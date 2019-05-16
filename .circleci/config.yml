@@ -1,0 +1,472 @@
+version: 2
+
+defaults: &linux_defaults
+  working_directory: /go/src/github.com/cosmos/gaia
+  docker:
+    - image: circleci/golang:1.12
+      environment:
+        GO111MODULE: 'on'
+
+
+############
+#
+# Configure macos integration tests
+
+macos_config: &macos_defaults
+  macos:
+    xcode: "10.1.0"
+  working_directory: /Users/distiller/project/src/github.com/cosmos/cosmos-sdk
+  environment:
+    GO_VERSION: "1.12.5"
+
+set_macos_env: &macos_env
+  run:
+    name: Set environment
+    command: |
+      echo 'export PATH=$PATH:$HOME/go/bin' >> $BASH_ENV
+      echo 'export GOPATH=$HOME/project' >> $BASH_ENV
+      echo 'export PATH=$PATH:$HOME/go/bin:$GOPATH/bin' >> $BASH_ENV
+      echo 'export GO111MODULE=on'
+
+############
+#
+# Configure docs deployment
+
+docs_update: &docs_deploy
+  working_directory: ~/repo
+  docker:
+    - image: tendermintdev/jq_curl
+  environment:
+    AWS_REGION: us-east-1
+
+jobs:
+  setup_dependencies:
+    <<: *linux_defaults
+    steps:
+      - run: mkdir -p /tmp/workspace/bin
+      - run: mkdir -p /tmp/workspace/profiles
+      - checkout
+      - restore_cache:
+          keys:
+            - go-mod-v1-{{ checksum "go.sum" }}
+      - run:
+          name: tools
+          command: |
+            make tools TOOLS_DESTDIR=/tmp/workspace/bin
+            cp $GOPATH/bin/runsim /tmp/workspace/bin/
+      - run:
+          name: binaries
+          command: |
+            export PATH=/tmp/workspace/bin:$PATH
+            make go-mod-cache
+            make install
+      - save_cache:
+          key: go-mod-v1-{{ checksum "go.sum" }}
+          paths:
+            - "/go/pkg/mod"
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - bin
+            - profiles
+
+  lint:
+    <<: *linux_defaults
+    parallelism: 1
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - checkout
+      - restore_cache:
+          keys:
+            - go-mod-v1-{{ checksum "go.sum" }}
+      - run:
+          name: Lint source
+          command: |
+            export PATH=/tmp/workspace/bin:$PATH
+            make ci-lint
+
+  integration_tests:
+    <<: *linux_defaults
+    parallelism: 1
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - checkout
+      - restore_cache:
+          keys:
+            - go-mod-v1-{{ checksum "go.sum" }}
+      - run:
+          name: Test cli
+          command: |
+            export BUILDDIR=`pwd`/build
+            make check-build
+
+  test_sim_gaia_nondeterminism:
+    <<: *linux_defaults
+    parallelism: 1
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - checkout
+      - restore_cache:
+          keys:
+            - go-mod-v1-{{ checksum "go.sum" }}
+      - run:
+          name: Test individual module simulations
+          command: |
+            make sim-gaia-nondeterminism
+
+  test_sim_gaia_fast:
+    <<: *linux_defaults
+    parallelism: 1
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - checkout
+      - restore_cache:
+          keys:
+            - go-mod-v1-{{ checksum "go.sum" }}
+      - run:
+          name: Test full Gaia simulation
+          command: |
+            make sim-gaia-fast
+
+  test_sim_gaia_import_export:
+    <<: *linux_defaults
+    parallelism: 1
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - checkout
+      - restore_cache:
+          keys:
+            - go-mod-v1-{{ checksum "go.sum" }}
+      - run:
+          name: Test Gaia import/export simulation
+          command: |
+            /tmp/workspace/bin/runsim -j 4 github.com/cosmos/gaia/app 50 5 TestGaiaImportExport
+
+  test_sim_gaia_simulation_after_import:
+    <<: *linux_defaults
+    parallelism: 1
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - checkout
+      - restore_cache:
+          keys:
+            - go-mod-v1-{{ checksum "go.sum" }}
+      - run:
+          name: Test Gaia import/export simulation
+          command: |
+            /tmp/workspace/bin/runsim -j 4 github.com/cosmos/gaia/app 50 5 TestGaiaSimulationAfterImport
+
+  test_sim_gaia_multi_seed_long:
+    <<: *linux_defaults
+    parallelism: 1
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - checkout
+      - restore_cache:
+          keys:
+            - go-mod-v1-{{ checksum "go.sum" }}
+      - run:
+          name: Test multi-seed Gaia simulation long
+          command: |
+            /tmp/workspace/bin/runsim -j 4 github.com/cosmos/gaia/app 500 50 TestFullGaiaSimulation
+
+  test_sim_gaia_multi_seed:
+    <<: *linux_defaults
+    parallelism: 1
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - checkout
+      - restore_cache:
+          keys:
+            - go-mod-v1-{{ checksum "go.sum" }}
+      - run:
+          name: Test multi-seed Gaia simulation short
+          command: |
+            /tmp/workspace/bin/runsim -j 4 github.com/cosmos/gaia/app 50 10 TestFullGaiaSimulation
+
+  test_cover:
+    <<: *linux_defaults
+    parallelism: 4
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - checkout
+      - run: mkdir -p /tmp/logs
+      - restore_cache:
+          keys:
+            - go-mod-v1-{{ checksum "go.sum" }}
+      - run:
+          name: Run tests
+          command: |
+            export VERSION="$(git describe --tags --long | sed 's/v\(.*\)/\1/')"
+            export GO111MODULE=on
+            for pkg in $(go list ./... | grep -v github.com/cosmos/gaia/cli_test | grep -v '/simulation' | circleci tests split --split-by=timings); do
+              id=$(echo "$pkg" | sed 's|[/.]|_|g')
+              go test -mod=readonly -timeout 8m -race -coverprofile=/tmp/workspace/profiles/$id.out -covermode=atomic -tags='ledger test_ledger_mock' "$pkg" | tee "/tmp/logs/$id-$RANDOM.log"
+            done
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - "profiles/*"
+      - store_artifacts:
+          path: /tmp/logs
+
+  upload_coverage:
+    <<: *linux_defaults
+    parallelism: 1
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - checkout
+      - run:
+          name: gather
+          command: |
+            set -ex
+
+            echo "--> Concatenating profiles:"
+            ls /tmp/workspace/profiles/
+            echo "mode: atomic" > coverage.txt
+            for prof in $(ls /tmp/workspace/profiles/); do
+              tail -n +2 /tmp/workspace/profiles/"$prof" >> coverage.txt
+            done
+      - run:
+          name: filter out DONTCOVER
+          command: |
+            excludelist="$(find ./ -type f -name '*.go' | xargs grep -l 'DONTCOVER' | xargs realpath --relative-to=$GOPATH/src)"
+            for filename in ${excludelist}; do
+              echo "Excluding ${filename} ..."
+              sed -i "\%${filename}:%d" coverage.txt
+            done
+      - run:
+          name: upload
+          command: bash <(curl -s https://codecov.io/bash) -f coverage.txt
+
+  localnet:
+      working_directory: /home/circleci/.go_workspace/src/github.com/cosmos/cosmos-sdk
+      machine:
+        image: circleci/classic:latest
+      environment:
+        GOPATH: /home/circleci/.go_workspace/
+        GOOS: linux
+        GOARCH: amd64
+        GO_VERSION: "1.12.5"
+      parallelism: 1
+      steps:
+        - checkout
+        - run:
+            name: run localnet and exit on failure
+            command: |
+              pushd /tmp
+              wget https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz
+              sudo tar -xvf go$GO_VERSION.linux-amd64.tar.gz
+              sudo rm -rf /usr/local/go
+              sudo mv go /usr/local
+              popd
+              set -x
+              make tools
+              make build-linux
+              make localnet-start
+              ./contrib/localnet-blocks-test.sh 40 5 10 localhost
+
+  deploy_docs:
+    <<: *docs_deploy
+    steps:
+      - checkout
+      - run:
+          name: Trigger website build
+          command: |
+            curl --silent \
+                 --show-error \
+                 -X POST \
+                 --header "Content-Type: application/json" \
+                 -d "{\"branch\": \"$CIRCLE_BRANCH\"}" \
+                 "https://circleci.com/api/v1.1/project/github/$CIRCLE_PROJECT_USERNAME/$WEBSITE_REPO_NAME/build?circle-token=$TENDERBOT_API_TOKEN" > response.json
+
+            RESULT=`jq -r '.status' response.json`
+            MESSAGE=`jq -r '.message' response.json`
+
+            if [[ ${RESULT} == "null" ]] || [[ ${RESULT} -ne "200" ]]; then
+                echo "CircleCI API call failed: $MESSAGE"
+                exit 1
+            else
+                echo "Website build started"
+            fi
+
+  macos_ci:
+    <<: *macos_defaults
+    steps:
+      - *macos_env
+      - run:
+          name: Install go
+          command: |
+            source $BASH_ENV
+            curl -L -O https://dl.google.com/go/go$GO_VERSION.darwin-amd64.tar.gz
+            tar -C $HOME -xzf go$GO_VERSION.darwin-amd64.tar.gz
+            rm go$GO_VERSION.darwin-amd64.tar.gz
+            go version
+      - checkout
+      - run:
+          name: Install SDK
+          command: |
+            source $BASH_ENV
+            make tools
+            make install
+      - run:
+          name: Integration tests
+          command:
+            source $BASH_ENV
+            make check-build
+      - run:
+          name: Test full gaia simulation
+          command: |
+            source $BASH_ENV
+            make sim-gaia-fast
+
+  docker_image:
+    <<: *linux_defaults
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run: |
+          GAIAD_VERSION=''
+          if [ "${CIRCLE_BRANCH}" = "master" ]; then
+            GAIAD_VERSION="stable"
+          elif [ "${CIRCLE_BRANCH}" = "develop" ]; then
+            GAIAD_VERSION="develop"
+          fi
+          if [ -z "${GAIAD_VERSION}" ]; then
+            docker build .
+          else
+            docker build -t tendermint/gaia:$GAIAD_VERSION .
+            docker login --password-stdin -u $DOCKER_USER <<<$DOCKER_PASS
+            docker push tendermint/gaia:$GAIAD_VERSION
+          fi
+
+  docker_tagged:
+    <<: *linux_defaults
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run: |
+          docker build -t tendermint/gaia:$CIRCLE_TAG .
+          docker login --password-stdin -u $DOCKER_USER <<<$DOCKER_PASS
+          docker push tendermint/gaia:$CIRCLE_TAG
+
+  reproducible_builds:
+    <<: *linux_defaults
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Build gaia
+          no_output_timeout: 20m
+          command: |
+            sudo apt-get install -y ruby
+            bash -x ./contrib/gitian-build.sh all
+            for os in darwin linux windows; do
+              cp gitian-build-${os}/result/gaia-${os}-res.yml .
+              rm -rf gitian-build-${os}/
+            done
+      - store_artifacts:
+          path: /go/src/github.com/cosmos/gaia/gaia-darwin-res.yml
+      - store_artifacts:
+          path: /go/src/github.com/cosmos/gaia/gaia-linux-res.yml
+      - store_artifacts:
+          path: /go/src/github.com/cosmos/gaia/gaia-windows-res.yml
+
+workflows:
+  version: 2
+  test-suite:
+    jobs:
+      - docker_image:
+          requires:
+            - setup_dependencies
+      - docker_tagged:
+          filters:
+            tags:
+              only:
+                - /^v.*/
+            branches:
+              ignore:
+                - /.*/
+          requires:
+            - setup_dependencies
+      - macos_ci:
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+      - deploy_docs:
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+      - setup_dependencies:
+          # filters here are needed to enable this job also for tags
+          filters:
+            tags:
+              only:
+                - /^v.*/
+      - lint:
+          requires:
+            - setup_dependencies
+      - integration_tests:
+          requires:
+            - setup_dependencies
+      - test_sim_gaia_nondeterminism:
+          requires:
+            - setup_dependencies
+      - test_sim_gaia_fast:
+          requires:
+            - setup_dependencies
+      - test_sim_gaia_import_export:
+          requires:
+            - setup_dependencies
+      - test_sim_gaia_simulation_after_import:
+          requires:
+            - setup_dependencies
+      - test_sim_gaia_multi_seed:
+          requires:
+            - setup_dependencies
+      - test_sim_gaia_multi_seed_long:
+          requires:
+            - setup_dependencies
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+      - test_cover:
+          requires:
+            - setup_dependencies
+      - localnet
+      - upload_coverage:
+          requires:
+            - test_cover
+      - reproducible_builds:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - setup_dependencies
+

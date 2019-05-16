@@ -1,0 +1,10 @@
+sections:
+  breaking: Breaking Changes
+  features: Features
+  improvements: Improvements
+  bugfixes: Bugfixes
+
+tags:
+  - gaiad
+  - gaiacli
+  - rest

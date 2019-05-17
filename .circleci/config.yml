@@ -52,7 +52,7 @@ jobs:
       - run:
           name: tools
           command: |
-            make tools TOOLS_DESTDIR=/tmp/workspace/bin
+            make runsim tools TOOLS_DESTDIR=/tmp/workspace/bin
       - run:
           name: binaries
           command: |
@@ -144,7 +144,7 @@ jobs:
       - run:
           name: Test Gaia import/export simulation
           command: |
-            /tmp/workspace/bin/runsim github.com/cosmos/gaia/app -j 4 50 5 TestGaiaImportExport
+            /tmp/workspace/bin/runsim -j 4 github.com/cosmos/gaia/app 50 5 TestGaiaImportExport
 
   test_sim_gaia_simulation_after_import:
     <<: *linux_defaults
@@ -159,9 +159,7 @@ jobs:
       - run:
           name: Test Gaia import/export simulation
           command: |
-            export GO111MODULE=on
-            make runsim
-            runsim -j 4 50 5 TestGaiaSimulationAfterImport
+            /tmp/workspace/bin/runsim -j 4 github.com/cosmos/gaia/app 50 5 TestGaiaSimulationAfterImport
 
   test_sim_gaia_multi_seed_long:
     <<: *linux_defaults

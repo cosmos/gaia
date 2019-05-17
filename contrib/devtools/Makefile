@@ -48,6 +48,7 @@ GOLANGCI_LINT   = $(TOOLS_DESTDIR)/golangci-lint
 STATIK          = $(TOOLS_DESTDIR)/statik
 GOIMPORTS       = $(TOOLS_DESTDIR)/goimports
 CLOG            = $(TOOLS_DESTDIR)/clog
+RUNSIM          = $(TOOLS_DESTDIR)/runsim
 
 all: tools
 
@@ -66,6 +67,10 @@ $(GOIMPORTS):
 
 $(CLOG):
 	$(call go_install,alessio,clog,1)
+
+$(RUNSIM):
+	go get github.com/cosmos/cosmos-sdk/contrib/runsim@v0.28.2-0.20190517070908-8ff9b25facc5
+	go install github.com/cosmos/cosmos-sdk/contrib/runsim
 
 tools-clean:
 	rm -f $(STATIK) $(GOIMPORTS) $(CLOG) $(GOLANGCI_LINT)

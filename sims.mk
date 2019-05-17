@@ -56,7 +56,7 @@ sim-gaia-profile:
 		-SimulationEnabled=true -SimulationNumBlocks=$(SIM_NUM_BLOCKS) -SimulationBlockSize=$(SIM_BLOCK_SIZE) -SimulationCommit=$(SIM_COMMIT) -timeout 24h -cpuprofile cpu.out -memprofile mem.out
 
 runsim:
-	go get github.com/cosmos/cosmos-sdk/contrib/runsim
+	go get github.com/cosmos/cosmos-sdk/contrib/runsim@v0.28.2-0.20190517070908-8ff9b25facc5
 
 
 .PHONY: runsim sim-gaia-nondeterminism sim-gaia-custom-genesis-fast sim-gaia-fast sim-gaia-import-export \

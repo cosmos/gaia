@@ -98,6 +98,7 @@ jobs:
       - run:
           name: Test cli
           command: |
+            export BUILDDIR=`pwd`/build
             make check-build
 
   test_sim_gaia_nondeterminism:

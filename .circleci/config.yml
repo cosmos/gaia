@@ -114,7 +114,7 @@ jobs:
       - run:
           name: Test individual module simulations
           command: |
-            make test_sim_gaia_nondeterminism
+            make sim-gaia-nondeterminism
 
   test_sim_gaia_fast:
     <<: *linux_defaults
@@ -129,7 +129,7 @@ jobs:
       - run:
           name: Test full Gaia simulation
           command: |
-            make test_sim_gaia_fast
+            make sim-gaia-fast
 
   test_sim_gaia_import_export:
     <<: *linux_defaults
@@ -335,7 +335,7 @@ jobs:
           name: Test full gaia simulation
           command: |
             source $BASH_ENV
-            make test_sim_gaia_fast
+            make sim-gaia-fast
 
   docker_image:
     <<: *linux_defaults

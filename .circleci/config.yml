@@ -175,7 +175,6 @@ jobs:
       - run:
           name: Test multi-seed Gaia simulation long
           command: |
-            export GO111MODULE=on
             /tmp/workspace/bin/runsim -j 4 github.com/cosmos/gaia/app 500 50 TestFullGaiaSimulation
 
   test_sim_gaia_multi_seed:
@@ -191,7 +190,6 @@ jobs:
       - run:
           name: Test multi-seed Gaia simulation short
           command: |
-            export GO111MODULE=on
             /tmp/workspace/bin/runsim -j 4 github.com/cosmos/gaia/app 50 10 TestFullGaiaSimulation
 
   test_cover:

@@ -279,7 +279,7 @@ jobs:
               make tools
               make build-linux
               make localnet-start
-              ./scripts/localnet-blocks-test.sh 40 5 10 localhost
+              ./contrib/localnet-blocks-test.sh 40 5 10 localhost
 
   deploy_docs:
     <<: *docs_deploy

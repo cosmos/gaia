@@ -1,9 +1,11 @@
 version: 2
 
 defaults: &linux_defaults
-  working_directory: /go/src/github.com/cosmos/cosmos-sdk
+  working_directory: /go/src/github.com/cosmos/gaia
   docker:
     - image: circleci/golang:1.12.5
+      environment:
+        GO111MODULE: "ON"
 
 
 ############
@@ -96,7 +98,7 @@ jobs:
       - run:
           name: Test cli
           command: |
-            make test_cli
+            make test-cli
 
   test_sim_gaia_nondeterminism:
     <<: *linux_defaults
@@ -389,11 +391,11 @@ jobs:
               rm -rf gitian-build-${os}/
             done
       - store_artifacts:
-          path: /go/src/github.com/cosmos/cosmos-sdk/gaia-darwin-res.yml
+          path: /go/src/github.com/cosmos/gaia/gaia-darwin-res.yml
       - store_artifacts:
-          path: /go/src/github.com/cosmos/cosmos-sdk/gaia-linux-res.yml
+          path: /go/src/github.com/cosmos/gaia/gaia-linux-res.yml
       - store_artifacts:
-          path: /go/src/github.com/cosmos/cosmos-sdk/gaia-windows-res.yml
+          path: /go/src/github.com/cosmos/gaia/gaia-windows-res.yml
 
 workflows:
   version: 2

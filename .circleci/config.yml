@@ -98,7 +98,7 @@ jobs:
       - run:
           name: Test cli
           command: |
-            make test-cli
+            make check-build
 
   test_sim_gaia_nondeterminism:
     <<: *linux_defaults
@@ -329,7 +329,7 @@ jobs:
           name: Integration tests
           command:
             source $BASH_ENV
-            make test_cli
+            make check-build
       - run:
           name: Test full gaia simulation
           command: |

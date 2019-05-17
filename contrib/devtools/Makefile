@@ -53,7 +53,7 @@ RUNSIM          = $(TOOLS_DESTDIR)/runsim
 all: tools
 
 tools: tools-stamp
-tools-stamp: $(STATIK) $(GOIMPORTS) $(CLOG) $(GOLANGCI_LINT)
+tools-stamp: $(STATIK) $(GOIMPORTS) $(CLOG) $(GOLANGCI_LINT) $(RUNSIM)
 	touch $@
 
 $(GOLANGCI_LINT): $(mkfile_dir)/install-golangci-lint.sh

@@ -141,6 +141,22 @@ benchmark:
 	@go test -mod=readonly -bench=. ./...
 
 
+########################################
+### Local validator nodes using docker and docker-compose
+
+build-docker-gaiadnode:
+	$(MAKE) -C networks/local
+
+# Run a 4-node testnet locally
+localnet-start: localnet-stop
+	@if ! [ -f build/node0/gaiad/config/genesis.json ]; then docker run --rm -v $(CURDIR)/build:/gaiad:Z tendermint/gaiadnode testnet --v 4 -o . --starting-ip-address 192.168.10.2 ; fi
+	docker-compose up -d
+
+# Stop testnet
+localnet-stop:
+	docker-compose down
+
+
 # include simulations
 include sims.mk
 

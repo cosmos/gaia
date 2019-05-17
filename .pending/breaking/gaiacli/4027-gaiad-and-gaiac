@@ -1,0 +1,1 @@
+#4027 gaiacli version command dooes not return the checksum of the go.sum file anymore.

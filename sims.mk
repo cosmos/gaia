@@ -3,13 +3,11 @@
 ########################################
 ### Simulations
 
-runsim: $(GOPATH)/bin/runsim
-$(GOPATH)/bin/runsim: contrib/runsim/main.go
-	go install github.com/cosmos/gaia/contrib/runsim
+SIMAPP = github.com/cosmos/gaia/app
 
 sim-gaia-nondeterminism:
 	@echo "Running nondeterminism test..."
-	@go test -mod=readonly ./cmd/gaia/app -run TestAppStateDeterminism -SimulationEnabled=true -v -timeout 10m
+	@go test -mod=readonly $(SIMAPP) -run TestAppStateDeterminism -SimulationEnabled=true -v -timeout 10m
 
 sim-gaia-custom-genesis-fast:
 	@echo "Running custom genesis simulation..."
@@ -57,6 +55,10 @@ sim-gaia-profile:
 	@go test -mod=readonly -benchmem -run=^$$ github.com/cosmos/gaia/app -bench ^BenchmarkFullGaiaSimulation$$ \
 		-SimulationEnabled=true -SimulationNumBlocks=$(SIM_NUM_BLOCKS) -SimulationBlockSize=$(SIM_BLOCK_SIZE) -SimulationCommit=$(SIM_COMMIT) -timeout 24h -cpuprofile cpu.out -memprofile mem.out
 
-.PHONY: sim-gaia-nondeterminism sim-gaia-custom-genesis-fast sim-gaia-fast sim-gaia-import-export \
+runsim:
+	go get github.com/cosmos/cosmos-sdk/contrib/runsim
+
+
+.PHONY: runsim sim-gaia-nondeterminism sim-gaia-custom-genesis-fast sim-gaia-fast sim-gaia-import-export \
 	sim-gaia-simulation-after-import sim-gaia-custom-genesis-multi-seed sim-gaia-multi-seed \
 	sim-benchmark-invariants sim-gaia-benchmark sim-gaia-profile

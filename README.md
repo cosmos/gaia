@@ -1,4 +1,5 @@
-# Gaia
+# Cosmos Hub
+[!banner](docs/welcome-banner.jpg)
 
 [![CircleCI](https://circleci.com/gh/cosmos/gaia/tree/master.svg?style=shield)](https://circleci.com/gh/cosmos/gaia/tree/master)
 [![codecov](https://codecov.io/gh/cosmos/gaia/branch/master/graph/badge.svg)](https://codecov.io/gh/cosmos/gaia)

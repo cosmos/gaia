@@ -94,7 +94,7 @@ f_build() {
 
   l_descriptor=$1
 
-  bin/gbuild --commit cosmos-sdk="$g_commit" ${GBUILD_FLAGS} "$l_descriptor"
+  bin/gbuild --commit gaia="$g_commit" ${GBUILD_FLAGS} "$l_descriptor"
   libexec/stop-target || f_echo_stderr "warning: couldn't stop target"
 }
 
@@ -182,7 +182,7 @@ f_prep_build "${g_platforms}"
 export USE_DOCKER=1
 for g_os in ${g_platforms}; do
   g_release="$(git describe --tags --abbrev=9 | sed 's/^v//')-${g_os}"
-  g_descriptor="${g_workdir}/cmd/gaia/contrib/gitian-descriptors/gitian-${g_os}.yml"
+  g_descriptor="${g_workdir}/contrib/gitian-descriptors/gitian-${g_os}.yml"
   [ -f ${g_descriptor} ]
   g_builddir="$(f_builddir ${g_os})"
 

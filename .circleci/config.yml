@@ -46,20 +46,24 @@ jobs:
       - run: mkdir -p /tmp/workspace/bin
       - run: mkdir -p /tmp/workspace/profiles
       - checkout
+      - restore_cache:
+          keys:
+            - go-mod-v1-{{ checksum "go.sum" }}
       - run:
           name: tools
           command: |
             make tools TOOLS_DESTDIR=/tmp/workspace/bin
             cp $GOPATH/bin/runsim /tmp/workspace/bin/
-      - save_cache:
-          key: go-mod-v1-{{ checksum "go.sum" }}
-          paths:
-            - "/go/pkg/mod"
       - run:
           name: binaries
           command: |
             export PATH=/tmp/workspace/bin:$PATH
+            make go-mod-cache
             make install
+      - save_cache:
+          key: go-mod-v1-{{ checksum "go.sum" }}
+          paths:
+            - "/go/pkg/mod"
       - persist_to_workspace:
           root: /tmp/workspace
           paths:

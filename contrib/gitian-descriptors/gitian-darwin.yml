@@ -80,6 +80,8 @@ script: |
   # Configure LDFLAGS for reproducible builds
   LDFLAGS="-extldflags=-static -buildid=${VERSION} -s -w \
     -X github.com/cosmos/cosmos-sdk/version.Name=gaia \
+    -X github.com/cosmos/cosmos-sdk/version.ServerName=gaiad \
+    -X github.com/cosmos/cosmos-sdk/version.ClientName=gaiacli \
     -X github.com/cosmos/cosmos-sdk/version.Version=${VERSION} \
     -X github.com/cosmos/cosmos-sdk/version.Commit=${COMMIT} \
     -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger"

@@ -34,11 +34,10 @@ contributors, the general procedure for contributing has been established:
        top of `master`, make some commits, and submit a PR to `master`,
          - for core developers working within the Gaia repo, 
 	 to ensure a clear ownership of branches, branches must be named with the convention `yourname/{issue-}feature-name`.  
-     5. include `WIP:` in the PR-title to and submit your PR early, even if it's
-       incomplete, this indicates to the community you're working on something and
-       allows them to provide comments early in the development process. When the code
-       is complete it can be marked as ready-for-review by replacing `WIP:` with
-       `R4R:` in the PR-title.
+     5. submit your PR early and make sure it's opened as a `Draft`, even if it's
+        incomplete, this indicates to the community you're working on something and
+        allows them to provide comments early in the development process. When the code
+        is complete it should be marked as ready-for-review using Github's `Mark Ready` feature.
 
 Note that for very small or blatantly obvious problems (such as typos) it is
 not required to an open issue to submit a PR, but be aware that for more complex

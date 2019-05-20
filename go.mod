@@ -36,4 +36,6 @@ require (
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 )
 
+replace github.com/cosmos/cosmos-sdk => github.com/cryptiumlabs/cosmos-sdk-proposal-7 v0.28.2-0.20190520160852-d04c9a31f93b
+
 replace golang.org/x/crypto => github.com/tendermint/crypto v0.0.0-20180820045704-3764759f34a5

@@ -30,6 +30,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	mintclient "github.com/cosmos/cosmos-sdk/x/mint/client"
 	mintrest "github.com/cosmos/cosmos-sdk/x/mint/client/rest"
+	distrcli "github.com/cosmos/cosmos-sdk/x/params/client/cli"
 	paramcli "github.com/cosmos/cosmos-sdk/x/params/client/cli"
 	paramsrest "github.com/cosmos/cosmos-sdk/x/params/client/rest"
 	sl "github.com/cosmos/cosmos-sdk/x/slashing"
@@ -70,7 +71,7 @@ func main() {
 	// Module clients hold cli commnads (tx,query) and lcd routes
 	// TODO: Make the lcd command take a list of ModuleClient
 	mc := []sdk.ModuleClient{
-		govClient.NewModuleClient(gv.StoreKey, cdc, paramcli.GetCmdSubmitProposal(cdc)),
+		govClient.NewModuleClient(gv.StoreKey, cdc, paramcli.GetCmdSubmitProposal(cdc), distrcli.GetCmdSubmitProposal(cdc)),
 		distClient.NewModuleClient(distcmd.StoreKey, cdc),
 		stakingclient.NewModuleClient(st.StoreKey, cdc),
 		mintclient.NewModuleClient(mint.StoreKey, cdc),

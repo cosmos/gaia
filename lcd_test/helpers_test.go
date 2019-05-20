@@ -40,6 +40,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
 	distrrest "github.com/cosmos/cosmos-sdk/x/distribution/client/rest"
+	distrcutils "github.com/cosmos/cosmos-sdk/x/distribution/client/utils"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	govrest "github.com/cosmos/cosmos-sdk/x/gov/client/rest"
@@ -1209,6 +1210,44 @@ func doSubmitParamChangeProposal(
 	require.NoError(t, err)
 
 	resp, body := Request(t, port, "POST", "/gov/proposals/param_change", req)
+	require.Equal(t, http.StatusOK, resp.StatusCode, body)
+
+	resp, body = signAndBroadcastGenTx(t, port, name, pwd, body, acc, client.DefaultGasAdjustment, false)
+	require.Equal(t, http.StatusOK, resp.StatusCode, body)
+
+	var txResp sdk.TxResponse
+	err = cdc.UnmarshalJSON([]byte(body), &txResp)
+	require.NoError(t, err)
+
+	return txResp
+}
+
+func doSubmitCommunityPoolSpendProposal(
+	t *testing.T, port, seed, name, pwd string, proposerAddr sdk.AccAddress,
+	amount sdk.Int, fees sdk.Coins,
+) sdk.TxResponse {
+
+	acc := getAccount(t, port, proposerAddr)
+	accnum := acc.GetAccountNumber()
+	sequence := acc.GetSequence()
+	chainID := viper.GetString(client.FlagChainID)
+	from := acc.GetAddress().String()
+
+	baseReq := rest.NewBaseReq(from, "", chainID, "", "", accnum, sequence, fees, nil, false)
+	pr := distrcutils.CommunityPoolSpendProposalReq{
+		BaseReq:     baseReq,
+		Title:       "Test",
+		Description: "test",
+		Proposer:    proposerAddr,
+		Recipient:   proposerAddr,
+		Deposit:     sdk.Coins{sdk.NewCoin(sdk.DefaultBondDenom, amount)},
+		Amount:      sdk.Coins{sdk.NewCoin(sdk.DefaultBondDenom, amount)},
+	}
+
+	req, err := cdc.MarshalJSON(pr)
+	require.NoError(t, err)
+
+	resp, body := Request(t, port, "POST", "/gov/proposals/community_pool_spend", req)
 	require.Equal(t, http.StatusOK, resp.StatusCode, body)
 
 	resp, body = signAndBroadcastGenTx(t, port, name, pwd, body, acc, client.DefaultGasAdjustment, false)

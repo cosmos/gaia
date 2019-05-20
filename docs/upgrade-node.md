@@ -9,7 +9,7 @@ First, stop your instance of `gaiad`. Next, upgrade the software:
 ```bash
 cd $GOPATH/src/github.com/cosmos/gaia
 git fetch --all && git checkout <new_version>
-make tools install
+make install
 ```
 
 ::: tip

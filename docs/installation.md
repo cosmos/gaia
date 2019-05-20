@@ -34,7 +34,7 @@ Older releases up to 0.34.x are available from the [Cosmos SDK releases page](ht
 mkdir -p $GOPATH/src/github.com/cosmos
 cd $GOPATH/src/github.com/cosmos
 git clone -b <latest-release-tag> https://github.com/cosmos/gaia
-cd gaia && make tools install
+cd gaia && make install
 ```
 
 > *NOTE*: If you have issues at this step, please check that you have the latest stable version of GO installed.

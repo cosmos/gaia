@@ -2,6 +2,10 @@
 
 Welcome to the documentation of the **Cosmos Hub application: `gaia`**.
 
+## What is Gaia?
+
+- [Gaia](./what-is-gaia.md)
+
 ## Join the Cosmos Hub Mainnet
 
 - [Install the `gaia` application](./installation.md)

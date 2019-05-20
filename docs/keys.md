@@ -5,6 +5,6 @@ See the [Tendermint specification](https://github.com/tendermint/tendermint/blob
 See `gaiacli keys --help`.
 
 Also see the [testnet
-tutorial](https://github.com/cosmos/cosmos-sdk/tree/develop/cmd/gaia/testnets).
+tutorial](./join-testnet).
 
 TODO: cleanup the UX and document this properly

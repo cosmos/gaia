@@ -26,7 +26,7 @@ For the mainnet, make sure your version is greater than `v0.33.0`
 :::
 
 ::: warning
-Older releases up to 0.34.x are available from the [Cosmos SDK releases page](https://github.com/cosmos/cosmos-sdk/releases).
+Older releases of the Cosmos SDK up to 0.34.x are available on the [Gaia releases page](https://github.com/cosmos/cosmos-sdk/releases).
 ::: 
 
 
@@ -34,7 +34,7 @@ Older releases up to 0.34.x are available from the [Cosmos SDK releases page](ht
 mkdir -p $GOPATH/src/github.com/cosmos
 cd $GOPATH/src/github.com/cosmos
 git clone -b <latest-release-tag> https://github.com/cosmos/gaia
-cd cosmos-sdk && make tools install
+cd gaia && make tools install
 ```
 
 > *NOTE*: If you have issues at this step, please check that you have the latest stable version of GO installed.

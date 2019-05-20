@@ -46,7 +46,7 @@ import (
 	amino "github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
 
-	_ "github.com/cosmos/cosmos-sdk/client/lcd/statik"
+	_ "github.com/cosmos/gaia/cmd/gaiacli/statik"
 )
 
 func main() {

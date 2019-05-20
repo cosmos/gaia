@@ -81,7 +81,7 @@ All PRs require two Reviews before merge (except docs changes, or variable name-
 
 If you open a PR in Gaia, it is mandatory to update the relevant documentation in /docs.
 
-* If your changes relate specifically to the gaia application (not including modules), please modify the docs/ folder.
+* If your changes relate specifically to the gaia application, please modify the docs/ folder.
 
 ## Forking
 

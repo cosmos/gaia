@@ -302,11 +302,11 @@ The action tag always equals the message type returned by the `Type()` function 
 You can find a list of available `tags` on each of the SDK modules:
 
 - [Common tags](https://github.com/cosmos/cosmos-sdk/blob/d1e76221d8e28824bb4791cb4ad8662d2ae9051e/types/tags.go#L57-L63)
-- [Staking tags](https://github.com/cosmos/cosmos-sdk/blob/d1e76221d8e28824bb4791cb4ad8662d2ae9051e/x/staking/tags/tags.go#L8-L24)
-- [Governance tags](https://github.com/cosmos/cosmos-sdk/blob/d1e76221d8e28824bb4791cb4ad8662d2ae9051e/x/gov/tags/tags.go#L8-L22)
-- [Slashing tags](https://github.com/cosmos/cosmos-sdk/blob/d1e76221d8e28824bb4791cb4ad8662d2ae9051e/x/slashing/handler.go#L52)
-- [Distribution tags](https://github.com/cosmos/cosmos-sdk/blob/develop/x/distribution/tags/tags.go#L8-L17)
-- [Bank tags](https://github.com/cosmos/cosmos-sdk/blob/d1e76221d8e28824bb4791cb4ad8662d2ae9051e/x/bank/keeper.go#L193-L206)
+- [Staking tags](https://cosmos.network/docs/spec/staking/06_tags.html#tags)
+- [Governance tags](https://cosmos.network/docs/spec/governance/04_tags.html#tags)
+- [Slashing tags](https://cosmos.network/docs/spec/slashing/06_tags.html#tags)
+- [Distribution tags](https://cosmos.network/docs/spec/distribution/06_tags.html)
+- [Bank tags](https://cosmos.network/docs/spec/bank/04_tags.html#tags)
 :::
 
 #### Matching a Transaction's Hash

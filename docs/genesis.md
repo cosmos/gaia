@@ -27,7 +27,7 @@ The `genesis_time` is defined at the top of the genesis file. It is a `UTC` time
 The `chain_id` is a unique identifier for your chain. It helps differentiate between different chains using the same version of the software.
 
 ```json
-"chain_id": "cosmoshub-1",
+"chain_id": "cosmoshub-2",
 ```
 
 ## Consensus Parameters

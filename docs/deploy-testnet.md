@@ -6,13 +6,14 @@ This document describes 3 ways to setup a network of `gaiad` nodes, each serving
 2. Multi-node, local, automated testnet
 3. Multi-node, remote, automated testnet
 
-Supporting code can be found in the [networks directory](https://github.com/cosmos/gaia/tree/develop/networks) and additionally the `local` or `remote` sub-directories.
+Supporting code can be found in the [networks directory](https://github.com/cosmos/gaia/tree/master/networks) and additionally the `local` or `remote` sub-directories.
 
 > NOTE: The `remote` network bootstrapping may be out of sync with the latest releases and is not to be relied upon.
 
 ## Available Docker images
 
 In case you need to use or deploy gaia as a container you could skip the `build` steps and use the official images, $TAG stands for the version you are interested in:
+
 - `docker run -it -v ~/.gaiad:/root/.gaiad -v ~/.gaiacli:/root/.gaiacli tendermint:$TAG gaiad init`
 - `docker run -it -p 26657:26657 -p 26656:26656 -v ~/.gaiad:/root/.gaiad -v ~/.gaiacli:/root/.gaiacli tendermint:$TAG gaiad start`
 - ...
@@ -60,7 +61,7 @@ This setup puts all the data for `gaiad` in `~/.gaiad`. You can examine the gene
 
 ## Multi-node, Local, Automated Testnet
 
-From the [networks/local directory](https://github.com/cosmos/gaia/tree/develop/networks/local):
+From the [networks/local directory](https://github.com/cosmos/gaia/tree/master/networks/local):
 
 ### Requirements
 
@@ -192,7 +193,7 @@ BINARY=gaiafoo make localnet-start
 
 ## Multi-Node, Remote, Automated Testnet
 
-The following should be run from the [networks directory](https://github.com/cosmos/gaia/tree/develop/networks).
+The following should be run from the [networks directory](https://github.com/cosmos/gaia/tree/master/networks).
 
 ### Terraform & Ansible
 

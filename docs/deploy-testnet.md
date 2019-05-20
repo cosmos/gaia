@@ -12,7 +12,7 @@ Supporting code can be found in the [networks directory](https://github.com/cosm
 
 ## Available Docker images
 
-In case you need to use or deploy gaia as a container you could skip the `build` steps and use the official images, \$TAG stands for the version you are interested in:
+In case you need to use or deploy gaia as a container you could skip the `build` steps and use the official images, $TAG stands for the version you are interested in:
 
 - `docker run -it -v ~/.gaiad:/root/.gaiad -v ~/.gaiacli:/root/.gaiacli tendermint:$TAG gaiad init`
 - `docker run -it -p 26657:26657 -p 26656:26656 -v ~/.gaiad:/root/.gaiad -v ~/.gaiacli:/root/.gaiacli tendermint:$TAG gaiad start`

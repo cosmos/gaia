@@ -26,7 +26,7 @@ For the mainnet, make sure your version is greater than `v0.33.0`
 :::
 
 ::: warning
-Older releases of the Cosmos SDK up to 0.34.x are available on the [Gaia releases page](https://github.com/cosmos/cosmos-sdk/releases).
+Older releases up to 0.34.x are available from the [Cosmos SDK releases page](https://github.com/cosmos/cosmos-sdk/releases).
 ::: 
 
 

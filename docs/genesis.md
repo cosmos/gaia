@@ -20,7 +20,7 @@ The state defined in the genesis file contains all the necessary information, li
 
 The `genesis_time` is defined at the top of the genesis file. It is a `UTC` timestamps which specifies when the blockchain is due to start. At this time, genesis validators are supposed to come online and start participating in the consensus process. The blockchain starts when more than 2/3rd of the genesis validators (weighted by voting power) are online. 
 
-```json f
+```json
 "genesis_time": "2019-03-13T17:00:00.000000000Z",
 ```
 

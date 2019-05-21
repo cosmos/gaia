@@ -403,6 +403,20 @@ func (f *Fixtures) TxGovSubmitParamChangeProposal(
 	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), client.DefaultKeyPass)
 }
 
+// TxGovSubmitCommunityPoolSpendProposal executes a CLI community pool spend proposal
+// submission.
+func (f *Fixtures) TxGovSubmitCommunityPoolSpendProposal(
+	from, proposalPath string, deposit sdk.Coin, flags ...string,
+) (bool, string, string) {
+
+	cmd := fmt.Sprintf(
+		"%s tx gov submit-proposal community-pool-spend %s --from=%s %v",
+		f.GaiacliBinary, proposalPath, from, f.Flags(),
+	)
+
+	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), client.DefaultKeyPass)
+}
+
 //___________________________________________________________________________________
 // gaiacli query account
 

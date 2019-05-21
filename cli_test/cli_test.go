@@ -687,6 +687,90 @@ func TestGaiaCLISubmitParamChangeProposal(t *testing.T) {
 	f.Cleanup()
 }
 
+func TestGaiaCLISubmitCommunityPoolSpendProposal(t *testing.T) {
+	t.Parallel()
+	f := InitFixtures(t)
+
+	// create some inflation
+	cdc := app.MakeCodec()
+	genesisState := f.GenesisState()
+	inflationMin := sdk.MustNewDecFromStr("10000.0")
+	var mintData mint.GenesisState
+	cdc.UnmarshalJSON(genesisState[mint.ModuleName], &mintData)
+	mintData.Minter.Inflation = inflationMin
+	mintData.Params.InflationMin = inflationMin
+	mintData.Params.InflationMax = sdk.MustNewDecFromStr("15000.0")
+	mintDataBz, err := cdc.MarshalJSON(mintData)
+	require.NoError(t, err)
+	genesisState[mint.ModuleName] = mintDataBz
+
+	genFile := filepath.Join(f.GaiadHome, "config", "genesis.json")
+	genDoc, err := tmtypes.GenesisDocFromFile(genFile)
+	require.NoError(t, err)
+	genDoc.AppState, err = cdc.MarshalJSON(genesisState)
+	require.NoError(t, genDoc.SaveAs(genFile))
+
+	proc := f.GDStart()
+	defer proc.Stop(false)
+
+	fooAddr := f.KeyAddress(keyFoo)
+	fooAcc := f.QueryAccount(fooAddr)
+	startTokens := sdk.TokensFromTendermintPower(50)
+	require.Equal(t, startTokens, fooAcc.GetCoins().AmountOf(sdk.DefaultBondDenom))
+
+	tests.WaitForNextNBlocksTM(3, f.Port)
+
+	// write proposal to file
+	proposalTokens := sdk.TokensFromTendermintPower(5)
+	proposal := fmt.Sprintf(`{
+  "title": "Community Pool Spend",
+  "description": "Spend from community pool",
+  "recipient": "%s",
+  "amount": [
+    {
+      "denom": "%s",
+      "amount": "1"
+    }
+  ],
+  "deposit": [
+    {
+      "denom": "%s",
+      "amount": "%s"
+    }
+  ]
+}
+`, fooAddr, sdk.DefaultBondDenom, sdk.DefaultBondDenom, proposalTokens.String())
+	proposalFile := WriteToNewTempFile(t, proposal)
+
+	// create the param change proposal
+	f.TxGovSubmitCommunityPoolSpendProposal(keyFoo, proposalFile.Name(), sdk.NewCoin(denom, proposalTokens), "-y")
+	tests.WaitForNextNBlocksTM(1, f.Port)
+
+	// ensure transaction tags can be queried
+	txsPage := f.QueryTxs(1, 50, "action:submit_proposal", fmt.Sprintf("sender:%s", fooAddr))
+	require.Len(t, txsPage.Txs, 1)
+
+	// ensure deposit was deducted
+	fooAcc = f.QueryAccount(fooAddr)
+	require.Equal(t, startTokens.Sub(proposalTokens).String(), fooAcc.GetCoins().AmountOf(sdk.DefaultBondDenom).String())
+
+	// ensure proposal is directly queryable
+	proposal1 := f.QueryGovProposal(1)
+	require.Equal(t, uint64(1), proposal1.ProposalID)
+	require.Equal(t, gov.StatusDepositPeriod, proposal1.Status)
+
+	// ensure correct query proposals result
+	proposalsQuery := f.QueryGovProposals()
+	require.Equal(t, uint64(1), proposalsQuery[0].ProposalID)
+
+	// ensure the correct deposit amount on the proposal
+	deposit := f.QueryGovDeposit(1, fooAddr)
+	require.Equal(t, proposalTokens, deposit.Amount.AmountOf(denom))
+
+	// Cleanup testing directories
+	f.Cleanup()
+}
+
 func TestGaiaCLIQueryTxPagination(t *testing.T) {
 	t.Parallel()
 	f := InitFixtures(t)

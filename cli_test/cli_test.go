@@ -721,7 +721,6 @@ func TestGaiaCLISubmitCommunityPoolSpendProposal(t *testing.T) {
   ]
 }
 `, fooAddr, proposalTokens.String())
-
 	proposalFile := WriteToNewTempFile(t, proposal)
 
 	// create the param change proposal

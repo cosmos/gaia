@@ -699,6 +699,8 @@ func TestGaiaCLISubmitCommunityPoolSpendProposal(t *testing.T) {
 	startTokens := sdk.TokensFromTendermintPower(50)
 	require.Equal(t, startTokens, fooAcc.GetCoins().AmountOf(sdk.DefaultBondDenom))
 
+	tests.WaitForNextNBlocksTM(3, f.Port)
+
 	// write proposal to file
 	proposalTokens := sdk.TokensFromTendermintPower(5)
 	proposal := fmt.Sprintf(`{
@@ -714,11 +716,11 @@ func TestGaiaCLISubmitCommunityPoolSpendProposal(t *testing.T) {
   "deposit": [
     {
       "denom": "stake",
-      "amount": "%s"
+      "amount": "1"
     }
   ]
 }
-`, fooAddr, proposalTokens.String(), proposalTokens.String())
+`, fooAddr, proposalTokens.String())
 
 	proposalFile := WriteToNewTempFile(t, proposal)
 

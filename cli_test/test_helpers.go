@@ -88,7 +88,7 @@ func NewFixtures(t *testing.T) *Fixtures {
 
 	buildDir := os.Getenv("BUILDDIR")
 	if buildDir == "" {
-		buildDir, err = filepath.Abs("../../../build/")
+		buildDir, err = filepath.Abs("../build/")
 		require.NoError(t, err)
 	}
 

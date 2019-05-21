@@ -4,15 +4,12 @@ If you want to open a PR on Gaia to update the documentation, please follow the 
 
 ## Docs Build Workflow
 
-The documentation for the Cosmos SDK & Gaia is hosted at:
+The documentation for Gaia is hosted at:
 
-- https://cosmos.network/docs/ and
-- https://cosmos-staging.interblock.io/docs/
+- https://hub.cosmos.network/docs/ 
 
-built from the files in this (`/docs`) directory for
-[master](https://github.com/cosmos/cosmos-sdk/tree/master/docs)
-and [develop](https://github.com/cosmos/cosmos-sdk/tree/develop/docs),
-respectively.
+built from the files in this (`/docs`) directory for [master](https://github.com/cosmos/gaia/tree/master/docs)
+
 
 ### How It Works
 

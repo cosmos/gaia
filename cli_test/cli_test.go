@@ -691,6 +691,25 @@ func TestGaiaCLISubmitCommunityPoolSpendProposal(t *testing.T) {
 	t.Parallel()
 	f := InitFixtures(t)
 
+	// create some inflation
+	cdc := app.MakeCodec()
+	genesisState := f.GenesisState()
+	inflationMin := sdk.MustNewDecFromStr("10000.0")
+	var mintData mint.GenesisState
+	cdc.UnmarshalJSON(genesisState[mint.ModuleName], &mintData)
+	mintData.Minter.Inflation = inflationMin
+	mintData.Params.InflationMin = inflationMin
+	mintData.Params.InflationMax = sdk.MustNewDecFromStr("15000.0")
+	mintDataBz, err := cdc.MarshalJSON(mintData)
+	require.NoError(t, err)
+	genesisState[mint.ModuleName] = mintDataBz
+
+	genFile := filepath.Join(f.GaiadHome, "config", "genesis.json")
+	genDoc, err := tmtypes.GenesisDocFromFile(genFile)
+	require.NoError(t, err)
+	genDoc.AppState, err = cdc.MarshalJSON(genesisState)
+	require.NoError(t, genDoc.SaveAs(genFile))
+
 	proc := f.GDStart()
 	defer proc.Stop(false)
 

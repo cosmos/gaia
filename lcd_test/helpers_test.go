@@ -301,6 +301,14 @@ func InitializeTestLCD(t *testing.T, nValidators int, initAddrs []sdk.AccAddress
 		accs = append(accs, acc)
 	}
 
+	// distr data
+	distrDataBz := genesisState[distr.ModuleName]
+	var distrData distr.GenesisState
+	cdc.MustUnmarshalJSON(distrDataBz, &distrData)
+	distrData.FeePool.CommunityPool = sdk.DecCoins{sdk.DecCoin{"test", sdk.NewDecFromInt(sdk.NewInt(10))}}
+	distrDataBz = cdc.MustMarshalJSON(distrData)
+	genesisState[distr.ModuleName] = distrDataBz
+
 	// now add the account tokens to the non-bonded pool
 	for _, acc := range accs {
 		accTokens := acc.Coins.AmountOf(sdk.DefaultBondDenom)
@@ -1240,7 +1248,7 @@ func doSubmitCommunityPoolSpendProposal(
 		Proposer:    proposerAddr,
 		Recipient:   proposerAddr,
 		Deposit:     sdk.Coins{sdk.NewCoin(sdk.DefaultBondDenom, amount)},
-		Amount:      sdk.Coins{sdk.NewCoin(sdk.DefaultBondDenom, amount)},
+		Amount:      sdk.Coins{sdk.NewCoin("test", sdk.NewInt(5))},
 	}
 
 	req, err := cdc.MarshalJSON(pr)

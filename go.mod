@@ -4,7 +4,7 @@ go 1.12
 
 require (
 	github.com/btcsuite/btcd v0.0.0-20190427004231-96897255fd17 // indirect
-	github.com/cosmos/cosmos-sdk v0.28.2-0.20190520151953-4b872d2eb4bb
+	github.com/cosmos/cosmos-sdk v0.28.2-0.20190521100210-dd89c329516e
 	github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d // indirect
 	github.com/gogo/protobuf v1.2.1 // indirect
 	github.com/google/gofuzz v1.0.0 // indirect
@@ -35,7 +35,5 @@ require (
 	google.golang.org/grpc v1.19.1 // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 )
-
-replace github.com/cosmos/cosmos-sdk => github.com/cryptiumlabs/cosmos-sdk-proposal-7 v0.28.2-0.20190521082256-a74daafffb48
 
 replace golang.org/x/crypto => github.com/tendermint/crypto v0.0.0-20180820045704-3764759f34a5

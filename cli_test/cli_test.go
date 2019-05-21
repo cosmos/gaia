@@ -710,13 +710,13 @@ func TestGaiaCLISubmitCommunityPoolSpendProposal(t *testing.T) {
   "amount": [
     {
       "denom": "stake",
-      "amount": "%s"
+      "amount": "1"
     }
   ],
   "deposit": [
     {
       "denom": "stake",
-      "amount": "1"
+      "amount": "%s"
     }
   ]
 }

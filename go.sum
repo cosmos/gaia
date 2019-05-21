@@ -49,12 +49,6 @@ github.com/cosmos/ledger-cosmos-go v0.10.3 h1:Qhi5yTR5Pg1CaTpd00pxlGwNl4sFRdtK1J
 github.com/cosmos/ledger-cosmos-go v0.10.3/go.mod h1:J8//BsAGTo3OC/vDLjMRFLW6q0WAaXvHnVc7ZmE8iUY=
 github.com/cosmos/ledger-go v0.9.2 h1:Nnao/dLwaVTk1Q5U9THldpUMMXU94BOTWPddSmVB6pI=
 github.com/cosmos/ledger-go v0.9.2/go.mod h1:oZJ2hHAZROdlHiwTg4t7kP+GKIIkBT+o6c9QWFanOyI=
-github.com/cryptiumlabs/cosmos-sdk-proposal-7 v0.28.2-0.20190520160852-d04c9a31f93b h1:zhePFXW1XHTQ5v8x1a+frIcCCL9IDvgW38m6eJiiVh4=
-github.com/cryptiumlabs/cosmos-sdk-proposal-7 v0.28.2-0.20190520160852-d04c9a31f93b/go.mod h1:I62zQ9u72HHY+V5gNVG2oHyyKJTnD2ZT/CJRr4j3JG0=
-github.com/cryptiumlabs/cosmos-sdk-proposal-7 v0.28.2-0.20190520164151-6e1dbddad494 h1:VGyzIwhwokBg7kayaM8DisP8+E7xzAL21dHbNuxdkg8=
-github.com/cryptiumlabs/cosmos-sdk-proposal-7 v0.28.2-0.20190520164151-6e1dbddad494/go.mod h1:asKfALbDgAL4BGwQdoYwEyfRIPHL20mA2Esan1ELVB4=
-github.com/cryptiumlabs/cosmos-sdk-proposal-7 v0.28.2-0.20190521082256-a74daafffb48 h1:cq/bdnH53zrVCLuJxHGNIpvmO01qorN1fqUAAKifvn0=
-github.com/cryptiumlabs/cosmos-sdk-proposal-7 v0.28.2-0.20190521082256-a74daafffb48/go.mod h1:asKfALbDgAL4BGwQdoYwEyfRIPHL20mA2Esan1ELVB4=
 github.com/davecgh/go-spew v0.0.0-20171005155431-ecdeabc65495/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=

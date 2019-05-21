@@ -4,7 +4,6 @@ PACKAGES_SIMTEST=$(shell go list ./... | grep '/simulation')
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 LEDGER_ENABLED ?= true
-GOBIN ?= $(GOPATH)/bin
 
 export GO111MODULE = on
 
@@ -116,12 +115,14 @@ distclean: clean
 ### Testing
 
 
-check: check-unit
+check: check-unit check-build
+check-all: check check-race check-cover
+
 check-unit:
-	@VERSION=$(VERSION) go test -mod=readonly -race -tags='ledger test_ledger_mock' ./...
+	@VERSION=$(VERSION) go test -mod=readonly -tags='ledger test_ledger_mock' ./...
 
 check-race:
-	@VERSION=$(VERSION) go test -mod=readonly -tags='ledger test_ledger_mock' -race ./...
+	@VERSION=$(VERSION) go test -mod=readonly -race -tags='ledger test_ledger_mock' ./...
 
 check-cover:
 	@go test -mod=readonly -timeout 30m -race -coverprofile=coverage.txt -covermode=atomic -tags='ledger test_ledger_mock' ./...
@@ -129,7 +130,6 @@ check-cover:
 check-build: build
 	@go test -mod=readonly -p 4 `go list ./cli_test/...` -tags=cli_test
 
-check-all: check-unit check-race check-cover check-build
 
 lint: ci-lint
 ci-lint:

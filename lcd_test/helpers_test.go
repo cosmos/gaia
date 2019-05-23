@@ -9,23 +9,23 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/client"
-	clientkeys "github.com/cosmos/cosmos-sdk/client/keys"
-	"github.com/cosmos/cosmos-sdk/client/utils"
-	"github.com/cosmos/cosmos-sdk/crypto/keys"
-	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
 
+	"github.com/cosmos/cosmos-sdk/client"
+	clientkeys "github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	clienttx "github.com/cosmos/cosmos-sdk/client/tx"
+	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/crypto/keys"
 	crkeys "github.com/cosmos/cosmos-sdk/crypto/keys"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	txbuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	bankrest "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
+	distrrest "github.com/cosmos/cosmos-sdk/x/distribution/client/rest"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	govrest "github.com/cosmos/cosmos-sdk/x/gov/client/rest"
 	gcutils "github.com/cosmos/cosmos-sdk/x/gov/client/utils"
@@ -159,18 +159,19 @@ func getTransactionRequest(t *testing.T, port, hash string) (*http.Response, str
 // POST /txs broadcast txs
 
 // GET /txs search transactions
-func getTransactions(t *testing.T, port string, tags ...string) []sdk.TxResponse {
+func getTransactions(t *testing.T, port string, tags ...string) *sdk.SearchTxsResult {
 	var txs []sdk.TxResponse
+	result := sdk.NewSearchTxsResult(0, 0, 1, 30, txs)
 	if len(tags) == 0 {
-		return txs
+		return &result
 	}
 	queryStr := strings.Join(tags, "&")
 	res, body := Request(t, port, "GET", fmt.Sprintf("/txs?%s", queryStr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	err := cdc.UnmarshalJSON([]byte(body), &txs)
+	err := cdc.UnmarshalJSON([]byte(body), &result)
 	require.NoError(t, err)
-	return txs
+	return &result
 }
 
 // ----------------------------------------------------------------------
@@ -542,11 +543,11 @@ func doBeginRedelegation(
 }
 
 // GET /staking/delegators/{delegatorAddr}/delegations Get all delegations from a delegator
-func getDelegatorDelegations(t *testing.T, port string, delegatorAddr sdk.AccAddress) []staking.Delegation {
+func getDelegatorDelegations(t *testing.T, port string, delegatorAddr sdk.AccAddress) staking.DelegationResponses {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/staking/delegators/%s/delegations", delegatorAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var dels []staking.Delegation
+	var dels staking.DelegationResponses
 
 	err := cdc.UnmarshalJSON([]byte(body), &dels)
 	require.Nil(t, err)
@@ -568,7 +569,7 @@ func getDelegatorUnbondingDelegations(t *testing.T, port string, delegatorAddr s
 }
 
 // GET /staking/redelegations?delegator=0xdeadbeef&validator_from=0xdeadbeef&validator_to=0xdeadbeef& Get redelegations filters by params passed in
-func getRedelegations(t *testing.T, port string, delegatorAddr sdk.AccAddress, srcValidatorAddr sdk.ValAddress, dstValidatorAddr sdk.ValAddress) []staking.Redelegation {
+func getRedelegations(t *testing.T, port string, delegatorAddr sdk.AccAddress, srcValidatorAddr sdk.ValAddress, dstValidatorAddr sdk.ValAddress) staking.RedelegationResponses {
 	var res *http.Response
 	var body string
 	endpoint := "/staking/redelegations?"
@@ -581,11 +582,14 @@ func getRedelegations(t *testing.T, port string, delegatorAddr sdk.AccAddress, s
 	if !dstValidatorAddr.Empty() {
 		endpoint += fmt.Sprintf("validator_to=%s&", dstValidatorAddr)
 	}
+
 	res, body = Request(t, port, "GET", endpoint, nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
-	var redels []staking.Redelegation
+
+	var redels staking.RedelegationResponses
 	err := cdc.UnmarshalJSON([]byte(body), &redels)
 	require.Nil(t, err)
+
 	return redels
 }
 
@@ -635,11 +639,11 @@ func getBondingTxs(t *testing.T, port string, delegatorAddr sdk.AccAddress, quer
 }
 
 // GET /staking/delegators/{delegatorAddr}/delegations/{validatorAddr} Query the current delegation between a delegator and a validator
-func getDelegation(t *testing.T, port string, delegatorAddr sdk.AccAddress, validatorAddr sdk.ValAddress) staking.Delegation {
+func getDelegation(t *testing.T, port string, delegatorAddr sdk.AccAddress, validatorAddr sdk.ValAddress) staking.DelegationResponse {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/staking/delegators/%s/delegations/%s", delegatorAddr, validatorAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var bond staking.Delegation
+	var bond staking.DelegationResponse
 	err := cdc.UnmarshalJSON([]byte(body), &bond)
 	require.Nil(t, err)
 
@@ -793,8 +797,8 @@ func doSubmitParamChangeProposal(
 		Description: "test",
 		Proposer:    proposerAddr,
 		Deposit:     sdk.Coins{sdk.NewCoin(sdk.DefaultBondDenom, amount)},
-		Changes: []params.ParamChange{
-			params.NewParamChange("staking", "MaxValidators", "", "105"),
+		Changes: paramscutils.ParamChangesJSON{
+			paramscutils.NewParamChangeJSON("staking", "MaxValidators", "", []byte(`105`)),
 		},
 	}
 
@@ -802,7 +806,44 @@ func doSubmitParamChangeProposal(
 	require.NoError(t, err)
 
 	resp, body := Request(t, port, "POST", "/gov/proposals/param_change", req)
-	fmt.Println(resp)
+	require.Equal(t, http.StatusOK, resp.StatusCode, body)
+
+	resp, body = signAndBroadcastGenTx(t, port, name, pwd, body, acc, client.DefaultGasAdjustment, false)
+	require.Equal(t, http.StatusOK, resp.StatusCode, body)
+
+	var txResp sdk.TxResponse
+	err = cdc.UnmarshalJSON([]byte(body), &txResp)
+	require.NoError(t, err)
+
+	return txResp
+}
+
+func doSubmitCommunityPoolSpendProposal(
+	t *testing.T, port, seed, name, pwd string, proposerAddr sdk.AccAddress,
+	amount sdk.Int, fees sdk.Coins,
+) sdk.TxResponse {
+
+	acc := getAccount(t, port, proposerAddr)
+	accnum := acc.GetAccountNumber()
+	sequence := acc.GetSequence()
+	chainID := viper.GetString(client.FlagChainID)
+	from := acc.GetAddress().String()
+
+	baseReq := rest.NewBaseReq(from, "", chainID, "", "", accnum, sequence, fees, nil, false)
+	pr := distrrest.CommunityPoolSpendProposalReq{
+		BaseReq:     baseReq,
+		Title:       "Test",
+		Description: "test",
+		Proposer:    proposerAddr,
+		Recipient:   proposerAddr,
+		Deposit:     sdk.Coins{sdk.NewCoin(sdk.DefaultBondDenom, amount)},
+		Amount:      sdk.Coins{sdk.NewCoin("test", sdk.NewInt(5))},
+	}
+
+	req, err := cdc.MarshalJSON(pr)
+	require.NoError(t, err)
+
+	resp, body := Request(t, port, "POST", "/gov/proposals/community_pool_spend", req)
 	require.Equal(t, http.StatusOK, resp.StatusCode, body)
 
 	resp, body = signAndBroadcastGenTx(t, port, name, pwd, body, acc, client.DefaultGasAdjustment, false)

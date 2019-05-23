@@ -2,7 +2,6 @@ package lcdtest
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/lcd"
@@ -18,9 +17,12 @@ import (
 	txbuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/cosmos/cosmos-sdk/x/auth/genaccounts"
 	bankrest "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
+	"github.com/cosmos/cosmos-sdk/x/crisis"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
 	distrrest "github.com/cosmos/cosmos-sdk/x/distribution/client/rest"
+	"github.com/cosmos/cosmos-sdk/x/genutil"
 	govrest "github.com/cosmos/cosmos-sdk/x/gov/client/rest"
+	"github.com/cosmos/cosmos-sdk/x/mint"
 	mintrest "github.com/cosmos/cosmos-sdk/x/mint/client/rest"
 	paramsrest "github.com/cosmos/cosmos-sdk/x/params/client/rest"
 	slashingrest "github.com/cosmos/cosmos-sdk/x/slashing/client/rest"
@@ -91,10 +93,11 @@ func InitializeLCD(nValidators int, initAddrs []sdk.AccAddress, minting bool, po
 	if err != nil {
 		panic(err)
 	}
-	genTxs := []json.RawMessage{}
 
 	// append any additional (non-proposing) validators
+	var genTxs []auth.StdTx
 	var accs []genaccounts.GenesisAccount
+
 	for i := 0; i < nValidators; i++ {
 		operPrivKey := secp256k1.GenPrivKey()
 		operAddr := operPrivKey.PubKey().Address()
@@ -123,13 +126,8 @@ func InitializeLCD(nValidators int, initAddrs []sdk.AccAddress, minting bool, po
 		if err != nil {
 			panic(err)
 		}
-		tx := auth.NewStdTx([]sdk.Msg{msg}, auth.StdFee{}, []auth.StdSignature{{Signature: sig, PubKey: operPrivKey.PubKey()}}, "")
-		txBytes, err := cdc.MarshalJSON(tx)
-		if err != nil {
-			panic(err)
-		}
-
-		genTxs = append(genTxs, txBytes)
+		transaction := auth.NewStdTx([]sdk.Msg{msg}, auth.StdFee{}, []auth.StdSignature{{Signature: sig, PubKey: operPrivKey.PubKey()}}, "")
+		genTxs = append(genTxs, transaction)
 		valConsPubKeys = append(valConsPubKeys, pubKey)
 		valOperAddrs = append(valOperAddrs, sdk.ValAddress(operAddr))
 
@@ -139,7 +137,21 @@ func InitializeLCD(nValidators int, initAddrs []sdk.AccAddress, minting bool, po
 		accs = append(accs, genaccounts.NewGenesisAccount(&accAuth))
 	}
 
-	genesisState := genaccounts.NewGenesisState(accs)
+	genesisState := gapp.NewDefaultGenesisState()
+	genDoc.AppState, err = cdc.MarshalJSON(genesisState)
+	if err != nil {
+		panic(err)
+	}
+
+	genesisState, err = genutil.SetGenTxsInAppGenesisState(cdc, genesisState, genTxs)
+	if err != nil {
+		panic(err)
+	}
+
+	// add some tokens to init accounts
+	stakingDataBz := genesisState[staking.ModuleName]
+	var stakingData staking.GenesisState
+	cdc.MustUnmarshalJSON(stakingDataBz, &stakingData)
 
 	// add some tokens to init accounts
 	for _, addr := range initAddrs {
@@ -147,38 +159,69 @@ func InitializeLCD(nValidators int, initAddrs []sdk.AccAddress, minting bool, po
 		accTokens := sdk.TokensFromTendermintPower(100)
 		accAuth.Coins = sdk.Coins{sdk.NewCoin(sdk.DefaultBondDenom, accTokens)}
 		acc := genaccounts.NewGenesisAccount(&accAuth)
-		// TODO: This seems really wrong together with line 143
-		genesisState.Accounts = append(genesisState.Accounts, acc)
-		//genesisState.StakingData.Pool.NotBondedTokens = genesisState.StakingData.Pool.NotBondedTokens.Add(accTokens)
+		accs = append(accs, acc)
+
+		//// TODO: This seems really wrong together with line 143
+		//genesisState.Accounts = append(genesisState.Accounts, acc)
+		////genesisState.StakingData.Pool.NotBondedTokens = genesisState.StakingData.Pool.NotBondedTokens.Add(accTokens)
 	}
 
-	//inflationMin := sdk.ZeroDec()
-	//if minting {
-	//	inflationMin = sdk.MustNewDecFromStr("10000.0")
-	//	genesisState.MintData.Params.InflationMax = sdk.MustNewDecFromStr("15000.0")
-	//} else {
-	//	genesisState.MintData.Params.InflationMax = inflationMin
-	//}
-	//genesisState.MintData.Minter.Inflation = inflationMin
-	//genesisState.MintData.Params.InflationMin = inflationMin
-	//
-	//// initialize crisis data
-	//genesisState.CrisisData.ConstantFee = sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000)
-	//
+	// distr data
+	distrDataBz := genesisState[distr.ModuleName]
+	var distrData distr.GenesisState
+	cdc.MustUnmarshalJSON(distrDataBz, &distrData)
+	distrData.FeePool.CommunityPool = sdk.DecCoins{sdk.DecCoin{Denom: "test", Amount: sdk.NewDecFromInt(sdk.NewInt(10))}}
+	distrDataBz = cdc.MustMarshalJSON(distrData)
+	genesisState[distr.ModuleName] = distrDataBz
+
+	// now add the account tokens to the non-bonded pool
+	for _, acc := range accs {
+		accTokens := acc.Coins.AmountOf(sdk.DefaultBondDenom)
+		stakingData.Pool.NotBondedTokens = stakingData.Pool.NotBondedTokens.Add(accTokens)
+	}
+	stakingDataBz = cdc.MustMarshalJSON(stakingData)
+	genesisState[staking.ModuleName] = stakingDataBz
+
+	genaccountsData := genaccounts.NewGenesisState(accs)
+	genaccountsDataBz := cdc.MustMarshalJSON(genaccountsData)
+	genesisState[genaccounts.ModuleName] = genaccountsDataBz
+
+	// mint genesis (none set within genesisState)
+	mintData := mint.DefaultGenesisState()
+	inflationMin := sdk.ZeroDec()
+	if minting {
+		inflationMin = sdk.MustNewDecFromStr("10000.0")
+		mintData.Params.InflationMax = sdk.MustNewDecFromStr("15000.0")
+	} else {
+		mintData.Params.InflationMax = inflationMin
+	}
+	mintData.Minter.Inflation = inflationMin
+	mintData.Params.InflationMin = inflationMin
+	mintDataBz := cdc.MustMarshalJSON(mintData)
+	genesisState[mint.ModuleName] = mintDataBz
+
+	// initialize crisis data
+	crisisDataBz := genesisState[crisis.ModuleName]
+	var crisisData crisis.GenesisState
+	cdc.MustUnmarshalJSON(crisisDataBz, &crisisData)
+	crisisData.ConstantFee = sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000)
+	crisisDataBz = cdc.MustMarshalJSON(crisisData)
+	genesisState[crisis.ModuleName] = crisisDataBz
+
 	//// double check inflation is set according to the minting boolean flag
-	//if minting {
-	//	if !(genesisState.MintData.Params.InflationMax.Equal(sdk.MustNewDecFromStr("15000.0")) &&
-	//		genesisState.MintData.Minter.Inflation.Equal(sdk.MustNewDecFromStr("10000.0")) &&
-	//		genesisState.MintData.Params.InflationMin.Equal(sdk.MustNewDecFromStr("10000.0"))) {
-	//		panic("Mint parameters does not correspond to their defaults")
-	//	}
-	//} else {
-	//	if !(genesisState.MintData.Params.InflationMax.Equal(sdk.ZeroDec()) &&
-	//		genesisState.MintData.Minter.Inflation.Equal(sdk.ZeroDec()) &&
-	//		genesisState.MintData.Params.InflationMin.Equal(sdk.ZeroDec())) {
-	//		panic("Mint parameters not equal to decimal 0")
-	//	}
-	//}
+	if minting {
+		if !(mintData.Params.InflationMax.Equal(sdk.MustNewDecFromStr("15000.0")) &&
+			mintData.Minter.Inflation.Equal(sdk.MustNewDecFromStr("10000.0")) &&
+			mintData.Params.InflationMin.Equal(sdk.MustNewDecFromStr("10000.0"))) {
+			panic("Mint parameters does not correspond to their defaults")
+		}
+	} else {
+		if !(mintData.Params.InflationMax.Equal(sdk.ZeroDec()) &&
+			mintData.Minter.Inflation.Equal(sdk.ZeroDec()) &&
+			mintData.Params.InflationMin.Equal(sdk.ZeroDec())) {
+			panic("Mint parameters not equal to decimal 0")
+		}
+	}
 
 	appState, err := codec.MarshalJSONIndent(cdc, genesisState)
 	if err != nil {
@@ -297,7 +340,7 @@ func registerRoutes(rs *lcd.RestServer) {
 	distrrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, distr.StoreKey)
 	stakingrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 	slashingrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
-	govrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, paramsrest.ProposalRESTHandler(rs.CliCtx, rs.Cdc))
+	govrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, paramsrest.ProposalRESTHandler(rs.CliCtx, rs.Cdc), distrrest.ProposalRESTHandler(rs.CliCtx, rs.Cdc))
 	mintrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 }
 

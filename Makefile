@@ -172,9 +172,9 @@ localnet-stop:
 # include simulations
 include sims.mk
 
-run-lcd-contract-tests:
+run-lcd-contract-tests: build-contract-tests-hooks
 	@echo "Running Gaia LCD for contract tests. This may take several minutes..."
-	@go run ./cmd/lcd_test/rest
+	@go run ./lcd_test/rest
 
 .PHONY: all build-linux install install-debug \
 	go-mod-cache draw-deps clean \

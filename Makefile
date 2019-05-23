@@ -78,12 +78,20 @@ endif
 build-linux: go.sum
 	LEDGER_ENABLED=false GOOS=linux GOARCH=amd64 $(MAKE) build
 
+build-contract-tests-hooks:
+ifeq ($(OS),Windows_NT)
+	go build -mod=readonly $(BUILD_FLAGS) -o build/contract_tests.exe ./cmd/contract_tests
+else
+	go build -mod=readonly $(BUILD_FLAGS) -o build/contract_tests ./cmd/contract_tests
+endif
+
 install: go.sum check-ledger
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/gaiad
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/gaiacli
 
 install-debug: go.sum
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/gaiadebug
+
 
 
 ########################################
@@ -163,6 +171,10 @@ localnet-stop:
 
 # include simulations
 include sims.mk
+
+run-lcd-contract-tests:
+	@echo "Running Gaia LCD for contract tests. This may take several minutes..."
+	@go run ./cmd/lcd_test/rest
 
 .PHONY: all build-linux install install-debug \
 	go-mod-cache draw-deps clean \

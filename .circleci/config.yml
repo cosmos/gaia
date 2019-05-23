@@ -391,6 +391,22 @@ jobs:
       - store_artifacts:
           path: /go/src/github.com/cosmos/gaia/gaia-windows-res.yml
 
+  dredd:
+    <<: *linux_defaults
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Get Node and test REST implementation against documentation
+          command: |
+            go get github.com/snikch/goodman/cmd/goodman
+            make build-contract-tests-hooks
+            export PATH=~/.local/bin:$PATH
+            ./scripts/get_node.sh && dredd
+
 workflows:
   version: 2
   test-suite:
@@ -467,6 +483,9 @@ workflows:
             branches:
               only:
                 - master
+          requires:
+            - setup_dependencies
+      - dredd:
           requires:
             - setup_dependencies
 

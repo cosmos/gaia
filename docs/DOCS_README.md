@@ -96,7 +96,7 @@ First, run `make tools` from the root of repo, to install the swagger-ui tool.
 
 Then, edit the `swagger.yaml` manually; it is found [here](https://github.com/cosmos/gaia/blob/master/cmd/gaiacli/swagger-ui/swagger.yaml)
 
-Finally, run `make update_gaia_lite_docs` from the root of the repo.
+Finally, run `make update-gaia-lite-docs` from the root of the repo.
 
 ## Search
 

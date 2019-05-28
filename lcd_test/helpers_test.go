@@ -317,7 +317,7 @@ func InitializeTestLCD(t *testing.T, nValidators int, initAddrs []sdk.AccAddress
 	stakingDataBz = cdc.MustMarshalJSON(stakingData)
 	genesisState[staking.ModuleName] = stakingDataBz
 
-	genaccountsData := genaccounts.NewGenesisState(accs)
+	genaccountsData := genaccounts.GenesisState(accs)
 	genaccountsDataBz := cdc.MustMarshalJSON(genaccountsData)
 	genesisState[genaccounts.ModuleName] = genaccountsDataBz
 
@@ -439,8 +439,8 @@ func startLCD(logger log.Logger, listenAddr string, cdc *codec.Codec, t *testing
 // TODO generalize this with the module basic manager
 // NOTE: If making updates here also update cmd/gaia/cmd/gaiacli/main.go
 func registerRoutes(rs *lcd.RestServer) {
-	rpc.RegisterRoutes(rs.CliCtx, rs.Mux)
-	tx.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
+	rpc.RegisterRPCRoutes(rs.CliCtx, rs.Mux)
+	tx.RegisterTxRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 	authrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, auth.StoreKey)
 	bankrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 	distrrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, distr.StoreKey)

@@ -49,6 +49,7 @@ var (
 	lean        bool
 	commit      bool
 	period      int
+	onOperation bool // TODO Remove in favor of binary search for invariant violation
 )
 
 func init() {
@@ -61,15 +62,16 @@ func init() {
 	flag.BoolVar(&lean, "SimulationLean", false, "lean simulation log output")
 	flag.BoolVar(&commit, "SimulationCommit", false, "have the simulation commit")
 	flag.IntVar(&period, "SimulationPeriod", 1, "run slow invariants only once every period assertions")
+	flag.BoolVar(&onOperation, "SimulateEveryOperation", false, "run slow invariants every operation")
 }
 
 // helper function for populating input for SimulateFromSeed
 func getSimulateFromSeedInput(tb testing.TB, w io.Writer, app *GaiaApp) (
 	testing.TB, io.Writer, *baseapp.BaseApp, simulation.AppStateFn, int64,
-	simulation.WeightedOperations, sdk.Invariants, int, int, bool, bool) {
+	simulation.WeightedOperations, sdk.Invariants, int, int, bool, bool, bool) {
 
 	return tb, w, app.BaseApp, appStateFn, seed,
-		testAndRunTxs(app), invariants(app), numBlocks, blockSize, commit, lean
+		testAndRunTxs(app), invariants(app), numBlocks, blockSize, commit, lean, onOperation
 }
 
 func appStateFromGenesisFileFn(r *rand.Rand, accs []simulation.Account, genesisTimestamp time.Time,
@@ -84,7 +86,7 @@ func appStateFromGenesisFileFn(r *rand.Rand, accs []simulation.Account, genesisT
 	cdc.MustUnmarshalJSON(bytes, &genesis)
 	var appState GenesisState
 	cdc.MustUnmarshalJSON(genesis.AppState, &appState)
-	accounts := genaccounts.GetGenesisStateFromAppState(cdc, appState).Accounts
+	accounts := genaccounts.GetGenesisStateFromAppState(cdc, appState)
 
 	var newAccs []simulation.Account
 	for _, acc := range accounts {
@@ -165,8 +167,7 @@ func appStateRandomizedFn(r *rand.Rand, accs []simulation.Account, genesisTimest
 		genesisAccounts = append(genesisAccounts, gacc)
 	}
 
-	genaccsGenesis := genaccounts.NewGenesisState(genesisAccounts)
-	genesisState[genaccounts.ModuleName] = cdc.MustMarshalJSON(genaccsGenesis)
+	genesisState[genaccounts.ModuleName] = cdc.MustMarshalJSON(genesisAccounts)
 
 	authGenesis := auth.NewGenesisState(
 		nil,
@@ -301,8 +302,8 @@ func testAndRunTxs(app *GaiaApp) []simulation.WeightedOperation {
 		{50, distrsim.SimulateMsgWithdrawDelegatorReward(app.accountKeeper, app.distrKeeper)},
 		{50, distrsim.SimulateMsgWithdrawValidatorCommission(app.accountKeeper, app.distrKeeper)},
 		{5, govsim.SimulateSubmittingVotingAndSlashingForProposal(app.govKeeper, govsim.SimulateTextProposalContent)},
-		{5, govsim.SimulateSubmittingVotingAndSlashingForProposal(app.govKeeper, paramsim.SimulateParamChangeProposalContent)},
 		{5, govsim.SimulateSubmittingVotingAndSlashingForProposal(app.govKeeper, distrsim.SimulateCommunityPoolSpendProposalContent(app.distrKeeper))},
+		{5, govsim.SimulateSubmittingVotingAndSlashingForProposal(app.govKeeper, paramsim.SimulateParamChangeProposalContent)},
 		{100, govsim.SimulateMsgDeposit(app.govKeeper)},
 		{100, stakingsim.SimulateMsgCreateValidator(app.accountKeeper, app.stakingKeeper)},
 		{5, stakingsim.SimulateMsgEditValidator(app.stakingKeeper)},
@@ -323,13 +324,12 @@ func fauxMerkleModeOpt(bapp *baseapp.BaseApp) {
 }
 
 // Profile with:
-// /usr/local/go/bin/go test -benchmem -run=^$ github.com/cosmos/gaia/app -bench ^BenchmarkFullGaiaSimulation$ -SimulationCommit=true -cpuprofile cpu.out
-func BenchmarkFullGaiaSimulation(b *testing.B) {
-	// Setup Gaia application
+// /usr/local/go/bin/go test -benchmem -run=^$ github.com/cosmos/cosmos-sdk/GaiaApp -bench ^BenchmarkFullAppSimulation$ -SimulationCommit=true -cpuprofile cpu.out
+func BenchmarkFullAppSimulation(b *testing.B) {
 	logger := log.NewNopLogger()
 
 	var db dbm.DB
-	dir, _ := ioutil.TempDir("", "goleveldb-gaia-sim")
+	dir, _ := ioutil.TempDir("", "goleveldb-app-sim")
 	db, _ = sdk.NewLevelDB("Simulation", dir)
 	defer func() {
 		db.Close()
@@ -351,25 +351,28 @@ func BenchmarkFullGaiaSimulation(b *testing.B) {
 	}
 }
 
-func TestFullGaiaSimulation(t *testing.T) {
+func TestFullAppSimulation(t *testing.T) {
 	if !enabled {
-		t.Skip("Skipping Gaia simulation")
+		t.Skip("Skipping application simulation")
 	}
 
-	// Setup Gaia application
 	var logger log.Logger
+
 	if verbose {
 		logger = log.TestingLogger()
 	} else {
 		logger = log.NewNopLogger()
 	}
+
 	var db dbm.DB
-	dir, _ := ioutil.TempDir("", "goleveldb-gaia-sim")
+	dir, _ := ioutil.TempDir("", "goleveldb-app-sim")
 	db, _ = sdk.NewLevelDB("Simulation", dir)
+
 	defer func() {
 		db.Close()
 		os.RemoveAll(dir)
 	}()
+
 	app := NewGaiaApp(logger, db, nil, true, 0, fauxMerkleModeOpt)
 	require.Equal(t, "GaiaApp", app.Name())
 
@@ -382,28 +385,31 @@ func TestFullGaiaSimulation(t *testing.T) {
 		fmt.Println(db.Stats()["leveldb.stats"])
 		fmt.Println("GoLevelDB cached block size", db.Stats()["leveldb.cachedblock"])
 	}
+
 	require.Nil(t, err)
 }
 
-func TestGaiaImportExport(t *testing.T) {
+func TestAppImportExport(t *testing.T) {
 	if !enabled {
-		t.Skip("Skipping Gaia import/export simulation")
+		t.Skip("Skipping application import/export simulation")
 	}
 
-	// Setup Gaia application
 	var logger log.Logger
 	if verbose {
 		logger = log.TestingLogger()
 	} else {
 		logger = log.NewNopLogger()
 	}
+
 	var db dbm.DB
-	dir, _ := ioutil.TempDir("", "goleveldb-gaia-sim")
+	dir, _ := ioutil.TempDir("", "goleveldb-app-sim")
 	db, _ = sdk.NewLevelDB("Simulation", dir)
+
 	defer func() {
 		db.Close()
 		os.RemoveAll(dir)
 	}()
+
 	app := NewGaiaApp(logger, db, nil, true, 0, fauxMerkleModeOpt)
 	require.Equal(t, "GaiaApp", app.Name())
 
@@ -417,37 +423,43 @@ func TestGaiaImportExport(t *testing.T) {
 		fmt.Println(db.Stats()["leveldb.stats"])
 		fmt.Println("GoLevelDB cached block size", db.Stats()["leveldb.cachedblock"])
 	}
-	require.Nil(t, err)
 
+	require.Nil(t, err)
 	fmt.Printf("Exporting genesis...\n")
 
 	appState, _, err := app.ExportAppStateAndValidators(false, []string{})
 	require.NoError(t, err)
 	fmt.Printf("Importing genesis...\n")
 
-	newDir, _ := ioutil.TempDir("", "goleveldb-gaia-sim-2")
+	newDir, _ := ioutil.TempDir("", "goleveldb-app-sim-2")
 	newDB, _ := sdk.NewLevelDB("Simulation-2", dir)
+
 	defer func() {
 		newDB.Close()
 		os.RemoveAll(newDir)
 	}()
+
 	newApp := NewGaiaApp(log.NewNopLogger(), newDB, nil, true, 0, fauxMerkleModeOpt)
 	require.Equal(t, "GaiaApp", newApp.Name())
+
 	var genesisState GenesisState
 	err = app.cdc.UnmarshalJSON(appState, &genesisState)
 	if err != nil {
 		panic(err)
 	}
+
 	ctxB := newApp.NewContext(true, abci.Header{})
 	newApp.mm.InitGenesis(ctxB, genesisState)
 
 	fmt.Printf("Comparing stores...\n")
 	ctxA := app.NewContext(true, abci.Header{})
+
 	type StoreKeysPrefixes struct {
 		A        sdk.StoreKey
 		B        sdk.StoreKey
 		Prefixes [][]byte
 	}
+
 	storeKeysPrefixes := []StoreKeysPrefixes{
 		{app.keyMain, newApp.keyMain, [][]byte{}},
 		{app.keyAccount, newApp.keyAccount, [][]byte{}},
@@ -460,6 +472,7 @@ func TestGaiaImportExport(t *testing.T) {
 		{app.keyParams, newApp.keyParams, [][]byte{}},
 		{app.keyGov, newApp.keyGov, [][]byte{}},
 	}
+
 	for _, storeKeysPrefix := range storeKeysPrefixes {
 		storeKeyA := storeKeysPrefix.A
 		storeKeyB := storeKeysPrefix.B
@@ -476,24 +489,26 @@ func TestGaiaImportExport(t *testing.T) {
 
 }
 
-func TestGaiaSimulationAfterImport(t *testing.T) {
+func TestAppSimulationAfterImport(t *testing.T) {
 	if !enabled {
-		t.Skip("Skipping Gaia simulation after import")
+		t.Skip("Skipping application simulation after import")
 	}
 
-	// Setup Gaia application
 	var logger log.Logger
 	if verbose {
 		logger = log.TestingLogger()
 	} else {
 		logger = log.NewNopLogger()
 	}
-	dir, _ := ioutil.TempDir("", "goleveldb-gaia-sim")
+
+	dir, _ := ioutil.TempDir("", "goleveldb-app-sim")
 	db, _ := sdk.NewLevelDB("Simulation", dir)
+
 	defer func() {
 		db.Close()
 		os.RemoveAll(dir)
 	}()
+
 	app := NewGaiaApp(logger, db, nil, true, 0, fauxMerkleModeOpt)
 	require.Equal(t, "GaiaApp", app.Name())
 
@@ -507,6 +522,7 @@ func TestGaiaSimulationAfterImport(t *testing.T) {
 		fmt.Println(db.Stats()["leveldb.stats"])
 		fmt.Println("GoLevelDB cached block size", db.Stats()["leveldb.cachedblock"])
 	}
+
 	require.Nil(t, err)
 
 	if stopEarly {
@@ -524,12 +540,14 @@ func TestGaiaSimulationAfterImport(t *testing.T) {
 
 	fmt.Printf("Importing genesis...\n")
 
-	newDir, _ := ioutil.TempDir("", "goleveldb-gaia-sim-2")
+	newDir, _ := ioutil.TempDir("", "goleveldb-app-sim-2")
 	newDB, _ := sdk.NewLevelDB("Simulation-2", dir)
+
 	defer func() {
 		newDB.Close()
 		os.RemoveAll(newDir)
 	}()
+
 	newApp := NewGaiaApp(log.NewNopLogger(), newDB, nil, true, 0, fauxMerkleModeOpt)
 	require.Equal(t, "GaiaApp", newApp.Name())
 	newApp.InitChain(abci.RequestInitChain{
@@ -539,14 +557,13 @@ func TestGaiaSimulationAfterImport(t *testing.T) {
 	// Run randomized simulation on imported app
 	_, err = simulation.SimulateFromSeed(getSimulateFromSeedInput(t, os.Stdout, newApp))
 	require.Nil(t, err)
-
 }
 
 // TODO: Make another test for the fuzzer itself, which just has noOp txs
-// and doesn't depend on gaia
+// and doesn't depend on the application.
 func TestAppStateDeterminism(t *testing.T) {
 	if !enabled {
-		t.Skip("Skipping Gaia simulation")
+		t.Skip("Skipping application simulation")
 	}
 
 	numSeeds := 3
@@ -569,6 +586,7 @@ func TestAppStateDeterminism(t *testing.T) {
 				100,
 				true,
 				false,
+				false,
 			)
 			appHash := app.LastCommitID().Hash
 			appHashList[j] = appHash
@@ -580,9 +598,8 @@ func TestAppStateDeterminism(t *testing.T) {
 }
 
 func BenchmarkInvariants(b *testing.B) {
-	// 1. Setup a simulated Gaia application
 	logger := log.NewNopLogger()
-	dir, _ := ioutil.TempDir("", "goleveldb-gaia-invariant-bench")
+	dir, _ := ioutil.TempDir("", "goleveldb-app-invariant-bench")
 	db, _ := sdk.NewLevelDB("simulation", dir)
 
 	defer func() {
@@ -595,7 +612,7 @@ func BenchmarkInvariants(b *testing.B) {
 	// 2. Run parameterized simulation (w/o invariants)
 	_, err := simulation.SimulateFromSeed(
 		b, ioutil.Discard, app.BaseApp, appStateFn, seed, testAndRunTxs(app),
-		[]sdk.Invariant{}, numBlocks, blockSize, commit, lean,
+		[]sdk.Invariant{}, numBlocks, blockSize, commit, lean, onOperation,
 	)
 	if err != nil {
 		fmt.Println(err)

@@ -1288,7 +1288,7 @@ func TestGaiadAddGenesisAccount(t *testing.T) {
 	genesisState := f.GenesisState()
 
 	cdc := app.MakeCodec()
-	accounts := genaccounts.GetGenesisStateFromAppState(cdc, genesisState).Accounts
+	accounts := genaccounts.GetGenesisStateFromAppState(cdc, genesisState)
 
 	require.Equal(t, accounts[0].Address, f.KeyAddress(keyFoo))
 	require.Equal(t, accounts[1].Address, f.KeyAddress(keyBar))

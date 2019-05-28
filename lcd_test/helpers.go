@@ -64,7 +64,7 @@ func InitializeLCD(nValidators int, initAddrs []sdk.AccAddress, minting bool, po
 	cleanup func(), valConsPubKeys []crypto.PubKey, valOperAddrs []sdk.ValAddress, port string) {
 
 	if nValidators < 1 {
-		panic("InitializeTestLCD must use at least one validator")
+		panic("InitializeLCD must use at least one validator")
 	}
 
 	config := GetConfig()

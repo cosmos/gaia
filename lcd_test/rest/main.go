@@ -15,14 +15,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	addr, p, err := lcdtest.CreateAddr("contract_tester", "contract_tester", kb)
+	addr, _, err := lcdtest.CreateAddr("sender", "1234567890", kb)
+	addr2, _, err := lcdtest.CreateAddr("receiver", "1234567890", kb)
 	if err != nil {
 		panic(err)
 	}
-	// 85B0FC5010CBAEBB58C6914DFF890982F7404374 pause fun stairs ready amount radar travel wrist present guitar awake stand speed leg local giant taxi crime dirt arrange rifle width avocado virtual
-	fmt.Println(addr, p)
-	cleanup, valConsPubKeys, valOperAddrs, port := lcdtest.InitializeLCD(1, []sdk.AccAddress{addr}, true, "58645")
-	fmt.Println("TEST", valConsPubKeys, port, valOperAddrs)
+
+	cleanup, _, _, _ := lcdtest.InitializeLCD(3, []sdk.AccAddress{addr, addr2}, true, "58645")
 	defer cleanup()
 
 	sigs := make(chan os.Signal, 1)

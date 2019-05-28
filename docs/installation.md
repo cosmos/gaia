@@ -33,7 +33,7 @@ Older releases up to 0.34.x are available from the [Cosmos SDK releases page](ht
 ```bash
 mkdir -p $GOPATH/src/github.com/cosmos
 cd $GOPATH/src/github.com/cosmos
-git clone -b <latest-release-tag> https://github.com/cosmos/gaia
+git clone -b <latest-release-tag> https://github.com/cosmos/cosmos-sdk
 cd gaia && make install
 ```
 

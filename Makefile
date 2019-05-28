@@ -102,9 +102,6 @@ draw-deps:
 	go get github.com/RobotsAndPencils/goviz
 	@goviz -i ./cmd/gaiad -d 2 | dot -Tpng -o dependency-graph.png
 
-update-gaia-lite-docs:
-	@statik -src=cmd/gaiacli/swagger-ui -dest=cmd/gaiacli/ -f
-
 clean:
 	rm -rf snapcraft-local.yaml build/
 

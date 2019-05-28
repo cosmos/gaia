@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 	"os"
 	"path"
 
@@ -40,14 +39,11 @@ import (
 	stakingclient "github.com/cosmos/cosmos-sdk/x/staking/client"
 	staking "github.com/cosmos/cosmos-sdk/x/staking/client/rest"
 
-	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
 	amino "github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
-
-	_ "github.com/cosmos/gaia/cmd/gaiacli/statik"
 )
 
 func main() {
@@ -168,7 +164,6 @@ func txCmd(cdc *amino.Codec, mc []sdk.ModuleClient) *cobra.Command {
 // NOTE: details on the routes added for each module are in the module documentation
 // NOTE: If making updates here you also need to update the test helper in client/lcd/test_helper.go
 func registerRoutes(rs *lcd.RestServer) {
-	registerSwaggerUI(rs)
 	rpc.RegisterRPCRoutes(rs.CliCtx, rs.Mux)
 	tx.RegisterTxRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 	auth.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, at.StoreKey)
@@ -178,15 +173,6 @@ func registerRoutes(rs *lcd.RestServer) {
 	slashing.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 	gov.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, paramsrest.ProposalRESTHandler(rs.CliCtx, rs.Cdc), dist.ProposalRESTHandler(rs.CliCtx, rs.Cdc))
 	mintrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
-}
-
-func registerSwaggerUI(rs *lcd.RestServer) {
-	statikFS, err := fs.New()
-	if err != nil {
-		panic(err)
-	}
-	staticServer := http.FileServer(statikFS)
-	rs.Mux.PathPrefix("/swagger-ui/").Handler(http.StripPrefix("/swagger-ui/", staticServer))
 }
 
 func initConfig(cmd *cobra.Command) error {

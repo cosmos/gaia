@@ -169,12 +169,18 @@ localnet-start: localnet-stop
 localnet-stop:
 	docker-compose down
 
+setup-contract-tests-data:
+	rm -rf contract_tests ; mkdir contract_tests ; cp -r ./lcd_test/testdata/* ./contract_tests/
+
+start-gaia: setup-contract-tests-data
+	./build/gaiad --home contract_tests start
+
+run-lcd-contract-tests: build build-contract-tests-hooks start-gaia
+	@echo "Running Gaia LCD for contract tests. This may take several minutes..."
+	./build/gaiacli rest-server --laddr tcp://0.0.0.0:8080 --home contract_tests --node http://localhost:26657 --chain-id lcd --trust-node true
+
 # include simulations
 include sims.mk
-
-run-lcd-contract-tests: build-contract-tests-hooks
-	@echo "Running Gaia LCD for contract tests. This may take several minutes..."
-	@go run ./lcd_test/rest
 
 .PHONY: all build-linux install install-debug \
 	go-mod-cache draw-deps clean \

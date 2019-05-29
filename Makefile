@@ -173,7 +173,7 @@ setup-contract-tests-data:
 	rm -rf contract_tests ; mkdir contract_tests ; cp -r ./lcd_test/testdata/* ./contract_tests/
 
 start-gaia: setup-contract-tests-data
-	./build/gaiad --home contract_tests start
+	nohup ./build/gaiad --home contract_tests start &
 
 run-lcd-contract-tests: build build-contract-tests-hooks start-gaia
 	@echo "Running Gaia LCD for contract tests. This may take several minutes..."

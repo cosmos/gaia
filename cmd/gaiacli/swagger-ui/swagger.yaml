@@ -490,13 +490,13 @@ paths:
         description: Bech32 AccAddress of Delegator
         required: true
         type: string
-        x-example: cosmos167w96tdvmazakdwkw2u57227eduula2cy572lf
+        x-example: cosmos16xyempempp92x9hyzz9wrgf94r6j9h5f06pxxv
       - in: path
         name: validatorAddr
         description: Bech32 OperatorAddress of validator
         required: true
         type: string
-        x-example: cosmosvaloper1qwl879nx9t6kef4supyazayf7vjhennyh568ys
+        x-example: cosmosvaloper16xyempempp92x9hyzz9wrgf94r6j9h5f2w4n2l
     get:
       summary: Query the current delegation between a delegator and a validator
       tags:
@@ -579,13 +579,13 @@ paths:
         description: Bech32 AccAddress of Delegator
         required: true
         type: string
-        x-example: cosmos167w96tdvmazakdwkw2u57227eduula2cy572lf
+        x-example: cosmos16xyempempp92x9hyzz9wrgf94r6j9h5f06pxxv
       - in: path
         name: validatorAddr
         description: Bech32 OperatorAddress of validator
         required: true
         type: string
-        x-example: cosmosvaloper1qwl879nx9t6kef4supyazayf7vjhennyh568ys
+        x-example: cosmosvaloper16xyempempp92x9hyzz9wrgf94r6j9h5f2w4n2l
     get:
       summary: Query all unbonding delegations between a delegator and a validator
       tags:
@@ -710,13 +710,13 @@ paths:
         description: Bech32 AccAddress of Delegator
         required: true
         type: string
-        x-example: cosmos167w96tdvmazakdwkw2u57227eduula2cy572lf
+        x-example: cosmos16xyempempp92x9hyzz9wrgf94r6j9h5f06pxxv
       - in: path
         name: validatorAddr
         description: Bech32 ValAddress of Delegator
         required: true
         type: string
-        x-example: cosmosvaloper1qwl879nx9t6kef4supyazayf7vjhennyh568ys
+        x-example: cosmosvaloper16xyempempp92x9hyzz9wrgf94r6j9h5f2w4n2l
     get:
       summary: Query a validator that a delegator is bonded to
       tags:
@@ -798,7 +798,7 @@ paths:
         description: Bech32 OperatorAddress of validator
         required: true
         type: string
-        x-example: cosmosvaloper1qwl879nx9t6kef4supyazayf7vjhennyh568ys
+        x-example: cosmosvaloper16xyempempp92x9hyzz9wrgf94r6j9h5f2w4n2l
     get:
       summary: Query the information from a single validator
       tags:
@@ -821,7 +821,7 @@ paths:
         description: Bech32 OperatorAddress of validator
         required: true
         type: string
-        x-example: cosmosvaloper1qwl879nx9t6kef4supyazayf7vjhennyh568ys
+        x-example: cosmosvaloper16xyempempp92x9hyzz9wrgf94r6j9h5f2w4n2l
     get:
       summary: Get all delegations from a validator
       tags:
@@ -846,7 +846,7 @@ paths:
         description: Bech32 OperatorAddress of validator
         required: true
         type: string
-        x-example: cosmosvaloper1qwl879nx9t6kef4supyazayf7vjhennyh568ys
+        x-example: cosmosvaloper16xyempempp92x9hyzz9wrgf94r6j9h5f2w4n2l
     get:
       summary: Get all unbonding delegations from a validator
       tags:
@@ -996,7 +996,7 @@ paths:
           name: validatorAddr
           required: true
           in: path
-          x-example: cosmosvaloper1qwl879nx9t6kef4supyazayf7vjhennyh568ys
+          x-example: cosmosvaloper16xyempempp92x9hyzz9wrgf94r6j9h5f2w4n2l
         - description: ""
           name: UnjailBody
           in: body
@@ -1397,7 +1397,7 @@ paths:
           name: voter
           required: true
           in: path
-          x-example: cosmos1qwl879nx9t6kef4supyazayf7vjhennyjqwjgr
+          x-example: cosmos16xyempempp92x9hyzz9wrgf94r6j9h5f06pxxv
       responses:
         200:
           description: OK
@@ -1568,13 +1568,13 @@ paths:
         description: Bech32 AccAddress of Delegator
         required: true
         type: string
-        x-example: cosmos167w96tdvmazakdwkw2u57227eduula2cy572lf
+        x-example: cosmos16xyempempp92x9hyzz9wrgf94r6j9h5f06pxxv
       - in: path
         name: validatorAddr
         description: Bech32 OperatorAddress of validator
         required: true
         type: string
-        x-example: cosmosvaloper1qwl879nx9t6kef4supyazayf7vjhennyh568ys
+        x-example: cosmosvaloper16xyempempp92x9hyzz9wrgf94r6j9h5f2w4n2l
     get:
       summary: Query a delegation reward
       description: Query a single delegation reward by a delegator
@@ -1680,7 +1680,7 @@ paths:
         description: Bech32 OperatorAddress of validator
         required: true
         type: string
-        x-example: cosmosvaloper1qwl879nx9t6kef4supyazayf7vjhennyh568ys
+        x-example: cosmosvaloper16xyempempp92x9hyzz9wrgf94r6j9h5f2w4n2l
     get:
       summary: Validator distribution information
       description: Query the distribution information of a single validator
@@ -1704,7 +1704,7 @@ paths:
         description: Bech32 OperatorAddress of validator
         required: true
         type: string
-        x-example: cosmosvaloper1qwl879nx9t6kef4supyazayf7vjhennyh568ys
+        x-example: cosmosvaloper16xyempempp92x9hyzz9wrgf94r6j9h5f2w4n2l
     get:
       summary: Fee distribution outstanding rewards of a single validator
       tags:
@@ -1727,7 +1727,7 @@ paths:
         description: Bech32 OperatorAddress of validator
         required: true
         type: string
-        x-example: cosmosvaloper1qwl879nx9t6kef4supyazayf7vjhennyh568ys
+        x-example: cosmosvaloper16xyempempp92x9hyzz9wrgf94r6j9h5f2w4n2l
     get:
       summary: Commission and self-delegation rewards of a single validator
       description: Query the commission and self-delegation rewards of validator.
@@ -1830,7 +1830,7 @@ paths:
               goal_bonded:
                 type: string
               blocks_per_year:
-                type: integer
+                type: string
         500:
           description: Internal Server Error
   /minting/inflation:
@@ -1943,7 +1943,7 @@ definitions:
   ValidatorAddress:
     type: string
     description: bech32 encoded address
-    example: cosmosvaloper1depk54cuajgkzea6zpgkq36tnjwdzv4avv9cxd
+    example: cosmosvaloper16xyempempp92x9hyzz9wrgf94r6j9h5f2w4n2l
   Coin:
     type: object
     properties:
@@ -2220,7 +2220,7 @@ definitions:
         $ref: "#/definitions/ValidatorAddress"
       pub_key:
         type: string
-        example: cosmosvalconspub1zcjduepq7sjfglw7ra4mjxpw4ph7dtdhdheh7nz8dfgl6t8u2n5szuuql9mqsrwquu
+        example: cosmosvalconspub1zcjduepq0vu2zgkgk49efa0nqwzndanq5m4c7pa3u4apz4g2r9gspqg6g9cs3k9cuf
       voting_power:
         type: string
         example: "1000"
@@ -2299,7 +2299,7 @@ definitions:
         $ref: "#/definitions/ValidatorAddress"
       consensus_pubkey:
         type: string
-        example: cosmosvalconspub1zcjduepq7sjfglw7ra4mjxpw4ph7dtdhdheh7nz8dfgl6t8u2n5szuuql9mqsrwquu
+        example: cosmosvalconspub1zcjduepq0vu2zgkgk49efa0nqwzndanq5m4c7pa3u4apz4g2r9gspqg6g9cs3k9cuf
       jailed:
         type: boolean
       status:

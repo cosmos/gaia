@@ -61,7 +61,7 @@ import (
 // and initAddrs are the accounts to initialize with some stake tokens. It
 // returns a cleanup function, a set of validator public keys, and a port.
 func InitializeLCD(nValidators int, initAddrs []sdk.AccAddress, minting bool, portExt ...string) (
-	cleanup func(), valConsPubKeys []crypto.PubKey, valOperAddrs []sdk.ValAddress, port string) {
+	cleanup func(), valConsPubKeys []crypto.PubKey, valOperAddrs []sdk.ValAddress, port string, err error) {
 
 	if nValidators < 1 {
 		panic("InitializeLCD must use at least one validator")
@@ -75,23 +75,76 @@ func InitializeLCD(nValidators int, initAddrs []sdk.AccAddress, minting bool, po
 	logger := log.NewTMLogger(log.NewSyncWriter(os.Stdout))
 	logger = log.NewFilter(logger, log.AllowError())
 
-	privVal := pvm.LoadOrGenFilePV(config.PrivValidatorKeyFile(),
-		config.PrivValidatorStateFile())
-	privVal.Reset()
-
 	db := dbm.NewMemDB()
 	app := gapp.NewGaiaApp(logger, db, nil, true, 0)
 	cdc = gapp.MakeCodec()
 
+	genDoc, valConsPubKeys, valOperAddrs, privVal := defaultGenesis(config, nValidators, initAddrs, minting)
+
+	var listenAddr string
+
+	if len(portExt) == 0 {
+		listenAddr, port, err = server.FreeTCPAddr()
+		if err != nil {
+			panic(err)
+		}
+	} else {
+		listenAddr = fmt.Sprintf("tcp://0.0.0.0:%s", portExt[0])
+		port = portExt[0]
+	}
+
+	// XXX: Need to set this so LCD knows the tendermint node address!
+	viper.Set(client.FlagNode, config.RPC.ListenAddress)
+	viper.Set(client.FlagChainID, genDoc.ChainID)
+	// TODO Set to false once the upstream Tendermint proof verification issue is fixed.
+	viper.Set(client.FlagTrustNode, true)
+
+	node, err := startTM(config, logger, genDoc, privVal, app)
+	if err != nil {
+		panic(err)
+	}
+
+	tests.WaitForNextHeightTM(tests.ExtractPortFromAddress(config.RPC.ListenAddress))
+	lcdInstance, err := startLCD(logger, listenAddr, cdc)
+	if err != nil {
+		panic(err)
+	}
+
+	tests.WaitForLCDStart(port)
+	tests.WaitForHeight(1, port)
+
+	cleanup = func() {
+		logger.Debug("cleaning up LCD initialization")
+		err = node.Stop()
+		if err != nil {
+			logger.Error(err.Error())
+		}
+
+		node.Wait()
+		err = lcdInstance.Close()
+		if err != nil {
+			logger.Error(err.Error())
+		}
+	}
+
+	return cleanup, valConsPubKeys, valOperAddrs, port, err
+}
+
+func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAddress, minting bool) (
+	genDoc *tmtypes.GenesisDoc, valConsPubKeys []crypto.PubKey, valOperAddrs []sdk.ValAddress, privVal *pvm.FilePV) {
+	privVal = pvm.LoadOrGenFilePV(config.PrivValidatorKeyFile(),
+		config.PrivValidatorStateFile())
+	privVal.Reset()
+
 	genesisFile := config.GenesisFile()
 	genDoc, err := tmtypes.GenesisDocFromFile(genesisFile)
 	if err != nil {
-		panic(err)
+		return
 	}
 	genDoc.Validators = nil
 	err = genDoc.SaveAs(genesisFile)
 	if err != nil {
-		panic(err)
+		return
 	}
 
 	// append any additional (non-proposing) validators
@@ -124,7 +177,7 @@ func InitializeLCD(nValidators int, initAddrs []sdk.AccAddress, minting bool, po
 		}
 		sig, err := operPrivKey.Sign(stdSignMsg.Bytes())
 		if err != nil {
-			panic(err)
+			return
 		}
 		transaction := auth.NewStdTx([]sdk.Msg{msg}, auth.StdFee{}, []auth.StdSignature{{Signature: sig, PubKey: operPrivKey.PubKey()}}, "")
 		genTxs = append(genTxs, transaction)
@@ -140,12 +193,12 @@ func InitializeLCD(nValidators int, initAddrs []sdk.AccAddress, minting bool, po
 	genesisState := gapp.NewDefaultGenesisState()
 	genDoc.AppState, err = cdc.MarshalJSON(genesisState)
 	if err != nil {
-		panic(err)
+		return
 	}
 
 	genesisState, err = genutil.SetGenTxsInAppGenesisState(cdc, genesisState, genTxs)
 	if err != nil {
-		panic(err)
+		return
 	}
 
 	// add some tokens to init accounts
@@ -225,57 +278,10 @@ func InitializeLCD(nValidators int, initAddrs []sdk.AccAddress, minting bool, po
 
 	appState, err := codec.MarshalJSONIndent(cdc, genesisState)
 	if err != nil {
-		panic(err)
+		return
 	}
 	genDoc.AppState = appState
-
-	var listenAddr string
-
-	if len(portExt) == 0 {
-		listenAddr, port, err = server.FreeTCPAddr()
-		if err != nil {
-			panic(err)
-		}
-	} else {
-		listenAddr = fmt.Sprintf("tcp://0.0.0.0:%s", portExt[0])
-		port = portExt[0]
-	}
-
-	// XXX: Need to set this so LCD knows the tendermint node address!
-	viper.Set(client.FlagNode, config.RPC.ListenAddress)
-	viper.Set(client.FlagChainID, genDoc.ChainID)
-	// TODO Set to false once the upstream Tendermint proof verification issue is fixed.
-	viper.Set(client.FlagTrustNode, true)
-
-	node, err := startTM(config, logger, genDoc, privVal, app)
-	if err != nil {
-		panic(err)
-	}
-
-	tests.WaitForNextHeightTM(tests.ExtractPortFromAddress(config.RPC.ListenAddress))
-	lcdInstance, err := startLCD(logger, listenAddr, cdc)
-	if err != nil {
-		panic(err)
-	}
-
-	tests.WaitForLCDStart(port)
-	tests.WaitForHeight(1, port)
-
-	cleanup = func() {
-		logger.Debug("cleaning up LCD initialization")
-		err = node.Stop()
-		if err != nil {
-			logger.Error(err.Error())
-		}
-
-		node.Wait()
-		err = lcdInstance.Close()
-		if err != nil {
-			logger.Error(err.Error())
-		}
-	}
-
-	return cleanup, valConsPubKeys, valOperAddrs, port
+	return
 }
 
 // startTM creates and starts an in-process Tendermint node with memDB and

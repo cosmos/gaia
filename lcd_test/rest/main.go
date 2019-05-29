@@ -21,7 +21,7 @@ func main() {
 		panic(err)
 	}
 
-	cleanup, _, _, _ := lcdtest.InitializeLCD(3, []sdk.AccAddress{addr, addr2}, true, "58645")
+	cleanup, _, _, _, err := lcdtest.InitializeLCD(3, []sdk.AccAddress{addr, addr2}, true, "58645")
 	defer cleanup()
 
 	sigs := make(chan os.Signal, 1)

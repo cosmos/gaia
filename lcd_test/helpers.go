@@ -29,6 +29,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingrest "github.com/cosmos/cosmos-sdk/x/staking/client/rest"
 	gapp "github.com/cosmos/gaia/app"
+	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"github.com/tendermint/go-amino"
 	tmcfg "github.com/tendermint/tendermint/config"
@@ -56,16 +57,12 @@ import (
 )
 
 // TODO: Make InitializeTestLCD safe to call in multiple tests at the same time
-// InitializeTestLCD starts Tendermint and the LCD in process, listening on
+// InitializeLCD starts Tendermint and the LCD in process, listening on
 // their respective sockets where nValidators is the total number of validators
 // and initAddrs are the accounts to initialize with some stake tokens. It
 // returns a cleanup function, a set of validator public keys, and a port.
 func InitializeLCD(nValidators int, initAddrs []sdk.AccAddress, minting bool, portExt ...string) (
 	cleanup func(), valConsPubKeys []crypto.PubKey, valOperAddrs []sdk.ValAddress, port string, err error) {
-
-	if nValidators < 1 {
-		panic("InitializeLCD must use at least one validator")
-	}
 
 	config := GetConfig()
 	config.Consensus.TimeoutCommit = 100
@@ -79,14 +76,17 @@ func InitializeLCD(nValidators int, initAddrs []sdk.AccAddress, minting bool, po
 	app := gapp.NewGaiaApp(logger, db, nil, true, 0)
 	cdc = gapp.MakeCodec()
 
-	genDoc, valConsPubKeys, valOperAddrs, privVal := defaultGenesis(config, nValidators, initAddrs, minting)
+	genDoc, valConsPubKeys, valOperAddrs, privVal, err := defaultGenesis(config, nValidators, initAddrs, minting)
+	if err != nil {
+		return
+	}
 
 	var listenAddr string
 
 	if len(portExt) == 0 {
 		listenAddr, port, err = server.FreeTCPAddr()
 		if err != nil {
-			panic(err)
+			return
 		}
 	} else {
 		listenAddr = fmt.Sprintf("tcp://0.0.0.0:%s", portExt[0])
@@ -101,13 +101,13 @@ func InitializeLCD(nValidators int, initAddrs []sdk.AccAddress, minting bool, po
 
 	node, err := startTM(config, logger, genDoc, privVal, app)
 	if err != nil {
-		panic(err)
+		return
 	}
 
 	tests.WaitForNextHeightTM(tests.ExtractPortFromAddress(config.RPC.ListenAddress))
 	lcdInstance, err := startLCD(logger, listenAddr, cdc)
 	if err != nil {
-		panic(err)
+		return
 	}
 
 	tests.WaitForLCDStart(port)
@@ -131,13 +131,18 @@ func InitializeLCD(nValidators int, initAddrs []sdk.AccAddress, minting bool, po
 }
 
 func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAddress, minting bool) (
-	genDoc *tmtypes.GenesisDoc, valConsPubKeys []crypto.PubKey, valOperAddrs []sdk.ValAddress, privVal *pvm.FilePV) {
+	genDoc *tmtypes.GenesisDoc, valConsPubKeys []crypto.PubKey, valOperAddrs []sdk.ValAddress, privVal *pvm.FilePV, err error) {
 	privVal = pvm.LoadOrGenFilePV(config.PrivValidatorKeyFile(),
 		config.PrivValidatorStateFile())
 	privVal.Reset()
 
+	if nValidators < 1 {
+		err = errors.New("InitializeLCD must use at least one validator")
+		return
+	}
+
 	genesisFile := config.GenesisFile()
-	genDoc, err := tmtypes.GenesisDocFromFile(genesisFile)
+	genDoc, err = tmtypes.GenesisDocFromFile(genesisFile)
 	if err != nil {
 		return
 	}
@@ -175,7 +180,8 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 			ChainID: genDoc.ChainID,
 			Msgs:    []sdk.Msg{msg},
 		}
-		sig, err := operPrivKey.Sign(stdSignMsg.Bytes())
+		var sig []byte
+		sig, err = operPrivKey.Sign(stdSignMsg.Bytes())
 		if err != nil {
 			return
 		}

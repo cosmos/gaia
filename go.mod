@@ -17,6 +17,7 @@ require (
 	github.com/otiai10/copy v1.0.1
 	github.com/otiai10/curr v0.0.0-20190513014714-f5a3d24e5776 // indirect
 	github.com/pelletier/go-toml v1.4.0 // indirect
+	github.com/pkg/errors v0.8.1
 	github.com/prometheus/client_golang v0.9.3 // indirect
 	github.com/prometheus/procfs v0.0.0-20190516194456-169873baca24 // indirect
 	github.com/rakyll/statik v0.1.6

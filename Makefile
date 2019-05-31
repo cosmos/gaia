@@ -171,19 +171,20 @@ localnet-stop:
 
 setup-contract-tests-data:
 	echo 'Here I want to unzip the to-be compressed dump'
+	rm -rf /tmp/.gaiacli ; rm -rf /tmp/.gaiad ; tar -xzf lcd_test/testdata/state.tar.gz -C /tmp/
 
 start-gaia: setup-contract-tests-data
-	nohup ./build/gaiad --home ./lcd_test/testdata/ start &
+	nohup ./build/gaiad --home /tmp/.gaiad start &
 
 run-lcd-contract-tests: build build-contract-tests-hooks start-gaia
 	@echo "Running Gaia LCD for contract tests. This may take several minutes..."
 	@bash ./lcd_test/testdata/setup.sh
-	./build/gaiacli rest-server --laddr tcp://0.0.0.0:8080 --home ./lcd_test/testdata/ --node http://localhost:26657 --chain-id lcd --trust-node true
+	./build/gaiacli rest-server --laddr tcp://0.0.0.0:8080 --home /tmp/.gaiacli --node http://localhost:26657 --chain-id lcd --trust-node true
 
 # include simulations
 include sims.mk
 
 .PHONY: all build-linux install install-debug \
-	go-mod-cache draw-deps clean build \
+	go-mod-cache draw-deps clean build setup-contract-tests-data start-gaia run-lcd-contract-tests \
 	check check-all check-build check-cover check-ledger check-unit check-race
 

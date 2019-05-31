@@ -177,7 +177,7 @@ start-gaia: setup-contract-tests-data
 
 run-lcd-contract-tests: build build-contract-tests-hooks start-gaia
 	@echo "Running Gaia LCD for contract tests. This may take several minutes..."
-	@bash ./contract_tests/setup.sh
+	@bash ./lcd_test/testdata/setup.sh
 	./build/gaiacli rest-server --laddr tcp://0.0.0.0:8080 --home ./lcd_test/testdata/ --node http://localhost:26657 --chain-id lcd --trust-node true
 
 # include simulations

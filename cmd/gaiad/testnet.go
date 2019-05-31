@@ -263,8 +263,7 @@ func initGenFiles(cdc *codec.Codec, mbm sdk.ModuleBasicManager, chainID string,
 	appGenState := mbm.DefaultGenesis()
 
 	// set the accounts in the genesis state
-	appGenState = genaccounts.SetGenesisStateInAppState(cdc, appGenState,
-		genaccounts.NewGenesisState(accs))
+	appGenState = genaccounts.SetGenesisStateInAppState(cdc, appGenState, accs)
 
 	appGenStateJSON, err := codec.MarshalJSONIndent(cdc, appGenState)
 	if err != nil {

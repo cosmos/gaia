@@ -42,7 +42,6 @@ import (
 	"sort"
 	"strings"
 
-	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/ed25519"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
@@ -238,12 +237,8 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 		accTokens := acc.Coins.AmountOf(sdk.DefaultBondDenom)
 		stakingData.Pool.NotBondedTokens = stakingData.Pool.NotBondedTokens.Add(accTokens)
 	}
-	stakingDataBz = cdc.MustMarshalJSON(stakingData)
-	genesisState[staking.ModuleName] = stakingDataBz
-
-	genaccountsData := genaccounts.NewGenesisState(accs)
-	genaccountsDataBz := cdc.MustMarshalJSON(genaccountsData)
-	genesisState[genaccounts.ModuleName] = genaccountsDataBz
+	genesisState[staking.ModuleName] = cdc.MustMarshalJSON(stakingData)
+	genesisState[genaccounts.ModuleName] = cdc.MustMarshalJSON(accs)
 
 	// mint genesis (none set within genesisState)
 	mintData := mint.DefaultGenesisState()
@@ -297,7 +292,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 // TODO: Clean up the WAL dir or enable it to be not persistent!
 func startTM(
 	tmcfg *tmcfg.Config, logger log.Logger, genDoc *tmtypes.GenesisDoc,
-	privVal tmtypes.PrivValidator, app abci.Application,
+	privVal tmtypes.PrivValidator, app *gapp.GaiaApp,
 ) (*nm.Node, error) {
 
 	genDocProvider := func() (*tmtypes.GenesisDoc, error) { return genDoc, nil }
@@ -345,8 +340,8 @@ func startLCD(logger log.Logger, listenAddr string, cdc *codec.Codec) (net.Liste
 
 // NOTE: If making updates here also update cmd/gaia/cmd/gaiacli/main.go
 func registerRoutes(rs *lcd.RestServer) {
-	rpc.RegisterRoutes(rs.CliCtx, rs.Mux)
-	tx.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
+	rpc.RegisterRPCRoutes(rs.CliCtx, rs.Mux)
+	tx.RegisterTxRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 	authrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, auth.StoreKey)
 	bankrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 	distrrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, distr.StoreKey)

@@ -31,6 +31,7 @@ import (
 	mintclient "github.com/cosmos/cosmos-sdk/x/mint/client"
 	mintrest "github.com/cosmos/cosmos-sdk/x/mint/client/rest"
 	paramcli "github.com/cosmos/cosmos-sdk/x/params/client/cli"
+	paramsrest "github.com/cosmos/cosmos-sdk/x/params/client/rest"
 	sl "github.com/cosmos/cosmos-sdk/x/slashing"
 	slashingclient "github.com/cosmos/cosmos-sdk/x/slashing/client"
 	slashing "github.com/cosmos/cosmos-sdk/x/slashing/client/rest"
@@ -43,8 +44,6 @@ import (
 
 	"github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
-
-	_ "github.com/cosmos/gaia/cmd/gaiacli/statik"
 )
 
 func main() {
@@ -165,26 +164,15 @@ func txCmd(cdc *amino.Codec, mc []sdk.ModuleClient) *cobra.Command {
 // NOTE: details on the routes added for each module are in the module documentation
 // NOTE: If making updates here you also need to update the test helper in client/lcd/test_helper.go
 func registerRoutes(rs *lcd.RestServer) {
-	registerSwaggerUI(rs)
-	rpc.RegisterRoutes(rs.CliCtx, rs.Mux)
-	tx.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
+	rpc.RegisterRPCRoutes(rs.CliCtx, rs.Mux)
+	tx.RegisterTxRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 	auth.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, at.StoreKey)
 	bank.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 	dist.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, distcmd.StoreKey)
 	staking.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 	slashing.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
-	gov.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
+	gov.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, paramsrest.ProposalRESTHandler(rs.CliCtx, rs.Cdc), dist.ProposalRESTHandler(rs.CliCtx, rs.Cdc))
 	mintrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
-}
-
-func registerSwaggerUI(rs *lcd.RestServer) {
-
-	//statikFS, err := fs.New()
-	//if err != nil {
-	//	panic(err)
-	//}
-	//staticServer := http.FileServer(statikFS)
-	//rs.Mux.PathPrefix("/swagger-ui/").Handler(http.StripPrefix("/swagger-ui/", staticServer))
 }
 
 func initConfig(cmd *cobra.Command) error {

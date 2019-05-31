@@ -403,6 +403,7 @@ jobs:
           name: Get Node and test REST implementation against documentation
           command: |
             go get github.com/snikch/goodman/cmd/goodman
+
             make build-contract-tests-hooks
             export PATH=~/.local/bin:$PATH
             ./contrib/get_node.sh && dredd

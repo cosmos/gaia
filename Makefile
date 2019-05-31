@@ -177,12 +177,13 @@ start-gaia: setup-contract-tests-data
 
 run-lcd-contract-tests: build build-contract-tests-hooks start-gaia
 	@echo "Running Gaia LCD for contract tests. This may take several minutes..."
+	@bash ./contract_tests/setup.sh
 	./build/gaiacli rest-server --laddr tcp://0.0.0.0:8080 --home contract_tests --node http://localhost:26657 --chain-id lcd --trust-node true
 
 # include simulations
 include sims.mk
 
 .PHONY: all build-linux install install-debug \
-	go-mod-cache draw-deps clean \
+	go-mod-cache draw-deps clean build \
 	check check-all check-build check-cover check-ledger check-unit check-race
 

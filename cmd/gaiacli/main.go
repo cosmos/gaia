@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 	"os"
 	"path"
 
@@ -32,7 +31,6 @@ import (
 	mintclient "github.com/cosmos/cosmos-sdk/x/mint/client"
 	mintrest "github.com/cosmos/cosmos-sdk/x/mint/client/rest"
 	paramcli "github.com/cosmos/cosmos-sdk/x/params/client/cli"
-	paramsrest "github.com/cosmos/cosmos-sdk/x/params/client/rest"
 	sl "github.com/cosmos/cosmos-sdk/x/slashing"
 	slashingclient "github.com/cosmos/cosmos-sdk/x/slashing/client"
 	slashing "github.com/cosmos/cosmos-sdk/x/slashing/client/rest"
@@ -40,11 +38,10 @@ import (
 	stakingclient "github.com/cosmos/cosmos-sdk/x/staking/client"
 	staking "github.com/cosmos/cosmos-sdk/x/staking/client/rest"
 
-	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	amino "github.com/tendermint/go-amino"
+	"github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
 
 	_ "github.com/cosmos/gaia/cmd/gaiacli/statik"
@@ -176,17 +173,18 @@ func registerRoutes(rs *lcd.RestServer) {
 	dist.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, distcmd.StoreKey)
 	staking.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 	slashing.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
-	gov.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, paramsrest.ProposalRESTHandler(rs.CliCtx, rs.Cdc), dist.ProposalRESTHandler(rs.CliCtx, rs.Cdc))
+	gov.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 	mintrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 }
 
 func registerSwaggerUI(rs *lcd.RestServer) {
-	statikFS, err := fs.New()
-	if err != nil {
-		panic(err)
-	}
-	staticServer := http.FileServer(statikFS)
-	rs.Mux.PathPrefix("/swagger-ui/").Handler(http.StripPrefix("/swagger-ui/", staticServer))
+
+	//statikFS, err := fs.New()
+	//if err != nil {
+	//	panic(err)
+	//}
+	//staticServer := http.FileServer(statikFS)
+	//rs.Mux.PathPrefix("/swagger-ui/").Handler(http.StripPrefix("/swagger-ui/", staticServer))
 }
 
 func initConfig(cmd *cobra.Command) error {

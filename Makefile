@@ -174,12 +174,12 @@ setup-contract-tests-data:
 	rm -rf /tmp/.gaiacli ; rm -rf /tmp/.gaiad ; tar -xzf lcd_test/testdata/state.tar.gz -C /tmp/
 
 start-gaia: setup-contract-tests-data
-	nohup ./build/gaiad --home /tmp/.gaiad start &
+	./build/gaiad --home /tmp/.gaiad start &
+	@sleep 2s
 
 run-lcd-contract-tests: build build-contract-tests-hooks start-gaia
 	@echo "Running Gaia LCD for contract tests. This may take several minutes..."
-	@bash ./lcd_test/testdata/setup.sh
-	./build/gaiacli rest-server --laddr tcp://0.0.0.0:8080 --home /tmp/.gaiacli --node http://localhost:26657 --chain-id lcd --trust-node true
+	@bash ./lcd_test/testdata/setup.sh && ./build/gaiacli rest-server --laddr tcp://0.0.0.0:8080 --home /tmp/.gaiacli --node http://localhost:26657 --chain-id lcd --trust-node true
 
 # include simulations
 include sims.mk

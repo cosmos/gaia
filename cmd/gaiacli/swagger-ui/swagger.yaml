@@ -347,8 +347,6 @@ paths:
             type: array
             items:
               $ref: "#/definitions/Coin"
-        204:
-          description: There is no data for the requested account
         500:
           description: Server internal error
   /bank/accounts/{address}/transfers:
@@ -426,8 +424,6 @@ paths:
                     $ref: "#/definitions/PublicKey"
                   sequence:
                     type: string
-        204:
-          description: No content about this account address
         500:
           description: Server internel error
   /staking/delegators/{delegatorAddr}/delegations:
@@ -602,9 +598,7 @@ paths:
         200:
           description: OK
           schema:
-            type: array
-            items:
-              $ref: "#/definitions/UnbondingDelegation"
+            $ref: "#/definitions/UnbondingDelegationPair"
         400:
           description: Invalid delegator address or validator address
         500:
@@ -759,8 +753,6 @@ paths:
             type: array
             items:
               $ref: "#/definitions/TxQuery"
-        204:
-          description: No staking transaction about this delegator address
         400:
           description: Invalid delegator address
         500:
@@ -926,32 +918,30 @@ paths:
                 type: string
         500:
           description: Internal Server Error
-  /slashing/validators/{validatorPubKey}/signing_info:
-    get:
-      summary: Get sign info of given validator
-      description: Get sign info of given validator
-      produces:
-        - application/json
-      tags:
-        - ICS23
-      parameters:
-        - type: string
-          description: Bech32 validator public key
-          name: validatorPubKey
-          required: true
-          in: path
-          x-example: cosmosvalconspub1zcjduepq7mft6gfls57a0a42d7uhx656cckhfvtrlmw744jv4q0mvlv0dypskehfk8
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: "#/definitions/SigningInfo"
-        204:
-          description: No sign info of this validator
-        400:
-          description: Invalid validator public key
-        500:
-          description: Internal Server Error
+#  /slashing/validators/{validatorPubKey}/signing_info:
+#    get:
+#      summary: Get sign info of given validator
+#      description: Get sign info of given validator
+#      produces:
+#        - application/json
+#      tags:
+#        - ICS23
+#      parameters:
+#        - type: string
+#          description: Bech32 validator public key
+#          name: validatorPubKey
+#          required: true
+#          in: path
+#          x-example: cosmosvalconspub1zcjduepq0vu2zgkgk49efa0nqwzndanq5m4c7pa3u4apz4g2r9gspqg6g9cs3k9cuf
+#      responses:
+#        200:
+#          description: OK
+#          schema:
+#            $ref: "#/definitions/SigningInfo"
+#        400:
+#          description: Invalid validator public key
+#        500:
+#          description: Internal Server Error
   /slashing/signing_infos:
     get:
       summary: Get sign info of given all validators
@@ -980,8 +970,6 @@ paths:
             type: array
             items:
               $ref: "#/definitions/SigningInfo"
-        204:
-          description: No validators with sign info
         400:
           description: Invalid validator public key for one of the validators
         500:
@@ -2363,6 +2351,28 @@ definitions:
         type: string
       height:
         type: integer
+  UnbondingDelegationPair:
+    type: object
+    properties:
+      delegator_address:
+        type: string
+      validator_address:
+        type: string
+      entries:
+        type: array
+        items:
+          $ref: "#/definitions/UnbondingEntries"
+  UnbondingEntries:
+    type: object
+    properties:
+      initial_balance:
+        type: string
+      balance:
+        type: string
+      creation_height:
+        type: string
+      min_time:
+        type: string
   UnbondingDelegation:
     type: object
     properties:

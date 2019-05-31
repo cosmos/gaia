@@ -170,7 +170,7 @@ localnet-stop:
 	docker-compose down
 
 setup-contract-tests-data:
-    echo 'Here I want to unzip the to-be compressed dump'
+	echo 'Here I want to unzip the to-be compressed dump'
 
 start-gaia: setup-contract-tests-data
 	nohup ./build/gaiad --home ./lcd_test/testdata/ start &

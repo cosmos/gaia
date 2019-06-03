@@ -63,7 +63,10 @@ import (
 func InitializeLCD(nValidators int, initAddrs []sdk.AccAddress, minting bool, portExt ...string) (
 	cleanup func(), valConsPubKeys []crypto.PubKey, valOperAddrs []sdk.ValAddress, port string, err error) {
 
-	config := GetConfig()
+	config, err := GetConfig()
+	if err != nil {
+		return
+	}
 	config.Consensus.TimeoutCommit = 100
 	config.Consensus.SkipTimeoutCommit = false
 	config.TxIndex.IndexAllTags = true
@@ -267,13 +270,15 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 		if !(mintData.Params.InflationMax.Equal(sdk.MustNewDecFromStr("15000.0")) &&
 			mintData.Minter.Inflation.Equal(sdk.MustNewDecFromStr("10000.0")) &&
 			mintData.Params.InflationMin.Equal(sdk.MustNewDecFromStr("10000.0"))) {
-			panic("Mint parameters does not correspond to their defaults")
+			err = errors.New("Mint parameters does not correspond to their defaults")
+			return
 		}
 	} else {
 		if !(mintData.Params.InflationMax.Equal(sdk.ZeroDec()) &&
 			mintData.Minter.Inflation.Equal(sdk.ZeroDec()) &&
 			mintData.Params.InflationMin.Equal(sdk.ZeroDec())) {
-			panic("Mint parameters not equal to decimal 0")
+			err = errors.New("Mint parameters not equal to decimal 0")
+			return
 		}
 	}
 
@@ -371,7 +376,7 @@ func CreateAddr(name, password string, kb crkeys.Keybase) (sdk.AccAddress, strin
 
 // CreateAddr adds multiple address to the key store and returns the addresses and associated seeds in lexographical order by address.
 // It also requires that the keys could be created.
-func CreateAddrs(kb crkeys.Keybase, numAddrs int) (addrs []sdk.AccAddress, seeds, names, passwords []string) {
+func CreateAddrs(kb crkeys.Keybase, numAddrs int) (addrs []sdk.AccAddress, seeds, names, passwords []string, errs []error) {
 	var (
 		err  error
 		info crkeys.Info
@@ -385,9 +390,12 @@ func CreateAddrs(kb crkeys.Keybase, numAddrs int) (addrs []sdk.AccAddress, seeds
 		password := "1234567890"
 		info, seed, err = kb.CreateMnemonic(name, crkeys.English, password, crkeys.Secp256k1)
 		if err != nil {
-			panic(err)
+			errs = append(errs, err)
 		}
 		addrSeeds = append(addrSeeds, AddrSeed{Address: sdk.AccAddress(info.GetPubKey().Address()), Seed: seed, Name: name, Password: password})
+	}
+	if len(errs) > 0 {
+		return
 	}
 
 	sort.Sort(addrSeeds)
@@ -399,7 +407,7 @@ func CreateAddrs(kb crkeys.Keybase, numAddrs int) (addrs []sdk.AccAddress, seeds
 		passwords = append(passwords, addrSeeds[i].Password)
 	}
 
-	return addrs, seeds, names, passwords
+	return
 }
 
 // AddrSeed combines an Address with the mnemonic of the private key to that address
@@ -450,41 +458,43 @@ func InitClientHome(dir string) string {
 	return dir
 }
 
-// makePathname creates a unique pathname for each test. It will panic if it
-// cannot get the current working directory.
-func makePathname() string {
+// makePathname creates a unique pathname for each test.
+func makePathname() (string, error) {
 	p, err := os.Getwd()
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
 	sep := string(filepath.Separator)
-	return strings.Replace(p, sep, "_", -1)
+	return strings.Replace(p, sep, "_", -1), nil
 }
 
 // GetConfig returns a Tendermint config for the test cases.
-func GetConfig() *tmcfg.Config {
-	pathname := makePathname()
+func GetConfig() (*tmcfg.Config, error) {
+	pathname, err := makePathname()
+	if err != nil {
+		return nil, err
+	}
 	config := tmcfg.ResetTestRoot(pathname)
 
 	tmAddr, _, err := server.FreeTCPAddr()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	rcpAddr, _, err := server.FreeTCPAddr()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	grpcAddr, _, err := server.FreeTCPAddr()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	config.P2P.ListenAddress = tmAddr
 	config.RPC.ListenAddress = rcpAddr
 	config.RPC.GRPCListenAddress = grpcAddr
 
-	return config
+	return config, nil
 }

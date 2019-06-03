@@ -900,7 +900,8 @@ func TestUnjail(t *testing.T) {
 func TestProposalsQuery(t *testing.T) {
 	kb, err := keys.NewKeyBaseFromDir(InitClientHome(""))
 	require.NoError(t, err)
-	addrs, seeds, names, passwords := CreateAddrs(kb, 2)
+	addrs, seeds, names, passwords, errors := CreateAddrs(kb, 2)
+	require.Empty(t, errors)
 
 	cleanup, _, _, port, err := InitializeLCD(1, []sdk.AccAddress{addrs[0], addrs[1]}, true)
 	require.NoError(t, err)

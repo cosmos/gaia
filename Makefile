@@ -115,7 +115,7 @@ dev-sdk:
 	
 dev-local:
 	@if [ -z "$(local)" ]; then echo $ correct usage: make dev-local local=[Local SDK Path]; \
-	else $ sed -i '$$ a\replace github.com\/cosmos\/cosmos-sdk => ..\/..\/$(local)\/cosmos-sdk' go.mod; fi 
+	else $ sed -i '$$ a\replace github.com\/cosmos\/cosmos-sdk => $(local)\/cosmos-sdk' go.mod; fi 
 
 dev-clean: clean
 	@sed -i '/replace github.com\/cosmos\/cosmos-sdk.*$$/d' go.mod

@@ -68,6 +68,23 @@ Build tags indicate special features that have been enabled in the binary.
 
 **Do not use snap at this time to install the binaries for production until we have a reproducible binary system.**
 
+### Developer Workflow
+
+Modified versions of the Cosmos-SDK can be built/installed in two ways.
+
+Through a SDK Fork:
+`make dev-local local=<path to fork>`
+
+Through a remote branch:
+- add sdk as a remote, `git add remote sdk https://github.com/cosmos/cosmos-sdk.git`
+- `git fetch sdk/<branch>`
+- `make dev-sdk branch=<branch>`
+
+Now the correct dependency has been updated in `go.mod` and gaia can be built/installed in the normal manner.
+
+To reset your builds and `go.mod` file:
+`make dev-clean`
+
 
 ### Next
 

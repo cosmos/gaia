@@ -110,7 +110,7 @@ distclean: clean
 
 dev-sdk:
 	@if [ -z "$(branch)" ]; then echo $ correct usage: make dev-sdk branch=[Branch on SDK Repo]; \
-	else hash='$(shell git rev-parse sdk/$(branch))'; time='$(shell git show -s sdk/$(branch) --date=format:'%Y%m%d%H%M%S' --format=%cd)'; \
+	else if hash='$(shell git rev-parse sdk/$(branch))'; time='$(shell git show -s sdk/$(branch) --date=format:'%Y%m%d%H%M%S' --format=%cd)'; \
 	$ sed -i '$$ a\replace github.com\/cosmos\/cosmos-sdk => github.com\/cosmos\/cosmos-sdk v0.0.0-'$$time'-'$$hash'' go.mod; fi 
 	
 dev-local:
@@ -174,6 +174,6 @@ localnet-stop:
 include sims.mk
 
 .PHONY: all build-linux install install-debug \
-	go-mod-cache draw-deps clean dev-clean \
+	go-mod-cache draw-deps clean dev-clean dev-sdk dev-local \
 	check check-all check-build check-cover check-ledger check-unit check-race
 

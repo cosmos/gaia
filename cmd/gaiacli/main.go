@@ -96,7 +96,7 @@ func queryCmd(cdc *amino.Codec) *cobra.Command {
 	)
 
 	// add modules' query commands
-	app.ModuleBasics.AddQueryCommands(queryCmd)
+	app.ModuleBasics.AddQueryCommands(queryCmd, cdc)
 
 	return queryCmd
 }
@@ -118,7 +118,7 @@ func txCmd(cdc *amino.Codec) *cobra.Command {
 	)
 
 	// add modules' tx commands
-	app.ModuleBasics.AddTxCommands(txCmd)
+	app.ModuleBasics.AddTxCommands(txCmd, cdc)
 
 	return txCmd
 }

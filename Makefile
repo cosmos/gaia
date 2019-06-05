@@ -168,14 +168,14 @@ localnet-stop:
 
 setup-contract-tests-data:
 	echo 'Here I want to unzip the to-be compressed dump'
-	rm -rf /tmp/.gaiacli ; rm -rf /tmp/.gaiad ; tar -xzf lcd_test/testdata/state.tar.gz -C /tmp/
+	rm -rf /tmp/.gaiacli ; rm -rf /tmp/.gaiad ; ./build/gaiad init --home /tmp/.gaiad --chain-id lcd contract-tests ; tar -xzf lcd_test/testdata/state.tar.gz -C /tmp/
 
 start-gaia: setup-contract-tests-data
 	./build/gaiad --home /tmp/.gaiad start &
 	@sleep 2s
 
 run-lcd-contract-tests: start-gaia
-	@echo "Running Gaia LCD for contract tests. This may take several minutes..."
+	@echo "Running Gaia LCD for contract tests"
 	@bash ./lcd_test/testdata/setup.sh && ./build/gaiacli rest-server --laddr tcp://0.0.0.0:8080 --home /tmp/.gaiacli --node http://localhost:26657 --chain-id lcd --trust-node true
 
 # include simulations

@@ -175,7 +175,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 			pubKey,
 			sdk.NewCoin(sdk.DefaultBondDenom, startTokens),
 			staking.NewDescription(fmt.Sprintf("validator-%d", i+1), "", "", ""),
-			staking.NewCommissionMsg(sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec()),
+			staking.NewCommissionRates(sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec()),
 			sdk.OneInt(),
 		)
 		stdSignMsg := txbuilder.StdSignMsg{

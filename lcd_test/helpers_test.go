@@ -22,7 +22,6 @@ import (
 	clientkeys "github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/lcd"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
-	"github.com/cosmos/cosmos-sdk/client/tx"
 	clienttx "github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -33,8 +32,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
-	txbuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/cosmos/cosmos-sdk/x/auth/genaccounts"
 	bankrest "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
@@ -45,8 +42,6 @@ import (
 	govrest "github.com/cosmos/cosmos-sdk/x/gov/client/rest"
 	gcutils "github.com/cosmos/cosmos-sdk/x/gov/client/utils"
 	"github.com/cosmos/cosmos-sdk/x/mint"
-	mintrest "github.com/cosmos/cosmos-sdk/x/mint/client/rest"
-	paramsrest "github.com/cosmos/cosmos-sdk/x/params/client/rest"
 	paramscutils "github.com/cosmos/cosmos-sdk/x/params/client/utils"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	slashingrest "github.com/cosmos/cosmos-sdk/x/slashing/client/rest"
@@ -264,7 +259,7 @@ func InitializeTestLCD(t *testing.T, nValidators int, initAddrs []sdk.AccAddress
 			staking.NewCommissionRates(sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec()),
 			sdk.OneInt(),
 		)
-		stdSignMsg := txbuilder.StdSignMsg{
+		stdSignMsg := auth.StdSignMsg{
 			ChainID: genDoc.ChainID,
 			Msgs:    []sdk.Msg{msg},
 		}
@@ -436,18 +431,10 @@ func startLCD(logger log.Logger, listenAddr string, cdc *codec.Codec, t *testing
 	return listener, nil
 }
 
-// TODO generalize this with the module basic manager
 // NOTE: If making updates here also update cmd/gaia/cmd/gaiacli/main.go
 func registerRoutes(rs *lcd.RestServer) {
-	rpc.RegisterRPCRoutes(rs.CliCtx, rs.Mux)
-	tx.RegisterTxRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
-	authrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, auth.StoreKey)
-	bankrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
-	distrrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, distr.StoreKey)
-	stakingrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
-	slashingrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
-	govrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, paramsrest.ProposalRESTHandler(rs.CliCtx, rs.Cdc), distrrest.ProposalRESTHandler(rs.CliCtx, rs.Cdc))
-	mintrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
+	client.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
+	gapp.ModuleBasics.RegisterRESTRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 }
 
 // Request makes a test LCD test request. It returns a response object and a
@@ -820,7 +807,7 @@ func signAndBroadcastGenTx(
 	err := cdc.UnmarshalJSON([]byte(genTx), &tx)
 	require.Nil(t, err)
 
-	txbldr := txbuilder.NewTxBuilder(
+	txbldr := auth.NewTxBuilder(
 		utils.GetTxEncoder(cdc),
 		acc.GetAccountNumber(),
 		acc.GetSequence(),

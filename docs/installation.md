@@ -70,21 +70,12 @@ Build tags indicate special features that have been enabled in the binary.
 
 ### Developer Workflow
 
-Modified versions of the Cosmos-SDK can be built/installed in two ways.
+To test any changes made in the SDK or Tendermint, a `replace` clause needs to be added to `go.mod` providing the correct import path.
 
-Through a SDK Fork:
-`make dev-local local=<path to fork>`
-
-Through a remote branch:
-- add sdk as a remote, `git add remote sdk https://github.com/cosmos/cosmos-sdk.git`
-- `git fetch sdk/<branch>`
-- `make dev-sdk branch=<branch>`
-
-Now the correct dependency has been updated in `go.mod` and gaia can be built/installed in the normal manner.
-
-To reset your builds and `go.mod` file:
-`make dev-clean`
-
+- Make appropriate changes
+- Add `replace github.com/cosmos/cosmos-sdk => /path/to/clone/cosmos-sdk` to `go.mod`
+- Run `make clean install` or `make clean build`
+- Test changes
 
 ### Next
 

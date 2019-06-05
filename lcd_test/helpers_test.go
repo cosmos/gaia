@@ -32,7 +32,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	txbuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/cosmos/cosmos-sdk/x/auth/genaccounts"
 	bankrest "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
@@ -260,7 +259,7 @@ func InitializeTestLCD(t *testing.T, nValidators int, initAddrs []sdk.AccAddress
 			staking.NewCommissionRates(sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec()),
 			sdk.OneInt(),
 		)
-		stdSignMsg := txbuilder.StdSignMsg{
+		stdSignMsg := auth.StdSignMsg{
 			ChainID: genDoc.ChainID,
 			Msgs:    []sdk.Msg{msg},
 		}
@@ -808,7 +807,7 @@ func signAndBroadcastGenTx(
 	err := cdc.UnmarshalJSON([]byte(genTx), &tx)
 	require.Nil(t, err)
 
-	txbldr := txbuilder.NewTxBuilder(
+	txbldr := auth.NewTxBuilder(
 		utils.GetTxEncoder(cdc),
 		acc.GetAccountNumber(),
 		acc.GetSequence(),

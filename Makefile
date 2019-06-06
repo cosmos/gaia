@@ -4,6 +4,7 @@ PACKAGES_SIMTEST=$(shell go list ./... | grep '/simulation')
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 LEDGER_ENABLED ?= true
+SDK_PACK := "$(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')"
 
 export GO111MODULE = on
 
@@ -167,16 +168,27 @@ localnet-stop:
 	docker-compose down
 
 setup-contract-tests-data:
-	echo 'Here I want to unzip the to-be compressed dump'
-	rm -rf /tmp/.gaiacli ; rm -rf /tmp/.gaiad ; ./build/gaiad init --home /tmp/.gaiad --chain-id lcd contract-tests ; tar -xzf lcd_test/testdata/state.tar.gz -C /tmp/
+	echo 'Prepare data for the contract tests'
+	rm -rf /tmp/contract_tests ; \
+	mkdir /tmp/contract_tests ; \
+	cp "${GOPATH}/pkg/mod/${SDK_PACK}/client/lcd/swagger-ui/swagger.yaml" /tmp/contract_tests/swagger.yaml ; \
+	./build/gaiad init --home /tmp/contract_tests/.gaiad --chain-id lcd contract-tests ; \
+	tar -xzf lcd_test/testdata/state.tar.gz -C /tmp/contract_tests/
 
 start-gaia: setup-contract-tests-data
-	./build/gaiad --home /tmp/.gaiad start &
+	nohup ./build/gaiad --home /tmp/contract_tests/.gaiad start &
 	@sleep 2s
 
-run-lcd-contract-tests: start-gaia
+setup-transactions: start-gaia
+	@bash ./lcd_test/testdata/setup.sh
+
+run-lcd-contract-tests:
 	@echo "Running Gaia LCD for contract tests"
-	@bash ./lcd_test/testdata/setup.sh && ./build/gaiacli rest-server --laddr tcp://0.0.0.0:8080 --home /tmp/.gaiacli --node http://localhost:26657 --chain-id lcd --trust-node true
+	./build/gaiacli rest-server --laddr tcp://0.0.0.0:8080 --home /tmp/contract_tests/.gaiacli --node http://localhost:26657 --chain-id lcd --trust-node true
+
+contract-tests: setup-transactions
+	@echo "Running Gaia LCD for contract tests"
+	dredd
 
 # include simulations
 include sims.mk

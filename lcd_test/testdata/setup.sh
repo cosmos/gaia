@@ -7,8 +7,8 @@ VALIDATOR="cosmosvaloper16xyempempp92x9hyzz9wrgf94r6j9h5f2w4n2l"
 AMOUNT="1000000stake"
 CHAIN="lcd"
 GOVID="2"
-HOME="/tmp/.gaiacli"
-SWAGGER='../cosmos-sdk/client/lcd/swagger-ui/swagger.yaml'
+HOME="/tmp/contract_tests/.gaiacli"
+SWAGGER='/tmp/contract_tests/swagger.yaml'
 
 # luckily governance are down in the swagger sequence of calls, this 15s are massive sleep time
 # TODO: find out why the signature verification still fails without sleeps
@@ -20,8 +20,9 @@ echo ${PASSWORD} | ./build/gaiacli tx gov deposit --home ${HOME} --from ${ADDR} 
 sleep 1s
 echo ${PASSWORD} | ./build/gaiacli tx gov vote --home ${HOME} --from ${ADDR} --yes --chain-id ${CHAIN} ${GOVID} Yes
 sleep 1s
-HASH=$(echo ${PASSWORD} | ./build/gaiacli tx send --home ${HOME} ${ADDR} ${RECEIVER} ${AMOUNT} --yes --chain-id ${CHAIN} |  awk '/txhash.*/{print $2}')
+HASH=$(echo ${PASSWORD} | ./build/gaiacli tx send --home ${HOME} ${ADDR} ${RECEIVER} ${AMOUNT} --yes --chain-id ${CHAIN} | awk '/txhash.*/{print $2}')
+sed -i.bak -e "s/BCBE20E8D46758B96AE5883B792858296AC06E51435490FBDCAE25A72B3CC76B/${HASH}/g" "${SWAGGER}"
+echo "Replaced dummy with actual transaction hash ${HASH}"
 sleep 1s
 echo ${PASSWORD} | ./build/gaiacli tx staking unbond --home ${HOME} --from ${ADDR} ${VALIDATOR} 100stake --yes --chain-id ${CHAIN}
-# Hacky but works on MacOS and Linuxs
-sed -i.bak -e "s/BCBE20E8D46758B96AE5883B792858296AC06E51435490FBDCAE25A72B3CC76B/${HASH}/g" -- "${SWAGGER}" && rm -- "${SWAGGER}.bak"
+

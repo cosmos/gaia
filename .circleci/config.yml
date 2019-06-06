@@ -406,8 +406,6 @@ jobs:
             make build
             make build-contract-tests-hooks
             export PATH=~/.local/bin:$PATH
-            mkdir -p /go/src/github.com/cosmos/cosmos-sdk/client/lcd/swagger-ui/
-            cp /go/pkg/mod/github.com/cosmos/cosmos-sdk\@v0.28.2-0.20190605232616-5f9c3fdf8895/client/lcd/swagger-ui/swagger.yaml /go/src/github.com/cosmos/cosmos-sdk/client/lcd/swagger-ui/swagger.yaml
             ./contrib/get_node.sh && dredd
       - store_artifacts:
           path: /go/src/github.com/cosmos/gaia/nohup.log

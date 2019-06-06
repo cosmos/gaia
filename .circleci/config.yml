@@ -405,6 +405,7 @@ jobs:
             go get github.com/snikch/goodman/cmd/goodman
             make build
             make build-contract-tests-hooks
+            make setup-contract-tests-data
             export PATH=~/.local/bin:$PATH
             ./contrib/get_node.sh && dredd
       - store_artifacts:

@@ -5,8 +5,6 @@ import (
 	"os"
 	"path"
 
-	"github.com/cosmos/gaia/app"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/lcd"
@@ -14,36 +12,18 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
-	at "github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/auth"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
-	auth "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
+	"github.com/cosmos/cosmos-sdk/x/bank"
 	bankcmd "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
-	bank "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
-	crisisclient "github.com/cosmos/cosmos-sdk/x/crisis/client"
-	distcmd "github.com/cosmos/cosmos-sdk/x/distribution"
-	distClient "github.com/cosmos/cosmos-sdk/x/distribution/client"
-	distrcli "github.com/cosmos/cosmos-sdk/x/distribution/client/cli"
-	dist "github.com/cosmos/cosmos-sdk/x/distribution/client/rest"
-	gv "github.com/cosmos/cosmos-sdk/x/gov"
-	govClient "github.com/cosmos/cosmos-sdk/x/gov/client"
-	gov "github.com/cosmos/cosmos-sdk/x/gov/client/rest"
-	"github.com/cosmos/cosmos-sdk/x/mint"
-	mintclient "github.com/cosmos/cosmos-sdk/x/mint/client"
-	mintrest "github.com/cosmos/cosmos-sdk/x/mint/client/rest"
-	paramcli "github.com/cosmos/cosmos-sdk/x/params/client/cli"
-	paramsrest "github.com/cosmos/cosmos-sdk/x/params/client/rest"
-	sl "github.com/cosmos/cosmos-sdk/x/slashing"
-	slashingclient "github.com/cosmos/cosmos-sdk/x/slashing/client"
-	slashing "github.com/cosmos/cosmos-sdk/x/slashing/client/rest"
-	st "github.com/cosmos/cosmos-sdk/x/staking"
-	stakingclient "github.com/cosmos/cosmos-sdk/x/staking/client"
-	staking "github.com/cosmos/cosmos-sdk/x/staking/client/rest"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
 	"github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
+
+	"github.com/cosmos/gaia/app"
 )
 
 func main() {
@@ -64,17 +44,6 @@ func main() {
 	// the below functions and eliminate global vars, like we do
 	// with the cdc
 
-	// Module clients hold cli commnads (tx,query) and lcd routes
-	// TODO: Make the lcd command take a list of ModuleClient
-	mc := []sdk.ModuleClient{
-		govClient.NewModuleClient(gv.StoreKey, cdc, paramcli.GetCmdSubmitProposal(cdc), distrcli.GetCmdSubmitProposal(cdc)),
-		distClient.NewModuleClient(distcmd.StoreKey, cdc),
-		stakingclient.NewModuleClient(st.StoreKey, cdc),
-		mintclient.NewModuleClient(mint.StoreKey, cdc),
-		slashingclient.NewModuleClient(sl.StoreKey, cdc),
-		crisisclient.NewModuleClient(sl.StoreKey, cdc),
-	}
-
 	rootCmd := &cobra.Command{
 		Use:   "gaiacli",
 		Short: "Command line interface for interacting with gaiad",
@@ -90,8 +59,8 @@ func main() {
 	rootCmd.AddCommand(
 		rpc.StatusCommand(),
 		client.ConfigCmd(app.DefaultCLIHome),
-		queryCmd(cdc, mc),
-		txCmd(cdc, mc),
+		queryCmd(cdc),
+		txCmd(cdc),
 		client.LineBreak,
 		lcd.ServeCommand(cdc, registerRoutes),
 		client.LineBreak,
@@ -111,7 +80,7 @@ func main() {
 	}
 }
 
-func queryCmd(cdc *amino.Codec, mc []sdk.ModuleClient) *cobra.Command {
+func queryCmd(cdc *amino.Codec) *cobra.Command {
 	queryCmd := &cobra.Command{
 		Use:     "query",
 		Aliases: []string{"q"},
@@ -119,25 +88,22 @@ func queryCmd(cdc *amino.Codec, mc []sdk.ModuleClient) *cobra.Command {
 	}
 
 	queryCmd.AddCommand(
+		authcmd.GetAccountCmd(cdc),
+		client.LineBreak,
 		rpc.ValidatorCommand(cdc),
 		rpc.BlockCommand(),
 		tx.SearchTxCmd(cdc),
 		tx.QueryTxCmd(cdc),
 		client.LineBreak,
-		authcmd.GetAccountCmd(at.StoreKey, cdc),
 	)
 
-	for _, m := range mc {
-		mQueryCmd := m.GetQueryCmd()
-		if mQueryCmd != nil {
-			queryCmd.AddCommand(mQueryCmd)
-		}
-	}
+	// add modules' query commands
+	app.ModuleBasics.AddQueryCommands(queryCmd, cdc)
 
 	return queryCmd
 }
 
-func txCmd(cdc *amino.Codec, mc []sdk.ModuleClient) *cobra.Command {
+func txCmd(cdc *amino.Codec) *cobra.Command {
 	txCmd := &cobra.Command{
 		Use:   "tx",
 		Short: "Transactions subcommands",
@@ -148,14 +114,25 @@ func txCmd(cdc *amino.Codec, mc []sdk.ModuleClient) *cobra.Command {
 		client.LineBreak,
 		authcmd.GetSignCommand(cdc),
 		authcmd.GetMultiSignCommand(cdc),
+		client.LineBreak,
 		tx.GetBroadcastCommand(cdc),
 		tx.GetEncodeCommand(cdc),
 		client.LineBreak,
 	)
 
-	for _, m := range mc {
-		txCmd.AddCommand(m.GetTxCmd())
+	// add modules' tx commands
+	app.ModuleBasics.AddTxCommands(txCmd, cdc)
+
+	// remove auth and bank commands as they're mounted under the root tx command
+	var cmdsToRemove []*cobra.Command
+
+	for _, cmd := range txCmd.Commands() {
+		if cmd.Use == auth.ModuleName || cmd.Use == bank.ModuleName {
+			cmdsToRemove = append(cmdsToRemove, cmd)
+		}
 	}
+
+	txCmd.RemoveCommand(cmdsToRemove...)
 
 	return txCmd
 }
@@ -164,15 +141,8 @@ func txCmd(cdc *amino.Codec, mc []sdk.ModuleClient) *cobra.Command {
 // NOTE: details on the routes added for each module are in the module documentation
 // NOTE: If making updates here you also need to update the test helper in client/lcd/test_helper.go
 func registerRoutes(rs *lcd.RestServer) {
-	rpc.RegisterRPCRoutes(rs.CliCtx, rs.Mux)
-	tx.RegisterTxRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
-	auth.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, at.StoreKey)
-	bank.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
-	dist.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, distcmd.StoreKey)
-	staking.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
-	slashing.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
-	gov.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, paramsrest.ProposalRESTHandler(rs.CliCtx, rs.Cdc), dist.ProposalRESTHandler(rs.CliCtx, rs.Cdc))
-	mintrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
+	client.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
+	app.ModuleBasics.RegisterRESTRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 }
 
 func initConfig(cmd *cobra.Command) error {

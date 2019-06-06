@@ -68,6 +68,14 @@ Build tags indicate special features that have been enabled in the binary.
 
 **Do not use snap at this time to install the binaries for production until we have a reproducible binary system.**
 
+### Developer Workflow
+
+To test any changes made in the SDK or Tendermint, a `replace` clause needs to be added to `go.mod` providing the correct import path.
+
+- Make appropriate changes
+- Add `replace github.com/cosmos/cosmos-sdk => /path/to/clone/cosmos-sdk` to `go.mod`
+- Run `make clean install` or `make clean build`
+- Test changes
 
 ### Next
 

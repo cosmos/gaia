@@ -309,7 +309,7 @@ func (f *Fixtures) CLIConfig(key, value string, flags ...string) {
 
 // TxSend is gaiacli tx send
 func (f *Fixtures) TxSend(from string, to sdk.AccAddress, amount sdk.Coin, flags ...string) (bool, string, string) {
-	cmd := fmt.Sprintf("%s tx bank send %s %s %s %v", f.GaiacliBinary, from, to, amount, f.Flags())
+	cmd := fmt.Sprintf("%s tx send %s %s %s %v", f.GaiacliBinary, from, to, amount, f.Flags())
 	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), client.DefaultKeyPass)
 }
 
@@ -317,13 +317,13 @@ func (f *Fixtures) txSendWithConfirm(
 	from string, to sdk.AccAddress, amount sdk.Coin, confirm string, flags ...string,
 ) (bool, string, string) {
 
-	cmd := fmt.Sprintf("%s tx bank send %s %s %s %v", f.GaiacliBinary, from, to, amount, f.Flags())
+	cmd := fmt.Sprintf("%s tx send %s %s %s %v", f.GaiacliBinary, from, to, amount, f.Flags())
 	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), confirm, client.DefaultKeyPass)
 }
 
 // TxSign is gaiacli tx sign
 func (f *Fixtures) TxSign(signer, fileName string, flags ...string) (bool, string, string) {
-	cmd := fmt.Sprintf("%s tx auth sign %v --from=%s %v", f.GaiacliBinary, f.Flags(), signer, fileName)
+	cmd := fmt.Sprintf("%s tx sign %v --from=%s %v", f.GaiacliBinary, f.Flags(), signer, fileName)
 	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), client.DefaultKeyPass)
 }
 
@@ -343,7 +343,7 @@ func (f *Fixtures) TxEncode(fileName string, flags ...string) (bool, string, str
 func (f *Fixtures) TxMultisign(fileName, name string, signaturesFiles []string,
 	flags ...string) (bool, string, string) {
 
-	cmd := fmt.Sprintf("%s tx auth multisign %v %s %s %s", f.GaiacliBinary, f.Flags(),
+	cmd := fmt.Sprintf("%s tx multisign %v %s %s %s", f.GaiacliBinary, f.Flags(),
 		fileName, name, strings.Join(signaturesFiles, " "),
 	)
 	return executeWriteRetStdStreams(f.T, cmd)

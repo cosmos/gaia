@@ -5,8 +5,6 @@ import (
 	"os"
 	"path"
 
-	"github.com/cosmos/gaia/app"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/lcd"
@@ -14,12 +12,18 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
+	"github.com/cosmos/cosmos-sdk/x/auth"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
+	"github.com/cosmos/cosmos-sdk/x/bank"
+	bankcmd "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
 	"github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
+
+	"github.com/cosmos/gaia/app"
 )
 
 func main() {
@@ -106,6 +110,11 @@ func txCmd(cdc *amino.Codec) *cobra.Command {
 	}
 
 	txCmd.AddCommand(
+		bankcmd.SendTxCmd(cdc),
+		client.LineBreak,
+		authcmd.GetSignCommand(cdc),
+		authcmd.GetMultiSignCommand(cdc),
+		client.LineBreak,
 		tx.GetBroadcastCommand(cdc),
 		tx.GetEncodeCommand(cdc),
 		client.LineBreak,
@@ -113,6 +122,17 @@ func txCmd(cdc *amino.Codec) *cobra.Command {
 
 	// add modules' tx commands
 	app.ModuleBasics.AddTxCommands(txCmd, cdc)
+
+	// remove auth and bank commands as they're mounted under the root tx command
+	var cmdsToRemove []*cobra.Command
+
+	for _, cmd := range txCmd.Commands() {
+		if cmd.Use == auth.ModuleName || cmd.Use == bank.ModuleName {
+			cmdsToRemove = append(cmdsToRemove, cmd)
+		}
+	}
+
+	txCmd.RemoveCommand(cmdsToRemove...)
 
 	return txCmd
 }

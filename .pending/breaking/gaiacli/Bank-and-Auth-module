@@ -1,3 +1,0 @@
-Bank and Auth module commands are now mounted under their respective module:
-  * `sign` and `multisign` are under `gaiacli tx auth`
-  * `send` is under `gaiacli tx bank`

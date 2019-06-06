@@ -4,7 +4,7 @@ go 1.12
 
 require (
 	github.com/btcsuite/btcd v0.0.0-20190523000118-16327141da8c // indirect
-	github.com/cosmos/cosmos-sdk v0.28.2-0.20190606150647-3552a6bf8df1
+	github.com/cosmos/cosmos-sdk v0.28.2-0.20190606154315-3180e68c7b57
 	github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d // indirect
 	github.com/google/gofuzz v1.0.0 // indirect
 	github.com/gorilla/mux v1.7.2 // indirect
@@ -29,7 +29,6 @@ require (
 	golang.org/x/crypto v0.0.0-20190513172903-22d7a77e9e5f // indirect
 	golang.org/x/sys v0.0.0-20190527104216-9cd6430ef91e // indirect
 	golang.org/x/text v0.3.2 // indirect
-	google.golang.org/appengine v1.4.0 // indirect
 	google.golang.org/genproto v0.0.0-20190522204451-c2c4e71fbf69 // indirect
 )
 

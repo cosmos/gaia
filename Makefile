@@ -176,7 +176,7 @@ setup-contract-tests-data:
 	tar -xzf lcd_test/testdata/state.tar.gz -C /tmp/contract_tests/
 
 start-gaia: setup-contract-tests-data
-	nohup ./build/gaiad --home /tmp/contract_tests/.gaiad start &
+	./build/gaiad --home /tmp/contract_tests/.gaiad start &
 	@sleep 2s
 
 setup-transactions: start-gaia
@@ -194,6 +194,7 @@ contract-tests: setup-transactions
 include sims.mk
 
 .PHONY: all build-linux install install-debug \
-	go-mod-cache draw-deps clean build setup-contract-tests-data start-gaia run-lcd-contract-tests \
+	go-mod-cache draw-deps clean build \
+	setup-transactions setup-contract-tests-data start-gaia run-lcd-contract-tests contract-tests \
 	check check-all check-build check-cover check-ledger check-unit check-race
 

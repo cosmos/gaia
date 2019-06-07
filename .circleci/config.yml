@@ -391,7 +391,7 @@ jobs:
       - store_artifacts:
           path: /go/src/github.com/cosmos/gaia/gaia-windows-res.yml
 
-  contract-tests:
+  contract_tests:
     <<: *linux_defaults
     steps:
       - attach_workspace:

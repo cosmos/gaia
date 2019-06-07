@@ -4,7 +4,7 @@ hookfiles: build/contract_tests
 language: go
 require: null
 server: make run-lcd-contract-tests
-server-wait: 10
+server-wait: 5
 init: false
 custom: {}
 names: false

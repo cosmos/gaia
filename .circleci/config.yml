@@ -391,7 +391,7 @@ jobs:
       - store_artifacts:
           path: /go/src/github.com/cosmos/gaia/gaia-windows-res.yml
 
-  dredd:
+  contract-tests:
     <<: *linux_defaults
     steps:
       - attach_workspace:
@@ -400,7 +400,7 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
-          name: Get Node and test REST implementation against documentation
+          name: Get Node.js and test REST implementation against swagger documentation at  https://cosmos.network/rpc/
           command: |
             go get github.com/snikch/goodman/cmd/goodman
             make build
@@ -487,7 +487,7 @@ workflows:
                 - master
           requires:
             - setup_dependencies
-      - dredd:
+      - contract-tests:
           requires:
             - setup_dependencies
 

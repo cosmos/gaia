@@ -188,7 +188,7 @@ run-lcd-contract-tests:
 
 contract-tests: setup-transactions
 	@echo "Running Gaia LCD for contract tests"
-	dredd && killall gaiad
+	dredd && killall gaiad || sudo killall gaiad
 
 # include simulations
 include sims.mk

@@ -330,8 +330,8 @@ func startLCD(logger log.Logger, listenAddr string, cdc *codec.Codec) (net.Liste
 
 // NOTE: If making updates here also update cmd/gaia/cmd/gaiacli/main.go
 func registerRoutes(rs *lcd.RestServer) {
-	client.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
-	gapp.ModuleBasics.RegisterRESTRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
+	client.RegisterRoutes(rs.CliCtx, rs.Mux)
+	gapp.ModuleBasics.RegisterRESTRoutes(rs.CliCtx, rs.Mux)
 }
 
 var cdc = amino.NewCodec()

@@ -487,7 +487,7 @@ workflows:
                 - master
           requires:
             - setup_dependencies
-      - contract-tests:
+      - contract_tests:
           requires:
             - setup_dependencies
 

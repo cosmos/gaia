@@ -4,6 +4,7 @@ PACKAGES_SIMTEST=$(shell go list ./... | grep '/simulation')
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 LEDGER_ENABLED ?= true
+SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
 
 export GO111MODULE = on
 
@@ -78,12 +79,20 @@ endif
 build-linux: go.sum
 	LEDGER_ENABLED=false GOOS=linux GOARCH=amd64 $(MAKE) build
 
+build-contract-tests-hooks:
+ifeq ($(OS),Windows_NT)
+	go build -mod=readonly $(BUILD_FLAGS) -o build/contract_tests.exe ./cmd/contract_tests
+else
+	go build -mod=readonly $(BUILD_FLAGS) -o build/contract_tests ./cmd/contract_tests
+endif
+
 install: go.sum check-ledger
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/gaiad
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/gaiacli
 
 install-debug: go.sum
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/gaiadebug
+
 
 
 ########################################
@@ -158,10 +167,34 @@ localnet-start: localnet-stop
 localnet-stop:
 	docker-compose down
 
+setup-contract-tests-data:
+	echo 'Prepare data for the contract tests'
+	rm -rf /tmp/contract_tests ; \
+	mkdir /tmp/contract_tests ; \
+	cp "${GOPATH}/pkg/mod/${SDK_PACK}/client/lcd/swagger-ui/swagger.yaml" /tmp/contract_tests/swagger.yaml ; \
+	./build/gaiad init --home /tmp/contract_tests/.gaiad --chain-id lcd contract-tests ; \
+	tar -xzf lcd_test/testdata/state.tar.gz -C /tmp/contract_tests/
+
+start-gaia: setup-contract-tests-data
+	./build/gaiad --home /tmp/contract_tests/.gaiad start &
+	@sleep 2s
+
+setup-transactions: start-gaia
+	@bash ./lcd_test/testdata/setup.sh
+
+run-lcd-contract-tests:
+	@echo "Running Gaia LCD for contract tests"
+	./build/gaiacli rest-server --laddr tcp://0.0.0.0:8080 --home /tmp/contract_tests/.gaiacli --node http://localhost:26657 --chain-id lcd --trust-node true
+
+contract-tests: setup-transactions
+	@echo "Running Gaia LCD for contract tests"
+	dredd && pkill gaiad
+
 # include simulations
 include sims.mk
 
 .PHONY: all build-linux install install-debug \
-	go-mod-cache draw-deps clean \
+	go-mod-cache draw-deps clean build \
+	setup-transactions setup-contract-tests-data start-gaia run-lcd-contract-tests contract-tests \
 	check check-all check-build check-cover check-ledger check-unit check-race
 

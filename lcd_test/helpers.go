@@ -157,7 +157,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 			pubKey = ed25519.GenPrivKey().PubKey()
 			power = 1
 		}
-		startTokens := sdk.TokensFromTendermintPower(power)
+		startTokens := sdk.TokensFromConsensusPower(power)
 
 		msg := staking.NewMsgCreateValidator(
 			sdk.ValAddress(operAddr),
@@ -182,7 +182,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 		valOperAddrs = append(valOperAddrs, sdk.ValAddress(operAddr))
 
 		accAuth := auth.NewBaseAccountWithAddress(sdk.AccAddress(operAddr))
-		accTokens := sdk.TokensFromTendermintPower(150)
+		accTokens := sdk.TokensFromConsensusPower(150)
 		accAuth.Coins = sdk.Coins{sdk.NewCoin(sdk.DefaultBondDenom, accTokens)}
 		accs = append(accs, genaccounts.NewGenesisAccount(&accAuth))
 	}
@@ -206,7 +206,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	// add some tokens to init accounts
 	for _, addr := range initAddrs {
 		accAuth := auth.NewBaseAccountWithAddress(addr)
-		accTokens := sdk.TokensFromTendermintPower(100)
+		accTokens := sdk.TokensFromConsensusPower(100)
 		accAuth.Coins = sdk.Coins{sdk.NewCoin(sdk.DefaultBondDenom, accTokens)}
 		acc := genaccounts.NewGenesisAccount(&accAuth)
 		accs = append(accs, acc)

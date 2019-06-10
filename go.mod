@@ -35,4 +35,6 @@ require (
 	google.golang.org/genproto v0.0.0-20190522204451-c2c4e71fbf69 // indirect
 )
 
+replace github.com/cosmos/cosmos-sdk => ../cosmos-sdk
+
 replace golang.org/x/crypto => github.com/tendermint/crypto v0.0.0-20180820045704-3764759f34a5

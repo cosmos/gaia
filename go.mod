@@ -18,7 +18,7 @@ require (
 	github.com/pkg/errors v0.8.1
 	github.com/prometheus/common v0.4.1 // indirect
 	github.com/prometheus/procfs v0.0.0-20190523193104-a7aeb8df3389 // indirect
-	github.com/rakyll/statik v0.1.6
+	github.com/rakyll/statik v0.1.6 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a // indirect
 	github.com/snikch/goodman v0.0.0-20171125024755-10e37e294daa
 	github.com/spf13/afero v1.2.2 // indirect

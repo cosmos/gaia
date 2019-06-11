@@ -190,8 +190,8 @@ func InitTestnet(config *tmconfig.Config, cdc *codec.Codec, mbm module.BasicMana
 			return err
 		}
 
-		accTokens := sdk.TokensFromTendermintPower(1000)
-		accStakingTokens := sdk.TokensFromTendermintPower(500)
+		accTokens := sdk.TokensFromConsensusPower(1000)
+		accStakingTokens := sdk.TokensFromConsensusPower(500)
 		accs = append(accs, genaccounts.GenesisAccount{
 			Address: addr,
 			Coins: sdk.Coins{
@@ -200,7 +200,7 @@ func InitTestnet(config *tmconfig.Config, cdc *codec.Codec, mbm module.BasicMana
 			},
 		})
 
-		valTokens := sdk.TokensFromTendermintPower(100)
+		valTokens := sdk.TokensFromConsensusPower(100)
 		msg := staking.NewMsgCreateValidator(
 			sdk.ValAddress(addr),
 			valPubKeys[i],

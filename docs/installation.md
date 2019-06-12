@@ -21,15 +21,6 @@ source ~/.bash_profile
 
 Next, let's install the latest version of Gaia. Make sure you `git checkout` the correct [released version](https://github.com/cosmos/gaia/releases).
 
-::: warning
-For the mainnet, make sure your version is greater than `v0.33.0`
-:::
-
-::: warning
-Older releases up to 0.34.x are available from the [Cosmos SDK releases page](https://github.com/cosmos/cosmos-sdk/releases).
-::: 
-
-
 ```bash
 mkdir -p $GOPATH/src/github.com/cosmos
 cd $GOPATH/src/github.com/cosmos
@@ -37,7 +28,7 @@ git clone -b <latest-release-tag> https://github.com/cosmos/gaia
 cd gaia && make install
 ```
 
-> *NOTE*: If you have issues at this step, please check that you have the latest stable version of GO installed.
+> _NOTE_: If you have issues at this step, please check that you have the latest stable version of GO installed.
 
 That will install the `gaiad` and `gaiacli` binaries. Verify that everything is OK:
 
@@ -79,4 +70,4 @@ To test any changes made in the SDK or Tendermint, a `replace` clause needs to b
 
 ### Next
 
-Now you can [join the mainnet](./join-mainnet.md), [the public testnet](./join-testnet.md) or [create you own  testnet](./deploy-testnet.md)
+Now you can [join the mainnet](./join-mainnet.md), [the public testnet](./join-testnet.md) or [create you own testnet](./deploy-testnet.md)

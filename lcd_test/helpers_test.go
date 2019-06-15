@@ -9,20 +9,17 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/spf13/viper"
-	"github.com/stretchr/testify/require"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	clientkeys "github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
-	clienttx "github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys"
 	crkeys "github.com/cosmos/cosmos-sdk/crypto/keys"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
+	authcutils "github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	bankrest "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
 	distrrest "github.com/cosmos/cosmos-sdk/x/distribution/client/rest"
 	"github.com/cosmos/cosmos-sdk/x/gov"
@@ -34,7 +31,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingrest "github.com/cosmos/cosmos-sdk/x/staking/client/rest"
 
+	"github.com/spf13/viper"
+	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/p2p"
+
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 )
 
@@ -268,10 +268,11 @@ func deleteKey(t *testing.T, port, name, password string) {
 func getAccount(t *testing.T, port string, addr sdk.AccAddress) auth.Account {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/auth/accounts/%s", addr.String()), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
-	var acc auth.Account
-	err := cdc.UnmarshalJSON([]byte(body), &acc)
-	require.Nil(t, err)
-	return acc
+
+	var acc authrest.AccountWithHeight
+	require.Nil(t, cdc.UnmarshalJSON([]byte(body), &acc))
+
+	return acc.Account
 }
 
 // ----------------------------------------------------------------------
@@ -280,7 +281,7 @@ func getAccount(t *testing.T, port string, addr sdk.AccAddress) auth.Account {
 
 // POST /tx/broadcast Send a signed Tx
 func doBroadcast(t *testing.T, port string, tx auth.StdTx) (*http.Response, string) {
-	txReq := clienttx.BroadcastReq{Tx: tx, Mode: "block"}
+	txReq := authrest.BroadcastReq{Tx: tx, Mode: "block"}
 
 	req, err := cdc.MarshalJSON(txReq)
 	require.Nil(t, err)
@@ -409,7 +410,7 @@ func signAndBroadcastGenTx(
 	require.Nil(t, err)
 
 	txbldr := auth.NewTxBuilder(
-		utils.GetTxEncoder(cdc),
+		authcutils.GetTxEncoder(cdc),
 		acc.GetAccountNumber(),
 		acc.GetSequence(),
 		tx.Fee.Gas,

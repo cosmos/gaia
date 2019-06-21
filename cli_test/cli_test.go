@@ -278,43 +278,6 @@ func TestGaiaCLISend(t *testing.T) {
 	f.Cleanup()
 }
 
-func TestGaiaCLIConfirmTx(t *testing.T) {
-	t.Parallel()
-	f := InitFixtures(t)
-
-	// start gaiad server
-	proc := f.GDStart()
-	defer proc.Stop(false)
-
-	// Save key addresses for later use
-	fooAddr := f.KeyAddress(keyFoo)
-	barAddr := f.KeyAddress(keyBar)
-
-	fooAcc := f.QueryAccount(fooAddr)
-	startTokens := sdk.TokensFromConsensusPower(50)
-	require.Equal(t, startTokens, fooAcc.GetCoins().AmountOf(denom))
-
-	// send some tokens from one account to the other
-	sendTokens := sdk.TokensFromConsensusPower(10)
-	f.txSendWithConfirm(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens), "Y")
-	tests.WaitForNextNBlocksTM(1, f.Port)
-
-	// ensure account balances match expected
-	barAcc := f.QueryAccount(barAddr)
-	require.Equal(t, sendTokens, barAcc.GetCoins().AmountOf(denom))
-
-	// send some tokens from one account to the other (cancelling confirmation)
-	f.txSendWithConfirm(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens), "n")
-	tests.WaitForNextNBlocksTM(1, f.Port)
-
-	// ensure account balances match expected
-	barAcc = f.QueryAccount(barAddr)
-	require.Equal(t, sendTokens, barAcc.GetCoins().AmountOf(denom))
-
-	// Cleanup testing directories
-	f.Cleanup()
-}
-
 func TestGaiaCLIGasAuto(t *testing.T) {
 	t.Parallel()
 	f := InitFixtures(t)

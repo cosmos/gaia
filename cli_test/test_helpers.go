@@ -313,14 +313,6 @@ func (f *Fixtures) TxSend(from string, to sdk.AccAddress, amount sdk.Coin, flags
 	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), client.DefaultKeyPass)
 }
 
-func (f *Fixtures) txSendWithConfirm(
-	from string, to sdk.AccAddress, amount sdk.Coin, confirm string, flags ...string,
-) (bool, string, string) {
-
-	cmd := fmt.Sprintf("%s tx send %s %s %s %v", f.GaiacliBinary, from, to, amount, f.Flags())
-	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), confirm, client.DefaultKeyPass)
-}
-
 // TxSign is gaiacli tx sign
 func (f *Fixtures) TxSign(signer, fileName string, flags ...string) (bool, string, string) {
 	cmd := fmt.Sprintf("%s tx sign %v --from=%s %v", f.GaiacliBinary, f.Flags(), signer, fileName)

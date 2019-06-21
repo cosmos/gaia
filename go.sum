@@ -43,6 +43,8 @@ github.com/cosmos/cosmos-sdk v0.28.2-0.20190615141739-ac2e765607a6 h1:PI7DItlX43
 github.com/cosmos/cosmos-sdk v0.28.2-0.20190615141739-ac2e765607a6/go.mod h1:MvaJDmjgAK7X1rTnpk8+c6tUFfIZ++iuNCp2sUWzprM=
 github.com/cosmos/cosmos-sdk v0.28.2-0.20190620160755-e5eba246e8bd h1:soTgNsisN8hCyeIbFtTDauvcDchG/am03UviKFgzqFw=
 github.com/cosmos/cosmos-sdk v0.28.2-0.20190620160755-e5eba246e8bd/go.mod h1:ILFjsOcobUbX47hQColTeCQv5ubSdMosxMOy3Nn+Qi8=
+github.com/cosmos/cosmos-sdk v0.28.2-0.20190621120424-861ea2b59e1b h1:rBlGWHoG/uhcWxlBroB8EvV+Dl5pM3ZlVBu087slzdE=
+github.com/cosmos/cosmos-sdk v0.28.2-0.20190621120424-861ea2b59e1b/go.mod h1:i4rMGboIfmgmZHGxxo6ceiHuVMwN9EVgObhoKKXQdBI=
 github.com/cosmos/cosmos-sdk v0.35.0 h1:EPeie1aKHwnXtTzKggvabG7aAPN+DDmju2xquvjFwao=
 github.com/cosmos/cosmos-sdk v0.35.0/go.mod h1:ruF+G4D7hRf34uzZQvf/SIja9fsIThU5D7GirwTMQ9I=
 github.com/cosmos/go-bip39 v0.0.0-20180618194314-52158e4697b8/go.mod h1:tSxLoYXyBmiFeKpvmq4dzayMdCjCnu8uqmCysIGBT2Y=
@@ -242,6 +244,8 @@ github.com/tendermint/tendermint v0.31.5 h1:vTet8tCq3B9/J9Yo11dNZ8pOB7NtSy++bVSf
 github.com/tendermint/tendermint v0.31.5/go.mod h1:ymcPyWblXCplCPQjbOYbrF1fWnpslATMVqiGgWbZrlc=
 github.com/tendermint/tendermint v0.32.0-dev0 h1:/LGvt1VyRwM9IY1MuHlRM+/uP6i+TjYTczY6o/0/EEs=
 github.com/tendermint/tendermint v0.32.0-dev0/go.mod h1:gmUQxIhqaKyt51CkAIadahUVDVwQpFMKPJT64Q1qtuA=
+github.com/tendermint/tendermint v0.32.0-dev1 h1:WuZJVtfehwKITTltI1r3u0NHDN5dj0CuuARDsyJhs8o=
+github.com/tendermint/tendermint v0.32.0-dev1/go.mod h1:gmUQxIhqaKyt51CkAIadahUVDVwQpFMKPJT64Q1qtuA=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/ugorji/go v1.1.4/go.mod h1:uQMGLiO92mf5W77hV/PUCpI3pbzQx3CRekS0kk+RGrc=
 github.com/ugorji/go/codec v0.0.0-20181204163529-d75b2dcb6bc8/go.mod h1:VFNgLljTbGfSG7qAOspJ7OScBnGdDN/yBr0sguwnwf0=
@@ -250,6 +254,7 @@ github.com/xordataexchange/crypt v0.0.3-0.20170626215501-b2862e3d0a77/go.mod h1:
 github.com/zondax/hid v0.9.0 h1:eiT3P6vNxAEVxXMw66eZUAAnU2zD33JBkfG/EnfAKl8=
 github.com/zondax/hid v0.9.0/go.mod h1:l5wttcP0jwtdLjqjMMWFVEE7d1zO0jvSPA9OPZxWpEM=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
+go.etcd.io/bbolt v1.3.3/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.uber.org/atomic v1.4.0/go.mod h1:gD2HeocX3+yG+ygLZcrzQJaqmWj9AIm7n08wl/qW/PE=
 go.uber.org/multierr v1.1.0/go.mod h1:wR5kodmAFQ0UK8QlbwjlSNy0Z68gJhDJUG5sjR94q/0=
 go.uber.org/zap v1.10.0/go.mod h1:vwi/ZaCAaUcBkycHslxD9B2zi4UTXhF60s6SWpuDF0Q=

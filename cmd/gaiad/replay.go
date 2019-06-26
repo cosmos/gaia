@@ -150,8 +150,7 @@ func replayTxs(rootDir string) error {
 
 	// Create executor
 	fmt.Fprintln(os.Stderr, "Creating block executor")
-	blockExec := tmsm.NewBlockExecutor(tmDB, ctx.Logger, proxyApp.Consensus(),
-		tmsm.MockMempool{}, tmsm.MockEvidencePool{})
+	blockExec := tmsm.NewBlockExecutor(tmDB, ctx.Logger, proxyApp.Consensus(), nil, tmsm.MockEvidencePool{})
 
 	// Create block store
 	fmt.Fprintln(os.Stderr, "Creating block store")

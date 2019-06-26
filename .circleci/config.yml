@@ -391,23 +391,26 @@ jobs:
       - store_artifacts:
           path: /go/src/github.com/cosmos/gaia/gaia-windows-res.yml
 
-  contract_tests:
-    <<: *linux_defaults
-    steps:
-      - attach_workspace:
-          at: /tmp/workspace
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: Get Node.js and test REST implementation against swagger documentation at  https://cosmos.network/rpc/
-          command: |
-            go get github.com/snikch/goodman/cmd/goodman
-            make build
-            make build-contract-tests-hooks
-            make setup-contract-tests-data
-            export PATH=~/.local/bin:$PATH
-            ./contrib/get_node.sh && make contract-tests
+# FIXME: The `setup-contract-tests-data` make target is broken as it completely
+# overrides the .gaiad directory.
+#
+#  contract_tests:
+#    <<: *linux_defaults
+#    steps:
+#      - attach_workspace:
+#          at: /tmp/workspace
+#      - checkout
+#      - setup_remote_docker:
+#          docker_layer_caching: true
+#      - run:
+#          name: Get Node.js and test REST implementation against swagger documentation at  https://cosmos.network/rpc/
+#          command: |
+#            go get github.com/snikch/goodman/cmd/goodman
+#            make build
+#            make build-contract-tests-hooks
+#            make setup-contract-tests-data
+#            export PATH=~/.local/bin:$PATH
+#            ./contrib/get_node.sh && make contract-tests
 
 workflows:
   version: 2
@@ -487,7 +490,6 @@ workflows:
                 - master
           requires:
             - setup_dependencies
-      - contract_tests:
-          requires:
-            - setup_dependencies
-
+#      - contract_tests:
+#          requires:
+#            - setup_dependencies

@@ -643,7 +643,7 @@ func (f *Fixtures) QuerySlashingParams() slashing.Params {
 //___________________________________________________________________________________
 // query distribution
 
-// QuerySigningInfo returns the signing info for a validator
+// QueryRewards returns the rewards of a delegator
 func (f *Fixtures) QueryRewards(delAddr sdk.AccAddress, flags ...string) distribution.QueryDelegatorTotalRewardsResponse {
 	cmd := fmt.Sprintf("%s query distr rewards %s %s", f.GaiacliBinary, delAddr, f.Flags())
 	res, errStr := tests.ExecuteT(f.T, cmd, "")
@@ -653,6 +653,32 @@ func (f *Fixtures) QueryRewards(delAddr sdk.AccAddress, flags ...string) distrib
 	err := cdc.UnmarshalJSON([]byte(res), &rewards)
 	require.NoError(f.T, err)
 	return rewards
+}
+
+//___________________________________________________________________________________
+// query supply
+
+// QueryTotalSupply returns the total supply of coins
+func (f *Fixtures) QueryTotalSupply(flags ...string) (totalSupply sdk.Coins) {
+	cmd := fmt.Sprintf("%s query supply total %s", f.GaiacliBinary, f.Flags())
+	res, errStr := tests.ExecuteT(f.T, cmd, "")
+	require.Empty(f.T, errStr)
+	cdc := app.MakeCodec()
+	err := cdc.UnmarshalJSON([]byte(res), &totalSupply)
+	require.NoError(f.T, err)
+	return totalSupply
+}
+
+// QueryTotalSupplyOf returns the total supply of a given coin denom
+func (f *Fixtures) QueryTotalSupplyOf(denom string, flags ...string) sdk.Int {
+	cmd := fmt.Sprintf("%s query supply total %s %s", denom, f.GaiacliBinary, f.Flags())
+	res, errStr := tests.ExecuteT(f.T, cmd, "")
+	require.Empty(f.T, errStr)
+	cdc := app.MakeCodec()
+	var supplyOf sdk.Int
+	err := cdc.UnmarshalJSON([]byte(res), &supplyOf)
+	require.NoError(f.T, err)
+	return supplyOf
 }
 
 //___________________________________________________________________________________

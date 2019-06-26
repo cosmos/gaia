@@ -145,6 +145,7 @@ func appStateRandomizedFn(
 	genGenesisAccounts(cdc, r, accs, genesisTimestamp, amount, numInitiallyBonded, genesisState)
 	genAuthGenesisState(cdc, r, appParams, genesisState)
 	genBankGenesisState(cdc, r, appParams, genesisState)
+	genSupplyGenesisState(cdc, amount, numInitiallyBonded, int64(len(accs)), genesisState)
 	genGovGenesisState(cdc, r, appParams, genesisState)
 	genMintGenesisState(cdc, r, appParams, genesisState)
 	genDistrGenesisState(cdc, r, appParams, genesisState)
@@ -255,6 +256,16 @@ func genBankGenesisState(cdc *codec.Codec, r *rand.Rand, ap simulation.AppParams
 
 	fmt.Printf("Selected randomly generated bank parameters:\n%s\n", codec.MustMarshalJSONIndent(cdc, bankGenesis))
 	genesisState[bank.ModuleName] = cdc.MustMarshalJSON(bankGenesis)
+}
+
+func genSupplyGenesisState(cdc *codec.Codec, amount, numInitiallyBonded, numAccs int64, genesisState map[string]json.RawMessage) {
+	totalSupply := sdk.NewInt(amount * (numAccs + numInitiallyBonded))
+	supplyGenesis := supply.NewGenesisState(
+		supply.NewSupply(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, totalSupply))),
+	)
+
+	fmt.Printf("Generated supply parameters:\n%s\n", codec.MustMarshalJSONIndent(cdc, supplyGenesis))
+	genesisState[supply.ModuleName] = cdc.MustMarshalJSON(supplyGenesis)
 }
 
 func genGenesisAccounts(

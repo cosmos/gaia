@@ -56,7 +56,7 @@ cd gaia/ && ./contrib/gitian-build.sh -s user@example.com all
 If you want to generate unsigned builds, just remove the option `-s` from the command line:
 
 ```
-./cmd/gaia/contrib/gitian-build.sh linux
+./contrib/gitian-build.sh linux
 ```
 
 At the end of the procedure, build results can be found in the `./gaia.sigs` directory:

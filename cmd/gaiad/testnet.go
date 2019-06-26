@@ -3,6 +3,7 @@ package main
 // DONTCOVER
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -54,7 +55,7 @@ Note, strict routability for addresses is turned off in the config file.
 Example:
 	gaiad testnet --v 4 --output-dir ./output --starting-ip-address 192.168.10.2
 	`,
-		RunE: func(_ *cobra.Command, _ []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			config := ctx.Config
 
 			outputDir := viper.GetString(flagOutputDir)
@@ -66,8 +67,8 @@ Example:
 			startingIPAddress := viper.GetString(flagStartingIPAddress)
 			numValidators := viper.GetInt(flagNumValidators)
 
-			return InitTestnet(config, cdc, mbm, genAccIterator, outputDir, chainID, minGasPrices,
-				nodeDirPrefix, nodeDaemonHome, nodeCLIHome, startingIPAddress, numValidators)
+			return InitTestnet(cmd, config, cdc, mbm, genAccIterator, outputDir, chainID,
+				minGasPrices, nodeDirPrefix, nodeDaemonHome, nodeCLIHome, startingIPAddress, numValidators)
 		},
 	}
 
@@ -94,8 +95,8 @@ Example:
 const nodeDirPerm = 0755
 
 // Initialize the testnet
-func InitTestnet(config *tmconfig.Config, cdc *codec.Codec, mbm module.BasicManager,
-	genAccIterator genutil.GenesisAccountsIterator,
+func InitTestnet(cmd *cobra.Command, config *tmconfig.Config, cdc *codec.Codec,
+	mbm module.BasicManager, genAccIterator genutil.GenesisAccountsIterator,
 	outputDir, chainID, minGasPrices, nodeDirPrefix, nodeDaemonHome,
 	nodeCLIHome, startingIPAddress string, numValidators int) error {
 
@@ -124,14 +125,12 @@ func InitTestnet(config *tmconfig.Config, cdc *codec.Codec, mbm module.BasicMana
 
 		config.SetRoot(nodeDir)
 
-		err := os.MkdirAll(filepath.Join(nodeDir, "config"), nodeDirPerm)
-		if err != nil {
+		if err := os.MkdirAll(filepath.Join(nodeDir, "config"), nodeDirPerm); err != nil {
 			_ = os.RemoveAll(outputDir)
 			return err
 		}
 
-		err = os.MkdirAll(clientDir, nodeDirPerm)
-		if err != nil {
+		if err := os.MkdirAll(clientDir, nodeDirPerm); err != nil {
 			_ = os.RemoveAll(outputDir)
 			return err
 		}
@@ -154,7 +153,7 @@ func InitTestnet(config *tmconfig.Config, cdc *codec.Codec, mbm module.BasicMana
 		memo := fmt.Sprintf("%s@%s:26656", nodeIDs[i], ip)
 		genFiles = append(genFiles, config.GenesisFile())
 
-		buf := client.BufferStdin()
+		buf := bufio.NewReader(cmd.InOrStdin())
 		prompt := fmt.Sprintf(
 			"Password for account '%s' (default %s):", nodeDirName, client.DefaultKeyPass,
 		)
@@ -185,8 +184,7 @@ func InitTestnet(config *tmconfig.Config, cdc *codec.Codec, mbm module.BasicMana
 		}
 
 		// save private key seed words
-		err = writeFile(fmt.Sprintf("%v.json", "key_seed"), clientDir, cliPrint)
-		if err != nil {
+		if err := writeFile(fmt.Sprintf("%v.json", "key_seed"), clientDir, cliPrint); err != nil {
 			return err
 		}
 
@@ -229,8 +227,7 @@ func InitTestnet(config *tmconfig.Config, cdc *codec.Codec, mbm module.BasicMana
 		}
 
 		// gather gentxs folder
-		err = writeFile(fmt.Sprintf("%v.json", nodeDirName), gentxsDir, txBytes)
-		if err != nil {
+		if err := writeFile(fmt.Sprintf("%v.json", nodeDirName), gentxsDir, txBytes); err != nil {
 			_ = os.RemoveAll(outputDir)
 			return err
 		}
@@ -253,7 +250,7 @@ func InitTestnet(config *tmconfig.Config, cdc *codec.Codec, mbm module.BasicMana
 		return err
 	}
 
-	fmt.Printf("Successfully initialized %d node directories\n", numValidators)
+	cmd.PrintErrf("Successfully initialized %d node directories\n", numValidators)
 	return nil
 }
 
@@ -324,8 +321,7 @@ func collectGenFiles(
 		genFile := config.GenesisFile()
 
 		// overwrite each validator's genesis file to have a canonical genesis time
-		err = genutil.ExportGenesisFileWithTime(genFile, chainID, nil, appState, genTime)
-		if err != nil {
+		if err := genutil.ExportGenesisFileWithTime(genFile, chainID, nil, appState, genTime); err != nil {
 			return err
 		}
 	}

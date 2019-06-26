@@ -490,7 +490,6 @@ workflows:
                 - master
           requires:
             - setup_dependencies
-      - contract_tests:
-          requires:
-            - setup_dependencies
-
+#      - contract_tests:
+#          requires:
+#            - setup_dependencies

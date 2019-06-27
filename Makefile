@@ -176,13 +176,13 @@ setup-contract-tests-data:
 	tar -xzf lcd_test/testdata/state.tar.gz -C /tmp/contract_tests/
 
 	# speed up tests by reducing timeouts
-	sed -i.bak -e "s/timeout_propose = .*/timeout_propose = \"200ms\"/g" /tmp/contract_tests/.gaiad/config/config.toml
-	sed -i.bak -e "s/timeout_propose_delta = .*/timeout_propose_delta = \"200ms\"/g" /tmp/contract_tests/.gaiad/config/config.toml
-	sed -i.bak -e "s/timeout_prevote = .*/timeout_prevote = \"500ms\"/g" /tmp/contract_tests/.gaiad/config/config.toml
-	sed -i.bak -e "s/timeout_prevote_delta = .*/timeout_prevote_delta = \"100ms\"/g" /tmp/contract_tests/.gaiad/config/config.toml
-	sed -i.bak -e "s/timeout_precommit = .*/timeout_precommit = \"200ms\"/g" /tmp/contract_tests/.gaiad/config/config.toml
-	sed -i.bak -e "s/timeout_precommit_delta = .*/timeout_precommit_delta = \"200ms\"/g" /tmp/contract_tests/.gaiad/config/config.toml
-	sed -i.bak -e "s/timeout_commit = .*/timeout_commit = \"500ms\"/g" /tmp/contract_tests/.gaiad/config/config.toml
+	sed -i.bak -e "s/^timeout_propose = .*/timeout_propose = \"200ms\"/g" /tmp/contract_tests/.gaiad/config/config.toml
+	sed -i.bak -e "s/^timeout_propose_delta = .*/timeout_propose_delta = \"200ms\"/g" /tmp/contract_tests/.gaiad/config/config.toml
+	sed -i.bak -e "s/^timeout_prevote = .*/timeout_prevote = \"500ms\"/g" /tmp/contract_tests/.gaiad/config/config.toml
+	sed -i.bak -e "s/^timeout_prevote_delta = .*/timeout_prevote_delta = \"100ms\"/g" /tmp/contract_tests/.gaiad/config/config.toml
+	sed -i.bak -e "s/^timeout_precommit = .*/timeout_precommit = \"200ms\"/g" /tmp/contract_tests/.gaiad/config/config.toml
+	sed -i.bak -e "s/^timeout_precommit_delta = .*/timeout_precommit_delta = \"200ms\"/g" /tmp/contract_tests/.gaiad/config/config.toml
+	sed -i.bak -e "s/^timeout_commit = .*/timeout_commit = \"500ms\"/g" /tmp/contract_tests/.gaiad/config/config.toml
 
 start-gaia: setup-contract-tests-data
 	./build/gaiad --home /tmp/contract_tests/.gaiad start &

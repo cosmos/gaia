@@ -391,6 +391,7 @@ jobs:
       - store_artifacts:
           path: /go/src/github.com/cosmos/gaia/gaia-windows-res.yml
 
+  # Get Node.js and test REST implementation against the swagger documentation of the SDK version used
   contract_tests:
     <<: *linux_defaults
     steps:
@@ -400,7 +401,7 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
-          name: Get Node.js and test REST implementation against swagger documentation at  https://cosmos.network/rpc/
+          name: Contract tests
           command: |
             go get github.com/snikch/goodman/cmd/goodman
             make build

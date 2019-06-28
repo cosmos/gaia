@@ -167,15 +167,16 @@ localnet-start: localnet-stop
 localnet-stop:
 	docker-compose down
 
+# clean any previous run of contract-tests, initialize gaiad and finally tune the configuration and override genesis to have predictable output
 setup-contract-tests-data:
 	echo 'Prepare data for the contract tests'
 	rm -rf /tmp/contract_tests ; \
 	mkdir /tmp/contract_tests ; \
 	cp "${GOPATH}/pkg/mod/${SDK_PACK}/client/lcd/swagger-ui/swagger.yaml" /tmp/contract_tests/swagger.yaml ; \
 	./build/gaiad init --home /tmp/contract_tests/.gaiad --chain-id lcd contract-tests ; \
-	tar -xzf lcd_test/testdata/state.tar.gz -C /tmp/contract_tests/
+	tar -xzf lcd_test/testdata/state.tar.gz -C /tmp/contract_tests/ # this will feed .gaiad and .gaiacli folders with static configuration and addresses
 
-	# speed up tests by reducing timeouts
+	# Tune config.toml in order to speed up tests, by reducing timeouts
 	sed -i.bak -e "s/^timeout_propose = .*/timeout_propose = \"200ms\"/g" /tmp/contract_tests/.gaiad/config/config.toml
 	sed -i.bak -e "s/^timeout_propose_delta = .*/timeout_propose_delta = \"200ms\"/g" /tmp/contract_tests/.gaiad/config/config.toml
 	sed -i.bak -e "s/^timeout_prevote = .*/timeout_prevote = \"500ms\"/g" /tmp/contract_tests/.gaiad/config/config.toml
@@ -184,17 +185,21 @@ setup-contract-tests-data:
 	sed -i.bak -e "s/^timeout_precommit_delta = .*/timeout_precommit_delta = \"200ms\"/g" /tmp/contract_tests/.gaiad/config/config.toml
 	sed -i.bak -e "s/^timeout_commit = .*/timeout_commit = \"500ms\"/g" /tmp/contract_tests/.gaiad/config/config.toml
 
+# start gaiad by using the custom home after having it set up
 start-gaia: setup-contract-tests-data
 	./build/gaiad --home /tmp/contract_tests/.gaiad start &
 	@sleep 2s
 
+# do a transaction, governance proposal, vote and unbound, should run after gaia has started against contract_test home folder
 setup-transactions: start-gaia
 	@bash ./lcd_test/testdata/setup.sh
 
+# Target made to be called by dredd, it runs the REST server that dredd will test against
 run-lcd-contract-tests:
 	@echo "Running Gaia LCD for contract tests"
 	./build/gaiacli rest-server --laddr tcp://0.0.0.0:8080 --home /tmp/contract_tests/.gaiacli --node http://localhost:26657 --chain-id lcd --trust-node true
 
+# launch dredd after having set it up, at completion dredd will kill the rest server while here we kill gaiad
 contract-tests: setup-transactions
 	@echo "Running Gaia LCD for contract tests"
 	dredd && pkill gaiad

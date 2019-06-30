@@ -19,9 +19,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
-	"github.com/cosmos/cosmos-sdk/x/auth/genaccounts"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
+	"github.com/cosmos/cosmos-sdk/x/genaccounts"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/staking"
@@ -223,12 +223,6 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	distrData.FeePool.CommunityPool = sdk.DecCoins{sdk.DecCoin{Denom: "test", Amount: sdk.NewDecFromInt(sdk.NewInt(10))}}
 	distrDataBz = cdc.MustMarshalJSON(distrData)
 	genesisState[distr.ModuleName] = distrDataBz
-
-	// now add the account tokens to the non-bonded pool
-	for _, acc := range accs {
-		accTokens := acc.Coins.AmountOf(sdk.DefaultBondDenom)
-		stakingData.Pool.NotBondedTokens = stakingData.Pool.NotBondedTokens.Add(accTokens)
-	}
 	genesisState[staking.ModuleName] = cdc.MustMarshalJSON(stakingData)
 	genesisState[genaccounts.ModuleName] = cdc.MustMarshalJSON(accs)
 

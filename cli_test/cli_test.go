@@ -449,10 +449,10 @@ func TestGaiaCLIQuerySupply(t *testing.T) {
 	cdc := app.MakeCodec()
 
 	genesisState := f.GenesisState()
-	totalSupply := sdk.Coins(sdk.DefaultBondDenom, sdk.NewInt(100000))
+	totalSupply := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100000)))
 	var supplyData supply.GenesisState
 	cdc.UnmarshalJSON(genesisState[supply.ModuleName], &supplyData)
-	supplyData.Supply.Inflation = inflationMin
+	supplyData.Supply.Total = totalSupply
 	supplyDataBz, err := cdc.MarshalJSON(supplyData)
 	require.NoError(t, err)
 	genesisState[supply.ModuleName] = supplyDataBz
@@ -468,7 +468,7 @@ func TestGaiaCLIQuerySupply(t *testing.T) {
 	defer proc.Stop(false)
 
 	require.Equal(t, totalSupply, f.QueryTotalSupply())
-	require.True(sdk.IntEq(t, sdk.NewInt(100000), f.QueryTotalSupplyOf(sdk.DefaultBondDenom))
+	require.True(sdk.IntEq(t, sdk.NewInt(100000), f.QueryTotalSupplyOf(sdk.DefaultBondDenom)))
 
 	f.Cleanup()
 }

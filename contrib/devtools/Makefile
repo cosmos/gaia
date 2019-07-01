@@ -69,7 +69,7 @@ $(CLOG):
 	$(call go_install,alessio,clog,1)
 
 $(RUNSIM):
-	go get github.com/cosmos/cosmos-sdk/contrib/runsim@v0.28.2-0.20190626164114-c898dac6a9fc
+	go get github.com/cosmos/cosmos-sdk/contrib/runsim@v0.28.2-0.20190701135316-b5cd01d1a80b
 	go install -mod=readonly github.com/cosmos/cosmos-sdk/contrib/runsim
 
 tools-clean:

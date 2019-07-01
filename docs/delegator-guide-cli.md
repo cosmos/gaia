@@ -72,32 +72,36 @@ At the core of every Cosmos account, there is a seed, which takes the form of a 
      Account 0                         Account 1                         Account 2
 
 +------------------+              +------------------+               +------------------+
-|                  |              |                  |               |                  |
-|    Address 0     |              |    Address 1     |               |    Address 2     |
-|        ^         |              |        ^         |               |        ^         |
-|        |         |              |        |         |               |        |         |
-|        |         |              |        |         |               |        |         |
-|        |         |              |        |         |               |        |         |
-|        +         |              |        +         |               |        +         |
-|  Public key 0    |              |  Public key 1    |               |  Public key 2    |
-|        ^         |              |        ^         |               |        ^         |
-|        |         |              |        |         |               |        |         |
-|        |         |              |        |         |               |        |         |
-|        |         |              |        |         |               |        |         |
-|        +         |              |        +         |               |        +         |
-|  Private key 0   |              |  Private key 1   |               |  Private key 2   |
-|        ^         |              |        ^         |               |        ^         |
+|---------------|--|---------------|--|---------------|
+| Address 0     |  | Address 1     |  | Address 2     |
+| ^             |  | ^             |  | ^             |
+|               |  |               |  | |||           |
+|               |  |               |  | |||           |
+|               |  |               |  | |||           |
+| +             |  | +             |  | +             |
+| Public key 0  |  | Public key 1  |  | Public key 2  |
+| ^             |  | ^             |  | ^             |
+|               |  |               |  | |||           |
+|               |  |               |  | |||           |
+|               |  |               |  | |||           |
+| +             |  | +             |  | +             |
+| Private key 0 |  | Private key 1 |  | Private key 2 |
+| ^             |  | ^             |  | ^             |
+|               |  |               |  |               ||
 +------------------+              +------------------+               +------------------+
-         |                                 |                                  |
-         |                                 |                                  |
-         |                                 |                                  |
+|--|--|
+|  |  |
+|  |  |
+|  |  ||
          +--------------------------------------------------------------------+
-                                           |
-                                           |
+||
+||
+|||
                                  +---------+---------+
-                                 |                   |
-                                 |  Mnemonic (Seed)  |
-                                 |                   |
+|-----------------|
+| Mnemonic (Seed) |
+|                 |
+|                 ||
                                  +-------------------+
 ```
 
@@ -314,7 +318,7 @@ gaiacli query staking delegations <delegatorAddress>
 gaiacli query staking delegation <delegatorAddress> <validatorAddress>
 
 // query the rewards of a delegator given a delegator address (e.g. cosmos10snjt8dmpr5my0h76xj48ty80uzwhraqalu4eg)
-gaiacli query distr rewards <delegatorAddress> 
+gaiacli query distribution rewards <delegatorAddress> 
 
 // query all proposals currently open for depositing
 gaiacli query gov proposals --status deposit_period
@@ -408,7 +412,7 @@ gaiacli tx staking redelegate <srcValidatorAddress> <destValidatorAddress> <amou
 // Withdraw all rewards
 // ex value for flag: <gasPrice>=0.025uatom
 
-gaiacli tx distr withdraw-all-rewards --from <delegatorKeyName> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice>
+gaiacli tx distribution withdraw-all-rewards --from <delegatorKeyName> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice>
 
 
 // Unbond a certain amount of Atoms from a given validator 

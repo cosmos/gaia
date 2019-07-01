@@ -680,7 +680,7 @@ gaiacli query gov param deposit
 查询当前的分配参数：
 
 ```bash
-gaiacli query distr params
+gaiacli query distribution params
 ```
 
 #### 查询
@@ -688,7 +688,7 @@ gaiacli query distr params
 查询当前未结算的（未提取）的奖励：
 
 ```bash
-gaiacli query distr outstanding-rewards
+gaiacli query distribution outstanding-rewards
 ```
 
 #### 查询验证人佣金
@@ -696,7 +696,7 @@ gaiacli query distr outstanding-rewards
 查询对一个验证人的未结算的佣金：
 
 ```bash
-gaiacli query distr commission <validator_address>
+gaiacli query distribution commission <validator_address>
 ```
 
 #### 查询验证人的削减处罚
@@ -704,7 +704,7 @@ gaiacli query distr commission <validator_address>
 查询一个验证人的处罚历史记录：
 
 ```bash
-gaiacli query distr slashes <validator_address> <start_height> <end_height>
+gaiacli query distribution slashes <validator_address> <start_height> <end_height>
 ```
 
 #### 查询委托人奖励
@@ -712,7 +712,7 @@ gaiacli query distr slashes <validator_address> <start_height> <end_height>
 查询某笔委托当前的奖励（如果要取回）：
 
 ```bash
-gaiacli query distr rewards <delegator_address> <validator_address>
+gaiacli query distribution rewards <delegator_address> <validator_address>
 ```
 
 #### 查询所有的委托人奖励
@@ -720,7 +720,7 @@ gaiacli query distr rewards <delegator_address> <validator_address>
 要查询委托人的所有当前奖励（如果要取回），请运行：
 
 ```bash
-gaiacli query distr rewards <delegator_address>
+gaiacli query distribution rewards <delegator_address>
 ```
 
 ### 多签交易

@@ -461,6 +461,7 @@ func TestGaiaCLIQuerySupply(t *testing.T) {
 	genDoc, err := tmtypes.GenesisDocFromFile(genFile)
 	require.NoError(t, err)
 	genDoc.AppState, err = cdc.MarshalJSON(genesisState)
+	require.NoError(t, err)
 	require.NoError(t, genDoc.SaveAs(genFile))
 
 	// start gaiad server

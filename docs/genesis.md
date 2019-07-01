@@ -201,10 +201,10 @@ Let us break down the parameters:
 
 ### Distribution
 
-The `distr` module handles the logic of distribution block provisions and fees to validators and delegators. The `distr` section in the genesis file looks like the follwing:
+The `distribution` module handles the logic of distribution block provisions and fees to validators and delegators. The `distribution` section in the genesis file looks like the follwing:
 
 ```json
-    "distr": {
+    "distribution": {
       "fee_pool": {
         "community_pool": null
       },
@@ -235,8 +235,8 @@ Let us break down the parameters:
 - `previous_proposer`: Proposer of the previous block. Set to `""` if genesis was not exported from previous state.
 - `outstanding_rewards`: Outstanding (un-withdrawn) rewards. Set to `null` if genesis was not exported from previous state.
 - `validator_accumulated_commission`: Outstanding (un-withdrawn) commission of validators. Set to `null` if genesis was not exported from previous state.
-- `validator_historical_rewards`: Set of information related to the historical rewards of validators and used by the `distr` module for various computation. Set to `null` if genesis was not exported from previous state. 
-- `validators_current_rewards`: Set of information related to the current rewards of validators and used by the `distr` module for various computation. Set to `null` if genesis was not exported from previous state.
+- `validator_historical_rewards`: Set of information related to the historical rewards of validators and used by the `distribution` module for various computation. Set to `null` if genesis was not exported from previous state. 
+- `validators_current_rewards`: Set of information related to the current rewards of validators and used by the `distribution` module for various computation. Set to `null` if genesis was not exported from previous state.
 - `delegator_starting_infos`: Tracks the previous validator period, the delegation's amount of staking token, and the creation height (to check later on if any slashes have occurred). Set to `null` if genesis was not exported from previous state.
 - `validator_slash_events`: Set of information related to the past slashing of validators. Set to `null` if genesis was not exported from previous state.
 

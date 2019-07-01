@@ -610,7 +610,7 @@ gaiacli query gov param deposit
 현재 리워드 분배 파라미터 값을 조회하기 위해서는:
 
 ```bash
-gaiacli query distr params
+gaiacli query distribution params
 ```
 
 #### 수령되지 않은 리워드를 받기
@@ -618,7 +618,7 @@ gaiacli query distr params
 수령하지 않은 리워드를 수령하기 위해서는:
 
 ```bash
-gaiacli query distr outstanding-rewards
+gaiacli query distribution outstanding-rewards
 ```
 
 #### 검증인 커미션 조회
@@ -626,7 +626,7 @@ gaiacli query distr outstanding-rewards
 특정 검증인의 커미션을 조회하기 위해서는:
 
 ```bash
-gaiacli query distr commission <validator_address(검증인 주소)>
+gaiacli query distribution commission <validator_address(검증인 주소)>
 ```
 
 #### 검증인 슬래싱 조회
@@ -634,7 +634,7 @@ gaiacli query distr commission <validator_address(검증인 주소)>
 특정 검증인의 슬래싱 기록을 조회하기 위해서는:
 
 ```bash
-gaiacli query distr slashes <validator_address(검증인 주소)> <start_height(시작 블록 높이)> <end_height(마지막 블록 높이)>
+gaiacli query distribution slashes <validator_address(검증인 주소)> <start_height(시작 블록 높이)> <end_height(마지막 블록 높이)>
 ```
 
 #### 특정 검증인에서 수령되지 않은 리워드 조회
@@ -642,7 +642,7 @@ gaiacli query distr slashes <validator_address(검증인 주소)> <start_height(
 위임자의 특정 검증인에서 발생된 미수령 리워드를 조회하기 위해서는:
 
 ```bash
-gaiacli query distr rewards <delegator_address(위임자 주소)> <validator_address(검증인 주소)>
+gaiacli query distribution rewards <delegator_address(위임자 주소)> <validator_address(검증인 주소)>
 ```
 
 #### 위임자의 수령 대기중인 모든 리워드 조회
@@ -650,7 +650,7 @@ gaiacli query distr rewards <delegator_address(위임자 주소)> <validator_add
 위임자의 모든 수령 대기 리워드를 조회하기 위해서는:
 
 ```bash
-gaiacli query distr rewards <delegator_address(위임자 주소)>
+gaiacli query distribution rewards <delegator_address(위임자 주소)>
 ```
 
 ### 멀티시그 트랜잭션

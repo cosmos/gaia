@@ -64,32 +64,36 @@
         账户 0                            账户 1                              账户 2
 
 +------------------+              +------------------+               +------------------+
-|                  |              |                  |               |                  |
-|       地址 0      |              |      地址 1      |               |       地址 2      |
-|        ^         |              |        ^         |               |        ^         |
-|        |         |              |        |         |               |        |         |
-|        |         |              |        |         |               |        |         |
-|        |         |              |        |         |               |        |         |
-|        +         |              |        +         |               |        +         |
-|       公钥 0      |              |      公钥 1      |               |       公钥 2      |
-|        ^         |              |        ^         |               |        ^         |
-|        |         |              |        |         |               |        |         |
-|        |         |              |        |         |               |        |         |
-|        |         |              |        |         |               |        |         |
-|        +         |              |        +         |               |        +         |
-|       私钥 0      |              |      私钥 1      |               |       私钥 2      |
-|        ^         |              |        ^         |               |        ^         |
+|--------|--|--------|--|--------|
+| 地址 0 |  | 地址 1 |  | 地址 2 |
+| ^      |  | ^      |  | ^      |
+|        |  |        |  | |||    |
+|        |  |        |  | |||    |
+|        |  |        |  | |||    |
+| +      |  | +      |  | +      |
+| 公钥 0 |  | 公钥 1 |  | 公钥 2 |
+| ^      |  | ^      |  | ^      |
+|        |  |        |  | |||    |
+|        |  |        |  | |||    |
+|        |  |        |  | |||    |
+| +      |  | +      |  | +      |
+| 私钥 0 |  | 私钥 1 |  | 私钥 2 |
+| ^      |  | ^      |  | ^      |
+|        |  |        |  |        ||
 +------------------+              +------------------+               +------------------+
-         |                                 |                                  |
-         |                                 |                                  |
-         |                                 |                                  |
+|--|--|
+|  |  |
+|  |  |
+|  |  ||
          +--------------------------------------------------------------------+
-                                           |
-                                           |
+||
+||
+|||
                                  +---------+---------+
-                                 |                   |
-                                 |  助记词 (Seed)     |
-                                 |                   |
+|---------------|
+| 助记词 (Seed) |
+|               |
+|               ||
                                  +-------------------+
 ```
 
@@ -347,7 +351,7 @@ gaiacli query staking delegations <delegatorAddress>
 gaiacli query staking delegation <delegatorAddress> <validatorAddress>
 
 // 查询一个指定地址的委托人(e.g. cosmos10snjt8dmpr5my0h76xj48ty80uzwhraqalu4eg)所能获得的奖励情况
-gaiacli query distr rewards <delegatorAddress> 
+gaiacli query distribution rewards <delegatorAddress> 
 
 // 查询所有现在正等待抵押的提案
 gaiacli query gov proposals --status deposit_period
@@ -407,7 +411,7 @@ gaiacli tx staking delegate <validatorAddress> <amountToBond> --from <delegatorK
 // 提取所有的奖励
 // 参数设定样例: <gasPrice>=1000uatom
 
-gaiacli tx distr withdraw-all-rewards --from <delegatorKeyName> --gas auto --gas-prices <gasPrice>
+gaiacli tx distribution withdraw-all-rewards --from <delegatorKeyName> --gas auto --gas-prices <gasPrice>
 
 
 // 向指定验证人申请解绑一定数量的Atom通证

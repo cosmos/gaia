@@ -733,7 +733,7 @@ gaiacli query gov param deposit
 To check the current distribution parameters, run:
 
 ```bash
-gaiacli query distr params
+gaiacli query distribution params
 ```
 
 #### Query distribution Community Pool
@@ -741,7 +741,7 @@ gaiacli query distr params
 To query all coins in the community pool which is under Governance control:
 
 ```bash
-gaiacli query distr community-pool
+gaiacli query distribution community-pool
 ```
 
 #### Query outstanding rewards
@@ -749,7 +749,7 @@ gaiacli query distr community-pool
 To check the current outstanding (un-withdrawn) rewards, run:
 
 ```bash
-gaiacli query distr outstanding-rewards
+gaiacli query distribution outstanding-rewards
 ```
 
 #### Query Validator Commission
@@ -757,7 +757,7 @@ gaiacli query distr outstanding-rewards
 To check the current outstanding commission for a validator, run:
 
 ```bash
-gaiacli query distr commission <validator_address>
+gaiacli query distribution commission <validator_address>
 ```
 
 #### Query Validator Slashes
@@ -765,7 +765,7 @@ gaiacli query distr commission <validator_address>
 To check historical slashes for a validator, run:
 
 ```bash
-gaiacli query distr slashes <validator_address> <start_height> <end_height>
+gaiacli query distribution slashes <validator_address> <start_height> <end_height>
 ```
 
 #### Query Delegator Rewards
@@ -773,7 +773,7 @@ gaiacli query distr slashes <validator_address> <start_height> <end_height>
 To check current rewards for a delegation (were they to be withdrawn), run:
 
 ```bash
-gaiacli query distr rewards <delegator_address> <validator_address>
+gaiacli query distribution rewards <delegator_address> <validator_address>
 ```
 
 #### Query All Delegator Rewards
@@ -781,7 +781,7 @@ gaiacli query distr rewards <delegator_address> <validator_address>
 To check all current rewards for a delegation (were they to be withdrawn), run:
 
 ```bash
-gaiacli query distr rewards <delegator_address>
+gaiacli query distribution rewards <delegator_address>
 ```
 
 ### Multisig Transactions

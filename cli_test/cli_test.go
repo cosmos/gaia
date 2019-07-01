@@ -28,6 +28,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genaccounts"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/mint"
+	"github.com/cosmos/cosmos-sdk/x/supply"
 )
 
 func TestGaiaCLIKeysAddMultisig(t *testing.T) {
@@ -438,6 +439,36 @@ func TestGaiaCLIQueryRewards(t *testing.T) {
 	fooAddr := f.KeyAddress(keyFoo)
 	rewards := f.QueryRewards(fooAddr)
 	require.Equal(t, 1, len(rewards.Rewards))
+
+	f.Cleanup()
+}
+
+func TestGaiaCLIQuerySupply(t *testing.T) {
+	t.Parallel()
+	f := InitFixtures(t)
+	cdc := app.MakeCodec()
+
+	genesisState := f.GenesisState()
+	totalSupply := sdk.Coins(sdk.DefaultBondDenom, sdk.NewInt(100000))
+	var supplyData supply.GenesisState
+	cdc.UnmarshalJSON(genesisState[supply.ModuleName], &supplyData)
+	supplyData.Supply.Inflation = inflationMin
+	supplyDataBz, err := cdc.MarshalJSON(supplyData)
+	require.NoError(t, err)
+	genesisState[supply.ModuleName] = supplyDataBz
+
+	genFile := filepath.Join(f.GaiadHome, "config", "genesis.json")
+	genDoc, err := tmtypes.GenesisDocFromFile(genFile)
+	require.NoError(t, err)
+	genDoc.AppState, err = cdc.MarshalJSON(genesisState)
+	require.NoError(t, genDoc.SaveAs(genFile))
+
+	// start gaiad server
+	proc := f.GDStart()
+	defer proc.Stop(false)
+
+	require.Equal(t, totalSupply, f.QueryTotalSupply())
+	require.True(sdk.IntEq(t, sdk.NewInt(100000), f.QueryTotalSupplyOf(sdk.DefaultBondDenom))
 
 	f.Cleanup()
 }

@@ -265,14 +265,12 @@ func deleteKey(t *testing.T, port, name, password string) {
 }
 
 // GET /auth/accounts/{address} Get the account information on blockchain
-func getAccount(t *testing.T, port string, addr sdk.AccAddress) auth.Account {
+func getAccount(t *testing.T, port string, addr sdk.AccAddress) (acc auth.Account) {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/auth/accounts/%s", addr.String()), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
-
-	var acc authrest.AccountWithHeight
 	require.Nil(t, cdc.UnmarshalJSON([]byte(body), &acc))
 
-	return acc.Account
+	return acc
 }
 
 // ----------------------------------------------------------------------

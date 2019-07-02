@@ -4,13 +4,14 @@ go 1.12
 
 require (
 	cloud.google.com/go v0.41.0 // indirect
+	github.com/aws/aws-sdk-go v1.20.13 // indirect
 	github.com/btcsuite/btcd v0.0.0-20190629003639-c26ffa870fd8 // indirect
 	github.com/btcsuite/goleveldb v1.0.0 // indirect
 	github.com/coreos/bbolt v1.3.3 // indirect
 	github.com/coreos/etcd v3.3.13+incompatible // indirect
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/coreos/go-systemd v0.0.0-20190620071333-e64a0ec8b42a // indirect
-	github.com/cosmos/cosmos-sdk v0.28.2-0.20190702162413-179476d6b0a4
+	github.com/cosmos/cosmos-sdk v0.28.2-0.20190702171630-ef7e266c6fe0
 	github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d // indirect
 	github.com/etcd-io/bbolt v1.3.3 // indirect
 	github.com/go-kit/kit v0.9.0 // indirect

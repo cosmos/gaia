@@ -1143,7 +1143,7 @@ func TestAccountBalanceQuery(t *testing.T) {
 	// empty account
 	res, body := Request(t, port, "GET", fmt.Sprintf("/auth/accounts/%s", someFakeAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
-	require.Contains(t, body, `"type":"auth/Account"`)
+	require.Contains(t, body, `"type":"cosmos-sdk/Account"`)
 
 	// empty account balance
 	res, body = Request(t, port, "GET", fmt.Sprintf("/bank/balances/%s", someFakeAddr), nil)

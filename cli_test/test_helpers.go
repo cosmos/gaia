@@ -45,16 +45,23 @@ const (
 )
 
 var (
-	startCoins = sdk.Coins{
-		sdk.NewCoin(feeDenom, sdk.TokensFromConsensusPower(1000000)),
+	totalCoins = sdk.NewCoins(
+		sdk.NewCoin(fee2Denom, sdk.TokensFromConsensusPower(2000000)),
+		sdk.NewCoin(feeDenom, sdk.TokensFromConsensusPower(2000000)),
+		sdk.NewCoin(fooDenom, sdk.TokensFromConsensusPower(2000)),
+		sdk.NewCoin(denom, sdk.TokensFromConsensusPower(300).Add(sdk.NewInt(12))), // add coins from inflation
+	)
+
+	startCoins = sdk.NewCoins(
 		sdk.NewCoin(fee2Denom, sdk.TokensFromConsensusPower(1000000)),
+		sdk.NewCoin(feeDenom, sdk.TokensFromConsensusPower(1000000)),
 		sdk.NewCoin(fooDenom, sdk.TokensFromConsensusPower(1000)),
 		sdk.NewCoin(denom, sdk.TokensFromConsensusPower(150)),
-	}
+	)
 
-	vestingCoins = sdk.Coins{
+	vestingCoins = sdk.NewCoins(
 		sdk.NewCoin(feeDenom, sdk.TokensFromConsensusPower(500000)),
-	}
+	)
 )
 
 //___________________________________________________________________________________
@@ -671,7 +678,7 @@ func (f *Fixtures) QueryTotalSupply(flags ...string) (totalSupply sdk.Coins) {
 
 // QueryTotalSupplyOf returns the total supply of a given coin denom
 func (f *Fixtures) QueryTotalSupplyOf(denom string, flags ...string) sdk.Int {
-	cmd := fmt.Sprintf("%s query supply total %s %s", denom, f.GaiacliBinary, f.Flags())
+	cmd := fmt.Sprintf("%s query supply total %s %s", f.GaiacliBinary, denom, f.Flags())
 	res, errStr := tests.ExecuteT(f.T, cmd, "")
 	require.Empty(f.T, errStr)
 	cdc := app.MakeCodec()

@@ -11,7 +11,7 @@ require (
 	github.com/coreos/etcd v3.3.13+incompatible // indirect
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/coreos/go-systemd v0.0.0-20190620071333-e64a0ec8b42a // indirect
-	github.com/cosmos/cosmos-sdk v0.28.2-0.20190703094427-b0a359c8f017
+	github.com/cosmos/cosmos-sdk v0.28.2-0.20190703154604-aab2cbcd436c
 	github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d // indirect
 	github.com/etcd-io/bbolt v1.3.3 // indirect
 	github.com/go-kit/kit v0.9.0 // indirect
@@ -50,7 +50,7 @@ require (
 	github.com/ugorji/go v1.1.7 // indirect
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4 // indirect
 	golang.org/x/exp v0.0.0-20190627132806-fd42eb6b336f // indirect
-	golang.org/x/image v0.0.0-20190622003408-7e034cad6442 // indirect
+	golang.org/x/image v0.0.0-20190703141733-d6a02ce849c9 // indirect
 	golang.org/x/mobile v0.0.0-20190607214518-6fa95d984e88 // indirect
 	golang.org/x/net v0.0.0-20190628185345-da137c7871d7 // indirect
 	golang.org/x/sys v0.0.0-20190626221950-04f50cda93cb // indirect

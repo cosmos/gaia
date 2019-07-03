@@ -25,6 +25,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+	"github.com/cosmos/cosmos-sdk/x/supply"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
@@ -151,6 +152,8 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	var genTxs []auth.StdTx
 	var accs []genaccounts.GenesisAccount
 
+	totalSupply := sdk.ZeroInt()
+
 	for i := 0; i < nValidators; i++ {
 		operPrivKey := secp256k1.GenPrivKey()
 		operAddr := operPrivKey.PubKey().Address()
@@ -162,6 +165,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 			power = 1
 		}
 		startTokens := sdk.TokensFromConsensusPower(power)
+		totalSupply = totalSupply.Add(startTokens)
 
 		msg := staking.NewMsgCreateValidator(
 			sdk.ValAddress(operAddr),
@@ -187,7 +191,9 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 
 		accAuth := auth.NewBaseAccountWithAddress(sdk.AccAddress(operAddr))
 		accTokens := sdk.TokensFromConsensusPower(150)
-		accAuth.Coins = sdk.Coins{sdk.NewCoin(sdk.DefaultBondDenom, accTokens)}
+		totalSupply = totalSupply.Add(accTokens)
+		
+		accAuth.Coins = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, accTokens))
 		accs = append(accs, genaccounts.NewGenesisAccount(&accAuth))
 	}
 
@@ -212,9 +218,19 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 		accAuth := auth.NewBaseAccountWithAddress(addr)
 		accTokens := sdk.TokensFromConsensusPower(100)
 		accAuth.Coins = sdk.Coins{sdk.NewCoin(sdk.DefaultBondDenom, accTokens)}
+		totalSupply = totalSupply.Add(accTokens)
 		acc := genaccounts.NewGenesisAccount(&accAuth)
 		accs = append(accs, acc)
 	}
+
+	// supply data
+	supplyDataBz := genesisState[supply.ModuleName]
+	var supplyData supply.GenesisState
+	cdc.MustUnmarshalJSON(supplyDataBz, &supplyData)
+	supplyData.Supply.Total = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, totalSupply))
+	supplyDataBz = cdc.MustMarshalJSON(supplyData)
+	genesisState[supply.ModuleName] = supplyDataBz
+
 
 	// distr data
 	distrDataBz := genesisState[distr.ModuleName]

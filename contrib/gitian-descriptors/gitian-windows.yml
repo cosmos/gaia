@@ -41,6 +41,7 @@ script: |
   fakeroot debian/rules build RUN_TESTS=false GOCACHE=/tmp/go-cache
   popd
 
+  export GOOS=windows
   export GOROOT=${BUILD_DIR}/go
   export GOPATH=${BUILD_DIR}/gopath
   mkdir -p ${GOPATH}/bin

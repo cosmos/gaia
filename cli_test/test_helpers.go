@@ -23,6 +23,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys"
 	"github.com/cosmos/cosmos-sdk/server"
+	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/tests"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -119,12 +120,12 @@ func (f Fixtures) GenesisFile() string {
 }
 
 // GenesisFile returns the application's genesis state
-func (f Fixtures) GenesisState() app.GenesisState {
+func (f Fixtures) GenesisState() simapp.GenesisState {
 	cdc := codec.New()
 	genDoc, err := tmtypes.GenesisDocFromFile(f.GenesisFile())
 	require.NoError(f.T, err)
 
-	var appState app.GenesisState
+	var appState simapp.GenesisState
 	require.NoError(f.T, cdc.UnmarshalJSON(genDoc.AppState, &appState))
 	return appState
 }

@@ -64,8 +64,39 @@ func getSimulateFromSeedInput(tb testing.TB, w io.Writer, app *GaiaApp) (
 	testing.TB, io.Writer, *baseapp.BaseApp, simulation.AppStateFn, int64,
 	simulation.WeightedOperations, sdk.Invariants, int, int, bool, bool, bool) {
 
-	return tb, w, app.BaseApp, simapp.AppStateFn, seed,
+	return tb, w, app.BaseApp, appStateFn, seed,
 		testAndRunTxs(app), invariants(app), numBlocks, blockSize, commit, lean, onOperation
+}
+
+func appStateFn(
+	r *rand.Rand, accs []simulation.Account, genesisTimestamp time.Time,
+) (appState json.RawMessage, simAccs []simulation.Account, chainID string) {
+
+	cdc := MakeCodec()
+
+	switch {
+	case paramsFile != "" && genesisFile != "":
+		panic("cannot provide both a genesis file and a params file")
+
+	case genesisFile != "":
+		appState, simAccs, chainID = simapp.AppStateFromGenesisFileFn(r, accs, genesisTimestamp)
+
+	case paramsFile != "":
+		appParams := make(simulation.AppParams)
+		bz, err := ioutil.ReadFile(paramsFile)
+		if err != nil {
+			panic(err)
+		}
+
+		cdc.MustUnmarshalJSON(bz, &appParams)
+		appState, simAccs, chainID = appStateRandomizedFn(r, accs, genesisTimestamp, appParams)
+
+	default:
+		appParams := make(simulation.AppParams)
+		appState, simAccs, chainID = appStateRandomizedFn(r, accs, genesisTimestamp, appParams)
+	}
+
+	return appState, simAccs, chainID
 }
 
 // TODO refactor out random initialization code to the modules
@@ -444,7 +475,7 @@ func TestAppImportExport(t *testing.T) {
 	newApp := NewGaiaApp(log.NewNopLogger(), newDB, nil, true, 0, fauxMerkleModeOpt)
 	require.Equal(t, "GaiaApp", newApp.Name())
 
-	var genesisState GenesisState
+	var genesisState simapp.GenesisState
 	err = app.cdc.UnmarshalJSON(appState, &genesisState)
 	if err != nil {
 		panic(err)
@@ -578,7 +609,7 @@ func TestAppStateDeterminism(t *testing.T) {
 
 			// Run randomized simulation
 			simulation.SimulateFromSeed(
-				t, os.Stdout, app.BaseApp, simapp.AppStateFn, seed,
+				t, os.Stdout, app.BaseApp, appStateFn, seed,
 				testAndRunTxs(app),
 				[]sdk.Invariant{},
 				50,
@@ -610,7 +641,7 @@ func BenchmarkInvariants(b *testing.B) {
 
 	// 2. Run parameterized simulation (w/o invariants)
 	_, err := simulation.SimulateFromSeed(
-		b, ioutil.Discard, app.BaseApp, simapp.AppStateFn, seed, testAndRunTxs(app),
+		b, ioutil.Discard, app.BaseApp, appStateFn, seed, testAndRunTxs(app),
 		[]sdk.Invariant{}, numBlocks, blockSize, commit, lean, onOperation,
 	)
 	if err != nil {

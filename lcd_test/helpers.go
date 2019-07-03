@@ -165,7 +165,6 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 			power = 1
 		}
 		startTokens := sdk.TokensFromConsensusPower(power)
-		totalSupply = totalSupply.Add(startTokens)
 
 		msg := staking.NewMsgCreateValidator(
 			sdk.ValAddress(operAddr),
@@ -192,7 +191,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 		accAuth := auth.NewBaseAccountWithAddress(sdk.AccAddress(operAddr))
 		accTokens := sdk.TokensFromConsensusPower(150)
 		totalSupply = totalSupply.Add(accTokens)
-		
+
 		accAuth.Coins = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, accTokens))
 		accs = append(accs, genaccounts.NewGenesisAccount(&accAuth))
 	}
@@ -230,7 +229,6 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	supplyData.Supply.Total = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, totalSupply))
 	supplyDataBz = cdc.MustMarshalJSON(supplyData)
 	genesisState[supply.ModuleName] = supplyDataBz
-
 
 	// distr data
 	distrDataBz := genesisState[distr.ModuleName]

@@ -15,6 +15,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	crkeys "github.com/cosmos/cosmos-sdk/crypto/keys"
 	"github.com/cosmos/cosmos-sdk/server"
+	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/tests"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -196,7 +197,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 		accs = append(accs, genaccounts.NewGenesisAccount(&accAuth))
 	}
 
-	genesisState := gapp.NewDefaultGenesisState()
+	genesisState := simapp.NewDefaultGenesisState()
 	genDoc.AppState, err = cdc.MarshalJSON(genesisState)
 	if err != nil {
 		return

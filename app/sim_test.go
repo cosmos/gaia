@@ -105,7 +105,7 @@ func appStateRandomizedFn(
 ) (json.RawMessage, []simulation.Account, string) {
 
 	cdc := MakeCodec()
-	genesisState := NewDefaultGenesisState()
+	genesisState := simapp.NewDefaultGenesisState()
 
 	var (
 		amount             int64

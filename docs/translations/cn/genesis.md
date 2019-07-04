@@ -313,7 +313,7 @@ The `slashing` module handles the logic to slash delegators if their validator m
 
 - `params`
   - `max_evidence_age`: 证据最长有效期，单位 **纳秒**。
-  - `signed_blocks_window`: 用于检验验证人节点可用性的滑动窗口，（单位***块*）。
+  - `signed_blocks_window`: 用于检验验证人节点可用性的滑动窗口，（单位**块**）。
   - `min_signed_per_window`: 在滑动窗口中预提交的数量少于此值，认为验证人节点可用性差。
   - `downtime_jail_duration`: 验证人节点因可用性差被关监狱后，在监狱中被关的时间（**纳秒**）。
   - `slash_fraction_double_sign`: 验证人节点双签时，需缴纳罚金占总委托数量的百分比。

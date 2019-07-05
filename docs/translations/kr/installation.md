@@ -23,11 +23,8 @@ source ~/.bash_profile
 다음은 최신 Gaia 버전을 설치하는 것입니다. 예시에서는 최신 스테이블 릴리즈가 포함되어있는 `master` 브랜치를 이용해 진행됩니다. 필요에 따라 `git checkout`을 통해 [최신 릴리즈](https://github.com/cosmos/cosmos-sdk/releases)가 설치되어있는지 확인하세요.
 
 ```bash
-mkdir -p $GOPATH/src/github.com/cosmos
-cd $GOPATH/src/github.com/cosmos
-git clone https://github.com/cosmos/cosmos-sdk
-cd cosmos-sdk && git checkout master
-make tools install
+git clone -b <latest-release-tag> https://github.com/cosmos/gaia
+cd gaia && make install
 ```
 
 > *참고*: 여기에서 문제가 발생한다면, Go의 최신 스테이블 버전이 설치되어있는지 확인하십시오.

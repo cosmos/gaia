@@ -45,7 +45,6 @@ mkfile_dir := $(shell cd $(shell dirname $(mkfile_path)); pwd)
 TOOLS_DESTDIR  ?= $(GOPATH)/bin
 
 GOLANGCI_LINT   = $(TOOLS_DESTDIR)/golangci-lint
-STATIK          = $(TOOLS_DESTDIR)/statik
 GOIMPORTS       = $(TOOLS_DESTDIR)/goimports
 CLOG            = $(TOOLS_DESTDIR)/clog
 RUNSIM          = $(TOOLS_DESTDIR)/runsim
@@ -53,14 +52,11 @@ RUNSIM          = $(TOOLS_DESTDIR)/runsim
 all: tools
 
 tools: tools-stamp
-tools-stamp: $(STATIK) $(GOIMPORTS) $(RUNSIM)
+tools-stamp: $(GOIMPORTS) $(RUNSIM)
 	touch $@
 
 $(GOLANGCI_LINT): $(mkfile_dir)/install-golangci-lint.sh
 	bash $(mkfile_dir)/install-golangci-lint.sh $(TOOLS_DESTDIR) $(GOLANGCI_LINT_VERSION) $(GOLANGCI_LINT_HASHSUM)
-
-$(STATIK):
-	$(call go_install,rakyll,statik,v0.1.5)
 
 $(GOIMPORTS):
 	go get golang.org/x/tools/cmd/goimports@v0.0.0-20190628034336-212fb13d595e
@@ -74,7 +70,7 @@ $(RUNSIM):
 golangci-lint: $(GOLANGCI_LINT)
 
 tools-clean:
-	rm -f $(STATIK) $(GOIMPORTS) $(CLOG) $(GOLANGCI_LINT)
+	rm -f $(GOIMPORTS) $(CLOG) $(GOLANGCI_LINT)
 	rm -f tools-stamp
 
 .PHONY: all tools tools-clean

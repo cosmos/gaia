@@ -27,11 +27,8 @@ Cosmos SDK需要安装**Go 1.12+**
 :::
 
 ```bash
-mkdir -p $GOPATH/src/github.com/cosmos
-cd $GOPATH/src/github.com/cosmos
-git clone https://github.com/cosmos/cosmos-sdk
-cd cosmos-sdk && git checkout <latest-release-tag>
-make tools install
+git clone -b <latest-release-tag> https://github.com/cosmos/gaia
+cd gaia && make install
 ```
 
 > *注意*: 如果在这一步中出现问题，请检查你是否安装的是Go的最新稳定版本。

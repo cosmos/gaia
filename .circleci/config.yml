@@ -50,16 +50,15 @@ jobs:
           keys:
             - go-mod-v1-{{ checksum "go.sum" }}
       - run:
-          name: tools
-          command: |
-            make tools TOOLS_DESTDIR=/tmp/workspace/bin
-      - run:
           name: binaries
           command: |
             export PATH=/tmp/workspace/bin:$PATH
-            go mod verify
             make go-mod-cache
             make install
+      - run:
+          name: tools
+          command: |
+            make tools TOOLS_DESTDIR=/tmp/workspace/bin
       - save_cache:
           key: go-mod-v1-{{ checksum "go.sum" }}
           paths:

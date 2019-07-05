@@ -134,7 +134,7 @@ check-cover:
 	@go test -mod=readonly -timeout 30m -race -coverprofile=coverage.txt -covermode=atomic -tags='ledger test_ledger_mock' ./...
 
 check-build: build
-	@go test -mod=readonly -p 4 `go list ./cli_test/...` -tags=cli_test
+	@go test -mod=readonly -p 4 `go list ./cli_test/...` -tags=cli_test -v
 
 
 lint: golangci-lint

@@ -3,10 +3,9 @@
 The gaia cli integration tests live in this folder. You can run the full suite by running:
 
 ```bash
-$ go test -mod=readonly -p 4 `go list ./cmd/gaia/cli_test/...` -tags=cli_test
-# OR!
-$ make test_cli
+go test -mod=readonly -p 4 `go list ./cli_test/...` -tags=cli_test
 ```
+
 > NOTE: While the full suite runs in parallel, some of the tests can take up to a minute to complete
 
 ### Test Structure
@@ -33,6 +32,7 @@ func TestMyNewCommand(t *testing.T) {
 ```
 
 This boilerplate above:
+
 - Ensures the tests run in parallel. Because the tests are calling out to `os/exec` for many operations these tests can take a long time to run.
 - Creates `.gaiad` and `.gaiacli` folders in a new temp folder.
 - Uses `gaiacli` to create 2 accounts for use in testing: `foo` and `bar`

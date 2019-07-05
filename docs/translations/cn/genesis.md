@@ -201,10 +201,10 @@ gaiad add-genesis-account <account-address> <amount><denom>
 
 ### 分配（Distribution）
 
-`distr`模块处理每个块中发给验证人和委托人的挖矿及手续费的分配逻辑。 创世文件中的`distr`部分如下所示：
+`distribution`模块处理每个块中发给验证人和委托人的挖矿及手续费的分配逻辑。 创世文件中的`distribution`部分如下所示：
 
 ```json
-    "distr": {
+    "distribution": {
       "fee_pool": {
         "community_pool": null
       },
@@ -235,8 +235,8 @@ gaiad add-genesis-account <account-address> <amount><denom>
 - `previous_proposer`: 上一个块的提议者，  如果没有从之前的状态导出，则设置为""。
 - `outstanding_rewards`: 未付（未提取）奖励。如果没有从之前的状态导出，设置为`null`。
 - `validator_accumulated_commission`: 未付（未提取）验证人佣金。如果没有从之前的状态导出，设置为`null`。
-- `validator_historical_rewards`: 验证人的历史奖励相关的信息，由`distr`模块用于各种计算。 如果没有从之前的状态导出，设置为`null`。
-- `validators_current_rewards`: 验证人的当前奖励相关的信息，由`distr`模块用于各种计算。 如果没有从之前的状态导出，设置为`null`。
+- `validator_historical_rewards`: 验证人的历史奖励相关的信息，由`distribution`模块用于各种计算。 如果没有从之前的状态导出，设置为`null`。
+- `validators_current_rewards`: 验证人的当前奖励相关的信息，由`distribution`模块用于各种计算。 如果没有从之前的状态导出，设置为`null`。
 - `delegator_starting_infos`: Tracks the previous validator period, the delegation's amount of staking token, and the creation height (to check later on if any slashes have occurred). 跟踪先前的验证人时期，委托的 token 数量和创建高度（稍后检查是否发生了需要惩罚的事件）。  如果没有从之前的状态导出，设置为`null`。
 - `validator_slash_events`: Set of information related to the past slashing of validators. Set to `null` if genesis was not exported from previous state. 过往验证人惩罚事件相关的信息集。 如果没有从之前的状态导出，设置为`null`。
 

@@ -57,6 +57,7 @@ jobs:
           name: binaries
           command: |
             export PATH=/tmp/workspace/bin:$PATH
+            go mod verify
             make go-mod-cache
             make install
       - save_cache:

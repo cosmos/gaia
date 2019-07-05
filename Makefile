@@ -137,8 +137,7 @@ check-build: build
 	@go test -mod=readonly -p 4 `go list ./cli_test/...` -tags=cli_test
 
 
-lint: ci-lint
-ci-lint:
+lint: golangci-lint
 	golangci-lint run
 	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" | xargs gofmt -d -s
 	go mod verify

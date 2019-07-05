@@ -50,11 +50,6 @@ jobs:
           keys:
             - go-mod-v1-{{ checksum "go.sum" }}
       - run:
-          name: tools
-          command: |
-            make tools TOOLS_DESTDIR=/tmp/workspace/bin
-            cp $GOPATH/bin/runsim /tmp/workspace/bin/
-      - run:
           name: binaries
           command: |
             export PATH=/tmp/workspace/bin:$PATH
@@ -64,27 +59,16 @@ jobs:
           key: go-mod-v1-{{ checksum "go.sum" }}
           paths:
             - "/go/pkg/mod"
+      - run:
+          name: tools
+          command: |
+            make tools TOOLS_DESTDIR=/tmp/workspace/bin
+            cp $GOPATH/bin/runsim /tmp/workspace/bin/
       - persist_to_workspace:
           root: /tmp/workspace
           paths:
             - bin
             - profiles
-
-  lint:
-    <<: *linux_defaults
-    parallelism: 1
-    steps:
-      - attach_workspace:
-          at: /tmp/workspace
-      - checkout
-      - restore_cache:
-          keys:
-            - go-mod-v1-{{ checksum "go.sum" }}
-      - run:
-          name: Lint source
-          command: |
-            export PATH=/tmp/workspace/bin:$PATH
-            make ci-lint
 
   integration_tests:
     <<: *linux_defaults
@@ -447,9 +431,6 @@ workflows:
             tags:
               only:
                 - /^v.*/
-      - lint:
-          requires:
-            - setup_dependencies
       - integration_tests:
           requires:
             - setup_dependencies

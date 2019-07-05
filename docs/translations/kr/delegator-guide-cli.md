@@ -43,7 +43,6 @@ CLI를 사용하는 위임자는 매우 실험적인 블록체인 기술이 사�
 
 모든 코스모스 계정에는 12개 또는 24개의 단어로 이루어진 '시드(Seed)'가 할당됩니다. 이 시드 단어(또는 시드 키)를 기반으로 다수의 코스모스 계정을 생성할 수 있습니다 (예를들어: 다수의 프라이빗 키/퍼블릭 키 쌍). 이런 형태의 월렛은 HD(Hierarchical deterministic) 월렛이라고 불립니다 (HD 월렛에 대한 자세한 정보는 [BIP32](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki)를 참고하세요).
 
-
 ```
         계정 0                             계정 1                              계정 2
 
@@ -76,6 +75,7 @@ CLI를 사용하는 위임자는 매우 실험적인 블록체인 기술이 사�
                                  |                   |
                                  +-------------------+
 ```
+
 특정 계좌에 보관된 자산은 프라이빗 키에 의해 관리됩니다. 이 프라이빗 키는 시드의 일방적 기능(one-way function)을 통해 생성됩니다. 프라이빗 키를 분실한 경우, 시드 키를 사용하여 프라이빗 키를 다시 복구하는 것이 가능합니다. 하지만 시드 키를 분실한 경우, 모든 프라이빗 키에 대한 사용권을 잃게 됩니다. 누군가 본인의 시드 키를 가진 경우, 해당 키와 연관된 모든 계정의 소유권을 가진 것과 동일합니다.
 
 ::: warning
@@ -277,7 +277,7 @@ gaiacli query delegations <위임자 주소(delegatorAddress)>
 gaiacli query delegations <위임자 주소(delegatorAddress)> <검증인 주소(validatorAddress)>
 
 // 위임자 주소로 (예시: cosmos10snjt8dmpr5my0h76xj48ty80uzwhraqalu4eg) 위임자 리워드 조회
-gaiacli query distr rewards <위임자 주소(delegatorAddress)> 
+gaiacli query distribution rewards <위임자 주소(delegatorAddress)> 
 
 // 예치금(deposit)을 대기중인 모든 프로포절 조회
 gaiacli query proposals --status deposit_period
@@ -340,7 +340,7 @@ gaiacli tx staking --amount <위임할 수량(amountToBond)> --validator <검증
 
 // 리워드 수령하기
 
-gaiacli tx distr withdraw-rewards --from <위임자 키 명칭(delegatorKeyName)>
+gaiacli tx distribution withdraw-rewards --from <위임자 키 명칭(delegatorKeyName)>
 ```
 
 ::: tip

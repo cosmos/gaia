@@ -30,7 +30,6 @@ import (
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
-	"github.com/cosmos/cosmos-sdk/x/staking"
 )
 
 const (
@@ -379,36 +378,6 @@ func TestTxs(t *testing.T) {
 	res, body = getTransactionRequest(t, port, "badtxhash")
 	require.True(t, strings.Contains(body, "encoding/hex"))
 	require.Equal(t, http.StatusInternalServerError, res.StatusCode)
-}
-
-func TestPoolParamsQuery(t *testing.T) {
-	kb, err := keys.NewKeyBaseFromDir(InitClientHome(""))
-	require.NoError(t, err)
-	addr, _, err := CreateAddr(name1, pw, kb)
-	require.NoError(t, err)
-	cleanup, _, _, port, err := InitializeLCD(1, []sdk.AccAddress{addr}, true)
-	require.NoError(t, err)
-	defer cleanup()
-
-	defaultParams := staking.DefaultParams()
-
-	params := getStakingParams(t, port)
-	require.True(t, defaultParams.Equal(params))
-
-	pool := getStakingPool(t, port)
-
-	initialPool := staking.InitialPool()
-	tokens := sdk.TokensFromConsensusPower(100)
-	freeTokens := sdk.TokensFromConsensusPower(50)
-	initialPool.NotBondedTokens = initialPool.NotBondedTokens.Add(tokens)
-	initialPool.BondedTokens = initialPool.BondedTokens.Add(tokens) // Delegate tx on GaiaAppGenState
-	initialPool.NotBondedTokens = initialPool.NotBondedTokens.Add(freeTokens)
-
-	require.Equal(t, initialPool.BondedTokens, pool.BondedTokens)
-
-	//TODO include this test once REST for distribution is online, need to include distribution tokens from inflation
-	//     for this equality to make sense
-	//require.Equal(t, initialPool.NotBondedTokens, pool.NotBondedTokens)
 }
 
 func TestValidatorsQuery(t *testing.T) {
@@ -1174,7 +1143,7 @@ func TestAccountBalanceQuery(t *testing.T) {
 	// empty account
 	res, body := Request(t, port, "GET", fmt.Sprintf("/auth/accounts/%s", someFakeAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
-	require.Contains(t, body, `"type":"auth/Account"`)
+	require.Contains(t, body, `"type":"cosmos-sdk/Account"`)
 
 	// empty account balance
 	res, body = Request(t, port, "GET", fmt.Sprintf("/bank/balances/%s", someFakeAddr), nil)

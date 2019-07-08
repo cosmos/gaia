@@ -14,7 +14,7 @@ type GenesisState struct {
   BankData     bank.GenesisState     `json:"bank"`
   StakingData  staking.GenesisState  `json:"staking"`
   MintData     mint.GenesisState     `json:"mint"`
-  DistrData    distr.GenesisState    `json:"distr"`
+  DistrData    distr.GenesisState    `json:"distribution"`
   GovData      gov.GenesisState      `json:"gov"`
   SlashingData slashing.GenesisState `json:"slashing"`
   GenTxs       []json.RawMessage     `json:"gentxs"`

@@ -151,17 +151,17 @@ gaiad add-genesis-account <account-address> <amount><denom>
 
 - `pool`
   - `not_bonded_tokens`: 在创世文件中没有绑定（即委托）的 token 数量。 通常情况下，它与权益 token （本例中是 `uatom`）的总供应量相等。
-  - `bonded_tokens`: 在创世文件中没绑定的 token 数量，通常是0。
+  - `bonded_tokens`: 在创世文件中绑定的 token 数量，通常是0。
 - `params`
   - `unbonding_time`: 以**纳秒**为单位的解绑延迟时间。
   - `max_validators`: 最大验证人节点数量。
-  - `max_entries`: 可同时进行解委托、重新委托的最大条目数。
+  - `max_entries`: 每对验证人和委托人之间可进行解委托、重新委托的最大条目数。
   - `bond_denom`: 权益代币符号。
 - `last_total_power`: 总投票权重。在创世文件通常是0（除非创世文件使用了之前的状态）。
 - `last_validator_powers`: 最后一个区块的状态中每个验证人的投票权重。在创世文件中通常是 null（除非创世文件使用了之前的状态）。
 - `validators`: 最后一个区块中的验证人列表。在创世文件中通常是 null（除非创世文件使用了之前的状态）。
 - `bonds`: 最后一个区块中的委托列表。在创世文件中通常是 null（除非创世文件使用了之前的状态）。
-- `unbonding_delegations`: 最后一个区块中解绑的委托列表。在创世文件中通常是 null（除非创世文件使用了之前的状态）。
+- `unbonding_delegations`: 最后一个区块中的解绑委托列表。在创世文件中通常是 null（除非创世文件使用了之前的状态）。
 - `redelegations`: 最后一个区块中的重新委托列表。在创世文件中通常是 null（除非创世文件使用了之前的状态）。
 - `exported`: 创世文件是否是从之前的状态导出得到的。
 
@@ -201,10 +201,10 @@ gaiad add-genesis-account <account-address> <amount><denom>
 
 ### 分配（Distribution）
 
-`distr`模块处理每个块中发给验证人和委托人的挖矿及手续费的分配逻辑。 创世文件中的`distr`部分如下所示：
+`distribution`模块处理每个块中发给验证人和委托人的挖矿及手续费的分配逻辑。 创世文件中的`distribution`部分如下所示：
 
 ```json
-    "distr": {
+    "distribution": {
       "fee_pool": {
         "community_pool": null
       },
@@ -229,14 +229,14 @@ gaiad add-genesis-account <account-address> <amount><denom>
   - `community_pool`: 用于支付奖励的 token 放在公共池中，它通过治理提案分配。在创世文件中通常是 null。
 - `community_tax`: 税率，即交易费和出块收益中需要放入公共池部分的百分比。
 - `base_proposer_reward`: 区块提议者在有效区块中收取的交易费用奖励的基础部分。 如果值为`0.010000000000000000`，则1％的费用将转给提议者。
-- `bonus_proposer_reward`: 如果预提交取得了 2/3 （该块有效的最小值）的加权投票，他们会获得 `base_proposer_reward` 奖励。  如果预提交获得100％的加权投票，则此奖励线性增加至`bonus_proposer_reward`。
+- `bonus_proposer_reward`: 如果区块提议者收集了 2/3 （该块有效的最小值）加权投票的预提交，则获得 `base_proposer_reward` 奖励。  如果区块提议者收集了100％加权投票的预提交，则奖励会再线性增加`bonus_proposer_reward`。
 - `withdraw_addr_enabled`: 如果是`true`，委托人可以设置不同的地址来取回他们的奖励。 如果要在创世时禁用转账，则要设置为`false`，因为它可以绕过转账限制。
 - `delegator_withdraw_infos`: 委托人收益地址列表。 如果没有从之前的状态导出，一般是`null`。
 - `previous_proposer`: 上一个块的提议者，  如果没有从之前的状态导出，则设置为""。
 - `outstanding_rewards`: 未付（未提取）奖励。如果没有从之前的状态导出，设置为`null`。
 - `validator_accumulated_commission`: 未付（未提取）验证人佣金。如果没有从之前的状态导出，设置为`null`。
-- `validator_historical_rewards`: 验证人的历史奖励相关的信息，由`distr`模块用于各种计算。 如果没有从之前的状态导出，设置为`null`。
-- `validators_current_rewards`: 验证人的当前奖励相关的信息，由`distr`模块用于各种计算。 如果没有从之前的状态导出，设置为`null`。
+- `validator_historical_rewards`: 验证人的历史奖励相关的信息，由`distribution`模块用于各种计算。 如果没有从之前的状态导出，设置为`null`。
+- `validators_current_rewards`: 验证人的当前奖励相关的信息，由`distribution`模块用于各种计算。 如果没有从之前的状态导出，设置为`null`。
 - `delegator_starting_infos`: Tracks the previous validator period, the delegation's amount of staking token, and the creation height (to check later on if any slashes have occurred). 跟踪先前的验证人时期，委托的 token 数量和创建高度（稍后检查是否发生了需要惩罚的事件）。  如果没有从之前的状态导出，设置为`null`。
 - `validator_slash_events`: Set of information related to the past slashing of validators. Set to `null` if genesis was not exported from previous state. 过往验证人惩罚事件相关的信息集。 如果没有从之前的状态导出，设置为`null`。
 
@@ -283,9 +283,9 @@ gaiad add-genesis-account <account-address> <amount><denom>
 - `voting_params`
   - `voting_period`: 投票期时长（单位**纳秒**）。
 - `tally_params`
-  - `quorum`: 提议生效所需的投票数占总抵押数的百分比。
-  - `threshold`: 提议生效所需 `YES` 票最小百分比。
-  - `veto`: 若提议生效，`NO_WITH_VETO` 票最大百分比.
+  - `quorum`: 提议生效所需的投票数占总抵押数的最小百分比。
+  - `threshold`: 提议生效所需 `YES` 票占总投票数的最小百分比。
+  - `veto`: 提议生效所需`NO_WITH_VETO` 票占总投票数的最大百分比.
   - `governance_penalty`: 对未给特定提案进行投票的验证人的处罚。
 
 ### 惩罚（Slashing ）
@@ -313,11 +313,11 @@ The `slashing` module handles the logic to slash delegators if their validator m
 
 - `params`
   - `max_evidence_age`: 证据最长有效期，单位 **纳秒**。
-  - `signed_blocks_window`: 用于识别离线验证人节点的块滑动窗口。
-  - `min_signed_per_window`: 在滑动窗口中预提交的数量少于此值，认为验证人节点离线。
-  - `downtime_jail_duration`: 如果验证人离线时间超过此处设定的**纳秒**数，验证人节点将被关小黑屋。
+  - `signed_blocks_window`: 用于检验验证人节点可用性的滑动窗口，（单位**块**）。
+  - `min_signed_per_window`: 在滑动窗口中预提交的数量少于此值，认为验证人节点可用性差。
+  - `downtime_jail_duration`: 验证人节点因可用性差被关监狱后，在监狱中被关的时间（**纳秒**）。
   - `slash_fraction_double_sign`: 验证人节点双签时，需缴纳罚金占总委托数量的百分比。
-  - `slash_fraction_downtime`: 验证人节点离线时，需缴纳罚金占总委托数量的百分比。
+  - `slash_fraction_downtime`: 验证人节点可用性差时，需缴纳罚金占总委托数量的百分比。
 - `signing_infos`:`slashing` 模块所需的每个验证人节点的各种信息。如果没有从之前的状态导出，设置为`{}`。
 - `missed_blocks`: `slashing` 模块所需的与丢块相关的各种信息。如果没有从之前的状态导出，设置为`{}`。
 

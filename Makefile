@@ -171,10 +171,9 @@ setup-contract-tests-data:
 	echo 'Prepare data for the contract tests'
 	rm -rf /tmp/contract_tests ; \
 	mkdir /tmp/contract_tests ; \
-	cp "${GOPATH}/pkg/mod/${SDK_PACK}/client/lcd/swagger-ui/swagger.yaml" /tmp/contract_tests/swagger.yaml ; \
-	./build/gaiad init --home /tmp/contract_tests/.gaiad --chain-id lcd contract-tests ; \
-	tar -xzf lcd_test/testdata/state.tar.gz -C /tmp/contract_tests/ # this will feed .gaiad and .gaiacli folders with static configuration and addresses
-	@bash ./lcd_test/testdata/config.sh
+	cp "${GOPATH}/pkg/mod/${SDK_PACK}/client/lcd/swagger-ui/swagger.yaml" /tmp/contract_tests/swagger.yaml && \
+	./lcd_test/testdata/replicable_state.sh && \
+	./lcd_test/testdata/config.sh
 
 # start gaiad by using the custom home after having it set up
 start-gaia: setup-contract-tests-data

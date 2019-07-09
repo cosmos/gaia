@@ -17,7 +17,7 @@ RECEIVER=$(./build/gaiacli keys show receiver --address --home ${HOMEC})
 
 sleep 1s
 echo "submit proposal"
-echo ${PASSWORD} | ./build/gaiacli tx gov submit-proposal --from ${SENDER} --chain-id ${CHAIN} --type text --title test --description test_description --deposit 10000stake --home ${HOMEC} --yes
+echo ${PASSWORD} | ./build/gaiacli tx gov submit-proposal --from ${SENDER} --type text --title test --description test_description --deposit 10000stake --chain-id ${CHAIN} --home ${HOMEC} --yes
 sleep 1s
 echo "delegate"
 echo ${PASSWORD} | ./build/gaiacli tx staking delegate ${VALIDATOR} 1000stake --from ${SENDER} --chain-id ${CHAIN} --home ${HOMEC} --yes
@@ -35,15 +35,15 @@ echo ${PASSWORD} | ./build/gaiacli tx gov vote ${PROPOSALID} Yes --from ${SENDER
 sleep 1s
 
 # make a transaction with known sender and receiver, replace this hash witith the existing one in the swagger file
-HASH=$(echo ${PASSWORD} | ./build/gaiacli tx send --home ${HOMEC} ${SENDER} ${RECEIVER} ${AMOUNT} --yes --chain-id ${CHAIN} | awk '/txhash.*/{print $2}')
+HASH=$(echo ${PASSWORD} | ./build/gaiacli tx send ${SENDER} ${RECEIVER} ${AMOUNT} --chain-id ${CHAIN} --home ${HOMEC} --yes | awk '/txhash.*/{print $2}')
 sleep 1s
 
 # unbound from a validator
-echo ${PASSWORD} | ./build/gaiacli tx staking unbond --home ${HOMEC} --from ${SENDER} ${VALIDATOR} 100stake --yes --chain-id ${CHAIN}
+echo ${PASSWORD} | ./build/gaiacli tx staking unbond --from ${SENDER} ${VALIDATOR} 100stake --chain-id ${CHAIN} --home ${HOMEC} --yes
 
 sleep 1s
 echo "withdraw rewards"
-echo ${PASSWORD} | ./build/gaiacli tx distribution withdraw-all-rewards --chain-id ${CHAIN} --from ${SENDER} --home ${HOMEC} --yes
+echo ${PASSWORD} | ./build/gaiacli tx distribution withdraw-all-rewards --from ${SENDER} --chain-id ${CHAIN} --home ${HOMEC} --yes
 
 # Replace dummy values in swagger with new hashes and addresses
 sed -i.bak -e "s/${DUMMY_HASH}/${HASH}/g" "${SWAGGER}"

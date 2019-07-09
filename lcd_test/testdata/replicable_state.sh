@@ -19,7 +19,8 @@ ADDR=$(./build/gaiacli keys show ${ACCOUNT} --address --home ${HOMEC})
 ./build/gaiad add-genesis-account ${ADDR} 1000000000000000000000000stake --home ${HOMED}
 ./build/gaiad add-genesis-account ${SENDER} 1000000000000000000000stake --home ${HOMED}
 ./build/gaiad add-genesis-account ${RECEIVER} 1000000000000000000000stake --home ${HOMED}
-echo ${PASSWORD} | gaiad gentx --name ${ACCOUNT} --home ${HOMED} --home-client ${HOMEC}
+
+echo ${PASSWORD} | ./build/gaiad gentx --name ${ACCOUNT} --home ${HOMED} --home-client ${HOMEC}
 
 ./build/gaiad collect-gentxs --home ${HOMED}
 

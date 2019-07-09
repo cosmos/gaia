@@ -4,7 +4,7 @@ go 1.12
 
 require (
 	github.com/btcsuite/btcd v0.0.0-20190523000118-16327141da8c // indirect
-	github.com/cosmos/cosmos-sdk v0.28.2-0.20190705123402-2fdbf631e763
+	github.com/cosmos/cosmos-sdk v0.28.2-0.20190709104300-8a042dedd3c9
 	github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d // indirect
 	github.com/etcd-io/bbolt v1.3.3 // indirect
 	github.com/go-kit/kit v0.9.0 // indirect

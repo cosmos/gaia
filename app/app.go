@@ -150,12 +150,13 @@ func NewGaiaApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 
 	// account permissions
 	maccPerms := map[string][]string{
+		auth.FeeCollectorName: {supply.Basic},
+		distr.ModuleName:      {supply.Basic},
+
 		gov.ModuleName:            {supply.Burner},
+		mint.ModuleName:           {supply.Minter},
 		staking.NotBondedPoolName: {supply.Burner, supply.Staking},
 		staking.BondedPoolName:    {supply.Burner, supply.Staking},
-		auth.FeeCollectorName:     {supply.Basic},
-		distr.ModuleName:          {supply.Basic},
-		mint.ModuleName:           {supply.Minter},
 	}
 
 	// add keepers

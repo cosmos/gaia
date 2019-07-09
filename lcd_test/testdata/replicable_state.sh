@@ -25,4 +25,4 @@ echo ${PASSWORD} | ./build/gaiad gentx --name ${ACCOUNT} --home ${HOMED} --home-
 ./build/gaiad collect-gentxs --home ${HOMED}
 
 # adjust inflation to see rewards
-sed -i .bak -e 's/\"inflation\".*$/\"inflation\":\ \"0.000000001300000000\",/' -e 's/\"inflation_max\".*$/\"inflation_max\":\ \"0.000000002000000000\",/' -e 's/\"inflation_min\".*$/\"inflation_min\":\ \"0.000000000700000000\",/' -e 's/\"goal_bonded\".*$/\"goal_bonded\":\ \"0.000000006700000000\",/' "${HOMED}/config/genesis.json"
+sed -i.bak -e 's/\"inflation\".*$/\"inflation\":\ \"0.000000001300000000\",/' -e 's/\"inflation_max\".*$/\"inflation_max\":\ \"0.000000002000000000\",/' -e 's/\"inflation_min\".*$/\"inflation_min\":\ \"0.000000000700000000\",/' -e 's/\"goal_bonded\".*$/\"goal_bonded\":\ \"0.000000006700000000\",/' "${HOMED}/config/genesis.json"

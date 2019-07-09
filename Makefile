@@ -196,7 +196,7 @@ run-lcd-contract-tests:
 # launch dredd after having set it up, at completion dredd will kill the rest server while here we kill gaiad
 contract-tests: setup-transactions
 	@echo "Running Gaia LCD for contract tests"
-	dredd ; pkill gaiad
+	dredd && pkill gaiad || (pkill gaiad ; exit 1)
 
 # include simulations
 include sims.mk

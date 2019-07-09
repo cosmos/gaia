@@ -166,12 +166,16 @@ localnet-start: localnet-stop
 localnet-stop:
 	docker-compose down
 
-# clean any previous run of contract-tests, initialize gaiad and finally tune the configuration and override genesis to have predictable output
-setup-contract-tests-data:
+# clean any previous run of contract-tests and copy the swagger.yaml inside the clean folder
+clean-contract-tests-data:
 	echo 'Prepare data for the contract tests'
 	rm -rf /tmp/contract_tests ; \
 	mkdir /tmp/contract_tests ; \
-	cp "${GOPATH}/pkg/mod/${SDK_PACK}/client/lcd/swagger-ui/swagger.yaml" /tmp/contract_tests/swagger.yaml && \
+	cp "${GOPATH}/pkg/mod/${SDK_PACK}/client/lcd/swagger-ui/swagger.yaml" /tmp/contract_tests/swagger.yaml
+
+# initialize gaiad, add few accounts, adjust inflation and shorten timeouts
+setup-contract-tests-data: clean-contract-tests-data
+	echo 'Prepare data for the contract tests'
 	./lcd_test/testdata/replicable_state.sh && \
 	./lcd_test/testdata/config.sh
 
@@ -192,7 +196,7 @@ run-lcd-contract-tests:
 # launch dredd after having set it up, at completion dredd will kill the rest server while here we kill gaiad
 contract-tests: setup-transactions
 	@echo "Running Gaia LCD for contract tests"
-	dredd && pkill gaiad
+	dredd ; pkill gaiad
 
 # include simulations
 include sims.mk

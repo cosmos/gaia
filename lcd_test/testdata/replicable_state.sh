@@ -10,7 +10,6 @@ ACCOUNT="contract-tests"
 
 ./build/gaiad init ${ACCOUNT} --chain-id ${CHAIN} --home ${HOMED}
 
-tar -xzf lcd_test/testdata/gaiad.tar.gz -C /tmp/contract_tests/
 tar -xzf lcd_test/testdata/gaiacli.tar.gz -C /tmp/contract_tests/
 
 SENDER=$(./build/gaiacli keys show sender --address --home ${HOMEC})

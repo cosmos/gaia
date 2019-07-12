@@ -125,8 +125,8 @@ func NewGaiaApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 		invCheckPeriod: invCheckPeriod,
 		keyMain:        sdk.NewKVStoreKey(bam.MainStoreKey),
 		keyAccount:     sdk.NewKVStoreKey(auth.StoreKey),
-		keySupply:      sdk.NewKVStoreKey(supply.StoreKey),
 		keyStaking:     sdk.NewKVStoreKey(staking.StoreKey),
+		keySupply:      sdk.NewKVStoreKey(supply.StoreKey),
 		tkeyStaking:    sdk.NewTransientStoreKey(staking.TStoreKey),
 		keyMint:        sdk.NewKVStoreKey(mint.StoreKey),
 		keyDistr:       sdk.NewKVStoreKey(distr.StoreKey),
@@ -149,19 +149,15 @@ func NewGaiaApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 	crisisSubspace := app.paramsKeeper.Subspace(crisis.DefaultParamspace)
 
 	// account permissions
-	maccPerms := map[string][]string{
-		auth.FeeCollectorName:     []string{supply.Basic},
-		distr.ModuleName:          []string{supply.Basic},
-		mint.ModuleName:           []string{supply.Minter},
-		staking.BondedPoolName:    []string{supply.Burner, supply.Staking},
-		staking.NotBondedPoolName: []string{supply.Burner, supply.Staking},
-		gov.ModuleName:            []string{supply.Burner},
-	}
+	basicModuleAccs := []string{auth.FeeCollectorName, distr.ModuleName}
+	minterModuleAccs := []string{mint.ModuleName}
+	burnerModuleAccs := []string{staking.BondedPoolName, staking.NotBondedPoolName, gov.ModuleName}
 
 	// add keepers
 	app.accountKeeper = auth.NewAccountKeeper(app.cdc, app.keyAccount, authSubspace, auth.ProtoBaseAccount)
 	app.bankKeeper = bank.NewBaseKeeper(app.accountKeeper, bankSubspace, bank.DefaultCodespace)
-	app.supplyKeeper = supply.NewKeeper(app.cdc, app.keySupply, app.accountKeeper, app.bankKeeper, supply.DefaultCodespace, maccPerms)
+	app.supplyKeeper = supply.NewKeeper(app.cdc, app.keySupply, app.accountKeeper,
+		app.bankKeeper, supply.DefaultCodespace, basicModuleAccs, minterModuleAccs, burnerModuleAccs)
 	stakingKeeper := staking.NewKeeper(app.cdc, app.keyStaking, app.tkeyStaking,
 		app.supplyKeeper, stakingSubspace, staking.DefaultCodespace)
 	app.mintKeeper = mint.NewKeeper(app.cdc, app.keyMint, mintSubspace, &stakingKeeper, app.supplyKeeper, auth.FeeCollectorName)

@@ -1,2 +1,0 @@
-Add `migrate` command to `gaiad` to provide the ability to migrate exported
-genesis state from one version to another.

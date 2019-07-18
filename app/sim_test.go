@@ -32,17 +32,18 @@ import (
 )
 
 var (
-	genesisFile string
-	paramsFile  string
-	seed        int64
-	numBlocks   int
-	blockSize   int
-	enabled     bool
-	verbose     bool
-	lean        bool
-	commit      bool
-	period      int
-	onOperation bool // TODO Remove in favor of binary search for invariant violation
+	genesisFile   string
+	paramsFile    string
+	seed          int64
+	numBlocks     int
+	blockSize     int
+	enabled       bool
+	verbose       bool
+	lean          bool
+	commit        bool
+	period        int
+	onOperation   bool // TODO Remove in favor of binary search for invariant violation
+	allInvariants bool
 )
 
 func init() {
@@ -57,15 +58,18 @@ func init() {
 	flag.BoolVar(&commit, "SimulationCommit", false, "have the simulation commit")
 	flag.IntVar(&period, "SimulationPeriod", 1, "run slow invariants only once every period assertions")
 	flag.BoolVar(&onOperation, "SimulateEveryOperation", false, "run slow invariants every operation")
+	flag.BoolVar(&allInvariants, "PrintAllInvariants", false, "print all invariants if a broken invariant is found")
 }
 
 // helper function for populating input for SimulateFromSeed
 func getSimulateFromSeedInput(tb testing.TB, w io.Writer, app *GaiaApp) (
 	testing.TB, io.Writer, *baseapp.BaseApp, simulation.AppStateFn, int64,
-	simulation.WeightedOperations, sdk.Invariants, int, int, bool, bool, bool) {
+	simulation.WeightedOperations, sdk.Invariants, int, int, bool, bool, bool, bool, map[string]bool,
+) {
 
 	return tb, w, app.BaseApp, appStateFn, seed,
-		testAndRunTxs(app), invariants(app), numBlocks, blockSize, commit, lean, onOperation
+		testAndRunTxs(app), invariants(app), numBlocks, blockSize, commit,
+		lean, onOperation, allInvariants, app.ModuleAccountAddrs()
 }
 
 func appStateFn(

@@ -32,17 +32,18 @@ import (
 )
 
 var (
-	genesisFile string
-	paramsFile  string
-	seed        int64
-	numBlocks   int
-	blockSize   int
-	enabled     bool
-	verbose     bool
-	lean        bool
-	commit      bool
-	period      int
-	onOperation bool // TODO Remove in favor of binary search for invariant violation
+	genesisFile   string
+	paramsFile    string
+	seed          int64
+	numBlocks     int
+	blockSize     int
+	enabled       bool
+	verbose       bool
+	lean          bool
+	commit        bool
+	period        int
+	onOperation   bool // TODO Remove in favor of binary search for invariant violation
+	allInvariants bool
 )
 
 func init() {
@@ -57,15 +58,18 @@ func init() {
 	flag.BoolVar(&commit, "SimulationCommit", false, "have the simulation commit")
 	flag.IntVar(&period, "SimulationPeriod", 1, "run slow invariants only once every period assertions")
 	flag.BoolVar(&onOperation, "SimulateEveryOperation", false, "run slow invariants every operation")
+	flag.BoolVar(&allInvariants, "PrintAllInvariants", false, "print all invariants if a broken invariant is found")
 }
 
 // helper function for populating input for SimulateFromSeed
 func getSimulateFromSeedInput(tb testing.TB, w io.Writer, app *GaiaApp) (
 	testing.TB, io.Writer, *baseapp.BaseApp, simulation.AppStateFn, int64,
-	simulation.WeightedOperations, sdk.Invariants, int, int, bool, bool, bool) {
+	simulation.WeightedOperations, sdk.Invariants, int, int, bool, bool, bool, bool, map[string]bool,
+) {
 
 	return tb, w, app.BaseApp, appStateFn, seed,
-		testAndRunTxs(app), invariants(app), numBlocks, blockSize, commit, lean, onOperation
+		testAndRunTxs(app), invariants(app), numBlocks, blockSize, commit,
+		lean, onOperation, allInvariants, app.ModuleAccountAddrs()
 }
 
 func appStateFn(
@@ -607,7 +611,7 @@ func TestAppStateDeterminism(t *testing.T) {
 			db := dbm.NewMemDB()
 			app := NewGaiaApp(logger, db, nil, true, 0)
 
-			// Run randomized simulation
+			// run randomized simulation
 			simulation.SimulateFromSeed(
 				t, os.Stdout, app.BaseApp, appStateFn, seed,
 				testAndRunTxs(app),
@@ -617,10 +621,14 @@ func TestAppStateDeterminism(t *testing.T) {
 				true,
 				false,
 				false,
+				false,
+				app.ModuleAccountAddrs(),
 			)
+
 			appHash := app.LastCommitID().Hash
 			appHashList[j] = appHash
 		}
+
 		for k := 1; k < numTimesToRunPerSeed; k++ {
 			require.Equal(t, appHashList[0], appHashList[k], "appHash list: %v", appHashList)
 		}
@@ -642,7 +650,8 @@ func BenchmarkInvariants(b *testing.B) {
 	// 2. Run parameterized simulation (w/o invariants)
 	_, err := simulation.SimulateFromSeed(
 		b, ioutil.Discard, app.BaseApp, appStateFn, seed, testAndRunTxs(app),
-		[]sdk.Invariant{}, numBlocks, blockSize, commit, lean, onOperation,
+		[]sdk.Invariant{}, numBlocks, blockSize, commit, lean, onOperation, false,
+		app.ModuleAccountAddrs(),
 	)
 	if err != nil {
 		fmt.Println(err)
@@ -657,8 +666,8 @@ func BenchmarkInvariants(b *testing.B) {
 	// their respective metadata which makes it useful for testing/benchmarking.
 	for _, cr := range app.crisisKeeper.Routes() {
 		b.Run(fmt.Sprintf("%s/%s", cr.ModuleName, cr.Route), func(b *testing.B) {
-			if err := cr.Invar(ctx); err != nil {
-				fmt.Printf("broken invariant at block %d of %d\n%s", ctx.BlockHeight()-1, numBlocks, err)
+			if res, stop := cr.Invar(ctx); stop {
+				fmt.Printf("broken invariant at block %d of %d\n%s", ctx.BlockHeight()-1, numBlocks, res)
 				b.FailNow()
 			}
 		})

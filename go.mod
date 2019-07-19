@@ -37,4 +37,4 @@ require (
 	google.golang.org/grpc v1.22.0 // indirect
 )
 
-replace github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.28.2-0.20190719155228-008ee6046704
+replace github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk joon/ics-25-implementation-2

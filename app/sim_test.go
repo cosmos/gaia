@@ -14,6 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/libs/common"
 	dbm "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -516,9 +517,9 @@ func TestAppImportExport(t *testing.T) {
 		prefixes := storeKeysPrefix.Prefixes
 		storeA := ctxA.KVStore(storeKeyA)
 		storeB := ctxB.KVStore(storeKeyB)
-		kvA, kvB, count, equal := sdk.DiffKVStores(storeA, storeB, prefixes)
-		fmt.Printf("Compared %d key/value pairs between %s and %s\n", count, storeKeyA, storeKeyB)
-		require.True(t, equal, simapp.GetSimulationLog(storeKeyA.Name(), app.cdc, newApp.cdc, kvA, kvB))
+		diffs := sdk.DiffKVStores(storeA, storeB, prefixes)
+		fmt.Printf("Compared %d key/value pairs between %s and %s\n", len(diffs)/2, storeKeyA, storeKeyB)
+		require.True(t, len(diffs) == 0, simapp.GetSimulationLog(storeKeyA.Name(), app.cdc, newApp.cdc, []common.KVPair{diffs[0], diffs[1]}))
 	}
 
 }

@@ -39,6 +39,12 @@ github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7
 github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
 github.com/cosmos/cosmos-sdk v0.28.2-0.20190718124356-a922dad3468b h1:Xdy1RNh4+it+umYuygHprhzpgbmZIMJHykS11FVViVc=
 github.com/cosmos/cosmos-sdk v0.28.2-0.20190718124356-a922dad3468b/go.mod h1:UV765S3m9sxCg8rYaBr4XgeHZl2UP6y++Coz9mLlYFc=
+github.com/cosmos/cosmos-sdk v0.28.2-0.20190719141711-39186ca6a507 h1:uPqs/KWOrZyeBotsBGn6rW1XJxhX1MkX+lgzC8ubFp4=
+github.com/cosmos/cosmos-sdk v0.28.2-0.20190719141711-39186ca6a507/go.mod h1:UV765S3m9sxCg8rYaBr4XgeHZl2UP6y++Coz9mLlYFc=
+github.com/cosmos/cosmos-sdk v0.28.2-0.20190719153553-5cd5bd816ce1 h1:0lDEx/7e6e79+KlQjAhsEspWiJAKzL5aEdOWmpUjVlI=
+github.com/cosmos/cosmos-sdk v0.28.2-0.20190719153553-5cd5bd816ce1/go.mod h1:UV765S3m9sxCg8rYaBr4XgeHZl2UP6y++Coz9mLlYFc=
+github.com/cosmos/cosmos-sdk v0.28.2-0.20190719155228-008ee6046704 h1:ohEmHQd2BONzWA8sXxWfOLPg7GCoVKDRrooIotUTqdY=
+github.com/cosmos/cosmos-sdk v0.28.2-0.20190719155228-008ee6046704/go.mod h1:UV765S3m9sxCg8rYaBr4XgeHZl2UP6y++Coz9mLlYFc=
 github.com/cosmos/go-bip39 v0.0.0-20180618194314-52158e4697b8/go.mod h1:tSxLoYXyBmiFeKpvmq4dzayMdCjCnu8uqmCysIGBT2Y=
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d h1:49RLWk1j44Xu4fjHb6JFYmeUnDORVwHNkDxaQ0ctCVU=
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d/go.mod h1:tSxLoYXyBmiFeKpvmq4dzayMdCjCnu8uqmCysIGBT2Y=

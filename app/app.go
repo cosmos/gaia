@@ -23,6 +23,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genaccounts"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/gov"
+	"github.com/cosmos/cosmos-sdk/x/ibc"
+	"github.com/cosmos/cosmos-sdk/x/ibc/20-token"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
@@ -102,6 +104,7 @@ type GaiaApp struct {
 	keyGov      *sdk.KVStoreKey
 	keyParams   *sdk.KVStoreKey
 	tkeyParams  *sdk.TransientStoreKey
+	keyIBC      *sdk.KVStoreKey
 
 	// keepers
 	accountKeeper  auth.AccountKeeper
@@ -114,6 +117,8 @@ type GaiaApp struct {
 	govKeeper      gov.Keeper
 	crisisKeeper   crisis.Keeper
 	paramsKeeper   params.Keeper
+	ibcKeeper      ibc.Keeper
+	tokenKeeper    token.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -145,6 +150,7 @@ func NewGaiaApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 		keyGov:         sdk.NewKVStoreKey(gov.StoreKey),
 		keyParams:      sdk.NewKVStoreKey(params.StoreKey),
 		tkeyParams:     sdk.NewTransientStoreKey(params.TStoreKey),
+		keyIBC:         sdk.NewKVStoreKey(ibc.StoreKey),
 	}
 
 	// init params keeper and subspaces
@@ -170,6 +176,8 @@ func NewGaiaApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 	app.slashingKeeper = slashing.NewKeeper(app.cdc, app.keySlashing, &stakingKeeper,
 		slashingSubspace, slashing.DefaultCodespace)
 	app.crisisKeeper = crisis.NewKeeper(crisisSubspace, invCheckPeriod, app.supplyKeeper, auth.FeeCollectorName)
+	app.ibcKeeper = ibc.NewKeeper(app.cdc, app.keyIBC)
+	app.tokenKeeper = token.NewKeeper(app.bankKeeper, app.ibcKeeper.Channel())
 
 	// register the proposal types
 	govRouter := gov.NewRouter()
@@ -184,6 +192,7 @@ func NewGaiaApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 	app.stakingKeeper = *stakingKeeper.SetHooks(
 		staking.NewMultiStakingHooks(app.distrKeeper.Hooks(), app.slashingKeeper.Hooks()))
 
+	tokenModule := token.NewAppModule(app.tokenKeeper)
 	app.mm = module.NewManager(
 		genaccounts.NewAppModule(app.accountKeeper),
 		genutil.NewAppModule(app.accountKeeper, app.stakingKeeper, app.BaseApp.DeliverTx),
@@ -196,6 +205,8 @@ func NewGaiaApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 		mint.NewAppModule(app.mintKeeper),
 		slashing.NewAppModule(app.slashingKeeper, app.stakingKeeper),
 		staking.NewAppModule(app.stakingKeeper, app.distrKeeper, app.accountKeeper, app.supplyKeeper),
+		token.NewAppModule(app.tokenKeeper),
+		ibc.NewAppModule(app.ibcKeeper, token.NewAppModule(app.tokenKeeper)),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that

@@ -37,7 +37,6 @@ import (
 	"github.com/tendermint/tendermint/crypto/ed25519"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 	"github.com/tendermint/tendermint/libs/cli"
-	dbm "github.com/tendermint/tm-db"
 	"github.com/tendermint/tendermint/libs/log"
 	nm "github.com/tendermint/tendermint/node"
 	"github.com/tendermint/tendermint/p2p"
@@ -46,6 +45,7 @@ import (
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 	tmrpc "github.com/tendermint/tendermint/rpc/lib/server"
 	tmtypes "github.com/tendermint/tendermint/types"
+	dbm "github.com/tendermint/tm-db"
 
 	gapp "github.com/cosmos/gaia/app"
 )
@@ -227,7 +227,8 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	supplyDataBz := genesisState[supply.ModuleName]
 	var supplyData supply.GenesisState
 	cdc.MustUnmarshalJSON(supplyDataBz, &supplyData)
-	supplyData.Supply.Total = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, totalSupply))
+
+	supplyData.Supply = supplyData.Supply.SetTotal(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, totalSupply)))
 	supplyDataBz = cdc.MustMarshalJSON(supplyData)
 	genesisState[supply.ModuleName] = supplyDataBz
 

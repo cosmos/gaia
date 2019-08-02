@@ -11,10 +11,10 @@ import (
 	"github.com/spf13/cobra"
 
 	abci "github.com/tendermint/tendermint/abci/types"
-	bcm "github.com/tendermint/tendermint/blockchain"
 	cmn "github.com/tendermint/tendermint/libs/common"
 	"github.com/tendermint/tendermint/proxy"
 	tmsm "github.com/tendermint/tendermint/state"
+	tmstore "github.com/tendermint/tendermint/store"
 	tm "github.com/tendermint/tendermint/types"
 
 	"github.com/cosmos/gaia/app"
@@ -154,7 +154,7 @@ func replayTxs(rootDir string) error {
 
 	// Create block store
 	fmt.Fprintln(os.Stderr, "Creating block store")
-	blockStore := bcm.NewBlockStore(bcDB)
+	blockStore := tmstore.NewBlockStore(bcDB)
 
 	tz := []time.Duration{0, 0, 0}
 	for i := int(state.LastBlockHeight) + 1; ; i++ {

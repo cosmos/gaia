@@ -12,20 +12,20 @@ sim-gaia-nondeterminism:
 sim-gaia-custom-genesis-fast:
 	@echo "Running custom genesis simulation..."
 	@echo "By default, ${HOME}/.gaiad/config/genesis.json will be used."
-	@go test -mod=readonly github.com/cosmos/gaia/app -run TestFullGaiaSimulation -Genesis=${HOME}/.gaiad/config/genesis.json \
+	@go test -mod=readonly $(SIMAPP) -run TestFullGaiaSimulation -Genesis=${HOME}/.gaiad/config/genesis.json \
 		-Enabled=true -NumBlocks=100 -BlockSize=200 -Commit=true -Seed=99 -Period=5 -v -timeout 24h
 
 sim-gaia-fast:
 	@echo "Running quick Gaia simulation. This may take several minutes..."
-	@go test -mod=readonly github.com/cosmos/gaia/app -run TestFullGaiaSimulation -Enabled=true -NumBlocks=100 -BlockSize=200 -Commit=true -Seed=99 -Period=5 -v -timeout 24h
+	@go test -mod=readonly $(SIMAPP) -run TestFullGaiaSimulation -Enabled=true -NumBlocks=100 -BlockSize=200 -Commit=true -Seed=99 -Period=5 -v -timeout 24h
 
 sim-gaia-import-export: runsim
 	@echo "Running Gaia import/export simulation. This may take several minutes..."
-	$(GOPATH)/bin/runsim 25 5 TestGaiaImportExport
+	$(GOPATH)/bin/runsim $(SIMAPP) 25 5 TestGaiaImportExport
 
 sim-gaia-simulation-after-import: runsim
 	@echo "Running Gaia simulation-after-import. This may take several minutes..."
-	$(GOPATH)/bin/runsim 25 5 TestGaiaSimulationAfterImport
+	$(GOPATH)/bin/runsim $(SIMAPP) 25 5 TestGaiaSimulationAfterImport
 
 sim-gaia-custom-genesis-multi-seed: runsim
 	@echo "Running multi-seed custom genesis simulation..."
@@ -34,11 +34,11 @@ sim-gaia-custom-genesis-multi-seed: runsim
 
 sim-gaia-multi-seed: runsim
 	@echo "Running multi-seed Gaia simulation. This may take awhile!"
-	$(GOPATH)/bin/runsim 400 5 TestFullGaiaSimulation
+	$(GOPATH)/bin/runsim $(SIMAPP) 400 5 TestFullGaiaSimulation
 
 sim-benchmark-invariants:
 	@echo "Running simulation invariant benchmarks..."
-	@go test -mod=readonly github.com/cosmos/gaia/app -benchmem -bench=BenchmarkInvariants -run=^$ \
+	@go test -mod=readonly $(SIMAPP) -benchmem -bench=BenchmarkInvariants -run=^$ \
 	-Enabled=true -NumBlocks=1000 -BlockSize=200 \
 	-Commit=true -Seed=57 -v -timeout 24h
 
@@ -47,12 +47,12 @@ SIM_BLOCK_SIZE ?= 200
 SIM_COMMIT ?= true
 sim-gaia-benchmark:
 	@echo "Running Gaia benchmark for numBlocks=$(SIM_NUM_BLOCKS), blockSize=$(SIM_BLOCK_SIZE). This may take awhile!"
-	@go test -mod=readonly -benchmem -run=^$$ github.com/cosmos/gaia/app -bench ^BenchmarkFullGaiaSimulation$$  \
+	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkFullGaiaSimulation$$  \
 		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -timeout 24h
 
 sim-gaia-profile:
 	@echo "Running Gaia benchmark for numBlocks=$(SIM_NUM_BLOCKS), blockSize=$(SIM_BLOCK_SIZE). This may take awhile!"
-	@go test -mod=readonly -benchmem -run=^$$ github.com/cosmos/gaia/app -bench ^BenchmarkFullGaiaSimulation$$ \
+	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkFullGaiaSimulation$$ \
 		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -timeout 24h -cpuprofile cpu.out -memprofile mem.out
 
 

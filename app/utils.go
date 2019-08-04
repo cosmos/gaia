@@ -20,6 +20,7 @@ var (
 	exportStatePath    string
 	exportStatsPath    string
 	seed               int64
+	initialBlockHeight int
 	numBlocks          int
 	blockSize          int
 	enabled            bool

@@ -56,21 +56,12 @@ func TestVersion(t *testing.T) {
 	defer cleanup()
 
 	// node info
-	res, body := Request(t, port, "GET", "/version", nil)
+	res, body := Request(t, port, "GET", "/node_version", nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	reg, err := regexp.Compile(`\d+\.\d+\.\d+.*`)
 	require.Nil(t, err)
 	match := reg.MatchString(body)
-	require.True(t, match, body, body)
-
-	// node info
-	res, body = Request(t, port, "GET", "/node_version", nil)
-	require.Equal(t, http.StatusOK, res.StatusCode, body)
-
-	reg, err = regexp.Compile(`\d+\.\d+\.\d+.*`)
-	require.Nil(t, err)
-	match = reg.MatchString(body)
 	require.True(t, match, body)
 }
 

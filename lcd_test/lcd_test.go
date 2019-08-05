@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -43,26 +42,6 @@ var fees = sdk.Coins{sdk.NewInt64Coin(sdk.DefaultBondDenom, 5)}
 func init() {
 	mintkey.BcryptSecurityParameter = 1
 	version.Version = os.Getenv("VERSION")
-}
-
-func TestVersion(t *testing.T) {
-	// skip the test if the VERSION environment variable has not been set
-	if version.Version == "" {
-		t.SkipNow()
-	}
-
-	cleanup, _, _, port, err := InitializeLCD(1, []sdk.AccAddress{}, true)
-	require.NoError(t, err)
-	defer cleanup()
-
-	// node info
-	res, body := Request(t, port, "GET", "/node_version", nil)
-	require.Equal(t, http.StatusOK, res.StatusCode, body)
-
-	reg, err := regexp.Compile(`\d+\.\d+\.\d+.*`)
-	require.Nil(t, err)
-	match := reg.MatchString(body)
-	require.True(t, match, body)
 }
 
 func TestNodeStatus(t *testing.T) {

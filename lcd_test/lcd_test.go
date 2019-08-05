@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -43,35 +42,6 @@ var fees = sdk.Coins{sdk.NewInt64Coin(sdk.DefaultBondDenom, 5)}
 func init() {
 	mintkey.BcryptSecurityParameter = 1
 	version.Version = os.Getenv("VERSION")
-}
-
-func TestVersion(t *testing.T) {
-	// skip the test if the VERSION environment variable has not been set
-	if version.Version == "" {
-		t.SkipNow()
-	}
-
-	cleanup, _, _, port, err := InitializeLCD(1, []sdk.AccAddress{}, true)
-	require.NoError(t, err)
-	defer cleanup()
-
-	// node info
-	res, body := Request(t, port, "GET", "/version", nil)
-	require.Equal(t, http.StatusOK, res.StatusCode, body)
-
-	reg, err := regexp.Compile(`\d+\.\d+\.\d+.*`)
-	require.Nil(t, err)
-	match := reg.MatchString(body)
-	require.True(t, match, body, body)
-
-	// node info
-	res, body = Request(t, port, "GET", "/node_version", nil)
-	require.Equal(t, http.StatusOK, res.StatusCode, body)
-
-	reg, err = regexp.Compile(`\d+\.\d+\.\d+.*`)
-	require.Nil(t, err)
-	match = reg.MatchString(body)
-	require.True(t, match, body)
 }
 
 func TestNodeStatus(t *testing.T) {
@@ -452,7 +422,7 @@ func TestBonding(t *testing.T) {
 	acc = getAccount(t, port, addr)
 	coins := acc.GetCoins()
 	expectedBalance := initialBalance[0].Sub(fees[0])
-	require.Equal(t, expectedBalance.Amount.Sub(delTokens), coins.AmountOf(sdk.DefaultBondDenom))
+	require.Equal(t, expectedBalance.Amount.Sub(delTokens).String(), coins.AmountOf(sdk.DefaultBondDenom).String())
 	expectedBalance = coins[0]
 
 	// query delegation
@@ -1036,12 +1006,12 @@ func TestDistributionFlow(t *testing.T) {
 	var rewards sdk.DecCoins
 	res, body := Request(t, port, "GET", fmt.Sprintf("/distribution/validators/%s/outstanding_rewards", valAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
-	require.NoError(t, cdc.UnmarshalJSON([]byte(body), &rewards))
+	require.NoError(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &rewards))
 
 	var valDistInfo distrrest.ValidatorDistInfo
 	res, body = Request(t, port, "GET", "/distribution/validators/"+valAddr.String(), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
-	require.NoError(t, cdc.UnmarshalJSON([]byte(body), &valDistInfo))
+	require.NoError(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &valDistInfo))
 	require.Equal(t, valDistInfo.OperatorAddress.String(), sdk.AccAddress(valAddr).String())
 
 	// Delegate some coins
@@ -1058,40 +1028,40 @@ func TestDistributionFlow(t *testing.T) {
 	// Query outstanding rewards changed
 	res, body = Request(t, port, "GET", fmt.Sprintf("/distribution/validators/%s/outstanding_rewards", valAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
-	require.NoError(t, cdc.UnmarshalJSON([]byte(body), &rewards))
+	require.NoError(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &rewards))
 
 	// Query validator distribution info
 	res, body = Request(t, port, "GET", "/distribution/validators/"+valAddr.String(), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	require.NoError(t, cdc.UnmarshalJSON([]byte(body), &valDistInfo))
+	require.NoError(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &valDistInfo))
 
 	// Query validator's rewards
 	res, body = Request(t, port, "GET", fmt.Sprintf("/distribution/validators/%s/rewards", valAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
-	require.NoError(t, cdc.UnmarshalJSON([]byte(body), &rewards))
+	require.NoError(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &rewards))
 
 	// Query self-delegation
 	res, body = Request(t, port, "GET", fmt.Sprintf("/distribution/delegators/%s/rewards/%s", operAddr, valAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
-	require.NoError(t, cdc.UnmarshalJSON([]byte(body), &rewards))
+	require.NoError(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &rewards))
 
 	// Query delegation
 	res, body = Request(t, port, "GET", fmt.Sprintf("/distribution/delegators/%s/rewards/%s", addr, valAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
-	require.NoError(t, cdc.UnmarshalJSON([]byte(body), &rewards))
+	require.NoError(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &rewards))
 
 	// Query delegator's rewards total
 	var delRewards disttypes.QueryDelegatorTotalRewardsResponse
 	res, body = Request(t, port, "GET", fmt.Sprintf("/distribution/delegators/%s/rewards", operAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
-	require.NoError(t, json.Unmarshal([]byte(body), &delRewards))
+	require.NoError(t, json.Unmarshal(extractResultFromResponse(t, []byte(body)), &delRewards))
 
 	// Query delegator's withdrawal address
 	var withdrawAddr string
 	res, body = Request(t, port, "GET", fmt.Sprintf("/distribution/delegators/%s/withdraw_address", operAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
-	require.NoError(t, cdc.UnmarshalJSON([]byte(body), &withdrawAddr))
+	require.NoError(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &withdrawAddr))
 	require.Equal(t, operAddr.String(), withdrawAddr)
 
 	// Withdraw delegator's rewards
@@ -1112,19 +1082,19 @@ func TestMintingQueries(t *testing.T) {
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var params mint.Params
-	require.NoError(t, cdc.UnmarshalJSON([]byte(body), &params))
+	require.NoError(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &params))
 
 	res, body = Request(t, port, "GET", "/minting/inflation", nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var inflation sdk.Dec
-	require.NoError(t, cdc.UnmarshalJSON([]byte(body), &inflation))
+	require.NoError(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &inflation))
 
 	res, body = Request(t, port, "GET", "/minting/annual-provisions", nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var annualProvisions sdk.Dec
-	require.NoError(t, cdc.UnmarshalJSON([]byte(body), &annualProvisions))
+	require.NoError(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &annualProvisions))
 }
 
 func TestAccountBalanceQuery(t *testing.T) {

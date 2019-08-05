@@ -5,7 +5,7 @@ go 1.12
 require (
 	github.com/aws/aws-sdk-go v1.21.9 // indirect
 	github.com/btcsuite/btcd v0.0.0-20190523000118-16327141da8c // indirect
-	github.com/cosmos/cosmos-sdk v0.28.2-0.20190803135615-4b354a782bcd
+	github.com/cosmos/cosmos-sdk v0.28.2-0.20190805164234-478eda1f7e3e
 	github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d // indirect
 	github.com/cosmos/tools/cmd/runsim v0.0.0-20190802160424-c5def0673f0a // indirect
 	github.com/go-kit/kit v0.9.0 // indirect

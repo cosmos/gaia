@@ -44,7 +44,6 @@ func init() {
 	flag.StringVar(&exportParamsPath, "ExportParamsPath", "", "custom file path to save the exported params JSON")
 	flag.IntVar(&exportParamsHeight, "ExportParamsHeight", 0, "height to which export the randomly generated params")
 	flag.StringVar(&exportStatePath, "ExportStatePath", "", "custom file path to save the exported app state JSON")
-	flag.StringVar(&exportStatsPath, "ExportStatsPath", "", "custom file path to save the exported simulation statistics JSON")
 	flag.Int64Var(&seed, "Seed", 42, "simulation random seed")
 	flag.IntVar(&numBlocks, "NumBlocks", 500, "number of blocks")
 	flag.IntVar(&blockSize, "BlockSize", 200, "operations per block")
@@ -61,7 +60,7 @@ func init() {
 // helper function for populating input for SimulateFromSeed
 func getSimulateFromSeedInput(tb testing.TB, w io.Writer, app *GaiaApp) (
 	testing.TB, io.Writer, *baseapp.BaseApp, simulation.AppStateFn, int64,
-	simulation.WeightedOperations, sdk.Invariants, int, int, int, string,
+	simulation.WeightedOperations, sdk.Invariants, int, int, int,
 	bool, bool, bool, bool, bool, map[string]bool) {
 
 	exportParams := exportParamsPath != ""
@@ -69,7 +68,7 @@ func getSimulateFromSeedInput(tb testing.TB, w io.Writer, app *GaiaApp) (
 	return tb, w, app.BaseApp, appStateFn, seed,
 		testAndRunTxs(app), invariants(app),
 		numBlocks, exportParamsHeight, blockSize,
-		exportStatsPath, exportParams, commit, lean, onOperation, allInvariants, app.ModuleAccountAddrs()
+		exportParams, commit, lean, onOperation, allInvariants, app.ModuleAccountAddrs()
 }
 
 func appStateFn(
@@ -597,9 +596,9 @@ func TestAppImportExport(t *testing.T) {
 		prefixes := storeKeysPrefix.Prefixes
 		storeA := ctxA.KVStore(storeKeyA)
 		storeB := ctxB.KVStore(storeKeyB)
-		failedKVs := sdk.DiffKVStores(storeA, storeB, prefixes)
-		fmt.Printf("Compared %d key/value pairs between %s and %s\n", len(failedKVs)/2, storeKeyA, storeKeyB)
-		require.Len(t, failedKVs, 0, simapp.GetSimulationLog(storeKeyA.Name(), app.cdc, newApp.cdc, failedKVs))
+		kvA, kvB, count, equal := sdk.DiffKVStores(storeA, storeB, prefixes)
+		fmt.Printf("Compared %d key/value pairs between %s and %s\n", count, storeKeyA, storeKeyB)
+		require.True(t, equal, simapp.GetSimulationLog(storeKeyA.Name(), app.cdc, newApp.cdc, kvA, kvB))
 	}
 
 }
@@ -715,7 +714,7 @@ func TestAppStateDeterminism(t *testing.T) {
 			simulation.SimulateFromSeed(
 				t, os.Stdout, app.BaseApp, appStateFn, seed,
 				testAndRunTxs(app), []sdk.Invariant{},
-				50, 100, 0, "",
+				50, 100, 0,
 				false, true, false, false, false, app.ModuleAccountAddrs(),
 			)
 			appHash := app.LastCommitID().Hash
@@ -744,7 +743,7 @@ func BenchmarkInvariants(b *testing.B) {
 	_, params, simErr := simulation.SimulateFromSeed(
 		b, ioutil.Discard, app.BaseApp, appStateFn, seed, testAndRunTxs(app),
 		[]sdk.Invariant{}, numBlocks, exportParamsHeight, blockSize,
-		exportStatsPath, exportParams, commit, lean, onOperation, false, app.ModuleAccountAddrs(),
+		exportParams, commit, lean, onOperation, false, app.ModuleAccountAddrs(),
 	)
 
 	// export state and params before the simulation error is checked

@@ -230,7 +230,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	var supplyData supply.GenesisState
 	cdc.MustUnmarshalJSON(supplyDataBz, &supplyData)
 
-	supplyData.Supply = supplyData.Supply.SetTotal(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, totalSupply)))
+	supplyData.Supply = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, totalSupply))
 	supplyDataBz = cdc.MustMarshalJSON(supplyData)
 	genesisState[supply.ModuleName] = supplyDataBz
 

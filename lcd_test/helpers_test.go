@@ -33,8 +33,6 @@ import (
 
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/p2p"
-
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 )
 
@@ -65,15 +63,15 @@ func Request(t *testing.T, port, method, path string, payload []byte) (*http.Res
 // ICS 0 - Tendermint
 // ----------------------------------------------------------------------
 // GET /node_info The properties of the connected node
-func getNodeInfo(t *testing.T, port string) p2p.DefaultNodeInfo {
+func getNodeInfo(t *testing.T, port string) rpc.NodeInfoResponse {
 	res, body := Request(t, port, "GET", "/node_info", nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var nodeInfo p2p.DefaultNodeInfo
+	var nodeInfo rpc.NodeInfoResponse
 	err := cdc.UnmarshalJSON([]byte(body), &nodeInfo)
-	require.Nil(t, err, "Couldn't parse node info")
+	require.Nil(t, err, "failed parse node info")
 
-	require.NotEqual(t, p2p.DefaultNodeInfo{}, nodeInfo, "res: %v", res)
+	require.NotEqual(t, rpc.NodeInfoResponse{}, nodeInfo, "res: %v", res)
 	return nodeInfo
 }
 
@@ -81,11 +79,12 @@ func getNodeInfo(t *testing.T, port string) p2p.DefaultNodeInfo {
 func getSyncStatus(t *testing.T, port string, syncing bool) {
 	res, body := Request(t, port, "GET", "/syncing", nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
-	if syncing {
-		require.Equal(t, "true", body)
-		return
-	}
-	require.Equal(t, "false", body)
+
+	var syncResp rpc.SyncingResponse
+	err := cdc.UnmarshalJSON([]byte(body), &syncResp)
+	require.Nil(t, err, "failed parse syncing info")
+
+	require.Equal(t, syncResp.Syncing, syncing)
 }
 
 // GET /blocks/latest Get the latest block
@@ -113,6 +112,13 @@ func getBlock(t *testing.T, port string, height int, expectFail bool) ctypes.Res
 	return resultBlock
 }
 
+func extractResultFromResponse(t *testing.T, body []byte) []byte {
+	var resp rest.ResponseWithHeight
+	require.NoError(t, cdc.UnmarshalJSON([]byte(body), &resp))
+
+	return resp.Result
+}
+
 // GET /validatorsets/{height} Get a validator set a certain height
 // GET /validatorsets/latest Get the latest validator set
 func getValidatorSets(t *testing.T, port string, height int, expectFail bool) rpc.ResultValidatorsOutput {
@@ -122,8 +128,8 @@ func getValidatorSets(t *testing.T, port string, height int, expectFail bool) rp
 	} else {
 		url = "/validatorsets/latest"
 	}
-	var resultVals rpc.ResultValidatorsOutput
 
+	var resultVals rpc.ResultValidatorsOutput
 	res, body := Request(t, port, "GET", url, nil)
 
 	if expectFail {
@@ -133,8 +139,8 @@ func getValidatorSets(t *testing.T, port string, height int, expectFail bool) rp
 
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	err := cdc.UnmarshalJSON([]byte(body), &resultVals)
-	require.Nil(t, err, "Couldn't parse validatorset")
+	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &resultVals)
+	require.Nil(t, err, "Couldn't parse validator set")
 
 	require.NotEqual(t, rpc.ResultValidatorsOutput{}, resultVals)
 	return resultVals
@@ -254,21 +260,11 @@ func updateKey(t *testing.T, port, name, oldPassword, newPassword string, fail b
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 }
 
-// DELETE /keys/{name} Remove an account
-func deleteKey(t *testing.T, port, name, password string) {
-	dk := clientkeys.NewDeleteKeyReq(password)
-	req, err := cdc.MarshalJSON(dk)
-	require.NoError(t, err)
-	keyEndpoint := fmt.Sprintf("/keys/%s", name)
-	res, body := Request(t, port, "DELETE", keyEndpoint, req)
-	require.Equal(t, http.StatusOK, res.StatusCode, body)
-}
-
 // GET /auth/accounts/{address} Get the account information on blockchain
 func getAccount(t *testing.T, port string, addr sdk.AccAddress) (acc auth.Account) {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/auth/accounts/%s", addr.String()), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
-	require.Nil(t, cdc.UnmarshalJSON([]byte(body), &acc))
+	require.Nil(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &acc))
 
 	return acc
 }
@@ -547,7 +543,7 @@ func getDelegatorDelegations(t *testing.T, port string, delegatorAddr sdk.AccAdd
 
 	var dels staking.DelegationResponses
 
-	err := cdc.UnmarshalJSON([]byte(body), &dels)
+	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &dels)
 	require.Nil(t, err)
 
 	return dels
@@ -560,7 +556,7 @@ func getDelegatorUnbondingDelegations(t *testing.T, port string, delegatorAddr s
 
 	var ubds []staking.UnbondingDelegation
 
-	err := cdc.UnmarshalJSON([]byte(body), &ubds)
+	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &ubds)
 	require.Nil(t, err)
 
 	return ubds
@@ -585,7 +581,7 @@ func getRedelegations(t *testing.T, port string, delegatorAddr sdk.AccAddress, s
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var redels staking.RedelegationResponses
-	err := cdc.UnmarshalJSON([]byte(body), &redels)
+	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &redels)
 	require.Nil(t, err)
 
 	return redels
@@ -598,7 +594,7 @@ func getDelegatorValidators(t *testing.T, port string, delegatorAddr sdk.AccAddr
 
 	var bondedValidators []staking.Validator
 
-	err := cdc.UnmarshalJSON([]byte(body), &bondedValidators)
+	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &bondedValidators)
 	require.Nil(t, err)
 
 	return bondedValidators
@@ -610,7 +606,7 @@ func getDelegatorValidator(t *testing.T, port string, delegatorAddr sdk.AccAddre
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var bondedValidator staking.Validator
-	err := cdc.UnmarshalJSON([]byte(body), &bondedValidator)
+	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &bondedValidator)
 	require.Nil(t, err)
 
 	return bondedValidator
@@ -642,7 +638,7 @@ func getDelegation(t *testing.T, port string, delegatorAddr sdk.AccAddress, vali
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var bond staking.DelegationResponse
-	err := cdc.UnmarshalJSON([]byte(body), &bond)
+	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &bond)
 	require.Nil(t, err)
 
 	return bond
@@ -659,7 +655,7 @@ func getUnbondingDelegation(t *testing.T, port string, delegatorAddr sdk.AccAddr
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var unbond staking.UnbondingDelegation
-	err := cdc.UnmarshalJSON([]byte(body), &unbond)
+	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &unbond)
 	require.Nil(t, err)
 
 	return unbond
@@ -671,7 +667,7 @@ func getValidators(t *testing.T, port string) []staking.Validator {
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var validators []staking.Validator
-	err := cdc.UnmarshalJSON([]byte(body), &validators)
+	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &validators)
 	require.Nil(t, err)
 
 	return validators
@@ -683,7 +679,7 @@ func getValidator(t *testing.T, port string, validatorAddr sdk.ValAddress) staki
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var validator staking.Validator
-	err := cdc.UnmarshalJSON([]byte(body), &validator)
+	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &validator)
 	require.Nil(t, err)
 
 	return validator
@@ -695,7 +691,7 @@ func getValidatorDelegations(t *testing.T, port string, validatorAddr sdk.ValAdd
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var delegations []staking.Delegation
-	err := cdc.UnmarshalJSON([]byte(body), &delegations)
+	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &delegations)
 	require.Nil(t, err)
 
 	return delegations
@@ -707,32 +703,10 @@ func getValidatorUnbondingDelegations(t *testing.T, port string, validatorAddr s
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var ubds []staking.UnbondingDelegation
-	err := cdc.UnmarshalJSON([]byte(body), &ubds)
+	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &ubds)
 	require.Nil(t, err)
 
 	return ubds
-}
-
-// GET /staking/pool Get the current state of the staking pool
-func getStakingPool(t *testing.T, port string) staking.Pool {
-	res, body := Request(t, port, "GET", "/staking/pool", nil)
-	require.Equal(t, http.StatusOK, res.StatusCode, body)
-	require.NotNil(t, body)
-	var pool staking.Pool
-	err := cdc.UnmarshalJSON([]byte(body), &pool)
-	require.Nil(t, err)
-	return pool
-}
-
-// GET /staking/parameters Get the current staking parameter values
-func getStakingParams(t *testing.T, port string) staking.Params {
-	res, body := Request(t, port, "GET", "/staking/parameters", nil)
-	require.Equal(t, http.StatusOK, res.StatusCode, body)
-
-	var params staking.Params
-	err := cdc.UnmarshalJSON([]byte(body), &params)
-	require.Nil(t, err)
-	return params
 }
 
 // ----------------------------------------------------------------------
@@ -860,7 +834,7 @@ func getProposalsAll(t *testing.T, port string) []gov.Proposal {
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var proposals []gov.Proposal
-	err := cdc.UnmarshalJSON([]byte(body), &proposals)
+	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &proposals)
 	require.Nil(t, err)
 	return proposals
 }
@@ -871,7 +845,7 @@ func getProposalsFilterDepositor(t *testing.T, port string, depositorAddr sdk.Ac
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var proposals []gov.Proposal
-	err := cdc.UnmarshalJSON([]byte(body), &proposals)
+	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &proposals)
 	require.Nil(t, err)
 	return proposals
 }
@@ -882,7 +856,7 @@ func getProposalsFilterVoter(t *testing.T, port string, voterAddr sdk.AccAddress
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var proposals []gov.Proposal
-	err := cdc.UnmarshalJSON([]byte(body), &proposals)
+	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &proposals)
 	require.Nil(t, err)
 	return proposals
 }
@@ -893,7 +867,7 @@ func getProposalsFilterVoterDepositor(t *testing.T, port string, voterAddr, depo
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var proposals []gov.Proposal
-	err := cdc.UnmarshalJSON([]byte(body), &proposals)
+	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &proposals)
 	require.Nil(t, err)
 	return proposals
 }
@@ -904,7 +878,7 @@ func getProposalsFilterStatus(t *testing.T, port string, status gov.ProposalStat
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var proposals []gov.Proposal
-	err := cdc.UnmarshalJSON([]byte(body), &proposals)
+	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &proposals)
 	require.Nil(t, err)
 	return proposals
 }
@@ -949,7 +923,7 @@ func getDeposits(t *testing.T, port string, proposalID uint64) []gov.Deposit {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/gov/proposals/%d/deposits", proposalID), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 	var deposits []gov.Deposit
-	err := cdc.UnmarshalJSON([]byte(body), &deposits)
+	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &deposits)
 	require.Nil(t, err)
 	return deposits
 }
@@ -958,9 +932,11 @@ func getDeposits(t *testing.T, port string, proposalID uint64) []gov.Deposit {
 func getTally(t *testing.T, port string, proposalID uint64) gov.TallyResult {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/gov/proposals/%d/tally", proposalID), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
+
 	var tally gov.TallyResult
-	err := cdc.UnmarshalJSON([]byte(body), &tally)
+	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &tally)
 	require.Nil(t, err)
+
 	return tally
 }
 
@@ -1005,7 +981,7 @@ func getVotes(t *testing.T, port string, proposalID uint64) []gov.Vote {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/gov/proposals/%d/votes", proposalID), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 	var votes []gov.Vote
-	err := cdc.UnmarshalJSON([]byte(body), &votes)
+	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &votes)
 	require.Nil(t, err)
 	return votes
 }
@@ -1014,9 +990,11 @@ func getVotes(t *testing.T, port string, proposalID uint64) []gov.Vote {
 func getProposal(t *testing.T, port string, proposalID uint64) gov.Proposal {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/gov/proposals/%d", proposalID), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
+
 	var proposal gov.Proposal
-	err := cdc.UnmarshalJSON([]byte(body), &proposal)
+	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &proposal)
 	require.Nil(t, err)
+
 	return proposal
 }
 
@@ -1024,9 +1002,11 @@ func getProposal(t *testing.T, port string, proposalID uint64) gov.Proposal {
 func getDeposit(t *testing.T, port string, proposalID uint64, depositorAddr sdk.AccAddress) gov.Deposit {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/gov/proposals/%d/deposits/%s", proposalID, depositorAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
+
 	var deposit gov.Deposit
-	err := cdc.UnmarshalJSON([]byte(body), &deposit)
+	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &deposit)
 	require.Nil(t, err)
+
 	return deposit
 }
 
@@ -1034,9 +1014,11 @@ func getDeposit(t *testing.T, port string, proposalID uint64, depositorAddr sdk.
 func getVote(t *testing.T, port string, proposalID uint64, voterAddr sdk.AccAddress) gov.Vote {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/gov/proposals/%d/votes/%s", proposalID, voterAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
+
 	var vote gov.Vote
-	err := cdc.UnmarshalJSON([]byte(body), &vote)
+	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &vote)
 	require.Nil(t, err)
+
 	return vote
 }
 
@@ -1046,7 +1028,7 @@ func getProposer(t *testing.T, port string, proposalID uint64) gcutils.Proposer 
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var proposer gcutils.Proposer
-	err := cdc.UnmarshalJSON([]byte(body), &proposer)
+	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &proposer)
 
 	require.Nil(t, err)
 	return proposer
@@ -1058,8 +1040,9 @@ func getDepositParam(t *testing.T, port string) gov.DepositParams {
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var depositParams gov.DepositParams
-	err := cdc.UnmarshalJSON([]byte(body), &depositParams)
+	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &depositParams)
 	require.Nil(t, err)
+
 	return depositParams
 }
 
@@ -1094,7 +1077,7 @@ func getSigningInfo(t *testing.T, port string, validatorPubKey string) slashing.
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var signingInfo slashing.ValidatorSigningInfo
-	err := cdc.UnmarshalJSON([]byte(body), &signingInfo)
+	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &signingInfo)
 	require.Nil(t, err)
 
 	return signingInfo
@@ -1109,7 +1092,7 @@ func getSigningInfoList(t *testing.T, port string) []slashing.ValidatorSigningIn
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var signingInfo []slashing.ValidatorSigningInfo
-	err := cdc.UnmarshalJSON([]byte(body), &signingInfo)
+	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &signingInfo)
 	require.Nil(t, err)
 
 	return signingInfo

@@ -809,7 +809,7 @@ func doSubmitCommunityPoolSpendProposal(
 		Proposer:    proposerAddr,
 		Recipient:   proposerAddr,
 		Deposit:     sdk.Coins{sdk.NewCoin(sdk.DefaultBondDenom, amount)},
-		Amount:      sdk.Coins{sdk.NewCoin("test", sdk.NewInt(5))},
+		Amount:      sdk.Coins{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(5))},
 	}
 
 	req, err := cdc.MarshalJSON(pr)

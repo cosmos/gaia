@@ -29,7 +29,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
-
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 
@@ -225,24 +224,28 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 		accs = append(accs, acc)
 	}
 
+	// distr data
+	distrDataBz := genesisState[distr.ModuleName]
+	var distrData distr.GenesisState
+	cdc.MustUnmarshalJSON(distrDataBz, &distrData)
+
+	commPoolAmt := sdk.NewInt(10)
+	distrData.FeePool.CommunityPool = sdk.DecCoins{sdk.NewDecCoin(sdk.DefaultBondDenom, commPoolAmt)}
+	distrDataBz = cdc.MustMarshalJSON(distrData)
+	genesisState[distr.ModuleName] = distrDataBz
+
+	// staking and genesis accounts
+	genesisState[staking.ModuleName] = cdc.MustMarshalJSON(stakingData)
+	genesisState[genaccounts.ModuleName] = cdc.MustMarshalJSON(accs)
+
 	// supply data
 	supplyDataBz := genesisState[supply.ModuleName]
 	var supplyData supply.GenesisState
 	cdc.MustUnmarshalJSON(supplyDataBz, &supplyData)
 
-	supplyData.Supply = supplyData.Supply.SetTotal(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, totalSupply)))
+	supplyData.Supply = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, totalSupply.Add(commPoolAmt)))
 	supplyDataBz = cdc.MustMarshalJSON(supplyData)
 	genesisState[supply.ModuleName] = supplyDataBz
-
-	// distr data
-	distrDataBz := genesisState[distr.ModuleName]
-	var distrData distr.GenesisState
-	cdc.MustUnmarshalJSON(distrDataBz, &distrData)
-	distrData.FeePool.CommunityPool = sdk.DecCoins{sdk.DecCoin{Denom: "test", Amount: sdk.NewDecFromInt(sdk.NewInt(10))}}
-	distrDataBz = cdc.MustMarshalJSON(distrData)
-	genesisState[distr.ModuleName] = distrDataBz
-	genesisState[staking.ModuleName] = cdc.MustMarshalJSON(stakingData)
-	genesisState[genaccounts.ModuleName] = cdc.MustMarshalJSON(accs)
 
 	// mint genesis (none set within genesisState)
 	mintData := mint.DefaultGenesisState()

@@ -375,7 +375,7 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 	db, _ = sdk.NewLevelDB("Simulation", dir)
 	defer func() {
 		db.Close()
-		os.RemoveAll(dir)
+		_ = os.RemoveAll(dir)
 	}()
 	app := NewGaiaApp(logger, db, nil, true, 0)
 
@@ -444,7 +444,7 @@ func TestFullAppSimulation(t *testing.T) {
 
 	defer func() {
 		db.Close()
-		os.RemoveAll(dir)
+		_ = os.RemoveAll(dir)
 	}()
 
 	app := NewGaiaApp(logger, db, nil, true, 0, fauxMerkleModeOpt)
@@ -502,7 +502,7 @@ func TestAppImportExport(t *testing.T) {
 
 	defer func() {
 		db.Close()
-		os.RemoveAll(dir)
+		_ = os.RemoveAll(dir)
 	}()
 
 	app := NewGaiaApp(logger, db, nil, true, 0, fauxMerkleModeOpt)
@@ -563,11 +563,11 @@ func TestAppImportExport(t *testing.T) {
 		panic(err)
 	}
 
-	ctxB := newApp.NewContext(true, abci.Header{})
+	ctxB := newApp.NewContext(true, abci.Header{Height: app.LastBlockHeight()})
 	newApp.mm.InitGenesis(ctxB, genesisState)
 
 	fmt.Printf("Comparing stores...\n")
-	ctxA := app.NewContext(true, abci.Header{})
+	ctxA := app.NewContext(true, abci.Header{Height: app.LastBlockHeight()})
 
 	type StoreKeysPrefixes struct {
 		A        sdk.StoreKey

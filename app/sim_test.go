@@ -720,10 +720,10 @@ func TestAppStateDeterminism(t *testing.T) {
 
 			// Run randomized simulation
 			_, _, err := simulation.SimulateFromSeed(
-				t, os.Stdout, app.BaseApp, appStateFn, seed,
-				testAndRunTxs(app), []sdk.Invariant{},
-				1, 50, 100, 0, "",
-				false, true, false, false, false, app.ModuleAccountAddrs(),
+				t, os.Stdout, app.BaseApp, appStateFn, seed, testAndRunTxs(app),
+				[]sdk.Invariant{}, 1, numBlocks, exportParamsHeight,
+				blockSize, "", false, commit, lean,
+				false, false, app.ModuleAccountAddrs(),
 			)
 			require.NoError(t, err)
 

@@ -6,8 +6,9 @@
 SIMAPP = github.com/cosmos/gaia/app
 
 sim-gaia-nondeterminism:
-	@echo "Running nondeterminism test..."
-	@go test -mod=readonly $(SIMAPP) -run TestAppStateDeterminism -Enabled=true -v -timeout 10m
+	@echo "Running non-determinism test..."
+	@go test -mod=readonly $(SIMAPP) -run TestAppStateDeterminism -Enabled=true \
+		-NumBlocks=100 -BlockSize=200 -Commit=true -v -timeout 24h
 
 sim-gaia-custom-genesis-fast:
 	@echo "Running custom genesis simulation..."

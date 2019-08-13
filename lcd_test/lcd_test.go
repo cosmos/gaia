@@ -116,7 +116,7 @@ func TestCoinSend(t *testing.T) {
 
 	// test failure with too little gas
 	res, body, _ = doTransferWithGas(t, port, seed, name1, memo, pw, addr, "100", 0, false, true, fees)
-	require.Equal(t, http.StatusInternalServerError, res.StatusCode, body)
+	require.Equal(t, http.StatusOK, res.StatusCode, body)
 	require.Nil(t, err)
 
 	// test failure with negative gas
@@ -129,12 +129,11 @@ func TestCoinSend(t *testing.T) {
 
 	// test failure with 0 gas
 	res, body, _ = doTransferWithGas(t, port, seed, name1, memo, pw, addr, "0", 0, false, true, fees)
-	require.Equal(t, http.StatusInternalServerError, res.StatusCode, body)
+	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	// test failure with wrong adjustment
 	res, body, _ = doTransferWithGas(t, port, seed, name1, memo, pw, addr, client.GasFlagAuto, 0.1, false, true, fees)
-
-	require.Equal(t, http.StatusInternalServerError, res.StatusCode, body)
+	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	// run simulation and test success with estimated gas
 	res, body, _ = doTransferWithGas(

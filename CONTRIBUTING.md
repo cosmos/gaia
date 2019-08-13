@@ -1,17 +1,18 @@
 # Contributing
 
-* [Pull Requests](#pull-requests)
-  * [Process for reviewing PRs](#process-for-reviewing-prs)
-  * [Updating Documentation](#updating-documentation)
-* [Forking](#forking)
-* [Dependencies](#dependencies)
-* [Testing](#testing)
-* [Branching Model and Release](#branching-model-and-release)
-  * [PR Targeting](#pr-targeting)
-  * [Development Procedure](#development-procedure)
-  * [Pull Merge Procedure](#pull-merge-procedure)
-  * [Release Procedure](#release-procedure)
-  * [Point Release Procedure](#point-release-procedure)
+- [Contributing](#contributing)
+  - [Pull Requests](#pull-requests)
+    - [Process for reviewing PRs](#process-for-reviewing-prs)
+    - [Updating Documentation](#updating-documentation)
+  - [Forking](#forking)
+  - [Dependencies](#dependencies)
+  - [Testing](#testing)
+  - [Branching Model and Release](#branching-model-and-release)
+    - [PR Targeting](#pr-targeting)
+    - [Development Procedure](#development-procedure)
+    - [Pull Merge Procedure](#pull-merge-procedure)
+    - [Release Procedure](#release-procedure)
+    - [Point Release Procedure](#point-release-procedure)
 
 Thank you for considering making contributions to Gaia and related
 repositories!
@@ -182,14 +183,21 @@ only pull requests targeted directly against master.
   - merge pull request
 
 ### Release Procedure
-  - start on `master`
-  - create the release candidate branch `rc/v*` (going forward known as **RC**) and ensure it's protected against pushing from anyone except the release manager/coordinator. **no PRs targeting this branch should be merged unless exceptional circumstances arise**
-  - on the `RC` branch, use `clog` to prepare the `CHANGELOG.md` and kick off a large round of simulation testing (e.g. 400 seeds for 2k blocks).
-  - if errors are found during the simulation testing, commit the fixes to `master` and create a new `RC` branch (making sure to increment the `rcN`)
-  - after simulation has successfully completed, create the release branch (`release/vX.XX.X`) from the `RC` branch
-  - merge the release branch to `master` to incorporate the `CHANGELOG.md` updates
-  - delete the `RC` branches
- 
+
+- Start on `master`
+- Create the release candidate branch `rc/v*` (going forward known as **RC**)
+  and ensure it's protected against pushing from anyone except the release
+  manager/coordinator
+  - **no PRs targeting this branch should be merged unless exceptional circumstances arise**
+- On the `RC` branch, prepare a new version section in the `CHANGELOG.md` and
+  kick off a large round of simulation testing (e.g. 400 seeds for 2k blocks)
+- If errors are found during the simulation testing, commit the fixes to `master`
+  and create a new `RC` branch (making sure to increment the `rcN`)
+- After simulation has successfully completed, create the release branch
+  (`release/vX.XX.X`) from the `RC` branch
+- Merge the release branch to `master` to incorporate the `CHANGELOG.md` updates
+- Delete the `RC` branches
+
 ### Point Release Procedure
 
 At the moment, only a single major release will be supported, so all point

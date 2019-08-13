@@ -32,7 +32,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 
-	"github.com/tendermint/go-amino"
 	tmcfg "github.com/tendermint/tendermint/config"
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/ed25519"
@@ -172,7 +171,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 			sdk.ValAddress(operAddr),
 			pubKey,
 			sdk.NewCoin(sdk.DefaultBondDenom, startTokens),
-			staking.NewDescription(fmt.Sprintf("validator-%d", i+1), "", "", ""),
+			staking.NewDescription(fmt.Sprintf("validator-%d", i+1), "", "", "", ""),
 			staking.NewCommissionRates(sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec()),
 			sdk.OneInt(),
 		)
@@ -354,7 +353,7 @@ func registerRoutes(rs *lcd.RestServer) {
 	gapp.ModuleBasics.RegisterRESTRoutes(rs.CliCtx, rs.Mux)
 }
 
-var cdc = amino.NewCodec()
+var cdc = codec.New()
 
 func init() {
 	ctypes.RegisterAmino(cdc)

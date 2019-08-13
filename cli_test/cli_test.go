@@ -105,8 +105,9 @@ func TestGaiaCLIMinimumFees(t *testing.T) {
 	barAddr := f.KeyAddress(keyBar)
 
 	// Send a transaction that will get rejected
-	success, _, _ := f.TxSend(keyFoo, barAddr, sdk.NewInt64Coin(fee2Denom, 10), "-y")
-	require.False(f.T, success)
+	success, stdOut, _ := f.TxSend(keyFoo, barAddr, sdk.NewInt64Coin(fee2Denom, 10), "-y")
+	require.Contains(t, stdOut, "insufficient fees")
+	require.True(f.T, success)
 	tests.WaitForNextNBlocksTM(1, f.Port)
 
 	// Ensure tx w/ correct fees pass
@@ -118,7 +119,8 @@ func TestGaiaCLIMinimumFees(t *testing.T) {
 	// Ensure tx w/ improper fees fails
 	txFees = fmt.Sprintf("--fees=%s", sdk.NewInt64Coin(feeDenom, 1))
 	success, _, _ = f.TxSend(keyFoo, barAddr, sdk.NewInt64Coin(fooDenom, 10), txFees, "-y")
-	require.False(f.T, success)
+	require.Contains(t, stdOut, "insufficient fees")
+	require.True(f.T, success)
 
 	// Cleanup testing directories
 	f.Cleanup()
@@ -297,8 +299,9 @@ func TestGaiaCLIGasAuto(t *testing.T) {
 
 	// Test failure with auto gas disabled and very little gas set by hand
 	sendTokens := sdk.TokensFromConsensusPower(10)
-	success, _, _ := f.TxSend(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens), "--gas=10", "-y")
-	require.False(t, success)
+	success, stdOut, _ := f.TxSend(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens), "--gas=10", "-y")
+	require.Contains(t, stdOut, "out of gas in location")
+	require.True(t, success)
 
 	// Check state didn't change
 	fooAcc = f.QueryAccount(fooAddr)
@@ -313,8 +316,9 @@ func TestGaiaCLIGasAuto(t *testing.T) {
 	require.Equal(t, startTokens, fooAcc.GetCoins().AmountOf(denom))
 
 	// Test failure with 0 gas
-	success, _, _ = f.TxSend(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens), "--gas=0", "-y")
-	require.False(t, success)
+	success, stdOut, _ = f.TxSend(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens), "--gas=0", "-y")
+	require.Contains(t, stdOut, "out of gas in location")
+	require.True(t, success)
 
 	// Check state didn't change
 	fooAcc = f.QueryAccount(fooAddr)

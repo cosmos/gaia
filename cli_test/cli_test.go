@@ -137,10 +137,11 @@ func TestGaiaCLIGasPrices(t *testing.T) {
 
 	// insufficient gas prices (tx fails)
 	badGasPrice, _ := sdk.NewDecFromStr("0.000003")
-	success, _, _ := f.TxSend(
+	success, stdOut, _ := f.TxSend(
 		keyFoo, barAddr, sdk.NewInt64Coin(fooDenom, 50),
 		fmt.Sprintf("--gas-prices=%s", sdk.NewDecCoinFromDec(feeDenom, badGasPrice)), "-y")
-	require.False(t, success)
+	require.Contains(t, stdOut, "insufficient fees")
+	require.True(t, success)
 
 	// wait for a block confirmation
 	tests.WaitForNextNBlocksTM(1, f.Port)
@@ -188,10 +189,11 @@ func TestGaiaCLIFeesDeduction(t *testing.T) {
 
 	// insufficient funds (coins + fees) tx fails
 	largeCoins := sdk.TokensFromConsensusPower(10000000)
-	success, _, _ = f.TxSend(
+	success, stdOut, _ := f.TxSend(
 		keyFoo, barAddr, sdk.NewCoin(fooDenom, largeCoins),
 		fmt.Sprintf("--fees=%s", sdk.NewInt64Coin(feeDenom, 2)), "-y")
-	require.False(t, success)
+	require.Contains(t, stdOut, "insufficient account funds")
+	require.True(t, success)
 
 	// Wait for a block
 	tests.WaitForNextNBlocksTM(1, f.Port)
@@ -980,8 +982,9 @@ func TestGaiaCLIMultisignInsufficientCosigners(t *testing.T) {
 	require.False(t, success)
 
 	// Broadcast the transaction
-	success, _, _ = f.TxBroadcast(signedTxFile.Name())
-	require.False(t, success)
+	success, stdOut, _ := f.TxBroadcast(signedTxFile.Name())
+	require.Contains(t, stdOut, "signature verification failed")
+	require.True(t, success)
 
 	// Cleanup testing directories
 	f.Cleanup()

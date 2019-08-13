@@ -2,9 +2,10 @@ sections:
   breaking: Breaking Changes
   features: Features
   improvements: Improvements
-  bugfixes: Bugfixes
+  bugfixes: Bug Fixes
 
 tags:
   - gaiad
   - gaiacli
   - rest
+  - sdk

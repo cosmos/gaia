@@ -1,10 +1,14 @@
-## Install Gaia
+# Install Gaia
 
-This guide will explain how to install the `gaiad` and `gaiacli` entrypoints onto your system. With these installed on a server, you can participate in the mainnet as either a [Full Node](./join-mainnet.md) or a [Validator](./validators/validator-setup.md).
+This guide will explain how to install the `gaiad` and `gaiacli` entrypoints
+onto your system. With these installed on a server, you can participate in the
+mainnet as either a [Full Node](./join-mainnet.md) or a
+[Validator](./validators/validator-setup.md).
 
-### Install Go
+## Install Go
 
-Install `go` by following the [official docs](https://golang.org/doc/install). Remember to set your `$GOPATH` and `$PATH` environment variables, for example:
+Install `go` by following the [official docs](https://golang.org/doc/install).
+Remember to set your `$GOPATH` and `$PATH` environment variables, for example:
 
 ```bash
 mkdir -p $HOME/go/bin
@@ -17,9 +21,10 @@ source ~/.bash_profile
 **Go 1.12+** is required for the Cosmos SDK.
 :::
 
-### Install the binaries
+## Install the binaries
 
-Next, let's install the latest version of Gaia. Make sure you `git checkout` the correct [released version](https://github.com/cosmos/gaia/releases).
+Next, let's install the latest version of Gaia. Make sure you `git checkout` the
+correct [released version](https://github.com/cosmos/gaia/releases).
 
 ```bash
 git clone -b <latest-release-tag> https://github.com/cosmos/gaia
@@ -37,14 +42,17 @@ $ gaiacli version --long
 
 `gaiacli` for instance should output something similar to:
 
-```
-cosmos-sdk: 0.33.0
-git commit: 7b4104aced52aa5b59a96c28b5ebeea7877fc4f0
-build tags: netgo ledger
-go version go1.12 linux/amd64
+```shell
+name: gaia
+server_name: gaiad
+client_name: gaiacli
+version: 1.0.0
+commit: 89e6316a27343304d332aadfe2869847bf52331c
+build_tags: netgo,ledger
+go: go version go1.12.5 darwin/amd64
 ```
 
-##### Build Tags
+### Build Tags
 
 Build tags indicate special features that have been enabled in the binary.
 
@@ -57,7 +65,7 @@ Build tags indicate special features that have been enabled in the binary.
 
 **Do not use snap at this time to install the binaries for production until we have a reproducible binary system.**
 
-### Developer Workflow
+## Developer Workflow
 
 To test any changes made in the SDK or Tendermint, a `replace` clause needs to be added to `go.mod` providing the correct import path.
 
@@ -66,6 +74,6 @@ To test any changes made in the SDK or Tendermint, a `replace` clause needs to b
 - Run `make clean install` or `make clean build`
 - Test changes
 
-### Next
+## Next
 
 Now you can [join the mainnet](./join-mainnet.md), [the public testnet](./join-testnet.md) or [create you own testnet](./deploy-testnet.md)

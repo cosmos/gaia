@@ -24,7 +24,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
-## [1.0.0] - 2019-08-13
+## [v1.0.0] - 2019-08-13
 
 ### Bug Fixes
 
@@ -82,4 +82,4 @@ Ref: https://keepachangelog.com/en/1.0.0/
 <!-- Release links -->
 
 [Unreleased]: https://github.com/cosmos/gaia/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/cosmos/gaia/releases/tag/v1.0.0
+[v1.0.0]: https://github.com/cosmos/gaia/releases/tag/v1.0.0

@@ -1,6 +1,30 @@
+<!--
+Guiding Principles:
+
+Changelogs are for humans, not machines.
+There should be an entry for every single version.
+The same types of changes should be grouped.
+Versions and sections should be linkable.
+The latest version comes first.
+The release date of each version is displayed.
+Mention whether you follow Semantic Versioning.
+
+Types of changes (Stanzas):
+
+"Features" for new features.
+"Improvements" for changes in existing functionality.
+"Deprecated" for soon-to-be removed features.
+"Bug Fixes" for any bug fixes.
+"Breaking" for breaking API changes.
+
+Ref: https://keepachangelog.com/en/1.0.0/
+-->
+
 # Changelog
 
-## 1.0.0
+## [Unreleased]
+
+## [1.0.0] - 2019-08-13
 
 ### Bug Fixes
 
@@ -54,3 +78,8 @@
 * (rest) [\#4123](https://github.com/cosmos/cosmos-sdk/issues/4123) Fix typo, url error and outdated command description of doc clients.
 * (rest) [\#4129](https://github.com/cosmos/cosmos-sdk/issues/4129) Translate doc clients to chinese.
 * (rest) [\#4141](https://github.com/cosmos/cosmos-sdk/issues/4141) Fix /txs/encode endpoint
+
+<!-- Release links -->
+
+[Unreleased]: https://github.com/cosmos/gaia/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/cosmos/gaia/releases/tag/v1.0.0

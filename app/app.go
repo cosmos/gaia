@@ -256,7 +256,7 @@ func (app *GaiaApp) LoadHeight(height int64) error {
 func (app *GaiaApp) ModuleAccountAddrs() map[string]bool {
 	modAccAddrs := make(map[string]bool)
 	for acc := range maccPerms {
-		modAccAddrs[app.supplyKeeper.GetModuleAddress(acc).String()] = true
+		modAccAddrs[supply.NewModuleAddress(acc).String()] = true
 	}
 
 	return modAccAddrs

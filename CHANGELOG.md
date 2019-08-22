@@ -35,6 +35,17 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+## [v2.0.0] - 2019-08-22
+
+### Bug Fixes
+
+* [\#104](https://github.com/cosmos/gaia/issues/104) Fix `ModuleAccountAddrs` to
+not rely on the `x/supply` keeper to get module account addresses for blacklisting.
+
+### Breaking Changes
+
+* (sdk) Update SDK version to v0.37.0
+
 ## [v1.0.0] - 2019-08-13
 
 ### Bug Fixes
@@ -92,5 +103,6 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v2.0.0...HEAD
+[v2.0.0]: https://github.com/cosmos/gaia/releases/tag/v2.0.0
 [v1.0.0]: https://github.com/cosmos/gaia/releases/tag/v1.0.0

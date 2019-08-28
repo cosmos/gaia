@@ -42,9 +42,13 @@ Ref: https://keepachangelog.com/en/1.0.0/
 * [\#104](https://github.com/cosmos/gaia/issues/104) Fix `ModuleAccountAddrs` to
 not rely on the `x/supply` keeper to get module account addresses for blacklisting.
 
-### Breaking Changes
+### State Machine Breaking Changes
 
 * (sdk) Update SDK version to v0.37.0
+
+### API Breaking Changes
+
+### Client Breaking Changes
 
 ## [v1.0.0] - 2019-08-13
 

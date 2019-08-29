@@ -26,7 +26,8 @@ Types of changes (Stanzas):
 "Improvements" for changes in existing functionality.
 "Deprecated" for soon-to-be removed features.
 "Bug Fixes" for any bug fixes.
-"Breaking" for breaking API changes.
+"Client Breaking" for breaking CLI commands and REST routes.
+"State Machine Breaking" for breaking the AppState
 
 Ref: https://keepachangelog.com/en/1.0.0/
 -->
@@ -45,8 +46,6 @@ not rely on the `x/supply` keeper to get module account addresses for blacklisti
 ### State Machine Breaking Changes
 
 * (sdk) Update SDK version to v0.37.0
-
-### API Breaking Changes
 
 ### Client Breaking Changes
 

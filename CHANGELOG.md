@@ -26,7 +26,8 @@ Types of changes (Stanzas):
 "Improvements" for changes in existing functionality.
 "Deprecated" for soon-to-be removed features.
 "Bug Fixes" for any bug fixes.
-"Breaking" for breaking API changes.
+"Client Breaking" for breaking CLI commands and REST routes.
+"State Machine Breaking" for breaking the AppState
 
 Ref: https://keepachangelog.com/en/1.0.0/
 -->
@@ -42,7 +43,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 * [\#104](https://github.com/cosmos/gaia/issues/104) Fix `ModuleAccountAddrs` to
 not rely on the `x/supply` keeper to get module account addresses for blacklisting.
 
-### Breaking Changes
+### State Machine Breaking Changes
 
 * (sdk) Update SDK version to v0.37.0
 

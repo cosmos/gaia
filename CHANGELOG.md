@@ -47,7 +47,6 @@ not rely on the `x/supply` keeper to get module account addresses for blacklisti
 
 * (sdk) Update SDK version to v0.37.0
 
-### Client Breaking Changes
 
 ## [v1.0.0] - 2019-08-13
 

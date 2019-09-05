@@ -40,10 +40,6 @@ github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7
 github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
 github.com/cosmos/cosmos-sdk v0.34.4-0.20190904173332-f010d2c6f109 h1:RGCapQh/9GLqJRHYSBK0A1PjSEEFiAMgkAIzlWaWO3k=
 github.com/cosmos/cosmos-sdk v0.34.4-0.20190904173332-f010d2c6f109/go.mod h1:ySFgSuZuUN2uleHgFJN/LiNcaeA+Q8NxOogiohpPhdQ=
-github.com/cosmos/cosmos-sdk v0.34.4-0.20190905162900-2d18f1e7e94b h1:nN3w1QBnv3vqW2bsBiO7sM5oH14AC3JpWLWlTkNtGSk=
-github.com/cosmos/cosmos-sdk v0.34.4-0.20190905162900-2d18f1e7e94b/go.mod h1:De67lt7tcfjIhSv58L/96UEdMvR3GZhOtvHntfEglDA=
-github.com/cosmos/cosmos-sdk v0.37.0 h1:S2I3NDGN2wqfGlY5KqkAHTpfezjhgeqDxrCxhlhd528=
-github.com/cosmos/cosmos-sdk v0.37.0/go.mod h1:3b/k/Zd+YDuttSmEJdNkxga1H5EIiDUhSYeErAHQN7A=
 github.com/cosmos/go-bip39 v0.0.0-20180618194314-52158e4697b8/go.mod h1:tSxLoYXyBmiFeKpvmq4dzayMdCjCnu8uqmCysIGBT2Y=
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d h1:49RLWk1j44Xu4fjHb6JFYmeUnDORVwHNkDxaQ0ctCVU=
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d/go.mod h1:tSxLoYXyBmiFeKpvmq4dzayMdCjCnu8uqmCysIGBT2Y=
@@ -145,7 +141,6 @@ github.com/libp2p/go-buffer-pool v0.0.2/go.mod h1:MvaB6xw5vOrDl8rYZGLFdKAuk/hRoR
 github.com/magiconair/properties v1.8.0/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/magiconair/properties v1.8.1 h1:ZC2Vc7/ZFkGmsVC9KvOjumD+G5lXy2RtTKyzRKO2BQ4=
 github.com/magiconair/properties v1.8.1/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
-github.com/mattn/go-isatty v0.0.6/go.mod h1:Iq45c/XA43vh69/j3iqttzPXn0bhXyGjM0Hdxcsrc5s=
 github.com/mattn/go-isatty v0.0.9 h1:d5US/mDsogSGW37IV293h//ZFaeajb69h+EHFsv2xGg=
 github.com/mattn/go-isatty v0.0.9/go.mod h1:YNRxwqDuOph6SZLI9vUUz6OYw3QyUt7WiY2yME+cCiQ=
 github.com/matttproud/golang_protobuf_extensions v1.0.1 h1:4hp9jkHxhMHkqkrB3Ix0jegS5sx/RkqARlsWZ6pIwiU=
@@ -207,7 +202,6 @@ github.com/prometheus/procfs v0.0.2/go.mod h1:TjEm7ze935MbeOT/UhFTIMYKhuLP4wbCsT
 github.com/prometheus/procfs v0.0.3 h1:CTwfnzjQ+8dS6MhHHu4YswVAD99sL2wjPqP+VkURmKE=
 github.com/prometheus/procfs v0.0.3/go.mod h1:4A/X28fw3Fc593LaREMrKMqOKvUAntwMDaekg4FpcdQ=
 github.com/prometheus/tsdb v0.7.1/go.mod h1:qhTCs0VvXwvX/y3TZrWD7rabWM+ijKTux40TwIPHuXU=
-github.com/rakyll/statik v0.1.5/go.mod h1:OEi9wJV/fMUAGx1eNjq75DKDsJVuEv1U0oYdX6GX8Zs=
 github.com/rakyll/statik v0.1.6 h1:uICcfUXpgqtw2VopbIncslhAmE5hwc4g20TEyEENBNs=
 github.com/rakyll/statik v0.1.6/go.mod h1:OEi9wJV/fMUAGx1eNjq75DKDsJVuEv1U0oYdX6GX8Zs=
 github.com/rcrowley/go-metrics v0.0.0-20180503174638-e2704e165165/go.mod h1:bCqnVzQkZxMG4s8nGwiZ5l3QUCyqpo9Y+/ZMZ9VjZe4=
@@ -251,7 +245,6 @@ github.com/syndtr/goleveldb v1.0.1-0.20190318030020-c3a204f8e965 h1:1oFLiOyVl+W7
 github.com/syndtr/goleveldb v1.0.1-0.20190318030020-c3a204f8e965/go.mod h1:9OrXJhf154huy1nPWmuSrkgjPUtUNhA+Zmy+6AESzuA=
 github.com/tendermint/btcd v0.1.1 h1:0VcxPfflS2zZ3RiOAHkBiFUcPvbtRj5O7zHmcJWHV7s=
 github.com/tendermint/btcd v0.1.1/go.mod h1:DC6/m53jtQzr/NFmMNEu0rxf18/ktVoVtMrnDD5pN+U=
-github.com/tendermint/crypto v0.0.0-20180820045704-3764759f34a5/go.mod h1:z4YtwM70uOnk8h0pjJYlj3zdYwi9l03By6iAIF5j/Pk=
 github.com/tendermint/crypto v0.0.0-20190823183015-45b1026d81ae h1:AOXNM7c2Vvo45SjAgeWF8Wy+NS7/NCqzRNpUc+HPAec=
 github.com/tendermint/crypto v0.0.0-20190823183015-45b1026d81ae/go.mod h1:z4YtwM70uOnk8h0pjJYlj3zdYwi9l03By6iAIF5j/Pk=
 github.com/tendermint/go-amino v0.14.1/go.mod h1:i/UKE5Uocn+argJJBb12qTZsCDBcAYMbR92AaJVmKso=
@@ -318,7 +311,6 @@ golang.org/x/sys v0.0.0-20181107165924-66b7b1311ac8/go.mod h1:STP8DvDyc/dI5b8T5h
 golang.org/x/sys v0.0.0-20181116152217-5ac8a444bdc5/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 golang.org/x/sys v0.0.0-20181205085412-a5c9d58dba9a/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 golang.org/x/sys v0.0.0-20190215142949-d0b11bdaac8a/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
-golang.org/x/sys v0.0.0-20190222072716-a9d3bda3a223/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 golang.org/x/sys v0.0.0-20190412213103-97732733099d/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20190801041406-cbf593c0f2f3/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20190813064441-fde4db37ae7a h1:aYOabOQFp6Vj6W1F80affTUvO9UxmJRx8K0gsfABByQ=

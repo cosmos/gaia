@@ -3,7 +3,14 @@ package app
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
+
+	"github.com/cosmos/cosmos-sdk/baseapp"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/staking"
+	"github.com/tendermint/tendermint/libs/log"
+	dbm "github.com/tendermint/tm-db"
 )
 
 //---------------------------------------------------------------------
@@ -41,4 +48,15 @@ func ExportStateToJSON(app *GaiaApp, path string) error {
 	}
 
 	return ioutil.WriteFile(path, []byte(appState), 0644)
+}
+
+// NewGaiaAppUNSAFE is used for debugging purposes only.
+//
+// NOTE: to not use this function with non-test code
+func NewGaiaAppUNSAFE(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
+	invCheckPeriod uint, baseAppOptions ...func(*baseapp.BaseApp),
+) (gapp *GaiaApp, keyMain, keyStaking *sdk.KVStoreKey, stakingKeeper staking.Keeper) {
+
+	gapp = NewGaiaApp(logger, db, traceStore, loadLatest, invCheckPeriod, baseAppOptions...)
+	return gapp, gapp.GetKey(baseapp.MainStoreKey), gapp.GetKey(staking.StoreKey), gapp.StakingKeeper
 }

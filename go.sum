@@ -38,6 +38,10 @@ github.com/coreos/go-etcd v2.0.0+incompatible/go.mod h1:Jez6KQU2B/sWsbdaef3ED8Nz
 github.com/coreos/go-semver v0.2.0/go.mod h1:nnelYz7RCh+5ahJtPPxZlU+153eP4D4r3EedlOD2RNk=
 github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
+github.com/cosmos/cosmos-sdk v0.34.4-0.20190904173332-f010d2c6f109 h1:RGCapQh/9GLqJRHYSBK0A1PjSEEFiAMgkAIzlWaWO3k=
+github.com/cosmos/cosmos-sdk v0.34.4-0.20190904173332-f010d2c6f109/go.mod h1:ySFgSuZuUN2uleHgFJN/LiNcaeA+Q8NxOogiohpPhdQ=
+github.com/cosmos/cosmos-sdk v0.34.4-0.20190905162900-2d18f1e7e94b h1:nN3w1QBnv3vqW2bsBiO7sM5oH14AC3JpWLWlTkNtGSk=
+github.com/cosmos/cosmos-sdk v0.34.4-0.20190905162900-2d18f1e7e94b/go.mod h1:De67lt7tcfjIhSv58L/96UEdMvR3GZhOtvHntfEglDA=
 github.com/cosmos/cosmos-sdk v0.37.0 h1:S2I3NDGN2wqfGlY5KqkAHTpfezjhgeqDxrCxhlhd528=
 github.com/cosmos/cosmos-sdk v0.37.0/go.mod h1:3b/k/Zd+YDuttSmEJdNkxga1H5EIiDUhSYeErAHQN7A=
 github.com/cosmos/go-bip39 v0.0.0-20180618194314-52158e4697b8/go.mod h1:tSxLoYXyBmiFeKpvmq4dzayMdCjCnu8uqmCysIGBT2Y=
@@ -106,6 +110,9 @@ github.com/gorilla/websocket v1.4.1/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/ad
 github.com/grpc-ecosystem/go-grpc-middleware v1.0.0/go.mod h1:FiyG127CGDf3tlThmgyCl78X/SZQqEOJBCDaAfeWzPs=
 github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0/go.mod h1:8NvIoxWQoOIhqOTXgfV/d3M/q6VIi02HzZEHgUlZvzk=
 github.com/grpc-ecosystem/grpc-gateway v1.9.0/go.mod h1:vNeuVxBJEsws4ogUvrchl83t/GYV9WGTSLVdBhOQFDY=
+github.com/hashicorp/golang-lru v0.5.1/go.mod h1:/m3WP610KZHVQ1SGc6re/UDhFvYD7pJ4Ao+sR/qLZy8=
+github.com/hashicorp/golang-lru v0.5.3 h1:YPkqC67at8FYaadspW/6uE0COsBxS2656RLEr8Bppgk=
+github.com/hashicorp/golang-lru v0.5.3/go.mod h1:iADmTwqILo4mZ8BN3D2Q6+9jd8WM5uGBxy+E8yxSoD4=
 github.com/hashicorp/hcl v1.0.0 h1:0Anlzjpi4vEasTeNFn2mLJgTSwt0+6sfsiTG8qcWGx4=
 github.com/hashicorp/hcl v1.0.0/go.mod h1:E5yfLk+7swimpb2L/Alb/PJmXilQ/rhwaUYs4T20WEQ=
 github.com/hpcloud/tail v1.0.0 h1:nfCOvKYfkgYP8hkirhJocXT2+zOD8yUNjXaWfTlyFKI=
@@ -255,6 +262,8 @@ github.com/tendermint/iavl v0.12.4/go.mod h1:8LHakzt8/0G3/I8FUU0ReNx98S/EP6eyPJk
 github.com/tendermint/tendermint v0.32.1/go.mod h1:jmPDAKuNkev9793/ivn/fTBnfpA9mGBww8MPRNPNxnU=
 github.com/tendermint/tendermint v0.32.2 h1:FvZWdksfDg/65vKKr5Lgo57keARFnmhrUEXHwyrV1QY=
 github.com/tendermint/tendermint v0.32.2/go.mod h1:NwMyx58S8VJ7tEpFKqRVlVWKO9N9zjTHu+Dx96VsnOE=
+github.com/tendermint/tendermint v0.32.3 h1:GEnWpGQ795h5oTFNbfBLsY0LW/CW2j6p6HtiYNfxsgg=
+github.com/tendermint/tendermint v0.32.3/go.mod h1:ZK2c29jl1QRYznIRyRWRDsmm1yvtPzBRT00x4t1JToY=
 github.com/tendermint/tm-db v0.1.1 h1:G3Xezy3sOk9+ekhjZ/kjArYIs1SmwV+1OUgNkj7RgV0=
 github.com/tendermint/tm-db v0.1.1/go.mod h1:0cPKWu2Mou3IlxecH+MEUSYc1Ch537alLe6CpFrKzgw=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=

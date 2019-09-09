@@ -289,11 +289,11 @@ func (app *GaiaApp) Codec() *codec.Codec {
 	return app.cdc
 }
 
-// GetMaccPerms returns a copy of the module account permissions.
+// GetMaccPerms returns a mapping of the application's module account permissions.
 func GetMaccPerms() map[string][]string {
-	dupMaccPerms := make(map[string][]string)
+	modAccPerms := make(map[string][]string)
 	for k, v := range maccPerms {
-		dupMaccPerms[k] = v
+		modAccPerms[k] = v
 	}
-	return dupMaccPerms
+	return modAccPerms
 }

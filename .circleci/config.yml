@@ -40,34 +40,32 @@ docs_update: &docs_deploy
 
 jobs:
   setup_dependencies:
-    <<: *linux_defaults
+    executor: golang
     steps:
-      - run: mkdir -p /tmp/workspace/bin
-      - run: mkdir -p /tmp/workspace/profiles
       - checkout
       - restore_cache:
+          name: "Restore go modules cache"
           keys:
-            - go-mod-v1-{{ checksum "go.sum" }}
+            - go-mod-v2-{{ checksum "go.sum" }}
       - run:
-          name: binaries
-          command: |
-            export PATH=/tmp/workspace/bin:$PATH
-            make go-mod-cache
-            make install
+          name: Cache go modules
+          command: make go-mod-cache
+      - run:
+          name: Build
+          command: make build
+      - run:
+          name: Git garbage collection
+          command: git gc
       - save_cache:
-          key: go-mod-v1-{{ checksum "go.sum" }}
+          name: "Save go modules cache"
+          key: go-mod-v2-{{ checksum "go.sum" }}
           paths:
             - "/go/pkg/mod"
-      - run:
-          name: tools
-          command: |
-            make tools TOOLS_DESTDIR=/tmp/workspace/bin
-            cp $GOPATH/bin/runsim /tmp/workspace/bin/
-      - persist_to_workspace:
-          root: /tmp/workspace
+      - save_cache:
+          name: "Save source code cache"
+          key: go-src-v1-{{ .Revision }}
           paths:
-            - bin
-            - profiles
+            - ".git"
 
   integration_tests:
     <<: *linux_defaults

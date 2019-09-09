@@ -261,7 +261,7 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 		_ = os.RemoveAll(dir)
 	}()
 
-	app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue)
+	app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue, interBlockCacheOpt())
 
 	// Run randomized simulation
 	// TODO: parameterize numbers, save for a later PR

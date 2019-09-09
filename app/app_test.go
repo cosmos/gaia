@@ -31,12 +31,11 @@ func TestBlackListedAddrs(t *testing.T) {
 	app := NewGaiaApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, 0)
 
 	for acc := range maccPerms {
-		require.True(t, app.BankKeeper.BlacklistedAddr(app.SupplyKeeper.GetModuleAddress(acc)))
+		require.True(t, app.bankKeeper.BlacklistedAddr(app.supplyKeeper.GetModuleAddress(acc)))
 	}
 }
 
 func setGenesis(gapp *GaiaApp) error {
-
 	genesisState := simapp.NewDefaultGenesisState()
 	stateBytes, err := codec.MarshalJSONIndent(gapp.cdc, genesisState)
 	if err != nil {
@@ -50,6 +49,7 @@ func setGenesis(gapp *GaiaApp) error {
 			AppStateBytes: stateBytes,
 		},
 	)
+
 	gapp.Commit()
 	return nil
 }

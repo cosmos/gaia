@@ -215,7 +215,7 @@ func NewGaiaApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 
 	// create the simulation manager and define the order of the modules for deterministic simulations
 	//
-	// NOTE: This is not required apps that don't use the simulator for fuzz testing
+	// NOTE: This is not required for apps that don't use the simulator for fuzz testing
 	// transactions.
 	app.sm = module.NewSimulationManager(
 		genaccounts.NewAppModule(app.accountKeeper),

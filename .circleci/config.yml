@@ -96,7 +96,7 @@ jobs:
   test_sim_multi_seed_long:
     executor: golang
     steps:
-      - run:
+      - make:
           target: test_sim_multi_seed_long
           description: "Test Gaia multi-seed simulation (long-lived)"
 

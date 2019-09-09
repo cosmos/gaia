@@ -19,24 +19,24 @@ test_sim_custom_genesis_fast:
 
 test_sim_import_export: runsim
 	@echo "Running Gaia import/export simulation. This may take several minutes..."
-	$(BINDIR)/runsim -Jobs=4 -SimAppPkg=$(SIMAPP) 25 5 TestGaiaImportExport
+	@$(BINDIR)/runsim -Jobs=4 -SimAppPkg=$(SIMAPP) 25 5 TestGaiaImportExport
 
 test_sim_after_import: runsim
 	@echo "Running Gaia simulation-after-import. This may take several minutes..."
-	$(BINDIR)/runsim -Jobs=4 -SimAppPkg=$(SIMAPP) 25 5 TestGaiaSimulationAfterImport
+	@$(BINDIR)/runsim -Jobs=4 -SimAppPkg=$(SIMAPP) 25 5 TestGaiaSimulationAfterImport
 
 test_sim_custom_genesis_multi_seed: runsim
 	@echo "Running multi-seed custom genesis simulation..."
 	@echo "By default, ${HOME}/.gaiad/config/genesis.json will be used."
-	$(BINDIR)/runsim -Jobs=4 -Genesis=${HOME}/.gaiad/config/genesis.json 400 5 TestFullGaiaSimulation
+	@$(BINDIR)/runsim -Jobs=4 -Genesis=${HOME}/.gaiad/config/genesis.json 400 5 TestFullGaiaSimulation
 
 test_sim_multi_seed_long: runsim
 	@echo "Running multi-seed application simulation. This may take awhile!"
-	$(BINDIR)/runsim -Jobs=4 -SimAppPkg=$(SIMAPP) 500 50 TestFullAppSimulation
+	@$(BINDIR)/runsim -Jobs=4 -SimAppPkg=$(SIMAPP) 500 50 TestFullAppSimulation
 
 test_sim_multi_seed_short: runsim
 	@echo "Running multi-seed application simulation. This may take awhile!"
-	$(BINDIR)/runsim -Jobs=4 -SimAppPkg=$(SIMAPP) 50 10 TestFullAppSimulation
+	@$(BINDIR)/runsim -Jobs=4 -SimAppPkg=$(SIMAPP) 50 10 TestFullAppSimulation
 
 sim-benchmark-invariants:
 	@echo "Running simulation invariant benchmarks..."

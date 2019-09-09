@@ -261,7 +261,7 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 		_ = os.RemoveAll(dir)
 	}()
 
-	app := NewGaiaApp(logger, db, nil, true, flagPeriodValue)
+	app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue)
 
 	// Run randomized simulation
 	// TODO: parameterize numbers, save for a later PR
@@ -298,14 +298,14 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 }
 
 func TestFullAppSimulation(t *testing.T) {
-	if !flagEnabledValue {
+	if !simapp.FlagEnabledValue {
 		t.Skip("skipping application simulation")
 	}
 
 	var logger log.Logger
 	config := simapp.NewConfigFromFlags()
 
-	if flagVerboseValue {
+	if simapp.FlagVerboseValue {
 		logger = log.TestingLogger()
 	} else {
 		logger = log.NewNopLogger()
@@ -320,7 +320,7 @@ func TestFullAppSimulation(t *testing.T) {
 		_ = os.RemoveAll(dir)
 	}()
 
-	app := NewGaiaApp(logger, db, nil, true, flagPeriodValue, fauxMerkleModeOpt)
+	app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue, fauxMerkleModeOpt)
 	require.Equal(t, "GaiaApp", app.Name())
 
 	// Run randomized simulation
@@ -352,14 +352,14 @@ func TestFullAppSimulation(t *testing.T) {
 }
 
 func TestAppImportExport(t *testing.T) {
-	if !flagEnabledValue {
+	if !simapp.FlagEnabledValue {
 		t.Skip("skipping application import/export simulation")
 	}
 
 	var logger log.Logger
 	config := simapp.NewConfigFromFlags()
 
-	if flagVerboseValue {
+	if simapp.FlagVerboseValue {
 		logger = log.TestingLogger()
 	} else {
 		logger = log.NewNopLogger()
@@ -374,7 +374,7 @@ func TestAppImportExport(t *testing.T) {
 		_ = os.RemoveAll(dir)
 	}()
 
-	app := NewGaiaApp(logger, db, nil, true, flagPeriodValue, fauxMerkleModeOpt)
+	app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue, fauxMerkleModeOpt)
 	require.Equal(t, "SimApp", app.Name())
 
 	// Run randomized simulation
@@ -418,7 +418,7 @@ func TestAppImportExport(t *testing.T) {
 		_ = os.RemoveAll(newDir)
 	}()
 
-	newApp := NewGaiaApp(log.NewNopLogger(), newDB, nil, true, flagPeriodValue, fauxMerkleModeOpt)
+	newApp := NewGaiaApp(log.NewNopLogger(), newDB, nil, true, simapp.FlagPeriodValue, fauxMerkleModeOpt)
 	require.Equal(t, "SimApp", newApp.Name())
 
 	var genesisState simapp.GenesisState
@@ -469,14 +469,14 @@ func TestAppImportExport(t *testing.T) {
 }
 
 func TestAppSimulationAfterImport(t *testing.T) {
-	if !flagEnabledValue {
+	if !simapp.FlagEnabledValue {
 		t.Skip("skipping application simulation after import")
 	}
 
 	var logger log.Logger
 	config := simapp.NewConfigFromFlags()
 
-	if flagVerboseValue {
+	if simapp.FlagVerboseValue {
 		logger = log.TestingLogger()
 	} else {
 		logger = log.NewNopLogger()
@@ -490,7 +490,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		_ = os.RemoveAll(dir)
 	}()
 
-	app := NewGaiaApp(logger, db, nil, true, flagPeriodValue, fauxMerkleModeOpt)
+	app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue, fauxMerkleModeOpt)
 	require.Equal(t, "GaiaApp", app.Name())
 
 	// Run randomized simulation
@@ -563,7 +563,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 // TODO: Make another test for the fuzzer itself, which just has noOp txs
 // and doesn't depend on the application.
 func TestAppStateDeterminism(t *testing.T) {
-	if !flagEnabledValue {
+	if !simapp.FlagEnabledValue {
 		t.Skip("skipping application simulation")
 	}
 
@@ -583,7 +583,7 @@ func TestAppStateDeterminism(t *testing.T) {
 		for j := 0; j < numTimesToRunPerSeed; j++ {
 			logger := log.NewNopLogger()
 			db := dbm.NewMemDB()
-			app := NewGaiaApp(logger, db, nil, true, flagPeriodValue, interBlockCacheOpt())
+			app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue, interBlockCacheOpt())
 
 			fmt.Printf(
 				"running non-determinism simulation; seed %d: %d/%d, attempt: %d/%d\n",
@@ -623,7 +623,7 @@ func BenchmarkInvariants(b *testing.B) {
 		os.RemoveAll(dir)
 	}()
 
-	app := NewGaiaApp(logger, db, nil, true, flagPeriodValue, interBlockCacheOpt())
+	app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue, interBlockCacheOpt())
 
 	// 2. Run parameterized simulation (w/o invariants)
 	_, simParams, simErr := simulation.SimulateFromSeed(

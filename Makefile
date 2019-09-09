@@ -5,8 +5,11 @@ VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 LEDGER_ENABLED ?= true
 SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
+GOPROXY ?= direct
+goproxy := $(GOPROXY)
 
 export GO111MODULE = on
+export GOPROXY = $(goproxy)
 
 # process build tags
 

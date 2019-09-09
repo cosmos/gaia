@@ -65,7 +65,7 @@ func testAndRunTxs(app *GaiaApp, config simulation.Config) []simulation.Weighted
 					})
 				return v
 			}(nil),
-			authsimops.SimulateDeductFee(app.AccountKeeper, app.SupplyKeeper),
+			authsimops.SimulateDeductFee(app.accountKeeper, app.supplyKeeper),
 		},
 		{
 			func(_ *rand.Rand) int {
@@ -76,7 +76,7 @@ func testAndRunTxs(app *GaiaApp, config simulation.Config) []simulation.Weighted
 					})
 				return v
 			}(nil),
-			banksimops.SimulateMsgSend(app.AccountKeeper, app.BankKeeper),
+			banksimops.SimulateMsgSend(app.accountKeeper, app.bankKeeper),
 		},
 		{
 			func(_ *rand.Rand) int {
@@ -87,7 +87,7 @@ func testAndRunTxs(app *GaiaApp, config simulation.Config) []simulation.Weighted
 					})
 				return v
 			}(nil),
-			banksimops.SimulateSingleInputMsgMultiSend(app.AccountKeeper, app.BankKeeper),
+			banksimops.SimulateSingleInputMsgMultiSend(app.accountKeeper, app.bankKeeper),
 		},
 		{
 			func(_ *rand.Rand) int {
@@ -98,7 +98,7 @@ func testAndRunTxs(app *GaiaApp, config simulation.Config) []simulation.Weighted
 					})
 				return v
 			}(nil),
-			distrsimops.SimulateMsgSetWithdrawAddress(app.DistrKeeper),
+			distrsimops.SimulateMsgSetWithdrawAddress(app.distrKeeper),
 		},
 		{
 			func(_ *rand.Rand) int {
@@ -109,7 +109,7 @@ func testAndRunTxs(app *GaiaApp, config simulation.Config) []simulation.Weighted
 					})
 				return v
 			}(nil),
-			distrsimops.SimulateMsgWithdrawDelegatorReward(app.DistrKeeper),
+			distrsimops.SimulateMsgWithdrawDelegatorReward(app.distrKeeper),
 		},
 		{
 			func(_ *rand.Rand) int {
@@ -120,7 +120,7 @@ func testAndRunTxs(app *GaiaApp, config simulation.Config) []simulation.Weighted
 					})
 				return v
 			}(nil),
-			distrsimops.SimulateMsgWithdrawValidatorCommission(app.DistrKeeper),
+			distrsimops.SimulateMsgWithdrawValidatorCommission(app.distrKeeper),
 		},
 		{
 			func(_ *rand.Rand) int {
@@ -131,7 +131,7 @@ func testAndRunTxs(app *GaiaApp, config simulation.Config) []simulation.Weighted
 					})
 				return v
 			}(nil),
-			govsimops.SimulateSubmittingVotingAndSlashingForProposal(app.GovKeeper, govsimops.SimulateTextProposalContent),
+			govsimops.SimulateSubmittingVotingAndSlashingForProposal(app.govKeeper, govsimops.SimulateTextProposalContent),
 		},
 		{
 			func(_ *rand.Rand) int {
@@ -142,7 +142,7 @@ func testAndRunTxs(app *GaiaApp, config simulation.Config) []simulation.Weighted
 					})
 				return v
 			}(nil),
-			govsimops.SimulateSubmittingVotingAndSlashingForProposal(app.GovKeeper, distrsimops.SimulateCommunityPoolSpendProposalContent(app.DistrKeeper)),
+			govsimops.SimulateSubmittingVotingAndSlashingForProposal(app.govKeeper, distrsimops.SimulateCommunityPoolSpendProposalContent(app.distrKeeper)),
 		},
 		{
 			func(_ *rand.Rand) int {
@@ -153,7 +153,7 @@ func testAndRunTxs(app *GaiaApp, config simulation.Config) []simulation.Weighted
 					})
 				return v
 			}(nil),
-			govsimops.SimulateSubmittingVotingAndSlashingForProposal(app.GovKeeper, paramsimops.SimulateParamChangeProposalContent(paramChanges)),
+			govsimops.SimulateSubmittingVotingAndSlashingForProposal(app.govKeeper, paramsimops.SimulateParamChangeProposalContent(paramChanges)),
 		},
 		{
 			func(_ *rand.Rand) int {
@@ -164,7 +164,7 @@ func testAndRunTxs(app *GaiaApp, config simulation.Config) []simulation.Weighted
 					})
 				return v
 			}(nil),
-			govsimops.SimulateMsgDeposit(app.GovKeeper),
+			govsimops.SimulateMsgDeposit(app.govKeeper),
 		},
 		{
 			func(_ *rand.Rand) int {
@@ -175,7 +175,7 @@ func testAndRunTxs(app *GaiaApp, config simulation.Config) []simulation.Weighted
 					})
 				return v
 			}(nil),
-			stakingsimops.SimulateMsgCreateValidator(app.AccountKeeper, app.StakingKeeper),
+			stakingsimops.SimulateMsgCreateValidator(app.accountKeeper, app.stakingKeeper),
 		},
 		{
 			func(_ *rand.Rand) int {
@@ -186,7 +186,7 @@ func testAndRunTxs(app *GaiaApp, config simulation.Config) []simulation.Weighted
 					})
 				return v
 			}(nil),
-			stakingsimops.SimulateMsgEditValidator(app.StakingKeeper),
+			stakingsimops.SimulateMsgEditValidator(app.stakingKeeper),
 		},
 		{
 			func(_ *rand.Rand) int {
@@ -197,7 +197,7 @@ func testAndRunTxs(app *GaiaApp, config simulation.Config) []simulation.Weighted
 					})
 				return v
 			}(nil),
-			stakingsimops.SimulateMsgDelegate(app.AccountKeeper, app.StakingKeeper),
+			stakingsimops.SimulateMsgDelegate(app.accountKeeper, app.stakingKeeper),
 		},
 		{
 			func(_ *rand.Rand) int {
@@ -208,7 +208,7 @@ func testAndRunTxs(app *GaiaApp, config simulation.Config) []simulation.Weighted
 					})
 				return v
 			}(nil),
-			stakingsimops.SimulateMsgUndelegate(app.AccountKeeper, app.StakingKeeper),
+			stakingsimops.SimulateMsgUndelegate(app.accountKeeper, app.stakingKeeper),
 		},
 		{
 			func(_ *rand.Rand) int {
@@ -219,7 +219,7 @@ func testAndRunTxs(app *GaiaApp, config simulation.Config) []simulation.Weighted
 					})
 				return v
 			}(nil),
-			stakingsimops.SimulateMsgBeginRedelegate(app.AccountKeeper, app.StakingKeeper),
+			stakingsimops.SimulateMsgBeginRedelegate(app.accountKeeper, app.stakingKeeper),
 		},
 		{
 			func(_ *rand.Rand) int {
@@ -230,18 +230,9 @@ func testAndRunTxs(app *GaiaApp, config simulation.Config) []simulation.Weighted
 					})
 				return v
 			}(nil),
-			slashingsimops.SimulateMsgUnjail(app.SlashingKeeper),
+			slashingsimops.SimulateMsgUnjail(app.slashingKeeper),
 		},
 	}
-}
-
-func invariants(app *GaiaApp) []sdk.Invariant {
-	// TODO: fix PeriodicInvariants, it doesn't seem to call individual invariants for a period of 1
-	// Ref: https://github.com/cosmos/cosmos-sdk/issues/4631
-	if flagPeriodValue == 1 {
-		return app.CrisisKeeper.Invariants()
-	}
-	return simulation.PeriodicInvariants(app.CrisisKeeper.Invariants(), flagPeriodValue, 0)
 }
 
 // fauxMerkleModeOpt returns a BaseApp option to use a dbStoreAdapter instead of
@@ -270,14 +261,13 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 		_ = os.RemoveAll(dir)
 	}()
 
-	app := NewGaiaApp(logger, db, nil, true, 0)
+	app := NewGaiaApp(logger, db, nil, true, flagPeriodValue)
 
 	// Run randomized simulation
 	// TODO: parameterize numbers, save for a later PR
 	_, simParams, simErr := simulation.SimulateFromSeed(
 		b, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
-		testAndRunTxs(app, config), invariants(app),
-		app.ModuleAccountAddrs(), config,
+		testAndRunTxs(app, config), app.ModuleAccountAddrs(), config,
 	)
 
 	// export state and params before the simulation error is checked
@@ -330,14 +320,13 @@ func TestFullAppSimulation(t *testing.T) {
 		_ = os.RemoveAll(dir)
 	}()
 
-	app := NewGaiaApp(logger, db, nil, true, 0, fauxMerkleModeOpt)
+	app := NewGaiaApp(logger, db, nil, true, flagPeriodValue, fauxMerkleModeOpt)
 	require.Equal(t, "GaiaApp", app.Name())
 
 	// Run randomized simulation
 	_, simParams, simErr := simulation.SimulateFromSeed(
 		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
-		testAndRunTxs(app, config), invariants(app),
-		app.ModuleAccountAddrs(), config,
+		testAndRunTxs(app, config), app.ModuleAccountAddrs(), config,
 	)
 
 	// export state and params before the simulation error is checked
@@ -385,14 +374,13 @@ func TestAppImportExport(t *testing.T) {
 		_ = os.RemoveAll(dir)
 	}()
 
-	app := NewGaiaApp(logger, db, nil, true, 0, fauxMerkleModeOpt)
+	app := NewGaiaApp(logger, db, nil, true, flagPeriodValue, fauxMerkleModeOpt)
 	require.Equal(t, "SimApp", app.Name())
 
 	// Run randomized simulation
 	_, simParams, simErr := simulation.SimulateFromSeed(
 		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
-		testAndRunTxs(app, config), invariants(app),
-		app.ModuleAccountAddrs(), config,
+		testAndRunTxs(app, config), app.ModuleAccountAddrs(), config,
 	)
 
 	// export state and simParams before the simulation error is checked
@@ -430,7 +418,7 @@ func TestAppImportExport(t *testing.T) {
 		_ = os.RemoveAll(newDir)
 	}()
 
-	newApp := NewGaiaApp(log.NewNopLogger(), newDB, nil, true, 0, fauxMerkleModeOpt)
+	newApp := NewGaiaApp(log.NewNopLogger(), newDB, nil, true, flagPeriodValue, fauxMerkleModeOpt)
 	require.Equal(t, "SimApp", newApp.Name())
 
 	var genesisState simapp.GenesisState
@@ -502,15 +490,14 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		_ = os.RemoveAll(dir)
 	}()
 
-	app := NewGaiaApp(logger, db, nil, true, 0, fauxMerkleModeOpt)
+	app := NewGaiaApp(logger, db, nil, true, flagPeriodValue, fauxMerkleModeOpt)
 	require.Equal(t, "GaiaApp", app.Name())
 
 	// Run randomized simulation
 	// Run randomized simulation
 	stopEarly, simParams, simErr := simulation.SimulateFromSeed(
 		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
-		testAndRunTxs(app, config), invariants(app),
-		app.ModuleAccountAddrs(), config,
+		testAndRunTxs(app, config), app.ModuleAccountAddrs(), config,
 	)
 
 	// export state and params before the simulation error is checked
@@ -567,8 +554,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 	// Run randomized simulation on imported app
 	_, _, err = simulation.SimulateFromSeed(
 		t, os.Stdout, newApp.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
-		testAndRunTxs(newApp, config), invariants(newApp),
-		newApp.ModuleAccountAddrs(), config,
+		testAndRunTxs(newApp, config), newApp.ModuleAccountAddrs(), config,
 	)
 
 	require.NoError(t, err)
@@ -597,7 +583,7 @@ func TestAppStateDeterminism(t *testing.T) {
 		for j := 0; j < numTimesToRunPerSeed; j++ {
 			logger := log.NewNopLogger()
 			db := dbm.NewMemDB()
-			app := NewGaiaApp(logger, db, nil, true, 0, interBlockCacheOpt())
+			app := NewGaiaApp(logger, db, nil, true, flagPeriodValue, interBlockCacheOpt())
 
 			fmt.Printf(
 				"running non-determinism simulation; seed %d: %d/%d, attempt: %d/%d\n",
@@ -606,8 +592,7 @@ func TestAppStateDeterminism(t *testing.T) {
 
 			_, _, err := simulation.SimulateFromSeed(
 				t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
-				testAndRunTxs(app, config), []sdk.Invariant{},
-				app.ModuleAccountAddrs(), config,
+				testAndRunTxs(app, config), app.ModuleAccountAddrs(), config,
 			)
 			require.NoError(t, err)
 
@@ -638,13 +623,12 @@ func BenchmarkInvariants(b *testing.B) {
 		os.RemoveAll(dir)
 	}()
 
-	app := NewGaiaApp(logger, db, nil, true, 0, interBlockCacheOpt())
+	app := NewGaiaApp(logger, db, nil, true, flagPeriodValue, interBlockCacheOpt())
 
 	// 2. Run parameterized simulation (w/o invariants)
 	_, simParams, simErr := simulation.SimulateFromSeed(
 		b, ioutil.Discard, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
-		testAndRunTxs(app, config), []sdk.Invariant{},
-		app.ModuleAccountAddrs(), config,
+		testAndRunTxs(app, config), app.ModuleAccountAddrs(), config,
 	)
 
 	// export state and params before the simulation error is checked
@@ -673,7 +657,7 @@ func BenchmarkInvariants(b *testing.B) {
 	//
 	// NOTE: We use the crisis keeper as it has all the invariants registered with
 	// their respective metadata which makes it useful for testing/benchmarking.
-	for _, cr := range app.CrisisKeeper.Routes() {
+	for _, cr := range app.crisisKeeper.Routes() {
 		b.Run(fmt.Sprintf("%s/%s", cr.ModuleName, cr.Route), func(b *testing.B) {
 			if res, stop := cr.Invar(ctx); stop {
 				fmt.Printf("broken invariant at block %d of %d\n%s", ctx.BlockHeight()-1, config.NumBlocks, res)

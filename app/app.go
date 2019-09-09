@@ -92,16 +92,16 @@ type GaiaApp struct {
 	tkeys map[string]*sdk.TransientStoreKey
 
 	// keepers
-	AccountKeeper  auth.AccountKeeper
-	BankKeeper     bank.Keeper
-	SupplyKeeper   supply.Keeper
-	StakingKeeper  staking.Keeper
-	SlashingKeeper slashing.Keeper
-	MintKeeper     mint.Keeper
-	DistrKeeper    distr.Keeper
-	GovKeeper      gov.Keeper
-	CrisisKeeper   crisis.Keeper
-	ParamsKeeper   params.Keeper
+	accountKeeper  auth.AccountKeeper
+	bankKeeper     bank.Keeper
+	supplyKeeper   supply.Keeper
+	stakingKeeper  staking.Keeper
+	slashingKeeper slashing.Keeper
+	mintKeeper     mint.Keeper
+	distrKeeper    distr.Keeper
+	govKeeper      gov.Keeper
+	crisisKeeper   crisis.Keeper
+	paramsKeeper   params.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -136,62 +136,62 @@ func NewGaiaApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 	}
 
 	// init params keeper and subspaces
-	app.ParamsKeeper = params.NewKeeper(app.cdc, keys[params.StoreKey], tkeys[params.TStoreKey], params.DefaultCodespace)
-	authSubspace := app.ParamsKeeper.Subspace(auth.DefaultParamspace)
-	bankSubspace := app.ParamsKeeper.Subspace(bank.DefaultParamspace)
-	stakingSubspace := app.ParamsKeeper.Subspace(staking.DefaultParamspace)
-	mintSubspace := app.ParamsKeeper.Subspace(mint.DefaultParamspace)
-	distrSubspace := app.ParamsKeeper.Subspace(distr.DefaultParamspace)
-	slashingSubspace := app.ParamsKeeper.Subspace(slashing.DefaultParamspace)
-	govSubspace := app.ParamsKeeper.Subspace(gov.DefaultParamspace).WithKeyTable(gov.ParamKeyTable())
-	crisisSubspace := app.ParamsKeeper.Subspace(crisis.DefaultParamspace)
+	app.paramsKeeper = params.NewKeeper(app.cdc, keys[params.StoreKey], tkeys[params.TStoreKey], params.DefaultCodespace)
+	authSubspace := app.paramsKeeper.Subspace(auth.DefaultParamspace)
+	bankSubspace := app.paramsKeeper.Subspace(bank.DefaultParamspace)
+	stakingSubspace := app.paramsKeeper.Subspace(staking.DefaultParamspace)
+	mintSubspace := app.paramsKeeper.Subspace(mint.DefaultParamspace)
+	distrSubspace := app.paramsKeeper.Subspace(distr.DefaultParamspace)
+	slashingSubspace := app.paramsKeeper.Subspace(slashing.DefaultParamspace)
+	govSubspace := app.paramsKeeper.Subspace(gov.DefaultParamspace).WithKeyTable(gov.ParamKeyTable())
+	crisisSubspace := app.paramsKeeper.Subspace(crisis.DefaultParamspace)
 
 	// add keepers
-	app.AccountKeeper = auth.NewAccountKeeper(app.cdc, keys[auth.StoreKey], authSubspace, auth.ProtoBaseAccount)
-	app.BankKeeper = bank.NewBaseKeeper(app.AccountKeeper, bankSubspace, bank.DefaultCodespace, app.ModuleAccountAddrs())
-	app.SupplyKeeper = supply.NewKeeper(app.cdc, keys[supply.StoreKey], app.AccountKeeper, app.BankKeeper, maccPerms)
-	StakingKeeper := staking.NewKeeper(
+	app.accountKeeper = auth.NewAccountKeeper(app.cdc, keys[auth.StoreKey], authSubspace, auth.ProtoBaseAccount)
+	app.bankKeeper = bank.NewBaseKeeper(app.accountKeeper, bankSubspace, bank.DefaultCodespace, app.ModuleAccountAddrs())
+	app.supplyKeeper = supply.NewKeeper(app.cdc, keys[supply.StoreKey], app.accountKeeper, app.bankKeeper, maccPerms)
+	stakingKeeper := staking.NewKeeper(
 		app.cdc, keys[staking.StoreKey], tkeys[staking.TStoreKey],
-		app.SupplyKeeper, stakingSubspace, staking.DefaultCodespace,
+		app.supplyKeeper, stakingSubspace, staking.DefaultCodespace,
 	)
-	app.MintKeeper = mint.NewKeeper(app.cdc, keys[mint.StoreKey], mintSubspace, &StakingKeeper, app.SupplyKeeper, auth.FeeCollectorName)
-	app.DistrKeeper = distr.NewKeeper(app.cdc, keys[distr.StoreKey], distrSubspace, &StakingKeeper,
-		app.SupplyKeeper, distr.DefaultCodespace, auth.FeeCollectorName, app.ModuleAccountAddrs())
-	app.SlashingKeeper = slashing.NewKeeper(
-		app.cdc, keys[slashing.StoreKey], &StakingKeeper, slashingSubspace, slashing.DefaultCodespace,
+	app.mintKeeper = mint.NewKeeper(app.cdc, keys[mint.StoreKey], mintSubspace, &stakingKeeper, app.supplyKeeper, auth.FeeCollectorName)
+	app.distrKeeper = distr.NewKeeper(app.cdc, keys[distr.StoreKey], distrSubspace, &stakingKeeper,
+		app.supplyKeeper, distr.DefaultCodespace, auth.FeeCollectorName, app.ModuleAccountAddrs())
+	app.slashingKeeper = slashing.NewKeeper(
+		app.cdc, keys[slashing.StoreKey], &stakingKeeper, slashingSubspace, slashing.DefaultCodespace,
 	)
-	app.CrisisKeeper = crisis.NewKeeper(crisisSubspace, invCheckPeriod, app.SupplyKeeper, auth.FeeCollectorName)
+	app.crisisKeeper = crisis.NewKeeper(crisisSubspace, invCheckPeriod, app.supplyKeeper, auth.FeeCollectorName)
 
 	// register the proposal types
 	govRouter := gov.NewRouter()
 	govRouter.AddRoute(gov.RouterKey, gov.ProposalHandler).
-		AddRoute(params.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
-		AddRoute(distr.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper))
-	app.GovKeeper = gov.NewKeeper(
+		AddRoute(params.RouterKey, params.NewParamChangeProposalHandler(app.paramsKeeper)).
+		AddRoute(distr.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.distrKeeper))
+	app.govKeeper = gov.NewKeeper(
 		app.cdc, keys[gov.StoreKey], govSubspace,
-		app.SupplyKeeper, &StakingKeeper, gov.DefaultCodespace, govRouter,
+		app.supplyKeeper, &stakingKeeper, gov.DefaultCodespace, govRouter,
 	)
 
 	// register the staking hooks
-	// NOTE: StakingKeeper above is passed by reference, so that it will contain these hooks
-	app.StakingKeeper = *StakingKeeper.SetHooks(
-		staking.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks()),
+	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
+	app.stakingKeeper = *stakingKeeper.SetHooks(
+		staking.NewMultiStakingHooks(app.distrKeeper.Hooks(), app.slashingKeeper.Hooks()),
 	)
 
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
 	app.mm = module.NewManager(
-		genaccounts.NewAppModule(app.AccountKeeper),
-		genutil.NewAppModule(app.AccountKeeper, app.StakingKeeper, app.BaseApp.DeliverTx),
-		auth.NewAppModule(app.AccountKeeper),
-		bank.NewAppModule(app.BankKeeper, app.AccountKeeper),
-		crisis.NewAppModule(&app.CrisisKeeper),
-		supply.NewAppModule(app.SupplyKeeper, app.AccountKeeper),
-		distr.NewAppModule(app.DistrKeeper, app.SupplyKeeper),
-		gov.NewAppModule(app.GovKeeper, app.SupplyKeeper),
-		mint.NewAppModule(app.MintKeeper),
-		slashing.NewAppModule(app.SlashingKeeper, app.StakingKeeper),
-		staking.NewAppModule(app.StakingKeeper, app.AccountKeeper, app.SupplyKeeper),
+		genaccounts.NewAppModule(app.accountKeeper),
+		genutil.NewAppModule(app.accountKeeper, app.stakingKeeper, app.BaseApp.DeliverTx),
+		auth.NewAppModule(app.accountKeeper),
+		bank.NewAppModule(app.bankKeeper, app.accountKeeper),
+		crisis.NewAppModule(&app.crisisKeeper),
+		supply.NewAppModule(app.supplyKeeper, app.accountKeeper),
+		distr.NewAppModule(app.distrKeeper, app.supplyKeeper),
+		gov.NewAppModule(app.govKeeper, app.supplyKeeper),
+		mint.NewAppModule(app.mintKeeper),
+		slashing.NewAppModule(app.slashingKeeper, app.stakingKeeper),
+		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.supplyKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -209,7 +209,7 @@ func NewGaiaApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 		mint.ModuleName, supply.ModuleName, crisis.ModuleName, genutil.ModuleName,
 	)
 
-	app.mm.RegisterInvariants(&app.CrisisKeeper)
+	app.mm.RegisterInvariants(&app.crisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter())
 
 	// create the simulation manager and define the order of the modules for deterministic simulations
@@ -217,15 +217,15 @@ func NewGaiaApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 	// NOTE: this is not required apps that don't use the simulator for fuzz testing
 	// transactions
 	app.sm = module.NewSimulationManager(
-		genaccounts.NewAppModule(app.AccountKeeper),
-		auth.NewAppModule(app.AccountKeeper),
-		bank.NewAppModule(app.BankKeeper, app.AccountKeeper),
-		supply.NewAppModule(app.SupplyKeeper, app.AccountKeeper),
-		gov.NewAppModule(app.GovKeeper, app.SupplyKeeper),
-		mint.NewAppModule(app.MintKeeper),
-		distr.NewAppModule(app.DistrKeeper, app.SupplyKeeper),
-		staking.NewAppModule(app.StakingKeeper, app.AccountKeeper, app.SupplyKeeper),
-		slashing.NewAppModule(app.SlashingKeeper, app.StakingKeeper),
+		genaccounts.NewAppModule(app.accountKeeper),
+		auth.NewAppModule(app.accountKeeper),
+		bank.NewAppModule(app.bankKeeper, app.accountKeeper),
+		supply.NewAppModule(app.supplyKeeper, app.accountKeeper),
+		gov.NewAppModule(app.govKeeper, app.supplyKeeper),
+		mint.NewAppModule(app.mintKeeper),
+		distr.NewAppModule(app.distrKeeper, app.supplyKeeper),
+		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.supplyKeeper),
+		slashing.NewAppModule(app.slashingKeeper, app.stakingKeeper),
 	)
 
 	app.sm.RegisterStoreDecoders()
@@ -237,7 +237,7 @@ func NewGaiaApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-	app.SetAnteHandler(auth.NewAnteHandler(app.AccountKeeper, app.SupplyKeeper, auth.DefaultSigVerificationGasConsumer))
+	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.supplyKeeper, auth.DefaultSigVerificationGasConsumer))
 	app.SetEndBlocker(app.EndBlocker)
 
 	if loadLatest {

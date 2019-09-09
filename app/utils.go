@@ -35,7 +35,7 @@ var (
 
 	flagEnabledValue     bool
 	flagVerboseValue     bool
-	flagPeriodValue      int
+	flagPeriodValue      uint
 	flagGenesisTimeValue int64
 )
 
@@ -58,5 +58,5 @@ func NewGaiaAppUNSAFE(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLa
 ) (gapp *GaiaApp, keyMain, keyStaking *sdk.KVStoreKey, stakingKeeper staking.Keeper) {
 
 	gapp = NewGaiaApp(logger, db, traceStore, loadLatest, invCheckPeriod, baseAppOptions...)
-	return gapp, gapp.GetKey(baseapp.MainStoreKey), gapp.GetKey(staking.StoreKey), gapp.StakingKeeper
+	return gapp, gapp.GetKey(baseapp.MainStoreKey), gapp.GetKey(staking.StoreKey), gapp.stakingKeeper
 }

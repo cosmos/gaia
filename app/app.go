@@ -77,7 +77,7 @@ func MakeCodec() *codec.Codec {
 	codec.RegisterCrypto(cdc)
 	codec.RegisterEvidences(cdc)
 
-	return cdc
+	return cdc.Seal()
 }
 
 // GaiaApp extended ABCI application
@@ -214,8 +214,8 @@ func NewGaiaApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 
 	// create the simulation manager and define the order of the modules for deterministic simulations
 	//
-	// NOTE: this is not required apps that don't use the simulator for fuzz testing
-	// transactions
+	// NOTE: This is not required apps that don't use the simulator for fuzz testing
+	// transactions.
 	app.sm = module.NewSimulationManager(
 		genaccounts.NewAppModule(app.accountKeeper),
 		auth.NewAppModule(app.accountKeeper),
@@ -288,17 +288,7 @@ func (app *GaiaApp) Codec() *codec.Codec {
 	return app.cdc
 }
 
-// GetKey returns the KVStoreKey for the provided store key
-func (app *GaiaApp) GetKey(storeKey string) *sdk.KVStoreKey {
-	return app.keys[storeKey]
-}
-
-// GetTKey returns the TransientStoreKey for the provided store key
-func (app *GaiaApp) GetTKey(storeKey string) *sdk.TransientStoreKey {
-	return app.tkeys[storeKey]
-}
-
-// GetMaccPerms returns a copy of the module account permissions
+// GetMaccPerms returns a copy of the module account permissions.
 func GetMaccPerms() map[string][]string {
 	dupMaccPerms := make(map[string][]string)
 	for k, v := range maccPerms {

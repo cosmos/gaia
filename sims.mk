@@ -9,7 +9,7 @@ SIMAPP = ./app
 test_sim_nondeterminism:
 	@echo "Running non-determinism test..."
 	@go test -mod=readonly $(SIMAPP) -run TestAppStateDeterminism -Enabled=true \
-		-Period=1 -NumBlocks=100 -BlockSize=200 -Commit=true -v -timeout 24h
+		-NumBlocks=100 -BlockSize=200 -Commit=true -Period=0 -v -timeout 24h
 
 test_sim_custom_genesis_fast:
 	@echo "Running custom genesis simulation..."

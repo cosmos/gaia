@@ -249,7 +249,7 @@ jobs:
             make sim-gaia-fast
 
   docker_image:
-    <<: *linux_defaults
+    executor: golang
     steps:
       - attach_workspace:
           at: /tmp/workspace
@@ -272,7 +272,7 @@ jobs:
           fi
 
   docker_tagged:
-    <<: *linux_defaults
+    executor: golang
     steps:
       - attach_workspace:
           at: /tmp/workspace
@@ -285,7 +285,7 @@ jobs:
           docker push tendermint/gaia:$CIRCLE_TAG
 
   reproducible_builds:
-    <<: *linux_defaults
+    executor: golang
     steps:
       - attach_workspace:
           at: /tmp/workspace
@@ -313,7 +313,7 @@ jobs:
 # overrides the .gaiad directory.
 #
 #  contract_tests:
-#    <<: *linux_defaults
+#    executor: golang
 #    steps:
 #      - attach_workspace:
 #          at: /tmp/workspace

@@ -93,8 +93,6 @@ install: go.sum check-ledger
 install-debug: go.sum
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/gaiadebug
 
-
-
 ########################################
 ### Tools & dependencies
 

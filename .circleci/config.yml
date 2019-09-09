@@ -96,7 +96,7 @@ jobs:
           keys:
             - go-mod-v1-{{ checksum "go.sum" }}
       - run:
-          name: Test individual module simulations
+          name: Test Gaia non-determinism simulations
           command: |
             make test_sim_nondeterminism
 
@@ -126,7 +126,7 @@ jobs:
           keys:
             - go-mod-v1-{{ checksum "go.sum" }}
       - run:
-          name: Test Gaia import/export simulation
+          name: Test Gaia simulation after importing state
           command: |
             make test_sim_after_import
 
@@ -141,7 +141,7 @@ jobs:
           keys:
             - go-mod-v1-{{ checksum "go.sum" }}
       - run:
-          name: Test multi-seed Gaia simulation long
+          name: Test Gaia multi-seed simulation (short-lived)
           command: |
             make test_sim_multi_seed_short
 

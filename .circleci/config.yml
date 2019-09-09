@@ -4,6 +4,32 @@ executors:
   golang:
     docker:
       - image: circleci/golang:1.13
+    working_directory: /go/src/github.com/cosmos/cosmos-sdk
+
+commands:
+  make:
+    parameters:
+      description:
+        type: string
+      target:
+        type: string
+    steps:
+      - attach_workspace:
+          at: /tmp/bin
+      - restore_cache:
+          name: "Restore source code cache"
+          keys:
+            - go-src-v1-{{ .Revision }}
+      - checkout
+      - restore_cache:
+          name: "Restore go modules cache"
+          keys:
+            - go-mod-v1-{{ checksum "go.sum" }}
+      - run:
+          name: << parameters.description >>
+          command: |
+            export BINDIR=/tmp/bin
+            make << parameters.target >>
 
 ############
 #
@@ -14,7 +40,7 @@ macos_config: &macos_defaults
     xcode: "10.1.0"
   working_directory: /Users/distiller/project/src/github.com/cosmos/cosmos-sdk
   environment:
-    GO_VERSION: "1.12.5"
+    GO_VERSION: "1.13"
 
 set_macos_env: &macos_env
   run:
@@ -44,7 +70,7 @@ jobs:
       - restore_cache:
           name: "Restore go modules cache"
           keys:
-            - go-mod-v2-{{ checksum "go.sum" }}
+            - go-mod-v1-{{ checksum "go.sum" }}
       - run:
           name: Cache go modules
           command: make go-mod-cache
@@ -52,11 +78,15 @@ jobs:
           name: Build
           command: make build
       - run:
-          name: Git garbage collection
+          name: "Git garbage collection"
           command: git gc
+      - run:
+          name: "Build tools binaries"
+          command: |
+            make tools
       - save_cache:
           name: "Save go modules cache"
-          key: go-mod-v2-{{ checksum "go.sum" }}
+          key: go-mod-v1-{{ checksum "go.sum" }}
           paths:
             - "/go/pkg/mod"
       - save_cache:
@@ -64,6 +94,14 @@ jobs:
           key: go-src-v1-{{ .Revision }}
           paths:
             - ".git"
+      - run:
+          command: |
+            mkdir -p /tmp/bin
+            cp -r /go/bin/* /tmp/bin
+      - persist_to_workspace:
+          root: "/tmp/bin"
+          paths:
+            - "."
 
   test_sim_nondeterminism:
     executor: golang
@@ -106,7 +144,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - go-mod-v2-{{ checksum "go.sum" }}
+            - go-mod-v1-{{ checksum "go.sum" }}
       - run:
           name: Test CLI integration
           command: |
@@ -120,7 +158,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - go-mod-v2-{{ checksum "go.sum" }}
+            - go-mod-v1-{{ checksum "go.sum" }}
       - run:
           name: Run tests with coverage
           command: |

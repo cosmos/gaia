@@ -68,7 +68,8 @@ var (
 	}
 )
 
-// MakeCodec custom tx codec
+// MakeCodec creates the application codec. The codec is sealed before it is
+// returned.
 func MakeCodec() *codec.Codec {
 	var cdc = codec.New()
 
@@ -283,7 +284,7 @@ func (app *GaiaApp) ModuleAccountAddrs() map[string]bool {
 	return modAccAddrs
 }
 
-// Codec returns simapp's codec
+// Codec returns the application's sealed codec.
 func (app *GaiaApp) Codec() *codec.Codec {
 	return app.cdc
 }

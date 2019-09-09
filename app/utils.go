@@ -15,9 +15,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 )
 
-//---------------------------------------------------------------------
-// Flags
-
 // List of available flags for the simulator
 var (
 	flagGenesisFileValue        string
@@ -34,11 +31,10 @@ var (
 	flagCommitValue             bool
 	flagOnOperationValue        bool // TODO: Remove in favor of binary search for invariant violation
 	flagAllInvariantsValue      bool
-
-	flagEnabledValue     bool
-	flagVerboseValue     bool
-	flagPeriodValue      uint
-	flagGenesisTimeValue int64
+	flagEnabledValue            bool
+	flagVerboseValue            bool
+	flagPeriodValue             uint
+	flagGenesisTimeValue        int64
 )
 
 // ExportStateToJSON util function to export the app state to JSON

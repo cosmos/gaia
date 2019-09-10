@@ -196,7 +196,7 @@ jobs:
       - run:
           name: filter out DONTCOVER
           command: |
-            excludelist="$(find ./ -type f -name '*.go' | xargs grep -l 'DONTCOVER')"
+            excludelist="$(find . -type f -name '*.go' | xargs grep -l 'DONTCOVER')"
             for filename in ${excludelist}; do
               filename=$(echo $filename | sed 's/^./github.com\/cosmos\/gaia/g')
               echo "Excluding ${filename} from coverage report..."

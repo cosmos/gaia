@@ -38,7 +38,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ### Improvements
 
-* (gaiad) [\#119](https://github.com/cosmos/gaia/pull/119) Refactor and upgrade Circle CI
+* [\#119](https://github.com/cosmos/gaia/pull/119) Refactor and upgrade Circle CI
 configuration.
 
 ### Features

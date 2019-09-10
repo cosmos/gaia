@@ -5,6 +5,18 @@ executors:
     docker:
       - image: circleci/golang:1.13
     working_directory: /go/src/github.com/cosmos/cosmos-sdk
+  mac:
+    macos:
+      xcode: "10.3.0"
+      working_directory: /Users/distiller/project/src/github.com/cosmos/cosmos-sdk
+      environment:
+        GO_VERSION: "1.13"
+  docs:
+    docker:
+      - image: tendermintdev/jq_curl
+    environment:
+      AWS_REGION: us-east-1
+
 
 commands:
   make:
@@ -30,37 +42,15 @@ commands:
           command: |
             export BINDIR=/tmp/bin
             make << parameters.target >>
-
-############
-#
-# Configure macos integration tests
-
-macos_config: &macos_defaults
-  macos:
-    xcode: "10.1.0"
-  working_directory: /Users/distiller/project/src/github.com/cosmos/cosmos-sdk
-  environment:
-    GO_VERSION: "1.13"
-
-set_macos_env: &macos_env
-  run:
-    name: Set environment
-    command: |
-      echo 'export PATH=$PATH:$HOME/go/bin' >> $BASH_ENV
-      echo 'export GOPATH=$HOME/project' >> $BASH_ENV
-      echo 'export PATH=$PATH:$HOME/go/bin:$GOPATH/bin' >> $BASH_ENV
-      echo 'export GO111MODULE=on'
-
-############
-#
-# Configure docs deployment
-
-docs_update: &docs_deploy
-  working_directory: ~/repo
-  docker:
-    - image: tendermintdev/jq_curl
-  environment:
-    AWS_REGION: us-east-1
+  mac_set_env:
+    steps:
+      - run:
+          name: "Set environment"
+          command: |
+            echo 'export PATH=$PATH:$HOME/go/bin' >> $BASH_ENV
+            echo 'export GOPATH=$HOME/project' >> $BASH_ENV
+            echo 'export PATH=$PATH:$HOME/go/bin:$GOPATH/bin' >> $BASH_ENV
+            echo 'export GO111MODULE=on'
 
 jobs:
   setup_dependencies:
@@ -234,7 +224,7 @@ jobs:
             ./contrib/localnet-blocks-test.sh 40 5 10 localhost
 
   deploy_docs:
-    <<: *docs_deploy
+    executor: docs
     steps:
       - checkout
       - run:
@@ -258,9 +248,9 @@ jobs:
             fi
 
   macos_ci:
-    <<: *macos_defaults
+    executor: mac
     steps:
-      - *macos_env
+      - mac_set_env
       - run:
           name: Install go
           command: |

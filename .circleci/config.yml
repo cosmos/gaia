@@ -8,9 +8,9 @@ executors:
   mac:
     macos:
       xcode: "10.3.0"
-      working_directory: /Users/distiller/project/src/github.com/cosmos/cosmos-sdk
-      environment:
-        GO_VERSION: "1.13"
+    working_directory: /Users/distiller/project/src/github.com/cosmos/cosmos-sdk
+    environment:
+      GO_VERSION: "1.13"
   docs:
     docker:
       - image: tendermintdev/jq_curl

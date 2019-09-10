@@ -61,7 +61,7 @@ $(GOIMPORTS):
 	go get golang.org/x/tools/cmd/goimports@v0.0.0-20190628034336-212fb13d595e
 
 $(RUNSIM):
-	go get github.com/cosmos/tools/cmd/runsim/
+	go install github.com/cosmos/tools/cmd/runsim/
 
 golangci-lint: $(GOLANGCI_LINT)
 

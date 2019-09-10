@@ -68,7 +68,8 @@ var (
 	}
 )
 
-// custom tx codec
+// MakeCodec creates the application codec. The codec is sealed before it is
+// returned.
 func MakeCodec() *codec.Codec {
 	var cdc = codec.New()
 
@@ -77,10 +78,10 @@ func MakeCodec() *codec.Codec {
 	codec.RegisterCrypto(cdc)
 	codec.RegisterEvidences(cdc)
 
-	return cdc
+	return cdc.Seal()
 }
 
-// Extended ABCI application
+// GaiaApp extended ABCI application
 type GaiaApp struct {
 	*bam.BaseApp
 	cdc *codec.Codec
@@ -105,6 +106,9 @@ type GaiaApp struct {
 
 	// the module manager
 	mm *module.Manager
+
+	// simulation manager
+	sm *module.SimulationManager
 }
 
 // NewGaiaApp returns a reference to an initialized GaiaApp.
@@ -188,7 +192,7 @@ func NewGaiaApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 		gov.NewAppModule(app.govKeeper, app.supplyKeeper),
 		mint.NewAppModule(app.mintKeeper),
 		slashing.NewAppModule(app.slashingKeeper, app.stakingKeeper),
-		staking.NewAppModule(app.stakingKeeper, app.distrKeeper, app.accountKeeper, app.supplyKeeper),
+		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.supplyKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -208,6 +212,24 @@ func NewGaiaApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 
 	app.mm.RegisterInvariants(&app.crisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter())
+
+	// create the simulation manager and define the order of the modules for deterministic simulations
+	//
+	// NOTE: This is not required for apps that don't use the simulator for fuzz testing
+	// transactions.
+	app.sm = module.NewSimulationManager(
+		genaccounts.NewAppModule(app.accountKeeper),
+		auth.NewAppModule(app.accountKeeper),
+		bank.NewAppModule(app.bankKeeper, app.accountKeeper),
+		supply.NewAppModule(app.supplyKeeper, app.accountKeeper),
+		gov.NewAppModule(app.govKeeper, app.supplyKeeper),
+		mint.NewAppModule(app.mintKeeper),
+		distr.NewAppModule(app.distrKeeper, app.supplyKeeper),
+		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.supplyKeeper),
+		slashing.NewAppModule(app.slashingKeeper, app.stakingKeeper),
+	)
+
+	app.sm.RegisterStoreDecoders()
 
 	// initialize stores
 	app.MountKVStores(keys)
@@ -260,4 +282,18 @@ func (app *GaiaApp) ModuleAccountAddrs() map[string]bool {
 	}
 
 	return modAccAddrs
+}
+
+// Codec returns the application's sealed codec.
+func (app *GaiaApp) Codec() *codec.Codec {
+	return app.cdc
+}
+
+// GetMaccPerms returns a mapping of the application's module account permissions.
+func GetMaccPerms() map[string][]string {
+	modAccPerms := make(map[string][]string)
+	for k, v := range maccPerms {
+		modAccPerms[k] = v
+	}
+	return modAccPerms
 }

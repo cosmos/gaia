@@ -107,14 +107,14 @@ jobs:
           target: test-sim-import-export
           description: "Test Gaia import/export simulation"
 
-  test-sim-after_import:
+  test-sim-after-import:
     executor: golang
     steps:
       - make:
           target: test-sim-after-import
           description: "Test Gaia simulation after importing state"
 
-  test-sim-multi_seed_short:
+  test-sim-multi-seed-short:
     executor: golang
     steps:
       - make:

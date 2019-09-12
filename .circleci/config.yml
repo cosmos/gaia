@@ -424,7 +424,7 @@ workflows:
       - localnet
       - upload-coverage:
           requires:
-            - test_cover
+            - test-cover
       - reproducible-builds:
           filters:
             branches:

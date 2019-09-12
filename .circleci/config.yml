@@ -362,10 +362,10 @@ workflows:
   version: 2
   test-suite:
     jobs:
-      - docker_image:
+      - docker-image:
           requires:
             - setup-dependencies
-      - docker_tagged:
+      - docker-tagged:
           filters:
             tags:
               only:

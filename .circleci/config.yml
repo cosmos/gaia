@@ -399,16 +399,16 @@ workflows:
       - test-sim-nondeterminism:
           requires:
             - setup-dependencies
-      - test-sim-import_export:
+      - test-sim-import-export:
           requires:
             - setup-dependencies
-      - test-sim-after_import:
+      - test-sim-after-import:
           requires:
             - setup-dependencies
-      - test-sim-multi_seed_short:
+      - test-sim-multi-seed-short:
           requires:
             - setup-dependencies
-      - test-sim-multi_seed_long:
+      - test-sim-multi-seed-long:
           requires:
             - setup-dependencies
           # These filters ensure that the long sim only runs during release

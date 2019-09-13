@@ -84,7 +84,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 			authGenState := auth.GetGenesisStateFromAppState(cdc, appState)
 
 			if authGenState.Accounts.Contains(addr) {
-				return fmt.Errorf("cannot add account at existing address %v", addr)
+				return fmt.Errorf("cannot add account at existing address %s", addr)
 			}
 
 			// Add the new account to the set of genesis accounts and sanitize the

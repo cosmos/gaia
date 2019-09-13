@@ -198,7 +198,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 		totalSupply = totalSupply.Add(accTokens)
 
 		account.Coins = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, accTokens))
-		genAccounts = append(genAccounts, app.NewBaseGenesisAccount(&account))
+		genAccounts = append(genAccounts, &account)
 	}
 
 	genesisState := app.NewDefaultGenesisState()
@@ -219,8 +219,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 		accAuth.Coins = sdk.Coins{sdk.NewCoin(sdk.DefaultBondDenom, accTokens)}
 		totalSupply = totalSupply.Add(accTokens)
 
-		acc := app.NewBaseGenesisAccount(&accAuth)
-		genAccounts = append(genAccounts, acc)
+		genAccounts = append(genAccounts, &accAuth)
 	}
 
 	// auth genesis state: params and genesis accounts

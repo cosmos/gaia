@@ -76,8 +76,6 @@ func MakeCodec() *codec.Codec {
 	codec.RegisterCrypto(cdc)
 	codec.RegisterEvidences(cdc)
 
-	cdc.RegisterConcrete(GenesisAccount{}, "gaia/GenesisAccount", nil)
-
 	return cdc.Seal()
 }
 

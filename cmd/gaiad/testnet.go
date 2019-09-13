@@ -30,7 +30,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	"github.com/cosmos/gaia/app"
 )
 
 var (
@@ -194,15 +193,11 @@ func InitTestnet(cmd *cobra.Command, config *tmconfig.Config, cdc *codec.Codec,
 
 		accTokens := sdk.TokensFromConsensusPower(1000)
 		accStakingTokens := sdk.TokensFromConsensusPower(500)
-		genAccounts = append(genAccounts, app.GenesisAccount{
-			BaseAccount: &auth.BaseAccount{
-				Address: addr,
-				Coins: sdk.Coins{
-					sdk.NewCoin(fmt.Sprintf("%stoken", nodeDirName), accTokens),
-					sdk.NewCoin(sdk.DefaultBondDenom, accStakingTokens),
-				},
-			},
-		})
+		coins := sdk.Coins{
+			sdk.NewCoin(fmt.Sprintf("%stoken", nodeDirName), accTokens),
+			sdk.NewCoin(sdk.DefaultBondDenom, accStakingTokens),
+		}
+		genAccounts = append(genAccounts, auth.NewBaseAccount(addr, coins.Sort(), nil, 0, 0))
 
 		valTokens := sdk.TokensFromConsensusPower(100)
 		msg := staking.NewMsgCreateValidator(

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -13,8 +14,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	authexported "github.com/cosmos/cosmos-sdk/x/auth/exported"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
-	"github.com/cosmos/gaia/app"
 )
 
 const (
@@ -70,15 +71,37 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 				return fmt.Errorf("failed to parse vesting amount: %w", err)
 			}
 
-			genAcc := app.NewGenesisAccount(addr, coins, vestingAmt, vestingStart, vestingEnd, "", "")
-			if err := genAcc.Validate(); err != nil {
+			// create concrete account type based on input parameters
+			var genAccount authexported.GenesisAccount
+
+			baseAccount := auth.NewBaseAccount(addr, coins.Sort(), nil, 0, 0)
+			if !vestingAmt.IsZero() {
+				baseVestingAccount := auth.NewBaseVestingAccount(
+					baseAccount, vestingAmt.Sort(), sdk.Coins{}, sdk.Coins{}, vestingEnd,
+				)
+
+				switch {
+				case vestingStart != 0 && vestingEnd != 0:
+					genAccount = auth.NewContinuousVestingAccountRaw(baseVestingAccount, vestingStart)
+
+				case vestingEnd != 0:
+					genAccount = auth.NewDelayedVestingAccountRaw(baseVestingAccount)
+
+				default:
+					return errors.New("invalid vesting parameters; must supply start and end time or end time")
+				}
+			} else {
+				genAccount = baseAccount
+			}
+
+			if err := genAccount.Validate(); err != nil {
 				return fmt.Errorf("failed to validate new genesis account: %w", err)
 			}
 
 			genFile := config.GenesisFile()
 			appState, genDoc, err := genutil.GenesisStateFromGenFile(cdc, genFile)
 			if err != nil {
-				return fmt.Errorf("failed to unmarshal auth genesis state: %w", err)
+				return fmt.Errorf("failed to unmarshal genesis state: %w", err)
 			}
 
 			authGenState := auth.GetGenesisStateFromAppState(cdc, appState)
@@ -89,8 +112,8 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 
 			// Add the new account to the set of genesis accounts and sanitize the
 			// accounts afterwards.
-			authGenState.Accounts = append(authGenState.Accounts, genAcc)
-			authGenState.Accounts = auth.Sanitize(authGenState.Accounts)
+			authGenState.Accounts = append(authGenState.Accounts, genAccount)
+			authGenState.Accounts = auth.SanitizeGenesisAccounts(authGenState.Accounts)
 
 			authGenStateBz, err := cdc.MarshalJSON(authGenState)
 			if err != nil {

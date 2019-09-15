@@ -25,7 +25,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/tests"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/genaccounts"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 )
@@ -1272,12 +1271,12 @@ func TestGaiadAddGenesisAccount(t *testing.T) {
 	genesisState := f.GenesisState()
 
 	cdc := app.MakeCodec()
-	accounts := genaccounts.GetGenesisStateFromAppState(cdc, genesisState)
+	accounts := auth.GetGenesisStateFromAppState(cdc, genesisState).Accounts
 
-	require.Equal(t, accounts[0].Address, f.KeyAddress(keyFoo))
-	require.Equal(t, accounts[1].Address, f.KeyAddress(keyBar))
-	require.True(t, accounts[0].Coins.IsEqual(startCoins))
-	require.True(t, accounts[1].Coins.IsEqual(bazCoins))
+	require.Equal(t, accounts[0].GetAddress(), f.KeyAddress(keyFoo))
+	require.Equal(t, accounts[1].GetAddress(), f.KeyAddress(keyBar))
+	require.True(t, accounts[0].GetCoins().IsEqual(startCoins))
+	require.True(t, accounts[1].GetCoins().IsEqual(bazCoins))
 
 	// Cleanup testing directories
 	f.Cleanup()

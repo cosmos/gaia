@@ -70,7 +70,7 @@ func InitializeLCD(nValidators int, initAddrs []sdk.AccAddress, minting bool, po
 	logger = log.NewFilter(logger, log.AllowError())
 
 	db := dbm.NewMemDB()
-	app := app.NewGaiaApp(logger, db, nil, true, 0, baseapp.SetPruning(store.PruneNothing))
+	gapp := app.NewGaiaApp(logger, db, nil, true, 0, baseapp.SetPruning(store.PruneNothing))
 	cdc = app.MakeCodec()
 
 	genDoc, valConsPubKeys, valOperAddrs, privVal, err := defaultGenesis(config, nValidators, initAddrs, minting)
@@ -96,7 +96,7 @@ func InitializeLCD(nValidators int, initAddrs []sdk.AccAddress, minting bool, po
 	// TODO Set to false once the upstream Tendermint proof verification issue is fixed.
 	viper.Set(client.FlagTrustNode, true)
 
-	node, err := startTM(config, logger, genDoc, privVal, app)
+	node, err := startTM(config, logger, genDoc, privVal, gapp)
 	if err != nil {
 		return
 	}

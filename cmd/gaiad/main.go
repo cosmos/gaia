@@ -95,13 +95,14 @@ func exportAppStateAndTMValidators(
 ) (json.RawMessage, []tmtypes.GenesisValidator, error) {
 
 	if height != -1 {
-		gApp := app.NewGaiaApp(logger, db, traceStore, false, uint(1))
-		err := gApp.LoadHeight(height)
+		gapp := app.NewGaiaApp(logger, db, traceStore, false, uint(1))
+		err := gapp.LoadHeight(height)
 		if err != nil {
 			return nil, nil, err
 		}
-		return gApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
+		return gapp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 	}
-	gApp := app.NewGaiaApp(logger, db, traceStore, true, uint(1))
-	return gApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
+
+	gapp := app.NewGaiaApp(logger, db, traceStore, true, uint(1))
+	return gapp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 }

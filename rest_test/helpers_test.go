@@ -1,4 +1,4 @@
-package lcdtest
+package resttest
 
 import (
 	"bytes"

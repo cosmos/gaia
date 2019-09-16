@@ -1,4 +1,4 @@
-package lcdtest
+package resttest
 
 import (
 	"encoding/base64"
@@ -10,8 +10,6 @@ import (
 	"strings"
 	"testing"
 	"time"
-
-	"github.com/cosmos/cosmos-sdk/x/mint"
 
 	"github.com/stretchr/testify/require"
 
@@ -28,6 +26,7 @@ import (
 	distrrest "github.com/cosmos/cosmos-sdk/x/distribution/client/rest"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"github.com/cosmos/cosmos-sdk/x/gov"
+	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 )
 

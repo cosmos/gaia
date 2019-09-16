@@ -36,8 +36,8 @@ import (
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 )
 
-// Request makes a test LCD test request. It returns a response object and a
-// stringified response body.
+// Request makes a test RESTful request to a testing REST service. It returns a
+// response object and a stringified response body.
 func Request(t *testing.T, port, method, path string, payload []byte) (*http.Response, string) {
 	var (
 		err error

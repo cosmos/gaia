@@ -141,9 +141,9 @@ lint: golangci-lint
 	go mod verify
 
 format:
-	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/lcd/statik/statik.go" | xargs gofmt -w -s
-	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/lcd/statik/statik.go" | xargs misspell -w
-	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/lcd/statik/statik.go" | xargs goimports -w -local github.com/cosmos/cosmos-sdk
+	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" | xargs gofmt -w -s
+	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" | xargs misspell -w
+	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" | xargs goimports -w -local github.com/cosmos/cosmos-sdk
 
 benchmark:
 	@go test -mod=readonly -bench=. ./...
@@ -160,38 +160,13 @@ localnet-start: build-linux localnet-stop
 	@if ! [ -f build/node0/gaiad/config/genesis.json ]; then docker run --rm -v $(CURDIR)/build:/gaiad:Z tendermint/gaiadnode testnet --v 4 -o . --starting-ip-address 192.168.10.2 ; fi
 	docker-compose up -d
 
-# Stop testnet
 localnet-stop:
 	docker-compose down
-
-setup-contract-tests-data:
-	echo 'Prepare data for the contract tests'
-	rm -rf /tmp/contract_tests ; \
-	mkdir /tmp/contract_tests ; \
-	cp "${GOPATH}/pkg/mod/${SDK_PACK}/client/lcd/swagger-ui/swagger.yaml" /tmp/contract_tests/swagger.yaml ; \
-	./build/gaiad init --home /tmp/contract_tests/.gaiad --chain-id lcd contract-tests ; \
-	tar -xzf lcd_test/testdata/state.tar.gz -C /tmp/contract_tests/
-
-start-gaia: setup-contract-tests-data
-	./build/gaiad --home /tmp/contract_tests/.gaiad start &
-	@sleep 2s
-
-setup-transactions: start-gaia
-	@bash ./lcd_test/testdata/setup.sh
-
-run-lcd-contract-tests:
-	@echo "Running Gaia LCD for contract tests"
-	./build/gaiacli rest-server --laddr tcp://0.0.0.0:8080 --home /tmp/contract_tests/.gaiacli --node http://localhost:26657 --chain-id lcd --trust-node true
-
-contract-tests: setup-transactions
-	@echo "Running Gaia LCD for contract tests"
-	dredd && pkill gaiad
 
 # include simulations
 include sims.mk
 
 .PHONY: all build-linux install install-debug \
 	go-mod-cache draw-deps clean build \
-	setup-transactions setup-contract-tests-data start-gaia run-lcd-contract-tests contract-tests \
 	check check-all check-build check-cover check-ledger check-unit check-race
 

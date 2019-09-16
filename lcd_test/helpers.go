@@ -15,7 +15,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/lcd"
+	"github.com/cosmos/cosmos-sdk/client/rest"
 	"github.com/cosmos/cosmos-sdk/codec"
 	crkeys "github.com/cosmos/cosmos-sdk/crypto/keys"
 	"github.com/cosmos/cosmos-sdk/server"
@@ -50,13 +50,14 @@ import (
 	"github.com/cosmos/gaia/app"
 )
 
-// TODO: Make InitializeTestLCD safe to call in multiple tests at the same time
-// InitializeLCD starts Tendermint and the LCD in process, listening on
+// TODO: Make InitializeRESTServer safe to call in multiple tests at the same time
+// InitializeRESTServer starts Tendermint and the REST server in process, listening on
 // their respective sockets where nValidators is the total number of validators
 // and initAddrs are the accounts to initialize with some stake tokens. It
 // returns a cleanup function, a set of validator public keys, and a port.
-func InitializeLCD(nValidators int, initAddrs []sdk.AccAddress, minting bool, portExt ...string) (
-	cleanup func(), valConsPubKeys []crypto.PubKey, valOperAddrs []sdk.ValAddress, port string, err error) {
+func InitializeRESTServer(
+	nValidators int, initAddrs []sdk.AccAddress, minting bool, portExt ...string,
+) (cleanup func(), valConsPubKeys []crypto.PubKey, valOperAddrs []sdk.ValAddress, port string, err error) {
 
 	config, err := GetConfig()
 	if err != nil {
@@ -90,7 +91,7 @@ func InitializeLCD(nValidators int, initAddrs []sdk.AccAddress, minting bool, po
 		port = portExt[0]
 	}
 
-	// XXX: Need to set this so LCD knows the tendermint node address!
+	// XXX: Need to set this so REST service knows the tendermint node address!
 	viper.Set(client.FlagNode, config.RPC.ListenAddress)
 	viper.Set(client.FlagChainID, genDoc.ChainID)
 	// TODO Set to false once the upstream Tendermint proof verification issue is fixed.
@@ -102,23 +103,23 @@ func InitializeLCD(nValidators int, initAddrs []sdk.AccAddress, minting bool, po
 	}
 
 	tests.WaitForNextHeightTM(tests.ExtractPortFromAddress(config.RPC.ListenAddress))
-	lcdInstance, err := startLCD(logger, listenAddr, cdc)
+	restSvr, err := startRESTServer(logger, listenAddr, cdc)
 	if err != nil {
 		return
 	}
 
-	tests.WaitForLCDStart(port)
+	tests.WaitForRESTServerStart(port)
 	tests.WaitForHeight(1, port)
 
 	cleanup = func() {
-		logger.Debug("cleaning up LCD initialization")
+		logger.Debug("cleaning up REST server initialization")
 		err = node.Stop()
 		if err != nil {
 			logger.Error(err.Error())
 		}
 
 		node.Wait()
-		err = lcdInstance.Close()
+		err = restSvr.Close()
 		if err != nil {
 			logger.Error(err.Error())
 		}
@@ -134,7 +135,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	privVal.Reset()
 
 	if nValidators < 1 {
-		err = errors.New("InitializeLCD must use at least one validator")
+		err = errors.New("must use at least one validator")
 		return
 	}
 
@@ -342,20 +343,21 @@ func startTM(
 	return node, err
 }
 
-// startLCD starts the LCD.
-func startLCD(logger log.Logger, listenAddr string, cdc *codec.Codec) (net.Listener, error) {
-	rs := lcd.NewRestServer(cdc)
+func startRESTServer(logger log.Logger, listenAddr string, cdc *codec.Codec) (net.Listener, error) {
+	rs := rest.NewRestServer(cdc)
+
 	registerRoutes(rs)
+
 	listener, err := tmrpc.Listen(listenAddr, tmrpc.DefaultConfig())
 	if err != nil {
 		return nil, err
 	}
+
 	go tmrpc.StartHTTPServer(listener, rs.Mux, logger, tmrpc.DefaultConfig()) //nolint:errcheck
 	return listener, nil
 }
 
-// NOTE: If making updates here also update cmd/gaia/cmd/gaiacli/main.go
-func registerRoutes(rs *lcd.RestServer) {
+func registerRoutes(rs *rest.RestServer) {
 	client.RegisterRoutes(rs.CliCtx, rs.Mux)
 	authrest.RegisterTxRoutes(rs.CliCtx, rs.Mux)
 	app.ModuleBasics.RegisterRESTRoutes(rs.CliCtx, rs.Mux)
@@ -451,7 +453,7 @@ func (b AddrSeedSlice) Swap(i, j int) {
 func InitClientHome(dir string) string {
 	var err error
 	if dir == "" {
-		dir, err = ioutil.TempDir("", "lcd_test")
+		dir, err = ioutil.TempDir("", "rest_server_test")
 		if err != nil {
 			panic(err)
 		}

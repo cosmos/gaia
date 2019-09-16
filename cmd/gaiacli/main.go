@@ -7,7 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/keys"
-	"github.com/cosmos/cosmos-sdk/client/lcd"
+	"github.com/cosmos/cosmos-sdk/client/rest"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -62,7 +62,7 @@ func main() {
 		queryCmd(cdc),
 		txCmd(cdc),
 		client.LineBreak,
-		lcd.ServeCommand(cdc, registerRoutes),
+		rest.ServeCommand(cdc, registerRoutes),
 		client.LineBreak,
 		keys.Commands(),
 		client.LineBreak,
@@ -137,10 +137,12 @@ func txCmd(cdc *amino.Codec) *cobra.Command {
 	return txCmd
 }
 
-// registerRoutes registers the routes from the different modules for the LCD.
-// NOTE: details on the routes added for each module are in the module documentation
-// NOTE: If making updates here you also need to update the test helper in client/lcd/test_helper.go
-func registerRoutes(rs *lcd.RestServer) {
+// registerRoutes registers the routes in the REST server from the different
+// modules and auxiliary handlers.
+//
+// NOTE: Details on the routes added for each module are in the module
+// documentation.
+func registerRoutes(rs *rest.RestServer) {
 	client.RegisterRoutes(rs.CliCtx, rs.Mux)
 	authrest.RegisterTxRoutes(rs.CliCtx, rs.Mux)
 	app.ModuleBasics.RegisterRESTRoutes(rs.CliCtx, rs.Mux)

@@ -139,7 +139,7 @@ jobs:
           name: Test CLI integration
           command: |
             export BUILDDIR=`pwd`/build
-            make check-build
+            make test-build
 
   test-cover:
     executor: golang
@@ -269,7 +269,7 @@ jobs:
       - run:
           name: Integration tests
           command: source $BASH_ENV
-            make check-build
+            make test-build
       - run:
           name: Test full gaia simulation
           command: |

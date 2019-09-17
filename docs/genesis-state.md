@@ -9,7 +9,6 @@ The Gaia genesis state is defined as follows:
 
 ```go
 type GenesisState struct {
-  Accounts     []GenesisAccount      `json:"accounts"`
   AuthData     auth.GenesisState     `json:"auth"`
   BankData     bank.GenesisState     `json:"bank"`
   StakingData  staking.GenesisState  `json:"staking"`
@@ -27,23 +26,10 @@ which internally calls each module's `InitGenesis` providing its own respective
 
 ## Accounts
 
-Genesis accounts defined in the `GenesisState` are defined as follows:
-
-```go
-type GenesisAccount struct {
-  Address       sdk.AccAddress `json:"address"`
-  Coins         sdk.Coins      `json:"coins"`
-  Sequence      uint64         `json:"sequence_number"`
-  AccountNumber uint64         `json:"account_number"`
-
-  // vesting account fields
-  OriginalVesting  sdk.Coins `json:"original_vesting"`  // total vesting coins upon initialization
-  DelegatedFree    sdk.Coins `json:"delegated_free"`    // delegated vested coins at time of delegation
-  DelegatedVesting sdk.Coins `json:"delegated_vesting"` // delegated vesting coins at time of delegation
-  StartTime        int64     `json:"start_time"`        // vesting start time (UNIX Epoch time)
-  EndTime          int64     `json:"end_time"`          // vesting end time (UNIX Epoch time)
-}
-```
+Genesis accounts are defined in the `GenesisState` of the `x/auth` module and
+exist under the `accounts` key. There is no single concrete implementation of a
+genesis account but they all implement the `GenesisAccount` interface defined by
+`x/auth`.
 
 Each account must have a valid and unique account number in addition to a
 sequence number (nonce) and address.

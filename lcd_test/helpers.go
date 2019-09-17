@@ -10,27 +10,27 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/pkg/errors"
+	"github.com/spf13/viper"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/lcd"
 	"github.com/cosmos/cosmos-sdk/codec"
 	crkeys "github.com/cosmos/cosmos-sdk/crypto/keys"
 	"github.com/cosmos/cosmos-sdk/server"
-	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/cosmos/cosmos-sdk/tests"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
+	authexported "github.com/cosmos/cosmos-sdk/x/auth/exported"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
-	"github.com/cosmos/cosmos-sdk/x/genaccounts"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
-	"github.com/pkg/errors"
-	"github.com/spf13/viper"
 
 	tmcfg "github.com/tendermint/tendermint/config"
 	"github.com/tendermint/tendermint/crypto"
@@ -47,7 +47,7 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
-	gapp "github.com/cosmos/gaia/app"
+	"github.com/cosmos/gaia/app"
 )
 
 // TODO: Make InitializeTestLCD safe to call in multiple tests at the same time
@@ -70,8 +70,8 @@ func InitializeLCD(nValidators int, initAddrs []sdk.AccAddress, minting bool, po
 	logger = log.NewFilter(logger, log.AllowError())
 
 	db := dbm.NewMemDB()
-	app := gapp.NewGaiaApp(logger, db, nil, true, 0, baseapp.SetPruning(store.PruneNothing))
-	cdc = gapp.MakeCodec()
+	gapp := app.NewGaiaApp(logger, db, nil, true, 0, baseapp.SetPruning(store.PruneNothing))
+	cdc = app.MakeCodec()
 
 	genDoc, valConsPubKeys, valOperAddrs, privVal, err := defaultGenesis(config, nValidators, initAddrs, minting)
 	if err != nil {
@@ -96,7 +96,7 @@ func InitializeLCD(nValidators int, initAddrs []sdk.AccAddress, minting bool, po
 	// TODO Set to false once the upstream Tendermint proof verification issue is fixed.
 	viper.Set(client.FlagTrustNode, true)
 
-	node, err := startTM(config, logger, genDoc, privVal, app)
+	node, err := startTM(config, logger, genDoc, privVal, gapp)
 	if err != nil {
 		return
 	}
@@ -151,7 +151,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 
 	// append any additional (non-proposing) validators
 	var genTxs []auth.StdTx
-	var accs []genaccounts.GenesisAccount
+	var genAccounts []authexported.GenesisAccount
 
 	totalSupply := sdk.ZeroInt()
 
@@ -165,6 +165,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 			pubKey = ed25519.GenPrivKey().PubKey()
 			power = 1
 		}
+
 		startTokens := sdk.TokensFromConsensusPower(power)
 
 		msg := staking.NewMsgCreateValidator(
@@ -175,29 +176,32 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 			staking.NewCommissionRates(sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec()),
 			sdk.OneInt(),
 		)
+
 		stdSignMsg := auth.StdSignMsg{
 			ChainID: genDoc.ChainID,
 			Msgs:    []sdk.Msg{msg},
 		}
+
 		var sig []byte
 		sig, err = operPrivKey.Sign(stdSignMsg.Bytes())
 		if err != nil {
 			return
 		}
+
 		transaction := auth.NewStdTx([]sdk.Msg{msg}, auth.StdFee{}, []auth.StdSignature{{Signature: sig, PubKey: operPrivKey.PubKey()}}, "")
 		genTxs = append(genTxs, transaction)
 		valConsPubKeys = append(valConsPubKeys, pubKey)
 		valOperAddrs = append(valOperAddrs, sdk.ValAddress(operAddr))
 
-		accAuth := auth.NewBaseAccountWithAddress(sdk.AccAddress(operAddr))
+		account := auth.NewBaseAccountWithAddress(sdk.AccAddress(operAddr))
 		accTokens := sdk.TokensFromConsensusPower(150)
 		totalSupply = totalSupply.Add(accTokens)
 
-		accAuth.Coins = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, accTokens))
-		accs = append(accs, genaccounts.NewGenesisAccount(&accAuth))
+		account.Coins = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, accTokens))
+		genAccounts = append(genAccounts, &account)
 	}
 
-	genesisState := simapp.NewDefaultGenesisState()
+	genesisState := app.NewDefaultGenesisState()
 	genDoc.AppState, err = cdc.MarshalJSON(genesisState)
 	if err != nil {
 		return
@@ -209,19 +213,26 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	}
 
 	// add some tokens to init accounts
-	stakingDataBz := genesisState[staking.ModuleName]
-	var stakingData staking.GenesisState
-	cdc.MustUnmarshalJSON(stakingDataBz, &stakingData)
-
-	// add some tokens to init accounts
 	for _, addr := range initAddrs {
 		accAuth := auth.NewBaseAccountWithAddress(addr)
 		accTokens := sdk.TokensFromConsensusPower(100)
 		accAuth.Coins = sdk.Coins{sdk.NewCoin(sdk.DefaultBondDenom, accTokens)}
 		totalSupply = totalSupply.Add(accTokens)
-		acc := genaccounts.NewGenesisAccount(&accAuth)
-		accs = append(accs, acc)
+
+		genAccounts = append(genAccounts, &accAuth)
 	}
+
+	// auth genesis state: params and genesis accounts
+	authDataBz := genesisState[auth.ModuleName]
+	var authGenState auth.GenesisState
+	cdc.MustUnmarshalJSON(authDataBz, &authGenState)
+	authGenState.Accounts = genAccounts
+	genesisState[auth.ModuleName] = cdc.MustMarshalJSON(authGenState)
+
+	stakingDataBz := genesisState[staking.ModuleName]
+	var stakingData staking.GenesisState
+	cdc.MustUnmarshalJSON(stakingDataBz, &stakingData)
+	genesisState[staking.ModuleName] = cdc.MustMarshalJSON(stakingData)
 
 	// distr data
 	distrDataBz := genesisState[distr.ModuleName]
@@ -232,10 +243,6 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	distrData.FeePool.CommunityPool = sdk.DecCoins{sdk.NewDecCoin(sdk.DefaultBondDenom, commPoolAmt)}
 	distrDataBz = cdc.MustMarshalJSON(distrData)
 	genesisState[distr.ModuleName] = distrDataBz
-
-	// staking and genesis accounts
-	genesisState[staking.ModuleName] = cdc.MustMarshalJSON(stakingData)
-	genesisState[genaccounts.ModuleName] = cdc.MustMarshalJSON(accs)
 
 	// supply data
 	supplyDataBz := genesisState[supply.ModuleName]
@@ -289,6 +296,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	if err != nil {
 		return
 	}
+
 	genDoc.AppState = appState
 	return
 }
@@ -300,7 +308,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 // TODO: Clean up the WAL dir or enable it to be not persistent!
 func startTM(
 	tmcfg *tmcfg.Config, logger log.Logger, genDoc *tmtypes.GenesisDoc,
-	privVal tmtypes.PrivValidator, app *gapp.GaiaApp,
+	privVal tmtypes.PrivValidator, app *app.GaiaApp,
 ) (*nm.Node, error) {
 
 	genDocProvider := func() (*tmtypes.GenesisDoc, error) { return genDoc, nil }
@@ -350,7 +358,7 @@ func startLCD(logger log.Logger, listenAddr string, cdc *codec.Codec) (net.Liste
 func registerRoutes(rs *lcd.RestServer) {
 	client.RegisterRoutes(rs.CliCtx, rs.Mux)
 	authrest.RegisterTxRoutes(rs.CliCtx, rs.Mux)
-	gapp.ModuleBasics.RegisterRESTRoutes(rs.CliCtx, rs.Mux)
+	app.ModuleBasics.RegisterRESTRoutes(rs.CliCtx, rs.Mux)
 }
 
 var cdc = codec.New()

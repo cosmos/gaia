@@ -32,3 +32,5 @@ require (
 	google.golang.org/genproto v0.0.0-20190801165951-fa694d86fc64 // indirect
 	google.golang.org/grpc v1.22.1 // indirect
 )
+
+replace github.com/cosmos/cosmos-sdk v0.34.4-0.20190913222629-1028283e6fc1 => github.com/cosmos/cosmos-sdk v0.34.4-0.20190917153638-70a1c97f9486

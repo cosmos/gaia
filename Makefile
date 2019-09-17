@@ -6,6 +6,10 @@ COMMIT := $(shell git log -1 --format='%H')
 LEDGER_ENABLED ?= true
 SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
 
+SWAGGER_HOST    ?= localhost:1317
+SWAGGER_TITLE   ?= Gaia REST API
+SWAGGER_VERSION ?= 1.0.0
+
 export GO111MODULE = on
 
 # process build tags
@@ -37,6 +41,7 @@ endif
 ifeq ($(WITH_CLEVELDB),yes)
   build_tags += gcc
 endif
+
 build_tags += $(BUILD_TAGS)
 build_tags := $(strip $(build_tags))
 
@@ -52,7 +57,10 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=gaia \
 		  -X github.com/cosmos/cosmos-sdk/version.ClientName=gaiacli \
 		  -X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
 		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
-		  -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)"
+		  -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)" \
+			-X "github.com/cosmos/cosmos-sdk/client/rest.SwaggerTitle=$(SWAGGER_TITLE)" \
+			-X github.com/cosmos/cosmos-sdk/client/rest.SwaggerHost=$(SWAGGER_HOST) \
+			-X github.com/cosmos/cosmos-sdk/client/rest.SwaggerVersion=$(SWAGGER_VERSION)
 
 ifeq ($(WITH_CLEVELDB),yes)
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=cleveldb

@@ -86,7 +86,7 @@ else
 	go build -mod=readonly $(BUILD_FLAGS) -o build/contract_tests ./cmd/contract_tests
 endif
 
-install: go.sum check-ledger
+install: go.sum
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/gaiad
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/gaiacli
 
@@ -119,19 +119,19 @@ distclean: clean
 ### Testing
 
 
-check: check-unit check-build
-check-all: check check-race check-cover
+test: test-unit test-build
+test-all: check test-race test-cover
 
-check-unit:
+test-unit:
 	@VERSION=$(VERSION) go test -mod=readonly -tags='ledger test_ledger_mock' ./...
 
-check-race:
+test-race:
 	@VERSION=$(VERSION) go test -mod=readonly -race -tags='ledger test_ledger_mock' ./...
 
-check-cover:
+test-cover:
 	@go test -mod=readonly -timeout 30m -race -coverprofile=coverage.txt -covermode=atomic -tags='ledger test_ledger_mock' ./...
 
-check-build: build
+test-build: build
 	@go test -mod=readonly -p 4 `go list ./cli_test/...` -tags=cli_test -v
 
 
@@ -193,5 +193,4 @@ include sims.mk
 .PHONY: all build-linux install install-debug \
 	go-mod-cache draw-deps clean build \
 	setup-transactions setup-contract-tests-data start-gaia run-lcd-contract-tests contract-tests \
-	check check-all check-build check-cover check-ledger check-unit check-race
-
+	test test-all test-build test-cover test-unit test-race

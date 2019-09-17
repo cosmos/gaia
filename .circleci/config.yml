@@ -53,7 +53,7 @@ commands:
             echo 'export GO111MODULE=on'
 
 jobs:
-  setup_dependencies:
+  setup-dependencies:
     executor: golang
     steps:
       - checkout
@@ -93,42 +93,42 @@ jobs:
           paths:
             - "."
 
-  test_sim_nondeterminism:
+  test-sim-nondeterminism:
     executor: golang
     steps:
       - make:
-          target: test_sim_nondeterminism
+          target: test-sim-nondeterminism
           description: "Test Gaia non-determinism simulations"
 
-  test_sim_import_export:
+  test-sim-import-export:
     executor: golang
     steps:
       - make:
-          target: test_sim_import_export
+          target: test-sim-import-export
           description: "Test Gaia import/export simulation"
 
-  test_sim_after_import:
+  test-sim-after-import:
     executor: golang
     steps:
       - make:
-          target: test_sim_after_import
+          target: test-sim-after-import
           description: "Test Gaia simulation after importing state"
 
-  test_sim_multi_seed_short:
+  test-sim-multi-seed-short:
     executor: golang
     steps:
       - make:
-          target: test_sim_multi_seed_short
+          target: test-sim-multi-seed-short
           description: "Test Gaia multi-seed simulation (short-lived)"
 
-  test_sim_multi_seed_long:
+  test-sim-multi-seed-long:
     executor: golang
     steps:
       - make:
-          target: test_sim_multi_seed_long
+          target: test-sim-multi-seed-long
           description: "Test Gaia multi-seed simulation (long-lived)"
 
-  integration_tests:
+  integration-tests:
     executor: golang
     steps:
       - checkout
@@ -139,9 +139,9 @@ jobs:
           name: Test CLI integration
           command: |
             export BUILDDIR=`pwd`/build
-            make check-build
+            make test-build
 
-  test_cover:
+  test-cover:
     executor: golang
     parallelism: 4
     steps:
@@ -166,7 +166,7 @@ jobs:
       - store_artifacts:
           path: /tmp/logs
 
-  upload_coverage:
+  upload-coverage:
     executor: golang
     steps:
       - attach_workspace:
@@ -223,7 +223,7 @@ jobs:
             make localnet-start
             ./contrib/localnet-blocks-test.sh 40 5 10 localhost
 
-  deploy_docs:
+  deploy-docs:
     executor: docs
     steps:
       - checkout
@@ -247,7 +247,7 @@ jobs:
                 echo "Website build started"
             fi
 
-  macos_ci:
+  macos-ci:
     executor: mac
     steps:
       - mac_set_env
@@ -269,14 +269,14 @@ jobs:
       - run:
           name: Integration tests
           command: source $BASH_ENV
-            make check-build
+            make test-build
       - run:
           name: Test full gaia simulation
           command: |
             source $BASH_ENV
             make sim-gaia-fast
 
-  docker_image:
+  docker-image:
     executor: golang
     steps:
       - attach_workspace:
@@ -299,7 +299,7 @@ jobs:
             docker push tendermint/gaia:$GAIAD_VERSION
           fi
 
-  docker_tagged:
+  docker-tagged:
     executor: golang
     steps:
       - attach_workspace:
@@ -312,7 +312,7 @@ jobs:
           docker login --password-stdin -u $DOCKER_USER \<<$DOCKER_PASS
           docker push tendermint/gaia:$CIRCLE_TAG
 
-  reproducible_builds:
+  reproducible-builds:
     executor: golang
     steps:
       - attach_workspace:
@@ -362,10 +362,10 @@ workflows:
   version: 2
   test-suite:
     jobs:
-      - docker_image:
+      - docker-image:
           requires:
-            - setup_dependencies
-      - docker_tagged:
+            - setup-dependencies
+      - docker-tagged:
           filters:
             tags:
               only:
@@ -374,43 +374,43 @@ workflows:
               ignore:
                 - /.*/
           requires:
-            - setup_dependencies
-      - macos_ci:
+            - setup-dependencies
+      - macos-ci:
           filters:
             branches:
               only:
                 - master
                 - develop
-      - deploy_docs:
+      - deploy-docs:
           filters:
             branches:
               only:
                 - master
                 - develop
-      - setup_dependencies:
+      - setup-dependencies:
           # filters here are needed to enable this job also for tags
           filters:
             tags:
               only:
                 - /^v.*/
-      - integration_tests:
+      - integration-tests:
           requires:
-            - setup_dependencies
-      - test_sim_nondeterminism:
+            - setup-dependencies
+      - test-sim-nondeterminism:
           requires:
-            - setup_dependencies
-      - test_sim_import_export:
+            - setup-dependencies
+      - test-sim-import-export:
           requires:
-            - setup_dependencies
-      - test_sim_after_import:
+            - setup-dependencies
+      - test-sim-after-import:
           requires:
-            - setup_dependencies
-      - test_sim_multi_seed_short:
+            - setup-dependencies
+      - test-sim-multi-seed-short:
           requires:
-            - setup_dependencies
-      - test_sim_multi_seed_long:
+            - setup-dependencies
+      - test-sim-multi-seed-long:
           requires:
-            - setup_dependencies
+            - setup-dependencies
           # These filters ensure that the long sim only runs during release
           filters:
             branches:
@@ -418,20 +418,20 @@ workflows:
             tags:
               only:
                 - /^v.*/
-      - test_cover:
+      - test-cover:
           requires:
-            - setup_dependencies
+            - setup-dependencies
       - localnet
-      - upload_coverage:
+      - upload-coverage:
           requires:
-            - test_cover
-      - reproducible_builds:
+            - test-cover
+      - reproducible-builds:
           filters:
             branches:
               only:
                 - master
           requires:
-            - setup_dependencies
+            - setup-dependencies
 #      - contract_tests:
 #          requires:
-#            - setup_dependencies
+#            - setup-dependencies

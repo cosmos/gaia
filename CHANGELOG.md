@@ -45,6 +45,8 @@ configuration.
 
 * (gaiad) [\#119](https://github.com/cosmos/gaia/pull/119) Add support for the `--halt-time` and
 `--inter-block-cache` CLI flags and configuration.
+* (gaiacli) [\#132](https://github.com/cosmos/gaia/pull/132) Add `tx decode` command to decode
+Base64 encoded transactions.
 
 ## [v2.0.0] - 2019-08-22
 

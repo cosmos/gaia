@@ -43,10 +43,8 @@ mkfile_dir := $(shell cd $(shell dirname $(mkfile_path)); pwd)
 ###
 
 TOOLS_DESTDIR  ?= $(GOPATH)/bin
-
-GOLANGCI_LINT   = $(TOOLS_DESTDIR)/golangci-lint
-GOIMPORTS       = $(TOOLS_DESTDIR)/goimports
-RUNSIM          = $(TOOLS_DESTDIR)/runsim
+GOLANGCI_LINT  = $(TOOLS_DESTDIR)/golangci-lint
+RUNSIM         = $(TOOLS_DESTDIR)/runsim
 
 all: tools
 
@@ -55,18 +53,23 @@ tools-stamp: $(GOIMPORTS) $(RUNSIM)
 	touch $@
 
 $(GOLANGCI_LINT): $(mkfile_dir)/install-golangci-lint.sh
-	bash $(mkfile_dir)/install-golangci-lint.sh $(TOOLS_DESTDIR) $(GOLANGCI_LINT_VERSION) $(GOLANGCI_LINT_HASHSUM)
+	@echo "Installing golangci-lint..."
+	@bash $(mkfile_dir)/install-golangci-lint.sh $(TOOLS_DESTDIR) $(GOLANGCI_LINT_VERSION) $(GOLANGCI_LINT_HASHSUM)
 
-$(GOIMPORTS):
-	go get golang.org/x/tools/cmd/goimports@v0.0.0-20190628034336-212fb13d595e
-
+# Install the runsim binary with a temporary workaround of entering an outside
+# directory as the "go get" command ignores the -mod option and will polute the
+# go.{mod, sum} files.
+# 
+# ref: https://github.com/golang/go/issues/30515
 $(RUNSIM):
-	go get github.com/cosmos/tools/cmd/runsim/
+	@echo "Installing runsim..."
+	@(cd /tmp && go get github.com/cosmos/tools/cmd/runsim@v1.0.0)
 
 golangci-lint: $(GOLANGCI_LINT)
 
 tools-clean:
-	rm -f $(GOIMPORTS) $(GOLANGCI_LINT)
+	rm -f $(GOLANGCI_LINT)
+	rm -f $(RUNSIM)
 	rm -f tools-stamp
 
 .PHONY: all tools tools-clean

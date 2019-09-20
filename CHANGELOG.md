@@ -37,8 +37,14 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [v2.0.1] - 2019-09-19
 
+### Features
+
+* (gaiad) [\#119](https://github.com/cosmos/gaia/pull/119) Add support for the `--halt-time` CLI flag and configuration.
+
 ### Improvements
 
+* [\#119](https://github.com/cosmos/gaia/pull/119) Refactor and upgrade Circle CI
+configuration.
 * (sdk) Update SDK version to v0.37.1
 
 ## [v2.0.0] - 2019-08-22

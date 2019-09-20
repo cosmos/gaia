@@ -39,8 +39,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ### Features
 
-* (gaiad) [\#119](https://github.com/cosmos/gaia/pull/119) Add support for the `--halt-time` and
-`--inter-block-cache` CLI flags and configuration.
+* (gaiad) [\#119](https://github.com/cosmos/gaia/pull/119) Add support for the `--halt-time` CLI flag and configuration.
 
 ### Improvements
 

@@ -1,0 +1,219 @@
+joons-mbp% ./connection.sh $CLIENTID
+establishing connection...
+connection 1: conn-c91b
+connection 2: conn-b49a
+3333
+{"chain_id":"chain-attv4e","account_number":"3","sequence":"58","fee":{"amount":[],"gas":"200000"},"msgs":[{"type":"ibc/client/MsgOpenInit","value":{"connection_id":"conn-c91b","connection":{"client":"client-67f4","counterparty":"conn-b49a","path":{"type":"ibc/commitment/merkle/Path","value":{"key_path":["aWJj"],"key_prefix":"djEv"}}},"counterparty_client":"client-67f4","next_timeout":"5302","signer":"cosmos1rnghdvmhl0zjltvvgp4j0xwaaxazj8t33kl524"}}],"memo":""}
+
+confirm transaction before signing and broadcasting [y/N]: y
+Password to sign with 'node0':
+height: 4303
+txhash: EDAEA145806A595487484C4875C5C4BD0AD6E9CBE9215C4279E952B4B0D51CE7
+code: 0
+data: ""
+rawlog: '[{"msg_index":0,"success":true,"log":"","events":[{"type":"message","attributes":[{"key":"action","value":"open-init"}]}]}]'
+logs:
+- msgindex: 0
+  success: true
+  log: ""
+  events:
+  - type: message
+    attributes:
+    - key: action
+      value: open-init
+info: ""
+gaswanted: 200000
+gasused: 24428
+codespace: ""
+tx: null
+timestamp: ""
+events:
+- type: message
+  attributes:
+  - key: action
+    value: open-init
+
+{"chain_id":"chain-attv4e","account_number":"3","sequence":"59","fee":{"amount":[],"gas":"200000"},"msgs":[{"type":"ibc/client/MsgUpdateClient","value":{"ClientID":"client-67f4","Header":{"type":"ibc/client/tendermint/Header","value":{"SignedHeader":{"header":{"version":{"block":"10","app":"0"},"chain_id":"chain-attv4e","height":"4304","time":"2019-09-20T16:24:51.987162Z","num_txs":"0","total_txs":"58","last_block_id":{"hash":"00D2FED681D798C17A1250B7AA76871880DAD86B84E45CA134F3BAC62FAB5C57","parts":{"total":"1","hash":"7CC72FA5F514E61D6EBDDC2E1A8C03047E3ACAD58A0A3BD73FC1C17D75F305C6"}},"last_commit_hash":"DB7FFB84C308EE5DF84B3536115F7786EBE35087DB4F1B5679257062B49F3D1D","data_hash":"","validators_hash":"D95391EDE995D615924038DC362DE9C68CB96D36D1EEB950B50F5276C13AF1C9","next_validators_hash":"D95391EDE995D615924038DC362DE9C68CB96D36D1EEB950B50F5276C13AF1C9","consensus_hash":"048091BC7DDC283F77BFBF91D73C44DA58C3DF8A9CBC867405D8B7F3DAADA22F","app_hash":"20D9677ED4CC87B8C20AA104D5C42E937C78FED1A660AC95B1FE5CA3CEB4D835","last_results_hash":"6E340B9CFFB37A989CA544E6BB780A2C78901D3FB33738768511A30617AFA01D","evidence_hash":"","proposer_address":"9A4B3DF37C5F60517397410AE705B68652275ECF"},"commit":{"block_id":{"hash":"EB40BE1F6676F4B6256D01B8DD42D107BF60D884F00F20816B70FAE9E8CB6A45","parts":{"total":"1","hash":"23C181961F708C2D0720266E55687DA76A0A7DA445DBF1D22E2F613F48E788A9"}},"precommits":[{"type":2,"height":"4304","round":"0","block_id":{"hash":"EB40BE1F6676F4B6256D01B8DD42D107BF60D884F00F20816B70FAE9E8CB6A45","parts":{"total":"1","hash":"23C181961F708C2D0720266E55687DA76A0A7DA445DBF1D22E2F613F48E788A9"}},"timestamp":"2019-09-20T16:24:57.028671Z","validator_address":"9A4B3DF37C5F60517397410AE705B68652275ECF","validator_index":"0","signature":"pvn3TDyAxaH02sL5sQbHsxZ1adlOcUMD1uFHXkErdj0bhhRxVUK/eEZhoOxKv2kQURbYH/yrkNbK/TkxsmO6Dg=="}]}},"ValidatorSet":{"validators":[{"address":"9A4B3DF37C5F60517397410AE705B68652275ECF","pub_key":{"type":"tendermint/PubKeyEd25519","value":"g61k/wo7hKejV8qDPVKKYKF9RbK9NH4G+5ioRlDkha4="},"voting_power":"100","proposer_priority":"0"}],"proposer":{"address":"9A4B3DF37C5F60517397410AE705B68652275ECF","pub_key":{"type":"tendermint/PubKeyEd25519","value":"g61k/wo7hKejV8qDPVKKYKF9RbK9NH4G+5ioRlDkha4="},"voting_power":"100","proposer_priority":"0"}},"NextValidatorSet":{"validators":[{"address":"9A4B3DF37C5F60517397410AE705B68652275ECF","pub_key":{"type":"tendermint/PubKeyEd25519","value":"g61k/wo7hKejV8qDPVKKYKF9RbK9NH4G+5ioRlDkha4="},"voting_power":"100","proposer_priority":"0"}],"proposer":{"address":"9A4B3DF37C5F60517397410AE705B68652275ECF","pub_key":{"type":"tendermint/PubKeyEd25519","value":"g61k/wo7hKejV8qDPVKKYKF9RbK9NH4G+5ioRlDkha4="},"voting_power":"100","proposer_priority":"0"}}}},"Signer":"cosmos1rnghdvmhl0zjltvvgp4j0xwaaxazj8t33kl524"}}],"memo":""}
+
+confirm transaction before signing and broadcasting [y/N]: y
+Password to sign with 'node0':
+height: 4312
+txhash: ACF62A37280E14C5C2D1CDC74AA035F812CC549F8C9F4C2EC88EF328AD350C1E
+code: 0
+data: ""
+rawlog: '[{"msg_index":0,"success":true,"log":"","events":[{"type":"message","attributes":[{"key":"action","value":"update-client"}]}]}]'
+logs:
+- msgindex: 0
+  success: true
+  log: ""
+  events:
+  - type: message
+    attributes:
+    - key: action
+      value: update-client
+info: ""
+gaswanted: 200000
+gasused: 33760
+codespace: ""
+tx: null
+timestamp: ""
+events:
+- type: message
+  attributes:
+  - key: action
+    value: update-client
+
+updated apphash to 20D9677ED4CC87B8C20AA104D5C42E937C78FED1A660AC95B1FE5CA3CEB4D835
+querying from 4303
+{"chain_id":"chain-attv4e","account_number":"3","sequence":"60","fee":{"amount":[],"gas":"200000"},"msgs":[{"type":"ibc/client/MsgOpenTry","value":{"connection_id":"conn-b49a","connection":{"client":"client-67f4","counterparty":"conn-c91b","path":{"type":"ibc/commitment/merkle/Path","value":{"key_path":["aWJj"],"key_prefix":"djEv"}}},"counterparty_client":"client-67f4","timeout":"5302","next_timeout":"5312","proofs":[{"type":"ibc/commitment/merkle/Proof","value":{"proof":{"ops":[{"type":"iavl:v","key":"djEvY29ubmVjdGlvbi9jb25uLWM5MWI=","data":"nAMKmQMKKggSEJQBGM8hIiA1uu18bvWW/FcBbVeDFXo2XqcJvawz/Z0KIh3KRSmbhQopCA4QOBjPISIgh81q9q9zOyLcx/SrvYmgu/EPHFkeTO8nzgKsmvOcmtkKKQgMECYYzyEqIPWdSvF1S9WIfp6faSJtwkajg9NUY9d99utFpgU9ZkgbCikIChAWGM8hIiAam4sJASUzHMKA/RQD/ngbTSa4ikEofQy7TNWBTEZhEQopCAgQDRjPISogA5EIGvZtcuZpSQRa+faLeV6oGEHZeTjbiSxA1YMYLXgKKQgGEAYYzyEqIOlZjcFw6ccNrQBd6YizSe7ZJD34ScfC5qLkPk3w8GCACikIBBAEGM8hIiDieDGSvr5nYeyHgfDMSLA1LYL3yyIzdcq6359YUUF3MwopCAIQAhjPISIgYOTrVYlfwodvPVJqf1OQlPg/Sx15T1Qsjkp3cKmxjMkaPgoXdjEvY29ubmVjdGlvbi9jb25uLWM5MWISICbl5EPm0bHiy90TynRiAjNMd2stzOJZHvrI79ZwDRtFGM8h"},{"type":"multistore","key":"aWJj","data":"/QMK+gMKMwoIc2xhc2hpbmcSJwolCM8hEiAQHdQGhiHLVYLjMJiE0d+SrYdl5UnKSUQvDEOrJ14zdgoyCgdzdGFraW5nEicKJQjPIRIg1X021R9yW6hsW0dDggRi5Zie7ucadqrtQkzisbRBwVEKLgoDYWNjEicKJQjPIRIgFFplpJIWY9BxSZz7U7X8O/nc8igjv48uMBWb1xfdPmQKLgoDaWJjEicKJQjPIRIg97XvcXEPTRGOCUXT6yfuuIeoGC/G14LxKbLGe0oqW+YKLgoDZ292EicKJQjPIRIgYM0TfBli7KxhY4nWgDSDPykhUJwtKFql9RU5l86WinQKLwoEbWFpbhInCiUIzyESIC5X75NgcQX0LlQ8dgnH0yGjA6A+mOiNJvhN1SnTkdFgCi8KBG1pbnQSJwolCM8hEiANZO1mEbc+HQcAul1Wuakw9VkfZGjs+ESzGO1T6xx2gQoxCgZzdXBwbHkSJwolCM8hEiB3+zNG7PnGHH+zboXgHHKHNlgnr9X4sj2+ds1OoTSpewo3CgxkaXN0cmlidXRpb24SJwolCM8hEiC6lukdRT65FpBydbFcDySpmQHDo6j8r4AMaBqE/1qoLAoxCgZwYXJhbXMSJwolCM8hEiDc+tPoZ9p8khPp2Nyt6ls817WnEELASt9/El0S5beAFQ=="}]},"key":"Y29ubmVjdGlvbi9jb25uLWM5MWI="}},{"type":"ibc/commitment/merkle/Proof","value":{"proof":{"ops":[{"type":"iavl:v","key":"djEvY29ubmVjdGlvbi9jb25uLWM5MWIvc3RhdGU=","data":"ogMKnwMKKggSEJQBGM8hIiA1uu18bvWW/FcBbVeDFXo2XqcJvawz/Z0KIh3KRSmbhQopCA4QOBjPISIgh81q9q9zOyLcx/SrvYmgu/EPHFkeTO8nzgKsmvOcmtkKKQgMECYYzyEqIPWdSvF1S9WIfp6faSJtwkajg9NUY9d99utFpgU9ZkgbCikIChAWGM8hIiAam4sJASUzHMKA/RQD/ngbTSa4ikEofQy7TNWBTEZhEQopCAgQDRjPISIgWsJmz4BpAVPzONMBNlMcJ+atd4t8BHYtHkEUte3deVwKKQgGEAcYzyEqIPKBvRA3CF7P3PbN/qiFQmHJgMBRxV4q2yC9+BTA3fiRCikIBBADGM8hKiDXI1/6iiwU+UeP4P2nnYCfsB9Ptdobd5PO6Plccm2RNQopCAIQAhjPISogWQu3LXzAbx0wWC9Y5L6NCOB29PgIiXf20XNfQ6Ddp7IaRAoddjEvY29ubmVjdGlvbi9jb25uLWM5MWIvc3RhdGUSIEv1Ei80RVTFO94uu4zSt+PRYArWMcOFpdfM4jx3hUWaGM8h"},{"type":"multistore","key":"aWJj","data":"/QMK+gMKMwoIc2xhc2hpbmcSJwolCM8hEiAQHdQGhiHLVYLjMJiE0d+SrYdl5UnKSUQvDEOrJ14zdgoyCgdzdGFraW5nEicKJQjPIRIg1X021R9yW6hsW0dDggRi5Zie7ucadqrtQkzisbRBwVEKLgoDYWNjEicKJQjPIRIgFFplpJIWY9BxSZz7U7X8O/nc8igjv48uMBWb1xfdPmQKLgoDaWJjEicKJQjPIRIg97XvcXEPTRGOCUXT6yfuuIeoGC/G14LxKbLGe0oqW+YKLgoDZ292EicKJQjPIRIgYM0TfBli7KxhY4nWgDSDPykhUJwtKFql9RU5l86WinQKLwoEbWFpbhInCiUIzyESIC5X75NgcQX0LlQ8dgnH0yGjA6A+mOiNJvhN1SnTkdFgCi8KBG1pbnQSJwolCM8hEiANZO1mEbc+HQcAul1Wuakw9VkfZGjs+ESzGO1T6xx2gQoxCgZzdXBwbHkSJwolCM8hEiB3+zNG7PnGHH+zboXgHHKHNlgnr9X4sj2+ds1OoTSpewo3CgxkaXN0cmlidXRpb24SJwolCM8hEiC6lukdRT65FpBydbFcDySpmQHDo6j8r4AMaBqE/1qoLAoxCgZwYXJhbXMSJwolCM8hEiDc+tPoZ9p8khPp2Nyt6ls817WnEELASt9/El0S5beAFQ=="}]},"key":"Y29ubmVjdGlvbi9jb25uLWM5MWIvc3RhdGU="}},{"type":"ibc/commitment/merkle/Proof","value":{"proof":{"ops":[{"type":"iavl:v","key":"djEvY29ubmVjdGlvbi9jb25uLWM5MWIvdGltZW91dA==","data":"pAMKoQMKKggSEJQBGM8hIiA1uu18bvWW/FcBbVeDFXo2XqcJvawz/Z0KIh3KRSmbhQopCA4QOBjPISIgh81q9q9zOyLcx/SrvYmgu/EPHFkeTO8nzgKsmvOcmtkKKQgMECYYzyEqIPWdSvF1S9WIfp6faSJtwkajg9NUY9d99utFpgU9ZkgbCikIChAWGM8hIiAam4sJASUzHMKA/RQD/ngbTSa4ikEofQy7TNWBTEZhEQopCAgQDRjPISIgWsJmz4BpAVPzONMBNlMcJ+atd4t8BHYtHkEUte3deVwKKQgGEAcYzyEqIPKBvRA3CF7P3PbN/qiFQmHJgMBRxV4q2yC9+BTA3fiRCikIBBADGM8hKiDXI1/6iiwU+UeP4P2nnYCfsB9Ptdobd5PO6Plccm2RNQopCAIQAhjPISIgareqlchGk+fq/tEkWKD8Jxwu3cNYV9WwMhL7mOYIEicaRgofdjEvY29ubmVjdGlvbi9jb25uLWM5MWIvdGltZW91dBIgnnwEWyOgFGr5Vdg16qMrD3CyCKBG7ftgzmAEnAqA4cwYzyE="},{"type":"multistore","key":"aWJj","data":"/QMK+gMKMwoIc2xhc2hpbmcSJwolCM8hEiAQHdQGhiHLVYLjMJiE0d+SrYdl5UnKSUQvDEOrJ14zdgoyCgdzdGFraW5nEicKJQjPIRIg1X021R9yW6hsW0dDggRi5Zie7ucadqrtQkzisbRBwVEKLgoDYWNjEicKJQjPIRIgFFplpJIWY9BxSZz7U7X8O/nc8igjv48uMBWb1xfdPmQKLgoDaWJjEicKJQjPIRIg97XvcXEPTRGOCUXT6yfuuIeoGC/G14LxKbLGe0oqW+YKLgoDZ292EicKJQjPIRIgYM0TfBli7KxhY4nWgDSDPykhUJwtKFql9RU5l86WinQKLwoEbWFpbhInCiUIzyESIC5X75NgcQX0LlQ8dgnH0yGjA6A+mOiNJvhN1SnTkdFgCi8KBG1pbnQSJwolCM8hEiANZO1mEbc+HQcAul1Wuakw9VkfZGjs+ESzGO1T6xx2gQoxCgZzdXBwbHkSJwolCM8hEiB3+zNG7PnGHH+zboXgHHKHNlgnr9X4sj2+ds1OoTSpewo3CgxkaXN0cmlidXRpb24SJwolCM8hEiC6lukdRT65FpBydbFcDySpmQHDo6j8r4AMaBqE/1qoLAoxCgZwYXJhbXMSJwolCM8hEiDc+tPoZ9p8khPp2Nyt6ls817WnEELASt9/El0S5beAFQ=="}]},"key":"Y29ubmVjdGlvbi9jb25uLWM5MWIvdGltZW91dA=="}},{"type":"ibc/commitment/merkle/Proof","value":{"proof":{"ops":[{"type":"iavl:v","key":"djEvY29ubmVjdGlvbi9jb25uLWM5MWIvY291bnRlcnBhcnR5Q2xpZW50","data":"hAMKgQMKKggSEJQBGM8hIiA1uu18bvWW/FcBbVeDFXo2XqcJvawz/Z0KIh3KRSmbhQopCA4QOBjPISIgh81q9q9zOyLcx/SrvYmgu/EPHFkeTO8nzgKsmvOcmtkKKQgMECYYzyEqIPWdSvF1S9WIfp6faSJtwkajg9NUY9d99utFpgU9ZkgbCikIChAWGM8hIiAam4sJASUzHMKA/RQD/ngbTSa4ikEofQy7TNWBTEZhEQopCAgQDRjPISogA5EIGvZtcuZpSQRa+faLeV6oGEHZeTjbiSxA1YMYLXgKKQgGEAYYzyEiIMmQAFBaGqK676nlA5nkl8p+JcHm/3h3jmXhpE62xowoCikIAhACGM8hKiC9iUlGVA0kBvtRw7n1XF0Ork+5UMRIVS68Wp2iHViWIxpRCip2MS9jb25uZWN0aW9uL2Nvbm4tYzkxYi9jb3VudGVycGFydHlDbGllbnQSIF6jG/vAVoASRkZtFzcrf+zRtjBNKX+AcZfu0S5Jw1LGGM8h"},{"type":"multistore","key":"aWJj","data":"/QMK+gMKMwoIc2xhc2hpbmcSJwolCM8hEiAQHdQGhiHLVYLjMJiE0d+SrYdl5UnKSUQvDEOrJ14zdgoyCgdzdGFraW5nEicKJQjPIRIg1X021R9yW6hsW0dDggRi5Zie7ucadqrtQkzisbRBwVEKLgoDYWNjEicKJQjPIRIgFFplpJIWY9BxSZz7U7X8O/nc8igjv48uMBWb1xfdPmQKLgoDaWJjEicKJQjPIRIg97XvcXEPTRGOCUXT6yfuuIeoGC/G14LxKbLGe0oqW+YKLgoDZ292EicKJQjPIRIgYM0TfBli7KxhY4nWgDSDPykhUJwtKFql9RU5l86WinQKLwoEbWFpbhInCiUIzyESIC5X75NgcQX0LlQ8dgnH0yGjA6A+mOiNJvhN1SnTkdFgCi8KBG1pbnQSJwolCM8hEiANZO1mEbc+HQcAul1Wuakw9VkfZGjs+ESzGO1T6xx2gQoxCgZzdXBwbHkSJwolCM8hEiB3+zNG7PnGHH+zboXgHHKHNlgnr9X4sj2+ds1OoTSpewo3CgxkaXN0cmlidXRpb24SJwolCM8hEiC6lukdRT65FpBydbFcDySpmQHDo6j8r4AMaBqE/1qoLAoxCgZwYXJhbXMSJwolCM8hEiDc+tPoZ9p8khPp2Nyt6ls817WnEELASt9/El0S5beAFQ=="}]},"key":"Y29ubmVjdGlvbi9jb25uLWM5MWIvY291bnRlcnBhcnR5Q2xpZW50"}}],"height":"4304","signer":"cosmos1rnghdvmhl0zjltvvgp4j0xwaaxazj8t33kl524"}}],"memo":""}
+
+confirm transaction before signing and broadcasting [y/N]: y
+Password to sign with 'node0':
+height: 4313
+txhash: 5979418C2ADCD4697DDCE82EB2E62314C2CC8F1552446897EA4130F8320BC6E1
+code: 0
+data: ""
+rawlog: '[{"msg_index":0,"success":true,"log":"","events":[{"type":"message","attributes":[{"key":"action","value":"open-try"}]}]}]'
+logs:
+- msgindex: 0
+  success: true
+  log: ""
+  events:
+  - type: message
+    attributes:
+    - key: action
+      value: open-try
+info: ""
+gaswanted: 200000
+gasused: 68052
+codespace: ""
+tx: null
+timestamp: ""
+events:
+- type: message
+  attributes:
+  - key: action
+    value: open-try
+
+{"chain_id":"chain-attv4e","account_number":"3","sequence":"61","fee":{"amount":[],"gas":"200000"},"msgs":[{"type":"ibc/client/MsgUpdateClient","value":{"ClientID":"client-67f4","Header":{"type":"ibc/client/tendermint/Header","value":{"SignedHeader":{"header":{"version":{"block":"10","app":"0"},"chain_id":"chain-attv4e","height":"4314","time":"2019-09-20T16:25:42.469457Z","num_txs":"0","total_txs":"60","last_block_id":{"hash":"AAC9CB0328819849A64710B15D1499688F7F36787397C19A07ACE5A980CA1CE9","parts":{"total":"1","hash":"EFB5B37EFB485E710CBBC4EBA61B6B40F4BFA99A11DA6AADE2C2697A67F79BF6"}},"last_commit_hash":"FFF4EA75B854EDD976A27A3C2421B7E61322C85A37E3B645DBB2169ACA580A0F","data_hash":"","validators_hash":"D95391EDE995D615924038DC362DE9C68CB96D36D1EEB950B50F5276C13AF1C9","next_validators_hash":"D95391EDE995D615924038DC362DE9C68CB96D36D1EEB950B50F5276C13AF1C9","consensus_hash":"048091BC7DDC283F77BFBF91D73C44DA58C3DF8A9CBC867405D8B7F3DAADA22F","app_hash":"86856C846F36A63E2ECB51570CD41A87F284DF9F9AE898A4C3D759441A82337E","last_results_hash":"6E340B9CFFB37A989CA544E6BB780A2C78901D3FB33738768511A30617AFA01D","evidence_hash":"","proposer_address":"9A4B3DF37C5F60517397410AE705B68652275ECF"},"commit":{"block_id":{"hash":"529503F7E75C7A7E894718F82CAE993BA3664D6903295F5CB9ACF882DB64F491","parts":{"total":"1","hash":"47D76A5AC6F9123D908FF84FEC2B426DDB888E8290AEA409B20D42B780CC871E"}},"precommits":[{"type":2,"height":"4314","round":"0","block_id":{"hash":"529503F7E75C7A7E894718F82CAE993BA3664D6903295F5CB9ACF882DB64F491","parts":{"total":"1","hash":"47D76A5AC6F9123D908FF84FEC2B426DDB888E8290AEA409B20D42B780CC871E"}},"timestamp":"2019-09-20T16:25:47.519984Z","validator_address":"9A4B3DF37C5F60517397410AE705B68652275ECF","validator_index":"0","signature":"xOVVdbDBhvXlqSHWNNbV2pVxND7ChgUa4ywh8jwSIo77kQWliR121TMvILEXdgBH6mP7fbk09Amd26We+UZuBw=="}]}},"ValidatorSet":{"validators":[{"address":"9A4B3DF37C5F60517397410AE705B68652275ECF","pub_key":{"type":"tendermint/PubKeyEd25519","value":"g61k/wo7hKejV8qDPVKKYKF9RbK9NH4G+5ioRlDkha4="},"voting_power":"100","proposer_priority":"0"}],"proposer":{"address":"9A4B3DF37C5F60517397410AE705B68652275ECF","pub_key":{"type":"tendermint/PubKeyEd25519","value":"g61k/wo7hKejV8qDPVKKYKF9RbK9NH4G+5ioRlDkha4="},"voting_power":"100","proposer_priority":"0"}},"NextValidatorSet":{"validators":[{"address":"9A4B3DF37C5F60517397410AE705B68652275ECF","pub_key":{"type":"tendermint/PubKeyEd25519","value":"g61k/wo7hKejV8qDPVKKYKF9RbK9NH4G+5ioRlDkha4="},"voting_power":"100","proposer_priority":"0"}],"proposer":{"address":"9A4B3DF37C5F60517397410AE705B68652275ECF","pub_key":{"type":"tendermint/PubKeyEd25519","value":"g61k/wo7hKejV8qDPVKKYKF9RbK9NH4G+5ioRlDkha4="},"voting_power":"100","proposer_priority":"0"}}}},"Signer":"cosmos1rnghdvmhl0zjltvvgp4j0xwaaxazj8t33kl524"}}],"memo":""}
+
+confirm transaction before signing and broadcasting [y/N]: y
+Password to sign with 'node0':
+height: 4316
+txhash: 7C02928EA0E65A7802167190E6B5FD8028DCD060B6B3DBE87BF5CD36455B8D06
+code: 0
+data: ""
+rawlog: '[{"msg_index":0,"success":true,"log":"","events":[{"type":"message","attributes":[{"key":"action","value":"update-client"}]}]}]'
+logs:
+- msgindex: 0
+  success: true
+  log: ""
+  events:
+  - type: message
+    attributes:
+    - key: action
+      value: update-client
+info: ""
+gaswanted: 200000
+gasused: 33770
+codespace: ""
+tx: null
+timestamp: ""
+events:
+- type: message
+  attributes:
+  - key: action
+    value: update-client
+
+{"chain_id":"chain-attv4e","account_number":"3","sequence":"62","fee":{"amount":[],"gas":"200000"},"msgs":[{"type":"ibc/client/MsgOpenAck","value":{"connection_id":"conn-c91b","timeout":"5312","next_timeout":"5316","proofs":[{"type":"ibc/commitment/merkle/Proof","value":{"proof":{"ops":[{"type":"iavl:v","key":"djEvY29ubmVjdGlvbi9jb25uLWI0OWE=","data":"8QIK7gIKKggSEJoBGNkhIiDOCl0CweIZtlvn4w6AgbleIgVPj4f/b+eD0xprb1uF2QopCA4QPRjZISog1/1pHFCJ2E6HZHmkkn0Kdcjuiebq66EDjs0RwOysaOMKKQgMECAY2SEiIIfNavavczsi3Mf0q72JoLvxDxxZHkzvJ84CrJrznJrZCikIChAOGNkhIiD8hL7wXm0cZ3TuEcrAma6oBbJCAYYDfKoGeDu+guhqwAopCAgQCBjZISogBtocM8BFKgTK0dzMy3p3yaB2cl0EQk/K/IPmIpZuApwKKQgEEAMY2SEqIF9tJVgG/Zj0c8Qi+fvxPWgzyK+UCmTac9TWY15LsJpnCikIAhACGNkhIiBn6wJi17X3S9ZcJ+1R64sh2xH/5QVokSUdo7lEIOIjvBo+Chd2MS9jb25uZWN0aW9uL2Nvbm4tYjQ5YRIg8MeXTkqaf+/s95K/G8gxCZoWff3CFbocqCC0JKbUnPwY2SE="},{"type":"multistore","key":"aWJj","data":"/QMK+gMKMQoGc3VwcGx5EicKJQjZIRIghjEhdfxigOZ59MmV4d+7CVD0Nhw3rquaNAbMt0m1ji4KNwoMZGlzdHJpYnV0aW9uEicKJQjZIRIgZ8+vYqYspyIrbdyKW2i+29la1zZB+YUr6pJQgUCFusAKMQoGcGFyYW1zEicKJQjZIRIg3PrT6GfafJIT6djcrepbPNe1pxBCwErffxJdEuW3gBUKLwoEbWludBInCiUI2SESIPnEfUHJkYnklc0nIOis/KLHlCHR41fEmh6G03G8tdX4Ci4KA2liYxInCiUI2SESIPaRYk+cdI/5YYUzFBnbjuTBXgrApk5a35H1jmeSnk1jCi4KA2dvdhInCiUI2SESIGDNE3wZYuysYWOJ1oA0gz8pIVCcLShapfUVOZfOlop0Ci8KBG1haW4SJwolCNkhEiAuV++TYHEF9C5UPHYJx9MhowOgPpjojSb4TdUp05HRYAozCghzbGFzaGluZxInCiUI2SESIP/a1keDPW0ymPhgTnZgOPI0BJf1NTJSasNBIy2HA+tfCjIKB3N0YWtpbmcSJwolCNkhEiDVfTbVH3JbqGxbR0OCBGLlmJ7u5xp2qu1CTOKxtEHBUQouCgNhY2MSJwolCNkhEiBVMveX/WFQIiLPA4tEmrNc9MkV9FR0PLN+mmkRHtS3Lw=="}]},"key":"Y29ubmVjdGlvbi9jb25uLWI0OWE="}},{"type":"ibc/commitment/merkle/Proof","value":{"proof":{"ops":[{"type":"iavl:v","key":"djEvY29ubmVjdGlvbi9jb25uLWI0OWEvc3RhdGU=","data":"ogMKnwMKKggSEJoBGNkhIiDOCl0CweIZtlvn4w6AgbleIgVPj4f/b+eD0xprb1uF2QopCA4QPRjZISog1/1pHFCJ2E6HZHmkkn0Kdcjuiebq66EDjs0RwOysaOMKKQgMECAY2SEiIIfNavavczsi3Mf0q72JoLvxDxxZHkzvJ84CrJrznJrZCikIChAOGNkhIiD8hL7wXm0cZ3TuEcrAma6oBbJCAYYDfKoGeDu+guhqwAopCAgQCBjZISIg4aLFz4MnigbGIyglWS6ijEXY8UPZAGRuS2mh4IQLHdgKKQgGEAUY2SEqIDe9WbpLErzS631XxbN+WKkU7A4RHzYQpGwqUCmzPxVnCikIBBADGNkhIiDZbGeCv2ypyzwQUML5YHc2JDw/NW/CSesmaL6MiGDmnQopCAIQAhjZISogKh6YdX8SZN/hTYXsFIyI8L717mh4cuNI8B5g3YbYy3caRAoddjEvY29ubmVjdGlvbi9jb25uLWI0OWEvc3RhdGUSINvBtMkA/+SNV1tdpcY4BAEl9l2w/j4kSUt26phkV9mGGNkh"},{"type":"multistore","key":"aWJj","data":"/QMK+gMKMQoGc3VwcGx5EicKJQjZIRIghjEhdfxigOZ59MmV4d+7CVD0Nhw3rquaNAbMt0m1ji4KNwoMZGlzdHJpYnV0aW9uEicKJQjZIRIgZ8+vYqYspyIrbdyKW2i+29la1zZB+YUr6pJQgUCFusAKMQoGcGFyYW1zEicKJQjZIRIg3PrT6GfafJIT6djcrepbPNe1pxBCwErffxJdEuW3gBUKLwoEbWludBInCiUI2SESIPnEfUHJkYnklc0nIOis/KLHlCHR41fEmh6G03G8tdX4Ci4KA2liYxInCiUI2SESIPaRYk+cdI/5YYUzFBnbjuTBXgrApk5a35H1jmeSnk1jCi4KA2dvdhInCiUI2SESIGDNE3wZYuysYWOJ1oA0gz8pIVCcLShapfUVOZfOlop0Ci8KBG1haW4SJwolCNkhEiAuV++TYHEF9C5UPHYJx9MhowOgPpjojSb4TdUp05HRYAozCghzbGFzaGluZxInCiUI2SESIP/a1keDPW0ymPhgTnZgOPI0BJf1NTJSasNBIy2HA+tfCjIKB3N0YWtpbmcSJwolCNkhEiDVfTbVH3JbqGxbR0OCBGLlmJ7u5xp2qu1CTOKxtEHBUQouCgNhY2MSJwolCNkhEiBVMveX/WFQIiLPA4tEmrNc9MkV9FR0PLN+mmkRHtS3Lw=="}]},"key":"Y29ubmVjdGlvbi9jb25uLWI0OWEvc3RhdGU="}},{"type":"ibc/commitment/merkle/Proof","value":{"proof":{"ops":[{"type":"iavl:v","key":"djEvY29ubmVjdGlvbi9jb25uLWI0OWEvdGltZW91dA==","data":"pAMKoQMKKggSEJoBGNkhIiDOCl0CweIZtlvn4w6AgbleIgVPj4f/b+eD0xprb1uF2QopCA4QPRjZISog1/1pHFCJ2E6HZHmkkn0Kdcjuiebq66EDjs0RwOysaOMKKQgMECAY2SEiIIfNavavczsi3Mf0q72JoLvxDxxZHkzvJ84CrJrznJrZCikIChAOGNkhIiD8hL7wXm0cZ3TuEcrAma6oBbJCAYYDfKoGeDu+guhqwAopCAgQCBjZISIg4aLFz4MnigbGIyglWS6ijEXY8UPZAGRuS2mh4IQLHdgKKQgGEAUY2SEqIDe9WbpLErzS631XxbN+WKkU7A4RHzYQpGwqUCmzPxVnCikIBBADGNkhIiDZbGeCv2ypyzwQUML5YHc2JDw/NW/CSesmaL6MiGDmnQopCAIQAhjZISIgsFdixzoKA5Wo1mtP8DOidS0/ZgejUXixwG0Ekly5jukaRgofdjEvY29ubmVjdGlvbi9jb25uLWI0OWEvdGltZW91dBIgAnNgTmeUhqKUyoBvq5dNdv5DOfkVlZs9RE5xJ6qerGAY2SE="},{"type":"multistore","key":"aWJj","data":"/QMK+gMKMQoGc3VwcGx5EicKJQjZIRIghjEhdfxigOZ59MmV4d+7CVD0Nhw3rquaNAbMt0m1ji4KNwoMZGlzdHJpYnV0aW9uEicKJQjZIRIgZ8+vYqYspyIrbdyKW2i+29la1zZB+YUr6pJQgUCFusAKMQoGcGFyYW1zEicKJQjZIRIg3PrT6GfafJIT6djcrepbPNe1pxBCwErffxJdEuW3gBUKLwoEbWludBInCiUI2SESIPnEfUHJkYnklc0nIOis/KLHlCHR41fEmh6G03G8tdX4Ci4KA2liYxInCiUI2SESIPaRYk+cdI/5YYUzFBnbjuTBXgrApk5a35H1jmeSnk1jCi4KA2dvdhInCiUI2SESIGDNE3wZYuysYWOJ1oA0gz8pIVCcLShapfUVOZfOlop0Ci8KBG1haW4SJwolCNkhEiAuV++TYHEF9C5UPHYJx9MhowOgPpjojSb4TdUp05HRYAozCghzbGFzaGluZxInCiUI2SESIP/a1keDPW0ymPhgTnZgOPI0BJf1NTJSasNBIy2HA+tfCjIKB3N0YWtpbmcSJwolCNkhEiDVfTbVH3JbqGxbR0OCBGLlmJ7u5xp2qu1CTOKxtEHBUQouCgNhY2MSJwolCNkhEiBVMveX/WFQIiLPA4tEmrNc9MkV9FR0PLN+mmkRHtS3Lw=="}]},"key":"Y29ubmVjdGlvbi9jb25uLWI0OWEvdGltZW91dA=="}},{"type":"ibc/commitment/merkle/Proof","value":{"proof":{"ops":[{"type":"iavl:v","key":"djEvY29ubmVjdGlvbi9jb25uLWI0OWEvY291bnRlcnBhcnR5Q2xpZW50","data":"2QIK1gIKKggSEJoBGNkhIiDOCl0CweIZtlvn4w6AgbleIgVPj4f/b+eD0xprb1uF2QopCA4QPRjZISog1/1pHFCJ2E6HZHmkkn0Kdcjuiebq66EDjs0RwOysaOMKKQgMECAY2SEiIIfNavavczsi3Mf0q72JoLvxDxxZHkzvJ84CrJrznJrZCikIChAOGNkhIiD8hL7wXm0cZ3TuEcrAma6oBbJCAYYDfKoGeDu+guhqwAopCAgQCBjZISogBtocM8BFKgTK0dzMy3p3yaB2cl0EQk/K/IPmIpZuApwKKQgEEAMY2SEiIBSlsEVpPCPCCpi7SmQARgqMZmcwQlIzslAe3AYAUe1JGlEKKnYxL2Nvbm5lY3Rpb24vY29ubi1iNDlhL2NvdW50ZXJwYXJ0eUNsaWVudBIgXqMb+8BWgBJGRm0XNyt/7NG2ME0pf4Bxl+7RLknDUsYY2SE="},{"type":"multistore","key":"aWJj","data":"/QMK+gMKMQoGc3VwcGx5EicKJQjZIRIghjEhdfxigOZ59MmV4d+7CVD0Nhw3rquaNAbMt0m1ji4KNwoMZGlzdHJpYnV0aW9uEicKJQjZIRIgZ8+vYqYspyIrbdyKW2i+29la1zZB+YUr6pJQgUCFusAKMQoGcGFyYW1zEicKJQjZIRIg3PrT6GfafJIT6djcrepbPNe1pxBCwErffxJdEuW3gBUKLwoEbWludBInCiUI2SESIPnEfUHJkYnklc0nIOis/KLHlCHR41fEmh6G03G8tdX4Ci4KA2liYxInCiUI2SESIPaRYk+cdI/5YYUzFBnbjuTBXgrApk5a35H1jmeSnk1jCi4KA2dvdhInCiUI2SESIGDNE3wZYuysYWOJ1oA0gz8pIVCcLShapfUVOZfOlop0Ci8KBG1haW4SJwolCNkhEiAuV++TYHEF9C5UPHYJx9MhowOgPpjojSb4TdUp05HRYAozCghzbGFzaGluZxInCiUI2SESIP/a1keDPW0ymPhgTnZgOPI0BJf1NTJSasNBIy2HA+tfCjIKB3N0YWtpbmcSJwolCNkhEiDVfTbVH3JbqGxbR0OCBGLlmJ7u5xp2qu1CTOKxtEHBUQouCgNhY2MSJwolCNkhEiBVMveX/WFQIiLPA4tEmrNc9MkV9FR0PLN+mmkRHtS3Lw=="}]},"key":"Y29ubmVjdGlvbi9jb25uLWI0OWEvY291bnRlcnBhcnR5Q2xpZW50"}}],"height":"4314","signer":"cosmos1rnghdvmhl0zjltvvgp4j0xwaaxazj8t33kl524"}}],"memo":""}
+
+confirm transaction before signing and broadcasting [y/N]: y
+Password to sign with 'node0':
+height: 4317
+txhash: E1F2BC73D93B733F47E89A785FBD1B5D2C4072C8A4C2AFE3A1B34097AE5F62FD
+code: 0
+data: ""
+rawlog: '[{"msg_index":0,"success":true,"log":"","events":[{"type":"message","attributes":[{"key":"action","value":"open-ack"}]}]}]'
+logs:
+- msgindex: 0
+  success: true
+  log: ""
+  events:
+  - type: message
+    attributes:
+    - key: action
+      value: open-ack
+info: ""
+gaswanted: 200000
+gasused: 67295
+codespace: ""
+tx: null
+timestamp: ""
+events:
+- type: message
+  attributes:
+  - key: action
+    value: open-ack
+
+{"chain_id":"chain-attv4e","account_number":"3","sequence":"63","fee":{"amount":[],"gas":"200000"},"msgs":[{"type":"ibc/client/MsgUpdateClient","value":{"ClientID":"client-67f4","Header":{"type":"ibc/client/tendermint/Header","value":{"SignedHeader":{"header":{"version":{"block":"10","app":"0"},"chain_id":"chain-attv4e","height":"4318","time":"2019-09-20T16:26:02.673235Z","num_txs":"0","total_txs":"62","last_block_id":{"hash":"5F28C3D4D1E1F8327ABFBF1DF7684FCFBE1BDDE491F02268E567AEEF26DCEDB0","parts":{"total":"1","hash":"57BE2C831336FAEA8704F4B1F7CF2C0776793AB75EC8F45A992091404574ECC1"}},"last_commit_hash":"8B167E59C768641FB454CFDA46915F23CCA6E312FB0349302E5E7295A77F7C40","data_hash":"","validators_hash":"D95391EDE995D615924038DC362DE9C68CB96D36D1EEB950B50F5276C13AF1C9","next_validators_hash":"D95391EDE995D615924038DC362DE9C68CB96D36D1EEB950B50F5276C13AF1C9","consensus_hash":"048091BC7DDC283F77BFBF91D73C44DA58C3DF8A9CBC867405D8B7F3DAADA22F","app_hash":"5C10648BADD4F821C7AD53F6FF5CEB5FE85153DBC8922C6696960BDFE1F6487F","last_results_hash":"6E340B9CFFB37A989CA544E6BB780A2C78901D3FB33738768511A30617AFA01D","evidence_hash":"","proposer_address":"9A4B3DF37C5F60517397410AE705B68652275ECF"},"commit":{"block_id":{"hash":"51756967589D9C297C7B0F636D8BFBE0DF115D8E401165EB7042AF16DC9DB2E8","parts":{"total":"1","hash":"C7AFAE6517E933D6DFD88ED26A86AD9114964CCA9A3BB588889D8CE345C1AD09"}},"precommits":[{"type":2,"height":"4318","round":"0","block_id":{"hash":"51756967589D9C297C7B0F636D8BFBE0DF115D8E401165EB7042AF16DC9DB2E8","parts":{"total":"1","hash":"C7AFAE6517E933D6DFD88ED26A86AD9114964CCA9A3BB588889D8CE345C1AD09"}},"timestamp":"2019-09-20T16:26:07.727843Z","validator_address":"9A4B3DF37C5F60517397410AE705B68652275ECF","validator_index":"0","signature":"trMvINrisNV+/9rOg6bvPNg3DX9ROo7LfGjLgM+cZie8dfKa4SOJTn/mHPE+XQc+49DN3tg4k5k1rjihd9kyAQ=="}]}},"ValidatorSet":{"validators":[{"address":"9A4B3DF37C5F60517397410AE705B68652275ECF","pub_key":{"type":"tendermint/PubKeyEd25519","value":"g61k/wo7hKejV8qDPVKKYKF9RbK9NH4G+5ioRlDkha4="},"voting_power":"100","proposer_priority":"0"}],"proposer":{"address":"9A4B3DF37C5F60517397410AE705B68652275ECF","pub_key":{"type":"tendermint/PubKeyEd25519","value":"g61k/wo7hKejV8qDPVKKYKF9RbK9NH4G+5ioRlDkha4="},"voting_power":"100","proposer_priority":"0"}},"NextValidatorSet":{"validators":[{"address":"9A4B3DF37C5F60517397410AE705B68652275ECF","pub_key":{"type":"tendermint/PubKeyEd25519","value":"g61k/wo7hKejV8qDPVKKYKF9RbK9NH4G+5ioRlDkha4="},"voting_power":"100","proposer_priority":"0"}],"proposer":{"address":"9A4B3DF37C5F60517397410AE705B68652275ECF","pub_key":{"type":"tendermint/PubKeyEd25519","value":"g61k/wo7hKejV8qDPVKKYKF9RbK9NH4G+5ioRlDkha4="},"voting_power":"100","proposer_priority":"0"}}}},"Signer":"cosmos1rnghdvmhl0zjltvvgp4j0xwaaxazj8t33kl524"}}],"memo":""}
+
+confirm transaction before signing and broadcasting [y/N]: y
+Password to sign with 'node0':
+height: 4320
+txhash: 45347A715789AE66EBB3E0495CE61576222804B594C6FA37A46B98BB5E87CECB
+code: 0
+data: ""
+rawlog: '[{"msg_index":0,"success":true,"log":"","events":[{"type":"message","attributes":[{"key":"action","value":"update-client"}]}]}]'
+logs:
+- msgindex: 0
+  success: true
+  log: ""
+  events:
+  - type: message
+    attributes:
+    - key: action
+      value: update-client
+info: ""
+gaswanted: 200000
+gasused: 33770
+codespace: ""
+tx: null
+timestamp: ""
+events:
+- type: message
+  attributes:
+  - key: action
+    value: update-client
+
+{"chain_id":"chain-attv4e","account_number":"3","sequence":"64","fee":{"amount":[],"gas":"200000"},"msgs":[{"type":"ibc/client/MsgOpenConfirm","value":{"connection_id":"conn-b49a","timeout":"5316","proofs":[{"type":"ibc/commitment/merkle/Proof","value":{"proof":{"ops":[{"type":"iavl:v","key":"djEvY29ubmVjdGlvbi9jb25uLWM5MWIvc3RhdGU=","data":"9wIK9AIKKggSEJwBGN0hIiDfr3shSwh9gjZWVxxYMQFwNFu1HASUdQsL0dbDlBNqAwopCA4QPhjdISIgZasYTqGloDN5356H6z5+FyF29yAeXtySTalo2cShmJ0KKQgMEB4Y3SEqIPWdSvF1S9WIfp6faSJtwkajg9NUY9d99utFpgU9ZkgbCikICBAOGN0hIiDW7bL+RIc2iv5ikhIJ76rbTW7Gvwp9vyELE6aMpsRS8QopCAYQBxjdISog8oG9EDcIXs/c9s3+qIVCYcmAwFHFXirbIL34FMDd+JEKKQgEEAMY3SEqINcjX/qKLBT5R4/g/aedgJ+wH0+12ht3k87o+VxybZE1CikIAhACGN0hKiBc73ao1tnh/3lnngoVEvOiPvSkXgYzyHs7TSfzT6K1QxpECh12MS9jb25uZWN0aW9uL2Nvbm4tYzkxYi9zdGF0ZRIgCE/tCLl4r019GWp0RqhrWACeY2thHbFiEbZamq3/KcUY3SE="},{"type":"multistore","key":"aWJj","data":"/QMK+gMKLwoEbWludBInCiUI3SESIPZWxhqqFQgXw86rdEiJOvet9O1EJMQnP2xzIs/OCaBECjEKBnN1cHBseRInCiUI3SESIJua97I7SIzWT+fVkmiWswp8qHEMbugeHD6ylME4CMiECjcKDGRpc3RyaWJ1dGlvbhInCiUI3SESICttMC+Zw+pcpK6RI4lsi3JtxdB8heucLcOCaE7zM0M1CjEKBnBhcmFtcxInCiUI3SESINz60+hn2nySE+nY3K3qWzzXtacQQsBK338SXRLlt4AVCjMKCHNsYXNoaW5nEicKJQjdIRIgcLWuVktV/zoDogiXsFfXu9BciTZf/1wyDj1ZrzjPjF8KMgoHc3Rha2luZxInCiUI3SESINV9NtUfcluobFtHQ4IEYuWYnu7nGnaq7UJM4rG0QcFRCi4KA2FjYxInCiUI3SESILR9yjBdOBzwwhBibEuDdnJnCRb0JQtELDYGR8EImcZPCi4KA2liYxInCiUI3SESIHm+tbe0sE+j3LzKgfnUkegg3UiAbgB7on8pOIVLeIn3Ci4KA2dvdhInCiUI3SESIGDNE3wZYuysYWOJ1oA0gz8pIVCcLShapfUVOZfOlop0Ci8KBG1haW4SJwolCN0hEiAuV++TYHEF9C5UPHYJx9MhowOgPpjojSb4TdUp05HRYA=="}]},"key":"Y29ubmVjdGlvbi9jb25uLWM5MWIvc3RhdGU="}},{"type":"ibc/commitment/merkle/Proof","value":{"proof":{"ops":[{"type":"iavl:v","key":"djEvY29ubmVjdGlvbi9jb25uLWM5MWIvdGltZW91dA==","data":"+QIK9gIKKggSEJwBGN0hIiDfr3shSwh9gjZWVxxYMQFwNFu1HASUdQsL0dbDlBNqAwopCA4QPhjdISIgZasYTqGloDN5356H6z5+FyF29yAeXtySTalo2cShmJ0KKQgMEB4Y3SEqIPWdSvF1S9WIfp6faSJtwkajg9NUY9d99utFpgU9ZkgbCikICBAOGN0hIiDW7bL+RIc2iv5ikhIJ76rbTW7Gvwp9vyELE6aMpsRS8QopCAYQBxjdISog8oG9EDcIXs/c9s3+qIVCYcmAwFHFXirbIL34FMDd+JEKKQgEEAMY3SEqINcjX/qKLBT5R4/g/aedgJ+wH0+12ht3k87o+VxybZE1CikIAhACGN0hIiB0ShmjUiWOT/xFS5Bka3Kqy74aZbJEZrEz0dg+QUfhLhpGCh92MS9jb25uZWN0aW9uL2Nvbm4tYzkxYi90aW1lb3V0EiBFINxDhRSRrOSB/DGAw9NqiO5T7aoQmu1TEAvZ6DUURRjdIQ=="},{"type":"multistore","key":"aWJj","data":"/QMK+gMKLwoEbWludBInCiUI3SESIPZWxhqqFQgXw86rdEiJOvet9O1EJMQnP2xzIs/OCaBECjEKBnN1cHBseRInCiUI3SESIJua97I7SIzWT+fVkmiWswp8qHEMbugeHD6ylME4CMiECjcKDGRpc3RyaWJ1dGlvbhInCiUI3SESICttMC+Zw+pcpK6RI4lsi3JtxdB8heucLcOCaE7zM0M1CjEKBnBhcmFtcxInCiUI3SESINz60+hn2nySE+nY3K3qWzzXtacQQsBK338SXRLlt4AVCjMKCHNsYXNoaW5nEicKJQjdIRIgcLWuVktV/zoDogiXsFfXu9BciTZf/1wyDj1ZrzjPjF8KMgoHc3Rha2luZxInCiUI3SESINV9NtUfcluobFtHQ4IEYuWYnu7nGnaq7UJM4rG0QcFRCi4KA2FjYxInCiUI3SESILR9yjBdOBzwwhBibEuDdnJnCRb0JQtELDYGR8EImcZPCi4KA2liYxInCiUI3SESIHm+tbe0sE+j3LzKgfnUkegg3UiAbgB7on8pOIVLeIn3Ci4KA2dvdhInCiUI3SESIGDNE3wZYuysYWOJ1oA0gz8pIVCcLShapfUVOZfOlop0Ci8KBG1haW4SJwolCN0hEiAuV++TYHEF9C5UPHYJx9MhowOgPpjojSb4TdUp05HRYA=="}]},"key":"Y29ubmVjdGlvbi9jb25uLWM5MWIvdGltZW91dA=="}}],"height":"4318","signer":"cosmos1rnghdvmhl0zjltvvgp4j0xwaaxazj8t33kl524"}}],"memo":""}
+
+confirm transaction before signing and broadcasting [y/N]: y
+Password to sign with 'node0':
+height: 4321
+txhash: 5C7BADF2B5D83F33EEA832B404B6563577C1A6838152C2A53F32D8BAC88632CD
+code: 0
+data: ""
+rawlog: '[{"msg_index":0,"success":true,"log":"","events":[{"type":"message","attributes":[{"key":"action","value":"open-confirm"}]}]}]'
+logs:
+- msgindex: 0
+  success: true
+  log: ""
+  events:
+  - type: message
+    attributes:
+    - key: action
+      value: open-confirm
+info: ""
+gaswanted: 200000
+gasused: 44592
+codespace: ""
+tx: null
+timestamp: ""
+events:
+- type: message
+  attributes:
+  - key: action
+    value: open-confirm
+
+joons-mbp% export CONN1=conn-c91b
+joons-mbp% export CONN2=conn-b49a

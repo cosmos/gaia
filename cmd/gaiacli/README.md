@@ -84,14 +84,28 @@ You can query the client after creation by
 }
 ```
 
+See [script log](./client.txt)
+
 ## Connection
 
-Connections can be established with `connection.sh $CLIENTID` command.
+Connections can be established with `connection.sh $CLIENTID` command. It will print
+
+```bash
+connection 1: conn-c91b
+connection 2: conn-b49a
+```
+
+export that identifier as an env variable.
+
+```bash
+> export CONNID1=conn-c91b
+> export CONNID2=conn-b49a
+```
 
 You can query the connection after establishment by
 
 ```bash
-> ./gaiacli query ibc connection connection conn-41f4 --home ../node0/gaiacli --trust-node
+> ./gaiacli query ibc connection connection $CONNID1 --home ../node0/gaiacli --trust-node
 {
   "connection": {
     "client": "client-09b6",
@@ -111,6 +125,28 @@ You can query the connection after establishment by
 }
 ```
 
+See [script log](./conn.txt)
+
 ## Channel
 
-// TODO
+Channels can be established with `channel.sh $CONNID1 $CONNID2` command.
+
+You can query the channel after establishment by
+
+```bash
+> ./gaiacli query ibc channel channel ibc-mock $CHANID1 --home ../node0/gaiacli --trust-node
+{
+  "channel": {
+    "Counterparty": "chan-f7b8",
+    "CounterpartyPort": "ibc-mock",
+    "ConnectionHops": [
+      "conn-c91b"
+    ]
+  },
+  "available": true,
+  "sequence_send": "0",
+  "sequence_receive": "0"
+}
+```
+
+See [script log](./chan.txt)

@@ -1,0 +1,32 @@
+joons-mbp% export CID=chain-attv4e
+joons-mbp% ./client.sh
+writing path...
+writing state...
+creating client client-67f4
+{"chain_id":"chain-attv4e","account_number":"3","sequence":"57","fee":{"amount":[],"gas":"200000"},"msgs":[{"type":"ibc/client/MsgCreateClient","value":{"ClientID":"client-67f4","ConsensusState":{"type":"ibc/client/tendermint/ConsensusState","value":{"ChainID":"chain-attv4e","Height":"4294","Root":{"type":"ibc/commitment/merkle/Root","value":{"hash":"QKAHCRcVfLMzyEhyZxp9E/NlFYHCdjGgm492uMLwzW0="}},"NextValidatorSet":{"validators":[{"address":"9A4B3DF37C5F60517397410AE705B68652275ECF","pub_key":{"type":"tendermint/PubKeyEd25519","value":"g61k/wo7hKejV8qDPVKKYKF9RbK9NH4G+5ioRlDkha4="},"voting_power":"100","proposer_priority":"0"}],"proposer":{"address":"9A4B3DF37C5F60517397410AE705B68652275ECF","pub_key":{"type":"tendermint/PubKeyEd25519","value":"g61k/wo7hKejV8qDPVKKYKF9RbK9NH4G+5ioRlDkha4="},"voting_power":"100","proposer_priority":"0"}}}},"Signer":"cosmos1rnghdvmhl0zjltvvgp4j0xwaaxazj8t33kl524"}}],"memo":""}
+
+confirm transaction before signing and broadcasting [y/N]: y
+Password to sign with 'node0':
+height: 0
+txhash: F1CAECBB19CE90A9A27B0DCD018755CC4AB513F72C00DFA98B6B90B35B3BD78C
+code: 0
+data: ""
+rawlog: '[{"msg_index":0,"success":true,"log":"","events":[{"type":"message","attributes":[{"key":"action","value":"create-client"}]}]}]'
+logs:
+- msgindex: 0
+  success: true
+  log: ""
+  events:
+  - type: message
+    attributes:
+    - key: action
+      value: create-client
+info: ""
+gaswanted: 0
+gasused: 0
+codespace: ""
+tx: null
+timestamp: ""
+events: []
+
+joons-mbp% export CLIENTID=client-67f4

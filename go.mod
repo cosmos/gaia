@@ -6,10 +6,7 @@ require (
 	github.com/btcsuite/btcd v0.0.0-20190807005414-4063feeff79a // indirect
 	github.com/cosmos/cosmos-sdk v0.34.4-0.20190919132138-01d8a230b22b
 	github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d // indirect
-	github.com/go-kit/kit v0.9.0 // indirect
 	github.com/golang/mock v1.3.1 // indirect
-	github.com/libp2p/go-buffer-pool v0.0.2 // indirect
-	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
 	github.com/otiai10/copy v1.0.2
@@ -17,7 +14,6 @@ require (
 	github.com/pkg/errors v0.8.1
 	github.com/prometheus/client_golang v1.1.0 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20190706150252-9beb055b7962 // indirect
-	github.com/rs/cors v1.7.0 // indirect
 	github.com/snikch/goodman v0.0.0-20171125024755-10e37e294daa
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/cobra v0.0.5
@@ -25,11 +21,10 @@ require (
 	github.com/stretchr/testify v1.4.0
 	github.com/stumble/gorocksdb v0.0.3 // indirect
 	github.com/tendermint/go-amino v0.15.0
-	github.com/tendermint/tendermint v0.32.3
+	github.com/tendermint/tendermint v0.32.4
 	github.com/tendermint/tm-db v0.2.0
 	golang.org/x/crypto v0.0.0-20190909091759-094676da4a83 // indirect
 	golang.org/x/net v0.0.0-20190827160401-ba9fcec4b297 // indirect
 	golang.org/x/text v0.3.2 // indirect
 	google.golang.org/genproto v0.0.0-20190801165951-fa694d86fc64 // indirect
-	google.golang.org/grpc v1.22.1 // indirect
 )

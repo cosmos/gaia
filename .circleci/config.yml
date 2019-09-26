@@ -197,19 +197,11 @@ jobs:
           command: bash <(curl -s https://codecov.io/bash) -f coverage.txt
 
   localnet:
-    working_directory: /home/circleci/.go_workspace/src/github.com/cosmos/gaia
-    machine:
-      image: circleci/classic:latest
-    environment:
-      GOPATH: /home/circleci/.go_workspace/
-      GOOS: linux
-      GOARCH: amd64
-      GO_VERSION: "1.13"
-    parallelism: 1
+    executor: golang
     steps:
       - checkout
       - run:
-          name: run localnet and exit on failure
+          name: Run a localnet and test liveness
           command: |
             pushd /tmp
             wget https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz
@@ -218,9 +210,7 @@ jobs:
             sudo mv go /usr/local
             popd
             set -x
-            make tools
-            make build-linux
-            make localnet-start
+            make clean build-linux localnet-start
             ./contrib/localnet-blocks-test.sh 40 5 10 localhost
 
   deploy-docs:

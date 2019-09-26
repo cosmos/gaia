@@ -197,7 +197,15 @@ jobs:
           command: bash <(curl -s https://codecov.io/bash) -f coverage.txt
 
   localnet:
-    executor: golang
+    working_directory: /home/circleci/.go_workspace/src/github.com/cosmos/gaia
+    machine:
+      image: circleci/classic:latest
+    environment:
+      GOPATH: /home/circleci/.go_workspace/
+      GOOS: linux
+      GOARCH: amd64
+      GO_VERSION: "1.13"
+    parallelism: 1
     steps:
       - checkout
       - run:

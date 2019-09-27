@@ -20,6 +20,9 @@ if [ -z "${BINARY_CHECK}" ]; then
 	exit 1
 fi
 
+chmod 777 -R /gaiad
+echo $(ls -lah /gaiad)
+
 ##
 ## Run binary with all parameters
 ##
@@ -30,6 +33,4 @@ if [ -d "`dirname ${GAIADHOME}/${LOG}`" ]; then
 else
   "$BINARY" --home "$GAIADHOME" "$@"
 fi
-
-chmod 777 -R /gaiad
 

@@ -218,7 +218,7 @@ jobs:
             sudo mv go /usr/local
             popd
             set -x
-            make clean build-linux localnet-start
+            make clean localnet-start
             ./contrib/localnet-blocks-test.sh 40 5 10 localhost
 
   deploy-docs:

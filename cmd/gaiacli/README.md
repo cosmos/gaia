@@ -4,87 +4,74 @@
 
 ## Dependencies
 
-This branch uses non-canonical branch of cosmos-sdk. Run `go mod vendor` on the root directory to retrive the dependencies.
+This branch uses non-canonical branch of cosmos-sdk. Before building, run `go mod vendor` on the root directory to retrive the dependencies. To build:
 
-Move to `gaiad` directory, run `./gaiad testnet --v 1` and `mv ./mytestnet/node0 ../`
-
-Currently the testing is done on a single chain with a pseudo-loopback connection, meaning that 
-- there is only one client living on single chain, pointing itself
-- there are two connections living on single chain, bonded to the client and pointing each other
-- there are two channels living on single chain, bonded to each connections and pointing each other
-
-but all lightclient verification and merkle proving are actually processed.
-
-Check the chain-id of the testnet under `node0/gaiad/config/genesis.json` and store it as the environment variable `CID`.
-
-```bash
-> export CID=chain-attv4e
+```shell
+git clone git@github.com:cosmos/gaia
+cd gaia
+go mod vendor
+make install
+gaiad version
+gaiacli version
 ```
 
-This will be used by the shell scripts.
+Stub out testnet files for 2 nodes, this example does so in your $HOME directory:
 
-Run gaia daemon by
+```shell
+cd ~ && mkdir ibc-testnets && cd ibc-testnet
+gaiad testnet -o ibc0 --v 1 --chain-id ibc0 --node-dir-prefix n
+gaiad testnet -o ibc1 --v 1 --chain-id ibc1 --node-dir-prefix n
+```
+
+Fix the configuration files to allow both chains/nodes to run on the same machine
+
+```shell
+# Configure the proper database backend for each node
+sed -i '' 's/"leveldb"/"goleveldb"/g' ibc0/n0/gaiad/config/config.toml
+sed -i '' 's/"leveldb"/"goleveldb"/g' ibc1/n0/gaiad/config/config.toml
+
+# Configure chain ibc1 to have different listening ports
+sed -i '' 's#"tcp://0.0.0.0:26656"#"tcp://0.0.0.0:26556"#g' ibc1/n0/gaiad/config/config.toml
+sed -i '' 's#"tcp://0.0.0.0:26657"#"tcp://0.0.0.0:26557"#g' ibc1/n0/gaiad/config/config.toml
+sed -i '' 's#"localhost:6060"#"localhost:6061"#g' ibc1/n0/gaiad/config/config.toml
+sed -i '' 's#"tcp://127.0.0.1:26658"#"tcp://127.0.0.1:26558"#g' ibc1/n0/gaiad/config/config.toml
+```
+
+Then configure your `gaiacli` instances for each chain:
 
 ```bash
-> ./gaiad/gaiad --home ./node0/gaiad start
+gaiacli config --home ibc0/n0/gaiacli/ chain-id ibc0
+gaiacli config --home ibc1/n0/gaiacli/ chain-id ibc1
+gaiacli config --home ibc0/n0/gaiacli/ node http://localhost:26657
+gaiacli config --home ibc1/n0/gaiacli/ node http://localhost:26557
+```
+
+After configuration is complete, start each node in a seperate terminal window:
+
+```bash
+gaiad --home ibc0/n0/gaiad start
+gaiad --home ibc1/n0/gaiad start
 ```
 
 ## Client
 
-Client can be instantiated with `client.sh` command. It will print
+Create a client on ibc0:
 
 ```bash
-creating client client-09b6
+gaiacli --home ibc0/n0/gaiacli q ibc client path > path.json
+gaiacli --home ibc0/n0/gaiacli q ibc client consensus-state > state0.json
+gaiacli --home ibc0/n0/gaiacli tx ibc client create c0 ./state0.json --from n0
+gaiacli --home ibc0/n0/gaiacli q ibc client client c0
 ```
 
-export that identifier as an env variable.
+Create a client on ibc1:
 
 ```bash
-> export CLIENTID=client-b438
+gaiacli --home ibc1/n0/gaiacli q ibc client path > path.json
+gaiacli --home ibc1/n0/gaiacli q ibc client consensus-state > state1.json
+gaiacli --home ibc1/n0/gaiacli tx ibc client create c1 ./state1.json --from n0
+gaiacli --home ibc1/n0/gaiacli q ibc client client c1
 ```
-
-You can query the client after creation by 
-
-```bash
-> ./gaiacli query ibc client client $CLIENTID --home ../node0/gaiacli --trust-node
-{
-  "type": "ibc/client/tendermint/ConsensusState",
-  "value": {
-    "ChainID": "chain-attv4e",
-    "Height": "1006",
-    "Root": {
-      "type": "ibc/commitment/merkle/Root",
-      "value": {
-        "hash": "RDYMrUY6z9UBtPk9+qKl2Vujm8dOyePj/9dUlh6VvWM="
-      }
-    },
-    "NextValidatorSet": {
-      "validators": [
-        {
-          "address": "9A4B3DF37C5F60517397410AE705B68652275ECF",
-          "pub_key": {
-            "type": "tendermint/PubKeyEd25519",
-            "value": "g61k/wo7hKejV8qDPVKKYKF9RbK9NH4G+5ioRlDkha4="
-          },
-          "voting_power": "100",
-          "proposer_priority": "0"
-        }
-      ],
-      "proposer": {
-        "address": "9A4B3DF37C5F60517397410AE705B68652275ECF",
-        "pub_key": {
-          "type": "tendermint/PubKeyEd25519",
-          "value": "g61k/wo7hKejV8qDPVKKYKF9RbK9NH4G+5ioRlDkha4="
-        },
-        "voting_power": "100",
-        "proposer_priority": "0"
-      }
-    }
-  }
-}
-```
-
-See [script log](./client.txt)
 
 ## Connection
 

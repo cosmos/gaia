@@ -8,6 +8,8 @@ RUN apk update && \
 VOLUME [ /gaiad ]
 WORKDIR /gaiad
 EXPOSE 26656 26657
+RUN ls -h /gaiad/
+RUN cat wrapper.sh
 ENTRYPOINT ["/usr/bin/wrapper.sh"]
 CMD ["start"]
 STOPSIGNAL SIGTERM

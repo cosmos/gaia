@@ -119,6 +119,30 @@ You can query the channel after establishment by
 gaiacli --home ibc0/n0/gaiacli query ibc channel channel ibc-mock chan0 --trust-node
 ```
 
-## Send
+## Send Packet
 
-TODO
+To send a packet using the `ibc-mock` application protocol run the following command:
+
+```
+gaiacli --home ibc0/n0/gaiacli q ibcmocksend sequence chan0
+```
+
+The command will return the latest sent sequence(0 if not exists). Run command with next sequence.
+
+```
+gaiacli --home ibc0/n0/gaiacli tx ibcmocksend sequence chan0 (sequence+1)
+```
+
+## Receive Packet
+
+To receive packets using the `ibc-mock` application protocol run the following command:
+
+```
+gaiacli --home ibc0/n0/gaiacli tx ibc channel flush ibcmocksend chan0 --trust-node
+```
+
+To see the updated sequence run the following command:
+
+```
+gaiacli --home ibc1/n0/gaiacli q ibcmockrecv sequence chan1 --trust-node
+```

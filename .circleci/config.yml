@@ -218,9 +218,8 @@ jobs:
             sudo mv go /usr/local
             popd
             set -x
-            make tools
             make build-linux
-            make localnet-start
+            make build-docker-gaiadnode localnet-start
             ./contrib/localnet-blocks-test.sh 40 5 10 localhost
 
   deploy-docs:

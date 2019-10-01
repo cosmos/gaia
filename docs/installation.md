@@ -35,7 +35,7 @@ If this command fails due to the following error message, you might have already
 
 ```
 # github.com/cosmos/gaia/cmd/gaiad
-flag provided but not defined: -L/usr/local/opt/foo
+flag provided but not defined: -L
 usage: link [options] main.o
 ...
 make: *** [install] Error 2

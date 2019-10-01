@@ -44,6 +44,12 @@ gaiacli config --home ibc0/n0/gaiacli/ chain-id ibc0
 gaiacli config --home ibc1/n0/gaiacli/ chain-id ibc1
 gaiacli config --home ibc0/n0/gaiacli/ node http://localhost:26657
 gaiacli config --home ibc1/n0/gaiacli/ node http://localhost:26557
+
+# Add the key from ibc1 to the ibc0 cli
+jq -r '.secret' ibc1/n0/gaiacli/key_seed.json | pbcopy
+
+# Paste the mnemonic from the above command after setting password (12345678)
+gaiacli --home ibc0/n0/gaiacli keys add n1 --recover
 ```
 
 After configuration is complete, start each node in a seperate terminal window:
@@ -58,7 +64,7 @@ gaiad --home ibc1/n0/gaiad start
 Create a client on ibc0:
 
 ```bash
-gaiacli --home ibc0/n0/gaiacli q ibc client path > path.json
+gaiacli --home ibc0/n0/gaiacli q ibc client path > path0.json
 gaiacli --home ibc0/n0/gaiacli q ibc client consensus-state > state0.json
 gaiacli --home ibc0/n0/gaiacli tx ibc client create c0 ./state0.json --from n0
 gaiacli --home ibc0/n0/gaiacli q ibc client client c0
@@ -67,7 +73,7 @@ gaiacli --home ibc0/n0/gaiacli q ibc client client c0
 Create a client on ibc1:
 
 ```bash
-gaiacli --home ibc1/n0/gaiacli q ibc client path > path.json
+gaiacli --home ibc1/n0/gaiacli q ibc client path > path1.json
 gaiacli --home ibc1/n0/gaiacli q ibc client consensus-state > state1.json
 gaiacli --home ibc1/n0/gaiacli tx ibc client create c1 ./state1.json --from n0
 gaiacli --home ibc1/n0/gaiacli q ibc client client c1
@@ -77,63 +83,42 @@ gaiacli --home ibc1/n0/gaiacli q ibc client client c1
 
 Connections can be established with `connection.sh $CLIENTID` command. It will print
 
-```bash
-connection 1: conn-c91b
-connection 2: conn-b49a
+```shell
+gaiacli \
+  --home ibc0/n0/gaiacli \
+  tx ibc connection handshake \
+  conn0 c0 path0.json \
+  conn1 c1 path1.json \
+  --from1 n0 --from2 n1 \
+  --node1 tcp://localhost:26657 \
+  --node2 tcp://localhost:26557
 ```
 
-export that identifier as an env variable.
+Once the connection is established you should be able to query it:
 
 ```bash
-> export CONNID1=conn-c91b
-> export CONNID2=conn-b49a
+gaiacli --home ibc0/n0/gaiacli q ibc connection connection conn0 --trust-node
 ```
-
-You can query the connection after establishment by
-
-```bash
-> ./gaiacli query ibc connection connection $CONNID1 --home ../node0/gaiacli --trust-node
-{
-  "connection": {
-    "client": "client-09b6",
-    "counterparty": "conn-e358",
-    "path": {
-      "type": "ibc/commitment/merkle/Path",
-      "value": {
-        "key_path": [
-          "aWJj"
-        ],
-        "key_prefix": "djEv"
-      }
-    }
-  },
-  "available": true,
-  "kind": "handshake"
-}
-```
-
-See [script log](./conn.txt)
 
 ## Channel
 
-Channels can be established with `channel.sh $CONNID1 $CONNID2` command.
+To establish a channel using the `ibc-mock` application protocol run the following command:
+
+```
+gaiacli \
+  --home ibc0/n0/gaiacli \
+  tx ibc channel handshake \
+  ibc-mock chan0 conn0 \
+  ibc-mock chan1 conn1 \
+  --from1 n0 --from2 n1
+```
 
 You can query the channel after establishment by
 
 ```bash
-> ./gaiacli query ibc channel channel ibc-mock $CHANID1 --home ../node0/gaiacli --trust-node
-{
-  "channel": {
-    "Counterparty": "chan-f7b8",
-    "CounterpartyPort": "ibc-mock",
-    "ConnectionHops": [
-      "conn-c91b"
-    ]
-  },
-  "available": true,
-  "sequence_send": "0",
-  "sequence_receive": "0"
-}
+gaiacli --home ibc0/n0/gaiacli query ibc channel channel ibc-mock chan0 --trust-node
 ```
 
-See [script log](./chan.txt)
+## Send
+
+TODO

@@ -3,14 +3,15 @@
 ##
 ## Input parameters
 ##
-BINARY=./${BINARY:-gaiad}
+BINARY=/gaiad/${BINARY:-gaiad}
 ID=${ID:-0}
 LOG=${LOG:-gaiad.log}
 
 ls -l /gaiad/
 chmod -v +x /gaiad/*
 chmod -v +x $BINARY
-ls ./
+echo $PATH
+cp $BINARY /usr/local/bin
 
 ##
 ## Assert linux binary

@@ -10,6 +10,7 @@ LOG=${LOG:-gaiad.log}
 ls -l /gaiad/
 chmod -v +x /gaiad/*
 chmod -v +x $BINARY
+ls ./
 
 ##
 ## Assert linux binary

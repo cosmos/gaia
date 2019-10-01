@@ -9,6 +9,7 @@ LOG=${LOG:-gaiad.log}
 
 ls -l /gaiad/
 chmod -v +x /gaiad/*
+chmod -v +x $BINARY
 
 ##
 ## Assert linux binary
@@ -28,11 +29,10 @@ fi
 ##
 export GAIADHOME="/gaiad/node${ID}/gaiad"
 
+chmod -v 777 -R /gaiad
+
 if [ -d "`dirname ${GAIADHOME}/${LOG}`" ]; then
   "$BINARY" --home "$GAIADHOME" "$@" | tee "${GAIADHOME}/${LOG}"
 else
   "$BINARY" --home "$GAIADHOME" "$@"
 fi
-
-chmod 777 -R /gaiad
-

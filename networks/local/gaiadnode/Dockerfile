@@ -6,7 +6,6 @@ RUN apk update && \
     apk --no-cache add curl jq file
 
 VOLUME [ /gaiad ]
-WORKDIR /gaiad
 EXPOSE 26656 26657
 RUN ls -h /gaiad/
 ENTRYPOINT ["/usr/bin/wrapper.sh"]

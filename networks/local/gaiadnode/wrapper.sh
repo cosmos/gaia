@@ -3,7 +3,7 @@
 ##
 ## Input parameters
 ##
-BINARY=/gaiad/${BINARY:-gaiad}
+BINARY=./${BINARY:-gaiad}
 ID=${ID:-0}
 LOG=${LOG:-gaiad.log}
 

@@ -7,6 +7,8 @@ BINARY=/gaiad/${BINARY:-gaiad}
 ID=${ID:-0}
 LOG=${LOG:-gaiad.log}
 
+ls -l /gaiad/
+
 ##
 ## Assert linux binary
 ##

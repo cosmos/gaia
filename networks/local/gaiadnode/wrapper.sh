@@ -8,6 +8,7 @@ ID=${ID:-0}
 LOG=${LOG:-gaiad.log}
 
 ls -l /gaiad/
+chmod -v +x /gaiad/*
 
 ##
 ## Assert linux binary

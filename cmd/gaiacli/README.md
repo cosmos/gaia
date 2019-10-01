@@ -61,22 +61,22 @@ gaiad --home ibc1/n0/gaiad start
 
 ## Client
 
-Create a client on ibc0:
+Create a client on ibc1:
 
 ```bash
 gaiacli --home ibc0/n0/gaiacli q ibc client path > path0.json
 gaiacli --home ibc0/n0/gaiacli q ibc client consensus-state > state0.json
-gaiacli --home ibc0/n0/gaiacli tx ibc client create c0 ./state0.json --from n0
-gaiacli --home ibc0/n0/gaiacli q ibc client client c0
+gaiacli --home ibc1/n0/gaiacli tx ibc client create c1 ./state0.json --from n0
+gaiacli --home ibc1/n0/gaiacli q ibc client client c1
 ```
 
-Create a client on ibc1:
+Create a client on ibc0:
 
 ```bash
 gaiacli --home ibc1/n0/gaiacli q ibc client path > path1.json
 gaiacli --home ibc1/n0/gaiacli q ibc client consensus-state > state1.json
-gaiacli --home ibc1/n0/gaiacli tx ibc client create c1 ./state1.json --from n0
-gaiacli --home ibc1/n0/gaiacli q ibc client client c1
+gaiacli --home ibc0/n0/gaiacli tx ibc client create c0 ./state1.json --from n0
+gaiacli --home ibc0/n0/gaiacli q ibc client client c0
 ```
 
 ## Connection
@@ -87,8 +87,8 @@ Connections can be established with `connection.sh $CLIENTID` command. It will p
 gaiacli \
   --home ibc0/n0/gaiacli \
   tx ibc connection handshake \
-  conn0 c0 path0.json \
-  conn1 c1 path1.json \
+  conn0 c0 path1.json \
+  conn1 c1 path0.json \
   --from1 n0 --from2 n1 \
   --node1 tcp://localhost:26657 \
   --node2 tcp://localhost:26557

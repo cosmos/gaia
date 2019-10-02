@@ -20,17 +20,14 @@ if [ -z "${BINARY_CHECK}" ]; then
 	exit 1
 fi
 
-chmod 777 -R /gaiad
-echo $(ls -lah /gaiad)
-
 ##
 ## Run binary with all parameters
 ##
 export GAIADHOME="/gaiad/node${ID}/gaiad"
 
-if [ -d "`dirname ${GAIADHOME}/${LOG}`" ]; then
-  "$BINARY" --home "$GAIADHOME" "$@" | tee "${GAIADHOME}/${LOG}"
+if [ -d "$(dirname "${GAIADHOME}"/"${LOG}")" ]; then
+  "${BINARY}" --home "${GAIADHOME}" "$@" | tee "${GAIADHOME}/${LOG}"
 else
-  "$BINARY" --home "$GAIADHOME" "$@"
+  "${BINARY}" --home "${GAIADHOME}" "$@"
 fi
 

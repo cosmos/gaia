@@ -21,7 +21,7 @@ require (
 	github.com/stretchr/testify v1.4.0
 	github.com/stumble/gorocksdb v0.0.3 // indirect
 	github.com/tendermint/go-amino v0.15.0
-	github.com/tendermint/tendermint v0.32.4
+	github.com/tendermint/tendermint v0.32.5
 	github.com/tendermint/tm-db v0.2.0
 	golang.org/x/crypto v0.0.0-20190909091759-094676da4a83 // indirect
 	golang.org/x/net v0.0.0-20190827160401-ba9fcec4b297 // indirect

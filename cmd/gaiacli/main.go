@@ -68,6 +68,7 @@ func main() {
 		client.LineBreak,
 		version.Cmd,
 		client.NewCompletionCmd(rootCmd, true),
+		dumpSchema(cdc),
 	)
 
 	// Add flags and prefix all env exposed with GA
@@ -78,6 +79,21 @@ func main() {
 		fmt.Printf("Failed executing CLI command: %s, exiting...\n", err)
 		os.Exit(1)
 	}
+}
+
+func dumpSchema(cdc *amino.Codec) *cobra.Command {
+	dumpSchemaCmd := &cobra.Command{
+		Use:   "schema",
+		Short: "dump schema from the amino codec",
+		Run: func(cmd *cobra.Command, args []string) {
+			types := cdc.TypeInfosByName()
+			for k, v := range types {
+				fmt.Printf("%v=%v\n", k, v)
+			}
+			return
+		},
+	}
+	return dumpSchemaCmd
 }
 
 func queryCmd(cdc *amino.Codec) *cobra.Command {

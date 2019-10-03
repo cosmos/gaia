@@ -69,11 +69,11 @@ all: install lint check
 
 build: go.sum
 ifeq ($(OS),Windows_NT)
-	go build -mod=readonly $(BUILD_FLAGS) -o build/gaiad.exe ./cmd/gaiad
-	go build -mod=readonly $(BUILD_FLAGS) -o build/gaiacli.exe ./cmd/gaiacli
+	go build $(BUILD_FLAGS) -o build/gaiad.exe ./cmd/gaiad
+	go build $(BUILD_FLAGS) -o build/gaiacli.exe ./cmd/gaiacli
 else
-	go build -mod=readonly $(BUILD_FLAGS) -o build/gaiad ./cmd/gaiad
-	go build -mod=readonly $(BUILD_FLAGS) -o build/gaiacli ./cmd/gaiacli
+	go build $(BUILD_FLAGS) -o build/gaiad ./cmd/gaiad
+	go build $(BUILD_FLAGS) -o build/gaiacli ./cmd/gaiacli
 endif
 
 build-linux: go.sum
@@ -87,8 +87,8 @@ else
 endif
 
 install: go.sum
-	go install -mod=readonly $(BUILD_FLAGS) ./cmd/gaiad
-	go install -mod=readonly $(BUILD_FLAGS) ./cmd/gaiacli
+	go install $(BUILD_FLAGS) ./cmd/gaiad
+	go install $(BUILD_FLAGS) ./cmd/gaiacli
 
 install-debug: go.sum
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/gaiadebug

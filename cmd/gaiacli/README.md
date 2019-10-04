@@ -81,7 +81,7 @@ gaiacli --home ibc0/n0/gaiacli q ibc client client c0
 
 ## Connection
 
-Connections can be established with `connection.sh $CLIENTID` command. It will print
+Create a connection with the following command:
 
 ```shell
 gaiacli \
@@ -89,6 +89,7 @@ gaiacli \
   tx ibc connection handshake \
   conn0 c0 path1.json \
   conn1 c1 path0.json \
+  --chain-id2 ibc1 \
   --from1 n0 --from2 n1 \
   --node1 tcp://localhost:26657 \
   --node2 tcp://localhost:26557

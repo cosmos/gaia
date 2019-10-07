@@ -26,11 +26,9 @@ gaiad testnet -o ibc1 --v 1 --chain-id ibc1 --node-dir-prefix n
 Fix the configuration files to allow both chains/nodes to run on the same machine
 
 ```shell
-# Configure the proper database backend for each node
+# Configure the proper database backend for each node and different listening ports
 sed -i '' 's/"leveldb"/"goleveldb"/g' ibc0/n0/gaiad/config/config.toml
 sed -i '' 's/"leveldb"/"goleveldb"/g' ibc1/n0/gaiad/config/config.toml
-
-# Configure chain ibc1 to have different listening ports
 sed -i '' 's#"tcp://0.0.0.0:26656"#"tcp://0.0.0.0:26556"#g' ibc1/n0/gaiad/config/config.toml
 sed -i '' 's#"tcp://0.0.0.0:26657"#"tcp://0.0.0.0:26557"#g' ibc1/n0/gaiad/config/config.toml
 sed -i '' 's#"localhost:6060"#"localhost:6061"#g' ibc1/n0/gaiad/config/config.toml
@@ -66,7 +64,7 @@ Create a client on ibc1:
 ```bash
 gaiacli --home ibc0/n0/gaiacli q ibc client path > path0.json
 gaiacli --home ibc0/n0/gaiacli q ibc client consensus-state > state0.json
-gaiacli --home ibc1/n0/gaiacli tx ibc client create c1 ./state0.json --from n0
+gaiacli --home ibc1/n0/gaiacli tx ibc client create c1 ./state0.json --from n0 -y
 gaiacli --home ibc1/n0/gaiacli q ibc client client c1
 ```
 
@@ -75,7 +73,7 @@ Create a client on ibc0:
 ```bash
 gaiacli --home ibc1/n0/gaiacli q ibc client path > path1.json
 gaiacli --home ibc1/n0/gaiacli q ibc client consensus-state > state1.json
-gaiacli --home ibc0/n0/gaiacli tx ibc client create c0 ./state1.json --from n0
+gaiacli --home ibc0/n0/gaiacli tx ibc client create c0 ./state1.json --from n0 -y
 gaiacli --home ibc0/n0/gaiacli q ibc client client c0
 ```
 
@@ -99,6 +97,7 @@ Once the connection is established you should be able to query it:
 
 ```bash
 gaiacli --home ibc0/n0/gaiacli q ibc connection connection conn0 --trust-node
+gaiacli --home ibc1/n0/gaiacli q ibc connection connection conn1 --trust-node
 ```
 
 ## Channel
@@ -111,13 +110,17 @@ gaiacli \
   tx ibc channel handshake \
   ibc-mock chan0 conn0 \
   ibc-mock chan1 conn1 \
+  --node1 tcp://localhost:26657 \
+  --node2 tcp://localhost:26557 \
+  --chain-id2 ibc1 \
   --from1 n0 --from2 n1
 ```
 
-You can query the channel after establishment by
+You can query the channel after establishment by running the following command
 
 ```bash
 gaiacli --home ibc0/n0/gaiacli query ibc channel channel ibc-mock chan0 --trust-node
+gaiacli --home ibc1/n0/gaiacli query ibc channel channel ibc-mock chan1 --trust-node
 ```
 
 ## Send Packet
@@ -128,10 +131,10 @@ To send a packet using the `ibc-mock` application protocol run the following com
 gaiacli --home ibc0/n0/gaiacli q ibcmocksend sequence chan0
 ```
 
-The command will return the latest sent sequence(0 if not exists). Run command with next sequence.
+The command will return the latest sent sequence, `0` if not exists. Run command with next sequence (n+1).
 
 ```
-gaiacli --home ibc0/n0/gaiacli tx ibcmocksend sequence chan0 (sequence+1)
+gaiacli --home ibc0/n0/gaiacli tx ibcmocksend sequence chan0 1 --from n0
 ```
 
 ## Receive Packet
@@ -139,7 +142,13 @@ gaiacli --home ibc0/n0/gaiacli tx ibcmocksend sequence chan0 (sequence+1)
 To receive packets using the `ibc-mock` application protocol run the following command:
 
 ```
-gaiacli --home ibc0/n0/gaiacli tx ibc channel flush ibcmocksend chan0 --trust-node
+gaiacli \
+  --home ibc0/n0/gaiacli \
+  tx ibc channel flush ibc-mock chan0 \
+  --node1 tcp://localhost:26657 \
+  --node2 tcp://localhost:26557 \
+  --chain-id2 ibc1 \
+  --from1 n0 --from2 n1
 ```
 
 To see the updated sequence run the following command:

@@ -57,6 +57,8 @@ var (
 		slashing.AppModuleBasic{},
 		supply.AppModuleBasic{},
 		ibc.AppModuleBasic{},
+		mocksend.AppModuleBasic{},
+		mockrecv.AppModuleBasic{},
 	)
 
 	// module account permissions

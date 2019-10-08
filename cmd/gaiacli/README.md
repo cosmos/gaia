@@ -7,7 +7,7 @@
 This branch uses non-canonical branch of cosmos-sdk. Before building, run `go mod vendor` on the root directory to retrive the dependencies. To build:
 
 ```shell
-git clone git@github.com:cosmos/gaia
+git clone https://github.com/:cosmos/gaia
 cd gaia
 git checkout joon/ibc-gaia-interface
 go mod vendor
@@ -28,12 +28,12 @@ Fix the configuration files to allow both chains/nodes to run on the same machin
 
 ```shell
 # Configure the proper database backend for each node and different listening ports
-sed -i '' 's/"leveldb"/"goleveldb"/g' ibc0/n0/gaiad/config/config.toml
-sed -i '' 's/"leveldb"/"goleveldb"/g' ibc1/n0/gaiad/config/config.toml
-sed -i '' 's#"tcp://0.0.0.0:26656"#"tcp://0.0.0.0:26556"#g' ibc1/n0/gaiad/config/config.toml
-sed -i '' 's#"tcp://0.0.0.0:26657"#"tcp://0.0.0.0:26557"#g' ibc1/n0/gaiad/config/config.toml
-sed -i '' 's#"localhost:6060"#"localhost:6061"#g' ibc1/n0/gaiad/config/config.toml
-sed -i '' 's#"tcp://127.0.0.1:26658"#"tcp://127.0.0.1:26558"#g' ibc1/n0/gaiad/config/config.toml
+sed -i  's/"leveldb"/"goleveldb"/g' ibc0/n0/gaiad/config/config.toml
+sed -i  's/"leveldb"/"goleveldb"/g' ibc1/n0/gaiad/config/config.toml
+sed -i  's/"tcp:\/\/0.0.0.0:26656"/"tcp:\/\/0.0.0.0:26556"/g' ibc1/n0/gaiad/config/config.toml
+sed -i  's/"tcp:\/\/0.0.0.0:26657"/"tcp:\/\/0.0.0.0:26557"/g' ibc1/n0/gaiad/config/config.toml
+sed -i  's/"localhost:6060"/"localhost:6061"/g' ibc1/n0/gaiad/config/config.toml
+sed -i  's/"tcp:\/\/127.0.0.1:26658"/"tcp:\/\/127.0.0.1:26558"/g' ibc1/n0/gaiad/config/config.toml
 ```
 
 Then configure your `gaiacli` instances for each chain:
@@ -45,7 +45,8 @@ gaiacli config --home ibc0/n0/gaiacli/ node http://localhost:26657
 gaiacli config --home ibc1/n0/gaiacli/ node http://localhost:26557
 
 # Add the key from ibc1 to the ibc0 cli
-jq -r '.secret' ibc1/n0/gaiacli/key_seed.json | pbcopy
+jq -r '.secret' ibc1/n0/gaiacli/key_seed.json
+#and copy displayed to clipboard
 
 # Paste the mnemonic from the above command after setting password (12345678)
 gaiacli --home ibc0/n0/gaiacli keys add n1 --recover

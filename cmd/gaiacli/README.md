@@ -82,7 +82,8 @@ gaiacli --home ibc0/n0/gaiacli q ibc client client c0
 
 Create a connection with the following command:
 
-```shell
+```shellls
+
 gaiacli \
   --home ibc0/n0/gaiacli \
   tx ibc connection handshake \
@@ -109,8 +110,8 @@ To establish a channel using the `ibc-mock` application protocol run the followi
 gaiacli \
   --home ibc0/n0/gaiacli \
   tx ibc channel handshake \
-  ibc-mock chan0 conn0 \
-  ibc-mock chan1 conn1 \
+  ibcmocksend chan0 conn0 \
+  ibcmockrecv chan1 conn1 \
   --node1 tcp://localhost:26657 \
   --node2 tcp://localhost:26557 \
   --chain-id2 ibc1 \
@@ -120,8 +121,8 @@ gaiacli \
 You can query the channel after establishment by running the following command
 
 ```bash
-gaiacli --home ibc0/n0/gaiacli query ibc channel channel ibc-mock chan0 --trust-node
-gaiacli --home ibc1/n0/gaiacli query ibc channel channel ibc-mock chan1 --trust-node
+gaiacli --home ibc0/n0/gaiacli query ibc channel channel ibcmocksend chan0 --trust-node
+gaiacli --home ibc1/n0/gaiacli query ibc channel channel ibcmockrecv chan1 --trust-node
 ```
 
 ## Send Packet
@@ -145,7 +146,7 @@ To receive packets using the `ibc-mock` application protocol run the following c
 ```
 gaiacli \
   --home ibc0/n0/gaiacli \
-  tx ibc channel flush ibc-mock chan0 \
+  tx ibc channel flush ibcmocksend chan0 \
   --node1 tcp://localhost:26657 \
   --node2 tcp://localhost:26557 \
   --chain-id2 ibc1 \

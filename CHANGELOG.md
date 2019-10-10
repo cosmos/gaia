@@ -39,7 +39,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ### Improvements
 
-* (sdk) Update SDK version to [v0.37.2](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.37.2).
+* (sdk) Bump SDK version to [v0.37.2](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.37.2).
+* (tendermint) Bump Tendermint version to [v0.32.6](https://github.com/tendermint/tendermint/releases/tag/v0.32.6)
 
 ## [v2.0.1] - 2019-09-20
 

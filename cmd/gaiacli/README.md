@@ -19,7 +19,7 @@ gaiacli version
 Stub out testnet files for 2 nodes, this example does so in your $HOME directory:
 
 ```shell
-cd ~ && mkdir ibc-testnets && cd ibc-testnet
+cd ~ && mkdir ibc-testnets && cd ibc-testnets
 gaiad testnet -o ibc0 --v 1 --chain-id ibc0 --node-dir-prefix n
 gaiad testnet -o ibc1 --v 1 --chain-id ibc1 --node-dir-prefix n
 ```

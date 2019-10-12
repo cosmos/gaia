@@ -145,12 +145,12 @@ To receive packets using the `ibc-mock` application protocol run the following c
 
 ```
 gaiacli \
-  --home ibc0/n0/gaiacli \
-  tx ibc channel flush ibcmocksend chan0 \
-  --node1 tcp://localhost:26657 \
-  --node2 tcp://localhost:26557 \
-  --chain-id2 ibc1 \
-  --from1 n0 --from2 n1
+  --home ibc1/n0/gaiacli \
+  tx ibc channel pull ibcmockrecv chan1 \
+  --node1 tcp://localhost:26557 \
+  --node2 tcp://localhost:26657 \
+  --chain-id2 ibc0 \
+  --from1 n0 --from2 n0
 ```
 
 To see the updated sequence run the following command:

@@ -248,7 +248,19 @@ func NewGaiaApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest b
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.supplyKeeper, auth.DefaultSigVerificationGasConsumer))
+
+	authante := auth.NewAnteHandler(app.accountKeeper, app.supplyKeeper, auth.DefaultSigVerificationGasConsumer)
+	ibcante := ibc.NewAnteHandler(app.ibcKeeper.Channel())
+	app.SetAnteHandler(func(ctx sdk.Context, tx sdk.Tx, simulate bool) (sdk.Context, sdk.Result, bool) {
+		// TODO: antedecorator
+		newCtx, res, abort := authante(ctx, tx, simulate)
+		if abort {
+			return newCtx, res, abort
+		}
+
+		newCtx, _, abort = ibcante(newCtx, tx, simulate)
+		return newCtx, res, abort
+	})
 	app.SetEndBlocker(app.EndBlocker)
 
 	if loadLatest {

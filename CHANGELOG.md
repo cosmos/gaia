@@ -43,6 +43,13 @@ flag and configuration.
 * (gaiacli) [\#132](https://github.com/cosmos/gaia/pull/132) Add `tx decode` command to decode
 Base64 encoded transactions.
 
+## [v2.0.2] - 2019-10-12
+
+### Improvements
+
+* (sdk) Bump SDK version to [v0.37.3](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.37.3).
+* (tendermint) Bump Tendermint version to [v0.32.6](https://github.com/tendermint/tendermint/releases/tag/v0.32.6).
+
 ## [v2.0.1] - 2019-09-20
 
 ### Features
@@ -123,7 +130,8 @@ not rely on the `x/supply` keeper to get module account addresses for blacklisti
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v2.0.1...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v2.0.2...HEAD
+[v2.0.2]: https://github.com/cosmos/gaia/releases/tag/v2.0.2
 [v2.0.1]: https://github.com/cosmos/gaia/releases/tag/v2.0.1
 [v2.0.0]: https://github.com/cosmos/gaia/releases/tag/v2.0.0
 [v1.0.0]: https://github.com/cosmos/gaia/releases/tag/v1.0.0

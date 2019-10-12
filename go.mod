@@ -22,6 +22,7 @@ require (
 	github.com/snikch/goodman v0.0.0-20171125024755-10e37e294daa
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/cobra v0.0.5
+	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.4.0
 	github.com/stretchr/testify v1.4.0
 	github.com/tendermint/go-amino v0.15.0
@@ -32,4 +33,5 @@ require (
 	golang.org/x/sys v0.0.0-20190804053845-51ab0e2deafa // indirect
 	golang.org/x/text v0.3.2 // indirect
 	google.golang.org/genproto v0.0.0-20190701230453-710ae3a149df // indirect
+	gopkg.in/yaml.v2 v2.2.4 // indirect
 )

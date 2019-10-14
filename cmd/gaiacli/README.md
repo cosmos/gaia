@@ -4,7 +4,7 @@
 
 ## Dependencies
 
-This branch uses non-canonical branch of cosmos-sdk. Before building, run `go mod vendor` on the root directory to retrive the dependencies. To build:
+This branch uses non-canonical branch of cosmos-sdk. Before building, run `go mod vendor` on the root directory to retrieve the dependencies. To build:
 
 ```shell
 git clone git@github.com:cosmos/gaia
@@ -46,7 +46,7 @@ gaiacli config --home ibc0/n0/gaiacli/ node http://localhost:26657
 gaiacli config --home ibc1/n0/gaiacli/ node http://localhost:26557
 ```
 
-Add keys from each chain to the other and make such that the key at `ibc1/n0/gaiacli/key_seed.json` is named `n1` on each `gaiacli` instance and the same for `n0`. After this is complete the results of `gaiacli keys list` from each chain should be identical. The following are instructions for how to do this on Mac:
+Add keys from each chain to the other and make sure that the key at `ibc1/n0/gaiacli/key_seed.json` is named `n1` on each `gaiacli` instance and the same for `n0`. After this is complete the results of `gaiacli keys list` from each chain should be identical. The following are instructions for how to do this on Mac:
 
 ```bash
 # These commands copy the seed phrase from each dir into the clipboard on mac
@@ -106,7 +106,7 @@ gaiacli --home ibc1/n0/gaiacli q ibc client client c1 --indent
 
 ### Connection Creation
 
-In order to send transactions using IBC there are two differnt handshakes that must be preformed. First there is a `connection` created between the two chains. Once the connection is created, an application specific `channel` handshake is preformed which allows the transfer of application specific data. Examples of applications are token transfer, cross-chain validation, cross-chain accounts, and in this tutorial `ibc-mock`.
+In order to send transactions using IBC there are two different handshakes that must be performed. First there is a `connection` created between the two chains. Once the connection is created, an application specific `channel` handshake is performed which allows the transfer of application specific data. Examples of applications are token transfer, cross-chain validation, cross-chain accounts, and in this tutorial `ibc-mock`.
 
 Create a `connection` with the following command:
 
@@ -133,7 +133,7 @@ gaiacli --home ibc1/n0/gaiacli q ibc connection connection conn1 --indent --trus
 
 ### Channel
 
-Now that the `connection` has been created, its time to establish a `channel` for the `ibc-mock` application protocol. This will allow sending of data between `ibc0` and `ibc1`. To create the `channel`, run the following command:
+Now that the `connection` has been created, it's time to establish a `channel` for the `ibc-mock` application protocol. This will allow sending of data between `ibc0` and `ibc1`. To create the `channel`, run the following command:
 
 > NOTE: This command broadcasts a total of 7 transactions between the two chains from 2 different wallets. At the start of the command you will be prompted for passwords for the two different keys. The command may then take some time. Please wait for the command to return!
 
@@ -176,7 +176,7 @@ gaiacli --home ibc0/n0/gaiacli tx ibcmocksend sequence chan0 $(gaiacli --home ib
 
 ### Receive Packet
 
-Once packets are sent, reciept must be confirmed on the destination chain. To receive the packets you just sent, run the following command:
+Once packets are sent, receipt must be confirmed on the destination chain. To receive the packets you just sent, run the following command:
 
 ```bash
 gaiacli \

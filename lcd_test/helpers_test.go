@@ -20,6 +20,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	authcutils "github.com/cosmos/cosmos-sdk/x/auth/client/utils"
+	authexported "github.com/cosmos/cosmos-sdk/x/auth/exported"
 	bankrest "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
 	distrrest "github.com/cosmos/cosmos-sdk/x/distribution/client/rest"
 	"github.com/cosmos/cosmos-sdk/x/gov"
@@ -261,7 +262,7 @@ func updateKey(t *testing.T, port, name, oldPassword, newPassword string, fail b
 }
 
 // GET /auth/accounts/{address} Get the account information on blockchain
-func getAccount(t *testing.T, port string, addr sdk.AccAddress) (acc auth.Account) {
+func getAccount(t *testing.T, port string, addr sdk.AccAddress) (acc authexported.Account) {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/auth/accounts/%s", addr.String()), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 	require.Nil(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &acc))
@@ -394,7 +395,7 @@ func doTransferWithGasAccAuto(
 // signAndBroadcastGenTx accepts a successfully generated unsigned tx, signs it,
 // and broadcasts it.
 func signAndBroadcastGenTx(
-	t *testing.T, port, name, pwd, genTx string, acc auth.Account, gasAdjustment float64, simulate bool,
+	t *testing.T, port, name, pwd, genTx string, acc authexported.Account, gasAdjustment float64, simulate bool,
 ) (resp *http.Response, body string) {
 
 	chainID := viper.GetString(client.FlagChainID)

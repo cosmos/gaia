@@ -15,6 +15,3 @@ linters-settings:
     min-confidence: 1.1
 run:
   tests: false
-
-service:
-  golangci-lint-version: 1.19.x

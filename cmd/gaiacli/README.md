@@ -1,7 +1,5 @@
 # IBC instruction
 
-// temporal document
-
 ## Dependencies
 
 This branch uses non-canonical branch of cosmos-sdk. Before building, run `go mod vendor` on the root directory to retrieve the dependencies. To build:
@@ -26,7 +24,7 @@ gaiad testnet -o ibc0 --v 1 --chain-id ibc0 --node-dir-prefix n
 gaiad testnet -o ibc1 --v 1 --chain-id ibc1 --node-dir-prefix n
 ```
 
-### Set `gaiacli` Configuation
+### Set `gaiad` and `gaiacli` Configuation
 
 Fix the configuration files for both `gaiad` and `gaiacli` to allow both chains/nodes to run on the same machine:
 
@@ -168,15 +166,15 @@ gaiacli --home ibc0/n0/gaiacli q ibcmocksend sequence chan0
 gaiacli --home ibc0/n0/gaiacli q ibcmocksend next chan0
 ```
 
-Now you are ready to send an `ibc-mock` packet down the channel (`chan0`) from chain `ibc0` to chain `ibc1`! To do so run the following command:
+Now you are ready to send an `ibc-mock` packet down the channel (`chan0`) from chain `ibc0` to chain `ibc1`! To do so run the following commands to send a packet down the channel:
 
 ```bash
-gaiacli --home ibc0/n0/gaiacli tx ibcmocksend sequence chan0 $(gaiacli --home ibc0/n0/gaiacli q ibcmocksend next chan0) --from n0 -o text
+gaiacli --home ibc0/n0/gaiacli tx ibcmocksend sequence chan0 $(gaiacli --home ibc0/n0/gaiacli q ibcmocksend next chan0) --from n0 -o text -y
 ```
 
 ### Receive Packet
 
-Once packets are sent, receipt must be confirmed on the destination chain. To receive the packets you just sent, run the following command:
+Once packets are sent, receipt must be confirmed on the destination chain. To `pull` the packets from `ibc0` on `ibc1`, run the following command:
 
 ```bash
 gaiacli \
@@ -185,11 +183,25 @@ gaiacli \
   --node1 tcp://localhost:26557 \
   --node2 tcp://localhost:26657 \
   --chain-id2 ibc0 \
-  --from1 n0 --from2 n0 -y -o text
+  --from n1
 ```
 
-Once the packets have been sent, check the To see the updated sequence run the following command:
+This command sends two transactions. You should see the reciept of the packet:
 
 ```
+ibc1 <- update-client  [OK] txid(7D4B4DE7A6B8E1045CA7BEB16E21DD0491BED000E5FB0D05BBB7960AABE5CC78) client(c1)
+ibc1 <- empty-packet   [OK] txid(6E90B9CE19394D7D41CF55E4ADCC94D6169B476B45527F9C47346080C85A289F) packets(1)
+```
+
+> Note: This command pushes all the packets out of the channel with one command. Try pushing a **couple of packets** from `ibc0` to `ibc1` then fulshing them at once. You should see output like:
+
+```
+ibc1 <- update-client  [OK] txid(21E0CE99A21DD7630A7DDE62459DD82C4051CC46B231A7B31529928B1B1B2C53) client(c1)
+ibc1 <- empty-packet   [OK] txid(92D76EF46FDCB3739DB06960BECCD7DA30AAA6AECA687DF4D92CC272D4941F7E) packets(2)
+```
+
+Once the packets have been sent, you can check the updated sequence by running:
+
+```bash
 gaiacli --home ibc1/n0/gaiacli q ibcmockrecv sequence chan1 --trust-node
 ```

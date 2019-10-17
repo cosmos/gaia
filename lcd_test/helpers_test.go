@@ -287,11 +287,11 @@ func doBroadcast(t *testing.T, port string, tx auth.StdTx) (*http.Response, stri
 // doTransfer performs a balance transfer with auto gas calculation. It also signs
 // the tx and broadcasts it.
 func doTransfer(
-	t *testing.T, port, seed, name, memo, pwd string, addr sdk.AccAddress, fees sdk.Coins,
+	t *testing.T, port, seed, name, memo string, addr sdk.AccAddress, fees sdk.Coins,
 	kb crkeys.Keybase,
 ) (sdk.AccAddress, sdk.TxResponse) {
 
-	resp, body, recvAddr := doTransferWithGas(t, port, seed, name, memo, pwd, addr, "", 1.0, false, true, fees, kb)
+	resp, body, recvAddr := doTransferWithGas(t, port, seed, name, memo, addr, "", 1.0, false, true, fees, kb)
 	require.Equal(t, http.StatusOK, resp.StatusCode, body)
 
 	var txResp sdk.TxResponse
@@ -305,7 +305,11 @@ func doTransfer(
 // broadcast parameter determines if the tx should only be generated or also
 // signed and broadcasted. The sending account's number and sequence are
 // determined prior to generating the tx.
-func doTransferWithGas(t *testing.T, port, seed, name, memo, pwd string, addr sdk.AccAddress, gas string, gasAdjustment float64, simulate, broadcast bool, fees sdk.Coins, kb crkeys.Keybase, ) (resp *http.Response, body string, receiveAddr sdk.AccAddress) {
+func doTransferWithGas(
+	t *testing.T, port, seed, name, memo string, addr sdk.AccAddress, gas string,
+	gasAdjustment float64, simulate, broadcast bool, fees sdk.Coins,
+	kb crkeys.Keybase,
+) (resp *http.Response, body string, receiveAddr sdk.AccAddress) {
 
 	// create receive address
 	kb2 := crkeys.NewInMemory()
@@ -341,7 +345,7 @@ func doTransferWithGas(t *testing.T, port, seed, name, memo, pwd string, addr sd
 	}
 
 	// sign and broadcast
-	resp, body = signAndBroadcastGenTx(t, port, name, pwd, body, acc, gasAdjustment, simulate, kb)
+	resp, body = signAndBroadcastGenTx(t, port, name, body, acc, gasAdjustment, simulate, kb)
 	return resp, body, receiveAddr
 }
 
@@ -349,7 +353,7 @@ func doTransferWithGas(t *testing.T, port, seed, name, memo, pwd string, addr sd
 // automatically determines the account's number and sequence when generating the
 // tx.
 func doTransferWithGasAccAuto(
-	t *testing.T, port, seed, name, memo, pwd string, addr sdk.AccAddress,
+	t *testing.T, port, seed, name, memo string, addr sdk.AccAddress,
 	gas string, gasAdjustment float64, simulate, broadcast bool, fees sdk.Coins,
 	kb crkeys.Keybase,
 ) (resp *http.Response, body string, receiveAddr sdk.AccAddress) {
@@ -385,14 +389,15 @@ func doTransferWithGasAccAuto(
 	}
 
 	// sign and broadcast
-	resp, body = signAndBroadcastGenTx(t, port, name, pwd, body, acc, gasAdjustment, simulate, kb)
+	resp, body = signAndBroadcastGenTx(t, port, name, body, acc, gasAdjustment, simulate, kb)
 	return resp, body, receiveAddr
 }
 
 // signAndBroadcastGenTx accepts a successfully generated unsigned tx, signs it,
 // and broadcasts it.
-func signAndBroadcastGenTx(t *testing.T, port, name, pwd, genTx string, acc authexported.Account, gasAdjustment float64, simulate bool,
-	kb crkeys.Keybase,
+func signAndBroadcastGenTx(
+	t *testing.T, port, name, genTx string, acc authexported.Account,
+	gasAdjustment float64, simulate bool, kb crkeys.Keybase,
 ) (resp *http.Response, body string) {
 
 	chainID := viper.GetString(client.FlagChainID)
@@ -414,7 +419,7 @@ func signAndBroadcastGenTx(t *testing.T, port, name, pwd, genTx string, acc auth
 		nil,
 	).WithKeybase(kb)
 
-	signedTx, err := txbldr.SignStdTx(name, pwd, tx, false)
+	signedTx, err := txbldr.SignStdTx(name, client.DefaultKeyPass, tx, false)
 	require.NoError(t, err)
 
 	return doBroadcast(t, port, signedTx)
@@ -426,7 +431,7 @@ func signAndBroadcastGenTx(t *testing.T, port, name, pwd, genTx string, acc auth
 
 // POST /staking/delegators/{delegatorAddr}/delegations Submit delegation
 func doDelegate(
-	t *testing.T, port, name, pwd string, delAddr sdk.AccAddress,
+	t *testing.T, port, name string, delAddr sdk.AccAddress,
 	valAddr sdk.ValAddress, amount sdk.Int, fees sdk.Coins,
 	kb crkeys.Keybase,
 ) sdk.TxResponse {
@@ -452,7 +457,7 @@ func doDelegate(
 	require.Equal(t, http.StatusOK, resp.StatusCode, body)
 
 	// sign and broadcast
-	resp, body = signAndBroadcastGenTx(t, port, name, pwd, body, acc, client.DefaultGasAdjustment, false, kb)
+	resp, body = signAndBroadcastGenTx(t, port, name, body, acc, client.DefaultGasAdjustment, false, kb)
 	require.Equal(t, http.StatusOK, resp.StatusCode, body)
 
 	var txResp sdk.TxResponse
@@ -464,7 +469,7 @@ func doDelegate(
 
 // POST /staking/delegators/{delegatorAddr}/delegations Submit delegation
 func doUndelegate(
-	t *testing.T, port, name, pwd string, delAddr sdk.AccAddress,
+	t *testing.T, port, name string, delAddr sdk.AccAddress,
 	valAddr sdk.ValAddress, amount sdk.Int, fees sdk.Coins,
 	kb crkeys.Keybase,
 ) sdk.TxResponse {
@@ -489,7 +494,7 @@ func doUndelegate(
 	resp, body := Request(t, port, "POST", fmt.Sprintf("/staking/delegators/%s/unbonding_delegations", delAddr), req)
 	require.Equal(t, http.StatusOK, resp.StatusCode, body)
 
-	resp, body = signAndBroadcastGenTx(t, port, name, pwd, body, acc, client.DefaultGasAdjustment, false, kb)
+	resp, body = signAndBroadcastGenTx(t, port, name, body, acc, client.DefaultGasAdjustment, false, kb)
 	require.Equal(t, http.StatusOK, resp.StatusCode, body)
 
 	var txResp sdk.TxResponse
@@ -501,8 +506,8 @@ func doUndelegate(
 
 // POST /staking/delegators/{delegatorAddr}/delegations Submit delegation
 func doBeginRedelegation(
-	t *testing.T, port, name, pwd string, delAddr sdk.AccAddress, valSrcAddr,
-	valDstAddr sdk.ValAddress, amount sdk.Int, fees sdk.Coins,
+	t *testing.T, port, name string, delAddr sdk.AccAddress, valSrcAddr, valDstAddr sdk.ValAddress,
+	amount sdk.Int, fees sdk.Coins,
 	kb crkeys.Keybase,
 ) sdk.TxResponse {
 
@@ -527,7 +532,7 @@ func doBeginRedelegation(
 	resp, body := Request(t, port, "POST", fmt.Sprintf("/staking/delegators/%s/redelegations", delAddr), req)
 	require.Equal(t, http.StatusOK, resp.StatusCode, body)
 
-	resp, body = signAndBroadcastGenTx(t, port, name, pwd, body, acc, client.DefaultGasAdjustment, false, kb)
+	resp, body = signAndBroadcastGenTx(t, port, name, body, acc, client.DefaultGasAdjustment, false, kb)
 	require.Equal(t, http.StatusOK, resp.StatusCode, body)
 
 	var txResp sdk.TxResponse
@@ -715,7 +720,7 @@ func getValidatorUnbondingDelegations(t *testing.T, port string, validatorAddr s
 // ----------------------------------------------------------------------
 // POST /gov/proposals Submit a proposal
 func doSubmitProposal(
-	t *testing.T, port, seed, name, pwd string, proposerAddr sdk.AccAddress,
+	t *testing.T, port, seed, name string, proposerAddr sdk.AccAddress,
 	amount sdk.Int, fees sdk.Coins,
 	kb crkeys.Keybase,
 ) sdk.TxResponse {
@@ -743,7 +748,7 @@ func doSubmitProposal(
 	resp, body := Request(t, port, "POST", "/gov/proposals", req)
 	require.Equal(t, http.StatusOK, resp.StatusCode, body)
 
-	resp, body = signAndBroadcastGenTx(t, port, name, pwd, body, acc, client.DefaultGasAdjustment, false, kb)
+	resp, body = signAndBroadcastGenTx(t, port, name, body, acc, client.DefaultGasAdjustment, false, kb)
 	require.Equal(t, http.StatusOK, resp.StatusCode, body)
 
 	var txResp sdk.TxResponse
@@ -754,7 +759,7 @@ func doSubmitProposal(
 }
 
 func doSubmitParamChangeProposal(
-	t *testing.T, port, seed, name, pwd string, proposerAddr sdk.AccAddress,
+	t *testing.T, port, seed, name string, proposerAddr sdk.AccAddress,
 	amount sdk.Int, fees sdk.Coins,
 	kb crkeys.Keybase,
 ) sdk.TxResponse {
@@ -783,7 +788,7 @@ func doSubmitParamChangeProposal(
 	resp, body := Request(t, port, "POST", "/gov/proposals/param_change", req)
 	require.Equal(t, http.StatusOK, resp.StatusCode, body)
 
-	resp, body = signAndBroadcastGenTx(t, port, name, pwd, body, acc, client.DefaultGasAdjustment, false, kb)
+	resp, body = signAndBroadcastGenTx(t, port, name, body, acc, client.DefaultGasAdjustment, false, kb)
 	require.Equal(t, http.StatusOK, resp.StatusCode, body)
 
 	var txResp sdk.TxResponse
@@ -794,7 +799,7 @@ func doSubmitParamChangeProposal(
 }
 
 func doSubmitCommunityPoolSpendProposal(
-	t *testing.T, port, seed, name, pwd string, proposerAddr sdk.AccAddress,
+	t *testing.T, port, seed, name string, proposerAddr sdk.AccAddress,
 	amount sdk.Int, fees sdk.Coins,
 	kb crkeys.Keybase,
 ) sdk.TxResponse {
@@ -822,7 +827,7 @@ func doSubmitCommunityPoolSpendProposal(
 	resp, body := Request(t, port, "POST", "/gov/proposals/community_pool_spend", req)
 	require.Equal(t, http.StatusOK, resp.StatusCode, body)
 
-	resp, body = signAndBroadcastGenTx(t, port, name, pwd, body, acc, client.DefaultGasAdjustment, false, kb)
+	resp, body = signAndBroadcastGenTx(t, port, name, body, acc, client.DefaultGasAdjustment, false, kb)
 	require.Equal(t, http.StatusOK, resp.StatusCode, body)
 
 	var txResp sdk.TxResponse
@@ -889,8 +894,8 @@ func getProposalsFilterStatus(t *testing.T, port string, status gov.ProposalStat
 
 // POST /gov/proposals/{proposalId}/deposits Deposit tokens to a proposal
 func doDeposit(
-	t *testing.T, port, seed, name, pwd string, proposerAddr sdk.AccAddress,
-	proposalID uint64, amount sdk.Int, fees sdk.Coins,
+	t *testing.T, port, seed, name string, proposerAddr sdk.AccAddress, proposalID uint64,
+	amount sdk.Int, fees sdk.Coins,
 	kb crkeys.Keybase,
 ) sdk.TxResponse {
 
@@ -913,7 +918,7 @@ func doDeposit(
 	resp, body := Request(t, port, "POST", fmt.Sprintf("/gov/proposals/%d/deposits", proposalID), req)
 	require.Equal(t, http.StatusOK, resp.StatusCode, body)
 
-	resp, body = signAndBroadcastGenTx(t, port, name, pwd, body, acc, client.DefaultGasAdjustment, false, kb)
+	resp, body = signAndBroadcastGenTx(t, port, name, body, acc, client.DefaultGasAdjustment, false, kb)
 	require.Equal(t, http.StatusOK, resp.StatusCode, body)
 
 	var txResp sdk.TxResponse
@@ -947,7 +952,7 @@ func getTally(t *testing.T, port string, proposalID uint64) gov.TallyResult {
 
 // POST /gov/proposals/{proposalId}/votes Vote a proposal
 func doVote(
-	t *testing.T, port, seed, name, pwd string, proposerAddr sdk.AccAddress,
+	t *testing.T, port, seed, name string, proposerAddr sdk.AccAddress,
 	proposalID uint64, option string, fees sdk.Coins,
 	kb crkeys.Keybase,
 ) sdk.TxResponse {
@@ -972,7 +977,7 @@ func doVote(
 	resp, body := Request(t, port, "POST", fmt.Sprintf("/gov/proposals/%d/votes", proposalID), req)
 	require.Equal(t, http.StatusOK, resp.StatusCode, body)
 
-	resp, body = signAndBroadcastGenTx(t, port, name, pwd, body, acc, client.DefaultGasAdjustment, false, kb)
+	resp, body = signAndBroadcastGenTx(t, port, name, body, acc, client.DefaultGasAdjustment, false, kb)
 	require.Equal(t, http.StatusOK, resp.StatusCode, body)
 
 	var txResp sdk.TxResponse
@@ -1107,7 +1112,7 @@ func getSigningInfoList(t *testing.T, port string) []slashing.ValidatorSigningIn
 // TODO: Test this functionality, it is not currently in any of the tests
 // POST /slashing/validators/{validatorAddr}/unjail Unjail a jailed validator
 func doUnjail(
-	t *testing.T, port, seed, name, pwd string, valAddr sdk.ValAddress, fees sdk.Coins,
+	t *testing.T, port, seed, name string, valAddr sdk.ValAddress, fees sdk.Coins,
 ) sdk.TxResponse {
 
 	acc := getAccount(t, port, sdk.AccAddress(valAddr.Bytes()))
@@ -1124,7 +1129,7 @@ func doUnjail(
 	resp, body := Request(t, port, "POST", fmt.Sprintf("/slashing/validators/%s/unjail", valAddr.String()), req)
 	require.Equal(t, http.StatusOK, resp.StatusCode, body)
 
-	resp, body = signAndBroadcastGenTx(t, port, name, pwd, body, acc, client.DefaultGasAdjustment, false, nil)
+	resp, body = signAndBroadcastGenTx(t, port, name, body, acc, client.DefaultGasAdjustment, false, nil)
 	require.Equal(t, http.StatusOK, resp.StatusCode, body)
 
 	var txResp sdk.TxResponse
@@ -1142,7 +1147,7 @@ type unjailReq struct {
 
 // POST /distribution/delegators/{delgatorAddr}/rewards Withdraw delegator rewards
 func doWithdrawDelegatorAllRewards(
-	t *testing.T, port, seed, name, pwd string, delegatorAddr sdk.AccAddress, fees sdk.Coins,
+	t *testing.T, port, seed, name string, delegatorAddr sdk.AccAddress, fees sdk.Coins,
 ) sdk.TxResponse {
 	// get the account to get the sequence
 	acc := getAccount(t, port, delegatorAddr)
@@ -1161,7 +1166,7 @@ func doWithdrawDelegatorAllRewards(
 	resp, body := Request(t, port, "POST", fmt.Sprintf("/distribution/delegators/%s/rewards", delegatorAddr), req)
 	require.Equal(t, http.StatusOK, resp.StatusCode, body)
 
-	resp, body = signAndBroadcastGenTx(t, port, name, pwd, body, acc, client.DefaultGasAdjustment, false, nil)
+	resp, body = signAndBroadcastGenTx(t, port, name, body, acc, client.DefaultGasAdjustment, false, nil)
 	require.Equal(t, http.StatusOK, resp.StatusCode, body)
 
 	var txResp sdk.TxResponse

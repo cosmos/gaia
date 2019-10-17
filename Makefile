@@ -7,6 +7,7 @@ LEDGER_ENABLED ?= true
 SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
 
 export GO111MODULE = on
+export COSMOS_SDK_TEST_KEYRING = y
 
 # process build tags
 
@@ -132,7 +133,7 @@ test-cover:
 	@go test -mod=readonly -timeout 30m -race -coverprofile=coverage.txt -covermode=atomic -tags='ledger test_ledger_mock' ./...
 
 test-build: build
-	@go test -mod=readonly -p 4 `go list ./cli_test/...` -tags=cli_test -v
+	@go test -mod=readonly -p 4 `go list ./cli_test/...` -tags=cli_test
 
 
 lint: golangci-lint

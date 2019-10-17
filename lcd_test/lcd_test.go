@@ -44,6 +44,11 @@ func init() {
 	version.Version = os.Getenv("VERSION")
 }
 
+func TestMain(m *testing.M) {
+	os.Setenv("COSMOS_SDK_TEST_KEYRING", "y")
+	os.Exit(m.Run())
+}
+
 func TestNodeStatus(t *testing.T) {
 	cleanup, _, _, port, err := InitializeLCD(1, []sdk.AccAddress{}, true)
 	require.NoError(t, err)
@@ -73,7 +78,7 @@ func TestValidators(t *testing.T) {
 }
 
 func TestCoinSend(t *testing.T) {
-	kb, err := keys.NewKeyBaseFromDir(InitClientHome(""))
+	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
 	require.NoError(t, err)
 	addr, seed, err := CreateAddr(name1, pw, kb)
 	require.NoError(t, err)
@@ -93,7 +98,7 @@ func TestCoinSend(t *testing.T) {
 	initialBalance := acc.GetCoins()
 
 	// create TX
-	receiveAddr, resultTx := doTransfer(t, port, seed, name1, memo, pw, addr, fees)
+	receiveAddr, resultTx := doTransfer(t, port, seed, name1, memo, pw, addr, fees, kb)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
 	// check if tx was committed
@@ -115,30 +120,28 @@ func TestCoinSend(t *testing.T) {
 	require.Equal(t, int64(1), coins2[0].Amount.Int64())
 
 	// test failure with too little gas
-	res, body, _ = doTransferWithGas(t, port, seed, name1, memo, pw, addr, "100", 0, false, true, fees)
+	res, body, _ = doTransferWithGas(t, port, seed, name1, memo, pw, addr, "100", 0, false, true, fees, kb)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 	require.Nil(t, err)
 
 	// test failure with negative gas
-	res, body, _ = doTransferWithGas(t, port, seed, name1, memo, pw, addr, "-200", 0, false, false, fees)
+	res, body, _ = doTransferWithGas(t, port, seed, name1, memo, pw, addr, "-200", 0, false, false, fees, kb)
 	require.Equal(t, http.StatusBadRequest, res.StatusCode, body)
 
 	// test failure with negative adjustment
-	res, body, _ = doTransferWithGas(t, port, seed, name1, memo, pw, addr, "10000", -0.1, true, false, fees)
+	res, body, _ = doTransferWithGas(t, port, seed, name1, memo, pw, addr, "10000", -0.1, true, false, fees, kb)
 	require.Equal(t, http.StatusBadRequest, res.StatusCode, body)
 
 	// test failure with 0 gas
-	res, body, _ = doTransferWithGas(t, port, seed, name1, memo, pw, addr, "0", 0, false, true, fees)
+	res, body, _ = doTransferWithGas(t, port, seed, name1, memo, pw, addr, "0", 0, false, true, fees, kb)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	// test failure with wrong adjustment
-	res, body, _ = doTransferWithGas(t, port, seed, name1, memo, pw, addr, client.GasFlagAuto, 0.1, false, true, fees)
+	res, body, _ = doTransferWithGas(t, port, seed, name1, memo, pw, addr, client.GasFlagAuto, 0.1, false, true, fees, kb)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	// run simulation and test success with estimated gas
-	res, body, _ = doTransferWithGas(
-		t, port, seed, name1, memo, pw, addr, "10000", 1.0, true, false, fees,
-	)
+	res, body, _ = doTransferWithGas(t, port, seed, name1, memo, pw, addr, "10000", 1.0, true, false, fees, kb)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var gasEstResp rest.GasEstimateResponse
@@ -150,7 +153,7 @@ func TestCoinSend(t *testing.T) {
 
 	// run successful tx
 	gas := fmt.Sprintf("%d", gasEstResp.GasEstimate)
-	res, body, _ = doTransferWithGas(t, port, seed, name1, memo, pw, addr, gas, 1.0, false, true, fees)
+	res, body, _ = doTransferWithGas(t, port, seed, name1, memo, pw, addr, gas, 1.0, false, true, fees, kb)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	err = cdc.UnmarshalJSON([]byte(body), &resultTx)
@@ -165,7 +168,7 @@ func TestCoinSend(t *testing.T) {
 }
 
 func TestCoinSendAccAuto(t *testing.T) {
-	kb, err := keys.NewKeyBaseFromDir(InitClientHome(""))
+	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
 	require.NoError(t, err)
 	addr, seed, err := CreateAddr(name1, pw, kb)
 	require.NoError(t, err)
@@ -178,7 +181,7 @@ func TestCoinSendAccAuto(t *testing.T) {
 
 	// send a transfer tx without specifying account number and sequence
 	res, body, _ := doTransferWithGasAccAuto(
-		t, port, seed, name1, memo, pw, addr, "200000", 1.0, false, true, fees,
+		t, port, seed, name1, memo, pw, addr, "200000", 1.0, false, true, fees, kb,
 	)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
@@ -192,7 +195,7 @@ func TestCoinSendAccAuto(t *testing.T) {
 }
 
 func TestCoinMultiSendGenerateOnly(t *testing.T) {
-	kb, err := keys.NewKeyBaseFromDir(InitClientHome(""))
+	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
 	require.NoError(t, err)
 	addr, seed, err := CreateAddr(name1, pw, kb)
 	require.NoError(t, err)
@@ -201,7 +204,7 @@ func TestCoinMultiSendGenerateOnly(t *testing.T) {
 	defer cleanup()
 
 	// generate only
-	res, body, _ := doTransferWithGas(t, port, seed, "", memo, "", addr, "200000", 1, false, false, fees)
+	res, body, _ := doTransferWithGas(t, port, seed, "", memo, "", addr, "200000", 1, false, false, fees, kb)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var stdTx auth.StdTx
@@ -217,7 +220,7 @@ func TestCoinMultiSendGenerateOnly(t *testing.T) {
 }
 
 func TestCoinSendGenerateSignAndBroadcast(t *testing.T) {
-	kb, err := keys.NewKeyBaseFromDir(InitClientHome(""))
+	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
 	require.NoError(t, err)
 	addr, seed, err := CreateAddr(name1, pw, kb)
 	require.NoError(t, err)
@@ -227,9 +230,7 @@ func TestCoinSendGenerateSignAndBroadcast(t *testing.T) {
 	acc := getAccount(t, port, addr)
 
 	// simulate tx
-	res, body, _ := doTransferWithGas(
-		t, port, seed, name1, memo, "", addr, client.GasFlagAuto, 1.0, true, false, fees,
-	)
+	res, body, _ := doTransferWithGas(t, port, seed, name1, memo, "", addr, client.GasFlagAuto, 1.0, true, false, fees, kb)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var gasEstResp rest.GasEstimateResponse
@@ -238,7 +239,7 @@ func TestCoinSendGenerateSignAndBroadcast(t *testing.T) {
 
 	// generate tx
 	gas := fmt.Sprintf("%d", gasEstResp.GasEstimate)
-	res, body, _ = doTransferWithGas(t, port, seed, name1, memo, "", addr, gas, 1, false, false, fees)
+	res, body, _ = doTransferWithGas(t, port, seed, name1, memo, "", addr, gas, 1, false, false, fees, kb)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var tx auth.StdTx
@@ -251,7 +252,7 @@ func TestCoinSendGenerateSignAndBroadcast(t *testing.T) {
 	require.NotZero(t, tx.Fee.Gas)
 
 	gasEstimate := int64(tx.Fee.Gas)
-	_, body = signAndBroadcastGenTx(t, port, name1, pw, body, acc, 1.0, false)
+	_, body = signAndBroadcastGenTx(t, port, name1, pw, body, acc, 1.0, false, kb)
 
 	// check if tx was committed
 	var txResp sdk.TxResponse
@@ -261,7 +262,7 @@ func TestCoinSendGenerateSignAndBroadcast(t *testing.T) {
 }
 
 func TestEncodeTx(t *testing.T) {
-	kb, err := keys.NewKeyBaseFromDir(InitClientHome(""))
+	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
 	require.NoError(t, err)
 	addr, seed, err := CreateAddr(name1, pw, kb)
 	require.NoError(t, err)
@@ -269,7 +270,7 @@ func TestEncodeTx(t *testing.T) {
 	require.NoError(t, err)
 	defer cleanup()
 
-	res, body, _ := doTransferWithGas(t, port, seed, name1, memo, "", addr, "2", 1, false, false, fees)
+	res, body, _ := doTransferWithGas(t, port, seed, name1, memo, "", addr, "2", 1, false, false, fees, kb)
 	var tx auth.StdTx
 	require.Nil(t, cdc.UnmarshalJSON([]byte(body), &tx))
 
@@ -296,7 +297,7 @@ func TestEncodeTx(t *testing.T) {
 }
 
 func TestTxs(t *testing.T) {
-	kb, err := keys.NewKeyBaseFromDir(InitClientHome(""))
+	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
 	require.NoError(t, err)
 	addr, seed, err := CreateAddr(name1, pw, kb)
 	require.NoError(t, err)
@@ -320,7 +321,7 @@ func TestTxs(t *testing.T) {
 	require.Equal(t, emptyTxs, txResult.Txs)
 
 	// create tx
-	receiveAddr, resultTx := doTransfer(t, port, seed, name1, memo, pw, addr, fees)
+	receiveAddr, resultTx := doTransfer(t, port, seed, name1, memo, pw, addr, fees, kb)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
 	// check if tx is queryable
@@ -382,7 +383,7 @@ func TestValidatorQuery(t *testing.T) {
 }
 
 func TestBonding(t *testing.T) {
-	kb, err := keys.NewKeyBaseFromDir(InitClientHome(""))
+	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
 	require.NoError(t, err)
 	addr, _, err := CreateAddr(name1, pw, kb)
 	require.NoError(t, err)
@@ -404,7 +405,7 @@ func TestBonding(t *testing.T) {
 
 	// create bond TX
 	delTokens := sdk.TokensFromConsensusPower(60)
-	resultTx := doDelegate(t, port, name1, pw, addr, operAddrs[0], delTokens, fees)
+	resultTx := doDelegate(t, port, name1, pw, addr, operAddrs[0], delTokens, fees, kb)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
 	require.Equal(t, uint32(0), resultTx.Code)
@@ -446,7 +447,7 @@ func TestBonding(t *testing.T) {
 
 	// testing unbonding
 	unbondingTokens := sdk.TokensFromConsensusPower(30)
-	resultTx = doUndelegate(t, port, name1, pw, addr, operAddrs[0], unbondingTokens, fees)
+	resultTx = doUndelegate(t, port, name1, pw, addr, operAddrs[0], unbondingTokens, fees, kb)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
 	require.Equal(t, uint32(0), resultTx.Code)
@@ -476,7 +477,7 @@ func TestBonding(t *testing.T) {
 
 	// test redelegation
 	rdTokens := sdk.TokensFromConsensusPower(30)
-	resultTx = doBeginRedelegation(t, port, name1, pw, addr, operAddrs[0], operAddrs[1], rdTokens, fees)
+	resultTx = doBeginRedelegation(t, port, name1, pw, addr, operAddrs[0], operAddrs[1], rdTokens, fees, kb)
 	require.Equal(t, uint32(0), resultTx.Code)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
@@ -548,7 +549,7 @@ func TestBonding(t *testing.T) {
 }
 
 func TestSubmitProposal(t *testing.T) {
-	kb, err := keys.NewKeyBaseFromDir(InitClientHome(""))
+	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
 	require.NoError(t, err)
 	addr, seed, err := CreateAddr(name1, pw, kb)
 	require.NoError(t, err)
@@ -561,7 +562,7 @@ func TestSubmitProposal(t *testing.T) {
 
 	// create SubmitProposal TX
 	proposalTokens := sdk.TokensFromConsensusPower(5)
-	resultTx := doSubmitProposal(t, port, seed, name1, pw, addr, proposalTokens, fees)
+	resultTx := doSubmitProposal(t, port, seed, name1, pw, addr, proposalTokens, fees, kb)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
 	// check if tx was committed
@@ -586,7 +587,7 @@ func TestSubmitProposal(t *testing.T) {
 }
 
 func TestSubmitCommunityPoolSpendProposal(t *testing.T) {
-	kb, err := keys.NewKeyBaseFromDir(InitClientHome(""))
+	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
 	require.NoError(t, err)
 	addr, seed, err := CreateAddr(name1, pw, kb)
 	require.NoError(t, err)
@@ -599,7 +600,7 @@ func TestSubmitCommunityPoolSpendProposal(t *testing.T) {
 
 	// create proposal tx
 	proposalTokens := sdk.TokensFromConsensusPower(5)
-	resultTx := doSubmitCommunityPoolSpendProposal(t, port, seed, name1, pw, addr, proposalTokens, fees)
+	resultTx := doSubmitCommunityPoolSpendProposal(t, port, seed, name1, pw, addr, proposalTokens, fees, kb)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
 	// check if tx was committed
@@ -624,7 +625,7 @@ func TestSubmitCommunityPoolSpendProposal(t *testing.T) {
 }
 
 func TestSubmitParamChangeProposal(t *testing.T) {
-	kb, err := keys.NewKeyBaseFromDir(InitClientHome(""))
+	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
 	require.NoError(t, err)
 	addr, seed, err := CreateAddr(name1, pw, kb)
 	require.NoError(t, err)
@@ -637,7 +638,7 @@ func TestSubmitParamChangeProposal(t *testing.T) {
 
 	// create proposal tx
 	proposalTokens := sdk.TokensFromConsensusPower(5)
-	resultTx := doSubmitParamChangeProposal(t, port, seed, name1, pw, addr, proposalTokens, fees)
+	resultTx := doSubmitParamChangeProposal(t, port, seed, name1, pw, addr, proposalTokens, fees, kb)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
 	// check if tx was committed
@@ -662,7 +663,7 @@ func TestSubmitParamChangeProposal(t *testing.T) {
 }
 
 func TestDeposit(t *testing.T) {
-	kb, err := keys.NewKeyBaseFromDir(InitClientHome(""))
+	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
 	require.NoError(t, err)
 	addr, seed, err := CreateAddr(name1, pw, kb)
 	require.NoError(t, err)
@@ -675,7 +676,7 @@ func TestDeposit(t *testing.T) {
 
 	// create SubmitProposal TX
 	proposalTokens := sdk.TokensFromConsensusPower(5)
-	resultTx := doSubmitProposal(t, port, seed, name1, pw, addr, proposalTokens, fees)
+	resultTx := doSubmitProposal(t, port, seed, name1, pw, addr, proposalTokens, fees, kb)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
 	// check if tx was committed
@@ -698,7 +699,7 @@ func TestDeposit(t *testing.T) {
 
 	// create SubmitProposal TX
 	depositTokens := sdk.TokensFromConsensusPower(5)
-	resultTx = doDeposit(t, port, seed, name1, pw, addr, proposalID, depositTokens, fees)
+	resultTx = doDeposit(t, port, seed, name1, pw, addr, proposalID, depositTokens, fees, kb)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
 	// verify balance after deposit and fee
@@ -722,7 +723,7 @@ func TestDeposit(t *testing.T) {
 }
 
 func TestVote(t *testing.T) {
-	kb, err := keys.NewKeyBaseFromDir(InitClientHome(""))
+	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
 	require.NoError(t, err)
 	addr, seed, err := CreateAddr(name1, pw, kb)
 	require.NoError(t, err)
@@ -735,7 +736,7 @@ func TestVote(t *testing.T) {
 
 	// create SubmitProposal TX
 	proposalTokens := sdk.TokensFromConsensusPower(10)
-	resultTx := doSubmitProposal(t, port, seed, name1, pw, addr, proposalTokens, fees)
+	resultTx := doSubmitProposal(t, port, seed, name1, pw, addr, proposalTokens, fees, kb)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
 	// check if tx was committed
@@ -758,7 +759,7 @@ func TestVote(t *testing.T) {
 	require.Equal(t, gov.StatusVotingPeriod, proposal.Status)
 
 	// vote
-	resultTx = doVote(t, port, seed, name1, pw, addr, proposalID, "Yes", fees)
+	resultTx = doVote(t, port, seed, name1, pw, addr, proposalID, "Yes", fees, kb)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
 	// verify balance after vote and fee
@@ -782,7 +783,7 @@ func TestVote(t *testing.T) {
 
 	// create bond TX
 	delTokens := sdk.TokensFromConsensusPower(60)
-	resultTx = doDelegate(t, port, name1, pw, addr, operAddrs[0], delTokens, fees)
+	resultTx = doDelegate(t, port, name1, pw, addr, operAddrs[0], delTokens, fees, kb)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
 	// verify balance
@@ -796,7 +797,7 @@ func TestVote(t *testing.T) {
 	require.Equal(t, delTokens, tally.Yes, "tally should be equal to the amount delegated")
 
 	// change vote option
-	resultTx = doVote(t, port, seed, name1, pw, addr, proposalID, "No", fees)
+	resultTx = doVote(t, port, seed, name1, pw, addr, proposalID, "No", fees, kb)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
 	// verify balance
@@ -810,7 +811,7 @@ func TestVote(t *testing.T) {
 }
 
 func TestUnjail(t *testing.T) {
-	kb, err := keys.NewKeyBaseFromDir(InitClientHome(""))
+	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
 	require.NoError(t, err)
 	addr, _, err := CreateAddr(name1, pw, kb)
 	require.NoError(t, err)
@@ -831,7 +832,7 @@ func TestUnjail(t *testing.T) {
 }
 
 func TestProposalsQuery(t *testing.T) {
-	kb, err := keys.NewKeyBaseFromDir(InitClientHome(""))
+	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
 	require.NoError(t, err)
 	addrs, seeds, names, passwords, errors := CreateAddrs(kb, 2)
 	require.Empty(t, errors)
@@ -846,14 +847,14 @@ func TestProposalsQuery(t *testing.T) {
 	getTallyingParam(t, port)
 
 	// Addr1 proposes (and deposits) proposals #1 and #2
-	resultTx := doSubmitProposal(t, port, seeds[0], names[0], passwords[0], addrs[0], halfMinDeposit, fees)
+	resultTx := doSubmitProposal(t, port, seeds[0], names[0], passwords[0], addrs[0], halfMinDeposit, fees, kb)
 	bz, err := hex.DecodeString(resultTx.Data)
 	require.NoError(t, err)
 
 	proposalID1 := gov.GetProposalIDFromBytes(bz)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
-	resultTx = doSubmitProposal(t, port, seeds[0], names[0], passwords[0], addrs[0], halfMinDeposit, fees)
+	resultTx = doSubmitProposal(t, port, seeds[0], names[0], passwords[0], addrs[0], halfMinDeposit, fees, kb)
 	bz, err = hex.DecodeString(resultTx.Data)
 	require.NoError(t, err)
 
@@ -861,7 +862,7 @@ func TestProposalsQuery(t *testing.T) {
 	tests.WaitForHeight(resultTx.Height+1, port)
 
 	// Addr2 proposes (and deposits) proposals #3
-	resultTx = doSubmitProposal(t, port, seeds[1], names[1], passwords[1], addrs[1], halfMinDeposit, fees)
+	resultTx = doSubmitProposal(t, port, seeds[1], names[1], passwords[1], addrs[1], halfMinDeposit, fees, kb)
 	bz, err = hex.DecodeString(resultTx.Data)
 	require.NoError(t, err)
 
@@ -869,10 +870,10 @@ func TestProposalsQuery(t *testing.T) {
 	tests.WaitForHeight(resultTx.Height+1, port)
 
 	// Addr2 deposits on proposals #2 & #3
-	resultTx = doDeposit(t, port, seeds[1], names[1], passwords[1], addrs[1], proposalID2, halfMinDeposit, fees)
+	resultTx = doDeposit(t, port, seeds[1], names[1], passwords[1], addrs[1], proposalID2, halfMinDeposit, fees, kb)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
-	resultTx = doDeposit(t, port, seeds[1], names[1], passwords[1], addrs[1], proposalID3, halfMinDeposit, fees)
+	resultTx = doDeposit(t, port, seeds[1], names[1], passwords[1], addrs[1], proposalID3, halfMinDeposit, fees, kb)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
 	// check deposits match proposal and individual deposits
@@ -895,7 +896,7 @@ func TestProposalsQuery(t *testing.T) {
 
 	// increasing the amount of the deposit should update the existing one
 	depositTokens := sdk.TokensFromConsensusPower(1)
-	resultTx = doDeposit(t, port, seeds[0], names[0], passwords[0], addrs[0], proposalID1, depositTokens, fees)
+	resultTx = doDeposit(t, port, seeds[0], names[0], passwords[0], addrs[0], proposalID1, depositTokens, fees, kb)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
 	deposits = getDeposits(t, port, proposalID1)
@@ -913,13 +914,13 @@ func TestProposalsQuery(t *testing.T) {
 	require.Equal(t, proposalID3, proposals[1].ProposalID)
 
 	// Addr1 votes on proposals #2 & #3
-	resultTx = doVote(t, port, seeds[0], names[0], passwords[0], addrs[0], proposalID2, "Yes", fees)
+	resultTx = doVote(t, port, seeds[0], names[0], passwords[0], addrs[0], proposalID2, "Yes", fees, kb)
 	tests.WaitForHeight(resultTx.Height+1, port)
-	resultTx = doVote(t, port, seeds[0], names[0], passwords[0], addrs[0], proposalID3, "Yes", fees)
+	resultTx = doVote(t, port, seeds[0], names[0], passwords[0], addrs[0], proposalID3, "Yes", fees, kb)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
 	// Addr2 votes on proposal #3
-	resultTx = doVote(t, port, seeds[1], names[1], passwords[1], addrs[1], proposalID3, "Yes", fees)
+	resultTx = doVote(t, port, seeds[1], names[1], passwords[1], addrs[1], proposalID3, "Yes", fees, kb)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
 	// Test query all proposals
@@ -986,7 +987,7 @@ func TestDistributionGetParams(t *testing.T) {
 }
 
 func TestDistributionFlow(t *testing.T) {
-	kb, err := keys.NewKeyBaseFromDir(InitClientHome(""))
+	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
 	require.NoError(t, err)
 	addr, seed, err := CreateAddr(name1, pw, kb)
 	require.NoError(t, err)
@@ -1010,12 +1011,12 @@ func TestDistributionFlow(t *testing.T) {
 
 	// Delegate some coins
 	delTokens := sdk.TokensFromConsensusPower(60)
-	resultTx := doDelegate(t, port, name1, pw, addr, valAddr, delTokens, fees)
+	resultTx := doDelegate(t, port, name1, pw, addr, valAddr, delTokens, fees, kb)
 	tests.WaitForHeight(resultTx.Height+1, port)
 	require.Equal(t, uint32(0), resultTx.Code)
 
 	// send some coins
-	_, resultTx = doTransfer(t, port, seed, name1, memo, pw, addr, fees)
+	_, resultTx = doTransfer(t, port, seed, name1, memo, pw, addr, fees, kb)
 	tests.WaitForHeight(resultTx.Height+5, port)
 	require.Equal(t, uint32(0), resultTx.Code)
 
@@ -1064,7 +1065,7 @@ func TestDistributionFlow(t *testing.T) {
 }
 
 func TestMintingQueries(t *testing.T) {
-	kb, err := keys.NewKeyBaseFromDir(InitClientHome(""))
+	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
 	require.NoError(t, err)
 	addr, _, err := CreateAddr(name1, pw, kb)
 	require.NoError(t, err)
@@ -1092,7 +1093,7 @@ func TestMintingQueries(t *testing.T) {
 }
 
 func TestAccountBalanceQuery(t *testing.T) {
-	kb, err := keys.NewKeyBaseFromDir(InitClientHome(""))
+	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
 	require.NoError(t, err)
 	addr, _, err := CreateAddr(name1, pw, kb)
 	require.NoError(t, err)

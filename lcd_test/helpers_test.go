@@ -306,8 +306,8 @@ func doTransfer(
 // signed and broadcasted. The sending account's number and sequence are
 // determined prior to generating the tx.
 func doTransferWithGas(
-	t *testing.T, port, seed, name, memo string, addr sdk.AccAddress, gas string,
-	gasAdjustment float64, simulate, broadcast bool, fees sdk.Coins,
+	t *testing.T, port, seed, name, memo string, addr sdk.AccAddress,
+	gas string, gasAdjustment float64, simulate, broadcast bool, fees sdk.Coins,
 	kb crkeys.Keybase,
 ) (resp *http.Response, body string, receiveAddr sdk.AccAddress) {
 
@@ -506,8 +506,8 @@ func doUndelegate(
 
 // POST /staking/delegators/{delegatorAddr}/delegations Submit delegation
 func doBeginRedelegation(
-	t *testing.T, port, name string, delAddr sdk.AccAddress, valSrcAddr, valDstAddr sdk.ValAddress,
-	amount sdk.Int, fees sdk.Coins,
+	t *testing.T, port, name string, delAddr sdk.AccAddress, valSrcAddr,
+	valDstAddr sdk.ValAddress, amount sdk.Int, fees sdk.Coins,
 	kb crkeys.Keybase,
 ) sdk.TxResponse {
 
@@ -894,8 +894,8 @@ func getProposalsFilterStatus(t *testing.T, port string, status gov.ProposalStat
 
 // POST /gov/proposals/{proposalId}/deposits Deposit tokens to a proposal
 func doDeposit(
-	t *testing.T, port, seed, name string, proposerAddr sdk.AccAddress, proposalID uint64,
-	amount sdk.Int, fees sdk.Coins,
+	t *testing.T, port, seed, name string, proposerAddr sdk.AccAddress,
+	proposalID uint64, amount sdk.Int, fees sdk.Coins,
 	kb crkeys.Keybase,
 ) sdk.TxResponse {
 

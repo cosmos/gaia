@@ -4,11 +4,11 @@ executors:
   golang:
     docker:
       - image: circleci/golang:1.13
-    working_directory: /go/src/github.com/cosmos/cosmos-sdk
+    working_directory: /go/src/github.com/cosmos/gaia
   mac:
     macos:
       xcode: "10.3.0"
-    working_directory: /Users/distiller/project/src/github.com/cosmos/cosmos-sdk
+    working_directory: /Users/distiller/project/src/github.com/cosmos/gaia
     environment:
       GO_VERSION: "1.13"
   docs:
@@ -209,7 +209,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: run localnet and exit on failure
+          name: Run a localnet and test liveness
           command: |
             pushd /tmp
             wget https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz
@@ -218,9 +218,7 @@ jobs:
             sudo mv go /usr/local
             popd
             set -x
-            make tools
-            make build-linux
-            make localnet-start
+            make clean localnet-start
             ./contrib/localnet-blocks-test.sh 40 5 10 localhost
 
   deploy-docs:

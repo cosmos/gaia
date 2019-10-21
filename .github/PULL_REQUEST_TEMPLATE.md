@@ -1,10 +1,10 @@
 <!-- < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < ☺
-v                               ✰  Thanks for creating a PR! ✰    
+v                               ✰  Thanks for creating a PR! ✰
 v    Before smashing the submit button please review the checkboxes.
 v    If a checkbox is n/a - please still include it but + a little note why
 ☺ > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > >  -->
 
-- Targeted PR against correct branch (see [CONTRIBUTING.md](https://github.com/cosmos/gaia/blob/develop/CONTRIBUTING.md#pr-targeting))
+- Targeted PR against correct branch (see [CONTRIBUTING.md](https://github.com/cosmos/gaia/blob/master/CONTRIBUTING.md#pr-targeting))
 
 - [ ] Linked to github-issue with discussion and accepted design OR link to spec that describes this work.
 - [ ] Wrote tests

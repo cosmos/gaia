@@ -272,7 +272,7 @@ jobs:
           name: Test full gaia simulation
           command: |
             source $BASH_ENV
-            make sim-gaia-fast
+            make test-sim-gaia-fast
 
   docker-image:
     executor: golang

@@ -8,15 +8,15 @@
 set -euo pipefail
 
 GITIAN_CACHE_DIRNAME='.gitian-builder-cache'
-GO_DEBIAN_RELEASE='1.12.9-1'
-GO_TARBALL="golang-debian-${GO_DEBIAN_RELEASE}.tar.gz"
-GO_TARBALL_URL="https://salsa.debian.org/go-team/compiler/golang/-/archive/debian/${GO_DEBIAN_RELEASE}/${GO_TARBALL}"
+GO_RELEASE='1.13'
+GO_TARBALL="go${GO_RELEASE}.linux-amd64.tar.gz"
+GO_TARBALL_URL="https://dl.google.com/go/${GO_TARBALL}"
 
 # Defaults
 
 DEFAULT_SIGN_COMMAND='gpg --detach-sign'
 DEFAULT_GAIA_SIGS=${GAIA_SIGS:-'gaia.sigs'}
-DEFAULT_GITIAN_REPO='https://github.com/devrandom/gitian-builder'
+DEFAULT_GITIAN_REPO='https://github.com/cosmos/gitian-builder'
 DEFAULT_GBUILD_FLAGS=''
 DEFAULT_SIGS_REPO='https://github.com/cosmos/gaia.sigs'
 

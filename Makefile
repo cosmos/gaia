@@ -65,7 +65,7 @@ BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
 # The below include contains the tools target.
 include contrib/devtools/Makefile
 
-all: install lint check
+all: install lint test
 
 build: go.sum
 ifeq ($(OS),Windows_NT)

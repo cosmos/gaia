@@ -423,13 +423,7 @@ workflows:
       - upload-coverage:
           requires:
             - test-cover
-      - reproducible-builds:
-          filters:
-            branches:
-              only:
-                - master
-          requires:
-            - setup-dependencies
+      - reproducible-builds
 #      - contract_tests:
 #          requires:
 #            - setup-dependencies

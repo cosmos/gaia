@@ -82,15 +82,19 @@ Create IBC clients on each chain using the following commands. Note that we are 
 
 ```bash
 # client for chain ibc1 on chain ibc0
+gaiacli --home ibc1/n0/gaiacli q ibc client node-state > state-ibc1.json
+
 gaiacli --home ibc0/n0/gaiacli \
   tx ibc client create c0 \
-  $(gaiacli --home ibc1/n0/gaiacli q ibc client consensus-state) \
+  state-ibc1.json \
   --from n0 -y -o text
 
 # client for chain ibc0 on chain ibc1
+gaiacli --home ibc0/n0/gaiacli q ibc client node-state > state-ibc0.json
+
 gaiacli --home ibc1/n0/gaiacli \
   tx ibc client create c1 \
-  $(gaiacli --home ibc0/n0/gaiacli q ibc client consensus-state) \
+  state-ibc0.json \
   --from n1 -y -o text
 ```
 

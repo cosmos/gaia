@@ -113,8 +113,8 @@ Create a `connection` with the following command:
 gaiacli \
   --home ibc0/n0/gaiacli \
   tx ibc connection handshake \
-  conn0 c0 $(gaiacli --home ibc1/n0/gaiacli q ibc client path) \
-  conn1 c1 $(gaiacli --home ibc0/n0/gaiacli q ibc client path) \
+  conn0 ibconeclient $(gaiacli --home ibc1/n0/gaiacli q ibc client path) \
+  conn1 ibczeroclient $(gaiacli --home ibc0/n0/gaiacli q ibc client path) \
   --chain-id2 ibc1 \
   --from1 n0 --from2 n1 \
   --node1 tcp://localhost:26657 \

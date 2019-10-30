@@ -82,27 +82,23 @@ Create IBC clients on each chain using the following commands. Note that we are 
 
 ```bash
 # client for chain ibc1 on chain ibc0
-gaiacli --home ibc1/n0/gaiacli q ibc client node-state > state-ibc1.json
-
 gaiacli --home ibc0/n0/gaiacli \
-  tx ibc client create c0 \
-  state-ibc1.json \
+  tx ibc client create ibconeclient \
+  $(gaiacli --home ibc1/n0/gaiacli q ibc client node-state) \
   --from n0 -y -o text
 
 # client for chain ibc0 on chain ibc1
-gaiacli --home ibc0/n0/gaiacli q ibc client node-state > state-ibc0.json
-
 gaiacli --home ibc1/n0/gaiacli \
-  tx ibc client create c1 \
-  state-ibc0.json \
+  tx ibc client create ibczeroclient \
+  $(gaiacli --home ibc0/n0/gaiacli q ibc client node-state) \
   --from n1 -y -o text
 ```
 
-To query details about the clients use the following commands :
+To query details about the clients use the following commands:
 
 ```bash
-gaiacli --home ibc0/n0/gaiacli q ibc client client c0 --indent
-gaiacli --home ibc1/n0/gaiacli q ibc client client c1 --indent
+gaiacli --home ibc0/n0/gaiacli q ibc client consensus-state ibconeclient --indent
+gaiacli --home ibc1/n0/gaiacli q ibc client consensus-state ibczeroclient --indent
 ```
 
 ### Connection Creation

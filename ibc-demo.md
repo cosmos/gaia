@@ -43,13 +43,25 @@ gaiacli config --home ibc0/n0/gaiacli/ node http://localhost:26657
 gaiacli config --home ibc1/n0/gaiacli/ node http://localhost:26557
 ```
 
-Add keys from each chain to the other and make sure that the key at `ibc1/n0/gaiacli/key_seed.json` is named `n1` on each `gaiacli` instance and the same for `n0`. After this is complete the results of `gaiacli keys list` from each chain should be identical. The following are instructions for how to do this on Mac:
+Add keys from each chain to the other and make sure that the key at `ibc1/n0/gaiacli/key_seed.json` is named `n1` on each `gaiacli` instance and the same for `n0`. After this is complete the results of `gaiacli keys list` from each chain should be identical.
+
+The following are instructions for how to copy seed phrases to the clipboard on Mac:
 
 ```bash
-# These commands copy the seed phrase from each dir into the clipboard on mac
 jq -r '.secret' ibc0/n0/gaiacli/key_seed.json | pbcopy
 jq -r '.secret' ibc1/n0/gaiacli/key_seed.json | pbcopy
+```
 
+Or on Linux:
+
+```bash
+jq -r '.secret' ibc0/n0/gaiacli/key_seed.json | xclip -sel clip
+jq -r '.secret' ibc1/n0/gaiacli/key_seed.json | xclip -sel clip
+```
+
+Then continue:
+
+```
 # Remove the key n0 on ibc1
 gaiacli --home ibc1/n0/gaiacli keys delete n0
 

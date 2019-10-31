@@ -136,8 +136,8 @@ gaiacli \
 Once the connection is established you should be able to query it:
 
 ```bash
-gaiacli --home ibc0/n0/gaiacli q ibc connection connection connectionzero --indent --trust-node
-gaiacli --home ibc1/n0/gaiacli q ibc connection connection connectionone --indent --trust-node
+gaiacli --home ibc0/n0/gaiacli q ibc connection end connectionzero --indent --trust-node
+gaiacli --home ibc1/n0/gaiacli q ibc connection end connectionone --indent --trust-node
 ```
 
 ### Channel

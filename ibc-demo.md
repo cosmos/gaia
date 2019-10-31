@@ -125,8 +125,8 @@ Create a `connection` with the following command:
 gaiacli \
   --home ibc0/n0/gaiacli \
   tx ibc connection handshake \
-  connection0 ibconeclient $(gaiacli --home ibc1/n0/gaiacli q ibc client path) \
-  connection1 ibczeroclient $(gaiacli --home ibc0/n0/gaiacli q ibc client path) \
+  connectionzero ibconeclient $(gaiacli --home ibc1/n0/gaiacli q ibc client path) \
+  connectionone ibczeroclient $(gaiacli --home ibc0/n0/gaiacli q ibc client path) \
   --chain-id2 ibc1 \
   --from1 n0 --from2 n1 \
   --node1 tcp://localhost:26657 \
@@ -136,8 +136,8 @@ gaiacli \
 Once the connection is established you should be able to query it:
 
 ```bash
-gaiacli --home ibc0/n0/gaiacli q ibc connection connection connection0 --indent --trust-node
-gaiacli --home ibc1/n0/gaiacli q ibc connection connection connection1 --indent --trust-node
+gaiacli --home ibc0/n0/gaiacli q ibc connection connection connectionzero --indent --trust-node
+gaiacli --home ibc1/n0/gaiacli q ibc connection connection connectionone --indent --trust-node
 ```
 
 ### Channel
@@ -150,8 +150,8 @@ Now that the `connection` has been created, it's time to establish a `channel` f
 gaiacli \
   --home ibc0/n0/gaiacli \
   tx ibc channel handshake \
-  ibcmocksend channel0 connection0 \
-  ibcmockrecv channel1 connection1 \
+  ibcmocksend channel0 connectionzero \
+  ibcmockrecv channel1 connectionone \
   --node1 tcp://localhost:26657 \
   --node2 tcp://localhost:26557 \
   --chain-id2 ibc1 \

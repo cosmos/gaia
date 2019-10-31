@@ -98,8 +98,8 @@ echo "Establishing a connection..."
 gaiacli \
   --home ibc0/n0/gaiacli \
   tx ibc connection handshake \
-  connection0 ibconeclient $(gaiacli --home ibc1/n0/gaiacli q ibc client path) \
-  connection1 ibczeroclient $(gaiacli --home ibc0/n0/gaiacli q ibc client path) \
+  connectionzero ibconeclient $(gaiacli --home ibc1/n0/gaiacli q ibc client path) \
+  connectionone ibczeroclient $(gaiacli --home ibc0/n0/gaiacli q ibc client path) \
   --chain-id2 ibc1 \
   --from1 n0 --from2 n1 \
   --node1 tcp://localhost:26657 \

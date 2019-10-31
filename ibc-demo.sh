@@ -54,18 +54,18 @@ echo -e "12345678\n" | gaiacli --home ibc1/n0/gaiacli keys delete n0
 echo "Seed 0: ${SEED0}"
 echo "Seed 1: ${SEED1}"
 
-echo "Enter seed 1:"
-gaiacli --home ibc0/n0/gaiacli keys add n1 --recover
+# echo "Enter seed 1:"
+# gaiacli --home ibc0/n0/gaiacli keys add n1 --recover
 
-echo "Enter seed 0:"
-gaiacli --home ibc1/n0/gaiacli keys add n0 --recover
+# echo "Enter seed 0:"
+# gaiacli --home ibc1/n0/gaiacli keys add n0 --recover
 
-echo "Enter seed 1:"
-gaiacli --home ibc1/n0/gaiacli keys add n1 --recover
+# echo "Enter seed 1:"
+# gaiacli --home ibc1/n0/gaiacli keys add n1 --recover
 
-#echo -e "12345678\n12345678\n${SEED1}\n" | gaiacli --home ibc0/n0/gaiacli keys add n1 --recover
-#echo -e "12345678\n12345678\n${SEED0}\n" | gaiacli --home ibc1/n0/gaiacli keys add n0 --recover
-#echo -e "12345678\n12345678\n${SEED1}\n" | gaiacli --home ibc1/n0/gaiacli keys add n1 --recover
+echo -e "12345678\n12345678\n${SEED1}\n" | gaiacli --home ibc0/n0/gaiacli keys add n1 --recover
+echo -e "12345678\n12345678\n${SEED0}\n" | gaiacli --home ibc1/n0/gaiacli keys add n0 --recover
+echo -e "12345678\n12345678\n${SEED1}\n" | gaiacli --home ibc1/n0/gaiacli keys add n1 --recover
 
 echo "Keys should match:"
 
@@ -104,3 +104,15 @@ gaiacli \
   --from1 n0 --from2 n1 \
   --node1 tcp://localhost:26657 \
   --node2 tcp://localhost:26557
+
+echo "Establishing a channel..."
+
+gaiacli \
+  --home ibc0/n0/gaiacli \
+  tx ibc channel handshake \
+  ibconeclient bank channelzero connectionzero \
+  ibczeroclient bank channelone connectionone \
+  --node1 tcp://localhost:26657 \
+  --node2 tcp://localhost:26557 \
+  --chain-id2 ibc1 \
+  --from1 n0 --from2 n1

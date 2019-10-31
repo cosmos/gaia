@@ -125,8 +125,8 @@ Create a `connection` with the following command:
 gaiacli \
   --home ibc0/n0/gaiacli \
   tx ibc connection handshake \
-  conn0 ibconeclient $(gaiacli --home ibc1/n0/gaiacli q ibc client path) \
-  conn1 ibczeroclient $(gaiacli --home ibc0/n0/gaiacli q ibc client path) \
+  connection0 ibconeclient $(gaiacli --home ibc1/n0/gaiacli q ibc client path) \
+  connection1 ibczeroclient $(gaiacli --home ibc0/n0/gaiacli q ibc client path) \
   --chain-id2 ibc1 \
   --from1 n0 --from2 n1 \
   --node1 tcp://localhost:26657 \
@@ -136,8 +136,8 @@ gaiacli \
 Once the connection is established you should be able to query it:
 
 ```bash
-gaiacli --home ibc0/n0/gaiacli q ibc connection connection conn0 --indent --trust-node
-gaiacli --home ibc1/n0/gaiacli q ibc connection connection conn1 --indent --trust-node
+gaiacli --home ibc0/n0/gaiacli q ibc connection connection connection0 --indent --trust-node
+gaiacli --home ibc1/n0/gaiacli q ibc connection connection connection1 --indent --trust-node
 ```
 
 ### Channel
@@ -150,8 +150,8 @@ Now that the `connection` has been created, it's time to establish a `channel` f
 gaiacli \
   --home ibc0/n0/gaiacli \
   tx ibc channel handshake \
-  ibcmocksend chan0 conn0 \
-  ibcmockrecv chan1 conn1 \
+  ibcmocksend channel0 connection0 \
+  ibcmockrecv channel1 connection1 \
   --node1 tcp://localhost:26657 \
   --node2 tcp://localhost:26557 \
   --chain-id2 ibc1 \
@@ -161,8 +161,8 @@ gaiacli \
 You can query the `channel` after establishment by running the following command:
 
 ```bash
-gaiacli --home ibc0/n0/gaiacli query ibc channel channel ibcmocksend chan0 --indent --trust-node
-gaiacli --home ibc1/n0/gaiacli query ibc channel channel ibcmockrecv chan1 --indent --trust-node
+gaiacli --home ibc0/n0/gaiacli query ibc channel channel ibcmocksend channel0 --indent --trust-node
+gaiacli --home ibc1/n0/gaiacli query ibc channel channel ibcmockrecv channel1 --indent --trust-node
 ```
 
 ## Send Packet
@@ -171,16 +171,16 @@ To send a packet using the `ibc-mock` application protocol, you need to know the
 
 ```bash
 # Returns the last sequence number
-gaiacli --home ibc0/n0/gaiacli q ibcmocksend sequence chan0
+gaiacli --home ibc0/n0/gaiacli q ibcmocksend sequence channel0
 
 # Returns the next expected sequence number, for use in scripting
-gaiacli --home ibc0/n0/gaiacli q ibcmocksend next chan0
+gaiacli --home ibc0/n0/gaiacli q ibcmocksend next channel0
 ```
 
-Now you are ready to send an `ibc-mock` packet down the channel (`chan0`) from chain `ibc0` to chain `ibc1`! To do so run the following commands to send a packet down the channel:
+Now you are ready to send an `ibc-mock` packet down the channel (`channel0`) from chain `ibc0` to chain `ibc1`! To do so run the following commands to send a packet down the channel:
 
 ```bash
-gaiacli --home ibc0/n0/gaiacli tx ibcmocksend sequence chan0 $(gaiacli --home ibc0/n0/gaiacli q ibcmocksend next chan0) --from n0 -o text -y
+gaiacli --home ibc0/n0/gaiacli tx ibcmocksend sequence channel0 $(gaiacli --home ibc0/n0/gaiacli q ibcmocksend next channel0) --from n0 -o text -y
 ```
 
 ### Receive Packet
@@ -190,7 +190,7 @@ Once packets are sent, receipt must be confirmed on the destination chain. To `p
 ```bash
 gaiacli \
   --home ibc1/n0/gaiacli \
-  tx ibc channel pull ibcmockrecv chan1 \
+  tx ibc channel pull ibcmockrecv channel1 \
   --node1 tcp://localhost:26557 \
   --node2 tcp://localhost:26657 \
   --chain-id2 ibc0 \
@@ -214,5 +214,5 @@ ibc1 <- empty-packet   [OK] txid(92D76EF46FDCB3739DB06960BECCD7DA30AAA6AECA687DF
 Once the packets have been sent, you can check the updated sequence by running:
 
 ```bash
-gaiacli --home ibc1/n0/gaiacli q ibcmockrecv sequence chan1 --trust-node
+gaiacli --home ibc1/n0/gaiacli q ibcmockrecv sequence channel1 --trust-node
 ```

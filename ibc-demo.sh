@@ -54,18 +54,18 @@ echo -e "12345678\n" | gaiacli --home ibc1/n0/gaiacli keys delete n0
 echo "Seed 0: ${SEED0}"
 echo "Seed 1: ${SEED1}"
 
-# echo "Enter seed 1:"
-# gaiacli --home ibc0/n0/gaiacli keys add n1 --recover
+echo "Enter seed 1:"
+gaiacli --home ibc0/n0/gaiacli keys add n1 --recover
 
-# echo "Enter seed 0:"
-# gaiacli --home ibc1/n0/gaiacli keys add n0 --recover
+echo "Enter seed 0:"
+gaiacli --home ibc1/n0/gaiacli keys add n0 --recover
 
-# echo "Enter seed 1:"
-# gaiacli --home ibc1/n0/gaiacli keys add n1 --recover
+echo "Enter seed 1:"
+gaiacli --home ibc1/n0/gaiacli keys add n1 --recover
 
-echo -e "12345678\n12345678\n${SEED1}\n" | gaiacli --home ibc0/n0/gaiacli keys add n1 --recover
-echo -e "12345678\n12345678\n${SEED0}\n" | gaiacli --home ibc1/n0/gaiacli keys add n0 --recover
-echo -e "12345678\n12345678\n${SEED1}\n" | gaiacli --home ibc1/n0/gaiacli keys add n1 --recover
+# echo -e "12345678\n12345678\n${SEED1}\n" | gaiacli --home ibc0/n0/gaiacli keys add n1 --recover
+# echo -e "12345678\n12345678\n${SEED0}\n" | gaiacli --home ibc1/n0/gaiacli keys add n0 --recover
+# echo -e "12345678\n12345678\n${SEED1}\n" | gaiacli --home ibc1/n0/gaiacli keys add n1 --recover
 
 echo "Keys should match:"
 

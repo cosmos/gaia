@@ -29,12 +29,12 @@ Fix the configuration files for both `gaiad` and `gaiacli` to allow both chains/
 
 ```bash
 # Configure the proper database backend for each node and different listening ports
-sed -i '' 's/"leveldb"/"goleveldb"/g' ibc0/n0/gaiad/config/config.toml
-sed -i '' 's/"leveldb"/"goleveldb"/g' ibc1/n0/gaiad/config/config.toml
-sed -i '' 's#"tcp://0.0.0.0:26656"#"tcp://0.0.0.0:26556"#g' ibc1/n0/gaiad/config/config.toml
-sed -i '' 's#"tcp://0.0.0.0:26657"#"tcp://0.0.0.0:26557"#g' ibc1/n0/gaiad/config/config.toml
-sed -i '' 's#"localhost:6060"#"localhost:6061"#g' ibc1/n0/gaiad/config/config.toml
-sed -i '' 's#"tcp://127.0.0.1:26658"#"tcp://127.0.0.1:26558"#g' ibc1/n0/gaiad/config/config.toml
+sed -i 's/"leveldb"/"goleveldb"/g' ibc0/n0/gaiad/config/config.toml
+sed -i 's/"leveldb"/"goleveldb"/g' ibc1/n0/gaiad/config/config.toml
+sed -i 's#"tcp://0.0.0.0:26656"#"tcp://0.0.0.0:26556"#g' ibc1/n0/gaiad/config/config.toml
+sed -i 's#"tcp://0.0.0.0:26657"#"tcp://0.0.0.0:26557"#g' ibc1/n0/gaiad/config/config.toml
+sed -i 's#"localhost:6060"#"localhost:6061"#g' ibc1/n0/gaiad/config/config.toml
+sed -i 's#"tcp://127.0.0.1:26658"#"tcp://127.0.0.1:26558"#g' ibc1/n0/gaiad/config/config.toml
 gaiacli config --home ibc0/n0/gaiacli/ chain-id ibc0
 gaiacli config --home ibc1/n0/gaiacli/ chain-id ibc1
 gaiacli config --home ibc0/n0/gaiacli/ output json

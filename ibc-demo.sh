@@ -74,10 +74,6 @@ echo "Keys should match:"
 gaiacli --home ibc0/n0/gaiacli keys list | jq '.[].address'
 gaiacli --home ibc1/n0/gaiacli keys list | jq '.[].address'
 
-DEST=$(gaiacli --home ibc0/n0/gaiacli keys list | jq -r '.[1].address')
-
-echo "Destination: $DEST"
-
 echo "Starting Gaiad instances..."
 
 nohup gaiad --home ibc0/n0/gaiad --log_level="*:debug" start > ibc0.log &
@@ -129,7 +125,7 @@ gaiacli \
   --home ibc0/n0/gaiacli \
   tx ibc transfer transfer \
   bankbankbank channelzero \
-  $DEST 1stake \
+  $(gaiacli --home ibc0/n0/gaiacli keys list | jq -r '.[1].address') 1stake \
   --from n0
 
 echo "Recieving token packets on ibc1..."

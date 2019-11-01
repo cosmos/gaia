@@ -17,15 +17,15 @@ killall gaiad
 
 set -e
 
-echo "Building Gaia..."
+#echo "Building Gaia..."
 
-cd $GAIA_DIR
-git clone git@github.com:cosmos/gaia
-cd gaia
-git checkout $GAIA_BRANCH
-make install
-gaiad version
-gaiacli version
+#cd $GAIA_DIR
+#git clone git@github.com:cosmos/gaia
+#cd gaia
+#git checkout $GAIA_BRANCH
+#make install
+#gaiad version
+#gaiacli version
 
 echo "Generating configurations..."
 
@@ -65,18 +65,9 @@ echo -e "12345678\n" | gaiacli --home ibc1/n0/gaiacli keys delete n0
 echo "Seed 0: ${SEED0}"
 echo "Seed 1: ${SEED1}"
 
-echo "Enter seed 1:"
-gaiacli --home ibc0/n0/gaiacli keys add n1 --recover
-
-echo "Enter seed 0:"
-gaiacli --home ibc1/n0/gaiacli keys add n0 --recover
-
-echo "Enter seed 1:"
-gaiacli --home ibc1/n0/gaiacli keys add n1 --recover
-
-#echo -e "12345678\n12345678\n$SEED1\n" | gaiacli --home ibc0/n0/gaiacli keys add n1 --recover
-#echo -e "12345678\n12345678\n$SEED0\n" | gaiacli --home ibc1/n0/gaiacli keys add n0 --recover
-#echo -e "12345678\n12345678\n$SEED1\n" | gaiacli --home ibc1/n0/gaiacli keys add n1 --recover
+gaiacli keys test --home ibc0/n0/gaiacli n1 "$(jq -r '.secret' ibc1/n0/gaiacli/key_seed.json)" 12345678
+gaiacli keys test --home ibc1/n0/gaiacli n0 "$(jq -r '.secret' ibc0/n0/gaiacli/key_seed.json)" 12345678
+gaiacli keys test --home ibc1/n0/gaiacli n1 "$(jq -r '.secret' ibc1/n0/gaiacli/key_seed.json)" 12345678
 
 echo "Keys should match:"
 
@@ -139,7 +130,7 @@ gaiacli \
   tx ibc transfer transfer \
   bankbankbank channelzero \
   $DEST 1stake \
-  --from n0 -y
+  --from n0
 
 echo "Recieving token packets on ibc1..."
 
@@ -149,4 +140,4 @@ gaiacli \
   bankbankbank channelone \
   packet.json \
   proof.json \
-  --from n1 -y
+  --from n1

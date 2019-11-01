@@ -126,7 +126,8 @@ gaiacli \
   tx ibc transfer transfer \
   bankbankbank channelzero \
   $(gaiacli --home ibc0/n0/gaiacli keys list | jq -r '.[1].address') 1stake \
-  --from n0
+  --from n0 \
+  --source
 
 echo "Recieving token packets on ibc1..."
 

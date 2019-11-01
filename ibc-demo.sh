@@ -112,8 +112,8 @@ echo "Establishing a channel..."
 gaiacli \
   --home ibc0/n0/gaiacli \
   tx ibc channel handshake \
-  ibconeclient bank channelzero connectionzero \
-  ibczeroclient bank channelone connectionone \
+  ibconeclient bankbankbank channelzero connectionzero \
+  ibczeroclient bankbankbank channelone connectionone \
   --node1 tcp://localhost:26657 \
   --node2 tcp://localhost:26557 \
   --chain-id2 ibc1 \

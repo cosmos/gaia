@@ -32,12 +32,23 @@ echo "Generating configurations..."
 cd $CONF_DIR && mkdir ibc-testnets && cd ibc-testnets
 echo -e "\n" | gaiad testnet -o ibc0 --v 1 --chain-id ibc0 --node-dir-prefix n
 echo -e "\n" | gaiad testnet -o ibc1 --v 1 --chain-id ibc1 --node-dir-prefix n
-sed -i '' 's/"leveldb"/"goleveldb"/g' ibc0/n0/gaiad/config/config.toml
-sed -i '' 's/"leveldb"/"goleveldb"/g' ibc1/n0/gaiad/config/config.toml
-sed -i '' 's#"tcp://0.0.0.0:26656"#"tcp://0.0.0.0:26556"#g' ibc1/n0/gaiad/config/config.toml
-sed -i '' 's#"tcp://0.0.0.0:26657"#"tcp://0.0.0.0:26557"#g' ibc1/n0/gaiad/config/config.toml
-sed -i '' 's#"localhost:6060"#"localhost:6061"#g' ibc1/n0/gaiad/config/config.toml
-sed -i '' 's#"tcp://127.0.0.1:26658"#"tcp://127.0.0.1:26558"#g' ibc1/n0/gaiad/config/config.toml
+
+if [ "$(uname)" = "Linux" ]; then
+  sed -i 's/"leveldb"/"goleveldb"/g' ibc0/n0/gaiad/config/config.toml
+  sed -i 's/"leveldb"/"goleveldb"/g' ibc1/n0/gaiad/config/config.toml
+  sed -i 's#"tcp://0.0.0.0:26656"#"tcp://0.0.0.0:26556"#g' ibc1/n0/gaiad/config/config.toml
+  sed -i 's#"tcp://0.0.0.0:26657"#"tcp://0.0.0.0:26557"#g' ibc1/n0/gaiad/config/config.toml
+  sed -i 's#"localhost:6060"#"localhost:6061"#g' ibc1/n0/gaiad/config/config.toml
+  sed -i 's#"tcp://127.0.0.1:26658"#"tcp://127.0.0.1:26558"#g' ibc1/n0/gaiad/config/config.toml
+else
+  sed -i '' 's/"leveldb"/"goleveldb"/g' ibc0/n0/gaiad/config/config.toml
+  sed -i '' 's/"leveldb"/"goleveldb"/g' ibc1/n0/gaiad/config/config.toml
+  sed -i '' 's#"tcp://0.0.0.0:26656"#"tcp://0.0.0.0:26556"#g' ibc1/n0/gaiad/config/config.toml
+  sed -i '' 's#"tcp://0.0.0.0:26657"#"tcp://0.0.0.0:26557"#g' ibc1/n0/gaiad/config/config.toml
+  sed -i '' 's#"localhost:6060"#"localhost:6061"#g' ibc1/n0/gaiad/config/config.toml
+  sed -i '' 's#"tcp://127.0.0.1:26658"#"tcp://127.0.0.1:26558"#g' ibc1/n0/gaiad/config/config.toml
+fi;
+
 gaiacli config --home ibc0/n0/gaiacli/ chain-id ibc0
 gaiacli config --home ibc1/n0/gaiacli/ chain-id ibc1
 gaiacli config --home ibc0/n0/gaiacli/ output json
@@ -63,14 +74,18 @@ gaiacli --home ibc1/n0/gaiacli keys add n0 --recover
 echo "Enter seed 1:"
 gaiacli --home ibc1/n0/gaiacli keys add n1 --recover
 
-# echo -e "12345678\n12345678\n${SEED1}\n" | gaiacli --home ibc0/n0/gaiacli keys add n1 --recover
-# echo -e "12345678\n12345678\n${SEED0}\n" | gaiacli --home ibc1/n0/gaiacli keys add n0 --recover
-# echo -e "12345678\n12345678\n${SEED1}\n" | gaiacli --home ibc1/n0/gaiacli keys add n1 --recover
+#echo -e "12345678\n12345678\n$SEED1\n" | gaiacli --home ibc0/n0/gaiacli keys add n1 --recover
+#echo -e "12345678\n12345678\n$SEED0\n" | gaiacli --home ibc1/n0/gaiacli keys add n0 --recover
+#echo -e "12345678\n12345678\n$SEED1\n" | gaiacli --home ibc1/n0/gaiacli keys add n1 --recover
 
 echo "Keys should match:"
 
 gaiacli --home ibc0/n0/gaiacli keys list | jq '.[].address'
 gaiacli --home ibc1/n0/gaiacli keys list | jq '.[].address'
+
+DEST=$(gaiacli --home ibc0/n0/gaiacli keys list | jq -r '.[1].address')
+
+echo "Destination: $DEST"
 
 echo "Starting Gaiad instances..."
 
@@ -117,6 +132,19 @@ gaiacli \
   --chain-id2 ibc1 \
   --from1 n0 --from2 n1
 
-  echo "Sending token packets from ibc0..."
+echo "Sending token packets from ibc0..."
 
-  echo "Recieving token packets on ibc1..."
+gaiacli \
+  --home ibc0/n0/gaiacli \
+  tx ibc transfer transfer \
+  bankbankbank channelzero \
+  $DEST 1stake
+
+echo "Recieving token packets on ibc1..."
+
+gaiacli \
+  --home ibc1/n0/gaiacli \
+  tx ibc transfer recv-packet \
+  bankbankbank channelone \
+  packet.json \
+  proof.json

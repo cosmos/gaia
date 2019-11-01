@@ -1,3 +1,7 @@
+---
+order: 6
+---
+
 # Deploy Your Own Gaia Testnet
 
 This document describes 3 ways to setup a network of `gaiad` nodes, each serving a different usecase:

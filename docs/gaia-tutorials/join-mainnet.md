@@ -1,4 +1,8 @@
-# Join the mainnet
+---
+order: 3
+---
+
+# Join the Cosmos Hub Mainnet
 
 ::: tip 
 See the [launch repo](https://github.com/cosmos/launch) for
@@ -79,7 +83,7 @@ If those seeds aren't working, you can find more seeds and persistent peers on a
 
 You can also ask for peers on the [Validators Riot Room](https://riot.im/app/#/room/#cosmos-validators:matrix.org)
 
-For more information on seeds and peers, you can [read this](https://github.com/tendermint/tendermint/blob/develop/docs/tendermint-core/using-tendermint.md#peers).
+For more information on seeds and peers, you can [read this](https://tendermint.com/docs/spec/p2p/peer.html#peers).
 
 ## A Note on Gas and Fees
 
@@ -179,4 +183,4 @@ deducted as the blockchain will halt (aka. this is a free transaction).
 
 ## Upgrade to Validator Node
 
-You now have an active full node. What's the next step? You can upgrade your full node to become a Cosmos Validator. The top 100 validators have the ability to propose new blocks to the Cosmos Hub. Continue onto [the Validator Setup](./validators/validator-setup.md).
+You now have an active full node. What's the next step? You can upgrade your full node to become a Cosmos Validator. The top 100 validators have the ability to propose new blocks to the Cosmos Hub. Continue onto [the Validator Setup](../validators/validator-setup.md).

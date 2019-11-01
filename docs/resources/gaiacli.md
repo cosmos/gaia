@@ -1,8 +1,12 @@
+---
+order: 1
+---
+
 # Gaia Client
 
 ## Gaia CLI
 
-`gaiacli` is the tool that enables you to interact with the node that runs on the Cosmos Hub network, whether you run it yourself or not. Let us set it up properly. In order to install it, follow the [installation procedure](./installation.md).
+`gaiacli` is the tool that enables you to interact with the node that runs on the Cosmos Hub network, whether you run it yourself or not. Let us set it up properly. In order to install it, follow the [installation procedure](../gaia-tutorials/installation.md).
 
 ### Setting up gaiacli 
 
@@ -181,7 +185,7 @@ gaiacli tx send ... --gas-prices=0.025uatom
 
 #### Get Tokens
 
-The best way to get tokens is from the [Cosmos Testnet Faucet](https://faucetcosmos.network). If the faucet is not working for you, try asking [#cosmos-validators](https://riot.im/app/#/room/#cosmos-validators:matrix.org). The faucet needs the `cosmos` from the account you wish to use for staking.
+On a testnet, getting tokens is usually done via a faucet. 
 
 #### Query Account Balance
 
@@ -371,7 +375,7 @@ Please refer to the [Validator Setup](../validators/validator-setup.md) section 
 
 #### Delegate to a Validator
 
-On the upcoming mainnet, you can delegate `atom` to a validator. These [delegators](/resources/delegators-faq) can receive part of the validator's fee revenue. Read more about the [Cosmos Token Model](https://github.com/cosmos/cosmos/raw/master/Cosmos_Token_Model.pdf).
+On the upcoming mainnet, you can delegate `atom` to a validator. These [delegators](../delegators/delegators-faq.md) can receive part of the validator's fee revenue. Read more about the [Cosmos Token Model](https://github.com/cosmos/cosmos/raw/master/Cosmos_Token_Model.pdf).
 
 ##### Query Validators
 
@@ -555,7 +559,7 @@ only the most recently cast vote will count as valid
   - `((YesVotes+NoVotes+NoWithVetoVotes) / totalBondedStake) >= quorum`
 
 For more information about the governance process and how it works, please check
-out the Governance module [specification](./../spec/governance).
+out the Governance module [specification](https://github.com/cosmos/cosmos-sdk/tree/master/x/gov/spec).
 
 #### Create a Governance Proposal
 

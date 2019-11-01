@@ -1,4 +1,9 @@
-![Welcome to the Cosmos Hub](./cosmos-hub-image.jpg)
+---
+parent:
+  order: 1
+---
+
+![Welcome to the Cosmos Hub](../cosmos-hub-image.jpg)
 
 # Cosmos Hub
 
@@ -8,7 +13,7 @@ The Cosmos Hub is the first of [thousands of interconnected blockchains](https:/
 
 Do you have ATOM tokens? With ATOM, you have the superpower to contribute to the security and governance of the Cosmos Hub. Delegate your ATOM to one or more of the 100 validators on the Cosmos Hub blockchain to earn more ATOM through Proof-of-Stake. You can also vote with your ATOM to influence the future of the Cosmos Hub through on-chain governance proposals.
 
-Learn more about [being a delegator](./delegators/delegator-faq.md), learn about [the security risks](./delegators/delegator-security.md), and start participating with one of the following wallets.
+Learn more about [being a delegator](../delegators/delegator-faq.md), learn about [the security risks](../delegators/delegator-security.md), and start participating with one of the following wallets.
 
 ## Cosmos Hub Wallets
 
@@ -46,15 +51,13 @@ These block explorers allow you to search, view and analyze Cosmos Hub data&mdas
 
 ## Cosmos Hub CLI
 
-`gaiacli` is a command-line interface that lets you interact with the Cosmos Hub. `gaiacli` is the only tool that supports 100% of the Cosmos Hub features, including accounts, transfers, delegation, and governance. Learn more about `gaiacli` with the [delegator's CLI guide](./delegators/delegator-guide-cli.md).
+`gaiacli` is a command-line interface that lets you interact with the Cosmos Hub. `gaiacli` is the only tool that supports 100% of the Cosmos Hub features, including accounts, transfers, delegation, and governance. Learn more about `gaiacli` with the [delegator's CLI guide](../delegators/delegator-guide-cli.md).
 
 ## Running a full-node on the Cosmos Hub Mainnet
 
-In order to run a full-node for the Cosmos Hub mainnet, you must first [install `gaiad`](./gaia/installation.md). Then, follow [the guide](./gaia/join-mainnet.md).
+In order to run a full-node for the Cosmos Hub mainnet, you must first [install `gaiad`](../gaia-tutorials/installation.md). Then, follow [the guide](../gaia-tutorials/join-mainnet.md).
 
-## Gaia Documentation
-
-For the full `gaia` documentation
+If you are looking to run a validator node, follow the [validator setup guide](../validators/validator-setup.md).
 
 ## Join the Community
 

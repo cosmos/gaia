@@ -1,3 +1,7 @@
+---
+order: 5
+---
+
 # Service Providers
 
 We define 'service providers' as entities providing services for end-users that involve some form of interaction with a Cosmos-SDK based blockchain (this includes the Cosmos Hub). More specifically, this document will be focused around interactions with tokens.
@@ -18,9 +22,9 @@ There are three main pieces to consider:
 
 We will describe the steps to run and interact with a full-node for the Cosmos Hub. For other SDK-based blockchain, the process should be similar. 
 
-First, you need to [install the software](./installation.md).
+First, you need to [install the software](../gaia-tutorials/installation.md).
 
-Then, you can start [running a full-node](./join-mainnet.md).
+Then, you can start [running a full-node](../gaia-tutorials/join-mainnet.md).
 
 ### Command-Line interface
 

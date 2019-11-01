@@ -1,9 +1,13 @@
+---
+order: 2
+---
+
 # Install Gaia
 
 This guide will explain how to install the `gaiad` and `gaiacli` entrypoints
 onto your system. With these installed on a server, you can participate in the
 mainnet as either a [Full Node](./join-mainnet.md) or a
-[Validator](./validators/validator-setup.md).
+[Validator](../validators/validator-setup.md).
 
 ## Install Go
 

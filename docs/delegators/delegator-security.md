@@ -1,3 +1,7 @@
+---
+order: 3
+---
+
 # Delegator Security
 
 The launch of any public blockchain is an incredibly exciting time, and it's definitely one that malicious actors may try to take advantage of for their own personal gain. Owning and having access to cryptocurrency can make you a valuable target for an attacker, but there are many things you can do to improve your personal security and reduce or eliminate security risks.

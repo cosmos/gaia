@@ -1,3 +1,7 @@
+---
+order: 1
+---
+
 # Delegator Guide (CLI)
 
 This document contains all the necessary information for delegators to interact with the Cosmos Hub through the Command-Line Interface (CLI).

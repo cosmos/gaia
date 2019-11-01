@@ -1,3 +1,7 @@
+---
+order: 4
+---
+
 # Ledger Nano Support
 
 Using a hardware wallet to store your keys greatly improves the security of your crypto assets. The Ledger device acts as an enclave of the seed and private keys, and the process of signing transaction takes place within it. No private information ever leaves the Ledger device. The following is a short tutorial on using the Cosmos Ledger app with the Gaia CLI or the [Lunie.io](https://lunie.io/#/) web wallet.
@@ -105,7 +109,7 @@ When prompted with `confirm transaction before signing`, Answer `Y`.
 
 Next you will be prompted to review and approve the transaction on your Ledger device. Be sure to inspect the transaction JSON displayed on the screen. You can scroll through each field and each message. Scroll down to read more about the data fields of a standard transaction object.
 
-Now, you are all set to start [sending transactions on the network](./delegator-guide-cli.md#sending-transactions).
+Now, you are all set to start [sending transactions on the network](../delegators/delegator-guide-cli.md#sending-transactions).
 
 ### Receive funds
 

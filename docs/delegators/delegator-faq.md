@@ -1,14 +1,18 @@
+---
+order: 2
+---
+
 # Delegator FAQ
 
 ## What is a delegator?
 
-People that cannot or do not want to operate [validator nodes](/validators/overview.html) can still participate in the staking process as delegators. Indeed, validators are not chosen based on their self-delegated stake but based on their total stake, which is the sum of their self-delegated stake and of the stake that is delegated to them. This is an important property, as it makes delegators a safeguard against validators that exhibit bad behavior. If a validator misbehaves, their delegators will move their Atoms away from them, thereby reducing their stake. Eventually, if a validator's stake falls under the top 100 addresses with highest stake, they will exit the validator set.
+People that cannot or do not want to operate [validator nodes](..//validators/overview.md) can still participate in the staking process as delegators. Indeed, validators are not chosen based on their self-delegated stake but based on their total stake, which is the sum of their self-delegated stake and of the stake that is delegated to them. This is an important property, as it makes delegators a safeguard against validators that exhibit bad behavior. If a validator misbehaves, their delegators will move their Atoms away from them, thereby reducing their stake. Eventually, if a validator's stake falls under the top 100 addresses with highest stake, they will exit the validator set.
 
 **Delegators share the revenue of their validators, but they also share the risks.** In terms of revenue, validators and delegators differ in that validators can apply a commission on the revenue that goes to their delegator before it is distributed. This commission is known to delegators beforehand and can only change according to predefined constraints (see [section](#choosing-a-validator) below). In terms of risk, delegators' Atoms can be slashed if their validator misbehaves. For more, see [Risks](#risks) section.
 
-To become delegators, Atom holders need to send a ["Delegate transaction"](/intro/delegator-guide-cli.html#sending-transactions) where they specify how many Atoms they want to bond and to which validator. A list of validator candidates will be displayed in Cosmos Hub explorers. Later, if a delegator wants to unbond part or all of their stake, they needs to send an "Unbond transaction". From there, the delegator will have to wait 3 weeks to retrieve their Atoms. Delegators can also send a "Rebond Transaction" to switch from one validator to another, without having to go through the 3 weeks waiting period. 
+To become delegators, Atom holders need to send a ["Delegate transaction"](./delegator-guide-cli.md#sending-transactions) where they specify how many Atoms they want to bond and to which validator. A list of validator candidates will be displayed in Cosmos Hub explorers. Later, if a delegator wants to unbond part or all of their stake, they needs to send an "Unbond transaction". From there, the delegator will have to wait 3 weeks to retrieve their Atoms. Delegators can also send a "Rebond Transaction" to switch from one validator to another, without having to go through the 3 weeks waiting period. 
 
-For a practical guide on how to become a delegator, click [here](/intro/cosmos-hub/delegator-guide-cli.html).
+For a practical guide on how to become a delegator, click [here](./delegator-guide-cli.md).
 
 ## Choosing a validator
 

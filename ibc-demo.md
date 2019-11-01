@@ -150,8 +150,8 @@ Now that the `connection` has been created, it's time to establish a `channel` f
 gaiacli \
   --home ibc0/n0/gaiacli \
   tx ibc channel handshake \
-  ibcmocksend channel0 connectionzero \
-  ibcmockrecv channel1 connectionone \
+  ibconeclient bank channelzero connectionzero \
+  ibczeroclient bank channelone connectionone \
   --node1 tcp://localhost:26657 \
   --node2 tcp://localhost:26557 \
   --chain-id2 ibc1 \
@@ -161,13 +161,13 @@ gaiacli \
 You can query the `channel` after establishment by running the following command:
 
 ```bash
-gaiacli --home ibc0/n0/gaiacli query ibc channel channel ibcmocksend channel0 --indent --trust-node
-gaiacli --home ibc1/n0/gaiacli query ibc channel channel ibcmockrecv channel1 --indent --trust-node
+gaiacli --home ibc0/n0/gaiacli q ibc channel end bank channelzero --indent --trust-node
+gaiacli --home ibc1/n0/gaiacli q ibc channel end bank channelone --indent --trust-node
 ```
 
 ## Send Packet
 
-To send a packet using the `ibc-mock` application protocol, you need to know the channel you plan to send on, as well as the sequence number on the channel. To get the sequence you use the following commands:
+To send a packet using the `bank` application protocol, you need to know the channel you plan to send on, as well as the sequence number on the channel. To get the sequence you use the following commands:
 
 ```bash
 # Returns the last sequence number

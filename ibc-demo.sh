@@ -116,3 +116,7 @@ gaiacli \
   --node2 tcp://localhost:26557 \
   --chain-id2 ibc1 \
   --from1 n0 --from2 n1
+
+  echo "Sending token packets from ibc0..."
+
+  echo "Recieving token packets on ibc1..."

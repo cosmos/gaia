@@ -138,7 +138,8 @@ gaiacli \
   --home ibc0/n0/gaiacli \
   tx ibc transfer transfer \
   bankbankbank channelzero \
-  $DEST 1stake
+  $DEST 1stake \
+  --from n0
 
 echo "Recieving token packets on ibc1..."
 
@@ -147,4 +148,5 @@ gaiacli \
   tx ibc transfer recv-packet \
   bankbankbank channelone \
   packet.json \
-  proof.json
+  proof.json \
+  --from n1

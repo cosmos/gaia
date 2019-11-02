@@ -155,20 +155,20 @@ gaiacli \
 You should see output like the following:
 
 ```
-ibc0 <- channel_open_init       [OK] txid(792E51E0455A8E0C85705C61A638A4D7C5399B3BA5AF6F29C85BB4E090FCA1B7) portid(bankbankbank) chanid(channelzero)
+ibc0 <- channel_open_init       [OK] txid(792E51E0455A8E0C85705C61A638A4D7C5399B3BA5AF6F29C85BB4E090FCA1B7) portid(bank) chanid(channelzero)
 ibc1 <- update_client           [OK] txid(CEA961B9BE931E7B06E6D5643486D267677E66A253F104BC00E2BCE1F9343C03) client(ibczeroclient)
-ibc1 <- channel_open_try        [OK] txid(D6BC3B03646EF61D1DA153C6678FE047DF76CB12981AC1D524C69C22124967D7) portid(bankbankbank) chanid(channelone)
+ibc1 <- channel_open_try        [OK] txid(D6BC3B03646EF61D1DA153C6678FE047DF76CB12981AC1D524C69C22124967D7) portid(bank) chanid(channelone)
 ibc0 <- update_client           [OK] txid(FA22E93601218CEA839FDEB7BD0D8F47D81E1172E18A8B21717675FF5C4BCF40) client(ibconeclient)
-ibc0 <- channel_open_ack        [OK] txid(1840343AFB2D5666F52440C199A1356C63A884A959F0A9A53175773CDB83006B) portid(bankbankbank) chanid(channelzero)
+ibc0 <- channel_open_ack        [OK] txid(1840343AFB2D5666F52440C199A1356C63A884A959F0A9A53175773CDB83006B) portid(bank) chanid(channelzero)
 ibc1 <- update_client           [OK] txid(BBE212C5041AC366C018BB97F8DF8A495562EAFFFF51BFDA7BBAE9952BE589D0) client(ibczeroclient)
-ibc1 <- channel_open_confirm    [OK] txid(69F50CA44AE6AD84BD24866E7DB7FE8ADFD9C484171662CB9E6F0C71BFC222A9) portid(bankbankbank) chanid(channelone)
+ibc1 <- channel_open_confirm    [OK] txid(69F50CA44AE6AD84BD24866E7DB7FE8ADFD9C484171662CB9E6F0C71BFC222A9) portid(bank) chanid(channelone)
 ```
 
 You can query the `channel` after establishment by running the following command:
 
 ```bash
-gaiacli --home ibc0/n0/gaiacli q ibc channel end bankbankbank channelzero --indent --trust-node
-gaiacli --home ibc1/n0/gaiacli q ibc channel end bankbankbank channelone --indent --trust-node
+gaiacli --home ibc0/n0/gaiacli q ibc channel end bank channelzero --indent --trust-node
+gaiacli --home ibc1/n0/gaiacli q ibc channel end bank channelone --indent --trust-node
 ```
 
 ### Send Packet

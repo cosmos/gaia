@@ -129,12 +129,16 @@ gaiacli \
   --from n0 \
   --source
 
+echo "Enter height:"
+
+read -r HEIGHT
+
 echo "Recieving token packets on ibc1..."
 
 gaiacli \
   --home ibc1/n0/gaiacli \
   tx ibc transfer recv-packet \
-  bankbankbank channelone \
   packet.json \
   proof.json \
+  $HEIGHT
   --from n1

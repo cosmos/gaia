@@ -135,6 +135,8 @@ echo "Enter height:"
 
 read -r HEIGHT
 
+TIMEOUT=$(echo "$HEIGHT + 1000" | bc -l)
+
 echo "Account before:"
 gaiacli --home ibc1/n0/gaiacli q account $DEST
 
@@ -143,9 +145,12 @@ echo "Recieving token packets on ibc1..."
 gaiacli \
   --home ibc1/n0/gaiacli \
   tx ibc transfer recv-packet \
-  packet.json \
+  bankbankbank channelzero \
+  bankbankbank channelone \
   proof.json \
-  $HEIGHT
+  $HEIGHT \
+  --packet-sequence 0 \\
+  --timeout $TIMEOUT \\
   --from n1
 
 echo "Account after:"

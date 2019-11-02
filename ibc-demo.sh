@@ -124,8 +124,8 @@ echo "Establishing a channel..."
 gaiacli \
   --home ibc0/n0/gaiacli \
   tx ibc channel handshake \
-  ibconeclient bankbankbank channelzero connectionzero \
-  ibczeroclient bankbankbank channelone connectionone \
+  ibconeclient bank channelzero connectionzero \
+  ibczeroclient bank channelone connectionone \
   --node1 tcp://localhost:26657 \
   --node2 tcp://localhost:26557 \
   --chain-id2 ibc1 \
@@ -135,8 +135,8 @@ sleep 2
 
 echo "Querying channel..."
 
-gaiacli --home ibc0/n0/gaiacli q ibc channel end bankbankbank channelzero --indent --trust-node
-gaiacli --home ibc1/n0/gaiacli q ibc channel end bankbankbank channelone --indent --trust-node
+gaiacli --home ibc0/n0/gaiacli q ibc channel end bank channelzero --indent --trust-node
+gaiacli --home ibc1/n0/gaiacli q ibc channel end bank channelone --indent --trust-node
 
 echo "Sending token packets from ibc0..."
 
@@ -145,7 +145,7 @@ DEST=$(gaiacli --home ibc0/n0/gaiacli keys show n1 -a)
 gaiacli \
   --home ibc0/n0/gaiacli \
   tx ibc transfer transfer \
-  bankbankbank channelzero \
+  bank channelzero \
   $DEST 1stake \
   --from n0 \
   --source
@@ -163,7 +163,7 @@ echo "Recieving token packets on ibc1..."
 
 gaiacli \
   tx ibc transfer recv-packet \
-  bankbankbank channelzero \
+  bank channelzero \
   --home ibc1/n0/gaiacli \
   --packet-sequence 1 \
   --timeout $TIMEOUT \

@@ -7,7 +7,7 @@ This branch uses non-canonical branch of cosmos-sdk. Before building, run `go mo
 ```shell
 git clone git@github.com:cosmos/gaia
 cd gaia
-git checkout fedekunze/ibc
+git checkout cwgoes/ibc-demo-fixes
 make install
 gaiad version
 gaiacli version
@@ -144,8 +144,8 @@ Now that the `connection` has been created, it's time to establish a `channel` f
 gaiacli \
   --home ibc0/n0/gaiacli \
   tx ibc channel handshake \
-  ibconeclient bankbankbank channelzero connectionzero \
-  ibczeroclient bankbankbank channelone connectionone \
+  ibconeclient bank channelzero connectionzero \
+  ibczeroclient bank channelone connectionone \
   --node1 tcp://localhost:26657 \
   --node2 tcp://localhost:26557 \
   --chain-id2 ibc1 \
@@ -179,13 +179,13 @@ To send a packet using the `bank` application protocol, you need to know the `ch
 gaiacli \
   --home ibc0/n0/gaiacli \
   tx ibc transfer transfer \
-  bankbankbank channelzero \
-  $(gaiacli --home ibc0/n0/gaiacli keys list | jq -r '.[1].address') 1stake \
+  bank channelzero \
+  $(gaiacli --home ibc0/n0/gaiacli keys show n1 -a) 1stake \
   --from n0 \
   --source
 ```
 
-> NOTE: This commands returns the `height` at which it was committed, this should be at the beginning of the JSON output. You will need this number for the next command.
+> NOTE: This commands returns the `height` at which it was committed, this should be at the beginning of the JSON output. The enviornment variable `TIMEOUT`.
 
 ### Receive Packet
 
@@ -199,12 +199,14 @@ To complete the transfer once packets are sent, receipt must be confirmed on the
 
 ```bash
 gaiacli \
-  --home ibc1/n0/gaiacli \
   tx ibc transfer recv-packet \
-  packet.json \
-  proof.json \
-  $HEIGHT
-  --from n1
+  --home ibc1/n0/gaiacli \
+  --packet-sequence 1 \
+  --timeout $TIMEOUT \
+  --from n1 \
+  --node2 tcp://localhost:26657 \
+  --chain-id2 ibc0 \
+  --source
 ```
 
 Once the packets have been recieved you should see the `1stake` in your account on `ibc1`:

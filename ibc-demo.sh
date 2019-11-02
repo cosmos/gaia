@@ -163,12 +163,13 @@ echo "Recieving token packets on ibc1..."
 
 gaiacli \
   tx ibc transfer recv-packet \
-  bank channelzero \
+  bank channelzero ibczeroclient \
   --home ibc1/n0/gaiacli \
   --packet-sequence 1 \
   --timeout $TIMEOUT \
   --from n1 \
-  --node2 tcp://localhost:26657
+  --node2 tcp://localhost:26657 \
+  --chain-id2 ibc0
 
 echo "Account after:"
 gaiacli --home ibc1/n0/gaiacli q account $DEST

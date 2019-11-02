@@ -146,7 +146,7 @@ gaiacli \
   tx ibc transfer recv-packet \
   bankbankbank channelzero \
   --home ibc1/n0/gaiacli \
-  --packet-sequence 0 \
+  --packet-sequence 1 \
   --timeout $TIMEOUT \
   --from n1 \
   --node2 tcp://localhost:26657

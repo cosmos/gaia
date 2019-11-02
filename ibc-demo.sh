@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-GAIA_BRANCH=cwgoes/ibc-demo-fixes
+GAIA_BRANCH=cwgoes-ibc-demo-fixes
 GAIA_DIR=$(mktemp -d)
 CONF_DIR=$(mktemp -d)
 
@@ -17,15 +17,15 @@ killall gaiad
 
 set -e
 
-#echo "Building Gaia..."
+echo "Building Gaia..."
 
-#cd $GAIA_DIR
-#git clone git@github.com:cosmos/gaia
-#cd gaia
-#git checkout $GAIA_BRANCH
-#make install
-#gaiad version
-#gaiacli version
+cd $GAIA_DIR
+git clone git@github.com:cosmos/gaia
+cd gaia
+git checkout $GAIA_BRANCH
+make install
+gaiad version
+gaiacli version
 
 echo "Generating configurations..."
 
@@ -160,6 +160,8 @@ echo "Account before:"
 gaiacli --home ibc1/n0/gaiacli q account $DEST
 
 echo "Recieving token packets on ibc1..."
+
+sleep 3
 
 gaiacli \
   tx ibc transfer recv-packet \

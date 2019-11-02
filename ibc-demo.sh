@@ -121,17 +121,22 @@ gaiacli \
 
 echo "Sending token packets from ibc0..."
 
+DEST=$(gaiacli --home ibc0/n0/gaiacli keys list | jq -r '.[1].address')
+
 gaiacli \
   --home ibc0/n0/gaiacli \
   tx ibc transfer transfer \
   bankbankbank channelzero \
-  $(gaiacli --home ibc0/n0/gaiacli keys list | jq -r '.[1].address') 1stake \
+  $DEST 1stake \
   --from n0 \
   --source
 
 echo "Enter height:"
 
 read -r HEIGHT
+
+echo "Account before:"
+gaiacli --home ibc1/n0/gaiacli q account $DEST
 
 echo "Recieving token packets on ibc1..."
 
@@ -142,3 +147,6 @@ gaiacli \
   proof.json \
   $HEIGHT
   --from n1
+
+echo "Account after:"
+gaiacli --home ibc1/n0/gaiacli q account $DEST

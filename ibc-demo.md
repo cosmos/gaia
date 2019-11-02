@@ -200,6 +200,7 @@ To complete the transfer once packets are sent, receipt must be confirmed on the
 ```bash
 gaiacli \
   tx ibc transfer recv-packet \
+  bank channelzero ibczeroclient \
   --home ibc1/n0/gaiacli \
   --packet-sequence 1 \
   --timeout $TIMEOUT \

@@ -95,6 +95,11 @@ echo -e "12345678\n" | gaiacli --home ibc1/n0/gaiacli \
 
 sleep 3
 
+echo "Querying clients..."
+
+gaiacli --home ibc0/n0/gaiacli q ibc client consensus-state ibconeclient --indent
+gaiacli --home ibc1/n0/gaiacli q ibc client consensus-state ibczeroclient --indent
+
 echo "Establishing a connection..."
 
 gaiacli \
@@ -106,6 +111,13 @@ gaiacli \
   --from1 n0 --from2 n1 \
   --node1 tcp://localhost:26657 \
   --node2 tcp://localhost:26557
+
+sleep 2
+
+echo "Querying connection..."
+
+gaiacli --home ibc0/n0/gaiacli q ibc connection end connectionzero --indent --trust-node
+gaiacli --home ibc1/n0/gaiacli q ibc connection end connectionone --indent --trust-node
 
 echo "Establishing a channel..."
 
@@ -119,9 +131,16 @@ gaiacli \
   --chain-id2 ibc1 \
   --from1 n0 --from2 n1
 
+sleep 2
+
+echo "Querying channel..."
+
+gaiacli --home ibc0/n0/gaiacli q ibc channel end bankbankbank channelzero --indent --trust-node
+gaiacli --home ibc1/n0/gaiacli q ibc channel end bankbankbank channelone --indent --trust-node
+
 echo "Sending token packets from ibc0..."
 
-DEST=$(gaiacli --home ibc0/n0/gaiacli keys list | jq -r '.[1].address')
+DEST=$(gaiacli --home ibc0/n0/gaiacli keys show n1 -a)
 
 gaiacli \
   --home ibc0/n0/gaiacli \

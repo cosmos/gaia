@@ -43,48 +43,30 @@ gaiacli config --home ibc0/n0/gaiacli/ node http://localhost:26657
 gaiacli config --home ibc1/n0/gaiacli/ node http://localhost:26557
 ```
 
-Add keys from each chain to the other and make sure that the key at `ibc1/n0/gaiacli/key_seed.json` is named `n1` on each `gaiacli` instance and the same for `n0`. After this is complete the results of `gaiacli keys list` from each chain should be identical.
-
-The following are instructions for how to copy seed phrases to the clipboard on Mac:
+Add keys from each chain to the other and make sure that the key at `ibc1/n0/gaiacli/key_seed.json` is named `n1` on each `gaiacli` instance and the same for `n0`. After this is complete the results of `gaiacli keys list` from each chain should be identical. The following commands will do the trick:
 
 ```bash
-jq -r '.secret' ibc0/n0/gaiacli/key_seed.json | pbcopy
-jq -r '.secret' ibc1/n0/gaiacli/key_seed.json | pbcopy
-```
-
-Or on Linux:
-
-```bash
-jq -r '.secret' ibc0/n0/gaiacli/key_seed.json | xclip -sel clip
-jq -r '.secret' ibc1/n0/gaiacli/key_seed.json | xclip -sel clip
-```
-
-Then continue:
-
-```
-# Remove the key n0 on ibc1
 gaiacli --home ibc1/n0/gaiacli keys delete n0
-
-# seed from ibc1/n0/gaiacli/key_seed.json -> ibc0/n1
-gaiacli --home ibc0/n0/gaiacli keys add n1 --recover
-
-# seed from ibc0/n0/gaiacli/key_seed.json -> ibc1/n0
-gaiacli --home ibc1/n0/gaiacli keys add n0 --recover
-
-# seed from ibc1/n0/gaiacli/key_seed.json -> ibc1/n1
-gaiacli --home ibc1/n0/gaiacli keys add n1 --recover
-
-# Ensure keys match
-gaiacli --home ibc0/n0/gaiacli keys list | jq '.[].address'
-gaiacli --home ibc1/n0/gaiacli keys list | jq '.[].address'
+gaiacli keys test --home ibc0/n0/gaiacli n1 "$(jq -r '.secret' ibc1/n0/gaiacli/key_seed.json)" 12345678
+gaiacli keys test --home ibc1/n0/gaiacli n0 "$(jq -r '.secret' ibc0/n0/gaiacli/key_seed.json)" 12345678
+gaiacli keys test --home ibc1/n0/gaiacli n1 "$(jq -r '.secret' ibc1/n0/gaiacli/key_seed.json)" 12345678
 ```
 
-After configuration is complete, start your `gaiad` processes:
+After this operation, check to make sure the keys match:
+
+```bash
+gaiacli --home ibc0/n0/gaiacli keys list | jq -r '.[].address'
+gaiacli --home ibc1/n0/gaiacli keys list | jq -r '.[].address'
+```
+
+After configuration is complete, you will be able to start two `gaiad` processes:
 
 ```bash
 nohup gaiad --home ibc0/n0/gaiad start > ibc0.log &
 nohup gaiad --home ibc1/n0/gaiad start > ibc1.log &
 ```
+
+> NOTE: If you would like to look at the logs from the instances just `tail -f ibc0.log`.
 
 ## IBC Command Sequence
 
@@ -94,13 +76,13 @@ Create IBC clients on each chain using the following commands. Note that we are 
 
 ```bash
 # client for chain ibc1 on chain ibc0
-gaiacli --home ibc0/n0/gaiacli \
+echo -e "12345678\n" | gaiacli --home ibc0/n0/gaiacli \
   tx ibc client create ibconeclient \
   $(gaiacli --home ibc1/n0/gaiacli q ibc client node-state) \
   --from n0 -y -o text
 
 # client for chain ibc0 on chain ibc1
-gaiacli --home ibc1/n0/gaiacli \
+echo -e "12345678\n" | gaiacli --home ibc1/n0/gaiacli \
   tx ibc client create ibczeroclient \
   $(gaiacli --home ibc0/n0/gaiacli q ibc client node-state) \
   --from n1 -y -o text
@@ -119,7 +101,7 @@ In order to send transactions using IBC there are two different handshakes that 
 
 Create a `connection` with the following command:
 
-> NOTE: This command broadcasts a total of 7 transactions between the two chains from 2 different wallets. At the start of the command you will be prompted for passwords for the two different keys. The command may then take some time. Please wait for the command to return!
+> NOTE: This command broadcasts a total of 7 transactions between the two chains from 2 different wallets. At the start of the command you will be prompted for passwords for the two different keys (`12345678` for both). The command will then take some time, please wait for it to return!
 
 ```shell
 gaiacli \
@@ -133,6 +115,18 @@ gaiacli \
   --node2 tcp://localhost:26557
 ```
 
+After the password input, you should see output like the following:
+
+```
+ibc0 <- connection_open_init    [OK] txid(B41C15A8F31524CB34EE061BA4418F48A3A37A7348BF8F818E67F5EE90AED45F) client(ibconeclient) connection(connectionzero)
+ibc1 <- update_client           [OK] txid(CD9F9AFD311DDF6B3604BCDD3DF371FAE93F76A01E66815AD6E2DCDDA942976D) client(ibconeclient)
+ibc1 <- connection_open_try     [OK] txid(F364081569703146978605D9079B751FA83E8766C749B1DA96054D2728DBD715) client(ibczeroclient) connection(connectionone)
+ibc0 <- update_client           [OK] txid(58A8E012E623303AA2B4A73099D00A6A3F34220E10FA5445251B1F7E6435EFF5) client(ibczeroclient)
+ibc0 <- connection_open_ack     [OK] txid(9535B4E25E204C129B91CF2FBDBD3E9AC17881AB4D4BFD4F57731E96D348B053) connection(connectionzero)
+ibc1 <- update_client           [OK] txid(50D737D7798E1D0A2E0452B7EDDC2D06A06524424F10B54F6400F148D9255DAF) client(ibconeclient)
+ibc0 <- connection_open_confirm [OK] txid(CF0F7E54481D90A438A625E16EAB48F5480334AF090CE05736BDFACB69B8F798) connection(connectionone)
+```
+
 Once the connection is established you should be able to query it:
 
 ```bash
@@ -144,75 +138,77 @@ gaiacli --home ibc1/n0/gaiacli q ibc connection end connectionone --indent --tru
 
 Now that the `connection` has been created, it's time to establish a `channel` for the `ibc-mock` application protocol. This will allow sending of data between `ibc0` and `ibc1`. To create the `channel`, run the following command:
 
-> NOTE: This command broadcasts a total of 7 transactions between the two chains from 2 different wallets. At the start of the command you will be prompted for passwords for the two different keys. The command may then take some time. Please wait for the command to return!
+> NOTE: This command broadcasts a total of 7 transactions between the two chains from 2 different wallets. At the start of the command you will be prompted for passwords for the two different keys (`12345678` for both). The command will then take some time, please wait for it to return!
 
 ```bash
 gaiacli \
   --home ibc0/n0/gaiacli \
   tx ibc channel handshake \
-  ibconeclient bank channelzero connectionzero \
-  ibczeroclient bank channelone connectionone \
+  ibconeclient bankbankbank channelzero connectionzero \
+  ibczeroclient bankbankbank channelone connectionone \
   --node1 tcp://localhost:26657 \
   --node2 tcp://localhost:26557 \
   --chain-id2 ibc1 \
   --from1 n0 --from2 n1
 ```
 
+You should see output like the following:
+
+```
+ibc0 <- channel_open_init       [OK] txid(792E51E0455A8E0C85705C61A638A4D7C5399B3BA5AF6F29C85BB4E090FCA1B7) portid(bankbankbank) chanid(channelzero)
+ibc1 <- update_client           [OK] txid(CEA961B9BE931E7B06E6D5643486D267677E66A253F104BC00E2BCE1F9343C03) client(ibczeroclient)
+ibc1 <- channel_open_try        [OK] txid(D6BC3B03646EF61D1DA153C6678FE047DF76CB12981AC1D524C69C22124967D7) portid(bankbankbank) chanid(channelone)
+ibc0 <- update_client           [OK] txid(FA22E93601218CEA839FDEB7BD0D8F47D81E1172E18A8B21717675FF5C4BCF40) client(ibconeclient)
+ibc0 <- channel_open_ack        [OK] txid(1840343AFB2D5666F52440C199A1356C63A884A959F0A9A53175773CDB83006B) portid(bankbankbank) chanid(channelzero)
+ibc1 <- update_client           [OK] txid(BBE212C5041AC366C018BB97F8DF8A495562EAFFFF51BFDA7BBAE9952BE589D0) client(ibczeroclient)
+ibc1 <- channel_open_confirm    [OK] txid(69F50CA44AE6AD84BD24866E7DB7FE8ADFD9C484171662CB9E6F0C71BFC222A9) portid(bankbankbank) chanid(channelone)
+```
+
 You can query the `channel` after establishment by running the following command:
 
 ```bash
-gaiacli --home ibc0/n0/gaiacli q ibc channel end bank channelzero --indent --trust-node
-gaiacli --home ibc1/n0/gaiacli q ibc channel end bank channelone --indent --trust-node
+gaiacli --home ibc0/n0/gaiacli q ibc channel end bankbankbank channelzero --indent --trust-node
+gaiacli --home ibc1/n0/gaiacli q ibc channel end bankbankbank channelone --indent --trust-node
 ```
 
-## Send Packet
+### Send Packet
 
-To send a packet using the `bank` application protocol, you need to know the channel you plan to send on, as well as the sequence number on the channel. To get the sequence you use the following commands:
+To send a packet using the `bank` application protocol, you need to know the `channel` you plan to send on, as well as the `port` on the channel. You also need to provide an `address` and `amount`. Use the following command to send the packet:
 
 ```bash
-# Returns the last sequence number
-gaiacli --home ibc0/n0/gaiacli q ibcmocksend sequence channel0
-
-# Returns the next expected sequence number, for use in scripting
-gaiacli --home ibc0/n0/gaiacli q ibcmocksend next channel0
+gaiacli \
+  --home ibc0/n0/gaiacli \
+  tx ibc transfer transfer \
+  bankbankbank channelzero \
+  $(gaiacli --home ibc0/n0/gaiacli keys list | jq -r '.[1].address') 1stake \
+  --from n0 \
+  --source
 ```
 
-Now you are ready to send an `ibc-mock` packet down the channel (`channel0`) from chain `ibc0` to chain `ibc1`! To do so run the following commands to send a packet down the channel:
-
-```bash
-gaiacli --home ibc0/n0/gaiacli tx ibcmocksend sequence channel0 $(gaiacli --home ibc0/n0/gaiacli q ibcmocksend next channel0) --from n0 -o text -y
-```
+> NOTE: This commands returns the `height` at which it was committed, this should be at the beginning of the JSON output. You will need this number for the next command.
 
 ### Receive Packet
 
-Once packets are sent, receipt must be confirmed on the destination chain. To `pull` the packets from `ibc0` on `ibc1`, run the following command:
+Now, try querying the account on `ibc1` that you sent the `1stake` to, the account will be empty:
+
+```bash
+gaiacli --home ibc1/n0/gaiacli q account $(gaiacli --home ibc0/n0/gaiacli keys show n1 -a)
+```
+
+To complete the transfer once packets are sent, receipt must be confirmed on the destination chain. To `recv-packet` from `ibc0` on `ibc1`, run the following command:
 
 ```bash
 gaiacli \
   --home ibc1/n0/gaiacli \
-  tx ibc channel pull ibcmockrecv channel1 \
-  --node1 tcp://localhost:26557 \
-  --node2 tcp://localhost:26657 \
-  --chain-id2 ibc0 \
+  tx ibc transfer recv-packet \
+  packet.json \
+  proof.json \
+  $HEIGHT
   --from n1
 ```
 
-This command sends two transactions. You should see the reciept of the packet:
-
-```
-ibc1 <- update-client  [OK] txid(7D4B4DE7A6B8E1045CA7BEB16E21DD0491BED000E5FB0D05BBB7960AABE5CC78) client(c1)
-ibc1 <- empty-packet   [OK] txid(6E90B9CE19394D7D41CF55E4ADCC94D6169B476B45527F9C47346080C85A289F) packets(1)
-```
-
-> Note: This command pushes all the packets out of the channel with one command. Try pushing a **couple of packets** from `ibc0` to `ibc1` then fulshing them at once. You should see output like:
-
-```
-ibc1 <- update-client  [OK] txid(21E0CE99A21DD7630A7DDE62459DD82C4051CC46B231A7B31529928B1B1B2C53) client(c1)
-ibc1 <- empty-packet   [OK] txid(92D76EF46FDCB3739DB06960BECCD7DA30AAA6AECA687DF4D92CC272D4941F7E) packets(2)
-```
-
-Once the packets have been sent, you can check the updated sequence by running:
+Once the packets have been recieved you should see the `1stake` in your account on `ibc1`:
 
 ```bash
-gaiacli --home ibc1/n0/gaiacli q ibcmockrecv sequence channel1 --trust-node
+gaiacli --home ibc1/n0/gaiacli q account $(gaiacli --home ibc0/n0/gaiacli keys show n1 -a)
 ```

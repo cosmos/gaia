@@ -30,6 +30,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
+	"github.com/cosmos/modules/incubator/nft"
 )
 
 const appName = "GaiaApp"
@@ -108,6 +109,7 @@ type GaiaApp struct {
 	crisisKeeper   crisis.Keeper
 	paramsKeeper   params.Keeper
 	ibcKeeper      ibc.Keeper
+	nftKeeper      nft.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -155,6 +157,7 @@ func NewGaiaApp(
 	crisisSubspace := app.paramsKeeper.Subspace(crisis.DefaultParamspace)
 
 	// add keepers
+	app.nftKeeper = nft.NewKeeper(app.cdc, keys[nft.StoreKey])
 	app.accountKeeper = auth.NewAccountKeeper(app.cdc, keys[auth.StoreKey], authSubspace, auth.ProtoBaseAccount)
 	app.bankKeeper = bank.NewBaseKeeper(app.accountKeeper, bankSubspace, bank.DefaultCodespace, app.ModuleAccountAddrs())
 	app.supplyKeeper = supply.NewKeeper(app.cdc, keys[supply.StoreKey], app.accountKeeper, app.bankKeeper, maccPerms)
@@ -185,7 +188,7 @@ func NewGaiaApp(
 		staking.NewMultiStakingHooks(app.distrKeeper.Hooks(), app.slashingKeeper.Hooks()),
 	)
 
-	app.ibcKeeper = ibc.NewKeeper(app.cdc, keys[ibc.StoreKey], ibc.DefaultCodespace, app.bankKeeper, app.supplyKeeper)
+	app.ibcKeeper = ibc.NewKeeper(app.cdc, keys[ibc.StoreKey], ibc.DefaultCodespace, app.bankKeeper, app.supplyKeeper, app.nftKeeper)
 
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
@@ -201,6 +204,7 @@ func NewGaiaApp(
 		slashing.NewAppModule(app.slashingKeeper, app.stakingKeeper),
 		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.supplyKeeper),
 		ibc.NewAppModule(app.ibcKeeper),
+		nft.NewAppModule(app.nftKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that

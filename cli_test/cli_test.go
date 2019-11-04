@@ -602,8 +602,9 @@ func TestGaiaCLISubmitProposal(t *testing.T) {
 	tests.WaitForNextNBlocksTM(1, f.Port)
 
 	// Test limit on proposals query
-	proposalsQuery = f.QueryGovProposals("--limit=1")
-	require.Equal(t, uint64(2), proposalsQuery[0].ProposalID)
+	proposalsQuery = f.QueryGovProposals("--limit=2")
+	require.Len(t, proposalsQuery, 2)
+	require.Equal(t, uint64(1), proposalsQuery[0].ProposalID)
 
 	f.Cleanup()
 }

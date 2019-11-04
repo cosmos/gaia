@@ -31,7 +31,23 @@ git clone -b <latest-release-tag> https://github.com/cosmos/gaia
 cd gaia && make install
 ```
 
-> _NOTE_: If you have issues at this step, please check that you have the latest stable version of GO installed.
+If this command fails due to the following error message, you might have already set `LDFLAGS` prior to running this step.
+
+```
+# github.com/cosmos/gaia/cmd/gaiad
+flag provided but not defined: -L
+usage: link [options] main.o
+...
+make: *** [install] Error 2
+```
+
+Unset this environment variable and try again.
+
+```
+LDFLAGS="" make install
+```
+
+> _NOTE_: If you still have issues at this step, please check that you have the latest stable version of GO installed.
 
 That will install the `gaiad` and `gaiacli` binaries. Verify that everything is OK:
 

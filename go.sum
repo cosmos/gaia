@@ -233,6 +233,8 @@ github.com/regen-friends/cosmos-sdk v0.25.1-0.20191101144426-83bfdc19c405 h1:4Hm
 github.com/regen-friends/cosmos-sdk v0.25.1-0.20191101144426-83bfdc19c405/go.mod h1:PuN72vbZxlorpnHmoIl6RjzVMXEOMejmwORJlZ74K7Q=
 github.com/regen-network/cosmos-sdk v0.25.1-0.20191101102816-9a016d3082fb h1:naQ1WMC5h0uGrzzfwTrdWqv6kuot+j4Pt8cTeHR1wuM=
 github.com/regen-network/cosmos-sdk v0.25.1-0.20191101102816-9a016d3082fb/go.mod h1:PuN72vbZxlorpnHmoIl6RjzVMXEOMejmwORJlZ74K7Q=
+github.com/regen-network/cosmos-sdk v0.25.1-0.20191105115944-73304609a9f2 h1:7vQv/vms+TMUQkM8uCKIvFhp2wu5rZXJZ10PCQbgxmM=
+github.com/regen-network/cosmos-sdk v0.25.1-0.20191105115944-73304609a9f2/go.mod h1:jfj68M7UAsSvG+XmGU5zVfSij5fzlOdiQc1NKt+YK2A=
 github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6SoW27p1b0cqNHllgS5HIMJraePCO15w5zCzIWYg=
 github.com/rs/cors v1.6.0/go.mod h1:gFx+x8UowdsKA9AchylcLynDq+nNFfI8FkUZdN/jGCU=
 github.com/rs/cors v1.7.0 h1:+88SsELBHx5r+hZ8TCkggzSstaWNbDvThkVK8H6f9ik=

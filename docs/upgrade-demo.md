@@ -1,12 +1,17 @@
 # Upgrade demo
 
-Compile gaia from https://github.com/regen-friends/gaia/tree/gaia-upgrade-rebased using 
-```make install```
+Compile gaia from https://github.com/regen-friends/gaia/tree/gaia-upgrade-rebased using `make install`
+
+## Prepare demo genesis 
 
 Setup local testnet. You can use the following script for this.
+
 ```
 # You can run all of these commands from your home directory
 cd $HOME
+
+# Remove any existing gaiacli and gaiad folders - check there is no useful data there first
+rm -rf .gaiacli/ .gaiad/
 
 # Initialize the genesis.json file that will help you to bootstrap the network
 gaiad init --chain-id=testing testing
@@ -26,30 +31,71 @@ gaiad gentx --name validator
 gaiad collect-gentxs
 ```
 
+**Important** Change `voting_params.voting_period` in `.gaiad/config/genesis.json` to a reduced time ~5 minutes(300000000000)
 
-Change ```voting_params.voting_period``` in ```genesis.json``` to a reduced time ~5 minutes(300000000000)
+## Start the network and trigger upgrade
 
-Start the testnet using
-```gaiad start```
+```
+# Start the testnet
+gaiad start
 
-Create a proposal using 
-```gaiacli tx gov submit-proposal software-upgrade test1 --title "test1" --description "upgrade"  --from validator --chain-id testing --upgrade-height 200 --deposit 1000stake -y```
+# Set up the cli config
+gaiacli config trust-node true
+gaiacli config chain-id testing
 
-Vote the proposal using 
-```gaiacli tx gov vote 1 yes --from validator --trust-node --chain-id testing -y```
+# Create a proposal
+gaiacli tx gov submit-proposal software-upgrade test1 --title "test1" --description "upgrade"  --from validator --upgrade-height 200 --deposit 10000000stake -y
 
-Query the proposal after voting time ends to see if it passed using 
-```gaiacli query gov proposal 1 --trust-node```
+# Ensure voting_start_time is set (sufficient deposit)
+gaiacli query gov proposal 1
 
-If the proposal passes, the chain will stop at given upgrade height.
+# Vote the proposal 
+gaiacli tx gov vote 1 yes --from validator -y
 
-In ```gaia/app/app.go```, uncomment upgrade handler on line:155. Make sure the upgrade title in handler matches the title from proposal.
+#Wait for the voting period to pass...
+sleep 500
 
-Create a new binary of gaia with added upgrade handler using
-```make install```
+# Query the proposal after voting time ends to see if it passed using 
+gaiacli query gov proposal 1
 
-Restart the chain using new binary, you should see  the chain resume from the upgrade height 
-```gaiad start```
+# Query the pending plan
+gaiacli query upgrade plan
 
+# Verify the bonus account (see commented upgrade handler) is empty
+gaiacli query account cosmos18cgkqduwuh253twzmhedesw3l7v3fm37sppt58
+```
 
+## Performing an upgrade
 
+Assuming you voted properly above, the proposal will pass, and the chain will stop at given upgrade height.
+You can stop and start the original binary all you want, but it will refuse to run after the upgrade height.
+We need a new binary with the upgrade handler installed. The logs should look something like:
+
+```
+E[2019-11-05|12:44:18.913] UPGRADE "test1" NEEDED at height: 200:       module=main 
+E[2019-11-05|12:44:18.914] CONSENSUS FAILURE!!!
+...
+```
+
+Note that the process just hangs, doesn't exit to avoid restart loops. You must manually kill the process and replace it with a new
+binary. Do so now with `Ctrl+C` or `killall gaiad`.
+
+In `gaia/app/app.go`, uncomment upgrade handler on lines 170-176. Make sure the upgrade title in handler matches the title from proposal.
+
+```
+# Create a new binary of gaia with added upgrade handler using
+make install
+
+# Restart the chain using new binary, you should see  the chain resume from the upgrade height
+# Like `I[2019-11-05|12:48:15.184] applying upgrade "test1" at height: 200      module=main`
+gaiad start
+
+# Verify no more pending plan
+gaiacli query upgrade plan
+
+# You can query the block header of the completed upgrade
+gaiacli query upgrade applied test1
+
+# Verify the bonus account (see commented upgrade handler) is now rich
+gaiacli query account cosmos18cgkqduwuh253twzmhedesw3l7v3fm37sppt58
+```

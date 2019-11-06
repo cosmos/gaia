@@ -80,7 +80,27 @@ E[2019-11-05|12:44:18.914] CONSENSUS FAILURE!!!
 Note that the process just hangs, doesn't exit to avoid restart loops. You must manually kill the process and replace it with a new
 binary. Do so now with `Ctrl+C` or `killall gaiad`.
 
-In `gaia/app/app.go`, uncomment upgrade handler on lines 170-176. Make sure the upgrade title in handler matches the title from proposal.
+In `gaia/app/app.go`, add the following lines after line 169 (oncd `app.upgradeKeeper` is initialized). Make sure the upgrade title in handler matches the title from proposal.
+
+```go
+	app.upgradeKeeper.SetUpgradeHandler("test1", func(ctx sdk.Context, plan upgrade.Plan) {
+		// Add some coins to a random account
+        addr, err := sdk.AccAddressFromBech32("cosmos18cgkqduwuh253twzmhedesw3l7v3fm37sppt58")
+        if err != nil {
+            panic(err)
+        }
+        _, err = app.bankKeeper.AddCoins(ctx, addr, sdk.Coins{sdk.Coin{Denom: "stake", Amount: sdk.NewInt(345600000)}})
+        if err != nil {
+            panic(err)
+        }
+	})
+```
+
+Note that we panic on any error - this would cause the upgrade to fail if the migration could not be run, and no node
+would advance - allowing a manual recovery. If we ignored the errors, then we would proceed with an incomplete upgrade
+and have a very difficult time every recovering the proper state. 
+
+Now, compile the new binary and run the upgraded code to complete the upgrade:
 
 ```
 # Create a new binary of gaia with added upgrade handler using

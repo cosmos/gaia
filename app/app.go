@@ -166,14 +166,6 @@ func NewGaiaApp(
 	)
 	app.crisisKeeper = crisis.NewKeeper(crisisSubspace, invCheckPeriod, app.supplyKeeper, auth.FeeCollectorName)
 	app.upgradeKeeper = upgrade.NewKeeper(keys[upgrade.StoreKey], app.cdc)
-	// Note: this is a demo for testing - see docs/upgrade-demo.md
-	// app.upgradeKeeper.SetUpgradeHandler("test1", func(ctx sdk.Context, plan upgrade.Plan) {
-	// 	// Add some coins to a random account
-	// 	addr, err := sdk.AccAddressFromBech32("cosmos18cgkqduwuh253twzmhedesw3l7v3fm37sppt58")
-	// 	if err == nil {
-	// 		_, _ = app.bankKeeper.AddCoins(ctx, addr, sdk.Coins{sdk.Coin{Denom: "stake", Amount: sdk.NewInt(345600000)}})
-	// 	}
-	// })
 
 	// register the proposal types
 	govRouter := gov.NewRouter()

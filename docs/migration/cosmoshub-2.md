@@ -120,7 +120,7 @@ $ jq -S -c -M '' cosmoshub_2_genesis_export.json | shasum -a 256
 ```
 
 4. At this point you now have a valid exported genesis state! All further steps now require
-v2.0.3 of [Gaia](https://github.com/cosmos/gaia).
+v2.0.3 of [Gaia](https://github.com/cosmos/gaia) and Go [1.13+](https://golang.org/dl/).
 
 ```shell
 git checkout v2.0.3; make install

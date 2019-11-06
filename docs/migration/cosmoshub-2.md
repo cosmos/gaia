@@ -33,9 +33,9 @@ Since the Cosmos SDK and Gaia have now been split into separate repositories, th
 versioning will also naturally diverge. In an attempt to decrease community confusion and strive for
 semantic versioning, the [Cosmos SDK](https://github.com/cosmos/cosmos-sdk/) will continue
 on its current versioning path (i.e. v0.36.x ) and the [Gaia](https://github.com/cosmos/gaia)
-application will become v2.0.0.
+application will become v2.0.x.
 
-__[Gaia](https://github.com/cosmos/gaia) application v2.0.0 is
+__[Gaia](https://github.com/cosmos/gaia) application v2.0.3 is
 what full node operators will upgrade to and run in this next major upgrade__.
 
 ## Major Updates
@@ -83,13 +83,12 @@ v0.34.6+ of the _Cosmos SDK_ and restore to their latest snapshot before restart
 
 __Note__: It is assumed you are currently operating a full-node running v0.34.6+ of the _Cosmos SDK_.
 
-
-- The version/commit hash of Gaia v2.0.0: `3c70fee433956ba32e35705193a5f7a7d5b63277`
-- The upgrade height as agreed upon by governance: **1,933,000**
+- The version/commit hash of Gaia v2.0.3: `2f6783e298f25ff4e12cb84549777053ab88749a`
+- The upgrade height as agreed upon by governance: **[PLACEHOLDER]**
 - You may obtain the canonical UTC timestamp of the exported block by any of the following methods:
-  - Block explorer (e.g. [Hubble](https://hubble.figment.network/cosmos/chains/cosmoshub-2/blocks/1933000?format=json&kind=block))
-  - Through manually querying an RPC node (e.g. `/block?height=1933000`)
-  - Through manually querying a Gaia REST client (e.g. `/blocks/1933000`)
+  - Block explorer (e.g. [Hubble](https://hubble.figment.network/cosmos/chains/cosmoshub-2/blocks/[PLACEHOLDER]?format=json&kind=block))
+  - Through manually querying an RPC node (e.g. `/block?height=[PLACEHOLDER]`)
+  - Through manually querying a Gaia REST client (e.g. `/blocks/[PLACEHOLDER]`)
 
 1. Verify you are currently running the correct version (v0.34.6+) of the _Cosmos SDK_:
 
@@ -121,20 +120,26 @@ $ jq -S -c -M '' cosmoshub_2_genesis_export.json | shasum -a 256
 ```
 
 4. At this point you now have a valid exported genesis state! All further steps now require
-v2.0.0 of [Gaia](https://github.com/cosmos/gaia).
+v2.0.3 of [Gaia](https://github.com/cosmos/gaia).
 
 ```shell
-git checkout v2.0.0; make install
+git checkout v2.0.3; make install
 ```
 
-5. Verify you are currently running the correct version (v2.0.0) of the _Gaia_:
+5. Verify you are currently running the correct version (v2.0.3) of the _Gaia_:
 
 ```shell
 $ gaiad version --long
-[PLACEHOLDER]
+name: gaia
+server_name: gaiad
+client_name: gaiacli
+version: 2.0.3
+commit: 2f6783e298f25ff4e12cb84549777053ab88749a
+build_tags: netgo,ledger
+go: go version go1.13.3 darwin/amd64
 ```
 
-6. Migrate exported state from the current v0.34.6+ version to the new v2.0.0 version:
+6. Migrate exported state from the current v0.34.6+ version to the new v2.0.3 version:
 
 ```shell
 $ gaiad migrate v0.36 cosmoshub_2_genesis_export.json --chain-id=cosmoshub-3 --genesis-time=[PLACEHOLDER]> genesis.json

@@ -92,104 +92,110 @@ __Note__: It is assumed you are currently operating a full-node running v0.34.6+
 
 1. Verify you are currently running the correct version (v0.34.6+) of the _Cosmos SDK_:
 
-```shell
-$ gaiad version --long
-cosmos-sdk: 0.34.6
-git commit: 80234baf91a15dd9a7df8dca38677b66b8d148c1
-vendor hash: f60176672270c09455c01e9d880079ba36130df4f5cd89df58b6701f50b13aad
-build tags: netgo ledger
-go version go1.12.2 linux/amd64
-```
+   ```shell
+   $ gaiad version --long
+   cosmos-sdk: 0.34.6
+   git commit: 80234baf91a15dd9a7df8dca38677b66b8d148c1
+   vendor hash: f60176672270c09455c01e9d880079ba36130df4f5cd89df58b6701f50b13aad
+   build tags: netgo ledger
+   go version go1.12.2 linux/amd64
+   ```
 
-2. Export existing state from `cosmoshub-2`
+2. Export existing state from `cosmoshub-2`:
 
-**NOTE**: It is recommended for validators and operators to take a full data snapshot at the export
-height before proceeding in case the upgrade does not go as planned or if not enough voting power
-comes online in a sufficient and agreed upon amount of time. In such a case, the chain will fallback
-to continue operating `cosmoshub-2`. See [Recovery](#recovery) for details on how to proceed.
+   **NOTE**: It is recommended for validators and operators to take a full data snapshot at the export
+   height before proceeding in case the upgrade does not go as planned or if not enough voting power
+   comes online in a sufficient and agreed upon amount of time. In such a case, the chain will fallback
+   to continue operating `cosmoshub-2`. See [Recovery](#recovery) for details on how to proceed.
 
-```shell
-$ gaiad export --for-zero-height --height=[PLACEHOLDER] > cosmoshub_2_genesis_export.json
-```
+   Before exporting state via the following command, the `gaiad` binary must be stopped!
+
+   ```shell
+   $ gaiad export --for-zero-height --height=[PLACEHOLDER] > cosmoshub_2_genesis_export.json
+   ```
 
 3. Verify the SHA256 of the (sorted) exported genesis file:
 
-```shell
-$ jq -S -c -M '' cosmoshub_2_genesis_export.json | shasum -a 256
-[PLACEHOLDER]  cosmoshub_2_genesis_export.json
-```
+   ```shell
+   $ jq -S -c -M '' cosmoshub_2_genesis_export.json | shasum -a 256
+   [PLACEHOLDER]  cosmoshub_2_genesis_export.json
+   ```
 
 4. At this point you now have a valid exported genesis state! All further steps now require
-v2.0.3 of [Gaia](https://github.com/cosmos/gaia) and Go [1.13+](https://golang.org/dl/).
+v2.0.3 of [Gaia](https://github.com/cosmos/gaia).
 
-```shell
-git checkout v2.0.3; make install
-```
+   **NOTE**: Go [1.13+](https://golang.org/dl/) is required!
+
+   ```shell
+   $ git clone https://github.com/cosmos/gaia.git; git checkout v2.0.3; make install
+   ```
 
 5. Verify you are currently running the correct version (v2.0.3) of the _Gaia_:
 
-```shell
-$ gaiad version --long
-name: gaia
-server_name: gaiad
-client_name: gaiacli
-version: 2.0.3
-commit: 2f6783e298f25ff4e12cb84549777053ab88749a
-build_tags: netgo,ledger
-go: go version go1.13.3 darwin/amd64
-```
+   ```shell
+   $ gaiad version --long
+   name: gaia
+   server_name: gaiad
+   client_name: gaiacli
+   version: 2.0.3
+   commit: 2f6783e298f25ff4e12cb84549777053ab88749a
+   build_tags: netgo,ledger
+   go: go version go1.13.3 darwin/amd64
+   ```
 
 6. Migrate exported state from the current v0.34.6+ version to the new v2.0.3 version:
 
-```shell
-$ gaiad migrate v0.36 cosmoshub_2_genesis_export.json --chain-id=cosmoshub-3 --genesis-time=[PLACEHOLDER]> genesis.json
-```
+   ```shell
+   $ gaiad migrate v0.36 cosmoshub_2_genesis_export.json --chain-id=cosmoshub-3 --genesis-time=[PLACEHOLDER]> genesis.json
+   ```
 
-**NOTE**: The `migrate` command takes an input genesis state and migrates it to a targeted version.
-Both v0.36 and v0.37 are compatible as far as state structure is concerned.
+   **NOTE**: The `migrate` command takes an input genesis state and migrates it to a targeted version.
+   Both v0.36 and v0.37 are compatible as far as state structure is concerned.
 
-Genesis time should be computed relative to the blocktime of [PLACEHOLDER]. The genesis time shall be
-the blocktime of [PLACEHOLDER] + [PLACEHOLDER] minutes with the subseconds truncated.
+   Genesis time should be computed relative to the blocktime of [PLACEHOLDER]. The genesis time shall be
+   the blocktime of [PLACEHOLDER] + [PLACEHOLDER] minutes with the subseconds truncated.
 
-An example shell command(tested on OS X Mojave) to compute this values is:
+   An example shell command(tested on OS X Mojave) to compute this values is:
 
-```shell
-curl https://stargate.cosmos.network:26657/block\?height\=1933000 | jq -r '.result["block_meta"]["header"]["time"]'|xargs -0 date -v +60M  -j  -f "%Y-%m-%dT%H:%M:%S" +"%Y-%m-%dT%H:%M:%SZ"
-```
+   ```shell
+   curl https://stargate.cosmos.network:26657/block\?height\=1933000 | jq -r '.result["block_meta"]["header"]["time"]'|xargs -0 date -v +60M  -j  -f "%Y-%m-%dT%H:%M:%S" +"%Y-%m-%dT%H:%M:%SZ"
+   ```
 
 7. Now we must update all parameters that have been agreed upon through governance. There is only a
 single parameter, `max_validators`, that we're upgrading based on [proposal 10](https://www.mintscan.io/proposals/10)
 
-```shell
-$ cat genesis.json | jq '.app_state["staking"]["params"]["max_validators"]=125' > tmp_genesis.json && mv tmp_genesis.json genesis.json
-```
+   ```shell
+   $ cat genesis.json | jq '.app_state["staking"]["params"]["max_validators"]=125' > tmp_genesis.json && mv tmp_genesis.json genesis.json
+   ```
 
 8. Verify the SHA256 of the final genesis JSON:
 
-```shell
-$ jq -S -c -M '' genesis.json | shasum -a 256
-[PLACEHOLDER]  genesis.json
-```
+   ```shell
+   $ jq -S -c -M '' genesis.json | shasum -a 256
+   [PLACEHOLDER]  genesis.json
+   ```
 
-9. Reset state
+9. Reset state:
 
-```shell
-$ gaiad unsafe-reset-all
-```
+   **NOTE**: Be sure you have a complete backed up state of your node before proceeding with this step.
+   See [Recovery](#recovery) for details on how to proceed.
+
+   ```shell
+   $ gaiad unsafe-reset-all
+   ```
 
 10. Move the new `genesis.json` to your `.gaiad/config/` directory
-
 11. Replace the `db_backend` on `.gaiad/config/config.toml` to:
 
-```toml
-db_backend = "goleveldb"
-```
+    ```toml
+    db_backend = "goleveldb"
+    ```
 
 12. Note, if you have any application configuration in `gaiad.toml`, that file has now been renamed to `app.toml`:
 
-```shell
-$ mv .gaiad/config/gaiad.toml .gaiad/config/app.toml
-```
+    ```shell
+    $ mv .gaiad/config/gaiad.toml .gaiad/config/app.toml
+    ```
 
 ## Notes for Service Providers
 

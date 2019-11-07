@@ -119,28 +119,28 @@ func TestCoinSend(t *testing.T) {
 	require.Equal(t, int64(1), coins2[0].Amount.Int64())
 
 	// test failure with too little gas
-	res, body = doTransferWithGas(t, port, seed, name1, memo, addr, "100", 0, false, true, fees, kb)
+	res, body, _ = doTransferWithGas(t, port, seed, name1, memo, addr, "100", 0, false, true, fees, kb)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 	require.Nil(t, err)
 
 	// test failure with negative gas
-	res, body = doTransferWithGas(t, port, seed, name1, memo, addr, "-200", 0, false, false, fees, kb)
+	res, body, _ = doTransferWithGas(t, port, seed, name1, memo, addr, "-200", 0, false, false, fees, kb)
 	require.Equal(t, http.StatusBadRequest, res.StatusCode, body)
 
 	// test failure with negative adjustment
-	res, body = doTransferWithGas(t, port, seed, name1, memo, addr, "10000", -0.1, true, false, fees, kb)
+	res, body, _ = doTransferWithGas(t, port, seed, name1, memo, addr, "10000", -0.1, true, false, fees, kb)
 	require.Equal(t, http.StatusBadRequest, res.StatusCode, body)
 
 	// test failure with 0 gas
-	res, body = doTransferWithGas(t, port, seed, name1, memo, addr, "0", 0, false, true, fees, kb)
+	res, body, _ = doTransferWithGas(t, port, seed, name1, memo, addr, "0", 0, false, true, fees, kb)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	// test failure with wrong adjustment
-	res, body = doTransferWithGas(t, port, seed, name1, memo, addr, client.GasFlagAuto, 0.1, false, true, fees, kb)
+	res, body, _ = doTransferWithGas(t, port, seed, name1, memo, addr, client.GasFlagAuto, 0.1, false, true, fees, kb)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	// run simulation and test success with estimated gas
-	res, body = doTransferWithGas(t, port, seed, name1, memo, addr, "10000", 1.0, true, false, fees, kb)
+	res, body, _ = doTransferWithGas(t, port, seed, name1, memo, addr, "10000", 1.0, true, false, fees, kb)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var gasEstResp rest.GasEstimateResponse
@@ -152,7 +152,7 @@ func TestCoinSend(t *testing.T) {
 
 	// run successful tx
 	gas := fmt.Sprintf("%d", gasEstResp.GasEstimate)
-	res, body = doTransferWithGas(t, port, seed, name1, memo, addr, gas, 1.0, false, true, fees, kb)
+	res, body, _ = doTransferWithGas(t, port, seed, name1, memo, addr, gas, 1.0, false, true, fees, kb)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	err = cdc.UnmarshalJSON([]byte(body), &resultTx)
@@ -203,7 +203,7 @@ func TestCoinMultiSendGenerateOnly(t *testing.T) {
 	defer cleanup()
 
 	// generate only
-	res, body := doTransferWithGas(t, port, seed, "", memo, addr, "200000", 1, false, false, fees, kb)
+	res, body, _ := doTransferWithGas(t, port, seed, "", memo, addr, "200000", 1, false, false, fees, kb)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var stdTx auth.StdTx
@@ -229,7 +229,7 @@ func TestCoinSendGenerateSignAndBroadcast(t *testing.T) {
 	acc := getAccount(t, port, addr)
 
 	// simulate tx
-	res, body := doTransferWithGas(t, port, seed, name1, memo, addr, client.GasFlagAuto, 1.0, true, false, fees, kb)
+	res, body, _ := doTransferWithGas(t, port, seed, name1, memo, addr, client.GasFlagAuto, 1.0, true, false, fees, kb)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var gasEstResp rest.GasEstimateResponse
@@ -238,7 +238,7 @@ func TestCoinSendGenerateSignAndBroadcast(t *testing.T) {
 
 	// generate tx
 	gas := fmt.Sprintf("%d", gasEstResp.GasEstimate)
-	res, body = doTransferWithGas(t, port, seed, name1, memo, addr, gas, 1, false, false, fees, kb)
+	res, body, _ = doTransferWithGas(t, port, seed, name1, memo, addr, gas, 1, false, false, fees, kb)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var tx auth.StdTx
@@ -269,7 +269,7 @@ func TestEncodeTx(t *testing.T) {
 	require.NoError(t, err)
 	defer cleanup()
 
-	res, body := doTransferWithGas(t, port, seed, name1, memo, addr, "2", 1, false, false, fees, kb)
+	res, body, _ := doTransferWithGas(t, port, seed, name1, memo, addr, "2", 1, false, false, fees, kb)
 	var tx auth.StdTx
 	require.Nil(t, cdc.UnmarshalJSON([]byte(body), &tx))
 

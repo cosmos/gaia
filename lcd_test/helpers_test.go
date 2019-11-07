@@ -291,14 +291,14 @@ func doTransfer(
 	kb crkeys.Keybase,
 ) (sdk.AccAddress, sdk.TxResponse) {
 
-	resp, body, recvAddr := doTransferWithGas(t, port, seed, name, memo, addr, "", 1.0, false, true, fees, kb)
+	resp, body := doTransferWithGas(t, port, seed, name, memo, addr, "", 1.0, false, true, fees, kb)
 	require.Equal(t, http.StatusOK, resp.StatusCode, body)
 
 	var txResp sdk.TxResponse
 	err := cdc.UnmarshalJSON([]byte(body), &txResp)
 	require.NoError(t, err)
 
-	return recvAddr, txResp
+	return addr, txResp
 }
 
 // doTransferWithGas performs a balance transfer with a specified gas value. The
@@ -309,17 +309,8 @@ func doTransferWithGas(
 	t *testing.T, port, seed, name, memo string, addr sdk.AccAddress,
 	gas string, gasAdjustment float64, simulate, broadcast bool, fees sdk.Coins,
 	kb crkeys.Keybase,
-) (resp *http.Response, body string, receiveAddr sdk.AccAddress) {
+) (resp *http.Response, body string) {
 
-	// create receive address
-	kb2 := crkeys.NewInMemory()
-
-	receiveInfo, _, err := kb2.CreateMnemonic(
-		"receive_address", crkeys.English, client.DefaultKeyPass, crkeys.SigningAlgo("secp256k1"),
-	)
-	require.Nil(t, err)
-
-	receiveAddr = sdk.AccAddress(receiveInfo.GetPubKey().Address())
 	acc := getAccount(t, port, addr)
 	accnum := acc.GetAccountNumber()
 	sequence := acc.GetSequence()
@@ -339,14 +330,14 @@ func doTransferWithGas(
 	require.NoError(t, err)
 
 	// generate tx
-	resp, body = Request(t, port, "POST", fmt.Sprintf("/bank/accounts/%s/transfers", receiveAddr), req)
+	resp, body = Request(t, port, "POST", fmt.Sprintf("/bank/accounts/%s/transfers", addr), req)
 	if !broadcast {
-		return resp, body, receiveAddr
+		return resp, body
 	}
 
 	// sign and broadcast
 	resp, body = signAndBroadcastGenTx(t, port, name, body, acc, gasAdjustment, simulate, kb)
-	return resp, body, receiveAddr
+	return resp, body
 }
 
 // doTransferWithGasAccAuto is similar to doTransferWithGas except that it

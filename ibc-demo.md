@@ -7,7 +7,7 @@ This branch uses non-canonical branch of cosmos-sdk. Before building, run `go mo
 ```shell
 git clone git@github.com:cosmos/gaia
 cd gaia
-git checkout cwgoes/ibc-demo-fixes
+git checkout fedekunze/ibc
 make install
 gaiad version
 gaiacli version

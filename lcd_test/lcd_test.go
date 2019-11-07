@@ -269,12 +269,12 @@ func TestEncodeTx(t *testing.T) {
 	require.NoError(t, err)
 	defer cleanup()
 
-	res, body, _ := doTransferWithGas(t, port, seed, name1, memo, "", addr, "2", 1, false, false, fees)
+	_, body, _ := doTransferWithGas(t, port, seed, name1, memo, "", addr, "2", 1, false, false, fees)
 	var tx auth.StdTx
 	require.Nil(t, cdc.UnmarshalJSON([]byte(body), &tx))
 
 	encodedJSON, _ := cdc.MarshalJSON(tx)
-	res, body = Request(t, port, "POST", "/txs/encode", encodedJSON)
+	res, body := Request(t, port, "POST", "/txs/encode", encodedJSON)
 
 	// Make sure it came back ok, and that we can decode it back to the transaction
 	// 200 response.
@@ -491,7 +491,6 @@ func TestBonding(t *testing.T) {
 	//require.Equal(t, rdTokens.ToDec(), delTokensAfterRedelegation)
 
 	// verify balance after paying fees
-	acc = getAccount(t, port, addr)
 	expectedBalance = expectedBalance.Sub(fees[0])
 	require.True(t,
 		expectedBalance.Amount.LT(coins.AmountOf(sdk.DefaultBondDenom)) ||

@@ -71,6 +71,7 @@ func getNodeInfo(t *testing.T, port string) rpc.NodeInfoResponse {
 	var nodeInfo rpc.NodeInfoResponse
 	err := cdc.UnmarshalJSON([]byte(body), &nodeInfo)
 	require.Nil(t, err, "failed parse node info")
+	res.Body.Close()
 
 	require.NotEqual(t, rpc.NodeInfoResponse{}, nodeInfo, "res: %v", res)
 	return nodeInfo
@@ -84,6 +85,7 @@ func getSyncStatus(t *testing.T, port string, syncing bool) {
 	var syncResp rpc.SyncingResponse
 	err := cdc.UnmarshalJSON([]byte(body), &syncResp)
 	require.Nil(t, err, "failed parse syncing info")
+	res.Body.Close()
 
 	require.Equal(t, syncResp.Syncing, syncing)
 }
@@ -108,6 +110,7 @@ func getBlock(t *testing.T, port string, height int, expectFail bool) ctypes.Res
 
 	err := cdc.UnmarshalJSON([]byte(body), &resultBlock)
 	require.Nil(t, err, "Couldn't parse block")
+	res.Body.Close()
 
 	require.NotEqual(t, ctypes.ResultBlock{}, resultBlock)
 	return resultBlock
@@ -115,7 +118,7 @@ func getBlock(t *testing.T, port string, height int, expectFail bool) ctypes.Res
 
 func extractResultFromResponse(t *testing.T, body []byte) []byte {
 	var resp rest.ResponseWithHeight
-	require.NoError(t, cdc.UnmarshalJSON([]byte(body), &resp))
+	require.NoError(t, cdc.UnmarshalJSON(body, &resp))
 
 	return resp.Result
 }
@@ -142,6 +145,7 @@ func getValidatorSets(t *testing.T, port string, height int, expectFail bool) rp
 
 	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &resultVals)
 	require.Nil(t, err, "Couldn't parse validator set")
+	res.Body.Close()
 
 	require.NotEqual(t, rpc.ResultValidatorsOutput{}, resultVals)
 	return resultVals
@@ -155,6 +159,7 @@ func getTransaction(t *testing.T, port string, hash string) sdk.TxResponse {
 
 	err := cdc.UnmarshalJSON([]byte(body), &tx)
 	require.NoError(t, err)
+	res.Body.Close()
 	return tx
 }
 
@@ -176,6 +181,7 @@ func getTransactions(t *testing.T, port string, tags ...string) *sdk.SearchTxsRe
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	err := cdc.UnmarshalJSON([]byte(body), &result)
+	res.Body.Close()
 	require.NoError(t, err)
 	return &result
 }
@@ -190,6 +196,7 @@ func getKeys(t *testing.T, port string) []keys.KeyOutput {
 	var m []keys.KeyOutput
 	err := cdc.UnmarshalJSON([]byte(body), &m)
 	require.Nil(t, err)
+	res.Body.Close()
 	return m
 }
 
@@ -205,6 +212,7 @@ func doKeysPost(t *testing.T, port, name, password, mnemonic string, account int
 	var resp keys.KeyOutput
 	err = cdc.UnmarshalJSON([]byte(body), &resp)
 	require.Nil(t, err, body)
+	res.Body.Close()
 	return resp
 }
 
@@ -212,10 +220,10 @@ func doKeysPost(t *testing.T, port, name, password, mnemonic string, account int
 func getKeysSeed(t *testing.T, port string) string {
 	res, body := Request(t, port, "GET", "/keys/seed", nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
-	reg, err := regexp.Compile(`([a-z]+ ){12}`)
-	require.Nil(t, err)
+	reg := regexp.MustCompile(`([a-z]+ ){12}`)
 	match := reg.MatchString(body)
 	require.True(t, match, "Returned seed has wrong format", body)
+	res.Body.Close()
 	return body
 }
 
@@ -244,6 +252,7 @@ func getKey(t *testing.T, port, name string) keys.KeyOutput {
 	var resp keys.KeyOutput
 	err := cdc.UnmarshalJSON([]byte(body), &resp)
 	require.Nil(t, err)
+	res.Body.Close()
 	return resp
 }
 
@@ -1129,10 +1138,6 @@ func doUnjail(
 	return txResp
 }
 
-type unjailReq struct {
-	BaseReq rest.BaseReq `json:"base_req"`
-}
-
 // ICS24 - fee distribution
 
 // POST /distribution/delegators/{delgatorAddr}/rewards Withdraw delegator rewards
@@ -1164,12 +1169,4 @@ func doWithdrawDelegatorAllRewards(
 	require.NoError(t, err)
 
 	return txResp
-}
-
-func mustParseDecCoins(dcstring string) sdk.DecCoins {
-	dcoins, err := sdk.ParseDecCoins(dcstring)
-	if err != nil {
-		panic(err)
-	}
-	return dcoins
 }

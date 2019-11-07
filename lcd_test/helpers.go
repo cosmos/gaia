@@ -151,7 +151,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 
 	// append any additional (non-proposing) validators
 	var genTxs []auth.StdTx
-	var genAccounts []authexported.GenesisAccount
+	genAccounts := make([]authexported.GenesisAccount, nValidators)
 
 	totalSupply := sdk.ZeroInt()
 
@@ -298,7 +298,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	}
 
 	genDoc.AppState = appState
-	return
+	return genDoc, valConsPubKeys, valOperAddrs, privVal, err
 }
 
 // startTM creates and starts an in-process Tendermint node with memDB and
@@ -412,7 +412,7 @@ func CreateAddrs(kb crkeys.Keybase, numAddrs int) (addrs []sdk.AccAddress, seeds
 		passwords = append(passwords, addrSeeds[i].Password)
 	}
 
-	return
+	return addrs, seeds, names, passwords, errs
 }
 
 // AddrSeed combines an Address with the mnemonic of the private key to that address

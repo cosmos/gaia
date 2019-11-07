@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-GAIA_BRANCH=cwgoes/ibc-demo-fixes
+GAIA_BRANCH=fedekunze/ibc
 GAIA_DIR=$(mktemp -d)
 CONF_DIR=$(mktemp -d)
 

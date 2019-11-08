@@ -42,6 +42,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 flag and configuration.
 * (gaiacli) [\#132](https://github.com/cosmos/gaia/pull/132) Add `tx decode` command to decode
 Base64 encoded transactions.
+* (modules) [\#190](https://github.com/cosmos/gaia/pull/190) Introduce use of the `x/evidence` module.
 
 ## [v2.0.3] - 2019-11-04
 

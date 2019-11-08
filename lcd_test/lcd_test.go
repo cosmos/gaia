@@ -626,7 +626,7 @@ func TestSubmitCommunityPoolSpendProposal(t *testing.T) {
 func TestSubmitParamChangeProposal(t *testing.T) {
 	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
 	require.NoError(t, err)
-	addr, seed, err := CreateAddr(name1, kb)
+	addr, _, err := CreateAddr(name1, kb)
 	require.NoError(t, err)
 	cleanup, _, _, port, err := InitializeLCD(1, []sdk.AccAddress{addr}, true)
 	require.NoError(t, err)
@@ -637,7 +637,7 @@ func TestSubmitParamChangeProposal(t *testing.T) {
 
 	// create proposal tx
 	proposalTokens := sdk.TokensFromConsensusPower(5)
-	resultTx := doSubmitParamChangeProposal(t, port, seed, name1, addr, proposalTokens, fees, kb)
+	resultTx := doSubmitParamChangeProposal(t, port, name1, addr, proposalTokens, fees, kb)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
 	// check if tx was committed

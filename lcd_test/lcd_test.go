@@ -550,7 +550,7 @@ func TestBonding(t *testing.T) {
 func TestSubmitProposal(t *testing.T) {
 	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
 	require.NoError(t, err)
-	addr, seed, err := CreateAddr(name1, kb)
+	addr, _, err := CreateAddr(name1, kb)
 	require.NoError(t, err)
 	cleanup, _, _, port, err := InitializeLCD(1, []sdk.AccAddress{addr}, true)
 	require.NoError(t, err)
@@ -561,7 +561,7 @@ func TestSubmitProposal(t *testing.T) {
 
 	// create SubmitProposal TX
 	proposalTokens := sdk.TokensFromConsensusPower(5)
-	resultTx := doSubmitProposal(t, port, seed, name1, addr, proposalTokens, fees, kb)
+	resultTx := doSubmitProposal(t, port, name1, addr, proposalTokens, fees, kb)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
 	// check if tx was committed
@@ -675,7 +675,7 @@ func TestDeposit(t *testing.T) {
 
 	// create SubmitProposal TX
 	proposalTokens := sdk.TokensFromConsensusPower(5)
-	resultTx := doSubmitProposal(t, port, seed, name1, addr, proposalTokens, fees, kb)
+	resultTx := doSubmitProposal(t, port, name1, addr, proposalTokens, fees, kb)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
 	// check if tx was committed
@@ -735,7 +735,7 @@ func TestVote(t *testing.T) {
 
 	// create SubmitProposal TX
 	proposalTokens := sdk.TokensFromConsensusPower(10)
-	resultTx := doSubmitProposal(t, port, seed, name1, addr, proposalTokens, fees, kb)
+	resultTx := doSubmitProposal(t, port, name1, addr, proposalTokens, fees, kb)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
 	// check if tx was committed
@@ -846,14 +846,14 @@ func TestProposalsQuery(t *testing.T) {
 	getTallyingParam(t, port)
 
 	// Addr1 proposes (and deposits) proposals #1 and #2
-	resultTx := doSubmitProposal(t, port, seeds[0], names[0], addrs[0], halfMinDeposit, fees, kb)
+	resultTx := doSubmitProposal(t, port, names[0], addrs[0], halfMinDeposit, fees, kb)
 	bz, err := hex.DecodeString(resultTx.Data)
 	require.NoError(t, err)
 
 	proposalID1 := gov.GetProposalIDFromBytes(bz)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
-	resultTx = doSubmitProposal(t, port, seeds[0], names[0], addrs[0], halfMinDeposit, fees, kb)
+	resultTx = doSubmitProposal(t, port, names[0], addrs[0], halfMinDeposit, fees, kb)
 	bz, err = hex.DecodeString(resultTx.Data)
 	require.NoError(t, err)
 
@@ -861,7 +861,7 @@ func TestProposalsQuery(t *testing.T) {
 	tests.WaitForHeight(resultTx.Height+1, port)
 
 	// Addr2 proposes (and deposits) proposals #3
-	resultTx = doSubmitProposal(t, port, seeds[1], names[1], addrs[1], halfMinDeposit, fees, kb)
+	resultTx = doSubmitProposal(t, port, names[1], addrs[1], halfMinDeposit, fees, kb)
 	bz, err = hex.DecodeString(resultTx.Data)
 	require.NoError(t, err)
 

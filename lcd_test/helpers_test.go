@@ -720,7 +720,7 @@ func getValidatorUnbondingDelegations(t *testing.T, port string, validatorAddr s
 // ----------------------------------------------------------------------
 // POST /gov/proposals Submit a proposal
 func doSubmitProposal(
-	t *testing.T, port, seed, name string, proposerAddr sdk.AccAddress,
+	t *testing.T, port, name string, proposerAddr sdk.AccAddress,
 	amount sdk.Int, fees sdk.Coins,
 	kb crkeys.Keybase,
 ) sdk.TxResponse {

@@ -55,7 +55,7 @@ func Request(t *testing.T, port, method, path string, payload []byte) (*http.Res
 	require.Nil(t, err)
 
 	output, err := ioutil.ReadAll(res.Body)
-
+	res.Body.Close()
 	require.Nil(t, err)
 
 	return res, string(output)

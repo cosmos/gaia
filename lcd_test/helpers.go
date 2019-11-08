@@ -151,8 +151,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 
 	// append any additional (non-proposing) validators
 	var genTxs []auth.StdTx
-	genAccounts := make([]authexported.GenesisAccount, nValidators)
-
+	genAccounts := make([]authexported.GenesisAccount, 0)
 	totalSupply := sdk.ZeroInt()
 
 	for i := 0; i < nValidators; i++ {

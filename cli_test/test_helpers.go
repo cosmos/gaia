@@ -758,7 +758,7 @@ func WriteToNewTempFile(t *testing.T, s string) *os.File {
 	return fp
 }
 
-//nolint:deadcode
+//nolint:deadcode,unused
 func marshalStdTx(t *testing.T, stdTx auth.StdTx) []byte {
 	cdc := app.MakeCodec()
 	bz, err := cdc.MarshalBinaryBare(stdTx)
@@ -766,7 +766,7 @@ func marshalStdTx(t *testing.T, stdTx auth.StdTx) []byte {
 	return bz
 }
 
-//nolint:deadcode
+//nolint:deadcode,unused
 func unmarshalStdTx(t *testing.T, s string) (stdTx auth.StdTx) {
 	cdc := app.MakeCodec()
 	require.Nil(t, cdc.UnmarshalJSON([]byte(s), &stdTx))

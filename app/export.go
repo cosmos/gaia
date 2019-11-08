@@ -128,7 +128,6 @@ func (app *GaiaApp) prepForZeroHeightGenesis(ctx sdk.Context, jailWhiteList []st
 	iter := sdk.KVStoreReversePrefixIterator(store, staking.ValidatorsKey)
 	counter := int16(0)
 
-	var valConsAddrs []sdk.ConsAddress
 	for ; iter.Valid(); iter.Next() {
 		addr := sdk.ValAddress(iter.Key()[1:])
 		validator, found := app.stakingKeeper.GetValidator(ctx, addr)
@@ -137,7 +136,6 @@ func (app *GaiaApp) prepForZeroHeightGenesis(ctx sdk.Context, jailWhiteList []st
 		}
 
 		validator.UnbondingHeight = 0
-		valConsAddrs = append(valConsAddrs, validator.ConsAddress())
 		if applyWhiteList && !whiteListMap[addr.String()] {
 			validator.Jailed = true
 		}

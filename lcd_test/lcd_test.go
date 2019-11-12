@@ -274,7 +274,8 @@ func TestEncodeTx(t *testing.T) {
 	var tx auth.StdTx
 	require.Nil(t, cdc.UnmarshalJSON([]byte(body), &tx))
 
-	encodedJSON, _ := cdc.MarshalJSON(tx)
+	encodedJSON, err := cdc.MarshalJSON(tx)
+	require.NoError(t, err)
 	res, body := Request(t, port, "POST", "/txs/encode", encodedJSON)
 
 	// Make sure it came back ok, and that we can decode it back to the transaction
@@ -820,7 +821,8 @@ func TestUnjail(t *testing.T) {
 
 	// NOTE: any less than this and it fails
 	tests.WaitForHeight(3, port)
-	pkString, _ := sdk.Bech32ifyConsPub(valPubKeys[0])
+	pkString, err := sdk.Bech32ifyConsPub(valPubKeys[0])
+	require.NoError(t, err)
 	signingInfo := getSigningInfo(t, port, pkString)
 	tests.WaitForHeight(4, port)
 	require.Equal(t, true, signingInfo.IndexOffset > 0)

@@ -134,7 +134,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	privVal.Reset()
 
 	if nValidators < 1 {
-		err = errors.New("InitializeLCD must use at least one validator")
+		err = errors.New("initializeLCD must use at least one validator")
 		return
 	}
 
@@ -282,14 +282,14 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 		if !(mintData.Params.InflationMax.Equal(sdk.MustNewDecFromStr("15000.0")) &&
 			mintData.Minter.Inflation.Equal(sdk.MustNewDecFromStr("10000.0")) &&
 			mintData.Params.InflationMin.Equal(sdk.MustNewDecFromStr("10000.0"))) {
-			err = errors.New("Mint parameters does not correspond to their defaults")
+			err = errors.New("mint parameters does not correspond to their defaults")
 			return
 		}
 	} else {
 		if !(mintData.Params.InflationMax.Equal(sdk.ZeroDec()) &&
 			mintData.Minter.Inflation.Equal(sdk.ZeroDec()) &&
 			mintData.Params.InflationMin.Equal(sdk.ZeroDec())) {
-			err = errors.New("Mint parameters not equal to decimal 0")
+			err = errors.New("mint parameters not equal to decimal 0")
 			return
 		}
 	}

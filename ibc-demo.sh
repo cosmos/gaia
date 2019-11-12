@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-GAIA_BRANCH=fedekunze/ibc
+GAIA_BRANCH=ibc-alpha
 GAIA_DIR=$(mktemp -d)
 CONF_DIR=$(mktemp -d)
 

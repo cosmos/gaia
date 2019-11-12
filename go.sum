@@ -289,6 +289,7 @@ github.com/tendermint/iavl v0.12.4 h1:hd1woxUGISKkfUWBA4mmmTwOua6PQZTJM/F0FDrmMV
 github.com/tendermint/iavl v0.12.4/go.mod h1:8LHakzt8/0G3/I8FUU0ReNx98S/EP6eyPJkAUvEXT/o=
 github.com/tendermint/tendermint v0.32.1/go.mod h1:jmPDAKuNkev9793/ivn/fTBnfpA9mGBww8MPRNPNxnU=
 github.com/tendermint/tendermint v0.32.6/go.mod h1:D2+A3pNjY+Po72X0mTfaXorFhiVI8dh/Zg640FGyGtE=
+github.com/tendermint/tendermint v0.32.7/go.mod h1:D2+A3pNjY+Po72X0mTfaXorFhiVI8dh/Zg640FGyGtE=
 github.com/tendermint/tendermint v0.32.8 h1:eOaLJGRi5x/Rb23fiVsxq9c5fZ/6O5QplExlGjNPDVI=
 github.com/tendermint/tendermint v0.32.8/go.mod h1:5/B1XZjNYtVBso8o1l/Eg4A0Mhu42lDcmftoQl95j/E=
 github.com/tendermint/tm-db v0.1.1/go.mod h1:0cPKWu2Mou3IlxecH+MEUSYc1Ch537alLe6CpFrKzgw=
@@ -394,6 +395,7 @@ gopkg.in/yaml.v2 v2.2.1/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
 gopkg.in/yaml.v2 v2.2.2/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
 gopkg.in/yaml.v2 v2.2.4 h1:/eiJrUcujPVeJ3xlSWaiNi3uSVmDGBK1pDHUHAnao1I=
 gopkg.in/yaml.v2 v2.2.4/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
+gopkg.in/yaml.v2 v2.2.5/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
 gopkg.in/yaml.v2 v2.2.7 h1:VUgggvou5XRW9mHwD/yXxIYSMtY0zoKQf/v226p2nyo=
 gopkg.in/yaml.v2 v2.2.7/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
 honnef.co/go/tools v0.0.0-20190102054323-c2f93a96b099/go.mod h1:rf3lG4BRIbNafJWhAfAdb/ePZxsR/4RtNHQocxwk9r4=

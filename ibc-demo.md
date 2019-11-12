@@ -29,7 +29,7 @@ Fix the configuration files for both `gaiad` and `gaiacli` to allow both chains/
 
 ```bash
 # Configure the proper database backend for each node and different listening ports
-sed -i 's/"leveldb"/"goleveldb"/g' ibc0/n0/gaiad/config/config.toml
+sed -i'.orig' -e 's/"leveldb"/"goleveldb"/g' ibc0/n0/gaiad/config/config.toml
 sed -i 's/"leveldb"/"goleveldb"/g' ibc1/n0/gaiad/config/config.toml
 sed -i 's#"tcp://0.0.0.0:26656"#"tcp://0.0.0.0:26556"#g' ibc1/n0/gaiad/config/config.toml
 sed -i 's#"tcp://0.0.0.0:26657"#"tcp://0.0.0.0:26557"#g' ibc1/n0/gaiad/config/config.toml
@@ -167,8 +167,8 @@ ibc1 <- channel_open_confirm    [OK] txid(69F50CA44AE6AD84BD24866E7DB7FE8ADFD9C4
 You can query the `channel` after establishment by running the following command:
 
 ```bash
-gaiacli --home ibc0/n0/gaiacli q ibc channel end bankbankbank channelzero --indent --trust-node
-gaiacli --home ibc1/n0/gaiacli q ibc channel end bankbankbank channelone --indent --trust-node
+gaiacli --home ibc0/n0/gaiacli q ibc channel end bank channelzero --indent --trust-node
+gaiacli --home ibc1/n0/gaiacli q ibc channel end bank channelone --indent --trust-node
 ```
 
 ### Send Packet
@@ -192,7 +192,7 @@ gaiacli \
 Now, try querying the account on `ibc1` that you sent the `1stake` to, the account will be empty:
 
 ```bash
-gaiacli --home ibc1/n0/gaiacli q account $(gaiacli --home ibc0/n0/gaiacli keys show n1 -a)
+gaiacli --home ibc1/n0/gaiacli q account $(gaiacli --home ibc0/n0/gaiacli keys show n1 -a) --indent --trust-node
 ```
 
 To complete the transfer once packets are sent, receipt must be confirmed on the destination chain. To `recv-packet` from `ibc0` on `ibc1`, run the following command:

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/base64"
 	"encoding/hex"
 	"fmt"
 	"os"
@@ -14,7 +13,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/crypto/ed25519"
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -26,7 +24,7 @@ import (
 func runHackCmd(cmd *cobra.Command, args []string) error {
 
 	if len(args) != 1 {
-		return fmt.Errorf("Expected 1 arg")
+		return fmt.Errorf("expected 1 arg")
 	}
 
 	// ".gaiad"
@@ -88,16 +86,11 @@ func runHackCmd(cmd *cobra.Command, args []string) error {
 	}
 }
 
-func base64ToPub(b64 string) ed25519.PubKeyEd25519 {
-	data, _ := base64.StdEncoding.DecodeString(b64)
-	var pubKey ed25519.PubKeyEd25519
-	copy(pubKey[:], data)
-	return pubKey
-
-}
-
 func hexToBytes(h string) []byte {
-	trouble, _ := hex.DecodeString(h)
+	trouble, err := hex.DecodeString(h)
+	if err != nil {
+		return nil
+	}
 	return trouble
 
 }

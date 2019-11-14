@@ -252,8 +252,16 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 	config := simapp.NewConfigFromFlags()
 
 	var db dbm.DB
-	dir, _ := ioutil.TempDir("", "goleveldb-app-sim")
-	db, _ = sdk.NewLevelDB("Simulation", dir)
+	dir, err := ioutil.TempDir("", "goleveldb-app-sim")
+	if err != nil {
+		fmt.Println(err)
+		b.Fail()
+	}
+	db, err = sdk.NewLevelDB("Simulation", dir)
+	if err != nil {
+		fmt.Println(err)
+		b.Fail()
+	}
 	defer func() {
 		db.Close()
 		_ = os.RemoveAll(dir)
@@ -310,8 +318,10 @@ func TestFullAppSimulation(t *testing.T) {
 	}
 
 	var db dbm.DB
-	dir, _ := ioutil.TempDir("", "goleveldb-app-sim")
-	db, _ = sdk.NewLevelDB("Simulation", dir)
+	dir, err := ioutil.TempDir("", "goleveldb-app-sim")
+	require.NoError(t, err)
+	db, err = sdk.NewLevelDB("Simulation", dir)
+	require.NoError(t, err)
 
 	defer func() {
 		db.Close()
@@ -364,8 +374,10 @@ func TestAppImportExport(t *testing.T) {
 	}
 
 	var db dbm.DB
-	dir, _ := ioutil.TempDir("", "goleveldb-app-sim")
-	db, _ = sdk.NewLevelDB("Simulation", dir)
+	dir, err := ioutil.TempDir("", "goleveldb-app-sim")
+	require.NoError(t, err)
+	db, err = sdk.NewLevelDB("Simulation", dir)
+	require.NoError(t, err)
 
 	defer func() {
 		db.Close()
@@ -408,8 +420,10 @@ func TestAppImportExport(t *testing.T) {
 	require.NoError(t, err)
 	fmt.Printf("importing genesis...\n")
 
-	newDir, _ := ioutil.TempDir("", "goleveldb-app-sim-2")
-	newDB, _ := sdk.NewLevelDB("Simulation-2", dir)
+	newDir, err := ioutil.TempDir("", "goleveldb-app-sim-2")
+	require.NoError(t, err)
+	newDB, err := sdk.NewLevelDB("Simulation-2", dir)
+	require.NoError(t, err)
 
 	defer func() {
 		newDB.Close()
@@ -480,8 +494,10 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		logger = log.NewNopLogger()
 	}
 
-	dir, _ := ioutil.TempDir("", "goleveldb-app-sim")
-	db, _ := sdk.NewLevelDB("Simulation", dir)
+	dir, err := ioutil.TempDir("", "goleveldb-app-sim")
+	require.NoError(t, err)
+	db, err := sdk.NewLevelDB("Simulation", dir)
+	require.NoError(t, err)
 
 	defer func() {
 		db.Close()
@@ -534,8 +550,10 @@ func TestAppSimulationAfterImport(t *testing.T) {
 
 	fmt.Printf("Importing genesis...\n")
 
-	newDir, _ := ioutil.TempDir("", "goleveldb-app-sim-2")
-	newDB, _ := sdk.NewLevelDB("Simulation-2", dir)
+	newDir, err := ioutil.TempDir("", "goleveldb-app-sim-2")
+	require.NoError(t, err)
+	newDB, err := sdk.NewLevelDB("Simulation-2", dir)
+	require.NoError(t, err)
 
 	defer func() {
 		newDB.Close()
@@ -613,8 +631,16 @@ func BenchmarkInvariants(b *testing.B) {
 	config := simapp.NewConfigFromFlags()
 	config.AllInvariants = false
 
-	dir, _ := ioutil.TempDir("", "goleveldb-app-invariant-bench")
-	db, _ := sdk.NewLevelDB("simulation", dir)
+	dir, err := ioutil.TempDir("", "goleveldb-app-invariant-bench")
+	if err != nil {
+		fmt.Println(err)
+		b.Fail()
+	}
+	db, err := sdk.NewLevelDB("simulation", dir)
+	if err != nil {
+		fmt.Println(err)
+		b.Fail()
+	}
 
 	defer func() {
 		db.Close()
@@ -656,6 +682,7 @@ func BenchmarkInvariants(b *testing.B) {
 	// NOTE: We use the crisis keeper as it has all the invariants registered with
 	// their respective metadata which makes it useful for testing/benchmarking.
 	for _, cr := range gapp.crisisKeeper.Routes() {
+		cr := cr
 		b.Run(fmt.Sprintf("%s/%s", cr.ModuleName, cr.Route), func(b *testing.B) {
 			if res, stop := cr.Invar(ctx); stop {
 				fmt.Printf("broken invariant at block %d of %d\n%s", ctx.BlockHeight()-1, config.NumBlocks, res)

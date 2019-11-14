@@ -134,7 +134,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	privVal.Reset()
 
 	if nValidators < 1 {
-		err = errors.New("InitializeLCD must use at least one validator")
+		err = errors.New("initializeLCD must use at least one validator")
 		return
 	}
 
@@ -150,9 +150,11 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	}
 
 	// append any additional (non-proposing) validators
-	var genTxs []auth.StdTx
-	var genAccounts []authexported.GenesisAccount
-
+	//nolint:prealloc
+	var (
+		genTxs      []auth.StdTx
+		genAccounts []authexported.GenesisAccount
+	)
 	totalSupply := sdk.ZeroInt()
 
 	for i := 0; i < nValidators; i++ {
@@ -280,14 +282,14 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 		if !(mintData.Params.InflationMax.Equal(sdk.MustNewDecFromStr("15000.0")) &&
 			mintData.Minter.Inflation.Equal(sdk.MustNewDecFromStr("10000.0")) &&
 			mintData.Params.InflationMin.Equal(sdk.MustNewDecFromStr("10000.0"))) {
-			err = errors.New("Mint parameters does not correspond to their defaults")
+			err = errors.New("mint parameters does not correspond to their defaults")
 			return
 		}
 	} else {
 		if !(mintData.Params.InflationMax.Equal(sdk.ZeroDec()) &&
 			mintData.Minter.Inflation.Equal(sdk.ZeroDec()) &&
 			mintData.Params.InflationMin.Equal(sdk.ZeroDec())) {
-			err = errors.New("Mint parameters not equal to decimal 0")
+			err = errors.New("mint parameters not equal to decimal 0")
 			return
 		}
 	}
@@ -298,7 +300,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	}
 
 	genDoc.AppState = appState
-	return
+	return genDoc, valConsPubKeys, valOperAddrs, privVal, err
 }
 
 // startTM creates and starts an in-process Tendermint node with memDB and
@@ -412,7 +414,7 @@ func CreateAddrs(kb crkeys.Keybase, numAddrs int) (addrs []sdk.AccAddress, seeds
 		passwords = append(passwords, addrSeeds[i].Password)
 	}
 
-	return
+	return addrs, seeds, names, passwords, errs
 }
 
 // AddrSeed combines an Address with the mnemonic of the private key to that address

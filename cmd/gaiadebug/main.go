@@ -73,7 +73,7 @@ var rawBytesCmd = &cobra.Command{
 
 func runRawBytesCmd(cmd *cobra.Command, args []string) error {
 	if len(args) != 1 {
-		return fmt.Errorf("Expected single arg")
+		return fmt.Errorf("expected single arg")
 	}
 	stringBytes := args[0]
 	stringBytes = strings.Trim(stringBytes, "[")
@@ -94,7 +94,7 @@ func runRawBytesCmd(cmd *cobra.Command, args []string) error {
 
 func runPubKeyCmd(cmd *cobra.Command, args []string) error {
 	if len(args) != 1 {
-		return fmt.Errorf("Expected single arg")
+		return fmt.Errorf("expected single arg")
 	}
 
 	pubkeyString := args[0]
@@ -116,7 +116,7 @@ func runPubKeyCmd(cmd *cobra.Command, args []string) error {
 					var err5 error
 					pubKeyI, err5 = sdk.GetConsPubKeyBech32(pubkeyString)
 					if err5 != nil {
-						return fmt.Errorf(`Expected hex, base64, or bech32. Got errors:
+						return fmt.Errorf(`expected hex, base64, or bech32. Got errors:
 								hex: %v,
 								base64: %v
 								bech32 Acc: %v
@@ -168,7 +168,7 @@ func runPubKeyCmd(cmd *cobra.Command, args []string) error {
 
 func runAddrCmd(cmd *cobra.Command, args []string) error {
 	if len(args) != 1 {
-		return fmt.Errorf("Expected single arg")
+		return fmt.Errorf("expected single arg")
 	}
 
 	addrString := args[0]
@@ -185,7 +185,7 @@ func runAddrCmd(cmd *cobra.Command, args []string) error {
 			addr, err3 = sdk.ValAddressFromBech32(addrString)
 
 			if err3 != nil {
-				return fmt.Errorf(`Expected hex or bech32. Got errors:
+				return fmt.Errorf(`expected hex or bech32. Got errors:
 			hex: %v,
 			bech32 acc: %v
 			bech32 val: %v
@@ -207,7 +207,7 @@ func runAddrCmd(cmd *cobra.Command, args []string) error {
 
 func runTxCmd(cmd *cobra.Command, args []string) error {
 	if len(args) != 1 {
-		return fmt.Errorf("Expected single arg")
+		return fmt.Errorf("expected single arg")
 	}
 
 	txString := args[0]
@@ -218,7 +218,7 @@ func runTxCmd(cmd *cobra.Command, args []string) error {
 		var err2 error
 		txBytes, err2 = base64.StdEncoding.DecodeString(txString)
 		if err2 != nil {
-			return fmt.Errorf(`Expected hex or base64. Got errors:
+			return fmt.Errorf(`expected hex or base64. Got errors:
 			hex: %v,
 			base64: %v
 			`, err, err2)

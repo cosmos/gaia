@@ -45,6 +45,7 @@ const (
 )
 
 var (
+	// nolint:varcheck,deadcode,unused
 	totalCoins = sdk.NewCoins(
 		sdk.NewCoin(fee2Denom, sdk.TokensFromConsensusPower(2000000)),
 		sdk.NewCoin(feeDenom, sdk.TokensFromConsensusPower(2000000)),
@@ -171,7 +172,7 @@ func InitFixtures(t *testing.T) (f *Fixtures) {
 	f.GenTx(keyFoo)
 	f.CollectGenTxs()
 
-	return
+	return f
 }
 
 // Cleanup is meant to be run at the end of a test to clean up an remaining test state
@@ -757,6 +758,7 @@ func WriteToNewTempFile(t *testing.T, s string) *os.File {
 	return fp
 }
 
+//nolint:deadcode,unused
 func marshalStdTx(t *testing.T, stdTx auth.StdTx) []byte {
 	cdc := app.MakeCodec()
 	bz, err := cdc.MarshalBinaryBare(stdTx)
@@ -764,6 +766,7 @@ func marshalStdTx(t *testing.T, stdTx auth.StdTx) []byte {
 	return bz
 }
 
+//nolint:deadcode,unused
 func unmarshalStdTx(t *testing.T, s string) (stdTx auth.StdTx) {
 	cdc := app.MakeCodec()
 	require.Nil(t, cdc.UnmarshalJSON([]byte(s), &stdTx))

@@ -113,6 +113,7 @@ func InitTestnet(cmd *cobra.Command, config *tmconfig.Config, cdc *codec.Codec,
 	gaiaConfig := srvconfig.DefaultConfig()
 	gaiaConfig.MinGasPrices = minGasPrices
 
+	//nolint:prealloc
 	var (
 		genAccounts []authexported.GenesisAccount
 		genFiles    []string

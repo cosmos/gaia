@@ -394,12 +394,11 @@ func CreateAddrs(kb crkeys.Keybase, numAddrs int) (addrs []sdk.AccAddress, seeds
 
 	for i := 0; i < numAddrs; i++ {
 		name := fmt.Sprintf("test%d", i)
-		password := "1234567890"
 		info, seed, err = kb.CreateMnemonic(name, crkeys.English, client.DefaultKeyPass, crkeys.Secp256k1)
 		if err != nil {
 			errs = append(errs, err)
 		}
-		addrSeeds = append(addrSeeds, AddrSeed{Address: sdk.AccAddress(info.GetPubKey().Address()), Seed: seed, Name: name, Password: password})
+		addrSeeds = append(addrSeeds, AddrSeed{Address: sdk.AccAddress(info.GetPubKey().Address()), Seed: seed, Name: name})
 	}
 	if len(errs) > 0 {
 		return
@@ -421,7 +420,6 @@ type AddrSeed struct {
 	Address  sdk.AccAddress
 	Seed     string
 	Name     string
-	Password string
 }
 
 // AddrSeedSlice implements `Interface` in sort package.

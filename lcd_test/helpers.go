@@ -413,7 +413,7 @@ func CreateAddrs(kb crkeys.Keybase, numAddrs int) (addrs []sdk.AccAddress, seeds
 		names = append(names, addrSeeds[i].Name)
 	}
 
-	return addrs, seeds, names, passwords, errs
+	return addrs, seeds, names, errs
 }
 
 // AddrSeed combines an Address with the mnemonic of the private key to that address

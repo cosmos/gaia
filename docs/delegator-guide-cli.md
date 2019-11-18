@@ -150,10 +150,19 @@ To restore an account using a fundraiser mnemonic and store the associated encry
 gaiacli keys add <yourKeyName> --recover
 ```
 
-You will be prompted to input a passphrase that is used to encrypt the private key of account `0` on disk. Each time you want to send a transaction, this password will be required. If you lose the password, you can always recover the private key with the mnemonic. 
-
 - `<yourKeyName>` is the name of the account. It is a reference to the account number used to derive the key pair from the mnemonic. You will use this name to identify your account when you want to send a transaction.
 - You can add the optional `--account` flag to specify the path (`0`, `1`, `2`, ...) you want to use to generate your account. By default, account `0` is generated. 
+
+The private key of account `0` will be saved in your operating system's credentials storage.
+Each time you want to send a transaction, you will need to unlock your system's credentials store.
+If you lose access to your credentials storage, you can always recover the private key with the
+mnemonic.
+
+::: tip
+**You may not be prompted for password each time you send a transaction since most operating systems
+unlock user's credentials store upon login by default. If you want to change your credentials
+store security policies please refer to your operating system manual.**
+:::
 
 ### Creating an Account
 
@@ -197,7 +206,17 @@ To generate an account, just use the following command:
 gaiacli keys add <yourKeyName>
 ```
 
-The command will generate a 24-words mnemonic and save the private and public keys for account `0` at the same time. You will be prompted to input a passphrase that is used to encrypt the private key of account `0` on disk. Each time you want to send a transaction, this password will be required. If you lose the password, you can always recover the private key with the mnemonic. 
+The command will generate a 24-words mnemonic and save the private and public keys for account `0`
+at the same time.
+Each time you want to send a transaction, you will need to unlock your system's credentials store.
+If you lose access to your credentials storage, you can always recover the private key with the
+mnemonic.
+
+::: tip
+**You may not be prompted for password each time you send a transaction since most operating systems
+unlock user's credentials store upon login by default. If you want to change your credentials
+store security policies please refer to your operating system manual.**
+:::
 
 ::: danger
 **Do not lose or share your 12 words with anyone. To prevent theft or loss of funds, it is best to ensure that you keep multiple copies of your mnemonic, and store it in a safe, secure place and that only you know how to access. If someone is able to gain access to your mnemonic, they will be able to gain access to your private keys and control the accounts associated with them.**

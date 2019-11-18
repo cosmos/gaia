@@ -7,6 +7,7 @@ LEDGER_ENABLED ?= true
 SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
 
 export GO111MODULE = on
+export COSMOS_SDK_TEST_KEYRING = y
 
 # process build tags
 
@@ -157,7 +158,7 @@ build-docker-gaiadnode:
 
 # Run a 4-node testnet locally
 localnet-start: build-linux localnet-stop
-	@if ! [ -f build/node0/gaiad/config/genesis.json ]; then docker run --rm -v $(CURDIR)/build:/gaiad:Z tendermint/gaiadnode testnet --v 4 -o . --starting-ip-address 192.168.10.2 ; fi
+	@if ! [ -f build/node0/gaiad/config/genesis.json ]; then docker run -e COSMOS_SDK_TEST_KEYRING=y --rm -v $(CURDIR)/build:/gaiad:Z tendermint/gaiadnode testnet --v 4 -o . --starting-ip-address 192.168.10.2 ; fi
 	docker-compose up -d
 
 # Stop testnet

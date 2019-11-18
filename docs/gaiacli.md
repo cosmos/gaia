@@ -62,6 +62,19 @@ There are three types of key representations that are used:
   - Get this value with `gaiad tendermint show-validator`
   - e.g. `cosmosvalconspub1zcjduepq0ms2738680y72v44tfyqm3c9ppduku8fs6sr73fx7m666sjztznqzp2emf`
 
+#### Migrate Keys From Legacy On-Disk Keybase To OS Built-in Secret Store
+
+Older versions of `gaiacli` used store keys in the user's home directory. If you are migrating
+from an old version of `gaiacli` you will need to migrate your old keys into your operating system's
+credentials storage by running the following command:
+
+```bash
+gaiacli keys migrate
+```
+
+The command will prompt for every passphrase. If a passphrase is incorrect, it will skip the
+respective key.
+
 #### Generate Keys
 
 You'll need an account private and public key pair \(a.k.a. `sk, pk` respectively\) to be able to receive funds, send txs, bond tx, etc.
@@ -72,10 +85,10 @@ To generate a new _secp256k1_ key:
 gaiacli keys add <account_name>
 ```
 
-Next, you will have to create a passphrase to protect the key on disk. The output of the above
-command will contain a _seed phrase_. It is recommended to save the _seed phrase_ in a safe
-place so that in case you forget the password, you could eventually regenerate the key from
-the seed phrase with the following command:
+The output of the above command will contain a _seed phrase_. It is recommended to save the _seed
+phrase_ in a safe place so that in case you forget the password of the operating system's
+credentials store, you could eventually regenerate the key from the seed phrase with the
+following command:
 
 ```bash
 gaiacli keys add --recover

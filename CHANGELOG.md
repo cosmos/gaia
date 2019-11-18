@@ -42,6 +42,14 @@ Ref: https://keepachangelog.com/en/1.0.0/
 flag and configuration.
 * (gaiacli) [\#132](https://github.com/cosmos/gaia/pull/132) Add `tx decode` command to decode
 Base64 encoded transactions.
+* (modules) [\#190](https://github.com/cosmos/gaia/pull/190) Introduce use of the `x/evidence` module.
+
+## [v2.0.3] - 2019-11-04
+
+### Improvements
+
+* (sdk) Bump SDK version to [v0.37.4](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.37.4).
+* (tendermint) Bump Tendermint version to [v0.32.7](https://github.com/tendermint/tendermint/releases/tag/v0.32.7).
 
 ## [v2.0.2] - 2019-10-12
 
@@ -130,7 +138,8 @@ not rely on the `x/supply` keeper to get module account addresses for blacklisti
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v2.0.2...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v2.0.3...HEAD
+[v2.0.3]: https://github.com/cosmos/gaia/releases/tag/v2.0.3
 [v2.0.2]: https://github.com/cosmos/gaia/releases/tag/v2.0.2
 [v2.0.1]: https://github.com/cosmos/gaia/releases/tag/v2.0.1
 [v2.0.0]: https://github.com/cosmos/gaia/releases/tag/v2.0.0

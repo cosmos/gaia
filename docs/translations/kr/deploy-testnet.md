@@ -1,6 +1,6 @@
 # 자체 테스트넷 구축하기
 
-해당 문서는 `gaiad` 노드 네트워크를 구축하는 세가지 방법을 제시합니다. 각 모델은 다른 이용 사례에 특화되어 있습니다.
+해당 문서는 `gaiad` 노드 네트워크를 구축하는 세가지 방법을 설명합니다. 각 테스트넷 모델은 다른 테스트 목적에 최적화 되어있습니다.
 
 1. 싱글-노드, 로컬, 수동 테스트넷
 2. 멀티-노드, 로컬, 자동 테스트넷
@@ -10,9 +10,19 @@
 
 > 참고: 현재 `remote` 관련 정보는 최신 릴리즈와 호환성이 맞지 않을 수 있으므로 참고하시기 바랍니다.
 
+## Docker 이미지
+
+컨테이너 형태로 Gaia 디플로이를 원하시는 경우, `build` 단계를 건너뛰시고 공식 이미지 파일을 설치하실 수 있습니다. $TAG은 설치하시려는 버전을 의미합니다.
+
+- `docker run -it -v ~/.gaiad:/root/.gaiad -v ~/.gaiacli:/root/.gaiacli tendermint:$TAG gaiad init`
+- `docker run -it -p 26657:26657 -p 26656:26656 -v ~/.gaiad:/root/.gaiad -v ~/.gaiacli:/root/.gaiacli tendermint:$TAG gaiad start`
+- `docker run -it -v ~/.gaiad:/root/.gaiad -v ~/.gaiacli:/root/.gaiacli tendermint:$TAG gaiacli version`
+
+각 이미지는 자체적인 docker-compose 스택을 빌드하는데 사용하실 수 있습니다.
+
 ## 싱글-노드, 로컬, 수동 테스트넷
 
-이 가이드는 하나의 검증인 노드를 로컬 환경에서 운영하는 방식을 알려드립니다. 이런 환경은 테스트/개발 환경을 구축하는데 이용될 수 있습니다.
+이 가이드는 한 개의 검증인 노드로 구성된 테스트넷을 로컬 환경에서 운영하는 방식을 알려드립니다. 테스트 용도 또는 개발 용도로 이용될 수 있습니다.
 
 ### 필수 사항
 
@@ -22,27 +32,26 @@
 ### 제네시스 파일 만들기, 네트워크 시작하기
 
 ```bash
-# You can run all of these commands from your home directory
+# 모든 명령어는 홈 디렉토리에서 실행하실 수 있습니다
 cd $HOME
 
-# Initialize the genesis.json file that will help you to bootstrap the network
+# 네트워크를 시작할 genesis.json 파일을 초기화하기
 gaiad init --chain-id=testing testing
 
-# Create a key to hold your validator account
+# 밸리데이터 키 생성하기
 gaiacli keys add validator
 
-# Add that key into the genesis.app_state.accounts array in the genesis file
-# NOTE: this command lets you set the number of coins. Make sure this account has some coins
-# with the genesis.app_state.staking.params.bond_denom denom, the default is staking
-gaiad add-genesis-account $(gaiacli keys show validator -a) 1000stake,1000validatortoken
+# 해당 키를 제네시스 파일에 있는 genesis.app_state.accounts 어레이(array)에 추가하세요
+# 참고: 이 명령어는 코인 수량을 설정할 수 있게 합니다. 위 계정에 코인 잔고를 포함하세요
+# genesis.app_state.staking.params.bond_denom의 기본 설정은 is staking gaiad add-genesis-account $(gaiacli keys show validator -a) 1000stake,1000validatortoken 입니다.
 
-# Generate the transaction that creates your validator
+# 밸리데이터 생성 트랜잭션 실행
 gaiad gentx --name validator
 
-# Add the generated bonding transaction to the genesis file
+# 제네시스 파일에 초기 본딩 트랜잭션 추가하기
 gaiad collect-gentxs
 
-# Now its safe to start `gaiad`
+# 이제 `gaiad`를 실행하실 수 있습니다.
 gaiad start
 ```
 
@@ -62,11 +71,9 @@ gaiad start
 
 `localnet` 커맨드를 운영하기 위한 `gaiad` 바이너리(리눅스)와 `tendermint/gaiadnode` docker 이미지를 생성합니다. 해당 바이너리는 컨테이너에 마운팅 되며 업데이트를 통해 이미지를 리빌드 하실 수 있습니다.
 
-Build the `gaiad` binary (linux) and the `tendermint/gaiadnode` docker image required for running the `localnet` commands. This binary will be mounted into the container and can be updated rebuilding the image, so you only need to build the image once.
-
 ```bash
 # Work from the SDK repo
-cd $GOPATH/src/github.com/cosmos/cosmos-sdk
+cd $GOPATH/src/github.com/cosmos/gaia
 
 # Build the linux binary in ./build
 make build-linux
@@ -181,7 +188,7 @@ BINARY=gaiafoo make localnet-start
 
 다음 환경은 [네트워크 디렉터리](https://github.com/cosmos/cosmos-sdk/tree/develop/networks)에서 실행하셔야 합니다.
 
-### Terraform 과 Ansible
+### Terraform과 Ansible
 
 자동 디플로이멘트(deployment)는 [Terraform](https://www.terraform.io/)를 이용해 AWS 서버를 만든 후 [Ansible](http://www.ansible.com/)을 이용해 해당 서버에서 테스트넷을 생성하고 관리하여 운영됩니다.
 
@@ -202,35 +209,33 @@ export SSH_PUBLIC_FILE="$HOME/.ssh/id_rsa.pub"
 
 해당 명령은 `terraform` 과 `ansible`에서 이용됩니다..
 
-### 리모트 네트워크 만들기
+### 리모트 네트워크 생성하기
 
 ```
 SERVERS=1 REGION_LIMIT=1 make validators-start
 ```
 
-테스트넷 이름은 --chain-id에서 이용될 값이며, 클러스터 이름은 AWS 서버 관리 태그에서 이용될 값입니다. 코드는 각 존의 
-
-The testnet name is what's going to be used in --chain-id, while the cluster name is the administrative tag in AWS for the servers. The code will create SERVERS amount of servers in each availability zone up to the number of REGION_LIMITs, starting at us-east-2. (us-east-1 is excluded.) The below BaSH script does the same, but sometimes it's more comfortable for input.
+테스트넷 이름은 --chain-id에서 이용될 값이며, 클러스터 이름은 AWS 서버 관리 태그에서 이용될 값입니다. cluster name은 서버의 AWS 관리용 태그입니다. 해당 코드는 SERVERS 개수에 비례하는 서버를 REGION_LIMIT 값까지 us-east-2 리전부터 생성합니다 (us-east-1는 제외됩니다). 다음 BaSH 스크립트는 동일한 명령을 실행하나, 개인 선호도에 따라 입력하기 편하실 수 있습니다.
 
 ```
 ./new-testnet.sh "$TESTNET_NAME" "$CLUSTER_NAME" 1 1
 ```
 
-### Quickly see the /status endpoint
+### /status 엔드포인트 빠르게 확인하기
 
 ```
 make validators-status
 ```
 
-### Delete servers
+### 서버 삭제하기
 
 ```
 make validators-stop
 ```
 
-### Logging
+### 로깅
 
-You can ship logs to Logz.io, an Elastic stack (Elastic search, Logstash and Kibana) service provider. You can set up your nodes to log there automatically. Create an account and get your API key from the notes on [this page](https://app.logz.io/#/dashboard/data-sources/Filebeat), then:
+로그는 Elastic stack (Elastic search, Logstash, Kibana) 서비스를 제공하는 Logz.io로 내보내실 수 있습니다. 또한, 노드가 자동으로 해당 서비스에 로깅을 진행하실 수 있습니다. 계정을 생성하시고 [이 페이지](https://app.logz.io/#/dashboard/data-sources/Filebeat)의 노트에서 API키를 받으신 후:
 
 ```
 yum install systemd-devel || echo "This will only work on RHEL-based systems."
@@ -240,9 +245,9 @@ go get github.com/mheese/journalbeat
 ansible-playbook -i inventory/digital_ocean.py -l remotenet logzio.yml -e LOGZIO_TOKEN=ABCDEFGHIJKLMNOPQRSTUVWXYZ012345
 ```
 
-### Monitoring
+### 모니터링
 
-You can install the DataDog agent with:
+다음과 같이 DataDog 에이전트를 설치하실 수 있습니다:
 
 ```
 make datadog-install

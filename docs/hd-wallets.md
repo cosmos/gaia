@@ -1,6 +1,6 @@
 # HD Wallets
 
-Accounts in Cosmos are Hierarichial Deterministic (HD) Wallets. Originally specified in Bitcoin's [BIP32](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki), HD wallets are a special kind of wallet that let users derive any number of accounts from a single seed. To understand what that means, let us first define some terminology:
+Accounts in Cosmos are Hierarchical Deterministic (HD) Wallets. Originally specified in Bitcoin's [BIP32](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki), HD wallets are a special kind of wallet that let users derive any number of accounts from a single seed. To understand what that means, let us first define some terminology:
 
 - **Wallet**: Set of accounts obtained from a given seed.
 - **Account**: A pair of public key/private key.

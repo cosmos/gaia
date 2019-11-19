@@ -828,9 +828,8 @@ func TestGaiaCLIValidateSignatures(t *testing.T) {
 	defer os.Remove(unsignedTxFile.Name())
 
 	// validate we can successfully sign
-	success, stdout, stderr = f.TxSign(keyFoo, unsignedTxFile.Name())
+	success, stdout, _ = f.TxSign(keyFoo, unsignedTxFile.Name())
 	require.True(t, success)
-	require.Empty(t, stderr)
 	stdTx := unmarshalStdTx(t, stdout)
 	require.Equal(t, len(stdTx.Msgs), 1)
 	require.Equal(t, 1, len(stdTx.GetSignatures()))

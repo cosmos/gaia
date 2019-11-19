@@ -371,19 +371,19 @@ func init() {
 
 // CreateAddr adds an address to the key store and returns an address and seed.
 // It also requires that the key could be created.
-func CreateAddr(name, password string, kb crkeys.Keybase) (sdk.AccAddress, string, error) {
+func CreateAddr(name string, kb crkeys.Keybase) (sdk.AccAddress, string, error) {
 	var (
 		err  error
 		info crkeys.Info
 		seed string
 	)
-	info, seed, err = kb.CreateMnemonic(name, crkeys.English, password, crkeys.Secp256k1)
+	info, seed, err = kb.CreateMnemonic(name, crkeys.English, client.DefaultKeyPass, crkeys.Secp256k1)
 	return sdk.AccAddress(info.GetPubKey().Address()), seed, err
 }
 
 // CreateAddr adds multiple address to the key store and returns the addresses and associated seeds in lexographical order by address.
 // It also requires that the keys could be created.
-func CreateAddrs(kb crkeys.Keybase, numAddrs int) (addrs []sdk.AccAddress, seeds, names, passwords []string, errs []error) {
+func CreateAddrs(kb crkeys.Keybase, numAddrs int) (addrs []sdk.AccAddress, seeds, names []string, errs []error) {
 	var (
 		err  error
 		info crkeys.Info
@@ -394,12 +394,11 @@ func CreateAddrs(kb crkeys.Keybase, numAddrs int) (addrs []sdk.AccAddress, seeds
 
 	for i := 0; i < numAddrs; i++ {
 		name := fmt.Sprintf("test%d", i)
-		password := "1234567890"
-		info, seed, err = kb.CreateMnemonic(name, crkeys.English, password, crkeys.Secp256k1)
+		info, seed, err = kb.CreateMnemonic(name, crkeys.English, client.DefaultKeyPass, crkeys.Secp256k1)
 		if err != nil {
 			errs = append(errs, err)
 		}
-		addrSeeds = append(addrSeeds, AddrSeed{Address: sdk.AccAddress(info.GetPubKey().Address()), Seed: seed, Name: name, Password: password})
+		addrSeeds = append(addrSeeds, AddrSeed{Address: sdk.AccAddress(info.GetPubKey().Address()), Seed: seed, Name: name})
 	}
 	if len(errs) > 0 {
 		return
@@ -411,10 +410,9 @@ func CreateAddrs(kb crkeys.Keybase, numAddrs int) (addrs []sdk.AccAddress, seeds
 		addrs = append(addrs, addrSeeds[i].Address)
 		seeds = append(seeds, addrSeeds[i].Seed)
 		names = append(names, addrSeeds[i].Name)
-		passwords = append(passwords, addrSeeds[i].Password)
 	}
 
-	return addrs, seeds, names, passwords, errs
+	return addrs, seeds, names, errs
 }
 
 // AddrSeed combines an Address with the mnemonic of the private key to that address
@@ -422,7 +420,6 @@ type AddrSeed struct {
 	Address  sdk.AccAddress
 	Seed     string
 	Name     string
-	Password string
 }
 
 // AddrSeedSlice implements `Interface` in sort package.

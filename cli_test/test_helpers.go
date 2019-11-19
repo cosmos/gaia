@@ -226,13 +226,13 @@ func (f *Fixtures) AddGenesisAccount(address sdk.AccAddress, coins sdk.Coins, fl
 // GenTx is gaiad gentx
 func (f *Fixtures) GenTx(name string, flags ...string) {
 	cmd := fmt.Sprintf("%s gentx --name=%s --home=%s --home-client=%s", f.GaiadBinary, name, f.GaiadHome, f.GaiacliHome)
-	executeWriteCheckErr(f.T, addFlags(cmd, flags), client.DefaultKeyPass)
+	executeWriteCheckErr(f.T, addFlags(cmd, flags))
 }
 
 // CollectGenTxs is gaiad collect-gentxs
 func (f *Fixtures) CollectGenTxs(flags ...string) {
 	cmd := fmt.Sprintf("%s collect-gentxs --home=%s", f.GaiadBinary, f.GaiadHome)
-	executeWriteCheckErr(f.T, addFlags(cmd, flags), client.DefaultKeyPass)
+	executeWriteCheckErr(f.T, addFlags(cmd, flags))
 }
 
 // GDStart runs gaiad start with the appropriate flags and returns a process
@@ -271,19 +271,19 @@ func (f *Fixtures) KeysDelete(name string, flags ...string) {
 // KeysAdd is gaiacli keys add
 func (f *Fixtures) KeysAdd(name string, flags ...string) {
 	cmd := fmt.Sprintf("%s keys add --home=%s %s", f.GaiacliBinary, f.GaiacliHome, name)
-	executeWriteCheckErr(f.T, addFlags(cmd, flags), client.DefaultKeyPass)
+	executeWriteCheckErr(f.T, addFlags(cmd, flags))
 }
 
 // KeysAddRecover prepares gaiacli keys add --recover
 func (f *Fixtures) KeysAddRecover(name, mnemonic string, flags ...string) (exitSuccess bool, stdout, stderr string) {
 	cmd := fmt.Sprintf("%s keys add --home=%s --recover %s", f.GaiacliBinary, f.GaiacliHome, name)
-	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), client.DefaultKeyPass, mnemonic)
+	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), mnemonic)
 }
 
 // KeysAddRecoverHDPath prepares gaiacli keys add --recover --account --index
 func (f *Fixtures) KeysAddRecoverHDPath(name, mnemonic string, account uint32, index uint32, flags ...string) {
 	cmd := fmt.Sprintf("%s keys add --home=%s --recover %s --account %d --index %d", f.GaiacliBinary, f.GaiacliHome, name, account, index)
-	executeWriteCheckErr(f.T, addFlags(cmd, flags), client.DefaultKeyPass, mnemonic)
+	executeWriteCheckErr(f.T, addFlags(cmd, flags), mnemonic)
 }
 
 // KeysShow is gaiacli keys show

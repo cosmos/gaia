@@ -43,6 +43,11 @@ flag and configuration.
 * (gaiacli) [\#132](https://github.com/cosmos/gaia/pull/132) Add `tx decode` command to decode
 Base64 encoded transactions.
 * (modules) [\#190](https://github.com/cosmos/gaia/pull/190) Introduce use of the `x/evidence` module.
+* (gaiad) [\#191](https://github.com/cosmos/gaia/pull/191) Add debug commands to gaiad: 
+    - `pubkey`: decode pubkey from base64, hex or bech32
+    - `addr`: convert a address between hex and bech32
+    - `raw-bytes` convert raw-bytes to hex
+* (gaiacli) [\#191](https://github.com/cosmos/gaia/pull/191) Add cmd `decode-tx`, decodes a tx from hex or base64
 
 ## [v2.0.3] - 2019-11-04
 

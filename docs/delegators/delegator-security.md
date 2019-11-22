@@ -51,10 +51,6 @@ For people who hold cryptocurrency, there are two specific account  security act
 ## Supply Chain Attacks
 Whether you're buying a hardware or a hardware wallet, it is important  to purchase whatever you need directly from the supplier or from a trusted source. This is the only way to completely eliminate the risk of a compromised device or chip from stealing your private keys, especially since there are reports of compromised wallets being sold on Amazon and through other popular online marketplaces. 
 
-## Alpha Software
-
-At launch, the official Cosmos Wallet is in alpha and is unsafe to use on the Cosmos network. The Tendermint KMS is also in alpha, and is not production-ready. 
-
 ## Disclaimer
 
 Please note that this is highly experimental software. In these early days, we can expect to have issues, updates, and bugs. The existing tools require advanced technical skills and involve risks which are outside of the control of the Interchain Foundation and/or the Tendermint team (see also the risk section in the Interchain Cosmos Contribution Terms). Any use of this open source Apache 2.0 licensed software is done at your own risk and on a "AS IS" basis, without warranties or conditions of any kind, and any and all liability of the Interchain Foundation and/or the Tendermint team for damages arising in connection to the software is excluded. Please exercise extreme caution!`

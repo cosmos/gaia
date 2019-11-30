@@ -45,7 +45,7 @@ governance process.
    corresponding upgrade `Handler` with the correct `<plan-name>`:
 
    ```go
-       app.upgradeKeeper.SetUpgradeHandler(<plan-name>, func(ctx sdk.Context, plan upgrade.Plan) {
+       app.upgradeKeeper.SetUpgradeHandler("<plan-name>", func(ctx sdk.Context, plan upgrade.Plan) {
            // custom logic after the network upgrade has been executed
        })
    ```

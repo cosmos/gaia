@@ -70,6 +70,11 @@ var (
 		staking.NotBondedPoolName: {supply.Burner, supply.Staking},
 		gov.ModuleName:            {supply.Burner},
 	}
+
+	// module accounts that are allowed to receive tokens
+	whitelistReceivingModAcc = map[string]bool{
+		distr.ModuleName: true,
+	}
 )
 
 // MakeCodec creates the application codec. The codec is sealed before it is
@@ -158,7 +163,7 @@ func NewGaiaApp(
 
 	// add keepers
 	app.accountKeeper = auth.NewAccountKeeper(app.cdc, keys[auth.StoreKey], authSubspace, auth.ProtoBaseAccount)
-	app.bankKeeper = bank.NewBaseKeeper(app.accountKeeper, bankSubspace, bank.DefaultCodespace, app.ModuleAccountAddrs())
+	app.bankKeeper = bank.NewBaseKeeper(app.accountKeeper, bankSubspace, bank.DefaultCodespace, app.BlacklistedAccAddrs())
 	app.supplyKeeper = supply.NewKeeper(app.cdc, keys[supply.StoreKey], app.accountKeeper, app.bankKeeper, maccPerms)
 	stakingKeeper := staking.NewKeeper(
 		app.cdc, keys[staking.StoreKey], app.supplyKeeper, stakingSubspace, staking.DefaultCodespace,
@@ -300,6 +305,17 @@ func (app *GaiaApp) ModuleAccountAddrs() map[string]bool {
 	}
 
 	return modAccAddrs
+}
+
+// BlacklistedAccAddrs returns all module account addresses blacklisted from
+// receiving tokens.
+func (app *GaiaApp) BlacklistedAccAddrs() map[string]bool {
+	blacklistedAddrs := make(map[string]bool)
+	for acc := range maccPerms {
+		blacklistedAddrs[supply.NewModuleAddress(acc).String()] = !whitelistReceivingModAcc[acc]
+	}
+
+	return blacklistedAddrs
 }
 
 // Codec returns the application's sealed codec.

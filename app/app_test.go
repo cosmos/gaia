@@ -32,7 +32,7 @@ func TestBlackListedAddrs(t *testing.T) {
 	gapp := NewGaiaApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, 0)
 
 	for acc := range maccPerms {
-		require.True(t, gapp.bankKeeper.BlacklistedAddr(gapp.supplyKeeper.GetModuleAddress(acc)))
+		require.Equal(t, !whitelistReceivingModAcc[acc], gapp.bankKeeper.BlacklistedAddr(gapp.supplyKeeper.GetModuleAddress(acc)))
 	}
 }
 

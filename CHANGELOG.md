@@ -36,6 +36,11 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+### State Machine Breaking
+
+* (modules) [\#203](https://github.com/cosmos/gaia/pull/203) Funds are now allowed to be directly sent
+  to the community pool (via the distribution module account).
+
 ### Features
 
 * (gaiad) [\#119](https://github.com/cosmos/gaia/pull/119) Add support for the `--inter-block-cache` CLI

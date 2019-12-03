@@ -8,17 +8,16 @@ mainnet as either a [Full Node](./join-mainnet.md) or a
 ## Install Go
 
 Install `go` by following the [official docs](https://golang.org/doc/install).
-Remember to set your `$GOPATH` and `$PATH` environment variables, for example:
+Remember to set your `$PATH` environment variable, for example:
 
 ```bash
 mkdir -p $HOME/go/bin
-echo "export GOPATH=$HOME/go" >> ~/.bash_profile
-echo "export PATH=\$PATH:\$GOPATH/bin" >> ~/.bash_profile
+echo "export PATH=$PATH:/usr/local/go/bin" >> ~/.bash_profile
 source ~/.bash_profile
 ```
 
 ::: tip
-**Go 1.12+** is required for the Cosmos SDK.
+**Go 1.13+** is required for the Cosmos SDK.
 :::
 
 ## Install the binaries

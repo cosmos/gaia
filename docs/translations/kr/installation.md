@@ -4,12 +4,11 @@
 
 ### Go 설치하기
 
-공식 [Go 문서](https://golang.org/doc/install)를 따라서 `go`를 설치하십시오. `$GOPATH`, 그리고 `$PATH`의 환경을 꼭 세팅하세요. 예시: 
+공식 [Go 문서](https://golang.org/doc/install)를 따라서 `go`를 설치하십시오. 그리고 `$PATH`의 환경을 꼭 세팅하세요. 예시:
 
 ```bash
 mkdir -p $HOME/go/bin
-echo "export GOPATH=$HOME/go" >> ~/.bash_profile
-echo "export PATH=\$PATH:\$GOPATH/bin" >> ~/.bash_profile
+echo "export PATH=$PATH:/usr/local/go/bin" >> ~/.bash_profile
 source ~/.bash_profile
 ```
 
@@ -42,10 +41,9 @@ make: *** [install] Error 2
 LDFLAGS="" make install
 ```
 
-> *참고*: 여기에서 문제가 발생한다면, Go의 최신 스테이블 버전이 설치되어있는지 확인하십시오.
+> _참고_: 여기에서 문제가 발생한다면, Go의 최신 스테이블 버전이 설치되어있는지 확인하십시오.
 
 위 절차를 따라하시면 `gaiad`와 `gaiacli` 바이너리가 설치될 것입니다. 설치가 잘 되어있는지 확인하십시오:
-
 
 ```bash
 $ gaiad version --long
@@ -68,10 +66,10 @@ go: go version go1.12.5 darwin/amd64
 
 빌드 태그는 해당 바이너리에서 활성화된 특별 기능을 표기합니다.
 
-| 빌드 태그   | 설명                                             |
-| --------- | ----------------------------------------------- |
-| netgo     | Name resolution이 오직 Go 코드만을 사용합니다          |
-| ledger    | 렛저 기기(하드웨어 지갑)이 지원됩니다                    |
+| 빌드 태그 | 설명                                          |
+| --------- | --------------------------------------------- |
+| netgo     | Name resolution이 오직 Go 코드만을 사용합니다 |
+| ledger    | 렛저 기기(하드웨어 지갑)이 지원됩니다         |
 
 ### snap을 사용해 바이너리 설치하기 (리눅스에만 해당)
 

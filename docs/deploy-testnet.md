@@ -12,7 +12,7 @@ Supporting code can be found in the [networks directory](https://github.com/cosm
 
 ## Available Docker images
 
-In case you need to use or deploy gaia as a container you could skip the `build` steps and use the official images, $TAG stands for the version you are interested in:
+In case you need to use or deploy gaia as a container you could skip the `build` steps and use the official images, \$TAG stands for the version you are interested in:
 
 - `docker run -it -v ~/.gaiad:/root/.gaiad -v ~/.gaiacli:/root/.gaiacli tendermint:$TAG gaiad init`
 - `docker run -it -p 26657:26657 -p 26656:26656 -v ~/.gaiad:/root/.gaiad -v ~/.gaiacli:/root/.gaiacli tendermint:$TAG gaiad start`
@@ -74,8 +74,11 @@ From the [networks/local directory](https://github.com/cosmos/gaia/tree/master/n
 Build the `gaiad` binary (linux) and the `tendermint/gaiadnode` docker image required for running the `localnet` commands. This binary will be mounted into the container and can be updated rebuilding the image, so you only need to build the image once.
 
 ```bash
+# Clone the gaia repo
+git clone https://github.com/cosmos/gaia.git
+
 # Work from the SDK repo
-cd $GOPATH/src/github.com/cosmos/gaia
+cd gaia
 
 # Build the linux binary in ./build
 make build-linux
@@ -95,12 +98,12 @@ make localnet-start
 This command creates a 4-node network using the gaiadnode image.
 The ports for each node are found in this table:
 
-| Node ID | P2P Port | RPC Port |
-| --------|-------|------|
-| `gaianode0` | `26656` | `26657` |
-| `gaianode1` | `26659` | `26660` |
-| `gaianode2` | `26661` | `26662` |
-| `gaianode3` | `26663` | `26664` |
+| Node ID     | P2P Port | RPC Port |
+| ----------- | -------- | -------- |
+| `gaianode0` | `26656`  | `26657`  |
+| `gaianode1` | `26659`  | `26660`  |
+| `gaianode2` | `26661`  | `26662`  |
+| `gaianode3` | `26663`  | `26664`  |
 
 To update the binary, just rebuild it and restart the nodes:
 

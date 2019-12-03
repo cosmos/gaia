@@ -212,4 +212,4 @@ single parameter, `max_validators`, that we're upgrading based on [proposal 10](
 5. We expect that developers with iOS or Android based apps may have to notify their users of downtime
    and ship an upgrade for cosmoshub-3 compatibility unless they have some kind of switch they can throw
    for the new tx formats. Server side applications should experience briefer service interruptions and
-   be able to just spin up new nodes and migrate to the new apis 
+   be able to just spin up new nodes and migrate to the new apis.

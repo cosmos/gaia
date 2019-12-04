@@ -52,7 +52,7 @@ Your full node has been initialized!
 
 ### Copy the Genesis File
 
-Fetch the testnet's `genesis.json` file into `gaiad`'s config directory.
+Fetch the mainnet's `genesis.json` file into `gaiad`'s config directory.
 
 ```bash
 mkdir -p $HOME/.gaiad/config

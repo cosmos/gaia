@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/snikch/goodman/hooks"
 	"github.com/snikch/goodman/transaction"
 )

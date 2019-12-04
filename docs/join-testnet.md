@@ -50,7 +50,7 @@ Now it is time to upgrade the software:
 git clone https://github.com/cosmos/gaia.git
 cd gaia
 git fetch --all && git checkout master
-make update_tools install
+make install
 ```
 
 ::: tip

@@ -47,7 +47,7 @@ gaiad unsafe-reset-all
 git clone https://github.com/cosmos/cosmos-sdk.git
 cd cosmos-sdk
 git fetch --all && git checkout master
-make update_tools install
+make install
 ```
 
 ::: 提示

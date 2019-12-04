@@ -19,13 +19,13 @@ set -e
 
 echo "Building Gaia..."
 
-cd $GAIA_DIR
-git clone git@github.com:cosmos/gaia
-cd gaia
-git checkout $GAIA_BRANCH
-make install
-gaiad version
-gaiacli version
+# cd $GAIA_DIR
+# git clone git@github.com:cosmos/gaia
+# cd gaia
+# git checkout $GAIA_BRANCH
+# make install
+# gaiad version
+# gaiacli version
 
 echo "Generating configurations..."
 
@@ -83,10 +83,14 @@ sleep 20
 
 echo "Creating clients..."
 
+echo "Creating ibconeclient..."
+
 echo -e "12345678\n" | gaiacli --home ibc0/n0/gaiacli \
   tx ibc client create ibconeclient \
   $(gaiacli --home ibc1/n0/gaiacli q ibc client node-state) \
   --from n0 -y -o text
+
+echo "Creating ibczeroclient..."
 
 echo -e "12345678\n" | gaiacli --home ibc1/n0/gaiacli \
   tx ibc client create ibczeroclient \

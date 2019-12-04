@@ -48,7 +48,7 @@ gaiacli keys add <keyName> --ledger
 <keyName> ledger cosmos1... cosmospub1...
 ```
 
-Cosmos uses [HD Wallets](./hd-wallets.md). This means you can setup many accounts using the same Ledger seed. To create another account from your Ledger device, run;
+Cosmos uses [HD Wallets](./hd-wallets.md). This means you can setup many accounts using the same Ledger seed. To create another account from your Ledger device, run:
 
 ```bash
 gaiacli keys add <secondKeyName> --ledger
@@ -66,7 +66,7 @@ Confirm that the address displayed on the device matches that displayed when you
 
 ### Connect to a full node
 
-Next, you need to configure gaiacli with the URL of a Cosmos full node and the appropriate `chain_id`. In this example we connect to the public load balanced full node operated by Chorus One on the `cosmoshub-2` chain. But you can point your `gaiacli` to any Cosmos full node. Be sure that the `chain_id` is set to the same chain as the full node.
+Next, you need to configure gaiacli with the URL of a Cosmos full node and the appropriate `chain_id`. In this example we connect to the public load balanced full node operated by Chorus One on the `cosmoshub-2` chain. But you can point your `gaiacli` to any Cosmos full node. Be sure that the `chain-id` is set to the same chain as the full node.
 
 ```bash
 gaiacli config node https://cosmos.chorus.one:26657
@@ -76,7 +76,7 @@ gaiacli config chain_id cosmoshub-2
 Test your connection with a query such as:
 
 ``` bash
-`gaiacli query staking validators`
+gaiacli query staking validators
 ```
 
 ::: tip

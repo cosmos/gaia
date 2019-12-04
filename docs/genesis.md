@@ -38,7 +38,7 @@ Next, the genesis file defines consensus parameters. Consensus parameters regrou
     + `max_bytes`: Maximum number of bytes per block. 
     + `max_gas`: Gas limit per block. Each transaction included in the block will consume some gas. The total gas used by transactions included in a block cannot exceed this limit.
 - `evidence`
-    + `max_age`: An evidence is a proof that a validator signed two different blocks at the same height (and round). This is an explicitely malicious behaviour that is punished at the state-machine level. The `max_age` defines the maximum number of **blocks** after which an evidence is not valid anymore. 
+    + `max_age`: An evidence is a proof that a validator signed two different blocks at the same height (and round). This is an explicitly malicious behaviour that is punished at the state-machine level. The `max_age` defines the maximum number of **blocks** after which an evidence is not valid anymore. 
 - `validator`
     + `pub_key_types`: The types of pubkey (`ed25519`, `secp256k1`, ...) that are accepted for validators. Currently only `ed25519` is accepted.
 
@@ -159,7 +159,7 @@ Let us break down the parameters:
     + `bond_denom`: Denomination of the staking token. 
 - `last_total_power`: Total amount of voting power. Generally `0` in genesis (except if genesis was generated using a previous state).
 - `last_validator_powers`: Power of each validator in last known state. Generally `null` in genesis (except if genesis was generated using a previous state).
-- `validators`: List of last knoww validators. Generally `null` in genesis (except if genesis was generated using a previous state).
+- `validators`: List of last known validators. Generally `null` in genesis (except if genesis was generated using a previous state).
 - `bonds`: List of last known delegation. Generally `null` in genesis (except if genesis was generated using a previous state).
 - `unbonding_delegations`: List of last known unbonding delegations. Generally `null` in genesis (except if genesis was generated using a previous state).
 - `redelegations`: List of last known redelegations. Generally `null` in genesis (except if genesis was generated using a previous state).

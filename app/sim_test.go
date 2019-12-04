@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
@@ -19,20 +18,19 @@ import (
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	authsimops "github.com/cosmos/cosmos-sdk/x/auth/simulation/operations"
-	banksimops "github.com/cosmos/cosmos-sdk/x/bank/simulation/operations"
+	banksim "github.com/cosmos/cosmos-sdk/x/bank/simulation"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
-	distrsimops "github.com/cosmos/cosmos-sdk/x/distribution/simulation/operations"
+	distrsim "github.com/cosmos/cosmos-sdk/x/distribution/simulation"
 	"github.com/cosmos/cosmos-sdk/x/gov"
-	govsimops "github.com/cosmos/cosmos-sdk/x/gov/simulation/operations"
+	govsim "github.com/cosmos/cosmos-sdk/x/gov/simulation"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/params"
-	paramsimops "github.com/cosmos/cosmos-sdk/x/params/simulation/operations"
+	paramsim "github.com/cosmos/cosmos-sdk/x/params/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
-	slashingsimops "github.com/cosmos/cosmos-sdk/x/slashing/simulation/operations"
+	slashingsim "github.com/cosmos/cosmos-sdk/x/slashing/simulation"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	stakingsimops "github.com/cosmos/cosmos-sdk/x/staking/simulation/operations"
+	stakingsim "github.com/cosmos/cosmos-sdk/x/staking/simulation"
 	"github.com/cosmos/cosmos-sdk/x/supply"
 )
 
@@ -59,35 +57,24 @@ func testAndRunTxs(app *GaiaApp, config simulation.Config) []simulation.Weighted
 		{
 			func(_ *rand.Rand) int {
 				var v int
-				ap.GetOrGenerate(app.cdc, OpWeightDeductFee, &v, nil,
-					func(_ *rand.Rand) {
-						v = 5
-					})
-				return v
-			}(nil),
-			authsimops.SimulateDeductFee(app.accountKeeper, app.supplyKeeper),
-		},
-		{
-			func(_ *rand.Rand) int {
-				var v int
 				ap.GetOrGenerate(app.cdc, OpWeightMsgSend, &v, nil,
 					func(_ *rand.Rand) {
 						v = 100
 					})
 				return v
 			}(nil),
-			banksimops.SimulateMsgSend(app.accountKeeper, app.bankKeeper),
+			banksim.SimulateMsgSend(app.accountKeeper, app.bankKeeper),
 		},
 		{
 			func(_ *rand.Rand) int {
 				var v int
-				ap.GetOrGenerate(app.cdc, OpWeightSingleInputMsgMultiSend, &v, nil,
+				ap.GetOrGenerate(app.cdc, OpWeightMsgMultiSend, &v, nil,
 					func(_ *rand.Rand) {
-						v = 10
+						v = 40
 					})
 				return v
 			}(nil),
-			banksimops.SimulateSingleInputMsgMultiSend(app.accountKeeper, app.bankKeeper),
+			banksim.SimulateMsgMultiSend(app.accountKeeper, app.bankKeeper),
 		},
 		{
 			func(_ *rand.Rand) int {
@@ -98,7 +85,7 @@ func testAndRunTxs(app *GaiaApp, config simulation.Config) []simulation.Weighted
 					})
 				return v
 			}(nil),
-			distrsimops.SimulateMsgSetWithdrawAddress(app.distrKeeper),
+			distrsim.SimulateMsgSetWithdrawAddress(app.accountKeeper, app.distrKeeper),
 		},
 		{
 			func(_ *rand.Rand) int {
@@ -109,7 +96,7 @@ func testAndRunTxs(app *GaiaApp, config simulation.Config) []simulation.Weighted
 					})
 				return v
 			}(nil),
-			distrsimops.SimulateMsgWithdrawDelegatorReward(app.distrKeeper),
+			distrsim.SimulateMsgWithdrawDelegatorReward(app.accountKeeper, app.distrKeeper, app.stakingKeeper),
 		},
 		{
 			func(_ *rand.Rand) int {
@@ -120,40 +107,40 @@ func testAndRunTxs(app *GaiaApp, config simulation.Config) []simulation.Weighted
 					})
 				return v
 			}(nil),
-			distrsimops.SimulateMsgWithdrawValidatorCommission(app.distrKeeper),
+			distrsim.SimulateMsgWithdrawValidatorCommission(app.accountKeeper, app.distrKeeper, app.stakingKeeper),
 		},
 		{
 			func(_ *rand.Rand) int {
 				var v int
-				ap.GetOrGenerate(app.cdc, OpWeightSubmitVotingSlashingTextProposal, &v, nil,
+				ap.GetOrGenerate(app.cdc, OpWeightSubmitTextProposal, &v, nil,
 					func(_ *rand.Rand) {
-						v = 5
+						v = 20
 					})
 				return v
 			}(nil),
-			govsimops.SimulateSubmittingVotingAndSlashingForProposal(app.govKeeper, govsimops.SimulateTextProposalContent),
+			govsim.SimulateSubmitProposal(app.accountKeeper, app.govKeeper, govsim.SimulateTextProposalContent),
 		},
 		{
 			func(_ *rand.Rand) int {
 				var v int
-				ap.GetOrGenerate(app.cdc, OpWeightSubmitVotingSlashingCommunitySpendProposal, &v, nil,
+				ap.GetOrGenerate(app.cdc, OpWeightSubmitCommunitySpendProposal, &v, nil,
 					func(_ *rand.Rand) {
-						v = 5
+						v = 20
 					})
 				return v
 			}(nil),
-			govsimops.SimulateSubmittingVotingAndSlashingForProposal(app.govKeeper, distrsimops.SimulateCommunityPoolSpendProposalContent(app.distrKeeper)),
+			govsim.SimulateSubmitProposal(app.accountKeeper, app.govKeeper, distrsim.SimulateCommunityPoolSpendProposalContent(app.distrKeeper)),
 		},
 		{
 			func(_ *rand.Rand) int {
 				var v int
-				ap.GetOrGenerate(app.cdc, OpWeightSubmitVotingSlashingParamChangeProposal, &v, nil,
+				ap.GetOrGenerate(app.cdc, OpWeightSubmitParamChangeProposal, &v, nil,
 					func(_ *rand.Rand) {
-						v = 5
+						v = 20
 					})
 				return v
 			}(nil),
-			govsimops.SimulateSubmittingVotingAndSlashingForProposal(app.govKeeper, paramsimops.SimulateParamChangeProposalContent(paramChanges)),
+			govsim.SimulateSubmitProposal(app.accountKeeper, app.govKeeper, paramsim.SimulateParamChangeProposalContent(paramChanges)),
 		},
 		{
 			func(_ *rand.Rand) int {
@@ -164,7 +151,18 @@ func testAndRunTxs(app *GaiaApp, config simulation.Config) []simulation.Weighted
 					})
 				return v
 			}(nil),
-			govsimops.SimulateMsgDeposit(app.govKeeper),
+			govsim.SimulateMsgDeposit(app.accountKeeper, app.govKeeper),
+		},
+		{
+			func(_ *rand.Rand) int {
+				var v int
+				ap.GetOrGenerate(app.cdc, OpWeightMsgVote, &v, nil,
+					func(_ *rand.Rand) {
+						v = 100
+					})
+				return v
+			}(nil),
+			govsim.SimulateMsgVote(app.accountKeeper, app.govKeeper),
 		},
 		{
 			func(_ *rand.Rand) int {
@@ -175,18 +173,18 @@ func testAndRunTxs(app *GaiaApp, config simulation.Config) []simulation.Weighted
 					})
 				return v
 			}(nil),
-			stakingsimops.SimulateMsgCreateValidator(app.accountKeeper, app.stakingKeeper),
+			stakingsim.SimulateMsgCreateValidator(app.accountKeeper, app.stakingKeeper),
 		},
 		{
 			func(_ *rand.Rand) int {
 				var v int
 				ap.GetOrGenerate(app.cdc, OpWeightMsgEditValidator, &v, nil,
 					func(_ *rand.Rand) {
-						v = 5
+						v = 20
 					})
 				return v
 			}(nil),
-			stakingsimops.SimulateMsgEditValidator(app.stakingKeeper),
+			stakingsim.SimulateMsgEditValidator(app.accountKeeper, app.stakingKeeper),
 		},
 		{
 			func(_ *rand.Rand) int {
@@ -197,7 +195,7 @@ func testAndRunTxs(app *GaiaApp, config simulation.Config) []simulation.Weighted
 					})
 				return v
 			}(nil),
-			stakingsimops.SimulateMsgDelegate(app.accountKeeper, app.stakingKeeper),
+			stakingsim.SimulateMsgDelegate(app.accountKeeper, app.stakingKeeper),
 		},
 		{
 			func(_ *rand.Rand) int {
@@ -208,7 +206,7 @@ func testAndRunTxs(app *GaiaApp, config simulation.Config) []simulation.Weighted
 					})
 				return v
 			}(nil),
-			stakingsimops.SimulateMsgUndelegate(app.accountKeeper, app.stakingKeeper),
+			stakingsim.SimulateMsgUndelegate(app.accountKeeper, app.stakingKeeper),
 		},
 		{
 			func(_ *rand.Rand) int {
@@ -219,7 +217,7 @@ func testAndRunTxs(app *GaiaApp, config simulation.Config) []simulation.Weighted
 					})
 				return v
 			}(nil),
-			stakingsimops.SimulateMsgBeginRedelegate(app.accountKeeper, app.stakingKeeper),
+			stakingsim.SimulateMsgBeginRedelegate(app.accountKeeper, app.stakingKeeper),
 		},
 		{
 			func(_ *rand.Rand) int {
@@ -230,7 +228,7 @@ func testAndRunTxs(app *GaiaApp, config simulation.Config) []simulation.Weighted
 					})
 				return v
 			}(nil),
-			slashingsimops.SimulateMsgUnjail(app.slashingKeeper),
+			slashingsim.SimulateMsgUnjail(app.accountKeeper, app.slashingKeeper, app.stakingKeeper),
 		},
 	}
 }
@@ -254,8 +252,16 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 	config := simapp.NewConfigFromFlags()
 
 	var db dbm.DB
-	dir, _ := ioutil.TempDir("", "goleveldb-app-sim")
-	db, _ = sdk.NewLevelDB("Simulation", dir)
+	dir, err := ioutil.TempDir("", "goleveldb-app-sim")
+	if err != nil {
+		fmt.Println(err)
+		b.Fail()
+	}
+	db, err = sdk.NewLevelDB("Simulation", dir)
+	if err != nil {
+		fmt.Println(err)
+		b.Fail()
+	}
 	defer func() {
 		db.Close()
 		_ = os.RemoveAll(dir)
@@ -312,8 +318,10 @@ func TestFullAppSimulation(t *testing.T) {
 	}
 
 	var db dbm.DB
-	dir, _ := ioutil.TempDir("", "goleveldb-app-sim")
-	db, _ = sdk.NewLevelDB("Simulation", dir)
+	dir, err := ioutil.TempDir("", "goleveldb-app-sim")
+	require.NoError(t, err)
+	db, err = sdk.NewLevelDB("Simulation", dir)
+	require.NoError(t, err)
 
 	defer func() {
 		db.Close()
@@ -366,8 +374,10 @@ func TestAppImportExport(t *testing.T) {
 	}
 
 	var db dbm.DB
-	dir, _ := ioutil.TempDir("", "goleveldb-app-sim")
-	db, _ = sdk.NewLevelDB("Simulation", dir)
+	dir, err := ioutil.TempDir("", "goleveldb-app-sim")
+	require.NoError(t, err)
+	db, err = sdk.NewLevelDB("Simulation", dir)
+	require.NoError(t, err)
 
 	defer func() {
 		db.Close()
@@ -410,8 +420,10 @@ func TestAppImportExport(t *testing.T) {
 	require.NoError(t, err)
 	fmt.Printf("importing genesis...\n")
 
-	newDir, _ := ioutil.TempDir("", "goleveldb-app-sim-2")
-	newDB, _ := sdk.NewLevelDB("Simulation-2", dir)
+	newDir, err := ioutil.TempDir("", "goleveldb-app-sim-2")
+	require.NoError(t, err)
+	newDB, err := sdk.NewLevelDB("Simulation-2", dir)
+	require.NoError(t, err)
 
 	defer func() {
 		newDB.Close()
@@ -482,8 +494,10 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		logger = log.NewNopLogger()
 	}
 
-	dir, _ := ioutil.TempDir("", "goleveldb-app-sim")
-	db, _ := sdk.NewLevelDB("Simulation", dir)
+	dir, err := ioutil.TempDir("", "goleveldb-app-sim")
+	require.NoError(t, err)
+	db, err := sdk.NewLevelDB("Simulation", dir)
+	require.NoError(t, err)
 
 	defer func() {
 		db.Close()
@@ -536,8 +550,10 @@ func TestAppSimulationAfterImport(t *testing.T) {
 
 	fmt.Printf("Importing genesis...\n")
 
-	newDir, _ := ioutil.TempDir("", "goleveldb-app-sim-2")
-	newDB, _ := sdk.NewLevelDB("Simulation-2", dir)
+	newDir, err := ioutil.TempDir("", "goleveldb-app-sim-2")
+	require.NoError(t, err)
+	newDB, err := sdk.NewLevelDB("Simulation-2", dir)
+	require.NoError(t, err)
 
 	defer func() {
 		newDB.Close()
@@ -615,8 +631,16 @@ func BenchmarkInvariants(b *testing.B) {
 	config := simapp.NewConfigFromFlags()
 	config.AllInvariants = false
 
-	dir, _ := ioutil.TempDir("", "goleveldb-app-invariant-bench")
-	db, _ := sdk.NewLevelDB("simulation", dir)
+	dir, err := ioutil.TempDir("", "goleveldb-app-invariant-bench")
+	if err != nil {
+		fmt.Println(err)
+		b.Fail()
+	}
+	db, err := sdk.NewLevelDB("simulation", dir)
+	if err != nil {
+		fmt.Println(err)
+		b.Fail()
+	}
 
 	defer func() {
 		db.Close()
@@ -658,6 +682,7 @@ func BenchmarkInvariants(b *testing.B) {
 	// NOTE: We use the crisis keeper as it has all the invariants registered with
 	// their respective metadata which makes it useful for testing/benchmarking.
 	for _, cr := range gapp.crisisKeeper.Routes() {
+		cr := cr
 		b.Run(fmt.Sprintf("%s/%s", cr.ModuleName, cr.Route), func(b *testing.B) {
 			if res, stop := cr.Invar(ctx); stop {
 				fmt.Printf("broken invariant at block %d of %d\n%s", ctx.BlockHeight()-1, config.NumBlocks, res)

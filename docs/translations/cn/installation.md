@@ -4,12 +4,11 @@
 
 ### 安装 Go
 
-按照[官方文档](https://golang.org/doc/install)安装`go`。记得设置环境变量 `$GOBIN`和`$PATH`:
+按照[官方文档](https://golang.org/doc/install)安装`go`。记得设置环境变量 `$PATH`:
 
 ```bash
 mkdir -p $HOME/go/bin
-echo "export PATH=$PATH:/usr/local/go/bin" >> ~/.bash_profile
-echo "export GO111MODULE=on" >> ~/.bash_profile
+echo "export PATH=$PATH:$(go env GOPATH)/bin" >> ~/.bash_profile
 source ~/.bash_profile
 ```
 

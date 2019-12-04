@@ -109,7 +109,7 @@ type GaiaApp struct {
 	crisisKeeper   crisis.Keeper
 	paramsKeeper   params.Keeper
 	upgradeKeeper  upgrade.Keeper
-	evidenceKeeper *evidence.Keeper
+	evidenceKeeper evidence.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -173,12 +173,16 @@ func NewGaiaApp(
 	app.upgradeKeeper = upgrade.NewKeeper(keys[upgrade.StoreKey], app.cdc)
 
 	// create evidence keeper with evidence router
-	app.evidenceKeeper = evidence.NewKeeper(
+	evidenceKeeper := evidence.NewKeeper(
 		app.cdc, keys[evidence.StoreKey], evidenceSubspace, evidence.DefaultCodespace,
+		&stakingKeeper, app.slashingKeeper,
 	)
 	evidenceRouter := evidence.NewRouter()
-	// TODO: Register evidence routes.
-	app.evidenceKeeper.SetRouter(evidenceRouter)
+
+	// TODO: register evidence routes
+	evidenceKeeper.SetRouter(evidenceRouter)
+
+	app.evidenceKeeper = *evidenceKeeper
 
 	// register the proposal types
 	govRouter := gov.NewRouter()
@@ -211,7 +215,7 @@ func NewGaiaApp(
 		slashing.NewAppModule(app.slashingKeeper, app.stakingKeeper),
 		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.supplyKeeper),
 		upgrade.NewAppModule(app.upgradeKeeper),
-		evidence.NewAppModule(*app.evidenceKeeper),
+		evidence.NewAppModule(app.evidenceKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that

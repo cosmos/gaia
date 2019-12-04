@@ -272,17 +272,17 @@ func NewGaiaApp(
 	return app
 }
 
-// application updates every begin block
+// BeginBlocker application updates every begin block
 func (app *GaiaApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	return app.mm.BeginBlock(ctx, req)
 }
 
-// application updates every end block
+// EndBlocker application updates every end block
 func (app *GaiaApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
 	return app.mm.EndBlock(ctx, req)
 }
 
-// application update at chain initialization
+// InitChainer application update at chain initialization
 func (app *GaiaApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var genesisState simapp.GenesisState
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
@@ -290,7 +290,7 @@ func (app *GaiaApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci
 	return app.mm.InitGenesis(ctx, genesisState)
 }
 
-// load a particular height
+// LoadHeight loads a particular height
 func (app *GaiaApp) LoadHeight(height int64) error {
 	return app.LoadVersion(height, app.keys[bam.MainStoreKey])
 }

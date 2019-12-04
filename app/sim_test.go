@@ -18,219 +18,18 @@ import (
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	banksim "github.com/cosmos/cosmos-sdk/x/bank/simulation"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
-	distrsim "github.com/cosmos/cosmos-sdk/x/distribution/simulation"
 	"github.com/cosmos/cosmos-sdk/x/gov"
-	govsim "github.com/cosmos/cosmos-sdk/x/gov/simulation"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/params"
-	paramsim "github.com/cosmos/cosmos-sdk/x/params/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
-	slashingsim "github.com/cosmos/cosmos-sdk/x/slashing/simulation"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	stakingsim "github.com/cosmos/cosmos-sdk/x/staking/simulation"
 	"github.com/cosmos/cosmos-sdk/x/supply"
 )
 
 func init() {
 	simapp.GetSimulatorFlags()
-}
-
-func testAndRunTxs(app *GaiaApp, config simulation.Config) []simulation.WeightedOperation {
-	ap := make(simulation.AppParams)
-
-	paramChanges := app.sm.GenerateParamChanges(config.Seed)
-
-	if config.ParamsFile != "" {
-		bz, err := ioutil.ReadFile(config.ParamsFile)
-		if err != nil {
-			panic(err)
-		}
-
-		app.cdc.MustUnmarshalJSON(bz, &ap)
-	}
-
-	// nolint: govet
-	return []simulation.WeightedOperation{
-		{
-			func(_ *rand.Rand) int {
-				var v int
-				ap.GetOrGenerate(app.cdc, OpWeightMsgSend, &v, nil,
-					func(_ *rand.Rand) {
-						v = 100
-					})
-				return v
-			}(nil),
-			banksim.SimulateMsgSend(app.accountKeeper, app.bankKeeper),
-		},
-		{
-			func(_ *rand.Rand) int {
-				var v int
-				ap.GetOrGenerate(app.cdc, OpWeightMsgMultiSend, &v, nil,
-					func(_ *rand.Rand) {
-						v = 40
-					})
-				return v
-			}(nil),
-			banksim.SimulateMsgMultiSend(app.accountKeeper, app.bankKeeper),
-		},
-		{
-			func(_ *rand.Rand) int {
-				var v int
-				ap.GetOrGenerate(app.cdc, OpWeightMsgSetWithdrawAddress, &v, nil,
-					func(_ *rand.Rand) {
-						v = 50
-					})
-				return v
-			}(nil),
-			distrsim.SimulateMsgSetWithdrawAddress(app.accountKeeper, app.distrKeeper),
-		},
-		{
-			func(_ *rand.Rand) int {
-				var v int
-				ap.GetOrGenerate(app.cdc, OpWeightMsgWithdrawDelegationReward, &v, nil,
-					func(_ *rand.Rand) {
-						v = 50
-					})
-				return v
-			}(nil),
-			distrsim.SimulateMsgWithdrawDelegatorReward(app.accountKeeper, app.distrKeeper, app.stakingKeeper),
-		},
-		{
-			func(_ *rand.Rand) int {
-				var v int
-				ap.GetOrGenerate(app.cdc, OpWeightMsgWithdrawValidatorCommission, &v, nil,
-					func(_ *rand.Rand) {
-						v = 50
-					})
-				return v
-			}(nil),
-			distrsim.SimulateMsgWithdrawValidatorCommission(app.accountKeeper, app.distrKeeper, app.stakingKeeper),
-		},
-		{
-			func(_ *rand.Rand) int {
-				var v int
-				ap.GetOrGenerate(app.cdc, OpWeightSubmitTextProposal, &v, nil,
-					func(_ *rand.Rand) {
-						v = 20
-					})
-				return v
-			}(nil),
-			govsim.SimulateSubmitProposal(app.accountKeeper, app.govKeeper, govsim.SimulateTextProposalContent),
-		},
-		{
-			func(_ *rand.Rand) int {
-				var v int
-				ap.GetOrGenerate(app.cdc, OpWeightSubmitCommunitySpendProposal, &v, nil,
-					func(_ *rand.Rand) {
-						v = 20
-					})
-				return v
-			}(nil),
-			govsim.SimulateSubmitProposal(app.accountKeeper, app.govKeeper, distrsim.SimulateCommunityPoolSpendProposalContent(app.distrKeeper)),
-		},
-		{
-			func(_ *rand.Rand) int {
-				var v int
-				ap.GetOrGenerate(app.cdc, OpWeightSubmitParamChangeProposal, &v, nil,
-					func(_ *rand.Rand) {
-						v = 20
-					})
-				return v
-			}(nil),
-			govsim.SimulateSubmitProposal(app.accountKeeper, app.govKeeper, paramsim.SimulateParamChangeProposalContent(paramChanges)),
-		},
-		{
-			func(_ *rand.Rand) int {
-				var v int
-				ap.GetOrGenerate(app.cdc, OpWeightMsgDeposit, &v, nil,
-					func(_ *rand.Rand) {
-						v = 100
-					})
-				return v
-			}(nil),
-			govsim.SimulateMsgDeposit(app.accountKeeper, app.govKeeper),
-		},
-		{
-			func(_ *rand.Rand) int {
-				var v int
-				ap.GetOrGenerate(app.cdc, OpWeightMsgVote, &v, nil,
-					func(_ *rand.Rand) {
-						v = 100
-					})
-				return v
-			}(nil),
-			govsim.SimulateMsgVote(app.accountKeeper, app.govKeeper),
-		},
-		{
-			func(_ *rand.Rand) int {
-				var v int
-				ap.GetOrGenerate(app.cdc, OpWeightMsgCreateValidator, &v, nil,
-					func(_ *rand.Rand) {
-						v = 100
-					})
-				return v
-			}(nil),
-			stakingsim.SimulateMsgCreateValidator(app.accountKeeper, app.stakingKeeper),
-		},
-		{
-			func(_ *rand.Rand) int {
-				var v int
-				ap.GetOrGenerate(app.cdc, OpWeightMsgEditValidator, &v, nil,
-					func(_ *rand.Rand) {
-						v = 20
-					})
-				return v
-			}(nil),
-			stakingsim.SimulateMsgEditValidator(app.accountKeeper, app.stakingKeeper),
-		},
-		{
-			func(_ *rand.Rand) int {
-				var v int
-				ap.GetOrGenerate(app.cdc, OpWeightMsgDelegate, &v, nil,
-					func(_ *rand.Rand) {
-						v = 100
-					})
-				return v
-			}(nil),
-			stakingsim.SimulateMsgDelegate(app.accountKeeper, app.stakingKeeper),
-		},
-		{
-			func(_ *rand.Rand) int {
-				var v int
-				ap.GetOrGenerate(app.cdc, OpWeightMsgUndelegate, &v, nil,
-					func(_ *rand.Rand) {
-						v = 100
-					})
-				return v
-			}(nil),
-			stakingsim.SimulateMsgUndelegate(app.accountKeeper, app.stakingKeeper),
-		},
-		{
-			func(_ *rand.Rand) int {
-				var v int
-				ap.GetOrGenerate(app.cdc, OpWeightMsgBeginRedelegate, &v, nil,
-					func(_ *rand.Rand) {
-						v = 100
-					})
-				return v
-			}(nil),
-			stakingsim.SimulateMsgBeginRedelegate(app.accountKeeper, app.stakingKeeper),
-		},
-		{
-			func(_ *rand.Rand) int {
-				var v int
-				ap.GetOrGenerate(app.cdc, OpWeightMsgUnjail, &v, nil,
-					func(_ *rand.Rand) {
-						v = 100
-					})
-				return v
-			}(nil),
-			slashingsim.SimulateMsgUnjail(app.accountKeeper, app.slashingKeeper, app.stakingKeeper),
-		},
-	}
 }
 
 // fauxMerkleModeOpt returns a BaseApp option to use a dbStoreAdapter instead of
@@ -273,7 +72,8 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 	// TODO: parameterize numbers, save for a later PR
 	_, simParams, simErr := simulation.SimulateFromSeed(
 		b, os.Stdout, gapp.BaseApp, simapp.AppStateFn(gapp.Codec(), gapp.sm),
-		testAndRunTxs(gapp, config), gapp.ModuleAccountAddrs(), config,
+		simapp.SimulationOperations(app, app.Codec(), config),
+		gapp.ModuleAccountAddrs(), config,
 	)
 
 	// export state and params before the simulation error is checked
@@ -334,7 +134,8 @@ func TestFullAppSimulation(t *testing.T) {
 	// Run randomized simulation
 	_, simParams, simErr := simulation.SimulateFromSeed(
 		t, os.Stdout, gapp.BaseApp, simapp.AppStateFn(gapp.Codec(), gapp.sm),
-		testAndRunTxs(gapp, config), gapp.ModuleAccountAddrs(), config,
+		simapp.SimulationOperations(app, app.Codec(), config),
+		gapp.ModuleAccountAddrs(), config,
 	)
 
 	// export state and params before the simulation error is checked
@@ -390,7 +191,8 @@ func TestAppImportExport(t *testing.T) {
 	// Run randomized simulation
 	_, simParams, simErr := simulation.SimulateFromSeed(
 		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
-		testAndRunTxs(app, config), app.ModuleAccountAddrs(), config,
+		simapp.SimulationOperations(app, app.Codec(), config),
+		app.ModuleAccountAddrs(), config,
 	)
 
 	// export state and simParams before the simulation error is checked
@@ -511,7 +313,8 @@ func TestAppSimulationAfterImport(t *testing.T) {
 	// Run randomized simulation
 	stopEarly, simParams, simErr := simulation.SimulateFromSeed(
 		t, os.Stdout, gapp.BaseApp, simapp.AppStateFn(gapp.Codec(), gapp.sm),
-		testAndRunTxs(gapp, config), gapp.ModuleAccountAddrs(), config,
+		simapp.SimulationOperations(app, app.Codec(), config),
+		gapp.ModuleAccountAddrs(), config,
 	)
 
 	// export state and params before the simulation error is checked
@@ -570,7 +373,8 @@ func TestAppSimulationAfterImport(t *testing.T) {
 	// Run randomized simulation on imported app
 	_, _, err = simulation.SimulateFromSeed(
 		t, os.Stdout, newApp.BaseApp, simapp.AppStateFn(gapp.Codec(), gapp.sm),
-		testAndRunTxs(newApp, config), newApp.ModuleAccountAddrs(), config,
+		simapp.SimulationOperations(app, app.Codec(), config),
+		newApp.ModuleAccountAddrs(), config,
 	)
 
 	require.NoError(t, err)
@@ -608,7 +412,8 @@ func TestAppStateDeterminism(t *testing.T) {
 
 			_, _, err := simulation.SimulateFromSeed(
 				t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
-				testAndRunTxs(app, config), app.ModuleAccountAddrs(), config,
+				simapp.SimulationOperations(app, app.Codec(), config),
+				app.ModuleAccountAddrs(), config,
 			)
 			require.NoError(t, err)
 
@@ -652,7 +457,8 @@ func BenchmarkInvariants(b *testing.B) {
 	// 2. Run parameterized simulation (w/o invariants)
 	_, simParams, simErr := simulation.SimulateFromSeed(
 		b, ioutil.Discard, gapp.BaseApp, simapp.AppStateFn(gapp.Codec(), gapp.sm),
-		testAndRunTxs(gapp, config), gapp.ModuleAccountAddrs(), config,
+		simapp.SimulationOperations(app, app.Codec(), config),
+		gapp.ModuleAccountAddrs(), config,
 	)
 
 	// export state and params before the simulation error is checked

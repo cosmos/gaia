@@ -12,7 +12,7 @@
 
 ## Docker 이미지
 
-컨테이너 형태로 Gaia 디플로이를 원하시는 경우, `build` 단계를 건너뛰시고 공식 이미지 파일을 설치하실 수 있습니다. $TAG은 설치하시려는 버전을 의미합니다.
+컨테이너 형태로 Gaia 디플로이를 원하시는 경우, `build` 단계를 건너뛰시고 공식 이미지 파일을 설치하실 수 있습니다. \$TAG은 설치하시려는 버전을 의미합니다.
 
 - `docker run -it -v ~/.gaiad:/root/.gaiad -v ~/.gaiacli:/root/.gaiacli tendermint:$TAG gaiad init`
 - `docker run -it -p 26657:26657 -p 26656:26656 -v ~/.gaiad:/root/.gaiad -v ~/.gaiacli:/root/.gaiacli tendermint:$TAG gaiad start`
@@ -55,7 +55,7 @@ gaiad collect-gentxs
 gaiad start
 ```
 
-이 셋업은 모든 `gaiad` 정보를  `~/.gaiad`에 저장힙니다. 생성하신 제네시스 파일을 확인하고 싶으시다면 `~/.gaiad/config/genesis.json`에서 확인이 가능합니다. 위의 세팅으로 `gaiacli`가 이용이 가능하며, 토큰(스테이킹/커스텀)이 있는 계정 또한 함께 생성됩니다.
+이 셋업은 모든 `gaiad` 정보를 `~/.gaiad`에 저장힙니다. 생성하신 제네시스 파일을 확인하고 싶으시다면 `~/.gaiad/config/genesis.json`에서 확인이 가능합니다. 위의 세팅으로 `gaiacli`가 이용이 가능하며, 토큰(스테이킹/커스텀)이 있는 계정 또한 함께 생성됩니다.
 
 ## 멀티 노드, 로컬, 자동 테스트넷
 
@@ -72,8 +72,11 @@ gaiad start
 `localnet` 커맨드를 운영하기 위한 `gaiad` 바이너리(리눅스)와 `tendermint/gaiadnode` docker 이미지를 생성합니다. 해당 바이너리는 컨테이너에 마운팅 되며 업데이트를 통해 이미지를 리빌드 하실 수 있습니다.
 
 ```bash
+# Clone the gaia repo
+git clone https://github.com/cosmos/gaia.git
+
 # Work from the SDK repo
-cd $GOPATH/src/github.com/cosmos/gaia
+cd gaia
 
 # Build the linux binary in ./build
 make build-linux
@@ -92,13 +95,12 @@ make localnet-start
 
 이 커맨드는 4개 노드로 구성되어있는 네트워크를 gaiadnode 이미지를 기반으로 생성합니다. 각 노드의 포트는 하단 테이블에서 확인하실 수 있습니다:
 
-
-| 노드 ID | P2P 포트 | RPC 포트 |
-| --------|-------|------|
-| `gaianode0` | `26656` | `26657` |
-| `gaianode1` | `26659` | `26660` |
-| `gaianode2` | `26661` | `26662` |
-| `gaianode3` | `26663` | `26664` |
+| 노드 ID     | P2P 포트 | RPC 포트 |
+| ----------- | -------- | -------- |
+| `gaianode0` | `26656`  | `26657`  |
+| `gaianode1` | `26659`  | `26660`  |
+| `gaianode2` | `26661`  | `26662`  |
+| `gaianode3` | `26663`  | `26664`  |
 
 바이너리를 업데이트 하기 위해서는 리빌드를 하신 후 노드를 재시작 하시면 됩니다:
 
@@ -109,7 +111,6 @@ make build-linux localnet-start
 ### 설정
 
 `make localnet-start`는 `gaiad testnet` 명령을 호출하여 4개 노드로 구성된 테스트넷에 필요한 파일을 `./build`에 저장합니다. 이 명령은 `./build` 디렉토리에 다수의 파일을 내보냅니다.
-
 
 ```bash
 $ tree -L 2 build/
@@ -164,12 +165,12 @@ docker logs -f gaiadnode0
 
 ### 키와 계정
 
-`gaiacli`를 이용해 tx를 생성하거나 상태를 쿼리 하시려면, 특정 노드의 `gaiacli` 디렉토리를 `home`처럼 이용하시면 됩니다. 예를들어: 
-
+`gaiacli`를 이용해 tx를 생성하거나 상태를 쿼리 하시려면, 특정 노드의 `gaiacli` 디렉토리를 `home`처럼 이용하시면 됩니다. 예를들어:
 
 ```shell
 gaiacli keys list --home ./build/node0/gaiacli
 ```
+
 이제 계정이 존재하니 추가로 새로운 계정을 만들고 계정들에게 토큰을 전송할 수 있습니다.
 
 ::: tip
@@ -179,6 +180,7 @@ gaiacli keys list --home ./build/node0/gaiacli
 ### 특수 바이너리
 
 다수의 이름을 가진 다수의 바이너리를 소유하신 경우, 어떤 바이너리의 환경 변수(environment variable)를 기준으로 실행할지 선택할 수 있습니다. 바이너리의 패스(path)는 관련 볼륨(volume)에 따라 달라집니다. 예시:
+
 ```
 # Run with custom binary
 BINARY=gaiafoo make localnet-start

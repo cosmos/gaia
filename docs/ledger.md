@@ -23,6 +23,7 @@ Installing the `Cosmos` application on your ledger device is required before you
 
 ::: tip
 To see the `Cosmos` application when you search for it, you might need to activate the `Developer Mode`, located in the Experimental features tab of the Ledger Live application.
+:::
 
 ![Devmode](./ledger-tuto-dev-mode.png)
 
@@ -31,10 +32,10 @@ To see the `Cosmos` application when you search for it, you might need to activa
 **Note: You need to [install the Cosmos app](#install-the-cosmos-ledger-application) on your Ledger Nano before using following this section**
 
 1. Connect your Ledger device to your computer, unlock it with the PIN and open the Cosmos app.
-2. Open [https://lunie.io](https://app.lunie.io/existing) in your web browser (latest version of Google Chrome preferred).
+2. Open [https://app.lunie.io](https://app.lunie.io) in your web browser (latest version of [Brave](https://brave.com/) preferred).
 3. Choose `Sign in with Ledger Nano S`.
     ![lunie-option](./ledger-tuto-lunie-option.png)
-4. Click on `Sign in`. Do not forget to open the Cosmos app on your Ledger device for Lunie to recognize it. 
+4. Make sure your Ledger device is unlocked and with the Cosmos app open and then click on the`Sign in` button. 
 
 That's it! You can now use Lunie with your Ledger Nano S. You will find your Cosmos address here:
 

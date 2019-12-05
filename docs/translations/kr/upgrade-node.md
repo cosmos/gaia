@@ -7,13 +7,13 @@
 우선 `gaiad` 인스턴스를 중지하세요. 이후 소프트웨어를 업그레이드하세요:
 
 ```bash
-cd $GOPATH/src/github.com/cosmos/gaia
+cd gaia
 git fetch --all && git checkout <new_version>
 make install
 ```
 
 ::: tip
-*참고*: 이번 단계에서 문제가 발생하는 경우, 최신 스테이블 버전의 Go가 설치되어있는지 확인하세요.
+_참고_: 이번 단계에서 문제가 발생하는 경우, 최신 스테이블 버전의 Go가 설치되어있는지 확인하세요.
 :::
 
 최신 퍼블릭 테스트넷에 필요한 버전 정보를 확인하기 위해서는 [테스트넷 리포](https://github.com/cosmos/testnets)를 참고하시고, 각 릴리즈에 대한 자세한 정보는 [Gaia 릴리즈 페이지](https://github.com/cosmos/Gaia/releases)를 참고하세요.
@@ -61,14 +61,13 @@ mv new_genesis.json genesis.json
 
 이 상태에서 내보낸 제네시스 파일을 새로운 버전과 호환되는 제네시스 파일로 변환하는 스크립트를 실행하셔야될 수 있습니다. 예를 들어, `Account` 타입의 형태가 바뀐경우, 스크립트는 account store에서 인코딩된 계정을 확인하고, 언마셜하고, 타입을 업데이트한 후 다시 마셜링을 진행한 다음에 복구하는 작업을 진행합니다. 스크립트의 예시는 [여기](https://github.com/cosmos/cosmos-sdk/blob/master/contrib/export/v0.33.x-to-v0.34.0.py).를 참고하세요
 
-
 ## 데이터 리셋하기
 
-:::warning 
-만약 업그레이드하는 <새로운_버전(new_version)>에 'breaking change'가 포함되는 않은 경우, 데이터를 리셋할 필요가 없습니다. 만약 'breaking change'가 포함되지 않은 경우, 바로 [Restart](#restart) 항목으로 넘어가세요.
+:::warning
+만약 업그레이드하는 <새로운\_버전(new_version)>에 'breaking change'가 포함되는 않은 경우, 데이터를 리셋할 필요가 없습니다. 만약 'breaking change'가 포함되지 않은 경우, 바로 [Restart](#restart) 항목으로 넘어가세요.
 :::
 
-::: warning 
+::: warning
 메인넷에서 **검증인 노드**를 운영하시는 경우, `gaiad unsafe-reset-all` 명령어를 실행하실때 주의를 기울이세요. `chain-id`를 변경하지 않는 이상 이 명령어를 실행할 필요가 없습니다.
 :::
 

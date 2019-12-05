@@ -32,7 +32,7 @@ To see the `Cosmos` application when you search for it, you might need to activa
 **Note: You need to [install the Cosmos app](#install-the-cosmos-ledger-application) on your Ledger Nano before using following this section**
 
 1. Connect your Ledger device to your computer, unlock it with the PIN and open the Cosmos app.
-2. Open [https://app.lunie.io](https://app.lunie.io) in your web browser (latest version of [Brave](https://brave.com/) preferred).
+2. Open [https://app.lunie.io](https://app.lunie.io/existing) in your web browser (latest version of [Brave](https://brave.com/) preferred).
 3. Choose `Sign in with Ledger Nano S`.
     ![lunie-option](./ledger-tuto-lunie-option.png)
 4. Make sure your Ledger device is unlocked and with the Cosmos app open and then click on the`Sign in` button. 
@@ -45,16 +45,13 @@ That's it! You can now use Lunie with your Ledger Nano S. You will find your Cos
 
 ### (Optional) Confirm your address
 
-**Note: This optional section tells your how to confirm that Lunie is displaying the correct address. It requires you to be familiar with Command-Line interfaces and the use of the terminal**
+You can double check that Lunie is displaying the correct address directly on your Ledger Nano device. To do so:
 
-To double check your address, you need to first [install `gaiacli`](./installation). Then, run this command to display your address on the device. Use the `keyName` you gave your ledger key. The `-d` flag is supported in version `1.5.0` and higher.
+1. Connect your Ledger to your computer and open the Cosmos application on the device.
+2. Once the Cosmos app is open, click on the right button to access the `Show Address` option.
+3. Click on both button, then select `Account 0` and `Index 0`. 
 
-```bash
-gaiacli keys show <keyName> -d
-```
-
-Confirm that the address displayed on your Ledger matches that shown on Lunie.io before proceeding.
-Now you can use your Ledger key to sign transctions on Lunie.
+You should now see the same address that is displayed on the Lunie application. 
 
 To learn more about using Lunie, [here is a tutorial](https://medium.com/easy2stake/how-to-delegate-re-delegate-un-delegate-cosmos-atoms-with-the-lunie-web-wallet-eb72369e52db) on staking and delegating ATOMs using the Lunie web wallet.
 

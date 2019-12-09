@@ -65,8 +65,8 @@ $ gaiacli version --long
 name: gaia
 server_name: gaiad
 client_name: gaiacli
-version: 1.0.0
-commit: 89e6316a27343304d332aadfe2869847bf52331c
+version: 2.0.3
+commit: 2f6783e298f25ff4e12cb84549777053ab88749a
 build_tags: netgo,ledger
 go: go version go1.12.5 darwin/amd64
 ```

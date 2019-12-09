@@ -3,7 +3,7 @@ parent:
   order: 1
 ---
 
-![Welcome to the Cosmos Hub](../cosmos-hub-image.jpg)
+![Welcome to the Cosmos Hub](../images/cosmos-hub-image.jpg)
 
 # Cosmos Hub
 

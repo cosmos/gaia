@@ -71,14 +71,14 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 	// Run randomized simulation
 	// TODO: parameterize numbers, save for a later PR
 	_, simParams, simErr := simulation.SimulateFromSeed(
-		b, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
-		SimulationOperations(app, app.Codec(), config),
+		b, os.Stdout, app.GetBaseApp(), simapp.AppStateFn(app.Codec(), app.sm),
+		simapp.SimulationOperations(app, app.Codec(), config),
 		app.ModuleAccountAddrs(), config,
 	)
 
 	// export state and params before the simulation error is checked
 	if config.ExportStatePath != "" {
-		if err := ExportStateToJSON(app, config.ExportStatePath); err != nil {
+		if err := simapp.ExportStateToJSON(app, config.ExportStatePath); err != nil {
 			fmt.Println(err)
 			b.Fail()
 		}
@@ -133,14 +133,14 @@ func TestFullAppSimulation(t *testing.T) {
 
 	// Run randomized simulation
 	_, simParams, simErr := simulation.SimulateFromSeed(
-		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
-		SimulationOperations(app, app.Codec(), config),
+		t, os.Stdout, app.GetBaseApp(), simapp.AppStateFn(app.Codec(), app.sm),
+		simapp.SimulationOperations(app, app.Codec(), config),
 		app.ModuleAccountAddrs(), config,
 	)
 
 	// export state and params before the simulation error is checked
 	if config.ExportStatePath != "" {
-		err := ExportStateToJSON(app, config.ExportStatePath)
+		err := simapp.ExportStateToJSON(app, config.ExportStatePath)
 		require.NoError(t, err)
 	}
 
@@ -190,14 +190,14 @@ func TestAppImportExport(t *testing.T) {
 
 	// Run randomized simulation
 	_, simParams, simErr := simulation.SimulateFromSeed(
-		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
-		SimulationOperations(app, app.Codec(), config),
+		t, os.Stdout, app.GetBaseApp(), simapp.AppStateFn(app.Codec(), app.sm),
+		simapp.SimulationOperations(app, app.Codec(), config),
 		app.ModuleAccountAddrs(), config,
 	)
 
 	// export state and simParams before the simulation error is checked
 	if config.ExportStatePath != "" {
-		err := ExportStateToJSON(app, config.ExportStatePath)
+		err := simapp.ExportStateToJSON(app, config.ExportStatePath)
 		require.NoError(t, err)
 	}
 
@@ -236,7 +236,7 @@ func TestAppImportExport(t *testing.T) {
 	require.Equal(t, "SimApp", newApp.Name())
 
 	var genesisState simapp.GenesisState
-	err = app.cdc.UnmarshalJSON(appState, &genesisState)
+	err = app.Codec().UnmarshalJSON(appState, &genesisState)
 	require.NoError(t, err)
 
 	ctxB := newApp.NewContext(true, abci.Header{Height: app.LastBlockHeight()})
@@ -278,7 +278,7 @@ func TestAppImportExport(t *testing.T) {
 		require.Equal(t, len(failedKVAs), len(failedKVBs), "unequal sets of key-values to compare")
 
 		fmt.Printf("compared %d key/value pairs between %s and %s\n", len(failedKVAs), storeKeyA, storeKeyB)
-		require.Len(t, failedKVAs, 0, simapp.GetSimulationLog(storeKeyA.Name(), app.sm.StoreDecoders, app.cdc, failedKVAs, failedKVBs))
+		require.Len(t, failedKVAs, 0, simapp.GetSimulationLog(storeKeyA.Name(), app.sm.StoreDecoders, app.Codec(), failedKVAs, failedKVBs))
 	}
 }
 
@@ -312,14 +312,14 @@ func TestAppSimulationAfterImport(t *testing.T) {
 	// Run randomized simulation
 	// Run randomized simulation
 	stopEarly, simParams, simErr := simulation.SimulateFromSeed(
-		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
-		SimulationOperations(app, app.Codec(), config),
+		t, os.Stdout, app.GetBaseApp(), simapp.AppStateFn(app.Codec(), app.sm),
+		simapp.SimulationOperations(app, app.Codec(), config),
 		app.ModuleAccountAddrs(), config,
 	)
 
 	// export state and params before the simulation error is checked
 	if config.ExportStatePath != "" {
-		err := ExportStateToJSON(app, config.ExportStatePath)
+		err := simapp.ExportStateToJSON(app, config.ExportStatePath)
 		require.NoError(t, err)
 	}
 
@@ -372,8 +372,8 @@ func TestAppSimulationAfterImport(t *testing.T) {
 
 	// Run randomized simulation on imported app
 	_, _, err = simulation.SimulateFromSeed(
-		t, os.Stdout, newApp.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
-		SimulationOperations(app, app.Codec(), config),
+		t, os.Stdout, newApp.GetBaseApp(), simapp.AppStateFn(app.Codec(), app.sm),
+		simapp.SimulationOperations(app, app.Codec(), config),
 		newApp.ModuleAccountAddrs(), config,
 	)
 
@@ -411,8 +411,8 @@ func TestAppStateDeterminism(t *testing.T) {
 			)
 
 			_, _, err := simulation.SimulateFromSeed(
-				t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
-				SimulationOperations(app, app.Codec(), config),
+				t, os.Stdout, app.GetBaseApp(), simapp.AppStateFn(app.Codec(), app.sm),
+				simapp.SimulationOperations(app, app.Codec(), config),
 				app.ModuleAccountAddrs(), config,
 			)
 			require.NoError(t, err)
@@ -457,13 +457,13 @@ func BenchmarkInvariants(b *testing.B) {
 	// 2. Run parameterized simulation (w/o invariants)
 	_, simParams, simErr := simulation.SimulateFromSeed(
 		b, ioutil.Discard, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
-		SimulationOperations(app, app.Codec(), config),
+		simapp.SimulationOperations(app, app.Codec(), config),
 		app.ModuleAccountAddrs(), config,
 	)
 
 	// export state and params before the simulation error is checked
 	if config.ExportStatePath != "" {
-		if err := ExportStateToJSON(app, config.ExportStatePath); err != nil {
+		if err := simapp.ExportStateToJSON(app, config.ExportStatePath); err != nil {
 			fmt.Println(err)
 			b.Fail()
 		}

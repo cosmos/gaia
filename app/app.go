@@ -12,6 +12,7 @@ import (
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/simapp"
+	"github.com/cosmos/cosmos-sdk/simapp/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -86,6 +87,12 @@ func MakeCodec() *codec.Codec {
 	return cdc.Seal()
 }
 
+// Verify app interfaces at compile time
+var (
+	_ types.App           = (*GaiaApp)(nil)
+	_ types.SimulationApp = (*GaiaApp)(nil)
+)
+
 // GaiaApp extended ABCI application
 type GaiaApp struct {
 	*bam.BaseApp
@@ -96,6 +103,9 @@ type GaiaApp struct {
 	// keys to access the substores
 	keys  map[string]*sdk.KVStoreKey
 	tKeys map[string]*sdk.TransientStoreKey
+
+	// subspaces
+	subspaces map[string]params.Subspace
 
 	// keepers
 	accountKeeper  auth.AccountKeeper
@@ -142,40 +152,56 @@ func NewGaiaApp(
 		invCheckPeriod: invCheckPeriod,
 		keys:           keys,
 		tKeys:          tKeys,
+		subspaces:      make(map[string]params.Subspace),
 	}
 
 	// init params keeper and subspaces
 	app.paramsKeeper = params.NewKeeper(app.cdc, keys[params.StoreKey], tKeys[params.TStoreKey], params.DefaultCodespace)
-	authSubspace := app.paramsKeeper.Subspace(auth.DefaultParamspace)
-	bankSubspace := app.paramsKeeper.Subspace(bank.DefaultParamspace)
-	stakingSubspace := app.paramsKeeper.Subspace(staking.DefaultParamspace)
-	mintSubspace := app.paramsKeeper.Subspace(mint.DefaultParamspace)
-	distrSubspace := app.paramsKeeper.Subspace(distr.DefaultParamspace)
-	slashingSubspace := app.paramsKeeper.Subspace(slashing.DefaultParamspace)
-	govSubspace := app.paramsKeeper.Subspace(gov.DefaultParamspace).WithKeyTable(gov.ParamKeyTable())
-	crisisSubspace := app.paramsKeeper.Subspace(crisis.DefaultParamspace)
-	evidenceSubspace := app.paramsKeeper.Subspace(evidence.DefaultParamspace)
+	app.subspaces[auth.ModuleName] = app.paramsKeeper.Subspace(auth.DefaultParamspace)
+	app.subspaces[bank.ModuleName] = app.paramsKeeper.Subspace(bank.DefaultParamspace)
+	app.subspaces[staking.ModuleName] = app.paramsKeeper.Subspace(staking.DefaultParamspace)
+	app.subspaces[mint.ModuleName] = app.paramsKeeper.Subspace(mint.DefaultParamspace)
+	app.subspaces[distr.ModuleName] = app.paramsKeeper.Subspace(distr.DefaultParamspace)
+	app.subspaces[slashing.ModuleName] = app.paramsKeeper.Subspace(slashing.DefaultParamspace)
+	app.subspaces[gov.ModuleName] = app.paramsKeeper.Subspace(gov.DefaultParamspace).WithKeyTable(gov.ParamKeyTable())
+	app.subspaces[crisis.ModuleName] = app.paramsKeeper.Subspace(crisis.DefaultParamspace)
+	app.subspaces[evidence.ModuleName] = app.paramsKeeper.Subspace(evidence.DefaultParamspace)
 
 	// add keepers
-	app.accountKeeper = auth.NewAccountKeeper(app.cdc, keys[auth.StoreKey], authSubspace, auth.ProtoBaseAccount)
-	app.bankKeeper = bank.NewBaseKeeper(app.accountKeeper, bankSubspace, bank.DefaultCodespace, app.ModuleAccountAddrs())
-	app.supplyKeeper = supply.NewKeeper(app.cdc, keys[supply.StoreKey], app.accountKeeper, app.bankKeeper, maccPerms)
+	app.accountKeeper = auth.NewAccountKeeper(
+		app.cdc, keys[auth.StoreKey], app.subspaces[auth.ModuleName], auth.ProtoBaseAccount,
+	)
+	app.bankKeeper = bank.NewBaseKeeper(
+		app.accountKeeper, app.subspaces[bank.ModuleName], bank.DefaultCodespace,
+		app.ModuleAccountAddrs(),
+	)
+	app.supplyKeeper = supply.NewKeeper(
+		app.cdc, keys[supply.StoreKey], app.accountKeeper, app.bankKeeper, maccPerms,
+	)
 	stakingKeeper := staking.NewKeeper(
-		app.cdc, keys[staking.StoreKey], app.supplyKeeper, stakingSubspace, staking.DefaultCodespace,
+		app.cdc, keys[staking.StoreKey], app.supplyKeeper,
+		app.subspaces[staking.ModuleName], staking.DefaultCodespace,
 	)
-	app.mintKeeper = mint.NewKeeper(app.cdc, keys[mint.StoreKey], mintSubspace, &stakingKeeper, app.supplyKeeper, auth.FeeCollectorName)
-	app.distrKeeper = distr.NewKeeper(app.cdc, keys[distr.StoreKey], distrSubspace, &stakingKeeper,
-		app.supplyKeeper, distr.DefaultCodespace, auth.FeeCollectorName, app.ModuleAccountAddrs())
+	app.mintKeeper = mint.NewKeeper(
+		app.cdc, keys[mint.StoreKey], app.subspaces[mint.ModuleName], &stakingKeeper,
+		app.supplyKeeper, auth.FeeCollectorName,
+	)
+	app.distrKeeper = distr.NewKeeper(
+		app.cdc, keys[distr.StoreKey], app.subspaces[distr.ModuleName], &stakingKeeper,
+		app.supplyKeeper, distr.DefaultCodespace, auth.FeeCollectorName, app.ModuleAccountAddrs(),
+	)
 	app.slashingKeeper = slashing.NewKeeper(
-		app.cdc, keys[slashing.StoreKey], &stakingKeeper, slashingSubspace, slashing.DefaultCodespace,
+		app.cdc, keys[slashing.StoreKey], &stakingKeeper, app.subspaces[slashing.ModuleName], slashing.DefaultCodespace,
 	)
-	app.crisisKeeper = crisis.NewKeeper(crisisSubspace, invCheckPeriod, app.supplyKeeper, auth.FeeCollectorName)
+	app.crisisKeeper = crisis.NewKeeper(
+		app.subspaces[crisis.ModuleName], invCheckPeriod, app.supplyKeeper, auth.FeeCollectorName,
+	)
 	app.upgradeKeeper = upgrade.NewKeeper(keys[upgrade.StoreKey], app.cdc)
 
 	// create evidence keeper with evidence router
 	evidenceKeeper := evidence.NewKeeper(
-		app.cdc, keys[evidence.StoreKey], evidenceSubspace, evidence.DefaultCodespace,
-		&stakingKeeper, app.slashingKeeper,
+		app.cdc, keys[evidence.StoreKey], app.subspaces[evidence.ModuleName],
+		evidence.DefaultCodespace, &stakingKeeper, app.slashingKeeper,
 	)
 	evidenceRouter := evidence.NewRouter()
 
@@ -191,7 +217,7 @@ func NewGaiaApp(
 		AddRoute(distr.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.distrKeeper)).
 		AddRoute(upgrade.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.upgradeKeeper))
 	app.govKeeper = gov.NewKeeper(
-		app.cdc, keys[gov.StoreKey], govSubspace,
+		app.cdc, keys[gov.StoreKey], app.subspaces[gov.ModuleName],
 		app.supplyKeeper, &stakingKeeper, gov.DefaultCodespace, govRouter,
 	)
 
@@ -272,6 +298,12 @@ func NewGaiaApp(
 	return app
 }
 
+// Name returns the name of the App
+func (app *GaiaApp) Name() string { return app.BaseApp.Name() }
+
+// GetBaseApp returns the application's BaseApp
+func (app *GaiaApp) GetBaseApp() *bam.BaseApp { return app.BaseApp }
+
 // BeginBlocker application updates every begin block
 func (app *GaiaApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	return app.mm.BeginBlock(ctx, req)
@@ -308,6 +340,32 @@ func (app *GaiaApp) ModuleAccountAddrs() map[string]bool {
 // Codec returns the application's sealed codec.
 func (app *GaiaApp) Codec() *codec.Codec {
 	return app.cdc
+}
+
+// GetKey returns the KVStoreKey for the provided store key.
+//
+// NOTE: This is solely to be used for testing purposes.
+func (app *GaiaApp) GetKey(storeKey string) *sdk.KVStoreKey {
+	return app.keys[storeKey]
+}
+
+// GetTKey returns the TransientStoreKey for the provided store key.
+//
+// NOTE: This is solely to be used for testing purposes.
+func (app *GaiaApp) GetTKey(storeKey string) *sdk.TransientStoreKey {
+	return app.tKeys[storeKey]
+}
+
+// GetSubspace returns a param subspace for a given module name.
+//
+// NOTE: This is solely to be used for testing purposes.
+func (app *GaiaApp) GetSubspace(moduleName string) params.Subspace {
+	return app.subspaces[moduleName]
+}
+
+// SimulationManager implements the SimulationApp interface
+func (app *GaiaApp) SimulationManager() *module.SimulationManager {
+	return app.sm
 }
 
 // GetMaccPerms returns a mapping of the application's module account permissions.

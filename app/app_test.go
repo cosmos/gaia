@@ -17,11 +17,12 @@ import (
 func TestGaiadExport(t *testing.T) {
 	db := db.NewMemDB()
 	gapp := NewGaiaApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, 0)
-	setGenesis(gapp)
+	err := setGenesis(gapp)
+	require.NoError(t, err)
 
 	// Making a new app object with the db, so that initchain hasn't been called
 	newGapp := NewGaiaApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, 0)
-	_, _, err := newGapp.ExportAppStateAndValidators(false, []string{})
+	_, _, err = newGapp.ExportAppStateAndValidators(false, []string{})
 	require.NoError(t, err, "ExportAppStateAndValidators should not have an error")
 }
 

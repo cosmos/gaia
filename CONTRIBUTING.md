@@ -53,11 +53,12 @@ overall information on repository workflow and standards. Note, we use `make
 tools` for installing the linting tools.
 
 Other notes:
-  - Looking for a good place to start contributing? How about checking out some
-    [good first issues](https://github.com/cosmos/gaia/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
-  - Please make sure to use `gofmt` before every commit - the easiest way to do
-    this is have your editor run it for you upon saving a file. Additionally
-    please ensure that your code is lint compliant by running `make lint`
+
+- Looking for a good place to start contributing? How about checking out some
+  [good first issues](https://github.com/cosmos/gaia/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
+- Please make sure to use `gofmt` before every commit - the easiest way to do
+  this is have your editor run it for you upon saving a file. Additionally
+  please ensure that your code is lint compliant by running `make lint`
 
 ## Pull Requests
 
@@ -84,7 +85,7 @@ All PRs require two Reviews before merge (except docs changes, or variable name-
 
 If you open a PR in Gaia, it is mandatory to update the relevant documentation in /docs.
 
-* If your changes relate specifically to the gaia application, please modify the docs/ folder.
+- If your changes relate specifically to the gaia application, please modify the docs/ folder.
 
 ## Forking
 
@@ -92,14 +93,14 @@ Please note that Go requires code to live under absolute paths, which complicate
 While my fork lives at `https://github.com/rigeyrigerige/gaia`,
 the code should never exist at  `$GOPATH/src/github.com/rigeyrigerige/gaia`.
 Instead, we use `git remote` to add the fork as a new remote for the original repo,
-`$GOPATH/src/github.com/cosmos/gaia `, and do all the work there.
+`$GOPATH/src/github.com/cosmos/gaia`, and do all the work there.
 
 For instance, to create a fork and work on a branch of it, I would:
 
-  - Create the fork on github, using the fork button.
-  - Go to the original repo checked out locally (i.e. `$GOPATH/src/github.com/cosmos/gaia`)
-  - `git remote rename origin upstream`
-  - `git remote add origin git@github.com:rigeyrigerige/gaia.git`
+- Create the fork on github, using the fork button.
+- Go to the original repo checked out locally (i.e. `$GOPATH/src/github.com/cosmos/gaia`)
+- `git remote rename origin upstream`
+- `git remote add origin git@github.com:rigeyrigerige/gaia.git`
 
 Now `origin` refers to my fork and `upstream` refers to the Gaia version.
 So I can `git push -u origin master` to update my fork, and make pull requests to Gaia from there.
@@ -107,8 +108,8 @@ Of course, replace `rigeyrigerige` with your git handle.
 
 To pull in updates from the origin repo, run
 
-  - `git fetch upstream`
-  - `git rebase upstream/master` (or whatever branch you want)
+- `git fetch upstream`
+- `git rebase upstream/master` (or whatever branch you want)
 
 Please don't make Pull Requests to `master`.
 
@@ -152,13 +153,13 @@ for tcIndex, tc := range cases {
   <some code>
   for i := 0; i < tc.numTxsToTest; i++ {
       <some code>
-			require.Equal(t, expectedTx[:32], calculatedTx[:32],
-				"First 32 bytes of the txs differed. tc #%d, i #%d", tcIndex, i)
+      require.Equal(t, expectedTx[:32], calculatedTx[:32],
+      "First 32 bytes of the txs differed. tc #%d, i #%d", tcIndex, i)
 ```
 
 ## Branching Model and Release
 
-User-facing repos should adhere to the trunk based development branching model: https://trunkbaseddevelopment.com/.
+User-facing repos should adhere to the [trunk based development branching model](https://trunkbaseddevelopment.com/).
 
 Libraries need not follow the model strictly, but would be wise to.
 
@@ -173,17 +174,19 @@ should be targeted against the release candidate branch. Release candidate branc
 only pull requests targeted directly against master.
 
 ### Development Procedure
-  - the latest state of development is on `master`
-  - `master` must never fail `make test` or `make test_cli`
-  - `master` should not fail `make lint`
-  - no `--force` onto `master` (except when reverting a broken commit, which should seldom happen)
-  - create a development branch either on github.com/cosmos/gaia, or your fork (using `git remote add origin`)
-  - before submitting a pull request, begin `git rebase` on top of `master`
+
+- the latest state of development is on `master`
+- `master` must never fail `make test` or `make test_cli`
+- `master` should not fail `make lint`
+- no `--force` onto `master` (except when reverting a broken commit, which should seldom happen)
+- create a development branch either on github.com/cosmos/gaia, or your fork (using `git remote add origin`)
+- before submitting a pull request, begin `git rebase` on top of `master`
 
 ### Pull Merge Procedure
-  - ensure pull branch is rebased on `master`
-  - run `make test` and `make test_cli` to ensure that all tests pass
-  - merge pull request
+
+- ensure pull branch is rebased on `master`
+- run `make test` and `make test_cli` to ensure that all tests pass
+- merge pull request
 
 ### Release Procedure
 
@@ -206,15 +209,15 @@ only pull requests targeted directly against master.
 At the moment, only a single major release will be supported, so all point
 releases will be based off of that release.
 
-  - start on `vX.XX.X`
-  - checkout a new branch `pre-rc/vX.X.X`
-  - cherry pick the desired changes from `master`
-    - these changes should be small and NON-BREAKING (both API and state machine)
-  - add entries to CHANGELOG.md and remove corresponding pending log entries
-  - checkout a new branch `rc/vX.X.X` based off of `vX.XX.X`
-  - create a PR merging `pre-rc/vX.X.X` into `rc/vX.X.X`
-  - run tests and simulations (noted in [Release Procedure](#release-procedure))
-  - after tests and simulation have successfully completed, create the release branch `release/vX.XX.X` from the `RC` branch
-  - delete the `pre-rc/vX.X.X` and `RC` branches
-  - create a PR into `master` containing ONLY the CHANGELOG.md updates
-  - tag and release `release/vX.XX.X`
+- start on `vX.XX.X`
+- checkout a new branch `pre-rc/vX.X.X`
+- cherry pick the desired changes from `master`
+  - these changes should be small and NON-BREAKING (both API and state machine)
+- add entries to CHANGELOG.md and remove corresponding pending log entries
+- checkout a new branch `rc/vX.X.X` based off of `vX.XX.X`
+- create a PR merging `pre-rc/vX.X.X` into `rc/vX.X.X`
+- run tests and simulations (noted in [Release Procedure](#release-procedure))
+- after tests and simulation have successfully completed, create the release branch `release/vX.XX.X` from the `RC` branch
+- delete the `pre-rc/vX.X.X` and `RC` branches
+- create a PR into `master` containing ONLY the CHANGELOG.md updates
+- tag and release `release/vX.XX.X`

@@ -116,7 +116,10 @@ func replayTxs(rootDir string) error {
 		return err
 	}
 	defer func() {
-		_ = proxyApp.Stop()
+		err = proxyApp.Stop()
+		if err != nil {
+			return
+		}
 	}()
 
 	state := tmsm.LoadState(tmDB)

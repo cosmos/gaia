@@ -51,13 +51,14 @@ Make sure that every node has a unique `priv_validator.json`. Do not copy the `p
 Now it is time to upgrade the software:
 
 ```bash
-cd $GOPATH/src/github.com/cosmos/gaia
+git clone https://github.com/cosmos/gaia.git
+cd gaia
 git fetch --all && git checkout master
-make update_tools install
+make install
 ```
 
 ::: tip
-*NOTE*: If you have issues at this step, please check that you have the latest stable version of GO installed.
+_NOTE_: If you have issues at this step, please check that you have the latest stable version of GO installed.
 :::
 
 Note we use `master` here since it contains the latest stable release.

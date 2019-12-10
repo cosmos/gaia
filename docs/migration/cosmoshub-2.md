@@ -128,7 +128,7 @@ v2.0.3 of [Gaia](https://github.com/cosmos/gaia).
    **NOTE**: Go [1.13+](https://golang.org/dl/) is required!
 
    ```shell
-   $ git clone https://github.com/cosmos/gaia.git; git checkout v2.0.3; make install
+   $ git clone https://github.com/cosmos/gaia.git && cd gaia && git checkout v2.0.3; make install
    ```
 
 5. Verify you are currently running the correct version (v2.0.3) of the _Gaia_:

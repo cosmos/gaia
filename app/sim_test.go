@@ -3,7 +3,6 @@ package app
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"math/rand"
 	"os"
 	"testing"
@@ -15,6 +14,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/simapp"
+	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -32,6 +32,12 @@ func init() {
 	simapp.GetSimulatorFlags()
 }
 
+type StoreKeysPrefixes struct {
+	A        sdk.StoreKey
+	B        sdk.StoreKey
+	Prefixes [][]byte
+}
+
 // fauxMerkleModeOpt returns a BaseApp option to use a dbStoreAdapter instead of
 // an IAVLStore for faster simulation speed.
 func fauxMerkleModeOpt(bapp *baseapp.BaseApp) {
@@ -44,212 +50,96 @@ func interBlockCacheOpt() func(*baseapp.BaseApp) {
 	return baseapp.SetInterBlockCache(store.NewCommitKVStoreCacheManager())
 }
 
-// Profile with:
-// /usr/local/go/bin/go test -benchmem -run=^$ github.com/cosmos/cosmos-sdk/GaiaApp -bench ^BenchmarkFullAppSimulation$ -Commit=true -cpuprofile cpu.out
-func BenchmarkFullAppSimulation(b *testing.B) {
-	logger := log.NewNopLogger()
-	config := simapp.NewConfigFromFlags()
-
-	var db dbm.DB
-	dir, err := ioutil.TempDir("", "goleveldb-app-sim")
-	if err != nil {
-		fmt.Println(err)
-		b.Fail()
-	}
-	db, err = sdk.NewLevelDB("Simulation", dir)
-	if err != nil {
-		fmt.Println(err)
-		b.Fail()
-	}
-	defer func() {
-		db.Close()
-		_ = os.RemoveAll(dir)
-	}()
-
-	app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue, interBlockCacheOpt())
-
-	// Run randomized simulation
-	// TODO: parameterize numbers, save for a later PR
-	_, simParams, simErr := simulation.SimulateFromSeed(
-		b, os.Stdout, app.GetBaseApp(), simapp.AppStateFn(app.Codec(), app.sm),
-		simapp.SimulationOperations(app, app.Codec(), config),
-		app.ModuleAccountAddrs(), config,
-	)
-
-	// export state and params before the simulation error is checked
-	if config.ExportStatePath != "" {
-		if err := simapp.ExportStateToJSON(app, config.ExportStatePath); err != nil {
-			fmt.Println(err)
-			b.Fail()
-		}
-	}
-
-	if config.ExportParamsPath != "" {
-		if err := simapp.ExportParamsToJSON(simParams, config.ExportParamsPath); err != nil {
-			fmt.Println(err)
-			b.Fail()
-		}
-	}
-
-	if simErr != nil {
-		fmt.Println(simErr)
-		b.FailNow()
-	}
-
-	if config.Commit {
-		fmt.Println("\nGoLevelDB Stats")
-		fmt.Println(db.Stats()["leveldb.stats"])
-		fmt.Println("GoLevelDB cached block size", db.Stats()["leveldb.cachedblock"])
-	}
-}
-
 func TestFullAppSimulation(t *testing.T) {
-	if !simapp.FlagEnabledValue {
+	config, db, dir, logger, skip, err := simapp.SetupSimulation("leveldb-app-sim", "Simulation")
+	if skip {
 		t.Skip("skipping application simulation")
 	}
-
-	var logger log.Logger
-	config := simapp.NewConfigFromFlags()
-
-	if simapp.FlagVerboseValue {
-		logger = log.TestingLogger()
-	} else {
-		logger = log.NewNopLogger()
-	}
-
-	var db dbm.DB
-	dir, err := ioutil.TempDir("", "goleveldb-app-sim")
-	require.NoError(t, err)
-	db, err = sdk.NewLevelDB("Simulation", dir)
-	require.NoError(t, err)
+	require.NoError(t, err, "simulation setup failed")
 
 	defer func() {
 		db.Close()
-		_ = os.RemoveAll(dir)
+		require.NoError(t, os.RemoveAll(dir))
 	}()
 
 	app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue, fauxMerkleModeOpt)
-	require.Equal(t, "GaiaApp", app.Name())
+	require.Equal(t, appName, app.Name())
 
-	// Run randomized simulation
+	// run randomized simulation
 	_, simParams, simErr := simulation.SimulateFromSeed(
-		t, os.Stdout, app.GetBaseApp(), simapp.AppStateFn(app.Codec(), app.sm),
-		simapp.SimulationOperations(app, app.Codec(), config),
-		app.ModuleAccountAddrs(), config,
-	)
-
-	// export state and params before the simulation error is checked
-	if config.ExportStatePath != "" {
-		err := simapp.ExportStateToJSON(app, config.ExportStatePath)
-		require.NoError(t, err)
-	}
-
-	if config.ExportParamsPath != "" {
-		err := simapp.ExportParamsToJSON(simParams, config.ExportParamsPath)
-		require.NoError(t, err)
-	}
-
-	require.NoError(t, simErr)
-
-	if config.Commit {
-		// for memdb:
-		// fmt.Println("Database Size", db.Stats()["database.size"])
-		fmt.Println("\nGoLevelDB Stats")
-		fmt.Println(db.Stats()["leveldb.stats"])
-		fmt.Println("GoLevelDB cached block size", db.Stats()["leveldb.cachedblock"])
-	}
-}
-
-func TestAppImportExport(t *testing.T) {
-	if !simapp.FlagEnabledValue {
-		t.Skip("skipping application import/export simulation")
-	}
-
-	var logger log.Logger
-	config := simapp.NewConfigFromFlags()
-
-	if simapp.FlagVerboseValue {
-		logger = log.TestingLogger()
-	} else {
-		logger = log.NewNopLogger()
-	}
-
-	var db dbm.DB
-	dir, err := ioutil.TempDir("", "goleveldb-app-sim")
-	require.NoError(t, err)
-	db, err = sdk.NewLevelDB("Simulation", dir)
-	require.NoError(t, err)
-
-	defer func() {
-		db.Close()
-		_ = os.RemoveAll(dir)
-	}()
-
-	app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue, fauxMerkleModeOpt)
-	require.Equal(t, "SimApp", app.Name())
-
-	// Run randomized simulation
-	_, simParams, simErr := simulation.SimulateFromSeed(
-		t, os.Stdout, app.GetBaseApp(), simapp.AppStateFn(app.Codec(), app.sm),
+		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.SimulationManager()),
 		simapp.SimulationOperations(app, app.Codec(), config),
 		app.ModuleAccountAddrs(), config,
 	)
 
 	// export state and simParams before the simulation error is checked
-	if config.ExportStatePath != "" {
-		err := simapp.ExportStateToJSON(app, config.ExportStatePath)
-		require.NoError(t, err)
-	}
-
-	if config.ExportParamsPath != "" {
-		err := simapp.ExportParamsToJSON(simParams, config.ExportParamsPath)
-		require.NoError(t, err)
-	}
-
+	err = simapp.CheckExportSimulation(app, config, simParams)
+	require.NoError(t, err)
 	require.NoError(t, simErr)
 
 	if config.Commit {
-		// for memdb:
-		// fmt.Println("Database Size", db.Stats()["database.size"])
-		fmt.Println("\nGoLevelDB Stats")
-		fmt.Println(db.Stats()["leveldb.stats"])
-		fmt.Println("GoLevelDB cached block size", db.Stats()["leveldb.cachedblock"])
+		simapp.PrintStats(db)
+	}
+}
+
+func TestAppImportExport(t *testing.T) {
+	config, db, dir, logger, skip, err := simapp.SetupSimulation("leveldb-app-sim", "Simulation")
+	if skip {
+		t.Skip("skipping application import/export simulation")
+	}
+	require.NoError(t, err, "simulation setup failed")
+
+	defer func() {
+		db.Close()
+		require.NoError(t, os.RemoveAll(dir))
+	}()
+
+	app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue, fauxMerkleModeOpt)
+	require.Equal(t, appName, app.Name())
+
+	// Run randomized simulation
+	_, simParams, simErr := simulation.SimulateFromSeed(
+		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.SimulationManager()),
+		simapp.SimulationOperations(app, app.Codec(), config),
+		app.ModuleAccountAddrs(), config,
+	)
+
+	// export state and simParams before the simulation error is checked
+	err = simapp.CheckExportSimulation(app, config, simParams)
+	require.NoError(t, err)
+	require.NoError(t, simErr)
+
+	if config.Commit {
+		simapp.PrintStats(db)
 	}
 
 	fmt.Printf("exporting genesis...\n")
 
 	appState, _, err := app.ExportAppStateAndValidators(false, []string{})
 	require.NoError(t, err)
+
 	fmt.Printf("importing genesis...\n")
 
-	newDir, err := ioutil.TempDir("", "goleveldb-app-sim-2")
-	require.NoError(t, err)
-	newDB, err := sdk.NewLevelDB("Simulation-2", dir)
-	require.NoError(t, err)
+	_, newDB, newDir, _, _, err := simapp.SetupSimulation("leveldb-app-sim-2", "Simulation-2")
+	require.NoError(t, err, "simulation setup failed")
 
 	defer func() {
 		newDB.Close()
-		_ = os.RemoveAll(newDir)
+		require.NoError(t, os.RemoveAll(newDir))
 	}()
 
 	newApp := NewGaiaApp(log.NewNopLogger(), newDB, nil, true, simapp.FlagPeriodValue, fauxMerkleModeOpt)
-	require.Equal(t, "SimApp", newApp.Name())
+	require.Equal(t, appName, newApp.Name())
 
-	var genesisState simapp.GenesisState
+	var genesisState GenesisState
 	err = app.Codec().UnmarshalJSON(appState, &genesisState)
 	require.NoError(t, err)
 
+	ctxA := app.NewContext(true, abci.Header{Height: app.LastBlockHeight()})
 	ctxB := newApp.NewContext(true, abci.Header{Height: app.LastBlockHeight()})
 	newApp.mm.InitGenesis(ctxB, genesisState)
 
 	fmt.Printf("comparing stores...\n")
-	ctxA := app.NewContext(true, abci.Header{Height: app.LastBlockHeight()})
-
-	type StoreKeysPrefixes struct {
-		A        sdk.StoreKey
-		B        sdk.StoreKey
-		Prefixes [][]byte
-	}
 
 	storeKeysPrefixes := []StoreKeysPrefixes{
 		{app.keys[baseapp.MainStoreKey], newApp.keys[baseapp.MainStoreKey], [][]byte{}},
@@ -266,117 +156,81 @@ func TestAppImportExport(t *testing.T) {
 		{app.keys[gov.StoreKey], newApp.keys[gov.StoreKey], [][]byte{}},
 	}
 
-	for _, storeKeysPrefix := range storeKeysPrefixes {
-		storeKeyA := storeKeysPrefix.A
-		storeKeyB := storeKeysPrefix.B
-		prefixes := storeKeysPrefix.Prefixes
+	for _, skp := range storeKeysPrefixes {
+		storeA := ctxA.KVStore(skp.A)
+		storeB := ctxB.KVStore(skp.B)
 
-		storeA := ctxA.KVStore(storeKeyA)
-		storeB := ctxB.KVStore(storeKeyB)
-
-		failedKVAs, failedKVBs := sdk.DiffKVStores(storeA, storeB, prefixes)
+		failedKVAs, failedKVBs := sdk.DiffKVStores(storeA, storeB, skp.Prefixes)
 		require.Equal(t, len(failedKVAs), len(failedKVBs), "unequal sets of key-values to compare")
 
-		fmt.Printf("compared %d key/value pairs between %s and %s\n", len(failedKVAs), storeKeyA, storeKeyB)
-		require.Len(t, failedKVAs, 0, simapp.GetSimulationLog(storeKeyA.Name(), app.sm.StoreDecoders, app.Codec(), failedKVAs, failedKVBs))
+		fmt.Printf("compared %d key/value pairs between %s and %s\n", len(failedKVAs), skp.A, skp.B)
+		require.Equal(t, len(failedKVAs), 0, simapp.GetSimulationLog(skp.A.Name(), app.SimulationManager().StoreDecoders, app.Codec(), failedKVAs, failedKVBs))
 	}
 }
 
 func TestAppSimulationAfterImport(t *testing.T) {
-	if !simapp.FlagEnabledValue {
+	config, db, dir, logger, skip, err := simapp.SetupSimulation("leveldb-app-sim", "Simulation")
+	if skip {
 		t.Skip("skipping application simulation after import")
 	}
-
-	var logger log.Logger
-	config := simapp.NewConfigFromFlags()
-
-	if simapp.FlagVerboseValue {
-		logger = log.TestingLogger()
-	} else {
-		logger = log.NewNopLogger()
-	}
-
-	dir, err := ioutil.TempDir("", "goleveldb-app-sim")
-	require.NoError(t, err)
-	db, err := sdk.NewLevelDB("Simulation", dir)
-	require.NoError(t, err)
+	require.NoError(t, err, "simulation setup failed")
 
 	defer func() {
 		db.Close()
-		_ = os.RemoveAll(dir)
+		require.NoError(t, os.RemoveAll(dir))
 	}()
 
 	app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue, fauxMerkleModeOpt)
-	require.Equal(t, "GaiaApp", app.Name())
+	require.Equal(t, appName, app.Name())
 
 	// Run randomized simulation
-	// Run randomized simulation
 	stopEarly, simParams, simErr := simulation.SimulateFromSeed(
-		t, os.Stdout, app.GetBaseApp(), simapp.AppStateFn(app.Codec(), app.sm),
+		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.SimulationManager()),
 		simapp.SimulationOperations(app, app.Codec(), config),
 		app.ModuleAccountAddrs(), config,
 	)
 
-	// export state and params before the simulation error is checked
-	if config.ExportStatePath != "" {
-		err := simapp.ExportStateToJSON(app, config.ExportStatePath)
-		require.NoError(t, err)
-	}
-
-	if config.ExportParamsPath != "" {
-		err := simapp.ExportParamsToJSON(simParams, config.ExportParamsPath)
-		require.NoError(t, err)
-	}
-
+	// export state and simParams before the simulation error is checked
+	err = simapp.CheckExportSimulation(app, config, simParams)
+	require.NoError(t, err)
 	require.NoError(t, simErr)
 
 	if config.Commit {
-		// for memdb:
-		// fmt.Println("Database Size", db.Stats()["database.size"])
-		fmt.Println("\nGoLevelDB Stats")
-		fmt.Println(db.Stats()["leveldb.stats"])
-		fmt.Println("GoLevelDB cached block size", db.Stats()["leveldb.cachedblock"])
+		simapp.PrintStats(db)
 	}
 
 	if stopEarly {
-		// we can't export or import a zero-validator genesis
-		fmt.Printf("We can't export or import a zero-validator genesis, exiting test...\n")
+		fmt.Println("can't export or import a zero-validator genesis, exiting test...")
 		return
 	}
 
-	fmt.Printf("Exporting genesis...\n")
+	fmt.Printf("exporting genesis...\n")
 
 	appState, _, err := app.ExportAppStateAndValidators(true, []string{})
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("Importing genesis...\n")
-
-	newDir, err := ioutil.TempDir("", "goleveldb-app-sim-2")
 	require.NoError(t, err)
-	newDB, err := sdk.NewLevelDB("Simulation-2", dir)
-	require.NoError(t, err)
+
+	fmt.Printf("importing genesis...\n")
+
+	_, newDB, newDir, _, _, err := simapp.SetupSimulation("leveldb-app-sim-2", "Simulation-2")
+	require.NoError(t, err, "simulation setup failed")
 
 	defer func() {
 		newDB.Close()
-		_ = os.RemoveAll(newDir)
+		require.NoError(t, os.RemoveAll(newDir))
 	}()
 
-	newApp := NewGaiaApp(log.NewNopLogger(), newDB, nil, true, 0, fauxMerkleModeOpt)
-	require.Equal(t, "GaiaApp", newApp.Name())
+	newApp := NewGaiaApp(log.NewNopLogger(), newDB, nil, true, simapp.FlagPeriodValue, fauxMerkleModeOpt)
+	require.Equal(t, appName, newApp.Name())
 
 	newApp.InitChain(abci.RequestInitChain{
 		AppStateBytes: appState,
 	})
 
-	// Run randomized simulation on imported app
 	_, _, err = simulation.SimulateFromSeed(
-		t, os.Stdout, newApp.GetBaseApp(), simapp.AppStateFn(app.Codec(), app.sm),
-		simapp.SimulationOperations(app, app.Codec(), config),
+		t, os.Stdout, newApp.BaseApp, simapp.AppStateFn(app.Codec(), app.SimulationManager()),
+		simapp.SimulationOperations(newApp, newApp.Codec(), config),
 		newApp.ModuleAccountAddrs(), config,
 	)
-
 	require.NoError(t, err)
 }
 
@@ -392,6 +246,7 @@ func TestAppStateDeterminism(t *testing.T) {
 	config.ExportParamsPath = ""
 	config.OnOperation = false
 	config.AllInvariants = false
+	config.ChainID = helpers.SimAppChainID
 
 	numSeeds := 3
 	numTimesToRunPerSeed := 5
@@ -401,8 +256,15 @@ func TestAppStateDeterminism(t *testing.T) {
 		config.Seed = rand.Int63()
 
 		for j := 0; j < numTimesToRunPerSeed; j++ {
-			logger := log.NewNopLogger()
+			var logger log.Logger
+			if simapp.FlagVerboseValue {
+				logger = log.TestingLogger()
+			} else {
+				logger = log.NewNopLogger()
+			}
+
 			db := dbm.NewMemDB()
+
 			app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue, interBlockCacheOpt())
 
 			fmt.Printf(
@@ -411,11 +273,15 @@ func TestAppStateDeterminism(t *testing.T) {
 			)
 
 			_, _, err := simulation.SimulateFromSeed(
-				t, os.Stdout, app.GetBaseApp(), simapp.AppStateFn(app.Codec(), app.sm),
+				t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.SimulationManager()),
 				simapp.SimulationOperations(app, app.Codec(), config),
 				app.ModuleAccountAddrs(), config,
 			)
 			require.NoError(t, err)
+
+			if config.Commit {
+				simapp.PrintStats(db)
+			}
 
 			appHash := app.LastCommitID().Hash
 			appHashList[j] = appHash
@@ -427,73 +293,5 @@ func TestAppStateDeterminism(t *testing.T) {
 				)
 			}
 		}
-	}
-}
-
-func BenchmarkInvariants(b *testing.B) {
-	logger := log.NewNopLogger()
-
-	config := simapp.NewConfigFromFlags()
-	config.AllInvariants = false
-
-	dir, err := ioutil.TempDir("", "goleveldb-app-invariant-bench")
-	if err != nil {
-		fmt.Println(err)
-		b.Fail()
-	}
-	db, err := sdk.NewLevelDB("simulation", dir)
-	if err != nil {
-		fmt.Println(err)
-		b.Fail()
-	}
-
-	defer func() {
-		db.Close()
-		os.RemoveAll(dir)
-	}()
-
-	app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue, interBlockCacheOpt())
-
-	// 2. Run parameterized simulation (w/o invariants)
-	_, simParams, simErr := simulation.SimulateFromSeed(
-		b, ioutil.Discard, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
-		simapp.SimulationOperations(app, app.Codec(), config),
-		app.ModuleAccountAddrs(), config,
-	)
-
-	// export state and params before the simulation error is checked
-	if config.ExportStatePath != "" {
-		if err := simapp.ExportStateToJSON(app, config.ExportStatePath); err != nil {
-			fmt.Println(err)
-			b.Fail()
-		}
-	}
-
-	if config.ExportParamsPath != "" {
-		if err := simapp.ExportParamsToJSON(simParams, config.ExportParamsPath); err != nil {
-			fmt.Println(err)
-			b.Fail()
-		}
-	}
-
-	if simErr != nil {
-		fmt.Println(simErr)
-		b.FailNow()
-	}
-
-	ctx := app.NewContext(true, abci.Header{Height: app.LastBlockHeight() + 1})
-
-	// 3. Benchmark each invariant separately
-	//
-	// NOTE: We use the crisis keeper as it has all the invariants registered with
-	// their respective metadata which makes it useful for testing/benchmarking.
-	for _, cr := range app.crisisKeeper.Routes() {
-		cr := cr
-		b.Run(fmt.Sprintf("%s/%s", cr.ModuleName, cr.Route), func(b *testing.B) {
-			if res, stop := cr.Invar(ctx); stop {
-				fmt.Printf("broken invariant at block %d of %d\n%s", ctx.BlockHeight()-1, config.NumBlocks, res)
-				b.FailNow()
-			}
-		})
 	}
 }

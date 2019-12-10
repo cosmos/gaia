@@ -87,11 +87,8 @@ func MakeCodec() *codec.Codec {
 	return cdc.Seal()
 }
 
-// Verify app interfaces at compile time
-var (
-	_ types.App           = (*GaiaApp)(nil)
-	_ types.SimulationApp = (*GaiaApp)(nil)
-)
+// Verify app interface at compile time
+var _ types.App = (*GaiaApp)(nil)
 
 // GaiaApp extended ABCI application
 type GaiaApp struct {
@@ -301,9 +298,6 @@ func NewGaiaApp(
 // Name returns the name of the App
 func (app *GaiaApp) Name() string { return app.BaseApp.Name() }
 
-// GetBaseApp returns the application's BaseApp
-func (app *GaiaApp) GetBaseApp() *bam.BaseApp { return app.BaseApp }
-
 // BeginBlocker application updates every begin block
 func (app *GaiaApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	return app.mm.BeginBlock(ctx, req)
@@ -340,27 +334,6 @@ func (app *GaiaApp) ModuleAccountAddrs() map[string]bool {
 // Codec returns the application's sealed codec.
 func (app *GaiaApp) Codec() *codec.Codec {
 	return app.cdc
-}
-
-// GetKey returns the KVStoreKey for the provided store key.
-//
-// NOTE: This is solely to be used for testing purposes.
-func (app *GaiaApp) GetKey(storeKey string) *sdk.KVStoreKey {
-	return app.keys[storeKey]
-}
-
-// GetTKey returns the TransientStoreKey for the provided store key.
-//
-// NOTE: This is solely to be used for testing purposes.
-func (app *GaiaApp) GetTKey(storeKey string) *sdk.TransientStoreKey {
-	return app.tKeys[storeKey]
-}
-
-// GetSubspace returns a param subspace for a given module name.
-//
-// NOTE: This is solely to be used for testing purposes.
-func (app *GaiaApp) GetSubspace(moduleName string) params.Subspace {
-	return app.subspaces[moduleName]
 }
 
 // SimulationManager implements the SimulationApp interface

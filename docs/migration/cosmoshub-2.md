@@ -77,6 +77,8 @@ Prior to exporting `cosmoshub-2` state, validators are encouraged to take a full
 export height before proceeding. Snapshotting depends heavily on infrastructure, but generally this
 can be done by backing up the `.gaiacli` and `.gaiad` directories.
 
+It is critically important to back-up the `.gaiad/data/priv_validator_state.json` file after stopping your gaiad process. This file is updated every block as your validator participates in a consensus rounds. It is a critical file needed to prevent double-signing, in case the upgrade fails and the previous chain needs to be restarted.
+
 In the event that the upgrade does not succeed, validators and operators must downgrade back to
 v0.34.6+ of the _Cosmos SDK_ and restore to their latest snapshot before restarting their nodes.
 

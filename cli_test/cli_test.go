@@ -12,7 +12,6 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/tendermint/tendermint/crypto/ed25519"
 	tmtypes "github.com/tendermint/tendermint/types"
@@ -1291,7 +1290,6 @@ func TestSlashingGetParams(t *testing.T) {
 	defer proc.Stop(false)
 
 	params := f.QuerySlashingParams()
-	require.Equal(t, time.Duration(120000000000), params.MaxEvidenceAge)
 	require.Equal(t, int64(100), params.SignedBlocksWindow)
 	require.Equal(t, sdk.NewDecWithPrec(5, 1), params.MinSignedPerWindow)
 

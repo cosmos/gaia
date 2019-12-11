@@ -3,6 +3,7 @@ package lcdtest
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -728,7 +729,7 @@ func doSubmitParamChangeProposal(
 		Proposer:    proposerAddr,
 		Deposit:     sdk.Coins{sdk.NewCoin(sdk.DefaultBondDenom, amount)},
 		Changes: paramscutils.ParamChangesJSON{
-			paramscutils.NewParamChangeJSON("staking", "MaxValidators", "", []byte(`105`)),
+			paramscutils.NewParamChangeJSON("staking", "MaxValidators", json.RawMessage(`105`)),
 		},
 	}
 

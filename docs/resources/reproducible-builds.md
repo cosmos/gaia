@@ -1,4 +1,8 @@
-## Build Gaia Deterministically
+---
+order: 6
+---
+
+# Build Gaia Deterministically
 
 Gitian is the deterministic build process that is used to build the Gaia executables. It provides a way to be reasonably sure that the executables are really built from the git source. It also makes sure that the same, tested dependencies are used and statically built into the executable.
 

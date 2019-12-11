@@ -1,3 +1,7 @@
+---
+order: 5
+---
+
 # KMS - Key Management System
 
 [Tendermint KMS](https://github.com/tendermint/kms) is a key management service that allows separating key management from Tendermint nodes. In addition it provides other advantages such as:

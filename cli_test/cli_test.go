@@ -1174,12 +1174,14 @@ func TestGaiaCLIConfig(t *testing.T) {
 	f.CLIConfig("chain-id", f.ChainID)
 	f.CLIConfig("trace", "false")
 	f.CLIConfig("indent", "true")
+	f.CLIConfig("keyring-backend", "test")
 
 	config, err := ioutil.ReadFile(path.Join(f.GaiacliHome, "config", "config.toml"))
 	require.NoError(t, err)
 	expectedConfig := fmt.Sprintf(`broadcast-mode = "block"
 chain-id = "%s"
 indent = true
+keyring-backend = "test"
 node = "%s"
 output = "text"
 trace = false

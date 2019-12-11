@@ -50,6 +50,12 @@ Base64 encoded transactions.
 * (gaiacli) [\#191](https://github.com/cosmos/gaia/pull/191) Add cmd `decode-tx`, decodes a tx from hex or base64
 * (modules) [\#196](https://github.com/cosmos/gaia/pull/196) Integrate the `x/upgrade` module.
 
+### Client Breaking Changes
+
+* [\#164](https://github.com/cosmos/gaia/pull/164) [\#212](https://github.com/cosmos/gaia/pull/212) The LevelDB-based
+keybase implementation has been replaced with a 99 designs Keyring library-backed implementation. Keys created and stored
+with previous `gaia` releases need to be migrated through the `gaiacli keys migrate` command.
+
 ## [v2.0.3] - 2019-11-04
 
 ### Improvements

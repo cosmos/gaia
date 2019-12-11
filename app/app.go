@@ -225,15 +225,6 @@ func NewGaiaApp(
 		staking.NewMultiStakingHooks(app.distrKeeper.Hooks(), app.slashingKeeper.Hooks()),
 	)
 
-	// create evidence keeper with evidence router
-	app.evidenceKeeper = evidence.NewKeeper(
-		app.cdc, keys[evidence.StoreKey], evidenceSubspace, evidence.DefaultCodespace,
-		&app.stakingKeeper, app.slashingKeeper,
-	)
-	evidenceRouter := evidence.NewRouter()
-	// TODO: Register evidence routes.
-	app.evidenceKeeper.SetRouter(evidenceRouter)
-
 	app.ibcKeeper = ibc.NewKeeper(app.cdc, keys[ibc.StoreKey], ibc.DefaultCodespace, app.bankKeeper, app.supplyKeeper)
 
 	// NOTE: Any module instantiated in the module manager that is later modified

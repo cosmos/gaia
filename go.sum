@@ -44,13 +44,10 @@ github.com/coreos/go-etcd v2.0.0+incompatible/go.mod h1:Jez6KQU2B/sWsbdaef3ED8Nz
 github.com/coreos/go-semver v0.2.0/go.mod h1:nnelYz7RCh+5ahJtPPxZlU+153eP4D4r3EedlOD2RNk=
 github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
-github.com/cosmos/cosmos-sdk v0.34.4-0.20191102035446-f72b3912da86 h1:zj3Rzlz492rj5EYcprWAG0p/xBaQtHN/KKwB1jzO+tI=
-github.com/cosmos/cosmos-sdk v0.34.4-0.20191102035446-f72b3912da86/go.mod h1:VmzpKwtYtelTVZuNkq/rkcgVawGpHckfRYS08JVcnqA=
-github.com/cosmos/cosmos-sdk v0.34.4-0.20191102053406-d1f6c30cc5ee/go.mod h1:VmzpKwtYtelTVZuNkq/rkcgVawGpHckfRYS08JVcnqA=
-github.com/cosmos/cosmos-sdk v0.34.4-0.20191112211422-adba84e47c47 h1:q539Ceq0acF5T50Tjtcr0tnbYOYIAWO2gKCyJ9DRp7k=
-github.com/cosmos/cosmos-sdk v0.34.4-0.20191112211422-adba84e47c47/go.mod h1:VmzpKwtYtelTVZuNkq/rkcgVawGpHckfRYS08JVcnqA=
-github.com/cosmos/cosmos-sdk v0.34.4-0.20191112211958-e1bbc06ce2d0 h1:7EyHkroJgxakBi7fcxDvipuEUNQ2O9blFtiRWqEllTs=
-github.com/cosmos/cosmos-sdk v0.34.4-0.20191112211958-e1bbc06ce2d0/go.mod h1:VmzpKwtYtelTVZuNkq/rkcgVawGpHckfRYS08JVcnqA=
+github.com/cosmos/cosmos-sdk v0.34.4-0.20191205150729-0300a6f6d7a7 h1:W2WVv1zwI34A0XsPdUXf+k1etTSftA5cNHXizaJ4xbw=
+github.com/cosmos/cosmos-sdk v0.34.4-0.20191205150729-0300a6f6d7a7/go.mod h1:JWuSAxZmMgNmNsZBCTuFfMHeeAAJZDxTnAKrQeSJOdk=
+github.com/cosmos/cosmos-sdk v0.34.4-0.20191210150959-eaea0245143a h1:WUsgMkp91ljFYVVW16eU+wAJ8Blz5PDzIRuVi1PnXSc=
+github.com/cosmos/cosmos-sdk v0.34.4-0.20191210150959-eaea0245143a/go.mod h1:Bzqy/gA/MZ4fkU/ia6ddMso3FEatgAsKBX9yI4QwDGI=
 github.com/cosmos/go-bip39 v0.0.0-20180618194314-52158e4697b8/go.mod h1:tSxLoYXyBmiFeKpvmq4dzayMdCjCnu8uqmCysIGBT2Y=
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d h1:49RLWk1j44Xu4fjHb6JFYmeUnDORVwHNkDxaQ0ctCVU=
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d/go.mod h1:tSxLoYXyBmiFeKpvmq4dzayMdCjCnu8uqmCysIGBT2Y=

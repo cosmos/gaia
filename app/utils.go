@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"io/ioutil"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -29,15 +28,4 @@ func SimulationOperations(app *GaiaApp, cdc *codec.Codec, config simulation.Conf
 	simState.ParamChanges = app.sm.GenerateParamChanges(config.Seed)
 	simState.Contents = app.sm.GetProposalContents(simState)
 	return app.sm.WeightedOperations(simState)
-}
-
-// ExportStateToJSON util function to export the app state to JSON
-func ExportStateToJSON(app *GaiaApp, path string) error {
-	fmt.Println("exporting app state...")
-	appState, _, err := app.ExportAppStateAndValidators(false, nil)
-	if err != nil {
-		return err
-	}
-
-	return ioutil.WriteFile(path, []byte(appState), 0644)
 }

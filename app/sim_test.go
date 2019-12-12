@@ -78,7 +78,7 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 
 	// export state and params before the simulation error is checked
 	if config.ExportStatePath != "" {
-		if err := ExportStateToJSON(app, config.ExportStatePath); err != nil {
+		if err := exportStateToJSON(app, config.ExportStatePath); err != nil {
 			fmt.Println(err)
 			b.Fail()
 		}
@@ -140,7 +140,7 @@ func TestFullAppSimulation(t *testing.T) {
 
 	// export state and params before the simulation error is checked
 	if config.ExportStatePath != "" {
-		err := ExportStateToJSON(app, config.ExportStatePath)
+		err := exportStateToJSON(app, config.ExportStatePath)
 		require.NoError(t, err)
 	}
 
@@ -197,7 +197,7 @@ func TestAppImportExport(t *testing.T) {
 
 	// export state and simParams before the simulation error is checked
 	if config.ExportStatePath != "" {
-		err := ExportStateToJSON(app, config.ExportStatePath)
+		err := exportStateToJSON(app, config.ExportStatePath)
 		require.NoError(t, err)
 	}
 
@@ -319,7 +319,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 
 	// export state and params before the simulation error is checked
 	if config.ExportStatePath != "" {
-		err := ExportStateToJSON(app, config.ExportStatePath)
+		err := exportStateToJSON(app, config.ExportStatePath)
 		require.NoError(t, err)
 	}
 
@@ -463,7 +463,7 @@ func BenchmarkInvariants(b *testing.B) {
 
 	// export state and params before the simulation error is checked
 	if config.ExportStatePath != "" {
-		if err := ExportStateToJSON(app, config.ExportStatePath); err != nil {
+		if err := exportStateToJSON(app, config.ExportStatePath); err != nil {
 			fmt.Println(err)
 			b.Fail()
 		}
@@ -496,4 +496,15 @@ func BenchmarkInvariants(b *testing.B) {
 			}
 		})
 	}
+}
+
+// auxiliary function to export the app state to JSON
+func exportStateToJSON(app *GaiaApp, path string) error {
+	fmt.Println("exporting app state...")
+	appState, _, err := app.ExportAppStateAndValidators(false, nil)
+	if err != nil {
+		return err
+	}
+
+	return ioutil.WriteFile(path, []byte(appState), 0644)
 }

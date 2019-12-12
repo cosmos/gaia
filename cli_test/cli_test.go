@@ -419,7 +419,7 @@ func TestGaiaCLIQueryRewards(t *testing.T) {
 	cdc := app.MakeCodec()
 
 	genesisState := f.GenesisState()
-	inflationMin := sdk.MustNewDecFromStr("10000.0")
+	inflationMin := sdk.MustNewDecFromStr("1.0")
 	var mintData mint.GenesisState
 	cdc.UnmarshalJSON(genesisState[mint.ModuleName], &mintData)
 	mintData.Minter.Inflation = inflationMin
@@ -679,7 +679,7 @@ func TestGaiaCLISubmitCommunityPoolSpendProposal(t *testing.T) {
 	// create some inflation
 	cdc := app.MakeCodec()
 	genesisState := f.GenesisState()
-	inflationMin := sdk.MustNewDecFromStr("10000.0")
+	inflationMin := sdk.MustNewDecFromStr("1.0")
 	var mintData mint.GenesisState
 	cdc.UnmarshalJSON(genesisState[mint.ModuleName], &mintData)
 	mintData.Minter.Inflation = inflationMin

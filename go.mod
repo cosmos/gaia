@@ -26,3 +26,5 @@ require (
 	golang.org/x/net v0.0.0-20190827160401-ba9fcec4b297 // indirect
 	golang.org/x/text v0.3.2 // indirect
 )
+
+replace github.com/cosmos/cosmos-sdk v0.34.4-0.20191211094526-394860068db0 => github.com/chainsafe/cosmos-sdk v0.34.4-0.20191212184630-bae2c1b85198

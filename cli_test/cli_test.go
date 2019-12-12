@@ -424,7 +424,7 @@ func TestGaiaCLIQueryRewards(t *testing.T) {
 	cdc.UnmarshalJSON(genesisState[mint.ModuleName], &mintData)
 	mintData.Minter.Inflation = inflationMin
 	mintData.Params.InflationMin = inflationMin
-	mintData.Params.InflationMax = sdk.MustNewDecFromStr("15000.0")
+	mintData.Params.InflationMax = sdk.MustNewDecFromStr("1.0")
 	mintDataBz, err := cdc.MarshalJSON(mintData)
 	require.NoError(t, err)
 	genesisState[mint.ModuleName] = mintDataBz
@@ -684,7 +684,7 @@ func TestGaiaCLISubmitCommunityPoolSpendProposal(t *testing.T) {
 	cdc.UnmarshalJSON(genesisState[mint.ModuleName], &mintData)
 	mintData.Minter.Inflation = inflationMin
 	mintData.Params.InflationMin = inflationMin
-	mintData.Params.InflationMax = sdk.MustNewDecFromStr("15000.0")
+	mintData.Params.InflationMax = sdk.MustNewDecFromStr("1.0")
 	mintDataBz, err := cdc.MarshalJSON(mintData)
 	require.NoError(t, err)
 	genesisState[mint.ModuleName] = mintDataBz

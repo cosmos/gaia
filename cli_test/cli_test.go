@@ -419,12 +419,12 @@ func TestGaiaCLIQueryRewards(t *testing.T) {
 	cdc := app.MakeCodec()
 
 	genesisState := f.GenesisState()
-	inflationMin := sdk.MustNewDecFromStr("10000.0")
+	inflationMin := sdk.MustNewDecFromStr("1.0")
 	var mintData mint.GenesisState
 	cdc.UnmarshalJSON(genesisState[mint.ModuleName], &mintData)
 	mintData.Minter.Inflation = inflationMin
 	mintData.Params.InflationMin = inflationMin
-	mintData.Params.InflationMax = sdk.MustNewDecFromStr("15000.0")
+	mintData.Params.InflationMax = sdk.MustNewDecFromStr("1.0")
 	mintDataBz, err := cdc.MarshalJSON(mintData)
 	require.NoError(t, err)
 	genesisState[mint.ModuleName] = mintDataBz
@@ -679,12 +679,12 @@ func TestGaiaCLISubmitCommunityPoolSpendProposal(t *testing.T) {
 	// create some inflation
 	cdc := app.MakeCodec()
 	genesisState := f.GenesisState()
-	inflationMin := sdk.MustNewDecFromStr("10000.0")
+	inflationMin := sdk.MustNewDecFromStr("1.0")
 	var mintData mint.GenesisState
 	cdc.UnmarshalJSON(genesisState[mint.ModuleName], &mintData)
 	mintData.Minter.Inflation = inflationMin
 	mintData.Params.InflationMin = inflationMin
-	mintData.Params.InflationMax = sdk.MustNewDecFromStr("15000.0")
+	mintData.Params.InflationMax = sdk.MustNewDecFromStr("1.0")
 	mintDataBz, err := cdc.MarshalJSON(mintData)
 	require.NoError(t, err)
 	genesisState[mint.ModuleName] = mintDataBz
@@ -1174,12 +1174,14 @@ func TestGaiaCLIConfig(t *testing.T) {
 	f.CLIConfig("chain-id", f.ChainID)
 	f.CLIConfig("trace", "false")
 	f.CLIConfig("indent", "true")
+	f.CLIConfig("keyring-backend", "test")
 
 	config, err := ioutil.ReadFile(path.Join(f.GaiacliHome, "config", "config.toml"))
 	require.NoError(t, err)
 	expectedConfig := fmt.Sprintf(`broadcast-mode = "block"
 chain-id = "%s"
 indent = true
+keyring-backend = "test"
 node = "%s"
 output = "text"
 trace = false

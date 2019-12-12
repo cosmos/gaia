@@ -259,8 +259,8 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	mintData := mint.DefaultGenesisState()
 	inflationMin := sdk.ZeroDec()
 	if minting {
-		inflationMin = sdk.MustNewDecFromStr("10000.0")
-		mintData.Params.InflationMax = sdk.MustNewDecFromStr("15000.0")
+		inflationMin = sdk.MustNewDecFromStr("0.9")
+		mintData.Params.InflationMax = sdk.MustNewDecFromStr("1.0")
 	} else {
 		mintData.Params.InflationMax = inflationMin
 	}
@@ -279,9 +279,9 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 
 	//// double check inflation is set according to the minting boolean flag
 	if minting {
-		if !(mintData.Params.InflationMax.Equal(sdk.MustNewDecFromStr("15000.0")) &&
-			mintData.Minter.Inflation.Equal(sdk.MustNewDecFromStr("10000.0")) &&
-			mintData.Params.InflationMin.Equal(sdk.MustNewDecFromStr("10000.0"))) {
+		if !(mintData.Params.InflationMax.Equal(sdk.MustNewDecFromStr("1.0")) &&
+			mintData.Minter.Inflation.Equal(sdk.MustNewDecFromStr("0.9")) &&
+			mintData.Params.InflationMin.Equal(sdk.MustNewDecFromStr("0.9"))) {
 			err = errors.New("mint parameters does not correspond to their defaults")
 			return
 		}
@@ -417,9 +417,9 @@ func CreateAddrs(kb crkeys.Keybase, numAddrs int) (addrs []sdk.AccAddress, seeds
 
 // AddrSeed combines an Address with the mnemonic of the private key to that address
 type AddrSeed struct {
-	Address  sdk.AccAddress
-	Seed     string
-	Name     string
+	Address sdk.AccAddress
+	Seed    string
+	Name    string
 }
 
 // AddrSeedSlice implements `Interface` in sort package.

@@ -83,7 +83,7 @@ If those seeds aren't working, you can find more seeds and persistent peers on a
 
 You can also ask for peers on the [Validators Riot Room](https://riot.im/app/#/room/#cosmos-validators:matrix.org)
 
-For more information on seeds and peers, you can [read this](https://tendermint.com/docs/spec/p2p/peer.html#peers).
+For more information on seeds and peers, you can [read this](https://docs.tendermint.com/master/spec/p2p/peer.html).
 
 ## A Note on Gas and Fees
 

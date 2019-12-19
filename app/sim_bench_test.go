@@ -5,8 +5,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/tendermint/tendermint/libs/log"
-
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -15,22 +13,19 @@ import (
 // Profile with:
 // /usr/local/go/bin/go test -benchmem -run=^$ github.com/cosmos/cosmos-sdk/simapp -bench ^BenchmarkFullAppSimulation$ -Commit=true -cpuprofile cpu.out
 func BenchmarkFullAppSimulation(b *testing.B) {
-	config, db, dir, _, _, err := simapp.SetupSimulation("goleveldb-app-sim", "Simulation")
+	config, db, dir, logger, _, err := simapp.SetupSimulation("goleveldb-app-sim", "Simulation")
 	if err != nil {
-		fmt.Println(err, "simulation setup failed")
-		b.Fail()
+		b.Fatalf("simulation setup failed: %s", err.Error())
 	}
 
 	defer func() {
 		db.Close()
 		err = os.RemoveAll(dir)
 		if err != nil {
-			fmt.Println(err.Error())
-			b.Fail()
+			b.Fatal(err)
 		}
 	}()
 
-	logger := log.NewNopLogger()
 	app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue, interBlockCacheOpt())
 
 	// run randomized simulation
@@ -42,13 +37,11 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 
 	// export state and simParams before the simulation error is checked
 	if err = simapp.CheckExportSimulation(app, config, simParams); err != nil {
-		fmt.Println(err)
-		b.Fail()
+		b.Fatal(err)
 	}
 
 	if simErr != nil {
-		fmt.Println(simErr)
-		b.FailNow()
+		b.Fatal(simErr)
 	}
 
 	if config.Commit {
@@ -57,21 +50,18 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 }
 
 func BenchmarkInvariants(b *testing.B) {
-	config, db, dir, _, _, err := simapp.SetupSimulation("leveldb-app-invariant-bench", "Simulation")
+	config, db, dir, logger, _, err := simapp.SetupSimulation("leveldb-app-invariant-bench", "Simulation")
 	if err != nil {
-		fmt.Println(err, "simulation setup failed")
-		b.Fail()
+		b.Fatalf("simulation setup failed: %s", err.Error())
 	}
 
-	logger := log.NewNopLogger()
 	config.AllInvariants = false
 
 	defer func() {
 		db.Close()
 		err = os.RemoveAll(dir)
 		if err != nil {
-			fmt.Println(err.Error())
-			b.Fail()
+			b.Fatal(err)
 		}
 	}()
 
@@ -86,13 +76,11 @@ func BenchmarkInvariants(b *testing.B) {
 
 	// export state and simParams before the simulation error is checked
 	if err = simapp.CheckExportSimulation(app, config, simParams); err != nil {
-		fmt.Println(err)
-		b.Fail()
+		b.Fatal(err)
 	}
 
 	if simErr != nil {
-		fmt.Println(simErr)
-		b.FailNow()
+		b.Fatal(simErr)
 	}
 
 	if config.Commit {

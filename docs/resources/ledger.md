@@ -1,3 +1,7 @@
+---
+order: 4
+---
+
 # Ledger Nano Support
 
 Using a hardware wallet to store your keys greatly improves the security of your crypto assets. The Ledger device acts as an enclave of the seed and private keys, and the process of signing transaction takes place within it. No private information ever leaves the Ledger device. The following is a short tutorial on using the Cosmos Ledger app with the Gaia CLI or the [Lunie.io](https://lunie.io/#/) web wallet.
@@ -10,22 +14,22 @@ Do not lose or share your 24 words with anyone. To prevent theft or loss of fund
 
 ## Install the Cosmos Ledger application
 
-Installing the `Cosmos` application on your ledger device is required before you can use either [Lunie](#lunie-io-+-ledger-nano) or [`gaiacli`](gaia-cli-+-ledger-nano). To do so, you need to:
+Installing the `Cosmos` application on your ledger device is required before you can use either [Lunie](#lunie-io-+-ledger-nano) or [`gaiacli`](#gaia-cli-+-ledger-nano). To do so, you need to:
 
 1. Install [Ledger Live](https://shop.ledger.com/pages/ledger-live) on your machine. 
 2. Using Ledger Live, [update your Ledger Nano S with the latest firmware](https://support.ledger.com/hc/en-us/articles/360002731113-Update-device-firmware).
 3. On the Ledger Live application, navigate to the `Manager` menu . 
-    ![manager](./ledger-tuto-manager.png)
+    ![manager](../images/ledger-tuto-manager.png)
 4. Connect your Ledger Nano device and allow Ledger Manager from it. 
 5. On the Ledger Live application, Search for `Cosmos`. 
-    ![search](./ledger-tuto-search.png)
+    ![search](../images/ledger-tuto-search.png)
 6. Install the Cosmos application by clicking on `Install`.
 
 ::: tip
 To see the `Cosmos` application when you search for it, you might need to activate the `Developer Mode`, located in the Experimental features tab of the Ledger Live application.
 :::
 
-![Devmode](./ledger-tuto-dev-mode.png)
+![Devmode](../images/ledger-tuto-dev-mode.png)
 
 ## Lunie.io + Ledger Nano  
 
@@ -34,12 +38,12 @@ To see the `Cosmos` application when you search for it, you might need to activa
 1. Connect your Ledger device to your computer, unlock it with the PIN and open the Cosmos app.
 2. Open [https://app.lunie.io](https://app.lunie.io/existing) in your web browser (latest version of [Brave](https://brave.com/) preferred).
 3. Choose `Sign in with Ledger Nano S`.
-    ![lunie-option](./ledger-tuto-lunie-option.png)
+    ![lunie-option](../images/ledger-tuto-lunie-option.png)
 4. Make sure your Ledger device is unlocked and with the Cosmos app open and then click on the`Sign in` button. 
 
 That's it! You can now use Lunie with your Ledger Nano S. You will find your Cosmos address here:
 
-![lunie-address](./ledger-tuto-lunie-address.png)
+![lunie-address](../images/ledger-tuto-lunie-address.png)
 
 **Note: Each time you will send a transaction, you will need to confirm it on your Ledger device. Indication will be prompted from the Lunie interface**
 
@@ -152,7 +156,7 @@ When prompted with `confirm transaction before signing`, Answer `Y`.
 
 Next you will be prompted to review and approve the transaction on your Ledger device. Be sure to inspect the transaction JSON displayed on the screen. You can scroll through each field and each message. Scroll down to read more about the data fields of a standard transaction object.
 
-Now, you are all set to start [sending transactions on the network](./delegator-guide-cli.md#sending-transactions).
+Now, you are all set to start [sending transactions on the network](../delegators/delegator-guide-cli.md#sending-transactions).
 
 ### Receive funds
 

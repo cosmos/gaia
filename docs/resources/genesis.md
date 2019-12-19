@@ -1,3 +1,7 @@
+---
+order: 2
+---
+
 # Genesis File
 
 This document explains how the genesis file of the Cosmos Hub mainnet is structured. It also explains how you can build a genesis file for your own `gaia` testnet.
@@ -329,4 +333,4 @@ A `gentx` can be added manually to the genesis file, or via the following comman
 gaiad collect-gentxs
 ```
 
-This command will add all the `gentxs` stored in `~/.gaiad/config/gentx` to the genesis file. In order to create a genesis transaction, click [here](./validators/validator-setup.md#participate-in-genesis-as-a-validator).
+This command will add all the `gentxs` stored in `~/.gaiad/config/gentx` to the genesis file. In order to create a genesis transaction, click [here](../validators/validator-setup.md#participate-in-genesis-as-a-validator).

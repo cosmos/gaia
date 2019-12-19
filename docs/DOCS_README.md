@@ -24,13 +24,6 @@ The [README.md](./README.md) is also the landing page for the documentation
 on the website. During the Jenkins build, the current commit is added to the bottom
 of the README.
 
-## Config.js
-
-The [config.js](./.vuepress/config.js) generates the sidebar and Table of Contents
-on the website docs. Note the use of relative links and the omission of
-file extensions. Additional features are available to improve the look
-of the sidebar.
-
 ## Links
 
 **NOTE:** Strongly consider the existing links - both within this directory
@@ -90,14 +83,6 @@ python -m SimpleHTTPServer 8080
 
 then navigate to localhost:8080 in your browser.
 
-## Build RPC Docs
-
-First, run `make tools` from the root of repo, to install the swagger-ui tool.
-
-Then, edit the `swagger.yaml` manually; it is found [here](https://github.com/cosmos/gaia/blob/master/cmd/gaiacli/swagger-ui/swagger.yaml)
-
-Finally, run `make update-gaia-lite-docs` from the root of the repo.
-
 ## Search
 
 We are using [Algolia](https://www.algolia.com) to power full-text search. This uses a public API search-only key in the `config.js` as well as a [cosmos_network.json](https://github.com/algolia/docsearch-configs/blob/master/configs/cosmos_network.json) configuration file that we can update with PRs.
@@ -105,7 +90,7 @@ We are using [Algolia](https://www.algolia.com) to power full-text search. This 
 ## Consistency
 
 Because the build processes are identical (as is the information contained herein), this file should be kept in sync as
-much as possible with its [counterpart in the Tendermint Core repo](https://github.com/tendermint/tendermint/blob/develop/docs/DOCS_README.md).
+much as possible with its [counterpart in the Tendermint Core repo](https://github.com/tendermint/tendermint/blob/master/docs/DOCS_README.md).
 
 ### Update and Build the RPC docs
 

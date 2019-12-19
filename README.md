@@ -9,22 +9,13 @@
 [![GolangCI](https://golangci.com/badges/github.com/cosmos/gaia.svg)](https://golangci.com/r/github.com/cosmos/gaia)
 [![riot.im](https://img.shields.io/badge/riot.im-JOIN%20CHAT-green.svg)](https://riot.im/app/#/room/#cosmos-sdk:matrix.org)
 
-This repository hosts `Gaia`, the first implementation of the Cosmos Hub.
+This repository hosts `Gaia`, the first implementation of the Cosmos Hub based on the [Cosmos SDK](https://github.com/cosmos/cosmos-sdk).
 
 **Note**: Requires [Go 1.13+](https://golang.org/dl/)
 
-**DISCLAIMER**: The current version of Gaia running the Cosmos Hub (v0.34.x) is
-__NOT__ maintained in this repository. Gaia and the [Cosmos SDK](https://github.com/cosmos/cosmos-sdk/)
-have been recently split. All future versions of Gaia, including the next major
-upgrade, will be maintained in this repository. However, until the next major upgrade,
-Gaia should be fetched and built from the latest [released](https://github.com/cosmos/cosmos-sdk/releases)
-__v0.34.x__ version in the SDK repository. In addition, this repository should be
-considered unstable until the next major release of Gaia. Please bear with us
-while we continue the migration process and update documentation.
-
 ## Cosmos Hub Mainnet
 
-To run a full-node for the mainnet of the Cosmos Hub, first [install `gaia`](./docs/installation.md), then follow [the guide](./docs/join-mainnet.md).
+To run a full-node for the mainnet of the Cosmos Hub, first [install `gaiad`](./docs/gaia-tutorials/installation.md), then follow [the guide](./docs/gaia-tutorials/join-mainnet.md).
 
 For status updates and genesis file, see the [launch repo](https://github.com/cosmos/launch).
 

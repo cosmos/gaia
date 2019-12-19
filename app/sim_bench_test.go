@@ -97,8 +97,10 @@ func BenchmarkInvariants(b *testing.B) {
 		cr := cr
 		b.Run(fmt.Sprintf("%s/%s", cr.ModuleName, cr.Route), func(b *testing.B) {
 			if res, stop := cr.Invar(ctx); stop {
-				fmt.Printf("broken invariant at block %d of %d\n%s", ctx.BlockHeight()-1, config.NumBlocks, res)
-				b.FailNow()
+				b.Fatalf(
+					"broken invariant at block %d of %d\n%s",
+					ctx.BlockHeight()-1, config.NumBlocks, res,
+				)
 			}
 		})
 	}

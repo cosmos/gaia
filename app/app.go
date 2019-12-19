@@ -12,7 +12,6 @@ import (
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/simapp"
-	"github.com/cosmos/cosmos-sdk/simapp/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -88,7 +87,7 @@ func MakeCodec() *codec.Codec {
 }
 
 // Verify app interface at compile time
-var _ types.App = (*GaiaApp)(nil)
+var _ simapp.App = (*GaiaApp)(nil)
 
 // GaiaApp extended ABCI application
 type GaiaApp struct {

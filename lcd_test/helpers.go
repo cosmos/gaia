@@ -15,6 +15,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/lcd"
 	"github.com/cosmos/cosmos-sdk/codec"
 	crkeys "github.com/cosmos/cosmos-sdk/crypto/keys"
@@ -91,10 +93,10 @@ func InitializeLCD(nValidators int, initAddrs []sdk.AccAddress, minting bool, po
 	}
 
 	// XXX: Need to set this so LCD knows the tendermint node address!
-	viper.Set(client.FlagNode, config.RPC.ListenAddress)
-	viper.Set(client.FlagChainID, genDoc.ChainID)
+	viper.Set(flags.FlagNode, config.RPC.ListenAddress)
+	viper.Set(flags.FlagChainID, genDoc.ChainID)
 	// TODO Set to false once the upstream Tendermint proof verification issue is fixed.
-	viper.Set(client.FlagTrustNode, true)
+	viper.Set(flags.FlagTrustNode, true)
 
 	node, err := startTM(config, logger, genDoc, privVal, gapp)
 	if err != nil {
@@ -377,7 +379,7 @@ func CreateAddr(name string, kb crkeys.Keybase) (sdk.AccAddress, string, error) 
 		info crkeys.Info
 		seed string
 	)
-	info, seed, err = kb.CreateMnemonic(name, crkeys.English, client.DefaultKeyPass, crkeys.Secp256k1)
+	info, seed, err = kb.CreateMnemonic(name, crkeys.English, keys.DefaultKeyPass, crkeys.Secp256k1)
 	return sdk.AccAddress(info.GetPubKey().Address()), seed, err
 }
 
@@ -394,7 +396,7 @@ func CreateAddrs(kb crkeys.Keybase, numAddrs int) (addrs []sdk.AccAddress, seeds
 
 	for i := 0; i < numAddrs; i++ {
 		name := fmt.Sprintf("test%d", i)
-		info, seed, err = kb.CreateMnemonic(name, crkeys.English, client.DefaultKeyPass, crkeys.Secp256k1)
+		info, seed, err = kb.CreateMnemonic(name, crkeys.English, keys.DefaultKeyPass, crkeys.Secp256k1)
 		if err != nil {
 			errs = append(errs, err)
 		}

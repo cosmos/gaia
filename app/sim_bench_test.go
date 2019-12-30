@@ -5,9 +5,10 @@ import (
 	"os"
 	"testing"
 
+	abci "github.com/tendermint/tendermint/abci/types"
+
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 // Profile with:

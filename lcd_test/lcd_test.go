@@ -15,7 +15,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
 
-	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/mintkey"
 	"github.com/cosmos/cosmos-sdk/tests"
@@ -46,7 +46,7 @@ func init() {
 
 // nolint: errcheck
 func TestMain(m *testing.M) {
-	viper.Set(client.FlagKeyringBackend, "test")
+	viper.Set(flags.FlagKeyringBackend, "test")
 	os.Exit(m.Run())
 }
 
@@ -138,7 +138,7 @@ func TestCoinSend(t *testing.T) {
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	// test failure with wrong adjustment
-	res, body, _ = doTransferWithGas(t, port, name1, memo, addr, client.GasFlagAuto, 0.1, false, true, fees, kb)
+	res, body, _ = doTransferWithGas(t, port, name1, memo, addr, flags.GasFlagAuto, 0.1, false, true, fees, kb)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	// run simulation and test success with estimated gas
@@ -231,7 +231,7 @@ func TestCoinSendGenerateSignAndBroadcast(t *testing.T) {
 	acc := getAccount(t, port, addr)
 
 	// simulate tx
-	res, body, _ := doTransferWithGas(t, port, name1, memo, addr, client.GasFlagAuto, 1.0, true, false, fees, kb)
+	res, body, _ := doTransferWithGas(t, port, name1, memo, addr, flags.GasFlagAuto, 1.0, true, false, fees, kb)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
 	var gasEstResp rest.GasEstimateResponse

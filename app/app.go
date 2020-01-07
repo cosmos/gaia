@@ -127,7 +127,7 @@ type GaiaApp struct {
 // NewGaiaApp returns a reference to an initialized GaiaApp.
 func NewGaiaApp(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
-	invCheckPeriod uint, baseAppOptions ...func(*bam.BaseApp),
+	invCheckPeriod uint, skipUpgradeHeights map[int64]bool, baseAppOptions ...func(*bam.BaseApp),
 ) *GaiaApp {
 
 	cdc := MakeCodec()
@@ -190,7 +190,7 @@ func NewGaiaApp(
 	app.crisisKeeper = crisis.NewKeeper(
 		app.subspaces[crisis.ModuleName], invCheckPeriod, app.supplyKeeper, auth.FeeCollectorName,
 	)
-	app.upgradeKeeper = upgrade.NewKeeper(map[int64]bool{}, keys[upgrade.StoreKey], app.cdc)
+	app.upgradeKeeper = upgrade.NewKeeper(skipUpgradeHeights, keys[upgrade.StoreKey], app.cdc)
 
 	// create evidence keeper with evidence router
 	evidenceKeeper := evidence.NewKeeper(

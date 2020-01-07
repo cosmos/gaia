@@ -7,7 +7,7 @@ With each breaking upgrade of the Cosmos Hub, the network is restarted at height
 
 As a result, the blocks of the previous networks are not downloaded by new clients (as they sync from the new genesis state), and may be deleted by existing full-nodes. 
 
-In an effort to maintain transparency, the interchain hosts archives of the previous verions of the Cosmos Hub network. These archives can be found [here](https://archive.interchain.io/).
+In an effort to maintain transparency, the interchain hosts archives of the previous versions of the Cosmos Hub network. These archives can be found [here](https://archive.interchain.io/).
 
 If you would like to search explorers for previous hub data, these are some links where you can find the information:
 

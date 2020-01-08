@@ -8,7 +8,7 @@ order: 1
 
 `gaiacli` is the tool that enables you to interact with the node that runs on the Cosmos Hub network, whether you run it yourself or not. Let us set it up properly. In order to install it, follow the [installation procedure](../gaia-tutorials/installation.md).
 
-### Setting up gaiacli 
+### Setting up gaiacli
 
 The main command used to set up `gaiacli` is the following:
 
@@ -16,7 +16,7 @@ The main command used to set up `gaiacli` is the following:
 gaiacli config <flag> <value>
 ```
 
-It allows you to set a default value for each given flag. 
+It allows you to set a default value for each given flag.
 
 First, set up the address of the full-node you want to connect to:
 
@@ -26,7 +26,7 @@ gaiacli config node <host>:<port>
 # example: gaiacli config node https://77.87.106.33:26657
 ```
 
-If you run your own full-node, just use `tcp://localhost:26657` as the address. 
+If you run your own full-node, just use `tcp://localhost:26657` as the address.
 
 Then, let us set the default value of the `--trust-node` flag:
 
@@ -174,12 +174,12 @@ is included in a block.
 
 ### Fees & Gas
 
-Each transaction may either supply fees or gas prices, but not both. 
+Each transaction may either supply fees or gas prices, but not both.
 
 Validator's have a minimum gas price (multi-denom) configuration and they use
-this value when when determining if they should include the transaction in a block during `CheckTx`, where `gasPrices >= minGasPrices`. Note, your transaction must supply fees that are greater than or equal to __any__ of the denominations the validator requires.
+this value when when determining if they should include the transaction in a block during `CheckTx`, where `gasPrices >= minGasPrices`. Note, your transaction must supply fees that are greater than or equal to **any** of the denominations the validator requires.
 
-__Note__: With such a mechanism in place, validators may start to prioritize
+**Note**: With such a mechanism in place, validators may start to prioritize
 txs by `gasPrice` in the mempool, so providing higher fees or gas prices may yield higher tx priority.
 
 e.g.
@@ -198,7 +198,7 @@ gaiacli tx send ... --gas-prices=0.025uatom
 
 #### Get Tokens
 
-On a testnet, getting tokens is usually done via a faucet. 
+On a testnet, getting tokens is usually done via a faucet.
 
 #### Query Account Balance
 
@@ -326,7 +326,7 @@ You can find a list of available `events` on each of the SDK modules:
 - [Slashing events](https://github.com/cosmos/cosmos-sdk/blob/master/x/slashing/spec/06_events.md)
 - [Distribution events](https://github.com/cosmos/cosmos-sdk/blob/master/x/distribution/spec/06_events.md)
 - [Bank events](https://github.com/cosmos/cosmos-sdk/blob/master/x/bank/spec/04_events.md)
-:::
+  :::
 
 #### Matching a Transaction's Hash
 
@@ -565,8 +565,8 @@ Some considerations about the voting process:
 - Voting is done by bonded `ATOM` holders on a 1 bonded `ATOM` 1 vote basis
 - Delegators inherit the vote of their validator if they don't vote
 - Votes are tallied at the end of the voting period (2 weeks on mainnet) where
-each address can vote multiple times to update its `Option` value (paying the transaction fee each time),
-only the most recently cast vote will count as valid
+  each address can vote multiple times to update its `Option` value (paying the transaction fee each time),
+  only the most recently cast vote will count as valid
 - Voters can choose between options `Yes`, `No`, `NoWithVeto` and `Abstain`
 - At the end of the voting period, a proposal is accepted iff:
   - `(YesVotes / (YesVotes+NoVotes+NoWithVetoVotes)) > 1/2`
@@ -638,7 +638,7 @@ respective parameter, eg. `MaxValidators` should be an integer and not a decimal
 
 Proper vetting of a parameter change proposal should prevent this from happening
 (no deposits should occur during the governance process), but it should be noted
-regardless. 
+regardless.
 
 :::
 
@@ -863,7 +863,7 @@ gaiacli tx sign \
   unsignedTx.json \
   --multisig=<multisig_address> \
   --from=p1 \
-  --output-document=p1signature.json 
+  --output-document=p1signature.json
 ```
 
 Once the signature is generated, `p1` transmits both `unsignedTx.json` and

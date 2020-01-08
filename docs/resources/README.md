@@ -4,6 +4,8 @@ parent:
   order: 5
 ---
 
+# Resources
+
 This folder contains resources on the `gaia` software.
 
 - [`gaiacli` documentation](./gaiacli.md)

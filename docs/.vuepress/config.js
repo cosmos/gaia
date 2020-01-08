@@ -40,16 +40,6 @@ module.exports = {
     editLinks: true,
     label: "Gaia",
     sidebar: [
-      // {
-      //   title: "Using the SDK",
-      //   children: [
-      //     {
-      //       title: "Modules",
-      //       directory: true,
-      //       path: "/modules"
-      //     }
-      //   ]
-      // },
       {
         title: "Resources",
         children: [

@@ -10,12 +10,12 @@
     "@vuepress/plugin-google-analytics": "^1.2.0"
   },
   "scripts": {
-    "preserve": "./pre.sh",
+    "preserve": "sh ./pre.sh",
     "serve": "trap 'exit 0' SIGINT; vuepress dev",
-    "postserve": "./post.sh",
-    "prebuild": "./pre.sh",
+    "postserve": "sh ./post.sh",
+    "prebuild": "sh ./pre.sh",
     "build": "trap 'exit 0' SIGINT; vuepress build",
-    "postbuild": "./post.sh"
+    "postbuild": "sh ./post.sh"
   },
   "author": "",
   "license": "ISC"

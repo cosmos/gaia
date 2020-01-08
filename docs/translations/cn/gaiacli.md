@@ -253,24 +253,24 @@ gaiacli tx broadcast --node=<node> signedSendTx.json
 
 你可以使用交易搜索命令查询与每个交易上添加的特定`标签集`匹配的交易。
 
-每个标签都由`<tag>:<value>`形式的键值对形成。还可以使用`＆`符号组合标签来查询更具体的结果。
+每个标签都由`{eventType}.{eventAttribute}={value}`形式的键值对形成。还可以使用`＆`符号组合标签来查询更具体的结果。
 
 使用`标签`查询交易的命令如下：
 
 ```bash
-gaiacli query txs --tags='<tag>:<value>'
+gaiacli query txs --events='message.sender=cosmos1...'
 ```
 
 使用多个`标签`:
 
 ```bash
-gaiacli query txs --tags='<tag1>:<value1>&<tag2>:<value2>'
+gaiacli query txs --events='message.sender=cosmos1...&message.action=withdraw_delegator_reward'
 ```
 
 通过`page`和`limit`来实现分页:
 
 ```bash
-gaiacli query txs --tags='<tag>:<value>' --page=1 --limit=20
+gaiacli query txs --events='message.sender=cosmos1...' --page=1 --limit=20
 ```
 
 ::: tip 注意
@@ -278,13 +278,13 @@ gaiacli query txs --tags='<tag>:<value>' --page=1 --limit=20
 action标签始终等于相关message的`Type()`函数返回的消息类型。
 
 你可以在每个SDK的模块中找到目前的标签列表：
-- [Common tags](https://github.com/cosmos/cosmos-sdk/blob/d1e76221d8e28824bb4791cb4ad8662d2ae9051e/types/tags.go#L57-L63)
-- [Staking tags](https://github.com/cosmos/cosmos-sdk/blob/d1e76221d8e28824bb4791cb4ad8662d2ae9051e/x/staking/tags/tags.go#L8-L24)
-- [Governance tags](https://github.com/cosmos/cosmos-sdk/blob/d1e76221d8e28824bb4791cb4ad8662d2ae9051e/x/gov/tags/tags.go#L8-L22)
-- [Slashing tags](https://github.com/cosmos/cosmos-sdk/blob/d1e76221d8e28824bb4791cb4ad8662d2ae9051e/x/slashing/handler.go#L52)
-- [Distribution tags](https://github.com/cosmos/cosmos-sdk/blob/develop/x/distribution/tags/tags.go#L8-L17)
-- [Bank tags](https://github.com/cosmos/cosmos-sdk/blob/d1e76221d8e28824bb4791cb4ad8662d2ae9051e/x/bank/keeper.go#L193-L206)
-  :::
+
+- [Staking events](https://github.com/cosmos/cosmos-sdk/blob/master/x/staking/spec/07_events.md)
+- [Governance events](https://github.com/cosmos/cosmos-sdk/blob/master/x/gov/spec/04_events.md)
+- [Slashing events](https://github.com/cosmos/cosmos-sdk/blob/master/x/slashing/spec/06_events.md)
+- [Distribution events](https://github.com/cosmos/cosmos-sdk/blob/master/x/distribution/spec/06_events.md)
+- [Bank events](https://github.com/cosmos/cosmos-sdk/blob/master/x/bank/spec/04_events.md)
+:::
 
 #### 匹配一笔交易的hash
 

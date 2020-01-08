@@ -83,8 +83,13 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 		cache = store.NewCommitKVStoreCacheManager()
 	}
 
+	skipUpgradeHeights := make(map[int64]bool)
+	for _, h := range viper.GetIntSlice(server.FlagUnsafeSkipUpgrades) {
+		skipUpgradeHeights[int64(h)] = true
+	}
+
 	return app.NewGaiaApp(
-		logger, db, traceStore, true, invCheckPeriod,
+		logger, db, traceStore, true, invCheckPeriod, skipUpgradeHeights,
 		baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
 		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
 		baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
@@ -98,7 +103,7 @@ func exportAppStateAndTMValidators(
 ) (json.RawMessage, []tmtypes.GenesisValidator, error) {
 
 	if height != -1 {
-		gapp := app.NewGaiaApp(logger, db, traceStore, false, uint(1))
+		gapp := app.NewGaiaApp(logger, db, traceStore, false, uint(1), map[int64]bool{})
 		err := gapp.LoadHeight(height)
 		if err != nil {
 			return nil, nil, err
@@ -106,6 +111,6 @@ func exportAppStateAndTMValidators(
 		return gapp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 	}
 
-	gapp := app.NewGaiaApp(logger, db, traceStore, true, uint(1))
+	gapp := app.NewGaiaApp(logger, db, traceStore, true, uint(1), map[int64]bool{})
 	return gapp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 }

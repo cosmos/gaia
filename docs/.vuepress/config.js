@@ -1,6 +1,6 @@
 module.exports = {
   theme: "cosmos",
-  title: "Cosmos SDK",
+  title: "Cosmos Hub",
   markdown: {
     anchor: {
       permalinkSymbol: ""
@@ -16,29 +16,12 @@ module.exports = {
       }
     ],
   ],
-  // locales: {
-  //   "/": {
-  //     lang: "en-US"
-  //   },
-  //   kr: {
-  //     lang: "kr"
-  //   },
-  //   kr: {
-  //     lang: "kr"
-  //   },
-  //   cn: {
-  //     lang: "cn"
-  //   },
-  //   ru: {
-  //     lang: "ru"
-  //   }
-  // },
   base: process.env.VUEPRESS_BASE || "/",
   themeConfig: {
     docsRepo: "cosmos/gaia",
     docsDir: "docs",
     editLinks: true,
-    label: "Gaia",
+    label: "hub",
     sidebar: [
       {
         title: "Resources",
@@ -166,16 +149,16 @@ module.exports = {
     }
   },
   plugins: [
-    [
-      "@vuepress/google-analytics",
-      {
-        ga: "UA-51029217-12"
-      }
-    ],
+    // [
+    //   "@vuepress/google-analytics",
+    //   {
+    //     ga: "UA-51029217-12"
+    //   }
+    // ],
     [
       "sitemap",
       {
-        hostname: "https://docs.cosmos.network"
+        hostname: "https://hub.cosmos.network"
       }
     ]
   ]

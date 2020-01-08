@@ -4,18 +4,11 @@
   "description": "Welcome to the Gaia documentation!",
   "main": "index.js",
   "dependencies": {
-    "vuepress-theme-cosmos": "^1.0.127"
-  },
-  "devDependencies": {
-    "@vuepress/plugin-google-analytics": "^1.2.0"
+    "vuepress-theme-cosmos": "^1.0.128"
   },
   "scripts": {
-    "preserve": "sh ./pre.sh",
-    "serve": "trap 'exit 0' SIGINT; vuepress dev",
-    "postserve": "sh ./post.sh",
-    "prebuild": "sh ./pre.sh",
-    "build": "trap 'exit 0' SIGINT; vuepress build",
-    "postbuild": "sh ./post.sh"
+    "serve": "trap 'exit 0' SIGINT; vuepress dev --no-cache",
+    "build": "trap 'exit 0' SIGINT; vuepress build --no-cache"
   },
   "author": "",
   "license": "ISC"

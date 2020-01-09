@@ -290,6 +290,8 @@ jobs:
             GAIAD_VERSION="stable"
           elif [ "${CIRCLE_BRANCH}" = "develop" ]; then
             GAIAD_VERSION="develop"
+          elif [[ "${CIRCLE_BRANCH}" == release/v* ]]; then
+            GAIAD_VERSION="${CIRCLE_BRANCH}"
           fi
           if [ -z "${GAIAD_VERSION}" ]; then
             docker build .

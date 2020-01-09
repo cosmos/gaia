@@ -235,40 +235,39 @@ gaiacli tx broadcast --node=<node> signedSendTx.json
 
 #### 태그 매칭하기
 
-트랜잭션 검색 명령을 이용하여 모든 트랜잭션에 추가되는 특정 `tags` 세트를 검색할 수 있습니다.
+트랜잭션 검색 명령을 이용하여 모든 트랜잭션에 추가되는 특정 `events` 세트를 검색할 수 있습니다.
 
-각 태그의 키-값 페어는 `<tag(태그)>:<value(값)>` 형태로 이루어집니다. 더 상세한 검색을 원하실 경우 `&` 를 사용하여 태그를 추가할 수 있습니다.
+각 태그의 키-값 페어는 `{eventType}.{eventAttribute}={value}` 형태로 이루어집니다. 더 상세한 검색을 원하실 경우 `&` 를 사용하여 태그를 추가할 수 있습니다.
 
-`tag`를 이용한 트랜잭션 조회는 다음과 같이 합니다:
+`events`를 이용한 트랜잭션 조회는 다음과 같이 합니다:
 
 ```bash
-gaiacli query txs --tags='<tag(태그)>:<value(값)>'
+gaiacli query txs --events='message.sender=cosmos1...'
 ```
 
-다수의 `tags`를 이용하실 경우:
+다수의 `events`를 이용하실 경우:
 
 ```bash
-gaiacli query txs --tags='<tag1>:<value1>&<tag2>:<value2>'
+gaiacli query txs --events='message.sender=cosmos1...&message.action=withdraw_delegator_reward'
 ```
 
 페이지네이션은 `page`와 `limit` 값으로 지원됩니다.
 
 ```bash
-gaiacli query txs --tags='<tag(태그)>:<value(값)>' --page=1 --limit=20
+gaiacli query txs --events='message.sender=cosmos1...' --page=1 --limit=20
 ```
 
 ::: tip 참고
 
 액션 태그는 관련 메시지의 `Type()` 명령이 응답하는 메시지 타입과 언제나 동일합니다.
 
-각 SDK 모듈에 대한 `tags`는 여기에서 확인할 수 있습니다:
+각 SDK 모듈에 대한 `events`는 여기에서 확인할 수 있습니다:
 
-- [Common tags](https://github.com/cosmos/cosmos-sdk/blob/d1e76221d8e28824bb4791cb4ad8662d2ae9051e/types/tags.go#L57-L63)
-- [Staking tags](https://github.com/cosmos/cosmos-sdk/blob/d1e76221d8e28824bb4791cb4ad8662d2ae9051e/x/staking/tags/tags.go#L8-L24)
-- [Governance tags](https://github.com/cosmos/cosmos-sdk/blob/d1e76221d8e28824bb4791cb4ad8662d2ae9051e/x/gov/tags/tags.go#L8-L22)
-- [Slashing tags](https://github.com/cosmos/cosmos-sdk/blob/d1e76221d8e28824bb4791cb4ad8662d2ae9051e/x/slashing/handler.go#L52)
-- [Distribution tags](https://github.com/cosmos/cosmos-sdk/blob/develop/x/distribution/tags/tags.go#L8-L17)
-- [Bank tags](https://github.com/cosmos/cosmos-sdk/blob/d1e76221d8e28824bb4791cb4ad8662d2ae9051e/x/bank/keeper.go#L193-L206)
+- [Staking events](https://github.com/cosmos/cosmos-sdk/blob/master/x/staking/spec/07_events.md)
+- [Governance events](https://github.com/cosmos/cosmos-sdk/blob/master/x/gov/spec/04_events.md)
+- [Slashing events](https://github.com/cosmos/cosmos-sdk/blob/master/x/slashing/spec/06_events.md)
+- [Distribution events](https://github.com/cosmos/cosmos-sdk/blob/master/x/distribution/spec/06_events.md)
+- [Bank events](https://github.com/cosmos/cosmos-sdk/blob/master/x/bank/spec/04_events.md)
 :::
 
 #### 트랜잭션 해시로 검색하기

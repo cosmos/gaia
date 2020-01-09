@@ -272,41 +272,43 @@ gaiacli tx broadcast --node=<node> signedSendTx.json
 
 ### Query Transactions
 
-#### Matching a Set of Tags
+#### Matching a Set of Events
 
-You can use the transaction search command to query for transactions that match a specific set of `tags`, which are added on every transaction.
+You can use the transaction search command to query for transactions that match a
+specific set of `events`, which are added on every transaction.
 
-Each tag is conformed by a key-value pair in the form of `<tag>:<value>`. Tags can also be combined to query for a more specific result using the `&` symbol.
+Each event is composed by a key-value pair in the form of `{eventType}.{eventAttribute}={value}`.
+Events can also be combined to query for a more specific result using the `&` symbol.
 
-The command for querying transactions using a `tag` is the following:
+You can query transactions by `events` as follows:
 
 ```bash
-gaiacli query txs --tags='<tag>:<value>'
+gaiacli query txs --events='message.sender=cosmos1...'
 ```
 
-And for using multiple `tags`:
+And for using multiple `events`:
 
 ```bash
-gaiacli query txs --tags='<tag1>:<value1>&<tag2>:<value2>'
+gaiacli query txs --events='message.sender=cosmos1...&message.action=withdraw_delegator_reward'
 ```
 
 The pagination is supported as well via `page` and `limit`:
+
 ```bash
-gaiacli query txs --tags='<tag>:<value>' --page=1 --limit=20
+gaiacli query txs --events='message.sender=cosmos1...' --page=1 --limit=20
 ```
 
 ::: tip Note
 
 The action tag always equals the message type returned by the `Type()` function of the relevant message.
 
-You can find a list of available `tags` on each of the SDK modules:
+You can find a list of available `events` on each of the SDK modules:
 
-- [Common tags](https://github.com/cosmos/cosmos-sdk/blob/d1e76221d8e28824bb4791cb4ad8662d2ae9051e/types/tags.go#L57-L63)
-- [Staking tags](https://cosmos.network/docs/spec/staking/06_tags.html#tags)
-- [Governance tags](https://cosmos.network/docs/spec/governance/04_tags.html#tags)
-- [Slashing tags](https://cosmos.network/docs/spec/slashing/06_tags.html#tags)
-- [Distribution tags](https://cosmos.network/docs/spec/distribution/06_tags.html)
-- [Bank tags](https://cosmos.network/docs/spec/bank/04_tags.html#tags)
+- [Staking events](https://github.com/cosmos/cosmos-sdk/blob/master/x/staking/spec/07_events.md)
+- [Governance events](https://github.com/cosmos/cosmos-sdk/blob/master/x/gov/spec/04_events.md)
+- [Slashing events](https://github.com/cosmos/cosmos-sdk/blob/master/x/slashing/spec/06_events.md)
+- [Distribution events](https://github.com/cosmos/cosmos-sdk/blob/master/x/distribution/spec/06_events.md)
+- [Bank events](https://github.com/cosmos/cosmos-sdk/blob/master/x/bank/spec/04_events.md)
 :::
 
 #### Matching a Transaction's Hash

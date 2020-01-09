@@ -150,7 +150,8 @@ not rely on the `x/supply` keeper to get module account addresses for blacklisti
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v2.0.3...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v2.0.4...HEAD
+[v2.0.4]: https://github.com/cosmos/gaia/releases/tag/v2.0.4
 [v2.0.3]: https://github.com/cosmos/gaia/releases/tag/v2.0.3
 [v2.0.2]: https://github.com/cosmos/gaia/releases/tag/v2.0.2
 [v2.0.1]: https://github.com/cosmos/gaia/releases/tag/v2.0.1

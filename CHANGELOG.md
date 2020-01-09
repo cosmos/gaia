@@ -35,12 +35,18 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
-## [v2.0.4] - TBD
+## [v2.0.4] - 2020-01-09
 
 ### Improvements
 
 * (sdk) Bump SDK version to [v0.37.5](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.37.5).
 * (tendermint) Bump Tendermint version to [v0.32.8](https://github.com/tendermint/tendermint/releases/tag/v0.32.8).
+
+### Bug Fixes
+
+* (cli) Fixed `gaiacli query txs` to use `events` instead of `tags`. Events take the form of `'{eventType}.{eventAttribute}={value}'`. Please
+  see the [events doc](https://github.com/cosmos/cosmos-sdk/blob/master/docs/core/events.md#events-1)
+  for further documentation.
 
 ## [v2.0.3] - 2019-11-04
 

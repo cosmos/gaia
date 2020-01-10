@@ -1,6 +1,6 @@
----
+<!--
 order: 1
----
+-->
 
 # Delegator Guide (CLI)
 

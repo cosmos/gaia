@@ -1,6 +1,6 @@
----
+<!--
 order: 6
----
+-->
 
 # Setting up Tendermint KMS + Ledger
 

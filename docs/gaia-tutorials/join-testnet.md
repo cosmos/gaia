@@ -1,6 +1,6 @@
----
+<!--
 order: 4
----
+-->
 
 # Join the Public Testnet 
 

@@ -1,6 +1,6 @@
----
+<!--
 order: 1
----
+-->
 
 ![Welcome to the Cosmos Hub](../images/cosmos-hub-image.jpg)
 

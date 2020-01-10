@@ -1,7 +1,7 @@
----
+<!--
 parent:
   order: false
----
+-->
 
 # Gaia Tutorials
 

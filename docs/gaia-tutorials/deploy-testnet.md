@@ -1,6 +1,6 @@
----
+<!--
 order: 6
----
+-->
 
 # Deploy Your Own Gaia Testnet
 

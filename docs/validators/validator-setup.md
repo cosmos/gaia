@@ -1,6 +1,6 @@
----
+<!--
 order: 2
----
+-->
 
 # Run a Validator on the Cosmos Hub Mainnet
 

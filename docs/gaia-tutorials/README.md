@@ -1,6 +1,7 @@
 ---
+order: false
 parent:
-  order: false
+  order: 3
 ---
 
 # Gaia Tutorials

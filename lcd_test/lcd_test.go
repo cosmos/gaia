@@ -24,7 +24,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
-	dclcommon "github.com/cosmos/cosmos-sdk/x/distribution/client/common"
 	distrrest "github.com/cosmos/cosmos-sdk/x/distribution/client/rest"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"github.com/cosmos/cosmos-sdk/x/gov"
@@ -822,7 +821,7 @@ func TestUnjail(t *testing.T) {
 
 	// NOTE: any less than this and it fails
 	tests.WaitForHeight(3, port)
-	pkString, err := sdk.Bech32ifyConsPub(valPubKeys[0])
+	pkString, err := sdk.Bech32ifyPubKey(sdk.Bech32PubKeyTypeConsPub, valPubKeys[0])
 	require.NoError(t, err)
 	signingInfo := getSigningInfo(t, port, pkString)
 	tests.WaitForHeight(4, port)
@@ -985,7 +984,7 @@ func TestDistributionGetParams(t *testing.T) {
 
 	res, body := Request(t, port, "GET", "/distribution/parameters", nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
-	require.NoError(t, cdc.UnmarshalJSON([]byte(body), &dclcommon.PrettyParams{}))
+	require.NoError(t, cdc.UnmarshalJSON([]byte(body), &disttypes.Params{}))
 }
 
 func TestDistributionFlow(t *testing.T) {

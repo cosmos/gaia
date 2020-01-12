@@ -10,11 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/require"
-
-	tmtypes "github.com/tendermint/tendermint/types"
-
 	"github.com/cosmos/gaia/app"
+	"github.com/stretchr/testify/require"
+	tmtypes "github.com/tendermint/tendermint/types"
 
 	clientkeys "github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/codec"

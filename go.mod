@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	github.com/btcsuite/btcd v0.0.0-20190807005414-4063feeff79a // indirect
-	github.com/cosmos/cosmos-sdk v0.34.4-0.20200106164931-25be589af6c9
+	github.com/cosmos/cosmos-sdk v0.34.4-0.20200110211037-214024431fbd
 	github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d // indirect
 	github.com/golang/mock v1.3.1 // indirect
 	github.com/onsi/ginkgo v1.8.0 // indirect
@@ -26,3 +26,5 @@ require (
 	golang.org/x/net v0.0.0-20190827160401-ba9fcec4b297 // indirect
 	golang.org/x/text v0.3.2 // indirect
 )
+
+replace github.com/keybase/go-keychain => github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4

@@ -374,9 +374,13 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - docs-update
-                - gamarin/docs-update
+      - deploy-docs:
+          context: gaia-docs-deployment
+          filters:
+            branches:
+              only:
+                - master
       - setup-dependencies:
           # filters here are needed to enable this job also for tags
           filters:

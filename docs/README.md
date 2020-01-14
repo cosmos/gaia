@@ -2,7 +2,7 @@
 parent:
   order: false
 layout: home
----
+-->
 
 # Cosmos Hub Documentation
 

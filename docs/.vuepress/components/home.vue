@@ -5,7 +5,7 @@
 <script>
 export default {
   mounted() {
-    window.location.assign("/hub-overview/overview.html")
+    window.location.assign(`${this.$site.base}hub-overview/overview.html`)
   }
 }
 </script>

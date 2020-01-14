@@ -16,6 +16,7 @@ executors:
       - image: tendermintdev/docker-website-deployment
     environment:
       AWS_REGION: us-east-1
+      LEDGER_ENABLED: false
 
 
 commands:

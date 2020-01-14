@@ -370,6 +370,7 @@ workflows:
                 - master
                 - develop
       - deploy-docs:
+          context: gaia-docs-deployment-staging
           filters:
             branches:
               only:

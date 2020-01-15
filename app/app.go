@@ -204,11 +204,7 @@ func NewGaiaApp(
 		AddRoute(distr.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.distrKeeper)).
 		AddRoute(upgrade.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.upgradeKeeper))
 	app.govKeeper = gov.NewKeeper(
-<<<<<<< HEAD
-		app.cdc, keys[gov.StoreKey], app.subspaces[gov.ModuleName],
-=======
 		app.cdc, keys[gov.StoreKey], govSubspace,
->>>>>>> Update gaia to latest ibc-alpha
 		app.supplyKeeper, &stakingKeeper, govRouter,
 	)
 
@@ -267,7 +263,7 @@ func NewGaiaApp(
 		mint.NewAppModule(app.mintKeeper),
 		distr.NewAppModule(app.distrKeeper, app.accountKeeper, app.supplyKeeper, app.stakingKeeper),
 		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.supplyKeeper),
-		slashing.NewAppModule(app.slashingKeeper, app.stakingKeeper),
+		slashing.NewAppModule(app.slashingKeeper, app.accountKeeper, app.stakingKeeper),
 		// TODO: ibc simulations
 	)
 

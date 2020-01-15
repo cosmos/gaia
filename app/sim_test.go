@@ -70,7 +70,7 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 
 	// Run randomized simulation
 	// TODO: parameterize numbers, save for a later PR
-	_, simParams, simErr := simulation.SimulateFromSeed(
+	_, _, simErr := simulation.SimulateFromSeed(
 		b, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
 		SimulationOperations(app, app.Codec(), config),
 		app.ModuleAccountAddrs(), config,
@@ -79,13 +79,6 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 	// export state and params before the simulation error is checked
 	if config.ExportStatePath != "" {
 		if err := ExportStateToJSON(app, config.ExportStatePath); err != nil {
-			fmt.Println(err)
-			b.Fail()
-		}
-	}
-
-	if config.ExportParamsPath != "" {
-		if err := simapp.ExportParamsToJSON(simParams, config.ExportParamsPath); err != nil {
 			fmt.Println(err)
 			b.Fail()
 		}
@@ -132,7 +125,7 @@ func TestFullAppSimulation(t *testing.T) {
 	require.Equal(t, "GaiaApp", app.Name())
 
 	// Run randomized simulation
-	_, simParams, simErr := simulation.SimulateFromSeed(
+	_, _, simErr := simulation.SimulateFromSeed(
 		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
 		SimulationOperations(app, app.Codec(), config),
 		app.ModuleAccountAddrs(), config,
@@ -141,11 +134,6 @@ func TestFullAppSimulation(t *testing.T) {
 	// export state and params before the simulation error is checked
 	if config.ExportStatePath != "" {
 		err := ExportStateToJSON(app, config.ExportStatePath)
-		require.NoError(t, err)
-	}
-
-	if config.ExportParamsPath != "" {
-		err := simapp.ExportParamsToJSON(simParams, config.ExportParamsPath)
 		require.NoError(t, err)
 	}
 
@@ -189,7 +177,7 @@ func TestAppImportExport(t *testing.T) {
 	require.Equal(t, "SimApp", app.Name())
 
 	// Run randomized simulation
-	_, simParams, simErr := simulation.SimulateFromSeed(
+	_, _, simErr := simulation.SimulateFromSeed(
 		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
 		SimulationOperations(app, app.Codec(), config),
 		app.ModuleAccountAddrs(), config,
@@ -198,11 +186,6 @@ func TestAppImportExport(t *testing.T) {
 	// export state and simParams before the simulation error is checked
 	if config.ExportStatePath != "" {
 		err := ExportStateToJSON(app, config.ExportStatePath)
-		require.NoError(t, err)
-	}
-
-	if config.ExportParamsPath != "" {
-		err := simapp.ExportParamsToJSON(simParams, config.ExportParamsPath)
 		require.NoError(t, err)
 	}
 
@@ -311,7 +294,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 
 	// Run randomized simulation
 	// Run randomized simulation
-	stopEarly, simParams, simErr := simulation.SimulateFromSeed(
+	stopEarly, _, simErr := simulation.SimulateFromSeed(
 		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
 		SimulationOperations(app, app.Codec(), config),
 		app.ModuleAccountAddrs(), config,
@@ -320,11 +303,6 @@ func TestAppSimulationAfterImport(t *testing.T) {
 	// export state and params before the simulation error is checked
 	if config.ExportStatePath != "" {
 		err := ExportStateToJSON(app, config.ExportStatePath)
-		require.NoError(t, err)
-	}
-
-	if config.ExportParamsPath != "" {
-		err := simapp.ExportParamsToJSON(simParams, config.ExportParamsPath)
 		require.NoError(t, err)
 	}
 
@@ -455,7 +433,7 @@ func BenchmarkInvariants(b *testing.B) {
 	app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue, interBlockCacheOpt())
 
 	// 2. Run parameterized simulation (w/o invariants)
-	_, simParams, simErr := simulation.SimulateFromSeed(
+	_, _, simErr := simulation.SimulateFromSeed(
 		b, ioutil.Discard, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
 		SimulationOperations(app, app.Codec(), config),
 		app.ModuleAccountAddrs(), config,
@@ -464,13 +442,6 @@ func BenchmarkInvariants(b *testing.B) {
 	// export state and params before the simulation error is checked
 	if config.ExportStatePath != "" {
 		if err := ExportStateToJSON(app, config.ExportStatePath); err != nil {
-			fmt.Println(err)
-			b.Fail()
-		}
-	}
-
-	if config.ExportParamsPath != "" {
-		if err := simapp.ExportParamsToJSON(simParams, config.ExportParamsPath); err != nil {
 			fmt.Println(err)
 			b.Fail()
 		}

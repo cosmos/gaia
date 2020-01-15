@@ -50,6 +50,58 @@ func interBlockCacheOpt() func(*baseapp.BaseApp) {
 	return baseapp.SetInterBlockCache(store.NewCommitKVStoreCacheManager())
 }
 
+// Profile with:
+// /usr/local/go/bin/go test -benchmem -run=^$ github.com/cosmos/cosmos-sdk/GaiaApp -bench ^BenchmarkFullAppSimulation$ -Commit=true -cpuprofile cpu.out
+func BenchmarkFullAppSimulation(b *testing.B) {
+	logger := log.NewNopLogger()
+	config := simapp.NewConfigFromFlags()
+
+	var db dbm.DB
+	dir, err := ioutil.TempDir("", "goleveldb-app-sim")
+	if err != nil {
+		fmt.Println(err)
+		b.Fail()
+	}
+	db, err = sdk.NewLevelDB("Simulation", dir)
+	if err != nil {
+		fmt.Println(err)
+		b.Fail()
+	}
+	defer func() {
+		db.Close()
+		_ = os.RemoveAll(dir)
+	}()
+
+	app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue, interBlockCacheOpt())
+
+	// Run randomized simulation
+	// TODO: parameterize numbers, save for a later PR
+	_, _, simErr := simulation.SimulateFromSeed(
+		b, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
+		SimulationOperations(app, app.Codec(), config),
+		app.ModuleAccountAddrs(), config,
+	)
+
+	// export state and params before the simulation error is checked
+	if config.ExportStatePath != "" {
+		if err := ExportStateToJSON(app, config.ExportStatePath); err != nil {
+			fmt.Println(err)
+			b.Fail()
+		}
+	}
+
+	if simErr != nil {
+		fmt.Println(simErr)
+		b.FailNow()
+	}
+
+	if config.Commit {
+		fmt.Println("\nGoLevelDB Stats")
+		fmt.Println(db.Stats()["leveldb.stats"])
+		fmt.Println("GoLevelDB cached block size", db.Stats()["leveldb.cachedblock"])
+	}
+}
+
 func TestFullAppSimulation(t *testing.T) {
 	config, db, dir, logger, skip, err := simapp.SetupSimulation("leveldb-app-sim", "Simulation")
 	if skip {
@@ -65,16 +117,19 @@ func TestFullAppSimulation(t *testing.T) {
 	app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue, map[int64]bool{}, fauxMerkleModeOpt)
 	require.Equal(t, appName, app.Name())
 
-	// run randomized simulation
-	_, simParams, simErr := simulation.SimulateFromSeed(
-		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.SimulationManager()),
-		simapp.SimulationOperations(app, app.Codec(), config),
+	// Run randomized simulation
+	_, _, simErr := simulation.SimulateFromSeed(
+		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
+		SimulationOperations(app, app.Codec(), config),
 		app.ModuleAccountAddrs(), config,
 	)
 
-	// export state and simParams before the simulation error is checked
-	err = simapp.CheckExportSimulation(app, config, simParams)
-	require.NoError(t, err)
+	// export state and params before the simulation error is checked
+	if config.ExportStatePath != "" {
+		err := ExportStateToJSON(app, config.ExportStatePath)
+		require.NoError(t, err)
+	}
+
 	require.NoError(t, simErr)
 
 	if config.Commit {
@@ -98,15 +153,18 @@ func TestAppImportExport(t *testing.T) {
 	require.Equal(t, appName, app.Name())
 
 	// Run randomized simulation
-	_, simParams, simErr := simulation.SimulateFromSeed(
-		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.SimulationManager()),
-		simapp.SimulationOperations(app, app.Codec(), config),
+	_, _, simErr := simulation.SimulateFromSeed(
+		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
+		SimulationOperations(app, app.Codec(), config),
 		app.ModuleAccountAddrs(), config,
 	)
 
 	// export state and simParams before the simulation error is checked
-	err = simapp.CheckExportSimulation(app, config, simParams)
-	require.NoError(t, err)
+	if config.ExportStatePath != "" {
+		err := ExportStateToJSON(app, config.ExportStatePath)
+		require.NoError(t, err)
+	}
+
 	require.NoError(t, simErr)
 
 	if config.Commit {
@@ -184,15 +242,19 @@ func TestAppSimulationAfterImport(t *testing.T) {
 	require.Equal(t, appName, app.Name())
 
 	// Run randomized simulation
-	stopEarly, simParams, simErr := simulation.SimulateFromSeed(
-		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.SimulationManager()),
-		simapp.SimulationOperations(app, app.Codec(), config),
+	// Run randomized simulation
+	stopEarly, _, simErr := simulation.SimulateFromSeed(
+		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
+		SimulationOperations(app, app.Codec(), config),
 		app.ModuleAccountAddrs(), config,
 	)
 
-	// export state and simParams before the simulation error is checked
-	err = simapp.CheckExportSimulation(app, config, simParams)
-	require.NoError(t, err)
+	// export state and params before the simulation error is checked
+	if config.ExportStatePath != "" {
+		err := ExportStateToJSON(app, config.ExportStatePath)
+		require.NoError(t, err)
+	}
+
 	require.NoError(t, simErr)
 
 	if config.Commit {
@@ -291,5 +353,66 @@ func TestAppStateDeterminism(t *testing.T) {
 				)
 			}
 		}
+	}
+}
+
+func BenchmarkInvariants(b *testing.B) {
+	logger := log.NewNopLogger()
+
+	config := simapp.NewConfigFromFlags()
+	config.AllInvariants = false
+
+	dir, err := ioutil.TempDir("", "goleveldb-app-invariant-bench")
+	if err != nil {
+		fmt.Println(err)
+		b.Fail()
+	}
+	db, err := sdk.NewLevelDB("simulation", dir)
+	if err != nil {
+		fmt.Println(err)
+		b.Fail()
+	}
+
+	defer func() {
+		db.Close()
+		os.RemoveAll(dir)
+	}()
+
+	app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue, interBlockCacheOpt())
+
+	// 2. Run parameterized simulation (w/o invariants)
+	_, _, simErr := simulation.SimulateFromSeed(
+		b, ioutil.Discard, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
+		SimulationOperations(app, app.Codec(), config),
+		app.ModuleAccountAddrs(), config,
+	)
+
+	// export state and params before the simulation error is checked
+	if config.ExportStatePath != "" {
+		if err := ExportStateToJSON(app, config.ExportStatePath); err != nil {
+			fmt.Println(err)
+			b.Fail()
+		}
+	}
+
+	if simErr != nil {
+		fmt.Println(simErr)
+		b.FailNow()
+	}
+
+	ctx := app.NewContext(true, abci.Header{Height: app.LastBlockHeight() + 1})
+
+	// 3. Benchmark each invariant separately
+	//
+	// NOTE: We use the crisis keeper as it has all the invariants registered with
+	// their respective metadata which makes it useful for testing/benchmarking.
+	for _, cr := range app.crisisKeeper.Routes() {
+		cr := cr
+		b.Run(fmt.Sprintf("%s/%s", cr.ModuleName, cr.Route), func(b *testing.B) {
+			if res, stop := cr.Invar(ctx); stop {
+				fmt.Printf("broken invariant at block %d of %d\n%s", ctx.BlockHeight()-1, config.NumBlocks, res)
+				b.FailNow()
+			}
+		})
 	}
 }

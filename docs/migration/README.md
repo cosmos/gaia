@@ -1,3 +1,8 @@
+<!--
+parent:
+  order: false
+-->
+
 # Migration Instructions
 
 This directory houses Cosmos Hub major upgrade migration instructions.

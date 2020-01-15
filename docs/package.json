@@ -1,0 +1,15 @@
+{
+  "name": "docs",
+  "version": "1.0.0",
+  "description": "Welcome to the Gaia documentation!",
+  "main": "index.js",
+  "dependencies": {
+    "vuepress-theme-cosmos": "^1.0.133"
+  },
+  "scripts": {
+    "serve": "trap 'exit 0' SIGINT; vuepress dev --no-cache",
+    "build": "trap 'exit 0' SIGINT; vuepress build --no-cache"
+  },
+  "author": "",
+  "license": "ISC"
+}

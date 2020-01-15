@@ -1,6 +1,6 @@
----
+<!--
 order: 3
----
+-->
 
 # Join the Cosmos Hub Mainnet
 

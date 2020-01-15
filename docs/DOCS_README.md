@@ -1,3 +1,8 @@
+<!--
+parent:
+  order: false
+-->
+
 # Updating the docs
 
 If you want to open a PR on Gaia to update the documentation, please follow the guidelines in the [`CONTRIBUTING.md`](https://github.com/cosmos/gaia/tree/master/CONTRIBUTING.md)
@@ -6,15 +11,14 @@ If you want to open a PR on Gaia to update the documentation, please follow the 
 
 The documentation for Gaia is hosted at:
 
-- https://hub.cosmos.network/docs/ 
+- https://hub.cosmos.network/docs/
 
 built from the files in this (`/docs`) directory for [master](https://github.com/cosmos/gaia/tree/master/docs)
-
 
 ### How It Works
 
 There is a CircleCI job listening for changes in the `/docs` directory, on both
-the  `master` and `develop` branches. Any updates to files in this directory
+the `master` and `develop` branches. Any updates to files in this directory
 on those branches will automatically trigger a website deployment. Under the hood,
 the private website repository has a `make build-docs` target consumed by a CircleCI job in that repo.
 
@@ -95,14 +99,14 @@ much as possible with its [counterpart in the Tendermint Core repo](https://gith
 ### Update and Build the RPC docs
 
 1. Execute the following command at the root directory to install the swagger-ui generate tool.
-    ```bash
-    make tools
-    ```
+   ```bash
+   make tools
+   ```
 2. Edit API docs
-    1. Directly Edit API docs manually: `cmd/gaiacli/swagger-ui/swagger.yaml`.
-    2. Edit API docs within the [Swagger Editor](https://editor.swagger.io/). Please refer to this [document](https://swagger.io/docs/specification/2-0/basic-structure/) for the correct structure in `.yaml`.
+   1. Directly Edit API docs manually: `cmd/gaiacli/swagger-ui/swagger.yaml`.
+   2. Edit API docs within the [Swagger Editor](https://editor.swagger.io/). Please refer to this [document](https://swagger.io/docs/specification/2-0/basic-structure/) for the correct structure in `.yaml`.
 3. Download `swagger.yaml` and replace the old `swagger.yaml` under fold `cmd/gaiacli/swagger-ui`.
 4. Compile gaiacli
-    ```bash
-    make install
-    ```
+   ```bash
+   make install
+   ```

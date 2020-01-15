@@ -120,7 +120,6 @@ type GaiaApp struct {
 	govKeeper      gov.Keeper
 	crisisKeeper   crisis.Keeper
 	paramsKeeper   params.Keeper
-	ibcKeeper      ibc.Keeper
 	upgradeKeeper  upgrade.Keeper
 	evidenceKeeper evidence.Keeper
 	ibcKeeper      ibc.Keeper

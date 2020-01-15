@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"math/rand"
 	"os"
 	"testing"
@@ -72,23 +73,15 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 		_ = os.RemoveAll(dir)
 	}()
 
-	app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue, interBlockCacheOpt())
+	app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue, map[int64]bool{}, interBlockCacheOpt())
 
 	// Run randomized simulation
 	// TODO: parameterize numbers, save for a later PR
 	_, _, simErr := simulation.SimulateFromSeed(
 		b, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
-		SimulationOperations(app, app.Codec(), config),
+		simapp.SimulationOperations(app, app.Codec(), config),
 		app.ModuleAccountAddrs(), config,
 	)
-
-	// export state and params before the simulation error is checked
-	if config.ExportStatePath != "" {
-		if err := ExportStateToJSON(app, config.ExportStatePath); err != nil {
-			fmt.Println(err)
-			b.Fail()
-		}
-	}
 
 	if simErr != nil {
 		fmt.Println(simErr)
@@ -120,15 +113,9 @@ func TestFullAppSimulation(t *testing.T) {
 	// Run randomized simulation
 	_, _, simErr := simulation.SimulateFromSeed(
 		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
-		SimulationOperations(app, app.Codec(), config),
+		simapp.SimulationOperations(app, app.Codec(), config),
 		app.ModuleAccountAddrs(), config,
 	)
-
-	// export state and params before the simulation error is checked
-	if config.ExportStatePath != "" {
-		err := ExportStateToJSON(app, config.ExportStatePath)
-		require.NoError(t, err)
-	}
 
 	require.NoError(t, simErr)
 
@@ -155,15 +142,9 @@ func TestAppImportExport(t *testing.T) {
 	// Run randomized simulation
 	_, _, simErr := simulation.SimulateFromSeed(
 		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
-		SimulationOperations(app, app.Codec(), config),
+		simapp.SimulationOperations(app, app.Codec(), config),
 		app.ModuleAccountAddrs(), config,
 	)
-
-	// export state and simParams before the simulation error is checked
-	if config.ExportStatePath != "" {
-		err := ExportStateToJSON(app, config.ExportStatePath)
-		require.NoError(t, err)
-	}
 
 	require.NoError(t, simErr)
 
@@ -245,15 +226,9 @@ func TestAppSimulationAfterImport(t *testing.T) {
 	// Run randomized simulation
 	stopEarly, _, simErr := simulation.SimulateFromSeed(
 		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
-		SimulationOperations(app, app.Codec(), config),
+		simapp.SimulationOperations(app, app.Codec(), config),
 		app.ModuleAccountAddrs(), config,
 	)
-
-	// export state and params before the simulation error is checked
-	if config.ExportStatePath != "" {
-		err := ExportStateToJSON(app, config.ExportStatePath)
-		require.NoError(t, err)
-	}
 
 	require.NoError(t, simErr)
 
@@ -378,22 +353,14 @@ func BenchmarkInvariants(b *testing.B) {
 		os.RemoveAll(dir)
 	}()
 
-	app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue, interBlockCacheOpt())
+	app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue, map[int64]bool{}, interBlockCacheOpt())
 
 	// 2. Run parameterized simulation (w/o invariants)
 	_, _, simErr := simulation.SimulateFromSeed(
 		b, ioutil.Discard, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
-		SimulationOperations(app, app.Codec(), config),
+		simapp.SimulationOperations(app, app.Codec(), config),
 		app.ModuleAccountAddrs(), config,
 	)
-
-	// export state and params before the simulation error is checked
-	if config.ExportStatePath != "" {
-		if err := ExportStateToJSON(app, config.ExportStatePath); err != nil {
-			fmt.Println(err)
-			b.Fail()
-		}
-	}
 
 	if simErr != nil {
 		fmt.Println(simErr)

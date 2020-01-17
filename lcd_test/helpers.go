@@ -53,6 +53,7 @@ import (
 )
 
 // TODO: Make InitializeTestLCD safe to call in multiple tests at the same time
+
 // InitializeLCD starts Tendermint and the LCD in process, listening on
 // their respective sockets where nValidators is the total number of validators
 // and initAddrs are the accounts to initialize with some stake tokens. It
@@ -66,7 +67,7 @@ func InitializeLCD(nValidators int, initAddrs []sdk.AccAddress, minting bool, po
 	}
 	config.Consensus.TimeoutCommit = 100
 	config.Consensus.SkipTimeoutCommit = false
-	config.TxIndex.IndexAllTags = true
+	config.TxIndex.IndexAllKeys = true
 
 	logger := log.NewTMLogger(log.NewSyncWriter(os.Stdout))
 	logger = log.NewFilter(logger, log.AllowError())
@@ -383,7 +384,7 @@ func CreateAddr(name string, kb crkeys.Keybase) (sdk.AccAddress, string, error) 
 	return sdk.AccAddress(info.GetPubKey().Address()), seed, err
 }
 
-// CreateAddr adds multiple address to the key store and returns the addresses and associated seeds in lexographical order by address.
+// CreateAddrs adds multiple address to the key store and returns the addresses and associated seeds in lexographical order by address.
 // It also requires that the keys could be created.
 func CreateAddrs(kb crkeys.Keybase, numAddrs int) (addrs []sdk.AccAddress, seeds, names []string, errs []error) {
 	var (

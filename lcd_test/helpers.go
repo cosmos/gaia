@@ -105,6 +105,7 @@ func InitializeLCD(nValidators int, initAddrs []sdk.AccAddress, minting bool, po
 	}
 
 	tests.WaitForNextHeightTM(tests.ExtractPortFromAddress(config.RPC.ListenAddress))
+
 	lcdInstance, err := startLCD(logger, listenAddr, cdc)
 	if err != nil {
 		return

@@ -42,7 +42,7 @@ func replayTxs(rootDir string) error {
 		// Copy the rootDir to a new directory, to preserve the old one.
 		fmt.Fprintln(os.Stderr, "Copying rootdir over")
 		oldRootDir := rootDir
-		
+
 		rootDir = oldRootDir + "_replay"
 		if tmos.FileExists(rootDir) {
 			tmos.Exit(fmt.Sprintf("temporary copy dir %v already exists", rootDir))

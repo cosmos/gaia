@@ -35,6 +35,13 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+## [v2.0.5] - 2020-01-21
+
+### Improvements
+
+* (sdk) Bump SDK version to [v0.37.6](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.37.6).
+* (tendermint) Bump Tendermint version to [v0.32.9](https://github.com/tendermint/tendermint/releases/tag/v0.32.9).
+
 ## [v2.0.4] - 2020-01-09
 
 ### Improvements
@@ -142,7 +149,8 @@ not rely on the `x/supply` keeper to get module account addresses for blacklisti
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v2.0.4...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v2.0.5...HEAD
+[v2.0.5]: https://github.com/cosmos/gaia/releases/tag/v2.0.5
 [v2.0.4]: https://github.com/cosmos/gaia/releases/tag/v2.0.4
 [v2.0.3]: https://github.com/cosmos/gaia/releases/tag/v2.0.3
 [v2.0.2]: https://github.com/cosmos/gaia/releases/tag/v2.0.2

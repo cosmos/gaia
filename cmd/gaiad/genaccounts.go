@@ -11,8 +11,8 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/crypto/keys"
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -50,7 +50,12 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			if err != nil {
 				// attempt to lookup address from Keybase if no address was provided
-				kb, err := keys.NewKeyringFromDir(viper.GetString(flagClientHome), inBuf)
+				kb, err := keys.NewKeyring(
+					sdk.GetConfig().GetKeyringServiceName(),
+					viper.GetString(flags.FlagKeyringBackend),
+					viper.GetString(flagClientHome),
+					inBuf,
+				)
 				if err != nil {
 					return err
 				}

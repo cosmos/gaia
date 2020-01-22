@@ -16,7 +16,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/client/keys"
+	"github.com/cosmos/cosmos-sdk/crypto/keys"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/mintkey"
 	"github.com/cosmos/cosmos-sdk/tests"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -41,6 +41,15 @@ var fees = sdk.Coins{sdk.NewInt64Coin(sdk.DefaultBondDenom, 5)}
 func init() {
 	mintkey.BcryptSecurityParameter = 1
 	version.Version = os.Getenv("VERSION")
+}
+
+func newKeybase() (keys.Keybase, error) {
+	return keys.NewKeyring(
+		sdk.GetConfig().GetKeyringServiceName(),
+		viper.GetString(flags.FlagKeyringBackend),
+		InitClientHome(""),
+		nil,
+	)
 }
 
 // nolint: errcheck
@@ -78,7 +87,7 @@ func TestValidators(t *testing.T) {
 }
 
 func TestCoinSend(t *testing.T) {
-	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
+	kb, err := newKeybase()
 	require.NoError(t, err)
 	addr, _, err := CreateAddr(name1, kb)
 	require.NoError(t, err)
@@ -168,7 +177,7 @@ func TestCoinSend(t *testing.T) {
 }
 
 func TestCoinSendAccAuto(t *testing.T) {
-	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
+	kb, err := newKeybase()
 	require.NoError(t, err)
 	addr, _, err := CreateAddr(name1, kb)
 	require.NoError(t, err)
@@ -195,7 +204,7 @@ func TestCoinSendAccAuto(t *testing.T) {
 }
 
 func TestCoinMultiSendGenerateOnly(t *testing.T) {
-	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
+	kb, err := newKeybase()
 	require.NoError(t, err)
 	addr, _, err := CreateAddr(name1, kb)
 	require.NoError(t, err)
@@ -220,7 +229,7 @@ func TestCoinMultiSendGenerateOnly(t *testing.T) {
 }
 
 func TestCoinSendGenerateSignAndBroadcast(t *testing.T) {
-	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
+	kb, err := newKeybase()
 	require.NoError(t, err)
 	addr, _, err := CreateAddr(name1, kb)
 	require.NoError(t, err)
@@ -262,7 +271,7 @@ func TestCoinSendGenerateSignAndBroadcast(t *testing.T) {
 }
 
 func TestEncodeTx(t *testing.T) {
-	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
+	kb, err := newKeybase()
 	require.NoError(t, err)
 	addr, _, err := CreateAddr(name1, kb)
 	require.NoError(t, err)
@@ -298,7 +307,7 @@ func TestEncodeTx(t *testing.T) {
 }
 
 func TestTxs(t *testing.T) {
-	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
+	kb, err := newKeybase()
 	require.NoError(t, err)
 	addr, _, err := CreateAddr(name1, kb)
 	require.NoError(t, err)
@@ -384,7 +393,7 @@ func TestValidatorQuery(t *testing.T) {
 }
 
 func TestBonding(t *testing.T) {
-	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
+	kb, err := newKeybase()
 	require.NoError(t, err)
 	addr, _, err := CreateAddr(name1, kb)
 	require.NoError(t, err)
@@ -549,7 +558,7 @@ func TestBonding(t *testing.T) {
 }
 
 func TestSubmitProposal(t *testing.T) {
-	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
+	kb, err := newKeybase()
 	require.NoError(t, err)
 	addr, _, err := CreateAddr(name1, kb)
 	require.NoError(t, err)
@@ -587,7 +596,7 @@ func TestSubmitProposal(t *testing.T) {
 }
 
 func TestSubmitCommunityPoolSpendProposal(t *testing.T) {
-	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
+	kb, err := newKeybase()
 	require.NoError(t, err)
 	addr, _, err := CreateAddr(name1, kb)
 	require.NoError(t, err)
@@ -625,7 +634,7 @@ func TestSubmitCommunityPoolSpendProposal(t *testing.T) {
 }
 
 func TestSubmitParamChangeProposal(t *testing.T) {
-	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
+	kb, err := newKeybase()
 	require.NoError(t, err)
 	addr, _, err := CreateAddr(name1, kb)
 	require.NoError(t, err)
@@ -663,7 +672,7 @@ func TestSubmitParamChangeProposal(t *testing.T) {
 }
 
 func TestDeposit(t *testing.T) {
-	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
+	kb, err := newKeybase()
 	require.NoError(t, err)
 	addr, _, err := CreateAddr(name1, kb)
 	require.NoError(t, err)
@@ -723,7 +732,7 @@ func TestDeposit(t *testing.T) {
 }
 
 func TestVote(t *testing.T) {
-	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
+	kb, err := newKeybase()
 	require.NoError(t, err)
 	addr, _, err := CreateAddr(name1, kb)
 	require.NoError(t, err)
@@ -811,7 +820,7 @@ func TestVote(t *testing.T) {
 }
 
 func TestUnjail(t *testing.T) {
-	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
+	kb, err := newKeybase()
 	require.NoError(t, err)
 	addr, _, err := CreateAddr(name1, kb)
 	require.NoError(t, err)
@@ -833,7 +842,7 @@ func TestUnjail(t *testing.T) {
 }
 
 func TestProposalsQuery(t *testing.T) {
-	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
+	kb, err := newKeybase()
 	require.NoError(t, err)
 	addrs, _, names, errors := CreateAddrs(kb, 2)
 	require.Empty(t, errors)
@@ -988,7 +997,7 @@ func TestDistributionGetParams(t *testing.T) {
 }
 
 func TestDistributionFlow(t *testing.T) {
-	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
+	kb, err := newKeybase()
 	require.NoError(t, err)
 	addr, _, err := CreateAddr(name1, kb)
 	require.NoError(t, err)
@@ -1066,7 +1075,7 @@ func TestDistributionFlow(t *testing.T) {
 }
 
 func TestMintingQueries(t *testing.T) {
-	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
+	kb, err := newKeybase()
 	require.NoError(t, err)
 	addr, _, err := CreateAddr(name1, kb)
 	require.NoError(t, err)
@@ -1094,7 +1103,7 @@ func TestMintingQueries(t *testing.T) {
 }
 
 func TestAccountBalanceQuery(t *testing.T) {
-	kb, err := keys.NewKeyringFromDir(InitClientHome(""), nil)
+	kb, err := newKeybase()
 	require.NoError(t, err)
 	addr, _, err := CreateAddr(name1, kb)
 	require.NoError(t, err)

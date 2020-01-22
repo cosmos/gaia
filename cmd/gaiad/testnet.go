@@ -14,13 +14,15 @@ import (
 	"github.com/spf13/viper"
 	tmconfig "github.com/tendermint/tendermint/config"
 	"github.com/tendermint/tendermint/crypto"
-	cmn "github.com/tendermint/tendermint/libs/common"
+	tmos "github.com/tendermint/tendermint/libs/os"
+	tmrand "github.com/tendermint/tendermint/libs/rand"
 	"github.com/tendermint/tendermint/types"
 	tmtime "github.com/tendermint/tendermint/types/time"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/client/keys"
+	clientkeys "github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/crypto/keys"
 	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -104,7 +106,7 @@ func InitTestnet(cmd *cobra.Command, config *tmconfig.Config, cdc *codec.Codec,
 	nodeCLIHome, startingIPAddress string, numValidators int) error {
 
 	if chainID == "" {
-		chainID = "chain-" + cmn.RandStr(6)
+		chainID = "chain-" + tmrand.NewRand().Str(6)
 	}
 
 	monikers := make([]string, numValidators)
@@ -159,12 +161,17 @@ func InitTestnet(cmd *cobra.Command, config *tmconfig.Config, cdc *codec.Codec,
 		memo := fmt.Sprintf("%s@%s:26656", nodeIDs[i], ip)
 		genFiles = append(genFiles, config.GenesisFile())
 
-		kb, err := keys.NewKeyringFromDir(clientDir, inBuf)
+		kb, err := keys.NewKeyring(
+			sdk.GetConfig().GetKeyringServiceName(),
+			viper.GetString(flags.FlagKeyringBackend),
+			clientDir,
+			inBuf,
+		)
 		if err != nil {
 			return err
 		}
 
-		keyPass := keys.DefaultKeyPass
+		keyPass := clientkeys.DefaultKeyPass
 		addr, secret, err := server.GenerateSaveCoinKey(kb, nodeDirName, keyPass, true)
 		if err != nil {
 			_ = os.RemoveAll(outputDir)
@@ -204,7 +211,7 @@ func InitTestnet(cmd *cobra.Command, config *tmconfig.Config, cdc *codec.Codec,
 		tx := auth.NewStdTx([]sdk.Msg{msg}, auth.StdFee{}, []auth.StdSignature{}, memo)
 		txBldr := auth.NewTxBuilderFromCLI(inBuf).WithChainID(chainID).WithMemo(memo).WithKeybase(kb)
 
-		signedTx, err := txBldr.SignStdTx(nodeDirName, keys.DefaultKeyPass, tx, false)
+		signedTx, err := txBldr.SignStdTx(nodeDirName, clientkeys.DefaultKeyPass, tx, false)
 		if err != nil {
 			_ = os.RemoveAll(outputDir)
 			return err
@@ -353,12 +360,12 @@ func writeFile(name string, dir string, contents []byte) error {
 	writePath := filepath.Join(dir)
 	file := filepath.Join(writePath, name)
 
-	err := cmn.EnsureDir(writePath, 0700)
+	err := tmos.EnsureDir(writePath, 0700)
 	if err != nil {
 		return err
 	}
 
-	err = cmn.WriteFile(file, contents, 0600)
+	err = tmos.WriteFile(file, contents, 0600)
 	if err != nil {
 		return err
 	}

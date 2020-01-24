@@ -27,6 +27,7 @@ import (
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authexported "github.com/cosmos/cosmos-sdk/x/auth/exported"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
@@ -162,7 +163,7 @@ func InitTestnet(cmd *cobra.Command, config *tmconfig.Config, cdc *codec.Codec,
 		genFiles = append(genFiles, config.GenesisFile())
 
 		kb, err := keys.NewKeyring(
-			sdk.GetConfig().GetKeyringServiceName(),
+			version.Name,
 			viper.GetString(flags.FlagKeyringBackend),
 			clientDir,
 			inBuf,

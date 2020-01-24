@@ -18,8 +18,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
-	authcutils "github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	authexported "github.com/cosmos/cosmos-sdk/x/auth/exported"
 	bankrest "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
 	distrrest "github.com/cosmos/cosmos-sdk/x/distribution/client/rest"
@@ -359,7 +359,7 @@ func signAndBroadcastGenTx(
 	require.Nil(t, err)
 
 	txbldr := auth.NewTxBuilder(
-		authcutils.GetTxEncoder(cdc),
+		authclient.GetTxEncoder(cdc),
 		acc.GetAccountNumber(),
 		acc.GetSequence(),
 		tx.Fee.Gas,

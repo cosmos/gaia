@@ -51,7 +51,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 			if err != nil {
 				// attempt to lookup address from Keybase if no address was provided
 				kb, err := keys.NewKeyring(
-					sdk.GetConfig().GetKeyringServiceName(),
+					sdk.KeyringServiceName(),
 					viper.GetString(flags.FlagKeyringBackend),
 					viper.GetString(flagClientHome),
 					inBuf,

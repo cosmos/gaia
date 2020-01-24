@@ -45,7 +45,7 @@ func init() {
 
 func newKeybase() (keys.Keybase, error) {
 	return keys.NewKeyring(
-		sdk.GetConfig().GetKeyringServiceName(),
+		sdk.KeyringServiceName(),
 		viper.GetString(flags.FlagKeyringBackend),
 		InitClientHome(""),
 		nil,

@@ -162,7 +162,7 @@ func InitTestnet(cmd *cobra.Command, config *tmconfig.Config, cdc *codec.Codec,
 		genFiles = append(genFiles, config.GenesisFile())
 
 		kb, err := keys.NewKeyring(
-			sdk.GetConfig().GetKeyringServiceName(),
+			sdk.KeyringServiceName(),
 			viper.GetString(flags.FlagKeyringBackend),
 			clientDir,
 			inBuf,

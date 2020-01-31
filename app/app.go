@@ -5,8 +5,8 @@ import (
 	"os"
 
 	abci "github.com/tendermint/tendermint/abci/types"
-	tmos "github.com/tendermint/tendermint/libs/os"
 	"github.com/tendermint/tendermint/libs/log"
+	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
@@ -143,7 +143,7 @@ func NewGaiaApp(
 	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetAppVersion(version.Version)
 	keys := sdk.NewKVStoreKeys(
-		bam.MainStoreKey, auth.StoreKey, staking.StoreKey,
+		bam.MainStoreKey, auth.StoreKey, staking.StoreKey, bank.StoreKey,
 		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey,
 		gov.StoreKey, params.StoreKey, ibc.StoreKey, evidence.StoreKey, upgrade.StoreKey,
 	)
@@ -172,14 +172,13 @@ func NewGaiaApp(
 
 	// add keepers
 	app.accountKeeper = auth.NewAccountKeeper(app.cdc, keys[auth.StoreKey], authSubspace, auth.ProtoBaseAccount)
-	app.bankKeeper = bank.NewBaseKeeper(app.accountKeeper, bankSubspace, app.ModuleAccountAddrs())
+	app.bankKeeper = bank.NewBaseKeeper(app.cdc, keys[bank.StoreKey], app.accountKeeper, bankSubspace, app.ModuleAccountAddrs())
 	app.supplyKeeper = supply.NewKeeper(app.cdc, keys[supply.StoreKey], app.accountKeeper, app.bankKeeper, maccPerms)
 	stakingKeeper := staking.NewKeeper(
-		app.cdc, keys[staking.StoreKey], app.supplyKeeper, stakingSubspace,
+		app.cdc, keys[staking.StoreKey], app.bankKeeper, app.supplyKeeper, stakingSubspace,
 	)
 	app.mintKeeper = mint.NewKeeper(app.cdc, keys[mint.StoreKey], mintSubspace, &stakingKeeper, app.supplyKeeper, auth.FeeCollectorName)
-	app.distrKeeper = distr.NewKeeper(app.cdc, keys[distr.StoreKey], distrSubspace, &stakingKeeper,
-		app.supplyKeeper, auth.FeeCollectorName, app.ModuleAccountAddrs())
+	app.distrKeeper = distr.NewKeeper(app.cdc, keys[distr.StoreKey], distrSubspace, app.bankKeeper, &stakingKeeper, app.supplyKeeper, auth.FeeCollectorName, app.ModuleAccountAddrs())
 	app.slashingKeeper = slashing.NewKeeper(
 		app.cdc, keys[slashing.StoreKey], &stakingKeeper, slashingSubspace,
 	)
@@ -215,7 +214,7 @@ func NewGaiaApp(
 		staking.NewMultiStakingHooks(app.distrKeeper.Hooks(), app.slashingKeeper.Hooks()),
 	)
 
-	app.ibcKeeper = ibc.NewKeeper(app.cdc, keys[ibc.StoreKey], app.bankKeeper, app.supplyKeeper)
+	app.ibcKeeper = ibc.NewKeeper(app.cdc, keys[ibc.StoreKey], stakingKeeper)
 
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
@@ -224,12 +223,12 @@ func NewGaiaApp(
 		auth.NewAppModule(app.accountKeeper),
 		bank.NewAppModule(app.bankKeeper, app.accountKeeper),
 		crisis.NewAppModule(&app.crisisKeeper),
-		supply.NewAppModule(app.supplyKeeper, app.accountKeeper),
-		gov.NewAppModule(app.govKeeper, app.accountKeeper, app.supplyKeeper),
+		supply.NewAppModule(app.supplyKeeper, app.bankKeeper, app.accountKeeper),
+		gov.NewAppModule(app.govKeeper, app.accountKeeper, app.bankKeeper, app.supplyKeeper),
 		mint.NewAppModule(app.mintKeeper),
-		slashing.NewAppModule(app.slashingKeeper, app.accountKeeper, app.stakingKeeper),
-		distr.NewAppModule(app.distrKeeper, app.accountKeeper, app.supplyKeeper, app.stakingKeeper),
-		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.supplyKeeper),
+		slashing.NewAppModule(app.slashingKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
+		distr.NewAppModule(app.distrKeeper, app.accountKeeper, app.bankKeeper, app.supplyKeeper, app.stakingKeeper),
+		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.bankKeeper, app.supplyKeeper),
 		ibc.NewAppModule(app.ibcKeeper),
 		upgrade.NewAppModule(app.upgradeKeeper),
 		evidence.NewAppModule(app.evidenceKeeper),
@@ -260,12 +259,12 @@ func NewGaiaApp(
 	app.sm = module.NewSimulationManager(
 		auth.NewAppModule(app.accountKeeper),
 		bank.NewAppModule(app.bankKeeper, app.accountKeeper),
-		supply.NewAppModule(app.supplyKeeper, app.accountKeeper),
-		gov.NewAppModule(app.govKeeper, app.accountKeeper, app.supplyKeeper),
+		supply.NewAppModule(app.supplyKeeper, app.bankKeeper, app.accountKeeper),
+		gov.NewAppModule(app.govKeeper, app.accountKeeper, app.bankKeeper, app.supplyKeeper),
 		mint.NewAppModule(app.mintKeeper),
-		distr.NewAppModule(app.distrKeeper, app.accountKeeper, app.supplyKeeper, app.stakingKeeper),
-		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.supplyKeeper),
-		slashing.NewAppModule(app.slashingKeeper, app.accountKeeper, app.stakingKeeper),
+		distr.NewAppModule(app.distrKeeper, app.accountKeeper, app.bankKeeper, app.supplyKeeper, app.stakingKeeper),
+		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.bankKeeper, app.supplyKeeper),
+		slashing.NewAppModule(app.slashingKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
 		// TODO: ibc simulations
 	)
 

@@ -11,13 +11,14 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/codec"
+	cryptokeys "github.com/cosmos/cosmos-sdk/crypto/keys"
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authexported "github.com/cosmos/cosmos-sdk/x/auth/exported"
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting"
+	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 )
 
@@ -50,7 +51,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			if err != nil {
 				// attempt to lookup address from Keybase if no address was provided
-				kb, err := keys.NewKeyringFromDir(viper.GetString(flagClientHome), inBuf)
+				kb, err := cryptokeys.NewKeyring(sdk.KeyringServiceName(), viper.GetString(flags.FlagKeyringBackend), viper.GetString(flagClientHome), inBuf)
 				if err != nil {
 					return err
 				}
@@ -78,9 +79,9 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 			// create concrete account type based on input parameters
 			var genAccount authexported.GenesisAccount
 
-			baseAccount := auth.NewBaseAccount(addr, coins.Sort(), nil, 0, 0)
+			baseAccount := auth.NewBaseAccount(addr, nil, 0, 0)
 			if !vestingAmt.IsZero() {
-				baseVestingAccount, err := authvesting.NewBaseVestingAccount(baseAccount, vestingAmt.Sort(), vestingEnd)
+				baseVestingAccount := authvesting.NewBaseVestingAccount(baseAccount, vestingAmt.Sort(), vestingEnd)
 				if err != nil {
 					return fmt.Errorf("failed to create base vesting account: %w", err)
 				}
@@ -110,10 +111,20 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 			}
 
 			authGenState := auth.GetGenesisStateFromAppState(cdc, appState)
+			bankGenState := bank.GetGenesisStateFromAppState(cdc, appState)
 
 			if authGenState.Accounts.Contains(addr) {
 				return fmt.Errorf("cannot add account at existing address %s", addr)
 			}
+
+			if balancesContains(bankGenState.Balances, addr) {
+				return fmt.Errorf("cannot add account at existing address %s", addr)
+			}
+
+			balance := bank.Balance{Address: addr, Coins: coins}
+
+			bankGenState.Balances = append(bankGenState.Balances, balance)
+			bankGenState.Balances = bank.SanitizeGenesisBalances(bankGenState.Balances)
 
 			// Add the new account to the set of genesis accounts and sanitize the
 			// accounts afterwards.
@@ -125,7 +136,13 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 				return fmt.Errorf("failed to marshal auth genesis state: %w", err)
 			}
 
+			bankGenStateBz, err := cdc.MarshalJSON(bankGenState)
+			if err != nil {
+				return fmt.Errorf("failed to marshal bank genesis state: %w", err)
+			}
+
 			appState[auth.ModuleName] = authGenStateBz
+			appState[bank.ModuleName] = bankGenStateBz
 
 			appStateJSON, err := cdc.MarshalJSON(appState)
 			if err != nil {
@@ -145,4 +162,13 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 	cmd.Flags().Uint64(flagVestingEnd, 0, "schedule end time (unix epoch) for vesting accounts")
 
 	return cmd
+}
+
+func balancesContains(bal []bank.Balance, addr sdk.AccAddress) bool {
+	for _, b := range bal {
+		if b.Address.Equals(addr) {
+			return true
+		}
+	}
+	return false
 }

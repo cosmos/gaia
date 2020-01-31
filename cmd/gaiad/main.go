@@ -21,7 +21,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/bank"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 )
@@ -37,7 +37,6 @@ func main() {
 	config.SetBech32PrefixForAccount(sdk.Bech32PrefixAccAddr, sdk.Bech32PrefixAccPub)
 	config.SetBech32PrefixForValidator(sdk.Bech32PrefixValAddr, sdk.Bech32PrefixValPub)
 	config.SetBech32PrefixForConsensusNode(sdk.Bech32PrefixConsAddr, sdk.Bech32PrefixConsPub)
-	config.SetKeyringServiceName("gaia")
 	config.Seal()
 
 	ctx := server.NewDefaultContext()
@@ -49,18 +48,18 @@ func main() {
 	}
 
 	rootCmd.AddCommand(genutilcli.InitCmd(ctx, cdc, app.ModuleBasics, app.DefaultNodeHome))
-	rootCmd.AddCommand(genutilcli.CollectGenTxsCmd(ctx, cdc, auth.GenesisAccountIterator{}, app.DefaultNodeHome))
+	rootCmd.AddCommand(genutilcli.CollectGenTxsCmd(ctx, cdc, bank.GenesisBalancesIterator{}, app.DefaultNodeHome))
 	rootCmd.AddCommand(genutilcli.MigrateGenesisCmd(ctx, cdc))
 	rootCmd.AddCommand(
 		genutilcli.GenTxCmd(
 			ctx, cdc, app.ModuleBasics, staking.AppModuleBasic{},
-			auth.GenesisAccountIterator{}, app.DefaultNodeHome, app.DefaultCLIHome,
+			bank.GenesisBalancesIterator{}, app.DefaultNodeHome, app.DefaultCLIHome,
 		),
 	)
 	rootCmd.AddCommand(genutilcli.ValidateGenesisCmd(ctx, cdc, app.ModuleBasics))
 	rootCmd.AddCommand(AddGenesisAccountCmd(ctx, cdc, app.DefaultNodeHome, app.DefaultCLIHome))
 	rootCmd.AddCommand(flags.NewCompletionCmd(rootCmd, true))
-	rootCmd.AddCommand(testnetCmd(ctx, cdc, app.ModuleBasics, auth.GenesisAccountIterator{}))
+	rootCmd.AddCommand(testnetCmd(ctx, cdc, app.ModuleBasics, bank.GenesisBalancesIterator{}))
 	rootCmd.AddCommand(replayCmd())
 	rootCmd.AddCommand(debug.Cmd(cdc))
 

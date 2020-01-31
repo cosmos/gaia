@@ -22,14 +22,16 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/codec"
+	cryptokeys "github.com/cosmos/cosmos-sdk/crypto/keys"
 	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authexported "github.com/cosmos/cosmos-sdk/x/auth/exported"
+	"github.com/cosmos/cosmos-sdk/x/bank"
+	bankexported "github.com/cosmos/cosmos-sdk/x/bank/exported"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
-	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 )
 
@@ -44,7 +46,7 @@ var (
 
 // get cmd to initialize all files for tendermint testnet and application
 func testnetCmd(ctx *server.Context, cdc *codec.Codec,
-	mbm module.BasicManager, genAccIterator genutiltypes.GenesisAccountsIterator,
+	mbm module.BasicManager, genBalancesIterator bank.GenesisBalancesIterator,
 ) *cobra.Command {
 
 	cmd := &cobra.Command{
@@ -70,7 +72,7 @@ Example:
 			startingIPAddress := viper.GetString(flagStartingIPAddress)
 			numValidators := viper.GetInt(flagNumValidators)
 
-			return InitTestnet(cmd, config, cdc, mbm, genAccIterator, outputDir, chainID,
+			return InitTestnet(cmd, config, cdc, mbm, genBalancesIterator, outputDir, chainID,
 				minGasPrices, nodeDirPrefix, nodeDaemonHome, nodeCLIHome, startingIPAddress, numValidators)
 		},
 	}
@@ -100,7 +102,7 @@ const nodeDirPerm = 0755
 
 // Initialize the testnet
 func InitTestnet(cmd *cobra.Command, config *tmconfig.Config, cdc *codec.Codec,
-	mbm module.BasicManager, genAccIterator genutiltypes.GenesisAccountsIterator,
+	mbm module.BasicManager, genBalancesIterator bank.GenesisBalancesIterator,
 	outputDir, chainID, minGasPrices, nodeDirPrefix, nodeDaemonHome,
 	nodeCLIHome, startingIPAddress string, numValidators int) error {
 
@@ -118,6 +120,7 @@ func InitTestnet(cmd *cobra.Command, config *tmconfig.Config, cdc *codec.Codec,
 	//nolint:prealloc
 	var (
 		genAccounts []authexported.GenesisAccount
+		genBalances []bankexported.GenesisBalance
 		genFiles    []string
 	)
 
@@ -160,10 +163,7 @@ func InitTestnet(cmd *cobra.Command, config *tmconfig.Config, cdc *codec.Codec,
 		memo := fmt.Sprintf("%s@%s:26656", nodeIDs[i], ip)
 		genFiles = append(genFiles, config.GenesisFile())
 
-		kb, err := keys.NewKeyringFromDir(clientDir, inBuf)
-		if err != nil {
-			return err
-		}
+		kb := cryptokeys.New(nodeDirName, clientDir)
 
 		keyPass := keys.DefaultKeyPass
 		addr, secret, err := server.GenerateSaveCoinKey(kb, nodeDirName, keyPass, true)
@@ -190,7 +190,9 @@ func InitTestnet(cmd *cobra.Command, config *tmconfig.Config, cdc *codec.Codec,
 			sdk.NewCoin(fmt.Sprintf("%stoken", nodeDirName), accTokens),
 			sdk.NewCoin(sdk.DefaultBondDenom, accStakingTokens),
 		}
-		genAccounts = append(genAccounts, auth.NewBaseAccount(addr, coins.Sort(), nil, 0, 0))
+
+		genBalances = append(genBalances, bank.Balance{Address: addr, Coins: coins})
+		genAccounts = append(genAccounts, auth.NewBaseAccount(addr, nil, 0, 0))
 
 		valTokens := sdk.TokensFromConsensusPower(100)
 		msg := staking.NewMsgCreateValidator(
@@ -229,13 +231,13 @@ func InitTestnet(cmd *cobra.Command, config *tmconfig.Config, cdc *codec.Codec,
 		srvconfig.WriteConfigFile(gaiaConfigFilePath, gaiaConfig)
 	}
 
-	if err := initGenFiles(cdc, mbm, chainID, genAccounts, genFiles, numValidators); err != nil {
+	if err := initGenFiles(cdc, mbm, chainID, genAccounts, genBalances, genFiles, numValidators); err != nil {
 		return err
 	}
 
 	err := collectGenFiles(
 		cdc, config, chainID, monikers, nodeIDs, valPubKeys, numValidators,
-		outputDir, nodeDirPrefix, nodeDaemonHome, genAccIterator,
+		outputDir, nodeDirPrefix, nodeDaemonHome, genBalancesIterator,
 	)
 	if err != nil {
 		return err
@@ -247,7 +249,7 @@ func InitTestnet(cmd *cobra.Command, config *tmconfig.Config, cdc *codec.Codec,
 
 func initGenFiles(
 	cdc *codec.Codec, mbm module.BasicManager, chainID string,
-	genAccounts []authexported.GenesisAccount, genFiles []string, numValidators int,
+	genAccounts []authexported.GenesisAccount, genBalances []bankexported.GenesisBalance, genFiles []string, numValidators int,
 ) error {
 
 	appGenState := mbm.DefaultGenesis()
@@ -258,6 +260,12 @@ func initGenFiles(
 	cdc.MustUnmarshalJSON(authDataBz, &authGenState)
 	authGenState.Accounts = genAccounts
 	appGenState[auth.ModuleName] = cdc.MustMarshalJSON(authGenState)
+
+	bankDataBz := appGenState[bank.ModuleName]
+	var bankGenState bank.GenesisState
+	cdc.MustUnmarshalJSON(bankDataBz, &bankGenState)
+	bankGenState.Balances = genBalToBal(genBalances)
+	appGenState[bank.ModuleName] = cdc.MustMarshalJSON(bankGenState)
 
 	appGenStateJSON, err := codec.MarshalJSONIndent(cdc, appGenState)
 	if err != nil {
@@ -279,11 +287,18 @@ func initGenFiles(
 	return nil
 }
 
+func genBalToBal(bals []bankexported.GenesisBalance) (out []bank.Balance) {
+	for _, bal := range bals {
+		out = append(out, bank.Balance{bal.GetAddress(), bal.GetCoins()})
+	}
+	return
+}
+
 func collectGenFiles(
 	cdc *codec.Codec, config *tmconfig.Config, chainID string,
 	monikers, nodeIDs []string, valPubKeys []crypto.PubKey,
 	numValidators int, outputDir, nodeDirPrefix, nodeDaemonHome string,
-	genAccIterator genutiltypes.GenesisAccountsIterator) error {
+	genBalIterator bank.GenesisBalancesIterator) error {
 
 	var appState json.RawMessage
 	genTime := tmtime.Now()
@@ -305,7 +320,7 @@ func collectGenFiles(
 			return err
 		}
 
-		nodeAppState, err := genutil.GenAppStateFromConfig(cdc, config, initCfg, *genDoc, genAccIterator)
+		nodeAppState, err := genutil.GenAppStateFromConfig(cdc, config, initCfg, *genDoc, genBalIterator)
 		if err != nil {
 			return err
 		}

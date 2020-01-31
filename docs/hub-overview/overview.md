@@ -27,6 +27,7 @@ These community-maintained web and mobile wallets allow you to store & transfer 
 * [Cosmostation](https://www.cosmostation.io/) - Android, iOS
 * [Huobi Wallet](https://www.huobiwallet.com/) - Android, iOS
 * [imToken](https://token.im/) - Android, iOS
+* [Interchain Wallet](https://t.me/InterchainWalletBot?start=326600450_2) - Telegram, Linux, macOS, Windows
 * [Lunagram](https://lunamint.com/) - Android, iOS
 * [Lunie](https://lunie.io) - Web
 * [Math Wallet](https://www.mathwallet.org/en/) - Android, iOS, Web
@@ -45,8 +46,10 @@ These block explorers allow you to search, view and analyze Cosmos Hub data&mdas
 * [Coris](http://coris.network)
 * [Cosmos Visualizer](https://nylira.net/3d)
 * [Hubble](https://hubble.figment.network)
+* [Interchain Wallet](https://t.me/InterchainWalletBot?start=326600450_2) - Telegram, Linux, macOS, Windows
 * [Mintscan](https://mintscan.io)
 * [Stargazer](https://stargazer.certus.one)
+* [Interchain Wallet](https://t.me/InterchainWalletBot)
 
 ## Cosmos Hub CLI
 

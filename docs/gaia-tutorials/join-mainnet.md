@@ -119,9 +119,9 @@ There are three strategies for pruning state, please be aware that this is only 
 
 1. `PruneEverything`: This means that all saved states will be pruned other than the current.
 2. `PruneNothing`: This means that all state will be saved and nothing will be deleted.
-3. `PruneSyncable`: This means that only the state of the last 100 and every 10,000th will be saved.
+3. `PruneSyncable`: This means that only the state of the last 100 and every 10,000th blocks will be saved.
 
-By default every node is in `PruneSyncable` mode. If you would like to change your nodes pruning strategy then you must do so when the node is initialized. For example, if you would like to change your node to the `PruneEverything` mode then you can pass the `---pruning everything` flag when you call `gaiad start`. If
+By default every node is in `PruneSyncable` mode. If you would like to change your nodes pruning strategy then you must do so when the node is initialized. For example, if you would like to change your node to the `PruneEverything` mode then you can pass the `---pruning everything` flag when you call `gaiad start`.
 
 > Note: When you are pruning state you will not be able to query the heights that are not in your store.
 

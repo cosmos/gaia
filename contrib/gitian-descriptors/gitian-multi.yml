@@ -1,5 +1,5 @@
 ---
-name: "gaia-linux"
+name: "gaia-multi"
 enable_cache: true
 distro: "ubuntu"
 suites:
@@ -43,7 +43,11 @@ script: |
   export PATH_orig=${PATH}
   export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 
-  export ARCHS='386 amd64 arm arm64'
+  declare -A OS_ARCHS
+  OS_ARCHS[linux]='386 amd64 arm arm64'
+  OS_ARCHS[darwin]='386 amd64'
+  OS_ARCHS[windows]='386 amd64'
+
   export GO111MODULE=on
 
   # Make release tarball
@@ -72,7 +76,7 @@ script: |
   popd
 
   # Configure LDFLAGS for reproducible builds
-  LDFLAGS="-extldflags=-static -buildid=${VERSION} -s -w \
+  LDFLAGS="-buildid=${VERSION} -s -w \
     -X github.com/cosmos/cosmos-sdk/version.Name=gaia \
     -X github.com/cosmos/cosmos-sdk/version.ServerName=gaiad \
     -X github.com/cosmos/cosmos-sdk/version.ClientName=gaiacli \
@@ -80,31 +84,36 @@ script: |
     -X github.com/cosmos/cosmos-sdk/version.Commit=${COMMIT} \
     -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger"
 
+  # Build
+
   # Extract release tarball and build
-  for arch in ${ARCHS}; do
-    INSTALLPATH=`pwd`/installed/${DISTNAME}-${arch}
-    mkdir -p ${INSTALLPATH}
+  for os in "${!OS_ARCHS[@]}"; do
+    exe_file_extension=''
+    if [ ${os} = windows ]; then
+      exe_file_extension='.exe'
+    fi
 
-    # Build gaia tool suite
-    pushd ${distsrc}
-    for prog in gaiacli gaiad; do
-      GOARCH=${arch} GOROOT_FINAL=${GOROOT} go build -a \
-        -trimpath \
-        -gcflags=all=-trimpath=${GOPATH} \
-        -asmflags=all=-trimpath=${GOPATH} \
-        -mod=readonly -tags "netgo ledger" \
-        -ldflags="${LDFLAGS}" \
-        -o ${INSTALLPATH}/${prog} ./cmd/${prog}
+    for arch in ${OS_ARCHS[$os]} ; do
+      INSTALLPATH=`pwd`/installed/
+      mkdir -p ${INSTALLPATH}
 
+      # Build gaia tool suite
+      pushd ${distsrc}
+      for prog in gaiacli gaiad; do
+        GOOS=${os} GOARCH=${arch} GOROOT_FINAL=${GOROOT} go build -a \
+          -trimpath \
+          -mod=readonly -tags "netgo ledger" \
+          -ldflags="${LDFLAGS}" \
+          -o ${INSTALLPATH}/${DISTNAME}-${os}-${arch}-${prog}${exe_file_extension} ./cmd/${prog}
+
+      done
+      popd # ${distsrc}
+
+      cp ${INSTALLPATH}/* ${OUTDIR}/
     done
-    popd # ${distsrc}
 
-    pushd ${INSTALLPATH}
-    find -type f | sort | tar \
-      --no-recursion --mode='u+rw,go+r-w,a+X' \
-      --numeric-owner --sort=name \
-      --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${DISTNAME}-linux-${arch}.tar.gz
-    popd  # installed
+    unset exe_file_extension
+
   done
 
   rm -rf ${distsrc}

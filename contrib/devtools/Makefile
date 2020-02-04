@@ -17,7 +17,6 @@ endif
 
 GOPATH ?= $(shell $(GO) env GOPATH)
 GITHUBDIR := $(GOPATH)$(FS)src$(FS)github.com
-GOLANGCI_LINT_HASHSUM := 8d21cc95da8d3daf8321ac40091456fc26123c964d7c2281d339d431f2f4c840
 
 ###
 # Functions
@@ -42,7 +41,6 @@ mkfile_dir := $(shell cd $(shell dirname $(mkfile_path)); pwd)
 ###
 
 TOOLS_DESTDIR  ?= $(GOPATH)/bin
-GOLANGCI_LINT  = $(TOOLS_DESTDIR)/golangci-lint
 RUNSIM         = $(TOOLS_DESTDIR)/runsim
 
 all: tools
@@ -50,10 +48,6 @@ all: tools
 tools: tools-stamp
 tools-stamp: $(RUNSIM)
 	touch $@
-
-$(GOLANGCI_LINT): $(mkfile_dir)/install-golangci-lint.sh
-	@echo "Installing golangci-lint..."
-	@bash $(mkfile_dir)/install-golangci-lint.sh $(TOOLS_DESTDIR) $(GOLANGCI_LINT_HASHSUM)
 
 # Install the runsim binary with a temporary workaround of entering an outside
 # directory as the "go get" command ignores the -mod option and will polute the
@@ -64,10 +58,7 @@ $(RUNSIM):
 	@echo "Installing runsim..."
 	@(cd /tmp && go get github.com/cosmos/tools/cmd/runsim@v1.0.0)
 
-golangci-lint: $(GOLANGCI_LINT)
-
 tools-clean:
-	rm -f $(GOLANGCI_LINT)
 	rm -f $(RUNSIM)
 	rm -f tools-stamp
 

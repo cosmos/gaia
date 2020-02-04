@@ -222,6 +222,15 @@ func getAccount(t *testing.T, port string, addr sdk.AccAddress) (acc authexporte
 	return acc
 }
 
+// GET /bank/balances/{address} Get the account balances
+func getBalances(t *testing.T, port string, addr sdk.AccAddress) (balances sdk.Coins) {
+	res, body := Request(t, port, "GET", fmt.Sprintf("/bank/balances/%s", addr), nil)
+	require.Equal(t, http.StatusOK, res.StatusCode, body)
+	require.Nil(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &balances))
+
+	return balances
+}
+
 // ----------------------------------------------------------------------
 // ICS 20 - Tokens
 // ----------------------------------------------------------------------

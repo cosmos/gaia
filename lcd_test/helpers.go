@@ -207,7 +207,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 		totalSupply = totalSupply.Add(accTokens)
 
 		coins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, accTokens))
-		genBalances = append(genBalances, bank.Balance{Address: sdk.AccAddress(operAddr), Coins: coins})
+		genBalances = append(genBalances, bank.Balance{Address: account.GetAddress(), Coins: coins})
 		genAccounts = append(genAccounts, &account)
 	}
 

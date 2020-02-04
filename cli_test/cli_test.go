@@ -188,7 +188,7 @@ func TestGaiaCLIFeesDeduction(t *testing.T) {
 	success, stdOut, _ := f.TxSend(
 		keyFoo, barAddr, sdk.NewCoin(fooDenom, largeCoins),
 		fmt.Sprintf("--fees=%s", sdk.NewInt64Coin(feeDenom, 2)), "-y")
-	require.Contains(t, stdOut, "insufficient account funds")
+	require.Contains(t, stdOut, "insufficient funds")
 	require.True(t, success)
 
 	// Wait for a block

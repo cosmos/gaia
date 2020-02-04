@@ -27,6 +27,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	authexported "github.com/cosmos/cosmos-sdk/x/auth/exported"
+	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
@@ -158,7 +159,9 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	var (
 		genTxs      []auth.StdTx
 		genAccounts []authexported.GenesisAccount
+		genBalances []bank.Balance
 	)
+
 	totalSupply := sdk.ZeroInt()
 
 	for i := 0; i < nValidators; i++ {
@@ -203,7 +206,8 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 		accTokens := sdk.TokensFromConsensusPower(150)
 		totalSupply = totalSupply.Add(accTokens)
 
-		account.Coins = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, accTokens))
+		coins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, accTokens))
+		genBalances = append(genBalances, bank.Balance{Address: sdk.AccAddress(operAddr), Coins: coins})
 		genAccounts = append(genAccounts, &account)
 	}
 
@@ -222,9 +226,10 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	for _, addr := range initAddrs {
 		accAuth := auth.NewBaseAccountWithAddress(addr)
 		accTokens := sdk.TokensFromConsensusPower(100)
-		accAuth.Coins = sdk.Coins{sdk.NewCoin(sdk.DefaultBondDenom, accTokens)}
 		totalSupply = totalSupply.Add(accTokens)
 
+		coins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, accTokens))
+		genBalances = append(genBalances, bank.Balance{Address: accAuth.GetAddress(), Coins: coins})
 		genAccounts = append(genAccounts, &accAuth)
 	}
 

@@ -1238,11 +1238,15 @@ func TestGaiadAddGenesisAccount(t *testing.T) {
 
 	f.AddGenesisAccount(f.KeyAddress(keyFoo), startCoins)
 	f.AddGenesisAccount(f.KeyAddress(keyBar), bazCoins)
-	genesisState := f.GenesisState()
 
+	genesisState := f.GenesisState()
 	cdc := app.MakeCodec()
+
 	accounts := auth.GetGenesisStateFromAppState(cdc, genesisState).Accounts
+	accounts = auth.SanitizeGenesisAccounts(accounts)
+
 	balances := bank.GetGenesisStateFromAppState(cdc, genesisState).Balances
+	balances = bank.SanitizeGenesisBalances(balances)
 
 	require.Equal(t, accounts[0].GetAddress(), f.KeyAddress(keyFoo))
 	require.Equal(t, accounts[1].GetAddress(), f.KeyAddress(keyBar))

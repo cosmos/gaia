@@ -447,6 +447,19 @@ func (f *Fixtures) QueryAccount(address sdk.AccAddress, flags ...string) auth.Ba
 	return acc
 }
 
+// QueryBalances executes the bank query balances command for a given address and
+// flag set.
+func (f *Fixtures) QueryBalances(address sdk.AccAddress, flags ...string) sdk.Coins {
+	cmd := fmt.Sprintf("%s query bank balances %s %v", f.GaiacliBinary, address, f.Flags())
+	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
+
+	var balances sdk.Coins
+	cdc := app.MakeCodec()
+	require.NoError(f.T, cdc.UnmarshalJSON([]byte(out), &balances), "out %v\n", out)
+
+	return balances
+}
+
 //___________________________________________________________________________________
 // gaiacli query txs
 

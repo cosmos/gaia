@@ -1243,17 +1243,17 @@ func TestGaiadAddGenesisAccount(t *testing.T) {
 	cdc := app.MakeCodec()
 
 	accounts := auth.GetGenesisStateFromAppState(cdc, genesisState).Accounts
-	accounts = auth.SanitizeGenesisAccounts(accounts)
-
 	balances := bank.GetGenesisStateFromAppState(cdc, genesisState).Balances
-	balances = bank.SanitizeGenesisBalances(balances)
+	balancesSet := make(map[string]sdk.Coins)
+
+	for _, b := range balances {
+		balancesSet[b.GetAddress().String()] = b.Coins
+	}
 
 	require.Equal(t, accounts[0].GetAddress(), f.KeyAddress(keyFoo))
 	require.Equal(t, accounts[1].GetAddress(), f.KeyAddress(keyBar))
-	require.Equal(t, balances[0].GetAddress(), f.KeyAddress(keyFoo))
-	require.Equal(t, balances[1].GetAddress(), f.KeyAddress(keyBar))
-	require.True(t, balances[0].GetCoins().IsEqual(startCoins))
-	require.True(t, balances[1].GetCoins().IsEqual(bazCoins))
+	require.True(t, balancesSet[accounts[0].GetAddress().String()].IsEqual(startCoins))
+	require.True(t, balancesSet[accounts[1].GetAddress().String()].IsEqual(bazCoins))
 
 	// Cleanup testing directories
 	f.Cleanup()

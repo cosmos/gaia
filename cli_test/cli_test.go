@@ -22,6 +22,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/tests"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 )
@@ -343,9 +344,9 @@ func TestGaiaCLICreateValidator(t *testing.T) {
 
 	// Generate a create validator transaction and ensure correctness
 	success, stdout, stderr := f.TxStakingCreateValidator(barAddr.String(), consPubKey, sdk.NewInt64Coin(denom, 2), "--generate-only")
-
 	require.True(f.T, success)
 	require.Empty(f.T, stderr)
+
 	msg := unmarshalStdTx(f.T, stdout)
 	require.NotZero(t, msg.Fee.Gas)
 	require.Equal(t, len(msg.Msgs), 1)
@@ -353,7 +354,7 @@ func TestGaiaCLICreateValidator(t *testing.T) {
 
 	// Test --dry-run
 	newValTokens := sdk.TokensFromConsensusPower(2)
-	success, _, _ = f.TxStakingCreateValidator(keyBar, consPubKey, sdk.NewCoin(denom, newValTokens), "--dry-run")
+	success, _, _ = f.TxStakingCreateValidator(barAddr.String(), consPubKey, sdk.NewCoin(denom, newValTokens), "--dry-run")
 	require.True(t, success)
 
 	// Create the validator
@@ -1241,11 +1242,14 @@ func TestGaiadAddGenesisAccount(t *testing.T) {
 
 	cdc := app.MakeCodec()
 	accounts := auth.GetGenesisStateFromAppState(cdc, genesisState).Accounts
+	balances := bank.GetGenesisStateFromAppState(cdc, genesisState).Balances
 
 	require.Equal(t, accounts[0].GetAddress(), f.KeyAddress(keyFoo))
 	require.Equal(t, accounts[1].GetAddress(), f.KeyAddress(keyBar))
-	require.True(t, f.QueryBalances(accounts[0].GetAddress()).IsEqual(startCoins))
-	require.True(t, f.QueryBalances(accounts[1].GetAddress()).IsEqual(bazCoins))
+	require.Equal(t, balances[0].GetAddress(), f.KeyAddress(keyFoo))
+	require.Equal(t, balances[1].GetAddress(), f.KeyAddress(keyBar))
+	require.True(t, balances[0].GetCoins().IsEqual(startCoins))
+	require.True(t, balances[1].GetCoins().IsEqual(bazCoins))
 
 	// Cleanup testing directories
 	f.Cleanup()

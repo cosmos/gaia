@@ -369,7 +369,7 @@ func TestValidatorsQuery(t *testing.T) {
 	// make sure all the validators were found (order unknown because sorted by operator addr)
 	foundVal := false
 
-	if validators[0].ConsPubKey == valPubKeys[0] {
+	if validators[0].ConsensusPubkey == sdk.MustBech32ifyPubKey(sdk.Bech32PubKeyTypeConsPub, valPubKeys[0]) {
 		foundVal = true
 	}
 

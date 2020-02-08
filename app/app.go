@@ -115,7 +115,7 @@ func NewGaiaApp(
 	invCheckPeriod uint, skipUpgradeHeights map[int64]bool, baseAppOptions ...func(*bam.BaseApp),
 ) *GaiaApp {
 
-	appCodec := NewAppCodec()
+	appCodec := NewCodec()
 
 	// TODO: Remove cdc in favor of appCodec once all modules are migrated.
 	cdc := MakeCodec()

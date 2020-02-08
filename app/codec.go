@@ -7,18 +7,18 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 )
 
-// AppCodec defines the application-level codec. This codec contains all the
+// Codec defines the application-level codec. This codec contains all the
 // required module-specific codecs that are to be provided upon initialization.
-type AppCodec struct {
+type Codec struct {
 	amino *codec.Codec
 
 	Staking *staking.Codec
 }
 
-func NewAppCodec() *AppCodec {
+func NewCodec() *Codec {
 	amino := MakeCodec()
 
-	return &AppCodec{
+	return &Codec{
 		amino:   amino,
 		Staking: staking.NewCodec(amino),
 	}

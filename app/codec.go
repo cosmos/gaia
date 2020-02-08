@@ -12,7 +12,7 @@ import (
 type Codec struct {
 	amino *codec.Codec
 
-	Staking *staking.Codec
+	staking *staking.Codec
 }
 
 func NewCodec() *Codec {
@@ -20,7 +20,7 @@ func NewCodec() *Codec {
 
 	return &Codec{
 		amino:   amino,
-		Staking: staking.NewCodec(amino),
+		staking: staking.NewCodec(amino),
 	}
 }
 

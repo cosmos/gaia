@@ -220,7 +220,7 @@ jobs:
             popd
             set -x
             make clean localnet-start
-            ./contrib/localnet-blocks-test.sh 40 5 10 localhost
+            ./contrib/localnet-blocks-test.sh 100 5 50 localhost
 
   deploy-docs:
     executor: docs

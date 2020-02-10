@@ -18,6 +18,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authexported "github.com/cosmos/cosmos-sdk/x/auth/exported"
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting"
+	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 )
 
@@ -83,11 +84,14 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 			// create concrete account type based on input parameters
 			var genAccount authexported.GenesisAccount
 
-			baseAccount := auth.NewBaseAccount(addr, coins.Sort(), nil, 0, 0)
+			balances := bank.Balance{Address: addr, Coins: coins.Sort()}
+			baseAccount := auth.NewBaseAccount(addr, nil, 0, 0)
 			if !vestingAmt.IsZero() {
-				baseVestingAccount, err := authvesting.NewBaseVestingAccount(baseAccount, vestingAmt.Sort(), vestingEnd)
-				if err != nil {
-					return fmt.Errorf("failed to create base vesting account: %w", err)
+				baseVestingAccount := authvesting.NewBaseVestingAccount(baseAccount, vestingAmt.Sort(), vestingEnd)
+
+				if (balances.Coins.IsZero() && !baseVestingAccount.OriginalVesting.IsZero()) ||
+					baseVestingAccount.OriginalVesting.IsAnyGT(balances.Coins) {
+					return errors.New("vesting amount cannot be greater than total amount")
 				}
 
 				switch {
@@ -131,6 +135,17 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 			}
 
 			appState[auth.ModuleName] = authGenStateBz
+
+			bankGenState := bank.GetGenesisStateFromAppState(cdc, appState)
+			bankGenState.Balances = append(bankGenState.Balances, balances)
+			bankGenState.Balances = bank.SanitizeGenesisBalances(bankGenState.Balances)
+
+			bankGenStateBz, err := cdc.MarshalJSON(bankGenState)
+			if err != nil {
+				return fmt.Errorf("failed to marshal bank genesis state: %w", err)
+			}
+
+			appState[bank.ModuleName] = bankGenStateBz
 
 			appStateJSON, err := cdc.MarshalJSON(appState)
 			if err != nil {

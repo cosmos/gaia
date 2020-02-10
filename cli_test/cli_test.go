@@ -22,6 +22,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/tests"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 )
@@ -169,8 +170,7 @@ func TestGaiaCLIFeesDeduction(t *testing.T) {
 	fooAddr := f.KeyAddress(keyFoo)
 	barAddr := f.KeyAddress(keyBar)
 
-	fooAcc := f.QueryAccount(fooAddr)
-	fooAmt := fooAcc.GetCoins().AmountOf(fooDenom)
+	fooAmt := f.QueryBalances(fooAddr).AmountOf(fooDenom)
 
 	// test simulation
 	success, _, _ := f.TxSend(
@@ -182,23 +182,21 @@ func TestGaiaCLIFeesDeduction(t *testing.T) {
 	tests.WaitForNextNBlocksTM(1, f.Port)
 
 	// ensure state didn't change
-	fooAcc = f.QueryAccount(fooAddr)
-	require.Equal(t, fooAmt.Int64(), fooAcc.GetCoins().AmountOf(fooDenom).Int64())
+	require.Equal(t, fooAmt.Int64(), f.QueryBalances(fooAddr).AmountOf(fooDenom).Int64())
 
 	// insufficient funds (coins + fees) tx fails
 	largeCoins := sdk.TokensFromConsensusPower(10000000)
 	success, stdOut, _ := f.TxSend(
 		keyFoo, barAddr, sdk.NewCoin(fooDenom, largeCoins),
 		fmt.Sprintf("--fees=%s", sdk.NewInt64Coin(feeDenom, 2)), "-y")
-	require.Contains(t, stdOut, "insufficient account funds")
+	require.Contains(t, stdOut, "insufficient funds")
 	require.True(t, success)
 
 	// Wait for a block
 	tests.WaitForNextNBlocksTM(1, f.Port)
 
 	// ensure state didn't change
-	fooAcc = f.QueryAccount(fooAddr)
-	require.Equal(t, fooAmt.Int64(), fooAcc.GetCoins().AmountOf(fooDenom).Int64())
+	require.Equal(t, fooAmt.Int64(), f.QueryBalances(fooAddr).AmountOf(fooDenom).Int64())
 
 	// test success (transfer = coins + fees)
 	success, _, _ = f.TxSend(
@@ -221,9 +219,8 @@ func TestGaiaCLISend(t *testing.T) {
 	fooAddr := f.KeyAddress(keyFoo)
 	barAddr := f.KeyAddress(keyBar)
 
-	fooAcc := f.QueryAccount(fooAddr)
 	startTokens := sdk.TokensFromConsensusPower(50)
-	require.Equal(t, startTokens, fooAcc.GetCoins().AmountOf(denom))
+	require.Equal(t, startTokens, f.QueryBalances(fooAddr).AmountOf(denom))
 
 	// Send some tokens from one account to the other
 	sendTokens := sdk.TokensFromConsensusPower(10)
@@ -231,10 +228,8 @@ func TestGaiaCLISend(t *testing.T) {
 	tests.WaitForNextNBlocksTM(1, f.Port)
 
 	// Ensure account balances match expected
-	barAcc := f.QueryAccount(barAddr)
-	require.Equal(t, sendTokens, barAcc.GetCoins().AmountOf(denom))
-	fooAcc = f.QueryAccount(fooAddr)
-	require.Equal(t, startTokens.Sub(sendTokens), fooAcc.GetCoins().AmountOf(denom))
+	require.Equal(t, sendTokens, f.QueryBalances(barAddr).AmountOf(denom))
+	require.Equal(t, startTokens.Sub(sendTokens), f.QueryBalances(fooAddr).AmountOf(denom))
 
 	// Test --dry-run
 	success, _, _ := f.TxSend(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens), "--dry-run")
@@ -252,28 +247,23 @@ func TestGaiaCLISend(t *testing.T) {
 	require.Len(t, msg.GetSignatures(), 0)
 
 	// Check state didn't change
-	fooAcc = f.QueryAccount(fooAddr)
-	require.Equal(t, startTokens.Sub(sendTokens), fooAcc.GetCoins().AmountOf(denom))
+	require.Equal(t, startTokens.Sub(sendTokens), f.QueryBalances(fooAddr).AmountOf(denom))
 
 	// test autosequencing
 	f.TxSend(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens), "-y")
 	tests.WaitForNextNBlocksTM(1, f.Port)
 
 	// Ensure account balances match expected
-	barAcc = f.QueryAccount(barAddr)
-	require.Equal(t, sendTokens.MulRaw(2), barAcc.GetCoins().AmountOf(denom))
-	fooAcc = f.QueryAccount(fooAddr)
-	require.Equal(t, startTokens.Sub(sendTokens.MulRaw(2)), fooAcc.GetCoins().AmountOf(denom))
+	require.Equal(t, sendTokens.MulRaw(2), f.QueryBalances(barAddr).AmountOf(denom))
+	require.Equal(t, startTokens.Sub(sendTokens.MulRaw(2)), f.QueryBalances(fooAddr).AmountOf(denom))
 
 	// test memo
 	f.TxSend(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens), "--memo='testmemo'", "-y")
 	tests.WaitForNextNBlocksTM(1, f.Port)
 
 	// Ensure account balances match expected
-	barAcc = f.QueryAccount(barAddr)
-	require.Equal(t, sendTokens.MulRaw(3), barAcc.GetCoins().AmountOf(denom))
-	fooAcc = f.QueryAccount(fooAddr)
-	require.Equal(t, startTokens.Sub(sendTokens.MulRaw(3)), fooAcc.GetCoins().AmountOf(denom))
+	require.Equal(t, sendTokens.MulRaw(3), f.QueryBalances(barAddr).AmountOf(denom))
+	require.Equal(t, startTokens.Sub(sendTokens.MulRaw(3)), f.QueryBalances(fooAddr).AmountOf(denom))
 
 	f.Cleanup()
 }
@@ -289,9 +279,8 @@ func TestGaiaCLIGasAuto(t *testing.T) {
 	fooAddr := f.KeyAddress(keyFoo)
 	barAddr := f.KeyAddress(keyBar)
 
-	fooAcc := f.QueryAccount(fooAddr)
 	startTokens := sdk.TokensFromConsensusPower(50)
-	require.Equal(t, startTokens, fooAcc.GetCoins().AmountOf(denom))
+	require.Equal(t, startTokens, f.QueryBalances(fooAddr).AmountOf(denom))
 
 	// Test failure with auto gas disabled and very little gas set by hand
 	sendTokens := sdk.TokensFromConsensusPower(10)
@@ -300,16 +289,14 @@ func TestGaiaCLIGasAuto(t *testing.T) {
 	require.True(t, success)
 
 	// Check state didn't change
-	fooAcc = f.QueryAccount(fooAddr)
-	require.Equal(t, startTokens, fooAcc.GetCoins().AmountOf(denom))
+	require.Equal(t, startTokens, f.QueryBalances(fooAddr).AmountOf(denom))
 
 	// Test failure with negative gas
 	success, _, _ = f.TxSend(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens), "--gas=-100", "-y")
 	require.False(t, success)
 
 	// Check state didn't change
-	fooAcc = f.QueryAccount(fooAddr)
-	require.Equal(t, startTokens, fooAcc.GetCoins().AmountOf(denom))
+	require.Equal(t, startTokens, f.QueryBalances(fooAddr).AmountOf(denom))
 
 	// Test failure with 0 gas
 	success, stdOut, _ = f.TxSend(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens), "--gas=0", "-y")
@@ -317,8 +304,7 @@ func TestGaiaCLIGasAuto(t *testing.T) {
 	require.True(t, success)
 
 	// Check state didn't change
-	fooAcc = f.QueryAccount(fooAddr)
-	require.Equal(t, startTokens, fooAcc.GetCoins().AmountOf(denom))
+	require.Equal(t, startTokens, f.QueryBalances(fooAddr).AmountOf(denom))
 
 	// Enable auto gas
 	success, stdout, stderr := f.TxSend(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens), "--gas=auto", "-y")
@@ -332,8 +318,7 @@ func TestGaiaCLIGasAuto(t *testing.T) {
 	tests.WaitForNextNBlocksTM(1, f.Port)
 
 	// Check state has changed accordingly
-	fooAcc = f.QueryAccount(fooAddr)
-	require.Equal(t, startTokens.Sub(sendTokens), fooAcc.GetCoins().AmountOf(denom))
+	require.Equal(t, startTokens.Sub(sendTokens), f.QueryBalances(fooAddr).AmountOf(denom))
 
 	f.Cleanup()
 }
@@ -355,14 +340,13 @@ func TestGaiaCLICreateValidator(t *testing.T) {
 	f.TxSend(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens), "-y")
 	tests.WaitForNextNBlocksTM(1, f.Port)
 
-	barAcc := f.QueryAccount(barAddr)
-	require.Equal(t, sendTokens, barAcc.GetCoins().AmountOf(denom))
+	require.Equal(t, sendTokens, f.QueryBalances(barAddr).AmountOf(denom))
 
 	// Generate a create validator transaction and ensure correctness
 	success, stdout, stderr := f.TxStakingCreateValidator(barAddr.String(), consPubKey, sdk.NewInt64Coin(denom, 2), "--generate-only")
-
 	require.True(f.T, success)
 	require.Empty(f.T, stderr)
+
 	msg := unmarshalStdTx(f.T, stdout)
 	require.NotZero(t, msg.Fee.Gas)
 	require.Equal(t, len(msg.Msgs), 1)
@@ -370,7 +354,7 @@ func TestGaiaCLICreateValidator(t *testing.T) {
 
 	// Test --dry-run
 	newValTokens := sdk.TokensFromConsensusPower(2)
-	success, _, _ = f.TxStakingCreateValidator(keyBar, consPubKey, sdk.NewCoin(denom, newValTokens), "--dry-run")
+	success, _, _ = f.TxStakingCreateValidator(barAddr.String(), consPubKey, sdk.NewCoin(denom, newValTokens), "--dry-run")
 	require.True(t, success)
 
 	// Create the validator
@@ -378,8 +362,7 @@ func TestGaiaCLICreateValidator(t *testing.T) {
 	tests.WaitForNextNBlocksTM(1, f.Port)
 
 	// Ensure funds were deducted properly
-	barAcc = f.QueryAccount(barAddr)
-	require.Equal(t, sendTokens.Sub(newValTokens), barAcc.GetCoins().AmountOf(denom))
+	require.Equal(t, sendTokens.Sub(newValTokens), f.QueryBalances(barAddr).AmountOf(denom))
 
 	// Ensure that validator state is as expected
 	validator := f.QueryStakingValidator(barVal)
@@ -475,9 +458,8 @@ func TestGaiaCLISubmitProposal(t *testing.T) {
 
 	fooAddr := f.KeyAddress(keyFoo)
 
-	fooAcc := f.QueryAccount(fooAddr)
 	startTokens := sdk.TokensFromConsensusPower(50)
-	require.Equal(t, startTokens, fooAcc.GetCoins().AmountOf(sdk.DefaultBondDenom))
+	require.Equal(t, startTokens, f.QueryBalances(fooAddr).AmountOf(sdk.DefaultBondDenom))
 
 	proposalsQuery := f.QueryGovProposals()
 	require.Empty(t, proposalsQuery)
@@ -506,8 +488,7 @@ func TestGaiaCLISubmitProposal(t *testing.T) {
 	require.Len(t, searchResult.Txs, 1)
 
 	// Ensure deposit was deducted
-	fooAcc = f.QueryAccount(fooAddr)
-	require.Equal(t, startTokens.Sub(proposalTokens), fooAcc.GetCoins().AmountOf(denom))
+	require.Equal(t, startTokens.Sub(proposalTokens), f.QueryBalances(fooAddr).AmountOf(denom))
 
 	// Ensure propsal is directly queryable
 	proposal1 := f.QueryGovProposal(1)
@@ -550,8 +531,7 @@ func TestGaiaCLISubmitProposal(t *testing.T) {
 	require.Len(t, searchResult.Txs, 1)
 
 	// Ensure account has expected amount of funds
-	fooAcc = f.QueryAccount(fooAddr)
-	require.Equal(t, startTokens.Sub(proposalTokens.Add(depositTokens)), fooAcc.GetCoins().AmountOf(denom))
+	require.Equal(t, startTokens.Sub(proposalTokens.Add(depositTokens)), f.QueryBalances(fooAddr).AmountOf(denom))
 
 	// Fetch the proposal and ensure it is now in the voting period
 	proposal1 = f.QueryGovProposal(1)
@@ -614,9 +594,8 @@ func TestGaiaCLISubmitParamChangeProposal(t *testing.T) {
 	defer proc.Stop(false)
 
 	fooAddr := f.KeyAddress(keyFoo)
-	fooAcc := f.QueryAccount(fooAddr)
 	startTokens := sdk.TokensFromConsensusPower(50)
-	require.Equal(t, startTokens, fooAcc.GetCoins().AmountOf(sdk.DefaultBondDenom))
+	require.Equal(t, startTokens, f.QueryBalances(fooAddr).AmountOf(sdk.DefaultBondDenom))
 
 	// write proposal to file
 	proposalTokens := sdk.TokensFromConsensusPower(5)
@@ -650,8 +629,7 @@ func TestGaiaCLISubmitParamChangeProposal(t *testing.T) {
 	require.Len(t, txsPage.Txs, 1)
 
 	// ensure deposit was deducted
-	fooAcc = f.QueryAccount(fooAddr)
-	require.Equal(t, startTokens.Sub(proposalTokens).String(), fooAcc.GetCoins().AmountOf(sdk.DefaultBondDenom).String())
+	require.Equal(t, startTokens.Sub(proposalTokens).String(), f.QueryBalances(fooAddr).AmountOf(sdk.DefaultBondDenom).String())
 
 	// ensure proposal is directly queryable
 	proposal1 := f.QueryGovProposal(1)
@@ -697,9 +675,8 @@ func TestGaiaCLISubmitCommunityPoolSpendProposal(t *testing.T) {
 	defer proc.Stop(false)
 
 	fooAddr := f.KeyAddress(keyFoo)
-	fooAcc := f.QueryAccount(fooAddr)
 	startTokens := sdk.TokensFromConsensusPower(50)
-	require.Equal(t, startTokens, fooAcc.GetCoins().AmountOf(sdk.DefaultBondDenom))
+	require.Equal(t, startTokens, f.QueryBalances(fooAddr).AmountOf(sdk.DefaultBondDenom))
 
 	tests.WaitForNextNBlocksTM(3, f.Port)
 
@@ -734,8 +711,7 @@ func TestGaiaCLISubmitCommunityPoolSpendProposal(t *testing.T) {
 	require.Len(t, txsPage.Txs, 1)
 
 	// ensure deposit was deducted
-	fooAcc = f.QueryAccount(fooAddr)
-	require.Equal(t, startTokens.Sub(proposalTokens).String(), fooAcc.GetCoins().AmountOf(sdk.DefaultBondDenom).String())
+	require.Equal(t, startTokens.Sub(proposalTokens).String(), f.QueryBalances(fooAddr).AmountOf(sdk.DefaultBondDenom).String())
 
 	// ensure proposal is directly queryable
 	proposal1 := f.QueryGovProposal(1)
@@ -919,9 +895,8 @@ func TestGaiaCLISendGenerateSignAndBroadcast(t *testing.T) {
 		fooAddr.String()), stdout)
 
 	// Ensure foo has right amount of funds
-	fooAcc := f.QueryAccount(fooAddr)
 	startTokens := sdk.TokensFromConsensusPower(50)
-	require.Equal(t, startTokens, fooAcc.GetCoins().AmountOf(denom))
+	require.Equal(t, startTokens, f.QueryBalances(fooAddr).AmountOf(denom))
 
 	// Test broadcast
 	success, stdout, _ = f.TxBroadcast(signedTxFile.Name())
@@ -929,10 +904,8 @@ func TestGaiaCLISendGenerateSignAndBroadcast(t *testing.T) {
 	tests.WaitForNextNBlocksTM(1, f.Port)
 
 	// Ensure account state
-	barAcc := f.QueryAccount(barAddr)
-	fooAcc = f.QueryAccount(fooAddr)
-	require.Equal(t, sendTokens, barAcc.GetCoins().AmountOf(denom))
-	require.Equal(t, startTokens.Sub(sendTokens), fooAcc.GetCoins().AmountOf(denom))
+	require.Equal(t, sendTokens, f.QueryBalances(barAddr).AmountOf(denom))
+	require.Equal(t, startTokens.Sub(sendTokens), f.QueryBalances(fooAddr).AmountOf(denom))
 
 	f.Cleanup()
 }
@@ -1045,8 +1018,7 @@ func TestGaiaCLIMultisignSortSignatures(t *testing.T) {
 	tests.WaitForNextNBlocksTM(1, f.Port)
 
 	// Ensure account balances match expected
-	fooBarBazAcc := f.QueryAccount(fooBarBazAddr)
-	require.Equal(t, int64(10), fooBarBazAcc.GetCoins().AmountOf(denom).Int64())
+	require.Equal(t, int64(10), f.QueryBalances(fooBarBazAddr).AmountOf(denom).Int64())
 
 	// Test generate sendTx with multisig
 	success, stdout, _ := f.TxSend(fooBarBazAddr.String(), barAddr, sdk.NewInt64Coin(denom, 5), "--generate-only")
@@ -1110,8 +1082,7 @@ func TestGaiaCLIMultisign(t *testing.T) {
 	tests.WaitForNextNBlocksTM(1, f.Port)
 
 	// Ensure account balances match expected
-	fooBarBazAcc := f.QueryAccount(fooBarBazAddr)
-	require.Equal(t, int64(10), fooBarBazAcc.GetCoins().AmountOf(denom).Int64())
+	require.Equal(t, int64(10), f.QueryBalances(fooBarBazAddr).AmountOf(denom).Int64())
 
 	// Test generate sendTx with multisig
 	success, stdout, stderr := f.TxSend(fooBarBazAddr.String(), bazAddr, sdk.NewInt64Coin(denom, 10), "--generate-only")
@@ -1267,15 +1238,22 @@ func TestGaiadAddGenesisAccount(t *testing.T) {
 
 	f.AddGenesisAccount(f.KeyAddress(keyFoo), startCoins)
 	f.AddGenesisAccount(f.KeyAddress(keyBar), bazCoins)
-	genesisState := f.GenesisState()
 
+	genesisState := f.GenesisState()
 	cdc := app.MakeCodec()
+
 	accounts := auth.GetGenesisStateFromAppState(cdc, genesisState).Accounts
+	balances := bank.GetGenesisStateFromAppState(cdc, genesisState).Balances
+	balancesSet := make(map[string]sdk.Coins)
+
+	for _, b := range balances {
+		balancesSet[b.GetAddress().String()] = b.Coins
+	}
 
 	require.Equal(t, accounts[0].GetAddress(), f.KeyAddress(keyFoo))
 	require.Equal(t, accounts[1].GetAddress(), f.KeyAddress(keyBar))
-	require.True(t, accounts[0].GetCoins().IsEqual(startCoins))
-	require.True(t, accounts[1].GetCoins().IsEqual(bazCoins))
+	require.True(t, balancesSet[accounts[0].GetAddress().String()].IsEqual(startCoins))
+	require.True(t, balancesSet[accounts[1].GetAddress().String()].IsEqual(bazCoins))
 
 	// Cleanup testing directories
 	f.Cleanup()

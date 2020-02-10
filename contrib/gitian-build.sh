@@ -8,7 +8,7 @@
 set -euo pipefail
 
 GITIAN_CACHE_DIRNAME='.gitian-builder-cache'
-GO_RELEASE='1.13.3'
+GO_RELEASE='1.13.7'
 GO_TARBALL="go${GO_RELEASE}.linux-amd64.tar.gz"
 GO_TARBALL_URL="https://dl.google.com/go/${GO_TARBALL}"
 
@@ -145,7 +145,7 @@ f_demangle_platforms() {
   case "${1}" in
   all)
     printf '%s' 'darwin linux windows' ;;
-  linux|darwin|windows)
+  linux|darwin|windows|multi)
     printf '%s' "${1}" ;;
   *)
     echo "invalid platform -- ${1}"

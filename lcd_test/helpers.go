@@ -27,6 +27,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	authexported "github.com/cosmos/cosmos-sdk/x/auth/exported"
+	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
@@ -158,7 +159,9 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	var (
 		genTxs      []auth.StdTx
 		genAccounts []authexported.GenesisAccount
+		genBalances []bank.Balance
 	)
+
 	totalSupply := sdk.ZeroInt()
 
 	for i := 0; i < nValidators; i++ {
@@ -203,7 +206,8 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 		accTokens := sdk.TokensFromConsensusPower(150)
 		totalSupply = totalSupply.Add(accTokens)
 
-		account.Coins = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, accTokens))
+		coins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, accTokens))
+		genBalances = append(genBalances, bank.Balance{Address: account.GetAddress(), Coins: coins})
 		genAccounts = append(genAccounts, &account)
 	}
 
@@ -222,42 +226,42 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	for _, addr := range initAddrs {
 		accAuth := auth.NewBaseAccountWithAddress(addr)
 		accTokens := sdk.TokensFromConsensusPower(100)
-		accAuth.Coins = sdk.Coins{sdk.NewCoin(sdk.DefaultBondDenom, accTokens)}
 		totalSupply = totalSupply.Add(accTokens)
 
+		coins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, accTokens))
+		genBalances = append(genBalances, bank.Balance{Address: accAuth.GetAddress(), Coins: coins})
 		genAccounts = append(genAccounts, &accAuth)
 	}
 
 	// auth genesis state: params and genesis accounts
-	authDataBz := genesisState[auth.ModuleName]
 	var authGenState auth.GenesisState
-	cdc.MustUnmarshalJSON(authDataBz, &authGenState)
+	cdc.MustUnmarshalJSON(genesisState[auth.ModuleName], &authGenState)
 	authGenState.Accounts = genAccounts
 	genesisState[auth.ModuleName] = cdc.MustMarshalJSON(authGenState)
 
-	stakingDataBz := genesisState[staking.ModuleName]
+	var bankGenState bank.GenesisState
+	cdc.MustUnmarshalJSON(genesisState[bank.ModuleName], &bankGenState)
+	bankGenState.Balances = genBalances
+	genesisState[bank.ModuleName] = cdc.MustMarshalJSON(bankGenState)
+
 	var stakingData staking.GenesisState
-	cdc.MustUnmarshalJSON(stakingDataBz, &stakingData)
+	cdc.MustUnmarshalJSON(genesisState[staking.ModuleName], &stakingData)
 	genesisState[staking.ModuleName] = cdc.MustMarshalJSON(stakingData)
 
 	// distr data
-	distrDataBz := genesisState[distr.ModuleName]
 	var distrData distr.GenesisState
-	cdc.MustUnmarshalJSON(distrDataBz, &distrData)
+	cdc.MustUnmarshalJSON(genesisState[distr.ModuleName], &distrData)
 
 	commPoolAmt := sdk.NewInt(10)
 	distrData.FeePool.CommunityPool = sdk.DecCoins{sdk.NewDecCoin(sdk.DefaultBondDenom, commPoolAmt)}
-	distrDataBz = cdc.MustMarshalJSON(distrData)
-	genesisState[distr.ModuleName] = distrDataBz
+	genesisState[distr.ModuleName] = cdc.MustMarshalJSON(distrData)
 
 	// supply data
-	supplyDataBz := genesisState[supply.ModuleName]
 	var supplyData supply.GenesisState
-	cdc.MustUnmarshalJSON(supplyDataBz, &supplyData)
+	cdc.MustUnmarshalJSON(genesisState[supply.ModuleName], &supplyData)
 
 	supplyData.Supply = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, totalSupply.Add(commPoolAmt)))
-	supplyDataBz = cdc.MustMarshalJSON(supplyData)
-	genesisState[supply.ModuleName] = supplyDataBz
+	genesisState[supply.ModuleName] = cdc.MustMarshalJSON(supplyData)
 
 	// mint genesis (none set within genesisState)
 	mintData := mint.DefaultGenesisState()
@@ -268,18 +272,17 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	} else {
 		mintData.Params.InflationMax = inflationMin
 	}
+
 	mintData.Minter.Inflation = inflationMin
 	mintData.Params.InflationMin = inflationMin
-	mintDataBz := cdc.MustMarshalJSON(mintData)
-	genesisState[mint.ModuleName] = mintDataBz
+	genesisState[mint.ModuleName] = cdc.MustMarshalJSON(mintData)
 
 	// initialize crisis data
-	crisisDataBz := genesisState[crisis.ModuleName]
 	var crisisData crisis.GenesisState
-	cdc.MustUnmarshalJSON(crisisDataBz, &crisisData)
+	cdc.MustUnmarshalJSON(genesisState[crisis.ModuleName], &crisisData)
+
 	crisisData.ConstantFee = sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000)
-	crisisDataBz = cdc.MustMarshalJSON(crisisData)
-	genesisState[crisis.ModuleName] = crisisDataBz
+	genesisState[crisis.ModuleName] = cdc.MustMarshalJSON(crisisData)
 
 	//// double check inflation is set according to the minting boolean flag
 	if minting {

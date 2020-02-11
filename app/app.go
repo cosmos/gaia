@@ -131,11 +131,32 @@ type GaiaApp struct {
 	sm *module.SimulationManager
 }
 
+// AppCodec defines the application-level codec. This codec contains all the
+// required module-specific codecs that are to be provided upon initialization.
+type AppCodec struct {
+	amino *codec.Codec
+
+	Staking      *staking.Codec
+	Distribution *distr.Codec
+}
+
+func NewAppCodec() *AppCodec {
+	amino := MakeCodec()
+
+	return &AppCodec{
+		amino:        amino,
+		Staking:      staking.NewCodec(amino),
+		Distribution: distr.NewCodec(amino),
+	}
+}
+
 // NewGaiaApp returns a reference to an initialized GaiaApp.
 func NewGaiaApp(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
 	invCheckPeriod uint, skipUpgradeHeights map[int64]bool, baseAppOptions ...func(*bam.BaseApp),
 ) *GaiaApp {
+
+	appCodec := NewAppCodec()
 
 	cdc := MakeCodec()
 
@@ -175,10 +196,10 @@ func NewGaiaApp(
 	app.bankKeeper = bank.NewBaseKeeper(app.cdc, keys[bank.StoreKey], app.accountKeeper, bankSubspace, app.ModuleAccountAddrs())
 	app.supplyKeeper = supply.NewKeeper(app.cdc, keys[supply.StoreKey], app.accountKeeper, app.bankKeeper, maccPerms)
 	stakingKeeper := staking.NewKeeper(
-		app.cdc, keys[staking.StoreKey], app.bankKeeper, app.supplyKeeper, stakingSubspace,
+		appCodec.Staking, keys[staking.StoreKey], app.bankKeeper, app.supplyKeeper, stakingSubspace,
 	)
 	app.mintKeeper = mint.NewKeeper(app.cdc, keys[mint.StoreKey], mintSubspace, &stakingKeeper, app.supplyKeeper, auth.FeeCollectorName)
-	app.distrKeeper = distr.NewKeeper(app.cdc, keys[distr.StoreKey], distrSubspace, app.bankKeeper, &stakingKeeper, app.supplyKeeper, auth.FeeCollectorName, app.ModuleAccountAddrs())
+	app.distrKeeper = distr.NewKeeper(appCodec.Distribution, keys[distr.StoreKey], distrSubspace, app.bankKeeper, &stakingKeeper, app.supplyKeeper, auth.FeeCollectorName, app.ModuleAccountAddrs())
 	app.slashingKeeper = slashing.NewKeeper(
 		app.cdc, keys[slashing.StoreKey], &stakingKeeper, slashingSubspace,
 	)

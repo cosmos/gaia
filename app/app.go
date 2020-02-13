@@ -140,7 +140,7 @@ func NewGaiaApp(
 	}
 
 	// init params keeper and subspaces
-	app.paramsKeeper = params.NewKeeper(app.cdc, keys[params.StoreKey], tKeys[params.TStoreKey])
+	app.paramsKeeper = params.NewKeeper(appCodec.params, keys[params.StoreKey], tKeys[params.TStoreKey])
 	app.subspaces[auth.ModuleName] = app.paramsKeeper.Subspace(auth.DefaultParamspace)
 	app.subspaces[bank.ModuleName] = app.paramsKeeper.Subspace(bank.DefaultParamspace)
 	app.subspaces[staking.ModuleName] = app.paramsKeeper.Subspace(staking.DefaultParamspace)
@@ -169,7 +169,7 @@ func NewGaiaApp(
 		app.supplyKeeper, auth.FeeCollectorName,
 	)
 	app.distrKeeper = distr.NewKeeper(
-		app.cdc, keys[distr.StoreKey], app.subspaces[distr.ModuleName], app.bankKeeper, &stakingKeeper,
+		appCodec.distribution, keys[distr.StoreKey], app.subspaces[distr.ModuleName], app.bankKeeper, &stakingKeeper,
 		app.supplyKeeper, auth.FeeCollectorName, app.ModuleAccountAddrs(),
 	)
 	app.slashingKeeper = slashing.NewKeeper(

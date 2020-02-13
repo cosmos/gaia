@@ -4,6 +4,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting"
+	distr "github.com/cosmos/cosmos-sdk/x/distribution"
+	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 )
 
@@ -12,15 +14,19 @@ import (
 type Codec struct {
 	amino *codec.Codec
 
-	staking *staking.Codec
+	staking      *staking.Codec
+	distribution *distr.Codec
+	params       *params.Codec
 }
 
 func NewCodec() *Codec {
 	amino := MakeCodec()
 
 	return &Codec{
-		amino:   amino,
-		staking: staking.NewCodec(amino),
+		amino:        amino,
+		staking:      staking.NewCodec(amino),
+		distribution: distr.NewCodec(amino),
+		params:       params.NewCodec(amino),
 	}
 }
 

@@ -19,7 +19,7 @@ require (
 	github.com/spf13/viper v1.6.2
 	github.com/stretchr/testify v1.4.0
 	github.com/tendermint/go-amino v0.15.1
-	github.com/tendermint/tendermint v0.33.0
+	github.com/tendermint/tendermint v0.33.1
 	github.com/tendermint/tm-db v0.4.0
 	golang.org/x/net v0.0.0-20190827160401-ba9fcec4b297 // indirect
 	golang.org/x/text v0.3.2 // indirect

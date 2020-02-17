@@ -3,12 +3,8 @@ on: [pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'skip-sims')"
     steps:
-      - uses: teaminkling/skip-commit@master
-        with:
-          commit-filter: skip-sims
-          always-allow-tags: true
-          ref: ${{ github.ref }}
       - uses: actions/setup-go@v1
         id: go
         with:

@@ -18,7 +18,6 @@ executors:
       AWS_REGION: us-east-1
       LEDGER_ENABLED: false
 
-
 commands:
   make:
     parameters:
@@ -94,33 +93,33 @@ jobs:
           paths:
             - "."
 
-  test-sim-nondeterminism:
-    executor: golang
-    steps:
-      - make:
-          target: test-sim-nondeterminism
-          description: "Test Gaia non-determinism simulations"
+  # test-sim-nondeterminism:
+  #   executor: golang
+  #   steps:
+  #     - make:
+  #         target: test-sim-nondeterminism
+  #         description: "Test Gaia non-determinism simulations"
 
-  test-sim-import-export:
-    executor: golang
-    steps:
-      - make:
-          target: test-sim-import-export
-          description: "Test Gaia import/export simulation"
+  # test-sim-import-export:
+  #   executor: golang
+  #   steps:
+  #     - make:
+  #         target: test-sim-import-export
+  #         description: "Test Gaia import/export simulation"
 
-  test-sim-after-import:
-    executor: golang
-    steps:
-      - make:
-          target: test-sim-after-import
-          description: "Test Gaia simulation after importing state"
+  # test-sim-after-import:
+  #   executor: golang
+  #   steps:
+  #     - make:
+  #         target: test-sim-after-import
+  #         description: "Test Gaia simulation after importing state"
 
-  test-sim-multi-seed-short:
-    executor: golang
-    steps:
-      - make:
-          target: test-sim-multi-seed-short
-          description: "Test Gaia multi-seed simulation (short-lived)"
+  # test-sim-multi-seed-short:
+  #   executor: golang
+  #   steps:
+  #     - make:
+  #         target: test-sim-multi-seed-short
+  #         description: "Test Gaia multi-seed simulation (short-lived)"
 
   test-sim-multi-seed-long:
     executor: golang
@@ -384,18 +383,18 @@ workflows:
       - integration-tests:
           requires:
             - setup-dependencies
-      - test-sim-nondeterminism:
-          requires:
-            - setup-dependencies
-      - test-sim-import-export:
-          requires:
-            - setup-dependencies
-      - test-sim-after-import:
-          requires:
-            - setup-dependencies
-      - test-sim-multi-seed-short:
-          requires:
-            - setup-dependencies
+      # - test-sim-nondeterminism:
+      #     requires:
+      #       - setup-dependencies
+      # - test-sim-import-export:
+      #     requires:
+      #       - setup-dependencies
+      # - test-sim-after-import:
+      #     requires:
+      #       - setup-dependencies
+      # - test-sim-multi-seed-short:
+      #     requires:
+      #       - setup-dependencies
       - test-sim-multi-seed-long:
           requires:
             - setup-dependencies

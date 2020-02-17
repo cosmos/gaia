@@ -4,6 +4,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - uses: teaminkling/skip-commit@master
+        with:
+          commit-filter: skip-sims
+          always-allow-tags: true
+          ref: ${{ github.ref }}
       - uses: actions/setup-go@v1
         id: go
         with:
@@ -133,7 +138,6 @@ jobs:
 
   integration-tests:
     runs-on: ubuntu-latest
-    needs: Build
     steps:
       - uses: actions/setup-go@v1
         id: go
@@ -146,10 +150,6 @@ jobs:
           echo "::add-path::$(go env GOPATH)/bin"
         shell: bash
       - uses: actions/checkout@v2
-      - uses: actions/cache@v1
-        with:
-          path: ~/go/bin
-          key: ${{ runner.os }}-go-runsim-binary
       - name: Test CLI integration
         run: |
           make test-build

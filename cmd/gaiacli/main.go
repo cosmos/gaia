@@ -13,26 +13,32 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	bankcmd "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 
+	"github.com/cosmos/gaia/app"
+	appcodec "github.com/cosmos/gaia/app/codec"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-
 	"github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
-
-	"github.com/cosmos/gaia/app"
 )
+
+var (
+	cdc      = appcodec.MakeCodec(app.ModuleBasics)
+	appCodec = appcodec.NewAppCodec(cdc)
+)
+
+func init() {
+	authclient.Codec = appCodec
+}
 
 func main() {
 	// Configure cobra to sort commands
 	cobra.EnableCommandSorting = false
-
-	// Instantiate the codec for the command line application
-	cdc := app.MakeCodec()
 
 	// Read in the configuration file for the sdk
 	config := sdk.GetConfig()

@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 
+	appcodec "github.com/cosmos/gaia/app/codec"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
@@ -115,10 +116,10 @@ func NewGaiaApp(
 	invCheckPeriod uint, skipUpgradeHeights map[int64]bool, baseAppOptions ...func(*bam.BaseApp),
 ) *GaiaApp {
 
-	appCodec := NewCodec()
-
 	// TODO: Remove cdc in favor of appCodec once all modules are migrated.
-	cdc := MakeCodec()
+	cdc := appcodec.MakeCodec(ModuleBasics)
+
+	appCodec := appcodec.NewAppCodec(cdc)
 
 	bApp := bam.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
@@ -140,7 +141,7 @@ func NewGaiaApp(
 	}
 
 	// init params keeper and subspaces
-	app.paramsKeeper = params.NewKeeper(appCodec.params, keys[params.StoreKey], tKeys[params.TStoreKey])
+	app.paramsKeeper = params.NewKeeper(appCodec, keys[params.StoreKey], tKeys[params.TStoreKey])
 	app.subspaces[auth.ModuleName] = app.paramsKeeper.Subspace(auth.DefaultParamspace)
 	app.subspaces[bank.ModuleName] = app.paramsKeeper.Subspace(bank.DefaultParamspace)
 	app.subspaces[staking.ModuleName] = app.paramsKeeper.Subspace(staking.DefaultParamspace)
@@ -153,23 +154,23 @@ func NewGaiaApp(
 
 	// add keepers
 	app.accountKeeper = auth.NewAccountKeeper(
-		app.cdc, keys[auth.StoreKey], app.subspaces[auth.ModuleName], auth.ProtoBaseAccount,
+		appCodec, keys[auth.StoreKey], app.subspaces[auth.ModuleName], auth.ProtoBaseAccount,
 	)
 	app.bankKeeper = bank.NewBaseKeeper(
 		app.cdc, keys[bank.StoreKey], app.accountKeeper, app.subspaces[bank.ModuleName], app.ModuleAccountAddrs(),
 	)
 	app.supplyKeeper = supply.NewKeeper(
-		app.cdc, keys[supply.StoreKey], app.accountKeeper, app.bankKeeper, maccPerms,
+		appCodec, keys[supply.StoreKey], app.accountKeeper, app.bankKeeper, maccPerms,
 	)
 	stakingKeeper := staking.NewKeeper(
-		appCodec.staking, keys[staking.StoreKey], app.bankKeeper, app.supplyKeeper, app.subspaces[staking.ModuleName],
+		appCodec, keys[staking.StoreKey], app.bankKeeper, app.supplyKeeper, app.subspaces[staking.ModuleName],
 	)
 	app.mintKeeper = mint.NewKeeper(
 		app.cdc, keys[mint.StoreKey], app.subspaces[mint.ModuleName], &stakingKeeper,
 		app.supplyKeeper, auth.FeeCollectorName,
 	)
 	app.distrKeeper = distr.NewKeeper(
-		appCodec.distribution, keys[distr.StoreKey], app.subspaces[distr.ModuleName], app.bankKeeper, &stakingKeeper,
+		appCodec, keys[distr.StoreKey], app.subspaces[distr.ModuleName], app.bankKeeper, &stakingKeeper,
 		app.supplyKeeper, auth.FeeCollectorName, app.ModuleAccountAddrs(),
 	)
 	app.slashingKeeper = slashing.NewKeeper(
@@ -297,7 +298,7 @@ func (app *GaiaApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci
 	var genesisState simapp.GenesisState
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
 
-	return app.mm.InitGenesis(ctx, genesisState)
+	return app.mm.InitGenesis(ctx, app.cdc, genesisState)
 }
 
 // LoadHeight loads a particular height

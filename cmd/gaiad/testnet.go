@@ -264,7 +264,7 @@ func initGenFiles(
 	genFiles []string, numValidators int,
 ) error {
 
-	appGenState := mbm.DefaultGenesis()
+	appGenState := mbm.DefaultGenesis(cdc)
 
 	// set the accounts in the genesis state
 	var authGenState auth.GenesisState

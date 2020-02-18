@@ -14,6 +14,7 @@ import (
 	"testing"
 
 	"github.com/cosmos/gaia/app"
+	appCodec "github.com/cosmos/gaia/app/codec"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/crypto/ed25519"
 	tmtypes "github.com/tendermint/tendermint/types"
@@ -310,7 +311,7 @@ func TestGaiaCLIGasAuto(t *testing.T) {
 	success, stdout, stderr := f.TxSend(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens), "--gas=auto", "-y")
 	require.NotEmpty(t, stderr)
 	require.True(t, success)
-	cdc := app.MakeCodec()
+	cdc := appCodec.MakeCodec(app.ModuleBasics)
 	sendResp := sdk.TxResponse{}
 	err := cdc.UnmarshalJSON([]byte(stdout), &sendResp)
 	require.Nil(t, err)
@@ -397,7 +398,7 @@ func TestGaiaCLICreateValidator(t *testing.T) {
 func TestGaiaCLIQueryRewards(t *testing.T) {
 	t.Parallel()
 	f := InitFixtures(t)
-	cdc := app.MakeCodec()
+	cdc := appCodec.MakeCodec(app.ModuleBasics)
 
 	genesisState := f.GenesisState()
 	inflationMin := sdk.MustNewDecFromStr("1.0")
@@ -653,7 +654,7 @@ func TestGaiaCLISubmitCommunityPoolSpendProposal(t *testing.T) {
 	f := InitFixtures(t)
 
 	// create some inflation
-	cdc := app.MakeCodec()
+	cdc := appCodec.MakeCodec(app.ModuleBasics)
 	genesisState := f.GenesisState()
 	inflationMin := sdk.MustNewDecFromStr("1.0")
 	var mintData mint.GenesisState
@@ -971,7 +972,7 @@ func TestGaiaCLIEncode(t *testing.T) {
 	proc := f.GDStart()
 	defer proc.Stop(false)
 
-	cdc := app.MakeCodec()
+	cdc := appCodec.MakeCodec(app.ModuleBasics)
 
 	// Build a testing transaction and write it to disk
 	barAddr := f.KeyAddress(keyBar)
@@ -1240,9 +1241,10 @@ func TestGaiadAddGenesisAccount(t *testing.T) {
 	f.AddGenesisAccount(f.KeyAddress(keyBar), bazCoins)
 
 	genesisState := f.GenesisState()
-	cdc := app.MakeCodec()
+	cdc := appCodec.MakeCodec(app.ModuleBasics)
+	appCodec := appCodec.NewAppCodec(cdc)
 
-	accounts := auth.GetGenesisStateFromAppState(cdc, genesisState).Accounts
+	accounts := auth.GetGenesisStateFromAppState(appCodec, genesisState).Accounts
 	balances := bank.GetGenesisStateFromAppState(cdc, genesisState).Balances
 	balancesSet := make(map[string]sdk.Coins)
 

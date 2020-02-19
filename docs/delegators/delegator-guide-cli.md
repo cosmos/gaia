@@ -59,7 +59,7 @@ Please exercise extreme caution!
 [**Download the binaries**]
 Not available yet.
 
-[**Install from source**](https://cosmos.network/docs/cosmos-hub/installation.html)
+[**Install from source**](../gaia-tutorials/installation.md)
 
 ::: tip
 `gaiacli` is used from a terminal. To open the terminal, follow these steps:

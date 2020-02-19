@@ -26,16 +26,32 @@ if [ -z "$4" ]; then
   exit 1
 fi
 
+docker_containers=( $(docker ps -q -f name=gaia --format='{{.Names}}') )
+
 while [ ${CNT} -lt $ITER ]; do
-  var=$(curl -s $NODEADDR:26657/status | jq -r '.result.sync_info.latest_block_height')
-  echo "Number of Blocks: ${var}"
-  if [ ! -z ${var} ] && [ ${var} -gt ${NUMBLOCKS} ]; then
-    echo "Number of blocks reached, exiting success..."
+  curr_block=$(curl -s $NODEADDR:26657/status | jq -r '.result.sync_info.latest_block_height')
+
+  if [ ! -z ${curr_block} ] ; then
+    echo "Number of Blocks: ${curr_block}"
+  fi
+
+  if [ ! -z ${curr_block} ] && [ ${curr_block} -gt ${NUMBLOCKS} ]; then
+    echo "Number of blocks reached. Success!"
     exit 0
   fi
+
+  # Emulate network chaos:
+  #
+  # Every 10 blocks, pick a random container and restart it.
+  if ! ((${CNT} % 10)); then
+    rand_container=${docker_containers["$[RANDOM % ${#docker_containers[@]}]"]};
+    echo "Restarting random docker container ${rand_container}"
+    docker restart ${rand_container} &>/dev/null &
+  fi
+
   let CNT=CNT+1
   sleep $SLEEP
 done
 
-echo "Timeout reached, exiting failure..."
+echo "Timeout reached. Failure!"
 exit 1

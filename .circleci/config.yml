@@ -220,7 +220,7 @@ jobs:
             popd
             set -x
             make clean localnet-start
-            ./contrib/localnet-blocks-test.sh 40 5 10 localhost
+            ./contrib/localnet-blocks-test.sh 100 5 50 localhost
 
   deploy-docs:
     executor: docs
@@ -313,17 +313,11 @@ jobs:
           no_output_timeout: 20m
           command: |
             sudo apt-get install -y ruby
-            bash -x ./contrib/gitian-build.sh all
-            for os in darwin linux windows; do
-              cp gitian-build-${os}/result/gaia-${os}-res.yml .
-              rm -rf gitian-build-${os}/
-            done
+            bash -x ./contrib/gitian-build.sh multi
+            cp gitian-build-multi/result/gaia-multi-res.yml .
+            rm -rf gitian-build-multi/
       - store_artifacts:
-          path: /go/src/github.com/cosmos/gaia/gaia-darwin-res.yml
-      - store_artifacts:
-          path: /go/src/github.com/cosmos/gaia/gaia-linux-res.yml
-      - store_artifacts:
-          path: /go/src/github.com/cosmos/gaia/gaia-windows-res.yml
+          path: /go/src/github.com/cosmos/gaia/gaia-multi-res.yml
 
 # FIXME: The `setup-contract-tests-data` make target is broken as it completely
 # overrides the .gaiad directory.

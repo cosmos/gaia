@@ -55,7 +55,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 					viper.GetString(flags.FlagKeyringBackend),
 					viper.GetString(flagClientHome),
 					inBuf,
-        )
+				)
 				if err != nil {
 					return err
 				}
@@ -118,7 +118,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 			}
 
 			authGenState := auth.GetGenesisStateFromAppState(cdc, appState)
-			bankGenState := bank.GetGenesisStateFromAppState(cdc, appState)
+			bankGenState := bank.GetGenesisStateFromAppState(cdc.Amino, appState)
 
 			if authGenState.Accounts.Contains(addr) {
 				return fmt.Errorf("cannot add account at existing address %s", addr)
@@ -151,11 +151,11 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 			appState[auth.ModuleName] = authGenStateBz
 			appState[bank.ModuleName] = bankGenStateBz
 
-			bankGenState := bank.GetGenesisStateFromAppState(cdc.Amino, appState)
+			bankGenState = bank.GetGenesisStateFromAppState(cdc.Amino, appState)
 			bankGenState.Balances = append(bankGenState.Balances, balances)
 			bankGenState.Balances = bank.SanitizeGenesisBalances(bankGenState.Balances)
 
-			bankGenStateBz, err := cdc.MarshalJSON(bankGenState)
+			bankGenStateBz, err = cdc.MarshalJSON(bankGenState)
 			if err != nil {
 				return fmt.Errorf("failed to marshal bank genesis state: %w", err)
 			}

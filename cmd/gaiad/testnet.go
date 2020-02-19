@@ -45,7 +45,7 @@ var (
 
 // get cmd to initialize all files for tendermint testnet and application
 func testnetCmd(ctx *server.Context, cdc *codec.Codec,
-	mbm module.BasicManager, genBalIterator genutiltypes.GenesisBalancesIterator,
+	mbm module.BasicManager, genBalIterator bank.GenesisBalancesIterator,
 ) *cobra.Command {
 
 	cmd := &cobra.Command{
@@ -103,7 +103,7 @@ const nodeDirPerm = 0755
 // Initialize the testnet
 func InitTestnet(
 	cmd *cobra.Command, config *tmconfig.Config, cdc *codec.Codec,
-	mbm module.BasicManager, genBalIterator genutiltypes.GenesisBalancesIterator,
+	mbm module.BasicManager, genBalIterator bank.GenesisBalancesIterator,
 	outputDir, chainID, minGasPrices, nodeDirPrefix, nodeDaemonHome,
 	nodeCLIHome, startingIPAddress string, numValidators int,
 ) error {
@@ -173,7 +173,7 @@ func InitTestnet(
 		)
 		if err != nil {
 			return err
-    }
+		}
 
 		keyPass := clientkeys.DefaultKeyPass
 		addr, secret, err := server.GenerateSaveCoinKey(kb, nodeDirName, keyPass, true)
@@ -299,9 +299,9 @@ func initGenFiles(
 	return nil
 }
 
-func genBalToBal(bals []bankexported.GenesisBalance) (out []bank.Balance) {
+func genBalToBal(bals []bank.Balance) (out []bank.Balance) {
 	for _, bal := range bals {
-		out = append(out, bank.Balance{bal.GetAddress(), bal.GetCoins()})
+		out = append(out, bank.Balance{Address: bal.GetAddress(), Coins: bal.GetCoins()})
 	}
 	return
 }
@@ -310,7 +310,7 @@ func collectGenFiles(
 	cdc *codec.Codec, config *tmconfig.Config, chainID string,
 	monikers, nodeIDs []string, valPubKeys []crypto.PubKey,
 	numValidators int, outputDir, nodeDirPrefix, nodeDaemonHome string,
-	genBalIterator genutiltypes.GenesisBalancesIterator,
+	genBalIterator bank.GenesisBalancesIterator,
 ) error {
 
 	var appState json.RawMessage

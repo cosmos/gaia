@@ -10,8 +10,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cosmos/gaia/app"
-	appcodec "github.com/cosmos/gaia/app/codec"
 	"github.com/stretchr/testify/require"
 	tmtypes "github.com/tendermint/tendermint/types"
 
@@ -60,8 +58,6 @@ var (
 	vestingCoins = sdk.NewCoins(
 		sdk.NewCoin(feeDenom, sdk.TokensFromConsensusPower(500000)),
 	)
-
-	cdc = appcodec.MakeCodec(app.ModuleBasics)
 )
 
 //___________________________________________________________________________________

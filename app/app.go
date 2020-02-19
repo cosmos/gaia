@@ -17,6 +17,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
@@ -114,25 +115,6 @@ type GaiaApp struct {
 
 	// simulation manager
 	sm *module.SimulationManager
-}
-
-// AppCodec defines the application-level codec. This codec contains all the
-// required module-specific codecs that are to be provided upon initialization.
-type AppCodec struct {
-	amino *codec.Codec
-
-	Staking      *staking.Codec
-	Distribution *distr.Codec
-}
-
-func NewAppCodec() *AppCodec {
-	amino := MakeCodec()
-
-	return &AppCodec{
-		amino:        amino,
-		Staking:      staking.NewCodec(amino),
-		Distribution: distr.NewCodec(amino),
-	}
 }
 
 // NewGaiaApp returns a reference to an initialized GaiaApp.

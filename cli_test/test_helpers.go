@@ -1,3 +1,5 @@
+// +build cli_test
+
 package clitest
 
 import (
@@ -462,7 +464,6 @@ func (f *Fixtures) QueryBalances(address sdk.AccAddress, flags ...string) sdk.Co
 	var balances sdk.Coins
 
 	require.NoError(f.T, f.cdc.UnmarshalJSON([]byte(out), &balances), "out %v\n", out)
-
 	return balances
 }
 
@@ -507,7 +508,7 @@ func (f *Fixtures) QueryStakingUnbondingDelegationsFrom(valAddr sdk.ValAddress, 
 	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
 	var ubds []staking.UnbondingDelegation
 
-	err := f.cdc.UnmarshalJSON([]byte(out), &ubds)
+  err := f.cdc.UnmarshalJSON([]byte(out), &ubds)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return ubds
 }
@@ -789,7 +790,6 @@ func WriteToNewTempFile(t *testing.T, s string) *os.File {
 
 //nolint:deadcode,unused
 func (f *Fixtures) marshalStdTx(t *testing.T, stdTx auth.StdTx) []byte {
-
 	bz, err := f.cdc.MarshalBinaryBare(stdTx)
 	require.NoError(t, err)
 	return bz
@@ -797,7 +797,6 @@ func (f *Fixtures) marshalStdTx(t *testing.T, stdTx auth.StdTx) []byte {
 
 //nolint:deadcode,unused
 func (f *Fixtures) unmarshalStdTx(t *testing.T, s string) (stdTx auth.StdTx) {
-
 	require.Nil(t, f.cdc.UnmarshalJSON([]byte(s), &stdTx))
 	return
 }

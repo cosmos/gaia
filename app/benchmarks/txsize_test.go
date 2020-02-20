@@ -3,9 +3,9 @@ package app
 import (
 	"fmt"
 
-	"github.com/tendermint/tendermint/crypto/secp256k1"
-
 	"github.com/cosmos/gaia/app"
+	appcodec "github.com/cosmos/gaia/app/codec"
+	"github.com/tendermint/tendermint/crypto/secp256k1"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -16,7 +16,8 @@ import (
 // This is due to secp256k1 signatures not being constant size.
 // nolint: vet
 func ExampleTxSendSize() {
-	cdc := app.MakeCodec()
+	cdc := appcodec.MakeCodec(app.ModuleBasics)
+
 	var gas uint64 = 1
 
 	priv1 := secp256k1.GenPrivKeySecp256k1([]byte{0})

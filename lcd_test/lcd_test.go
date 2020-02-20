@@ -991,10 +991,10 @@ func TestDistributionFlow(t *testing.T) {
 	valAddr := valAddrs[0]
 	operAddr := sdk.AccAddress(valAddr)
 
-	var rewards sdk.DecCoins
+	var outstanding disttypes.ValidatorOutstandingRewards
 	res, body := Request(t, port, "GET", fmt.Sprintf("/distribution/validators/%s/outstanding_rewards", valAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
-	require.NoError(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &rewards))
+	require.NoError(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &outstanding))
 
 	var valDistInfo distrrest.ValidatorDistInfo
 	res, body = Request(t, port, "GET", "/distribution/validators/"+valAddr.String(), nil)
@@ -1016,7 +1016,7 @@ func TestDistributionFlow(t *testing.T) {
 	// Query outstanding rewards changed
 	res, body = Request(t, port, "GET", fmt.Sprintf("/distribution/validators/%s/outstanding_rewards", valAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
-	require.NoError(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &rewards))
+	require.NoError(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &outstanding))
 
 	// Query validator distribution info
 	res, body = Request(t, port, "GET", "/distribution/validators/"+valAddr.String(), nil)
@@ -1025,6 +1025,8 @@ func TestDistributionFlow(t *testing.T) {
 	require.NoError(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &valDistInfo))
 
 	// Query validator's rewards
+	var rewards sdk.DecCoins
+
 	res, body = Request(t, port, "GET", fmt.Sprintf("/distribution/validators/%s/rewards", valAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 	require.NoError(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &rewards))

@@ -5,13 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-
-	"github.com/tendermint/tendermint/libs/cli"
-
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys"
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -20,6 +14,11 @@ import (
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
+
+	appcodec "github.com/cosmos/gaia/app/codec"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"github.com/tendermint/tendermint/libs/cli"
 )
 
 const (
@@ -31,7 +30,7 @@ const (
 
 // AddGenesisAccountCmd returns add-genesis-account cobra Command.
 func AddGenesisAccountCmd(
-	ctx *server.Context, cdc *codec.Codec, defaultNodeHome, defaultClientHome string,
+	ctx *server.Context, cdc *appcodec.Codec, defaultNodeHome, defaultClientHome string,
 ) *cobra.Command {
 
 	cmd := &cobra.Command{
@@ -113,7 +112,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 			}
 
 			genFile := config.GenesisFile()
-			appState, genDoc, err := genutil.GenesisStateFromGenFile(cdc, genFile)
+			appState, genDoc, err := genutil.GenesisStateFromGenFile(cdc.Amino, genFile)
 			if err != nil {
 				return fmt.Errorf("failed to unmarshal genesis state: %w", err)
 			}
@@ -136,7 +135,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 
 			appState[auth.ModuleName] = authGenStateBz
 
-			bankGenState := bank.GetGenesisStateFromAppState(cdc, appState)
+			bankGenState := bank.GetGenesisStateFromAppState(cdc.Amino, appState)
 			bankGenState.Balances = append(bankGenState.Balances, balances)
 			bankGenState.Balances = bank.SanitizeGenesisBalances(bankGenState.Balances)
 

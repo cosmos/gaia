@@ -93,53 +93,12 @@ jobs:
           paths:
             - "."
 
-  # test-sim-nondeterminism:
-  #   executor: golang
-  #   steps:
-  #     - make:
-  #         target: test-sim-nondeterminism
-  #         description: "Test Gaia non-determinism simulations"
-
-  # test-sim-import-export:
-  #   executor: golang
-  #   steps:
-  #     - make:
-  #         target: test-sim-import-export
-  #         description: "Test Gaia import/export simulation"
-
-  # test-sim-after-import:
-  #   executor: golang
-  #   steps:
-  #     - make:
-  #         target: test-sim-after-import
-  #         description: "Test Gaia simulation after importing state"
-
-  # test-sim-multi-seed-short:
-  #   executor: golang
-  #   steps:
-  #     - make:
-  #         target: test-sim-multi-seed-short
-  #         description: "Test Gaia multi-seed simulation (short-lived)"
-
   test-sim-multi-seed-long:
     executor: golang
     steps:
       - make:
           target: test-sim-multi-seed-long
           description: "Test Gaia multi-seed simulation (long-lived)"
-
-  integration-tests:
-    executor: golang
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - go-mod-v1-{{ checksum "go.sum" }}
-      - run:
-          name: Test CLI integration
-          command: |
-            export BUILDDIR=`pwd`/build
-            make test-build
 
   test-cover:
     executor: golang
@@ -380,21 +339,6 @@ workflows:
             tags:
               only:
                 - /^v.*/
-      - integration-tests:
-          requires:
-            - setup-dependencies
-      # - test-sim-nondeterminism:
-      #     requires:
-      #       - setup-dependencies
-      # - test-sim-import-export:
-      #     requires:
-      #       - setup-dependencies
-      # - test-sim-after-import:
-      #     requires:
-      #       - setup-dependencies
-      # - test-sim-multi-seed-short:
-      #     requires:
-      #       - setup-dependencies
       - test-sim-multi-seed-long:
           requires:
             - setup-dependencies

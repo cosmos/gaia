@@ -4,9 +4,7 @@ go 1.13
 
 require (
 	github.com/btcsuite/btcd v0.0.0-20190807005414-4063feeff79a // indirect
-	github.com/coreos/go-etcd v2.0.0+incompatible // indirect
 	github.com/cosmos/cosmos-sdk v0.34.4-0.20200221191853-143ccf7ce435
-	github.com/cpuguy83/go-md2man v1.0.10 // indirect
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/mock v1.3.1 // indirect
 	github.com/onsi/ginkgo v1.8.0 // indirect
@@ -25,7 +23,6 @@ require (
 	github.com/tendermint/go-amino v0.15.1
 	github.com/tendermint/tendermint v0.33.1
 	github.com/tendermint/tm-db v0.4.0
-	github.com/ugorji/go/codec v0.0.0-20181204163529-d75b2dcb6bc8 // indirect
 	golang.org/x/net v0.0.0-20190827160401-ba9fcec4b297 // indirect
 	golang.org/x/text v0.3.2 // indirect
 )

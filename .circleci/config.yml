@@ -101,18 +101,14 @@ jobs:
     steps:
       - checkout
       - run:
-          command: |
-          LEDGER_ENABLED=false
-          make proto-lint
+          command: make proto-lint
 
   proto-breakage:
     executor: protoc
     steps:
       - checkout
       - run:
-          command: |
-          LEDGER_ENABLED=false
-          make proto-check-breaking
+          command: make proto-check-breaking
 
   test-sim-nondeterminism:
     executor: golang

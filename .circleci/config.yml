@@ -20,6 +20,8 @@ executors:
   protoc:
     docker:
       - image: tendermintdev/docker-protoc
+    environment:
+      LEDGER_ENABLED: false
 
 commands:
   make:

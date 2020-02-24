@@ -241,7 +241,7 @@ func NewGaiaApp(
 	// there is nothing left over in the validator fee pool, so as to keep the
 	// CanWithdrawInvariant invariant.
 
-	app.mm.SetOrderBeginBlockers(upgrade.ModuleName, mint.ModuleName, distr.ModuleName, slashing.ModuleName)
+	app.mm.SetOrderBeginBlockers(upgrade.ModuleName, mint.ModuleName, distr.ModuleName, slashing.ModuleName, staking.ModuleName)
 	app.mm.SetOrderEndBlockers(crisis.ModuleName, gov.ModuleName, staking.ModuleName)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -310,7 +310,14 @@ func (app *GaiaApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci
 	var genesisState simapp.GenesisState
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
 
-	return app.mm.InitGenesis(ctx, app.cdc, genesisState)
+	res := app.mm.InitGenesis(ctx, app.cdc, genesisState)
+
+	// Set Historical infos in InitChain to ignore genesis params
+	stakingParams := staking.DefaultParams()
+	stakingParams.HistoricalEntries = 10
+	app.stakingKeeper.SetParams(ctx, stakingParams)
+
+	return res
 }
 
 // LoadHeight loads a particular height

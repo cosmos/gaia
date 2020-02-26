@@ -233,12 +233,13 @@ GOGO_PROTO_URL   = https://raw.githubusercontent.com/regen-network/protobuf/cosm
 COSMOS_SDK_URL   = https://raw.githubusercontent.com/cosmos/cosmos-sdk/master
 COSMOS_PROTO_URL = https://raw.githubusercontent.com/regen-network/cosmos-proto/master
 
-GOGO_PROTO_TYPES    = third_party/proto/gogoproto
-COSMOS_PROTO_TYPES  = third_party/proto/cosmos-proto
-SDK_PROTO_TYPES     = third_party/proto/cosmos-sdk/types
-AUTH_PROTO_TYPES    = third_party/proto/cosmos-sdk/x/auth/types
-VESTING_PROTO_TYPES = third_party/proto/cosmos-sdk/x/auth/vesting/types
-SUPPLY_PROTO_TYPES  = third_party/proto/cosmos-sdk/x/supply/types
+GOGO_PROTO_TYPES     = third_party/proto/gogoproto
+COSMOS_PROTO_TYPES   = third_party/proto/cosmos-proto
+SDK_PROTO_TYPES      = third_party/proto/cosmos-sdk/types
+AUTH_PROTO_TYPES     = third_party/proto/cosmos-sdk/x/auth/types
+EVIDENCE_PROTO_TYPES = third_party/proto/cosmos-sdk/x/evidence/types
+VESTING_PROTO_TYPES  = third_party/proto/cosmos-sdk/x/auth/vesting/types
+SUPPLY_PROTO_TYPES   = third_party/proto/cosmos-sdk/x/supply/types
 
 proto-update-deps:
 	@mkdir -p $(GOGO_PROTO_TYPES)
@@ -253,6 +254,10 @@ proto-update-deps:
 	@mkdir -p $(AUTH_PROTO_TYPES)
 	@curl -sSL $(COSMOS_SDK_URL)/x/auth/types/types.proto > $(AUTH_PROTO_TYPES)/types.proto
 	@sed -i '' '5 s|types/|third_party/proto/cosmos-sdk/types/|g' $(AUTH_PROTO_TYPES)/types.proto
+
+	@mkdir -p $(EVIDENCE_PROTO_TYPES)
+	@curl -sSL $(COSMOS_SDK_URL)/x/evidence/types/types.proto > $(EVIDENCE_PROTO_TYPES)/types.proto
+	@sed -i '' '5 s|types/|third_party/proto/cosmos-sdk/types/|g' $(EVIDENCE_PROTO_TYPES)/types.proto
 
 	@mkdir -p $(VESTING_PROTO_TYPES)
 	@curl -sSL $(COSMOS_SDK_URL)/x/auth/vesting/types/types.proto > $(VESTING_PROTO_TYPES)/types.proto

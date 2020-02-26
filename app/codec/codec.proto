@@ -1,10 +1,12 @@
 syntax = "proto3";
 package gaia.codec.v1;
 
+import "third_party/proto/gogoproto/gogo.proto";
 import "third_party/proto/cosmos-proto/cosmos.proto";
 import "third_party/proto/cosmos-sdk/x/auth/types/types.proto";
 import "third_party/proto/cosmos-sdk/x/auth/vesting/types/types.proto";
 import "third_party/proto/cosmos-sdk/x/supply/types/types.proto";
+import "third_party/proto/cosmos-sdk/x/evidence/types/types.proto";
 
 option go_package = "github.com/cosmos/gaia/app/codec";
 
@@ -30,4 +32,26 @@ message Supply {
   oneof sum {
     cosmos_sdk.x.supply.v1.Supply supply = 1;
   }
+}
+
+// Evidence defines the application-level allowed Evidence to be submitted via a
+// MsgSubmitEvidence message.
+message Evidence {
+  option (gogoproto.equal)             = true;
+  option (cosmos_proto.interface_type) = "github.com/cosmos/cosmos-sdk/x/evidence/exported.Evidence";
+
+  // sum defines a set of all acceptable concrete Evidence implementations.
+  oneof sum {
+    cosmos_sdk.x.evidence.v1.Equivocation equivocation = 1;
+  }
+}
+
+// MsgSubmitEvidence defines the application-level message type for handling
+// evidence submission.
+message MsgSubmitEvidence {
+  option (gogoproto.equal)           = true;
+  option (gogoproto.goproto_getters) = false;
+
+  Evidence                                       evidence = 1;
+  cosmos_sdk.x.evidence.v1.MsgSubmitEvidenceBase base     = 2 [(gogoproto.nullable) = false, (gogoproto.embed) = true];
 }

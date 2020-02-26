@@ -8,8 +8,11 @@ import (
 	github_com_cosmos_cosmos_sdk_x_auth_exported "github.com/cosmos/cosmos-sdk/x/auth/exported"
 	types "github.com/cosmos/cosmos-sdk/x/auth/types"
 	types1 "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+	github_com_cosmos_cosmos_sdk_x_evidence_exported "github.com/cosmos/cosmos-sdk/x/evidence/exported"
+	types3 "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	github_com_cosmos_cosmos_sdk_x_supply_exported "github.com/cosmos/cosmos-sdk/x/supply/exported"
 	types2 "github.com/cosmos/cosmos-sdk/x/supply/types"
+	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
 	_ "github.com/regen-network/cosmos-proto"
 	io "io"
@@ -230,45 +233,254 @@ func (*Supply) XXX_OneofWrappers() []interface{} {
 	}
 }
 
+// Evidence defines the application-level allowed Evidence to be submitted via a
+// MsgSubmitEvidence message.
+type Evidence struct {
+	// sum defines a set of all acceptable concrete Evidence implementations.
+	//
+	// Types that are valid to be assigned to Sum:
+	//	*Evidence_Equivocation
+	Sum isEvidence_Sum `protobuf_oneof:"sum"`
+}
+
+func (m *Evidence) Reset()         { *m = Evidence{} }
+func (m *Evidence) String() string { return proto.CompactTextString(m) }
+func (*Evidence) ProtoMessage()    {}
+func (*Evidence) Descriptor() ([]byte, []int) {
+	return fileDescriptor_f13cdefb3712d8a3, []int{2}
+}
+func (m *Evidence) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Evidence) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Evidence.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *Evidence) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Evidence.Merge(m, src)
+}
+func (m *Evidence) XXX_Size() int {
+	return m.Size()
+}
+func (m *Evidence) XXX_DiscardUnknown() {
+	xxx_messageInfo_Evidence.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Evidence proto.InternalMessageInfo
+
+type isEvidence_Sum interface {
+	isEvidence_Sum()
+	Equal(interface{}) bool
+	MarshalTo([]byte) (int, error)
+	Size() int
+}
+
+type Evidence_Equivocation struct {
+	Equivocation *types3.Equivocation `protobuf:"bytes,1,opt,name=equivocation,proto3,oneof" json:"equivocation,omitempty"`
+}
+
+func (*Evidence_Equivocation) isEvidence_Sum() {}
+
+func (m *Evidence) GetSum() isEvidence_Sum {
+	if m != nil {
+		return m.Sum
+	}
+	return nil
+}
+
+func (m *Evidence) GetEquivocation() *types3.Equivocation {
+	if x, ok := m.GetSum().(*Evidence_Equivocation); ok {
+		return x.Equivocation
+	}
+	return nil
+}
+
+// XXX_OneofWrappers is for the internal use of the proto package.
+func (*Evidence) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
+		(*Evidence_Equivocation)(nil),
+	}
+}
+
+// MsgSubmitEvidence defines the application-level message type for handling
+// evidence submission.
+type MsgSubmitEvidence struct {
+	Evidence                     *Evidence `protobuf:"bytes,1,opt,name=evidence,proto3" json:"evidence,omitempty"`
+	types3.MsgSubmitEvidenceBase `protobuf:"bytes,2,opt,name=base,proto3,embedded=base" json:"base"`
+}
+
+func (m *MsgSubmitEvidence) Reset()         { *m = MsgSubmitEvidence{} }
+func (m *MsgSubmitEvidence) String() string { return proto.CompactTextString(m) }
+func (*MsgSubmitEvidence) ProtoMessage()    {}
+func (*MsgSubmitEvidence) Descriptor() ([]byte, []int) {
+	return fileDescriptor_f13cdefb3712d8a3, []int{3}
+}
+func (m *MsgSubmitEvidence) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgSubmitEvidence) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgSubmitEvidence.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgSubmitEvidence) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSubmitEvidence.Merge(m, src)
+}
+func (m *MsgSubmitEvidence) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgSubmitEvidence) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSubmitEvidence.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgSubmitEvidence proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*Account)(nil), "gaia.codec.v1.Account")
 	proto.RegisterType((*Supply)(nil), "gaia.codec.v1.Supply")
+	proto.RegisterType((*Evidence)(nil), "gaia.codec.v1.Evidence")
+	proto.RegisterType((*MsgSubmitEvidence)(nil), "gaia.codec.v1.MsgSubmitEvidence")
 }
 
 func init() { proto.RegisterFile("app/codec/codec.proto", fileDescriptor_f13cdefb3712d8a3) }
 
 var fileDescriptor_f13cdefb3712d8a3 = []byte{
-	// 446 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x93, 0xc1, 0x8a, 0x13, 0x31,
-	0x1c, 0xc6, 0x67, 0xdc, 0xdd, 0x0a, 0x59, 0xd7, 0xc3, 0xc0, 0x6a, 0xe9, 0x61, 0x58, 0x17, 0x04,
-	0x51, 0x9a, 0x61, 0x5d, 0xd7, 0xd5, 0x8a, 0x07, 0xab, 0xc8, 0x7a, 0x50, 0x64, 0x05, 0x0f, 0x5e,
-	0x86, 0x4c, 0x12, 0xda, 0x61, 0x3b, 0x93, 0x30, 0x49, 0x86, 0xce, 0x0b, 0x78, 0xf6, 0x61, 0x7a,
-	0xf4, 0x01, 0xa4, 0xa7, 0x1e, 0x3d, 0x4a, 0xfb, 0x22, 0x32, 0x49, 0x98, 0xa9, 0xcc, 0xb4, 0xf5,
-	0x12, 0x48, 0xf2, 0x7d, 0xdf, 0xef, 0x83, 0xfc, 0x03, 0x8e, 0x11, 0xe7, 0x01, 0x66, 0x84, 0x62,
-	0xb3, 0x42, 0x9e, 0x31, 0xc9, 0xbc, 0xa3, 0x11, 0x8a, 0x11, 0x34, 0x27, 0xf9, 0x59, 0xef, 0x89,
-	0x1c, 0xc7, 0x19, 0x09, 0x39, 0xca, 0x64, 0x11, 0x68, 0x45, 0x80, 0x99, 0x48, 0x98, 0xe8, 0xaf,
-	0x6f, 0x8c, 0xb7, 0x77, 0xb1, 0x51, 0x2c, 0xc8, 0x4d, 0x30, 0x0d, 0x90, 0x92, 0xe3, 0x40, 0x16,
-	0x9c, 0x0a, 0xb3, 0x5a, 0xdb, 0xeb, 0xff, 0xb1, 0xe5, 0x54, 0xc8, 0x38, 0x1d, 0xb5, 0xd8, 0x2f,
-	0x77, 0xd8, 0x85, 0xe2, 0x7c, 0x52, 0x34, 0x8d, 0xa7, 0x3f, 0xf7, 0xc1, 0xed, 0x37, 0x18, 0x33,
-	0x95, 0x4a, 0xef, 0x3d, 0xb8, 0x13, 0x21, 0x41, 0x43, 0x64, 0xf6, 0x5d, 0xf7, 0xc4, 0x7d, 0x74,
-	0xf8, 0xf4, 0x01, 0x34, 0x49, 0xa1, 0x20, 0x37, 0x70, 0x0a, 0xcb, 0x22, 0x30, 0x3f, 0x83, 0x43,
-	0x24, 0xa8, 0x35, 0x5e, 0x39, 0xd7, 0x87, 0x51, 0xbd, 0xf5, 0x72, 0xd0, 0xc3, 0x2c, 0x95, 0x71,
-	0xaa, 0x98, 0x12, 0xa1, 0x2d, 0x5d, 0xa5, 0xde, 0xd2, 0xa9, 0xcf, 0xdb, 0x52, 0x8d, 0xb2, 0x4c,
-	0x7f, 0x5b, 0xf9, 0xbf, 0x9a, 0xc3, 0x1a, 0xd5, 0xc5, 0x1b, 0xee, 0xbc, 0x04, 0xdc, 0x27, 0x74,
-	0x82, 0x0a, 0x4a, 0x1a, 0xd0, 0x3d, 0x0d, 0x3d, 0xdf, 0x0e, 0x7d, 0x67, 0xcc, 0x0d, 0xe2, 0x31,
-	0x69, 0xbb, 0xf0, 0x38, 0xe8, 0x72, 0x9a, 0xc5, 0x8c, 0xc4, 0xb8, 0xc1, 0xdb, 0xd7, 0xbc, 0x67,
-	0xdb, 0x79, 0x9f, 0xad, 0xbb, 0x01, 0xbc, 0xc7, 0x5b, 0x6f, 0xbc, 0x4f, 0xe0, 0x6e, 0xc2, 0x88,
-	0x9a, 0xd4, 0x4f, 0x74, 0xa0, 0x39, 0x0f, 0xff, 0xe5, 0x98, 0xc7, 0x2e, 0x09, 0x1f, 0xb5, 0xba,
-	0x0e, 0x3e, 0x4a, 0xd6, 0x0f, 0x06, 0x2f, 0xe7, 0xb3, 0xfe, 0xc5, 0xe3, 0x51, 0x2c, 0xc7, 0x2a,
-	0x82, 0x98, 0x25, 0x76, 0x66, 0x5a, 0x26, 0x8f, 0x4e, 0x39, 0xcb, 0x24, 0x25, 0xd0, 0x5a, 0x87,
-	0x07, 0x60, 0x4f, 0xa8, 0xe4, 0xf4, 0xbb, 0x0b, 0x3a, 0x5f, 0x34, 0xce, 0x7b, 0x01, 0x3a, 0x06,
-	0x6c, 0xe7, 0xc6, 0xdf, 0x54, 0xca, 0xe8, 0xaf, 0x9c, 0x6b, 0xab, 0x1f, 0xbc, 0x9a, 0xcf, 0xfa,
-	0x97, 0xbb, 0x6a, 0xd8, 0x09, 0xae, 0x8a, 0x98, 0x94, 0x0f, 0xb6, 0xc8, 0x70, 0xf0, 0x6b, 0xe9,
-	0xbb, 0x8b, 0xa5, 0xef, 0xfe, 0x59, 0xfa, 0xee, 0x8f, 0x95, 0xef, 0x2c, 0x56, 0xbe, 0xf3, 0x7b,
-	0xe5, 0x3b, 0xdf, 0x4e, 0x9a, 0xc1, 0xe5, 0xf7, 0x0e, 0xaa, 0xaf, 0x1f, 0x75, 0xf4, 0x57, 0x38,
-	0xff, 0x1b, 0x00, 0x00, 0xff, 0xff, 0xf6, 0x51, 0x48, 0xda, 0x0e, 0x04, 0x00, 0x00,
+	// 592 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x54, 0xcf, 0x6e, 0xd3, 0x30,
+	0x18, 0x4f, 0x58, 0x57, 0x2a, 0x6f, 0x43, 0x22, 0xd2, 0x58, 0xd5, 0x43, 0x3a, 0x26, 0x31, 0x21,
+	0x50, 0x13, 0x8d, 0x32, 0x46, 0x8b, 0x38, 0xac, 0x30, 0x54, 0x24, 0x8a, 0x50, 0x27, 0x71, 0xe0,
+	0x52, 0xa5, 0xb1, 0x95, 0x5a, 0x6b, 0x62, 0x53, 0x3b, 0x51, 0xfb, 0x02, 0x88, 0x23, 0x8f, 0x30,
+	0x78, 0x86, 0x1e, 0x79, 0x80, 0xa9, 0xa7, 0x1e, 0x39, 0x4d, 0xa8, 0xbd, 0xf0, 0x18, 0x28, 0xb1,
+	0x9b, 0xb6, 0x4a, 0xba, 0xee, 0x62, 0xc5, 0xf6, 0xef, 0xdf, 0xa7, 0x7c, 0x9f, 0xc1, 0xae, 0x45,
+	0xa9, 0x69, 0x13, 0x88, 0x6c, 0xb1, 0x1a, 0xb4, 0x47, 0x38, 0xd1, 0x76, 0x1c, 0x0b, 0x5b, 0x86,
+	0x38, 0x09, 0x8e, 0x0a, 0x87, 0xbc, 0x83, 0x7b, 0xb0, 0x45, 0xad, 0x1e, 0x1f, 0x98, 0x11, 0xc2,
+	0x74, 0x88, 0x43, 0xe6, 0x5f, 0x82, 0x56, 0x78, 0x9a, 0xc4, 0xd9, 0x84, 0xb9, 0x84, 0x95, 0x16,
+	0x37, 0x12, 0x7c, 0xbc, 0x12, 0xcc, 0xe0, 0x85, 0xd9, 0x37, 0x2d, 0x9f, 0x77, 0x4c, 0x3e, 0xa0,
+	0x88, 0x89, 0x55, 0xd2, 0x5e, 0xdf, 0x86, 0x16, 0x20, 0xc6, 0xb1, 0xe7, 0xa4, 0xd0, 0x4f, 0xd6,
+	0xd0, 0x99, 0x4f, 0x69, 0x77, 0x90, 0x42, 0xac, 0xac, 0x21, 0xa2, 0x00, 0x43, 0xe4, 0xd9, 0x28,
+	0x49, 0x3d, 0xf8, 0x9d, 0x01, 0x77, 0x4f, 0x6d, 0x9b, 0xf8, 0x1e, 0xd7, 0xde, 0x81, 0xed, 0xb6,
+	0xc5, 0x50, 0xcb, 0x12, 0xfb, 0xbc, 0xba, 0xaf, 0x3e, 0xde, 0x7a, 0xf6, 0xd0, 0x10, 0x5a, 0x2d,
+	0x06, 0x2f, 0x8c, 0xbe, 0x11, 0xd6, 0x60, 0x04, 0x47, 0x46, 0xcd, 0x62, 0x48, 0x12, 0xeb, 0x4a,
+	0x73, 0xab, 0x3d, 0xdf, 0x6a, 0x01, 0x28, 0xd8, 0xc4, 0xe3, 0xd8, 0xf3, 0x89, 0xcf, 0x5a, 0xb2,
+	0xde, 0x58, 0xf5, 0x4e, 0xa4, 0xfa, 0x22, 0x4d, 0x55, 0x20, 0x43, 0xf5, 0x37, 0x31, 0xff, 0xb3,
+	0x38, 0x9c, 0x5b, 0xe5, 0xed, 0x15, 0x77, 0x9a, 0x0b, 0xf6, 0x20, 0xea, 0x5a, 0x03, 0x04, 0x13,
+	0xa6, 0x1b, 0x91, 0x69, 0xf9, 0x66, 0xd3, 0xb7, 0x82, 0x9c, 0x70, 0xdc, 0x85, 0x69, 0x17, 0x1a,
+	0x05, 0x79, 0x8a, 0x7a, 0x98, 0x40, 0x6c, 0x27, 0xfc, 0x32, 0x91, 0xdf, 0xf3, 0x9b, 0xfd, 0x3e,
+	0x49, 0x76, 0xc2, 0xf0, 0x01, 0x4d, 0xbd, 0xd1, 0x3e, 0x82, 0x7b, 0x2e, 0x81, 0x7e, 0x77, 0xfe,
+	0x8b, 0x36, 0x23, 0x9f, 0x47, 0xcb, 0x3e, 0xa2, 0x4f, 0x42, 0x87, 0x46, 0x84, 0x9e, 0x0b, 0xef,
+	0xb8, 0x8b, 0x07, 0xd5, 0xca, 0x68, 0x58, 0x3a, 0x7e, 0xe2, 0x60, 0xde, 0xf1, 0xdb, 0x86, 0x4d,
+	0x5c, 0xd9, 0x35, 0x29, 0x4d, 0x8b, 0xfa, 0x94, 0xf4, 0x38, 0x82, 0x86, 0xa4, 0xd6, 0x36, 0xc1,
+	0x06, 0xf3, 0xdd, 0x83, 0x6f, 0x2a, 0xc8, 0x9e, 0x47, 0x76, 0xda, 0x4b, 0x90, 0x15, 0xc6, 0xb2,
+	0x6f, 0xf4, 0x55, 0xa1, 0x04, 0xbe, 0xae, 0x34, 0x25, 0xbe, 0xfa, 0x6a, 0x34, 0x2c, 0x9d, 0xac,
+	0x8b, 0x21, 0x9b, 0x3f, 0x0e, 0x22, 0x54, 0xde, 0xcf, 0x82, 0xfc, 0x52, 0x41, 0xee, 0x4c, 0xb6,
+	0xb9, 0xf6, 0x01, 0x6c, 0xa3, 0xaf, 0x3e, 0x0e, 0x88, 0x6d, 0x71, 0x4c, 0x3c, 0x19, 0xe8, 0x70,
+	0x39, 0xd0, 0x6c, 0x28, 0xc2, 0x48, 0x67, 0x0b, 0xe8, 0xba, 0xd2, 0x5c, 0x62, 0x57, 0x4f, 0xff,
+	0x5d, 0x16, 0xd5, 0xd1, 0xb0, 0x54, 0x59, 0x93, 0x30, 0x9e, 0xb2, 0x38, 0xe3, 0x2c, 0xd0, 0x2c,
+	0xe4, 0x4f, 0x15, 0xdc, 0x6f, 0x30, 0xe7, 0xdc, 0x6f, 0xbb, 0x98, 0xc7, 0x69, 0xcb, 0x20, 0x37,
+	0xa3, 0xca, 0xa4, 0x7b, 0xc6, 0xd2, 0x1b, 0x17, 0xeb, 0x34, 0x63, 0xa0, 0xd6, 0x00, 0x99, 0x70,
+	0xe4, 0xe4, 0x34, 0x99, 0xab, 0x4b, 0x4b, 0xf8, 0x85, 0x83, 0x5b, 0xcb, 0x5d, 0x5d, 0x17, 0x95,
+	0xf1, 0x75, 0x51, 0x6d, 0x46, 0x32, 0xd5, 0xdc, 0xf7, 0xcb, 0xa2, 0x12, 0xd6, 0x59, 0xab, 0x5e,
+	0x4d, 0x74, 0x75, 0x3c, 0xd1, 0xd5, 0xbf, 0x13, 0x5d, 0xfd, 0x31, 0xd5, 0x95, 0xf1, 0x54, 0x57,
+	0xfe, 0x4c, 0x75, 0xe5, 0xcb, 0x7e, 0xb2, 0xfe, 0x30, 0xa6, 0x19, 0x3f, 0xd3, 0xed, 0x6c, 0xf4,
+	0xa6, 0x94, 0xff, 0x07, 0x00, 0x00, 0xff, 0xff, 0xc9, 0xfb, 0xc1, 0x72, 0xba, 0x05, 0x00, 0x00,
 }
 
+func (this *Evidence) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*Evidence)
+	if !ok {
+		that2, ok := that.(Evidence)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if that1.Sum == nil {
+		if this.Sum != nil {
+			return false
+		}
+	} else if this.Sum == nil {
+		return false
+	} else if !this.Sum.Equal(that1.Sum) {
+		return false
+	}
+	return true
+}
+func (this *Evidence_Equivocation) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*Evidence_Equivocation)
+	if !ok {
+		that2, ok := that.(Evidence_Equivocation)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if !this.Equivocation.Equal(that1.Equivocation) {
+		return false
+	}
+	return true
+}
+func (this *MsgSubmitEvidence) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*MsgSubmitEvidence)
+	if !ok {
+		that2, ok := that.(MsgSubmitEvidence)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if !this.Evidence.Equal(that1.Evidence) {
+		return false
+	}
+	if !this.MsgSubmitEvidenceBase.Equal(&that1.MsgSubmitEvidenceBase) {
+		return false
+	}
+	return true
+}
 func (this *Account) GetAccount() github_com_cosmos_cosmos_sdk_x_auth_exported.Account {
 	if x := this.GetBaseAccount(); x != nil {
 		return x
@@ -331,6 +543,29 @@ func (this *Supply) SetSupplyI(value github_com_cosmos_cosmos_sdk_x_supply_expor
 		return nil
 	}
 	return fmt.Errorf("can't encode value of type %T as message Supply", value)
+}
+
+func (this *Evidence) GetEvidence() github_com_cosmos_cosmos_sdk_x_evidence_exported.Evidence {
+	if x := this.GetEquivocation(); x != nil {
+		return x
+	}
+	return nil
+}
+
+func (this *Evidence) SetEvidence(value github_com_cosmos_cosmos_sdk_x_evidence_exported.Evidence) error {
+	if value == nil {
+		this.Sum = nil
+		return nil
+	}
+	switch vt := value.(type) {
+	case *types3.Equivocation:
+		this.Sum = &Evidence_Equivocation{vt}
+		return nil
+	case types3.Equivocation:
+		this.Sum = &Evidence_Equivocation{&vt}
+		return nil
+	}
+	return fmt.Errorf("can't encode value of type %T as message Evidence", value)
 }
 
 func (m *Account) Marshal() (dAtA []byte, err error) {
@@ -523,6 +758,104 @@ func (m *Supply_Supply) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	return len(dAtA) - i, nil
 }
+func (m *Evidence) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Evidence) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Evidence) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Sum != nil {
+		{
+			size := m.Sum.Size()
+			i -= size
+			if _, err := m.Sum.MarshalTo(dAtA[i:]); err != nil {
+				return 0, err
+			}
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *Evidence_Equivocation) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Evidence_Equivocation) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	if m.Equivocation != nil {
+		{
+			size, err := m.Equivocation.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintCodec(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+func (m *MsgSubmitEvidence) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgSubmitEvidence) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgSubmitEvidence) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.MsgSubmitEvidenceBase.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintCodec(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x12
+	if m.Evidence != nil {
+		{
+			size, err := m.Evidence.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintCodec(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintCodec(dAtA []byte, offset int, v uint64) int {
 	offset -= sovCodec(v)
 	base := offset
@@ -628,6 +961,44 @@ func (m *Supply_Supply) Size() (n int) {
 		l = m.Supply.Size()
 		n += 1 + l + sovCodec(uint64(l))
 	}
+	return n
+}
+func (m *Evidence) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Sum != nil {
+		n += m.Sum.Size()
+	}
+	return n
+}
+
+func (m *Evidence_Equivocation) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Equivocation != nil {
+		l = m.Equivocation.Size()
+		n += 1 + l + sovCodec(uint64(l))
+	}
+	return n
+}
+func (m *MsgSubmitEvidence) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Evidence != nil {
+		l = m.Evidence.Size()
+		n += 1 + l + sovCodec(uint64(l))
+	}
+	l = m.MsgSubmitEvidenceBase.Size()
+	n += 1 + l + sovCodec(uint64(l))
 	return n
 }
 
@@ -928,6 +1299,216 @@ func (m *Supply) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			m.Sum = &Supply_Supply{v}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipCodec(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthCodec
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthCodec
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Evidence) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowCodec
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Evidence: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Evidence: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Equivocation", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCodec
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthCodec
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthCodec
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			v := &types3.Equivocation{}
+			if err := v.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			m.Sum = &Evidence_Equivocation{v}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipCodec(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthCodec
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthCodec
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgSubmitEvidence) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowCodec
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgSubmitEvidence: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgSubmitEvidence: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Evidence", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCodec
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthCodec
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthCodec
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Evidence == nil {
+				m.Evidence = &Evidence{}
+			}
+			if err := m.Evidence.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MsgSubmitEvidenceBase", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowCodec
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthCodec
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthCodec
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.MsgSubmitEvidenceBase.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

@@ -27,7 +27,7 @@ These community-maintained web and mobile wallets allow you to store & transfer 
 * [Cosmostation](https://www.cosmostation.io/) - Android, iOS
 * [Huobi Wallet](https://www.huobiwallet.com/) - Android, iOS
 * [imToken](https://token.im/) - Android, iOS
-* [Interchain Wallet](https://t.me/InterchainWalletBot?start=326600450_2) - Telegram, Linux, macOS, Windows
+* [Interchain Wallet Bot](https://t.me/InterchainWalletBot?start=326600450_2) - Telegram
 * [Lunagram](https://lunamint.com/) - Android, iOS
 * [Lunie](https://lunie.io) - Web
 * [Math Wallet](https://www.mathwallet.org/en/) - Android, iOS, Web

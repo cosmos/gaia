@@ -49,7 +49,7 @@ These block explorers allow you to search, view and analyze Cosmos Hub data&mdas
 * [Interchain Wallet](https://t.me/InterchainWalletBot?start=326600450_2) - Telegram, Linux, macOS, Windows
 * [Mintscan](https://mintscan.io)
 * [Stargazer](https://stargazer.certus.one)
-* [Interchain Wallet](https://t.me/InterchainWalletBot)
+* [Interchain Wallet Bot](https://t.me/InterchainWalletBot)
 
 ## Cosmos Hub CLI
 

@@ -46,7 +46,7 @@ These block explorers allow you to search, view and analyze Cosmos Hub data&mdas
 * [Coris](http://coris.network)
 * [Cosmos Visualizer](https://nylira.net/3d)
 * [Hubble](https://hubble.figment.network)
-* [Interchain Wallet](https://t.me/InterchainWalletBot?start=326600450_2) - Telegram, Linux, macOS, Windows
+* [Interchain Wallet Bot](https://t.me/InterchainWalletBot?start=326600450_2) - Telegram
 * [Mintscan](https://mintscan.io)
 * [Stargazer](https://stargazer.certus.one)
 * [Interchain Wallet Bot](https://t.me/InterchainWalletBot)

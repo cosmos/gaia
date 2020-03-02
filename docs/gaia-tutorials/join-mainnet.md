@@ -35,7 +35,7 @@ You can edit this `moniker` later, in the `~/.gaiad/config/config.toml` file:
 moniker = "<your_custom_moniker>"
 ```
 
-You can edit the `~/.gaiad/config/gaiad.toml` file in order to enable the anti spam mechanism and reject incoming transactions with less than the minimum gas prices:
+You can edit the `~/.gaiad/config/app.toml` file in order to enable the anti spam mechanism and reject incoming transactions with less than the minimum gas prices:
 
 ```
 # This is a TOML config file.
@@ -109,7 +109,7 @@ For mainnet, the recommended `gas-prices` is `0.025uatom`.
 
 ## Set `minimum-gas-prices`
 
-Your full-node keeps unconfirmed transactions in its mempool. In order to protect it from spam, it is better to set a `minimum-gas-prices` that the transaction must meet in order to be accepted in your node's mempool. This parameter can be set in the following file `~/.gaiad/config/gaiad.toml`.
+Your full-node keeps unconfirmed transactions in its mempool. In order to protect it from spam, it is better to set a `minimum-gas-prices` that the transaction must meet in order to be accepted in your node's mempool. This parameter can be set in the following file `~/.gaiad/config/app.toml`.
 
 The initial recommended `min-gas-prices` is `0.025uatom`, but you might want to change it later.
 

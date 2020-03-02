@@ -120,10 +120,6 @@ module.exports = {
             {
               title: "Forum",
               url: "https://forum.cosmos.network/"
-            },
-            {
-              title: "Chat",
-              url: "https://riot.im/app/#/room/#cosmos-sdk:matrix.org"
             }
           ]
         },

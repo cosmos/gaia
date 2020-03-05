@@ -4,9 +4,8 @@ go 1.13
 
 require (
 	github.com/btcsuite/btcd v0.0.0-20190807005414-4063feeff79a // indirect
-	github.com/cosmos/cosmos-sdk v0.34.4-0.20200225202228-ec39bb3b4274
+	github.com/cosmos/cosmos-sdk v0.34.4-0.20200305154025-bc863c921202
 	github.com/gogo/protobuf v1.3.1
-	github.com/golang/mock v1.3.1 // indirect
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
 	github.com/otiai10/copy v1.0.2

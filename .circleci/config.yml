@@ -386,8 +386,6 @@ workflows:
       - test-sim-nondeterminism:
           requires:
             - setup-dependencies
-      - proto-lint
-      - proto-breakage
       - test-sim-import-export:
           requires:
             - setup-dependencies

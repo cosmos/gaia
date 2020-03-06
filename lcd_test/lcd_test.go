@@ -878,9 +878,9 @@ func TestProposalsQuery(t *testing.T) {
 	deposits = getDeposits(t, port, proposalID2)
 	require.Len(t, deposits, 2)
 	deposit = getDeposit(t, port, proposalID2, addrs[0])
-	require.True(t, deposit.Equals(deposits[0]))
+	require.True(t, deposit.Equal(deposits[0]))
 	deposit = getDeposit(t, port, proposalID2, addrs[1])
-	require.True(t, deposit.Equals(deposits[1]))
+	require.True(t, deposit.Equal(deposits[1]))
 
 	deposits = getDeposits(t, port, proposalID3)
 	require.Len(t, deposits, 1)

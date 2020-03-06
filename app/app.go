@@ -4,7 +4,6 @@ import (
 	"io"
 	"os"
 
-	appcodec "github.com/cosmos/gaia/app/codec"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
@@ -12,6 +11,7 @@ import (
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -114,13 +114,13 @@ type GaiaApp struct {
 // NewGaiaApp returns a reference to an initialized GaiaApp.
 func NewGaiaApp(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
-	invCheckPeriod uint, skipUpgradeHeights map[int64]bool, baseAppOptions ...func(*bam.BaseApp),
+	invCheckPeriod uint, skipUpgradeHeights map[int64]bool, home string,
+	baseAppOptions ...func(*bam.BaseApp),
 ) *GaiaApp {
 
 	// TODO: Remove cdc in favor of appCodec once all modules are migrated.
-	cdc := appcodec.MakeCodec(ModuleBasics)
-
-	appCodec := appcodec.NewAppCodec(cdc)
+	cdc := codecstd.MakeCodec(ModuleBasics)
+	appCodec := codecstd.NewAppCodec(cdc)
 
 	bApp := bam.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
@@ -180,7 +180,7 @@ func NewGaiaApp(
 	app.crisisKeeper = crisis.NewKeeper(
 		app.subspaces[crisis.ModuleName], invCheckPeriod, app.supplyKeeper, auth.FeeCollectorName,
 	)
-	app.upgradeKeeper = upgrade.NewKeeper(skipUpgradeHeights, keys[upgrade.StoreKey], appCodec)
+	app.upgradeKeeper = upgrade.NewKeeper(skipUpgradeHeights, keys[upgrade.StoreKey], appCodec, home)
 
 	// create evidence keeper with evidence router
 	evidenceKeeper := evidence.NewKeeper(
@@ -200,7 +200,7 @@ func NewGaiaApp(
 		AddRoute(distr.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.distrKeeper)).
 		AddRoute(upgrade.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.upgradeKeeper))
 	app.govKeeper = gov.NewKeeper(
-		app.cdc, keys[gov.StoreKey], app.subspaces[gov.ModuleName],
+		appCodec, keys[gov.StoreKey], app.subspaces[gov.ModuleName],
 		app.supplyKeeper, &stakingKeeper, govRouter,
 	)
 

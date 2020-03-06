@@ -83,7 +83,7 @@ func InitializeLCD(
 	logger = log.NewFilter(logger, log.AllowError())
 
 	db := dbm.NewMemDB()
-	gapp := app.NewGaiaApp(logger, db, nil, true, 0, map[int64]bool{}, baseapp.SetPruning(store.PruneNothing))
+	gapp := app.NewGaiaApp(logger, db, nil, true, 0, map[int64]bool{}, "", baseapp.SetPruning(store.PruneNothing))
 
 	genDoc, valConsPubKeys, valOperAddrs, privVal, err := defaultGenesis(config, nValidators, initAddrs, minting)
 	if err != nil {

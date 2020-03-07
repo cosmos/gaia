@@ -299,13 +299,6 @@ func initGenFiles(
 	return nil
 }
 
-func genBalToBal(bals []bank.Balance) (out []bank.Balance) {
-	for _, bal := range bals {
-		out = append(out, bank.Balance{Address: bal.GetAddress(), Coins: bal.GetCoins()})
-	}
-	return
-}
-
 func collectGenFiles(
 	cdc *codec.Codec, config *tmconfig.Config, chainID string,
 	monikers, nodeIDs []string, valPubKeys []crypto.PubKey,

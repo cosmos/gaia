@@ -28,7 +28,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/gaia/app"
-	appcodec "github.com/cosmos/gaia/app/codec"
+
+	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
 )
 
 const (
@@ -101,7 +102,7 @@ func NewFixtures(t *testing.T) *Fixtures {
 		require.NoError(t, err)
 	}
 
-	cdc := appcodec.MakeCodec(app.ModuleBasics)
+	cdc := codecstd.MakeCodec(app.ModuleBasics)
 
 	return &Fixtures{
 		T:             t,
@@ -508,7 +509,7 @@ func (f *Fixtures) QueryStakingUnbondingDelegationsFrom(valAddr sdk.ValAddress, 
 	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
 	var ubds []staking.UnbondingDelegation
 
-  err := f.cdc.UnmarshalJSON([]byte(out), &ubds)
+	err := f.cdc.UnmarshalJSON([]byte(out), &ubds)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return ubds
 }

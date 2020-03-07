@@ -13,13 +13,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cosmos/gaia/app"
-	appcodec "github.com/cosmos/gaia/app/codec"
-	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/crypto/ed25519"
-	tmtypes "github.com/tendermint/tendermint/types"
-
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
 	"github.com/cosmos/cosmos-sdk/tests"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -27,11 +22,16 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/mint"
+	"github.com/stretchr/testify/require"
+	"github.com/tendermint/tendermint/crypto/ed25519"
+	tmtypes "github.com/tendermint/tendermint/types"
+
+	"github.com/cosmos/gaia/app"
 )
 
 var (
-	cdc      = appcodec.MakeCodec(app.ModuleBasics)
-	appCodec = appcodec.NewAppCodec(cdc)
+	cdc      = codecstd.MakeCodec(app.ModuleBasics)
+	appCodec = codecstd.NewAppCodec(cdc)
 )
 
 func init() {

@@ -3,20 +3,20 @@ package app
 import (
 	"fmt"
 
-	"github.com/cosmos/gaia/app"
-	appcodec "github.com/cosmos/gaia/app/codec"
-	"github.com/tendermint/tendermint/crypto/secp256k1"
-
+	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/tendermint/tendermint/crypto/secp256k1"
+
+	"github.com/cosmos/gaia/app"
 )
 
 // This will fail half the time with the second output being 173
 // This is due to secp256k1 signatures not being constant size.
 // nolint: vet
 func ExampleTxSendSize() {
-	cdc := appcodec.MakeCodec(app.ModuleBasics)
+	cdc := codecstd.MakeCodec(app.ModuleBasics)
 
 	var gas uint64 = 1
 

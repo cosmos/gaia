@@ -73,6 +73,8 @@ github.com/coreos/pkg v0.0.0-20160727233714-3ac0863d7acf/go.mod h1:E3G3o1h8I7cfc
 github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
 github.com/cosmos/cosmos-sdk v0.34.4-0.20200309184629-4a3b03a477e2 h1:7oreiG5bSV3gDivizbQzTPZhGk66aCmIFNcNQ0DZ2V8=
 github.com/cosmos/cosmos-sdk v0.34.4-0.20200309184629-4a3b03a477e2/go.mod h1:y87Xq6aGGW6bGtRi1oIBmT42t0a+x2wMe9EnirnCY6s=
+github.com/cosmos/cosmos-sdk v0.34.4-0.20200309192329-2310bee2de0e h1:GgNnVDUYb4MSOCyUabvcQABEMHOKcXzl6e4wj5oQlMY=
+github.com/cosmos/cosmos-sdk v0.34.4-0.20200309192329-2310bee2de0e/go.mod h1:y87Xq6aGGW6bGtRi1oIBmT42t0a+x2wMe9EnirnCY6s=
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d h1:49RLWk1j44Xu4fjHb6JFYmeUnDORVwHNkDxaQ0ctCVU=
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d/go.mod h1:tSxLoYXyBmiFeKpvmq4dzayMdCjCnu8uqmCysIGBT2Y=
 github.com/cosmos/ledger-cosmos-go v0.11.1 h1:9JIYsGnXP613pb2vPjFeMMjBI5lEDsEaF6oYorTy6J4=
@@ -440,6 +442,7 @@ github.com/tendermint/go-amino v0.15.1/go.mod h1:TQU0M1i/ImAo+tYpZi73AU3V/dKeCoM
 github.com/tendermint/iavl v0.13.0 h1:r2sINvNFlJsLlLhGoqlqPlREWYkuK26BvMfkBt+XQnA=
 github.com/tendermint/iavl v0.13.0/go.mod h1:7nSUPdrsHEZ2nNZa+9gaIrcJciWd1jCQZXtcyARU82k=
 github.com/tendermint/tendermint v0.33.0/go.mod h1:s5UoymnPIY+GcA3mMte4P9gpMP8vS7UH7HBXikT1pHI=
+github.com/tendermint/tendermint v0.33.1-dev3 h1:bxc7zwOZyt4E/7Bte7ii5nL7j+gbBahgDeiAulh2O24=
 github.com/tendermint/tendermint v0.33.1-dev3/go.mod h1:CRiNrmGG8HSRJyj8j69k/vKauv97R54Md9zWlEx+gdg=
 github.com/tendermint/tendermint v0.33.1 h1:8f68LUBz8yhISZvaLFP4siXXrLWsWeoYfelbdNtmvm4=
 github.com/tendermint/tendermint v0.33.1/go.mod h1:fBOKyrlXOETqQ+heL8x/TZgSdmItON54csyabvktBp0=

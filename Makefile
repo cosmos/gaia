@@ -65,6 +65,10 @@ BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)' -trimpath
 # The below include contains the tools target.
 include contrib/devtools/Makefile
 
+###############################################################################
+###                              Documentation                              ###
+###############################################################################
+
 all: install lint test
 
 build: go.sum
@@ -90,30 +94,6 @@ install: go.sum
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/gaiad
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/gaiacli
 
-
-########################################
-### Documentation
-
-build-docs:
-	@cd docs && \
-	while read p; do \
-		(git checkout $${p} && npm install && VUEPRESS_BASE="/$${p}/" npm run build) ; \
-		mkdir -p ~/output/$${p} ; \
-		cp -r .vuepress/dist/* ~/output/$${p}/ ; \
-		cp ~/output/$${p}/index.html ~/output ; \
-	done < versions ;
-
-sync-docs:
-	cd ~/output && \
-	echo "role_arn = ${DEPLOYMENT_ROLE_ARN}" >> /root/.aws/config ; \
-	echo "CI job = ${CIRCLE_BUILD_URL}" >> version.html ; \
-	aws s3 sync . s3://${WEBSITE_BUCKET} --profile terraform --delete ; \
-	aws cloudfront create-invalidation --distribution-id ${CF_DISTRIBUTION_ID} --profile terraform --path "/*" ;
-.PHONY: sync-docs
-
-########################################
-### Tools & dependencies
-
 go-mod-cache: go.sum
 	@echo "--> Download go modules to local cache"
 	@go mod download
@@ -133,11 +113,36 @@ clean:
 distclean: clean
 	rm -rf vendor/
 
-########################################
-### Testing
+###############################################################################
+###                                 Devdoc                                  ###
+###############################################################################
 
+build-docs:
+	@cd docs && \
+	while read p; do \
+		(git checkout $${p} && npm install && VUEPRESS_BASE="/$${p}/" npm run build) ; \
+		mkdir -p ~/output/$${p} ; \
+		cp -r .vuepress/dist/* ~/output/$${p}/ ; \
+		cp ~/output/$${p}/index.html ~/output ; \
+	done < versions ;
+
+sync-docs:
+	cd ~/output && \
+	echo "role_arn = ${DEPLOYMENT_ROLE_ARN}" >> /root/.aws/config ; \
+	echo "CI job = ${CIRCLE_BUILD_URL}" >> version.html ; \
+	aws s3 sync . s3://${WEBSITE_BUCKET} --profile terraform --delete ; \
+	aws cloudfront create-invalidation --distribution-id ${CF_DISTRIBUTION_ID} --profile terraform --path "/*" ;
+.PHONY: sync-docs
+
+
+###############################################################################
+###                           Tests & Simulation                            ###
+###############################################################################
+
+include sims.mk
 
 test: test-unit test-build
+
 test-all: check test-race test-cover
 
 test-unit:
@@ -152,6 +157,13 @@ test-cover:
 test-build: build
 	@go test -mod=readonly -p 4 `go list ./cli_test/...` -tags=cli_test -v
 
+benchmark:
+	@go test -mod=readonly -bench=. ./...
+
+
+###############################################################################
+###                                Linting                                  ###
+###############################################################################
 
 lint:
 	golangci-lint run
@@ -163,12 +175,9 @@ format:
 	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/lcd/statik/statik.go" | xargs misspell -w
 	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/lcd/statik/statik.go" | xargs goimports -w -local github.com/cosmos/cosmos-sdk
 
-benchmark:
-	@go test -mod=readonly -bench=. ./...
-
-
-########################################
-### Local validator nodes using docker and docker-compose
+###############################################################################
+###                                Localnet                                 ###
+###############################################################################
 
 build-docker-gaiadnode:
 	$(MAKE) -C networks/local
@@ -205,8 +214,22 @@ contract-tests: setup-transactions
 	@echo "Running Gaia LCD for contract tests"
 	dredd && pkill gaiad
 
-# include simulations
-include sims.mk
+###############################################################################
+###                                Protobuf                                 ###
+###############################################################################
+
+proto-all: proto-gen proto-lint proto-check-breaking
+
+proto-gen:
+	@./scripts/protocgen.sh
+
+proto-lint:
+	@buf check lint --error-format=json
+
+proto-check-breaking:
+	@buf check breaking --against-input '.git#branch=master'
+
+.PHONY: proto-all proto-gen proto-lint proto-check-breaking
 
 .PHONY: all build-linux install install-debug \
 	go-mod-cache draw-deps clean build \

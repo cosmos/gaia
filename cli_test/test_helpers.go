@@ -1,3 +1,5 @@
+// +build cli_test
+
 package clitest
 
 import (
@@ -10,7 +12,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cosmos/gaia/app"
 	"github.com/stretchr/testify/require"
 	tmtypes "github.com/tendermint/tendermint/types"
 
@@ -454,7 +455,7 @@ func (f *Fixtures) QueryBalances(address sdk.AccAddress, flags ...string) sdk.Co
 	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
 
 	var balances sdk.Coins
-	cdc := app.MakeCodec()
+
 	require.NoError(f.T, cdc.UnmarshalJSON([]byte(out), &balances), "out %v\n", out)
 
 	return balances
@@ -468,7 +469,7 @@ func (f *Fixtures) QueryTxs(page, limit int, events ...string) *sdk.SearchTxsRes
 	cmd := fmt.Sprintf("%s query txs --page=%d --limit=%d --events='%s' %v", f.GaiacliBinary, page, limit, queryEvents(events), f.Flags())
 	out, _ := tests.ExecuteT(f.T, cmd, "")
 	var result sdk.SearchTxsResult
-	cdc := app.MakeCodec()
+
 	err := cdc.UnmarshalJSON([]byte(out), &result)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return &result
@@ -489,7 +490,7 @@ func (f *Fixtures) QueryStakingValidator(valAddr sdk.ValAddress, flags ...string
 	cmd := fmt.Sprintf("%s query staking validator %s %v", f.GaiacliBinary, valAddr, f.Flags())
 	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
 	var validator staking.Validator
-	cdc := app.MakeCodec()
+
 	err := cdc.UnmarshalJSON([]byte(out), &validator)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return validator
@@ -500,7 +501,7 @@ func (f *Fixtures) QueryStakingUnbondingDelegationsFrom(valAddr sdk.ValAddress, 
 	cmd := fmt.Sprintf("%s query staking unbonding-delegations-from %s %v", f.GaiacliBinary, valAddr, f.Flags())
 	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
 	var ubds []staking.UnbondingDelegation
-	cdc := app.MakeCodec()
+
 	err := cdc.UnmarshalJSON([]byte(out), &ubds)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return ubds
@@ -511,7 +512,7 @@ func (f *Fixtures) QueryStakingDelegationsTo(valAddr sdk.ValAddress, flags ...st
 	cmd := fmt.Sprintf("%s query staking delegations-to %s %v", f.GaiacliBinary, valAddr, f.Flags())
 	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
 	var delegations []staking.Delegation
-	cdc := app.MakeCodec()
+
 	err := cdc.UnmarshalJSON([]byte(out), &delegations)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return delegations
@@ -522,7 +523,7 @@ func (f *Fixtures) QueryStakingPool(flags ...string) staking.Pool {
 	cmd := fmt.Sprintf("%s query staking pool %v", f.GaiacliBinary, f.Flags())
 	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
 	var pool staking.Pool
-	cdc := app.MakeCodec()
+
 	err := cdc.UnmarshalJSON([]byte(out), &pool)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return pool
@@ -533,7 +534,7 @@ func (f *Fixtures) QueryStakingParameters(flags ...string) staking.Params {
 	cmd := fmt.Sprintf("%s query staking params %v", f.GaiacliBinary, f.Flags())
 	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
 	var params staking.Params
-	cdc := app.MakeCodec()
+
 	err := cdc.UnmarshalJSON([]byte(out), &params)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return params
@@ -547,7 +548,7 @@ func (f *Fixtures) QueryGovParamDeposit() gov.DepositParams {
 	cmd := fmt.Sprintf("%s query gov param deposit %s", f.GaiacliBinary, f.Flags())
 	out, _ := tests.ExecuteT(f.T, cmd, "")
 	var depositParam gov.DepositParams
-	cdc := app.MakeCodec()
+
 	err := cdc.UnmarshalJSON([]byte(out), &depositParam)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return depositParam
@@ -558,7 +559,7 @@ func (f *Fixtures) QueryGovParamVoting() gov.VotingParams {
 	cmd := fmt.Sprintf("%s query gov param voting %s", f.GaiacliBinary, f.Flags())
 	out, _ := tests.ExecuteT(f.T, cmd, "")
 	var votingParam gov.VotingParams
-	cdc := app.MakeCodec()
+
 	err := cdc.UnmarshalJSON([]byte(out), &votingParam)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return votingParam
@@ -569,7 +570,7 @@ func (f *Fixtures) QueryGovParamTallying() gov.TallyParams {
 	cmd := fmt.Sprintf("%s query gov param tallying %s", f.GaiacliBinary, f.Flags())
 	out, _ := tests.ExecuteT(f.T, cmd, "")
 	var tallyingParam gov.TallyParams
-	cdc := app.MakeCodec()
+
 	err := cdc.UnmarshalJSON([]byte(out), &tallyingParam)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return tallyingParam
@@ -584,7 +585,7 @@ func (f *Fixtures) QueryGovProposals(flags ...string) gov.Proposals {
 	}
 	require.Empty(f.T, stderr)
 	var out gov.Proposals
-	cdc := app.MakeCodec()
+
 	err := cdc.UnmarshalJSON([]byte(stdout), &out)
 	require.NoError(f.T, err)
 	return out
@@ -595,7 +596,7 @@ func (f *Fixtures) QueryGovProposal(proposalID int, flags ...string) gov.Proposa
 	cmd := fmt.Sprintf("%s query gov proposal %d %v", f.GaiacliBinary, proposalID, f.Flags())
 	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
 	var proposal gov.Proposal
-	cdc := app.MakeCodec()
+
 	err := cdc.UnmarshalJSON([]byte(out), &proposal)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return proposal
@@ -606,7 +607,7 @@ func (f *Fixtures) QueryGovVote(proposalID int, voter sdk.AccAddress, flags ...s
 	cmd := fmt.Sprintf("%s query gov vote %d %s %v", f.GaiacliBinary, proposalID, voter, f.Flags())
 	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
 	var vote gov.Vote
-	cdc := app.MakeCodec()
+
 	err := cdc.UnmarshalJSON([]byte(out), &vote)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return vote
@@ -617,7 +618,7 @@ func (f *Fixtures) QueryGovVotes(proposalID int, flags ...string) []gov.Vote {
 	cmd := fmt.Sprintf("%s query gov votes %d %v", f.GaiacliBinary, proposalID, f.Flags())
 	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
 	var votes []gov.Vote
-	cdc := app.MakeCodec()
+
 	err := cdc.UnmarshalJSON([]byte(out), &votes)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return votes
@@ -628,7 +629,7 @@ func (f *Fixtures) QueryGovDeposit(proposalID int, depositor sdk.AccAddress, fla
 	cmd := fmt.Sprintf("%s query gov deposit %d %s %v", f.GaiacliBinary, proposalID, depositor, f.Flags())
 	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
 	var deposit gov.Deposit
-	cdc := app.MakeCodec()
+
 	err := cdc.UnmarshalJSON([]byte(out), &deposit)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return deposit
@@ -639,7 +640,7 @@ func (f *Fixtures) QueryGovDeposits(propsalID int, flags ...string) []gov.Deposi
 	cmd := fmt.Sprintf("%s query gov deposits %d %v", f.GaiacliBinary, propsalID, f.Flags())
 	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
 	var deposits []gov.Deposit
-	cdc := app.MakeCodec()
+
 	err := cdc.UnmarshalJSON([]byte(out), &deposits)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return deposits
@@ -653,7 +654,7 @@ func (f *Fixtures) QuerySigningInfo(val string) slashing.ValidatorSigningInfo {
 	cmd := fmt.Sprintf("%s query slashing signing-info %s %s", f.GaiacliBinary, val, f.Flags())
 	res, errStr := tests.ExecuteT(f.T, cmd, "")
 	require.Empty(f.T, errStr)
-	cdc := app.MakeCodec()
+
 	var sinfo slashing.ValidatorSigningInfo
 	err := cdc.UnmarshalJSON([]byte(res), &sinfo)
 	require.NoError(f.T, err)
@@ -665,7 +666,7 @@ func (f *Fixtures) QuerySlashingParams() slashing.Params {
 	cmd := fmt.Sprintf("%s query slashing params %s", f.GaiacliBinary, f.Flags())
 	res, errStr := tests.ExecuteT(f.T, cmd, "")
 	require.Empty(f.T, errStr)
-	cdc := app.MakeCodec()
+
 	var params slashing.Params
 	err := cdc.UnmarshalJSON([]byte(res), &params)
 	require.NoError(f.T, err)
@@ -680,7 +681,7 @@ func (f *Fixtures) QueryRewards(delAddr sdk.AccAddress, flags ...string) distrib
 	cmd := fmt.Sprintf("%s query distribution rewards %s %s", f.GaiacliBinary, delAddr, f.Flags())
 	res, errStr := tests.ExecuteT(f.T, cmd, "")
 	require.Empty(f.T, errStr)
-	cdc := app.MakeCodec()
+
 	var rewards distribution.QueryDelegatorTotalRewardsResponse
 	err := cdc.UnmarshalJSON([]byte(res), &rewards)
 	require.NoError(f.T, err)
@@ -695,7 +696,7 @@ func (f *Fixtures) QueryTotalSupply(flags ...string) (totalSupply sdk.Coins) {
 	cmd := fmt.Sprintf("%s query supply total %s", f.GaiacliBinary, f.Flags())
 	res, errStr := tests.ExecuteT(f.T, cmd, "")
 	require.Empty(f.T, errStr)
-	cdc := app.MakeCodec()
+
 	err := cdc.UnmarshalJSON([]byte(res), &totalSupply)
 	require.NoError(f.T, err)
 	return totalSupply
@@ -706,7 +707,7 @@ func (f *Fixtures) QueryTotalSupplyOf(denom string, flags ...string) sdk.Int {
 	cmd := fmt.Sprintf("%s query supply total %s %s", f.GaiacliBinary, denom, f.Flags())
 	res, errStr := tests.ExecuteT(f.T, cmd, "")
 	require.Empty(f.T, errStr)
-	cdc := app.MakeCodec()
+
 	var supplyOf sdk.Int
 	err := cdc.UnmarshalJSON([]byte(res), &supplyOf)
 	require.NoError(f.T, err)
@@ -783,7 +784,7 @@ func WriteToNewTempFile(t *testing.T, s string) *os.File {
 
 //nolint:deadcode,unused
 func marshalStdTx(t *testing.T, stdTx auth.StdTx) []byte {
-	cdc := app.MakeCodec()
+
 	bz, err := cdc.MarshalBinaryBare(stdTx)
 	require.NoError(t, err)
 	return bz
@@ -791,7 +792,7 @@ func marshalStdTx(t *testing.T, stdTx auth.StdTx) []byte {
 
 //nolint:deadcode,unused
 func unmarshalStdTx(t *testing.T, s string) (stdTx auth.StdTx) {
-	cdc := app.MakeCodec()
+
 	require.Nil(t, cdc.UnmarshalJSON([]byte(s), &stdTx))
 	return
 }

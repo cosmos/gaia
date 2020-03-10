@@ -369,7 +369,7 @@ func TestValidatorsQuery(t *testing.T) {
 	// make sure all the validators were found (order unknown because sorted by operator addr)
 	foundVal := false
 
-	if validators[0].ConsPubKey == valPubKeys[0] {
+	if validators[0].ConsensusPubkey == sdk.MustBech32ifyPubKey(sdk.Bech32PubKeyTypeConsPub, valPubKeys[0]) {
 		foundVal = true
 	}
 
@@ -878,9 +878,9 @@ func TestProposalsQuery(t *testing.T) {
 	deposits = getDeposits(t, port, proposalID2)
 	require.Len(t, deposits, 2)
 	deposit = getDeposit(t, port, proposalID2, addrs[0])
-	require.True(t, deposit.Equals(deposits[0]))
+	require.True(t, deposit.Equal(deposits[0]))
 	deposit = getDeposit(t, port, proposalID2, addrs[1])
-	require.True(t, deposit.Equals(deposits[1]))
+	require.True(t, deposit.Equal(deposits[1]))
 
 	deposits = getDeposits(t, port, proposalID3)
 	require.Len(t, deposits, 1)
@@ -991,10 +991,10 @@ func TestDistributionFlow(t *testing.T) {
 	valAddr := valAddrs[0]
 	operAddr := sdk.AccAddress(valAddr)
 
-	var rewards sdk.DecCoins
+	var outstanding disttypes.ValidatorOutstandingRewards
 	res, body := Request(t, port, "GET", fmt.Sprintf("/distribution/validators/%s/outstanding_rewards", valAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
-	require.NoError(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &rewards))
+	require.NoError(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &outstanding))
 
 	var valDistInfo distrrest.ValidatorDistInfo
 	res, body = Request(t, port, "GET", "/distribution/validators/"+valAddr.String(), nil)
@@ -1016,7 +1016,7 @@ func TestDistributionFlow(t *testing.T) {
 	// Query outstanding rewards changed
 	res, body = Request(t, port, "GET", fmt.Sprintf("/distribution/validators/%s/outstanding_rewards", valAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
-	require.NoError(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &rewards))
+	require.NoError(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &outstanding))
 
 	// Query validator distribution info
 	res, body = Request(t, port, "GET", "/distribution/validators/"+valAddr.String(), nil)
@@ -1025,6 +1025,8 @@ func TestDistributionFlow(t *testing.T) {
 	require.NoError(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &valDistInfo))
 
 	// Query validator's rewards
+	var rewards sdk.DecCoins
+
 	res, body = Request(t, port, "GET", fmt.Sprintf("/distribution/validators/%s/rewards", valAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 	require.NoError(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &rewards))

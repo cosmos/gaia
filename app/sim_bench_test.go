@@ -27,7 +27,7 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 		}
 	}()
 
-	app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue, map[int64]bool{}, interBlockCacheOpt())
+	app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue, map[int64]bool{}, "", interBlockCacheOpt())
 
 	// run randomized simulation
 	_, simParams, simErr := simulation.SimulateFromSeed(
@@ -66,7 +66,7 @@ func BenchmarkInvariants(b *testing.B) {
 		}
 	}()
 
-	app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue, map[int64]bool{}, interBlockCacheOpt())
+	app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue, map[int64]bool{}, "", interBlockCacheOpt())
 
 	// run randomized simulation
 	_, simParams, simErr := simulation.SimulateFromSeed(

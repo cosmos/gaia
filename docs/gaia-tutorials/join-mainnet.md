@@ -35,7 +35,7 @@ You can edit this `moniker` later, in the `~/.gaiad/config/config.toml` file:
 moniker = "<your_custom_moniker>"
 ```
 
-You can edit the `~/.gaiad/config/gaiad.toml` file in order to enable the anti spam mechanism and reject incoming transactions with less than the minimum gas prices:
+You can edit the `~/.gaiad/config/app.toml` file in order to enable the anti spam mechanism and reject incoming transactions with less than the minimum gas prices:
 
 ```
 # This is a TOML config file.
@@ -109,9 +109,21 @@ For mainnet, the recommended `gas-prices` is `0.025uatom`.
 
 ## Set `minimum-gas-prices`
 
-Your full-node keeps unconfirmed transactions in its mempool. In order to protect it from spam, it is better to set a `minimum-gas-prices` that the transaction must meet in order to be accepted in your node's mempool. This parameter can be set in the following file `~/.gaiad/config/gaiad.toml`.
+Your full-node keeps unconfirmed transactions in its mempool. In order to protect it from spam, it is better to set a `minimum-gas-prices` that the transaction must meet in order to be accepted in your node's mempool. This parameter can be set in the following file `~/.gaiad/config/app.toml`.
 
-The initial recommended `min-gas-prices` is `0.025uatom`, but you might want to change it later. 
+The initial recommended `min-gas-prices` is `0.025uatom`, but you might want to change it later.
+
+## Pruning of State
+
+There are three strategies for pruning state, please be aware that this is only for state and not for block storage:
+
+1. `PruneEverything`: This means that all saved states will be pruned other than the current.
+2. `PruneNothing`: This means that all state will be saved and nothing will be deleted.
+3. `PruneSyncable`: This means that only the state of the last 100 and every 10,000th blocks will be saved.
+
+By default every node is in `PruneSyncable` mode. If you would like to change your nodes pruning strategy then you must do so when the node is initialized. For example, if you would like to change your node to the `PruneEverything` mode then you can pass the `---pruning everything` flag when you call `gaiad start`.
+
+> Note: When you are pruning state you will not be able to query the heights that are not in your store.
 
 ## Run a Full Node
 

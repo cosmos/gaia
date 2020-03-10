@@ -211,7 +211,7 @@ func InitTestnet(
 			valPubKeys[i],
 			sdk.NewCoin(sdk.DefaultBondDenom, valTokens),
 			staking.NewDescription(nodeDirName, "", "", "", ""),
-			staking.NewCommissionRates(sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec()),
+			staking.NewCommissionRates(sdk.OneDec(), sdk.OneDec(), sdk.OneDec()),
 			sdk.OneInt(),
 		)
 
@@ -264,7 +264,7 @@ func initGenFiles(
 	genFiles []string, numValidators int,
 ) error {
 
-	appGenState := mbm.DefaultGenesis()
+	appGenState := mbm.DefaultGenesis(cdc)
 
 	// set the accounts in the genesis state
 	var authGenState auth.GenesisState

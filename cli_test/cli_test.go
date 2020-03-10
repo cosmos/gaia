@@ -13,19 +13,30 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/cosmos/gaia/app"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
+	"github.com/cosmos/cosmos-sdk/tests"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth"
+	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
+	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/gov"
+	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/crypto/ed25519"
 	tmtypes "github.com/tendermint/tendermint/types"
 
-	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/tests"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/bank"
-	"github.com/cosmos/cosmos-sdk/x/gov"
-	"github.com/cosmos/cosmos-sdk/x/mint"
+	"github.com/cosmos/gaia/app"
 )
+
+var (
+	cdc      = codecstd.MakeCodec(app.ModuleBasics)
+	appCodec = codecstd.NewAppCodec(cdc)
+)
+
+func init() {
+	authclient.Codec = appCodec
+}
 
 func TestGaiaCLIKeysAddMultisig(t *testing.T) {
 	t.Parallel()
@@ -310,7 +321,6 @@ func TestGaiaCLIGasAuto(t *testing.T) {
 	success, stdout, stderr := f.TxSend(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens), "--gas=auto", "-y")
 	require.NotEmpty(t, stderr)
 	require.True(t, success)
-	cdc := app.MakeCodec()
 	sendResp := sdk.TxResponse{}
 	err := cdc.UnmarshalJSON([]byte(stdout), &sendResp)
 	require.Nil(t, err)
@@ -397,7 +407,6 @@ func TestGaiaCLICreateValidator(t *testing.T) {
 func TestGaiaCLIQueryRewards(t *testing.T) {
 	t.Parallel()
 	f := InitFixtures(t)
-	cdc := app.MakeCodec()
 
 	genesisState := f.GenesisState()
 	inflationMin := sdk.MustNewDecFromStr("1.0")
@@ -653,7 +662,6 @@ func TestGaiaCLISubmitCommunityPoolSpendProposal(t *testing.T) {
 	f := InitFixtures(t)
 
 	// create some inflation
-	cdc := app.MakeCodec()
 	genesisState := f.GenesisState()
 	inflationMin := sdk.MustNewDecFromStr("1.0")
 	var mintData mint.GenesisState
@@ -731,6 +739,10 @@ func TestGaiaCLISubmitCommunityPoolSpendProposal(t *testing.T) {
 }
 
 func TestGaiaCLIQueryTxPagination(t *testing.T) {
+	// Skip until https://github.com/tendermint/tendermint/issues/4432 has been
+	// resolved and included in a release.
+	t.SkipNow()
+
 	t.Parallel()
 	f := InitFixtures(t)
 
@@ -768,7 +780,11 @@ func TestGaiaCLIQueryTxPagination(t *testing.T) {
 	// perPage = 50
 	txsPageFull := f.QueryTxs(1, 50, fmt.Sprintf("message.sender=%s", fooAddr))
 	require.Len(t, txsPageFull.Txs, 30)
-	require.Equal(t, txsPageFull.Txs, append(txsPage1.Txs, txsPage2.Txs...))
+
+	expected := txsPageFull.Txs
+	got := append(txsPage1.Txs, txsPage2.Txs...)
+
+	require.Equal(t, expected, got)
 
 	// perPage = 0
 	f.QueryTxsInvalid(errors.New("ERROR: page must greater than 0"), 0, 50, fmt.Sprintf("message.sender=%s", fooAddr))
@@ -970,8 +986,6 @@ func TestGaiaCLIEncode(t *testing.T) {
 	// start gaiad server
 	proc := f.GDStart()
 	defer proc.Stop(false)
-
-	cdc := app.MakeCodec()
 
 	// Build a testing transaction and write it to disk
 	barAddr := f.KeyAddress(keyBar)
@@ -1240,9 +1254,8 @@ func TestGaiadAddGenesisAccount(t *testing.T) {
 	f.AddGenesisAccount(f.KeyAddress(keyBar), bazCoins)
 
 	genesisState := f.GenesisState()
-	cdc := app.MakeCodec()
 
-	accounts := auth.GetGenesisStateFromAppState(cdc, genesisState).Accounts
+	accounts := auth.GetGenesisStateFromAppState(appCodec, genesisState).Accounts
 	balances := bank.GetGenesisStateFromAppState(cdc, genesisState).Balances
 	balancesSet := make(map[string]sdk.Coins)
 

@@ -3,14 +3,14 @@ version: 2.1
 executors:
   golang:
     docker:
-      - image: circleci/golang:1.13
+      - image: circleci/golang:1.14
     working_directory: /go/src/github.com/cosmos/gaia
   mac:
     macos:
       xcode: "10.3.0"
     working_directory: /Users/distiller/project/src/github.com/cosmos/gaia
     environment:
-      GO_VERSION: "1.13"
+      GO_VERSION: "1.14"
   docs:
     docker:
       - image: tendermintdev/docker-website-deployment
@@ -223,7 +223,7 @@ jobs:
       GOPATH: /home/circleci/.go_workspace/
       GOOS: linux
       GOARCH: amd64
-      GO_VERSION: "1.13"
+      GO_VERSION: "1.14"
     parallelism: 1
     steps:
       - checkout

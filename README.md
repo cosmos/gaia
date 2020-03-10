@@ -11,7 +11,7 @@
 
 This repository hosts `Gaia`, the first implementation of the Cosmos Hub based on the [Cosmos SDK](https://github.com/cosmos/cosmos-sdk).
 
-**Note**: Requires [Go 1.13+](https://golang.org/dl/)
+**Note**: Requires [Go 1.14+](https://golang.org/dl/)
 
 ## Cosmos Hub Mainnet
 

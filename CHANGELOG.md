@@ -37,6 +37,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [v2.0.7] - TBD
 
+### Improvements
+
+* (sdk) Bump SDK version to [v0.37.8](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.37.8).
+
 ## [v2.0.6] - 2020-02-10
 
 ### Improvements

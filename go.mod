@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	github.com/btcsuite/btcd v0.0.0-20190807005414-4063feeff79a // indirect
-	github.com/cosmos/cosmos-sdk v0.34.4-0.20200310122512-01ccc21696ed
+	github.com/cosmos/cosmos-sdk v0.34.4-0.20200311131545-b4127970cae3
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
 	github.com/otiai10/copy v1.0.2

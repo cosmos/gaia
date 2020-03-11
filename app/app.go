@@ -25,7 +25,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/ibc"
-	ibctransfer "github.com/cosmos/cosmos-sdk/x/ibc/20-transfer"
+	transfer "github.com/cosmos/cosmos-sdk/x/ibc/20-transfer"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
@@ -65,17 +65,18 @@ var (
 		upgrade.AppModuleBasic{},
 		evidence.AppModuleBasic{},
 		ibc.AppModuleBasic{},
+		transfer.AppModuleBasic{},
 	)
 
 	// module account permissions
 	maccPerms = map[string][]string{
-		auth.FeeCollectorName:              nil,
-		distr.ModuleName:                   nil,
-		mint.ModuleName:                    {supply.Minter},
-		staking.BondedPoolName:             {supply.Burner, supply.Staking},
-		staking.NotBondedPoolName:          {supply.Burner, supply.Staking},
-		gov.ModuleName:                     {supply.Burner},
-		ibctransfer.GetModuleAccountName(): {supply.Minter, supply.Burner},
+		auth.FeeCollectorName:           nil,
+		distr.ModuleName:                nil,
+		mint.ModuleName:                 {supply.Minter},
+		staking.BondedPoolName:          {supply.Burner, supply.Staking},
+		staking.NotBondedPoolName:       {supply.Burner, supply.Staking},
+		gov.ModuleName:                  {supply.Burner},
+		transfer.GetModuleAccountName(): {supply.Minter, supply.Burner},
 	}
 )
 
@@ -110,6 +111,7 @@ type GaiaApp struct {
 	upgradeKeeper  upgrade.Keeper
 	evidenceKeeper evidence.Keeper
 	ibcKeeper      ibc.Keeper
+	transferKeeper transfer.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -135,7 +137,8 @@ func NewGaiaApp(
 	keys := sdk.NewKVStoreKeys(
 		bam.MainStoreKey, auth.StoreKey, bank.StoreKey, staking.StoreKey,
 		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey,
-		gov.StoreKey, params.StoreKey, ibc.StoreKey, evidence.StoreKey, upgrade.StoreKey,
+		gov.StoreKey, params.StoreKey, ibc.StoreKey, transfer.StoreKey,
+		evidence.StoreKey, upgrade.StoreKey,
 	)
 	tKeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
 
@@ -222,6 +225,12 @@ func NewGaiaApp(
 
 	app.ibcKeeper = ibc.NewKeeper(app.cdc, keys[ibc.StoreKey], stakingKeeper)
 
+	transferCapKey := app.ibcKeeper.PortKeeper.BindPort(bank.ModuleName)
+	app.transferKeeper = transfer.NewKeeper(
+		app.cdc, keys[transfer.StoreKey], transferCapKey,
+		app.ibcKeeper.ChannelKeeper, app.bankKeeper, app.supplyKeeper,
+	)
+
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
 	app.mm = module.NewManager(
@@ -238,6 +247,7 @@ func NewGaiaApp(
 		upgrade.NewAppModule(app.upgradeKeeper),
 		evidence.NewAppModule(app.evidenceKeeper),
 		ibc.NewAppModule(app.ibcKeeper),
+		transfer.NewAppModule(app.transferKeeper),
 	)
 	// During begin block slashing happens after distr.BeginBlocker so that
 	// there is nothing left over in the validator fee pool, so as to keep the

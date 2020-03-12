@@ -214,23 +214,6 @@ contract-tests: setup-transactions
 	@echo "Running Gaia LCD for contract tests"
 	dredd && pkill gaiad
 
-###############################################################################
-###                                Protobuf                                 ###
-###############################################################################
-
-proto-all: proto-gen proto-lint proto-check-breaking
-
-proto-gen:
-	@./scripts/protocgen.sh
-
-proto-lint:
-	@buf check lint --error-format=json
-
-proto-check-breaking:
-	@buf check breaking --against-input '.git#branch=master'
-
-.PHONY: proto-all proto-gen proto-lint proto-check-breaking
-
 .PHONY: all build-linux install install-debug \
 	go-mod-cache draw-deps clean build \
 	setup-transactions setup-contract-tests-data start-gaia run-lcd-contract-tests contract-tests \

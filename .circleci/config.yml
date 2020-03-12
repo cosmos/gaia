@@ -17,11 +17,6 @@ executors:
     environment:
       AWS_REGION: us-east-1
       LEDGER_ENABLED: false
-  protoc:
-    docker:
-      - image: tendermintdev/docker-protoc
-    environment:
-      LEDGER_ENABLED: false
 
 commands:
   make:
@@ -97,20 +92,6 @@ jobs:
           root: "/tmp/bin"
           paths:
             - "."
-
-  proto-lint:
-    executor: protoc
-    steps:
-      - checkout
-      - run:
-          command: make proto-lint
-
-  proto-breakage:
-    executor: protoc
-    steps:
-      - checkout
-      - run:
-          command: make proto-check-breaking
 
   test-sim-nondeterminism:
     executor: golang
@@ -405,8 +386,6 @@ workflows:
       - test-sim-nondeterminism:
           requires:
             - setup-dependencies
-      - proto-lint
-      - proto-breakage
       - test-sim-import-export:
           requires:
             - setup-dependencies

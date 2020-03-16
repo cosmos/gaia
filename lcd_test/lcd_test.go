@@ -297,7 +297,7 @@ func TestEncodeTx(t *testing.T) {
 
 	// check that the transaction decodes as expected
 	var decodedTx auth.StdTx
-	require.Nil(t, cdc.UnmarshalBinaryLengthPrefixed(decodedBytes, &decodedTx))
+	require.Nil(t, cdc.UnmarshalBinaryBare(decodedBytes, &decodedTx))
 	require.Equal(t, memo, decodedTx.Memo)
 }
 

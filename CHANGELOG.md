@@ -49,6 +49,7 @@ Base64 encoded transactions.
   * `raw-bytes` convert raw-bytes to hex
 * (gaiacli) [\#191](https://github.com/cosmos/gaia/pull/191) Add cmd `decode-tx`, decodes a tx from hex or base64
 * (modules) [\#196](https://github.com/cosmos/gaia/pull/196) Integrate the `x/upgrade` module.
+* (gaiad) [\327](https://github.com/cosmos/gaia/pull/327) Add support for state snapshots, including `snapshot-interval` and `snapshot-retention` config options.
 
 ### Client Breaking Changes
 

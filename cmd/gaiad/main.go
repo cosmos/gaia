@@ -3,12 +3,14 @@ package main
 import (
 	"encoding/json"
 	"io"
+	"path/filepath"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/debug"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
 	"github.com/cosmos/cosmos-sdk/server"
+	"github.com/cosmos/cosmos-sdk/snapshots"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
@@ -87,14 +89,29 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 		skipUpgradeHeights[int64(h)] = true
 	}
 
+	home := viper.GetString(flags.FlagHome)
+	snapshotDir := filepath.Join(home, "snapshots")
+	snapshotDB, err := dbm.NewGoLevelDB("metadata", snapshotDir)
+	if err != nil {
+		panic(err)
+	}
+	snapshotStore, err := snapshots.NewStore(snapshotDB, snapshotDir)
+	if err != nil {
+		panic(err)
+	}
+
 	return app.NewGaiaApp(
-		logger, db, traceStore, true, invCheckPeriod, skipUpgradeHeights,
-		viper.GetString(flags.FlagHome),
+		logger, db, traceStore, true, invCheckPeriod, skipUpgradeHeights, home,
 		baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
 		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
 		baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
 		baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),
 		baseapp.SetInterBlockCache(cache),
+		baseapp.SetSnapshotStore(snapshotStore),
+		baseapp.SetSnapshotPolicy(
+			viper.GetUint64(server.FlagSnapshotInterval),
+			viper.GetUint32(server.FlagSnapshotRetention),
+		),
 	)
 }
 

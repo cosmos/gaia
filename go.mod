@@ -20,3 +20,5 @@ require (
 	github.com/tendermint/tm-db v0.5.0
 	golang.org/x/net v0.0.0-20190827160401-ba9fcec4b297 // indirect
 )
+
+replace github.com/cosmos/cosmos-sdk => ../cosmos-sdk

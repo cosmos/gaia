@@ -1116,6 +1116,14 @@ func TestGaiaCLIMultisign(t *testing.T) {
 	defer os.Remove(barSignatureFile.Name())
 
 	// Multisign
+
+	// Does not work in offline mode
+	success, stdout, _ = f.TxMultisign(unsignedTxFile.Name(), keyFooBarBaz, []string{
+		fooSignatureFile.Name(), barSignatureFile.Name()}, "--offline")
+	require.Contains(t, "couldn't verify signature", stdout)
+	require.False(t, success)
+
+	// Success multisign
 	success, stdout, _ = f.TxMultisign(unsignedTxFile.Name(), keyFooBarBaz, []string{
 		fooSignatureFile.Name(), barSignatureFile.Name()})
 	require.True(t, success)

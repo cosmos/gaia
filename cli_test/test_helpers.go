@@ -353,7 +353,7 @@ func (f *Fixtures) TxMultisign(fileName, name string, signaturesFiles []string,
 	cmd := fmt.Sprintf("%s tx multisign --keyring-backend=test %v %s %s %s", f.GaiacliBinary, f.Flags(),
 		fileName, name, strings.Join(signaturesFiles, " "),
 	)
-	return executeWriteRetStdStreams(f.T, cmd)
+	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags))
 }
 
 //___________________________________________________________________________________

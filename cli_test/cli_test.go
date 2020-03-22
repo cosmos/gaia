@@ -891,6 +891,11 @@ func TestGaiaCLISendGenerateSignAndBroadcast(t *testing.T) {
 	require.Contains(t, stderr, "required flag(s) \"account-number\", \"sequence\" not set")
 	require.False(t, success)
 
+	// But works offline if we set account number and sequence
+	success, _, _ = f.TxSign(keyFoo, unsignedTxFile.Name(), "--offline", "--account-number", "1", "--sequence", "1")
+	require.True(t, success)
+
+	// Sign transaction
 	success, stdout, _ = f.TxSign(keyFoo, unsignedTxFile.Name())
 	require.True(t, success)
 	msg = unmarshalStdTx(t, stdout)

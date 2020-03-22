@@ -233,8 +233,15 @@ func TestGaiaCLISend(t *testing.T) {
 	startTokens := sdk.TokensFromConsensusPower(50)
 	require.Equal(t, startTokens, f.QueryBalances(fooAddr).AmountOf(denom))
 
-	// Send some tokens from one account to the other
 	sendTokens := sdk.TokensFromConsensusPower(10)
+
+	// It does not allow to send in offline mode
+	success, _, stdErr := f.TxSend(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens), "-y", "--offline")
+	require.Contains(t, stdErr, "no RPC client is defined in offline mode")
+	require.False(f.T, success)
+	tests.WaitForNextNBlocksTM(1, f.Port)
+
+	// Send some tokens from one account to the other
 	f.TxSend(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens), "-y")
 	tests.WaitForNextNBlocksTM(1, f.Port)
 
@@ -243,7 +250,7 @@ func TestGaiaCLISend(t *testing.T) {
 	require.Equal(t, startTokens.Sub(sendTokens), f.QueryBalances(fooAddr).AmountOf(denom))
 
 	// Test --dry-run
-	success, _, _ := f.TxSend(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens), "--dry-run")
+	success, _, _ = f.TxSend(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens), "--dry-run")
 	require.True(t, success)
 
 	// Test --generate-only

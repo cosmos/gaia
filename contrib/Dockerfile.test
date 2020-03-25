@@ -33,4 +33,5 @@ COPY ./contrib/single-node.sh .
 
 EXPOSE 26657
 
+ENTRYPOINT [ "./single-node.sh" ]
 # NOTE: to run this image, docker run -d -p 26657:26657 ./single-node.sh {{chain_id}} {{genesis_account}}

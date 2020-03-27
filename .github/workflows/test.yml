@@ -1,25 +1,9 @@
 name: Build & Test
-on: [pull_request, push]
+on: [pull_request]
 jobs:
-  unit-test:
+  integration-tests:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, 'skip-sims')"
-    steps:
-      - uses: actions/setup-go@v1
-        id: go
-        with:
-          go-version: 1.13
-      - name: Setup env for GO
-        #  this is only used until the setup-go action is updated
-        run: |
-          echo "::set-env name=GOPATH::$(go env GOPATH)"
-          echo "::add-path::$(go env GOPATH)/bin"
-        shell: bash
-      - uses: actions/checkout@v2
-      - name: Unit_test
-        run: make test
-
-  integration-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-go@v1

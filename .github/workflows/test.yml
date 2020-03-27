@@ -4,7 +4,6 @@ jobs:
   integration-tests:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, 'skip-sims')"
-    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-go@v1
         id: go

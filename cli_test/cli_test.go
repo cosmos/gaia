@@ -1011,7 +1011,7 @@ func TestGaiaCLIEncode(t *testing.T) {
 
 	// Check that the transaction decodes as epxceted
 	var decodedTx auth.StdTx
-	require.Nil(t, cdc.UnmarshalBinaryLengthPrefixed(decodedBytes, &decodedTx))
+	require.Nil(t, cdc.UnmarshalBinaryBare(decodedBytes, &decodedTx))
 	require.Equal(t, "deadbeef", decodedTx.Memo)
 }
 

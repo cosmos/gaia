@@ -27,6 +27,7 @@ sed -i 's/"leveldb"/"goleveldb"/g' ~/.gaiad/config/config.toml
 sed -i 's#"tcp://127.0.0.1:26657"#"tcp://0.0.0.0:26657"#g' ~/.gaiad/config/config.toml
 sed -i 's/timeout_commit = "5s"/timeout_commit = "1s"/g' ~/.gaiad/config/config.toml
 sed -i 's/timeout_propose = "3s"/timeout_propose = "1s"/g' ~/.gaiad/config/config.toml
+sed -i 's/index_all_keys = false/index_all_keys = true/g' ~/.gaiad/config/config.toml
 
 # Start the gaia
 gaiad start --pruning=nothing

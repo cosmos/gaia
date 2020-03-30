@@ -128,11 +128,6 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 				return fmt.Errorf("cannot add account at existing address %s", addr)
 			}
 
-			balance := bank.Balance{Address: addr, Coins: coins}
-
-			bankGenState.Balances = append(bankGenState.Balances, balance)
-			bankGenState.Balances = bank.SanitizeGenesisBalances(bankGenState.Balances)
-
 			// Add the new account to the set of genesis accounts and sanitize the
 			// accounts afterwards.
 			authGenState.Accounts = append(authGenState.Accounts, genAccount)

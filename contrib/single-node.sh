@@ -1,5 +1,13 @@
 #!/bin/sh
 
+CMD=$1
+if [ "$CMD" = single-node ]; then
+  # Yes, we really want to start the single node.
+  # Just ignore this command and parse arguments
+  # as usual.
+  shift
+fi
+
 CHAINID=$1
 GENACCT=$2
 

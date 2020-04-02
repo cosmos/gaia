@@ -22,7 +22,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clientkeys "github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/crypto/keys"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -165,7 +165,7 @@ func InitTestnet(
 		memo := fmt.Sprintf("%s@%s:26656", nodeIDs[i], ip)
 		genFiles = append(genFiles, config.GenesisFile())
 
-		kb, err := keys.NewKeyring(
+		kb, err := keyring.NewKeyring(
 			sdk.KeyringServiceName(),
 			viper.GetString(flags.FlagKeyringBackend),
 			clientDir,

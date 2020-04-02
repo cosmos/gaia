@@ -16,8 +16,9 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/crypto/keys"
-	"github.com/cosmos/cosmos-sdk/crypto/keys/mintkey"
+	mintkey "github.com/cosmos/cosmos-sdk/crypto"
+	mintkey "github.com/cosmos/cosmos-sdk/crypto/"
+	keys "github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/tests"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"

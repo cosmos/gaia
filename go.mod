@@ -4,7 +4,7 @@ go 1.14
 
 require (
 	github.com/btcsuite/btcd v0.0.0-20190807005414-4063feeff79a // indirect
-	github.com/cosmos/cosmos-sdk v0.34.4-0.20200330183050-2a7a408d358e
+	github.com/cosmos/cosmos-sdk v0.34.4-0.20200403145946-22422c6de1d8
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
 	github.com/otiai10/copy v1.1.1
@@ -17,6 +17,6 @@ require (
 	github.com/stretchr/testify v1.5.1
 	github.com/tendermint/go-amino v0.15.1
 	github.com/tendermint/tendermint v0.33.2
-	github.com/tendermint/tm-db v0.5.0
+	github.com/tendermint/tm-db v0.5.1
 	golang.org/x/net v0.0.0-20190827160401-ba9fcec4b297 // indirect
 )

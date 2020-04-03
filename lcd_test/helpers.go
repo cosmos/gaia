@@ -17,7 +17,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/lcd"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
-	crkeys "github.com/cosmos/cosmos-sdk/crypto/keys"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/cosmos/cosmos-sdk/tests"
@@ -380,23 +380,23 @@ func registerRoutes(rs *lcd.RestServer) {
 
 // CreateAddr adds an address to the key store and returns an address and seed.
 // It also requires that the key could be created.
-func CreateAddr(name string, kb crkeys.Keybase) (sdk.AccAddress, string, error) {
+func CreateAddr(name string, kb keyring.Keybase) (sdk.AccAddress, string, error) {
 	var (
 		err  error
-		info crkeys.Info
+		info keyring.Info
 		seed string
 	)
 
-	info, seed, err = kb.CreateMnemonic(name, crkeys.English, keys.DefaultKeyPass, crkeys.Secp256k1)
+	info, seed, err = kb.CreateMnemonic(name, keyring.English, keys.DefaultKeyPass, keyring.Secp256k1)
 	return sdk.AccAddress(info.GetPubKey().Address()), seed, err
 }
 
 // CreateAddrs adds multiple address to the key store and returns the addresses and associated seeds in lexographical order by address.
 // It also requires that the keys could be created.
-func CreateAddrs(kb crkeys.Keybase, numAddrs int) (addrs []sdk.AccAddress, seeds, names []string, errs []error) {
+func CreateAddrs(kb keyring.Keybase, numAddrs int) (addrs []sdk.AccAddress, seeds, names []string, errs []error) {
 	var (
 		err  error
-		info crkeys.Info
+		info keyring.Info
 		seed string
 	)
 
@@ -404,7 +404,7 @@ func CreateAddrs(kb crkeys.Keybase, numAddrs int) (addrs []sdk.AccAddress, seeds
 
 	for i := 0; i < numAddrs; i++ {
 		name := fmt.Sprintf("test%d", i)
-		info, seed, err = kb.CreateMnemonic(name, crkeys.English, keys.DefaultKeyPass, crkeys.Secp256k1)
+		info, seed, err = kb.CreateMnemonic(name, keyring.English, keys.DefaultKeyPass, keyring.Secp256k1)
 		if err != nil {
 			errs = append(errs, err)
 		}

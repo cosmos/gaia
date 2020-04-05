@@ -17,7 +17,7 @@ VOLUME [ /gaiad ]
 WORKDIR /gaiad
 EXPOSE 26656 26657
 ENTRYPOINT ["/usr/bin/wrapper.sh"]
-CMD ["start"]
+CMD ["start", "--snapshot-interval", "1", "--snapshot-retention", "10", "--log_level", "main:info,state:info,statesync:info,*:error"]
 STOPSIGNAL SIGTERM
 
 COPY wrapper.sh /usr/bin/wrapper.sh

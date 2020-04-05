@@ -76,8 +76,8 @@ ifeq ($(OS),Windows_NT)
 	go build -mod=readonly $(BUILD_FLAGS) -o build/gaiad.exe ./cmd/gaiad
 	go build -mod=readonly $(BUILD_FLAGS) -o build/gaiacli.exe ./cmd/gaiacli
 else
-	go build -mod=readonly $(BUILD_FLAGS) -o build/gaiad ./cmd/gaiad
-	go build -mod=readonly $(BUILD_FLAGS) -o build/gaiacli ./cmd/gaiacli
+	go build $(BUILD_FLAGS) -o build/gaiad ./cmd/gaiad
+	go build $(BUILD_FLAGS) -o build/gaiacli ./cmd/gaiacli
 endif
 
 build-linux: go.sum
@@ -185,7 +185,7 @@ build-docker-gaiadnode:
 # Run a 4-node testnet locally
 localnet-start: build-linux localnet-stop
 	@if ! [ -f build/node0/gaiad/config/genesis.json ]; then docker run --rm -v $(CURDIR)/build:/gaiad:Z tendermint/gaiadnode testnet --v 4 -o . --starting-ip-address 192.168.10.2 --keyring-backend=test ; fi
-	docker-compose up -d
+	docker-compose up gaiadnode0 gaiadnode1 gaiadnode2
 
 # Stop testnet
 localnet-stop:

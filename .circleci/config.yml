@@ -3,24 +3,19 @@ version: 2.1
 executors:
   golang:
     docker:
-      - image: circleci/golang:1.13
+      - image: circleci/golang:1.14
     working_directory: /go/src/github.com/cosmos/gaia
   mac:
     macos:
       xcode: "10.3.0"
     working_directory: /Users/distiller/project/src/github.com/cosmos/gaia
     environment:
-      GO_VERSION: "1.13"
+      GO_VERSION: "1.14"
   docs:
     docker:
       - image: tendermintdev/docker-website-deployment
     environment:
       AWS_REGION: us-east-1
-      LEDGER_ENABLED: false
-  protoc:
-    docker:
-      - image: tendermintdev/docker-protoc
-    environment:
       LEDGER_ENABLED: false
 
 commands:
@@ -98,67 +93,12 @@ jobs:
           paths:
             - "."
 
-  proto-lint:
-    executor: protoc
-    steps:
-      - checkout
-      - run:
-          command: make proto-lint
-
-  proto-breakage:
-    executor: protoc
-    steps:
-      - checkout
-      - run:
-          command: make proto-check-breaking
-
-  test-sim-nondeterminism:
-    executor: golang
-    steps:
-      - make:
-          target: test-sim-nondeterminism
-          description: "Test Gaia non-determinism simulations"
-
-  test-sim-import-export:
-    executor: golang
-    steps:
-      - make:
-          target: test-sim-import-export
-          description: "Test Gaia import/export simulation"
-
-  test-sim-after-import:
-    executor: golang
-    steps:
-      - make:
-          target: test-sim-after-import
-          description: "Test Gaia simulation after importing state"
-
-  test-sim-multi-seed-short:
-    executor: golang
-    steps:
-      - make:
-          target: test-sim-multi-seed-short
-          description: "Test Gaia multi-seed simulation (short-lived)"
-
   test-sim-multi-seed-long:
     executor: golang
     steps:
       - make:
           target: test-sim-multi-seed-long
           description: "Test Gaia multi-seed simulation (long-lived)"
-
-  integration-tests:
-    executor: golang
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - go-mod-v1-{{ checksum "go.sum" }}
-      - run:
-          name: Test CLI integration
-          command: |
-            export BUILDDIR=`pwd`/build
-            make test-build
 
   test-cover:
     executor: golang
@@ -223,7 +163,7 @@ jobs:
       GOPATH: /home/circleci/.go_workspace/
       GOOS: linux
       GOARCH: amd64
-      GO_VERSION: "1.13"
+      GO_VERSION: "1.14"
     parallelism: 1
     steps:
       - checkout
@@ -380,7 +320,6 @@ workflows:
             branches:
               only:
                 - master
-                - develop
       - deploy-docs:
           context: gaia-docs-deployment-staging
           filters:
@@ -399,23 +338,6 @@ workflows:
             tags:
               only:
                 - /^v.*/
-      - integration-tests:
-          requires:
-            - setup-dependencies
-      - test-sim-nondeterminism:
-          requires:
-            - setup-dependencies
-      - proto-lint
-      - proto-breakage
-      - test-sim-import-export:
-          requires:
-            - setup-dependencies
-      - test-sim-after-import:
-          requires:
-            - setup-dependencies
-      - test-sim-multi-seed-short:
-          requires:
-            - setup-dependencies
       - test-sim-multi-seed-long:
           requires:
             - setup-dependencies

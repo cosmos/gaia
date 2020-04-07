@@ -618,12 +618,7 @@ func TestGaiaCLISubmitParamChangeProposal(t *testing.T) {
       "value": 105
     }
   ],
-  "deposit": [
-    {
-      "denom": "stake",
-      "amount": "%s"
-    }
-  ]
+  "deposit": "%sstake"
 }
 `, proposalTokens.String())
 
@@ -694,20 +689,10 @@ func TestGaiaCLISubmitCommunityPoolSpendProposal(t *testing.T) {
   "title": "Community Pool Spend",
   "description": "Spend from community pool",
   "recipient": "%s",
-  "amount": [
-    {
-      "denom": "%s",
-      "amount": "1"
-    }
-  ],
-  "deposit": [
-    {
-      "denom": "%s",
-      "amount": "%s"
-    }
-  ]
+  "amount": "1%s",
+  "deposit": "%s%s"
 }
-`, fooAddr, sdk.DefaultBondDenom, sdk.DefaultBondDenom, proposalTokens.String())
+`, fooAddr, sdk.DefaultBondDenom, proposalTokens.String(), sdk.DefaultBondDenom)
 	proposalFile := WriteToNewTempFile(t, proposal)
 
 	// create the param change proposal

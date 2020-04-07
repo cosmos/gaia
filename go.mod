@@ -1,6 +1,6 @@
 module github.com/cosmos/gaia
 
-go 1.13
+go 1.14
 
 require (
 	github.com/btcsuite/btcd v0.0.0-20190807005414-4063feeff79a // indirect

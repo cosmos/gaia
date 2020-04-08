@@ -26,6 +26,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/ibc"
+	port "github.com/cosmos/cosmos-sdk/x/ibc/05-port"
 	transfer "github.com/cosmos/cosmos-sdk/x/ibc/20-transfer"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/params"
@@ -99,21 +100,23 @@ type GaiaApp struct {
 	subspaces map[string]params.Subspace
 
 	// keepers
-	accountKeeper    auth.AccountKeeper
-	bankKeeper       bank.Keeper
-	supplyKeeper     supply.Keeper
-	stakingKeeper    staking.Keeper
-	capabilityKeeper *capability.Keeper
-	slashingKeeper   slashing.Keeper
-	mintKeeper       mint.Keeper
-	distrKeeper      distr.Keeper
-	govKeeper        gov.Keeper
-	crisisKeeper     crisis.Keeper
-	paramsKeeper     params.Keeper
-	upgradeKeeper    upgrade.Keeper
-	evidenceKeeper   evidence.Keeper
-	ibcKeeper        ibc.Keeper
-	transferKeeper   transfer.Keeper
+	accountKeeper        auth.AccountKeeper
+	bankKeeper           bank.Keeper
+	supplyKeeper         supply.Keeper
+	stakingKeeper        staking.Keeper
+	capabilityKeeper     *capability.Keeper
+	slashingKeeper       slashing.Keeper
+	mintKeeper           mint.Keeper
+	distrKeeper          distr.Keeper
+	govKeeper            gov.Keeper
+	crisisKeeper         crisis.Keeper
+	paramsKeeper         params.Keeper
+	upgradeKeeper        upgrade.Keeper
+	evidenceKeeper       evidence.Keeper
+	ibcKeeper            ibc.Keeper
+	transferKeeper       transfer.Keeper
+	scopedIBCKeeper      capability.ScopedKeeper
+	scopedTransferKeeper capability.ScopedKeeper
 
 	// the module manager
 	mm *module.Manager
@@ -230,12 +233,22 @@ func NewGaiaApp(
 		staking.NewMultiStakingHooks(app.distrKeeper.Hooks(), app.slashingKeeper.Hooks()),
 	)
 
+	// create IBC keeper
 	app.ibcKeeper = ibc.NewKeeper(app.cdc, keys[ibc.StoreKey], stakingKeeper, scopedIBCKeeper)
 
+	// create transfer keeper
 	app.transferKeeper = transfer.NewKeeper(
 		app.cdc, keys[transfer.StoreKey],
 		app.ibcKeeper.ChannelKeeper, app.bankKeeper, app.supplyKeeper, scopedTransferKeeper,
 	)
+
+	// instantiate the module to use it in the router
+	transferModule := transfer.NewAppModule(app.transferKeeper)
+
+	// create the IBC router and add the transfer route to it
+	ibcRouter := port.NewRouter()
+	ibcRouter.AddRoute(transfer.ModuleName, transferModule)
+	app.ibcKeeper.SetRouter(ibcRouter)
 
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
@@ -253,7 +266,7 @@ func NewGaiaApp(
 		upgrade.NewAppModule(app.upgradeKeeper),
 		evidence.NewAppModule(app.evidenceKeeper),
 		ibc.NewAppModule(app.ibcKeeper),
-		transfer.NewAppModule(app.transferKeeper),
+		transferModule,
 	)
 	// During begin block slashing happens after distr.BeginBlocker so that
 	// there is nothing left over in the validator fee pool, so as to keep the

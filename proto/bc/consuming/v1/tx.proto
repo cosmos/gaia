@@ -1,0 +1,32 @@
+syntax = "proto3";
+package bc.consuming.v1;
+
+option go_package = "github.com/bandprotocol/band-consumer/x/consuming/types";
+
+import "gogoproto/gogo.proto";
+
+// Msg defines the consuming Msg service.
+service Msg {
+  // Request defines a rpc handler method for MsgRequestData.
+  rpc RequestData(MsgRequestData) returns (MsgRequestDataResponse);
+}
+
+// MsgRequestData defines a SDK message for requesting data from BandChain.
+message MsgRequestData {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  int64 oracle_script_id = 1 [
+    (gogoproto.customname) = "OracleScriptID",
+    (gogoproto.moretags) = "yaml:\"oracle_script_id\""
+  ];
+  string source_channel = 2
+      [ (gogoproto.moretags) = "yaml:\"source_channel\"" ];
+  bytes calldata = 3;
+  int64 ask_count = 4 [ (gogoproto.moretags) = "yaml:\"ask_count\"" ];
+  int64 min_count = 5 [ (gogoproto.moretags) = "yaml:\"min_count\"" ];
+  string sender = 6;
+}
+
+// MsgRequestDataResponse defines the Msg/RequestData response type.
+message MsgRequestDataResponse {}

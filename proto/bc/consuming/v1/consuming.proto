@@ -1,0 +1,4 @@
+syntax = "proto3";
+package bc.consuming.v1;
+
+option go_package = "github.com/bandprotocol/band-consumer/x/consuming/types";

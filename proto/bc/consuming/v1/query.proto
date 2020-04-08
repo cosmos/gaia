@@ -1,0 +1,24 @@
+syntax = "proto3";
+package bc.consuming.v1;
+
+option go_package = "github.com/bandprotocol/band-consumer/x/consuming/types";
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+
+// Query provides defines the gRPC querier service.
+service Query {
+  // Request defines a rpc handler method for MsgRequestData.
+  rpc Result(QueryResultRequest) returns (QueryResultResponse) {
+    option (google.api.http).get = "/consuming/v1/result/{request_id}";
+  }
+}
+
+// QueryResultRequest is the request type for the Query/Result RPC method
+message QueryResultRequest { int64 request_id = 1; }
+
+// QueryResultResponse is the response type for the Query/Result RPC method
+message QueryResultResponse {
+  // pagination defines an optional pagination for the request.
+  bytes result = 1;
+}

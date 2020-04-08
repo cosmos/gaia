@@ -90,6 +90,10 @@ import (
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
+
+	"github.com/bandprotocol/band-consumer/x/consuming"
+	consumingkeeper "github.com/bandprotocol/band-consumer/x/consuming/keeper"
+	consumingtypes "github.com/bandprotocol/band-consumer/x/consuming/types"
 )
 
 const appName = "BandConsumerApp"
@@ -120,6 +124,7 @@ var (
 		evidence.AppModuleBasic{},
 		transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
+		consuming.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -175,6 +180,7 @@ type BandConsumerApp struct { // nolint: golint
 	IBCKeeper        *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	EvidenceKeeper   evidencekeeper.Keeper
 	TransferKeeper   ibctransferkeeper.Keeper
+	ConsumingKeeper  consumingkeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -215,7 +221,7 @@ func NewBandConsumerApp(
 		authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey,
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
-		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
+		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey, consumingtypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -295,6 +301,11 @@ func NewBandConsumerApp(
 		app.IBCKeeper.ChannelKeeper, &app.IBCKeeper.PortKeeper,
 		app.AccountKeeper, app.BankKeeper, scopedTransferKeeper,
 	)
+
+	app.ConsumingKeeper = consumingkeeper.NewKeeper(
+		appCodec, keys[consumingtypes.StoreKey], app.IBCKeeper.ChannelKeeper, app.ScopedIBCKeeper,
+	)
+
 	transferModule := transfer.NewAppModule(app.TransferKeeper)
 
 	// Create static IBC router, add transfer route, then set and seal it
@@ -341,6 +352,7 @@ func NewBandConsumerApp(
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
+		consuming.NewAppModule(app.ConsumingKeeper),
 		transferModule,
 	)
 

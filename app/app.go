@@ -320,6 +320,9 @@ func NewGaiaApp(
 		}
 	}
 
+	app.scopedIBCKeeper = scopedIBCKeeper
+	app.scopedTransferKeeper = scopedTransferKeeper
+
 	return app
 }
 

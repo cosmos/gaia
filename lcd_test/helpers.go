@@ -10,6 +10,22 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/pkg/errors"
+	"github.com/spf13/viper"
+	tmcfg "github.com/tendermint/tendermint/config"
+	"github.com/tendermint/tendermint/crypto"
+	"github.com/tendermint/tendermint/crypto/ed25519"
+	"github.com/tendermint/tendermint/crypto/secp256k1"
+	"github.com/tendermint/tendermint/libs/cli"
+	"github.com/tendermint/tendermint/libs/log"
+	nm "github.com/tendermint/tendermint/node"
+	"github.com/tendermint/tendermint/p2p"
+	pvm "github.com/tendermint/tendermint/privval"
+	"github.com/tendermint/tendermint/proxy"
+	tmrpc "github.com/tendermint/tendermint/rpc/lib/server"
+	tmtypes "github.com/tendermint/tendermint/types"
+	dbm "github.com/tendermint/tm-db"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -17,6 +33,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/lcd"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
+	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/store"
@@ -33,21 +50,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
-	"github.com/pkg/errors"
-	"github.com/spf13/viper"
-	tmcfg "github.com/tendermint/tendermint/config"
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/ed25519"
-	"github.com/tendermint/tendermint/crypto/secp256k1"
-	"github.com/tendermint/tendermint/libs/cli"
-	"github.com/tendermint/tendermint/libs/log"
-	nm "github.com/tendermint/tendermint/node"
-	"github.com/tendermint/tendermint/p2p"
-	pvm "github.com/tendermint/tendermint/privval"
-	"github.com/tendermint/tendermint/proxy"
-	tmrpc "github.com/tendermint/tendermint/rpc/lib/server"
-	tmtypes "github.com/tendermint/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/gaia/app"
 )
@@ -380,20 +382,20 @@ func registerRoutes(rs *lcd.RestServer) {
 
 // CreateAddr adds an address to the key store and returns an address and seed.
 // It also requires that the key could be created.
-func CreateAddr(name string, kb keyring.Keybase) (sdk.AccAddress, string, error) {
+func CreateAddr(name string, kb keyring.Keyring) (sdk.AccAddress, string, error) {
 	var (
 		err  error
 		info keyring.Info
 		seed string
 	)
 
-	info, seed, err = kb.CreateMnemonic(name, keyring.English, keys.DefaultKeyPass, keyring.Secp256k1)
+	info, seed, err = kb.NewMnemonic(name, keyring.English, keys.DefaultKeyPass, hd.Secp256k1)
 	return sdk.AccAddress(info.GetPubKey().Address()), seed, err
 }
 
 // CreateAddrs adds multiple address to the key store and returns the addresses and associated seeds in lexographical order by address.
 // It also requires that the keys could be created.
-func CreateAddrs(kb keyring.Keybase, numAddrs int) (addrs []sdk.AccAddress, seeds, names []string, errs []error) {
+func CreateAddrs(kb keyring.Keyring, numAddrs int) (addrs []sdk.AccAddress, seeds, names []string, errs []error) {
 	var (
 		err  error
 		info keyring.Info
@@ -404,7 +406,7 @@ func CreateAddrs(kb keyring.Keybase, numAddrs int) (addrs []sdk.AccAddress, seed
 
 	for i := 0; i < numAddrs; i++ {
 		name := fmt.Sprintf("test%d", i)
-		info, seed, err = kb.CreateMnemonic(name, keyring.English, keys.DefaultKeyPass, keyring.Secp256k1)
+		info, seed, err = kb.NewMnemonic(name, keyring.English, keys.DefaultKeyPass, hd.Secp256k1)
 		if err != nil {
 			errs = append(errs, err)
 		}

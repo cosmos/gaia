@@ -45,17 +45,15 @@ func TestGaiaCLIKeysAddMultisig(t *testing.T) {
 	// key names order does not matter
 	f.KeysAdd("msig1", "--multisig-threshold=2",
 		fmt.Sprintf("--multisig=%s,%s", keyBar, keyBaz))
-	f.KeysAdd("msig2", "--multisig-threshold=2",
+	f.KeysAddFail("msig2", "--multisig-threshold=2",
 		fmt.Sprintf("--multisig=%s,%s", keyBaz, keyBar))
-	require.Equal(t, f.KeysShow("msig1").Address, f.KeysShow("msig2").Address)
-
 	f.KeysAdd("msig3", "--multisig-threshold=2",
 		fmt.Sprintf("--multisig=%s,%s", keyBar, keyBaz),
 		"--nosort")
-	f.KeysAdd("msig4", "--multisig-threshold=2",
+	f.KeysAddFail("msig4", "--multisig-threshold=2",
 		fmt.Sprintf("--multisig=%s,%s", keyBaz, keyBar),
 		"--nosort")
-	require.NotEqual(t, f.KeysShow("msig3").Address, f.KeysShow("msig4").Address)
+	require.NotEqual(t, f.KeysShow("msig1").Address, f.KeysShow("msig3").Address)
 
 	// Cleanup testing directories
 	f.Cleanup()

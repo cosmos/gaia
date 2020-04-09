@@ -283,6 +283,12 @@ func (f *Fixtures) KeysAdd(name string, flags ...string) {
 	executeWriteCheckErr(f.T, addFlags(cmd, flags))
 }
 
+func (f *Fixtures) KeysAddFail(name string, flags ...string) {
+	cmd := fmt.Sprintf("%s keys add --keyring-backend=test --home=%s %s", f.GaiacliBinary,
+		f.GaiacliHome, name)
+	executeWriteExpectErr(f.T, addFlags(cmd, flags))
+}
+
 // KeysAddRecover prepares gaiacli keys add --recover
 func (f *Fixtures) KeysAddRecover(name, mnemonic string, flags ...string) (exitSuccess bool, stdout, stderr string) {
 	cmd := fmt.Sprintf("%s keys add --keyring-backend=test --home=%s --recover %s",
@@ -723,6 +729,10 @@ func (f *Fixtures) QueryTotalSupplyOf(denom string, flags ...string) sdk.Int {
 
 //___________________________________________________________________________________
 // executors
+
+func executeWriteExpectErr(t *testing.T, cmdStr string, writes ...string) {
+	require.False(t, executeWrite(t, cmdStr, writes...))
+}
 
 func executeWriteCheckErr(t *testing.T, cmdStr string, writes ...string) {
 	require.True(t, executeWrite(t, cmdStr, writes...))

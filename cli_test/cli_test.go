@@ -13,6 +13,10 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+	"github.com/tendermint/tendermint/crypto/ed25519"
+	tmtypes "github.com/tendermint/tendermint/types"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
 	"github.com/cosmos/cosmos-sdk/tests"
@@ -22,9 +26,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/mint"
-	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/crypto/ed25519"
-	tmtypes "github.com/tendermint/tendermint/types"
 
 	"github.com/cosmos/gaia/app"
 )
@@ -45,9 +46,13 @@ func TestGaiaCLIKeysAddMultisig(t *testing.T) {
 	// key names order does not matter
 	f.KeysAdd("msig1", "--multisig-threshold=2",
 		fmt.Sprintf("--multisig=%s,%s", keyBar, keyBaz))
+	ke1Address1 := f.KeysShow("msig1").Address
+	f.KeysDelete("msig1")
+
 	f.KeysAdd("msig2", "--multisig-threshold=2",
 		fmt.Sprintf("--multisig=%s,%s", keyBaz, keyBar))
-	require.Equal(t, f.KeysShow("msig1").Address, f.KeysShow("msig2").Address)
+	require.Equal(t, ke1Address1, f.KeysShow("msig2").Address)
+	f.KeysDelete("msig2")
 
 	f.KeysAdd("msig3", "--multisig-threshold=2",
 		fmt.Sprintf("--multisig=%s,%s", keyBar, keyBaz),

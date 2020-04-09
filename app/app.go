@@ -113,7 +113,7 @@ type GaiaApp struct {
 	paramsKeeper         params.Keeper
 	upgradeKeeper        upgrade.Keeper
 	evidenceKeeper       evidence.Keeper
-	ibcKeeper            ibc.Keeper
+	ibcKeeper            *ibc.Keeper
 	transferKeeper       transfer.Keeper
 	scopedIBCKeeper      capability.ScopedKeeper
 	scopedTransferKeeper capability.ScopedKeeper
@@ -312,7 +312,7 @@ func NewGaiaApp(
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-	app.SetAnteHandler(ante.NewAnteHandler(app.accountKeeper, app.supplyKeeper, app.ibcKeeper, ante.DefaultSigVerificationGasConsumer))
+	app.SetAnteHandler(ante.NewAnteHandler(app.accountKeeper, app.supplyKeeper, *app.ibcKeeper, ante.DefaultSigVerificationGasConsumer))
 	app.SetEndBlocker(app.EndBlocker)
 
 	if loadLatest {

@@ -43,8 +43,8 @@ func init() {
 	version.Version = os.Getenv("VERSION")
 }
 
-func newKeybase() (keyring.Keybase, error) {
-	return keyring.NewKeyring(
+func newKeybase() (keyring.Keyring, error) {
+	return keyring.New(
 		sdk.KeyringServiceName(),
 		viper.GetString(flags.FlagKeyringBackend),
 		InitClientHome(""),

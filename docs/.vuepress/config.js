@@ -58,6 +58,7 @@ module.exports = {
       }
     },
     footer: {
+      questionsText: "Chat with Cosmos developers on [Discord](https://discord.gg/cr7N47p) or reach out on the [SDK Developer Forum](https://forum.cosmos.network/) to learn more.",
       logo: "/logo-bw.svg",
       textLink: {
         text: "cosmos.network",
@@ -119,10 +120,6 @@ module.exports = {
             {
               title: "Forum",
               url: "https://forum.cosmos.network/"
-            },
-            {
-              title: "Chat",
-              url: "https://riot.im/app/#/room/#cosmos-sdk:matrix.org"
             }
           ]
         },
@@ -144,12 +141,12 @@ module.exports = {
     }
   },
   plugins: [
-    // [
-    //   "@vuepress/google-analytics",
-    //   {
-    //     ga: "UA-51029217-12"
-    //   }
-    // ],
+    [
+      "@vuepress/google-analytics",
+      {
+        ga: "UA-51029217-12"
+      }
+    ],
     [
       "sitemap",
       {

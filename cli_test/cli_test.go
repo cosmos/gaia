@@ -49,7 +49,7 @@ func TestGaiaCLIKeysAddMultisig(t *testing.T) {
 	f.KeysAddFail("msig2", "--multisig-threshold=2",
 		fmt.Sprintf("--multisig=%s,%s", keyBaz, keyBar))
 
-  f.KeysAdd("msig3", "--multisig-threshold=2",
+	f.KeysAdd("msig3", "--multisig-threshold=2",
 		fmt.Sprintf("--multisig=%s,%s", keyBar, keyBaz),
 		"--nosort")
 	f.KeysAddFail("msig4", "--multisig-threshold=2",

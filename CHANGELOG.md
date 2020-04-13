@@ -35,6 +35,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+## [v2.0.9] - 2020-13-09
+
+* Build against Cosmos SDK 0.37.10 RC
+
 ## [v2.0.8] - 2020-04-09
 
 ### Improvements

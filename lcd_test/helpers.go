@@ -34,7 +34,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
-		"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/cosmos/cosmos-sdk/tests"

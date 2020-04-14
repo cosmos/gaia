@@ -92,8 +92,8 @@ else
 endif
 
 install: go.sum
-	go install $(BUILD_FLAGS) ./cmd/gaiad
-	go install $(BUILD_FLAGS) ./cmd/gaiacli
+	go install -mod=readonly $(BUILD_FLAGS) ./cmd/gaiad
+	go install -mod=readonly $(BUILD_FLAGS) ./cmd/gaiacli
 
 go-mod-cache: go.sum
 	@echo "--> Download go modules to local cache"

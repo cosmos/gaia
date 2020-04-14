@@ -238,8 +238,15 @@ func TestGaiaCLISend(t *testing.T) {
 	startTokens := sdk.TokensFromConsensusPower(50)
 	require.Equal(t, startTokens, f.QueryBalances(fooAddr).AmountOf(denom))
 
-	// Send some tokens from one account to the other
 	sendTokens := sdk.TokensFromConsensusPower(10)
+
+	// It does not allow to send in offline mode
+	success, _, stdErr := f.TxSend(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens), "-y", "--offline")
+	require.Contains(t, stdErr, "no RPC client is defined in offline mode")
+	require.False(f.T, success)
+	tests.WaitForNextNBlocksTM(1, f.Port)
+
+	// Send some tokens from one account to the other
 	f.TxSend(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens), "-y")
 	tests.WaitForNextNBlocksTM(1, f.Port)
 
@@ -248,7 +255,7 @@ func TestGaiaCLISend(t *testing.T) {
 	require.Equal(t, startTokens.Sub(sendTokens), f.QueryBalances(fooAddr).AmountOf(denom))
 
 	// Test --dry-run
-	success, _, _ := f.TxSend(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens), "--dry-run")
+	success, _, _ = f.TxSend(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens), "--dry-run")
 	require.True(t, success)
 
 	// Test --generate-only
@@ -883,6 +890,17 @@ func TestGaiaCLISendGenerateSignAndBroadcast(t *testing.T) {
 	require.Equal(t, fmt.Sprintf("Signers:\n  0: %v\n\nSignatures:\n\n", fooAddr.String()), stdout)
 
 	// Test sign
+
+	// Does not work in offline mode
+	success, stdout, stderr = f.TxSign(keyFoo, unsignedTxFile.Name(), "--offline")
+	require.Contains(t, stderr, "required flag(s) \"account-number\", \"sequence\" not set")
+	require.False(t, success)
+
+	// But works offline if we set account number and sequence
+	success, _, _ = f.TxSign(keyFoo, unsignedTxFile.Name(), "--offline", "--account-number", "1", "--sequence", "1")
+	require.True(t, success)
+
+	// Sign transaction
 	success, stdout, _ = f.TxSign(keyFoo, unsignedTxFile.Name())
 	require.True(t, success)
 	msg = f.unmarshalStdTx(t, stdout)
@@ -905,6 +923,13 @@ func TestGaiaCLISendGenerateSignAndBroadcast(t *testing.T) {
 	require.Equal(t, startTokens, f.QueryBalances(fooAddr).AmountOf(denom))
 
 	// Test broadcast
+
+	// Does not work in offline mode
+	success, _, stderr = f.TxBroadcast(signedTxFile.Name(), "--offline")
+	require.Contains(t, stderr, "cannot broadcast tx during offline mode")
+	require.False(t, success)
+	tests.WaitForNextNBlocksTM(1, f.Port)
+
 	success, stdout, _ = f.TxBroadcast(signedTxFile.Name())
 	require.True(t, success)
 	tests.WaitForNextNBlocksTM(1, f.Port)
@@ -1114,6 +1139,14 @@ func TestGaiaCLIMultisign(t *testing.T) {
 	defer os.Remove(barSignatureFile.Name())
 
 	// Multisign
+
+	// Does not work in offline mode
+	success, stdout, _ = f.TxMultisign(unsignedTxFile.Name(), keyFooBarBaz, []string{
+		fooSignatureFile.Name(), barSignatureFile.Name()}, "--offline")
+	require.Contains(t, "couldn't verify signature", stdout)
+	require.False(t, success)
+
+	// Success multisign
 	success, stdout, _ = f.TxMultisign(unsignedTxFile.Name(), keyFooBarBaz, []string{
 		fooSignatureFile.Name(), barSignatureFile.Name()})
 	require.True(t, success)

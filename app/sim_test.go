@@ -65,13 +65,16 @@ func TestFullAppSimulation(t *testing.T) {
 	app := NewGaiaApp(logger, db, nil, true, simapp.FlagPeriodValue, map[int64]bool{}, "", fauxMerkleModeOpt)
 	require.Equal(t, appName, app.Name())
 
-	// Run randomized simulation
-	_, _, simErr := simulation.SimulateFromSeed(
-		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
+	// run randomized simulation
+	_, simParams, simErr := simulation.SimulateFromSeed(
+		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.SimulationManager()),
 		simapp.SimulationOperations(app, app.Codec(), config),
 		app.ModuleAccountAddrs(), config,
 	)
 
+	// export state and simParams before the simulation error is checked
+	err = simapp.CheckExportSimulation(app, config, simParams)
+	require.NoError(t, err)
 	require.NoError(t, simErr)
 
 	if config.Commit {
@@ -95,12 +98,15 @@ func TestAppImportExport(t *testing.T) {
 	require.Equal(t, appName, app.Name())
 
 	// Run randomized simulation
-	_, _, simErr := simulation.SimulateFromSeed(
-		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
+	_, simParams, simErr := simulation.SimulateFromSeed(
+		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.SimulationManager()),
 		simapp.SimulationOperations(app, app.Codec(), config),
 		app.ModuleAccountAddrs(), config,
 	)
 
+	// export state and simParams before the simulation error is checked
+	err = simapp.CheckExportSimulation(app, config, simParams)
+	require.NoError(t, err)
 	require.NoError(t, simErr)
 
 	if config.Commit {
@@ -178,13 +184,15 @@ func TestAppSimulationAfterImport(t *testing.T) {
 	require.Equal(t, appName, app.Name())
 
 	// Run randomized simulation
-	// Run randomized simulation
-	stopEarly, _, simErr := simulation.SimulateFromSeed(
-		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.sm),
+	stopEarly, simParams, simErr := simulation.SimulateFromSeed(
+		t, os.Stdout, app.BaseApp, simapp.AppStateFn(app.Codec(), app.SimulationManager()),
 		simapp.SimulationOperations(app, app.Codec(), config),
 		app.ModuleAccountAddrs(), config,
 	)
 
+	// export state and simParams before the simulation error is checked
+	err = simapp.CheckExportSimulation(app, config, simParams)
+	require.NoError(t, err)
 	require.NoError(t, simErr)
 
 	if config.Commit {

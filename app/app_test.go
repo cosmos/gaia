@@ -22,7 +22,7 @@ func TestGaiadExport(t *testing.T) {
 
 	// Making a new app object with the db, so that initchain hasn't been called
 	newGapp := NewGaiaApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, 0, map[int64]bool{}, "")
-	_, _, err = newGapp.ExportAppStateAndValidators(false, []string{})
+	_, _, _, err = newGapp.ExportAppStateAndValidators(false, []string{})
 	require.NoError(t, err, "ExportAppStateAndValidators should not have an error")
 }
 

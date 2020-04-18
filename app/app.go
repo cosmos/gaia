@@ -126,7 +126,7 @@ func NewGaiaApp(
 	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetAppVersion(version.Version)
 	keys := sdk.NewKVStoreKeys(
-		bam.MainStoreKey, auth.StoreKey, bank.StoreKey, staking.StoreKey,
+		auth.StoreKey, bank.StoreKey, staking.StoreKey,
 		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey,
 		gov.StoreKey, params.StoreKey, evidence.StoreKey, upgrade.StoreKey,
 	)
@@ -151,7 +151,7 @@ func NewGaiaApp(
 	app.subspaces[slashing.ModuleName] = app.paramsKeeper.Subspace(slashing.DefaultParamspace)
 	app.subspaces[gov.ModuleName] = app.paramsKeeper.Subspace(gov.DefaultParamspace).WithKeyTable(gov.ParamKeyTable())
 	app.subspaces[crisis.ModuleName] = app.paramsKeeper.Subspace(crisis.DefaultParamspace)
-	app.subspaces[evidence.ModuleName] = app.paramsKeeper.Subspace(evidence.DefaultParamspace)
+	//app.subspaces[evidence.ModuleName] = app.paramsKeeper.Subspace(evidence.DefaultParamspace)
 
 	// add keepers
 	app.accountKeeper = auth.NewAccountKeeper(
@@ -184,7 +184,7 @@ func NewGaiaApp(
 
 	// create evidence keeper with evidence router
 	evidenceKeeper := evidence.NewKeeper(
-		appCodec, keys[evidence.StoreKey], app.subspaces[evidence.ModuleName], &stakingKeeper, app.slashingKeeper,
+		appCodec, keys[evidence.StoreKey], &stakingKeeper, app.slashingKeeper,
 	)
 	evidenceRouter := evidence.NewRouter()
 
@@ -268,11 +268,11 @@ func NewGaiaApp(
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.supplyKeeper, auth.DefaultSigVerificationGasConsumer))
+	//app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.supplyKeeper, auth.DefaultSigVerificationGasConsumer))
 	app.SetEndBlocker(app.EndBlocker)
 
 	if loadLatest {
-		err := app.LoadLatestVersion(app.keys[bam.MainStoreKey])
+		err := app.LoadLatestVersion()
 		if err != nil {
 			tmos.Exit(err.Error())
 		}
@@ -304,7 +304,7 @@ func (app *GaiaApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci
 
 // LoadHeight loads a particular height
 func (app *GaiaApp) LoadHeight(height int64) error {
-	return app.LoadVersion(height, app.keys[bam.MainStoreKey])
+	return app.LoadVersion(height)
 }
 
 // ModuleAccountAddrs returns all the app's module account addresses.

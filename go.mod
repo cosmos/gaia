@@ -13,10 +13,10 @@ require (
 	github.com/snikch/goodman v0.0.0-20171125024755-10e37e294daa
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/cobra v0.0.7
-	github.com/spf13/viper v1.6.2
+	github.com/spf13/viper v1.6.3
 	github.com/stretchr/testify v1.5.1
 	github.com/tendermint/go-amino v0.15.1
-	github.com/tendermint/tendermint v0.33.2
+	github.com/tendermint/tendermint v0.33.3
 	github.com/tendermint/tm-db v0.5.1
 	golang.org/x/net v0.0.0-20190827160401-ba9fcec4b297 // indirect
 )

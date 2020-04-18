@@ -2,6 +2,7 @@ package app
 
 // Simulation parameter constants
 const (
+	Paramspace                             = "gaia"
 	StakePerAccount                        = "stake_per_account"
 	InitiallyBondedValidators              = "initially_bonded_validators"
 	OpWeightDeductFee                      = "op_weight_deduct_fee"

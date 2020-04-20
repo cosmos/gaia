@@ -36,7 +36,6 @@ import (
 	paramsproposal "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	"github.com/cosmos/cosmos-sdk/x/supply"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 )
@@ -64,7 +63,6 @@ var (
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
 		slashing.AppModuleBasic{},
-		supply.AppModuleBasic{},
 		upgrade.AppModuleBasic{},
 		evidence.AppModuleBasic{},
 		ibc.AppModuleBasic{},
@@ -75,11 +73,11 @@ var (
 	maccPerms = map[string][]string{
 		auth.FeeCollectorName:           nil,
 		distr.ModuleName:                nil,
-		mint.ModuleName:                 {supply.Minter},
-		staking.BondedPoolName:          {supply.Burner, supply.Staking},
-		staking.NotBondedPoolName:       {supply.Burner, supply.Staking},
-		gov.ModuleName:                  {supply.Burner},
-		transfer.GetModuleAccountName(): {supply.Minter, supply.Burner},
+		mint.ModuleName:                 {auth.Minter},
+		staking.BondedPoolName:          {auth.Burner, auth.Staking},
+		staking.NotBondedPoolName:       {auth.Burner, auth.Staking},
+		gov.ModuleName:                  {auth.Burner},
+		transfer.GetModuleAccountName(): {auth.Minter, auth.Burner},
 	}
 )
 
@@ -104,7 +102,6 @@ type GaiaApp struct {
 	// keepers
 	accountKeeper        auth.AccountKeeper
 	bankKeeper           bank.Keeper
-	supplyKeeper         supply.Keeper
 	stakingKeeper        staking.Keeper
 	capabilityKeeper     *capability.Keeper
 	slashingKeeper       slashing.Keeper
@@ -143,7 +140,7 @@ func NewGaiaApp(
 	bApp.SetAppVersion(version.Version)
 	keys := sdk.NewKVStoreKeys(
 		auth.StoreKey, bank.StoreKey, staking.StoreKey,
-		supply.StoreKey, mint.StoreKey, distr.StoreKey, slashing.StoreKey,
+		mint.StoreKey, distr.StoreKey, slashing.StoreKey,
 		gov.StoreKey, params.StoreKey, ibc.StoreKey, transfer.StoreKey,
 		evidence.StoreKey, upgrade.StoreKey, capability.StoreKey,
 	)
@@ -181,30 +178,27 @@ func NewGaiaApp(
 
 	// add keepers
 	app.accountKeeper = auth.NewAccountKeeper(
-		appCodec, keys[auth.StoreKey], app.subspaces[auth.ModuleName], auth.ProtoBaseAccount,
+		appCodec, keys[auth.StoreKey], app.subspaces[auth.ModuleName], auth.ProtoBaseAccount, maccPerms,
 	)
 	app.bankKeeper = bank.NewBaseKeeper(
 		appCodec, keys[bank.StoreKey], app.accountKeeper, app.subspaces[bank.ModuleName], app.ModuleAccountAddrs(),
 	)
-	app.supplyKeeper = supply.NewKeeper(
-		appCodec, keys[supply.StoreKey], app.accountKeeper, app.bankKeeper, maccPerms,
-	)
 	stakingKeeper := staking.NewKeeper(
-		appCodec, keys[staking.StoreKey], app.bankKeeper, app.supplyKeeper, app.subspaces[staking.ModuleName],
+		appCodec, keys[staking.StoreKey], app.accountKeeper, app.bankKeeper, app.subspaces[staking.ModuleName],
 	)
 	app.mintKeeper = mint.NewKeeper(
 		appCodec, keys[mint.StoreKey], app.subspaces[mint.ModuleName], &stakingKeeper,
-		app.supplyKeeper, auth.FeeCollectorName,
+		app.accountKeeper, app.bankKeeper, auth.FeeCollectorName,
 	)
 	app.distrKeeper = distr.NewKeeper(
-		appCodec, keys[distr.StoreKey], app.subspaces[distr.ModuleName], app.bankKeeper, &stakingKeeper,
-		app.supplyKeeper, auth.FeeCollectorName, app.ModuleAccountAddrs(),
+		appCodec, keys[distr.StoreKey], app.subspaces[distr.ModuleName], app.accountKeeper, app.bankKeeper,
+		&stakingKeeper, auth.FeeCollectorName, app.ModuleAccountAddrs(),
 	)
 	app.slashingKeeper = slashing.NewKeeper(
 		appCodec, keys[slashing.StoreKey], &stakingKeeper, app.subspaces[slashing.ModuleName],
 	)
 	app.crisisKeeper = crisis.NewKeeper(
-		app.subspaces[crisis.ModuleName], invCheckPeriod, app.supplyKeeper, auth.FeeCollectorName,
+		app.subspaces[crisis.ModuleName], invCheckPeriod, app.bankKeeper, auth.FeeCollectorName,
 	)
 	app.upgradeKeeper = upgrade.NewKeeper(skipUpgradeHeights, keys[upgrade.StoreKey], appCodec, home)
 
@@ -216,7 +210,7 @@ func NewGaiaApp(
 		AddRoute(upgrade.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.upgradeKeeper))
 	app.govKeeper = gov.NewKeeper(
 		appCodec, keys[gov.StoreKey], app.subspaces[gov.ModuleName],
-		app.supplyKeeper, &stakingKeeper, govRouter,
+		app.accountKeeper, app.bankKeeper, &stakingKeeper, govRouter,
 	)
 
 	// register the staking hooks
@@ -234,7 +228,7 @@ func NewGaiaApp(
 	app.transferKeeper = transfer.NewKeeper(
 		app.cdc, keys[transfer.StoreKey],
 		app.ibcKeeper.ChannelKeeper, &app.ibcKeeper.PortKeeper,
-		app.bankKeeper, app.supplyKeeper,
+		app.accountKeeper, app.bankKeeper,
 		scopedTransferKeeper,
 	)
 	transferModule := transfer.NewAppModule(app.transferKeeper)
@@ -258,16 +252,15 @@ func NewGaiaApp(
 	// must be passed by reference here.
 	app.mm = module.NewManager(
 		genutil.NewAppModule(app.accountKeeper, app.stakingKeeper, app.BaseApp.DeliverTx),
-		auth.NewAppModule(app.accountKeeper, app.supplyKeeper),
+		auth.NewAppModule(app.accountKeeper),
 		bank.NewAppModule(app.bankKeeper, app.accountKeeper),
 		capability.NewAppModule(*app.capabilityKeeper),
 		crisis.NewAppModule(&app.crisisKeeper),
-		supply.NewAppModule(app.supplyKeeper, app.bankKeeper, app.accountKeeper),
-		gov.NewAppModule(app.govKeeper, app.accountKeeper, app.bankKeeper, app.supplyKeeper),
-		mint.NewAppModule(app.mintKeeper, app.supplyKeeper),
+		gov.NewAppModule(app.govKeeper, app.accountKeeper, app.bankKeeper),
+		mint.NewAppModule(app.mintKeeper, app.accountKeeper),
 		slashing.NewAppModule(app.slashingKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
-		distr.NewAppModule(app.distrKeeper, app.accountKeeper, app.bankKeeper, app.supplyKeeper, app.stakingKeeper),
-		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.bankKeeper, app.supplyKeeper),
+		distr.NewAppModule(app.distrKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
+		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.bankKeeper),
 		upgrade.NewAppModule(app.upgradeKeeper),
 		evidence.NewAppModule(app.evidenceKeeper),
 		ibc.NewAppModule(app.ibcKeeper),
@@ -278,16 +271,18 @@ func NewGaiaApp(
 	// During begin block slashing happens after distr.BeginBlocker so that
 	// there is nothing left over in the validator fee pool, so as to keep the
 	// CanWithdrawInvariant invariant.
-	app.mm.SetOrderBeginBlockers(upgrade.ModuleName, mint.ModuleName, distr.ModuleName, slashing.ModuleName, staking.ModuleName)
+	app.mm.SetOrderBeginBlockers(
+		upgrade.ModuleName, mint.ModuleName, distr.ModuleName, slashing.ModuleName,
+		evidence.ModuleName, staking.ModuleName, ibc.ModuleName,
+	)
 	app.mm.SetOrderEndBlockers(crisis.ModuleName, gov.ModuleName, staking.ModuleName)
 
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
 	app.mm.SetOrderInitGenesis(
 		auth.ModuleName, distr.ModuleName, staking.ModuleName, bank.ModuleName,
-		slashing.ModuleName, gov.ModuleName, mint.ModuleName, supply.ModuleName,
-		crisis.ModuleName, ibc.ModuleName, genutil.ModuleName, evidence.ModuleName,
-		transfer.ModuleName,
+		slashing.ModuleName, gov.ModuleName, mint.ModuleName, crisis.ModuleName,
+		ibc.ModuleName, genutil.ModuleName, evidence.ModuleName, transfer.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.crisisKeeper)
@@ -298,13 +293,12 @@ func NewGaiaApp(
 	// NOTE: This is not required for apps that don't use the simulator for fuzz testing
 	// transactions.
 	app.sm = module.NewSimulationManager(
-		auth.NewAppModule(app.accountKeeper, app.supplyKeeper),
+		auth.NewAppModule(app.accountKeeper),
 		bank.NewAppModule(app.bankKeeper, app.accountKeeper),
-		supply.NewAppModule(app.supplyKeeper, app.bankKeeper, app.accountKeeper),
-		gov.NewAppModule(app.govKeeper, app.accountKeeper, app.bankKeeper, app.supplyKeeper),
-		mint.NewAppModule(app.mintKeeper, app.supplyKeeper),
-		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.bankKeeper, app.supplyKeeper),
-		distr.NewAppModule(app.distrKeeper, app.accountKeeper, app.bankKeeper, app.supplyKeeper, app.stakingKeeper),
+		gov.NewAppModule(app.govKeeper, app.accountKeeper, app.bankKeeper),
+		mint.NewAppModule(app.mintKeeper, app.accountKeeper),
+		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.bankKeeper),
+		distr.NewAppModule(app.distrKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
 		slashing.NewAppModule(app.slashingKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
 		params.NewAppModule(app.paramsKeeper),
 	)
@@ -321,7 +315,7 @@ func NewGaiaApp(
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetAnteHandler(
 		ante.NewAnteHandler(
-			app.accountKeeper, app.supplyKeeper, *app.ibcKeeper,
+			app.accountKeeper, app.bankKeeper, *app.ibcKeeper,
 			ante.DefaultSigVerificationGasConsumer,
 		),
 	)
@@ -382,7 +376,7 @@ func (app *GaiaApp) LoadHeight(height int64) error {
 func (app *GaiaApp) ModuleAccountAddrs() map[string]bool {
 	modAccAddrs := make(map[string]bool)
 	for acc := range maccPerms {
-		modAccAddrs[supply.NewModuleAddress(acc).String()] = true
+		modAccAddrs[auth.NewModuleAddress(acc).String()] = true
 	}
 
 	return modAccAddrs

@@ -34,7 +34,7 @@ ifeq ($(LEDGER_ENABLED),true)
   endif
 endif
 
-ifeq ($(WITH_CLEVELDB),yes)
+ifeq (cleveldb,$(findstring cleveldb,$(GAIA_BUILD_OPTIONS)))
   build_tags += gcc
 endif
 build_tags += $(BUILD_TAGS)
@@ -54,13 +54,20 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=gaia \
 		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
 		  -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)"
 
-ifeq ($(WITH_CLEVELDB),yes)
+ifeq (cleveldb,$(findstring cleveldb,$(GAIA_BUILD_OPTIONS)))
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=cleveldb
+endif
+ifeq (,$(findstring nostrip,$(GAIA_BUILD_OPTIONS)))
+  ldflags += -w -s
 endif
 ldflags += $(LDFLAGS)
 ldflags := $(strip $(ldflags))
 
-BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)' -trimpath
+BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
+# check for nostrip option
+ifeq (,$(findstring nostrip,$(GAIA_BUILD_OPTIONS)))
+  BUILD_FLAGS += -trimpath
+endif
 
 # The below include contains the tools target.
 include contrib/devtools/Makefile

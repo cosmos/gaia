@@ -261,7 +261,8 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	var distrData distr.GenesisState
 	cdc.MustUnmarshalJSON(genesisState[distr.ModuleName], &distrData)
 
-	commPoolAmt := sdk.NewInt(10)
+	// TODO: Fix this so that there are 10 tokens in the module account
+	commPoolAmt := sdk.NewInt(0)
 	distrData.FeePool.CommunityPool = sdk.DecCoins{sdk.NewDecCoin(sdk.DefaultBondDenom, commPoolAmt)}
 	genesisState[distr.ModuleName] = cdc.MustMarshalJSON(distrData)
 

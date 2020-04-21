@@ -120,7 +120,6 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 
 			authGenState := auth.GetGenesisStateFromAppState(cdc, appState)
 			bankGenState := bank.GetGenesisStateFromAppState(depCdc, appState)
-
 			if authGenState.Accounts.Contains(addr) {
 				return fmt.Errorf("cannot add account at existing address %s", addr)
 			}
@@ -150,17 +149,6 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 			}
 
 			appState[auth.ModuleName] = authGenStateBz
-			appState[bank.ModuleName] = bankGenStateBz
-
-			bankGenState = bank.GetGenesisStateFromAppState(depCdc, appState)
-			bankGenState.Balances = append(bankGenState.Balances, balances)
-			bankGenState.Balances = bank.SanitizeGenesisBalances(bankGenState.Balances)
-
-			bankGenStateBz, err = cdc.MarshalJSON(bankGenState)
-			if err != nil {
-				return fmt.Errorf("failed to marshal bank genesis state: %w", err)
-			}
-
 			appState[bank.ModuleName] = bankGenStateBz
 
 			appStateJSON, err := cdc.MarshalJSON(appState)

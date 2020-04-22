@@ -376,7 +376,7 @@ func (app *GaiaApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci
 	res := app.mm.InitGenesis(ctx, app.cdc, genesisState)
 
 	// Set Historical infos in InitChain to ignore genesis params
-	stakingParams := staking.DefaultParams()
+	stakingParams := app.stakingKeeper.GetParams(ctx)
 	stakingParams.HistoricalEntries = 1000
 	app.stakingKeeper.SetParams(ctx, stakingParams)
 

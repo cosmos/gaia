@@ -1,16 +1,15 @@
 {
-  "name": "docs",
+  "name": "gaia-docs",
   "version": "1.0.0",
-  "description": "Welcome to the Gaia documentation!",
+  "description": "Gaia Documentation",
   "main": "index.js",
-  "dependencies": {
-    "@vuepress/plugin-google-analytics": "^1.3.1",
-    "vuepress-theme-cosmos": "^1.0.161"
-  },
   "scripts": {
     "serve": "trap 'exit 0' SIGINT; vuepress dev --no-cache",
     "build": "trap 'exit 0' SIGINT; vuepress build --no-cache"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "vuepress-theme-cosmos": "^1.0.163"
+  }
 }

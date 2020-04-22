@@ -32,10 +32,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/lcd"
 	"github.com/cosmos/cosmos-sdk/codec"
-	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/server"
+	"github.com/cosmos/cosmos-sdk/std"
 	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/cosmos/cosmos-sdk/tests"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -49,14 +49,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	"github.com/cosmos/cosmos-sdk/x/supply"
 
 	"github.com/cosmos/gaia/app"
 )
 
 var (
-	cdc      = codecstd.MakeCodec(app.ModuleBasics)
-	appCodec = codecstd.NewAppCodec(cdc)
+	cdc      = std.MakeCodec(app.ModuleBasics)
+	appCodec = std.NewAppCodec(cdc)
 )
 
 func init() {
@@ -174,10 +173,14 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 
 	totalSupply := sdk.ZeroInt()
 
+	var pubKey crypto.PubKey
 	for i := 0; i < nValidators; i++ {
 		operPrivKey := secp256k1.GenPrivKey()
 		operAddr := operPrivKey.PubKey().Address()
-		pubKey := privVal.GetPubKey()
+		pubKey, err = privVal.GetPubKey()
+		if err != nil {
+			return
+		}
 
 		power := int64(100)
 		if i > 0 {
@@ -262,16 +265,10 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	var distrData distr.GenesisState
 	cdc.MustUnmarshalJSON(genesisState[distr.ModuleName], &distrData)
 
-	commPoolAmt := sdk.NewInt(10)
+	// TODO: Fix this so that there are 10 tokens in the module account
+	commPoolAmt := sdk.NewInt(0)
 	distrData.FeePool.CommunityPool = sdk.DecCoins{sdk.NewDecCoin(sdk.DefaultBondDenom, commPoolAmt)}
 	genesisState[distr.ModuleName] = cdc.MustMarshalJSON(distrData)
-
-	// supply data
-	var supplyData supply.GenesisState
-	cdc.MustUnmarshalJSON(genesisState[supply.ModuleName], &supplyData)
-
-	supplyData.Supply = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, totalSupply.Add(commPoolAmt)))
-	genesisState[supply.ModuleName] = cdc.MustMarshalJSON(supplyData)
 
 	// mint genesis (none set within genesisState)
 	mintData := mint.DefaultGenesisState()

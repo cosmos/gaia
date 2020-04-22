@@ -173,10 +173,14 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 
 	totalSupply := sdk.ZeroInt()
 
+	var pubKey crypto.PubKey
 	for i := 0; i < nValidators; i++ {
 		operPrivKey := secp256k1.GenPrivKey()
 		operAddr := operPrivKey.PubKey().Address()
-		pubKey := privVal.GetPubKey()
+		pubKey, err = privVal.GetPubKey()
+		if err != nil {
+			return
+		}
 
 		power := int64(100)
 		if i > 0 {

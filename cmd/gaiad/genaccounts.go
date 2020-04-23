@@ -119,10 +119,19 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 			}
 
 			authGenState := auth.GetGenesisStateFromAppState(cdc, appState)
-
+			bankGenState := bank.GetGenesisStateFromAppState(depCdc, appState)
 			if authGenState.Accounts.Contains(addr) {
 				return fmt.Errorf("cannot add account at existing address %s", addr)
 			}
+
+			if balancesContains(bankGenState.Balances, addr) {
+				return fmt.Errorf("cannot add account at existing address %s", addr)
+			}
+
+			balance := bank.Balance{Address: addr, Coins: coins}
+
+			bankGenState.Balances = append(bankGenState.Balances, balance)
+			bankGenState.Balances = bank.SanitizeGenesisBalances(bankGenState.Balances)
 
 			// Add the new account to the set of genesis accounts and sanitize the
 			// accounts afterwards.
@@ -134,17 +143,12 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 				return fmt.Errorf("failed to marshal auth genesis state: %w", err)
 			}
 
-			appState[auth.ModuleName] = authGenStateBz
-
-			bankGenState := bank.GetGenesisStateFromAppState(depCdc, appState)
-			bankGenState.Balances = append(bankGenState.Balances, balances)
-			bankGenState.Balances = bank.SanitizeGenesisBalances(bankGenState.Balances)
-
 			bankGenStateBz, err := cdc.MarshalJSON(bankGenState)
 			if err != nil {
 				return fmt.Errorf("failed to marshal bank genesis state: %w", err)
 			}
 
+			appState[auth.ModuleName] = authGenStateBz
 			appState[bank.ModuleName] = bankGenStateBz
 
 			appStateJSON, err := cdc.MarshalJSON(appState)
@@ -165,4 +169,13 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 	cmd.Flags().Uint64(flagVestingEnd, 0, "schedule end time (unix epoch) for vesting accounts")
 
 	return cmd
+}
+
+func balancesContains(bal []bank.Balance, addr sdk.AccAddress) bool {
+	for _, b := range bal {
+		if b.Address.Equals(addr) {
+			return true
+		}
+	}
+	return false
 }

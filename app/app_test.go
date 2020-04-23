@@ -22,18 +22,23 @@ func TestGaiadExport(t *testing.T) {
 
 	// Making a new app object with the db, so that initchain hasn't been called
 	newGapp := NewGaiaApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, 0, map[int64]bool{}, "")
-	_, _, err = newGapp.ExportAppStateAndValidators(false, []string{})
+	_, _, _, err = newGapp.ExportAppStateAndValidators(false, []string{})
 	require.NoError(t, err, "ExportAppStateAndValidators should not have an error")
 }
 
 // ensure that black listed addresses are properly set in bank keeper
 func TestBlackListedAddrs(t *testing.T) {
 	db := db.NewMemDB()
-	gapp := NewGaiaApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, 0, map[int64]bool{}, "")
+	app := NewGaiaApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, 0, map[int64]bool{}, "")
 
 	for acc := range maccPerms {
-		require.True(t, gapp.bankKeeper.BlacklistedAddr(gapp.supplyKeeper.GetModuleAddress(acc)))
+		require.Equal(t, !allowedReceivingModAcc[acc], app.bankKeeper.BlacklistedAddr(app.accountKeeper.GetModuleAddress(acc)))
 	}
+}
+
+func TestGetMaccPerms(t *testing.T) {
+	dup := GetMaccPerms()
+	require.Equal(t, maccPerms, dup, "duplicated module account permissions differed from actual module account permissions")
 }
 
 func setGenesis(gapp *GaiaApp) error {

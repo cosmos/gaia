@@ -273,7 +273,7 @@ func NewGaiaApp(
 		distr.NewAppModule(appCodec, app.distrKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
 		staking.NewAppModule(appCodec, app.stakingKeeper, app.accountKeeper, app.bankKeeper),
 		upgrade.NewAppModule(app.upgradeKeeper),
-		evidence.NewAppModule(app.evidenceKeeper),
+		evidence.NewAppModule(appCodec, app.evidenceKeeper),
 		ibc.NewAppModule(app.ibcKeeper),
 		params.NewAppModule(app.paramsKeeper),
 		transferModule,
@@ -377,7 +377,6 @@ func (app *GaiaApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci
 
 	// Set Historical infos in InitChain to ignore genesis params
 	stakingParams := app.stakingKeeper.GetParams(ctx)
-	stakingParams.HistoricalEntries = 1000
 	app.stakingKeeper.SetParams(ctx, stakingParams)
 
 	return res

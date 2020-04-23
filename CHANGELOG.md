@@ -37,7 +37,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [v2.0.9] - 2020-04-23
 
-* Build against Cosmos SDK 0.37.11.
+* (sdk) Bump SDK version to [v0.37.11](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.37.11).
 
 ## [v2.0.8] - 2020-04-09
 

@@ -5,7 +5,6 @@ VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 LEDGER_ENABLED ?= true
 SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
-TEST_DOCKER_REPO=jackzampolin/gaiatest
 
 export GO111MODULE = on
 
@@ -168,16 +167,6 @@ test-build: build
 benchmark:
 	@go test -mod=readonly -bench=. ./...
 
-test-docker:
-	@docker build -f contrib/Dockerfile.test -t ${TEST_DOCKER_REPO}:$(shell git rev-parse --short HEAD) .
-	@docker tag ${TEST_DOCKER_REPO}:$(shell git rev-parse --short HEAD) ${TEST_DOCKER_REPO}:$(shell git rev-parse --abbrev-ref HEAD | sed 's#/#_#g')
-	@docker tag ${TEST_DOCKER_REPO}:$(shell git rev-parse --short HEAD) ${TEST_DOCKER_REPO}:latest
-
-test-docker-push: test-docker
-	@docker push ${TEST_DOCKER_REPO}:$(shell git rev-parse --short HEAD)
-	@docker push ${TEST_DOCKER_REPO}:$(shell git rev-parse --abbrev-ref HEAD | sed 's#/#_#g')
-	@docker push ${TEST_DOCKER_REPO}:latest
-
 ###############################################################################
 ###                                Linting                                  ###
 ###############################################################################
@@ -231,7 +220,11 @@ contract-tests: setup-transactions
 	@echo "Running Gaia LCD for contract tests"
 	dredd && pkill gaiad
 
+docker-single-node:
+	docker build -f contrib/Dockerfile.test -t gaia-singlenode:$(VERSION) .
+
 .PHONY: all build-linux install install-debug \
 	go-mod-cache draw-deps clean build \
 	setup-transactions setup-contract-tests-data start-gaia run-lcd-contract-tests contract-tests \
-	test test-all test-build test-cover test-unit test-race
+	test test-all test-build test-cover test-unit test-race \
+	docker-single-node

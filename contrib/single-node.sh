@@ -23,7 +23,6 @@ gaiad gentx --name validator --keyring-backend="test"
 gaiad collect-gentxs
 
 # Set proper defaults and change ports
-sed -i 's/"leveldb"/"goleveldb"/g' ~/.gaiad/config/config.toml
 sed -i 's#"tcp://127.0.0.1:26657"#"tcp://0.0.0.0:26657"#g' ~/.gaiad/config/config.toml
 sed -i 's/timeout_commit = "5s"/timeout_commit = "1s"/g' ~/.gaiad/config/config.toml
 sed -i 's/timeout_propose = "3s"/timeout_propose = "1s"/g' ~/.gaiad/config/config.toml

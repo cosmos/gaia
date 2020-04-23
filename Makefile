@@ -172,10 +172,11 @@ test-docker:
 	@docker build -f contrib/Dockerfile.test -t ${TEST_DOCKER_REPO}:$(shell git rev-parse --short HEAD) .
 	@docker tag ${TEST_DOCKER_REPO}:$(shell git rev-parse --short HEAD) ${TEST_DOCKER_REPO}:$(shell git rev-parse --abbrev-ref HEAD | sed 's#/#_#g')
 	@docker tag ${TEST_DOCKER_REPO}:$(shell git rev-parse --short HEAD) ${TEST_DOCKER_REPO}:latest
+
+test-docker-push: test-docker
 	@docker push ${TEST_DOCKER_REPO}:$(shell git rev-parse --short HEAD)
 	@docker push ${TEST_DOCKER_REPO}:$(shell git rev-parse --abbrev-ref HEAD | sed 's#/#_#g')
 	@docker push ${TEST_DOCKER_REPO}:latest
-
 
 ###############################################################################
 ###                                Linting                                  ###

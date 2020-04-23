@@ -328,6 +328,12 @@ func (f *Fixtures) CLIConfig(key, value string, flags ...string) {
 //___________________________________________________________________________________
 // gaiacli tx send/sign/broadcast
 
+// Status is gaiacli status
+func (f *Fixtures) Status(flags ...string) (bool, string, string) {
+	cmd := fmt.Sprintf("%s status %s", f.GaiacliBinary, f.Flags())
+	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), clientkeys.DefaultKeyPass)
+}
+
 // TxSend is gaiacli tx send
 func (f *Fixtures) TxSend(from string, to sdk.AccAddress, amount sdk.Coin, flags ...string) (bool, string, string) {
 	cmd := fmt.Sprintf("%s tx send --keyring-backend=test %s %s %s %v", f.GaiacliBinary, from,

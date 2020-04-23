@@ -174,7 +174,6 @@ benchmark:
 lint:
 	golangci-lint run
 	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" | xargs gofmt -d -s
-	go mod verify
 
 format:
 	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/lcd/statik/statik.go" | xargs gofmt -w -s
@@ -223,8 +222,10 @@ contract-tests: setup-transactions
 docker-single-node:
 	docker build -f contrib/Dockerfile.test -t gaia-singlenode:$(VERSION) .
 
-.PHONY: all build-linux install install-debug \
+.PHONY: all build-linux install format lint \
 	go-mod-cache draw-deps clean build \
 	setup-transactions setup-contract-tests-data start-gaia run-lcd-contract-tests contract-tests \
 	test test-all test-build test-cover test-unit test-race \
+	benchmark \
+	build-docker-gaiadnode localnet-start localnet-stop \
 	docker-single-node

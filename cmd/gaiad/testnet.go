@@ -10,15 +10,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	tmconfig "github.com/tendermint/tendermint/config"
-	"github.com/tendermint/tendermint/crypto"
-	tmos "github.com/tendermint/tendermint/libs/os"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
-	"github.com/tendermint/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
-
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clientkeys "github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -31,8 +22,17 @@ import (
 	authexported "github.com/cosmos/cosmos-sdk/x/auth/exported"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
-	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+
+	tmconfig "github.com/tendermint/tendermint/config"
+	"github.com/tendermint/tendermint/crypto"
+	tmos "github.com/tendermint/tendermint/libs/os"
+	tmrand "github.com/tendermint/tendermint/libs/rand"
+	"github.com/tendermint/tendermint/types"
+	tmtime "github.com/tendermint/tendermint/types/time"
+
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var (
@@ -46,7 +46,7 @@ var (
 
 // get cmd to initialize all files for tendermint testnet and application
 func testnetCmd(ctx *server.Context, cdc *codec.Codec,
-	mbm module.BasicManager, genBalIterator genutiltypes.GenesisBalancesIterator,
+	mbm module.BasicManager, genBalIterator bank.GenesisBalancesIterator,
 ) *cobra.Command {
 
 	cmd := &cobra.Command{
@@ -104,7 +104,7 @@ const nodeDirPerm = 0755
 // Initialize the testnet
 func InitTestnet(
 	cmd *cobra.Command, config *tmconfig.Config, cdc *codec.Codec,
-	mbm module.BasicManager, genBalIterator genutiltypes.GenesisBalancesIterator,
+	mbm module.BasicManager, genBalIterator bank.GenesisBalancesIterator,
 	outputDir, chainID, minGasPrices, nodeDirPrefix, nodeDaemonHome,
 	nodeCLIHome, startingIPAddress string, numValidators int,
 ) error {
@@ -166,7 +166,7 @@ func InitTestnet(
 		memo := fmt.Sprintf("%s@%s:26656", nodeIDs[i], ip)
 		genFiles = append(genFiles, config.GenesisFile())
 
-		kb, err := keyring.NewKeyring(
+		kb, err := keyring.New(
 			sdk.KeyringServiceName(),
 			viper.GetString(flags.FlagKeyringBackend),
 			clientDir,
@@ -304,7 +304,7 @@ func collectGenFiles(
 	cdc *codec.Codec, config *tmconfig.Config, chainID string,
 	monikers, nodeIDs []string, valPubKeys []crypto.PubKey,
 	numValidators int, outputDir, nodeDirPrefix, nodeDaemonHome string,
-	genBalIterator genutiltypes.GenesisBalancesIterator,
+	genBalIterator bank.GenesisBalancesIterator,
 ) error {
 
 	var appState json.RawMessage

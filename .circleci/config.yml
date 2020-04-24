@@ -100,61 +100,6 @@ jobs:
           target: test-sim-multi-seed-long
           description: "Test Gaia multi-seed simulation (long-lived)"
 
-  test-cover:
-    executor: golang
-    parallelism: 4
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - go-mod-v1-{{ checksum "go.sum" }}
-      - run:
-          name: Run tests with coverage
-          command: |
-            export VERSION="$(git describe --tags --long | sed 's/v\(.*\)/\1/')"
-            export GO111MODULE=on
-            mkdir -p /tmp/logs /tmp/workspace/profiles
-            for pkg in $(go list ./... | grep -v '/simulation' | circleci tests split); do
-              id=$(echo "$pkg" | sed 's|[/.]|_|g')
-              go test -mod=readonly -timeout 8m -race -coverprofile=/tmp/workspace/profiles/$id.out -covermode=atomic -tags='ledger test_ledger_mock' "$pkg" | tee "/tmp/logs/$id-$RANDOM.log"
-            done
-      - persist_to_workspace:
-          root: /tmp/workspace
-          paths:
-            - "profiles/*"
-      - store_artifacts:
-          path: /tmp/logs
-
-  upload-coverage:
-    executor: golang
-    steps:
-      - attach_workspace:
-          at: /tmp/workspace
-      - checkout
-      - run:
-          name: gather
-          command: |
-            set -ex
-
-            echo "--> Concatenating profiles:"
-            ls /tmp/workspace/profiles/
-            echo "mode: atomic" > coverage.txt
-            for prof in $(ls /tmp/workspace/profiles/); do
-              tail -n +2 /tmp/workspace/profiles/"$prof" >> coverage.txt
-            done
-      - run:
-          name: filter out DONTCOVER
-          command: |
-            excludelist="$(find . -type f -name '*.go' | xargs grep -l 'DONTCOVER')"
-            for filename in ${excludelist}; do
-              filename=$(echo $filename | sed 's/^./github.com\/cosmos\/gaia/g')
-              echo "Excluding ${filename} from coverage report..."
-              sed -i.bak "/$(echo $filename | sed 's/\//\\\//g')/d" coverage.txt
-            done
-      - run:
-          name: upload
-          command: bash <(curl -s https://codecov.io/bash) -f coverage.txt
-
   localnet:
     working_directory: /home/circleci/.go_workspace/src/github.com/cosmos/gaia
     machine:
@@ -241,7 +186,7 @@ jobs:
             docker build .
           else
             docker build -t tendermint/gaia:$GAIAD_VERSION .
-            docker login --password-stdin -u $DOCKER_USER \<<<$DOCKER_PASS
+            docker login --password-stdin -u $DOCKER_USER \<\<\<$DOCKER_PASS
             docker push tendermint/gaia:$GAIAD_VERSION
           fi
 
@@ -255,7 +200,7 @@ jobs:
           docker_layer_caching: true
       - run: |
           docker build -t tendermint/gaia:$CIRCLE_TAG .
-          docker login --password-stdin -u $DOCKER_USER \<<$DOCKER_PASS
+          docker login --password-stdin -u $DOCKER_USER \<\<\<$DOCKER_PASS
           docker push tendermint/gaia:$CIRCLE_TAG
 
   reproducible-builds:
@@ -348,13 +293,7 @@ workflows:
             tags:
               only:
                 - /^v.*/
-      - test-cover:
-          requires:
-            - setup-dependencies
       - localnet
-      - upload-coverage:
-          requires:
-            - test-cover
       - reproducible-builds:
           filters:
             branches:

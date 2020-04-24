@@ -56,6 +56,14 @@ Base64 encoded transactions.
 * [\#164](https://github.com/cosmos/gaia/pull/164) [\#212](https://github.com/cosmos/gaia/pull/212) The LevelDB-based
 keybase implementation has been replaced with a 99 designs Keyring library-backed implementation. Keys created and stored
 with previous `gaia` releases need to be migrated through the `gaiacli keys migrate` command.
+* (gaiacli) [\#326](https://github.com/cosmos/gaia/pull/326) Implement `--offline` flag in all post commands. Some commands
+that did not work with `--generate-only` as `gaiacli staking delegate` now work as long as we don't include the offline flag.
+
+## [v2.0.8] - 2020-04-09
+
+### Improvements
+
+* (sdk) Bump SDK version to [v0.37.9](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.37.9).
 
 ## [v2.0.7] - 2020-03-11
 
@@ -183,7 +191,8 @@ not rely on the `x/supply` keeper to get module account addresses for blacklisti
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v2.0.7...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v2.0.8...HEAD
+[v2.0.8]: https://github.com/cosmos/gaia/releases/tag/v2.0.8
 [v2.0.7]: https://github.com/cosmos/gaia/releases/tag/v2.0.7
 [v2.0.6]: https://github.com/cosmos/gaia/releases/tag/v2.0.6
 [v2.0.5]: https://github.com/cosmos/gaia/releases/tag/v2.0.5

@@ -13,6 +13,11 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+	"github.com/tendermint/tendermint/crypto/ed25519"
+	coretypes "github.com/tendermint/tendermint/rpc/core/types"
+	tmtypes "github.com/tendermint/tendermint/types"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
 	"github.com/cosmos/cosmos-sdk/tests"
@@ -22,9 +27,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/mint"
-	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/crypto/ed25519"
-	tmtypes "github.com/tendermint/tendermint/types"
 
 	"github.com/cosmos/gaia/app"
 )
@@ -45,9 +47,13 @@ func TestGaiaCLIKeysAddMultisig(t *testing.T) {
 	// key names order does not matter
 	f.KeysAdd("msig1", "--multisig-threshold=2",
 		fmt.Sprintf("--multisig=%s,%s", keyBar, keyBaz))
+	ke1Address1 := f.KeysShow("msig1").Address
+	f.KeysDelete("msig1")
+
 	f.KeysAdd("msig2", "--multisig-threshold=2",
 		fmt.Sprintf("--multisig=%s,%s", keyBaz, keyBar))
-	require.Equal(t, f.KeysShow("msig1").Address, f.KeysShow("msig2").Address)
+	require.Equal(t, ke1Address1, f.KeysShow("msig2").Address)
+	f.KeysDelete("msig2")
 
 	f.KeysAdd("msig3", "--multisig-threshold=2",
 		fmt.Sprintf("--multisig=%s,%s", keyBar, keyBaz),
@@ -233,8 +239,15 @@ func TestGaiaCLISend(t *testing.T) {
 	startTokens := sdk.TokensFromConsensusPower(50)
 	require.Equal(t, startTokens, f.QueryBalances(fooAddr).AmountOf(denom))
 
-	// Send some tokens from one account to the other
 	sendTokens := sdk.TokensFromConsensusPower(10)
+
+	// It does not allow to send in offline mode
+	success, _, stdErr := f.TxSend(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens), "-y", "--offline")
+	require.Contains(t, stdErr, "no RPC client is defined in offline mode")
+	require.False(f.T, success)
+	tests.WaitForNextNBlocksTM(1, f.Port)
+
+	// Send some tokens from one account to the other
 	f.TxSend(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens), "-y")
 	tests.WaitForNextNBlocksTM(1, f.Port)
 
@@ -243,7 +256,7 @@ func TestGaiaCLISend(t *testing.T) {
 	require.Equal(t, startTokens.Sub(sendTokens), f.QueryBalances(fooAddr).AmountOf(denom))
 
 	// Test --dry-run
-	success, _, _ := f.TxSend(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens), "--dry-run")
+	success, _, _ = f.TxSend(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens), "--dry-run")
 	require.True(t, success)
 
 	// Test --generate-only
@@ -252,7 +265,7 @@ func TestGaiaCLISend(t *testing.T) {
 	)
 	require.Empty(t, stderr)
 	require.True(t, success)
-	msg := unmarshalStdTx(f.T, stdout)
+	msg := f.unmarshalStdTx(f.T, stdout)
 	require.NotZero(t, msg.Fee.Gas)
 	require.Len(t, msg.Msgs, 1)
 	require.Len(t, msg.GetSignatures(), 0)
@@ -357,7 +370,7 @@ func TestGaiaCLICreateValidator(t *testing.T) {
 	require.True(f.T, success)
 	require.Empty(f.T, stderr)
 
-	msg := unmarshalStdTx(f.T, stdout)
+	msg := f.unmarshalStdTx(f.T, stdout)
 	require.NotZero(t, msg.Fee.Gas)
 	require.Equal(t, len(msg.Msgs), 1)
 	require.Equal(t, 0, len(msg.GetSignatures()))
@@ -479,7 +492,7 @@ func TestGaiaCLISubmitProposal(t *testing.T) {
 		fooAddr.String(), "Text", "Test", "test", sdk.NewCoin(denom, proposalTokens), "--generate-only", "-y")
 	require.True(t, success)
 	require.Empty(t, stderr)
-	msg := unmarshalStdTx(t, stdout)
+	msg := f.unmarshalStdTx(t, stdout)
 	require.NotZero(t, msg.Fee.Gas)
 	require.Equal(t, len(msg.Msgs), 1)
 	require.Equal(t, 0, len(msg.GetSignatures()))
@@ -517,7 +530,7 @@ func TestGaiaCLISubmitProposal(t *testing.T) {
 	success, stdout, stderr = f.TxGovDeposit(1, fooAddr.String(), sdk.NewCoin(denom, depositTokens), "--generate-only")
 	require.True(t, success)
 	require.Empty(t, stderr)
-	msg = unmarshalStdTx(t, stdout)
+	msg = f.unmarshalStdTx(t, stdout)
 	require.NotZero(t, msg.Fee.Gas)
 	require.Equal(t, len(msg.Msgs), 1)
 	require.Equal(t, 0, len(msg.GetSignatures()))
@@ -551,7 +564,7 @@ func TestGaiaCLISubmitProposal(t *testing.T) {
 	success, stdout, stderr = f.TxGovVote(1, gov.OptionYes, fooAddr.String(), "--generate-only")
 	require.True(t, success)
 	require.Empty(t, stderr)
-	msg = unmarshalStdTx(t, stdout)
+	msg = f.unmarshalStdTx(t, stdout)
 	require.NotZero(t, msg.Fee.Gas)
 	require.Equal(t, len(msg.Msgs), 1)
 	require.Equal(t, 0, len(msg.GetSignatures()))
@@ -804,7 +817,7 @@ func TestGaiaCLIValidateSignatures(t *testing.T) {
 	// validate we can successfully sign
 	success, stdout, _ = f.TxSign(keyFoo, unsignedTxFile.Name())
 	require.True(t, success)
-	stdTx := unmarshalStdTx(t, stdout)
+	stdTx := f.unmarshalStdTx(t, stdout)
 	require.Equal(t, len(stdTx.Msgs), 1)
 	require.Equal(t, 1, len(stdTx.GetSignatures()))
 	require.Equal(t, fooAddr.String(), stdTx.GetSigners()[0].String())
@@ -819,7 +832,7 @@ func TestGaiaCLIValidateSignatures(t *testing.T) {
 
 	// modify the transaction
 	stdTx.Memo = "MODIFIED-ORIGINAL-TX-BAD"
-	bz := marshalStdTx(t, stdTx)
+	bz := f.marshalStdTx(t, stdTx)
 	modSignedTxFile := WriteToNewTempFile(t, string(bz))
 	defer os.Remove(modSignedTxFile.Name())
 
@@ -846,7 +859,7 @@ func TestGaiaCLISendGenerateSignAndBroadcast(t *testing.T) {
 	success, stdout, stderr := f.TxSend(fooAddr.String(), barAddr, sdk.NewCoin(denom, sendTokens), "--generate-only")
 	require.True(t, success)
 	require.Empty(t, stderr)
-	msg := unmarshalStdTx(t, stdout)
+	msg := f.unmarshalStdTx(t, stdout)
 	require.Equal(t, msg.Fee.Gas, uint64(flags.DefaultGasLimit))
 	require.Equal(t, len(msg.Msgs), 1)
 	require.Equal(t, 0, len(msg.GetSignatures()))
@@ -855,7 +868,7 @@ func TestGaiaCLISendGenerateSignAndBroadcast(t *testing.T) {
 	success, stdout, stderr = f.TxSend(fooAddr.String(), barAddr, sdk.NewCoin(denom, sendTokens), "--gas=100", "--generate-only")
 	require.True(t, success)
 	require.Empty(t, stderr)
-	msg = unmarshalStdTx(t, stdout)
+	msg = f.unmarshalStdTx(t, stdout)
 	require.Equal(t, msg.Fee.Gas, uint64(100))
 	require.Equal(t, len(msg.Msgs), 1)
 	require.Equal(t, 0, len(msg.GetSignatures()))
@@ -864,7 +877,7 @@ func TestGaiaCLISendGenerateSignAndBroadcast(t *testing.T) {
 	success, stdout, stderr = f.TxSend(fooAddr.String(), barAddr, sdk.NewCoin(denom, sendTokens), "--generate-only")
 	require.True(t, success)
 	require.Empty(t, stderr)
-	msg = unmarshalStdTx(t, stdout)
+	msg = f.unmarshalStdTx(t, stdout)
 	require.True(t, msg.Fee.Gas > 0)
 	require.Equal(t, len(msg.Msgs), 1)
 
@@ -878,9 +891,20 @@ func TestGaiaCLISendGenerateSignAndBroadcast(t *testing.T) {
 	require.Equal(t, fmt.Sprintf("Signers:\n  0: %v\n\nSignatures:\n\n", fooAddr.String()), stdout)
 
 	// Test sign
+
+	// Does not work in offline mode
+	success, stdout, stderr = f.TxSign(keyFoo, unsignedTxFile.Name(), "--offline")
+	require.Contains(t, stderr, "required flag(s) \"account-number\", \"sequence\" not set")
+	require.False(t, success)
+
+	// But works offline if we set account number and sequence
+	success, _, _ = f.TxSign(keyFoo, unsignedTxFile.Name(), "--offline", "--account-number", "1", "--sequence", "1")
+	require.True(t, success)
+
+	// Sign transaction
 	success, stdout, _ = f.TxSign(keyFoo, unsignedTxFile.Name())
 	require.True(t, success)
-	msg = unmarshalStdTx(t, stdout)
+	msg = f.unmarshalStdTx(t, stdout)
 	require.Equal(t, len(msg.Msgs), 1)
 	require.Equal(t, 1, len(msg.GetSignatures()))
 	require.Equal(t, fooAddr.String(), msg.GetSigners()[0].String())
@@ -900,6 +924,13 @@ func TestGaiaCLISendGenerateSignAndBroadcast(t *testing.T) {
 	require.Equal(t, startTokens, f.QueryBalances(fooAddr).AmountOf(denom))
 
 	// Test broadcast
+
+	// Does not work in offline mode
+	success, _, stderr = f.TxBroadcast(signedTxFile.Name(), "--offline")
+	require.Contains(t, stderr, "cannot broadcast tx during offline mode")
+	require.False(t, success)
+	tests.WaitForNextNBlocksTM(1, f.Port)
+
 	success, stdout, _ = f.TxBroadcast(signedTxFile.Name())
 	require.True(t, success)
 	tests.WaitForNextNBlocksTM(1, f.Port)
@@ -1109,6 +1140,14 @@ func TestGaiaCLIMultisign(t *testing.T) {
 	defer os.Remove(barSignatureFile.Name())
 
 	// Multisign
+
+	// Does not work in offline mode
+	success, stdout, _ = f.TxMultisign(unsignedTxFile.Name(), keyFooBarBaz, []string{
+		fooSignatureFile.Name(), barSignatureFile.Name()}, "--offline")
+	require.Contains(t, "couldn't verify signature", stdout)
+	require.False(t, success)
+
+	// Success multisign
 	success, stdout, _ = f.TxMultisign(unsignedTxFile.Name(), keyFooBarBaz, []string{
 		fooSignatureFile.Name(), barSignatureFile.Name()})
 	require.True(t, success)
@@ -1289,4 +1328,25 @@ func TestValidateGenesis(t *testing.T) {
 
 	// Cleanup testing directories
 	f.Cleanup()
+}
+
+func TestGaiaCLIStatus(t *testing.T) {
+	t.Parallel()
+	f := InitFixtures(t)
+
+	// start gaiad server with minimum fees
+	minGasPrice, _ := sdk.NewDecFromStr("0.000006")
+	fees := fmt.Sprintf(
+		"--minimum-gas-prices=%s,%s",
+		sdk.NewDecCoinFromDec(feeDenom, minGasPrice),
+		sdk.NewDecCoinFromDec(fee2Denom, minGasPrice),
+	)
+	proc := f.GDStart(fees)
+	t.Cleanup(func() { proc.Stop(false) })
+
+	tests.WaitForNextNBlocksTM(1, f.Port)
+	_, stdout, stderr := f.Status()
+	require.Empty(t, stderr)
+	status := coretypes.ResultStatus{}
+	require.NoError(t, f.cdc.UnmarshalJSON([]byte(stdout), &status))
 }

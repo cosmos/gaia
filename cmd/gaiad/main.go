@@ -5,6 +5,14 @@ import (
 	"io"
 	"path/filepath"
 
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/libs/cli"
+	"github.com/tendermint/tendermint/libs/log"
+	tmtypes "github.com/tendermint/tendermint/types"
+	dbm "github.com/tendermint/tm-db"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/debug"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -16,13 +24,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/cli"
-	"github.com/tendermint/tendermint/libs/log"
-	tmtypes "github.com/tendermint/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/gaia/app"
 )
@@ -117,13 +118,13 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 
 func exportAppStateAndTMValidators(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, height int64, forZeroHeight bool, jailWhiteList []string,
-) (json.RawMessage, []tmtypes.GenesisValidator, error) {
+) (json.RawMessage, []tmtypes.GenesisValidator, *abci.ConsensusParams, error) {
 
 	if height != -1 {
 		gapp := app.NewGaiaApp(logger, db, traceStore, false, uint(1), map[int64]bool{}, "")
 		err := gapp.LoadHeight(height)
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, nil, err
 		}
 
 		return gapp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)

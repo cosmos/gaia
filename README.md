@@ -1,5 +1,5 @@
-# Cosmos Hub
-![banner](./docs/images/cosmos-hub-image.jpg)
+# Gaia
+Gaia is the first implementation of the Cosmos Hub, built using the [Cosmos SDK](https://github.com/cosmos/cosmos-sdk).  Gaia and other Cosmos Hubs allow fully sovereign blockchains to interact with one another using a protocl called [IBC](https://github.com/cosmos/ics/tree/master/ibc) that enables Inter-Blockchain Communication.  
 
 [![CircleCI](https://circleci.com/gh/cosmos/gaia/tree/master.svg?style=shield)](https://circleci.com/gh/cosmos/gaia/tree/master)
 [![codecov](https://codecov.io/gh/cosmos/gaia/branch/master/graph/badge.svg)](https://codecov.io/gh/cosmos/gaia)
@@ -8,20 +8,20 @@
 [![LoC](https://tokei.rs/b1/github/cosmos/gaia)](https://github.com/cosmos/gaia)
 [![GolangCI](https://golangci.com/badges/github.com/cosmos/gaia.svg)](https://golangci.com/r/github.com/cosmos/gaia)
 
-This repository hosts `Gaia`, the first implementation of the Cosmos Hub based on the [Cosmos SDK](https://github.com/cosmos/cosmos-sdk).
 
-**Note**: Requires [Go 1.14+](https://golang.org/dl/)
+## Mainnet Full Node Quick Start
 
-## Cosmos Hub Mainnet
-
-To run a full-node for the mainnet of the Cosmos Hub, first [install `gaiad`](./docs/gaia-tutorials/installation.md), then follow [the guide](./docs/gaia-tutorials/join-mainnet.md).
-
-For status updates and genesis file, see the [launch repo](https://github.com/cosmos/launch).
-
-## Quick Start
+This assumes that you're running Linux or MacOS and have installed [Go 1.14+](https://golang.org/dl/).  It will build and install Gaia, allow you to name your node, add seeds to your config file, start your node and use gaiacli to check the status of your node.  Welcome to the Cosmos!
 
 ```
+git clone -b v2.0.9 https://github.com/cosmos/gaia
+cd gaia
 make install
+gaiad init yournodenamehere
+SEEDS=$(cat seeds); original_string="seeds = \"\""; replace_string="seeds = \"$SEEDS\""; sed -i -e "s/$original_string/$replace_string/g" "$HOME/.gaiad/config/config.toml"
+curl https://raw.githubusercontent.com/cosmos/launch/master/genesis.json > $HOME/.gaiad/config/genesis.json
+gaiad start
+gaiacli status
 ```
 
 ## Cosmos Hub Archives
@@ -30,4 +30,4 @@ Archives of the Cosmos Hub can be found on this page [here](./docs/resources/arc
 
 ## Disambiguation
 
-This Cosmos-SDK project is not related to the [React-Cosmos](https://github.com/react-cosmos/react-cosmos) project (yet). Many thanks to Evan Coury and Ovidiu (@skidding) for this Github organization name. As per our agreement, this disambiguation notice will stay here.
+This Cosmos-SDK project is not related to the [React-Cosmos](https://github.com/react-cosmos/react-cosmos) project (yet). Many thanks to Evan Coury and Ovidiu (@skidding) for this Github organization name. Per our agreement, this disambiguation notice will stay here.

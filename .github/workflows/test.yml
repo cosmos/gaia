@@ -11,16 +11,23 @@ jobs:
 
   test-coverage-upload:
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'skip-tests')"
     steps:
-      - uses: actions/setup-go@v2-beta
       - uses: actions/checkout@v2
+      - uses: technote-space/get-diff-action@v1
+        with:
+          SUFFIX_FILTER: |
+            .go
+            .mod
+            .sum
+          SET_ENV_NAME_INSERTIONS: 1
+          SET_ENV_NAME_LINES: 1
       - name: build
         run: |
           make build
       - name: test & coverage report creation
         run: |
           go test ./... -mod=readonly -timeout 12m -race -coverprofile=coverage.txt -covermode=atomic -tags='ledger test_ledger_mock'
+        if: "env.GIT_DIFF != ''"
       - name: filter out DONTCOVER
         run: |
           excludelist="$(find ./ -type f -name '*.go' | xargs grep -l 'DONTCOVER')"
@@ -31,26 +38,29 @@ jobs:
             echo "Excluding ${filename} from coverage report..."
             sed -i.bak "/$(echo $filename | sed 's/\//\\\//g')/d" coverage.txt
           done
+        if: "env.GIT_DIFF != ''"
       - uses: codecov/codecov-action@v1
         with:
           file: ./coverage.txt # optional
           fail_ci_if_error: true
+        if: "env.GIT_DIFF != ''"
 
   integration-tests:
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'skip-tests')"
     steps:
-      - uses: actions/setup-go@v1
-        id: go
-        with:
-          go-version: 1.14
       - name: Setup env for GO
-        #  this is only used until the setup-go action is updated
-        run: |
-          echo "::set-env name=GOPATH::$(go env GOPATH)"
-          echo "::add-path::$(go env GOPATH)/bin"
+        run: echo "::add-path::$(go env GOPATH)/bin"
         shell: bash
       - uses: actions/checkout@v2
+      - uses: technote-space/get-diff-action@v1
+        with:
+          SUFFIX_FILTER: |
+            .go
+            .mod
+            .sum
+          SET_ENV_NAME_INSERTIONS: 1
+          SET_ENV_NAME_LINES: 1
       - name: Test CLI integration
         run: |
           make test-build
+        if: "env.GIT_DIFF != ''"

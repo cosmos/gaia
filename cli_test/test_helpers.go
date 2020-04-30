@@ -347,6 +347,13 @@ func (f *Fixtures) TxSign(signer, fileName string, flags ...string) (bool, strin
 	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), clientkeys.DefaultKeyPass)
 }
 
+// TxValidateSignatures is gaiacli tx sign
+func (f *Fixtures) TxValidateSignatures(fileName string, flags ...string) (bool, string, string) {
+	cmd := fmt.Sprintf("%s tx validate-signatures %v --keyring-backend=test %v", f.GaiacliBinary,
+		f.Flags(), fileName)
+	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), clientkeys.DefaultKeyPass)
+}
+
 // TxBroadcast is gaiacli tx broadcast
 func (f *Fixtures) TxBroadcast(fileName string, flags ...string) (bool, string, string) {
 	cmd := fmt.Sprintf("%s tx broadcast %v %v", f.GaiacliBinary, f.Flags(), fileName)

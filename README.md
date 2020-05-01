@@ -30,9 +30,9 @@ gaiacli status
 * [Twitter](https://twitter.com/cosmos)
 * [Telegram](https://t.me/cosmosproject)
 
-## Cosmos Hub Archives
+## Archives
 
-Archives of the Cosmos Hub can be found on this page [here](./docs/resources/archives.md).
+With each version of the Cosmos Hub, the chain is restarted from a new Genesis state.  We are currently on cosmoshub-3.  Archives of the state of cosmoshub-1 and cosmoshub-2 are available [here](./docs/resources/archives.md).
 
 ## Disambiguation
 

@@ -25,9 +25,10 @@ gaiacli status
 ```
 
 ## Talk to us!
-[Discord](https://discord.gg/huHEBUX)
-[Twitter](https://twitter.com/cosmos)
-[Telegram](https://t.me/cosmosproject)
+
+* [Discord](https://discord.gg/huHEBUX)
+* [Twitter](https://twitter.com/cosmos)
+* [Telegram](https://t.me/cosmosproject)
 
 ## Cosmos Hub Archives
 

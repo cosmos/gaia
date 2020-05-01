@@ -24,6 +24,11 @@ gaiad start
 gaiacli status
 ```
 
+## Talk to us!
+[Discord](https://discord.gg/huHEBUX)
+[Twitter](https://twitter.com/cosmos)
+[Telegram](https://t.me/cosmosproject)
+
 ## Cosmos Hub Archives
 
 Archives of the Cosmos Hub can be found on this page [here](./docs/resources/archives.md).

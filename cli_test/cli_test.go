@@ -15,10 +15,11 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/crypto/ed25519"
+	coretypes "github.com/tendermint/tendermint/rpc/core/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
+	"github.com/cosmos/cosmos-sdk/std"
 	"github.com/cosmos/cosmos-sdk/tests"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -31,8 +32,8 @@ import (
 )
 
 var (
-	cdc      = codecstd.MakeCodec(app.ModuleBasics)
-	appCodec = codecstd.NewAppCodec(cdc)
+	cdc      = std.MakeCodec(app.ModuleBasics)
+	appCodec = std.NewAppCodec(cdc)
 )
 
 func init() {
@@ -1327,4 +1328,25 @@ func TestValidateGenesis(t *testing.T) {
 
 	// Cleanup testing directories
 	f.Cleanup()
+}
+
+func TestGaiaCLIStatus(t *testing.T) {
+	t.Parallel()
+	f := InitFixtures(t)
+
+	// start gaiad server with minimum fees
+	minGasPrice, _ := sdk.NewDecFromStr("0.000006")
+	fees := fmt.Sprintf(
+		"--minimum-gas-prices=%s,%s",
+		sdk.NewDecCoinFromDec(feeDenom, minGasPrice),
+		sdk.NewDecCoinFromDec(fee2Denom, minGasPrice),
+	)
+	proc := f.GDStart(fees)
+	t.Cleanup(func() { proc.Stop(false) })
+
+	tests.WaitForNextNBlocksTM(1, f.Port)
+	_, stdout, stderr := f.Status()
+	require.Empty(t, stderr)
+	status := coretypes.ResultStatus{}
+	require.NoError(t, f.cdc.UnmarshalJSON([]byte(stdout), &status))
 }

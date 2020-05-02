@@ -20,6 +20,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/simapp"
+	"github.com/cosmos/cosmos-sdk/std"
 	"github.com/cosmos/cosmos-sdk/tests"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -28,8 +29,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/gaia/app"
-
-	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
 )
 
 const (
@@ -102,7 +101,7 @@ func NewFixtures(t *testing.T) *Fixtures {
 		require.NoError(t, err)
 	}
 
-	cdc := codecstd.MakeCodec(app.ModuleBasics)
+	cdc := std.MakeCodec(app.ModuleBasics)
 
 	return &Fixtures{
 		T:             t,
@@ -327,6 +326,12 @@ func (f *Fixtures) CLIConfig(key, value string, flags ...string) {
 
 //___________________________________________________________________________________
 // gaiacli tx send/sign/broadcast
+
+// Status is gaiacli status
+func (f *Fixtures) Status(flags ...string) (bool, string, string) {
+	cmd := fmt.Sprintf("%s status %s", f.GaiacliBinary, f.Flags())
+	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), clientkeys.DefaultKeyPass)
+}
 
 // TxSend is gaiacli tx send
 func (f *Fixtures) TxSend(from string, to sdk.AccAddress, amount sdk.Coin, flags ...string) (bool, string, string) {

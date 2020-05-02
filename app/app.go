@@ -346,7 +346,8 @@ func NewGaiaApp(
 	// sub-keepers.
 	// This must be done during creation of baseapp rather than in InitChain so
 	// that in-memory capabilities get regenerated on app restart
-	ctx := app.BaseApp.NewContext(true, abci.Header{})
+
+	ctx := app.BaseApp.NewContext(true, abci.Header{Height: -1})
 	app.capabilityKeeper.InitializeAndSeal(ctx)
 
 	app.scopedIBCKeeper = scopedIBCKeeper

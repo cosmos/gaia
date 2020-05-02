@@ -30,12 +30,12 @@ make install
 gaiad init yournodenamehere
 ```
 
-**add seeds**
+**Add Seeds**
 ```
 nano ~/.gaiad/config/config.toml
 ```
 
-Scroll down to seeds, and add some of these seeds as a comma-separated list:
+Scroll down to seeds in `config.toml`, and add some of these seeds as a comma-separated list:
 
 ```
 ba3bacc714817218562f743178228f23678b2873@5.83.160.108:26656
@@ -50,7 +50,7 @@ fa105c2291ac4aa452552fa4835266300a8209e1@88.198.41.62
 bd410d4564f7e0dd9a0eb16a64c337a059e11b80@47.103.35.130
 ```
 
-**Download Genesis, start your node, check your node status**
+**Download Genesis, Start your Node, Check your Node Status**
 ```
 curl https://raw.githubusercontent.com/cosmos/launch/master/genesis.json > $HOME/.gaiad/config/genesis.json
 gaiad start

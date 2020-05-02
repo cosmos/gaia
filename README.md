@@ -20,8 +20,7 @@ This assumes that you're running Linux or MacOS and have installed [Go 1.14+](ht
 * start your node 
 * use gaiacli to check the status of your node.  
 
-#### Build, Install, and Name your Node
-
+Build, Install, and Name your Node
 ```bash
 git clone -b v2.0.9 https://github.com/cosmos/gaia
 cd gaia
@@ -29,14 +28,12 @@ make install
 gaiad init yournodenamehere
 ```
 
-#### Add Seeds
-
+Add Seeds
 ```bash
 nano ~/.gaiad/config/config.toml
 ```
 
 Scroll down to seeds in `config.toml`, and add some of these seeds as a comma-separated list:
-
 ```
 ba3bacc714817218562f743178228f23678b2873@5.83.160.108:26656
 1e63e84945837b026f596ed8ae68708783d04ad4@51.75.145.123:26656
@@ -50,8 +47,7 @@ fa105c2291ac4aa452552fa4835266300a8209e1@88.198.41.62
 bd410d4564f7e0dd9a0eb16a64c337a059e11b80@47.103.35.130
 ```
 
-#### Download Genesis, Start your Node, Check your Node Status
-
+Download Genesis, Start your Node, Check your Node Status
 ```bash
 curl https://raw.githubusercontent.com/cosmos/launch/master/genesis.json > $HOME/.gaiad/config/genesis.json
 gaiad start

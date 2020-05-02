@@ -20,9 +20,7 @@ This assumes that you're running Linux or MacOS and have installed [Go 1.14+](ht
 * start your node 
 * use gaiacli to check the status of your node.  
 
-Welcome to the Cosmos!
-
-**Build, Install, Name your Node**
+#### Build, Install, and Name your Node
 ```
 git clone -b v2.0.9 https://github.com/cosmos/gaia
 cd gaia
@@ -30,7 +28,7 @@ make install
 gaiad init yournodenamehere
 ```
 
-**Add Seeds**
+#### Add Seeds
 ```
 nano ~/.gaiad/config/config.toml
 ```
@@ -50,14 +48,18 @@ fa105c2291ac4aa452552fa4835266300a8209e1@88.198.41.62
 bd410d4564f7e0dd9a0eb16a64c337a059e11b80@47.103.35.130
 ```
 
-**Download Genesis, Start your Node, Check your Node Status**
+#### Download Genesis, Start your Node, Check your Node Status
 ```
 curl https://raw.githubusercontent.com/cosmos/launch/master/genesis.json > $HOME/.gaiad/config/genesis.json
 gaiad start
 gaiacli status
 ```
 
+Welcome to the Cosmos!
+
 ## Talk to us!
+
+We have active, helpful communities on Twitter, Discord, and Telegram.
 
 * [Discord](https://discord.gg/huHEBUX)
 * [Twitter](https://twitter.com/cosmos)
@@ -69,4 +71,4 @@ With each version of the Cosmos Hub, the chain is restarted from a new Genesis s
 
 ## Disambiguation
 
-This Cosmos-SDK project is not related to the [React-Cosmos](https://github.com/react-cosmos/react-cosmos) project (yet). Many thanks to Evan Coury and Ovidiu (@skidding) for this Github organization name. Per our agreement, this disambiguation notice will stay here.
+Gaia is not related to the [React-Cosmos](https://github.com/react-cosmos/react-cosmos) project (yet). Many thanks to Evan Coury and Ovidiu (@skidding) for this Github organization name. Per our agreement, this disambiguation notice will stay here.

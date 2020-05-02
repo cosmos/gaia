@@ -20,7 +20,7 @@ This assumes that you're running Linux or MacOS and have installed [Go 1.14+](ht
 * start your node 
 * use gaiacli to check the status of your node.  
 
-#### Build, Install, and Name your Node
+## Build, Install, and Name your Node
 
 ```
 git clone -b v2.0.9 https://github.com/cosmos/gaia

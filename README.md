@@ -11,8 +11,18 @@ Gaia is the first implementation of the Cosmos Hub, built using the [Cosmos SDK]
 
 ## Mainnet Full Node Quick Start
 
-This assumes that you're running Linux or MacOS and have installed [Go 1.14+](https://golang.org/dl/).  It will build and install Gaia, allow you to name your node, add seeds to your config file, start your node and use gaiacli to check the status of your node.  Welcome to the Cosmos!
+This assumes that you're running Linux or MacOS and have installed [Go 1.14+](https://golang.org/dl/).  This guide helps you:
 
+* build and install Gaia
+* allow you to name your node
+* add seeds to your config file
+* download genesis state
+* start your node 
+* use gaiacli to check the status of your node.  
+
+Welcome to the Cosmos!
+
+**Build, Install, Name your Node**
 ```
 git clone -b v2.0.9 https://github.com/cosmos/gaia
 cd gaia
@@ -20,8 +30,7 @@ make install
 gaiad init yournodenamehere
 ```
 
-Next, you're going to want to add seeds to your config.toml:
-
+**add seeds**
 ```
 nano ~/.gaiad/config/config.toml
 ```
@@ -41,6 +50,7 @@ fa105c2291ac4aa452552fa4835266300a8209e1@88.198.41.62
 bd410d4564f7e0dd9a0eb16a64c337a059e11b80@47.103.35.130
 ```
 
+**Download Genesis, start your node, check your node status**
 ```
 curl https://raw.githubusercontent.com/cosmos/launch/master/genesis.json > $HOME/.gaiad/config/genesis.json
 gaiad start

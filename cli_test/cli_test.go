@@ -19,7 +19,6 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/std"
 	"github.com/cosmos/cosmos-sdk/tests"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -32,8 +31,7 @@ import (
 )
 
 var (
-	cdc      = std.MakeCodec(app.ModuleBasics)
-	appCodec = std.NewAppCodec(cdc)
+	appCodec, cdc = app.MakeCodecs()
 )
 
 func init() {

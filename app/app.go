@@ -417,17 +417,17 @@ func (app *GaiaApp) SimulationManager() *module.SimulationManager {
 }
 
 // MakeCodecs constructs the *std.Codec and *codec.Codec instances used by
-// simapp. It is useful for tests and clients who do not want to construct the
-// full simapp
+// GaiaApp.
 func MakeCodecs() (*std.Codec, *codec.Codec) {
 	cdc := std.MakeCodec(ModuleBasics)
-	interfaceRegistry := cdctypes.NewInterfaceRegistry()
+	interfaceRegistry := types.NewInterfaceRegistry()
+	appCodec := std.NewAppCodec(cdc, interfaceRegistry)
+
 	sdk.RegisterInterfaces(interfaceRegistry)
 	ModuleBasics.RegisterInterfaceModules(interfaceRegistry)
-	appCodec := std.NewAppCodec(cdc, interfaceRegistry)
+
 	return appCodec, cdc
 }
-
 // GetMaccPerms returns a copy of the module account permissions
 func GetMaccPerms() map[string][]string {
 	dupMaccPerms := make(map[string][]string)

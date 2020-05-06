@@ -74,6 +74,8 @@ github.com/coreos/pkg v0.0.0-20160727233714-3ac0863d7acf/go.mod h1:E3G3o1h8I7cfc
 github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
 github.com/cosmos/cosmos-sdk v0.34.4-0.20200506151750-d7ebee74e775 h1:JJbh1+D3SUnIUvSUyobxa92wRyLFNeNY7AL9dXfMaNQ=
 github.com/cosmos/cosmos-sdk v0.34.4-0.20200506151750-d7ebee74e775/go.mod h1:WkEH2bpJZlLcTZfE0dChRfuIuX1uIwsQPP22Na+k6RM=
+github.com/cosmos/cosmos-sdk v0.34.4-0.20200506155649-ff24a24ae6c9 h1:hT9QcDxwZJWPWNLcEiJpjYyC3OY6ojl/1oQMB55E2A0=
+github.com/cosmos/cosmos-sdk v0.34.4-0.20200506155649-ff24a24ae6c9/go.mod h1:WkEH2bpJZlLcTZfE0dChRfuIuX1uIwsQPP22Na+k6RM=
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d h1:49RLWk1j44Xu4fjHb6JFYmeUnDORVwHNkDxaQ0ctCVU=
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d/go.mod h1:tSxLoYXyBmiFeKpvmq4dzayMdCjCnu8uqmCysIGBT2Y=
 github.com/cosmos/ledger-cosmos-go v0.11.1 h1:9JIYsGnXP613pb2vPjFeMMjBI5lEDsEaF6oYorTy6J4=

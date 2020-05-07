@@ -3,7 +3,7 @@ module github.com/cosmos/gaia
 go 1.14
 
 require (
-	github.com/cosmos/cosmos-sdk v0.34.4-0.20200430150743-930802e7a13c
+	github.com/cosmos/cosmos-sdk v0.34.4-0.20200506155649-ff24a24ae6c9
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
 	github.com/otiai10/copy v1.1.1
@@ -16,5 +16,3 @@ require (
 	github.com/tendermint/tendermint v0.33.4
 	github.com/tendermint/tm-db v0.5.1
 )
-
-replace github.com/cosmos/cosmos-sdk => /home/alessio/work/cosmos-sdk

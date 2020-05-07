@@ -420,7 +420,7 @@ func (app *GaiaApp) SimulationManager() *module.SimulationManager {
 // GaiaApp.
 func MakeCodecs() (*std.Codec, *codec.Codec) {
 	cdc := std.MakeCodec(ModuleBasics)
-	interfaceRegistry := types.NewInterfaceRegistry()
+	interfaceRegistry := cdctypes.NewInterfaceRegistry()
 	appCodec := std.NewAppCodec(cdc, interfaceRegistry)
 
 	sdk.RegisterInterfaces(interfaceRegistry)
@@ -428,6 +428,7 @@ func MakeCodecs() (*std.Codec, *codec.Codec) {
 
 	return appCodec, cdc
 }
+
 // GetMaccPerms returns a copy of the module account permissions
 func GetMaccPerms() map[string][]string {
 	dupMaccPerms := make(map[string][]string)

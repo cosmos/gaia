@@ -20,7 +20,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/capability"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
+	"github.com/cosmos/cosmos-sdk/x/evidence"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -157,6 +159,8 @@ func TestAppImportExport(t *testing.T) {
 		{app.keys[bank.StoreKey], newApp.keys[bank.StoreKey], [][]byte{bank.BalancesPrefix}},
 		{app.keys[paramtypes.StoreKey], newApp.keys[paramtypes.StoreKey], [][]byte{}},
 		{app.keys[gov.StoreKey], newApp.keys[gov.StoreKey], [][]byte{}},
+		{app.keys[evidence.StoreKey], newApp.keys[evidence.StoreKey], [][]byte{}},
+		{app.keys[capability.StoreKey], newApp.keys[capability.StoreKey], [][]byte{}},
 	}
 
 	for _, skp := range storeKeysPrefixes {

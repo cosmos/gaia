@@ -20,6 +20,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/simapp"
+	"github.com/cosmos/cosmos-sdk/std"
 	"github.com/cosmos/cosmos-sdk/tests"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -28,8 +29,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/gaia/app"
-
-	codecstd "github.com/cosmos/cosmos-sdk/codec/std"
 )
 
 const (
@@ -102,7 +101,7 @@ func NewFixtures(t *testing.T) *Fixtures {
 		require.NoError(t, err)
 	}
 
-	cdc := codecstd.MakeCodec(app.ModuleBasics)
+	cdc := std.MakeCodec(app.ModuleBasics)
 
 	return &Fixtures{
 		T:             t,

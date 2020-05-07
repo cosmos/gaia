@@ -22,14 +22,19 @@ This assumes that you're running Linux or MacOS and have installed [Go 1.14+](ht
 
 Build, Install, and Name your Node
 ```bash
+# Clone Gaia
 git clone -b v2.0.9 https://github.com/cosmos/gaia
+# Enter the folder Gaia was cloned into
 cd gaia
+# Comile and install Gaia
 make install
+# Initalize Gaiad in ~/.gaiad and name your node
 gaiad init yournodenamehere
 ```
 
 Add Seeds
 ```bash
+# Edit config.toml
 nano ~/.gaiad/config/config.toml
 ```
 
@@ -49,8 +54,11 @@ bd410d4564f7e0dd9a0eb16a64c337a059e11b80@47.103.35.130
 
 Download Genesis, Start your Node, Check your Node Status
 ```bash
+# Download genesis.json
 curl https://raw.githubusercontent.com/cosmos/launch/master/genesis.json > $HOME/.gaiad/config/genesis.json
+# Start Gaiad
 gaiad start
+# Check your node's status with gaiacli
 gaiacli status
 ```
 

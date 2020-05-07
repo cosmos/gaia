@@ -19,7 +19,6 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/std"
 	"github.com/cosmos/cosmos-sdk/tests"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -32,8 +31,7 @@ import (
 )
 
 var (
-	cdc      = std.MakeCodec(app.ModuleBasics)
-	appCodec = std.NewAppCodec(cdc)
+	appCodec, cdc = app.MakeCodecs()
 )
 
 func init() {
@@ -827,7 +825,7 @@ func TestGaiaCLIValidateSignatures(t *testing.T) {
 	defer os.Remove(signedTxFile.Name())
 
 	// validate signatures
-	success, _, _ = f.TxSign(keyFoo, signedTxFile.Name(), "--validate-signatures")
+	success, _, _ = f.TxValidateSignatures(signedTxFile.Name())
 	require.True(t, success)
 
 	// modify the transaction
@@ -837,7 +835,7 @@ func TestGaiaCLIValidateSignatures(t *testing.T) {
 	defer os.Remove(modSignedTxFile.Name())
 
 	// validate signature validation failure due to different transaction sig bytes
-	success, _, _ = f.TxSign(keyFoo, modSignedTxFile.Name(), "--validate-signatures")
+	success, _, _ = f.TxValidateSignatures(modSignedTxFile.Name())
 	require.False(t, success)
 
 	f.Cleanup()
@@ -885,8 +883,8 @@ func TestGaiaCLISendGenerateSignAndBroadcast(t *testing.T) {
 	unsignedTxFile := WriteToNewTempFile(t, stdout)
 	defer os.Remove(unsignedTxFile.Name())
 
-	// Test sign --validate-signatures
-	success, stdout, _ = f.TxSign(keyFoo, unsignedTxFile.Name(), "--validate-signatures")
+	// Test validate-signatures
+	success, stdout, _ = f.TxValidateSignatures(unsignedTxFile.Name())
 	require.False(t, success)
 	require.Equal(t, fmt.Sprintf("Signers:\n  0: %v\n\nSignatures:\n\n", fooAddr.String()), stdout)
 
@@ -913,8 +911,8 @@ func TestGaiaCLISendGenerateSignAndBroadcast(t *testing.T) {
 	signedTxFile := WriteToNewTempFile(t, stdout)
 	defer os.Remove(signedTxFile.Name())
 
-	// Test sign --validate-signatures
-	success, stdout, _ = f.TxSign(keyFoo, signedTxFile.Name(), "--validate-signatures")
+	// Test validate-signatures
+	success, stdout, _ = f.TxValidateSignatures(signedTxFile.Name())
 	require.True(t, success)
 	require.Equal(t, fmt.Sprintf("Signers:\n  0: %v\n\nSignatures:\n  0: %v\t\t\t[OK]\n\n", fooAddr.String(),
 		fooAddr.String()), stdout)
@@ -983,7 +981,7 @@ func TestGaiaCLIMultisignInsufficientCosigners(t *testing.T) {
 	defer os.Remove(signedTxFile.Name())
 
 	// Validate the multisignature
-	success, _, _ = f.TxSign(keyFooBarBaz, signedTxFile.Name(), "--validate-signatures")
+	success, _, _ = f.TxValidateSignatures(signedTxFile.Name())
 	require.False(t, success)
 
 	// Broadcast the transaction
@@ -1084,7 +1082,7 @@ func TestGaiaCLIMultisignSortSignatures(t *testing.T) {
 	defer os.Remove(signedTxFile.Name())
 
 	// Validate the multisignature
-	success, _, _ = f.TxSign(keyFooBarBaz, signedTxFile.Name(), "--validate-signatures")
+	success, _, _ = f.TxValidateSignatures(signedTxFile.Name())
 	require.True(t, success)
 
 	// Broadcast the transaction
@@ -1157,7 +1155,7 @@ func TestGaiaCLIMultisign(t *testing.T) {
 	defer os.Remove(signedTxFile.Name())
 
 	// Validate the multisignature
-	success, _, _ = f.TxSign(keyFooBarBaz, signedTxFile.Name(), "--validate-signatures", "-y")
+	success, _, _ = f.TxValidateSignatures(signedTxFile.Name())
 	require.True(t, success)
 
 	// Broadcast the transaction

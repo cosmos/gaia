@@ -35,7 +35,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/server"
-	"github.com/cosmos/cosmos-sdk/std"
 	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/cosmos/cosmos-sdk/tests"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -54,8 +53,7 @@ import (
 )
 
 var (
-	cdc      = std.MakeCodec(app.ModuleBasics)
-	appCodec = std.NewAppCodec(cdc)
+	appCodec, cdc = app.MakeCodecs()
 )
 
 func init() {

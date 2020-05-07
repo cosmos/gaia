@@ -16,7 +16,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/debug"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server"
-	"github.com/cosmos/cosmos-sdk/std"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
@@ -31,8 +30,7 @@ const flagInvCheckPeriod = "inv-check-period"
 var invCheckPeriod uint
 
 func main() {
-	cdc := std.MakeCodec(app.ModuleBasics)
-	appCodec := std.NewAppCodec(cdc)
+	appCodec, cdc := app.MakeCodecs()
 
 	config := sdk.GetConfig()
 	config.SetBech32PrefixForAccount(sdk.Bech32PrefixAccAddr, sdk.Bech32PrefixAccPub)

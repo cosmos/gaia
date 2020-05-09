@@ -55,7 +55,7 @@ bd410d4564f7e0dd9a0eb16a64c337a059e11b80@47.103.35.130
 Download Genesis, Start your Node, Check your Node Status
 ```bash
 # Download genesis.json
-curl https://raw.githubusercontent.com/cosmos/launch/master/genesis.json > $HOME/.gaiad/config/genesis.json
+wget -O $HOME/.gaiad/config/genesis.json https://raw.githubusercontent.com/cosmos/launch/master/genesis.json 
 # Start Gaiad
 gaiad start
 # Check your node's status with gaiacli

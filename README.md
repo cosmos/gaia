@@ -22,8 +22,8 @@ This assumes that you're running Linux or MacOS and have installed [Go 1.14+](ht
 
 Build, Install, and Name your Node
 ```bash
-# Clone Gaia
-git clone -b v2.0.9 https://github.com/cosmos/gaia
+# Clone Gaia from the latest release found here: https://github.com/cosmos/gaia/releases
+git clone -b v2.0.10 https://github.com/cosmos/gaia
 # Enter the folder Gaia was cloned into
 cd gaia
 # Comile and install Gaia

@@ -168,7 +168,7 @@ Ayude a prevenir una catástrofe ejecutando invariantes en cada bloque de su nod
 gaiad start --assert-invariants-blockly
 ```
 
-Si se rompe una invariante en su nodo, su nodo entrará en pánico y le pedirá que envíe una transacción que detenga la red principal. Por ejemplo, el mensaje proporcionado puede parecerse a:
+Si se rompe una invariante en su nodo, su nodo entrará en pánico (`panic` de Golang) y le pedirá que envíe una transacción que detenga la red principal. Por ejemplo, el mensaje proporcionado puede parecerse a:
 
 ```bash
 invariant broken:

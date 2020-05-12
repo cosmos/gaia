@@ -26,7 +26,7 @@ gaiad init <your_custom_moniker>
 El moniker solo debe contener carácteres ASCII.  El uso de caracteres Unicode hará que tu nodo sea irreconocible.
 :::
 
-Puede editar el `moniker` después, en el archivo `~/.gaiad/config/config.toml`:
+Puede editar el apodo (`moniker`) después, en el archivo `~/.gaiad/config/config.toml`:
 
 ```toml
 # A custom human readable name for this node

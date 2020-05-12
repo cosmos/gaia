@@ -76,7 +76,7 @@ Las etiquetas (_tags_) para la construcción indican opciones especiales que deb
 | netgo     | La resolución del nombre usará código puro de Go |
 | ledger    | Dispositivos de carteras son compatibles (wallets físicas) |
 
-### Instalación de los binarios via snap (Linux only)
+### Instalación de los binarios via snap (Linux solamente)
 
 **No use snap en este momento para instalar los binarios para producción hasta que tengamos un sistema binario reproducible.**
 

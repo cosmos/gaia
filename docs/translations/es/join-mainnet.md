@@ -106,7 +106,7 @@ Para la red principal, el `gas-prices` recomendado es `0.025uatom`.
 
 ## Establezca `minimum-gas-prices`
 
-Su nodo completo mantiene las transacciones no confirmadas en la mempool. Para protegerlo de ataques de spam, es mejor establecer un `minimum-gas-prices` que la transacción debe cumplir para ser aceptada en la mempool de su nodo. Este parámetro puede ser establecido en el siguiente archivo `~/.gaiad/config/app.toml`.
+Su nodo completo mantiene las transacciones no confirmadas en la _mempool_. Para protegerlo de ataques de spam, es mejor establecer un `minimum-gas-prices` que la transacción debe cumplir para ser aceptada en la _mempool_ de su nodo. Este parámetro puede ser establecido en el siguiente archivo `~/.gaiad/config/app.toml`.
 
 El valor inicial recomendado para `min-gas-prices` es `0.025uatom`, pero puede querer cambiarlo más tarde.
 

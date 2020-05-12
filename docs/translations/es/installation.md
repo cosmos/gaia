@@ -78,7 +78,7 @@ Las etiquetas (_tags_) para la construcción indican opciones especiales que deb
 
 ### Instalación de los binarios via snap (Linux solamente)
 
-**No use snap en este momento para instalar los binarios para producción hasta que tengamos un sistema binario reproducible.**
+**No use _snap_ en este momento para instalar los binarios para producción hasta que tengamos un sistema binario reproducible.**
 
 ## Workflow para el desarrollador
 

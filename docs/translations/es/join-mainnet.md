@@ -49,7 +49,7 @@ minimum-gas-prices = ""
 
 Su nodo completo ha sido iniciado!
 
-## Génesis y seeds
+## Génesis y semillas
 
 ### Copie el archivo génesis
 

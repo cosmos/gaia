@@ -22,7 +22,7 @@ Primero, inicie el nodo y cree los archivos de configuración necesarios:
 gaiad init <your_custom_moniker>
 ```
 
-:::nota de alerta
+:::Warning
 El moniker solo debe contener carácteres ASCII.  El uso de caracteres Unicode hará que tu nodo sea irreconocible.
 :::
 

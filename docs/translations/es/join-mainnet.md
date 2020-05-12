@@ -96,7 +96,7 @@ tarifa = techo(gas * precioPorGas)
 
 El `gas` depende de la transacción. Diferentes transacciones requieren diferentes cantidades de `gas`. La cantidad de `gas` para una transacción se calcula mientras se procesa, pero hay una forma previa de estimarla usando el valor `auto` para el indicador de `gas`. Por supuesto, esto sólo da una estimación. Puede ajustar esta estimación con el identificador `--gas-adjustment` (por defecto `1.0`) si quiere estar seguro de que proporciona suficiente `gas` para la transacción. 
 
-El `gasPrice` es el precio de cada unidad de `gas`. Cada validador establece un valor de `min-gas-price`, y sólo incluirá transacciones que tengan un `gasPrice` mayor que su `min-gas-price`.
+El `gasPrice` (i.e `precioPorGas`) es el precio de cada unidad de `gas`. Cada validador establece un valor de `min-gas-price`, y sólo incluirá transacciones que tengan un `gasPrice` mayor que su `min-gas-price`.
 
 Los `fees` de la transacción son el producto del `gas` y del `gasPrice`. Como usuario, tiene que introducir 2 de 3. Cuanto más alto sea el `gasPrice`/`fees`, mayor será la posibilidad de que su transacción se incluya en un bloque.
 

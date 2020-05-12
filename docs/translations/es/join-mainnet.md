@@ -72,7 +72,7 @@ Para verificar la validez de la configuración:
 gaiad start
 ```
 
-### Añada los seeds nodes
+### Añada los nodos semilla
 
 Su nodo necesita saber cómo encontrar peers. Necesita añadir seed nodes en buen estado en `$HOME/.gaiad/config/config.toml`. El repositorio para el [`lanzamiento`](https://github.com/cosmos/launch) contiene enlaces a algunos seed nodes.
 

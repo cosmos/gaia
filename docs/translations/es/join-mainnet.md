@@ -74,7 +74,7 @@ gaiad start
 
 ### Añada los nodos semilla
 
-Su nodo necesita saber cómo encontrar peers. Necesita añadir seed nodes en buen estado en `$HOME/.gaiad/config/config.toml`. El repositorio para el [`lanzamiento`](https://github.com/cosmos/launch) contiene enlaces a algunos seed nodes.
+Su nodo necesita saber cómo encontrar pares (_peers_). Necesita añadir nodos semilla en buen estado en `$HOME/.gaiad/config/config.toml`. El repositorio para el [`lanzamiento`](https://github.com/cosmos/launch) contiene enlaces a algunos nodos semilla.
 
 Si esos seeds no funcionan, puedes encontrar más seeds y peers persistentes en un explorador de Cosmos Hub (puede encontrar una lista en la [página del lanzamiento](https://cosmos.network/launch))
 

@@ -71,7 +71,7 @@ go: go version go1.12.5 darwin/amd64
 
 Las etiquetas (_tags_) para la construcción indican opciones especiales que deben ser activados en el binario.
 
-| Tag Construcción | Descripción                                     |
+| Etiquetas Construcción | Descripción                                     |
 | --------- | ----------------------------------------------- |
 | netgo     | La resolución del nombre usará código puro de Go |
 | ledger    | Dispositivos de carteras son compatibles (wallets físicas) |

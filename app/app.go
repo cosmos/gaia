@@ -11,6 +11,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/std"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -141,8 +142,7 @@ func NewGaiaApp(
 ) *GaiaApp {
 
 	// TODO: Remove cdc in favor of appCodec once all modules are migrated.
-	cdc := std.MakeCodec(ModuleBasics)
-	appCodec := std.NewAppCodec(cdc)
+	appCodec, cdc := MakeCodecs()
 
 	bApp := baseapp.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
@@ -272,7 +272,7 @@ func NewGaiaApp(
 		distr.NewAppModule(appCodec, app.distrKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
 		staking.NewAppModule(appCodec, app.stakingKeeper, app.accountKeeper, app.bankKeeper),
 		upgrade.NewAppModule(app.upgradeKeeper),
-		evidence.NewAppModule(appCodec, app.evidenceKeeper),
+		evidence.NewAppModule(app.evidenceKeeper),
 		ibc.NewAppModule(app.ibcKeeper),
 		params.NewAppModule(app.paramsKeeper),
 		transferModule,
@@ -315,7 +315,7 @@ func NewGaiaApp(
 		distr.NewAppModule(appCodec, app.distrKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
 		slashing.NewAppModule(appCodec, app.slashingKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
 		params.NewAppModule(app.paramsKeeper),
-		evidence.NewAppModule(appCodec, app.evidenceKeeper),
+		evidence.NewAppModule(app.evidenceKeeper),
 	)
 
 	app.sm.RegisterStoreDecoders()
@@ -414,6 +414,10 @@ func (app *GaiaApp) SimulationManager() *module.SimulationManager {
 	return app.sm
 }
 
+func (app *GaiaApp) FlushLatestVersion() int64 {
+	return app.BaseApp.FlushLatestVersion()
+}
+
 // GetMaccPerms returns a copy of the module account permissions
 func GetMaccPerms() map[string][]string {
 	dupMaccPerms := make(map[string][]string)
@@ -421,4 +425,17 @@ func GetMaccPerms() map[string][]string {
 		dupMaccPerms[k] = v
 	}
 	return dupMaccPerms
+}
+
+// MakeCodecs constructs the *std.Codec and *codec.Codec instances used by
+// GaiaApp.
+func MakeCodecs() (*std.Codec, *codec.Codec) {
+	cdc := std.MakeCodec(ModuleBasics)
+	interfaceRegistry := types.NewInterfaceRegistry()
+	appCodec := std.NewAppCodec(cdc, interfaceRegistry)
+
+	sdk.RegisterInterfaces(interfaceRegistry)
+	ModuleBasics.RegisterInterfaceModules(interfaceRegistry)
+
+	return appCodec, cdc
 }

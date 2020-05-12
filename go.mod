@@ -16,3 +16,7 @@ require (
 	github.com/tendermint/tendermint v0.33.4
 	github.com/tendermint/tm-db v0.5.1
 )
+
+replace github.com/cosmos/cosmos-sdk => /Users/aleksbez/go/src/github.com/cosmos/cosmos-sdk
+
+replace github.com/tendermint/iavl => /Users/aleksbez/code/tendermint/iavl

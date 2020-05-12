@@ -85,7 +85,7 @@ Las etiquetas (_tags_) para la construcción indican opciones especiales que deb
 Para probar cualquier cambio hecho en el SDK o Tendermint, se debe agregar una cláusula de `replace` en `go.mod` proporcionando la ruta de entrada correcta.
 
 - Realice los cambios apropiados
-- Añada `replace github.com/cosmos/cosmos-sdk => /path/to/clone/cosmos-sdk` en `go.mod`
+- Añada `replace github.com/cosmos/cosmos-sdk => /ruta/a/clon/cosmos-sdk` en `go.mod`
 - Ejecute `make clean install` o `make clean build`
 - Compruebe sus cambios
 

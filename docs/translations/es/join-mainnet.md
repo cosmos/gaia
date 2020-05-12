@@ -76,7 +76,7 @@ gaiad start
 
 Su nodo necesita saber cómo encontrar pares (_peers_). Necesita añadir nodos semilla en buen estado en `$HOME/.gaiad/config/config.toml`. El repositorio para el [`lanzamiento`](https://github.com/cosmos/launch) contiene enlaces a algunos nodos semilla.
 
-Si esos seeds no funcionan, puedes encontrar más seeds y peers persistentes en un explorador de Cosmos Hub (puede encontrar una lista en la [página del lanzamiento](https://cosmos.network/launch))
+Si estas semillas no funcionan, puedes encontrar más _seeds_ y _peers_ persistentes en un explorador de Cosmos Hub (puede encontrar una lista en la [página del lanzamiento](https://cosmos.network/launch))
 
 También puedes preguntar por peers en el [canal de Validadores de Riot](https://riot.im/app/#/room/#cosmos-validators:matrix.org)
 

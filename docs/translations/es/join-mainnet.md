@@ -32,7 +32,7 @@ Puede editar el apodo (`moniker`) después, en el archivo `~/.gaiad/config/confi
 # A custom human readable name for this node
 moniker = "<tu nombre personalizado>"
 ```
-Puede editar el archivo `~/.gaiad/config/app.toml` para activar el mecanismo antispam y rechazar las transacciones entrantes con valores inferiores a los precios mínimos para el gas:
+Puede editar el archivo `~/.gaiad/config/app.toml` para activar el mecanismo antispam y rechazar las transacciones entrantes con valores inferiores a los precios mínimos para el _gas_:
 
 ```
 # This is a TOML config file.

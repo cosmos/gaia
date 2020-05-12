@@ -78,7 +78,7 @@ Su nodo necesita saber cómo encontrar pares (_peers_). Necesita añadir nodos s
 
 Si estas semillas no funcionan, puedes encontrar más _seeds_ y _peers_ persistentes en un explorador de Cosmos Hub (puede encontrar una lista en la [página del lanzamiento](https://cosmos.network/launch))
 
-También puedes preguntar por peers en el [canal de Validadores de Riot](https://riot.im/app/#/room/#cosmos-validators:matrix.org)
+También puedes preguntar por _peers_ en el [canal de Validadores de Riot](https://riot.im/app/#/room/#cosmos-validators:matrix.org)
 
 Para más información acerca de seeds y peers, puede leer [este enlace](https://docs.tendermint.com/master/spec/p2p/peer.html)
 

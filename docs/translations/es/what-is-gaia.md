@@ -20,6 +20,13 @@ order: 1
 - `x/gov`: Lógica para la gobernanza.
 - `x/ibc`: Transferencia entre blockchains.
 - `x/params`: Controla los parámetros del nivel de la aplicación.
+- `x/capability`:
+- `x/crisis`:
+- `x/evidence`:
+- `x/genaccounts`:
+- `x/mint`:
+- `x/simulation`:
+- `x/upgrade`:
 
 Acerca del Hub de Cosmos: El Hub de Cosmos es el primer Hub en ser lanzado en la red de Cosmos. El propósito del Hub es facilitar las transferencias entre cadenas de bloques. Si una cadena de bloques se conecta a un Hub a través de IBC, automáticamente obtiene acceso a todas las otras cadenas de bloques que están conectadas a ella. El Hub del Cosmos es una cadena de participación pública. Su token de participación es llamado Atom.
 

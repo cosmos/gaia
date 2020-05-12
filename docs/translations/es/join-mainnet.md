@@ -47,7 +47,7 @@ Puede editar el archivo `~/.gaiad/config/app.toml` para activar el mecanismo ant
 minimum-gas-prices = ""
 ```
 
-Su nodo completo ha sido iniciado!
+¡Su nodo completo ha sido iniciado!
 
 ## Génesis y semillas
 

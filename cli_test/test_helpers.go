@@ -20,6 +20,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/simapp"
+	"github.com/cosmos/cosmos-sdk/std"
 	"github.com/cosmos/cosmos-sdk/tests"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -27,6 +28,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+	"github.com/cosmos/gaia/app"
 )
 
 const (
@@ -78,6 +80,8 @@ type Fixtures struct {
 	GaiacliHome   string
 	P2PAddr       string
 	T             *testing.T
+
+	cdc *codec.Codec
 }
 
 // NewFixtures creates a new instance of Fixtures with many vars set
@@ -97,6 +101,8 @@ func NewFixtures(t *testing.T) *Fixtures {
 		require.NoError(t, err)
 	}
 
+	cdc := std.MakeCodec(app.ModuleBasics)
+
 	return &Fixtures{
 		T:             t,
 		BuildDir:      buildDir,
@@ -108,6 +114,7 @@ func NewFixtures(t *testing.T) *Fixtures {
 		RPCAddr:       servAddr,
 		P2PAddr:       p2pAddr,
 		Port:          port,
+		cdc:           cdc,
 	}
 }
 
@@ -320,6 +327,12 @@ func (f *Fixtures) CLIConfig(key, value string, flags ...string) {
 //___________________________________________________________________________________
 // gaiacli tx send/sign/broadcast
 
+// Status is gaiacli status
+func (f *Fixtures) Status(flags ...string) (bool, string, string) {
+	cmd := fmt.Sprintf("%s status %s", f.GaiacliBinary, f.Flags())
+	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), clientkeys.DefaultKeyPass)
+}
+
 // TxSend is gaiacli tx send
 func (f *Fixtures) TxSend(from string, to sdk.AccAddress, amount sdk.Coin, flags ...string) (bool, string, string) {
 	cmd := fmt.Sprintf("%s tx send --keyring-backend=test %s %s %s %v", f.GaiacliBinary, from,
@@ -331,6 +344,13 @@ func (f *Fixtures) TxSend(from string, to sdk.AccAddress, amount sdk.Coin, flags
 func (f *Fixtures) TxSign(signer, fileName string, flags ...string) (bool, string, string) {
 	cmd := fmt.Sprintf("%s tx sign %v --keyring-backend=test --from=%s %v", f.GaiacliBinary,
 		f.Flags(), signer, fileName)
+	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), clientkeys.DefaultKeyPass)
+}
+
+// TxValidateSignatures is gaiacli tx sign
+func (f *Fixtures) TxValidateSignatures(fileName string, flags ...string) (bool, string, string) {
+	cmd := fmt.Sprintf("%s tx validate-signatures %v --keyring-backend=test %v", f.GaiacliBinary,
+		f.Flags(), fileName)
 	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), clientkeys.DefaultKeyPass)
 }
 
@@ -456,8 +476,7 @@ func (f *Fixtures) QueryBalances(address sdk.AccAddress, flags ...string) sdk.Co
 
 	var balances sdk.Coins
 
-	require.NoError(f.T, cdc.UnmarshalJSON([]byte(out), &balances), "out %v\n", out)
-
+	require.NoError(f.T, f.cdc.UnmarshalJSON([]byte(out), &balances), "out %v\n", out)
 	return balances
 }
 
@@ -470,7 +489,7 @@ func (f *Fixtures) QueryTxs(page, limit int, events ...string) *sdk.SearchTxsRes
 	out, _ := tests.ExecuteT(f.T, cmd, "")
 	var result sdk.SearchTxsResult
 
-	err := cdc.UnmarshalJSON([]byte(out), &result)
+	err := f.cdc.UnmarshalJSON([]byte(out), &result)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return &result
 }
@@ -491,7 +510,7 @@ func (f *Fixtures) QueryStakingValidator(valAddr sdk.ValAddress, flags ...string
 	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
 	var validator staking.Validator
 
-	err := cdc.UnmarshalJSON([]byte(out), &validator)
+	err := f.cdc.UnmarshalJSON([]byte(out), &validator)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return validator
 }
@@ -502,7 +521,7 @@ func (f *Fixtures) QueryStakingUnbondingDelegationsFrom(valAddr sdk.ValAddress, 
 	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
 	var ubds []staking.UnbondingDelegation
 
-	err := cdc.UnmarshalJSON([]byte(out), &ubds)
+	err := f.cdc.UnmarshalJSON([]byte(out), &ubds)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return ubds
 }
@@ -513,7 +532,7 @@ func (f *Fixtures) QueryStakingDelegationsTo(valAddr sdk.ValAddress, flags ...st
 	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
 	var delegations []staking.Delegation
 
-	err := cdc.UnmarshalJSON([]byte(out), &delegations)
+	err := f.cdc.UnmarshalJSON([]byte(out), &delegations)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return delegations
 }
@@ -524,7 +543,7 @@ func (f *Fixtures) QueryStakingPool(flags ...string) staking.Pool {
 	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
 	var pool staking.Pool
 
-	err := cdc.UnmarshalJSON([]byte(out), &pool)
+	err := f.cdc.UnmarshalJSON([]byte(out), &pool)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return pool
 }
@@ -535,7 +554,7 @@ func (f *Fixtures) QueryStakingParameters(flags ...string) staking.Params {
 	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
 	var params staking.Params
 
-	err := cdc.UnmarshalJSON([]byte(out), &params)
+	err := f.cdc.UnmarshalJSON([]byte(out), &params)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return params
 }
@@ -549,7 +568,7 @@ func (f *Fixtures) QueryGovParamDeposit() gov.DepositParams {
 	out, _ := tests.ExecuteT(f.T, cmd, "")
 	var depositParam gov.DepositParams
 
-	err := cdc.UnmarshalJSON([]byte(out), &depositParam)
+	err := f.cdc.UnmarshalJSON([]byte(out), &depositParam)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return depositParam
 }
@@ -560,7 +579,7 @@ func (f *Fixtures) QueryGovParamVoting() gov.VotingParams {
 	out, _ := tests.ExecuteT(f.T, cmd, "")
 	var votingParam gov.VotingParams
 
-	err := cdc.UnmarshalJSON([]byte(out), &votingParam)
+	err := f.cdc.UnmarshalJSON([]byte(out), &votingParam)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return votingParam
 }
@@ -571,7 +590,7 @@ func (f *Fixtures) QueryGovParamTallying() gov.TallyParams {
 	out, _ := tests.ExecuteT(f.T, cmd, "")
 	var tallyingParam gov.TallyParams
 
-	err := cdc.UnmarshalJSON([]byte(out), &tallyingParam)
+	err := f.cdc.UnmarshalJSON([]byte(out), &tallyingParam)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return tallyingParam
 }
@@ -586,7 +605,7 @@ func (f *Fixtures) QueryGovProposals(flags ...string) gov.Proposals {
 	require.Empty(f.T, stderr)
 	var out gov.Proposals
 
-	err := cdc.UnmarshalJSON([]byte(stdout), &out)
+	err := f.cdc.UnmarshalJSON([]byte(stdout), &out)
 	require.NoError(f.T, err)
 	return out
 }
@@ -597,7 +616,7 @@ func (f *Fixtures) QueryGovProposal(proposalID int, flags ...string) gov.Proposa
 	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
 	var proposal gov.Proposal
 
-	err := cdc.UnmarshalJSON([]byte(out), &proposal)
+	err := f.cdc.UnmarshalJSON([]byte(out), &proposal)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return proposal
 }
@@ -608,7 +627,7 @@ func (f *Fixtures) QueryGovVote(proposalID int, voter sdk.AccAddress, flags ...s
 	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
 	var vote gov.Vote
 
-	err := cdc.UnmarshalJSON([]byte(out), &vote)
+	err := f.cdc.UnmarshalJSON([]byte(out), &vote)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return vote
 }
@@ -619,7 +638,7 @@ func (f *Fixtures) QueryGovVotes(proposalID int, flags ...string) []gov.Vote {
 	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
 	var votes []gov.Vote
 
-	err := cdc.UnmarshalJSON([]byte(out), &votes)
+	err := f.cdc.UnmarshalJSON([]byte(out), &votes)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return votes
 }
@@ -630,7 +649,7 @@ func (f *Fixtures) QueryGovDeposit(proposalID int, depositor sdk.AccAddress, fla
 	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
 	var deposit gov.Deposit
 
-	err := cdc.UnmarshalJSON([]byte(out), &deposit)
+	err := f.cdc.UnmarshalJSON([]byte(out), &deposit)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return deposit
 }
@@ -641,7 +660,7 @@ func (f *Fixtures) QueryGovDeposits(propsalID int, flags ...string) []gov.Deposi
 	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
 	var deposits []gov.Deposit
 
-	err := cdc.UnmarshalJSON([]byte(out), &deposits)
+	err := f.cdc.UnmarshalJSON([]byte(out), &deposits)
 	require.NoError(f.T, err, "out %v\n, err %v", out, err)
 	return deposits
 }
@@ -656,7 +675,7 @@ func (f *Fixtures) QuerySigningInfo(val string) slashing.ValidatorSigningInfo {
 	require.Empty(f.T, errStr)
 
 	var sinfo slashing.ValidatorSigningInfo
-	err := cdc.UnmarshalJSON([]byte(res), &sinfo)
+	err := f.cdc.UnmarshalJSON([]byte(res), &sinfo)
 	require.NoError(f.T, err)
 	return sinfo
 }
@@ -668,7 +687,7 @@ func (f *Fixtures) QuerySlashingParams() slashing.Params {
 	require.Empty(f.T, errStr)
 
 	var params slashing.Params
-	err := cdc.UnmarshalJSON([]byte(res), &params)
+	err := f.cdc.UnmarshalJSON([]byte(res), &params)
 	require.NoError(f.T, err)
 	return params
 }
@@ -683,7 +702,7 @@ func (f *Fixtures) QueryRewards(delAddr sdk.AccAddress, flags ...string) distrib
 	require.Empty(f.T, errStr)
 
 	var rewards distribution.QueryDelegatorTotalRewardsResponse
-	err := cdc.UnmarshalJSON([]byte(res), &rewards)
+	err := f.cdc.UnmarshalJSON([]byte(res), &rewards)
 	require.NoError(f.T, err)
 	return rewards
 }
@@ -693,23 +712,23 @@ func (f *Fixtures) QueryRewards(delAddr sdk.AccAddress, flags ...string) distrib
 
 // QueryTotalSupply returns the total supply of coins
 func (f *Fixtures) QueryTotalSupply(flags ...string) (totalSupply sdk.Coins) {
-	cmd := fmt.Sprintf("%s query supply total %s", f.GaiacliBinary, f.Flags())
+	cmd := fmt.Sprintf("%s query bank total %s", f.GaiacliBinary, f.Flags())
 	res, errStr := tests.ExecuteT(f.T, cmd, "")
 	require.Empty(f.T, errStr)
 
-	err := cdc.UnmarshalJSON([]byte(res), &totalSupply)
+	err := f.cdc.UnmarshalJSON([]byte(res), &totalSupply)
 	require.NoError(f.T, err)
 	return totalSupply
 }
 
 // QueryTotalSupplyOf returns the total supply of a given coin denom
 func (f *Fixtures) QueryTotalSupplyOf(denom string, flags ...string) sdk.Int {
-	cmd := fmt.Sprintf("%s query supply total %s %s", f.GaiacliBinary, denom, f.Flags())
+	cmd := fmt.Sprintf("%s query bank total %s %s", f.GaiacliBinary, denom, f.Flags())
 	res, errStr := tests.ExecuteT(f.T, cmd, "")
 	require.Empty(f.T, errStr)
 
 	var supplyOf sdk.Int
-	err := cdc.UnmarshalJSON([]byte(res), &supplyOf)
+	err := f.cdc.UnmarshalJSON([]byte(res), &supplyOf)
 	require.NoError(f.T, err)
 	return supplyOf
 }
@@ -783,16 +802,14 @@ func WriteToNewTempFile(t *testing.T, s string) *os.File {
 }
 
 //nolint:deadcode,unused
-func marshalStdTx(t *testing.T, stdTx auth.StdTx) []byte {
-
-	bz, err := cdc.MarshalBinaryBare(stdTx)
+func (f *Fixtures) marshalStdTx(t *testing.T, stdTx auth.StdTx) []byte {
+	bz, err := f.cdc.MarshalBinaryBare(stdTx)
 	require.NoError(t, err)
 	return bz
 }
 
 //nolint:deadcode,unused
-func unmarshalStdTx(t *testing.T, s string) (stdTx auth.StdTx) {
-
-	require.Nil(t, cdc.UnmarshalJSON([]byte(s), &stdTx))
+func (f *Fixtures) unmarshalStdTx(t *testing.T, s string) (stdTx auth.StdTx) {
+	require.Nil(t, f.cdc.UnmarshalJSON([]byte(s), &stdTx))
 	return
 }

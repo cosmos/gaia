@@ -93,13 +93,6 @@ jobs:
           paths:
             - "."
 
-  test-sim-multi-seed-long:
-    executor: golang
-    steps:
-      - make:
-          target: test-sim-multi-seed-long
-          description: "Test Gaia multi-seed simulation (long-lived)"
-
   localnet:
     working_directory: /home/circleci/.go_workspace/src/github.com/cosmos/gaia
     machine:
@@ -280,16 +273,6 @@ workflows:
       - setup-dependencies:
           # filters here are needed to enable this job also for tags
           filters:
-            tags:
-              only:
-                - /^v.*/
-      - test-sim-multi-seed-long:
-          requires:
-            - setup-dependencies
-          # These filters ensure that the long sim only runs during release
-          filters:
-            branches:
-              ignore: /.*/
             tags:
               only:
                 - /^v.*/

@@ -58,6 +58,18 @@ with previous `gaia` releases need to be migrated through the `gaiacli keys migr
 * (gaiacli) [\#326](https://github.com/cosmos/gaia/pull/326) Implement `--offline` flag in all post commands. Some commands
 that did not work with `--generate-only` as `gaiacli staking delegate` now work as long as we don't include the offline flag.
 
+## v2.0.10 - 2020-05-06
+
+### Improvements
+
+    (sdk) Bump SDK version to v0.37.12.
+
+## v2.0.9 - 2020-04-23
+
+### Improvements
+
+    (sdk) Bump SDK version to v0.37.11.
+
 ## [v2.0.8] - 2020-04-09
 
 ### Improvements
@@ -190,7 +202,9 @@ not rely on the `x/supply` keeper to get module account addresses for blacklisti
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v2.0.8...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v2.0.10...HEAD
+[v2.0.10]: https://github.com/cosmos/gaia/releases/tag/v2.0.10
+[v2.0.9]: https://github.com/cosmos/gaia/releases/tag/v2.0.9
 [v2.0.8]: https://github.com/cosmos/gaia/releases/tag/v2.0.8
 [v2.0.7]: https://github.com/cosmos/gaia/releases/tag/v2.0.7
 [v2.0.6]: https://github.com/cosmos/gaia/releases/tag/v2.0.6

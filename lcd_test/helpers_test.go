@@ -20,7 +20,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
-	authexported "github.com/cosmos/cosmos-sdk/x/auth/exported"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	bankrest "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
 	distrrest "github.com/cosmos/cosmos-sdk/x/distribution/client/rest"
 	"github.com/cosmos/cosmos-sdk/x/gov"
@@ -214,7 +214,7 @@ func doKeysPost(t *testing.T, port, name, password, mnemonic string, account int
 }
 
 // GET /auth/accounts/{address} Get the account information on blockchain
-func getAccount(t *testing.T, port string, addr sdk.AccAddress) (acc authexported.Account) {
+func getAccount(t *testing.T, port string, addr sdk.AccAddress) (acc authtypes.AccountI) {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/auth/accounts/%s", addr.String()), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 	require.Nil(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &acc))
@@ -357,7 +357,7 @@ func doTransferWithGasAccAuto(
 // signAndBroadcastGenTx accepts a successfully generated unsigned tx, signs it,
 // and broadcasts it.
 func signAndBroadcastGenTx(
-	t *testing.T, port, name, genTx string, acc authexported.Account,
+	t *testing.T, port, name, genTx string, acc authtypes.AccountI,
 	gasAdjustment float64, simulate bool, kb keyring.Keyring,
 ) (resp *http.Response, body string) {
 
@@ -380,7 +380,7 @@ func signAndBroadcastGenTx(
 		nil,
 	).WithKeybase(kb)
 
-	signedTx, err := txbldr.SignStdTx(name, clientkeys.DefaultKeyPass, tx, false)
+	signedTx, err := txbldr.SignStdTx(name, tx, false)
 	require.NoError(t, err)
 
 	return doBroadcast(t, port, signedTx)

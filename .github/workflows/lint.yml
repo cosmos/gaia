@@ -1,5 +1,5 @@
 name: Lint
-# Lint runs golangci-lint over the entire Tendermint repository
+# Lint runs golangci-lint over the entire Gaia repository
 # This workflow is run on every pull request and push to master
 # The `golangci` job will pass without running if no *.{go, mod, sum} files have been modified.
 on:

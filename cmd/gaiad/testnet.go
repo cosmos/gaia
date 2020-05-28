@@ -259,7 +259,7 @@ func InitTestnet(
 }
 
 func initGenFiles(
-	cdc *codec.Codec, mbm module.BasicManager, chainID string,
+	cdc codec.JSONMarshaler, mbm module.BasicManager, chainID string,
 	genAccounts []authexported.GenesisAccount, genBalances []bank.Balance,
 	genFiles []string, numValidators int,
 ) error {

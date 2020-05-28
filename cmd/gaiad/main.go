@@ -46,21 +46,20 @@ func main() {
 		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
 	}
 
-	rootCmd.AddCommand(genutilcli.InitCmd(ctx, cdc, app.ModuleBasics, app.DefaultNodeHome))
-	rootCmd.AddCommand(genutilcli.CollectGenTxsCmd(ctx, cdc, bank.GenesisBalancesIterator{}, app.DefaultNodeHome))
-	rootCmd.AddCommand(genutilcli.MigrateGenesisCmd(ctx, cdc))
 	rootCmd.AddCommand(
+		genutilcli.InitCmd(ctx, cdc, app.ModuleBasics, app.DefaultNodeHome),
+		genutilcli.CollectGenTxsCmd(ctx, cdc, bank.GenesisBalancesIterator{}, app.DefaultNodeHome),
+		genutilcli.MigrateGenesisCmd(ctx, cdc),
 		genutilcli.GenTxCmd(
 			ctx, cdc, app.ModuleBasics, staking.AppModuleBasic{},
 			bank.GenesisBalancesIterator{}, app.DefaultNodeHome, app.DefaultCLIHome,
 		),
-	)
-	rootCmd.AddCommand(genutilcli.ValidateGenesisCmd(ctx, cdc, app.ModuleBasics))
-	rootCmd.AddCommand(AddGenesisAccountCmd(ctx, cdc, appCodec, app.DefaultNodeHome, app.DefaultCLIHome))
-	rootCmd.AddCommand(flags.NewCompletionCmd(rootCmd, true))
-	rootCmd.AddCommand(testnetCmd(ctx, cdc, app.ModuleBasics, bank.GenesisBalancesIterator{}))
-	rootCmd.AddCommand(replayCmd())
-	rootCmd.AddCommand(debug.Cmd(cdc))
+		genutilcli.ValidateGenesisCmd(ctx, cdc, app.ModuleBasics),
+		AddGenesisAccountCmd(ctx, cdc, appCodec, app.DefaultNodeHome, app.DefaultCLIHome),
+		flags.NewCompletionCmd(rootCmd, true),
+		testnetCmd(ctx, cdc, app.ModuleBasics, bank.GenesisBalancesIterator{}),
+		replayCmd(),
+		debug.Cmd(cdc))
 
 	server.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
 

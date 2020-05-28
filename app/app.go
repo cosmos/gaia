@@ -27,9 +27,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/ibc"
+	transfer "github.com/cosmos/cosmos-sdk/x/ibc-transfer"
+	transfertypes "github.com/cosmos/cosmos-sdk/x/ibc-transfer/types"
 	ibcclient "github.com/cosmos/cosmos-sdk/x/ibc/02-client"
 	port "github.com/cosmos/cosmos-sdk/x/ibc/05-port"
-	transfer "github.com/cosmos/cosmos-sdk/x/ibc/20-transfer"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
@@ -74,13 +75,13 @@ var (
 
 	// module account permissions
 	maccPerms = map[string][]string{
-		auth.FeeCollectorName:           nil,
-		distr.ModuleName:                nil,
-		mint.ModuleName:                 {auth.Minter},
-		staking.BondedPoolName:          {auth.Burner, auth.Staking},
-		staking.NotBondedPoolName:       {auth.Burner, auth.Staking},
-		gov.ModuleName:                  {auth.Burner},
-		transfer.GetModuleAccountName(): {auth.Minter, auth.Burner},
+		auth.FeeCollectorName:     nil,
+		distr.ModuleName:          nil,
+		mint.ModuleName:           {auth.Minter},
+		staking.BondedPoolName:    {auth.Burner, auth.Staking},
+		staking.NotBondedPoolName: {auth.Burner, auth.Staking},
+		gov.ModuleName:            {auth.Burner},
+		transfertypes.ModuleName:  {auth.Minter, auth.Burner},
 	}
 
 	// module accounts that are allowed to receive tokens

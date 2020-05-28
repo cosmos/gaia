@@ -5,9 +5,11 @@ import (
 	"os"
 	"path"
 
+	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -86,7 +88,7 @@ func main() {
 	}
 }
 
-func queryCmd(cdc *amino.Codec) *cobra.Command {
+func queryCmd(cdc *codec.Codec) *cobra.Command {
 	queryCmd := &cobra.Command{
 		Use:                        "query",
 		Aliases:                    []string{"q"},
@@ -112,7 +114,7 @@ func queryCmd(cdc *amino.Codec) *cobra.Command {
 	return queryCmd
 }
 
-func txCmd(cdc *amino.Codec) *cobra.Command {
+func txCmd(cdc *codec.Codec) *cobra.Command {
 	txCmd := &cobra.Command{
 		Use:                        "tx",
 		Short:                      "Transactions subcommands",
@@ -121,8 +123,15 @@ func txCmd(cdc *amino.Codec) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
+	cliCtx := context.CLIContext{}
+	cliCtx = cliCtx.
+		WithJSONMarshaler(appCodec).
+		WithTxGenerator(types.StdTxGenerator{Cdc: cdc}).
+		WithAccountRetriever(types.NewAccountRetriever(appCodec)).
+		WithCodec(cdc)
+
 	txCmd.AddCommand(
-		bankcmd.SendTxCmd(cdc),
+		bankcmd.NewSendTxCmd(cliCtx),
 		flags.LineBreak,
 		authcmd.GetSignCommand(cdc),
 		authcmd.GetValidateSignaturesCommand(cdc),
@@ -135,7 +144,7 @@ func txCmd(cdc *amino.Codec) *cobra.Command {
 	)
 
 	// add modules' tx commands
-	app.ModuleBasics.AddTxCommands(txCmd, cdc)
+	app.ModuleBasics.AddTxCommands(txCmd, cliCtx)
 
 	// remove auth and bank commands as they're mounted under the root tx command
 	var cmdsToRemove []*cobra.Command

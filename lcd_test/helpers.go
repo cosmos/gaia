@@ -22,7 +22,7 @@ import (
 	"github.com/tendermint/tendermint/p2p"
 	pvm "github.com/tendermint/tendermint/privval"
 	"github.com/tendermint/tendermint/proxy"
-	tmrpc "github.com/tendermint/tendermint/rpc/lib/server"
+	tmrpcserver "github.com/tendermint/tendermint/rpc/jsonrpc/server"
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
@@ -360,11 +360,12 @@ func startTM(
 func startLCD(logger log.Logger, listenAddr string, cdc *codec.Codec) (net.Listener, error) {
 	rs := lcd.NewRestServer(cdc)
 	registerRoutes(rs)
-	listener, err := tmrpc.Listen(listenAddr, tmrpc.DefaultConfig())
+	listener, err := tmrpcserver.Listen(listenAddr, tmrpcserver.DefaultConfig())
 	if err != nil {
 		return nil, err
 	}
-	go tmrpc.StartHTTPServer(listener, rs.Mux, logger, tmrpc.DefaultConfig()) //nolint:errcheck
+
+	go tmrpcserver.Serve(listener, rs.Mux, logger, tmrpcserver.DefaultConfig()) //nolint:errcheck
 	return listener, nil
 }
 

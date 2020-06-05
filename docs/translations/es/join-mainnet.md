@@ -4,11 +4,11 @@ order: 3
 
 # Únase a la red principal de la Hub de Cosmos
 
-:::Tip
+::: tip
 Vea el [repositorio para el lanzamiento](https://github.com/cosmos/launch) para la información de la red principal, incluyendo la versión correcta para el SDK de Cosmos que usar y detalles acerca del archivo génesis.
 :::
 
-:::aviso
+::: aviso
 **Necesitará [instalar gaia](./installation.md) antes de avanzar más**
 :::
 

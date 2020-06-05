@@ -162,7 +162,7 @@ gaiad export --height [height] --for-zero-height > [filename].json
 
 ## Verifica la red principal
 
-Ayude a prevenir una catástrofe ejecutando invariantes en cada bloque de su nodo. En esencia, al ejecutar invariantes se asegura que el estado de la red principal es el estado esperado correcto. Una comprobación de la invariante vital es que ningún átomo está siendo creado o destruido fuera del protocolo esperado, sin embargo hay muchas otras invariantes, comprueben cada una de ellas de forma única para su respectivo módulo. Porque la invariante es costosa desde el punto de vista computacional, no están habilitados por defecto. Para ejecutar un nodo con  estas comprobaciones inicie su nodo con la opción assert-invariants-blockly:
+Ayude a prevenir problemas críticos ejecutando invariantes en cada bloque de su nodo. En esencia, al ejecutar invariantes se asegura que el estado de la red principal es el estado esperado correcto. Una comprobación de la invariante vital es que ningún átomo está siendo creado o destruido fuera del protocolo esperado, sin embargo hay muchas otras invariantes, comprueben cada una de ellas de forma única para su respectivo módulo. Porque la invariante es costosa desde el punto de vista computacional, no están habilitados por defecto. Para ejecutar un nodo con  estas comprobaciones inicie su nodo con la opción assert-invariants-blockly:
 
 ```bash
 gaiad start --assert-invariants-blockly

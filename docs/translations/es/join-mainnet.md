@@ -98,9 +98,9 @@ El `gas` depende de la transacción. Diferentes transacciones requieren diferent
 
 El `gasPrice` (i.e `precioPorGas`) es el precio de cada unidad de `gas`. Cada validador establece un valor de `min-gas-price`, y sólo incluirá transacciones que tengan un `gasPrice` mayor que su `min-gas-price`.
 
-Los `fees` (tarifa) de la transacción son el producto del `gas` y del `gasPrice`. Como usuario, tiene que introducir 2 de 3. Cuanto más alto sea el `gasPrice`/`fees`, mayor será la posibilidad de que su transacción se incluya en un bloque.
+Los `fees` de la transacción son el producto del `gas` y del `gasPrice`. Como usuario, tiene que introducir 2 de 3. Cuanto más alto sea el `gasPrice`/`fees`, mayor será la posibilidad de que su transacción se incluya en un bloque.
 
-:::consejo
+::: consejo
 Para la red principal, el `gas-prices` recomendado es `0.025uatom`.
 :::
 

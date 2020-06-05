@@ -60,7 +60,7 @@ mkdir -p $HOME/.gaiad/config
 curl https://raw.githubusercontent.com/cosmos/launch/master/genesis.json > $HOME/.gaiad/config/genesis.json
 ```
 
-Nota: usamos el directorio `latest` en el [repositorio de lanzamiento](https://github.com/cosmos/launch) que contiene detalles para la red principal como la última versión y el archivo de génesis.
+Observe que usamos el directorio `latest` en el [repositorio de lanzamiento](https://github.com/cosmos/launch) que contiene detalles para la red principal como la última versión y el archivo de génesis.
 
 :::consejo
 Si en cambio quiere conectarse a la red de pruebas pública, haga clic [aquí](./join-testnet.md)

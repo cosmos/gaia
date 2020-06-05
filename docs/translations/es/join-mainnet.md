@@ -84,7 +84,7 @@ Para más información acerca de seeds y peers, puede leer [este enlace](https:/
 
 ## Nota sobre el Fee y el Gas
 
-:::Aviso
+::: Aviso
 En el Hub de Cosmos, la denominación aceptada es `uatom`, donde `1atom = 1.000.000uatom`
 :::
 

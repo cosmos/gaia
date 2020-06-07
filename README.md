@@ -26,9 +26,9 @@ Build, Install, and Name your Node
 git clone -b <latest_release> https://github.com/cosmos/gaia
 # Enter the folder Gaia was cloned into
 cd gaia
-# Comile and install Gaia
+# Compile and install Gaia
 make install
-# Initalize Gaiad in ~/.gaiad and name your node
+# Initialize Gaiad in ~/.gaiad and name your node
 gaiad init yournodenamehere
 ```
 

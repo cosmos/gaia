@@ -74,7 +74,7 @@ Las etiquetas (_tags_) para la construcción indican opciones especiales que deb
 | Etiquetas Construcción | Descripción                                     |
 | --------- | ----------------------------------------------- |
 | netgo     | La resolución del nombre usará código puro de Go |
-| ledger    | Dispositivos de carteras son compatibles (wallets físicas) |
+| ledger    | Añade compatibilidad de dispositivos hardware (wallets físicas) |
 
 ### Instalación de los binarios via snap (Linux solamente)
 

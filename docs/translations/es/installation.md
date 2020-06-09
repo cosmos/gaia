@@ -91,4 +91,4 @@ Para probar cualquier cambio hecho en el SDK o Tendermint, se debe agregar una c
 
 ## Siguiente
 
-Ahora puede unirse a la [red principal](./join-mainnet.md), [red de pruebas pública](./join-testnet.md) o crear [su propia red de pruebas pública](./deploy-testnet.md)
+Ahora puede unirse a la [red principal](./join-mainnet.md), [testnet](./join-testnet.md) o crear [su propia testnet pública](./deploy-testnet.md)

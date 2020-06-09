@@ -69,7 +69,7 @@ go: go version go1.12.5 darwin/amd64
 
 ### Tags para la construcción
 
-Las etiquetas (_tags_) para la construcción indican opciones especiales que deben ser activados en el binario.
+Las etiquetas (_tags_) para la construcción indican opciones especiales que deben ser activadas en el binario.
 
 | Etiquetas Construcción | Descripción                                     |
 | --------- | ----------------------------------------------- |

@@ -19,7 +19,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	authexported "github.com/cosmos/cosmos-sdk/x/auth/exported"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/staking"
@@ -122,7 +121,7 @@ func InitTestnet(
 
 	//nolint:prealloc
 	var (
-		genAccounts []authexported.GenesisAccount
+		genAccounts []auth.GenesisAccount
 		genBalances []bank.Balance
 		genFiles    []string
 	)
@@ -218,7 +217,7 @@ func InitTestnet(
 		tx := auth.NewStdTx([]sdk.Msg{msg}, auth.StdFee{}, []auth.StdSignature{}, memo)
 		txBldr := auth.NewTxBuilderFromCLI(inBuf).WithChainID(chainID).WithMemo(memo).WithKeybase(kb)
 
-		signedTx, err := txBldr.SignStdTx(nodeDirName, clientkeys.DefaultKeyPass, tx, false)
+		signedTx, err := txBldr.SignStdTx(nodeDirName, tx, false)
 		if err != nil {
 			_ = os.RemoveAll(outputDir)
 			return err
@@ -260,7 +259,7 @@ func InitTestnet(
 
 func initGenFiles(
 	cdc codec.JSONMarshaler, mbm module.BasicManager, chainID string,
-	genAccounts []authexported.GenesisAccount, genBalances []bank.Balance,
+	genAccounts []auth.GenesisAccount, genBalances []bank.Balance,
 	genFiles []string, numValidators int,
 ) error {
 

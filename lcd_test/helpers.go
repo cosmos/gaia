@@ -22,15 +22,15 @@ import (
 	"github.com/tendermint/tendermint/p2p"
 	pvm "github.com/tendermint/tendermint/privval"
 	"github.com/tendermint/tendermint/proxy"
-	tmrpc "github.com/tendermint/tendermint/rpc/lib/server"
+	tmrpc "github.com/tendermint/tendermint/rpc/jsonrpc/server"
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/lcd"
+	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
@@ -41,7 +41,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
-	authexported "github.com/cosmos/cosmos-sdk/x/auth/exported"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
@@ -165,7 +164,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	//nolint:prealloc
 	var (
 		genTxs      []auth.StdTx
-		genAccounts []authexported.GenesisAccount
+		genAccounts []auth.GenesisAccount
 		genBalances []bank.Balance
 	)
 
@@ -364,15 +363,15 @@ func startLCD(logger log.Logger, listenAddr string, cdc *codec.Codec) (net.Liste
 	if err != nil {
 		return nil, err
 	}
-	go tmrpc.StartHTTPServer(listener, rs.Mux, logger, tmrpc.DefaultConfig()) //nolint:errcheck
+	go tmrpc.Serve(listener, rs.Mux, logger, tmrpc.DefaultConfig()) //nolint:errcheck
 	return listener, nil
 }
 
 // NOTE: If making updates here also update cmd/gaia/cmd/gaiacli/main.go
 func registerRoutes(rs *lcd.RestServer) {
-	client.RegisterRoutes(rs.CliCtx, rs.Mux)
-	authrest.RegisterTxRoutes(rs.CliCtx, rs.Mux)
-	app.ModuleBasics.RegisterRESTRoutes(rs.CliCtx, rs.Mux)
+	rpc.RegisterRoutes(rs.ClientCtx, rs.Mux)
+	authrest.RegisterTxRoutes(rs.ClientCtx, rs.Mux)
+	app.ModuleBasics.RegisterRESTRoutes(rs.ClientCtx, rs.Mux)
 }
 
 // CreateAddr adds an address to the key store and returns an address and seed.

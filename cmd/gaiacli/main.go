@@ -60,13 +60,17 @@ func main() {
 		return initConfig(rootCmd)
 	}
 
+	clientCtx := client.Context{}
+	clientCtx = clientCtx.
+		WithJSONMarshaler(appCodec).
+		WithCodec(cdc)
+
 	// Construct Root Command
-	cliCtx := client.NewContext()
 	rootCmd.AddCommand(
 		rpc.StatusCommand(),
 		client.ConfigCmd(app.DefaultCLIHome),
-		queryCmd(cliCtx, cdc),
-		txCmd(cliCtx, cdc),
+		queryCmd(clientCtx, cdc),
+		txCmd(clientCtx, cdc),
 		flags.LineBreak,
 		lcd.ServeCommand(cdc, registerRoutes),
 		flags.LineBreak,

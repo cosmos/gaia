@@ -220,7 +220,7 @@ func TestCoinMultiSendGenerateOnly(t *testing.T) {
 	require.Equal(t, memo, stdTx.Memo)
 	require.NotZero(t, stdTx.Fee.Gas)
 	require.IsType(t, stdTx.GetMsgs()[0], bank.MsgSend{})
-	require.Equal(t, addr, stdTx.GetMsgs()[0].(bank.MsgSend).FromAddress)
+	require.Equal(t, addr, stdTx.GetMsgs()[0].(*bank.MsgSend).FromAddress)
 }
 
 func TestCoinSendGenerateSignAndBroadcast(t *testing.T) {

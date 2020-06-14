@@ -58,6 +58,10 @@ with previous `gaia` releases need to be migrated through the `gaiacli keys migr
 * (gaiacli) [\#326](https://github.com/cosmos/gaia/pull/326) Implement `--offline` flag in all post commands. Some commands
 that did not work with `--generate-only` as `gaiacli staking delegate` now work as long as we don't include the offline flag.
 
+## [v2.0.11] - 2020-05-06
+
+* (sdk) Bump SDK version to [v0.37.13](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.37.13).
+
 ## v2.0.10 - 2020-05-06
 
 ### Improvements

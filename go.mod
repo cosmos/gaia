@@ -3,7 +3,7 @@ module github.com/cosmos/gaia
 go 1.14
 
 require (
-	github.com/cosmos/cosmos-sdk v0.34.4-0.20200611221925-9048ffa8d351
+	github.com/cosmos/cosmos-sdk v0.34.4-0.20200615173909-6a05b83069bb
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
 	github.com/otiai10/copy v1.2.0

@@ -12,7 +12,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/keys"
-	"github.com/cosmos/cosmos-sdk/client/lcd"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -20,9 +19,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
-	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
-	"github.com/cosmos/cosmos-sdk/x/bank"
 	bankcmd "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	"github.com/cosmos/gaia/app"
 )
@@ -72,7 +70,6 @@ func main() {
 		queryCmd(clientCtx, cdc),
 		txCmd(clientCtx, cdc),
 		flags.LineBreak,
-		lcd.ServeCommand(cdc, registerRoutes),
 		flags.LineBreak,
 		keys.Commands(),
 		flags.LineBreak,
@@ -145,7 +142,7 @@ func txCmd(cliContext client.Context, cdc *codec.Codec) *cobra.Command {
 	var cmdsToRemove []*cobra.Command
 
 	for _, cmd := range txCmd.Commands() {
-		if cmd.Use == auth.ModuleName || cmd.Use == bank.ModuleName {
+		if cmd.Use == auth.ModuleName || cmd.Use == banktypes.ModuleName {
 			cmdsToRemove = append(cmdsToRemove, cmd)
 		}
 	}
@@ -153,15 +150,6 @@ func txCmd(cliContext client.Context, cdc *codec.Codec) *cobra.Command {
 	txCmd.RemoveCommand(cmdsToRemove...)
 
 	return txCmd
-}
-
-// registerRoutes registers the routes from the different modules for the REST client.
-// NOTE: details on the routes added for each module are in the module documentation
-// NOTE: If making updates here you also need to update the test helper in lcd_testt/helpers_test.go
-func registerRoutes(rs *lcd.RestServer) {
-	rpc.RegisterRoutes(rs.ClientCtx, rs.Mux)
-	authrest.RegisterTxRoutes(rs.ClientCtx, rs.Mux)
-	app.ModuleBasics.RegisterRESTRoutes(rs.ClientCtx, rs.Mux)
 }
 
 func initConfig(cmd *cobra.Command) error {

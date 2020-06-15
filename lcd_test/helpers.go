@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
-	"net"
 	"os"
 	"path/filepath"
 	"sort"
@@ -22,15 +21,12 @@ import (
 	"github.com/tendermint/tendermint/p2p"
 	pvm "github.com/tendermint/tendermint/privval"
 	"github.com/tendermint/tendermint/proxy"
-	tmrpc "github.com/tendermint/tendermint/rpc/jsonrpc/server"
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/keys"
-	"github.com/cosmos/cosmos-sdk/client/lcd"
-	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
@@ -40,13 +36,12 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
-	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
-	"github.com/cosmos/cosmos-sdk/x/bank"
-	"github.com/cosmos/cosmos-sdk/x/crisis"
-	distr "github.com/cosmos/cosmos-sdk/x/distribution"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
+	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
-	"github.com/cosmos/cosmos-sdk/x/mint"
-	"github.com/cosmos/cosmos-sdk/x/staking"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"github.com/cosmos/gaia/app"
 )
@@ -88,18 +83,18 @@ func InitializeLCD(
 		return
 	}
 
-	var listenAddr string
-
-	if len(portExt) == 0 {
-		listenAddr, port, err = server.FreeTCPAddr()
-		if err != nil {
-			return
-		}
-	} else {
-		listenAddr = fmt.Sprintf("tcp://0.0.0.0:%s", portExt[0])
-		port = portExt[0]
-	}
-
+	//var listenAddr string
+	//
+	//if len(portExt) == 0 {
+	//	listenAddr, port, err = server.FreeTCPAddr()
+	//	if err != nil {
+	//		return
+	//	}
+	//} else {
+	//	listenAddr = fmt.Sprintf("tcp://0.0.0.0:%s", portExt[0])
+	//	port = portExt[0]
+	//}
+	//
 	// XXX: Need to set this so LCD knows the tendermint node address!
 	viper.Set(flags.FlagNode, config.RPC.ListenAddress)
 	viper.Set(flags.FlagChainID, genDoc.ChainID)
@@ -113,10 +108,10 @@ func InitializeLCD(
 
 	tests.WaitForNextHeightTM(tests.ExtractPortFromAddress(config.RPC.ListenAddress))
 
-	lcdInstance, err := startLCD(logger, listenAddr, cdc)
-	if err != nil {
-		return
-	}
+	//lcdInstance, err := startLCD(logger, listenAddr, cdc)
+	//if err != nil {
+	//	return
+	//}
 
 	tests.WaitForLCDStart(port)
 	tests.WaitForHeight(1, port)
@@ -129,10 +124,10 @@ func InitializeLCD(
 		}
 
 		node.Wait()
-		err = lcdInstance.Close()
-		if err != nil {
-			logger.Error(err.Error())
-		}
+		//err = lcdInstance.Close()
+		//if err != nil {
+		//	logger.Error(err.Error())
+		//}
 	}
 
 	return cleanup, valConsPubKeys, valOperAddrs, port, err
@@ -165,7 +160,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	var (
 		genTxs      []auth.StdTx
 		genAccounts []auth.GenesisAccount
-		genBalances []bank.Balance
+		genBalances []banktypes.Balance
 	)
 
 	totalSupply := sdk.ZeroInt()
@@ -187,12 +182,12 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 
 		startTokens := sdk.TokensFromConsensusPower(power)
 
-		msg := staking.NewMsgCreateValidator(
+		msg := stakingtypes.NewMsgCreateValidator(
 			sdk.ValAddress(operAddr),
 			pubKey,
 			sdk.NewCoin(sdk.DefaultBondDenom, startTokens),
-			staking.NewDescription(fmt.Sprintf("validator-%d", i+1), "", "", "", ""),
-			staking.NewCommissionRates(sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec()),
+			stakingtypes.NewDescription(fmt.Sprintf("validator-%d", i+1), "", "", "", ""),
+			stakingtypes.NewCommissionRates(sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec()),
 			sdk.OneInt(),
 		)
 
@@ -217,7 +212,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 		totalSupply = totalSupply.Add(accTokens)
 
 		coins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, accTokens))
-		genBalances = append(genBalances, bank.Balance{Address: account.GetAddress(), Coins: coins})
+		genBalances = append(genBalances, banktypes.Balance{Address: account.GetAddress(), Coins: coins})
 		genAccounts = append(genAccounts, account)
 	}
 
@@ -239,7 +234,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 		totalSupply = totalSupply.Add(accTokens)
 
 		coins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, accTokens))
-		genBalances = append(genBalances, bank.Balance{Address: accAuth.GetAddress(), Coins: coins})
+		genBalances = append(genBalances, banktypes.Balance{Address: accAuth.GetAddress(), Coins: coins})
 		genAccounts = append(genAccounts, accAuth)
 	}
 
@@ -249,26 +244,26 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	authGenState.Accounts = genAccounts
 	genesisState[auth.ModuleName] = cdc.MustMarshalJSON(authGenState)
 
-	var bankGenState bank.GenesisState
-	cdc.MustUnmarshalJSON(genesisState[bank.ModuleName], &bankGenState)
+	var bankGenState banktypes.GenesisState
+	cdc.MustUnmarshalJSON(genesisState[banktypes.ModuleName], &bankGenState)
 	bankGenState.Balances = genBalances
-	genesisState[bank.ModuleName] = cdc.MustMarshalJSON(bankGenState)
+	genesisState[banktypes.ModuleName] = cdc.MustMarshalJSON(bankGenState)
 
-	var stakingData staking.GenesisState
-	cdc.MustUnmarshalJSON(genesisState[staking.ModuleName], &stakingData)
-	genesisState[staking.ModuleName] = cdc.MustMarshalJSON(stakingData)
+	var stakingData stakingtypes.GenesisState
+	cdc.MustUnmarshalJSON(genesisState[stakingtypes.ModuleName], &stakingData)
+	genesisState[stakingtypes.ModuleName] = cdc.MustMarshalJSON(stakingData)
 
 	// distr data
-	var distrData distr.GenesisState
-	cdc.MustUnmarshalJSON(genesisState[distr.ModuleName], &distrData)
+	var distrData disttypes.GenesisState
+	cdc.MustUnmarshalJSON(genesisState[disttypes.ModuleName], &distrData)
 
 	// TODO: Fix this so that there are 10 tokens in the module account
 	commPoolAmt := sdk.NewInt(0)
 	distrData.FeePool.CommunityPool = sdk.DecCoins{sdk.NewDecCoin(sdk.DefaultBondDenom, commPoolAmt)}
-	genesisState[distr.ModuleName] = cdc.MustMarshalJSON(distrData)
+	genesisState[disttypes.ModuleName] = cdc.MustMarshalJSON(distrData)
 
 	// mint genesis (none set within genesisState)
-	mintData := mint.DefaultGenesisState()
+	mintData := minttypes.DefaultGenesisState()
 	inflationMin := sdk.ZeroDec()
 	if minting {
 		inflationMin = sdk.MustNewDecFromStr("0.9")
@@ -279,14 +274,14 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 
 	mintData.Minter.Inflation = inflationMin
 	mintData.Params.InflationMin = inflationMin
-	genesisState[mint.ModuleName] = cdc.MustMarshalJSON(mintData)
+	genesisState[minttypes.ModuleName] = cdc.MustMarshalJSON(mintData)
 
 	// initialize crisis data
-	var crisisData crisis.GenesisState
-	cdc.MustUnmarshalJSON(genesisState[crisis.ModuleName], &crisisData)
+	var crisisData crisistypes.GenesisState
+	cdc.MustUnmarshalJSON(genesisState[crisistypes.ModuleName], &crisisData)
 
 	crisisData.ConstantFee = sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000)
-	genesisState[crisis.ModuleName] = cdc.MustMarshalJSON(crisisData)
+	genesisState[crisistypes.ModuleName] = cdc.MustMarshalJSON(crisisData)
 
 	//// double check inflation is set according to the minting boolean flag
 	if minting {
@@ -353,25 +348,6 @@ func startTM(
 	logger.Info("Tendermint running!")
 
 	return node, err
-}
-
-// startLCD starts the LCD.
-func startLCD(logger log.Logger, listenAddr string, cdc *codec.Codec) (net.Listener, error) {
-	rs := lcd.NewRestServer(cdc)
-	registerRoutes(rs)
-	listener, err := tmrpc.Listen(listenAddr, tmrpc.DefaultConfig())
-	if err != nil {
-		return nil, err
-	}
-	go tmrpc.Serve(listener, rs.Mux, logger, tmrpc.DefaultConfig()) //nolint:errcheck
-	return listener, nil
-}
-
-// NOTE: If making updates here also update cmd/gaia/cmd/gaiacli/main.go
-func registerRoutes(rs *lcd.RestServer) {
-	rpc.RegisterRoutes(rs.ClientCtx, rs.Mux)
-	authrest.RegisterTxRoutes(rs.ClientCtx, rs.Mux)
-	app.ModuleBasics.RegisterRESTRoutes(rs.ClientCtx, rs.Mux)
 }
 
 // CreateAddr adds an address to the key store and returns an address and seed.

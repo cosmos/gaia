@@ -90,17 +90,17 @@ func InitializeLCD(
 		return
 	}
 
-	//var listenAddr string
-	//if len(portExt) == 0 {
-	//	listenAddr, port, err = server.FreeTCPAddr()
-	//	if err != nil {
-	//		return
-	//	}
-	//} else {
-	//	listenAddr = fmt.Sprintf("tcp://0.0.0.0:%s", portExt[0])
-	//	port = portExt[0]
-	//}
-	//
+	var listenAddr string
+	if len(portExt) == 0 {
+		listenAddr, port, err = server.FreeTCPAddr()
+		if err != nil {
+			return
+		}
+	} else {
+		listenAddr = fmt.Sprintf("tcp://0.0.0.0:%s", portExt[0])
+		port = portExt[0]
+	}
+
 	// XXX: Need to set this so LCD knows the tendermint node address!
 	viper.Set(flags.FlagNode, config.RPC.ListenAddress)
 	viper.Set(flags.FlagChainID, genDoc.ChainID)
@@ -114,7 +114,7 @@ func InitializeLCD(
 
 	tests.WaitForNextHeightTM(tests.ExtractPortFromAddress(config.RPC.ListenAddress))
 
-	_, err = startLCD(config.RPC.ListenAddress, cdc)
+	_, err = startLCD(listenAddr, cdc)
 	if err != nil {
 		return
 	}
@@ -371,10 +371,10 @@ func startLCD(listenAddr string, cdc *codec.Codec) (*api.Server, error) {
 		Swagger:            true,
 		EnableUnsafeCORS:   true,
 		Address:            listenAddr,
-		MaxOpenConnections: 0,
-		RPCReadTimeout:     0,
-		RPCWriteTimeout:    0,
-		RPCMaxBodyBytes:    0,
+		MaxOpenConnections: 100,
+		RPCReadTimeout:     100,
+		RPCWriteTimeout:    100,
+		RPCMaxBodyBytes:    100,
 	})
 
 	return rs, nil

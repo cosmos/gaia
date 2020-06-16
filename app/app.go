@@ -4,6 +4,10 @@ import (
 	"io"
 	"os"
 
+	"github.com/cosmos/cosmos-sdk/server/api"
+
+	"github.com/cosmos/cosmos-sdk/server"
+
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
@@ -119,6 +123,7 @@ var (
 
 // Verify app interface at compile time
 var _ simapp.App = (*GaiaApp)(nil)
+var _ server.Application = (*GaiaApp)(nil)
 
 // GaiaApp extended ABCI application
 type GaiaApp struct {
@@ -419,6 +424,10 @@ func (app *GaiaApp) ModuleAccountAddrs() map[string]bool {
 	}
 
 	return modAccAddrs
+}
+
+func (app *GaiaApp) RegisterAPIRoutes(a *api.Server) {
+	panic("implement me")
 }
 
 // BlacklistedAccAddrs returns all the app's module account addresses black listed for receiving tokens.

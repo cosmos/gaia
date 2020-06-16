@@ -9,6 +9,13 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/cosmos/cosmos-sdk/client/rpc"
+	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
+
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/server/api"
+	"github.com/cosmos/cosmos-sdk/server/config"
+
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	tmcfg "github.com/tendermint/tendermint/config"
@@ -84,7 +91,6 @@ func InitializeLCD(
 	}
 
 	//var listenAddr string
-	//
 	//if len(portExt) == 0 {
 	//	listenAddr, port, err = server.FreeTCPAddr()
 	//	if err != nil {
@@ -108,10 +114,10 @@ func InitializeLCD(
 
 	tests.WaitForNextHeightTM(tests.ExtractPortFromAddress(config.RPC.ListenAddress))
 
-	//lcdInstance, err := startLCD(logger, listenAddr, cdc)
-	//if err != nil {
-	//	return
-	//}
+	_, err = startLCD(config.RPC.ListenAddress, cdc)
+	if err != nil {
+		return
+	}
 
 	tests.WaitForLCDStart(port)
 	tests.WaitForHeight(1, port)
@@ -348,6 +354,37 @@ func startTM(
 	logger.Info("Tendermint running!")
 
 	return node, err
+}
+
+// startLCD starts the LCD.
+func startLCD(listenAddr string, cdc *codec.Codec) (*api.Server, error) {
+	clientCtx := client.Context{}
+	clientCtx = clientCtx.
+		WithJSONMarshaler(appCodec).
+		WithCodec(cdc)
+
+	rs := api.New(clientCtx)
+	registerRoutes(rs)
+
+	go rs.Start(config.APIConfig{
+		Enable:             true,
+		Swagger:            true,
+		EnableUnsafeCORS:   true,
+		Address:            listenAddr,
+		MaxOpenConnections: 0,
+		RPCReadTimeout:     0,
+		RPCWriteTimeout:    0,
+		RPCMaxBodyBytes:    0,
+	})
+
+	return rs, nil
+}
+
+// NOTE: If making updates here also update cmd/gaia/cmd/gaiacli/main.go
+func registerRoutes(rs *api.Server) {
+	rpc.RegisterRoutes(rs.ClientCtx, rs.Router)
+	authrest.RegisterTxRoutes(rs.ClientCtx, rs.Router)
+	app.ModuleBasics.RegisterRESTRoutes(rs.ClientCtx, rs.Router)
 }
 
 // CreateAddr adds an address to the key store and returns an address and seed.

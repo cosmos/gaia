@@ -10,6 +10,11 @@ import (
 	"os"
 	"path/filepath"
 
+	types2 "github.com/cosmos/cosmos-sdk/x/genutil/types"
+
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clientkeys "github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -19,9 +24,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
-	"github.com/cosmos/cosmos-sdk/x/staking"
 
 	tmconfig "github.com/tendermint/tendermint/config"
 	"github.com/tendermint/tendermint/crypto"
@@ -45,7 +48,7 @@ var (
 
 // get cmd to initialize all files for tendermint testnet and application
 func testnetCmd(ctx *server.Context, cdc *codec.Codec,
-	mbm module.BasicManager, genBalIterator bank.GenesisBalancesIterator,
+	mbm module.BasicManager, genBalIterator banktypes.GenesisBalancesIterator,
 ) *cobra.Command {
 
 	cmd := &cobra.Command{
@@ -103,7 +106,7 @@ const nodeDirPerm = 0755
 // Initialize the testnet
 func InitTestnet(
 	cmd *cobra.Command, config *tmconfig.Config, cdc *codec.Codec,
-	mbm module.BasicManager, genBalIterator bank.GenesisBalancesIterator,
+	mbm module.BasicManager, genBalIterator banktypes.GenesisBalancesIterator,
 	outputDir, chainID, minGasPrices, nodeDirPrefix, nodeDaemonHome,
 	nodeCLIHome, startingIPAddress string, numValidators int,
 ) error {
@@ -122,7 +125,7 @@ func InitTestnet(
 	//nolint:prealloc
 	var (
 		genAccounts []auth.GenesisAccount
-		genBalances []bank.Balance
+		genBalances []banktypes.Balance
 		genFiles    []string
 	)
 
@@ -201,16 +204,16 @@ func InitTestnet(
 			sdk.NewCoin(sdk.DefaultBondDenom, accStakingTokens),
 		}
 
-		genBalances = append(genBalances, bank.Balance{Address: addr, Coins: coins.Sort()})
+		genBalances = append(genBalances, banktypes.Balance{Address: addr, Coins: coins.Sort()})
 		genAccounts = append(genAccounts, auth.NewBaseAccount(addr, nil, 0, 0))
 
 		valTokens := sdk.TokensFromConsensusPower(100)
-		msg := staking.NewMsgCreateValidator(
+		msg := stakingtypes.NewMsgCreateValidator(
 			sdk.ValAddress(addr),
 			valPubKeys[i],
 			sdk.NewCoin(sdk.DefaultBondDenom, valTokens),
-			staking.NewDescription(nodeDirName, "", "", "", ""),
-			staking.NewCommissionRates(sdk.OneDec(), sdk.OneDec(), sdk.OneDec()),
+			stakingtypes.NewDescription(nodeDirName, "", "", "", ""),
+			stakingtypes.NewCommissionRates(sdk.OneDec(), sdk.OneDec(), sdk.OneDec()),
 			sdk.OneInt(),
 		)
 
@@ -259,7 +262,7 @@ func InitTestnet(
 
 func initGenFiles(
 	cdc codec.JSONMarshaler, mbm module.BasicManager, chainID string,
-	genAccounts []auth.GenesisAccount, genBalances []bank.Balance,
+	genAccounts []auth.GenesisAccount, genBalances []banktypes.Balance,
 	genFiles []string, numValidators int,
 ) error {
 
@@ -273,11 +276,11 @@ func initGenFiles(
 	appGenState[auth.ModuleName] = cdc.MustMarshalJSON(authGenState)
 
 	// set the balances in the genesis state
-	var bankGenState bank.GenesisState
-	cdc.MustUnmarshalJSON(appGenState[bank.ModuleName], &bankGenState)
+	var bankGenState banktypes.GenesisState
+	cdc.MustUnmarshalJSON(appGenState[banktypes.ModuleName], &bankGenState)
 
 	bankGenState.Balances = genBalances
-	appGenState[bank.ModuleName] = cdc.MustMarshalJSON(bankGenState)
+	appGenState[banktypes.ModuleName] = cdc.MustMarshalJSON(bankGenState)
 
 	appGenStateJSON, err := codec.MarshalJSONIndent(cdc, appGenState)
 	if err != nil {
@@ -303,7 +306,7 @@ func collectGenFiles(
 	cdc *codec.Codec, config *tmconfig.Config, chainID string,
 	monikers, nodeIDs []string, valPubKeys []crypto.PubKey,
 	numValidators int, outputDir, nodeDirPrefix, nodeDaemonHome string,
-	genBalIterator bank.GenesisBalancesIterator,
+	genBalIterator banktypes.GenesisBalancesIterator,
 ) error {
 
 	var appState json.RawMessage
@@ -319,7 +322,7 @@ func collectGenFiles(
 		config.SetRoot(nodeDir)
 
 		nodeID, valPubKey := nodeIDs[i], valPubKeys[i]
-		initCfg := genutil.NewInitConfig(chainID, gentxsDir, moniker, nodeID, valPubKey)
+		initCfg := types2.NewInitConfig(chainID, gentxsDir, moniker, nodeID, valPubKey)
 
 		genDoc, err := types.GenesisDocFromFile(config.GenesisFile())
 		if err != nil {

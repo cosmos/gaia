@@ -23,12 +23,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/bank"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrrest "github.com/cosmos/cosmos-sdk/x/distribution/client/rest"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	"github.com/cosmos/cosmos-sdk/x/gov"
-	"github.com/cosmos/cosmos-sdk/x/mint"
-	"github.com/cosmos/cosmos-sdk/x/slashing"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
+	slashtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 )
 
 const (
@@ -214,13 +214,13 @@ func TestCoinMultiSendGenerateOnly(t *testing.T) {
 	var stdTx auth.StdTx
 	require.Nil(t, cdc.UnmarshalJSON([]byte(body), &stdTx))
 	require.Equal(t, len(stdTx.Msgs), 1)
-	require.Equal(t, stdTx.GetMsgs()[0].Route(), bank.RouterKey)
+	require.Equal(t, stdTx.GetMsgs()[0].Route(), banktypes.RouterKey)
 	require.Equal(t, stdTx.GetMsgs()[0].GetSigners(), []sdk.AccAddress{addr})
 	require.Equal(t, 0, len(stdTx.Signatures))
 	require.Equal(t, memo, stdTx.Memo)
 	require.NotZero(t, stdTx.Fee.Gas)
-	require.IsType(t, stdTx.GetMsgs()[0], bank.MsgSend{})
-	require.Equal(t, addr, stdTx.GetMsgs()[0].(*bank.MsgSend).FromAddress)
+	require.IsType(t, stdTx.GetMsgs()[0], banktypes.MsgSend{})
+	require.Equal(t, addr, stdTx.GetMsgs()[0].(*banktypes.MsgSend).FromAddress)
 }
 
 func TestCoinSendGenerateSignAndBroadcast(t *testing.T) {
@@ -249,7 +249,7 @@ func TestCoinSendGenerateSignAndBroadcast(t *testing.T) {
 	var tx auth.StdTx
 	require.Nil(t, cdc.UnmarshalJSON([]byte(body), &tx))
 	require.Equal(t, len(tx.Msgs), 1)
-	require.Equal(t, tx.Msgs[0].Route(), bank.RouterKey)
+	require.Equal(t, tx.Msgs[0].Route(), banktypes.RouterKey)
 	require.Equal(t, tx.Msgs[0].GetSigners(), []sdk.AccAddress{addr})
 	require.Equal(t, 0, len(tx.Signatures))
 	require.Equal(t, memo, tx.Memo)
@@ -570,7 +570,7 @@ func TestSubmitProposal(t *testing.T) {
 
 	bz, err := hex.DecodeString(resultTx.Data)
 	require.NoError(t, err)
-	proposalID := gov.GetProposalIDFromBytes(bz)
+	proposalID := govtypes.GetProposalIDFromBytes(bz)
 
 	// verify balance
 	balances := getBalances(t, port, addr)
@@ -610,7 +610,7 @@ func TestSubmitCommunityPoolSpendProposal(t *testing.T) {
 
 	bz, err := hex.DecodeString(resultTx.Data)
 	require.NoError(t, err)
-	proposalID := gov.GetProposalIDFromBytes(bz)
+	proposalID := govtypes.GetProposalIDFromBytes(bz)
 
 	// verify balance
 	balances := getBalances(t, port, addr)
@@ -647,7 +647,7 @@ func TestSubmitParamChangeProposal(t *testing.T) {
 
 	bz, err := hex.DecodeString(resultTx.Data)
 	require.NoError(t, err)
-	proposalID := gov.GetProposalIDFromBytes(bz)
+	proposalID := govtypes.GetProposalIDFromBytes(bz)
 
 	// verify balance
 	balances := getBalances(t, port, addr)
@@ -684,7 +684,7 @@ func TestDeposit(t *testing.T) {
 
 	bz, err := hex.DecodeString(resultTx.Data)
 	require.NoError(t, err)
-	proposalID := gov.GetProposalIDFromBytes(bz)
+	proposalID := govtypes.GetProposalIDFromBytes(bz)
 
 	// verify balance
 	coins := getBalances(t, port, addr)
@@ -742,7 +742,7 @@ func TestVote(t *testing.T) {
 
 	bz, err := hex.DecodeString(resultTx.Data)
 	require.NoError(t, err)
-	proposalID := gov.GetProposalIDFromBytes(bz)
+	proposalID := govtypes.GetProposalIDFromBytes(bz)
 
 	// verify balance
 	coins := getBalances(t, port, addr)
@@ -753,7 +753,7 @@ func TestVote(t *testing.T) {
 	// query proposal
 	proposal := getProposal(t, port, proposalID)
 	require.Equal(t, "Test", proposal.GetTitle())
-	require.Equal(t, gov.StatusVotingPeriod, proposal.Status)
+	require.Equal(t, govtypes.StatusVotingPeriod, proposal.Status)
 
 	// vote
 	resultTx = doVote(t, port, name1, addr, proposalID, "Yes", fees, kb)
@@ -772,7 +772,7 @@ func TestVote(t *testing.T) {
 
 	vote := getVote(t, port, proposalID, addr)
 	require.Equal(t, proposalID, vote.ProposalID)
-	require.Equal(t, gov.OptionYes, vote.Option)
+	require.Equal(t, govtypes.OptionYes, vote.Option)
 
 	tally := getTally(t, port, proposalID)
 	require.Equal(t, sdk.ZeroInt(), tally.Yes, "tally should be 0 as the address is not bonded")
@@ -847,14 +847,14 @@ func TestProposalsQuery(t *testing.T) {
 	bz, err := hex.DecodeString(resultTx.Data)
 	require.NoError(t, err)
 
-	proposalID1 := gov.GetProposalIDFromBytes(bz)
+	proposalID1 := govtypes.GetProposalIDFromBytes(bz)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
 	resultTx = doSubmitProposal(t, port, names[0], addrs[0], halfMinDeposit, fees, kb)
 	bz, err = hex.DecodeString(resultTx.Data)
 	require.NoError(t, err)
 
-	proposalID2 := gov.GetProposalIDFromBytes(bz)
+	proposalID2 := govtypes.GetProposalIDFromBytes(bz)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
 	// Addr2 proposes (and deposits) proposals #3
@@ -862,7 +862,7 @@ func TestProposalsQuery(t *testing.T) {
 	bz, err = hex.DecodeString(resultTx.Data)
 	require.NoError(t, err)
 
-	proposalID3 := gov.GetProposalIDFromBytes(bz)
+	proposalID3 := govtypes.GetProposalIDFromBytes(bz)
 	tests.WaitForHeight(resultTx.Height+1, port)
 
 	// Addr2 deposits on proposals #2 & #3
@@ -899,12 +899,12 @@ func TestProposalsQuery(t *testing.T) {
 	require.Len(t, deposits, 1)
 
 	// Only proposals #1 should be in Deposit Period
-	proposals := getProposalsFilterStatus(t, port, gov.StatusDepositPeriod)
+	proposals := getProposalsFilterStatus(t, port, govtypes.StatusDepositPeriod)
 	require.Len(t, proposals, 1)
 	require.Equal(t, proposalID1, proposals[0].ProposalID)
 
 	// Only proposals #2 and #3 should be in Voting Period
-	proposals = getProposalsFilterStatus(t, port, gov.StatusVotingPeriod)
+	proposals = getProposalsFilterStatus(t, port, govtypes.StatusVotingPeriod)
 	require.Len(t, proposals, 2)
 	require.Equal(t, proposalID2, proposals[0].ProposalID)
 	require.Equal(t, proposalID3, proposals[1].ProposalID)
@@ -967,7 +967,7 @@ func TestSlashingGetParams(t *testing.T) {
 	res, body := Request(t, port, "GET", "/slashing/parameters", nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var params slashing.Params
+	var params slashtypes.Params
 	err = cdc.UnmarshalJSON([]byte(body), &params)
 	require.NoError(t, err)
 }
@@ -1074,7 +1074,7 @@ func TestMintingQueries(t *testing.T) {
 	res, body := Request(t, port, "GET", "/minting/parameters", nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var params mint.Params
+	var params minttypes.Params
 	require.NoError(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &params))
 
 	res, body = Request(t, port, "GET", "/minting/inflation", nil)
@@ -1112,5 +1112,4 @@ func TestAccountBalanceQuery(t *testing.T) {
 	res, body = Request(t, port, "GET", fmt.Sprintf("/bank/balances/%s", someFakeAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 	require.Contains(t, body, "[]")
-
 }

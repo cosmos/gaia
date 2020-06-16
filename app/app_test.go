@@ -4,10 +4,11 @@ import (
 	"os"
 	"testing"
 
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+
 	"github.com/cosmos/cosmos-sdk/std"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 	"github.com/tendermint/tendermint/libs/log"
@@ -78,9 +79,9 @@ func BenchmarkTxSendSize(b *testing.B) {
 	priv2 := secp256k1.GenPrivKeySecp256k1([]byte{1})
 	addr2 := sdk.AccAddress(priv2.PubKey().Address())
 	coins := sdk.Coins{sdk.NewCoin("denom", sdk.NewInt(10))}
-	msg1 := bank.NewMsgMultiSend(
-		[]bank.Input{bank.NewInput(addr1, coins)},
-		[]bank.Output{bank.NewOutput(addr2, coins)},
+	msg1 := banktypes.NewMsgMultiSend(
+		[]banktypes.Input{banktypes.NewInput(addr1, coins)},
+		[]banktypes.Output{banktypes.NewOutput(addr2, coins)},
 	)
 	fee := auth.NewStdFee(gas, coins)
 	signBytes := auth.StdSignBytes("example-chain-ID",

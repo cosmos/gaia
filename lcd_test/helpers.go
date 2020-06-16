@@ -9,6 +9,8 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/tendermint/tendermint/rpc/client/local"
+
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 
@@ -32,7 +34,6 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -101,12 +102,6 @@ func InitializeLCD(
 		port = portExt[0]
 	}
 
-	// XXX: Need to set this so LCD knows the tendermint node address!
-	viper.Set(flags.FlagNode, config.RPC.ListenAddress)
-	viper.Set(flags.FlagChainID, genDoc.ChainID)
-	// TODO Set to false once the upstream Tendermint proof verification issue is fixed.
-	viper.Set(flags.FlagTrustNode, true)
-
 	node, err := startTM(config, logger, genDoc, privVal, gapp)
 	if err != nil {
 		return
@@ -114,7 +109,7 @@ func InitializeLCD(
 
 	tests.WaitForNextHeightTM(tests.ExtractPortFromAddress(config.RPC.ListenAddress))
 
-	_, err = startLCD(listenAddr, cdc)
+	_, err = startLCD(node, listenAddr, cdc)
 	if err != nil {
 		return
 	}
@@ -357,11 +352,13 @@ func startTM(
 }
 
 // startLCD starts the LCD.
-func startLCD(listenAddr string, cdc *codec.Codec) (*api.Server, error) {
+func startLCD(node *nm.Node, listenAddr string, cdc *codec.Codec) (*api.Server, error) {
 	clientCtx := client.Context{}
 	clientCtx = clientCtx.
 		WithJSONMarshaler(appCodec).
-		WithCodec(cdc)
+		WithCodec(cdc).
+		WithClient(local.New(node)).
+		WithTrustNode(true)
 
 	rs := api.New(clientCtx)
 	registerRoutes(rs)

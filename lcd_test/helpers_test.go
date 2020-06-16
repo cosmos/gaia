@@ -22,14 +22,14 @@ import (
 	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	bankrest "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
 	distrrest "github.com/cosmos/cosmos-sdk/x/distribution/client/rest"
-	"github.com/cosmos/cosmos-sdk/x/gov"
 	govrest "github.com/cosmos/cosmos-sdk/x/gov/client/rest"
 	gcutils "github.com/cosmos/cosmos-sdk/x/gov/client/utils"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	paramscutils "github.com/cosmos/cosmos-sdk/x/params/client/utils"
-	"github.com/cosmos/cosmos-sdk/x/slashing"
 	slashingrest "github.com/cosmos/cosmos-sdk/x/slashing/client/rest"
-	"github.com/cosmos/cosmos-sdk/x/staking"
+	slashtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingrest "github.com/cosmos/cosmos-sdk/x/staking/client/rest"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
@@ -503,11 +503,11 @@ func doBeginRedelegation(
 }
 
 // GET /staking/delegators/{delegatorAddr}/delegations Get all delegations from a delegator
-func getDelegatorDelegations(t *testing.T, port string, delegatorAddr sdk.AccAddress) staking.DelegationResponses {
+func getDelegatorDelegations(t *testing.T, port string, delegatorAddr sdk.AccAddress) stakingtypes.DelegationResponses {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/staking/delegators/%s/delegations", delegatorAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var dels staking.DelegationResponses
+	var dels stakingtypes.DelegationResponses
 
 	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &dels)
 	require.Nil(t, err)
@@ -516,11 +516,11 @@ func getDelegatorDelegations(t *testing.T, port string, delegatorAddr sdk.AccAdd
 }
 
 // GET /staking/delegators/{delegatorAddr}/unbonding_delegations Get all unbonding delegations from a delegator
-func getDelegatorUnbondingDelegations(t *testing.T, port string, delegatorAddr sdk.AccAddress) []staking.UnbondingDelegation {
+func getDelegatorUnbondingDelegations(t *testing.T, port string, delegatorAddr sdk.AccAddress) []stakingtypes.UnbondingDelegation {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/staking/delegators/%s/unbonding_delegations", delegatorAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var ubds []staking.UnbondingDelegation
+	var ubds []stakingtypes.UnbondingDelegation
 
 	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &ubds)
 	require.Nil(t, err)
@@ -529,7 +529,7 @@ func getDelegatorUnbondingDelegations(t *testing.T, port string, delegatorAddr s
 }
 
 // GET /staking/redelegations?delegator=0xdeadbeef&validator_from=0xdeadbeef&validator_to=0xdeadbeef& Get redelegations filters by params passed in
-func getRedelegations(t *testing.T, port string, delegatorAddr sdk.AccAddress, srcValidatorAddr sdk.ValAddress, dstValidatorAddr sdk.ValAddress) staking.RedelegationResponses {
+func getRedelegations(t *testing.T, port string, delegatorAddr sdk.AccAddress, srcValidatorAddr sdk.ValAddress, dstValidatorAddr sdk.ValAddress) stakingtypes.RedelegationResponses {
 	var res *http.Response
 	var body string
 	endpoint := "/staking/redelegations?"
@@ -546,7 +546,7 @@ func getRedelegations(t *testing.T, port string, delegatorAddr sdk.AccAddress, s
 	res, body = Request(t, port, "GET", endpoint, nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var redels staking.RedelegationResponses
+	var redels stakingtypes.RedelegationResponses
 	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &redels)
 	require.Nil(t, err)
 
@@ -554,11 +554,11 @@ func getRedelegations(t *testing.T, port string, delegatorAddr sdk.AccAddress, s
 }
 
 // GET /staking/delegators/{delegatorAddr}/validators Query all validators that a delegator is bonded to
-func getDelegatorValidators(t *testing.T, port string, delegatorAddr sdk.AccAddress) []staking.Validator {
+func getDelegatorValidators(t *testing.T, port string, delegatorAddr sdk.AccAddress) []stakingtypes.Validator {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/staking/delegators/%s/validators", delegatorAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var bondedValidators []staking.Validator
+	var bondedValidators []stakingtypes.Validator
 
 	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &bondedValidators)
 	require.Nil(t, err)
@@ -567,11 +567,11 @@ func getDelegatorValidators(t *testing.T, port string, delegatorAddr sdk.AccAddr
 }
 
 // GET /staking/delegators/{delegatorAddr}/validators/{validatorAddr} Query a validator that a delegator is bonded to
-func getDelegatorValidator(t *testing.T, port string, delegatorAddr sdk.AccAddress, validatorAddr sdk.ValAddress) staking.Validator {
+func getDelegatorValidator(t *testing.T, port string, delegatorAddr sdk.AccAddress, validatorAddr sdk.ValAddress) stakingtypes.Validator {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/staking/delegators/%s/validators/%s", delegatorAddr, validatorAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var bondedValidator staking.Validator
+	var bondedValidator stakingtypes.Validator
 	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &bondedValidator)
 	require.Nil(t, err)
 
@@ -599,11 +599,11 @@ func getBondingTxs(t *testing.T, port string, delegatorAddr sdk.AccAddress, quer
 }
 
 // GET /staking/delegators/{delegatorAddr}/delegations/{validatorAddr} Query the current delegation between a delegator and a validator
-func getDelegation(t *testing.T, port string, delegatorAddr sdk.AccAddress, validatorAddr sdk.ValAddress) staking.DelegationResponse {
+func getDelegation(t *testing.T, port string, delegatorAddr sdk.AccAddress, validatorAddr sdk.ValAddress) stakingtypes.DelegationResponse {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/staking/delegators/%s/delegations/%s", delegatorAddr, validatorAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var bond staking.DelegationResponse
+	var bond stakingtypes.DelegationResponse
 	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &bond)
 	require.Nil(t, err)
 
@@ -612,7 +612,7 @@ func getDelegation(t *testing.T, port string, delegatorAddr sdk.AccAddress, vali
 
 // GET /staking/delegators/{delegatorAddr}/unbonding_delegations/{validatorAddr} Query all unbonding delegations between a delegator and a validator
 func getUnbondingDelegation(t *testing.T, port string, delegatorAddr sdk.AccAddress,
-	validatorAddr sdk.ValAddress) staking.UnbondingDelegation {
+	validatorAddr sdk.ValAddress) stakingtypes.UnbondingDelegation {
 
 	res, body := Request(t, port, "GET",
 		fmt.Sprintf("/staking/delegators/%s/unbonding_delegations/%s",
@@ -620,7 +620,7 @@ func getUnbondingDelegation(t *testing.T, port string, delegatorAddr sdk.AccAddr
 
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var unbond staking.UnbondingDelegation
+	var unbond stakingtypes.UnbondingDelegation
 	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &unbond)
 	require.Nil(t, err)
 
@@ -628,11 +628,11 @@ func getUnbondingDelegation(t *testing.T, port string, delegatorAddr sdk.AccAddr
 }
 
 // GET /staking/validators Get all validator candidates
-func getValidators(t *testing.T, port string) []staking.Validator {
+func getValidators(t *testing.T, port string) []stakingtypes.Validator {
 	res, body := Request(t, port, "GET", "/staking/validators", nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var validators []staking.Validator
+	var validators []stakingtypes.Validator
 	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &validators)
 	require.Nil(t, err)
 
@@ -640,11 +640,11 @@ func getValidators(t *testing.T, port string) []staking.Validator {
 }
 
 // GET /staking/validators/{validatorAddr} Query the information from a single validator
-func getValidator(t *testing.T, port string, validatorAddr sdk.ValAddress) staking.Validator {
+func getValidator(t *testing.T, port string, validatorAddr sdk.ValAddress) stakingtypes.Validator {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/staking/validators/%s", validatorAddr.String()), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var validator staking.Validator
+	var validator stakingtypes.Validator
 	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &validator)
 	require.Nil(t, err)
 
@@ -652,11 +652,11 @@ func getValidator(t *testing.T, port string, validatorAddr sdk.ValAddress) staki
 }
 
 // GET /staking/validators/{validatorAddr}/delegations Get all delegations from a validator
-func getValidatorDelegations(t *testing.T, port string, validatorAddr sdk.ValAddress) []staking.Delegation {
+func getValidatorDelegations(t *testing.T, port string, validatorAddr sdk.ValAddress) []stakingtypes.Delegation {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/staking/validators/%s/delegations", validatorAddr.String()), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var delegations []staking.Delegation
+	var delegations []stakingtypes.Delegation
 	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &delegations)
 	require.Nil(t, err)
 
@@ -664,11 +664,11 @@ func getValidatorDelegations(t *testing.T, port string, validatorAddr sdk.ValAdd
 }
 
 // GET /staking/validators/{validatorAddr}/unbonding_delegations Get all unbonding delegations from a validator
-func getValidatorUnbondingDelegations(t *testing.T, port string, validatorAddr sdk.ValAddress) []staking.UnbondingDelegation {
+func getValidatorUnbondingDelegations(t *testing.T, port string, validatorAddr sdk.ValAddress) []stakingtypes.UnbondingDelegation {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/staking/validators/%s/unbonding_delegations", validatorAddr.String()), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var ubds []staking.UnbondingDelegation
+	var ubds []stakingtypes.UnbondingDelegation
 	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &ubds)
 	require.Nil(t, err)
 
@@ -798,55 +798,55 @@ func doSubmitCommunityPoolSpendProposal(
 }
 
 // GET /gov/proposals Query proposals
-func getProposalsAll(t *testing.T, port string) []gov.Proposal {
+func getProposalsAll(t *testing.T, port string) []govtypes.Proposal {
 	res, body := Request(t, port, "GET", "/gov/proposals", nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var proposals []gov.Proposal
+	var proposals []govtypes.Proposal
 	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &proposals)
 	require.Nil(t, err)
 	return proposals
 }
 
 // GET /gov/proposals?depositor=%s Query proposals
-func getProposalsFilterDepositor(t *testing.T, port string, depositorAddr sdk.AccAddress) []gov.Proposal {
+func getProposalsFilterDepositor(t *testing.T, port string, depositorAddr sdk.AccAddress) []govtypes.Proposal {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/gov/proposals?depositor=%s", depositorAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var proposals []gov.Proposal
+	var proposals []govtypes.Proposal
 	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &proposals)
 	require.Nil(t, err)
 	return proposals
 }
 
 // GET /gov/proposals?voter=%s Query proposals
-func getProposalsFilterVoter(t *testing.T, port string, voterAddr sdk.AccAddress) []gov.Proposal {
+func getProposalsFilterVoter(t *testing.T, port string, voterAddr sdk.AccAddress) []govtypes.Proposal {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/gov/proposals?voter=%s", voterAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var proposals []gov.Proposal
+	var proposals []govtypes.Proposal
 	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &proposals)
 	require.Nil(t, err)
 	return proposals
 }
 
 // GET /gov/proposals?depositor=%s&voter=%s Query proposals
-func getProposalsFilterVoterDepositor(t *testing.T, port string, voterAddr, depositorAddr sdk.AccAddress) []gov.Proposal {
+func getProposalsFilterVoterDepositor(t *testing.T, port string, voterAddr, depositorAddr sdk.AccAddress) []govtypes.Proposal {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/gov/proposals?depositor=%s&voter=%s", depositorAddr, voterAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var proposals []gov.Proposal
+	var proposals []govtypes.Proposal
 	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &proposals)
 	require.Nil(t, err)
 	return proposals
 }
 
 // GET /gov/proposals?status=%s Query proposals
-func getProposalsFilterStatus(t *testing.T, port string, status gov.ProposalStatus) []gov.Proposal {
+func getProposalsFilterStatus(t *testing.T, port string, status govtypes.ProposalStatus) []govtypes.Proposal {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/gov/proposals?status=%s", status), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var proposals []gov.Proposal
+	var proposals []govtypes.Proposal
 	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &proposals)
 	require.Nil(t, err)
 	return proposals
@@ -889,21 +889,21 @@ func doDeposit(
 }
 
 // GET /gov/proposals/{proposalId}/deposits Query deposits
-func getDeposits(t *testing.T, port string, proposalID uint64) []gov.Deposit {
+func getDeposits(t *testing.T, port string, proposalID uint64) []govtypes.Deposit {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/gov/proposals/%d/deposits", proposalID), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
-	var deposits []gov.Deposit
+	var deposits []govtypes.Deposit
 	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &deposits)
 	require.Nil(t, err)
 	return deposits
 }
 
 // GET /gov/proposals/{proposalId}/tally Get a proposal's tally result at the current time
-func getTally(t *testing.T, port string, proposalID uint64) gov.TallyResult {
+func getTally(t *testing.T, port string, proposalID uint64) govtypes.TallyResult {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/gov/proposals/%d/tally", proposalID), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var tally gov.TallyResult
+	var tally govtypes.TallyResult
 	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &tally)
 	require.Nil(t, err)
 
@@ -948,21 +948,21 @@ func doVote(
 }
 
 // GET /gov/proposals/{proposalId}/votes Query voters
-func getVotes(t *testing.T, port string, proposalID uint64) []gov.Vote {
+func getVotes(t *testing.T, port string, proposalID uint64) []govtypes.Vote {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/gov/proposals/%d/votes", proposalID), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
-	var votes []gov.Vote
+	var votes []govtypes.Vote
 	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &votes)
 	require.Nil(t, err)
 	return votes
 }
 
 // GET /gov/proposals/{proposalId} Query a proposal
-func getProposal(t *testing.T, port string, proposalID uint64) gov.Proposal {
+func getProposal(t *testing.T, port string, proposalID uint64) govtypes.Proposal {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/gov/proposals/%d", proposalID), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var proposal gov.Proposal
+	var proposal govtypes.Proposal
 	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &proposal)
 	require.Nil(t, err)
 
@@ -970,11 +970,11 @@ func getProposal(t *testing.T, port string, proposalID uint64) gov.Proposal {
 }
 
 // GET /gov/proposals/{proposalId}/deposits/{depositor} Query deposit
-func getDeposit(t *testing.T, port string, proposalID uint64, depositorAddr sdk.AccAddress) gov.Deposit {
+func getDeposit(t *testing.T, port string, proposalID uint64, depositorAddr sdk.AccAddress) govtypes.Deposit {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/gov/proposals/%d/deposits/%s", proposalID, depositorAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var deposit gov.Deposit
+	var deposit govtypes.Deposit
 	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &deposit)
 	require.Nil(t, err)
 
@@ -982,11 +982,11 @@ func getDeposit(t *testing.T, port string, proposalID uint64, depositorAddr sdk.
 }
 
 // GET /gov/proposals/{proposalId}/votes/{voter} Query vote
-func getVote(t *testing.T, port string, proposalID uint64, voterAddr sdk.AccAddress) gov.Vote {
+func getVote(t *testing.T, port string, proposalID uint64, voterAddr sdk.AccAddress) govtypes.Vote {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/gov/proposals/%d/votes/%s", proposalID, voterAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var vote gov.Vote
+	var vote govtypes.Vote
 	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &vote)
 	require.Nil(t, err)
 
@@ -1006,11 +1006,11 @@ func getProposer(t *testing.T, port string, proposalID uint64) gcutils.Proposer 
 }
 
 // GET /gov/parameters/deposit Query governance deposit parameters
-func getDepositParam(t *testing.T, port string) gov.DepositParams {
+func getDepositParam(t *testing.T, port string) govtypes.DepositParams {
 	res, body := Request(t, port, "GET", "/gov/parameters/deposit", nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var depositParams gov.DepositParams
+	var depositParams govtypes.DepositParams
 	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &depositParams)
 	require.Nil(t, err)
 
@@ -1018,22 +1018,22 @@ func getDepositParam(t *testing.T, port string) gov.DepositParams {
 }
 
 // GET /gov/parameters/tallying Query governance tally parameters
-func getTallyingParam(t *testing.T, port string) gov.TallyParams {
+func getTallyingParam(t *testing.T, port string) govtypes.TallyParams {
 	res, body := Request(t, port, "GET", "/gov/parameters/tallying", nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var tallyParams gov.TallyParams
+	var tallyParams govtypes.TallyParams
 	err := cdc.UnmarshalJSON([]byte(body), &tallyParams)
 	require.Nil(t, err)
 	return tallyParams
 }
 
 // GET /gov/parameters/voting Query governance voting parameters
-func getVotingParam(t *testing.T, port string) gov.VotingParams {
+func getVotingParam(t *testing.T, port string) govtypes.VotingParams {
 	res, body := Request(t, port, "GET", "/gov/parameters/voting", nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var votingParams gov.VotingParams
+	var votingParams govtypes.VotingParams
 	err := cdc.UnmarshalJSON([]byte(body), &votingParams)
 	require.Nil(t, err)
 	return votingParams
@@ -1043,11 +1043,11 @@ func getVotingParam(t *testing.T, port string) gov.VotingParams {
 // ICS 23 - Slashing
 // ----------------------------------------------------------------------
 // GET /slashing/validators/{validatorPubKey}/signing_info Get sign info of given validator
-func getSigningInfo(t *testing.T, port string, validatorPubKey string) slashing.ValidatorSigningInfo {
+func getSigningInfo(t *testing.T, port string, validatorPubKey string) slashtypes.ValidatorSigningInfo {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/slashing/validators/%s/signing_info", validatorPubKey), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var signingInfo slashing.ValidatorSigningInfo
+	var signingInfo slashtypes.ValidatorSigningInfo
 	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &signingInfo)
 	require.Nil(t, err)
 
@@ -1058,11 +1058,11 @@ func getSigningInfo(t *testing.T, port string, validatorPubKey string) slashing.
 // ICS 23 - SlashingList
 // ----------------------------------------------------------------------
 // GET /slashing/signing_infos Get sign info of all validators with pagination
-func getSigningInfoList(t *testing.T, port string) []slashing.ValidatorSigningInfo {
+func getSigningInfoList(t *testing.T, port string) []slashtypes.ValidatorSigningInfo {
 	res, body := Request(t, port, "GET", "/slashing/signing_infos?page=1&limit=1", nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var signingInfo []slashing.ValidatorSigningInfo
+	var signingInfo []slashtypes.ValidatorSigningInfo
 	err := cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &signingInfo)
 	require.Nil(t, err)
 

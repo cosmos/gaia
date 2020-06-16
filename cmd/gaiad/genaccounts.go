@@ -5,6 +5,9 @@ import (
 	"errors"
 	"fmt"
 
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	gentypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 
 	"github.com/spf13/cobra"
@@ -18,7 +21,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting"
-	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 )
 
@@ -84,7 +86,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 			// create concrete account type based on input parameters
 			var genAccount auth.GenesisAccount
 
-			balances := bank.Balance{Address: addr, Coins: coins.Sort()}
+			balances := banktypes.Balance{Address: addr, Coins: coins.Sort()}
 			baseAccount := auth.NewBaseAccount(addr, nil, 0, 0)
 			if !vestingAmt.IsZero() {
 				baseVestingAccount := authvesting.NewBaseVestingAccount(baseAccount, vestingAmt.Sort(), vestingEnd)
@@ -113,13 +115,13 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 			}
 
 			genFile := config.GenesisFile()
-			appState, genDoc, err := genutil.GenesisStateFromGenFile(depCdc, genFile)
+			appState, genDoc, err := gentypes.GenesisStateFromGenFile(depCdc, genFile)
 			if err != nil {
 				return fmt.Errorf("failed to unmarshal genesis state: %w", err)
 			}
 
 			authGenState := auth.GetGenesisStateFromAppState(cdc, appState)
-			bankGenState := bank.GetGenesisStateFromAppState(depCdc, appState)
+			bankGenState := banktypes.GetGenesisStateFromAppState(depCdc, appState)
 			if authGenState.Accounts.Contains(addr) {
 				return fmt.Errorf("cannot add account at existing address %s", addr)
 			}
@@ -128,10 +130,10 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 				return fmt.Errorf("cannot add account at existing address %s", addr)
 			}
 
-			balance := bank.Balance{Address: addr, Coins: coins}
+			balance := banktypes.Balance{Address: addr, Coins: coins}
 
 			bankGenState.Balances = append(bankGenState.Balances, balance)
-			bankGenState.Balances = bank.SanitizeGenesisBalances(bankGenState.Balances)
+			bankGenState.Balances = banktypes.SanitizeGenesisBalances(bankGenState.Balances)
 
 			// Add the new account to the set of genesis accounts and sanitize the
 			// accounts afterwards.
@@ -149,7 +151,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 			}
 
 			appState[auth.ModuleName] = authGenStateBz
-			appState[bank.ModuleName] = bankGenStateBz
+			appState[banktypes.ModuleName] = bankGenStateBz
 
 			appStateJSON, err := cdc.MarshalJSON(appState)
 			if err != nil {
@@ -171,7 +173,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 	return cmd
 }
 
-func balancesContains(bal []bank.Balance, addr sdk.AccAddress) bool {
+func balancesContains(bal []banktypes.Balance, addr sdk.AccAddress) bool {
 	for _, b := range bal {
 		if b.Address.Equals(addr) {
 			return true

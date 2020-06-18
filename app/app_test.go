@@ -4,20 +4,17 @@ import (
 	"os"
 	"testing"
 
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/std"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/stretchr/testify/require"
+	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 	"github.com/tendermint/tendermint/libs/log"
 	db "github.com/tendermint/tm-db"
-
-	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/simapp"
-
-	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 func TestGaiadExport(t *testing.T) {
@@ -38,7 +35,7 @@ func TestBlackListedAddrs(t *testing.T) {
 	app := NewGaiaApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, 0, map[int64]bool{}, "")
 
 	for acc := range maccPerms {
-		require.Equal(t, !allowedReceivingModAcc[acc], app.bankKeeper.BlacklistedAddr(app.accountKeeper.GetModuleAddress(acc)))
+		require.Equal(t, !allowedReceivingModAcc[acc], app.bankKeeper.BlockedAddr(app.accountKeeper.GetModuleAddress(acc)))
 	}
 }
 
@@ -83,16 +80,16 @@ func BenchmarkTxSendSize(b *testing.B) {
 		[]banktypes.Input{banktypes.NewInput(addr1, coins)},
 		[]banktypes.Output{banktypes.NewOutput(addr2, coins)},
 	)
-	fee := auth.NewStdFee(gas, coins)
-	signBytes := auth.StdSignBytes("example-chain-ID",
+	fee := authtypes.NewStdFee(gas, coins)
+	signBytes := authtypes.StdSignBytes("example-chain-ID",
 		1, 1, fee, []sdk.Msg{msg1}, "")
 	sig, err := priv1.Sign(signBytes)
 	if err != nil {
 		return
 	}
-	sigs := []auth.StdSignature{{nil, sig}}
+	sigs := []authtypes.StdSignature{{nil, sig}}
 	for i := 0; i < b.N; i++ {
-		tx := auth.NewStdTx([]sdk.Msg{msg1}, fee, sigs, "")
+		tx := authtypes.NewStdTx([]sdk.Msg{msg1}, fee, sigs, "")
 		b.Log(len(cdc.MustMarshalBinaryBare([]sdk.Msg{msg1})))
 		b.Log(len(cdc.MustMarshalBinaryBare(tx)))
 		// output: 80

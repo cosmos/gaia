@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"os"
 	"path"
 
@@ -16,7 +17,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
-	"github.com/cosmos/cosmos-sdk/x/auth"
 	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	bankcmd "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
@@ -142,7 +142,7 @@ func txCmd(cliContext client.Context, cdc *codec.Codec) *cobra.Command {
 	var cmdsToRemove []*cobra.Command
 
 	for _, cmd := range txCmd.Commands() {
-		if cmd.Use == auth.ModuleName || cmd.Use == banktypes.ModuleName {
+		if cmd.Use == authtypes.ModuleName || cmd.Use == banktypes.ModuleName {
 			cmdsToRemove = append(cmdsToRemove, cmd)
 		}
 	}

@@ -304,6 +304,8 @@ func doTransferWithGas(
 		return resp, body, receiveAddr
 	}
 
+	fmt.Printf("HEEEEELP %v\n", body)
+
 	// sign and broadcast
 	resp, body = signAndBroadcastGenTx(t, port, name, body, acc, gasAdjustment, simulate, kb)
 	return resp, body, receiveAddr
@@ -362,6 +364,7 @@ func signAndBroadcastGenTx(
 
 	chainID := viper.GetString(flags.FlagChainID)
 
+	fmt.Printf("EMPTY HELP %v\n", genTx)
 	var tx auth.StdTx
 	err := cdc.UnmarshalJSON([]byte(genTx), &tx)
 	require.Nil(t, err)

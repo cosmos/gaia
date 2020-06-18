@@ -9,14 +9,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/tendermint/tendermint/rpc/client/local"
+	"github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	"github.com/cosmos/cosmos-sdk/client/rpc"
-	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
-
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/server/api"
-	"github.com/cosmos/cosmos-sdk/server/config"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
@@ -30,20 +25,26 @@ import (
 	"github.com/tendermint/tendermint/p2p"
 	pvm "github.com/tendermint/tendermint/privval"
 	"github.com/tendermint/tendermint/proxy"
+	"github.com/tendermint/tendermint/rpc/client/local"
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/keys"
+	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/server"
+	"github.com/cosmos/cosmos-sdk/server/api"
+	"github.com/cosmos/cosmos-sdk/server/config"
 	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/cosmos/cosmos-sdk/tests"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
+	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
@@ -109,6 +110,7 @@ func InitializeLCD(
 
 	tests.WaitForNextHeightTM(tests.ExtractPortFromAddress(config.RPC.ListenAddress))
 
+	viper.Set(flags.FlagChainID, config.BaseConfig.ChainID())
 	_, err = startLCD(node, listenAddr, cdc)
 	if err != nil {
 		return
@@ -125,10 +127,6 @@ func InitializeLCD(
 		}
 
 		node.Wait()
-		//err = lcdInstance.Close()
-		//if err != nil {
-		//	logger.Error(err.Error())
-		//}
 	}
 
 	return cleanup, valConsPubKeys, valOperAddrs, port, err
@@ -358,7 +356,8 @@ func startLCD(node *nm.Node, listenAddr string, cdc *codec.Codec) (*api.Server, 
 		WithJSONMarshaler(appCodec).
 		WithCodec(cdc).
 		WithClient(local.New(node)).
-		WithTrustNode(true)
+		WithTrustNode(true).
+		WithTxGenerator(types.StdTxGenerator{Cdc: cdc})
 
 	rs := api.New(clientCtx)
 	registerRoutes(rs)
@@ -371,7 +370,7 @@ func startLCD(node *nm.Node, listenAddr string, cdc *codec.Codec) (*api.Server, 
 		MaxOpenConnections: 100,
 		RPCReadTimeout:     100,
 		RPCWriteTimeout:    100,
-		RPCMaxBodyBytes:    100,
+		RPCMaxBodyBytes:    100000000000,
 	})
 
 	return rs, nil

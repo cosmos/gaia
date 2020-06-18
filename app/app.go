@@ -23,6 +23,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	bankeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -106,13 +108,12 @@ var (
 
 	// module account permissions
 	maccPerms = map[string][]string{
-		auth.FeeCollectorName:          nil,
 		disttypes.ModuleName:           nil,
-		minttypes.ModuleName:           {auth.Minter},
-		stakingtypes.BondedPoolName:    {auth.Burner, auth.Staking},
-		stakingtypes.NotBondedPoolName: {auth.Burner, auth.Staking},
-		govtypes.ModuleName:            {auth.Burner},
-		transfertypes.ModuleName:       {auth.Minter, auth.Burner},
+		minttypes.ModuleName:           {authtypes.Minter},
+		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
+		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
+		govtypes.ModuleName:            {authtypes.Burner},
+		transfertypes.ModuleName:       {authtypes.Minter, authtypes.Burner},
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -141,7 +142,7 @@ type GaiaApp struct {
 	subspaces map[string]paramtypes.Subspace
 
 	// keepers
-	accountKeeper    auth.AccountKeeper
+	accountKeeper    authkeeper.AccountKeeper
 	bankKeeper       bankeeper.Keeper
 	capabilityKeeper *capkeeper.Keeper
 	stakingKeeper    stakingkeeper.Keeper
@@ -177,12 +178,12 @@ func NewGaiaApp(
 	// TODO: Remove cdc in favor of appCodec once all modules are migrated.
 	appCodec, cdc := MakeCodecs()
 
-	bApp := baseapp.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...)
+	bApp := baseapp.NewBaseApp(appName, logger, db, authtypes.DefaultTxDecoder(cdc), baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetAppVersion(version.Version)
 
 	keys := sdk.NewKVStoreKeys(
-		auth.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey,
+		authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey,
 		minttypes.StoreKey, disttypes.StoreKey, slashtypes.StoreKey,
 		govtypes.StoreKey, paramtypes.StoreKey, host.StoreKey, utypes.StoreKey,
 		evidencetypes.StoreKey, transfertypes.StoreKey, capabilitytypes.StoreKey,
@@ -202,9 +203,9 @@ func NewGaiaApp(
 
 	// init params keeper and subspaces
 	app.paramsKeeper = paramskeeper.NewKeeper(appCodec, keys[paramtypes.StoreKey], tkeys[paramtypes.TStoreKey])
-	app.subspaces[auth.ModuleName] = app.paramsKeeper.Subspace(auth.DefaultParamspace)
+	app.subspaces[authtypes.ModuleName] = app.paramsKeeper.Subspace(authtypes.DefaultParamspace)
 	app.subspaces[banktypes.ModuleName] = app.paramsKeeper.Subspace(banktypes.DefaultParamspace)
-	app.subspaces[stakingtypes.ModuleName] = app.paramsKeeper.Subspace(stakingkeeper.DefaultParamspace)
+	app.subspaces[stakingtypes.ModuleName] = app.paramsKeeper.Subspace(stakingtypes.DefaultParamspace)
 	app.subspaces[minttypes.ModuleName] = app.paramsKeeper.Subspace(minttypes.DefaultParamspace)
 	app.subspaces[disttypes.ModuleName] = app.paramsKeeper.Subspace(disttypes.DefaultParamspace)
 	app.subspaces[slashtypes.ModuleName] = app.paramsKeeper.Subspace(slashtypes.DefaultParamspace)
@@ -220,8 +221,8 @@ func NewGaiaApp(
 	scopedTransferKeeper := app.capabilityKeeper.ScopeToModule(transfertypes.ModuleName)
 
 	// add keepers
-	app.accountKeeper = auth.NewAccountKeeper(
-		appCodec, keys[auth.StoreKey], app.subspaces[auth.ModuleName], auth.ProtoBaseAccount, maccPerms,
+	app.accountKeeper = authkeeper.NewAccountKeeper(
+		appCodec, keys[authtypes.StoreKey], app.subspaces[authtypes.ModuleName], authtypes.ProtoBaseAccount, maccPerms,
 	)
 	app.bankKeeper = bankeeper.NewBaseKeeper(
 		appCodec, keys[banktypes.StoreKey], app.accountKeeper, app.subspaces[banktypes.ModuleName], app.BlacklistedAccAddrs(),
@@ -231,17 +232,17 @@ func NewGaiaApp(
 	)
 	app.mintKeeper = mintkeeper.NewKeeper(
 		appCodec, keys[minttypes.StoreKey], app.subspaces[minttypes.ModuleName], &stakingKeeper,
-		app.accountKeeper, app.bankKeeper, auth.FeeCollectorName,
+		app.accountKeeper, app.bankKeeper, authtypes.FeeCollectorName,
 	)
 	app.distrKeeper = distrkeeper.NewKeeper(
 		appCodec, keys[disttypes.StoreKey], app.subspaces[disttypes.ModuleName], app.accountKeeper, app.bankKeeper,
-		&stakingKeeper, auth.FeeCollectorName, app.ModuleAccountAddrs(),
+		&stakingKeeper, authtypes.FeeCollectorName, app.ModuleAccountAddrs(),
 	)
 	app.slashingKeeper = slashkeeper.NewKeeper(
 		appCodec, keys[slashtypes.StoreKey], &stakingKeeper, app.subspaces[slashtypes.ModuleName],
 	)
 	app.crisisKeeper = crisiskeeper.NewKeeper(
-		app.subspaces[crisistypes.ModuleName], invCheckPeriod, app.bankKeeper, auth.FeeCollectorName,
+		app.subspaces[crisistypes.ModuleName], invCheckPeriod, app.bankKeeper, authtypes.FeeCollectorName,
 	)
 	app.upgradeKeeper = ukeeper.NewKeeper(skipUpgradeHeights, keys[utypes.StoreKey], appCodec, home)
 
@@ -328,7 +329,7 @@ func NewGaiaApp(
 	// so that other modules that want to create or claim capabilities afterwards in InitChain
 	// can do so safely.
 	app.mm.SetOrderInitGenesis(
-		capabilitytypes.ModuleName, auth.ModuleName, disttypes.ModuleName, stakingtypes.ModuleName, banktypes.ModuleName,
+		capabilitytypes.ModuleName, authtypes.ModuleName, disttypes.ModuleName, stakingtypes.ModuleName, banktypes.ModuleName,
 		slashtypes.ModuleName, govtypes.ModuleName, minttypes.ModuleName, crisistypes.ModuleName,
 		host.ModuleName, gentypes.ModuleName, evidencetypes.ModuleName, transfertypes.ModuleName,
 	)
@@ -420,7 +421,7 @@ func (app *GaiaApp) LoadHeight(height int64) error {
 func (app *GaiaApp) ModuleAccountAddrs() map[string]bool {
 	modAccAddrs := make(map[string]bool)
 	for acc := range maccPerms {
-		modAccAddrs[auth.NewModuleAddress(acc).String()] = true
+		modAccAddrs[authtypes.NewModuleAddress(acc).String()] = true
 	}
 
 	return modAccAddrs
@@ -434,7 +435,7 @@ func (app *GaiaApp) RegisterAPIRoutes(a *api.Server) {
 func (app *GaiaApp) BlacklistedAccAddrs() map[string]bool {
 	blacklistedAddrs := make(map[string]bool)
 	for acc := range maccPerms {
-		blacklistedAddrs[auth.NewModuleAddress(acc).String()] = !allowedReceivingModAcc[acc]
+		blacklistedAddrs[authtypes.NewModuleAddress(acc).String()] = !allowedReceivingModAcc[acc]
 	}
 
 	return blacklistedAddrs

@@ -17,9 +17,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
-	"github.com/cosmos/cosmos-sdk/x/auth"
 	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	bankrest "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
 	distrrest "github.com/cosmos/cosmos-sdk/x/distribution/client/rest"
 	govrest "github.com/cosmos/cosmos-sdk/x/gov/client/rest"
@@ -213,7 +213,7 @@ func doKeysPost(t *testing.T, port, name, password, mnemonic string, account int
 }
 
 // GET /auth/accounts/{address} Get the account information on blockchain
-func getAccount(t *testing.T, port string, addr sdk.AccAddress) (acc auth.AccountI) {
+func getAccount(t *testing.T, port string, addr sdk.AccAddress) (acc authtypes.AccountI) {
 	res, body := Request(t, port, "GET", fmt.Sprintf("/auth/accounts/%s", addr.String()), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 	require.Nil(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &acc))
@@ -235,7 +235,7 @@ func getBalances(t *testing.T, port string, addr sdk.AccAddress) (balances sdk.C
 // ----------------------------------------------------------------------
 
 // POST /tx/broadcast Send a signed Tx
-func doBroadcast(t *testing.T, port string, tx auth.StdTx) (*http.Response, string) {
+func doBroadcast(t *testing.T, port string, tx authtypes.StdTx) (*http.Response, string) {
 	txReq := authrest.BroadcastReq{Tx: tx, Mode: "block"}
 
 	req, err := cdc.MarshalJSON(txReq)
@@ -358,18 +358,18 @@ func doTransferWithGasAccAuto(
 // signAndBroadcastGenTx accepts a successfully generated unsigned tx, signs it,
 // and broadcasts it.
 func signAndBroadcastGenTx(
-	t *testing.T, port, name, genTx string, acc auth.AccountI,
+	t *testing.T, port, name, genTx string, acc authtypes.AccountI,
 	gasAdjustment float64, simulate bool, kb keyring.Keyring,
 ) (resp *http.Response, body string) {
 
 	chainID := viper.GetString(flags.FlagChainID)
 
 	fmt.Printf("EMPTY HELP %v\n", genTx)
-	var tx auth.StdTx
+	var tx authtypes.StdTx
 	err := cdc.UnmarshalJSON([]byte(genTx), &tx)
 	require.Nil(t, err)
 
-	txbldr := auth.NewTxBuilder(
+	txbldr := authtypes.NewTxBuilder(
 		authclient.GetTxEncoder(cdc),
 		acc.GetAccountNumber(),
 		acc.GetSequence(),

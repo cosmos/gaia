@@ -22,7 +22,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/cosmos/cosmos-sdk/version"
-	"github.com/cosmos/cosmos-sdk/x/auth"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrrest "github.com/cosmos/cosmos-sdk/x/distribution/client/rest"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
@@ -211,7 +211,7 @@ func TestCoinMultiSendGenerateOnly(t *testing.T) {
 	res, body, _ := doTransferWithGas(t, port, "", memo, addr, "200000", 1, false, false, fees, kb)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var stdTx auth.StdTx
+	var stdTx authtypes.StdTx
 	require.Nil(t, cdc.UnmarshalJSON([]byte(body), &stdTx))
 	require.Equal(t, len(stdTx.Msgs), 1)
 	require.Equal(t, stdTx.GetMsgs()[0].Route(), banktypes.RouterKey)
@@ -246,7 +246,7 @@ func TestCoinSendGenerateSignAndBroadcast(t *testing.T) {
 	res, body, _ = doTransferWithGas(t, port, name1, memo, addr, gas, 1, false, false, fees, kb)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 
-	var tx auth.StdTx
+	var tx authtypes.StdTx
 	require.Nil(t, cdc.UnmarshalJSON([]byte(body), &tx))
 	require.Equal(t, len(tx.Msgs), 1)
 	require.Equal(t, tx.Msgs[0].Route(), banktypes.RouterKey)
@@ -275,7 +275,7 @@ func TestEncodeTx(t *testing.T) {
 	defer cleanup()
 
 	_, body, _ := doTransferWithGas(t, port, name1, memo, addr, "2", 1, false, false, fees, kb)
-	var tx auth.StdTx
+	var tx authtypes.StdTx
 	require.Nil(t, cdc.UnmarshalJSON([]byte(body), &tx))
 
 	encodedJSON, err := cdc.MarshalJSON(tx)
@@ -296,7 +296,7 @@ func TestEncodeTx(t *testing.T) {
 	require.Nil(t, err)
 
 	// check that the transaction decodes as expected
-	var decodedTx auth.StdTx
+	var decodedTx authtypes.StdTx
 	require.Nil(t, cdc.UnmarshalBinaryBare(decodedBytes, &decodedTx))
 	require.Equal(t, memo, decodedTx.Memo)
 }

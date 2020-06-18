@@ -9,10 +9,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/cosmos/cosmos-sdk/x/auth/types"
-
-	"github.com/cosmos/cosmos-sdk/client/flags"
-
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	tmcfg "github.com/tendermint/tendermint/config"
@@ -31,6 +27,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -42,9 +39,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/cosmos/cosmos-sdk/tests"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth"
 	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
@@ -157,8 +154,8 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	// append any additional (non-proposing) validators
 	//nolint:prealloc
 	var (
-		genTxs      []auth.StdTx
-		genAccounts []auth.GenesisAccount
+		genTxs      []authtypes.StdTx
+		genAccounts []authtypes.GenesisAccount
 		genBalances []banktypes.Balance
 	)
 
@@ -190,7 +187,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 			sdk.OneInt(),
 		)
 
-		stdSignMsg := auth.StdSignMsg{
+		stdSignMsg := authtypes.StdSignMsg{
 			ChainID: genDoc.ChainID,
 			Msgs:    []sdk.Msg{msg},
 		}
@@ -201,12 +198,12 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 			return
 		}
 
-		transaction := auth.NewStdTx([]sdk.Msg{msg}, auth.StdFee{}, []auth.StdSignature{{Signature: sig, PubKey: operPrivKey.PubKey().Bytes()}}, "")
+		transaction := authtypes.NewStdTx([]sdk.Msg{msg}, authtypes.StdFee{}, []authtypes.StdSignature{{Signature: sig, PubKey: operPrivKey.PubKey().Bytes()}}, "")
 		genTxs = append(genTxs, transaction)
 		valConsPubKeys = append(valConsPubKeys, pubKey)
 		valOperAddrs = append(valOperAddrs, sdk.ValAddress(operAddr))
 
-		account := auth.NewBaseAccountWithAddress(sdk.AccAddress(operAddr))
+		account := authtypes.NewBaseAccountWithAddress(sdk.AccAddress(operAddr))
 		accTokens := sdk.TokensFromConsensusPower(150)
 		totalSupply = totalSupply.Add(accTokens)
 
@@ -228,7 +225,7 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 
 	// add some tokens to init accounts
 	for _, addr := range initAddrs {
-		accAuth := auth.NewBaseAccountWithAddress(addr)
+		accAuth := authtypes.NewBaseAccountWithAddress(addr)
 		accTokens := sdk.TokensFromConsensusPower(100)
 		totalSupply = totalSupply.Add(accTokens)
 
@@ -238,10 +235,10 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 	}
 
 	// auth genesis state: params and genesis accounts
-	var authGenState auth.GenesisState
-	cdc.MustUnmarshalJSON(genesisState[auth.ModuleName], &authGenState)
+	var authGenState authtypes.GenesisState
+	cdc.MustUnmarshalJSON(genesisState[authtypes.ModuleName], &authGenState)
 	authGenState.Accounts = genAccounts
-	genesisState[auth.ModuleName] = cdc.MustMarshalJSON(authGenState)
+	genesisState[authtypes.ModuleName] = cdc.MustMarshalJSON(authGenState)
 
 	var bankGenState banktypes.GenesisState
 	cdc.MustUnmarshalJSON(genesisState[banktypes.ModuleName], &bankGenState)
@@ -357,20 +354,22 @@ func startLCD(node *nm.Node, listenAddr string, cdc *codec.Codec) (*api.Server, 
 		WithCodec(cdc).
 		WithClient(local.New(node)).
 		WithTrustNode(true).
-		WithTxGenerator(types.StdTxGenerator{Cdc: cdc})
+		WithTxGenerator(authtypes.StdTxGenerator{Cdc: cdc})
 
 	rs := api.New(clientCtx)
 	registerRoutes(rs)
 
-	go rs.Start(config.APIConfig{
-		Enable:             true,
-		Swagger:            true,
-		EnableUnsafeCORS:   true,
-		Address:            listenAddr,
-		MaxOpenConnections: 100,
-		RPCReadTimeout:     100,
-		RPCWriteTimeout:    100,
-		RPCMaxBodyBytes:    100000000000,
+	go rs.Start(config.Config{
+		API: config.APIConfig{
+			Enable:             true,
+			Swagger:            true,
+			EnableUnsafeCORS:   true,
+			Address:            listenAddr,
+			MaxOpenConnections: 100,
+			RPCReadTimeout:     100,
+			RPCWriteTimeout:    100,
+			RPCMaxBodyBytes:    100000000000,
+		},
 	})
 
 	return rs, nil

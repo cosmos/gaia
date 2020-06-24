@@ -86,10 +86,15 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) server.Applicati
 		skipUpgradeHeights[int64(h)] = true
 	}
 
+	pruningOptions, err := server.GetPruningOptionsFromFlags()
+	if err != nil {
+		panic("invalid pruning options")
+	}
+
 	return app.NewGaiaApp(
 		logger, db, traceStore, true, invCheckPeriod, skipUpgradeHeights,
 		viper.GetString(flags.FlagHome),
-		baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
+		baseapp.SetPruning(pruningOptions),
 		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
 		baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
 		baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),

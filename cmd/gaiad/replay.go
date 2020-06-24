@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/cosmos/cosmos-sdk/store/types"
+
 	cpm "github.com/otiai10/copy"
 	"github.com/spf13/cobra"
 
@@ -21,7 +23,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/server"
-	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -96,7 +97,7 @@ func replayTxs(rootDir string) error {
 	fmt.Fprintln(os.Stderr, "Creating application")
 	gapp := app.NewGaiaApp(
 		ctx.Logger, appDB, traceStoreWriter, true, uint(1), map[int64]bool{}, "",
-		baseapp.SetPruning(store.PruneEverything), // nothing
+		baseapp.SetPruning(types.PruneEverything), // nothing
 	)
 
 	// Genesis
@@ -109,7 +110,6 @@ func replayTxs(rootDir string) error {
 	if err != nil {
 		return err
 	}
-	// tmsm.SaveState(tmDB, genState)
 
 	cc := proxy.NewLocalClientCreator(gapp)
 	proxyApp := proxy.NewAppConns(cc)

@@ -456,10 +456,10 @@ func (app *GaiaApp) SimulationManager() *module.SimulationManager {
 
 // MakeCodecs constructs the *std.Codec and *codec.Codec instances used by
 // GaiaApp.
-func MakeCodecs() (*std.Codec, *codec.Codec) {
+func MakeCodecs() (codec.Marshaler, *codec.Codec) {
 	cdc := std.MakeCodec(ModuleBasics)
 	interfaceRegistry := types.NewInterfaceRegistry()
-	appCodec := std.NewAppCodec(cdc, interfaceRegistry)
+	appCodec := codec.NewHybridCodec(cdc, interfaceRegistry)
 
 	sdk.RegisterInterfaces(interfaceRegistry)
 	ModuleBasics.RegisterInterfaceModules(interfaceRegistry)

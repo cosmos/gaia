@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"os"
 	"path"
+
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -125,13 +126,13 @@ func txCmd(cliContext client.Context, cdc *codec.Codec) *cobra.Command {
 	txCmd.AddCommand(
 		bankcmd.NewSendTxCmd(cliContext),
 		flags.LineBreak,
-		authcmd.GetSignCommand(cdc),
-		authcmd.GetValidateSignaturesCommand(cdc),
-		authcmd.GetMultiSignCommand(cdc),
+		authcmd.GetSignCommand(cliContext),
+		authcmd.GetValidateSignaturesCommand(cliContext),
+		authcmd.GetMultiSignCommand(cliContext),
 		flags.LineBreak,
-		authcmd.GetBroadcastCommand(cdc),
-		authcmd.GetEncodeCommand(cdc),
-		authcmd.GetDecodeCommand(cdc),
+		authcmd.GetBroadcastCommand(cliContext),
+		authcmd.GetEncodeCommand(cliContext),
+		authcmd.GetDecodeCommand(cliContext),
 		flags.LineBreak,
 	)
 

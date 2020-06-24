@@ -1,41 +1,33 @@
 module.exports = {
   theme: "cosmos",
   title: "Cosmos Hub",
-  head: [
-    [
-      "link",
-      {
-        rel: "stylesheet",
-        type: "text/css",
-        href: "https://cloud.typography.com/6138116/7255612/css/fonts.css"
-      }
-    ],
-  ],
   base: process.env.VUEPRESS_BASE || "/",
   themeConfig: {
     docsRepo: "cosmos/gaia",
     docsDir: "docs",
     editLinks: true,
     label: "hub",
-    sidebar: [
-      {
-        title: "Resources",
-        children: [
-          {
-            title: "Tutorials",
-            path: "https://tutorials.cosmos.network"
-          },
-          {
-            title: "SDK API Reference",
-            path: "https://godoc.org/github.com/cosmos/cosmos-sdk"
-          },
-          {
-            title: "REST API Spec",
-            path: "https://cosmos.network/rpc/"
-          }
-        ]
-      }
-    ],
+    sidebar: {
+      nav: [
+        {
+          title: "Resources",
+          children: [
+            {
+              title: "Tutorials",
+              path: "https://tutorials.cosmos.network"
+            },
+            {
+              title: "SDK API Reference",
+              path: "https://godoc.org/github.com/cosmos/cosmos-sdk"
+            },
+            {
+              title: "REST API Spec",
+              path: "https://cosmos.network/rpc/"
+            }
+          ]
+        }
+      ]
+    },
     gutter: {
       title: "Help & Support",
       editLink: true,
@@ -58,11 +50,13 @@ module.exports = {
       }
     },
     footer: {
-      questionsText: "Chat with Cosmos developers on [Discord](https://discord.gg/cr7N47p) or reach out on the [SDK Developer Forum](https://forum.cosmos.network/) to learn more.",
+      question: {
+        text: "Chat with Cosmos developers in <a href='https://discordapp.com/channels/669268347736686612' target='_blank'>Discord</a> or reach out on the <a href='https://forum.cosmos.network/c/tendermint' target='_blank'>SDK Developer Forum</a> to learn more."
+      },
       logo: "/logo-bw.svg",
       textLink: {
         text: "cosmos.network",
-        url: "/"
+        url: "https://cosmos.network"
       },
       services: [
         {

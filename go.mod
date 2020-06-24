@@ -3,7 +3,7 @@ module github.com/cosmos/gaia
 go 1.14
 
 require (
-	github.com/cosmos/cosmos-sdk v0.34.4-0.20200618171220-66e15d14db70
+	github.com/cosmos/cosmos-sdk v0.34.4-0.20200624121508-ab18c3fae0cd
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
 	github.com/otiai10/copy v1.2.0
@@ -17,4 +17,3 @@ require (
 )
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alpha.regen.4
-replace github.com/cosmos/cosmos-sdk => /Users/jgimeno/Development/GoProjects/cosmos-sdk

@@ -72,6 +72,10 @@ module.exports = {
           url: "https://www.linkedin.com/company/tendermint/"
         },
         {
+          service: "github",
+          url: "https://github.com/cosmos/gaia"
+        },
+        {
           service: "reddit",
           url: "https://reddit.com/r/cosmosnetwork"
         },

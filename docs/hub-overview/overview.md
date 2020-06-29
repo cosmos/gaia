@@ -41,6 +41,7 @@ These community-maintained web and mobile wallets allow you to store & transfer 
 
 These block explorers allow you to search, view and analyze Cosmos Hub data&mdash;like blocks, transactions, validators, etc.
 
+* [ATOMScan](https://atomscan.app)
 * [Big Dipper](https://cosmos.bigdipper.live)
 * [Cosmos Overview](https://genesislab.net)
 * [Coris](http://coris.network)

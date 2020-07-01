@@ -495,8 +495,8 @@ func (f *Fixtures) QueryTxs(page, limit int, events ...string) *sdk.SearchTxsRes
 }
 
 // QueryTxsInvalid query txs with wrong parameters and compare expected error
-func (f *Fixtures) QueryTxsInvalid(expectedErr error, page, limit int, events ...string) {
-	cmd := fmt.Sprintf("%s query txs --page=%d --limit=%d --events='%s' %v", f.GaiacliBinary, page, limit, queryEvents(events), f.Flags())
+func (f *Fixtures) QueryTxsInvalid(expectedErr error, page, limit int, tags ...string) {
+	cmd := fmt.Sprintf("%s query txs --page=%d --limit=%d --events='%s' %v", f.GaiacliBinary, page, limit, queryEvents(tags), f.Flags())
 	_, err := tests.ExecuteT(f.T, cmd, "")
 	require.EqualError(f.T, expectedErr, err)
 }

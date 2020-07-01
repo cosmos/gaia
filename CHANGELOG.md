@@ -36,39 +36,17 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
-### Features
+## [v2.0.11] - 2020-05-06
 
-* (gaiad) [\#119](https://github.com/cosmos/gaia/pull/119) Add support for the `--inter-block-cache` CLI
-flag and configuration.
-* (gaiacli) [\#132](https://github.com/cosmos/gaia/pull/132) Add `tx decode` command to decode
-Base64 encoded transactions.
-* (modules) [\#190](https://github.com/cosmos/gaia/pull/190) Introduce use of the `x/evidence` module.
-* (gaiad) [\#191](https://github.com/cosmos/gaia/pull/191) Add debug commands to gaiad:
-  * `pubkey`: decode pubkey from base64, hex or bech32
-  * `addr`: convert a address between hex and bech32
-  * `raw-bytes` convert raw-bytes to hex
-* (gaiacli) [\#191](https://github.com/cosmos/gaia/pull/191) Add cmd `decode-tx`, decodes a tx from hex or base64
-* (modules) [\#196](https://github.com/cosmos/gaia/pull/196) Integrate the `x/upgrade` module.
+* (sdk) Bump SDK version to [v0.37.13](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.37.13).
 
-### Client Breaking Changes
+## [v2.0.10] - 2020-05-06
 
-* [\#164](https://github.com/cosmos/gaia/pull/164) [\#212](https://github.com/cosmos/gaia/pull/212) The LevelDB-based
-keybase implementation has been replaced with a 99 designs Keyring library-backed implementation. Keys created and stored
-with previous `gaia` releases need to be migrated through the `gaiacli keys migrate` command.
-* (gaiacli) [\#326](https://github.com/cosmos/gaia/pull/326) Implement `--offline` flag in all post commands. Some commands
-that did not work with `--generate-only` as `gaiacli staking delegate` now work as long as we don't include the offline flag.
+* (sdk) Bump SDK version to [v0.37.12](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.37.12).
 
-## v2.0.10 - 2020-05-06
+## [v2.0.9] - 2020-04-23
 
-### Improvements
-
-    (sdk) Bump SDK version to v0.37.12.
-
-## v2.0.9 - 2020-04-23
-
-### Improvements
-
-    (sdk) Bump SDK version to v0.37.11.
+* (sdk) Bump SDK version to [v0.37.11](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.37.11).
 
 ## [v2.0.8] - 2020-04-09
 

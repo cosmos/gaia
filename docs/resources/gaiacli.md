@@ -326,7 +326,7 @@ You can find a list of available `events` on each of the SDK modules:
 - [Slashing events](https://github.com/cosmos/cosmos-sdk/blob/master/x/slashing/spec/06_events.md)
 - [Distribution events](https://github.com/cosmos/cosmos-sdk/blob/master/x/distribution/spec/06_events.md)
 - [Bank events](https://github.com/cosmos/cosmos-sdk/blob/master/x/bank/spec/04_events.md)
-  :::
+:::
 
 #### Matching a Transaction's Hash
 

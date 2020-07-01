@@ -39,16 +39,15 @@ import (
 	"github.com/cosmos/cosmos-sdk/tests"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
-	authexported "github.com/cosmos/cosmos-sdk/x/auth/exported"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
+	"github.com/cosmos/cosmos-sdk/x/genaccounts"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-
+	"github.com/cosmos/cosmos-sdk/x/supply"
 	"github.com/cosmos/gaia/app"
 )
 
@@ -82,7 +81,8 @@ func InitializeLCD(
 	logger = log.NewFilter(logger, log.AllowError())
 
 	db := dbm.NewMemDB()
-	gapp := app.NewGaiaApp(logger, db, nil, true, 0, map[int64]bool{}, "", baseapp.SetPruning(store.PruneNothing))
+	app := gapp.NewGaiaApp(logger, db, nil, true, 0, baseapp.SetPruning(store.PruneNothing))
+	cdc = gapp.MakeCodec()
 
 	genDoc, valConsPubKeys, valOperAddrs, privVal, err := defaultGenesis(config, nValidators, initAddrs, minting)
 	if err != nil {
@@ -244,29 +244,27 @@ func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAd
 		genAccounts = append(genAccounts, accAuth)
 	}
 
-	// auth genesis state: params and genesis accounts
-	var authGenState auth.GenesisState
-	cdc.MustUnmarshalJSON(genesisState[auth.ModuleName], &authGenState)
-	authGenState.Accounts = genAccounts
-	genesisState[auth.ModuleName] = cdc.MustMarshalJSON(authGenState)
-
-	var bankGenState bank.GenesisState
-	cdc.MustUnmarshalJSON(genesisState[bank.ModuleName], &bankGenState)
-	bankGenState.Balances = genBalances
-	genesisState[bank.ModuleName] = cdc.MustMarshalJSON(bankGenState)
-
-	var stakingData staking.GenesisState
-	cdc.MustUnmarshalJSON(genesisState[staking.ModuleName], &stakingData)
-	genesisState[staking.ModuleName] = cdc.MustMarshalJSON(stakingData)
-
 	// distr data
 	var distrData distr.GenesisState
-	cdc.MustUnmarshalJSON(genesisState[distr.ModuleName], &distrData)
+	cdc.MustUnmarshalJSON(distrDataBz, &distrData)
 
-	// TODO: Fix this so that there are 10 tokens in the module account
-	commPoolAmt := sdk.NewInt(0)
+	commPoolAmt := sdk.NewInt(10)
 	distrData.FeePool.CommunityPool = sdk.DecCoins{sdk.NewDecCoin(sdk.DefaultBondDenom, commPoolAmt)}
-	genesisState[distr.ModuleName] = cdc.MustMarshalJSON(distrData)
+	distrDataBz = cdc.MustMarshalJSON(distrData)
+	genesisState[distr.ModuleName] = distrDataBz
+
+	// staking and genesis accounts
+	genesisState[staking.ModuleName] = cdc.MustMarshalJSON(stakingData)
+	genesisState[genaccounts.ModuleName] = cdc.MustMarshalJSON(accs)
+
+	// supply data
+	supplyDataBz := genesisState[supply.ModuleName]
+	var supplyData supply.GenesisState
+	cdc.MustUnmarshalJSON(supplyDataBz, &supplyData)
+
+	supplyData.Supply = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, totalSupply.Add(commPoolAmt)))
+	supplyDataBz = cdc.MustMarshalJSON(supplyData)
+	genesisState[supply.ModuleName] = supplyDataBz
 
 	// mint genesis (none set within genesisState)
 	mintData := mint.DefaultGenesisState()

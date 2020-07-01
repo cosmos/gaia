@@ -10,6 +10,7 @@ Gaia is the first implementation of the Cosmos Hub, built using the [Cosmos SDK]
 
 
 ## Mainnet Full Node Quick Start
+**Note**: Requires [Go 1.13+](https://golang.org/dl/)
 
 This assumes that you're running Linux or MacOS and have installed [Go 1.14+](https://golang.org/dl/).  This guide helps you:
 

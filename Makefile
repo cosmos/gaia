@@ -96,6 +96,12 @@ install: go.sum
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/gaiad
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/gaiacli
 
+install-debug: go.sum
+	go install -mod=readonly $(BUILD_FLAGS) ./cmd/gaiadebug
+
+########################################
+### Tools & dependencies
+
 go-mod-cache: go.sum
 	@echo "--> Download go modules to local cache"
 	@go mod download
@@ -145,6 +151,7 @@ include sims.mk
 
 test: test-unit test-build
 
+test: test-unit test-build
 test-all: check test-race test-cover
 
 test-unit:
@@ -185,7 +192,7 @@ build-docker-gaiadnode:
 
 # Run a 4-node testnet locally
 localnet-start: build-linux localnet-stop
-	@if ! [ -f build/node0/gaiad/config/genesis.json ]; then docker run --rm -v $(CURDIR)/build:/gaiad:Z tendermint/gaiadnode testnet --v 4 -o . --starting-ip-address 192.168.10.2 --keyring-backend=test ; fi
+	@if ! [ -f build/node0/gaiad/config/genesis.json ]; then docker run --rm -v $(CURDIR)/build:/gaiad:Z tendermint/gaiadnode testnet --v 4 -o . --starting-ip-address 192.168.10.2 ; fi
 	docker-compose up -d
 
 # Stop testnet
@@ -228,7 +235,4 @@ test-docker-push: test-docker
 .PHONY: all build-linux install format lint \
 	go-mod-cache draw-deps clean build \
 	setup-transactions setup-contract-tests-data start-gaia run-lcd-contract-tests contract-tests \
-	test test-all test-build test-cover test-unit test-race \
-	benchmark \
-	build-docker-gaiadnode localnet-start localnet-stop \
-	docker-single-node
+	test test-all test-build test-cover test-unit test-race

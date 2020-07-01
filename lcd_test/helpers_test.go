@@ -115,7 +115,7 @@ func getBlock(t *testing.T, port string, height int, expectFail bool) ctypes.Res
 
 func extractResultFromResponse(t *testing.T, body []byte) []byte {
 	var resp rest.ResponseWithHeight
-	require.NoError(t, cdc.UnmarshalJSON(body, &resp))
+	require.NoError(t, cdc.UnmarshalJSON([]byte(body), &resp))
 
 	return resp.Result
 }
@@ -219,14 +219,11 @@ func getAccount(t *testing.T, port string, addr sdk.AccAddress) (acc authexporte
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 	require.Nil(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &acc))
 
-	return acc
-}
-
-// GET /bank/balances/{address} Get the account balances
-func getBalances(t *testing.T, port string, addr sdk.AccAddress) (balances sdk.Coins) {
-	res, body := Request(t, port, "GET", fmt.Sprintf("/bank/balances/%s", addr), nil)
+// GET /auth/accounts/{address} Get the account information on blockchain
+func getAccount(t *testing.T, port string, addr sdk.AccAddress) (acc auth.Account) {
+	res, body := Request(t, port, "GET", fmt.Sprintf("/auth/accounts/%s", addr.String()), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
-	require.Nil(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &balances))
+	require.Nil(t, cdc.UnmarshalJSON(extractResultFromResponse(t, []byte(body)), &acc))
 
 	return balances
 }

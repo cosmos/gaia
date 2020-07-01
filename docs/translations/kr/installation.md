@@ -52,7 +52,7 @@ $ gaiacli version --long
 
 `gaiacli` 명령어는 다음과 비슷한 아웃풋을 내보냅니다:
 
-```shell
+```bash
 name: gaia
 server_name: gaiad
 client_name: gaiacli

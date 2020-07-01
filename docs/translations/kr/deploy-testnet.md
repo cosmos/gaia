@@ -167,7 +167,7 @@ docker logs -f gaiadnode0
 
 `gaiacli`를 이용해 tx를 생성하거나 상태를 쿼리 하시려면, 특정 노드의 `gaiacli` 디렉토리를 `home`처럼 이용하시면 됩니다. 예를들어:
 
-```shell
+```bash
 gaiacli keys list --home ./build/node0/gaiacli
 ```
 

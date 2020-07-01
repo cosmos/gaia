@@ -32,7 +32,7 @@ governance process.
    We need a new binary with the upgrade handler installed. The logs should look
    something like:
 
-   ```shell
+   ```bash
    E[2019-11-05|12:44:18.913] UPGRADE "<plan-name>" NEEDED at height: <desired-upgrade-height>:       module=main
    E[2019-11-05|12:44:18.914] CONSENSUS FAILURE!!!
    ...

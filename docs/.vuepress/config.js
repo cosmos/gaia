@@ -1,68 +1,44 @@
 module.exports = {
   theme: "cosmos",
   title: "Cosmos Hub",
-  head: [
-    [
-      "link",
-      {
-        rel: "stylesheet",
-        type: "text/css",
-        href: "https://cloud.typography.com/6138116/7255612/css/fonts.css"
-      }
-    ],
-  ],
   base: process.env.VUEPRESS_BASE || "/",
   themeConfig: {
     docsRepo: "cosmos/gaia",
     docsDir: "docs",
     editLinks: true,
     label: "hub",
-    sidebar: [
-      {
-        title: "Resources",
-        children: [
-          {
-            title: "Tutorials",
-            path: "https://tutorials.cosmos.network"
-          },
-          {
-            title: "SDK API Reference",
-            path: "https://godoc.org/github.com/cosmos/cosmos-sdk"
-          },
-          {
-            title: "REST API Spec",
-            path: "https://cosmos.network/rpc/"
-          }
-        ]
-      }
-    ],
+    sidebar: {
+      nav: [
+        {
+          title: "Resources",
+          children: [
+            {
+              title: "Tutorials",
+              path: "https://tutorials.cosmos.network"
+            },
+            {
+              title: "SDK API Reference",
+              path: "https://godoc.org/github.com/cosmos/cosmos-sdk"
+            },
+            {
+              title: "REST API Spec",
+              path: "https://cosmos.network/rpc/"
+            }
+          ]
+        }
+      ]
+    },
     gutter: {
-      title: "Help & Support",
       editLink: true,
-      chat: {
-        title: "Discord",
-        text: "Chat with Cosmos developers on Discord.",
-        url: "https://discordapp.com/channels/669268347736686612",
-        bg: "linear-gradient(225.11deg, #2E3148 0%, #161931 95.68%)"
-      },
-      forum: {
-        title: "Cosmos SDK Forum",
-        text: "Join the SDK Developer Forum to learn more.",
-        url: "https://forum.cosmos.network/",
-        bg: "linear-gradient(225deg, #46509F -1.08%, #2F3564 95.88%)",
-        logo: "cosmos"
-      },
-      github: {
-        title: "Found an Issue?",
-        text: "Help us improve this page by suggesting edits on GitHub."
-      }
     },
     footer: {
-      questionsText: "Chat with Cosmos developers on [Discord](https://discord.gg/cr7N47p) or reach out on the [SDK Developer Forum](https://forum.cosmos.network/) to learn more.",
+      question: {
+        text: "Chat with Cosmos developers in <a href='https://discord.gg/W8trcGV' target='_blank'>Discord</a> or reach out on the <a href='https://forum.cosmos.network/c/cosmos-sdk' target='_blank'>SDK Developer Forum</a> to learn more."
+      },
       logo: "/logo-bw.svg",
       textLink: {
         text: "cosmos.network",
-        url: "/"
+        url: "https://cosmos.network"
       },
       services: [
         {
@@ -76,6 +52,10 @@ module.exports = {
         {
           service: "linkedin",
           url: "https://www.linkedin.com/company/tendermint/"
+        },
+        {
+          service: "github",
+          url: "https://github.com/cosmos/gaia"
         },
         {
           service: "reddit",

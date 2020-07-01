@@ -95,7 +95,7 @@ __Note__: It is assumed you are currently operating a full-node running v0.34.6+
 
 1. Verify you are currently running the correct version (v0.34.6+) of the _Cosmos SDK_:
 
-   ```shell
+   ```bash
    $ gaiad version --long
    cosmos-sdk: 0.34.6
    git commit: 80234baf91a15dd9a7df8dca38677b66b8d148c1
@@ -113,13 +113,13 @@ __Note__: It is assumed you are currently operating a full-node running v0.34.6+
 
    Before exporting state via the following command, the `gaiad` binary must be stopped!
 
-   ```shell
+   ```bash
    $ gaiad export --for-zero-height --height=2902000 > cosmoshub_2_genesis_export.json
    ```
 
 3. Verify the SHA256 of the (sorted) exported genesis file:
 
-   ```shell
+   ```bash
    $ jq -S -c -M '' cosmoshub_2_genesis_export.json | shasum -a 256
    [PLACEHOLDER]  cosmoshub_2_genesis_export.json
    ```
@@ -129,13 +129,13 @@ v2.0.3 of [Gaia](https://github.com/cosmos/gaia).
 
    **NOTE**: Go [1.13+](https://golang.org/dl/) is required!
 
-   ```shell
+   ```bash
    $ git clone https://github.com/cosmos/gaia.git && cd gaia && git checkout v2.0.3; make install
    ```
 
 5. Verify you are currently running the correct version (v2.0.3) of the _Gaia_:
 
-   ```shell
+   ```bash
    $ gaiad version --long
    name: gaia
    server_name: gaiad
@@ -148,7 +148,7 @@ v2.0.3 of [Gaia](https://github.com/cosmos/gaia).
 
 6. Migrate exported state from the current v0.34.6+ version to the new v2.0.3 version:
 
-   ```shell
+   ```bash
    $ gaiad migrate v0.36 cosmoshub_2_genesis_export.json --chain-id=cosmoshub-3 --genesis-time=[PLACEHOLDER]> genesis.json
    ```
 
@@ -160,20 +160,20 @@ v2.0.3 of [Gaia](https://github.com/cosmos/gaia).
 
    An example shell command(tested on OS X Mojave) to compute this values is:
 
-   ```shell
+   ```bash
    curl https://stargate.cosmos.network:26657/block\?height\=2902000 | jq -r '.result["block_meta"]["header"]["time"]'|xargs -0 date -v +60M  -j  -f "%Y-%m-%dT%H:%M:%S" +"%Y-%m-%dT%H:%M:%SZ"
    ```
 
 7. Now we must update all parameters that have been agreed upon through governance. There is only a
 single parameter, `max_validators`, that we're upgrading based on [proposal 10](https://www.mintscan.io/proposals/10)
 
-   ```shell
+   ```bash
    $ cat genesis.json | jq '.app_state["staking"]["params"]["max_validators"]=125' > tmp_genesis.json && mv tmp_genesis.json genesis.json
    ```
 
 8. Verify the SHA256 of the final genesis JSON:
 
-   ```shell
+   ```bash
    $ jq -S -c -M '' genesis.json | shasum -a 256
    [PLACEHOLDER]  genesis.json
    ```
@@ -183,7 +183,7 @@ single parameter, `max_validators`, that we're upgrading based on [proposal 10](
    **NOTE**: Be sure you have a complete backed up state of your node before proceeding with this step.
    See [Recovery](#recovery) for details on how to proceed.
 
-   ```shell
+   ```bash
    $ gaiad unsafe-reset-all
    ```
 
@@ -196,7 +196,7 @@ single parameter, `max_validators`, that we're upgrading based on [proposal 10](
 
 12. Note, if you have any application configuration in `gaiad.toml`, that file has now been renamed to `app.toml`:
 
-    ```shell
+    ```bash
     $ mv .gaiad/config/gaiad.toml .gaiad/config/app.toml
     ```
 

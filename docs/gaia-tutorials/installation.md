@@ -61,7 +61,7 @@ $ gaiacli version --long
 
 `gaiacli` for instance should output something similar to:
 
-```shell
+```bash
 name: gaia
 server_name: gaiad
 client_name: gaiacli

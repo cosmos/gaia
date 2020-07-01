@@ -178,7 +178,7 @@ docker logs -f gaiadnode0
 To interact with `gaiacli` and start querying state or creating txs, you use the
 `gaiacli` directory of any given node as your `home`, for example:
 
-```shell
+```bash
 gaiacli keys list --home ./build/node0/gaiacli
 ```
 

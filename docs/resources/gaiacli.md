@@ -106,7 +106,7 @@ gaiacli keys show <account_name>
 
 View the validator operator's address via:
 
-```shell
+```bash
 gaiacli keys show <account_name> --bech=val
 ```
 

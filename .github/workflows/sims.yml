@@ -1,5 +1,9 @@
 name: Sims
-on: [pull_request]
+on:
+  pull_request:
+  push:
+    branches:
+      - main
 jobs:
   cleanup-runs:
     runs-on: ubuntu-latest

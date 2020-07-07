@@ -92,19 +92,6 @@ jobs:
           paths:
             - "."
 
-  integration-tests:
-    executor: golang
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - go-mod-v1-{{ checksum "go.sum" }}
-      - run:
-          name: Test CLI integration
-          command: |
-            export BUILDDIR=`pwd`/build
-            make test-build
-
   localnet:
     working_directory: /home/circleci/.go_workspace/src/github.com/cosmos/gaia
     machine:
@@ -304,9 +291,6 @@ workflows:
             tags:
               only:
                 - /^v.*/
-      - integration-tests:
-          requires:
-            - setup-dependencies
       - localnet
       - reproducible-builds:
           filters:

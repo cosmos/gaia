@@ -6,7 +6,6 @@ require (
 	github.com/btcsuite/btcd v0.0.0-20190523000118-16327141da8c // indirect
 	github.com/cosmos/cosmos-sdk v0.37.13
 	github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d // indirect
-	github.com/golang/mock v1.3.1 // indirect
 	github.com/gorilla/mux v1.7.3 // indirect
 	github.com/mattn/go-isatty v0.0.8 // indirect
 	github.com/onsi/ginkgo v1.8.0 // indirect
@@ -22,12 +21,11 @@ require (
 	github.com/snikch/goodman v0.0.0-20171125024755-10e37e294daa
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/cobra v0.0.5
-	github.com/spf13/viper v1.6.1
+	github.com/spf13/viper v1.7.0
 	github.com/stretchr/testify v1.4.0
 	github.com/tendermint/go-amino v0.15.1
 	github.com/tendermint/tendermint v0.32.12
 	github.com/tendermint/tm-db v0.2.0
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4 // indirect
 	golang.org/x/net v0.0.0-20190724013045-ca1201d0de80 // indirect
-	golang.org/x/text v0.3.2 // indirect
 )

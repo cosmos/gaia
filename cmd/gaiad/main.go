@@ -90,6 +90,7 @@ func exportAppStateAndTMValidators(
 		if err != nil {
 			return nil, nil, err
 		}
+
 		return gApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 	}
 	gApp := app.NewGaiaApp(logger, db, traceStore, true, uint(1))

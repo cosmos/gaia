@@ -21,9 +21,17 @@ RUN apk add --no-cache $PACKAGES && \
 # Final image
 FROM alpine:edge
 
+ENV GAIA /gaia
+
 # Install ca-certificates
 RUN apk add --update ca-certificates
-WORKDIR /root
+
+RUN addgroup gaia && \
+    adduser -S -G gaia gaia -h "$GAIA"
+
+USER gaia
+
+WORKDIR $GAIA
 
 # Copy over binaries from the build-env
 COPY --from=build-env /go/bin/gaiad /usr/bin/gaiad

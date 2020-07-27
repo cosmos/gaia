@@ -7,6 +7,9 @@ module.exports = {
     docsDir: "docs",
     editLinks: true,
     label: "hub",
+    topbar: {
+      banner: true,
+    },
     sidebar: {
       nav: [
         {

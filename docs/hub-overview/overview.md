@@ -28,6 +28,7 @@ These community-maintained web and mobile wallets allow you to store & transfer 
 * [Huobi Wallet](https://www.huobiwallet.com/) - Android, iOS
 * [imToken](https://token.im/) - Android, iOS
 * [Keplr](https://wallet.keplr.app) - Web
+* [Ledger](https://www.ledger.com/cosmos-wallet) - Hardware
 * [Lunagram](https://lunamint.com/) - Android, iOS
 * [Lunie](https://lunie.io) - Web
 * [Math Wallet](https://www.mathwallet.org/en/) - Android, iOS, Web
@@ -41,14 +42,20 @@ These community-maintained web and mobile wallets allow you to store & transfer 
 
 These block explorers allow you to search, view and analyze Cosmos Hub data&mdash;like blocks, transactions, validators, etc.
 
+* [Anthem](https://anthem.chorus.one)
+* [ATOMScan](https://atomscan.app)
 * [Big Dipper](https://cosmos.bigdipper.live)
 * [Cosmos Overview](https://genesislab.net)
 * [Coris](http://coris.network)
+* [Cosmoscan](https://cosmoscan.net/)
 * [Cosmos Visualizer](https://nylira.net/3d)
 * [Hubble](https://hubble.figment.network)
 * [LOOK Explorer](https://cosmos.ping.pub)
+* [Lunie](https://lunie.io)
 * [Mintscan](https://mintscan.io)
 * [Stargazer](https://stargazer.certus.one)
+* [Union Market](https://union.market/token/cosmos)
+
 
 ## Cosmos Hub CLI
 
@@ -64,8 +71,9 @@ If you are looking to run a validator node, follow the [validator setup guide](.
 
 Have questions, comments, or new ideas? Participate in the Cosmos community through one of the following channels. Also check out the [latest events](https://cosmos.network/community).
 
-* [Cosmos Community Chat](https://t.me/cosmosproject)
-* [Cosmos Developer Chat](https://riot.im/app/#/room/#cosmos:matrix.org)
+* [Cosmos Community Discord](https://discord.com/invite/W8trcGV)
+* [Cosmos Community Telegram](https://t.me/cosmosproject)
+* [Cosmos Hub Governance Working Group Telegram](https://t.me/hubgov)
 * [Cosmos Forum](https://forum.cosmos.network)
 * [Cosmos on Reddit](https://reddit.com/r/cosmosnetwork)
 

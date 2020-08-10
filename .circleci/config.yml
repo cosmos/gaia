@@ -1,0 +1,289 @@
+version: 2.1
+
+executors:
+  golang:
+    docker:
+      - image: circleci/golang:1.14
+    working_directory: /go/src/github.com/cosmos/gaia
+  mac:
+    macos:
+      xcode: "10.3.0"
+    working_directory: /Users/distiller/project/src/github.com/cosmos/gaia
+    environment:
+      GO_VERSION: "1.14"
+  docs:
+    docker:
+      - image: tendermintdev/docker-website-deployment
+    environment:
+      AWS_REGION: us-east-1
+      LEDGER_ENABLED: false
+
+commands:
+  make:
+    parameters:
+      description:
+        type: string
+      target:
+        type: string
+    steps:
+      - attach_workspace:
+          at: /tmp/bin
+      - restore_cache:
+          name: "Restore source code cache"
+          keys:
+            - go-src-v1-{{ .Revision }}
+      - checkout
+      - restore_cache:
+          name: "Restore go modules cache"
+          keys:
+            - go-mod-v1-{{ checksum "go.sum" }}
+      - run:
+          name: << parameters.description >>
+          command: |
+            export BINDIR=/tmp/bin
+            make << parameters.target >>
+  mac_set_env:
+    steps:
+      - run:
+          name: "Set environment"
+          command: |
+            echo 'export PATH=$PATH:$HOME/go/bin' >> $BASH_ENV
+            echo 'export GOPATH=$HOME/project' >> $BASH_ENV
+            echo 'export PATH=$PATH:$HOME/go/bin:$GOPATH/bin' >> $BASH_ENV
+            echo 'export GO111MODULE=on'
+
+jobs:
+  setup-dependencies:
+    executor: golang
+    steps:
+      - checkout
+      - restore_cache:
+          name: "Restore go modules cache"
+          keys:
+            - go-mod-v1-{{ checksum "go.sum" }}
+      - run:
+          name: Cache go modules
+          command: make go-mod-cache
+      - run:
+          name: Build
+          command: make build
+      - run:
+          name: "Git garbage collection"
+          command: git gc
+      - run:
+          name: "Build tools binaries"
+          command: |
+            make tools
+      - save_cache:
+          name: "Save go modules cache"
+          key: go-mod-v1-{{ checksum "go.sum" }}
+          paths:
+            - "/go/pkg/mod"
+      - save_cache:
+          name: "Save source code cache"
+          key: go-src-v1-{{ .Revision }}
+          paths:
+            - ".git"
+      - run:
+          command: |
+            mkdir -p /tmp/bin
+            cp -r /go/bin/* /tmp/bin
+      - persist_to_workspace:
+          root: "/tmp/bin"
+          paths:
+            - "."
+
+  localnet:
+    working_directory: /home/circleci/.go_workspace/src/github.com/cosmos/gaia
+    machine:
+      image: circleci/classic:latest
+    environment:
+      GOPATH: /home/circleci/.go_workspace/
+      GOOS: linux
+      GOARCH: amd64
+      GO_VERSION: "1.14"
+    parallelism: 1
+    steps:
+      - checkout
+      - run:
+          name: Run a localnet and test liveness
+          command: |
+            pushd /tmp
+            wget https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz
+            sudo tar -xvf go$GO_VERSION.linux-amd64.tar.gz
+            sudo rm -rf /usr/local/go
+            sudo mv go /usr/local
+            popd
+            set -x
+            make clean localnet-start
+            ./contrib/localnet-blocks-test.sh 100 5 50 localhost
+
+  deploy-docs:
+    executor: docs
+    steps:
+      - checkout
+      - run:
+          name: "Build docs"
+          command: make build-docs
+      - run:
+          name: "Upload docs to S3"
+          command: make sync-docs
+
+  macos-ci:
+    executor: mac
+    steps:
+      - mac_set_env
+      - run:
+          name: Install go
+          command: |
+            source $BASH_ENV
+            curl -L -O https://dl.google.com/go/go$GO_VERSION.darwin-amd64.tar.gz
+            tar -C $HOME -xzf go$GO_VERSION.darwin-amd64.tar.gz
+            rm go$GO_VERSION.darwin-amd64.tar.gz
+            go version
+      - checkout
+      - run:
+          name: Install SDK
+          command: |
+            source $BASH_ENV
+            make tools
+            make install
+      - run:
+          name: Integration tests
+          command: source $BASH_ENV
+            make test-build
+      - run:
+          name: Test full gaia simulation
+          command: |
+            source $BASH_ENV
+            make test-sim-gaia-fast
+
+  docker-image:
+    executor: golang
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run: |
+          GAIAD_VERSION=''
+          if [ "${CIRCLE_BRANCH}" = "master" ]; then
+            GAIAD_VERSION="stable"
+          elif [ "${CIRCLE_BRANCH}" = "develop" ]; then
+            GAIAD_VERSION="develop"
+          elif [[ "${CIRCLE_BRANCH}" == release/v* ]]; then
+            GAIAD_VERSION="${CIRCLE_BRANCH}"
+          fi
+          if [ -z "${GAIAD_VERSION}" ]; then
+            docker build .
+          else
+            docker build -t tendermint/gaia:$GAIAD_VERSION .
+            docker login --password-stdin -u $DOCKER_USER \<\<\<$DOCKER_PASS
+            docker push tendermint/gaia:$GAIAD_VERSION
+          fi
+
+  docker-tagged:
+    executor: golang
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run: |
+          docker build -t tendermint/gaia:$CIRCLE_TAG .
+          docker login --password-stdin -u $DOCKER_USER \<\<\<$DOCKER_PASS
+          docker push tendermint/gaia:$CIRCLE_TAG
+
+  reproducible-builds:
+    executor: golang
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Build gaia
+          no_output_timeout: 20m
+          command: |
+            sudo apt-get install -y ruby
+            bash -x ./contrib/gitian-build.sh multi
+            cp gitian-build-multi/result/gaia-multi-res.yml .
+            rm -rf gitian-build-multi/
+      - store_artifacts:
+          path: /go/src/github.com/cosmos/gaia/gaia-multi-res.yml
+
+# FIXME: The `setup-contract-tests-data` make target is broken as it completely
+# overrides the .gaiad directory.
+#
+#  contract_tests:
+#    executor: golang
+#    steps:
+#      - attach_workspace:
+#          at: /tmp/workspace
+#      - checkout
+#      - setup_remote_docker:
+#          docker_layer_caching: true
+#      - run:
+#          name: Get Node.js and test REST implementation against swagger documentation at  https://cosmos.network/rpc/
+#          command: |
+#            go get github.com/snikch/goodman/cmd/goodman
+#            make build
+#            make build-contract-tests-hooks
+#            make setup-contract-tests-data
+#            export PATH=~/.local/bin:$PATH
+#            ./contrib/get_node.sh && make contract-tests
+
+workflows:
+  version: 2
+  test-suite:
+    jobs:
+      - docker-image:
+          requires:
+            - setup-dependencies
+      - docker-tagged:
+          filters:
+            tags:
+              only:
+                - /^v.*/
+            branches:
+              ignore:
+                - /.*/
+          requires:
+            - setup-dependencies
+      - macos-ci:
+          filters:
+            branches:
+              only:
+                - master
+      - deploy-docs:
+          context: gaia-docs-deployment-staging
+          filters:
+            branches:
+              only:
+                - docs-update
+      - deploy-docs:
+          context: gaia-docs-deployment
+          filters:
+            branches:
+              only:
+                - master
+      - setup-dependencies:
+          # filters here are needed to enable this job also for tags
+          filters:
+            tags:
+              only:
+                - /^v.*/
+      - localnet
+      - reproducible-builds:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - setup-dependencies
+#      - contract_tests:
+#          requires:
+#            - setup-dependencies

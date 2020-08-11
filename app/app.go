@@ -1,4 +1,4 @@
-package gaia
+package app
 
 import (
 	"io"
@@ -75,7 +75,7 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
-const appName = "Gaia"
+const appName = "GaiaApp"
 
 var (
 	// DefaultNodeHome default home directories for the application daemon
@@ -121,14 +121,14 @@ var (
 	}
 )
 
-var _ App = (*SimApp)(nil)
+var _ App = (*GaiaApp)(nil)
 
-// SimApp extends an ABCI application, but with most of its parameters exported.
+// Gaia extends an ABCI application, but with most of its parameters exported.
 // They are exported for convenience in creating helper functions, as object
 // capabilities aren't needed for testing.
-type SimApp struct {
+type GaiaApp struct {
 	*baseapp.BaseApp
-	cdc               *codec.Codec
+	cdc               *codec.LegacyAmino
 	appCodec          codec.Marshaler
 	interfaceRegistry types.InterfaceRegistry
 
@@ -166,11 +166,11 @@ type SimApp struct {
 	sm *module.SimulationManager
 }
 
-// NewSimApp returns a reference to an initialized SimApp.
-func NewSimApp(
+// NewGaia returns a reference to an initialized Gaia.
+func NewGaiaApp(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool, skipUpgradeHeights map[int64]bool,
 	homePath string, invCheckPeriod uint, baseAppOptions ...func(*baseapp.BaseApp),
-) *SimApp {
+) *GaiaApp {
 
 	// TODO: Remove cdc in favor of appCodec once all modules are migrated.
 	encodingConfig := MakeEncodingConfig()
@@ -192,7 +192,7 @@ func NewSimApp(
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
 
-	app := &SimApp{
+	app := &GaiaApp{
 		BaseApp:           bApp,
 		cdc:               cdc,
 		appCodec:          appCodec,
@@ -392,41 +392,41 @@ func NewSimApp(
 	return app
 }
 
-// MakeCodecs constructs the *std.Codec and *codec.Codec instances used by
+// MakeCodecs constructs the *std.Codec and *codec.LegacyAmino instances used by
 // simapp. It is useful for tests and clients who do not want to construct the
 // full simapp
-func MakeCodecs() (codec.Marshaler, *codec.Codec) {
+func MakeCodecs() (codec.Marshaler, *codec.LegacyAmino) {
 	config := MakeEncodingConfig()
 	return config.Marshaler, config.Amino
 }
 
 // Name returns the name of the App
-func (app *SimApp) Name() string { return app.BaseApp.Name() }
+func (app *GaiaApp) Name() string { return app.BaseApp.Name() }
 
 // BeginBlocker application updates every begin block
-func (app *SimApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
+func (app *GaiaApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	return app.mm.BeginBlock(ctx, req)
 }
 
 // EndBlocker application updates every end block
-func (app *SimApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
+func (app *GaiaApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
 	return app.mm.EndBlock(ctx, req)
 }
 
 // InitChainer application update at chain initialization
-func (app *SimApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
+func (app *GaiaApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var genesisState GenesisState
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
 	return app.mm.InitGenesis(ctx, app.cdc, genesisState)
 }
 
 // LoadHeight loads a particular height
-func (app *SimApp) LoadHeight(height int64) error {
+func (app *GaiaApp) LoadHeight(height int64) error {
 	return app.LoadVersion(height)
 }
 
 // ModuleAccountAddrs returns all the app's module account addresses.
-func (app *SimApp) ModuleAccountAddrs() map[string]bool {
+func (app *GaiaApp) ModuleAccountAddrs() map[string]bool {
 	modAccAddrs := make(map[string]bool)
 	for acc := range maccPerms {
 		modAccAddrs[authtypes.NewModuleAddress(acc).String()] = true
@@ -437,7 +437,7 @@ func (app *SimApp) ModuleAccountAddrs() map[string]bool {
 
 // BlockedAddrs returns all the app's module account addresses that are not
 // allowed to receive external tokens.
-func (app *SimApp) BlockedAddrs() map[string]bool {
+func (app *GaiaApp) BlockedAddrs() map[string]bool {
 	blockedAddrs := make(map[string]bool)
 	for acc := range maccPerms {
 		blockedAddrs[authtypes.NewModuleAddress(acc).String()] = !allowedReceivingModAcc[acc]
@@ -446,64 +446,64 @@ func (app *SimApp) BlockedAddrs() map[string]bool {
 	return blockedAddrs
 }
 
-// Codec returns SimApp's codec.
+// Codec returns Gaia's codec.
 //
 // NOTE: This is solely to be used for testing purposes as it may be desirable
 // for modules to register their own custom testing types.
-func (app *SimApp) Codec() *codec.Codec {
+func (app *GaiaApp) Codec() *codec.LegacyAmino {
 	return app.cdc
 }
 
-// AppCodec returns SimApp's app codec.
+// AppCodec returns Gaia's app codec.
 //
 // NOTE: This is solely to be used for testing purposes as it may be desirable
 // for modules to register their own custom testing types.
-func (app *SimApp) AppCodec() codec.Marshaler {
+func (app *GaiaApp) AppCodec() codec.Marshaler {
 	return app.appCodec
 }
 
-// InterfaceRegistry returns SimApp's InterfaceRegistry
-func (app *SimApp) InterfaceRegistry() types.InterfaceRegistry {
+// InterfaceRegistry returns Gaia's InterfaceRegistry
+func (app *GaiaApp) InterfaceRegistry() types.InterfaceRegistry {
 	return app.interfaceRegistry
 }
 
 // GetKey returns the KVStoreKey for the provided store key.
 //
 // NOTE: This is solely to be used for testing purposes.
-func (app *SimApp) GetKey(storeKey string) *sdk.KVStoreKey {
+func (app *GaiaApp) GetKey(storeKey string) *sdk.KVStoreKey {
 	return app.keys[storeKey]
 }
 
 // GetTKey returns the TransientStoreKey for the provided store key.
 //
 // NOTE: This is solely to be used for testing purposes.
-func (app *SimApp) GetTKey(storeKey string) *sdk.TransientStoreKey {
+func (app *GaiaApp) GetTKey(storeKey string) *sdk.TransientStoreKey {
 	return app.tkeys[storeKey]
 }
 
 // GetMemKey returns the MemStoreKey for the provided mem key.
 //
 // NOTE: This is solely used for testing purposes.
-func (app *SimApp) GetMemKey(storeKey string) *sdk.MemoryStoreKey {
+func (app *GaiaApp) GetMemKey(storeKey string) *sdk.MemoryStoreKey {
 	return app.memKeys[storeKey]
 }
 
 // GetSubspace returns a param subspace for a given module name.
 //
 // NOTE: This is solely to be used for testing purposes.
-func (app *SimApp) GetSubspace(moduleName string) paramstypes.Subspace {
+func (app *GaiaApp) GetSubspace(moduleName string) paramstypes.Subspace {
 	subspace, _ := app.ParamsKeeper.GetSubspace(moduleName)
 	return subspace
 }
 
 // SimulationManager implements the SimulationApp interface
-func (app *SimApp) SimulationManager() *module.SimulationManager {
+func (app *GaiaApp) SimulationManager() *module.SimulationManager {
 	return app.sm
 }
 
 // RegisterAPIRoutes registers all application module routes with the provided
 // API server.
-func (app *SimApp) RegisterAPIRoutes(apiSvr *api.Server) {
+func (app *GaiaApp) RegisterAPIRoutes(apiSvr *api.Server) {
 	rpc.RegisterRoutes(apiSvr.ClientCtx, apiSvr.Router)
 	authrest.RegisterTxRoutes(apiSvr.ClientCtx, apiSvr.Router)
 	ModuleBasics.RegisterRESTRoutes(apiSvr.ClientCtx, apiSvr.Router)

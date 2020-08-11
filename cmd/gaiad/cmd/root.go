@@ -29,6 +29,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
+	"github.com/cosmos/gaia/app"
 	gaia "github.com/cosmos/gaia/app"
 )
 
@@ -50,11 +51,11 @@ var (
 			WithJSONMarshaler(encodingConfig.Marshaler).
 			WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
 			WithTxConfig(encodingConfig.TxConfig).
-			WithCodec(encodingConfig.Amino).
+			WithLegacyAmino(encodingConfig.Amino).
 			WithInput(os.Stdin).
 			WithAccountRetriever(types.NewAccountRetriever(encodingConfig.Marshaler)).
 			WithBroadcastMode(flags.BroadcastBlock).
-			WithHomeDir(gaia.DefaultNodeHome)
+			WithHomeDir(app.DefaultNodeHome)
 )
 
 // Execute executes the root command.
@@ -167,7 +168,7 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts serverty
 		panic(err)
 	}
 
-	return gaia.NewSimApp(
+	return gaia.NewGaiaApp(
 		logger, db, traceStore, true, skipUpgradeHeights,
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)),
@@ -184,15 +185,15 @@ func exportAppStateAndTMValidators(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, height int64, forZeroHeight bool, jailWhiteList []string,
 ) (json.RawMessage, []tmtypes.GenesisValidator, *abci.ConsensusParams, error) {
 
-	var simApp *gaia.SimApp
+	var gaia *app.GaiaApp
 	if height != -1 {
-		simApp = gaia.NewSimApp(logger, db, traceStore, false, map[int64]bool{}, "", uint(1))
+		gaia = app.NewGaiaApp(logger, db, traceStore, false, map[int64]bool{}, "", uint(1))
 
 		if err := gaia.LoadHeight(height); err != nil {
 			return nil, nil, nil, err
 		}
 	} else {
-		simApp = gaia.NewSimApp(logger, db, traceStore, true, map[int64]bool{}, "", uint(1))
+		gaia = app.NewGaiaApp(logger, db, traceStore, true, map[int64]bool{}, "", uint(1))
 	}
 
 	return gaia.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)

@@ -1,4 +1,4 @@
-package gaia
+package app
 
 import (
 	"github.com/cosmos/cosmos-sdk/simapp/params"

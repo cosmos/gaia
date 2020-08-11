@@ -1,4 +1,4 @@
-package gaia
+package app
 
 import (
 	"encoding/json"
@@ -17,7 +17,7 @@ import (
 
 // ExportAppStateAndValidators exports the state of the application for a genesis
 // file.
-func (app *SimApp) ExportAppStateAndValidators(
+func (app *GaiaApp) ExportAppStateAndValidators(
 	forZeroHeight bool, jailWhiteList []string,
 ) (appState json.RawMessage, validators []tmtypes.GenesisValidator, cp *abci.ConsensusParams, err error) {
 
@@ -41,7 +41,7 @@ func (app *SimApp) ExportAppStateAndValidators(
 // prepare for fresh start at zero height
 // NOTE zero height genesis is a temporary feature which will be deprecated
 //      in favour of export at a block height
-func (app *SimApp) prepForZeroHeightGenesis(ctx sdk.Context, jailWhiteList []string) {
+func (app *GaiaApp) prepForZeroHeightGenesis(ctx sdk.Context, jailWhiteList []string) {
 	applyWhiteList := false
 
 	//Check if there is a whitelist

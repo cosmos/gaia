@@ -20,6 +20,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
+	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/store"
@@ -29,14 +30,27 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
-	"github.com/cosmos/gaia/app"
 	gaia "github.com/cosmos/gaia/app"
+	"github.com/cosmos/gaia/app/params"
 )
 
-var (
-	rootCmd = &cobra.Command{
+// NewRootCmd creates a new root command for simd. It is called once in the
+// main function.
+func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
+	encodingConfig := gaia.MakeEncodingConfig()
+	initClientCtx := client.Context{}.
+		WithJSONMarshaler(encodingConfig.Marshaler).
+		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
+		WithTxConfig(encodingConfig.TxConfig).
+		WithLegacyAmino(encodingConfig.Amino).
+		WithInput(os.Stdin).
+		WithAccountRetriever(types.AccountRetriever{}).
+		WithBroadcastMode(flags.BroadcastBlock).
+		WithHomeDir(gaia.DefaultNodeHome)
+
+	rootCmd := &cobra.Command{
 		Use:   "gaiad",
-		Short: "the gaia application",
+		Short: "Stargate CosmosHub App",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 			if err := client.SetCmdClientContextHandler(initClientCtx, cmd); err != nil {
 				return err
@@ -46,20 +60,13 @@ var (
 		},
 	}
 
-	encodingConfig = gaia.MakeEncodingConfig()
-	initClientCtx  = client.Context{}.
-			WithJSONMarshaler(encodingConfig.Marshaler).
-			WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
-			WithTxConfig(encodingConfig.TxConfig).
-			WithLegacyAmino(encodingConfig.Amino).
-			WithInput(os.Stdin).
-			WithAccountRetriever(types.NewAccountRetriever(encodingConfig.Marshaler)).
-			WithBroadcastMode(flags.BroadcastBlock).
-			WithHomeDir(app.DefaultNodeHome)
-)
+	initRootCmd(rootCmd, encodingConfig)
+
+	return rootCmd, encodingConfig
+}
 
 // Execute executes the root command.
-func Execute() error {
+func Execute(rootCmd *cobra.Command) error {
 	// Create and set a client.Context on the command's Context. During the pre-run
 	// of the root command, a default initialized client.Context is provided to
 	// seed child command execution with values such as AccountRetriver, Keyring,
@@ -74,7 +81,7 @@ func Execute() error {
 	return executor.ExecuteContext(ctx)
 }
 
-func init() {
+func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 	authclient.Codec = encodingConfig.Marshaler
 
 	rootCmd.AddCommand(
@@ -172,12 +179,14 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts serverty
 		logger, db, traceStore, true, skipUpgradeHeights,
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)),
+		gaia.MakeEncodingConfig(), // Ideally, we would reuse the one created by NewRootCmd.
 		baseapp.SetPruning(pruningOpts),
 		baseapp.SetMinGasPrices(cast.ToString(appOpts.Get(server.FlagMinGasPrices))),
 		baseapp.SetHaltHeight(cast.ToUint64(appOpts.Get(server.FlagHaltHeight))),
 		baseapp.SetHaltTime(cast.ToUint64(appOpts.Get(server.FlagHaltTime))),
 		baseapp.SetInterBlockCache(cache),
 		baseapp.SetTrace(cast.ToBool(appOpts.Get(server.FlagTrace))),
+		baseapp.SetIndexEvents(cast.ToStringSlice(appOpts.Get(server.FlagIndexEvents))),
 	)
 }
 
@@ -185,16 +194,18 @@ func exportAppStateAndTMValidators(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, height int64, forZeroHeight bool, jailWhiteList []string,
 ) (json.RawMessage, []tmtypes.GenesisValidator, *abci.ConsensusParams, error) {
 
-	var gaia *app.GaiaApp
+	encCfg := gaia.MakeEncodingConfig() // Ideally, we would reuse the one created by NewRootCmd.
+	encCfg.Marshaler = codec.NewProtoCodec(encCfg.InterfaceRegistry)
+	var gaiaApp *gaia.GaiaApp
 	if height != -1 {
-		gaia = app.NewGaiaApp(logger, db, traceStore, false, map[int64]bool{}, "", uint(1))
+		gaiaApp = gaia.NewGaiaApp(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), encCfg)
 
-		if err := gaia.LoadHeight(height); err != nil {
+		if err := gaiaApp.LoadHeight(height); err != nil {
 			return nil, nil, nil, err
 		}
 	} else {
-		gaia = app.NewGaiaApp(logger, db, traceStore, true, map[int64]bool{}, "", uint(1))
+		gaiaApp = gaia.NewGaiaApp(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), encCfg)
 	}
 
-	return gaia.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
+	return gaiaApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 }

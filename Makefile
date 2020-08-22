@@ -189,29 +189,6 @@ localnet-start: build-linux localnet-stop
 localnet-stop:
 	docker-compose down
 
-setup-contract-tests-data:
-	echo 'Prepare data for the contract tests'
-	rm -rf /tmp/contract_tests ; \
-	mkdir /tmp/contract_tests ; \
-	cp "${GOPATH}/pkg/mod/${SDK_PACK}/client/lcd/swagger-ui/swagger.yaml" /tmp/contract_tests/swagger.yaml ; \
-	./build/gaiad init --home /tmp/contract_tests/.gaiad --chain-id lcd contract-tests ; \
-	tar -xzf lcd_test/testdata/state.tar.gz -C /tmp/contract_tests/
-
-start-gaia: setup-contract-tests-data
-	./build/gaiad --home /tmp/contract_tests/.gaiad start &
-	@sleep 2s
-
-setup-transactions: start-gaia
-	@bash ./lcd_test/testdata/setup.sh
-
-run-lcd-contract-tests:
-	@echo "Running Gaia LCD for contract tests"
-	./build/gaiacli rest-server --laddr tcp://0.0.0.0:8080 --home /tmp/contract_tests/.gaiacli --node http://localhost:26657 --chain-id lcd --trust-node true
-
-contract-tests: setup-transactions
-	@echo "Running Gaia LCD for contract tests"
-	dredd && pkill gaiad
-
 test-docker:
 	@docker build -f contrib/Dockerfile.test -t ${TEST_DOCKER_REPO}:$(shell git rev-parse --short HEAD) .
 	@docker tag ${TEST_DOCKER_REPO}:$(shell git rev-parse --short HEAD) ${TEST_DOCKER_REPO}:$(shell git rev-parse --abbrev-ref HEAD | sed 's#/#_#g')

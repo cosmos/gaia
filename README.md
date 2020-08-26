@@ -4,7 +4,7 @@ Gaia 3.0 is a test version of the Stargate binaries. It is intended to use in te
 
 The biggest change is that there is no longer two seperate binaries. There is just `gaiad`.
 
-The rest and new GRPC interfaces can be configured using the `app.toml`. 
+The rest and new GRPC interfaces can be configured using the `app.toml`.
 
 You can interact via the cli interface using a second instance of the binary while a full node is running.
 

@@ -11,7 +11,7 @@ If you want to open a PR on Gaia to update the documentation, please follow the 
 
 The documentation for Gaia is hosted at:
 
-- https://hub.cosmos.network/docs/
+- https://hub.cosmos.network/
 
 built from the files in this (`/docs`) directory for [master](https://github.com/cosmos/gaia/tree/master/docs)
 

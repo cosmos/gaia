@@ -6,12 +6,10 @@ require (
 	github.com/99designs/keyring v1.1.5 // indirect
 	github.com/bartekn/go-bip39 v0.0.0-20171116152956-a05967ea095d // indirect
 	github.com/confio/ics23-iavl v0.6.0 // indirect
-	github.com/cosmos/cosmos-sdk v0.34.4-0.20200825201020-d9fd4d2ca9a3
+	github.com/cosmos/cosmos-sdk v0.34.4-0.20200828050731-161157006f40
 	github.com/enigmampc/btcutil v1.0.3-0.20200723161021-e2fb6adb2a25 // indirect
 	github.com/gibson042/canonicaljson-go v1.0.3 // indirect
 	github.com/golang/mock v1.4.4 // indirect
-	github.com/onsi/ginkgo v1.8.0 // indirect
-	github.com/onsi/gomega v1.5.0 // indirect
 	github.com/otiai10/copy v1.2.0
 	github.com/pelletier/go-toml v1.8.0 // indirect
 	github.com/pkg/errors v0.9.1
@@ -26,8 +24,7 @@ require (
 	github.com/stretchr/testify v1.6.1
 	github.com/tendermint/go-amino v0.15.1
 	github.com/tendermint/tendermint v0.34.0-rc3
-	github.com/tendermint/tm-db v0.6.1
-	google.golang.org/grpc v1.31.0 // indirect
+	github.com/tendermint/tm-db v0.6.2
 	google.golang.org/protobuf v1.25.0 // indirect
 	rsc.io/quote/v3 v3.1.0 // indirect
 )

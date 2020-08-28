@@ -34,7 +34,6 @@ WORKDIR $GAIA
 
 # Copy over binaries from the build-env
 COPY --from=build-env /go/bin/gaiad /usr/bin/gaiad
-COPY --from=build-env /go/bin/gaiacli /usr/bin/gaiacli
 
 # Run gaiad by default, omit entrypoint to ease using container with gaiacli
 CMD ["gaiad"]

@@ -14,7 +14,7 @@ jobs:
         uses: actions/checkout@v1
 
       - name: Build gaia-pi.img
-        run: docker run --rm --privileged -v /dev:/dev -v ${PWD}:/build mkaczanowski/packer-builder-arm build contrib/pi-image/gaia-pi.json
+        run: docker run --rm --privileged -v /dev:/dev -v ${PWD}:/build mkaczanowski/packer-builder-arm build contrib/pi-image/gaia.json
 
       - name: Install PiShrink
         run: |
@@ -22,11 +22,11 @@ jobs:
           chmod +x pishrink.sh
           sudo mv pishrink.sh /usr/local/bin
 
-      - name: Shrink gaia-pi.img
-        run: sudo pishrink.sh -Z -v -r -a gaia-pi.img
+      - name: Shrink gaia.img
+        run: sudo pishrink.sh -Z -v -r -a gaia.img
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: Starport PI
-          path: starport-pi.img.xz
+          name: Gaia PI
+          path: gaia.img.xz

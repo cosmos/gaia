@@ -8,7 +8,7 @@
     "file_unarchive_cmd": ["bsdtar", "-xpf", "$ARCHIVE_PATH", "-C", "$MOUNTPOINT"],
     "file_target_extension": "tar.gz",
     "image_build_method": "new",
-    "image_path": "gaia-pi.img",
+    "image_path": "gaia.img",
     "image_size": "6G",
     "image_type": "dos",
     "image_partitions": [

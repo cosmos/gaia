@@ -46,6 +46,11 @@
       ]
     },
     {
+      "type": "file",
+      "source": "contrib/pi-image/gaiad.service",
+      "destination": "/etc/systemd/system/gaiad.service"
+    },
+    {
       "type": "shell",
       "inline": [
         "pacman -S go docker git base-devel leveldb npm --noconfirm --needed",
@@ -56,7 +61,8 @@
         "cd gaia",
         "go mod vendor",
         "make build",
-        "make install"
+        "make install",
+        "systemctl enable gaiad.service"
       ]
     },
     {

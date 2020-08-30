@@ -6,7 +6,7 @@ require (
 	github.com/99designs/keyring v1.1.5 // indirect
 	github.com/bartekn/go-bip39 v0.0.0-20171116152956-a05967ea095d // indirect
 	github.com/confio/ics23-iavl v0.6.0 // indirect
-	github.com/cosmos/cosmos-sdk v0.34.4-0.20200829041113-200e88ba075b
+	github.com/cosmos/cosmos-sdk v0.34.4-0.20200829202026-52ffb269adfc
 	github.com/enigmampc/btcutil v1.0.3-0.20200723161021-e2fb6adb2a25 // indirect
 	github.com/gibson042/canonicaljson-go v1.0.3 // indirect
 	github.com/golang/mock v1.4.4 // indirect

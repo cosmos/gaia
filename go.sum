@@ -136,6 +136,8 @@ github.com/cosmos/cosmos-sdk v0.34.4-0.20200828050731-161157006f40 h1:Pll1RX/kec
 github.com/cosmos/cosmos-sdk v0.34.4-0.20200828050731-161157006f40/go.mod h1:98AUjjEVPWmMhikxNkehbCJvmvAiYM2Y1Z7hqoSOAv8=
 github.com/cosmos/cosmos-sdk v0.34.4-0.20200829041113-200e88ba075b h1:h6FujmJDkgWwPeGsu3+3+bH4z2Nscps6+R7CXmkaCow=
 github.com/cosmos/cosmos-sdk v0.34.4-0.20200829041113-200e88ba075b/go.mod h1:98AUjjEVPWmMhikxNkehbCJvmvAiYM2Y1Z7hqoSOAv8=
+github.com/cosmos/cosmos-sdk v0.34.4-0.20200829202026-52ffb269adfc h1:p1UBAakYIXl4wtEmUI9aqRPJUxwA8FlFWssHlch9wME=
+github.com/cosmos/cosmos-sdk v0.34.4-0.20200829202026-52ffb269adfc/go.mod h1:JV8lM9nrxvvdScPytlCKGgQthzq98O3J37p/9cwWFNE=
 github.com/cosmos/cosmos-sdk v0.39.0 h1:lWZQLFxLYQ4ydD01cDZF7tRF8IN2xclDmoNPIJ5Kw44=
 github.com/cosmos/cosmos-sdk v0.39.0/go.mod h1:3iKiqnQ48T0UG4IDw9EM8utQSwItutLUkmGkRSWpS5U=
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d h1:49RLWk1j44Xu4fjHb6JFYmeUnDORVwHNkDxaQ0ctCVU=
@@ -388,6 +390,8 @@ github.com/lyft/protoc-gen-validate v0.0.13/go.mod h1:XbGvPuh87YZc5TdIa2/I4pLk0Q
 github.com/magiconair/properties v1.8.0/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/magiconair/properties v1.8.1 h1:ZC2Vc7/ZFkGmsVC9KvOjumD+G5lXy2RtTKyzRKO2BQ4=
 github.com/magiconair/properties v1.8.1/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
+github.com/magiconair/properties v1.8.2 h1:znVR8Q4g7/WlcvsxLBRWvo+vtFJUAbDn3w+Yak2xVMI=
+github.com/magiconair/properties v1.8.2/go.mod h1:y3VJvCyxH9uVvJTWEGAELF3aiYNyPKd5NZ3oSwXrF60=
 github.com/mattn/go-colorable v0.0.9/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=
 github.com/mattn/go-isatty v0.0.3/go.mod h1:M+lRXTBqGeGNdLjl/ufCoiOlB5xdOkqRJdNxMWT7Zi4=
 github.com/mattn/go-isatty v0.0.4/go.mod h1:M+lRXTBqGeGNdLjl/ufCoiOlB5xdOkqRJdNxMWT7Zi4=

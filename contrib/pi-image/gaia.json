@@ -66,6 +66,8 @@
         "mkdir -p /gaia/config",
         "wget -O /gaia/config/genesis.json https://raw.githubusercontent.com/cosmos/launch/master/genesis.json",
         "systemctl enable gaiad.service"
+        "systemctl enable gaiad.service",
+        "systemctl enable sshd"
       ]
     },
     {

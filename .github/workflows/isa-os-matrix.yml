@@ -19,7 +19,11 @@ jobs:
         uses: actions/setup-go@v1
         with:
           go-version: ${{ matrix.go }}
-      - run: make
+      - run: |
+            go mod vendor
+            go get .
+            make
+            
       
       
 # name: Cache Go modules

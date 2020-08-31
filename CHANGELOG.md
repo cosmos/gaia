@@ -34,6 +34,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 # Changelog
 
 ## [Unreleased]
+* Raspberry Pi image build target
+* Raspberry Pi image GitHub Action
 
 ## [v2.0.13] - 2020-08-13
 

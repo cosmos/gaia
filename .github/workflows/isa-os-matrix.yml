@@ -1,6 +1,9 @@
 # This is an attempt to build gaia for many OSes and instruction set architectures at once.
 # The ARM64 binaries this process will produce will reduce the size of gaia-pi.img by several gigabytes.
 
+name: Gaia Matrix
+on: [push, pull_request]
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}

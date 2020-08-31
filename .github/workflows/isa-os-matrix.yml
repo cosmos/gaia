@@ -1,0 +1,30 @@
+# This is an attempt to build gaia for many OSes and instruction set architectures at once.
+# The ARM64 binaries this process will produce will reduce the size of gaia-pi.img by several gigabytes.
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+      arch: 
+        go: [ '1.14', '1.13', '1.15' ]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    name: GAIA Go ${{ matrix.go }} ${{ matrix.os }} 
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup go
+        uses: actions/setup-go@v1
+        with:
+          go-version: ${{ matrix.go }}
+      - run: make
+      
+      
+# name: Cache Go modules
+#  uses: actions/cache@preview
+#  with:
+#    path: ~/go/pkg/mod
+#    key: ${{ runner.os }}-build-${{ hashFiles('**/go.sum') }}
+#		restore-keys: |
+#      ${{ runner.OS }}-build-${{ env.cache-name }}-
+#      ${{ runner.OS }}-build-
+#      ${{ runner.OS }}-

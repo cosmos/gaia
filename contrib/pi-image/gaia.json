@@ -53,7 +53,7 @@
     {
       "type": "shell",
       "inline": [
-        "pacman -S go docker git base-devel wget leveldb npm --noconfirm --needed",
+        "pacman -S go docker git base-devel wget leveldb openssh npm --noconfirm --needed",
         "mkdir /go",
         "export PATH=$PATH:/go/bin",
         "export GOPATH=/go",
@@ -63,7 +63,8 @@
         "go mod vendor",
         "make build",
         "make install",
-        "systemctl enable gaiad.service"
+        "systemctl enable gaiad.service",
+        "systemctl enable sshd"
       ]
     },
     {

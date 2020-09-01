@@ -6,13 +6,12 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }} 
+    runs-on: ubuntu-latest
     strategy:
       matrix: 
         arch: [amd64, arm64, risc64]
         targetos: [windows, darwin, linux]
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    name: Gaia ${{ matrix.os }} for ${{ matrix.targetos }} ${{ matrix.arch }}
+    name: Gaia ${{ matrix.arch }} for ${{ matrix.targetos }} 
     steps:
       - uses: actions/checkout@v2
       - name: Setup go

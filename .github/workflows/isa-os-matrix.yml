@@ -19,23 +19,14 @@ jobs:
         with:
           go-version: 1.15
         env: 
-          GOOS: ${{ matrix.buildos }}
+          GOOS: ${{ matrix.targetos }}
           GOARCH: ${{ matrix.arch }}
       - name: Compile
         run: make build
       - uses: actions/upload-artifact@v2
         with:
-          name: gaia ${{ matrix.buildos }} ${{ matrix.arch }}
+          name: gaia ${{ matrix.targetos }} ${{ matrix.arch }}
           path: build
             
       
       
-# name: Cache Go modules
-#  uses: actions/cache@preview
-#  with:
-#    path: ~/go/pkg/mod
-#    key: ${{ runner.os }}-build-${{ hashFiles('**/go.sum') }}
-#		restore-keys: |
-#      ${{ runner.OS }}-build-${{ env.cache-name }}-
-#      ${{ runner.OS }}-build-
-#      ${{ runner.OS }}-

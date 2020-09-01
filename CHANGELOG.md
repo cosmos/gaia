@@ -35,9 +35,11 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
-### Improvements
+### Features
 
-* features
+* Matrix builds for gaia: 
+  * windows, mac, linux 
+  * arm64, amd64, riscv64
 
 
 ## [v2.0.13] - 2020-08-13

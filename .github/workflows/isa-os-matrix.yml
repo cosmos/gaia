@@ -21,8 +21,6 @@ jobs:
         env: 
           GOOS: ${{ matrix.buildOS }}
           GOARCH: ${{ matrix.arch }}
-      - name: Test
-        run: make test test-all
       - name: Compile
         run: make build
       - uses: actions/upload-artifact@v2

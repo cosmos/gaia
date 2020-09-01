@@ -24,7 +24,7 @@ jobs:
       - name: Test
         run: make test test-all
       - name: Compile
-      - run: make build
+        run: make build
       - uses: actions/upload-artifact@v2
         with:
           name: gaia ${{ matrix.buildos }} ${{ matrix.arch }}

@@ -3,7 +3,7 @@ module github.com/cosmos/gaia
 go 1.14
 
 require (
-	github.com/cosmos/cosmos-sdk v0.34.4-0.20200901224407-b043797a0794
+	github.com/cosmos/cosmos-sdk v0.34.4-0.20200902231530-7602b5a5fb7e
 	github.com/spf13/cast v1.3.1
 	github.com/spf13/cobra v1.0.0
 	github.com/tendermint/tendermint v0.34.0-rc3

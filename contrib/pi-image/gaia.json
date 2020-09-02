@@ -53,16 +53,7 @@
     {
       "type": "shell",
       "inline": [
-        "pacman -S go docker git base-devel wget leveldb openssh npm --noconfirm --needed",
-        "mkdir /go",
-        "export PATH=$PATH:/go/bin",
-        "export GOPATH=/go",
-        "git clone https://github.com/cosmos/gaia",
-        "cd gaia",
-        "git checkout v2.0.13",
-        "go mod vendor",
-        "make build",
-        "make install",
+        "pacman -S openssh --noconfirm --needed",
         "systemctl enable gaiad.service",
         "systemctl enable sshd"
       ]
@@ -71,6 +62,15 @@
       "type": "file",
       "source": "contrib/pi-image/resizerootfs",
       "destination": "/tmp"
+    },
+    {
+      "type": "file",
+      "source": "build/*",
+      "destination": "/usr/bin"
+    },
+    {
+      "type": "shell",
+      "script": "chmod +x /usr/bin/gaia*"
     },
     {
       "type": "shell",

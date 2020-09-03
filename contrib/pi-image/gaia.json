@@ -75,7 +75,7 @@
     },
     {
       "type": "shell",
-      "script": "chmod +x /usr/bin/gaia*"
+      "inline": "chmod +x /usr/bin/gaia*"
     },
     {
       "type": "shell",

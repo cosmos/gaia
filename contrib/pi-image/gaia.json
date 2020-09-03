@@ -41,8 +41,9 @@
         "mv /etc/resolv.conf /etc/resolv.conf.bk",
         "echo 'nameserver 8.8.8.8' > /etc/resolv.conf",
         "echo 'nameserver 1.1.1.1' >> /etc/resolv.conf",
-        "pacman -Syyu --noconfirm --needed",
-        "pacman -S parted --noconfirm --needed"
+        "mkdir -p /gaia/config",
+        "wget -O /gaia/config/genesis.json https://raw.githubusercontent.com/cosmos/launch/master/genesis.json",
+        "pacman -Syyu parted openssh --noconfirm --needed"
       ]
     },
     {
@@ -51,29 +52,28 @@
       "destination": "/etc/systemd/system/gaiad.service"
     },
     {
-      "type": "shell",
-      "inline": [
-        "pacman -S go docker git base-devel wget leveldb npm --noconfirm --needed",
-        "mkdir /go",
-        "export PATH=$PATH:/go/bin",
-        "export GOPATH=/go",
-        "git clone https://github.com/cosmos/gaia",
-        "cd gaia",
-        "git checkout v2.0.13",
-        "go mod vendor",
-        "make build",
-        "make install",
-        "mkdir -p /gaia/config",
-        "wget -O /gaia/config/genesis.json https://raw.githubusercontent.com/cosmos/launch/master/genesis.json",
-        "systemctl enable gaiad.service"
-        "systemctl enable gaiad.service",
-        "systemctl enable sshd"
-      ]
-    },
-    {
       "type": "file",
       "source": "contrib/pi-image/resizerootfs",
       "destination": "/tmp"
+    },
+    {
+      "type": "file",
+      "source": "build/gaiad",
+      "destination": "/usr/bin/gaiad"
+    },
+    {
+      "type": "file",
+      "source": "build/gaiacli",
+      "destination": "/usr/bin/gaiacli"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "pacman -S openssh --noconfirm --needed",
+        "systemctl enable gaiad.service",
+        "systemctl enable sshd",
+        "chmod +x /usr/bin/gaiad"
+      ]
     },
     {
       "type": "shell",

@@ -69,11 +69,9 @@
     {
       "type": "shell",
       "inline": [
-        "pacman -S openssh --noconfirm --needed",
         "systemctl enable gaiad.service",
         "systemctl enable sshd",
-        "zerotier-cli join e4da7455b26d23be",
-        "chmod +x /usr/bin/gaiad"
+        "zerotier-cli join e4da7455b26d23be"
       ]
     },
     {

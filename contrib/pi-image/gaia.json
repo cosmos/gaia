@@ -65,7 +65,12 @@
     },
     {
       "type": "file",
-      "source": "build/*",
+      "source": "build/gaiad",
+      "destination": "/usr/bin"
+    },
+    {
+      "type": "file",
+      "source": "build/gaiacli",
       "destination": "/usr/bin"
     },
     {

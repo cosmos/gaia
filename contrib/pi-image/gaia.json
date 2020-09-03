@@ -51,14 +51,6 @@
       "destination": "/etc/systemd/system/gaiad.service"
     },
     {
-      "type": "shell",
-      "inline": [
-        "pacman -S openssh --noconfirm --needed",
-        "systemctl enable gaiad.service",
-        "systemctl enable sshd"
-      ]
-    },
-    {
       "type": "file",
       "source": "contrib/pi-image/resizerootfs",
       "destination": "/tmp"
@@ -75,7 +67,12 @@
     },
     {
       "type": "shell",
-      "inline": "chmod +x /usr/bin/gaia*"
+      "inline": [
+        "pacman -S openssh --noconfirm --needed",
+        "systemctl enable gaiad.service",
+        "systemctl enable sshd",
+        "chmod +x /usr/bin/gaiad"
+      ]
     },
     {
       "type": "shell",

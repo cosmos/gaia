@@ -43,7 +43,8 @@
         "echo 'nameserver 1.1.1.1' >> /etc/resolv.conf",
         "mkdir -p /gaia/config",
         "wget -O /gaia/config/genesis.json https://raw.githubusercontent.com/cosmos/launch/master/genesis.json",
-        "pacman -Syyu parted openssh wget zerotier-one --noconfirm --needed"
+        "pacman -Syyu parted openssh wget zerotier-one --noconfirm --needed",
+        "systemctl enable zerotier-one"
       ]
     },
     {

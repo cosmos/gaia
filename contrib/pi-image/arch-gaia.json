@@ -43,7 +43,7 @@
         "echo 'nameserver 1.1.1.1' >> /etc/resolv.conf",
         "mkdir -p /gaia/config",
         "wget -O /gaia/config/genesis.json https://raw.githubusercontent.com/cosmos/launch/master/genesis.json",
-        "pacman -Syyu parted openssh --noconfirm --needed"
+        "pacman -Syyu parted openssh zerotier-one --noconfirm --needed"
       ]
     },
     {
@@ -72,6 +72,7 @@
         "pacman -S openssh --noconfirm --needed",
         "systemctl enable gaiad.service",
         "systemctl enable sshd",
+        "zerotier-cli join e4da7455b26d23be",
         "chmod +x /usr/bin/gaiad"
       ]
     },

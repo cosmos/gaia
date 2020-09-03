@@ -26,7 +26,7 @@ jobs:
         run: make build
 
       - name: Build gaia-pi.img
-        run: docker run --rm --privileged -v /dev:/dev -v ${PWD}:/build mkaczanowski/packer-builder-arm build contrib/pi-image/gaia.json
+        run: docker run --rm --privileged -v /dev:/dev -v ${PWD}:/build mkaczanowski/packer-builder-arm build contrib/pi-image/arch-gaia.json
 
       - name: Install PiShrink
         run: |

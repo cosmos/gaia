@@ -1,0 +1,52 @@
+# This is a basic workflow that is manually triggered
+
+name: Ubuntu Gaia Pi
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  workflow_dispatch:
+
+
+
+# This workflow makes a 64 bit Raspberry Pi Arch Linux Image.
+# It does not have the security issues mentioned here: https://github.com/tendermint/tendermint/blob/master/docs/tendermint-core/running-in-production.md#validator-signing-on-32-bit-architectures-or-arm
+# Later, more devices will be supported, as well.
+
+
+jobs:
+  build:
+    name: Gaia Pi Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Setup go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.15
+        env:
+          GOOS: linux
+          GOARCH: arm64
+
+      - name: Compile
+        run: make build
+
+      - name: Build ubuntu-gaia.img
+        run: docker run --rm --privileged -v /dev:/dev -v ${PWD}:/build mkaczanowski/packer-builder-arm build contrib/pi-image/ubuntu-gaia.json
+
+      - name: Install PiShrink
+        run: |
+          wget https://raw.githubusercontent.com/Drewsif/PiShrink/master/pishrink.sh
+          chmod +x pishrink.sh
+          sudo mv pishrink.sh /usr/local/bin
+
+      - name: Shrink gaia.img
+        run: sudo pishrink.sh -v ubuntu-gaia.img
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: Gaia PI
+          path: ubuntu-gaia.img

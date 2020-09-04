@@ -33,7 +33,6 @@
     "qemu_binary_destination_path": "/usr/bin/qemu-aarch64-static"
   }],
   "provisioners": [
-    "provisioners": [
       {
         "type": "shell",
         "inline": [

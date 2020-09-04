@@ -1,0 +1,27 @@
+# This builds a pi image on metal, it does not use a docker container at all
+
+name: gaia-raspi
+on: [push, pull_request]
+
+
+jobs:
+  build:
+    name: Gaia Pi Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Setup go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.15
+        env:
+          GOOS: linux
+          GOARCH: arm64
+
+
+      - name: Compile
+        run: make build
+
+      - name: Install Packer

@@ -38,10 +38,10 @@
       "inline": [
         "pacman-key --init",
         "pacman-key --populate archlinuxarm",
-        "pacman -Syyu parted openssh wget zerotier-one --noconfirm --needed",
-        "mv /etc/resolv.conf /etc/resolv.conf.bk",
         "echo 'nameserver 8.8.8.8' > /etc/resolv.conf",
         "echo 'nameserver 1.1.1.1' >> /etc/resolv.conf",
+        "pacman -Syyu parted openssh wget zerotier-one --noconfirm --needed",
+        "mv /etc/resolv.conf /etc/resolv.conf.bk",
         "mkdir -p /gaia/config",
         "wget -O /gaia/config/genesis.json https://raw.githubusercontent.com/cosmos/launch/master/genesis.json",
         "systemctl enable zerotier-one"

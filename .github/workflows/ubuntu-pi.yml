@@ -4,9 +4,7 @@ name: Ubuntu Gaia Pi
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
-on:
-  workflow_dispatch:
-
+on: [push, pull_request]
 
 
 # This workflow makes a 64 bit Raspberry Pi Arch Linux Image.

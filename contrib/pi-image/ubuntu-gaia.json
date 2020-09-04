@@ -46,9 +46,8 @@
       "inline": [
         "apt update",
         "apt upgrade -y",
-        "systemctl enable gaiad.service",
-        "systemctl enable sshd",
-        "zerotier-cli join e4da7455b26d23be"
+        "apt install -y ntop",
+        "systemctl enable sshd"
       ]
     }
   ],

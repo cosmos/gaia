@@ -69,8 +69,23 @@
       "type": "shell",
       "inline": [
         "systemctl enable gaiad.service",
-        "systemctl enable sshd",
+        "systemctl enable sshd.service",
+        "systemctl enable sshd.socket",
         "systemctl enable zerotier-one"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "touch /boot/ssh"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "sed '/PasswordAuthentication/d' -i /etc/ssh/sshd_config",
+        "echo >> /etc/ssh/sshd_config",
+        "echo 'PasswordAuthentication yes' >> /etc/ssh/sshd_config"
       ]
     },
     {

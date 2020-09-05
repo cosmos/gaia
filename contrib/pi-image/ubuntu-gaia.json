@@ -44,9 +44,10 @@
     {
       "type": "shell",
       "inline": [
+        "mv /etc/resolv.conf /etc/resolv.conf.bk",
+        "echo 'nameserver 8.8.8.8' > /etc/resolv.conf",
         "apt update",
         "apt upgrade -y",
-        "apt install -y ntop",
         "systemctl enable sshd"
       ]
     }

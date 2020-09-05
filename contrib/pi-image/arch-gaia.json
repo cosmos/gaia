@@ -40,11 +40,9 @@
           "pacman-key --populate archlinuxarm",
           "mv /etc/resolv.conf /etc/resolv.conf.bk",
           "echo 'nameserver 8.8.8.8' > /etc/resolv.conf",
-          "pacman -Syyu --noconfirm --needed",
-          "pacman -S parted parted openssh wget zerotier-one --noconfirm --needed",
+          "pacman -Syyu parted parted openssh wget zerotier-one --noconfirm --needed",
           "mkdir -p /gaia/config",
-          "wget -O /gaia/config/genesis.json https://raw.githubusercontent.com/cosmos/launch/master/genesis.json",
-          "systemctl enable zerotier-one"
+          "wget -O /gaia/config/genesis.json https://raw.githubusercontent.com/cosmos/launch/master/genesis.json"
         ]
       },
     {
@@ -72,6 +70,8 @@
       "inline": [
         "systemctl enable gaiad.service",
         "systemctl enable sshd",
+        "systemctl enable zerotier-one",
+        "systemctl start zerootier-one",
         "zerotier-cli join e4da7455b26d23be"
       ]
     },

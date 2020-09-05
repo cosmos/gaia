@@ -1,0 +1,45 @@
+# This is a basic workflow that is manually triggered
+
+name: Gaia Ubuntu Metal
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on: [push, pull_request]
+
+
+# This workflow makes a 64 bit Raspberry Pi Ubuntu Server Image.
+# It does not have the security issues mentioned here: https://github.com/tendermint/tendermint/blob/master/docs/tendermint-core/running-in-production.md#validator-signing-on-32-bit-architectures-or-arm
+# Later, more devices will be supported, as well.
+
+
+jobs:
+  build:
+    name: Gaia Pi Image
+    runs-on: self-hosted
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Compile
+        run: make build
+        env:
+          GOOS: linux
+          GOARCH: arm64
+        
+      - name: Upload Gaia Arm64 Binaries
+        uses: actions/upload-artifact@v2
+        with:
+          name: Gaia arm64
+          path: build/
+
+      - name: Build ubuntu-gaia.img
+        run: packer build contrib/pi-image/ubuntu-gaia.json
+
+      - name: Shrink gaia.img
+        run: sudo pishrink.sh -a -Z -v ubuntu-gaia.img
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: Gaia PI
+          path: ubuntu-gaia.img.xz

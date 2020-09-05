@@ -71,8 +71,6 @@
         "systemctl enable gaiad.service",
         "systemctl enable sshd",
         "systemctl enable zerotier-one",
-        "systemctl start zerootier-one",
-        "zerotier-cli join e4da7455b26d23be"
       ]
     },
     {

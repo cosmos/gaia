@@ -70,7 +70,7 @@
       "inline": [
         "systemctl enable gaiad.service",
         "systemctl enable sshd",
-        "systemctl enable zerotier-one",
+        "systemctl enable zerotier-one"
       ]
     },
     {

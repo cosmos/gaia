@@ -8,7 +8,7 @@
     "file_target_extension": "xz",
     "file_unarchive_cmd": ["xz", "--decompress", "$ARCHIVE_PATH"],
     "image_build_method": "reuse",
-    "image_path": "ubuntu-20.04.img",
+    "image_path": "ubuntu-gaia.img",
     "image_size": "3.1G",
     "image_type": "dos",
     "image_partitions": [

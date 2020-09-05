@@ -62,6 +62,11 @@
         "mv /etc/resolv.conf /etc/resolv.conf.bk",
         "echo 'nameserver 8.8.8.8' > /etc/resolv.conf",
         "echo 'nameserver 1.1.1.1' >> /etc/resolv.conf",
+        "apt update",
+        "apt install -y curl wget",
+        "mkdir -p /gaia/config",
+        "wget -O /gaia/config/genesis.json https://raw.githubusercontent.com/cosmos/launch/master/genesis.json",
+        "chmod +x /usr/bin/gaiad",
         "systemctl enable gaiad"
       ]
     }

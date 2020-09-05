@@ -42,6 +42,21 @@
       ]
     },
     {
+      "type": "file",
+      "source": "contrib/pi-image/gaiad.service",
+      "destination": "/etc/systemd/system/gaiad.service"
+    },
+    {
+      "type": "file",
+      "source": "build/gaiad",
+      "destination": "/usr/bin/gaiad"
+    },
+    {
+      "type": "file",
+      "source": "build/gaiacli",
+      "destination": "/usr/bin/gaiacli"
+    },
+    {
       "type": "shell",
       "inline": [
         "mv /etc/resolv.conf /etc/resolv.conf.bk",

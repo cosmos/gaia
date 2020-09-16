@@ -60,16 +60,46 @@ Example:
 			serverCtx := server.GetServerContextFromCmd(cmd)
 			config := serverCtx.Config
 
-			outputDir, _ := cmd.Flags().GetString(flagOutputDir)
-			keyringBackend, _ := cmd.Flags().GetString(flags.FlagKeyringBackend)
-			chainID, _ := cmd.Flags().GetString(flags.FlagChainID)
-			minGasPrices, _ := cmd.Flags().GetString(server.FlagMinGasPrices)
-			nodeDirPrefix, _ := cmd.Flags().GetString(flagNodeDirPrefix)
-			nodeDaemonHome, _ := cmd.Flags().GetString(flagNodeDaemonHome)
-			nodeCLIHome, _ := cmd.Flags().GetString(flagNodeCLIHome)
-			startingIPAddress, _ := cmd.Flags().GetString(flagStartingIPAddress)
-			numValidators, _ := cmd.Flags().GetInt(flagNumValidators)
-			algo, _ := cmd.Flags().GetString(flags.FlagKeyAlgorithm)
+			outputDir, err := cmd.Flags().GetString(flagOutputDir)
+			if err != nil {
+				return err
+			}
+			keyringBackend, err := cmd.Flags().GetString(flags.FlagKeyringBackend)
+			if err != nil {
+				return err
+			}
+			chainID, err := cmd.Flags().GetString(flags.FlagChainID)
+			if err != nil {
+				return err
+			}
+			minGasPrices, err := cmd.Flags().GetString(server.FlagMinGasPrices)
+			if err != nil {
+				return err
+			}
+			nodeDirPrefix, err := cmd.Flags().GetString(flagNodeDirPrefix)
+			if err != nil {
+				return err
+			}
+			nodeDaemonHome, err := cmd.Flags().GetString(flagNodeDaemonHome)
+			if err != nil {
+				return err
+			}
+			nodeCLIHome, err := cmd.Flags().GetString(flagNodeCLIHome)
+			if err != nil {
+				return err
+			}
+			startingIPAddress, err := cmd.Flags().GetString(flagStartingIPAddress)
+			if err != nil {
+				return err
+			}
+			numValidators, err := cmd.Flags().GetInt(flagNumValidators)
+			if err != nil {
+				return err
+			}
+			algo, err := cmd.Flags().GetString(flags.FlagKeyAlgorithm)
+			if err != nil {
+				return err
+			}
 
 			return InitTestnet(
 				clientCtx, cmd, config, mbm, genBalIterator, outputDir, chainID, minGasPrices,

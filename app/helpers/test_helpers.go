@@ -54,9 +54,9 @@ func GenTx(gen client.TxConfig, msgs []sdk.Msg, feeAmt sdk.Coins, gas uint64, ch
 	for i, p := range priv {
 		// use a empty chainID for ease of testing
 		signerData := authsign.SignerData{
-			ChainID:         chainID,
-			AccountNumber:   accnums[i],
-			AccountSequence: seq[i],
+			ChainID:       chainID,
+			AccountNumber: accnums[i],
+			Sequence:      seq[i],
 		}
 		signBytes, err := gen.SignModeHandler().GetSignBytes(signMode, signerData, tx.GetTx())
 		if err != nil {

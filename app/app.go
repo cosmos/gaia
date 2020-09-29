@@ -78,10 +78,11 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	gaiaappparams "github.com/cosmos/gaia/app/params"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
+	// This is for the swagger file for legacy support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
-	gaiaappparams "github.com/cosmos/gaia/app/params"
 )
 
 const appName = "GaiaApp"

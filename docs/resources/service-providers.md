@@ -146,7 +146,7 @@ gaiacli rest-server --node=<full_node_address:full_node_port>
 ```
 
 Flags:
-- `--trust-node`: A boolean. If `true`, light-client verification is disabled. If `false`, it is disabled. For service providers, this should be set to `true`. By default, it set to `true`. 
+- `--trust-node`: A boolean. If `true`, light-client verification is disabled. If `false`, it is enabled. For service providers, this should be set to `true`. By default, it set to `false`. 
 - `--node`: This is where you indicate the address and the port of your full-node. The format is `<full_node_address:full_node_port>`. If the full-node is on the same machine, the address should be `tcp://localhost:26657`.
 - `--laddr`: This flag allows you to specify the address and port for the Rest Server (default `1317`). You will mostly use this flag only to specify the port, in which case just input "localhost" for the address. The format is <rest_server_address:port>.
 

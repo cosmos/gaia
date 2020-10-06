@@ -3,7 +3,7 @@ module github.com/cosmos/gaia
 go 1.14
 
 require (
-	github.com/cosmos/cosmos-sdk v0.34.4-0.20201005133838-ee80f10cc66c
+	github.com/cosmos/cosmos-sdk v0.34.4-0.20201005215609-4a1b2fba43b1
 	github.com/gorilla/mux v1.8.0
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/cast v1.3.1

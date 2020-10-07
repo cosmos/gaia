@@ -3,7 +3,10 @@ module github.com/cosmos/gaia
 go 1.14
 
 require (
+	github.com/btcsuite/btcd v0.21.0-beta
+	github.com/btcsuite/btcutil v1.0.2
 	github.com/cosmos/cosmos-sdk v0.34.4-0.20200929112910-ddaa3c5176bc
+	github.com/ethereum/go-ethereum v1.9.22
 	github.com/gorilla/mux v1.8.0
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/cast v1.3.1

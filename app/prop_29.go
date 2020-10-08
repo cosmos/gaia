@@ -3,6 +3,7 @@ package app
 import (
 	"bytes"
 	"encoding/base64"
+	"encoding/json"
 	"log"
 
 	"github.com/btcsuite/btcd/btcec"
@@ -22,6 +23,42 @@ type FundRecoveryMessage struct {
 	sourceAddress types.Address
 	destAddress   types.Address
 	destBalance   types.Coin
+}
+
+func (f *FundRecoveryMessage) unmarshalSignedJson() (SignedJSON, error) {
+	return UnmarshalSignedJSON([]byte(f.signedMessage))
+}
+
+func (f *FundRecoveryMessage) VerifyBitcoinSignature(addrIdx int) (SignedJSON, error) {
+	msgJson, err := f.unmarshalSignedJson()
+	if err != nil {
+		return SignedJSON{}, err
+	}
+	VerifyBitcoinSignature(f.signature, f.signedMessage, msgJson.ContributingAddresses[addrIdx].Address)
+	return msgJson, nil
+}
+
+func UnmarshalSignedJSON(data []byte) (SignedJSON, error) {
+	var r SignedJSON
+	err := json.Unmarshal(data, &r)
+	return r, err
+}
+
+func (r *SignedJSON) Marshal() ([]byte, error) {
+	return json.Marshal(r)
+}
+
+type SignedJSON struct {
+	Message               string                `json:"Message"`
+	Txid                  string                `json:"Txid"`
+	Contribution          string                `json:"Contribution"`
+	ContributingAddresses []ContributingAddress `json:"Contributing Addresses"`
+	GenesisCosmosAddress  string                `json:"Genesis Cosmos Address"`
+	RecoveryCosmosAddress string                `json:"Recovery Cosmos Address"`
+}
+
+type ContributingAddress struct {
+	Address string `json:"address"`
 }
 
 func BTCDonor1() FundRecoveryMessage {

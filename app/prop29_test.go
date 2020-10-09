@@ -15,11 +15,10 @@ func TestVerifySignatures(t *testing.T) {
 	donor3.VerifyBitcoinSignature(1)
 	donor4.VerifyBitcoinSignature(0)
 
-
 	//Ethereum Donors
-	//eDonor1 := EthDonor1()
+	eDonor1 := EthDonor1()
 
 	//Ethereum Verification
-	//eDonor1.VerifyEthereumSignature(0)
+	eDonor1.VerifyEthereumSignature(0)
 
 }

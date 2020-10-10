@@ -8,6 +8,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.34.4-0.20201009191330-c7d926da2dd7
 	github.com/ethereum/go-ethereum v1.9.22
 	github.com/gorilla/mux v1.8.0
+	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/cast v1.3.1
 	github.com/spf13/cobra v1.0.0

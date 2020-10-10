@@ -30,6 +30,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
 
+	"github.com/cosmos/gaia/app"
 	gaia "github.com/cosmos/gaia/app"
 	"github.com/cosmos/gaia/app/params"
 )
@@ -87,7 +88,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 	rootCmd.AddCommand(
 		genutilcli.InitCmd(gaia.ModuleBasics, gaia.DefaultNodeHome),
 		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, gaia.DefaultNodeHome),
-		genutilcli.MigrateGenesisCmd(),
+		app.MigrateGenesisCmd(),
 		genutilcli.GenTxCmd(gaia.ModuleBasics, encodingConfig.TxConfig, banktypes.GenesisBalancesIterator{}, gaia.DefaultNodeHome),
 		genutilcli.ValidateGenesisCmd(gaia.ModuleBasics, encodingConfig.TxConfig),
 		AddGenesisAccountCmd(gaia.DefaultNodeHome),

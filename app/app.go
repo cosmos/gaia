@@ -82,6 +82,9 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	gaiaappparams "github.com/cosmos/gaia/app/params"
+
+	// This is for the swagger file for legacy support
+	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
 )
 
 const appName = "GaiaApp"

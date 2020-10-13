@@ -335,7 +335,7 @@ func NewGaiaApp(
 	)
 	app.mm.SetOrderEndBlockers(crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName)
 
-	// NOTE: The genutils moodule must occur after staking so that pools are
+	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
 	// NOTE: Capability module must occur first so that it can initialize any capabilities
 	// so that other modules that want to create or claim capabilities afterwards in InitChain
@@ -542,7 +542,7 @@ func RegisterSwaggerAPI(ctx client.Context, rtr *mux.Router) {
 	}
 
 	staticServer := http.FileServer(statikFS)
-	rtr.PathPrefix("/swagger").Handler(http.StripPrefix("/swagger/", staticServer))
+	rtr.PathPrefix("/swagger/").Handler(http.StripPrefix("/swagger/", staticServer))
 }
 
 // GetMaccPerms returns a copy of the module account permissions

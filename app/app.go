@@ -53,6 +53,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	convo "github.com/cosmos/cosmos-sdk/x/ibc/applications/convo"
+	ibcconvokeeper "github.com/cosmos/cosmos-sdk/x/ibc/applications/convo/keeper"
+	ibcconvotypes "github.com/cosmos/cosmos-sdk/x/ibc/applications/convo/types"
 	transfer "github.com/cosmos/cosmos-sdk/x/ibc/applications/transfer"
 	ibctransferkeeper "github.com/cosmos/cosmos-sdk/x/ibc/applications/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/cosmos-sdk/x/ibc/applications/transfer/types"
@@ -165,10 +168,12 @@ type GaiaApp struct {
 	IBCKeeper        *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	EvidenceKeeper   evidencekeeper.Keeper
 	TransferKeeper   ibctransferkeeper.Keeper
+	ConvoKeeper      ibcconvokeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
+	ScopedConvoKeeper    capabilitykeeper.ScopedKeeper
 
 	// the module manager
 	mm *module.Manager
@@ -208,6 +213,7 @@ func NewGaiaApp(
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
+		ibcconvotypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -232,6 +238,7 @@ func NewGaiaApp(
 	app.CapabilityKeeper = capabilitykeeper.NewKeeper(appCodec, keys[capabilitytypes.StoreKey], memKeys[capabilitytypes.MemStoreKey])
 	scopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
 	scopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
+	scopedConvoKeeper := app.CapabilityKeeper.ScopeToModule(ibcconvotypes.ModuleName)
 
 	// add keepers
 	app.AccountKeeper = authkeeper.NewAccountKeeper(
@@ -290,6 +297,14 @@ func NewGaiaApp(
 	)
 	transferModule := transfer.NewAppModule(app.TransferKeeper)
 
+	// CONVOCHAIN DEMO
+	// Create Convo Keeper
+	app.ConvoKeeper = ibcconvokeeper.NewKeeper(
+		appCodec, keys[ibcconvotypes.StoreKey], app.IBCKeeper.ChannelKeeper,
+		&app.IBCKeeper.PortKeeper, scopedConvoKeeper,
+	)
+	convoModule := convo.NewAppModule(app.ConvoKeeper)
+
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
@@ -325,6 +340,7 @@ func NewGaiaApp(
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
+		convoModule,
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -350,7 +366,7 @@ func NewGaiaApp(
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
-	app.mm.RegisterQueryServices(app.GRPCQueryRouter())
+	app.mm.RegisterServices(module.NewConfigurator(app.GRPCQueryRouter()))
 
 	// add test gRPC service for testing gRPC queries in isolation
 	testdata.RegisterTestServiceServer(app.GRPCQueryRouter(), testdata.TestServiceImpl{})
@@ -410,6 +426,7 @@ func NewGaiaApp(
 
 	app.ScopedIBCKeeper = scopedIBCKeeper
 	app.ScopedTransferKeeper = scopedTransferKeeper
+	app.ScopedConvoKeeper = scopedConvoKeeper
 
 	return app
 }

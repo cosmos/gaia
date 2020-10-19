@@ -327,7 +327,7 @@ const flagInitialHeight = "initial-height"
 // MigrateGenesisCmd returns a command to execute genesis state migration.
 func MigrateGenesisCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "migrate [target-version] [genesis-file]",
+		Use:   "migrate [genesis-file]",
 		Short: "Migrate genesis to a specified target version",
 		Long: fmt.Sprintf(`Migrate the source genesis into the target version and print to STDOUT.
 
@@ -340,7 +340,7 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 
 			var err error
 
-			target := "0.40"
+			target := "0.37"
 			importGenesis := args[0]
 
 			genDoc, err := tmtypes.GenesisDocFromFile(importGenesis)

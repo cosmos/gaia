@@ -340,7 +340,7 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 
 			var err error
 
-			target := "0.37"
+			target := "v0.37"
 			importGenesis := args[0]
 
 			genDoc, err := tmtypes.GenesisDocFromFile(importGenesis)

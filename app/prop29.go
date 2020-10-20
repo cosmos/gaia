@@ -33,6 +33,8 @@ import (
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	ibctypes "github.com/cosmos/cosmos-sdk/x/ibc/applications/transfer/types"
+
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	tmtypes "github.com/tendermint/tendermint/types"
 )
@@ -451,10 +453,16 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 				}
 			}
 
-			//TODO disable ICS20 transfers and recieves.
+			var ibcGenesis ibctypes.GenesisState
+
+			clientCtx.JSONMarshaler.MustUnmarshalJSON(newGenState[ibctypes.ModuleName], &ibcGenesis)
+
+			ibcGenesis.Params.ReceiveEnabled = false
+			ibcGenesis.Params.SendEnabled = true
 
 			newGenState[bank.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(&bankGenesis)
 			newGenState[distrtypes.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(&distrGenesis)
+			newGenState[ibctypes.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(&ibcGenesis)
 
 			genDoc.AppState, err = json.Marshal(newGenState)
 			if err != nil {

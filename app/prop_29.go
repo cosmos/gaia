@@ -341,7 +341,7 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 
 			var err error
 
-			target := "v0.40"
+			firstMigration := "v0.39"
 			importGenesis := args[0]
 
 			jsonBlob, err := ioutil.ReadFile(importGenesis)
@@ -366,13 +366,23 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 				return errors.Wrap(err, "failed to JSON unmarshal initial genesis state")
 			}
 
-			migrationFunc := cli.GetMigrationCallback(target)
+			migrationFunc := cli.GetMigrationCallback(firstMigration)
 			if migrationFunc == nil {
-				return fmt.Errorf("unknown migration function for version: %s", target)
+				return fmt.Errorf("unknown migration function for version: %s", firstMigration)
 			}
 
 			// TODO: handler error from migrationFunc call
 			newGenState := migrationFunc(initialState, clientCtx)
+
+			secondMigration := "v0.40"
+
+			migrationFunc := cli.GetMigrationCallback(secondMigration)
+			if migrationFunc == nil {
+				return fmt.Errorf("unknown migration function for version: %s", secondMigration)
+			}
+
+			// TODO: handler error from migrationFunc call
+			newGenState = migrationFunc(newGenState, clientCtx)
 
 			var bankGenesis bank.GenesisState
 
@@ -430,6 +440,8 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 					recoveryAccounting = sdk.NewInt64Coin("uatom", 0)
 				}
 			}
+
+			//TODO disable ICS20 transfers and recieves.
 
 			newGenState[bank.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(&bankGenesis)
 			newGenState[distrtypes.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(&distrGenesis)

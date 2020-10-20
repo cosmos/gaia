@@ -376,7 +376,7 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 
 			secondMigration := "v0.40"
 
-			migrationFunc := cli.GetMigrationCallback(secondMigration)
+			migrationFunc = cli.GetMigrationCallback(secondMigration)
 			if migrationFunc == nil {
 				return fmt.Errorf("unknown migration function for version: %s", secondMigration)
 			}

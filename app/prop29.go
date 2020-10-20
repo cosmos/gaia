@@ -458,7 +458,7 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 			clientCtx.JSONMarshaler.MustUnmarshalJSON(newGenState[ibctypes.ModuleName], &ibcGenesis)
 
 			ibcGenesis.Params.ReceiveEnabled = false
-			ibcGenesis.Params.SendEnabled = true
+			ibcGenesis.Params.SendEnabled = false
 
 			newGenState[bank.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(&bankGenesis)
 			newGenState[distrtypes.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(&distrGenesis)

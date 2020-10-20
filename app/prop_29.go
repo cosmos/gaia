@@ -506,7 +506,7 @@ func migrateTendermintGenesis(jsonBlob []byte) ([]byte, error) {
 
 	evidenceParams["max_age_duration"] = "172800000000000"
 
-	evidenceParams["max_num"] = "50"
+	evidenceParams["max_num"] = 50
 
 	jsonBlob, err = json.Marshal(jsonObj)
 

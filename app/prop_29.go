@@ -9,6 +9,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"time"
 
@@ -340,10 +341,22 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 
 			var err error
 
-			target := "v0.37"
+			target := "v0.40"
 			importGenesis := args[0]
 
-			genDoc, err := tmtypes.GenesisDocFromFile(importGenesis)
+			jsonBlob, err := ioutil.ReadFile(importGenesis)
+
+			if err != nil {
+				return errors.Wrap(err, "failed to read provided genesis file")
+			}
+
+			jsonBlob, err = migrateTendermintGenesis(jsonBlob)
+
+			if err != nil {
+				return errors.Wrap(err, "failed to migration from 0.32 Tendermint params to 0.34 parms")
+			}
+
+			genDoc, err := tmtypes.GenesisDocFromJSON(jsonBlob)
 			if err != nil {
 				return errors.Wrapf(err, "failed to read genesis document from file %s", importGenesis)
 			}
@@ -467,4 +480,39 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 	cmd.Flags().String(flags.FlagChainID, "", "override chain_id with this flag")
 
 	return cmd
+}
+
+// MigrateTendermintGenesis makes sure a later version of Tendermint can parse
+// a JSON blob exported by an older version of Tendermint.
+func migrateTendermintGenesis(jsonBlob []byte) ([]byte, error) {
+	var jsonObj map[string]interface{}
+	err := json.Unmarshal(jsonBlob, &jsonObj)
+	if err != nil {
+		return nil, err
+	}
+
+	consensusParams, ok := jsonObj["consensus_params"].(map[string]interface{})
+	if !ok {
+		return nil, fmt.Errorf("exported json does not contain consensus_params field")
+	}
+	evidenceParams, ok := consensusParams["evidence"].(map[string]interface{})
+	if !ok {
+		return nil, fmt.Errorf("exported json does not contain consensus_params.evidence field")
+
+	}
+
+	evidenceParams["max_age_num_blocks"] = evidenceParams["max_age"]
+	delete(evidenceParams, "max_age")
+
+	evidenceParams["max_age_duration"] = "172800000000000"
+
+	evidenceParams["max_num"] = "50"
+
+	jsonBlob, err = json.Marshal(jsonObj)
+
+	if err != nil {
+		return nil, errors.Wrapf(err, "Error resserializing JSON blob after tendermint migrations")
+	}
+
+	return jsonBlob, nil
 }

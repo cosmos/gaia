@@ -341,7 +341,7 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 
 			var err error
 
-			firstMigration := "v0.39"
+			firstMigration := "v0.38"
 			importGenesis := args[0]
 
 			jsonBlob, err := ioutil.ReadFile(importGenesis)
@@ -374,11 +374,21 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 			// TODO: handler error from migrationFunc call
 			newGenState := migrationFunc(initialState, clientCtx)
 
-			secondMigration := "v0.40"
+			secondMigration := "v0.39"
 
 			migrationFunc = cli.GetMigrationCallback(secondMigration)
 			if migrationFunc == nil {
 				return fmt.Errorf("unknown migration function for version: %s", secondMigration)
+			}
+
+			// TODO: handler error from migrationFunc call
+			newGenState = migrationFunc(newGenState, clientCtx)
+
+			thirdMigration := "v0.40"
+
+			migrationFunc = cli.GetMigrationCallback(thirdMigration)
+			if migrationFunc == nil {
+				return fmt.Errorf("unknown migration function for version: %s", thirdMigration)
 			}
 
 			// TODO: handler error from migrationFunc call

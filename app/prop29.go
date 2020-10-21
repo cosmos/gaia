@@ -406,7 +406,7 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 
 			recoveryAccounting := sdk.NewInt64Coin("uatom", 0)
 
-			//Set All Source Addresses to Zero
+			//Set All Source Addresses to Zero and accumulate the total funds being moved
 			for i, balance := range bankGenesis.Balances {
 				_, isSourceAddress := fundRecovery.IsSourceAddress(balance.Address)
 				if isSourceAddress {
@@ -446,9 +446,9 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 			// Add the remaining ATOMs to the fee pool by adding them to distribution modules
 			for i, balance := range bankGenesis.Balances {
 				if distModuleAccount.String() == balance.Address {
-					bankGenesis.Balances[i].Coins.Add(recoveryAccounting)
+					bankGenesis.Balances[i].Coins = bankGenesis.Balances[i].Coins.Add(recoveryAccounting)
 
-					distrGenesis.FeePool.CommunityPool.Add(sdk.NewDecCoinFromCoin(recoveryAccounting))
+					distrGenesis.FeePool.CommunityPool = distrGenesis.FeePool.CommunityPool.Add(sdk.NewDecCoinFromCoin(recoveryAccounting))
 
 					recoveryAccounting = sdk.NewInt64Coin("uatom", 0)
 				}

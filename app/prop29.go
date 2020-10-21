@@ -33,7 +33,9 @@ import (
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	ibctypes "github.com/cosmos/cosmos-sdk/x/ibc/applications/transfer/types"
+	ibcxfertypes "github.com/cosmos/cosmos-sdk/x/ibc/applications/transfer/types"
+	host "github.com/cosmos/cosmos-sdk/x/ibc/core/24-host"
+	ibccoretypes "github.com/cosmos/cosmos-sdk/x/ibc/core/types"
 
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	tmtypes "github.com/tendermint/tendermint/types"
@@ -406,14 +408,13 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 
 			//Set All Source Addresses to Zero
 			for i, balance := range bankGenesis.Balances {
-
 				_, isSourceAddress := fundRecovery.IsSourceAddress(balance.Address)
 				if isSourceAddress {
 					if len(balance.Coins) > 1 {
 						log.Fatal("Expected all balances to contain only 1 denom during the migration")
 					}
 					// Accumulate all the coins removed from the balances
-					recoveryAccounting.Add(balance.Coins[0])
+					recoveryAccounting = recoveryAccounting.Add(balance.Coins[0])
 					// Zero out the Balance
 					bankGenesis.Balances[i].Coins[0] = sdk.NewInt64Coin("uatom", 0)
 
@@ -423,8 +424,8 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 			for i, balance := range bankGenesis.Balances {
 				index, isDestAddress := fundRecovery.IsDestAddress(balance.Address)
 				if isDestAddress {
-					recoveryAccounting.Sub(fundRecovery[index].destBalance)
-					bankGenesis.Balances[i].Coins.Add(fundRecovery[index].destBalance)
+					recoveryAccounting = recoveryAccounting.Sub(fundRecovery[index].destBalance)
+					bankGenesis.Balances[i].Coins = bankGenesis.Balances[i].Coins.Add(fundRecovery[index].destBalance)
 					fundRecovery[index].destBalance = sdk.NewInt64Coin("uatom", 0)
 				}
 
@@ -433,7 +434,7 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 			bankGenesis.Balances = append(bankGenesis.Balances, fundRecovery.GetRemainingBalances()...)
 
 			for _, balance := range fundRecovery.GetRemainingBalances() {
-				recoveryAccounting.Sub(balance.Coins[0])
+				recoveryAccounting = recoveryAccounting.Sub(balance.Coins[0])
 			}
 
 			distModuleAccount := authtypes.NewModuleAddress(distrtypes.ModuleName)
@@ -453,16 +454,16 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 				}
 			}
 
-			var ibcGenesis ibctypes.GenesisState
+			ibcTransferGenesis := ibcxfertypes.DefaultGenesisState()
+			ibcCoreGenesis := ibccoretypes.DefaultGenesisState()
 
-			clientCtx.JSONMarshaler.MustUnmarshalJSON(newGenState[ibctypes.ModuleName], &ibcGenesis)
-
-			ibcGenesis.Params.ReceiveEnabled = false
-			ibcGenesis.Params.SendEnabled = false
+			ibcTransferGenesis.Params.ReceiveEnabled = false
+			ibcTransferGenesis.Params.SendEnabled = false
 
 			newGenState[bank.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(&bankGenesis)
 			newGenState[distrtypes.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(&distrGenesis)
-			newGenState[ibctypes.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(&ibcGenesis)
+			newGenState[ibcxfertypes.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(ibcTransferGenesis)
+			newGenState[host.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(ibcCoreGenesis)
 
 			genDoc.AppState, err = json.Marshal(newGenState)
 			if err != nil {

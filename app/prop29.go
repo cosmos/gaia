@@ -328,6 +328,7 @@ func verifyBitcoinSignature(sig, msg, addr string) {
 
 const flagGenesisTime = "genesis-time"
 const flagInitialHeight = "initial-height"
+const flagReplacementKeys = "replacement-cons-keys"
 
 // MigrateGenesisCmd returns a command to execute genesis state migration.
 func MigrateGenesisCmd() *cobra.Command {
@@ -491,6 +492,12 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 
 			genDoc.InitialHeight = int64(initialHeight)
 
+			replacementKeys, _ := cmd.Flags().GetString(flagReplacementKeys)
+
+			if replacementKeys != "" {
+				genDoc = loadKeydataFromFile(clientCtx, replacementKeys, genDoc)
+			}
+
 			bz, err := tmjson.Marshal(genDoc)
 			if err != nil {
 				return errors.Wrap(err, "failed to marshal genesis doc")
@@ -508,6 +515,7 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 
 	cmd.Flags().String(flagGenesisTime, "", "override genesis_time with this flag")
 	cmd.Flags().String(flagInitialHeight, "", "Set the starting height for the chain")
+	cmd.Flags().String(flagReplacementKeys, "", "Proviide a JSON file to replace the consensus keys of validators")
 	cmd.Flags().String(flags.FlagChainID, "", "override chain_id with this flag")
 
 	return cmd

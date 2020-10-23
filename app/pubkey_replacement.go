@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil/types"
+	slashing "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	staking "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/pkg/errors"
 	tmtypes "github.com/tendermint/tendermint/types"
@@ -53,8 +54,10 @@ func loadKeydataFromFile(clientCtx client.Context, replacementrJSON string, genD
 	}
 
 	var stakingGenesis staking.GenesisState
+	var slashingGenesis slashing.GenesisState
 
 	clientCtx.JSONMarshaler.MustUnmarshalJSON(state[staking.ModuleName], &stakingGenesis)
+	clientCtx.JSONMarshaler.MustUnmarshalJSON(state[slashing.ModuleName], &slashingGenesis)
 
 	for i, val := range stakingGenesis.Validators {
 		idx, replacement := replacementKeys.isReplacedValidator(val.OperatorAddress)
@@ -72,6 +75,22 @@ func loadKeydataFromFile(clientCtx client.Context, replacementrJSON string, genD
 
 			replaceVal := val.ToTmValidator()
 
+			toReplaceValConsAddress, _ := sdk.ConsAddressFromHex(toReplaceVal.Address.String())
+			replaceValConsAddress, _ := sdk.ConsAddressFromHex(replaceVal.Address.String())
+
+			for i, signingInfo := range slashingGenesis.SigningInfos {
+				if signingInfo.Address == toReplaceValConsAddress.String() {
+					slashingGenesis.SigningInfos[i].Address = replaceValConsAddress.String()
+					slashingGenesis.SigningInfos[i].ValidatorSigningInfo.Address = replaceValConsAddress.String()
+				}
+			}
+
+			for i, missedInfo := range slashingGenesis.MissedBlocks {
+				if missedInfo.Address == toReplaceValConsAddress.String() {
+					slashingGenesis.MissedBlocks[i].Address = replaceValConsAddress.String()
+				}
+			}
+
 			for tmIdx, tmval := range genDoc.Validators {
 				if tmval.Address.String() == toReplaceVal.Address.String() {
 					genDoc.Validators[tmIdx].Address = replaceVal.Address
@@ -85,6 +104,7 @@ func loadKeydataFromFile(clientCtx client.Context, replacementrJSON string, genD
 
 	}
 	state[staking.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(&stakingGenesis)
+	state[slashing.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(&slashingGenesis)
 
 	genDoc.AppState, err = json.Marshal(state)
 

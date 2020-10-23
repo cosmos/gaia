@@ -2,10 +2,12 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil/types"
 	staking "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/pkg/errors"
@@ -17,7 +19,7 @@ type replacementConfigs []replacementConfig
 func (r *replacementConfigs) isReplacedValidator(validatorAddress string) (int, replacementConfig) {
 
 	for i, replacement := range *r {
-		if replacement.validatorAddress == validatorAddress {
+		if replacement.ValidatorAddress == validatorAddress {
 			return i, replacement
 		}
 	}
@@ -26,9 +28,9 @@ func (r *replacementConfigs) isReplacedValidator(validatorAddress string) (int, 
 }
 
 type replacementConfig struct {
-	name             string
-	validatorAddress string
-	consensusPubkey  string
+	Name             string `json:"validator_name"`
+	ValidatorAddress string `json:"validator_address"`
+	ConsensusPubkey  string `json:"stargate_consensus_public_key"`
 }
 
 func loadKeydataFromFile(clientCtx client.Context, replacementrJSON string, genDoc *tmtypes.GenesisDoc) *tmtypes.GenesisDoc {
@@ -56,7 +58,12 @@ func loadKeydataFromFile(clientCtx client.Context, replacementrJSON string, genD
 		if idx != -1 {
 			toReplaceVal := val.ToTmValidator()
 
-			val.ConsensusPubkey = replacement.consensusPubkey
+			consPubKey, err := sdk.GetPubKeyFromBech32(sdk.Bech32PubKeyTypeConsPub, replacement.ConsensusPubkey)
+			if err != nil {
+				log.Fatal(fmt.Errorf("failed to decode key:%s %w", consPubKey, err))
+			}
+
+			val.ConsensusPubkey = sdk.MustBech32ifyPubKey(sdk.Bech32PubKeyTypeConsPub, consPubKey)
 
 			replaceVal := val.ToTmValidator()
 

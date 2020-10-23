@@ -32,7 +32,9 @@ import (
 	"github.com/spf13/cobra"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	captypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	evtypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	ibcxfertypes "github.com/cosmos/cosmos-sdk/x/ibc/applications/transfer/types"
 	host "github.com/cosmos/cosmos-sdk/x/ibc/core/24-host"
 	ibccoretypes "github.com/cosmos/cosmos-sdk/x/ibc/core/types"
@@ -457,6 +459,8 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 
 			ibcTransferGenesis := ibcxfertypes.DefaultGenesisState()
 			ibcCoreGenesis := ibccoretypes.DefaultGenesisState()
+			capGenesis := captypes.DefaultGenesis()
+			evGenesis := evtypes.DefaultGenesisState()
 
 			ibcTransferGenesis.Params.ReceiveEnabled = false
 			ibcTransferGenesis.Params.SendEnabled = false
@@ -465,6 +469,8 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 			newGenState[distrtypes.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(&distrGenesis)
 			newGenState[ibcxfertypes.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(ibcTransferGenesis)
 			newGenState[host.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(ibcCoreGenesis)
+			newGenState[captypes.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(capGenesis)
+			newGenState[evtypes.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(evGenesis)
 
 			genDoc.AppState, err = json.Marshal(newGenState)
 			if err != nil {

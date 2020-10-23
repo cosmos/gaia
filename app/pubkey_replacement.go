@@ -43,6 +43,10 @@ func loadKeydataFromFile(clientCtx client.Context, replacementrJSON string, genD
 
 	err = json.Unmarshal(jsonReplacementBlob, &replacementKeys)
 
+	if err != nil {
+		log.Fatal("Could not unmarshal replacement keys ")
+	}
+
 	var state types.AppMap
 	if err := json.Unmarshal(genDoc.AppState, &state); err != nil {
 		log.Fatal(errors.Wrap(err, "failed to JSON unmarshal initial genesis state"))
@@ -59,6 +63,7 @@ func loadKeydataFromFile(clientCtx client.Context, replacementrJSON string, genD
 			toReplaceVal := val.ToTmValidator()
 
 			consPubKey, err := sdk.GetPubKeyFromBech32(sdk.Bech32PubKeyTypeConsPub, replacement.ConsensusPubkey)
+
 			if err != nil {
 				log.Fatal(fmt.Errorf("failed to decode key:%s %w", consPubKey, err))
 			}
@@ -84,7 +89,7 @@ func loadKeydataFromFile(clientCtx client.Context, replacementrJSON string, genD
 	genDoc.AppState, err = json.Marshal(state)
 
 	if err != nil {
-		log.Fatal("Could not App State")
+		log.Fatal("Could not marshal App State")
 	}
 	return genDoc
 

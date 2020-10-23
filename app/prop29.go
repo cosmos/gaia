@@ -331,6 +331,7 @@ func verifyBitcoinSignature(sig, msg, addr string) {
 const flagGenesisTime = "genesis-time"
 const flagInitialHeight = "initial-height"
 const flagReplacementKeys = "replacement-cons-keys"
+const flagNoProp29 = "no-prop-29"
 
 // MigrateGenesisCmd returns a command to execute genesis state migration.
 func MigrateGenesisCmd() *cobra.Command {
@@ -401,60 +402,69 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 			// TODO: handler error from migrationFunc call
 			newGenState = migrationFunc(newGenState, clientCtx)
 
-			var bankGenesis bank.GenesisState
+			noProp29, _ := cmd.Flags().GetBool(flagNoProp29)
 
-			clientCtx.JSONMarshaler.MustUnmarshalJSON(newGenState[bank.ModuleName], &bankGenesis)
+			if !noProp29 {
 
-			fundRecovery := validateFundRecovery()
+				var bankGenesis bank.GenesisState
 
-			recoveryAccounting := sdk.NewInt64Coin("uatom", 0)
+				clientCtx.JSONMarshaler.MustUnmarshalJSON(newGenState[bank.ModuleName], &bankGenesis)
 
-			//Set All Source Addresses to Zero and accumulate the total funds being moved
-			for i, balance := range bankGenesis.Balances {
-				_, isSourceAddress := fundRecovery.IsSourceAddress(balance.Address)
-				if isSourceAddress {
-					if len(balance.Coins) > 1 {
-						log.Fatal("Expected all balances to contain only 1 denom during the migration")
+				fundRecovery := validateFundRecovery()
+
+				recoveryAccounting := sdk.NewInt64Coin("uatom", 0)
+
+				//Set All Source Addresses to Zero and accumulate the total funds being moved
+				for i, balance := range bankGenesis.Balances {
+					_, isSourceAddress := fundRecovery.IsSourceAddress(balance.Address)
+					if isSourceAddress {
+						if len(balance.Coins) > 1 {
+							log.Fatal("Expected all balances to contain only 1 denom during the migration")
+						}
+						// Accumulate all the coins removed from the balances
+						recoveryAccounting = recoveryAccounting.Add(balance.Coins[0])
+						// Zero out the Balance
+						bankGenesis.Balances[i].Coins[0] = sdk.NewInt64Coin("uatom", 0)
+
 					}
-					// Accumulate all the coins removed from the balances
-					recoveryAccounting = recoveryAccounting.Add(balance.Coins[0])
-					// Zero out the Balance
-					bankGenesis.Balances[i].Coins[0] = sdk.NewInt64Coin("uatom", 0)
-
-				}
-			}
-
-			for i, balance := range bankGenesis.Balances {
-				index, isDestAddress := fundRecovery.IsDestAddress(balance.Address)
-				if isDestAddress {
-					recoveryAccounting = recoveryAccounting.Sub(fundRecovery[index].destBalance)
-					bankGenesis.Balances[i].Coins = bankGenesis.Balances[i].Coins.Add(fundRecovery[index].destBalance)
-					fundRecovery[index].destBalance = sdk.NewInt64Coin("uatom", 0)
 				}
 
-			}
+				for i, balance := range bankGenesis.Balances {
+					index, isDestAddress := fundRecovery.IsDestAddress(balance.Address)
+					if isDestAddress {
+						recoveryAccounting = recoveryAccounting.Sub(fundRecovery[index].destBalance)
+						bankGenesis.Balances[i].Coins = bankGenesis.Balances[i].Coins.Add(fundRecovery[index].destBalance)
+						fundRecovery[index].destBalance = sdk.NewInt64Coin("uatom", 0)
+					}
 
-			bankGenesis.Balances = append(bankGenesis.Balances, fundRecovery.GetRemainingBalances()...)
-
-			for _, balance := range fundRecovery.GetRemainingBalances() {
-				recoveryAccounting = recoveryAccounting.Sub(balance.Coins[0])
-			}
-
-			distModuleAccount := authtypes.NewModuleAddress(distrtypes.ModuleName)
-
-			var distrGenesis distrtypes.GenesisState
-
-			clientCtx.JSONMarshaler.MustUnmarshalJSON(newGenState[distrtypes.ModuleName], &distrGenesis)
-
-			// Add the remaining ATOMs to the fee pool by adding them to distribution modules
-			for i, balance := range bankGenesis.Balances {
-				if distModuleAccount.String() == balance.Address {
-					bankGenesis.Balances[i].Coins = bankGenesis.Balances[i].Coins.Add(recoveryAccounting)
-
-					distrGenesis.FeePool.CommunityPool = distrGenesis.FeePool.CommunityPool.Add(sdk.NewDecCoinFromCoin(recoveryAccounting))
-
-					recoveryAccounting = sdk.NewInt64Coin("uatom", 0)
 				}
+
+				bankGenesis.Balances = append(bankGenesis.Balances, fundRecovery.GetRemainingBalances()...)
+
+				for _, balance := range fundRecovery.GetRemainingBalances() {
+					recoveryAccounting = recoveryAccounting.Sub(balance.Coins[0])
+				}
+
+				distModuleAccount := authtypes.NewModuleAddress(distrtypes.ModuleName)
+
+				var distrGenesis distrtypes.GenesisState
+
+				clientCtx.JSONMarshaler.MustUnmarshalJSON(newGenState[distrtypes.ModuleName], &distrGenesis)
+
+				// Add the remaining ATOMs to the fee pool by adding them to distribution modules
+				for i, balance := range bankGenesis.Balances {
+					if distModuleAccount.String() == balance.Address {
+						bankGenesis.Balances[i].Coins = bankGenesis.Balances[i].Coins.Add(recoveryAccounting)
+
+						distrGenesis.FeePool.CommunityPool = distrGenesis.FeePool.CommunityPool.Add(sdk.NewDecCoinFromCoin(recoveryAccounting))
+
+						recoveryAccounting = sdk.NewInt64Coin("uatom", 0)
+					}
+				}
+
+				newGenState[bank.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(&bankGenesis)
+				newGenState[distrtypes.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(&distrGenesis)
+
 			}
 
 			ibcTransferGenesis := ibcxfertypes.DefaultGenesisState()
@@ -465,8 +475,6 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 			ibcTransferGenesis.Params.ReceiveEnabled = false
 			ibcTransferGenesis.Params.SendEnabled = false
 
-			newGenState[bank.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(&bankGenesis)
-			newGenState[distrtypes.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(&distrGenesis)
 			newGenState[ibcxfertypes.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(ibcTransferGenesis)
 			newGenState[host.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(ibcCoreGenesis)
 			newGenState[captypes.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(capGenesis)
@@ -520,9 +528,10 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 	}
 
 	cmd.Flags().String(flagGenesisTime, "", "override genesis_time with this flag")
-	cmd.Flags().String(flagInitialHeight, "", "Set the starting height for the chain")
+	cmd.Flags().Int(flagInitialHeight, 0, "Set the starting height for the chain")
 	cmd.Flags().String(flagReplacementKeys, "", "Proviide a JSON file to replace the consensus keys of validators")
 	cmd.Flags().String(flags.FlagChainID, "", "override chain_id with this flag")
+	cmd.Flags().Bool(flagNoProp29, false, "Do not implement fund recovery from prop29")
 
 	return cmd
 }

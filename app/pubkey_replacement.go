@@ -7,6 +7,7 @@ import (
 	"log"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil/types"
 	slashing "github.com/cosmos/cosmos-sdk/x/slashing/types"
@@ -63,7 +64,10 @@ func loadKeydataFromFile(clientCtx client.Context, replacementrJSON string, genD
 		idx, replacement := replacementKeys.isReplacedValidator(val.OperatorAddress)
 
 		if idx != -1 {
-			toReplaceVal := val.ToTmValidator()
+			toReplaceVal, err := val.ToTmValidator()
+			if err != nil {
+				log.Fatal(fmt.Errorf("failed to replace validator:%s %w", val.OperatorAddress, err))
+			}
 
 			consPubKey, err := sdk.GetPubKeyFromBech32(sdk.Bech32PubKeyTypeConsPub, replacement.ConsensusPubkey)
 
@@ -71,9 +75,15 @@ func loadKeydataFromFile(clientCtx client.Context, replacementrJSON string, genD
 				log.Fatal(fmt.Errorf("failed to decode key:%s %w", consPubKey, err))
 			}
 
-			val.ConsensusPubkey = sdk.MustBech32ifyPubKey(sdk.Bech32PubKeyTypeConsPub, consPubKey)
+			val.ConsensusPubkey, err = codectypes.PackAny(consPubKey)
+			if err != nil {
+				log.Fatal("failed to pack replacement pub key")
+			}
 
-			replaceVal := val.ToTmValidator()
+			replaceVal, err := val.ToTmValidator()
+			if err != nil {
+				log.Fatal(fmt.Errorf("failed to replace validator:%s %w", val.OperatorAddress, err))
+			}
 
 			toReplaceValConsAddress, _ := sdk.ConsAddressFromHex(toReplaceVal.Address.String())
 			replaceValConsAddress, _ := sdk.ConsAddressFromHex(replaceVal.Address.String())

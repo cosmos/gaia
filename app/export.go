@@ -35,7 +35,10 @@ func (app *GaiaApp) ExportAppStateAndValidators(
 		return servertypes.ExportedApp{}, err
 	}
 
-	validators := staking.WriteValidators(ctx, app.StakingKeeper)
+	validators, err := staking.WriteValidators(ctx, app.StakingKeeper)
+	if err != nil {
+		panic(err)
+	}
 	return servertypes.ExportedApp{
 		AppState:        appState,
 		Validators:      validators,
@@ -174,7 +177,10 @@ func (app *GaiaApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs [
 
 	iter.Close()
 
-	_ = app.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
+	_, err := app.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
+	if err != nil {
+		panic(err)
+	}
 
 	/* Handle slashing state. */
 

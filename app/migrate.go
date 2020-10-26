@@ -13,6 +13,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
+	auth "github.com/cosmos/cosmos-sdk/x/auth/types"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/types"
 	captypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution/types"
@@ -114,10 +115,14 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 
 				clientCtx.JSONMarshaler.MustUnmarshalJSON(newGenState[distr.ModuleName], &distrGenesis)
 
-				bankGenesis, distrGenesis = Prop29Migration(&bankGenesis, &distrGenesis)
+				var authGenesis auth.GenesisState
+				clientCtx.JSONMarshaler.MustUnmarshalJSON(newGenState[auth.ModuleName], &authGenesis)
+
+				authGenesis, bankGenesis, distrGenesis = Prop29Migration(&authGenesis, &bankGenesis, &distrGenesis)
 
 				newGenState[bank.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(&bankGenesis)
 				newGenState[distr.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(&distrGenesis)
+				newGenState[auth.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(&authGenesis)
 
 			}
 

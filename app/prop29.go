@@ -16,6 +16,7 @@ import (
 	"github.com/btcsuite/btcd/wire"
 	"github.com/btcsuite/btcutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	auth "github.com/cosmos/cosmos-sdk/x/auth/types"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -53,6 +54,17 @@ func (r *recoveryMessages) GetRemainingBalances() (balances []bank.Balance) {
 				Address: m.destAddress.String(),
 				Coins:   []sdk.Coin{m.destBalance},
 			})
+		}
+
+	}
+	return
+}
+
+func (r *recoveryMessages) GetRemainingAccounts() (addresses []sdk.Address) {
+	zeroBalance := sdk.NewInt64Coin("uatom", 0)
+	for _, m := range *r {
+		if m.destBalance != zeroBalance {
+			addresses = append(addresses, m.destAddress)
 		}
 
 	}
@@ -310,7 +322,7 @@ func verifyBitcoinSignature(sig, msg, addr string) {
 
 }
 
-func Prop29Migration(bankGenesis *bank.GenesisState, distrGenesis *distr.GenesisState) (bank.GenesisState, distr.GenesisState) {
+func Prop29Migration(authGenesis *auth.GenesisState, bankGenesis *bank.GenesisState, distrGenesis *distr.GenesisState) (auth.GenesisState, bank.GenesisState, distr.GenesisState) {
 
 	fundRecovery := validateFundRecovery()
 
@@ -346,7 +358,24 @@ func Prop29Migration(bankGenesis *bank.GenesisState, distrGenesis *distr.Genesis
 
 	bankGenesis.Balances = append(bankGenesis.Balances, fundRecovery.GetRemainingBalances()...)
 
+	accs, err := auth.UnpackAccounts(authGenesis.Accounts)
+	if err != nil {
+		log.Fatal("Could not unpack genesis account")
+	}
+
+	for _, addr := range fundRecovery.GetRemainingAccounts() {
+		recoveryAccount := auth.NewBaseAccount(sdk.AccAddress(addr.Bytes()), nil, 0, 0)
+
+		accs = append(accs, recoveryAccount)
+
+	}
+
+	genAccs, err := authtypes.PackAccounts(accs)
+
+	authGenesis.Accounts = genAccs
+
 	for _, balance := range fundRecovery.GetRemainingBalances() {
+
 		recoveryAccounting = recoveryAccounting.Sub(balance.Coins[0])
 	}
 
@@ -361,6 +390,6 @@ func Prop29Migration(bankGenesis *bank.GenesisState, distrGenesis *distr.Genesis
 		}
 	}
 
-	return *bankGenesis, *distrGenesis
+	return *authGenesis, *bankGenesis, *distrGenesis
 
 }

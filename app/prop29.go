@@ -49,7 +49,7 @@ func (r *recoveryMessages) IsDestAddress(addr string) (int, bool) {
 func (r *recoveryMessages) GetRemainingBalances() (balances []bank.Balance) {
 	zeroBalance := sdk.NewInt64Coin("uatom", 0)
 	for _, m := range *r {
-		if m.destBalance != zeroBalance {
+		if !m.destBalance.IsEqual(zeroBalance) {
 			balances = append(balances, bank.Balance{
 				Address: m.destAddress.String(),
 				Coins:   []sdk.Coin{m.destBalance},
@@ -63,7 +63,7 @@ func (r *recoveryMessages) GetRemainingBalances() (balances []bank.Balance) {
 func (r *recoveryMessages) GetRemainingAccounts() (addresses []sdk.Address) {
 	zeroBalance := sdk.NewInt64Coin("uatom", 0)
 	for _, m := range *r {
-		if m.destBalance != zeroBalance {
+		if !m.destBalance.IsEqual(zeroBalance) {
 			addresses = append(addresses, m.destAddress)
 		}
 
@@ -328,6 +328,8 @@ func Prop29Migration(authGenesis *auth.GenesisState, bankGenesis *bank.GenesisSt
 
 	recoveryAccounting := sdk.NewInt64Coin("uatom", 0)
 
+	emptyCoins := []sdk.Coin{}
+
 	distModuleAccount := authtypes.NewModuleAddress(distr.ModuleName)
 
 	//Set All Source Addresses to Zero and accumulate the total funds being moved
@@ -340,8 +342,7 @@ func Prop29Migration(authGenesis *auth.GenesisState, bankGenesis *bank.GenesisSt
 			// Accumulate all the coins removed from the balances
 			recoveryAccounting = recoveryAccounting.Add(balance.Coins[0])
 			// Zero out the Balance
-			bankGenesis.Balances[i].Coins[0] = sdk.NewInt64Coin("uatom", 0)
-
+			bankGenesis.Balances[i].Coins = emptyCoins
 		}
 
 	}
@@ -353,9 +354,7 @@ func Prop29Migration(authGenesis *auth.GenesisState, bankGenesis *bank.GenesisSt
 			bankGenesis.Balances[i].Coins = bankGenesis.Balances[i].Coins.Add(fundRecovery[index].destBalance)
 			fundRecovery[index].destBalance = sdk.NewInt64Coin("uatom", 0)
 		}
-
 	}
-
 	bankGenesis.Balances = append(bankGenesis.Balances, fundRecovery.GetRemainingBalances()...)
 
 	accs, err := auth.UnpackAccounts(authGenesis.Accounts)
@@ -375,7 +374,6 @@ func Prop29Migration(authGenesis *auth.GenesisState, bankGenesis *bank.GenesisSt
 	authGenesis.Accounts = genAccs
 
 	for _, balance := range fundRecovery.GetRemainingBalances() {
-
 		recoveryAccounting = recoveryAccounting.Sub(balance.Coins[0])
 	}
 

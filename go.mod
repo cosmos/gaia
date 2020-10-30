@@ -5,7 +5,7 @@ go 1.14
 require (
 	github.com/btcsuite/btcd v0.21.0-beta
 	github.com/btcsuite/btcutil v1.0.2
-	github.com/cosmos/cosmos-sdk v0.34.4-0.20201030152712-bd6c16b4628c
+	github.com/cosmos/cosmos-sdk v0.34.4-0.20201030193545-8e234bc4a5ad
 	github.com/ethereum/go-ethereum v1.9.22
 	github.com/gorilla/mux v1.8.0
 	github.com/pkg/errors v0.9.1

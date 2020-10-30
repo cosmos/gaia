@@ -40,7 +40,7 @@ func profile() {
 	}
 	pprof.StartCPUProfile(f)
 
-	timer = time.NewTimer(35 * time.Minute)
+	timer = time.NewTimer(13 * time.Minute)
 	<-timer.C
 	pprof.StopCPUProfile()
 	f.Close()

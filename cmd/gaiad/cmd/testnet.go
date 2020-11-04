@@ -39,7 +39,6 @@ var (
 	flagNumValidators     = "v"
 	flagOutputDir         = "output-dir"
 	flagNodeDaemonHome    = "node-daemon-home"
-	flagNodeCLIHome       = "node-cli-home"
 	flagStartingIPAddress = "starting-ip-address"
 )
 
@@ -50,9 +49,11 @@ func testnetCmd(mbm module.BasicManager, genBalIterator banktypes.GenesisBalance
 		Short: "Initialize files for a simapp testnet",
 		Long: `testnet will create "v" number of directories and populate each with
 necessary files (private validator, genesis, config, etc.).
+
 Note, strict routability for addresses is turned off in the config file.
+
 Example:
-	gaiad testnet --v 4 --output-dir ./output --starting-ip-address 192.168.10.2
+	simd testnet --v 4 --output-dir ./output --starting-ip-address 192.168.10.2
 	`,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
@@ -60,50 +61,19 @@ Example:
 			serverCtx := server.GetServerContextFromCmd(cmd)
 			config := serverCtx.Config
 
-			outputDir, err := cmd.Flags().GetString(flagOutputDir)
-			if err != nil {
-				return err
-			}
-			keyringBackend, err := cmd.Flags().GetString(flags.FlagKeyringBackend)
-			if err != nil {
-				return err
-			}
-			chainID, err := cmd.Flags().GetString(flags.FlagChainID)
-			if err != nil {
-				return err
-			}
-			minGasPrices, err := cmd.Flags().GetString(server.FlagMinGasPrices)
-			if err != nil {
-				return err
-			}
-			nodeDirPrefix, err := cmd.Flags().GetString(flagNodeDirPrefix)
-			if err != nil {
-				return err
-			}
-			nodeDaemonHome, err := cmd.Flags().GetString(flagNodeDaemonHome)
-			if err != nil {
-				return err
-			}
-			nodeCLIHome, err := cmd.Flags().GetString(flagNodeCLIHome)
-			if err != nil {
-				return err
-			}
-			startingIPAddress, err := cmd.Flags().GetString(flagStartingIPAddress)
-			if err != nil {
-				return err
-			}
-			numValidators, err := cmd.Flags().GetInt(flagNumValidators)
-			if err != nil {
-				return err
-			}
-			algo, err := cmd.Flags().GetString(flags.FlagKeyAlgorithm)
-			if err != nil {
-				return err
-			}
+			outputDir, _ := cmd.Flags().GetString(flagOutputDir)
+			keyringBackend, _ := cmd.Flags().GetString(flags.FlagKeyringBackend)
+			chainID, _ := cmd.Flags().GetString(flags.FlagChainID)
+			minGasPrices, _ := cmd.Flags().GetString(server.FlagMinGasPrices)
+			nodeDirPrefix, _ := cmd.Flags().GetString(flagNodeDirPrefix)
+			nodeDaemonHome, _ := cmd.Flags().GetString(flagNodeDaemonHome)
+			startingIPAddress, _ := cmd.Flags().GetString(flagStartingIPAddress)
+			numValidators, _ := cmd.Flags().GetInt(flagNumValidators)
+			algo, _ := cmd.Flags().GetString(flags.FlagKeyAlgorithm)
 
 			return InitTestnet(
 				clientCtx, cmd, config, mbm, genBalIterator, outputDir, chainID, minGasPrices,
-				nodeDirPrefix, nodeDaemonHome, nodeCLIHome, startingIPAddress, keyringBackend, algo, numValidators,
+				nodeDirPrefix, nodeDaemonHome, startingIPAddress, keyringBackend, algo, numValidators,
 			)
 		},
 	}
@@ -111,8 +81,7 @@ Example:
 	cmd.Flags().Int(flagNumValidators, 4, "Number of validators to initialize the testnet with")
 	cmd.Flags().StringP(flagOutputDir, "o", "./mytestnet", "Directory to store initialization data for the testnet")
 	cmd.Flags().String(flagNodeDirPrefix, "node", "Prefix the directory name for each node with (node results in node0, node1, ...)")
-	cmd.Flags().String(flagNodeDaemonHome, "gaiad", "Home directory of the node's daemon configuration")
-	cmd.Flags().String(flagNodeCLIHome, "gaiad", "Home directory of the node's cli configuration")
+	cmd.Flags().String(flagNodeDaemonHome, "simd", "Home directory of the node's daemon configuration")
 	cmd.Flags().String(flagStartingIPAddress, "192.168.0.1", "Starting IP address (192.168.0.1 results in persistent peers list ID0@192.168.0.1:46656, ID1@192.168.0.2:46656, ...)")
 	cmd.Flags().String(flags.FlagChainID, "", "genesis file chain-id, if left blank will be randomly created")
 	cmd.Flags().String(server.FlagMinGasPrices, fmt.Sprintf("0.000006%s", sdk.DefaultBondDenom), "Minimum gas prices to accept for transactions; All fees in a tx must meet this minimum (e.g. 0.01photino,0.001stake)")
@@ -136,7 +105,6 @@ func InitTestnet(
 	minGasPrices,
 	nodeDirPrefix,
 	nodeDaemonHome,
-	nodeCLIHome,
 	startingIPAddress,
 	keyringBackend,
 	algoStr string,
@@ -159,9 +127,9 @@ func InitTestnet(
 	simappConfig.Telemetry.GlobalLabels = [][]string{{"chain_id", chainID}}
 
 	var (
-		genAccounts = []authtypes.GenesisAccount{}
-		genBalances = []banktypes.Balance{}
-		genFiles    = []string{}
+		genAccounts []authtypes.GenesisAccount
+		genBalances []banktypes.Balance
+		genFiles    []string
 	)
 
 	inBuf := bufio.NewReader(cmd.InOrStdin())
@@ -169,18 +137,12 @@ func InitTestnet(
 	for i := 0; i < numValidators; i++ {
 		nodeDirName := fmt.Sprintf("%s%d", nodeDirPrefix, i)
 		nodeDir := filepath.Join(outputDir, nodeDirName, nodeDaemonHome)
-		clientDir := filepath.Join(outputDir, nodeDirName, nodeCLIHome)
 		gentxsDir := filepath.Join(outputDir, "gentxs")
 
 		nodeConfig.SetRoot(nodeDir)
 		nodeConfig.RPC.ListenAddress = "tcp://0.0.0.0:26657"
 
 		if err := os.MkdirAll(filepath.Join(nodeDir, "config"), nodeDirPerm); err != nil {
-			_ = os.RemoveAll(outputDir)
-			return err
-		}
-
-		if err := os.MkdirAll(clientDir, nodeDirPerm); err != nil {
 			_ = os.RemoveAll(outputDir)
 			return err
 		}
@@ -202,7 +164,7 @@ func InitTestnet(
 		memo := fmt.Sprintf("%s@%s:26656", nodeIDs[i], ip)
 		genFiles = append(genFiles, nodeConfig.GenesisFile())
 
-		kb, err := keyring.New(sdk.KeyringServiceName(), keyringBackend, clientDir, inBuf)
+		kb, err := keyring.New(sdk.KeyringServiceName(), keyringBackend, nodeDir, inBuf)
 		if err != nil {
 			return err
 		}
@@ -227,7 +189,7 @@ func InitTestnet(
 		}
 
 		// save private key seed words
-		if err := writeFile(fmt.Sprintf("%v.json", "key_seed"), clientDir, cliPrint); err != nil {
+		if err := writeFile(fmt.Sprintf("%v.json", "key_seed"), nodeDir, cliPrint); err != nil {
 			return err
 		}
 
@@ -242,7 +204,7 @@ func InitTestnet(
 		genAccounts = append(genAccounts, authtypes.NewBaseAccount(addr, nil, 0, 0))
 
 		valTokens := sdk.TokensFromConsensusPower(100)
-		createValMsg := stakingtypes.NewMsgCreateValidator(
+		createValMsg, err := stakingtypes.NewMsgCreateValidator(
 			sdk.ValAddress(addr),
 			valPubKeys[i],
 			sdk.NewCoin(sdk.DefaultBondDenom, valTokens),
@@ -250,6 +212,9 @@ func InitTestnet(
 			stakingtypes.NewCommissionRates(sdk.OneDec(), sdk.OneDec(), sdk.OneDec()),
 			sdk.OneInt(),
 		)
+		if err != nil {
+			return err
+		}
 
 		txBuilder := clientCtx.TxConfig.NewTxBuilder()
 		if err := txBuilder.SetMsgs(createValMsg); err != nil {

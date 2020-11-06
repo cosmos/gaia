@@ -84,7 +84,7 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	gaiaappparams "github.com/cosmos/gaia/app/params"
 
-	// This is for the swagger file for legacy support
+	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
 )
 

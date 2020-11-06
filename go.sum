@@ -149,10 +149,13 @@ github.com/cosmos/cosmos-sdk v0.40.0-rc1 h1:DbM2vbmx9soER38YkdLB5g9d+YhaDlKAl2Pn
 github.com/cosmos/cosmos-sdk v0.40.0-rc1/go.mod h1:4wGruNUDrenXKRl/F7ujW29lTv3C+6/TDWs3QfZZN2Y=
 github.com/cosmos/cosmos-sdk v0.40.0-rc2 h1:6OkkAZ9Qo/db7WUppxRMPVCV1r9MrI0HOYQ9COt138s=
 github.com/cosmos/cosmos-sdk v0.40.0-rc2/go.mod h1:KvZzKUEc7KrMiiIeU0zKPMMwuxxn+R0Leo8vBSDgOeQ=
+github.com/cosmos/cosmos-sdk v0.40.0-rc3 h1:sS9BZ82dOxXiZPZdfrzSniEAzLLN0oTP5lFVyjnq2x4=
+github.com/cosmos/cosmos-sdk v0.40.0-rc3/go.mod h1:eKgbkQO4FEvC+a1+eyRuL7UgluGK1ad4PufPTpQc6ZA=
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d h1:49RLWk1j44Xu4fjHb6JFYmeUnDORVwHNkDxaQ0ctCVU=
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d/go.mod h1:tSxLoYXyBmiFeKpvmq4dzayMdCjCnu8uqmCysIGBT2Y=
 github.com/cosmos/iavl v0.15.0-rc3 h1:rSm60IFfDCD9qDfvXKEmaJhcv0rB5uCbVlBDKsynxqw=
 github.com/cosmos/iavl v0.15.0-rc3/go.mod h1:rQ2zK/LuivThMjve3Yr6VkjvCqCXl+fgHCY7quiUA68=
+github.com/cosmos/iavl v0.15.0-rc3.0.20201009144442-230e9bdf52cd/go.mod h1:3xOIaNNX19p0QrX0VqWa6voPRoJRGGYtny+DH8NEPvE=
 github.com/cosmos/iavl v0.15.0-rc4 h1:P1wmET7BueqCzfxsn+BzVkDWDLY9ij2JNwkbIdM7RG8=
 github.com/cosmos/iavl v0.15.0-rc4/go.mod h1:5CsecJdh44Uj4vZ6WSPeWq84hNW5BwRI36ZsAbfJvRw=
 github.com/cosmos/ledger-cosmos-go v0.11.1 h1:9JIYsGnXP613pb2vPjFeMMjBI5lEDsEaF6oYorTy6J4=
@@ -682,6 +685,8 @@ github.com/tendermint/tendermint v0.34.0-rc4.0.20201005135527-d7d0ffea13c6 h1:gq
 github.com/tendermint/tendermint v0.34.0-rc4.0.20201005135527-d7d0ffea13c6/go.mod h1:BSXqR6vWbOecet726v66qVwSkFDLfEeBrq+EhkKbij4=
 github.com/tendermint/tendermint v0.34.0-rc5 h1:2bnQfWyOMfTCbol5pwB8CgM2nxi6/Kz6zqlS6Udm/Cg=
 github.com/tendermint/tendermint v0.34.0-rc5/go.mod h1:yotsojf2C1QBOw4dZrTcxbyxmPUrT4hNuOQWX9XUwB4=
+github.com/tendermint/tendermint v0.34.0-rc6 h1:SVuKGvvE22KxfuK8QUHctUrmOWJsncZSYXIYtcnoKN0=
+github.com/tendermint/tendermint v0.34.0-rc6/go.mod h1:ugzyZO5foutZImv0Iyx/gOFCX6mjJTgbLHTwi17VDVg=
 github.com/tendermint/tm-db v0.6.1 h1:w3X87itMPXopcRPlFiqspEKhw4FXihPk2rnFFkP0zGk=
 github.com/tendermint/tm-db v0.6.1/go.mod h1:m3x9kRP4UFd7JODJL0yBAZqE7wTw+S37uAE90cTx7OA=
 github.com/tendermint/tm-db v0.6.2 h1:DOn8jwCdjJblrCFJbtonEIPD1IuJWpbRUUdR8GWE4RM=

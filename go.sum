@@ -143,6 +143,7 @@ github.com/cosmos/cosmos-sdk v0.34.4-0.20201007125611-a87d6ea3ab6b h1:z4S0K8Ju4+
 github.com/cosmos/cosmos-sdk v0.34.4-0.20201007125611-a87d6ea3ab6b/go.mod h1:bLowJxl+f0nyM10MQbRIyBdXqC7yb5GErM/qsmSbz3M=
 github.com/cosmos/cosmos-sdk v0.34.4-0.20201009191330-c7d926da2dd7 h1:qBwGvuUaWx5q84BttzQHCRcDlAmHh7QTFd2IclGaJz8=
 github.com/cosmos/cosmos-sdk v0.34.4-0.20201009191330-c7d926da2dd7/go.mod h1:YZcO00Tq/qqj4ncsfn+PobyTelsot7wEMGPpxEbEAT0=
+github.com/cosmos/cosmos-sdk v0.39.1 h1:vhjf9PZh9ph8btAj9aBpHoVITgVVjNBpM3x5Gl/Vwac=
 github.com/cosmos/cosmos-sdk v0.40.0-rc0 h1:GY+jzuVILZ7wlx5Zic2W0rWlo47fZgN048xV458sUAo=
 github.com/cosmos/cosmos-sdk v0.40.0-rc0/go.mod h1:YZcO00Tq/qqj4ncsfn+PobyTelsot7wEMGPpxEbEAT0=
 github.com/cosmos/cosmos-sdk v0.40.0-rc1 h1:DbM2vbmx9soER38YkdLB5g9d+YhaDlKAl2Pne5RLcEQ=
@@ -151,6 +152,8 @@ github.com/cosmos/cosmos-sdk v0.40.0-rc2 h1:6OkkAZ9Qo/db7WUppxRMPVCV1r9MrI0HOYQ9
 github.com/cosmos/cosmos-sdk v0.40.0-rc2/go.mod h1:KvZzKUEc7KrMiiIeU0zKPMMwuxxn+R0Leo8vBSDgOeQ=
 github.com/cosmos/cosmos-sdk v0.40.0-rc3 h1:sS9BZ82dOxXiZPZdfrzSniEAzLLN0oTP5lFVyjnq2x4=
 github.com/cosmos/cosmos-sdk v0.40.0-rc3/go.mod h1:eKgbkQO4FEvC+a1+eyRuL7UgluGK1ad4PufPTpQc6ZA=
+github.com/cosmos/cosmos-sdk v0.40.0-rc3.0.20201111080523-6d92028eb324 h1:vse7nVXT1e/C8Ffb6Y/l8vIfF0ipYlaC9KjM1MqeVl8=
+github.com/cosmos/cosmos-sdk v0.40.0-rc3.0.20201111080523-6d92028eb324/go.mod h1:eKgbkQO4FEvC+a1+eyRuL7UgluGK1ad4PufPTpQc6ZA=
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d h1:49RLWk1j44Xu4fjHb6JFYmeUnDORVwHNkDxaQ0ctCVU=
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d/go.mod h1:tSxLoYXyBmiFeKpvmq4dzayMdCjCnu8uqmCysIGBT2Y=
 github.com/cosmos/iavl v0.15.0-rc3 h1:rSm60IFfDCD9qDfvXKEmaJhcv0rB5uCbVlBDKsynxqw=

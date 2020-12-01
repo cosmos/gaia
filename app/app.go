@@ -184,11 +184,7 @@ type GaiaApp struct {
 }
 
 func init() {
-	userHomeDir, err := os.UserHomeDir()
-	if err != nil {
-		panic(err)
-	}
-
+	userHomeDir := os.ExpandEnv("$HOME")
 	DefaultNodeHome = filepath.Join(userHomeDir, ".gaia")
 }
 

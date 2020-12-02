@@ -11,6 +11,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil/types"
 	slashing "github.com/cosmos/cosmos-sdk/x/slashing/types"
+	teststaking "github.com/cosmos/cosmos-sdk/x/staking/teststaking"
 	staking "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/pkg/errors"
 	tmtypes "github.com/tendermint/tendermint/types"
@@ -64,7 +65,7 @@ func loadKeydataFromFile(clientCtx client.Context, replacementrJSON string, genD
 		idx, replacement := replacementKeys.isReplacedValidator(val.OperatorAddress)
 
 		if idx != -1 {
-			toReplaceVal, err := val.ToTmValidator()
+			toReplaceVal, err := teststaking.ToTmValidator(val)
 
 			if err != nil {
 				log.Fatal(fmt.Errorf("failed construnct a tendermint validator to replace from export:%s %w", val, err))
@@ -81,7 +82,7 @@ func loadKeydataFromFile(clientCtx client.Context, replacementrJSON string, genD
 				log.Fatal(fmt.Errorf("failed to decode key:%s %w", consPubKey, err))
 			}
 
-			replaceVal, err := val.ToTmValidator()
+			replaceVal, err := teststaking.ToTmValidator(val)
 
 			if err != nil {
 				log.Fatal(fmt.Errorf("failed construnct a tendermint validator to replace with from list:%s %w", val, err))

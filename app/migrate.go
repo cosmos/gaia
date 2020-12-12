@@ -23,6 +23,7 @@ import (
 	ibcxfertypes "github.com/cosmos/cosmos-sdk/x/ibc/applications/transfer/types"
 	host "github.com/cosmos/cosmos-sdk/x/ibc/core/24-host"
 	ibccoretypes "github.com/cosmos/cosmos-sdk/x/ibc/core/types"
+	staking "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	tmjson "github.com/tendermint/tendermint/libs/json"
@@ -126,6 +127,10 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 
 			}
 
+			var stakingGenesis staking.GenesisState
+
+			clientCtx.JSONMarshaler.MustUnmarshalJSON(newGenState[staking.ModuleName], &stakingGenesis)
+
 			ibcTransferGenesis := ibcxfertypes.DefaultGenesisState()
 			ibcCoreGenesis := ibccoretypes.DefaultGenesisState()
 			capGenesis := captypes.DefaultGenesis()
@@ -134,10 +139,13 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 			ibcTransferGenesis.Params.ReceiveEnabled = false
 			ibcTransferGenesis.Params.SendEnabled = false
 
+			stakingGenesis.Params.HistoricalEntries = 1000
+
 			newGenState[ibcxfertypes.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(ibcTransferGenesis)
 			newGenState[host.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(ibcCoreGenesis)
 			newGenState[captypes.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(capGenesis)
 			newGenState[evtypes.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(evGenesis)
+			newGenState[staking.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(&stakingGenesis)
 
 			genDoc.AppState, err = json.Marshal(newGenState)
 			if err != nil {

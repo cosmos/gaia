@@ -43,6 +43,8 @@ gaiad start --p2p.seeds ba3bacc714817218562f743178228f23678b2873@5.83.160.108:26
 # Check your node's status with gaiacli
 gaiacli status
 ```
+You'll want to include the seeds in future startups of your node, or add them to the `seeds` section in config.toml as a comma-separated list, as they appear above.
+
 
 Welcome to the Cosmos!
 

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec/types"
@@ -259,6 +260,12 @@ func NewGaiaApp(
 		app.GetSubspace(crisistypes.ModuleName), invCheckPeriod, app.BankKeeper, authtypes.FeeCollectorName,
 	)
 	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, keys[upgradetypes.StoreKey], appCodec, homePath)
+	// upgrade script will modify the unbonding period
+	app.UpgradeKeeper.SetUpgradeHandler("ibc-test", func(ctx sdk.Context, plan upgradetypes.Plan) {
+		params := stakingtypes.DefaultParams()
+		params.UnbondingTime = time.Hour * 24 * 7 * 4
+		app.StakingKeeper.SetParams(ctx, params)
+	})
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks

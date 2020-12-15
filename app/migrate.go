@@ -30,10 +30,12 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 )
 
-const flagGenesisTime = "genesis-time"
-const flagInitialHeight = "initial-height"
-const flagReplacementKeys = "replacement-cons-keys"
-const flagNoProp29 = "no-prop-29"
+const (
+	flagGenesisTime     = "genesis-time"
+	flagInitialHeight   = "initial-height"
+	flagReplacementKeys = "replacement-cons-keys"
+	flagNoProp29        = "no-prop-29"
+)
 
 // MigrateGenesisCmd returns a command to execute genesis state migration.
 func MigrateGenesisCmd() *cobra.Command {

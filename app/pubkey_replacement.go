@@ -13,6 +13,7 @@ import (
 	slashing "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	staking "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/pkg/errors"
+	cryptocodec "github.com/tendermint/tendermint/crypto/encoding"
 	tmtypes "github.com/tendermint/tendermint/types"
 )
 
@@ -64,11 +65,8 @@ func loadKeydataFromFile(clientCtx client.Context, replacementrJSON string, genD
 		idx, replacement := replacementKeys.isReplacedValidator(val.OperatorAddress)
 
 		if idx != -1 {
-			toReplaceVal, err := val.ToTmValidator()
 
-			if err != nil {
-				log.Fatal(fmt.Errorf("failed construnct a tendermint validator to replace from export:%s %w", val, err))
-			}
+			toReplaceValConsAddress, _ := val.GetConsAddr()
 
 			consPubKey, err := sdk.GetPubKeyFromBech32(sdk.Bech32PubKeyTypeConsPub, replacement.ConsensusPubkey)
 
@@ -81,14 +79,9 @@ func loadKeydataFromFile(clientCtx client.Context, replacementrJSON string, genD
 				log.Fatal(fmt.Errorf("failed to decode key:%s %w", consPubKey, err))
 			}
 
-			replaceVal, err := val.ToTmValidator()
-
-			if err != nil {
-				log.Fatal(fmt.Errorf("failed construnct a tendermint validator to replace with from list:%s %w", val, err))
-			}
-
-			toReplaceValConsAddress, _ := sdk.ConsAddressFromHex(toReplaceVal.Address.String())
-			replaceValConsAddress, _ := sdk.ConsAddressFromHex(replaceVal.Address.String())
+			replaceValConsAddress, _ := val.GetConsAddr()
+			protoReplaceValConsPubKey, _ := val.TmConsPublicKey()
+			replaceValConsPubKey, _ := cryptocodec.PubKeyFromProto(protoReplaceValConsPubKey)
 
 			for i, signingInfo := range slashingGenesis.SigningInfos {
 				if signingInfo.Address == toReplaceValConsAddress.String() {
@@ -104,9 +97,9 @@ func loadKeydataFromFile(clientCtx client.Context, replacementrJSON string, genD
 			}
 
 			for tmIdx, tmval := range genDoc.Validators {
-				if tmval.Address.String() == toReplaceVal.Address.String() {
-					genDoc.Validators[tmIdx].Address = replaceVal.Address
-					genDoc.Validators[tmIdx].PubKey = replaceVal.PubKey
+				if tmval.Address.String() == replaceValConsAddress.String() {
+					genDoc.Validators[tmIdx].Address = replaceValConsAddress.Bytes()
+					genDoc.Validators[tmIdx].PubKey = replaceValConsPubKey
 
 				}
 			}

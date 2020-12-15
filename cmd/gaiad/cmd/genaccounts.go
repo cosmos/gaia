@@ -70,7 +70,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 				addr = info.GetAddress()
 			}
 
-			coins, err := sdk.ParseCoins(args[1])
+			coins, err := sdk.ParseCoinsNormalized(args[1])
 			if err != nil {
 				return fmt.Errorf("failed to parse coins: %w", err)
 			}
@@ -88,7 +88,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 				return err
 			}
 
-			vestingAmt, err := sdk.ParseCoins(vestingAmtStr)
+			vestingAmt, err := sdk.ParseCoinsNormalized(vestingAmtStr)
 			if err != nil {
 				return fmt.Errorf("failed to parse vesting amount: %w", err)
 			}
@@ -182,6 +182,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 	}
 
 	cmd.Flags().String(flags.FlagHome, defaultNodeHome, "The application home directory")
+	cmd.Flags().String(flags.FlagKeyringBackend, flags.DefaultKeyringBackend, "Select keyring's backend (os|file|kwallet|pass|test)")
 	cmd.Flags().String(flagVestingAmt, "", "amount of coins for vesting accounts")
 	cmd.Flags().Int64(flagVestingStart, 0, "schedule start time (unix epoch) for vesting accounts")
 	cmd.Flags().Int64(flagVestingEnd, 0, "schedule end time (unix epoch) for vesting accounts")

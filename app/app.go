@@ -2,6 +2,7 @@ package app
 
 import (
 	"io"
+	stdlog "log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -19,6 +20,7 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server/api"
@@ -140,7 +142,7 @@ var (
 	_ servertypes.Application = (*GaiaApp)(nil)
 )
 
-// Gaia extends an ABCI application, but with most of its parameters exported.
+// GaiaApp extends an ABCI application, but with most of its parameters exported.
 // They are exported for convenience in creating helper functions, as object
 // capabilities aren't needed for testing.
 type GaiaApp struct {
@@ -184,12 +186,15 @@ type GaiaApp struct {
 }
 
 func init() {
-	userHomeDir := os.ExpandEnv("$HOME")
+	userHomeDir, err := os.UserHomeDir()
+	if err != nil {
+		stdlog.Println("Failed to get home dir %2", err)
+	}
+
 	DefaultNodeHome = filepath.Join(userHomeDir, ".gaia")
 }
 
-// NewGaia returns a reference to an initialized Gaia.
-// NewSimApp returns a reference to an initialized SimApp.
+// NewGaiaApp returns a reference to an initialized Gaia.
 func NewGaiaApp(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool, skipUpgradeHeights map[int64]bool,
 	homePath string, invCheckPeriod uint, encodingConfig gaiaappparams.EncodingConfig, appOpts servertypes.AppOptions, baseAppOptions ...func(*baseapp.BaseApp),
@@ -267,7 +272,7 @@ func NewGaiaApp(
 
 	// Create IBC Keeper
 	app.IBCKeeper = ibckeeper.NewKeeper(
-		appCodec, keys[ibchost.StoreKey], app.StakingKeeper, scopedIBCKeeper,
+		appCodec, keys[ibchost.StoreKey], app.GetSubspace(ibchost.ModuleName), app.StakingKeeper, scopedIBCKeeper,
 	)
 
 	// register the proposal types
@@ -534,13 +539,16 @@ func (app *GaiaApp) SimulationManager() *module.SimulationManager {
 func (app *GaiaApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig) {
 	clientCtx := apiSvr.ClientCtx
 	rpc.RegisterRoutes(clientCtx, apiSvr.Router)
+	// Register legacy tx routes.
 	authrest.RegisterTxRoutes(clientCtx, apiSvr.Router)
 	// Register new tx routes from grpc-gateway.
-	authtx.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCRouter)
+	authtx.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
+	// Register new tendermint queries routes from grpc-gateway.
+	tmservice.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
 	// Register legacy and grpc-gateway routes for all modules.
 	ModuleBasics.RegisterRESTRoutes(clientCtx, apiSvr.Router)
-	ModuleBasics.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCRouter)
+	ModuleBasics.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
 	// register swagger API from root so that other applications can override easily
 	if apiConfig.Swagger {
@@ -551,6 +559,11 @@ func (app *GaiaApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APICo
 // RegisterTxService implements the Application.RegisterTxService method.
 func (app *GaiaApp) RegisterTxService(clientCtx client.Context) {
 	authtx.RegisterTxService(app.BaseApp.GRPCQueryRouter(), clientCtx, app.BaseApp.Simulate, app.interfaceRegistry)
+}
+
+// RegisterTendermintService implements the Application.RegisterTendermintService method.
+func (app *GaiaApp) RegisterTendermintService(clientCtx client.Context) {
+	tmservice.RegisterTendermintService(app.BaseApp.GRPCQueryRouter(), clientCtx, app.interfaceRegistry)
 }
 
 // RegisterSwaggerAPI registers swagger route with API Server
@@ -586,6 +599,7 @@ func initParamsKeeper(appCodec codec.BinaryMarshaler, legacyAmino *codec.LegacyA
 	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govtypes.ParamKeyTable())
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
+	paramsKeeper.Subspace(ibchost.ModuleName)
 
 	return paramsKeeper
 }

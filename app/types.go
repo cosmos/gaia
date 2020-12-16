@@ -1,4 +1,4 @@
-package app
+package gaia
 
 import (
 	abci "github.com/tendermint/tendermint/abci/types"

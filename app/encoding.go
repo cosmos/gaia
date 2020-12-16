@@ -1,4 +1,4 @@
-package app
+package gaia
 
 import (
 	"github.com/cosmos/cosmos-sdk/std"

@@ -16,7 +16,7 @@ import (
 // SimAppChainID hardcoded chainID for simulation
 const (
 	DefaultGenTxGas = 1000000
-	SimAppChainID   = "simulation-app"
+	SimAppChainID   = "gaia-app"
 )
 
 // GenTx generates a signed mock transaction.

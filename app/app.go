@@ -1,4 +1,4 @@
-package app
+package gaia
 
 import (
 	"io"
@@ -424,8 +424,8 @@ func NewGaiaApp(
 }
 
 // MakeCodecs constructs the *std.Codec and *codec.LegacyAmino instances used by
-// simapp. It is useful for tests and clients who do not want to construct the
-// full simapp
+// Gaia. It is useful for tests and clients who do not want to construct the
+// full gaia application
 func MakeCodecs() (codec.Marshaler, *codec.LegacyAmino) {
 	config := MakeEncodingConfig()
 	return config.Marshaler, config.Amino
@@ -479,7 +479,7 @@ func (app *GaiaApp) BlockedAddrs() map[string]bool {
 	return blockedAddrs
 }
 
-// LegacyAmino returns SimApp's amino codec.
+// LegacyAmino returns GaiaApp's amino codec.
 //
 // NOTE: This is solely to be used for testing purposes as it may be desirable
 // for modules to register their own custom testing types.

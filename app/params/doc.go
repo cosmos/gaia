@@ -1,5 +1,5 @@
 /*
-Package params defines the simulation parameters in the simapp.
+Package params defines the simulation parameters in the gaia.
 
 It contains the default weights used for each transaction used on the module's
 simulation. These weights define the chance for a transaction to be simulated at

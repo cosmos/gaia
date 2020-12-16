@@ -15,7 +15,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	gaiaappparams "github.com/cosmos/gaia/app/params"
+	gaiaappparams "github.com/cosmos/gaia/v3/app/params"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 )
 

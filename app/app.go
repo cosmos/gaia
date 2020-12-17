@@ -264,6 +264,7 @@ func NewGaiaApp(
 	app.UpgradeKeeper.SetUpgradeHandler("ibc-test", func(ctx sdk.Context, plan upgradetypes.Plan) {
 		params := stakingtypes.DefaultParams()
 		params.UnbondingTime = time.Hour * 24 * 7 * 4
+		params.BondDenom = "ubrews"
 		app.StakingKeeper.SetParams(ctx, params)
 	})
 

@@ -78,10 +78,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: Build
     steps:
-      - name: Setup env for GO
-        run: |
-          echo "::add-path::$(go env GOPATH)/bin"
-        shell: bash
+      - uses: actions/setup-go@v2.1.3
+        with:
+          go-version: 1.15
       - uses: actions/checkout@v2
       - uses: technote-space/get-diff-action@v4
         with:

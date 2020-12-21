@@ -16,15 +16,16 @@ jobs:
   test-coverage-upload:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: technote-space/get-diff-action@v1
+      - uses: actions/setup-go@v2.1.3
         with:
-          SUFFIX_FILTER: |
+          go-version: 1.15
+      - uses: actions/checkout@v2
+      - uses: technote-space/get-diff-action@v4
+        with:
+          PATTERN: |
             .go
             .mod
             .sum
-          SET_ENV_NAME_INSERTIONS: 1
-          SET_ENV_NAME_LINES: 1
       - name: build
         run: |
           make build
@@ -52,18 +53,16 @@ jobs:
   integration-tests:
     runs-on: ubuntu-latest
     steps:
-      - name: Setup env for GO
-        run: echo "::add-path::$(go env GOPATH)/bin"
-        shell: bash
-      - uses: actions/checkout@v2
-      - uses: technote-space/get-diff-action@v1
+      - uses: actions/setup-go@v2.1.3
         with:
-          SUFFIX_FILTER: |
+          go-version: 1.15
+      - uses: actions/checkout@v2
+      - uses: technote-space/get-diff-action@v4
+        with:
+          PATTERN: |
             .go
             .mod
             .sum
-          SET_ENV_NAME_INSERTIONS: 1
-          SET_ENV_NAME_LINES: 1
       - name: Test CLI integration
         run: |
           make test-build

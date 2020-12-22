@@ -34,6 +34,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 # Changelog
 
 ## [Unreleased]
+* Updated readme.md to provide seeds to gaiad using a flag instead of config.toml
 
 ## [v2.0.14] - 2020-12-10
 

@@ -33,38 +33,18 @@ make install
 gaiad init yournodenamehere
 ```
 
-Add Seeds:
-
-```bash
-# Edit config.toml
-nano ~/.gaiad/config/config.toml
-```
-
-Scroll down to seeds in `config.toml`, and add some of these seeds as a comma-separated list:
-
-```toml
-ba3bacc714817218562f743178228f23678b2873@5.83.160.108:26656
-1e63e84945837b026f596ed8ae68708783d04ad4@51.75.145.123:26656
-d2d452e7c9c43fa5ef017552688de60a5c0053ee@34.245.217.163:26656
-dd36969b56c740bb40bb8badd4d4c6facc35dc24@206.189.115.41:26656
-a0aca8fb801c69653a290bd44872e8457f8b0982@47.99.180.54:26656
-27f8dd3bdbecbef7192291083706c156e523d8e0@3.122.248.21:26656
-aee0df1a660f301d456a0c2f805b372f7341e8ec@63.35.230.143:26656
-7d1f660b361d6286715c098a3a171e554e9642bb@34.254.205.37:26656
-fa105c2291ac4aa452552fa4835266300a8209e1@88.198.41.62:26656
-bd410d4564f7e0dd9a0eb16a64c337a059e11b80@47.103.35.130:26656
-```
-
 Download Genesis, Start your Node, Check your Node Status:
 
 ```bash
 # Download genesis.json
 wget -O $HOME/.gaiad/config/genesis.json https://raw.githubusercontent.com/cosmos/launch/master/genesis.json
-# Start Gaiad
-gaiad start
+# Start Gaiad and feed it seeds
+gaiad start --p2p.seeds ba3bacc714817218562f743178228f23678b2873@5.83.160.108:26656,1e63e84945837b026f596ed8ae68708783d04ad4@51.75.145.123:26656,d2d452e7c9c43fa5ef017552688de60a5c0053ee@34.245.217.163:26656,dd36969b56c740bb40bb8badd4d4c6facc35dc24@206.189.115.41:26656,a0aca8fb801c69653a290bd44872e8457f8b0982@47.99.180.54:26656,27f8dd3bdbecbef7192291083706c156e523d8e0@3.122.248.21:26656,aee0df1a660f301d456a0c2f805b372f7341e8ec@63.35.230.143:26656,7d1f660b361d6286715c098a3a171e554e9642bb@34.254.205.37:26656,fa105c2291ac4aa452552fa4835266300a8209e1@88.198.41.62:26656,bd410d4564f7e0dd9a0eb16a64c337a059e11b80@47.103.35.130:26656
 # Check your node's status with gaiacli
 gaiacli status
 ```
+You'll want to include the seeds in future startups of your node, or add them to the `seeds` section in config.toml as a comma-separated list, as they appear above.
+
 
 Welcome to the Cosmos!
 

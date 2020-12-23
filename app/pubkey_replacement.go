@@ -74,7 +74,7 @@ func loadKeydataFromFile(clientCtx client.Context, replacementrJSON string, genD
 				log.Fatal(fmt.Errorf("failed to decode key:%s %w", consPubKey, err))
 			}
 
-			val.ConsensusPubkey, err = codectypes.PackAny(consPubKey)
+			val.ConsensusPubkey, err = codectypes.NewAnyWithValue(consPubKey)
 			if err != nil {
 				log.Fatal(fmt.Errorf("failed to decode key:%s %w", consPubKey, err))
 			}

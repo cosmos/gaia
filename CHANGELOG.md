@@ -29,6 +29,10 @@ Types of changes (Stanzas):
 "Breaking" for breaking API changes.
 
 Ref: https://keepachangelog.com/en/1.0.0/
+
+Reminder:
+Update list of release links at the bottom of this md file.
+Otherwise release links aren't made into links.
 -->
 
 # Changelog
@@ -193,7 +197,11 @@ not rely on the `x/supply` keeper to get module account addresses for blacklisti
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v2.0.10...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v2.0.14...HEAD
+[v2.0.14]: https://github.com/cosmos/gaia/releases/tag/v2.0.14
+[v2.0.13]: https://github.com/cosmos/gaia/releases/tag/v2.0.13
+[v2.0.12]: https://github.com/cosmos/gaia/releases/tag/v2.0.12
+[v2.0.11]: https://github.com/cosmos/gaia/releases/tag/v2.0.11
 [v2.0.10]: https://github.com/cosmos/gaia/releases/tag/v2.0.10
 [v2.0.9]: https://github.com/cosmos/gaia/releases/tag/v2.0.9
 [v2.0.8]: https://github.com/cosmos/gaia/releases/tag/v2.0.8

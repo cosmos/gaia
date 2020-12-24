@@ -15,7 +15,6 @@ This assumes that you're running Linux or MacOS and have installed [Go 1.14+](ht
 
 * build and install Gaia
 * allow you to name your node
-* add seeds to your config file
 * download genesis state
 * start your node
 * use gaiacli to check the status of your node.
@@ -43,6 +42,7 @@ gaiad start --p2p.seeds ba3bacc714817218562f743178228f23678b2873@5.83.160.108:26
 # Check your node's status with gaiacli
 gaiacli status
 ```
+
 You'll want to include the seeds in future startups of your node, or add them to the `seeds` section in config.toml as a comma-separated list, as they appear above.
 
 

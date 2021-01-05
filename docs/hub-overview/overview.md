@@ -36,6 +36,7 @@ These community-maintained web and mobile wallets allow you to store & transfer 
 * [Qbao Wallet](https://qbao.fund/) - Android, iOS
 * [Trust Wallet](https://trustwallet.com/) Android, iOS
 * [Wetez](https://www.wetez.io/pc/homepage) - Android, iOS
+* [Crypto.com](https://crypto.com/) - Android, iOS
 
 
 ## Cosmos Hub Explorers
@@ -43,7 +44,7 @@ These community-maintained web and mobile wallets allow you to store & transfer 
 These block explorers allow you to search, view and analyze Cosmos Hub data&mdash;like blocks, transactions, validators, etc.
 
 * [Anthem](https://anthem.chorus.one)
-* [ATOMScan](https://atomscan.app)
+* [ATOMScan](https://atomscan.com)
 * [Big Dipper](https://cosmos.bigdipper.live)
 * [Cosmos Overview](https://genesislab.net)
 * [Coris](http://coris.network)

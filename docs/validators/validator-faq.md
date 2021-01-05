@@ -54,19 +54,7 @@ Any participant in the network can signal that they want to become a validator b
 
 Once a validator is created, Atom holders can delegate atoms to them, effectively adding stake to their pool. The total stake of an address is the combination of Atoms bonded by delegators and Atoms self-bonded by the entity which designated themselves.
 
-Out of all validator candidates that signaled themselves, the 100 with the most total stake are the ones who are designated as validators. They become **validators** If a validator's total stake falls below the top 100 then that validator loses their validator privileges: they don't participate in consensus and generate rewards any more. Over time, the maximum number of validators will increase, according to the following schedule (_Note: this schedule can be changed by governance_):
-
-- **Year 0:** 100
-- **Year 1:** 113
-- **Year 2:** 127
-- **Year 3:** 144
-- **Year 4:** 163
-- **Year 5:** 184
-- **Year 6:** 208
-- **Year 7:** 235
-- **Year 8:** 265
-- **Year 9:** 300
-- **Year 10:** 300
+Out of all validator candidates that signaled themselves, the 100 with the most total stake are the ones who are designated as validators. They become **validators** If a validator's total stake falls below the top 100 then that validator loses their validator privileges: they don't participate in consensus and generate rewards any more. Over time, the maximum number of validators may be increased via on-chain governance proposal.
 
 ## Testnet
 

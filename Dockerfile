@@ -25,10 +25,10 @@ ENV GAIA /gaia
 # Install ca-certificates
 RUN apk add --update ca-certificates
 
-RUN addgroup gaiauser && \
-    adduser -S -G gaiauser gaiauser -h "$GAIA"
-    
-USER gaiauser
+RUN addgroup gaia && \
+    adduser -S -G gaia gaia -h "$GAIA"
+
+USER gaia
 
 WORKDIR $GAIA
 

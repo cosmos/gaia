@@ -4,7 +4,7 @@ order: 5
 
 # KMS - Key Management System
 
-[Tendermint KMS](https://github.com/tendermint/kms) is a key management service that allows separating key management from Tendermint nodes. In addition it provides other advantages such as:
+[Tendermint KMS](https://github.com/iqlusioninc/tmkms) is a key management service that allows separating key management from Tendermint nodes. In addition it provides other advantages such as:
 
 - Improved security and risk management policies
 - Unified API and support for various HSM (hardware security modules)
@@ -14,7 +14,7 @@ It is recommended that the KMS service runs in a separate physical hosts.
 
 ## Building
 
-Detailed build instructions can be found [here](https://github.com/tendermint/kms#installation).
+Detailed build instructions can be found [here](https://github.com/iqlusioninc/tmkms#installation).
 
 ::: tip
 When compiling the KMS, ensure you have enabled the applicable features:
@@ -31,7 +31,7 @@ A KMS can be configured in various ways:
 
 ### Using a YubiHSM
   
-  Detailed information on how to setup a KMS with YubiHSM2 can be found [here](https://github.com/tendermint/kms/blob/master/README.yubihsm.md)
+  Detailed information on how to setup a KMS with YubiHSM2 can be found [here](https://github.com/iqlusioninc/tmkms/blob/master/README.yubihsm.md)
 
 ### Using a Ledger device running the Tendermint app
 

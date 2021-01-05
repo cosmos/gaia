@@ -24,7 +24,7 @@ In this section, we will configure a KMS to use a Ledger device running the Tend
 
 ### Config file
 
-You can find other configuration examples [here](https://github.com/tendermint/kms/blob/master/tmkms.toml.example)
+You can find other configuration examples [here](https://github.com/iqlusioninc/tmkms/blob/master/tmkms.toml.example)
 
 - Create a `~/.tmkms/tmkms.toml` file with the following content (use an adequate `chain_id`)
 

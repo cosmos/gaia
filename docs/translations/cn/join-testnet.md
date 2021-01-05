@@ -1,7 +1,7 @@
 # 加入公共测试网
 
 ::: 提示 当前测试网
-请查看[testnet repo](https://github.com/cosmos/testnets)获取最新的公共测试网信息，包含了所使用的Cosmos-SDK的正确版本和genesis文件。
+请查看[testnet repo](https://github.com/cosmos/testnets)获取最新的公共测试网信息，包含了所使用的 Cosmos-SDK 的正确版本和 genesis 文件。
 :::
 
 ::: 警告
@@ -10,18 +10,17 @@
 
 ## 创建一个新节点
 
-> 注意：如果你在之前的测试网中运行过一个全节点，请跳至[升级之前的Testnet](#upgrading-from-previous-testnet)。
+> 注意：如果你在之前的测试网中运行过一个全节点，请跳至[升级之前的 Testnet](#upgrading-from-previous-testnet)。
 
 要创建一个新节点，主网的指令同样适用：
 
-+ [加入mainnet](./join-mainnet.md)
-+ [部署验证人节点](./validators/validator-setup.md)
+- [加入 mainnet](./join-mainnet.md)
+- [部署验证人节点](./validators/validator-setup.md)
 
-只有SDK的版本和genesis文件不同。查看[testnet repo](https://github.com/cosmos/testnets)
-获取测试网的信息，包括Cosmos-SDK正确的版本和genesis文件。
+只有 SDK 的版本和 genesis 文件不同。查看[testnet repo](https://github.com/cosmos/testnets)
+获取测试网的信息，包括 Cosmos-SDK 正确的版本和 genesis 文件。
 
-
-## 升级之前的Testnet
+## 升级之前的 Testnet
 
 这些指令用以把运行过以前测试网络的全节点升级至最新的测试网络。
 
@@ -45,15 +44,16 @@ gaiad unsafe-reset-all
 现在升级软件：
 
 ```bash
-cd $GOPATH/src/github.com/cosmos/cosmos-sdk
+git clone https://github.com/cosmos/cosmos-sdk.git
+cd cosmos-sdk
 git fetch --all && git checkout master
-make update_tools install
+make install
 ```
 
 ::: 提示
-*注意*：如果在这一步出现问题，请检查是否安装了最新稳定版本的Go。
+_注意_：如果在这一步出现问题，请检查是否安装了最新稳定版本的 Go。
 :::
 
-注意这里我们使用的是包含最新稳定发布版本的`master`分支。请查看[testnet repo](https://github.com/cosmos/testnets)查看哪个版本的测试网需要哪一个Cosmos-SDK版本，在[SDK发布版](https://github.com/cosmos/cosmos-sdk/releases)中对应的详细信息。
+注意这里我们使用的是包含最新稳定发布版本的`master`分支。请查看[testnet repo](https://github.com/cosmos/testnets)查看哪个版本的测试网需要哪一个 Cosmos-SDK 版本，在[SDK 发布版](https://github.com/cosmos/cosmos-sdk/releases)中对应的详细信息。
 
 你的全节点已经升级成功！

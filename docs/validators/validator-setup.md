@@ -1,10 +1,14 @@
+<!--
+order: 2
+-->
+
 # Run a Validator on the Cosmos Hub Mainnet
 
 ::: tip
-Information on how to join the mainnet (`genesis.json` file and seeds) is held [in our `launch` repo](https://github.com/cosmos/launch/tree/master/latest). 
+Information on how to join the mainnet (`genesis.json` file and seeds) is held [in our `launch` repo](https://github.com/cosmos/launch/). 
 :::
 
-Before setting up your validator node, make sure you've already gone through the [Full Node Setup](../join-mainnet.md) guide.
+Before setting up your validator node, make sure you've already gone through the [Full Node Setup](../gaia-tutorials/join-mainnet.md) guide.
 
 If you plan to use a KMS (key management system), you should go through these steps first: [Using a KMS](kms/kms.md).
 
@@ -16,7 +20,7 @@ If you plan to use a KMS (key management system), you should go through these st
 If you want to become a validator for the Hub's `mainnet`, you should [research security](./security.md).
 :::
 
-You may want to skip the next section if you have already [set up a full-node](../join-mainnet.md).
+You may want to skip the next section if you have already [set up a full-node](../gaia-tutorials/join-mainnet.md).
 
 ## Create Your Validator
 

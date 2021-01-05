@@ -43,7 +43,6 @@ moniker = "<your_custom_moniker>"
 minimum_fees = ""
 ```
 
-
 당신의 풀노드가 활성화 되었습니다! [제네시스와 시드](#genesis-seeds)로 넘어가주세요.
 
 ## 과거 테스트넷에서 업그레이드 하기
@@ -70,13 +69,14 @@ gaiad unsafe-reset-all
 이제 소프트웨어를 업그레이드할 시간입니다:
 
 ```bash
-cd $GOPATH/src/github.com/cosmos/cosmos-sdk
+git clone https://github.com/cosmos/cosmos-sdk.git
+cd cosmos-sdk
 git fetch --all && git checkout master
-make update_tools install
+make install
 ```
 
 ::: tip
-*참고*: 이 단계에서 문제가 있으시다면 최신 스테이블 GO 버전이 설치되어있는지 확인해주세요.
+_참고_: 이 단계에서 문제가 있으시다면 최신 스테이블 GO 버전이 설치되어있는지 확인해주세요.
 :::
 
 위 예시에서는 가장 최신 스테이블 릴리즈가 있는 `master`를 사용합니다. 테스트넷마다 운용하는 릴리즈가 다를 경우가 있으니 [testnet repo](https://github.com/cosmos/testnets)를 확인하셔서 어떤 버전이 필요한지 확인하시고, [SDK 릴리즈 페이지](https://github.com/cosmos/cosmos-sdk/releases)에서 각 릴리즈에 대한 정보를 확인하세요.
@@ -106,7 +106,7 @@ gaiad start
 
 이제 노드가 다른 피어들을 찾는 방법을 알아야합니다. `$HOME/.gaiad/config/config.toml`에 안정적인 시드 노드들을 추가할 차례입니다. `testnets` repo에 각 테스트넷에 대한 시드 노드 링크가 포함되어있습니다. 만약 현재 운영되고 있는 테스트넷을 참가하고 싶으시다면 [여기](https://github.com/cosmos/testnets)에서 어떤 노드를 이용할지 확인하세요.
 
-만약 해당 시드가 작동하지 않는다면, 추가적인 시드와 피어들을 [코스모스 익스플로러](https://explorer.cosmos.network/nodes)를 통해 확인하실 수 있습니다. `Full Nodes` 탭을 들어가셔서 프라이빗(`10.x.x.x`) 또는 로컬 IP 주소(https://en.wikipedia.org/wiki/Private_network)가 *아닌* 노드를 열어보세요. `Persistent Peer` 값에 연결 스트링(connection string)이 표기되어 있습니다. 가장 최적화된 결과를 위해서는 4-6을 이용하세요.
+만약 해당 시드가 작동하지 않는다면, 추가적인 시드와 피어들을 [코스모스 익스플로러](https://explorer.cosmos.network/nodes)를 통해 확인하실 수 있습니다. `Full Nodes` 탭을 들어가셔서 프라이빗(`10.x.x.x`) 또는 로컬 IP 주소(https://en.wikipedia.org/wiki/Private_network)가 _아닌_ 노드를 열어보세요. `Persistent Peer` 값에 연결 스트링(connection string)이 표기되어 있습니다. 가장 최적화된 결과를 위해서는 4-6을 이용하세요.
 
 이 외에도 [밸리데이터 라이엇 채팅방](https://riot.im/app/#/room/#cosmos-validators:matrix.org)을 통해서 피어 요청을 할 수 있습니다.
 

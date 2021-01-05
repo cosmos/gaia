@@ -1,4 +1,8 @@
-## Validator Security
+<!--
+order: 4
+-->
+
+# Validator Security
 
 Each validator candidate is encouraged to run its operations independently, as diverse setups increase the resilience of the network. Validator candidates should commence their setup phase now in order to be on time for launch.
 
@@ -6,7 +10,7 @@ Each validator candidate is encouraged to run its operations independently, as d
 
 It is mission critical that an attacker cannot steal a validator's key. If this is possible, it puts the entire stake delegated to the compromised validator at risk. Hardware security modules are an important strategy for mitigating this risk.
 
-HSM modules must support `ed25519` signatures for the hub. The YubiHSM2 supports `ed25519` and we expect to have an adapter library available in December 2017. The YubiHSM can protect a private key but cannot ensure in a secure setting that it won't sign the same block twice.
+HSM modules must support `ed25519` signatures for the hub. The YubiHSM2 supports `ed25519` and [this yubikey library is available](https://github.com/iqlusioninc/yubihsm.rs). The YubiHSM can protect a private key but cannot ensure in a secure setting that it won't sign the same block twice.
 
 The Tendermint team is also working on extending our Ledger Nano S application to support validator signing. This app can store recent blocks and mitigate double signing attacks.
 

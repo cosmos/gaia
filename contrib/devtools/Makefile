@@ -36,17 +36,32 @@ go_install = $(call go_get,$(1),$(2),$(3)) && cd $(GITHUBDIR)$(FS)$(1)$(FS)$(2) 
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 mkfile_dir := $(shell cd $(shell dirname $(mkfile_path)); pwd)
 
-###
-# tools
-###
+###############################################################################
+###                                 Tools                                   ###
+###############################################################################
+
+BIN ?= /usr/local/bin
+UNAME_S ?= $(shell uname -s)
+UNAME_M ?= $(shell uname -m)
 
 TOOLS_DESTDIR  ?= $(GOPATH)/bin
 RUNSIM         = $(TOOLS_DESTDIR)/runsim
 
+BUF_VERSION ?= 0.7.0
+PROTOC_VERSION ?= 3.11.2
+
+ifeq ($(UNAME_S),Linux)
+  PROTOC_ZIP ?= protoc-3.11.2-linux-x86_64.zip
+endif
+ifeq ($(UNAME_S),Darwin)
+  PROTOC_ZIP ?= protoc-3.11.2-osx-x86_64.zip
+endif
+
 all: tools
 
 tools: tools-stamp
-tools-stamp: $(GOIMPORTS) $(RUNSIM)
+
+tools-stamp: $(RUNSIM)
 	touch $@
 
 # Install the runsim binary with a temporary workaround of entering an outside
@@ -58,10 +73,41 @@ $(RUNSIM):
 	@echo "Installing runsim..."
 	@(cd /tmp && go get github.com/cosmos/tools/cmd/runsim@v1.0.0)
 
-golangci-lint: $(GOLANGCI_LINT)
+protoc:
+	@echo "Installing protoc compiler..."
+	@(cd /tmp; \
+	curl -sSOL "https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VERSION}/${PROTOC_ZIP}"; \
+	unzip -o ${PROTOC_ZIP} -d /usr/local bin/protoc; \
+	unzip -o ${PROTOC_ZIP} -d /usr/local 'include/*'; \
+	rm -f ${PROTOC_ZIP})
+
+protoc-gen-gocosmos:
+	@echo "Installing protoc-gen-gocosmos..."
+	@go install github.com/regen-network/cosmos-proto/protoc-gen-gocosmos
+
+buf: protoc-gen-buf-check-breaking protoc-gen-buf-check-lint
+	@echo "Installing buf..."
+	@(cd /tmp; \
+	curl -sSOL "https://github.com/bufbuild/buf/releases/download/v${BUF_VERSION}/buf-${UNAME_S}-${UNAME_M}"; \
+	mv buf-${UNAME_S}-${UNAME_M} "${BIN}/buf"; \
+	chmod +x "${BIN}/buf")
+
+protoc-gen-buf-check-breaking:
+	@echo "Installing protoc-gen-buf-check-breaking..."
+	@(cd /tmp; \
+	curl -sSOL "https://github.com/bufbuild/buf/releases/download/v${BUF_VERSION}/protoc-gen-buf-check-breaking-${UNAME_S}-${UNAME_M}"; \
+	mv protoc-gen-buf-check-breaking-${UNAME_S}-${UNAME_M} "${BIN}/protoc-gen-buf-check-breaking"; \
+	chmod +x "${BIN}/protoc-gen-buf-check-breaking")
+
+protoc-gen-buf-check-lint:
+	@echo "Installing protoc-gen-buf-check-lint..."
+	@(cd /tmp; \
+	curl -sSOL "https://github.com/bufbuild/buf/releases/download/v${BUF_VERSION}/protoc-gen-buf-check-lint-${UNAME_S}-${UNAME_M}"; \
+	mv protoc-gen-buf-check-lint-${UNAME_S}-${UNAME_M} "${BIN}/protoc-gen-buf-check-lint"; \
+	chmod +x "${BIN}/protoc-gen-buf-check-lint")
 
 tools-clean:
 	rm -f $(RUNSIM)
 	rm -f tools-stamp
 
-.PHONY: all tools tools-clean
+.PHONY: all tools tools-clean protoc buf protoc-gen-buf-check-breaking protoc-gen-buf-check-lint protoc-gen-gocosmos

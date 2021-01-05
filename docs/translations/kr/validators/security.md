@@ -27,8 +27,8 @@
 검증인 노드는 해당 노드의 `config.toml`을 수정해야 합니다:
 
 ```bash
-# Comma separated list of nodes to keep persistent connections to
-# Do not add private peers to this list if you don't want them advertised
+# 지속적으로 연결할 노드 목록, 다수의 노드는 `,`로 분리
+# 프라이빗 피어는 노출의 위험이 존재하니 이 목록에 추가하지 마세요.
 persistent_peers =[list of sentry nodes]
 
 # Set true to enable the peer-exchange reactor
@@ -39,7 +39,7 @@ pex = false
 
 ```bash
 # Comma separated list of peer IDs to keep private (will not be gossiped to other peers)
-private_peer_ids = "ipaddress of validator nodes"
+private_peer_ids = "프라이빗_피어_노드_ID"
 ```
 
 ## 환경 변수

@@ -26,18 +26,16 @@ Types of changes (Stanzas):
 "Improvements" for changes in existing functionality.
 "Deprecated" for soon-to-be removed features.
 "Bug Fixes" for any bug fixes.
-"Breaking" for breaking API changes.
+"Client Breaking" for breaking CLI commands and REST routes.
+"State Machine Breaking" for breaking the AppState
 
 Ref: https://keepachangelog.com/en/1.0.0/
-
-Reminder:
-Update list of release links at the bottom of this md file.
-Otherwise release links aren't made into links.
 -->
 
 # Changelog
 
 ## [Unreleased]
+
 * Updated readme.md to provide seeds to gaiad using a flag instead of config.toml
 
 ## [v2.0.14] - 2020-12-10

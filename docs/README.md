@@ -1,37 +1,43 @@
+<!--
+parent:
+  order: false
+layout: home
+-->
+
 # Cosmos Hub Documentation
 
 Welcome to the documentation of the **Cosmos Hub application: `gaia`**.
 
 ## What is Gaia?
 
-- [Gaia](./what-is-gaia.md)
+- [Intro to the `gaia` software](./gaia-tutorials/what-is-gaia.md)
 
 ## Join the Cosmos Hub Mainnet
 
-- [Install the `gaia` application](./installation.md)
-- [Set up a full node and join the mainnet](./join-mainnet.md)
+- [Install the `gaia` application](./gaia-tutorials/installation.md)
+- [Set up a full node and join the mainnet](./gaia-tutorials/join-mainnet.md)
 - [Upgrade to a validator node](./validators/validator-setup.md)
 
 ## Join the Cosmos Hub Public Testnet
 
-- [Join the testnet](./join-testnet.md)
+- [Join the testnet](./gaia-tutorials/join-testnet.md)
 
 ## Setup Your Own `gaia` Testnet
 
-- [Setup your own `gaia` testnet](./deploy-testnet.md)
+- [Setup your own `gaia` testnet](./gaia-tutorials/deploy-testnet.md)
 
 ## Additional Resources
 
-- [Intro to validators](./validators/overview.md)
-- [Validator FAQ](./validators/validator-faq.md)
-- [Validator security considerations](./validators/security.md)
-- [Reproducible builds](./reproducible-builds.md)
+- [Validator Resources](./validators/README.md): Contains documentation for `gaia` validators.
+- [Delegator Resources](./delegators/README.md): Contains documentation for delegators.
+- [Other Resources](./resources/README.md): Contains documentation on `gaiacli`, genesis file, service providers, ledger wallets, ...
+- [Cosmos Hub Archives](./resources/archives.md): State archives of past iteration of the Cosmos Hub.
 
 # Contribute
 
-See [this file](https://github.com/cosmos/gaia/blob/master/docs/DOCS_README.md) for details of the build process and
+See [this file](./DOCS_README.md) for details of the build process and
 considerations when making changes.
 
 # Version
 
- This documentation is built from the following commit:
+This documentation is built from the following commit:

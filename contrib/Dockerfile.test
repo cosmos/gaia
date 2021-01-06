@@ -26,7 +26,6 @@ WORKDIR /root
 
 # Copy over binaries from the build-env
 COPY --from=build-env /go/bin/gaiad /usr/bin/gaiad
-COPY --from=build-env /go/bin/gaiacli /usr/bin/gaiacli
 
 COPY ./contrib/single-node.sh .
 

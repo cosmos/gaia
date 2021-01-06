@@ -24,5 +24,4 @@ func TestVerifySignatures(t *testing.T) {
 	eDonor1.verifyEthereumSignature(0)
 	eDonor2.verifyEthereumSignature(0)
 	eDonor3.verifyEthereumSignature(0)
-
 }

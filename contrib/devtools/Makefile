@@ -69,6 +69,7 @@ tools-stamp: $(RUNSIM)
 # go.{mod, sum} files.
 # 
 # ref: https://github.com/golang/go/issues/30515
+runsim: $(RUNSIM)
 $(RUNSIM):
 	@echo "Installing runsim..."
 	@(cd /tmp && go get github.com/cosmos/tools/cmd/runsim@v1.0.0)

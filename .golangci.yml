@@ -1,9 +1,16 @@
+run:
+  tests: false
+#   # timeout for analysis, e.g. 30s, 5m, default is 1m
+#   timeout: 5m
+
 linters:
+  disable-all: true
   enable:
     - bodyclose
     - deadcode
     - depguard
     - dogsled
+    # - errcheck
     - goconst
     - gocritic
     - gofmt
@@ -14,8 +21,8 @@ linters:
     - govet
     - ineffassign
     - interfacer
-    - misspell
     - maligned
+    - misspell
     - nakedret
     - prealloc
     - scopelint
@@ -25,16 +32,31 @@ linters:
     - typecheck
     - unconvert
     - unused
-    - varcheck
+    - unparam
+    # - wsl
+    - nolintlint
 
 issues:
   exclude-rules:
     - text: "Use of weak random number generator"
       linters:
         - gosec
+    - text: "comment on exported var"
+      linters:
+        - golint
+    - text: "don't use an underscore in package name"
+      linters:
+        - golint
     - text: "ST1003:"
       linters:
         - stylecheck
+    # FIXME: Disabled until golangci-lint updates stylecheck with this fix:
+    # https://github.com/dominikh/go-tools/issues/389
+    - text: "ST1016:"
+      linters:
+        - stylecheck
+  max-issues-per-linter: 10000
+  max-same-issues: 10000
 
 linters-settings:
   dogsled:
@@ -42,19 +64,8 @@ linters-settings:
   maligned:
     # print struct with more effective memory layout or not, false by default
     suggest-new: true
-  errcheck:
-    # report about assignment of errors to blank identifier: `num, _ := strconv.Atoi(numStr)`;
-    # default is false: such cases aren't reported by default.
-    check-blank: true
-  golint:
-    # minimal confidence for issues, default is 0.8
-    min-confidence: 0
-  prealloc:
-    # XXX: we don't recommend using this linter before doing performance profiling.
-    # For most programs usage of prealloc will be a premature optimization.
-
-    # Report preallocation suggestions only on simple loops that have no returns/breaks/continues/gotos in them.
-    # True by default.
-    simple: false
-    range-loops: true # Report preallocation suggestions on range loops, true by default
-    for-loops: true # Report preallocation suggestions on for loops, false by default
+  nolintlint:
+    allow-unused: false
+    allow-leading-space: true
+    require-explanation: false
+    require-specific: false

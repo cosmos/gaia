@@ -49,21 +49,3 @@ jobs:
           file: ./coverage.txt # optional
           fail_ci_if_error: true
         if: "env.GIT_DIFF != ''"
-
-  integration-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/setup-go@v2.1.3
-        with:
-          go-version: 1.15
-      - uses: actions/checkout@v2
-      - uses: technote-space/get-diff-action@v4
-        with:
-          PATTERN: |
-            .go
-            .mod
-            .sum
-      - name: Test CLI integration
-        run: |
-          make test-build
-        if: "env.GIT_DIFF != ''"

@@ -168,7 +168,7 @@ jobs:
           docker_layer_caching: true
       - run: |
           GAIAD_VERSION=''
-          if [ "${CIRCLE_BRANCH}" = "master" ]; then
+          if [ "${CIRCLE_BRANCH}" = "main" ]; then
             GAIAD_VERSION="stable"
           elif [ "${CIRCLE_BRANCH}" = "develop" ]; then
             GAIAD_VERSION="develop"
@@ -257,7 +257,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
       - deploy-docs:
           context: gaia-docs-deployment-staging
           filters:
@@ -269,7 +269,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
       - setup-dependencies:
           # filters here are needed to enable this job also for tags
           filters:
@@ -281,7 +281,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
           requires:
             - setup-dependencies
 #      - contract_tests:

@@ -5,7 +5,7 @@ parent:
 
 # Updating the docs
 
-If you want to open a PR on Gaia to update the documentation, please follow the guidelines in the [`CONTRIBUTING.md`](https://github.com/cosmos/gaia/tree/master/CONTRIBUTING.md)
+If you want to open a PR on Gaia to update the documentation, please follow the guidelines in the [`CONTRIBUTING.md`](https://github.com/cosmos/gaia/tree/main/CONTRIBUTING.md)
 
 ## Docs Build Workflow
 
@@ -13,7 +13,7 @@ The documentation for Gaia is hosted at:
 
 - https://hub.cosmos.network/
 
-built from the files in this (`/docs`) directory for [master](https://github.com/cosmos/gaia/tree/master/docs)
+built from the files in this (`/docs`) directory for [master](https://github.com/cosmos/gaia/tree/main/docs)
 
 ### How It Works
 

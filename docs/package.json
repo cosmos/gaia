@@ -11,5 +11,11 @@
     "build": "trap 'exit 0' SIGINT; vuepress build --no-cache"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "keywords": [
+    "cosmos",
+    "gaia",
+    "cosmos hub",
+    "atom"
+  ]
 }

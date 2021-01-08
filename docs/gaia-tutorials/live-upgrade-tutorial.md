@@ -10,16 +10,16 @@ governance process.
    $ gaiad start
 
    # set up the cli config
-   $ gaiacli config trust-node true
-   $ gaiacli config chain-id testing
+   $ gaiad config trust-node true
+   $ gaiad config chain-id testing
 
    # create an upgrade governance proposal
-   $ gaiacli tx gov submit-proposal software-upgrade <plan-name> \
+   $ gaiad tx gov submit-proposal software-upgrade <plan-name> \
    --title <proposal-title> --description <proposal-description> \
    --from <name-or-key> --upgrade-height <desired-upgrade-height> --deposit 10000000stake
 
    # once the proposal passes you can query the pending plan
-   $ gaiacli query upgrade plan
+   $ gaiad query upgrade plan
    ```
 
 2. Performing an upgrade
@@ -67,8 +67,8 @@ governance process.
    $ gaiad start
 
    # verify there is no pending plan
-   $ gaiacli query upgrade plan
+   $ gaiad query upgrade plan
 
    # verify you can query the block header of the completed upgrade
-   $ gaiacli query upgrade applied <plan-name>
+   $ gaiad query upgrade applied <plan-name>
    ```

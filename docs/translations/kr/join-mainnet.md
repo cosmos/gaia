@@ -120,7 +120,7 @@ gaiad start
 모든 것이 잘 작동하고 있는지 확인하기 위해서는:
 
 ```bash
-gaiacli status
+gaiad status
 ```
 
 네트워크 상태를 [코스모스 익스플로러](https://cosmos.network/launch)에서 확인하세요.
@@ -165,7 +165,7 @@ invariant broken:
         pool.NotBondedTokens: 100
         sum of account tokens: 101
     CRITICAL please submit the following transaction:
-        gaiacli tx crisis invariant-broken staking supply
+        gaiad tx crisis invariant-broken staking supply
 
 ```
 

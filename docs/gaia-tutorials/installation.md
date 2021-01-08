@@ -4,7 +4,7 @@ order: 2
 
 # Install Gaia
 
-This guide will explain how to install the `gaiad` and `gaiacli` entrypoints
+This guide will explain how to install the `gaiad` entrypoint
 onto your system. With these installed on a server, you can participate in the
 mainnet as either a [Full Node](./join-mainnet.md) or a
 [Validator](../validators/validator-setup.md).
@@ -21,7 +21,7 @@ source ~/.bash_profile
 ```
 
 ::: tip
-**Go 1.14+** is required for the Cosmos SDK.
+**Go 1.15+** is required for the Cosmos SDK.
 :::
 
 ## Install the binaries
@@ -52,19 +52,17 @@ LDFLAGS="" make install
 
 > _NOTE_: If you still have issues at this step, please check that you have the latest stable version of GO installed.
 
-That will install the `gaiad` and `gaiacli` binaries. Verify that everything is OK:
+That will install the `gaiad` and `gaiad` binaries. Verify that everything is OK:
 
 ```bash
-$ gaiad version --long
-$ gaiacli version --long
+gaiad version --long
 ```
 
-`gaiacli` for instance should output something similar to:
+`gaiad` for instance should output something similar to:
 
 ```bash
 name: gaia
 server_name: gaiad
-client_name: gaiacli
 version: 2.0.3
 commit: 2f6783e298f25ff4e12cb84549777053ab88749a
 build_tags: netgo,ledger

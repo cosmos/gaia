@@ -18,10 +18,10 @@ Supporting code can be found in the [networks directory](https://github.com/cosm
 
 In case you need to use or deploy gaia as a container you could skip the `build` steps and use the official images, \$TAG stands for the version you are interested in:
 
-- `docker run -it -v ~/.gaiad:/root/.gaiad -v ~/.gaiacli:/root/.gaiacli tendermint:$TAG gaiad init`
-- `docker run -it -p 26657:26657 -p 26656:26656 -v ~/.gaiad:/root/.gaiad -v ~/.gaiacli:/root/.gaiacli tendermint:$TAG gaiad start`
+- `docker run -it -v ~/.gaiad:/root/.gaiad tendermint:$TAG gaiad init`
+- `docker run -it -p 26657:26657 -p 26656:26656 -v ~/.gaiad:/root/.gaiad tendermint:$TAG gaiad start`
 - ...
-- `docker run -it -v ~/.gaiad:/root/.gaiad -v ~/.gaiacli:/root/.gaiacli tendermint:$TAG gaiacli version`
+- `docker run -it -v ~/.gaiad:/root/.gaiad tendermint:$TAG gaiad version`
 
 The same images can be used to build your own docker-compose stack.
 
@@ -44,12 +44,12 @@ cd $HOME
 gaiad init --chain-id=testing testing
 
 # Create a key to hold your validator account
-gaiacli keys add validator
+gaiad keys add validator
 
 # Add that key into the genesis.app_state.accounts array in the genesis file
 # NOTE: this command lets you set the number of coins. Make sure this account has some coins
 # with the genesis.app_state.staking.params.bond_denom denom, the default is staking
-gaiad add-genesis-account $(gaiacli keys show validator -a) 1000000000stake,1000000000validatortoken
+gaiad add-genesis-account $(gaiad keys show validator -a) 1000000000stake,1000000000validatortoken
 
 # Generate the transaction that creates your validator
 gaiad gentx --name validator
@@ -61,7 +61,7 @@ gaiad collect-gentxs
 gaiad start
 ```
 
-This setup puts all the data for `gaiad` in `~/.gaiad`. You can examine the genesis file you created at `~/.gaiad/config/genesis.json`. With this configuration `gaiacli` is also ready to use and has an account with tokens (both staking and custom).
+This setup puts all the data for `gaiad` in `~/.gaiad`. You can examine the genesis file you created at `~/.gaiad/config/genesis.json`. With this configuration `gaiad` is also ready to use and has an account with tokens (both staking and custom).
 
 ## Multi-node, Local, Automated Testnet
 
@@ -124,7 +124,6 @@ calling the `gaiad testnet` command. This outputs a handful of files in the
 ```bash
 $ tree -L 2 build/
 build/
-├── gaiacli
 ├── gaiad
 ├── gentxs
 │   ├── node0.json
@@ -132,34 +131,27 @@ build/
 │   ├── node2.json
 │   └── node3.json
 ├── node0
-│   ├── gaiacli
-│   │   ├── key_seed.json
-│   │   └── keys
 │   └── gaiad
+│       ├── key_seed.json
+│       ├── keys
 │       ├── ${LOG:-gaiad.log}
 │       ├── config
 │       └── data
 ├── node1
-│   ├── gaiacli
-│   │   └── key_seed.json
-│   └── gaiad
+│       ├── key_seed.json
 │       ├── ${LOG:-gaiad.log}
 │       ├── config
 │       └── data
 ├── node2
-│   ├── gaiacli
-│   │   └── key_seed.json
-│   └── gaiad
+│       ├── key_seed.json
 │       ├── ${LOG:-gaiad.log}
 │       ├── config
 │       └── data
 └── node3
-    ├── gaiacli
-    │   └── key_seed.json
-    └── gaiad
-        ├── ${LOG:-gaiad.log}
-        ├── config
-        └── data
+         ├── key_seed.json
+         ├── ${LOG:-gaiad.log}
+         ├── config
+         └── data
 ```
 
 Each `./build/nodeN` directory is mounted to the `/gaiad` directory in each container.
@@ -175,18 +167,18 @@ docker logs -f gaiadnode0
 
 ### Keys & Accounts
 
-To interact with `gaiacli` and start querying state or creating txs, you use the
-`gaiacli` directory of any given node as your `home`, for example:
+To interact with `gaiad` and start querying state or creating txs, you use the
+`gaiad` directory of any given node as your `home`, for example:
 
 ```bash
-gaiacli keys list --home ./build/node0/gaiacli
+gaiad keys list --home ./build/node0/gaiad
 ```
 
 Now that accounts exists, you may create new accounts and send those accounts
 funds!
 
 ::: tip
-**Note**: Each node's seed is located at `./build/nodeN/gaiacli/key_seed.json` and can be restored to the CLI using the `gaiacli keys add --restore` command
+**Note**: Each node's seed is located at `./build/nodeN/gaiad/key_seed.json` and can be restored to the CLI using the `gaiad keys add --restore` command
 :::
 
 ### Special Binaries

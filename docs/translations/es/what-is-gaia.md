@@ -7,7 +7,7 @@ order: 1
 `gaia` es el nombre de la aplicación de Cosmos SDK para el Hub de Cosmos. Viene con 2 opciones principales de entrada:
 
 - `gaiad`: El demonio de Gaia, ejecuta un full-node con la aplicacion `gaia`.
-- `gaiacli`: Interface de línea de comandos de Gaia, la cual activa la interacción con en full-node de Gaia.
+- `gaiad`: Interface de línea de comandos de Gaia, la cual activa la interacción con en full-node de Gaia.
 
 `gaia` es construida con el SDK de Cosmos usando los siguientes módulos:
 

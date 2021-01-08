@@ -31,7 +31,7 @@ gaiad tendermint show-validator
 :::
 
 ```bash
-gaiacli tx staking create-validator \
+gaiad tx staking create-validator \
   --amount=1000000uatom \
   --pubkey=$(gaiad tendermint show-validator) \
   --moniker="choose a moniker" \
@@ -104,7 +104,7 @@ gaiad gentx \
 `--identity`可用于验证和Keybase或UPort这样的系统一起验证身份。与Keybase一起使用时，`--identity`应使用由一个[keybase.io](https://keybase.io/)帐户生成的16位字符串。它是一种加密安全的方法，可以跨多个在线网络验证您的身份。 Keybase API允许我们检索你的Keybase头像。这是你可以在验证人配置文件中添加徽标的方法。
 
 ```bash
-gaiacli tx staking edit-validator
+gaiad tx staking edit-validator
   --moniker="choose a moniker" \
   --website="https://cosmos.network" \
   --identity=6A0D65E29A4CBC8E \
@@ -127,7 +127,7 @@ gaiacli tx staking edit-validator
 通过该命令查看验证人的描述信息:
 
 ```bash
-gaiacli query staking validator <account_cosmos>
+gaiad query staking validator <account_cosmos>
 ```
 
 ## 跟踪验证人的签名信息
@@ -135,7 +135,7 @@ gaiacli query staking validator <account_cosmos>
 你可以通过`signing-info`命令跟踪过往的验证人签名：
 
 ```bash
-gaiacli query slashing signing-info <validator-pubkey>\
+gaiad query slashing signing-info <validator-pubkey>\
   --chain-id=<chain_id>
 ```
 
@@ -144,7 +144,7 @@ gaiacli query slashing signing-info <validator-pubkey>\
 当验证人因停机而"jailed"(入狱)时，你必须用节点操作人帐户提交一笔`Unjail`交易，使其再次能够获得区块提交的奖励（奖励多少取决于分区的fee分配）。
 
 ```bash
-gaiacli tx slashing unjail \
+gaiad tx slashing unjail \
 	--from=<key_name> \
 	--chain-id=<chain_id>
 ```
@@ -154,7 +154,7 @@ gaiacli tx slashing unjail \
 如果下面的命令返回有内容就证明你的验证人正处于活跃状态:
 
 ```bash
-gaiacli query tendermint-validator-set | grep "$(gaiad tendermint show-validator)"
+gaiad query tendermint-validator-set | grep "$(gaiad tendermint show-validator)"
 ```
 
 你必须要在[区块浏览器](https://explorecosmos.network/validators)中看见你的验证人节点信息。你可以在`~/.gaiad/config/priv_validator.json`文件中找到`bech32`编码格式的`address`。
@@ -180,7 +180,7 @@ gaiad start
 最后，检查你的验证人看看投票股权是否恢复：
 
 ```bash
-gaiacli status
+gaiad status
 ```
 
 你可能会注意到你的投票权比之前要少。这是由于你的下线受到的削减处罚！

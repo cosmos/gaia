@@ -14,10 +14,10 @@
 
 如果你需要使用或部署 gaia 作为容器，你可以跳过`build`步骤并使用官方镜像，\$TAG 标识你感兴趣的版本：
 
-- `docker run -it -v ~/.gaiad:/root/.gaiad -v ~/.gaiacli:/root/.gaiacli tendermint:$TAG gaiad init`
-- `docker run -it -p 26657:26657 -p 26656:26656 -v ~/.gaiad:/root/.gaiad -v ~/.gaiacli:/root/.gaiacli tendermint:$TAG gaiad start`
+- `docker run -it -v ~/.gaiad:/root/.gaiad -v ~/.gaiad:/root/.gaiad tendermint:$TAG gaiad init`
+- `docker run -it -p 26657:26657 -p 26656:26656 -v ~/.gaiad:/root/.gaiad -v ~/.gaiad:/root/.gaiad tendermint:$TAG gaiad start`
 - ...
-- `docker run -it -v ~/.gaiad:/root/.gaiad -v ~/.gaiacli:/root/.gaiacli tendermint:$TAG gaiacli version`
+- `docker run -it -v ~/.gaiad:/root/.gaiad -v ~/.gaiad:/root/.gaiad tendermint:$TAG gaiad version`
 
 相同的镜像也可以用于构建你自己的 docker-compose 栈
 
@@ -40,12 +40,12 @@ cd $HOME
 gaiad init --chain-id=testing testing
 
 # Create a key to hold your validator account
-gaiacli keys add validator
+gaiad keys add validator
 
 # Add that key into the genesis.app_state.accounts array in the genesis file
 # NOTE: this command lets you set the number of coins. Make sure this account has some coins
 # with the genesis.app_state.staking.params.bond_denom denom, the default is staking
-gaiad add-genesis-account $(gaiacli keys show validator -a) 1000000000stake,1000000000validatortoken
+gaiad add-genesis-account $(gaiad keys show validator -a) 1000000000stake,1000000000validatortoken
 
 # Generate the transaction that creates your validator
 gaiad gentx --name validator
@@ -57,7 +57,7 @@ gaiad collect-gentxs
 gaiad start
 ```
 
-启动将会把`gaiad`相关的所有数据放在`~/.gaiad`目录。你可以检查所创建的 genesis 文件——`~/.gaiad/config/genesis.json`。同时`gaiacli`也已经配置完成并且有了一个拥有 token 的账户(stake 和自定义的代币)。
+启动将会把`gaiad`相关的所有数据放在`~/.gaiad`目录。你可以检查所创建的 genesis 文件——`~/.gaiad/config/genesis.json`。同时`gaiad`也已经配置完成并且有了一个拥有 token 的账户(stake 和自定义的代币)。
 
 ## 多节点，本地的，自动的测试网
 
@@ -117,7 +117,7 @@ make build-linux localnet-start
 ```bash
 $ tree -L 2 build/
 build/
-├── gaiacli
+├── gaiad
 ├── gaiad
 ├── gentxs
 │   ├── node0.json
@@ -125,7 +125,7 @@ build/
 │   ├── node2.json
 │   └── node3.json
 ├── node0
-│   ├── gaiacli
+│   ├── gaiad
 │   │   ├── key_seed.json
 │   │   └── keys
 │   └── gaiad
@@ -133,21 +133,21 @@ build/
 │       ├── config
 │       └── data
 ├── node1
-│   ├── gaiacli
+│   ├── gaiad
 │   │   └── key_seed.json
 │   └── gaiad
 │       ├── ${LOG:-gaiad.log}
 │       ├── config
 │       └── data
 ├── node2
-│   ├── gaiacli
+│   ├── gaiad
 │   │   └── key_seed.json
 │   └── gaiad
 │       ├── ${LOG:-gaiad.log}
 │       ├── config
 │       └── data
 └── node3
-    ├── gaiacli
+    ├── gaiad
     │   └── key_seed.json
     └── gaiad
         ├── ${LOG:-gaiad.log}
@@ -167,16 +167,16 @@ docker logs -f gaiadnode0
 
 ### 密钥&账户
 
-你需要使用指定节点的`gaiacli`目录作为你的`home`来同`gaiacli`交互，并执行查询或者创建交易:
+你需要使用指定节点的`gaiad`目录作为你的`home`来同`gaiad`交互，并执行查询或者创建交易:
 
 ```bash
-gaiacli keys list --home ./build/node0/gaiacli
+gaiad keys list --home ./build/node0/gaiad
 ```
 
 现在账户已经存在了，你可以创建新的账户并向其发送资金！
 
 ::: 提示
-注意：每个节点的密钥种子放在`./build/nodeN/gaiacli/key_seed.json`中，可以通过`gaiacli keys add --restore`命令来回复。
+注意：每个节点的密钥种子放在`./build/nodeN/gaiad/key_seed.json`中，可以通过`gaiad keys add --restore`命令来回复。
 :::
 
 ### 特殊的可执行程序

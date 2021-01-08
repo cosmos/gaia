@@ -28,22 +28,22 @@ Then, you can start [running a full-node](../gaia-tutorials/join-mainnet.md).
 
 ### Command-Line interface
 
-## Setting Up `gaiacli`
+## Setting Up `gaiad`
 
 ::: tip
-**Before setting up `gaiacli`, make sure you have set up a way to [access the Cosmos Hub network](#accessing-the-cosmos-hub-network)**
+**Before setting up `gaiad`, make sure you have set up a way to [access the Cosmos Hub network](#accessing-the-cosmos-hub-network)**
 :::
 
 ::: warning
-**Please check that you are always using the latest stable release of `gaiacli`**
+**Please check that you are always using the latest stable release of `gaiad`**
 :::
 
-`gaiacli` is the tool that enables you to interact with the node that runs on the Cosmos Hub network, whether you run it yourself or not. Let us set it up properly.
+`gaiad` is the tool that enables you to interact with the node that runs on the Cosmos Hub network, whether you run it yourself or not. Let us set it up properly.
 
-In order to set up `gaiacli`, use the following command:
+In order to set up `gaiad`, use the following command:
 
 ```bash
-gaiacli config <flag> <value>
+gaiad config <flag> <value>
 ```
 
 It allows you to set a default value for each given flag. 
@@ -51,9 +51,9 @@ It allows you to set a default value for each given flag.
 First, set up the address of the full-node you want to connect to:
 
 ```bash
-gaiacli config node <host>:<port
+gaiad config node <host>:<port
 
-// example: gaiacli config node https://77.87.106.33:26657
+// example: gaiad config node https://77.87.106.33:26657
 ```
 
 If you run your own full-node, just use `tcp://localhost:26657` as the address. 
@@ -61,7 +61,7 @@ If you run your own full-node, just use `tcp://localhost:26657` as the address.
 Then, let us set the default value of the `--trust-node` flag:
 
 ```bash
-gaiacli config trust-node false
+gaiad config trust-node false
 
 // Set to true if you run a light-client node, false otherwise
 ```
@@ -69,7 +69,7 @@ gaiacli config trust-node false
 Finally, let us set the `chain-id` of the blockchain we want to interact with:
 
 ```bash
-gaiacli config chain-id cosmoshub-2
+gaiad config chain-id cosmoshub-2
 ```
 
 Next you will find a few useful CLI commands to interact with the Full-Node.
@@ -79,7 +79,7 @@ Next you will find a few useful CLI commands to interact with the Full-Node.
 To generate a new key (default secp256k1 elliptic curve):
 
 ```bash
-gaiacli keys add <your_key_name>
+gaiad keys add <your_key_name>
 ```
 
 You will be asked to create a password (at least 8 characters) for this key-pair. This will return the information listed below:
@@ -93,7 +93,7 @@ You will be asked to create a password (at least 8 characters) for this key-pair
 You can see all your available keys by typing:
 
 ```bash
-gaiacli keys list
+gaiad keys list
 ```
 
 #### Checking your balance
@@ -101,7 +101,7 @@ gaiacli keys list
 After receiving tokens to your address, you can view your account's balance by typing:
 
 ```bash
-gaiacli query account <YOUR_ADDRESS>
+gaiad query account <YOUR_ADDRESS>
 ```
 
 *Note: When you query an account balance with zero tokens, you will get this error: No account with address <YOUR_ADDRESS> was found in the state. This is expected! We're working on improving our error messages.*
@@ -111,7 +111,7 @@ gaiacli query account <YOUR_ADDRESS>
 Here is the command to send coins via the CLI:
 
 ```bash
-gaiacli tx send <from_key_or_address> <to_address> <amount> \
+gaiad tx send <from_key_or_address> <to_address> <amount> \
     --chain-id=<name_of_testnet_chain> 
 ```
 
@@ -130,7 +130,7 @@ Flags:
 If you need to do something else, the best command you can run is:
 
 ```bash
-gaiacli 
+gaiad 
 ```
 
 It will display all the available commands. For each command, you can use the `--help` flag to get further information. 
@@ -142,7 +142,7 @@ The Rest Server acts as an intermediary between the front-end and the full-node.
 To start the Rest server: 
 
 ```bash
-gaiacli rest-server --node=<full_node_address:full_node_port>
+gaiad rest-server --node=<full_node_address:full_node_port>
 ```
 
 Flags:
@@ -180,7 +180,7 @@ you need to use the field `generate_only` in the body of `base_req`.
 
 Cosmos SDK transaction signing is a fairly simple process.
 
-Every Cosmos SDK transaction has a canonical JSON representation. The `gaiacli`
+Every Cosmos SDK transaction has a canonical JSON representation. The `gaiad`
 and Stargate REST interfaces provide canonical JSON representations of transactions
 and their "broadcast" functions will provide compact Amino (a protobuf-like wire format)
 encoding translations.

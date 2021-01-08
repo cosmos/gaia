@@ -60,7 +60,7 @@ These block explorers allow you to search, view and analyze Cosmos Hub data&mdas
 
 ## Cosmos Hub CLI
 
-`gaiacli` is a command-line interface that lets you interact with the Cosmos Hub. `gaiacli` is the only tool that supports 100% of the Cosmos Hub features, including accounts, transfers, delegation, and governance. Learn more about `gaiacli` with the [delegator's CLI guide](../delegators/delegator-guide-cli.md).
+`gaiad` is a command-line interface that lets you interact with the Cosmos Hub. `gaiad` is the only tool that supports 100% of the Cosmos Hub features, including accounts, transfers, delegation, and governance. Learn more about `gaiad` with the [delegator's CLI guide](../delegators/delegator-guide-cli.md).
 
 ## Running a full-node on the Cosmos Hub Mainnet
 

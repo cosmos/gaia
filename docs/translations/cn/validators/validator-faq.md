@@ -84,7 +84,7 @@ Cosmos Hub是一个权益证明（PoS）区块链，意味着验证人的权重�
 + **Tendermint Key** ：这是用于对区块哈希进行签名的唯一密钥。它与一个公钥`cosmosvalconspub`相关联。
 	+ 使用`gaiad init`创建节点时生成。
 	+ 使用`gaiad tendermint show-validator`查看，如`cosmosvalconspub1zcjduc3qcyj09qc03elte23zwshdx92jm6ce88fgc90rtqhjx8v0608qh5ssp0w94c`。
-+ **Application keys** ：这些密钥是由应用程序创建的，用于签名交易。作为验证人，你可能会使用一个密钥来签名与抵押相关的交易，另一个密钥用于签署与治理相关的交易。应用程序私钥和公钥`cosmospub`及地址`cosmos`相关联。两者都来自`gaiacli keys add`生成的帐户私钥。
++ **Application keys** ：这些密钥是由应用程序创建的，用于签名交易。作为验证人，你可能会使用一个密钥来签名与抵押相关的交易，另一个密钥用于签署与治理相关的交易。应用程序私钥和公钥`cosmospub`及地址`cosmos`相关联。两者都来自`gaiad keys add`生成的帐户私钥。
 	+ 注意：验证人的操作员的私钥直接绑定到应用程序私钥，但为此目的保留前缀：`cosmosvaloper`和`cosmosvaloperpub`
 
 

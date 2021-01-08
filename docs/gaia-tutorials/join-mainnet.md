@@ -136,7 +136,7 @@ gaiad start
 Check that everything is running smoothly:
 
 ```bash
-gaiacli status
+gaiad status
 ```
 
 View the status of the network with the [Cosmos Explorer](https://cosmos.network/launch). 
@@ -186,7 +186,7 @@ invariant broken:
         pool.NotBondedTokens: 100
         sum of account tokens: 101
     CRITICAL please submit the following transaction:
-        gaiacli tx crisis invariant-broken staking supply
+        gaiad tx crisis invariant-broken staking supply
 
 ```
 

@@ -28,7 +28,7 @@ The best way to minimize the risk of theft or loss of ATOM is to have a strong s
 ## Software Vulnerabilities
 To protect yourself and ensure you're using the safest code is to use the latest version of software available, and to update immediately (or as soon as you can) after a security advisory is released. This is important for your laptops, mobile devices, cryptocurrency wallets, and anything else that may be linked to your identity or your cryptocurrency. 
 
-*To protect your ATOM, you should only download software directly from official sources, and make sure that you're always using the latest, most secure version of `gaiacli` when you're doing anything that involves your 12 words*. The latest versions of `Tendermint`, the `Cosmos-SDK`, and `gaiacli` will always be available from our official Github repositories.
+*To protect your ATOM, you should only download software directly from official sources, and make sure that you're always using the latest, most secure version of `gaiad` when you're doing anything that involves your 12 words*. The latest versions of `Tendermint`, the `Cosmos-SDK`, and `gaiad` will always be available from our official Github repositories.
 
 No one from Cosmos, the Tendermint team or the Interchain Foundation will ever send an email that asks for you to download a software attachment  after sending out a security advisory or making a patch available. 
 

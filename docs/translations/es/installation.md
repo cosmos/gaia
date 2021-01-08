@@ -4,7 +4,7 @@ order: 2
 
 # Instalación de Gaia
 
-Esta guía le explicará como instalar los puntos de entrada `gaiad` y `gaiacli` en su sistema. Con esto instalado en su servidor, puede participar en la red principal como un [Full Node](./join-mainnet.md) o como un [Validador](../validators/validator-setup.md).
+Esta guía le explicará como instalar los puntos de entrada `gaiad` y `gaiad` en su sistema. Con esto instalado en su servidor, puede participar en la red principal como un [Full Node](./join-mainnet.md) o como un [Validador](../validators/validator-setup.md).
 
 ## Instalación de Go
 
@@ -48,19 +48,19 @@ LDFLAGS="" make install
 
 > _NOTA_: Si aún tiene problemas en este paso, por favor compruebe que tiene instalada la última versión estable de GO.
 
-Esto debería instalar los binarios de `gaiad`y `gaiacli`. Verifique que todo esta OK:
+Esto debería instalar los binarios de `gaiad`y `gaiad`. Verifique que todo esta OK:
 
 ```bash
 $ gaiad version --long
-$ gaiacli version --long
+$ gaiad version --long
 ```
 
-`gaiacli` por su parte, debería dar como resultado algo similar a:
+`gaiad` por su parte, debería dar como resultado algo similar a:
 
 ```shell
 name: gaia
 server_name: gaiad
-client_name: gaiacli
+client_name: gaiad
 version: 2.0.3
 commit: 2f6783e298f25ff4e12cb84549777053ab88749a
 build_tags: netgo,ledger

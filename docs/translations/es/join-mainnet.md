@@ -133,7 +133,7 @@ gaiad start
 Comprueba que todo funciona bien:
 
 ```bash
-gaiacli status
+gaiad status
 ```
 
 Vea el estado de la red con el [Explorador de Cosmos](https://cosmos.network/launch)
@@ -176,7 +176,7 @@ invariant broken:
         pool.NotBondedTokens: 100
         sum of account tokens: 101
     CRITICAL please submit the following transaction:
-        gaiacli tx crisis invariant-broken staking supply
+        gaiad tx crisis invariant-broken staking supply
 
 ```
 

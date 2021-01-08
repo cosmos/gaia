@@ -3,7 +3,7 @@
 `gaia`是作为Cosmos SDK应用程序的Cosmos Hub的名称。它有两个主要的入口：
 
 + `gaiad` : Gaia的服务进程，运行着`gaia`程序的全节点。
-+ `gaiacli` : Gaia的命令行界面，用于同一个Gaia的全节点交互。
++ `gaiad` : Gaia的命令行界面，用于同一个Gaia的全节点交互。
 
 `gaia`基于Cosmos SDK构建，使用了如下模块:
 

@@ -80,7 +80,7 @@
   * gaiad init으로 노드가 생성될때 키가 생성되며
   * 해당 키 정보는 `gaiad tendermint show-validator` 명령어로 확인하실 수 있습니다. 예) `cosmosvalconspub1zcjduc3qcyj09qc03elte23zwshdx92jm6ce88fgc90rtqhjx8v0608qh5ssp0w94c`
 
-* **애플리케이션 키**: 이 키는 애플리케이션에 의하여 생성되고 트랜잭션을 서명할때 이용됩니다. 검증인으로써는 이 키를 스테이킹 관련 트랜잭션과 거버넌스 관련 트랜잭션을 서명할때 이용하시게 됩니다. 애플리케이션 키는 `cosmospub` 퍼블릭키와 `cosmos` 주소와 연관되어있습니다. 두 키 모두 `gaiacli keys add` 명령으로 생성됩니다.
+* **애플리케이션 키**: 이 키는 애플리케이션에 의하여 생성되고 트랜잭션을 서명할때 이용됩니다. 검증인으로써는 이 키를 스테이킹 관련 트랜잭션과 거버넌스 관련 트랜잭션을 서명할때 이용하시게 됩니다. 애플리케이션 키는 `cosmospub` 퍼블릭키와 `cosmos` 주소와 연관되어있습니다. 두 키 모두 `gaiad keys add` 명령으로 생성됩니다.
   * 참고: 특정 검증인의 운영키는 애플리케이션키와 연관이 있으나 `cosmosvaloper`와 `cosmosvaloperpub`같은 특정 용도에만 맞는 사전 정의된 prefix를 이용합니다.
 
 ### 밸리데이터들의 '상태(state)'에는 어떤 것들이 있나요?

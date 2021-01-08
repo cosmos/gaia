@@ -103,10 +103,10 @@ much as possible with its [counterpart in the Tendermint Core repo](https://gith
    make tools
    ```
 2. Edit API docs
-   1. Directly Edit API docs manually: `cmd/gaiacli/swagger-ui/swagger.yaml`.
+   1. Directly Edit API docs manually: `cmd/gaiad/swagger-ui/swagger.yaml`.
    2. Edit API docs within the [Swagger Editor](https://editor.swagger.io/). Please refer to this [document](https://swagger.io/docs/specification/2-0/basic-structure/) for the correct structure in `.yaml`.
-3. Download `swagger.yaml` and replace the old `swagger.yaml` under fold `cmd/gaiacli/swagger-ui`.
-4. Compile gaiacli
+3. Download `swagger.yaml` and replace the old `swagger.yaml` under fold `cmd/gaiad/swagger-ui`.
+4. Compile gaiad
    ```bash
    make install
    ```

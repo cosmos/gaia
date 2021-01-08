@@ -123,7 +123,7 @@ gaiad start
 모든 것이 잘 작동하고 있는지 확인하기 위해서는:
 
 ```bash
-gaiacli status
+gaiad status
 ```
 
 네트워크 상태를 [코스모스 익스플로러](https://explorecosmos.network)를 통해 확인하세요. 현재 풀 노드가 현재 블록높이로 싱크되었을 경우, 익스플로러의 [풀 노드 리스트](https://explorecosmos.network/validators)에 표시가 될 것입니다. 익스플로러가 모든 노드에 연결하지는 않아 표시가 되지 않을 수 있다는 점 참고해주십시오.

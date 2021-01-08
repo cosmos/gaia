@@ -6,8 +6,7 @@ order: 1
 
 `gaia` is the name of the Cosmos SDK application for the Cosmos Hub. It comes with 2 main entrypoints:
 
-- `gaiad`: The Gaia Daemon, runs a full-node of the `gaia` application.
-- `gaiacli`: The Gaia command-line interface, which enables interaction with a Gaia full-node.
+- `gaiad`: The Gaia Daemon and command-line interface (CLI). runs a full-node of the `gaia` application.
 
 `gaia` is built on the Cosmos SDK using the following modules:
 

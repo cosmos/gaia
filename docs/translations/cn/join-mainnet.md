@@ -117,7 +117,7 @@ gaiad start
 检查一切是否平稳运行中:
 
 ```bash
-gaiacli status
+gaiad status
 ```
 
 使用[Cosmos Explorer](https://cosmos.network/launch)查看网络状态。

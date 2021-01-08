@@ -26,7 +26,7 @@ Once transfers are enabled, state rollbacks will be much more difficult to justi
 
 **What this means for users:** In this phase, we strongly recommend that you do not arrange to trade Atoms (eg. by legal contract as they will not be transferable yet) as there is the risk of state being reverted.
 
-You can, however, safely delegate Atoms to validators in this phase by following the CLI guideline and video tutorial linked below. Of course, in the event of a state reversion, any earned fees and inflation may be lost. Note that only `gaiacli` should be used for making transactions. Voyager, the GUI for interacting with the Cosmos Hub, is currently in alpha and undergoing development. A separate announcement will be made once Voyager is safer for use.
+You can, however, safely delegate Atoms to validators in this phase by following the CLI guideline and video tutorial linked below. Of course, in the event of a state reversion, any earned fees and inflation may be lost. Note that only `gaiad` should be used for making transactions. Voyager, the GUI for interacting with the Cosmos Hub, is currently in alpha and undergoing development. A separate announcement will be made once Voyager is safer for use.
 
 CLI Guide 🔗:  [github.com/cosmos/cosmos-sdk/…/delegator-guide-cli.md](https://github.com/cosmos/cosmos-sdk/blob/develop/docs/gaia/delegator-guide-cli.md) 
 

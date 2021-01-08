@@ -33,14 +33,14 @@ Please exercise extreme caution!
 
 ## Table of Contents
 
-- [Installing `gaiacli`](#installing-gaiacli)
+- [Installing `gaiad`](#installing-gaiad)
 - [Cosmos Accounts](#cosmos-accounts)
     + [Restoring an Account from the Fundraiser](#restoring-an-account-from-the-fundraiser)
     + [Creating an Account](#creating-an-account)
 - [Accessing the Cosmos Hub Network](#accessing-the-cosmos-hub-network)
     + [Running Your Own Full-Node](#running-your-own-full-node)
     + [Connecting to a Remote Full-Node](#connecting-to-a-remote-full-node)
-- [Setting Up `gaiacli`](#setting-up-gaiacli)
+- [Setting Up `gaiad`](#setting-up-gaiad)
 - [Querying the State](#querying-the-state)
 - [Sending Transactions](#sending-transactions)
     + [A Note on Gas and Fees](#a-note-on-gas-and-fees)
@@ -48,12 +48,12 @@ Please exercise extreme caution!
     + [Participating in Governance](#participating-in-governance)
     + [Signing Transactions from an Offline Computer](#signing-transactions-from-an-offline-computer)
 
-## Installing `gaiacli` 
+## Installing `gaiad` 
 
-`gaiacli`: This is the command-line interface to interact with a `gaiad` full-node. 
+`gaiad`: This is the command-line interface to interact with a `gaiad` full-node. 
 
 ::: warning
-**Please check that you download the latest stable release of `gaiacli` that is available**
+**Please check that you download the latest stable release of `gaiad` that is available**
 :::
 
 [**Download the binaries**]
@@ -62,7 +62,7 @@ Not available yet.
 [**Install from source**](../gaia-tutorials/installation.md)
 
 ::: tip
-`gaiacli` is used from a terminal. To open the terminal, follow these steps:
+`gaiad` is used from a terminal. To open the terminal, follow these steps:
 - **Windows**: `Start` > `All Programs` > `Accessories` > `Command Prompt`
 - **MacOS**: `Finder` > `Applications` > `Utilities` > `Terminal`
 - **Linux**: `Ctrl` + `Alt` + `T`
@@ -151,7 +151,7 @@ Next, click [here](#using-a-ledger-device) to learn how to generate an account.
 To restore an account using a fundraiser mnemonic and store the associated encrypted private key on a computer, use the following command:
 
 ```bash
-gaiacli keys add <yourKeyName> --recover
+gaiad keys add <yourKeyName> --recover
 ```
 
 - `<yourKeyName>` is the name of the account. It is a reference to the account number used to derive the key pair from the mnemonic. You will use this name to identify your account when you want to send a transaction.
@@ -170,7 +170,7 @@ store security policies please refer to your operating system manual.**
 
 ### Creating an Account
 
-To create an account, you just need to have `gaiacli` installed. Before creating it, you need to know where you intend to store and interact with your private keys. The best options are to store them in an offline dedicated computer or a ledger device. Storing them on your regular online computer involves more risk, since anyone who infiltrates your computer through the internet could exfiltrate your private keys and steal your funds.
+To create an account, you just need to have `gaiad` installed. Before creating it, you need to know where you intend to store and interact with your private keys. The best options are to store them in an offline dedicated computer or a ledger device. Storing them on your regular online computer involves more risk, since anyone who infiltrates your computer through the internet could exfiltrate your private keys and steal your funds.
 
 #### Using a Ledger Device
 
@@ -178,7 +178,7 @@ To create an account, you just need to have `gaiacli` installed. Before creating
 **Only use Ledger devices that you bought factory new or trust fully**
 :::
 
-When you initialize your ledger, a 24-word mnemonic is generated and stored in the device. This mnemonic is compatible with Cosmos and Cosmos accounts can be derived from it. Therefore, all you have to do is make your ledger compatible with `gaiacli`. To do so, you need to go through the following steps:
+When you initialize your ledger, a 24-word mnemonic is generated and stored in the device. This mnemonic is compatible with Cosmos and Cosmos accounts can be derived from it. Therefore, all you have to do is make your ledger compatible with `gaiad`. To do so, you need to go through the following steps:
 
 1. Download the Ledger Live app [here](https://www.ledger.com/pages/ledger-live). 
 2. Connect your ledger via USB and update to the latest firmware
@@ -188,7 +188,7 @@ When you initialize your ledger, a 24-word mnemonic is generated and stored in t
 Then, to create an account, use the following command:
 
 ```bash
-gaiacli keys add <yourAccountName> --ledger 
+gaiad keys add <yourAccountName> --ledger 
 ```
 
 ::: warning
@@ -207,7 +207,7 @@ gaiacli keys add <yourAccountName> --ledger
 To generate an account, just use the following command:
 
 ```bash
-gaiacli keys add <yourKeyName>
+gaiad keys add <yourKeyName>
 ```
 
 The command will generate a 24-words mnemonic and save the private and public keys for account `0`
@@ -242,7 +242,7 @@ rm ~/.bash_history
 You can generate more accounts from the same mnemonic using the following command:
 
 ```bash
-gaiacli keys add <yourKeyName> --recover --account 1
+gaiad keys add <yourKeyName> --recover --account 1
 ```
 
 This command will prompt you to input a passphrase as well as your mnemonic. Change the account number to generate a different account. 
@@ -266,24 +266,24 @@ You will find the tutorial on how to install `gaiad` [here](https://cosmos.netwo
 
 If you do not want or cannot run your own node, you can connect to someone else's full-node. You should pick an operator you trust, because a malicious operator could return  incorrect query results or censor your transactions. However, they will never be able to steal your funds, as your private keys are stored locally on your computer or ledger device. Possible options of full-node operators include validators, wallet providers or exchanges. 
 
-In order to connect to the full-node, you will need an address of the following form: `https://77.87.106.33:26657` (*Note: This is a placeholder*). This address has to be communicated by the full-node operator you choose to trust. You will use this address in the [following section](#setting-up-gaiacli).
+In order to connect to the full-node, you will need an address of the following form: `https://77.87.106.33:26657` (*Note: This is a placeholder*). This address has to be communicated by the full-node operator you choose to trust. You will use this address in the [following section](#setting-up-gaiad).
 
-## Setting Up `gaiacli`
+## Setting Up `gaiad`
 
 ::: tip
-**Before setting up `gaiacli`, make sure you have set up a way to [access the Cosmos Hub network](#accessing-the-cosmos-hub-network)**
+**Before setting up `gaiad`, make sure you have set up a way to [access the Cosmos Hub network](#accessing-the-cosmos-hub-network)**
 :::
 
 ::: warning
-**Please check that you are always using the latest stable release of `gaiacli`**
+**Please check that you are always using the latest stable release of `gaiad`**
 :::
 
-`gaiacli` is the tool that enables you to interact with the node that runs on the Cosmos Hub network, whether you run it yourself or not. Let us set it up properly.
+`gaiad` is the tool that enables you to interact with the node that runs on the Cosmos Hub network, whether you run it yourself or not. Let us set it up properly.
 
-In order to set up `gaiacli`, use the following command:
+In order to set up `gaiad`, use the following command:
 
 ```bash
-gaiacli config <flag> <value>
+gaiad config <flag> <value>
 ```
 
 It allows you to set a default value for each given flag. 
@@ -291,9 +291,9 @@ It allows you to set a default value for each given flag.
 First, set up the address of the full-node you want to connect to:
 
 ```bash
-gaiacli config node <host>:<port
+gaiad config node <host>:<port
 
-// example: gaiacli config node https://77.87.106.33:26657
+// example: gaiad config node https://77.87.106.33:26657
 ```
 
 If you run your own full-node, just use `tcp://localhost:26657` as the address. 
@@ -301,7 +301,7 @@ If you run your own full-node, just use `tcp://localhost:26657` as the address.
 Then, let us set the default value of the `--trust-node` flag:
 
 ```bash
-gaiacli config trust-node false
+gaiad config trust-node false
 
 // Set to true if you run a light-client node, false otherwise
 ```
@@ -309,50 +309,50 @@ gaiacli config trust-node false
 Finally, let us set the `chain-id` of the blockchain we want to interact with:
 
 ```bash
-gaiacli config chain-id cosmoshub-2
+gaiad config chain-id cosmoshub-2
 ```
 
 ## Querying the State
 
 ::: tip
-**Before you can bond atoms and withdraw rewards, you need to [set up `gaiacli`](#setting-up-gaiacli)**
+**Before you can bond atoms and withdraw rewards, you need to [set up `gaiad`](#setting-up-gaiad)**
 :::
 
-`gaiacli` lets you query all relevant information from the blockchain, like account balances, amount of bonded tokens, outstanding rewards, governance proposals and more. Next is a list of the most useful commands for delegator. 
+`gaiad` lets you query all relevant information from the blockchain, like account balances, amount of bonded tokens, outstanding rewards, governance proposals and more. Next is a list of the most useful commands for delegator. 
 
 ```bash
 // query account balances and other account-related information
-gaiacli query account <yourAddress>
+gaiad query account <yourAddress>
 
 // query the list of validators
-gaiacli query staking validators
+gaiad query staking validators
 
 // query the information of a validator given their address (e.g. cosmosvaloper1n5pepvmgsfd3p2tqqgvt505jvymmstf6s9gw27)
-gaiacli query staking validator <validatorAddress>
+gaiad query staking validator <validatorAddress>
 
 // query all delegations made from a delegator given their address (e.g. cosmos10snjt8dmpr5my0h76xj48ty80uzwhraqalu4eg)
-gaiacli query staking delegations <delegatorAddress>
+gaiad query staking delegations <delegatorAddress>
 
 // query a specific delegation made from a delegator (e.g. cosmos10snjt8dmpr5my0h76xj48ty80uzwhraqalu4eg) to a validator (e.g. cosmosvaloper1n5pepvmgsfd3p2tqqgvt505jvymmstf6s9gw27) given their addresses
-gaiacli query staking delegation <delegatorAddress> <validatorAddress>
+gaiad query staking delegation <delegatorAddress> <validatorAddress>
 
 // query the rewards of a delegator given a delegator address (e.g. cosmos10snjt8dmpr5my0h76xj48ty80uzwhraqalu4eg)
-gaiacli query distribution rewards <delegatorAddress> 
+gaiad query distribution rewards <delegatorAddress> 
 
 // query all proposals currently open for depositing
-gaiacli query gov proposals --status deposit_period
+gaiad query gov proposals --status deposit_period
 
 // query all proposals currently open for voting
-gaiacli query gov proposals --status voting_period
+gaiad query gov proposals --status voting_period
 
 // query a proposal given its proposalID
-gaiacli query gov proposal <proposalID>
+gaiad query gov proposal <proposalID>
 ```
 
 For more commands, just type:
 
 ```bash
-gaiacli query
+gaiad query
 ```
 
 For each command, you can use the `-h` or `--help` flag to get more information.
@@ -384,7 +384,7 @@ For mainnet, the recommended `gas-prices` is `0.025uatom`.
 ### Sending Tokens
 
 ::: tip
-**Before you can bond atoms and withdraw rewards, you need to [set up `gaiacli`](#setting-up-gaiacli) and [create an account](#creating-an-account)**
+**Before you can bond atoms and withdraw rewards, you need to [set up `gaiad`](#setting-up-gaiad) and [create an account](#creating-an-account)**
 :::
 
 ::: warning
@@ -396,13 +396,13 @@ For mainnet, the recommended `gas-prices` is `0.025uatom`.
 // Ex value for parameters (do not actually use these values in your tx!!): <to_address>=cosmos16m93fezfiezhvnjajzrfyszml8qm92a0w67ntjhd3d0 <amount>=1000000uatom 
 // Ex value for flags: <gasPrice>=0.025uatom
 
-gaiacli tx send <to_address> <amount> --from <yourKeyName> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice>
+gaiad tx send <to_address> <amount> --from <yourKeyName> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice>
 ```
 
 ### Bonding Atoms and Withdrawing Rewards
 
 ::: tip
-**Before you can bond atoms and withdraw rewards, you need to [set up `gaiacli`](#setting-up-gaiacli) and [create an account](#creating-an-account)**
+**Before you can bond atoms and withdraw rewards, you need to [set up `gaiad`](#setting-up-gaiad) and [create an account](#creating-an-account)**
 :::
 
 ::: warning
@@ -417,7 +417,7 @@ gaiacli tx send <to_address> <amount> --from <yourKeyName> --gas auto --gas-adju
 // Bond a certain amount of Atoms to a given validator
 // ex value for flags: <validatorAddress>=cosmosvaloper18thamkhnj9wz8pa4nhnp9rldprgant57pk2m8s, <amountToBound>=10000000uatom, <gasPrice>=0.025uatom
 
-gaiacli tx staking delegate <validatorAddress> <amountToBond> --from <delegatorKeyName> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice>
+gaiad tx staking delegate <validatorAddress> <amountToBond> --from <delegatorKeyName> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice>
 
 
 // Redelegate a certain amount of Atoms from a validator to another
@@ -426,19 +426,19 @@ gaiacli tx staking delegate <validatorAddress> <amountToBond> --from <delegatorK
 // After a redelegation, no other redelegation can be made from the account for the next 3 weeks
 // ex value for flags: <stcValidatorAddress>=cosmosvaloper18thamkhnj9wz8pa4nhnp9rldprgant57pk2m8s, <amountToRedelegate>=100000000uatom, <gasPrice>=0.025uatom
 
-gaiacli tx staking redelegate <srcValidatorAddress> <destValidatorAddress> <amountToRedelegate> --from <delegatorKeyName> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice>
+gaiad tx staking redelegate <srcValidatorAddress> <destValidatorAddress> <amountToRedelegate> --from <delegatorKeyName> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice>
 
 // Withdraw all rewards
 // ex value for flag: <gasPrice>=0.025uatom
 
-gaiacli tx distribution withdraw-all-rewards --from <delegatorKeyName> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice>
+gaiad tx distribution withdraw-all-rewards --from <delegatorKeyName> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice>
 
 
 // Unbond a certain amount of Atoms from a given validator 
 // You will have to wait 3 weeks before your Atoms are fully unbonded and transferrable 
 // ex value for flags: <validatorAddress>=cosmosvaloper18thamkhnj9wz8pa4nhnp9rldprgant57pk2m8s, <amountToUnbound>=10000000uatom, <gasPrice>=0.025uatom
 
-gaiacli tx staking unbond <validatorAddress> <amountToUnbond> --from <delegatorKeyName> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice>
+gaiad tx staking unbond <validatorAddress> <amountToUnbond> --from <delegatorKeyName> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice>
 ```
 
 ::: warning
@@ -449,14 +449,14 @@ To confirm that your transaction went through, you can use the following queries
 
 ```bash
 // your balance should change after you bond Atoms or withdraw rewards
-gaiacli query account
+gaiad query account
 
 // you should have delegations after you bond Atom
-gaiacli query staking delegations <delegatorAddress>
+gaiad query staking delegations <delegatorAddress>
 
 // this returns your tx if it has been included
 // use the tx hash that was displayed when you created the tx
-gaiacli query tx <txHash>
+gaiad query tx <txHash>
 
 ```
 
@@ -493,19 +493,19 @@ At the end of the voting period, the proposal is accepted if there are more than
 // <type>=text/parameter_change/software_upgrade
 // ex value for flag: <gasPrice>=0.025uatom
 
-gaiacli tx gov submit-proposal --title "Test Proposal" --description "My awesome proposal" --type <type> --deposit=10000000uatom --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice> --from <delegatorKeyName>
+gaiad tx gov submit-proposal --title "Test Proposal" --description "My awesome proposal" --type <type> --deposit=10000000uatom --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice> --from <delegatorKeyName>
 
 // Increase deposit of a proposal
-// Retrieve proposalID from $gaiacli query gov proposals --status deposit_period
+// Retrieve proposalID from $gaiad query gov proposals --status deposit_period
 // ex value for parameter: <deposit>=10000000uatom
 
-gaiacli tx gov deposit <proposalID> <deposit> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice> --from <delegatorKeyName>
+gaiad tx gov deposit <proposalID> <deposit> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice> --from <delegatorKeyName>
 
 // Vote on a proposal
-// Retrieve proposalID from $gaiacli query gov proposals --status voting_period 
+// Retrieve proposalID from $gaiad query gov proposals --status voting_period 
 // <option>=yes/no/no_with_veto/abstain
 
-gaiacli tx gov vote <proposalID> <option> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice> --from <delegatorKeyName>
+gaiad tx gov vote <proposalID> <option> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice> --from <delegatorKeyName>
 ```
 
 ### Signing Transactions From an Offline Computer
@@ -516,7 +516,7 @@ If you do not have a ledger device and want to interact with your private key on
 // Bond Atoms 
 // ex value for flags: <amountToBound>=10000000uatom, <bech32AddressOfValidator>=cosmosvaloper18thamkhnj9wz8pa4nhnp9rldprgant57pk2m8s, <gasPrice>=0.025uatom, <delegatorAddress>=cosmos10snjt8dmpr5my0h76xj48ty80uzwhraqalu4eg
 
-gaiacli tx staking delegate <validatorAddress> <amountToBond> --from <delegatorAddress> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice> --generate-only > unsignedTX.json
+gaiad tx staking delegate <validatorAddress> <amountToBond> --from <delegatorAddress> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice> --generate-only > unsignedTX.json
 ```
 
 In order to sign, you will also need the `chain-id`, `account-number` and `sequence`. The `chain-id` is a unique identifier for the blockchain on which you are submitting the transaction. The `account-number` is an identifier generated when your account first receives funds. The `sequence` number is used to keep track of the number of transactions you have sent and prevent replay attacks.
@@ -524,7 +524,7 @@ In order to sign, you will also need the `chain-id`, `account-number` and `seque
 Get the chain-id from the genesis file (`cosmoshub-2`), and the two other fields using the account query:
 
 ```bash
-gaiacli query account <yourAddress> --chain-id cosmoshub-2
+gaiad query account <yourAddress> --chain-id cosmoshub-2
 ```
 
 Then, copy `unsignedTx.json` and transfer it (e.g. via USB) to the offline computer. If it is not done already, [create an account on the offline computer](#using-a-computer). For additional security, you can double check the parameters of your transaction before signing it using the following command:
@@ -536,11 +536,11 @@ cat unsignedTx.json
 Now, sign the transaction using the following command. You will need the `chain-id`, `sequence` and `account-number` obtained earlier:
 
 ```bash
-gaiacli tx sign unsignedTx.json --from <delegatorKeyName> --offline --chain-id cosmoshub-2 --sequence <sequence> --account-number <account-number> > signedTx.json
+gaiad tx sign unsignedTx.json --from <delegatorKeyName> --offline --chain-id cosmoshub-2 --sequence <sequence> --account-number <account-number> > signedTx.json
 ```
 
 Copy `signedTx.json` and transfer it back to the online computer. Finally, use the following command to broadcast the transaction:
 
 ```bash
-gaiacli tx broadcast signedTx.json
+gaiad tx broadcast signedTx.json
 ```

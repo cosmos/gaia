@@ -1,6 +1,6 @@
 ## Gaia 설치하기
 
-이 가이드는 `gaiad`와 `gaiacli`를 엔트리포인트를 시스템에 설치하는 방법을 설명합니다. `gaiad`와 `gaiacli`가 설치된 서버를 통해 [풀노드](./join-testnet.md#run-a-full-node) 또는 [밸리데이터로](./validators/validator-setup.md)써 최신 테스트넷에 참가하실 수 있습니다.
+이 가이드는 `gaiad`와 `gaiad`를 엔트리포인트를 시스템에 설치하는 방법을 설명합니다. `gaiad`와 `gaiad`가 설치된 서버를 통해 [풀노드](./join-testnet.md#run-a-full-node) 또는 [밸리데이터로](./validators/validator-setup.md)써 최신 테스트넷에 참가하실 수 있습니다.
 
 ### Go 설치하기
 
@@ -43,19 +43,19 @@ LDFLAGS="" make install
 
 > _참고_: 여기에서 문제가 발생한다면, Go의 최신 스테이블 버전이 설치되어있는지 확인하십시오.
 
-위 절차를 따라하시면 `gaiad`와 `gaiacli` 바이너리가 설치될 것입니다. 설치가 잘 되어있는지 확인하십시오:
+위 절차를 따라하시면 `gaiad`와 `gaiad` 바이너리가 설치될 것입니다. 설치가 잘 되어있는지 확인하십시오:
 
 ```bash
 $ gaiad version --long
-$ gaiacli version --long
+$ gaiad version --long
 ```
 
-`gaiacli` 명령어는 다음과 비슷한 아웃풋을 내보냅니다:
+`gaiad` 명령어는 다음과 비슷한 아웃풋을 내보냅니다:
 
 ```bash
 name: gaia
 server_name: gaiad
-client_name: gaiacli
+client_name: gaiad
 version: 1.0.0
 commit: 89e6316a27343304d332aadfe2869847bf52331c
 build_tags: netgo,ledger

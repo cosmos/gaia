@@ -14,9 +14,9 @@
 
 컨테이너 형태로 Gaia 디플로이를 원하시는 경우, `build` 단계를 건너뛰시고 공식 이미지 파일을 설치하실 수 있습니다. \$TAG은 설치하시려는 버전을 의미합니다.
 
-- `docker run -it -v ~/.gaiad:/root/.gaiad -v ~/.gaiacli:/root/.gaiacli tendermint:$TAG gaiad init`
-- `docker run -it -p 26657:26657 -p 26656:26656 -v ~/.gaiad:/root/.gaiad -v ~/.gaiacli:/root/.gaiacli tendermint:$TAG gaiad start`
-- `docker run -it -v ~/.gaiad:/root/.gaiad -v ~/.gaiacli:/root/.gaiacli tendermint:$TAG gaiacli version`
+- `docker run -it -v ~/.gaiad:/root/.gaiad -v ~/.gaiad:/root/.gaiad tendermint:$TAG gaiad init`
+- `docker run -it -p 26657:26657 -p 26656:26656 -v ~/.gaiad:/root/.gaiad -v ~/.gaiad:/root/.gaiad tendermint:$TAG gaiad start`
+- `docker run -it -v ~/.gaiad:/root/.gaiad -v ~/.gaiad:/root/.gaiad tendermint:$TAG gaiad version`
 
 각 이미지는 자체적인 docker-compose 스택을 빌드하는데 사용하실 수 있습니다.
 
@@ -39,11 +39,11 @@ cd $HOME
 gaiad init --chain-id=testing testing
 
 # 밸리데이터 키 생성하기
-gaiacli keys add validator
+gaiad keys add validator
 
 # 해당 키를 제네시스 파일에 있는 genesis.app_state.accounts 어레이(array)에 추가하세요
 # 참고: 이 명령어는 코인 수량을 설정할 수 있게 합니다. 위 계정에 코인 잔고를 포함하세요
-# genesis.app_state.staking.params.bond_denom의 기본 설정은 is staking gaiad add-genesis-account $(gaiacli keys show validator -a) 1000stake,1000validatortoken 입니다.
+# genesis.app_state.staking.params.bond_denom의 기본 설정은 is staking gaiad add-genesis-account $(gaiad keys show validator -a) 1000stake,1000validatortoken 입니다.
 
 # 밸리데이터 생성 트랜잭션 실행
 gaiad gentx --name validator
@@ -55,7 +55,7 @@ gaiad collect-gentxs
 gaiad start
 ```
 
-이 셋업은 모든 `gaiad` 정보를 `~/.gaiad`에 저장힙니다. 생성하신 제네시스 파일을 확인하고 싶으시다면 `~/.gaiad/config/genesis.json`에서 확인이 가능합니다. 위의 세팅으로 `gaiacli`가 이용이 가능하며, 토큰(스테이킹/커스텀)이 있는 계정 또한 함께 생성됩니다.
+이 셋업은 모든 `gaiad` 정보를 `~/.gaiad`에 저장힙니다. 생성하신 제네시스 파일을 확인하고 싶으시다면 `~/.gaiad/config/genesis.json`에서 확인이 가능합니다. 위의 세팅으로 `gaiad`가 이용이 가능하며, 토큰(스테이킹/커스텀)이 있는 계정 또한 함께 생성됩니다.
 
 ## 멀티 노드, 로컬, 자동 테스트넷
 
@@ -115,7 +115,7 @@ make build-linux localnet-start
 ```bash
 $ tree -L 2 build/
 build/
-├── gaiacli
+├── gaiad
 ├── gaiad
 ├── gentxs
 │   ├── node0.json
@@ -123,7 +123,7 @@ build/
 │   ├── node2.json
 │   └── node3.json
 ├── node0
-│   ├── gaiacli
+│   ├── gaiad
 │   │   ├── key_seed.json
 │   │   └── keys
 │   └── gaiad
@@ -131,21 +131,21 @@ build/
 │       ├── config
 │       └── data
 ├── node1
-│   ├── gaiacli
+│   ├── gaiad
 │   │   └── key_seed.json
 │   └── gaiad
 │       ├── ${LOG:-gaiad.log}
 │       ├── config
 │       └── data
 ├── node2
-│   ├── gaiacli
+│   ├── gaiad
 │   │   └── key_seed.json
 │   └── gaiad
 │       ├── ${LOG:-gaiad.log}
 │       ├── config
 │       └── data
 └── node3
-    ├── gaiacli
+    ├── gaiad
     │   └── key_seed.json
     └── gaiad
         ├── ${LOG:-gaiad.log}
@@ -165,16 +165,16 @@ docker logs -f gaiadnode0
 
 ### 키와 계정
 
-`gaiacli`를 이용해 tx를 생성하거나 상태를 쿼리 하시려면, 특정 노드의 `gaiacli` 디렉토리를 `home`처럼 이용하시면 됩니다. 예를들어:
+`gaiad`를 이용해 tx를 생성하거나 상태를 쿼리 하시려면, 특정 노드의 `gaiad` 디렉토리를 `home`처럼 이용하시면 됩니다. 예를들어:
 
 ```bash
-gaiacli keys list --home ./build/node0/gaiacli
+gaiad keys list --home ./build/node0/gaiad
 ```
 
 이제 계정이 존재하니 추가로 새로운 계정을 만들고 계정들에게 토큰을 전송할 수 있습니다.
 
 ::: tip
-**참고**: 각 노드의 시드는 `./build/nodeN/gaiacli/key_seed.json`에서 확인이 가능하며 `gaiacli keys add --restore` 명령을 통해 CLI로 복원될 수 있습니다.
+**참고**: 각 노드의 시드는 `./build/nodeN/gaiad/key_seed.json`에서 확인이 가능하며 `gaiad keys add --restore` 명령을 통해 CLI로 복원될 수 있습니다.
 :::
 
 ### 특수 바이너리

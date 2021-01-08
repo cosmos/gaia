@@ -38,6 +38,11 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 * Updated readme.md to provide seeds to gaiad using a flag instead of config.toml
 
+### Improvements
+
+* (sdk) Bump SDK version to [v0.40.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.40.0).
+* (tendermint) Bump Tendermint version to [v0.34.1](https://github.com/tendermint/tendermint/releases/tag/v0.34.1).
+
 ## [v2.0.14] - 2020-12-10
 
 * (sdk) Bump SDK version to [v0.37.15](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.37.15).

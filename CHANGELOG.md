@@ -38,6 +38,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 * Updated readme.md to provide seeds to gaiad using a flag instead of config.toml
 
+## [v3.0.0] - 2021-01-09
+
 ### Improvements
 
 * (sdk) Bump SDK version to [v0.40.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.40.0).
@@ -129,7 +131,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ### Improvements
 
 * [\#119](https://github.com/cosmos/gaia/pull/119) Refactor and upgrade Circle CI
-configuration.
+  configuration.
 * (sdk) Update SDK version to v0.37.1
 
 ## [v2.0.0] - 2019-08-22
@@ -137,7 +139,7 @@ configuration.
 ### Bug Fixes
 
 * [\#104](https://github.com/cosmos/gaia/issues/104) Fix `ModuleAccountAddrs` to
-not rely on the `x/supply` keeper to get module account addresses for blacklisting.
+  not rely on the `x/supply` keeper to get module account addresses for blacklisting.
 
 ### Breaking Changes
 
@@ -200,7 +202,8 @@ not rely on the `x/supply` keeper to get module account addresses for blacklisti
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v2.0.14...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v3.0.0...HEAD
+[v3.0.0]: https://github.com/cosmos/gaia/releases/tag/v3.0.0
 [v2.0.14]: https://github.com/cosmos/gaia/releases/tag/v2.0.14
 [v2.0.13]: https://github.com/cosmos/gaia/releases/tag/v2.0.13
 [v2.0.12]: https://github.com/cosmos/gaia/releases/tag/v2.0.12

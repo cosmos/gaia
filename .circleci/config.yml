@@ -196,25 +196,6 @@ jobs:
           docker login --password-stdin -u $DOCKER_USER \<\<\<$DOCKER_PASS
           docker push tendermint/gaia:$CIRCLE_TAG
 
-  reproducible-builds:
-    executor: golang
-    steps:
-      - attach_workspace:
-          at: /tmp/workspace
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: Build gaia
-          no_output_timeout: 20m
-          command: |
-            sudo apt-get install -y ruby
-            bash -x ./contrib/gitian-build.sh multi
-            cp gitian-build-multi/result/gaia-multi-res.yml .
-            rm -rf gitian-build-multi/
-      - store_artifacts:
-          path: /go/src/github.com/cosmos/gaia/gaia-multi-res.yml
-
 # FIXME: The `setup-contract-tests-data` make target is broken as it completely
 # overrides the .gaiad directory.
 #

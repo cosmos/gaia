@@ -129,35 +129,6 @@ jobs:
           name: "Upload docs to S3"
           command: make sync-docs
 
-  macos-ci:
-    executor: mac
-    steps:
-      - mac_set_env
-      - run:
-          name: Install go
-          command: |
-            source $BASH_ENV
-            curl -L -O https://dl.google.com/go/go$GO_VERSION.darwin-amd64.tar.gz
-            tar -C $HOME -xzf go$GO_VERSION.darwin-amd64.tar.gz
-            rm go$GO_VERSION.darwin-amd64.tar.gz
-            go version
-      - checkout
-      - run:
-          name: Install SDK
-          command: |
-            source $BASH_ENV
-            make tools
-            make install
-      - run:
-          name: Integration tests
-          command: source $BASH_ENV
-            make test-build
-      - run:
-          name: Test full gaia simulation
-          command: |
-            source $BASH_ENV
-            make test-sim-gaia-fast
-
   docker-image:
     executor: golang
     steps:
@@ -234,11 +205,6 @@ workflows:
                 - /.*/
           requires:
             - setup-dependencies
-      - macos-ci:
-          filters:
-            branches:
-              only:
-                - main
       - deploy-docs:
           context: gaia-docs-deployment-staging
           filters:

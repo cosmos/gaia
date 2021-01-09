@@ -258,13 +258,6 @@ workflows:
               only:
                 - /^v.*/
       - localnet
-      - reproducible-builds:
-          filters:
-            branches:
-              only:
-                - main
-          requires:
-            - setup-dependencies
 #      - contract_tests:
 #          requires:
 #            - setup-dependencies

@@ -129,44 +129,6 @@ jobs:
           name: "Upload docs to S3"
           command: make sync-docs
 
-  docker-image:
-    executor: golang
-    steps:
-      - attach_workspace:
-          at: /tmp/workspace
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run: |
-          GAIAD_VERSION=''
-          if [ "${CIRCLE_BRANCH}" = "main" ]; then
-            GAIAD_VERSION="stable"
-          elif [ "${CIRCLE_BRANCH}" = "develop" ]; then
-            GAIAD_VERSION="develop"
-          elif [[ "${CIRCLE_BRANCH}" == release/v* ]]; then
-            GAIAD_VERSION="${CIRCLE_BRANCH}"
-          fi
-          if [ -z "${GAIAD_VERSION}" ]; then
-            docker build .
-          else
-            docker build -t tendermint/gaia:$GAIAD_VERSION .
-            docker login --password-stdin -u $DOCKER_USER \<\<\<$DOCKER_PASS
-            docker push tendermint/gaia:$GAIAD_VERSION
-          fi
-
-  docker-tagged:
-    executor: golang
-    steps:
-      - attach_workspace:
-          at: /tmp/workspace
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run: |
-          docker build -t tendermint/gaia:$CIRCLE_TAG .
-          docker login --password-stdin -u $DOCKER_USER \<\<\<$DOCKER_PASS
-          docker push tendermint/gaia:$CIRCLE_TAG
-
 # FIXME: The `setup-contract-tests-data` make target is broken as it completely
 # overrides the .gaiad directory.
 #
@@ -192,19 +154,6 @@ workflows:
   version: 2
   test-suite:
     jobs:
-      - docker-image:
-          requires:
-            - setup-dependencies
-      - docker-tagged:
-          filters:
-            tags:
-              only:
-                - /^v.*/
-            branches:
-              ignore:
-                - /.*/
-          requires:
-            - setup-dependencies
       - deploy-docs:
           context: gaia-docs-deployment-staging
           filters:

@@ -4,87 +4,59 @@ order: 6
 
 # Build Gaia Deterministically
 
-Gitian is the deterministic build process that is used to build the Gaia executables. It provides a way to be reasonably sure that the executables are really built from the git source. It also makes sure that the same, tested dependencies are used and statically built into the executable.
-
-Multiple developers build the source code by following a specific descriptor ("recipe"), cryptographically sign the result, and upload the resulting signature. These results are compared and only if they match, the build is accepted and provided for download.
-
-More independent Gitian builders are needed, which is why this guide exists. It is preferred you follow these steps yourself instead of using someone else's VM image to avoid 'contaminating' the build.
-
-This page contains all instructions required to build and sign reproducible Gaia binaries for Linux, Mac OS X, and Windows.
+The [Tendermint rbuilder Docker image](https://github.com/tendermint/images/tree/master/rbuilder) provides a deterministic build environment that is used to build Cosmos SDK applications. It provides a way to be reasonably sure that the executables are really built from the git source. It also makes sure that the same, tested dependencies are used and statically built into the executable.
 
 ## Prerequisites
 
-Make sure your system satisfy minimum requisites as outlined in https://github.com/devrandom/gitian-builder#prerequisites.
+Make sure you have [Docker installed on your system](https://docs.docker.com/get-docker/).
 
-All the following instructions have been tested on *Ubuntu 18.04.2 LTS* with *docker 18.06.1-ce* and *docker 18.09.6-ce*.
+All the following instructions have been tested on *Ubuntu 18.04.2 LTS* with *docker 20.10.2*.
 
-If you are on Mac OS X, make sure you have prepended your `PATH` environment variable with GNU coreutils's path before running the build script:
+## Build
 
-```
-export PATH=/usr/local/opt/coreutils/libexec/gnubin/:$PATH
-```
-
-## Build and sign
-
-Clone cosmos-sdk:
+Clone `gaia`:
 
 ```
-git clone git@github.com:cosmos/gaia
+git clone https://github.com/cosmos/gaia.git
 ```
 
 Checkout the commit, branch, or release tag you want to build:
 
 ```
 cd gaia/
-git checkout v0.35.0
+git checkout v3.0.0
 ```
 
-Run the following command to launch a build for `linux` and sign the final build
-report (replace `user@example.com` with the GPG identity you want to sign the report with):
+The buildsystem supports and produces binaries for the following architectures:
+* **darwin/amd64**
+* **linux/amd64**
+* **linux/arm64**
+* **windows/amd64**
+
+Run the following command to launch a build for all supported architectures:
 
 ```
-./contrib/gitian-build.sh -s user@example.com linux
+make distclean build-reproducible
 ```
 
-The above command generates two directories in the current working directory:
-* `gitian-build-linux` containing the `gitian-builder` clone used to drive the build process.
-* `gaia.sigs` containing the signed build report.
-
-Replace `linux` in the above command with `darwin` or `windows` to run builds for Mac OS X and Windows respectively.
-Run the following command to build binaries for all platforms (`darwin`, `linux`, and `windows`):
+The build system generates both the binaries and deterministic build report in the `artifacts` directory.
+The `artifacts/build_report` file contains the list of the build artifacts and their respective checksums, and can be used to verify
+build sanity. An example of its contents follows:
 
 ```
-cd gaia/ && ./contrib/gitian-build.sh -s user@example.com all
-```
-
-If you want to generate unsigned builds, just remove the option `-s` from the command line:
-
-```
-./contrib/gitian-build.sh linux
-```
-
-At the end of the procedure, build results can be found in the `./gaia.sigs` directory:
-
-Please refer to the `contrib/gitian-build.sh`'s help screen for further information on its usage.
-
-## Signatures upload
-
-Once signatures are generated, they could be uploaded to gaia's dedicated repository: https://github.com/cosmos/gaia.sigs.
-The build script can take care of cloning the signatures repository and commit the signed result too:
-
-```
-./contrib/gitian-build.sh -c -s user@example.com all
-```
-
-## Troubleshooting
-
-### Docker gitian-target container cannot be killed
-
-The issue is due to a relatively recent kernel apparmor change, [see here](https://github.com/moby/moby/issues/36809#issuecomment-379325713) for more information on a potential mitigation for the issue.
-
-On Ubuntu 18.04, when the container hangs and `docker` is unable to kill it you can try to use `pkill` to forcibly terminate `containerd-shim`:
-
-```
-sudo pkill containerd-shim
-docker system prune
+App: gaiad
+Version: 2.0.12-20-gfc0171b
+Commit: fc0171b00662fb43df12955378ed8b0c5db85229
+Files:
+ bee04f003adcc2a1848bcc4ec6dc6731  gaiad-2.0.12-20-gfc0171b-darwin-amd64
+ ff1edcd44f6ff7b3746d211eceb8f3f5  gaiad-2.0.12-20-gfc0171b-linux-amd64
+ 8d6109dc1e1c59b2ffa9660a49bb54e1  gaiad-2.0.12-20-gfc0171b-linux-arm64
+ 3183eec0ae71da9d8b68e0ba2986b885  gaiad-2.0.12-20-gfc0171b-windows-amd64.exe
+ 8f26db0add97a3ac1e038b0a8dc3ffb3  gaiad-2.0.12-20-gfc0171b.tar.gz
+Checksums-Sha256:
+ c08d6bf03ca71254b24e8eda54dfcbf82ef671891b283ac194b6633292792324  gaiad-2.0.12-20-gfc0171b-darwin-amd64
+ 8c85b5ab2f3c4d50a53d97448d6eab28a3b3e9da1b92616cb478418bc8096f5a  gaiad-2.0.12-20-gfc0171b-linux-amd64
+ 66606c5cc82794a7713d50364ce9f0b3e582774b8fc8fb5851db933f98f661c2  gaiad-2.0.12-20-gfc0171b-linux-arm64
+ 1633968dbd987f1a1e2f90820ec78a39984eeae1fb97e0240d1f04909761bdb5  gaiad-2.0.12-20-gfc0171b-windows-amd64.exe
+ 8b7e34474185d83c6333e1f08f4c35459e95ec06bb8a246fd14bab595427ae9d  gaiad-2.0.12-20-gfc0171b.tar.gz
 ```

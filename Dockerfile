@@ -2,7 +2,7 @@
 # > docker build -t gaia .
 # > docker run -it -p 46657:46657 -p 46656:46656 -v ~/.gaiad:/gaia/.gaiad -v ~/.gaiacli:/gaia/.gaiacli gaia gaiad init
 # > docker run -it -p 46657:46657 -p 46656:46656 -v ~/.gaiad:/gaia/.gaiad -v ~/.gaiacli:/gaia/.gaiacli gaia gaiad start
-FROM golang:alpine AS build-env
+FROM golang:1.15-alpine AS build-env
 
 # Set up dependencies
 ENV PACKAGES curl make git libc-dev bash gcc linux-headers eudev-dev python3
@@ -12,6 +12,8 @@ WORKDIR /go/src/github.com/cosmos/gaia
 
 # Add source files
 COPY . .
+
+RUN go version
 
 # Install minimum necessary dependencies, build Cosmos SDK, remove packages
 RUN apk add --no-cache $PACKAGES && \

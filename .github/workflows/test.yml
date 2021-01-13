@@ -49,12 +49,3 @@ jobs:
           file: ./coverage.txt # optional
           fail_ci_if_error: true
         if: "env.GIT_DIFF != ''"
-
-  docker-build:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v2
-      - name: build docker image
-        run: |
-          docker build --pull --rm -f "Dockerfile" -t gaia:latest "."

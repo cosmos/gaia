@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -o errexit -o nounset
+
 CHAINID=$1
 GENACCT=$2
 
@@ -19,7 +21,7 @@ gaiad init --chain-id $CHAINID $CHAINID
 gaiad keys add validator --keyring-backend="test"
 gaiad add-genesis-account $(gaiad keys show validator -a --keyring-backend="test") $coins
 gaiad add-genesis-account $GENACCT $coins
-gaiad gentx validator --keyring-backend="test" --chain-id $CHAINID
+gaiad gentx validator 5000000000stake --keyring-backend="test" --chain-id $CHAINID
 gaiad collect-gentxs
 
 # Set proper defaults and change ports

@@ -139,6 +139,7 @@ build-docs:
 		cp -r .vuepress/dist/* ~/output/$${p}/ ; \
 		cp ~/output/$${p}/index.html ~/output ; \
 	done < versions ;
+.PHONY: build-docs
 
 sync-docs:
 	cd ~/output && \

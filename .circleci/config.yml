@@ -118,54 +118,10 @@ jobs:
             make clean localnet-start
             ./contrib/localnet-blocks-test.sh 100 5 50 localhost
 
-  deploy-docs:
-    executor: docs
-    steps:
-      - checkout
-      - run:
-          name: "Build docs"
-          command: make build-docs
-      - run:
-          name: "Upload docs to S3"
-          command: make sync-docs
-
-# FIXME: The `setup-contract-tests-data` make target is broken as it completely
-# overrides the .gaiad directory.
-#
-#  contract_tests:
-#    executor: golang
-#    steps:
-#      - attach_workspace:
-#          at: /tmp/workspace
-#      - checkout
-#      - setup_remote_docker:
-#          docker_layer_caching: true
-#      - run:
-#          name: Get Node.js and test REST implementation against swagger documentation at  https://cosmos.network/rpc/
-#          command: |
-#            go get github.com/snikch/goodman/cmd/goodman
-#            make build
-#            make build-contract-tests-hooks
-#            make setup-contract-tests-data
-#            export PATH=~/.local/bin:$PATH
-#            ./contrib/get_node.sh && make contract-tests
-
 workflows:
   version: 2
   test-suite:
     jobs:
-      - deploy-docs:
-          context: gaia-docs-deployment-staging
-          filters:
-            branches:
-              only:
-                - docs-update
-      - deploy-docs:
-          context: gaia-docs-deployment
-          filters:
-            branches:
-              only:
-                - main
       - setup-dependencies:
           # filters here are needed to enable this job also for tags
           filters:

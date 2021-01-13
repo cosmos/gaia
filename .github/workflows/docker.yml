@@ -2,6 +2,7 @@ name: Build & Push
 # Build & Push builds the simapp docker image on every push to master and
 # and pushes the image to https://hub.docker.com/r/interchainio/simapp/tags
 on:
+  pull_request:
   push:
     branches:
       - master
@@ -20,7 +21,7 @@ jobs:
       - name: Prepare
         id: prep
         run: |
-          DOCKER_IMAGE=tendermint/gaia
+          DOCKER_IMAGE=tendermint/gaia`
           VERSION=noop
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/}

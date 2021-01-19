@@ -36,7 +36,16 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
-* Updated readme.md to provide seeds to gaiad using a flag instead of config.toml
+## [v3.0.1] - 2021-01-19
+
+* (sdk) Bump SDK version to [v0.40.1](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.40.1).
+* (tendermint) Bump Tendermint version to [v0.34.3](https://github.com/tendermint/tendermint/releases/tag/v0.34.3).
+* (starport) [\#535](https://github.com/cosmos/gaia/pull/535) Add config.yml
+* (github) [\#543](https://github.com/cosmos/gaia/pull/543) Add docker deployment
+* (github) [\#544](https://github.com/cosmos/gaia/pull/544) Deploy from main not master
+* (docs) [\#550](https://github.com/cosmos/gaia/pull/550) Bump vuepress-theme-cosmos to 1.0.180
+* (docker) [\#537](https://github.com/cosmos/gaia/pull/537) Fix single-node.sh setup script
+* (docker) [\#534](https://github.com/cosmos/gaia/pull/534) Update to python3
 
 ## [v3.0.0] - 2021-01-09
 
@@ -202,7 +211,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v3.0.0...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v3.0.1...HEAD
+[v3.0.1]: https://github.com/cosmos/gaia/releases/tag/v3.0.1
 [v3.0.0]: https://github.com/cosmos/gaia/releases/tag/v3.0.0
 [v2.0.14]: https://github.com/cosmos/gaia/releases/tag/v2.0.14
 [v2.0.13]: https://github.com/cosmos/gaia/releases/tag/v2.0.13

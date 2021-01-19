@@ -38,6 +38,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [v3.0.1] - 2021-01-19
 
+* (sdk) Bump SDK version to [v0.40.1](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.40.1).
+* (tendermint) Bump Tendermint version to [v0.34.3](https://github.com/tendermint/tendermint/releases/tag/v0.34.3).
 * (starport) [\#535](https://github.com/cosmos/gaia/pull/535) Add config.yml
 * (github) [\#543](https://github.com/cosmos/gaia/pull/543) Add docker deployment
 * (github) [\#544](https://github.com/cosmos/gaia/pull/544) Deploy from main not master

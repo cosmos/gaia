@@ -1,8 +1,9 @@
-package gaia
+package bc
 
 import (
 	"github.com/cosmos/cosmos-sdk/std"
-	"github.com/cosmos/gaia/v3/app/params"
+
+	"github.com/bandprotocol/band-consumer/app/params"
 )
 
 // MakeEncodingConfig creates an EncodingConfig for testing

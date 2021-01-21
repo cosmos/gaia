@@ -1,4 +1,4 @@
-package gaia
+package bc
 
 /// This file implements Proposal 29 as passed by the Cosmos Hub. During the migration from
 /// cosmoshub-3 to cosmoshub-4, the migration function Validates the signed messages and then

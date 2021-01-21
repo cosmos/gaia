@@ -1,4 +1,4 @@
-package gaia
+package bc
 
 import (
 	"io"
@@ -85,7 +85,8 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	gaiaappparams "github.com/cosmos/gaia/v3/app/params"
+
+	bcappparams "github.com/bandprotocol/band-consumer/app/params"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
@@ -195,10 +196,10 @@ func init() {
 	DefaultNodeHome = filepath.Join(userHomeDir, ".bc")
 }
 
-// NewGaiaApp returns a reference to an initialized Gaia.
+// NewBandConsumerApp returns a reference to an initialized Gaia.
 func NewBandConsumerApp(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool, skipUpgradeHeights map[int64]bool,
-	homePath string, invCheckPeriod uint, encodingConfig gaiaappparams.EncodingConfig, appOpts servertypes.AppOptions, baseAppOptions ...func(*baseapp.BaseApp),
+	homePath string, invCheckPeriod uint, encodingConfig bcappparams.EncodingConfig, appOpts servertypes.AppOptions, baseAppOptions ...func(*baseapp.BaseApp),
 ) *BandConsumerApp {
 
 	appCodec := encodingConfig.Marshaler
@@ -219,7 +220,7 @@ func NewBandConsumerApp(
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
 
-	app := &NewBandConsumerApp{
+	app := &BandConsumerApp{
 		BaseApp:           bApp,
 		legacyAmino:       legacyAmino,
 		appCodec:          appCodec,

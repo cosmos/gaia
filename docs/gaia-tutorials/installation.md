@@ -52,7 +52,7 @@ LDFLAGS="" make install
 
 > _NOTE_: If you still have issues at this step, please check that you have the latest stable version of GO installed.
 
-That will install the `gaiad` and `gaiad` binaries. Verify that everything is OK:
+That will install the `gaiad` binary. Verify that everything is OK:
 
 ```bash
 gaiad version --long

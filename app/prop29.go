@@ -9,6 +9,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"log"
+	"strings"
 
 	"github.com/btcsuite/btcd/btcec"
 	"github.com/btcsuite/btcd/chaincfg"
@@ -80,7 +81,8 @@ type FundRecoveryMessage struct {
 }
 
 func (f *FundRecoveryMessage) unMarshalSignedJSON() (signedJSON, error) {
-	return unmarshalSignedJSON([]byte(f.signedMessage))
+	newLineStripped := strings.Replace(f.signedMessage, `\n`, "", -1)
+	return unmarshalSignedJSON([]byte(strings.Replace(newLineStripped, "\\", "", -1)))
 }
 
 // nolint: unparam
@@ -186,8 +188,8 @@ func ethDonor1() FundRecoveryMessage {
 	destAddress, _ := sdk.AccAddressFromBech32("cosmos17cg9xxpjnammafyqwfryr3hn32h6vjmh9x0y6j")   // nolint: errcheck
 
 	return FundRecoveryMessage{
-		`{ \"Message\":\"I remember After I successfully sent my 16 Eth to the Cosmos fundraising address 3 years ago,I wrote down those seed words and had a picture.But when we could claim,I found my seed phase does not work,I've tried every means I could,but all failed.Honestly,I still don’t know the problem,maybe I wrote wrong letters,maybe something wrong with that webpage,or maybe I mixed something,only God knows.\", \"Txid\":\"https://etherscan.io/tx/0x42d0f860e1cd484f51647f34479843008b69d8f1158c94ad44ae30df33fdc080\", \"Contribution\":\"16 ETH\", \"Contributing Addresses\":[ { \"address\":\"0x53ad4398f76a453a2d4dac4470f0b81cd1d72715\" } ], \"Genesis Cosmos Address\":\"cosmos1m06fehere8q09sqcj08dcc0xyj3fjlzc2x24y4\", \"Recovery Cosmos Address\":\"cosmos17cg9xxpjnammafyqwfryr3hn32h6vjmh9x0y6j\" }`,
-		"ceed630f7e8d102b125a22d9ec06ced12a016f376b408b9832a63a9b4b5f352b4b67c94e9cfa35e4f2676f0f92643f8b56caf82f6c6eabd765b787d3f6af77fb1b",
+		`{ "Message":"I remember After I successfully sent my 16 Eth to the Cosmos fundraising address 3 years ago,I wrote down those seed words and had a picture.But when we could claim,I found my seed phase does not work,I've tried every means I could,but all failed.Honestly,I still don’t know the problem,maybe I wrote wrong letters,maybe something wrong with that webpage,or maybe I mixed something,only God knows.", "Txid":"https://etherscan.io/tx/0x42d0f860e1cd484f51647f34479843008b69d8f1158c94ad44ae30df33fdc080", "Contribution":"16 ETH", "Contributing Addresses":[ { "address":"0x53ad4398f76a453a2d4dac4470f0b81cd1d72715" } ], "Genesis Cosmos Address":"cosmos1m06fehere8q09sqcj08dcc0xyj3fjlzc2x24y4", "Recovery Cosmos Address":"cosmos17cg9xxpjnammafyqwfryr3hn32h6vjmh9x0y6j" }`,
+		"0xceed630f7e8d102b125a22d9ec06ced12a016f376b408b9832a63a9b4b5f352b4b67c94e9cfa35e4f2676f0f92643f8b56caf82f6c6eabd765b787d3f6af77fb1b",
 		sourceAddress,
 		destAddress,
 		sdk.NewInt64Coin("uatom", 6512400000)}
@@ -199,7 +201,7 @@ func ethDonor2() FundRecoveryMessage {
 
 	return FundRecoveryMessage{
 		`{\n   \"Message\":\"In April 2017, I participated in 24 ETH at Cosmos ico. In about two years when Cosmos was listed on exchange, the cell phone that had taken the seed phrase picture was destroyed. I tried to go to a data recovery company, but I couldn't recover the picture, so there was no way to get ATOM. However, I still have the private key and keystore file of the Ethereum wallet that participated in Cosmos ico.\",\n   \"Txid\":\"https://etherscan.io/tx/0xe2bb8c832c237b9ed898d4616649347e84931d56b8942cb409cafd6b01e1913d\",\n   \"Contribution\":\"24 ETH\",\n   \"Contributing Addresses\":[\n      {\n         \"address\":\"0xff3fa81a59f31bd563d2554401438a1678d43593\"\n      }\n   ],\n   \"Genesis Cosmos Address\":\"cosmos1gzuqry88awndjjsa5exzx4gwnmktcpdrxgdcf6\",\n   \"Recovery Cosmos Address\":\"cosmos1teux7wdnnq03r7r277yu762mq3cket5mg4xd3e\"\n}\n`,
-		"38de4018152de5f42d24b1150c04f5010dc3edce9a3436a57d318beae5e6955228a5e2c1255591c0324e4e9f1bbd13806e51bbdb11259c9e2aeddbdbc91bc11a1b",
+		"0x38de4018152de5f42d24b1150c04f5010dc3edce9a3436a57d318beae5e6955228a5e2c1255591c0324e4e9f1bbd13806e51bbdb11259c9e2aeddbdbc91bc11a1b",
 		sourceAddress,
 		destAddress,
 		sdk.NewInt64Coin("uatom", 9769500000)}
@@ -211,7 +213,7 @@ func ethDonor3() FundRecoveryMessage {
 
 	return FundRecoveryMessage{
 		`{ \"Message\":\"One of the early Ethereum alternatives is Cosmos. This is one of the reasons ICONOMI that is a collective of 1500 small donors , donated to  Cosmos fundraiser about  2,222 ETH similarly to numerous ICO where we participated. Due to the possible bug  in the code, we did not get the seed phrases. During the subscription process using the Brave browser, following all the steps the seed phrases simply did not show-up. Iconomi will be grateful to the community for the recovery of the atoms.\", \"Txid\":\"https://etherscan.io/tx/0x0c85c7cc2b66840357c3f293ae2010f0c79f2cc9f4b1220028afe780fdfdb426\", \"Contribution\":\"2222 ETH\", \"Contributing Addresses\":[ { \"address\":\"0xb4dc54df11d2dcecd046e5c7318fb241a73ee370\" } ], \"Genesis Cosmos Address\":\"cosmos1r3xvguuhwvlk34esxclvrh3g7ycmcqqc2kcn9v\", \"Recovery Cosmos Address\":\"cosmos18qjynuyrfja9qugzs4zjcs6dh0qyprqa2vwktp\" }`,
-		"4c29f9d74a070a8c475553597a1bd461137af0ba9120c183a1cfe3dc8c729f367dcf76ed9a384eea18c920b7ba7613ddb5632da9642fdb42cc183ff5ea74614e1b",
+		"0x4c29f9d74a070a8c475553597a1bd461137af0ba9120c183a1cfe3dc8c729f367dcf76ed9a384eea18c920b7ba7613ddb5632da9642fdb42cc183ff5ea74614e1b",
 		sourceAddress,
 		destAddress,
 		sdk.NewInt64Coin("uatom", 904509000000)}
@@ -228,19 +230,19 @@ func validateFundRecovery() recoveryMessages {
 	//Bitcoin Verification
 	_, err := bDonor1.verifyBitcoinSignature(0)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("BTC1 %e", err)
 	}
 	_, err = bDonor2.verifyBitcoinSignature(0)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("BTC2 %e", err)
 	}
 	_, err = bDonor3.verifyBitcoinSignature(1)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("BTC3 %e", err)
 	}
 	_, err = bDonor4.verifyBitcoinSignature(0)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("BTC4 %e", err)
 	}
 
 	//Ethereum Donors
@@ -251,15 +253,17 @@ func validateFundRecovery() recoveryMessages {
 	//Ethereum Verification
 	_, err = eDonor1.verifyEthereumSignature(0)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Eth1 %e", err)
 	}
+
 	_, err = eDonor2.verifyEthereumSignature(0)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Eth2 %e", err)
 	}
+
 	_, err = eDonor3.verifyEthereumSignature(0)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Eth3 %e", err)
 	}
 
 	return []FundRecoveryMessage{bDonor1, bDonor2, bDonor3, bDonor4, eDonor1, eDonor2, eDonor3}
@@ -271,31 +275,28 @@ func validateFundRecovery() recoveryMessages {
 func verifyEthereumSignature(sig, msg, addr string) {
 	sigBytes, err := hexutil.Decode(sig)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Eth Sig Decode %e", err)
 	}
+	sigBytes[64] -= 27 // Transform yellow paper V from 27/28 to 0/1
 
 	addrBytes, err := hexutil.Decode(addr)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Eth Address Decode %e", err)
 	}
 
+	// fmt.Println(msg)
 	hash := accounts.TextHash([]byte(msg))
 
-	sigPublicKey, err := crypto.Ecrecover(hash, sigBytes)
+	sigPublicKey, err := crypto.SigToPub(hash, sigBytes)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Eth Pub Key Recover %e", err)
 	}
 
-	pubkey, err := crypto.DecompressPubkey(sigPublicKey)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	addrRecovered := crypto.PubkeyToAddress(*pubkey)
+	addrRecovered := crypto.PubkeyToAddress(*sigPublicKey)
 
 	if !bytes.Equal(addrRecovered.Bytes(), addrBytes) {
-		log.Fatal("invalid signature")
+		log.Fatalf("invalid signature given address %s, recovered address %s", addr, addrRecovered.String())
 	}
 }
 

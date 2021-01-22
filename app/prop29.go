@@ -277,7 +277,12 @@ func verifyEthereumSignature(sig, msg, addr string) {
 	if err != nil {
 		log.Fatalf("Eth Sig Decode %e", err)
 	}
-	sigBytes[64] -= 27 // Transform yellow paper V from 27/28 to 0/1
+
+	if sigBytes[64] != 27 && sigBytes[64] != 28 {
+		log.Fatalf("Invalid Eth Signatures for %s. The last byte is neither 27 not 28. %d", addr, sigBytes[64])
+	}
+
+	sigBytes[64] -= 27
 
 	addrBytes, err := hexutil.Decode(addr)
 	if err != nil {
@@ -286,6 +291,8 @@ func verifyEthereumSignature(sig, msg, addr string) {
 
 	// fmt.Println(msg)
 	hash := accounts.TextHash([]byte(msg))
+
+	// fmt.Println(hexutil.Encode(hash))
 
 	sigPublicKey, err := crypto.SigToPub(hash, sigBytes)
 

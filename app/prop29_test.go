@@ -1,6 +1,10 @@
 package gaia
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+)
 
 func TestVerifySignatures(t *testing.T) {
 	//Bitcoin Donors
@@ -10,10 +14,17 @@ func TestVerifySignatures(t *testing.T) {
 	bDonor4 := btcDonor4()
 
 	//Bitcoin Verification
-	bDonor1.verifyBitcoinSignature(0)
-	bDonor2.verifyBitcoinSignature(0)
-	bDonor3.verifyBitcoinSignature(1)
-	bDonor4.verifyBitcoinSignature(0)
+	_, err := bDonor1.verifyBitcoinSignature(0)
+	require.NoError(t, err, "bitcoin donor 1")
+
+	_, err = bDonor2.verifyBitcoinSignature(0)
+	require.NoError(t, err, "bitcoin donor 2")
+
+	_, err = bDonor3.verifyBitcoinSignature(1)
+	require.NoError(t, err, "bitcoin donor 3")
+
+	_, err = bDonor4.verifyBitcoinSignature(0)
+	require.NoError(t, err, "bitcoin donor 4")
 
 	//Ethereum Donors
 	eDonor1 := ethDonor1()
@@ -21,7 +32,12 @@ func TestVerifySignatures(t *testing.T) {
 	eDonor3 := ethDonor3()
 
 	//Ethereum Verification
-	eDonor1.verifyEthereumSignature(0)
-	eDonor2.verifyEthereumSignature(0)
-	eDonor3.verifyEthereumSignature(0)
+	_, err = eDonor1.verifyEthereumSignature(0)
+	require.NoError(t, err, "ethereum donor 1")
+
+	_, err = eDonor2.verifyEthereumSignature(0)
+	require.NoError(t, err, "ethereum donor 2")
+
+	_, err = eDonor3.verifyEthereumSignature(0)
+	require.NoError(t, err, "ethereum donor 3")
 }

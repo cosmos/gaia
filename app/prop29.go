@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"log"
 	"strings"
 
@@ -21,7 +22,9 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution/types"
+
 	"github.com/ethereum/go-ethereum/accounts"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 )
@@ -60,6 +63,7 @@ func (r *recoveryMessages) GetRemainingBalances() (balances []banktypes.Balance)
 	return
 }
 
+// GetRemainingAccounts returns the recovery destination addresses with positive balance
 func (r *recoveryMessages) GetRemainingAccounts() (addresses []sdk.Address) {
 	zeroBalance := sdk.NewInt64Coin("uatom", 0)
 	for _, m := range *r {
@@ -68,7 +72,7 @@ func (r *recoveryMessages) GetRemainingAccounts() (addresses []sdk.Address) {
 		}
 
 	}
-	return
+	return addresses
 }
 
 // FundRecoveryMessage were signed messages provided by fundraiser particpants who could not access their ATOM to facilate this process for recovering access to their funds.
@@ -91,7 +95,12 @@ func (f *FundRecoveryMessage) verifyBitcoinSignature(addrIdx int) (signedJSON, e
 	if err != nil {
 		return signedJSON{}, err
 	}
-	verifyBitcoinSignature(f.signature, f.signedMessage, msgJSON.ContributingAddresses[addrIdx].Address)
+
+	err = verifyBitcoinSignature(f.signature, f.signedMessage, msgJSON.ContributingAddresses[addrIdx].Address)
+	if err != nil {
+		return signedJSON{}, err
+	}
+
 	return msgJSON, nil
 }
 
@@ -102,7 +111,11 @@ func (f *FundRecoveryMessage) verifyEthereumSignature(addrIdx int) (signedJSON, 
 		return signedJSON{}, err
 	}
 
-	verifyEthereumSignature(f.signature, f.signedMessage, msgJSON.ContributingAddresses[addrIdx].Address)
+	err = verifyEthereumSignature(f.signature, f.signedMessage, msgJSON.ContributingAddresses[addrIdx].Address)
+	if err != nil {
+		return signedJSON{}, err
+	}
+
 	return msgJSON, nil
 }
 
@@ -267,41 +280,54 @@ func validateFundRecovery() recoveryMessages {
 	}
 
 	return []FundRecoveryMessage{bDonor1, bDonor2, bDonor3, bDonor4, eDonor1, eDonor2, eDonor3}
+}
 
+// EcRecover returns the address for the account that was used to create the signature.
+// Note, this function is compatible with eth_sign and personal_sign. As such it recovers
+// the address of:
+// hash = keccak256("\x19Ethereum Signed Message:\n"${message length}${message})
+// addr = ecrecover(hash, signature)
+//
+// Note, the signature must conform to the secp256k1 curve R, S and V values, where
+// the V value must be 27 or 28 for legacy reasons.
+//
+// https://github.com/ethereum/go-ethereum/wiki/Management-APIs#personal_ecRecover
+func ecRecover(sig, msg hexutil.Bytes) (common.Address, error) {
+	if len(sig) != crypto.SignatureLength {
+		return common.Address{}, fmt.Errorf("signature must be %d bytes long", crypto.SignatureLength)
+	}
+	if sig[crypto.RecoveryIDOffset] != 27 && sig[crypto.RecoveryIDOffset] != 28 {
+		return common.Address{}, fmt.Errorf("invalid Ethereum signature (V is not 27 or 28)")
+	}
+	sig[crypto.RecoveryIDOffset] -= 27 // Transform yellow paper V from 27/28 to 0/1
+
+	rpk, err := crypto.SigToPub(accounts.TextHash(msg), sig)
+	if err != nil {
+		return common.Address{}, err
+	}
+	return crypto.PubkeyToAddress(*rpk), nil
 }
 
 // Eth_sign verifier for MEW signatures.
+func verifyEthereumSignature(sig, msg, addr string) error {
+	var sigBz hexutil.Bytes
 
-func verifyEthereumSignature(sig, msg, addr string) {
-	sigBytes, err := hexutil.Decode(sig)
+	if err := sigBz.UnmarshalText([]byte(sig)); err != nil {
+		return fmt.Errorf("eth sig unmarshal error: %w", err)
+	}
+
+	addrRecovered, err := ecRecover(sigBz, []byte(msg))
 	if err != nil {
-		log.Fatalf("Eth Sig Decode error %e", err)
+		return fmt.Errorf("ecRecover error: %w", err)
 	}
 
-	if sigBytes[64] != 27 && sigBytes[64] != 28 {
-		log.Fatalf("Invalid Eth Signatures for %s. The last byte is neither 27 not 28. %d", addr, sigBytes[64])
+	address := common.HexToAddress(addr)
+
+	if !bytes.Equal(addrRecovered.Bytes(), address.Bytes()) {
+		log.Fatalf("invalid signature, given address %s, recovered address %s", address.String(), addrRecovered.String())
 	}
 
-	sigBytes[64] -= 27
-
-	addrBytes, err := hexutil.Decode(addr)
-	if err != nil {
-		log.Fatalf("Eth Address Decode error %e", err)
-	}
-
-	hash := accounts.TextHash([]byte(msg))
-
-	sigPublicKey, err := crypto.SigToPub(hash, sigBytes)
-
-	if err != nil {
-		log.Fatalf("Eth Pub Key Recover error %e", err)
-	}
-
-	addrRecovered := crypto.PubkeyToAddress(*sigPublicKey)
-
-	if !bytes.Equal(addrRecovered.Bytes(), addrBytes) {
-		log.Fatalf("invalid signature given address %s, recovered address %s", addr, addrRecovered.String())
-	}
+	return nil
 }
 
 const messageSignatureHeader = "Bitcoin Signed Message:\n"
@@ -309,29 +335,27 @@ const messageSignatureHeader = "Bitcoin Signed Message:\n"
 // Modified Bitcoin signature key recovery and address verification script that verifies
 // signed messages against simple pay to pub key hash addresses.
 // Should panic on failure.
-func verifyBitcoinSignature(sig, msg, addr string) {
-
+func verifyBitcoinSignature(sig, msg, addr string) error {
 	var buf bytes.Buffer
 	err := wire.WriteVarString(&buf, 0, messageSignatureHeader)
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("msg signature header serialization failed: %w", err)
 	}
 
-	err = wire.WriteVarString(&buf, 0, msg)
-	if err != nil {
-		log.Fatal(err)
+	if err := wire.WriteVarString(&buf, 0, msg); err != nil {
+		return fmt.Errorf("msg serialization failed: %w", err)
 	}
 
 	expectedMessageHash := chainhash.DoubleHashB(buf.Bytes())
 
 	sigBytes, err := base64.StdEncoding.DecodeString(sig)
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("base64 signature decoding failed: %w", err)
 	}
 
 	pk, wasCompressed, err := btcec.RecoverCompact(btcec.S256(), sigBytes, expectedMessageHash)
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("signature verification failed: %w", err)
 	}
 
 	var serializedPK []byte
@@ -343,82 +367,88 @@ func verifyBitcoinSignature(sig, msg, addr string) {
 
 	address, err := btcutil.NewAddressPubKey(serializedPK, &chaincfg.MainNetParams)
 	if err != nil {
-		log.Fatal("Address recovery failed")
-
+		return fmt.Errorf("address recovery from pubkey failed: %w", err)
 	}
 
 	if address.EncodeAddress() != addr {
-		log.Fatal("invalid signature")
+		return fmt.Errorf("address mismatch, expected %s, got %s", addr, address.EncodeAddress())
 	}
+
+	return nil
 }
 
 func Prop29Migration(authGenesis *authtypes.GenesisState, bankGenesis *banktypes.GenesisState, distrGenesis *distr.GenesisState) (authtypes.GenesisState, banktypes.GenesisState, distr.GenesisState) {
-
 	fundRecovery := validateFundRecovery()
 
 	recoveryAccounting := sdk.NewInt64Coin("uatom", 0)
-
 	emptyCoins := []sdk.Coin{}
-
 	distModuleAccount := authtypes.NewModuleAddress(distr.ModuleName)
 
-	//Set All Source Addresses to Zero and accumulate the total funds being moved
+	// zero out all source addresses balances and accumulate the total funds being moved
 	for i, balance := range bankGenesis.Balances {
 		_, isSourceAddress := fundRecovery.IsSourceAddress(balance.Address)
-		if isSourceAddress {
-			if len(balance.Coins) > 1 {
-				log.Fatal("Expected all balances to contain only 1 denom during the migration")
-			}
-			// Accumulate all the coins removed from the balances
-			recoveryAccounting = recoveryAccounting.Add(balance.Coins[0])
-			// Zero out the Balance
-			bankGenesis.Balances[i].Coins = emptyCoins
+		if !isSourceAddress {
+			continue
 		}
 
+		if len(balance.Coins) > 1 {
+			log.Fatal("expected all balances to contain only 1 denom during the migration")
+		}
+		// accumulate all the coins removed from the balances into the pool
+		recoveryAccounting = recoveryAccounting.Add(balance.Coins[0])
+		// Empty the source address balance
+		bankGenesis.Balances[i].Coins = emptyCoins
 	}
 
+	// migrate the balances to the the destination addresses
 	for i, balance := range bankGenesis.Balances {
 		index, isDestAddress := fundRecovery.IsDestAddress(balance.Address)
-		if isDestAddress {
-			recoveryAccounting = recoveryAccounting.Sub(fundRecovery[index].destBalance)
-			bankGenesis.Balances[i].Coins = bankGenesis.Balances[i].Coins.Add(fundRecovery[index].destBalance)
-			fundRecovery[index].destBalance = sdk.NewInt64Coin("uatom", 0)
+		if !isDestAddress {
+			continue
 		}
+
+		// transfer coins from the atom recovery pool to the dest address
+		recoveryAccounting = recoveryAccounting.Sub(fundRecovery[index].destBalance)
+		bankGenesis.Balances[i].Coins = bankGenesis.Balances[i].Coins.Add(fundRecovery[index].destBalance)
+		fundRecovery[index].destBalance = sdk.NewInt64Coin("uatom", 0)
 	}
+
+	// add the balances to the bank genesis
 	bankGenesis.Balances = append(bankGenesis.Balances, fundRecovery.GetRemainingBalances()...)
 
 	accs, err := authtypes.UnpackAccounts(authGenesis.Accounts)
 	if err != nil {
-		log.Fatal("Could not unpack genesis account")
+		log.Fatalf("could not unpack genesis accounts: %s", err.Error())
 	}
 
+	// add the accounts with positive balance to the genesis accounts
 	for _, addr := range fundRecovery.GetRemainingAccounts() {
 		recoveryAccount := authtypes.NewBaseAccount(sdk.AccAddress(addr.Bytes()), nil, 0, 0)
-
 		accs = append(accs, recoveryAccount)
-
 	}
 
 	genAccs, err := authtypes.PackAccounts(accs)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("could not pack genesis accounts: %s", err.Error())
 	}
 
 	authGenesis.Accounts = genAccs
 
+	// subtract the coins from the addresses with positive balances from the recovery accounting
 	for _, balance := range fundRecovery.GetRemainingBalances() {
 		recoveryAccounting = recoveryAccounting.Sub(balance.Coins[0])
 	}
 
 	// Add the remaining ATOMs to the fee pool by adding them to distribution modules
 	for i, balance := range bankGenesis.Balances {
-		if distModuleAccount.String() == balance.Address {
-			bankGenesis.Balances[i].Coins = bankGenesis.Balances[i].Coins.Add(recoveryAccounting)
-
-			distrGenesis.FeePool.CommunityPool = distrGenesis.FeePool.CommunityPool.Add(sdk.NewDecCoinFromCoin(recoveryAccounting))
-
-			recoveryAccounting = sdk.NewInt64Coin("uatom", 0)
+		if distModuleAccount.String() != balance.Address {
+			continue
 		}
+
+		// add coins to the community pool bank and distr balances
+		bankGenesis.Balances[i].Coins = bankGenesis.Balances[i].Coins.Add(recoveryAccounting)
+		distrGenesis.FeePool.CommunityPool = distrGenesis.FeePool.CommunityPool.Add(sdk.NewDecCoinFromCoin(recoveryAccounting))
+		break
 	}
 
 	return *authGenesis, *bankGenesis, *distrGenesis

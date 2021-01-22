@@ -81,8 +81,8 @@ type FundRecoveryMessage struct {
 }
 
 func (f *FundRecoveryMessage) unMarshalSignedJSON() (signedJSON, error) {
-	newLineStripped := strings.Replace(f.signedMessage, `\n`, "", -1)
-	return unmarshalSignedJSON([]byte(strings.Replace(newLineStripped, "\\", "", -1)))
+	newLineStripped := strings.ReplaceAll(f.signedMessage, `\n`, "")
+	return unmarshalSignedJSON([]byte(strings.ReplaceAll(newLineStripped, "\\", "")))
 }
 
 // nolint: unparam

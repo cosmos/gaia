@@ -38,7 +38,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ### Bug Fixes
 
-* (cmd) [\#8418](https://github.com/cosmos/gaia/pull/8418) Add balance coin to supply when adding a new genesis account
+* (cmd) [\#563](https://github.com/cosmos/gaia/pull/563) Add balance coin to supply when adding a new genesis account
 
 ## [v3.0.1] - 2021-01-19
 

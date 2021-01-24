@@ -140,7 +140,7 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 					DenomUnits: []*bank.DenomUnit{
 						{Denom: "uatom", Exponent: uint32(0), Aliases: []string{"microatom"}},
 						{Denom: "matom", Exponent: uint32(3), Aliases: []string{"milliatom"}},
-						{Denom: "atom", Exponent: uint32(6), Aliases: nil},
+						{Denom: "atom", Exponent: uint32(6), Aliases: []string{}},
 					},
 					Base:    "uatom",
 					Display: "atom",

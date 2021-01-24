@@ -36,6 +36,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+### Improvements
+
+* (app) [\#564](https://github.com/cosmos/gaia/pull/564) Add client denomination metadata for atoms.
+
 ### Bug Fixes
 
 * (cmd) [\#563](https://github.com/cosmos/gaia/pull/563) Add balance coin to supply when adding a new genesis account

@@ -6,11 +6,11 @@ The IBC and Gaia go-to-market initiatives will be about direct engagement with t
 
 **How we work**
 
-These discussions will take place during weekly Gaia team calls on Fridays. The Hub will determine the value proposition of IBC and how it is integrated into Gaia and how it will serve the larger ecosystem of interconnected blockchains. These discussions will continue to take place with key stakeholders during the bi-weekly Cosmos multi entity call. Importantly, the purpose of the bi-weekly multi entity call will be to consider all technical aspects of IBC launch from a strategic perspective (outlined in &#39;What&#39;s Needed to Successfully Go to Market?&#39;). This will inform the agenda.
+These discussions will take place during weekly Gaia team calls. The Hub will determine the value proposition of IBC and how it is integrated into Gaia and how it will serve the larger ecosystem of interconnected blockchains. These discussions will continue to take place with key stakeholders during the bi-weekly Cosmos multi entity call. Importantly, the purpose of the bi-weekly multi entity call will be to consider all technical aspects of IBC launch from a strategic perspective (outlined in &#39;What&#39;s Needed to Successfully Go to Market?&#39;). This will inform the agenda.
 
-Leading up to Stargate, we can consider that Gaia Development was led by Chris Goes (Interchain Berlin) and go-to-market was led by Zaki (Iqlusion). Moving forward, we are aiming to organize Gaia Development led by Shahan Khatchadourian (Interchain Berlin) and go-to-market led by Jelena Djuric (Informal Systems). Both Shahan and Jelena are being onboarded into these roles with the support of the previous leads.
+Leading up to Stargate, IBC Development was led by Chris Goes (Interchain Berlin), while Gaia did not have a maintainer. Go-to-market for Stargate was led by Zaki (Iqlusion). Moving forward, we are aiming to organize Cosmos Hub leadership under Shahan Khatchadourian (Interchain Berlin) and go-to-market led by Jelena Djuric (Informal Systems). Both Shahan and Jelena are being onboarded into these roles with the support of previous leads. 
 
-Execution and completion will be tracked via a meta-project dashboard (Gaia Roadmap) that incorporates the high level objectives for each phase roll out. Each phase (i.e. Phase 1 - Accounts UX, Phase 2 - Interchain Interchange, etc) will have their own project dashboard that will link to the repos, issues, PRs, etc, where development is taking place.
+Execution and completion will be tracked via a meta-project dashboard ([Gaia Roadmap](https://github.com/cosmos/gaia/projects/6)) that incorporates the high level objectives for each phase roll out. Each phase (i.e. Phase 1 - Accounts UX, Phase 2 - Interchain Interchange, etc) will have their own project dashboard that will link to the repos, issues, PRs, etc, where development is taking place.
 
 &quot;_Never doubt that a small group of thoughtful, committed, citizens can change the world. Indeed, it is the only thing that ever has.&quot; - Margaret Mead_
 
@@ -36,7 +36,7 @@ The user is paramount. For Gaia and IBC, we see the users being:
   - Nodes on hub and zones
   - Users of hub and zones
 
-We will also want to be tracking outreach to the relevant users per phase to ensure that Hub utility (and IBC where appropriate) are being validated. We will also need spotlights on experiments that validate the utility of the Hub and IBC (i.e. bridge to Ethereum, AMM, etc).
+We will also want to be tracking outreach to the relevant users per phase to ensure that Hub utility (and IBC where appropriate) are being validated. Spotlights on experiments will continue to validate the utility of the Hub and IBC (i.e. bridge to Ethereum, AMM, etc). We will also be conducting continous outbound outreach to look for partners that are aligned with the interchain mission.
 
 3. **Communications**
 

@@ -151,8 +151,7 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
    $ gaiad migrate cosmoshub_3_genesis_export.json --chain-id=cosmoshub-4 --genesis-time=[PLACEHOLDER]> genesis.json
    ```
 
-   Genesis time should be computed relative to the blocktime of `2,902,000`. The genesis time
-   shall be the upgrade time of `2021-02-18T06:00:00Z` + `60` minutes with the subseconds truncated.
+   The genesis time shall be the upgrade time of `2021-02-18T06:00:00Z` + `60` minutes with the subseconds truncated.
 
    **2021-02-18T07:00:00Z**
 

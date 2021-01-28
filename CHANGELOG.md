@@ -45,7 +45,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ### Bug Fixes
 
 * (cmd) [\#563](https://github.com/cosmos/gaia/pull/563) Add balance coin to supply when adding a new genesis account
-* (sdk) Bump SDK version to [v0.41.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.41.0).
+* (sdk) [\#579](https://github.com/cosmos/gaia/pull/579) Bump SDK version to [v0.41.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.41.0).
 
 ## [v3.0.1] - 2021-01-19
 

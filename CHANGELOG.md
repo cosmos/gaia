@@ -36,6 +36,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+## [v4.0.0] - 2021-01-26
+
 ### Improvements
 
 * (app) [\#564](https://github.com/cosmos/gaia/pull/564) Add client denomination metadata for atoms.
@@ -43,6 +45,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ### Bug Fixes
 
 * (cmd) [\#563](https://github.com/cosmos/gaia/pull/563) Add balance coin to supply when adding a new genesis account
+* (sdk) Bump SDK version to [v0.41.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.41.0).
 
 ## [v3.0.1] - 2021-01-19
 
@@ -225,7 +228,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v3.0.1...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v4.0.0...HEAD
+[v4.0.0]: https://github.com/cosmos/gaia/releases/tag/v4.0.0
 [v3.0.1]: https://github.com/cosmos/gaia/releases/tag/v3.0.1
 [v3.0.0]: https://github.com/cosmos/gaia/releases/tag/v3.0.0
 [v2.0.14]: https://github.com/cosmos/gaia/releases/tag/v2.0.14

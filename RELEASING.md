@@ -56,13 +56,18 @@ Ensure that the same replace line is also used in Gaia's `go.mod` file.
 1. `git push --tags --dry-run`
 1. `git push --tags`
 
+If a tag needs to be re-created, do the following:
+1. `git tag -d v4.0.0` to delete a tag locally
+1. `git push --delete origin v4.0.0`, to push the deletion to the remote
+1. Proceed with the above steps to create a tag
+
 ### Release notes
 
 Ensure you run the reproducible build in order to generate sha256 hashes and platform binaries; 
 these artifacts should be included in the release.
 
 ```bash
-make build-reproducable
+make distclean build-reproducable
 ```
 
 Then use the following release text template:
@@ -79,7 +84,7 @@ As there is a breaking change from Gaia v3, the Gaia module has been incremented
 See the [Cosmos SDK v0.41.0 Release](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.41.0) for details.
 
 ```bash
-$ make build-reproducable
+$ make distclean build-reproducable
 App: gaiad
 Version: 4.0.0
 Commit: 2bb04266266586468271c4ab322367acbf41188f

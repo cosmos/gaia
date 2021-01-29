@@ -202,6 +202,9 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
     gaiad start
     ```
 
+    Automated audits of the genesis state can take 30-120 min using the crisis module. This can be disabled by 
+    `gaiad start --x-crisis-skip-assert-invariants`.
+
 ## Notes for Service Providers
 
 # REST server

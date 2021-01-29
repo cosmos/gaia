@@ -48,6 +48,8 @@ applications gain in speed, readability, convinience and interoperability with m
 led to a `gaiad` and `gaiacli` binary which were seperated and could be used for different interactions with the
 blockchain. Both of these have been merged into one `gaiad` which now supports the commands the `gaiacli` previously
 supported.
+- **Node Configuration**: Previously blockchain data and node configuration was stored in `~/.gaiad/`, these will
+now reside in `~/.gaia/`, if you use scripts that make use of the configuration or blockchain data, make sure to update the path.
 
 ## Risks
 
@@ -65,7 +67,7 @@ before resetting your validator.
 
 Prior to exporting `cosmoshub-3` state, validators are encouraged to take a full data snapshot at the
 export height before proceeding. Snapshotting depends heavily on infrastructure, but generally this
-can be done by backing up the `.gaiacli` and `.gaiad` directories.
+can be done by backing up the `.gaiad` directory.
 
 It is critically important to back-up the `.gaiad/data/priv_validator_state.json` file after stopping your gaiad process. This file is updated every block as your validator participates in a consensus rounds. It is a critical file needed to prevent double-signing, in case the upgrade fails and the previous chain needs to be restarted.
 
@@ -76,7 +78,7 @@ gaia v2.0.14 with v0.37.15 of the _Cosmos SDK_ and restore to their latest snaps
 
 __Note__: It is assumed you are currently operating a full-node running gaia v2.0.14 with v0.37.15 of the _Cosmos SDK_.
 
-- The version/commit hash of Gaia v2.0.14: `86343f24f39dbc800922e5fb296b77b9d30ebaae`
+The version/commit hash of Gaia v2.0.14: `86343f24f39dbc800922e5fb296b77b9d30ebaae`
 
 1. Verify you are currently running the correct version (v2.0.14) of _gaiad_:
 
@@ -91,34 +93,47 @@ __Note__: It is assumed you are currently operating a full-node running gaia v2.
     go: go version go1.15 darwin/amd64
    ```
 
-2. Make sure your chain halts at the right time and date:
+1. Make sure your chain halts at the right time and date:
     February 18, 2021 at 06:00 UTC is in UNIX seconds: `1613628000`
 
     ```bash
     perl -i -pe 's/^halt-time =.*/halt-time = 1613628000/' ~/.gaiad/config/app.toml
     ```
 
-3. Export existing state from `cosmoshub-3`:
+ 1. After the chain has halted, make a backup of your `.gaiad` directory
 
-   **NOTE**: It is recommended for validators and operators to take a full data snapshot at the export
+    ```bash
+    mv ~/.gaiad ./gaiad_backup
+    ```
+
+    **NOTE**: It is recommended for validators and operators to take a full data snapshot at the export
    height before proceeding in case the upgrade does not go as planned or if not enough voting power
    comes online in a sufficient and agreed upon amount of time. In such a case, the chain will fallback
    to continue operating `cosmoshub-3`. See [Recovery](#recovery) for details on how to proceed.
 
+1. Export existing state from `cosmoshub-3`:
+
    Before exporting state via the following command, the `gaiad` binary must be stopped!
+   As a validator, you can see the last block height created in the `~/.gaiad/config/data/priv_validator_state.json`
+   and obtain it with
+
+   ```bash
+   cat ~/.gaiad/config/data/priv_validator_state.json | jq '.height'
+   ```
 
    ```bash
    $ gaiad export --for-zero-height --height=<height> > cosmoshub_3_genesis_export.json
    ```
+   _this might take a while, you can expect an hour for this step_
 
-4. Verify the SHA256 of the (sorted) exported genesis file:
+1. Verify the SHA256 of the (sorted) exported genesis file:
 
    ```bash
    $ jq -S -c -M '' cosmoshub_3_genesis_export.json | shasum -a 256
    [SHA256_VALUE]  cosmoshub_3_genesis_export.json
    ```
 
-5. At this point you now have a valid exported genesis state! All further steps now require
+1. At this point you now have a valid exported genesis state! All further steps now require
 v4.0.0 of [Gaia](https://github.com/cosmos/gaia). 
 Cross check your genesis hash with other peers (other validators) in the chat rooms.
 
@@ -128,10 +143,11 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
    $ git clone https://github.com/cosmos/gaia.git && cd gaia && git checkout v4.0.0; make install
    ```
 
-6. Verify you are currently running the correct version (v4.0.0) of the _Gaia_:
+1. Verify you are currently running the correct version (v4.0.0) of the _Gaia_:
 
-- The version/commit hash of Gaia v4.0.0: `2bb04266266586468271c4ab322367acbf41188f`
-- The upgrade time as agreed upon by governance: **February 18, 2021 at 06:00 UTC**
+    The upgrade time as agreed upon by governance: 
+    
+    **February 18, 2021 at 06:00 UTC**
 
    ```bash
     $ gaiad version --long
@@ -144,8 +160,9 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
     build_deps:
     ...
    ```
+    The version/commit hash of Gaia v4.0.0: `2bb04266266586468271c4ab322367acbf41188f`
 
-7. Migrate exported state from the current v2.0.14 version to the new v4.0.0 version:
+1. Migrate exported state from the current v2.0.14 version to the new v4.0.0 version:
 
    ```bash
    $ gaiad migrate cosmoshub_3_genesis_export.json --chain-id=cosmoshub-4 --genesis-time=[PLACEHOLDER]> genesis.json
@@ -156,14 +173,14 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
    **2021-02-18T07:00:00Z**
 
 
-8. Verify the SHA256 of the final genesis JSON:
+1. Verify the SHA256 of the final genesis JSON:
 
    ```bash
    $ jq -S -c -M '' genesis.json | shasum -a 256
    [SHA256_VALUE]  genesis.json
    ```
 
-9. Reset state:
+1. Reset state:
 
    **NOTE**: Be sure you have a complete backed up state of your node before proceeding with this step.
    See [Recovery](#recovery) for details on how to proceed.
@@ -172,9 +189,34 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
    $ gaiad unsafe-reset-all
    ```
 
-10. Move the new `genesis.json` to your `.gaiad/config/` directory
+1. Move the new `genesis.json` to your `.gaiad/config/` directory
+
+    ```bash
+    cp genesis.json ~/.gaia/config/
+    ```
+
+1. Start your blockchain 
+
+    ```bash
+    gaiad start
+    ```
 
 ## Notes for Service Providers
+
+# REST server
+
+In case you have been running REST server with the command `gaiacli rest-server` previously, running this command will not be necessary anymore.
+API server is now in-process with daemon and can be enabled/disabled by API configuration in your `.gaiad/config/app.toml`:
+
+```
+[api]
+# Enable defines if the API server should be enabled.
+enable = false
+# Swagger defines if swagger documentation should automatically be registered.
+swagger = false
+```
+
+`swagger` setting refers to enabling/disabling swagger docs API, i.e, /swagger/ API endpoint.
 
 # Migrations
 

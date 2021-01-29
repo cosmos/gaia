@@ -114,8 +114,9 @@ The version/commit hash of Gaia v2.0.14: `86343f24f39dbc800922e5fb296b77b9d30eba
 1. Export existing state from `cosmoshub-3`:
 
    Before exporting state via the following command, the `gaiad` binary must be stopped!
-   As a validator, you can see the last block height created in the `~/.gaiad/config/data/priv_validator_state.json`
-   and obtain it with
+   As a validator, you can see the last block height created in the 
+   `~/.gaiad/config/data/priv_validator_state.json` - or now residing in `gaiad_backup` when you made
+    a backup as in the last step - and obtain it with
 
    ```bash
    cat ~/.gaiad/config/data/priv_validator_state.json | jq '.height'

@@ -72,23 +72,23 @@ can be done by backing up the `.gaiad` directory.
 It is critically important to back-up the `.gaiad/data/priv_validator_state.json` file after stopping your gaiad process. This file is updated every block as your validator participates in a consensus rounds. It is a critical file needed to prevent double-signing, in case the upgrade fails and the previous chain needs to be restarted.
 
 In the event that the upgrade does not succeed, validators and operators must downgrade back to
-gaia v2.0.14 with v0.37.15 of the _Cosmos SDK_ and restore to their latest snapshot before restarting their nodes.
+gaia v2.0.15 with v0.37.15 of the _Cosmos SDK_ and restore to their latest snapshot before restarting their nodes.
 
 ## Upgrade Procedure
 
-__Note__: It is assumed you are currently operating a full-node running gaia v2.0.14 with v0.37.15 of the _Cosmos SDK_.
+__Note__: It is assumed you are currently operating a full-node running gaia v2.0.15 with v0.37.15 of the _Cosmos SDK_.
 
-The version/commit hash of Gaia v2.0.14: `86343f24f39dbc800922e5fb296b77b9d30ebaae`
+The version/commit hash of Gaia v2.0.15: `89cf7e6fc166eaabf47ad2755c443d455feda02e`
 
-1. Verify you are currently running the correct version (v2.0.14) of _gaiad_:
+1. Verify you are currently running the correct version (v2.0.15) of _gaiad_:
 
    ```bash
     $ gaiad version --long
     name: gaia
     server_name: gaiad
     client_name: gaiacli
-    version: 2.0.14
-    commit: 86343f24f39dbc800922e5fb296b77b9d30ebaae
+    version: 2.0.15
+    commit: 89cf7e6fc166eaabf47ad2755c443d455feda02e
     build_tags: netgo,ledger
     go: go version go1.15 darwin/amd64
    ```
@@ -163,7 +163,7 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
    ```
     The version/commit hash of Gaia v4.0.0: `2bb04266266586468271c4ab322367acbf41188f`
 
-1. Migrate exported state from the current v2.0.14 version to the new v4.0.0 version:
+1. Migrate exported state from the current v2.0.15 version to the new v4.0.0 version:
 
    ```bash
    $ gaiad migrate cosmoshub_3_genesis_export.json --chain-id=cosmoshub-4 --genesis-time=[PLACEHOLDER]> genesis.json

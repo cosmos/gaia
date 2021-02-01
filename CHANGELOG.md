@@ -35,6 +35,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+## [v2.0.15] - 2021-02-01
+
+* (cli) [\#598](https://github.com/cosmos/gaia/pull/598) Add halt time flag to CLI.
+
 ## [v2.0.14] - 2020-08-13
 
 * (sdk) Bump SDK version to [v0.37.15](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.37.15).
@@ -187,7 +191,8 @@ not rely on the `x/supply` keeper to get module account addresses for blacklisti
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v2.0.10...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v2.0.15...HEAD
+[v2.0.15]: https://github.com/cosmos/gaia/releases/tag/v2.0.15
 [v2.0.10]: https://github.com/cosmos/gaia/releases/tag/v2.0.10
 [v2.0.9]: https://github.com/cosmos/gaia/releases/tag/v2.0.9
 [v2.0.8]: https://github.com/cosmos/gaia/releases/tag/v2.0.8

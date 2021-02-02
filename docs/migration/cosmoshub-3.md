@@ -187,7 +187,7 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
    See [Recovery](#recovery) for details on how to proceed.
 
    ```bash
-   $ gaiad unsafe-reset-all
+   $ gaiad init [moniker]
    ```
 
 1. Move the new `genesis.json` to your `.gaiad/config/` directory

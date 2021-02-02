@@ -222,6 +222,33 @@ swagger = false
 
 `swagger` setting refers to enabling/disabling swagger docs API, i.e, /swagger/ API endpoint.
 
+# gRPC Configuration
+
+gRPC configuration in your `.gaiad/config/app.toml`
+
+```yaml
+[grpc]
+# Enable defines if the gRPC server should be enabled.
+enable = true
+# Address defines the gRPC server address to bind to.
+address = "0.0.0.0:9090"
+```
+
+# State Sync
+
+State Sync Configuration in your `.gaiad/config/app.toml`
+
+```yaml
+# State sync snapshots allow other nodes to rapidly join the network without replaying historical
+# blocks, instead downloading and applying a snapshot of the application state at a given height.
+[state-sync]
+# snapshot-interval specifies the block interval at which local state sync snapshots are
+# taken (0 to disable). Must be a multiple of pruning-keep-every.
+snapshot-interval = 0
+# snapshot-keep-recent specifies the number of recent snapshots to keep and serve (0 to keep all).
+snapshot-keep-recent = 2
+```
+
 # Migrations
 
 These chapters contains all the migration guides to update your app and modules to Cosmos v0.40 Stargate.

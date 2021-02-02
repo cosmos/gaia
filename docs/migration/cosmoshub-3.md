@@ -129,6 +129,9 @@ The version/commit hash of Gaia v2.0.15: `89cf7e6fc166eaabf47ad2755c443d455feda0
 
 1. Verify the SHA256 of the (sorted) exported genesis file:
 
+    Compare this value with other validators / full node operators of the network. 
+    Going forward it will be important that all parties can create the same genesis file export.
+
    ```bash
    $ jq -S -c -M '' cosmoshub_3_genesis_export.json | shasum -a 256
    [SHA256_VALUE]  cosmoshub_3_genesis_export.json
@@ -181,13 +184,16 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
    [SHA256_VALUE]  genesis.json
    ```
 
+    Compare this value with other validators / full node operators of the network. 
+    It is important that each parties can reproduce the same genesis.json file from the steps accordingly.
+
 1. Reset state:
 
    **NOTE**: Be sure you have a complete backed up state of your node before proceeding with this step.
    See [Recovery](#recovery) for details on how to proceed.
 
    ```bash
-   $ gaiad init [moniker]
+   $ gaiad unsafe-reset-all
    ```
 
 1. Move the new `genesis.json` to your `.gaiad/config/` directory

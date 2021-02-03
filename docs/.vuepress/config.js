@@ -36,7 +36,7 @@ module.exports = {
     },
     footer: {
       question: {
-        text: "Chat with Cosmos developers in <a href='https://discord.gg/W8trcGV' target='_blank'>Discord</a> or reach out on the <a href='https://forum.cosmos.network/c/cosmos-sdk' target='_blank'>SDK Developer Forum</a> to learn more."
+        text: "Chat with Cosmos developers in <a href='https://discord.gg/vcExX9T' target='_blank'>Discord</a> or reach out on the <a href='https://forum.cosmos.network/c/cosmos-sdk' target='_blank'>SDK Developer Forum</a> to learn more."
       },
       logo: "/logo-bw.svg",
       textLink: {

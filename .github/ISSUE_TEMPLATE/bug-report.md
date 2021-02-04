@@ -1,14 +1,13 @@
 ---
-name: Bug Report 
-about: Create a report to help us squash bugs!
-
+name: Bug Report
+about: But reports help us build a reliable telecom blockchai!
 ---
 
-<!-- < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < ☺ 
-v                            ✰  Thanks for opening an issue! ✰    
-v    Before smashing the submit button please review the template.
-v    Please also ensure that this is not a duplicate issue :)  
-☺ > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > >  -->
+<!-- < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < <
+v                             Thanks for opening an issue!
+v    Before submitting please review the template.
+v    Please also ensure that this is not a duplicate issue
+  > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > >  -->
 
 ## Summary of Bug
 
@@ -16,17 +15,8 @@ v    Please also ensure that this is not a duplicate issue :)
 
 ## Version
 
-<!-- git commit hash, output of `gaiacli version`, output of `gaiad version` -->
+<!-- git commit hash, output of `althea version` -->
 
 ## Steps to Reproduce
 
 <!-- What commands in order should someone run to reproduce your problem -->
-
-____
-
-#### For Admin Use
-
-- [ ] Not duplicate issue
-- [ ] Appropriate labels applied
-- [ ] Appropriate contributors tagged
-- [ ] Contributor assigned/self-assigned

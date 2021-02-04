@@ -140,6 +140,8 @@ jobs:
       - name: start localnet
         run: |
           make clean localnet-start
+        if: "env.GIT_DIFF != ''"
       - name: test liveness
         run: |
           ./contrib/localnet-blocks-test.sh 100 5 50 localhost
+        if: "env.GIT_DIFF != ''"

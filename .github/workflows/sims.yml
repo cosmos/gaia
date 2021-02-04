@@ -137,16 +137,9 @@ jobs:
             **/**.go
             go.mod
             go.sum
-#      - uses: actions/cache@v2.1.3
-#        with:
-#          path: ~/go/bin
-#          key: ${{ runner.os }}-go-runsim-binary
-#        if: "env.GIT_DIFF != ''"
       - name: start localnet
         run: |
           make clean localnet-start
-#        if: "env.GIT_DIFF != ''"
       - name: test liveness
         run: |
           ./contrib/localnet-blocks-test.sh 100 5 50 localhost
-#        if: "env.GIT_DIFF != ''"

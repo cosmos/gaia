@@ -149,10 +149,6 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
 
 1. Verify you are currently running the correct version (v4.0.0) of the _Gaia_:
 
-    The upgrade time as agreed upon by governance: 
-    
-    **February 18, 2021 at 06:00 UTC**
-
    ```bash
     $ gaiad version --long
     name: gaia
@@ -168,14 +164,17 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
 
 1. Migrate exported state from the current v2.0.15 version to the new v4.0.0 version:
 
-   ```bash
-   $ gaiad migrate cosmoshub_3_genesis_export.json --chain-id=cosmoshub-4 --genesis-time=[PLACEHOLDER]> genesis.json
-   ```
-
    The genesis time shall be the upgrade time of `2021-02-18T06:00:00Z` + `60` minutes with the subseconds truncated.
 
-   **2021-02-18T07:00:00Z**
+   This results in our genesis time for starting the blockchain:
 
+    **2021-02-18T07:00:00Z**
+
+   ```bash
+   $ gaiad migrate cosmoshub_3_genesis_export.json --chain-id=cosmoshub-4 --genesis-time=2021-02-18T07:00:00Z> genesis.json
+   ```
+
+   This will migrate our exported state into the required `genesis.json` file to start the cosmoshub-4.
 
 1. Verify the SHA256 of the final genesis JSON:
 
@@ -185,7 +184,7 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
    ```
 
     Compare this value with other validators / full node operators of the network. 
-    It is important that each parties can reproduce the same genesis.json file from the steps accordingly.
+    It is important that each party can reproduce the same genesis.json file from the steps accordingly.
 
 1. Reset state:
 
@@ -196,7 +195,7 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
    $ gaiad unsafe-reset-all
    ```
 
-1. Move the new `genesis.json` to your `.gaiad/config/` directory
+1. Move the new `genesis.json` to your `.gaia/config/` directory
 
     ```bash
     cp genesis.json ~/.gaia/config/
@@ -216,7 +215,7 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
 # REST server
 
 In case you have been running REST server with the command `gaiacli rest-server` previously, running this command will not be necessary anymore.
-API server is now in-process with daemon and can be enabled/disabled by API configuration in your `.gaiad/config/app.toml`:
+API server is now in-process with daemon and can be enabled/disabled by API configuration in your `.gaia/config/app.toml`:
 
 ```
 [api]
@@ -230,7 +229,7 @@ swagger = false
 
 # gRPC Configuration
 
-gRPC configuration in your `.gaiad/config/app.toml`
+gRPC configuration in your `.gaia/config/app.toml`
 
 ```yaml
 [grpc]
@@ -242,7 +241,7 @@ address = "0.0.0.0:9090"
 
 # State Sync
 
-State Sync Configuration in your `.gaiad/config/app.toml`
+State Sync Configuration in your `.gaia/config/app.toml`
 
 ```yaml
 # State sync snapshots allow other nodes to rapidly join the network without replaying historical

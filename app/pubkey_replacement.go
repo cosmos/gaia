@@ -1,4 +1,4 @@
-package gaia
+package althea
 
 import (
 	"encoding/json"

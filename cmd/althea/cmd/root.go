@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	althea "github.com/althea-net/althea-chain/app"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/debug"
@@ -49,8 +50,8 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		WithHomeDir(gaia.DefaultNodeHome)
 
 	rootCmd := &cobra.Command{
-		Use:   "gaiad",
-		Short: "Stargate Cosmos Hub App",
+		Use:   "althea",
+		Short: "Althea chain app",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 			if err := client.SetCmdClientContextHandler(initClientCtx, cmd); err != nil {
 				return err
@@ -174,11 +175,11 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts serverty
 		panic(err)
 	}
 
-	return gaia.NewGaiaApp(
+	return althea.NewAltheaApp(
 		logger, db, traceStore, true, skipUpgradeHeights,
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)),
-		gaia.MakeEncodingConfig(), // Ideally, we would reuse the one created by NewRootCmd.
+		althea.MakeEncodingConfig(), // Ideally, we would reuse the one created by NewRootCmd.
 		appOpts,
 		baseapp.SetPruning(pruningOpts),
 		baseapp.SetMinGasPrices(cast.ToString(appOpts.Get(server.FlagMinGasPrices))),
@@ -198,17 +199,17 @@ func createSimappAndExport(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, height int64, forZeroHeight bool, jailAllowedAddrs []string,
 	appOpts servertypes.AppOptions) (servertypes.ExportedApp, error) {
 
-	encCfg := gaia.MakeEncodingConfig() // Ideally, we would reuse the one created by NewRootCmd.
+	encCfg := althea.MakeEncodingConfig() // Ideally, we would reuse the one created by NewRootCmd.
 	encCfg.Marshaler = codec.NewProtoCodec(encCfg.InterfaceRegistry)
-	var gaiaApp *gaia.GaiaApp
+	var gaiaApp *althea.AltheaApp
 	if height != -1 {
-		gaiaApp = gaia.NewGaiaApp(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), encCfg, appOpts)
+		gaiaApp = althea.NewAltheaApp(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), encCfg, appOpts)
 
 		if err := gaiaApp.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
-		gaiaApp = gaia.NewGaiaApp(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), encCfg, appOpts)
+		gaiaApp = althea.NewAltheaApp(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), encCfg, appOpts)
 	}
 
 	return gaiaApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)

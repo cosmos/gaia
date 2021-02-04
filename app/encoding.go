@@ -1,8 +1,8 @@
-package gaia
+package althea
 
 import (
+	"github.com/althea-net/althea-chain/app/params"
 	"github.com/cosmos/cosmos-sdk/std"
-	"github.com/cosmos/gaia/v4/app/params"
 )
 
 // MakeEncodingConfig creates an EncodingConfig for testing

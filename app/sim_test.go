@@ -1,4 +1,4 @@
-package gaia_test
+package althea_test
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	gaia "github.com/cosmos/gaia/v4/app"
+	althea "github.com/althea-net/althea-chain/app"
 
 	"github.com/cosmos/gaia/v4/app/helpers"
 	"github.com/stretchr/testify/require"
@@ -41,7 +41,7 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 		}
 	}()
 
-	app := gaia.NewGaiaApp(logger, db, nil, true, map[int64]bool{}, gaia.DefaultNodeHome, simapp.FlagPeriodValue, gaia.MakeEncodingConfig(), simapp.EmptyAppOptions{}, interBlockCacheOpt())
+	app := althea.NewAltheaApp(logger, db, nil, true, map[int64]bool{}, althea.DefaultNodeHome, simapp.FlagPeriodValue, althea.MakeEncodingConfig(), simapp.EmptyAppOptions{}, interBlockCacheOpt())
 
 	// Run randomized simulation:w
 	_, simParams, simErr := simulation.SimulateFromSeed(
@@ -106,7 +106,7 @@ func TestAppStateDeterminism(t *testing.T) {
 			}
 
 			db := dbm.NewMemDB()
-			app := gaia.NewGaiaApp(logger, db, nil, true, map[int64]bool{}, gaia.DefaultNodeHome, simapp.FlagPeriodValue, gaia.MakeEncodingConfig(), simapp.EmptyAppOptions{}, interBlockCacheOpt())
+			app := althea.NewAltheaApp(logger, db, nil, true, map[int64]bool{}, althea.DefaultNodeHome, simapp.FlagPeriodValue, althea.MakeEncodingConfig(), simapp.EmptyAppOptions{}, interBlockCacheOpt())
 
 			fmt.Printf(
 				"running non-determinism simulation; seed %d: %d/%d, attempt: %d/%d\n",

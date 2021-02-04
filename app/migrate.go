@@ -1,4 +1,4 @@
-package gaia
+package althea
 
 //This file implements a genesis migration from cosmoshub-3 to cosmoshub-4. It migrates state from the modules in cosmoshub-3.
 //This file also implements setting an initial height from an upgrade.

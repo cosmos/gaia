@@ -1,4 +1,4 @@
-module github.com/cosmos/gaia/v4
+module github.com/althea-net/althea-chain
 
 go 1.15
 
@@ -7,6 +7,7 @@ require (
 	github.com/btcsuite/btcd v0.21.0-beta
 	github.com/btcsuite/btcutil v1.0.2
 	github.com/cosmos/cosmos-sdk v0.41.0
+	github.com/cosmos/gaia/v4 v4.0.0
 	github.com/ethereum/go-ethereum v1.9.25
 	github.com/gorilla/mux v1.8.0
 	github.com/pkg/errors v0.9.1

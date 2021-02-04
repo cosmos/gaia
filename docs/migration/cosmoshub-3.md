@@ -9,12 +9,33 @@ There is a strong social consensus around proposal `Cosmos Hub 4 Upgrade Proposa
 on `cosmoshub-3`. Following proposals #[27](https://www.mintscan.io/cosmos/proposals/27), #[35](https://www.mintscan.io/cosmos/proposals/35) and #[36](https://www.mintscan.io/cosmos/proposals/36).
 This indicates that the upgrade procedure should be performed on `February 18, 2021 at 06:00 UTC`.
 
+  - [Migrations](#migrations)
   - [Preliminary](#preliminary)
   - [Major Updates](#major-updates)
   - [Risks](#risks)
   - [Recovery](#recovery)
   - [Upgrade Procedure](#upgrade-procedure)
   - [Notes for Service Providers](#notes-for-service-providers)
+
+# Migrations
+
+These chapters contains all the migration guides to update your app and modules to Cosmos v0.40 Stargate.
+
+If you’re running a block explorer, wallet, exchange, validator, or any other service (eg. custody provider) that depends upon the Cosmos Hub or Cosmos ecosystem, you’ll want to pay attention, because this upgrade will involve substantial changes.
+
+1. [App and Modules Migration](https://github.com/cosmos/cosmos-sdk/blob/master/docs/migrations/app_and_modules.md)
+1. [Chain Upgrade Guide to v0.40](https://github.com/cosmos/cosmos-sdk/blob/master/docs/migrations/chain-upgrade-guide-040.md)
+1. [REST Endpoints Migration](https://github.com/cosmos/cosmos-sdk/blob/master/docs/migrations/rest.md)
+1. [Collection of breaking changes from changelogs](breaking_changes.md)
+1. [Inter-Blockchain Communication (IBC)– cross-chain transactions](https://figment.network/resources/cosmos-stargate-upgrade-overview/#ibc)
+1. [Protobuf Migration – blockchain performance & dev acceleration](https://figment.network/resources/cosmos-stargate-upgrade-overview/#proto)
+1. [State Sync – minutes to sync new nodes](https://figment.network/resources/cosmos-stargate-upgrade-overview/#sync)
+1. [Full-Featured Light Clients](https://figment.network/resources/cosmos-stargate-upgrade-overview/#light)
+1. [Chain Upgrade Module – upgrade automation](https://figment.network/resources/cosmos-stargate-upgrade-overview/#upgrade)
+
+If you want to test the procedure before the update happens on 18th of February, please see this post accordingly:
+
+https://github.com/cosmos/gaia/issues/569#issuecomment-767910963
 
 ## Preliminary
 
@@ -253,15 +274,3 @@ snapshot-interval = 0
 # snapshot-keep-recent specifies the number of recent snapshots to keep and serve (0 to keep all).
 snapshot-keep-recent = 2
 ```
-
-# Migrations
-
-These chapters contains all the migration guides to update your app and modules to Cosmos v0.40 Stargate.
-
-1. [App and Modules Migration](https://github.com/cosmos/cosmos-sdk/blob/master/docs/migrations/app_and_modules.md)
-1. [Chain Upgrade Guide to v0.40](https://github.com/cosmos/cosmos-sdk/blob/master/docs/migrations/chain-upgrade-guide-040.md)
-1. [REST Endpoints Migration](https://github.com/cosmos/cosmos-sdk/blob/master/docs/migrations/rest.md)
-
-If you want to test the procedure before the update happens on 18th of February, please see this post accordingly:
-
-https://github.com/cosmos/gaia/issues/569#issuecomment-767910963

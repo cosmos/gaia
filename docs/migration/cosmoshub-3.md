@@ -192,7 +192,7 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
     **2021-02-18T07:00:00Z**
 
    ```bash
-   $ gaiad migrate cosmoshub_3_genesis_export.json --chain-id=cosmoshub-4 --genesis-time=2021-02-18T07:00:00Z> genesis.json
+   $ gaiad migrate cosmoshub_3_genesis_export.json --chain-id=cosmoshub-4 --initial-height [last_cosmoshub-3_block+1] > genesis.json
    ```
 
    This will migrate our exported state into the required `genesis.json` file to start the cosmoshub-4.

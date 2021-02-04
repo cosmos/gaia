@@ -185,12 +185,6 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
 
 1. Migrate exported state from the current v2.0.15 version to the new v4.0.0 version:
 
-   The genesis time shall be the upgrade time of `2021-02-18T06:00:00Z` + `60` minutes with the subseconds truncated.
-
-   This results in our genesis time for starting the blockchain:
-
-    **2021-02-18T07:00:00Z**
-
    ```bash
    $ gaiad migrate cosmoshub_3_genesis_export.json --chain-id=cosmoshub-4 --initial-height [last_cosmoshub-3_block+1] > genesis.json
    ```

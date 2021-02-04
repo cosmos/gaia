@@ -1,3 +1,19 @@
+![Althea Blockchain](./banner.svg)
+
 # Althea Blockchain
 
-The Althea blockchain is a decentralized telecom micropayments platform designed to operate as a backend and payments platform for [Althea routers](https://youtu.be/G4EKbgShyLw)
+The Internet is a fundamentally cooperative network, representing the revolutionary idea of using technical systems to coordinate human groups.
+
+But nearly 40 years later the limitations of the Internet’s first generation protocols are on display. The Internet is wonderfully decentralized, if you’re the sort of large technical organization that designed and participated in ARPANET.
+
+For its 5 billion users the Internet has come to represent open information, inclusion, and the belief that everyone should have the access and opportunity to contribute. Blockchain is the natural evolution and the next step for that dream.
+
+Althea introduced our [pay-per-forward protocol](https://www.youtube.com/watch?v=G4EKbgShyLw) in 2018, a trustless way of coordinating payments for bandwidth and network routing that is radical in its simplicity and efficiency.
+
+People often ask, about both blockchain and Althea, why 'we don't want to trust anyone'. The point of trustless systems is exactly the opposite, when technology itself protects users from fraud and harm it becomes possible to trust _everyone_.
+
+With pay-per-forward, running on the Althea blockchain, anyone can be an ISP and exchange bandwidth as a commodity. Any seller can contribute their resources and any buyer can purchase bandwidth.
+
+The Althea blockchain is the community that will deliver this vision for the future of the Internet. A future where the internet itself operates on the principles it has inspired.
+
+---

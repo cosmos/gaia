@@ -174,6 +174,8 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
    $ gaiad migrate cosmoshub_3_genesis_export.json --chain-id=cosmoshub-4 --genesis-time=2021-02-18T07:00:00Z> genesis.json
    ```
 
+   This will migrate our exported state into the required `genesis.json` file to start the cosmoshub-4.
+
 1. Verify the SHA256 of the final genesis JSON:
 
    ```bash

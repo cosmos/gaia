@@ -63,15 +63,12 @@ HD钱包的核心是种子。用这个种子用户可以确定地生成子帐户
 **不要遗失或与任何人分享你的12/24个单词。为防止盗窃或资金损失，最好确保备份多个助记词拷贝，并将其存放在安全可靠的地方，并且只有你知道如何访问。如果有人能够访问你的助记词，他们将能够访问你的私钥并控制与其关联的帐户**
 :::
 
-助记词与Cosmos帐户体系兼容。用于在Cosmos Hub网络上生成地址和交易的工具称为`gaiacli`，它支持从Ledger种子派生帐户私钥。请注意，Ledger钱包充当种子和私钥的沙盒，并且对交易进行签名的过程完全在内部进行。没有任何私人信息会离开Ledger钱包。
+助记词与Cosmos帐户体系兼容。用于在Cosmos Hub网络上生成地址和交易的工具称为`gaiad`，它支持从Ledger种子派生帐户私钥。请注意，Ledger钱包充当种子和私钥的沙盒，并且对交易进行签名的过程完全在内部进行。没有任何私人信息会离开Ledger钱包。
 
-要将`gaiacli`与Ledger钱包一起使用，你需要具备以下条件：
+要将`gaiad`与Ledger钱包一起使用，你需要具备以下条件：
 
 - [在Ledger Nano中安装`COSMOS`应用并生成账户](./delegator-guide-cli.md#using-a-ledger-device)
 - [有一个你打算连接的可访问的并处于运行状态的`gaiad`实例](./delegator-guide-cli.md#accessing-the-cosmos-hub-network)
-- [一个同你所选的`gaiad`实例相连接的`gaiacli`实例](./delegator-guide-cli.md#setting-up-gaiacli)
+- [一个同你所选的`gaiad`实例相连接的`gaiad`实例](./delegator-guide-cli.md#setting-up-gaiad)
 
 现在，你都准备好去[发送交易到网络](./delegator-guide-cli.md#sending-transactions).
-
-
-

@@ -18,14 +18,14 @@
 
 ## 目录
     
-- [安装 `gaiacli`](#安装-gaiacli)
+- [安装 `gaiad`](#安装-gaiad)
 - [Cosmos账户](#Cosmos账户)
     + [通过募资人恢复一个账户](#通过募资人恢复一个账户)
     + [创建一个账户](#创建一个账户)
 - [访问Cosmos Hub网络](#访问Cosmos-Hub网络)
     + [运行您自己的全节点](#运行您自己的全节点)
     + [连接到一个远程全节点](#连接到一个远程全节点)
-- [设置`gaiacli`](#设置-gaiacli)
+- [设置`gaiad`](#设置-gaiad)
 - [状态查询](#状态查询)
 - [发起交易](#发起交易)
     + [关于gas费和手续费](#关于gas费和手续费)
@@ -33,13 +33,13 @@
     + [参与链上治理](#参与链上治理)
     + [从一台离线电脑上签署交易](#从一台离线电脑上签署交易)
 
-## 安装 `gaiacli` 
+## 安装 `gaiad` 
 
-`gaiacli`: 与`gaiad`全节点交互的命令行用户界面。 
+`gaiad`: 与`gaiad`全节点交互的命令行用户界面。 
 
 ::: 安全提示
 
-**请检查并且确认你下载的`gaiacli`是可获得的最新稳定版本**
+**请检查并且确认你下载的`gaiad`是可获得的最新稳定版本**
 :::
 
 
@@ -50,7 +50,7 @@
 
 ::: tip 提示 
 
-`gaiacli` 需要通过操作系统的终端窗口使用，打开步骤如下所示： 
+`gaiad` 需要通过操作系统的终端窗口使用，打开步骤如下所示： 
 - **Windows**: `开始` > `所有程序` > `附件` > `终端`
 - **MacOS**: `访达` > `应用程序` > `实用工具` > `终端`
 - **Linux**: `Ctrl` + `Alt` + `T`
@@ -151,7 +151,7 @@ Cosmos地址是一个以可读词开头的字符串(比如`cosmos10snjt8dmpr5my0
 如果您希望通过众筹时获得的助记词恢复账户并保存相关私钥，请按以下步骤操作： 
 
 ```bash
-gaiacli keys add <yourKeyName> --recover
+gaiad keys add <yourKeyName> --recover
 ```
 
 
@@ -166,7 +166,7 @@ gaiacli keys add <yourKeyName> --recover
 
 ### 创建一个账户
 
-前，您需要先安装`gaiacli`，同时，您需要知道你希望在哪里保存和使用您的私钥。 最好的办法是把他们保存在一台没有上网的电脑或者一个硬件钱包设备里面。 将私钥保存在一台联网的电脑里面比较危险，任何人通过网络攻击都有可能获取您的私钥，进而盗取您的资产。 
+前，您需要先安装`gaiad`，同时，您需要知道你希望在哪里保存和使用您的私钥。 最好的办法是把他们保存在一台没有上网的电脑或者一个硬件钱包设备里面。 将私钥保存在一台联网的电脑里面比较危险，任何人通过网络攻击都有可能获取您的私钥，进而盗取您的资产。 
 
 #### 使用硬件钱包设备进行操作
 
@@ -175,7 +175,7 @@ gaiacli keys add <yourKeyName> --recover
 **建议仅使用您新买的钱包设备或者您足够信任的设备**
 :::
 
-当您初始化钱包设备时，设备会产生一个24个词的助记词组。这个助记词组和Cosmos是兼容的，我们可以通过这个助记词组创建Cosmos账户。所以，您需要做的是确认您的钱包设备兼容`gaiacli`，通过下面的步骤可以帮助您确认您的设备是否兼容：
+当您初始化钱包设备时，设备会产生一个24个词的助记词组。这个助记词组和Cosmos是兼容的，我们可以通过这个助记词组创建Cosmos账户。所以，您需要做的是确认您的钱包设备兼容`gaiad`，通过下面的步骤可以帮助您确认您的设备是否兼容：
 
    
 1. 下载[Ledger Live应用](https://www.ledger.com/pages/ledger-live). 
@@ -187,7 +187,7 @@ gaiacli keys add <yourKeyName> --recover
 然后，通过以下命令创建账户：
 
 ```bash
-gaiacli keys add <yourAccountName> --ledger 
+gaiad keys add <yourAccountName> --ledger 
 ```
 
 ::: 注意： 该命令仅在硬件钱包已导入并在解锁状态时才有效:::
@@ -208,7 +208,7 @@ gaiacli keys add <yourAccountName> --ledger
 然后，通过以下命令创建账户：
 
 ```bash
-gaiacli keys add <yourKeyName>
+gaiad keys add <yourKeyName>
 ```
 
 这个命令会产生一个24个词的助记词组，并且同时保存账户 `0` 的私钥和公钥。 另外，您还需要输入一个密码来对您硬盘上账户`0`的私钥进行加密。 每次您发出一笔交易时都将需要输入这个密码。如果您丢失了密码，您可以通过助记词来恢复您的私钥。 
@@ -230,7 +230,7 @@ rm ~/.bash_history
 你可以用以下命令使用助记词生成多个账户： 
 
 ```bash
-gaiacli keys add <yourKeyName> --recover --account 1
+gaiad keys add <yourKeyName> --recover --account 1
 ```
 
 - - `<yourKeyName>` 是账户名称，用来指代用助记词生成私钥/公钥对的Cosmos账户。在您发起交易时，这个账户名称用来识别您的账户。 
@@ -266,25 +266,25 @@ gaiacli keys add <yourKeyName> --recover --account 1
 
 连接到其他人提供的全节点，你需要一个全节点地址，如`https://77.87.106.33:26657`。这个地址是您的供应商提供的一个可信的接入地址。你会在下一节中用到这个地址。 
 
-## 设置 `gaiacli`
+## 设置 `gaiad`
 
 ::: 提示
 
-**在开始设置 `gaiacli`前，请确认你已经可以[访问Cosmos Hub网络](#访问cosmos-hub网络)**
+**在开始设置 `gaiad`前，请确认你已经可以[访问Cosmos Hub网络](#访问cosmos-hub网络)**
 :::
 
 ::: 警告
 
-**请确认您使用的`gaiacli`是最新的稳定版本**
+**请确认您使用的`gaiad`是最新的稳定版本**
 :::
 
-无论您是否在自己运行一个节点，`gaiacli` 都可以帮您实现与Cosmos Hub网络的交互。让我们来完成对它的配置。 
+无论您是否在自己运行一个节点，`gaiad` 都可以帮您实现与Cosmos Hub网络的交互。让我们来完成对它的配置。 
 
 
-您需要用下面的命令行完成对`gaiacli`的配置：
+您需要用下面的命令行完成对`gaiad`的配置：
 
 ```bash
-gaiacli config <flag> <value>
+gaiad config <flag> <value>
 ```
 
 
@@ -294,9 +294,9 @@ gaiacli config <flag> <value>
 首先，设置你想要访问的全节点的地址：
 
 ```bash
-gaiacli config node <host>:<port
+gaiad config node <host>:<port
 
-// 样例: gaiacli config node https://77.87.106.33:26657
+// 样例: gaiad config node https://77.87.106.33:26657
 ```
 
 
@@ -306,7 +306,7 @@ gaiacli config node <host>:<port
 然后，让我们设置 `--trust-node` 指标的缺省值。 
 
 ```bash
-gaiacli config trust-node false
+gaiad config trust-node false
 
 // Set to true if you run a light-client node, false otherwise
 ```
@@ -314,55 +314,55 @@ gaiacli config trust-node false
 最后，让我们设置需要访问区块链的 `chain-id` 
 
 ```bash
-gaiacli config chain-id gos-6
+gaiad config chain-id gos-6
 ```
 
 ## 状态查询
 
 ::: 提示
-** 准备抵押ATOM通证和取回奖励前，需要先完成 [`gaiacli` 配置](#设置-gaiacli)**
+** 准备抵押ATOM通证和取回奖励前，需要先完成 [`gaiad` 配置](#设置-gaiad)**
 :::
 
 
-`gaiacli` 可以帮助您获得所有区块链的相关信息， 比如账户余额，抵押通证数量，奖励，治理提案以及其他信息。下面是一组用于委托操作的命令
+`gaiad` 可以帮助您获得所有区块链的相关信息， 比如账户余额，抵押通证数量，奖励，治理提案以及其他信息。下面是一组用于委托操作的命令
 
 ```bash
 
 // 查询账户余额或者其他账户相关信息
-gaiacli query account
+gaiad query account
 
 
 // 查询验证人列表
-gaiacli query staking validators
+gaiad query staking validators
 
 
 // 查询指定地址的验证人的信息(e.g. cosmosvaloper1n5pepvmgsfd3p2tqqgvt505jvymmstf6s9gw27)
-gaiacli query staking validator <validatorAddress>
+gaiad query staking validator <validatorAddress>
 
 
 //查询指定地址的验证人相关的所有委托信息 (e.g. cosmos10snjt8dmpr5my0h76xj48ty80uzwhraqalu4eg)
-gaiacli query staking delegations <delegatorAddress>
+gaiad query staking delegations <delegatorAddress>
 
 // 查询从一个指定地址的委托人(e.g. cosmos10snjt8dmpr5my0h76xj48ty80uzwhraqalu4eg)和一个指定地址的验证人(e.g. cosmosvaloper1n5pepvmgsfd3p2tqqgvt505jvymmstf6s9gw27) 之间的委托交易
-gaiacli query staking delegation <delegatorAddress> <validatorAddress>
+gaiad query staking delegation <delegatorAddress> <validatorAddress>
 
 // 查询一个指定地址的委托人(e.g. cosmos10snjt8dmpr5my0h76xj48ty80uzwhraqalu4eg)所能获得的奖励情况
-gaiacli query distribution rewards <delegatorAddress> 
+gaiad query distribution rewards <delegatorAddress> 
 
 // 查询所有现在正等待抵押的提案
-gaiacli query gov proposals --status deposit_period
+gaiad query gov proposals --status deposit_period
 
 //查询所有现在正等待投票的填
-gaiacli query gov proposals --status voting_period
+gaiad query gov proposals --status voting_period
 
 // 查询一个指定propsalID的提案信息
-gaiacli query gov proposal <proposalID>
+gaiad query gov proposal <proposalID>
 ```
 
 需要了解跟多的命令，只需要用：
 
 ```bash
-gaiacli query
+gaiad query
 ```
 
 对于每条命令，您都可以使用`-h` 或 `--help` 参数来获得更多的信息。 
@@ -386,7 +386,7 @@ fees = gas * gasPrices
 ### 抵押Atom通证 & 提取奖励
 
 ::: 提示
-**在您抵押通证或取回奖励之前，您需要完成[`gaiacli` 设置](#设置-gaiacli) 和 [创建账户](#创建一个账户)**
+**在您抵押通证或取回奖励之前，您需要完成[`gaiad` 设置](#设置-gaiad) 和 [创建账户](#创建一个账户)**
 :::
 
 ::: 警告
@@ -401,20 +401,20 @@ fees = gas * gasPrices
 // 向指定验证人绑定一定数量的Atom通证
 // 参数设定样例: <validatorAddress>=cosmosvaloper18thamkhnj9wz8pa4nhnp9rldprgant57pk2m8s, <amountToBound>=10000000000uatom, <gasPrice>=1000uatom
 
-gaiacli tx staking delegate <validatorAddress> <amountToBond> --from <delegatorKeyName> --gas auto --gas-prices <gasPrice>
+gaiad tx staking delegate <validatorAddress> <amountToBond> --from <delegatorKeyName> --gas auto --gas-prices <gasPrice>
 
 
 // 提取所有的奖励
 // 参数设定样例: <gasPrice>=1000uatom
 
-gaiacli tx distribution withdraw-all-rewards --from <delegatorKeyName> --gas auto --gas-prices <gasPrice>
+gaiad tx distribution withdraw-all-rewards --from <delegatorKeyName> --gas auto --gas-prices <gasPrice>
 
 
 // 向指定验证人申请解绑一定数量的Atom通证
 // 解绑的通证需要3周后才能完全解绑并可以交易，
 // 参数设定样例: <validatorAddress>=cosmosvaloper18thamkhnj9wz8pa4nhnp9rldprgant57pk2m8s, <amountToUnbound>=10000000000uatom, <gasPrice>=1000uatom
 
-gaiacli tx staking unbond <validatorAddress> <amountToUnbond> --from <delegatorKeyName> --gas auto --gas-prices <gasPrice>
+gaiad tx staking unbond <validatorAddress> <amountToUnbond> --from <delegatorKeyName> --gas auto --gas-prices <gasPrice>
 ```
 
 ::: 提示
@@ -425,14 +425,14 @@ gaiacli tx staking unbond <validatorAddress> <amountToUnbond> --from <delegatorK
 
 ```bash
 // 您的账户余额在您抵押Atom通证或者取回奖励后会发生变化
-gaiacli query account
+gaiad query account
 
 // 您在抵押后应该能查到委托交易
-gaiacli query staking delegations <delegatorAddress>
+gaiad query staking delegations <delegatorAddress>
 
 // 如果交易已经被打包，将会返回交易记录（tx）
 // 在以下查询命令中可以使用显示的交易哈希值作为参数
-gaiacli query tx <txHash>
+gaiad query tx <txHash>
 
 ```
 
@@ -471,21 +471,21 @@ Cosmos Hub有一个内建的治理系统，该系统允许抵押通证的持有�
 // <type>=text/parameter_change/software_upgrade
 // ex value for flag: <gasPrice>=100uatom
 
-gaiacli tx gov submit-proposal --title "Test Proposal" --description "My awesome proposal" --type <type> --deposit=10000000uatom --gas auto --gas-prices <gasPrice> --from <delegatorKeyName>
+gaiad tx gov submit-proposal --title "Test Proposal" --description "My awesome proposal" --type <type> --deposit=10000000uatom --gas auto --gas-prices <gasPrice> --from <delegatorKeyName>
 
 // 增加对提案的抵押
-// Retrieve proposalID from $gaiacli query gov proposals --status deposit_period
-// 通过 $gaiacli query gov proposals --status deposit_period 命令获得 `proposalID` 
+// Retrieve proposalID from $gaiad query gov proposals --status deposit_period
+// 通过 $gaiad query gov proposals --status deposit_period 命令获得 `proposalID` 
 // 参数设定样例: <deposit>=1000000uatom
 
-gaiacli tx gov deposit <proposalID> <deposit> --gas auto --gas-prices <gasPrice> --from <delegatorKeyName>
+gaiad tx gov deposit <proposalID> <deposit> --gas auto --gas-prices <gasPrice> --from <delegatorKeyName>
 
 // 对一个提案投票
-// Retrieve proposalID from $gaiacli query gov proposals --status voting_period 
-通过 $gaiacli query gov proposals --status deposit_period 命令获得 `proposalID` 
+// Retrieve proposalID from $gaiad query gov proposals --status voting_period 
+通过 $gaiad query gov proposals --status deposit_period 命令获得 `proposalID` 
 // <option>=yes/no/no_with_veto/abstain
 
-gaiacli tx gov vote <proposalID> <option> --gas auto --gas-prices <gasPrice> --from <delegatorKeyName>
+gaiad tx gov vote <proposalID> <option> --gas auto --gas-prices <gasPrice> --from <delegatorKeyName>
 ```
 
 ### 从一台离线电脑上签署交易
@@ -497,7 +497,7 @@ gaiacli tx gov vote <proposalID> <option> --gas auto --gas-prices <gasPrice> --f
 // 抵押Atom通证
 // 参数设定样例: <amountToBound>=10000000000uatom, <bech32AddressOfValidator>=cosmosvaloper18thamkhnj9wz8pa4nhnp9rldprgant57pk2m8s, <gasPrice>=1000uatom
 
-gaiacli tx staking delegate <validatorAddress> <amountToBond> --from <delegatorKeyName> --gas auto --gas-prices <gasPrice> --generate-only > unsignedTX.json
+gaiad tx staking delegate <validatorAddress> <amountToBond> --from <delegatorKeyName> --gas auto --gas-prices <gasPrice> --generate-only > unsignedTX.json
 ```
 
 然后，复制 `unsignedTx.json` 并且帮它转移到没有联网的电脑上（比如通过U盘）。如果没有在没联网的电脑上建立账户，可先[在没有联网的电脑上建立账户](#使用电脑设备进行操作)。为了进一步保障安全，你可以在签署交易前用以下命令对参数进行检查。 
@@ -509,11 +509,11 @@ cat unsignedTx.json
 现在，通过以下命令对交易签名：
 
 ```bash
-gaiacli tx sign unsignedTx.json --from-addr <delegatorAddr>> signedTx.json
+gaiad tx sign unsignedTx.json --from-addr <delegatorAddr>> signedTx.json
 ```
 
 复制 `signedTx.json` 并转移回联网的那台电脑。最后，用以下命令向网络广播交易。 
 
 ```bash
-gaiacli tx broadcast signedTx.json
+gaiad tx broadcast signedTx.json
 ```

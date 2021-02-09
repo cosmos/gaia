@@ -171,9 +171,9 @@ Gaia utilizes [semantic versioning](https://semver.org/).
 
 Ensure that you base and target your PR on the `main` branch.
 
-All feature additions should be targeted against `master`. Bug fixes for an outstanding release candidate
+All feature additions should be targeted against `main`. Bug fixes for an outstanding release candidate
 should be targeted against the release candidate branch. Release candidate branches themselves should be the
-only pull requests targeted directly against master.
+only pull requests targeted directly against main.
 
 ### Development Procedure
 

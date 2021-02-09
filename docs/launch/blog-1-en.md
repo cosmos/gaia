@@ -18,7 +18,7 @@ Atoms. Please read through the entire guide first to familiarize yourself
 before you actually do anything: [CLI guide][cli]
 
 The process outlined in the guide is currently the only verified and secure way
-to delegate Atoms at launch. This is because the gaiacli tool used in the guide
+to delegate Atoms at launch. This is because the gaiad tool used in the guide
 is the only wallet software undergoing third-party security audits right now.
 No other wallet providers have begun security audits yet.
 
@@ -138,9 +138,9 @@ reduce or eliminate the risk of key or credential theft.
 Cosmos mainnet launch:**
 
 - Download software directly from official sources, and make sure that you’re
-  always using the latest, most secure version of gaiacli when you’re doing
+  always using the latest, most secure version of gaiad when you’re doing
   anything that involves your 12 words. The latest versions of Tendermint, the
-  Cosmos-SDK, and gaiacli will always be available from our official GitHub
+  Cosmos-SDK, and gaiad will always be available from our official GitHub
   repositories, and downloading them from there ensures that you will not be
   tricked into using a maliciously modified version of software.
 

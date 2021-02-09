@@ -26,7 +26,8 @@ Types of changes (Stanzas):
 "Improvements" for changes in existing functionality.
 "Deprecated" for soon-to-be removed features.
 "Bug Fixes" for any bug fixes.
-"Breaking" for breaking API changes.
+"Client Breaking" for breaking CLI commands and REST routes.
+"State Machine Breaking" for breaking the AppState
 
 Ref: https://keepachangelog.com/en/1.0.0/
 -->
@@ -34,6 +35,46 @@ Ref: https://keepachangelog.com/en/1.0.0/
 # Changelog
 
 ## [Unreleased]
+
+## [v4.0.0] - 2021-01-26
+
+### Improvements
+
+* (app) [\#564](https://github.com/cosmos/gaia/pull/564) Add client denomination metadata for atoms.
+
+### Bug Fixes
+
+* (cmd) [\#563](https://github.com/cosmos/gaia/pull/563) Add balance coin to supply when adding a new genesis account
+* (sdk) [\#579](https://github.com/cosmos/gaia/pull/579) Bump SDK version to [v0.41.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.41.0).
+
+## [v3.0.1] - 2021-01-19
+
+### Improvements
+
+* (protobuf) [\#553](https://github.com/cosmos/gaia/pull/553) Bump gogo protobuf deps to v1.3.3
+* (github) [\#543](https://github.com/cosmos/gaia/pull/543) Add docker deployment
+* (starport) [\#535](https://github.com/cosmos/gaia/pull/535) Add config.yml
+* (docker) [\#534](https://github.com/cosmos/gaia/pull/534) Update to python3
+
+### Bug Fixes
+
+* (sdk) Bump SDK version to [v0.40.1](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.40.1).
+* (tendermint) Bump Tendermint version to [v0.34.3](https://github.com/tendermint/tendermint/releases/tag/v0.34.3).
+* (github) [\#544](https://github.com/cosmos/gaia/pull/544) Deploy from main not master
+* (docs) [\#550](https://github.com/cosmos/gaia/pull/550) Bump vuepress-theme-cosmos to 1.0.180
+* (docker) [\#537](https://github.com/cosmos/gaia/pull/537) Fix single-node.sh setup script
+
+## [v3.0.0] - 2021-01-09
+
+### Improvements
+
+* (sdk) Bump SDK version to [v0.40.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.40.0).
+* (tendermint) Bump Tendermint version to [v0.34.1](https://github.com/tendermint/tendermint/releases/tag/v0.34.1).
+
+## [v2.0.14] - 2020-12-10
+
+* (sdk) Bump SDK version to [v0.37.15](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.37.15).
+* (tendermint) Bump Tendermint version to [v0.32.14](https://github.com/tendermint/tendermint/releases/tag/v0.32.14).
 
 ## [v2.0.13] - 2020-08-13
 
@@ -116,7 +157,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ### Improvements
 
 * [\#119](https://github.com/cosmos/gaia/pull/119) Refactor and upgrade Circle CI
-configuration.
+  configuration.
 * (sdk) Update SDK version to v0.37.1
 
 ## [v2.0.0] - 2019-08-22
@@ -124,7 +165,7 @@ configuration.
 ### Bug Fixes
 
 * [\#104](https://github.com/cosmos/gaia/issues/104) Fix `ModuleAccountAddrs` to
-not rely on the `x/supply` keeper to get module account addresses for blacklisting.
+  not rely on the `x/supply` keeper to get module account addresses for blacklisting.
 
 ### Breaking Changes
 
@@ -187,7 +228,14 @@ not rely on the `x/supply` keeper to get module account addresses for blacklisti
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v2.0.10...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v4.0.0...HEAD
+[v4.0.0]: https://github.com/cosmos/gaia/releases/tag/v4.0.0
+[v3.0.1]: https://github.com/cosmos/gaia/releases/tag/v3.0.1
+[v3.0.0]: https://github.com/cosmos/gaia/releases/tag/v3.0.0
+[v2.0.14]: https://github.com/cosmos/gaia/releases/tag/v2.0.14
+[v2.0.13]: https://github.com/cosmos/gaia/releases/tag/v2.0.13
+[v2.0.12]: https://github.com/cosmos/gaia/releases/tag/v2.0.12
+[v2.0.11]: https://github.com/cosmos/gaia/releases/tag/v2.0.11
 [v2.0.10]: https://github.com/cosmos/gaia/releases/tag/v2.0.10
 [v2.0.9]: https://github.com/cosmos/gaia/releases/tag/v2.0.9
 [v2.0.8]: https://github.com/cosmos/gaia/releases/tag/v2.0.8

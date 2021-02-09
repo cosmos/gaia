@@ -35,7 +35,7 @@ gaiad tendermint show-validator
 :::
 
 ```bash
-gaiacli tx staking create-validator \
+gaiad tx staking create-validator \
   --amount=5000000uatom \
   --pubkey=$(gaiad tendermint show-validator) \
   --moniker="choose a moniker" \
@@ -113,7 +113,7 @@ gaiad start
 `--identity` 값은 Keybase 또는 UPort 같은 시스템을 이용해서 신분(identity)를 검증하는데 이용될 수 있습니다. Keybase를 사용하시는 경우 `--identity`는 [keybase.io](https://keybase.io) 계정으로 생성하신 16자리 string 값이 입력되어야 합니다. 이런 절차는 다수의 온라인 네트워크에서 본인의 신분을 증명하는데 이용될 수 있습니다. 또한 Keybase API를 이용해서 Keybase 아바타를 가져와 밸리데이터 프로파일에 이용하실 수 있습니다.
 
 ```bash
-gaiacli tx staking edit-validator
+gaiad tx staking edit-validator
   --moniker="choose a moniker" \
   --website="https://cosmos.network" \
   --identity=6A0D65E29A4CBC8E \
@@ -133,7 +133,7 @@ __참고__: `commission-rate` 값은 다음의 규칙을 따라야 합니다:
 검증인의 정보는 다음 명령어로 확인이 가능합니다:
 
 ```bash
-gaiacli query staking validator <account_cosmos>
+gaiad query staking validator <account_cosmos>
 ```
 
 ## 밸리데이터 서명 정보 추적하기
@@ -141,7 +141,7 @@ gaiacli query staking validator <account_cosmos>
 특정 검증인의 과거 서명 정보를 확인하기 위해서는 `signing-info` 명령어를 이용하실 수 있습니다:
 
 ```bash
-gaiacli query slashing signing-info <validator-pubkey>\
+gaiad query slashing signing-info <validator-pubkey>\
   --chain-id=<chain_id>
 ```
 
@@ -150,7 +150,7 @@ gaiacli query slashing signing-info <validator-pubkey>\
 특정 검증인이 과도한 다운타임으로 '구속(jailed)' 상태로 전환되면 운영자의 계정에서 '석방(unjail)' 요청 트랜잭션을 전송해야만 다시 블록 생성 리워드를 받을 수 있습니다(각 존의 리워드 분배 정책에 따라 다를 수 있음).
 
 ```bash
-gaiacli tx slashing unjail \
+gaiad tx slashing unjail \
 	--from=<key_name> \
 	--chain-id=<chain_id>
 ```
@@ -160,7 +160,7 @@ gaiacli tx slashing unjail \
 다음 명령어가 반응을 준다면 당신의 밸리데이터는 작동하고 있습니다:
 
 ```bash
-gaiacli query tendermint-validator-set | grep "$(gaiad tendermint show-validator)"
+gaiad query tendermint-validator-set | grep "$(gaiad tendermint show-validator)"
 ```
 
 코스모스 테스트넷의 경우 코스모스 [익스플로러](https://explorecosmos.network/validators)를 통해서 밸리데이터가 운영되고 있는지 확인하실 수 있습니다. `~/.gaiad/config/priv_validator.json` 파일의 `bech32` 인코딩이된 `address` 항목을 참고하세요.
@@ -181,10 +181,10 @@ gaiacli query tendermint-validator-set | grep "$(gaiad tendermint show-validator
 gaiad start
 ```
 
-당신의 풀노드가 최신 블록높이에 싱크될때까지 기다리십시오. 이후, 다음 명령어를 실행하십시오. 참고로 `<cosmos>` 항목은 밸리데이터 계정의 주소이며, `<name>`은 밸리데이터 계정의 이름입니다. 해당 정보는 `gaiacli keys list` 명령어를 통해 확인하실 수 있습니다.
+당신의 풀노드가 최신 블록높이에 싱크될때까지 기다리십시오. 이후, 다음 명령어를 실행하십시오. 참고로 `<cosmos>` 항목은 밸리데이터 계정의 주소이며, `<name>`은 밸리데이터 계정의 이름입니다. 해당 정보는 `gaiad keys list` 명령어를 통해 확인하실 수 있습니다.
 
 ```bash
-gaiacli tx slashing unjail <cosmos> --chain-id=<chain_id> --from=<from>
+gaiad tx slashing unjail <cosmos> --chain-id=<chain_id> --from=<from>
 ```
 
 ::: danger 경고
@@ -194,7 +194,7 @@ gaiacli tx slashing unjail <cosmos> --chain-id=<chain_id> --from=<from>
 마지막으로 밸리데이터의 보팅파워가 복구 되었는지 확인하십시오.
 
 ```bash
-gaiacli status
+gaiad status
 ```
 
 만약 보팅 파워가 예전보다 감소되었다면 다운타임에 대한 슬래싱이 이유일 수 있습니다.

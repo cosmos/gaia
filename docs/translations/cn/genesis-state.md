@@ -2,22 +2,6 @@
 
 Gaia 创世状态`GenesisState`由账户、各种模块状态和元数据组成，例如创世交易。 每个模块可以指定自己的`GenesisState`。 此外，每个模块可以指定自己的创世状态有效性验证、导入和导出功能。
 
-Gaia 创世状态定义如下：
-
-```go
-type GenesisState struct {
-  Accounts     []GenesisAccount      `json:"accounts"`
-  AuthData     auth.GenesisState     `json:"auth"`
-  BankData     bank.GenesisState     `json:"bank"`
-  StakingData  staking.GenesisState  `json:"staking"`
-  MintData     mint.GenesisState     `json:"mint"`
-  DistrData    distr.GenesisState    `json:"distribution"`
-  GovData      gov.GenesisState      `json:"gov"`
-  SlashingData slashing.GenesisState `json:"slashing"`
-  GenTxs       []json.RawMessage     `json:"gentxs"`
-}
-```
-
 在 Gaia 的 ABCI`initChainer`定义中调用`initFromGenesisState`，它在内部调用每个模块的`InitGenesis`，提供它自己的`GenesisState`作为参数。
 
 ## 账户（Accounts）

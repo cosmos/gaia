@@ -1,7 +1,11 @@
+<!--
+order: 6
+-->
+
 # Setting up Tendermint KMS + Ledger
 
 ::: danger Warning
-The following instructions are a brief walkthrough and not a comprehensive guideline. You should consider and [research more about the security implications](./security.md) of activating an external KMS.
+The following instructions are a brief walkthrough and not a comprehensive guideline. You should consider and [research more about the security implications](../security.md) of activating an external KMS.
 :::
 
 ::: danger Warning
@@ -20,7 +24,7 @@ In this section, we will configure a KMS to use a Ledger device running the Tend
 
 ### Config file
 
-You can find other configuration examples [here](https://github.com/tendermint/kms/blob/master/tmkms.toml.example)
+You can find other configuration examples [here](https://github.com/iqlusioninc/tmkms/blob/master/tmkms.toml.example)
 
 - Create a `~/.tmkms/tmkms.toml` file with the following content (use an adequate `chain_id`)
 

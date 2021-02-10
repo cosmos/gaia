@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	althea "github.com/althea-net/althea-chain/app"
+	"github.com/althea-net/althea-chain/app/params"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/debug"
@@ -30,15 +31,12 @@ import (
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
-
-	gaia "github.com/cosmos/gaia/v4/app"
-	"github.com/cosmos/gaia/v4/app/params"
 )
 
 // NewRootCmd creates a new root command for simd. It is called once in the
 // main function.
 func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
-	encodingConfig := gaia.MakeEncodingConfig()
+	encodingConfig := althea.MakeEncodingConfig()
 	initClientCtx := client.Context{}.
 		WithJSONMarshaler(encodingConfig.Marshaler).
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
@@ -47,7 +45,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		WithInput(os.Stdin).
 		WithAccountRetriever(types.AccountRetriever{}).
 		WithBroadcastMode(flags.BroadcastBlock).
-		WithHomeDir(gaia.DefaultNodeHome)
+		WithHomeDir(althea.DefaultNodeHome)
 
 	rootCmd := &cobra.Command{
 		Use:   "althea",
@@ -70,25 +68,25 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 	authclient.Codec = encodingConfig.Marshaler
 
 	rootCmd.AddCommand(
-		genutilcli.InitCmd(gaia.ModuleBasics, gaia.DefaultNodeHome),
-		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, gaia.DefaultNodeHome),
-		gaia.MigrateGenesisCmd(),
-		genutilcli.GenTxCmd(gaia.ModuleBasics, encodingConfig.TxConfig, banktypes.GenesisBalancesIterator{}, gaia.DefaultNodeHome),
-		genutilcli.ValidateGenesisCmd(gaia.ModuleBasics),
-		AddGenesisAccountCmd(gaia.DefaultNodeHome),
+		genutilcli.InitCmd(althea.ModuleBasics, althea.DefaultNodeHome),
+		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, althea.DefaultNodeHome),
+		althea.MigrateGenesisCmd(),
+		genutilcli.GenTxCmd(althea.ModuleBasics, encodingConfig.TxConfig, banktypes.GenesisBalancesIterator{}, althea.DefaultNodeHome),
+		genutilcli.ValidateGenesisCmd(althea.ModuleBasics),
+		AddGenesisAccountCmd(althea.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
-		testnetCmd(gaia.ModuleBasics, banktypes.GenesisBalancesIterator{}),
+		testnetCmd(althea.ModuleBasics, banktypes.GenesisBalancesIterator{}),
 		debug.Cmd(),
 	)
 
-	server.AddCommands(rootCmd, gaia.DefaultNodeHome, newApp, createSimappAndExport, addModuleInitFlags)
+	server.AddCommands(rootCmd, althea.DefaultNodeHome, newApp, createSimappAndExport, addModuleInitFlags)
 
 	// add keybase, auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(
 		rpc.StatusCommand(),
 		queryCommand(),
 		txCommand(),
-		keys.Commands(gaia.DefaultNodeHome),
+		keys.Commands(althea.DefaultNodeHome),
 	)
 }
 func addModuleInitFlags(startCmd *cobra.Command) {
@@ -113,7 +111,7 @@ func queryCommand() *cobra.Command {
 		authcmd.QueryTxCmd(),
 	)
 
-	gaia.ModuleBasics.AddQueryCommands(cmd)
+	althea.ModuleBasics.AddQueryCommands(cmd)
 	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
 
 	return cmd
@@ -141,7 +139,7 @@ func txCommand() *cobra.Command {
 		vestingcli.GetTxCmd(),
 	)
 
-	gaia.ModuleBasics.AddTxCommands(cmd)
+	althea.ModuleBasics.AddTxCommands(cmd)
 	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
 
 	return cmd
@@ -201,16 +199,16 @@ func createSimappAndExport(
 
 	encCfg := althea.MakeEncodingConfig() // Ideally, we would reuse the one created by NewRootCmd.
 	encCfg.Marshaler = codec.NewProtoCodec(encCfg.InterfaceRegistry)
-	var gaiaApp *althea.AltheaApp
+	var altheaApp *althea.AltheaApp
 	if height != -1 {
-		gaiaApp = althea.NewAltheaApp(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), encCfg, appOpts)
+		altheaApp = althea.NewAltheaApp(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), encCfg, appOpts)
 
-		if err := gaiaApp.LoadHeight(height); err != nil {
+		if err := altheaApp.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
-		gaiaApp = althea.NewAltheaApp(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), encCfg, appOpts)
+		altheaApp = althea.NewAltheaApp(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), encCfg, appOpts)
 	}
 
-	return gaiaApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
+	return altheaApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
 }

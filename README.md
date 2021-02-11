@@ -17,3 +17,13 @@ With pay-per-forward, running on the Althea blockchain, anyone can be an ISP and
 The Althea blockchain is the community that will deliver this vision for the future of the Internet. A future where the internet itself operates on the principles it has inspired.
 
 ---
+
+## Testnet 1
+
+The next major event in the launch of the Althea blockchain is Testnet #1, taking place February 13th you can find the testnet 1 documentation [here](docs/althea/testnet-1.md)
+
+---
+
+## Join the Althea community!
+
+Join us on [Discord](https://discord.com/invite/vw8twzR) or [Matrix](https://riot.im/app/#/room/#althea:matrix.org)

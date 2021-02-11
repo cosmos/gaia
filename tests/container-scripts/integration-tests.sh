@@ -15,5 +15,4 @@ set +e
 killall -9 test-runner
 set -e
 
-pushd /althea/orchestrator/test_runner
-RUST_BACKTRACE=full TEST_TYPE=$TEST_TYPE RUST_LOG=INFO test-runner
+RUST_BACKTRACE=full CHAIN_BINARY=althea TEST_TYPE=$TEST_TYPE RUST_LOG=INFO test-runner

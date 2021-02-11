@@ -4,15 +4,17 @@ ENV PATH=$PATH:/go/bin
 RUN dnf install -y git make gcc gcc-c++ which iproute iputils procps-ng vim-minimal tmux net-tools htop tar jq npm openssl-devel perl
 ADD https://golang.org/dl/go1.15.6.linux-amd64.tar.gz /go/
 RUN cd /go && tar -xvf * && mv /go/**/ /usr/local/
-# only required for solidity contract deployment script
-RUN npm install -g ts-node && npm install -g typescript
 ADD https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.9.14-6d74d1e5.tar.gz /geth/
 RUN cd /geth && tar -xvf * && mv /geth/**/geth /usr/bin/geth
 # this is the Gravity bridge release, update it along with your go.mod entry
-ADD https://github.com/althea-net/cosmos-gravity-bridge/releases/download/v0.0.10/test-runner /usr/bin/test-runner
+ADD https://github.com/althea-net/cosmos-gravity-bridge/releases/download/v0.0.16/test-runner /usr/bin/test-runner
 RUN chmod +x /usr/bin/test-runner
-ADD https://github.com/althea-net/cosmos-gravity-bridge/releases/download/v0.0.10/Peggy.json /solidity/Peggy.json
-ADD https://github.com/althea-net/cosmos-gravity-bridge/releases/download/v0.0.10/contract-deployer.ts /solidity/contratct-deployer.ts
+ADD https://github.com/althea-net/cosmos-gravity-bridge/releases/download/v0.0.16/Peggy.json /solidity/Peggy.json
+ADD https://github.com/althea-net/cosmos-gravity-bridge/releases/download/v0.0.16/TestERC20A.json /solidity/TestERC20A.json
+ADD https://github.com/althea-net/cosmos-gravity-bridge/releases/download/v0.0.16/TestERC20B.json /solidity/TestERC20B.json
+ADD https://github.com/althea-net/cosmos-gravity-bridge/releases/download/v0.0.16/TestERC20C.json /solidity/TestERC20C.json
+ADD https://github.com/althea-net/cosmos-gravity-bridge/releases/download/v0.0.16/contract-deployer /solidity/contract-deployer
+RUN chmod +x /solidity/contract-deployer
 # the actual source code for this repo, this **only** includes checked in files!
 # this is a bit of a pain but it does speed things up a lot
 ADD althea.tar.gz /

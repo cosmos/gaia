@@ -51,8 +51,8 @@ Be sure to back up the phrase you get! You’ll need it in a bit. If you don't b
 
 ```
 cd $HOME
-peggy init mymoniker --chain-id althea-testnet1
-peggy keys add validator
+althea init mymoniker --chain-id althea-testnet1
+althea keys add validator
 ```
 
 ### Copy the genesis file
@@ -64,7 +64,7 @@ cp althea-testnet1-genesis.json $HOME/.althea/config/genesis.json
 
 ### Add persistent peers
 
-Change the p2p.persistent_peers field in ~/.peggy/config/config.toml to contain the following:
+Change the p2p.persistent_peers field in ~/.althea/config/config.toml to contain the following:
 
 ```
 persistent_peers = “<this value won't be available until Feb 13th>@testnet1.altheamesh.com:26657”
@@ -110,7 +110,7 @@ althea tx staking create-validator \
   --amount=1500000stake \
   --pubkey=$(althea tendermint show-validator) \
   --moniker="put your validator name here" \
-  --chain-id=peggy-testnet1 \
+  --chain-id=althea-testnet1 \
   --commission-rate="0.10" \
   --commission-max-rate="0.20" \
   --commission-max-change-rate="0.01" \
@@ -134,7 +134,7 @@ althea tx staking delegate $(althea tendermint show-validator) 99000000stake --f
 If you see one line in the response you are validating. If you don't see any output from this command you are not validating. Check that the last command ran successfully.
 
 ```
-peggy query tendermint-validator-set | grep "$(peggy tendermint show-validator)"
+althea query tendermint-validator-set | grep "$(althea tendermint show-validator)"
 ```
 
 ### Setup Gravity bridge

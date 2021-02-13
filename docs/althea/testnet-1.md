@@ -201,6 +201,8 @@ cd geth-linux-amd64-1.9.25-e7872729
 
 Once 66% of the validator set has registered their delegate Ethereum key it is possible to deploy the Gravity Ethereum contract. Once deployed the Gravity contract address on Görli will be posted here
 
+Here is the contract address! Move forward!
+
 ```
 0xB48095a68501bC157654d338ce86fdaEF4071B24
 ```

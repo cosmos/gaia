@@ -53,6 +53,8 @@ __[Gaia](https://github.com/cosmos/gaia) application v4.0.0 is
 what full node operators will upgrade to and run in this next major upgrade__.
 Following Cosmos SDK version v0.41.0 and Tendermint v0.34.3.
 
+Validators should expect that at least 16GB of RAM needs to be provisioned to process the first new block on cosmoshub-4.
+
 ## Major Updates
 
 There are many notable features and changes in the upcoming release of the SDK. Many of these

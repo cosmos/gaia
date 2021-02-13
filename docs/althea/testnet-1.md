@@ -73,7 +73,7 @@ cp althea-testnet1-genesis.json $HOME/.althea/config/genesis.json
 Change the p2p.persistent_peers field in ~/.althea/config/config.toml to contain the following:
 
 ```
-persistent_peers = “05ded2f258ab158c5526eb53aa14d122367115a7@testnet1.althea.net:26656”
+persistent_peers = "05ded2f258ab158c5526eb53aa14d122367115a7@testnet1.althea.net:26656"
 ```
 
 ### Start your full node and wait for it to sync

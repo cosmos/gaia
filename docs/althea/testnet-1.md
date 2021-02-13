@@ -109,7 +109,7 @@ althea tx staking create-validator \
 
 ```
 
-To increase your ualtg (ptional)
+To increase your ualtg (optional)
 
 ```
 althea keys show validator1 --bech val
@@ -227,6 +227,56 @@ RUST_LOG=INFO orchestrator \
 bash start-orchestrator.sh
 ```
 
-### Testing Peggy
+### Testing Gravity
 
 Now that we've made it this far it's time to actually play around with the bridge
+
+This first command will send some ERC20 tokens to an address of your choice on the Althea
+chain. Notice that the Ethereum key is pre-filled. This address has both some test ETH and
+a large balance of ERC20 tokens from the contracts listed here.
+
+```
+RUST_LOG=info client eth-to-cosmos \
+        --ethereum-key="0xb1bab011e03a9862664706fc3bbaa1b16651528e5f0e7fbfcbfdd8be302a13e7" \
+        --ethereum-rpc="http://localhost:8545" \
+        --contract-address="wait for it" \
+        --erc20-address="wait for it" \
+        --amount=1 \
+        --cosmos-destination="wait for it"
+```
+
+You should see a message like this on your Orchestrator. The details of course will be different but it means that your Orchestrator has observed the event on Ethereum and sent the details into the Cosmos chain!
+
+```
+[2021-02-13T12:35:54Z INFO  orchestrator::ethereum_event_watcher] Oracle observed deposit with sender 0xBf660843528035a5A4921534E156a27e64B231fE, destination cosmos1xpfu40gseet70wfeazds773v05pjx3dwe7e03f, amount
+999999984306749440, and event nonce 3
+```
+
+Once the event has been observed we can check our balance on the Cosmos side. We will see some peggy<ERC20 address> tokens in our balance. We have a good bit of code in flight right now so the module renaming from 'Peggy' to 'Gravity' has been put on hold until we're feature complete.
+
+```
+althea query bank balances <any cosmos address>
+```
+
+Now that we have some tokens on the Althea chain we can try sending them back to Ethereum. Remember to use the Cosmos phrase for the address you actually sent the tokens to.
+
+```
+RUST_LOG=info client cosmos-to-eth \
+        --cosmos-phrase="the phrase containing the Gravity bridged tokens" \
+        --cosmos-rpc="http://localhost:1317"  \
+        --fees="peggy0xXXXXXXX" \
+        --erc20-address="0xXXXXXXX" \
+        --amount=.5 \
+        --eth-destination="any eth address"
+```
+
+### Really testing Gravity
+
+Now that we have the basics out of the way we can get into the fun testing, including hundreds of transactions across the bridge, upgrades, and slashing. Depending on how the average participant is doing we may or may not get to this during our chain start call.
+
+- Send a 100 transaction batch
+- Send 100 deposits to the Althea chain from Ethereum
+- IBC bridge some tokens to another chain
+- Exchange those bridged tokens on the Gravity DEX
+- Have a governance vote to reduce the slashing period to 1 hr downtime, then have a volunteer get slashed
+- Stretch goal, upgrade the testnet the following week for Gravity V2 features. This may end up not being practical depending on the amount of changes made.

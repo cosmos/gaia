@@ -111,13 +111,6 @@ althea tx staking create-validator \
 
 ```
 
-To increase your ualtg (optional). This step is optional
-
-```
-althea keys show validator1 --bech val
-althea tx staking delegate $(althea tendermint show-address) 99000000ualtg --from validator1 --chain-id althea-testnet1 --fees 50ualtg --broadcast-mode block
-```
-
 ### Confirm that you are validating
 
 If you see one line in the response you are validating. If you don't see any output from this command you are not validating. Check that the last command ran successfully.
@@ -298,3 +291,12 @@ Now that we have the basics out of the way we can get into the fun testing, incl
 - Exchange those bridged tokens on the Gravity DEX
 - Have a governance vote to reduce the slashing period to 1 hr downtime, then have a volunteer get slashed
 - Stretch goal, upgrade the testnet the following week for Gravity V2 features. This may end up not being practical depending on the amount of changes made.
+
+### Appendix
+
+To increase your ualtg (optional). You probably don't need this step
+
+```
+althea keys show validator1 --bech val
+althea tx staking delegate $(althea tendermint show-address) 99000000ualtg --from myvalidatorkeyname --chain-id althea-testnet1 --fees 50ualtg --broadcast-mode block
+```

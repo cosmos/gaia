@@ -69,21 +69,18 @@ include contrib/devtools/Makefile
 
 all: install lint check
 
-build: go.sum
-ifeq ($(OS),Windows_NT)
-	go build -mod=readonly $(BUILD_FLAGS) -o build/gaiad.exe ./cmd/gaiad
-	go build -mod=readonly $(BUILD_FLAGS) -o build/gaiacli.exe ./cmd/gaiacli
-else
-	go build -mod=readonly $(BUILD_FLAGS) -o build/gaiad ./cmd/gaiad
-	go build -mod=readonly $(BUILD_FLAGS) -o build/gaiacli ./cmd/gaiacli
-endif
+build: BUILD_ARGS=-o $(BUILDDIR)/
+
+$(BUILD_TARGETS): go.sum $(BUILDDIR)/
+	go $@ -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./...
+
+$(BUILDDIR)/:
+	mkdir -p $(BUILDDIR)/
 
 build-reproducible: go.sum
-	echo "curdir", $(CURDIR)
 	$(DOCKER) rm latest-build || true
 	$(DOCKER) run --volume=$(CURDIR):/sources:ro \
         --env TARGET_PLATFORMS='linux/amd64 darwin/amd64 linux/arm64 windows/amd64' \
-        --env APP=gaiad \
         --env VERSION=$(VERSION) \
         --env COMMIT=$(COMMIT) \
         --env LEDGER_ENABLED=$(LEDGER_ENABLED) \
@@ -94,11 +91,8 @@ build-linux: go.sum
 	LEDGER_ENABLED=false GOOS=linux GOARCH=amd64 $(MAKE) build
 
 build-contract-tests-hooks:
-ifeq ($(OS),Windows_NT)
-	go build -mod=readonly $(BUILD_FLAGS) -o build/contract_tests.exe ./cmd/contract_tests
-else
-	go build -mod=readonly $(BUILD_FLAGS) -o build/contract_tests ./cmd/contract_tests
-endif
+	mkdir -p $(BUILDDIR)
+	go build -mod=readonly $(BUILD_FLAGS) -o $(BUILDDIR)/ ./cmd/contract_tests
 
 install: go.sum
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/gaiad
@@ -124,7 +118,7 @@ draw-deps:
 	@goviz -i ./cmd/gaiad -d 2 | dot -Tpng -o dependency-graph.png
 
 clean:
-	rm -rf snapcraft-local.yaml build/
+	rm -rf snapcraft-local.yaml $(BUILDDIR)/ artifacts/
 
 distclean: clean
 	rm -rf vendor/

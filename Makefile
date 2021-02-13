@@ -5,6 +5,8 @@ VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 LEDGER_ENABLED ?= true
 SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
+DOCKER := $(shell which docker)
+BUILDDIR ?= $(CURDIR)/build
 
 export GO111MODULE = on
 
@@ -75,6 +77,18 @@ else
 	go build -mod=readonly $(BUILD_FLAGS) -o build/gaiad ./cmd/gaiad
 	go build -mod=readonly $(BUILD_FLAGS) -o build/gaiacli ./cmd/gaiacli
 endif
+
+build-reproducible: go.sum
+	echo "curdir", $(CURDIR)
+	$(DOCKER) rm latest-build || true
+	$(DOCKER) run --volume=$(CURDIR):/sources:ro \
+        --env TARGET_PLATFORMS='linux/amd64 darwin/amd64 linux/arm64 windows/amd64' \
+        --env APP=gaiad \
+        --env VERSION=$(VERSION) \
+        --env COMMIT=$(COMMIT) \
+        --env LEDGER_ENABLED=$(LEDGER_ENABLED) \
+        --name latest-build cosmossdk/rbuilder:latest
+	$(DOCKER) cp -a latest-build:/home/builder/artifacts/ $(CURDIR)/
 
 build-linux: go.sum
 	LEDGER_ENABLED=false GOOS=linux GOARCH=amd64 $(MAKE) build

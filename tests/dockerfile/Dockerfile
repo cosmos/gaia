@@ -7,7 +7,7 @@ RUN cd /go && tar -xvf * && mv /go/**/ /usr/local/
 ADD https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.9.14-6d74d1e5.tar.gz /geth/
 RUN cd /geth && tar -xvf * && mv /geth/**/geth /usr/bin/geth
 # this is the Gravity bridge release, update it along with your go.mod entry
-ADD https://github.com/althea-net/cosmos-gravity-bridge/releases/download/v0.0.18/test-runner /usr/bin/test-runner
+ADD https://github.com/althea-net/cosmos-gravity-bridge/releases/download/v0.0.19/test-runner /usr/bin/test-runner
 RUN chmod +x /usr/bin/test-runner
 ADD https://github.com/althea-net/cosmos-gravity-bridge/releases/download/v0.0.19/Peggy.json /solidity/Peggy.json
 ADD https://github.com/althea-net/cosmos-gravity-bridge/releases/download/v0.0.19/TestERC20A.json /solidity/TestERC20A.json

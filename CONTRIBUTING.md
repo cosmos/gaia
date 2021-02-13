@@ -33,7 +33,7 @@ contributors, the general procedure for contributing has been established:
       to begin work
    4. Follow standard Github best practices: fork the repo, branch from the
       HEAD of `main`, make some commits, and submit a PR to `main`
-      - For core developers working within the cosmos-sdk repo, to ensure a clear
+      - For core developers working within the Gaia repo, to ensure a clear
       ownership of branches, branches must be named with the convention
       `{moniker}/{issue#}-branch-name`
    5. Be sure to submit the PR in `Draft` mode submit your PR early, even if
@@ -117,12 +117,15 @@ Please don't make Pull Requests to `main`.
 
 ## Dependencies
 
-We use [Go 1.11 Modules](https://github.com/golang/go/wiki/Modules) to manage
+We use [Go Modules](https://github.com/golang/go/wiki/Modules) to manage
 dependency versions.
 
 The main branch of every Cosmos repository should just build with `go get`,
 which means they should be kept up-to-date with their dependencies so we can
 get away with telling people they can just `go get` our software.
+
+When dependencies in Gaia's `go.mod` are changed, it is generally accepted practice
+to delete `go.sum` and then run `go mod tidy`.
 
 Since some dependencies are not under our control, a third party may break our
 build, in which case we can fall back on `go mod tidy -v`.
@@ -181,7 +184,7 @@ only pull requests targeted directly against main.
 - `main` must never fail `make test` or `make test_cli`
 - `main` should not fail `make lint`
 - no `--force` onto `main` (except when reverting a broken commit, which should seldom happen)
-- create a development branch either on github.com/cosmos/gaia, or your fork (using `git remote add origin`)
+- create a development branch either on `https://github.com/cosmos/gaia`, or your fork (using `git remote add origin`)
 - before submitting a pull request, begin `git rebase` on top of `main`
 
 ### Pull Merge Procedure
@@ -189,37 +192,3 @@ only pull requests targeted directly against main.
 - ensure pull branch is rebased on `main`
 - run `make test` and `make test_cli` to ensure that all tests pass
 - merge pull request
-
-### Release Procedure
-
-- Start on `main`
-- Create the release candidate branch `rc/v*` (going forward known as **RC**)
-  and ensure it's protected against pushing from anyone except the release
-  manager/coordinator
-  - **no PRs targeting this branch should be merged unless exceptional circumstances arise**
-- On the `RC` branch, prepare a new version section in the `CHANGELOG.md` and
-  kick off a large round of simulation testing (e.g. 400 seeds for 2k blocks)
-- If errors are found during the simulation testing, commit the fixes to `main`
-  and create a new `RC` branch (making sure to increment the `rcN`)
-- After simulation has successfully completed, create the release branch
-  (`release/vX.XX.X`) from the `RC` branch
-- Merge the release branch to `main` to incorporate the `CHANGELOG.md` updates
-- Delete the `RC` branches
-
-### Point Release Procedure
-
-At the moment, only a single major release will be supported, so all point
-releases will be based off of that release.
-
-- start on `vX.XX.X`
-- checkout a new branch `rcN/vX.X.X`
-- cherry pick the desired changes from `main`
-  - these changes should be small and NON-BREAKING (both API and state machine)
-- add entries to CHANGELOG.md and remove corresponding pending log entries
-- checkout a new branch `release/vX.X.X` based off of the previous release
-- create a PR merging `rcN/vX.X.X` into `release/vX.X.X`
-- run tests and simulations (noted in [Release Procedure](#release-procedure))
-- after tests and simulation have successfully completed, merge the `RC` branch into `release/vX.X.X`
-  - Make sure to delete the `RC` branch
-- create a PR into `main` containing ONLY the CHANGELOG.md updates
-- tag (use `git tag -a`) then push the tags (`git push --tags`)

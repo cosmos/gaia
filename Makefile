@@ -91,8 +91,11 @@ build-linux: go.sum
 	LEDGER_ENABLED=false GOOS=linux GOARCH=amd64 $(MAKE) build
 
 build-contract-tests-hooks:
-	mkdir -p $(BUILDDIR)
-	go build -mod=readonly $(BUILD_FLAGS) -o $(BUILDDIR)/ ./cmd/contract_tests
+ifeq ($(OS),Windows_NT)
+	go build -mod=readonly $(BUILD_FLAGS) -o build/contract_tests.exe ./cmd/contract_tests
+else
+	go build -mod=readonly $(BUILD_FLAGS) -o build/contract_tests ./cmd/contract_tests
+endif
 
 install: go.sum
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/gaiad

@@ -25,7 +25,6 @@ serves other important details, such as bug fixes and feature improvements.
 
 ## v0.34.0
 
-### BREAKING CHANGES
 
 - CLI/RPC/Config
 

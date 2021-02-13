@@ -1,25 +1,19 @@
 # Althea Testnet 1
 
-Althea Testnet #1 mainly focuses around the Gravity bridge integration. Our goal is to run a two week testnet covering.
+Althea Testnet #1 mainly focuses around the Gravity bridge integration. Our goal is to run this testnet right up until the launch of the Althea chain
 
 - Althea chain parameter selection
 - Gravity bridge slashing
 - Gravity bridge Orchestrator stability
 - IBC testing with B-Harvest and Agoric
 
-This testnet will be launched with a four hour Zoom call with all participants online.
-
-prospective validators can [sign up here](https://airtable.com/shr86l8MZB7nLvjkH)
+If you would like to join this testnet connect with us on the [Althea Discord](https://discordapp.com/invite/vw8twzR) where you can request testnet tokens to stake.
 
 ## What do I need?
 
 A Linux server with any modern Linux distribution, 2gb of ram and at least 20gb storage. Requirements are very minimal.
 
 I also suggest an open notepad or other document to keep track of the keys you will be generating.
-
-## Warning
-
-The genesis file and all binaries have been updated since yesterday, you should blow away your directory and start again if you did anything on the 12th.
 
 ## Bootstrapping steps and commands
 

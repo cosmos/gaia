@@ -3,7 +3,7 @@ module github.com/althea-net/althea-chain
 go 1.15
 
 require (
-	github.com/althea-net/peggy/module v0.0.0-20210203002914-cfbd0532ece0
+	github.com/althea-net/peggy/module v0.0.0-20210213122229-1902c2a3fb7a
 	github.com/btcsuite/btcd v0.21.0-beta
 	github.com/btcsuite/btcutil v1.0.2
 	github.com/cosmos/cosmos-sdk v0.41.0

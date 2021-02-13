@@ -16,7 +16,6 @@ serves other important details, such as bug fixes and feature improvements.
 
 ## v0.34.1
 
-### BREAKING CHANGES
 
 - CLI/RPC/Config
     - [cli] [\#5786](https://github.com/tendermint/tendermint/issues/5786) deprecate snake_case commands for hyphen-case (@cmwaters)

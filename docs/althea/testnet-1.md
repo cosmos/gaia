@@ -111,11 +111,11 @@ althea tx staking create-validator \
 
 ```
 
-To increase your ualtg (optional)
+To increase your ualtg (optional). This step is optional
 
 ```
 althea keys show validator1 --bech val
-althea tx staking delegate $(althea tendermint show-validator) 99000000ualtg --from validator1 --chain-id althea-testnet1 --fees 50ualtg --broadcast-mode block
+althea tx staking delegate $(althea tendermint show-address) 99000000ualtg --from validator1 --chain-id althea-testnet1 --fees 50ualtg --broadcast-mode block
 ```
 
 ### Confirm that you are validating
@@ -149,6 +149,8 @@ enable = true
 ```
 nano $HOME/.althea/config/app.toml
 ```
+
+After you do this you need to restart your validator hit ctrl-c and then run 'althea start' again
 
 ### Register your delegate keys
 

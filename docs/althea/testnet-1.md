@@ -181,7 +181,7 @@ For the purposes of this testnet just follow the instructions below, even on the
 wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.9.25-e7872729.tar.gz
 tar -xvf geth-linux-amd64-1.9.25-e7872729.tar.gz
 cd geth-linux-amd64-1.9.25-e7872729
-./geth --syncmode "light" --goerli --http
+./geth --syncmode "light" --goerli --http --cache 16
 ```
 
 ### Deployment of the Gravity contract
@@ -288,9 +288,30 @@ Now that we have the basics out of the way we can get into the fun testing, incl
 
 ### Appendix
 
-To increase your ualtg (optional). You probably don't need this step
+#### Increase your stake
+
+To increase your ualtg stake, if you have extra tokens lying around. The first command will show an output like this, you want to take the key starting with cosmosvaloper1 in the 'address' field.
 
 ```
-althea keys show validator1 --bech val
-althea tx staking delegate $(althea tendermint show-address) 99000000ualtg --from myvalidatorkeyname --chain-id althea-testnet1 --fees 50ualtg --broadcast-mode block
+- name: jkilpatr
+  type: local
+  address: cosmosvaloper1jpz0ahls2chajf78nkqczdwwuqcu97w6z3plt4
+  pubkey: cosmosvaloperpub1addwnpepqvl0qgfqewmuqvyaskmr4pwkr5fwzuk8286umwrfnxqkgqceg6ksu359m5q
+  mnemonic: ""
+  threshold: 0
+  pubkeys: []
+
+```
+
+```
+althea keys show myvalidatorkeyname --bech val
+althea tx staking delegate <the address from the above command> 99000000ualtg --from myvalidatorkeyname --chain-id althea-testnet1 --fees 50ualtg --broadcast-mode block
+```
+
+#### Unjail your validator
+
+You can be jailed for several different reasons. As part of the Althea testnet we are testing slashing conditions for the Gravity bridge, so you will be slashed if the Orchestrator is not running properly, in addition to the usual Cosmos double sign and downtime slashing parameters. To unjail your validator run
+
+```
+althea tx slashing unjail --from myvalidatorkeyname --chain-id=althea-testnet1
 ```

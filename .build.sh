@@ -27,6 +27,7 @@ for platform in ${TARGET_PLATFORMS} ; do
     make clean
     echo Building for $(go env GOOS)/$(go env GOARCH) >&2
     GOROOT_FINAL="$(go env GOROOT)" \
+
     make build \
         LDFLAGS=-buildid=${VERSION} \
         VERSION=${VERSION} \
@@ -35,6 +36,7 @@ for platform in ${TARGET_PLATFORMS} ; do
 
     APP="gaiad"
     mv ./build/${APP} ${OUTDIR}/${APP}-${VERSION}-$(go env GOOS)-$(go env GOARCH)${OS_FILE_EXT}
+
     APP="gaiacli"
     mv ./build/${APP} ${OUTDIR}/${APP}-${VERSION}-$(go env GOOS)-$(go env GOARCH)${OS_FILE_EXT}
 

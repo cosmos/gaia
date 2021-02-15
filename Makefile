@@ -69,6 +69,8 @@ include contrib/devtools/Makefile
 
 all: install lint check
 
+BUILD_TARGETS := build install
+
 build: BUILD_ARGS=-o $(BUILDDIR)/
 
 $(BUILD_TARGETS): go.sum $(BUILDDIR)/
@@ -90,19 +92,19 @@ build-reproducible: go.sum
 build-linux: go.sum
 	LEDGER_ENABLED=false GOOS=linux GOARCH=amd64 $(MAKE) build
 
-build-contract-tests-hooks:
-ifeq ($(OS),Windows_NT)
-	go build -mod=readonly $(BUILD_FLAGS) -o build/contract_tests.exe ./cmd/contract_tests
-else
-	go build -mod=readonly $(BUILD_FLAGS) -o build/contract_tests ./cmd/contract_tests
-endif
+#build-contract-tests-hooks:
+#ifeq ($(OS),Windows_NT)
+#	go build -mod=readonly $(BUILD_FLAGS) -o build/contract_tests.exe ./cmd/contract_tests
+#else
+#	go build -mod=readonly $(BUILD_FLAGS) -o build/contract_tests ./cmd/contract_tests
+#endif
+#
+#install: go.sum
+#	go install -mod=readonly $(BUILD_FLAGS) ./cmd/gaiad
+#	go install -mod=readonly $(BUILD_FLAGS) ./cmd/gaiacli
 
-install: go.sum
-	go install -mod=readonly $(BUILD_FLAGS) ./cmd/gaiad
-	go install -mod=readonly $(BUILD_FLAGS) ./cmd/gaiacli
-
-install-debug: go.sum
-	go install -mod=readonly $(BUILD_FLAGS) ./cmd/gaiadebug
+#install-debug: go.sum
+	#go install -mod=readonly $(BUILD_FLAGS) ./cmd/gaiadebug
 
 ########################################
 ### Tools & dependencies
@@ -121,7 +123,7 @@ draw-deps:
 	@goviz -i ./cmd/gaiad -d 2 | dot -Tpng -o dependency-graph.png
 
 clean:
-	rm -rf snapcraft-local.yaml $(BUILDDIR)/ artifacts/
+	rm -rf $(BUILDDIR)/ artifacts/
 
 distclean: clean
 	rm -rf vendor/

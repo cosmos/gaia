@@ -71,9 +71,8 @@ all: install lint check
 
 BUILD_TARGETS := build install
 
-build: BUILD_ARGS=-o $(BUILDDIR)/
-
 $(BUILD_TARGETS): go.sum $(BUILDDIR)/
+	BUILD_ARGS=-o $(BUILDDIR)/
 	go $@ -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./...
 
 $(BUILDDIR)/:

@@ -1,21 +1,47 @@
 # Cosmos Hub 3 Upgrade Instructions
 
-The following document describes the necessary steps involved that full-node operators
-must take in order to upgrade from `cosmoshub-3` to `cosmoshub-4`. The Tendermint team
-will post an official updated genesis file, but it is recommended that validators
+The following document describes the necessary steps involved that validators and full node operators
+must take in order to upgrade from `cosmoshub-3` to `cosmoshub-4`. The Cosmos teams
+will post an official `cosmoshub-4` genesis file, but it is recommended that validators
 execute the following instructions in order to verify the resulting genesis file.
 
 There is a strong social consensus around proposal `Cosmos Hub 4 Upgrade Proposal`
 on `cosmoshub-3`. Following proposals #[27](https://www.mintscan.io/cosmos/proposals/27), #[35](https://www.mintscan.io/cosmos/proposals/35) and #[36](https://www.mintscan.io/cosmos/proposals/36).
 This indicates that the upgrade procedure should be performed on `February 18, 2021 at 06:00 UTC`.
 
+  - [Summary](#summary)
   - [Migrations](#migrations)
   - [Preliminary](#preliminary)
   - [Major Updates](#major-updates)
   - [Risks](#risks)
   - [Recovery](#recovery)
   - [Upgrade Procedure](#upgrade-procedure)
+  - [Guidance for Full Node Operators](#guidance-for-full-node-operators)
   - [Notes for Service Providers](#notes-for-service-providers)
+ 
+# Summary
+
+The Cosmoshub-3 will undergo a scheduled upgrade to Cosmoshub-4 on Feb 18, 2021 at 6 UTC.
+
+The following is a short summary of the upgrade steps:
+    1. Stopping the running Gaia v2.0.x instance 
+    1. Backing up configs, data, and keys used for running Cosmoshub-3
+    1. Resetting state to clear the local Cosmoshub-3 state
+    1. Copying the cosmoshub-4 genesis file to the Gaia config folder (either after migrating an existing cosmoshub-3 genesis export, or downloading the cosmoshub-4 genesis from the mainnet github)
+    1. Installing the Gaia v4.0.x release
+    1. Starting the Gaia v4.0.x instance to resume the Cosmos hub chain at a height of <cosmoshub3 height> + 1.
+
+Specific instructions for validators are available in [Upgrade Procedure](#upgrade-procedure), 
+and specific instructions for full node operators are available in [Guidance for Full Node Operators](#guidance-for-full-node-operators).
+
+Upgrade coordination and support for validators will be available on the #validators-verified channel of the [Cosmos Discord](https://discord.gg/vcExX9T).
+
+The network upgrade can take the following potential pathways:
+1. Happy path: Validator successfully migrate the cosmoshub-3 genesis file to a cosmoshub-4 genesis file, and the validator can succesfully start Gaia v4 with the cosmoshub-4 genesis within 1-2 hours of the scheduled upgrade.
+1. Not-so-happy path: Validators have trouble migrating the cosmoshub-3 genesis to a cosmoshub-4 genesis, but can obtain the genesis file from the Cosmos mainnet github repo and can successfully start Gaia v4 within 1-2 hours of the scheduled upgrade.  
+1. Abort path: In the rare event that the team becomes aware of critical issues, which result in an unsuccessful migration within a few hours, the upgrade will be announced as aborted 
+   on the #validators-verified channel, and validators will need to resume running cosmoshub-3 network without any updates or changes. 
+   A new governance proposal for the upgrade will need to be issued and voted on by the community.
 
 # Migrations
 
@@ -227,6 +253,92 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
     Automated audits of the genesis state can take 30-120 min using the crisis module. This can be disabled by 
     `gaiad start --x-crisis-skip-assert-invariants`.
 
+# Guidance for Full Node Operators
+
+1. Verify you are currently running the correct version (v2.0.15) of _gaiad_:
+
+   ```bash
+    $ gaiad version --long
+    name: gaia
+    server_name: gaiad
+    client_name: gaiacli
+    version: 2.0.15
+    commit: 89cf7e6fc166eaabf47ad2755c443d455feda02e
+    build_tags: netgo,ledger
+    go: go version go1.15 darwin/amd64
+   ```
+
+1. Make sure your chain halts at the right time and date:
+   February 18, 2021 at 06:00 UTC is in UNIX seconds: `1613628000`
+
+    ```bash
+    perl -i -pe 's/^halt-time =.*/halt-time = 1613628000/' ~/.gaiad/config/app.toml
+    ```
+
+1. After the chain has halted, make a backup of your `.gaiad` directory
+
+   ```bash
+   mv ~/.gaiad ./gaiad_backup
+   ```
+
+   **NOTE**: It is recommended for validators and operators to take a full data snapshot at the export
+   height before proceeding in case the upgrade does not go as planned or if not enough voting power
+   comes online in a sufficient and agreed upon amount of time. In such a case, the chain will fallback
+   to continue operating `cosmoshub-3`. See [Recovery](#recovery) for details on how to proceed.
+
+1. Download the cosmoshub-4 genesis file from the [Cosmos Mainnet Github](https://github.com/cosmos/mainnet).
+   This file will be generated by a validator that is migrating from cosmoshub-3 to cosmoshub-4.
+   The cosmoshub-4 genesis file will be validated by community participants, and
+   the hash of the file will be shared on the #validators-verified channel of the [Cosmos Discord](https://discord.gg/vcExX9T).
+
+1. Install v4.0.0 of [Gaia](https://github.com/cosmos/gaia).
+
+   **NOTE**: Go [1.15+](https://golang.org/dl/) is required!
+
+   ```bash
+   $ git clone https://github.com/cosmos/gaia.git && cd gaia && git checkout v4.0.0; make install
+   ```
+
+1. Verify you are currently running the correct version (v4.0.0) of the _Gaia_:
+
+   ```bash
+    $ gaiad version --long
+    name: gaia
+    server_name: gaiad
+    version: 4.0.0
+    commit: 2bb04266266586468271c4ab322367acbf41188f
+    build_tags: netgo,ledger
+    go: go version go1.15 darwin/amd64
+    build_deps:
+    ...
+   ```
+
+   The version/commit hash of Gaia v4.0.0: `2bb04266266586468271c4ab322367acbf41188f`
+
+1. Reset state:
+
+   **NOTE**: Be sure you have a complete backed up state of your node before proceeding with this step.
+   See [Recovery](#recovery) for details on how to proceed.
+
+   ```bash
+   $ gaiad unsafe-reset-all
+   ```
+
+1. Move the new `genesis.json` to your `.gaia/config/` directory
+
+    ```bash
+    cp genesis.json ~/.gaia/config/
+    ```
+
+1. Start your blockchain
+
+    ```bash
+    gaiad start
+    ```
+
+   Automated audits of the genesis state can take 30-120 min using the crisis module. This can be disabled by
+   `gaiad start --x-crisis-skip-assert-invariants`.
+   
 ## Notes for Service Providers
 
 # REST server

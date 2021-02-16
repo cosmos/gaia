@@ -37,10 +37,10 @@ and specific instructions for full node operators are available in [Guidance for
 Upgrade coordination and support for validators will be available on the #validators-verified channel of the [Cosmos Discord](https://discord.gg/vcExX9T).
 
 The network upgrade can take the following potential pathways:
-1. Happy path: Validator successfully migrate the cosmoshub-3 genesis file to a cosmoshub-4 genesis file, and the validator can succesfully start Gaia v4 with the cosmoshub-4 genesis within 1-2 hours of the scheduled upgrade.
+1. Happy path: Validator successfully migrates the cosmoshub-3 genesis file to a cosmoshub-4 genesis file, and the validator can successfully start Gaia v4 with the cosmoshub-4 genesis within 1-2 hours of the scheduled upgrade.
 1. Not-so-happy path: Validators have trouble migrating the cosmoshub-3 genesis to a cosmoshub-4 genesis, but can obtain the genesis file from the Cosmos mainnet github repo and can successfully start Gaia v4 within 1-2 hours of the scheduled upgrade.  
 1. Abort path: In the rare event that the team becomes aware of critical issues, which result in an unsuccessful migration within a few hours, the upgrade will be announced as aborted 
-   on the #validators-verified channel, and validators will need to resume running cosmoshub-3 network without any updates or changes. 
+   on the #validators-verified channel of [Discord](https://discord.gg/vcExX9T), and validators will need to resume running cosmoshub-3 network without any updates or changes. 
    A new governance proposal for the upgrade will need to be issued and voted on by the community.
 
 # Migrations
@@ -268,12 +268,7 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
     go: go version go1.15 darwin/amd64
    ```
 
-1. Make sure your chain halts at the right time and date:
-   February 18, 2021 at 06:00 UTC is in UNIX seconds: `1613628000`
-
-    ```bash
-    perl -i -pe 's/^halt-time =.*/halt-time = 1613628000/' ~/.gaiad/config/app.toml
-    ```
+1. Stop your Gaia v2.0.15 instance.
 
 1. After the chain has halted, make a backup of your `.gaiad` directory
 
@@ -283,7 +278,9 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
 
    **NOTE**: It is recommended for validators and operators to take a full data snapshot at the export
    height before proceeding in case the upgrade does not go as planned or if not enough voting power
-   comes online in a sufficient and agreed upon amount of time. In such a case, the chain will fallback
+   comes online in a sufficient and agreed upon amount of time. That means the backup of `.gaiad` should 
+   only take place once the chain has halted at UNIX time `1613628000`.
+   In such a case, the chain will fallback
    to continue operating `cosmoshub-3`. See [Recovery](#recovery) for details on how to proceed.
 
 1. Download the cosmoshub-4 genesis file from the [Cosmos Mainnet Github](https://github.com/cosmos/mainnet).

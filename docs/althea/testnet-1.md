@@ -51,15 +51,15 @@ You'll be prompted to create a password, I suggest you pick something short sinc
 
 ```
 cd $HOME
-althea init mymoniker --chain-id althea-testnet1
+althea init mymoniker --chain-id althea-testnet1v2
 althea keys add myvalidatorkeyname
 ```
 
 ### Copy the genesis file
 
 ```
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/althea-testnet1-genesis.json
-cp althea-testnet1-genesis.json $HOME/.althea/config/genesis.json
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/althea-testnet1-v2-genesis.json
+cp althea-testnet1-v2-genesis.json $HOME/.althea/config/genesis.json
 ```
 
 ### Add persistent peers
@@ -164,7 +164,7 @@ althea keys show myvalidatorkeyname
 ```
 
 ```
-althea tx bank send myvalidatorkeyname <your delegate cosmos address> 50000000footoken --chain-id=althea-testnet1
+althea tx bank send myvalidatorkeyname <your delegate cosmos address> 50000000footoken --chain-id=althea-testnet1v2
 ```
 
 With the Althea side funded, now we need some Goerli Eth you can ask for some in chat or use [this faucet](https://goerli-faucet.slock.it/) for a small amount that should be more than sufficient for this testnet. Just paste in the Ethereum address that was generated in the previous step.
@@ -305,7 +305,7 @@ To increase your ualtg stake, if you have extra tokens lying around. The first c
 
 ```
 althea keys show myvalidatorkeyname --bech val
-althea tx staking delegate <the address from the above command> 99000000ualtg --from myvalidatorkeyname --chain-id althea-testnet1 --fees 50ualtg --broadcast-mode block
+althea tx staking delegate <the address from the above command> 99000000ualtg --from myvalidatorkeyname --chain-id althea-testnet1v2 --fees 50ualtg --broadcast-mode block
 ```
 
 #### Unjail your validator
@@ -313,5 +313,71 @@ althea tx staking delegate <the address from the above command> 99000000ualtg --
 You can be jailed for several different reasons. As part of the Althea testnet we are testing slashing conditions for the Gravity bridge, so you will be slashed if the Orchestrator is not running properly, in addition to the usual Cosmos double sign and downtime slashing parameters. To unjail your validator run
 
 ```
-althea tx slashing unjail --from myvalidatorkeyname --chain-id=althea-testnet1
+althea tx slashing unjail --from myvalidatorkeyname --chain-id=althea-testnet1v2
 ```
+
+### Upgrading from althea-testnet1 to altheatestnet1v2
+
+Thank you very much for your patience and participation! During the initial launch of testnet1 we encountered several bugs that have now been patched. See our [blog post](https://blog.althea.net/althea-testnet-1-launched/) on the bugs you helped fix!
+
+For now though lets talk about getting everyone back up and running
+
+_You will keep your tokens and your validator in v2, as part of this guide you will unjail yourself and return to validating_
+
+#### Update your binaries
+
+We have a new version of everything as the fixes are quite expansive
+
+```
+cd althea-bin
+
+# the althea chain binary itself
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/althea
+
+# Tools for the gravity bridge from the gravity repo
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/client
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/orchestrator
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/register-delegate-keys
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/relayer
+chmod +x *
+sudo mv * /usr/bin/
+
+```
+
+### Update your genesis file
+
+This is the exported genesis file of the chain history we started on the 13th, we'll import it into our new updated chain keeping all balances and state
+
+```
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/althea-testnet1-v2-genesis.json
+cp althea-testnet1-v2-genesis.json $HOME/.althea/config/genesis.json
+```
+
+### Start the chain
+
+Unsafe reset all will reset the entire blockchain state in .althea allowing you to start althea-testnet1v2 using only the state from the genesis file
+
+```
+althea unsafe-reset-all
+althea start
+```
+
+### Restart your Orchestrator
+
+No argument changes are required, just ctrl-c and start it again.
+
+You may also want to check the status of your Geth node, no changes are required there.
+
+### Unjail yourself
+
+This command will unjail you, completing the process of getting the chain back online!
+
+_replace 'myvalidatorkeyname' with your validator keys name, if you don't remember run `althea keys list`_
+
+```
+althea tx slashing unjail --from myvalidatorkeyname --chain-id=althea-testnet1v2
+```
+
+### Notes
+
+The updated orchestrator addresses a lot of the community concerns and error messages, you should only see one error message, talking about potential bridge highjacking. It will go away in a few hours and is related to the fact that the chain stopped shortly after the time that I used for the genesis file. This is just a warning working as intended and can be safely ignored in this case.

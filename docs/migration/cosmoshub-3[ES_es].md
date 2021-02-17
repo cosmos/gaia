@@ -40,7 +40,7 @@ __La aplicación [Gaia](https://github.com/cosmos/gaia) v4.0.0 es lo que los ope
 
 ## Principales actualizaciones
 
-Hay muchas características y cambios notables en la próxima versión del SDK. Muchos de ellos se discuten a un alto nivel [aquí](https://github.com/cosmos/stargate).
+Hay muchas características y cambios notables en la próxima versión del SDK. Muchos de ellos se discuten a de forma general [aquí](https://github.com/cosmos/stargate).
 
 Algunos de los principales cambios que hay que tener en cuenta a la hora de actualizar como desarrollador o cliente son los siguientes:
 

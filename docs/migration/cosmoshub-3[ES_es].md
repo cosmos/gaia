@@ -202,7 +202,7 @@ El ajuste `swagger` se refiere a la activación/desactivación de la API de docu
 
 # Configuración gRPC
 
-configuración gRPC en tu `.gaia/config/app.toml`
+Configuración gRPC en tu `.gaia/config/app.toml`
 
 ```yaml
 [grpc]

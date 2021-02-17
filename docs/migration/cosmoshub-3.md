@@ -168,7 +168,7 @@ The version/commit hash of Gaia v2.0.15: `89cf7e6fc166eaabf47ad2755c443d455feda0
     a backup as in the last step - and obtain it with
 
    ```bash
-   cat ~/.gaiad/config/data/priv_validator_state.json | jq '.height'
+   cat ~/.gaiad/data/priv_validator_state.json | jq '.height'
    ```
 
    ```bash

@@ -28,9 +28,7 @@ Si tienes un explorador de bloques, un monedero, un exchange, un validador o cua
 1. [Clientes ligeros con todas las funciones](https://figment.network/resources/cosmos-stargate-upgrade-overview/#light)
 1. [Módulo de actualización de la cadena - automatización de la actualización](https://figment.network/resources/cosmos-stargate-upgrade-overview/#upgrade)
 
-Si quieres probar el procedimiento antes de que se produzca la actualización el 18 de febrero, consulta este post en relación a ello:
-
-https://github.com/cosmos/gaia/issues/569#issuecomment-767910963
+Si quieres probar el procedimiento antes de que se produzca la actualización el 18 de febrero, consulta este [post](https://github.com/cosmos/gaia/issues/569#issuecomment-767910963) en relación a ello.
 
 ## Preliminares
 

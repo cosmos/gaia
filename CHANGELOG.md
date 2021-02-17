@@ -36,6 +36,13 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+## [v4.0.1] - 2021-02-17
+
+### Bug Fixes
+
+* (sdk) [\#579](https://github.com/cosmos/gaia/pull/635) Bump SDK version to [v0.41.1](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.41.1).
+* (tendermint) [\#622](https://github.com/cosmos/gaia/pull/622) Bump Tendermint version to [v0.34.4](https://github.com/tendermint/tendermint/releases/tag/v0.34.4).
+
 ## [v4.0.0] - 2021-01-26
 
 ### Improvements
@@ -228,7 +235,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v4.0.0...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v4.0.1...HEAD
+[v4.0.1]: https://github.com/cosmos/gaia/releases/tag/v4.0.1
 [v4.0.0]: https://github.com/cosmos/gaia/releases/tag/v4.0.0
 [v3.0.1]: https://github.com/cosmos/gaia/releases/tag/v3.0.1
 [v3.0.0]: https://github.com/cosmos/gaia/releases/tag/v3.0.0

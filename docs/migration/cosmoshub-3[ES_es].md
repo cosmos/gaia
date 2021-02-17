@@ -19,7 +19,7 @@ Estos capítulos contienen todas las guías de migración para actualizar tu apl
 Si tienes un explorador de bloques, un monedero, un exchange, un validador o cualquier otro servicio (por ejemplo, un proveedor de custodia) que dependa del Cosmos Hub o del ecosistema Cosmos, deberás prestar atención, porque esta actualización implicará cambios sustanciales.
 
 1. [Migración de aplicaciones y módulos](ttps://github.com/cosmos/cosmos-sdk/blob/master/docs/migrations/app_and_modules.md)
-1. [Guía de actualización de la cadena a v0.40](https://github.com/cosmos/cosmos-sdk/blob/master/docs/migrations/chain-upgrade-guide-040.md)
+1. [Guía de actualización de la cadena a v0.41](https://github.com/cosmos/cosmos-sdk/blob/master/docs/migrations/chain-upgrade-guide-040.md)
 1. [Migración de endpoints REST](https://github.com/cosmos/cosmos-sdk/blob/master/docs/migrations/rest.md)
 1. [Recopilación de modificaciones de ruptura de los registros de cambios](https://github.com/cosmos/gaia/blob/main/docs/migration/breaking_changes.md)
 1. [Comunicación entre cadenas de bloques (IBC) - transacciones entre cadenas](https://figment.io/resources/cosmos-stargate-upgrade-overview/#ibc)

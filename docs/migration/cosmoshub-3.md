@@ -75,9 +75,9 @@ the [Interchain Standads](https://github.com/cosmos/ics#ibc-quick-references) wi
 This upgrade comes with several improvements in efficiency, node synchronization and following blockchain upgrades.
 More details on the [Stargate Website](https://stargate.cosmos.network/).
 
-__[Gaia](https://github.com/cosmos/gaia) application v4.0.0 is
+__[Gaia](https://github.com/cosmos/gaia) application v4.0.1 is
 what full node operators will upgrade to and run in this next major upgrade__.
-Following Cosmos SDK version v0.41.0 and Tendermint v0.34.3.
+Following Cosmos SDK version v0.41.1 and Tendermint v0.34.4.
 
 Validators should expect that at least 16GB of RAM needs to be provisioned to process the first new block on cosmoshub-4.
 
@@ -187,31 +187,28 @@ The version/commit hash of Gaia v2.0.15: `89cf7e6fc166eaabf47ad2755c443d455feda0
    ```
 
 1. At this point you now have a valid exported genesis state! All further steps now require
-v4.0.0 of [Gaia](https://github.com/cosmos/gaia). 
+v4.0.1 of [Gaia](https://github.com/cosmos/gaia). 
 Cross check your genesis hash with other peers (other validators) in the chat rooms.
 
    **NOTE**: Go [1.15+](https://golang.org/dl/) is required!
 
    ```bash
-   $ git clone https://github.com/cosmos/gaia.git && cd gaia && git checkout v4.0.0; make install
+   $ git clone https://github.com/cosmos/gaia.git && cd gaia && git checkout v4.0.1; make install
    ```
 
-1. Verify you are currently running the correct version (v4.0.0) of the _Gaia_:
+1. Verify you are currently running the correct version (v4.0.1) of the _Gaia_:
 
    ```bash
-    $ gaiad version --long
-    name: gaia
-    server_name: gaiad
-    version: 4.0.0
-    commit: a279d091c6f66f8a91c87943139ebaecdd84f689
-    build_tags: netgo,ledger
-    go: go version go1.15 darwin/amd64
-    build_deps:
+    $ name: gaia
+      server_name: gaiad
+      version: 4.0.1
+      commit: 496759bd9fdb38ff6f3a681f6116e6ece99e7770
+      build_tags: netgo,ledger
     ...
    ```
-    The version/commit hash of Gaia v4.0.0: `a279d091c6f66f8a91c87943139ebaecdd84f689`
+    The version/commit hash of Gaia v4.0.1: `496759bd9fdb38ff6f3a681f6116e6ece99e7770`
 
-1. Migrate exported state from the current v2.0.15 version to the new v4.0.0 version:
+1. Migrate exported state from the current v2.0.15 version to the new v4.0.1 version:
 
    ```bash
    $ gaiad migrate cosmoshub_3_genesis_export.json --chain-id=cosmoshub-4 --initial-height [last_cosmoshub-3_block+1] > genesis.json
@@ -288,29 +285,26 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
    The cosmoshub-4 genesis file will be validated by community participants, and
    the hash of the file will be shared on the #validators-verified channel of the [Cosmos Discord](https://discord.gg/vcExX9T).
 
-1. Install v4.0.0 of [Gaia](https://github.com/cosmos/gaia).
+1. Install v4.0.1 of [Gaia](https://github.com/cosmos/gaia).
 
    **NOTE**: Go [1.15+](https://golang.org/dl/) is required!
 
    ```bash
-   $ git clone https://github.com/cosmos/gaia.git && cd gaia && git checkout v4.0.0; make install
+   $ git clone https://github.com/cosmos/gaia.git && cd gaia && git checkout v4.0.1; make install
    ```
 
-1. Verify you are currently running the correct version (v4.0.0) of the _Gaia_:
+1. Verify you are currently running the correct version (v4.0.1) of the _Gaia_:
 
    ```bash
-    $ gaiad version --long
-    name: gaia
-    server_name: gaiad
-    version: 4.0.0
-    commit: a279d091c6f66f8a91c87943139ebaecdd84f689
-    build_tags: netgo,ledger
-    go: go version go1.15 darwin/amd64
-    build_deps:
+    $ name: gaia
+      server_name: gaiad
+      version: 4.0.1
+      commit: 496759bd9fdb38ff6f3a681f6116e6ece99e7770
+      build_tags: netgo,ledger
     ...
    ```
 
-   The version/commit hash of Gaia v4.0.0: `a279d091c6f66f8a91c87943139ebaecdd84f689`
+   The version/commit hash of Gaia v4.0.1: `496759bd9fdb38ff6f3a681f6116e6ece99e7770`
 
 1. Reset state:
 

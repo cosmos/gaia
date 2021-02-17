@@ -203,13 +203,13 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
     name: gaia
     server_name: gaiad
     version: 4.0.0
-    commit: 2bb04266266586468271c4ab322367acbf41188f
+    commit: a279d091c6f66f8a91c87943139ebaecdd84f689
     build_tags: netgo,ledger
     go: go version go1.15 darwin/amd64
     build_deps:
     ...
    ```
-    The version/commit hash of Gaia v4.0.0: `2bb04266266586468271c4ab322367acbf41188f`
+    The version/commit hash of Gaia v4.0.0: `a279d091c6f66f8a91c87943139ebaecdd84f689`
 
 1. Migrate exported state from the current v2.0.15 version to the new v4.0.0 version:
 
@@ -303,14 +303,14 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
     name: gaia
     server_name: gaiad
     version: 4.0.0
-    commit: 2bb04266266586468271c4ab322367acbf41188f
+    commit: a279d091c6f66f8a91c87943139ebaecdd84f689
     build_tags: netgo,ledger
     go: go version go1.15 darwin/amd64
     build_deps:
     ...
    ```
 
-   The version/commit hash of Gaia v4.0.0: `2bb04266266586468271c4ab322367acbf41188f`
+   The version/commit hash of Gaia v4.0.0: `a279d091c6f66f8a91c87943139ebaecdd84f689`
 
 1. Reset state:
 

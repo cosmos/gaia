@@ -166,7 +166,7 @@ gaiad query tendermint-validator-set | grep "$(gaiad tendermint show-validator)"
 코스모스 테스트넷의 경우 코스모스 [익스플로러](https://explorecosmos.network/validators)를 통해서 밸리데이터가 운영되고 있는지 확인하실 수 있습니다. `~/.gaiad/config/priv_validator.json` 파일의 `bech32` 인코딩이된 `address` 항목을 참고하세요.
 
 ::: warning 참고
-검증인 세트에 포함되시기 원하신다면 100등 밸리데이터보다 보팅 파워(voting power)가 높아야 합니다.
+검증인 세트에 포함되시기 원하신다면 125등 밸리데이터보다 보팅 파워(voting power)가 높아야 합니다.
 :::
 
 ## 흔히 발생하는 문제들

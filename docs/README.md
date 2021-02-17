@@ -37,7 +37,3 @@ Welcome to the documentation of the **Cosmos Hub application: `gaia`**.
 
 See [this file](./DOCS_README.md) for details of the build process and
 considerations when making changes.
-
-# Version
-
-This documentation is built from the following commit:

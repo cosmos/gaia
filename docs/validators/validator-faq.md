@@ -20,7 +20,7 @@ The Cosmos Hub is a public Proof-Of-Stake (PoS) blockchain, meaning that the wei
 
 Any user in the system can declare their intention to become a validator by sending a `create-validator` transaction. From there, they become validator candidates.
 
-The weight (i.e. voting power) of a validator determines whether or not they are an active validator. Initially, only the top 100 validators with the most voting power will be active validators.
+The weight (i.e. voting power) of a validator determines whether or not they are an active validator. Initially, only the top 125 validators with the most voting power will be active validators.
 
 ### What is a full-node?
 
@@ -54,7 +54,7 @@ Any participant in the network can signal that they want to become a validator b
 
 Once a validator is created, Atom holders can delegate atoms to them, effectively adding stake to their pool. The total stake of an address is the combination of Atoms bonded by delegators and Atoms self-bonded by the entity which designated themselves.
 
-Out of all validator candidates that signaled themselves, the 100 with the most total stake are the ones who are designated as validators. They become **validators** If a validator's total stake falls below the top 100 then that validator loses their validator privileges: they don't participate in consensus and generate rewards any more. Over time, the maximum number of validators may be increased via on-chain governance proposal.
+Out of all validator candidates that signaled themselves, the 125 with the most total stake are the ones who are designated as validators. They become **validators** If a validator's total stake falls below the top 125 then that validator loses their validator privileges: they don't participate in consensus and generate rewards any more. Over time, the maximum number of validators may be increased via on-chain governance proposal.
 
 ## Testnet
 

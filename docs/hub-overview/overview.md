@@ -10,7 +10,7 @@ The Cosmos Hub is the first of [thousands of interconnected blockchains](https:/
 
 ## The ATOM
 
-Do you have ATOM tokens? With ATOM, you have the superpower to contribute to the security and governance of the Cosmos Hub. Delegate your ATOM to one or more of the 100 validators on the Cosmos Hub blockchain to earn more ATOM through Proof-of-Stake. You can also vote with your ATOM to influence the future of the Cosmos Hub through on-chain governance proposals.
+Do you have ATOM tokens? With ATOM, you have the superpower to contribute to the security and governance of the Cosmos Hub. Delegate your ATOM to one or more of the 125 validators on the Cosmos Hub blockchain to earn more ATOM through Proof-of-Stake. You can also vote with your ATOM to influence the future of the Cosmos Hub through on-chain governance proposals.
 
 Learn more about [being a delegator](../delegators/delegator-faq.md), learn about [the security risks](../delegators/delegator-security.md), and start participating with one of the following wallets.
 
@@ -72,7 +72,7 @@ If you are looking to run a validator node, follow the [validator setup guide](.
 
 Have questions, comments, or new ideas? Participate in the Cosmos community through one of the following channels. Also check out the [latest events](https://cosmos.network/community).
 
-* [Cosmos Community Discord](https://discord.com/invite/W8trcGV)
+* [Cosmos Community Discord](https://discord.gg/vcExX9T)
 * [Cosmos Community Telegram](https://t.me/cosmosproject)
 * [Cosmos Hub Governance Working Group Telegram](https://t.me/hubgov)
 * [Cosmos Forum](https://forum.cosmos.network)

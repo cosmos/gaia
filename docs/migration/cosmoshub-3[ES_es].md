@@ -192,9 +192,9 @@ En caso de que hayas estado ejecutando el servidor REST con el comando `gaiacli 
 
 ```
 [api]
-# Enable defines if the API server should be enabled.
+# Enable define si la API del servidor debe estar habilitada.
 enable = false
-# Swagger defines if swagger documentation should automatically be registered.
+# Swagger define si la documentación swagger debe registrarse automáticamente.
 swagger = false
 ```
 
@@ -206,9 +206,9 @@ Configuración gRPC en tu `.gaia/config/app.toml`
 
 ```yaml
 [grpc]
-# Enable defines if the gRPC server should be enabled.
+# Enable define si el servidor gRPC debe estar habilitado.
 enable = true
-# Address defines the gRPC server address to bind to.
+# Address define la dirección del servidor gRPC a la que se vincula.
 address = "0.0.0.0:9090"
 ```
 
@@ -217,12 +217,15 @@ address = "0.0.0.0:9090"
 Configuración de State Sync en tu `.gaia/config/app.toml`
 
 ```yaml
-# State sync snapshots allow other nodes to rapidly join the network without replaying historical
-# blocks, instead downloading and applying a snapshot of the application state at a given height.
+# State sync o las instantáneas de sincronización de estado permiten que otros nodos 
+# se unan rápidamente a la red sin reproducir los bloques históricos, descargando y 
+# aplicando en su lugar una instantánea del estado de la aplicación a una altura determinada.
 [state-sync]
-# snapshot-interval specifies the block interval at which local state sync snapshots are
-# taken (0 to disable). Must be a multiple of pruning-keep-every.
+# snapshot-interval especifica el intervalo de bloques en el que se toman instantáneas 
+# de sincronización de estado local (0 para deshabilitar). Debe ser un múltiplo de 
+# pruning-keep-every.
 snapshot-interval = 0
-# snapshot-keep-recent specifies the number of recent snapshots to keep and serve (0 to keep all).
+# snapshot-keep-recent especifica el número de instantáneas recientes a conservar y servir 
+# (0 para conservar todas).
 snapshot-keep-recent = 2
 ```

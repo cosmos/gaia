@@ -41,7 +41,6 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ### Bug Fixes
 
 This release fixes build failures caused by a small API breakage introduced in tendermint v0.34.7.
-See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tendermint/blob/v0.34.x/CHANGELOG.md#v0347) for details.
 
 * (sdk)  Bump SDK version to [v0.41.3](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.41.3).
 

@@ -172,7 +172,7 @@ The version/commit hash of Gaia v2.0.15: `89cf7e6fc166eaabf47ad2755c443d455feda0
    ```
 
    ```bash
-   $ gaiad export --for-zero-height --height=<height> > cosmoshub_3_genesis_export.json
+   $ gaiad export --height=<height> > cosmoshub_3_genesis_export.json
    ```
    _this might take a while, you can expect an hour for this step_
 

@@ -40,8 +40,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ### Bug Fixes
 
-* (sdk) Bump SDK version to [v0.41.2](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.41.2).
-* (tendermint) Bump Tendermint version to [v0.34.6](https://github.com/tendermint/tendermint/releases/tag/v0.34.6).
+* (sdk) [\#640](https://github.com/cosmos/gaia/pull/640) Bump SDK version to [v0.41.2](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.41.2).
+* (tendermint) [\#640](https://github.com/cosmos/gaia/pull/640) Bump Tendermint version to [v0.34.6](https://github.com/tendermint/tendermint/releases/tag/v0.34.6).
 
 ## [v4.0.1] - 2021-02-17
 

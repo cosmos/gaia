@@ -36,6 +36,14 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+## [v4.0.3] - 2021-02-18
+
+### Bug Fixes
+
+This release fixes build failures caused by a small API breakage introduced in tendermint v0.34.7.
+
+* (sdk)  Bump SDK version to [v0.41.3](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.41.3).
+
 ## [v4.0.2] - 2021-02-18
 
 ### Bug Fixes
@@ -245,7 +253,8 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v4.0.2...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v4.0.3...HEAD
+[v4.0.3]: https://github.com/cosmos/gaia/releases/tag/v4.0.3
 [v4.0.2]: https://github.com/cosmos/gaia/releases/tag/v4.0.2
 [v4.0.1]: https://github.com/cosmos/gaia/releases/tag/v4.0.1
 [v4.0.0]: https://github.com/cosmos/gaia/releases/tag/v4.0.0

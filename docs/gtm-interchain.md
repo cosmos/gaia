@@ -29,7 +29,7 @@ In sum, project management will focus on surfacing issues, dependencies, relativ
 
 The user is paramount. For Gaia and IBC, we see the users being:
 
-  - Atom holders
+  - ATOM holders
   - Existing zones
   - New zones
   - Validators on hub and zones

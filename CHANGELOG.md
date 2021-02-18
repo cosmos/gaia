@@ -36,12 +36,15 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
-## [v4.0.2] - 2021-02-17
+## [v4.0.2] - 2021-02-18
 
 ### Bug Fixes
 
+This release fixes a downstream security issue which impacts Cosmos SDK users. 
+See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tendermint/blob/v0.34.x/CHANGELOG.md#v0347) for details. 
+
 * (sdk) [\#640](https://github.com/cosmos/gaia/pull/640) Bump SDK version to [v0.41.2](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.41.2).
-* (tendermint) [\#640](https://github.com/cosmos/gaia/pull/640) Bump Tendermint version to [v0.34.6](https://github.com/tendermint/tendermint/releases/tag/v0.34.6).
+* (tendermint) [\#640](https://github.com/cosmos/gaia/pull/640) Bump Tendermint version to [v0.34.7](https://github.com/tendermint/tendermint/releases/tag/v0.34.7).
 
 ## [v4.0.1] - 2021-02-17
 

@@ -1,8 +1,15 @@
 #!/usr/bin/make -f
 
-PACKAGES_SIMTEST=$(shell go list ./... | grep '/simulation')
-VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
+BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 COMMIT := $(shell git log -1 --format='%H')
+
+# ascribe tag only if on a release/ branch, otherwise pick branch name and concatenate commit hash
+VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
+ifeq (, $(findstring release/,$(BRANCH)))
+  VERSION = $(BRANCH)-$(COMMIT)
+endif
+
+PACKAGES_SIMTEST=$(shell go list ./... | grep '/simulation')
 LEDGER_ENABLED ?= true
 SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
 DOCKER := $(shell which docker)

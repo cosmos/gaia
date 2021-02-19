@@ -164,7 +164,7 @@ The version/commit hash of Gaia v2.0.15: `89cf7e6fc166eaabf47ad2755c443d455feda0
 
    Before exporting state via the following command, the `gaiad` binary must be stopped!
    As a validator, you can see the last block height created in the 
-   `~/.gaiad/config/data/priv_validator_state.json` - or now residing in `gaiad_backup` when you made
+   `~/.gaiad/data/priv_validator_state.json` - or now residing in `gaiad_backup` when you made
     a backup as in the last step - and obtain it with
 
    ```bash

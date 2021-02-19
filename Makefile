@@ -45,7 +45,7 @@ ifeq ($(LEDGER_ENABLED),true)
 endif
 
 ifeq (cleveldb,$(findstring cleveldb,$(GAIA_BUILD_OPTIONS)))
-  build_tags += gcc
+  build_tags += gcc cleveldb
 endif
 build_tags += $(BUILD_TAGS)
 build_tags := $(strip $(build_tags))
@@ -77,6 +77,8 @@ BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
 ifeq (,$(findstring nostrip,$(GAIA_BUILD_OPTIONS)))
   BUILD_FLAGS += -trimpath
 endif
+
+#$(info $$BUILD_FLAGS is [$(BUILD_FLAGS)])
 
 # The below include contains the tools target.
 include contrib/devtools/Makefile

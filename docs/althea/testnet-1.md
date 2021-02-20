@@ -267,7 +267,6 @@ Now that we have some tokens on the Althea chain we can try sending them back to
 RUST_LOG=info client cosmos-to-eth \
         --cosmos-phrase="the phrase containing the Gravity bridged tokens" \
         --cosmos-rpc="http://localhost:1317"  \
-        --fees="must be the erc20 your sending back in the form peggy0xXXXXX" \
         --erc20-address="0xXXXXXXX" \
         --amount=.5 \
         --eth-destination="any eth address, try your delegate eth address"
@@ -344,7 +343,7 @@ sudo mv * /usr/bin/
 
 ```
 
-### Update your genesis file
+#### Update your genesis file
 
 This is the exported genesis file of the chain history we started on the 13th, we'll import it into our new updated chain keeping all balances and state
 
@@ -353,7 +352,7 @@ wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/althea-
 cp althea-testnet1-v2-genesis.json $HOME/.althea/config/genesis.json
 ```
 
-### Start the chain
+#### Start the chain
 
 Unsafe reset all will reset the entire blockchain state in .althea allowing you to start althea-testnet1v2 using only the state from the genesis file
 
@@ -362,13 +361,13 @@ althea unsafe-reset-all
 althea start
 ```
 
-### Restart your Orchestrator
+#### Restart your Orchestrator
 
 No argument changes are required, just ctrl-c and start it again.
 
 You may also want to check the status of your Geth node, no changes are required there.
 
-### Unjail yourself
+#### Unjail yourself
 
 This command will unjail you, completing the process of getting the chain back online!
 
@@ -378,6 +377,85 @@ _replace 'myvalidatorkeyname' with your validator keys name, if you don't rememb
 althea tx slashing unjail --from myvalidatorkeyname --chain-id=althea-testnet1v2
 ```
 
-### Notes
+#### Notes
 
 The updated orchestrator addresses a lot of the community concerns and error messages, you should only see one error message, talking about potential bridge highjacking. It will go away in a few hours and is related to the fact that the chain stopped shortly after the time that I used for the genesis file. This is just a warning working as intended and can be safely ignored in this case.
+
+### Stress test the Gravity bridge!
+
+As part of our testnet we're going to try and put the maximum possible load on the bridge, Sunday February 21st at around 1pm west coast time. This isn't a hard time event, you can simply setup your client to send thousands of transactions and leave it alone for the rest of the day. We just want to get as many people as possible doing so.
+
+This guide does not require that you be a validator on althea-testnet1v2, it is designed to run on any machine.
+
+#### Download Althea chain and the Gravity tools
+
+The client binary has been updated for this guide.
+
+```
+mkdir althea-bin
+cd althea-bin
+
+# the althea chain binary itself
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/althea
+
+# Tools for the gravity bridge from the gravity repo
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/client
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/orchestrator
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/register-delegate-keys
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/relayer
+chmod +x *
+sudo mv * /usr/bin/
+
+```
+
+#### Generate your Althea testnet Cosmos address
+
+If you are a validator you can skip this step as you already have an address ready. Or you can generate a new address there's not much real difference. Just remember to keep track of your seed phrases.
+
+```
+cd $HOME
+althea init mymoniker --chain-id althea-testnet1v2
+althea keys add mytestingname
+```
+
+#### Request some ERC20 tokens on Cosmos
+
+Paste your Cosmos key in the chat and request some ERC20 to test with (you may already have some if you've been testing as a validator)
+
+#### Build a big batch
+
+The goal of our test is to build 3 large transaction batches (over 100 transactions) and then have them
+flow through the Gravity bridge all at once. When you request tokens I'll send you 100 of each type of ERC20 which you'll then use these commands to send back. They will take quite some time to run, that's intentional we want to have the largest number of different people sending transactions at once, not the most spam a single person can send at once
+
+```
+RUST_LOG=info client cosmos-to-eth \
+        --cosmos-phrase="the cosmos phrase from before" \
+        --cosmos-rpc="http://testnet1-rpc:1317"  \
+        --erc20-address="0xD7600ae27C99988A6CD360234062b540F88ECA43" \
+        --amount=.5 \
+        --times=200 \
+        --no-batch \
+        --eth-destination="any eth address, try your delegate eth address"
+
+RUST_LOG=info client cosmos-to-eth \
+        --cosmos-phrase="the cosmos phrase from before" \
+        --cosmos-rpc="http://testnet1-rpc:1317"  \
+        --erc20-address="0x7580bFE88Dd3d07947908FAE12d95872a260F2D8" \
+        --amount=.5 \
+        --times=200 \
+        --no-batch \
+        --eth-destination="any eth address, try your delegate eth address"
+
+RUST_LOG=info client cosmos-to-eth \
+        --cosmos-phrase="the cosmos phrase from before" \
+        --cosmos-rpc="http://testnet1-rpc:1317"  \
+        --erc20-address="0xD50c0953a99325d01cca655E57070F1be4983b6b" \
+        --amount=.5 \
+        --times=200 \
+        --no-batch \
+        --eth-destination="any eth address, try your delegate eth address"
+```
+
+#### Wait for it
+
+the above commands have 'no-batch' set, which means the funds won't show up on Ethereum instead they are waiting for a relayer to deem the batch profitable enough to relay and request it. This is where our scheduled time comes in. I'll request batches for all three tokens at around 1pm West coast time.

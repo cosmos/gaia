@@ -430,7 +430,7 @@ flow through the Gravity bridge all at once. When you request tokens I'll send y
 ```
 RUST_LOG=info client cosmos-to-eth \
         --cosmos-phrase="the cosmos phrase from before" \
-        --cosmos-rpc="http://testnet1-rpc:1317"  \
+        --cosmos-rpc="http://testnet1-rpc.althea.net:1317"  \
         --erc20-address="0xD7600ae27C99988A6CD360234062b540F88ECA43" \
         --amount=.5 \
         --times=200 \
@@ -439,7 +439,7 @@ RUST_LOG=info client cosmos-to-eth \
 
 RUST_LOG=info client cosmos-to-eth \
         --cosmos-phrase="the cosmos phrase from before" \
-        --cosmos-rpc="http://testnet1-rpc:1317"  \
+        --cosmos-rpc="http://testnet1-rpc.althea.net:1317"  \
         --erc20-address="0x7580bFE88Dd3d07947908FAE12d95872a260F2D8" \
         --amount=.5 \
         --times=200 \
@@ -448,7 +448,7 @@ RUST_LOG=info client cosmos-to-eth \
 
 RUST_LOG=info client cosmos-to-eth \
         --cosmos-phrase="the cosmos phrase from before" \
-        --cosmos-rpc="http://testnet1-rpc:1317"  \
+        --cosmos-rpc="http://testnet1-rpc.althea.net:1317"  \
         --erc20-address="0xD50c0953a99325d01cca655E57070F1be4983b6b" \
         --amount=.5 \
         --times=200 \

@@ -23,6 +23,8 @@ If you'd like to save those seeds to your settings put them in ~/.gaia/config/co
 
 **You need to [install gaia](./installation.md) before you go further**
 
+**Gaia nodes on cosmoshub-4 take about 45 min to startup. The development team are evaluating [solutions](https://github.com/cosmos/cosmos-sdk/issues/7766).**
+
 ## Setting Up a New Node
 
 These instructions are for setting up a brand new full node from scratch.

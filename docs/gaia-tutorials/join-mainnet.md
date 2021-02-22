@@ -4,15 +4,24 @@ order: 3
 
 # Join the Cosmos Hub Mainnet
 
-::: tip 
-See the [launch repo](https://github.com/cosmos/launch) for
-information on the mainnet, including the correct version
-of the Cosmos-SDK to use and details about the genesis file.
-:::
 
-::: warning
+## Quickstart
+
+**Instant Gratification Snippet**
+
+```bash
+git clone -b v4.0.4 https://github.com/cosmos/gaia
+make install
+gaiad init chooseanicehandle
+wget https://github.com/cosmos/mainnet/raw/master/genesis.cosmoshub-4.json.gz
+gzip -d genesis.cosmoshub-4.json.gz
+mv genesis.cosmoshub-4.json ~/.gaia/config/genesis.json
+gaiad start --p2p.seeds bf8328b66dceb4987e5cd94430af66045e59899f@public-seed.cosmos.vitwit.com:26656,cfd785a4224c7940e9a10f6c1ab24c343e923bec@164.68.107.188:26656,d72b3011ed46d783e369fdf8ae2055b99a1e5074@173.249.50.25:26656,ba3bacc714817218562f743178228f23678b2873@public-seed-node.cosmoshub.certus.one:26656,3c7cad4154967a294b3ba1cc752e40e8779640ad@84.201.128.115:26656
+```
+
+If you'd like to save those seeds to your settings put them in ~/.gaia/config/config.toml in the p2p section under seeds in the same comma-separated list format.
+
 **You need to [install gaia](./installation.md) before you go further**
-:::
 
 ## Setting Up a New Node
 
@@ -24,9 +33,8 @@ First, initialize the node and create the necessary config files:
 gaiad init <your_custom_moniker>
 ```
 
-::: warning Note
+**Note**
 Monikers can contain only ASCII characters. Using Unicode characters will render your node unreachable.
-:::
 
 You can edit this `moniker` later, in the `~/.gaiad/config/config.toml` file:
 
@@ -60,14 +68,12 @@ Fetch the mainnet's `genesis.json` file into `gaiad`'s config directory.
 
 ```bash
 mkdir -p $HOME/.gaiad/config
-curl https://raw.githubusercontent.com/cosmos/launch/master/genesis.json > $HOME/.gaiad/config/genesis.json
+wget https://github.com/cosmos/mainnet/raw/master/genesis.cosmoshub-4.json.gz
+gzip -d genesis.cosmoshub-4.json.gz
+mv genesis.cosmoshub-4.json $HOME/.gaiad/config
 ```
 
-Note we use the `latest` directory in the [launch repo](https://github.com/cosmos/launch) which contains details for the mainnet like the latest version and the genesis file. 
-
-::: tip
 If you want to connect to the public testnet instead, click [here](./join-testnet.md)
-:::
 
 To verify the correctness of the configuration run:
 
@@ -81,15 +87,11 @@ Your node needs to know how to find peers. You'll need to add healthy seed nodes
 
 If those seeds aren't working, you can find more seeds and persistent peers on a Cosmos Hub explorer (a list can be found on the [launch page](https://cosmos.network/launch)). 
 
-You can also ask for peers on the [Validators Riot Room](https://riot.im/app/#/room/#cosmos-validators:matrix.org)
 
-For more information on seeds and peers, you can [read this](https://docs.tendermint.com/master/spec/p2p/peer.html).
 
 ## A Note on Gas and Fees
 
-::: warning
 On Cosmos Hub mainnet, the accepted denom is `uatom`, where `1atom = 1.000.000uatom`
-:::
 
 Transactions on the Cosmos Hub network need to include a transaction fee in order to be processed. This fee pays for the gas required to run the transaction. The formula is the following:
 
@@ -103,9 +105,7 @@ The `gasPrice` is the price of each unit of `gas`. Each validator sets a `min-ga
 
 The transaction `fees` are the product of `gas` and `gasPrice`. As a user, you have to input 2 out of 3. The higher the `gasPrice`/`fees`, the higher the chance that your transaction will get included in a block. 
 
-::: tip
 For mainnet, the recommended `gas-prices` is `0.025uatom`. 
-::: 
 
 ## Set `minimum-gas-prices`
 

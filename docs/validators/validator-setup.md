@@ -162,7 +162,7 @@ gaiad tx slashing unjail \
 Your validator is active if the following command returns anything:
 
 ```bash
-gaiad query tendermint-validator-set | grep "$(gaiad tendermint show-validator)"
+gaiad query tendermint-validator-set | grep "$(gaiad tendermint show-address)"
 ```
 
 You should now see your validator in one of the Cosmos Hub explorers. You are looking for the `bech32` encoded `address` in the `~/.gaia/config/priv_validator.json` file.

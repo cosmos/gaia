@@ -165,7 +165,7 @@ Your validator is active if the following command returns anything:
 gaiad query tendermint-validator-set | grep "$(gaiad tendermint show-validator)"
 ```
 
-You should now see your validator in one of the Cosmos Hub explorers. You are looking for the `bech32` encoded `address` in the `~/.gaiad/config/priv_validator.json` file.
+You should now see your validator in one of the Cosmos Hub explorers. You are looking for the `bech32` encoded `address` in the `~/.gaia/config/priv_validator.json` file.
 
 ::: warning Note
 To be in the validator set, you need to have more total voting power than the 100th validator.

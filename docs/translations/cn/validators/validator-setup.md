@@ -157,7 +157,7 @@ gaiad tx slashing unjail \
 gaiad query tendermint-validator-set | grep "$(gaiad tendermint show-validator)"
 ```
 
-你必须要在[区块浏览器](https://explorecosmos.network/validators)中看见你的验证人节点信息。你可以在`~/.gaiad/config/priv_validator.json`文件中找到`bech32`编码格式的`address`。
+你必须要在[区块浏览器](https://explorecosmos.network/validators)中看见你的验证人节点信息。你可以在`~/.gaia/config/priv_validator.json`文件中找到`bech32`编码格式的`address`。
 
 ::: warning 注意
 为了能进入验证人集合，你的权重必须超过第100名的验证人。

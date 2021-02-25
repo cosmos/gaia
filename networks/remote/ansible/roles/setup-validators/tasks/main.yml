@@ -30,7 +30,7 @@
   become: yes
   become_user: gaiad
   args:
-    creates: /home/gaiad/.gaiad/config/gentx
+    creates: /home/gaiad/.gaia/config/gentx
 
 - name: Get wallet word seed from result of initial transaction locally
   when: gentxresult["changed"]
@@ -46,7 +46,7 @@
   connection: local
 
 - name: Find gentx file
-  command: "ls /home/gaiad/.gaiad/config/gentx"
+  command: "ls /home/gaiad/.gaia/config/gentx"
   changed_when: false
   register: gentxfile
 
@@ -58,7 +58,7 @@
 - name: Get gen-tx file
   fetch:
     dest: files/
-    src: "/home/gaiad/.gaiad/config/gentx/{{gentxfile.stdout_lines[0]}}"
+    src: "/home/gaiad/.gaia/config/gentx/{{gentxfile.stdout_lines[0]}}"
     flat: yes
 
 - name: Compress gathered gen-tx files locally
@@ -67,12 +67,12 @@
   connection: local
 
 - name: Unpack gen-tx archive
-  unarchive: src=files/gen-tx.tgz dest=/home/gaiad/.gaiad/config/gentx owner=gaiad
+  unarchive: src=files/gen-tx.tgz dest=/home/gaiad/.gaia/config/gentx owner=gaiad
 
 - name: Generate genesis.json
   command: "/usr/bin/gaiad init --with-txs --name=node{{nodeid.stdout_lines[0]}} --chain-id={{TESTNET_NAME}}"
   become: yes
   become_user: gaiad
   args:
-    creates: /home/gaiad/.gaiad/config/genesis.json
+    creates: /home/gaiad/.gaia/config/genesis.json
 

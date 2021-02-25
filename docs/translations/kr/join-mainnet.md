@@ -24,14 +24,14 @@ gaiad init <your_custom_moniker>
 `--moniker`는 ASCII 캐릭터만을 지원합니다. Unicode 캐릭터를 이용하는 경우 노드 접근이 불가능할 수 있으니 참고하세요.
 :::
 
-`moniker`는 `~/.gaiad/config/config.toml` 파일을 통해 추후에 변경이 가능합니다:
+`moniker`는 `~/.gaia/config/config.toml` 파일을 통해 추후에 변경이 가능합니다:
 
 ```toml
 # A custom human readable name for this node
 moniker = "<your_custom_moniker>"
 ```
 
-최소 가스 가격보다 낮은 트랜잭션을 거절하는 스팸 방지 메커니즘을 활성화 하시려면 `~/.gaiad/config/gaiad.toml` 파일을 변경하시면 됩니다:
+최소 가스 가격보다 낮은 트랜잭션을 거절하는 스팸 방지 메커니즘을 활성화 하시려면 `~/.gaia/config/gaiad.toml` 파일을 변경하시면 됩니다:
 
 ```
 # This is a TOML config file.
@@ -55,8 +55,8 @@ minimum-gas-prices = ""
 테스트넷의 `genesis.json`파일을 `gaiad`의 config 디렉토리로 가져옵니다.
 
 ```bash
-mkdir -p $HOME/.gaiad/config
-curl https://raw.githubusercontent.com/cosmos/launch/master/genesis.json > $HOME/.gaiad/config/genesis.json
+mkdir -p $HOME/.gaia/config
+curl https://raw.githubusercontent.com/cosmos/launch/master/genesis.json > $HOME/.gaia/config/genesis.json
 ```
 
 위 예시에서는 최신 테스트넷에 대한 정보가 포함되어있는 [launch repo](https://github.com/cosmos/launch)의 `latest` 디렉토리를 이용하는 것을 참고하세요. 
@@ -72,7 +72,7 @@ gaiad start
 ```
 ### 시드 노드 추가하기
 
-이제 노드가 다른 피어들을 찾는 방법을 알아야합니다. `$HOME/.gaiad/config/config.toml`에 안정적인 시드 노드들을 추가할 차례입니다. [`launch`](https://github.com/cosmos/launch) repo에 몇 개 시드 노드 링크가 포함되어있습니다.
+이제 노드가 다른 피어들을 찾는 방법을 알아야합니다. `$HOME/.gaia/config/config.toml`에 안정적인 시드 노드들을 추가할 차례입니다. [`launch`](https://github.com/cosmos/launch) repo에 몇 개 시드 노드 링크가 포함되어있습니다.
 
 만약 해당 시드가 작동하지 않는다면, 추가적인 시드와 피어들을 코스모스 허브 익스플로러에서 확인하세요(목록은 [launch](https://cosmos.network/launch) 페이지에 있습니다.)
 
@@ -105,7 +105,7 @@ gaiad start
 
 ## 최소 가스 가격(`minimum-gas-prices`) 설정하기
 
-풀노드는 컨펌되지 않은 트랜잭션을 멤풀에 보관합니다. 스팸 트랜잭션으로부터 풀노드를 보호하기 위해서 노드 멤풀에 보관되기 위한 트랜잭션의 최소 가스 가격(`minimum-gas-prices`)을 설정할 것을 권장합니다. 해당 파라미터는 `~/.gaiad/config/gaiad.toml`에서 설정하실 수 있씁니다.
+풀노드는 컨펌되지 않은 트랜잭션을 멤풀에 보관합니다. 스팸 트랜잭션으로부터 풀노드를 보호하기 위해서 노드 멤풀에 보관되기 위한 트랜잭션의 최소 가스 가격(`minimum-gas-prices`)을 설정할 것을 권장합니다. 해당 파라미터는 `~/.gaia/config/gaiad.toml`에서 설정하실 수 있씁니다.
 
 기본 권장 `minimum-gas-prices`는 `0.025uatom`이지만, 추후 바꾸실 수 있습니다. 
 

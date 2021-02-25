@@ -29,7 +29,7 @@
 首先，移除过期的文件并重置数据：
 
 ```bash
-rm $HOME/.gaiad/config/addrbook.json $HOME/.gaiad/config/genesis.json
+rm $HOME/.gaia/config/addrbook.json $HOME/.gaia/config/genesis.json
 gaiad unsafe-reset-all
 ```
 

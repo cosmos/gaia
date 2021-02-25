@@ -69,7 +69,7 @@ gaiad gentx \
   --name <key_name>
 ```
 
-__참고__: 이 명령어는 제네시스에서의 처리를 위해 `gentx`를 `~/.gaiad/config/gentx`에 저장합니다.
+__참고__: 이 명령어는 제네시스에서의 처리를 위해 `gentx`를 `~/.gaia/config/gentx`에 저장합니다.
 
 ::: tip
 명령어 플래그에 대한 정보는 `gaiad gentx --help`를 사용에 확인하십시오.
@@ -84,15 +84,15 @@ __참고__: 이 명령어는 제네시스에서의 처리를 위해 `gentx`를 `
 Fetch the `genesis.json` file into `gaiad`'s config directory.
 
 ```bash
-mkdir -p $HOME/.gaiad/config
-curl https://raw.githubusercontent.com/cosmos/testnets/master/latest/genesis.json > $HOME/.gaiad/config/genesis.json
+mkdir -p $HOME/.gaia/config
+curl https://raw.githubusercontent.com/cosmos/testnets/master/latest/genesis.json > $HOME/.gaia/config/genesis.json
 ```
 
 __참고:__ 이 항목에서는 최신 테스트넷 관련 정보가 있는 [테스트넷 repo](https://github.com/cosmos/testnets)의 `latest` 디렉토리를 사용합니다. 만약 다른 테스트넷에 연결하신다면 이용하시는 파일을 확인하시기 바랍니다.
 
 이제 다른 제네시스 밸리데이터들의 제네시스 트랜잭션을 가져옵니다. 현재 밸리데이터들이 본인들의 제네시스 트랜잭션을 제공할 수 있는 리포지토리가 없는 상태이나, 추후 테스트넷에서 검증 후 추가될 예정입니다.
 
-모든 제네시스 트랜잭션을 받으시고 `~/.gaiad/config/gentx`에 저장하셨다면 다음 명령어를 실행하십시오:
+모든 제네시스 트랜잭션을 받으시고 `~/.gaia/config/gentx`에 저장하셨다면 다음 명령어를 실행하십시오:
 
 ```bash
 gaiad collect-gentxs
@@ -163,7 +163,7 @@ gaiad tx slashing unjail \
 gaiad query tendermint-validator-set | grep "$(gaiad tendermint show-validator)"
 ```
 
-코스모스 테스트넷의 경우 코스모스 [익스플로러](https://explorecosmos.network/validators)를 통해서 밸리데이터가 운영되고 있는지 확인하실 수 있습니다. `~/.gaiad/config/priv_validator.json` 파일의 `bech32` 인코딩이된 `address` 항목을 참고하세요.
+코스모스 테스트넷의 경우 코스모스 [익스플로러](https://explorecosmos.network/validators)를 통해서 밸리데이터가 운영되고 있는지 확인하실 수 있습니다. `~/.gaia/config/priv_validator.json` 파일의 `bech32` 인코딩이된 `address` 항목을 참고하세요.
 
 ::: warning 참고
 검증인 세트에 포함되시기 원하신다면 125등 밸리데이터보다 보팅 파워(voting power)가 높아야 합니다.

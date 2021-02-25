@@ -24,6 +24,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
+	feegrantcli "github.com/cosmos/cosmos-sdk/x/feegrant/client/cli"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
@@ -110,6 +111,7 @@ func queryCommand() *cobra.Command {
 		rpc.BlockCommand(),
 		authcmd.QueryTxsByEventsCmd(),
 		authcmd.QueryTxCmd(),
+		feegrantcli.GetQueryCmd(),
 	)
 
 	gaia.ModuleBasics.AddQueryCommands(cmd)
@@ -138,6 +140,7 @@ func txCommand() *cobra.Command {
 		authcmd.GetDecodeCommand(),
 		flags.LineBreak,
 		vestingcli.GetTxCmd(),
+		feegrantcli.GetTxCmd(),
 	)
 
 	gaia.ModuleBasics.AddTxCommands(cmd)

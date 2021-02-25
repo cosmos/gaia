@@ -21,6 +21,7 @@ import (
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	vestingcli "github.com/cosmos/cosmos-sdk/x/auth/vesting/client/cli"
+	authzcli "github.com/cosmos/cosmos-sdk/x/authz/client/cli"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	feegrantcli "github.com/cosmos/cosmos-sdk/x/feegrant/client/cli"
@@ -112,6 +113,7 @@ func queryCommand() *cobra.Command {
 		authcmd.QueryTxsByEventsCmd(),
 		authcmd.QueryTxCmd(),
 		feegrantcli.GetQueryCmd(),
+		authzcli.GetQueryCmd(),
 	)
 
 	gaia.ModuleBasics.AddQueryCommands(cmd)
@@ -141,6 +143,7 @@ func txCommand() *cobra.Command {
 		flags.LineBreak,
 		vestingcli.GetTxCmd(),
 		feegrantcli.GetTxCmd(),
+		authzcli.GetTxCmd(),
 	)
 
 	gaia.ModuleBasics.AddTxCommands(cmd)

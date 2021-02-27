@@ -459,3 +459,28 @@ RUST_LOG=info client cosmos-to-eth \
 #### Wait for it
 
 the above commands have 'no-batch' set, which means the funds won't show up on Ethereum instead they are waiting for a relayer to deem the batch profitable enough to relay and request it. This is where our scheduled time comes in. I'll request batches for all three tokens at around 1pm West coast time.
+
+### Preparing for the Althea-testnet1v3 upgrade event
+
+This event is scheduled for Feb 28th 2020 at 1pm PST
+
+A live call will be held on the [Althea discord](https://discordapp.com/invite/vw8twzR)
+
+We have a couple of weeks of code improvements to bring to the Althea testnet
+
+- Improved slashing conditions
+- Fixes for sending more than 18 (uint64 max wei) tokens across the bridge in a single tx
+- Some very early GravityV2 code. We'll be moving ALTG to Görli next weekend!
+- Quality of life improvements for the Orchestrator
+
+If you are not a validator yet, feel free to follow the instructions in this document to start
+then come back here. If you are a validator the only thing you need to do to prepare right now is
+stop your validator (using ctrl-c) and restart it using this command.
+
+When more than 66% of the voting power on Althea testnet halts at this block height it will bring
+the chain down gracefully to wait for the upgrade. This value is tuned to be around the start of our
+meeting. At that time new instructions will be available for actually performing the upgrade.
+
+```
+althea start --halt-height 198659
+```

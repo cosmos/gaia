@@ -482,5 +482,5 @@ the chain down gracefully to wait for the upgrade. This value is tuned to be aro
 meeting. At that time new instructions will be available for actually performing the upgrade.
 
 ```
-althea start --halt-height 198659
+althea start --halt-height 198059
 ```

@@ -1,3 +1,80 @@
+### Upgrading from althea-testnet1v2 to altheatestnet1v3
+
+Thank you very much for your patience and participation! We have several exciting improvements
+including the first Cosmos token to ever travel to an ETH chain!
+
+- Improved slashing conditions
+- Fixes for sending more than 18 (uint64 max wei) tokens across the bridge in a single tx
+- Some very early GravityV2 code. We'll be moving ALTG to Görli next weekend!
+- Quality of life improvements for the Orchestrator
+
+If you are not a validator yet, just start at the top of this document, these instructions are for
+updating an already running validator.
+
+When more than 66% of the voting power on Althea testnet returns the chain will start once again!
+
+#### Update your binaries
+
+We have a new version of everything as the fixes are quite expansive
+
+```
+cd althea-bin
+
+# the althea chain binary itself
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/althea-0.0.3-1-g82a2b1d-linux-amd64
+mv althea-0.0.3-1-g82a2b1d-linux-amd64 althea
+
+# Tools for the gravity bridge from the gravity repo
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/client
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/orchestrator
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/register-delegate-keys
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/relayer
+chmod +x *
+sudo mv * /usr/bin/
+
+```
+
+#### Update your genesis file
+
+This is the exported genesis file of the chain history we started on the 13th, we'll import it into our new updated chain keeping all balances and state
+
+```
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/althea-testnet1-v3-genesis.json
+cp althea-testnet1-v3-genesis.json $HOME/.althea/config/genesis.json
+```
+
+#### Start the chain
+
+Unsafe reset all will reset the entire blockchain state in .althea allowing you to start althea-testnet1v3 using only the state from the genesis file
+
+```
+althea unsafe-reset-all
+althea start
+```
+
+#### Wait for it
+
+wait at this step for the chain to finish starting up again
+
+If you've done the upgrade right expect to see this line
+
+```
+11:20PM INF Inbound Peer rejected err="incompatible: peer is on a different network. Got althea-testnet1v2, expected althea-testnet1v3" module=p2p numPeers=11
+```
+
+You are expecting the updated version of the chain. If you see 'expected althea-testnet1v2' then you are still running the out of date software and should double check
+these instructions.
+
+#### Restart your Orchestrator
+
+No argument changes are required, just ctrl-c and start it again.
+
+You may also want to check the status of your Geth node, no changes are required there.
+
+Congrats you've finished upgrading
+
+---
+
 # Althea Testnet 1
 
 Althea Testnet #1 mainly focuses around the Gravity bridge integration. Our goal is to run this testnet right up until the launch of the Althea chain
@@ -316,70 +393,6 @@ You can be jailed for several different reasons. As part of the Althea testnet w
 althea tx slashing unjail --from myvalidatorkeyname --chain-id=althea-testnet1v3
 ```
 
-### Upgrading from althea-testnet1v2 to altheatestnet1v3
-
-Thank you very much for your patience and participation! We have several exciting improvements
-including the first Cosmos token to ever travel to an ETH chain!
-
-- Improved slashing conditions
-- Fixes for sending more than 18 (uint64 max wei) tokens across the bridge in a single tx
-- Some very early GravityV2 code. We'll be moving ALTG to Görli next weekend!
-- Quality of life improvements for the Orchestrator
-
-If you are not a validator yet, just start at the top of this document, these instructions are for
-updating an already running validator.
-
-When more than 66% of the voting power on Althea testnet returns the chain will start once again!
-
-#### Update your binaries
-
-We have a new version of everything as the fixes are quite expansive
-
-```
-cd althea-bin
-
-# the althea chain binary itself
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/althea-0.0.3-1-g82a2b1d-linux-amd64
-mv althea-0.0.3-1-g82a2b1d-linux-amd64 althea
-
-# Tools for the gravity bridge from the gravity repo
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/client
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/orchestrator
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/register-delegate-keys
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/relayer
-chmod +x *
-sudo mv * /usr/bin/
-
-```
-
-#### Update your genesis file
-
-This is the exported genesis file of the chain history we started on the 13th, we'll import it into our new updated chain keeping all balances and state
-
-```
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/althea-testnet1-v3-genesis.json
-cp althea-testnet1-v3-genesis.json $HOME/.althea/config/genesis.json
-```
-
-#### Start the chain
-
-Unsafe reset all will reset the entire blockchain state in .althea allowing you to start althea-testnet1v3 using only the state from the genesis file
-
-```
-althea unsafe-reset-all
-althea start
-```
-
-#### Wait for it
-
-wait at this step for the chain to finish starting up again
-
-#### Restart your Orchestrator
-
-No argument changes are required, just ctrl-c and start it again.
-
-You may also want to check the status of your Geth node, no changes are required there.
-
 #### Unjail yourself
 
 This command will unjail you, completing the process of getting the chain back online!
@@ -387,7 +400,7 @@ This command will unjail you, completing the process of getting the chain back o
 _replace 'myvalidatorkeyname' with your validator keys name, if you don't remember run `althea keys list`_
 
 ```
-althea tx slashing unjail --from myvalidatorkeyname --chain-id=althea-testnet1v2
+althea tx slashing unjail --from myvalidatorkeyname --chain-id=althea-testnet1v3
 ```
 
 #### Notes
@@ -398,7 +411,7 @@ The updated orchestrator addresses a lot of the community concerns and error mes
 
 As part of our testnet we're going to try and put the maximum possible load on the bridge, Sunday February 21st at around 1pm west coast time. This isn't a hard time event, you can simply setup your client to send thousands of transactions and leave it alone for the rest of the day. We just want to get as many people as possible doing so.
 
-This guide does not require that you be a validator on althea-testnet1v2, it is designed to run on any machine.
+This guide does not require that you be a validator on althea-testnet1v3, it is designed to run on any machine.
 
 #### Download Althea chain and the Gravity tools
 

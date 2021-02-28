@@ -13,7 +13,7 @@ echo -e "
 "
 
 DEPENDENCIES="curl"
-if $(uname -m) = "x86_64" then
+if $(uname -m) = "x86_64"; then
 PROCESSOR=amd64
 fi
 ARCH="$(uname -s | tr :lower:)-$(echo $PROCESSOR)"

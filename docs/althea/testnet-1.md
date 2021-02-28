@@ -18,7 +18,7 @@ I also suggest an open notepad or other document to keep track of the keys you w
 ## Bootstrapping steps and commands
 
 We’re going to have a centralized start testnet. Where Althea will launch a chain, send everyone else tokens, and then each participant will come in and ualtg to become a validator.
-In order to further simplify bootstrapping for this testnet we will be using pre-built binaries I am placing into a github release. These include ARM binaries for those of you on ARM platforms. Note that you will need to be running a 64bit ARM machine with a 64 bit operating system to use these binaries. In order to download ARM binaries change the names in the wget links from ‘client’ to ‘client-arm’. Repeat for all binaries
+In order to further simplify bootstrapping for this testnet we will be using pre-built binaries I am placing into a github release. These include ARM binaries for those of you on ARM platforms. Note that you will need to be running a 64bit ARM machine with a 64 bit operating system to use these binaries. In order to download ARM binaries change the names in the wget links from ‘client’ to ‘client-arm’. Repeat for all binaries. For the althea binary itself use -arm64 rather than amd.
 
 ### Download Althea chain and the Gravity tools
 
@@ -27,13 +27,13 @@ mkdir althea-bin
 cd althea-bin
 
 # the althea chain binary itself
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/althea
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/althea-0.0.2-2-g6942fcb-linux-amd64
 
 # Tools for the gravity bridge from the gravity repo
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/client
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/orchestrator
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/register-delegate-keys
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/relayer
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/client
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/orchestrator
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/register-delegate-keys
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/relayer
 chmod +x *
 sudo mv * /usr/bin/
 
@@ -58,8 +58,8 @@ althea keys add myvalidatorkeyname
 ### Copy the genesis file
 
 ```
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/althea-testnet1-v2-genesis.json
-cp althea-testnet1-v2-genesis.json $HOME/.althea/config/genesis.json
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/althea-testnet1-v3-genesis.json
+cp althea-testnet1-v3-genesis.json $HOME/.althea/config/genesis.json
 ```
 
 ### Add persistent peers
@@ -315,13 +315,13 @@ You can be jailed for several different reasons. As part of the Althea testnet w
 althea tx slashing unjail --from myvalidatorkeyname --chain-id=althea-testnet1v2
 ```
 
-### Upgrading from althea-testnet1 to altheatestnet1v2
+### Upgrading from althea-testnet1 to altheatestnet1v3
 
 Thank you very much for your patience and participation! During the initial launch of testnet1 we encountered several bugs that have now been patched. See our [blog post](https://blog.althea.net/althea-testnet-1-launched/) on the bugs you helped fix!
 
 For now though lets talk about getting everyone back up and running
 
-_You will keep your tokens and your validator in v2, as part of this guide you will unjail yourself and return to validating_
+_You will keep your tokens and your validator in v3, as part of this guide you will unjail yourself and return to validating_
 
 #### Update your binaries
 
@@ -331,13 +331,13 @@ We have a new version of everything as the fixes are quite expansive
 cd althea-bin
 
 # the althea chain binary itself
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/althea
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/althea-0.0.2-2-g6942fcb-linux-amd64
 
 # Tools for the gravity bridge from the gravity repo
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/client
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/orchestrator
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/register-delegate-keys
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/relayer
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/client
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/orchestrator
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/register-delegate-keys
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/relayer
 chmod +x *
 sudo mv * /usr/bin/
 
@@ -348,7 +348,7 @@ sudo mv * /usr/bin/
 This is the exported genesis file of the chain history we started on the 13th, we'll import it into our new updated chain keeping all balances and state
 
 ```
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/althea-testnet1-v2-genesis.json
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/althea-testnet1-v3-genesis.json
 cp althea-testnet1-v2-genesis.json $HOME/.althea/config/genesis.json
 ```
 

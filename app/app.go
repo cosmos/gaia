@@ -316,7 +316,7 @@ func NewAltheaApp(
 	app.EvidenceKeeper = *evidenceKeeper
 
 	app.PeggyKeeper = peggykeeper.NewKeeper(
-		appCodec, keys[peggytypes.StoreKey], app.GetSubspace(peggytypes.ModuleName), stakingKeeper, app.BankKeeper,
+		appCodec, keys[peggytypes.StoreKey], app.GetSubspace(peggytypes.ModuleName), stakingKeeper, app.BankKeeper, app.SlashingKeeper,
 	)
 
 	/****  Module Options ****/

@@ -76,6 +76,8 @@ github.com/althea-net/peggy/module v0.0.0-20210215230821-4d8ddeb17675 h1:Tyk6F5M
 github.com/althea-net/peggy/module v0.0.0-20210215230821-4d8ddeb17675/go.mod h1:0oHvbNpHaBFZfeU1gLfD51/m7ZPtn+JNJLLpnrKsR0c=
 github.com/althea-net/peggy/module v0.0.0-20210228153607-ecc64ceadbfa h1:YgTyFs9hcFfZJb1m/EaXmzkeMWS9OTM7KFg1x+AQdik=
 github.com/althea-net/peggy/module v0.0.0-20210228153607-ecc64ceadbfa/go.mod h1:0oHvbNpHaBFZfeU1gLfD51/m7ZPtn+JNJLLpnrKsR0c=
+github.com/althea-net/peggy/module v0.0.0-20210228205431-16fa682f1a14 h1:5OIbYNwgO9VLYHnN/xMJUbuhnros7IxgWF/fYyj/qt8=
+github.com/althea-net/peggy/module v0.0.0-20210228205431-16fa682f1a14/go.mod h1:0oHvbNpHaBFZfeU1gLfD51/m7ZPtn+JNJLLpnrKsR0c=
 github.com/antihax/optional v1.0.0/go.mod h1:uupD/76wgC+ih3iEmQUL+0Ugr19nfwCT1kdvxnR2qWY=
 github.com/apache/thrift v0.12.0/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
 github.com/apache/thrift v0.13.0/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=

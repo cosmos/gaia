@@ -27,7 +27,8 @@ mkdir althea-bin
 cd althea-bin
 
 # the althea chain binary itself
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/althea-0.0.2-2-g6942fcb-linux-amd64
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/althea-0.0.3-1-g82a2b1d-linux-amd64
+mv althea-0.0.3-1-g82a2b1d-linux-amd64 althea
 
 # Tools for the gravity bridge from the gravity repo
 wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/client
@@ -51,7 +52,7 @@ You'll be prompted to create a password, I suggest you pick something short sinc
 
 ```
 cd $HOME
-althea init mymoniker --chain-id althea-testnet1v2
+althea init mymoniker --chain-id althea-testnet1v3
 althea keys add myvalidatorkeyname
 ```
 
@@ -93,7 +94,7 @@ althea tx staking create-validator \
   --amount=100000000ualtg \
   --pubkey=$(althea tendermint show-validator) \
   --moniker="put your validator name here" \
-  --chain-id=althea-testnet1v2 \
+  --chain-id=althea-testnet1v3 \
   --commission-rate="0.10" \
   --commission-max-rate="0.20" \
   --commission-max-change-rate="0.01" \
@@ -164,7 +165,7 @@ althea keys show myvalidatorkeyname
 ```
 
 ```
-althea tx bank send myvalidatorkeyname <your delegate cosmos address> 50000000footoken --chain-id=althea-testnet1v2
+althea tx bank send myvalidatorkeyname <your delegate cosmos address> 50000000footoken --chain-id=althea-testnet1v3
 ```
 
 With the Althea side funded, now we need some Goerli Eth you can ask for some in chat or use [this faucet](https://goerli-faucet.slock.it/) for a small amount that should be more than sufficient for this testnet. Just paste in the Ethereum address that was generated in the previous step.
@@ -304,7 +305,7 @@ To increase your ualtg stake, if you have extra tokens lying around. The first c
 
 ```
 althea keys show myvalidatorkeyname --bech val
-althea tx staking delegate <the address from the above command> 99000000ualtg --from myvalidatorkeyname --chain-id althea-testnet1v2 --fees 50ualtg --broadcast-mode block
+althea tx staking delegate <the address from the above command> 99000000ualtg --from myvalidatorkeyname --chain-id althea-testnet1v3 --fees 50ualtg --broadcast-mode block
 ```
 
 #### Unjail your validator
@@ -312,16 +313,23 @@ althea tx staking delegate <the address from the above command> 99000000ualtg --
 You can be jailed for several different reasons. As part of the Althea testnet we are testing slashing conditions for the Gravity bridge, so you will be slashed if the Orchestrator is not running properly, in addition to the usual Cosmos double sign and downtime slashing parameters. To unjail your validator run
 
 ```
-althea tx slashing unjail --from myvalidatorkeyname --chain-id=althea-testnet1v2
+althea tx slashing unjail --from myvalidatorkeyname --chain-id=althea-testnet1v3
 ```
 
-### Upgrading from althea-testnet1 to altheatestnet1v3
+### Upgrading from althea-testnet1v2 to altheatestnet1v3
 
-Thank you very much for your patience and participation! During the initial launch of testnet1 we encountered several bugs that have now been patched. See our [blog post](https://blog.althea.net/althea-testnet-1-launched/) on the bugs you helped fix!
+Thank you very much for your patience and participation! We have several exciting improvements
+including the first Cosmos token to ever travel to an ETH chain!
 
-For now though lets talk about getting everyone back up and running
+- Improved slashing conditions
+- Fixes for sending more than 18 (uint64 max wei) tokens across the bridge in a single tx
+- Some very early GravityV2 code. We'll be moving ALTG to Görli next weekend!
+- Quality of life improvements for the Orchestrator
 
-_You will keep your tokens and your validator in v3, as part of this guide you will unjail yourself and return to validating_
+If you are not a validator yet, just start at the top of this document, these instructions are for
+updating an already running validator.
+
+When more than 66% of the voting power on Althea testnet returns the chain will start once again!
 
 #### Update your binaries
 
@@ -331,7 +339,8 @@ We have a new version of everything as the fixes are quite expansive
 cd althea-bin
 
 # the althea chain binary itself
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/althea-0.0.2-2-g6942fcb-linux-amd64
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/althea-0.0.3-1-g82a2b1d-linux-amd64
+mv althea-0.0.3-1-g82a2b1d-linux-amd64 althea
 
 # Tools for the gravity bridge from the gravity repo
 wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/client
@@ -349,17 +358,21 @@ This is the exported genesis file of the chain history we started on the 13th, w
 
 ```
 wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/althea-testnet1-v3-genesis.json
-cp althea-testnet1-v2-genesis.json $HOME/.althea/config/genesis.json
+cp althea-testnet1-v3-genesis.json $HOME/.althea/config/genesis.json
 ```
 
 #### Start the chain
 
-Unsafe reset all will reset the entire blockchain state in .althea allowing you to start althea-testnet1v2 using only the state from the genesis file
+Unsafe reset all will reset the entire blockchain state in .althea allowing you to start althea-testnet1v3 using only the state from the genesis file
 
 ```
 althea unsafe-reset-all
 althea start
 ```
+
+#### Wait for it
+
+wait at this step for the chain to finish starting up again
 
 #### Restart your Orchestrator
 
@@ -396,13 +409,14 @@ mkdir althea-bin
 cd althea-bin
 
 # the althea chain binary itself
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/althea
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/althea-0.0.3-1-g82a2b1d-linux-amd64
+mv althea-0.0.3-1-g82a2b1d-linux-amd64 althea
 
 # Tools for the gravity bridge from the gravity repo
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/client
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/orchestrator
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/register-delegate-keys
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.1/relayer
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/client
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/orchestrator
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/register-delegate-keys
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/relayer
 chmod +x *
 sudo mv * /usr/bin/
 
@@ -414,7 +428,7 @@ If you are a validator you can skip this step as you already have an address rea
 
 ```
 cd $HOME
-althea init mymoniker --chain-id althea-testnet1v2
+althea init mymoniker --chain-id althea-testnet1v3
 althea keys add mytestingname
 ```
 

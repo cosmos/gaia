@@ -13,8 +13,11 @@ echo -e "
 "
 
 DEPENDENCIES="curl"
-ARCH="$(uname -s)_$(uname -m)"
-INSTALL_DIR="$HOME/gaia"
+if $(uname -m) = "x86_64" then
+PROCESSOR=amd64
+fi
+ARCH="$(uname -s | tr :lower:)-$(echo $PROCESSOR)"
+INSTALL_DIR="/usr/local/bin/"
 SEEDS="bf8328b66dceb4987e5cd94430af66045e59899f@public-seed.cosmos.vitwit.com:26656,cfd785a4224c7940e9a10f6c1ab24c343e923bec@164.68.107.188:26656,d72b3011ed46d783e369fdf8ae2055b99a1e5074@173.249.50.25:26656,ba3bacc714817218562f743178228f23678b2873@public-seed-node.cosmoshub.certus.one:26656,3c7cad4154967a294b3ba1cc752e40e8779640ad@84.201.128.115:26656"
 
 
@@ -49,7 +52,7 @@ function getMatchingAssets {
             # `line` is a asset name
 
             # set `take_next` to true to add it to `urls` in the next iteration
-            if [ "$line" == "galaxycli_$ARCH" ] || [ "$line" == "galaxyd_$ARCH" ]; then
+            if [ "$line" == "gaiad-$ARCH" ]; then
                 take_next=true
             fi
         else

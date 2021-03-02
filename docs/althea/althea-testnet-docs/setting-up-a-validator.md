@@ -18,8 +18,8 @@ mkdir althea-bin
 cd althea-bin
 
 # the althea chain binary itself
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.4/althea-0.0.1-16-g05e0553-linux-amd64
-mv althea-0.0.1-16-g05e0553-linux-amd64 althea
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.4/althea-0.0.3-4-g30eddc7-linux-amd64
+mv althea-0.0.3-4-g30eddc7-linux-amd64 althea
 
 # Tools for the gravity bridge from the gravity repo
 wget https://github.com/althea-net/althea-chain/releases/download/v0.0.4/client

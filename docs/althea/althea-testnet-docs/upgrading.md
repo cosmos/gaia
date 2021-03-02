@@ -83,3 +83,10 @@ If you've done the upgrade right expect to see this line
 You are expecting the updated version of the chain. If you see 'expected althea-testnet1v3' then you are still running the out of date software and should double check these instructions.
 
 Congrats you've finished upgrading! Keep an eye out for the upgrade signing progress message. You can safely leave your node unattended and everything should start when the chain starts
+
+Keep your eye out for lines like these, this line notes that 23% of the chain power is online and ready to start.
+
+```
+10:10PM INF Added to prevote module=consensus prevotes="VoteSet{H:208301 R:0 T:SIGNED_MSG_TYPE_PREVOTE +2/3:<nil>(0.23819055244195356) BA{15:x____________x_} map[]}"
+
+```

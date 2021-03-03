@@ -9,6 +9,12 @@ Althea Testnet #1 mainly focuses around the Gravity bridge integration. Our goal
 
 If you would like to join this testnet connect with us on the [Althea Discord](https://discordapp.com/invite/vw8twzR) where you can request testnet tokens to stake or just play around with.
 
+If you are looking to integrate against the Althea testnet you can use the public rpc
+
+```
+testnet1-rpc.althea.net
+```
+
 ## Documents
 
 - [How to become a validator](althea-testnet-docs/setting-up-a-validator.md)

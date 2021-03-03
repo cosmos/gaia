@@ -101,8 +101,11 @@ althea tx staking create-validator \
 
 If you see one line in the response you are validating. If you don't see any output from this command you are not validating. Check that the last command ran successfully.
 
+Be sure to replace 'my validator key name' with your actual key name. If you want to double check you can see all your keys with 'althea keys list'
+
 ```
-althea query tendermint-validator-set | grep "$(althea tendermint show-address)"
+althea query staking validator $(althea keys show myvalidatorkeyname --bech val --address)
+
 ```
 
 ### Setup Gravity bridge

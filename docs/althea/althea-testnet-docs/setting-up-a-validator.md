@@ -50,8 +50,8 @@ althea keys add myvalidatorkeyname
 ### Copy the genesis file
 
 ```
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.3/althea-testnet1-v3-genesis.json
-cp althea-testnet1-v3-genesis.json $HOME/.althea/config/genesis.json
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.4/althea-testnet1-v4-genesis.json
+cp althea-testnet1-v4-genesis.json $HOME/.althea/config/genesis.json
 ```
 
 ### Add persistent peers

@@ -13,6 +13,10 @@ jobs:
     name: Push Multiplatform Gaia Docker image to GitHub Packages
     runs-on: ubuntu-latest
     steps:
+    
+      - name: GitHub Environment Variables Action
+        uses: FranzDiebold/github-env-vars-action@v2.1.0
+
       - name: Check out the repo
         uses: actions/checkout@v2
         
@@ -32,4 +36,4 @@ jobs:
           platforms: linux/amd64,linux/arm64
           registry: docker.pkg.github.com
           repository: ${{ github.actor }}/gaia/gaia
-          tags: ${{ GITHUB_REPOSITORY }}:${GITHUB_REF##*/},${{ GITHUB_REPOSITORY }}:${GITHUB_REF},
+          tags: ${GITHUB_REPOSITORY}:${BRANCH_NAME},${GITHUB_REPOSITORY}:${BRANCH_NAME}

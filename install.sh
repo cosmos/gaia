@@ -15,7 +15,7 @@ echo -e "
 DEPENDENCIES="curl"
 CPUTYPE=$(uname -m)
 if [ $CPUTYPE == "x86_64" ]; then
-CPUTYPE=amd64
+CPUTYPE="amd64"
 fi
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
 ARCH="$OS-$CPUTYPE"

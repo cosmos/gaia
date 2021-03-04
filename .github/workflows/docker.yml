@@ -41,7 +41,7 @@ jobs:
 # Sidestepping by manually calling docker buildx build --load and then in the next step, pushing
 # When Github allows logins to ghc via secrets.GITHUB_TOKEN, instead of requiring a new PAT, it makes sense to switch over to ghcr. 
       - name: Build Docker Image
-        run: docker buildx build --platform linux/amd64,linux/arm64 --load --tag docker.pkg.github.com/${{ github.REPOSITORY }}:${{ github.SHA }}
+        run: docker buildx build --platform linux/amd64,linux/arm64 --load --tag docker.pkg.github.com/${{ github.REPOSITORY }}:${{ github.SHA }} .
 
       - name: Push Docker Image
         run: docker push docker.pkg.github.com/${{ github.REPOSITORY }}:${{ github.SHA }}

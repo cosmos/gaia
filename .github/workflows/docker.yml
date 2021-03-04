@@ -5,8 +5,8 @@ on:
   pull_request:
   push: 
   release:
-    types: 
-      - created
+    types: [published, created, edited]
+
       
 jobs:
   push_to_registry:

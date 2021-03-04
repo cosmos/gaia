@@ -35,5 +35,5 @@ jobs:
         with:
           context: .
           platforms: linux/amd64,linux/arm64
-          repository: ${{ github.actor }}/gaia/gaia
+          push: true
           tags: ${GITHUB_REPOSITORY}:${BRANCH_NAME},${GITHUB_REPOSITORY}:${BRANCH_NAME}

@@ -37,13 +37,20 @@ Once the event has been observed we can check our balance on the Cosmos side. We
 althea query bank balances <any cosmos address>
 ```
 
-Now that we have some tokens on the Althea chain we can try sending them back to Ethereum. Remember to use the Cosmos phrase for the address you actually sent the tokens to.
+Now that we have some tokens on the Althea chain we can try sending them back to Ethereum. Remember to use the Cosmos phrase for the address you actually sent the tokens to. Alternately you can send Cosmos native tokens with this command.
+
+The denom of a bridged token will be
+
+```
+peggy0xD7600ae27C99988A6CD360234062b540F88ECA43
+```
 
 ```
 RUST_LOG=info client cosmos-to-eth \
         --cosmos-phrase="the phrase containing the Gravity bridged tokens" \
-        --cosmos-rpc="http://localhost:1317"  \
-        --erc20-address="0xXXXXXXX" \
+        --cosmos-legacy-rpc="http://localhost:1317" \
+        --cosmos-grpc="http://localhost:9090" \
+        --cosmos-denom="any denom" \
         --amount=.5 \
         --eth-destination="any eth address, try your delegate eth address"
 ```

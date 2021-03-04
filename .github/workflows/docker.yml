@@ -30,11 +30,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Push to GitHub Packages
+      - name: Build and Push to GitHub Packages
         uses: docker/build-push-action@v2
         with:
           context: .
           platforms: linux/amd64,linux/arm64
-          registry: docker.pkg.github.com
           repository: ${{ github.actor }}/gaia/gaia
           tags: ${GITHUB_REPOSITORY}:${BRANCH_NAME},${GITHUB_REPOSITORY}:${BRANCH_NAME}

@@ -3,10 +3,13 @@
 BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 COMMIT := $(shell git log -1 --format='%H')
 
-# ascribe tag only if on a release/ branch, otherwise pick branch name and concatenate commit hash
-VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
-ifeq (, $(findstring release/,$(BRANCH)))
-  VERSION = $(BRANCH)-$(COMMIT)
+# don't override user values
+ifeq (,$(VERSION))
+  VERSION := $(shell git describe --exact-match 2>/dev/null)
+  # if VERSION is empty, then populate it with branch's name and raw commit hash
+  ifeq (,$(VERSION))
+    VERSION := $(BRANCH)-$(COMMIT)
+  endif
 endif
 
 PACKAGES_SIMTEST=$(shell go list ./... | grep '/simulation')

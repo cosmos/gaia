@@ -42,4 +42,4 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: docker.pkg.github.com/${{ github.REPOSITORY }}:${{ env.CI_REF_NAME }},docker.pkg.github.com/${{ github.REPOSITORY }}:${{ env.CI_REF_NAME }}
+          tags: docker.pkg.github.com/${{ github.REPOSITORY }}:${{ github.GITHUB_SHA }}

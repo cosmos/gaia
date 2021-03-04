@@ -11,6 +11,7 @@ order: 3
 
 ```bash
 git clone -b v4.0.5 https://github.com/cosmos/gaia
+cd gaia
 make install
 gaiad init chooseanicehandle
 wget https://github.com/cosmos/mainnet/raw/master/genesis.cosmoshub-4.json.gz

@@ -38,4 +38,4 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ github.REPOSITORY }}:${{ env.BRANCH_NAME }},${{ github.REPOSITORY }}:${{ env.BRANCH_NAME }}
+          tags: ${{ github.REPOSITORY }}:${{ env.CI_REF_NAME }},${{ github.REPOSITORY }}:${{ env.CI_REF_NAME }}

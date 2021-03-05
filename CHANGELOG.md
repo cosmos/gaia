@@ -36,6 +36,9 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+### Improvements
+* Added a github action that runs the instant gratification snippet to ensure that users will be gratified. 
+
 ## [v4.0.5] - 2021-03-02
 
 ### Bug Fixes

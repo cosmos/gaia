@@ -3,7 +3,8 @@ name: Standup
 on: [push,pull_request]
 
 jobs:
-  build:
+# Purpose: test the snippet, thereby testing the availaibility of the listed seeds. 
+  snippet-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-go@v2.1.3
@@ -11,7 +12,7 @@ jobs:
           go-version: 1.16
       - name: Snippet
         run: |
-          git clone -b v4.0.4 https://github.com/cosmos/gaia
+          git clone -b v4.0.5 https://github.com/cosmos/gaia
           cd gaia
           make install
           gaiad init thisnodeisinci

@@ -75,7 +75,7 @@ Fetch the mainnet's `genesis.json` file into `gaiad`'s config directory.
 mkdir -p $HOME/.gaiad/config
 wget https://github.com/cosmos/mainnet/raw/master/genesis.cosmoshub-4.json.gz
 gzip -d genesis.cosmoshub-4.json.gz
-mv genesis.cosmoshub-4.json $HOME/.gaiad/config
+mv genesis.cosmoshub-4.json $HOME/.gaia/config
 ```
 
 If you want to connect to the public testnet instead, click [here](./join-testnet.md)
@@ -88,7 +88,7 @@ gaiad start
 
 ### Add Seed Nodes
 
-Your node needs to know how to find peers. You'll need to add healthy seed nodes to `$HOME/.gaiad/config/config.toml`. The [`launch`](https://github.com/cosmos/launch) repo contains links to some seed nodes.
+Your node needs to know how to find peers. You'll need to add healthy seed nodes to `$HOME/.gaia/config/config.toml`. The [`launch`](https://github.com/cosmos/launch) repo contains links to some seed nodes.
 
 If those seeds aren't working, you can find more seeds and persistent peers on a Cosmos Hub explorer (a list can be found on the [launch page](https://cosmos.network/launch)). 
 

@@ -46,7 +46,7 @@ Algunos de los principales cambios que hay que tener en cuenta a la hora de actu
 
 - **Protocol Buffers**: Inicialmente el SDK de Cosmos utilizaba _codecs_ de Amino para casi toda la codificación y decodificación. En esta versión se ha integrado una importante actualización de los Protocol Buffers. Se espera que con los Protocol Buffers las aplicaciones ganen en velocidad, legibilidad, conveniencia e interoperabilidad con muchos lenguajes de programación. Para más información consulta [aquí](https://github.com/cosmos/cosmos-sdk/blob/master/docs/migrations/app_and_modules.md#protocol-buffers).
 - **CLI**: El CLI y el commando de full node para la cadena de bloques estaban separados en las versiones anteriores del SDK de Cosmos. Esto dio lugar a dos binarios, `gaiad` y `gaiacli`, que estaban separados y podían utilizarse para diferentes interacciones con la cadena de bloques. Ambos se han fusionado en un solo comando `gaiad` que ahora soporta los comandos que antes soportaba el `gaiacli`.
-- **Configuración del nodo**: Anteriormente los datos de la cadena de bloques y la configuración de los nodos se almacenaban en `~/.gaiad/`, ahora residirán en `~/.gaia/`, si utilizas scripts que hacen uso de la configuración o de los datos de la cadena de bloques, asegúrate de actualizar la ruta.
+- **Configuración del nodo**: Anteriormente los datos de la cadena de bloques y la configuración de los nodos se almacenaban en `~/.gaia/`, ahora residirán en `~/.gaia/`, si utilizas scripts que hacen uso de la configuración o de los datos de la cadena de bloques, asegúrate de actualizar la ruta.
 
 ## Riesgos
 
@@ -56,9 +56,9 @@ Lo más arriesgado que puede hacer un validador es descubrir que ha cometido un 
 
 ## Recuperación
 
-Antes de exportar el estado de `cosmoshub-3`, se recomienda a los validadores que tomen una instantánea completa de los datos a la altura de la exportación antes de proceder. La toma de snapshots depende en gran medida de la infraestructura, pero en general se puede hacer una copia de seguridad del directorio `.gaiad`.
+Antes de exportar el estado de `cosmoshub-3`, se recomienda a los validadores que tomen una instantánea completa de los datos a la altura de la exportación antes de proceder. La toma de snapshots depende en gran medida de la infraestructura, pero en general se puede hacer una copia de seguridad del directorio `.gaia`.
 
-Es muy importante hacer una copia de seguridad del archivo `.gaiad/data/priv_validator_state.json` después de detener el proceso de gaiad. Este archivo se actualiza en cada bloque cuando tu validador participa en las rondas de consenso. Es un archivo crítico necesario para evitar la doble firma, en caso de que la actualización falle y sea necesario reiniciar la cadena anterior.
+Es muy importante hacer una copia de seguridad del archivo `.gaia/data/priv_validator_state.json` después de detener el proceso de gaiad. Este archivo se actualiza en cada bloque cuando tu validador participa en las rondas de consenso. Es un archivo crítico necesario para evitar la doble firma, en caso de que la actualización falle y sea necesario reiniciar la cadena anterior.
 
 En el caso de que la actualización no tenga éxito, los validadores y operadores deben volver a actualizar a
 gaia v2.0.15 con v0.37.15 del _Cosmos SDK_ y restaurar a su último snapshot antes de reiniciar sus nodos.
@@ -86,21 +86,21 @@ El hash de la versión/commit de Gaia v2.0.15: `89cf7e6fc166eaabf47ad2755c443d45
     18 de febrero de 2021 a las 06:00 UTC es en segundos UNIX: `1613628000`
 
     ```bash
-    perl -i -pe 's/^halt-time =.*/halt-time = 1613628000/' ~/.gaiad/config/app.toml
+    perl -i -pe 's/^halt-time =.*/halt-time = 1613628000/' ~/.gaia/config/app.toml
     ```
-1. Después de que la cadena se haya detenido, haz una copia de seguridad de tu directorio `.gaiad`.
+1. Después de que la cadena se haya detenido, haz una copia de seguridad de tu directorio `.gaia`.
 
     ```bash
-    mv ~/.gaiad ./gaiad_backup
+    mv ~/.gaia ./gaiad_backup
     ```
     **NOTA**: Se recomienda a los validadores y operadores que tomen una instantánea completa de los datos a la altura de la exportación antes de proceder en caso de que la actualización no vaya según lo previsto o si no se pone en línea suficiente poder de voto en un tiempo determinado y acordado. En tal caso, la cadena volverá a funcionar con `cosmoshub-3`. Consulte [Recuperación](#recuperación) para saber cómo proceder.
 
 1. Exportar el estado existente de `cosmoshub-3`:
 
-    Antes de exportar el estado a través del siguiente comando, el binario `gaiad` debe estar detenido. Como validador, puedes ver la última altura del bloque creado en el `~/.gaiad/config/data/priv_validator_state.json` -o que ahora reside en `gaiad_backup` cuando hiciste una copia de seguridad como en el último paso- y obtenerla con
+    Antes de exportar el estado a través del siguiente comando, el binario `gaiad` debe estar detenido. Como validador, puedes ver la última altura del bloque creado en el `~/.gaia/config/data/priv_validator_state.json` -o que ahora reside en `gaiad_backup` cuando hiciste una copia de seguridad como en el último paso- y obtenerla con
 
     ```bash
-    cat ~/.gaiad/config/data/priv_validator_state.json | jq '.height'
+    cat ~/.gaia/config/data/priv_validator_state.json | jq '.height'
     ```
    
    ```bash

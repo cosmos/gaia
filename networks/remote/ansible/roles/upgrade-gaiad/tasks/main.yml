@@ -11,14 +11,14 @@
   when: "GENESISFILE is defined and GENESISFILE != ''" 
   copy:
     src: "{{GENESISFILE}}"
-    dest: /home/gaiad/.gaiad/config/genesis.json
+    dest: /home/gaiad/.gaia/config/genesis.json
   notify: restart gaiad
 
 - name: Download genesis.json URL, if available
   when: "GENESISURL is defined and GENESISURL != ''"
   get_url:
     url: "{{GENESISURL}}"
-    dest: /home/gaiad/.gaiad/config/genesis.json
+    dest: /home/gaiad/.gaia/config/genesis.json
     force: yes
   notify: restart gaiad
 

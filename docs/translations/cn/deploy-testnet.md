@@ -14,10 +14,10 @@
 
 如果你需要使用或部署 gaia 作为容器，你可以跳过`build`步骤并使用官方镜像，\$TAG 标识你感兴趣的版本：
 
-- `docker run -it -v ~/.gaiad:/root/.gaiad -v ~/.gaiad:/root/.gaiad tendermint:$TAG gaiad init`
-- `docker run -it -p 26657:26657 -p 26656:26656 -v ~/.gaiad:/root/.gaiad -v ~/.gaiad:/root/.gaiad tendermint:$TAG gaiad start`
+- `docker run -it -v ~/.gaia:/root/.gaia -v ~/.gaia:/root/.gaia tendermint:$TAG gaiad init`
+- `docker run -it -p 26657:26657 -p 26656:26656 -v ~/.gaia:/root/.gaia -v ~/.gaia:/root/.gaia tendermint:$TAG gaiad start`
 - ...
-- `docker run -it -v ~/.gaiad:/root/.gaiad -v ~/.gaiad:/root/.gaiad tendermint:$TAG gaiad version`
+- `docker run -it -v ~/.gaia:/root/.gaia -v ~/.gaia:/root/.gaia tendermint:$TAG gaiad version`
 
 相同的镜像也可以用于构建你自己的 docker-compose 栈
 
@@ -57,7 +57,7 @@ gaiad collect-gentxs
 gaiad start
 ```
 
-启动将会把`gaiad`相关的所有数据放在`~/.gaiad`目录。你可以检查所创建的 genesis 文件——`~/.gaiad/config/genesis.json`。同时`gaiad`也已经配置完成并且有了一个拥有 token 的账户(stake 和自定义的代币)。
+启动将会把`gaiad`相关的所有数据放在`~/.gaia`目录。你可以检查所创建的 genesis 文件——`~/.gaia/config/genesis.json`。同时`gaiad`也已经配置完成并且有了一个拥有 token 的账户(stake 和自定义的代币)。
 
 ## 多节点，本地的，自动的测试网
 

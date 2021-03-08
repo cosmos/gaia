@@ -39,7 +39,7 @@ If you are joining the mainnet, fetch the genesis from the [mainnet repo](https:
 Save the new genesis as `new_genesis.json`. Then replace the old `genesis.json` with `new_genesis.json`
 
 ```bash
-cd $HOME/.gaiad/config
+cd $HOME/.gaia/config
 cp -f genesis.json new_genesis.json
 mv new_genesis.json genesis.json
 ```
@@ -51,7 +51,7 @@ Then, go to the [reset data](#reset-data) section.
 If you were running a node in the previous version of the network and want to build your new genesis locally from a state of this previous network, use the following command:
 
 ```bash
-cd $HOME/.gaiad/config
+cd $HOME/.gaia/config
 gaiad export --for-zero-height --height=<export-height> > new_genesis.json
 ```
 

@@ -18,10 +18,10 @@ Supporting code can be found in the [networks directory](https://github.com/cosm
 
 In case you need to use or deploy gaia as a container you could skip the `build` steps and use the official images, \$TAG stands for the version you are interested in:
 
-- `docker run -it -v ~/.gaiad:/root/.gaiad tendermint:$TAG gaiad init`
-- `docker run -it -p 26657:26657 -p 26656:26656 -v ~/.gaiad:/root/.gaiad tendermint:$TAG gaiad start`
+- `docker run -it -v ~/.gaia:/root/.gaia tendermint:$TAG gaiad init`
+- `docker run -it -p 26657:26657 -p 26656:26656 -v ~/.gaia:/root/.gaia tendermint:$TAG gaiad start`
 - ...
-- `docker run -it -v ~/.gaiad:/root/.gaiad tendermint:$TAG gaiad version`
+- `docker run -it -v ~/.gaia:/root/.gaia tendermint:$TAG gaiad version`
 
 The same images can be used to build your own docker-compose stack.
 
@@ -61,7 +61,7 @@ gaiad collect-gentxs
 gaiad start
 ```
 
-This setup puts all the data for `gaiad` in `~/.gaiad`. You can examine the genesis file you created at `~/.gaiad/config/genesis.json`. With this configuration `gaiad` is also ready to use and has an account with tokens (both staking and custom).
+This setup puts all the data for `gaiad` in `~/.gaia`. You can examine the genesis file you created at `~/.gaia/config/genesis.json`. With this configuration `gaiad` is also ready to use and has an account with tokens (both staking and custom).
 
 ## Multi-node, Local, Automated Testnet
 

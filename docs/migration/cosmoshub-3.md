@@ -97,7 +97,7 @@ applications gain in speed, readability, convinience and interoperability with m
 led to a `gaiad` and `gaiacli` binary which were seperated and could be used for different interactions with the
 blockchain. Both of these have been merged into one `gaiad` which now supports the commands the `gaiacli` previously
 supported.
-- **Node Configuration**: Previously blockchain data and node configuration was stored in `~/.gaiad/`, these will
+- **Node Configuration**: Previously blockchain data and node configuration was stored in `~/.gaia/`, these will
 now reside in `~/.gaia/`, if you use scripts that make use of the configuration or blockchain data, make sure to update the path.
 
 ## Risks
@@ -116,9 +116,9 @@ before resetting your validator.
 
 Prior to exporting `cosmoshub-3` state, validators are encouraged to take a full data snapshot at the
 export height before proceeding. Snapshotting depends heavily on infrastructure, but generally this
-can be done by backing up the `.gaiad` directory.
+can be done by backing up the `.gaia` directory.
 
-It is critically important to back-up the `.gaiad/data/priv_validator_state.json` file after stopping your gaiad process. This file is updated every block as your validator participates in a consensus rounds. It is a critical file needed to prevent double-signing, in case the upgrade fails and the previous chain needs to be restarted.
+It is critically important to back-up the `.gaia/data/priv_validator_state.json` file after stopping your gaiad process. This file is updated every block as your validator participates in a consensus rounds. It is a critical file needed to prevent double-signing, in case the upgrade fails and the previous chain needs to be restarted.
 
 In the event that the upgrade does not succeed, validators and operators must downgrade back to
 gaia v2.0.15 with v0.37.15 of the _Cosmos SDK_ and restore to their latest snapshot before restarting their nodes.
@@ -146,13 +146,13 @@ The version/commit hash of Gaia v2.0.15: `89cf7e6fc166eaabf47ad2755c443d455feda0
     February 18, 2021 at 06:00 UTC is in UNIX seconds: `1613628000`
 
     ```bash
-    perl -i -pe 's/^halt-time =.*/halt-time = 1613628000/' ~/.gaiad/config/app.toml
+    perl -i -pe 's/^halt-time =.*/halt-time = 1613628000/' ~/.gaia/config/app.toml
     ```
 
- 1. After the chain has halted, make a backup of your `.gaiad` directory
+ 1. After the chain has halted, make a backup of your `.gaia` directory
 
     ```bash
-    mv ~/.gaiad ./gaiad_backup
+    mv ~/.gaia ./gaiad_backup
     ```
 
     **NOTE**: It is recommended for validators and operators to take a full data snapshot at the export
@@ -164,11 +164,11 @@ The version/commit hash of Gaia v2.0.15: `89cf7e6fc166eaabf47ad2755c443d455feda0
 
    Before exporting state via the following command, the `gaiad` binary must be stopped!
    As a validator, you can see the last block height created in the 
-   `~/.gaiad/data/priv_validator_state.json` - or now residing in `gaiad_backup` when you made
+   `~/.gaia/data/priv_validator_state.json` - or now residing in `gaiad_backup` when you made
     a backup as in the last step - and obtain it with
 
    ```bash
-   cat ~/.gaiad/data/priv_validator_state.json | jq '.height'
+   cat ~/.gaia/data/priv_validator_state.json | jq '.height'
    ```
 
    ```bash
@@ -270,15 +270,15 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
 
 1. Stop your Gaia v2.0.15 instance.
 
-1. After the chain has halted, make a backup of your `.gaiad` directory
+1. After the chain has halted, make a backup of your `.gaia` directory
 
    ```bash
-   mv ~/.gaiad ./gaiad_backup
+   mv ~/.gaia ./gaiad_backup
    ```
 
    **NOTE**: It is recommended for validators and operators to take a full data snapshot at the export
    height before proceeding in case the upgrade does not go as planned or if not enough voting power
-   comes online in a sufficient and agreed upon amount of time. That means the backup of `.gaiad` should 
+   comes online in a sufficient and agreed upon amount of time. That means the backup of `.gaia` should 
    only take place once the chain has halted at UNIX time `1613628000`.
    In such a case, the chain will fallback
    to continue operating `cosmoshub-3`. See [Recovery](#recovery) for details on how to proceed.

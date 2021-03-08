@@ -17,7 +17,7 @@ order: 1
 - `x/distribution`: Fee distribution logic.
 - `x/slashing`: Slashing logic.
 - `x/gov`: Governance logic.
-- `x/ibc`: Inter-blockchain transfers.
+- `ibc-go/modules`: Inter-blockchain communication. Hosted in the `cosmos/ibc-go` repository. 
 - `x/params`: Handles app-level parameters.
 
 About the Cosmos Hub: The Cosmos Hub is the first Hub to be launched in the Cosmos Network. The role of a Hub is to facilitate transfers between blockchains. If a blockchain connects to a Hub via IBC, it automatically gains access to all the other blockchains that are connected to it. The Cosmos Hub is a public Proof-of-Stake chain. Its staking token is called the Atom.

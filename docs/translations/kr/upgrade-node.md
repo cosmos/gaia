@@ -34,7 +34,7 @@ _참고_: 이번 단계에서 문제가 발생하는 경우, 최신 스테이블
 새로운 제네시스 파일을 `new_genesis.json`으로 저장하세요. 이후, 오래된 `genesis.json`을 `new_genesis.json`으로 바꾸세요.
 
 ```bash
-cd $HOME/.gaiad/config
+cd $HOME/.gaia/config
 cp -f genesis.json new_genesis.json
 mv new_genesis.json genesis.json
 ```
@@ -46,7 +46,7 @@ mv new_genesis.json genesis.json
 만약 과거 네트워크 버전에서 노드를 운영하셨고 로컬 환경에서 과거 네트워크의 제네시스 파일을 내보내시는 경우, 다음 명령어를 사용하세요:
 
 ```bash
-cd $HOME/.gaiad/config
+cd $HOME/.gaia/config
 gaiad export --for-zero-height --height=<내보내는_블록_높이(export-height)> > new_genesis.json
 ```
 

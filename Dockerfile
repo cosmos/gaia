@@ -1,7 +1,7 @@
 # Simple usage with a mounted data directory:
 # > docker build -t gaia .
-# > docker run -it -p 46657:46657 -p 46656:46656 -v ~/.gaiad:/gaia/.gaiad -v ~/.gaiacli:/gaia/.gaiacli gaia gaiad init
-# > docker run -it -p 46657:46657 -p 46656:46656 -v ~/.gaiad:/gaia/.gaiad -v ~/.gaiacli:/gaia/.gaiacli gaia gaiad start
+# > docker run -it -p 46657:46657 -p 46656:46656 -v ~/.gaia:/gaia/.gaia gaia gaiad init
+# > docker run -it -p 46657:46657 -p 46656:46656 -v ~/.gaia:/gaia/.gaia gaia gaiad start
 FROM golang:1.15-alpine AS build-env
 
 # Set up dependencies

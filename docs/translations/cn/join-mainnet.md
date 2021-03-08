@@ -22,14 +22,14 @@ gaiad init <your_custom_moniker>
 moniker只能包含ASCII字符。使用Unicode字符会使得你的节点不可访问
 :::
 
-你可以稍后在`~/.gaiad/config/config.toml`文件中编辑`moniker`:
+你可以稍后在`~/.gaia/config/config.toml`文件中编辑`moniker`:
 
 ```toml
 # A custom human readable name for this node
 moniker = "<your_custom_moniker>"
 ```
 
-你可以编辑`~/.gaiad/config/config.toml`文件来开启垃圾交易过滤机制以拒绝收到的手续费过低的交易：
+你可以编辑`~/.gaia/config/config.toml`文件来开启垃圾交易过滤机制以拒绝收到的手续费过低的交易：
 
 ```
 # This is a TOML config file.
@@ -53,8 +53,8 @@ minimum-gas-prices = ""
 将主网的`genesis.json`文件放置在`gaiad`的配置文件夹中
 
 ```bash
-mkdir -p $HOME/.gaiad/config
-curl https://raw.githubusercontent.com/cosmos/launch/master/genesis.json > $HOME/.gaiad/config/genesis.json
+mkdir -p $HOME/.gaia/config
+curl https://raw.githubusercontent.com/cosmos/launch/master/genesis.json > $HOME/.gaia/config/genesis.json
 ```
 
 注意我们使用了[launch repo](https://github.com/cosmos/launch)中的`latest`文件夹，该文件夹包含了最新版本主网的详细信息。
@@ -71,7 +71,7 @@ gaiad start
 
 ### 添加种子节点
 
-你的节点需要知道如何寻找伙伴节点。你需要添加有用的种子节点到`$HOME/.gaiad/config/config.toml`文件中。[`launch`](https://github.com/cosmos/launch) repo包含了一些种子节点的链接。
+你的节点需要知道如何寻找伙伴节点。你需要添加有用的种子节点到`$HOME/.gaia/config/config.toml`文件中。[`launch`](https://github.com/cosmos/launch) repo包含了一些种子节点的链接。
 
 如果这些种子节点不再运行，你可以在Cosmos Hub浏览器(可以在[launch page](https://cosmos.network/launch)中找到)发现种子节点和持久节点。
 
@@ -102,7 +102,7 @@ fees = gas * gasPrices
 
 ## 设置`minimum-gas-prices`
 
-你的全节点可以在交易池中放入未确认的交易。为了保护其免受Spam攻击，最好设置一个`minimum-gas-prices`来过滤交易以决定是否要放入交易池。这个参数可以在`~/.gaiad/config/gaiad.toml`文件中配置。
+你的全节点可以在交易池中放入未确认的交易。为了保护其免受Spam攻击，最好设置一个`minimum-gas-prices`来过滤交易以决定是否要放入交易池。这个参数可以在`~/.gaia/config/gaiad.toml`文件中配置。
 
 推荐的初始`minimum-gas-prices`是`0.025uatom`，如果你愿意可以稍后再修改它。
 

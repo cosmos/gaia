@@ -26,13 +26,13 @@ gaiad init <your_custom_moniker>
 El moniker solo debe contener carácteres ASCII.  El uso de caracteres Unicode hará que tu nodo sea irreconocible.
 :::
 
-Puede editar el apodo (`moniker`) después, en el archivo `~/.gaiad/config/config.toml`:
+Puede editar el apodo (`moniker`) después, en el archivo `~/.gaia/config/config.toml`:
 
 ```toml
 # A custom human readable name for this node
 moniker = "<tu nombre personalizado>"
 ```
-Puede editar el archivo `~/.gaiad/config/app.toml` para activar el mecanismo antispam y rechazar las transacciones entrantes con valores inferiores a los precios mínimos para el _gas_:
+Puede editar el archivo `~/.gaia/config/app.toml` para activar el mecanismo antispam y rechazar las transacciones entrantes con valores inferiores a los precios mínimos para el _gas_:
 
 ```
 # This is a TOML config file.
@@ -56,8 +56,8 @@ minimum-gas-prices = ""
 Busque el archivo `genesis.json` de la red principal en el directorio de configuración de `gaiad`.
 
 ```bash
-mkdir -p $HOME/.gaiad/config
-curl https://raw.githubusercontent.com/cosmos/launch/master/genesis.json > $HOME/.gaiad/config/genesis.json
+mkdir -p $HOME/.gaia/config
+curl https://raw.githubusercontent.com/cosmos/launch/master/genesis.json > $HOME/.gaia/config/genesis.json
 ```
 
 Observe que usamos el directorio `latest` en el [repositorio de lanzamiento](https://github.com/cosmos/launch) que contiene detalles para la red principal como la última versión y el archivo de génesis.
@@ -74,7 +74,7 @@ gaiad start
 
 ### Añada los nodos semilla
 
-Su nodo necesita saber cómo encontrar pares (_peers_). Necesita añadir nodos semilla en buen estado en `$HOME/.gaiad/config/config.toml`. El repositorio para el [`lanzamiento`](https://github.com/cosmos/launch) contiene enlaces a algunos nodos semilla.
+Su nodo necesita saber cómo encontrar pares (_peers_). Necesita añadir nodos semilla en buen estado en `$HOME/.gaia/config/config.toml`. El repositorio para el [`lanzamiento`](https://github.com/cosmos/launch) contiene enlaces a algunos nodos semilla.
 
 Si estas semillas no funcionan, puedes encontrar más _seeds_ y _peers_ persistentes en un explorador de Cosmos Hub (puede encontrar una lista en la [página del lanzamiento](https://cosmos.network/launch))
 
@@ -106,7 +106,7 @@ Para la red principal, el `gas-prices` recomendado es `0.025uatom`.
 
 ## Establezca `minimum-gas-prices`
 
-Su nodo completo mantiene las transacciones no confirmadas en la _mempool_. Para protegerlo de ataques de spam, es mejor establecer un `minimum-gas-prices` que la transacción debe cumplir para ser aceptada en la _mempool_ de su nodo. Este parámetro puede ser establecido en el siguiente archivo `~/.gaiad/config/app.toml`.
+Su nodo completo mantiene las transacciones no confirmadas en la _mempool_. Para protegerlo de ataques de spam, es mejor establecer un `minimum-gas-prices` que la transacción debe cumplir para ser aceptada en la _mempool_ de su nodo. Este parámetro puede ser establecido en el siguiente archivo `~/.gaia/config/app.toml`.
 
 El valor inicial recomendado para `min-gas-prices` es `0.025uatom`, pero puede querer cambiarlo más tarde.
 

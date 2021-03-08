@@ -41,7 +41,7 @@ chain_ids = ["gaia-11001"]
 ```
 
 - Edit `addr` to point to your `gaiad` instance.
-- Adjust `chain-id` to match your `.gaiad/config/config.toml` settings.
+- Adjust `chain-id` to match your `.gaia/config/config.toml` settings.
 - `provider.ledgertm` has not additional parameters at the moment, however, it is important that you keep that header to enable the feature.
 
 *Plug your Ledger device and open the Tendermint validator app.*
@@ -80,7 +80,7 @@ Take note of the validator pubkey that appears in your screen. *We will use it i
 
 ## Gaia configuration
 
-You need to enable KMS access by editing `.gaiad/config/config.toml`. In this file, modify `priv_validator_laddr` to create a listening address/port or a unix socket in `gaiad`.
+You need to enable KMS access by editing `.gaia/config/config.toml`. In this file, modify `priv_validator_laddr` to create a listening address/port or a unix socket in `gaiad`.
 
 For example:
 

@@ -34,7 +34,7 @@ These instructions are for full nodes that have ran on previous versions of and 
 First, remove the outdated files and reset the data.
 
 ```bash
-rm $HOME/.gaiad/config/addrbook.json $HOME/.gaiad/config/genesis.json
+rm $HOME/.gaia/config/addrbook.json $HOME/.gaia/config/genesis.json
 gaiad unsafe-reset-all
 ```
 

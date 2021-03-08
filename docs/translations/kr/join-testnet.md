@@ -24,14 +24,14 @@ gaiad init --moniker <your_custom_moniker>
 `--moniker`는 ASCII 캐릭터만을 지원합니다. Unicode 캐릭터를 이용하는 경우 노드 접근이 불가능할 수 있으니 참고하세요.
 :::
 
-`moniker`는 `~/.gaiad/config/config.toml` 파일을 통해 추후에 변경이 가능합니다:
+`moniker`는 `~/.gaia/config/config.toml` 파일을 통해 추후에 변경이 가능합니다:
 
 ```toml
 # A custom human readable name for this node
 moniker = "<your_custom_moniker>"
 ```
 
-최소 수수료보다 낮은 트랜잭션을 거절하는 스팸 방지 메커니즘을 활성화 하시려면 `~/.gaiad/config/gaiad.toml` 파일을 변경하시면 됩니다:
+최소 수수료보다 낮은 트랜잭션을 거절하는 스팸 방지 메커니즘을 활성화 하시려면 `~/.gaia/config/gaiad.toml` 파일을 변경하시면 됩니다:
 
 ```
 # This is a TOML config file.
@@ -54,7 +54,7 @@ minimum_fees = ""
 우선, 과거 파일을 삭제하고 데이터를 리셋합니다.
 
 ```bash
-rm $HOME/.gaiad/config/addrbook.json $HOME/.gaiad/config/genesis.json
+rm $HOME/.gaia/config/addrbook.json $HOME/.gaia/config/genesis.json
 gaiad unsafe-reset-all
 ```
 
@@ -90,8 +90,8 @@ _참고_: 이 단계에서 문제가 있으시다면 최신 스테이블 GO 버�
 테스트넷의 `genesis.json`파일을 `gaiad`의 config 디렉토리로 가져옵니다.
 
 ```bash
-mkdir -p $HOME/.gaiad/config
-curl https://raw.githubusercontent.com/cosmos/testnets/master/latest/genesis.json > $HOME/.gaiad/config/genesis.json
+mkdir -p $HOME/.gaia/config
+curl https://raw.githubusercontent.com/cosmos/testnets/master/latest/genesis.json > $HOME/.gaia/config/genesis.json
 ```
 
 위 예시에서는 최신 테스트넷에 대한 정보가 포함되어있는 [테스트넷 repo]의 `latest`를 이용하는 것을 참고하세요. 만약 다른 테스트넷에 연결하신다면 해당 테스트넷의 파일을 가져오는 것인지 확인하세요.
@@ -104,7 +104,7 @@ gaiad start
 
 ### 시드 노드 추가하기
 
-이제 노드가 다른 피어들을 찾는 방법을 알아야합니다. `$HOME/.gaiad/config/config.toml`에 안정적인 시드 노드들을 추가할 차례입니다. `testnets` repo에 각 테스트넷에 대한 시드 노드 링크가 포함되어있습니다. 만약 현재 운영되고 있는 테스트넷을 참가하고 싶으시다면 [여기](https://github.com/cosmos/testnets)에서 어떤 노드를 이용할지 확인하세요.
+이제 노드가 다른 피어들을 찾는 방법을 알아야합니다. `$HOME/.gaia/config/config.toml`에 안정적인 시드 노드들을 추가할 차례입니다. `testnets` repo에 각 테스트넷에 대한 시드 노드 링크가 포함되어있습니다. 만약 현재 운영되고 있는 테스트넷을 참가하고 싶으시다면 [여기](https://github.com/cosmos/testnets)에서 어떤 노드를 이용할지 확인하세요.
 
 만약 해당 시드가 작동하지 않는다면, 추가적인 시드와 피어들을 [코스모스 익스플로러](https://explorer.cosmos.network/nodes)를 통해 확인하실 수 있습니다. `Full Nodes` 탭을 들어가셔서 프라이빗(`10.x.x.x`) 또는 로컬 IP 주소(https://en.wikipedia.org/wiki/Private_network)가 _아닌_ 노드를 열어보세요. `Persistent Peer` 값에 연결 스트링(connection string)이 표기되어 있습니다. 가장 최적화된 결과를 위해서는 4-6을 이용하세요.
 

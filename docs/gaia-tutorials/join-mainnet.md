@@ -41,14 +41,14 @@ gaiad init <your_custom_moniker>
 **Note**
 Monikers can contain only ASCII characters. Using Unicode characters will render your node unreachable.
 
-You can edit this `moniker` later, in the `~/.gaiad/config/config.toml` file:
+You can edit this `moniker` later, in the `~/.gaia/config/config.toml` file:
 
 ```toml
 # A custom human readable name for this node
 moniker = "<your_custom_moniker>"
 ```
 
-You can edit the `~/.gaiad/config/app.toml` file in order to enable the anti spam mechanism and reject incoming transactions with less than the minimum gas prices:
+You can edit the `~/.gaia/config/app.toml` file in order to enable the anti spam mechanism and reject incoming transactions with less than the minimum gas prices:
 
 ```
 # This is a TOML config file.
@@ -72,10 +72,10 @@ Your full node has been initialized!
 Fetch the mainnet's `genesis.json` file into `gaiad`'s config directory.
 
 ```bash
-mkdir -p $HOME/.gaiad/config
+mkdir -p $HOME/.gaia/config
 wget https://github.com/cosmos/mainnet/raw/master/genesis.cosmoshub-4.json.gz
 gzip -d genesis.cosmoshub-4.json.gz
-mv genesis.cosmoshub-4.json $HOME/.gaiad/config
+mv genesis.cosmoshub-4.json $HOME/.gaia/config
 ```
 
 If you want to connect to the public testnet instead, click [here](./join-testnet.md)
@@ -88,7 +88,7 @@ gaiad start
 
 ### Add Seed Nodes
 
-Your node needs to know how to find peers. You'll need to add healthy seed nodes to `$HOME/.gaiad/config/config.toml`. The [`launch`](https://github.com/cosmos/launch) repo contains links to some seed nodes.
+Your node needs to know how to find peers. You'll need to add healthy seed nodes to `$HOME/.gaia/config/config.toml`. The [`launch`](https://github.com/cosmos/launch) repo contains links to some seed nodes.
 
 If those seeds aren't working, you can find more seeds and persistent peers on a Cosmos Hub explorer (a list can be found on the [launch page](https://cosmos.network/launch)). 
 
@@ -114,7 +114,7 @@ For mainnet, the recommended `gas-prices` is `0.025uatom`.
 
 ## Set `minimum-gas-prices`
 
-Your full-node keeps unconfirmed transactions in its mempool. In order to protect it from spam, it is better to set a `minimum-gas-prices` that the transaction must meet in order to be accepted in your node's mempool. This parameter can be set in the following file `~/.gaiad/config/app.toml`.
+Your full-node keeps unconfirmed transactions in its mempool. In order to protect it from spam, it is better to set a `minimum-gas-prices` that the transaction must meet in order to be accepted in your node's mempool. This parameter can be set in the following file `~/.gaia/config/app.toml`.
 
 The initial recommended `min-gas-prices` is `0.025uatom`, but you might want to change it later.
 

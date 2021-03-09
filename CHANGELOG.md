@@ -46,7 +46,7 @@ and a few performance improvements. The SDK also applies a security fix for vali
 address conversion in evidence handling, and the full header is now emitted on an 
 IBC UpdateClient message event.
 
-* (sdk)  Bump SDK version to [v0.42](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42)
+* (sdk)  Bump SDK version to [v0.42.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42.0)
 
 ## [v4.0.5] - 2021-03-02
 

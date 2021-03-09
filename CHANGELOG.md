@@ -36,6 +36,18 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+## [v4.0.6] - 2021-03-09
+
+### Bug Fixes
+
+This release bumps the Cosmos SDK, which includes an important security fix for all non 
+Cosmos Hub chains (e.g. any chain that does not use the default cosmos bech32 prefix), 
+and a few performance improvements. The SDK also applies a security fix for validator 
+address conversion in evidence handling, and the full header is now emitted on an 
+IBC UpdateClient message event.
+
+* (sdk)  Bump SDK version to [v0.42.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42.0)
+
 ## [v4.0.5] - 2021-03-02
 
 ### Bug Fixes
@@ -266,7 +278,8 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v4.0.5...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v4.0.6...HEAD
+[v4.0.6]: https://github.com/cosmos/gaia/releases/tag/v4.0.6
 [v4.0.5]: https://github.com/cosmos/gaia/releases/tag/v4.0.5
 [v4.0.4]: https://github.com/cosmos/gaia/releases/tag/v4.0.4
 [v4.0.3]: https://github.com/cosmos/gaia/releases/tag/v4.0.3

@@ -10,7 +10,7 @@ pull_request_rules:
         strict: true
   - name: backport patches to v4.0.x branch
     conditions:
-      - base=master
+      - base=main
       - label=backport/4.0.x
     actions:
       backport:

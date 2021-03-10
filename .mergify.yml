@@ -8,3 +8,11 @@ pull_request_rules:
       merge:
         method: squash
         strict: true
+  - name: backport patches to v4.0.x branch
+    conditions:
+      - base=master
+      - label=backport/4.0.x
+    actions:
+      backport:
+        branches:
+          - release/v4.0.x

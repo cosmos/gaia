@@ -36,6 +36,18 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+## [v4.1.0] - 2021-03-10
+
+### Bug Fixes
+
+A critical security vulnerability has been identified in Gaia v4.0.x.
+User funds are NOT at risk; however, the vulnerability can result in a chain halt.
+
+This release fixes the identified security vulnerability.
+
+If the chain halts before or during the upgrade, validators with sufficient voting power need to upgrade 
+and come online in order for the chain to resume.
+
 ## [v4.0.6] - 2021-03-09
 
 ### Bug Fixes
@@ -278,7 +290,8 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v4.0.6...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v4.1.0...HEAD
+[v4.1.0]: https://github.com/cosmos/gaia/releases/tag/v4.1.0
 [v4.0.6]: https://github.com/cosmos/gaia/releases/tag/v4.0.6
 [v4.0.5]: https://github.com/cosmos/gaia/releases/tag/v4.0.5
 [v4.0.4]: https://github.com/cosmos/gaia/releases/tag/v4.0.4

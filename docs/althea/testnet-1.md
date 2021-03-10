@@ -18,6 +18,7 @@ testnet1-rpc.althea.net
 ## Documents
 
 - [How to become a validator](althea-testnet-docs/setting-up-a-validator.md)
+- [How to run a fullnode](althea-testnet-docs/setting-up-a-fullnode.md)
 - [upgrading your validator](althea-testnet-docs/upgrading.md)
 - [Testing Gravity](althea-testnet-docs/testing-gravity.md)
 - [Testing large Gravity tx batches](althea-testnet-docs/big-build-batch.md)

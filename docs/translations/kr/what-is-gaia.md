@@ -14,7 +14,7 @@
 - `x/distribution`: 수수료(보상) 분배 로직(fee distribution logic)
 - `x/slashing`: 슬래싱 로직
 - `x/gov`: 거버넌스 로직
-- `x/ibc`: 인터블록체인 전송
+- `ibc-go/modules`: 인터블록체인 전송
 - `x/params`: 앱레벨 파라미터 관리
 
 

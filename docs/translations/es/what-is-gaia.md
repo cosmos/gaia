@@ -18,7 +18,7 @@ order: 1
 - `x/distribution`: Lógica para la distribución del FEE.
 - `x/slashing`: Lógica para la penalización.
 - `x/gov`: Lógica para la gobernanza.
-- `x/ibc`: Transferencia entre blockchains.
+- `ibc-go/modules`: Transferencia entre blockchains.
 - `x/params`: Controla los parámetros del nivel de la aplicación.
 - `x/capability`:
 - `x/crisis`:

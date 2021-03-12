@@ -8,7 +8,7 @@
 gaiad init <명칭(moniker)> --chain-id <체인_아이디(chain-id)>
 ```
 
-제네시스 파일은 `~/.gaiad/config/genesis.toml`에 저장됩니다.
+제네시스 파일은 `~/.gaia/config/genesis.toml`에 저장됩니다.
 
 ## 제네시스 파일은 무엇인가?
 
@@ -330,4 +330,4 @@ gaiad add-genesis-account <계정_주소(account_address)> <수량(amount)> <단
 gaiad collect-gentxs
 ```
 
-위 명령어는 `~/.gaiad/config/gentx`에 있는 모든 `gentxs`를 제네시스 파일에 추가합니다. 제네시스 트랜잭션을 생성하기 위해서는 [여기](./validators/validator-setup.md#participate-in-genesis-as-a-validator)를 확인하세요.
+위 명령어는 `~/.gaia/config/gentx`에 있는 모든 `gentxs`를 제네시스 파일에 추가합니다. 제네시스 트랜잭션을 생성하기 위해서는 [여기](./validators/validator-setup.md#participate-in-genesis-as-a-validator)를 확인하세요.

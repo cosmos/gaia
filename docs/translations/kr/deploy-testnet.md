@@ -14,9 +14,9 @@
 
 컨테이너 형태로 Gaia 디플로이를 원하시는 경우, `build` 단계를 건너뛰시고 공식 이미지 파일을 설치하실 수 있습니다. \$TAG은 설치하시려는 버전을 의미합니다.
 
-- `docker run -it -v ~/.gaiad:/root/.gaiad -v ~/.gaiad:/root/.gaiad tendermint:$TAG gaiad init`
-- `docker run -it -p 26657:26657 -p 26656:26656 -v ~/.gaiad:/root/.gaiad -v ~/.gaiad:/root/.gaiad tendermint:$TAG gaiad start`
-- `docker run -it -v ~/.gaiad:/root/.gaiad -v ~/.gaiad:/root/.gaiad tendermint:$TAG gaiad version`
+- `docker run -it -v ~/.gaia:/root/.gaia -v ~/.gaia:/root/.gaia tendermint:$TAG gaiad init`
+- `docker run -it -p 26657:26657 -p 26656:26656 -v ~/.gaia:/root/.gaia -v ~/.gaia:/root/.gaia tendermint:$TAG gaiad start`
+- `docker run -it -v ~/.gaia:/root/.gaia -v ~/.gaia:/root/.gaia tendermint:$TAG gaiad version`
 
 각 이미지는 자체적인 docker-compose 스택을 빌드하는데 사용하실 수 있습니다.
 
@@ -55,7 +55,7 @@ gaiad collect-gentxs
 gaiad start
 ```
 
-이 셋업은 모든 `gaiad` 정보를 `~/.gaiad`에 저장힙니다. 생성하신 제네시스 파일을 확인하고 싶으시다면 `~/.gaiad/config/genesis.json`에서 확인이 가능합니다. 위의 세팅으로 `gaiad`가 이용이 가능하며, 토큰(스테이킹/커스텀)이 있는 계정 또한 함께 생성됩니다.
+이 셋업은 모든 `gaiad` 정보를 `~/.gaia`에 저장힙니다. 생성하신 제네시스 파일을 확인하고 싶으시다면 `~/.gaia/config/genesis.json`에서 확인이 가능합니다. 위의 세팅으로 `gaiad`가 이용이 가능하며, 토큰(스테이킹/커스텀)이 있는 계정 또한 함께 생성됩니다.
 
 ## 멀티 노드, 로컬, 자동 테스트넷
 

@@ -12,7 +12,7 @@ Note that you can generate a default genesis file for your own testnet by runnin
 gaiad init <moniker> --chain-id <chain-id>
 ```
 
-The genesis file is stored in `~/.gaiad/config/genesis.toml`.
+The genesis file is stored in `~/.gaia/config/genesis.toml`.
 
 ## What is a Genesis File
 
@@ -333,4 +333,4 @@ A `gentx` can be added manually to the genesis file, or via the following comman
 gaiad collect-gentxs
 ```
 
-This command will add all the `gentxs` stored in `~/.gaiad/config/gentx` to the genesis file. In order to create a genesis transaction, click [here](../validators/validator-setup.md#participate-in-genesis-as-a-validator).
+This command will add all the `gentxs` stored in `~/.gaia/config/gentx` to the genesis file. In order to create a genesis transaction, click [here](../validators/validator-setup.md#participate-in-genesis-as-a-validator).

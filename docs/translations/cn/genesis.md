@@ -8,7 +8,7 @@
 gaiad init <moniker> --chain-id <chain-id>
 ```
 
-genesis 文件存储在 `~/.gaiad/config/genesis.toml`.
+genesis 文件存储在 `~/.gaia/config/genesis.toml`.
 
 ## 什么是创世文件
 
@@ -331,4 +331,4 @@ The `slashing` module handles the logic to slash delegators if their validator m
 gaiad collect-gentxs
 ```
 
-此命令将存储在`~/.gaiad/config/gentx`中的所有`gentxs`添加到genesis文件中。 要创建创世纪交易，请单击[此处](./validators/validator-setup.md#participation-in-genesis-as-a-validator)。
+此命令将存储在`~/.gaia/config/gentx`中的所有`gentxs`添加到genesis文件中。 要创建创世纪交易，请单击[此处](./validators/validator-setup.md#participation-in-genesis-as-a-validator)。

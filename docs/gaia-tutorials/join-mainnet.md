@@ -10,7 +10,7 @@ order: 3
 **Instant Gratification Snippet**
 
 ```bash
-git clone -b v4.0.5 https://github.com/cosmos/gaia
+git clone -b v4.1.0 https://github.com/cosmos/gaia
 cd gaia
 make install
 gaiad init chooseanicehandle

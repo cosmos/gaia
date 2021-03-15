@@ -173,9 +173,9 @@ Please note that only Geth full nodes can serve Geth light clients, no other nod
 For the purposes of this testnet just follow the instructions below, even on the slowest node you should be synced inside of a few minutes.
 
 ```
-wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.9.25-e7872729.tar.gz
-tar -xvf geth-linux-amd64-1.9.25-e7872729.tar.gz
-cd geth-linux-amd64-1.9.25-e7872729
+wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.1-c2d2f4ed.tar.gz
+tar -xvf geth-linux-amd64-1.10.1-c2d2f4ed.tar.gz
+cd geth-linux-amd64-1.10.1-c2d2f4ed
 ./geth --syncmode "light" --goerli --http --cache 16
 ```
 

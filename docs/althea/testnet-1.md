@@ -19,6 +19,7 @@ testnet1-rpc.althea.net
 
 - [How to become a validator](althea-testnet-docs/setting-up-a-validator.md)
 - [How to run a fullnode](althea-testnet-docs/setting-up-a-fullnode.md)
+- [Testnet Faucet](althea-testnet-docs/faucet.md)
 - [Upgrading your validator](althea-testnet-docs/upgrading.md)
 - [Preparing for the next upgrade](althea-testnet-docs/preparing-for-upgrade.md) (Updated 03/15/2020)
 - [Testing Gravity](althea-testnet-docs/testing-gravity.md)

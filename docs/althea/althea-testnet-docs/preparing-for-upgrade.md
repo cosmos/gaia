@@ -1,6 +1,6 @@
 # Preparing for the Althea testnet1v5 upgrade
 
-This Wednesday (March 17th 2020) the Gorli Ethereum testnet will be performing the Berlin hardfork. This Sunday (March 21st 2020) we will be upgrading to Althea testnet1v5. Big changes in v5 will include.
+This Wednesday (March 17th 2021) the Gorli Ethereum testnet will be performing the Berlin hardfork. This Sunday (March 21st 2021) we will be upgrading to Althea testnet1v5. Big changes in v5 will include.
 
 1. Fixes for sudden slashing
 2. Registration for delegate keys in the 'althea' binary (allowing for Ledeger key use)

@@ -36,6 +36,15 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+## [v4.1.1] - 2021-03-19
+
+This release bring improvements to keyring UX, tx search results, and multi-sig account migrations. 
+See the Cosmos SDK [release notes](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42.2) for details. 
+
+### Bug Fixes
+
+* (sdk)  Bump SDK version to [v0.42.2](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42.2)
+
 ## [v4.1.0] - 2021-03-10
 
 ### Bug Fixes
@@ -290,7 +299,8 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v4.1.0...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v4.1.1...HEAD
+[v4.1.1]: https://github.com/cosmos/gaia/releases/tag/v4.1.1
 [v4.1.0]: https://github.com/cosmos/gaia/releases/tag/v4.1.0
 [v4.0.6]: https://github.com/cosmos/gaia/releases/tag/v4.0.6
 [v4.0.5]: https://github.com/cosmos/gaia/releases/tag/v4.0.5

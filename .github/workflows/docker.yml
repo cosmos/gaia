@@ -1,6 +1,6 @@
 name: Build & Push
 # Build & Push builds the simapp docker image on every push to master and
-# and pushes the image to https://hub.docker.com/r/interchainio/simapp/tags
+# and pushes the image to https://hub.docker.com/r/tendermint/gaia
 on:
   pull_request:
   push:
@@ -38,18 +38,27 @@ jobs:
           echo ::set-output name=version::${VERSION}
           echo ::set-output name=tags::${TAGS}
           echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-
+          
+          
+      # Install QEMU 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      
+      # Use buildx instead of build
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-
+        
+      # Login so we can push the image
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
+          
+      # Using the github action, push the Gaia amd64/arm64 image to Docker Hub
       - name: Publish to Docker Hub
         uses: docker/build-push-action@v2
         with:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.prep.outputs.tags }}
+          platform: linux/amd64,linux/arm64

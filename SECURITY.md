@@ -1,5 +1,13 @@
 # Security
 
+This security document is the process that the Gaia team follows regarding security issues 
+that can impact partners and users of Gaia and the Cosmos Hub network. 
+
+## Prerequisites
+
+If a vulnerability and its exploit are both publicly known, the security process may not apply. 
+However, in such cases, resolutions and mitigation strategies may still be eligible for rewards through a bounty program.
+
 ## Reporting a Bug
 
 As part of our [Coordinated Vulnerability Disclosure

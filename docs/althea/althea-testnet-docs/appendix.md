@@ -22,14 +22,6 @@ althea tx staking delegate <the address from the above command> 99000000ualtg --
 
 ## Unjail your validator
 
-You can be jailed for several different reasons. As part of the Althea testnet we are testing slashing conditions for the Gravity bridge, so you will be slashed if the Orchestrator is not running properly, in addition to the usual Cosmos double sign and downtime slashing parameters. To unjail your validator run
-
-```
-althea tx slashing unjail --from myvalidatorkeyname --chain-id=althea-testnet1v4
-```
-
-## Unjail yourself
-
 This command will unjail you, completing the process of getting the chain back online!
 
 _replace 'myvalidatorkeyname' with your validator keys name, if you don't remember run `althea keys list`_

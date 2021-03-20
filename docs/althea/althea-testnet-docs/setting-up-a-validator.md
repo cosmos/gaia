@@ -2,7 +2,7 @@
 
 ## What do I need?
 
-A Linux server with any modern Linux distribution, 2gb of ram and at least 20gb storage. Requirements are very minimal.
+A Linux server with any modern Linux distribution, 4cores, 8gb of ram and at least 20gb of SSD storage.
 
 I also suggest an open notepad or other document to keep track of the keys you will be generating.
 

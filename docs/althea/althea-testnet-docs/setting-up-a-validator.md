@@ -72,7 +72,7 @@ althea start
 
 ### Request some funds be sent to your address
 
-Copy and paste your address into Zoom chat so that we can send you some tokens.
+Copy and paste your address into the [Althea chat](https://discord.gg/VqBXkpPKjm) so that we can send you some tokens.
 
 ```
 althea keys list

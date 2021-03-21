@@ -2,7 +2,7 @@
 
 As part of our testnet we're going to try and put the maximum possible load on the bridge, Sunday February 21st at around 1pm west coast time. This isn't a hard time event, you can simply setup your client to send thousands of transactions and leave it alone for the rest of the day. We just want to get as many people as possible doing so.
 
-This guide does not require that you be a validator on althea-testnet1v4, it is designed to run on any machine.
+This guide does not require that you be a validator on althea-testnet1v5, it is designed to run on any machine.
 
 ## Download Althea chain and the Gravity tools
 
@@ -13,14 +13,14 @@ mkdir althea-bin
 cd althea-bin
 
 # the althea chain binary itself
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.4/althea-0.0.1-16-g05e0553-linux-amd64
-mv althea-0.0.1-16-g05e0553-linux-amd64 althea
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.5/althea-0.0.4-16-g6812f87-linux-amd64
+mv althea-0.0.4-16-g6812f87-linux-amd64 althea
 
 # Tools for the gravity bridge from the gravity repo
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.4/client
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.4/orchestrator
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.4/register-delegate-keys
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.4/relayer
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.5/client
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.5/orchestrator
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.5/register-delegate-keys
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.5/relayer
 chmod +x *
 sudo mv * /usr/bin/
 ```
@@ -31,7 +31,7 @@ If you are a validator you can skip this step as you already have an address rea
 
 ```
 cd $HOME
-althea init mymoniker --chain-id althea-testnet1v4
+althea init mymoniker --chain-id althea-testnet1v5
 althea keys add mytestingname
 ```
 

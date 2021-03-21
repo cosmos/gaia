@@ -10,8 +10,8 @@ A Linux server with any modern Linux distribution, 2gb of ram and at least 20gb 
 
 ```
 # the althea chain binary itself
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.4/althea-0.0.3-4-g30eddc7-linux-amd64
-mv althea-0.0.3-4-g30eddc7-linux-amd64 althea
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.5/althea-0.0.4-16-g6812f87-linux-amd64
+mv althea-0.0.4-16-g6812f87-linux-amd64 althea
 
 chmod +x althea
 sudo mv althea /usr/bin/
@@ -21,7 +21,7 @@ sudo mv althea /usr/bin/
 
 ```
 cd $HOME
-althea init mymoniker --chain-id althea-testnet1v4
+althea init mymoniker --chain-id althea-testnet1v5
 ```
 
 ### Generate your key
@@ -34,15 +34,15 @@ You'll be prompted to create a password, I suggest you pick something short sinc
 
 ```
 cd $HOME
-althea init mymoniker --chain-id althea-testnet1v4
+althea init mymoniker --chain-id althea-testnet1v5
 althea keys add myvalidatorkeyname
 ```
 
 ### Copy the genesis file
 
 ```
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.4/althea-testnet1-v4-genesis.json
-cp althea-testnet1-v4-genesis.json $HOME/.althea/config/genesis.json
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.5/althea-testnet1-v5-genesis.json
+cp althea-testnet1-v5-genesis.json $HOME/.althea/config/genesis.json
 ```
 
 ### Add persistent peers
@@ -63,7 +63,7 @@ althea start
 
 ### Request tokens from the faucet
 
-First list all of your keys 
+First list all of your keys
 
 ```
 althea keys list
@@ -83,7 +83,6 @@ You'll see an output like this
 ```
 
 Copy your address from the 'address' field and paste it into the command below
-
 
 ```
 curl -X POST -d '{"address":"<address here>"}' https://faucet.althea.hub.hackatom.org

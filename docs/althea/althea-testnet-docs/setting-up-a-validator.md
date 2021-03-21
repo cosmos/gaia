@@ -18,14 +18,14 @@ mkdir althea-bin
 cd althea-bin
 
 # the althea chain binary itself
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.4/althea-0.0.3-4-g30eddc7-linux-amd64
-mv althea-0.0.3-4-g30eddc7-linux-amd64 althea
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.5/althea-0.0.4-16-g6812f87-linux-amd64
+mv althea-0.0.4-16-g6812f87-linux-amd64 althea
 
 # Tools for the gravity bridge from the gravity repo
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.4/client
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.4/orchestrator
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.4/register-delegate-keys
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.4/relayer
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.5/client
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.5/orchestrator
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.5/register-delegate-keys
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.5/relayer
 chmod +x *
 sudo mv * /usr/bin/
 
@@ -43,15 +43,15 @@ You'll be prompted to create a password, I suggest you pick something short sinc
 
 ```
 cd $HOME
-althea init mymoniker --chain-id althea-testnet1v4
+althea init mymoniker --chain-id althea-testnet1v5
 althea keys add myvalidatorkeyname
 ```
 
 ### Copy the genesis file
 
 ```
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.4/althea-testnet1-v4-genesis.json
-cp althea-testnet1-v4-genesis.json $HOME/.althea/config/genesis.json
+wget https://github.com/althea-net/althea-chain/releases/download/v0.0.5/althea-testnet1-v5-genesis.json
+cp althea-testnet1-v5-genesis.json $HOME/.althea/config/genesis.json
 ```
 
 ### Add persistent peers
@@ -94,7 +94,7 @@ althea tx staking create-validator \
   --amount=100000000ualtg \
   --pubkey=$(althea tendermint show-validator) \
   --moniker="put your validator name here" \
-  --chain-id=althea-testnet1v4 \
+  --chain-id=althea-testnet1v5 \
   --commission-rate="0.10" \
   --commission-max-rate="0.20" \
   --commission-max-change-rate="0.01" \
@@ -168,7 +168,7 @@ althea keys show myvalidatorkeyname
 ```
 
 ```
-althea tx bank send myvalidatorkeyname <your delegate cosmos address> 50000000footoken --chain-id=althea-testnet1v4
+althea tx bank send myvalidatorkeyname <your delegate cosmos address> 50000000footoken --chain-id=althea-testnet1v5
 ```
 
 With the Althea side funded, now we need some Goerli Eth you can ask for some in chat or use [this faucet](https://goerli-faucet.slock.it/) for a small amount that should be more than sufficient for this testnet. Just paste in the Ethereum address that was generated in the previous step.

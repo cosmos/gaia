@@ -21,7 +21,7 @@ testnet1-rpc.althea.net
 - [How to run a fullnode](althea-testnet-docs/setting-up-a-fullnode.md)
 - [Testnet Faucet](althea-testnet-docs/faucet.md)
 - [Upgrading your validator](althea-testnet-docs/upgrading.md)
-- [Preparing for the next upgrade](althea-testnet-docs/preparing-for-upgrade.md) (Updated 03/15/2020)
+- [Preparing for the next upgrade](althea-testnet-docs/preparing-for-upgrade.md) (Out of date)
 - [Testing Gravity](althea-testnet-docs/testing-gravity.md)
 - [Testing large Gravity tx batches](althea-testnet-docs/big-build-batch.md)
 - [Appendix](althea-testnet-docs/appendix.md)

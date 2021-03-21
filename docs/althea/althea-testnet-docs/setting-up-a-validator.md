@@ -62,6 +62,15 @@ Change the p2p.persistent_peers field in ~/.althea/config/config.toml to contain
 persistent_peers = "05ded2f258ab158c5526eb53aa14d122367115a7@testnet1.althea.net:26656"
 ```
 
+### Increasing the default open files limit
+
+If we don't raise this value nodes will crash once the network grows large enough
+
+```
+sudo su -c "echo 'fs.file-max = 65536' >> /etc/sysctl.conf"
+sysctl -p
+```
+
 ### Start your full node and wait for it to sync
 
 Ask what the current blockheight is in the chat

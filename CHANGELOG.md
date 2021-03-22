@@ -36,6 +36,14 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+## [v4.1.2] - 2021-03-22
+
+This release removes unnecessary dependencies.
+
+### Bug Fixes
+
+* (gaia)  [\#781](https://github.com/cosmos/gaia/pull/781) Remove unnecessary dependencies
+
 ## [v4.1.1] - 2021-03-19
 
 This release bring improvements to keyring UX, tx search results, and multi-sig account migrations. 
@@ -299,7 +307,8 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v4.1.1...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v4.1.2...HEAD
+[v4.1.2]: https://github.com/cosmos/gaia/releases/tag/v4.1.2
 [v4.1.1]: https://github.com/cosmos/gaia/releases/tag/v4.1.1
 [v4.1.0]: https://github.com/cosmos/gaia/releases/tag/v4.1.0
 [v4.0.6]: https://github.com/cosmos/gaia/releases/tag/v4.0.6

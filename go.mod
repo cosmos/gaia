@@ -3,10 +3,7 @@ module github.com/cosmos/gaia/v4
 go 1.15
 
 require (
-	github.com/btcsuite/btcd v0.21.0-beta
-	github.com/btcsuite/btcutil v1.0.2
 	github.com/cosmos/cosmos-sdk v0.42.2
-	github.com/ethereum/go-ethereum v1.10.1
 	github.com/gorilla/mux v1.8.0
 	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7

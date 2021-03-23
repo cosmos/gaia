@@ -45,6 +45,29 @@ Gaia uses the following disclosure process:
 
 This process can take some time. Every effort will be made to handle the bug in as timely a manner as possible, however it's important that we follow the process described above to ensure that disclosures are handled consistently and to keep Gaia and its partner projects--including but not limited to the Cosmos Hub--as secure as possible.
 
+### Disclosure Communications
+
+Communications to Cosmos Hub Validators will include the following details:
+1. Affected version(s)
+1. New release version
+1. Impact on user funds
+1. For timed releases, a date and time that the new release will be made available
+1. Impact on the hub if upgrades are not completed in a timely manner
+1. Potential actions to take if an adverse condition arises during the security release process
+
+An example notice looks like:
+```
+Dear Cosmos Hub Validators,
+
+A critical security vulnerability has been identified in Gaia v4.0.x. 
+User funds are NOT at risk; however, the vulnerability can result in a chain halt.
+
+This notice is to inform you that on [[**March 1 at 1pm EST/6pm UTC**]], we will be releasing Gaia v4.1.x, which patches the security issue. 
+We ask all validators to upgrade their nodes ASAP.
+
+If the chain halts, validators with sufficient voting power need to upgrade and come online in order for the chain to resume.
+```
+
 ### Example Timeline
 
 The following is an example timeline for the triage and response. The required roles and team members are described in parentheses after each task; however, multiple people can play each role and each person may play multiple roles.

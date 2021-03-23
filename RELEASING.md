@@ -48,6 +48,7 @@ Ensure that the same replace line is also used in Gaia's `go.mod` file.
 
 ### Tagging
 
+The following steps are the default for tagging a specific branch commit (usually on a branch labeled `release/vX.X.X`):
 1. Ensure you have checked out the commit you wish to tag
 1. `git pull --tags --dry-run`
 1. `git pull --tags`
@@ -56,10 +57,15 @@ Ensure that the same replace line is also used in Gaia's `go.mod` file.
 1. `git push --tags --dry-run`
 1. `git push --tags`
 
-If a tag needs to be re-created, do the following:
+To re-create a tag:
 1. `git tag -d v4.0.0` to delete a tag locally
 1. `git push --delete origin v4.0.0`, to push the deletion to the remote
 1. Proceed with the above steps to create a tag
+
+To tag and build without a public release (e.g., as part of a timed security release):
+1. Follow the steps above for tagging locally, but do not push the tags to the repository. 
+1. After adding the tag locally, you can build the binary, e.g., `make build-reproducible`.
+1. To finalize the release, push the local tags, create a release based off the newly pushed tag, and attach the binary. 
 
 ### Release notes
 

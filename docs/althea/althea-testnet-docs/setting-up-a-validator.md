@@ -90,7 +90,7 @@ althea keys list
 Copy your address from the 'address' field and paste it into the command below remember to remove the `<>`
 
 ```
-curl -vv -XPOST http://testnet1-rpc.althea.net/get_altg/<your address here without the brackets>
+curl -vv -XPOST http://testnet1.althea.net/get_altg/<your address here without the brackets>
 ```
 
 This will provide you 10 ALTG from the faucet storage.
@@ -178,7 +178,11 @@ althea keys show myvalidatorkeyname
 althea tx bank send myvalidatorkeyname <your delegate cosmos address> 50000000footoken --chain-id=althea-testnet1v5
 ```
 
-With the Althea side funded, now we need some Goerli Eth you can ask for some in chat or use [this faucet](https://goerli-faucet.slock.it/) for a small amount that should be more than sufficient for this testnet. Just paste in the Ethereum address that was generated in the previous step.
+With the Althea side funded, now we need some Goerli Eth
+
+```
+curl -vv -XPOST http://testnet1.althea.net/get_eth/<your address here without the brackets>
+```
 
 ### Download and setup Geth on the Goerli testnet
 
@@ -189,10 +193,12 @@ Please note that only Geth full nodes can serve Geth light clients, no other nod
 For the purposes of this testnet just follow the instructions below, even on the slowest node you should be synced inside of a few minutes.
 
 ```
+
 wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.1-c2d2f4ed.tar.gz
 tar -xvf geth-linux-amd64-1.10.1-c2d2f4ed.tar.gz
 cd geth-linux-amd64-1.10.1-c2d2f4ed
 ./geth --syncmode "light" --goerli --http --cache 16
+
 ```
 
 ### Deployment of the Gravity contract
@@ -202,7 +208,9 @@ Once 66% of the validator set has registered their delegate Ethereum key it is p
 Here is the contract address! Move forward!
 
 ```
+
 0xB48095a68501bC157654d338ce86fdaEF4071B24
+
 ```
 
 ### Start your Orchestrator
@@ -214,21 +222,31 @@ If your Orchestrator goes down for more than 16 hours during the testnet you wil
 Since you'll be running this a lot I suggest putting the command into a script, like so
 
 ```
+
 nano start-orchestrator.sh
+
 ```
 
 ```
+
 #!/bin/bash
 RUST_LOG=INFO orchestrator \
-    --cosmos-phrase="your delegate key phrase" \
-    --ethereum-key="your delegate ethereum private key" \
-    --cosmos-legacy-rpc="http://localhost:1317" \
-    --cosmos-grpc="http://localhost:9090" \
-    --ethereum-rpc="http://localhost:8545" \
-    --fees=footoken \
-    --contract-address="0xB48095a68501bC157654d338ce86fdaEF4071B24"
+ --cosmos-phrase="your delegate key phrase" \
+ --ethereum-key="your delegate ethereum private key" \
+ --cosmos-legacy-rpc="http://localhost:1317" \
+ --cosmos-grpc="http://localhost:9090" \
+ --ethereum-rpc="http://localhost:8545" \
+ --fees=footoken \
+ --contract-address="0xB48095a68501bC157654d338ce86fdaEF4071B24"
+
 ```
 
 ```
+
 bash start-orchestrator.sh
+
+```
+
+```
+
 ```

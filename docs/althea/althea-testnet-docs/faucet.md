@@ -85,7 +85,13 @@ You'll see an output like this
 Copy your address from the 'address' field and paste it into the command below remember to remove the `<>`
 
 ```
-curl -vv -XPOST http://testnet1-rpc.althea.net/get_altg/<your address here without the brackets>
+curl -vv -XPOST http://testnet1.althea.net/get_altg/<your address here without the brackets>
 ```
 
 Once you execute this command you should see 10 testnet ALTG in your balance within a few blocks
+
+This faucet also provides Gorli ETH like so
+
+```
+curl -vv -XPOST http://testnet1.althea.net/get_eth/<your eth address here without the brackets>
+```

@@ -81,17 +81,25 @@ althea start
 
 ### Request some funds be sent to your address
 
-Copy and paste your address into the [Althea chat](https://discord.gg/VqBXkpPKjm) so that we can send you some tokens.
+First find your address
 
 ```
 althea keys list
 ```
 
+then run
+
+```
+curl -X POST -d '{"address":"<address here>"}' https://faucet.althea.hub.hackatom.org
+```
+
+This will provide you 10 ALTG from the faucet storage.
+
 ### Send your validator setup transaction
 
 ```
 althea tx staking create-validator \
-  --amount=100000000ualtg \
+  --amount=9000000ualtg \
   --pubkey=$(althea tendermint show-validator) \
   --moniker="put your validator name here" \
   --chain-id=althea-testnet1v5 \

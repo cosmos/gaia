@@ -36,6 +36,20 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+## [v4.2.0] - 2021-03-25
+
+A critical security vulnerability has been identified in Gaia v4.1.x.
+User funds are NOT at risk; however, the vulnerability can result in a chain halt.
+
+This release fixes the identified security vulnerability.
+
+If the chain halts before or during the upgrade, validators with sufficient voting power need to upgrade
+and come online in order for the chain to resume.
+
+### Bug Fixes
+
+* (sdk)  Bump SDK version to [v0.42.3](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42.3)
+
 ## [v4.1.2] - 2021-03-22
 
 This release removes unnecessary dependencies.
@@ -46,8 +60,8 @@ This release removes unnecessary dependencies.
 
 ## [v4.1.1] - 2021-03-19
 
-This release bring improvements to keyring UX, tx search results, and multi-sig account migrations. 
-See the Cosmos SDK [release notes](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42.2) for details. 
+This release bring improvements to keyring UX, tx search results, and multi-sig account migrations.
+See the Cosmos SDK [release notes](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42.2) for details.
 
 ### Bug Fixes
 
@@ -62,17 +76,17 @@ User funds are NOT at risk; however, the vulnerability can result in a chain hal
 
 This release fixes the identified security vulnerability.
 
-If the chain halts before or during the upgrade, validators with sufficient voting power need to upgrade 
+If the chain halts before or during the upgrade, validators with sufficient voting power need to upgrade
 and come online in order for the chain to resume.
 
 ## [v4.0.6] - 2021-03-09
 
 ### Bug Fixes
 
-This release bumps the Cosmos SDK, which includes an important security fix for all non 
-Cosmos Hub chains (e.g. any chain that does not use the default cosmos bech32 prefix), 
-and a few performance improvements. The SDK also applies a security fix for validator 
-address conversion in evidence handling, and the full header is now emitted on an 
+This release bumps the Cosmos SDK, which includes an important security fix for all non
+Cosmos Hub chains (e.g. any chain that does not use the default cosmos bech32 prefix),
+and a few performance improvements. The SDK also applies a security fix for validator
+address conversion in evidence handling, and the full header is now emitted on an
 IBC UpdateClient message event.
 
 * (sdk)  Bump SDK version to [v0.42.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42.0)
@@ -82,7 +96,7 @@ IBC UpdateClient message event.
 ### Bug Fixes
 
 * (tendermint) Bump Tendermint version to [v0.34.8](https://github.com/tendermint/tendermint/releases/tag/v0.34.8).
-* (sdk)  Bump SDK version to [v0.41.4](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.41.4), which reduces startup time with the cosmoshub-4 mainnet genesis without invariant checks. 
+* (sdk)  Bump SDK version to [v0.41.4](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.41.4), which reduces startup time with the cosmoshub-4 mainnet genesis without invariant checks.
 
 ## [v4.0.4] - 2021-02-19
 
@@ -102,8 +116,8 @@ This release fixes build failures caused by a small API breakage introduced in t
 
 ### Bug Fixes
 
-This release fixes a downstream security issue which impacts Cosmos SDK users. 
-See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tendermint/blob/v0.34.x/CHANGELOG.md#v0347) for details. 
+This release fixes a downstream security issue which impacts Cosmos SDK users.
+See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tendermint/blob/v0.34.x/CHANGELOG.md#v0347) for details.
 
 * (sdk) [\#640](https://github.com/cosmos/gaia/pull/640) Bump SDK version to [v0.41.2](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.41.2).
 * (tendermint) [\#640](https://github.com/cosmos/gaia/pull/640) Bump Tendermint version to [v0.34.7](https://github.com/tendermint/tendermint/releases/tag/v0.34.7).
@@ -307,7 +321,8 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v4.1.2...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v4.2.0...HEAD
+[v4.2.0]: https://github.com/cosmos/gaia/releases/tag/v4.2.0
 [v4.1.2]: https://github.com/cosmos/gaia/releases/tag/v4.1.2
 [v4.1.1]: https://github.com/cosmos/gaia/releases/tag/v4.1.1
 [v4.1.0]: https://github.com/cosmos/gaia/releases/tag/v4.1.0

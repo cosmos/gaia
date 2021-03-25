@@ -87,10 +87,10 @@ First find your address
 althea keys list
 ```
 
-then run
+Copy your address from the 'address' field and paste it into the command below remember to remove the `<>`
 
 ```
-curl -X POST -d '{"address":"<address here>"}' https://faucet.althea.hub.hackatom.org
+curl -vv -XPOST http://testnet1-rpc.althea.net/get_altg/<your address here without the brackets>
 ```
 
 This will provide you 10 ALTG from the faucet storage.
@@ -122,7 +122,6 @@ Be sure to replace 'my validator key name' with your actual key name. If you wan
 
 ```
 althea query staking validator $(althea keys show myvalidatorkeyname --bech val --address)
-
 ```
 
 ### Setup Gravity bridge

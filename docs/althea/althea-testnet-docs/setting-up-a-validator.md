@@ -175,7 +175,7 @@ althea keys show myvalidatorkeyname
 ```
 
 ```
-althea tx bank send myvalidatorkeyname <your delegate cosmos address> 50000000footoken --chain-id=althea-testnet1v5
+althea tx bank send myvalidatorkeyname <your delegate cosmos address> 5000000footoken --chain-id=althea-testnet1v5
 ```
 
 With the Althea side funded, now we need some Goerli Eth

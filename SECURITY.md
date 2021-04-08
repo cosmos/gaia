@@ -72,11 +72,11 @@ If the chain halts, validators with sufficient voting power need to upgrade and 
 
 The following is an example timeline for the triage and response. The required roles and team members are described in parentheses after each task; however, multiple people can play each role and each person may play multiple roles.
 
-#### > 24 Hours Before Release Time
+#### 24+ Hours Before Release Time
 
 1. Request CVE number (ADMIN)
 2. Gather emails and other contact info for validators (COMMS LEAD)
-3. Test fixes on a testnet  (GAIA ENG, TENDERMINT ENG, COSMOS ENG)
+3. Test fixes on a testnet  (GAIA ENG, TENDERMINT ENG, COSMOS SDK ENG)
 4. Write “Security Advisory” for forum (GAIA LEAD)
 
 #### 24 Hours Before Release Time
@@ -89,7 +89,7 @@ The following is an example timeline for the triage and response. The required r
 #### Release Time
 
 1. Cut Tendermint releases for eligible versions (TENDERMINT ENG)
-2. Cut Cosmos SDK release for eligible versions (COSMOS ENG)
+2. Cut Cosmos SDK release for eligible versions (COSMOS SDK ENG)
 3. Cut Gaia release for eligible versions (GAIA ENG)
 4. Post “Security releases” on forum (GAIA LEAD)
 5. Post new Tweet linking to forum post (COMMS LEAD)

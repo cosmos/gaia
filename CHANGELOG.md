@@ -36,6 +36,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+* (tendermint) Bump Tendermint version to [v0.34.10](https://github.com/tendermint/tendermint/releases/tag/v0.34.10).
+
 ## [v4.2.1] - 2021-04-08
 
 A critical security vulnerability was identified in Tendermint Core, which impacts Tendermint Lite Client.

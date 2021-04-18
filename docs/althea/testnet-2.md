@@ -12,10 +12,10 @@ testnet2.althea.net
 
 ## Documents
 
+- [How to become a validator (manual setup) (recommended)](althea-testnet-docs/setting-up-a-validator-manual.md)
 - [How to become a validator](althea-testnet-docs/setting-up-a-validator.md)
-- [How to become a validator (manual setup)](althea-testnet-docs/setting-up-a-validator-manual.md)
+- [How to run a fullnode (manual setup) (recommended)](althea-testnet-docs/setting-up-a-fullnode-manual.md)
 - [How to run a fullnode](althea-testnet-docs/setting-up-a-fullnode.md)
-- [How to run a fullnode (manual setup)](althea-testnet-docs/setting-up-a-fullnode-manual.md)
 - [Testnet Faucet](althea-testnet-docs/faucet.md)
 - [Upgrading your validator](althea-testnet-docs/upgrading.md)
 - [Preparing for the next upgrade](althea-testnet-docs/preparing-for-upgrade.md) (Out of date)

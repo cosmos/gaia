@@ -28,8 +28,8 @@ wget https://github.com/althea-net/althea-chain/releases/download/v0.1.1/client
 wget https://github.com/althea-net/althea-chain/releases/download/v0.1.1/orchestrator
 wget https://github.com/althea-net/althea-chain/releases/download/v0.1.1/register-delegate-keys
 wget https://github.com/althea-net/althea-chain/releases/download/v0.1.1/relayer
-chmod +x _
-sudo mv _ /usr/bin/
+chmod +x *
+sudo mv * /usr/bin/
 
 ```
 

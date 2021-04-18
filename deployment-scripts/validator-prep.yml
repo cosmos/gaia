@@ -1,9 +1,9 @@
 ---
 # This Ansible playbook will deploy and/or update
----
 - name: "Prepare this machine for Validator setup"
   hosts: localhost
   connection: local
   roles:
+    - install-packages
     - update-repo
     - update-binaries

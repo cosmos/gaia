@@ -23,9 +23,10 @@ sudo apt get update
 sudo apt-get install -y ansible git
 ```
 
-For Fedora / Centos
+For Centos
 
 ```
+sudo yum install -y epel-release
 sudo yum install -y ansible git
 ```
 

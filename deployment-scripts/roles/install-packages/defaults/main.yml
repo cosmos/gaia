@@ -1,0 +1,43 @@
+# Known requirements per distro, please expand if you encounter breakage
+known_distros:
+  - CentOS
+  - Fedora
+  - Ubuntu
+  - Debian
+  - Red Hat Enterprise Linux
+  - Arch Linux
+
+debian_deps:
+  - vim
+  - htop
+  - tmux
+  - git
+  - ansible
+
+centos_deps:
+  - vim
+  - htop
+  - tmux
+  - git
+  - ansible
+
+ubuntu_deps:
+  - vim
+  - htop
+  - tmux
+  - git
+  - ansible
+
+fedora_deps:
+  - vim
+  - htop
+  - tmux
+  - git
+  - ansible
+
+arch_deps:
+  - vim
+  - htop
+  - tmux
+  - git
+  - ansible

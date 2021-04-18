@@ -41,8 +41,8 @@ althea keys add myvalidatorkeyname
 ### Copy the genesis file
 
 ```
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.5/althea-testnet1-v5-genesis.json
-cp althea-testnet1-v5-genesis.json $HOME/.althea/config/genesis.json
+wget https://github.com/althea-net/althea-chain/releases/download/v0.1.1/althea-testnet2-v1-genesis.json
+cp althea-testnet2-v1-genesis.json $HOME/.althea/config/genesis.json
 ```
 
 ### Add persistent peers
@@ -85,7 +85,7 @@ You'll see an output like this
 Copy your address from the 'address' field and paste it into the command below remember to remove the `<>`
 
 ```
-curl -vv -XPOST http://testnet1.althea.net/get_altg/<your address here without the brackets>
+curl -vv -XPOST http://testnet2.althea.net/get_altg/<your address here without the brackets>
 ```
 
 Once you execute this command you should see 10 testnet ALTG in your balance within a few blocks
@@ -93,5 +93,5 @@ Once you execute this command you should see 10 testnet ALTG in your balance wit
 This faucet also provides Gorli ETH like so
 
 ```
-curl -vv -XPOST http://testnet1.althea.net/get_eth/<your eth address here without the brackets>
+curl -vv -XPOST http://testnet2.althea.net/get_eth/<your eth address here without the brackets>
 ```

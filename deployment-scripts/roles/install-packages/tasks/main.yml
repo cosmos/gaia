@@ -1,0 +1,85 @@
+---
+# Determines if the required dependencies are installed
+
+- name: Install Debian deps
+  apt:
+    name: "{{debian_deps}}"
+    state: present
+  when: ansible_distribution == 'Debian'
+  become: true
+
+- name: Update Debian packages
+  apt:
+    name: "*"
+    state: latest
+  when: ansible_distribution == 'Debian'
+  become: true
+  register: updated
+
+- name: Install Ubuntu deps
+  apt:
+    name: "{{ubuntu_deps}}"
+    state: present
+  when: ansible_distribution == 'Ubuntu'
+  become: true
+
+- name: Update Ubuntu packages
+  apt:
+    name: "*"
+    state: latest
+    force_apt_get: True
+  when: ansible_distribution == 'Ubuntu'
+  become: true
+  register: updated
+
+- name: Install Fedora deps
+  dnf:
+    name: "{{fedora_deps}}"
+    state: present
+  when: ansible_distribution == 'Fedora'
+  become: true
+
+- name: Update Fedora packages
+  dnf:
+    name: "*"
+    state: latest
+  when: ansible_distribution == 'Fedora'
+  become: true
+  register: updated
+
+- name: Install CentOS/RHEL epel
+  yum:
+    name: "epel-release"
+    state: present
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  become: true
+
+- name: Install CentOS/RHEL deps
+  yum:
+    name: "{{centos_deps}}"
+    state: present
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  become: true
+
+- name: Update CentOS/RHEL packages
+  yum:
+    name: "*"
+    state: latest
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  become: true
+  register: updated
+
+- name: Install Archlinux Deps
+  pacman:
+    name: "{{arch_deps}}"
+    state: present
+  when: ansible_distribution == 'Archlinux'
+  become: true
+
+- name: Update Archlinux packages
+  pacman:
+    name: "*"
+    state: latest
+  when: ansible_distribution == 'Archlinux'
+  become: true
+  register: updated

@@ -27,5 +27,5 @@ This command will unjail you, completing the process of getting the chain back o
 _replace 'myvalidatorkeyname' with your validator keys name, if you don't remember run `althea keys list`_
 
 ```
-althea tx slashing unjail --from myvalidatorkeyname --chain-id=althea-testnet1v5
+althea tx slashing unjail --from myvalidatorkeyname --chain-id=althea-testnet2v1
 ```

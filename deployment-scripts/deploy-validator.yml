@@ -1,0 +1,18 @@
+---
+# This Ansible playbook will deploy and/or update an Althea chain validator
+---
+- name: "Deploy an Althea blockchain validator on this machine"
+  hosts: localhost
+  connection: local
+  vars_prompt:
+    - name: delegate_mnemonic
+      prompt: What is your Orchestrator phrase?
+    - name: delegate_eth
+      prompt: What is your Eth private key?
+  roles:
+    - install-packages
+    - update-repo
+    - update-binaries
+    - setup-althea-service
+    - setup-geth-service
+    - setup-orchestrator-service

@@ -1,0 +1,53 @@
+---
+# This role will download and set executable Althea chain binaries
+
+- name: Create the Althea-bin directory if it does not exist
+  ansible.builtin.file:
+    path: "/tmp/althea-bin"
+    state: directory
+
+- name: Download the Althea chain binary
+  get_url:
+    url: "{{release}}althea-0.0.5-10-g8141769-linux-amd64"
+    dest: "/tmp/althea-bin/althea"
+  when: ansible_architecture === "x86_64"
+
+- name: Download the Althea chain binary ARM
+  get_url:
+    url: "{{release}}althea-0.0.5-10-g8141769-linux-arm64"
+    dest: "/tmp/althea-bin/althea"
+  when: ansible_architecture === "arm64"
+
+- name: Download tools for the Gravity Bridge from the gravity repo
+  get_url:
+    url: "{{release}}{{ item }}"
+    dest: "/tmp/althea-bin/{{item}}"
+  with_items:
+    - client
+    - orchestrator
+    - register-delegate-keys
+    - relayer
+  when: ansible_architecture === "x86_64"
+
+- name: Download tools for the Gravity Bridge from the gravity repo
+  get_url:
+    url: "{{release}}{{ item }}-arm"
+    dest: "/tmp/althea-bin/{{item}}"
+  with_items:
+    - client
+    - orchestrator
+    - register-delegate-keys
+    - relayer
+  when: ansible_architecture === "arm64"
+
+- name: copy file and set permissions
+  copy:
+    src: "/tmp/althea-bin/{{ item }}"
+    dest: /usr/bin
+    mode: a+x
+  with_items:
+    - althea
+    - client
+    - orchestrator
+    - register-delegate-keys
+    - relayer

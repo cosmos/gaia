@@ -1,0 +1,32 @@
+- name: Template Althea chain service file
+  template:
+    src: althea-chain.service.j2
+    dest: /etc/systemd/system/althea-chain.service
+  become: true
+
+- name: Set Althea chain to run on startup
+  systemd:
+    daemon_reload: yes
+    name: althea-chain
+    state: restarted
+    enabled: yes
+  become: true
+
+- name: Wait for Quick crashes
+  pause:
+    seconds: 30
+
+- name: Check if Althea chain is running
+  command: systemctl status althea-chain
+  ignore_errors: yes
+  changed_when: false
+  register: service_althea_chain_status
+
+- name: Report status of Althea chain
+  fail:
+    msg: |
+      Service althea-chain is not running.
+      Output of `systemctl status althea-chain`:
+      {{ service_althea_chain_status.stdout }}
+      {{ service_althea_chain_status.stderr }}
+  when: service_althea_chain_status is failed

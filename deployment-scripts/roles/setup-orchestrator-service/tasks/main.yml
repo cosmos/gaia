@@ -1,0 +1,32 @@
+- name: Template Orchestrator chain service file
+  template:
+    src: orchestrator.service.j2
+    dest: /etc/systemd/system/orchestrator.service
+  become: true
+
+- name: Set the Orchestrator to run on startup
+  systemd:
+    daemon_reload: yes
+    name: orchestrator
+    state: restarted
+    enabled: yes
+  become: true
+
+- name: Wait for Quick crashes
+  pause:
+    seconds: 30
+
+- name: Check if Orchestrator is running
+  command: systemctl status orchestrator
+  ignore_errors: yes
+  changed_when: false
+  register: service_orchestrator_status
+
+- name: Report status of the Orchestrator chain
+  fail:
+    msg: |
+      Service althea-chain is not running.
+      Output of `systemctl status orchestrator`:
+      {{ service_orchestrator_status.stdout }}
+      {{ service_orchestrator_status.stderr }}
+  when: service_orchestrator_status is failed

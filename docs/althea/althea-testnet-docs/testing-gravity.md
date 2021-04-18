@@ -48,7 +48,6 @@ peggy0xD7600ae27C99988A6CD360234062b540F88ECA43
 ```
 RUST_LOG=info client cosmos-to-eth \
         --cosmos-phrase="the phrase containing the Gravity bridged tokens" \
-        --cosmos-legacy-rpc="http://localhost:1317" \
         --cosmos-grpc="http://localhost:9090" \
         --cosmos-denom="any denom" \
         --amount=.5 \

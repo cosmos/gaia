@@ -35,7 +35,7 @@ printf "$(date) Now lets fund our ETHEREUM delegate address. \n"
 
 read -p 'Copy and paste the DELEGATE ETHEREUM address just displayed here (0xxx.....xxxx): ' ETHEREUM_DELEGATE_ADDRESS
 
-curl -vv -XPOST http://testnet1.althea.net/get_eth/$ETHEREUM_DELEGATE_ADDRESS
+curl -vv -XPOST http://testnet2.althea.net/get_eth/$ETHEREUM_DELEGATE_ADDRESS
 
 printf "\n";
 printf "$(date) Both delegate addresses are now funded.  Lets view your balances. \n"
@@ -53,21 +53,8 @@ printf "$(date) This is the Gravity Ethereum contract: 0xB48095a68501bC157654d33
 
 ETHEREUM_CONTRACT_ADDRESS=0xB48095a68501bC157654d338ce86fdaEF4071B24
 
-
-printf "\n";
-printf "$(date) *** Time to create the Orchestrator service and start it! *** \n"
-
-sudo cp /home/$USER/althea-bin/orchestratord.service /lib/systemd/system/orchestratord.service
-
-sed -i "s/^    --cosmos-phrase=.*/    --cosmos-phrase=\"$MNEMONIC\" "\\"\\"" /" /home/$USER/althea-bin/orchestratord.service
-sed -i "s/^    --ethereum-key=.*/    --ethereum-key=\"$ETHEREUM_DELEGATE_ADDRESS\" "\\"\\"" /" /home/$USER/althea-bin/orchestratord.service
-sed -i "s/^    --contract-address=.*/    --contract-address=\"$ETHEREUM_CONTRACT_ADDRESS\" "\\"\\"" /" /home/$USER/althea-bin/orchestratord.service
-
-sudo systemctl enable orchestratord.service
-sudo systemctl start orchestratord.service
-
 printf "\n";
 printf "$(date) *** It is finished!  You should now have a fully running Gravity Bridge Validator configuration! *** \n"
 
 printf "\n";
-printf "$(date) To view the status of Gravity-Bridge, Orchestrator or Geth, type: sudo journal -fu <service_name> (gravity-bridge, orchestratord, or geth) \n"
+printf "$(date) To view the status of Gravity-Bridge, Orchestrator or Geth, type: sudo journal -fu <service_name> (althea-chain, orchestrator, or geth) \n"

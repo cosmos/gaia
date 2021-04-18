@@ -4,45 +4,59 @@ A Althea chain full node is just like any other Cosmos chain full node and unlik
 
 ## What do I need?
 
-A Linux server with any modern Linux distribution, 2gb of ram and at least 20gb storage. Requirements are very minimal.
+A Linux server with any modern Linux distribution, 4cores, 8gb of ram and at least 20gb of SSD storage.
 
-### Download Althea chain software
+In theory Althea chain can be run on Windows and Mac. Binaries are provided on the releases page. But instructions are not provided.
 
-```
-# the althea chain binary itself
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.5/althea-0.0.4-16-g6812f87-linux-amd64
-mv althea-0.0.4-16-g6812f87-linux-amd64 althea
+I also suggest an open notepad or other document to keep track of the keys you will be generating.
 
-chmod +x althea
-sudo mv althea /usr/bin/
-```
+## Bootstrapping steps and commands
 
-### Init the config files
+Start by logging into your Linux server using ssh. The following commands are intended to be run on that machine
 
-```
-cd $HOME
-althea init mymoniker --chain-id althea-testnet1v5
-```
+### Install git and ansible
 
-### Copy the genesis file
+For Ubuntu / Debian
 
 ```
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.5/althea-testnet1-v5-genesis.json
-cp althea-testnet1-v5-genesis.json $HOME/.althea/config/genesis.json
+sudo apt get update
+sudo apt-get install -y ansible git
 ```
 
-### Add persistent peers
-
-Change the p2p.persistent_peers field in ~/.althea/config/config.toml to contain the following:
+For Fedora / Centos
 
 ```
-persistent_peers = "05ded2f258ab158c5526eb53aa14d122367115a7@testnet1.althea.net:26656"
+sudo yum install -y ansible git
 ```
 
-### Start your full node and wait for it to sync
-
-Ask what the current blockheight is in the chat
+### Download the Althea chain repo
 
 ```
-althea start
+git clone https://github.com/althea-net/althea-chain
+cd althea-chain/deployment-scripts
+```
+
+### Run the first time bootstrapping playbook and script
+
+This script will print a lot of instructions, follow them carefully and be sure to copy
+down the keys you generate. You will need them later.
+
+```
+ansible-playbook validator-prep.yml
+bash shell/chain-setup.sh
+```
+
+### Now it's finally time to set everything up and start it
+
+```
+ansible-playbook deploy-fullnode.yml
+```
+
+### Check the status of the Althea chain binary
+
+You should be good to go! You can check the status of the three
+major components of Althea chain by running
+
+```
+sudo journal -fu althea-chain
 ```

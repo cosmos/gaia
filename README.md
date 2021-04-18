@@ -18,9 +18,9 @@ The Althea blockchain is the community that will deliver this vision for the fut
 
 ---
 
-## Testnet 1
+## Testnet 2
 
-The next major event in the launch of the Althea blockchain is Testnet #1, taking place February 13th you can find the testnet 1 documentation [here](docs/althea/testnet-1.md)
+The next major event in the launch of the Althea blockchain is Testnet #2, taking place February 13th you can find the testnet 2 documentation [here](docs/althea/testnet-2.md)
 
 ---
 

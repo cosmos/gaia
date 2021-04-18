@@ -1,0 +1,51 @@
+# Installs the latest stable Geth wallet and sets it to run on boot
+
+- name: download and unpack geth tar
+  unarchive:
+    remote_src: yes
+    src: "{{geth_tar_url}}"
+    dest: "/tmp/"
+  become: true
+  retries: 3
+  delay: 3
+
+- name: Copy bin to final location
+  copy:
+    remote_src: yes
+    src: "/tmp/{{geth_tar_name}}/geth"
+    dest: "/usr/bin/geth"
+    mode: "0755"
+  become: true
+
+- name: Template geth service file
+  template:
+    src: geth.service.j2
+    dest: /etc/systemd/system/geth.service
+  become: true
+
+- name: Set geth to run on startup
+  systemd:
+    daemon_reload: yes
+    name: geth
+    state: restarted
+    enabled: yes
+  become: true
+
+- name: Wait for Quick crashes
+  pause:
+    seconds: 30
+
+- name: Check if geth is running
+  command: systemctl status geth
+  ignore_errors: yes
+  changed_when: false
+  register: service_geth_status
+
+- name: Report status of geth
+  fail:
+    msg: |
+      Service geth is not running.
+      Output of `systemctl status geth`:
+      {{ service_geth_status.stdout }}
+      {{ service_geth_status.stderr }}
+  when: service_geth_status is failed

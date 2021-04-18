@@ -1,3 +1,4 @@
+# This is a systemd service for Geth
 [Unit]
 Description=Geth Ethereum Daemon
 After=network-online.target
@@ -6,11 +7,15 @@ StartLimitIntervalSec=0
 [Service]
 Type=simple
 Restart=always
-User=$USER
 TimeoutStopSec=90s
 LimitNOFILE= 65530
 WorkingDirectory=/usr/bin
-ExecStart=/usr/bin/geth --syncmode "light" --goerli --http --cache 16
+ExecStart=/usr/bin/geth \
+--syncmode "light" \
+--goerli \
+--http \
+--cache {{ ansible_memtotal_mb * 0.1 |int|abs }} \
+--nousb
 
 [Install]
 WantedBy=multi-user.target

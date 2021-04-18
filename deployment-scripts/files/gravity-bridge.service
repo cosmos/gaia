@@ -1,0 +1,16 @@
+[Unit]
+Description=Gravity Bridge Daemon
+After=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+User=$USER
+TimeoutStopSec=90s
+LimitNOFILE= 65530
+WorkingDirectory=/usr/bin
+ExecStart=/usr/bin/althea start
+
+[Install]
+WantedBy=multi-user.target

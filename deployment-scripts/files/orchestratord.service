@@ -1,0 +1,24 @@
+[Unit]
+Description=Althea Orchestrator Daemon
+After=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=3
+User=$USER
+TimeoutStopSec=90s
+LimitNOFILE=65530
+WorkingDirectory=/usr/bin
+ExecStart=/usr/bin/orchestrator \
+    --cosmos-phrase="Althea mnemonic" \
+    --ethereum-key="Ethereum Delegate Address" \
+    --cosmos-legacy-rpc="http://localhost:1317" \
+    --cosmos-grpc="http://localhost:9090" \
+    --ethereum-rpc="http://localhost:8545" \
+    --fees=footoken \
+    --contract-address="Ethereum Contract Address"
+
+[Install]
+WantedBy=multi-user.target

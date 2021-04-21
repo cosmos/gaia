@@ -29,7 +29,7 @@ We will describe the steps to run and interact with a Full Node for the Cosmos H
 
 First, you need to [install the software](../gaia-tutorials/installation.md).
 
-Then, you can start running a [Cosmos Hub Full Node](../gaia-tutorials/join-mainnet.md).
+Consider running your own [Cosmos Hub Full Node](../gaia-tutorials/join-mainnet.md).
 
 ## Command-Line interface
 

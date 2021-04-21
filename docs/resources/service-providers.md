@@ -4,27 +4,32 @@ order: 5
 
 # Service Providers
 
-We define 'service providers' as entities providing services for end-users that involve some form of interaction with a Cosmos-SDK based blockchain (this includes the Cosmos Hub). More specifically, this document will be focused around interactions with tokens.
+We define 'Service Providers' as entities providing services for end-users that involve some form of interaction with the Cosmos Hub. More specifically, this document will be focused around interactions with tokens.
 
-This section does not concern wallet builders that want to provide Light-Client functionalities. Service providers are expected to act as trusted point of contact to the blockchain for their end-users. 
+This section does not concern wallet builders that want to provide Light-Client functionalities. Service Providers are expected to act as trusted point of contact to the blockchain for their end-users. 
 
 ## High-level description of the architecture
 
-There are three main pieces to consider:
+There are four main pieces to connect to the Cosmos Hub:
 
-- Full-nodes: To interact with the blockchain. 
+- Full Nodes: To interact with the blockchain. 
 - Rest Server: This acts as a relayer for HTTP calls.
 - Rest API: Define available endpoints for the Rest Server.
+- GRPC: Connect to the Cosmos Hub via gRPC.
 
-## Running a Full-Node
+## Running a Full Node
+
+### What is a Full Node?
+
+A Full Node is a network node that syncs up with the state of the blockchain. It provides blockchain data to others by using RESTful APIs, a replica of the database by exposing data with interfaces. A Full Node keeps in syncs with the rest of the blockchain nodes and stores the state on disk. If the full node does not have the queried block on disk the full node can go find the blockchain where the queried data lives. 
 
 ### Installation and configuration
 
-We will describe the steps to run and interact with a full-node for the Cosmos Hub. For other SDK-based blockchain, the process should be similar. 
+We will describe the steps to run and interact with a Full Node for the Cosmos Hub.
 
 First, you need to [install the software](../gaia-tutorials/installation.md).
 
-Then, you can start [running a full-node](../gaia-tutorials/join-mainnet.md).
+Then, you can start running a [Cosmos Hub Full Node](../gaia-tutorials/join-mainnet.md).
 
 ### Command-Line interface
 

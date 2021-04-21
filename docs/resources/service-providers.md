@@ -4,7 +4,7 @@ order: 5
 
 # Service Providers
 
-We define 'Service Providers' as entities providing services for end-users that involve some form of interaction with the Cosmos Hub. More specifically, this document will be focused around interactions with tokens.
+'Service Providers' are defined as entities providing services for end-users that involve some form of interaction with the Cosmos Hub. More specifically, this document will be focused around interactions with tokens.
 
 This section does not concern wallet builders that want to provide Light-Client functionalities. Service Providers are expected to act as trusted point of contact to the blockchain for their end-users.
 
@@ -13,8 +13,8 @@ This section does not concern wallet builders that want to provide Light-Client 
 There are four main technologies to consider, connecting to the Cosmos Hub:
 
 - Full Nodes: To interact with the blockchain. 
-- Rest Server: This acts as a relayer for HTTP calls.
-- Rest API: Define available endpoints for the Rest Server.
+- REST Server: This acts as a relayer for HTTP calls.
+- REST API: Define available endpoints for the REST Server.
 - GRPC: Connect to the Cosmos Hub via gRPC.
 
 ## Running a Full-Node
@@ -31,18 +31,70 @@ First, you need to [install the software](../gaia-tutorials/installation.md).
 
 Then, you can start running a [Cosmos Hub Full Node](../gaia-tutorials/join-mainnet.md).
 
-### Command-Line interface
+## Command-Line interface
 
-## Remote Access to gaiad
+The Command-Line Interface (CLI) is the most powerful tool to access the Cosmos Hub and use gaia.
+You need to install the latest version of `gaia` on your machine in order to use the Command-Line Interface.
 
-When choosing to remote access a Full Node and gaiad, you need a Full Node running.
-You can either connect to an existing Full Node, or learn how to setup a [Cosmos Hub Full Node](../gaia-tutorials/join-mainnet.md).
+Compare your version with the [latest release version](https://github.com/cosmos/gaia/releases)
 
-::: warning
-**Please check that you are always using the latest stable release of `gaiad`**
-:::
+```bash
+gaiad version --long
+```
 
-`gaiad` is the tool that enables you to interact with the node that runs on the Cosmos Hub network, whether you run it yourself or not. Let us set it up properly.
+#### Help
+
+All available CLI commands will be shown if you just execute `gaiad`:
+
+```bash
+gaiad 
+```
+
+```bash
+Stargate Cosmos Hub App
+
+Usage:
+  gaiad [command]
+
+Available Commands:
+
+
+  add-genesis-account Add a genesis account to genesis.json
+  collect-gentxs      Collect genesis txs and output a genesis.json file
+  debug               Tool for helping with debugging your application
+  export              Export state to JSON
+  gentx               Generate a genesis tx carrying a self delegation
+  help                Help about any command
+  init                Initialize private validator, p2p, genesis, and application configuration files
+  keys                Manage your application's keys
+  migrate             Migrate genesis to a specified target version
+  query               Querying subcommands
+  start               Run the full node
+  status              Query remote node for status
+  tendermint          Tendermint subcommands
+  testnet             Initialize files for a simapp testnet
+  tx                  Transactions subcommands
+  unsafe-reset-all    Resets the blockchain database, removes address book files, and resets data/priv_validator_state.json to the genesis state
+  validate-genesis    validates the genesis file at the default location or at the location passed as an arg
+  version             Print the application binary version information
+
+Flags:
+  -h, --help                help for gaiad
+      --home string         directory for config and data (default "/Users/tobias/.gaia")
+      --log_format string   The logging format (json|plain) (default "plain")
+      --log_level string    The logging level (trace|debug|info|warn|error|fatal|panic) (default "info")
+      --trace               print out full stack trace on errors
+
+Use "gaiad [command] --help" for more information about a command.
+```
+
+For each displayed command, you can use the `--help` flag to get further information. 
+
+### Remote Access to gaiad
+
+When choosing to remote access a Full Node and gaiad, you need a Full Node running and gaia installed on your local machine.
+
+`gaiad` is the tool that enables you to interact with the node that runs on the Cosmos Hub network, whether you run it yourself or not.
 
 In order to set up `gaiad` on a local machine and connect to an existing Full Node, use the following command:
 
@@ -74,7 +126,8 @@ Finally, set the `chain-id` of the blockchain you want to interact with:
 gaiad config chain-id cosmoshub-4
 ```
 
-Next you will find a few useful CLI commands to interact with the Full-Node.
+Next you will learn useful CLI commands to interact with the Full Node.
+You can run these commands as remote control or when you are running it on your local machine.
 
 ### How to create a key-pair
 
@@ -126,16 +179,6 @@ Parameters:
 Flags:
 
 - `--chain-id`: This flag allows you to specify the id of the chain. There will be different ids for different testnet chains and mainnet chains.
-
-#### Help
-
-If you need to do something else, the best command you can run is:
-
-```bash
-gaiad 
-```
-
-It will display all the available commands. For each command, you can use the `--help` flag to get further information. 
 
 ## REST API
 

@@ -183,27 +183,15 @@ Flags:
 ## REST API
 
 The [REST API documents](https://cosmos.network/rpc/) list all the available endpoints that you can use to interact
-with your Full Node.
-
-To give more flexibility to developers, we have included the ability to
-generate unsigned transactions, [sign](https://cosmos.network/rpc/#/ICS20/post_tx_sign)
-and [broadcast](https://cosmos.network/rpc/#/ICS20/post_tx_broadcast) them with
-different API endpoints. This allows service providers to use their own signing
-mechanism for instance.
-
-In order to generate an unsigned transaction (example with
-[coin transfer](https://cosmos.network/rpc/#/ICS20/post_bank_accounts__address__transfers)),
-you need to use the field `generate_only` in the body of `base_req`.
+with your Full Node. Learn [how to enable the REST API](../gaia-tutorials/join-mainnet.md#enable-the-rest-api) on your Full Node.
 
 ### Listen for incoming transaction
 
-The recommended way to listen for incoming transaction is to periodically query the blockchain through the following endpoint of the LCD:
+The recommended way to listen for incoming transaction is to periodically query the blockchain through the following http endpoint:
 
 [`/cosmos/bank/v1beta1/balances/{address}`](https://cosmos.network/rpc/)
 
 ## Cosmos SDK Transaction Signing
-
-Cosmos SDK transaction signing is a fairly simple process.
 
 Every Cosmos SDK transaction has a canonical JSON representation. The `gaiad`
 and Stargate REST interfaces provide canonical JSON representations of transactions

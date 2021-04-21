@@ -36,14 +36,12 @@ Note:  If your node is unable to connect to any of the seeds listed here, you ca
 
 If you'd like to save those seeds to your settings put them in ~/.gaia/config/config.toml in the p2p section under seeds in the same comma-separated list format.
 
-## Setting Up a New Node
-
-**You need to [install gaia](./installation.md) before you go further**
-
+## Manual Setup of a new Node
 
 These instructions are for setting up a brand new full node from scratch.
 
-First, initialize the node and create the necessary config files:
+Make sure to have the [latest gaia version installed](./join-mainnet.md).
+First, initialize the node.
 
 ```bash
 gaiad init <your_custom_moniker>
@@ -52,14 +50,17 @@ gaiad init <your_custom_moniker>
 **Note**
 Monikers can contain only ASCII characters. Using Unicode characters will render your node unreachable.
 
-You can edit this `moniker` later, in the `~/.gaia/config/config.toml` file:
+By default, the `init` command will create your `~/.gaia` directory with subfolders `config` and `data`.
+In the `config` directory the most important files for configuration will be the `app.toml` and `config.toml`.
+
+You can edit the `moniker` in the `~/.gaia/config/config.toml` file:
 
 ```toml
 # A custom human readable name for this node
 moniker = "<your_custom_moniker>"
 ```
 
-You can edit the `~/.gaia/config/app.toml` file in order to enable the anti spam mechanism and reject incoming transactions with less than the minimum gas prices:
+For optimised node performance, edit the `~/.gaia/config/app.toml` file in order to enable the anti spam mechanism and reject incoming transactions with less than the minimum gas prices:
 
 ```
 # This is a TOML config file.

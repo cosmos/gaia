@@ -9,12 +9,13 @@ order: 3
 **Get Ready**
 Note: You'll need Go v1.16 or higher.
 
-This will:
+This Quickstart will:
 
 * Compile gaia
-* give your node a moniker and configure it
-* download compressed genesis state
-* put genesis.json in the correct location
+* Give your node a moniker and configure it
+* Download compressed genesis state
+* Put the `genesis.json` file in the correct location
+
 ```bash
 git clone -b v4.2.1 https://github.com/cosmos/gaia
 cd gaia

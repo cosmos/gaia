@@ -8,7 +8,7 @@ We define 'Service Providers' as entities providing services for end-users that 
 
 This section does not concern wallet builders that want to provide Light-Client functionalities. Service Providers are expected to act as trusted point of contact to the blockchain for their end-users.
 
-## High-level description of the architecture
+## Connection Options
 
 There are four main technologies to consider, connecting to the Cosmos Hub:
 
@@ -33,11 +33,10 @@ Then, you can start running a [Cosmos Hub Full Node](../gaia-tutorials/join-main
 
 ### Command-Line interface
 
-## Setting Up `gaiad`
+## Remote Access to gaiad
 
-::: tip
-**Before setting up `gaiad`, make sure you have set up a way to [access the Cosmos Hub network](#accessing-the-cosmos-hub-network)**
-:::
+When choosing to remote access a Full Node and gaiad, you need a Full Node running.
+You can either connect to an existing Full Node, or learn how to setup a [Cosmos Hub Full Node](../gaia-tutorials/join-mainnet.md).
 
 ::: warning
 **Please check that you are always using the latest stable release of `gaiad`**
@@ -45,13 +44,11 @@ Then, you can start running a [Cosmos Hub Full Node](../gaia-tutorials/join-main
 
 `gaiad` is the tool that enables you to interact with the node that runs on the Cosmos Hub network, whether you run it yourself or not. Let us set it up properly.
 
-In order to set up `gaiad`, use the following command:
+In order to set up `gaiad` on a local machine and connect to an existing Full Node, use the following command:
 
 ```bash
 gaiad config <flag> <value>
 ```
-
-It allows you to set a default value for each given flag. 
 
 First, set up the address of the full-node you want to connect to:
 
@@ -61,25 +58,25 @@ gaiad config node <host>:<port
 // example: gaiad config node https://77.87.106.33:26657
 ```
 
-If you run your own full-node, just use `tcp://localhost:26657` as the address. 
+If you run your own Full Node locally, use `tcp://localhost:26657` as the address. 
 
-Then, let us set the default value of the `--trust-node` flag:
+Set the default value of the `--trust-node` flag:
 
 ```bash
 gaiad config trust-node false
 
-// Set to true if you run a light-client node, false otherwise
+// Set to true if you run a light-client node
 ```
 
-Finally, let us set the `chain-id` of the blockchain we want to interact with:
+Finally, set the `chain-id` of the blockchain you want to interact with:
 
 ```bash
-gaiad config chain-id cosmoshub-2
+gaiad config chain-id cosmoshub-4
 ```
 
 Next you will find a few useful CLI commands to interact with the Full-Node.
 
-#### Creating a key-pair
+### How to create a key-pair
 
 To generate a new key (default secp256k1 elliptic curve):
 
@@ -95,13 +92,13 @@ You will be asked to create a password (at least 8 characters) for this key-pair
 - `PUBKEY`: Your public key. Useful for validators.
 - `MNEMONIC`: 24-words phrase. **Save this mnemonic somewhere safe**. It is used to recover your private key in case you forget the password.
 
-You can see all your available keys by typing:
+You can see all available keys by typing:
 
 ```bash
 gaiad keys list
 ```
 
-#### Checking your balance
+#### Check your balance
 
 After receiving tokens to your address, you can view your account's balance by typing:
 
@@ -111,13 +108,13 @@ gaiad query account <YOUR_ADDRESS>
 
 *Note: When you query an account balance with zero tokens, you will get this error: No account with address <YOUR_ADDRESS> was found in the state. This is expected! We're working on improving our error messages.*
 
-#### Sending coins via the CLI
+#### Send coins using the CLI
 
 Here is the command to send coins via the CLI:
 
 ```bash
 gaiad tx send <from_key_or_address> <to_address> <amount> \
-    --chain-id=<name_of_testnet_chain> 
+    --chain-id=<your_chain_id> 
 ```
 
 Parameters:
@@ -128,7 +125,7 @@ Parameters:
 
 Flags:
 
-- `--chain-id`: This flag allows you to specify the id of the chain. There will be different ids for different testnet chains and main chain.
+- `--chain-id`: This flag allows you to specify the id of the chain. There will be different ids for different testnet chains and mainnet chains.
 
 #### Help
 
@@ -140,36 +137,10 @@ gaiad
 
 It will display all the available commands. For each command, you can use the `--help` flag to get further information. 
 
-## Setting up the Rest Server
+## REST API
 
-The Rest Server acts as an intermediary between the front-end and the full-node. You don't need to run the Rest Server on the same machine as the full-node. 
-
-To start the Rest server: 
-
-```bash
-gaiad rest-server --node=<full_node_address:full_node_port>
-```
-
-Flags:
-- `--trust-node`: A boolean. If `true`, light-client verification is disabled. If `false`, it is enabled. For service providers, this should be set to `true`. By default, it set to `false`. 
-- `--node`: This is where you indicate the address and the port of your full-node. The format is `<full_node_address:full_node_port>`. If the full-node is on the same machine, the address should be `tcp://localhost:26657`.
-- `--laddr`: This flag allows you to specify the address and port for the Rest Server (default `1317`). You will mostly use this flag only to specify the port, in which case just input "localhost" for the address. The format is <rest_server_address:port>.
-
-
-### Listening for incoming transaction
-
-The recommended way to listen for incoming transaction is to periodically query the blockchain through the following endpoint of the LCD:
-
-[`/bank/balance/{address}`](https://cosmos.network/rpc/#/ICS20/get_bank_balances__address_)
-
-## Rest API
-
-The Rest API documents all the available endpoints that you can use to interact
-with your full node. It can be found [here](https://cosmos.network/rpc/).
-
-The API is divided into ICS standards for each category of endpoints. For
-example, the [ICS20](https://cosmos.network/rpc/#/ICS20/) describes the API to
-interact with tokens.
+The [REST API documents](https://cosmos.network/rpc/) list all the available endpoints that you can use to interact
+with your Full Node.
 
 To give more flexibility to developers, we have included the ability to
 generate unsigned transactions, [sign](https://cosmos.network/rpc/#/ICS20/post_tx_sign)
@@ -180,6 +151,12 @@ mechanism for instance.
 In order to generate an unsigned transaction (example with
 [coin transfer](https://cosmos.network/rpc/#/ICS20/post_bank_accounts__address__transfers)),
 you need to use the field `generate_only` in the body of `base_req`.
+
+### Listen for incoming transaction
+
+The recommended way to listen for incoming transaction is to periodically query the blockchain through the following endpoint of the LCD:
+
+[`/cosmos/bank/v1beta1/balances/{address}`](https://cosmos.network/rpc/)
 
 ## Cosmos SDK Transaction Signing
 

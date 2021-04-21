@@ -36,7 +36,6 @@ Note:  If your node is unable to connect to any of the seeds listed here, you ca
 
 If you'd like to save those seeds to your settings put them in ~/.gaia/config/config.toml in the p2p section under seeds in the same comma-separated list format.
 
-
 ## Setting Up a New Node
 
 **You need to [install gaia](./installation.md) before you go further**
@@ -72,7 +71,7 @@ You can edit the `~/.gaia/config/app.toml` file in order to enable the anti spam
 # transaction. A transaction's fees must meet the minimum of any denomination
 # specified in this config (e.g. 10uatom).
 
-minimum-gas-prices = ""
+minimum-gas-prices = "0.025uatom"
 ```
 
 Your full node has been initialized! 
@@ -132,13 +131,16 @@ The initial recommended `min-gas-prices` is `0.025uatom`, but you might want to 
 
 ## Pruning of State
 
-There are three strategies for pruning state, please be aware that this is only for state and not for block storage:
+There are four strategies for pruning state, please be aware that this is only for state and not for block storage.
+Pruning can be set by either adjusting the `pruning` parameter in the `~/.gaia/config/app.toml` file.
+The following settings are available
 
-1. `PruneEverything`: This means that all saved states will be pruned other than the current.
-2. `PruneNothing`: This means that all state will be saved and nothing will be deleted.
-3. `PruneSyncable`: This means that only the state of the last 100 and every 10,000th blocks will be saved.
+1. `everything`: This means that all saved states will be pruned other than the current.
+2. `nothing`: This means that all state will be saved and nothing will be deleted.
+3. `default`: This means that only the state of the last 100 and every 10,000th blocks will be saved.
+4. `custom`: Pruning settings can be specified through `pruning-keep-recent`, `pruning-keep-every`, and `pruning-interval`
 
-By default every node is in `PruneSyncable` mode. If you would like to change your nodes pruning strategy then you must do so when the node is initialized. For example, if you would like to change your node to the `PruneEverything` mode then you can pass the `---pruning everything` flag when you call `gaiad start`.
+By default every node is in `default` mode. If you would like to change your nodes pruning strategy then you must do so when the node is initialized. Passing a flag when starting `gaia` will always override settings in the `app.toml` file, if you would like to change your node to the `everything` mode then you can pass the `---pruning everything` flag when you call `gaiad start`.
 
 > Note: When you are pruning state you will not be able to query the heights that are not in your store.
 
@@ -157,6 +159,42 @@ gaiad status
 ```
 
 View the status of the network with the [Cosmos Explorer](https://cosmos.network/launch). 
+
+## Enable the REST API
+
+The REST API can be enabled in the `~/.gaia/config/app.toml` file. 
+By default the REST API is disabled, find the API part in the `app.toml` file and set `enable` to `true`
+
+```toml
+###############################################################################
+###                           API Configuration                             ###
+###############################################################################
+[api]
+# Enable defines if the API server should be enabled.
+enable = true
+# Swagger defines if swagger documentation should automatically be registered.
+swagger = false
+# Address defines the API server to listen on.
+address = "tcp://0.0.0.0:1317"
+```
+
+Optionally you can set to activate swagger with setting `swagger` to `true` or change the port of the REST API in the parameter `address`.
+After restarting your application, you are able to access the REST API on `YOURNODEIP:1317`.
+
+## GRPC Configuration
+
+GRPC is enabled by default on port `9090`. You can find the gRPC settings in the `~/.gaia/config/app.toml` file in the gRPC section. Set `enable` to `false` in case you want to disabled the gRPC endpoint, you can change the port with changing the `address` parameter.
+
+```toml
+###############################################################################
+###                           gRPC Configuration                            ###
+###############################################################################
+[grpc]
+# Enable defines if the gRPC server should be enabled.
+enable = true
+# Address defines the gRPC server address to bind to.
+address = "0.0.0.0:9090"
+```
 
 ## Export State
 

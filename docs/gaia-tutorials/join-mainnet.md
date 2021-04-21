@@ -7,7 +7,7 @@ order: 3
 ## Quickstart
 
 **Get Ready**
-Note: You'll need Go v1.15 or higher.
+Note: You'll need Go v1.16 or higher.
 
 This will:
 

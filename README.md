@@ -19,8 +19,9 @@ We have active, helpful communities on Twitter, Discord, and Telegram.
 * [Twitter](https://twitter.com/cosmos)
 * [Telegram](https://t.me/cosmosproject)
 
-## Archives && Genesis
+## Archives & Genesis
 
-With each version of the Cosmos Hub, the chain is restarted from a new Genesis state. This version will be used to upgrade `cosmoshub-3` to `cosmoshub-4`. Mainnet is currently running as `cosmoshub-3`. Archives of the state of `cosmoshub-1` and `cosmoshub-2` are available [here](./docs/resources/archives.md).
+With each version of the Cosmos Hub, the chain is restarted from a new Genesis state. 
+Mainnet is currently running as `cosmoshub-4`. Archives of the state of `cosmoshub-1`, `cosmoshub-2`, and `cosmoshub-3` are available [here](./docs/resources/archives.md).
 
 If you are looking for historical genesis files and other data [`cosmos/mainnet`](http://github.com/cosmos/mainnet) is an excellent resource.

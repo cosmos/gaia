@@ -6,8 +6,8 @@
 
 - name: Template Althea chain start file
   template:
-    src: run-althea.sh.j2
-    dest: /etc/run-althea.sh
+    src: start-althea-chain.sh.j2
+    dest: /etc/start-althea-chain.sh
   become: true
 
 - name: Set Althea chain to run on startup

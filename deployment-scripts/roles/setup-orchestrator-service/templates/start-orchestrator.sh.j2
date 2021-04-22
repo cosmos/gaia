@@ -1,0 +1,10 @@
+#!/bin/bash
+
+/usr/bin/orchestrator \
+    --cosmos-phrase="{{delegate_mnemonic}}" \
+    --ethereum-key="{{delegate_eth}}" \
+    --prefix=althea \
+    --cosmos-grpc="http://localhost:9090" \
+    --ethereum-rpc="http://localhost:8545" \
+    --fees=ufootoken \
+    --contract-address="{{gravity_contract}}"

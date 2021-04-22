@@ -4,6 +4,12 @@
     dest: /etc/systemd/system/orchestrator.service
   become: true
 
+- name: Template Orchestrator start file
+  template:
+    src: start-orchestrator.sh.j2
+    dest: /etc/start-orchestrator.sh
+  become: true
+
 - name: Set the Orchestrator to run on startup
   systemd:
     daemon_reload: yes

@@ -11,14 +11,7 @@ TimeoutStopSec=60
 LimitNOFILE=65530
 WorkingDirectory=/usr/bin
 Environment=RUST_LOG=INFO
-ExecStart=/usr/bin/orchestrator \
-    --cosmos-phrase={{delegate_mnemonic}} \
-    --ethereum-key={{delegate_eth}} \
-    --cosmos-legacy-rpc="http://localhost:1317" \
-    --cosmos-grpc="http://localhost:9090" \
-    --ethereum-rpc="http://localhost:8545" \
-    --fees=footoken \
-    --contract-address="Ethereum Contract Address"
+ExecStart=/bin/bash /etc/start-orchestrator.sh
 
 [Install]
 WantedBy=multi-user.target

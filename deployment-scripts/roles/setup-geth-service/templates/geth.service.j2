@@ -7,6 +7,7 @@ StartLimitIntervalSec=0
 [Service]
 Type=simple
 Restart=always
+RestartSec=60s
 TimeoutStopSec=90s
 LimitNOFILE= 65530
 ExecStart=/usr/bin/geth \

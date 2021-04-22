@@ -37,8 +37,6 @@
 
 - name: Check if geth is running
   command: systemctl status geth
-  ignore_errors: yes
-  changed_when: false
   register: service_geth_status
 
 - name: Report status of geth

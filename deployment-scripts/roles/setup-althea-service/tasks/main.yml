@@ -14,12 +14,10 @@
 
 - name: Wait for Quick crashes
   pause:
-    seconds: 30
+    seconds: 5
 
 - name: Check if Althea chain is running
   command: systemctl status althea-chain
-  ignore_errors: yes
-  changed_when: false
   register: service_althea_chain_status
 
 - name: Report status of Althea chain

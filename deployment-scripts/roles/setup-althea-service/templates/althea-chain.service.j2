@@ -9,7 +9,8 @@ Restart=always
 RestartSec=60s
 TimeoutStopSec=90s
 LimitNOFILE= 65530
-ExecStart=/usr/bin/althea start
+ExecStart=/usr/bin/althea \
+start
 
 [Install]
 WantedBy=multi-user.target

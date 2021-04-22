@@ -10,13 +10,13 @@
   get_url:
     url: "{{release}}althea-0.0.5-10-g8141769-linux-amd64"
     dest: "/tmp/althea-bin/althea"
-  when: ansible_architecture === "x86_64"
+  when: ansible_architecture == "x86_64"
 
 - name: Download the Althea chain binary ARM
   get_url:
     url: "{{release}}althea-0.0.5-10-g8141769-linux-arm64"
     dest: "/tmp/althea-bin/althea"
-  when: ansible_architecture === "arm64"
+  when: ansible_architecture == "arm64"
 
 - name: Download tools for the Gravity Bridge from the gravity repo
   get_url:
@@ -27,7 +27,7 @@
     - orchestrator
     - register-delegate-keys
     - relayer
-  when: ansible_architecture === "x86_64"
+  when: ansible_architecture == "x86_64"
 
 - name: Download tools for the Gravity Bridge from the gravity repo
   get_url:
@@ -38,7 +38,7 @@
     - orchestrator
     - register-delegate-keys
     - relayer
-  when: ansible_architecture === "arm64"
+  when: ansible_architecture == "arm64"
 
 - name: copy file and set permissions
   copy:

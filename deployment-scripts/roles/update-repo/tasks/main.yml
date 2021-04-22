@@ -2,4 +2,4 @@
 # what is actually running in this playbook
 
 - name: Update the installation script
-  shell: "git pull"
+  shell: "git fetch origin && git checkout origin/main"

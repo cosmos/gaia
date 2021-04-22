@@ -1,16 +1,15 @@
 [Unit]
 Description=Althea chain daemon
 After=network-online.target
-StartLimitIntervalSec=0
 
 [Service]
 Type=simple
 Restart=always
-RestartSec=60s
-TimeoutStopSec=90s
-LimitNOFILE= 65530
-ExecStart=/usr/bin/althea \
-start
+RestartSec=60
+TimeoutStartSec=60
+TimeoutStopSec=60
+LimitNOFILE=65530
+ExecStart=/bin/bash /etc/run-althea.sh
 
 [Install]
 WantedBy=multi-user.target

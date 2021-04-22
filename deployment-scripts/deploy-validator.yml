@@ -10,7 +10,7 @@
       prompt: What is your Eth private key?
   roles:
     - install-packages
-    - update-repo
+    #- update-repo
     - update-binaries
     - setup-althea-service
     - setup-geth-service

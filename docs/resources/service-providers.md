@@ -151,15 +151,47 @@ You can see all available keys by typing:
 gaiad keys list
 ```
 
+If you want to add a key to your keyring that imports a mnemonic, use the `--recover` flag.
+
+```bash
+gaiad keys add <your_key_name> --recover
+```
+
 #### Check your balance
 
-After receiving tokens to your address, you can view your account's balance by typing:
+After receiving tokens to your address, you can view your account by typing:
 
 ```bash
 gaiad query account <YOUR_ADDRESS>
 ```
 
-*Note: When you query an account balance with zero tokens, you will get this error: No account with address <YOUR_ADDRESS> was found in the state. This is expected! We're working on improving our error messages.*
+Query the account balance with the command:
+
+```bash
+gaiad query bank balances <YOUR_ADDRESS>
+```
+
+The response contains keys `balances` and `pagination`.
+Each `balances` entry contains an `amount` held, connected to a `denom` identifier.
+The typical $ATOM token is identified by the denom `uatom`. Where 1 `uatom` is 0.000001 ATOM.
+
+```bash
+balances: 
+- amount: "12345678"
+  denom: uatom
+pagination:
+  next_key: null
+  total: "0"
+```
+
+When you query an account that has not received any token yet, you will see the `balances` entry as empty array.
+
+```bash
+balances: []
+pagination:
+  next_key: null
+  total: "0"
+```
 
 #### Send coins using the CLI
 
@@ -179,6 +211,7 @@ Parameters:
 Flags:
 
 - `--chain-id`: This flag allows you to specify the id of the chain. There will be different ids for different testnet chains and mainnet chains.
+- `--gas-prices`: This flag allows you to specify gas prices you pay for the transaction. The format is used as `0.025uatom`
 
 ## REST API
 
@@ -224,13 +257,13 @@ is a common cause of invalid signature error. You can load the mempool of a full
 node or validator with a sequence of uncommitted transactions with incrementing
 sequence numbers and it will mostly do the correct thing.  
 
-Before signing, all keys are lexicographically sorted and all white space is
+Before signing, all keys are lexicographically sorted and all white space are
 removed from the JSON output.
 
 The signature encoding is the 64-byte concatenation of ECDSArands (i.e. `r || s`),
 where `s` is lexicographically less than its inverse in order to prevent malleability.
-This is like Ethereum, but without the extra byte for PubKey recovery, since
-Tendermint assumes the PubKey is always provided anyway.
+This is similar to Ethereum signing, but without the extra byte for PubKey recovery, since
+Tendermint assumes the PubKey is always provided.
 
 Signatures and public key examples in a signed transaction:
 
@@ -254,3 +287,5 @@ Signatures and public key examples in a signed transaction:
 
 Once signatures are properly generated, insert the JSON into into the generated
 transaction and then use the broadcast endpoint.
+
+POST [`/txs`](https://cosmos.network/rpc/)

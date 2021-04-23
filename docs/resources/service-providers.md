@@ -42,7 +42,7 @@ Compare your version with the [latest release version](https://github.com/cosmos
 gaiad version --long
 ```
 
-#### Help
+#### Commands
 
 All available CLI commands will be shown if you just execute `gaiad`:
 
@@ -90,6 +90,47 @@ Use "gaiad [command] --help" for more information about a command.
 
 For each displayed command, you can use the `--help` flag to get further information. 
 
+```bash
+gaiad query --help
+Usage:
+  gaiad query [flags]
+  gaiad query [command]
+
+Aliases:
+  query, q
+
+Available Commands:
+  account                  Query for account by address
+  auth                     Querying commands for the auth module
+  bank                     Querying commands for the bank module
+  block                    Get verified data for a the block at given height
+  distribution             Querying commands for the distribution module
+  evidence                 Query for evidence by hash or for all (paginated) submitted evidence
+  gov                      Querying commands for the governance module
+  ibc                      Querying commands for the IBC module
+  ibc-transfer             IBC fungible token transfer query subcommands
+  mint                     Querying commands for the minting module
+  params                   Querying commands for the params module
+  slashing                 Querying commands for the slashing module
+  staking                  Querying commands for the staking module
+  tendermint-validator-set Get the full tendermint validator set at given height
+  tx                       Query for a transaction by hash in a committed block
+  txs                      Query for paginated transactions that match a set of events
+  upgrade                  Querying commands for the upgrade module
+
+Flags:
+      --chain-id string   The network chain ID
+  -h, --help              help for query
+
+Global Flags:
+      --home string         directory for config and data (default "/Users/tobias/.gaia")
+      --log_format string   The logging format (json|plain) (default "plain")
+      --log_level string    The logging level (trace|debug|info|warn|error|fatal|panic) (default "info")
+      --trace               print out full stack trace on errors
+
+Use "gaiad query [command] --help" for more information about a command.
+```
+
 ### Remote Access to gaiad
 
 When choosing to remote access a Full Node and gaiad, you need a Full Node running and gaia installed on your local machine.
@@ -129,7 +170,7 @@ gaiad config chain-id cosmoshub-4
 Next you will learn useful CLI commands to interact with the Full Node.
 You can run these commands as remote control or when you are running it on your local machine.
 
-### How to create a key-pair
+### Create a Key pair
 
 To generate a new key (default secp256k1 elliptic curve):
 
@@ -143,7 +184,7 @@ You will be asked to create a password (at least 8 characters) for this key-pair
 - `TYPE`: Type of your key, always `local`. 
 - `ADDRESS`: Your address. Used to receive funds.
 - `PUBKEY`: Your public key. Useful for validators.
-- `MNEMONIC`: 24-words phrase. **Save this mnemonic somewhere safe**. It is used to recover your private key in case you forget the password.
+- `MNEMONIC`: 24-words phrase. **Save this mnemonic somewhere safe**. It is used to recover your private key in case you forget the password. It is displayed at the end of the output.
 
 You can see all available keys by typing:
 
@@ -206,7 +247,7 @@ Parameters:
 
 - `<from_key_or_address>`: Key name or address of sending account.
 - `<to_address>`: Address of the recipient.
-- `<amount>`: This parameter accepts the format `<value|coinName>`, such as `10faucetToken`.
+- `<amount>`: This parameter accepts the format `<value|coinName>`, such as `1000000uatom`.
 
 Flags:
 

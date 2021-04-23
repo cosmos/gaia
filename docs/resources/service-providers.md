@@ -198,13 +198,27 @@ If you want to add a key to your keyring that imports a mnemonic, use the `--rec
 gaiad keys add <your_key_name> --recover
 ```
 
-#### Check your balance
+#### Check your Account
 
-After receiving tokens to your address, you can view your account by typing:
+You can view your account by using the `query account` command.
 
 ```bash
 gaiad query account <YOUR_ADDRESS>
 ```
+
+It will display your account type, account number, public key and current account sequence.
+
+```bash
+'@type': /cosmos.auth.v1beta1.BaseAccount
+account_number: "xxxx"
+address: cosmosxxxx
+pub_key:
+  '@type': /cosmos.crypto.secp256k1.PubKey
+  key: xxx
+sequence: "x"
+```
+
+### Check your Balance
 
 Query the account balance with the command:
 
@@ -310,7 +324,7 @@ Signatures and public key examples in a signed transaction:
 
 ``` json
 {
-  "type": "auth/StdTx",
+  "typeUrl": "/cosmos.bank.v1beta1.MsgSend",
   "value": {
     "msg": [...],
     "signatures": [

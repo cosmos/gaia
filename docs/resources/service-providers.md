@@ -8,6 +8,24 @@ order: 5
 
 This section does not concern wallet builders that want to provide Light-Client functionalities. Service Providers are expected to act as trusted point of contact to the blockchain for their end-users.
 
+This document describes 
+
+- [Connection Options](#connection-options)
+- [Running a Full Node](#running-a-full-node)
+  - [What is a Full Node?](#what-is-a-full-node)
+  - [Installation and Configuration](#installation-and-configuration)
+- [Command-Line Interface](#command-line-interface)
+  - [Available Commands](#available-commands)
+  - [Remote Access to gaiad](#remote-access-to-gaiad)
+  - [Create a Key pair](#create-a-key-pair)
+  - [Check your Account](#check-your-account)
+  - [Check your Balance](#check-your-balance)
+  - [Send coins using the CLI](#send-coins-using-the-cli)
+- [REST API](#rest-api)
+  - [Listen for incoming transactions](#listen-for-incoming-transaction)
+- [Cosmos SDK Transaction Signing](#cosmos-sdk-transaction-signing)
+
+
 ## Connection Options
 
 There are four main technologies to consider, connecting to the Cosmos Hub:
@@ -31,7 +49,7 @@ First, you need to [install the software](../gaia-tutorials/installation.md).
 
 Consider running your own [Cosmos Hub Full Node](../gaia-tutorials/join-mainnet.md).
 
-## Command-Line interface
+## Command-Line Interface
 
 The Command-Line Interface (CLI) is the most powerful tool to access the Cosmos Hub and use gaia.
 You need to install the latest version of `gaia` on your machine in order to use the Command-Line Interface.
@@ -42,7 +60,7 @@ Compare your version with the [latest release version](https://github.com/cosmos
 gaiad version --long
 ```
 
-#### Commands
+### Available Commands
 
 All available CLI commands will be shown if you just execute `gaiad`:
 
@@ -341,6 +359,6 @@ Signatures and public key examples in a signed transaction:
 ```
 
 Once signatures are properly generated, insert the JSON into into the generated
-transaction and then use the broadcast endpoint.
+transaction and then use the broadcast transaction endpoint.
 
 POST [`/txs`](https://cosmos.network/rpc/)

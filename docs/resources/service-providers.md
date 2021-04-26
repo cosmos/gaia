@@ -23,7 +23,6 @@ This document describes
   - [Send coins using the CLI](#send-coins-using-the-cli)
 - [REST API](#rest-api)
   - [Listen for incoming transactions](#listen-for-incoming-transaction)
-- [Cosmos SDK Transaction Signing](#cosmos-sdk-transaction-signing)
 
 
 ## Connection Options
@@ -296,69 +295,3 @@ with your Full Node. Learn [how to enable the REST API](../gaia-tutorials/join-m
 The recommended way to listen for incoming transaction is to periodically query the blockchain through the following http endpoint:
 
 [`/cosmos/bank/v1beta1/balances/{address}`](https://cosmos.network/rpc/)
-
-## Cosmos SDK Transaction Signing
-
-Every Cosmos SDK transaction has a canonical JSON representation. The `gaiad`
-and Stargate REST interfaces provide canonical JSON representations of transactions
-and their "broadcast" functions will provide compact Amino (a protobuf-like wire format)
-encoding translations.
-
-Things to know when signing messages:
-
-The format is as follows
-
-```json
-{
-  "account_number": XXX,
-  "chain_id": XXX,
-  "fee": XXX,
-  "sequence": XXX,
-  "memo": XXX,
-  "msgs": XXX
-}
-```
-
-The signer must supply `"chain_id"`, `"account number"` and `"sequence number"`.
-
-The `"fee"`, `"msgs"` and `"memo"` fields will be supplied by the transaction
-composer interface.
-
-The `"account_number"` and `"sequence"` fields can be queried directly from the
-blockchain or cached locally. Getting these numbers wrong, along with the chainID,
-is a common cause of invalid signature error. You can load the mempool of a full
-node or validator with a sequence of uncommitted transactions with incrementing
-sequence numbers and it will mostly do the correct thing.  
-
-Before signing, all keys are lexicographically sorted and all white space are
-removed from the JSON output.
-
-The signature encoding is the 64-byte concatenation of ECDSArands (i.e. `r || s`),
-where `s` is lexicographically less than its inverse in order to prevent malleability.
-This is similar to Ethereum signing, but without the extra byte for PubKey recovery, since
-Tendermint assumes the PubKey is always provided.
-
-Signatures and public key examples in a signed transaction:
-
-``` json
-{
-  "typeUrl": "/cosmos.bank.v1beta1.MsgSend",
-  "value": {
-    "msg": [...],
-    "signatures": [
-      {
-        "pub_key": {
-          "type": "tendermint/PubKeySecp256k1",
-          "value": XXX
-        },
-        "signature": XXX
-      }
-    ],
-  }
-}
-```
-
-Once signatures are properly generated, insert the JSON into into the generated
-transaction and then use the broadcast transaction endpoint.
-
-POST [`/txs`](https://cosmos.network/rpc/)

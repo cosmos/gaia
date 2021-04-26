@@ -21,7 +21,7 @@ source ~/.bash_profile
 ```
 
 ::: tip
-**Go 1.16+** is required for the Cosmos SDK.
+**Go 1.16+** or later is required for the Cosmos SDK.
 :::
 
 ## Install the binaries
@@ -80,8 +80,8 @@ Build tags indicate special features that have been enabled in the binary.
 
 ## Work with a Cosmos SDK Clone
 
-If you want to work with your own modifications of the Cosmos SDK, make a fork and add a `replace` clause to the `go.mod` file.
-The `replace` clause needs to be added to `go.mod` providing the correct import path.
+To work with your own modifications of the Cosmos SDK, make a fork of this repo, and add a `replace` clause to the `go.mod` file.
+The `replace` clause you add to `go.mod` must provide the correct import path:
 
 - Make appropriate changes
 - Add `replace github.com/cosmos/cosmos-sdk => /path/to/clone/cosmos-sdk` to `go.mod`

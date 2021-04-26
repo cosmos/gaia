@@ -4,11 +4,11 @@ order: 5
 
 # Service Providers
 
-'Service Providers' are defined as entities providing services for end-users that involve some form of interaction with the Cosmos Hub. More specifically, this document will be focused around interactions with tokens.
+'Service Providers' are defined as entities that provide services for end-users that involve some form of interaction with the Cosmos Hub. More specifically, this document is focused on interactions with tokens.
 
-This section does not concern wallet builders that want to provide Light-Client functionalities. Service Providers are expected to act as trusted point of contact to the blockchain for their end-users.
+Service Providers are expected to act as trusted points of contact to the blockchain for their end-users. This Service Providers section does not apply to wallet builders that want to provide Light Client functionalities. 
 
-This document describes 
+This document describes:
 
 - [Connection Options](#connection-options)
 - [Running a Full Node](#running-a-full-node)
@@ -27,22 +27,22 @@ This document describes
 
 ## Connection Options
 
-There are four main technologies to consider, connecting to the Cosmos Hub:
+There are four main technologies to consider to connect to the Cosmos Hub:
 
-- Full Nodes: To interact with the blockchain. 
-- REST Server: This acts as a relayer for HTTP calls.
-- REST API: Define available endpoints for the REST Server.
-- GRPC: Connect to the Cosmos Hub via gRPC.
+- Full Nodes: Interact with the blockchain. 
+- REST Server: Serve as a relayer for HTTP calls.
+- REST API: Use available endpoints for the REST Server.
+- GRPC: Connect to the Cosmos Hub using gRPC.
 
-## Running a Full-Node
+## Running a Full Node
 
 ### What is a Full Node?
 
 A Full Node is a network node that syncs up with the state of the blockchain. It provides blockchain data to others by using RESTful APIs, a replica of the database by exposing data with interfaces. A Full Node keeps in syncs with the rest of the blockchain nodes and stores the state on disk. If the full node does not have the queried block on disk the full node can go find the blockchain where the queried data lives. 
 
-### Installation and configuration
+### Installation and Configuration
 
-We will describe the steps to run and interact with a Full Node for the Cosmos Hub.
+This section describes the steps to run and interact with a full node for the Cosmos Hub.
 
 First, you need to [install the software](../gaia-tutorials/installation.md).
 
@@ -50,8 +50,8 @@ Consider running your own [Cosmos Hub Full Node](../gaia-tutorials/join-mainnet.
 
 ## Command-Line Interface
 
-The Command-Line Interface (CLI) is the most powerful tool to access the Cosmos Hub and use gaia.
-You need to install the latest version of `gaia` on your machine in order to use the Command-Line Interface.
+The command-line interface (CLI) is the most powerful tool to access the Cosmos Hub and use gaia.
+To use the CLI, you must install the latest version of `gaia` on your machine.
 
 Compare your version with the [latest release version](https://github.com/cosmos/gaia/releases)
 
@@ -61,7 +61,7 @@ gaiad version --long
 
 ### Available Commands
 
-All available CLI commands will be shown if you just execute `gaiad`:
+All available CLI commands are shown when you run the `gaiad` command:
 
 ```bash
 gaiad 
@@ -154,13 +154,13 @@ When choosing to remote access a Full Node and gaiad, you need a Full Node runni
 
 `gaiad` is the tool that enables you to interact with the node that runs on the Cosmos Hub network, whether you run it yourself or not.
 
-In order to set up `gaiad` on a local machine and connect to an existing Full Node, use the following command:
+To set up `gaiad` on a local machine and connect to an existing full node, use the following command:
 
 ```bash
 gaiad config <flag> <value>
 ```
 
-First, set up the address of the full-node you want to connect to:
+First, set up the address of the full node you want to connect to:
 
 ```bash
 gaiad config node <host>:<port
@@ -168,14 +168,14 @@ gaiad config node <host>:<port
 // example: gaiad config node https://77.87.106.33:26657
 ```
 
-If you run your own Full Node locally, use `tcp://localhost:26657` as the address. 
+If you run your own full node locally, use `tcp://localhost:26657` as the address. 
 
 Set the default value of the `--trust-node` flag:
 
 ```bash
 gaiad config trust-node false
 
-// Set to true if you run a light-client node
+// Set to true if you run a light client node
 ```
 
 Finally, set the `chain-id` of the blockchain you want to interact with:
@@ -184,12 +184,14 @@ Finally, set the `chain-id` of the blockchain you want to interact with:
 gaiad config chain-id cosmoshub-4
 ```
 
-Next you will learn useful CLI commands to interact with the Full Node.
+Next, learn to use CLI commands to interact with the full node.
 You can run these commands as remote control or when you are running it on your local machine.
 
-### Create a Key pair
+### Create a Key Pair
 
-To generate a new key (default secp256k1 elliptic curve):
+The default key is `secp256k1 elliptic curve`. Use the `gaiad keys` command to list the keys and generate a new key.
+
+
 
 ```bash
 gaiad keys add <your_key_name>
@@ -201,7 +203,7 @@ You will be asked to create a password (at least 8 characters) for this key-pair
 - `TYPE`: Type of your key, always `local`. 
 - `ADDRESS`: Your address. Used to receive funds.
 - `PUBKEY`: Your public key. Useful for validators.
-- `MNEMONIC`: 24-words phrase. **Save this mnemonic somewhere safe**. It is used to recover your private key in case you forget the password. It is displayed at the end of the output.
+- `MNEMONIC`: 24-word phrase. **Save this mnemonic somewhere safe**. This phrase is required to recover your private key in case you forget the password. The mnemonic is displayed at the end of the output.
 
 You can see all available keys by typing:
 
@@ -209,7 +211,7 @@ You can see all available keys by typing:
 gaiad keys list
 ```
 
-If you want to add a key to your keyring that imports a mnemonic, use the `--recover` flag.
+Use the `--recover` flag to add a key that imports a mnemonic to your keyring.
 
 ```bash
 gaiad keys add <your_key_name> --recover
@@ -256,7 +258,7 @@ pagination:
   total: "0"
 ```
 
-When you query an account that has not received any token yet, you will see the `balances` entry as empty array.
+When you query an account that has not received any token yet, the `balances` entry is shown as an empty array.
 
 ```bash
 balances: []
@@ -265,9 +267,9 @@ pagination:
   total: "0"
 ```
 
-#### Send coins using the CLI
+#### Send Coins Using the CLI
 
-Here is the command to send coins via the CLI:
+To send coins using the CLI:
 
 ```bash
 gaiad tx send <from_key_or_address> <to_address> <amount> \
@@ -282,16 +284,16 @@ Parameters:
 
 Flags:
 
-- `--chain-id`: This flag allows you to specify the id of the chain. There will be different ids for different testnet chains and mainnet chains.
-- `--gas-prices`: This flag allows you to specify gas prices you pay for the transaction. The format is used as `0.025uatom`
+- `--chain-id`: This flag allows you to specify the id of the chain. There are different ids for different testnet chains and mainnet chains.
+- `--gas-prices`: This flag allows you to specify the gas prices you pay for the transaction. The format is used as `0.025uatom`
 
 ## REST API
 
 The [REST API documents](https://cosmos.network/rpc/) list all the available endpoints that you can use to interact
-with your Full Node. Learn [how to enable the REST API](../gaia-tutorials/join-mainnet.md#enable-the-rest-api) on your Full Node.
+with your full node. Learn [how to enable the REST API](../gaia-tutorials/join-mainnet.md#enable-the-rest-api) on your full node.
 
-### Listen for incoming transaction
+### Listen for Incoming Transactions
 
-The recommended way to listen for incoming transaction is to periodically query the blockchain through the following http endpoint:
+The recommended way to listen for incoming transactions is to periodically query the blockchain by using the following HTTP endpoint:
 
 [`/cosmos/bank/v1beta1/balances/{address}`](https://cosmos.network/rpc/)

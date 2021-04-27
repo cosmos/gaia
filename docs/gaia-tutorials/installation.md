@@ -21,7 +21,7 @@ source ~/.bash_profile
 ```
 
 ::: tip
-**Go 1.16+** or later is required for the Cosmos SDK.
+**Go 1.15+** or later is required for the Cosmos SDK.
 :::
 
 ## Install the binaries
@@ -66,7 +66,7 @@ server_name: gaiad
 version: v4.2.1
 commit: dbd8a6fb522c571debf958837f9113c56d418f6b
 build_tags: netgo,ledger
-go: go version go1.16 darwin/amd64
+go: go version go1.15 darwin/amd64
 ```
 
 ### Build Tags

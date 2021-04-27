@@ -24,7 +24,7 @@ Checkout the commit, branch, or release tag you want to build:
 
 ```
 cd gaia/
-git checkout v3.0.0
+git checkout v4.2.1
 ```
 
 The buildsystem supports and produces binaries for the following architectures:
@@ -45,18 +45,18 @@ build sanity. An example of its contents follows:
 
 ```
 App: gaiad
-Version: 2.0.12-20-gfc0171b
-Commit: fc0171b00662fb43df12955378ed8b0c5db85229
+Version: v4.2.1
+Commit: dbd8a6fb522c571debf958837f9113c56d418f6b
 Files:
- bee04f003adcc2a1848bcc4ec6dc6731  gaiad-2.0.12-20-gfc0171b-darwin-amd64
- ff1edcd44f6ff7b3746d211eceb8f3f5  gaiad-2.0.12-20-gfc0171b-linux-amd64
- 8d6109dc1e1c59b2ffa9660a49bb54e1  gaiad-2.0.12-20-gfc0171b-linux-arm64
- 3183eec0ae71da9d8b68e0ba2986b885  gaiad-2.0.12-20-gfc0171b-windows-amd64.exe
- 8f26db0add97a3ac1e038b0a8dc3ffb3  gaiad-2.0.12-20-gfc0171b.tar.gz
+ 29d219b0b120b3188bd7cd7249fc96b9  gaiad-v4.2.1-darwin-amd64
+ 80338d9f0e55ea8f6c93f2ec7d4e18d6  gaiad-v4.2.1-linux-amd64
+ 9bc77a512acca673ca1769ae67b4d6c7  gaiad-v4.2.1-linux-arm64
+ c84387860f52178e2bffee08897564bb  gaiad-v4.2.1-windows-amd64.exe
+ c25cca8ccceec06a6fabae90f671fab1  gaiad-v4.2.1.tar.gz
 Checksums-Sha256:
- c08d6bf03ca71254b24e8eda54dfcbf82ef671891b283ac194b6633292792324  gaiad-2.0.12-20-gfc0171b-darwin-amd64
- 8c85b5ab2f3c4d50a53d97448d6eab28a3b3e9da1b92616cb478418bc8096f5a  gaiad-2.0.12-20-gfc0171b-linux-amd64
- 66606c5cc82794a7713d50364ce9f0b3e582774b8fc8fb5851db933f98f661c2  gaiad-2.0.12-20-gfc0171b-linux-arm64
- 1633968dbd987f1a1e2f90820ec78a39984eeae1fb97e0240d1f04909761bdb5  gaiad-2.0.12-20-gfc0171b-windows-amd64.exe
- 8b7e34474185d83c6333e1f08f4c35459e95ec06bb8a246fd14bab595427ae9d  gaiad-2.0.12-20-gfc0171b.tar.gz
+ 05e5b9064bac4e71f0162c4c3c3bff55def22ca016d34205a5520fef89fd2776  gaiad-v4.2.1-darwin-amd64
+ ccda422cbda29c723aaf27653bcf0f6412e138eec33fba2b49de131f9ffbe2d2  gaiad-v4.2.1-linux-amd64
+ 95f89e8213cb758d12e1b0b631285938de822d04d2e25f399e99c0b798173cfd  gaiad-v4.2.1-linux-arm64
+ 7ef98f0041f1573f0a8601abad4a14b1c163f47481c7ba1954fd81ed423a6408  gaiad-v4.2.1-windows-amd64.exe
+ 422883ba43c96a6ea5ef9512d39321dd1356633c6a9505517b9c651788df4a7f  gaiad-v4.2.1.tar.gz
 ```

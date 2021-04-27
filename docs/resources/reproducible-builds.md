@@ -24,7 +24,7 @@ Checkout the commit, branch, or release tag you want to build:
 
 ```
 cd gaia/
-git checkout v3.0.0
+git checkout v4.2.1
 ```
 
 The buildsystem supports and produces binaries for the following architectures:

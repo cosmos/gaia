@@ -30,7 +30,7 @@ This document describes:
 There are four main technologies to consider to connect to the Cosmos Hub:
 
 - Full Nodes: Interact with the blockchain. 
-- REST Server: Serve as a relayer for HTTP calls.
+- REST Server: Serves for HTTP calls.
 - REST API: Use available endpoints for the REST Server.
 - GRPC: Connect to the Cosmos Hub using gRPC.
 

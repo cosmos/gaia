@@ -21,7 +21,7 @@ source ~/.bash_profile
 ```
 
 ::: tip
-**Go 1.15+** is required for the Cosmos SDK.
+**Go 1.15+** or later is required for the Cosmos SDK.
 :::
 
 ## Install the binaries
@@ -63,10 +63,10 @@ gaiad version --long
 ```bash
 name: gaia
 server_name: gaiad
-version: 2.0.3
-commit: 2f6783e298f25ff4e12cb84549777053ab88749a
+version: v4.2.1
+commit: dbd8a6fb522c571debf958837f9113c56d418f6b
 build_tags: netgo,ledger
-go: go version go1.12.5 darwin/amd64
+go: go version go1.15 darwin/amd64
 ```
 
 ### Build Tags
@@ -78,13 +78,10 @@ Build tags indicate special features that have been enabled in the binary.
 | netgo     | Name resolution will use pure Go code           |
 | ledger    | Ledger devices are supported (hardware wallets) |
 
-### Install binary distribution via snap (Linux only)
+## Work with a Cosmos SDK Clone
 
-**Do not use snap at this time to install the binaries for production until we have a reproducible binary system.**
-
-## Developer Workflow
-
-To test any changes made in the SDK or Tendermint, a `replace` clause needs to be added to `go.mod` providing the correct import path.
+To work with your own modifications of the Cosmos SDK, make a fork of this repo, and add a `replace` clause to the `go.mod` file.
+The `replace` clause you add to `go.mod` must provide the correct import path:
 
 - Make appropriate changes
 - Add `replace github.com/cosmos/cosmos-sdk => /path/to/clone/cosmos-sdk` to `go.mod`

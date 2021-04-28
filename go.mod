@@ -1,6 +1,6 @@
 module github.com/cosmos/gaia/v4
 
-go 1.15
+go 1.16
 
 require (
 	github.com/cosmos/cosmos-sdk v0.42.4

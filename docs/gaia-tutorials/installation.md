@@ -9,6 +9,17 @@ onto your system. With these installed on a server, you can participate in the
 mainnet as either a [Full Node](./join-mainnet.md) or a
 [Validator](../validators/validator-setup.md).
 
+## Install build requirements
+
+Install `make` and `gcc`.
+
+On Ubuntu this can be done with the following:
+```bash
+sudo apt-get update
+
+sudo apt-get install -y make gcc
+```
+
 ## Install Go
 
 Install `go` by following the [official docs](https://golang.org/doc/install).

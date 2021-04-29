@@ -10,6 +10,7 @@ order: 3
 
 This Quickstart tutorial completes the following actions:
 
+* Ensure that you have [compilation prerequisites](installation.md)
 * Compile gaia
 * Give your node a moniker and configure it
 * Download compressed genesis state

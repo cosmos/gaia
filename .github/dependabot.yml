@@ -1,0 +1,36 @@
+version: 2
+updates:
+- package-ecosystem: gomod
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: github.com/otiai10/copy
+    versions:
+    - "> 1.0.2, < 2"
+  - dependency-name: github.com/spf13/cobra
+    versions:
+    - "> 0.0.5, < 1"
+  - dependency-name: github.com/spf13/viper
+    versions:
+    - "> 1.6.1, < 2"
+  - dependency-name: github.com/tendermint/tendermint
+    versions:
+    - ">= 0.33.a, < 0.34"
+  - dependency-name: github.com/tendermint/tendermint
+    versions:
+    - 0.34.10
+  - dependency-name: github.com/cosmos/cosmos-sdk
+    versions:
+    - 0.42.0
+  - dependency-name: github.com/ethereum/go-ethereum
+    versions:
+    - 1.10.0
+- package-ecosystem: npm
+  directory: "/docs"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  reviewers:
+  - fadeev

@@ -62,15 +62,38 @@ Other notes:
   A convenience git `pre-commit` hook that runs the formatters automatically
   before each commit is available in the `contrib/githooks/` directory.
 
-## Pull Requests
+## Submissions
+
+Generally, when structuring a submission for the Cosmos ecosystem, the submission might span multiple layers
+of the technology stack, including the Cosmos SDK and Tendermint dependencies.
+
+### Structuring a submission
 
 To accommodate review process we suggest that PRs are categorically broken up.
 Ideally each PR addresses only a single issue. Additionally, as much as possible
 code refactoring and cleanup should be submitted as a separate PRs from bugfixes/feature-additions.
 
+In order to simplify reviewing large changes, submissions should have a created an issue
+with a description of the submission, a description tracking the changes and relevant discussions,
+and a checklist of changes and tasks to be done. 
+
+The issue can then be used to develop multiple well-scoped PRs that are easy to review.
+
+The following PR structuring checklist can be used when submitting changes to the Gaia repository for review:
+- [ ] Proto files: PR updating proto files. As a suggested next step, don't regenerate updated protobuf 
+   implementations using `protgen`, since this will break existing code.   
+- [ ] Broken code: If `protogen` is run, a PR disabling broken code
+- [ ] Validation: PR with validation of types
+- [ ] Functionality: PR integrating supporting functionality
+- [ ] Servers: PR for `msgserver` and `queryserver`
+- [ ] CLI: PR for CLI commands
+- [ ] Orchestrators: PR for any orchestrators
+- [ ] Genesis: PR for genesis
+- [ ] Upgrades: PR for upgrades
+
 ### Process for reviewing PRs
 
-All PRs require two Reviews before merge (except docs changes, or variable name-changes which only require one). When reviewing PRs please use the following review explanations:
+All PRs require at least one review before merge (except docs changes, or variable name-changes which only require one). When reviewing PRs please use the following review explanations:
 
 - `LGTM` without an explicit approval means that the changes look good, but you haven't pulled down the code, run tests locally and thoroughly reviewed it.
 - `Approval` through the GH UI means that you understand the code, documentation/spec is updated in the right places, you have pulled down and tested the code locally. In addition:

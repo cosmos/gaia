@@ -3,10 +3,13 @@ module github.com/cosmos/gaia/v4
 go 1.15
 
 require (
-	github.com/cosmos/cosmos-sdk v0.43.0-alpha1
+	github.com/armon/go-metrics v0.3.7 // indirect
+	github.com/cosmos/cosmos-sdk v0.43.0-alpha1.0.20210509051442-abd86777da6a
+	github.com/cosmos/iavl v0.16.0 // indirect
 	github.com/cosmos/ibc-go v1.0.0-alpha1
 	github.com/gorilla/mux v1.8.0
 	github.com/pkg/errors v0.9.1
+	github.com/prometheus/common v0.23.0 // indirect
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/cast v1.3.1
 	github.com/spf13/cobra v1.1.3

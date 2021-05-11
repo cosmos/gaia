@@ -4,51 +4,163 @@ order: 5
 
 # Service Providers
 
-We define 'service providers' as entities providing services for end-users that involve some form of interaction with a Cosmos-SDK based blockchain (this includes the Cosmos Hub). More specifically, this document will be focused around interactions with tokens.
+'Service Providers' are defined as entities that provide services for end-users that involve some form of interaction with the Cosmos Hub. More specifically, this document is focused on interactions with tokens.
 
-This section does not concern wallet builders that want to provide Light-Client functionalities. Service providers are expected to act as trusted point of contact to the blockchain for their end-users. 
+Service Providers are expected to act as trusted points of contact to the blockchain for their end-users. This Service Providers section does not apply to wallet builders that want to provide Light Client functionalities. 
 
-## High-level description of the architecture
+This document describes:
 
-There are three main pieces to consider:
+- [Connection Options](#connection-options)
+- [Running a Full Node](#running-a-full-node)
+  - [What is a Full Node?](#what-is-a-full-node)
+  - [Installation and Configuration](#installation-and-configuration)
+- [Command-Line Interface](#command-line-interface)
+  - [Available Commands](#available-commands)
+  - [Remote Access to gaiad](#remote-access-to-gaiad)
+  - [Create a Key pair](#create-a-key-pair)
+  - [Check your Account](#check-your-account)
+  - [Check your Balance](#check-your-balance)
+  - [Send coins using the CLI](#send-coins-using-the-cli)
+- [REST API](#rest-api)
+  - [Listen for incoming transactions](#listen-for-incoming-transaction)
 
-- Full-nodes: To interact with the blockchain. 
-- Rest Server: This acts as a relayer for HTTP calls.
-- Rest API: Define available endpoints for the Rest Server.
 
-## Running a Full-Node
+## Connection Options
 
-### Installation and configuration
+There are four main technologies to consider to connect to the Cosmos Hub:
 
-We will describe the steps to run and interact with a full-node for the Cosmos Hub. For other SDK-based blockchain, the process should be similar. 
+- Full Nodes: Interact with the blockchain. 
+- REST Server: Serves for HTTP calls.
+- REST API: Use available endpoints for the REST Server.
+- GRPC: Connect to the Cosmos Hub using gRPC.
+
+## Running a Full Node
+
+### What is a Full Node?
+
+A Full Node is a network node that syncs up with the state of the blockchain. It provides blockchain data to others by using RESTful APIs, a replica of the database by exposing data with interfaces. A Full Node keeps in syncs with the rest of the blockchain nodes and stores the state on disk. If the full node does not have the queried block on disk the full node can go find the blockchain where the queried data lives. 
+
+### Installation and Configuration
+
+This section describes the steps to run and interact with a full node for the Cosmos Hub.
 
 First, you need to [install the software](../gaia-tutorials/installation.md).
 
-Then, you can start [running a full-node](../gaia-tutorials/join-mainnet.md).
+Consider running your own [Cosmos Hub Full Node](../gaia-tutorials/join-mainnet.md).
 
-### Command-Line interface
+## Command-Line Interface
 
-## Setting Up `gaiad`
+The command-line interface (CLI) is the most powerful tool to access the Cosmos Hub and use gaia.
+To use the CLI, you must install the latest version of `gaia` on your machine.
 
-::: tip
-**Before setting up `gaiad`, make sure you have set up a way to [access the Cosmos Hub network](#accessing-the-cosmos-hub-network)**
-:::
+Compare your version with the [latest release version](https://github.com/cosmos/gaia/releases)
 
-::: warning
-**Please check that you are always using the latest stable release of `gaiad`**
-:::
+```bash
+gaiad version --long
+```
 
-`gaiad` is the tool that enables you to interact with the node that runs on the Cosmos Hub network, whether you run it yourself or not. Let us set it up properly.
+### Available Commands
 
-In order to set up `gaiad`, use the following command:
+All available CLI commands are shown when you run the `gaiad` command:
+
+```bash
+gaiad 
+```
+
+```bash
+Stargate Cosmos Hub App
+
+Usage:
+  gaiad [command]
+
+Available Commands:
+
+
+  add-genesis-account Add a genesis account to genesis.json
+  collect-gentxs      Collect genesis txs and output a genesis.json file
+  debug               Tool for helping with debugging your application
+  export              Export state to JSON
+  gentx               Generate a genesis tx carrying a self delegation
+  help                Help about any command
+  init                Initialize private validator, p2p, genesis, and application configuration files
+  keys                Manage your application's keys
+  migrate             Migrate genesis to a specified target version
+  query               Querying subcommands
+  start               Run the full node
+  status              Query remote node for status
+  tendermint          Tendermint subcommands
+  testnet             Initialize files for a simapp testnet
+  tx                  Transactions subcommands
+  unsafe-reset-all    Resets the blockchain database, removes address book files, and resets data/priv_validator_state.json to the genesis state
+  validate-genesis    validates the genesis file at the default location or at the location passed as an arg
+  version             Print the application binary version information
+
+Flags:
+  -h, --help                help for gaiad
+      --home string         directory for config and data (default "/Users/tobias/.gaia")
+      --log_format string   The logging format (json|plain) (default "plain")
+      --log_level string    The logging level (trace|debug|info|warn|error|fatal|panic) (default "info")
+      --trace               print out full stack trace on errors
+
+Use "gaiad [command] --help" for more information about a command.
+```
+
+For each displayed command, you can use the `--help` flag to get further information. 
+
+```bash
+gaiad query --help
+Usage:
+  gaiad query [flags]
+  gaiad query [command]
+
+Aliases:
+  query, q
+
+Available Commands:
+  account                  Query for account by address
+  auth                     Querying commands for the auth module
+  bank                     Querying commands for the bank module
+  block                    Get verified data for a the block at given height
+  distribution             Querying commands for the distribution module
+  evidence                 Query for evidence by hash or for all (paginated) submitted evidence
+  gov                      Querying commands for the governance module
+  ibc                      Querying commands for the IBC module
+  ibc-transfer             IBC fungible token transfer query subcommands
+  mint                     Querying commands for the minting module
+  params                   Querying commands for the params module
+  slashing                 Querying commands for the slashing module
+  staking                  Querying commands for the staking module
+  tendermint-validator-set Get the full tendermint validator set at given height
+  tx                       Query for a transaction by hash in a committed block
+  txs                      Query for paginated transactions that match a set of events
+  upgrade                  Querying commands for the upgrade module
+
+Flags:
+      --chain-id string   The network chain ID
+  -h, --help              help for query
+
+Global Flags:
+      --home string         directory for config and data (default "/Users/tobias/.gaia")
+      --log_format string   The logging format (json|plain) (default "plain")
+      --log_level string    The logging level (trace|debug|info|warn|error|fatal|panic) (default "info")
+      --trace               print out full stack trace on errors
+
+Use "gaiad query [command] --help" for more information about a command.
+```
+
+### Remote Access to gaiad
+
+When choosing to remote access a Full Node and gaiad, you need a Full Node running and gaia installed on your local machine.
+
+`gaiad` is the tool that enables you to interact with the node that runs on the Cosmos Hub network, whether you run it yourself or not.
+
+To set up `gaiad` on a local machine and connect to an existing full node, use the following command:
 
 ```bash
 gaiad config <flag> <value>
 ```
 
-It allows you to set a default value for each given flag. 
-
-First, set up the address of the full-node you want to connect to:
+First, set up the address of the full node you want to connect to:
 
 ```bash
 gaiad config node <host>:<port
@@ -56,27 +168,30 @@ gaiad config node <host>:<port
 // example: gaiad config node https://77.87.106.33:26657
 ```
 
-If you run your own full-node, just use `tcp://localhost:26657` as the address. 
+If you run your own full node locally, use `tcp://localhost:26657` as the address. 
 
-Then, let us set the default value of the `--trust-node` flag:
+Set the default value of the `--trust-node` flag:
 
 ```bash
 gaiad config trust-node false
 
-// Set to true if you run a light-client node, false otherwise
+// Set to true if you run a light client node
 ```
 
-Finally, let us set the `chain-id` of the blockchain we want to interact with:
+Finally, set the `chain-id` of the blockchain you want to interact with:
 
 ```bash
-gaiad config chain-id cosmoshub-2
+gaiad config chain-id cosmoshub-4
 ```
 
-Next you will find a few useful CLI commands to interact with the Full-Node.
+Next, learn to use CLI commands to interact with the full node.
+You can run these commands as remote control or when you are running it on your local machine.
 
-#### Creating a key-pair
+### Create a Key Pair
 
-To generate a new key (default secp256k1 elliptic curve):
+The default key is `secp256k1 elliptic curve`. Use the `gaiad keys` command to list the keys and generate a new key.
+
+
 
 ```bash
 gaiad keys add <your_key_name>
@@ -88,156 +203,97 @@ You will be asked to create a password (at least 8 characters) for this key-pair
 - `TYPE`: Type of your key, always `local`. 
 - `ADDRESS`: Your address. Used to receive funds.
 - `PUBKEY`: Your public key. Useful for validators.
-- `MNEMONIC`: 24-words phrase. **Save this mnemonic somewhere safe**. It is used to recover your private key in case you forget the password.
+- `MNEMONIC`: 24-word phrase. **Save this mnemonic somewhere safe**. This phrase is required to recover your private key in case you forget the password. The mnemonic is displayed at the end of the output.
 
-You can see all your available keys by typing:
+You can see all available keys by typing:
 
 ```bash
 gaiad keys list
 ```
 
-#### Checking your balance
+Use the `--recover` flag to add a key that imports a mnemonic to your keyring.
 
-After receiving tokens to your address, you can view your account's balance by typing:
+```bash
+gaiad keys add <your_key_name> --recover
+```
+
+#### Check your Account
+
+You can view your account by using the `query account` command.
 
 ```bash
 gaiad query account <YOUR_ADDRESS>
 ```
 
-*Note: When you query an account balance with zero tokens, you will get this error: No account with address <YOUR_ADDRESS> was found in the state. This is expected! We're working on improving our error messages.*
+It will display your account type, account number, public key and current account sequence.
 
-#### Sending coins via the CLI
+```bash
+'@type': /cosmos.auth.v1beta1.BaseAccount
+account_number: "xxxx"
+address: cosmosxxxx
+pub_key:
+  '@type': /cosmos.crypto.secp256k1.PubKey
+  key: xxx
+sequence: "x"
+```
 
-Here is the command to send coins via the CLI:
+### Check your Balance
+
+Query the account balance with the command:
+
+```bash
+gaiad query bank balances <YOUR_ADDRESS>
+```
+
+The response contains keys `balances` and `pagination`.
+Each `balances` entry contains an `amount` held, connected to a `denom` identifier.
+The typical $ATOM token is identified by the denom `uatom`. Where 1 `uatom` is 0.000001 ATOM.
+
+```bash
+balances: 
+- amount: "12345678"
+  denom: uatom
+pagination:
+  next_key: null
+  total: "0"
+```
+
+When you query an account that has not received any token yet, the `balances` entry is shown as an empty array.
+
+```bash
+balances: []
+pagination:
+  next_key: null
+  total: "0"
+```
+
+#### Send Coins Using the CLI
+
+To send coins using the CLI:
 
 ```bash
 gaiad tx send <from_key_or_address> <to_address> <amount> \
-    --chain-id=<name_of_testnet_chain> 
+    --chain-id=<your_chain_id> 
 ```
 
 Parameters:
 
 - `<from_key_or_address>`: Key name or address of sending account.
 - `<to_address>`: Address of the recipient.
-- `<amount>`: This parameter accepts the format `<value|coinName>`, such as `10faucetToken`.
+- `<amount>`: This parameter accepts the format `<value|coinName>`, such as `1000000uatom`.
 
 Flags:
 
-- `--chain-id`: This flag allows you to specify the id of the chain. There will be different ids for different testnet chains and main chain.
+- `--chain-id`: This flag allows you to specify the id of the chain. There are different ids for different testnet chains and mainnet chains.
+- `--gas-prices`: This flag allows you to specify the gas prices you pay for the transaction. The format is used as `0.025uatom`
 
-#### Help
+## REST API
 
-If you need to do something else, the best command you can run is:
+The [REST API documents](https://cosmos.network/rpc/) list all the available endpoints that you can use to interact
+with your full node. Learn [how to enable the REST API](../gaia-tutorials/join-mainnet.md#enable-the-rest-api) on your full node.
 
-```bash
-gaiad 
-```
+### Listen for Incoming Transactions
 
-It will display all the available commands. For each command, you can use the `--help` flag to get further information. 
+The recommended way to listen for incoming transactions is to periodically query the blockchain by using the following HTTP endpoint:
 
-## Setting up the Rest Server
-
-The Rest Server acts as an intermediary between the front-end and the full-node. You don't need to run the Rest Server on the same machine as the full-node. 
-
-To start the Rest server: 
-
-```bash
-gaiad rest-server --node=<full_node_address:full_node_port>
-```
-
-Flags:
-- `--trust-node`: A boolean. If `true`, light-client verification is disabled. If `false`, it is enabled. For service providers, this should be set to `true`. By default, it set to `false`. 
-- `--node`: This is where you indicate the address and the port of your full-node. The format is `<full_node_address:full_node_port>`. If the full-node is on the same machine, the address should be `tcp://localhost:26657`.
-- `--laddr`: This flag allows you to specify the address and port for the Rest Server (default `1317`). You will mostly use this flag only to specify the port, in which case just input "localhost" for the address. The format is <rest_server_address:port>.
-
-
-### Listening for incoming transaction
-
-The recommended way to listen for incoming transaction is to periodically query the blockchain through the following endpoint of the LCD:
-
-[`/bank/balance/{address}`](https://cosmos.network/rpc/#/ICS20/get_bank_balances__address_)
-
-## Rest API
-
-The Rest API documents all the available endpoints that you can use to interact
-with your full node. It can be found [here](https://cosmos.network/rpc/).
-
-The API is divided into ICS standards for each category of endpoints. For
-example, the [ICS20](https://cosmos.network/rpc/#/ICS20/) describes the API to
-interact with tokens.
-
-To give more flexibility to developers, we have included the ability to
-generate unsigned transactions, [sign](https://cosmos.network/rpc/#/ICS20/post_tx_sign)
-and [broadcast](https://cosmos.network/rpc/#/ICS20/post_tx_broadcast) them with
-different API endpoints. This allows service providers to use their own signing
-mechanism for instance.
-
-In order to generate an unsigned transaction (example with
-[coin transfer](https://cosmos.network/rpc/#/ICS20/post_bank_accounts__address__transfers)),
-you need to use the field `generate_only` in the body of `base_req`.
-
-## Cosmos SDK Transaction Signing
-
-Cosmos SDK transaction signing is a fairly simple process.
-
-Every Cosmos SDK transaction has a canonical JSON representation. The `gaiad`
-and Stargate REST interfaces provide canonical JSON representations of transactions
-and their "broadcast" functions will provide compact Amino (a protobuf-like wire format)
-encoding translations.
-
-Things to know when signing messages:
-
-The format is as follows
-
-```json
-{
-  "account_number": XXX,
-  "chain_id": XXX,
-  "fee": XXX,
-  "sequence": XXX,
-  "memo": XXX,
-  "msgs": XXX
-}
-```
-
-The signer must supply `"chain_id"`, `"account number"` and `"sequence number"`.
-
-The `"fee"`, `"msgs"` and `"memo"` fields will be supplied by the transaction
-composer interface.
-
-The `"account_number"` and `"sequence"` fields can be queried directly from the
-blockchain or cached locally. Getting these numbers wrong, along with the chainID,
-is a common cause of invalid signature error. You can load the mempool of a full
-node or validator with a sequence of uncommitted transactions with incrementing
-sequence numbers and it will mostly do the correct thing.  
-
-Before signing, all keys are lexicographically sorted and all white space is
-removed from the JSON output.
-
-The signature encoding is the 64-byte concatenation of ECDSArands (i.e. `r || s`),
-where `s` is lexicographically less than its inverse in order to prevent malleability.
-This is like Ethereum, but without the extra byte for PubKey recovery, since
-Tendermint assumes the PubKey is always provided anyway.
-
-Signatures and public key examples in a signed transaction:
-
-``` json
-{
-  "type": "auth/StdTx",
-  "value": {
-    "msg": [...],
-    "signatures": [
-      {
-        "pub_key": {
-          "type": "tendermint/PubKeySecp256k1",
-          "value": XXX
-        },
-        "signature": XXX
-      }
-    ],
-  }
-}
-```
-
-Once signatures are properly generated, insert the JSON into into the generated
-transaction and then use the broadcast endpoint.
+[`/cosmos/bank/v1beta1/balances/{address}`](https://cosmos.network/rpc/)

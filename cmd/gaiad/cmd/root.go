@@ -7,7 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
-	config "github.com/cosmos/cosmos-sdk/client/config"
+	"github.com/cosmos/cosmos-sdk/client/config"
 	"github.com/cosmos/cosmos-sdk/client/debug"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/keys"
@@ -40,7 +40,7 @@ import (
 func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	encodingConfig := gaia.MakeEncodingConfig()
 	initClientCtx := client.Context{}.
-		WithJSONMarshaler(encodingConfig.Marshaler).
+		WithJSONCodec(encodingConfig.Marshaler).
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
 		WithTxConfig(encodingConfig.TxConfig).
 		WithLegacyAmino(encodingConfig.Amino).

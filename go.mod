@@ -4,11 +4,9 @@ go 1.16
 
 require (
 	github.com/cosmos/cosmos-sdk v0.43.0-beta1.0.20210516010547-40c60e64d03b
-	github.com/cosmos/iavl v0.16.0 // indirect
 	github.com/cosmos/ibc-go v1.0.0-alpha2
 	github.com/gorilla/mux v1.8.0
 	github.com/pkg/errors v0.9.1
-	github.com/prometheus/common v0.23.0 // indirect
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/cast v1.3.1
 	github.com/spf13/cobra v1.1.3

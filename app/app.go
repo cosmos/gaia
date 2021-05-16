@@ -10,7 +10,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
-	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 
@@ -41,7 +40,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/vesting"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
-	authztypes "github.com/cosmos/cosmos-sdk/x/authz/types"
+	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -58,8 +57,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/evidence"
 	evidencekeeper "github.com/cosmos/cosmos-sdk/x/evidence/keeper"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
+	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
-	feegranttypes "github.com/cosmos/cosmos-sdk/x/feegrant/types"
+	feegrantmodule "github.com/cosmos/cosmos-sdk/x/feegrant/module"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/cosmos/cosmos-sdk/x/gov"
@@ -84,7 +84,7 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	gaiaappparams "github.com/cosmos/gaia/v5/app/params"
-	transfer "github.com/cosmos/ibc-go/modules/apps/transfer"
+	"github.com/cosmos/ibc-go/modules/apps/transfer"
 	ibctransferkeeper "github.com/cosmos/ibc-go/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/modules/apps/transfer/types"
 	ibc "github.com/cosmos/ibc-go/modules/core"
@@ -125,7 +125,8 @@ var (
 		evidence.AppModuleBasic{},
 		transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
-		feegrant.AppModuleBasic{},
+		feegrantmodule.AppModuleBasic{},
+		authzmodule.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -137,8 +138,6 @@ var (
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-		feegranttypes.ModuleName:       {authtypes.Minter, authtypes.Burner},
-		authztypes.ModuleName:          {authtypes.Minter, authtypes.Burner},
 	}
 )
 
@@ -153,7 +152,7 @@ var (
 type GaiaApp struct { // nolint: golint
 	*baseapp.BaseApp
 	legacyAmino       *codec.LegacyAmino
-	appCodec          codec.Marshaler
+	appCodec          codec.Codec
 	interfaceRegistry types.InterfaceRegistry
 
 	invCheckPeriod uint
@@ -223,7 +222,8 @@ func NewGaiaApp(
 		authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey,
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
-		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey, feegranttypes.StoreKey,
+		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey, feegrant.StoreKey,
+		authzkeeper.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -318,12 +318,12 @@ func NewGaiaApp(
 	app.EvidenceKeeper = *evidenceKeeper
 
 	feegrantKeeper := feegrantkeeper.NewKeeper(
-		appCodec, keys[feegranttypes.StoreKey], &app.AccountKeeper,
+		appCodec, keys[feegrant.StoreKey], &app.AccountKeeper,
 	)
 	app.FeeGrantKeeper = feegrantKeeper
 
 	authzKeeper := authzkeeper.NewKeeper(
-		keys[authztypes.StoreKey],appCodec, app.MsgServiceRouter(),
+		keys[authzkeeper.StoreKey],appCodec, app.MsgServiceRouter(),
 	)
 	app.AuthzKeeper = authzKeeper
 	/****  Module Options ****/
@@ -357,8 +357,8 @@ func NewGaiaApp(
 		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		upgrade.NewAppModule(app.UpgradeKeeper),
 		evidence.NewAppModule(app.EvidenceKeeper),
-		feegrant.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
-		authz.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
+		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
+		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
@@ -372,8 +372,8 @@ func NewGaiaApp(
 		upgradetypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName,
 	)
-	app.mm.SetOrderEndBlockers(crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, feegranttypes.ModuleName,
-		authztypes.ModuleName,
+	app.mm.SetOrderEndBlockers(crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, feegrant.ModuleName,
+		authz.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -384,8 +384,8 @@ func NewGaiaApp(
 	app.mm.SetOrderInitGenesis(
 		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName, stakingtypes.ModuleName,
 		slashingtypes.ModuleName, govtypes.ModuleName, minttypes.ModuleName, crisistypes.ModuleName,
-		ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName, ibctransfertypes.ModuleName, feegranttypes.ModuleName,
-		authztypes.ModuleName,
+		ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName, ibctransfertypes.ModuleName, feegrant.ModuleName,
+		authz.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -401,6 +401,8 @@ func NewGaiaApp(
 		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts),
 		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
 		capability.NewAppModule(appCodec, *app.CapabilityKeeper),
+		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
+		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper),
 		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper),
 		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
@@ -460,14 +462,6 @@ func NewGaiaApp(
 	return app
 }
 
-// MakeCodecs constructs the *std.Codec and *codec.LegacyAmino instances used by
-// Gaia. It is useful for tests and clients who do not want to construct the
-// full gaia application
-func MakeCodecs() (codec.Marshaler, *codec.LegacyAmino) {
-	config := MakeEncodingConfig()
-	return config.Marshaler, config.Amino
-}
-
 // Name returns the name of the App
 func (app *GaiaApp) Name() string { return app.BaseApp.Name() }
 
@@ -517,7 +511,7 @@ func (app *GaiaApp) LegacyAmino() *codec.LegacyAmino {
 //
 // NOTE: This is solely to be used for testing purposes as it may be desirable
 // for modules to register their own custom testing types.
-func (app *GaiaApp) AppCodec() codec.Marshaler {
+func (app *GaiaApp) AppCodec() codec.Codec {
 	return app.appCodec
 }
 
@@ -613,7 +607,7 @@ func GetMaccPerms() map[string][]string {
 }
 
 // initParamsKeeper init params keeper and its subspaces
-func initParamsKeeper(appCodec codec.BinaryMarshaler, legacyAmino *codec.LegacyAmino, key, tkey sdk.StoreKey) paramskeeper.Keeper {
+func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino, key, tkey sdk.StoreKey) paramskeeper.Keeper {
 	paramsKeeper := paramskeeper.NewKeeper(appCodec, legacyAmino, key, tkey)
 
 	paramsKeeper.Subspace(authtypes.ModuleName)
@@ -626,8 +620,6 @@ func initParamsKeeper(appCodec codec.BinaryMarshaler, legacyAmino *codec.LegacyA
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
-	paramsKeeper.Subspace(feegranttypes.ModuleName)
-	paramsKeeper.Subspace(authztypes.ModuleName)
 
 	return paramsKeeper
 }

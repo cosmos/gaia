@@ -61,9 +61,7 @@ github.com/aristanetworks/goarista v0.0.0-20170210015632-ea17b1a17847/go.mod h1:
 github.com/armon/circbuf v0.0.0-20150827004946-bbbad097214e/go.mod h1:3U/XgcO3hCbHZ8TKRvWD2dDTCfh9M9ya+I9JpbB7O8o=
 github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6/go.mod h1:grANhF5doyWs3UAsr3K4I6qtAmlQcZDesFNEHPZAzj8=
 github.com/armon/go-metrics v0.0.0-20180917152333-f0300d1749da/go.mod h1:Q73ZrmVTwzkszR9V5SSuryQ31EELlFMUz1kKyl939pY=
-github.com/armon/go-metrics v0.3.6/go.mod h1:4O98XIr/9W0sxpJ8UaYkvjk10Iff7SnFrb4QAOwNTFc=
-github.com/armon/go-metrics v0.3.7 h1:c/oCtWzYpboy6+6f6LjXRlyW7NwA2SWf+a9KMlHq/bM=
-github.com/armon/go-metrics v0.3.7/go.mod h1:4O98XIr/9W0sxpJ8UaYkvjk10Iff7SnFrb4QAOwNTFc=
+github.com/armon/go-metrics v0.3.8 h1:oOxq3KPj0WhCuy50EhzwiyMyG2ovRQZpZLXQuOh2a/M=
 github.com/armon/go-metrics v0.3.8/go.mod h1:4O98XIr/9W0sxpJ8UaYkvjk10Iff7SnFrb4QAOwNTFc=
 github.com/armon/go-radix v0.0.0-20180808171621-7fddfc383310/go.mod h1:ufUuZ+zHj4x4TnLV4JWEpy2hxWSpsRywHrMgIH9cCH8=
 github.com/aryann/difflib v0.0.0-20170710044230-e206f873d14a/go.mod h1:DAHtR1m6lCRdSC2Tm3DSWRPvIPr6xNKyeHdqDQSQT+A=
@@ -127,9 +125,6 @@ github.com/coreos/go-systemd v0.0.0-20180511133405-39ca1b05acc7/go.mod h1:F5haX7
 github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7vjVVG0kc13fIWeqUViNPyEJxv/OmvnBo0Yme4=
 github.com/coreos/pkg v0.0.0-20160727233714-3ac0863d7acf/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
 github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfcXa63jLwjI0eiQQMgzzUDFVpN/nH/eA=
-github.com/cosmos/cosmos-sdk v0.43.0-alpha1/go.mod h1:23fblvrFANcnpkzqX3zhlveFUymcvq3bNUsGUocDGOE=
-github.com/cosmos/cosmos-sdk v0.43.0-alpha1.0.20210509051442-abd86777da6a h1:jt2y/1eXhgrw+vT6emXrfdFWFlu+3qmegGJPkrs46JQ=
-github.com/cosmos/cosmos-sdk v0.43.0-alpha1.0.20210509051442-abd86777da6a/go.mod h1:23fblvrFANcnpkzqX3zhlveFUymcvq3bNUsGUocDGOE=
 github.com/cosmos/cosmos-sdk v0.43.0-beta1/go.mod h1:rpCPaC3MnityU4Io4CDZqZB4GMtPqNeYXxPk8iRqmYM=
 github.com/cosmos/cosmos-sdk v0.43.0-beta1.0.20210516010547-40c60e64d03b h1:JGgkDvWzMKqtiQcsmGMR9Cp3RHTtq3lqdZkQFHYVQQw=
 github.com/cosmos/cosmos-sdk v0.43.0-beta1.0.20210516010547-40c60e64d03b/go.mod h1:rpCPaC3MnityU4Io4CDZqZB4GMtPqNeYXxPk8iRqmYM=
@@ -141,8 +136,6 @@ github.com/cosmos/iavl v0.15.0-rc5/go.mod h1:WqoPL9yPTQ85QBMT45OOUzPxG/U/JcJoN7u
 github.com/cosmos/iavl v0.15.3/go.mod h1:OLjQiAQ4fGD2KDZooyJG9yz+p2ao2IAYSbke8mVvSA4=
 github.com/cosmos/iavl v0.16.0 h1:ICIOB8xysirTX27GmVAaoeSpeozzgSu9d49w36xkVJA=
 github.com/cosmos/iavl v0.16.0/go.mod h1:2A8O/Jz9YwtjqXMO0CjnnbTYEEaovE8jWcwrakH3PoE=
-github.com/cosmos/ibc-go v1.0.0-alpha1 h1:y/SHLt6Ka4gL3OaHmEItXInFaUSo9R9IYw7Ogz/5DqE=
-github.com/cosmos/ibc-go v1.0.0-alpha1/go.mod h1:TcKBAuDkqs6qCs6runA0UhjZ+anFp7OZZ1w7Hi4K0hk=
 github.com/cosmos/ibc-go v1.0.0-alpha2 h1:G7CQLTgH5CLXp6UajmBcM6GcWb63p+ZTmIYzZoC7rfg=
 github.com/cosmos/ibc-go v1.0.0-alpha2/go.mod h1:NU4IARjXt3Hj5xcju207SWjDMpqMx3CHUXejGe0EXfY=
 github.com/cosmos/ledger-cosmos-go v0.11.1 h1:9JIYsGnXP613pb2vPjFeMMjBI5lEDsEaF6oYorTy6J4=
@@ -523,8 +516,7 @@ github.com/openzipkin-contrib/zipkin-go-opentracing v0.4.5/go.mod h1:/wsWhb9smxS
 github.com/openzipkin/zipkin-go v0.1.6/go.mod h1:QgAqvLzwWbR/WpD4A3cGpPtJrZXNIiJc5AZX7/PBEpw=
 github.com/openzipkin/zipkin-go v0.2.1/go.mod h1:NaW6tEwdmWMaCDZzg8sh+IBNOxHMPnhQw8ySjnjRyN4=
 github.com/openzipkin/zipkin-go v0.2.2/go.mod h1:NaW6tEwdmWMaCDZzg8sh+IBNOxHMPnhQw8ySjnjRyN4=
-github.com/otiai10/copy v1.5.1 h1:a/cs2E1/1V0az8K5nblbl+ymEa4E11AfaOLMar8V34w=
-github.com/otiai10/copy v1.5.1/go.mod h1:XWfuS3CrI0R6IE0FbgHsEazaXO8G0LpMp9o8tos0x4E=
+github.com/otiai10/copy v1.6.0 h1:IinKAryFFuPONZ7cm6T6E2QX/vcJwSnlaA5lfoaXIiQ=
 github.com/otiai10/copy v1.6.0/go.mod h1:XWfuS3CrI0R6IE0FbgHsEazaXO8G0LpMp9o8tos0x4E=
 github.com/otiai10/curr v0.0.0-20150429015615-9b4961190c95/go.mod h1:9qAhocn7zKJG+0mI8eUu6xqkFDYS2kb2saOteoSB3cE=
 github.com/otiai10/curr v1.0.0/go.mod h1:LskTG5wDwr8Rs+nNQ+1LlxRjAtTZZjtJW4rMXl6j4vs=
@@ -580,7 +572,6 @@ github.com/prometheus/common v0.9.1/go.mod h1:yhUN8i9wzaXS3w1O07YhxHEBxD+W35wd8b
 github.com/prometheus/common v0.10.0/go.mod h1:Tlit/dnDKsSWFlCLTWaA1cyBgKHSMdTB80sz/V91rCo=
 github.com/prometheus/common v0.14.0/go.mod h1:U+gB1OBLb1lF3O42bTCL+FK18tX9Oar16Clt/msog/s=
 github.com/prometheus/common v0.18.0/go.mod h1:U+gB1OBLb1lF3O42bTCL+FK18tX9Oar16Clt/msog/s=
-github.com/prometheus/common v0.21.0/go.mod h1:U+gB1OBLb1lF3O42bTCL+FK18tX9Oar16Clt/msog/s=
 github.com/prometheus/common v0.23.0 h1:GXWvPYuTUenIa+BhOq/x+L/QZzCqASkVRny5KTlPDGM=
 github.com/prometheus/common v0.23.0/go.mod h1:H6QK/N6XVT42whUeIdI3dp36w49c+/iMDk7UAI2qm7Q=
 github.com/prometheus/procfs v0.0.0-20181005140218-185b4288413d/go.mod h1:c3At6R/oaqEKCNdg8wHV1ftS6bRYblBhIjjI8uT2IGk=

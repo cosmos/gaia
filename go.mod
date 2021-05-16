@@ -3,10 +3,9 @@ module github.com/cosmos/gaia/v5
 go 1.16
 
 require (
-	github.com/armon/go-metrics v0.3.7 // indirect
-	github.com/cosmos/cosmos-sdk v0.43.0-alpha1.0.20210509051442-abd86777da6a
+	github.com/cosmos/cosmos-sdk v0.43.0-beta1.0.20210516010547-40c60e64d03b
 	github.com/cosmos/iavl v0.16.0 // indirect
-	github.com/cosmos/ibc-go v1.0.0-alpha1
+	github.com/cosmos/ibc-go v1.0.0-alpha2
 	github.com/gorilla/mux v1.8.0
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/common v0.23.0 // indirect

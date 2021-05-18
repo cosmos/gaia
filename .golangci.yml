@@ -9,8 +9,6 @@ linters:
     - bodyclose
     - deadcode
     - depguard
-    - dogsled
-    # - errcheck
     - goconst
     - gocritic
     - gofmt
@@ -29,12 +27,9 @@ linters:
     - staticcheck
     - structcheck
     - stylecheck
-    - typecheck
     - unconvert
     - unused
     - unparam
-    # - wsl
-    - nolintlint
 
 issues:
   exclude-rules:

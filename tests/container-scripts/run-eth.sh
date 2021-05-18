@@ -11,9 +11,8 @@ geth --identity "AltheaTestnet" \
 geth --identity "AltheaTestnet" --nodiscover \
 --networkid 15 \
 --mine \
---rpc \
 --http \
---minerthreads=1 \
+--miner.threads=1 \
 --nousb \
 --verbosity=5 \
---etherbase=0xBf660843528035a5A4921534E156a27e64B231fE &> /geth.log
+--miner.etherbase=0xBf660843528035a5A4921534E156a27e64B231fE &> /geth.log

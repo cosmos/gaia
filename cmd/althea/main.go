@@ -3,21 +3,16 @@ package main
 import (
 	"os"
 
-	"github.com/cosmos/cosmos-sdk/server"
-	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
-
-	app "github.com/althea-net/althea-chain/app"
 	"github.com/althea-net/althea-chain/cmd/althea/cmd"
+	"github.com/cosmos/cosmos-sdk/server"
 )
 
 func main() {
 	rootCmd, _ := cmd.NewRootCmd()
-
-	if err := svrcmd.Execute(rootCmd, app.DefaultNodeHome); err != nil {
+	if err := cmd.Execute(rootCmd); err != nil {
 		switch e := err.(type) {
 		case server.ErrorCode:
 			os.Exit(e.Code)
-
 		default:
 			os.Exit(1)
 		}

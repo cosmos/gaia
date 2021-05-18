@@ -3,7 +3,7 @@ module github.com/althea-net/althea-chain
 go 1.15
 
 require (
-	github.com/althea-net/cosmos-gravity-bridge/module v0.0.0-20210517233717-bca90b08f42f // indirect
+	github.com/althea-net/cosmos-gravity-bridge/module v0.0.0-20210517233717-bca90b08f42f
 	github.com/btcsuite/btcd v0.21.0-beta
 	github.com/btcsuite/btcutil v1.0.2
 	github.com/cosmos/cosmos-sdk v0.42.1

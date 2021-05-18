@@ -27,3 +27,21 @@ The next major event in the launch of the Althea blockchain is Testnet #2, takin
 ## Join the Althea community!
 
 Join us on [Discord](https://discord.com/invite/vw8twzR) or [Matrix](https://riot.im/app/#/room/#althea:matrix.org)
+
+---
+
+# Developer instructions
+
+## Build and test
+
+```
+make
+make test
+```
+
+## Updating the Gravity dependency
+
+```
+go get github.com/althea-net/cosmos-gravity-bridge/module@<git commit hash or tag to target>
+go mod tidy
+```

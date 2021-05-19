@@ -10,8 +10,8 @@ A Linux server with any modern Linux distribution, 2gb of ram and at least 20gb 
 
 ```
 # the althea chain binary itself
-wget https://github.com/althea-net/althea-chain/releases/download/v0.0.5/althea-0.0.4-16-g6812f87-linux-amd64
-mv althea-0.0.4-16-g6812f87-linux-amd64 althea
+wget https://github.com/althea-net/althea-chain/releases/download/v0.2.1/althea-0.0.5-26-gcf92625-linux-amd64
+mv althea-0.0.5-26-gcf92625-linux-amd64 althea
 
 chmod +x althea
 sudo mv althea /usr/bin/
@@ -21,7 +21,7 @@ sudo mv althea /usr/bin/
 
 ```
 cd $HOME
-althea init mymoniker --chain-id althea-testnet1v5
+althea init mymoniker --chain-id althea-testnet2v1
 ```
 
 ### Generate your key
@@ -34,23 +34,25 @@ You'll be prompted to create a password, I suggest you pick something short sinc
 
 ```
 cd $HOME
-althea init mymoniker --chain-id althea-testnet1v5
+althea init mymoniker --chain-id althea-testnet2v1
 althea keys add myvalidatorkeyname
 ```
 
 ### Copy the genesis file
 
 ```
-wget https://github.com/althea-net/althea-chain/releases/download/v0.1.1/althea-testnet2-v1-genesis.json
-cp althea-testnet2-v1-genesis.json $HOME/.althea/config/genesis.json
+wget https://github.com/althea-net/althea-chain/releases/download/v0.2.1/althea-testnet2v1-genesis.json
+cp althea-testnet2v1-genesis.json $HOME/.althea/config/genesis.json
 ```
 
-### Add persistent peers
+### Add seed node
 
-Change the p2p.persistent_peers field in ~/.althea/config/config.toml to contain the following:
+Change the seed field in ~/.althea/config/config.toml to contain the following:
 
 ```
-persistent_peers = "05ded2f258ab158c5526eb53aa14d122367115a7@testnet1.althea.net:26656"
+
+seeds = "6a9cd8d87ab9e49d7af91e09026cb3f40dec2f85@testnet2.althea.net:26656"
+
 ```
 
 ### Start your full node and wait for it to sync

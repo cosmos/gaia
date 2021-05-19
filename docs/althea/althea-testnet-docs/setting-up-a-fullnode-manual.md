@@ -27,17 +27,17 @@ althea init mymoniker --chain-id althea-testnet2v1
 ### Copy the genesis file
 
 ```
-wget https://github.com/althea-net/althea-chain/releases/download/v0.2.1/althea-testnet2-v1-genesis.json
-cp althea-testnet2-v1-genesis.json $HOME/.althea/config/genesis.json
+wget https://github.com/althea-net/althea-chain/releases/download/v0.2.1/althea-testnet2v1-genesis.json
+cp althea-testnet2v1-genesis.json $HOME/.althea/config/genesis.json
 ```
 
 ### Add seed node
 
-Change the seed_nodes field in ~/.althea/config/config.toml to contain the following:
+Change the seed field in ~/.althea/config/config.toml to contain the following:
 
 ```
 
-seed_nodes = "c6031b3c9f179a3884ef559f@testnet2.althea.net:26656"
+seeds = "6a9cd8d87ab9e49d7af91e09026cb3f40dec2f85@testnet2.althea.net:26656"
 
 ```
 

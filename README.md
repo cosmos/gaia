@@ -11,6 +11,15 @@ Gaia is the first implementation of the Cosmos Hub, built using the [Cosmos SDK]
 
 Documentation for the Cosmos Hub lives at [hub.cosmos.network](https://hub.cosmos.network/main/hub-overview/overview.html).
 
+## Run a node
+
+* In a [configurable way](https://github.com/cosmos/gaia/blob/main/docs/gaia-tutorials/join-mainnet.md)
+* Instantly:
+
+```
+docker run -d tendermint/instagaia
+```
+
 ## Talk to us!
 
 We have active, helpful communities on Twitter, Discord, and Telegram.

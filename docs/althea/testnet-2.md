@@ -20,5 +20,4 @@ testnet2.althea.net
 - [Upgrading your validator](althea-testnet-docs/upgrading.md)
 - [Preparing for the next upgrade](althea-testnet-docs/preparing-for-upgrade.md) (Out of date)
 - [Testing Gravity](althea-testnet-docs/testing-gravity.md)
-- [Testing large Gravity tx batches](althea-testnet-docs/big-build-batch.md)
 - [Appendix](althea-testnet-docs/appendix.md)

@@ -20,7 +20,7 @@ The Althea blockchain is the community that will deliver this vision for the fut
 
 ## Testnet 2
 
-The next major event in the launch of the Althea blockchain is Testnet #2, taking place February 13th you can find the testnet 2 documentation [here](docs/althea/testnet-2.md)
+The next major event in the launch of the Althea blockchain is Testnet #2, which is online now! You can find the testnet 2 documentation [here](docs/althea/testnet-2.md)
 
 ---
 
@@ -41,7 +41,22 @@ make test
 
 ## Updating the Gravity dependency
 
+Note that you must use a git tag for releases to downstream chains, as this will produce the required binaries for the Gravity test suite
+
+because go get does not have vendoring you will have to use the git hash not the tag
+
 ```
-go get github.com/althea-net/cosmos-gravity-bridge/module@<git commit hash or tag to target>
+go get github.com/althea-net/cosmos-gravity-bridge/module@<git commit hash of tag>
 go mod tidy
+```
+
+then open `tests/dockerfile/Dockerfile` and update the git tag of the dependencies
+
+## Running the all up test suite
+
+This suite runs the full gravity set of tests against this chain
+
+```
+bash tests/build-container.sh
+bash tests/all-up-test.sh
 ```

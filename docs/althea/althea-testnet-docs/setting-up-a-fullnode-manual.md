@@ -10,8 +10,8 @@ A Linux server with any modern Linux distribution, 2gb of ram and at least 20gb 
 
 ```
 # the althea chain binary itself
-wget https://github.com/althea-net/althea-chain/releases/download/v0.1.1/althea-0.0.5-10-g8141769-linux-amd64
-mv althea-0.0.5-10-g8141769-linux-amd64 althea
+wget https://github.com/althea-net/althea-chain/releases/download/v0.2.1/althea-0.0.5-26-gcf92625-linux-amd64
+mv althea-0.0.5-26-gcf92625-linux-amd64 althea
 
 chmod +x althea
 sudo mv althea /usr/bin/
@@ -27,16 +27,18 @@ althea init mymoniker --chain-id althea-testnet2v1
 ### Copy the genesis file
 
 ```
-wget https://github.com/althea-net/althea-chain/releases/download/v0.1.1/althea-testnet2-v1-genesis.json
+wget https://github.com/althea-net/althea-chain/releases/download/v0.2.1/althea-testnet2-v1-genesis.json
 cp althea-testnet2-v1-genesis.json $HOME/.althea/config/genesis.json
 ```
 
-### Add persistent peers
+### Add seed node
 
-Change the p2p.persistent_peers field in ~/.althea/config/config.toml to contain the following:
+Change the seed_nodes field in ~/.althea/config/config.toml to contain the following:
 
 ```
-persistent_peers = "05ded2f258ab158c5526eb53aa14d122367115a7@testnet1.althea.net:26656"
+
+seed_nodes = "c6031b3c9f179a3884ef559f@testnet2.althea.net:26656"
+
 ```
 
 ### Start your full node and wait for it to sync

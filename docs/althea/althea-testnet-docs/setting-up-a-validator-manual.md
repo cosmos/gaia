@@ -251,7 +251,7 @@ RUST_LOG=INFO orchestrator \
  --cosmos-grpc="http://localhost:9090" \
  --ethereum-rpc="http://localhost:8545" \
  --fees=ufootoken \
- --address-prefix=althea
+ --address-prefix=althea \
  --contract-address="0xFA2f45c5C8AcddFfbA0E5228bDf7E8B8f4fD2E84"
 
 ```

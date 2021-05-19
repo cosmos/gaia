@@ -9,8 +9,6 @@ WORKDIR /go/src/github.com/cosmos/gaia
 # Add source files
 COPY . .
 
-RUN go version
-
 # Install minimum necessary dependencies, build Cosmos SDK, remove packages
 RUN apk add --no-cache $PACKAGES && \
     make install

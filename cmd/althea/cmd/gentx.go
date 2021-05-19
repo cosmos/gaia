@@ -147,12 +147,6 @@ $ %s gentx my-key-name 1000000stake 0x033030FEeBd93E3178487c35A9c8cA80874353C9 c
 				return errors.Wrap(err, "failed to validate validator account in genesis")
 			}
 
-			// validate orchestrator account in genesis and warn if not found
-			if err = genutil.ValidateAccountInGenesis(genesisState, genBalIterator, orchAddress, coins, cdc); err != nil {
-				cmd.PrintErrf("orchestrator address not found in genesis file: %s\n", orchAddress)
-				return nil
-			}
-
 			txFactory := tx.NewFactoryCLI(clientCtx, cmd.Flags())
 			if err != nil {
 				return errors.Wrap(err, "error creating tx builder")

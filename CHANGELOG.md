@@ -38,6 +38,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 * (tendermint) Bump Tendermint version to [v0.34.10](https://github.com/tendermint/tendermint/releases/tag/v0.34.10).
 * (golang) Bump golang prerequisite from 1.15 to 1.16.
+* (gaia) Add [Liquidity](https://github.com/tendermint/liquidity) module.
 
 ## [v4.2.1] - 2021-04-08
 

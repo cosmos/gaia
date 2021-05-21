@@ -88,6 +88,12 @@ def get_validator_id(target_dir):
 
 
 common_genesis = working_directory + template_replacements['replacement_genesis']
+# support compressed genesis files
+if common_genesis.endswith(".tar.gz"):
+    unzip_cmd = "tar zxvf " + common_genesis + " --cd " + working_directory + "templates"
+    print("unzip_cmd:" + unzip_cmd)
+    subprocess.call(unzip_cmd, shell=True)
+    common_genesis = common_genesis.rstrip(".tar.gz")
 
 if len(template_replacements['replacement_genesis']) > 0:
     # cat genesis.cosmoshub-4.json| jq -s '.[].validators[] | { address: .address, power: .power, name: .name }'
@@ -152,10 +158,12 @@ if len(template_replacements['replacement_genesis']) > 0:
 
     # gaiad migrate cosmoshub_3_genesis_export.json --chain-id=cosmoshub-4 --initial-height [last_cosmoshub-3_block+1] > genesis.json
     print("migration genesis:" + str(common_genesis))
-    cmd_string = 'gaiad migrate ' + working_directory + 'templates/3924406.cosmoshub-3.json --chain-id cosmoshub-4 --initial-height 0  --replacement-cons-keys ' + working_directory + 'templates/validator_replacement_output.json > ' + working_directory + 'templates/genesis_replaced.json'
-
+    cmd_string = 'gaiad migrate ' + common_genesis + ' --chain-id cosmoshub-4 --initial-height 0  --replacement-cons-keys ' + working_directory + 'templates/validator_replacement_output.json > ' + working_directory + 'templates/genesis_replaced.json'
     print("cmd_string:" + cmd_string)
     subprocess.call([cmd_string], shell=True)
+
+    # compress genesis
+    subprocess.call('tar zcvf ' + working_directory + 'templates/genesis_replaced.json.tar.gz --cd ' + working_directory + 'templates genesis_replaced.json', shell=True)
 
     common_genesis = working_directory + 'templates/genesis_replaced.json'
 

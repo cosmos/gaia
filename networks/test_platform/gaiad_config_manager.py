@@ -73,7 +73,7 @@ local_sequence = 0
 
 
 def get_validator_pubkey(target_dir):
-    val_pub_key = subprocess.check_output(['gaiad', 'tendermint', 'show-validator'])
+    val_pub_key = subprocess.check_output(['gaiad', 'tendermint', 'show-validator', '--home', target_dir.rstrip('/config')])
     val_pub_key = val_pub_key.decode("utf-8").rstrip('\n')
     return val_pub_key
 
@@ -127,7 +127,10 @@ if len(template_replacements['replacement_genesis']) > 0:
 
     # specify the output
     for node_num in range(safe_index):
-        target_files.append(target_dir.replace("node0", "node" + str(node_num)))
+        target_file = target_dir.replace("node0", "node" + str(node_num))
+        target_files.append(target_file)
+        subprocess.call("gaiad init node" + str(node_num) + " -o --home "+target_file.rstrip('/config'), shell=True)
+        subprocess.call('gaiad unsafe-reset-all --home ' + target_file.rstrip('/config'), shell=True)
 
     print("target_files:"+str(target_files))
 
@@ -151,9 +154,11 @@ if len(template_replacements['replacement_genesis']) > 0:
 
     # gaiad migrate cosmoshub_3_genesis_export.json --chain-id=cosmoshub-4 --initial-height [last_cosmoshub-3_block+1] > genesis.json
     print("migration genesis:" + str(common_genesis))
-    cmd_string = 'gaiad migrate ' + target_files[0] + 'genesis.json --chain-id=cosmoshub-3 --initial-height 1 --home ' + target_files[0].rstrip('/config') + ' --replacement-cons-keys ' + working_directory + 'templates/validator_replacement_output.json > ' + working_directory + 'templates/genesis_replaced.json'
+    cmd_string = 'gaiad migrate ' + target_files[0] + 'genesis.json --chain-id=cosmoshub-4 --initial-height 1 --home ' + target_files[0].rstrip('/config') + ' > ' + working_directory + 'templates/genesis_replaced.json'
+    #  --replacement-cons-keys ' + working_directory + 'templates/validator_replacement_output.json
     print("cmd_string:" + cmd_string)
     subprocess.call([cmd_string], shell=True)
+
     common_genesis = working_directory + 'templates/genesis_replaced.json'
 else:
     # gaiad testnet --keyring-backend test --v 4

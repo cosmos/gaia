@@ -35,7 +35,7 @@ sudo mv * /usr/bin/
 
 At specific points during the testnet you may be told to 'update your orchestrator' or 'update your althea binary'. In order to do that you can simply repeat the above instructions and then restart the affected software.
 
-to check what version of the tools you have run `orchestrator --version` the current latest version is `0.4.1`
+to check what version of the tools you have run `orchestrator --version` the current latest version is `0.4.3`
 
 ### Generate your key
 

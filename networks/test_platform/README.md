@@ -11,6 +11,13 @@ This tool aims to simplify testing of key Cosmos Hub operations, such as module 
 1. Gaiad nodes all started on one machine without conflict
 1. All nodes generate, propose, and vote on blocks
 1. Stopping app stops all instances
+1. Support specifying a pre-existing genesis file
+1. Supports taking a pre-existing genesis file and creating a network with a sufficient number of validators. The network
+   creates as many validators as needed to attain majority voting power on the new network (and produce new blocks with pre-existing genesis file).
+   The validators that are replaced is the set that provides at least 66% of the total voting power given in the genesis file.
+   
+   **This feature allows testing upgrades and module migrations of existing networks, using their pre-existing genesis** :star:
+
 
 ## Usage
 

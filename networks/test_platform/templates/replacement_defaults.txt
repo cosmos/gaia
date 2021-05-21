@@ -1,8 +1,8 @@
-num_of_nodes_to_apply=1
-replacement_genesis=
+replacement_genesis_make_safe=True
 replacement_genesis=templates/3924406.cosmoshub-3.json
 replacement_genesis=templates/3924406.cosmoshub-3.json.tar.gz
-replacement_genesis_make_safe=True
+replacement_genesis=
+num_of_nodes_to_apply=4
 LOG_LEVEL=debug
 P2P_PEERID_IP=0.0.0.0
 P2P_LADDR=tcp://0.0.0.0

@@ -21,7 +21,8 @@ This tool aims to simplify testing of key Cosmos Hub operations, such as module 
    1. To create a network based on an existing genesis file:
       1. Set `replacement_genesis` to the source genesis file; `.tar.gz` files are also supported
       1. Set `replacement_genesis_make_safe` to `True` in order to create as many nodes as needed to run a majority of validators. 
-      1. Otherwise, set `replacement_genesis_make_safe` value to blank to create `num_of_nodes_to_apply` nodes, e.g., `replacement_genesis_make_safe=`
+      1. Otherwise, set `replacement_genesis_make_safe` value to blank to create `num_of_nodes_to_apply` nodes, e.g., `replacement_genesis_make_safe=`. 
+         Important: if the `replacement_genesis_make_safe` is not set, then the validator keys in the genesis file aren't replaced and so the network may not produce new blocks.
    1. Optionally, set `LOG_LEVEL` to one of _(trace | debug | info | warn | error | fatal | panic)_; default _info_
 1. Start  `gaiad_config_manager.py`
 

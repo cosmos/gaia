@@ -150,8 +150,6 @@ if len(template_replacements['replacement_genesis']) > 0:
     with open(working_directory + 'templates/validator_replacement_output.json', 'w') as f:
         f.write(str(json.dumps(output_els)))
 
-    shutil.copy2(common_genesis, target_files[0] + 'genesis.json')
-
     # gaiad migrate cosmoshub_3_genesis_export.json --chain-id=cosmoshub-4 --initial-height [last_cosmoshub-3_block+1] > genesis.json
     print("migration genesis:" + str(common_genesis))
     cmd_string = 'gaiad migrate ' + working_directory + 'templates/3924406.cosmoshub-3.json --chain-id cosmoshub-4 --initial-height 0  --replacement-cons-keys ' + working_directory + 'templates/validator_replacement_output.json > ' + working_directory + 'templates/genesis_replaced.json'
@@ -160,6 +158,12 @@ if len(template_replacements['replacement_genesis']) > 0:
     subprocess.call([cmd_string], shell=True)
 
     common_genesis = working_directory + 'templates/genesis_replaced.json'
+
+    # create each target's config files
+    for target_file in target_files:
+        # copy genesis if a file path to a genesis file is set
+        print("common_genesis:" + common_genesis)
+        shutil.copy2(common_genesis, target_file + 'genesis.json')
 else:
     # gaiad testnet --keyring-backend test --v 4
     print("Creating testnet subdirectories")
@@ -173,13 +177,6 @@ else:
         target_files.append(target_dir.replace("node0", "node" + str(node_num)))
 
     subprocess.call(['gaiad', 'testnet', '--keyring-backend', 'test', '--v', str(num_of_nodes_to_apply)])
-
-    # create each target's config files
-    for target_file in target_files:
-        # copy genesis if a file path to a genesis file is set
-        if len(template_replacements['replacement_genesis']) > 0:
-            print("common_genesis:" + common_genesis)
-            shutil.copy2(common_genesis, target_file + 'genesis.json')
 
 peer_ids = [get_validator_id(t) for t in target_files]
 peers = ",".join(peer_ids)

@@ -129,7 +129,7 @@ if len(template_replacements['replacement_genesis']) > 0:
     for node_num in range(safe_index):
         target_file = target_dir.replace("node0", "node" + str(node_num))
         target_files.append(target_file)
-        subprocess.call("gaiad init node" + str(node_num) + " -o --home "+target_file.rstrip('/config'), shell=True)
+        # subprocess.call("gaiad init node" + str(node_num) + " -o --home "+target_file.rstrip('/config'), shell=True)
         subprocess.call('gaiad unsafe-reset-all --home ' + target_file.rstrip('/config'), shell=True)
 
     print("target_files:"+str(target_files))
@@ -154,8 +154,8 @@ if len(template_replacements['replacement_genesis']) > 0:
 
     # gaiad migrate cosmoshub_3_genesis_export.json --chain-id=cosmoshub-4 --initial-height [last_cosmoshub-3_block+1] > genesis.json
     print("migration genesis:" + str(common_genesis))
-    cmd_string = 'gaiad migrate ' + target_files[0] + 'genesis.json --chain-id=cosmoshub-4 --initial-height 1 --home ' + target_files[0].rstrip('/config') + ' > ' + working_directory + 'templates/genesis_replaced.json'
-    #  --replacement-cons-keys ' + working_directory + 'templates/validator_replacement_output.json
+    cmd_string = 'gaiad migrate ' + working_directory + 'templates/3924406.cosmoshub-3.json --chain-id cosmoshub-4 --initial-height 0  --replacement-cons-keys ' + working_directory + 'templates/validator_replacement_output.json > ' + working_directory + 'templates/genesis_replaced.json'
+
     print("cmd_string:" + cmd_string)
     subprocess.call([cmd_string], shell=True)
 
@@ -180,6 +180,7 @@ else:
         if len(template_replacements['replacement_genesis']) > 0:
             print("common_genesis:" + common_genesis)
             shutil.copy2(common_genesis, target_file + 'genesis.json')
+
 peer_ids = [get_validator_id(t) for t in target_files]
 peers = ",".join(peer_ids)
 print("testnet peer ids:" + peers)

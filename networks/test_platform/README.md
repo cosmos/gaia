@@ -16,8 +16,8 @@ This tool aims to simplify testing of key Cosmos Hub operations, such as module 
 
 1. Configure `template/replacement_defaults.txt`:
    1. To create a network from scratch:
-      1. Set `num_of_nodes_to_apply` to the _number of nodes to run_, e.g., `num_of_nodes_to_apply=4`
       1. Set `replacement_genesis` value to blank, e.g., `replacement_genesis=`
+      1. Set `num_of_nodes_to_apply` to the _number of nodes to run_, e.g., `num_of_nodes_to_apply=4`
    1. To create a network based on an existing genesis file:
       1. Set `replacement_genesis` to the source genesis file; `.tar.gz` files are also supported
       1. Set `replacement_genesis_make_safe` to `True` in order to create as many nodes as needed to run a majority of validators. 

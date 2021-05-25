@@ -15,14 +15,12 @@ a large balance of ERC20 tokens from the contracts listed here.
 Note that the 'amount' field for this command is now in whole coins rather than wei like the previous testnets
 
 ```
-RUST_LOG=info client eth-to-cosmos \
-        --ethereum-key="0xb1bab011e03a9862664706fc3bbaa1b16651528e5f0e7fbfcbfdd8be302a13e7" \
-        --ethereum-rpc="http://localhost:8545" \
-        --contract-address="0xFA2f45c5C8AcddFfbA0E5228bDf7E8B8f4fD2E84" \
-        --address-prefix="althea"
-        --erc20-address="any of the three values above" \
+gbt -a althea client eth-to-cosmos \
+        --ethereum-key "0xb1bab011e03a9862664706fc3bbaa1b16651528e5f0e7fbfcbfdd8be302a13e7" \
+        --gravity-contract-address "0xFA2f45c5C8AcddFfbA0E5228bDf7E8B8f4fD2E84" \
+        --token-contract-address "any of the three values above" \
         --amount=1 \
-        --cosmos-destination="any Cosmos address, I suggest your delegate Cosmos address"
+        --destination "any Cosmos address, I suggest your delegate Cosmos address"
 ```
 
 You should see a message like this on your Orchestrator. The details of course will be different but it means that your Orchestrator has observed the event on Ethereum and sent the details into the Cosmos chain!
@@ -47,13 +45,11 @@ gravity0xD7600ae27C99988A6CD360234062b540F88ECA43
 ```
 
 ```
-RUST_LOG=info client cosmos-to-eth \
-        --cosmos-phrase="the phrase containing the Gravity bridged tokens" \
-        --cosmos-grpc="http://localhost:9090" \
-        --address-prefix="althea" \
-        --cosmos-denom="any denom" \
+gbt -a althea client cosmos-to-eth \
+        --cosmos-phrase "the phrase containing the Gravity bridged tokens" \
+        --denom "any denom" \
         --amount=.5 \
-        --eth-destination="any eth address, try your delegate eth address"
+        --eth-destination "any eth address, try your delegate eth address"
 ```
 
 It will take a moment or two for Etherescan to catch up, but once it has you'll see the new ERC20 token balance reflected at https://goerli.etherscan.io/

@@ -17,7 +17,7 @@ To increase your ualtg stake, if you have extra tokens lying around. The first c
 
 ```
 althea keys show myvalidatorkeyname --bech val
-althea tx staking delegate <the address from the above command> 99000000ualtg --from myvalidatorkeyname --chain-id althea-testnet1v5 --fees 50ualtg --broadcast-mode block
+althea tx staking delegate <the address from the above command> 99000000ualtg --from myvalidatorkeyname --chain-id althea-testnet1v5 --fees 1altg --broadcast-mode block
 ```
 
 ## Unjail your validator

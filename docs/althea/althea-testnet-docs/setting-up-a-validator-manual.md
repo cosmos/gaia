@@ -127,7 +127,7 @@ althea tx staking create-validator \
  --min-self-delegation="1" \
  --gas="auto" \
  --gas-adjustment=1.5 \
- --gas-prices="0.025ualtg" \
+ --gas-prices="1altg" \
  --from=myvalidatorkeyname
 
 ```
@@ -154,7 +154,7 @@ Delegate keys allow the for the validator private keys to be kept in secure stor
 
 ```
 
-gbt -a althea keys register-orchestrator-address --validator-phrase "the phrase you saved earlier" --fees=100ufootoken
+gbt -a althea keys register-orchestrator-address --validator-phrase "the phrase you saved earlier" --fees=125000ualtg
 
 ```
 
@@ -245,7 +245,7 @@ nano start-orchestrator.sh
 
 #!/bin/bash
 gbt -a althea orchestrator \
-         --fees 100ufootoken \
+         --fees 125000ualtg \
          --gravity-contract-address "0xFA2f45c5C8AcddFfbA0E5228bDf7E8B8f4fD2E84"
 
 ```

@@ -597,8 +597,8 @@ github.com/tendermint/crypto v0.0.0-20191022145703-50d29ede1e15 h1:hqAk8riJvK4RM
 github.com/tendermint/crypto v0.0.0-20191022145703-50d29ede1e15/go.mod h1:z4YtwM70uOnk8h0pjJYlj3zdYwi9l03By6iAIF5j/Pk=
 github.com/tendermint/go-amino v0.16.0 h1:GyhmgQKvqF82e2oZeuMSp9JTN0N09emoSZlb2lyGa2E=
 github.com/tendermint/go-amino v0.16.0/go.mod h1:TQU0M1i/ImAo+tYpZi73AU3V/dKeCoMC9Sphe2ZwGME=
-github.com/tendermint/liquidity v1.2.6-rc1 h1:Hf+/hlxy6W5FFT4Pxi/wvxe2o8b44KCaM3JpO6cwIkQ=
-github.com/tendermint/liquidity v1.2.6-rc1/go.mod h1:giWBVS1/cJN9SYh0KsOVLdIeZzTDi/Cnvb1RcQLnBHE=
+github.com/tendermint/liquidity v1.2.6-rc2 h1:1ypAjz6a1FmM1YhJrdEozjedXfI/zPxudwWyM//P2LQ=
+github.com/tendermint/liquidity v1.2.6-rc2/go.mod h1:giWBVS1/cJN9SYh0KsOVLdIeZzTDi/Cnvb1RcQLnBHE=
 github.com/tendermint/tendermint v0.34.0-rc4/go.mod h1:yotsojf2C1QBOw4dZrTcxbyxmPUrT4hNuOQWX9XUwB4=
 github.com/tendermint/tendermint v0.34.0-rc6/go.mod h1:ugzyZO5foutZImv0Iyx/gOFCX6mjJTgbLHTwi17VDVg=
 github.com/tendermint/tendermint v0.34.0/go.mod h1:Aj3PIipBFSNO21r+Lq3TtzQ+uKESxkbA3yo/INM4QwQ=

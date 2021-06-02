@@ -19,12 +19,12 @@ cd althea-bin
 
 # the althea chain binary itself
 
-wget https://github.com/althea-net/althea-chain/releases/download/v0.2.1/althea-0.0.5-26-gcf92625-linux-amd64
+wget https://github.com/althea-net/althea-chain/releases/download/v0.2.2/althea-0.0.5-26-gcf92625-linux-amd64
 mv althea-0.0.5-26-gcf92625-linux-amd64 althea
 
 # Tools for the gravity bridge from the gravity repo
 
-wget https://github.com/althea-net/althea-chain/releases/download/v0.2.1/gbt
+wget https://github.com/althea-net/althea-chain/releases/download/v0.2.2/gbt
 chmod +x *
 sudo mv * /usr/bin/
 
@@ -45,7 +45,7 @@ You'll be prompted to create a password, I suggest you pick something short sinc
 ```
 
 cd $HOME
-althea init mymoniker --chain-id althea-testnet2v1
+althea init mymoniker --chain-id althea-testnet2v2
 althea keys add myvalidatorkeyname
 
 ```
@@ -54,8 +54,8 @@ althea keys add myvalidatorkeyname
 
 ```
 
-wget https://github.com/althea-net/althea-chain/releases/download/v0.2.1/althea-testnet2v1-genesis.json
-cp althea-testnet2v1-genesis.json $HOME/.althea/config/genesis.json
+wget https://github.com/althea-net/althea-chain/releases/download/v0.2.2/althea-testnet2v2-genesis.json
+cp althea-testnet2v2-genesis.json $HOME/.althea/config/genesis.json
 
 ```
 
@@ -102,11 +102,9 @@ althea keys list
 
 Copy your address from the 'address' field and paste it into the command below remember to remove the `<>`
 
-While this testnet is private the faucet will require a password.
-
 ```
 
-curl -vv -XPOST http://testnet2.althea.net/get_altg/<your address here without the brackets>/<password>
+curl -vv -XPOST http://testnet2.althea.net/get_altg/<your address here without the brackets>
 
 ```
 
@@ -152,6 +150,8 @@ You are now validating on the Althea blockchain. But as a validator you also nee
 
 Delegate keys allow the for the validator private keys to be kept in secure storage while the Orchestrator can use it's own delegated keys for Gravity functions. The delegate keys registration tool will generate Ethereum and Cosmos keys for you if you don't provide any. These will be saved in your local config for later use.
 
+\*\*If you have set a minimum fee value in your `~/.althea/config/app.toml` modify the `--fees` parameter to match that value!
+
 ```
 
 gbt -a althea keys register-orchestrator-address --validator-phrase "the phrase you saved earlier" --fees=125000ualtg
@@ -174,7 +174,7 @@ Both your Ethereum delegate key and your Cosmos delegate key will need some toke
 
 In a production network only relayers would need Ethereum to fund relaying, but for this testnet all validators run relayers by default, allowing us to more easily simulate a lively economy of many relayers.
 
-You should have received 2 two million Althea Governance Token in ALTG and the same amount of footoken. We're going to send half of hte footoken to the delegate address
+You should have received fifty thousand Althea Governance Token in ALTG and the same amount of footoken. We're going to send half of the footoken to the delegate address
 
 To get the address for your validator key you can run the below, where 'myvalidatorkeyname' is whatever you named your key in the 'generate your key' step.
 
@@ -186,7 +186,7 @@ althea keys show myvalidatorkeyname
 
 ```
 
-althea tx bank send myvalidatorkeyname <your delegate cosmos address> 10000000000ufootoken --chain-id=althea-testnet2v1
+althea tx bank send myvalidatorkeyname <your delegate cosmos address> 250000000000ufootoken --chain-id=althea-testnet2v2
 
 ```
 
@@ -235,6 +235,8 @@ If your Orchestrator goes down for more than 16 hours during the testnet you wil
 
 Since you'll be running this a lot I suggest putting the command into a script, like so. The next version of the orchestrator will use a config file for these values and have encrypted key storage.
 
+\*\*If you have set a minimum fee value in your `~/.althea/config/app.toml` modify the `--fees` parameter to match that value!
+
 ```
 
 nano start-orchestrator.sh
@@ -245,7 +247,7 @@ nano start-orchestrator.sh
 
 #!/bin/bash
 gbt -a althea orchestrator \
-         --fees 125000ualtg \
+         --fees 125000ufootoken \
          --gravity-contract-address "0xFA2f45c5C8AcddFfbA0E5228bDf7E8B8f4fD2E84"
 
 ```

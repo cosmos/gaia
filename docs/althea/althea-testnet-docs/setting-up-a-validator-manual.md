@@ -115,7 +115,7 @@ This will provide you 10 ALTG from the faucet storage.
 ```
 
 althea tx staking create-validator \
- --amount=500000000000ualtg \
+ --amount=50000000000ualtg \
  --pubkey=$(althea tendermint show-validator) \
  --moniker="put your validator name here" \
  --chain-id=althea-testnet2v1 \
@@ -186,7 +186,7 @@ althea keys show myvalidatorkeyname
 
 ```
 
-althea tx bank send myvalidatorkeyname <your delegate cosmos address> 250000000000ufootoken --chain-id=althea-testnet2v2
+althea tx bank send myvalidatorkeyname <your delegate cosmos address> 25000000000ufootoken --chain-id=althea-testnet2v2
 
 ```
 

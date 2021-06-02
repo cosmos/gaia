@@ -125,7 +125,7 @@ althea tx staking create-validator \
  --min-self-delegation="1" \
  --gas="auto" \
  --gas-adjustment=1.5 \
- --gas-prices="1altg" \
+ --gas-prices="1ualtg" \
  --from=myvalidatorkeyname
 
 ```

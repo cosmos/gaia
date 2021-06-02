@@ -85,7 +85,7 @@ The optionality around complex delegations would eventually increase the possibl
 
 ### Epoch Staking
 
-The current Staking Module of the Cosmos SDK is moving towards Epoch based staking. This means that instead of validator set delegation amounts being calculated on a per block basis, they will be calculated over some group of time (or blocks) called an Epoch. This will decrease the number of times staking is calculated and generally decrease the complexity involved in staking. The additional complexity of chain relevant stake calculations will similarly benefit from a general simplification of stake calculations.
+The current Staking Module of the Cosmos SDK is moving towards Epoch based staking. This means that instead of validator set delegation amounts being calculated on a per block basis, they will be calculated over some group of time (or blocks) called an Epoch. This will decrease the number of times staking is calculated and generally decrease the complexity involved in staking. The additional complexity of chain relevant stake calculations will similarly benefit from a general simplification of stake calculations, and it will require less packets to be sent between the chains.
 
 
 ## Parent Chain Distribution Module

@@ -25,7 +25,7 @@ sudo mv * /usr/bin/
 
 ```
 
-run `gbt --version` to check that you where successful, the current latest version is `gbt 0.5.2`
+run `gbt --version` to check that you where successful, the current latest version is `gbt 0.5.3`
 
 ## Update your genesis file
 

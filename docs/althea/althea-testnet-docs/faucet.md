@@ -21,7 +21,7 @@ sudo mv althea /usr/bin/
 
 ```
 cd $HOME
-althea init mymoniker --chain-id althea-testnet2v1
+althea init mymoniker --chain-id althea-testnet2v2
 ```
 
 ### Generate your key
@@ -34,15 +34,15 @@ You'll be prompted to create a password, I suggest you pick something short sinc
 
 ```
 cd $HOME
-althea init mymoniker --chain-id althea-testnet2v1
+althea init mymoniker --chain-id althea-testnet2v2
 althea keys add myvalidatorkeyname
 ```
 
 ### Copy the genesis file
 
 ```
-wget https://github.com/althea-net/althea-chain/releases/download/v0.2.1/althea-testnet2v1-genesis.json
-cp althea-testnet2v1-genesis.json $HOME/.althea/config/genesis.json
+wget https://github.com/althea-net/althea-chain/releases/download/v0.2.2/althea-testnet2v2-genesis.json
+cp althea-testnet2v2-genesis.json $HOME/.althea/config/genesis.json
 ```
 
 ### Add seed node

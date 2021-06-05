@@ -153,6 +153,7 @@ Delegate keys allow the for the validator private keys to be kept in secure stor
 \*\*If you have set a minimum fee value in your `~/.althea/config/app.toml` modify the `--fees` parameter to match that value!
 
 ```
+gbt init
 
 gbt -a althea keys register-orchestrator-address --validator-phrase "the phrase you saved earlier" --fees=125000ualtg
 

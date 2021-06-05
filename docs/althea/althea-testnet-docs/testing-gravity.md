@@ -46,8 +46,8 @@ gravity0xD7600ae27C99988A6CD360234062b540F88ECA43
 
 ```
 gbt -a althea client cosmos-to-eth \
-        --cosmos-phrase "the phrase containing the Gravity bridged tokens" \
-        --fees 100footoken
+        --cosmos-phrase "the phrase containing the Gravity bridged tokens (delegate keys mnemonic)" \
+        --fees 100footoken \
         --amount 100000000000gravity0xD7600ae27C99988A6CD360234062b540F88ECA43 \
         --eth-destination "any eth address, try your delegate eth address"
 ```

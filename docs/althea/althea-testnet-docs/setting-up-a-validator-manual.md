@@ -65,7 +65,7 @@ Change the seed field in ~/.althea/config/config.toml to contain the following:
 
 ```
 
-seeds = "6a9cd8d87ab9e49d7af91e09026cb3f40dec2f85@testnet2.althea.net:26656"
+seeds = "6a9cd8d87ab9e49d7af91e09026cb3f40dec2f85@testnet2.althea.net:26656,3b8af242bf3bb82c203d1d8ef0949f8ca48767c8@althea-sentry-01.mahdisworld.net:26656,02c2b59771c3626f6744ab1fb1048ba967cb82cd@althea-sentry-02.mahdisworld.net:26656"
 
 ```
 

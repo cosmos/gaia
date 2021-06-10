@@ -78,7 +78,19 @@ If we don't raise this value nodes will crash once the network grows large enoug
 sudo su -c "echo 'fs.file-max = 65536' >> /etc/sysctl.conf"
 sysctl -p
 
+sudo su -c "echo '* hard nofile 94000'" >> /etc/security/limits.conf
+sudo su -c "echo '* soft nofile 94000'" >> /etc/security/limits.conf
 ```
+
+For this to take effect you'll need to (A) reboot (B) close and re-open all ssh sessions
+
+To check if this has worked run
+
+```
+ulimit -n
+```
+
+If you see `1024` _then you need to reboot_
 
 ### Start your full node and wait for it to sync
 
@@ -153,6 +165,7 @@ Delegate keys allow the for the validator private keys to be kept in secure stor
 \*\*If you have set a minimum fee value in your `~/.althea/config/app.toml` modify the `--fees` parameter to match that value!
 
 ```
+
 gbt init
 
 gbt -a althea keys register-orchestrator-address --validator-phrase "the phrase you saved earlier" --fees=125000ualtg
@@ -166,7 +179,9 @@ gbt -a althea keys register-orchestrator-address --validator-phrase "the phrase 
 This is an **optional** step for those who are using hardware security for their validator key. In order to register your keys you will use the `althea` cli instead of `gbt`. You will need to generate one ethereum key and one cosmos key yourself.
 
 ```
+
 althea tx gravity set-orchestrator-address [validator key name] [orchestrator key name] [ethereum-address]
+
 ```
 
 ### Fund your delegate keys
@@ -203,18 +218,44 @@ curl -vv -XPOST http://testnet2.althea.net/get_eth/<your address here without th
 
 We will be using Geth Ethereum light clients for this task. For production Gravity we suggest that you point your Orchestrator at a Geth light client and then configure your light client to peer with full nodes that you control. This provides higher reliability as light clients are very quick to start/stop and resync. Allowing you to for example rebuild an Ethereum full node without having days of Orchestrator downtime.
 
-Please note that only Geth full nodes can serve Geth light clients, no other node type will do. Also you must configure a Geth full node to serve light client requests as they do not do so by default.
+Geth full nodes do not serve light clients by default, light clients do not trust full nodes, but if there are no full nodes to request proofs from they can not operate. Therefore we are collecting the largest possible
+list of Geth full nodes from our community that will serve light clients.
 
-For the purposes of this testnet just follow the instructions below, even on the slowest node you should be synced inside of a few minutes.
+If you have more than 40gb of free storage, an SSD and extra memory/CPU power, please run a full node and share the node url. If you do not, please use the light client instructions
+
+_Please only run one or the other of the below instructions, both will not work_
+
+#### Light client instructions
 
 ```
 
 wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.3-991384a7.tar.gz
 tar -xvf geth-linux-amd64-1.10.3-991384a7.tar.gz
 cd geth-linux-amd64-1.10.3-991384a7
-./geth --syncmode "light" --goerli --http --cache 16
+wget https://github.com/althea-net/althea-chain/releases/download/v0.2.2/geth-light-config.toml
+./geth --syncmode "light" --goerli --http --config geth-light-config.toml
 
 ```
+
+#### Fullnode instructions
+
+```
+
+wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.3-991384a7.tar.gz
+tar -xvf geth-linux-amd64-1.10.3-991384a7.tar.gz
+cd geth-linux-amd64-1.10.3-991384a7
+wget https://github.com/althea-net/althea-chain/releases/download/v0.2.2/geth-full-config.toml
+./geth --goerli --http --config geth-full-config.toml
+
+```
+
+You'll see this url, please note your ip and share both this node url and your ip in chat to add to the light client nodes list
+
+```
+INFO [06-10|14:11:03.104] Started P2P networking self=enode://71b8bb569dad23b16822a249582501aef5ed51adf384f424a060aec4151b7b5c4d8a1503c7f3113ef69e24e1944640fc2b422764cf25dbf9db91f34e94bf4571@127.0.0.1:30303
+```
+
+Finally you'll need to wait for several hours until your node is synced, you can not continue with the instructions until your node is synced.
 
 ### Deployment of the Gravity contract
 
@@ -248,13 +289,17 @@ nano start-orchestrator.sh
 
 #!/bin/bash
 gbt -a althea orchestrator \
-         --fees 125000ufootoken \
-         --gravity-contract-address "0xFA2f45c5C8AcddFfbA0E5228bDf7E8B8f4fD2E84"
+ --fees 125000ufootoken \
+ --gravity-contract-address "0xFA2f45c5C8AcddFfbA0E5228bDf7E8B8f4fD2E84"
 
 ```
 
 ```
 
 bash start-orchestrator.sh
+
+```
+
+```
 
 ```

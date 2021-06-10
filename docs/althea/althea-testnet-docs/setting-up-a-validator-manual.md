@@ -232,7 +232,7 @@ _Please only run one or the other of the below instructions, both will not work_
 wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.3-991384a7.tar.gz
 tar -xvf geth-linux-amd64-1.10.3-991384a7.tar.gz
 cd geth-linux-amd64-1.10.3-991384a7
-wget https://github.com/althea-net/althea-chain/releases/download/v0.2.2/geth-light-config.toml
+wget https://github.com/althea-net/althea-chain/raw/main/docs/althea/configs/geth-light-config.toml
 ./geth --syncmode "light" --goerli --http --config geth-light-config.toml
 
 ```
@@ -244,7 +244,7 @@ wget https://github.com/althea-net/althea-chain/releases/download/v0.2.2/geth-li
 wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.3-991384a7.tar.gz
 tar -xvf geth-linux-amd64-1.10.3-991384a7.tar.gz
 cd geth-linux-amd64-1.10.3-991384a7
-wget https://github.com/althea-net/althea-chain/releases/download/v0.2.2/geth-full-config.toml
+wget https://github.com/althea-net/althea-chain/raw/main/docs/althea/configs/geth-full-config.toml
 ./geth --goerli --http --config geth-full-config.toml
 
 ```

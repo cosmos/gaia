@@ -1,0 +1,29 @@
+[Eth]
+NetworkId = 5
+SyncMode = "fast"
+EthDiscoveryURLs = ["enrtree://AKA3AM6LPBYEUDMVNU3BSVQJ5AD45Y7YPOHJLEF6W26QOE4VTUDPE@all.goerli.ethdisco.net"]
+SnapDiscoveryURLs = []
+NoPruning = false
+NoPrefetch = false
+TxLookupLimit = 2350000
+LightServ = 400
+LightPeers = 1000
+UltraLightFraction = 75
+DatabaseCache = 4096
+DatabaseFreezer = ""
+TrieCleanCache = 154
+TrieCleanCacheJournal = "triecache"
+TrieCleanCacheRejournal = 3600000000000
+TrieDirtyCache = 256
+TrieTimeout = 3600000000000
+SnapshotCache = 102
+Preimages = false
+EnablePreimageRecording = false
+EWASMInterpreter = ""
+EVMInterpreter = ""
+RPCGasCap = 25000000
+RPCTxFeeCap = 1e+00
+
+
+[Node.P2P]
+MaxPeers = 5000

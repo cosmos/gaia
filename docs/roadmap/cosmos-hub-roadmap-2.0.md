@@ -1,4 +1,4 @@
-# Cosmos Hub Product Roadmap
+# The Cosmos Hub Roadmap 2.0
 
 This Cosmos Hub Product Roadmap incorporates input from product owners, key Cosmos stakeholders (ATOM holders, Interchain Foundation, and Cosmos Hub operations), the internal Gaia / ATOM call, the virtual Gaia Org Call, the [Cosmos Hub as a Port City](https://github.com/cosmos/gaia/issues/600) article, and the [ATOM2021](https://github.com/cosmosdevs/atom2021) presentation.
 

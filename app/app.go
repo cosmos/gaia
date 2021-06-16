@@ -13,9 +13,9 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 
-	"github.com/tendermint/liquidity/x/liquidity"
-	liquiditykeeper "github.com/tendermint/liquidity/x/liquidity/keeper"
-	liquiditytypes "github.com/tendermint/liquidity/x/liquidity/types"
+	"github.com/gravity-devs/liquidity/x/liquidity"
+	liquiditykeeper "github.com/gravity-devs/liquidity/x/liquidity/keeper"
+	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	"github.com/tendermint/tendermint/libs/log"

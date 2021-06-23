@@ -419,7 +419,7 @@ func NewGaiaApp(
 		func(ctx sdk.Context, plan upgradetypes.Plan) {
 			var genState liquiditytypes.GenesisState
 			genState.Params = liquiditytypes.DefaultParams()
-			genState.Params.PoolCreationFee = sdk.NewCoins(sdk.NewCoin("uatom", sdk.NewInt(100000000)))
+			genState.Params.PoolCreationFee = sdk.NewCoins(sdk.NewCoin("uatom", sdk.NewInt(40000000)))
 			app.LiquidityKeeper.InitGenesis(ctx, genState)
 		})
 

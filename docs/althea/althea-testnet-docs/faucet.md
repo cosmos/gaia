@@ -10,8 +10,8 @@ A Linux server with any modern Linux distribution, 2gb of ram and at least 20gb 
 
 ```
 # the althea chain binary itself
-wget https://github.com/althea-net/althea-chain/releases/download/v0.2.1/althea-0.0.5-26-gcf92625-linux-amd64
-mv althea-0.0.5-26-gcf92625-linux-amd64 althea
+wget https://github.com/althea-net/althea-chain/releases/download/v0.2.3/althea-0.2.2-18-g73447b6-linux-amd64
+mv althea-0.2.2-18-g73447b6-linux-amd64 althea
 
 chmod +x althea
 sudo mv althea /usr/bin/
@@ -21,7 +21,7 @@ sudo mv althea /usr/bin/
 
 ```
 cd $HOME
-althea init mymoniker --chain-id althea-testnet2v2
+althea init mymoniker --chain-id althea-testnet2v3
 ```
 
 ### Generate your key
@@ -34,15 +34,15 @@ You'll be prompted to create a password, I suggest you pick something short sinc
 
 ```
 cd $HOME
-althea init mymoniker --chain-id althea-testnet2v2
+althea init mymoniker --chain-id althea-testnet2v3
 althea keys add myvalidatorkeyname
 ```
 
 ### Copy the genesis file
 
 ```
-wget https://github.com/althea-net/althea-chain/releases/download/v0.2.2/althea-testnet2v2-genesis.json
-cp althea-testnet2v2-genesis.json $HOME/.althea/config/genesis.json
+wget https://github.com/althea-net/althea-chain/releases/download/v0.2.3/althea-testnet2v3-genesis.json
+cp althea-testnet2v3-genesis.json $HOME/.althea/config/genesis.json
 ```
 
 ### Add seed node

@@ -19,12 +19,12 @@ cd althea-bin
 
 # the althea chain binary itself
 
-wget https://github.com/althea-net/althea-chain/releases/download/v0.2.2/althea-0.0.5-26-gcf92625-linux-amd64
-mv althea-0.0.5-26-gcf92625-linux-amd64 althea
+wget https://github.com/althea-net/althea-chain/releases/download/v0.2.3/althea-0.2.2-18-g73447b6-linux-amd64
+mv althea-0.2.2-18-g73447b6-linux-amd64 althea
 
 # Tools for the gravity bridge from the gravity repo
 
-wget https://github.com/althea-net/althea-chain/releases/download/v0.2.2/gbt
+wget https://github.com/althea-net/althea-chain/releases/download/v0.2.3/gbt
 chmod +x *
 sudo mv * /usr/bin/
 
@@ -32,7 +32,7 @@ sudo mv * /usr/bin/
 
 At specific points during the testnet you may be told to 'update your orchestrator' or 'update your althea binary'. In order to do that you can simply repeat the above instructions and then restart the affected software.
 
-to check what version of the tools you have run `gbt --version` the current latest version is `gbt 0.5.4`
+to check what version of the tools you have run `gbt --version` the current latest version is `gbt 0.5.5`
 
 ### Generate your key
 
@@ -45,7 +45,7 @@ You'll be prompted to create a password, I suggest you pick something short sinc
 ```
 
 cd $HOME
-althea init mymoniker --chain-id althea-testnet2v2
+althea init mymoniker --chain-id althea-testnet2v3
 althea keys add myvalidatorkeyname
 
 ```
@@ -54,8 +54,8 @@ althea keys add myvalidatorkeyname
 
 ```
 
-wget https://github.com/althea-net/althea-chain/releases/download/v0.2.2/althea-testnet2v2-genesis.json
-cp althea-testnet2v2-genesis.json $HOME/.althea/config/genesis.json
+wget https://github.com/althea-net/althea-chain/releases/download/v0.2.3/althea-testnet2v3-genesis.json
+cp althea-testnet2v3-genesis.json $HOME/.althea/config/genesis.json
 
 ```
 

@@ -37,7 +37,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ## [Unreleased]
 
 * (golang) Bump golang prerequisite from 1.15 to 1.16.
-* (gaia) Add [Liquidity](https://github.com/gravity-devs/liquidity) module [v1.2.8](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.2.8).
+* (gaia) Add [Liquidity](https://github.com/gravity-devs/liquidity) module [v1.2.9](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.2.9).
 * (sdk)  Bump SDK version to [v0.42.6](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42.6).
 * (tendermint) Bump Tendermint version to [v0.34.11](https://github.com/tendermint/tendermint/releases/tag/v0.34.11).
 

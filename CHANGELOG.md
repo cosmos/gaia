@@ -34,7 +34,9 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 # Changelog
 
-## [v5.0.0] - 2021-06-25
+## [Unreleased]
+
+## [v5.0.0] - 2021-06-28
 
 * (golang) Bump golang prerequisite from 1.15 to 1.16.
 * (gaia) Add [Liquidity](https://github.com/gravity-devs/liquidity) module [v1.2.9](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.2.9).
@@ -337,7 +339,8 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v4.2.1...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v5.0.0...HEAD
+[v5.0.0]: https://github.com/cosmos/gaia/releases/tag/v5.0.0
 [v4.2.1]: https://github.com/cosmos/gaia/releases/tag/v4.2.1
 [v4.2.0]: https://github.com/cosmos/gaia/releases/tag/v4.2.0
 [v4.1.2]: https://github.com/cosmos/gaia/releases/tag/v4.1.2

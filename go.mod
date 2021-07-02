@@ -3,7 +3,7 @@ module github.com/cosmos/gaia/v5
 go 1.16
 
 require (
-	github.com/cosmos/cosmos-sdk v0.43.0-beta1.0.20210516010547-40c60e64d03b
+	github.com/cosmos/cosmos-sdk v0.43.0-beta4
 	github.com/cosmos/ibc-go v1.0.0-alpha2
 	github.com/gorilla/mux v1.8.0
 	github.com/pkg/errors v0.9.1

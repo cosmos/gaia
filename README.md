@@ -7,6 +7,10 @@ Gaia is the first implementation of the Cosmos Hub, built using the [Cosmos SDK]
 [![LoC](https://tokei.rs/b1/github/cosmos/gaia)](https://github.com/cosmos/gaia)
 [![GolangCI](https://golangci.com/badges/github.com/cosmos/gaia.svg)](https://golangci.com/r/github.com/cosmos/gaia)
 
+## Contributing
+
+Check out [contributing.md](contributing.md) for our guidelines & policies for how we develop Cosmos Hub. Thank you to all those who have contributed to Cosmos Hub!
+
 ## Documentation
 
 Documentation for the Cosmos Hub lives at [hub.cosmos.network](https://hub.cosmos.network/main/hub-overview/overview.html).

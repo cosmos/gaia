@@ -99,3 +99,25 @@ Operators are encouraged to join the `#validators-verified` channel of the Cosmo
 As a validator performing the upgrade procedure on your consensus nodes carries a heightened risk of double-signing and being slashed. The most important piece of this procedure is verifying your software version and genesis file hash before starting your validator and signing.
 
 The riskiest thing a validator can do is discover that they made a mistake and repeat the upgrade procedure again during the network startup. If you discover a mistake in the process, the best thing to do is wait for the network to start before correcting it. 
+
+## FAQ
+
+1. If I am a new operator and I want to join the network, what should I do?
+
+In order to join the cosmoshub-4 network after the Delta upgrade, you have two options:
+  1. Use a post-delta upgrade state snapshot and start a node using the gaia v5.0.0 binary.
+  2. If not using a snapshot, or using a pre-delta upgrade snapshot, sync with the network using the gaia v4.2.1 binary until the upgrade height and panic, then switch the gaia binary for v5.0.0.
+  
+2. Does the post-Delta upgrade introduce any changes of note?
+
+The core Cosmos SDK and Tendermint dependencies have only their minor versions bumped, so there are no significant changes of note to the API.
+
+The only integration points that would be affected would be anything that parses all Cosmos SDK messages. The additional messages are [here](https://github.com/Gravity-Devs/liquidity/blob/master/proto/tendermint/liquidity/v1beta1/tx.proto).
+
+3. Is Amino still supported in the post-Delta upgrade?
+
+Amino is still supported. Amino support is still present in the master branch of the Cosmos SDK. No upgrade to remove Amino is currently scheduled.
+
+4. Has the Gravity DEX module undergone a professional 3rd-party audit?
+
+Yes, the audit was led by Least Authority, and have released the [audit report](https://leastauthority.com/blog/audit-of-cosmos-sdk-liquidity-module-for-all-in-bits/).

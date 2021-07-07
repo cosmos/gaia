@@ -21,7 +21,7 @@ sudo mv althea /usr/bin/
 
 ```
 cd $HOME
-althea init mymoniker --chain-id althea-testnet2v2
+althea init mymoniker --chain-id althea-testnet2v3
 ```
 
 ### Copy the genesis file

@@ -17,6 +17,7 @@ TOC:
 - [Rollback plan](#rollback-plan)
 - [Communications](#communications)
 - [Risks](#risks)
+- [FAQ](#faq)
 
 ## On-chain governance proposal attains consensus
 

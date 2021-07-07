@@ -106,7 +106,7 @@ The riskiest thing a validator can do is discover that they made a mistake and r
 1. If I am a new operator and I want to join the network, what should I do?
 
 In order to join the cosmoshub-4 network after the Delta upgrade, you have two options:
- - Use a post-delta upgrade state snapshot and start a node using the gaia v5.0.0 binary. 
+ - Use a post-delta upgrade state snapshot, such as one provided by [quicksync](https://cosmos.quicksync.io/) and start a node using the gaia v5.0.0 binary. 
  - If not using a snapshot, or using a pre-delta upgrade snapshot, sync with the network using the gaia v4.2.1 binary until the upgrade height and panic, then switch the gaia binary for v5.0.0.
   
 2. Does the post-Delta upgrade introduce any changes of note?

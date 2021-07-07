@@ -77,7 +77,7 @@ IMPORTANT: The flag `--x-crisis-skip-assert-invariants` is optional and can be u
 
 ## Upgrade duration
 
-The upgrade may take several hours to take complete because cosmoshub-4 participants operate globally with differing operating hours and it may take some time for operators to upgrade their binaries and connect to the network.
+The upgrade may take several hours to complete because cosmoshub-4 participants operate globally with differing operating hours and it may take some time for operators to upgrade their binaries and connect to the network.
 
 ## Rollback plan
 

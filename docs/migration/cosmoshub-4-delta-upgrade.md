@@ -62,9 +62,9 @@ The following steps assume that an operator is running v4.2.1 (running an earlie
 1. Prior to the upgrade, operators _MUST_ be running Gaia v4.2.1.
 2. At the upgrade block height of [6910000](#Upgrade-will-take-place-July-12,-2021), the Gaia software will panic with a message similar to the below:
 
-> ERR UPGRADE "Gravity-DEX" NEEDED at height: 6910000: v4.2.1
-> 
-> ERR CONSENSUS FAILURE!!! err="UPGRADE \"Gravity-DEX\" NEEDED at height: 6910000: v4.2.1" module=consensus stack="goroutine ...
+> ERR UPGRADE "Gravity-DEX" NEEDED at height: 6910000: v5.0.0-4760cf1f1266accec7a107f440d46d9724c6fd08
+>
+> panic: UPGRADE "Gravity-DEX" NEEDED at height: 6910000: v5.0.0-4760cf1f1266accec7a107f440d46d9724c6fd08
 
 3. Replace the Gaia v4.2.1 binary with the Gaia v5.0.0 binary
 4. Start the Gaia v5.0.0 binary using the following command (also applying any additional flags and parameters to the binary needed by the operator, e.g., `--home $HOME`):
@@ -85,7 +85,7 @@ During the network upgrade, core Cosmos teams will be keeping an ever vigilant e
 
 Steps to skip this upgrade proposal are simply to resume the cosmoshub-4 network with the (downgraded) v4.2.1 binary using the following command:
 
-> gaiad start --unsafe-skip-upgrade
+> gaiad start --unsafe-skip-upgrade 6910000
 
 Note: There is no particular need to restore a state snapshot prior to the upgrade height, unless specifically directed by core Cosmos teams.
 

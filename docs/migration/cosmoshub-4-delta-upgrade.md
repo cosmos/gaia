@@ -77,11 +77,11 @@ IMPORTANT: The flag `--x-crisis-skip-assert-invariants` is optional and can be u
 
 ## Upgrade duration
 
-The upgrade may take several hours to take complete because cosmoshub-4 participants operate globally with differing operating hours and it may take some time for operators to upgrade their binaries and connect to the network.
+The upgrade may take several hours to complete because cosmoshub-4 participants operate globally with differing operating hours and it may take some time for operators to upgrade their binaries and connect to the network.
 
 ## Rollback plan
 
-During the network upgrade, core Cosmos teams will be keeping an ever vigilant eye and communicating with operators on the status of their upgrades. During this time, the core teams will listen to operator needs to determine if the upgrade is experiencing unintended challenges. In the event of unexpected challenges, the core teams, after conferring with operators and attain social consensus, may choose to declare that the upgrade will be skipped. 
+During the network upgrade, core Cosmos teams will be keeping an ever vigilant eye and communicating with operators on the status of their upgrades. During this time, the core teams will listen to operator needs to determine if the upgrade is experiencing unintended challenges. In the event of unexpected challenges, the core teams, after conferring with operators and attaining social consensus, may choose to declare that the upgrade will be skipped. 
 
 Steps to skip this upgrade proposal are simply to resume the cosmoshub-4 network with the (downgraded) v4.2.1 binary using the following command:
 

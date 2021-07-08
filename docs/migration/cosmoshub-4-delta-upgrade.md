@@ -122,3 +122,7 @@ Amino is still supported. Amino support is still present in the master branch of
 4. Has the Gravity DEX module undergone a professional 3rd-party audit?
 
 Yes, the audit was led by Least Authority, and have released the [audit report](https://leastauthority.com/blog/audit-of-cosmos-sdk-liquidity-module-for-all-in-bits/).
+
+4. We have some self-healing node infrastructure in place. If the node starts failing when the chain halts, and we automatically spin up another 4.2.1 node with state from within the past couple of hours, is there a risk of it double signing transactions as it "catches up" to the point where block processing stops?
+
+When the network is halted, there is no risk of double-signing since no blocks are being produced. You only need to ensure that the self-healing infrastructure does not launch multiple validators when the network resumes block production. As well, if any new node is spun up while the chain is halted, live peers will continue to share historical blocks without producing new blocks.

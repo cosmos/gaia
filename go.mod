@@ -3,7 +3,7 @@ module github.com/cosmos/gaia/v5
 go 1.16
 
 require (
-	github.com/cosmos/cosmos-sdk v0.43.0-beta4
+	github.com/cosmos/cosmos-sdk v0.43.0-beta1
 	github.com/cosmos/ibc-go v1.0.0-alpha2
 	github.com/gorilla/mux v1.8.0
 	github.com/pkg/errors v0.9.1
@@ -17,6 +17,6 @@ require (
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
 
-replace github.com/cosmos/cosmos-sdk => github.com/agoric-labs/cosmos-sdk v0.43.0-beta3
+replace github.com/cosmos/cosmos-sdk => github.com/agoric-labs/cosmos-sdk v0.43.0-beta5
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1

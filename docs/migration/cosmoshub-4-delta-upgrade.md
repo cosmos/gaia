@@ -66,7 +66,16 @@ The following steps assume that an operator is running v4.2.1 (running an earlie
 >
 > panic: UPGRADE "Gravity-DEX" NEEDED at height: 6910000: v5.0.0-4760cf1f1266accec7a107f440d46d9724c6fd08
 
-3. Important note to all validators: Although the upgrade path is essentially to replace the binary when the software panics and halts at the upgrade height, an important disaster recovery operation is to take a snapshot of your state after the halt and before starting v5.0.0. 
+**IMPORTANT: PLEASE WAIT FOR THE BINARY TO HALT ON ITS OWN**. Do NOT shutdown the node yourself. If the node shuts down before the panic message, start the node and let it run until the panic stops the node for you. 
+
+3. Important note to all validators: Although the upgrade path is essentially to replace the binary when the software panics and halts at the upgrade height, an important disaster recovery operation is to take a snapshot of your state after the halt and before starting v5.0.0.
+
+```bash
+cp -r ~/.gaia ./gaia_backup
+```
+
+Note: use the home directory relevant to your node's Gaia configuration (if different from `~/.gaia`). 
+    
 4. Replace the Gaia v4.2.1 binary with the Gaia v5.0.0 binary
 5. Start the Gaia v5.0.0 binary using the following command (also applying any additional flags and parameters to the binary needed by the operator, e.g., `--home $HOME`):
 

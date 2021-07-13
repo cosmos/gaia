@@ -84,6 +84,9 @@ Note: use the home directory relevant to your node's Gaia configuration (if diff
 IMPORTANT: The flag `--x-crisis-skip-assert-invariants` is optional and can be used to reduce memory and processing requirements while the in-place ugprade takes place before resuming connecting to the network.
 
 5. Wait until 2/3+ of voting power has upgraded for the network to start producing blocks
+6. You can use the following command to check peering status:
+
+> curl -s http://127.0.0.1:26657/net_info | grep n_peers
 
 ## Upgrade duration
 

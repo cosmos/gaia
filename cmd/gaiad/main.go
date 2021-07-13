@@ -10,7 +10,7 @@ import (
 	"github.com/cosmos/gaia/v5/cmd/gaiad/cmd"
 )
 
-func main() {
+func main() {//main 函数
 	rootCmd, _ := cmd.NewRootCmd()
 
 	if err := svrcmd.Execute(rootCmd, app.DefaultNodeHome); err != nil {

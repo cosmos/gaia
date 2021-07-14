@@ -35,6 +35,9 @@ Ref: https://keepachangelog.com/en/1.0.0/
 # Changelog
 
 ## [Unreleased]
+
+## [v5.0.1] - 2021-07-15
+
 * (gaia) Configure gaiad command to add back `config` capabilities.
 
 ## [v5.0.0] - 2021-06-28
@@ -340,7 +343,8 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v5.0.0...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v5.0.1...HEAD
+[v5.0.1]: https://github.com/cosmos/gaia/releases/tag/v5.0.1
 [v5.0.0]: https://github.com/cosmos/gaia/releases/tag/v5.0.0
 [v4.2.1]: https://github.com/cosmos/gaia/releases/tag/v4.2.1
 [v4.2.0]: https://github.com/cosmos/gaia/releases/tag/v4.2.0

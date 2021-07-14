@@ -73,7 +73,7 @@ Ensure you run the reproducible build in order to generate sha256 hashes and pla
 these artifacts should be included in the release.
 
 ```bash
-make distclean build-reproducable
+make distclean build-reproducible
 ```
 
 Then use the following release text template:
@@ -90,7 +90,7 @@ As there is a breaking change from Gaia v3, the Gaia module has been incremented
 See the [Cosmos SDK v0.41.0 Release](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.41.0) for details.
 
 ```bash
-$ make distclean build-reproducable
+$ make distclean build-reproducible
 App: gaiad
 Version: 4.0.0
 Commit: 2bb04266266586468271c4ab322367acbf41188f

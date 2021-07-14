@@ -35,6 +35,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 # Changelog
 
 ## [Unreleased]
+* (gaia) Configure gaiad command to add back `config` capabilities.
 
 ## [v5.0.0] - 2021-06-28
 

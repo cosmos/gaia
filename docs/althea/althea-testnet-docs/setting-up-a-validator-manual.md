@@ -231,9 +231,9 @@ _Please only run one or the other of the below instructions, both will not work_
 
 ```
 
-wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.4-aa637fd3.tar.gz
-tar -xvf geth-linux-amd64-1.10.4-aa637fd3.tar.gz
-cd geth-linux-amd64-1.10.4-aa637fd3
+wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.6-576681f2.tar.gz
+tar -xvf geth-linux-amd64-1.10.6-576681f2.tar.gz
+cd geth-linux-amd64-1.10.6-576681f2
 wget https://github.com/althea-net/althea-chain/raw/main/docs/althea/configs/geth-light-config.toml
 ./geth --syncmode "light" --goerli --http --config geth-light-config.toml
 
@@ -243,9 +243,9 @@ wget https://github.com/althea-net/althea-chain/raw/main/docs/althea/configs/get
 
 ```
 
-wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.4-aa637fd3.tar.gz
-tar -xvf geth-linux-amd64-1.10.4-aa637fd3.tar.gz
-cd geth-linux-amd64-1.10.4-aa637fd3
+wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.6-576681f2.tar.gz
+tar -xvf geth-linux-amd64-1.10.6-576681f2.tar.gz
+cd geth-linux-amd64-1.10.6-576681f2
 wget https://github.com/althea-net/althea-chain/raw/main/docs/althea/configs/geth-full-config.toml
 ./geth --goerli --http --config geth-full-config.toml
 

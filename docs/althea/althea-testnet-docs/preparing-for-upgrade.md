@@ -17,9 +17,9 @@ Stop your existing geth node using ctrl-C
 Then download and start the new one
 
 ```
-wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.1-c2d2f4ed.tar.gz
-tar -xvf geth-linux-amd64-1.10.1-c2d2f4ed.tar.gz
-cd geth-linux-amd64-1.10.1-c2d2f4ed
+wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.6-576681f2.tar.gz
+tar -xvf geth-linux-amd64-1.10.6-576681f2.tar.gz
+cd geth-linux-amd64-1.10.6-576681f2
 ./geth --syncmode "light" --goerli --http --cache 16
 ```
 

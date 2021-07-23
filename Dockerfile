@@ -1,19 +1,17 @@
 # Simple usage with a mounted data directory:
-# > docker build -t gaia .
-# > docker run -it -p 46657:46657 -p 46656:46656 -v ~/.gaiad:/gaia/.gaiad -v ~/.gaiacli:/gaia/.gaiacli gaia gaiad init
-# > docker run -it -p 46657:46657 -p 46656:46656 -v ~/.gaiad:/gaia/.gaiad -v ~/.gaiacli:/gaia/.gaiacli gaia gaiad start
+# $ docker build -t <ImageName> .
+# $ docker run --rm -it -p 46657:46657 -p 46656:46656 -v ~/.althea:/althea/.althea <ImageName> althea init <Moniker>
+# $ docker run --rm -it -p 46657:46657 -p 46656:46656 -v ~/.althea:/althea/.althea <ImageName> althea start
 FROM golang:1.15-alpine AS build-env
 
 # Set up dependencies
 ENV PACKAGES curl make git libc-dev bash gcc linux-headers eudev-dev python3
 
 # Set working directory for the build
-WORKDIR /go/src/github.com/cosmos/gaia
+WORKDIR /src
 
 # Add source files
 COPY . .
-
-RUN go version
 
 # Install minimum necessary dependencies, build Cosmos SDK, remove packages
 RUN apk add --no-cache $PACKAGES && \
@@ -22,20 +20,19 @@ RUN apk add --no-cache $PACKAGES && \
 # Final image
 FROM alpine:edge
 
-ENV GAIA /gaia
+ENV ALTHEA /althea
 
 # Install ca-certificates
-RUN apk add --update ca-certificates
+RUN apk add --update ca-certificates && \
+    addgroup althea && \
+    adduser -S -G althea althea -h "$ALTHEA"
 
-RUN addgroup gaia && \
-    adduser -S -G gaia gaia -h "$GAIA"
+USER althea
 
-USER gaia
-
-WORKDIR $GAIA
+WORKDIR $ALTHEA
 
 # Copy over binaries from the build-env
-COPY --from=build-env /go/bin/gaiad /usr/bin/gaiad
+COPY --from=build-env /go/bin/althea /usr/bin/althea
 
-# Run gaiad by default, omit entrypoint to ease using container with gaiacli
-CMD ["gaiad"]
+# Run althea by default
+CMD ["althea"]

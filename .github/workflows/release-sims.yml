@@ -1,8 +1,8 @@
 name: Release Sims
 on:
-  pull_request:
+  push:
     branches:
-      - "rc**"
+      - main
 
 jobs:
   cleanup-runs:

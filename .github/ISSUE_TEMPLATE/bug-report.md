@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: But reports help us build a reliable telecom blockchai!
+about: But reports help us build a reliable telecom blockchain!
 ---
 
 <!-- < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < <

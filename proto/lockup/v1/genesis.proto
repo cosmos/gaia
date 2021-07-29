@@ -1,0 +1,19 @@
+syntax = "proto3";
+package lockup.v1;
+
+option go_package = "github.com/althea-net/althea-chain/x/lockup/types";
+
+// Params struct
+message Params {
+  // The lockup module is engaged if locked is true (chain is "locked up")
+  bool                               locked = 1;
+  // Addresses not affected by the lockup module
+  repeated string                          lock_exempt = 2;
+  // Messages with one of these types are blocked when the chain is locked up
+  // and not sent from a lock_exempt address
+  repeated string                    locked_message_types = 3;
+}
+
+message GenesisState {
+  Params params = 1;
+}

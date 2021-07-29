@@ -9,7 +9,9 @@ require (
 	github.com/cosmos/cosmos-sdk v0.42.1
 	github.com/cosmos/gaia/v4 v4.0.0
 	github.com/ethereum/go-ethereum v1.10.3
+	github.com/gogo/protobuf v1.3.3
 	github.com/gorilla/mux v1.8.0
+	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/cast v1.3.1

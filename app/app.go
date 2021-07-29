@@ -92,6 +92,10 @@ import (
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
+
+	lockup "github.com/althea-net/althea-chain/x/lockup"
+	lockupKeeper "github.com/althea-net/althea-chain/x/lockup/keeper"
+	lockuptypes "github.com/althea-net/althea-chain/x/lockup/types"
 )
 
 const appName = "app"
@@ -123,6 +127,7 @@ var (
 		transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		gravity.AppModuleBasic{},
+		lockup.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -180,6 +185,7 @@ type AltheaApp struct { // nolint: golint
 	EvidenceKeeper   evidencekeeper.Keeper
 	TransferKeeper   ibctransferkeeper.Keeper
 	GravityKeeper    gravitykeeper.Keeper
+	LockupKeeper     lockupKeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -221,7 +227,7 @@ func NewAltheaApp(
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		gravitytypes.StoreKey,
+		gravitytypes.StoreKey, lockuptypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -319,6 +325,10 @@ func NewAltheaApp(
 		appCodec, keys[gravitytypes.StoreKey], app.GetSubspace(gravitytypes.ModuleName), stakingKeeper, app.BankKeeper, app.SlashingKeeper,
 	)
 
+	app.LockupKeeper = lockupKeeper.NewKeeper(
+		appCodec, keys[lockuptypes.StoreKey], app.GetSubspace(lockuptypes.ModuleName),
+	)
+
 	/****  Module Options ****/
 
 	/****  Module Options ****/
@@ -354,6 +364,7 @@ func NewAltheaApp(
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		gravity.NewAppModule(app.GravityKeeper, app.BankKeeper),
+		lockup.NewAppModule(app.LockupKeeper, app.BankKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -372,9 +383,10 @@ func NewAltheaApp(
 	// so that other modules that want to create or claim capabilities afterwards in InitChain
 	// can do so safely.
 	app.mm.SetOrderInitGenesis(
-		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName, stakingtypes.ModuleName,
-		slashingtypes.ModuleName, govtypes.ModuleName, minttypes.ModuleName, crisistypes.ModuleName,
-		ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName, ibctransfertypes.ModuleName, gravitytypes.ModuleName,
+		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName,
+		stakingtypes.ModuleName, slashingtypes.ModuleName, govtypes.ModuleName, minttypes.ModuleName,
+		crisistypes.ModuleName, ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName,
+		ibctransfertypes.ModuleName, gravitytypes.ModuleName, lockuptypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -411,9 +423,14 @@ func NewAltheaApp(
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetAnteHandler(
-		ante.NewAnteHandler(
-			app.AccountKeeper, app.BankKeeper, ante.DefaultSigVerificationGasConsumer,
-			encodingConfig.TxConfig.SignModeHandler(),
+		// Wrap a LockupAnteHandler around the default AnteHandler to incorporate future sdk changes
+		// while enabling the lockup module on every transaction
+		lockup.NewWrappedLockupAnteHandler(
+			ante.NewAnteHandler(
+				app.AccountKeeper, app.BankKeeper, ante.DefaultSigVerificationGasConsumer,
+				encodingConfig.TxConfig.SignModeHandler(),
+			),
+			app.LockupKeeper,
 		),
 	)
 	app.SetEndBlocker(app.EndBlocker)
@@ -466,6 +483,7 @@ func (app *AltheaApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) ab
 	if err := tmjson.Unmarshal(req.AppStateBytes, &genesisState); err != nil {
 		panic(err)
 	}
+
 	return app.mm.InitGenesis(ctx, app.appCodec, genesisState)
 }
 
@@ -617,6 +635,7 @@ func initParamsKeeper(appCodec codec.BinaryMarshaler, legacyAmino *codec.LegacyA
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(gravitytypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
+	paramsKeeper.Subspace(lockuptypes.ModuleName)
 
 	return paramsKeeper
 }

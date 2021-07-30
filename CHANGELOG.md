@@ -35,6 +35,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 # Changelog
 
 ## [Unreleased]
+* (gaia) Bump SDK to 0.42.7 to resolve state sync issues.
 
 ## [v5.0.2] - 2021-07-15
 

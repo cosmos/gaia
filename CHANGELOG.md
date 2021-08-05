@@ -36,11 +36,12 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
-## [v5.0.4] - 2021-07-31
+ * (gaia) Bump SDK to [0.42.9](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42.9) to resolve IBC channel restart issue ([9800](https://github.com/cosmos/cosmos-sdk/issues/9800)).
 
-* (chore) Fix release to include intended items from `v5.0.3`.
+## [5.0.4] - 2021-07-31
+ * (chore) Fix release to include intended items from `v5.0.3`.
 
-## [v5.0.3] - 2021-07-30
+## [5.0.3] - 2021-07-30
 
 * (gaia) Bump SDK to [0.42.8](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42.8) to resolve tx query issues.
 * (gaia) Bump SDK to [0.42.7](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42.7) to resolve state sync issues.

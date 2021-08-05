@@ -34,8 +34,9 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 # Changelog
 
-## [Unreleased]
+## [v5.0.4] - 2021-07-31
 
+* (chore) Fix release to include intended items from `v5.0.3`.
 
 ## [v5.0.3] - 2021-07-30
 
@@ -354,7 +355,8 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v5.0.3...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v5.0.4...HEAD
+[v5.0.4]: https://github.com/cosmos/gaia/releases/tag/v5.0.4
 [v5.0.3]: https://github.com/cosmos/gaia/releases/tag/v5.0.3
 [v5.0.2]: https://github.com/cosmos/gaia/releases/tag/v5.0.2
 [v5.0.1]: https://github.com/cosmos/gaia/releases/tag/v5.0.1

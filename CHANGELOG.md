@@ -34,6 +34,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 # Changelog
 
+## Unreleased
+
 ## [v5.0.4] - 2021-07-31
 
 * (chore) Fix release to include intended items from `v5.0.3`.

@@ -9,7 +9,7 @@ Gaia is the first implementation of the Cosmos Hub, built using the [Cosmos SDK]
 
 ## Contributing
 
-Check out [contributing.md](contributing.md) for our guidelines & policies for how we develop the Cosmos Hub. Thank you to all those who have contributed!
+Check out [contributing.md](CONTRIBUTING.md) for our guidelines & policies for how we develop the Cosmos Hub. Thank you to all those who have contributed!
 
 ## Documentation
 

@@ -15,18 +15,25 @@ Gravity DEX:
 
 ## Vega Upgrade
 
+ - Cosmos SDK v0.43
+   - Fee grant module:
+      - Allows paying fees on behalf of another account
+   - Authz module:
+      - Provide governance functions to execute transactions on behalf of another account
+ - IBC 1.0
+
+## Theta Upgrade
+
 Gravity Ethereum Bridge:
 - Transfer ATOM, ETH, ERC-20, and tokens on the Cosmos Hub between Ethereum- and Cosmos-compatible chains
 - Fee and reward model hosted across Comos and Ethereum
 - Adds light-weight infrastructure and operational requirements with minimal slashing conditions to all Hub validators
 
-## Theta Upgrade
+## Rho Upgrade
 
-Fee grant module:
-- Allows paying fees on behalf of another account
+Cosmos SDK v0.44
 
-Authz module:
-- Provide governance functions to execute transactions on behalf of another account
+Tendermint v0.35
 
 Groups module:
 - Enables higher-level multisig permissioned accounts, e.g., weight-based voting policies
@@ -34,8 +41,6 @@ Groups module:
 Interchain accounts:
 - A requirement in order to manage accounts across multiple blockchains
 - Aims to provide locking/unlocking mechanisms across IBC-enabled blockchains
-
-## Rho Upgrade
 
 NFT module:
 - Enable simple management of NFT identifiers, their owners, and associated data, such as URIs, content, and provenance

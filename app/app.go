@@ -389,7 +389,6 @@ func NewGaiaApp(
 		govRouter,
 	)
 
-	// Create Transfer Keepers
 	app.TransferKeeper = ibctransferkeeper.NewKeeper(
 		appCodec,
 		keys[ibctransfertypes.StoreKey],

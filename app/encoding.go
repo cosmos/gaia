@@ -1,7 +1,7 @@
 package gaia
 
 import (
-	"github.com/cosmos/gaia/v5/app/params"
+	"github.com/cosmos/gaia/v5/app/params"   // todo change to v6?
 
 	"github.com/cosmos/cosmos-sdk/std"
 )

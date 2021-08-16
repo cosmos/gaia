@@ -552,14 +552,23 @@ func NewGaiaApp(
 	app.SetEndBlocker(app.EndBlocker)
 
 	app.UpgradeKeeper.SetUpgradeHandler(
+<<<<<<< HEAD
 		upgradeName,
+=======
+		"gaia-v6.0.0", // TODO: Verify the upgrade name.
+>>>>>>> e7034249 (app updates)
 		func(ctx sdk.Context, _ upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
 			// TODO: Verify these parameters are correct and intended.
 			app.IBCKeeper.ConnectionKeeper.SetParams(ctx, ibcconnectiontypes.DefaultParams())
 
+<<<<<<< HEAD
 			fromVM := make(map[string]uint64)
 			for moduleName, _ := range app.mm.Modules {
 				fromVM[moduleName] = 1
+=======
+			fromVM := map[string]uint64{
+				"ibc": 1,
+>>>>>>> e7034249 (app updates)
 			}
 
 			return app.mm.RunMigrations(ctx, app.configurator, fromVM)

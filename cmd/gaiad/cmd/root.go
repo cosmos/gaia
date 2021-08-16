@@ -70,7 +70,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 				return err
 			}
 
-			return server.InterceptConfigsPreRunHandler(cmd,"", appconfig.AppConfig{})  //todo: check if right
+			return server.InterceptConfigsPreRunHandler(cmd, "", nil)
 		},
 	}
 

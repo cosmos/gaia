@@ -259,5 +259,5 @@ func (ac appCreator) appExport(
 		}
 	}
 
-	return gaiaApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
+	return umeeApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
 }

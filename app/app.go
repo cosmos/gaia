@@ -389,7 +389,6 @@ func NewGaiaApp(
 		govRouter,
 	)
 
-	// Create Transfer Keepers
 	app.TransferKeeper = ibctransferkeeper.NewKeeper(
 		appCodec,
 		keys[ibctransfertypes.StoreKey],
@@ -549,8 +548,9 @@ func NewGaiaApp(
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
 
+	// TODO: Verify the upgrade name.
 	app.UpgradeKeeper.SetUpgradeHandler(
-		"gaia-v6.0.0", // TODO: Verify the upgrade name.
+		"gaia-v6.0.0",
 		func(ctx sdk.Context, _ upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
 			// TODO: Verify these parameters are correct and intended.
 			app.IBCKeeper.ConnectionKeeper.SetParams(ctx, ibcconnectiontypes.DefaultParams())
@@ -560,7 +560,8 @@ func NewGaiaApp(
 			}
 
 			return app.mm.RunMigrations(ctx, app.configurator, fromVM)
-		})
+		},
+	)
 
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {

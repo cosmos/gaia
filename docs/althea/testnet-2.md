@@ -21,4 +21,5 @@ testnet2.althea.net
 - [Upgrading your validator](althea-testnet-docs/upgrading.md)
 - [Preparing for the next upgrade](althea-testnet-docs/preparing-for-upgrade.md) (Out of date)
 - [Testing Gravity](althea-testnet-docs/testing-gravity.md)
+- [Tools for using gravity bridge](althea-testnet-docs/tools-for-using-gravity-bridge.md)
 - [Appendix](althea-testnet-docs/appendix.md)

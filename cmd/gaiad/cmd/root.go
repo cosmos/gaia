@@ -80,7 +80,6 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 }
 
 func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
-	//authclient.Codec = encodingConfig.Marshaler
 
 	cfg := sdk.GetConfig()  // todo check
 	cfg.Seal() //todo check

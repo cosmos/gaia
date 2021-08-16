@@ -22,6 +22,3 @@ replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
 replace github.com/tendermint/tendermint => github.com/tendermint/tendermint v0.34.13
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-
-// this is a temporal solution: liquidity v1.2.9 uses SupplyI rather than sdk.Coins. see changes #8517 in https://github.com/cosmos/cosmos-sdk/blob/v0.43.0/CHANGELOG.md#v0430---2021-08-10
-replace github.com/gravity-devs/liquidity v1.2.9 => github.com/tendermint/liquidity v1.2.6-0.20210513094606-6cd272e3814d

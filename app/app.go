@@ -548,9 +548,8 @@ func NewGaiaApp(
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
 
-	// TODO: Verify the upgrade name.
 	app.UpgradeKeeper.SetUpgradeHandler(
-		"gaia-v6.0.0",
+		"vega",
 		func(ctx sdk.Context, _ upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
 			// TODO: Verify these parameters are correct and intended.
 			app.IBCKeeper.ConnectionKeeper.SetParams(ctx, ibcconnectiontypes.DefaultParams())
@@ -568,7 +567,7 @@ func NewGaiaApp(
 		panic(fmt.Sprintf("failed to read upgrade info from disk %s", err))
 	}
 
-	if upgradeInfo.Name == "gaia-v6.0.0" && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+	if upgradeInfo.Name == "vega" && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := store.StoreUpgrades{
 			Added: []string{ibchost.ModuleName},
 		}

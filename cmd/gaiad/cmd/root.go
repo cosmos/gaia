@@ -20,11 +20,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
-	vestingcli "github.com/cosmos/cosmos-sdk/x/auth/vesting/client/cli"
-	authzcli "github.com/cosmos/cosmos-sdk/x/authz/client/cli"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
-	feegrantcli "github.com/cosmos/cosmos-sdk/x/feegrant/client/cli"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
@@ -54,10 +51,6 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		Use:   "gaiad",
 		Short: "Stargate Cosmos Hub App",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
-			// set the default command outputs
-			cmd.SetOut(cmd.OutOrStdout())
-			cmd.SetErr(cmd.ErrOrStderr())
-
 			initClientCtx = client.ReadHomeFlag(initClientCtx, cmd)
 			initClientCtx, err := config.ReadFromClientConfig(initClientCtx)
 			if err != nil {
@@ -128,8 +121,6 @@ func queryCommand() *cobra.Command {
 		rpc.BlockCommand(),
 		authcmd.QueryTxsByEventsCmd(),
 		authcmd.QueryTxCmd(),
-		feegrantcli.GetQueryCmd(),
-		authzcli.GetQueryCmd(),
 	)
 
 	gaia.ModuleBasics.AddQueryCommands(cmd)
@@ -157,9 +148,6 @@ func txCommand() *cobra.Command {
 		authcmd.GetBroadcastCommand(),
 		authcmd.GetEncodeCommand(),
 		authcmd.GetDecodeCommand(),
-		vestingcli.GetTxCmd(),
-		feegrantcli.GetTxCmd(),
-		authzcli.GetTxCmd(),
 	)
 
 	gaia.ModuleBasics.AddTxCommands(cmd)
@@ -245,7 +233,7 @@ func (ac appCreator) appExport(
 		loadLatest = true
 	}
 
-	umeeApp := gaia.NewGaiaApp(
+	gaiaApp := gaia.NewGaiaApp(
 		logger,
 		db,
 		traceStore,
@@ -258,10 +246,10 @@ func (ac appCreator) appExport(
 	)
 
 	if height != -1 {
-		if err := umeeApp.LoadHeight(height); err != nil {
+		if err := gaiaApp.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	}
 
-	return umeeApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
+	return gaiaApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
 }

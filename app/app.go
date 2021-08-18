@@ -560,6 +560,7 @@ func NewGaiaApp(
 				"capability":   1,
 				"crisis":       1,
 				"distribution": 1,
+				"liquidity":    1,
 				"evidence":     1,
 				"gov":          1,
 				"mint":         1,

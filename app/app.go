@@ -587,7 +587,7 @@ func NewGaiaApp(
 
 	if upgradeInfo.Name == "vega" && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := store.StoreUpgrades{
-			Added: []string{ibchost.ModuleName},
+			Added: []string{ibchost.ModuleName, authz.ModuleName, feegrant.ModuleName},
 		}
 
 		// configure store loader that checks if version == upgradeHeight and applies store upgrades

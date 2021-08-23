@@ -1,11 +1,11 @@
-# Cosmos Hub 6 Vega  Upgrade Test Instruction
+# Cosmos Hub Vega  Upgrade Test Instruction
 
-This document describes the  procedures to test an upgrade from cosmoshub-5.0.5 to cosmoshub-6.0.0-vega locally.
+This document describes the  procedures to test cosmoshub vega upgrade locally.
 This upgrade will bring the new release of Cosmos-SDK v0.43 RC and IBC 1.0 RC into gaia.
 
 ## Version
-- presently running cosmoshub-5.0.5
-- going to upgrade to cosmoshub-6-vega.
+- presently running cosmoshub-4. Gaia version: v5.0.5
+- going to upgrade to cosmoshub-5, Gaia version: v6.0.0-vega ???
 
 ## Chain Upgrade by Cosmovisor
 Initial setup and configuration
@@ -15,21 +15,32 @@ make install
 # Never do unsafe-reset-all in production environment !!!
 gaiad unsafe-reset-all
 ```
-Configure the gaiad binary for testing
-```shell
-gaiad config chain-id test
-gaiad config keyring-backend test
-gaiad config broadcast-mode block
-```
-Init the chain
-```shell
-# Never do overwrite in production environment !!!
-gaiad init my-node --chain-id test --overwrite
-```
+
+[comment]: <> (Configure the gaiad binary for testing)
+
+[comment]: <> (```shell)
+
+[comment]: <> (gaiad config chain-id test)
+
+[comment]: <> (gaiad config keyring-backend test)
+
+[comment]: <> (gaiad config broadcast-mode block)
+
+[comment]: <> (```)
+
+[comment]: <> (Init the chain)
+
+[comment]: <> (```shell)
+
+[comment]: <> (# Never do overwrite in production environment !!!)
+
+[comment]: <> (gaiad init my-node --chain-id test --overwrite)
+
+[comment]: <> (```)
 
 Change the genesis file
 
-We have prepared a genesis file which was obtained by `gaiad export` on cosmoshub-5 network. Uncompress this genesis file and use it as the genesis data to mock the comoshub-5 upgrade.
+We have prepared a genesis file which was obtained by `gaiad export` on cosmoshub-5 network at height 7368387. Uncompress this genesis file and use it as the genesis data to mock the comoshub-5 upgrade.
 
 ```shell
 wget https://xxxx.json.gz
@@ -40,21 +51,57 @@ Set the minimum gas price to 0stake in `~/.gaia/config/app.toml`.
 ```shell
 minimum-gas-prices = "0stake"
 ```
-Setup the Validator
+
+Get the private validator key
+
+We have prepared a validator key (MNEMONIC: "net warfare noise fabric ring eager crumble pioneer assault segment trust bind inform warfare silk cement language kitten ginger stadium divide borrow tail great")
+This private validator will be configured to own over 67% of voting power.
+
+Reminder: please do not use this key for your cryptocurrency assets in production environment !!!
+```shell
+wget https://xxxx.json.gz
+cp priv_validator_key.json ~/.gaia/config/priv_validator_key.json
+```
+Add this validator to genesis file 
+We can add our created validator to the genesis file by replacing address and "pub_key" of one validator(name: Umbrella) which is already in the genesis file.
 
 ```shell
-# Create a key to hold your validator account
-gaiad keys add my-account
+export $GENESIS = ~/.gaia/config/genesis.json
+# change the chain-id to test
+sed -i '' 's%"chain_id": "cosmoshub-4",%"chain_id": "test",%g' $GENESIS
+# change the pub_key value
+sed -i '' 's%z/Dg9WU/rlIB+LaQVMMHW/a7rvalfIcyz3VdOwfvguc=%i8Y6OsPLIbkFXbPAYv3iJJkHscPl4n2IGNw2Q2RO4F0=%g' $GENESIS
+# change the address
+sed -i '' 's%EBED694E6CE1224FB1E8A2DD8EE63A38568B1E2B%0C619FA4D49086F5341E04BDE3105D5AC0517B47%g' $GENESIS
+# change the validator_address
+cosmosvaloper1q9p5m5xemu0zln3sh02u5neh8g7zevcq45essg
+sed -i '' 's%cosmosvalcons1a0kkjnnvuy3ylv0g5twcae368ptgk83tyalw6t%cosmosvaloper1q9p5m5xemu0zln3sh02u5neh8g7zevcq45essg%g' $EXPORTED_GENESIS
 
-# Add that key into the genesis.app_state.accounts array in the genesis file
-gaiad add-genesis-account $(gaiad keys show my-account -a) 3000000000stake
-
-# Creates your validator
-gaiad gentx my-account 1000000000stake --chain-id test
-
-# Add the generated bonding transaction to the genesis file
-gaiad collect-gentxs
 ```
+
+Config the validator to have over 67% voting power
+
+[comment]: <> (Setup the Validator)
+
+[comment]: <> (```shell)
+
+[comment]: <> (# Create a key to hold your validator account)
+
+[comment]: <> (gaiad keys add my-account)
+
+[comment]: <> (# Add that key into the genesis.app_state.accounts array in the genesis file)
+
+[comment]: <> (gaiad add-genesis-account $&#40;gaiad keys show my-account -a&#41; 3000000000stake)
+
+[comment]: <> (# Creates your validator)
+
+[comment]: <> (gaiad gentx my-account 1000000000stake --chain-id test)
+
+[comment]: <> (# Add the generated bonding transaction to the genesis file)
+
+[comment]: <> (gaiad collect-gentxs)
+
+[comment]: <> (```)
 
 Set the environment variables
 ```shell

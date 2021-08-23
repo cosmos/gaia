@@ -27,7 +27,20 @@ Init the chain
 gaiad init my-node --chain-id test --overwrite
 ```
 
-Setup the single Validator
+Change the genesis file
+
+We have prepared a genesis file which was obtained by `gaiad export` on cosmoshub-5 network. Uncompress this genesis file and use it as the genesis data to mock the comoshub-5 upgrade.
+
+```shell
+wget https://xxxx.json.gz
+gunzip exported_genesis_v5.json.gz
+cp exported_genesis_v5.json ~/.gaia/config/genesis.json
+```
+Set the minimum gas price to 0stake in `~/.gaia/config/app.toml`.
+```shell
+minimum-gas-prices = "0stake"
+```
+Setup the Validator
 
 ```shell
 # Create a key to hold your validator account
@@ -41,20 +54,6 @@ gaiad gentx my-account 1000000000stake --chain-id test
 
 # Add the generated bonding transaction to the genesis file
 gaiad collect-gentxs
-```
-
-Change the genesis file
-
-We have prepared a genesis file which was obtained by `gaiad export` on cosmoshub-5 network. Uncompress this genesis file and use it as the genesis data to mock the comoshub-5 upgrade.
-
-```shell
-wget https://xxxx.json.tar.bz2
-tar xvzf xxxx.json.tar.bz2
-mv xxxx.json ~/.gaia/config/genesis.json
-```
-Set the minimum gas price to 0stake in `~/.gaia/config/app.toml`.
-```shell
-minimum-gas-prices = "0stake"
 ```
 
 Set the environment variables

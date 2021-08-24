@@ -4,7 +4,7 @@ order: 3
 
 # Join the Cosmos Hub Mainnet
 
-> Note: The current mainnet (`cosmoshub-4`) has performed the first [in-place store migration](https://docs.cosmos.network/v0.43/architecture/adr-041-in-place-store-migrations.html#adr-041-in-place-store-migrations) upgrade. That means that an [upgrade proposal](https://wallet.keplr.app/#/cosmoshub/governance?detailId=51) was passed to start using the [v5.0.0]() release of the gaia node. As a result the [v4.2.6](https://github.com/cosmos/gaia/releases/tag/v4.2.6) version of the gaia node would panic and stop at block [6910000](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md#Upgrade-will-take-place-July-12,-2021). At that point node operators installed the [v5.0.2](https://github.com/cosmos/gaia/releases/tag/v5.0.2) version of the gaia node and then started the node again. This type of upgrade preserves the same `chain-id` but is otherwise similar to a traditional hub upgrade, meaning historical state is lost after the upgrade takes place (still accessible of course by a v4.6.2 full node).
+> Note: The current mainnet (`cosmoshub-4`) has performed the first [in-place store migration](https://docs.cosmos.network/v0.43/architecture/adr-041-in-place-store-migrations.html#adr-041-in-place-store-migrations) upgrade. That means that an [upgrade proposal](https://wallet.keplr.app/#/cosmoshub/governance?detailId=51) was passed to start using the [v5.0.0]() release of the gaia node. As a result the [v4.2.6](https://github.com/cosmos/gaia/releases/tag/v4.2.6) version of the gaia node would panic and stop at block [6910000](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md#Upgrade-will-take-place-July-12,-2021). At that point node operators installed the [v5.0.5](https://github.com/cosmos/gaia/releases/tag/v5.0.5) version of the gaia node and then started the node again. This type of upgrade preserves the same `chain-id` but is otherwise similar to a traditional hub upgrade, meaning historical state is lost after the upgrade takes place (still accessible of course by a v4.6.2 full node).
 > 
 > **In order to sync a gaia node from genesis the upgrade process outline above and [in more detail here](https://github.com/cosmos/mainnet) will need to take place.**
 > 
@@ -23,7 +23,7 @@ This Quickstart tutorial completes the following actions:
 * Put the `genesis.json` file in the correct location
 
 ```bash
-git clone -b v5.0.2 https://github.com/cosmos/gaia
+git clone -b v5.0.5 https://github.com/cosmos/gaia
 cd gaia
 make install
 gaiad init chooseanicehandle
@@ -45,7 +45,7 @@ panic: UPGRADE "Gravity-DEX" NEEDED at height: 6910000: v5.0.0-4760cf1f1266accec
 ```
 Then you should run the following commands:
 ```bash
-git checkout -b v5.0.2
+git checkout -b v5.0.5
 make install
 gaiad start --x-crisis-skip-assert-invariants --p2p.seeds bf8328b66dceb4987e5cd94430af66045e59899f@public-seed.cosmos.vitwit.com:26656,cfd785a4224c7940e9a10f6c1ab24c343e923bec@164.68.107.188:26656,d72b3011ed46d783e369fdf8ae2055b99a1e5074@173.249.50.25:26656,ba3bacc714817218562f743178228f23678b2873@public-seed-node.cosmoshub.certus.one:26656,3c7cad4154967a294b3ba1cc752e40e8779640ad@84.201.128.115:26656
 ```

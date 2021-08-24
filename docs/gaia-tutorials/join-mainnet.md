@@ -56,6 +56,8 @@ To save those seeds to your settings, put the comma-separated list format seeds 
 
 ## Manual Setup of a new Node
 
+Genesis is available at IPFS CID Qmc54DreioPpPDUdJW6bBTYUKepmcPsscfqsfFcFmTaVig
+
 These instructions are for setting up a brand new full node from scratch.
 
 Make sure to have the [latest gaia version installed](./join-mainnet.md).

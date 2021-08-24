@@ -26,4 +26,4 @@ jobs:
         run: wget -O ~/.gaia/config/genesis.json https://cloudflare-ipfs.com/ipfs/Qmc54DreioPpPDUdJW6bBTYUKepmcPsscfqsfFcFmTaVig
         
       - name: state sync
-        run: scripts/statesync.sh
+        run: contrib/statesync.sh

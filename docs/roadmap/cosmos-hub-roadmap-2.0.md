@@ -6,14 +6,14 @@ This roadmap gives a one-year guideline in which stakeholders can anticipate upd
 
 The upgrades aim to add features such as liquidity, economic security, usability, and participation. To highlight our focus on DeFi, we have chosen to use the [Greeks from Finance](https://en.wikipedia.org/wiki/Greeks_(finance)) in naming upcoming upgrades.
 
-## Delta Upgrade
+## Delta Upgrade (Completed July 12, 2021)
 
 Gravity DEX:
 - A scalable AMM model for token swaps
 - Drives liquidity for tokens on the Cosmos Hub
 - Delivers price consistency and order execution
 
-## Vega Upgrade
+## Vega Upgrade (expected Q3 2021)
 
  - Cosmos SDK v0.43
    - Fee grant module:
@@ -22,14 +22,14 @@ Gravity DEX:
       - Provide governance functions to execute transactions on behalf of another account
  - IBC 1.0
 
-## Theta Upgrade
+## Theta Upgrade (expected Q4 2021)
 
 Gravity Ethereum Bridge:
 - Transfer ATOM, ETH, ERC-20, and tokens on the Cosmos Hub between Ethereum- and Cosmos-compatible chains
 - Fee and reward model hosted across Comos and Ethereum
 - Adds light-weight infrastructure and operational requirements with minimal slashing conditions to all Hub validators
 
-## Rho Upgrade
+## Rho Upgrade (expected Q1 2022)
 
 Cosmos SDK v0.44
 
@@ -50,7 +50,7 @@ Chain name service:
 - Allows registration of unique chainids for IBC
 - Interoperable with cross-chain validation and interchain staking
 
-## Lambda Upgrade
+## Lambda Upgrade (expected Q2 2022)
 
 Staking derivatives:
 - Frees secure and low-risk delegations for use in other parts of the Cosmos ecosystem

@@ -8,10 +8,10 @@ The upgrades aim to add features such as liquidity, economic security, usability
 
 ## Delta Upgrade (Completed July 12, 2021)
 
-Gravity DEX:
-- A scalable AMM model for token swaps
-- Drives liquidity for tokens on the Cosmos Hub
-- Delivers price consistency and order execution
+- Gravity DEX:
+  - A scalable AMM model for token swaps
+  - Drives liquidity for tokens on the Cosmos Hub
+  - Delivers price consistency and order execution
 
 ## Vega Upgrade (expected Q3 2021)
 
@@ -24,46 +24,58 @@ Gravity DEX:
 
 ## Theta Upgrade (expected Q4 2021)
 
-Gravity Ethereum Bridge:
-- Transfer ATOM, ETH, ERC-20, and tokens on the Cosmos Hub between Ethereum- and Cosmos-compatible chains
-- Fee and reward model hosted across Comos and Ethereum
-- Adds light-weight infrastructure and operational requirements with minimal slashing conditions to all Hub validators
+- Cosmos <> Ethereum Gravity Bridge:
+  - Transfer ATOM, ETH, ERC-20, and tokens on the Cosmos Hub between Ethereum- and Cosmos-compatible chains  
+  - Fee and reward model hosted across Comos and Ethereum
+  - Adds light-weight infrastructure and operational requirements with minimal slashing conditions to all Hub validators
+- Budget Module
+  - Inflation funding directed to arbitrary module and account addresses
+- Farming Module
+
 
 ## Rho Upgrade (expected Q1 2022)
 
-Cosmos SDK v0.44
-
-Tendermint v0.35
-
-Groups module:
-- Enables higher-level multisig permissioned accounts, e.g., weight-based voting policies
-
-Interchain accounts:
-- A requirement in order to manage accounts across multiple blockchains
-- Aims to provide locking/unlocking mechanisms across IBC-enabled blockchains
-
-NFT module:
-- Enable simple management of NFT identifiers, their owners, and associated data, such as URIs, content, and provenance
-- An extensible base module for extensions including collectibles, custody, provenance, and marketplaces
-
-Chain name service:
-- Allows registration of unique chainids for IBC
-- Interoperable with cross-chain validation and interchain staking
+- Interchain Security v0
+  - The Cosmos solution to shared security that uses the entire validator set of the Cosmos Hub to secure a separate blockchain.
+  - Allows independent modules like Gravity DEX or Bridge to live on separate chains with their own development cycles.
+- Cosmos SDK v0.44
+  - Groups module:
+    - Enables higher-level multisig permissioned accounts, e.g., weight-based voting policies
+  - Meta-Transactions
+    - Allows transactions to be submitted by separate accounts that receive tips.
+  - Gov Module Improvements
+    - Execution of arbitraty transactions instead of just governance proposals.
+    - Enables much more expressive governance module.
+- Tendermint v0.35
+- Interchain accounts
+  - A requirement in order to manage accounts across multiple blockchains
+  - Aims to provide locking/unlocking mechanisms across IBC-enabled blockchains
+  - Would allow custody providers to service any IBC connected blockchain through a common interface on the Hub.
+- NFT module
+  - Enable simple management of NFT identifiers, their owners, and associated data, such as URIs, content, and provenance
+  - An extensible base module for extensions including collectibles, custody, provenance, and marketplaces
+- Chain name service
+  - Allows registration of unique chainids for IBC
+  - Interoperable with cross-chain validation and interchain staking
 
 ## Lambda Upgrade (expected Q2 2022)
 
-Staking derivatives:
-- Frees secure and low-risk delegations for use in other parts of the Cosmos ecosystem
-- Features include enabling transfer of rewards and voting rights
-
-Interchain staking:
-- Cosmos solution to shared security using cross chain validation and interchain accounts
-- Enables a parent chain, e.g., Cosmos Hub, to be in charge of producing blocks for a baby chain
-- Validators of a baby chain will have their ATOM stake on the Cosmos Hub slashed for misbehaviour
-
-Token Issuance:
-- Enables creation of tokens directly on the Hub
-- Aims to provide ERC20 capabilities
+- Interchain Security v2
+  - Cosmos solution to shared security using cross chain validation and interchain accounts
+  - Enables a parent chain, e.g., Cosmos Hub, to be in charge of producing blocks for a baby chain
+  - Validators of a baby chain will have their ATOM stake on the Cosmos Hub slashed for misbehaviour
+- Staking derivatives
+  - Frees secure and low-risk delegations for use in other parts of the Cosmos ecosystem
+  - Features include enabling transfer of rewards and voting rights
+- Cosmos SDK v0.45
+  - SMT
+  - Postgres indexing
+  - Protobuf v2
+- Token Issuance
+  - Enables creation of tokens directly on the Hub
+  - Aims to provide ERC20 capabilities
+- Gravity DEX v2
+  - Order matching
 
 ## Future Upgrades
 

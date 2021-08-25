@@ -16,34 +16,12 @@ make install
 gaiad unsafe-reset-all
 ```
 
-[comment]: <> (Configure the gaiad binary for testing)
-
-[comment]: <> (```shell)
-
-[comment]: <> (gaiad config chain-id test)
-
-[comment]: <> (gaiad config keyring-backend test)
-
-[comment]: <> (gaiad config broadcast-mode block)
-
-[comment]: <> (```)
-
-[comment]: <> (Init the chain)
-
-[comment]: <> (```shell)
-
-[comment]: <> (# Never do overwrite in production environment !!!)
-
-[comment]: <> (gaiad init my-node --chain-id test --overwrite)
-
-[comment]: <> (```)
 
 Change the genesis file
 
 We have prepared a genesis file which was obtained by `gaiad export` on cosmoshub-5 network at height 7368387. Uncompress this genesis file and use it as the genesis data to mock the comoshub-5 upgrade.
 
 ```shell
-wget https://xxxx.json.gz
 gunzip exported_genesis_v5.json.gz
 cp exported_genesis_v5.json ~/.gaia/config/genesis.json
 ```
@@ -59,49 +37,40 @@ This private validator will be configured to own over 67% of voting power.
 
 Reminder: please do not use this key for your cryptocurrency assets in production environment !!!
 ```shell
-wget https://xxxx.json.gz
 cp priv_validator_key.json ~/.gaia/config/priv_validator_key.json
 ```
 Add this validator to genesis file 
 We can add our created validator to the genesis file by replacing address and "pub_key" of one validator(name: Umbrella) which is already in the genesis file.
 
 ```shell
-export $GENESIS = ~/.gaia/config/genesis.json
+export $GENESIS=~/.gaia/config/genesis.json
 # change the chain-id to test
 sed -i '' 's%"chain_id": "cosmoshub-4",%"chain_id": "test",%g' $GENESIS
-# change the pub_key value
-sed -i '' 's%z/Dg9WU/rlIB+LaQVMMHW/a7rvalfIcyz3VdOwfvguc=%i8Y6OsPLIbkFXbPAYv3iJJkHscPl4n2IGNw2Q2RO4F0=%g' $GENESIS
-# change the address
-sed -i '' 's%EBED694E6CE1224FB1E8A2DD8EE63A38568B1E2B%0C619FA4D49086F5341E04BDE3105D5AC0517B47%g' $GENESIS
+# change the consensus pub_key value 
+sed -i '' 's%z/Dg9WU/rlIB+LaQVMMHW/a7rvalfIcyz3VdOwfvguc=%/BcD6ZbLvQY29Tx6QJckzHkqvZu/4MfsO12h4a6bSh0%g' $GENESIS
+# change the concensus key address 
+sed -i '' 's%EBED694E6CE1224FB1E8A2DD8EE63A38568B1E2B%94BFF2A5382CA04897142B4C5B8605B3532F5F7E%g' $GENESIS
 # change the validator_address
-cosmosvaloper1q9p5m5xemu0zln3sh02u5neh8g7zevcq45essg
-sed -i '' 's%cosmosvalcons1a0kkjnnvuy3ylv0g5twcae368ptgk83tyalw6t%cosmosvaloper1q9p5m5xemu0zln3sh02u5neh8g7zevcq45essg%g' $EXPORTED_GENESIS
-
+sed -i '' 's%cosmosvalcons1a0kkjnnvuy3ylv0g5twcae368ptgk83tyalw6t%cosmosvalcons1jjll9ffc9jsy39c59dx9hps9kdfj7hm7w63d0c%g' $GENESIS
+# change user account
+sed -i '' 's%cosmos1qf7rj85uflxlq2pth5wgst2y9k95ky5zehqeue%cosmos1padpexf2eg9txfkluc5kela53z7g9l333examx%g' $GENESIS
+sed -i '' 's%Ah+xi5KEr3N4e8QfYyfP4dRI3MwdCg7mhlMHWjUlspUu%AqJQlj3TwtUkaXpAY+9sahzFCFnbNlbQ36tVqFDAEsLg%g' $GENESIS
 ```
 
 Config the validator to have over 67% voting power
+```shell
+# fix the delegation amount to be over 67%
+sed -i '' 's%"618372700353.000000000000000000"%"10000000000000618372700353.000000000000000000"%g' $GENESIS
 
-[comment]: <> (Setup the Validator)
+# fix power of the validator
+sed -i '' 's%"power": "618372"%"power": "60618372"%g' $GENESIS
 
-[comment]: <> (```shell)
+# fix last_total_power
+sed -i '' 's%"194616038"%"6194616038"%g' $GENESIS
+# fix total supply of uatom
+sed -i '' 's%277834757180509%1000277834757180509%g' $GENESIS
 
-[comment]: <> (# Create a key to hold your validator account)
-
-[comment]: <> (gaiad keys add my-account)
-
-[comment]: <> (# Add that key into the genesis.app_state.accounts array in the genesis file)
-
-[comment]: <> (gaiad add-genesis-account $&#40;gaiad keys show my-account -a&#41; 3000000000stake)
-
-[comment]: <> (# Creates your validator)
-
-[comment]: <> (gaiad gentx my-account 1000000000stake --chain-id test)
-
-[comment]: <> (# Add the generated bonding transaction to the genesis file)
-
-[comment]: <> (gaiad collect-gentxs)
-
-[comment]: <> (```)
+```
 
 Set the environment variables
 ```shell

@@ -36,10 +36,16 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
- * (gaia) Bump SDK to [0.42.9](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42.9) to resolve IBC channel restart issue ([9800](https://github.com/cosmos/cosmos-sdk/issues/9800)).
+## [5.0.6] - 2021-08-26
+
  * (gaia) Bump tendermint to 0.34.12
 
+## [5.0.5] - 2021-08-05
+
+ * (gaia) Bump SDK to [0.42.9](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42.9) to resolve IBC channel restart issue ([9800](https://github.com/cosmos/cosmos-sdk/issues/9800)).
+
 ## [5.0.4] - 2021-07-31
+
  * (chore) Fix release to include intended items from `v5.0.3`.
 
 ## [5.0.3] - 2021-07-30
@@ -359,7 +365,9 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v5.0.4...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v5.0.6...HEAD
+[v5.0.6]: https://github.com/cosmos/gaia/releases/tag/v5.0.6
+[v5.0.5]: https://github.com/cosmos/gaia/releases/tag/v5.0.5
 [v5.0.4]: https://github.com/cosmos/gaia/releases/tag/v5.0.4
 [v5.0.3]: https://github.com/cosmos/gaia/releases/tag/v5.0.3
 [v5.0.2]: https://github.com/cosmos/gaia/releases/tag/v5.0.2

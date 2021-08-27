@@ -37,6 +37,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ## [Unreleased]
 
 ## [5.0.6] - 2021-08-26
+
  * (gaia) Bump tendermint to 0.34.12
 
 ## [5.0.5] - 2021-08-05

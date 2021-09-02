@@ -2,7 +2,7 @@
 
 ## What do I need?
 
-A Linux server with any modern Linux distribution, 4cores, 8gb of ram and at least 20gb of SSD storage.
+A Linux server with any modern Linux distribution, 16cores, 16gb of ram and at least 320gb of SSD storage.
 
 Althea chain can be run on Windows and Mac. Binaries are provided on the releases page. But validator instructions are not provided.
 
@@ -231,9 +231,9 @@ _Please only run one or the other of the below instructions, both will not work_
 
 ```
 
-wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.6-576681f2.tar.gz
-tar -xvf geth-linux-amd64-1.10.6-576681f2.tar.gz
-cd geth-linux-amd64-1.10.6-576681f2
+wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.8-26675454.tar.gz
+tar -xvf geth-linux-amd64-1.10.8-26675454.tar.gz
+cd geth-linux-amd64-1.10.8-26675454
 wget https://github.com/althea-net/althea-chain/raw/main/docs/althea/configs/geth-light-config.toml
 ./geth --syncmode "light" --goerli --http --config geth-light-config.toml
 
@@ -243,9 +243,9 @@ wget https://github.com/althea-net/althea-chain/raw/main/docs/althea/configs/get
 
 ```
 
-wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.6-576681f2.tar.gz
-tar -xvf geth-linux-amd64-1.10.6-576681f2.tar.gz
-cd geth-linux-amd64-1.10.6-576681f2
+wget https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.10.8-26675454.tar.gz
+tar -xvf geth-linux-amd64-1.10.8-26675454.tar.gz
+cd geth-linux-amd64-1.10.8-26675454
 wget https://github.com/althea-net/althea-chain/raw/main/docs/althea/configs/geth-full-config.toml
 ./geth --goerli --http --config geth-full-config.toml
 

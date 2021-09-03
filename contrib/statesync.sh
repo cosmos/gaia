@@ -1,17 +1,8 @@
 #!/bin/bash
 # microtick and bitcanna contributed significantly here.
-set -e
-
-export GOPATH=~/go
-export PATH=$PATH:~/go/bin
-go install ./...
 
 
-# MAKE HOME FOLDER AND GET GENESIS
-osmosisd init test 
-wget -O ~/.gaia/config/genesis.json https://cloudflare-ipfs.com/ipfs/Qmc54DreioPpPDUdJW6bBTYUKepmcPsscfqsfFcFmTaVig
-
-INTERVAL=1500
+INTERVAL=1000
 
 # GET TRUST HASH AND TRUST HEIGHT
 

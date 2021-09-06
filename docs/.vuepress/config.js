@@ -4,6 +4,7 @@ module.exports = {
   base: process.env.VUEPRESS_BASE || "/",
   themeConfig: {
     docsRepo: "cosmos/gaia",
+    docsBranch: "main",
     docsDir: "docs",
     editLinks: true,
     label: "hub",

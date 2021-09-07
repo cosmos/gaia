@@ -36,6 +36,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+ * (gaia) Bump [Liquidity](https://github.com/gravity-devs/liquidity) module to [v1.4.0](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.4.0). See the [CHANGELOG.md](https://github.com/Gravity-Devs/liquidity/blob/v1.4.0/CHANGELOG.md#v130---2021-08-31) for details. This contains consensus breaking changes. 
 ## [5.0.6] - 2021-08-26
 
  * (gaia) Bump tendermint to 0.34.12
@@ -43,7 +44,6 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ## [5.0.5] - 2021-08-05
 
  * (gaia) Bump SDK to [0.42.9](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42.9) to resolve IBC channel restart issue ([9800](https://github.com/cosmos/cosmos-sdk/issues/9800)).
- * (gaia) Bump [Liquidity](https://github.com/gravity-devs/liquidity) module [v1.3.0](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.3.0), see the [CHANGELOG](https://github.com/Gravity-Devs/liquidity/blob/master/CHANGELOG.md#v130---2021-08-31) for details containing breaking changes. 
 
 ## [5.0.4] - 2021-07-31
 

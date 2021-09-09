@@ -15,7 +15,7 @@ The upgrades aim to add features such as liquidity, economic security, usability
 
 ## Vega Upgrade (expected Q3 2021)
 
- - Cosmos SDK v0.43
+ - Cosmos SDK v0.44
    - Fee grant module:
       - Allows paying fees on behalf of another account
    - Authz module:

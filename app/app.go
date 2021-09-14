@@ -2,6 +2,7 @@ package gaia
 
 import (
 	"fmt"
+	ibcante "github.com/cosmos/ibc-go/modules/core/ante"
 	"io"
 	stdlog "log"
 	"net/http"
@@ -531,12 +532,11 @@ func NewGaiaApp(
 	app.MountTransientStores(tkeys)
 	app.MountMemoryStores(memKeys)
 
-	anteHandler, err := NewAnteHandler(
-		HandlerOptions{
+	defaultAnteHandler, err := ante.NewAnteHandler(
+		ante.HandlerOptions{
 			AccountKeeper:   app.AccountKeeper,
 			BankKeeper:      app.BankKeeper,
 			FeegrantKeeper:  app.FeeGrantKeeper,
-			Channelkeeper:   app.IBCKeeper.ChannelKeeper,
 			SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 			SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 		},
@@ -545,6 +545,8 @@ func NewGaiaApp(
 		panic(fmt.Errorf("failed to create ante handler: %s", err))
 	}
 
+	ibcDecorator := ibcante.NewAnteDecorator(app.IBCKeeper.ChannelKeeper)
+	anteHandler := AddExtraDecorator(defaultAnteHandler, ibcDecorator)
 	app.SetAnteHandler(anteHandler)
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
@@ -557,7 +559,7 @@ func NewGaiaApp(
 			app.IBCKeeper.ConnectionKeeper.SetParams(ctx, ibcconnectiontypes.DefaultParams())
 
 			fromVM := make(map[string]uint64)
-			for moduleName, _ := range app.mm.Modules{
+			for moduleName, _ := range app.mm.Modules {
 				fromVM[moduleName] = 1
 			}
 

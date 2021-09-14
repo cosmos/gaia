@@ -36,6 +36,9 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+ * (gaia) Bump [Liquidity](https://github.com/gravity-devs/liquidity) module to [v1.4.0](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.4.0). See the [CHANGELOG.md](https://github.com/Gravity-Devs/liquidity/blob/v1.4.0/CHANGELOG.md#v130---2021-08-31) for details. This contains consensus breaking changes.
+
+## [5.0.6] - 2021-08-26
 
 ## [5.0.6] - 2021-09-16
 

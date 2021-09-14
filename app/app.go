@@ -560,7 +560,7 @@ func NewGaiaApp(
 			app.IBCKeeper.ConnectionKeeper.SetParams(ctx, ibcconnectiontypes.DefaultParams())
 
 			fromVM := make(map[string]uint64)
-			for moduleName, _ := range app.mm.Modules {
+			for moduleName := range app.mm.Modules {
 				fromVM[moduleName] = 1
 			}
 

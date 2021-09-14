@@ -104,6 +104,7 @@ import (
 )
 
 const appName = "GaiaApp"
+const upgradeName = "Vega"
 
 var (
 	// DefaultNodeHome default home directories for the application daemon
@@ -550,7 +551,7 @@ func NewGaiaApp(
 	app.SetEndBlocker(app.EndBlocker)
 
 	app.UpgradeKeeper.SetUpgradeHandler(
-		"vega",
+		upgradeName,
 		func(ctx sdk.Context, _ upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
 			// TODO: Verify these parameters are correct and intended.
 			app.IBCKeeper.ConnectionKeeper.SetParams(ctx, ibcconnectiontypes.DefaultParams())
@@ -586,7 +587,7 @@ func NewGaiaApp(
 		panic(fmt.Sprintf("failed to read upgrade info from disk %s", err))
 	}
 
-	if upgradeInfo.Name == "vega" && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+	if upgradeInfo.Name == upgradeName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := store.StoreUpgrades{
 			Added: []string{authz.ModuleName, feegrant.ModuleName},
 		}

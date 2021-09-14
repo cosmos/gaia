@@ -556,26 +556,9 @@ func NewGaiaApp(
 			// TODO: Verify these parameters are correct and intended.
 			app.IBCKeeper.ConnectionKeeper.SetParams(ctx, ibcconnectiontypes.DefaultParams())
 
-			fromVM := map[string]uint64{
-				"auth":         1,
-				"authz":        1,
-				"bank":         1,
-				"capability":   1,
-				"crisis":       1,
-				"distribution": 1,
-				"liquidity":    1,
-				"evidence":     1,
-				"feegrant":     1,
-				"gov":          1,
-				"mint":         1,
-				"params":       1,
-				"slashing":     1,
-				"staking":      1,
-				"upgrade":      1,
-				"vesting":      1,
-				"ibc":          1,
-				"genutil":      1,
-				"transfer":     1,
+			fromVM := make(map[string]uint64)
+			for moduleName, _ := range app.mm.Modules{
+				fromVM[moduleName] = 1
 			}
 
 			return app.mm.RunMigrations(ctx, app.configurator, fromVM)

@@ -8,13 +8,15 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/types/bech32/legacybech32" // todo check here
 	"github.com/cosmos/cosmos-sdk/x/genutil/types"
 	slashing "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	staking "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/pkg/errors"
 	cryptocodec "github.com/tendermint/tendermint/crypto/encoding"
 	tmtypes "github.com/tendermint/tendermint/types"
+
+	// nolint
+	"github.com/cosmos/cosmos-sdk/types/bech32/legacybech32"
 )
 
 type replacementConfigs []replacementConfig
@@ -67,8 +69,9 @@ func loadKeydataFromFile(clientCtx client.Context, replacementrJSON string, genD
 
 		if idx != -1 {
 			toReplaceValConsAddress, _ := val.GetConsAddr()
-			consPubKey, err := legacybech32.UnmarshalPubKey(legacybech32.ConsPK, replacement.ConsensusPubkey) //todo check here
 
+			// nolint
+			consPubKey, err := legacybech32.UnmarshalPubKey(legacybech32.ConsPK, replacement.ConsensusPubkey)
 			if err != nil {
 				log.Fatal(fmt.Errorf("failed to decode key:%s %w", consPubKey, err))
 			}

@@ -59,16 +59,14 @@ func loadKeydataFromFile(clientCtx client.Context, replacementrJSON string, genD
 		slashingGenesis slashing.GenesisState
 	)
 
-	clientCtx.JSONCodec.MustUnmarshalJSON(state[staking.ModuleName], &stakingGenesis)
-	clientCtx.JSONCodec.MustUnmarshalJSON(state[slashing.ModuleName], &slashingGenesis)
+	clientCtx.Codec.MustUnmarshalJSON(state[staking.ModuleName], &stakingGenesis)
+	clientCtx.Codec.MustUnmarshalJSON(state[slashing.ModuleName], &slashingGenesis)
 
 	for i, val := range stakingGenesis.Validators {
 		idx, replacement := replacementKeys.isReplacedValidator(val.OperatorAddress)
 
 		if idx != -1 {
-
 			toReplaceValConsAddress, _ := val.GetConsAddr()
-
 			consPubKey, err := legacybech32.UnmarshalPubKey(legacybech32.ConsPK, replacement.ConsensusPubkey) //todo check here
 
 			if err != nil {
@@ -109,8 +107,8 @@ func loadKeydataFromFile(clientCtx client.Context, replacementrJSON string, genD
 		}
 
 	}
-	state[staking.ModuleName] = clientCtx.JSONCodec.MustMarshalJSON(&stakingGenesis)
-	state[slashing.ModuleName] = clientCtx.JSONCodec.MustMarshalJSON(&slashingGenesis)
+	state[staking.ModuleName] = clientCtx.Codec.MustMarshalJSON(&stakingGenesis)
+	state[slashing.ModuleName] = clientCtx.Codec.MustMarshalJSON(&slashingGenesis)
 
 	genDoc.AppState, err = json.Marshal(state)
 

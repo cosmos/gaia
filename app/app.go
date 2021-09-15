@@ -564,6 +564,10 @@ func NewGaiaApp(
 				fromVM[moduleName] = 1
 			}
 
+			// override versions for _new_ modules as to not skip InitGenesis
+			fromVM[authz.ModuleName] = 0
+			fromVM[feegrant.ModuleName] = 0
+
 			return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 		},
 	)

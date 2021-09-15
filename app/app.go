@@ -567,6 +567,8 @@ func NewGaiaApp(
 			// override versions for _new_ modules as to not skip InitGenesis
 			fromVM[authz.ModuleName] = 0
 			fromVM[feegrant.ModuleName] = 0
+			// x/auth runs 1->2 migration
+			fromVM[authtypes.ModuleName] = auth.AppModule{}.ConsensusVersion()
 
 			return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 		},

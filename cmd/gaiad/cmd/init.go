@@ -6,9 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"time"
 	"strings"
-
 
 	"github.com/cosmos/go-bip39"
 	"github.com/pkg/errors"
@@ -82,34 +80,24 @@ func InitCmd(mbm module.BasicManager, defaultNodeHome string) *cobra.Command {
 			serverCtx := server.GetServerContextFromCmd(cmd)
 			config := serverCtx.Config
 
-
-			//This is a slice of SEED nodes, not peers.  They must be configured in seed mode. 
+			//This is a slice of SEED nodes, not peers.  They must be configured in seed mode.
 			//An easy way to run a lightweight seed node is to use tenderseed: github.com/binaryholdings/tenderseed
-			
-			seeds := []string {
-			"085f62d67bbf9c501e8ac84d4533440a1eef6c45@95.217.196.54:4000"} // Notional
-		 
-			
-			
 
-			
+			seeds := []string{
+				"bf8328b66dceb4987e5cd94430af66045e59899f@public-seed.cosmos.vitwit.com:26656",         // vitwit
+				"ba3bacc714817218562f743178228f23678b2873@public-seed-node.cosmoshub.certus.one:26656", // Certus One
+				"d85a36ad765a9ac7557f0a2f39ec637db5cac13c@162.55.132.230:2011"}                         // Notional
 
 			//Override default settings in config.toml
-			config.P2P.Seeds = strings.Join(seeds[:],",")
-			config.P2P.MaxNumInboundPeers = 150
+			config.P2P.Seeds = strings.Join(seeds[:], ",")
+			config.P2P.MaxNumInboundPeers = 300
 			config.P2P.MaxNumOutboundPeers = 40
 			config.Mempool.Size = 10000
-			config.StateSync.TrustPeriod = 112 * time.Hour
-			config.FastSync.Version = "v0"
 
 			config.SetRoot(clientCtx.HomeDir)
 
-
 			//Override default settings in app.toml
 			appConfig := appcfg.DefaultConfig()
-			appConfig.API.Enable = true
-			appConfig.StateSync.SnapshotInterval = 1500
-			appConfig.StateSync.SnapshotKeepRecent = 2
 
 			chainID, _ := cmd.Flags().GetString(flags.FlagChainID)
 			if chainID == "" {

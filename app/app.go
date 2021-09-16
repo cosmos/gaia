@@ -75,7 +75,6 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	gaiaappparams "github.com/cosmos/gaia/v5/app/params"
 	"github.com/cosmos/ibc-go/modules/apps/transfer"
 	ibctransferkeeper "github.com/cosmos/ibc-go/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/modules/apps/transfer/types"
@@ -529,7 +528,7 @@ func NewGaiaApp(
 
 	// initialize stores
 	app.MountKVStores(keys)
-	app.MountTransientStores(transientKeys)
+	app.MountTransientStores(tkeys)
 	app.MountMemoryStores(memKeys)
 
 	anteHandler, err := NewAnteHandler(

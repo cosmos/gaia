@@ -556,7 +556,6 @@ func NewGaiaApp(
 	app.UpgradeKeeper.SetUpgradeHandler(
 		upgradeName,
 		func(ctx sdk.Context, _ upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
-			// TODO: Verify these parameters are correct and intended.
 			app.IBCKeeper.ConnectionKeeper.SetParams(ctx, ibcconnectiontypes.DefaultParams())
 
 			fromVM := make(map[string]uint64)

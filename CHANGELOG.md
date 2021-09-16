@@ -36,6 +36,11 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+
+## [5.0.6] - 2021-09-16
+
+ * (gaia) Bump tendermint to 0.34.13
+ 
 ## [5.0.5] - 2021-08-05
 
  * (gaia) Bump SDK to [0.42.9](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42.9) to resolve IBC channel restart issue ([9800](https://github.com/cosmos/cosmos-sdk/issues/9800)).

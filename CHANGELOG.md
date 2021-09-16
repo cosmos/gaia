@@ -35,6 +35,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 # Changelog
 
 ## [Unreleased]
+* (gaia: ux) Add seed nodes to init.go
 
 
 ## [5.0.6] - 2021-09-16

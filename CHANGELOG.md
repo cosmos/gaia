@@ -36,6 +36,9 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+
+## [6.0.0] - 2021-09-17
+
  * (gaia) Bump [Liquidity](https://github.com/gravity-devs/liquidity) module to [v1.4.0](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.4.0). See the [CHANGELOG.md](https://github.com/Gravity-Devs/liquidity/blob/v1.4.0/CHANGELOG.md#v130---2021-08-31) for details. This contains consensus breaking changes.
  * (gaia) Bump [Cosmos SDK](https://github.com/cosmos/cosmos-sdk) to [v0.44.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.0). See the [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/release/v0.44.x/CHANGELOG.md#v0440---2021-09-01) for details. This contains consensus breaking changes.
  * (gaia) Add [IBC](https://github.com/cosmos/ibc-go) as a standalone module from the Cosmos SDK using version [v1.2.0](https://github.com/cosmos/ibc-go/releases/tag/v1.2.0). See the [CHANGELOG.md](https://github.com/cosmos/ibc-go/blob/v1.2.0/CHANGELOG.md) for details.
@@ -368,7 +371,8 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v5.0.6...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v6.0.0...HEAD
+[v6.0.0]: https://github.com/cosmos/gaia/releases/tag/v6.0.0
 [v5.0.6]: https://github.com/cosmos/gaia/releases/tag/v5.0.6
 [v5.0.5]: https://github.com/cosmos/gaia/releases/tag/v5.0.5
 [v5.0.4]: https://github.com/cosmos/gaia/releases/tag/v5.0.4

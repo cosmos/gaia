@@ -20,7 +20,8 @@ The upgrades aim to add features such as liquidity, economic security, usability
       - Allows paying fees on behalf of another account
    - Authz module:
       - Provide governance functions to execute transactions on behalf of another account
- - IBC 1.0
+ - IBC 1.2
+ - Cosmosvisor v0.1.0
 
 ## Theta Upgrade (expected Q4 2021)
 

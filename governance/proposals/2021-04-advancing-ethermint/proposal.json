@@ -1,0 +1,7 @@
+{
+  "title": "Advancing Ethermint: GTM and Engineering Plan for the Ethermint Chain",
+  "description": "Tharsis is requesting 100,000 ATOMs from the Cosmos Hub community pool to fund, develop and advance the Ethermint project and launch an Ethermint Chain. n\n More details can be found in the long form proposal here: https://gateway.pinata.cloud/ipfs/QmWwJ63V4TuZkDfWoH66vxd6NK82g6rgPVnypESXBFRbws and https://github.com/cosmos/governance/pull/18 and https://forum.cosmos.network/t/advancing-ethermint-governance-proposal-gtm-and-engineering-plan-for-the-ethermint-chain/4554. \n\n The multisig administration includes:\n\t - @fedekunze (Federico Kunze Küllmer, Tharsis)\n\t - @zmanian (Zaki Manian, Iqlusion)\n\t - @marbar3778 (Marko Baricevic, Interchain GmbH)",
+  "recipient": "cosmos124ezy53svellxqs075g69n4f5c0yzcy5slw7xz",
+  "amount": "100000000000uatom",
+  "deposit": "256000000uatom"
+}

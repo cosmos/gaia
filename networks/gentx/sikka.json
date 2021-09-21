@@ -1,0 +1,69 @@
+{
+  "type": "auth/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cosmos-sdk/MsgCreateValidator",
+        "value": {
+          "description": {
+            "moniker": "Sikka",
+            "identity": "https://keybase.io/team/sikka",
+            "website": "sikka.tech",
+            "details": "Sunny Aggarwal (@sunnya97) and Dev Ojha (@ValarDragon)"
+          },
+          "commission": {
+            "rate": "0.000000000000000000",
+            "max_rate": "1.000000000000000000",
+            "max_change_rate": "1.000000000000000000"
+          },
+          "min_self_delegation": "1",
+          "delegator_address": "cosmos1ey69r37gfxvxg62sh4r0ktpuc46pzjrmz29g45",
+          "validator_address": "cosmosvaloper1ey69r37gfxvxg62sh4r0ktpuc46pzjrm873ae8",
+          "pubkey": "cosmosvalconspub1zcjduepqg6y8magedjwr9p6s2c28zp28jdjtecxhn97ew6tnuzqklg63zgfspp9y3n",
+          "value": {
+            "denom": "uatom",
+            "amount": "20190313"
+          }
+        }
+      }
+    ],
+    "fee": {
+      "amount": null,
+      "gas": "566626"
+    },
+    "signatures": [
+      {
+        "pub_key": {
+          "type": "tendermint/PubKeyMultisigThreshold",
+          "value": {
+            "threshold": "2",
+            "pubkeys": [
+              {
+                "type": "tendermint/PubKeySecp256k1",
+                "value": "AldOvgv8dU9ZZzuhGydQD5FYreLhfhoBgrDKi8ZSTbCQ"
+              },
+              {
+                "type": "tendermint/PubKeySecp256k1",
+                "value": "AxUMR/GKoycWplR+2otzaQZ9zhHRQWJFt3h1bPg1ltha"
+              },
+              {
+                "type": "tendermint/PubKeySecp256k1",
+                "value": "AlI9yVj2Aejow6bYl2nTRylfU+9LjQLEl3keq0sERx9+"
+              },
+              {
+                "type": "tendermint/PubKeySecp256k1",
+                "value": "A0UvHPcvCCaIoFY9Ygh0Pxq9SZTAWtduOyinit/8uo+Q"
+              },
+              {
+                "type": "tendermint/PubKeySecp256k1",
+                "value": "As7R9fDUnwsUVLDr1cxspp+cY9UfXfUf7i9/w+N0EzKA"
+              }
+            ]
+          }
+        },
+        "signature": "CgUIBRIBSBJAYzfuW4yNj3lH4MWAzKrScBY9gEQxra+nfui3irKad04nDR5wyDIfCZEdPnnh555hVA1oLYIuEz7YAUF3ns8pExJAZlNUh6V+yz42UoGkJQY0L7veKXRWvltxOK0xxt2KdwZYqr6UA1E1ttJhGdyzlh0PyNXuYV2xGZ3UVbz5Qrx2/w=="
+      }
+    ],
+    "memo": "Brexit vote must be put on hold, MPs warn May"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "type": "auth/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cosmos-sdk/MsgCreateValidator",
+        "value": {
+          "description": {
+            "moniker": "StakeWith.Us",
+            "identity": "",
+            "website": "https://stakewith.us",
+            "details": "Secured Staking Made Easy. Put Your Crypto to Work - Hassle Free. Disclaimer: Delegators should understand that delegation comes with slashing risk. By delegating to StakeWithUs Pte Ltd, you acknowledge that StakeWithUs Pte Ltd is not liable for any losses on your investment."
+          },
+          "commission": {
+            "rate": "0.150000000000000000",
+            "max_rate": "0.250000000000000000",
+            "max_change_rate": "0.010000000000000000"
+          },
+          "min_self_delegation": "1",
+          "delegator_address": "cosmos1urtpxwfuu8k57aqt0h5zhsvmjt4m2mmdxmxfwm",
+          "validator_address": "cosmosvaloper1urtpxwfuu8k57aqt0h5zhsvmjt4m2mmdr0juzg",
+          "pubkey": "cosmosvalconspub1zcjduepqqf375ynp09sdnfdld0h0y5guphjr0pey06tjnfatrk2ck96vzvcq0r0kxj",
+          "value": {
+            "denom": "uatom",
+            "amount": "12680000000"
+          }
+        }
+      }
+    ],
+    "fee": {
+      "amount": null,
+      "gas": "200000"
+    },
+    "signatures": [
+      {
+        "pub_key": {
+          "type": "tendermint/PubKeySecp256k1",
+          "value": "A9QrxM2cU3P1k021CIDIsieZxK83etp7wQQB7IxF7pCL"
+        },
+        "signature": "vxaaUIsfe0nJxYgjAA6kPq9uOJvrX3oxMfOojpnBpp9RuxqN6eJfmsfV3ZOlaF4kZwQZVWeEiHAiH+YtZhM8tA=="
+      }
+    ],
+    "memo": ""
+  }
+}

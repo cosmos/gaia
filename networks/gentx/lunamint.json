@@ -1,0 +1,45 @@
+{
+  "type": "auth/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cosmos-sdk/MsgCreateValidator",
+        "value": {
+          "description": {
+            "moniker": "lunamint",
+            "identity": "4F26823468DD7518",
+            "website": "https://lunamint.com",
+            "details": "Always adding value to Cosmos. Check out Lunagram, the Cosmos wallet built into Telegram."
+          },
+          "commission": {
+            "rate": "0.150000000000000000",
+            "max_rate": "1.000000000000000000",
+            "max_change_rate": "1.000000000000000000"
+          },
+          "min_self_delegation": "1",
+          "delegator_address": "cosmos1ec3p6a75mqwkv33zt543n6cnxqwun37rxqj2vl",
+          "validator_address": "cosmosvaloper1ec3p6a75mqwkv33zt543n6cnxqwun37rr5xlqv",
+          "pubkey": "cosmosvalconspub1zcjduepqd85nu5nelvcyyzcsrr0yaglh8rfvn6cv9pp3p0hgmwtk8hf3cazqc7vz5c",
+          "value": {
+            "denom": "uatom",
+            "amount": "6500000000"
+          }
+        }
+      }
+    ],
+    "fee": {
+      "amount": null,
+      "gas": "200000"
+    },
+    "signatures": [
+      {
+        "pub_key": {
+          "type": "tendermint/PubKeySecp256k1",
+          "value": "A5jDkVzd9IL+B6ZPeFIWW8VkZuTGQ8lOKtduG0Z37GkB"
+        },
+        "signature": "etBUdqf+/JeKvgPIii8jen+aIefOpYTUr/8fAL98P41u8cQpAAkUg7HHaMwfDZUN1hwlQ0mpdpa6VzrnKpsrUg=="
+      }
+    ],
+    "memo": ""
+  }
+}

@@ -1,0 +1,45 @@
+{  
+   "type":"auth/StdTx",
+   "value":{  
+      "msg":[  
+         {  
+            "type":"cosmos-sdk/MsgCreateValidator",
+            "value":{  
+               "description":{  
+                  "moniker":"Ztake.org",
+                  "identity":"",
+                  "website":"https://ztake.org/",
+                  "details":"We are a team of tech-savvy blockchain developers and enthusiasts who run nodes on PoS and PoA blockchains. We took care all of the technical setup needed, so that you could easily stake your assets."
+               },
+               "commission":{  
+                  "rate":"0.081000000000000000",
+                  "max_rate":"0.250000000000000000",
+                  "max_change_rate":"0.100000000000000000"
+               },
+               "min_self_delegation":"10",
+               "delegator_address":"cosmos102ruvpv2srmunfffxavttxnhezln6fnc3pf7tt",
+               "validator_address":"cosmosvaloper102ruvpv2srmunfffxavttxnhezln6fnc54at8c",
+               "pubkey":"cosmosvalconspub1zcjduepq9weu2v0za8fdcvx0w3ps972k5v7sm6h5as9qaznc437vwpfxu37q0f3lyg",
+               "value":{  
+                  "denom":"uatom",
+                  "amount":"5000000000"
+               }
+            }
+         }
+      ],
+      "fee":{  
+         "amount":null,
+         "gas":"200000"
+      },
+      "signatures":[  
+         {  
+            "pub_key":{  
+               "type":"tendermint/PubKeySecp256k1",
+               "value":"ApAH7o7BzCs5sI0aACr5yojkRm4A84GG8IO9zMBaxyf1"
+            },
+            "signature":"k6UTw4nGFkx/Bq8OosgCL05iu6mfusciANxHRHJQkpxmeujy/ehMXFvrh7ELdycKhLHR+P+7RoKdLNIUSvqs0Q=="
+         }
+      ],
+      "memo":""
+   }
+}

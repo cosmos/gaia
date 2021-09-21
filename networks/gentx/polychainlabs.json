@@ -1,0 +1,45 @@
+{
+  "type": "auth/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cosmos-sdk/MsgCreateValidator",
+        "value": {
+          "description": {
+            "moniker": "Polychain Labs",
+            "identity": "",
+            "website": "https://cosmos.polychainlabs.com",
+            "details": ""
+          },
+          "commission": {
+            "rate": "0.200000000000000000",
+            "max_rate": "1.000000000000000000",
+            "max_change_rate": "0.010000000000000000"
+          },
+          "min_self_delegation": "1",
+          "delegator_address": "cosmos16m93gjfqvnjajzrfyszml8qm92a0w67ntjhd3d",
+          "validator_address": "cosmosvaloper16m93gjfqvnjajzrfyszml8qm92a0w67nwxrca7",
+          "pubkey": "cosmosvalconspub1zcjduepqfgl6yafrrlx0saks9w2nafptm3lvmvzwdwhmvsqmx4l6cnqfn7ss9tdah3",
+          "value": {
+            "denom": "uatom",
+            "amount": "100000000000"
+          }
+        }
+      }
+    ],
+    "fee": {
+      "amount": null,
+      "gas": "200000"
+    },
+    "signatures": [
+      {
+        "pub_key": {
+          "type": "tendermint/PubKeySecp256k1",
+          "value": "A8mJRMqtUZDBLPHWEZXaPeMW7ieIyCn/7CjQaB/gojGT"
+        },
+        "signature": "I8K3bM4gER/ONfqOdNvdvWyLALoxh7xh9sgpAF92dH1PQyFeivtGAxbDo3lqWuLerZ5q6vWEEXoA3YaGNX1wfA=="
+      }
+    ],
+    "memo": ""
+  }
+}

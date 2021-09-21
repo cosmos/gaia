@@ -9,8 +9,8 @@ require (
 	github.com/gravity-devs/liquidity v1.4.0
 	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7
-	github.com/spf13/cast v1.3.1
-	github.com/spf13/cobra v1.1.3
+	github.com/spf13/cast v1.4.1
+	github.com/spf13/cobra v1.2.1
 	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/tendermint v0.34.13
 	github.com/tendermint/tm-db v0.6.4
@@ -95,7 +95,7 @@ require (
 	github.com/spf13/afero v1.6.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/spf13/viper v1.8.0 // indirect
+	github.com/strangelove-ventures/packet-forward-middleware v0.0.0-20210915191732-56800405180f // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
 	github.com/syndtr/goleveldb v1.0.1-0.20200815110645-5c35d600f0ca // indirect
 	github.com/tecbot/gorocksdb v0.0.0-20191217155057-f0fad39f321c // indirect
@@ -110,8 +110,6 @@ require (
 	golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1 // indirect
 	golang.org/x/text v0.3.6 // indirect
 	google.golang.org/genproto v0.0.0-20210602131652-f16073e35f0c // indirect
-	google.golang.org/grpc v1.38.0 // indirect
-	google.golang.org/protobuf v1.26.0 // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect

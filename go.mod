@@ -9,8 +9,9 @@ require (
 	github.com/gravity-devs/liquidity v1.4.0
 	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7
-	github.com/spf13/cast v1.3.1
+	github.com/spf13/cast v1.4.1
 	github.com/spf13/cobra v1.2.1
+	github.com/strangelove-ventures/packet-forward-middleware v0.0.0-20210915191732-56800405180f
 	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/tendermint v0.34.13
 	github.com/tendermint/tm-db v0.6.4

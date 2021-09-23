@@ -215,6 +215,58 @@ enable = true
 address = "0.0.0.0:9090"
 ```
 
+## Upgrades
+
+To be best prepared for eventual upgrades, it is recommended to setup [Cosmovisor](https://docs.cosmos.network/master/run-node/cosmovisor.html), a small process manager,  which can swap in new `gaiad` binaries. Read more about setting this up [here](upgrade-node.md).
+
+## Background Process
+
+To run the node in a background process with automatic restarts, you can use a service manager like `systemd`. To set this up run the following:
+
+```bash
+sudo tee /etc/systemd/system/gaiad.service > /dev/null <<EOF  
+[Unit]
+Description=Gaia Daemon
+After=network-online.target
+
+[Service]
+User=$USER
+ExecStart=$(which gaiad) start
+Restart=always
+RestartSec=3
+LimitNOFILE=4096
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+If you're using Cosmovisor you want to add
+
+```bash
+Environment="DAEMON_HOME=$HOME/.gaia"
+Environment="DAEMON_NAME=gaiad"
+Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=false"
+Environment="DAEMON_RESTART_AFTER_UPGRADE=true"
+```
+
+after the `LimitNOFILE` line and replace `$(which gaiad)` with `$(which cosmovisor)`.
+
+Then setup the daemon
+
+```bash
+sudo -S systemctl daemon-reload
+sudo -S systemctl enable gaiad
+```
+
+We can then start the process and confirm that it is running
+
+```bash
+sudo -S systemctl start gaiad
+
+sudo service gaiad status
+```
+
 ## Export State
 
 Gaia can dump the entire application state into a JSON file. This application state dump is useful for manual analysis and can also be used as the genesis file of a new network.

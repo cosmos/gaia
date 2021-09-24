@@ -158,7 +158,7 @@ gaiad tx send ... --fees=5000uatom
 또는
 
 ```bash
-gaiad tx send ... --gas-prices=0.025uatom
+gaiad tx send ... --gas-prices=0.0025uatom
 ```
 
 ### 계정

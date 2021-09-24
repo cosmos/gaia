@@ -378,7 +378,7 @@ The `gasPrice` is the price of each unit of `gas`. Each validator sets a `min-ga
 The transaction `fees` are the product of `gas` and `gasPrice`. As a user, you have to input 2 out of 3. The higher the `gasPrice`/`fees`, the higher the chance that your transaction will get included in a block. 
 
 ::: tip
-For mainnet, the recommended `gas-prices` is `0.025uatom`. 
+For mainnet, the recommended `gas-prices` is `0.0025uatom`. 
 ::: 
 
 ### Sending Tokens
@@ -394,7 +394,7 @@ For mainnet, the recommended `gas-prices` is `0.025uatom`.
 ```bash
 // Send a certain amount of tokens to an address
 // Ex value for parameters (do not actually use these values in your tx!!): <to_address>=cosmos16m93fezfiezhvnjajzrfyszml8qm92a0w67ntjhd3d0 <amount>=1000000uatom 
-// Ex value for flags: <gasPrice>=0.025uatom
+// Ex value for flags: <gasPrice>=0.0025uatom
 
 gaiad tx send <to_address> <amount> --from <yourKeyName> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice>
 ```
@@ -415,7 +415,7 @@ gaiad tx send <to_address> <amount> --from <yourKeyName> --gas auto --gas-adjust
 
 ```bash
 // Bond a certain amount of Atoms to a given validator
-// ex value for flags: <validatorAddress>=cosmosvaloper18thamkhnj9wz8pa4nhnp9rldprgant57pk2m8s, <amountToBound>=10000000uatom, <gasPrice>=0.025uatom
+// ex value for flags: <validatorAddress>=cosmosvaloper18thamkhnj9wz8pa4nhnp9rldprgant57pk2m8s, <amountToBound>=10000000uatom, <gasPrice>=0.0025uatom
 
 gaiad tx staking delegate <validatorAddress> <amountToBond> --from <delegatorKeyName> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice>
 
@@ -424,19 +424,19 @@ gaiad tx staking delegate <validatorAddress> <amountToBond> --from <delegatorKey
 // Can only be used if already bonded to a validator
 // Redelegation takes effect immediately, there is no waiting period to redelegate
 // After a redelegation, no other redelegation can be made from the account for the next 3 weeks
-// ex value for flags: <stcValidatorAddress>=cosmosvaloper18thamkhnj9wz8pa4nhnp9rldprgant57pk2m8s, <amountToRedelegate>=100000000uatom, <gasPrice>=0.025uatom
+// ex value for flags: <stcValidatorAddress>=cosmosvaloper18thamkhnj9wz8pa4nhnp9rldprgant57pk2m8s, <amountToRedelegate>=100000000uatom, <gasPrice>=0.0025uatom
 
 gaiad tx staking redelegate <srcValidatorAddress> <destValidatorAddress> <amountToRedelegate> --from <delegatorKeyName> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice>
 
 // Withdraw all rewards
-// ex value for flag: <gasPrice>=0.025uatom
+// ex value for flag: <gasPrice>=0.0025uatom
 
 gaiad tx distribution withdraw-all-rewards --from <delegatorKeyName> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice>
 
 
 // Unbond a certain amount of Atoms from a given validator 
 // You will have to wait 3 weeks before your Atoms are fully unbonded and transferrable 
-// ex value for flags: <validatorAddress>=cosmosvaloper18thamkhnj9wz8pa4nhnp9rldprgant57pk2m8s, <amountToUnbound>=10000000uatom, <gasPrice>=0.025uatom
+// ex value for flags: <validatorAddress>=cosmosvaloper18thamkhnj9wz8pa4nhnp9rldprgant57pk2m8s, <amountToUnbound>=10000000uatom, <gasPrice>=0.0025uatom
 
 gaiad tx staking unbond <validatorAddress> <amountToUnbond> --from <delegatorKeyName> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice>
 ```
@@ -491,7 +491,7 @@ At the end of the voting period, the proposal is accepted if there are more than
 ```bash
 // Submit a Proposal
 // <type>=text/parameter_change/software_upgrade
-// ex value for flag: <gasPrice>=0.025uatom
+// ex value for flag: <gasPrice>=0.0025uatom
 
 gaiad tx gov submit-proposal --title "Test Proposal" --description "My awesome proposal" --type <type> --deposit=10000000uatom --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice> --from <delegatorKeyName>
 
@@ -514,7 +514,7 @@ If you do not have a ledger device and want to interact with your private key on
 
 ```bash
 // Bond Atoms 
-// ex value for flags: <amountToBound>=10000000uatom, <bech32AddressOfValidator>=cosmosvaloper18thamkhnj9wz8pa4nhnp9rldprgant57pk2m8s, <gasPrice>=0.025uatom, <delegatorAddress>=cosmos10snjt8dmpr5my0h76xj48ty80uzwhraqalu4eg
+// ex value for flags: <amountToBound>=10000000uatom, <bech32AddressOfValidator>=cosmosvaloper18thamkhnj9wz8pa4nhnp9rldprgant57pk2m8s, <gasPrice>=0.0025uatom, <delegatorAddress>=cosmos10snjt8dmpr5my0h76xj48ty80uzwhraqalu4eg
 
 gaiad tx staking delegate <validatorAddress> <amountToBond> --from <delegatorAddress> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice> --generate-only > unsignedTX.json
 ```

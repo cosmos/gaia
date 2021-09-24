@@ -90,7 +90,7 @@ For optimized node performance, edit the `~/.gaia/config/app.toml` file to enabl
 # transaction. A transaction's fees must meet the minimum of any denomination
 # specified in this config (for example, 10uatom).
 
-minimum-gas-prices = "0.025uatom"
+minimum-gas-prices = "0.0025uatom"
 ```
 
 Your full node has been initialized! 
@@ -140,13 +140,13 @@ The `gasPrice` is the price of each unit of `gas`. Each validator sets a `min-ga
 
 The transaction `fees` are the product of `gas` and `gasPrice`. As a user, you have to input 2 out of 3. The higher the `gasPrice`/`fees`, the higher the chance that your transaction will get included in a block. 
 
-For mainnet, the recommended `gas-prices` is `0.025uatom`. 
+For mainnet, the recommended `gas-prices` is `0.0025uatom`. 
 
 ## Set `minimum-gas-prices`
 
 Your full-node keeps unconfirmed transactions in its mempool. In order to protect it from spam, it is better to set a `minimum-gas-prices` that the transaction must meet in order to be accepted in your node's mempool. This parameter can be set in the following file `~/.gaia/config/app.toml`.
 
-The initial recommended `min-gas-prices` is `0.025uatom`, but you might want to change it later.
+The initial recommended `min-gas-prices` is `0.0025uatom`, but you might want to change it later.
 
 ## Pruning of State
 

@@ -23,7 +23,7 @@ The upgrades aim to add features such as liquidity, economic security, usability
  - IBC v1.2
  - Tendermint v0.34.13
  - Cosmosvisor v0.1.0
- - Router module 
+ - IBC router module 
 
 ## Theta Upgrade (expected Q4 2021)
 

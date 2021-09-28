@@ -1,0 +1,23 @@
+{
+  "name": "governance",
+  "version": "1.0.0",
+  "description": "Cosmos governance documentation",
+  "main": "index.js",
+  "scripts": {
+    "serve": "vuepress dev",
+    "build": "vuepress build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hyphacoop/governance.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hyphacoop/governance/issues"
+  },
+  "homepage": "https://github.com/hyphacoop/governance#readme",
+  "dependencies": {
+    "vuepress-theme-cosmos": "^1.0.182"
+  }
+}

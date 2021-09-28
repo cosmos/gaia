@@ -1,0 +1,45 @@
+{
+  "type": "auth/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cosmos-sdk/MsgCreateValidator",
+        "value": {
+          "description": {
+            "moniker": "firstblock.io",
+            "identity": "23D9B8528FC93D58",
+            "website": "https://firstblock.io",
+            "details": "You Delegate. We Validate."
+          },
+          "commission": {
+            "rate": "0.100000000000000000",
+            "max_rate": "0.200000000000000000",
+            "max_change_rate": "0.010000000000000000"
+          },
+          "min_self_delegation": "1",
+          "delegator_address": "cosmos1s65zmn32zugl57ysj47s7vmfcek0rtd7jd2mp2",
+          "validator_address": "cosmosvaloper1s65zmn32zugl57ysj47s7vmfcek0rtd7he7wde",
+          "pubkey": "cosmosvalconspub1zcjduepqrc6g9m2eyy4zs7kyeph8vk5ldpgnceveelc39zf7lc32j8k3shqssevdlg",
+          "value": {
+            "denom": "uatom",
+            "amount": "3000000000"
+          }
+        }
+      }
+    ],
+    "fee": {
+      "amount": null,
+      "gas": "200000"
+    },
+    "signatures": [
+      {
+        "pub_key": {
+          "type": "tendermint/PubKeySecp256k1",
+          "value": "AlLytZYcIwiP/kUu5EeR9seek332Mc1857kHeiwPYFNL"
+        },
+        "signature": "ngZIoTD7oaCbH+7jH+/SqdNq2vOxV8ssU8KDyc2Sf0V9g5PIOh0cYgoPckYhLcEZZlgy1k1VM5GIyQlEBrHbDA=="
+      }
+    ],
+    "memo": ""
+  }
+}

@@ -13,7 +13,7 @@ ifeq (,$(VERSION))
 endif
 
 PACKAGES_SIMTEST=$(shell go list ./... | grep '/simulation')
-LEDGER_ENABLED ?= true
+LEDGER_ENABLED ?= false
 SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
 TM_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::') # grab everything after the space in "github.com/tendermint/tendermint v0.34.7"
 DOCKER := $(shell which docker)

@@ -1,6 +1,7 @@
 package gaia
 
 import (
+	"fmt"
 	"io"
 	stdlog "log"
 	"net/http"
@@ -410,12 +411,19 @@ func NewGaiaApp(
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-	app.SetAnteHandler(
-		ante.NewAnteHandler(
-			app.AccountKeeper, app.BankKeeper, ante.DefaultSigVerificationGasConsumer,
-			encodingConfig.TxConfig.SignModeHandler(),
-		),
+	anteHandler, err := NewAnteHandler(
+		HandlerOptions{
+			AccountKeeper:    app.AccountKeeper,
+			BankKeeper:       app.BankKeeper,
+			SignModeHandler:  encodingConfig.TxConfig.SignModeHandler(),
+			SigGasConsumer:   ante.DefaultSigVerificationGasConsumer,
+			IBCChannelkeeper: app.IBCKeeper.ChannelKeeper,
+		},
 	)
+	if err != nil {
+		panic(fmt.Errorf("failed to create AnteHandler: %s", err))
+	}
+	app.SetAnteHandler(anteHandler)
 	app.SetEndBlocker(app.EndBlocker)
 	app.UpgradeKeeper.SetUpgradeHandler("Gravity-DEX",
 		func(ctx sdk.Context, plan upgradetypes.Plan) {

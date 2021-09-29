@@ -1,4 +1,4 @@
-# The Proposal Process & Governance Mechanism
+# Overview of Proposal Process & Governance Mechanism
 
 ## The Proposal Process: Two Periods
 

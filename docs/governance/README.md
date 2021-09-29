@@ -1,4 +1,4 @@
-# Cosmos Governance
+# Governance
 
 The Cosmos Hub ("Gaia") has an on-chain governance mechanism for passing 
 [text proposals](./text), 
@@ -37,5 +37,3 @@ community members, including:
 - [Reddit](http://reddit.com/r/cosmosnetwork)
 - [Telegram (Governance Working Group)](https://t.me/hubgov)
 - anywhere else you might interact with members of the Cosmos community!
-
-

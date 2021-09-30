@@ -17,3 +17,5 @@ jobs:
           version: v2.5.2
           github-token: ${{ secrets.github_token }}
           skip-pkg-cache: true
+          skip-build-cache: true
+

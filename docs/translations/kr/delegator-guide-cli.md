@@ -327,7 +327,7 @@ gaiad query
 트랜잭션 피(`fees`)는 `gas` 수량과 `gasPrice`를 곱한 값입니다. 유저는 3개의 값 중 2개의 값을 입력하게 됩니다. `gasPrice`가 높을수록 트랜잭션이 블록에 포함될 확률이 높아집니다.
 
 ::: tip
-메인넷 권장 `gas-prices`는 `0.025uatom` 입니다.
+메인넷 권장 `gas-prices`는 `0.0025uatom` 입니다.
 :::
 
 ### 토큰 전송하기
@@ -339,7 +339,7 @@ gaiad query
 ```bash
 //특정 수량의 토큰을 지정한 주소로 전송하기
 //파라미터 값 예시(실제 토큰 전송시 사용하지 마세요!): <수신자_주소_예시>=cosmos16m93fezfiezhvnjajzrfyszml8qm92a0w67ntjhd3d0 <수량_예시>=1000000uatom
-//플래그 값 예시: <가스_가격(gasPrice)>=0.025uatom
+//플래그 값 예시: <가스_가격(gasPrice)>=0.0025uatom
 
 gaiad tx send <수신자_주소> <보내는_수량> --from <키_이름> --gas auto --gas-adjustment 1.5 --gas-prices <가스_가격(gasPrice)>
 ```
@@ -359,7 +359,7 @@ gaiad tx send <수신자_주소> <보내는_수량> --from <키_이름> --gas au
 
 ```bash
 // 특정 검증인에게 아톰 위임하기 
-// 플래그 값 예시: <검증인_주소(validatorAddress)>= cosmosvaloper18thamkhnj9wz8pa4nhnp9rldprgant57pk2m8s, <위임할_수량(amountToBound)>=10000000uatom, <가스_가격(gasPrice)>=0.025uatom
+// 플래그 값 예시: <검증인_주소(validatorAddress)>= cosmosvaloper18thamkhnj9wz8pa4nhnp9rldprgant57pk2m8s, <위임할_수량(amountToBound)>=10000000uatom, <가스_가격(gasPrice)>=0.0025uatom
 
 gaiad tx staking delegate <검증인_주소(validatorAddress> <위임할_수량(amountToBond)> --from <위임자_키_명칭(delegatorKeyName)> --gas auto --gas-adjustment 1.5 --gas-prices <가스_가격(gasPrice)>
 
@@ -367,18 +367,18 @@ gaiad tx staking delegate <검증인_주소(validatorAddress> <위임할_수량(
 // 이미 검증인에게 위임이 된 상태에서만 사용하실 수 있습니다
 // 재위임은 즉시 반영됩니다. 재위임 대기 기간은 없습니다
 // 재위임을 진행하신 후, 동일한 아톰에 대한 재위임은 3주 후 가능합니다.
-// 플래그 값 예시: <기존_검증인_주소(srcValidatorAddress)>=cosmosvaloper18thamkhnj9wz8pa4nhnp9rldprgant57pk2m8s, <재위임할_수량>=100000000uatom, <가스_가격(gasPrice)>=0.025uatom
+// 플래그 값 예시: <기존_검증인_주소(srcValidatorAddress)>=cosmosvaloper18thamkhnj9wz8pa4nhnp9rldprgant57pk2m8s, <재위임할_수량>=100000000uatom, <가스_가격(gasPrice)>=0.0025uatom
 
 gaiad tx staking redelegate <기존_검증인_주소(srcValidatorAddress)> <이동할_검증인_주소(destValidatorAddress)> <재위임할_수량(amountToRedelegate)> --from <위임자_키_명칭(delegatorKeyName)> --gas auto --gas-adjustment 1.5 --gas-prices <가스_가격(gasPrice)>
 
 // 모든 리워드 수령하기
-// 플래그 값 예시: <가스_가격(gasPrice)>=0.025uatom
+// 플래그 값 예시: <가스_가격(gasPrice)>=0.0025uatom
 
 gaiad tx distribution withdraw-all-rewards --from <위임자_키_명칭(delegatorKeyName)> --gas auto --gas-adjustment 1.5 --gas-prices <가스_가격(gasPrice)>
 
 // 특정 검증인으로 부터 위임 취소하기
 // 위임 취소가 완료되기 위해서는 3주의 기간이 걸리며, 위임 취소가 진행중인 기간에는 해당 아톰을 전송하실 수 없습니다.
-// 플래그 값 예시: <검증인_주소(validatorAddress)>=cosmosvaloper18thamkhnj9wz8pa4nhnp9rldprgant57pk2m8s, <위임_취소할_수량(amountToUnbond)>=10000000uatom, <가스_가격(gasPrice)>=0.025uatom
+// 플래그 값 예시: <검증인_주소(validatorAddress)>=cosmosvaloper18thamkhnj9wz8pa4nhnp9rldprgant57pk2m8s, <위임_취소할_수량(amountToUnbond)>=10000000uatom, <가스_가격(gasPrice)>=0.0025uatom
 
 gaiad tx staking unbond <검증인_주소(validatorAddress)> <위임_취소할_수량(amountToUnbond)> --from <위임자_키_명칭(delegatorKeyName)> --gas auto --gas-adjustment 1.5 --gas-prices <가스_가격(gasPrice)>
 
@@ -428,7 +428,7 @@ gaiad query tx <트랜잭션_해시(txHash)>
 ```bash
 // 프로포절 제안하기
 // <프로포절_종류(type)>=text/parameter_change/software_upgrade
-// 플래그 값 예시: <가스_가격(gasPrice)>=0.025uatom
+// 플래그 값 예시: <가스_가격(gasPrice)>=0.0025uatom
 
 gaiad tx gov submit-proposal --title "Test Proposal" --description "My awesome proposal" --type <프로포절_종류(type)> --deposit=10000000uatom --gas auto --gas-prices <가스_가격(gasPrice)> --from <위임자_키_명칭(delegatorKeyName)>
 
@@ -451,7 +451,7 @@ gaiad tx gov vote <프로포절_ID(proposalID)> <표_선택(option)> --gas auto 
 
 ```bash
 // 아톰 본딩하기 
-// 플래그 값 예시: <본딩할 수량(amountToBond)>=10000000uatom, <위임할 검증인의 bech32 주소(bech32AddressOfValidator)>=cosmosvaloper18thamkhnj9wz8pa4nhnp9rldprgant57pk2m8s, <가스 가격(gasPrice)>=0.025uatom
+// 플래그 값 예시: <본딩할 수량(amountToBond)>=10000000uatom, <위임할 검증인의 bech32 주소(bech32AddressOfValidator)>=cosmosvaloper18thamkhnj9wz8pa4nhnp9rldprgant57pk2m8s, <가스 가격(gasPrice)>=0.0025uatom
 
 gaiad tx staking delegate <검증인_주소(validatorAddress)> <위임할_수량(amountToBond)> --from <위임자_주소(delegatorAddress)> --gas auto --gas-adjustment 1.5 --gas-prices <가스_가격(gasPrice)> --generate-only > unsignedTX.json
 ```

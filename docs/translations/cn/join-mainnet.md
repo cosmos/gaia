@@ -97,14 +97,14 @@ fees = gas * gasPrices
 交易的`fees`是`gas`与`gasPrice`的结果。作为一个用户，你必须输入三者中的两者。更高的`gasPrice`/`fees`，将提高你的交易被打包的机会。
 
 ::: 提示
-主网中推荐的`gas-prices`是`0.025uatom`
+主网中推荐的`gas-prices`是`0.0025uatom`
 :::
 
 ## 设置`minimum-gas-prices`
 
 你的全节点可以在交易池中放入未确认的交易。为了保护其免受Spam攻击，最好设置一个`minimum-gas-prices`来过滤交易以决定是否要放入交易池。这个参数可以在`~/.gaia/config/gaiad.toml`文件中配置。
 
-推荐的初始`minimum-gas-prices`是`0.025uatom`，如果你愿意可以稍后再修改它。
+推荐的初始`minimum-gas-prices`是`0.0025uatom`，如果你愿意可以稍后再修改它。
 
 ## 运行一个全节点
 

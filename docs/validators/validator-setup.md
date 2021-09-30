@@ -47,7 +47,7 @@ gaiad tx staking create-validator \
   --commission-max-change-rate="0.01" \
   --min-self-delegation="1000000" \
   --gas="auto" \
-  --gas-prices="0.025uatom" \
+  --gas-prices="0.0025uatom" \
   --from=<key_name>
 ```
 
@@ -118,7 +118,7 @@ gaiad tx staking edit-validator
   --details="To infinity and beyond!" \
   --chain-id=<chain_id> \
   --gas="auto" \
-  --gas-prices="0.025uatom" \
+  --gas-prices="0.0025uatom" \
   --from=<key_name> \
   --commission-rate="0.10"
 ```

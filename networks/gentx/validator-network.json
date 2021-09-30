@@ -1,0 +1,45 @@
+{
+  "type": "auth/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cosmos-sdk/MsgCreateValidator",
+        "value": {
+          "description": {
+            "moniker": "Validator Network",
+            "identity": "357F80896B3311B4",
+            "website": "https://validator.network",
+            "details": "Highly resilient and secure validator operating out of Northern Europe. See website for terms of service."
+          },
+          "commission": {
+            "rate": "0.125000000000000000",
+            "max_rate": "1.000000000000000000",
+            "max_change_rate": "0.010000000000000000"
+          },
+          "min_self_delegation": "100000000",
+          "delegator_address": "cosmos1sxx9mszve0gaedz5ld7qdkjkfv8z992arw3rr5",
+          "validator_address": "cosmosvaloper1sxx9mszve0gaedz5ld7qdkjkfv8z992ax69k08",
+          "pubkey": "cosmosvalconspub1zcjduepqjnnwe2jsywv0kfc97pz04zkm7tc9k2437cde2my3y5js9t7cw9mstfg3sa",
+          "value": {
+            "denom": "uatom",
+            "amount": "14000000000"
+          }
+        }
+      }
+    ],
+    "fee": {
+      "amount": null,
+      "gas": "200000"
+    },
+    "signatures": [
+      {
+        "pub_key": {
+          "type": "tendermint/PubKeySecp256k1",
+          "value": "A874FW2YoONx6zbQemNXwaJSqtQ6Wb9BRg0HRLWvtp2o"
+        },
+        "signature": "DVtmJ7kqp3rdMktRn/0yHTr6zsCJBH5R4/qNHVELm1hOCwKP3nRp2Udb8EEhorqMt0Q83T7zP14nwttFagox/w=="
+      }
+    ],
+    "memo": "4e2e13e5552000e0a80eac8a4f291a0a3e4012f8@52.57.20.18:26656"
+  }
+}

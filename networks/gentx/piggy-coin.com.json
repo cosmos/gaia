@@ -1,0 +1,45 @@
+{
+  "type": "auth/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cosmos-sdk/MsgCreateValidator",
+        "value": {
+          "description": {
+            "moniker": "piggy-coin.com",
+            "identity": "9979ae5a5da54bf04719b8c8ebdc0d24",
+            "website": "https://www.piggy-coin.com/",
+            "details": "Delegate here to support piggy-coin's hard-spoon to tendermint / cosmos"
+          },
+          "commission": {
+            "rate": "0.250000000000000000",
+            "max_rate": "0.500000000000000000",
+            "max_change_rate": "0.005000000000000000"
+          },
+          "min_self_delegation": "100000000",
+          "delegator_address": "cosmos1zp6kg7qlmztyw2km2af4z5ruz5vn04cpq84vjk",
+          "validator_address": "cosmosvaloper1zp6kg7qlmztyw2km2af4z5ruz5vn04cp9npe79",
+          "pubkey": "cosmosvalconspub1zcjduepq5supzpux2jafyv06qw2dnd0fzshd2enmea9zeak9emu2ft5rs8nswzlqxf",
+          "value": {
+            "denom": "uatom",
+            "amount": "1000000000"
+          }
+        }
+      }
+    ],
+    "fee": {
+      "amount": null,
+      "gas": "200000"
+    },
+    "signatures": [
+      {
+        "pub_key": {
+          "type": "tendermint/PubKeySecp256k1",
+          "value": "A92fKIknHSbNXRS3MpM+IUTuCJ01AG6SwabK1nMvZVoj"
+        },
+        "signature": "iW0RF/rSEe0fXtiGn0cZrv0VHdOprJnObmd0Ziyp3u8U93oKgJF4umj/GwNJn93oHBcCnxkDlOLoJXHkD/SbDg=="
+      }
+    ],
+    "memo": ""
+  }
+}

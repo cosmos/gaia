@@ -1,0 +1,24 @@
+{
+  "cosmos1unc788q8md2jymsns24eyhua58palg5kc7cstv": {
+    "type":"multisig",
+    "threshold":2,
+    "pubs":[
+      "cosmospub1addwnpepqdffnd5p089hkxq9jt3grlcn79c0a0yeuumuu9nmas0vvtqmxa0fx0j4xg8",
+      "cosmospub1addwnpepqwc5kp5my47sppxecut5hs5yk7jmvg3znhfr0tzc32jghme350enxlz7d2k",
+      "cosmospub1addwnpepqgzapwxlcc5u8tsthcsreeq6uet579aak07pktj0fx5ua4xu6j2sq3nut63"
+    ],
+    "amount":6083156.55
+  },
+  "cosmos1z8mzakma7vnaajysmtkwt4wgjqr2m84tzvyfkz": {
+    "type":"multisig",
+    "threshold":3,
+    "pubs":[
+      "cosmospub1addwnpepq2y8tmyylle355nsku2n2smsw496t6vmpy5gldrpf2sruvnpn0dp56dkyqe",
+      "cosmospub1addwnpepqtq8q3dhy5q2r6re7275t4uq0xqa5dt0993aduy6fe5s9gtvar5jq0nd675",
+      "cosmospub1addwnpepqgqvs5w7j3whzt8m0plpasxakyx020vu6q3gnve7x0dnwyqc3kpjg0sywxu",
+	  "cosmospub1addwnpepqwkzxs6lmlfxnh7dvqtfdeat3py68fl5jxh7xsg2c28vjjsh3cd2wlcy830",
+	  "cosmospub1addwnpepqw0edg79k6lh344h9zcc64l8slaj39rty2m7esekgq88zumu9mgcgyzw39n"
+    ],
+    "amount":14194031.94
+  }
+}

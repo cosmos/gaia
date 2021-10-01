@@ -3,7 +3,7 @@ module github.com/cosmos/gaia/v6
 go 1.17
 
 require (
-	github.com/cosmos/cosmos-sdk v0.44.0
+	github.com/cosmos/cosmos-sdk v0.44.1
 	github.com/cosmos/ibc-go v1.2.0
 	github.com/gorilla/mux v1.8.0
 	github.com/gravity-devs/liquidity v1.4.0

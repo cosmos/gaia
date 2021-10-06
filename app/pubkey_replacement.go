@@ -8,7 +8,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/x/genutil/types"
+	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	slashing "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	staking "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/pkg/errors"
@@ -51,7 +51,7 @@ func loadKeydataFromFile(clientCtx client.Context, replacementrJSON string, genD
 		log.Fatal("Could not unmarshal replacement keys ")
 	}
 
-	var state types.AppMap
+	var state genutiltypes.AppMap
 	if err := json.Unmarshal(genDoc.AppState, &state); err != nil {
 		log.Fatal(errors.Wrap(err, "failed to JSON unmarshal initial genesis state"))
 	}

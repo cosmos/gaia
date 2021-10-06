@@ -22,7 +22,7 @@ import (
 	captypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	evtypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
-	"github.com/cosmos/cosmos-sdk/x/genutil/types"
+	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	staking "github.com/cosmos/cosmos-sdk/x/staking/types"
 	ibcxfertypes "github.com/cosmos/ibc-go/modules/apps/transfer/types"
 	host "github.com/cosmos/ibc-go/modules/core/24-host"
@@ -73,7 +73,7 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 				return errors.Wrapf(err, "failed to read genesis document from file %s", importGenesis)
 			}
 
-			var initialState types.AppMap
+			var initialState genutiltypes.AppMap
 			if err := json.Unmarshal(genDoc.AppState, &initialState); err != nil {
 				return errors.Wrap(err, "failed to JSON unmarshal initial genesis state")
 			}

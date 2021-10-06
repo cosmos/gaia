@@ -99,7 +99,7 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	gaiaappparams "github.com/cosmos/gaia/v6/app/params"
-	router "github.com/strangelove-ventures/packet-forward-middleware/router"
+	"github.com/strangelove-ventures/packet-forward-middleware/router"
 	routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/router/keeper"
 	routertypes "github.com/strangelove-ventures/packet-forward-middleware/router/types"
 
@@ -472,6 +472,7 @@ func NewGaiaApp(
 		stakingtypes.ModuleName,
 		liquiditytypes.ModuleName,
 		ibchost.ModuleName,
+		routertypes.ModuleName,
 	)
 	app.mm.SetOrderEndBlockers(
 		crisistypes.ModuleName,
@@ -575,6 +576,7 @@ func NewGaiaApp(
 			// override versions for _new_ modules as to not skip InitGenesis
 			fromVM[authz.ModuleName] = 0
 			fromVM[feegrant.ModuleName] = 0
+			fromVM[routertypes.ModuleName] = 0
 
 			return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 		},
@@ -587,7 +589,7 @@ func NewGaiaApp(
 
 	if upgradeInfo.Name == upgradeName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := store.StoreUpgrades{
-			Added: []string{authz.ModuleName, feegrant.ModuleName},
+			Added: []string{authz.ModuleName, feegrant.ModuleName, routertypes.ModuleName},
 		}
 
 		// configure store loader that checks if version == upgradeHeight and applies store upgrades

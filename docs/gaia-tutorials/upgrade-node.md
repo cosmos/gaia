@@ -6,7 +6,56 @@ order: 5
 
 This document describes the upgrade procedure of a `gaiad` full-node to a new version.
 
-## Software Upgrade
+## Cosmovisor
+
+The CosmosSDK provides a convenient process manager that wraps around the `gaiad` binary and can automatically swap in new binaries upon a successful governance upgrade proposal. Cosmovisor is entirely optional but recommended. More information can be found [here](https://docs.cosmos.network/master/run-node/cosmovisor.html).
+
+### Setup
+
+To get started with Cosmovisor first download it
+
+```bash
+go get github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor
+```
+
+Set up the environment variables
+
+```bash
+echo "# Setup Cosmovisor" >> ~/.profile
+echo "export DAEMON_NAME=gaiad" >> ~/.profile
+echo "export DAEMON_HOME=$HOME/.gaia" >> ~/.profile
+source ~/.profile
+```
+
+Create the appropriate directories
+
+```bash
+mkdir -p ~/.gaia/cosmovisor/upgrades
+mkdir -p ~/.gaia/cosmovisor/genesis/bin/
+cp $(which gaiad) ~/.gaia/cosmovisor/genesis/bin/
+
+# verify the setup. 
+# It should return the same version as gaiad
+cosmovisor version
+```
+
+Now `gaiad` can start by running
+
+```bash
+cosmovisor start
+```
+
+### Preparing an Upgrade
+
+Cosmovisor will continually poll  the `$DAEMON_HOME/data/upgrade-info.json` for new upgrade instructions. When an upgrade is ready, node operators can download the new binary and place it under `$DAEMON_HOME/cosmovisor/upgrades/<name>/bin` where `<name>` is the URI-encoded name of the upgrade as specified in the upgrade module plan.
+
+It is possible to have Cosmovisor automatically download the new binary. To do this set the following environment variable.
+
+```bash
+export DAEMON_ALLOW_DOWNLOAD_BINARIES=true
+```
+
+## Manual Software Upgrade
 
 First, stop your instance of `gaiad`. Next, upgrade the software:
 
@@ -22,7 +71,11 @@ _NOTE_: If you have issues at this step, please check that you have the latest s
 
 See the [testnet repo](https://github.com/cosmos/testnets) for details on which version is needed for which public testnet, and the [Gaia release page](https://github.com/cosmos/Gaia/releases) for details on each release.
 
-Your full node has been cleanly upgraded!
+Your full node has been cleanly upgraded! If there are no breaking changes then you can simply restart the node by running:
+
+```bash
+gaiad start
+```
 
 ## Upgrade Genesis File
 
@@ -87,11 +140,3 @@ gaiad unsafe-reset-all
 ```
 
 Your node is now in a pristine state while keeping the original `priv_validator.json` and `config.toml`. If you had any sentry nodes or full nodes setup before, your node will still try to connect to them, but may fail if they haven't also been upgraded.
-
-## Restart
-
-To restart your node, just type:
-
-```bash
-gaiad start
-```

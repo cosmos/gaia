@@ -191,7 +191,7 @@ gaiad tx bank send ... --fees=50000uatom
 or
 
 ```bash
-gaiad tx bank send ... --gas-prices=0.025uatom
+gaiad tx bank send ... --gas-prices=0.0025uatom
 ```
 
 ### Account

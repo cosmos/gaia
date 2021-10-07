@@ -72,7 +72,7 @@ If you are looking to run a validator node, follow the [validator setup guide](.
 
 Have questions, comments, or new ideas? Participate in the Cosmos community through one of the following channels. Also check out the [latest events](https://cosmos.network/community).
 
-* [Cosmos Community Discord](https://discord.gg/vcExX9T)
+* [Cosmos Community Discord](https://discord.gg/cosmosnetwork)
 * [Cosmos Community Telegram](https://t.me/cosmosproject)
 * [Cosmos Hub Governance Working Group Telegram](https://t.me/hubgov)
 * [Cosmos Forum](https://forum.cosmos.network)

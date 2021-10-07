@@ -90,7 +90,7 @@ For optimized node performance, edit the `~/.gaia/config/app.toml` file to enabl
 # transaction. A transaction's fees must meet the minimum of any denomination
 # specified in this config (for example, 10uatom).
 
-minimum-gas-prices = "0.025uatom"
+minimum-gas-prices = "0.0025uatom"
 ```
 
 Your full node has been initialized! 
@@ -140,13 +140,13 @@ The `gasPrice` is the price of each unit of `gas`. Each validator sets a `min-ga
 
 The transaction `fees` are the product of `gas` and `gasPrice`. As a user, you have to input 2 out of 3. The higher the `gasPrice`/`fees`, the higher the chance that your transaction will get included in a block. 
 
-For mainnet, the recommended `gas-prices` is `0.025uatom`. 
+For mainnet, the recommended `gas-prices` is `0.0025uatom`. 
 
 ## Set `minimum-gas-prices`
 
 Your full-node keeps unconfirmed transactions in its mempool. In order to protect it from spam, it is better to set a `minimum-gas-prices` that the transaction must meet in order to be accepted in your node's mempool. This parameter can be set in the following file `~/.gaia/config/app.toml`.
 
-The initial recommended `min-gas-prices` is `0.025uatom`, but you might want to change it later.
+The initial recommended `min-gas-prices` is `0.0025uatom`, but you might want to change it later.
 
 ## Pruning of State
 
@@ -213,6 +213,58 @@ By default, gRPC is enabled on port `9090`. In the `~/.gaia/config/app.toml` fil
 enable = true
 # Address defines the gRPC server address to bind to.
 address = "0.0.0.0:9090"
+```
+
+## Upgrades
+
+To be best prepared for eventual upgrades, it is recommended to setup [Cosmovisor](https://docs.cosmos.network/master/run-node/cosmovisor.html), a small process manager,  which can swap in new `gaiad` binaries. Read more about setting this up [here](upgrade-node.md).
+
+## Background Process
+
+To run the node in a background process with automatic restarts, you can use a service manager like `systemd`. To set this up run the following:
+
+```bash
+sudo tee /etc/systemd/system/gaiad.service > /dev/null <<EOF  
+[Unit]
+Description=Gaia Daemon
+After=network-online.target
+
+[Service]
+User=$USER
+ExecStart=$(which gaiad) start
+Restart=always
+RestartSec=3
+LimitNOFILE=4096
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+If you're using Cosmovisor you want to add
+
+```bash
+Environment="DAEMON_HOME=$HOME/.gaia"
+Environment="DAEMON_NAME=gaiad"
+Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=false"
+Environment="DAEMON_RESTART_AFTER_UPGRADE=true"
+```
+
+after the `LimitNOFILE` line and replace `$(which gaiad)` with `$(which cosmovisor)`.
+
+Then setup the daemon
+
+```bash
+sudo -S systemctl daemon-reload
+sudo -S systemctl enable gaiad
+```
+
+We can then start the process and confirm that it is running
+
+```bash
+sudo -S systemctl start gaiad
+
+sudo service gaiad status
 ```
 
 ## Export State

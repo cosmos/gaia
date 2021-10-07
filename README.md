@@ -19,7 +19,7 @@ Documentation for the Cosmos Hub lives at [hub.cosmos.network](https://hub.cosmo
 
 We have active, helpful communities on Twitter, Discord, and Telegram.
 
-* [Discord](https://discord.gg/vcExX9T)
+* [Discord](https://discord.gg/cosmosnetwork)
 * [Twitter](https://twitter.com/cosmos)
 * [Telegram](https://t.me/cosmosproject)
 

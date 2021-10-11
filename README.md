@@ -1,4 +1,20 @@
-# Gaia
+# Agoric Gaia
+
+This repository contains sources for the [Agoric blockchain's](https://agoric.com/) `agaiad` program, a fork of the [Cosmos Gaia implementation](https://github.com/cosmos/gaia).
+
+TL;DR: Compile `agaiad` with `make build`, and run with `build/agaiad`.
+
+The first Agoric mainnet (phase 0) will not have the [Agoric SDK](https://github.com/Agoric/agoric-sdk) enabled until governance votes to turn it on.  Until then,
+validators run `agaiad` to bootstrap the chain with support for Cosmos-layer
+validation, staking, and governance.
+
+Please refer to https://agoric.com to learn about Agoric and get involved.
+
+*The rest of the original Gaia README follows:*
+
+----
+
+# Original Gaia README
 Gaia is the first implementation of the Cosmos Hub, built using the [Cosmos SDK](https://github.com/cosmos/cosmos-sdk).  Gaia and other Cosmos Hubs allow fully sovereign blockchains to interact with one another using a protocol called [IBC](https://github.com/cosmos/ics/tree/master/ibc) that enables Inter-Blockchain Communication.
 
 [![codecov](https://codecov.io/gh/cosmos/gaia/branch/master/graph/badge.svg)](https://codecov.io/gh/cosmos/gaia)

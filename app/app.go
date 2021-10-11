@@ -200,7 +200,7 @@ func init() {
 		stdlog.Println("Failed to get home dir %2", err)
 	}
 
-	DefaultNodeHome = filepath.Join(userHomeDir, ".gaia")
+	DefaultNodeHome = filepath.Join(userHomeDir, ".agaia")
 }
 
 // NewGaiaApp returns a reference to an initialized Gaia.
@@ -323,7 +323,7 @@ func NewGaiaApp(
 	app.FeeGrantKeeper = feegrantKeeper
 
 	authzKeeper := authzkeeper.NewKeeper(
-		keys[authzkeeper.StoreKey],appCodec, app.MsgServiceRouter(),
+		keys[authzkeeper.StoreKey], appCodec, app.MsgServiceRouter(),
 	)
 	app.AuthzKeeper = authzKeeper
 	/****  Module Options ****/

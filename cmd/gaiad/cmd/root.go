@@ -50,8 +50,8 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		WithViper("GAIA")
 
 	rootCmd := &cobra.Command{
-		Use:   "gaiad",
-		Short: "Stargate Cosmos Hub App",
+		Use:   "agaiad",
+		Short: "Stargate Agoric App (without Agoric JS VM)",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 			// set the default command outputs
 			cmd.SetOut(cmd.OutOrStdout())

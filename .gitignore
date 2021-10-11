@@ -9,6 +9,7 @@
 .idea
 
 # Build
+artifacts
 vendor
 build
 tools/bin/*

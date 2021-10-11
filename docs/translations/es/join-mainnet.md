@@ -101,14 +101,14 @@ El `gasPrice` (i.e `precioPorGas`) es el precio de cada unidad de `gas`. Cada va
 Los `fees` de la transacción son el producto del `gas` y del `gasPrice`. Como usuario, tiene que introducir 2 de 3. Cuanto más alto sea el `gasPrice`/`fees`, mayor será la posibilidad de que su transacción se incluya en un bloque.
 
 ::: consejo
-Para la red principal, el `gas-prices` recomendado es `0.025uatom`.
+Para la red principal, el `gas-prices` recomendado es `0.0025uatom`.
 :::
 
 ## Establezca `minimum-gas-prices`
 
 Su nodo completo mantiene las transacciones no confirmadas en la _mempool_. Para protegerlo de ataques de spam, es mejor establecer un `minimum-gas-prices` que la transacción debe cumplir para ser aceptada en la _mempool_ de su nodo. Este parámetro puede ser establecido en el siguiente archivo `~/.gaia/config/app.toml`.
 
-El valor inicial recomendado para `min-gas-prices` es `0.025uatom`, pero puede querer cambiarlo más tarde.
+El valor inicial recomendado para `min-gas-prices` es `0.0025uatom`, pero puede querer cambiarlo más tarde.
 
 ## Reducción del Estado
 

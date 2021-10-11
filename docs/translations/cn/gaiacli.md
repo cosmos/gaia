@@ -153,7 +153,7 @@ gaiad tx send ... --fees=50000uatom
 或：
 
 ```bash
-gaiad tx send ... --gas-prices=0.025uatom
+gaiad tx send ... --gas-prices=0.0025uatom
 ```
 
 

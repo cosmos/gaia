@@ -9,6 +9,11 @@ import (
 	"io/ioutil"
 	"time"
 
+	"github.com/pkg/errors"
+	"github.com/spf13/cobra"
+	tmjson "github.com/tendermint/tendermint/libs/json"
+	tmtypes "github.com/tendermint/tendermint/types"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -23,10 +28,6 @@ import (
 	host "github.com/cosmos/ibc-go/modules/core/24-host"
 	"github.com/cosmos/ibc-go/modules/core/exported"
 	ibccoretypes "github.com/cosmos/ibc-go/modules/core/types"
-	"github.com/pkg/errors"
-	"github.com/spf13/cobra"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	tmtypes "github.com/tendermint/tendermint/types"
 )
 
 const (
@@ -107,7 +108,7 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 
 			var bankGenesis bank.GenesisState
 
-			clientCtx.JSONCodec.MustUnmarshalJSON(newGenState[bank.ModuleName], &bankGenesis)
+			clientCtx.Codec.MustUnmarshalJSON(newGenState[bank.ModuleName], &bankGenesis)
 
 			bankGenesis.DenomMetadata = []bank.Metadata{
 				{
@@ -121,11 +122,11 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 					Display: "atom",
 				},
 			}
-			newGenState[bank.ModuleName] = clientCtx.JSONCodec.MustMarshalJSON(&bankGenesis)
+			newGenState[bank.ModuleName] = clientCtx.Codec.MustMarshalJSON(&bankGenesis)
 
 			var stakingGenesis staking.GenesisState
 
-			clientCtx.JSONCodec.MustUnmarshalJSON(newGenState[staking.ModuleName], &stakingGenesis)
+			clientCtx.Codec.MustUnmarshalJSON(newGenState[staking.ModuleName], &stakingGenesis)
 
 			ibcTransferGenesis := ibcxfertypes.DefaultGenesisState()
 			ibcCoreGenesis := ibccoretypes.DefaultGenesisState()
@@ -138,11 +139,11 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 			ibcCoreGenesis.ClientGenesis.Params.AllowedClients = []string{exported.Tendermint}
 			stakingGenesis.Params.HistoricalEntries = 10000
 
-			newGenState[ibcxfertypes.ModuleName] = clientCtx.JSONCodec.MustMarshalJSON(ibcTransferGenesis)
-			newGenState[host.ModuleName] = clientCtx.JSONCodec.MustMarshalJSON(ibcCoreGenesis)
-			newGenState[captypes.ModuleName] = clientCtx.JSONCodec.MustMarshalJSON(capGenesis)
-			newGenState[evtypes.ModuleName] = clientCtx.JSONCodec.MustMarshalJSON(evGenesis)
-			newGenState[staking.ModuleName] = clientCtx.JSONCodec.MustMarshalJSON(&stakingGenesis)
+			newGenState[ibcxfertypes.ModuleName] = clientCtx.Codec.MustMarshalJSON(ibcTransferGenesis)
+			newGenState[host.ModuleName] = clientCtx.Codec.MustMarshalJSON(ibcCoreGenesis)
+			newGenState[captypes.ModuleName] = clientCtx.Codec.MustMarshalJSON(capGenesis)
+			newGenState[evtypes.ModuleName] = clientCtx.Codec.MustMarshalJSON(evGenesis)
+			newGenState[staking.ModuleName] = clientCtx.Codec.MustMarshalJSON(&stakingGenesis)
 
 			genDoc.AppState, err = json.Marshal(newGenState)
 			if err != nil {

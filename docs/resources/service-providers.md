@@ -285,7 +285,7 @@ Parameters:
 Flags:
 
 - `--chain-id`: This flag allows you to specify the id of the chain. There are different ids for different testnet chains and mainnet chains.
-- `--gas-prices`: This flag allows you to specify the gas prices you pay for the transaction. The format is used as `0.025uatom`
+- `--gas-prices`: This flag allows you to specify the gas prices you pay for the transaction. The format is used as `0.0025uatom`
 
 ## REST API
 

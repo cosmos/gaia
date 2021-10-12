@@ -37,24 +37,29 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ## [Unreleased]
 
 
-## [6.0.0] - 2021-09-17
+## [v6.0.0] - 2021-09-17
 
  * (gaia) Bump [Liquidity](https://github.com/gravity-devs/liquidity) module to [v1.4.0](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.4.0). See the [CHANGELOG.md](https://github.com/Gravity-Devs/liquidity/blob/v1.4.0/CHANGELOG.md#v130---2021-08-31) for details. This contains consensus breaking changes.
  * (gaia) Bump [Cosmos SDK](https://github.com/cosmos/cosmos-sdk) to [v0.44.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.0). See the [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/release/v0.44.x/CHANGELOG.md#v0440---2021-09-01) for details. This contains consensus breaking changes.
  * (gaia) Add [IBC](https://github.com/cosmos/ibc-go) as a standalone module from the Cosmos SDK using version [v1.2.0](https://github.com/cosmos/ibc-go/releases/tag/v1.2.0). See the [CHANGELOG.md](https://github.com/cosmos/ibc-go/blob/v1.2.0/CHANGELOG.md) for details.
 
-## [5.0.6] - 2021-09-16
+## [v5.0.7] - 2021-09-30
+
+  * (gaia) Bump Cosmos SDK to 0.42.10
+
+## [v5.0.6] - 2021-09-16
 
  * (gaia) Bump tendermint to 0.34.13
+
  
-## [5.0.5] - 2021-08-05
+## [v5.0.5] - 2021-08-05
 
  * (gaia) Bump SDK to [0.42.9](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42.9) to resolve IBC channel restart issue ([9800](https://github.com/cosmos/cosmos-sdk/issues/9800)).
 
-## [5.0.4] - 2021-07-31
+## [v5.0.4] - 2021-07-31
  * (chore) Fix release to include intended items from `v5.0.3`.
 
-## [5.0.3] - 2021-07-30
+## [v5.0.3] - 2021-07-30
 
 * (gaia) Bump SDK to [0.42.8](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42.8) to resolve tx query issues.
 * (gaia) Bump SDK to [0.42.7](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42.7) to resolve state sync issues.
@@ -371,8 +376,9 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v6.0.0...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v6.0.0-rc1...HEAD
 [v6.0.0]: https://github.com/cosmos/gaia/releases/tag/v6.0.0
+[v5.0.7]: https://github.com/cosmos/gaia/releases/tag/v5.0.7
 [v5.0.6]: https://github.com/cosmos/gaia/releases/tag/v5.0.6
 [v5.0.5]: https://github.com/cosmos/gaia/releases/tag/v5.0.5
 [v5.0.4]: https://github.com/cosmos/gaia/releases/tag/v5.0.4

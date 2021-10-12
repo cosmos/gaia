@@ -185,13 +185,13 @@ txs by `gasPrice` in the mempool, so providing higher fees or gas prices may yie
 e.g.
 
 ```bash
-gaiad tx send ... --fees=50000uatom
+gaiad tx bank send ... --fees=50000uatom
 ```
 
 or
 
 ```bash
-gaiad tx send ... --gas-prices=0.025uatom
+gaiad tx bank send ... --gas-prices=0.0025uatom
 ```
 
 ### Account
@@ -218,7 +218,7 @@ When you query an account balance with zero tokens, you will get this error: `No
 The following command could be used to send coins from one account to another:
 
 ```bash
-gaiad tx send <sender_key_name_or_address> <recipient_address> 10faucetToken \
+gaiad tx bank send <sender_key_name_or_address> <recipient_address> 10faucetToken \
   --chain-id=<chain_id>
 ```
 
@@ -249,7 +249,7 @@ You can simulate a transaction without actually broadcasting it by appending the
 `--dry-run` flag to the command line:
 
 ```bash
-gaiad tx send <sender_key_name_or_address> <destination_cosmosaccaddr> 10faucetToken \
+gaiad tx bank send <sender_key_name_or_address> <destination_cosmosaccaddr> 10faucetToken \
   --chain-id=<chain_id> \
   --dry-run
 ```
@@ -258,7 +258,7 @@ Furthermore, you can build a transaction and print its JSON format to STDOUT by
 appending `--generate-only` to the list of the command line arguments:
 
 ```bash
-gaiad tx send <sender_address> <recipient_address> 10faucetToken \
+gaiad tx bank send <sender_address> <recipient_address> 10faucetToken \
   --chain-id=<chain_id> \
   --generate-only > unsignedSendTx.json
 ```
@@ -850,7 +850,7 @@ The first step to create a multisig transaction is to initiate it on behalf
 of the multisig address created above:
 
 ```bash
-gaiad tx send cosmos1570v2fq3twt0f0x02vhxpuzc9jc4yl30q2qned 1000000uatom \
+gaiad tx bank send cosmos1570v2fq3twt0f0x02vhxpuzc9jc4yl30q2qned 1000000uatom \
   --from=<multisig_address> \
   --generate-only > unsignedTx.json
 ```

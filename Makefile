@@ -191,8 +191,10 @@ benchmark:
 ###                                Linting                                  ###
 ###############################################################################
 
+golangci_lint_cmd=go run github.com/golangci/golangci-lint/cmd/golangci-lint@v1.42.1
+
 lint:
-	golangci-lint run
+	$(golangci_lint_cmd) run --out-format=tab $(GIT_DIFF)
 	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" | xargs gofmt -d -s
 
 format:

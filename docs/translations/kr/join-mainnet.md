@@ -100,14 +100,14 @@ gaiad start
 트랜잭션 피(`fees`)는 `gas` 수량과 `gasPrice`를 곱한 값입니다. 유저는 3개의 값 중 2개의 값을 입력하게 됩니다. `gasPrice`가 높을수록 트랜잭션이 블록에 포함될 확률이 높아집니다.
 
 ::: tip
-메인넷 권장 `gas-prices`는 `0.025uatom` 입니다.
+메인넷 권장 `gas-prices`는 `0.0025uatom` 입니다.
 :::
 
 ## 최소 가스 가격(`minimum-gas-prices`) 설정하기
 
 풀노드는 컨펌되지 않은 트랜잭션을 멤풀에 보관합니다. 스팸 트랜잭션으로부터 풀노드를 보호하기 위해서 노드 멤풀에 보관되기 위한 트랜잭션의 최소 가스 가격(`minimum-gas-prices`)을 설정할 것을 권장합니다. 해당 파라미터는 `~/.gaia/config/gaiad.toml`에서 설정하실 수 있씁니다.
 
-기본 권장 `minimum-gas-prices`는 `0.025uatom`이지만, 추후 바꾸실 수 있습니다. 
+기본 권장 `minimum-gas-prices`는 `0.0025uatom`이지만, 추후 바꾸실 수 있습니다. 
 
 ## 풀노드 운영하기
 

@@ -8,19 +8,20 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/types/bech32/legacybech32"
 	"github.com/cosmos/cosmos-sdk/x/genutil/types"
 	slashing "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	staking "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/pkg/errors"
 	cryptocodec "github.com/tendermint/tendermint/crypto/encoding"
 	tmtypes "github.com/tendermint/tendermint/types"
+
+	// nolint
+	"github.com/cosmos/cosmos-sdk/types/bech32/legacybech32"
 )
 
 type replacementConfigs []replacementConfig
 
 func (r *replacementConfigs) isReplacedValidator(validatorAddress string) (int, replacementConfig) {
-
 	for i, replacement := range *r {
 		if replacement.ValidatorAddress == validatorAddress {
 			return i, replacement
@@ -55,23 +56,22 @@ func loadKeydataFromFile(clientCtx client.Context, replacementrJSON string, genD
 		log.Fatal(errors.Wrap(err, "failed to JSON unmarshal initial genesis state"))
 	}
 
-	var stakingGenesis staking.GenesisState
-	var slashingGenesis slashing.GenesisState
+	var (
+		stakingGenesis  staking.GenesisState
+		slashingGenesis slashing.GenesisState
+	)
 
-	clientCtx.JSONCodec.MustUnmarshalJSON(state[staking.ModuleName], &stakingGenesis)
-	clientCtx.JSONCodec.MustUnmarshalJSON(state[slashing.ModuleName], &slashingGenesis)
+	clientCtx.Codec.MustUnmarshalJSON(state[staking.ModuleName], &stakingGenesis)
+	clientCtx.Codec.MustUnmarshalJSON(state[slashing.ModuleName], &slashingGenesis)
 
 	for i, val := range stakingGenesis.Validators {
 		idx, replacement := replacementKeys.isReplacedValidator(val.OperatorAddress)
 
 		if idx != -1 {
-
 			toReplaceValConsAddress, _ := val.GetConsAddr()
 
-			// TODO: cosmoshub-4.6
+			// nolint
 			consPubKey, err := legacybech32.UnmarshalPubKey(legacybech32.ConsPK, replacement.ConsensusPubkey)
-			//consPubKey, err := sdk.GetPubKeyFromBech32(sdk.Bech32PubKeyTypeConsPub, replacement.ConsensusPubkey)
-
 			if err != nil {
 				log.Fatal(fmt.Errorf("failed to decode key:%s %w", consPubKey, err))
 			}
@@ -110,8 +110,8 @@ func loadKeydataFromFile(clientCtx client.Context, replacementrJSON string, genD
 		}
 
 	}
-	state[staking.ModuleName] = clientCtx.JSONCodec.MustMarshalJSON(&stakingGenesis)
-	state[slashing.ModuleName] = clientCtx.JSONCodec.MustMarshalJSON(&slashingGenesis)
+	state[staking.ModuleName] = clientCtx.Codec.MustMarshalJSON(&stakingGenesis)
+	state[slashing.ModuleName] = clientCtx.Codec.MustMarshalJSON(&slashingGenesis)
 
 	genDoc.AppState, err = json.Marshal(state)
 

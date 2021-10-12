@@ -17,15 +17,15 @@
 Thank you for considering making contributions to Gaia and related
 repositories!
 
-Contributing to this repo can mean many things such as participated in
+Contributing to this repo can mean many things such as participating in
 discussion or proposing code changes. To ensure a smooth workflow for all
-contributors, the general procedure for contributing has been established:
+contributors, a general procedure for contributing has been established:
 
 1. Either [open](https://github.com/cosmos/gaia/issues/new/choose) or
    [find](https://github.com/cosmos/gaia/issues) an issue you'd like to help with
 2. Participate in thoughtful discussion on that issue
 3. If you would like to contribute:
-   1. If a the issue is a proposal, ensure that the proposal has been accepted
+   1. If the issue is a proposal, ensure that the proposal has been accepted
    2. Ensure that nobody else has already begun working on this issue, if they have
       make sure to contact them to collaborate
    3. If nobody has been assigned the issue and you would like to work on it
@@ -36,7 +36,7 @@ contributors, the general procedure for contributing has been established:
       - For core developers working within the Gaia repo, to ensure a clear
       ownership of branches, branches must be named with the convention
       `{moniker}/{issue#}-branch-name`
-   5. Be sure to submit the PR in `Draft` mode submit your PR early, even if
+   5. Be sure to submit the PR in `Draft` mode. Submit your PR early, even if
       it's incomplete as this indicates to the community you're working on
       something and allows them to provide comments early in the development process
    6. When the code is complete it can be marked `Ready for Review`

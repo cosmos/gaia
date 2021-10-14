@@ -36,6 +36,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+## [5.0.8] - 2021-10-14
+
+* (gaia) This release includes a new AnteHandler that rejects redundant IBC transactions to save relayers fees.
+
 ## [5.0.7] - 2021-09-30
 
   * (gaia) Bump Cosmos SDK to 0.42.10
@@ -368,7 +372,8 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v5.0.7...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v5.0.8...HEAD
+[v5.0.8]: https://github.com/cosmos/gaia/releases/tag/v5.0.8
 [v5.0.7]: https://github.com/cosmos/gaia/releases/tag/v5.0.7
 [v5.0.6]: https://github.com/cosmos/gaia/releases/tag/v5.0.6
 [v5.0.5]: https://github.com/cosmos/gaia/releases/tag/v5.0.5

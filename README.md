@@ -9,6 +9,10 @@ The Cosmos Hub is built using the [Cosmos SDK](https://github.com/cosmos/cosmos-
 [![LoC](https://tokei.rs/b1/github/cosmos/gaia)](https://github.com/cosmos/gaia)
 [![GolangCI](https://golangci.com/badges/github.com/cosmos/gaia.svg)](https://golangci.com/r/github.com/cosmos/gaia)
 
+## Roadmap
+
+For an overview of the Cosmos Hub Roadmap take a look [here](https://github.com/cosmos/gaia/blob/main/docs/roadmap/cosmos-hub-roadmap-2.0.md).
+
 ## Contributing
 
 Check out [contributing.md](CONTRIBUTING.md) for our guidelines & policies for how we develop the Cosmos Hub. Thank you to all those who have contributed!

@@ -29,7 +29,7 @@ The upgrades aim to add features such as liquidity, economic security, usability
 
 - Cosmos <> Ethereum Gravity Bridge:
   - Transfer ATOM, ETH, ERC-20, and tokens on the Cosmos Hub between Ethereum- and Cosmos-compatible chains  
-  - Fee and reward model hosted across Comos and Ethereum
+  - Fee and reward model hosted across Cosmos and Ethereum
   - Adds light-weight infrastructure and operational requirements with minimal slashing conditions to all Hub validators
 - Budget Module
   - Inflation funding directed to arbitrary module and account addresses

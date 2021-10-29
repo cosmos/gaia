@@ -1,0 +1,10 @@
+{
+  "title": "Signaling Proposal - Deployment of Gravity Bridge on the Cosmos Hub",
+  "description": "This proposal is a Request For Comment from the ATOM community regarding the activation of the Gravity Bridge module onto the Cosmos Hub.\n  By voting YES to this proposal, you will signal that you approve of having the Gravity Ethereum <> Cosmos bridge deployed onto the Cosmos Hub. \n More details can be found in the long form proposal here: https://github.com/cosmos/governance/pull/27 and discussion here: https://forum.cosmos.network/t/signaling-proposal-deployment-of-gravity-bridge-on-the-cosmos-hub",
+  "deposit": [
+    {
+      "denom": "uatom",
+      "amount": "1000000"
+    }
+  ]
+}

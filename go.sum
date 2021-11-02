@@ -976,8 +976,8 @@ github.com/status-im/keycard-go v0.0.0-20190316090335-8537d3370df4/go.mod h1:RZL
 github.com/steakknife/bloomfilter v0.0.0-20180922174646-6819c0d2a570/go.mod h1:8OR4w3TdeIHIh1g6EMY5p0gVNOovcWC+1vpc7naMuAw=
 github.com/steakknife/hamming v0.0.0-20180906055917-c99c65617cd3/go.mod h1:hpGUWaI9xL8pRQCTXQgocU38Qw1g0Us7n5PxxTwTCYU=
 github.com/stephens2424/writerset v1.0.2/go.mod h1:aS2JhsMn6eA7e82oNmW4rfsgAOp9COBTTl8mzkwADnc=
-github.com/strangelove-ventures/packet-forward-middleware v0.0.0-20211012183028-c3c7e62b2d93 h1:FKPFTWbYIalovlyqQErnXljisfXFweDikPPkwyPhR3s=
-github.com/strangelove-ventures/packet-forward-middleware v0.0.0-20211012183028-c3c7e62b2d93/go.mod h1:cqhBXFkGbXbG9hf7BXYB6iKTXUhcm765h7EmBScrR6A=
+github.com/strangelove-ventures/packet-forward-middleware v1.0.0 h1:vinFW1EOFa+HS8Fixp26Jacfa9B18SZ5AeVIH4McPdY=
+github.com/strangelove-ventures/packet-forward-middleware v1.0.0/go.mod h1:cqhBXFkGbXbG9hf7BXYB6iKTXUhcm765h7EmBScrR6A=
 github.com/streadway/amqp v0.0.0-20190404075320-75d898a42a94/go.mod h1:AZpEONHx3DKn8O/DFsRAY58/XVQiIPMTMB1SddzLXVw=
 github.com/streadway/amqp v0.0.0-20190827072141-edfb9018d271/go.mod h1:AZpEONHx3DKn8O/DFsRAY58/XVQiIPMTMB1SddzLXVw=
 github.com/streadway/handy v0.0.0-20190108123426-d5acb3125c2a/go.mod h1:qNTQ5P5JnDBl6z3cMAg/SywNDC5ABu5ApDIw6lUbRmI=

@@ -45,6 +45,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
  * (gaia) Add [packet-forward-middleware](https://github.com/strangelove-ventures/packet-forward-middleware) [v1.0.1](https://github.com/strangelove-ventures/packet-forward-middleware/releases/tag/v1.0.1).
  * (gaia) [#969](https://github.com/cosmos/gaia/issues/969) Remove legacy migration code.
 
+## [v5.0.8] - 2021-10-14
+
+* (gaia) This release includes a new AnteHandler that rejects redundant IBC transactions to save relayers fees.
+
 ## [v5.0.7] - 2021-09-30
 
   * (gaia) Bump Cosmos SDK to 0.42.10
@@ -380,6 +384,7 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 [Unreleased]: https://github.com/cosmos/gaia/compare/v6.0.0-rc3...HEAD
 [v6.0.0]: https://github.com/cosmos/gaia/releases/tag/v6.0.0-rc3
+[v5.0.8]: https://github.com/cosmos/gaia/releases/tag/v5.0.8
 [v5.0.7]: https://github.com/cosmos/gaia/releases/tag/v5.0.7
 [v5.0.6]: https://github.com/cosmos/gaia/releases/tag/v5.0.6
 [v5.0.5]: https://github.com/cosmos/gaia/releases/tag/v5.0.5

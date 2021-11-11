@@ -36,13 +36,13 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
-## [v6.0.0] - 2021-11-05
+## [v6.0.0] - 2021-11-11
 
  * (golang) Bump golang prerequisite to 1.17. 
- * (gaia) Bump [Liquidity](https://github.com/gravity-devs/liquidity) module to [v1.4.1](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.4.1). See the [CHANGELOG.md](https://github.com/Gravity-Devs/liquidity/blob/v1.4.1/CHANGELOG.md#v141---2021-10-25) for details.
- * (gaia) Bump [Cosmos SDK](https://github.com/cosmos/cosmos-sdk) to [v0.44.2](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.2). See the [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/release/v0.44.x/CHANGELOG.md#v0442---2021-10-12) for details.
- * (gaia) Add [IBC](https://github.com/cosmos/ibc-go) as a standalone module from the Cosmos SDK using version [v1.2.1](https://github.com/cosmos/ibc-go/releases/tag/v1.2.1). See the [CHANGELOG.md](https://github.com/cosmos/ibc-go/blob/v1.2.1/CHANGELOG.md) for details.
- * (gaia) Add [packet-forward-middleware](https://github.com/strangelove-ventures/packet-forward-middleware) [v1.0.0](https://github.com/strangelove-ventures/packet-forward-middleware/releases/tag/v1.0.0).
+ * (gaia) Bump [Liquidity](https://github.com/gravity-devs/liquidity) module to [v1.4.2](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.4.2).
+ * (gaia) Bump [Cosmos SDK](https://github.com/cosmos/cosmos-sdk) to [v0.44.3](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.3). See the [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/release/v0.44.x/CHANGELOG.md#v0443---2021-10-21) for details.
+ * (gaia) Add [IBC](https://github.com/cosmos/ibc-go) as a standalone module from the Cosmos SDK using version [v2.0.0](https://github.com/cosmos/ibc-go/releases/tag/v2.0.0). See the [CHANGELOG.md](https://github.com/cosmos/ibc-go/blob/v2.0.0/CHANGELOG.md) for details.
+ * (gaia) Add [packet-forward-middleware](https://github.com/strangelove-ventures/packet-forward-middleware) [v1.0.1](https://github.com/strangelove-ventures/packet-forward-middleware/releases/tag/v1.0.1).
  * (gaia) [#969](https://github.com/cosmos/gaia/issues/969) Remove legacy migration code.
 
 ## [v5.0.7] - 2021-09-30
@@ -378,8 +378,8 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v6.0.0-rc2...HEAD
-[v6.0.0]: https://github.com/cosmos/gaia/releases/tag/v6.0.0-rc2
+[Unreleased]: https://github.com/cosmos/gaia/compare/v6.0.0-rc3...HEAD
+[v6.0.0]: https://github.com/cosmos/gaia/releases/tag/v6.0.0-rc3
 [v5.0.7]: https://github.com/cosmos/gaia/releases/tag/v5.0.7
 [v5.0.6]: https://github.com/cosmos/gaia/releases/tag/v5.0.6
 [v5.0.5]: https://github.com/cosmos/gaia/releases/tag/v5.0.5

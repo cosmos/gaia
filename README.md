@@ -1,5 +1,5 @@
 # Cosmos Hub (Gaia)
-![image](https://user-images.githubusercontent.com/964052/138430638-96db65ed-790b-4fea-9d06-1fe0b6e6c8fa.png)
+![image](https://miro.medium.com/max/2000/1*DHtmSfS_Efvuq8n2LAnhkA.png)
 
 The Cosmos Hub is built using the [Cosmos SDK](https://github.com/cosmos/cosmos-sdk) and to build a binary called `gaiad` (Gaia Daemon). The Cosmos Hub and other fully sovereign Cosmos SDK blockchains interact with one another using a protocol called [IBC](https://github.com/cosmos/ibc) that enables Inter-Blockchain Communication.
 

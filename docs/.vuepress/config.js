@@ -9,7 +9,7 @@ module.exports = {
     editLinks: true,
     label: "hub",
     topbar: {
-      banner: true,
+      banner: false,
     },
     sidebar: {
       nav: [

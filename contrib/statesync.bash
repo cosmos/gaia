@@ -18,7 +18,7 @@ INTERVAL=1000
 
 # GET TRUST HASH AND TRUST HEIGHT
 
-LATEST_HEIGHT=$(curl -s https://cosmoshub-4.technofractal.com | jq -r .result.block.header.height);
+LATEST_HEIGHT=$(curl -s https://cosmoshub-4.technofractal.com/block | jq -r .result.block.header.height);
 BLOCK_HEIGHT=$(($LATEST_HEIGHT-$INTERVAL)) 
 TRUST_HASH=$(curl -s "https://cosmoshub-4.technofractal.com/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
 

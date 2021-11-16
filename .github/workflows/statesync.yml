@@ -5,14 +5,16 @@ on:
   push:
     branches:
       - main
+      
+      
 jobs:
-  test-coverage-upload:
+  statesync:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-go@v2.1.3
         with:
           go-version: 1.17
       - uses: actions/checkout@v2
-      - name: technote-space/get-diff-action@v4
+      - name: State Sync
         run: bash contrib/statesync.bash
         

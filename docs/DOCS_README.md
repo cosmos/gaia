@@ -13,14 +13,15 @@ The documentation for Gaia is hosted at:
 
 - https://hub.cosmos.network/
 
-built from the files in this (`/docs`) directory for [master](https://github.com/cosmos/gaia/tree/main/docs)
+built from the files in this (`/docs`) directory for [main](https://github.com/cosmos/gaia/tree/main/docs).
 
 ### How It Works
 
-There is a CircleCI job listening for changes in the `/docs` directory, on both
-the `master` and `develop` branches. Any updates to files in this directory
-on those branches will automatically trigger a website deployment. Under the hood,
-the private website repository has a `make build-docs` target consumed by a CircleCI job in that repo.
+There is a [Github Action](https://github.com/cosmos/gaia/blob/main/.github/workflows/docs.yml) 
+listening for changes in the `/docs` directory, on the `main` branch. 
+Any updates to files in this directory on that branch will automatically 
+trigger a website deployment. Under the hood, `make build-docs` is run from the 
+[Makefile](https://github.com/cosmos/gaia/blob/main/Makefile) in this repo.
 
 ## README
 

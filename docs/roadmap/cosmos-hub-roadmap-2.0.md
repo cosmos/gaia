@@ -25,7 +25,7 @@ The upgrades aim to add features such as liquidity, economic security, usability
  - IBC v2.1.0
  - Tendermint v0.34.14
  - Cosmosvisor v0.1.0
- - IBC pachet forward middleware v1.0.1
+ - IBC packet forward middleware v1.0.1
 
 ## Theta Upgrade (expected Q1 2022)
 

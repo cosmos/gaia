@@ -1,0 +1,17 @@
+{
+  "title": "Luna Mission - Funding $ATOM",
+  "description": "The Cosmos Hub (ATOM) community is requesting a community pool spend amount of 129,208 ATOM in order to implement a comprehensive ATOM marketing plan that will be executed in collaboration with AiB (Tendermint). The marketing efforts will be initiated immediately upon passing of proposal #34.\n\n The distribution of funds will be administered by 5 community members, that have been carefully selected by the community via the Cosmos governance working group to administer the marketing plan and release funds to either AiB that will act as a liaison between Cosmos Hub community and third parties or directly to parties that will be in charge of executing the marketing plan based on a majority multisignature approval. At least 3 members will have to approve each milestone-spend for it to be released to AiB based on the expected proposal scope &completion. \n\n More details can be found in the long form proposal here: https://cloudflare-ipfs.com/ipfs/QmWAxtxf7fUprPVWx1jWyxSKjBNqkcbA3FG6hRps7QTu3k and https://github.com/cosmos/governance/pull/10 and https://forum.cosmos.network/t/draft-governance-proposal-for-a-community-pool-spend-proposal-33-luna-mission-funding-atom/4244/15 \n\n The multisig administration includes: \n @johnniecosmos, @JoeDirtay, @jackzampolin (Jack Zampolin, Pylon Validator), @immasssi (SG-1 Validator), @zakimanian (Zaki Manian, Iqlusion Validator).",
+  "recipient": "cosmos16plylpsgxechajltx9yeseqexzdzut9g8vla4k",
+  "amount": [
+    {
+      "denom": "uatom",
+      "amount": "129208000000"
+    }
+  ],
+  "deposit": [
+    {
+      "denom": "uatom",
+      "amount": "12000000"
+    }
+  ]
+}

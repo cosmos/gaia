@@ -1,0 +1,17 @@
+{
+  "title": "Adjust InflationRateChange to 1",
+  "description": "When the number of bonded atoms falls below the target ratio (ie currently 67% of total supply), the inflation rate is increased to incentivize more bonding. The inflation changes at a rate parameterized by the InflationRateChange, currently set at 0.13. It seems this parameter is mis-specified, since this generally leads to slow response to shock unbonding - eg. if the bonded atoms fall to only 34% of the supply, will take 2 years to get from the minimum 7% inflation to the maximum 20% rate. Here we propose to increase this parameter to 1, which enables incentives to adapt much more quickly to shock unbonds. More details were drafted on <GITHUB> and are available on <IPFS>",
+  "changes": [
+    {
+      "subspace": "mint",
+      "key":"InflationRateChange",
+      "value": "1"
+    }
+  ],
+  "deposit": [
+    {
+      "denom": "uatom",
+      "amount": "1000000"
+    }
+  ]
+}

@@ -32,7 +32,7 @@ echo "TRUST HASH: $TRUST_HASH"
 # export state sync vars
 export GAIAD_STATESYNC_ENABLE=true
 export GAIAD_P2P_MAX_NUM_OUTBOUND_PEERS=200
-export GAIAD_STATESYNC_RPC_SERVERS="162.55.132.230:2011,https://cosmoshub-4.technofractal.com:443"
+export GAIAD_STATESYNC_RPC_SERVERS="https://cosmoshub-4.technofractal.com:443,https://cosmoshub-4.technofractal.com:443"
 export GAIAD_STATESYNC_TRUST_HEIGHT=$BLOCK_HEIGHT
 export GAIAD_STATESYNC_TRUST_HASH=$TRUST_HASH
 export GAIAD_P2P_PERSISTENT_PEERS="2bb31c07148a689f0b2dd363e17631993eca1020@162.55.132.230:2010"

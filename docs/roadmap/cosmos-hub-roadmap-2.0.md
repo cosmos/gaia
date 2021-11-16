@@ -13,7 +13,7 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Drives liquidity for tokens on the Cosmos Hub
   - Delivers price consistency and order execution
 
-## Vega Upgrade (expected Q3 2021)
+## Vega Upgrade (expected Q4 2021)
 
  - Cosmos SDK v0.44
    - Fee grant module:

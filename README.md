@@ -8,7 +8,7 @@ Gaia is the first implementation of the Cosmos Hub, built using the [Cosmos SDK]
 [![GolangCI](https://golangci.com/badges/github.com/cosmos/gaia.svg)](https://golangci.com/r/github.com/cosmos/gaia)
 
 ## How to Use 
-You can find documentation on how to install and use the Cosmos Hub(Gaia) [here](https://hub.cosmos.network/main/gaia-tutorials/installation.html). 
+You can find documentation on how to install and use the Cosmos Hub (Gaia) [here](https://hub.cosmos.network/main/gaia-tutorials/installation.html). 
 
 ## Contributing
 

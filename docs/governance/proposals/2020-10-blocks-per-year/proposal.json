@@ -1,0 +1,17 @@
+{
+  "title": "Adjust Blocks Per Year to 4.35M",
+  "description": "While the current inflation rate is set at 7%, the effective inflation rate is more like ~6.29%. This is because blocks have slowed down somewhat from ~6.5s to ~7.24s per block, and thus the current blocks per year value of 4855015 is too high. Here we propose to adjust the blocks per year value from 4855015 to 4360000 to bring it in line with current block times, which should realign the effective inflation rate. More details were drafted on <GITHUB> and are available on <IPFS>",
+  "changes": [
+    {
+      "subspace": "mint",
+      "key":"BlocksPerYear",
+      "value": "4360000"
+    }
+  ],
+  "deposit": [
+    {
+      "denom": "uatom",
+      "amount": "1000000"
+    }
+  ]
+}

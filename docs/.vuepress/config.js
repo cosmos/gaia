@@ -1,3 +1,5 @@
+const p = require('../governance/current-parameters.json');
+
 module.exports = {
   theme: "cosmos",
   title: "Cosmos Hub",
@@ -8,6 +10,7 @@ module.exports = {
     docsDir: "docs",
     editLinks: true,
     label: "hub",
+    currentParameters: p,
     topbar: {
       banner: true,
     },

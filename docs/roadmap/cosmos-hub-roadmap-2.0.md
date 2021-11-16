@@ -37,9 +37,9 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Gov Module Improvements
     - Execution of arbitraty transactions instead of just governance proposals.
     - Enables much more expressive governance module.
-  - NFT module
-    - Enable simple management of NFT identifiers, their owners, and associated data, such as URIs, content, and provenance
-    - An extensible base module for extensions including collectibles, custody, provenance, and marketplaces
+- NFT module
+  - Enable simple management of NFT identifiers, their owners, and associated data, such as URIs, content, and provenance
+  - An extensible base module for extensions including collectibles, custody, provenance, and marketplaces
 - Tendermint v0.35
 - Interchain accounts
   - A requirement in order to manage accounts across multiple blockchains
@@ -57,20 +57,20 @@ The upgrades aim to add features such as liquidity, economic security, usability
 
 ## Rho Upgrade (expected Q2 2022)
 
-- Interchain Security v0
-  - The Cosmos solution to shared security that uses the entire validator set of the Cosmos Hub to secure a separate blockchain.
-  - Allows independent modules like Gravity DEX or Bridge to live on separate chains with their own development cycles
-- Chain name service
-  - Allows registration of unique chainids for IBC
-  - Interoperable with cross-chain validation and interchain staking
+- Interchain Security v1 - Required Participation of Provider Chain Validators
+  - The Cosmos solution to shared security that uses IBC (Cross Chain Validation / CCV) to relay validator set compisition from a Provider Chain (Cosmos Hub) to a Consumer Chain. This validator set is in charge of producing blocks on both networks using separate nodes. Misbehaviour on the Consumer Chain results in slashing Provider Chain staking tokens (ATOM).
+  - Allows independent modules like Gravity DEX or Bridge to live on separate chains with their own development cycles.
+- Chain Name Service
+  -  Chain-ID registry
+  -  Asset registry
+  -  Node registry
+  -  IBC Path Resolution
 
 ## Lambda Upgrade (expected Q3 2022)
 
-- Interchain Security v2
-  - Cosmos solution to shared security using cross chain validation and interchain accounts
-  - Enables a parent chain, e.g., Cosmos Hub, to be in charge of producing blocks for a baby chain
-  - Validators of a baby chain will have their ATOM stake on the Cosmos Hub slashed for misbehaviour
-- Staking derivatives
+- Interchain Security v2 - Opt-In Participation of Provider Chain Validators
+  - Where Provider Chain validators have the ability to opt-in to block production for various Consumer Chains.
+- Liquid Staking
   - Frees secure and low-risk delegations for use in other parts of the Cosmos ecosystem
   - Features include enabling transfer of rewards and voting rights
 - Cosmos SDK v0.46
@@ -82,6 +82,11 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Aims to provide ERC20 capabilities
 - Gravity DEX v2
   - Order matching
+
+## Epsilon (expected Q4 2022)
+
+- Interchain Security v3 - Layered Security
+  - Where Consumer Chains combine their own staking token validator set with Provider Chain validator set.
 
 ## Future Upgrades
 

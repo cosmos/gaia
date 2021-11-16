@@ -22,7 +22,7 @@ The upgrades aim to add features such as liquidity, economic security, usability
       - Provide governance functions to execute transactions on behalf of another account
 - Liquidity Module v1.4.2
   -  The Gravity DEX with updates for dependencies
- - IBC v2.1.0
+ - IBC v2.0.0
  - Tendermint v0.34.14
  - Cosmosvisor v0.1.0
  - IBC packet forward middleware v1.0.1

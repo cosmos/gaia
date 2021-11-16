@@ -12,7 +12,7 @@ module.exports = {
     label: "hub",
     currentParameters: p,
     topbar: {
-      banner: true,
+      banner: false,
     },
     sidebar: {
       nav: [

@@ -20,28 +20,16 @@ The upgrades aim to add features such as liquidity, economic security, usability
       - Allows paying fees on behalf of another account
    - Authz module:
       - Provide governance functions to execute transactions on behalf of another account
- - IBC v1.2
- - Tendermint v0.34.13
+- Liquidity Module v1.4.2
+  -  The Gravity DEX with updates for dependencies
+ - IBC v2.0.0
+ - Tendermint v0.34.14
  - Cosmosvisor v0.1.0
- - IBC router module 
+ - IBC packet forward middleware v1.0.1
 
-## Theta Upgrade (expected Q4 2021)
+## Theta Upgrade (expected Q1 2022)
 
-- Cosmos <> Ethereum Gravity Bridge:
-  - Transfer ATOM, ETH, ERC-20, and tokens on the Cosmos Hub between Ethereum- and Cosmos-compatible chains  
-  - Fee and reward model hosted across Cosmos and Ethereum
-  - Adds light-weight infrastructure and operational requirements with minimal slashing conditions to all Hub validators
-- Budget Module
-  - Inflation funding directed to arbitrary module and account addresses
-- Farming Module
-
-
-## Rho Upgrade (expected Q1 2022)
-
-- Interchain Security v0
-  - The Cosmos solution to shared security that uses the entire validator set of the Cosmos Hub to secure a separate blockchain.
-  - Allows independent modules like Gravity DEX or Bridge to live on separate chains with their own development cycles.
-- Cosmos SDK v0.44
+- Cosmos SDK v0.45
   - Groups module:
     - Enables higher-level multisig permissioned accounts, e.g., weight-based voting policies
   - Meta-Transactions
@@ -49,19 +37,34 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Gov Module Improvements
     - Execution of arbitraty transactions instead of just governance proposals.
     - Enables much more expressive governance module.
+  - NFT module
+    - Enable simple management of NFT identifiers, their owners, and associated data, such as URIs, content, and provenance
+    - An extensible base module for extensions including collectibles, custody, provenance, and marketplaces
 - Tendermint v0.35
 - Interchain accounts
   - A requirement in order to manage accounts across multiple blockchains
   - Aims to provide locking/unlocking mechanisms across IBC-enabled blockchains
   - Would allow custody providers to service any IBC connected blockchain through a common interface on the Hub.
-- NFT module
-  - Enable simple management of NFT identifiers, their owners, and associated data, such as URIs, content, and provenance
-  - An extensible base module for extensions including collectibles, custody, provenance, and marketplaces
+- Items still being discussed:
+  - Cosmos <> Ethereum Gravity Bridge
+    - Transfer ATOM, ETH, ERC-20, and tokens on the Cosmos Hub between Ethereum- and Cosmos-compatible chains  
+    - Fee and reward model hosted across Cosmos and Ethereum
+    - Adds light-weight infrastructure and operational requirements with minimal slashing conditions to all Hub validators
+  - Budget Module
+    - Inflation funding directed to arbitrary module and account addresses
+  - Farming Module
+    - Rewards for locked tokens, especially LP tokens for different trading pair pools
+
+## Rho Upgrade (expected Q2 2022)
+
+- Interchain Security v0
+  - The Cosmos solution to shared security that uses the entire validator set of the Cosmos Hub to secure a separate blockchain.
+  - Allows independent modules like Gravity DEX or Bridge to live on separate chains with their own development cycles
 - Chain name service
   - Allows registration of unique chainids for IBC
   - Interoperable with cross-chain validation and interchain staking
 
-## Lambda Upgrade (expected Q2 2022)
+## Lambda Upgrade (expected Q3 2022)
 
 - Interchain Security v2
   - Cosmos solution to shared security using cross chain validation and interchain accounts
@@ -70,7 +73,7 @@ The upgrades aim to add features such as liquidity, economic security, usability
 - Staking derivatives
   - Frees secure and low-risk delegations for use in other parts of the Cosmos ecosystem
   - Features include enabling transfer of rewards and voting rights
-- Cosmos SDK v0.45
+- Cosmos SDK v0.46
   - SMT
   - Postgres indexing
   - Protobuf v2

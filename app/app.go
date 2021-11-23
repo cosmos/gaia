@@ -573,11 +573,10 @@ func NewGaiaApp(
 			for moduleName := range app.mm.Modules {
 				fromVM[moduleName] = 1
 			}
-			// override versions for _new_ modules as to not skip InitGenesis
-			fromVM[authz.ModuleName] = 0
-			fromVM[feegrant.ModuleName] = 0
-			fromVM[routertypes.ModuleName] = 0
-
+			// delete new modules from the map, for _new_ modules as to not skip InitGenesis
+			delete(fromVM, authz.ModuleName)
+			delete(fromVM, feegrant.ModuleName)
+			delete(fromVM, routertypes.ModuleName)
 			return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 		},
 	)

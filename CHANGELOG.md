@@ -38,6 +38,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [v6.0.0] - 2021-11-24
 
+ * (gaia) Add NewSetUpContextDecorator to anteDecorators
  * (gaia) Reconfigure SetUpgradeHandler to ensure vesting is configured after auth and new modules have InitGenesis run.
  * (golang) Bump golang prerequisite to 1.17. 
  * (gaia) Bump [Liquidity](https://github.com/gravity-devs/liquidity) module to [v1.4.2](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.4.2).

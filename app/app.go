@@ -573,12 +573,24 @@ func NewGaiaApp(
 			for moduleName := range app.mm.Modules {
 				fromVM[moduleName] = 1
 			}
-			// override versions for _new_ modules as to not skip InitGenesis
-			fromVM[authz.ModuleName] = 0
-			fromVM[feegrant.ModuleName] = 0
-			fromVM[routertypes.ModuleName] = 0
+			// delete new modules from the map, for _new_ modules as to not skip InitGenesis
+			delete(fromVM, authz.ModuleName)
+			delete(fromVM, feegrant.ModuleName)
+			delete(fromVM, routertypes.ModuleName)
 
-			return app.mm.RunMigrations(ctx, app.configurator, fromVM)
+			// make fromVM[authtypes.ModuleName] = 2 to skip the first RunMigrations for auth (because from version 2 to migration version 2 will not migrate)
+			fromVM[authtypes.ModuleName] = 2
+
+			// the first RunMigrations, which will migrate all the old modules except auth module
+			newVM, err := app.mm.RunMigrations(ctx, app.configurator, fromVM)
+			if err != nil {
+				return nil, err
+			}
+			// now update auth version back to 1, to make the second RunMigrations includes only auth
+			newVM[authtypes.ModuleName] = 1
+
+			// RunMigrations twice is just a way to make auth module's migrates after staking
+			return app.mm.RunMigrations(ctx, app.configurator, newVM)
 		},
 	)
 

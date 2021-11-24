@@ -36,8 +36,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
-## [v6.0.0] - 2021-11-11
+## [v6.0.0] - 2021-11-24
 
+ * (gaia) Add NewSetUpContextDecorator to anteDecorators
+ * (gaia) Reconfigure SetUpgradeHandler to ensure vesting is configured after auth and new modules have InitGenesis run.
  * (golang) Bump golang prerequisite to 1.17. 
  * (gaia) Bump [Liquidity](https://github.com/gravity-devs/liquidity) module to [v1.4.2](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.4.2).
  * (gaia) Bump [Cosmos SDK](https://github.com/cosmos/cosmos-sdk) to [v0.44.3](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.3). See the [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/release/v0.44.x/CHANGELOG.md#v0443---2021-10-21) for details.
@@ -378,8 +380,8 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v6.0.0-rc3...HEAD
-[v6.0.0]: https://github.com/cosmos/gaia/releases/tag/v6.0.0-rc3
+[Unreleased]: https://github.com/cosmos/gaia/compare/v6.0.0...HEAD
+[v6.0.0]: https://github.com/cosmos/gaia/releases/tag/v6.0.0
 [v5.0.7]: https://github.com/cosmos/gaia/releases/tag/v5.0.7
 [v5.0.6]: https://github.com/cosmos/gaia/releases/tag/v5.0.6
 [v5.0.5]: https://github.com/cosmos/gaia/releases/tag/v5.0.5

@@ -397,7 +397,6 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 * (rest) [\#4141](https://github.com/cosmos/cosmos-sdk/issues/4141) Fix /txs/encode endpoint
 
 <!-- Release links -->
-
 [Unreleased]: https://github.com/cosmos/gaia/compare/v6.0.3...HEAD
 [v6.0.3]: https://github.com/cosmos/gaia/releases/tag/v6.0.3
 [v6.0.2]: https://github.com/cosmos/gaia/releases/tag/v6.0.2

@@ -36,6 +36,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+ * (gaia) Add NewSetUpContextDecorator to anteDecorators
+
 ## [v6.0.0] - 2021-11-11
 
  * (golang) Bump golang prerequisite to 1.17. 

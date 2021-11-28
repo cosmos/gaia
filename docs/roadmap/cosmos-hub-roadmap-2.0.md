@@ -45,6 +45,9 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - A requirement in order to manage accounts across multiple blockchains
   - Aims to provide locking/unlocking mechanisms across IBC-enabled blockchains
   - Would allow custody providers to service any IBC connected blockchain through a common interface on the Hub.
+- Liquid Staking
+  - Frees secure and low-risk delegations for use in other parts of the Cosmos ecosystem
+  - Features include enabling transfer of rewards and voting rights
 - Items still being discussed:
   - Cosmos <> Ethereum Gravity Bridge
     - Transfer ATOM, ETH, ERC-20, and tokens on the Cosmos Hub between Ethereum- and Cosmos-compatible chains  
@@ -70,9 +73,6 @@ The upgrades aim to add features such as liquidity, economic security, usability
 
 - Interchain Security v2 - Opt-In Participation of Provider Chain Validators
   - Where Provider Chain validators have the ability to opt-in to block production for various Consumer Chains.
-- Liquid Staking
-  - Frees secure and low-risk delegations for use in other parts of the Cosmos ecosystem
-  - Features include enabling transfer of rewards and voting rights
 - Cosmos SDK v0.46
   - SMT
   - Postgres indexing

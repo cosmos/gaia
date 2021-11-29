@@ -6,7 +6,7 @@
   <br/>
   
   <h1> Cosmos Hub (Gaia) </h1>
-  <p> The Cosmos Hub is the first of thousands of interconnected blockchains that will eventually comprise the Cosmos Network. </p>
+  <p> The Cosmos Hub is the first of an exploding number of interconnected blockchains that comprise the Cosmos Network. </p>
   
   <a href="https://twitter.com/cosmoshub"><img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Tweet" height="20"/></a>
   <br/>

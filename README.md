@@ -24,7 +24,7 @@
 ### 🤔 — Why should you be interested in the Cosmos Hub 
 ___
 
-The Cosmos Hub is built using the [Cosmos SDK](https://github.com/cosmos/cosmos-sdk) and to build a binary called `gaiad` (Gaia Daemon). The Cosmos Hub and other fully sovereign Cosmos SDK blockchains interact with one another using a protocol called [IBC](https://github.com/cosmos/ibc) that enables Inter-Blockchain Communication. In order to understand what the Cosmos Hub is you can read this [introductory explanation](https://hub.cosmos.network/main/hub-overview/overview.html).
+The Cosmos Hub is built using the [Cosmos SDK](https://github.com/cosmos/cosmos-sdk) and compiled to a binary called `gaiad` (Gaia Daemon). The Cosmos Hub and other fully sovereign Cosmos SDK blockchains interact with one another using a protocol called [IBC](https://github.com/cosmos/ibc) that enables Inter-Blockchain Communication. In order to understand what the Cosmos Hub is you can read this [introductory explanation](https://hub.cosmos.network/main/hub-overview/overview.html).
 
 |  |  |  |  |  |
 | --- | --- | --- | --- | --- |

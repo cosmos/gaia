@@ -38,7 +38,7 @@ The Cosmos Hub is built using the [Cosmos SDK](https://github.com/cosmos/cosmos-
 ### ⚡ — Documentation & Introduction
 ___
 
-You can find an introduction to the Cosmos Hub and how to use gaia as a delegator, validator or node operator as well as how governance on the Cosmos Hub works in the [documentation](https://hub.cosmos.network/main/hub-overview/overview.html). 
+You can find an introduction to the Cosmos Hub and how to use the `gaiad` binary as a delegator, validator or node operator as well as how governance on the Cosmos Hub works in the [documentation](https://hub.cosmos.network/main/hub-overview/overview.html). 
 
 
 <br/>

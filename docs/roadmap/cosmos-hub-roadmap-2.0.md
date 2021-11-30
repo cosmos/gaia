@@ -49,6 +49,7 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Frees secure and low-risk delegations for use in other parts of the Cosmos ecosystem
   - Features include enabling transfer of rewards and voting rights
 - Items still being discussed:
+  - Governance permissioned CosmWASM instance on the hub
   - Cosmos <> Ethereum Gravity Bridge
     - Transfer ATOM, ETH, ERC-20, and tokens on the Cosmos Hub between Ethereum- and Cosmos-compatible chains  
     - Fee and reward model hosted across Cosmos and Ethereum

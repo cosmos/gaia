@@ -8,7 +8,7 @@ This document describes the upgrade procedure of a `gaiad` full-node to a new ve
 
 ## Cosmovisor
 
-The CosmosSDK provides a convenient process manager that wraps around the `gaiad` binary and can automatically swap in new binaries upon a successful governance upgrade proposal. Cosmovisor is entirely optional but recommended. More information can be found [here](https://docs.cosmos.network/master/run-node/cosmovisor.html).
+The CosmosSDK provides a convenient process manager that wraps around the `gaiad` binary and can automatically swap in new binaries upon a successful governance upgrade proposal. Cosmovisor is entirely optional but recommended. More information can be found in [cosmos.network docs](https://docs.cosmos.network/master/run-node/cosmovisor.html) and [cosmos-sdk/cosmovisor/readme](https://github.com/cosmos/cosmos-sdk/blob/master/cosmovisor/README.md).
 
 ### Setup
 

@@ -1,9 +1,3 @@
-<!--
-parent:
-  order: false
-layout: home
--->
-
 # Documentación para el Hub de Cosmos
 
 Bienvenido a la documentación de la **aplicación para el Hub de Cosmos: `gaia`**

@@ -24,6 +24,6 @@ For more information on specific modules, refer to the [Cosmos SDK documentation
       </tr>
    </table>
    <p>
-     Read more about the governance implications of the  <a :href="'/params-change/' + subspace + '.html'">{{subspace}} subspace here.</a>
+     Read more about the governance implications of the  <a :href="subspace + '.html'">{{subspace}} subspace here.</a>
    </p>
 </section>

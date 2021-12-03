@@ -3,6 +3,20 @@ const p = require('../governance/current-parameters.json');
 module.exports = {
   theme: "cosmos",
   title: "Cosmos Hub",
+  locales: {
+  "/": {
+    lang: "en-US"
+  },
+  es: {
+    lang: "es"
+  },
+  ko: {
+    lang: "ko"
+  },
+  zh: {
+    lang: "zh-CN"
+  }
+},
   base: process.env.VUEPRESS_BASE || "/",
   themeConfig: {
     docsRepo: "cosmos/gaia",

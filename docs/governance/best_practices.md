@@ -1,10 +1,10 @@
 # Best Practices for Drafting a Proposal 
 
 There are currently three types of proposals supported by the Cosmos Hub: 
-- [Community Pool Spend](community-pool-spend/) - Proposal to spend funds from the community pool on
+- [Community Pool Spend](./community-pool-spend) - Proposal to spend funds from the community pool on
   an important project.
-- [Parameter Change](params-change/) - Proposal to change a core on-chain parameter.
-- [Text](text/) - Proposal to agree to a certain strategy, plan, commitment, future
+- [Parameter Change](./params-change) - Proposal to change a core on-chain parameter.
+- [Text](./text) - Proposal to agree to a certain strategy, plan, commitment, future
   upgrade or other statement. Text proposals are exclusively a signalling mechanism and focal point for future coordination - 
   they do not directly cause any changes.
 
@@ -88,10 +88,10 @@ Submitting your proposal to the testnet increases the likelihood of engagement a
 
 A majority of the voting community should probably be aware of the proposal and have considered it before the proposal goes live on-chain. If you're taking a conservative approach, you should have reasonable confidence that your proposal will pass before risking deposit contributions. Make revisions to your draft proposal after each stage of engagement.
 
-See the [submitting guide](submitting.md) for more on submitting proposals.
+See the [submitting guide](./submitting.md) for more on submitting proposals.
 
 ### The Deposit Period
-The deposit period currently lasts 14 days. If you submitted your transaction with the minimum deposit (512 ATOM), your proposal will immediately enter the voting period. If you didn't submit the minimum deposit amount (currently 512 ATOM), then this may be an opportunity for others to show their support by contributing (and risking) their ATOMs as a bond for your proposal. You can request contributions openly and also contact stakeholders directly (particularly stakeholders who are enthusiastic about your proposal). Remember that each contributor is risking their funds, and you can [read more about the conditions for burning deposits here](overview.md#burned-deposits).
+The deposit period currently lasts 14 days. If you submitted your transaction with the minimum deposit (512 ATOM), your proposal will immediately enter the voting period. If you didn't submit the minimum deposit amount (currently 512 ATOM), then this may be an opportunity for others to show their support by contributing (and risking) their ATOMs as a bond for your proposal. You can request contributions openly and also contact stakeholders directly (particularly stakeholders who are enthusiastic about your proposal). Remember that each contributor is risking their funds, and you can [read more about the conditions for burning deposits here](./overview.md#burned-deposits).
 
 This is a stage where proposals may begin to get broader attention. Most popular explorers currently display proposals that are in the deposit period, but due to proposal spamming, this may change. [Hubble](https://hubble.figment.network/cosmos/chains/cosmoshub-3/governance), for example, only displays proposals that have 10% or more of the minimum deposit, so 51.2 ATOM or more.
 

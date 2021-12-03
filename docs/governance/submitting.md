@@ -36,14 +36,14 @@ The reason we use IPFS is that it is a decentralized means of storage, making it
 
 ## Formatting the JSON file for the governance proposal
 
-Prior to sending the transaction that submits your proposal on-chain, you must create a JSON file. This file will contain the information that will be stored on-chain as the governance proposal. Begin by creating a new text (.txt) file to enter this information. Use [these best practices](best_practices.md) as a guide for the contents of your proposal. When you're done, save the file as a .json file. See the examples that follow to help format your proposal.
+Prior to sending the transaction that submits your proposal on-chain, you must create a JSON file. This file will contain the information that will be stored on-chain as the governance proposal. Begin by creating a new text (.txt) file to enter this information. Use [these best practices](./best_practices.md) as a guide for the contents of your proposal. When you're done, save the file as a .json file. See the examples that follow to help format your proposal.
 
 Each proposal type is unique in how the JSON should be formatted.
 See the relevant section for the type of proposal you are drafting:
 
-- [Text Proposals](text/)
-- [Community Pool Spend Proposals](community-pool-spend/formatting.md)
-- [Parameter Change Proposals](params-change/formatting.md)
+- [Text Proposals](./text/)
+- [Community Pool Spend Proposals](./community-pool-spend/formatting.md)
+- [Parameter Change Proposals](./params-change/formatting.md)
 
 Once on-chain, most people will rely upon network explorers to interpret this information with a graphical user interface (GUI).
 

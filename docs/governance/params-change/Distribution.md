@@ -115,7 +115,7 @@ Delegators can designate a separate withdrawal address (account) that receives s
 Changing the `withdrawaddrenabled` to false will prevent delegators from changing or setting a separate withdrawal address (account) that receives the staking rewards. This may disrupt the functionality of applications and the expectations of staking participants.
 
 #### Notes
-This parameter was set to `false` before transfers were enabled in order to prevent stakers from diverting their rewards to other addresses ie. to avoid a loophole that would enable ATOM transfer via diverting staking rewards to a designated address. This parameter likely is only useful if [`sendenabled`](Bank.md#1-sendenabled) is set to `false`.
+This parameter was set to `false` before transfers were enabled in order to prevent stakers from diverting their rewards to other addresses ie. to avoid a loophole that would enable ATOM transfer via diverting staking rewards to a designated address. This parameter likely is only useful if [`sendenabled`](./Bank.md#1-sendenabled) is set to `false`.
 
 ## Known Bug
 There is a known bug associated with this module that has reportedly caused a chain to halt. In [this reported case](https://github.com/cosmos/cosmos-sdk/issues/5808), the chain's parameter values were changed to be:

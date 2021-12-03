@@ -1,3 +1,8 @@
+---
+name: Pull Request
+about: Create a PR. 
+
+---
 <!-- < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < ☺
 v                               ✰  Thanks for creating a PR! ✰    
 v    Before smashing the submit button please review the checkboxes.

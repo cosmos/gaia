@@ -33,7 +33,6 @@ Governance discussions happens in a number of places moderated by diverse
 community members, including:
 
 - [Forum](http://forum.cosmos.network/)
-- [Discord](https://discord.gg/W8trcGV)
 - [Reddit](http://reddit.com/r/cosmosnetwork)
 - [Telegram (Governance Working Group)](https://t.me/hubgov)
 - anywhere else you might interact with members of the Cosmos community!

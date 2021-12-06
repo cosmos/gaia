@@ -66,9 +66,12 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Allows independent modules like Gravity DEX or Bridge to live on separate chains with their own development cycles.
 - Chain Name Service
   -  Chain-ID registry
+    - Node registry
+    - IBC Path Resolution
   -  Asset registry
-  -  Node registry
-  -  IBC Path Resolution
+  -  Account registry
+  -  Bech32 registry
+
 
 ## Lambda Upgrade (expected Q3 2022)
 

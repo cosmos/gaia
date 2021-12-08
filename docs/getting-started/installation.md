@@ -2,18 +2,24 @@
 order: 2
 -->
 
-# Install Gaia
+# Installation
 
-This guide will explain how to install the `gaiad` entrypoint
-onto your system. With these installed on a server, you can participate in the
-mainnet as either a [Full Node](./join-mainnet.md) or a
-[Validator](../validators/validator-setup.md).
+This guide will explain how to install the `gaiad` binary and run the cli.
 
-## Install build requirements
+## Build Requirements
+
+At present, the SDK fully supports installation on linux distributions. For the purpose of this instruction set, we'll be using `Ubuntu 20.04.3 LTS`. It is also possible to install `gaiad` on Unix, while Windows may require additional unsupported third party installation. All steps are listed below for a clean install.
+
+1. [Update & install build tools](#build-tools)
+2. [Install Go](#install-go)
+3. [Install `Gaiad` binaries](#install-the-binaries)
+
+
+## Build Tools
 
 Install `make` and `gcc`.
 
-On Ubuntu this can be done with the following:
+**Ubuntu:**
 ```bash
 sudo apt-get update
 
@@ -22,18 +28,31 @@ sudo apt-get install -y make gcc
 
 ## Install Go
 
-Install `go` by following the [official docs](https://golang.org/doc/install).
-Remember to set your `$PATH` environment variable, for example:
-
-```bash
-mkdir -p $HOME/go/bin
-echo "export PATH=$PATH:$(go env GOPATH)/bin" >> ~/.bash_profile
-source ~/.bash_profile
-```
-
 ::: tip
 **Go 1.16+** or later is required for the Cosmos SDK.
 :::
+
+Install Go one of two ways. Check out the [official docs](https://golang.org/doc/install) and go installer for the correct download for your operating system. Alternatively, you can install Go yourself from the command line. Detailed below are standard default installation locations, but feel free to customize.
+
+**[Go Binary Downloads](https://go.dev/dl/)**
+
+**Ubuntu:**
+
+At the time of this writing, the latest release is `1.16.7`. We're going to download the tarball, extract it to `/usr/local`, and export `GOROOT` to our `$PATH`
+```bash
+curl -OL https://golang.org/dl/go1.16.7.linux-amd64.tar.gz
+
+sudo tar -C /usr/local -xvf go1.16.7.linux-amd64.tar.gz
+
+export PATH=$PATH:/usr/local/go/bin
+
+```
+
+Remember to add `GOPATH` to your `$PATH` environment variable. If you're not sure where that is, run `go env GOPATH`. This will allow us to run the `gaiad` binary in the next step.
+
+```bash
+export PATH=$PATH:$(go env GOPATH)/bin
+```
 
 ## Install the binaries
 
@@ -63,21 +82,21 @@ LDFLAGS="" make install
 
 > _NOTE_: If you still have issues at this step, please check that you have the latest stable version of GO installed.
 
-That will install the `gaiad` binary. Verify that everything is OK:
+That will install the `gaiad` binary. Verify that everything installed successfully by running:
 
 ```bash
 gaiad version --long
 ```
 
-`gaiad` for instance should output something similar to:
+You should see something similar to the following:
 
 ```bash
 name: gaia
 server_name: gaiad
-version: v4.2.1
-commit: dbd8a6fb522c571debf958837f9113c56d418f6b
+version: v6.0.0
+commit: 07f9892a927f451ae204d0c9d1a5601d8fc232a5
 build_tags: netgo,ledger
-go: go version go1.15 darwin/amd64
+go: go version go1.15 linux/amd64
 ```
 
 ### Build Tags

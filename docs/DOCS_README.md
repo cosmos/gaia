@@ -17,10 +17,10 @@ built from the files in this (`/docs`) directory for [main](https://github.com/c
 
 ### How It Works
 
-There is a [Github Action](https://github.com/cosmos/gaia/blob/main/.github/workflows/docs.yml) 
-listening for changes in the `/docs` directory, on the `main` branch. 
-Any updates to files in this directory on that branch will automatically 
-trigger a website deployment. Under the hood, `make build-docs` is run from the 
+There is a [Github Action](https://github.com/cosmos/gaia/blob/main/.github/workflows/docs.yml)
+listening for changes in the `/docs` directory, on the `main` branch.
+Any updates to files in this directory on that branch will automatically
+trigger a website deployment. Under the hood, `make build-docs` is run from the
 [Makefile](https://github.com/cosmos/gaia/blob/main/Makefile) in this repo.
 
 ## README
@@ -59,34 +59,25 @@ to send users to the GitHub.
 
 ## Building Locally
 
-To build and serve the documentation locally, run:
+To build and serve the documentation locally, make sure you're in the `docs` directory and run the following:
 
+Clear `node_modules` for a clean install. This is not necessary every time.
 ```bash
-npm install -g vuepress
+rm -rf node_modules
 ```
 
-then change the following line in the `config.js`:
-
-```js
-base: "/docs/",
-```
-
-to:
-
-```js
-base: "/",
-```
-
-Finally, go up one directory to the root of the repo and run:
-
+Install project dependencies
 ```bash
-# from root of repo
-vuepress build docs
-cd dist/docs
-python -m SimpleHTTPServer 8080
+npm install
 ```
 
-then navigate to localhost:8080 in your browser.
+Serve the app
+```bash
+npm run serve
+```
+then navigate to `localhost:8080` in your browser.
+
+To build documentation as a static website run `npm run build`. You will find the website in `.vuepress/dist` directory.
 
 ## Search
 

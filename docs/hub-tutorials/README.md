@@ -1,10 +1,10 @@
-<!--
+---
 order: false
 parent:
   order: 3
--->
+---
 
-# Gaia Tutorials
+# Hub Tutorials
 
 This folder contains tutorials related to the `gaia` application.
 

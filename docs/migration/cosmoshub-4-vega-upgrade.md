@@ -8,7 +8,7 @@ This document describes the steps for validator and full node operators for the 
 
 TOC:
 - [On-chain governance proposal attains consensus](#on-chain-governance-proposal-attains-consensus)
-- [Upgrade will take place December 13, 2021](#upgrade-will-take-place-december-13-2021)
+- [Upgrade will take place December 14, 2021](#upgrade-will-take-place-december-14-2021)
 - [Chain-id will remain the same](#chain-id-will-remain-the-same)
 - [Preparing for the upgrade](#preparing-for-the-upgrade)
     - [Backups](#backups)
@@ -30,9 +30,9 @@ TOC:
 
 [Proposal #59](https://www.mintscan.io/cosmos/proposals/59) is the reference on-chain governance proposal for this upgrade, which has passed with overwhleming community support. Neither core developers nor core funding entities control the governance, and this governance proposal has passed in a _fully decentralized_ way.
 
-## Upgrade will take place December 13, 2021
+## Upgrade will take place December 14, 2021
 
-The upgrade will take place at a block height of `8695000`. At current block times (around 7s/block), this block height corresponds approximately to `12-13-2021`. This date/time is approximate as blocks are not generated at a constant interval.
+The upgrade will take place at a block height of `8695000`. At current block times (around 7s/block), this block height corresponds approximately to `Tuesday, 14-Dec-21 6:00:00 UTC`. This date/time is approximate as blocks are not generated at a constant interval.
 
 ## Chain-id will remain the same
 

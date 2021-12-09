@@ -12,41 +12,41 @@ El módulo `gov` es responsable de las propuestas de gobierno en cadena y la fun
    - [`threshold`](#threshold) - `0.500000000000000000` (proporción del poder de voto)
    - [`veto`](#veto) - `0.334000000000000000` (proporción del poder de voto)
 
-Los valores de lanzamiento de cada subkey de los parámetros están indicados arriba, pero puede [verificarlos usted mismo](params-change/Governance.md#verify-parameter-values).
+Los valores de lanzamiento de cada subkey de los parámetros están indicados arriba, pero puede [verificarlos usted mismo](./Governance.md#verify-parameter-values).
 
-Se están considerando [algunas funciones adicionales](params-change/Governance.md#future) para el desarrollo del módulo de gobernanza.
+Se están considerando [algunas funciones adicionales](./Governance.md#future) para el desarrollo del módulo de gobernanza.
 
-Si estás técnicamente preparado, [estas son las especificaciones técnicas](params-change/Governance.md#technical-specifications). Si quieres crear una propuesta para cambiar uno o más de estos parámetros, [mira esta sección para el formato](params-change/submitting.md#formatting-the-json-file-for-the-governance-proposal).
+Si estás técnicamente preparado, [estas son las especificaciones técnicas](./Governance.md#technical-specifications). Si quieres crear una propuesta para cambiar uno o más de estos parámetros, [mira esta sección para el formato](../submitting.md#formatting-the-json-file-for-the-governance-proposal).
 
 ## 1. `depositparams`
 ## `mindeposit`
 ### El depósito mínimo requerido para que una propuesta entre en el [período de votación](params-change/Governance.md#votingperiod), en micro-ATOMs
 #### `cosmoshub-3` por defecto: `512000000` `uatom`
 
-Antes de que una propuesta de gobierno entre en el [período de votación](params-change/Governance.md#votingperiod) (es decir, para que la propuesta sea votada), debe haber al menos un número mínimo de ATOMs depositados. Cualquiera puede contribuir a este depósito. Los depósitos de las propuestas aprobadas y fallidas se devuelven a los contribuyentes. Los depósitos se queman cuando las propuestas 1) [expiran](params-change/Governance.md#maxdepositperiod), 2) no alcanzan el [quórum](params-change/Governance.md#quorum), o 3) son [vetadas](params-change/Governance.md#veto). El valor de subkey de este parámetro representa el depósito mínimo requerido para que una propuesta entre en el [período de votación](params-change/Governance.md#votingperiod) en micro-ATOMs, donde `512000000uatom` equivalen a 512 ATOM.
+Antes de que una propuesta de gobierno entre en el [período de votación](./Governance.md#votingperiod) (es decir, para que la propuesta sea votada), debe haber al menos un número mínimo de ATOMs depositados. Cualquiera puede contribuir a este depósito. Los depósitos de las propuestas aprobadas y fallidas se devuelven a los contribuyentes. Los depósitos se queman cuando las propuestas 1) [expiran](./Governance.md#maxdepositperiod), 2) no alcanzan el [quórum](./Governance.md#quorum), o 3) son [vetadas](./Governance.md#veto). El valor de subkey de este parámetro representa el depósito mínimo requerido para que una propuesta entre en el [período de votación](./Governance.md#votingperiod) en micro-ATOMs, donde `512000000uatom` equivalen a 512 ATOM.
 
 ### Posibles consecuencias
 #### Disminución del valor `mindeposit`
-La disminución del valor de subkey `mindeposit` permitirá que las propuestas de gobernanza entren en el [período de votación](params-change/Governance.md#votingperiod) con menos ATOMs en juego. Es probable que esto aumente el volumen de nuevas propuestas de gobernanza.
+La disminución del valor de subkey `mindeposit` permitirá que las propuestas de gobernanza entren en el [período de votación](./Governance.md#votingperiod) con menos ATOMs en juego. Es probable que esto aumente el volumen de nuevas propuestas de gobernanza.
 
 #### Aumentar el valor `mindeposit`
-Para aumentar el valor de subkey `mindeposit` será necesario arriesgar un mayor número de ATOMs antes de que las propuestas de gobierno puedan entrar en el [período de votación](params-change/Governance.md#votingperiod). Es probable que esto disminuya el volumen de nuevas propuestas de gobierno.
+Para aumentar el valor de subkey `mindeposit` será necesario arriesgar un mayor número de ATOMs antes de que las propuestas de gobierno puedan entrar en el [período de votación](./Governance.md#votingperiod). Es probable que esto disminuya el volumen de nuevas propuestas de gobierno.
 
 ## `maxdepositperiod`
 ### La cantidad máxima de tiempo que una propuesta puede aceptar contribuciones de depósito antes de expirar, en nanosegundos.
 #### `cosmoshub-3` por defecto: `1209600000000000`
 
-Antes de que una propuesta de gobierno entre en el [período de votación](params-change/Governance.md#votingperiod), debe haber al menos un número mínimo de ATOMs depositados. El valor de subkey de este parámetro representa la cantidad máxima de tiempo que la propuesta tiene para alcanzar la cantidad mínima de depósito antes de expirar. La cantidad máxima de tiempo que una propuesta puede aceptar contribuciones de depósito antes de expirar es actualmente de 1209600000000000 nanosegundos o 14 días. Si la propuesta expira, cualquier cantidad de depósito será quemada.
+Antes de que una propuesta de gobierno entre en el [período de votación](./Governance.md#votingperiod), debe haber al menos un número mínimo de ATOMs depositados. El valor de subkey de este parámetro representa la cantidad máxima de tiempo que la propuesta tiene para alcanzar la cantidad mínima de depósito antes de expirar. La cantidad máxima de tiempo que una propuesta puede aceptar contribuciones de depósito antes de expirar es actualmente de 1209600000000000 nanosegundos o 14 días. Si la propuesta expira, cualquier cantidad de depósito será quemada.
 
 ### Posibles consecuencias
 #### Disminución del valor `maxdepositperiod`
 La disminución del valor de subkey `maxdepositperiod` reducirá el tiempo de depósito de las contribuciones a las propuestas de gobernanza. Es probable que esto disminuya el tiempo que algunas propuestas permanecen visibles y que disminuya la probabilidad de que entren en el período de votación. Esto puede aumentar la probabilidad de que las propuestas caduquen y se quemen sus depósitos.
 
 #### Aumentar el valor `maxdepositperiod`
-El aumento del valor de subkey `maxdepositperiod` ampliará el plazo para las contribuciones de depósito a las propuestas de gobernanza. Es probable que esto aumente el tiempo en que algunas propuestas siguen siendo visibles y aumente potencialmente la probabilidad de que entren en el [período de votación](params-change/Governance.md#votingperiod). Esto puede disminuir la probabilidad de que las propuestas caduquen y se quemen sus depósitos.
+El aumento del valor de subkey `maxdepositperiod` ampliará el plazo para las contribuciones de depósito a las propuestas de gobernanza. Es probable que esto aumente el tiempo en que algunas propuestas siguen siendo visibles y aumente potencialmente la probabilidad de que entren en el [período de votación](./Governance.md#votingperiod). Esto puede disminuir la probabilidad de que las propuestas caduquen y se quemen sus depósitos.
 
 #### Observaciones
-Actualmente, la mayoría de los exploradores de la red (por ejemplo, Hubble, Big Dipper, Mintscan) dan la misma visibilidad a las propuestas en el período de depósito que a las del [período de votación](params-change/Governance.md#votingperiod). Esto significa que una propuesta con un pequeño depósito (por ejemplo, 0.001 ATOM) tendrá la misma visibilidad que aquellas con un depósito completo de 512 ATOM en el período de votación.
+Actualmente, la mayoría de los exploradores de la red (por ejemplo, Hubble, Big Dipper, Mintscan) dan la misma visibilidad a las propuestas en el período de depósito que a las del [período de votación](./Governance.md#votingperiod). Esto significa que una propuesta con un pequeño depósito (por ejemplo, 0.001 ATOM) tendrá la misma visibilidad que aquellas con un depósito completo de 512 ATOM en el período de votación.
 
 ## 2. `votingparams`
 ## `votingperiod`
@@ -88,10 +88,10 @@ El aumento del valor de subkey `quorum` requerirá una mayor proporción de la r
 #### `cosmoshub-3` por defecto: `0.500000000000000000`
 
 Se requiere una mayoría simple de votos a favor (es decir, el 50% del poder de voto participativo) para que se apruebe una propuesta de gobierno. Aunque es necesario, un voto de mayoría simple 'yes' puede no ser suficiente para aprobar una propuesta en dos escenarios:
-1. No se alcanza un [quórum](params-change/Governance.md#quorum) del 40% de la capacidad de la red o
+1. No se alcanza un [quórum](./Governance.md#quorum) del 40% de la capacidad de la red o
 2. Un voto de 'no-with-veto' del 33,4% del poder de voto o mayor.
 
-Si se aprueba una propuesta de gobernanza, las cantidades depositadas se devuelven a los contribuyentes. Si se aprueba una propuesta basada en texto, nada se promulga automáticamente, pero existe una expectativa social de que los participantes se coordinen para promulgar los compromisos señalados en la propuesta. Si se aprueba una propuesta de cambio de parámetros, el parámetro de protocolo cambiará inmediatamente después de que termine el [período de votación](params-change/Governance.md#votingperiod), y sin necesidad de ejecutar un nuevo software. Si se aprueba una propuesta de gasto comunitario, el saldo de la Reserva Comunitaria disminuirá en el número de ATOMs indicados en la propuesta y la dirección del destinatario aumentará en ese mismo número de ATOMs inmediatamente después de que termine el período de votación.
+Si se aprueba una propuesta de gobernanza, las cantidades depositadas se devuelven a los contribuyentes. Si se aprueba una propuesta basada en texto, nada se promulga automáticamente, pero existe una expectativa social de que los participantes se coordinen para promulgar los compromisos señalados en la propuesta. Si se aprueba una propuesta de cambio de parámetros, el parámetro de protocolo cambiará inmediatamente después de que termine el [período de votación](./Governance.md#votingperiod), y sin necesidad de ejecutar un nuevo software. Si se aprueba una propuesta de gasto comunitario, el saldo de la Reserva Comunitaria disminuirá en el número de ATOMs indicados en la propuesta y la dirección del destinatario aumentará en ese mismo número de ATOMs inmediatamente después de que termine el período de votación.
 
 ### Posibles consecuencias
 #### Disminución del valor `threshold`
@@ -123,7 +123,7 @@ Aumentar el valor de subkey `veto` aumentará la proporción del poder de voto r
 ## Parámetros de Génesis (aka lanzamiento)
 Esto es útil si no tienes `gaiad` instalado y no tienes una razón para creer que el parámetro ha cambiado desde que se lanzó la cadena.
 
-Cada parámetro puede ser verificado en el archivo génesis de la cadena, que encuentra [aquí](https://raw.githubusercontent.com/cosmos/launch/master/genesis.json). Estos son los parámetros con los que la última cadena del Hub de Cosmos se lanzó, y seguirá haciéndolo, a menos que una propuesta de gobierno los cambie. He resumido esos valores originales en la sección [Especificaciones Técnicas](params-change/Governance.md#technical-specifications).
+Cada parámetro puede ser verificado en el archivo génesis de la cadena, que encuentra [aquí](https://raw.githubusercontent.com/cosmos/launch/master/genesis.json). Estos son los parámetros con los que la última cadena del Hub de Cosmos se lanzó, y seguirá haciéndolo, a menos que una propuesta de gobierno los cambie. He resumido esos valores originales en la sección [Especificaciones Técnicas](./Governance.md#technical-specifications).
 
 El archivo génesis contiene texto y es grande. El esquema de nombres de los parámetros de génesis no es idéntico a los de la lista anterior, así que cuando busco, pongo un guión bajo entre los caracteres en mayúsculas y minúsculas, y luego convierto todos los caracteres a minúsculas.
 

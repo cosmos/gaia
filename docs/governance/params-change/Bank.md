@@ -32,4 +32,4 @@ Setting the `sendenabled` parameter to `false` will prevent ATOMs from being tra
 
 
 #### Notes
-The cosmoshub-1 chain launched with `sendenabled` set to `false` and with [`withdrawaddrenabled`](params-change/Distribution.md#4-withdrawaddrenabled) set to `false`. Staking was enabled on cosmoshub-1, so setting `withdrawaddrenabled` to false was necessary to prevent a loophole that would enable ATOM transfer via diverting staking rewards to a designated address.
+The cosmoshub-1 chain launched with `sendenabled` set to `false` and with [`withdrawaddrenabled`](./Distribution.md#4-withdrawaddrenabled) set to `false`. Staking was enabled on cosmoshub-1, so setting `withdrawaddrenabled` to false was necessary to prevent a loophole that would enable ATOM transfer via diverting staking rewards to a designated address.

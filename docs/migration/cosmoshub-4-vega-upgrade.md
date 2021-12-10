@@ -203,7 +203,7 @@ Important: A social consensus decision to skip the upgrade will be based solely 
 
 ## Communications
 
-Operators are encouraged to join the `#validators-verified` ???? channel of the Cosmos Community Discord. This channel is the primary communication tool for operators to ask questions, report upgrade status, report technical issues, and to build social consensus should the need arise. This channel is restricted to known operators and requires verification beforehand - requests to join the `#validators-verified` channel can be sent to the `#validators-public` ???? channel.
+Operators are encouraged to join the `#validators-verified` channel of the Cosmos Community Discord. This channel is the primary communication tool for operators to ask questions, report upgrade status, report technical issues, and to build social consensus should the need arise. This channel is restricted to known operators and requires verification beforehand. Requests to join the `#validators-verified` channel can be sent to the `#general-support` channel.
 
 ## Risks
 

@@ -193,7 +193,7 @@ The upgrade may take several hours to complete because cosmoshub-4 participants 
 
 During the network upgrade, core Cosmos teams will be keeping an ever vigilant eye and communicating with operators on the status of their upgrades. During this time, the core teams will listen to operator needs to determine if the upgrade is experiencing unintended challenges. In the event of unexpected challenges, the core teams, after conferring with operators and attaining social consensus, may choose to declare that the upgrade will be skipped.
 
-Steps to skip this upgrade proposal are simply to resume the cosmoshub-4 network with the (downgraded) v5.0.0 binary using the following command:
+Steps to skip this upgrade proposal are simply to resume the cosmoshub-4 network with the (downgraded) v5.0.x binary using the following command:
 
 > gaiad start --unsafe-skip-upgrade 8695000
 
@@ -213,4 +213,5 @@ The riskiest thing a validator can do is discover that they made a mistake and r
 
 ## Reference
 [cosmos/vega-test](https://github.com/cosmos/vega-test)
+
 [Delta upgrade instruction](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md)

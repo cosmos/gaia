@@ -64,7 +64,7 @@ There are 2 major ways to upgrade a node:
 - manual upgrade
 - upgrade by [cosmovisor](https://github.com/cosmos/cosmos-sdk/tree/master/cosmovisor)
     - with manually prepare new binary
-    - with manually prepare new binary
+    - with auto-download of the new binary
 If you prefer to use cosmovisor to upgrade, a preparation work is needed before upgrade.
 
 ### method I: manual upgrade

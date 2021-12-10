@@ -167,7 +167,7 @@ Start the node:
 ```shell
 cosmovisor start --x-crisis-skip-assert-invariants
 ```
-????
+Skipping the invariant checks is strongly encouraged since it decreases the upgrade time significantly and since there are some other improvements coming to the crisis module in the next release of the Cosmos SDK.
 
 #### Expected result
 When the upgrade block height is reached, you can find the following information in the log: 

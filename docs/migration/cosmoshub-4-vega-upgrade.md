@@ -4,7 +4,7 @@
 This document describes the steps for validator and full node operators for the successful execution of the [Vega Upgrade](https://github.com/cosmos/gaia/blob/main/docs/roadmap/cosmos-hub-roadmap-2.0.md#vega-upgrade-expected-q4-2021), which contains the following main new features:
 -  [authz](https://github.com/cosmos/cosmos-sdk/tree/v0.44.3/x/authz/spec) and [feegrant modules](https://github.com/cosmos/cosmos-sdk/tree/v0.44.3/x/feegrant/spec)
 - [packet-forward-middleware](https://github.com/strangelove-ventures/packet-forward-middleware)
--  [IBC](htxtps://github.com/cosmos/ibc-go) as a standalone module
+-  [IBC](https://github.com/cosmos/ibc-go) as a standalone module
 
 TOC:
 - [On-chain governance proposal attains consensus](#on-chain-governance-proposal-attains-consensus)

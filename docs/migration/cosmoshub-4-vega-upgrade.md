@@ -17,8 +17,8 @@ TOC:
     - [Target runtime, cosmoshub-4 (post-Vega upgrade) will run Gaia v6.0.0](#target-runtime-cosmoshub-4-post-vega-upgrade-will-run-gaia-v600)
 - [Vega upgrade steps](#vega-upgrade-steps)
     - [Method I: manual upgrade](#method-i-manual-upgrade)
-    - [Method II: upgrade by cosmovisor with manually prepare the Gaia v6.0.0 binary](#method-ii-upgrade-by-cosmovisor-with-manually-prepare-the-gaia-v600-binary)
-    - [Method III: upgrade by cosmovisor with auto-download the Gaia v6.0.0 binary](#method-iii-upgrade-by-cosmovisor-with-manually-prepare-the-gaia-v600-binary-not-recommended)
+    -  - [Method II: upgrade using Cosmovisor by manually preparing the Gaia v6.0.0 binary](#method-ii-upgrade-using-cosmovisor-by-manually-preparing-the-gaia-v600-binary)
+  - [Method III: upgrade using Cosmovisor by auto-downloading the Gaia v6.0.0 binary (not recommended!)](#method-iii-upgrade-using-cosmovisor-by-auto-downloading-the-gaia-v600-binary-not-recommended)
 - [Upgrade duration](#upgrade-duration)
 - [Rollback plan](#rollback-plan)
 - [Communications](#communications)
@@ -43,7 +43,7 @@ The chain-id of the network will remain the same, `cosmoshub-4`. This is because
 ### Backups
 
 Prior to the upgrade, validators are encouraged to take a full data snapshot. Snapshotting depends heavily on infrastructure, but generally this can be done by backing up the `.gaia` directory.
-If you use cosmovisor to upgrade, by default, cosmovisor will backup your data upon upgrade. See below [upgrade by cosmovisor]((#method-ii-upgrade-by-cosmovisor-with-manually-prepare-the-gaia-v600-binary)) session.
+If you use Cosmovisor to upgrade, by default, Cosmovisor will backup your data upon upgrade. See below [upgrade by cosmovisor](#method-ii-upgrade-using-cosmovisor-by-manually-preparing-the-gaia-v600-binary) section.
 
 It is critically important for validator operators to back-up the `.gaia/data/priv_validator_state.json` file after stopping the gaiad process. This file is updated every block as your validator participates in consensus rounds. It is a critical file needed to prevent double-signing, in case the upgrade fails and the previous chain needs to be restarted.
 
@@ -53,21 +53,22 @@ For those validator and full node operators that are interested in ensuring prep
 
 ### Current runtime, cosmoshub-4 (pre-Vega upgrade) is running Gaia v5.0.0
 
-The Cosmos Hub mainnet network, `cosmoshub-4`, is currently running [Gaia v5.0.0](https://github.com/cosmos/gaia/releases/tag/v5.0.0). We anticipate that operators who are running earlier versions of Gaia, e.g., v5.0.x, will be able to upgrade successfully; however, this is untested and it is up to operators to ensure that their systems are capable of performing the upgrade.
+The Cosmos Hub mainnet network, `cosmoshub-4`, is currently running [Gaia v5.0.0](https://github.com/cosmos/gaia/releases/tag/v5.0.0). We anticipate that operators who are running on v5.0.x, will be able to upgrade successfully; however, this is untested and it is up to operators to ensure that their systems are capable of performing the upgrade.
 
 ### Target runtime, cosmoshub-4 (post-Vega upgrade) will run Gaia v6.0.0
 
 The Comsos Hub mainnet network, `cosmoshub-4`, will run [Gaia v6.0.0](https://github.com/cosmos/gaia/releases/tag/v6.0.0). Operators _MUST_ use this version post-upgrade to remain connected to the network.
 
 ## Vega upgrade steps
-There are 2 major ways to upgrade a node: 
-- manual upgrade
-- upgrade by [cosmovisor](https://github.com/cosmos/cosmos-sdk/tree/master/cosmovisor)
-    - with manually prepare new binary
-    - with auto-download of the new binary
-If you prefer to use cosmovisor to upgrade, a preparation work is needed before upgrade.
+There are 2 major ways to upgrade a node:
+- Manual upgrade
+- Upgrade using [Cosmovisor](https://github.com/cosmos/cosmos-sdk/tree/master/cosmovisor)
+  - Either by manually preparing the new binary
+  - Or by using the auto-download functionality (this is not yet recommended)
+    
+If you prefer to use Cosmovisor to upgrade, some preparation work is needed before upgrade.
 
-### method I: manual upgrade
+### Method I: manual upgrade
 Run Gaia v5.0.x till upgrade height, the node will panic:
 ```shell
 ERR UPGRADE "Vega" NEEDED at height: 8695000
@@ -76,23 +77,23 @@ panic: UPGRADE "Vega" NEEDED at height: 8695000
 ```
 Stop the node, and install Gaia v6.0.0 and re-start by `gaiad start`.
 
-It may take 20 min to a few hours till validators with total sum power > 2/3 complete their nodes upgrades and by that moment, the chain can continue to produce blocks.
+It may take 20 min to a few hours until validators with a total sum voting power > 2/3 to complete their nodes upgrades. After that, the chain can continue to produce blocks.
 
-### Method II: upgrade by cosmovisor with manually prepare the Gaia v6.0.0 binary
+### Method II: upgrade using Cosmovisor by manually preparing the Gaia v6.0.0 binary
 #### Preparation
 
-Install cosmovisor latest version:
+Install the latest version of Cosmovisor:
 ```shell
 go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@latest
 ```
 
 Create a cosmovisor folder:
 
-create cosmovisor folder inside gaia home and move Gaia v5.0.0 into ` $GAIA_HOME/cosmovisor/genesis/bin`
+create a Cosmovisor folder inside `$GAIA_HOME` and move Gaia v5.0.0 into ` $GAIA_HOME/cosmovisor/genesis/bin`
 ```shell
 mkdir -p $GAIA_HOME/cosmovisor/genesis/bin
 cp $(which gaiad) $GAIA_HOME/cosmovisor/genesis/bin
-```
+````
 build Gaia v6.0.0, and move gaiad v6.0.0 to `$GAIA_HOME/cosmovisor/upgrades/Vega/bin`
 
 ```shell
@@ -131,14 +132,13 @@ When the upgrade block height is reached, you can find the following information
 ERR UPGRADE "Vega" NEEDED at height: 8695000: upgrade to Vega and applying upgrade "Vega" at height:8695000.
 ```
  This may take 20 min to a few hours.
-Then the chain will continue to produce blocks after validators with total sum power > 2/3 complete their nodes upgrades.
+ After this, the chain will continue to produce blocks when validators with a total sum voting power > 2/3 complete their nodes upgrades.
 
-### Method III: upgrade by cosmovisor with manually prepare the Gaia v6.0.0 binary (not recommended!!!)
+### Method III: upgrade using Cosmovisor by auto-downloading the Gaia v6.0.0 binary (not recommended!)
 #### Preparation
-Install cosmovisor v0.1
+Install Cosmovisor v0.1
 ```shell
 go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v0.1.0
-
 ```
 Create a cosmovisor folder:
 
@@ -174,9 +174,8 @@ When the upgrade block height is reached, you can find the following information
 ```shell
 ERR UPGRADE "Vega" NEEDED at height: 8695000: upgrade to Vega and applying upgrade "Vega" at height:8695000
 ```
-Then the cosmovisor will create `$GAIA_HOME/cosmovisor/upgrades/Vega/bin` and download Gaia v6.0.0 binary to this folder according to links in the ` --info` field of the upgrade proposal 59.
-This may take 20 min to a few hours, afterwards, the chain will continue to produce blocks once validators with total sum power > 2/3 complete their nodes upgrades.
-
+Then the Cosmovisor will create `$GAIA_HOME/cosmovisor/upgrades/Vega/bin` and download Gaia v6.0.0 binary to this folder according to links in the ` --info` field of the upgrade proposal 59.
+This may take 20 min to a few hours, afterwards, the chain will continue to produce blocks once validators with a total sum voting power > 2/3 complete their nodes upgrades.
 
 *Please Note:*
 

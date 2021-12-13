@@ -32,7 +32,7 @@ TOC:
 
 ## Upgrade will take place December 14, 2021
 
-The upgrade will take place at a block height of `8695000`. At current block times (around 7s/block), this block height corresponds approximately to `Tuesday, 14-Dec-21 6:00:00 UTC`. This date/time is approximate as blocks are not generated at a constant interval.
+The upgrade will take place at a block height of `8695000`. At current block times (around 7s/block), this block height corresponds approximately to `Tuesday, 14-Dec-21 14:49:50 UTC`. This date/time is approximate as blocks are not generated at a constant interval.
 
 ## Chain-id will remain the same
 

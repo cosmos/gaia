@@ -1,6 +1,6 @@
 # Cosmos Hub 3 and the Community Pool
 
-The Cosmos Hub 3 launched with community-spend capabilities on December 11, 2019, effectively unlocking the potential for token-holders to vote to approve spending from the Community Pool. **This documentation is in active development, so please seek feedback and take care when using this information.** [Discuss its development here](https://forum.cosmos.network/t/gwg-community-spend-best-practices/3240).
+The Cosmos Hub 3 launched with community-spend capabilities on December 11, 2019, effectively unlocking the potential for token-holders to vote to approve spending from the Community Pool.
 
 🇪🇸 Esta página también está [disponible en español](https://github.com/raquetelio/CosmosCommunitySpend/blob/master/README%5BES_es%5D.md).
 
@@ -22,9 +22,9 @@ Drafting and submitting a proposal is a process that takes time, attention, and 
 
 If you are considering drafting a proposal, you should review the general
 background on drafting and submitting a proposal:
-1. [How the voting process and governance mechanism works](/overview.md)
-1. [How to draft your proposal and engage with the Cosmos community about it](/best_practices.md)
-1. [How to submit your proposal](/submitting.md)
+1. [How the voting process and governance mechanism works](../overview.md)
+1. [How to draft your proposal and engage with the Cosmos community about it](../best_practices.md)
+1. [How to submit your proposal](../submitting.md)
 
 You should also review details specific to Community Pool Spend proposals:
 

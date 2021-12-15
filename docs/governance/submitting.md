@@ -36,14 +36,14 @@ The reason we use IPFS is that it is a decentralized means of storage, making it
 
 ## Formatting the JSON file for the governance proposal
 
-Prior to sending the transaction that submits your proposal on-chain, you must create a JSON file. This file will contain the information that will be stored on-chain as the governance proposal. Begin by creating a new text (.txt) file to enter this information. Use [these best practices](bestpractices.md) as a guide for the contents of your proposal. When you're done, save the file as a .json file. See the examples that follow to help format your proposal.
+Prior to sending the transaction that submits your proposal on-chain, you must create a JSON file. This file will contain the information that will be stored on-chain as the governance proposal. Begin by creating a new text (.txt) file to enter this information. Use [these best practices](./best_practices.md) as a guide for the contents of your proposal. When you're done, save the file as a .json file. See the examples that follow to help format your proposal.
 
 Each proposal type is unique in how the JSON should be formatted.
 See the relevant section for the type of proposal you are drafting:
 
-- [Text Proposals](text/formatting.md)
-- [Community Pool Spend Proposals](community-pool-spend/formatting.md)
-- [Parameter Change Proposals](params-change/formatting.md)
+- [Text Proposals](./text/)
+- [Community Pool Spend Proposals](./community-pool-spend/formatting.md)
+- [Parameter Change Proposals](./params-change/formatting.md)
 
 Once on-chain, most people will rely upon network explorers to interpret this information with a graphical user interface (GUI).
 
@@ -51,7 +51,7 @@ Once on-chain, most people will rely upon network explorers to interpret this in
 
 
 ## Sending the transaction that submits your governance proposal
-For information on how to use gaiad (the command line interface) to submit an on-chain proposal through the governance module, please refer to the [gaiad resource](https://hub.cosmos.network/main/resources/gaiad.html) for the Cosmos Hub documentation.
+For information on how to use gaiad (the command line interface) to submit an on-chain proposal through the governance module, please refer to the [gaiad resource](../resources/gaiad.md) for the Cosmos Hub documentation.
 
 ### Walkthrough example
 
@@ -96,7 +96,8 @@ This is the complete command that I could use to submit a **mainnet** parameter-
 After posting your transaction, your command line interface (gaiad) will provide you with the transaction's hash, which you can either query using gaiad or by searching the hash using [Hubble](https://hubble.figment.network/cosmos/chains/cosmoshub-3/transactions/B8E2662DE82413F03919712B18F7B23AF00B50DAEB499DAD8C436514640EFC79). The hash should look something like this: `B8E2662DE82413F03919712B18F7B23AF00B50DAEB499DAD8C436514640EFC79`
 
 You can see whether or not your transaction was successful with Hubble:
-![Verify tx with Hubble](/community-pool-spend/verify%20tx.png?raw=true)
+
+![Verify tx with Hubble](../images/verify-tx.png)
 
 ### Troubleshooting a failed transaction
 There are a number of reasons why a transaction may fail. Here are two examples:

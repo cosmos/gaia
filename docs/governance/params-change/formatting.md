@@ -1,6 +1,6 @@
 # Formatting a Params Change Proposal
 
-**Note:** Changes to the [`gov` module](/Governance.md) are different from the other kinds of parameter changes because `gov` has subkeys, [as discussed here](https://github.com/cosmos/cosmos-sdk/issues/5800). Only the `key` part of the JSON file is different for `gov` parameter-change proposals.
+**Note:** Changes to the [`gov` module](./Governance.md) are different from the other kinds of parameter changes because `gov` has subkeys, [as discussed here](https://github.com/cosmos/cosmos-sdk/issues/5800). Only the `key` part of the JSON file is different for `gov` parameter-change proposals.
 
 For parameter-change proposals, there are seven (7) components:
 1. **Title** - the distinguishing name of the proposal, typically the way the that explorers list proposals
@@ -39,7 +39,7 @@ You use can also use [Hubble](https://hubble.figment.network/cosmos/chains/gaia-
 The deposit `denom` is `uatom` and `amount` is `100000`. Since 1,000,000 micro-ATOM is equal to 1 ATOM, a deposit of 0.1 ATOM will be included with this proposal. The gaia-13007 testnet currently has a 0.1 ATOM minimum deposit, so this will put the proposal directly into the voting period. There is a minimum deposit required for a proposal to enter the voting period, and anyone may contribute to this deposit within a 14-day period. If the minimum deposit isn't reached before this time, the deposit amounts will be burned. Deposit amounts will also be burned if quorum isn't met in the vote or if the proposal is vetoed.
 
 ### Mainnet example: 
-To date, the Cosmos Hub's parameters have not been changed by a parameter-change governance proposal. This is a hypothetical example of the JSON file that would be used with a command line transaction to create a new proposal. This is an example of a proposal that changes two parameters, and both parameters are from the [`slashing` module](Slashing.md). A single parameter-change governance proposal can reportedly change any number of parameters.
+To date, the Cosmos Hub's parameters have not been changed by a parameter-change governance proposal. This is a hypothetical example of the JSON file that would be used with a command line transaction to create a new proposal. This is an example of a proposal that changes two parameters, and both parameters are from the [`slashing` module](./Slashing.md). A single parameter-change governance proposal can reportedly change any number of parameters.
 
 ```
 {
@@ -62,5 +62,4 @@ To date, the Cosmos Hub's parameters have not been changed by a parameter-change
 ```
 **Note:** in the JSON file, `\n` creates a new line.
 
-It's worth noting that this example proposal doesn't provide reasoning/justification for these changes. Consider consulting the [parameter-change best practices documentation](submitting.md) for guidance on the contents of a parameter-change proposal.
-
+It's worth noting that this example proposal doesn't provide reasoning/justification for these changes. Consider consulting the [parameter-change best practices documentation](./best_practices.md) for guidance on the contents of a parameter-change proposal.

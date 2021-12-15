@@ -1,9 +1,11 @@
 # Cosmos Hub Parameter-Change Best Practices & Wiki
+
 This Cosmos Hub educational documentation aims to outline the [Hub's parameters](#params-wiki), describe their functions, and describe the potential implications of modifying each parameter. This documentation also aims to provide [guidelines for creating and assessing parameter-change proposals](#drafting-a-parameter-change-proposal).
 
 **This documentation has not had adequate review from experts or testing from participants, so please be cautious when using it.** [Discuss its development here](https://forum.cosmos.network/t/gwg-cosmos-hub-parameters-wiki/3170) and please provide feedback either in the forum or by opening a Github issue. If you are technically inclined, this is the full [list of modules](https://github.com/cosmos/cosmos-sdk/tree/master/x) in the Cosmos SDK.
 
 ## Drafting a Parameter Change Proposal
+
 Drafting and submitting a parameter-change governance proposal involves two kinds of risk: losing proposal deposit amounts and the potential to alter the function of the Cosmos Hub network in an undesirable way. The objective of this documentation is to reduce these risks by preparing participants for what to pay attention to and for what information to consider in a proposal. Ideally, a proposal should only fail to pass because the voters 1) are aware and engaged and 2) are able to make an informed decision to vote down the proposal.
 
 If you are considering drafting a proposal, you should review the general
@@ -38,7 +40,9 @@ There is an [index of these parameters here](./param_index.md).
 
 The value or setting for each parameter may be verified in the chain's genesis file, [found here](https://raw.githubusercontent.com/cosmos/launch/master/genesis.json). These are the parameter settings that the latest Cosmos Hub chain launched with, and will remain so unless a governance proposal or software upgrade changes them.
 
-There are also ways to query the current settings for each module's parameter(s). Some can be queried with the command line program [`gaiad`](./gaiad), but I'm still exploring the ways that these settings can be queried. Want to help? I've opened this up as an issue [here](https://github.com/gavinly/CosmosParametersWiki/issues/1). You can begin by using the command `gaia q [module] -h` to get help about the subcommands for the module you want to query. For example, `gaiad q staking params --chain-id cosmoshub-3 --node http://51.79.82.228:26657` returns the settings of four parameters:
+There are also ways to query the current settings for each module's parameter(s). Some can be queried with the command line program [`gaiad`](../../getting-started/installation.md), but I'm still exploring the ways that these settings can be queried. 
+
+You can begin by using the command `gaia q [module] -h` to get help about the subcommands for the module you want to query. For example, `gaiad q staking params --chain-id cosmoshub-3 --node http://51.79.82.228:26657` returns the settings of four parameters:
 ```
 unbonding_time: 504h0m0s
 max_validators: 125
@@ -54,15 +58,17 @@ If a paramater-change proposal is successful, the change takes effect immediatel
 
 ## Note
 - You cannot currently query the `bank` module's parameter, which is `sendenabled`. You also cannot query the `crisis` module's parameters.
-- You will need to compile [`gaiad`](./gaiad) from source into a binary file executable by your operating system eg. MacOS, Windows, Linux
+- You will need to compile [`gaiad`](../../getting-started/installation.md) from source into a binary file executable by your operating system eg. MacOS, Windows, Linux
 - You will need to indicate which chain you are querying, and currently this is `--chain-id cosmoshub-3`
 - You will need to connect to a full node. If gaiad isn't already configured for this, you can use this tag in your command `--node [address]:26657`.
 
 ## Full nodes
+
 Running a full node can be difficult for those not technically-inclined, so you may choose to use a third-party's full node. In this case, the primary security risk is that of censorship: it's the single place where you have a single gateway to the network, and any messages submitted through an untrusted node could be censored.
 - http://51.79.82.228:26657 ([Figment Networks](https://figment.network/networks/cosmos/))
 
 ## Contributors
+
 This documentation was created by Gavin Birch ([Figment Networks](https://figment.network)). Its development was supported by community funding that was approved on January 29, 2020 by the Cosmos Hub via community-spend proposal [Prop23](https://hubble.figment.network/cosmos/chains/cosmoshub-3/governance/proposals/23). You can read the [full proposal PDF here](https://ipfs.io/ipfs/QmSMGEoY2dfxADPfgoAsJxjjC6hwpSNx1dXAqePiCEMCbY). You can also create an issue or pull request to participate in its development at any time!
 
 **Special thanks** to the following for helping to provide credible information that contributed to this wiki's development:

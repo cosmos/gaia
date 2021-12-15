@@ -2,7 +2,7 @@
 order: 4
 -->
 
-# Join the Public Testnet 
+# Join the Public Testnet
 
 ::: tip Current Testnet
 See the [testnet repo](https://github.com/cosmos/testnets) for
@@ -11,7 +11,7 @@ of Gaia to use and details about the genesis file.
 :::
 
 ::: warning
-**You need to [install gaia](./installation.md) before you go further**
+**You need to [install gaia](./getting-started/installation.md) before you go further**
 :::
 
 ## Starting a New Node

@@ -120,4 +120,4 @@ The `replace` clause you add to `go.mod` must provide the correct import path:
 
 ## Next
 
-Now you can [join the mainnet](./join-mainnet.md), [the public testnet](./join-testnet.md) or [create you own testnet](./deploy-testnet.md)
+Now you can [join the mainnet](./hub-tutorials/join-mainnet.md), [the public testnet](./hub-tutorials/join-testnet.md) or [create you own testnet](./hub-tutorials/deploy-testnet.md)

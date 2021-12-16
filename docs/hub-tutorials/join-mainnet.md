@@ -5,9 +5,9 @@ order: 3
 # Join the Cosmos Hub Mainnet
 
 > Note: The current mainnet (`cosmoshub-4`) has performed the first [in-place store migration](https://docs.cosmos.network/v0.43/architecture/adr-041-in-place-store-migrations.html#adr-041-in-place-store-migrations) upgrade. That means that an [upgrade proposal](https://wallet.keplr.app/#/cosmoshub/governance?detailId=51) was passed to start using the [v5.0.0]() release of the gaia node. As a result the [v4.2.1](https://github.com/cosmos/gaia/releases/tag/v4.2.1) version of the gaia node would panic and stop at block [6910000](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md#Upgrade-will-take-place-July-12,-2021). At that point node operators installed the [v5.0.5](https://github.com/cosmos/gaia/releases/tag/v5.0.5) version of the gaia node and then started the node again. This type of upgrade preserves the same `chain-id` but is otherwise similar to a traditional hub upgrade, meaning historical state is lost after the upgrade takes place (still accessible of course by a v4.2.1 full node).
-> 
+>
 > **In order to sync a gaia node from genesis the upgrade process outline above and [in more detail here](https://github.com/cosmos/mainnet) will need to take place.**
-> 
+>
 > _To quickly sync a Cosmos Hub node it's recommended that you use the [cosmos.quicksync.io](https://cosmos.quicksync.io/) snapshots._
 
 ## Quickstart
@@ -16,7 +16,7 @@ order: 3
 
 This Quickstart tutorial completes the following actions:
 
-* Ensure that you have [compilation prerequisites](installation.md)
+* Ensure that you have [compilation prerequisites](./getting-started/installation.md)
 * Compile gaia
 * Give your node a moniker and configure it
 * Download compressed genesis state
@@ -93,7 +93,7 @@ For optimized node performance, edit the `~/.gaia/config/app.toml` file to enabl
 minimum-gas-prices = "0.0025uatom"
 ```
 
-Your full node has been initialized! 
+Your full node has been initialized!
 
 ## Genesis & Seeds
 
@@ -120,7 +120,7 @@ gaiad start
 
 Your node needs to know how to find peers. You'll need to add healthy seed nodes to `$HOME/.gaia/config/config.toml`. The [`launch`](https://github.com/cosmos/launch) repo contains links to some seed nodes.
 
-If those seeds aren't working, you can find more seeds and persistent peers on a Cosmos Hub explorer (a list can be found on the [launch page](https://cosmos.network/launch)). 
+If those seeds aren't working, you can find more seeds and persistent peers on a Cosmos Hub explorer (a list can be found on the [launch page](https://cosmos.network/launch)).
 
 
 
@@ -134,13 +134,13 @@ Transactions on the Cosmos Hub network need to include a transaction fee in orde
 fees = ceil(gas * gasPrices)
 ```
 
-The `gas` is dependent on the transaction. Different transaction require different amount of `gas`. The `gas` amount for a transaction is calculated as it is being processed, but there is a way to estimate it beforehand by using the `auto` value for the `gas` flag. Of course, this only gives an estimate. You can adjust this estimate with the flag `--gas-adjustment` (default `1.0`) if you want to be sure you provide enough `gas` for the transaction. 
+The `gas` is dependent on the transaction. Different transaction require different amount of `gas`. The `gas` amount for a transaction is calculated as it is being processed, but there is a way to estimate it beforehand by using the `auto` value for the `gas` flag. Of course, this only gives an estimate. You can adjust this estimate with the flag `--gas-adjustment` (default `1.0`) if you want to be sure you provide enough `gas` for the transaction.
 
-The `gasPrice` is the price of each unit of `gas`. Each validator sets a `min-gas-price` value, and will only include transactions that have a `gasPrice` greater than their `min-gas-price`. 
+The `gasPrice` is the price of each unit of `gas`. Each validator sets a `min-gas-price` value, and will only include transactions that have a `gasPrice` greater than their `min-gas-price`.
 
-The transaction `fees` are the product of `gas` and `gasPrice`. As a user, you have to input 2 out of 3. The higher the `gasPrice`/`fees`, the higher the chance that your transaction will get included in a block. 
+The transaction `fees` are the product of `gas` and `gasPrice`. As a user, you have to input 2 out of 3. The higher the `gasPrice`/`fees`, the higher the chance that your transaction will get included in a block.
 
-For mainnet, the recommended `gas-prices` is `0.0025uatom`. 
+For mainnet, the recommended `gas-prices` is `0.0025uatom`.
 
 ## Set `minimum-gas-prices`
 
@@ -178,11 +178,11 @@ Check that everything is running smoothly:
 gaiad status
 ```
 
-View the status of the network with the [Cosmos Explorer](https://cosmos.network/launch). 
+View the status of the network with the [Cosmos Explorer](https://cosmos.network/launch).
 
 ## Enable the REST API
 
-By default, the REST API is disabled. To enable the REST API, edit the `~/.gaia/config/app.toml` file, and set `enable` to `true` in the `[api]` section. 
+By default, the REST API is disabled. To enable the REST API, edit the `~/.gaia/config/app.toml` file, and set `enable` to `true` in the `[api]` section.
 
 ```toml
 ###############################################################################
@@ -289,14 +289,14 @@ If you plan to start a new network from the exported state, export with the `--f
 gaiad export --height [height] --for-zero-height > [filename].json
 ```
 
-## Verify Mainnet 
+## Verify Mainnet
 
 Help to prevent a catastrophe by running invariants on each block on your full
 node. In essence, by running invariants you ensure that the state of mainnet is
 the correct expected state. One vital invariant check is that no atoms are
 being created or destroyed outside of expected protocol, however there are many
-other invariant checks each unique to their respective module. Because invariant checks 
-are computationally expensive, they are not enabled by default. To run a node with 
+other invariant checks each unique to their respective module. Because invariant checks
+are computationally expensive, they are not enabled by default. To run a node with
 these checks start your node with the assert-invariants-blockly flag:
 
 ```bash
@@ -304,7 +304,7 @@ gaiad start --assert-invariants-blockly
 ```
 
 If an invariant is broken on your node, your node will panic and prompt you to send
-a transaction which will halt mainnet. For example the provided message may look like: 
+a transaction which will halt mainnet. For example the provided message may look like:
 
 ```bash
 invariant broken:
@@ -317,4 +317,4 @@ invariant broken:
 ```
 
 When submitting a invariant-broken transaction, transaction fee tokens are not
-deducted as the blockchain will halt (invariant-broken transactions are free transactions). 
+deducted as the blockchain will halt (invariant-broken transactions are free transactions).

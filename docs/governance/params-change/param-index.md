@@ -1,4 +1,8 @@
-# Cosmos Hub - Index of Governable Parameters
+---
+order: 2
+---
+
+# Index of Governable Parameters
 
 ## Querying on-chain parameters
 

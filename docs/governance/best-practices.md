@@ -14,25 +14,28 @@ There are currently three types of proposals supported by the Cosmos Hub:
   they do not directly cause any changes.
 
 You'll first want to determine which kind of proposal you are making. Be sure to
-review all details of your specific proposal type. What follows below are
-general best practices, regardless of proposal type.
+review all details of your specific proposal type. 
 
 ## Engage directly with the voting community and seek feedback
 
-Engagement is likely to be critical to the success of a proposal. 
-
-The degree to which you engage with the Cosmos Hub community should be relative to the potential impact that your proposal may have on the stakeholders. 
+Engagement is likely to be critical to the success of a proposal. The degree to which you engage with the Cosmos Hub community should be relative to the potential impact that your proposal may have on the stakeholders. This guide does not cover all ways of engaging: you could bring your idea to a podcast or a hackathon, host an AMA on [Reddit](https://www.reddit.com/r/cosmosnetwork) or host a Q&A (questions & answers). We encourage you to experiment and use your strengths to introduce proposal ideas and gather feedback.
 
 There are many different ways to engage. One strategy involves a few stages of engagement before and after submitting a proposal on chain. **Why do it in stages?** It's a more conservative approach to save resources. The idea is to check in with key stakeholders at each stage before investing more resources into developing your proposal.
 
-In the first stage of this strategy, you should engage people (ideally experts) informally about your idea.
+In the first stage of this strategy, you should engage people (ideally experts) informally about your idea. You'll want to start with the minimal, critical components (name, value to cosmos hub, timeline, any funding needs) and check:
 - Does it make sense? 
 - Are there critical flaws? 
 - Does it need to be reconsidered? 
 
-If you're already confident about your idea, [skip to Stage 2](#stage-2-your-draft-proposal).
+You should be able enagaging with key stakeholders (eg. a large validator operator) with a few short sentences to measure their support. Here's an example:
 
-**Note**: this guide likely fails to capture all ways of engaging. Perhaps you could bring your idea to a podcast or a hackathon. You could host an AMA on [Reddit](https://www.reddit.com/r/cosmosnetwork) or host a Q&A (questions & answers) video call. Try to go above and beyond what's recommended here--experiment, and use your strengths and connections.
+"We are considering a proposal for funding to work on `project`. We think it will help the Hub to `outcome`. Timeline is `x`, and we're asking for `y` amount. Do you think that this is a proposal that `large validator` may support?"
+
+**Why a large validator?** They tend to be the de facto decision-makers on the Cosmos Hub, since their delegators also delegate their voting power. If you can establish a base layer of off-chain support, you can be more confident that it's worth proceeding to the next stage.
+
+**Note:** many will likely hesitate to commit support, and that's okay. It will be important to reassure these stakeholders that this isn't a binding a commitment. You're just canvasing the community to get a feel for whether it's worthwhile to proceed. It's also an opportunity to connect with new people and to answer their questions about what it is you're working on. It will be important for them to clearly understand why you think what you're proposing will be valuable to the Cosmos Hub, and if possible, why it will be valuable to them as long-term stakeholders.
+
+If you're already confident about your idea, [skip to Stage 2](#stage-2-your-draft-proposal).
 
 ## Stage 1: Your Idea
 
@@ -54,9 +57,74 @@ A conservative approach is to have some confidence that you roughly have initial
 
 ## Stage 2: Your Draft Proposal
 
-### Begin with a well-considered draft proposal
-
 The next major section outlines and describes some potential elements of drafting a proposal. Ensure that you have considered your proposal and anticipated questions that the community will likely ask. Once your proposal is on-chain, you will not be able to change it.
+
+### Proposal Elements 
+
+It will be important to balance two things: being detailed and being concise. You'll want to be concise so that people can assess your proposal quickly. You'll want to be detailed so that voters will have a clear, meaningful understanding of what the changes are and how they are likely to be impacted.
+
+There is a [proposal template](./proposals/proposal-template.md) with suggested sections. Each proposal should contain a summmary with key details:
+   
+- who is submitting the proposal
+- the amount of the proposal or parameter(s) being changed;
+- and deliverables and timeline
+- a reason for the proposal and potential impacts
+- a short summary of the history (what compelled this proposal), solution that's being presented, and future expectations
+
+Assume that many people will stop reading at this point. However it is important to provide in-depth information, a few more pointers for Parameter-change and Community Spend proposals are below.
+
+#### Parameter-Change
+
+1. Problem/Value - generally the problem or value that's motivating the parameter change(s)
+1. Solution - generally how changing the parameter(s) will address the problem or improve the network
+   - the beneficiaries of the change(s) (ie. who will these changes impact and how?)
+      - voters should understand the importance of the change(s) in a simple way
+1. Risks & Benefits - clearly describe how making this/these change(s) may expose stakeholders to new benefits and/or risks
+1. Supplementary materials - optional materials eg. models, graphs, tables, research, signed petition, etc
+
+
+#### Community-Spend Proposal
+
+1. Applicant(s) - the profile of the person(s)/entity making the proposal
+   - who you are and your involvement in Cosmos and/or other blockchain networks
+   - an overview of team members involved and their relevant experience
+   - brief mission statment for your organization/business (if applicable) eg. website
+   - past work you've done eg. include your Github
+   - some sort of proof of who you are eg. Keybase
+1. Problem - generally what you're solving and/or opportunity you're addressing
+   - past, present (and possibly a prediction of the future without this work being done)
+1. Solution - generally how you're proposing to deliver the solution
+   - your plan to fix the problem or deliver value
+   - the beneficiaries of this plan (ie. who will your plan impact and how?)
+     - follow the "as a user" template ie. write a short user story about the problem you are trying to solve and how users will interact with what you're proposing to deliver (eg. benefits and functionality from a user’s perspective)
+     - voters should understand the value of what you're providing in a simple way
+   - your reasons for selecting this plan
+   - your motivation for delivering this solution/value
+1. Funding - amount and denomination proposed eg. 5000 ATOM
+   - the entity controlling the account receiving the funding
+   - consider an itemized breakdown of funding per major deliverable
+   - consider outlining how the funds will be spent
+1. Deliverables and timeline - the specifics of what you're delivering and how, and what to expect
+   - what are the specific deliverables? (be detailed)
+   - when will each of these be delivered?
+   - will there be a date at which the project will be considered failed if the deliverables have not been met?
+   - how will each of these be delivered?
+   - what will happen if you do not deliver on time?
+     - what is the deadline for the project to be considered failed?
+     - do you have a plan to return the funds?
+   - how will you be accountable to the Cosmos Hub stakeholders?
+     - how will you communicate updates and how often?
+     - how can the community observe your progress?
+     - how can the community provide feedback?
+   - how should the quality of deliverables be assessed? eg. metrics
+1. Relationships and disclosures
+   - have you received or applied for grants or funding? for similar work? eg. from the Interchain Foundation
+   - how will you and/or your organization benefit?
+   - do you see this work continuing in the future and is there a plan?
+   - what are the risks involved with this work?
+   - do you have conflicts of interest to declare?
+
+### Begin with a well-considered draft proposal
 
 The ideal format for a proposal is as a Markdown file (ie. `.md`) in a github repo. Markdown
 is a simple and accessible format for writing plain text files that is easy to

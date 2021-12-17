@@ -1,6 +1,8 @@
-# Submitting a Governance Proposal
+---
+order: 4
+---
 
-## WARNING: This process is in active development and has not been thoroughly tested. Consider discussing this process with the [Cosmos governance working group (GWG)](https://t.me/hubgov) before using it to submit a proposal.
+# Submitting a Governance Proposal
 
 If you have a final draft of your proposal ready to submit, you may want to push your proposal live on the testnet first. These are the three primary steps to getting your proposal live on-chain.
 
@@ -41,9 +43,9 @@ Prior to sending the transaction that submits your proposal on-chain, you must c
 Each proposal type is unique in how the JSON should be formatted.
 See the relevant section for the type of proposal you are drafting:
 
-- [Text Proposals](./text/)
-- [Community Pool Spend Proposals](./community-pool-spend/formatting.md)
-- [Parameter Change Proposals](./params-change/formatting.md)
+- [Text Proposals](./formatting.md)
+- [Community Pool Spend Proposals](./formatting.md)
+- [Parameter Change Proposals](./formatting.md)
 
 Once on-chain, most people will rely upon network explorers to interpret this information with a graphical user interface (GUI).
 
@@ -51,6 +53,7 @@ Once on-chain, most people will rely upon network explorers to interpret this in
 
 
 ## Sending the transaction that submits your governance proposal
+
 For information on how to use gaiad (the command line interface) to submit an on-chain proposal through the governance module, please refer to the [gaiad resource](../resources/gaiad.md) for the Cosmos Hub documentation.
 
 ### Walkthrough example
@@ -93,6 +96,7 @@ This is the complete command that I could use to submit a **mainnet** parameter-
 **Note**: be careful what you use for `--fees`. A mistake here could result in spending hundreds or thousands of ATOMs accidentally, which cannot be recovered.
 
 ### Verifying your transaction
+
 After posting your transaction, your command line interface (gaiad) will provide you with the transaction's hash, which you can either query using gaiad or by searching the hash using [Hubble](https://hubble.figment.network/cosmos/chains/cosmoshub-3/transactions/B8E2662DE82413F03919712B18F7B23AF00B50DAEB499DAD8C436514640EFC79). The hash should look something like this: `B8E2662DE82413F03919712B18F7B23AF00B50DAEB499DAD8C436514640EFC79`
 
 You can see whether or not your transaction was successful with Hubble:
@@ -100,6 +104,7 @@ You can see whether or not your transaction was successful with Hubble:
 ![Verify tx with Hubble](../images/verify-tx.png)
 
 ### Troubleshooting a failed transaction
+
 There are a number of reasons why a transaction may fail. Here are two examples:
 1. **Running out of gas** - The more data there is in a transaction, the more gas it will need to be processed. If you don't specify enough gas, the transaction will fail.
 
@@ -108,6 +113,7 @@ There are a number of reasons why a transaction may fail. Here are two examples:
 If you encounter a problem, try to troubleshoot it first, and then ask for help on the All in Bits Cosmos forum: [https://forum.cosmos.network/c/governance](https://forum.cosmos.network/c/governance). We can learn from failed attempts and use them to improve upon this guide.
 
 ### Submitting your proposal to the testnet
+
 You may want to submit your proposal to the testnet chain before the mainnet for a number of reasons:
 1. To see what the proposal description will look like
 2. To signal that your proposal is about to go live on the mainnet

@@ -67,15 +67,15 @@ func getRegisterAccountCmd() *cobra.Command {
 }
 
 
-	cmd.Flags().AddFlagSet(fsConnectionPair)
-
-	_ = cmd.MarkFlagRequired(FlagConnectionID)
-	_ = cmd.MarkFlagRequired(FlagCounterpartyConnectionID)
-
-	flags.AddTxFlagsToCmd(cmd)
-
-	return cmd
-}
+//	cmd.Flags().AddFlagSet(fsConnectionPair)
+//
+//	_ = cmd.MarkFlagRequired(FlagConnectionID)
+//	_ = cmd.MarkFlagRequired(FlagCounterpartyConnectionID)
+//
+//	flags.AddTxFlagsToCmd(cmd)
+//
+//	return cmd
+//}
 
 
 func getSubmitTxCmd() *cobra.Command {

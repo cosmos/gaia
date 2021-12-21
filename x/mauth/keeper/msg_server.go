@@ -2,8 +2,6 @@ package keeper
 
 import (
 	"context"
-	"errors"
-	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -17,16 +15,6 @@ var _ types.MsgServer = msgServer{}
 
 type msgServer struct {
 	Keeper
-}
-
-func (k msgServer) Send(ctx context.Context, send *types.MsgSend) (*types.MsgSendResponse, error) {
-	fmt.Println("implement me!!!")
-	return &types.MsgSendResponse{}, errors.New("not implemented")
-}
-
-func (k msgServer) Delegate(ctx context.Context, delegate *types.MsgDelegate) (*types.MsgDelegateResponse, error) {
-	fmt.Println("implement me!!!")
-	return &types.MsgDelegateResponse{}, errors.New("not implemented")
 }
 
 // NewMsgServerImpl creates and returns a new types.MsgServer, fulfilling the intertx Msg service interface

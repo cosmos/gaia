@@ -1,68 +1,85 @@
 package keeper_test
 
-// var (
-// 	// TestAccAddress defines a resuable bech32 address for testing purposes
-// 	// TODO: update crypto.AddressHash() when sdk uses address.Module()
-// 	TestAccAddress = icatypes.GenerateAddress(sdk.AccAddress(crypto.AddressHash([]byte(icatypes.ModuleName))), TestPortID)
-// 	// TestOwnerAddress defines a reusable bech32 address for testing purposes
-// 	TestOwnerAddress = "cosmos17dtl0mjt3t77kpuhg2edqzjpszulwhgzuj9ljs"
-// 	// TestPortID defines a resuable port identifier for testing purposes
-// 	TestPortID, _ = icatypes.GeneratePortID(TestOwnerAddress, ibctesting.FirstConnectionID, ibctesting.FirstConnectionID)
-// 	// TestVersion defines a resuable interchainaccounts version string for testing purposes
-// 	TestVersion = icatypes.NewAppVersion(icatypes.VersionPrefix, TestAccAddress.String())
-// )
+import (
+	"encoding/json"
+	"testing"
 
-// func init() {
-// 	ibctesting.DefaultTestingAppInit = SetupICATestingApp
-// }
+	"github.com/stretchr/testify/suite"
+	"github.com/tendermint/tendermint/crypto"
+	"github.com/tendermint/tendermint/libs/log"
+	dbm "github.com/tendermint/tm-db"
 
-// func SetupICATestingApp() (ibctesting.TestingApp, map[string]json.RawMessage) {
-// 	db := dbm.NewMemDB()
-// 	encCdc := icaapp.MakeEncodingConfig()
-// 	app := icaapp.New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, icaapp.DefaultNodeHome, 5, encCdc, icaapp.EmptyAppOptions{})
-// 	return app, icaapp.NewDefaultGenesisState(encCdc.Marshaler)
-// }
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
+	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
+	ibctesting "github.com/cosmos/ibc-go/v3/testing"
 
-// // KeeperTestSuite is a testing suite to test keeper functions
-// type KeeperTestSuite struct {
-// 	suite.Suite
+	icaapp "github.com/cosmos/gaia/v6/app"
+)
 
-// 	coordinator *ibctesting.Coordinator
+var (
+	// TestAccAddress defines a resuable bech32 address for testing purposes
+	// TODO: update crypto.AddressHash() when sdk uses address.Module()
+	TestAccAddress = icatypes.GenerateAddress(sdk.AccAddress(crypto.AddressHash([]byte(icatypes.ModuleName))), TestPortID)
+	// TestOwnerAddress defines a reusable bech32 address for testing purposes
+	TestOwnerAddress = "cosmos17dtl0mjt3t77kpuhg2edqzjpszulwhgzuj9ljs"
+	// TestPortID defines a resuable port identifier for testing purposes
+	TestPortID, _ = icatypes.GeneratePortID(TestOwnerAddress, ibctesting.FirstConnectionID, ibctesting.FirstConnectionID)
+	// TestVersion defines a resuable interchainaccounts version string for testing purposes
+	TestVersion = icatypes.NewAppVersion(icatypes.VersionPrefix, TestAccAddress.String())
+)
 
-// 	// testing chains used for convenience and readability
-// 	chainA *ibctesting.TestChain
-// 	chainB *ibctesting.TestChain
-// }
+func init() {
+	ibctesting.DefaultTestingAppInit = SetupICATestingApp
+}
 
-// func (suite *KeeperTestSuite) GetICAApp(chain *ibctesting.TestChain) *icaapp.App {
-// 	app, ok := chain.App.(*icaapp.App)
-// 	if !ok {
-// 		panic("not ica app")
-// 	}
+func SetupICATestingApp() (ibctesting.TestingApp, map[string]json.RawMessage) {
+	db := dbm.NewMemDB()
+	encCdc := icaapp.MakeEncodingConfig()
+	app := icaapp.New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, icaapp.DefaultNodeHome, 5, encCdc, icaapp.EmptyAppOptions{})
+	return app, icaapp.NewDefaultGenesisState(encCdc.Marshaler)
+}
 
-// 	return app
-// }
+// KeeperTestSuite is a testing suite to test keeper functions
+type KeeperTestSuite struct {
+	suite.Suite
 
-// // TestKeeperTestSuite runs all the tests within this package.
-// func TestKeeperTestSuite(t *testing.T) {
-// 	suite.Run(t, new(KeeperTestSuite))
-// }
+	coordinator *ibctesting.Coordinator
 
-// // SetupTest creates a coordinator with 2 test chains.
-// func (suite *KeeperTestSuite) SetupTest() {
-// 	suite.coordinator = ibctesting.NewCoordinator(suite.T(), 2)
-// 	suite.chainA = suite.coordinator.GetChain(ibctesting.GetChainID(0))
-// 	suite.chainB = suite.coordinator.GetChain(ibctesting.GetChainID(1))
-// }
+	// testing chains used for convenience and readability
+	chainA *ibctesting.TestChain
+	chainB *ibctesting.TestChain
+}
 
-// func NewICAPath(chainA, chainB *ibctesting.TestChain) *ibctesting.Path {
-// 	path := ibctesting.NewPath(chainA, chainB)
-// 	path.EndpointA.ChannelConfig.PortID = icatypes.PortID
-// 	path.EndpointB.ChannelConfig.PortID = icatypes.PortID
-// 	path.EndpointA.ChannelConfig.Order = channeltypes.ORDERED
-// 	path.EndpointB.ChannelConfig.Order = channeltypes.ORDERED
-// 	path.EndpointA.ChannelConfig.Version = icatypes.VersionPrefix
-// 	path.EndpointB.ChannelConfig.Version = TestVersion
+func (suite *KeeperTestSuite) GetICAApp(chain *ibctesting.TestChain) *icaapp.App {
+	app, ok := chain.App.(*icaapp.App)
+	if !ok {
+		panic("not ica app")
+	}
 
-// 	return path
-// }
+	return app
+}
+
+// TestKeeperTestSuite runs all the tests within this package.
+func TestKeeperTestSuite(t *testing.T) {
+	suite.Run(t, new(KeeperTestSuite))
+}
+
+// SetupTest creates a coordinator with 2 test chains.
+func (suite *KeeperTestSuite) SetupTest() {
+	suite.coordinator = ibctesting.NewCoordinator(suite.T(), 2)
+	suite.chainA = suite.coordinator.GetChain(ibctesting.GetChainID(0))
+	suite.chainB = suite.coordinator.GetChain(ibctesting.GetChainID(1))
+}
+
+func NewICAPath(chainA, chainB *ibctesting.TestChain) *ibctesting.Path {
+	path := ibctesting.NewPath(chainA, chainB)
+	path.EndpointA.ChannelConfig.PortID = icatypes.PortID
+	path.EndpointB.ChannelConfig.PortID = icatypes.PortID
+	path.EndpointA.ChannelConfig.Order = channeltypes.ORDERED
+	path.EndpointB.ChannelConfig.Order = channeltypes.ORDERED
+	path.EndpointA.ChannelConfig.Version = icatypes.VersionPrefix
+	path.EndpointB.ChannelConfig.Version = TestVersion
+
+	return path
+}

@@ -1,12 +1,9 @@
 package keeper_test
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
-	ibctesting "github.com/cosmos/ibc-go/v3/testing"
-
 	"github.com/cosmos/gaia/v6/x/mauth/keeper"
 	"github.com/cosmos/gaia/v6/x/mauth/types"
+	icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
 )
 
 func (suite *KeeperTestSuite) TestRegisterInterchainAccount() {

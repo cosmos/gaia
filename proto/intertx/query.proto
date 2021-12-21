@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package intertx;
 
-option go_package = "github.com/cosmos/gaia/v6/x/mauth/types";
+option go_package = "github.com/cosmos/gaia/x/mauth/types";
 
 import "gogoproto/gogo.proto";
 

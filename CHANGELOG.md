@@ -31,12 +31,13 @@ Types of changes (Stanzas):
 
 Ref: https://keepachangelog.com/en/1.0.0/
 -->
-
+git 
 # Changelog
 
 ## [Unreleased]
 
  * (gaia) Add NewSetUpContextDecorator to anteDecorators
+ * (gaia) Update links in docs [#1125](https://github.com/cosmos/gaia/issues/1125)
 
 ## [v6.0.0] - 2021-11-11
 

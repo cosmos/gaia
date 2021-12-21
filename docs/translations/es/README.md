@@ -22,11 +22,11 @@ Bienvenido a la documentación de la **aplicación para el Hub de Cosmos: `gaia`
 
 ## Únase a la testnet pública del hub de Cosmos
 
-- [Únase a la testnet](./gaia-tutorials/join-testnet.md)
+- [Únase a la testnet](./hub-tutorials/join-testnet.md)
 
 ## Prepare su propia Testnet de `gaia`
 
-- [Prepare su propia Testnet de `gaia`](./gaia-tutorials/deploy-testnet.md)
+- [Prepare su propia Testnet de `gaia`](./hub-tutorials/deploy-testnet.md)
 
 ## Recursos adicionales
 

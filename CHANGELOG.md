@@ -31,7 +31,7 @@ Types of changes (Stanzas):
 
 Ref: https://keepachangelog.com/en/1.0.0/
 -->
-git 
+
 # Changelog
 
 ## [Unreleased]

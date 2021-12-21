@@ -2,6 +2,7 @@ package gaia
 
 import (
 	"fmt"
+	porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
 	"io"
 	stdlog "log"
 	"net/http"
@@ -430,8 +431,8 @@ func NewGaiaApp(
 		app.BankKeeper,
 		scopedTransferKeeper,
 	)
-	transferModule := transfer.NewAppModule(app.TransferKeeper)
-
+	transferModule := transfer.NewIBCModule(app.TransferKeeper)
+	tranferAppModule := transfer.NewAppModule(app.TransferKeeper)
 	app.ICAControllerKeeper = icacontrollerkeeper.NewKeeper(
 		appCodec, keys[icacontrollertypes.StoreKey], app.GetSubspace(icacontrollertypes.SubModuleName),
 		app.IBCKeeper.ChannelKeeper, // may be replaced with middleware such as ics29 fee
@@ -459,7 +460,7 @@ func NewGaiaApp(
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.AddRoute(icacontrollertypes.SubModuleName, icaControllerIBCModule).
 		AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
-		AddRoute(ibctransfertypes.ModuleName, transferIBCModule).
+		AddRoute(ibctransfertypes.ModuleName, transferModule).
 		// .AddRoute(ibctransfertypes.ModuleName, routerModule).
 		AddRoute(intertxtypes.ModuleName, icaControllerIBCModule)
 	app.IBCKeeper.SetRouter(ibcRouter)
@@ -502,7 +503,7 @@ func NewGaiaApp(
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		liquidity.NewAppModule(appCodec, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.DistrKeeper),
-		transferModule,
+		tranferAppModule,
 		icaModule,
 		interTxModule,
 		// routerModule,
@@ -584,7 +585,7 @@ func NewGaiaApp(
 		evidence.NewAppModule(app.EvidenceKeeper),
 		liquidity.NewAppModule(appCodec, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.DistrKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
-		transferModule,
+		tranferAppModule,
 	)
 
 	app.sm.RegisterStoreDecoders()

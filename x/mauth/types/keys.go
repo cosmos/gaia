@@ -1,7 +1,7 @@
 package types
 
 const (
-	ModuleName = "ica-msg-auth"
+	ModuleName = "icamsgauth"
 
 	StoreKey = ModuleName
 

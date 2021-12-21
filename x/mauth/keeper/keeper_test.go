@@ -36,8 +36,9 @@ func init() {
 func SetupICATestingApp() (ibctesting.TestingApp, map[string]json.RawMessage) {
 	db := dbm.NewMemDB()
 	encCdc := icaapp.MakeEncodingConfig()
-	app := icaapp.New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, icaapp.DefaultNodeHome, 5, encCdc, icaapp.EmptyAppOptions{})
-	return app, icaapp.NewDefaultGenesisState(encCdc.Marshaler)
+	app := icaapp.NewGaiaApp(log.NewNopLogger(), db, nil, true, map[int64]bool{}, icaapp.DefaultNodeHome, 5, encCdc, icaapp.EmptyAppOptions{})
+	// TODO: figure out if it's ok that w MakeEncodingConfig inside of our Genesis.go. It would be a different instance than the one used in app
+	return app, icaapp.NewDefaultGenesisState()
 }
 
 // KeeperTestSuite is a testing suite to test keeper functions
@@ -51,8 +52,8 @@ type KeeperTestSuite struct {
 	chainB *ibctesting.TestChain
 }
 
-func (suite *KeeperTestSuite) GetICAApp(chain *ibctesting.TestChain) *icaapp.App {
-	app, ok := chain.App.(*icaapp.App)
+func (suite *KeeperTestSuite) GetICAApp(chain *ibctesting.TestChain) *icaapp.GaiaApp {
+	app, ok := chain.App.(*icaapp.GaiaApp)
 	if !ok {
 		panic("not ica app")
 	}

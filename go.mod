@@ -13,7 +13,7 @@ require (
 	github.com/strangelove-ventures/packet-forward-middleware v1.0.1
 	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/tendermint v0.34.14
-	github.com/tendermint/tm-db v0.6.6
+	github.com/tendermint/tm-db v0.6.4
 )
 
 require (

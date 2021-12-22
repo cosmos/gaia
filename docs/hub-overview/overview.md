@@ -65,7 +65,7 @@ These block explorers allow you to search, view and analyze Cosmos Hub data&mdas
 
 ## Running a full-node on the Cosmos Hub Mainnet
 
-In order to run a full-node for the Cosmos Hub mainnet, you must first [install `gaiad`](../gaia-tutorials/installation.md). Then, follow [the guide](../gaia-tutorials/join-mainnet.md).
+In order to run a full-node for the Cosmos Hub mainnet, you must first [install `gaiad`](../getting-started/installation.md). Then, follow [the guide](../hub-tutorials/join-mainnet.md).
 
 If you are looking to run a validator node, follow the [validator setup guide](../validators/validator-setup.md).
 

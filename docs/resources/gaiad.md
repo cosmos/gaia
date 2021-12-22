@@ -6,7 +6,7 @@ order: 1
 
 ## Gaia Daemon
 
-`gaiad` is the tool that enables you to interact with the node that runs on the Cosmos Hub network, whether you run it yourself or not. Let us set it up properly. In order to install it, follow the [installation procedure](../gaia-tutorials/installation.md).
+`gaiad` is the tool that enables you to interact with the node that runs on the Cosmos Hub network, whether you run it yourself or not. Let us set it up properly. In order to install it, follow the [installation procedure](../getting-started/installation.md).
 
 ### Setting up gaiad
 

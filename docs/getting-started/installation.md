@@ -4,7 +4,7 @@ order: 2
 
 # Installation
 
-This guide will explain how to install the `gaiad` binary and run the cli. With this binary installed on a server, you can participate on the mainnet as either a [Full Node](./hub-tutorials/join-mainnet.md) or a [Validator](../validators/validator-setup.md).
+This guide will explain how to install the `gaiad` binary and run the cli. With this binary installed on a server, you can participate on the mainnet as either a [Full Node](../hub-tutorials/join-mainnet.md) or a [Validator](../validators/validator-setup.md).
 
 ## Build Requirements
 

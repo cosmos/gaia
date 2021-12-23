@@ -40,9 +40,9 @@ We suggest the following two ways to install Go. Check out the [official docs](h
 
 At the time of this writing, the latest release is `1.17.5`. We're going to download the tarball, extract it to `/usr/local`, and export `GOROOT` to our `$PATH`
 ```bash
-curl -OL https://go.dev/dl/go1.17.5.darwin-amd64.tar.gz
+curl -OL https://go.dev/dl/go1.17.5.linux-amd64.tar.gz
 
-sudo tar -C /usr/local -xvf go1.17.5.darwin-amd64.tar.gz
+sudo tar -C /usr/local -xvf go1.17.5.linux-amd64.tar.gz
 
 export PATH=$PATH:/usr/local/go/bin
 

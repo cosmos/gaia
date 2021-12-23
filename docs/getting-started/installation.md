@@ -4,7 +4,7 @@ order: 2
 
 # Installation
 
-This guide will explain how to install the `gaiad` binary and run the cli. With this binary installed on a server, you can participate on the mainnet as either a [Full Node](./hub-tutorials/join-mainnet.md) or a [Validator](../validators/validator-setup.md).
+This guide will explain how to install the `gaiad` binary and run the cli. With this binary installed on a server, you can participate on the mainnet as either a [Full Node](../hub-tutorials/join-mainnet.md) or a [Validator](../validators/validator-setup.md).
 
 ## Build Requirements
 
@@ -38,11 +38,11 @@ We suggest the following two ways to install Go. Check out the [official docs](h
 
 **Ubuntu:**
 
-At the time of this writing, the latest release is `1.17.4`. We're going to download the tarball, extract it to `/usr/local`, and export `GOROOT` to our `$PATH`
+At the time of this writing, the latest release is `1.17.5`. We're going to download the tarball, extract it to `/usr/local`, and export `GOROOT` to our `$PATH`
 ```bash
-curl -OL https://golang.org/dl/go1.17.4.linux-amd64.tar.gz
+curl -OL https://go.dev/dl/go1.17.5.darwin-amd64.tar.gz
 
-sudo tar -C /usr/local -xvf go1.17.4.linux-amd64.tar.gz
+sudo tar -C /usr/local -xvf go1.17.5.darwin-amd64.tar.gz
 
 export PATH=$PATH:/usr/local/go/bin
 
@@ -120,4 +120,4 @@ The `replace` clause you add to `go.mod` must provide the correct import path:
 
 ## Next
 
-Now you can [join the mainnet](./hub-tutorials/join-mainnet.md), [the public testnet](./hub-tutorials/join-testnet.md) or [create you own testnet](./hub-tutorials/deploy-testnet.md)
+Now you can [join the mainnet](../hub-tutorials/join-mainnet.md), [the public testnet](../hub-tutorials/join-testnet.md) or [create you own testnet](../hub-tutorials/deploy-testnet.md)

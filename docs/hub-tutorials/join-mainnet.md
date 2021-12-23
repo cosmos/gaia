@@ -4,7 +4,7 @@ order: 3
 
 # Join the Cosmos Hub Mainnet
 
-> Note: The current mainnet (`cosmoshub-4`) has performed the first [in-place store migration](https://docs.cosmos.network/v0.43/architecture/adr-041-in-place-store-migrations.html#adr-041-in-place-store-migrations) upgrade. That means that an [upgrade proposal](https://wallet.keplr.app/#/cosmoshub/governance?detailId=51) was passed to start using the [v5.0.0]() release of the gaia node. As a result the [v4.2.1](https://github.com/cosmos/gaia/releases/tag/v4.2.1) version of the gaia node would panic and stop at block [6910000](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md#Upgrade-will-take-place-July-12,-2021). At that point node operators installed the [v5.0.5](https://github.com/cosmos/gaia/releases/tag/v5.0.5) version of the gaia node and then started the node again. This type of upgrade preserves the same `chain-id` but is otherwise similar to a traditional hub upgrade, meaning historical state is lost after the upgrade takes place (still accessible of course by a v4.2.1 full node).
+> Note: The current mainnet (`cosmoshub-4`) has performed the first [in-place store migration](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md) upgrade. That means that an [upgrade proposal](https://wallet.keplr.app/#/cosmoshub/governance?detailId=51) was passed to start using the [v5.0.0]() release of the gaia node. As a result the [v4.2.1](https://github.com/cosmos/gaia/releases/tag/v4.2.1) version of the gaia node would panic and stop at block [6910000](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md#Upgrade-will-take-place-July-12,-2021). At that point node operators installed the [v5.0.5](https://github.com/cosmos/gaia/releases/tag/v5.0.5) version of the gaia node and then started the node again. This type of upgrade preserves the same `chain-id` but is otherwise similar to a traditional hub upgrade, meaning historical state is lost after the upgrade takes place (still accessible of course by a v4.2.1 full node).
 >
 > **In order to sync a gaia node from genesis the upgrade process outline above and [in more detail here](https://github.com/cosmos/mainnet) will need to take place.**
 >
@@ -16,7 +16,7 @@ order: 3
 
 This Quickstart tutorial completes the following actions:
 
-* Ensure that you have [compilation prerequisites](./getting-started/installation.md)
+* Ensure that you have [compilation prerequisites](../getting-started/installation.md)
 * Compile gaia
 * Give your node a moniker and configure it
 * Download compressed genesis state
@@ -120,7 +120,10 @@ gaiad start
 
 Your node needs to know how to find peers. You'll need to add healthy seed nodes to `$HOME/.gaia/config/config.toml`. The [`launch`](https://github.com/cosmos/launch) repo contains links to some seed nodes.
 
-If those seeds aren't working, you can find more seeds and persistent peers on a Cosmos Hub explorer (a list can be found on the [launch page](https://cosmos.network/launch)).
+If those seeds aren't working, you can find more seeds and persistent peers on a Cosmos Hub explorer (try [mintscan]() or [bigdipper]()). The Hub team is working on publishing a more 
+
+
+(a list can be found on the [launch page](https://cosmos.network/launch)).
 
 
 
@@ -178,7 +181,7 @@ Check that everything is running smoothly:
 gaiad status
 ```
 
-View the status of the network with the [Cosmos Explorer](https://cosmos.network/launch).
+View the status of the network with the [Cosmos Explorer](https://www.mintscan.io/cosmos).
 
 ## Enable the REST API
 

@@ -120,11 +120,7 @@ gaiad start
 
 Your node needs to know how to find peers. You'll need to add healthy seed nodes to `$HOME/.gaia/config/config.toml`. The [`launch`](https://github.com/cosmos/launch) repo contains links to some seed nodes.
 
-If those seeds aren't working, you can find more seeds and persistent peers on a Cosmos Hub explorer (try [mintscan]() or [bigdipper]()). The Hub team is working on publishing a more 
-
-
-(a list can be found on the [launch page](https://cosmos.network/launch)).
-
+If those seeds aren't working, you can find more seeds and persistent peers on a Cosmos Hub explorer (try [mintscan](https://www.mintscan.io/cosmos) or [bigdipper](https://cosmos.bigdipper.live/)). The Hub team is currently working on a forthcoming guide with additional detail.
 
 
 ## A Note on Gas and Fees

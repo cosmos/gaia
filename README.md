@@ -47,7 +47,7 @@ You can find an introduction to the Cosmos Hub and how to use the `gaiad` binary
 
 ### 👤 — Node Operators
 ___
-If you're interested in running a node on the current Cosmos Hub, check out the docs to [Join the Cosmos Hub Mainnet](https://github.com/cosmos/gaia/blob/main/docs/gaia-tutorials/join-mainnet.md).
+If you're interested in running a node on the current Cosmos Hub, check out the docs to [Join the Cosmos Hub Mainnet](https://github.com/cosmos/gaia/blob/main/docs/hub-tutorials/join-mainnet.md).
 
 
 <br/>

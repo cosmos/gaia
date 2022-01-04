@@ -13,7 +13,7 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Drives liquidity for tokens on the Cosmos Hub
   - Delivers price consistency and order execution
 
-## Vega Upgrade (expected Q4 2021)
+## Vega Upgrade (Completed December 14, 2021)
 
  - Cosmos SDK v0.44
    - Fee grant module:
@@ -21,11 +21,12 @@ The upgrades aim to add features such as liquidity, economic security, usability
    - Authz module:
       - Provide governance functions to execute transactions on behalf of another account
 - Liquidity Module v1.4.2
-  -  The Gravity DEX with updates for dependencies
- - IBC v2.0.0
- - Tendermint v0.34.14
- - Cosmosvisor v0.1.0
- - IBC packet forward middleware v1.0.1
+  - The Gravity DEX with updates for dependencies
+- IBC v2.0.0
+- Tendermint v0.34.14
+- Cosmosvisor v0.1.0
+- IBC packet forward middleware v1.0.1
+  - Cosmos Hub as a router
 
 ## Theta Upgrade (expected Q1 2022)
 
@@ -65,12 +66,12 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - The Cosmos solution to shared security that uses IBC Cross Chain Validation (CCV) to relay validator set composition from a Provider Chain (Cosmos Hub) to a Consumer Chain. This validator set is in charge of producing blocks on both networks using separate nodes. Misbehavior on the Consumer Chain results in slashing Provider Chain staking tokens (ATOM).
   - Allows independent modules like Gravity DEX or Bridge to live on separate chains with their own development cycles.
 - Chain Name Service
-  -  Chain-ID registry
-    - Node registry
-    - IBC Path Resolution
-  -  Asset registry
-  -  Account registry
-  -  Bech32 registry
+  - Chain-ID registry
+  - Node registry
+  - IBC Path Resolution
+  - Asset registry
+  - Account registry
+  - Bech32 registry
 
 
 ## Lambda Upgrade (expected Q3 2022)
@@ -78,7 +79,8 @@ The upgrades aim to add features such as liquidity, economic security, usability
 - Interchain Security v2 - Opt-In Participation of Provider Chain Validators
   - Where Provider Chain validators have the ability to opt-in to block production for various Consumer Chains.
 - Cosmos SDK v0.46
-  - SMT
+  - Sparse Merkle Tree (SMT)
+    - Various storage and performance optimizations 
   - Postgres indexing
   - Protobuf v2
 - Token Issuance

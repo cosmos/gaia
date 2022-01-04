@@ -93,11 +93,7 @@ This is the complete command that I could use to submit a **mainnet** parameter-
 **Note**: be careful what you use for `--fees`. A mistake here could result in spending hundreds or thousands of ATOMs accidentally, which cannot be recovered.
 
 ### Verifying your transaction
-After posting your transaction, your command line interface (gaiad) will provide you with the transaction's hash, which you can either query using gaiad or by searching the hash using [Hubble](https://hubble.figment.network/cosmos/chains/cosmoshub-3/transactions/B8E2662DE82413F03919712B18F7B23AF00B50DAEB499DAD8C436514640EFC79). The hash should look something like this: `B8E2662DE82413F03919712B18F7B23AF00B50DAEB499DAD8C436514640EFC79`
-
-You can see whether or not your transaction was successful with Hubble:
-
-![Verify tx with Hubble](../images/verify-tx.png)
+After posting your transaction, your command line interface (gaiad) will provide you with the transaction's hash, which you can either query using gaiad or by searching the transaction hash using [Mintscan](https://www.mintscan.io/cosmos/txs/B8E2662DE82413F03919712B18F7B23AF00B50DAEB499DAD8C436514640EFC79). The hash should look something like this: `B8E2662DE82413F03919712B18F7B23AF00B50DAEB499DAD8C436514640EFC79`
 
 ### Troubleshooting a failed transaction
 There are a number of reasons why a transaction may fail. Here are two examples:
@@ -106,6 +102,28 @@ There are a number of reasons why a transaction may fail. Here are two examples:
 2. **Incorrect denomination** - You may have specified an amount in 'utom' or 'atom' instead of 'uatom', causing the transaction to fail.
 
 If you encounter a problem, try to troubleshoot it first, and then ask for help on the All in Bits Cosmos forum: [https://forum.cosmos.network/c/governance](https://forum.cosmos.network/c/governance). We can learn from failed attempts and use them to improve upon this guide.
+
+### Depositing funds after a proposal has been submitted
+Sometimes a proposal is submitted without having the minimum token amount deposited yet. In these cases you would want to be able to deposit more tokens to get the proposal into the voting stage. In order to deposit tokens, you'll need to know what your proposal ID is after you've submitted your proposal. You can query all proposals by the following command:
+
+```
+gaiad q gov proposals
+```
+
+If there are a lot of proposals on the chain already, you can also filter by your own address. For the proposal above, that would be:
+
+```
+gaiad q gov proposals --depositor cosmos19wlk8gkfjckqr8d73dyp4n0f0k89q4h7xr3uwj
+```
+
+Once you have the proposal ID, this is the command to deposit extra tokens:
+
+```
+gaiad tx gov deposit <proposal-id> <deposit> --from <name>
+```
+
+In our case above, the `<proposal-id>` would be 23 as queried earlier.
+The `<deposit>` is written as `1000000uatom`, just like the example above.
 
 ### Submitting your proposal to the testnet
 You may want to submit your proposal to the testnet chain before the mainnet for a number of reasons:

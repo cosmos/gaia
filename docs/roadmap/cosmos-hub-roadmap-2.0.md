@@ -2,7 +2,7 @@
 
 This Cosmos Hub Product Roadmap incorporates input from product owners, key Cosmos stakeholders (ATOM holders, Interchain Foundation, and Cosmos Hub operations), the internal Gaia / ATOM call, the virtual Gaia Org Call, the [Cosmos Hub as a Port City](https://blog.cosmos.network/the-cosmos-hub-is-a-port-city-5b7f2d28debf) article, and the [ATOM2021](https://github.com/cosmosdevs/atom2021) presentation.
 
-This roadmap gives a one-year guideline in which stakeholders can anticipate updated features on the Cosmos Hub, with the greatest degree of specificity available for the most immediate upgrades, and decreasing precision available the further out the timeline goes. For example, the roadmap is most precise for the upcoming Liquidity upgrades (the Gravity DEX and Gravity Bridge modules).
+This roadmap gives a one-year guideline in which stakeholders can anticipate updated features on the Cosmos Hub, with the greatest degree of specificity available for the most immediate upgrades, and decreasing precision available the further out the timeline goes.
 
 The upgrades aim to add features such as liquidity, economic security, usability, and participation. To highlight our focus on DeFi, we have chosen to use the [Greeks from Finance](https://en.wikipedia.org/wiki/Greeks_(finance)) in naming upcoming upgrades.
 
@@ -28,6 +28,10 @@ The upgrades aim to add features such as liquidity, economic security, usability
 - IBC packet forward middleware v1.0.1
   - Cosmos Hub as a router
 
+- External chain launch: Gravity Bridge
+  - Transfer ATOM, ETH, ERC-20, and tokens on the Cosmos Hub between Ethereum- and Cosmos-compatible chains
+  - Fee and reward model hosted across Cosmos and Ethereum
+
 ## Theta Upgrade (expected Q1 2022)
 
 - Cosmos SDK v0.45
@@ -51,10 +55,6 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Features include enabling transfer of rewards and voting rights
 - Items still being discussed:
   - Governance permissioned CosmWASM instance on the hub
-  - Cosmos <> Ethereum Gravity Bridge
-    - Transfer ATOM, ETH, ERC-20, and tokens on the Cosmos Hub between Ethereum- and Cosmos-compatible chains  
-    - Fee and reward model hosted across Cosmos and Ethereum
-    - Adds light-weight infrastructure and operational requirements with minimal slashing conditions to all Hub validators
   - Budget Module
     - Inflation funding directed to arbitrary module and account addresses
   - Farming Module

@@ -45,7 +45,7 @@ There are many explorers for the Cosmos Hub. For reference while setting up a no
 Before syncing a node, make sure the following prerequisites are completed:
 - Choose the proper hardware/server configuration. See the [hardware guide](#hardware).
 - Ensure Gaia is properly installed. See the [installation guide](https://hub.cosmos.network/main/getting-started/installation.html) for a walkthrough.
-- Compile the Gaia binary. The version of Gaia will depend on which way the node is synced. See [releases](#releases) for more information on the appropriate version to build.
+- Compile the Gaia binary (also in the installation guide). The version of Gaia will depend on [which way the node is synced](#Choosing-a-Sync-Mode). If syncing from scratch checkout version [`v4.2.1`](https://github.com/cosmos/gaia/releases/tag/v4.2.1). If syncing via state sync, checkout the [latest release](https://github.com/cosmos/gaia/releases/tag/v6.0.0). If unsure, see [releases](#Releases-amp-Upgrades) for more information on the appropriate version to build.
 - Follow the [configuration guide](#General-Configuration) to intialize and prepare the node to sync with the network.
 
 
@@ -80,7 +80,7 @@ mv genesis.cosmoshub-4.json ~/.gaia/config/genesis.json
 
 ### Seeds & Peers
 
-Upon startup the node will need to connect to peers. If there are specific nodes a node operator is interested in setting as seeds or as persistent peers, this can be configured in `$HOME/.gaia/config/config.toml`
+Upon startup the node will need to connect to peers. If there are specific nodes a node operator is interested in setting as seeds or as persistent peers, this can be configured in `~/.gaia/config/config.toml`
 
 ```
 # Comma separated list of seed nodes to connect to
@@ -110,7 +110,7 @@ The transaction `fees` are the product of `gas` and `gasPrice`. The higher the `
 
 **For mainnet, the recommended `gas-prices` is `0.0025uatom`.**
 
-A full-node keeps unconfirmed transactions in its mempool. In order to protect it from spam, it is better to set a `minimum-gas-prices` that the transaction must meet in order to be accepted in your node's mempool. This parameter can be set in the following file `~/.gaia/config/app.toml`.
+A full-node keeps unconfirmed transactions in its mempool. In order to protect it from spam, it is better to set a `minimum-gas-prices` that the transaction must meet in order to be accepted in the node's mempool. This parameter can be set in  `~/.gaia/config/app.toml`.
 
 ```
 # The minimum gas prices a validator is willing to accept for processing a
@@ -150,9 +150,9 @@ pruning-keep-every = "1000"
 pruning-interval = "10"
 ```
 
-Passing a flag when starting `gaia` will always override settings in the `app.toml` file, if you would like to change your node to the `everything` mode then you can pass the `---pruning everything` flag when you call `gaiad start`.
+Passing a flag when starting `gaia` will always override settings in the `app.toml` file. To change the node's pruning setting to `everything` mode then pass the `---pruning everything` flag when running `gaiad start`.
 
-> **Note**: When you are pruning state it will not be possible to query the heights that are not in the node's store.
+> **Note**: If running the node with pruned state, it will not be possible to query the heights that are not in the node's store.
 
 ### REST API
 
@@ -171,12 +171,12 @@ swagger = false
 address = "tcp://0.0.0.0:1317"
 ```
 
-Optionally, you can activate swagger by setting `swagger` to `true` or change the port of the REST API in the parameter `address`.
-After restarting your application, you can access the REST API on `<NODE IP>:1317`.
+Optionally activate swagger by setting `swagger` to `true` or change the port of the REST API in the parameter `address`.
+After restarting the application, access the REST API on `<NODE IP>:1317`.
 
 ### GRPC
 
-By default, gRPC is enabled on port `9090`. In the `~/.gaia/config/app.toml` file, you can make changes in the gRPC section. To disable the gRPC endpoint, set `enable` to `false`. To change the port, use the `address` parameter.
+By default, gRPC is enabled on port `9090`. The `~/.gaia/config/app.toml` file is where changes can be made in the gRPC section. To disable the gRPC endpoint, set `enable` to `false`. To change the port, use the `address` parameter.
 
 ```
 ###############################################################################
@@ -196,9 +196,9 @@ There are three main ways to sync a node on the Cosmos Hub. The way a node opera
 
 If a node operator wishes to run a full/archive node, it is possible to start from scratch but will take a significant amount of time to catch up. Node operators not concerned with rebuilding original state from the beginning of `cosmoshub-4` can also leverage [Quicksync](#Quicksync)'s available archive history.
 
-For operators interested in bootstrapping a pruned node, either [Quicksync](#Quicksync) or [State sync](#State-sync) would be sufficient.
+For operators interested in bootstrapping a pruned node, either [Quicksync](#Quicksync) or [State Sync](#State-Sync) would be sufficient.
 
-Make sure to consult the [hardware](#hardware) section for guidance on the best configuration for the type of node operating.
+Make sure to consult the [hardware](#Hardware) section for guidance on the best configuration for the type of node operating.
 
 ### Sync from scratch
 
@@ -216,9 +216,9 @@ The node will begin rebuilding state until it hits the first upgrade height at b
 
 Enabling state sync can be one of the most efficient ways to bootstrap a node. On startup, the node will ask its peers for available snapshots. Once a snapshot has been accepted, it will begin requesting snapshot chunks from peers. Once the snapshot is verified, the node will begin to process blocks in realtime until it catches up with the head of the chain. For more information on state sync, see [Tendermint's documentation](https://docs.tendermint.com/master/spec/p2p/messages/state-sync.html).
 
-To enable state, visit an explorer to get a recent block height and corresponding hash. A node operator can choose any height/hash in the current bonding period, but as the recommended snapshot period is `1000` blocks, it is advised to choose something close to`height - 1000`.
+To enable state sync, visit an explorer to get a recent block height and corresponding hash. A node operator can choose any height/hash in the current bonding period, but as the recommended snapshot period is `1000` blocks, it is advised to choose something close to `current height - 1000`.
 
-With the block height and hash selected, update the configuration in `~/.gaia/config/config.toml` to set `enable = true`, and populate the `trust_height` and `trust_hash`. Node operators can configure the rpc servers to a preferred provider, but there must be at least two entries. It is important that these are two rpc servers the node operator trusts to verify component parts of the chain state. While not reccommended, uniqueness is not currently enforced, so it is possible to duplicate the same server in the list and still sync successfully.
+With the block height and hash selected, update the configuration in `~/.gaia/config/config.toml` to set `enable = true`, and populate the `trust_height` and `trust_hash`. Node operators can configure the rpc servers to a preferred provider, but there must be at least two entries. It is important that these are two rpc servers the node operator trusts to verify component parts of the chain state. While not recommended, uniqueness is not currently enforced, so it is possible to duplicate the same server in the list and still sync successfully.
 
 > **Note**: In the future, the RPC server requirement will be deprecated as state sync is [moved to the p2p layer in Tendermint 0.35](https://github.com/tendermint/tendermint/issues/6491).
 
@@ -405,13 +405,13 @@ Export state with:
 gaiad export > [filename].json
 ```
 
-You can also export state from a particular height (at the end of processing the block of that height):
+It is also possible to export state from a particular height (at the end of processing the block of that height):
 
 ```bash
 gaiad export --height [height] > [filename].json
 ```
 
-If you plan to start a new network from the exported state, export with the `--for-zero-height` flag:
+If planning to start a new network from the exported state, export with the `--for-zero-height` flag:
 
 ```bash
 gaiad export --height [height] --for-zero-height > [filename].json
@@ -421,19 +421,13 @@ gaiad export --height [height] --for-zero-height > [filename].json
 ## Verify Mainnet
 
 Help to prevent a catastrophe by running invariants on each block on your full
-node. In essence, by running invariants you ensure that the state of mainnet is
-the correct expected state. One vital invariant check is that no atoms are
-being created or destroyed outside of expected protocol, however there are many
-other invariant checks each unique to their respective module. Because invariant checks
-are computationally expensive, they are not enabled by default. To run a node with
-these checks start your node with the assert-invariants-blockly flag:
+node. In essence, by running invariants the node operator ensures that the state of mainnet is the correct expected state. One vital invariant check is that no atoms are being created or destroyed outside of expected protocol, however there are many other invariant checks each unique to their respective module. Because invariant checks are computationally expensive, they are not enabled by default. To run a node with these checks start your node with the assert-invariants-blockly flag:
 
 ```bash
 gaiad start --assert-invariants-blockly
 ```
 
-If an invariant is broken on your node, your node will panic and prompt you to send
-a transaction which will halt mainnet. For example the provided message may look like:
+If an invariant is broken on the node, it will panic and prompt the operator to send a transaction which will halt mainnet. For example the provided message may look like:
 
 ```bash
 invariant broken:

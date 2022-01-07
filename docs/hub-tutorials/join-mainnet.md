@@ -1,3 +1,7 @@
+<!--
+order: 3
+-->
+
 # Join the Cosmos Hub Mainnet
 
 The current Cosmos Hub mainnet`cosmoshub-4`is operating after its most recent [Vega upgrade `V6.0.0`](https://github.com/cosmos/gaia/releases/tag/v6.0.0). This guide includes instructions for joining the mainnet either as an archive/full node or a pruned node. For instructions to join as a validator, please also see the [validator instructions](https://hub.cosmos.network/main/validators/overview.html#).

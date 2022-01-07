@@ -48,10 +48,9 @@ func (im IBCModule) OnChanOpenTry(
 	channelID string,
 	chanCap *capabilitytypes.Capability,
 	counterparty channeltypes.Counterparty,
-	version,
 	counterpartyVersion string,
-) error {
-	return nil
+) (version string, err error) {
+	return "", nil
 }
 
 // OnChanOpenAck implements the IBCModule interface

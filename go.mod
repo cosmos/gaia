@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/cosmos/cosmos-sdk v0.44.5
-	github.com/cosmos/ibc-go/v3 v3.0.0-20211220113545-e3036e36200c
+	github.com/cosmos/ibc-go/v3 v3.0.0-alpha2
 	github.com/gogo/protobuf v1.3.3
 	github.com/gorilla/mux v1.8.0
 	github.com/gravity-devs/liquidity v1.4.2
@@ -53,6 +53,7 @@ require (
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/go-kit/kit v0.10.0 // indirect
 	github.com/go-logfmt/logfmt v0.5.0 // indirect
+	github.com/go-playground/validator/v10 v10.4.1 // indirect
 	github.com/godbus/dbus v0.0.0-20190726142602-4481cbc300e2 // indirect
 	github.com/gogo/gateway v1.1.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect

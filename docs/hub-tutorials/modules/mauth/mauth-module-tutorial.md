@@ -149,10 +149,7 @@ gaiad tx bank send $B $AICA 100stake --home test-2
 Create a hermes channel:
 
 ```shell
-cp hermes/rly-config.toml ~/.hermes/config.toml
-```
-```shell
-hermes create channel --port-a transfer --port-b transfer test-1 test-2
+hermes -c hermes/rly-config.toml create channel --port-a transfer --port-b transfer test-1 test-2
 ```
 
 kill hermes and restart

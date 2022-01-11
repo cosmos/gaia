@@ -204,7 +204,7 @@ step 2: use interchain account to execute the ibc transfer in the json file:
 ```shell
 gaiad tx icamsgauth submit-tx send-raw.json --connection-id connection-1 --counterparty-connection-id connection-1 --from a --home test-1 --gas 150000
 ```
-The ibc/stake will changed from the denom of `0ibc/3C3D7B3BE` to `stake` when the token is back to a on chain test-1.
+The ibc/stake will changed from the denom of `ibc/3C3D7B3BE4ECC85A0E5B52A3AEC3B7DFC2AA9CA47C37821E57020D6807043BE9` to `stake` when the token is back to a on chain test-1.
  You might need to kill hermes and restart to receive the tokens.
 
 ## References:

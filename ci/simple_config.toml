@@ -1,0 +1,61 @@
+[global]
+log_level = 'trace'
+
+[mode]
+
+[mode.clients]
+enabled = true
+refresh = true
+misbehaviour = true
+
+[mode.connections]
+enabled = false
+
+[mode.channels]
+enabled = false
+
+[mode.packets]
+enabled = true
+clear_interval = 100
+clear_on_start = true
+filter = false
+tx_confirmation = true
+
+[telemetry]
+enabled = false
+host = '127.0.0.1'
+port = 3001
+
+[[chains]]
+id = 'ibc-0'
+rpc_addr = 'http://ibc-0:26657'
+grpc_addr = 'http://ibc-0:9090'
+websocket_addr = 'ws://ibc-0:26657/websocket'
+rpc_timeout = '10s'
+account_prefix = 'cosmos'
+key_name = 'testkey'
+store_prefix = 'ibc'
+max_gas = 3000000
+max_msg_num = 30
+max_tx_size = 2097152
+gas_price = { price = 0.001, denom = 'stake' }
+clock_drift = '5s'
+trusting_period = '14days'
+trust_threshold = { numerator = '1', denominator = '3' }
+
+[[chains]]
+id = 'ibc-1'
+rpc_addr = 'http://ibc-1:26657'
+grpc_addr = 'http://ibc-1:9090'
+websocket_addr = 'ws://ibc-1:26657/websocket'
+rpc_timeout = '10s'
+account_prefix = 'cosmos'
+key_name = 'testkey'
+store_prefix = 'ibc'
+max_gas = 3000000
+max_msg_num = 30
+max_tx_size = 2097152
+gas_price = { price = 0.001, denom = 'stake' }
+clock_drift = '5s'
+trusting_period = '14days'
+trust_threshold = { numerator = '1', denominator = '3' }

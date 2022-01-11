@@ -1,0 +1,61 @@
+version: '3'
+
+services:
+
+  ibc-0:
+    container_name: ibc-0
+    image: "informaldev/ibc-0:v5.0.5"
+    stdin_open: true
+    tty: true
+    entrypoint: "/chain/gaia/run-gaiad.sh"
+    networks:
+      relaynet:
+        ipv4_address: 172.25.0.10
+    environment:
+      - CHAIN_ID=ibc-0
+
+  ibc-1:
+    container_name: ibc-1
+    image: "informaldev/ibc-1:v5.0.5"
+    stdin_open: true
+    tty: true
+    entrypoint: "/chain/gaia/run-gaiad.sh"
+    networks:
+      relaynet:
+        ipv4_address: 172.25.0.11
+    environment:
+      - CHAIN_ID=ibc-1
+
+  relayer:
+    depends_on:
+      - ibc-0
+      - ibc-1
+    container_name: relayer
+    stdin_open: true
+    tty: true
+    build:
+      context: ../
+      dockerfile: ci/relayer.Dockerfile
+      args:
+        RELEASE: v5.0.5
+    environment:
+      - CHAIN_A=ibc-0
+      - CHAIN_A_HOME=/data/ibc-0
+      - CHAIN_A_PORT=26657
+      - CHAIN_B=ibc-1
+      - CHAIN_B_HOME=/data/ibc-1
+      - CHAIN_B_PORT=26657
+      - CONFIG=simple_config.toml
+      - RELAYER_DIR=/relayer
+      - RELEASE=v5.0.5
+    networks:
+      relaynet:
+        ipv4_address: 172.25.0.12
+
+networks:
+  relaynet:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.25.0.0/16

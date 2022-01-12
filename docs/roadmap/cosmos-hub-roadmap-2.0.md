@@ -2,7 +2,7 @@
 
 This Cosmos Hub Product Roadmap incorporates input from product owners, key Cosmos stakeholders (ATOM holders, Interchain Foundation, and Cosmos Hub operations), the internal Gaia / ATOM call, the virtual Gaia Org Call, the [Cosmos Hub as a Port City](https://blog.cosmos.network/the-cosmos-hub-is-a-port-city-5b7f2d28debf) article, and the [ATOM2021](https://github.com/cosmosdevs/atom2021) presentation.
 
-This roadmap gives a one-year guideline in which stakeholders can anticipate updated features on the Cosmos Hub, with the greatest degree of specificity available for the most immediate upgrades, and decreasing precision available the further out the timeline goes. For example, the roadmap is most precise for the upcoming Liquidity upgrades (the Gravity DEX and Gravity Bridge modules).
+This roadmap gives a one-year guideline in which stakeholders can anticipate updated features on the Cosmos Hub, with the greatest degree of specificity available for the most immediate upgrades, and decreasing precision available the further out the timeline goes.
 
 The upgrades aim to add features such as liquidity, economic security, usability, and participation. To highlight our focus on DeFi, we have chosen to use the [Greeks from Finance](https://en.wikipedia.org/wiki/Greeks_(finance)) in naming upcoming upgrades.
 
@@ -13,7 +13,7 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Drives liquidity for tokens on the Cosmos Hub
   - Delivers price consistency and order execution
 
-## Vega Upgrade (expected Q4 2021)
+## Vega Upgrade (Completed December 14, 2021)
 
  - Cosmos SDK v0.44
    - Fee grant module:
@@ -21,11 +21,16 @@ The upgrades aim to add features such as liquidity, economic security, usability
    - Authz module:
       - Provide governance functions to execute transactions on behalf of another account
 - Liquidity Module v1.4.2
-  -  The Gravity DEX with updates for dependencies
- - IBC v2.0.0
- - Tendermint v0.34.14
- - Cosmosvisor v0.1.0
- - IBC packet forward middleware v1.0.1
+  - The Gravity DEX with updates for dependencies
+- IBC v2.0.0
+- Tendermint v0.34.14
+- Cosmosvisor v0.1.0
+- IBC packet forward middleware v1.0.1
+  - Cosmos Hub as a router
+
+- External chain launch: Gravity Bridge
+  - Transfer ATOM, ETH, ERC-20, and other Cosmos tokens between Ethereum and the Gravity Bridge Chain and by extension all IBC connected chains.
+  - Fee and reward model hosted across Cosmos and Ethereum
 
 ## Theta Upgrade (expected Q1 2022)
 
@@ -50,10 +55,6 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Features include enabling transfer of rewards and voting rights
 - Items still being discussed:
   - Governance permissioned CosmWASM instance on the hub
-  - Cosmos <> Ethereum Gravity Bridge
-    - Transfer ATOM, ETH, ERC-20, and tokens on the Cosmos Hub between Ethereum- and Cosmos-compatible chains  
-    - Fee and reward model hosted across Cosmos and Ethereum
-    - Adds light-weight infrastructure and operational requirements with minimal slashing conditions to all Hub validators
   - Budget Module
     - Inflation funding directed to arbitrary module and account addresses
   - Farming Module
@@ -65,12 +66,12 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - The Cosmos solution to shared security that uses IBC Cross Chain Validation (CCV) to relay validator set composition from a Provider Chain (Cosmos Hub) to a Consumer Chain. This validator set is in charge of producing blocks on both networks using separate nodes. Misbehavior on the Consumer Chain results in slashing Provider Chain staking tokens (ATOM).
   - Allows independent modules like Gravity DEX or Bridge to live on separate chains with their own development cycles.
 - Chain Name Service
-  -  Chain-ID registry
-    - Node registry
-    - IBC Path Resolution
-  -  Asset registry
-  -  Account registry
-  -  Bech32 registry
+  - Chain-ID registry
+  - Node registry
+  - IBC Path Resolution
+  - Asset registry
+  - Account registry
+  - Bech32 registry
 
 
 ## Lambda Upgrade (expected Q3 2022)
@@ -78,7 +79,8 @@ The upgrades aim to add features such as liquidity, economic security, usability
 - Interchain Security v2 - Opt-In Participation of Provider Chain Validators
   - Where Provider Chain validators have the ability to opt-in to block production for various Consumer Chains.
 - Cosmos SDK v0.46
-  - SMT
+  - Sparse Merkle Tree (SMT)
+    - Various storage and performance optimizations 
   - Postgres indexing
   - Protobuf v2
 - Token Issuance

@@ -8,7 +8,7 @@ parent:
 
 ## Roadmap 2.0
 
-For current roadmap, check out the Cosmos 2.0 Roadmap [roadmap](./cosmos-hub-roadmap-2.0.md).
+For current roadmap, check out the Cosmos 2.0 [Roadmap](./cosmos-hub-roadmap-2.0.md).
 
 ## Cosmos Hub History
 

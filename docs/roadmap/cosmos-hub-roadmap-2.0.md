@@ -29,7 +29,7 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Cosmos Hub as a router
 
 - External chain launch: Gravity Bridge
-  - Transfer ATOM, ETH, ERC-20, and tokens on the Cosmos Hub between Ethereum- and Cosmos-compatible chains
+  - Transfer ATOM, ETH, ERC-20, and other Cosmos tokens between Ethereum and the Gravity Bridge Chain and by extension all IBC connected chains.
   - Fee and reward model hosted across Cosmos and Ethereum
 
 ## Theta Upgrade (expected Q1 2022)

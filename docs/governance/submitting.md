@@ -122,7 +122,7 @@ Once you have the proposal ID, this is the command to deposit extra tokens:
 gaiad tx gov deposit <proposal-id> <deposit> --from <name>
 ```
 
-In our case above, the `<proposal-id>` would be 23 as queried earlier.
+In our case above, the `<proposal-id>` would be 59 as queried earlier.
 The `<deposit>` is written as `1000000uatom`, just like the example above.
 
 ### Submitting your proposal to the testnet

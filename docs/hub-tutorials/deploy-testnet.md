@@ -31,7 +31,7 @@ This guide helps you create a single validator node that runs a network locally 
 
 ### Requirements
 
-- [Install gaia](./installation.md)
+- [Install gaia](./getting-started/installation.md)
 - [Install `jq`](https://stedolan.github.io/jq/download/) (optional)
 
 ### Create Genesis File and Start the Network
@@ -69,7 +69,7 @@ From the [networks/local directory](https://github.com/cosmos/gaia/tree/main/net
 
 ### Requirements
 
-- [Install gaia](./installation.md)
+- [Install gaia](./getting-started/installation.md)
 - [Install docker](https://docs.docker.com/engine/installation/)
 - [Install docker-compose](https://docs.docker.com/compose/install/)
 

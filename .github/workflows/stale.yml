@@ -1,4 +1,4 @@
-name: "Close stale issues & pull requests"
+name: "Close stale pull requests"
 on:
   schedule:
     - cron: "0 0 * * 1-5"
@@ -7,16 +7,12 @@ jobs:
   stale:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/stale@v3
+      - uses: actions/stale@v4.1.0
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          stale-pr-message: "This pull request has been automatically marked as stale because it has not had
-    recent activity. It will be closed if no further activity occurs. Thank you
-    for your contributions."
-  #         stale-issue-message: "This issue has been automatically marked as stale because it has not had
-  # recent activity. It will be closed if no further activity occurs. Thank you
-  # for your contributions."
-          days-before-stale: 30
-          days-before-close: 4
-          exempt-pr-labels: "pinned, security, proposal"
-          # exempt-issues-labels: "pinned, security, proposal"
+          stale-pr-message: "This pull request has been automatically marked as stale because it has not had recent activity. It will be closed if no further activity occurs. Thank you for your contributions."
+          days-before-stale: -1
+          days-before-close: -1
+          days-before-pr-stale: 45
+          days-before-pr-close: 6
+          exempt-pr-labels: "pinned, security, proposal, blocked, ADR"

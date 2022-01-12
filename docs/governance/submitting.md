@@ -123,7 +123,7 @@ gaiad tx gov deposit <proposal-id> <deposit> --from <name>
 ```
 
 In our case above, the `<proposal-id>` would be 59 as queried earlier.
-The `<deposit>` is written as `1000000uatom`, just like the example above.
+The `<deposit>` is written as `500000uatom`, just like the example above.
 
 ### Submitting your proposal to the testnet
 You may want to submit your proposal to the testnet chain before the mainnet for a number of reasons:

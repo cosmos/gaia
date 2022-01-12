@@ -12,7 +12,7 @@ For current roadmap, check out the Cosmos 2.0 [Roadmap](./cosmos-hub-roadmap-2.0
 
 ## Cosmos Hub History
 
-| Upgrade Name        | Date          | Height    | Chain ID      | Tm | Cosmos SDK | Gaia                     | IBC                      |
+| Upgrade Name        | Date          | Height    |          Chain ID               | Tm | Cosmos SDK | Gaia                     | IBC                      |
 |---------------------|---------------|-----------|---------------|------------|------------|--------------------------|--------------------------|
 | Mainnet Launch      | ?             | 0         | `cosmoshub-1` | ?          | v0.31.x    | _Included in Cosmos SDK_ | n/a                      |
 | Upgrade #1          | ?             | 500,043   | `cosmoshub-2` | ?          | v0.36.x    | v1.0.x                   | n/a                      |

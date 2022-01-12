@@ -113,7 +113,7 @@ gaiad q gov proposals
 If there are a lot of proposals on the chain already, you can also filter by your own address. For the proposal above, that would be:
 
 ```
-gaiad q gov proposals --depositor cosmos19wlk8gkfjckqr8d73dyp4n0f0k89q4h7xr3uwj
+gaiad q gov proposals --depositor cosmos1hxv7mpztvln45eghez6evw2ypcw4vjmsmr8cdx
 ```
 
 Once you have the proposal ID, this is the command to deposit extra tokens:

@@ -14,6 +14,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/server"
+	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/snapshots"
 	"github.com/cosmos/cosmos-sdk/store"
@@ -60,8 +61,9 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 			if err = client.SetCmdClientContextHandler(initClientCtx, cmd); err != nil {
 				return err
 			}
-
-			return server.InterceptConfigsPreRunHandler(cmd, "", nil)
+			// This is where the default server configs might be overridden
+			customGaiaConfig := initAppConfig()
+			return server.InterceptConfigsPreRunHandler(cmd, "", customGaiaConfig)
 		},
 	}
 
@@ -70,8 +72,24 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	return rootCmd, encodingConfig
 }
 
+func initAppConfig() interface{} {
+	type CustomAppConfig struct {
+		serverconfig.Config
+	}
+
+	// Allow overrides to the SDK default server config
+	srvCfg := serverconfig.DefaultConfig()
+	srvCfg.StateSync.SnapshotInterval = 1000
+	srvCfg.StateSync.SnapshotKeepRecent = 10
+
+	GaiaAppConfig := CustomAppConfig{Config: *srvCfg}
+
+	return GaiaAppConfig
+}
+
 func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 	cfg := sdk.GetConfig()
+
 	cfg.Seal()
 
 	rootCmd.AddCommand(

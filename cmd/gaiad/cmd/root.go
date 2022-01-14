@@ -73,18 +73,12 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 }
 
 func initAppConfig() interface{} {
-	type CustomAppConfig struct {
-		serverconfig.Config
-	}
-
 	// Allow overrides to the SDK default server config
 	srvCfg := serverconfig.DefaultConfig()
 	srvCfg.StateSync.SnapshotInterval = 1000
 	srvCfg.StateSync.SnapshotKeepRecent = 10
 
-	GaiaAppConfig := CustomAppConfig{Config: *srvCfg}
-
-	return GaiaAppConfig
+	return *srvCfg
 }
 
 func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {

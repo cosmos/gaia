@@ -11,6 +11,7 @@ TOC:
 - [Upgrade will take place December 14, 2021](#upgrade-will-take-place-december-14-2021)
 - [Chain-id will remain the same](#chain-id-will-remain-the-same)
 - [Preparing for the upgrade](#preparing-for-the-upgrade)
+    - [System requirement](#system-requirement)
     - [Backups](#backups)
     - [Testing](#testing)
     - [Current runtime, cosmoshub-4 (pre-Vega upgrade) is running Gaia v5.0.0](#current-runtime-cosmoshub-4-pre-vega-upgrade-is-running-gaia-v500)
@@ -32,13 +33,26 @@ TOC:
 
 ## Upgrade will take place December 14, 2021
 
-The upgrade will take place at a block height of `8695000`. At current block times (around 7s/block), this block height corresponds approximately to `Tuesday, 14-Dec-21 6:00:00 UTC`. This date/time is approximate as blocks are not generated at a constant interval.
+The upgrade will take place at a block height of `8695000`. At the time of writing, and at current block times (around 7s/block), this block height corresponds approximately to `Tuesday, 14-Dec-21 14:49:50 UTC`. This date/time is approximate as blocks are not generated at a constant interval. You can stay up-to-date using this [live countdown](https://chain-monitor.cros-nest.com/d/Upgrades/upgrades?var-chain_id=cosmoshub-4&orgId=1&refresh=1m) page.
 
 ## Chain-id will remain the same
 
 The chain-id of the network will remain the same, `cosmoshub-4`. This is because an in-place migration of state will take place, i.e., this upgrade does not export any state.
 
 ## Preparing for the upgrade
+
+### System requirement
+32GB RAM is recommended to ensure a smooth upgrade.
+
+If you have less than 32GB RAM, you might try creating a swapfile to swap an idle program onto the hard disk to free up memory. This can
+allow your machine to run the binary than it could run in RAM alone.
+
+```shell
+sudo fallocate -l 16G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+```
 
 ### Backups
 
@@ -106,11 +120,11 @@ Then you should get the following structure:
 ├── current -> genesis or upgrades/<name>
 ├── genesis
 │   └── bin
-│       └── gaiadv5.0.0
+│       └── gaiad  #v5.0.x
 └── upgrades
 └── Vega
 └── bin
-    └── gaiadv6.0.0
+    └── gaiad  #v6.0.0
 ```
 Export the environmental variables:
 ```shell
@@ -153,7 +167,7 @@ cp $(which gaiad) $GAIA_HOME/cosmovisor/genesis/bin
 ├── current -> genesis or upgrades/<name>
 └── genesis
      └── bin
-        └── gaiadv5.0.0
+        └── gaiad  #v5.0.x
 ```
 Export the environmental variables:
 ```shell

@@ -1,3 +1,17 @@
+---
+adr: (number)
+title: (short title)
+status: (current process stage)
+category: (Module or Feature)
+kind: (ics kind)
+author: (primary & additional authors)
+created: (creation date)
+modified: (modification date)
+requires: (optional list of downstream ADRs)
+required-by: (optional list of upstream ADRs)
+implements: (optional list of component ADRs)
+---
+
 # ADR {ADR-NUMBER}: {TITLE}
 
 ## Changelog
@@ -8,8 +22,8 @@
 
 {DRAFT | PROPOSED} Not Implemented
 
-> Please have a look at the [PROCESS](./PROCESS.md#adr-status) page.
-> Use DRAFT if the ADR is in a draft stage (draft PR) or PROPOSED if it's in review.
+> Please have a look at the [ADR status guide](./README.md#Status) page.
+> Use `DRAFT` if the ADR is in a draft stage (draft PR) or `PROPOSED` if it's in review.
 
 ## Abstract
 

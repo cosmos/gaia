@@ -62,17 +62,17 @@ If a paramater-change proposal is successful, the change takes effect immediatel
 
 - You cannot currently query the `bank` module's parameter, which is `sendenabled`. You also cannot query the `crisis` module's parameters.
 - You will need to compile [`gaiad`](../../getting-started/installation.md) from source into a binary file executable by your operating system eg. MacOS, Windows, Linux
-- You will need to indicate which chain you are querying, and currently this is `--chain-id cosmoshub-3`
+- You will need to indicate which chain you are querying, and currently this is `--chain-id cosmoshub-4`
 - You will need to connect to a full node. If gaiad isn't already configured for this, you can use this tag in your command `--node [address]:26657`.
 
 ## Full nodes
 
 Running a full node can be difficult for those not technically-inclined, so you may choose to use a third-party's full node. In this case, the primary security risk is that of censorship: it's the single place where you have a single gateway to the network, and any messages submitted through an untrusted node could be censored.
-- http://51.79.82.228:26657 ([Figment Networks](https://figment.network/networks/cosmos/))
+- https://rpc.cosmos.network:443 ([Tendermint, Inc](https://tendermint.com))
 
 ## Credits
 
-This documentation was originally created by Gavin Birch ([Figment Networks](https://figment.network)). Its development was supported by funding approved on January 29, 2020 by the Cosmos Hub via Community Spend [Proposal 23](https://hubble.figment.network/cosmos/chains/cosmoshub-3/governance/proposals/23) ([full Proposal PDF here](https://ipfs.io/ipfs/QmSMGEoY2dfxADPfgoAsJxjjC6hwpSNx1dXAqePiCEMCbY)). 
+This documentation was originally created by Gavin Birch ([Figment Networks](https://figment.network)). Its development was supported by funding approved on January 29, 2020 by the Cosmos Hub via Community Spend [Proposal 23](https://hubble.figment.network/cosmos/chains/cosmoshub-3/governance/proposals/23) ([full Proposal PDF here](https://ipfs.io/ipfs/QmSMGEoY2dfxADPfgoAsJxjjC6hwpSNx1dXAqePiCEMCbY)). In late 2021 and early 2022 significant updates were made by [Hypha, co-op](https://hypha.coop/), especially @dcwalk 🙏
 
 **Special thanks** to the following for providing credible information:
 - Aleks (All in Bits; Fission Labs) for answering countless questions about these parameters

@@ -1,7 +1,7 @@
 ---
 ADR: (number)
 Title: (short title)
-Status: ([current ADR status](./README.md#Status))
+Status: (current ADR status)
 Category: (Module or Feature)
 Author: (primary & additional authors)
 Created: (creation date)
@@ -19,14 +19,13 @@ Implements: (optional list of component ADRs)
 
 ## Abstract
 
-> "If you can't explain it simply, you don't understand it well enough." Provide a simplified and layman-accessible explanation of the ADR.
-> A short (~200 word) high level description of the issue being addressed and rationale for such.
+> "If you can't explain it simply, you don't understand it well enough." Provide  a short (~200 word) high level description of the issue being addressed and rationale for such.
 
-## Context
-> Describe the background and forces at play, including technological, political, social, and project local. The language in this section is value-neutral and should clearly explain the problem and motivation that the proposal aims to resolve.
+## Rationale
+> Describe the context and rationale for proposing a new feature or module. The language in this section is value-neutral and should clearly explain the problem and motivation that the proposal aims to resolve.
 
 ## Desired Outcome
-> Details responses to the issues documented above. Response should include desired characteristics / properties of feature/protocol, and effects if properties are violated.
+> Provides succinct answers to the issues documented above. Response should include desired characteristics / properties of feature/protocol, and effects if properties are violated.
 
 ## Consequences
 > This section describes the resulting context, after applying the decision (positive, neutral, and negative).

@@ -1,15 +1,14 @@
 ---
-adr: (number)
-title: (short title)
-status: (current process stage)
-category: (Module or Feature)
-kind: (ics kind)
-author: (primary & additional authors)
-created: (creation date)
-modified: (modification date)
-requires: (optional list of downstream ADRs)
-required-by: (optional list of upstream ADRs)
-implements: (optional list of component ADRs)
+ADR: (number)
+Title: (short title)
+Status: ([current ADR status](./README.md#Status))
+Category: (Module or Feature)
+Author: (primary & additional authors)
+Created: (creation date)
+Mdified: (modification date)
+Requires: (optional list of downstream ADRs)
+Required-By: (optional list of upstream ADRs)
+Implements: (optional list of component ADRs)
 ---
 
 # ADR {ADR-NUMBER}: {TITLE}
@@ -18,57 +17,57 @@ implements: (optional list of component ADRs)
 
 - {date}: {changelog}
 
-## Status
-
-{DRAFT | PROPOSED} Not Implemented
-
-> Please have a look at the [ADR status guide](./README.md#Status) page.
-> Use `DRAFT` if the ADR is in a draft stage (draft PR) or `PROPOSED` if it's in review.
-
 ## Abstract
 
 > "If you can't explain it simply, you don't understand it well enough." Provide a simplified and layman-accessible explanation of the ADR.
-> A short (~200 word) description of the issue being addressed.
+> A short (~200 word) high level description of the issue being addressed and rationale for such.
 
 ## Context
+> Describe the background and forces at play, including technological, political, social, and project local. The language in this section is value-neutral and should clearly explain the problem and motivation that the proposal aims to resolve.
 
-> This section describes the forces at play, including technological, political, social, and project local. These forces are probably in tension, and should be called out as such. The language in this section is value-neutral. It is simply describing facts. It should clearly explain the problem and motivation that the proposal aims to resolve.
-> {context body}
-
-## Decision
-
-> This section describes our response to these forces. It is stated in full sentences, with active voice. "We will ..."
-> {decision body}
+## Desired Outcome
+> Details responses to the issues documented above. Response should include desired characteristics / properties of feature/protocol, and effects if properties are violated.
 
 ## Consequences
+> This section describes the resulting context, after applying the decision (positive, neutral, and negative).
 
-> This section describes the resulting context, after applying the decision. All consequences should be listed here, not just the "positive" ones. A particular decision may have positive, negative, and neutral consequences, but all of them affect the team and project in the future.
+#### Backwards Compatibility
+> Discussion of compatibility or lack thereof with previous standards.
+
+#### Forward Compatibility
+> Discussion of compatibility or lack thereof with expected future standards.
+
+## Technical Specification
+> Details main technical standard, may include some of the following: syntax, semantics, sub-protocols, algorithms, data structures, etc.
+
+## Development
+> Documents the following for readiness/deployment milestones
+- Integration requirements (CLI)
+- Testing (Simulations, Core Team Testing, Partner Testing)
+- Audits (Internal Dev review, Third-party review, Bug Bounty)
+- Networks (Testnets, Productionnets, Mainnets)
 
 ### Backwards Compatibility
+> Discussion of compatibility or lack thereof with expected future standards.
 
-> All ADRs that introduce backwards incompatibilities must include a section describing these incompatibilities and their severity. The ADR must explain how the author proposes to deal with these incompatibilities. ADR submissions without a sufficient backwards compatibility treatise may be rejected outright.
+## Governance [optional]
+> If relevant, will include:
+- Linked Hub Governance proposal
+- Core Community Governance
+- Steering Community
+- Timelines & Roadmap
 
-### Positive
+## Project Integrations [optional]
+> Document internal and/or external integration partners
+- Gaia Integrations
+- Integration Partner
+- IBC Readiness
+#### Downstream User Impact Report
+#### Upstream Partner Impact Report
+#### Inter-module Dependence
 
-{positive consequences}
+## Support
+> Includes additional technical, marketing, educational, etc support
 
-### Negative
-
-{negative consequences}
-
-### Neutral
-
-{neutral consequences}
-
-## Further Discussions
-
-While an ADR is in the DRAFT or PROPOSED stage, this section should contain a summary of issues to be solved in future iterations (usually referencing comments from a pull-request discussion).
-Later, this section can optionally list ideas or improvements the author or reviewers found during the analysis of this ADR.
-
-## Test Cases [optional]
-
-Test cases for an implementation are mandatory for ADRs that are affecting consensus changes. Other ADRs can choose to include links to test cases if applicable.
-
-## References
-
-- {reference link}
+## Additional Research & References
+> Additional links or sections to address

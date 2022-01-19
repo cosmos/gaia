@@ -1,3 +1,9 @@
+---
+name: Cosmos Hub Feature Proposal Checklist
+about: Create a checklist for a feature proposal
+
+---
+
 ## Cosmos Hub Feature Epic
 
 # <Feature Name>

@@ -4,35 +4,39 @@ order: 3
 
 # Join the Cosmos Hub Mainnet
 
-The current Cosmos Hub mainnet`cosmoshub-4`is operating after its most recent [Vega upgrade `V6.0.0`](https://github.com/cosmos/gaia/releases/tag/v6.0.0). This guide includes instructions for joining the mainnet either as an archive/full node or a pruned node. For instructions to join as a validator, please also see the [validator instructions](https://hub.cosmos.network/main/validators/overview.html#).
+The current Cosmos Hub mainnet`cosmoshub-4`is operating after its most recent [Vega upgrade `V6.0.0`](https://github.com/cosmos/gaia/releases/tag/v6.0.0). This guide includes full instructions for joining the mainnet either as an archive/full node or a pruned node.
+<!-- TODO: Link Future Quick Start Guide -->
+For instructions to boostrap a node via Quicksync or State Sync, see the [Quickstart Guide](https://github.com/cosmos/mainnet/blob/306363b874e5dea91d3305788f2d864713aa10e0/README.md)
+
+For instructions to join as a validator, please also see the [Validator Guide](https://hub.cosmos.network/main/validators/overview.html#).
 
 ### Overview
-
-- [Explorers](#Explorers)
-- [Getting Started](#Getting-Started)
-- [General Configuration](#General-Configuration)
-    - [Initialize Chain](#Initialize-Chain)
-    - [Genesis File](#Genesis-File)
-    - [Seeds & Peers](#Seeds-amp-Peers)
-    - [Gas & Fees](#Gas-amp-Fees)
-    - [Pruning of State](#Pruning-of-State)
-    - [REST API](#REST-API)
-    - [GRPC](#GRPC)
-- [Choosing a Sync Mode](#Choosing-a-Sync-Mode)
-    - [Sync from Scratch (Full/Archive Node)](#Sync-from-scratch)
-    - [State Sync](#State-Sync)
-    - [Quicksync](#Quicksync)
-- [Snapshots](#Snapshots)
-- [Hardware Requirements](#Hardware)
-- [Releases](#Releases-amp-Upgrades)
-- [Cosmovisor](#Cosmovisor)
-- [Running via Background Process](#Running-via-Background-Process)
-- [Exporting State](#Exporting-State)
-- [Verify Mainnet](#Verify-Mainnet)
+<!-- DON'T FORGET TO KEEP INDEX UP TO DATE -->
+- [Explorers](#explorers)
+- [Getting Started](#getting-started)
+- [General Configuration](#general-configuration)
+    - [Initialize Chain](#initialize-chain)
+    - [Genesis File](#genesis-file)
+    - [Seeds & Peers](#seeds-amp-peers)
+    - [Gas & Fees](#gas-amp-fees)
+    - [Pruning of State](#pruning-of-state)
+    - [REST API](#rest-api)
+    - [GRPC](#grpc)
+- [Sync Options](#sync-options)
+    - [Blocksync](#blocksync)
+    - [State Sync](#state-sync)
+    - [Quicksync](#quicksync)
+- [Snapshots](#snapshots)
+- [Hardware Requirements](#hardware)
+- [Releases](#releases-amp-upgrades)
+- [Cosmovisor](#cosmovisor)
+- [Running via Background Process](#running-via-background-process)
+- [Exporting State](#exporting-state)
+- [Verify Mainnet](#verify-mainnet)
 
 ### Background
 
-The current Cosmos Hub mainnet `cosmoshub-4` has been performing in place store migration upgrades as of the [Delta Upgrade](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md) July 2021. The most recent upgrade was [Vega](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-vega-upgrade.md) December 2021. This type of upgrade preserves the same chain-id but is otherwise similar to a traditional hub upgrade, meaning historical state is lost after the upgrade takes place (still accessible of course by a v4.2.1 full node). Visit the [migration section](https://github.com/cosmos/gaia/tree/main/docs/migration) of the Hub's docs for more information on previous chain migrations.
+The current Cosmos Hub mainnet `cosmoshub-4`. Visit the [migration section](https://github.com/cosmos/gaia/tree/main/docs/migration) of the Hub's docs for more information on previous chain migrations.
 
 
 ## Explorers
@@ -46,10 +50,9 @@ There are many explorers for the Cosmos Hub. For reference while setting up a no
 
 ## Getting Started
 
-Before syncing a node, make sure the following prerequisites are completed:
+Make sure the following prerequisites are completed:
 - Choose the proper hardware/server configuration. See the [hardware guide](#hardware).
 - Ensure Gaia is properly installed. See the [installation guide](https://hub.cosmos.network/main/getting-started/installation.html) for a walkthrough.
-- Compile the Gaia binary (also in the installation guide). The version of Gaia will depend on [which way the node is synced](#Choosing-a-Sync-Mode). If syncing from scratch checkout version [`v4.2.1`](https://github.com/cosmos/gaia/releases/tag/v4.2.1). If syncing via state sync, checkout the [latest release](https://github.com/cosmos/gaia/releases/tag/v6.0.0). If unsure, see [releases](#Releases-amp-Upgrades) for more information on the appropriate version to build.
 - Follow the [configuration guide](#General-Configuration) to intialize and prepare the node to sync with the network.
 
 
@@ -94,7 +97,7 @@ seeds = "<seed node id 1>@<seed node address 1>:26656,<seed node id 2>@<seed nod
 persistent_peers = "<node id 1>@<node address 1>:26656,<node id 2>@<node address 2>:26656"
 ```
 
-Alternatively, node operators can also download the [Quicksync address book]( https://quicksync.io/addrbook.cosmos.json). Make sure this is moved to `~/.gaia/config/addrbook.json`.
+Node operators can optionally download the [Quicksync address book]( https://quicksync.io/addrbook.cosmos.json). Make sure to move this to `~/.gaia/config/addrbook.json`.
 
 ### Gas & Fees
 
@@ -106,11 +109,11 @@ Transactions on the Cosmos Hub network need to include a transaction fee in orde
 fees = ceil(gas * gasPrices)
 ```
 
-The `gas` is dependent on the transaction. Different transaction require different amount of `gas`. The `gas` amount for a transaction is calculated as it is being processed, but there is a way to estimate it beforehand by using the `auto` value for the `gas` flag. Of course, this only gives an estimate. This estimate is adjustable with the flag `--gas-adjustment` (default `1.0`) to ensure enough `gas` is provided for the transaction.
+`Gas` is the smallest unit or pricing value required to perform a transaction. Different transactions require different amounts of `gas`. The `gas` amount for a transaction is calculated as it is being processed, but it can be estimated beforehand by using the `auto` value for the `gas` flag. The gas estimate can be adjusted with the flag `--gas-adjustment` (default `1.0`) to ensure enough `gas` is provided for the transaction.
 
 The `gasPrice` is the price of each unit of `gas`. Each validator sets a `min-gas-price` value, and will only include transactions that have a `gasPrice` greater than their `min-gas-price`.
 
-The transaction `fees` are the product of `gas` and `gasPrice`. The higher the `gasPrice`/`fees`, the higher the chance that your transaction will get included in a block.
+The transaction `fees` are the product of `gas` and `gasPrice`. The higher the `gasPrice`/`fees`, the higher the chance that a transaction will get included in a block.
 
 **For mainnet, the recommended `gas-prices` is `0.0025uatom`.**
 
@@ -124,6 +127,7 @@ minimum-gas-prices = "0.0025uatom"
 ```
 
 The initial recommended `min-gas-prices` is `0.0025uatom`, but this can be changed later.
+
 
 ### Pruning of State
 
@@ -194,19 +198,54 @@ address = "0.0.0.0:9090"
 ```
 
 
-## Choosing a Sync Mode
+## Sync Options
 
-There are three main ways to sync a node on the Cosmos Hub. The way a node operator will want to sync is partially dependent on the type of node they will operate. This guide will focus on two types of common nodes; archive/full and pruned. For further information on syncing to run a validator node, see the section on [Validators](https://hub.cosmos.network/main/validators/overview.html).
+There are three main ways to sync a node on the Cosmos Hub; Blocksync, State Sync, and Quicksync. See the matrix below for the Hub's recommended setup configuration. This guide will focus on syncing two types of common nodes; full and pruned. For further information on syncing to run a validator node, see the section on [Validators](https://hub.cosmos.network/main/validators/overview.html).
 
-If a node operator wishes to run a full/archive node, it is possible to start from scratch but will take a significant amount of time to catch up. Node operators not concerned with rebuilding original state from the beginning of `cosmoshub-4` can also leverage [Quicksync](#Quicksync)'s available archive history.
+There are two types of concerns when deciding which sync option is right. _Data integrity_ refers to how reliable the data provided by a subset of network participants is. _Historical data_ refers to how robust and inclusive the chain’s history is.
+
+|                           | Low Data Integrity   |   High Data Integrity |
+| -----------------------   | -------------------- | --------------------- |
+| Minimal Historical Data   | Quicksync - Pruned   | State Sync            |
+| Moderate Historical Data  | Quicksync - Default  |                       |
+| Full Historical Data      | Quicksync - Archive  | Blocksync             |
+
+
+
+If a node operator wishes to run a full node, it is possible to start from scratch but will take a significant amount of time to catch up. Node operators not concerned with rebuilding original state from the beginning of `cosmoshub-4` can also leverage [Quicksync](#Quicksync)'s available archive history.
 
 For operators interested in bootstrapping a pruned node, either [Quicksync](#Quicksync) or [State Sync](#State-Sync) would be sufficient.
 
+
+
+
+
 Make sure to consult the [hardware](#Hardware) section for guidance on the best configuration for the type of node operating.
 
-### Sync from scratch
 
-Syncing from scratch is possible by starting the chain from the beginning of `cosmoshub-4` and either manually upgrading the chain or setting up [Cosmovisor](#Cosmovisor) to upgrade automatically. Node operators syncing from scratch will need to navigate two upgrades, Delta and Vega. For more information on performing the manual upgrades, see [Releases & Upgrades](#Releases-amp=-Upgrades).
+
+<!-- #sync options -->
+::::::: tabs :options="{ useUrlFragment: false }"
+
+:::::: tab Blocksync
+### Blocksync
+
+Blocksync is faster than traditional consensus and syncs the chain from genesis by downloading blocks and verifying against the merkle tree of validators. For more information see [Tendermint's Blocksync Docs](https://docs.tendermint.com/master/tendermint-core/block-sync/)
+
+When syncing via Blocksync, node operators will either need to manually upgrade the chain or set up [Cosmovisor](#Cosmovisor) to upgrade automatically.
+
+For more information on performing the manual upgrades, see [Releases & Upgrades](#Releases-amp=-Upgrades).
+
+It is possible to sync from previous versions of the Cosmos Hub. See the matrix below for the correct `gaia` version. See the [mainnet archive](https://github.com/cosmos/mainnet) for historical genesis files.
+
+| Chain Id      | Gaia Version  |
+| -----------   | -------- |
+| `cosmoshub-4` | `v4.2.1` |
+| `cosmoshub-3` | `v2.0.x` |
+| `cosmoshub-2` | `v1.0.x` |
+| `cosmoshub-1` | `v0.0.x` |
+
+##### Getting Started
 
 Start Gaia to begin syncing with the `skip-invariants` flag. For more information on this see [Verify Mainnet](#Verify-Mainnet).
 ```bash
@@ -215,10 +254,12 @@ gaiad start --x-crisis-skip-assert-invariants
 ```
 
 The node will begin rebuilding state until it hits the first upgrade height at block `6910000`. If Cosmovisor is set up then there's nothing else to do besides wait, otherwise the node operator will need to perform the manual upgrade twice.
+::::::
 
+:::::: tab State Sync
 ### State Sync
 
-Enabling state sync can be one of the most efficient ways to bootstrap a node. On startup, the node will ask its peers for available snapshots. Once a snapshot has been accepted, it will begin requesting snapshot chunks from peers. Once the snapshot is verified, the node will begin to process blocks in realtime until it catches up with the head of the chain. For more information on state sync, see [Tendermint's documentation](https://docs.tendermint.com/master/spec/p2p/messages/state-sync.html).
+State Sync is an efficient and fast way to bootstrap a new node, and it works by replaying larger chunks of application state directly rather than replaying individual blocks or consensus rounds. For more information, see [Tendermint's State Sync docs](https://docs.tendermint.com/master/spec/p2p/messages/state-sync.html).
 
 To enable state sync, visit an explorer to get a recent block height and corresponding hash. A node operator can choose any height/hash in the current bonding period, but as the recommended snapshot period is `1000` blocks, it is advised to choose something close to `current height - 1000`.
 
@@ -266,15 +307,23 @@ $ gaiad start --x-crisis-skip-assert-invariants
 ```
 
 Once state sync successfully completes, the node will begin to process blocks normally. If state sync fails and the node operator encounters the following error:  `State sync failed err="state sync aborted"`, either try restarting `gaiad` or running `gaiad unsafe-reset-all` (make sure to backup any configuration and history before doing this).
+::::::
 
+:::::: tab Quicksync
 ### Quicksync
 Quicksync.io offers several  daily snapshots of the Cosmos Hub with varying levels of pruning (`archive` 1.4TB, `default` 540GB, and `pruned` 265GB). For downloads and installation instructions, visit the [Cosmos Quicksync guide](https://quicksync.io/networks/cosmos.html).
+::::::
 
+:::::::
+
+<!-- #end -->
 
 ## Snapshots
-Saving and serving snapshots helps nodes rapidly join the network.
+Saving and serving snapshots helps nodes rapidly join the network. Snapshots are now enabled by default effective `1/20/21`.
 
-To contribute snapshots to the network, `snapshot-interval` needs to be configured in `~/.gaia/config/app.toml`. The Cosmos Hub recommends setting this value to `1000`. This value must match `pruning-keep-every` in `config.toml`.
+While not advised, if a node operator needs to customize this feature, it can be configured in `~/.gaia/config/app.toml`. The Cosmos Hub recommends setting this value to match `pruning-keep-every` in `config.toml`.
+
+> **Note**: It is highly recommended that node operators use the same value for snapshot-interval in order to aid snapshot discovery. Discovery is easier when more nodes are serving the same snapshots.
 
 In `app.toml`
 ```
@@ -293,8 +342,6 @@ snapshot-interval = 1000
 # snapshot-keep-recent specifies the number of recent snapshots to keep and serve (0 to keep all).
 snapshot-keep-recent = 10
 ```
-
-It is highly recommended that node operators use the same value for snapshot-interval in order to aid snapshot discovery. Discovery is easier when more nodes are serving the same snapshots.
 
 
 ## Hardware
@@ -402,6 +449,8 @@ sudo service <service name> status
 ## Exporting State
 
 Gaia can dump the entire application state into a JSON file. This application state dump is useful for manual analysis and can also be used as the genesis file of a new network.
+
+> **Note**: The node can't be running while exporting state, otherwise the operator can expect a `resource temporarily unavailable` error.
 
 Export state with:
 

@@ -4,7 +4,11 @@ order: 3
 
 # Join the Cosmos Hub Mainnet
 
-The current Cosmos Hub mainnet`cosmoshub-4`is operating after its most recent [Vega upgrade `V6.0.0`](https://github.com/cosmos/gaia/releases/tag/v6.0.0). This guide includes full instructions for joining the mainnet either as an archive/full node or a pruned node.
+The current Cosmos Hub mainnet, `cosmoshub-4`, has been performing in place store migration upgrades as of the [Delta Upgrade](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md) July 2021. The most recent upgrade was [Vega](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-vega-upgrade.md) December 2021. This type of upgrade preserves the same chain-id but state before the upgrade height is only accessible by corresponding versions of the binary (ie. queries of state between height `6910000` and `8695000` should use `gaia v5.0.x` (Delta) but after `86950000` should use `gaia v6.0.x` (Vega) to guarantee correctly encoded responses). Visit the [migration section](https://github.com/cosmos/gaia/tree/main/docs/migration) of the Hub's docs for more information on previous chain migrations.
+
+**This guide includes full instructions for joining the mainnet either as an archive/full node or a pruned node.**
+
+
 <!-- TODO: Link Future Quick Start Guide -->
 For instructions to boostrap a node via Quicksync or State Sync, see the [Quickstart Guide](https://github.com/cosmos/mainnet/blob/306363b874e5dea91d3305788f2d864713aa10e0/README.md)
 
@@ -46,6 +50,7 @@ There are many explorers for the Cosmos Hub. For reference while setting up a no
 - [Mintscan](https://www.mintscan.io/cosmos)
 - [Big Dipper](https://cosmos.bigdipper.live/)
 - [Hubble](https://hubble.figment.io/cosmos/chains/cosmoshub-4)
+- [Stake ID](https://cosmos.stake.id/)
 
 
 ## Getting Started
@@ -350,9 +355,8 @@ Running a full archive node can be resource intensive as the full  current `cosm
 | Node Type     | RAM                   | Storage     |
 | -----------   | --------------------- | ----------- |
 | Validator     | 16GB (32 Recommended) | 500GB-2TB*  |
-| Full/Archive  | 8GB (16 Recommended)  | 2TB         |
+| Full          | 8GB (16 Recommended)  | 2TB         |
 | Default       | 8GB (16 Recommended)  | 1TB         |
-| Pruned        | 8 GB                  | 500GB       |
 
 \* Storage size for validators will depend on level of pruning.
 

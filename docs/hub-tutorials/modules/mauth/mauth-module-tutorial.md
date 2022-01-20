@@ -42,7 +42,7 @@ sh hermes/rly-restore-keys.sh
 sh hermes/rly-create-conn.sh
 sh hermes/rly-start.sh
 ```
-Now, you are running two cosmos-sdk chain at background, and a hermes relayer. Open a new terminal and config gaia home for the two chains. Then you are ready to solve the [interchain account exercise](##Interchain account exercise).
+Now, you are running two cosmos-sdk chain in the background, and a hermes relayer. Open a new terminal and config gaia home for the two chains. Then you are ready to solve the [interchain account exercise](##Interchain account exercise).
 ```shell
 sh gaia-home-config.sh
 ```

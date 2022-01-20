@@ -31,21 +31,18 @@ To see the `Cosmos` application when you search for it, you might need to activa
 
 ![Devmode](../images/ledger-tuto-dev-mode.png)
 
-## Lunie.io + Ledger Nano  
+## Keplr + Ledger Nano  
 
-**Note: You need to [install the Cosmos app](#install-the-cosmos-ledger-application) on your Ledger Nano before using following this section**
+**Note: You need to [install the Cosmos app](#install-the-cosmos-ledger-application) on your Ledger Nano before following this section**
 
 1. Connect your Ledger device to your computer, unlock it with the PIN and open the Cosmos app.
-2. Open [https://app.lunie.io](https://app.lunie.io/existing) in your web browser (latest version of [Brave](https://brave.com/) preferred).
-3. Choose `Sign in with Ledger Nano S`.
-    ![lunie-option](../images/ledger-tuto-lunie-option.png)
-4. Make sure your Ledger device is unlocked and with the Cosmos app open and then click on the`Sign in` button. 
+2. Install the [Keplr browser extension](https://www.keplr.app/).
+3. Click on the Keplr extension icon and select `Import Ledger` and choose an account name and password.
+5. Make sure your Ledger device is unlocked and has the Cosmos app open and then follow the instructions on the Keplr pop-up.
 
-That's it! You can now use Lunie with your Ledger Nano S. You will find your Cosmos address here:
+That's it! You can now use Keplr with your Ledger Nano S. You can use the [Keplr web app](https://wallet.keplr.app/#/dashboard) to get a more detailed overview of your Cosmos account.
 
-![lunie-address](../images/ledger-tuto-lunie-address.png)
-
-**Note: Each time you will send a transaction, you will need to confirm it on your Ledger device. Indication will be prompted from the Lunie interface**
+**Note: Each time you will send a transaction, you will need to confirm it on your Ledger device. Indication will be prompted from the Keplr interface**
 
 ### (Optional) Confirm your address
 
@@ -208,5 +205,5 @@ Feel welcome to reach out in our [Telegram channel](https://t.me/cosmosproject) 
 
 Here are a few relevant and helpful tutorials from the wonderful Cosmos community:
 
-- [Ztake](https://medium.com/@miranugumanova) - [How to Redelegate Cosmos Atoms with the Lunie Web Wallet](https://medium.com/@miranugumanova/how-to-re-delegate-cosmos-atoms-with-lunie-web-wallet-8303752832c5)
+- [Catdotfish](https://catdotfish.medium.com/) - [How to use the Keplr Wallet](hhttps://medium.com/chainapsis/how-to-use-keplr-wallet-40afc80907f6)
 - [Cryptium Labs](https://medium.com/cryptium-cosmos) - [How to store your ATOMS on your Ledger and delegate with the command line](https://medium.com/cryptium-cosmos/how-to-store-your-cosmos-atoms-on-your-ledger-and-delegate-with-the-command-line-929eb29705f)

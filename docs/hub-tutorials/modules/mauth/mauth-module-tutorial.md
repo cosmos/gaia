@@ -203,6 +203,12 @@ gaiad tx bank send $B $AICA 200ibc/3C3D7B3BE4ECC85A0E5B52A3AEC3B7DFC2AA9CA47C378
 ```
 
 #### Q5: `aica` sends `100ibc/stake` to `a`
+
+Create the channel for ibc transfer:
+```shell
+hermes create channel --port-a transfer --port-b transfer test-1 test-2
+```
+
 Step 1: prepare the transaction JSON file:
 
 ```shell

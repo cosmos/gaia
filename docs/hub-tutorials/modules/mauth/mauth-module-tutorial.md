@@ -104,7 +104,7 @@ gaiad tx bank send $B $AICA 1000stake --from b --home test-2
 ```
 
 ### Exercises
-We would like to invite you to try to perform the actions below yourself. If you're having issues, you can find the solutions [here](### Solutions).
+We would like to invite you to try to perform the actions below yourself. If you're having issues, you can find the solutions at the bottom of this tutorial.
 
 > NOTE:
 > * `a` = account on `test-1`

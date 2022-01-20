@@ -7,7 +7,7 @@ Mauth module allows all the message types from cosmos-sdk.
 
 In the following tutorial, we will practice how to use interchain account through [mauth module](https://github.com/cosmos/gaia/tree/ica-acct-auth/x/mauth) of gaia.
 ## Setup preparation
-We will run two cosmos-sdk chains (control chain:test-1 and host chain: test-2), and a relayer to connect these two chains. We will create an account on chain test-1 and call it `a`, and register an interchain account(ica) for `a` on chain test-2, we will create a normal account `b` on chain tst-2 as well. Through these 3 account, we can test:
+We will run two cosmos-sdk chains (control chain: `test-1` and host chain: `test-2`), and a relayer to connect these two chains. We will create an account on chain `test-1` and call it `a`, and register an interchain account(ica) for `a` on chain `test-2`, we will create a normal account `b` on chain `test-2` as well. Through these 3 account, we can test:
  - `a` can control `a`'s `ica` to transfer tokens to an account on chain `test-2`.
 - `a` can control `a`'s `ica` to tranfer `ica`'s token to `a` (this also involves ibc transfer)
 

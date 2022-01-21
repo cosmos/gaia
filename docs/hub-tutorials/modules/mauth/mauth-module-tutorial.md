@@ -132,7 +132,7 @@ Both `aica` and `b` are on chain `test-2`, however, we need `a` from `test-1` to
 
 Step 1: generate the transaction json: 
 ```shell
-gaiad tx bank send $AICA $B --chain-id test-2 --from a --gas 90000 --home test-1 --generate-only | jq '.body.messages[0]' > ./send-raw.json
+gaiad tx bank send $AICA $B --chain-id test-2 --from a --generate-only | jq '.body.messages[0]' > ./send-raw.json
 
 cat send-raw.json
 ```
@@ -212,7 +212,7 @@ hermes create channel --port-a transfer --port-b transfer test-1 test-2
 Step 1: prepare the transaction JSON file:
 
 ```shell
-gaiad tx ibc-transfer transfer transfer channel-1 $A 100ibc/3C3D7B3BE4ECC85A0E5B52A3AEC3B7DFC2AA9CA47C37821E57020D6807043BE9 --from $AICA --home test-2 --generate-only | jq '.body.messages[0]' > send-raw.json
+gaiad tx ibc-transfer transfer transfer channel-1 $A 100ibc/3C3D7B3BE4ECC85A0E5B52A3AEC3B7DFC2AA9CA47C37821E57020D6807043BE9 --from $AICA --generate-only | jq '.body.messages[0]' > send-raw.json
 cat send-raw.json
 ```
 

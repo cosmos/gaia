@@ -206,5 +206,5 @@ Feel welcome to reach out in our [Telegram channel](https://t.me/cosmosproject) 
 
 Here are a few relevant and helpful tutorials from the wonderful Cosmos community:
 
-- [Catdotfish](https://catdotfish.medium.com/) - [How to use the Keplr Wallet](hhttps://medium.com/chainapsis/how-to-use-keplr-wallet-40afc80907f6)
+- [Catdotfish](https://catdotfish.medium.com/) - [How to use the Keplr Wallet](https://medium.com/chainapsis/how-to-use-keplr-wallet-40afc80907f6)
 - [Cryptium Labs](https://medium.com/cryptium-cosmos) - [How to store your ATOMS on your Ledger and delegate with the command line](https://medium.com/cryptium-cosmos/how-to-store-your-cosmos-atoms-on-your-ledger-and-delegate-with-the-command-line-929eb29705f)

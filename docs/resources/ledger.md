@@ -4,7 +4,7 @@ order: 4
 
 # Ledger Nano Support
 
-Using a hardware wallet to store your keys greatly improves the security of your crypto assets. The Ledger device acts as an enclave of the seed and private keys, and the process of signing transaction takes place within it. No private information ever leaves the Ledger device. The following is a short tutorial on using the Cosmos Ledger app with the Gaia CLI or the [Lunie.io](https://lunie.io/#/) web wallet.
+Using a hardware wallet to store your keys greatly improves the security of your crypto assets. The Ledger device acts as an enclave of the seed and private keys, and the process of signing transaction takes place within it. No private information ever leaves the Ledger device. The following is a short tutorial on using the Cosmos Ledger app with the Gaia CLI or the [Keplr](https://www.keplr.app/) wallet extension.
 
 At the core of a Ledger device there is a mnemonic seed phrase that is used to generate private keys. This phrase is generated when you initialize you Ledger. The mnemonic is compatible with Cosmos and can be used to seed new accounts.
 
@@ -14,7 +14,7 @@ Do not lose or share your 24 words with anyone. To prevent theft or loss of fund
 
 ## Install the Cosmos Ledger application
 
-Installing the `Cosmos` application on your ledger device is required before you can use either [Lunie](#lunie-io-+-ledger-nano) or [`gaiad`](#gaia-cli-+-ledger-nano). To do so, you need to:
+Installing the `Cosmos` application on your ledger device is required before you can use either [Keplr](#keplr-+-ledger-nano) or [`gaiad`](#gaia-cli-+-ledger-nano). To do so, you need to:
 
 1. Install [Ledger Live](https://shop.ledger.com/pages/ledger-live) on your machine. 
 2. Using Ledger Live, [update your Ledger Nano S with the latest firmware](https://support.ledger.com/hc/en-us/articles/360002731113-Update-device-firmware).
@@ -46,21 +46,22 @@ That's it! You can now use Keplr with your Ledger Nano S. You can use the [Keplr
 
 ### (Optional) Confirm your address
 
-You can double check that Lunie is displaying the correct address directly on your Ledger Nano device. To do so:
+You can double check that Keplr is displaying the correct address directly on your Ledger Nano device. To do so:
 
 1. Connect your Ledger to your computer and open the Cosmos application on the device.
 2. Once the Cosmos app is open, click on the right button to access the `Show Address` option.
 3. Click on both button, then select `Account 0` and `Index 0`. 
 
-You should now see the same address that is displayed on the Lunie application. 
+You should now see the same address that is displayed on the Keplr extension. 
 
-To learn more about using Lunie, [here is a tutorial](https://medium.com/easy2stake/how-to-delegate-re-delegate-un-delegate-cosmos-atoms-with-the-lunie-web-wallet-eb72369e52db) on staking and delegating ATOMs using the Lunie web wallet.
+To learn more about using Keplr, we suggest you have a look at their [support documentation](https://keplr.crunch.help).
+You can also have a look at the [Ledger support page](https://support.ledger.com/hc/en-us/articles/4411149814417-Set-up-and-use-Keplr-to-access-your-Ledger-Cosmos-ATOM-account?docs=true) for more details.
 
 ## Gaia CLI + Ledger Nano
 
 **Note: You need to [install the Cosmos app](#install-the-cosmos-ledger-application) on your Ledger Nano before using following this section**
 
-The tool used to generate addresses and transactions on the Cosmos Hub network is `gaiad`. Here is how to get started. If using a CLI tool is unfamiliar to you, scroll down and follow instructions for using the Lunie.io web wallet instead.
+The tool used to generate addresses and transactions on the Cosmos Hub network is `gaiad`. Here is how to get started. If using a CLI tool is unfamiliar to you, scroll down and follow instructions for using the Keplr wallet instead.
 
 ### Before you Begin
 

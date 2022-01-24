@@ -18,6 +18,7 @@ For instructions to join as a validator, please also see the [Validator Guide](h
 <!-- DON'T FORGET TO KEEP INDEX UP TO DATE -->
 - [Explorers](#explorers)
 - [Getting Started](#getting-started)
+- [Hardware Requirements](#hardware)
 - [General Configuration](#general-configuration)
     - [Initialize Chain](#initialize-chain)
     - [Genesis File](#genesis-file)
@@ -30,8 +31,7 @@ For instructions to join as a validator, please also see the [Validator Guide](h
     - [Blocksync](#blocksync)
     - [State Sync](#state-sync)
     - [Quicksync](#quicksync)
-- [Snapshots](#snapshots)
-- [Hardware Requirements](#hardware)
+- [Snapshots](#snapshots)=
 - [Releases](#releases-amp-upgrades)
 - [Cosmovisor](#cosmovisor)
 - [Running via Background Process](#running-via-background-process)
@@ -59,6 +59,18 @@ Make sure the following prerequisites are completed:
 - Choose the proper hardware/server configuration. See the [hardware guide](#hardware).
 - Ensure Gaia is properly installed. See the [installation guide](https://hub.cosmos.network/main/getting-started/installation.html) for a walkthrough.
 - Follow the [configuration guide](#General-Configuration) to intialize and prepare the node to sync with the network.
+
+
+## Hardware
+Running a full archive node can be resource intensive as the full  current `cosmoshub-4` state is over `1.4TB`. For those who wish to run state sync or use quicksync, the following hardware configuration is recommended:
+
+| Node Type     | RAM                   | Storage     |
+| -----------   | --------------------- | ----------- |
+| Validator     | 32GB                  | 500GB-2TB*  |
+| Full          | 16GB                  | 2TB         |
+| Default       | 16GB                  | 1TB         |
+
+\* Storage size for validators will depend on level of pruning.
 
 
 ## General Configuration
@@ -347,19 +359,6 @@ snapshot-interval = 1000
 # snapshot-keep-recent specifies the number of recent snapshots to keep and serve (0 to keep all).
 snapshot-keep-recent = 10
 ```
-
-
-## Hardware
-Running a full archive node can be resource intensive as the full  current `cosmoshub-4` state is over `1.4TB`. For those who wish to run state sync or use quicksync, the following hardware configuration is recommended:
-
-| Node Type     | RAM                   | Storage     |
-| -----------   | --------------------- | ----------- |
-| Validator     | 16GB (32 Recommended) | 500GB-2TB*  |
-| Full          | 8GB (16 Recommended)  | 2TB         |
-| Default       | 8GB (16 Recommended)  | 1TB         |
-
-\* Storage size for validators will depend on level of pruning.
-
 
 ## Releases & Upgrades
 **See all [Gaia Releases](https://github.com/cosmos/gaia/releases)**

@@ -75,7 +75,7 @@ Running a full archive node can be resource intensive as the full  current `cosm
 
 ## General Configuration
 
-Before choosing a method of syncing a node, make sure to walk through the basic setup and configuration. Operators will need to initialize gaiad, download the genesis file for `cosmoshub-4`, and set persistent peers and/or seeds for startup.
+Make sure to walk through the basic setup and configuration. Operators will need to initialize `gaiad`, download the genesis file for `cosmoshub-4`, and set persistent peers and/or seeds for startup.
 
 ### Initialize Chain
 
@@ -148,6 +148,8 @@ The initial recommended `min-gas-prices` is `0.0025uatom`, but this can be chang
 
 ### Pruning of State
 
+> **Note**: This is an optional configuration.
+
 There are four strategies for pruning state. These strategies apply only to state and do not apply to block storage. A node operator may want to consider custom pruning if node storage is a concern or there is an interest in running an archive node.
 
 To set pruning, adjust the `pruning` parameter in the `~/.gaia/config/app.toml` file.
@@ -181,6 +183,8 @@ Passing a flag when starting `gaia` will always override settings in the `app.to
 
 ### REST API
 
+> **Note**: This is an optional configuration.
+
 By default, the REST API is disabled. To enable the REST API, edit the `~/.gaia/config/app.toml` file, and set `enable` to `true` in the `[api]` section.
 
 ```
@@ -200,6 +204,8 @@ Optionally activate swagger by setting `swagger` to `true` or change the port of
 After restarting the application, access the REST API on `<NODE IP>:1317`.
 
 ### GRPC
+
+> **Note**: This is an optional configuration.
 
 By default, gRPC is enabled on port `9090`. The `~/.gaia/config/app.toml` file is where changes can be made in the gRPC section. To disable the gRPC endpoint, set `enable` to `false`. To change the port, use the `address` parameter.
 

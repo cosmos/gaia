@@ -145,7 +145,7 @@ Validators, and by association delegators, receive block rewards, fees, and have
 
 By delegating to a validator, a user delegates voting power. The more voting power a validator have, the more weight they have in the consensus and governance processes. This does not mean that the validator has custody of their delegators' ATOM. **A validator cannot run away with its delegator's funds**.
 
-Even though delegated funds cannot be stolen by their validators, delegators are still liable with at least a part of their stake if their validators misbehave.
+Even though delegated funds cannot be stolen by their validators, delegators' tokens can still be slashed by a small percentage if their validator suffers a [slashing event](#what-are-the-slashing-conditions?), which is why we encourage due diligence when [selecting a validator](#how-do-delegators-choose-their-validators?).
 
 ### How often is a validator chosen to propose the next block? Does frequency increase with the quantity of bonded ATOM?
 
@@ -274,6 +274,8 @@ Running an effective operation is key to avoiding unexpected unbonding or slashi
 ### What are the maintenance requirements?
 
 Validators are expected to perform regular software updates to accommodate chain upgrades and bug fixes. It is suggested to consider using [Cosmovisor](https://docs.cosmos.network/master/run-node/cosmovisor.html) to partially automate this process.
+
+During an chain upgrade, progress is discussed in a private channel in the [Cosmos Developer Discord](https://discord.gg/cosmosnetwork). If your validator is in the active set we encourage you to request access to that channel by contacting a moderator.
 
 ### How can validators protect themselves from denial-of-service attacks?
 

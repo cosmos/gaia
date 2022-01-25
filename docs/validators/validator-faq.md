@@ -24,7 +24,7 @@ The weight (i.e. voting power) of a validator determines whether they are an act
 
 ### What is a full node?
 
-A full node is a program that fully validates transactions and blocks of a blockchain. A full node is distinct from a pruned node that processes only block headers and a small subset of transactions. Running a full node requires more resources than a pruned node. A full node is required in order to be a validator. In practice, running a full node implies running a non-compromised and up-to-date version of the software with low network latency and with no downtime.
+A full node is a server running a chain's _binary_ (its software) that fully validates transactions and blocks of a blockchain and keeps a full record of all historic activity. A full node is distinct from a pruned node that processes only block headers and a small subset of transactions. Running a full node requires more resources than a pruned node. Validators can decide to run either a full node or a pruned node, but they need to make sure they retain enough blocks to be able to validate new blocks.
 
 Of course, it is possible and encouraged for users to run full nodes even if they do not plan to be validators.
 
@@ -88,7 +88,7 @@ After a validator is created with a `create-validator` transaction, the validato
 - `in validator set`: Validator is in the active set and participates in consensus. The validator is earning rewards and can be slashed for misbehavior.
 - `jailed`: Validator misbehaved and is in jail, i.e. outside of the validator set. 
 
-  - If the jailing is due to being offline for too long (i.e. having missed more than `95%` out of `10,000` blocks), the validator can send an `unjail` transaction in order to re-enter the validator set. 
+  - If the jailing is due to being offline for too long (i.e. having missed more than `95%` out of the last `10,000` blocks), the validator can send an `unjail` transaction in order to re-enter the validator set. 
   - If the jailing is due to double signing, the validator cannot unjail.
 
 - `unbonded`: Validator is not in the active set, and therefore not signing blocs. The validator cannot be slashed and does not earn any reward. It is still possible to delegate ATOM to an unbonded validator. Undelegating from an `unbonded` validator is immediate, meaning that the tokens are not subject to the unbonding period.

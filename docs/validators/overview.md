@@ -20,7 +20,7 @@ For validator key management, validators must set up a physical operation that i
 
 Validators are expected to equip their datacenter location with redundant power, connectivity, and storage backups. Expect to have several redundant networking boxes for fiber, firewall, and switching and then small servers with redundant hard drive and failover.
 
-You can find the minimum hardware requirements on the [instructions for joining mainnet](../hub-tutorials/join-mainnet.md). As the network grows, bandwidth, CPU, and memory requirements rise. Large hard drives are recommended for storing years of blockchain history.
+You can find the minimum hardware requirements on the [instructions for joining mainnet](../hub-tutorials/join-mainnet.md). As the network grows, bandwidth, CPU, and memory requirements rise. Large hard drives are recommended for storing years of blockchain history, as well as significant RAM to process the increasing amount of transactions.
 
 ## Set Up a Website
 
@@ -28,7 +28,7 @@ We suggest you set up a dedicated validator's website and signal your intention 
 
 ## Seek Legal Advice
 
-We recommend you seek legal advice if you intend to run a Validator.
+We recommend you seek legal advice if you intend to run a Validator node.
 
 ## Community
 

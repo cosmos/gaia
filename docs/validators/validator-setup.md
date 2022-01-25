@@ -142,7 +142,7 @@ You can find more advanced information about running a node or a validator on th
 
 ### Problem #1: My validator has `voting_power: 0`
 
-Your validator has become jailed. Validators get jailed, i.e. get removed from the active validator set, if they do not vote on at least `500` of the last `10000` blocks, or if they double sign. 
+Your validator has become jailed. Validators get jailed, i.e. get removed from the active validator set, if they do not vote on at least `500` of the last `10,000` blocks, or if they double sign. 
 
 If you got jailed for downtime, you can get your voting power back to your validator. First, if you're not using [Cosmovisor](https://docs.cosmos.network/master/run-node/cosmovisor.html) and `gaiad` is not running, start it up again:
 
@@ -152,7 +152,7 @@ gaiad start
 
 Wait for your full node to catch up to the latest block. Then, you can [unjail your validator](#unjail-validator)
 
-Lastly, check your validator again to see if your voting power is back.
+After you have submitted the unjail transaction, check your validator again to see if your voting power is back.
 
 ```bash
 gaiad status

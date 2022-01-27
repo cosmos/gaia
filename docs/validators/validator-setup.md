@@ -8,7 +8,7 @@ order: 2
 We suggest you try out joining a public testnet first. Information on how to join the most recent testnet can be found [here](../hub-tutorials/join-testnet.md). 
 :::
 
-Before setting up your validator node, make sure you've already gone through the [Full Node Setup](../hub-tutorials/join-mainnet.md) guide.
+Before setting up a validator node, make sure to have completed the [Joining Mainnet](../hub-tutorials/join-mainnet.md) guide.
 
 If you plan to use a KMS (key management system), you should go through these steps first: [Using a KMS](kms/kms.md).
 

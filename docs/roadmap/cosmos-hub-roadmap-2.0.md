@@ -37,10 +37,13 @@ The upgrades aim to add features such as liquidity, economic security, usability
 - Cosmos SDK v0.45
   - Minimal update with small fixes
 - IBC 3.0
-  - Interchain accounts
-    - A requirement in order to manage accounts across multiple blockchains
-    - Provides locking/unlocking mechanisms across IBC-enabled blockchains
-    - Will allow custody providers to service any IBC connected blockchain through a common interface on the Hub.
+  - Interchain Account Module
+    - Allows the creation of accounts on a "Host" blockchain which are controlled by an authentication module on a "Controller" blockchain.
+    - Arbitrary messages are able to be submitted from the "Controller" blockchain to the "Host" blockchain to be executed on behalf of the Interchain Account.
+    - Uses ordered IBC channels, one per account.
+- Interchain Account Message Auhothorization Module
+    - Authentication module that authorizes any Account to create an Interchain Account on any IBC connected "Host" blockchain that has the Interchain Account IBC module.
+    - Accounts can be private key controlled users, and eventually the Gov Module and any Groups Module.
 
 ## v8-Rho Upgrade (expected Q2 2022)
 - Gaia v8.0.x
@@ -62,8 +65,6 @@ The upgrades aim to add features such as liquidity, economic security, usability
 - Governance permissioned CosmWASM instance on the hub
 - Budget Module
   - Inflation funding directed to arbitrary module and account addresses
-- Farming Module
-  - Rewards for locked tokens, especially LP tokens for different trading pair pools
 
 ## v9-Lambda Upgrade (expected Q3 2022)
 - Gaia v9.0.x

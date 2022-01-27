@@ -5,7 +5,7 @@ order: 2
 # Running a Validator
 
 ::: tip
-We suggest you try out joining a public testnet first. Information on how to join the Vega testnet can be found [here]](https://github.com/cosmos/vega-test/blob/master/public-testnet/README.md). 
+We suggest you try out joining a public testnet first. Information on how to join the most recent testnet can be found [here](../hub-tutorials/join-testnet.md). 
 :::
 
 Before setting up your validator node, make sure you've already gone through the [Full Node Setup](../hub-tutorials/join-mainnet.md) guide.

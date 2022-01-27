@@ -40,7 +40,7 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Interchain accounts
     - A requirement in order to manage accounts across multiple blockchains
     - Provides locking/unlocking mechanisms across IBC-enabled blockchains
-    - Would allow custody providers to service any IBC connected blockchain through a common interface on the Hub.
+    - Will allow custody providers to service any IBC connected blockchain through a common interface on the Hub.
 
 ## v8-Rho Upgrade (expected Q2 2022)
 - Gaia v8.0.x

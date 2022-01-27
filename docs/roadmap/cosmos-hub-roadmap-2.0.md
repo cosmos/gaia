@@ -39,7 +39,7 @@ The upgrades aim to add features such as liquidity, economic security, usability
 - IBC 3.0
   - Interchain accounts
     - A requirement in order to manage accounts across multiple blockchains
-    - Aims to provide locking/unlocking mechanisms across IBC-enabled blockchains
+    - Provides locking/unlocking mechanisms across IBC-enabled blockchains
     - Would allow custody providers to service any IBC connected blockchain through a common interface on the Hub.
 
 ## v8-Rho Upgrade (expected Q2 2022)

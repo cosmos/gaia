@@ -279,7 +279,7 @@ gaiad start --x-crisis-skip-assert-invariants
 The node will begin rebuilding state until it hits the first upgrade height at block `6910000`. If Cosmovisor is set up then there's nothing else to do besides wait, otherwise the node operator will need to perform the manual upgrade twice.
 ::::::
 
-:::::: tab State Sync
+:::::: tab "State Sync"
 ### State Sync
 
 State Sync is an efficient and fast way to bootstrap a new node, and it works by replaying larger chunks of application state directly rather than replaying individual blocks or consensus rounds. For more information, see [Tendermint's State Sync docs](https://docs.tendermint.com/master/spec/p2p/messages/state-sync.html).

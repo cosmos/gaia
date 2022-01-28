@@ -38,18 +38,30 @@ State Sync is far faster and more efficient than Blocksync, but Blocksync offers
 # Build gaiad binary and initialize chain
 cd $HOME
 git clone -b release/<release_version> https://github.com/cosmos/gaia
+<<<<<<< HEAD
+cd gaia
+=======
 cd gaiad
+>>>>>>> d73b44ba (Update joining testnet docs)
 make install
 gaiad init <custom_moniker>
 
 # Prepare genesis file for vega-testnet
+<<<<<<< HEAD
+wget https://github.com/cosmos/vega-test/raw/master/public-testnet/modified_genesis_public_testnet/genesis.json.gz
+=======
 wget https://github.com/cosmos/vega-test/blob/master/public-testnet/modified_genesis_public_testnet/genesis.json.gz
+>>>>>>> d73b44ba (Update joining testnet docs)
 gzip -d genesis.json.gz
 mv genesis.json $HOME/.gaia/config/genesis.json
 
 # Set minimum gas price & peers
 cd $HOME/.gaia/config
+<<<<<<< HEAD
+sed -i 's/minimum-gas-prices = ""/minimum-gas-prices = "0.001uatom"/' app.toml
+=======
 sed -i 's/minimum-gas-prices = ""/minimum-gas-prices = "0.001"/' app.toml
+>>>>>>> d73b44ba (Update joining testnet docs)
 sed -i 's/persistent_peers = ""/persistent_peers = "5303f0b47c98727cd7b19965c73b39ce115d3958@134.122.35.247:26656,9e1e3ce30f22083f04ea157e287d338cf20482cf@165.22.235.50:26656,b7feb9619bef083e3a3e86925824f023c252745b@143.198.41.219:26656"/' config.toml
 ```
 
@@ -112,6 +124,7 @@ source ~/.profile
 mkdir -p ~/.gaia/cosmovisor/upgrades
 mkdir -p ~/.gaia/cosmovisor/genesis/bin/
 cp $(which gaiad) ~/.gaia/cosmovisor/genesis/bin/
+<<<<<<< HEAD
 
 # Verify cosmovisor and gaiad versions are the same.
 cosmovisor version
@@ -124,6 +137,20 @@ cosmovisor start
 
 Cosmovisor will continually poll the `$DAEMON_HOME/data/upgrade-info.json` for new upgrade instructions. When an upgrade is ready, node operators can download the new binary and place it under `$DAEMON_HOME/cosmovisor/upgrades/<name>/bin` where `<name>` is the URI-encoded name of the upgrade as specified in the upgrade module plan.
 
+=======
+
+# Verify cosmovisor and gaiad versions are the same.
+cosmovisor version
+
+# Start Cosmovisor
+cosmovisor start
+```
+
+#### Upgrading
+
+Cosmovisor will continually poll the `$DAEMON_HOME/data/upgrade-info.json` for new upgrade instructions. When an upgrade is ready, node operators can download the new binary and place it under `$DAEMON_HOME/cosmovisor/upgrades/<name>/bin` where `<name>` is the URI-encoded name of the upgrade as specified in the upgrade module plan.
+
+>>>>>>> d73b44ba (Update joining testnet docs)
 For the `Vega` upgrade, this would look like:
 ```
 # Prepare Vega upgrade directory
@@ -156,7 +183,11 @@ cd $HOME/.gaia/config
 sed -i 's/enable = false/enable = true/' config.toml
 sed -i 's/trust_height = 0/trust_height = <BLOCK_HEIGHT>/' config.toml
 sed -i 's/trust_hash = ""/trust_hash = "<BLOCK_HASH>"/' config.toml
+<<<<<<< HEAD
+sed -i 's/rpc_servers = ""/rpc_servers = "134.122.35.247:26657,165.22.235.50:26657"/' config.toml
+=======
 sed -i 's/rpc_servers = ""/rpc_servers = "134.122.35.247:26657,165.22.235.50:26657' config.toml
+>>>>>>> d73b44ba (Update joining testnet docs)
 ```
 
 Now run `gaiad start` or if using [Cosmovisor](#using-cosmovisor),  `cosmovisor start`. Once a snapshot is found and verified, the chain will start syncing via regular consensus within minutes.

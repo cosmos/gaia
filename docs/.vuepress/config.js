@@ -161,6 +161,7 @@ module.exports = {
       {
         hostname: "https://hub.cosmos.network"
       }
-    ]
+    ],
+    [ "tabs" ]
   ]
 };

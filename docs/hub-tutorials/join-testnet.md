@@ -34,6 +34,8 @@ State Sync is far faster and more efficient than Blocksync, but Blocksync offers
 
 To get started, you'll need to install and configure the Gaia binary using the script below. **For Blocksync, it is important to checkout Gaia `release/v5.0.5`. For State Sync checkout `release/v6.0.0-rc3`**
 
+This example is using the Vega testnet genesis. For up to date values like `persistent_peers`, visit the current testnet repository's [Peers & Endpoints](https://github.com/cosmos/vega-test/blob/master/public-testnet/README.md#peers-and-endpoints) section.
+
 ```
 # Build gaiad binary and initialize chain
 cd $HOME
@@ -42,7 +44,7 @@ cd gaia
 make install
 gaiad init <custom_moniker>
 
-# Prepare genesis file for vega-testnet
+# Prepare genesis file
 wget https://github.com/cosmos/vega-test/raw/master/public-testnet/modified_genesis_public_testnet/genesis.json.gz
 gzip -d genesis.json.gz
 mv genesis.json $HOME/.gaia/config/genesis.json
@@ -50,7 +52,7 @@ mv genesis.json $HOME/.gaia/config/genesis.json
 # Set minimum gas price & peers
 cd $HOME/.gaia/config
 sed -i 's/minimum-gas-prices = ""/minimum-gas-prices = "0.001uatom"/' app.toml
-sed -i 's/persistent_peers = ""/persistent_peers = "5303f0b47c98727cd7b19965c73b39ce115d3958@134.122.35.247:26656,9e1e3ce30f22083f04ea157e287d338cf20482cf@165.22.235.50:26656,b7feb9619bef083e3a3e86925824f023c252745b@143.198.41.219:26656"/' config.toml
+sed -i 's/persistent_peers = ""/persistent_peers = "<persistent_peer_node_id_1:persistent_peer_address_1>,<persistent_peer_node_id_2:persistent_peer_address_2>"/' config.toml
 ```
 
 ### Blocksync
@@ -151,12 +153,14 @@ There will need to be additional configuration to enable State Sync on the testn
 
 Visit a [testnet explorer](https://vega-explorer.hypha.coop/) to get a recent block height and corresponding hash. A node operator can choose any height/hash in the current bonding period, but as the recommended snapshot period is 1000 blocks, it is advised to choose something close to current height - 1000. Set these parameters in the code snippet below `<BLOCK_HEIGHT>` and `<BLOCK_HASH>`
 
+For up to date values like `rpc_servers`, visit the current testnet repository's [State Sync](https://github.com/cosmos/vega-test/blob/master/public-testnet/README.md#using-state-sync) section.
+
 ```
 cd $HOME/.gaia/config
 sed -i 's/enable = false/enable = true/' config.toml
 sed -i 's/trust_height = 0/trust_height = <BLOCK_HEIGHT>/' config.toml
 sed -i 's/trust_hash = ""/trust_hash = "<BLOCK_HASH>"/' config.toml
-sed -i 's/rpc_servers = ""/rpc_servers = "134.122.35.247:26657,165.22.235.50:26657"/' config.toml
+sed -i 's/rpc_servers = ""/rpc_servers = "<rpc_address_1>:26657,<rpc_address_2>:26657"/' config.toml
 ```
 
 Now run `gaiad start` or if using [Cosmovisor](#using-cosmovisor),  `cosmovisor start`. Once a snapshot is found and verified, the chain will start syncing via regular consensus within minutes.

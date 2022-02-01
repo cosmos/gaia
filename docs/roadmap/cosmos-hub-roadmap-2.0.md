@@ -36,6 +36,8 @@ The upgrades aim to add features such as liquidity, economic security, usability
 - Gaia v7.0.x
 - Cosmos SDK v0.45
   - Minimal update with small fixes
+- Gravity DEX: Liquidity v1.4.5
+  - Adds a circuit breaker governance proposal type to disable adding new liquidity in order to make a migration possible.
 - IBC 3.0
   - Interchain Account Module
     - Allows the creation of accounts on a "Host" blockchain which are controlled by an authentication module on a "Controller" blockchain.

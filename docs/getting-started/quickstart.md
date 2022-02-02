@@ -19,21 +19,24 @@ To quickly get started, node operators can choose to sync via State Sync or by d
 
 > **Note**: Make sure to set the `--home` flag when initializing and starting `gaiad` if mounting quicksync data externally.
 
-#### Initialize gaia
+#### Create Gaia Home & Download Genesis
 ```bash
-gaiad init <custom moniker>
+mkdir $HOME/.gaia/
+wget https://github.com/cosmos/mainnet/raw/master/genesis.cosmoshub-4.json.gz
+gzip -d genesis.cosmoshub-4.json.gz
+mv genesis.cosmoshub-4.json ~/.gaia/config/genesis.json
 ```
 
 
 #### Set Gas
 ```bash
-sed -i 's/minimum-gas-prices = ""/minimum-gas-prices = "0.001uatom"/' app.toml
+sed -i 's/minimum-gas-prices = ""/minimum-gas-prices = "0.0025uatom"/' $HOME/.gaia/config/app.toml
 ```
 
 
 #### Copy Address Book Quicksync
 ```bash
-curl https://quicksync.io/addrbook.cosmos.json > addrbook.json
+curl https://quicksync.io/addrbook.cosmos.json > $HOME/.gaia/config/addrbook.json
 ```
 
 
@@ -47,6 +50,7 @@ Node Operators can decide how much of historical state they want to preserve by 
 ```bash=
 sudo apt-get install wget liblz4-tool aria2 -y
 
+apt install jq -y
 
 export URL=`curl https://quicksync.io/cosmos.json|jq -r '.[] |select(.file=="cosmoshub-4-default")|.url'`
 

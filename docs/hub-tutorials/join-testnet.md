@@ -55,21 +55,27 @@ sed -i 's/minimum-gas-prices = ""/minimum-gas-prices = "0.001uatom"/' app.toml
 sed -i 's/persistent_peers = ""/persistent_peers = "<persistent_peer_node_id_1:persistent_peer_address_1>,<persistent_peer_node_id_2:persistent_peer_address_2>"/' config.toml
 ```
 
-### Blocksync
-Blocksync will require nagivating both the Delta and Vega upgrades either via [Cosmovisor](#using-cosmovisor) or manually.
+### State Sync
 
-Manually updating `gaiad` will require stopping the chain and installing the new binary once it halts at block height `7,453,750`.
+::: warning
+State Sync requires Gaia version [`v6.0.0-rc3`](https://github.com/cosmos/gaia/tree/release/v6.0.0-rc3).
+:::
 
-Logs will show `ERR UPGRADE "Vega" NEEDED at height: 7368587: upgrade to Vega`. Stop `gaiad` and run the following:
+There will need to be additional configuration to enable State Sync on the testnet. State Sync requires setting an initial list of `persistent_peers` to fetch snapshots from. This will change and eventually move to the p2p layer when the Cosmos Hub upgrades to [Tendermint `v0.35`](https://github.com/tendermint/tendermint/issues/6491). For the sake of simplicity, this step is already done in the [Configuration & Setup](#configuration-amp=-setup) section.
+
+Visit a [testnet explorer](https://vega-explorer.hypha.coop/) to get a recent block height and corresponding hash. A node operator can choose any height/hash in the current bonding period, but as the recommended snapshot period is 1000 blocks, it is advised to choose something close to current height - 1000. Set these parameters in the code snippet below `<BLOCK_HEIGHT>` and `<BLOCK_HASH>`
+
+For up to date values like `rpc_servers`, visit the current [testnet repository](https://github.com/cosmos/testnets).
 
 ```
-cd $HOME/gaia
-git checkout release/v6.0.0-rc3
-make install
-
-# Verify the correct installation
-gaiad -version
+cd $HOME/.gaia/config
+sed -i 's/enable = false/enable = true/' config.toml
+sed -i 's/trust_height = 0/trust_height = <BLOCK_HEIGHT>/' config.toml
+sed -i 's/trust_hash = ""/trust_hash = "<BLOCK_HASH>"/' config.toml
+sed -i 's/rpc_servers = ""/rpc_servers = "<rpc_address_1>:26657,<rpc_address_2>:26657"/' config.toml
 ```
+
+Now run `gaiad start` or if using [Cosmovisor](#using-cosmovisor),  `cosmovisor start`. Once a snapshot is found and verified, the chain will start syncing via regular consensus within minutes.
 
 ### Using Cosmovisor
 
@@ -138,24 +144,20 @@ cp $GOPATH/bin/gaiad ~/.gaia/cosmovisor/upgrades/Vega/bin
 
 If Cosmovisor is already running, there's nothing left to do, otherwise run `cosmovisor start` to start the daemon.
 
-### State Sync
+### Blocksync
+Blocksync will require nagivating the Vega upgrade either via [Cosmovisor](#using-cosmovisor) or manually.
 
-::: warning
-State Sync requires Gaia version [`v6.0.0-rc3`](https://github.com/cosmos/gaia/tree/release/v6.0.0-rc3).
-:::
+Manually updating `gaiad` will require stopping the chain and installing the new binary once it halts at block height `7,453,750`.
 
-There will need to be additional configuration to enable State Sync on the testnet. State Sync requires setting an initial list of `persistent_peers` to fetch snapshots from. This will change and eventually move to the p2p layer when the Cosmos Hub upgrades to [Tendermint `v0.35`](https://github.com/tendermint/tendermint/issues/6491). For the sake of simplicity, this step is already done in the [Configuration & Setup](#configuration-amp=-setup) section.
-
-Visit a [testnet explorer](https://vega-explorer.hypha.coop/) to get a recent block height and corresponding hash. A node operator can choose any height/hash in the current bonding period, but as the recommended snapshot period is 1000 blocks, it is advised to choose something close to current height - 1000. Set these parameters in the code snippet below `<BLOCK_HEIGHT>` and `<BLOCK_HASH>`
-
-For up to date values like `rpc_servers`, visit the current [testnet repository](https://github.com/cosmos/testnets).
+Logs will show `ERR UPGRADE "Vega" NEEDED at height: 7368587: upgrade to Vega`. Stop `gaiad` and run the following:
 
 ```
-cd $HOME/.gaia/config
-sed -i 's/enable = false/enable = true/' config.toml
-sed -i 's/trust_height = 0/trust_height = <BLOCK_HEIGHT>/' config.toml
-sed -i 's/trust_hash = ""/trust_hash = "<BLOCK_HASH>"/' config.toml
-sed -i 's/rpc_servers = ""/rpc_servers = "<rpc_address_1>:26657,<rpc_address_2>:26657"/' config.toml
+cd $HOME/gaia
+git checkout release/v5.0.5
+make install
+
+# Verify the correct installation
+gaiad -version
 ```
 
-Now run `gaiad start` or if using [Cosmovisor](#using-cosmovisor),  `cosmovisor start`. Once a snapshot is found and verified, the chain will start syncing via regular consensus within minutes.
+Once the new binary is installed, restart the Gaia daemon. 

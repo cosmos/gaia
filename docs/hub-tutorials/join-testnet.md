@@ -153,11 +153,11 @@ Logs will show `ERR UPGRADE "Vega" NEEDED at height: 7368587: upgrade to Vega`. 
 
 ```
 cd $HOME/gaia
-git checkout release/v5.0.5
+git checkout release/v6.0.0-rc3
 make install
 
 # Verify the correct installation
 gaiad -version
 ```
 
-Once the new binary is installed, restart the Gaia daemon. 
+Once the new binary is installed, restart the Gaia daemon.

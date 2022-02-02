@@ -34,7 +34,7 @@ State Sync is far faster and more efficient than Blocksync, but Blocksync offers
 
 To get started, you'll need to install and configure the Gaia binary using the script below. **For Blocksync, it is important to checkout Gaia `release/v5.0.5`. For State Sync checkout `release/v6.0.0-rc3`**
 
-This example is using the Vega testnet genesis. For up to date values like `persistent_peers`, visit the current testnet repository's [Peers & Endpoints](https://github.com/cosmos/vega-test/blob/master/public-testnet/README.md#peers-and-endpoints) section.
+This example is using the Vega testnet genesis. For up to date values like `persistent_peers`, visit the [testnet repository](https://github.com/cosmos/testnets).
 
 ```
 # Build gaiad binary and initialize chain
@@ -56,11 +56,6 @@ sed -i 's/persistent_peers = ""/persistent_peers = "<persistent_peer_node_id_1:p
 ```
 
 ### Blocksync
-
-::: warning
-Blocksync requires Gaia version [`v5.0.5`](https://github.com/cosmos/gaia/tree/release/v5.0.5).
-:::
-
 Blocksync will require nagivating both the Delta and Vega upgrades either via [Cosmovisor](#using-cosmovisor) or manually.
 
 Manually updating `gaiad` will require stopping the chain and installing the new binary once it halts at block height `7,453,750`.
@@ -153,7 +148,7 @@ There will need to be additional configuration to enable State Sync on the testn
 
 Visit a [testnet explorer](https://vega-explorer.hypha.coop/) to get a recent block height and corresponding hash. A node operator can choose any height/hash in the current bonding period, but as the recommended snapshot period is 1000 blocks, it is advised to choose something close to current height - 1000. Set these parameters in the code snippet below `<BLOCK_HEIGHT>` and `<BLOCK_HASH>`
 
-For up to date values like `rpc_servers`, visit the current testnet repository's [State Sync](https://github.com/cosmos/vega-test/blob/master/public-testnet/README.md#using-state-sync) section.
+For up to date values like `rpc_servers`, visit the current [testnet repository](https://github.com/cosmos/testnets).
 
 ```
 cd $HOME/.gaia/config

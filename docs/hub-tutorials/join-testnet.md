@@ -6,7 +6,7 @@ order: 4
 
 | Current Upgrade | Chain Id       | Upgrade Block Height | Upgrade Date     |
 | --------------- | -------------- | -------------------- | ---------------- |
-| Vega            | `vega-testnet` | `7368587`            | November 12 2021 |
+| Vega            | `vega-testnet` | `7453750`            | November 12 2021 |
 
 
 ## Background
@@ -149,7 +149,7 @@ Blocksync will require nagivating the Vega upgrade either via [Cosmovisor](#usin
 
 Manually updating `gaiad` will require stopping the chain and installing the new binary once it halts at block height `7,453,750`.
 
-Logs will show `ERR UPGRADE "Vega" NEEDED at height: 7368587: upgrade to Vega`. Stop `gaiad` and run the following:
+Logs will show `ERR UPGRADE "Vega" NEEDED at height: 7453750`. Stop `gaiad` and run the following:
 
 ```
 cd $HOME/gaia
@@ -160,4 +160,4 @@ make install
 gaiad -version
 ```
 
-Once the new binary is installed, restart the Gaia daemon.
+Once the new binary is installed, restart the Gaia daemon. Logs will show `INF applying upgrade "Vega" at height: 7453750`. After a few minutes, the node will start syncing blocks.

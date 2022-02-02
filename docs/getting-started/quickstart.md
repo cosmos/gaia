@@ -79,7 +79,6 @@ aria2c -x5 $URL
 ```bash=
 sudo apt-get install wget liblz4-tool aria2 jq -y
 
-
 export URL=`curl https://quicksync.io/cosmos.json|jq -r '.[] |select(.file=="cosmoshub-4-pruned")|.url'`
 
 aria2c -x5 $URL

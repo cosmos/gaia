@@ -36,6 +36,8 @@ The upgrades aim to add features such as liquidity, economic security, usability
 - Gaia v7.0.x
 - Cosmos SDK v0.45
   - Minimal update with small fixes
+- Gravity DEX: Liquidity v1.4.5
+  - Adds a circuit breaker governance proposal type to disable adding new liquidity in order to make a migration possible.
 - IBC 3.0
   - Interchain Account Module
     - Allows the creation of accounts on a "Host" blockchain which are controlled by an authentication module on a "Controller" blockchain.
@@ -68,6 +70,8 @@ The upgrades aim to add features such as liquidity, economic security, usability
 
 ## v9-Lambda Upgrade (expected Q3 2022)
 - Gaia v9.0.x
+- IBC 3.1.0
+  - Relayer Incentivisation so that IBC packets contain fees to pay for relayer costs.
 - Interchain Security v1 - Required Participation of Provider Chain Validators
   - The Cosmos solution to shared security that uses IBC Cross Chain Validation (CCV) to relay validator set composition from a Provider Chain (Cosmos Hub) to a Consumer Chain. This validator set is in charge of producing blocks on both networks using separate nodes. Misbehavior on the Consumer Chain results in slashing Provider Chain staking tokens (ATOM).
   - Allows independent modules like Gravity DEX or Bridge to live on separate chains with their own development cycles.

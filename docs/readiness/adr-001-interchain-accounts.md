@@ -19,54 +19,63 @@ Implements:
 
 ## Abstract
 
-> "If you can't explain it simply, you don't understand it well enough." Provide  a short (~200 word) high level description of the issue being addressed and rationale for such.
+This is the Core Interchain Accounts Module. It allows the Cosmos Hub to act as a host chain with interchain accounts that are controlled by external IBC connected "Controller" blockchains. Candidate chains include Umee, Quicksilver, Sommelier. It is also a necessary component for a Authentication Module that allows the Cosmos Hub to act as a Controller chain as well. This will be recorded in a separate ADR.
 
 ## Rationale
-> Describe the context and rationale for proposing a new feature or module. The language in this section is value-neutral and should clearly explain the problem and motivation that the proposal aims to resolve.
+This allows the Hub to participate in advanced cross-chain defi operations, like Liquid Staking and various protocol controlled value applications.
 
 ## Desired Outcome
-> Provides succinct answers to the issues documented above. Response should include desired characteristics / properties of feature/protocol, and effects if properties are violated.
+The hub can be used trustlessly as a host chain in the configuration of Interchain Accounts.
 
 ## Consequences
-> This section describes the resulting context, after applying the decision (positive, neutral, and negative).
+The hub will be the target for protocol controlled accounts, it is not expected to have the same risks as atomic smart contract controlled accounts which added re-entrancy bugs as a security vulnerability on EVM chains, but it does provide a similar capability.
 
 #### Backwards Compatibility
-> Discussion of compatibility or lack thereof with previous standards.
+This is the first of its kind.
 
 #### Forward Compatibility
-> Discussion of compatibility or lack thereof with expected future standards.
+There are future releases of Interchain Accounts which are expected to be backwards compatible.
 
 ## Technical Specification
-> Details main technical standard, may include some of the following: syntax, semantics, sub-protocols, algorithms, data structures, etc.
+[ICS-27 Spec](https://github.com/cosmos/ibc/blob/master/spec/app/ics-027-interchain-accounts/README.md)
 
 ## Development
-> Documents the following for readiness/deployment milestones
-- Integration requirements (CLI)
+- Integration requirements
+  - Development has occured in [IBC-go](https://github.com/cosmos/ibc-go) and progress tracked on the [project board](https://github.com/orgs/cosmos/projects/7/views/7) there.
 - Testing (Simulations, Core Team Testing, Partner Testing)
+  - Simulations and Core Team tested this module
 - Audits (Internal Dev review, Third-party review, Bug Bounty)
+  - An internal audit, an audit from Informal Systems, and an audit from Trail of Bits all took place with fixes made to all findings.
 - Networks (Testnets, Productionnets, Mainnets)
-
-### Backwards Compatibility
-> Discussion of compatibility or lack thereof with expected future standards.
+  - Testnets
 
 ## Governance [optional]
-> If relevant, will include:
-- Linked Hub Governance proposal
+- **Needs Signaling Proposal**
 - Core Community Governance
+  -  N/A
 - Steering Community
+  -  N/A. Possibly Aditya Srinpal, Sean King, Bez?
 - Timelines & Roadmap
+  - Expected to be released as part of IBC 3.0 in Feb 2022 (currently in [beta release](https://github.com/cosmos/ibc-go/releases/tag/v3.0.0-beta1))
 
 ## Project Integrations [optional]
-> Document internal and/or external integration partners
 - Gaia Integrations
+  - [PR](https://github.com/cosmos/gaia/pull/1150)
 - Integration Partner
-- IBC Readiness
+  - IBC Team
+
 #### Downstream User Impact Report
+**Needs to be created**
+
 #### Upstream Partner Impact Report
-#### Inter-module Dependence
+**Needs to be created**
+
+#### Inter-module Dependence Report
+** Needs to be created**
 
 ## Support
-> Includes additional technical, marketing, educational, etc support
+[Documentation](https://ibc.cosmos.network/main/app-modules/interchain-accounts/overview.html)
 
 ## Additional Research & References
-> Additional links or sections to address
+ * [Why Interchain Accounts Change Everything for Cosmos Interoperability](https://medium.com/chainapsis/why-interchain-accounts-change-everything-for-cosmos-interoperability-59c19032bf11)
+ * [Interchain Account Auth Module Demo Repo](https://github.com/cosmos/interchain-accounts)

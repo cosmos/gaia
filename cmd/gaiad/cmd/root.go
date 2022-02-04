@@ -14,6 +14,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/server"
+	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/snapshots"
 	"github.com/cosmos/cosmos-sdk/store"
@@ -51,8 +52,12 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		Use:   "gaiad",
 		Short: "Stargate Cosmos Hub App",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
-			initClientCtx = client.ReadHomeFlag(initClientCtx, cmd)
-			initClientCtx, err := config.ReadFromClientConfig(initClientCtx)
+			initClientCtx, err := client.ReadPersistentCommandFlags(initClientCtx, cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			initClientCtx, err = config.ReadFromClientConfig(initClientCtx)
 			if err != nil {
 				return err
 			}
@@ -61,7 +66,8 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 				return err
 			}
 
-			return server.InterceptConfigsPreRunHandler(cmd, "", nil)
+			customTemplate, customGaiaConfig := initAppConfig()
+			return server.InterceptConfigsPreRunHandler(cmd, customTemplate, customGaiaConfig)
 		},
 	}
 
@@ -70,8 +76,27 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	return rootCmd, encodingConfig
 }
 
+func initAppConfig() (string, interface{}) {
+
+	type CustomAppConfig struct {
+		serverconfig.Config
+	}
+
+	// Allow overrides to the SDK default server config
+	srvCfg := serverconfig.DefaultConfig()
+	srvCfg.StateSync.SnapshotInterval = 1000
+	srvCfg.StateSync.SnapshotKeepRecent = 10
+
+	GaiaAppCfg := CustomAppConfig{Config: *srvCfg}
+
+	GaiaAppTemplate := serverconfig.DefaultConfigTemplate
+
+	return GaiaAppTemplate, GaiaAppCfg
+}
+
 func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 	cfg := sdk.GetConfig()
+
 	cfg.Seal()
 
 	rootCmd.AddCommand(

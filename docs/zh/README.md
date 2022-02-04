@@ -4,17 +4,17 @@
 
 ## 加入Cosmos Hub主网
 
-- [安装`gaia`程序](./installation.md)
-- [启动一个全节点并加入主网](./join-mainnet.md)
+- [安装`gaia`程序](./gaia-tutorials/installation.md)
+- [启动一个全节点并加入主网](./gaia-tutorials/join-mainnet.md)
 - [升级成一个验证人节点](./validators/validator-setup.md)
 
 ## 加入Cosmos Hub公共测试网
 
-- [加入测试网](./join-testnet.md)
+- [加入测试网](./gaia-tutorials/join-testnet.md)
 
 ## 部署你自己的`gaia`测试网络
 
-- [部署你自己的`gaia`测试网](./deploy-testnet.md)
+- [部署你自己的`gaia`测试网](./gaia-tutorials/deploy-testnet.md)
 
 ## 额外资源
 

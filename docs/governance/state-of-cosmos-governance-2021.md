@@ -1,4 +1,4 @@
-# State of Cosmos Governance
+# State of Cosmos Governance 2021
 
 > Governance and decision-making processes within the Cosmos ecosystem as of August 2021
 

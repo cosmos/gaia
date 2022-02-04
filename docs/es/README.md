@@ -1,22 +1,16 @@
-<!--
-parent:
-  order: false
-layout: home
--->
-
 # Documentación para el Hub de Cosmos
 
 Bienvenido a la documentación de la **aplicación para el Hub de Cosmos: `gaia`**
 
 ## ¿Qué es Gaia?
 
-- [Introducción al software `gaia`](./what-is-gaia.md)
+- [Introducción al software `gaia`](./gaia-tutorials/what-is-gaia.md)
 
 ## Únase a la red principal del Hub de Cosmos
 
-- [Instale la aplicación de `gaia`](./installation.md)
+- [Instale la aplicación de `gaia`](./gaia-tutorials/installation.md)
 
-- [Prepare un full node y únase a la mainnet](./join-mainnet.md)
+- [Prepare un full node y únase a la mainnet](./gaia-tutorials/join-mainnet.md)
 
 - [Actualice para ser un nodo validador](./validators/validator-setup.md)
 

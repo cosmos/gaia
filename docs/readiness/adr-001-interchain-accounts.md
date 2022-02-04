@@ -29,7 +29,7 @@ This allows the Hub to participate in advanced cross-chain defi operations, like
 The hub can be used trustlessly as a host chain in the configuration of Interchain Accounts.
 
 ## Consequences
-The hub will be the target for protocol controlled accounts, it is not expected to have the same risks as atomic smart contract controlled accounts which added re-entrancy bugs as a security vulnerability on EVM chains, but it does provide a similar capability.
+There has been preliminary work done to understand if this increases any security feature of the Cosmos Hub. One thought was that this capability is similar to contract to contract interactions which are possible on virtual machine blockchains like EVM chains. Those interactions introduced a new attack vector, called a re-entrancy bug, which was the culprit of "The DAO hack on Ethereum". We believe there is no risk of these kinds of attacks with Interchain Accounts because they require the interactions to be atomic and Interchain Accounts are asynchronous.
 
 #### Backwards Compatibility
 This is the first of its kind.

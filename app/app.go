@@ -465,9 +465,11 @@ func NewGaiaApp(
 	// there is nothing left over in the validator fee pool, so as to keep the
 	// CanWithdrawInvariant invariant.
 	// NOTE: staking module is required if HistoricalEntries param > 0
+	// NOTE: capability module's beginblocker must come before any modules using capabilities (e.g. IBC)
 	app.mm.SetOrderBeginBlockers(
 		// upgrades should be run first
 		upgradetypes.ModuleName,
+		capabilitytypes.ModuleName,
 		crisistypes.ModuleName,
 		govtypes.ModuleName,
 		stakingtypes.ModuleName,
@@ -475,7 +477,6 @@ func NewGaiaApp(
 		ibctransfertypes.ModuleName,
 		ibchost.ModuleName,
 		routertypes.ModuleName,
-		capabilitytypes.ModuleName,
 		authtypes.ModuleName,
 		banktypes.ModuleName,
 		distrtypes.ModuleName,
@@ -533,7 +534,7 @@ func NewGaiaApp(
 		feegrant.ModuleName,
 		authz.ModuleName,
 		authtypes.ModuleName,
-		routertypes.ModuleName,
+	    routertypes.ModuleName,
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
@@ -653,9 +654,9 @@ func (app *GaiaApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci
 	if err := tmjson.Unmarshal(req.AppStateBytes, &genesisState); err != nil {
 		panic(err)
 	}
-
+	fmt.Println("err1 !!!!")
 	app.UpgradeKeeper.SetModuleVersionMap(ctx, app.mm.GetVersionMap())
-
+	fmt.Println("err2 !!!!")
 	return app.mm.InitGenesis(ctx, app.appCodec, genesisState)
 }
 

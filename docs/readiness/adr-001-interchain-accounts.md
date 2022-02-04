@@ -6,8 +6,8 @@ Category: Feature
 Author: Sean King & Damian Nolan
 Created: 2022-01-19
 Mdified: 2022-01-19
-Requires: mauth
-Required-By: Cosmos-SDK, go-ibc
+Requires: Cosmos-SDK, go-ibc
+Required-By: mauth
 Implements: Interchain Accounts
 ---
 

@@ -8,13 +8,14 @@ Created: 2022-01-19
 Mdified: 2022-01-19
 Requires: mauth
 Required-By: Cosmos-SDK, go-ibc
-Implements:
+Implements: Interchain Accounts
 ---
 
 # ADR 001: Interchain
 
 ## Changelog
 
+- 2022-02-04: added content
 - 2022-01-19: init
 
 ## Abstract
@@ -65,13 +66,13 @@ There are future releases of Interchain Accounts which are expected to be backwa
   - IBC Team
 
 #### Downstream User Impact Report
-**Needs to be created**
+(Needs to be created)
 
 #### Upstream Partner Impact Report
-**Needs to be created**
+(Needs to be created)
 
 #### Inter-module Dependence Report
-** Needs to be created**
+(Needs to be created)
 
 ## Support
 [Documentation](https://ibc.cosmos.network/main/app-modules/interchain-accounts/overview.html)

@@ -36,14 +36,16 @@ The upgrades aim to add features such as liquidity, economic security, usability
 - Gaia v7.0.x
 - Cosmos SDK v0.45
   - Minimal update with small fixes
-- IBC 3.0
+- Gravity DEX: Liquidity v1.4.5
+  - Adds a circuit breaker governance proposal type to disable adding new liquidity in order to make a migration possible.
+- IBC 3.0.0
   - Interchain Account Module
     - Allows the creation of accounts on a "Host" blockchain which are controlled by an authentication module on a "Controller" blockchain.
     - Arbitrary messages are able to be submitted from the "Controller" blockchain to the "Host" blockchain to be executed on behalf of the Interchain Account.
     - Uses ordered IBC channels, one per account.
 - Interchain Account Message Auhothorization Module
-    - Authentication module that authorizes any Account to create an Interchain Account on any IBC connected "Host" blockchain that has the Interchain Account IBC module.
-    - Accounts can be private key controlled users, and eventually the Gov Module and any Groups Module.
+  - Authentication module that authorizes any Account to create an Interchain Account on any IBC connected "Host" blockchain that has the Interchain Account IBC module.
+  - Accounts can be private key controlled users, and eventually the Gov Module and any Groups Module.
 
 ## v8-Rho Upgrade (expected Q2 2022)
 - Gaia v8.0.x
@@ -55,14 +57,19 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Gov Module Improvements
     - Execution of arbitraty transactions instead of just governance proposals.
     - Enables much more expressive governance module.
-- NFT module
-  - Enable simple management of NFT identifiers, their owners, and associated data, such as URIs, content, and provenance
-  - An extensible base module for extensions including collectibles, custody, provenance, and marketplaces
+  - NFT module
+    - Enable simple management of NFT identifiers, their owners, and associated data, such as URIs, content, and provenance
+    - An extensible base module for extensions including collectibles, custody, provenance, and marketplaces
 - Tendermint v0.35
+  - Mempool Transaction Prioritization
+  - Lib P2P
+- IBC 3.1.0
+  - Relayer Incentivisation so that IBC packets contain fees to pay for relayer costs.
 - Liquid Staking
   - Frees secure and low-risk delegations for use in other parts of the Cosmos ecosystem
   - Features include enabling transfer of rewards and voting rights
-- Governance permissioned CosmWASM instance on the hub
+- Wasmd
+  - Governance permissioned CosmWASM instance on the hub
 - Budget Module
   - Inflation funding directed to arbitrary module and account addresses
 
@@ -88,6 +95,7 @@ The upgrades aim to add features such as liquidity, economic security, usability
     - Various storage and performance optimizations 
   - Postgres indexing
   - Protobuf v2
+- IBC Queries
 
 ## v11-Gamma (expected Q1 2023)
 - Gaia v11.0.x

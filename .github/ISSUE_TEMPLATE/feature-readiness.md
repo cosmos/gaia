@@ -29,7 +29,6 @@ Continuity
 Integrations
   - [ ] Gaia integration
   - [ ] Integration partner:
-  - [ ] [IBC Readiness](https://github.com/cosmos/stargate-launch/blob/master/ibc_readiness_matrix.md)
   - [ ] Downstream user impact report
   - [ ] Upstream partner impact report
   - [ ] Inter-module dependence, e.g., pegs  

@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/cosmos/cosmos-sdk v0.44.5
-	github.com/cosmos/ibc-go/v2 v2.0.2
+	github.com/cosmos/ibc-go/v2 v2.0.3
 	github.com/gorilla/mux v1.8.0
 	github.com/gravity-devs/liquidity v1.4.2
 	github.com/rakyll/statik v0.1.7

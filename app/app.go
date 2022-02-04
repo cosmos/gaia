@@ -409,10 +409,11 @@ func NewGaiaApp(
 		scopedTransferKeeper,
 	)
 	transferModule := transfer.NewAppModule(app.TransferKeeper)
+	ibcmodule := transfer.NewIBCModule(app.TransferKeeper)
 
 	app.RouterKeeper = routerkeeper.NewKeeper(appCodec, keys[routertypes.StoreKey], app.GetSubspace(routertypes.ModuleName), app.TransferKeeper, app.DistrKeeper)
 
-	routerModule := router.NewAppModule(app.RouterKeeper, transferModule)
+	routerModule := router.NewAppModule(app.RouterKeeper, ibcmodule)
 	// create static IBC router, add transfer route, then set and seal it
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, routerModule)

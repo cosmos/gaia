@@ -36,6 +36,8 @@ To get started, you'll need to install and configure the Gaia binary using the s
 
 This example is using the Vega testnet genesis. For up to date values like `persistent_peers`, visit the [testnet repository](https://github.com/cosmos/testnets).
 
+> **Note**: Cosmos Hub recommends running `gaiad` or `cosmovisor` with the `--x-crisis-skip-assert-invariants` flag. If checking for invariants, operators are likely to see `rounding error withdrawing rewards from validator`. These are expected. For more information see [Verify Mainnet](./join-mainnet.md#verify-mainnet)
+
 ```
 # Build gaiad binary and initialize chain
 cd $HOME
@@ -52,7 +54,7 @@ mv genesis.json $HOME/.gaia/config/genesis.json
 # Set minimum gas price & peers
 cd $HOME/.gaia/config
 sed -i 's/minimum-gas-prices = ""/minimum-gas-prices = "0.001uatom"/' app.toml
-sed -i 's/persistent_peers = ""/persistent_peers = "<persistent_peer_node_id_1:persistent_peer_address_1>,<persistent_peer_node_id_2:persistent_peer_address_2>"/' config.toml
+sed -i 's/persistent_peers = ""/persistent_peers = "<persistent_peer_node_id_1@persistent_peer_address_1:p2p_port>,<persistent_peer_node_id_2@persistent_peer_address_2:p2p_port>"/' config.toml
 ```
 
 ### State Sync
@@ -75,7 +77,7 @@ sed -i 's/trust_hash = ""/trust_hash = "<BLOCK_HASH>"/' config.toml
 sed -i 's/rpc_servers = ""/rpc_servers = "<rpc_address_1>:26657,<rpc_address_2>:26657"/' config.toml
 ```
 
-Now run `gaiad start` or if using [Cosmovisor](#using-cosmovisor),  `cosmovisor start`. Once a snapshot is found and verified, the chain will start syncing via regular consensus within minutes.
+Now run `gaiad start --x-crisis-skip-assert-invariants` or if using [Cosmovisor](#using-cosmovisor),  `cosmovisor start --x-crisis-skip-assert-invariants`. Once a snapshot is found and verified, the chain will start syncing via regular consensus within minutes.
 
 ### Using Cosmovisor
 
@@ -101,8 +103,6 @@ It is possible to enable autodownload for the new binary, but for the purpose of
 
 The following script installs, configures and starts Cosmovisor:
 
-> **Note**: Cosmos Hub recommends running `gaiad` or `cosmovisor` with the `--x-crisis-skip-assert-invariants` flag. If checking for invariants, operators are likely to see `rounding error withdrawing rewards from validator`. These are expected.
-
 ```
 # Install Cosmovisor
 go get github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor
@@ -120,7 +120,7 @@ cp $(which gaiad) ~/.gaia/cosmovisor/genesis/bin/
 cosmovisor version
 
 # Start Cosmovisor
-cosmovisor start
+cosmovisor start --x-crisis-skip-assert-invariants
 ```
 
 #### Upgrading

@@ -99,7 +99,7 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
-	gaiaappparams "github.com/cosmos/gaia/v6/app/params"
+	gaiaappparams "github.com/cosmos/gaia/v7/app/params"
 	"github.com/strangelove-ventures/packet-forward-middleware/router"
 	routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/router/keeper"
 	routertypes "github.com/strangelove-ventures/packet-forward-middleware/router/types"

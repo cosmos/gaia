@@ -93,13 +93,13 @@ When writing ADRs, follow the same best practices for writing RFCs. When writing
 
 ### Accepted
 
-- [ADR 000: <Accepted Module or Feature>]()
+- n/a
 
 ### Proposed
 
-- [ADR 001: <Proposed Module or Feature>]()
+- n/a
 
 
 ### Draft
 
-- [ADR 002: <Draft Module or Feature>]()
+- [ADR 001: Interchain Accounts](./adr-001-interchain-accounts.md)

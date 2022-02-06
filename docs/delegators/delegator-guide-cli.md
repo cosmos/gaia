@@ -11,7 +11,7 @@ It also contains instructions on how to manage accounts, restore accounts from t
 ::: danger
 **Very Important**: Please assure that you follow the steps described hereinafter
 carefully, as negligence in this significant process could lead to an indefinite
-loss of your Atoms. Therefore, read through the following instructions in their 
+loss of your Atoms. Therefore, read through the following instructions in their
 entirety prior to proceeding and reach out to us in case you need support.
 
 Please also note that you are about to interact with the Cosmos Hub, a
@@ -21,8 +21,8 @@ with utmost care, we can nevertheless expect to have issues, updates and bugs.
 Furthermore, interaction with blockchain technology requires
 advanced technical skills and always entails risks that are outside our control.
 By using the software, you confirm that you understand the inherent risks
-associated with cryptographic software (see also risk section of the 
-[Interchain Cosmos Contribution terms](https://github.com/cosmos/cosmos/blob/master/fundraiser/Interchain%20Cosmos%20Contribution%20Terms%20-%20FINAL.pdf)) and that the Interchain Foundation and/or 
+associated with cryptographic software (see also risk section of the
+[Interchain Cosmos Contribution terms](https://github.com/cosmos/cosmos/blob/master/fundraiser/Interchain%20Cosmos%20Contribution%20Terms%20-%20FINAL.pdf)) and that the Interchain Foundation and/or
 the Tendermint Team may not be held liable for potential damages arising out of the use of the
 software. Any use of this open source software released under the Apache 2.0 license is
 done at your own risk and on a "AS IS" basis, without warranties or conditions
@@ -48,9 +48,9 @@ Please exercise extreme caution!
     + [Participating in Governance](#participating-in-governance)
     + [Signing Transactions from an Offline Computer](#signing-transactions-from-an-offline-computer)
 
-## Installing `gaiad` 
+## Installing `gaiad`
 
-`gaiad`: This is the command-line interface to interact with a `gaiad` full-node. 
+`gaiad`: This is the command-line interface to interact with a `gaiad` full-node.
 
 ::: warning
 **Please check that you download the latest stable release of `gaiad` that is available**
@@ -105,13 +105,13 @@ At the core of every Cosmos account, there is a seed, which takes the form of a 
                                  +-------------------+
 ```
 
-The funds stored in an account are controlled by the private key. This private key is generated using a one-way function from the mnemonic. If you lose the private key, you can retrieve it using the mnemonic. However, if you lose the mnemonic, you will lose access to all the derived private keys. Likewise, if someone gains access to your mnemonic, they gain access to all the associated accounts. 
+The funds stored in an account are controlled by the private key. This private key is generated using a one-way function from the mnemonic. If you lose the private key, you can retrieve it using the mnemonic. However, if you lose the mnemonic, you will lose access to all the derived private keys. Likewise, if someone gains access to your mnemonic, they gain access to all the associated accounts.
 
 ::: danger
 **Do not lose or share your 12 words with anyone. To prevent theft or loss of funds, it is best to ensure that you keep multiple copies of your mnemonic, and store it in a safe, secure place and that only you know how to access. If someone is able to gain access to your mnemonic, they will be able to gain access to your private keys and control the accounts associated with them.**
 :::
 
-The address is a public string with a human-readable prefix (e.g. `cosmos10snjt8dmpr5my0h76xj48ty80uzwhraqalu4eg`) that identifies your account. When someone wants to send you funds, they send it to your address. It is computationally infeasible to find the private key associated with a given address. 
+The address is a public string with a human-readable prefix (e.g. `cosmos10snjt8dmpr5my0h76xj48ty80uzwhraqalu4eg`) that identifies your account. When someone wants to send you funds, they send it to your address. It is computationally infeasible to find the private key associated with a given address.
 
 ### Restoring an Account from the Fundraiser
 
@@ -119,11 +119,11 @@ The address is a public string with a human-readable prefix (e.g. `cosmos10snjt8
 *NOTE: This section only concerns fundraiser participants*
 :::
 
-If you participated in the fundraiser, you should be in possession of a 12-words mnemonic. Newly generated mnemonics use 24 words, but 12-word mnemonics are also compatible with all the Cosmos tools. 
+If you participated in the fundraiser, you should be in possession of a 12-words mnemonic. Newly generated mnemonics use 24 words, but 12-word mnemonics are also compatible with all the Cosmos tools.
 
 #### On a Ledger Device
 
-At the core of a ledger device, there is a mnemonic used to generate accounts on multiple blockchains (including the Cosmos Hub). Usually, you will create a new mnemonic when you initialize your ledger device. However, it is possible to tell the ledger device to use a mnemonic provided by the user instead. Let us go ahead and see how you can input the mnemonic you obtained during the fundraiser as the seed of your ledger device. 
+At the core of a ledger device, there is a mnemonic used to generate accounts on multiple blockchains (including the Cosmos Hub). Usually, you will create a new mnemonic when you initialize your ledger device. However, it is possible to tell the ledger device to use a mnemonic provided by the user instead. Let us go ahead and see how you can input the mnemonic you obtained during the fundraiser as the seed of your ledger device.
 
 ::: warning
 *NOTE: To do this, **it is preferable to use a brand new ledger device.**. Indeed, there can be only one mnemonic per ledger device. If, however, you want to use a ledger that is already initialized with a seed, you can reset it by going in `Settings`>`Device`>`Reset All`. **Please note that this will wipe out the seed currently stored on the device. If you have not properly secured the associated mnemonic, you could lose your funds!!!***
@@ -136,17 +136,17 @@ The following steps need to be performed on an un-initialized ledger device:
 3. Do **NOT** choose the "Config as a new device" option. Instead, choose "Restore Configuration"
 4. Choose a PIN
 5. Choose the 12 words option
-6. Input each of the words you got during the fundraiser, in the correct order. 
+6. Input each of the words you got during the fundraiser, in the correct order.
 
 Your ledger is now correctly set up with your fundraiser mnemonic! Do not lose this mnemonic! If your ledger is compromised, you can always restore a new device again using the same mnemonic.
 
-Next, click [here](#using-a-ledger-device) to learn how to generate an account. 
+Next, click [here](#using-a-ledger-device) to learn how to generate an account.
 
 #### On a Computer
 
 ::: warning
 **NOTE: It is more secure to perform this action on an offline computer**
-::: 
+:::
 
 To restore an account using a fundraiser mnemonic and store the associated encrypted private key on a computer, use the following command:
 
@@ -155,7 +155,7 @@ gaiad keys add <yourKeyName> --recover
 ```
 
 - `<yourKeyName>` is the name of the account. It is a reference to the account number used to derive the key pair from the mnemonic. You will use this name to identify your account when you want to send a transaction.
-- You can add the optional `--account` flag to specify the path (`0`, `1`, `2`, ...) you want to use to generate your account. By default, account `0` is generated. 
+- You can add the optional `--account` flag to specify the path (`0`, `1`, `2`, ...) you want to use to generate your account. By default, account `0` is generated.
 
 The private key of account `0` will be saved in your operating system's credentials storage.
 Each time you want to send a transaction, you will need to unlock your system's credentials store.
@@ -180,15 +180,15 @@ To create an account, you just need to have `gaiad` installed. Before creating i
 
 When you initialize your ledger, a 24-word mnemonic is generated and stored in the device. This mnemonic is compatible with Cosmos and Cosmos accounts can be derived from it. Therefore, all you have to do is make your ledger compatible with `gaiad`. To do so, you need to go through the following steps:
 
-1. Download the Ledger Live app [here](https://www.ledger.com/pages/ledger-live). 
+1. Download the Ledger Live app [here](https://www.ledger.com/pages/ledger-live).
 2. Connect your ledger via USB and update to the latest firmware
-3. Go to the ledger live app store, and download the "Cosmos" application (this can take a while). **Note: You may have to enable `Dev Mode` in the `Settings` of Ledger Live to be able to download the "Cosmos" application**. 
+3. Go to the ledger live app store, and download the "Cosmos" application (this can take a while). **Note: You may have to enable `Dev Mode` in the `Settings` of Ledger Live to be able to download the "Cosmos" application**.
 4. Navigate to the Cosmos app on your ledger device
 
 Then, to create an account, use the following command:
 
 ```bash
-gaiad keys add <yourAccountName> --ledger 
+gaiad keys add <yourAccountName> --ledger
 ```
 
 ::: warning
@@ -196,9 +196,9 @@ gaiad keys add <yourAccountName> --ledger
 :::
 
 - `<yourKeyName>` is the name of the account. It is a reference to the account number used to derive the key pair from the mnemonic. You will use this name to identify your account when you want to send a transaction.
-- You can add the optional `--account` flag to specify the path (`0`, `1`, `2`, ...) you want to use to generate your account. By default, account `0` is generated. 
+- You can add the optional `--account` flag to specify the path (`0`, `1`, `2`, ...) you want to use to generate your account. By default, account `0` is generated.
 
-#### Using a Computer 
+#### Using a Computer
 
 ::: warning
 **NOTE: It is more secure to perform this action on an offline computer**
@@ -224,7 +224,7 @@ store security policies please refer to your operating system manual.**
 
 ::: danger
 **Do not lose or share your 12 words with anyone. To prevent theft or loss of funds, it is best to ensure that you keep multiple copies of your mnemonic, and store it in a safe, secure place and that only you know how to access. If someone is able to gain access to your mnemonic, they will be able to gain access to your private keys and control the accounts associated with them.**
-::: 
+:::
 
 ::: warning
 After you have secured your mnemonic (triple check!), you can delete bash history to ensure no one can retrieve it:
@@ -236,7 +236,7 @@ rm ~/.bash_history
 :::
 
 - `<yourKeyName>` is the name of the account. It is a reference to the account number used to derive the key pair from the mnemonic. You will use this name to identify your account when you want to send a transaction.
-- You can add the optional `--account` flag to specify the path (`0`, `1`, `2`, ...) you want to use to generate your account. By default, account `0` is generated. 
+- You can add the optional `--account` flag to specify the path (`0`, `1`, `2`, ...) you want to use to generate your account. By default, account `0` is generated.
 
 
 You can generate more accounts from the same mnemonic using the following command:
@@ -245,7 +245,7 @@ You can generate more accounts from the same mnemonic using the following comman
 gaiad keys add <yourKeyName> --recover --account 1
 ```
 
-This command will prompt you to input a passphrase as well as your mnemonic. Change the account number to generate a different account. 
+This command will prompt you to input a passphrase as well as your mnemonic. Change the account number to generate a different account.
 
 
 ## Accessing the Cosmos Hub Network
@@ -254,17 +254,17 @@ In order to query the state and send transactions, you need a way to access the 
 
 ::: danger
 **NOTE: Do not share your mnemonic (12 or 24 words) with anyone. The only person who should ever need to know it is you. This is especially important if you are ever approached via email or direct message by someone requesting that you share your mnemonic for any kind of blockchain services or support. No one from Cosmos, the Tendermint team or the Interchain Foundation will ever send an email that asks for you to share any kind of account credentials or your mnemonic."**.
-::: 
+:::
 
 ### Running Your Own Full-Node
 
-This is the most secure option, but comes with relatively high resource requirements. In order to run your own full-node, you need good bandwidth and at least 1TB of disk space. 
+This is the most secure option, but comes with relatively high resource requirements. In order to run your own full-node, you need good bandwidth and at least 1TB of disk space.
 
 You will find the tutorial on how to install `gaiad` [here](https://cosmos.network/docs/cosmos-hub/installation.html), and the guide to run a full-node [here](https://cosmos.network/docs/cosmos-hub/join-mainnet.html).
 
 ### Connecting to a Remote Full-Node
 
-If you do not want or cannot run your own node, you can connect to someone else's full-node. You should pick an operator you trust, because a malicious operator could return  incorrect query results or censor your transactions. However, they will never be able to steal your funds, as your private keys are stored locally on your computer or ledger device. Possible options of full-node operators include validators, wallet providers or exchanges. 
+If you do not want or cannot run your own node, you can connect to someone else's full-node. You should pick an operator you trust, because a malicious operator could return  incorrect query results or censor your transactions. However, they will never be able to steal your funds, as your private keys are stored locally on your computer or ledger device. Possible options of full-node operators include validators, wallet providers or exchanges.
 
 In order to connect to the full-node, you will need an address of the following form: `https://77.87.106.33:26657` (*Note: This is a placeholder*). This address has to be communicated by the full-node operator you choose to trust. You will use this address in the [following section](#setting-up-gaiad).
 
@@ -286,7 +286,7 @@ In order to set up `gaiad`, use the following command:
 gaiad config <flag> <value>
 ```
 
-It allows you to set a default value for each given flag. 
+It allows you to set a default value for each given flag.
 
 First, set up the address of the full-node you want to connect to:
 
@@ -296,7 +296,7 @@ gaiad config node <host>:<port
 // example: gaiad config node https://77.87.106.33:26657
 ```
 
-If you run your own full-node, just use `tcp://localhost:26657` as the address. 
+If you run your own full-node, just use `tcp://localhost:26657` as the address.
 
 Then, let us set the default value of the `--trust-node` flag:
 
@@ -318,7 +318,7 @@ gaiad config chain-id cosmoshub-2
 **Before you can bond atoms and withdraw rewards, you need to [set up `gaiad`](#setting-up-gaiad)**
 :::
 
-`gaiad` lets you query all relevant information from the blockchain, like account balances, amount of bonded tokens, outstanding rewards, governance proposals and more. Next is a list of the most useful commands for delegator. 
+`gaiad` lets you query all relevant information from the blockchain, like account balances, amount of bonded tokens, outstanding rewards, governance proposals and more. Next is a list of the most useful commands for delegator.
 
 ```bash
 // query account balances and other account-related information
@@ -337,7 +337,7 @@ gaiad query staking delegations <delegatorAddress>
 gaiad query staking delegation <delegatorAddress> <validatorAddress>
 
 // query the rewards of a delegator given a delegator address (e.g. cosmos10snjt8dmpr5my0h76xj48ty80uzwhraqalu4eg)
-gaiad query distribution rewards <delegatorAddress> 
+gaiad query distribution rewards <delegatorAddress>
 
 // query all proposals currently open for depositing
 gaiad query gov proposals --status deposit_period
@@ -373,13 +373,13 @@ fees = ceil(gas * gasPrices)
 
 The `gas` is dependent on the transaction. Different transaction require different amount of `gas`. The `gas` amount for a transaction is calculated as it is being processed, but there is a way to estimate it beforehand by using the `auto` value for the `gas` flag. Of course, this only gives an estimate. You can adjust this estimate with the flag `--gas-adjustment` (default `1.0`) if you want to be sure you provide enough `gas` for the transaction. For the remainder of this tutorial, we will use a `--gas-adjustment` of `1.5`.
 
-The `gasPrice` is the price of each unit of `gas`. Each validator sets a `min-gas-price` value, and will only include transactions that have a `gasPrice` greater than their `min-gas-price`. 
+The `gasPrice` is the price of each unit of `gas`. Each validator sets a `min-gas-price` value, and will only include transactions that have a `gasPrice` greater than their `min-gas-price`.
 
-The transaction `fees` are the product of `gas` and `gasPrice`. As a user, you have to input 2 out of 3. The higher the `gasPrice`/`fees`, the higher the chance that your transaction will get included in a block. 
+The transaction `fees` are the product of `gas` and `gasPrice`. As a user, you have to input 2 out of 3. The higher the `gasPrice`/`fees`, the higher the chance that your transaction will get included in a block.
 
 ::: tip
-For mainnet, the recommended `gas-prices` is `0.0025uatom`. 
-::: 
+For mainnet, the recommended `gas-prices` is `0.0025uatom`.
+:::
 
 ### Sending Tokens
 
@@ -389,14 +389,14 @@ For mainnet, the recommended `gas-prices` is `0.0025uatom`.
 
 ::: warning
 **Note: These commands need to be run on an online computer. It is more secure to perform them commands using a Ledger Nano S device. For the offline procedure, click [here](#signing-transactions-from-an-offline-computer).**
-::: 
+:::
 
 ```bash
 // Send a certain amount of tokens to an address
-// Ex value for parameters (do not actually use these values in your tx!!): <to_address>=cosmos16m93fezfiezhvnjajzrfyszml8qm92a0w67ntjhd3d0 <amount>=1000000uatom 
+// Ex value for parameters (do not actually use these values in your tx!!): <to_address>=cosmos16m93fezfiezhvnjajzrfyszml8qm92a0w67ntjhd3d0 <amount>=1000000uatom
 // Ex value for flags: <gasPrice>=0.0025uatom
 
-gaiad tx send <to_address> <amount> --from <yourKeyName> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice>
+gaiad tx bank send [from_key_or_address] [to_address] [amount] [flags]
 ```
 
 ### Bonding Atoms and Withdrawing Rewards
@@ -411,7 +411,7 @@ gaiad tx send <to_address> <amount> --from <yourKeyName> --gas auto --gas-adjust
 
 ::: warning
 **Note: These commands need to be run on an online computer. It is more secure to perform them commands using a ledger device. For the offline procedure, click [here](#signing-transactions-from-an-offline-computer).**
-::: 
+:::
 
 ```bash
 // Bond a certain amount of Atoms to a given validator
@@ -434,8 +434,8 @@ gaiad tx staking redelegate <srcValidatorAddress> <destValidatorAddress> <amount
 gaiad tx distribution withdraw-all-rewards --from <delegatorKeyName> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice>
 
 
-// Unbond a certain amount of Atoms from a given validator 
-// You will have to wait 3 weeks before your Atoms are fully unbonded and transferrable 
+// Unbond a certain amount of Atoms from a given validator
+// You will have to wait 3 weeks before your Atoms are fully unbonded and transferrable
 // ex value for flags: <validatorAddress>=cosmosvaloper18thamkhnj9wz8pa4nhnp9rldprgant57pk2m8s, <amountToUnbound>=10000000uatom, <gasPrice>=0.0025uatom
 
 gaiad tx staking unbond <validatorAddress> <amountToUnbond> --from <delegatorKeyName> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice>
@@ -443,7 +443,7 @@ gaiad tx staking unbond <validatorAddress> <amountToUnbond> --from <delegatorKey
 
 ::: warning
 **If you use a connected Ledger, you will be asked to confirm the transaction on the device before it is signed and broadcast to the network. Note that the command will only work while the Ledger is plugged in and unlocked.**
-::: 
+:::
 
 To confirm that your transaction went through, you can use the following queries:
 
@@ -460,7 +460,7 @@ gaiad query tx <txHash>
 
 ```
 
-Double check with a block explorer if you interact with the network through a trusted full-node. 
+Double check with a block explorer if you interact with the network through a trusted full-node.
 
 ## Participating in Governance
 
@@ -468,13 +468,13 @@ Double check with a block explorer if you interact with the network through a tr
 
 The Cosmos Hub has a built-in governance system that lets bonded Atom holders vote on proposals. There are three types of proposal:
 
-- `Text Proposals`: These are the most basic type of proposals. They can be used to get the opinion of the network on a given topic. 
+- `Text Proposals`: These are the most basic type of proposals. They can be used to get the opinion of the network on a given topic.
 - `Parameter Proposals`: These are used to update the value of an existing parameter.
 - `Software Upgrade Proposal`: These are used to propose an upgrade of the Hub's software.
 
-Any Atom holder can submit a proposal. In order for the proposal to be open for voting, it needs to come with a `deposit` that is greater than a parameter called `minDeposit`. The `deposit` need not be provided in its entirety by the submitter. If the initial proposer's `deposit` is not sufficient, the proposal enters the `deposit_period` status. Then, any Atom holder can increase the deposit by sending a `depositTx`. 
+Any Atom holder can submit a proposal. In order for the proposal to be open for voting, it needs to come with a `deposit` that is greater than a parameter called `minDeposit`. The `deposit` need not be provided in its entirety by the submitter. If the initial proposer's `deposit` is not sufficient, the proposal enters the `deposit_period` status. Then, any Atom holder can increase the deposit by sending a `depositTx`.
 
-Once the `deposit` reaches `minDeposit`, the proposal enters the `voting_period`, which lasts 2 weeks. Any **bonded** Atom holder can then cast a vote on this proposal. The options are `Yes`, `No`, `NoWithVeto` and `Abstain`. The weight of the vote is based on the amount of bonded Atoms of the sender. If they don't vote, delegator inherit the vote of their validator. However, delegators can override their validator's vote by sending a vote themselves. 
+Once the `deposit` reaches `minDeposit`, the proposal enters the `voting_period`, which lasts 2 weeks. Any **bonded** Atom holder can then cast a vote on this proposal. The options are `Yes`, `No`, `NoWithVeto` and `Abstain`. The weight of the vote is based on the amount of bonded Atoms of the sender. If they don't vote, delegator inherit the vote of their validator. However, delegators can override their validator's vote by sending a vote themselves.
 
 At the end of the voting period, the proposal is accepted if there are more than 50% `Yes` votes (excluding `Abstain ` votes) and less than 33.33% of `NoWithVeto` votes (excluding `Abstain` votes).
 
@@ -486,7 +486,7 @@ At the end of the voting period, the proposal is accepted if there are more than
 
 ::: warning
 **Note: These commands need to be run on an online computer. It is more secure to perform them commands using a ledger device. For the offline procedure, click [here](#signing-transactions-from-an-offline-computer).**
-::: 
+:::
 
 ```bash
 // Submit a Proposal
@@ -502,7 +502,7 @@ gaiad tx gov submit-proposal --title "Test Proposal" --description "My awesome p
 gaiad tx gov deposit <proposalID> <deposit> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice> --from <delegatorKeyName>
 
 // Vote on a proposal
-// Retrieve proposalID from $gaiad query gov proposals --status voting_period 
+// Retrieve proposalID from $gaiad query gov proposals --status voting_period
 // <option>=yes/no/no_with_veto/abstain
 
 gaiad tx gov vote <proposalID> <option> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice> --from <delegatorKeyName>
@@ -513,7 +513,7 @@ gaiad tx gov vote <proposalID> <option> --gas auto --gas-adjustment 1.5 --gas-pr
 If you do not have a ledger device and want to interact with your private key on an offline computer, you can use the following procedure. First, generate an unsigned transaction on an **online computer** with the following command (example with a bonding transaction):
 
 ```bash
-// Bond Atoms 
+// Bond Atoms
 // ex value for flags: <amountToBound>=10000000uatom, <bech32AddressOfValidator>=cosmosvaloper18thamkhnj9wz8pa4nhnp9rldprgant57pk2m8s, <gasPrice>=0.0025uatom, <delegatorAddress>=cosmos10snjt8dmpr5my0h76xj48ty80uzwhraqalu4eg
 
 gaiad tx staking delegate <validatorAddress> <amountToBond> --from <delegatorAddress> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice> --generate-only > unsignedTX.json

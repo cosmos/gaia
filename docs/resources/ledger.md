@@ -137,7 +137,7 @@ To run your own full node locally [read more here.](https://cosmos.network/docs/
 You are now ready to start signing and sending transactions. Send a transaction with gaiad using the `tx send` command.
 
 ``` bash
-gaiad tx send --help # to see all available options.
+gaiad tx bank send --help # to see all available options.
 ```
 
 ::: tip
@@ -147,7 +147,7 @@ Be sure to unlock your device with the PIN and open the Cosmos app before trying
 Use the `keyName` you set for your Ledger key and gaia will connect with the Cosmos Ledger app to then sign your transaction.
 
 ```bash
-gaiad tx send <keyName> <destinationAddress> <amount><denomination>
+gaiad tx bank send <keyName> <destinationAddress> <amount><denomination>
 ```
 
 When prompted with `confirm transaction before signing`, Answer `Y`.

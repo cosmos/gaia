@@ -152,13 +152,13 @@ __참고__: 위와 같은 메커니즘에서 일부 검증인은 멤풀에 있�
 예시)
 
 ```bash
-gaiad tx send ... --fees=5000uatom
+gaiad tx bank send ... --fees=5000uatom
 ```
 
 또는
 
 ```bash
-gaiad tx send ... --gas-prices=0.0025uatom
+gaiad tx bank send ... --gas-prices=0.0025uatom
 ```
 
 ### 계정
@@ -184,7 +184,7 @@ gaiad query account <코스모스_주소(account_cosmos)>
 한 계정에서 다른 계정으로 토큰/코인을 전송하기 위해서는 다음 명령어를 이용하시면 됩니다:
 
 ```bash
-gaiad tx send <보내는_사람_키_명칭_또는_주소(sender_key_name_or_address)> 10faucetToken \
+gaiad tx bank send <보내는_사람_키_명칭_또는_주소(sender_key_name_or_address)> 10faucetToken \
   --chain-id=<체인_아이디(chain_id)> \
 ```
 
@@ -212,7 +212,7 @@ gaiad query account <코스모스_주소(account_cosmos)> --block=<블록_높이
 트랜잭션을 실제 전파하지 않고 시뮬레이션을 하시려면 명령어 뒤에 `--dry-run` 플래그를 추가하세요:
 
 ```bash
-gaiad tx send <보내는_사람_키_명칭_또는_주소(sender_key_name_or_address)> 10faucetToken \
+gaiad tx bank send <보내는_사람_키_명칭_또는_주소(sender_key_name_or_address)> 10faucetToken \
   --chain-id=<체인_아이디(chain-id)> \
   --dry-run
 ```
@@ -220,7 +220,7 @@ gaiad tx send <보내는_사람_키_명칭_또는_주소(sender_key_name_or_addr
 또한 트랜잭션을 빌드한 후 해당 트랜잭션을 JSON 포맷으로 STDOUT에 프린트 하시기를 원하면 `--generate-only`를 명령어에 추가하시면 됩니다:
 
 ```bash
-gaiad tx send <보내는이_주소(sender_address)> <수신자_주소(destination_cosmosaccaddr)> 10faucetToken \
+gaiad tx bank send <보내는이_주소(sender_address)> <수신자_주소(destination_cosmosaccaddr)> 10faucetToken \
   --chain-id=<체인_아이디(chain-id)> \
   --generate-only > unsignedSendTx.json
 ```
@@ -775,7 +775,7 @@ gaiad keys show p1p2p3 --show-multisig
 위 주소를 기반으로 멀티시그 트랜잭션을 생성하는 과정의 첫 단계는 다음과 같습니다:
 
 ```bash
-gaiad tx send cosmos1570v2fq3twt0f0x02vhxpuzc9jc4yl30q2qned 10000000uatom \
+gaiad tx bank send cosmos1570v2fq3twt0f0x02vhxpuzc9jc4yl30q2qned 10000000uatom \
   --from=<멀티시그_주소(multisig_address)> \
   --generate-only > unsignedTx.json
 ```

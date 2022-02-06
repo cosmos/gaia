@@ -44,7 +44,7 @@ gaiad config chain-id cosmoshub-2
 
 有如下类型的key：
 
-+ `cosmos` 
++ `cosmos`
 	+ 从通过`gaiad keys add`生成的账户私钥中产生
 	+ 用于接收资金
 	+ 例如 `cosmos15h6vd5f0wqps26zjlwrc6chah08ryu4hzzdwhc`
@@ -147,13 +147,13 @@ gaiad keys show --multisig-threshold K name1 name2 name3 [...]
 比如：
 
 ```bash
-gaiad tx send ... --fees=50000uatom
+gaiad tx bank send ... --fees=50000uatom
 ```
 
 或：
 
 ```bash
-gaiad tx send ... --gas-prices=0.0025uatom
+gaiad tx bank send ... --gas-prices=0.0025uatom
 ```
 
 
@@ -180,9 +180,7 @@ gaiad query account <account_cosmos>
 你可以通过如下命令从一个账户发送资金到另一个账户：
 
 ```bash
-gaiad tx send <destination_cosmos> 10faucetToken \
-  --chain-id=<chain_id> \
-  --from=<key_name> 
+gaiad tx bank send [from_key_or_address] [to_address] [amount] [flags]
 ```
 
 ::: warning Note
@@ -209,7 +207,7 @@ gaiad query account <account_cosmos> --block=<block_height>
 你可以通过在命令行中附加`--dry-run`标识来模拟交易而不实际广播它：
 
 ```bash
-gaiad tx send <destination_cosmosaccaddr> 10faucetToken \
+gaiad tx bank send <destination_cosmosaccaddr> 10faucetToken \
   --chain-id=<chain_id> \
   --from=<key_name> \
   --dry-run
@@ -218,7 +216,7 @@ gaiad tx send <destination_cosmosaccaddr> 10faucetToken \
 此外，你可以通过将`--generate-only`附加到命令行参数列表来构建交易并将其JSON格式打印到STDOUT：
 
 ```bash
-gaiad tx send <destination_cosmosaccaddr> 10faucetToken \
+gaiad tx bank send <destination_cosmosaccaddr> 10faucetToken \
   --chain-id=<chain_id> \
   --from=<key_name> \
   --generate-only > unsignedSendTx.json
@@ -563,7 +561,7 @@ respective parameter, eg. `MaxValidators` should be an integer and not a decimal
 
 Proper vetting of a parameter change proposal should prevent this from happening
 (no deposits should occur during the governance process), but it should be noted
-regardless. 
+regardless.
 
 目前，参数更改已经过*评估*但未*经过验证*，因此`value`对于其相应参数，任何更改都是有效的（即正确类型和边界内）非常重要，例如 `MaxValidators` 应该是整数而不是小数。
 
@@ -761,7 +759,7 @@ gaiad keys show p1p2p3 --show-multisig
 创建多签交易的第一步是使用上面创建的多签地址初始化：
 
 ```bash
-gaiad tx send cosmos1570v2fq3twt0f0x02vhxpuzc9jc4yl30q2qned 10000000uatom \
+gaiad tx bank send cosmos1570v2fq3twt0f0x02vhxpuzc9jc4yl30q2qned 10000000uatom \
   --from=<multisig_address> \
   --generate-only > unsignedTx.json
 ```
@@ -773,7 +771,7 @@ gaiad tx sign \
   unsignedTx.json \
   --multisig=<multisig_address> \
   --from=p1 \
-  --output-document=p1signature.json 
+  --output-document=p1signature.json
 ```
 
 生成签名后，`p1`将`unsignedTx.json`和`p1signature.json`都发送到`p2`或`p3`，然后`p2`或`p3`将生成它们各自的签名:

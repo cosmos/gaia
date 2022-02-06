@@ -88,7 +88,7 @@ gaiad query staking validators
 이제 트랜잭션을 서명하고 전송할 수 있습니다. Gaiacli를 사용해 트랜잭션을 전송하기 위해서는 `tx send` 명령어를 사용하세요.
 
 ``` bash
-gaiad tx send --help # to see all available options.
+gaiad tx bank send --help # to see all available options.
 ```
 
 ::: tip
@@ -98,7 +98,7 @@ gaiad tx send --help # to see all available options.
 렛저의 `키_명칭(keyName)`을 지정하여 Gaia와 코스모스 렛저 앱을 연결하고 트랜잭션을 서명하세요.
 
 ```bash
-gaiad tx send <키_명칭(keyName)> <수신자_주소(destinationAddress)> <수량(amount)><단위(denomination)>
+gaiad tx bank send <키_명칭(keyName)> <수신자_주소(destinationAddress)> <수량(amount)><단위(denomination)>
 ```
 
 만약 `confirm transaction before signing`이 표기되는 경우, `Y`를 입력하여 진행하세요.

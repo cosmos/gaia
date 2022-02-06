@@ -6,7 +6,7 @@ order: 5
 
 'Service Providers' are defined as entities that provide services for end-users that involve some form of interaction with the Cosmos Hub. More specifically, this document is focused on interactions with tokens.
 
-Service Providers are expected to act as trusted points of contact to the blockchain for their end-users. This Service Providers section does not apply to wallet builders that want to provide Light Client functionalities. 
+Service Providers are expected to act as trusted points of contact to the blockchain for their end-users. This Service Providers section does not apply to wallet builders that want to provide Light Client functionalities.
 
 This document describes:
 
@@ -29,7 +29,7 @@ This document describes:
 
 There are four main technologies to consider to connect to the Cosmos Hub:
 
-- Full Nodes: Interact with the blockchain. 
+- Full Nodes: Interact with the blockchain.
 - REST Server: Serves for HTTP calls.
 - REST API: Use available endpoints for the REST Server.
 - GRPC: Connect to the Cosmos Hub using gRPC.
@@ -38,7 +38,7 @@ There are four main technologies to consider to connect to the Cosmos Hub:
 
 ### What is a Full Node?
 
-A Full Node is a network node that syncs up with the state of the blockchain. It provides blockchain data to others by using RESTful APIs, a replica of the database by exposing data with interfaces. A Full Node keeps in syncs with the rest of the blockchain nodes and stores the state on disk. If the full node does not have the queried block on disk the full node can go find the blockchain where the queried data lives. 
+A Full Node is a network node that syncs up with the state of the blockchain. It provides blockchain data to others by using RESTful APIs, a replica of the database by exposing data with interfaces. A Full Node keeps in syncs with the rest of the blockchain nodes and stores the state on disk. If the full node does not have the queried block on disk the full node can go find the blockchain where the queried data lives.
 
 ### Installation and Configuration
 
@@ -64,7 +64,7 @@ gaiad version --long
 All available CLI commands are shown when you run the `gaiad` command:
 
 ```bash
-gaiad 
+gaiad
 ```
 
 ```bash
@@ -105,7 +105,7 @@ Flags:
 Use "gaiad [command] --help" for more information about a command.
 ```
 
-For each displayed command, you can use the `--help` flag to get further information. 
+For each displayed command, you can use the `--help` flag to get further information.
 
 ```bash
 gaiad query --help
@@ -168,7 +168,7 @@ gaiad config node <host>:<port
 // example: gaiad config node https://77.87.106.33:26657
 ```
 
-If you run your own full node locally, use `tcp://localhost:26657` as the address. 
+If you run your own full node locally, use `tcp://localhost:26657` as the address.
 
 Set the default value of the `--trust-node` flag:
 
@@ -200,7 +200,7 @@ gaiad keys add <your_key_name>
 You will be asked to create a password (at least 8 characters) for this key-pair. This will return the information listed below:
 
 - `NAME`: Name of your key
-- `TYPE`: Type of your key, always `local`. 
+- `TYPE`: Type of your key, always `local`.
 - `ADDRESS`: Your address. Used to receive funds.
 - `PUBKEY`: Your public key. Useful for validators.
 - `MNEMONIC`: 24-word phrase. **Save this mnemonic somewhere safe**. This phrase is required to recover your private key in case you forget the password. The mnemonic is displayed at the end of the output.
@@ -250,7 +250,7 @@ Each `balances` entry contains an `amount` held, connected to a `denom` identifi
 The typical $ATOM token is identified by the denom `uatom`. Where 1 `uatom` is 0.000001 ATOM.
 
 ```bash
-balances: 
+balances:
 - amount: "12345678"
   denom: uatom
 pagination:
@@ -272,8 +272,7 @@ pagination:
 To send coins using the CLI:
 
 ```bash
-gaiad tx send <from_key_or_address> <to_address> <amount> \
-    --chain-id=<your_chain_id> 
+gaiad tx bank send [from_key_or_address] [to_address] [amount] [flags]
 ```
 
 Parameters:

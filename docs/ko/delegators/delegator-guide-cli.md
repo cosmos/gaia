@@ -341,7 +341,7 @@ gaiad query
 //파라미터 값 예시(실제 토큰 전송시 사용하지 마세요!): <수신자_주소_예시>=cosmos16m93fezfiezhvnjajzrfyszml8qm92a0w67ntjhd3d0 <수량_예시>=1000000uatom
 //플래그 값 예시: <가스_가격(gasPrice)>=0.0025uatom
 
-gaiad tx send <수신자_주소> <보내는_수량> --from <키_이름> --gas auto --gas-adjustment 1.5 --gas-prices <가스_가격(gasPrice)>
+gaiad tx bank send <수신자_주소> <보내는_수량> --from <키_이름> --gas auto --gas-adjustment 1.5 --gas-prices <가스_가격(gasPrice)>
 ```
 
 ### 아톰 위임하기 / 리워드 수령하기

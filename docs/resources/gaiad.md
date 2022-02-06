@@ -218,7 +218,7 @@ When you query an account balance with zero tokens, you will get this error: `No
 The following command could be used to send coins from one account to another:
 
 ```bash
-gaiad tx bank send <sender_key_name_or_address> <recipient_address> 10faucetToken \
+gaiad tx bank send [from_key_or_address] [to_address] [amount] [flags] \
   --chain-id=<chain_id>
 ```
 
@@ -249,7 +249,7 @@ You can simulate a transaction without actually broadcasting it by appending the
 `--dry-run` flag to the command line:
 
 ```bash
-gaiad tx bank send <sender_key_name_or_address> <destination_cosmosaccaddr> 10faucetToken \
+gaiad tx bank send [from_key_or_address] [to_address] [amount] [flags] \
   --chain-id=<chain_id> \
   --dry-run
 ```
@@ -258,7 +258,7 @@ Furthermore, you can build a transaction and print its JSON format to STDOUT by
 appending `--generate-only` to the list of the command line arguments:
 
 ```bash
-gaiad tx bank send <sender_address> <recipient_address> 10faucetToken \
+gaiad tx bank send [from_key_or_address] [to_address] [amount] [flags] \
   --chain-id=<chain_id> \
   --generate-only > unsignedSendTx.json
 ```

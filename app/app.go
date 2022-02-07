@@ -654,9 +654,9 @@ func (app *GaiaApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci
 	if err := tmjson.Unmarshal(req.AppStateBytes, &genesisState); err != nil {
 		panic(err)
 	}
-	fmt.Println("err1 !!!!")
+	
 	app.UpgradeKeeper.SetModuleVersionMap(ctx, app.mm.GetVersionMap())
-	fmt.Println("err2 !!!!")
+	
 	return app.mm.InitGenesis(ctx, app.appCodec, genesisState)
 }
 

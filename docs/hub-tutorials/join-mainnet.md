@@ -32,7 +32,7 @@ For instructions to join as a validator, please also see the [Validator Guide](h
     - [State Sync](#state-sync)
     - [Quicksync](#quicksync)
 - [Snapshots](#snapshots)
-- [Releases](#releases-and-upgrades)
+- [Releases](#releases-upgrades)
 - [Cosmovisor](#cosmovisor)
 - [Running via Background Process](#running-via-background-process)
 - [Exporting State](#exporting-state)

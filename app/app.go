@@ -535,7 +535,7 @@ func NewGaiaApp(
 		authz.ModuleName,
 		authtypes.ModuleName,
 		genutiltypes.ModuleName,
-	    routertypes.ModuleName,
+		routertypes.ModuleName,
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,

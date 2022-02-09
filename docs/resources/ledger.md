@@ -66,7 +66,7 @@ The tool used to generate addresses and transactions on the Cosmos Hub network i
 ### Before you Begin
 
 - [Install Golang](https://golang.org/doc/install)
-- [Install Gaia](https://cosmos.network/docs/cosmos-hub/installation.html)
+- [Install Gaia](../getting-started/installation.html)
 
 Verify that gaiad is installed correctly with the following command
 
@@ -129,7 +129,7 @@ gaiad query staking validators
 ```
 
 ::: tip
-To run your own full node locally [read more here.](https://cosmos.network/docs/cosmos-hub/join-mainnet.html#setting-up-a-new-node).
+To run your own full node locally [read more here.](../hub-tutorials/join-mainnet.html#setting-up-a-new-node).
 :::
 
 ### Sign a transaction
@@ -207,4 +207,4 @@ Feel welcome to reach out in our [Telegram channel](https://t.me/cosmosproject) 
 Here are a few relevant and helpful tutorials from the wonderful Cosmos community:
 
 - [Catdotfish](https://catdotfish.medium.com/) - [How to use the Keplr Wallet](https://medium.com/chainapsis/how-to-use-keplr-wallet-40afc80907f6)
-- [Cryptium Labs](https://medium.com/cryptium-cosmos) - [How to store your ATOMS on your Ledger and delegate with the command line](https://medium.com/cryptium-cosmos/how-to-store-your-cosmos-atoms-on-your-ledger-and-delegate-with-the-command-line-929eb29705f)
+- [Cryptium Labs](https://medium.com/cryptium) - [How to store your ATOMS on your Ledger and delegate with the command line](https://medium.com/cryptium-cosmos/how-to-store-your-cosmos-atoms-on-your-ledger-and-delegate-with-the-command-line-929eb29705f)

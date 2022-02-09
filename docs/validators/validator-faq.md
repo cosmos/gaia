@@ -12,7 +12,7 @@ This is work in progress. Mechanisms and values are susceptible to change.
 
 ### What is a Cosmos validator?
 
-The [Cosmos Hub](../getting-started/what-is-gaia.md) is based on [Tendermint](https://tendermint.com/docs/introduction/what-is-tendermint.html) that relies on a set of validators to secure the network. The role of validators is to run a full node and participate in consensus by broadcasting votes that contain cryptographic signatures signed by the validator's private key. Validators commit new blocks in the blockchain and receive revenue in exchange for their work. Validators must also participate in governance by voting on proposals. Validators are weighted according to their total stake.
+The [Cosmos Hub](../getting-started/what-is-gaia.md) is based on [Tendermint](https://docs.tendermint.com/master/introduction/what-is-tendermint.html) that relies on a set of validators to secure the network. The role of validators is to run a full node and participate in consensus by broadcasting votes that contain cryptographic signatures signed by the validator's private key. Validators commit new blocks in the blockchain and receive revenue in exchange for their work. Validators must also participate in governance by voting on proposals. Validators are weighted according to their total stake.
 
 ### What is staking?
 
@@ -145,7 +145,7 @@ Validators, and by association delegators, receive block rewards, fees, and have
 
 By delegating to a validator, a user delegates voting power. The more voting power a validator have, the more weight they have in the consensus and governance processes. This does not mean that the validator has custody of their delegators' ATOM. **A validator cannot run away with its delegator's funds**.
 
-Even though delegated funds cannot be stolen by their validators, delegators' tokens can still be slashed by a small percentage if their validator suffers a [slashing event](#what-are-the-slashing-conditions?), which is why we encourage due diligence when [selecting a validator](#how-do-delegators-choose-their-validators?).
+Even though delegated funds cannot be stolen by their validators, delegators' tokens can still be slashed by a small percentage if their validator suffers a [slashing event](#what-are-the-slashing-conditions), which is why we encourage due diligence when [selecting a validator](#how-do-delegators-choose-their-validators).
 
 ### How often is a validator chosen to propose the next block? Does frequency increase with the quantity of bonded ATOM?
 

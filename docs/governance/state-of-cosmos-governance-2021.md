@@ -66,7 +66,7 @@ Venues involve community members to different degrees and individuals often perf
   - For internal team coordinating, 1-1s between specific core development teams, multi-team discussions that are early stage, have private or strategic team info too early to share out
 - **[Telegram (Governance Working Group)](https://t.me/hubgov)**
   - For coordinating a working group that: "develops decentralized community governance efforts alongside the Hub's governance development."
-  - Working Group came out of [a community pool proposal](https://figment.io/wp-content/uploads/2019/12/Figment-Networks-Cosmos-GWG-proposal.pdf). 
+  - Working Group came out of [a community pool proposal](https://www.figment.io/resources/introducing-the-cosmos-governance-working-group). 
   - Some interest in deprecating but remains actives
 - **GitHub repositories** for governance processes ([Cosmos governance](https://github.com/cosmos/governance), [Cosmos cips](https://github.com/cosmos/cips), [Cosmos ibc](https://github.com/cosmos/ibc))
   - For discussing meta aspects of governance processes, discussion and development of specific off-chain design records and technical specs, and repository for on-chain proposals

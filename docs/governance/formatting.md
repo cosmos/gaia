@@ -87,7 +87,7 @@ You use can also use [Hubble](https://hubble.figment.network/cosmos/chains/cosmo
 
 ## Params Change
 
-**Note:** Changes to the [`gov` module](./Governance.md) are different from the other kinds of parameter changes because `gov` has subkeys, [as discussed here](https://github.com/cosmos/cosmos-sdk/issues/5800). Only the `key` part of the JSON file is different for `gov` parameter-change proposals.
+**Note:** Changes to the [`gov` module](https://docs.cosmos.network/master/modules/gov/) are different from the other kinds of parameter changes because `gov` has subkeys, [as discussed here](https://github.com/cosmos/cosmos-sdk/issues/5800). Only the `key` part of the JSON file is different for `gov` parameter-change proposals.
 
 For parameter-change proposals, there are seven (7) components:
 1. **Title** - the distinguishing name of the proposal, typically the way the that explorers list proposals
@@ -128,7 +128,7 @@ The deposit `denom` is `uatom` and `amount` is `100000`. Since 1,000,000 micro-A
 
 ### Mainnet Example
  
-To date, the Cosmos Hub's parameters have not been changed by a parameter-change governance proposal. This is a hypothetical example of the JSON file that would be used with a command line transaction to create a new proposal. This is an example of a proposal that changes two parameters, and both parameters are from the [`slashing` module](./Slashing.md). A single parameter-change governance proposal can reportedly change any number of parameters.
+To date, the Cosmos Hub's parameters have not been changed by a parameter-change governance proposal. This is a hypothetical example of the JSON file that would be used with a command line transaction to create a new proposal. This is an example of a proposal that changes two parameters, and both parameters are from the [`slashing` module](https://docs.cosmos.network/master/modules/slashing/). A single parameter-change governance proposal can reportedly change any number of parameters.
 
 ```
 {
@@ -151,4 +151,4 @@ To date, the Cosmos Hub's parameters have not been changed by a parameter-change
 ```
 **Note:** in the JSON file, `\n` creates a new line.
 
-It's worth noting that this example proposal doesn't provide reasoning/justification for these changes. Consider consulting the [parameter-change best practices documentation](./best_practices.md) for guidance on the contents of a parameter-change proposal.
+It's worth noting that this example proposal doesn't provide reasoning/justification for these changes. Consider consulting the [parameter-change best practices documentation](./best-practices.md) for guidance on the contents of a parameter-change proposal.

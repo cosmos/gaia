@@ -69,7 +69,7 @@ From the [networks/local directory](https://github.com/cosmos/gaia/tree/main/net
 
 ### Requirements
 
-- [Install gaia](./getting-started/installation.md)
+- [Install gaia](../getting-started/installation.md)
 - [Install docker](https://docs.docker.com/engine/installation/)
 - [Install docker-compose](https://docs.docker.com/compose/install/)
 

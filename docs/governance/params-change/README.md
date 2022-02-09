@@ -16,7 +16,7 @@ Drafting and submitting a parameter-change governance proposal involves two kind
 
 If you are considering drafting a proposal, you should review the general
 background on drafting and submitting a proposal:
-1. [How the voting process and governance mechanism works](../overview.md)
+1. [How the voting process and governance mechanism works](../process.md)
 1. [How to draft your proposal and engage with the Cosmos community about it](../best-practices.md)
 1. [How to format proposals](../formatting.md)
 1. [How to submit your proposal](../submitting.md)
@@ -54,7 +54,7 @@ bond_denom: uatom
 
 ## The Voting Process & Governance Mechanism
 
-The criteria for submitting a parameter-change proposal and the subsequent voting conditions are the same as those for signalling (text-based) proposals and community-spend proposals. Details about the deposit period can be found [here](../overview.md#_1-deposit-period), and voting period [here](../overview.md#what-determines-whether-or-not-a-governance-proposal-passes).
+The criteria for submitting a parameter-change proposal and the subsequent voting conditions are the same as those for signalling (text-based) proposals and community-spend proposals. Details about the deposit period can be found [here](../process.md#_1-deposit-period), and voting period [here](../process.md#what-determines-whether-or-not-a-governance-proposal-passes).
 
 If a paramater-change proposal is successful, the change takes effect immediately upon completion of the voting period.
 

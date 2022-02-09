@@ -608,6 +608,8 @@ func NewGaiaApp(
 				fromVM[moduleName] = eachModule.ConsensusVersion()
 			}
 
+			ctx.Logger().Info("start to run module migrations...")
+
 			return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 		},
 	)

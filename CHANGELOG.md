@@ -54,6 +54,15 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ## [v6.0.1] - 2021-11-24
  * Unusable release
 
+## [v6.0.1] - 2022-02-11
+
+* (gaia) Bump [Liquidity](https://github.com/gravity-devs/liquidity) module to [v1.4.4](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.4.4).
+* (gaia) Bump [IBC](https://github.com/cosmos/ibc-go) module to [2.0.3](https://github.com/cosmos/ibc-go/releases/tag/v2.0.3).
+* (gaia) [#1230](https://github.com/cosmos/gaia/pull/1230) Fix: update gRPC Web Configuration in `contrib/testnets/test_platform`.
+* (gaia) [#1135](https://github.com/cosmos/gaia/pull/1135) Fix rocksdb build tag usage.
+* (gaia) [#1160](https://github.com/cosmos/gaia/pull/1160) Improvement: update state sync configs.
+* (gaia) [#1208](https://github.com/cosmos/gaia/pull/1208) Update statesync.bash.
+
 ## [v6.0.0] - 2021-11-24
 
  * (gaia) Add NewSetUpContextDecorator to anteDecorators

@@ -37,7 +37,7 @@ Increasing the value of the `communitytax` parameter will increase the rate that
 ### `baseproposerreward`
 **The fixed base reward bonus for the validator proposing a block, as a proportion of transaction fees.**
 
-All validators in the active set share the rewards for producing a block equally, except for the proposer of a valid block: that validator receives a bonus of `0.010000000000000000` (1%) more in transaction fees. The proposer must include a minimum of 2/3 of precommit signatures from the other validators in the active set in order for the block to be valid and to receive the `baseproposerreward` bonus. All in Bits has published more in-depth information [here](../../validators/validator-faq.html#how-are-fees-distributed).
+All validators in the active set share the rewards for producing a block equally, except for the proposer of a valid block: that validator receives a bonus of `0.010000000000000000` (1%) more in transaction fees. The proposer must include a minimum of 2/3 of precommit signatures from the other validators in the active set in order for the block to be valid and to receive the `baseproposerreward` bonus. All in Bits has published more in-depth information [here](../../validators/validator-faq.md#how-are-fees-distributed).
 
 * on-chain value:  `{{ $themeConfig.currentParameters.distribution.baseproposerreward }}`
 * `cosmoshub-4` default: `0.010000000000000000`
@@ -55,7 +55,7 @@ The Cosmos Hub transaction fee volume is proportionally very low in value compar
 ###  `bonusproposerreward`
 **The maximum additional reward bonus for the validator proposing a block, as a proportion of transaction fees.**
 
-All validators in the active set share the rewards for producing a block equally, except for the proposer of a valid block. If that validator includes more than a minimum of 2/3 of precommit signatures from the other validators in the active set, they are eligible to receive the `bonusproposerreward` of up to 4% (`0.040000000000000000`), beyond the 1% `baseproposerreward`. The bonus proposer reward amount that a validator receives depends upon how many precommit signatures are included in the proposed block (additional to the requisite 2/3). All in Bits has published more in-depth information [here](../../validators/validator-faq.html#how-are-fees-distributed).
+All validators in the active set share the rewards for producing a block equally, except for the proposer of a valid block. If that validator includes more than a minimum of 2/3 of precommit signatures from the other validators in the active set, they are eligible to receive the `bonusproposerreward` of up to 4% (`0.040000000000000000`), beyond the 1% `baseproposerreward`. The bonus proposer reward amount that a validator receives depends upon how many precommit signatures are included in the proposed block (additional to the requisite 2/3). All in Bits has published more in-depth information [here](../../validators/validator-faq.md#how-are-fees-distributed).
 
 * on-chain value: `{{ $themeConfig.currentParameters.distribution.bonusproposerreward }}`
 * `cosmoshub-4` default: `0.040000000000000000`
@@ -71,7 +71,7 @@ Increasing the value of the `bonusproposerreward` parameter will increase the ad
 The Cosmos Hub transaction fee volume is proportionally very low in value compared to the inflationary block rewards, and until that changes, this parameter will likely have very little impact on validator behaviours. As fee volumes increase, the `bonusproposerreward` bonus may incentivize delegations to the validator(s) with the greatest stake-backing. There are some detailed discussions about the proposer bonus [here](https://github.com/cosmos/cosmos-sdk/issues/3529).
 
 #### Example
-**Note** that "reserve pool" refers to the community pool. In this example from the [All in Bits website](../../validators/validator-faq.html#how-are-fees-distributed), there are 10 validators with equal stake. Each of them applies a 1% commission rate and has 20% of self-delegated Atoms. Now comes a successful block that collects a total of 1025.51020408 Atoms in fees.
+**Note** that "reserve pool" refers to the community pool. In this example from the [All in Bits website](../../validators/validator-faq.md#how-are-fees-distributed), there are 10 validators with equal stake. Each of them applies a 1% commission rate and has 20% of self-delegated Atoms. Now comes a successful block that collects a total of 1025.51020408 Atoms in fees.
 
 First, a 2% tax is applied. The corresponding Atoms go to the reserve pool (aka community pool). Reserve pool's funds can be allocated through governance to fund bounties and upgrades.
 

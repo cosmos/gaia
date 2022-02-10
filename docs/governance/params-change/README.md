@@ -68,7 +68,8 @@ If a paramater-change proposal is successful, the change takes effect immediatel
 ## Full nodes
 
 Running a full node can be difficult for those not technically-inclined, so you may choose to use a third-party's full node. In this case, the primary security risk is that of censorship: it's the single place where you have a single gateway to the network, and any messages submitted through an untrusted node could be censored.
-- https://rpc.cosmos.network:443 ([Tendermint, Inc](https://tendermint.com))
+
+You can find a list of available Cosmos Hub endpoints under the [API section](https://github.com/cosmos/chain-registry/blob/master/cosmoshub/chain.json) in the [Chain Registry](https://github.com/cosmos/chain-registry).
 
 ## Credits
 

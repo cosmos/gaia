@@ -50,7 +50,7 @@ type chain struct {
 }
 
 func newChain() (*chain, error) {
-	tmpDir, err := ioutil.TempDir("", "umee-e2e-testnet-")
+	tmpDir, err := ioutil.TempDir("", "gaia-e2e-testnet-")
 	if err != nil {
 		return nil, err
 	}
@@ -122,7 +122,7 @@ func (c *chain) createValidator(index int) *validator {
 	return &validator{
 		chain:   c,
 		index:   index,
-		moniker: "umee",
+		moniker: fmt.Sprintf("%s-gaia-%d", c.id, index),
 	}
 }
 

@@ -12,7 +12,7 @@
 
 {DRAFT | PROPOSED}
 
-> Use DRAFT if the Governance Proposal is in a draft stage or PROPOSED if it's in review. You can read more about governance proposal stages here: https://hub.cosmos.network/main/governance/best_practices.html
+> Use DRAFT if the Governance Proposal is in a draft stage or PROPOSED if it's in review. You can read more about governance proposal stages [here](../best-practices.md).
 
 ## Proposal
 
@@ -31,7 +31,7 @@ The following items summarize the voting options and what it means for this prop
 - **NO (VETO)**: You veto the entire motivation for the proposal, are strongly opposed to its implementation, and will exit the network if passed. You are signalling the proposers should not create a follow-up proposal.
 - **ABSTAIN**: You are impartial to the outcome of the proposal.
 
-> State what voting for each option means in terms of this proposal. You can read more about voting options at: https://hub.cosmos.network/main/governance/overview.html#what-do-the-voting-options-mean
+> State what voting for each option means in terms of this proposal.
 
 ## Conclusion
 

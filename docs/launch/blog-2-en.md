@@ -28,7 +28,7 @@ Once transfers are enabled, state rollbacks will be much more difficult to justi
 
 You can, however, safely delegate Atoms to validators in this phase by following the CLI guideline and video tutorial linked below. Of course, in the event of a state reversion, any earned fees and inflation may be lost. Note that only `gaiad` should be used for making transactions. Voyager, the GUI for interacting with the Cosmos Hub, is currently in alpha and undergoing development. A separate announcement will be made once Voyager is safer for use.
 
-CLI Guide 🔗:  [github.com/cosmos/cosmos-sdk/…/delegator-guide-cli.md](https://github.com/cosmos/cosmos-sdk/blob/develop/docs/gaia/delegator-guide-cli.md) 
+[CLI Guide](../delegators/delegator-guide-cli.md) 🔗
 
 **Watch CLI delegation tutorial:** [Cosmos YouTube](https://www.youtube.com/watch?v=ydZw6o6Mzy0)
 
@@ -64,4 +64,4 @@ To the Moon 🚀
 
 
 [blog post]: [https://blog.cosmos.network/developer-deep-dive-cosmos-ibc-5855aaf183fe]
-[ibc]: [https://github.com/cosmos/cosmos-sdk/blob/develop/docs/spec/ibc/overview.md]
+[ibc]: [https://docs.cosmos.network/master/ibc/overview.html]

@@ -43,10 +43,9 @@ func init() {
 }
 
 type chain struct {
-	dataDir        string
-	id             string
-	validators     []*validator
-	gaiaValidators []*gaiaValidator
+	dataDir    string
+	id         string
+	validators []*validator
 }
 
 func newChain() (*chain, error) {
@@ -123,11 +122,5 @@ func (c *chain) createValidator(index int) *validator {
 		chain:   c,
 		index:   index,
 		moniker: fmt.Sprintf("%s-gaia-%d", c.id, index),
-	}
-}
-
-func (c *chain) createGaiaValidator(index int) *gaiaValidator {
-	return &gaiaValidator{
-		index: index,
 	}
 }

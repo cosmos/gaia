@@ -48,7 +48,7 @@ Cosmos主网启动将分成3个阶段分布完成，下面我们将具体介绍�
 
 
 
-但是，您可以通过下面链接的[CLI指南](https://github.com/cosmos/cosmos-sdk/blob/develop/docs/gaia/delegator-guide-cli.md)和视频教程的指导，在此阶段将Atoms通证委托给验证人。当然，如果发生状态修改，那么所有收益（包括手续费和通胀收益）都将丢失。Voyager是用于与Cosmos Hub交互的图形化客户端，目前处于alpha版，正在持续开发中。一旦Voager beta版上线，并可以安全使用，我们将另行公告。
+但是，您可以通过下面链接的[CLI指南](../delegator/delegator-guide-cli.md)和视频教程的指导，在此阶段将Atoms通证委托给验证人。当然，如果发生状态修改，那么所有收益（包括手续费和通胀收益）都将丢失。Voyager是用于与Cosmos Hub交互的图形化客户端，目前处于alpha版，正在持续开发中。一旦Voager beta版上线，并可以安全使用，我们将另行公告。
 
 
 CLI指南和视频教程：https://v.qq.com/x/page/q08425izfhi.html
@@ -80,7 +80,7 @@ Cosmos浏览器是查看治理提案状态的最佳途径，可以在我们的�
 
 **摘要：**
 
-第三阶段我们将会发布[IBC协议](https://github.com/cosmos/cosmos-sdk/blob/develop/docs/spec/ibc/overview.md)，并且对是否将其纳入Cosmos-SDK的核心模块库进行链上治理投票。
+第三阶段我们将会发布[IBC协议](https://docs.cosmos.network/master/ibc/overview.html)，并且对是否将其纳入Cosmos-SDK的核心模块库进行链上治理投票。
 
 
 

@@ -260,7 +260,7 @@ In order to query the state and send transactions, you need a way to access the 
 
 This is the most secure option, but comes with relatively high resource requirements. In order to run your own full-node, you need good bandwidth and at least 1TB of disk space.
 
-You will find the tutorial on how to install `gaiad` [here](https://cosmos.network/docs/cosmos-hub/installation.html), and the guide to run a full-node [here](https://cosmos.network/docs/cosmos-hub/join-mainnet.html).
+You will find the tutorial on how to install `gaiad` [here](../getting-started/installation.md), and the guide to run a full-node [here](../hub-tutorials/join-mainnet.md).
 
 ### Connecting to a Remote Full-Node
 

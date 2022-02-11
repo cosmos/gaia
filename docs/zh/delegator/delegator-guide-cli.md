@@ -256,8 +256,8 @@ gaiad keys add <yourKeyName> --recover --account 1
 这是最安全的途径，但需要相当多的资源。您需要有较大的带宽和至少1TB的磁盘容量来运行一个全节点。  
 
 
- `gaia`的安装教程在[这里](https://cosmos.network/docs/gaia/installation.html)， 如何运行一个全节点指导在[这里](https://cosmos.network/docs/gaia/join-testnet.html)
-
+ `gaia`的安装教程在[这里](../getting-started/installation.md)， 如何运行一个全节点指导在[这里](../hub-tutorials/join-mainnet.md)
+ 
 ### 连接到一个远程全节点
 
 

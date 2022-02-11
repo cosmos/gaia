@@ -10,7 +10,7 @@
 
 **Atom通证持有人务必仔细阅读以下内容，以保障您的通证能够安全委托给验证人。在您开始实际操作前，请先仔细阅读整个CLI指南并熟悉所有命令**
 
-* [CLI指南](https://github.com/cosmos/cosmos-sdk/blob/develop/docs/gaia/delegator-guide-cli.md)
+* [CLI指南](../delegator/delegator-guide-cli.md)
 
 CLI指南中所介绍的流程是至今为止唯一经过验证的在主网实现通证委托的安全途径。这是因为指南中用到的gaiacli工具是唯一正在进行第三方安全审计的数字钱包软件，目前尚没有其他数字钱包供应商通过类似的安全审计。
 

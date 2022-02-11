@@ -10,7 +10,7 @@ order: 3
 > **Note**: Make sure the [Gaia CLI is installed](./installation.md).
 
 ### Sync Options
-To quickly get started, node operators can choose to sync via State Sync or by downloading a snapshot from Quicksync. State Sync works by replaying larger chunks of application state directly rather than replaying individual blocks or consensus rounds. Quicksync is a service provided courtesy of ChainLayer, and offers historical state of the chain available for download every 24 hours. For more advanced information on setting up a node, see the Sync Options section of the full [Joining Mainnet Tutorial](../hub-tutorials/joining-mainnet.md)
+To quickly get started, node operators can choose to sync via State Sync or by downloading a snapshot from Quicksync. State Sync works by replaying larger chunks of application state directly rather than replaying individual blocks or consensus rounds. Quicksync is a service provided courtesy of ChainLayer, and offers historical state of the chain available for download every 24 hours. For more advanced information on setting up a node, see the Sync Options section of the full [Joining Mainnet Tutorial](../hub-tutorials/join-mainnet.md)
 
 <!-- #sync options -->
 ::::::: tabs :options="{ useUrlFragment: false }"

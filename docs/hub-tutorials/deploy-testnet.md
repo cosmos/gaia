@@ -1,5 +1,8 @@
 <!--
 order: 6
+
+PLEASE REMOVE IF THIS DOC IS UPDATED:
+markdown-link-check-disable
 -->
 
 # Deploy Your Own Gaia Testnet
@@ -259,3 +262,5 @@ You can install the DataDog agent with:
 ```
 make datadog-install
 ```
+
+<!-- markdown-link-check-enable -->

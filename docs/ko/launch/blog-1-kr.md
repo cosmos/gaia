@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # 코스모스 허브 메인넷의 시작
 
 #### 런칭 준비 체크리스트 & 안전하게 아톰 수령하기
@@ -80,3 +81,5 @@
 * 페이스북 : https://facebook.com/groups/cosmoskorea
 
 참고: 이 글은 정보 제공을 위하여 번역된 글입니다. 내용/해석에 차이가 있을 수 있으며, 이 경우 영문 원문이 상위 권한을 가집니다.
+
+<!-- markdown-link-check-enable -->

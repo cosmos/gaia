@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # 제네시스 파일
 
 이 문서는 코스모스 허브 메인넷의 제네시스 파일의 구조를 설명합니다. 또한, 자체 gaia 테스트넷을 운영하기 위해 자체적으로 제네시스 파일을 작성하는 방법을 설명합니다.
@@ -331,3 +332,4 @@ gaiad collect-gentxs
 ```
 
 위 명령어는 `~/.gaia/config/gentx`에 있는 모든 `gentxs`를 제네시스 파일에 추가합니다. 제네시스 트랜잭션을 생성하기 위해서는 [여기](./validators/validator-setup.md#participate-in-genesis-as-a-validator)를 확인하세요.
+<!-- markdown-link-check-enable -->

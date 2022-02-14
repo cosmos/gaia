@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # 검증인(밸리데이터) 개요
 
 ## 소개
@@ -32,3 +33,5 @@
 
 * [검증인 채팅](https://riot.im/app/#/room/#cosmos_validators:matrix.org)
 * [검증인 포럼](https://forum.cosmos.network/c/validating)
+
+<!-- markdown-link-check-enable -->

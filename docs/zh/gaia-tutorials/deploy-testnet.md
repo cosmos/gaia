@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # 部署你自己的测试网
 
 这篇文章介绍了三种创建`gaiad`节点的测试网的方式，每种针对不同的使用场景：
@@ -256,3 +257,5 @@ ansible-playbook -i inventory/digital_ocean.py -l remotenet logzio.yml -e LOGZIO
 ```
 make datadog-install
 ```
+
+<!-- markdown-link-check-enable -->

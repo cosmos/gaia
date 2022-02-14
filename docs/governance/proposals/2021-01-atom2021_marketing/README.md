@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # Proposal 34: Luna Mission - Funding $ATOM
 
 **ABSTRACT:**
@@ -105,3 +106,5 @@ Specific work tasks like the banner campaign & the thought leader campaign are e
 **Closing Remarks:**
 
 Ultimately for us, the Community, Cosmos Hub ($ATOM) signals the second era of the so-called Blockchain Revolution. We can all be the messengers, but we need the message to be delivered sooner than later. Empower us with the necessary funding tools so that we disseminate and deliver the message across all corners of the space. For, beyond awesome code, we see an equally awesome community ready to undertake and support this ambitious initiative. We do not see this as a phoney attempt to shill an empty promise. We see this as an opportunity to inform, educate and create a larger follower base around the most important project in this space to date.
+
+<!-- markdown-link-check-enable -->

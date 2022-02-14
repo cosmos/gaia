@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # 레저(Ledger) 나노 하드웨어 지갑 지원
 
 암호화폐 자산을 하드웨어 지갑을 사용하여 보관하는 것은 보안을 상당히 향상합니다. 렛저 기기는 시드와 프라이빗 키를 보관하는 '영역' 역할을 하며, 트래잭션을 기기 내에서 서명합니다. 민감한 정보는 절대로 렛저 기기 밖으로 노출되지 않습니다. 이 문서는 코스모스 렛저 앱을 Gaia CLI 환경에서 사용하거나 [Lunie.io](https://lunie.io/#/) 웹 지갑에서 사용하는 방법을 설명합니다.
@@ -181,3 +182,5 @@ Lunie에 대해 더 알고싶으시면 이 [투토리얼](https://medium.com/eas
 
 - [Ztake](https://medium.com/@miranugumanova) - [How to Redelegate Cosmos Atoms with the Lunie Web Wallet](https://medium.com/@miranugumanova/how-to-re-delegate-cosmos-atoms-with-lunie-web-wallet-8303752832c5)
 - [Cryptium Labs](https://medium.com/cryptium-cosmos) - [How to store your ATOMS on your Ledger and delegate with the command line](https://medium.com/cryptium-cosmos/how-to-store-your-cosmos-atoms-on-your-ledger-and-delegate-with-the-command-line-929eb29705f)
+
+<!-- markdown-link-check-enable -->

@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # 자체 테스트넷 구축하기
 
 해당 문서는 `gaiad` 노드 네트워크를 구축하는 세가지 방법을 설명합니다. 각 테스트넷 모델은 다른 테스트 목적에 최적화 되어있습니다.
@@ -254,3 +255,5 @@ ansible-playbook -i inventory/digital_ocean.py -l remotenet logzio.yml -e LOGZIO
 ```
 make datadog-install
 ```
+
+<!-- markdown-link-check-enable -->

@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 ## 加入主网
 
 ::: 提示
@@ -146,3 +147,4 @@ gaiad export --height [height] --for-zero-height > [filename].json
 
 ## 升级成为验证人节点
 你现在有了一个运行状态的全节点。接下来，你可以升级你的全节点，成为一个Cosmos验证人。排名前100的验证人节点可以向Cosmos Hub提议新的区块。请查看[创建验证人节点](./validators/validator-setup.md)。
+<!-- markdown-link-check-enable -->

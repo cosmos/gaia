@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # Gaia 클라이언트
 
 ## Gaia CLI
@@ -843,3 +844,5 @@ echo '. gaiacli_completion' >> ~/.bashrc
 
 셸 자동 완성을 사용하시려면 사용하시는 OS의 매뉴얼을 참고하십시오.
 :::
+
+<!-- markdown-link-check-enable -->

@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # 验证人概览
 
 ## 介绍
@@ -36,3 +37,4 @@ Cosmos Hub基于Tendermint，它依赖于一组负责在区块链中提交新区
 
 + [Validator Chat](https://riot.im/app/#/room/#cosmos_validators:matrix.org)
 + [Validator Forum](https://forum.cosmos.network/c/validating)
+<!-- markdown-link-check-enable -->

@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 ## Gaia 설치하기
 
 이 가이드는 `gaiad`와 `gaiad`를 엔트리포인트를 시스템에 설치하는 방법을 설명합니다. `gaiad`와 `gaiad`가 설치된 서버를 통해 [풀노드](./gaia-tutorials/join-testnet.md#run-a-full-node) 또는 [밸리데이터로](./validators/validator-setup.md)써 최신 테스트넷에 참가하실 수 있습니다.
@@ -87,3 +88,5 @@ go: go version go1.12.5 darwin/amd64
 ### 다음 절차
 
 축하합니다! 이제 [메인넷](./gaia-tutorials/join-mainnet.md)에 참가하거나[퍼블릭 테스트넷](./join-testnet.md)에 참가하시거나 [자체 테스트넷](./gaia-tutorials/deploy-testnet.md)을 운영하실 수 있습니다.
+
+<!-- markdown-link-check-enable -->

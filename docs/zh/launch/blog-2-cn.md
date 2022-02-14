@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # **Cosmos主网上线三部曲**
 
 
@@ -114,3 +115,5 @@ Cosmos旨在建立所有区块链间的桥梁，最终建立一个区块链互�
 
 走更崎岖的路，才会看见更美的风景！
 ****
+
+<!-- markdown-link-check-enable -->

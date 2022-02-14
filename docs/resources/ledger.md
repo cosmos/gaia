@@ -17,7 +17,9 @@ Do not lose or share your 24 words with anyone. To prevent theft or loss of fund
 Installing the `Cosmos` application on your ledger device is required before you can use either [Keplr](#keplr-+-ledger-nano) or [`gaiad`](#gaia-cli-+-ledger-nano). To do so, you need to:
 
 1. Install [Ledger Live](https://shop.ledger.com/pages/ledger-live) on your machine. 
+<!-- markdown-link-check-disable -->
 2. Using Ledger Live, [update your Ledger Nano S with the latest firmware](https://support.ledger.com/hc/en-us/articles/360002731113?docs=true).
+<!-- markdown-link-check-enable -->
 3. On the Ledger Live application, navigate to the `Manager` menu . 
     ![manager](../images/ledger-tuto-manager.png)
 4. Connect your Ledger Nano device and allow Ledger Manager from it. 
@@ -55,7 +57,9 @@ You can double check that Keplr is displaying the correct address directly on yo
 You should now see the same address that is displayed on the Keplr extension. 
 
 To learn more about using Keplr, we suggest you have a look at their [support documentation](https://keplr.crunch.help).
+<!-- markdown-link-check-disable -->
 You can also have a look at the [Ledger support page](https://support.ledger.com/hc/en-us/articles/4411149814417?docs=true) for more details.
+<!-- markdown-link-check-enable -->
 
 ## Gaia CLI + Ledger Nano
 

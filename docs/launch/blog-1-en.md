@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # Cosmos Hub to Launch Mainnet
 
 ## Pre-launch Dependencies & How to Safely Claim Your Atoms
@@ -220,3 +221,4 @@ accounts to communicate important news directly to the Cosmos community.*
 [rc]: https://github.com/cosmos/cosmos-sdk/projects/27
 [compromised site]: https://blog.malwarebytes.com/cybercrime/2013/02/tools-of-the-trade-exploit-kits/
 [quiz]: https://phishingquiz.withgoogle.com/
+<!-- markdown-link-check-enable -->

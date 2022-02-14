@@ -1,7 +1,7 @@
 <!--
 order: 2
-markdown-link-check-disable
 -->
+<!-- markdown-link-check-disable -->
 
 # Instalación de Gaia
 

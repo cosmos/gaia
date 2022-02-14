@@ -1,9 +1,7 @@
 <!--
 order: 6
-
-PLEASE REMOVE IF THIS DOC IS UPDATED:
-markdown-link-check-disable
 -->
+<!-- markdown-link-check-disable -->
 
 # Deploy Your Own Gaia Testnet
 

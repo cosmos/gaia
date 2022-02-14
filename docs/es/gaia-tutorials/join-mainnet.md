@@ -1,7 +1,7 @@
 <!--
 order: 3
-markdown-link-check-disable
 -->
+<!-- markdown-link-check-disable -->
 
 # Únase a la red principal del Cosmos Hub
 

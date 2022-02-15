@@ -1,6 +1,7 @@
 <!--
 order: 2
 -->
+<!-- markdown-link-check-disable -->
 
 # Instalación de Gaia
 
@@ -92,3 +93,5 @@ Para probar cualquier cambio hecho en el SDK o Tendermint, se debe agregar una c
 ## Siguiente
 
 Ahora puede unirse a la [red principal](./join-mainnet.md), [testnet](./join-testnet.md) o crear [su propia testnet pública](./deploy-testnet.md)
+
+<!-- markdown-link-check-enable -->

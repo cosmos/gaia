@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # 위임자 가이드라인 (CLI)
 
 이 문서는 위임자가 커맨드라인 인터페이스(CLI, Command-Line Interface)를 통해 코스모스 허브와 소통하기 위해 필요한 모든 정보를 포함하고 있습니다.
@@ -481,3 +482,5 @@ gaiad tx sign unsignedTx.json --from <위임자_키_명칭(delegatorKeyName)> --
 ```bash
 gaiad tx broadcast signedTx.json
 ```
+
+<!-- markdown-link-check-enable -->

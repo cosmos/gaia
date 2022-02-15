@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # Delay of Hub Stargate Upgrade
  
 The Stargate team is recommending that the Cosmos Hub reschedule the next upgrade to a new commit hash. The new commit hash is expected to be available on Tuesday Jan 26th with a new upgrade proposal immediately after.
@@ -10,3 +11,5 @@ We are recommending the delay for the following reasons.
 * A balance validation regression was identified during Prop 29 code review. [x/bank: balance and metadata validation by fedekunze · Pull Request #8417 · cosmos/cosmos-sdk · GitHub](https://github.com/cosmos/cosmos-sdk/pull/8417)
 * The IBC Go To Market Working Group has [identified Ledger hardware wallet](https://github.com/cosmos/cosmos-sdk/issues/8266) support as a necessary feature for the initial launch of IBC on the Hub. We have an opportunity to provide this support in this upgrade. The SDK believes this can be quickly remediated in the time available with merged PRs on Monday.
 * The number of Stargate related support requests from integrators has increased significantly since the governance proposal went live but some teams have already announced a period of reduced $ATOM support while they upgrade like <https://twitter.com/Ledger_Support/status/1352247403605356551?s=20>. The additional time should minimize the disruption for $ATOM holders. Thank so much to the $IRIS team who is fielding a similar request volume among our non-English community.
+
+<!-- markdown-link-check-enable -->

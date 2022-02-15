@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # 验证人相关问题
 
 ::: 声明
@@ -326,3 +327,5 @@ Tendermint团队不会推荐上面的其中之一。鼓励社区最好加强改�
 期待验证人在这方面良好的操作将完全消除这些威胁。
 
 了解哨兵节点架构的更多信息请看[这里](https://forum.cosmos.network/t/sentry-node-architecture-overview/454)。
+
+<!-- markdown-link-check-enable -->

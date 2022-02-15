@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # Signaling Proposal - Deployment of Gravity Bridge on the Cosmos Hub
 
 ![Gravity Bridge](https://raw.githubusercontent.com/althea-net/cosmos-gravity-bridge/main/gravity-bridge.svg)
@@ -184,3 +185,5 @@ Ethereum as it currently exists (ETH1) fundamentally can not implement IBC. It m
 Implementing IBC for ETH2 require significant development effort and coordination with the Ethereum team as well as the completion and deployment of ETH2, which is on an uncertain timeline.
 
 Gravity bridge is a design that can be deployed in the forseeable future and will continue to function so long as ETH1 compatibility is maintained.
+
+<!-- markdown-link-check-enable -->

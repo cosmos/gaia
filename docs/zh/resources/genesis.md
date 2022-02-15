@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # 创世（Genesis）文件
 
 本文档解释了 Cosmos Hub 主网的 genesis 文件是如何构建的。 它还解释了如何为自己的`gaia` testnet 创建一个 genesis 文件。
@@ -332,3 +333,4 @@ gaiad collect-gentxs
 ```
 
 此命令将存储在`~/.gaia/config/gentx`中的所有`gentxs`添加到genesis文件中。 要创建创世纪交易，请单击[此处](./validators/validator-setup.md#participation-in-genesis-as-a-validator)。
+<!-- markdown-link-check-enable -->

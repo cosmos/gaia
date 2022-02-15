@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # HD 지갑
 
 코스모스의 계정은 HD 월렛(Hierarchical Deterministic Wallet) 표준을 사용합니다. HD 월렛은 비트코인의 [BIP32](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki)로 부터 정의되며, 유저가 하나의 시드로부터 다수의 계정을 생성할 수 있게 하는 시스템입니다. 더 자세하게 알아보기 위해서 관련 명칭을 설명하겠습니다:
@@ -56,3 +57,5 @@
 ::: danger
 **24 단어로 구성된 네모닉을 누구와도 공유하지 마세요. 자산의 도난과 분실을 예방하기 위해서 다수의 네모닉 키를 안전한 곳에 보관하는 것이 좋습니다. 만약 타인이 당신의 네모닉을 소유하게 되면, 연관된 모든 계정의 소유권을 함께 가지게 됩니다.**
 :::
+
+<!-- markdown-link-check-enable -->

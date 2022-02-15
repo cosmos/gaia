@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # Gaia Documentation
 
 `Gaia` docs에 오신 것을 환영합니다. `Gaia` 는 코스모스 허브를 위한 코스모스 애플리케이션의 현재 명칭입니다.
@@ -17,3 +18,5 @@
 - [밸리데이터에 대한 소개](./validators/overview.md)
 - [밸리데이터 FAQ](./validators/validator-faq.md)
 - [밸리데이터가 알아야할 보안](./validators/security.md)
+
+<!-- markdown-link-check-enable -->

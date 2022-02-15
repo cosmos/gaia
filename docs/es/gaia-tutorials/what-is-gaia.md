@@ -1,5 +1,6 @@
 <!--
 order: 1
+markdown-link-check-disable
 -->
 
 # ¿Qué es Gaia?
@@ -31,3 +32,5 @@ order: 1
 Acerca del Hub de Cosmos: El Hub de Cosmos es el primer Hub en ser lanzado en la red de Cosmos. El propósito del Hub es facilitar las transferencias entre cadenas de bloques. Si una cadena de bloques se conecta a un Hub a través de IBC, automáticamente obtiene acceso a todas las otras cadenas de bloques que están conectadas a ella. El Hub del Cosmos es una cadena de participación pública. Su token de participación es llamado Atom.
 
 Siguiente, aprenda como [instalar Gaia](./installation.md)
+
+<!-- markdown-link-check-enable -->

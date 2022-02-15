@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # 최신 퍼블릭 테스트넷에 참가하기
 
 ::: tip 최신 테스트넷
@@ -155,3 +156,5 @@ gaiad export --height [height] --for-zero-height > [filename].json
 이제 풀노드가 활성화 되었습니다! 다음은 무엇일까요?
 
 이제는 해당 풀노드를 업그레이드 하여 코스모스 밸리데이터가 될 수 있습니다. 상위 100개 밸리데이터는 코스모스 허브의 블록 생성과 제안을 할 수 있습니다. 밸리데이터 노드로 업그레이드 하시기 위해서는 [밸리데이터 설정하기](./validators/validator-setup.md) 항목으로 넘어가주세요.
+
+<!-- markdown-link-check-enable -->

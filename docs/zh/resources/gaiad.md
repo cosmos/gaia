@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # Gaia客户端
 
 ## Gaia CLI
@@ -829,3 +830,5 @@ echo '. gaiacli_completion' >> ~/.bashrc
 
 有关如何启用shell自动完成的信息，请参阅操作系统提供的解释器用户手册。
 :::
+
+<!-- markdown-link-check-enable -->

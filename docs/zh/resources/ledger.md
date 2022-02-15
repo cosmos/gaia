@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # Ledger Nano支持
 
 ## 关于HD钱包
@@ -72,3 +73,5 @@ HD钱包的核心是种子。用这个种子用户可以确定地生成子帐户
 - [一个同你所选的`gaiad`实例相连接的`gaiad`实例](./delegator-guide-cli.md#setting-up-gaiad)
 
 现在，你都准备好去[发送交易到网络](./delegator-guide-cli.md#sending-transactions).
+
+<!-- markdown-link-check-enable -->

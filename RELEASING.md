@@ -25,17 +25,18 @@ It is fine to create a long-lived branch from main if the last commit is the rel
 At the moment, only a single major release will be supported, so all point
 releases will be based off of that release.
 
-- start on `vX.XX.X`
-- checkout a new branch `rcN/vX.X.X`
+- start on `release/vX.XX.X`
+- checkout a `vX.0.x`(e.g. `v4.0.x`) branch and push it to github if it does not exit
+- checkout a new branch `rcN/vX.X.X` off `vX.0.x`.
 - cherry pick the desired changes from `main`
     - these changes should be small and NON-BREAKING (both API and state machine)
 - add entries to CHANGELOG.md and remove corresponding pending log entries
-- checkout a new branch `release/vX.X.X` based off of the previous release
+- checkout a new branch `release/vX.X.X` based off of the previous `rcN/vX.X.X`.
 - create a PR merging `rcN/vX.X.X` into `release/vX.X.X`
 - run tests and simulations (noted in [Release Procedure](#release-procedure))
 - after tests and simulation have successfully completed, merge the `RC` branch into `release/vX.X.X`
     - Make sure to delete the `RC` branch
-- create a PR into `main` containing ONLY the CHANGELOG.md updates
+- create a PR into `vX.0.x` containing ONLY the CHANGELOG.md updates
 - tag (use `git tag -a`) then push the tags (`git push --tags`)
 
 ### Dependency review

@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # Cosmos Hub 4, Vega Upgrade, Instructions
 
 
@@ -228,3 +229,5 @@ The riskiest thing a validator can do is discover that they made a mistake and r
 [cosmos/vega-test](https://github.com/cosmos/vega-test)
 
 [Delta upgrade instruction](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md)
+
+<!-- markdown-link-check-enable -->

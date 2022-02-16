@@ -12,7 +12,7 @@ Validator candidates can bond their own ATOM and have ATOM ["delegated"](../dele
 
 Validators and their delegators earn ATOM as block provisions and tokens as transaction fees through execution of the Tendermint consensus protocol. Note that validators can set a commission percentage on the fees their delegators receive as additional incentive. You can find an overview of all current validators and their voting power on [Mintscan](https://www.mintscan.io/cosmos).
 
-If validators double sign, are offline for an [extended period](./validator-faq.html#what-are-the-slashing-conditions), their staked ATOM (including ATOM of users that delegated to them) can be slashed. The penalty depends on the severity of the violation.
+If validators double sign, are offline for an [extended period](./validator-faq.md#what-are-the-slashing-conditions), their staked ATOM (including ATOM of users that delegated to them) can be slashed. The penalty depends on the severity of the violation.
 
 ## Hardware
 

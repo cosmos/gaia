@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # 검증인 FAQ
 
 ::: warning 경고
@@ -306,3 +307,5 @@ DDoS 공격은 공격자가 특정 IP의 서버에게 인터넷 트래픽을 과
 올바른 운영과 아키텍쳐를 이용하는 검증이는 이런 공격 가능성을 막을 수 있을 것으로 기대됩니다.
 
 센트리노드에 대한 추가적인 정보는 [여기](https://forum.cosmos.network/t/sentry-node-architecture-overview/454)에서 확인 가능합니다.
+
+<!-- markdown-link-check-enable -->

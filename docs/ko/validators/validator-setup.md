@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # 퍼블릭 테스트넷에서 밸리데이터 운영하기
 
 ::: tip
@@ -221,3 +222,5 @@ LimitNOFILE=4096
 [Install]
 WantedBy=multi-user.target
 ```
+
+<!-- markdown-link-check-enable -->

@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 ## 安装 Gaia
 
 本教程将详细说明如何在你的系统上安装`gaiad`和`gaiad`。安装后，你可以作为[全节点](./join-mainnet.md)或是[验证人节点](./validators/validator-setup.md)加入到主网。
@@ -60,3 +61,5 @@ build tags 指定了可执行程序具有的特殊特性。
 ### 接下来
 
 然后你可以选择 加入[主网](./join-mainnet.md)、[公共测试网](./join-testnet.md) 或是 [创建私有测试网](./deploy-testnet.md)。
+
+<!-- markdown-link-check-enable -->

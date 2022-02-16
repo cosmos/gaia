@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # 委托人指南 (CLI)
 
 
@@ -517,3 +518,5 @@ gaiad tx sign unsignedTx.json --from-addr <delegatorAddr>> signedTx.json
 ```bash
 gaiad tx broadcast signedTx.json
 ```
+
+<!-- markdown-link-check-enable -->

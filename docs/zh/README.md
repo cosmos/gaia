@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # gaia文档
 
 欢迎阅读`Gaia`文档。 `Gaia`是Cosmos Hub目前的应用程序名。
@@ -21,3 +22,5 @@
 - [验证人介绍](./validators/overview.md)
 - [验证人问答](./validators/validator-faq.md)
 - [验证人安全性考量](./validators/security.md)
+
+<!-- markdown-link-check-enable -->

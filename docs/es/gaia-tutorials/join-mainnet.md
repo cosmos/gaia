@@ -1,6 +1,7 @@
 <!--
 order: 3
 -->
+<!-- markdown-link-check-disable -->
 
 # Únase a la red principal del Cosmos Hub
 
@@ -185,3 +186,5 @@ Cuando se presenta una transacción inválida, no se deducen los tokens de honor
 ## Actualice a un nodo validador
 
 Ahora tienes un nodo completo activo. ¿Cuál es el siguiente paso? Puedes actualizar tu nodo completo para convertirte en un Validador del Cosmos. Los 120 mejores validadores tienen la capacidad de proponer nuevos bloques en el Hub de Cosmos. Continúe en la [Configuración del Validador](../validators/validator-setup.md)
+
+<!-- markdown-link-check-enable -->

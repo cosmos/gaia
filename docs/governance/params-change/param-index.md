@@ -11,7 +11,7 @@ Given a subspace and an associated key, you can query on chain parameters using 
 ``` bash
 gaiad query params subspace <subspace_name> <key> --node <node_address> --chain-id <chain_id>
 ```
-For more information on specific modules, refer to the [Cosmos SDK documentation on modules](https://docs.cosmos.network/v0.43/modules/).
+For more information on specific modules, refer to the [Cosmos SDK documentation on modules](https://docs.cosmos.network/master/).
 
 ## Current subspaces, keys, and values
 

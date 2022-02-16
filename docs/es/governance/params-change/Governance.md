@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # Módulo `gov`
 El módulo `gov` es responsable de las propuestas de gobierno en cadena y la funcionalidad de la votación. Nótese que [este módulo requiere una forma única de cambiar sus parámetros](https://github.com/cosmos/cosmos-sdk/issues/5800). `gov` está activo en Cosmos Hub 3 y actualmente tiene tres parámetros con seis subkeys que pueden ser modificados por una propuesta de gobernanza:
 1. [`depositparams`](#1-depositparams)
@@ -176,3 +177,5 @@ El módulo `gov` contiene los siguientes parámetros:
 | veto               | string (dec)     | "0.334000000000000000" |
 
 __Observación__: El módulo de gobierno contiene parámetros que son objetos que no son como los demás módulos. Si sólo se desea modificar un subconjunto de parámetros, sólo hay que incluirlos y no toda la estructura de objetos de parámetros.
+
+<!-- markdown-link-check-enable -->

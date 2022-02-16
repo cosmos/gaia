@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # The 3 Phases of the Cosmos Hub Mainnet
 ## Post-Mainnet Development Roadmap & Expectations for Users
 
@@ -65,3 +66,4 @@ To the Moon 🚀
 
 [blog post]: [https://blog.cosmos.network/developer-deep-dive-cosmos-ibc-5855aaf183fe]
 [ibc]: [https://docs.cosmos.network/master/ibc/overview.html]
+<!-- markdown-link-check-enable -->

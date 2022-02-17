@@ -16,7 +16,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-go@v2.1.5
+      - uses: actions/setup-go@v2.2.0
         with:
           go-version: 1.16
       - name: Install runsim
@@ -31,7 +31,7 @@ jobs:
 #    needs: Build
 #    steps:
 #      - uses: actions/checkout@v2.4.0
-#      - uses: actions/setup-go@v2.1.5
+#      - uses: actions/setup-go@v2.2.0
 #        with:
 #          go-version: 1.16
 #      - uses: technote-space/get-diff-action@v5.0.2
@@ -61,7 +61,7 @@ jobs:
             go.mod
             go.sum
       - uses: actions/checkout@v2.4.0
-      - uses: actions/setup-go@v2.1.5
+      - uses: actions/setup-go@v2.2.0
         with:
           go-version: 1.16
       - uses: actions/cache@v2.1.7
@@ -78,7 +78,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: Build
     steps:
-      - uses: actions/setup-go@v2.1.5
+      - uses: actions/setup-go@v2.2.0
         with:
           go-version: 1.16
       - uses: actions/checkout@v2.4.0
@@ -103,7 +103,7 @@ jobs:
     needs: Build
     steps:
       - uses: actions/checkout@v2.4.0
-      - uses: actions/setup-go@v2.1.5
+      - uses: actions/setup-go@v2.2.0
         with:
           go-version: 1.16
       - uses: technote-space/get-diff-action@v5.0.2
@@ -128,7 +128,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v2.4.0
-      - uses: actions/setup-go@v2.1.5
+      - uses: actions/setup-go@v2.2.0
         with:
           go-version: 1.16
       - uses: technote-space/get-diff-action@v5.0.2

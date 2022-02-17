@@ -22,10 +22,12 @@ can upload it to the IPFS network:
 
 1. either by [running an IPFS node and the IPFS software](https://ipfs.io), or
 2. using a service such as [https://pinata.cloud](https://pinata.cloud)
+<!-- markdown-link-check-disable -->
 
 Ensure that you "pin" the file so that it continues to be available on the network. You should get a URL like this: https://ipfs.io/ipfs/QmbkQNtCAdR1CNbFE8ujub2jcpwUcmSRpSCg8gVWrTHSWD
 The value QmbkQNtCAdR1CNbFE8ujub2jcpwUcmSRpSCg8gVWrTHSWD is called the `CID` of
 your file - it is effectively the file's hash.
+<!-- markdown-link-check-enable -->
 
 If you uploaded a markdown file, you can use the IPFS markdown viewer to render
 the document for better viewing. Links for the markdown viewer look like

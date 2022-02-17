@@ -318,7 +318,7 @@ enable = true
 #
 # For Cosmos SDK-based chains, trust_period should usually be about 2/3 of the unbonding time (~2
 # weeks) during which they can be financially punished (slashed) for misbehavior.
-rpc_servers = "https://rpc-cosmoshub.keplr.app:443,https://rpc.cosmos.network:443"
+rpc_servers = "https://rpc.cosmos.network:443,https://rpc.cosmos.network:443"
 trust_height = 8959784
 trust_hash = "3D8F12EA302AEDA66E80939F7FC785206692F8B6EE6F727F1655F1AFB6A873A5"
 trust_period = "168h0m0s"

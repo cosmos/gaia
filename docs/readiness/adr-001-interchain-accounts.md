@@ -75,7 +75,7 @@ There are future releases of Interchain Accounts which are expected to be backwa
 (Needs to be created)
 
 ## Support
-[Documentation](https://ibc.cosmos.network/main/app-modules/interchain-accounts/overview.html)
+[Documentation](https://ibc.cosmos.network/main/apps/interchain-accounts/overview.html)
 
 ## Additional Research & References
  * [Why Interchain Accounts Change Everything for Cosmos Interoperability](https://medium.com/chainapsis/why-interchain-accounts-change-everything-for-cosmos-interoperability-59c19032bf11)

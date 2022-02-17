@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # 在主网上运行一个验证人
 
 ::: 提示
@@ -208,3 +209,5 @@ LimitNOFILE=4096
 [Install]
 WantedBy=multi-user.target
 ```
+
+<!-- markdown-link-check-enable -->

@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # 加入公共测试网
 
 ::: 提示 当前测试网
@@ -57,3 +58,5 @@ _注意_：如果在这一步出现问题，请检查是否安装了最新稳定
 注意这里我们使用的是包含最新稳定发布版本的`master`分支。请查看[testnet repo](https://github.com/cosmos/testnets)查看哪个版本的测试网需要哪一个 Cosmos-SDK 版本，在[SDK 发布版](https://github.com/cosmos/cosmos-sdk/releases)中对应的详细信息。
 
 你的全节点已经升级成功！
+
+<!-- markdown-link-check-enable -->

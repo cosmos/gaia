@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # State of Cosmos Governance 2021
 
 > Governance and decision-making processes within the Cosmos ecosystem as of August 2021
@@ -350,3 +351,5 @@ This report provides a descriptive account of the existing governance documentat
 - ["RFC Interchain Staking Light Paper"](https://github.com/cosmos/gaia/issues/659) an example of a potential CIP that was PRd to the Gaia repo. The ambiguity makes sense: it fits criteria of informational CIP about the Cosmos environment (Light Paper), but also a shorter and higher level document is needed to function as more of a summary in order to get early user feedback and market ideas that isn't a CIP <https://github.com/cosmos/gaia/issues/659>
 - The terms "Cosmos" and "Cosmos Hub" are used interchangeably in the CIPs repository, so the intended audience could be made more clear. The [module readiness process and checklist](https://github.com/cosmos/cips/pull/6/files), which proposes a process for modules to be adopted by the Gaia team, suggests that the process is intended for teams involved in development related to the Cosmos Hub.
 - Tendermint has an [ADR process](https://github.com/tendermint/tendermint/tree/master/docs/architecture) as well. Documentation around the relationship between the Tendermint ADR and the RFC processes would be valuable.
+
+<!-- markdown-link-check-enable -->

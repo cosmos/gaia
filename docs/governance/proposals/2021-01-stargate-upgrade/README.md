@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # Cosmos Stargate Hub Upgrade Proposal 2: Time to Upgrade
 
 ![Stargate Upgrade banner graphic](https://siasky.net/AADU5rg0GvapbrICLUk7SxZeMDrKo5Q8oLrpOwl71wXhnQ)
@@ -140,3 +141,5 @@ There are multiple circumstances where the proposal should be abandoned even if 
 1. A critical vulnerability may be found in the software. If the development teams change their recommended version of gaia, the validator set should implicitly abandon this upgrade procedure. A future proposal will be made to the Hub to upgrade to the new target commit.
 
 2. The migration process fails could fail to produce a valid cosmoshub-4 genesis file. This would manifest as ad-hoc changes to genesis needed to start or a failure to produce blocks from `cosmoshub-4`. In this case, the validator set should restart cosmoshub-3 at `last-cosmoshub-3_block` and a future governance proposal will be done to initiate another upgrade.
+
+<!-- markdown-link-check-enable -->

@@ -10,7 +10,7 @@ The current Cosmos Hub mainnet, `cosmoshub-4`, has been performing in place stor
 
 
 <!-- TODO: Link Future Quick Start Guide -->
-For instructions to boostrap a node via Quicksync or State Sync, see the [Quickstart Guide](https://github.com/cosmos/mainnet/blob/306363b874e5dea91d3305788f2d864713aa10e0/README.md)
+For instructions to boostrap a node via Quicksync or State Sync, see the [Quickstart Guide](https://hub.cosmos.network/main/getting-started/quickstart.html)
 
 For instructions to join as a validator, please also see the [Validator Guide](https://hub.cosmos.network/main/validators/overview.html#).
 

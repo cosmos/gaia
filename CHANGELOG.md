@@ -402,6 +402,7 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 [v6.0.2]: https://github.com/cosmos/gaia/releases/tag/v6.0.2
 [v6.0.1]: https://github.com/cosmos/gaia/releases/tag/v6.0.1
 [v6.0.0]: https://github.com/cosmos/gaia/releases/tag/v6.0.0
+[v5.0.8]: https://github.com/cosmos/gaia/releases/tag/v5.0.8
 [v5.0.7]: https://github.com/cosmos/gaia/releases/tag/v5.0.7
 [v5.0.6]: https://github.com/cosmos/gaia/releases/tag/v5.0.6
 [v5.0.5]: https://github.com/cosmos/gaia/releases/tag/v5.0.5

@@ -36,6 +36,15 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+## [v6.0.3] - 2021-02-18
+ * This is a reverted release that is the same as v6.0.0
+
+## [v6.0.2] - 2021-02-17
+ * Unusable release
+
+## [v6.0.1] - 2021-11-24
+ * Unusable release
+
 ## [v6.0.0] - 2021-11-24
 
  * (gaia) Add NewSetUpContextDecorator to anteDecorators
@@ -380,7 +389,10 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v6.0.0...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v6.0.3...HEAD
+[v6.0.3]: https://github.com/cosmos/gaia/releases/tag/v6.0.3
+[v6.0.2]: https://github.com/cosmos/gaia/releases/tag/v6.0.2
+[v6.0.1]: https://github.com/cosmos/gaia/releases/tag/v6.0.1
 [v6.0.0]: https://github.com/cosmos/gaia/releases/tag/v6.0.0
 [v5.0.7]: https://github.com/cosmos/gaia/releases/tag/v5.0.7
 [v5.0.6]: https://github.com/cosmos/gaia/releases/tag/v5.0.6

@@ -4,7 +4,7 @@ parent:
 layout: home
 -->
 
-# Cosmos Hub Documentation
+# Cosmos Hub Documentation 
 
 Welcome to the documentation of the **Cosmos Hub application: `gaia`**.
 

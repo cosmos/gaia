@@ -76,7 +76,7 @@ these artifacts should be included in the release.
 make distclean build-reproducible
 ```
 
-This runs the docker image [tendermintdev/rbuilder](https://hub.docker.com/r/tendermintdev/rbuilder) with a copy of the docker file being used available at [github.com/tendermint/images/master/rbuilder](https://github.com/tendermint/images/tree/master/rbuilder).
+This runs the docker image [tendermintdev/rbuilder](https://hub.docker.com/r/tendermintdev/rbuilder) with a copy of the [rbuilder](https://github.com/tendermint/images/tree/master/rbuilder) docker file.
 
 Then use the following release text template:
 

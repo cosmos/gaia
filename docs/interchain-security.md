@@ -166,7 +166,7 @@ Interchain Security consists of many moving pieces, each of which has a variable
 
 *   Child or Provider Chain halting
 *   Child of Provider Chain upgrading
-*   Contentious forks of either Provider Chain of Consumer Chain
+*   Contentious forks of either Provider Chain or Consumer Chain
 *   Versions of IBC on each side fall out of sync
 
 Other open questions include addressing the degree of risk this configuration adds to the Provider Chain. Should it be possible for a Provider Chain validator to validate on a large number of Consumer Chains? To what extent should this be a choice of the Validator or a limit imposed by the Provider Chain state machine? If the Validator is exposed to slashing conditions of too many Consumer Chains, could this endanger the security of the Provider Chain or is it the responsibility of the delegator to take that risk into account?

@@ -29,6 +29,7 @@ Types of changes (Stanzas):
 "Client Breaking" for breaking CLI commands and REST routes.
 "State Machine Breaking" for breaking the AppState
 
+
 Ref: https://keepachangelog.com/en/1.0.0/
 -->
 

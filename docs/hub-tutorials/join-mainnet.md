@@ -379,7 +379,7 @@ snapshot-keep-recent = 10
 ## Releases & Upgrades
 **See all [Gaia Releases](https://github.com/cosmos/gaia/releases)**
 
-The most up to date release of Gaia is [`V6.0.0`](https://github.com/cosmos/gaia/releases/tag/v6.0.0). For those that want to use state sync or quicksync to get their node up to speed, starting with the most recent version of Gaia is sufficient.
+The most up to date release of Gaia is [`V6.0.3`](https://github.com/cosmos/gaia/releases/tag/v6.0.3). For those that want to use state sync or quicksync to get their node up to speed, starting with the most recent version of Gaia is sufficient.
 
 To sync an archive or full node from scratch, it is important to note that you must start with [`V4.2.1`](https://github.com/cosmos/gaia/releases/tag/v4.2.1) and proceed through two different upgrades Delta at block height `6910000` and Vega at block height `8695000`.
 

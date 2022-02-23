@@ -186,6 +186,8 @@ test-cover:
 benchmark:
 	@go test -mod=readonly -bench=. ./...
 
+docker-build-debug:
+	@docker build -t cosmos/gaiad-e2e --build-arg IMG_TAG=debug -f Dockerfile.e2e .
 
 ###############################################################################
 ###                                Linting                                  ###
@@ -232,4 +234,4 @@ test-docker-push: test-docker
 	test test-all test-build test-cover test-unit test-race \
 	benchmark \
 	build-docker-gaiadnode localnet-start localnet-stop \
-	docker-single-node
+	docker-single-node docker-build-debug

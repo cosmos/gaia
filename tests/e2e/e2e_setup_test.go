@@ -274,7 +274,7 @@ func (s *IntegrationTestSuite) runValidators(c *chain) {
 			Mounts: []string{
 				fmt.Sprintf("%s/:/root/.gaia", val.configDir()),
 			},
-			Repository: "TODO",
+			Repository: "cosmos/gaiad-e2e",
 		}
 
 		// expose the first validator for debugging and communication

@@ -652,14 +652,8 @@ func NewGaiaApp(
 
 	app.UpgradeKeeper.SetUpgradeHandler(
 		upgradeName,
-		func(ctx sdk.Context, _ upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
+		func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 			app.IBCKeeper.ConnectionKeeper.SetParams(ctx, ibcconnectiontypes.DefaultParams())
-
-			fromVM := make(map[string]uint64)
-			for moduleName, eachModule := range app.mm.Modules {
-				fromVM[moduleName] = eachModule.ConsensusVersion()
-			}
-			delete(fromVM, icatypes.ModuleName)
 
 			ctx.Logger().Info("start to run module migrations...")
 

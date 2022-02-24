@@ -12,7 +12,7 @@ This is work in progress. Mechanisms and values are susceptible to change.
 
 ### What is a Cosmos validator?
 
-The [Cosmos Hub](../getting-started/what-is-gaia.md) is based on [Tendermint](https://docs.tendermint.com/master/introduction/what-is-tendermint.html) that relies on a set of validators to secure the network. The role of validators is to run a full node and participate in consensus by broadcasting votes that contain cryptographic signatures signed by the validator's private key. Validators commit new blocks in the blockchain and receive revenue in exchange for their work. Validators must also participate in governance by voting on proposals. Validators are weighted according to their total stake.
+The [Cosmos Hub](../getting-started/what-is-gaia.md) is based on [Tendermint](https:/blocs/docs.tendermint.com/master/introduction/what-is-tendermint.html) that relies on a set of validators to secure the network. The role of validators is to run a full node and participate in consensus by broadcasting votes that contain cryptographic signatures signed by the validator's private key. Validators commit new blocks in the blockchain and receive revenue in exchange for their work. Validators must also participate in governance by voting on proposals. Validators are weighted according to their total stake.
 
 ### What is staking?
 
@@ -91,7 +91,7 @@ After a validator is created with a `create-validator` transaction, the validato
   - If the jailing is due to being offline for too long (i.e. having missed more than `95%` out of the last `10,000` blocks), the validator can send an `unjail` transaction in order to re-enter the validator set. 
   - If the jailing is due to double signing, the validator cannot unjail.
 
-- `unbonded`: Validator is not in the active set, and therefore not signing blocs. The validator cannot be slashed and does not earn any reward. It is still possible to delegate ATOM to an unbonded validator. Undelegating from an `unbonded` validator is immediate, meaning that the tokens are not subject to the unbonding period.
+- `unbonded`: Validator is not in the active set, and therefore not signing blocks. The validator cannot be slashed and does not earn any reward. It is still possible to delegate ATOM to an unbonded validator. Undelegating from an `unbonded` validator is immediate, meaning that the tokens are not subject to the unbonding period.
 
 ### What is self-delegation? How can I increase my self-delegation?
 

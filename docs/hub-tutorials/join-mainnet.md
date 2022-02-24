@@ -32,7 +32,7 @@ For instructions to join as a validator, please also see the [Validator Guide](h
     - [State Sync](#state-sync)
     - [Quicksync](#quicksync)
 - [Snapshots](#snapshots)
-- [Releases](#releases-upgrades)
+- [Releases](#releases--upgrades)
 - [Cosmovisor](#cosmovisor)
 - [Running via Background Process](#running-via-background-process)
 - [Exporting State](#exporting-state)
@@ -49,9 +49,8 @@ There are many explorers for the Cosmos Hub. For reference while setting up a no
 
 - [Mintscan](https://www.mintscan.io/cosmos)
 - [Big Dipper](https://cosmos.bigdipper.live/)
-- [Hubble](https://hubble.figment.io/cosmos/chains/cosmoshub-4)
-- [Stake ID](https://cosmos.stake.id/)
-
+- [Hubble](https://hubble.figment.io/cosmos/chains/cosmoshub-4)<!-- markdown-link-check-disable -->
+- [Stake ID](https://cosmos.stake.id/)<!-- markdown-link-check-enable -->
 
 ## Getting Started
 
@@ -292,7 +291,7 @@ The node will begin rebuilding state until it hits the first upgrade height at b
 :::::: tab "State Sync"
 ### State Sync
 
-State Sync is an efficient and fast way to bootstrap a new node, and it works by replaying larger chunks of application state directly rather than replaying individual blocks or consensus rounds. For more information, see [Tendermint's State Sync docs](https://docs.tendermint.com/master/spec/p2p/messages/state-sync.html).
+State Sync is an efficient and fast way to bootstrap a new node, and it works by replaying larger chunks of application state directly rather than replaying individual blocks or consensus rounds. For more information, see [Tendermint's State Sync docs](https://github.com/tendermint/tendermint/blob/master/spec/p2p/messages/state-sync.md).
 
 To enable state sync, visit an explorer to get a recent block height and corresponding hash. A node operator can choose any height/hash in the current bonding period, but as the recommended snapshot period is `1000` blocks, it is advised to choose something close to `current height - 1000`.
 

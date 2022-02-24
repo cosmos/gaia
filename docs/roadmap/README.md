@@ -2,7 +2,6 @@
 order: false
 parent:
   order: 8
-markdown-link-check-disable
 -->
 
 # Roadmap
@@ -27,5 +26,3 @@ For current roadmap, check out the Cosmos 2.0 [Roadmap](./cosmos-hub-roadmap-2.0
 
 
 
-
-<!-- markdown-link-check-enable -->

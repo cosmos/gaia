@@ -31,14 +31,13 @@ import (
 
 const (
 	photonDenom    = "photon"
-	initBalanceStr = "110000000000uatom,100000000000photon"
+	initBalanceStr = "110000000000stake,100000000000photon"
 	minGasPrice    = "0.00001"
-	// gaiaChainID    = "test-gaia-chain"
 )
 
 var (
 	stakeAmount, _  = sdk.NewIntFromString("100000000000")
-	stakeAmountCoin = sdk.NewCoin("uatom", stakeAmount)
+	stakeAmountCoin = sdk.NewCoin("stake", stakeAmount)
 )
 
 type IntegrationTestSuite struct {
@@ -67,14 +66,13 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.chainB, err = newChain()
 	s.Require().NoError(err)
 
-	s.T().Logf("starting e2e infrastructure for chain A; chain-id: %s; datadir: %s", s.chainA.id, s.chainA.dataDir)
-	s.T().Logf("starting e2e infrastructure for chain B; chain-id: %s; datadir: %s", s.chainB.id, s.chainB.dataDir)
-
 	s.dkrPool, err = dockertest.NewPool("")
 	s.Require().NoError(err)
 
 	s.dkrNet, err = s.dkrPool.CreateNetwork(fmt.Sprintf("%s-%s-testnet", s.chainA.id, s.chainB.id))
 	s.Require().NoError(err)
+
+	s.valResources = make(map[string][]*dockertest.Resource)
 
 	// The boostrapping phase is as follows:
 	//
@@ -83,11 +81,13 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	// 3. Start both networks.
 	// 4. Create and run IBC relayer (Hermes) containers.
 
+	s.T().Logf("starting e2e infrastructure for chain A; chain-id: %s; datadir: %s", s.chainA.id, s.chainA.dataDir)
 	s.initNodes(s.chainA)
 	s.initGenesis(s.chainA)
 	s.initValidatorConfigs(s.chainA)
 	s.runValidators(s.chainA)
 
+	s.T().Logf("starting e2e infrastructure for chain B; chain-id: %s; datadir: %s", s.chainB.id, s.chainB.dataDir)
 	s.initNodes(s.chainB)
 	s.initGenesis(s.chainB)
 	s.initValidatorConfigs(s.chainB)
@@ -127,7 +127,6 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 }
 
 func (s *IntegrationTestSuite) initNodes(c *chain) {
-	s.Require().NoError(c.createAndInitValidators(2))
 	s.Require().NoError(c.createAndInitValidators(2))
 
 	// initialize a genesis file for the first validator

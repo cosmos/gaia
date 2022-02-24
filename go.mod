@@ -6,7 +6,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.45.1
 	github.com/cosmos/ibc-go/v3 v3.0.0-rc0
 	github.com/gorilla/mux v1.8.0
-	github.com/gravity-devs/liquidity v1.4.5
+	github.com/gravity-devs/liquidity v1.5.0
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/cast v1.4.1
 	github.com/spf13/cobra v1.3.0

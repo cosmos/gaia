@@ -1,5 +1,5 @@
 {
-    "ignorePatterns": [ ],
+    "ignorePatterns": [ { "pattern": "^https://ipfs.io/ipfs/" } ],
     "replacementPatterns": [ ],
     "httpHeaders": [ ],
     "timeout": "20s",

@@ -43,9 +43,6 @@ The upgrades aim to add features such as liquidity, economic security, usability
     - Allows the creation of accounts on a "Host" blockchain which are controlled by an authentication module on a "Controller" blockchain.
     - Arbitrary messages are able to be submitted from the "Controller" blockchain to the "Host" blockchain to be executed on behalf of the Interchain Account.
     - Uses ordered IBC channels, one per account.
-- Interchain Account Message Auhothorization Module
-  - Authentication module that authorizes any Account to create an Interchain Account on any IBC connected "Host" blockchain that has the Interchain Account IBC module.
-  - Accounts can be private key controlled users, and eventually the Gov Module and any Groups Module.
 
 ## v8-Rho Upgrade (expected Q2 2022)
 - Gaia v8.0.x
@@ -65,6 +62,9 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Lib P2P
 - IBC 3.1.0
   - Relayer Incentivisation so that IBC packets contain fees to pay for relayer costs.
+- Interchain Account Message Auhothorization Module
+  - Authentication module that authorizes any Account to create an Interchain Account on any IBC connected "Host" blockchain that has the Interchain Account IBC module.
+  - Accounts can be private key controlled users, and eventually the Gov Module and any Groups Module.
 - Liquid Staking
   - Frees secure and low-risk delegations for use in other parts of the Cosmos ecosystem
   - Features include enabling transfer of rewards and voting rights
@@ -103,7 +103,7 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Where Consumer Chains combine their own staking token validator set with Provider Chain validator set.
 
 ## Future Considerations
-The Cosmos Hub is a decentralized network with many diverse contributors. As such there is no one authority of what is or can be part of the Cosmos Network. The Cosmos Hub team at Interchain does it's best to maintain the Gaia repository, which is the primary codebase that operates the Cosmos Network. The Interchain Foundation is one of the sources of funding for engineering work that may make its way onto the Cosmos Hub. We do our best to participate in ongoing conversations about the mission, vision and purpose of the Cosmos Hub, so that we can best support work to enabling it via funding, engineering, coordination and communication. Some of the topics which have been discussed by contributors inside and outside of Interchain are listed below, although have not been developed to the point of being included in the roadmap:
+The Cosmos Hub is a decentralized network with many diverse contributors. As such there is no one authority of what is or can be part of the Cosmos Network. The Cosmos Hub team at Interchain does its best to maintain the Gaia repository, which is the primary codebase that operates the Cosmos Network. The Interchain Foundation is one of the sources of funding for engineering work that may make its way onto the Cosmos Hub. We do our best to participate in ongoing conversations about the mission, vision and purpose of the Cosmos Hub, so that we can best support work to enabling it via funding, engineering, coordination and communication. Some of the topics which have been discussed by contributors inside and outside of Interchain are listed below, although have not been developed to the point of being included in the roadmap:
 * Privacy
 * Smart Contracts
 * Rollups

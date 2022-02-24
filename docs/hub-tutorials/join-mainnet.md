@@ -10,7 +10,7 @@ The current Cosmos Hub mainnet, `cosmoshub-4`, has been performing in place stor
 
 
 <!-- TODO: Link Future Quick Start Guide -->
-For instructions to boostrap a node via Quicksync or State Sync, see the [Quickstart Guide](https://github.com/cosmos/mainnet/blob/306363b874e5dea91d3305788f2d864713aa10e0/README.md)
+For instructions to boostrap a node via Quicksync or State Sync, see the [Quickstart Guide](https://hub.cosmos.network/main/getting-started/quickstart.html)
 
 For instructions to join as a validator, please also see the [Validator Guide](https://hub.cosmos.network/main/validators/overview.html#).
 
@@ -32,7 +32,7 @@ For instructions to join as a validator, please also see the [Validator Guide](h
     - [State Sync](#state-sync)
     - [Quicksync](#quicksync)
 - [Snapshots](#snapshots)
-- [Releases](#releases-upgrades)
+- [Releases](#releases--upgrades)
 - [Cosmovisor](#cosmovisor)
 - [Running via Background Process](#running-via-background-process)
 - [Exporting State](#exporting-state)
@@ -49,9 +49,8 @@ There are many explorers for the Cosmos Hub. For reference while setting up a no
 
 - [Mintscan](https://www.mintscan.io/cosmos)
 - [Big Dipper](https://cosmos.bigdipper.live/)
-- [Hubble](https://hubble.figment.io/cosmos/chains/cosmoshub-4)
-- [Stake ID](https://cosmos.stake.id/)
-
+- [Hubble](https://hubble.figment.io/cosmos/chains/cosmoshub-4)<!-- markdown-link-check-disable -->
+- [Stake ID](https://cosmos.stake.id/)<!-- markdown-link-check-enable -->
 
 ## Getting Started
 
@@ -292,7 +291,7 @@ The node will begin rebuilding state until it hits the first upgrade height at b
 :::::: tab "State Sync"
 ### State Sync
 
-State Sync is an efficient and fast way to bootstrap a new node, and it works by replaying larger chunks of application state directly rather than replaying individual blocks or consensus rounds. For more information, see [Tendermint's State Sync docs](https://docs.tendermint.com/master/spec/p2p/messages/state-sync.html).
+State Sync is an efficient and fast way to bootstrap a new node, and it works by replaying larger chunks of application state directly rather than replaying individual blocks or consensus rounds. For more information, see [Tendermint's State Sync docs](https://github.com/tendermint/tendermint/blob/master/spec/p2p/messages/state-sync.md).
 
 To enable state sync, visit an explorer to get a recent block height and corresponding hash. A node operator can choose any height/hash in the current bonding period, but as the recommended snapshot period is `1000` blocks, it is advised to choose something close to `current height - 1000`.
 
@@ -318,7 +317,7 @@ enable = true
 #
 # For Cosmos SDK-based chains, trust_period should usually be about 2/3 of the unbonding time (~2
 # weeks) during which they can be financially punished (slashed) for misbehavior.
-rpc_servers = "https://rpc-cosmoshub.keplr.app:443,https://rpc.cosmos.network:443"
+rpc_servers = "https://rpc.cosmos.network:443,https://rpc.cosmos.network:443"
 trust_height = 8959784
 trust_hash = "3D8F12EA302AEDA66E80939F7FC785206692F8B6EE6F727F1655F1AFB6A873A5"
 trust_period = "168h0m0s"

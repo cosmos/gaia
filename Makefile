@@ -189,6 +189,11 @@ benchmark:
 docker-build-debug:
 	@docker build -t cosmos/gaiad-e2e --build-arg IMG_TAG=debug -f Dockerfile.e2e .
 
+# TODO: Push this to the Cosmos Dockerhub so we don't have to keep building it
+# in CI.
+docker-push-hermes:
+	@cd tests/e2e/docker; docker build -t cosmos/hermes-e2e:latest -f hermes.Dockerfile .
+
 ###############################################################################
 ###                                Linting                                  ###
 ###############################################################################
@@ -234,4 +239,4 @@ test-docker-push: test-docker
 	test test-all test-build test-cover test-unit test-race \
 	benchmark \
 	build-docker-gaiadnode localnet-start localnet-stop \
-	docker-single-node docker-build-debug
+	docker-single-node docker-build-debug docker-push-hermes

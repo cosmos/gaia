@@ -170,22 +170,6 @@ sync-docs:
 
 include sims.mk
 
-# test: test-unit test-build
-
-# test-all: check test-race test-cover
-
-# test-unit:
-# 	@VERSION=$(VERSION) go test -mod=readonly -tags='ledger test_ledger_mock' ./...
-
-# test-race:
-# 	@VERSION=$(VERSION) go test -mod=readonly -race -tags='ledger test_ledger_mock' ./...
-
-# test-cover:
-# 	@go test -mod=readonly -timeout 30m -race -coverprofile=coverage.txt -covermode=atomic -tags='ledger test_ledger_mock' ./...
-
-# benchmark:
-# 	@go test -mod=readonly -bench=. ./...
-
 PACKAGES_UNIT=$(shell go list ./... | grep -v -e '/tests/e2e')
 PACKAGES_E2E=$(shell go list ./... | grep '/e2e')
 TEST_PACKAGES=./...

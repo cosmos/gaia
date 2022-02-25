@@ -405,6 +405,10 @@ func (s *IntegrationTestSuite) runIBCRelayer() {
 
 	s.T().Logf("started Hermes relayer container: %s", s.hermesResource.Container.ID)
 
+	// XXX: Give time to both networks to start, otherwise we might see gRPC
+	// transport errors.
+	time.Sleep(10 * time.Second)
+
 	// create the client, connection and channel between the two Gaia chains
 	s.connectIBCChains()
 }

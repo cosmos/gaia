@@ -85,13 +85,13 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.initNodes(s.chainA)
 	s.initGenesis(s.chainA)
 	s.initValidatorConfigs(s.chainA)
-	s.runValidators(s.chainA)
+	s.runValidators(s.chainA, 0)
 
 	s.T().Logf("starting e2e infrastructure for chain B; chain-id: %s; datadir: %s", s.chainB.id, s.chainB.dataDir)
 	s.initNodes(s.chainB)
 	s.initGenesis(s.chainB)
 	s.initValidatorConfigs(s.chainB)
-	s.runValidators(s.chainB)
+	s.runValidators(s.chainB, 10)
 
 	s.runIBCRelayer()
 }
@@ -262,7 +262,7 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 	}
 }
 
-func (s *IntegrationTestSuite) runValidators(c *chain) {
+func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 	s.T().Logf("starting Gaia %s validator containers...", c.id)
 
 	s.valResources[c.id] = make([]*dockertest.Resource, len(c.validators))
@@ -279,16 +279,16 @@ func (s *IntegrationTestSuite) runValidators(c *chain) {
 		// expose the first validator for debugging and communication
 		if val.index == 0 {
 			runOpts.PortBindings = map[docker.Port][]docker.PortBinding{
-				"1317/tcp":  {{HostIP: "", HostPort: "1317"}},
-				"6060/tcp":  {{HostIP: "", HostPort: "6060"}},
-				"6061/tcp":  {{HostIP: "", HostPort: "6061"}},
-				"6062/tcp":  {{HostIP: "", HostPort: "6062"}},
-				"6063/tcp":  {{HostIP: "", HostPort: "6063"}},
-				"6064/tcp":  {{HostIP: "", HostPort: "6064"}},
-				"6065/tcp":  {{HostIP: "", HostPort: "6065"}},
-				"9090/tcp":  {{HostIP: "", HostPort: "9090"}},
-				"26656/tcp": {{HostIP: "", HostPort: "26656"}},
-				"26657/tcp": {{HostIP: "", HostPort: "26657"}},
+				"1317/tcp":  {{HostIP: "", HostPort: fmt.Sprintf("%d", 1317+portOffset)}},
+				"6060/tcp":  {{HostIP: "", HostPort: fmt.Sprintf("%d", 6060+portOffset)}},
+				"6061/tcp":  {{HostIP: "", HostPort: fmt.Sprintf("%d", 6061+portOffset)}},
+				"6062/tcp":  {{HostIP: "", HostPort: fmt.Sprintf("%d", 6062+portOffset)}},
+				"6063/tcp":  {{HostIP: "", HostPort: fmt.Sprintf("%d", 6063+portOffset)}},
+				"6064/tcp":  {{HostIP: "", HostPort: fmt.Sprintf("%d", 6064+portOffset)}},
+				"6065/tcp":  {{HostIP: "", HostPort: fmt.Sprintf("%d", 6065+portOffset)}},
+				"9090/tcp":  {{HostIP: "", HostPort: fmt.Sprintf("%d", 9090+portOffset)}},
+				"26656/tcp": {{HostIP: "", HostPort: fmt.Sprintf("%d", 26656+portOffset)}},
+				"26657/tcp": {{HostIP: "", HostPort: fmt.Sprintf("%d", 26657+portOffset)}},
 			}
 		}
 

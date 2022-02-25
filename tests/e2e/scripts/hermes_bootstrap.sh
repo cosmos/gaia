@@ -28,7 +28,6 @@ enabled = false
 enabled = true
 clear_interval = 100
 clear_on_start = true
-filter = false
 tx_confirmation = true
 
 [rest]
@@ -67,7 +66,7 @@ account_prefix = 'cosmos'
 key_name = 'val01-gaia-b'
 store_prefix = 'ibc'
 max_gas = 6000000
-gas_price = { price = 0.001, denom = 'stake' }
+gas_price = { price = 0.001, denom = 'photon' }
 gas_adjustment = 1.0
 clock_drift = '1m' # to accomdate docker containers
 trusting_period = '14days'

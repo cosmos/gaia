@@ -31,7 +31,7 @@ jobs:
           make build
       - name: test & coverage report creation
         run: |
-          go test ./... -mod=readonly -timeout 12m -race -coverprofile=coverage.txt -covermode=atomic -tags='ledger test_ledger_mock'
+          make test-unit-cover
         if: "env.GIT_DIFF != ''"
       - name: filter out DONTCOVER
         run: |

@@ -12,7 +12,7 @@ This is work in progress. Mechanisms and values are susceptible to change.
 
 ### What is a Cosmos validator?
 
-The [Cosmos Hub](../getting-started/what-is-gaia.md) is based on [Tendermint](https:/blocs/docs.tendermint.com/master/introduction/what-is-tendermint.html) that relies on a set of validators to secure the network. The role of validators is to run a full node and participate in consensus by broadcasting votes that contain cryptographic signatures signed by the validator's private key. Validators commit new blocks in the blockchain and receive revenue in exchange for their work. Validators must also participate in governance by voting on proposals. Validators are weighted according to their total stake.
+The [Cosmos Hub](../getting-started/what-is-gaia.md) is based on [Tendermint](https://docs.tendermint.com/master/introduction/what-is-tendermint.html) that relies on a set of validators to secure the network. The role of validators is to run a full node and participate in consensus by broadcasting votes that contain cryptographic signatures signed by the validator's private key. Validators commit new blocks in the blockchain and receive revenue in exchange for their work. Validators must also participate in governance by voting on proposals. Validators are weighted according to their total stake.
 
 ### What is staking?
 

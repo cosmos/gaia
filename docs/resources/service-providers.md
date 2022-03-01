@@ -288,7 +288,7 @@ Flags:
 
 ## REST API
 
-The [REST API documents](https://cosmos.network/rpc/) list all the available endpoints that you can use to interact
+The [REST API documents](https://v1.cosmos.network/rpc/v0.44.5) list all the available endpoints that you can use to interact
 with your full node. Learn [how to enable the REST API](../hub-tutorials/join-mainnet.md#enable-the-rest-api) on your full node.
 
 ### Listen for Incoming Transactions

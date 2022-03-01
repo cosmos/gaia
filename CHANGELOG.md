@@ -29,28 +29,41 @@ Types of changes (Stanzas):
 "Client Breaking" for breaking CLI commands and REST routes.
 "State Machine Breaking" for breaking the AppState
 
+
 Ref: https://keepachangelog.com/en/1.0.0/
 -->
 
 # Changelog
 
 ## [Unreleased]
+* (gaia) Bump [Liquidity](https://github.com/gravity-devs/liquidity) module to [v1.4.6](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.4.6).
+* (gaia) Bump [IBC](https://github.com/cosmos/ibc-go) module to [2.0.3](https://github.com/cosmos/ibc-go/releases/tag/v2.0.3).
+* (gaia) [#1230](https://github.com/cosmos/gaia/pull/1230) Fix: update gRPC Web Configuration in `contrib/testnets/test_platform`.
+* (gaia) [#1135](https://github.com/cosmos/gaia/pull/1135) Fix rocksdb build tag usage.
+* (gaia) [#1160](https://github.com/cosmos/gaia/pull/1160) Improvement: update state sync configs.
+* (gaia) [#1208](https://github.com/cosmos/gaia/pull/1208) Update statesync.bash.
+* * (gaia) Bump [Cosmos-SDK](https://github.com/cosmos/cosmos-sdk) to [v0.44.6](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.6)
+* (gaia) Bump [Versions](https://github.com/cosmos/gaia/pull/1100) of various smaller dependencies, remove the Cosmos SDK replace statement, update `initiClientCtx` params, ensure `stdout` and `stderr` are handled correctly in the CLI.
+
+## [v6.0.3] - 2021-02-18
+ * This is a reverted release that is the same as v6.0.0
+
+## [v6.0.2] - 2021-02-17
+ * Unusable release
+
+## [v6.0.1] - 2021-11-24
+ * Unusable release
+
+## [v6.0.0] - 2021-11-24
 
  * (gaia) Add NewSetUpContextDecorator to anteDecorators
- * (gaia) Update links in docs [#1125](https://github.com/cosmos/gaia/issues/1125)
-
-## [v6.0.0] - 2021-11-11
-
+ * (gaia) Reconfigure SetUpgradeHandler to ensure vesting is configured after auth and new modules have InitGenesis run.
  * (golang) Bump golang prerequisite to 1.17. 
  * (gaia) Bump [Liquidity](https://github.com/gravity-devs/liquidity) module to [v1.4.2](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.4.2).
  * (gaia) Bump [Cosmos SDK](https://github.com/cosmos/cosmos-sdk) to [v0.44.3](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.3). See the [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/release/v0.44.x/CHANGELOG.md#v0443---2021-10-21) for details.
  * (gaia) Add [IBC](https://github.com/cosmos/ibc-go) as a standalone module from the Cosmos SDK using version [v2.0.0](https://github.com/cosmos/ibc-go/releases/tag/v2.0.0). See the [CHANGELOG.md](https://github.com/cosmos/ibc-go/blob/v2.0.0/CHANGELOG.md) for details.
  * (gaia) Add [packet-forward-middleware](https://github.com/strangelove-ventures/packet-forward-middleware) [v1.0.1](https://github.com/strangelove-ventures/packet-forward-middleware/releases/tag/v1.0.1).
  * (gaia) [#969](https://github.com/cosmos/gaia/issues/969) Remove legacy migration code.
-
-## [v5.0.8] - 2021-10-14
-
-* (gaia) This release includes a new AnteHandler that rejects redundant IBC transactions to save relayers fees.
 
 ## [v5.0.7] - 2021-09-30
 
@@ -385,9 +398,11 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v6.0.0-rc3...HEAD
-[v6.0.0]: https://github.com/cosmos/gaia/releases/tag/v6.0.0-rc3
-[v5.0.8]: https://github.com/cosmos/gaia/releases/tag/v5.0.8
+[Unreleased]: https://github.com/cosmos/gaia/compare/v6.0.3...HEAD
+[v6.0.3]: https://github.com/cosmos/gaia/releases/tag/v6.0.3
+[v6.0.2]: https://github.com/cosmos/gaia/releases/tag/v6.0.2
+[v6.0.1]: https://github.com/cosmos/gaia/releases/tag/v6.0.1
+[v6.0.0]: https://github.com/cosmos/gaia/releases/tag/v6.0.0
 [v5.0.7]: https://github.com/cosmos/gaia/releases/tag/v5.0.7
 [v5.0.6]: https://github.com/cosmos/gaia/releases/tag/v5.0.6
 [v5.0.5]: https://github.com/cosmos/gaia/releases/tag/v5.0.5

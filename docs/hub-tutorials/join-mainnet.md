@@ -292,7 +292,7 @@ The node will begin rebuilding state until it hits the first upgrade height at b
 :::::: tab "State Sync"
 ### State Sync
 
-State Sync is an efficient and fast way to bootstrap a new node, and it works by replaying larger chunks of application state directly rather than replaying individual blocks or consensus rounds. For more information, see [Tendermint's State Sync docs](https://docs.tendermint.com/master/spec/p2p/messages/state-sync.html).
+State Sync is an efficient and fast way to bootstrap a new node, and it works by replaying larger chunks of application state directly rather than replaying individual blocks or consensus rounds. For more information, see [Tendermint's State Sync docs](https://github.com/tendermint/tendermint/blob/master/spec/p2p/messages/state-sync.md).
 
 To enable state sync, visit an explorer to get a recent block height and corresponding hash. A node operator can choose any height/hash in the current bonding period, but as the recommended snapshot period is `1000` blocks, it is advised to choose something close to `current height - 1000`.
 

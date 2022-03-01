@@ -38,9 +38,9 @@ There are currently 8 modules active in the Cosmos Hub with parameters that may 
 6. [distribution](./Distribution.md) - Fee distribution and staking token provision distribution
 7. [crisis](./Crisis.md) - Halting the blockchain under certain circumstances (ie. if an invariant is broken)
 8. [mint](./Mint.md) - Creation of new units of staking token
-
+<!-- markdown-link-check-disable -->
 The value or setting for each parameter may be verified in the chain's genesis file, [found here](https://raw.githubusercontent.com/cosmos/launch/master/genesis.json). These are the parameter settings that the latest Cosmos Hub chain launched with, and will remain so unless a governance proposal or software upgrade changes them.
-
+<!-- markdown-link-check-enable -->
 There are also ways to query the current settings for each module's parameter(s). Some can be queried with the command line program [`gaiad`](../../getting-started/installation.md), but I'm still exploring the ways that these settings can be queried. 
 
 You can begin by using the command `gaia q [module] -h` to get help about the subcommands for the module you want to query. For example, `gaiad q staking params --chain-id cosmoshub-3 --node http://51.79.82.228:26657` returns the settings of four parameters:

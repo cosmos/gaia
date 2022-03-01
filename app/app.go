@@ -117,7 +117,7 @@ import (
 )
 
 const appName = "GaiaApp"
-const upgradeName = "v07-Theta"
+const upgradeName = "v7-Theta"
 
 var (
 	// DefaultNodeHome default home directories for the application daemon

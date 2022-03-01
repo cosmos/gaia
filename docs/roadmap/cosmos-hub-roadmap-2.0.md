@@ -72,6 +72,9 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Governance permissioned CosmWASM instance on the hub
 - Budget Module
   - Inflation funding directed to arbitrary module and account addresses
+- Global Fee Module
+  - Allows denoms and min-fees to be governance parameters so gas can be paid in various denoms.
+  - Visible on [tgrade](https://github.com/confio/tgrade/tree/main/x/globalfee) already and enabled in [ante.go](https://github.com/confio/tgrade/blob/main/app/ante.go#L72-L92)
 
 ## v9-Lambda Upgrade (expected Q3 2022)
 - Gaia v9.0.x

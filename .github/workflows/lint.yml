@@ -12,7 +12,7 @@ jobs:
     name: golangci-lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2.4.0
+      - uses: actions/checkout@v3
       - uses: technote-space/get-diff-action@v5.0.2
         with:
           PATTERNS: |

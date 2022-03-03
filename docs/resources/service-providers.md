@@ -287,7 +287,6 @@ Flags:
 - `--gas-prices`: This flag allows you to specify the gas prices you pay for the transaction. The format is used as `0.0025uatom`
 
 ## REST API
-
 The [REST API documents](https://v1.cosmos.network/rpc/v0.44.5) list all the available endpoints that you can use to interact
 with your full node. Learn [how to enable the REST API](../hub-tutorials/join-mainnet.md#enable-the-rest-api) on your full node.
 

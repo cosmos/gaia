@@ -18,16 +18,15 @@ RUN apk add --no-cache $PACKAGES && \
   make install
 
 # Final image
-FROM alpine:edge
+FROM alpine:latest
 
 # Install ca-certificates
-RUN apk add --update ca-certificates
-WORKDIR /root
+RUN apk add --update --no-cache ca-certificates
+
+COPY ./contrib/single-node.sh .
 
 # Copy over binaries from the build-env
 COPY --from=build-env /go/bin/gaiad /usr/bin/gaiad
-
-COPY ./contrib/single-node.sh .
 
 EXPOSE 26657
 

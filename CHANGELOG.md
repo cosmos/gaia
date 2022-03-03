@@ -35,6 +35,9 @@ Ref: https://keepachangelog.com/en/1.0.0/
 # Changelog
 
 ## [Unreleased]
+
+## [v6.0.4] - 2022-03-03
+
 * (gaia) Bump [Liquidity](https://github.com/gravity-devs/liquidity) module to [v1.4.6](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.4.6).
 * (gaia) Bump [IBC](https://github.com/cosmos/ibc-go) module to [2.0.3](https://github.com/cosmos/ibc-go/releases/tag/v2.0.3).
 * (gaia) [#1230](https://github.com/cosmos/gaia/pull/1230) Fix: update gRPC Web Configuration in `contrib/testnets/test_platform`.
@@ -42,13 +45,13 @@ Ref: https://keepachangelog.com/en/1.0.0/
 * (gaia) [#1160](https://github.com/cosmos/gaia/pull/1160) Improvement: update state sync configs.
 * (gaia) [#1208](https://github.com/cosmos/gaia/pull/1208) Update statesync.bash.
 
-## [v6.0.3] - 2021-02-18
+## [v6.0.3] - 2022-02-18
  * This is a reverted release that is the same as v6.0.0
 
-## [v6.0.2] - 2021-02-17
+## [v6.0.2] - 2022-02-17
  * Unusable release
 
-## [v6.0.1] - 2021-11-24
+## [v6.0.1] - 2022-02-16
  * Unusable release
 
 ## [v6.0.0] - 2021-11-24
@@ -395,7 +398,8 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v6.0.3...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v6.0.4...HEAD
+[v6.0.4]: https://github.com/cosmos/gaia/releases/tag/v6.0.4
 [v6.0.3]: https://github.com/cosmos/gaia/releases/tag/v6.0.3
 [v6.0.2]: https://github.com/cosmos/gaia/releases/tag/v6.0.2
 [v6.0.1]: https://github.com/cosmos/gaia/releases/tag/v6.0.1

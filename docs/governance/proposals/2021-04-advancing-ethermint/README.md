@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # Advancing Ethermint - Governance Proposal: GTM and Engineering Plan for the Ethermint Chain 
 
 > **NOTE**: this is a short version of the full proposal. To read the full document click [here](https://forum.cosmos.network/t/advancing-ethermint-governance-proposal-gtm-and-engineering-plan-for-the-ethermint-chain/4554).
@@ -114,3 +115,5 @@ See the [full version](https://forum.cosmos.network/t/advancing-ethermint-govern
 With this proposal, Tharsis plans to expedite the Ethermint chain's development and launch the network by Q4 2021. Ethermint will be the first EVM-compatible chain on Cosmos that will be fully interoperable with other BFT and EVM chains via IBC and the Gravity bridge. 
 
 By creating and envisioning this long-term roadmap, we believe Ethermint can act as the vital component of the Interchain and serve as the gateway between the Ethereum and Cosmos ecosystems: The Ethermint launch will combine the Cosmos and Ethereum communities and provide new economic opportunities for millions of users.
+
+<!-- markdown-link-check-enable -->

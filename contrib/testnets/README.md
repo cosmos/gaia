@@ -3,4 +3,4 @@
 Here contains the files required for automated deployment of either local or remote testnets.
 
 Doing so is best accomplished using the `make` targets. For more information, see the
-[networks documentation](../docs/gaia-tutorials/deploy-testnet.md)
+[networks documentation](../docs/hub-tutorials/deploy-testnet.md)

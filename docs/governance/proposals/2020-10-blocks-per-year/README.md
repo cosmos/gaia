@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # Cosmos Hub Inflation variable modification: Blocks Per Year
 
 **Quick Summary of issue**
@@ -65,3 +66,5 @@ I know there isn’t a right answer for blocks per year. I fully expect this val
 to be fine tuned over the coming years / decades. This seems like a very good
 starting place and a greatly beneficial change before we enter the post star
 gate world ☺
+
+<!-- markdown-link-check-enable -->

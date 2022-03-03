@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # Cosmos Hub 3 Upgrade Instructions
 
 The following document describes the necessary steps involved that validators and full node operators
@@ -373,3 +374,5 @@ snapshot-interval = 0
 # snapshot-keep-recent specifies the number of recent snapshots to keep and serve (0 to keep all).
 snapshot-keep-recent = 2
 ```
+
+<!-- markdown-link-check-enable -->

@@ -29,6 +29,7 @@ Types of changes (Stanzas):
 "Client Breaking" for breaking CLI commands and REST routes.
 "State Machine Breaking" for breaking the AppState
 
+
 Ref: https://keepachangelog.com/en/1.0.0/
 -->
 
@@ -37,7 +38,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ## [Unreleased]
 
 ## [v6.0.4] - 2022-03-03
-
+* (gaia) Bump [Cosmos-SDK](https://github.com/cosmos/cosmos-sdk) to [v0.44.6](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.6)
+* (gaia) Bump [Versions](https://github.com/cosmos/gaia/pull/1100) of various smaller dependencies, remove the Cosmos SDK replace statement, update `initiClientCtx` params, ensure `stdout` and `stderr` are handled correctly in the CLI.
 * (gaia) Bump [Liquidity](https://github.com/gravity-devs/liquidity) module to [v1.4.6](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.4.6).
 * (gaia) Bump [IBC](https://github.com/cosmos/ibc-go) module to [2.0.3](https://github.com/cosmos/ibc-go/releases/tag/v2.0.3).
 * (gaia) [#1230](https://github.com/cosmos/gaia/pull/1230) Fix: update gRPC Web Configuration in `contrib/testnets/test_platform`.
@@ -395,8 +397,6 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 * (rest) [\#4123](https://github.com/cosmos/cosmos-sdk/issues/4123) Fix typo, url error and outdated command description of doc clients.
 * (rest) [\#4129](https://github.com/cosmos/cosmos-sdk/issues/4129) Translate doc clients to chinese.
 * (rest) [\#4141](https://github.com/cosmos/cosmos-sdk/issues/4141) Fix /txs/encode endpoint
-
-<!-- Release links -->
 
 [Unreleased]: https://github.com/cosmos/gaia/compare/v6.0.4...HEAD
 [v6.0.4]: https://github.com/cosmos/gaia/releases/tag/v6.0.4

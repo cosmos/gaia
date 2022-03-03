@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # 코스모스 허브 3 업그레이드 매뉴얼
 
 이 문서는 풀노드 운영자가 `cosmoshub-3`에서 `cosmoshub-4` 업그레이드를 진행하기 위한 과정을 설명합니다.
@@ -235,3 +236,5 @@ snapshot-interval = 0
 # snapshot-keep-recent specifies the number of recent snapshots to keep and serve (0 to keep all).
 snapshot-keep-recent = 2
 ```
+
+<!-- markdown-link-check-enable -->

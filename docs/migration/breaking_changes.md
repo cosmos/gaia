@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # Breaking Changes
 
 This document collects all of the *breaking changes* from the CHANGELOG.md files
@@ -664,3 +665,5 @@ sure you are aware of any relevant breaking changes.
 ## [v0.37.14] - 2020-08-12
 
 # - end -
+
+<!-- markdown-link-check-enable -->

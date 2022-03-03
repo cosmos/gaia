@@ -12,8 +12,8 @@ jobs:
     name: golangci-lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: technote-space/get-diff-action@v4
+      - uses: actions/checkout@v2.4.0
+      - uses: technote-space/get-diff-action@v5.0.2
         with:
           PATTERNS: |
             **/**.go

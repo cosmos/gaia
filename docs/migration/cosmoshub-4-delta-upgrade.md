@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # Cosmos Hub 4, Delta Upgrade, Instructions
 
 This document describes the steps for validator and full node operators for the successful execution of the [Delta Upgrade](https://github.com/cosmos/gaia/blob/main/docs/roadmap/cosmos-hub-roadmap-2.0.md#Delta-Upgrade), which adds the __Gravity DEX__ to the Cosmos Hub. 
@@ -141,3 +142,5 @@ Yes, the audit was led by Least Authority, and have released the [audit report](
 4. We have some self-healing node infrastructure in place. If the node starts failing when the chain halts, and we automatically spin up another 4.2.1 node with state from within the past couple of hours, is there a risk of it double signing transactions as it "catches up" to the point where block processing stops?
 
 When the network is halted, there is no risk of double-signing since no blocks are being produced. You only need to ensure that the self-healing infrastructure does not launch multiple validators when the network resumes block production. As well, if any new node is spun up while the chain is halted, live peers will continue to share historical blocks without producing new blocks.
+
+<!-- markdown-link-check-enable -->

@@ -1,4 +1,4 @@
-﻿
+﻿<!-- markdown-link-check-disable -->
 Cosmos Hub Inflation variable modification: Inflation Rate Change
 
 **Quick Summary of issue**
@@ -38,3 +38,4 @@ Inflation rate Change (Max Slope of inflation curve)
 
 I know there isn’t a right answer for maximum slope. I fully expect this to be fine-tuned over the coming years / decades. Future proposals may adjust this number by a factor of (.5 – 2+) but this gets us in the right ball park just in time for Stargate. ☺
 
+<!-- markdown-link-check-enable -->

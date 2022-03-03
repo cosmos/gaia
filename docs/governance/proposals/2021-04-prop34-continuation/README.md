@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # Proposal 46: Extend Luna Mission to Fund ATOM Marketing
  
 The Cosmos community approved Proposal 34 on 2021-01-20 allocating 129,208 ATOM to implement a comprehensive ATOM marketing plan executed in collaboration with key community stakeholders. Proposal 46 is requesting an extension of the time allowed to spend the approved budget and allocate existing funds for additional ATOM-focused priorities. Below are details of this request and an outline of the successful results of Proposal 34 marketing spend as of 2021-03-31.
@@ -156,3 +157,5 @@ Stage 1 accepted entries for prizes (so far): 170+
     - Cosmonaut Twitter channel growth: 400+ new people in 2 weeks (organic)
 [MEME Live tracker](https://docs.google.com/spreadsheets/d/1w8ry3-SxIRuEjMT1PoES8H19CsRT1aSjiKvVJEjFp_k/edit#gid=0)
 [Competition outline](https://twitter.com/ATOMCosmonauts/status/1373952259013349376?s=20)
+
+<!-- markdown-link-check-enable -->

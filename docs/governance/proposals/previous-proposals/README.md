@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # Previous proposals
 
 This is a record of past proposals, including ones that weren't drafted in the governance repository. These proposals are present in the cosmoshub-4 genesis file.
@@ -203,3 +204,4 @@ The Stargate team is recommending that the Cosmos Hub reschedule the next upgrad
 
 Proposal to complete the Stargate upgrade, halt `cosmoshub-3` at 06:00 UTC on Feb 18th, export the state and start `cosmoshub-4` based on gaia 4.0.nn Gaia Commit hash: n a279d091c6f66f8a91c87943139ebaecdd84f689 Proposal details can be found on n github: https://github.com/cosmos/governance/pull/13 n Rendered: https://ipfs.io/ipfs/QmTkzDwWqPbnAh5YiV5VwcTLnGdwSNsNTn2aDxdXBFca7D/example#/ipfs/QmYn2SxCMYk5SWs5GMcXdbXR8wMCCXRmCyW19SFyzSeZp1 n ipfs: https://cloudflare-ipfs.com/ipfs/QmYn2SxCMYk5SWs5GMcXdbXR8wMCCXRmCyW19SFyzSeZp1 n sia: https://siasky.net/EACAsPcUjpTEpQlG9_nRI1OR07gNeRiudfEWAvKnf0tj_Q n 
 
+<!-- markdown-link-check-enable -->

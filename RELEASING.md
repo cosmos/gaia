@@ -1,42 +1,25 @@
 
 ### Long-Lived Version Branch Approach
 
-Cherry-pick commits from `main` into the long-lived `release/vn.n.x` branch, e.g., `release/v3.0.x`. 
-It is fine to create a long-lived branch from main if the last commit is the release commit.
+In Gaia repo, there are three categories of long-lived branches:
+##`main` 
+`main` allows PR merge if that PR is targeting a bug/feature/improvement that will be included in a backport release or present release. In order to keep `main` always pointing to the most updated version that  can be used on live cosmoshub net. The PRs against `main` might only be get merged when the release process starts.
+## `release` branch
+Each new release line start with `release/vn.0.x`, e.g. `release/v7.0.x`, `release/vn.0.x` should point to the most updated `vn` releases. Each release will checkout its own branch but merged back to  `release/vn.0.x`. The first release on `release/vn.0.x` should be `release/vn.0.0-rc0` which contains cherry-picked commits from `release-prepare` branch or merged from `release-prepare` branch. 
+  
+## `release-prepare` branch
+`release-prepare` branch will cherry-pick the commits from main or be directly commits to. `release-prepare` aims at a clean `release-branch`. Therefore, only till the binary built from `release-prepare` branch passes the dev-testnet, that this branch can be cherry-pick/merge to `release` branch. 
+
+The `release` branch will merge back to `main` when the live cosmoshub net upgrades to this release version line.
 
 ### Release Procedure
 
-- Start on `main`
-- Create the release candidate branch `rc/v*` (going forward known as **RC**)
-  and ensure it's protected against pushing from anyone except the release
-  manager/coordinator
-    - **no PRs targeting this branch should be merged unless exceptional circumstances arise**
-- On the `RC` branch, prepare a new version section in the `CHANGELOG.md` and
-  kick off a large round of simulation testing (e.g. 400 seeds for 2k blocks)
-- If errors are found during the simulation testing, commit the fixes to `main`
-  and create a new `RC` branch (making sure to increment the `rcN`)
-- After simulation has successfully completed, create the release branch
-  (`release/vX.XX.X`) from the `RC` branch
-- Merge the release branch to `main` to incorporate the `CHANGELOG.md` updates
-- Delete the `RC` branches
+ start on `release/v(n-1).0.x`, checkout `upgradename-main`(e.g. `theta-main`) branch, cherry-pick/merge commits from main, or commits directly to `upgradename-main` branch. When  `upgradename-main` branch pass `dev-testnet` tests, checkout a new branch  `release/vn.0.x` off  `release/v(n-1).0.x`, checkout  `release/vn.0.0-rc0` from  `release/vn.0.x`, merge commits from `upgradename-main` branch to `release/vn.0.0-rc0`, modify change log, tag `release/vn.0.0-rc0`.
 
-### Point Release Procedure
 
-At the moment, only a single major release will be supported, so all point
-releases will be based off of that release.
 
-- start on `vX.XX.X`
-- checkout a new branch `rcN/vX.X.X`
-- cherry pick the desired changes from `main`
-    - these changes should be small and NON-BREAKING (both API and state machine)
-- add entries to CHANGELOG.md and remove corresponding pending log entries
-- checkout a new branch `release/vX.X.X` based off of the previous release
-- create a PR merging `rcN/vX.X.X` into `release/vX.X.X`
-- run tests and simulations (noted in [Release Procedure](#release-procedure))
-- after tests and simulation have successfully completed, merge the `RC` branch into `release/vX.X.X`
-    - Make sure to delete the `RC` branch
-- create a PR into `main` containing ONLY the CHANGELOG.md updates
-- tag (use `git tag -a`) then push the tags (`git push --tags`)
+
+
 
 ### Dependency review
 

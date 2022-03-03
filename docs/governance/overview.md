@@ -44,12 +44,7 @@ There are four criteria:
 Currently, the criteria for submitting and passing/failing all proposal types is the same.
 
 ### How is voting tallied?
-<<<<<<< HEAD:docs/governance/overview.md
-Voting power is determined by stake weight at the end of the 14-day voting period and is proportional to the number of total ATOMs participating in the vote. Only bonded ATOMs count towards the voting power for a governance proposal. Liquid ATOMs will not count toward a vote or quorum. 
-=======
-
 Voting power is determined by stake weight at the end of the 14-day voting period and is proportional to the number of total ATOMs participating in the vote. Only bonded ATOMs count towards the voting power for a governance proposal. Liquid ATOMs will not count toward a vote or quorum.
->>>>>>> 720215ca (WIP: Fix commands for quickstart for mac and linux compatability (#1287)):docs/governance/process.md
 
 Inactive validators can cast a vote, but their voting power (including the backing of their delegators) will not count toward the vote if they are not in the active set when the voting period ends. That means that if I delegate to a validator that is either jailed, tombstoned, or ranked lower than 125 in stake-backing at the time that the voting period ends, my stake-weight will not count in the vote.
 

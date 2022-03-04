@@ -662,6 +662,8 @@ func NewGaiaApp(
 				HostEnabled: true,
 				AllowMessages: []string{"/cosmos.bank.v1beta1.MsgSend"},
 			}
+
+			ctx.Logger().Info("start to init interchainaccount module...")
 			// initialize ICS27 module
 			icaModule.InitModule(ctx, controllerParams, hostParams)
 

@@ -34,9 +34,9 @@ The voting period is currently a fixed 14-day period. During the voting period, 
 3. **No:** indicates disapproval of the proposal in its current form.
 4. **NoWithVeto:** indicates stronger opposition to the proposal than simply voting 'No'. If the number of 'NoWithVeto' votes is greater than a third of total votes excluding 'Abstain' votes, the proposal is rejected and the deposits are [burned](#burned-deposits).
 
-As accepted by the community in [Proposal 6](https://ipfs.io/ipfs/QmRtR7qkeaZCpCzHDwHgJeJAZdTrbmHLxFDYXhw7RoF1pp), voters are expected to vote 'NoWithVeto' if a proposal leads to undesireable outcomes for the community. It states “if a proposal seems to be spam or is deemed to have caused a negative externality to Cosmos community, voters should vote _NoWithVeto_.” 
+As accepted by the community in [Proposal 6](https://ipfs.io/ipfs/QmRtR7qkeaZCpCzHDwHgJeJAZdTrbmHLxFDYXhw7RoF1pp), voters are expected to vote 'NoWithVeto' if a proposal leads to undesireable outcomes for the community. It states “if a proposal seems to be spam or is deemed to have caused a negative externality to Cosmos community, voters should vote _NoWithVeto_.”
 
-Voting 'NoWithVeto' provides a mechanism for a minority group representing a _third_ of the participating voting power to reject a proposal that would otherwise pass. This makes explicit an aspect of the consensus protocol: it works as long as only up to [a third of nodes fail](https://docs.tendermint.com/master/introduction/what-is-tendermint.html). In other words, greater than a third of validators are always in a position to cause a proposal to fail outside the formalized governance process and the network's norms, such as by censoring transactions. The purpose of internalizing this aspect of the consensus protocol into the governance process is to discourage validators from relying on collusion and censorship tactics to influence voting outcomes.
+Voting 'NoWithVeto' provides a mechanism for a minority group representing a _third_ of the participating voting power to reject a proposal that would otherwise pass. This makes explicit an aspect of the consensus protocol: it works as long as only up to [a third of nodes fail](https://docs.tendermint.com/v0.35/introduction/what-is-tendermint.html). In other words, greater than a third of validators are always in a position to cause a proposal to fail outside the formalized governance process and the network's norms, such as by censoring transactions. The purpose of internalizing this aspect of the consensus protocol into the governance process is to discourage validators from relying on collusion and censorship tactics to influence voting outcomes.
 
 ## What determines whether or not a governance proposal passes?
 
@@ -49,11 +49,11 @@ There are four criteria:
 3. A simple majority (greater than 50%) of the participating voting power must back the 'Yes' vote during the 14-day voting period
 4. Less than 33.4% of participating voting power votes 'NoWithVeto'
 
-Currently, the criteria for submitting and passing/failing all proposal types is the same. 
+Currently, the criteria for submitting and passing/failing all proposal types is the same.
 
 ### How is voting tallied?
 
-Voting power is determined by stake weight at the end of the 14-day voting period and is proportional to the number of total ATOMs participating in the vote. Only bonded ATOMs count towards the voting power for a governance proposal. Liquid ATOMs will not count toward a vote or quorum. 
+Voting power is determined by stake weight at the end of the 14-day voting period and is proportional to the number of total ATOMs participating in the vote. Only bonded ATOMs count towards the voting power for a governance proposal. Liquid ATOMs will not count toward a vote or quorum.
 
 Inactive validators can cast a vote, but their voting power (including the backing of their delegators) will not count toward the vote if they are not in the active set when the voting period ends. That means that if I delegate to a validator that is either jailed, tombstoned, or ranked lower than 125 in stake-backing at the time that the voting period ends, my stake-weight will not count in the vote.
 

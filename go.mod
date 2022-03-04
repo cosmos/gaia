@@ -7,8 +7,8 @@ require (
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/ibc-go/v2 v2.0.3
 	github.com/gorilla/mux v1.8.0
-	github.com/gravity-devs/liquidity v1.4.4
 	github.com/ory/dockertest/v3 v3.8.1
+	github.com/gravity-devs/liquidity v1.4.6
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/cast v1.4.1
 	github.com/spf13/cobra v1.3.0

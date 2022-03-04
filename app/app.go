@@ -651,15 +651,19 @@ func NewGaiaApp(
 	app.UpgradeKeeper.SetUpgradeHandler(
 		upgradeName,
 		func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-			// set ICS27 Host submodule params
-			app.ICAHostKeeper.SetParams(ctx, icahosttypes.Params{
-				HostEnabled:   true,
-				AllowMessages: []string{"/cosmos.bank.v1beta1.MsgSend"}})
 
-			// set ICS27 Controller submodule params
-			app.ICAControllerKeeper.SetParams(ctx, icacontrollertypes.Params{
+			fromVM[icatypes.ModuleName] = icaModule.ConsensusVersion()
+			// create ICS27 Controller submodule params
+			controllerParams := icacontrollertypes.Params{
 				ControllerEnabled: true,
-			})
+			}
+			// create ICS27 Host submodule params
+			hostParams := icahosttypes.Params{
+				HostEnabled: true,
+				AllowMessages: []string{"/cosmos.bank.v1beta1.MsgSend"},
+			}
+			// initialize ICS27 module
+			icaModule.InitModule(ctx, controllerParams, hostParams)
 
 			ctx.Logger().Info("start to run module migrations...")
 

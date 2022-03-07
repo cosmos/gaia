@@ -155,6 +155,12 @@ The validator that is selected to propose the next block is called the proposer.
 
 This depends, currently no validators are required to validate other blockchains. But when the first version of [Interchain Security](https://blog.cosmos.network/interchain-security-is-coming-to-the-cosmos-hub-f144c45fb035) is launched on the Cosmos Hub, delegators can vote to have certain blockchains secured via Interchain Security. In those cases, validators are required to validate on these chains as well.
 
+### How can a validator safely quit validating on the Cosmos Hub?
+
+If a validator simply shuts down their node, this would result in the validator and their delegators getting slashed for being offline. The only way to safely exit a validator node running on the Cosmos Hub is by unbonding the validator's self-delegated stake so that it fall below its minimum self-delegation limit. As a result, the entire staking pool of this validator gets unbonded and the validator gets kicked out of the active set of validators. They can then proceed to shut down their node without risk of getting slashed.
+
+It's highly advised to warn your delegators before doing this, as they might not always become aware of their ATOM tokens becoming unbonded.
+
 ## Incentives
 
 ### What is the incentive to stake?

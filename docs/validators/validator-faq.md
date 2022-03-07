@@ -157,7 +157,7 @@ This depends, currently no validators are required to validate other blockchains
 
 ### How can a validator safely quit validating on the Cosmos Hub?
 
-If a validator simply shuts down their node, this would result in the validator and their delegators getting slashed for being offline. The only way to safely exit a validator node running on the Cosmos Hub is by unbonding the validator's self-delegated stake so that it fall below its minimum self-delegation limit. As a result, the entire staking pool of this validator gets unbonded and the validator gets kicked out of the active set of validators. They can then proceed to shut down their node without risk of getting slashed.
+If a validator simply shuts down their node, this would result in the validator and their delegators getting slashed for being offline. The only way to safely exit a validator node running on the Cosmos Hub is by unbonding the validator's self-delegated stake so that it falls below its minimum self-delegation limit. As a result, the entire staking pool of this validator gets unbonded and the validator gets kicked out of the active set of validators. They can then proceed to shut down their node without risk of getting slashed.
 
 It's highly advised to warn your delegators before doing this, as they might not always become aware of their ATOM tokens becoming unbonded.
 

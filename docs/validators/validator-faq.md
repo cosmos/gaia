@@ -52,7 +52,7 @@ Any participant in the network can signal that they want to become a validator b
 - **Initial commission rate**: The commission rate on block rewards and fees charged to delegators.
 - **Maximum commission:** The maximum commission rate that this validator can charge. This parameter is fixed and cannot be changed after the `create-validator` transaction is processed.
 - **Commission max change rate:** The maximum daily increase of the validator commission. This parameter is fixed cannot be changed after the `create-validator` transaction is processed.
-- **Minimum self-delegation:** Minimum amount of ATOM the validator requires to have bonded at all time. If the validator's self-delegated stake falls below this limit, their entire staking pool is unbonded.
+- **Minimum self-delegation:** Minimum amount of ATOM the validator requires to have bonded at all time. If the validator's self-delegated stake falls below this limit, their validator gets jailed and kicked out of the active validator set.
 
 After a validator is created, ATOM holders can delegate ATOM to them, effectively adding stake to the validator's pool. The total stake of an address is the combination of ATOM bonded by delegators and ATOM self-bonded by the validator.
 
@@ -155,6 +155,12 @@ The validator that is selected to propose the next block is called the proposer.
 
 This depends, currently no validators are required to validate other blockchains. But when the first version of [Interchain Security](https://blog.cosmos.network/interchain-security-is-coming-to-the-cosmos-hub-f144c45fb035) is launched on the Cosmos Hub, delegators can vote to have certain blockchains secured via Interchain Security. In those cases, validators are required to validate on these chains as well.
 
+### How can a validator safely quit validating on the Cosmos Hub?
+
+If a validator simply shuts down their node, this would result in the validator and their delegators getting slashed for being offline. The only way to safely exit a validator node running on the Cosmos Hub is by unbonding the validator's self-delegated stake so that it falls below its minimum self-delegation limit. As a result, the validator gets jailed and kicked out of the active set of validators, without getting slashed. They can then proceed to shut down their node without risking their tokens.
+
+It's highly advised to inform your delegators when doing this, as they will still be bonded to your validator after it got jailed. They will need to manually unbond and they might not have been made aware of this via their preferred wallet application.
+
 ## Incentives
 
 ### What is the incentive to stake?
@@ -228,7 +234,7 @@ If a validator misbehaves, their delegated stake is partially slashed. Two fault
 
 Yes, they do need to self-delegate at least `1 atom`. Even though there is no obligation for validators to self-delegate more than `1 atom`, delegators want their validator to have more self-delegated ATOM in their staking pool. In other words, validators share the risk.
 
-In order for delegators to have some guarantee about how much shared risk their validator has, the validator can signal a minimum amount of self-delegated ATOM. If a validator's self-delegation goes below the limit that it predefined, this validator and all of its delegators are unbonded.
+In order for delegators to have some guarantee about how much shared risk their validator has, the validator can signal a minimum amount of self-delegated ATOM. If a validator's self-delegation goes below the limit that it predefined, the validator gets jailed and kicked out of the active set of validators while its delegators remain bonded to it.
 
 Note however that it's possible that some validators decide to self-delegate via a different address for security reasons.
 

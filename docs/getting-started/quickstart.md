@@ -24,7 +24,7 @@ For reference, the list of `rpc_servers` and `persistent` peers can be found in 
 ```bash
 # Build gaiad binary and initialize chain
 cd $HOME
-git clone -b v6.0.0 https://github.com/cosmos/gaia
+git clone -b v6.0.4 https://github.com/cosmos/gaia
 cd gaiad
 make install
 gaiad init <custom moniker>

@@ -93,7 +93,7 @@ You should see something similar to the following:
 ```bash
 name: gaia
 server_name: gaiad
-version: v6.0.0
+version: v6.0.4
 commit: 07f9892a927f451ae204d0c9d1a5601d8fc232a5
 build_tags: netgo,ledger
 go: go version go1.15 linux/amd64

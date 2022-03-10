@@ -36,6 +36,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 # Changelog
 
 ## [Unreleased]
+
+## [v6.0.3] - 2021-03-10
 * (gaia) Bump [Liquidity](https://github.com/gravity-devs/liquidity) module to [v1.4.6](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.4.6).
 * (gaia) Bump [IBC](https://github.com/cosmos/ibc-go) module to [2.0.3](https://github.com/cosmos/ibc-go/releases/tag/v2.0.3).
 * (gaia) [#1230](https://github.com/cosmos/gaia/pull/1230) Fix: update gRPC Web Configuration in `contrib/testnets/test_platform`.
@@ -407,7 +409,8 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v6.0.3...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v6.0.4...HEAD
+[v6.0.4]: https://github.com/cosmos/gaia/releases/tag/v6.0.4
 [v6.0.3]: https://github.com/cosmos/gaia/releases/tag/v6.0.3
 [v6.0.2]: https://github.com/cosmos/gaia/releases/tag/v6.0.2
 [v6.0.1]: https://github.com/cosmos/gaia/releases/tag/v6.0.1

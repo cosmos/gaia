@@ -7,7 +7,7 @@ We follow [Semver](https://semver.org/) in that any patch releases are non-break
 
 ## Long-Lived Version Branch Approach
 
-In Gaia repo, there are three categories of long-lived branches:
+In the Gaia repo, there are three categories of long-lived branches:
 
 ### Branch: `main` 
 The `main` branch should be targeted for PRs that contain a bug-fix/feature/improvement that will be included in a release that is used on the currently live Cosmos Hub Network or to be backported to a previous release. The PRs against `main` might only be get merged when the release process starts.

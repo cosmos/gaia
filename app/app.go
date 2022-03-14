@@ -425,7 +425,7 @@ func NewGaiaApp(
 		scopedTransferKeeper,
 	)
 	transferModule := transfer.NewAppModule(app.TransferKeeper)
-	ibcmodule := transfer.NewIBCModule(app.TransferKeeper)
+	transferIBCModule := transfer.NewIBCModule(app.TransferKeeper)
 
 	app.ICAControllerKeeper = icacontrollerkeeper.NewKeeper(
 		appCodec, keys[icacontrollertypes.StoreKey],
@@ -446,17 +446,18 @@ func NewGaiaApp(
 		app.MsgServiceRouter(),
 	)
 	icaModule := ica.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper)
-	icaControllerIBCModule := icacontroller.NewIBCModule(app.ICAControllerKeeper, ibcmodule)
+	// temporarily use IBC transfer module as the ICA authentication module
+	icaControllerIBCModule := icacontroller.NewIBCModule(app.ICAControllerKeeper, transferIBCModule)
 	icaHostIBCModule := icahost.NewIBCModule(app.ICAHostKeeper)
 
 	app.RouterKeeper = routerkeeper.NewKeeper(appCodec, keys[routertypes.StoreKey], app.GetSubspace(routertypes.ModuleName), app.TransferKeeper, app.DistrKeeper)
 
-	routerModule := router.NewAppModule(app.RouterKeeper, ibcmodule)
+	routerModule := router.NewAppModule(app.RouterKeeper, transferIBCModule)
 	// create static IBC router, add transfer route, then set and seal it
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.AddRoute(icacontrollertypes.SubModuleName, icaControllerIBCModule).
 		AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
-		AddRoute(ibctransfertypes.ModuleName, ibcmodule)
+		AddRoute(ibctransfertypes.ModuleName, transferIBCModule)
 
 	app.IBCKeeper.SetRouter(ibcRouter)
 

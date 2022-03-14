@@ -77,7 +77,6 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
-	icacontroller "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller"
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/keeper"
 	icacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
 	icahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
@@ -446,8 +445,6 @@ func NewGaiaApp(
 		app.MsgServiceRouter(),
 	)
 	icaModule := ica.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper)
-	// temporarily use IBC transfer module as the ICA authentication module
-	icaControllerIBCModule := icacontroller.NewIBCModule(app.ICAControllerKeeper, transferIBCModule)
 	icaHostIBCModule := icahost.NewIBCModule(app.ICAHostKeeper)
 
 	app.RouterKeeper = routerkeeper.NewKeeper(appCodec, keys[routertypes.StoreKey], app.GetSubspace(routertypes.ModuleName), app.TransferKeeper, app.DistrKeeper)
@@ -455,8 +452,7 @@ func NewGaiaApp(
 	routerModule := router.NewAppModule(app.RouterKeeper, transferIBCModule)
 	// create static IBC router, add transfer route, then set and seal it
 	ibcRouter := porttypes.NewRouter()
-	ibcRouter.AddRoute(icacontrollertypes.SubModuleName, icaControllerIBCModule).
-		AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
+	ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
 		AddRoute(ibctransfertypes.ModuleName, transferIBCModule)
 
 	app.IBCKeeper.SetRouter(ibcRouter)
@@ -655,7 +651,34 @@ func NewGaiaApp(
 			// create ICS27 Host submodule params
 			hostParams := icahosttypes.Params{
 				HostEnabled:   true,
-				AllowMessages: []string{"/cosmos.bank.v1beta1.MsgSend"},
+				AllowMessages: []string{
+					"/cosmos.authz.v1beta1.MsgExec",
+					"/cosmos.authz.v1beta1.MsgGrant",
+					"/cosmos.authz.v1beta1.MsgRevoke",
+					"/cosmos.bank.v1beta1.MsgSend",
+					"/cosmos.bank.v1beta1.MsgMultiSend",
+					"/cosmos.distribution.v1beta1.MsgSetWithdrawAddress",
+					"/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission",
+					"/cosmos.distribution.v1beta1.MsgFundCommunityPool",
+					"/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
+					"/cosmos.feegrant.v1beta1.MsgGrantAllowance",
+					"/cosmos.feegrant.v1beta1.MsgRevokeAllowance",
+					"/cosmos.gov.v1beta1.MsgVoteWeighted",
+					"/cosmos.gov.v1beta1.MsgSubmitProposal",
+					"/cosmos.gov.v1beta1.MsgDeposit",
+					"/cosmos.gov.v1beta1.MsgVote",
+					"/cosmos.staking.v1beta1.MsgEditValidator",
+					"/cosmos.staking.v1beta1.MsgDelegate",
+					"/cosmos.staking.v1beta1.MsgUndelegate",
+					"/cosmos.staking.v1beta1.MsgBeginRedelegate",
+					"/cosmos.staking.v1beta1.MsgCreateValidator",
+					"/cosmos.vesting.v1beta1.MsgCreateVestingAccount",
+					"/ibc.applications.transfer.v1.MsgTransfer",
+					"/tendermint.liquidity.v1beta1.MsgCreatePool",
+					"/tendermint.liquidity.v1beta1.MsgSwapWithinBatch",
+					"/tendermint.liquidity.v1beta1.MsgDepositWithinBatch",
+					"/tendermint.liquidity.v1beta1.MsgWithdrawWithinBatch",
+				},
 			}
 
 			ctx.Logger().Info("start to init interchainaccount module...")
@@ -675,7 +698,7 @@ func NewGaiaApp(
 
 	if upgradeInfo.Name == upgradeName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := store.StoreUpgrades{
-			Added: []string{icacontrollertypes.StoreKey, icahosttypes.StoreKey},
+			Added: []string{icahosttypes.StoreKey},
 		}
 
 		// configure store loader that checks if version == upgradeHeight and applies store upgrades

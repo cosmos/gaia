@@ -152,7 +152,7 @@ If Cosmovisor is already running, there's nothing left to do, otherwise run `cos
 ### Blocksync
 Blocksync will require navigating the Theta upgrade either via [Cosmovisor](#using-cosmovisor) or manually.
 
-Manually updating `gaiad` will require stopping the chain and installing the new binary once it halts at the expected block height (sometime on March 17).
+Manually updating `gaiad` will require stopping the chain and installing the new binary once it halts at the expected block height (some time on March 17, TBA).
 
 Logs will show `ERR UPGRADE "Theta" NEEDED at height: XXXX`. Stop `gaiad` and run the following:
 

@@ -37,7 +37,7 @@ State Sync is far faster and more efficient than Blocksync, but Blocksync offers
 
 To get started, you'll need to install and configure the Gaia binary using the script below. **For Blocksync, it is important to checkout Gaia `release/v6.0.0`. For State Sync checkout the most recent [testnet release](https://github.com/cosmos/gaia/tree/v6.0.0) until the upgrade is performed**
 
-This example is using the Theta testnet genesis. For up to date values like `persistent_peers`, visit the [testnet repository](https://github.com/cosmos/testnets).
+This example is using the Theta testnet genesis. For up to date values like `seeds`, visit the [testnet repository](https://github.com/cosmos/testnets).
 
 > **Note**: Cosmos Hub recommends running `gaiad` or `cosmovisor` with the `--x-crisis-skip-assert-invariants` flag. If checking for invariants, operators are likely to see `rounding error withdrawing rewards from validator`. These are expected. For more information see [Verify Mainnet](./join-mainnet.md#verify-mainnet)
 

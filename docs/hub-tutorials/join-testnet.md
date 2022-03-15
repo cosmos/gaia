@@ -6,13 +6,16 @@ order: 4
 
 | Current Upgrade | Chain Id       | Upgrade Block Height | Upgrade Date     |
 | --------------- | -------------- | -------------------- | ---------------- |
-| Vega            | `vega-testnet` | `7453750`            | November 12 2021 |
+| Theta           | `theta-testnet-001` | TBD   | March 17 2021 |
 
 
 ## Background
-The Cosmos Hub Testnet is currently running after it's most recent [Vega Upgrade](https://interchain-io.medium.com/cosmos-hub-vega-upgrade-testnet-details-e9c5d69a59c). Visit the [testnet explorer](https://vega-explorer.hypha.coop/) to view all on chain activity.
+The current Cosmos Hub Testnet is running to prepare for the [Theta Upgrade](https://interchain-io.medium.com/preparing-for-the-cosmos-hub-v7-theta-upgrade-2fc41ce34787). Visit the [testnet explorer](https://explorer.theta-testnet.polypore.xyz/) to view all on chain activity.
 
 For those who just need instructions on performing the upgrade, see the [Upgrade](#upgrading) section.
+
+## Releases
+If syncing before the Theta update, checkout [`v6.0.0`](https://github.com/cosmos/gaia/tree/v6.0.0). Until a release is cut for the upgrade, feel free to track the [`theta-prepare` branch](https://github.com/cosmos/gaia/tree/theta-prepare).
 
 ## Prerequisites
 
@@ -20,7 +23,7 @@ For those who just need instructions on performing the upgrade, see the [Upgrade
 
 It's recommended that public testnet nodes are running on machines with at least `16GB` of RAM.
 
-**Make sure Go & Gaia are [properly installed](../getting-started/installation.md). The most recent Gaia version for the Vega Testnet is [`v6.0.0-rc3`](https://github.com/cosmos/gaia/tree/v6.0.0-rc3)**
+**Make sure Go & Gaia are [properly installed](../getting-started/installation.md). The most recent Gaia version for the Theta Testnet is [`v6.0.0`](https://github.com/cosmos/gaia/tree/v6.0.0).**
 
 
 This tutorial will provide all necessary instructions for joining the current public testnet. If you're interested in more advanced configuration and synchronization options, see [Join Mainnet](./join-mainnet.md) for a detailed walkthrough.
@@ -32,9 +35,9 @@ State Sync is far faster and more efficient than Blocksync, but Blocksync offers
 
 ### Configuration & Setup
 
-To get started, you'll need to install and configure the Gaia binary using the script below. **For Blocksync, it is important to checkout Gaia `release/v5.0.5`. For State Sync checkout `release/v6.0.0-rc3`**
+To get started, you'll need to install and configure the Gaia binary using the script below. **For Blocksync, it is important to checkout Gaia `release/v6.0.0`. For State Sync checkout the most recent [testnet release](https://github.com/cosmos/gaia/tree/v6.0.0) until the upgrade is performed**
 
-This example is using the Vega testnet genesis. For up to date values like `persistent_peers`, visit the [testnet repository](https://github.com/cosmos/testnets).
+This example is using the Theta testnet genesis. For up to date values like `seeds`, visit the [testnet repository](https://github.com/cosmos/testnets).
 
 > **Note**: Cosmos Hub recommends running `gaiad` or `cosmovisor` with the `--x-crisis-skip-assert-invariants` flag. If checking for invariants, operators are likely to see `rounding error withdrawing rewards from validator`. These are expected. For more information see [Verify Mainnet](./join-mainnet.md#verify-mainnet)
 
@@ -47,7 +50,7 @@ make install
 gaiad init <custom_moniker>
 
 # Prepare genesis file
-wget https://github.com/cosmos/vega-test/raw/master/public-testnet/modified_genesis_public_testnet/genesis.json.gz
+wget https://github.com/hyphacoop/testnets/raw/add-theta-testnet/v7-theta/public-testnet/genesis.json.gz
 gzip -d genesis.json.gz
 mv genesis.json $HOME/.gaia/config/genesis.json
 
@@ -60,12 +63,14 @@ sed -i 's/persistent_peers = ""/persistent_peers = "<persistent_peer_node_id_1@p
 ### State Sync
 
 ::: warning
-State Sync requires Gaia version [`v6.0.0-rc3`](https://github.com/cosmos/gaia/tree/release/v6.0.0-rc3).
+State Sync requires Gaia version [`v6.0.0`](https://github.com/cosmos/gaia/tree/v6.0.0) until the upgrade is performed.
 :::
+
+**Check out the [quickstart script](https://github.com/cosmos/testnets/tree/master/v7-theta/public-testnet#quickstart-on-a-fresh-machine-eg-on-digital-ocean-droplet) to bootstrap a Theta testnet node and configure as needed**
 
 There will need to be additional configuration to enable State Sync on the testnet. State Sync requires setting an initial list of `persistent_peers` to fetch snapshots from. This will change and eventually move to the p2p layer when the Cosmos Hub upgrades to [Tendermint `v0.35`](https://github.com/tendermint/tendermint/issues/6491). For the sake of simplicity, this step is already done in the [Configuration & Setup](#configuration-amp=-setup) section.
 
-Visit a [testnet explorer](https://vega-explorer.hypha.coop/) to get a recent block height and corresponding hash. A node operator can choose any height/hash in the current bonding period, but as the recommended snapshot period is 1000 blocks, it is advised to choose something close to current height - 1000. Set these parameters in the code snippet below `<BLOCK_HEIGHT>` and `<BLOCK_HASH>`
+Visit a [testnet explorer](https://explorer.theta-testnet.polypore.xyz/) to get a recent block height and corresponding hash. A node operator can choose any height/hash in the current bonding period, but as the recommended snapshot period is 1000 blocks, it is advised to choose something close to current height - 1000. Set these parameters in the code snippet below `<BLOCK_HEIGHT>` and `<BLOCK_HASH>`
 
 For up to date values like `rpc_servers`, visit the current [testnet repository](https://github.com/cosmos/testnets).
 
@@ -93,13 +98,13 @@ Cosmovisor requires the creation the following directory structure:
 │   └── bin
 │       └── gaiad
 └── upgrades
-    └── Vega
+    └── Theta
         ├── bin
         │   └── gaiad
         └── upgrade-info.json
 ```
 
-It is possible to enable autodownload for the new binary, but for the purpose of this tutorial, the setup instructions will include how to do this manually. For more information on autodownload with Cosmovisor, see the Vega Testnet respository's [documentation on Cosmosvisor](https://github.com/cosmos/vega-test/blob/master/local-testnet/README.md#Cosmovisor).
+It is possible to enable autodownload for the new binary, but for the purpose of this tutorial, the setup instructions will include how to do this manually. For more information on autodownload with Cosmovisor, see the full docs on [setting up Cosmosvisor](https://github.com/cosmos/cosmos-sdk/blob/master/cosmovisor/README.md).
 
 The following script installs, configures and starts Cosmovisor:
 
@@ -127,37 +132,37 @@ cosmovisor start --x-crisis-skip-assert-invariants
 
 Cosmovisor will continually poll the `$DAEMON_HOME/data/upgrade-info.json` for new upgrade instructions. When an upgrade is ready, node operators can download the new binary and place it under `$DAEMON_HOME/cosmovisor/upgrades/<name>/bin` where `<name>` is the URI-encoded name of the upgrade as specified in the upgrade module plan.
 
-When the chain reaches block height `7,453,750`, the chain will halt and you will have to download the new binary and move it to the correct folder. For the `Vega` upgrade, this would look like:
+When the chain reaches the upgrade block height, the chain will halt and you will have to download the new binary and move it to the correct folder. For the `Theta` upgrade, this would look like:
 ```
-# Prepare Vega upgrade directory
-mkdir -p ~/.gaia/cosmovisor/upgrades/Vega/bin
+# Prepare Theta upgrade directory
+mkdir -p ~/.gaia/cosmovisor/upgrades/Theta/bin
 
 # Download and install the new binary version.
 cd $HOME/gaia
 git pull
-git checkout v6.0.0-rc3
+git checkout <upgrade-release>
 make install
 
-# Move the new binary to the Vega upgrade directory
-cp $GOPATH/bin/gaiad ~/.gaia/cosmovisor/upgrades/Vega/bin
+# Move the new binary to the Theta upgrade directory
+cp $GOPATH/bin/gaiad ~/.gaia/cosmovisor/upgrades/Theta/bin
 ```
 
 If Cosmovisor is already running, there's nothing left to do, otherwise run `cosmovisor start` to start the daemon.
 
 ### Blocksync
-Blocksync will require nagivating the Vega upgrade either via [Cosmovisor](#using-cosmovisor) or manually.
+Blocksync will require navigating the Theta upgrade either via [Cosmovisor](#using-cosmovisor) or manually.
 
-Manually updating `gaiad` will require stopping the chain and installing the new binary once it halts at block height `7,453,750`.
+Manually updating `gaiad` will require stopping the chain and installing the new binary once it halts at the expected block height (some time on March 17, TBA).
 
-Logs will show `ERR UPGRADE "Vega" NEEDED at height: 7453750`. Stop `gaiad` and run the following:
+Logs will show `ERR UPGRADE "Theta" NEEDED at height: XXXX`. Stop `gaiad` and run the following:
 
 ```
 cd $HOME/gaia
-git checkout release/v6.0.0-rc3
+git checkout <theta release candidate>
 make install
 
 # Verify the correct installation
 gaiad -version
 ```
 
-Once the new binary is installed, restart the Gaia daemon. Logs will show `INF applying upgrade "Vega" at height: 7453750`. After a few minutes, the node will start syncing blocks.
+Once the new binary is installed, restart the Gaia daemon. Logs will show `INF applying upgrade "Theta" at height: XXXXX`. After a few minutes, the node will start syncing blocks.

@@ -6,9 +6,9 @@ import (
 	"os"
 	"testing"
 
-	gaia "github.com/cosmos/gaia/v6/app"
+	gaia "github.com/cosmos/gaia/v7/app"
 
-	"github.com/cosmos/gaia/v6/app/helpers"
+	"github.com/cosmos/gaia/v7/app/helpers"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	"github.com/tendermint/tendermint/libs/rand"

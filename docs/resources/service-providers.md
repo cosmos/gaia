@@ -44,9 +44,9 @@ A Full Node is a network node that syncs up with the state of the blockchain. It
 
 This section describes the steps to run and interact with a full node for the Cosmos Hub.
 
-First, you need to [install the software](../gaia-tutorials/installation.md).
+First, you need to [install the software](../getting-started/installation.md).
 
-Consider running your own [Cosmos Hub Full Node](../gaia-tutorials/join-mainnet.md).
+Consider running your own [Cosmos Hub Full Node](../hub-tutorials/join-mainnet.md).
 
 ## Command-Line Interface
 
@@ -290,7 +290,7 @@ Flags:
 ## REST API
 
 The [REST API documents](https://cosmos.network/rpc/) list all the available endpoints that you can use to interact
-with your full node. Learn [how to enable the REST API](../gaia-tutorials/join-mainnet.md#enable-the-rest-api) on your full node.
+with your full node. Learn [how to enable the REST API](../hub-tutorials/join-mainnet.md#enable-the-rest-api) on your full node.
 
 ### Listen for Incoming Transactions
 

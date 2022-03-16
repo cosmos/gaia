@@ -673,7 +673,7 @@ func NewGaiaApp(
 			ctx.Logger().Info("start to run module migrations...")
 
 			// RunMigrations twice is just a way to make auth module's migrates after staking
-			return app.mm.RunMigrations(ctx, app.configurator, newVM)
+			return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 		},
 	)
 

@@ -1,7 +1,8 @@
 # CODEOWNERS: https://help.github.com/articles/about-codeowners/
 
 # Primary repo maintainers
-*       @alessio @alexanderbez @jgimeno @shahankhatch @zmanian @yaruwangway
+*       @okwme @alexanderbez @zmanian @yaruwangway @jgimeno @crodriguezvega @cmwaters @jackzampolin
 
 # Governance Process and Docs maintainers
 docs/governance/*       @ebuchman @zmanian @hxrts @mariapao
+

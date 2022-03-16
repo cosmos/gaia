@@ -1,6 +1,30 @@
+const p = require('../governance/current-parameters.json');
+
 module.exports = {
   theme: "cosmos",
   title: "Cosmos Hub",
+  locales: {
+    "/": {
+      selectText: 'Languages',
+      label: "English",
+      lang: "en-US"
+    },
+    "/es/": {
+      selectText: 'Idiomas',
+      label: "español",
+      lang: "es"
+    },
+    "/ko/": {
+      selectText: "언어 선택",
+      label: "한국어",
+      lang: "ko"
+    },
+    "/zh/": {
+      selectText: "选择语言",
+      label: "中文(简体)",
+      lang: "zh-CN"
+    }
+  },
   base: process.env.VUEPRESS_BASE || "/",
   themeConfig: {
     docsRepo: "cosmos/gaia",
@@ -8,8 +32,9 @@ module.exports = {
     docsDir: "docs",
     editLinks: true,
     label: "hub",
+    currentParameters: p,
     topbar: {
-      banner: true,
+      banner: false,
     },
     sidebar: {
       nav: [
@@ -136,6 +161,7 @@ module.exports = {
       {
         hostname: "https://hub.cosmos.network"
       }
-    ]
+    ],
+    [ "tabs" ]
   ]
 };

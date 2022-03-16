@@ -36,7 +36,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
-## [v6.0.4] - 2021-03-10
+## [v6.0.4] - 2022-03-10
 * (gaia) Bump [Liquidity](https://github.com/gravity-devs/liquidity) module to [v1.4.6](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.4.6).
 * (gaia) Bump [IBC](https://github.com/cosmos/ibc-go) module to [2.0.3](https://github.com/cosmos/ibc-go/releases/tag/v2.0.3).
 * (gaia) [#1230](https://github.com/cosmos/gaia/pull/1230) Fix: update gRPC Web Configuration in `contrib/testnets/test_platform`.
@@ -46,13 +46,13 @@ Ref: https://keepachangelog.com/en/1.0.0/
 * * (gaia) Bump [Cosmos-SDK](https://github.com/cosmos/cosmos-sdk) to [v0.44.6](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.6)
 * (gaia) Bump [Versions](https://github.com/cosmos/gaia/pull/1100) of various smaller dependencies, remove the Cosmos SDK replace statement, update `initiClientCtx` params, ensure `stdout` and `stderr` are handled correctly in the CLI.
 
-## [v6.0.3] - 2021-02-18
+## [v6.0.3] - 2022-02-18
  * This is a reverted release that is the same as v6.0.0
 
-## [v6.0.2] - 2021-02-17
+## [v6.0.2] - 2022-02-17
  * Unusable release
 
-## [v6.0.1] - 2021-11-24
+## [v6.0.1] - 2022-02-10
  * Unusable release
 
 ## [v6.0.0] - 2021-11-24

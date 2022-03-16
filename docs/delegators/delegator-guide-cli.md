@@ -59,7 +59,7 @@ Please exercise extreme caution!
 [**Download the binaries**]
 Not available yet.
 
-[**Install from source**](../gaia-tutorials/installation.md)
+[**Install from source**](../getting-started/installation.md)
 
 ::: tip
 `gaiad` is used from a terminal. To open the terminal, follow these steps:

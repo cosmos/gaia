@@ -5,6 +5,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	ibctransfertypes "github.com/cosmos/ibc-go/v2/modules/apps/transfer/types"
 	ibcclienttypes "github.com/cosmos/ibc-go/v2/modules/core/02-client/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v2/modules/core/04-channel/types"
 )
 
 const maxIBCRelayerMsgGasUsage = uint64(200_000)
@@ -63,6 +64,9 @@ func isIBCRelayerTx(msgs []sdk.Msg) bool {
 	for _, msg := range msgs {
 		switch msg.(type) {
 		case *ibctransfertypes.MsgTransfer:
+			continue
+
+		case *ibcchanneltypes.MsgAcknowledgement:
 			continue
 
 		case *ibcclienttypes.MsgUpdateClient:

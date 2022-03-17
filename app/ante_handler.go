@@ -6,6 +6,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	channelkeeper "github.com/cosmos/ibc-go/v2/modules/core/04-channel/keeper"
 	ibcante "github.com/cosmos/ibc-go/v2/modules/core/ante"
+
+	gaiaante "github.com/cosmos/gaia/v6/ante"
 )
 
 // HandlerOptions extend the SDK's AnteHandler options by requiring the IBC
@@ -35,7 +37,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 	anteDecorators := []sdk.AnteDecorator{
 		ante.NewSetUpContextDecorator(),
 		ante.NewRejectExtensionOptionsDecorator(),
-		ante.NewMempoolFeeDecorator(),
+		gaiaante.NewMempoolFeeDecorator(),
 		ante.NewValidateBasicDecorator(),
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(options.AccountKeeper),

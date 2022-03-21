@@ -10,6 +10,9 @@ import (
 	gaiaante "github.com/cosmos/gaia/v6/ante"
 )
 
+// TODO: Move this to the root ante package after this is backported to 6.x.x
+// release.
+
 // HandlerOptions extend the SDK's AnteHandler options by requiring the IBC
 // channel keeper.
 type HandlerOptions struct {

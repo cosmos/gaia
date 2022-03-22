@@ -36,13 +36,15 @@ Ref: https://keepachangelog.com/en/1.0.0/
 # Changelog
 
 ## [Unreleased]
+
+* (ante-handler) [\#1343](https://github.com/cosmos/gaia/pull/1343) Bypass validator min fee checks during CheckTx for specific IBC transactions.
 * (gaia) Bump [Liquidity](https://github.com/gravity-devs/liquidity) module to [v1.4.6](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.4.6).
 * (gaia) Bump [IBC](https://github.com/cosmos/ibc-go) module to [2.0.3](https://github.com/cosmos/ibc-go/releases/tag/v2.0.3).
 * (gaia) [#1230](https://github.com/cosmos/gaia/pull/1230) Fix: update gRPC Web Configuration in `contrib/testnets/test_platform`.
 * (gaia) [#1135](https://github.com/cosmos/gaia/pull/1135) Fix rocksdb build tag usage.
 * (gaia) [#1160](https://github.com/cosmos/gaia/pull/1160) Improvement: update state sync configs.
 * (gaia) [#1208](https://github.com/cosmos/gaia/pull/1208) Update statesync.bash.
-* * (gaia) Bump [Cosmos-SDK](https://github.com/cosmos/cosmos-sdk) to [v0.44.6](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.6)
+* (gaia) Bump [Cosmos-SDK](https://github.com/cosmos/cosmos-sdk) to [v0.44.6](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.6)
 * (gaia) Bump [Versions](https://github.com/cosmos/gaia/pull/1100) of various smaller dependencies, remove the Cosmos SDK replace statement, update `initiClientCtx` params, ensure `stdout` and `stderr` are handled correctly in the CLI.
 
 ## [v6.0.3] - 2021-02-18

@@ -270,7 +270,7 @@ It is possible to sync from previous versions of the Cosmos Hub. See the matrix 
 | Stargate            | 18/02/21    | 5,200,791 | `cosmoshub-4` | [v0.34.x](https://github.com/tendermint/tendermint/releases/tag/v0.34.3)          | [v0.40.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.40.1)    | [v4.0.x](https://github.com/cosmos/gaia/releases/tag/v4.0.6)                   | _Included in Cosmos SDK_ |
 | Security Hard Fork  | ?             | ?         | `cosmoshub-4` | [v0.34.x](https://github.com/tendermint/tendermint/releases/tag/v0.34.8)          | [v0.41.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.41.4)    | [v4.2.x](https://github.com/cosmos/gaia/releases/tag/v4.2.1)                   | _Included in Cosmos SDK_ |
 | Delta (Gravity DEX) | 13/07/21    | 6,910,000 | `cosmoshub-4` | [v0.34.x](https://github.com/tendermint/tendermint/releases/tag/v0.34.13)          | [v0.42.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42.10)    | [v5.0.x](https://github.com/cosmos/gaia/releases/tag/v5.0.8)                   | _Included in Cosmos SDK_ |
-| Vega                | 13/12/21    | 8,695,000 | `cosmoshub-4` | [v0.34.x](https://github.com/tendermint/tendermint/releases/tag/v0.34.14)          | [v0.44.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.5)    | [v6.0.x](https://github.com/cosmos/gaia/releases/tag/v6.0.0)                   | [v2.0.x](https://github.com/cosmos/ibc-go/releases/tag/v2.0.3)                   |
+| Vega                | 13/12/21    | 8,695,000 | `cosmoshub-4` | [v0.34.x](https://github.com/tendermint/tendermint/releases/tag/v0.34.14)          | [v0.44.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.5)    | [v6.0.x](https://github.com/cosmos/gaia/releases/tag/v6.0.4)                   | [v2.0.x](https://github.com/cosmos/ibc-go/releases/tag/v2.0.3)                   |
 
 
 
@@ -378,7 +378,7 @@ snapshot-keep-recent = 10
 ## Releases & Upgrades
 **See all [Gaia Releases](https://github.com/cosmos/gaia/releases)**
 
-The most up to date release of Gaia is [`V6.0.0`](https://github.com/cosmos/gaia/releases/tag/v6.0.0). For those that want to use state sync or quicksync to get their node up to speed, starting with the most recent version of Gaia is sufficient.
+The most up to date release of Gaia is [`V6.0.4`](https://github.com/cosmos/gaia/releases/tag/v6.0.4). For those that want to use state sync or quicksync to get their node up to speed, starting with the most recent version of Gaia is sufficient.
 
 To sync an archive or full node from scratch, it is important to note that you must start with [`V4.2.1`](https://github.com/cosmos/gaia/releases/tag/v4.2.1) and proceed through two different upgrades Delta at block height `6910000` and Vega at block height `8695000`.
 
@@ -405,7 +405,7 @@ ERR UPGRADE "Vega" NEEDED at height: 8695000
 
 Again, make sure to backup `~/.gaia`
 
-Install Gaia [`V6.0.0`](https://github.com/cosmos/gaia/releases/tag/v6.0.0) and restart the daemon.
+Install Gaia [`V6.0.4`](https://github.com/cosmos/gaia/releases/tag/v6.0.4) and restart the daemon.
 
 
 ## Cosmovisor

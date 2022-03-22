@@ -98,7 +98,7 @@ Cosmovisor requires the creation the following directory structure:
 │   └── bin
 │       └── gaiad
 └── upgrades
-    └── Theta
+    └── v7-Theta
         ├── bin
         │   └── gaiad
         └── upgrade-info.json

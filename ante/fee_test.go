@@ -14,7 +14,11 @@ func (s *IntegrationTestSuite) TestMempoolFeeDecorator() {
 	s.SetupTest()
 	s.txBuilder = s.clientCtx.TxConfig.NewTxBuilder()
 
-	mfd := ante.NewMempoolFeeDecorator()
+	mfd := ante.NewMempoolFeeDecorator([]string{
+		sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),
+		sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
+		sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
+	})
 	antehandler := sdk.ChainAnteDecorators(mfd)
 	priv1, _, addr1 := testdata.KeyTestPubAddr()
 

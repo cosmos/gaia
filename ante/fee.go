@@ -3,11 +3,10 @@ package ante
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
-	ibcchanneltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
+	tmstrings "github.com/tendermint/tendermint/libs/strings"
 )
 
-const maxIBCRelayerMsgGasUsage = uint64(200_000)
+const maxBypassMinFeeMsgGasUsage = uint64(200_000)
 
 // MempoolFeeDecorator will check if the transaction's fee is at least as large
 // as the local validator's minimum gasFee (defined in validator config).
@@ -17,10 +16,14 @@ const maxIBCRelayerMsgGasUsage = uint64(200_000)
 // CheckTx, then call next AnteHandler.
 //
 // CONTRACT: Tx must implement FeeTx to use MempoolFeeDecorator
-type MempoolFeeDecorator struct{}
+type MempoolFeeDecorator struct {
+	BypassMinFeeMsgTypes []string
+}
 
-func NewMempoolFeeDecorator() MempoolFeeDecorator {
-	return MempoolFeeDecorator{}
+func NewMempoolFeeDecorator(bypassMsgTypes []string) MempoolFeeDecorator {
+	return MempoolFeeDecorator{
+		BypassMinFeeMsgTypes: bypassMsgTypes,
+	}
 }
 
 func (mfd MempoolFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
@@ -34,10 +37,10 @@ func (mfd MempoolFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate b
 	msgs := feeTx.GetMsgs()
 
 	// Only check for minimum fees if the execution mode is CheckTx and the tx does
-	// not contain IBC relayer messages. If the tx does contain IBC relayer messages,
-	// it's total gas must be less than or equal to a constant, otherwise minimum
-	// fees are checked.
-	if ctx.IsCheckTx() && !simulate && !(isIBCRelayerTx(msgs) && gas <= uint64(len(msgs))*maxIBCRelayerMsgGasUsage) {
+	// not contain operator configured bypass messages. If the tx does contain
+	// operator configured bypass messages only, it's total gas must be less than
+	// or equal to a constant, otherwise minimum fees are checked to prevent spam.
+	if ctx.IsCheckTx() && !simulate && !(mfd.bypassMinFeeMsgs(msgs) && gas <= uint64(len(msgs))*maxBypassMinFeeMsgGasUsage) {
 		minGasPrices := ctx.MinGasPrices()
 		if !minGasPrices.IsZero() {
 			requiredFees := make(sdk.Coins, len(minGasPrices))
@@ -59,21 +62,13 @@ func (mfd MempoolFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate b
 	return next(ctx, tx, simulate)
 }
 
-func isIBCRelayerTx(msgs []sdk.Msg) bool {
+func (mfd MempoolFeeDecorator) bypassMinFeeMsgs(msgs []sdk.Msg) bool {
 	for _, msg := range msgs {
-		switch msg.(type) {
-		case *ibcchanneltypes.MsgRecvPacket:
+		if tmstrings.StringInSlice(sdk.MsgTypeURL(msg), mfd.BypassMinFeeMsgTypes) {
 			continue
-
-		case *ibcchanneltypes.MsgAcknowledgement:
-			continue
-
-		case *ibcclienttypes.MsgUpdateClient:
-			continue
-
-		default:
-			return false
 		}
+
+		return false
 	}
 
 	return true

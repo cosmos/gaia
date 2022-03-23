@@ -98,16 +98,17 @@ import (
 	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
+	"github.com/strangelove-ventures/packet-forward-middleware/v2/router"
+	routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v2/router/keeper"
+	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v2/router/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
+	gaiaante "github.com/cosmos/gaia/v7/ante"
 	gaiaappparams "github.com/cosmos/gaia/v7/app/params"
-	"github.com/strangelove-ventures/packet-forward-middleware/v2/router"
-	routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v2/router/keeper"
-	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v2/router/types"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
@@ -602,8 +603,8 @@ func NewGaiaApp(
 	app.MountTransientStores(tkeys)
 	app.MountMemoryStores(memKeys)
 
-	anteHandler, err := NewAnteHandler(
-		HandlerOptions{
+	anteHandler, err := gaiaante.NewAnteHandler(
+		gaiaante.HandlerOptions{
 			HandlerOptions: ante.HandlerOptions{
 				AccountKeeper:   app.AccountKeeper,
 				BankKeeper:      app.BankKeeper,

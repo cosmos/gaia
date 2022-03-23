@@ -39,8 +39,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ## [7.0.0-rc0] - 2022-03-16
 - (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.1](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.1). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.1/CHANGELOG.md#v0451---2022-02-03) for details.
 - (gaia) bump [ibc-go](https://github.com/cosmos/ibc-go) module to [v3.0.0](https://github.com/cosmos/ibc-go/releases/tag/v3.0.0). See [CHANGELOG.md](https://github.com/cosmos/ibc-go/blob/v3.0.0/CHANGELOG.md#v300---2022-03-15) for details.
-- (gaia) add [interhcian account](https://github.com/cosmos/ibc-go/tree/main/modules/apps/27-interchain-accounts) module (interhchain-account module is part of ibc-go module).
-- (gaia) bump [liquidity](github.com/gravity-devs/liquidity/x/liquidity) module to [v1.5.0](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.5.0). See [CHANGELOG.md](https://github.com/Gravity-Devs/liquidity/blob/v1.5.0/CHANGELOG.md#v150---20220223) for details.
+- (gaia) add [interchain account](https://github.com/cosmos/ibc-go/tree/main/modules/apps/27-interchain-accounts) module (interhchain-account module is part of ibc-go module).
+- (gaia) bump [liquidity](https://github.com/gravity-devs/liquidity) module to [v1.5.0](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.5.0). See [CHANGELOG.md](https://github.com/Gravity-Devs/liquidity/blob/v1.5.0/CHANGELOG.md#v150---20220223) for details.
 - (gaia) bump [packet-forward-middleware](https://github.com/strangelove-ventures/packet-forward-middleware) module to [v2.1.1](https://github.com/strangelove-ventures/packet-forward-middleware/releases/tag/v2.1.1).
 - (gaia) add migration logs for upgrade process.
 
@@ -55,24 +55,28 @@ Ref: https://keepachangelog.com/en/1.0.0/
 * (gaia) Bump [Versions](https://github.com/cosmos/gaia/pull/1100) of various smaller dependencies, remove the Cosmos SDK replace statement, update `initiClientCtx` params, ensure `stdout` and `stderr` are handled correctly in the CLI.
 
 ## [v6.0.3] - 2022-02-18
- * This is a reverted release that is the same as v6.0.0
+* This is a reverted release that is the same as v6.0.0
 
 ## [v6.0.2] - 2022-02-17
- * Unusable release
+* Unusable release
 
 ## [v6.0.1] - 2022-02-10
- * Unusable release
+* Unusable release
 
 ## [v6.0.0] - 2021-11-24
 
- * (gaia) Add NewSetUpContextDecorator to anteDecorators
- * (gaia) Reconfigure SetUpgradeHandler to ensure vesting is configured after auth and new modules have InitGenesis run.
- * (golang) Bump golang prerequisite to 1.17. 
- * (gaia) Bump [Liquidity](https://github.com/gravity-devs/liquidity) module to [v1.4.2](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.4.2).
- * (gaia) Bump [Cosmos SDK](https://github.com/cosmos/cosmos-sdk) to [v0.44.3](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.3). See the [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/release/v0.44.x/CHANGELOG.md#v0443---2021-10-21) for details.
- * (gaia) Add [IBC](https://github.com/cosmos/ibc-go) as a standalone module from the Cosmos SDK using version [v2.0.0](https://github.com/cosmos/ibc-go/releases/tag/v2.0.0). See the [CHANGELOG.md](https://github.com/cosmos/ibc-go/blob/v2.0.0/CHANGELOG.md) for details.
- * (gaia) Add [packet-forward-middleware](https://github.com/strangelove-ventures/packet-forward-middleware) [v1.0.1](https://github.com/strangelove-ventures/packet-forward-middleware/releases/tag/v1.0.1).
- * (gaia) [#969](https://github.com/cosmos/gaia/issues/969) Remove legacy migration code.
+* (gaia) Add NewSetUpContextDecorator to anteDecorators
+* (gaia) Reconfigure SetUpgradeHandler to ensure vesting is configured after auth and new modules have InitGenesis run.
+* (golang) Bump golang prerequisite to 1.17.
+* (gaia) Bump [Liquidity](https://github.com/gravity-devs/liquidity) module to [v1.4.2](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.4.2).
+* (gaia) Bump [Cosmos SDK](https://github.com/cosmos/cosmos-sdk) to [v0.44.3](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.3). See the [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/release/v0.44.x/CHANGELOG.md#v0443---2021-10-21) for details.
+* (gaia) Add [IBC](https://github.com/cosmos/ibc-go) as a standalone module from the Cosmos SDK using version [v2.0.0](https://github.com/cosmos/ibc-go/releases/tag/v2.0.0). See the [CHANGELOG.md](https://github.com/cosmos/ibc-go/blob/v2.0.0/CHANGELOG.md) for details.
+* (gaia) Add [packet-forward-middleware](https://github.com/strangelove-ventures/packet-forward-middleware) [v1.0.1](https://github.com/strangelove-ventures/packet-forward-middleware/releases/tag/v1.0.1).
+* (gaia) [#969](https://github.com/cosmos/gaia/issues/969) Remove legacy migration code.
+
+## [v5.0.8] - 2021-10-14
+
+* (gaia) This release includes a new AnteHandler that rejects redundant IBC transactions to save relayers fees.
 
 ## [v5.0.8] - 2021-10-14
 
@@ -80,19 +84,19 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [v5.0.7] - 2021-09-30
 
-  * (gaia) Bump Cosmos SDK to 0.42.10
+* (gaia) Bump Cosmos SDK to 0.42.10
 
 ## [v5.0.6] - 2021-09-16
 
- * (gaia) Bump tendermint to 0.34.13
+* (gaia) Bump tendermint to 0.34.13
 
- 
+
 ## [v5.0.5] - 2021-08-05
 
- * (gaia) Bump SDK to [0.42.9](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42.9) to resolve IBC channel restart issue ([9800](https://github.com/cosmos/cosmos-sdk/issues/9800)).
+* (gaia) Bump SDK to [0.42.9](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42.9) to resolve IBC channel restart issue ([9800](https://github.com/cosmos/cosmos-sdk/issues/9800)).
 
 ## [v5.0.4] - 2021-07-31
- * (chore) Fix release to include intended items from `v5.0.3`.
+* (chore) Fix release to include intended items from `v5.0.3`.
 
 ## [v5.0.3] - 2021-07-30
 

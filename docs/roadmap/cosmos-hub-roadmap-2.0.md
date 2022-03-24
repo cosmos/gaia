@@ -62,9 +62,15 @@ The upgrades aim to add features such as liquidity, economic security, usability
 - Liquid Staking
   - Frees secure and low-risk delegations for use in other parts of the Cosmos ecosystem
   - Features include enabling transfer of rewards and voting rights
-- Governance permissioned CosmWASM instance on the hub
-- Budget Module
+- Wasmd
+  - Governance permissioned CosmWASM instance on the hub
+- Budget Module (stretch-goal)
   - Inflation funding directed to arbitrary module and account addresses
+- Global Fee Module (stretch-goal)
+  - Allows denoms and min-fees to be governance parameters so gas can be paid in various denoms.
+  - Visible on [tgrade](https://github.com/confio/tgrade/tree/main/x/globalfee) already and enabled in [ante.go](https://github.com/confio/tgrade/blob/main/app/ante.go#L72-L92)
+- Bech32 Prefix forwarding (stretch-goal)
+  - https://github.com/osmosis-labs/bech32-ibc
 
 ## v9-Lambda Upgrade (expected Q3 2022)
 - Gaia v9.0.x

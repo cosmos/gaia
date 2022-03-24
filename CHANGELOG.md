@@ -78,6 +78,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 * (gaia) This release includes a new AnteHandler that rejects redundant IBC transactions to save relayers fees.
 
+## [v5.0.8] - 2021-10-14
+
+* (gaia) This release includes a new AnteHandler that rejects redundant IBC transactions to save relayers fees.
+
 ## [v5.0.7] - 2021-09-30
 
   * (gaia) Bump Cosmos SDK to 0.42.10

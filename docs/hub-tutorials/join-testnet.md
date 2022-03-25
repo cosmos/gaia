@@ -6,16 +6,16 @@ order: 4
 
 | Current Upgrade | Chain Id       | Upgrade Block Height | Upgrade Date     |
 | --------------- | -------------- | -------------------- | ---------------- |
-| Theta           | `theta-testnet-001` | TBD   | March 17 2021 |
+| Theta           | `theta-testnet-001` | 9283650   | March 17 2021 |
 
 
 ## Background
-The current Cosmos Hub Testnet is running to prepare for the [Theta Upgrade](https://interchain-io.medium.com/preparing-for-the-cosmos-hub-v7-theta-upgrade-2fc41ce34787). Visit the [testnet explorer](https://explorer.theta-testnet.polypore.xyz/) to view all on chain activity.
+The current Cosmos Hub Testnet is running on the [Theta Upgrade](https://interchain-io.medium.com/preparing-for-the-cosmos-hub-v7-theta-upgrade-2fc41ce34787). Visit the [testnet explorer](https://explorer.theta-testnet.polypore.xyz/) to view all on chain activity.
 
 For those who just need instructions on performing the upgrade, see the [Upgrade](#upgrading) section.
 
 ## Releases
-If syncing before the Theta update, checkout [`v6.0.0`](https://github.com/cosmos/gaia/tree/v6.0.0). Until a release is cut for the upgrade, feel free to track the [`theta-prepare` branch](https://github.com/cosmos/gaia/tree/theta-prepare).
+If syncing before the Theta update, checkout [`v6.0.0`](https://github.com/cosmos/gaia/tree/v6.0.0). **If syncing after the upgrade, see [`v7.0.0-rc0`](https://github.com/cosmos/gaia/tree/release/v7.0.0-rc0).**
 
 ## Prerequisites
 
@@ -23,7 +23,7 @@ If syncing before the Theta update, checkout [`v6.0.0`](https://github.com/cosmo
 
 It's recommended that public testnet nodes are running on machines with at least `16GB` of RAM.
 
-**Make sure Go & Gaia are [properly installed](../getting-started/installation.md). The most recent Gaia version for the Theta Testnet is [`v6.0.0`](https://github.com/cosmos/gaia/tree/v6.0.0).**
+**Make sure Go & Gaia are [properly installed](../getting-started/installation.md). The most recent Gaia version for the Theta Testnet is [`v7.0.0-rc0`](https://github.com/cosmos/gaia/tree/release/v7.0.0-rc0).**
 
 
 This tutorial will provide all necessary instructions for joining the current public testnet. If you're interested in more advanced configuration and synchronization options, see [Join Mainnet](./join-mainnet.md) for a detailed walkthrough.
@@ -35,7 +35,7 @@ State Sync is far faster and more efficient than Blocksync, but Blocksync offers
 
 ### Configuration & Setup
 
-To get started, you'll need to install and configure the Gaia binary using the script below. **For Blocksync, it is important to checkout Gaia `release/v6.0.0`. For State Sync checkout the most recent [testnet release](https://github.com/cosmos/gaia/tree/v6.0.0) until the upgrade is performed**
+To get started, you'll need to install and configure the Gaia binary using the script below. **For Blocksync, it is important to checkout Gaia `release/v6.0.0`. For State Sync checkout the most recent Theta release [`v7.0.0-rc0`](https://github.com/cosmos/gaia/tree/release/v7.0.0-rc0)**
 
 This example is using the Theta testnet genesis. For up to date values like `seeds`, visit the [testnet repository](https://github.com/cosmos/testnets).
 

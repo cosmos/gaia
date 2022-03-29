@@ -4,7 +4,7 @@ This Cosmos Hub Product Roadmap incorporates input from product owners, key Cosm
 
 This roadmap gives a one-year guideline in which stakeholders can anticipate updated features on the Cosmos Hub, with the greatest degree of specificity available for the most immediate upgrades, and decreasing precision available the further out the timeline goes.
 
-The upgrades aim to add features such as liquidity, economic security, usability, and participation. To highlight our focus on DeFi, we have chosen to use the [Greeks from Finance](https://en.wikipedia.org/wiki/Greeks_(finance)) in naming upcoming upgrades.
+The upgrades aim to add features such as liquidity, economic security, usability, and participation. To highlight our focus on DeFi, we have chosen to use the [Greek alphabet](https://en.wikipedia.org/wiki/Greek_alphabet) to name upcoming upgrades.
 
 ## Delta Upgrade (Completed July 12, 2021)
 - Gaia v5.0.x

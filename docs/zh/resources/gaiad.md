@@ -25,14 +25,6 @@ gaiad config node <host>:<port
 
 如果您运行自己的全节点，只需使用`tcp://localhost:26657`地址即可。
 
-然后，让我们设置`--trust-node`标志的默认值：
-
-```bash
-gaiad config trust-node true
-
-# Set to true if you trust the full-node you are connecting to, false otherwise
-```
-
 最后，设置我们想要与之交互链的`chain-id`：
 
 ```bash

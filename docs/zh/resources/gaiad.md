@@ -20,7 +20,7 @@ gaiad config <flag> <value>
 ```bash
 gaiad config node <host>:<port
 
-# example: gaiad config node https://77.87.106.33:26657
+# example: gaiad config node https://77.87.106.33:26657 (note: this is a placeholder)
 ```
 
 如果您运行自己的全节点，只需使用`tcp://localhost:26657`地址即可。

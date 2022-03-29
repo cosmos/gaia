@@ -45,7 +45,7 @@ There are three types of key representations that are used:
   - Used to receive funds
   - e.g. `cosmos15h6vd5f0wqps26zjlwrc6chah08ryu4hzzdwhc`
 
-* `cosmosvaloper`
+- `cosmosvaloper`
   - Used to associate a validator to it's operator
   - Used to invoke staking commands
   - e.g. `cosmosvaloper1carzvgq3e6y3z5kz5y6gxp3wpy3qdrv928vyah`

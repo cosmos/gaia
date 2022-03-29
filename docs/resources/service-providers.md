@@ -165,7 +165,7 @@ First, set up the address of the full node you want to connect to:
 ```bash
 gaiad config node <host>:<port
 
-// example: gaiad config node https://77.87.106.33:26657
+// example: gaiad config node https://77.87.106.33:26657 (note: this is a placeholder)
 ```
 
 If you run your own full node locally, use `tcp://localhost:26657` as the address.

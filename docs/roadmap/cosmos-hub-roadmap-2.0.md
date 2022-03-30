@@ -49,14 +49,11 @@ The upgrades aim to add features such as liquidity, economic security, usability
 - Cosmos SDK v0.46
   - Groups module:
     - Enables higher-level multisig permissioned accounts, e.g., weight-based voting policies
-  - Meta-Transactions
-    - Allows transactions to be submitted by separate accounts that receive tips.
+  - Meta-Transactions (stretch-goal)
+    - Allows messages to be submitted by separate accounts that receive tips for doing so.
   - Gov Module Improvements
     - Execution of arbitraty transactions instead of just governance proposals.
     - Enables much more expressive governance module.
-  - NFT module
-    - Enable simple management of NFT identifiers, their owners, and associated data, such as URIs, content, and provenance
-    - An extensible base module for extensions including collectibles, custody, provenance, and marketplaces
 - Tendermint v0.35
   - Mempool Transaction Prioritization
   - Lib P2P
@@ -77,6 +74,7 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Visible on [tgrade](https://github.com/confio/tgrade/tree/main/x/globalfee) already and enabled in [ante.go](https://github.com/confio/tgrade/blob/main/app/ante.go#L72-L92)
 - Bech32 Prefix forwarding (stretch-goal)
   - https://github.com/osmosis-labs/bech32-ibc
+- IBC Msg Whitelist to skip MinFee in CheckTX
 
 ## v9-Lambda Upgrade (expected Q3 2022)
 - Gaia v9.0.x
@@ -102,6 +100,7 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Protobuf v2
 - IBC Queries
 
+
 ## v11-Gamma (expected Q1 2023)
 - Gaia v11.0.x
 - Interchain Security v3 - Layered Security
@@ -109,8 +108,13 @@ The upgrades aim to add features such as liquidity, economic security, usability
 
 ## Future Considerations
 The Cosmos Hub is a decentralized network with many diverse contributors. As such there is no one authority of what is or can be part of the Cosmos Network. The Cosmos Hub team at Interchain does its best to maintain the Gaia repository, which is the primary codebase that operates the Cosmos Network. The Interchain Foundation is one of the sources of funding for engineering work that may make its way onto the Cosmos Hub. We do our best to participate in ongoing conversations about the mission, vision and purpose of the Cosmos Hub, so that we can best support work to enabling it via funding, engineering, coordination and communication. Some of the topics which have been discussed by contributors inside and outside of Interchain are listed below, although have not been developed to the point of being included in the roadmap:
-* Privacy
-* Smart Contracts
-* Rollups
+- IBC NFT
+- NFT module
+    - Enable simple management of NFT identifiers, their owners, and associated data, such as URIs, content, and provenance
+    - An extensible base module for extensions including collectibles, custody, provenance, and marketplaces
+    - Unless the Cosmos Hub plans to be a full blown platform for NFT publication, it should pair the inclusion of this module with the IBC NFT module similar to how the Cosmos Hub doesn't allow new Fungible Tokens to be published but does allow them to be transferred via IBC.
+- Privacy
+- Smart Contracts
+- Rollups
 
 The Cosmos Hub Roadmap is maintained by the Interchain Cosmos Hub team as a living document, and is updated in collaboration with key stakeholders from the multi-entity Cosmos community. 

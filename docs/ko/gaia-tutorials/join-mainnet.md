@@ -152,10 +152,10 @@ gaiad export --height [height] --for-zero-height > [filename].json
 
 각 폴노드에서 invariant를 실행하여 검증 중 위험한 상황이 발생하는 것을 방지하세요. Invariant를 사용하여 메인넷의 상태(state)가 올바른 상태인 것을 확인합니다. 중요한 invariant 검증 중 하나는 프로토콜 예상 범위 밖에서 새로운 아톰이 생성되거나 사라지는 행위를 미리 감지하고 예빵합니다. 이 외에도 다양한 invariant check가 모듈 내 내장되어있습니다.
 
-Invariant check는 블록체인 연산력을 상당하게 소모하기 때문에, 기본적으로 비활성화 되어있습니다. Invariant check를 실행한 상태로 노드를 시작하기 원하시는 경우 `assert-invariants-blockly` 플래그를 추가하세요:
+Invariant check는 블록체인 연산력을 상당하게 소모하기 때문에, 기본적으로 비활성화 되어있습니다. Invariant check를 실행한 상태로 노드를 시작하기 원하시는 경우 `inv-check-period` 플래그를 추가하세요:
 
 ```bash
-gaiad start --assert-invariants-blockly
+gaiad start --inv-check-period [block-count]
 ```
 
 만약 노드 내 invariant가 문제를 감지하는 경우, 노드는 패닉하여 메인넷을 중지하는 트랜잭션을 전송합니다. 예시 메시지는 다음과 같습니다:

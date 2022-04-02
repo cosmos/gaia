@@ -25,6 +25,7 @@ Text proposals are used by delegators to agree to a certain strategy, plan, comm
 ## Community Pool Spend
 
 There are five (5) components:
+
 1. **Title** - the distinguishing name of the proposal, typically the way the that explorers list proposals
 2. **Description** - the body of the proposal that further describes what is being proposed and details surrounding the proposal
 3. **Recipient** - the Cosmos Hub (bech32-based) address that will receive funding from the Community Pool
@@ -37,7 +38,7 @@ In this simple example (below), a network explorer will list the governance prop
 
 The `amount` is `1000000uatom`. 1,000,000 micro-ATOM is equal to 1 ATOM, so `recipient` address `cosmos1qgfdn8h6fkh0ekt4n4d2c93c5gz3cv5gce783m` will receive 1 ATOM if this proposal is passed.
 
-The `deposit 512000000 uatom` results in 512 ATOM being used from the proposal submitter's account. There is a minimum deposit required for a proposal to enter the voting period, and anyone may contribute to this deposit within a 14-day period. If the minimum deposit isn't reach before this time, the deposit amounts will be burned. Deposit amounts will also be burned if quorum isn't met in the vote or if the proposal is vetoed.
+The `deposit 64000000 uatom` results in 64 ATOM being used from the proposal submitter's account. There is a minimum deposit required for a proposal to enter the voting period, and anyone may contribute to this deposit within a 14-day period. If the minimum deposit isn't reach before this time, the deposit amounts will be burned. Deposit amounts will also be burned if quorum isn't met in the vote or if the proposal is vetoed.
 
 ```
 {
@@ -53,7 +54,7 @@ The `deposit 512000000 uatom` results in 512 ATOM being used from the proposal s
   "deposit": [
     {
       "denom": "uatom",
-      "amount": "512000000"
+      "amount": "64000000"
     }
   ]
 }
@@ -62,7 +63,7 @@ The `deposit 512000000 uatom` results in 512 ATOM being used from the proposal s
 
 #### Real Example
 
-This is the governance proposal that [Gavin Birch](https://twitter.com/Ether_Gavin) ([Figment Networks](https://figment.network/)) used to create [Prop23, the first successful Cosmos Hub community-spend proposal](https://hubble.figment.network/cosmos/chains/cosmoshub-3/governance/proposals/23). 
+This is the governance proposal that [Gavin Birch](https://twitter.com/Ether_Gavin) ([Figment Networks](https://figment.network/)) used to create [Prop23, the first successful Cosmos Hub community-spend proposal](https://hubble.figment.network/cosmos/chains/cosmoshub-3/governance/proposals/23).
 
 You can query the proposal details with the gaiad command-line interface using this command: `gaiad q gov proposal 23 --chain-id cosmoshub-3 --node cosmos-node-1.figment.network:26657`
 
@@ -90,6 +91,7 @@ You use can also use [Hubble](https://hubble.figment.network/cosmos/chains/cosmo
 **Note:** Changes to the [`gov` module](https://docs.cosmos.network/master/modules/gov/) are different from the other kinds of parameter changes because `gov` has subkeys, [as discussed here](https://github.com/cosmos/cosmos-sdk/issues/5800). Only the `key` part of the JSON file is different for `gov` parameter-change proposals.
 
 For parameter-change proposals, there are seven (7) components:
+
 1. **Title** - the distinguishing name of the proposal, typically the way the that explorers list proposals
 2. **Description** - the body of the proposal that further describes what is being proposed and details surrounding the proposal
 3. **Subspace** - the Cosmos Hub module with the parameter that is being changed
@@ -124,13 +126,14 @@ You use can also use [Hubble](https://hubble.figment.network/cosmos/chains/gaia-
   "deposit": "100000umuon"
 }
 ```
+
 The deposit `denom` is `uatom` and `amount` is `100000`. Since 1,000,000 micro-ATOM is equal to 1 ATOM, a deposit of 0.1 ATOM will be included with this proposal. The gaia-13007 testnet currently has a 0.1 ATOM minimum deposit, so this will put the proposal directly into the voting period. There is a minimum deposit required for a proposal to enter the voting period, and anyone may contribute to this deposit within a 14-day period. If the minimum deposit isn't reached before this time, the deposit amounts will be burned. Deposit amounts will also be burned if quorum isn't met in the vote or if the proposal is vetoed.
 
 ### Mainnet Example
- 
+
 To date, the Cosmos Hub's parameters have not been changed by a parameter-change governance proposal. This is a hypothetical example of the JSON file that would be used with a command line transaction to create a new proposal. This is an example of a proposal that changes two parameters, and both parameters are from the [`slashing` module](https://docs.cosmos.network/master/modules/slashing/). A single parameter-change governance proposal can reportedly change any number of parameters.
 
-```
+```json
 {
   "title": "Parameter changes for validator downtime",
   "description": "If passed, this governance proposal will do two things:\n\n1. Increase the slashing penalty for downtime from 0.01% to 0.50%\n2. Decrease the window \n\nIf this proposal passes, validators must sign at least 5% of 5,000 blocks, which is 250 blocks. That means that a validator that misses 4,750 consecutive blocks will be considered by the system to have committed a liveness violation, where previously 9,500 consecutive blocks would need to have been missed to violate these system rules. Assuming 7s block times, validators offline for approximately 9.25 consecutive hours (instead of ~18.5 hours) will be slashed 0.5% (instead of 0.01%).",
@@ -149,6 +152,7 @@ To date, the Cosmos Hub's parameters have not been changed by a parameter-change
   "deposit": "512000000uatom"
 }
 ```
+
 **Note:** in the JSON file, `\n` creates a new line.
 
 It's worth noting that this example proposal doesn't provide reasoning/justification for these changes. Consider consulting the [parameter-change best practices documentation](./best-practices.md) for guidance on the contents of a parameter-change proposal.

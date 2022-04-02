@@ -136,7 +136,7 @@ When attempting to perform routine maintenance or planning for an upcoming coord
 the block.
 
 ## Advanced configuration
-You can find more advanced information about running a node or a validator on the [Tendermint Core documentation](https://docs.tendermint.com/master/nodes/).
+You can find more advanced information about running a node or a validator on the [Tendermint Core documentation](https://docs.tendermint.com/v0.35/nodes/).
 
 ## Common Problems
 

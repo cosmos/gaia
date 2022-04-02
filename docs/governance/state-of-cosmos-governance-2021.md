@@ -1,7 +1,7 @@
 <!-- markdown-link-check-disable -->
 # State of Cosmos Governance 2021
 
-> Governance and decision-making processes within the Cosmos ecosystem as of August 2021
+> Governance and decision-making processes within the Cosmos ecosystem as of August 2021. This particular document serves as a snapshot of the process at this moment in time and parts of it may be out of date or deprecated in the future.
 
 ## Cosmos View of Governance
 
@@ -71,6 +71,7 @@ Venues involve community members to different degrees and individuals often perf
   - Some interest in deprecating but remains actives
 - **GitHub repositories** for governance processes ([Cosmos governance](https://github.com/cosmos/governance), [Cosmos cips](https://github.com/cosmos/cips), [Cosmos ibc](https://github.com/cosmos/ibc))
   - For discussing meta aspects of governance processes, discussion and development of specific off-chain design records and technical specs, and repository for on-chain proposals
+  - The Cosmos governance repo is officially deprecated as of October 2021.
 - **Bi-weekly Cosmos Gaia / ATOM sync call**
   - For cross-team discussion on the [Gaia roadmap](https://github.com/cosmos/gaia/projects/9)
 - (Informal) **Google Docs for early feedback**
@@ -191,7 +192,7 @@ Participants in the process include:
 
 ### Process owners
 
-- Listed in [governance](https://github.com/cosmos/governance) repo: Ethan Buchman ([@ebuchman](https://github.com/ebuchman)), Zaki Manian ([@zmanian](https://github.com/zmanian)), Sam Hart ([@hxrts](https://github.com/hxrts)), Maria Gomez ([@mariapao](https://github.com/mariapao)).
+- Former process owners are listed in  the now-deprecated [governance repo](https://github.com/cosmos/governance).
 
 ### Process maturity
 

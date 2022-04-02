@@ -35,18 +35,18 @@ Please exercise extreme caution!
 
 - [Installing `gaiad`](#installing-gaiad)
 - [Cosmos Accounts](#cosmos-accounts)
-    + [Restoring an Account from the Fundraiser](#restoring-an-account-from-the-fundraiser)
-    + [Creating an Account](#creating-an-account)
+  - [Restoring an Account from the Fundraiser](#restoring-an-account-from-the-fundraiser)
+  - [Creating an Account](#creating-an-account)
 - [Accessing the Cosmos Hub Network](#accessing-the-cosmos-hub-network)
-    + [Running Your Own Full-Node](#running-your-own-full-node)
-    + [Connecting to a Remote Full-Node](#connecting-to-a-remote-full-node)
+  - [Running Your Own Full-Node](#running-your-own-full-node)
+  - [Connecting to a Remote Full-Node](#connecting-to-a-remote-full-node)
 - [Setting Up `gaiad`](#setting-up-gaiad)
 - [Querying the State](#querying-the-state)
 - [Sending Transactions](#sending-transactions)
-    + [A Note on Gas and Fees](#a-note-on-gas-and-fees)
-    + [Bonding Atoms and Withdrawing Rewards](#bonding-atoms-and-withdrawing-rewards)
-    + [Participating in Governance](#participating-in-governance)
-    + [Signing Transactions from an Offline Computer](#signing-transactions-from-an-offline-computer)
+  - [A Note on Gas and Fees](#a-note-on-gas-and-fees)
+  - [Bonding Atoms and Withdrawing Rewards](#bonding-atoms-and-withdrawing-rewards)
+  - [Participating in Governance](#participating-in-governance)
+  - [Signing Transactions from an Offline Computer](#signing-transactions-from-an-offline-computer)
 
 ## Installing `gaiad`
 
@@ -63,6 +63,7 @@ Not available yet.
 
 ::: tip
 `gaiad` is used from a terminal. To open the terminal, follow these steps:
+
 - **Windows**: `Start` > `All Programs` > `Accessories` > `Command Prompt`
 - **MacOS**: `Finder` > `Applications` > `Utilities` > `Terminal`
 - **Linux**: `Ctrl` + `Alt` + `T`
@@ -233,11 +234,11 @@ After you have secured your mnemonic (triple check!), you can delete bash histor
 history -c
 rm ~/.bash_history
 ```
+
 :::
 
 - `<yourKeyName>` is the name of the account. It is a reference to the account number used to derive the key pair from the mnemonic. You will use this name to identify your account when you want to send a transaction.
 - You can add the optional `--account` flag to specify the path (`0`, `1`, `2`, ...) you want to use to generate your account. By default, account `0` is generated.
-
 
 You can generate more accounts from the same mnemonic using the following command:
 
@@ -246,7 +247,6 @@ gaiad keys add <yourKeyName> --recover --account 1
 ```
 
 This command will prompt you to input a passphrase as well as your mnemonic. Change the account number to generate a different account.
-
 
 ## Accessing the Cosmos Hub Network
 
@@ -293,18 +293,10 @@ First, set up the address of the full-node you want to connect to:
 ```bash
 gaiad config node <host>:<port
 
-// example: gaiad config node https://77.87.106.33:26657
+// example: gaiad config node https://77.87.106.33:26657 (note: this is a placeholder)
 ```
 
 If you run your own full-node, just use `tcp://localhost:26657` as the address.
-
-Then, let us set the default value of the `--trust-node` flag:
-
-```bash
-gaiad config trust-node false
-
-// Set to true if you run a light-client node, false otherwise
-```
 
 Finally, let us set the `chain-id` of the blockchain we want to interact with:
 
@@ -476,7 +468,7 @@ Any Atom holder can submit a proposal. In order for the proposal to be open for 
 
 Once the `deposit` reaches `minDeposit`, the proposal enters the `voting_period`, which lasts 2 weeks. Any **bonded** Atom holder can then cast a vote on this proposal. The options are `Yes`, `No`, `NoWithVeto` and `Abstain`. The weight of the vote is based on the amount of bonded Atoms of the sender. If they don't vote, delegator inherit the vote of their validator. However, delegators can override their validator's vote by sending a vote themselves.
 
-At the end of the voting period, the proposal is accepted if there are more than 50% `Yes` votes (excluding `Abstain ` votes) and less than 33.33% of `NoWithVeto` votes (excluding `Abstain` votes).
+At the end of the voting period, the proposal is accepted if there are more than 50% `Yes` votes (excluding `Abstain` votes) and less than 33.33% of `NoWithVeto` votes (excluding `Abstain` votes).
 
 #### In Practice
 

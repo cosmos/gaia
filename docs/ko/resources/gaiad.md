@@ -25,14 +25,6 @@ gaiad config node <호스트(host)>:<포트(port)>
 
 자체적으로 풀노드를 운영하시는 경우, 주소 값에 `tcp://localhost:26657`을 입력하세요.
 
-이후, `--trust-node` 플래그의 기본 값을 설정하겠습니다:
-
-```bash
-gaiad config trust-node true
-
-# 연결하시는 원격 풀노드를 신뢰하시는 경우, true를 선택하세요. 신뢰하지 않는 경우 false를 선택하세요.
-```
-
 마지막으로 연결하려는 블록체인의 `chain-id` 값을 설정하겠습니다:
 
 ```bash

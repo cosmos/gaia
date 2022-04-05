@@ -317,8 +317,6 @@ For original Quicksync.io instructions visit [Quicksync.io's Cosmos guide](https
 
 ### Blocksync
 
-> **Note**: Blocksync will take a significant amount of time and is not reccommended unless there's a specific need to sync a node from the beginning of cosmoshub-4
-
 Blocksync is faster than traditional consensus and syncs the chain from genesis by downloading blocks and verifying against the merkle tree of validators. For more information see [Tendermint's Blocksync Docs](https://docs.tendermint.com/v0.35/tendermint-core/block-sync/)
 
 When syncing via Blocksync, node operators will either need to manually upgrade the chain or set up [Cosmovisor](#Cosmovisor) to upgrade automatically.

@@ -20,7 +20,6 @@ For instructions to join as a validator, please also see the [Validator Guide](h
 - [Hardware Requirements](#hardware)
 - [General Configuration](#general-configuration)
   - [Initialize Chain](#initialize-chain)
-  - [Genesis File](#genesis-file)
   - [Seeds & Peers](#seeds-amp-peers)
   - [Gas & Fees](#gas-amp-fees)
   - [Pruning of State](#pruning-of-state)
@@ -79,7 +78,7 @@ Make sure to walk through the basic setup and configuration. Operators will need
 Choose a custom moniker for the node and initialize. By default, the `init` command creates the `~/.gaia` directory with subfolders `config` and `data`. In the `/config` directory, the most important files for configuration are `app.toml` and `config.toml`.
 
 ```bash
-gaiad init <custom-moniker>
+gaiad init CUSTOM_MONIKER --chain-id cosmoshub-4
 ```
 
 > **Note**: Monikers can contain only ASCII characters. Using Unicode characters is not supported and renders the node unreachable.
@@ -89,16 +88,6 @@ The `moniker` can be edited in the `~/.gaia/config/config.toml` file:
 ```
 # A custom human readable name for this node
 moniker = "<custom_moniker>"
-```
-
-### Genesis File
-
-Once the node is initialized, download the genesis file and move to the `/config` directory of the Gaia home directory.
-
-```bash
-wget https://github.com/cosmos/mainnet/raw/master/genesis.cosmoshub-4.json.gz
-gzip -d genesis.cosmoshub-4.json.gz
-mv genesis.cosmoshub-4.json ~/.gaia/config/genesis.json
 ```
 
 ### Seeds & Peers
@@ -240,6 +229,90 @@ Make sure to consult the [hardware](#Hardware) section for guidance on the best 
 <!-- #sync options -->
 ::::::: tabs :options="{ useUrlFragment: false }"
 
+:::::: tab "State Sync"
+
+### State Sync
+
+**See the [Quickstart Docs](https://hub.cosmos.network/main/getting-started/quickstart.html) to bootstrap the Statesync setup**
+
+State Sync is an efficient and fast way to bootstrap a new node, and it works by replaying larger chunks of application state directly rather than replaying individual blocks or consensus rounds. For more information, see [Tendermint's State Sync docs](https://github.com/tendermint/tendermint/blob/master/spec/p2p/messages/state-sync.md).
+
+To enable state sync, visit [an explorer](https://www.mintscan.io/cosmos/blocks) to get a recent block height and corresponding hash. A node operator can choose any height/hash in the current bonding period, but as the recommended snapshot period is `1000` blocks, it is advised to choose something close to `current height - 1000`.
+
+With the block height and hash selected, update the configuration in `~/.gaia/config/config.toml` to set `enable = true`, and populate the `trust_height` and `trust_hash`. Node operators can configure the rpc servers to a preferred provider, but there must be at least two entries. It is important that these are two rpc servers the node operator trusts to verify component parts of the chain state. While not recommended, uniqueness is not currently enforced, so it is possible to duplicate the same server in the list and still sync successfully.
+
+> **Note**: In the future, the RPC server requirement will be deprecated as state sync is [moved to the p2p layer in Tendermint 0.35](https://github.com/tendermint/tendermint/issues/6491).
+
+
+```
+#######################################################
+###         State Sync Configuration Options        ###
+#######################################################
+[statesync]
+# State sync rapidly bootstraps a new node by discovering, fetching, and restoring a state machine
+# snapshot from peers instead of fetching and replaying historical blocks. Requires some peers in
+# the network to take and serve state machine snapshots. State sync is not attempted if the node
+# has any local state (LastBlockHeight > 0). The node will have a truncated block history,
+# starting from the height of the snapshot.
+enable = true
+
+# RPC servers (comma-separated) for light client verification of the synced state machine and
+# retrieval of state data for node bootstrapping. Also needs a trusted height and corresponding
+# header hash obtained from a trusted source, and a period during which validators can be trusted.
+#
+# For Cosmos SDK-based chains, trust_period should usually be about 2/3 of the unbonding time (~2
+# weeks) during which they can be financially punished (slashed) for misbehavior.
+rpc_servers = ""
+trust_height = 0
+trust_hash = ""
+trust_period = "168h0m0s"
+```
+
+Run the following to enable Statesync
+```
+# Install jq for parsing trust height & hash
+apt install jq
+
+# Retrieve trust height interval
+export INTERVAL=1000
+export LATEST_HEIGHT=$(curl -s https://rpc.cosmos.network/block | jq -r .result.block.header.height)
+export BLOCK_HEIGHT=$(($LATEST_HEIGHT-$INTERVAL))
+export TRUST_HASH=$(curl -s "https://rpc.cosmos.network/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
+
+# Enable state sync in config.toml and set trust parameters
+sed -i '' 's/enable = false/enable = true/' $HOME/.gaia/config/config.toml
+sed -i -e "/trust_height =/ s/= .*/= $BLOCK_HEIGHT/" $HOME/.gaia/config/config.toml
+sed -i -e "/trust_hash =/ s/= .*/= \"$TRUST_HASH\"/" $HOME/.gaia/config/config.toml
+sed -i -e "/rpc_servers =/ s/= .*/= \"https:\/\/rpc.cosmos.network:443,https:\/\/rpc.cosmos.network:443\"/" $HOME/.gaia/config/config.toml
+```
+
+Start Gaia to begin state sync. It may take take some time for the node to acquire a snapshot, but the command and output should look similar to the following:
+
+```bash
+$ gaiad start --x-crisis-skip-assert-invariants
+
+...
+
+> INF Discovered new snapshot format=1 hash="0x000..." height=8967000 module=statesync
+
+...
+
+> INF Fetching snapshot chunk chunk=4 format=1 height=8967000 module=statesync total=45
+> INF Applied snapshot chunk to ABCI app chunk=0 format=1 height=8967000 module=statesync total=45
+```
+
+Once state sync successfully completes, the node will begin to process blocks normally. If state sync fails and the node operator encounters the following error:  `State sync failed err="state sync aborted"`, either try restarting `gaiad` or running `gaiad unsafe-reset-all` (make sure to backup any configuration and history before doing this).
+::::::
+
+:::::: tab Quicksync
+
+### Quicksync
+
+Quicksync.io offers several  daily snapshots of the Cosmos Hub with varying levels of pruning (`archive` 1.4TB, `default` 540GB, and `pruned` 265GB). For downloads and installation instructions, visit the [Gaia Quickstart Docs](https://hub.cosmos.network/main/getting-started/quickstart.html) and check out the `Quicksync` tab.
+
+For original Quicksync.io instructions visit [Quicksync.io's Cosmos guide](https://quicksync.io/networks/cosmos.html).
+::::::
+
 :::::: tab Blocksync
 
 ### Blocksync
@@ -273,67 +346,6 @@ gaiad start --x-crisis-skip-assert-invariants
 ```
 
 The node will begin rebuilding state until it hits the first upgrade height at block `6910000`. If Cosmovisor is set up then there's nothing else to do besides wait, otherwise the node operator will need to perform the manual upgrade twice.
-::::::
-
-:::::: tab "State Sync"
-
-### State Sync
-
-State Sync is an efficient and fast way to bootstrap a new node, and it works by replaying larger chunks of application state directly rather than replaying individual blocks or consensus rounds. For more information, see [Tendermint's State Sync docs](https://github.com/tendermint/tendermint/blob/master/spec/p2p/messages/state-sync.md).
-
-To enable state sync, visit an explorer to get a recent block height and corresponding hash. A node operator can choose any height/hash in the current bonding period, but as the recommended snapshot period is `1000` blocks, it is advised to choose something close to `current height - 1000`.
-
-With the block height and hash selected, update the configuration in `~/.gaia/config/config.toml` to set `enable = true`, and populate the `trust_height` and `trust_hash`. Node operators can configure the rpc servers to a preferred provider, but there must be at least two entries. It is important that these are two rpc servers the node operator trusts to verify component parts of the chain state. While not recommended, uniqueness is not currently enforced, so it is possible to duplicate the same server in the list and still sync successfully.
-
-> **Note**: In the future, the RPC server requirement will be deprecated as state sync is [moved to the p2p layer in Tendermint 0.35](https://github.com/tendermint/tendermint/issues/6491).
-
-```
-#######################################################
-###         State Sync Configuration Options        ###
-#######################################################
-[statesync]
-# State sync rapidly bootstraps a new node by discovering, fetching, and restoring a state machine
-# snapshot from peers instead of fetching and replaying historical blocks. Requires some peers in
-# the network to take and serve state machine snapshots. State sync is not attempted if the node
-# has any local state (LastBlockHeight > 0). The node will have a truncated block history,
-# starting from the height of the snapshot.
-enable = true
-
-# RPC servers (comma-separated) for light client verification of the synced state machine and
-# retrieval of state data for node bootstrapping. Also needs a trusted height and corresponding
-# header hash obtained from a trusted source, and a period during which validators can be trusted.
-#
-# For Cosmos SDK-based chains, trust_period should usually be about 2/3 of the unbonding time (~2
-# weeks) during which they can be financially punished (slashed) for misbehavior.
-rpc_servers = "https://rpc.cosmos.network:443,https://rpc.cosmos.network:443"
-trust_height = 8959784
-trust_hash = "3D8F12EA302AEDA66E80939F7FC785206692F8B6EE6F727F1655F1AFB6A873A5"
-trust_period = "168h0m0s"
-```
-
-Start Gaia to begin state sync. It may take take some time for the node to acquire a snapshot, but the command and output should look similar to the following:
-
-```bash
-$ gaiad start --x-crisis-skip-assert-invariants
-
-...
-
-> INF Discovered new snapshot format=1 hash="0x000..." height=8967000 module=statesync
-
-...
-
-> INF Fetching snapshot chunk chunk=4 format=1 height=8967000 module=statesync total=45
-> INF Applied snapshot chunk to ABCI app chunk=0 format=1 height=8967000 module=statesync total=45
-```
-
-Once state sync successfully completes, the node will begin to process blocks normally. If state sync fails and the node operator encounters the following error:  `State sync failed err="state sync aborted"`, either try restarting `gaiad` or running `gaiad unsafe-reset-all` (make sure to backup any configuration and history before doing this).
-::::::
-
-:::::: tab Quicksync
-
-### Quicksync
-
-Quicksync.io offers several  daily snapshots of the Cosmos Hub with varying levels of pruning (`archive` 1.4TB, `default` 540GB, and `pruned` 265GB). For downloads and installation instructions, visit the [Cosmos Quicksync guide](https://quicksync.io/networks/cosmos.html).
 ::::::
 
 :::::::

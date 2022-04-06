@@ -81,3 +81,10 @@ jobs:
                     asset_path: ./artifacts/gaiad-${{ env.RELEASE_VERSION }}.tar.gz
                     asset_name: gaiad-${{ env.RELEASE_VERSION }}.tar.gz
                     asset_content_type: application/gzip
+        -   name: setup go and generate upgrade proposal
+            uses: actions/setup-go@v3
+            with:
+                go-version: '1.17'
+                check-latest: true
+        -   run: |
+              cd ./contrib/generate_upgrade_proposal && go run main.go

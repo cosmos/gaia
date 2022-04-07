@@ -24,7 +24,12 @@ jobs:
                     draft: true
                     prerelease: false
             -   name: set tag env
-                run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+                run: echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+            -   name: install go
+                uses: actions/setup-go@v3
+                with:
+                  go-version: '1.17'
+                  check-latest: true
             -   name: Build Artifacts
                 run: make distclean build-reproducible
             -   name: Upload linux-amd64 artifact
@@ -33,8 +38,8 @@ jobs:
                     GITHUB_TOKEN: ${{ github.token }}
                 with:
                     upload_url: ${{ steps.create_release.outputs.upload_url }}
-                    asset_path: ./artifacts/gaiad-${{ env.RELEASE_VERSION }}-linux-amd64
-                    asset_name: gaiad-${{ env.RELEASE_VERSION }}-linux-amd64
+                    asset_path: ./artifacts/gaiad-${{ env.VERSION }}-linux-amd64
+                    asset_name: gaiad-${{ env.VERSION }}-linux-amd64
                     asset_content_type: application/binary
             -   name: Upload build_report
                 uses: actions/upload-release-asset@v1
@@ -51,8 +56,8 @@ jobs:
                     GITHUB_TOKEN: ${{ github.token }}
                 with:
                     upload_url: ${{ steps.create_release.outputs.upload_url }}
-                    asset_path: ./artifacts/gaiad-${{ env.RELEASE_VERSION }}-linux-arm64
-                    asset_name: gaiad-${{ env.RELEASE_VERSION }}-linux-arm64
+                    asset_path: ./artifacts/gaiad-${{ env.VERSION }}-linux-arm64
+                    asset_name: gaiad-${{ env.VERSION }}-linux-arm64
                     asset_content_type: application/binary
             -   name: Upload darwin-amd64 artifact
                 uses: actions/upload-release-asset@v1
@@ -60,8 +65,8 @@ jobs:
                     GITHUB_TOKEN: ${{ github.token }}
                 with:
                     upload_url: ${{ steps.create_release.outputs.upload_url }}
-                    asset_path: ./artifacts/gaiad-${{ env.RELEASE_VERSION }}-darwin-amd64
-                    asset_name: gaiad-${{ env.RELEASE_VERSION }}-darwin-amd64
+                    asset_path: ./artifacts/gaiad-${{ env.VERSION }}-darwin-amd64
+                    asset_name: gaiad-${{ env.VERSION }}-darwin-amd64
                     asset_content_type: application/binary
             -   name: Upload windows-amd64 artifact
                 uses: actions/upload-release-asset@v1
@@ -69,8 +74,8 @@ jobs:
                     GITHUB_TOKEN: ${{ github.token }}
                 with:
                     upload_url: ${{ steps.create_release.outputs.upload_url }}
-                    asset_path: ./artifacts/gaiad-${{ env.RELEASE_VERSION }}-windows-amd64
-                    asset_name: gaiad-${{ env.RELEASE_VERSION }}-windows-amd64
+                    asset_path: ./artifacts/gaiad-${{ env.VERSION }}-windows-amd64.exe
+                    asset_name: gaiad-${{ env.VERSION }}-windows-amd64.exe
                     asset_content_type: application/binary
             -   name: Upload compression
                 uses: actions/upload-release-asset@v1
@@ -78,6 +83,6 @@ jobs:
                     GITHUB_TOKEN: ${{ github.token }}
                 with:
                     upload_url: ${{ steps.create_release.outputs.upload_url }}
-                    asset_path: ./artifacts/gaiad-${{ env.RELEASE_VERSION }}.tar.gz
-                    asset_name: gaiad-${{ env.RELEASE_VERSION }}.tar.gz
+                    asset_path: ./artifacts/gaiad-${{ env.VERSION }}.tar.gz
+                    asset_name: gaiad-${{ env.VERSION }}.tar.gz
                     asset_content_type: application/gzip

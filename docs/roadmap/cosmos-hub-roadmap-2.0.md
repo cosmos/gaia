@@ -81,13 +81,6 @@ The upgrades aim to add features such as liquidity, economic security, usability
 - Interchain Security v1 - Required Participation of Provider Chain Validators
   - The Cosmos solution to shared security that uses IBC Cross Chain Validation (CCV) to relay validator set composition from a Provider Chain (Cosmos Hub) to a Consumer Chain. This validator set is in charge of producing blocks on both networks using separate nodes. Misbehavior on the Consumer Chain results in slashing Provider Chain staking tokens (ATOM).
   - Allows independent modules like Gravity DEX or Bridge to live on separate chains with their own development cycles.
-- Chain Name Service
-  - Chain-ID registry
-  - Node registry
-  - IBC Path Resolution
-  - Asset registry
-  - Account registry
-  - Bech32 registry
 
 ## v10-Epsilon (expected Q4 2022)
 - Gaia v10.0.x
@@ -108,6 +101,13 @@ The upgrades aim to add features such as liquidity, economic security, usability
 
 ## Future Considerations
 The Cosmos Hub is a decentralized network with many diverse contributors. As such there is no one authority of what is or can be part of the Cosmos Network. The Cosmos Hub team at Interchain does its best to maintain the Gaia repository, which is the primary codebase that operates the Cosmos Network. The Interchain Foundation is one of the sources of funding for engineering work that may make its way onto the Cosmos Hub. We do our best to participate in ongoing conversations about the mission, vision and purpose of the Cosmos Hub, so that we can best support work to enabling it via funding, engineering, coordination and communication. Some of the topics which have been discussed by contributors inside and outside of Interchain are listed below, although have not been developed to the point of being included in the roadmap:
+- Chain Name Service
+  - Chain-ID registry
+  - Node registry
+  - IBC Path Resolution
+  - Asset registry
+  - Account registry
+  - Bech32 registry
 - IBC NFT
 - NFT module
     - Enable simple management of NFT identifiers, their owners, and associated data, such as URIs, content, and provenance

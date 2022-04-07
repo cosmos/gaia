@@ -126,9 +126,9 @@ Then you should get the following structure:
 │   └── bin
 │       └── gaiad  #v6.0.4
 └── upgrades
-└── v7-Theta
-└── bin
-    └── gaiad  #v7.0.0
+    └── v7-Theta
+        └── bin
+            └── gaiad  #v7.0.0
 ```
 Export the environmental variables:
 ```shell

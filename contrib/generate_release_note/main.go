@@ -64,7 +64,7 @@ func FindChangelog(file string, version string) (string, error) {
 		return "", errors.New(fmt.Sprintf("cannot find version %s\n", version))
 	}
 	j := strings.Index(changelogs[i:], "##")
-	if i == -1 {
+	if j == -1 {
 		// -1 means not found
 		return "", errors.New(fmt.Sprintf("cannot find the end of  %s's changelog \n", version))
 	}

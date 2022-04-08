@@ -12,6 +12,17 @@ jobs:
         steps:
             -   name: Checkout code
                 uses: actions/checkout@v2
+            -   name: set tag env
+                run: echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+            -   name: install go
+                uses: actions/setup-go@v3
+                with:
+                    go-version: '1.17'
+                    check-latest: true
+            -   name: Build Artifacts
+                run: make distclean build-reproducible
+            -   name: generate release note
+                run: go run ./contrib/generate_release_note/main.go ${{ env.VERSION }} true
             -   name: Create Release
                 id: create_release
                 uses: actions/create-release@v1
@@ -20,18 +31,9 @@ jobs:
                 with:
                     tag_name: ${{ github.ref }}
                     release_name: Release ${{ github.ref }}
-                    body_path: ./RELEASE_NOTE
+                    body_path: ./contrib/generate_release_note/releasenote
                     draft: true
                     prerelease: false
-            -   name: set tag env
-                run: echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-            -   name: install go
-                uses: actions/setup-go@v3
-                with:
-                  go-version: '1.17'
-                  check-latest: true
-            -   name: Build Artifacts
-                run: make distclean build-reproducible
             -   name: Upload linux-amd64 artifact
                 uses: actions/upload-release-asset@v1
                 env:
@@ -84,5 +86,5 @@ jobs:
                 with:
                     upload_url: ${{ steps.create_release.outputs.upload_url }}
                     asset_path: ./artifacts/gaiad-${{ env.VERSION }}.tar.gz
-                    asset_name: gaiad-${{ env.VERSION }}.tar.gz
+                    asset_name: gaiad-${{ env.RELEASE_VERSION }}.tar.gz
                     asset_content_type: application/gzip

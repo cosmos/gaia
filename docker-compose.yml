@@ -6,6 +6,8 @@ services:
     image: "tendermint/gaiadnode"
     ports:
       - "26656-26657:26656-26657"
+      - "9090:9090"
+      - "1317:1317"
     environment:
       - ID=0
       - LOG=${LOG:-gaiad.log}

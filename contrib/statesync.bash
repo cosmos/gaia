@@ -10,12 +10,7 @@ export PATH=$PATH:~/go/bin
 make install
 
 # Initialize chain.
-gaiad init test 
-
-# Prepare genesis file for cosmoshub-4.
-wget https://github.com/cosmos/mainnet/raw/master/genesis.cosmoshub-4.json.gz
-gzip -d genesis.cosmoshub-4.json.gz
-mv genesis.cosmoshub-4.json $HOME/.gaia/config/genesis.json
+gaiad init test --chain-id cosmoshub-4
 
 # Set minimum gas price.
 sed -i'' 's/minimum-gas-prices = ""/minimum-gas-prices = "0.0025uatom"/' $HOME/.gaia/config/app.toml

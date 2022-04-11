@@ -1,0 +1,25 @@
+name: Push to container registry (ghcr)
+  #on: [push] # When pushing to any branch then run this action
+on:
+  push:
+    - "feature/adding_docker_github_action" # TODO: remove this after testing
+
+# Env variable
+env:
+  CR_PAT: ${{ secrets.CR_PAT }}
+  REPO_OWNER: ${{ env.GITHUB_REPOSITORY_OWNER }}
+  REPO_NAME: ${{ env.GITHUB_REPOSITORY_OWNER }}
+  REF: ${{ env.GITHUB_REF }}
+
+jobs:  
+  push-image-to-registry:  # job name    
+  runs-on: ubuntu-latest  # runner name : (ubuntu latest version)     
+  steps:
+   - uses: actions/checkout@v2 # first action : checkout source code
+   - name: docker login
+     run: | # log into docker hub account
+     echo $CR_PAT | docker login -u $REPO_OWNER --password-stdin
+   - name: Build the Docker image # push The image to the docker hub
+     run: docker build . --file Dockerfile --tag $REPO_OWNER/$REPO_NAME:$REF    
+   - name: Docker Push
+     run: docker push $REPO_OWNER/$REPO_NAME:$REF

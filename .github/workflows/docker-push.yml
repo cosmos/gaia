@@ -17,7 +17,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3 # first action : checkout source code
       - name: docker login
-        run: echo  "$CR_PAT" | docker login -u "$REPO_OWNER" --password-stdin # log into docker hub account
+        run: |
+          echo  "$CR_PAT" | docker login -u "$REPO_OWNER" --password-stdin # log into docker hub account
       - name: Build the Docker image # push The image to the docker hub
         run: docker build . --file Dockerfile --tag "$NAME":"$TAG"
       - name: Docker Push

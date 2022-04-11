@@ -67,7 +67,10 @@ func addGenesisAccount(path, moniker, amountStr string, accAddr sdk.AccAddress) 
 	}
 
 	if accs.Contains(accAddr) {
-		return fmt.Errorf("failed to add account to genesis state; account already exists: %s", accAddr)
+		return fmt.Errorf(
+			"failed to add account to genesis state; account already exists: %s",
+			accAddr,
+		)
 	}
 
 	// Add the new account to the set of genesis accounts and sanitize the

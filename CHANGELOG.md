@@ -36,6 +36,12 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+## [v7.0.1] -2022-04-13
+- (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.3](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.3). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.3/CHANGELOG.md#v0453---2022-04-12) for details.
+- (gaia) bump [tendermint](https://github.com/tendermint/tendermint) to [0.34.19](https://github.com/tendermint/tendermint/tree/v0.34.19). See [CHANGELOG.md](https://github.com/tendermint/tendermint/blob/v0.34.19/CHANGELOG.md#v03419) for details.
+- (gaia) bump [tm-db](https://github.com/tendermint/tm-db) to [v0.6.6](https://github.com/tendermint/tm-db/tree/v0.6.6). See [CHANGELOG.md](https://github.com/tendermint/tm-db/blob/v0.6.6/CHANGELOG.md#066) for details.
+
+
 ## [v7.0.0] - 2022-03-24
 - (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.1](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.1). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.1/CHANGELOG.md#v0451---2022-02-03) for details.
 - (gaia) bump [ibc-go](https://github.com/cosmos/ibc-go) module to [v3.0.0](https://github.com/cosmos/ibc-go/releases/tag/v3.0.0). See [CHANGELOG.md](https://github.com/cosmos/ibc-go/blob/v3.0.0/CHANGELOG.md#v300---2022-03-15) for details.
@@ -415,7 +421,8 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v7.0.1...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v7.0.2...HEAD
+[v7.0.1]: https://github.com/cosmos/gaia/releases/tag/v7.0.1
 [v7.0.0]: https://github.com/cosmos/gaia/releases/tag/v7.0.0
 [v6.0.4]: https://github.com/cosmos/gaia/releases/tag/v6.0.4
 [v6.0.3]: https://github.com/cosmos/gaia/releases/tag/v6.0.3

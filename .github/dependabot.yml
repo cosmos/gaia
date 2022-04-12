@@ -18,5 +18,5 @@ updates:
       interval: daily
     open-pull-requests-limit: 10
     labels:
-      - automerge
+      - "A:automerge"
       - dependencies

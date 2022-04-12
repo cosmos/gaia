@@ -103,7 +103,7 @@ To distinguish fees in a Partial Validator Set (Opt-In), the distribution module
 
 ## IBC & Cross Chain Validation
 
-There are a number of IBC application layer modules and packets that need to be developed to fully realize the IBC component of Interchain Security. This work has begun with a spec draft from Informal Systems that is visible at [@informalsystems/cross-chain-validation](https://github.com/informalsystems/cross-chain-validation/). Instead of diving into the details of what they are and exactly how they work this section will be reserved for high level responsibilities of these mechanisms.
+There are a number of IBC application layer modules and packets that need to be developed to fully realize the IBC component of Interchain Security. This work has begun with a spec draft from Informal Systems that is visible at [@ibc/cross-chain-validation](https://github.com/cosmos/ibc/tree/marius/ccv/spec/app/ics-028-cross-chain-validation). Instead of diving into the details of what they are and exactly how they work this section will be reserved for high level responsibilities of these mechanisms.
 
 There are three types of operations within Cross Chain Validation which must be present for Interchain Security to take place:
 

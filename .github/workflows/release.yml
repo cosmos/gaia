@@ -22,7 +22,7 @@ jobs:
             -   name: Build Artifacts
                 run: make distclean build-reproducible
             -   name: generate release note
-                run: go run ./contrib/generate_release_note/main.go ${{ env.VERSION }} true
+                run: go run ./contrib/generate_release_note/main.go ${{ env.VERSION }} ./artifacts/build_report ./CHANGELOG.md
             -   name: Create Release
                 id: create_release
                 uses: actions/create-release@v1
@@ -31,7 +31,7 @@ jobs:
                 with:
                     tag_name: ${{ github.ref }}
                     release_name: Release ${{ github.ref }}
-                    body_path: ./contrib/generate_release_note/releasenote
+                    body_path: ./releasenote
                     draft: true
                     prerelease: false
             -   name: Upload linux-amd64 artifact

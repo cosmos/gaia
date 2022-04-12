@@ -11,17 +11,12 @@ import (
 
 func main() {
 	args := os.Args
-	if len(args) != 3 {
-		fmt.Println("please add os.Args release version and if this is run as github action(true/false), example: go run main.go v7.0.0 false")
+	if len(args) != 4 {
+		fmt.Println("please add os.Args release version, build_report path and CHANGELOG.md path, example: go run main.go v7.0.0 ../../artifacts/build_report ../../CHANGELOG.md")
 	}
 
-	// default path  is for running on github action
-	buildReportPath := "./artifacts/build_report"
-	changelogPath := "./CHANGELOG.md"
-	if args[2] == "false" {
-		buildReportPath = "../../artifacts/build_report"
-		changelogPath = "../../CHANGELOG.md"
-	}
+	buildReportPath := args[2]
+	changelogPath := args[3]
 
 	buildReport, err := os.ReadFile(buildReportPath)
 	if err != nil {

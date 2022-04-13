@@ -11,37 +11,35 @@ Each major release will have a release branch and patch releases will be tagged 
 In the Gaia repo, there are three categories of long-lived branches:
 
 ### Branch: `main`
-The `main` branch should be targeted for PRs that contain a bug-fix/feature/improvement that will be included in a release that is used on the currently live Cosmos Hub Network or to be backported to a previous release. The PRs against `main` might only be get merged when the release process starts.
+The `main` branch should be targeted for PRs that contain a bug-fix/feature/improvement that will be included for the next release. 
 
 ### Branch: `release`
-There are multiple long lived branches with the `release/` prefix. Each release series follows the format `release/vn.0.x`, e.g. `release/v7.0.x`. The branch `release/vn.0.x` should point to the most updated `vn` release, e.g. `release/v5.0.x` should be the same as `release/v5.0.8` if that's the latest `v5.0` release. When starting a new minor or patch release, begin with `release/vn.0.x` and checkout a new branch called `rc0/vn.0.m` where `m` is +1 the latest release number. This branch will be used in a PR into `release/vn.0.m` and eventually merged back to `release/vn.0.x`. When making a major release, the process should be the same as minor and patch except begin with a name like `release/vn.0.0-rc0` which contains cherry-picked commits from `release-prepare` branch or merged from `release-prepare` branch.
+There are multiple long-lived branches with the `release/` prefix. Each release series follows the format `release/vn.0.x`, e.g. `release/v7.0.x`. The branch `release/vn.0.x` should point to the most updated `vn` release, e.g. `release/v5.0.x` should be the same as `release/v5.0.8` if that's the latest `v5.0` release.
 
-### Branch: `release-prepare`
-The `release-prepare` branch named `[upgradename]-main` is initially created from the latest `release/vn.0.x` of the previous major release. It serves the same purpose as `main` except for the next planned Cosmos Hub Upgrade. As soon as the upgrade has taken place, it is merged into main and won't exist until the next upgrade is in progress. During the period that `main` is the currently running network version and a new major release is being prepared, `release-prepare` is targeted for PRs that contain bug-fixes/features/improvements for that release. There may be some PRs that target `main` because they are relevant to the current network, but are also relevant to the upcoming upgrade. These should be cherry picked into `release-prepare` before being subsequently cherry picked into the respective `release/vn.0.x` that is being used for the next upgrade. The `release-prepare` branch aims to be a clean starting point for the subsequent `release/` branch. Therefore, only after the binary built from `release-prepare` branch passed dev-testnet action, will this branch be used in a subsequent `release/` branch. `release/` branch contains clean a squashed commit from `release-prepare` and an updated changedlog. `release/` will be finally merged into `release/vn.0.x` and deleted. This means we do not keep each release a branch.
+## Other Branches
+**branches for the next release:**
 
-The `release-prepare` branch will become `main` after the relevant Cosmos Hub Network Upgrade successfully takes place.
+Other feature/fix branches targeting at main contain commits preparing for next release. When the `release-prepare-branch` is ready for next release, add label `A:backport/vn.0.x` to the pr of `release-prepare-branch` against `main`, then the mergifybot will create a new pr of `mergify/bp/release/vn.0.x`  against `Release/vn.0.x`.
+
+**branches for the backport release:**
+
+If the feature/fix branch  is for a backport release and `main` branch already contains the commits for the next major release  `vn`. The feature/fix branch's PR should target at `Release/vn-1` rather than `main`. 
 
 ## Release Procedure
 
-### Minor & Patch Releases
+### Checks and tests
+Before merge and release, the following tests checks need to be conducted:
 
-TODO
+- check the `replace` line in `go.mod`, check all the versions in `go.mod` are correct.
+- run tests and simulations by `make run-tests`.
 
-### Major Release
+### Major and minor Release
 
-For a new major release, `m`, after a previous release, `n`, start on `release/vn.0.x` and checkout a new branch called `upgradename-main`(e.g. `Theta-main`). This will be the `release-prepare` branch referenced above going forward until the network upgrades with the new Major Release. This branch should act like `main` in that it is the target for new PRs that come in with code meant for the upcoming release. Some PRs that target the real `main` will be relevant to this `upgradename-main`, and should similarly be cherry picked to this branch. Before beginning the initial release candidate process, this branch should pass the `dev-testnet` tests. Once passing, checkout a new branch, `release/vm.0.x` off  `release/vn.0.x`. From `release/vm.0.x` checkout two branched: `release/vm.0.0-rc0` and `rc0/vm.0.0-rc0`. Merge `upgradename-main` into `rc0/vm.0.0-rc0`.(not directly merge `upgradename-main` into `release/vm.0.0-rc0` is to protect `upgradename-main` from being deleted, any branch merged to `release/` branch will be deleted after merge). Now open a PR from `rc0/vm.0.0-rc0` against `release/vn.0.0-rc0`. This PR is important as it's the last time code reviewers can see all changes going into the release at once. Last minute changes can go directly into `rc0/vm.0.0-rc0` as well as updating the CHANGELOG.md. Once the PR has been merged, the `rc0/vm.0.0-rc` branch will be automatically deleted. The `release/vm.0.0-rc0` is merged again into the `release/vm.0.x` branch, and tagged, then the release can be published as a pre-release. `release/vm.0.x` will also be automatically deleted.
+For a new major release `n`, checkout `release/vn.0.x` from `main`. Merge or use mergify to merge the commits to `release/vn.0.x`, and tag the version.
+For minor release. Merge or use mergify to merge the commits to `release/vn.0.x`, and tag the version.
 
-This `vm.0.0-rc0` tag on `release/vm.0.x` will be used on the public testnet before the upgrade takes place. If there are no issues, it can be re-tagged and re-released as `vm.0.0` and used in the final upgrade. Should changes be needed follow the Minor & Patch Release process iterating on the final `rcn` number.
-
-After a successful release, ensure `vm.0.0` on `release/vm.0.x` is merged back into `upgradename-main`.
-
-### Dependency review
-
-Check the `replace` line in `go.mod` of the [Cosmos SDK](https://github.com/cosmos/cosmos-sdk/blob/master/go.mod) for something like:
-```
-replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-```
-Ensure that the same replace line is also used in Gaia's `go.mod` file.
+### backport release
+For a backport release, checkout a new branch from the right release branch, for example, `release/vn-1.0.x`. Commits to this new branch and merge into `release/vn-1.0.x`, tag the backport version from `release/vn-1.0.x`.
 
 ### Tagging
 

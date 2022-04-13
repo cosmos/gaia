@@ -40,7 +40,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 * (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.3](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.3). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.3/CHANGELOG.md#v0453---2022-04-12) for details.
 * (gaia) bump [tendermint](https://github.com/tendermint/tendermint) to [0.34.19](https://github.com/tendermint/tendermint/tree/v0.34.19). See [CHANGELOG.md](https://github.com/tendermint/tendermint/blob/v0.34.19/CHANGELOG.md#v03419) for details.
-* (gaia) bump [tm-db](https://github.com/tendermint/tm-db) to [v0.6.6](https://github.com/tendermint/tm-db/tree/v0.6.6). See [CHANGELOG.md](https://github.com/tendermint/tm-db/blob/v0.6.6/CHANGELOG.md#066) for details.
+* (gaia) bump [tm-db](https://github.com/tendermint/tm-db) to [v0.6.7](https://github.com/tendermint/tm-db/tree/v0.6.7). See [CHANGELOG.md](https://github.com/tendermint/tm-db/blob/v0.6.7/CHANGELOG.md#067) for details.
 
 ## [v7.0.0] - 2022-03-24
 

@@ -1,6 +1,6 @@
 # Releasing
 
-This document outlines the release process for https://github.com/cosmos/gaia. We use a [Long-Lived Version Branch Approach](x) because we work in parallel on a `main` branch and a `release` branch.
+This document outlines the release process for https://github.com/cosmos/gaia. We use [Long-Lived Version Branch Approach](x) on a `main` branch and a `release` branch.
 
 We follow [Semver](https://semver.org/) in that any patch releases are non-breaking changes. It's important to note, that breaking changes in a Blockchain context include non-determinism. So if a code change is backwards compatible, it may still impact the amount of gas needed to execute an action, which means the change is in fact breaking as it results in a different apphash after the code is executed. It's important for non-breaking changes to be possible to be used on the live network prior to the release.
 
@@ -8,7 +8,7 @@ Each major release will have a release branch and patch releases will be tagged 
 
 ## Long-Lived Version Branch Approach
 
-In the Gaia repo, there are three categories of long-lived branches:
+In the Gaia repo, there are two categories of long-lived branches:
 
 ### Branch: `main`
 The `main` branch should be targeted for PRs that contain a bug-fix/feature/improvement that will be included for the next release. 
@@ -17,11 +17,11 @@ The `main` branch should be targeted for PRs that contain a bug-fix/feature/impr
 There are multiple long-lived branches with the `release/` prefix. Each release series follows the format `release/vn.0.x`, e.g. `release/v7.0.x`. The branch `release/vn.0.x` should point to the most updated `vn` release, e.g. `release/v5.0.x` should be the same as `release/v5.0.8` if that's the latest `v5.0` release.
 
 ## Other Branches
-**branches for the next release:**
+### branches for the next release:
 
 Other feature/fix branches targeting at `main` contain commits preparing for the next release. When the `release-prepare-branch` is ready for next release, add label `A:backport/vn.0.x` to the PR of `release-prepare-branch` against `main`, then the mergifybot will create a new PR of `mergify/bp/release/vn.0.x`  against `Release/vn.0.x`.
 
-**branches for the backport release:**
+### branches for the backport release:
 
 If the feature/fix branches are for a backport release, `main` branch already contains the commits for the next major release  `vn`, the feature/fix branch's PR should target at `Release/vn-1` rather than `main`. 
 
@@ -41,7 +41,7 @@ For minor release. Merge or use mergify to merge the commits to `release/vn.0.x`
 
 Usually the first release on the `release/vn.0.x` is a release candidate.
 
-#### example for releasing `v8.0.0-rc0`:
+#### example of releasing `v8.0.0-rc0`:
 
 1. checkout `release/v8.0.x` off `main`
 1. get the `v8-prepare-branch` ready including CHANGELOG.md, create a PR to merge `v8-prepare-branch` to `main`, label this PR `A:backport/v8.0.x`.
@@ -133,4 +133,3 @@ Checksums-Sha256:
  3895518436b74be8b042d7d0b868a60d03e1656e2556b12132be0f25bcb061ef  gaiad-4.0.0.tar.gz
 ```
 
-g

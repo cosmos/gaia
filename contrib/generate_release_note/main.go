@@ -29,6 +29,7 @@ func main() {
 	}
 
 	note := strings.Builder{}
+	note.WriteString(fmt.Sprintf("#Gaia %s Rlease Notes\n", args[1]))
 	note.WriteString(changelog)
 	note.WriteString("```\n")
 	note.Write(buildReport)

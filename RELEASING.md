@@ -1,6 +1,6 @@
 # Releasing
 
-This document outlines the release process for https://github.com/cosmos/gaia. We use a [Long-Lived Version Branch Approach](x) because we work in parallel on a `main` branch, a `release` branch and a `release-prepare` branch. The reason for this is because our software is used to run a single live network that at any given moment only works with one major version of our software. We may make a major release, but there will be a time span after that release before the software is live on the network, and we'd like our `main` branch to always be compilable and (theoretically) able to be run with the current live network (if it's in main but not a release it comes with the caveat that there may be dragons).
+This document outlines the release process for https://github.com/cosmos/gaia. We use a [Long-Lived Version Branch Approach](x) because we work in parallel on a `main` branch and a `release` branch.
 
 We follow [Semver](https://semver.org/) in that any patch releases are non-breaking changes. It's important to note, that breaking changes in a Blockchain context include non-determinism. So if a code change is backwards compatible, it may still impact the amount of gas needed to execute an action, which means the change is in fact breaking as it results in a different apphash after the code is executed. It's important for non-breaking changes to be possible to be used on the live network prior to the release.
 
@@ -19,11 +19,11 @@ There are multiple long-lived branches with the `release/` prefix. Each release 
 ## Other Branches
 **branches for the next release:**
 
-Other feature/fix branches targeting at main contain commits preparing for next release. When the `release-prepare-branch` is ready for next release, add label `A:backport/vn.0.x` to the pr of `release-prepare-branch` against `main`, then the mergifybot will create a new pr of `mergify/bp/release/vn.0.x`  against `Release/vn.0.x`.
+Other feature/fix branches targeting at `main` contain commits preparing for the next release. When the `release-prepare-branch` is ready for next release, add label `A:backport/vn.0.x` to the PR of `release-prepare-branch` against `main`, then the mergifybot will create a new PR of `mergify/bp/release/vn.0.x`  against `Release/vn.0.x`.
 
 **branches for the backport release:**
 
-If the feature/fix branch  is for a backport release and `main` branch already contains the commits for the next major release  `vn`. The feature/fix branch's PR should target at `Release/vn-1` rather than `main`. 
+If the feature/fix branches are for a backport release, `main` branch already contains the commits for the next major release  `vn`, the feature/fix branch's PR should target at `Release/vn-1` rather than `main`. 
 
 ## Release Procedure
 
@@ -32,14 +32,42 @@ Before merge and release, the following tests checks need to be conducted:
 
 - check the `replace` line in `go.mod`, check all the versions in `go.mod` are correct.
 - run tests and simulations by `make run-tests`.
+- test version compatibilities for minor releases.
 
 ### Major and minor Release
 
 For a new major release `n`, checkout `release/vn.0.x` from `main`. Merge or use mergify to merge the commits to `release/vn.0.x`, and tag the version.
 For minor release. Merge or use mergify to merge the commits to `release/vn.0.x`, and tag the version.
 
+Usually the first release on the `release/vn.0.x` is a release candidate.
+
+#### example for releasing `v8.0.0-rc0`:
+
+1. checkout `release/v8.0.x` off `main`
+1. get the `v8-prepare-branch` ready including CHANGELOG.md, create a PR to merge `v8-prepare-branch` to `main`, label this PR `A:backport/v8.0.x`.
+1. after merge  `v8-prepare-branch` to `main`, mergifybot will create a new PR of  `mergify/bp/release/v8.0.x` to `release/v8.0.x`. Check the PR, and merge this PR.
+1. checkout  `release/v8.0.x` and tag `v8.0.0-rc0`.
+
+#### example of releasing `v8.0.0`:
+
+1. get the `v800-prepare-branch` ready including CHANGELOG.md, create a PR to merge `v800-prepare-branch` to `main`, label this PR `A:backport/v8.0.x`.
+1. after merge  `v800-prepare-branch` to `main`, mergifybot will create a new PR of  `mergify/bp/release/v8.0.x` to `release/v8.0.x`. Check the PR, and merge this PR.
+1. checkout  `release/v8.0.x` and tag `v8.0.0`.
+
+#### example of releasing `v8.0.1`:
+
+1. get the `v801-prepare-branch`(off `main`) ready including CHANGELOG.md, create a PR to merge `v801-prepare-branch` to `main`, label this PR `A:backport/v8.0.x`.
+1. after merge  `v801-prepare-branch` to `main`, mergifybot will create a new PR of  `mergify/bp/release/v8.0.x` to `release/v8.0.x`. Check the PR, and merge this PR.
+1. checkout  `release/v8.0.x` and tag `v8.0.1`.
+
 ### backport release
 For a backport release, checkout a new branch from the right release branch, for example, `release/vn-1.0.x`. Commits to this new branch and merge into `release/vn-1.0.x`, tag the backport version from `release/vn-1.0.x`.
+
+#### example of backport release `v7.0.5`:
+assume main branch is at `v8`.
+1. checkout `v705-prepare-branch` off `release/v7.0.x`, get the backport changes ready including CHANGELOG.md on `v705-prepare-branch`.
+1. create a PR to merge `v705-prepare-branch` to `release/v7.0.x`, and merge.
+1. checkout `release/v7.0.x`  tag `v7.0.5`.
 
 ### Tagging
 
@@ -47,7 +75,7 @@ The following steps are the default for tagging a specific branch commit (usuall
 1. Ensure you have checked out the commit you wish to tag
 1. `git pull --tags --dry-run`
 1. `git pull --tags`
-1. `git tag -a v3.0.1 -m 'Release v3.0.1'`
+1. `git tag -s v3.0.1 -m 'Release v3.0.1'`
    1. optional, add the `-s` tag to create a signed commit using your PGP key (which should be added to github beforehand)
 1. `git push --tags --dry-run`
 1. `git push --tags`

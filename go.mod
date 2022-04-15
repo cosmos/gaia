@@ -3,17 +3,19 @@ module github.com/cosmos/gaia/v4
 go 1.15
 
 require (
-	github.com/cosmos/cosmos-sdk v0.42.4
+	github.com/cosmos/cosmos-sdk v0.42.11
 	github.com/gorilla/mux v1.8.0
 	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7
-	github.com/spf13/cast v1.3.1
-	github.com/spf13/cobra v1.1.3
-	github.com/stretchr/testify v1.7.0
-	github.com/tendermint/tendermint v0.34.9
-	github.com/tendermint/tm-db v0.6.4
+	github.com/spf13/cast v1.4.1
+	github.com/spf13/cobra v1.3.0
+	github.com/stretchr/testify v1.7.1
+	github.com/tendermint/tendermint v0.34.16
+	github.com/tendermint/tm-db v0.6.7
 )
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
+
+replace github.com/tendermint/tm-db => github.com/notional-labs/tm-db v0.6.7-0.20220413194741-5be48b846d14
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1

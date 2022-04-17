@@ -66,7 +66,7 @@ This setup puts all the data for `gaiad` in `~/.gaia`. You can examine the genes
 
 ## Multi-node, Local, Automated Testnet
 
-From the [networks/local directory](https://github.com/cosmos/gaia/tree/main/networks/local):
+From the [contrib/testnets/local directory](https://github.com/cosmos/gaia/tree/main/contrib/testnets/local):
 
 ### Requirements
 
@@ -193,7 +193,7 @@ BINARY=gaiafoo make localnet-start
 
 ## Multi-Node, Remote, Automated Testnet
 
-The following should be run from the [networks directory](https://github.com/cosmos/gaia/tree/main/networks).
+The following should be run from the [contrib/testnets directory](https://github.com/cosmos/gaia/tree/main/contrib/testnets).
 
 ### Terraform & Ansible
 

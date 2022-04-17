@@ -11,7 +11,7 @@ This document describes 3 ways to setup a network of `gaiad` nodes, each serving
 2. Multi-node, local, automated testnet
 3. Multi-node, remote, automated testnet
 
-Supporting code can be found in the [networks directory](https://github.com/cosmos/gaia/tree/main/networks) and additionally the `local` or `remote` sub-directories.
+Supporting code can be found in the [contrib/testnets directory](https://github.com/cosmos/gaia/tree/main/contrib/testnets) and additionally the `local` or `remote` sub-directories.
 
 > NOTE: The `remote` network bootstrapping may be out of sync with the latest releases and is not to be relied upon.
 

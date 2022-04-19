@@ -1,9 +1,8 @@
 package gaia
 
-// nolint: gosec
 const (
 	appName     = "GaiaApp"
-	upgradeName = "v7-Theta"
+	upgradeName = "v8-Rho"
 
 	authzMsgExec                        = "/cosmos.authz.v1beta1.MsgExec"
 	authzMsgGrant                       = "/cosmos.authz.v1beta1.MsgGrant"

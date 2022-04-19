@@ -8,9 +8,10 @@ import (
 
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
-	"github.com/cosmos/cosmos-sdk/x/staking"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	stakingtypessdk "github.com/cosmos/cosmos-sdk/x/staking/types"
+	slashingtypes "github.com/iqlusioninc/liquidity-staking-module/x/slashing/types"
+	"github.com/iqlusioninc/liquidity-staking-module/x/staking"
+	stakingtypes "github.com/iqlusioninc/liquidity-staking-module/x/staking/types"
 )
 
 // ExportAppStateAndValidators exports the state of the application for a genesis
@@ -71,8 +72,8 @@ func (app *GaiaApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs [
 	/* Handle fee distribution state. */
 
 	// withdraw all validator commission
-	app.StakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypes.ValidatorI) (stop bool) {
-		_, _ = app.DistrKeeper.WithdrawValidatorCommission(ctx, val.GetOperator())
+	app.StakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypessdk.ValidatorI) (stop bool) {
+		_, _ = app.DistrKeeper.WithdrawValidatorCommission(ctx, val.GetOperator()) //nolint:errcheck
 		return false
 	})
 
@@ -88,7 +89,7 @@ func (app *GaiaApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs [
 		if err != nil {
 			panic(err)
 		}
-		_, _ = app.DistrKeeper.WithdrawDelegationRewards(ctx, delAddr, valAddr)
+		_, _ = app.DistrKeeper.WithdrawDelegationRewards(ctx, delAddr, valAddr) //nolint:errcheck
 	}
 
 	// clear validator slash events
@@ -102,14 +103,17 @@ func (app *GaiaApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs [
 	ctx = ctx.WithBlockHeight(0)
 
 	// reinitialize all validators
-	app.StakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypes.ValidatorI) (stop bool) {
+	app.StakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypessdk.ValidatorI) (stop bool) {
 		// donate any unwithdrawn outstanding reward fraction tokens to the community pool
 		scraps := app.DistrKeeper.GetValidatorOutstandingRewardsCoins(ctx, val.GetOperator())
 		feePool := app.DistrKeeper.GetFeePool(ctx)
 		feePool.CommunityPool = feePool.CommunityPool.Add(scraps...)
 		app.DistrKeeper.SetFeePool(ctx, feePool)
 
-		app.DistrKeeper.Hooks().AfterValidatorCreated(ctx, val.GetOperator())
+		err := app.DistrKeeper.Hooks().AfterValidatorCreated(ctx, val.GetOperator())
+		if err != nil {
+			panic(err)
+		}
 		return false
 	})
 
@@ -123,8 +127,14 @@ func (app *GaiaApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs [
 		if err != nil {
 			panic(err)
 		}
-		app.DistrKeeper.Hooks().BeforeDelegationCreated(ctx, delAddr, valAddr)
-		app.DistrKeeper.Hooks().AfterDelegationModified(ctx, delAddr, valAddr)
+		err = app.DistrKeeper.Hooks().BeforeDelegationCreated(ctx, delAddr, valAddr)
+		if err != nil {
+			panic(err)
+		}
+		err = app.DistrKeeper.Hooks().AfterDelegationModified(ctx, delAddr, valAddr)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	// reset context height
@@ -157,7 +167,7 @@ func (app *GaiaApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs [
 	counter := int16(0)
 
 	for ; iter.Valid(); iter.Next() {
-		addr := sdk.ValAddress(stakingtypes.AddressFromValidatorsKey(iter.Key()))
+		addr := sdk.ValAddress(iter.Key()[1:])
 		validator, found := app.StakingKeeper.GetValidator(ctx, addr)
 		if !found {
 			panic("expected validator, not found")

@@ -24,7 +24,7 @@ import (
 	"github.com/tendermint/tendermint/p2p"
 	"github.com/tendermint/tendermint/privval"
 
-	gaia "github.com/cosmos/gaia/v6/app"
+	gaia "github.com/cosmos/gaia/v7/app"
 )
 
 type validator struct {

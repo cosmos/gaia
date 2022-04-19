@@ -1,38 +1,52 @@
 name: Build & Test
 on:
   pull_request:
+    paths:
+      - "**.go"
+      - go.mod
+      - go.sum
   push:
     branches:
       - main
+    paths:
+      - "**.go"
+      - go.mod
+      - go.sum
+
 jobs:
   cleanup-runs:
+    if: "!startsWith(github.ref, 'refs/tags/') && github.ref != 'refs/heads/main'"
     runs-on: ubuntu-latest
     steps:
       - uses: rokroskar/workflow-run-cleanup-action@master
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-    if: "!startsWith(github.ref, 'refs/tags/') && github.ref != 'refs/heads/main'"
 
   test-coverage-upload:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-go@v2.1.5
+      - uses: actions/setup-go@v3.0.0
         with:
           go-version: 1.17
+
       - uses: actions/checkout@v2.4.0
-      - uses: technote-space/get-diff-action@v5.0.2
+
+      - uses: actions/cache@v3.0.2
         with:
-          PATTERNS: |
-            **/**.go
-            go.mod
-            go.sum
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.mod') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
       - name: build
-        run: |
-          make build
+        run: make build
+
       - name: test & coverage report creation
         run: |
           make test-unit-cover
-        if: "env.GIT_DIFF != ''"
+
       - name: filter out DONTCOVER
         run: |
           excludelist="$(find ./ -type f -name '*.go' | xargs grep -l 'DONTCOVER')"
@@ -43,32 +57,24 @@ jobs:
             echo "Excluding ${filename} from coverage report..."
             sed -i.bak "/$(echo $filename | sed 's/\//\\\//g')/d" coverage.txt
           done
-        if: "env.GIT_DIFF != ''"
-      - uses: codecov/codecov-action@v2.1.0
+
+      - uses: codecov/codecov-action@v3.0.0
         with:
           file: ./coverage.txt # optional
           fail_ci_if_error: true
-        if: "env.GIT_DIFF != ''"
 
   test-e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - uses: actions/setup-go@v2.2.0
+      - uses: actions/setup-go@v3.0.0
         with:
           go-version: 1.17
+
       - uses: actions/checkout@v2
-      - uses: technote-space/get-diff-action@v6.0.1
-        with:
-          PATTERNS: |
-            **/**.go
-            go.mod
-            go.sum
+
       - name: Build Docker Image
-        run: |
-          make docker-build-debug
-        if: env.GIT_DIFF
+        run: make docker-build-debug
+
       - name: Test E2E
-        run: |
-          make test-e2e
-        if: env.GIT_DIFF
+        run: make test-e2e

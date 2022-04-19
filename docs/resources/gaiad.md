@@ -23,18 +23,10 @@ First, set up the address of the full-node you want to connect to:
 ```bash
 gaiad config node <host>:<port>
 
-# example: gaiad config node https://77.87.106.33:26657
+# example: gaiad config node https://77.87.106.33:26657 (note: this is a placeholder)
 ```
 
 If you run your own full-node, just use `tcp://localhost:26657` as the address.
-
-Then, let us set the default value of the `--trust-node` flag:
-
-```bash
-gaiad config trust-node true
-
-# Set to true if you trust the full-node you are connecting to, false otherwise
-```
 
 Finally, let us set the `chain-id` of the blockchain we want to interact with:
 
@@ -53,7 +45,7 @@ There are three types of key representations that are used:
   - Used to receive funds
   - e.g. `cosmos15h6vd5f0wqps26zjlwrc6chah08ryu4hzzdwhc`
 
-* `cosmosvaloper`
+- `cosmosvaloper`
   - Used to associate a validator to it's operator
   - Used to invoke staking commands
   - e.g. `cosmosvaloper1carzvgq3e6y3z5kz5y6gxp3wpy3qdrv928vyah`

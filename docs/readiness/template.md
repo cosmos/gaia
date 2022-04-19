@@ -1,3 +1,8 @@
+<!--
+parent:
+  order: false
+-->
+
 ---
 ADR: (number)
 Title: (short title)

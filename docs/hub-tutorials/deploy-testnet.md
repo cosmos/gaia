@@ -11,7 +11,7 @@ This document describes 3 ways to setup a network of `gaiad` nodes, each serving
 2. Multi-node, local, automated testnet
 3. Multi-node, remote, automated testnet
 
-Supporting code can be found in the [networks directory](https://github.com/cosmos/gaia/tree/main/networks) and additionally the `local` or `remote` sub-directories.
+Supporting code can be found in the [contrib/testnets directory](https://github.com/cosmos/gaia/tree/main/contrib/testnets) and additionally the `local` or `remote` sub-directories.
 
 > NOTE: The `remote` network bootstrapping may be out of sync with the latest releases and is not to be relied upon.
 
@@ -66,7 +66,7 @@ This setup puts all the data for `gaiad` in `~/.gaia`. You can examine the genes
 
 ## Multi-node, Local, Automated Testnet
 
-From the [networks/local directory](https://github.com/cosmos/gaia/tree/main/networks/local):
+From the [contrib/testnets/local directory](https://github.com/cosmos/gaia/tree/main/contrib/testnets/local):
 
 ### Requirements
 
@@ -193,7 +193,7 @@ BINARY=gaiafoo make localnet-start
 
 ## Multi-Node, Remote, Automated Testnet
 
-The following should be run from the [networks directory](https://github.com/cosmos/gaia/tree/main/networks).
+The following should be run from the [contrib/testnets directory](https://github.com/cosmos/gaia/tree/main/contrib/testnets).
 
 ### Terraform & Ansible
 

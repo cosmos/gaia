@@ -1,3 +1,7 @@
+<!--
+order: 1
+-->
+
 # Architecture Decision Records (ADR)
 
 This is a location to record all high-level architecture decisions for new feature and module proposals in the Cosmos Hub.

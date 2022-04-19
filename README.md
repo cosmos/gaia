@@ -67,7 +67,7 @@ If you're running a validator node on the Cosmos Hub, reach out to a Janitor on 
 ### 👥 — Testnet
 ___
 
-To participate in or utilize the current Cosmos Hub testnet that upgrades `cosmoshub-4` from gaia v5.0.x to gaia v6.0.x, take a look at the [vega-testnet](https://github.com/cosmos/vega-test) repository. This testnet is for the Vega Upgrade expected in Q4 2021. For future upgrades of the Cosmos Hub take a look at the [roadmap](https://github.com/cosmos/gaia/blob/main/docs/roadmap/cosmos-hub-roadmap-2.0.md).
+To participate in or utilize the current Cosmos Hub testnet, take a look at the [cosmos/testnets](https://github.com/cosmos/testnets) repository. This testnet is for the Theta Upgrade expected in Q1 2022. For future upgrades of the Cosmos Hub take a look at the [roadmap](https://github.com/cosmos/gaia/blob/main/docs/roadmap/cosmos-hub-roadmap-2.0.md).
 
 
 <br/>

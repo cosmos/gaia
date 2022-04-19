@@ -165,18 +165,10 @@ First, set up the address of the full node you want to connect to:
 ```bash
 gaiad config node <host>:<port
 
-// example: gaiad config node https://77.87.106.33:26657
+// example: gaiad config node https://77.87.106.33:26657 (note: this is a placeholder)
 ```
 
 If you run your own full node locally, use `tcp://localhost:26657` as the address.
-
-Set the default value of the `--trust-node` flag:
-
-```bash
-gaiad config trust-node false
-
-// Set to true if you run a light client node
-```
 
 Finally, set the `chain-id` of the blockchain you want to interact with:
 
@@ -288,7 +280,7 @@ Flags:
 
 ## REST API
 
-The [REST API documents](https://cosmos.network/rpc/) list all the available endpoints that you can use to interact
+The [REST API documents](https://v1.cosmos.network/rpc/v0.44.5) list all the available endpoints that you can use to interact
 with your full node. Learn [how to enable the REST API](../hub-tutorials/join-mainnet.md#enable-the-rest-api) on your full node.
 
 ### Listen for Incoming Transactions

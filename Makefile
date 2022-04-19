@@ -112,7 +112,7 @@ build-reproducible: go.sum
         --env VERSION=$(VERSION) \
         --env COMMIT=$(COMMIT) \
         --env LEDGER_ENABLED=$(LEDGER_ENABLED) \
-        --name latest-build cosmossdk/rbuilder:latest
+        --name latest-build tendermintdev/rbuilder:latest
 	$(DOCKER) cp -a latest-build:/home/builder/artifacts/ $(CURDIR)/
 
 build-linux: go.sum
@@ -170,30 +170,47 @@ sync-docs:
 
 include sims.mk
 
-test: test-unit test-build
+PACKAGES_UNIT=$(shell go list ./... | grep -v -e '/tests/e2e')
+PACKAGES_E2E=$(shell go list ./... | grep '/e2e')
+TEST_PACKAGES=./...
+TEST_TARGETS := test-unit test-unit-cover test-race test-e2e
 
-test-all: check test-race test-cover
+test-unit: ARGS=-timeout=5m -tags='norace'
+test-unit: TEST_PACKAGES=$(PACKAGES_UNIT)
+test-unit-cover: ARGS=-timeout=5m -tags='norace' -coverprofile=coverage.txt -covermode=atomic
+test-unit-cover: TEST_PACKAGES=$(PACKAGES_UNIT)
+test-race: ARGS=-timeout=5m -race
+test-race: TEST_PACKAGES=$(PACKAGES_UNIT)
+test-e2e: ARGS=-timeout=25m -v
+test-e2e: TEST_PACKAGES=$(PACKAGES_E2E)
+$(TEST_TARGETS): run-tests
 
-test-unit:
-	@VERSION=$(VERSION) go test -mod=readonly -tags='ledger test_ledger_mock' ./...
+run-tests:
+ifneq (,$(shell which tparse 2>/dev/null))
+	@echo "--> Running tests"
+	@go test -mod=readonly -json $(ARGS) $(TEST_PACKAGES) | tparse
+else
+	@echo "--> Running tests"
+	@go test -mod=readonly $(ARGS) $(TEST_PACKAGES)
+endif
 
-test-race:
-	@VERSION=$(VERSION) go test -mod=readonly -race -tags='ledger test_ledger_mock' ./...
+.PHONY: run-tests $(TEST_TARGETS)
 
-test-cover:
-	@go test -mod=readonly -timeout 30m -race -coverprofile=coverage.txt -covermode=atomic -tags='ledger test_ledger_mock' ./...
+docker-build-debug:
+	@docker build -t cosmos/gaiad-e2e --build-arg IMG_TAG=debug -f e2e.Dockerfile .
 
-benchmark:
-	@go test -mod=readonly -bench=. ./...
-
+# TODO: Push this to the Cosmos Dockerhub so we don't have to keep building it
+# in CI.
+docker-build-hermes:
+	@cd tests/e2e/docker; docker build -t cosmos/hermes-e2e:latest -f hermes.Dockerfile .
 
 ###############################################################################
 ###                                Linting                                  ###
 ###############################################################################
 
 lint:
-	golangci-lint run
-	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" | xargs gofmt -d -s
+	@echo "--> Running linter"
+	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run --timeout=10m
 
 format:
 	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/lcd/statik/statik.go" | xargs gofmt -w -s
@@ -205,7 +222,7 @@ format:
 ###############################################################################
 
 build-docker-gaiadnode:
-	$(MAKE) -C networks/local
+	$(MAKE) -C contrib/testnets/local
 
 # Run a 4-node testnet locally
 localnet-start: build-linux localnet-stop
@@ -229,7 +246,6 @@ test-docker-push: test-docker
 .PHONY: all build-linux install format lint \
 	go-mod-cache draw-deps clean build \
 	setup-transactions setup-contract-tests-data start-gaia run-lcd-contract-tests contract-tests \
-	test test-all test-build test-cover test-unit test-race \
 	benchmark \
 	build-docker-gaiadnode localnet-start localnet-stop \
-	docker-single-node
+	docker-single-node docker-build-debug docker-build-hermes

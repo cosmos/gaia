@@ -303,15 +303,6 @@ gaiad config node <host>:<port
 
 如果你是自己运行全节点，可以使用 `tcp://localhost:26657` 作为地址。 
 
-
-然后，让我们设置 `--trust-node` 指标的缺省值。 
-
-```bash
-gaiad config trust-node false
-
-// Set to true if you run a light-client node, false otherwise
-```
-
 最后，让我们设置需要访问区块链的 `chain-id` 
 
 ```bash

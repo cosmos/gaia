@@ -185,4 +185,4 @@ At this point you'll want to track which validator has voted and which has not. 
 
 Remember that any voter may change their vote at any time before the voting period ends. That historically doesn't happen often, but there may be an opportunity to convince a voter to change their vote. The biggest risk is that stakeholders won't vote at all (for a number of reasons). Validator operators tend to need multiple reminders to vote. How you choose to contact validator operators, how often, and what you say is up to you--remember that no validator is obligated to vote, and that operators are likely occupied by competing demands for their attention. Take care not to stress any potential relationship with validator operators.
 
-   [forum]: https://forum.cosmos.network/c/governance
+   [forum]: https://forum.cosmos.network/c/hub-proposals/25

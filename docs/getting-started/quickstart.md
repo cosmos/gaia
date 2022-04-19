@@ -24,15 +24,10 @@ For reference, the list of `rpc_servers` and `persistent` peers can be found in 
 ```bash
 # Build gaiad binary and initialize chain
 cd $HOME
-git clone -b v6.0.4 https://github.com/cosmos/gaia --depth=1
+git clone -b v7.0.0 https://github.com/cosmos/gaia --depth=1
 cd gaiad
 make install
-gaiad init <custom moniker>
-
-# Prepare genesis file for cosmoshub-4
-wget https://github.com/cosmos/mainnet/raw/master/genesis.cosmoshub-4.json.gz
-gzip -d genesis.cosmoshub-4.json.gz
-mv genesis.cosmoshub-4.json $HOME/.gaia/config/genesis.json
+gaiad init CUSTOM_MONIKER --chain-id cosmoshub-4
 
 #Set minimum gas price & peers
 sed -i'' 's/minimum-gas-prices = ""/minimum-gas-prices = "0.0025uatom"/' $HOME/.gaia/config/app.toml

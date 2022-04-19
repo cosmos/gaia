@@ -20,8 +20,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	tmcfg "github.com/tendermint/tendermint/config"
+	"github.com/tendermint/tendermint/internal/p2p"
 	tmos "github.com/tendermint/tendermint/libs/os"
-	"github.com/tendermint/tendermint/p2p"
 	"github.com/tendermint/tendermint/privval"
 
 	gaia "github.com/cosmos/gaia/v7/app"

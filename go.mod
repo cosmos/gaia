@@ -7,7 +7,8 @@ require (
 	github.com/CosmWasm/wasmvm v1.0.0-beta7
 	github.com/cosmos/iavl v0.18.0
 	github.com/cosmos/ibc-go/v3 v3.0.0-alpha1.0.20220223145401-ef34765e7010
-	github.com/gravity-devs/liquidity v1.5.0
+	// TODO: add back
+	// github.com/gravity-devs/liquidity v1.5.0
 	github.com/ory/dockertest/v3 v3.8.1
 	github.com/dvsekhvalnov/jose2go v0.0.0-20200901110807-248326c1351b
 	github.com/gogo/protobuf v1.3.3
@@ -28,10 +29,12 @@ require (
 	github.com/strangelove-ventures/packet-forward-middleware/v2 v2.1.1
 	github.com/stretchr/testify v1.7.1
 	github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
-	// go get github.com/tendermint/tendermint@v0.35.x
-	github.com/tendermint/tendermint v0.36.0-dev.0.20220226000315-ea497301a7d3
+	github.com/tendermint/tendermint v0.35.2
+	// TODO: Ask LIDO why they were using v0.36
+	// github.com/tendermint/tendermint v0.36.0-dev.0.20220226000315-ea497301a7d3
 	github.com/tendermint/tm-db v0.6.7
 	google.golang.org/genproto v0.0.0-20220222213610-43724f9ea8cf
+	// TODO: Adk LIDO if this is the correct version
 	google.golang.org/grpc v1.45.0
 	gopkg.in/yaml.v2 v2.4.0
 )
@@ -163,7 +166,6 @@ require (
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 	nhooyr.io/websocket v1.8.6 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
-	google.golang.org/grpc v1.44.0 // indirect
 )
 
 replace (
@@ -178,5 +180,4 @@ replace (
 	// latest grpc doesn't work with with our modified proto compiler, so we need to enforce
 	// the following version across all dependencies.
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-	google.golang.org/grpc => google.golang.org/grpc v1.33.2
 )

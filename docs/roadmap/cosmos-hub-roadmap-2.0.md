@@ -67,7 +67,7 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Features include enabling transfer of rewards and voting rights
 - Wasmd
   - Governance permissioned CosmWASM instance on the hub
-- Budget Module (stretch-goal)
+- [Budget Module](https://github.com/tendermint/budget) (stretch-goal)
   - Inflation funding directed to arbitrary module and account addresses
 - Global Fee Module (stretch-goal)
   - Allows denoms and min-fees to be governance parameters so gas can be paid in various denoms.

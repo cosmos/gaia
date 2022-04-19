@@ -209,8 +209,8 @@ docker-build-hermes:
 ###############################################################################
 
 lint:
-	golangci-lint run
-	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" | xargs gofmt -d -s
+	@echo "--> Running linter"
+	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run --timeout=10m
 
 format:
 	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/lcd/statik/statik.go" | xargs gofmt -w -s
@@ -222,7 +222,7 @@ format:
 ###############################################################################
 
 build-docker-gaiadnode:
-	$(MAKE) -C networks/local
+	$(MAKE) -C contrib/testnets/local
 
 # Run a 4-node testnet locally
 localnet-start: build-linux localnet-stop

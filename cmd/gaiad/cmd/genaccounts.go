@@ -16,8 +16,11 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	"github.com/cosmos/cosmos-sdk/x/genutil"
-	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	// TODO: figure out if these need to be added back
+	// "github.com/cosmos/cosmos-sdk/x/genutil"
+	// genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	"github.com/CosmWasm/wasmd/x/wasm/types/compatibility/genutil"
+	genutiltypes "github.com/CosmWasm/wasmd/x/wasm/types/compatibility/genutil/types"
 )
 
 const (

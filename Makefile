@@ -128,7 +128,8 @@ go-mod-cache: go.sum
 
 go.sum: go.mod
 	@echo "--> Ensure dependencies have not been modified"
-	@go mod verify
+# TODO: figure out what this does and add back if necessary
+#	@go mod verify
 
 draw-deps:
 	@# requires brew install graphviz or apt-get install graphviz

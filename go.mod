@@ -169,7 +169,7 @@ require (
 )
 
 replace (
-	github.com/CosmWasm/wasmd => github.com/cosmos/wasmd  v0.23.1-0.20220408144353-74e01f79d8f4
+	github.com/CosmWasm/wasmd => github.com/cosmos/wasmd  v0.23.1-0.20220415144639-618f118be3dd
 	// Use the cosmos-flavored keyring library
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.1.7-0.20210622111912-ef00f8ac3d76
 	github.com/cosmos/ibc-go/v3 => github.com/cosmos/ibc-go/v3 v3.0.0-alpha1.0.20220331200732-34f03df4aa59

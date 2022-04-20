@@ -223,7 +223,7 @@ format:
 ###############################################################################
 
 build-docker-gaiadnode:
-	$(MAKE) -C networks/local
+	$(MAKE) -C contrib/testnets/local
 
 # Run a 4-node testnet locally
 localnet-start: build-linux localnet-stop

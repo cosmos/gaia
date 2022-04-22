@@ -11,6 +11,7 @@ on:
 jobs:
   docker_ghcr_build_push:
     runs-on: ubuntu-20.04
+    environment: container_registory
     env:
       NAME: $GITHUB_REPOSITORY
       TAG: $GITHUB_REF

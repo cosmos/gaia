@@ -16,15 +16,6 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
-      - name: slack - GitHub Actions Slack integration
-        uses: act10ns/slack@v1.5.0
-        with:
-          status: ${{ job.status }}
-          channel: "#cosmos-hub-github-actions"
-          steps: ${{ toJson(steps) }}
-          message: Building and publishing docker image for $GITHUB_REF
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       - name: Checkout
         uses: actions/checkout@v2
       - name: Docker meta

@@ -1,39 +1,64 @@
 name: Build and publish a Docker image to ghcr.io
 
 on:
-  # publish on releases, e.g. v2.1.13 (image tagged as "2.1.13" - "v" prefix is removed)
-  release:
-    types: [published]
-
+  schedule:
+    - cron: "0 10 * * *"
   push:
-    branches: feature/adding_docker_github_action
+    branches:
+      - "**"
+    tags:
+      - "v*.*.*"
+  pull_request:
+    branches:
+      - "main"
 
 jobs:
-  docker_ghcr_build_push:
-    runs-on: ubuntu-20.04
-    environment: container_registory
-    env:
-      NAME: $GITHUB_REPOSITORY
-      TAG: $GITHUB_REF
+  docker:
+    runs-on: ubuntu-latest
     steps:
       - name: slack - GitHub Actions Slack integration
         uses: act10ns/slack@v1.5.0
         with:
           status: ${{ job.status }}
-          channel: "#cosmos-hub-internal"
+          channel: "#cosmos-hub-github-actions"
           steps: ${{ toJson(steps) }}
-          message: Starting Gravity Delegation bot
+          message: Building and publishing docker image for $GITHUB_REF
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      - name: Login to GitHub Container Registry
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          # list of Docker images to use as base name for tags
+          images: |
+            cosmos/gaia
+            ghcr.io/cosmos/gaia
+          # generate Docker tags based on the following events/attributes
+          tags: |
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=sha
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to GHCR
+        if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
-          username: $GITHUB_REPOSITORY_OWNER
-          password: ${{ secrets.CR_PAT }}
-      - name: echo docker
-        run: echo wtf  "$(which docker)"
-      - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag "$NAME":"$TAG"
-      - name: Docker Push
-        run: docker push "$NAME":"$TAG"
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GHCR_PAT }}
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

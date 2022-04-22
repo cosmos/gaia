@@ -1,25 +1,29 @@
-name: Push to container registry (ghcr) #on: [push] # When pushing to any branch then run this action
-
+name: Push to container registry (ghcr)
 on:
   push:
     branches:
       - "feature/adding_docker_github_action" # TODO: remove this after testing
 jobs:
-  push-image-to-registry: # job name
+  push-image-to-registry:
     environment: container_registory
-    # Env variable
     env:
       CR_PAT: ${{ secrets.CR_PAT }}
       REPO_OWNER: $GITHUB_REPOSITORY_OWNER
       NAME: $GITHUB_REPOSITORY
       TAG: $GITHUB_REF
-    runs-on: ubuntu-latest # runner name : (ubuntu latest version)
+    runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3 # first action : checkout source code
+      - uses: actions/checkout@v3
+      - name: install dependencies
+        run: |
+          apt -y update && apt -y install curl && \
+          curl -fsSL https://get.docker.com -o get-docker.sh && \
+          sh get-docker.sh
       - name: docker login
         run: |
-          echo "$CR_PAT" | docker login -u "$REPO_OWNER" --password-stdin # log into docker hub account
-      - name: Build the Docker image # push The image to the docker hub
+          echo "$CR_PAT" && exit 0
+          # echo "$CR_PAT" | docker login -u "$REPO_OWNER" --password-stdin
+      - name: Build the Docker image
         run: docker build . --file Dockerfile --tag "$NAME":"$TAG"
       - name: Docker Push
         run: docker push "$NAME":"$TAG"

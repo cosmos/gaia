@@ -118,6 +118,11 @@ build-reproducible: go.sum
 build-linux: go.sum
 	LEDGER_ENABLED=false GOOS=linux GOARCH=amd64 $(MAKE) build
 
+build-all-binaries: go.sum
+	LEDGER_ENABLED=false GOOS=linux GOARCH=amd64 go build $(BUILD_FLAGS) CGO_ENABLED=0 -o $(BUILDDIR)/gaiad-linux-amd64 ./cmd/gaiad
+	LEDGER_ENABLED=false GOOS=linux GOARCH=arm64 go build $(BUILD_FLAGS) CGO_ENABLED=0 -o $(BUILDDIR)/gaiad-linux-arm64 ./cmd/gaiad
+	LEDGER_ENABLED=false GOOS=windows GOARCH=amd64 go build $(BUILD_FLAGS) CGO_ENABLED=0 -o $(BUILDDIR)/gaiad-windows-amd64.exe ./cmd/gaiad
+
 build-contract-tests-hooks:
 	mkdir -p $(BUILDDIR)
 	go build -mod=readonly $(BUILD_FLAGS) -o $(BUILDDIR)/ ./cmd/contract_tests

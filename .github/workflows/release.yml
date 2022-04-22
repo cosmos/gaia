@@ -1,0 +1,62 @@
+name: Release Binary
+on:
+  release:
+    types:
+      - created
+
+jobs:
+  uploadAssets:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+      - name: Build Binaries with Docker
+        run: |
+          sed "s/make build/make build-all-binaries/g" Dockerfile | tee Dockerfile.all-binaries
+          docker build -t build:all-binaries -f Dockerfile.all-binaries .
+          docker run -itd --name gaiad-all-binaries build:all-binaries tail -f /dev/null
+          mkdir -p build/
+      - name: tar linux amd64 binary
+        run: |
+          docker cp gaiad-all-binaries:/usr/local/bin/gaiad-linux-amd64 build/
+          tar -czvf build/gaiad-linux-amd64-${GITHUB_REF_NAME}.tar.gz build/gaiad-linux-amd64
+      - name: tar linux arm64 binary
+        run: |
+          docker cp gaiad-all-binaries:/usr/local/bin/gaiad-linux-arm64 build/
+          tar -czvf build/gaiad-linux-arm64-${GITHUB_REF_NAME}.tar.gz build/gaiad-linux-arm64
+      - name: get windows amd64 binary
+        run: |
+          docker cp gaiad-all-binaries:/usr/local/bin/gaiad-windows-amd64.exe build/
+          mv build/gaiad-windows-amd64.exe build/gaiad-windows-amd64-${GITHUB_REF_NAME}.exe
+          ls build/
+
+      - name: Upload Linux AMD64 Binary
+        id: upload-linux-amd64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: build/gaiad-linux-amd64-${{ github.ref_name }}.tar.gz
+          asset_name: gaiad-linux-amd64-${{ github.ref_name }}.tar.gz
+          asset_content_type: application/gzip
+      - name: Upload Linux ARM64 Binary
+        id: upload-linux-arm64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: build/gaiad-linux-arm64-${{ github.ref_name }}.tar.gz
+          asset_name: gaiad-linux-arm64-${{ github.ref_name }}.tar.gz
+          asset_content_type: application/gzip
+      - name: Upload Windows AMD64 Binary
+        id: upload-windows-amd64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: build/gaiad-windows-amd64-${{ github.ref_name }}.exe
+          asset_name: gaiad-windows-amd64-${{ github.ref_name }}.exe
+          asset_content_type: application/octet-stream

@@ -11,22 +11,20 @@ linters:
     - depguard
     - dogsled
     # - errcheck
+    - exportloopref
     - goconst
     - gocritic
     - gofmt
     - goimports
-    - golint
     - gosec
     - gosimple
     - govet
     - ineffassign
-    - interfacer
-    - maligned
     - misspell
     - nakedret
     - prealloc
+    - revive
     - scopelint
-    - staticcheck
     - structcheck
     - stylecheck
     - typecheck

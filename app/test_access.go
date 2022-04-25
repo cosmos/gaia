@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 
-	"github.com/CosmWasm/wasmd/app/params"
+	"github.com/cosmos/wasmd/app/params"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
@@ -15,7 +15,7 @@ import (
 	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
 	stakingkeeper "github.com/iqlusioninc/liquidity-staking-module/x/staking/keeper"
 
-	"github.com/CosmWasm/wasmd/x/wasm"
+	"github.com/cosmos/wasmd/x/wasm"
 )
 
 type TestSupport struct {

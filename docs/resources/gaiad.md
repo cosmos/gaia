@@ -842,8 +842,7 @@ The first step to create a multisig transaction is to initiate it on behalf
 of the multisig address created above:
 
 ```bash
-gaiad tx bank send cosmos1570v2fq3twt0f0x02vhxpuzc9jc4yl30q2qned 1000000uatom \
-  --from=<multisig_address> \
+gaiad tx bank send <multisig_address> cosmos1570v2fq3twt0f0x02vhxpuzc9jc4yl30q2qned 1000000uatom \
   --generate-only > unsignedTx.json
 ```
 

@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 
-	genutilcli "github.com/CosmWasm/wasmd/x/wasm/types/compatibility/genutil/client/cli"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/config"
@@ -24,6 +23,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
+	genutilcli "github.com/iqlusioninc/liquidity-staking-module/x/genutil/client/cli"
 
 	// TODO: Figure out if this needs to be added back
 	// genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"

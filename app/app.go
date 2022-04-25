@@ -71,7 +71,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	govv1beta2 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta2"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
@@ -112,6 +112,9 @@ import (
 	distrclient "github.com/iqlusioninc/liquidity-staking-module/x/distribution/client"
 	distrkeeper "github.com/iqlusioninc/liquidity-staking-module/x/distribution/keeper"
 	distrtypes "github.com/iqlusioninc/liquidity-staking-module/x/distribution/types"
+	"github.com/iqlusioninc/liquidity-staking-module/x/genutil"
+	genutiltypes "github.com/iqlusioninc/liquidity-staking-module/x/genutil/types"
+
 	"github.com/iqlusioninc/liquidity-staking-module/x/slashing"
 	slashingkeeper "github.com/iqlusioninc/liquidity-staking-module/x/slashing/keeper"
 	slashingtypes "github.com/iqlusioninc/liquidity-staking-module/x/slashing/types"
@@ -211,7 +214,7 @@ var (
 			upgradeclient.LegacyProposalHandler,
 			upgradeclient.LegacyCancelProposalHandler,
 			ibcclientclient.UpdateClientProposalHandler,
-			ibcclientclient.UpgradeProposalHandler)
+			ibcclientclient.UpgradeProposalHandler),
 		),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
@@ -1117,7 +1120,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(minttypes.ModuleName)
 	paramsKeeper.Subspace(distrtypes.ModuleName)
 	paramsKeeper.Subspace(slashingtypes.ModuleName)
-	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govv1.ParamKeyTable())
+	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govv1beta2.ParamKeyTable())
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	// paramsKeeper.Subspace(liquiditytypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)

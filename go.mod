@@ -3,13 +3,10 @@ module github.com/cosmos/gaia/v7
 go 1.17
 
 require (
-	github.com/cosmos/cosmos-sdk v0.46.0-beta2
 	github.com/CosmWasm/wasmvm v1.0.0-beta7
+	github.com/cosmos/cosmos-sdk v0.46.0-alpha3
 	github.com/cosmos/iavl v0.18.0
-	github.com/cosmos/ibc-go/v3 v3.0.0-alpha1.0.20220223145401-ef34765e7010
-	// TODO: add back
-	// github.com/gravity-devs/liquidity v1.5.0
-	github.com/ory/dockertest/v3 v3.8.1
+	github.com/cosmos/ibc-go/v3 v3.0.0
 	github.com/dvsekhvalnov/jose2go v0.0.0-20200901110807-248326c1351b
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
@@ -17,6 +14,10 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.0.1 // indirect
+	github.com/iqlusioninc/liquidity-staking-module v0.0.3-0.20220408012452-aa2bd4fb5ec9
+	// TODO: add back
+	// github.com/gravity-devs/liquidity v1.5.0
+	github.com/ory/dockertest/v3 v3.8.1
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.12.1
 	github.com/rakyll/statik v0.1.7
@@ -29,7 +30,7 @@ require (
 	github.com/strangelove-ventures/packet-forward-middleware/v2 v2.1.1
 	github.com/stretchr/testify v1.7.1
 	github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
-	github.com/tendermint/tendermint v0.35.2
+	github.com/tendermint/tendermint v0.36.0-dev.0.20220226000315-ea497301a7d3
 	// TODO: Ask LIDO why they were using v0.36
 	// github.com/tendermint/tendermint v0.36.0-dev.0.20220226000315-ea497301a7d3
 	github.com/tendermint/tm-db v0.6.7
@@ -46,7 +47,7 @@ require (
 	github.com/99designs/keyring v1.1.6 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
 	github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d // indirect
-	github.com/DataDog/zstd v1.4.5 // indirect
+	github.com/DataDog/zstd v1.5.0 // indirect
 	github.com/Microsoft/go-winio v0.5.1 // indirect
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect
 	github.com/Workiva/go-datastructures v1.0.53 // indirect
@@ -56,14 +57,14 @@ require (
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
 	github.com/bgentry/speakeasy v0.1.0 // indirect
 	github.com/btcsuite/btcd v0.22.0-beta // indirect
-	github.com/cenkalti/backoff/v4 v4.1.1 // indirect
+	github.com/cenkalti/backoff/v4 v4.1.2 // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/cockroachdb/apd/v2 v2.0.2 // indirect
 	github.com/coinbase/rosetta-sdk-go v0.7.2 // indirect
 	github.com/confio/ics23/go v0.7.0 // indirect
+	github.com/containerd/continuity v0.2.1 // indirect
 	github.com/cosmos/btcutil v1.0.4 // indirect
-	github.com/containerd/continuity v0.1.0 // indirect
 	github.com/cosmos/cosmos-proto v1.0.0-alpha7.0.20220208174455-213b76899fac // indirect
 	github.com/cosmos/cosmos-sdk/api v0.1.0-alpha5 // indirect
 	github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.3 // indirect
@@ -71,6 +72,7 @@ require (
 	github.com/cosmos/gorocksdb v1.2.0 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.11.1 // indirect
 	github.com/cosmos/ledger-go v0.9.2 // indirect
+	github.com/CosmWasm/wasmd v0.23.0
 	github.com/danieljoos/wincred v1.0.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f // indirect
@@ -85,7 +87,7 @@ require (
 	github.com/felixge/httpsnoop v1.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/go-kit/kit v0.12.0 // indirect
-	github.com/go-logfmt/logfmt v0.5.0 // indirect
+	github.com/go-logfmt/logfmt v0.5.1 // indirect
 	github.com/go-playground/validator/v10 v10.4.1 // indirect
 	github.com/godbus/dbus v0.0.0-20190726142602-4481cbc300e2 // indirect
 	github.com/gogo/gateway v1.1.0 // indirect
@@ -100,9 +102,9 @@ require (
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0 // indirect
+	github.com/gsterjov/go-libsecret v0.0.0-20161001094733-a6f4afe4910c // indirect
 	github.com/gtank/merlin v0.1.1 // indirect
 	github.com/gtank/ristretto255 v0.1.2 // indirect
-	github.com/gsterjov/go-libsecret v0.0.0-20161001094733-a6f4afe4910c // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-getter v1.5.11 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
@@ -111,20 +113,19 @@ require (
 	github.com/hashicorp/golang-lru v0.5.5-0.20210104140557-80c98217689d // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hdevalence/ed25519consensus v0.0.0-20210204194344-59a8610d2b87 // indirect
-	github.com/improbable-eng/grpc-web v0.15.0 // indirect
 	github.com/imdario/mergo v0.3.12 // indirect
+	github.com/improbable-eng/grpc-web v0.15.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
-	github.com/iqlusioninc/liquidity-staking-module v0.0.3-0.20220408012452-aa2bd4fb5ec9 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jmhodges/levigo v1.0.0 // indirect
 	github.com/keybase/go-keychain v0.0.0-20190712205309-48d3d31d256d // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/lib/pq v1.10.4 // indirect
-	github.com/mimoo/StrobeGo v0.0.0-20181016162300-f8f6d4d2b643 // indirect
 	github.com/libp2p/go-buffer-pool v0.0.2 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
+	github.com/mimoo/StrobeGo v0.0.0-20181016162300-f8f6d4d2b643 // indirect
 	github.com/minio/highwayhash v1.0.2 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/go-testing-interface v1.0.0 // indirect
@@ -169,10 +170,10 @@ require (
 )
 
 replace (
-	github.com/CosmWasm/wasmd => github.com/cosmos/wasmd  v0.23.1-0.20220415144639-618f118be3dd
 	// Use the cosmos-flavored keyring library
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.1.7-0.20210622111912-ef00f8ac3d76
-	github.com/cosmos/ibc-go/v3 => github.com/cosmos/ibc-go/v3 v3.0.0-alpha1.0.20220331200732-34f03df4aa59
+	github.com/CosmWasm/wasmd => github.com/cosmos/wasmd v0.23.1-0.20220425102225-6084e38ffe69
+	github.com/cosmos/ibc-go/v3 => github.com/oopcode/ibc-go/v3 v3.0.0-alpha1.0.20220420133428-298df13e12a4
 	//github.com/cosmos/ibc-go/v3 => ../../ibc-go
 	// Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
 	// TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409

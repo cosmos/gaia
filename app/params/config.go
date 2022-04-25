@@ -21,7 +21,7 @@ var (
 #
 # Example:
 # ["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement", ...]
-bypass-min-fee-msg-types = {{ .BypassMinFeeMsgTypes }}
+bypass-min-fee-msg-types = [{{ range .BypassMinFeeMsgTypes }}{{ printf "%q, " . }}{{end}}]
 `
 )
 

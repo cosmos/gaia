@@ -2,15 +2,19 @@ name: Build and publish a Docker image to ghcr.io
 
 on:
   schedule:
-    - cron: "0 10 * * *"
+    - cron: "10 10 * * *"
   push:
     branches:
       - "**"
+    paths:
+      - "!docs/**"
     tags:
       - "v*.*.*"
   pull_request:
     branches:
       - "main"
+    paths:
+      - "!docs/**"
 
 jobs:
   docker:
@@ -50,6 +54,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          #  push: ${{ github.event_name != 'pull_request' }}

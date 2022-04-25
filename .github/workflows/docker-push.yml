@@ -1,4 +1,4 @@
-name: Build and publish a Docker image to ghcr.io
+name: Docker - non release branch docker build and push
 
 on:
   schedule:
@@ -6,18 +6,13 @@ on:
   push:
     branches:
       - "**"
-    paths:
-      - "!docs/**"
+      - "!release/**"
+      - "!v*.**"
     tags:
-      - "v*.*.*"
-  pull_request:
-    branches:
-      - "main"
-    paths:
-      - "!docs/**"
+      - "!**"
 
 jobs:
-  docker:
+  docker-non-release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

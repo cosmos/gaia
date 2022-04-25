@@ -24,7 +24,6 @@ linters:
     - nakedret
     - prealloc
     - revive
-    - scopelint
     - structcheck
     - stylecheck
     - typecheck

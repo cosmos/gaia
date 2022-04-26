@@ -11,7 +11,6 @@ import (
 
 	"github.com/cosmos/wasmd/x/wasm/types/compatibility"
 
-	wasmtypes "github.com/cosmos/wasmd/x/wasm/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
@@ -27,6 +26,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
+	wasmtypes "github.com/cosmos/wasmd/x/wasm/types"
 
 	// Auth-related SDK imports
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -43,9 +43,6 @@ import (
 	// Vesting SDK imports
 	"github.com/cosmos/cosmos-sdk/x/auth/vesting"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
-
-	"github.com/iqlusioninc/liquidity-staking-module/x/genutil"
-	genutiltypes "github.com/iqlusioninc/liquidity-staking-module/x/genutil/types"
 
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
@@ -68,8 +65,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	govv1beta2 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta2"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	govv1beta2 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta2"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
@@ -102,6 +99,7 @@ import (
 	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
 	ibcmock "github.com/cosmos/ibc-go/v3/testing/mock"
 	"github.com/gorilla/mux"
+
 	// "github.com/gravity-devs/liquidity/x/liquidity"
 	// liquiditykeeper "github.com/gravity-devs/liquidity/x/liquidity/keeper"
 	// liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
@@ -132,7 +130,6 @@ import (
 	routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v2/router/keeper"
 	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v2/router/types"
 
-	wasmappparams "github.com/cosmos/wasmd/app/params"
 	"github.com/cosmos/wasmd/x/wasm"
 	wasmclient "github.com/cosmos/wasmd/x/wasm/client"
 
@@ -175,7 +172,7 @@ func GetEnabledProposals() []wasm.ProposalType {
 var (
 	// DefaultNodeHome default home directories for wasmd
 	DefaultNodeHome string
-	Bech32Prefix = "cosmos"
+	Bech32Prefix    = "cosmos"
 
 	// Bech32PrefixAccAddr defines the Bech32 prefix of an account's address
 	Bech32PrefixAccAddr = Bech32Prefix
@@ -205,13 +202,13 @@ var (
 		distr.AppModuleBasic{},
 		gov.NewAppModuleBasic(
 			append(
-			wasmclient.ProposalHandlers,
-			paramsclient.ProposalHandler,
-			distrclient.ProposalHandler,
-			upgradeclient.LegacyProposalHandler,
-			upgradeclient.LegacyCancelProposalHandler,
-			ibcclientclient.UpdateClientProposalHandler,
-			ibcclientclient.UpgradeProposalHandler),
+				wasmclient.ProposalHandlers,
+				paramsclient.ProposalHandler,
+				distrclient.ProposalHandler,
+				upgradeclient.LegacyProposalHandler,
+				upgradeclient.LegacyCancelProposalHandler,
+				ibcclientclient.UpdateClientProposalHandler,
+				ibcclientclient.UpgradeProposalHandler),
 		),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
@@ -240,8 +237,8 @@ var (
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
 		// liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
-		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-		wasm.ModuleName:                {authtypes.Burner},
+		ibctransfertypes.ModuleName: {authtypes.Minter, authtypes.Burner},
+		wasm.ModuleName:             {authtypes.Burner},
 	}
 )
 
@@ -281,22 +278,22 @@ type GaiaApp struct { // nolint: golint
 	UpgradeKeeper    upgradekeeper.Keeper
 	ParamsKeeper     paramskeeper.Keeper
 	// IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
-	IBCKeeper       *ibckeeper.Keeper
-	ICAHostKeeper   icahostkeeper.Keeper
+	IBCKeeper           *ibckeeper.Keeper
+	ICAHostKeeper       icahostkeeper.Keeper
 	ICAControllerKeeper icacontrollerkeeper.Keeper
-	EvidenceKeeper  evidencekeeper.Keeper
-	TransferKeeper  ibctransferkeeper.Keeper
-	FeeGrantKeeper  feegrantkeeper.Keeper
-	AuthzKeeper     authzkeeper.Keeper
+	EvidenceKeeper      evidencekeeper.Keeper
+	TransferKeeper      ibctransferkeeper.Keeper
+	FeeGrantKeeper      feegrantkeeper.Keeper
+	AuthzKeeper         authzkeeper.Keeper
 	// LiquidityKeeper liquiditykeeper.Keeper
-	RouterKeeper    routerkeeper.Keeper
-	WasmKeeper      wasm.Keeper
+	RouterKeeper routerkeeper.Keeper
+	WasmKeeper   wasm.Keeper
 
 	// make scoped keepers public for test purposes
-	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
-	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
+	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
+	ScopedTransferKeeper      capabilitykeeper.ScopedKeeper
 	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
-	ScopedICAHostKeeper  capabilitykeeper.ScopedKeeper
+	ScopedICAHostKeeper       capabilitykeeper.ScopedKeeper
 	ScopedIBCMockKeeper       capabilitykeeper.ScopedKeeper
 	ScopedICAMockKeeper       capabilitykeeper.ScopedKeeper
 	scopedWasmKeeper          capabilitykeeper.ScopedKeeper
@@ -309,7 +306,7 @@ type GaiaApp struct { // nolint: golint
 	mm *module.Manager
 
 	// simulation manager
-	sm           *module.SimulationManager
+	sm *module.SimulationManager
 	// module configurator
 	configurator module.Configurator
 }
@@ -338,7 +335,7 @@ func NewGaiaApp(
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *GaiaApp {
 
-	appCodec := encodingConfig.Codec
+	appCodec := encodingConfig.Marshaler
 	legacyAmino := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
 
@@ -351,8 +348,8 @@ func NewGaiaApp(
 		authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey,
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
-		evidencetypes.StoreKey, 
-		// liquiditytypes.StoreKey, 
+		evidencetypes.StoreKey,
+		// liquiditytypes.StoreKey,
 		ibctransfertypes.StoreKey,
 		capabilitytypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey, routertypes.StoreKey, icahosttypes.StoreKey,
 		icacontrollertypes.StoreKey,
@@ -480,7 +477,7 @@ func NewGaiaApp(
 		appCodec,
 		homePath,
 		app.BaseApp,
-		authtypes.NewModuleAddress(govtypes.ModuleName).String()
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	// app.LiquidityKeeper = liquiditykeeper.NewKeeper(
 	// 	appCodec,
@@ -591,10 +588,10 @@ func NewGaiaApp(
 	// create static IBC router, add app routes, then set and seal it
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
-	AddRoute(ibctransfertypes.ModuleName, transferIBCModule).
-	AddRoute(icacontrollertypes.SubModuleName, icaControllerIBCModule).
-	AddRoute(ibcmock.ModuleName+icacontrollertypes.SubModuleName, icaControllerIBCModule). // ica with mock auth module stack route to ica (top level of middleware stack)
-	AddRoute(ibcmock.ModuleName, mockIBCModule)
+		AddRoute(ibctransfertypes.ModuleName, transferIBCModule).
+		AddRoute(icacontrollertypes.SubModuleName, icaControllerIBCModule).
+		AddRoute(ibcmock.ModuleName+icacontrollertypes.SubModuleName, icaControllerIBCModule). // ica with mock auth module stack route to ica (top level of middleware stack)
+		AddRoute(ibcmock.ModuleName, mockIBCModule)
 
 		// NOTE: this line was missing from lido code
 	app.IBCKeeper.SetRouter(ibcRouter)

@@ -2,6 +2,8 @@ package gaia
 
 import (
 	"encoding/json"
+
+	app "github.com/cosmos/gaia/v7/app/params"
 )
 
 // The genesis state of the blockchain is represented here as a map of raw json
@@ -15,6 +17,6 @@ type GenesisState map[string]json.RawMessage
 
 // NewDefaultGenesisState generates the default state for the application.
 func NewDefaultGenesisState() GenesisState {
-	encCfg := MakeEncodingConfig()
-	return ModuleBasics.DefaultGenesis(encCfg.Codec)
+	encCfg := app.MakeTestEncodingConfig()
+	return ModuleBasics.DefaultGenesis(encCfg.Marshaler)
 }

@@ -125,18 +125,20 @@ Assume that many people will stop reading at this point. However it is important
    - do you have conflicts of interest to declare?
 
 ### Begin with a well-considered draft proposal
+<!-- markdown-link-check-disable -->
 
 The ideal format for a proposal is as a Markdown file (ie. `.md`) in a github repo. Markdown
 is a simple and accessible format for writing plain text files that is easy to
 learn. See the [Github Markdown
-Guide](https://guides.github.com/features/mastering-markdown/) for details on
+Guide](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax) for details on
 writing markdown files.
 
 If you don't have a [Github](http://github.com/) account already, register one. Then fork this
 repository, draft your proposal in the `proposals` directory, and make a
 pull-request back to this repository. For more details on using Github, see the
-[Github Forking Guide](https://guides.github.com/activities/forking/). If you
+[Github Forking Guide](https://docs.github.com/en/get-started/quickstart/contributing-to-projects). If you
 need help using Github, don't be afraid to ask someone!
+<!-- markdown-link-check-enale -->
 
 If you really don't want to deal with Github, you can always draft a proposal in
 Word or Google Docs, or directly in the forums, or otherwise. However Markdown

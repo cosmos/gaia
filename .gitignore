@@ -1,3 +1,5 @@
+.venv
+
 # OS
 .DS_Store
 *.swp

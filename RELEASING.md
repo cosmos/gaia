@@ -88,7 +88,7 @@ To re-create a tag:
 To tag and build without a public release (e.g., as part of a timed security release):
 1. Follow the steps above for tagging locally, but do not push the tags to the repository.
 1. After adding the tag locally, you can build the binary, e.g., `make build-reproducible`.
-1. To finalize the release, push the local tags, create a release based off the newly pushed tag, and attach the binary.
+1. To finalize the release, push the local tags, create a release based off the newly pushed tag, and attach the binaries.
 
 ### Release notes
 

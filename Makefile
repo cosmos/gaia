@@ -221,10 +221,14 @@ format:
 ###                                Localnet                                 ###
 ###############################################################################
 
+start-localnet-ci:
+	@ignite chain serve --reset-once -v -c ./ignite.ci.yml
+
+.PHONY: start-localnet-ci
+
 ###############################################################################
 ###                                Docker                                   ###
 ###############################################################################
-
 
 test-docker:
 	@docker build -f contrib/Dockerfile.test -t ${TEST_DOCKER_REPO}:$(shell git rev-parse --short HEAD) .

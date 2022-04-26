@@ -70,11 +70,37 @@ jobs:
       - uses: actions/setup-go@v3.0.0
         with:
           go-version: 1.17
-
       - uses: actions/checkout@v2
-
       - name: Build Docker Image
         run: make docker-build-debug
-
       - name: Test E2E
         run: make test-e2e
+
+  liveness-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.18
+      - uses: technote-space/get-diff-action@v6.0.1
+        id: git_diff
+        with:
+          PATTERNS: |
+            **/**.go
+            go.mod
+            go.sum
+      - name: Install Ignite CLI
+        run: |
+          curl https://get.ignite.com/cli@v0.20.0! | bash
+        if: env.GIT_DIFF
+      - name: Start Local Network via Ignite CLI
+        run: |
+          ignite chain serve --reset-once -v -c ./ignite.ci.yml > ignite.out 2>&1 &
+        if: env.GIT_DIFF
+      - name: Test Local Network Liveness
+        run: |
+          sleep 3m
+          ./contrib/scripts/test_localnet_liveness.sh 100 5 50 localhost
+        if: env.GIT_DIFF

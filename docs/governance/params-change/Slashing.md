@@ -61,6 +61,7 @@ If a validator in the active set is offline for too long, the validator will be 
 
 How long is being offline for too long? There are two components: [`SignedBlocksWindow`](#SignedBlocksWindow) and `MinSignedPerWindow`. Since `MinSignedPerWindow` is 5% and `SignedBlocksWindow` is 10,000, a validator must have signed at least 5% of 10,000 blocks (500 out of 10,000) at any given time to comply with protocol rules. That means a validator that misses 9,500 consecutive blocks will be considered by the system to have committed a liveness violation. The threshold-proportion of blocks is determined by this parameter, so the greater that `MinSignedPerWindow` is, the lower the tolerance for missed blocks by the system.
 
+
 All in Bits has published more about liveness [here](https://docs.cosmos.network/main/modules/slashing/04_begin_block.html).
 
 #### Decreasing the value of `MinSignedPerWindow`
@@ -92,9 +93,11 @@ That's ~17.5 hours instead of ~18.5 hours, assuming 7s block times.
 * `cosmoshub-4` default: `600000000000`
 * `cosmoshub-3` default: `600000000000`
 
+
 A validator in the active set that's offline for too long, besides being slashed, will be temporarily removed from the active set (aka "[jailed](https://docs.cosmos.network/main/modules/slashing/03_messages.html#unjail)") for at least [`DowntimeJailDuration`](#DowntimeJailDuration), which is 10 minutes (`600000000000` nanoseconds). During this time, a validator is not able to sign blocks and its delegators will not earn staking rewards. After the `DowntimeJailDuration` period has passed, the validator operator may send an "[unjail](https://docs.cosmos.network/main/modules/slashing/03_messages.html#unjail)" transaction to resume validator operations.
 
 All in Bits has published more about liveness [here](https://docs.cosmos.network/main/modules/slashing/04_begin_block.html).
+
 
 #### Decreasing the value of `DowntimeJailDuration`
 Decreasing the value of the `DowntimeJailDuration` parameter will require a validator to wait less time before resuming validator operations. During this time, a validator is not able to sign blocks and its delegators will not earn staking rewards.
@@ -108,6 +111,7 @@ Increasing the value of the `DowntimeJailDuration` parameter will require a vali
 * on-chain value: `{{ $themeConfig.currentParameters.slashing.SlashFractionDoubleSign }}`
 * `cosmoshub-4` default: `0.050000000000000000`
 * `cosmoshub-3` default: `0.050000000000000000`
+
 
 A validator proven to have signed two blocks at the same height is considered to have committed equivocation, and the system will then permanently burn ("slash") that validator's total delegations (aka stake-backing) by `0.050000000000000000` (5%). All delegators to an offending validator will lose 5% of all ATOMs delegated to this validator. At this point the validator will be "[tombstoned](https://docs.cosmos.network/main/modules/slashing/01_concepts.html)," which means the validator will be permanently removed from the active set of validators, and the validator's stake-backing will only be slashed one time (regardless of how many equivocations).
 

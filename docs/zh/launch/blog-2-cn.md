@@ -84,7 +84,6 @@ Cosmos浏览器是查看治理提案状态的最佳途径，可以在我们的�
 第三阶段我们将会发布[IBC协议](https://docs.cosmos.network/main/ibc/overview.html)，并且对是否将其纳入Cosmos-SDK的核心模块库进行链上治理投票。
 
 
-
 **对开发人员的建议**：使用Cosmos-SDK或Tendermint BFT构建的应用专有链将能够连接到 Cosmos Hub，并与连接到Hubs上的其他任意区块链进行跨链交互。
 
 

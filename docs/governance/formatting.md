@@ -3,9 +3,9 @@ order: 4
 ---
 
 # Formatting a Proposal
-
-Many proposals allow for long form text to be included, usually under the key `description`. These provide the opportunity to include [markdown](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax) if formatted correctly as well as line breaks with `\n`. Beware, however, that if you are using the CLI to create a proposal, and setting `description` using a flag, the text will be [escaped](https://en.wikipedia.org/wiki/Escape_sequences_in_C) which may have undesired effects. If you're using markdown or line breaks it's recommended to put the proposal text into a json file and include that file as part of the CLI proposal, as opposed to individual fields in flags.
-
+<!-- markdown-link-check-disable -->
+Many proposals allow for long form text to be included, usually under the key `description`. These provide the opportunity to include [markdown](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax) if formatted correctly as well as line breaks with `\n`. Beware, however, that if you are using the CLI to create a proposal, and setting `description` using a flag, the text will be [escaped](https://en.wikipedia.org/wiki/Escape_sequences_in_C) which may have undesired effects. If you're using markdown or line breaks it's recommended to put the proposal text into a json file and include that file as part of the CLI proposal, as opposed to individual fields in flags.
+<!-- markdown-link-check-enable -->
 ## Text
 
 Text proposals are used by delegators to agree to a certain strategy, plan, commitment, future upgrade, or any other statement in the form of text. Aside from having a record of the proposal outcome on the Cosmos Hub chain, a text proposal has no direct effect on the change Cosmos Hub.
@@ -88,7 +88,7 @@ You use can also use [Hubble](https://hubble.figment.network/cosmos/chains/cosmo
 
 ## Params Change
 
-**Note:** Changes to the [`gov` module](https://docs.cosmos.network/master/modules/gov/) are different from the other kinds of parameter changes because `gov` has subkeys, [as discussed here](https://github.com/cosmos/cosmos-sdk/issues/5800). Only the `key` part of the JSON file is different for `gov` parameter-change proposals.
+**Note:** Changes to the [`gov` module](https://docs.cosmos.network/v0.45/modules/gov/) are different from the other kinds of parameter changes because `gov` has subkeys, [as discussed here](https://github.com/cosmos/cosmos-sdk/issues/5800). Only the `key` part of the JSON file is different for `gov` parameter-change proposals.
 
 For parameter-change proposals, there are seven (7) components:
 
@@ -131,7 +131,7 @@ The deposit `denom` is `uatom` and `amount` is `100000`. Since 1,000,000 micro-A
 
 ### Mainnet Example
 
-To date, the Cosmos Hub's parameters have not been changed by a parameter-change governance proposal. This is a hypothetical example of the JSON file that would be used with a command line transaction to create a new proposal. This is an example of a proposal that changes two parameters, and both parameters are from the [`slashing` module](https://docs.cosmos.network/master/modules/slashing/). A single parameter-change governance proposal can reportedly change any number of parameters.
+To date, the Cosmos Hub's parameters have not been changed by a parameter-change governance proposal. This is a hypothetical example of the JSON file that would be used with a command line transaction to create a new proposal. This is an example of a proposal that changes two parameters, and both parameters are from the [`slashing` module](https://docs.cosmos.network/v0.45/modules/slashing/). A single parameter-change governance proposal can reportedly change any number of parameters.
 
 ```json
 {

@@ -12,17 +12,23 @@ func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
 	var ibcStakeDenom string
 
 	s.Run("send_photon_to_chainB", func() {
-		recipient := s.chainB.validators[0].keyInfo.GetAddress().String()
-		token := sdk.NewInt64Coin(photonDenom, 3300000000) // 3,300photon
-		s.sendIBC(s.chainA.id, s.chainB.id, recipient, token)
-
-		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
 
 		// require the recipient account receives the IBC tokens (IBC packets ACKd)
 		var (
 			balances sdk.Coins
 			err      error
 		)
+
+		address, err := s.chainB.validators[0].keyInfo.GetAddress()
+		if err != nil {
+			s.Require().NoError(err)
+		}
+		recipient := address.String()
+		token := sdk.NewInt64Coin(photonDenom, 3300000000) // 3,300photon
+		s.sendIBC(s.chainA.id, s.chainB.id, recipient, token)
+
+		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
+
 		s.Require().Eventually(
 			func() bool {
 				balances, err = queryGaiaAllBalances(chainBAPIEndpoint, recipient)

@@ -39,7 +39,7 @@ func init() {
 		&ed25519.PubKey{},
 	)
 
-	cdc = encodingConfig.Marshaler
+	cdc = encodingConfig.Codec
 }
 
 type chain struct {
@@ -55,7 +55,7 @@ func newChain() (*chain, error) {
 	}
 
 	return &chain{
-		id:      "chain-" + tmrand.NewRand().Str(6),
+		id:      "chain-" + tmrand.Str(6),
 		dataDir: tmpDir,
 	}, nil
 }

@@ -6,8 +6,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 
-	"github.com/cosmos/wasmd/app/params"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
@@ -67,7 +65,7 @@ func (s TestSupport) GetBaseApp() *baseapp.BaseApp {
 }
 
 func (s TestSupport) GetTxConfig() client.TxConfig {
-	return params.MakeEncodingConfig().TxConfig
+	return MakeEncodingConfig().TxConfig
 }
 
 // TODO: add ica related methods

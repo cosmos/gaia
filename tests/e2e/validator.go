@@ -25,6 +25,7 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 
 	gaia "github.com/cosmos/gaia/v7/app"
+	"github.com/cosmos/gaia/v7/app/params"
 )
 
 type validator struct {
@@ -32,7 +33,7 @@ type validator struct {
 	index            int
 	moniker          string
 	mnemonic         string
-	keyInfo          keyring.Info
+	keyInfo          keyring.Record
 	privateKey       cryptotypes.PrivKey
 	consensusKey     privval.FilePVKey
 	consensusPrivKey cryptotypes.PrivKey
@@ -97,7 +98,7 @@ func (v *validator) createNodeKey() error {
 		return err
 	}
 
-	v.nodeKey = *nodeKey
+	v.nodeKey = nodeKey
 	return nil
 }
 
@@ -108,24 +109,28 @@ func (v *validator) createConsensusKey() error {
 	config.SetRoot(v.configDir())
 	config.Moniker = v.moniker
 
-	pvKeyFile := config.PrivValidatorKeyFile()
+	pvKeyFile := config.PrivValidator.KeyFile()
 	if err := tmos.EnsureDir(filepath.Dir(pvKeyFile), 0777); err != nil {
 		return err
 	}
-
-	pvStateFile := config.PrivValidatorStateFile()
+	pvStateFile := config.PrivValidator.StateFile()
 	if err := tmos.EnsureDir(filepath.Dir(pvStateFile), 0777); err != nil {
 		return err
 	}
 
-	filePV := privval.LoadOrGenFilePV(pvKeyFile, pvStateFile)
+	filePV, err := privval.LoadOrGenFilePV(pvKeyFile, pvStateFile)
+	if err != nil {
+		return err
+	}
 	v.consensusKey = filePV.Key
 
 	return nil
 }
 
 func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
-	kb, err := keyring.New(keyringAppName, keyring.BackendTest, v.configDir(), nil)
+	cdc := params.MakeTestEncodingConfig().Codec
+
+	kb, err := keyring.New(keyringAppName, keyring.BackendTest, v.configDir(), nil, cdc)
 	if err != nil {
 		return err
 	}
@@ -151,7 +156,7 @@ func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
 		return err
 	}
 
-	v.keyInfo = info
+	v.keyInfo = *info
 	v.mnemonic = mnemonic
 	v.privateKey = privKey
 
@@ -182,9 +187,12 @@ func (v *validator) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	address, err := v.keyInfo.GetAddress()
+	if err != nil {
+		return nil, err
+	}
 	return stakingtypes.NewMsgCreateValidator(
-		sdk.ValAddress(v.keyInfo.GetAddress()),
+		sdk.ValAddress(address),
 		valPubKey,
 		amount,
 		description,
@@ -200,7 +208,7 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 		return nil, err
 	}
 
-	txBuilder.SetMemo(fmt.Sprintf("%s@%s:26656", v.nodeKey.ID(), v.instanceName()))
+	txBuilder.SetMemo(fmt.Sprintf("%s@%s:26656", v.nodeKey.ID, v.instanceName()))
 	txBuilder.SetFeeAmount(sdk.NewCoins())
 	txBuilder.SetGasLimit(200000)
 
@@ -218,8 +226,12 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 	// Note: This line is not needed for SIGN_MODE_LEGACY_AMINO, but putting it
 	// also doesn't affect its generated sign bytes, so for code's simplicity
 	// sake, we put it here.
+	pk, err := v.keyInfo.GetPubKey()
+	if err != nil {
+		return nil, err
+	}
 	sig := txsigning.SignatureV2{
-		PubKey: v.keyInfo.GetPubKey(),
+		PubKey: pk,
 		Data: &txsigning.SingleSignatureData{
 			SignMode:  txsigning.SignMode_SIGN_MODE_DIRECT,
 			Signature: nil,
@@ -245,8 +257,13 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 		return nil, err
 	}
 
+	pk, err = v.keyInfo.GetPubKey()
+	if err != nil {
+		return nil, err
+	}
+
 	sig = txsigning.SignatureV2{
-		PubKey: v.keyInfo.GetPubKey(),
+		PubKey: pk,
 		Data: &txsigning.SingleSignatureData{
 			SignMode:  txsigning.SignMode_SIGN_MODE_DIRECT,
 			Signature: sigBytes,

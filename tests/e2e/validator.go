@@ -20,11 +20,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	tmcfg "github.com/tendermint/tendermint/config"
-
-	// TODO: this was moved internally, find what it needs and fix
-	"github.com/tendermint/tendermint/internal/p2p"
 	tmos "github.com/tendermint/tendermint/libs/os"
 	"github.com/tendermint/tendermint/privval"
+	tmtypes "github.com/tendermint/tendermint/types"
 
 	gaia "github.com/cosmos/gaia/v7/app"
 )
@@ -38,7 +36,7 @@ type validator struct {
 	privateKey       cryptotypes.PrivKey
 	consensusKey     privval.FilePVKey
 	consensusPrivKey cryptotypes.PrivKey
-	nodeKey          p2p.NodeKey
+	nodeKey          tmtypes.NodeKey
 }
 
 func (v *validator) instanceName() string {
@@ -94,7 +92,7 @@ func (v *validator) createNodeKey() error {
 	config.SetRoot(v.configDir())
 	config.Moniker = v.moniker
 
-	nodeKey, err := p2p.LoadOrGenNodeKey(config.NodeKeyFile())
+	nodeKey, err := tmtypes.LoadOrGenNodeKey(config.NodeKeyFile())
 	if err != nil {
 		return err
 	}

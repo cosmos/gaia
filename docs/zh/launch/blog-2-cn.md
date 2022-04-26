@@ -81,7 +81,7 @@ Cosmos浏览器是查看治理提案状态的最佳途径，可以在我们的�
 
 **摘要：**
 
-第三阶段我们将会发布[IBC协议](https://docs.cosmos.network/master/ibc/overview.html)，并且对是否将其纳入Cosmos-SDK的核心模块库进行链上治理投票。
+第三阶段我们将会发布[IBC协议](https://docs.cosmos.network/main/ibc/overview.html)，并且对是否将其纳入Cosmos-SDK的核心模块库进行链上治理投票。
 
 
 

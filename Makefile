@@ -221,17 +221,10 @@ format:
 ###                                Localnet                                 ###
 ###############################################################################
 
-build-docker-gaiadnode:
-	$(MAKE) -C contrib/testnets/local
+###############################################################################
+###                                Docker                                   ###
+###############################################################################
 
-# Run a 4-node testnet locally
-localnet-start: build-linux localnet-stop
-	@if ! [ -f build/node0/gaiad/config/genesis.json ]; then docker run --rm -v $(CURDIR)/build:/gaiad:Z tendermint/gaiadnode testnet --v 4 -o . --starting-ip-address 192.168.10.2 --keyring-backend=test ; fi
-	docker-compose up -d
-
-# Stop testnet
-localnet-stop:
-	docker-compose down
 
 test-docker:
 	@docker build -f contrib/Dockerfile.test -t ${TEST_DOCKER_REPO}:$(shell git rev-parse --short HEAD) .
@@ -243,9 +236,5 @@ test-docker-push: test-docker
 	@docker push ${TEST_DOCKER_REPO}:$(shell git rev-parse --abbrev-ref HEAD | sed 's#/#_#g')
 	@docker push ${TEST_DOCKER_REPO}:latest
 
-.PHONY: all build-linux install format lint \
-	go-mod-cache draw-deps clean build \
-	setup-transactions setup-contract-tests-data start-gaia run-lcd-contract-tests contract-tests \
-	benchmark \
-	build-docker-gaiadnode localnet-start localnet-stop \
-	docker-single-node docker-build-debug docker-build-hermes
+.PHONY: all build-linux install format lint go-mod-cache draw-deps clean build \
+	start-gaia contract-tests benchmark docker-build-debug docker-build-hermes

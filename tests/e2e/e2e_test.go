@@ -20,9 +20,7 @@ func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
 		)
 
 		address, err := s.chainB.validators[0].keyInfo.GetAddress()
-		if err != nil {
-			s.Require().NoError(err)
-		}
+		s.Require().NoError(err)
 		recipient := address.String()
 		token := sdk.NewInt64Coin(photonDenom, 3300000000) // 3,300photon
 		s.sendIBC(s.chainA.id, s.chainB.id, recipient, token)

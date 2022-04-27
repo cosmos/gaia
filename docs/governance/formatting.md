@@ -88,7 +88,8 @@ You use can also use [Hubble](https://hubble.figment.network/cosmos/chains/cosmo
 
 ## Params Change
 
-**Note:** Changes to the [`gov` module](https://docs.cosmos.network/v0.45/modules/gov/) are different from the other kinds of parameter changes because `gov` has subkeys, [as discussed here](https://github.com/cosmos/cosmos-sdk/issues/5800). Only the `key` part of the JSON file is different for `gov` parameter-change proposals.
+
+**Note:** Changes to the [`gov` module](https://docs.cosmos.network/main/modules/gov/) are different from the other kinds of parameter changes because `gov` has subkeys, [as discussed here](https://github.com/cosmos/cosmos-sdk/issues/5800). Only the `key` part of the JSON file is different for `gov` parameter-change proposals.
 
 For parameter-change proposals, there are seven (7) components:
 
@@ -131,7 +132,9 @@ The deposit `denom` is `uatom` and `amount` is `100000`. Since 1,000,000 micro-A
 
 ### Mainnet Example
 
-To date, the Cosmos Hub's parameters have not been changed by a parameter-change governance proposal. This is a hypothetical example of the JSON file that would be used with a command line transaction to create a new proposal. This is an example of a proposal that changes two parameters, and both parameters are from the [`slashing` module](https://docs.cosmos.network/v0.45/modules/slashing/). A single parameter-change governance proposal can reportedly change any number of parameters.
+
+To date, the Cosmos Hub's parameters have not been changed by a parameter-change governance proposal. This is a hypothetical example of the JSON file that would be used with a command line transaction to create a new proposal. This is an example of a proposal that changes two parameters, and both parameters are from the [`slashing` module](https://docs.cosmos.network/main/modules/slashing/). A single parameter-change governance proposal can reportedly change any number of parameters.
+
 
 ```json
 {

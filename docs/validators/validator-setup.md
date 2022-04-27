@@ -144,7 +144,7 @@ You can find more advanced information about running a node or a validator on th
 
 Your validator has become jailed. Validators get jailed, i.e. get removed from the active validator set, if they do not vote on at least `500` of the last `10,000` blocks, or if they double sign. 
 
-If you got jailed for downtime, you can get your voting power back to your validator. First, if you're not using [Cosmovisor](https://docs.cosmos.network/v0.45/run-node/cosmovisor.html) and `gaiad` is not running, start it up again:
+If you got jailed for downtime, you can get your voting power back to your validator. First, if you're not using [Cosmovisor](https://docs.cosmos.network/main/run-node/cosmovisor.html) and `gaiad` is not running, start it up again:
 
 ```bash
 gaiad start
@@ -162,7 +162,7 @@ You may notice that your voting power is less than it used to be. That's because
 
 ### Problem #2: My `gaiad` crashes because of `too many open files`
 
-The default number of files Linux can open (per-process) is `1024`. `gaiad` is known to open more than `1024` files. This causes the process to crash. A quick fix is to run `ulimit -n 4096` (increase the number of open files allowed) and then restarting the process with `gaiad start`. If you are using `systemd` or another process manager to launch `gaiad` (such as [Cosmovisor](https://docs.cosmos.network/v0.45/run-node/cosmovisor.html)) this may require some configuration at that level. A sample `systemd` file to fix this issue is below:
+The default number of files Linux can open (per-process) is `1024`. `gaiad` is known to open more than `1024` files. This causes the process to crash. A quick fix is to run `ulimit -n 4096` (increase the number of open files allowed) and then restarting the process with `gaiad start`. If you are using `systemd` or another process manager to launch `gaiad` (such as [Cosmovisor](https://docs.cosmos.network/main/run-node/cosmovisor.html)) this may require some configuration at that level. A sample `systemd` file to fix this issue is below:
 
 ```toml
 # /etc/systemd/system/gaiad.service

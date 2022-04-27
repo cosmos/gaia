@@ -1,4 +1,4 @@
-package gaia
+package ante
 
 // TODO: Add this back to app.go
 

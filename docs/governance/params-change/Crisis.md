@@ -20,7 +20,11 @@ The `crisis` module is responsible for halting the blockchain under the circumst
 ### `ConstantFee`
 **The amount required to send a message to halt the Cosmos Hub chain if an invariant is broken, in micro-ATOM.**
 
+<<<<<<< HEAD
 A Cosmos account (address) can send a transaction message that will halt the Cosmos Hub chain if an invariant is broken. An example of this would be if all of the account balances in total did not equal the total supply. This kind of transaction could consume excessive amounts of gas to compute, beyond the maximum allowable block gas limit. `ConstantFee` makes it possible to bypass the gas limit in order to process this transaction, while setting a cost to disincentivize using the function to attack the network. The cost of the transaction is `1333000000` `uatom` (1,333 ATOM) and will effectively not be paid if the chain halts due to a broken invariant (which similar to being refunded). If the invariant is not broken, then `ConstantFee` will be paid. All in Bits has published more information about the [crisis module here](https://docs.cosmos.network/master/modules/crisis/).
+=======
+A Cosmos account (address) can send a transaction message that will halt the Cosmos Hub chain if an invariant is broken. An example of this would be if all of the account balances in total did not equal the total supply. This kind of transaction could consume excessive amounts of gas to compute, beyond the maximum allowable block gas limit. `ConstantFee` makes it possible to bypass the gas limit in order to process this transaction, while setting a cost to disincentivize using the function to attack the network. The cost of the transaction is `1333000000` `uatom` (1,333 ATOM) and will effectively not be paid if the chain halts due to a broken invariant (which similar to being refunded). If the invariant is not broken, then `ConstantFee` will be paid. All in Bits has published more information about the [crisis module here](https://docs.cosmos.network/main/modules/crisis/).
+>>>>>>> 0e94267 (feat: bypass min fee check for custom message types (#1447))
 
 * on-chain value: `{{ $themeConfig.currentParameters.crisis.ConstantFee }}`
 * `cosmoshub-4` default: `1333000000` `uatom`
@@ -33,4 +37,8 @@ Decreasing the value of the `ConstantFee` parameter will reduce the cost of chec
 Increasing the value of the `ConstantFee` parameter will increase the cost of checking an invariant. This will likely make it more difficult to halt the chain if an invariant is actually broken, but it will increase the cost for an attacker to use this function to slow block production.
 
 #### Notes
+<<<<<<< HEAD
 Only [registered invariants](https://github.com/cosmos/cosmos-sdk/blob/master/x/supply/keeper/invariants.go) may be checked with this transaction message. Validators are reportedly performant enough to handle large computations like invariant checks, and the likely outcome of multiple invariant checks would be longer block times. In the code, there is a comment that indicates that the designers were targeting $5000 USD as the required amount of ATOMs to run an invariant check.
+=======
+Only registered invariants may be checked with this transaction message. Validators are reportedly performant enough to handle large computations like invariant checks, and the likely outcome of multiple invariant checks would be longer block times. In the code, there is a comment that indicates that the designers were targeting $5000 USD as the required amount of ATOMs to run an invariant check.
+>>>>>>> 0e94267 (feat: bypass min fee check for custom message types (#1447))

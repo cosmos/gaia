@@ -104,10 +104,12 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
-	gaiaappparams "github.com/cosmos/gaia/v7/app/params"
 	"github.com/strangelove-ventures/packet-forward-middleware/v2/router"
 	routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v2/router/keeper"
 	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v2/router/types"
+
+	gaiaante "github.com/cosmos/gaia/v7/ante"
+	gaiaappparams "github.com/cosmos/gaia/v7/app/params"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
@@ -602,8 +604,8 @@ func NewGaiaApp(
 	app.MountTransientStores(tkeys)
 	app.MountMemoryStores(memKeys)
 
-	anteHandler, err := NewAnteHandler(
-		HandlerOptions{
+	anteHandler, err := gaiaante.NewAnteHandler(
+		gaiaante.HandlerOptions{
 			HandlerOptions: ante.HandlerOptions{
 				AccountKeeper:   app.AccountKeeper,
 				BankKeeper:      app.BankKeeper,
@@ -611,7 +613,8 @@ func NewGaiaApp(
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
-			IBCkeeper: app.IBCKeeper,
+			IBCkeeper:            app.IBCKeeper,
+			BypassMinFeeMsgTypes: cast.ToStringSlice(appOpts.Get(gaiaappparams.BypassMinFeeMsgTypesKey)),
 		},
 	)
 	if err != nil {

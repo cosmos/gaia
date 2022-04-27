@@ -70,7 +70,11 @@ major upgrade (`cosmoshub-3`). These changes notably consist of many new feature
 protocol changes, and application structural changes that favor developer ergonomics
 and application development.
 
+<<<<<<< HEAD
 First and foremost, [IBC](https://docs.cosmos.network/master/ibc/overview.html) following 
+=======
+First and foremost, [IBC](https://docs.cosmos.network/main/ibc/overview.html) following 
+>>>>>>> 0e94267 (feat: bypass min fee check for custom message types (#1447))
 the [Interchain Standads](https://github.com/cosmos/ics#ibc-quick-references) will be enabled. 
 This upgrade comes with several improvements in efficiency, node synchronization and following blockchain upgrades.
 More details on the [Stargate Website](https://stargate.cosmos.network/).
@@ -373,3 +377,8 @@ snapshot-interval = 0
 # snapshot-keep-recent specifies the number of recent snapshots to keep and serve (0 to keep all).
 snapshot-keep-recent = 2
 ```
+<<<<<<< HEAD
+=======
+
+<!-- markdown-link-check-enable -->
+>>>>>>> 0e94267 (feat: bypass min fee check for custom message types (#1447))

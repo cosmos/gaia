@@ -87,7 +87,12 @@ You use can also use [Hubble](https://hubble.figment.network/cosmos/chains/cosmo
 
 ## Params Change
 
+<<<<<<< HEAD
 **Note:** Changes to the [`gov` module](./Governance.md) are different from the other kinds of parameter changes because `gov` has subkeys, [as discussed here](https://github.com/cosmos/cosmos-sdk/issues/5800). Only the `key` part of the JSON file is different for `gov` parameter-change proposals.
+=======
+
+**Note:** Changes to the [`gov` module](https://docs.cosmos.network/main/modules/gov/) are different from the other kinds of parameter changes because `gov` has subkeys, [as discussed here](https://github.com/cosmos/cosmos-sdk/issues/5800). Only the `key` part of the JSON file is different for `gov` parameter-change proposals.
+>>>>>>> 0e94267 (feat: bypass min fee check for custom message types (#1447))
 
 For parameter-change proposals, there are seven (7) components:
 1. **Title** - the distinguishing name of the proposal, typically the way the that explorers list proposals
@@ -130,7 +135,15 @@ The deposit `denom` is `uatom` and `amount` is `100000`. Since 1,000,000 micro-A
  
 To date, the Cosmos Hub's parameters have not been changed by a parameter-change governance proposal. This is a hypothetical example of the JSON file that would be used with a command line transaction to create a new proposal. This is an example of a proposal that changes two parameters, and both parameters are from the [`slashing` module](./Slashing.md). A single parameter-change governance proposal can reportedly change any number of parameters.
 
+<<<<<<< HEAD
 ```
+=======
+
+To date, the Cosmos Hub's parameters have not been changed by a parameter-change governance proposal. This is a hypothetical example of the JSON file that would be used with a command line transaction to create a new proposal. This is an example of a proposal that changes two parameters, and both parameters are from the [`slashing` module](https://docs.cosmos.network/main/modules/slashing/). A single parameter-change governance proposal can reportedly change any number of parameters.
+
+
+```json
+>>>>>>> 0e94267 (feat: bypass min fee check for custom message types (#1447))
 {
   "title": "Parameter changes for validator downtime",
   "description": "If passed, this governance proposal will do two things:\n\n1. Increase the slashing penalty for downtime from 0.01% to 0.50%\n2. Decrease the window \n\nIf this proposal passes, validators must sign at least 5% of 5,000 blocks, which is 250 blocks. That means that a validator that misses 4,750 consecutive blocks will be considered by the system to have committed a liveness violation, where previously 9,500 consecutive blocks would need to have been missed to violate these system rules. Assuming 7s block times, validators offline for approximately 9.25 consecutive hours (instead of ~18.5 hours) will be slashed 0.5% (instead of 0.01%).",

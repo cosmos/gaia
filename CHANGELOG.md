@@ -36,6 +36,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+Update to tendermint v0.34.19 and SDK v0.44.8: https://github.com/cosmos/gaia/pull/1417
+
 ## [v6.0.3] - 2021-02-18
  * This is a reverted release that is the same as v6.0.0
 

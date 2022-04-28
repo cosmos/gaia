@@ -38,7 +38,7 @@
 지난 코스모스 허브 업그레이드(`cosmoshub-3`) 이후 코스모스 SDK와 Gaia 애플리케이션에 상당한 양의 변경사항이 적용되었습니다.
 변경사항에는 신규 기능, 프로토콜 변경사항, 애플리케이션 구조 변경 등이 포함되었으며, 애플리케이션 개발 과정의 개선이 기대됩니다.
 
-우선, [인터체인 표준](https://github.com/cosmos/ics#ibc-quick-references)를 따른 [IBC](https://docs.cosmos.network/master/ibc/overview.html)이 활성화될 예정입니다. 또한 효율성, 노드 동기화, 추후 블록체인 업데이트 과정이 개선됩니다. 자세한 내용은 [스타게이트 웹사이트](https://stargate.cosmos.network/)를 참고하세요.
+우선, [인터체인 표준](https://github.com/cosmos/ics#ibc-quick-references)를 따른 [IBC](https://docs.cosmos.network/main/ibc/overview.html)이 활성화될 예정입니다. 또한 효율성, 노드 동기화, 추후 블록체인 업데이트 과정이 개선됩니다. 자세한 내용은 [스타게이트 웹사이트](https://stargate.cosmos.network/)를 참고하세요.
 
 __이번 업그레이드에서 풀 노드 운영자 업그레이드를 진행하는 것은 [Gaia](https://github.com/cosmos/gaia) 애플리케이션 v4.0.0입니다. 이번 버전의 Gaia 애플리케이션은 코스모스 SDK v0.41.0 그리고 텐더민트 v0.34.3 기반으로 빌드되었습니다.
 

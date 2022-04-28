@@ -24,6 +24,8 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
+	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
@@ -77,21 +79,18 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 }
 
 func initAppConfig() (string, interface{}) {
-
-	type CustomAppConfig struct {
-		serverconfig.Config
-	}
-
-	// Allow overrides to the SDK default server config
 	srvCfg := serverconfig.DefaultConfig()
 	srvCfg.StateSync.SnapshotInterval = 1000
 	srvCfg.StateSync.SnapshotKeepRecent = 10
 
-	GaiaAppCfg := CustomAppConfig{Config: *srvCfg}
-
-	GaiaAppTemplate := serverconfig.DefaultConfigTemplate
-
-	return GaiaAppTemplate, GaiaAppCfg
+	return params.CustomConfigTemplate, params.CustomAppConfig{
+		Config: *srvCfg,
+		BypassMinFeeMsgTypes: []string{
+			sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),
+			sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
+			sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
+		},
+	}
 }
 
 func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {

@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - "release/**"
-      - "feature/adding_docker_github_action" # TODO: remove after testing
     tags:
       - "v*.*.*"
 

@@ -1,15 +1,11 @@
 name: Docker - non release branch docker build and push
 
 on:
-  schedule:
-    - cron: "10 10 * * *"
   push:
     branches:
-      - "**"
-      - "!release/**"
-      - "!v*.**"
+      - "release/**"
     tags:
-      - "!**"
+      - "v*.*.*"
 
 jobs:
   docker-non-release:
@@ -52,4 +48,4 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           secrets: |
-            GIT_AUTH_TOKEN=${{ secrets.GHCR_TOKEN }}
+            GIT_AUTH_TOKEN=${{ secrets.GITHUB_TOKEN }}

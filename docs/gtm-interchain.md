@@ -72,4 +72,4 @@ Further, we will need technical support that goes beyond the different phase rol
 
 The go-to-market team should be tracking the extent to which IBC is succeeding or failing in terms of key metrics. This will require continuous experimentation and coordination between entities. An example of a metric that best represents IBC go to market would be # of distinct IBC connections that transport x amount of value. To get to these metrics we need the developer resources and proven business models that encourage developers to use this technology.
 
-The Cosmos-SDK exposes some [existing metrics for IBC](https://docs.cosmos.network/master/core/telemetry.html#supported-metrics).
+The Cosmos-SDK exposes some [existing metrics for IBC](https://docs.cosmos.network/main/core/telemetry.html#supported-metrics).

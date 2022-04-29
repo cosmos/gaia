@@ -21,7 +21,7 @@ Bienvenido a la documentación de la **aplicación para el Hub de Cosmos: `gaia`
 
 ## Prepare su propia Testnet de `gaia`
 
-- [Prepare su propia Testnet de `gaia`](./hub-tutorials/deploy-testnet.md)
+- [Prepare su propia Testnet de `gaia`](../hub-tutorials/deploy-testnet.md)
 
 ## Recursos adicionales
 

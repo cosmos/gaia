@@ -1,3 +1,7 @@
+<!--
+order: 2
+-->
+
 ---
 ADR: 001
 Title: Interchain Accounts
@@ -11,7 +15,7 @@ Required-By: mauth
 Implements: Interchain Accounts
 ---
 
-# ADR 001: Interchain
+# ADR 001: Interchain Accounts
 
 ## Changelog
 

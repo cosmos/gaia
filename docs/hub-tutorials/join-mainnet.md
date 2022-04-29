@@ -20,7 +20,6 @@ For instructions to join as a validator, please also see the [Validator Guide](h
 - [Hardware Requirements](#hardware)
 - [General Configuration](#general-configuration)
   - [Initialize Chain](#initialize-chain)
-  - [Genesis File](#genesis-file)
   - [Seeds & Peers](#seeds-amp-peers)
   - [Gas & Fees](#gas-amp-fees)
   - [Pruning of State](#pruning-of-state)
@@ -79,7 +78,7 @@ Make sure to walk through the basic setup and configuration. Operators will need
 Choose a custom moniker for the node and initialize. By default, the `init` command creates the `~/.gaia` directory with subfolders `config` and `data`. In the `/config` directory, the most important files for configuration are `app.toml` and `config.toml`.
 
 ```bash
-gaiad init <custom-moniker>
+gaiad init CUSTOM_MONIKER --chain-id cosmoshub-4
 ```
 
 > **Note**: Monikers can contain only ASCII characters. Using Unicode characters is not supported and renders the node unreachable.
@@ -89,16 +88,6 @@ The `moniker` can be edited in the `~/.gaia/config/config.toml` file:
 ```
 # A custom human readable name for this node
 moniker = "<custom_moniker>"
-```
-
-### Genesis File
-
-Once the node is initialized, download the genesis file and move to the `/config` directory of the Gaia home directory.
-
-```bash
-wget https://github.com/cosmos/mainnet/raw/master/genesis.cosmoshub-4.json.gz
-gzip -d genesis.cosmoshub-4.json.gz
-mv genesis.cosmoshub-4.json ~/.gaia/config/genesis.json
 ```
 
 ### Seeds & Peers
@@ -240,52 +229,20 @@ Make sure to consult the [hardware](#Hardware) section for guidance on the best 
 <!-- #sync options -->
 ::::::: tabs :options="{ useUrlFragment: false }"
 
-:::::: tab Blocksync
-
-### Blocksync
-
-Blocksync is faster than traditional consensus and syncs the chain from genesis by downloading blocks and verifying against the merkle tree of validators. For more information see [Tendermint's Blocksync Docs](https://docs.tendermint.com/v0.35/tendermint-core/block-sync/)
-
-When syncing via Blocksync, node operators will either need to manually upgrade the chain or set up [Cosmovisor](#Cosmovisor) to upgrade automatically.
-
-For more information on performing the manual upgrades, see [Releases & Upgrades](#Releases-amp=-Upgrades).
-
-It is possible to sync from previous versions of the Cosmos Hub. See the matrix below for the correct `gaia` version. See the [mainnet archive](https://github.com/cosmos/mainnet) for historical genesis files.
-
-| Upgrade Name        | Date          | Height    | Chain Identifier | Tm      | Cosmos SDK | Gaia                     | IBC                      |
-|---------------------|---------------|-----------|---------------|------------|------------|--------------------------|--------------------------|
-| Mainnet Launch      | 13/03/19    | 0         | `cosmoshub-1` | [v0.31.x](https://github.com/tendermint/tendermint/releases/tag/v0.31.11)          | [v0.33.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.33.2)    |  _Included in Cosmos SDK_ | n/a                      |
-| [Security Hard Fork](https://forum.cosmos.network/t/critical-cosmossdk-security-advisory-updated/2211)  | 21/04/19    | 482,100   | `cosmoshub-1` | [v0.31.x](https://github.com/tendermint/tendermint/releases/tag/v0.31.11)          | [v0.34.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.34.6)    |   _Included in Cosmos SDK_)                  | n/a                      |
-| Upgrade #1          | 21/01/20    | 500,043   | `cosmoshub-2` | [v0.31.x](https://github.com/tendermint/tendermint/releases/tag/v0.31.11)          | [v0.34.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.34.10)    |   _Included in Cosmos SDK_)                  | n/a                      |
-| Upgrade #2          | 07/08/20    | 2,902,000 | `cosmoshub-3` | [v0.32.x](https://github.com/tendermint/tendermint/releases/tag/v0.32.14)          | [v0.37.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.37.15)    | [v2.0.x](https://github.com/cosmos/gaia/releases/tag/v2.0.14)                   | n/a                      |
-| Stargate            | 18/02/21    | 5,200,791 | `cosmoshub-4` | [v0.34.x](https://github.com/tendermint/tendermint/releases/tag/v0.34.3)          | [v0.40.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.40.1)    | [v4.0.x](https://github.com/cosmos/gaia/releases/tag/v4.0.6)                   | _Included in Cosmos SDK_ |
-| Security Hard Fork  | ?             | ?         | `cosmoshub-4` | [v0.34.x](https://github.com/tendermint/tendermint/releases/tag/v0.34.8)          | [v0.41.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.41.4)    | [v4.2.x](https://github.com/cosmos/gaia/releases/tag/v4.2.1)                   | _Included in Cosmos SDK_ |
-| Delta (Gravity DEX) | 13/07/21    | 6,910,000 | `cosmoshub-4` | [v0.34.x](https://github.com/tendermint/tendermint/releases/tag/v0.34.13)          | [v0.42.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42.10)    | [v5.0.x](https://github.com/cosmos/gaia/releases/tag/v5.0.8)                   | _Included in Cosmos SDK_ |
-| Vega                | 13/12/21    | 8,695,000 | `cosmoshub-4` | [v0.34.x](https://github.com/tendermint/tendermint/releases/tag/v0.34.14)          | [v0.44.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.5)    | [v6.0.x](https://github.com/cosmos/gaia/releases/tag/v6.0.4)                   | [v2.0.x](https://github.com/cosmos/ibc-go/releases/tag/v2.0.3)                   |
-
-##### Getting Started
-
-Start Gaia to begin syncing with the `skip-invariants` flag. For more information on this see [Verify Mainnet](#Verify-Mainnet).
-
-```bash
-gaiad start --x-crisis-skip-assert-invariants
-
-```
-
-The node will begin rebuilding state until it hits the first upgrade height at block `6910000`. If Cosmovisor is set up then there's nothing else to do besides wait, otherwise the node operator will need to perform the manual upgrade twice.
-::::::
-
 :::::: tab "State Sync"
 
 ### State Sync
 
+**See the [Quickstart Docs](https://hub.cosmos.network/main/getting-started/quickstart.html) to bootstrap the Statesync setup**
+
 State Sync is an efficient and fast way to bootstrap a new node, and it works by replaying larger chunks of application state directly rather than replaying individual blocks or consensus rounds. For more information, see [Tendermint's State Sync docs](https://github.com/tendermint/tendermint/blob/master/spec/p2p/messages/state-sync.md).
 
-To enable state sync, visit an explorer to get a recent block height and corresponding hash. A node operator can choose any height/hash in the current bonding period, but as the recommended snapshot period is `1000` blocks, it is advised to choose something close to `current height - 1000`.
+To enable state sync, visit [an explorer](https://www.mintscan.io/cosmos/blocks) to get a recent block height and corresponding hash. A node operator can choose any height/hash in the current bonding period, but as the recommended snapshot period is `1000` blocks, it is advised to choose something close to `current height - 1000`.
 
 With the block height and hash selected, update the configuration in `~/.gaia/config/config.toml` to set `enable = true`, and populate the `trust_height` and `trust_hash`. Node operators can configure the rpc servers to a preferred provider, but there must be at least two entries. It is important that these are two rpc servers the node operator trusts to verify component parts of the chain state. While not recommended, uniqueness is not currently enforced, so it is possible to duplicate the same server in the list and still sync successfully.
 
 > **Note**: In the future, the RPC server requirement will be deprecated as state sync is [moved to the p2p layer in Tendermint 0.35](https://github.com/tendermint/tendermint/issues/6491).
+
 
 ```
 #######################################################
@@ -305,10 +262,28 @@ enable = true
 #
 # For Cosmos SDK-based chains, trust_period should usually be about 2/3 of the unbonding time (~2
 # weeks) during which they can be financially punished (slashed) for misbehavior.
-rpc_servers = "https://rpc.cosmos.network:443,https://rpc.cosmos.network:443"
-trust_height = 8959784
-trust_hash = "3D8F12EA302AEDA66E80939F7FC785206692F8B6EE6F727F1655F1AFB6A873A5"
+rpc_servers = ""
+trust_height = 0
+trust_hash = ""
 trust_period = "168h0m0s"
+```
+
+Run the following to enable Statesync
+```
+# Install jq for parsing trust height & hash
+apt install jq
+
+# Retrieve trust height interval
+export INTERVAL=1000
+export LATEST_HEIGHT=$(curl -s https://rpc.cosmos.network/block | jq -r .result.block.header.height)
+export BLOCK_HEIGHT=$(($LATEST_HEIGHT-$INTERVAL))
+export TRUST_HASH=$(curl -s "https://rpc.cosmos.network/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
+
+# Enable state sync in config.toml and set trust parameters
+sed -i '' 's/enable = false/enable = true/' $HOME/.gaia/config/config.toml
+sed -i -e "/trust_height =/ s/= .*/= $BLOCK_HEIGHT/" $HOME/.gaia/config/config.toml
+sed -i -e "/trust_hash =/ s/= .*/= \"$TRUST_HASH\"/" $HOME/.gaia/config/config.toml
+sed -i -e "/rpc_servers =/ s/= .*/= \"https:\/\/rpc.cosmos.network:443,https:\/\/rpc.cosmos.network:443\"/" $HOME/.gaia/config/config.toml
 ```
 
 Start Gaia to begin state sync. It may take take some time for the node to acquire a snapshot, but the command and output should look similar to the following:
@@ -333,7 +308,45 @@ Once state sync successfully completes, the node will begin to process blocks no
 
 ### Quicksync
 
-Quicksync.io offers several  daily snapshots of the Cosmos Hub with varying levels of pruning (`archive` 1.4TB, `default` 540GB, and `pruned` 265GB). For downloads and installation instructions, visit the [Cosmos Quicksync guide](https://quicksync.io/networks/cosmos.html).
+Quicksync.io offers several  daily snapshots of the Cosmos Hub with varying levels of pruning (`archive` 1.4TB, `default` 540GB, and `pruned` 265GB). For downloads and installation instructions, visit the [Gaia Quickstart Docs](https://hub.cosmos.network/main/getting-started/quickstart.html) and check out the `Quicksync` tab.
+
+For original Quicksync.io instructions visit [Quicksync.io's Cosmos guide](https://quicksync.io/networks/cosmos.html).
+::::::
+
+:::::: tab Blocksync
+
+### Blocksync
+
+Blocksync is faster than traditional consensus and syncs the chain from genesis by downloading blocks and verifying against the merkle tree of validators. For more information see [Tendermint's Blocksync Docs](https://docs.tendermint.com/v0.35/tendermint-core/block-sync/)
+
+When syncing via Blocksync, node operators will either need to manually upgrade the chain or set up [Cosmovisor](#Cosmovisor) to upgrade automatically.
+
+For more information on performing the manual upgrades, see [Releases & Upgrades](#Releases-amp=-Upgrades).
+
+It is possible to sync from previous versions of the Cosmos Hub. See the matrix below for the correct `gaia` version. See the [mainnet archive](https://github.com/cosmos/mainnet) for historical genesis files.
+
+| Upgrade Name        | Date          | Height    | Chain Identifier | Tm      | Cosmos SDK | Gaia                     | IBC                      |
+|---------------------|---------------|-----------|---------------|------------|------------|--------------------------|--------------------------|
+| Mainnet Launch      | 13/03/19    | 0         | `cosmoshub-1` | [v0.31.x](https://github.com/tendermint/tendermint/releases/tag/v0.31.11)          | [v0.33.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.33.2)    |  _Included in Cosmos SDK_ | n/a                      |
+| [Security Hard Fork](https://forum.cosmos.network/t/critical-cosmossdk-security-advisory-updated/2211)  | 21/04/19    | 482,100   | `cosmoshub-1` | [v0.31.x](https://github.com/tendermint/tendermint/releases/tag/v0.31.11)          | [v0.34.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.34.6)    |   _Included in Cosmos SDK_)                  | n/a                      |
+| Upgrade #1          | 21/01/20    | 500,043   | `cosmoshub-2` | [v0.31.x](https://github.com/tendermint/tendermint/releases/tag/v0.31.11)          | [v0.34.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.34.10)    |   _Included in Cosmos SDK_)                  | n/a                      |
+| Upgrade #2          | 07/08/20    | 2,902,000 | `cosmoshub-3` | [v0.32.x](https://github.com/tendermint/tendermint/releases/tag/v0.32.14)          | [v0.37.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.37.15)    | [v2.0.x](https://github.com/cosmos/gaia/releases/tag/v2.0.14)                   | n/a                      |
+| Stargate            | 18/02/21    | 5,200,791 | `cosmoshub-4` | [v0.34.x](https://github.com/tendermint/tendermint/releases/tag/v0.34.3)          | [v0.40.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.40.1)    | [v4.0.x](https://github.com/cosmos/gaia/releases/tag/v4.0.6)                   | _Included in Cosmos SDK_ |
+| Security Hard Fork  | ?             | ?         | `cosmoshub-4` | [v0.34.x](https://github.com/tendermint/tendermint/releases/tag/v0.34.8)          | [v0.41.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.41.4)    | [v4.2.x](https://github.com/cosmos/gaia/releases/tag/v4.2.1)                   | _Included in Cosmos SDK_ |
+| Delta (Gravity DEX) | 13/07/21    | 6,910,000 | `cosmoshub-4` | [v0.34.x](https://github.com/tendermint/tendermint/releases/tag/v0.34.13)          | [v0.42.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42.10)    | [v5.0.x](https://github.com/cosmos/gaia/releases/tag/v5.0.8)                   | _Included in Cosmos SDK_ |
+| Vega                | 13/12/21    | 8,695,000 | `cosmoshub-4` | [v0.34.x](https://github.com/tendermint/tendermint/releases/tag/v0.34.14)          | [v0.44.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.5)    | [v6.0.x](https://github.com/cosmos/gaia/releases/tag/v6.0.4)                   | [v2.0.x](https://github.com/cosmos/ibc-go/releases/tag/v2.0.3)                   |
+| Theta                | 12/04/22    | 10,085,397 | `cosmoshub-4` | [v0.34.x](https://github.com/tendermint/tendermint/releases/tag/v0.34.14)          | [v0.45.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.1)    | [v7.0.x](https://github.com/cosmos/gaia/releases/tag/v7.0.0)                   | [v3.0.x](https://github.com/cosmos/ibc-go/releases/tag/v3.0.0)                   |
+
+##### Getting Started
+
+Start Gaia to begin syncing with the `skip-invariants` flag. For more information on this see [Verify Mainnet](#Verify-Mainnet).
+
+```bash
+gaiad start --x-crisis-skip-assert-invariants
+
+```
+
+The node will begin rebuilding state until it hits the first upgrade height at block `6910000`. If Cosmovisor is set up then there's nothing else to do besides wait, otherwise the node operator will need to perform the manual upgrade twice.
 ::::::
 
 :::::::
@@ -371,7 +384,7 @@ snapshot-keep-recent = 10
 
 **See all [Gaia Releases](https://github.com/cosmos/gaia/releases)**
 
-The most up to date release of Gaia is [`V6.0.4`](https://github.com/cosmos/gaia/releases/tag/v6.0.4). For those that want to use state sync or quicksync to get their node up to speed, starting with the most recent version of Gaia is sufficient.
+The most up to date release of Gaia is [`v7.0.0`](https://github.com/cosmos/gaia/releases/tag/v7.0.0). For those that want to use state sync or quicksync to get their node up to speed, starting with the most recent version of Gaia is sufficient.
 
 To sync an archive or full node from scratch, it is important to note that you must start with [`V4.2.1`](https://github.com/cosmos/gaia/releases/tag/v4.2.1) and proceed through two different upgrades Delta at block height `6910000` and Vega at block height `8695000`.
 
@@ -380,7 +393,7 @@ The process is summarized below but make sure to follow the manual upgrade instr
 **[Delta Instructions](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md#Upgrade-will-take-place-July-12,-2021)**
 Once `V4` reaches the upgrade block height, expect the chain to halt and to see the following message:
 
-```bash
+```shell
 ERR UPGRADE "Gravity-DEX" NEEDED at height: 6910000: v5.0.0-4760cf1f1266accec7a107f440d46d9724c6fd08
 ```
 
@@ -392,7 +405,7 @@ Install Gaia [`V5.0.0`](https://github.com/cosmos/gaia/releases/tag/v5.0.0) and 
 
 Once `V5` reaches the upgrade block height, the chain will halt and display the following message:
 
-```bash
+```shell
 ERR UPGRADE "Vega" NEEDED at height: 8695000
 
 ```
@@ -400,6 +413,20 @@ ERR UPGRADE "Vega" NEEDED at height: 8695000
 Again, make sure to backup `~/.gaia`
 
 Install Gaia [`V6.0.4`](https://github.com/cosmos/gaia/releases/tag/v6.0.4) and restart the daemon.
+
+
+**[Theta Instructions](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-v7-Theta-upgrade.md)**
+
+Once `V6` reaches the upgrade block height, the chain will halt and display the following message:
+
+```shell
+ERR CONSENSUS FAILURE!!! err="UPGRADE \"v7-Theta\" NEEDED at height: 10085397
+
+```
+
+Again, make sure to backup `~/.gaia`
+
+Install Gaia [`v7.0.0`](https://github.com/cosmos/gaia/releases/tag/v7.0.0) and restart the daemon.
 
 ## Cosmovisor
 

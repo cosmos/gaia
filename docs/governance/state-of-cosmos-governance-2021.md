@@ -1,13 +1,13 @@
 <!-- markdown-link-check-disable -->
 # State of Cosmos Governance 2021
 
-> Governance and decision-making processes within the Cosmos ecosystem as of August 2021
+> Governance and decision-making processes within the Cosmos ecosystem as of August 2021. This particular document serves as a snapshot of the process at this moment in time and parts of it may be out of date or deprecated in the future.
 
 ## Cosmos View of Governance
 
 The Cosmos ecosystem emphasizes governance mechanisms in order to achieve the vision of an ecosystem of interoperable blockchains supported by interchain infrastructure and services on the Cosmos Hub and beyond. The intent is that Cosmos Hub is operated by the community of code development teams supported by the Interchain Foundation, validators and ATOM token holders as a form of distributed organization.
 
-Cosmos Hub has a [Governance (x/gov) module](https://docs.cosmos.network/master/modules/gov/) for coordinating various changes to the blockchain through parameters, upgrades and proposals (the [white paper](https://v1.cosmos.network/resources/whitepaper) refers to text amendments to the "human-readable constitution" setting out Cosmos Hub policies). However, the ecosystem also has additional on- and off- chain processes that exist to set technical direction and inculcate social norms.
+Cosmos Hub has a [Governance (x/gov) module](https://docs.cosmos.network/main/modules/gov/) for coordinating various changes to the blockchain through parameters, upgrades and proposals (the [white paper](https://v1.cosmos.network/resources/whitepaper) refers to text amendments to the "human-readable constitution" setting out Cosmos Hub policies). However, the ecosystem also has additional on- and off- chain processes that exist to set technical direction and inculcate social norms.
 
 Reviewing existing governance documentation and discussion, a few key themes surfaced:
 
@@ -21,7 +21,7 @@ Each blockchain in the Cosmos ecosystem can be tailored to a specific applicatio
 
 ### Development of Governance Processes Over Time
 
-The existing [governance module](https://docs.cosmos.network/master/modules/gov/)  is described as a minimum viable product for the governance module, with [ideas for future improvement](https://docs.cosmos.network/master/modules/gov/05_future_improvements.html) . For example an active product team is currently aligning [groups and governance functionality](https://docs.google.com/document/d/1w-fwa8i8kkgirbn9DOFklHwcu9xO_IdbMN910ASr2oQ/edit#)  will change current governance practices and open up new avenues to explore and support through on- and off- chain processes
+The existing [governance module](https://docs.cosmos.network/main/modules/gov/)  is described as a minimum viable product for the governance module, with [ideas for future improvement](https://docs.cosmos.network/main/modules/gov/05_future_improvements.html) . For example an active product team is currently aligning [groups and governance functionality](https://docs.google.com/document/d/1w-fwa8i8kkgirbn9DOFklHwcu9xO_IdbMN910ASr2oQ/edit#)  will change current governance practices and open up new avenues to explore and support through on- and off- chain processes
 
 
 ## On- and off-chain Governance Structure
@@ -33,7 +33,7 @@ Governance practices and decisions are communicated through different types of d
 - On-chain governance [proposals](https://cosmoscan.net/governance-stats)
 - Decision records 
   - Cosmos Improvement Proposals ([CIPs](https://cips.cosmos.network/))
-  - Cosmos SDK's [ADRs](https://docs.cosmos.network/master/architecture/)
+  - Cosmos SDK's [ADRs](https://docs.cosmos.network/main/architecture/)
   - Tendermint's [ADRs](https://github.com/tendermint/tendermint/tree/master/docs/architecture)
 - Technical standards / specifications
   - Interchain Standard ([ICS](https://github.com/cosmos/ibc))
@@ -71,6 +71,7 @@ Venues involve community members to different degrees and individuals often perf
   - Some interest in deprecating but remains actives
 - **GitHub repositories** for governance processes ([Cosmos governance](https://github.com/cosmos/governance), [Cosmos cips](https://github.com/cosmos/cips), [Cosmos ibc](https://github.com/cosmos/ibc))
   - For discussing meta aspects of governance processes, discussion and development of specific off-chain design records and technical specs, and repository for on-chain proposals
+  - The Cosmos governance repo is officially deprecated as of October 2021.
 - **Bi-weekly Cosmos Gaia / ATOM sync call**
   - For cross-team discussion on the [Gaia roadmap](https://github.com/cosmos/gaia/projects/9)
 - (Informal) **Google Docs for early feedback**
@@ -191,7 +192,7 @@ Participants in the process include:
 
 ### Process owners
 
-- Listed in [governance](https://github.com/cosmos/governance) repo: Ethan Buchman ([@ebuchman](https://github.com/ebuchman)), Zaki Manian ([@zmanian](https://github.com/zmanian)), Sam Hart ([@hxrts](https://github.com/hxrts)), Maria Gomez ([@mariapao](https://github.com/mariapao)).
+- Former process owners are listed in  the now-deprecated [governance repo](https://github.com/cosmos/governance).
 
 ### Process maturity
 
@@ -242,7 +243,7 @@ ADRs serve as the main way to propose new feature designs, new processes, and to
 
 "An Architectural Decision (AD) is a software design choice that addresses a functional or non-functional requirement that is architecturally significant. An Architecturally Significant Requirement (ASR) is a requirement that has a measurable effect on a software system's architecture and quality. An Architectural Decision Record (ADR) captures a single AD, such as often done when writing personal notes or meeting minutes; the collection of ADRs created and maintained in a project constitute its decision log."
 
-🔗 <https://docs.cosmos.network/master/architecture/>
+🔗 <https://docs.cosmos.network/main/architecture/>
 
 ### Process overview
 
@@ -251,10 +252,10 @@ ADRs serve as the main way to propose new feature designs, new processes, and to
   1.  Copy the adr-template.md file. Use the following filename pattern: adr-next_number-title.md
   1.  Create a draft Pull Request if you want to get an early feedback.
   1.  Make sure the context and a solution is clear and well documented.
-  1.  Add an entry to a list in the [README](https://docs.cosmos.network/master/architecture/) file.
+  1.  Add an entry to a list in the [README](https://docs.cosmos.network/main/architecture/) file.
   1.  Create a Pull Request to propose a new ADR.
-  `<https://docs.cosmos.network/master/architecture/PROCESS.html>`
-- ADRs go through a lifecycle: <https://docs.cosmos.network/master/architecture/PROCESS.html#adr-life-cycle>
+  `<https://docs.cosmos.network/main/architecture/PROCESS.html>`
+- ADRs go through a lifecycle: <https://docs.cosmos.network/main/architecture/PROCESS.html#adr-life-cycle>
 ```
 DRAFT -> PROPOSED -> LAST CALL yyyy-mm-dd -> ACCEPTED | REJECTED -> SUPERSEEDED by ADR-xxx
 

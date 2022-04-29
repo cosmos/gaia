@@ -65,5 +65,5 @@ To the Moon 🚀
 
 
 [blog post]: [https://blog.cosmos.network/developer-deep-dive-cosmos-ibc-5855aaf183fe]
-[ibc]: [https://docs.cosmos.network/master/ibc/overview.html]
+[ibc]: [https://docs.cosmos.network/main/ibc/overview.html]
 <!-- markdown-link-check-enable -->

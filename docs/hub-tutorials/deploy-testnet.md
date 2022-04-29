@@ -127,32 +127,32 @@ $ tree -L 2 build/
 build/
 ├── gaiad
 ├── gentxs
-│   ├── node0.json
-│   ├── node1.json
-│   ├── node2.json
-│   └── node3.json
+│   ├── node0.json
+│   ├── node1.json
+│   ├── node2.json
+│   └── node3.json
 ├── node0
-│   └── gaiad
-│       ├── key_seed.json
-│       ├── keys
-│       ├── ${LOG:-gaiad.log}
-│       ├── config
-│       └── data
+│   └── gaiad
+│       ├── key_seed.json
+│       ├── keys
+│       ├── ${LOG:-gaiad.log}
+│       ├── config
+│       └── data
 ├── node1
-│       ├── key_seed.json
-│       ├── ${LOG:-gaiad.log}
-│       ├── config
-│       └── data
+│       ├── key_seed.json
+│       ├── ${LOG:-gaiad.log}
+│       ├── config
+│       └── data
 ├── node2
-│       ├── key_seed.json
-│       ├── ${LOG:-gaiad.log}
-│       ├── config
-│       └── data
+│       ├── key_seed.json
+│       ├── ${LOG:-gaiad.log}
+│       ├── config
+│       └── data
 └── node3
-         ├── key_seed.json
-         ├── ${LOG:-gaiad.log}
-         ├── config
-         └── data
+         ├── key_seed.json
+         ├── ${LOG:-gaiad.log}
+         ├── config
+         └── data
 ```
 
 Each `./build/nodeN` directory is mounted to the `/gaiad` directory in each container.

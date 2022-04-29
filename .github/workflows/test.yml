@@ -1,17 +1,9 @@
 name: Build & Test
 on:
   pull_request:
-    paths:
-      - "**.go"
-      - go.mod
-      - go.sum
   push:
     branches:
       - main
-    paths:
-      - "**.go"
-      - go.mod
-      - go.sum
 
 jobs:
   cleanup-runs:
@@ -28,9 +20,13 @@ jobs:
       - uses: actions/setup-go@v3.0.0
         with:
           go-version: 1.17
-
       - uses: actions/checkout@v2.4.0
-
+      - uses: technote-space/get-diff-action@v6.0.1
+        with:
+          PATTERNS: |
+            **/**.go
+            go.mod
+            go.sum
       - uses: actions/cache@v3.0.2
         with:
           path: |
@@ -39,14 +35,11 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.mod') }}
           restore-keys: |
             ${{ runner.os }}-go-
-
       - name: build
         run: make build
-
       - name: test & coverage report creation
         run: |
           make test-unit-cover
-
       - name: filter out DONTCOVER
         run: |
           excludelist="$(find ./ -type f -name '*.go' | xargs grep -l 'DONTCOVER')"
@@ -58,7 +51,7 @@ jobs:
             sed -i.bak "/$(echo $filename | sed 's/\//\\\//g')/d" coverage.txt
           done
 
-      - uses: codecov/codecov-action@v3.0.0
+      - uses: codecov/codecov-action@v3.1.0
         with:
           file: ./coverage.txt # optional
           fail_ci_if_error: true
@@ -70,11 +63,42 @@ jobs:
       - uses: actions/setup-go@v3.0.0
         with:
           go-version: 1.17
-
       - uses: actions/checkout@v2
-
+      - uses: technote-space/get-diff-action@v6.0.1
+        with:
+          PATTERNS: |
+            **/**.go
+            go.mod
+            go.sum
       - name: Build Docker Image
         run: make docker-build-debug
-
       - name: Test E2E
         run: make test-e2e
+
+  liveness-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.18
+      - uses: technote-space/get-diff-action@v6.0.1
+        with:
+          PATTERNS: |
+            **/**.go
+            go.mod
+            go.sum
+      - name: Install Ignite CLI
+        run: |
+          curl https://get.ignite.com/cli@v0.20.0! | bash
+        if: env.GIT_DIFF
+      - name: Start Local Network via Ignite CLI
+        run: |
+          make start-localnet-ci > ignite.out 2>&1 &
+        if: env.GIT_DIFF
+      - name: Test Local Network Liveness
+        run: |
+          sleep 3m
+          ./contrib/scripts/test_localnet_liveness.sh 100 5 50 localhost
+        if: env.GIT_DIFF

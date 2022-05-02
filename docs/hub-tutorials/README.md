@@ -1,7 +1,7 @@
 <!--
 order: false
 parent:
-  order: 3
+  order: 1
 -->
 
 # Gaia Tutorials

@@ -1,5 +1,5 @@
 <!--
-order: 3
+order: 2
 -->
 
 # Join the Cosmos Hub Mainnet

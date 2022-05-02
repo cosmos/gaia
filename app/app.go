@@ -35,6 +35,7 @@ import (
 	// TODO: Confirm whether this is still needed
 	// authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	"github.com/cosmos/cosmos-sdk/x/auth/middleware"
 	authmiddleware "github.com/cosmos/cosmos-sdk/x/auth/middleware"
 	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
@@ -125,7 +126,6 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
-	gaiaappparams "github.com/cosmos/gaia/v7/app/params"
 	// "github.com/strangelove-ventures/packet-forward-middleware/v2/router"
 	// routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v2/router/keeper"
 	// routertypes "github.com/strangelove-ventures/packet-forward-middleware/v2/router/types"
@@ -823,28 +823,18 @@ func NewGaiaApp(
 	app.MountTransientStores(tkeys)
 	app.MountMemoryStores(memKeys)
 
-	anteHandler, err := gaiaante.NewAnteHandler(
-		gaiaante.HandlerOptions{
-			HandlerOptions: ante.HandlerOptions{
-				AccountKeeper:   app.AccountKeeper,
-				BankKeeper:      app.BankKeeper,
-				FeegrantKeeper:  app.FeeGrantKeeper,
-				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
-				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
-			},
-			IBCkeeper:            app.IBCKeeper,
-			BypassMinFeeMsgTypes: cast.ToStringSlice(appOpts.Get(gaiaappparams.BypassMinFeeMsgTypesKey)),
-		},
-	)
-	if err != nil {
-		panic(fmt.Errorf("failed to create AnteHandler: %s", err))
-	}
 
-	app.SetAnteHandler(anteHandler)
+
+	// app.SetAnteHandler(anteHandler)
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
-	app.setTxHandler(encodingConfig.TxConfig, cast.ToStringSlice(appOpts.Get(server.FlagIndexEvents)), keys, wasmConfig)
+	app.setTxHandler(encodingConfig.TxConfig,
+		cast.ToStringSlice(appOpts.Get(server.FlagIndexEvents)),
+		keys,
+		wasmConfig,
+		cast.ToStringSlice(appOpts.Get(gaiaappparams.BypassMinFeeMsgTypesKey))
+	)
 
 	app.UpgradeKeeper.SetUpgradeHandler(
 		upgradeName,
@@ -936,7 +926,7 @@ func NewGaiaApp(
 }
 
 // TODO: figure out if liquidity or router need to be added here
-func (app *GaiaApp) setTxHandler(txConfig client.TxConfig, indexEventsStr []string, keys map[string]*storetypes.KVStoreKey, wasmConfig wasmtypes.WasmConfig) {
+func (app *GaiaApp) setTxHandler(txConfig client.TxConfig, indexEventsStr []string, keys map[string]*storetypes.KVStoreKey, wasmConfig wasmtypes.WasmConfig, minFeeOpts []string) {
 
 	indexEvents := map[string]struct{}{}
 	for _, e := range indexEventsStr {
@@ -958,6 +948,7 @@ func (app *GaiaApp) setTxHandler(txConfig client.TxConfig, indexEventsStr []stri
 		WasmConfig:        &wasmConfig,
 		TXCounterStoreKey: keys[wasm.StoreKey],
 		IBCKeeper:         app.IBCKeeper,
+		BypassMinFeeMsgTypes:  minFeeOpts,
 	})
 	if err != nil {
 		panic(err)

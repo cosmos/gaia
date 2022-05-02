@@ -56,8 +56,12 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 					return err
 				}
 
+				chainID, err := cmd.Flags().GetString(flags.FlagChainID)
+				if err != nil {
+					return err
+				}
 				// attempt to lookup address from Keybase if no address was provided
-				kb, err := keyring.New(sdk.KeyringServiceName(), keyringBackend, clientCtx.HomeDir, inBuf, clientCtx.Codec)
+				kb, err := keyring.New(chainID, sdk.KeyringServiceName(), keyringBackend, clientCtx.HomeDir, inBuf, clientCtx.Codec)
 				if err != nil {
 					return err
 				}

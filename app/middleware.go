@@ -6,6 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/tx"
 	"github.com/cosmos/cosmos-sdk/x/auth/middleware"
 	authmiddleware "github.com/cosmos/cosmos-sdk/x/auth/middleware"
+	gaiaante "github.com/cosmos/gaia/v7/ante"
 	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
 	ibcmiddleware "github.com/cosmos/ibc-go/v3/modules/core/middleware"
 	wasmkeeper "github.com/cosmos/wasmd/x/wasm/keeper"
@@ -36,9 +37,10 @@ func ComposeMiddlewares(txHandler tx.Handler, middlewares ...tx.Middleware) tx.H
 type TxHandlerOptions struct {
 	authmiddleware.TxHandlerOptions
 
-	TXCounterStoreKey storetypes.StoreKey
-	WasmConfig        *wasmTypes.WasmConfig
-	IBCKeeper         *ibckeeper.Keeper
+	TXCounterStoreKey    storetypes.StoreKey
+	WasmConfig           *wasmTypes.WasmConfig
+	IBCKeeper            *ibckeeper.Keeper
+	BypassMinFeeMsgTypes []string
 }
 
 // NewDefaultTxHandler defines a TxHandler middleware stacks that should work
@@ -65,8 +67,33 @@ func NewDefaultTxHandler(options TxHandlerOptions) (tx.Handler, error) {
 		sigGasConsumer = middleware.DefaultSigVerificationGasConsumer
 	}
 
+	// bez version vvv
+
+	// 	anteDecorators := []sdk.AnteDecorator{
+	// 		middleware.NewSetUpContextDecorator(),
+	// 		middleware.NewRejectExtensionOptionsDecorator(),
+	// 		NewMempoolFeeDecorator(opts.BypassMinFeeMsgTypes),
+	// 		middleware.NewValidateBasicDecorator(),
+	// 		middleware.NewTxTimeoutHeightDecorator(),
+	// 		middleware.NewValidateMemoDecorator(opts.AccountKeeper),
+	// 		middleware.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
+	// 		middleware.NewDeductFeeDecorator(opts.AccountKeeper, opts.BankKeeper, opts.FeegrantKeeper),
+	// 		// SetPubKeyDecorator must be called before all signature verification decorators
+	// 		middleware.NewSetPubKeyDecorator(opts.AccountKeeper),
+	// 		middleware.NewValidateSigCountDecorator(opts.AccountKeeper),
+	// 		middleware.SigGasConsumeDecorator(opts.AccountKeeper, sigGasConsumer),
+	// 		middleware.NewSigVerificationDecorator(opts.AccountKeeper, opts.SignModeHandler),
+	// 		middleware.NewIncrementSequenceDecorator(opts.AccountKeeper),
+	// 		ibcante.NewAnteDecorator(opts.IBCkeeper),
+	// 	}
+
+	// end bez version ^^^
+
 	return ComposeMiddlewares(
 		middleware.NewRunMsgsTxHandler(options.MsgServiceRouter, options.LegacyRouter),
+		// min fee Middleware
+		gaiaante.NewMempoolFeeDecorator(options.BypassMinFeeMsgTypes),
+
 		middleware.NewTxDecoderMiddleware(options.TxDecoder),
 		// Wasm Middleware
 		wasmkeeper.CountTxMiddleware(options.TXCounterStoreKey),

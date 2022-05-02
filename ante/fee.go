@@ -3,6 +3,7 @@ package ante
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/types/tx"
 	tmstrings "github.com/tendermint/tendermint/libs/strings"
 )
 
@@ -20,7 +21,7 @@ type MempoolFeeDecorator struct {
 	BypassMinFeeMsgTypes []string
 }
 
-func NewMempoolFeeDecorator(bypassMsgTypes []string) MempoolFeeDecorator {
+func NewMempoolFeeDecorator(bypassMsgTypes []string) tx.Middleware {
 	return MempoolFeeDecorator{
 		BypassMinFeeMsgTypes: bypassMsgTypes,
 	}

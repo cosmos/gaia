@@ -130,12 +130,14 @@ The ideal format for a proposal is as a Markdown file (ie. `.md`) in a github re
 is a simple and accessible format for writing plain text files that is easy to
 learn. See the [Github Markdown
 Guide](https://guides.github.com/features/mastering-markdown/) for details on
+Guide](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/about-writing-and-formatting-on-github) for details on
 writing markdown files.
 
 If you don't have a [Github](http://github.com/) account already, register one. Then fork this
 repository, draft your proposal in the `proposals` directory, and make a
 pull-request back to this repository. For more details on using Github, see the
 [Github Forking Guide](https://guides.github.com/activities/forking/). If you
+[Github Forking Guide](https://docs.github.com/en/get-started/quickstart/fork-a-repo). If you
 need help using Github, don't be afraid to ask someone!
 
 If you really don't want to deal with Github, you can always draft a proposal in

@@ -133,6 +133,9 @@ import (
 	"github.com/cosmos/wasmd/x/wasm"
 	wasmclient "github.com/cosmos/wasmd/x/wasm/client"
 
+	gaiaante "github.com/cosmos/gaia/v7/ante"
+	gaiaappparams "github.com/cosmos/gaia/v7/app/params"
+
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
 )
@@ -820,24 +823,24 @@ func NewGaiaApp(
 	app.MountTransientStores(tkeys)
 	app.MountMemoryStores(memKeys)
 
-	// TODO: Add back custom antehandler from ante_handler.go
-	// anteHandler, err := NewAnteHandler(
-	// 	HandlerOptions{
-	// 		HandlerOptions: ante.HandlerOptions{
-	// 			AccountKeeper:   app.AccountKeeper,
-	// 			BankKeeper:      app.BankKeeper,
-	// 			FeegrantKeeper:  app.FeeGrantKeeper,
-	// 			SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
-	// 			SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
-	// 		},
-	// 		IBCkeeper: app.IBCKeeper,
-	// 	},
-	// )
-	// if err != nil {
-	// 	panic(fmt.Errorf("failed to create AnteHandler: %s", err))
-	// }
+	anteHandler, err := gaiaante.NewAnteHandler(
+		gaiaante.HandlerOptions{
+			HandlerOptions: ante.HandlerOptions{
+				AccountKeeper:   app.AccountKeeper,
+				BankKeeper:      app.BankKeeper,
+				FeegrantKeeper:  app.FeeGrantKeeper,
+				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
+				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+			},
+			IBCkeeper:            app.IBCKeeper,
+			BypassMinFeeMsgTypes: cast.ToStringSlice(appOpts.Get(gaiaappparams.BypassMinFeeMsgTypesKey)),
+		},
+	)
+	if err != nil {
+		panic(fmt.Errorf("failed to create AnteHandler: %s", err))
+	}
 
-	// app.SetAnteHandler(anteHandler)
+	app.SetAnteHandler(anteHandler)
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)

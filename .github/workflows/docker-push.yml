@@ -2,6 +2,8 @@ name: Docker - non release branch docker build and push
 
 on:
   push:
+    schedule:
+      - cron: "0 10 * * *"
     branches:
       - "release/**"
     tags:

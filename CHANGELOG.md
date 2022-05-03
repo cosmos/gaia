@@ -36,7 +36,11 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
-<<<<<<< HEAD
+* [#1447](https://github.com/cosmos/gaia/pull/1447) Support custom message types to bypass minimum fee checks for.
+  If a transaction contains only bypassed message types, the transaction will not have minimum fee
+  checks performed during `CheckTx`. Operators can supply these message types via the `bypass-min-fee-msg-types`
+  configuration in `app.toml`. Note, by default they include various IBC message types.
+
 ## [v7.0.1] -2022-04-13
 
 * (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.3](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.3). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.3/CHANGELOG.md#v0453---2022-04-12) for details.
@@ -51,21 +55,6 @@ Ref: https://keepachangelog.com/en/1.0.0/
 * (gaia) bump [liquidity](https://github.com/gravity-devs/liquidity) module to [v1.5.0](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.5.0). See [CHANGELOG.md](https://github.com/Gravity-Devs/liquidity/blob/v1.5.0/CHANGELOG.md#v150---20220223) for details.
 * (gaia) bump [packet-forward-middleware](https://github.com/strangelove-ventures/packet-forward-middleware) module to [v2.1.1](https://github.com/strangelove-ventures/packet-forward-middleware/releases/tag/v2.1.1).
 * (gaia) add migration logs for upgrade process.
-=======
-- [#1447](https://github.com/cosmos/gaia/pull/1447) Support custom message types to bypass minimum fee checks for.
-  If a transaction contains only bypassed message types, the transaction will not have minimum fee
-  checks performed during `CheckTx`. Operators can supply these message types via the `bypass-min-fee-msg-types`
-  configuration in `app.toml`. Note, by default they include various IBC message types.
-
-## [v7.0.0] - 2022-03-24
-
-- (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.1](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.1). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.1/CHANGELOG.md#v0451---2022-02-03) for details.
-- (gaia) bump [ibc-go](https://github.com/cosmos/ibc-go) module to [v3.0.0](https://github.com/cosmos/ibc-go/releases/tag/v3.0.0). See [CHANGELOG.md](https://github.com/cosmos/ibc-go/blob/v3.0.0/CHANGELOG.md#v300---2022-03-15) for details.
-- (gaia) add [interchain account](https://github.com/cosmos/ibc-go/tree/main/modules/apps/27-interchain-accounts) module (interhchain-account module is part of ibc-go module).
-- (gaia) bump [liquidity](https://github.com/gravity-devs/liquidity) module to [v1.5.0](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.5.0). See [CHANGELOG.md](https://github.com/Gravity-Devs/liquidity/blob/v1.5.0/CHANGELOG.md#v150---20220223) for details.
-- (gaia) bump [packet-forward-middleware](https://github.com/strangelove-ventures/packet-forward-middleware) module to [v2.1.1](https://github.com/strangelove-ventures/packet-forward-middleware/releases/tag/v2.1.1).
-- (gaia) add migration logs for upgrade process.
->>>>>>> 0e94267 (feat: bypass min fee check for custom message types (#1447))
 
 ## [v6.0.4] - 2022-03-10
 

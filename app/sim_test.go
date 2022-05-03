@@ -6,12 +6,12 @@ import (
 	"os"
 	"testing"
 
-	gaia "github.com/cosmos/gaia/v7/app"
+	gaia "github.com/cosmos/gaia/v8/app"
 	"github.com/cosmos/wasmd/x/wasm"
 
 	"math/rand"
 
-	"github.com/cosmos/gaia/v7/app/helpers"
+	"github.com/cosmos/gaia/v8/app/helpers"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"

@@ -131,8 +131,8 @@ import (
 	routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v2/router/keeper"
 	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v2/router/types"
 
-	gaiaante "github.com/cosmos/gaia/v7/ante"
-	gaiaappparams "github.com/cosmos/gaia/v7/app/params"
+	gaiaante "github.com/cosmos/gaia/v8/ante"
+	gaiaappparams "github.com/cosmos/gaia/v8/app/params"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"

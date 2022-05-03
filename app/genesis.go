@@ -3,7 +3,7 @@ package gaia
 import (
 	"encoding/json"
 
-	app "github.com/cosmos/gaia/v7/app/params"
+	app "github.com/cosmos/gaia/v8/app/params"
 )
 
 // The genesis state of the blockchain is represented here as a map of raw json

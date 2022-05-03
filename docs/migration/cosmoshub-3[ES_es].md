@@ -34,11 +34,7 @@ Si quieres probar el procedimiento antes de que se produzca la actualización el
 
 Se han producido muchos cambios en el SDK de Cosmos y en la aplicación Gaia desde la última gran actualización (`cosmoshub-3`). Estos cambios consisten principalmente en muchas nuevas características, cambios de protocolo y cambios estructurales de la aplicación que favorecen la ergonomía del desarrollador y el desarrollo de la aplicación.
 
-<<<<<<< HEAD
 En primer lugar, se habilitará [IBC](https://docs.cosmos.network/master/ibc/overview.html) siguiendo los [estándares de Interchain](https://github.com/cosmos/ics#ibc-quick-references). Esta actualización viene con varias mejoras en la eficiencia, la sincronización de nodos y las siguientes actualizaciones de la cadena de bloques. Más detalles en el [sitio web de Stargate](https://stargate.cosmos.network/).
-=======
-En primer lugar, se habilitará [IBC](https://docs.cosmos.network/main/ibc/overview.html) siguiendo los [estándares de Interchain](https://github.com/cosmos/ics#ibc-quick-references). Esta actualización viene con varias mejoras en la eficiencia, la sincronización de nodos y las siguientes actualizaciones de la cadena de bloques. Más detalles en el [sitio web de Stargate](https://stargate.cosmos.network/).
->>>>>>> 0e94267 (feat: bypass min fee check for custom message types (#1447))
 
 __La aplicación [Gaia](https://github.com/cosmos/gaia) v4.0.0 es lo que los operadores de nodos actualizarán y ejecutarán en esta próxima gran actualización__. Tras la versión v0.41.0 del SDK de Cosmos y la v0.34.3 de Tendermint.
 
@@ -233,8 +229,3 @@ snapshot-interval = 0
 # (0 para conservar todas).
 snapshot-keep-recent = 2
 ```
-<<<<<<< HEAD
-=======
-
-<!-- markdown-link-check-enable -->
->>>>>>> 0e94267 (feat: bypass min fee check for custom message types (#1447))

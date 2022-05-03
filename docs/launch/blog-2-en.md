@@ -64,9 +64,4 @@ To the Moon 🚀
 
 
 [blog post]: [https://blog.cosmos.network/developer-deep-dive-cosmos-ibc-5855aaf183fe]
-<<<<<<< HEAD
 [ibc]: [https://github.com/cosmos/cosmos-sdk/blob/develop/docs/spec/ibc/overview.md]
-=======
-[ibc]: [https://docs.cosmos.network/main/ibc/overview.html]
-<!-- markdown-link-check-enable -->
->>>>>>> 0e94267 (feat: bypass min fee check for custom message types (#1447))

@@ -26,6 +26,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
+	"github.com/cosmos/wasmd/x/wasm"
+	wasmclient "github.com/cosmos/wasmd/x/wasm/client"
 	wasmtypes "github.com/cosmos/wasmd/x/wasm/types"
 
 	// Auth-related SDK imports

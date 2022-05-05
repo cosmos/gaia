@@ -36,7 +36,12 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+<<<<<<< HEAD
 * [#1447](https://github.com/cosmos/gaia/pull/1447) Support custom message types to bypass minimum fee checks for.
+=======
+* (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.4](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.4). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.4/CHANGELOG.md#v0454---2022-04-25) for details.
+* (gaia) [#1447](https://github.com/cosmos/gaia/pull/1447) Support custom message types to bypass minimum fee checks for.
+>>>>>>> 4e07112 (preparation for v7.0.2 release  (#1458))
   If a transaction contains only bypassed message types, the transaction will not have minimum fee
   checks performed during `CheckTx`. Operators can supply these message types via the `bypass-min-fee-msg-types`
   configuration in `app.toml`. Note, by default they include various IBC message types.

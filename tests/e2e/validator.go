@@ -24,8 +24,8 @@ import (
 	"github.com/tendermint/tendermint/privval"
 	tmtypes "github.com/tendermint/tendermint/types"
 
-	gaia "github.com/cosmos/gaia/v7/app"
-	"github.com/cosmos/gaia/v7/app/params"
+	gaia "github.com/cosmos/gaia/v8/app"
+	"github.com/cosmos/gaia/v8/app/params"
 )
 
 type validator struct {

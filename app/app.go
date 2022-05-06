@@ -125,7 +125,7 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
-	gaiaappparams "github.com/cosmos/gaia/v7/app/params"
+	gaiaappparams "github.com/cosmos/gaia/v8/app/params"
 	// "github.com/strangelove-ventures/packet-forward-middleware/v2/router"
 	// routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v2/router/keeper"
 	// routertypes "github.com/strangelove-ventures/packet-forward-middleware/v2/router/types"

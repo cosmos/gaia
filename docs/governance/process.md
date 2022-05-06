@@ -18,7 +18,7 @@ In the past, different people have considered contributions amounts differently.
 
 #### Burned deposits
 
-Deposits are burned only when proposals are vetoed i.e. 33.4% of voting power backing the 'NoWithVeto' option.
+Deposits are burned only when proposals are vetoed i.e. 33.4% of voting power backing the 'NoWithVeto' option as documented in the [Cosmos SDK gov module spec](https://github.com/cosmos/cosmos-sdk/blob/main/x/gov/spec/01_concepts.md#deposit-refund-and-burn).
 
 ### 2. Voting Period
 

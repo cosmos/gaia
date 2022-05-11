@@ -1,8 +1,6 @@
 package e2e
 
 import (
-	"fmt"
-
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -11,16 +9,13 @@ import (
 )
 
 func createMnemonic() (string, error) {
-	fmt.Println("oops10")
 	entropySeed, err := bip39.NewEntropy(256)
 	if err != nil {
-		fmt.Println("oops6")
 		return "", err
 	}
 
 	mnemonic, err := bip39.NewMnemonic(entropySeed)
 	if err != nil {
-		fmt.Println("oops7")
 		return "", err
 	}
 

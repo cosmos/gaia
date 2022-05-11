@@ -81,7 +81,10 @@ func (v *validator) init() error {
 		return fmt.Errorf("failed to export app genesis state: %w", err)
 	}
 
-	tmcfg.WriteConfigFile(filepath.Join(config.RootDir, "config", "config.toml"), config)
+	err = tmcfg.WriteConfigFile(config.RootDir, config)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -128,17 +131,9 @@ func (v *validator) createConsensusKey() error {
 }
 
 func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
-	fmt.Println("oops11")
-	// cdc := params.MakeTestEncodingConfig().Codec
-	fmt.Println("oops12")
-	fmt.Println("cdc", cdc)
 	dir := v.configDir()
-	fmt.Println("oops13")
-	fmt.Println("dir", dir)
-	fmt.Println("keyring.BackendTest", keyring.BackendTest)
 	kb, err := keyring.New(keyringAppName, keyring.BackendTest, dir, nil, cdc)
 	if err != nil {
-		fmt.Println("oops9")
 		return err
 	}
 
@@ -171,10 +166,8 @@ func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
 }
 
 func (v *validator) createKey(name string) error {
-	fmt.Println("oops9")
 	mnemonic, err := createMnemonic()
 	if err != nil {
-		fmt.Println("oops5")
 		return err
 	}
 
@@ -190,7 +183,10 @@ func (v *validator) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
 	}
 
 	// get the initial validator min self delegation
-	minSelfDelegation, _ := sdk.NewIntFromString("1")
+	minSelfDelegation, ok := sdk.NewIntFromString("1")
+	if !ok {
+		return nil, fmt.Errorf("NewIntFromString(\"1\") failed")
+	}
 
 	valPubKey, err := cryptocodec.FromTmPubKeyInterface(v.consensusKey.PubKey)
 	if err != nil {
@@ -269,7 +265,6 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("sigBytes", sigBytes)
 	sig = txsigning.SignatureV2{
 		PubKey: pk,
 		Data: &txsigning.SingleSignatureData{
@@ -278,17 +273,13 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 		},
 		Sequence: 0,
 	}
-	fmt.Println("sig", sig)
 	if err := txBuilder.SetSignatures(sig); err != nil {
-		fmt.Println("oops4")
 		return nil, err
 	}
 
 	signedTx := txBuilder.GetTx()
-	fmt.Println("signedTx", signedTx)
 	bz, err := encodingConfig.TxConfig.TxEncoder()(signedTx)
 	if err != nil {
-		fmt.Println("oops99")
 		return nil, err
 	}
 

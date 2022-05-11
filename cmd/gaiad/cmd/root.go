@@ -26,7 +26,6 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
-	gaiaappparams "github.com/cosmos/gaia/v8/app/params"
 
 	// ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
 	// ibcchanneltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
@@ -43,7 +42,7 @@ import (
 // NewRootCmd creates a new root command for simd. It is called once in the
 // main function.
 func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
-	encodingConfig := gaiaappparams.MakeEncodingConfig()
+	encodingConfig := params.MakeTestEncodingConfig()
 	initClientCtx := client.Context{}.
 		WithCodec(encodingConfig.Codec).
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).

@@ -12,7 +12,9 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
+	"github.com/cosmos/cosmos-sdk/server/types"
 	gaiaapp "github.com/cosmos/gaia/v8/app"
+	"github.com/cosmos/gaia/v8/app/params"
 )
 
 // SimAppChainID hardcoded chainID for simulation
@@ -22,8 +24,8 @@ const (
 
 // DefaultConsensusParams defines the default Tendermint consensus params used
 // in GaiaApp testing.
-var DefaultConsensusParams = &abci.ConsensusParams{
-	Block: &abci.BlockParams{
+var DefaultConsensusParams = &tmproto.ConsensusParams{
+	Block: &tmproto.BlockParams{
 		MaxBytes: 200000,
 		MaxGas:   2000000,
 	},
@@ -65,9 +67,20 @@ func Setup(t *testing.T, isCheckTx bool, invCheckPeriod uint) *gaiaapp.GaiaApp {
 	return app
 }
 
+// SetupOptions defines arguments that are passed into `Simapp` constructor.
+type SetupOptions struct {
+	Logger             log.Logger
+	DB                 *dbm.MemDB
+	InvCheckPeriod     uint
+	HomePath           string
+	SkipUpgradeHeights map[int64]bool
+	EncConfig          params.EncodingConfig
+	AppOpts            types.AppOptions
+}
+
 func setup(withGenesis bool, invCheckPeriod uint) (*gaiaapp.GaiaApp, gaiaapp.GenesisState) {
 	db := dbm.NewMemDB()
-	encCdc := gaiaapp.MakeEncodingConfig()
+	encCdc := gaiaapp.MakeTestEncodingConfig()
 	app := gaiaapp.NewGaiaApp(
 		log.NewNopLogger(),
 		db,

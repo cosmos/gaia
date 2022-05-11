@@ -65,11 +65,14 @@ func (c *chain) configDir() string {
 }
 
 func (c *chain) createAndInitValidators(count int) error {
+	fmt.Println("count", count)
 	for i := 0; i < count; i++ {
 		node := c.createValidator(i)
+		fmt.Println("node", node)
 
 		// generate genesis files
 		if err := node.init(); err != nil {
+			fmt.Println("oops1")
 			return err
 		}
 
@@ -77,12 +80,15 @@ func (c *chain) createAndInitValidators(count int) error {
 
 		// create keys
 		if err := node.createKey("val"); err != nil {
+			fmt.Println("oops2")
 			return err
 		}
 		if err := node.createNodeKey(); err != nil {
+			fmt.Println("oops3")
 			return err
 		}
 		if err := node.createConsensusKey(); err != nil {
+			fmt.Println("oops3")
 			return err
 		}
 	}

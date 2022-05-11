@@ -134,6 +134,7 @@ func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
 	dir := v.configDir()
 	kb, err := keyring.New(keyringAppName, keyring.BackendTest, dir, nil, cdc)
 	if err != nil {
+		fmt.Println("oops9")
 		return err
 	}
 
@@ -168,6 +169,7 @@ func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
 func (v *validator) createKey(name string) error {
 	mnemonic, err := createMnemonic()
 	if err != nil {
+		fmt.Println("oops5")
 		return err
 	}
 
@@ -265,6 +267,7 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println("sigBytes", sigBytes)
 	sig = txsigning.SignatureV2{
 		PubKey: pk,
 		Data: &txsigning.SingleSignatureData{
@@ -274,6 +277,7 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 		Sequence: 0,
 	}
 	if err := txBuilder.SetSignatures(sig); err != nil {
+		fmt.Println("oops4")
 		return nil, err
 	}
 

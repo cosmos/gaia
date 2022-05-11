@@ -13,18 +13,15 @@ func decodeTx(txBytes []byte) (*sdktx.Tx, error) {
 	// reject all unknown proto fields in the root TxRaw
 	err := unknownproto.RejectUnknownFieldsStrict(txBytes, &raw, encodingConfig.InterfaceRegistry)
 	if err != nil {
-		fmt.Println("oops98")
 		return nil, fmt.Errorf("failed to reject unknown fields: %w", err)
 	}
 
 	if err := cdc.Unmarshal(txBytes, &raw); err != nil {
-		fmt.Println("oops97")
 		return nil, err
 	}
 
 	var body sdktx.TxBody
 	if err := cdc.Unmarshal(raw.BodyBytes, &body); err != nil {
-		fmt.Println("oops96")
 		return nil, fmt.Errorf("failed to decode tx: %w", err)
 	}
 
@@ -33,12 +30,10 @@ func decodeTx(txBytes []byte) (*sdktx.Tx, error) {
 	// reject all unknown proto fields in AuthInfo
 	err = unknownproto.RejectUnknownFieldsStrict(raw.AuthInfoBytes, &authInfo, encodingConfig.InterfaceRegistry)
 	if err != nil {
-		fmt.Println("oops95")
 		return nil, fmt.Errorf("failed to reject unknown fields: %w", err)
 	}
 
 	if err := cdc.Unmarshal(raw.AuthInfoBytes, &authInfo); err != nil {
-		fmt.Println("oops94")
 		return nil, fmt.Errorf("failed to decode auth info: %w", err)
 	}
 	return &sdktx.Tx{

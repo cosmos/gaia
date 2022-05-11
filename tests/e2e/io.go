@@ -34,10 +34,11 @@ func copyFile(src, dst string) (int64, error) {
 }
 
 func writeFile(path string, body []byte) error {
+	fmt.Println("path", path)
 	_, err := os.Create(path)
 	if err != nil {
 		return err
 	}
 
-	return ioutil.WriteFile(path, body, 0600)
+	return ioutil.WriteFile(path, body, 0644)
 }

@@ -6,9 +6,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/std"
 )
 
-// MakeEncodingConfig creates an EncodingConfig for testing
-func MakeEncodingConfig() params.EncodingConfig {
-	encodingConfig := params.MakeEncodingConfig()
+// MakeTestEncodingConfig creates an EncodingConfig for testing. This function
+// should be used only in tests or when creating a new app instance (NewApp*()).
+// App user shouldn't create new codecs - use the app.AppCodec instead.
+// [DEPRECATED]
+func MakeTestEncodingConfig() params.EncodingConfig {
+	encodingConfig := MakeTestEncodingConfig()
 	std.RegisterLegacyAminoCodec(encodingConfig.Amino)
 	std.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	ModuleBasics.RegisterLegacyAminoCodec(encodingConfig.Amino)

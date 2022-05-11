@@ -6,12 +6,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	params "github.com/cosmos/gaia/v8/app/params"
 
 	"github.com/cosmos/go-bip39"
 )
 
 func createMnemonic() (string, error) {
+	fmt.Println("oops10")
 	entropySeed, err := bip39.NewEntropy(256)
 	if err != nil {
 		fmt.Println("oops6")
@@ -42,7 +42,7 @@ func createMemoryKey() (mnemonic string, info *keyring.Record, err error) {
 }
 
 func createMemoryKeyFromMnemonic(mnemonic string) (*keyring.Record, error) {
-	cdc := params.MakeTestEncodingConfig().Codec
+	// cdc := params.MakeTestEncodingConfig().Codec
 
 	kb, err := keyring.New("testnet", keyring.BackendMemory, "", nil, cdc)
 

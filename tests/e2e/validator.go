@@ -19,7 +19,6 @@ import (
 	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/cosmos/gaia/v8/app/params"
 	tmcfg "github.com/tendermint/tendermint/config"
 	tmos "github.com/tendermint/tendermint/libs/os"
 	"github.com/tendermint/tendermint/privval"
@@ -129,9 +128,15 @@ func (v *validator) createConsensusKey() error {
 }
 
 func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
-	cdc := params.MakeTestEncodingConfig().Codec
-
-	kb, err := keyring.New(keyringAppName, keyring.BackendTest, v.configDir(), nil, cdc)
+	fmt.Println("oops11")
+	// cdc := params.MakeTestEncodingConfig().Codec
+	fmt.Println("oops12")
+	fmt.Println("cdc", cdc)
+	dir := v.configDir()
+	fmt.Println("oops13")
+	fmt.Println("dir", dir)
+	fmt.Println("keyring.BackendTest", keyring.BackendTest)
+	kb, err := keyring.New(keyringAppName, keyring.BackendTest, dir, nil, cdc)
 	if err != nil {
 		fmt.Println("oops9")
 		return err
@@ -166,6 +171,7 @@ func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
 }
 
 func (v *validator) createKey(name string) error {
+	fmt.Println("oops9")
 	mnemonic, err := createMnemonic()
 	if err != nil {
 		fmt.Println("oops5")
@@ -272,14 +278,17 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 		},
 		Sequence: 0,
 	}
+	fmt.Println("sig", sig)
 	if err := txBuilder.SetSignatures(sig); err != nil {
 		fmt.Println("oops4")
 		return nil, err
 	}
 
 	signedTx := txBuilder.GetTx()
+	fmt.Println("signedTx", signedTx)
 	bz, err := encodingConfig.TxConfig.TxEncoder()(signedTx)
 	if err != nil {
+		fmt.Println("oops99")
 		return nil, err
 	}
 

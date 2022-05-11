@@ -24,16 +24,17 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
-	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
-	ibcchanneltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
+
+	// ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
+	// ibcchanneltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
 
-	gaia "github.com/cosmos/gaia/v7/app"
-	"github.com/cosmos/gaia/v7/app/params"
+	gaia "github.com/cosmos/gaia/v8/app"
+	"github.com/cosmos/gaia/v8/app/params"
 )
 
 // NewRootCmd creates a new root command for simd. It is called once in the
@@ -85,11 +86,11 @@ func initAppConfig() (string, interface{}) {
 
 	return params.CustomConfigTemplate, params.CustomAppConfig{
 		Config: *srvCfg,
-		BypassMinFeeMsgTypes: []string{
-			sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),
-			sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
-			sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
-		},
+		// BypassMinFeeMsgTypes: []string{
+		// 	sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),
+		// 	sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
+		// 	sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
+		// },
 	}
 }
 

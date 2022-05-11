@@ -1,7 +1,7 @@
 package gaia
 
 import (
-	"github.com/cosmos/gaia/v7/app/params"
+	"github.com/cosmos/gaia/v8/app/params"
 
 	"github.com/cosmos/cosmos-sdk/std"
 )

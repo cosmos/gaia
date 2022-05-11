@@ -14,8 +14,8 @@ import (
 	tmconfig "github.com/tendermint/tendermint/config"
 	tmos "github.com/tendermint/tendermint/libs/os"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
+	tmtime "github.com/tendermint/tendermint/libs/time"
 	"github.com/tendermint/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -33,10 +33,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
-	ibcchanneltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 
-	"github.com/cosmos/gaia/v7/app/params"
+	// ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
+	// ibcchanneltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
+
+	"github.com/cosmos/gaia/v8/app/params"
 )
 
 var (
@@ -134,11 +135,11 @@ func InitTestnet(
 	simappConfig.Telemetry.PrometheusRetentionTime = 60
 	simappConfig.Telemetry.EnableHostnameLabel = false
 	simappConfig.Telemetry.GlobalLabels = [][]string{{"chain_id", chainID}}
-	simappConfig.BypassMinFeeMsgTypes = []string{
-		sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),
-		sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
-		sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
-	}
+	// simappConfig.BypassMinFeeMsgTypes = []string{
+	// 	sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),
+	// 	sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
+	// 	sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
+	// }
 
 	var (
 		genAccounts []authtypes.GenesisAccount

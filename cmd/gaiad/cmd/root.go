@@ -42,7 +42,7 @@ import (
 // NewRootCmd creates a new root command for simd. It is called once in the
 // main function.
 func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
-	encodingConfig := params.MakeTestEncodingConfig()
+	encodingConfig := gaia.MakeTestEncodingConfig()
 	initClientCtx := client.Context{}.
 		WithCodec(encodingConfig.Codec).
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).

@@ -11,6 +11,7 @@ import (
 )
 
 func createMnemonic() (string, error) {
+	fmt.Println("oops10")
 	entropySeed, err := bip39.NewEntropy(256)
 	if err != nil {
 		fmt.Println("oops6")

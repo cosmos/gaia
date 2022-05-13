@@ -167,6 +167,7 @@ func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
 }
 
 func (v *validator) createKey(name string) error {
+	fmt.Println("oops9")
 	mnemonic, err := createMnemonic()
 	if err != nil {
 		fmt.Println("oops5")
@@ -276,14 +277,17 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 		},
 		Sequence: 0,
 	}
+	fmt.Println("sig", sig)
 	if err := txBuilder.SetSignatures(sig); err != nil {
 		fmt.Println("oops4")
 		return nil, err
 	}
 
 	signedTx := txBuilder.GetTx()
+	fmt.Println("signedTx", signedTx)
 	bz, err := encodingConfig.TxConfig.TxEncoder()(signedTx)
 	if err != nil {
+		fmt.Println("oops99")
 		return nil, err
 	}
 

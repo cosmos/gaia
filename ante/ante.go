@@ -1,6 +1,7 @@
 package ante
 
 // import (
+//  "github.com/cosmos/gaia/v8/x/globalfee"
 // 	sdk "github.com/cosmos/cosmos-sdk/types"
 // 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 // 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
@@ -34,21 +35,22 @@ package ante
 // 	}
 
 // 	anteDecorators := []sdk.AnteDecorator{
-// 		ante.NewSetUpContextDecorator(),
-// 		ante.NewRejectExtensionOptionsDecorator(),
-// 		NewMempoolFeeDecorator(opts.BypassMinFeeMsgTypes),
-// 		ante.NewValidateBasicDecorator(),
-// 		ante.NewTxTimeoutHeightDecorator(),
-// 		ante.NewValidateMemoDecorator(opts.AccountKeeper),
-// 		ante.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
-// 		ante.NewDeductFeeDecorator(opts.AccountKeeper, opts.BankKeeper, opts.FeegrantKeeper),
-// 		// SetPubKeyDecorator must be called before all signature verification decorators
-// 		ante.NewSetPubKeyDecorator(opts.AccountKeeper),
-// 		ante.NewValidateSigCountDecorator(opts.AccountKeeper),
-// 		ante.NewSigGasConsumeDecorator(opts.AccountKeeper, sigGasConsumer),
-// 		ante.NewSigVerificationDecorator(opts.AccountKeeper, opts.SignModeHandler),
-// 		ante.NewIncrementSequenceDecorator(opts.AccountKeeper),
-// 		ibcante.NewAnteDecorator(opts.IBCkeeper),
+//		ante.NewSetUpContextDecorator(),
+//		ante.NewRejectExtensionOptionsDecorator(),
+//		NewMempoolFeeDecorator(opts.BypassMinFeeMsgTypes),
+//		globalfee.NewGlobalMinimumChainFeeDecorator(options.GlobalFeeSubspace), // after local min fee check
+//		ante.NewValidateBasicDecorator(),
+//		ante.NewTxTimeoutHeightDecorator(),
+//		ante.NewValidateMemoDecorator(opts.AccountKeeper),
+//		ante.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
+//		ante.NewDeductFeeDecorator(opts.AccountKeeper, opts.BankKeeper, opts.FeegrantKeeper),
+//		// SetPubKeyDecorator must be called before all signature verification decorators
+//		ante.NewSetPubKeyDecorator(opts.AccountKeeper),
+//		ante.NewValidateSigCountDecorator(opts.AccountKeeper),
+//		ante.NewSigGasConsumeDecorator(opts.AccountKeeper, sigGasConsumer),
+//		ante.NewSigVerificationDecorator(opts.AccountKeeper, opts.SignModeHandler),
+//		ante.NewIncrementSequenceDecorator(opts.AccountKeeper),
+//		ibcante.NewAnteDecorator(opts.IBCkeeper),
 // 	}
 
 // 	return sdk.ChainAnteDecorators(anteDecorators...), nil

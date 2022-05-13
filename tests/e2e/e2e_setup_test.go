@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"testing"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/server"
@@ -51,9 +52,9 @@ type IntegrationTestSuite struct {
 	valResources   map[string][]*dockertest.Resource
 }
 
-//func TestIntegrationTestSuite(t *testing.T) {
-//	suite.Run(t, new(IntegrationTestSuite))
-//}
+func TestIntegrationTestSuite(t *testing.T) {
+	suite.Run(t, new(IntegrationTestSuite))
+}
 
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up e2e integration test suite...")

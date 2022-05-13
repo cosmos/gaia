@@ -11,7 +11,7 @@ require (
 	github.com/gravity-devs/liquidity v1.5.0
 	github.com/ory/dockertest/v3 v3.8.1
 	github.com/rakyll/statik v0.1.7
-	github.com/spf13/cast v1.4.1
+	github.com/spf13/cast v1.5.0
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/viper v1.10.1
 	github.com/strangelove-ventures/packet-forward-middleware/v2 v2.1.1

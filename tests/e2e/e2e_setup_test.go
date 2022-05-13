@@ -252,7 +252,8 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 
 		valConfig.P2P.PersistentPeers = strings.Join(peers, ",")
 
-		tmconfig.WriteConfigFile(tmCfgPath, valConfig)
+		err := tmconfig.WriteConfigFile(val.configDir(), valConfig)
+		s.Require().NoError(err)
 
 		// set application configuration
 		appCfgPath := filepath.Join(val.configDir(), "config", "app.toml")
@@ -302,7 +303,7 @@ func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 		s.T().Logf("started Gaia %s validator container: %s", c.id, resource.Container.ID)
 	}
 
-	rpcClient, err := rpchttp.New("tcp://localhost:26657/websocket")
+	rpcClient, err := rpchttp.New("tcp://localhost:26657")
 	s.Require().NoError(err)
 
 	s.Require().Eventually(

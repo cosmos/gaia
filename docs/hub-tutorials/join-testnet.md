@@ -10,7 +10,7 @@ order: 3
 
 
 ## Background
-The current Cosmos Hub Testnet is running to prepare for the [Theta Upgrade](https://interchain-io.medium.com/preparing-for-the-cosmos-hub-v7-theta-upgrade-2fc41ce34787). Visit the [testnet explorer](https://explorer.theta-testnet.polypore.xyz/) to view all on chain activity.
+The current Cosmos Hub Testnet is running on the [Theta Upgrade](https://interchain-io.medium.com/preparing-for-the-cosmos-hub-v7-theta-upgrade-2fc41ce34787). Visit the [testnet explorer](https://explorer.theta-testnet.polypore.xyz/) to view all on chain activity.
 
 For those who just need instructions on performing the upgrade, see the [Upgrade](#upgrading) section.
 

@@ -224,7 +224,7 @@ format:
 ###############################################################################
 
 start-localnet-ci:
-	@ignite chain serve --reset-once -v -c ./ignite.ci.yml
+	@ignite chain serve --mode validator --reset-once -v -c ./ignite.ci.yml
 
 .PHONY: start-localnet-ci
 

@@ -36,6 +36,7 @@ func decodeTx(txBytes []byte) (*sdktx.Tx, error) {
 	if err := cdc.Unmarshal(raw.AuthInfoBytes, &authInfo); err != nil {
 		return nil, fmt.Errorf("failed to decode auth info: %w", err)
 	}
+
 	return &sdktx.Tx{
 		Body:       &body,
 		AuthInfo:   &authInfo,

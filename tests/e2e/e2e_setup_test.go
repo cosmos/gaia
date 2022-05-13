@@ -189,6 +189,7 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 		createValmsg, err := val.buildCreateValidatorMsg(stakeAmountCoin)
 		s.Require().NoError(err)
 		signedTx, err := val.signMsg(createValmsg)
+
 		s.Require().NoError(err)
 
 		txRaw, err := cdc.MarshalJSON(signedTx)
@@ -196,6 +197,7 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 
 		genTxs[i] = txRaw
 	}
+
 	genUtilGenState.GenTxs = genTxs
 
 	bz, err = cdc.MarshalJSON(&genUtilGenState)

@@ -23,7 +23,7 @@ If syncing before the Theta update, checkout [`v6.0.0`](https://github.com/cosmo
 
 It's recommended that public testnet nodes are running on machines with at least `16GB` of RAM.
 
-**Make sure Go & Gaia are [properly installed](../getting-started/installation.md). The most recent Gaia version for the Theta Testnet is [`v6.0.0`](https://github.com/cosmos/gaia/tree/v6.0.0).**
+**Make sure Go & Gaia are [properly installed](../getting-started/installation.md). The most recent Gaia version for the Theta Testnet is [`v7.0.0-rc0`](https://github.com/cosmos/gaia/tree/v7.0.0-rc0).**
 
 
 This tutorial will provide all necessary instructions for joining the current public testnet. If you're interested in more advanced configuration and synchronization options, see [Join Mainnet](./join-mainnet.md) for a detailed walkthrough.

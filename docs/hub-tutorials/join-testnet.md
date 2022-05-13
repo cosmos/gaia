@@ -6,7 +6,7 @@ order: 3
 
 | Current Upgrade | Chain Id       | Upgrade Block Height | Upgrade Date     |
 | --------------- | -------------- | -------------------- | ---------------- |
-| Theta           | `theta-testnet-001` | TBD   | March 17 2021 |
+| Theta           | `theta-testnet-001` | 9283650   | March 17 2021 |
 
 
 ## Background

@@ -16,4 +16,4 @@ ARG IMG_TAG
 COPY --from=gaiad-builder /go/bin/gaiad /usr/local/bin/
 EXPOSE 26656 26657 1317 9090
 
-ENTRYPOINT ["gaiad", "start"]
+ENTRYPOINT ["gaiad", "start", "--mode", "validator"]

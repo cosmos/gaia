@@ -188,16 +188,18 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 	for i, val := range c.validators {
 		createValmsg, err := val.buildCreateValidatorMsg(stakeAmountCoin)
 		s.Require().NoError(err)
-
+		fmt.Println("createValmsg", createValmsg)
 		signedTx, err := val.signMsg(createValmsg)
+		fmt.Println("signedTx", signedTx)
 		s.Require().NoError(err)
 
 		txRaw, err := cdc.MarshalJSON(signedTx)
+		fmt.Println("txRaw", txRaw)
 		s.Require().NoError(err)
 
 		genTxs[i] = txRaw
 	}
-
+	fmt.Println("here92")
 	genUtilGenState.GenTxs = genTxs
 
 	bz, err = cdc.MarshalJSON(&genUtilGenState)
@@ -214,7 +216,8 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 
 	// write the updated genesis file to each validator
 	for _, val := range c.validators {
-		writeFile(filepath.Join(val.configDir(), "config", "genesis.json"), bz)
+		err = writeFile(filepath.Join(val.configDir(), "config", "genesis.json"), bz)
+		s.Require().NoError(err)
 	}
 }
 

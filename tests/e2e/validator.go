@@ -19,7 +19,6 @@ import (
 	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/cosmos/gaia/v8/app/params"
 	tmcfg "github.com/tendermint/tendermint/config"
 	tmos "github.com/tendermint/tendermint/libs/os"
 	"github.com/tendermint/tendermint/privval"
@@ -82,7 +81,10 @@ func (v *validator) init() error {
 		return fmt.Errorf("failed to export app genesis state: %w", err)
 	}
 
-	tmcfg.WriteConfigFile(filepath.Join(config.RootDir, "config", "config.toml"), config)
+	err = tmcfg.WriteConfigFile(config.RootDir, config)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -129,9 +131,8 @@ func (v *validator) createConsensusKey() error {
 }
 
 func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
-	cdc := params.MakeTestEncodingConfig().Codec
-
-	kb, err := keyring.New(keyringAppName, keyring.BackendTest, v.configDir(), nil, cdc)
+	dir := v.configDir()
+	kb, err := keyring.New(keyringAppName, keyring.BackendTest, dir, nil, cdc)
 	if err != nil {
 		return err
 	}
@@ -182,7 +183,10 @@ func (v *validator) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
 	}
 
 	// get the initial validator min self delegation
-	minSelfDelegation, _ := sdk.NewIntFromString("1")
+	minSelfDelegation, ok := sdk.NewIntFromString("1")
+	if !ok {
+		return nil, fmt.Errorf("NewIntFromString(\"1\") failed")
+	}
 
 	valPubKey, err := cryptocodec.FromTmPubKeyInterface(v.consensusKey.PubKey)
 	if err != nil {

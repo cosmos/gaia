@@ -69,11 +69,24 @@ func (s *IntegrationTestSuite) TestBankTokenTransfer() {
 
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
-		beforeSenderPhotonBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, "photon")
-		s.Require().NoError(err)
+		var (
+			beforeSenderPhotonBalance    sdk.Coin
+			beforeRecipientPhotonBalance sdk.Coin
+		)
 
-		beforeRecipientPhotonBalance, err := getSpecificBalance(chainAAPIEndpoint, recipient, "photon")
-		s.Require().NoError(err)
+		s.Require().Eventually(
+			func() bool {
+				beforeSenderPhotonBalance, err = getSpecificBalance(chainAAPIEndpoint, sender, "photon")
+				s.Require().NoError(err)
+
+				beforeRecipientPhotonBalance, err = getSpecificBalance(chainAAPIEndpoint, recipient, "photon")
+				s.Require().NoError(err)
+
+				return beforeSenderPhotonBalance.IsValid() && beforeRecipientPhotonBalance.IsValid()
+			},
+			10*time.Second,
+			5*time.Second,
+		)
 
 		s.sendMsgSend(s.chainA, 0, sender, recipient, token.String(), fees.String())
 

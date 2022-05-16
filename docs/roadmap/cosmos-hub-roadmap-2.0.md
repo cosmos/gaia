@@ -49,7 +49,7 @@ The upgrades aim to add features such as liquidity, economic security, usability
 - Cosmos SDK v0.46
   - Groups module:
     - Enables higher-level multisig permissioned accounts, e.g., weight-based voting policies
-  - Meta-Transactions (stretch-goal)
+  - Meta-Transactions
     - Allows messages to be submitted by separate accounts that receive tips for doing so.
   - Gov Module Improvements
     - Execution of arbitraty transactions instead of just governance proposals.
@@ -59,14 +59,10 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Lib P2P
 - IBC 3.1.0
   - Relayer Incentivisation so that IBC packets contain fees to pay for relayer costs.
-- Interchain Account Message Auhothorization Module
+- Interchain Account Message Authorization Module
   - Authentication module that authorizes any Account to create an Interchain Account on any IBC connected "Host" blockchain that has the Interchain Account IBC module.
   - Accounts can be private key controlled users, and eventually the Gov Module and any Groups Module.
-- Liquid Staking
-  - Frees secure and low-risk delegations for use in other parts of the Cosmos ecosystem
-  - Features include enabling transfer of rewards and voting rights
-- Wasmd
-  - Governance permissioned CosmWASM instance on the hub
+- IBC Msg Whitelist to skip MinFee in CheckTX
 - [Budget Module](https://github.com/tendermint/budget) (stretch-goal)
   - Inflation funding directed to arbitrary module and account addresses
 - Global Fee Module (stretch-goal)
@@ -74,29 +70,31 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Visible on [tgrade](https://github.com/confio/tgrade/tree/main/x/globalfee) already and enabled in [ante.go](https://github.com/confio/tgrade/blob/main/app/ante.go#L72-L92)
 - Bech32 Prefix forwarding (stretch-goal)
   - https://github.com/osmosis-labs/bech32-ibc
-- IBC Msg Whitelist to skip MinFee in CheckTX
 
 ## v9-Lambda Upgrade (expected Q3 2022)
 - Gaia v9.0.x
 - Interchain Security v1 - Required Participation of Provider Chain Validators
   - The Cosmos solution to shared security that uses IBC Cross Chain Validation (CCV) to relay validator set composition from a Provider Chain (Cosmos Hub) to a Consumer Chain. This validator set is in charge of producing blocks on both networks using separate nodes. Misbehavior on the Consumer Chain results in slashing Provider Chain staking tokens (ATOM).
   - Allows independent modules like Gravity DEX or Bridge to live on separate chains with their own development cycles.
+- Liquid Staking
+  - Frees secure and low-risk delegations for use in other parts of the Cosmos ecosystem
+  - Features include enabling transfer of rewards and voting rights
 
 ## v10-Epsilon (expected Q4 2022)
 - Gaia v10.0.x
-- Interchain Security v2 - Opt-In Participation of Provider Chain Validators
-  - Where Provider Chain validators have the ability to opt-in to block production for various Consumer Chains.
+- IBC Queries
+- Hub ATOM Liquidity (HAL)
+  - Protocol Controlled Value application to acquire ATOM LP tokens with Interchain Security Tokens
+
+
+## v11-Gamma (expected Q1 2023)
+- Gaia v11.0.x
 - Cosmos SDK v0.47
   - Sparse Merkle Tree (SMT)
     - Various storage and performance optimizations 
   - Postgres indexing
   - Protobuf v2
-- IBC Queries
-
-
-## v11-Gamma (expected Q1 2023)
-- Gaia v11.0.x
-- Interchain Security v3 - Layered Security
+- Interchain Security v2 - Layered Security
   - Where Consumer Chains combine their own staking token validator set with Provider Chain validator set.
 
 ## Future Considerations

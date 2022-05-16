@@ -702,8 +702,8 @@ github.com/gostaticanalysis/testutil v0.4.0 h1:nhdCmubdmDF6VEatUNjgUZBJKWRqugoIS
 github.com/gostaticanalysis/testutil v0.4.0/go.mod h1:bLIoPefWXrRi/ssLFWX1dx7Repi5x3CuviD3dgAZaBU=
 github.com/gotestyourself/gotestyourself v2.2.0+incompatible/go.mod h1:zZKM6oeNM8k+FRljX1mnzVYeS8wiGgQyvST1/GafPbY=
 github.com/graph-gophers/graphql-go v1.3.0/go.mod h1:9CQHMSxwO4MprSdzoIEobiHpoLtHm77vfxsvsIN5Vuc=
-github.com/gravity-devs/liquidity v1.5.1-0.20220513094413-f474dc411ef5 h1:5sFp3gPw1VJlJPgfeEAMGc9cyYUclaHl+cbwBTnJ4E0=
-github.com/gravity-devs/liquidity v1.5.1-0.20220513094413-f474dc411ef5/go.mod h1:ll3zQ4mzQsVbHg7OwuBt6BV7nVHdyc/xIkL58hlxd/s=
+github.com/gravity-devs/liquidity/v2 v2.0.0-beta1 h1:BM7dnQR7ZwSyI5JRF0+sVAUWOAlHHwYEtMtCBAy4ZSg=
+github.com/gravity-devs/liquidity/v2 v2.0.0-beta1/go.mod h1:wgduJCewa6Yis4eIDKPw0DbOLEyPEDcKBetM6kdU5SQ=
 github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79/go.mod h1:FecbI9+v66THATjSRHfNgh1IVFe/9kFxbXtjV0ctIMA=
 github.com/grpc-ecosystem/go-grpc-middleware v1.0.0/go.mod h1:FiyG127CGDf3tlThmgyCl78X/SZQqEOJBCDaAfeWzPs=
 github.com/grpc-ecosystem/go-grpc-middleware v1.0.1-0.20190118093823-f849b5445de4/go.mod h1:FiyG127CGDf3tlThmgyCl78X/SZQqEOJBCDaAfeWzPs=

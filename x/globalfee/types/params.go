@@ -1,7 +1,7 @@
 package types
 
 import (
-	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+//	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/params/types"
@@ -37,7 +37,8 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 func validateMinimumGasPrices(i interface{}) error {
 	v, ok := i.(sdk.DecCoins)
 	if !ok {
-		return sdkerrors.Wrapf(wasmtypes.ErrInvalid, "type: %T", i)
+		// todo check if err type correct
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "type: %T", i)
 	}
 	return v.Validate()
 }

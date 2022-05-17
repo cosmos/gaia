@@ -2,7 +2,7 @@
 order: 3
 -->
 
-# Quick Start
+# Join Mainnet Quick Start
 
 **Bootstrap a  `cosmoshub-4` mainnet node**
 

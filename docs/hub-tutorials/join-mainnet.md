@@ -1,6 +1,7 @@
-<!--
+---
 order: 2
--->
+title: Joining Mainnet
+---
 
 # Join the Cosmos Hub Mainnet
 

@@ -1,7 +1,7 @@
-<!--
+---
 title: Cosmos Hub 3 Upgrade
 order: 5
--->
+---
 <!-- markdown-link-check-disable -->
 # Cosmos Hub 3 Upgrade Instructions
 

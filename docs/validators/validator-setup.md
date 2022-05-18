@@ -1,6 +1,7 @@
-<!--
+---
 order: 2
--->
+title: Running a Validator
+---
 
 # Running a Validator
 

@@ -1,7 +1,7 @@
-<!--
+---
 title: Cosmos Hub 4, Delta Upgrade
 order: 4
--->
+---
 <!-- markdown-link-check-disable -->
 # Cosmos Hub 4, Delta Upgrade, Instructions
 

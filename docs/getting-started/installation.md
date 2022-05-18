@@ -1,6 +1,7 @@
-<!--
+---
 order: 2
--->
+title: Installing Gaia
+---
 
 # Installation
 

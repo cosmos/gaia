@@ -1,7 +1,7 @@
-<!--
+---
 title: Cosmos Hub 4, Vega Upgrade
 order: 3
--->
+---
 <!-- markdown-link-check-disable -->
 # Cosmos Hub 4, Vega Upgrade, Instructions
 

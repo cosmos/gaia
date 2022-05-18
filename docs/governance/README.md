@@ -1,9 +1,9 @@
-<!--
+---
 order: 1
 parent:
   title: Governance
   order: 6
--->
+---
 
 # Governance Overview
 

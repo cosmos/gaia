@@ -13,7 +13,7 @@ import (
 
 func TestDefaultGenesis(t *testing.T) {
 	encCfg := simapp.MakeTestEncodingConfig()
-	gotJson := AppModuleBasic{}.DefaultGenesis(encCfg.Marshaler)
+	gotJson := AppModuleBasic{}.DefaultGenesis(encCfg.Codec)
 	assert.JSONEq(t, `{"params":{"minimum_gas_prices":[]}}`, string(gotJson), string(gotJson))
 }
 
@@ -47,7 +47,7 @@ func TestValidateGenesis(t *testing.T) {
 	}
 	for name, spec := range specs {
 		t.Run(name, func(t *testing.T) {
-			gotErr := AppModuleBasic{}.ValidateGenesis(encCfg.Marshaler, nil, []byte(spec.src))
+			gotErr := AppModuleBasic{}.ValidateGenesis(encCfg.Codec, nil, []byte(spec.src))
 			if spec.expErr {
 				require.Error(t, gotErr)
 				return
@@ -80,10 +80,10 @@ func TestInitExportGenesis(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			ctx, encCfg, subspace := setupTestStore(t)
 			m := NewAppModule(subspace)
-			m.InitGenesis(ctx, encCfg.Marshaler, []byte(spec.src))
-			gotJson := m.ExportGenesis(ctx, encCfg.Marshaler)
+			m.InitGenesis(ctx, encCfg.Codec, []byte(spec.src))
+			gotJson := m.ExportGenesis(ctx, encCfg.Codec)
 			var got types.GenesisState
-			require.NoError(t, encCfg.Marshaler.UnmarshalJSON(gotJson, &got))
+			require.NoError(t, encCfg.Codec.UnmarshalJSON(gotJson, &got))
 			assert.Equal(t, spec.exp, got, string(gotJson))
 		})
 	}

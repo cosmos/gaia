@@ -6,7 +6,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/simapp"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
-	"github.com/cosmos/cosmos-sdk/store"
+	store"github.com/cosmos/cosmos-sdk/store"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
@@ -192,11 +193,11 @@ func setupTestStore(t *testing.T) (sdk.Context, simappparams.EncodingConfig, par
 	encCfg := simapp.MakeTestEncodingConfig()
 	keyParams := sdk.NewKVStoreKey(paramstypes.StoreKey)
 	tkeyParams := sdk.NewTransientStoreKey(paramstypes.TStoreKey)
-	ms.MountStoreWithDB(keyParams, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(tkeyParams, sdk.StoreTypeTransient, db)
+	ms.MountStoreWithDB(keyParams, storetypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(tkeyParams, storetypes.StoreTypeTransient, db)
 	require.NoError(t, ms.LoadLatestVersion())
 
-	paramsKeeper := paramskeeper.NewKeeper(encCfg.Marshaler, encCfg.Amino, keyParams, tkeyParams)
+	paramsKeeper := paramskeeper.NewKeeper(encCfg.Codec, encCfg.Amino, keyParams, tkeyParams)
 
 	ctx := sdk.NewContext(ms, tmproto.Header{
 		Height: 1234567,

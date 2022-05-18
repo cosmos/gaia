@@ -1,6 +1,8 @@
 <!--
+order: false
 parent:
-  order: false
+  title: Migration Instructions
+  order: 9
 markdown-link-check-disable
 -->
 

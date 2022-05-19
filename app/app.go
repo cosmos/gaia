@@ -90,6 +90,7 @@ import (
 
 	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
 	icacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
+	icahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
 	icahostkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/keeper"
 	icahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
 	icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
@@ -101,7 +102,7 @@ import (
 	ibcclientclient "github.com/cosmos/ibc-go/v3/modules/core/02-client/client"
 	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
 
-	// porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
+	porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
 	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
 	"github.com/gorilla/mux"
@@ -276,9 +277,9 @@ func NewGaiaApp(
 	keys := sdk.NewKVStoreKeys(
 		authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey,
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
-		govtypes.StoreKey, paramstypes.StoreKey /*ibchost.StoreKey,*/, upgradetypes.StoreKey,
-		evidencetypes.StoreKey, /*liquiditytypes.StoreKey,*/ /*ibctransfertypes.StoreKey,*/
-		capabilitytypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey /*routertypes.StoreKey,*/ /* icahosttypes.StoreKey,*/, group.StoreKey,
+		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
+		evidencetypes.StoreKey /*liquiditytypes.StoreKey,*/, ibctransfertypes.StoreKey,
+		capabilitytypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey /*routertypes.StoreKey,*/, icahosttypes.StoreKey, group.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -415,6 +416,18 @@ func NewGaiaApp(
 		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks()),
 	)
 
+	// set the governance module account as the authority for conducting upgrades
+	// UpgradeKeeper must be created before IBCKeeper
+	app.UpgradeKeeper = upgradekeeper.NewKeeper(
+		skipUpgradeHeights,
+		keys[upgradetypes.StoreKey],
+		appCodec,
+		homePath,
+		app.BaseApp,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+	)
+
+	// UpgradeKeeper must be created before IBCKeeper
 	app.IBCKeeper = ibckeeper.NewKeeper(
 		appCodec,
 		keys[ibchost.StoreKey],
@@ -443,20 +456,10 @@ func NewGaiaApp(
 		app.GetSubspace(govtypes.ModuleName),
 		app.AccountKeeper,
 		app.BankKeeper,
-		&stakingKeeper,
+		app.StakingKeeper,
 		govRouter,
 		app.msgSvcRouter,
 		govConfig,
-	)
-
-	// set the governance module account as the authority for conducting upgrades
-	app.UpgradeKeeper = upgradekeeper.NewKeeper(
-		skipUpgradeHeights,
-		keys[upgradetypes.StoreKey],
-		appCodec,
-		homePath,
-		app.BaseApp,
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	app.TransferKeeper = ibctransferkeeper.NewKeeper(
@@ -471,7 +474,7 @@ func NewGaiaApp(
 		scopedTransferKeeper,
 	)
 	transferModule := transfer.NewAppModule(app.TransferKeeper)
-	// transferIBCModule := transfer.NewIBCModule(app.TransferKeeper)
+	transferIBCModule := transfer.NewIBCModule(app.TransferKeeper)
 
 	app.ICAHostKeeper = icahostkeeper.NewKeeper(
 		appCodec, keys[icahosttypes.StoreKey],
@@ -483,17 +486,17 @@ func NewGaiaApp(
 		app.msgSvcRouter,
 	)
 	icaModule := ica.NewAppModule(nil, &app.ICAHostKeeper)
-	// icaHostIBCModule := icahost.NewIBCModule(app.ICAHostKeeper)
+	icaHostIBCModule := icahost.NewIBCModule(app.ICAHostKeeper)
 
 	// app.RouterKeeper = routerkeeper.NewKeeper(appCodec, keys[routertypes.StoreKey], app.GetSubspace(routertypes.ModuleName), app.TransferKeeper, app.DistrKeeper)
 
 	// routerModule := router.NewAppModule(app.RouterKeeper, transferIBCModule)
 	// create static IBC router, add transfer route, then set and seal it
-	// ibcRouter := porttypes.NewRouter()
-	// ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
-	// 	AddRoute(ibctransfertypes.ModuleName, transferIBCModule)
+	ibcRouter := porttypes.NewRouter()
+	ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
+		AddRoute(ibctransfertypes.ModuleName, transferIBCModule)
 
-	// app.IBCKeeper.SetRouter(ibcRouter)
+	app.IBCKeeper.SetRouter(ibcRouter)
 
 	// create evidence keeper with router
 	evidenceKeeper := evidencekeeper.NewKeeper(

@@ -275,8 +275,8 @@ func NewGaiaApp(
 	keys := sdk.NewKVStoreKeys(
 		authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey,
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
-		govtypes.StoreKey, paramstypes.StoreKey                           /*ibchost.StoreKey,*/, upgradetypes.StoreKey,
-		evidencetypes.StoreKey,                                           /*liquiditytypes.StoreKey,*/ /*ibctransfertypes.StoreKey,*/
+		govtypes.StoreKey, paramstypes.StoreKey /*ibchost.StoreKey,*/, upgradetypes.StoreKey,
+		evidencetypes.StoreKey, /*liquiditytypes.StoreKey,*/ /*ibctransfertypes.StoreKey,*/
 		capabilitytypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey /*routertypes.StoreKey,*/ /* icahosttypes.StoreKey,*/, group.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -797,16 +797,16 @@ func (app *GaiaApp) setAppTxHandler(txConfig client.TxConfig, indexEventsStr []s
 	txHandler, err := gaiaante.NewTxHandler(
 		gaiaante.TxHandlerOptions{
 			TxHandlerOptions: authmiddleware.TxHandlerOptions{
-				Debug:           app.Trace(),
-				TxDecoder:       txConfig.TxDecoder(),
+				Debug:            app.Trace(),
+				TxDecoder:        txConfig.TxDecoder(),
 				IndexEvents:      indexEvents,
 				LegacyRouter:     app.legacyRouter,
 				MsgServiceRouter: app.msgSvcRouter,
-				AccountKeeper:   app.AccountKeeper,
-				BankKeeper:      app.BankKeeper,
-				FeegrantKeeper:  app.FeeGrantKeeper,
-				SignModeHandler: txConfig.SignModeHandler(),
-				SigGasConsumer:  authmiddleware.DefaultSigVerificationGasConsumer,
+				AccountKeeper:    app.AccountKeeper,
+				BankKeeper:       app.BankKeeper,
+				FeegrantKeeper:   app.FeeGrantKeeper,
+				SignModeHandler:  txConfig.SignModeHandler(),
+				SigGasConsumer:   authmiddleware.DefaultSigVerificationGasConsumer,
 			},
 			// IBCkeeper:            app.IBCKeeper,
 		},

@@ -1,12 +1,13 @@
 package ante
 
 import (
+	"math"
+
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/tx"
 	"github.com/cosmos/cosmos-sdk/x/auth/middleware"
-	"math"
 	// "github.com/cosmos/cosmos-sdk/x/auth/ante"
 	// ibcante "github.com/cosmos/ibc-go/v3/modules/core/ante"
 	// ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
@@ -63,7 +64,6 @@ type TxHandlerOptions struct {
 	// IBCkeeper            *ibckeeper.Keeper
 	BypassMinFeeMsgTypes []string
 }
-
 
 func NewTxHandler(options TxHandlerOptions) (tx.Handler, error) {
 	if options.TxDecoder == nil {
@@ -131,7 +131,7 @@ func NewTxHandler(options TxHandlerOptions) (tx.Handler, error) {
 		middleware.IncrementSequenceMiddleware(options.AccountKeeper),
 		// Creates a new MultiStore branch, discards downstream writes if the downstream returns error.
 		// These kinds of middlewares should be put under this:
-		// - Could return error after messages executed succesfully.
+		// - Could return error after messages executed successfully.
 		// - Storage writes should be discarded together when tx failed.
 		middleware.WithBranchedStore,
 		// Consume block gas. All middlewares whose gas consumption after their `next` handler
@@ -142,14 +142,13 @@ func NewTxHandler(options TxHandlerOptions) (tx.Handler, error) {
 	), nil
 }
 
+// helper functions: rejectExtensionOption and checkTxFeeWithValidatorMinGasPrices
 
-// helper functions
 // rejectExtensionOption is the default extension check that reject all tx
 // extensions.
 func rejectExtensionOption(*codectypes.Any) bool {
 	return false
 }
-
 
 // checkTxFeeWithValidatorMinGasPrices implements the default fee logic, where the minimum price per
 // unit of gas is fixed and set by each validator, can the tx priority is computed from the gas price.

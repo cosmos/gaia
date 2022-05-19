@@ -121,7 +121,7 @@ import (
 	// routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v2/router/keeper"
 	// routertypes "github.com/strangelove-ventures/packet-forward-middleware/v2/router/types"
 
-	// gaiaante "github.com/cosmos/gaia/v8/ante"
+	gaiaante "github.com/cosmos/gaia/v8/ante"
 	gaiaappparams "github.com/cosmos/gaia/v8/app/params"
 
 	// unnamed import of statik for swagger UI support
@@ -683,8 +683,25 @@ func NewGaiaApp(
 	// if err != nil {
 	// 	panic(fmt.Errorf("failed to create AnteHandler: %s", err))
 	// }
+	anteHandler, err := gaiaante.NewTxHandler(
+		gaiaante.TxHandlerOptions{
+			TxHandlerOptions: authmiddleware.TxHandlerOptions {
+				AccountKeeper:   app.AccountKeeper,
+				BankKeeper:      app.BankKeeper,
+				FeegrantKeeper:  app.FeeGrantKeeper,
+				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
+				SigGasConsumer:  authmiddleware.DefaultSigVerificationGasConsumer,
+			},
+			// IBCkeeper:            app.IBCKeeper,
+			BypassMinFeeMsgTypes: cast.ToStringSlice(appOpts.Get(gaiaappparams.BypassMinFeeMsgTypesKey)),
+		},
+	)
+	if err != nil {
+		panic(fmt.Errorf("failed to create AnteHandler: %s", err))
+	}
 
 	// app.SetAnteHandler(anteHandler)
+	app.SetTxHandler(anteHandler)
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)

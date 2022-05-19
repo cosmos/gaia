@@ -90,7 +90,6 @@ import (
 
 	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
 	icacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
-	icahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
 	icahostkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/keeper"
 	icahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
 	icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
@@ -102,7 +101,6 @@ import (
 	ibcclientclient "github.com/cosmos/ibc-go/v3/modules/core/02-client/client"
 	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
 
-	porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
 	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
 	"github.com/gorilla/mux"
@@ -474,7 +472,7 @@ func NewGaiaApp(
 		scopedTransferKeeper,
 	)
 	transferModule := transfer.NewAppModule(app.TransferKeeper)
-	transferIBCModule := transfer.NewIBCModule(app.TransferKeeper)
+	// transferIBCModule := transfer.NewIBCModule(app.TransferKeeper)
 
 	app.ICAHostKeeper = icahostkeeper.NewKeeper(
 		appCodec, keys[icahosttypes.StoreKey],
@@ -486,17 +484,17 @@ func NewGaiaApp(
 		app.msgSvcRouter,
 	)
 	icaModule := ica.NewAppModule(nil, &app.ICAHostKeeper)
-	icaHostIBCModule := icahost.NewIBCModule(app.ICAHostKeeper)
+	// icaHostIBCModule := icahost.NewIBCModule(app.ICAHostKeeper)
 
 	// app.RouterKeeper = routerkeeper.NewKeeper(appCodec, keys[routertypes.StoreKey], app.GetSubspace(routertypes.ModuleName), app.TransferKeeper, app.DistrKeeper)
 
 	// routerModule := router.NewAppModule(app.RouterKeeper, transferIBCModule)
 	// create static IBC router, add transfer route, then set and seal it
-	ibcRouter := porttypes.NewRouter()
-	ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
-		AddRoute(ibctransfertypes.ModuleName, transferIBCModule)
+	// ibcRouter := porttypes.NewRouter()
+	// ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
+	// 	AddRoute(ibctransfertypes.ModuleName, transferIBCModule)
 
-	app.IBCKeeper.SetRouter(ibcRouter)
+	// app.IBCKeeper.SetRouter(ibcRouter)
 
 	// create evidence keeper with router
 	evidenceKeeper := evidencekeeper.NewKeeper(

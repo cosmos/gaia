@@ -1,6 +1,7 @@
-<!--
-order: 7
--->
+---
+order: 2
+title: Cosmos Hub Archives
+---
 
 # Cosmos Hub Archives
 

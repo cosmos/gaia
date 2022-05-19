@@ -2,7 +2,7 @@
 order: 1
 parent:
   title: Governance
-  order: 7
+  order: 6
 ---
 
 # Governance Overview

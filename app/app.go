@@ -8,11 +8,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/cosmos/cosmos-sdk/testutil/testdata_pulsar"
-
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
+	"github.com/cosmos/cosmos-sdk/testutil/testdata_pulsar"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
@@ -276,8 +275,8 @@ func NewGaiaApp(
 	keys := sdk.NewKVStoreKeys(
 		authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey,
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
-		govtypes.StoreKey, paramstypes.StoreKey /*ibchost.StoreKey,*/, upgradetypes.StoreKey,
-		evidencetypes.StoreKey, /*liquiditytypes.StoreKey,*/ /*ibctransfertypes.StoreKey,*/
+		govtypes.StoreKey, paramstypes.StoreKey                           /*ibchost.StoreKey,*/, upgradetypes.StoreKey,
+		evidencetypes.StoreKey,                                           /*liquiditytypes.StoreKey,*/ /*ibctransfertypes.StoreKey,*/
 		capabilitytypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey /*routertypes.StoreKey,*/ /* icahosttypes.StoreKey,*/, group.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -431,7 +430,7 @@ func NewGaiaApp(
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper))
-		// AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
+	// AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
 	govConfig := govtypes.DefaultConfig()
 	/*
 		Example of setting gov params:
@@ -683,29 +682,12 @@ func NewGaiaApp(
 	// if err != nil {
 	// 	panic(fmt.Errorf("failed to create AnteHandler: %s", err))
 	// }
-	anteHandler, err := gaiaante.NewTxHandler(
-		gaiaante.TxHandlerOptions{
-			TxHandlerOptions: authmiddleware.TxHandlerOptions {
-				AccountKeeper:   app.AccountKeeper,
-				BankKeeper:      app.BankKeeper,
-				FeegrantKeeper:  app.FeeGrantKeeper,
-				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
-				SigGasConsumer:  authmiddleware.DefaultSigVerificationGasConsumer,
-			},
-			// IBCkeeper:            app.IBCKeeper,
-			BypassMinFeeMsgTypes: cast.ToStringSlice(appOpts.Get(gaiaappparams.BypassMinFeeMsgTypesKey)),
-		},
-	)
-	if err != nil {
-		panic(fmt.Errorf("failed to create AnteHandler: %s", err))
-	}
 
 	// app.SetAnteHandler(anteHandler)
-	app.SetTxHandler(anteHandler)
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
-	app.setTxHandler(encodingConfig.TxConfig, cast.ToStringSlice(appOpts.Get(server.FlagIndexEvents)))
+	app.setAppTxHandler(encodingConfig.TxConfig, cast.ToStringSlice(appOpts.Get(server.FlagIndexEvents)))
 
 	app.UpgradeKeeper.SetUpgradeHandler(
 		upgradeName,
@@ -783,23 +765,52 @@ func NewGaiaApp(
 	return app
 }
 
-func (app *GaiaApp) setTxHandler(txConfig client.TxConfig, indexEventsStr []string) {
+//func (app *GaiaApp) setTxHandler(txConfig client.TxConfig, indexEventsStr []string) {
+//	indexEvents := map[string]struct{}{}
+//	for _, e := range indexEventsStr {
+//		indexEvents[e] = struct{}{}
+//	}
+//	txHandler, err := authmiddleware.NewDefaultTxHandler(authmiddleware.TxHandlerOptions{
+//		Debug:            app.Trace(),
+//		IndexEvents:      indexEvents,
+//		LegacyRouter:     app.legacyRouter,
+//		MsgServiceRouter: app.msgSvcRouter,
+//		AccountKeeper:    app.AccountKeeper,
+//		BankKeeper:       app.BankKeeper,
+//		FeegrantKeeper:   app.FeeGrantKeeper,
+//		SignModeHandler:  txConfig.SignModeHandler(),
+//		SigGasConsumer:   authmiddleware.DefaultSigVerificationGasConsumer,
+//		TxDecoder:        txConfig.TxDecoder(),
+//	})
+//	if err != nil {
+//		panic(err)
+//	}
+//
+//	app.SetTxHandler(txHandler)
+//}
+
+func (app *GaiaApp) setAppTxHandler(txConfig client.TxConfig, indexEventsStr []string) {
 	indexEvents := map[string]struct{}{}
 	for _, e := range indexEventsStr {
 		indexEvents[e] = struct{}{}
 	}
-	txHandler, err := authmiddleware.NewDefaultTxHandler(authmiddleware.TxHandlerOptions{
-		Debug:            app.Trace(),
-		IndexEvents:      indexEvents,
-		LegacyRouter:     app.legacyRouter,
-		MsgServiceRouter: app.msgSvcRouter,
-		AccountKeeper:    app.AccountKeeper,
-		BankKeeper:       app.BankKeeper,
-		FeegrantKeeper:   app.FeeGrantKeeper,
-		SignModeHandler:  txConfig.SignModeHandler(),
-		SigGasConsumer:   authmiddleware.DefaultSigVerificationGasConsumer,
-		TxDecoder:        txConfig.TxDecoder(),
-	})
+	txHandler, err := gaiaante.NewTxHandler(
+		gaiaante.TxHandlerOptions{
+			TxHandlerOptions: authmiddleware.TxHandlerOptions{
+				Debug:           app.Trace(),
+				TxDecoder:       txConfig.TxDecoder(),
+				IndexEvents:      indexEvents,
+				LegacyRouter:     app.legacyRouter,
+				MsgServiceRouter: app.msgSvcRouter,
+				AccountKeeper:   app.AccountKeeper,
+				BankKeeper:      app.BankKeeper,
+				FeegrantKeeper:  app.FeeGrantKeeper,
+				SignModeHandler: txConfig.SignModeHandler(),
+				SigGasConsumer:  authmiddleware.DefaultSigVerificationGasConsumer,
+			},
+			// IBCkeeper:            app.IBCKeeper,
+		},
+	)
 	if err != nil {
 		panic(err)
 	}

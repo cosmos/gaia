@@ -1,8 +1,9 @@
-<!--
+---
 order: false
 parent:
-  order: 6
--->
+  title: Resources
+  order: 8
+---
 
 # Resources
 

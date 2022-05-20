@@ -36,6 +36,11 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+* (gaia-rho) Update [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.46.0-beta2](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.46.0-beta2). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.46.0-beta2/CHANGELOG.md) for details.
+* (gaia-rho) Add [Groups Module](https://docs.cosmos.network/main/modules/group/#group-module).
+* (tests) Add E2E test for Bank Send.
+* (tests) Update liveness tests to use Ignite v0.21.1.
+
 ## [v7.0.2] -2022-05-09
 
 * (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.4](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.4). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.4/CHANGELOG.md#v0454---2022-04-25) for details.

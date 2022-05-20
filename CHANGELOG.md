@@ -36,6 +36,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+* (gaia-rho) update Liquidity module to v2.0.0-beta1 to work with Cosmos-SDK v0.46.0-beta2
+
 ## [v7.0.2] -2022-05-09
 
 * (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.4](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.4). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.4/CHANGELOG.md#v0454---2022-04-25) for details.

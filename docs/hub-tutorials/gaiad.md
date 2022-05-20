@@ -1,6 +1,7 @@
-<!--
+---
 order: 5
--->
+title: Interacting with Gaiad (CLI)
+---
 
 # Gaia Client
 

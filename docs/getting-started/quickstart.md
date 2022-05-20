@@ -1,6 +1,7 @@
-<!--
+---
 order: 3
--->
+title: Quick Start - Join Mainnet 
+---
 
 # Join Mainnet Quick Start
 

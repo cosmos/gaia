@@ -6,7 +6,6 @@ require (
 	github.com/cosmos/cosmos-sdk v0.46.0-beta2
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/ibc-go/v3 v3.0.0
-	// github.com/cosmos/ibc-go/v3 v1.0.0-beta1.0.20220515142851-0daf1c39fba0
 	github.com/golangci/golangci-lint v1.45.2
 	github.com/gorilla/mux v1.8.0
 	// github.com/gravity-devs/liquidity v1.5.0
@@ -278,10 +277,7 @@ require (
 )
 
 replace (
-	// github.com/cosmos/ibc-go/v3 => /Users/billy/GitHub/cosmos/ibc-go
 	github.com/cosmos/ibc-go/v3 => github.com/cosmos/ibc-go/v3 v3.0.0-20220517190049-c4ce2b908a1e
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	github.com/zondax/hid => github.com/zondax/hid v0.9.0
 )
-
-// replace github.com/cosmos/ibc-go => github.com/cosmos/ibc-go 0daf1c39fba06faf3eb8cb9cd4a7b0ac0542a96e

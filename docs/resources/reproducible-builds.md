@@ -1,6 +1,7 @@
-<!--
-order: 6
--->
+---
+order: 5
+title: Building Gaia Deterministically
+---
 
 # Build Gaia Deterministically
 

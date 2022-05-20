@@ -1,6 +1,7 @@
-<!--
+---
 order: 6
--->
+title: Upgrading the Chain
+---
 
 # Live Upgrade Tutorial
 

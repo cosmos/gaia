@@ -87,13 +87,13 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.initValidatorConfigs(s.chainA)
 	s.runValidators(s.chainA, 0)
 
-	s.T().Logf("starting e2e infrastructure for chain B; chain-id: %s; datadir: %s", s.chainB.id, s.chainB.dataDir)
-	s.initNodes(s.chainB)
-	s.initGenesis(s.chainB)
-	s.initValidatorConfigs(s.chainB)
-	s.runValidators(s.chainB, 10)
+	// s.T().Logf("starting e2e infrastructure for chain B; chain-id: %s; datadir: %s", s.chainB.id, s.chainB.dataDir)
+	// s.initNodes(s.chainB)
+	// s.initGenesis(s.chainB)
+	// s.initValidatorConfigs(s.chainB)
+	// s.runValidators(s.chainB, 10)
 
-	s.runIBCRelayer()
+	// s.runIBCRelayer()
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -108,7 +108,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 
 	s.T().Log("tearing down e2e integration test suite...")
 
-	s.Require().NoError(s.dkrPool.Purge(s.hermesResource))
+	// s.Require().NoError(s.dkrPool.Purge(s.hermesResource))
 
 	for _, vr := range s.valResources {
 		for _, r := range vr {
@@ -119,7 +119,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 	s.Require().NoError(s.dkrPool.RemoveNetwork(s.dkrNet))
 
 	os.RemoveAll(s.chainA.dataDir)
-	os.RemoveAll(s.chainB.dataDir)
+	// os.RemoveAll(s.chainB.dataDir)
 
 	for _, td := range s.tmpDirs {
 		os.RemoveAll(td)
@@ -132,8 +132,10 @@ func (s *IntegrationTestSuite) initNodes(c *chain) {
 	// initialize a genesis file for the first validator
 	val0ConfigDir := c.validators[0].configDir()
 	for _, val := range c.validators {
+		address, err := val.keyInfo.GetAddress()
+		s.Require().NoError(err)
 		s.Require().NoError(
-			addGenesisAccount(val0ConfigDir, "", initBalanceStr, val.keyInfo.GetAddress()),
+			addGenesisAccount(val0ConfigDir, "", initBalanceStr, address),
 		)
 	}
 
@@ -187,8 +189,8 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 	for i, val := range c.validators {
 		createValmsg, err := val.buildCreateValidatorMsg(stakeAmountCoin)
 		s.Require().NoError(err)
-
 		signedTx, err := val.signMsg(createValmsg)
+
 		s.Require().NoError(err)
 
 		txRaw, err := cdc.MarshalJSON(signedTx)
@@ -213,7 +215,8 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 
 	// write the updated genesis file to each validator
 	for _, val := range c.validators {
-		writeFile(filepath.Join(val.configDir(), "config", "genesis.json"), bz)
+		err = writeFile(filepath.Join(val.configDir(), "config", "genesis.json"), bz)
+		s.Require().NoError(err)
 	}
 }
 
@@ -243,13 +246,14 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 			}
 
 			peer := c.validators[j]
-			peerID := fmt.Sprintf("%s@%s%d:26656", peer.nodeKey.ID(), peer.moniker, j)
+			peerID := fmt.Sprintf("%s@%s%d:26656", peer.nodeKey.ID, peer.moniker, j)
 			peers = append(peers, peerID)
 		}
 
 		valConfig.P2P.PersistentPeers = strings.Join(peers, ",")
 
-		tmconfig.WriteConfigFile(tmCfgPath, valConfig)
+		err := tmconfig.WriteConfigFile(val.configDir(), valConfig)
+		s.Require().NoError(err)
 
 		// set application configuration
 		appCfgPath := filepath.Join(val.configDir(), "config", "app.toml")
@@ -299,7 +303,7 @@ func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 		s.T().Logf("started Gaia %s validator container: %s", c.id, resource.Container.ID)
 	}
 
-	rpcClient, err := rpchttp.New("tcp://localhost:26657", "/websocket")
+	rpcClient, err := rpchttp.New("tcp://localhost:26657")
 	s.Require().NoError(err)
 
 	s.Require().Eventually(

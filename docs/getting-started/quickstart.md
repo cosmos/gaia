@@ -1,8 +1,9 @@
-<!--
+---
 order: 3
--->
+title: Quick Start - Join Mainnet 
+---
 
-# Quick Start
+# Join Mainnet Quick Start
 
 **Bootstrap a  `cosmoshub-4` mainnet node**
 

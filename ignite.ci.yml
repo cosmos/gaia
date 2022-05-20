@@ -7,6 +7,9 @@ genesis:
     staking:
       params:
         bond_denom: "uatom"
+init:
+  config:
+    mode: "validator"
 accounts:
   - name: alice
     coins: ["39000000000000uatom"]

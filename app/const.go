@@ -1,4 +1,5 @@
-package gaia //#nosec
+package gaia
+
 const (
 	appName     = "GaiaApp"
 	upgradeName = "v8-Rho"
@@ -25,7 +26,7 @@ const (
 	stakingMsgCreateValidator           = "/cosmos.staking.v1beta1.MsgCreateValidator"
 	vestingMsgCreateVestingAccount      = "/cosmos.vesting.v1beta1.MsgCreateVestingAccount"
 	transferMsgTransfer                 = "/ibc.applications.transfer.v1.MsgTransfer"
-	liquidityMsgSwapWithinBatch         = "/tendermint.liquidity.v1beta1.MsgSwapWithinBatch"
+	liquidityMsgSwapWithinBatch         = "/tendermint.liquidity.v1beta1.MsgSwapWithinBatch" //#nosec
 	liquidityMsgCreatePool              = "/tendermint.liquidity.v1beta1.MsgCreatePool"
 	liquidityMsgDepositWithinBatch      = "/tendermint.liquidity.v1beta1.MsgDepositWithinBatch"
 	liquidityMsgWithdrawWithinBatch     = "/tendermint.liquidity.v1beta1.MsgWithdrawWithinBatch"

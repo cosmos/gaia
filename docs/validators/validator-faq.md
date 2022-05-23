@@ -1,6 +1,7 @@
-<!--
+---
 order: 3
--->
+title: Validator FAQ
+---
 
 # Validator FAQ
 

@@ -11,6 +11,7 @@ Welcome to the documentation of the **Cosmos Hub application: `gaia`**.
 ## What is Gaia?
 
 - [Intro to the `gaia` software](./getting-started/what-is-gaia.md)
+- [Interacting with the `gaiad` binary](./hub-tutorials/gaiad.md)
 
 ## Join the Cosmos Hub Mainnet
 
@@ -24,7 +25,7 @@ Welcome to the documentation of the **Cosmos Hub application: `gaia`**.
 
 ## Setup Your Own `gaia` Testnet
 
-- [Setup your own `gaia` testnet](./hub-tutorials/deploy-testnet.md)
+- [Setup your own `gaia` testnet](https://github.com/cosmos/testnets/tree/master/v7-theta/local-testnet)
 
 ## Additional Resources
 

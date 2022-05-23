@@ -1,6 +1,7 @@
-<!--
-order: 2
--->
+---
+order: 1
+title: The Genesis File
+---
 
 # Genesis File
 

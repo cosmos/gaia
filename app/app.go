@@ -106,9 +106,9 @@ import (
 	// ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
 	"github.com/gorilla/mux"
 
-	// "github.com/gravity-devs/liquidity/x/liquidity"
-	// liquiditykeeper "github.com/gravity-devs/liquidity/x/liquidity/keeper"
-	// liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
+	"github.com/gravity-devs/liquidity/v2/x/liquidity"
+	liquiditykeeper "github.com/gravity-devs/liquidity/v2/x/liquidity/keeper"
+	liquiditytypes "github.com/gravity-devs/liquidity/v2/x/liquidity/types"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -164,7 +164,7 @@ var (
 		evidence.AppModuleBasic{},
 		// transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
-		// liquidity.AppModuleBasic{},
+		liquidity.AppModuleBasic{},
 		// router.AppModuleBasic{},
 		// ica.AppModuleBasic{},
 	)
@@ -178,7 +178,7 @@ var (
 		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
-		// liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
+		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		// ibctransfertypes.ModuleName: {authtypes.Minter, authtypes.Burner},
 	}
 )
@@ -223,10 +223,10 @@ type GaiaApp struct { // nolint: golint
 	// ICAHostKeeper  icahostkeeper.Keeper
 	EvidenceKeeper evidencekeeper.Keeper
 	// TransferKeeper ibctransferkeeper.Keeper
-	FeeGrantKeeper feegrantkeeper.Keeper
-	GroupKeeper    groupkeeper.Keeper
-	AuthzKeeper    authzkeeper.Keeper
-	// LiquidityKeeper liquiditykeeper.Keeper
+	FeeGrantKeeper  feegrantkeeper.Keeper
+	GroupKeeper     groupkeeper.Keeper
+	AuthzKeeper     authzkeeper.Keeper
+	LiquidityKeeper liquiditykeeper.Keeper
 	// RouterKeeper    routerkeeper.Keeper
 
 	// make scoped keepers public for test purposes
@@ -277,7 +277,7 @@ func NewGaiaApp(
 		authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey,
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey /*ibchost.StoreKey,*/, upgradetypes.StoreKey,
-		evidencetypes.StoreKey, /*liquiditytypes.StoreKey,*/ /*ibctransfertypes.StoreKey,*/
+		evidencetypes.StoreKey, liquiditytypes.StoreKey, /*ibctransfertypes.StoreKey,*/
 		capabilitytypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey /*routertypes.StoreKey,*/ /* icahosttypes.StoreKey,*/, group.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -400,14 +400,14 @@ func NewGaiaApp(
 		app.BankKeeper,
 		authtypes.FeeCollectorName,
 	)
-	// app.LiquidityKeeper = liquiditykeeper.NewKeeper(
-	// 	appCodec,
-	// 	keys[liquiditytypes.StoreKey],
-	// 	app.GetSubspace(liquiditytypes.ModuleName),
-	// 	app.BankKeeper,
-	// 	app.AccountKeeper,
-	// 	app.DistrKeeper,
-	// )
+	app.LiquidityKeeper = liquiditykeeper.NewKeeper(
+		appCodec,
+		keys[liquiditytypes.StoreKey],
+		app.GetSubspace(liquiditytypes.ModuleName),
+		app.BankKeeper,
+		app.AccountKeeper,
+		app.DistrKeeper,
+	)
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
@@ -533,7 +533,7 @@ func NewGaiaApp(
 		groupmodule.NewAppModule(appCodec, app.GroupKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		// ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
-		// liquidity.NewAppModule(appCodec, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.DistrKeeper),
+		liquidity.NewAppModule(appCodec, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.DistrKeeper),
 		// transferModule,
 		// icaModule,
 		// routerModule,
@@ -557,7 +557,7 @@ func NewGaiaApp(
 		banktypes.ModuleName,
 		govtypes.ModuleName,
 		crisistypes.ModuleName,
-		// liquiditytypes.ModuleName,
+		liquiditytypes.ModuleName,
 		// ibctransfertypes.ModuleName,
 		// ibchost.ModuleName,
 		// icatypes.ModuleName,
@@ -573,7 +573,7 @@ func NewGaiaApp(
 		crisistypes.ModuleName,
 		govtypes.ModuleName,
 		stakingtypes.ModuleName,
-		// liquiditytypes.ModuleName,
+		liquiditytypes.ModuleName,
 		// ibctransfertypes.ModuleName,
 		// ibchost.ModuleName,
 		// icatypes.ModuleName,
@@ -615,7 +615,7 @@ func NewGaiaApp(
 		// ibchost.ModuleName,
 		// icatypes.ModuleName,
 		evidencetypes.ModuleName,
-		// liquiditytypes.ModuleName,
+		liquiditytypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
 		group.ModuleName,
@@ -655,7 +655,7 @@ func NewGaiaApp(
 		evidence.NewAppModule(app.EvidenceKeeper),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		groupmodule.NewAppModule(appCodec, app.GroupKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
-		// liquidity.NewAppModule(appCodec, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.DistrKeeper),
+		liquidity.NewAppModule(appCodec, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.DistrKeeper),
 		// ibc.NewAppModule(app.IBCKeeper),
 		// transferModule,
 	)
@@ -937,7 +937,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(slashingtypes.ModuleName)
 	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govv1.ParamKeyTable())
 	paramsKeeper.Subspace(crisistypes.ModuleName)
-	// paramsKeeper.Subspace(liquiditytypes.ModuleName)
+	paramsKeeper.Subspace(liquiditytypes.ModuleName)
 	// paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	// paramsKeeper.Subspace(ibchost.ModuleName)
 	// paramsKeeper.Subspace(routertypes.ModuleName).WithKeyTable(routertypes.ParamKeyTable())

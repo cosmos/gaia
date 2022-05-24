@@ -31,7 +31,7 @@ import (
 
 const (
 	photonDenom    = "photon"
-	initBalanceStr = "110000000000stake,100000000000photon"
+	initBalanceStr = "110000000000stake,100000000000000000photon"
 	minGasPrice    = "0.00001"
 )
 
@@ -85,6 +85,8 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.initNodes(s.chainA)
 	s.initGenesis(s.chainA)
 	s.initValidatorConfigs(s.chainA)
+	// Init proposals
+	s.writeGovProposals((s.chainA))
 	s.runValidators(s.chainA, 0)
 
 	// s.T().Logf("starting e2e infrastructure for chain B; chain-id: %s; datadir: %s", s.chainB.id, s.chainB.dataDir)
@@ -421,5 +423,29 @@ func noRestart(config *docker.HostConfig) {
 	// in this case we don't want the nodes to restart on failure
 	config.RestartPolicy = docker.RestartPolicy{
 		Name: "no",
+	}
+}
+
+func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
+	body, err := json.MarshalIndent(struct {
+		Title       string `json:"title"`
+		Description string `json:"description"`
+		Recipient   string `json:"recipient"`
+		Amount      string `json:"amount"`
+		Deposit     string `json:"deposit"`
+	}{
+		Title:       "Community Pool Spend",
+		Description: "Fund Gov !",
+		Recipient:   "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+		Amount:      "1000photon",
+		Deposit:     "5000photon",
+	}, "", " ")
+
+	s.Require().NoError(err)
+
+	// write the updated genesis file to each validator
+	for _, val := range c.validators {
+		err = writeFile(filepath.Join(val.configDir(), "config", "proposal.json"), body)
+		s.Require().NoError(err)
 	}
 }

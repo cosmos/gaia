@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"encoding/json"
+	"github.com/cosmos/gaia/v8/app/helpers"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -14,7 +15,8 @@ import (
 	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 	ibctesting "github.com/cosmos/ibc-go/v3/testing"
 
-	icaapp "github.com/cosmos/interchain-accounts/app"
+	// icaapp "github.com/cosmos/interchain-accounts/app"
+	gaiaapp "github.com/cosmos/gaia/v8/app"
 )
 
 var (
@@ -33,16 +35,22 @@ var (
 	}))
 )
 
+
+
 func init() {
 	ibctesting.DefaultTestingAppInit = SetupICATestingApp
 }
 
+
+
 func SetupICATestingApp() (ibctesting.TestingApp, map[string]json.RawMessage) {
 	db := dbm.NewMemDB()
-	encCdc := icaapp.MakeEncodingConfig()
-	app := icaapp.New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, icaapp.DefaultNodeHome, 5, encCdc, icaapp.EmptyAppOptions{})
-	return app, icaapp.NewDefaultGenesisState(encCdc.Marshaler)
+	encCdc := gaiaapp.MakeTestEncodingConfig()
+	app := gaiaapp.NewGaiaApp(log.NewNopLogger(), db, nil, true, map[int64]bool{}, gaiaapp.DefaultNodeHome, 5, encCdc, helpers.EmptyAppOptions{})
+	return app, gaiaapp.NewDefaultGenesisState()
 }
+
+
 
 // KeeperTestSuite is a testing suite to test keeper functions
 type KeeperTestSuite struct {
@@ -55,8 +63,8 @@ type KeeperTestSuite struct {
 	chainB *ibctesting.TestChain
 }
 
-func (suite *KeeperTestSuite) GetICAApp(chain *ibctesting.TestChain) *icaapp.App {
-	app, ok := chain.App.(*icaapp.App)
+func (suite *KeeperTestSuite) GetICAApp(chain *ibctesting.TestChain) *gaiaapp.App {
+	app, ok := chain.App.(*gaiaapp.App)
 	if !ok {
 		panic("not ica app")
 	}

@@ -1,17 +1,72 @@
+run:
+  tests: false
+  skip-dirs:
+    - tests/e2e
+
 linters:
   disable-all: true
   enable:
+    - bodyclose
+    - deadcode
+    - depguard
+    - dogsled
     - errcheck
-    - golint
+    - goconst
+    - gocritic
+    - gofmt
+    - goimports
+    - gosec
+    - gosimple
+    - govet
     - ineffassign
-    - unconvert
     - misspell
+    - nakedret
+    - prealloc
+    - revive
+    - staticcheck
+    - structcheck
+    - stylecheck
+    - typecheck
+    - unconvert
+    - unused
+    - unparam
+
+issues:
+  exclude-rules:
+    - text: "Use of weak random number generator"
+      linters:
+        - gosec
+    - text: "comment on exported var"
+      linters:
+        - golint
+    - text: "don't use an underscore in package name"
+      linters:
+        - golint
+    - text: "put a space between `//` and comment text"
+      linters:
+        - gocritic
+    - text: "ST1003:"
+      linters:
+        - stylecheck
+    # FIXME: Disabled until golangci-lint updates stylecheck with this fix:
+    # https://github.com/dominikh/go-tools/issues/389
+    - text: "ST1016:"
+      linters:
+        - stylecheck
+    - text: "SA1019: codec.LegacyAmino is deprecated"
+      linters:
+        - staticcheck
+  max-issues-per-linter: 10000
+  max-same-issues: 10000
+
 linters-settings:
-  gocyclo:
-    min-complexity: 11
-  errcheck:
-    ignore: fmt:.*,io/ioutil:^Read.*,github.com/spf13/cobra:MarkFlagRequired,github.com/spf13/viper:BindPFlag
-  golint:
-    min-confidence: 1.1
-run:
-  tests: false
+  dogsled:
+    max-blank-identifiers: 3
+  maligned:
+    # print struct with more effective memory layout or not, false by default
+    suggest-new: true
+  nolintlint:
+    allow-unused: false
+    allow-leading-space: true
+    require-explanation: false
+    require-specific: false

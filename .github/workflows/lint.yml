@@ -5,6 +5,7 @@ on:
     branches:
       - main
 
+# The diffs broke it, they're removed now.
 jobs:
   golangci:
     name: Run golangci-lint
@@ -13,13 +14,8 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v3
         with:
-          go-version: 1.17
-      - uses: technote-space/get-diff-action@v6.0.1
-        with:
-          PATTERNS: |
-            **/**.go
-            go.mod
-            go.sum
+          go-version: 1.18
       - name: Run golangci-lint
         run: make lint
-        if: env.GIT_DIFF
+
+# the linters should always run, even if no diffs.

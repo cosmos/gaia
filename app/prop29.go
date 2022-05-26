@@ -54,7 +54,6 @@ func (r *recoveryMessages) GetRemainingBalances() (balances []banktypes.Balance)
 				Coins:   []sdk.Coin{m.destBalance},
 			})
 		}
-
 	}
 	return
 }
@@ -65,7 +64,6 @@ func (r *recoveryMessages) GetRemainingAccounts() (addresses []sdk.Address) {
 		if !m.destBalance.IsEqual(zeroBalance) {
 			addresses = append(addresses, m.destAddress)
 		}
-
 	}
 	return
 }
@@ -128,7 +126,6 @@ type contributingAddress struct {
 }
 
 func btcDonor1() FundRecoveryMessage {
-
 	sourceAddress, _ := sdk.AccAddressFromBech32("cosmos17s3zkmz6d42rgvtxj3mxaqqtl6dtn4c75lwl4k") // nolint: errcheck
 	destAddress, _ := sdk.AccAddressFromBech32("cosmos1hq5jdspaysmpt5cgg3w4g2u84th3qklr4e5jlq")   // nolint: errcheck
 
@@ -137,11 +134,11 @@ func btcDonor1() FundRecoveryMessage {
 		"IDM3egFNpQRboMrnxMAlIp2XAI0dylAEAysQeNTVLodBP3DU0aY/co0K5ngafdBPgIzGqxA2+ZH/c36tyB+PdWs=",
 		sourceAddress,
 		destAddress,
-		sdk.NewInt64Coin("uatom", 4180221000)}
+		sdk.NewInt64Coin("uatom", 4180221000),
+	}
 }
 
 func btcDonor2() FundRecoveryMessage {
-
 	sourceAddress, _ := sdk.AccAddressFromBech32("cosmos1fhejq5a3z8kehknrrjupt2wdl4l0wh9y2vayhr") // nolint: errcheck
 	destAddress, _ := sdk.AccAddressFromBech32("cosmos12h5m3cuupza33psgzegjdvvsrngadjjmgnql34")   // nolint: errcheck
 
@@ -150,11 +147,11 @@ func btcDonor2() FundRecoveryMessage {
 		"IItkbg76ZjfFmMlyAmFAMz7CCt1FIw7VluWQbDvNhGdFZ6Y/FohkqlvXdv7aon8MGm6LbntbL3RxzR780PLYHY8=",
 		sourceAddress,
 		destAddress,
-		sdk.NewInt64Coin("uatom", 31406121000)}
+		sdk.NewInt64Coin("uatom", 31406121000),
+	}
 }
 
 func btcDonor3() FundRecoveryMessage {
-
 	sourceAddress, _ := sdk.AccAddressFromBech32("cosmos14qyqets0c94u9hjmvrm4n8s2v5pgnk9kjh93ay") // nolint: errcheck
 	destAddress, _ := sdk.AccAddressFromBech32("cosmos12sptngkpvc3alssd9wcgr9sn5zh2rdg8gt27x0")   // nolint: errcheck
 
@@ -163,13 +160,13 @@ func btcDonor3() FundRecoveryMessage {
 		"H4+JhJH23leWopflTc5lIS4Wz089YWrUBCPGo9AwLktfUf5+Kpzo/nWS121/qyMxBF1G2eFUe+gwUhuRdZ4FWPA=",
 		sourceAddress,
 		destAddress,
-		sdk.NewInt64Coin("uatom", 125649621000)}
+		sdk.NewInt64Coin("uatom", 125649621000),
+	}
 }
 
 /// BTC Donor 4 should have the same message as Donor 3 because they signed they same message from two difference addresses that were both donation sources.
 
 func btcDonor4() FundRecoveryMessage {
-
 	sourceAddress, _ := sdk.AccAddressFromBech32("cosmos138a2ulzndl7gezsd6symywvdpzes4awj9eypkr") // nolint: errcheck
 	destAddress, _ := sdk.AccAddressFromBech32("cosmos1nc8s85wnax2jn2zch4cuyqumfqml53cumhwk82")   // nolint: errcheck
 
@@ -178,7 +175,8 @@ func btcDonor4() FundRecoveryMessage {
 		"IFb7u28IBBzn9UuXrOJnzO0kL8yItojE8X3GAcD+bk2JSXRHgsJLj0wYdXn9P8HqlDtl7jF5a1Bxu/f3Lxul+Xk=",
 		sourceAddress,
 		destAddress,
-		sdk.NewInt64Coin("uatom", 104706621000)}
+		sdk.NewInt64Coin("uatom", 104706621000),
+	}
 }
 
 func ethDonor1() FundRecoveryMessage {
@@ -190,7 +188,8 @@ func ethDonor1() FundRecoveryMessage {
 		"ceed630f7e8d102b125a22d9ec06ced12a016f376b408b9832a63a9b4b5f352b4b67c94e9cfa35e4f2676f0f92643f8b56caf82f6c6eabd765b787d3f6af77fb1b",
 		sourceAddress,
 		destAddress,
-		sdk.NewInt64Coin("uatom", 6512400000)}
+		sdk.NewInt64Coin("uatom", 6512400000),
+	}
 }
 
 func ethDonor2() FundRecoveryMessage {
@@ -202,7 +201,8 @@ func ethDonor2() FundRecoveryMessage {
 		"38de4018152de5f42d24b1150c04f5010dc3edce9a3436a57d318beae5e6955228a5e2c1255591c0324e4e9f1bbd13806e51bbdb11259c9e2aeddbdbc91bc11a1b",
 		sourceAddress,
 		destAddress,
-		sdk.NewInt64Coin("uatom", 9769500000)}
+		sdk.NewInt64Coin("uatom", 9769500000),
+	}
 }
 
 func ethDonor3() FundRecoveryMessage {
@@ -214,18 +214,18 @@ func ethDonor3() FundRecoveryMessage {
 		"4c29f9d74a070a8c475553597a1bd461137af0ba9120c183a1cfe3dc8c729f367dcf76ed9a384eea18c920b7ba7613ddb5632da9642fdb42cc183ff5ea74614e1b",
 		sourceAddress,
 		destAddress,
-		sdk.NewInt64Coin("uatom", 904509000000)}
+		sdk.NewInt64Coin("uatom", 904509000000),
+	}
 }
 
 func validateFundRecovery() recoveryMessages {
-
-	//Bitcoin Donors
+	// Bitcoin Donors
 	bDonor1 := btcDonor1()
 	bDonor2 := btcDonor2()
 	bDonor3 := btcDonor3()
 	bDonor4 := btcDonor4()
 
-	//Bitcoin Verification
+	// Bitcoin Verification
 	_, err := bDonor1.verifyBitcoinSignature(0)
 	if err != nil {
 		log.Fatal(err)
@@ -243,12 +243,12 @@ func validateFundRecovery() recoveryMessages {
 		log.Fatal(err)
 	}
 
-	//Ethereum Donors
+	// Ethereum Donors
 	eDonor1 := ethDonor1()
 	eDonor2 := ethDonor2()
 	eDonor3 := ethDonor3()
 
-	//Ethereum Verification
+	// Ethereum Verification
 	_, err = eDonor1.verifyEthereumSignature(0)
 	if err != nil {
 		log.Fatal(err)
@@ -263,7 +263,6 @@ func validateFundRecovery() recoveryMessages {
 	}
 
 	return []FundRecoveryMessage{bDonor1, bDonor2, bDonor3, bDonor4, eDonor1, eDonor2, eDonor3}
-
 }
 
 // Eth_sign verifier for MEW signatures.
@@ -282,7 +281,6 @@ func verifyEthereumSignature(sig, msg, addr string) {
 	hash := accounts.TextHash([]byte(msg))
 
 	sigPublicKey, err := crypto.Ecrecover(hash, sigBytes)
-
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -305,7 +303,6 @@ const messageSignatureHeader = "Bitcoin Signed Message:\n"
 // signed messages against simple pay to pub key hash addresses.
 // Should panic on failure.
 func verifyBitcoinSignature(sig, msg, addr string) {
-
 	var buf bytes.Buffer
 	err := wire.WriteVarString(&buf, 0, messageSignatureHeader)
 	if err != nil {
@@ -339,7 +336,6 @@ func verifyBitcoinSignature(sig, msg, addr string) {
 	address, err := btcutil.NewAddressPubKey(serializedPK, &chaincfg.MainNetParams)
 	if err != nil {
 		log.Fatal("Address recovery failed")
-
 	}
 
 	if address.EncodeAddress() != addr {
@@ -348,7 +344,6 @@ func verifyBitcoinSignature(sig, msg, addr string) {
 }
 
 func Prop29Migration(authGenesis *authtypes.GenesisState, bankGenesis *banktypes.GenesisState, distrGenesis *distr.GenesisState) (authtypes.GenesisState, banktypes.GenesisState, distr.GenesisState) {
-
 	fundRecovery := validateFundRecovery()
 
 	recoveryAccounting := sdk.NewInt64Coin("uatom", 0)
@@ -357,7 +352,7 @@ func Prop29Migration(authGenesis *authtypes.GenesisState, bankGenesis *banktypes
 
 	distModuleAccount := authtypes.NewModuleAddress(distr.ModuleName)
 
-	//Set All Source Addresses to Zero and accumulate the total funds being moved
+	// Set All Source Addresses to Zero and accumulate the total funds being moved
 	for i, balance := range bankGenesis.Balances {
 		_, isSourceAddress := fundRecovery.IsSourceAddress(balance.Address)
 		if isSourceAddress {
@@ -417,5 +412,4 @@ func Prop29Migration(authGenesis *authtypes.GenesisState, bankGenesis *banktypes
 	}
 
 	return *authGenesis, *bankGenesis, *distrGenesis
-
 }

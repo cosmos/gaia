@@ -20,7 +20,6 @@ import (
 type replacementConfigs []replacementConfig
 
 func (r *replacementConfigs) isReplacedValidator(validatorAddress string) (int, replacementConfig) {
-
 	for i, replacement := range *r {
 		if replacement.ValidatorAddress == validatorAddress {
 			return i, replacement
@@ -69,7 +68,6 @@ func loadKeydataFromFile(clientCtx client.Context, replacementrJSON string, genD
 			toReplaceValConsAddress, _ := val.GetConsAddr()
 
 			consPubKey, err := sdk.GetPubKeyFromBech32(sdk.Bech32PubKeyTypeConsPub, replacement.ConsensusPubkey)
-
 			if err != nil {
 				log.Fatal(fmt.Errorf("failed to decode key:%s %w", consPubKey, err))
 			}
@@ -117,5 +115,4 @@ func loadKeydataFromFile(clientCtx client.Context, replacementrJSON string, genD
 		log.Fatal("Could not marshal App State")
 	}
 	return genDoc
-
 }

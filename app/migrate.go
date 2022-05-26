@@ -1,7 +1,7 @@
 package gaia
 
-//This file implements a genesis migration from cosmoshub-3 to cosmoshub-4. It migrates state from the modules in cosmoshub-3.
-//This file also implements setting an initial height from an upgrade.
+// This file implements a genesis migration from cosmoshub-3 to cosmoshub-4. It migrates state from the modules in cosmoshub-3.
+// This file also implements setting an initial height from an upgrade.
 
 import (
 	"encoding/json"
@@ -56,7 +56,6 @@ $ %s migrate /path/to/genesis.json --chain-id=cosmoshub-4 --genesis-time=2019-04
 			importGenesis := args[0]
 
 			jsonBlob, err := ioutil.ReadFile(importGenesis)
-
 			if err != nil {
 				return errors.Wrap(err, "failed to read provided genesis file")
 			}
@@ -216,7 +215,6 @@ func migrateTendermintGenesis(jsonBlob []byte) ([]byte, error) {
 	evidenceParams, ok := consensusParams["evidence"].(map[string]interface{})
 	if !ok {
 		return nil, fmt.Errorf("exported json does not contain consensus_params.evidence field")
-
 	}
 
 	evidenceParams["max_age_num_blocks"] = evidenceParams["max_age"]

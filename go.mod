@@ -279,7 +279,7 @@ require (
 )
 
 replace (
-	github.com/cosmos/ibc-go/v3 => github.com/cosmos/ibc-go/v3 v3.0.0-20220517190049-c4ce2b908a1e
+	github.com/cosmos/ibc-go/v3 => github.com/notional-labs/ibc-go/v3 7d35705
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	github.com/zondax/hid => github.com/zondax/hid v0.9.0
 )

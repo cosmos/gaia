@@ -1,8 +1,9 @@
-<!---
+---
 order: false
 parent:
+  title: Delegators
   order: 4
---->
+---
 
 # Delegators
 

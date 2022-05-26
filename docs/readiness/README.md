@@ -1,5 +1,8 @@
 <!--
 order: 1
+parent:
+  title: Architecture Decision Records (ADR)
+  order: 10
 -->
 
 # Architecture Decision Records (ADR)

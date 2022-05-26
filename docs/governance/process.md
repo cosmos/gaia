@@ -18,10 +18,7 @@ In the past, different people have considered contributions amounts differently.
 
 #### Burned deposits
 
-Deposits are burned when proposals:
-1. **Expire** - deposits will be burned if the deposit period ends before reaching the minimum deposit (64 ATOM)
-2. **Fail** to reach quorum - deposits will be burned for proposals that do not reach quorum ie. 40% of all staked ATOM must vote
-3. **Are vetoed** - deposits for proposals with 33.4% of voting power backing the 'NoWithVeto' option are also burned
+Deposits are burned only when proposals are vetoed i.e. 33.4% of voting power backing the 'NoWithVeto' option as documented in the [Cosmos SDK gov module spec](https://github.com/cosmos/cosmos-sdk/blob/main/x/gov/spec/01_concepts.md#deposit-refund-and-burn).
 
 ### 2. Voting Period
 

@@ -37,7 +37,6 @@ func replayCmd() *cobra.Command {
 }
 
 func replayTxs(rootDir string) error {
-
 	if false {
 		// Copy the rootDir to a new directory, to preserve the old one.
 		fmt.Fprintln(os.Stderr, "Copying rootdir over")
@@ -80,7 +79,7 @@ func replayTxs(rootDir string) error {
 
 	// TraceStore
 	var traceStoreWriter io.Writer
-	var traceStoreDir = filepath.Join(dataDir, "trace.log")
+	traceStoreDir := filepath.Join(dataDir, "trace.log")
 	traceStoreWriter, err = os.OpenFile(
 		traceStoreDir,
 		os.O_WRONLY|os.O_APPEND|os.O_CREATE,
@@ -98,7 +97,7 @@ func replayTxs(rootDir string) error {
 	)
 
 	// Genesis
-	var genDocPath = filepath.Join(configDir, "genesis.json")
+	genDocPath := filepath.Join(configDir, "genesis.json")
 	genDoc, err := tm.GenesisDocFromFile(genDocPath)
 	if err != nil {
 		return err

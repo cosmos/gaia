@@ -1,3 +1,4 @@
+//go:build cli_test
 // +build cli_test
 
 package clitest
@@ -1078,7 +1079,8 @@ func TestGaiaCLIMultisignSortSignatures(t *testing.T) {
 
 	// Multisign, keys in different order
 	success, stdout, _ = f.TxMultisign(unsignedTxFile.Name(), keyFooBarBaz, []string{
-		bazSignatureFile.Name(), fooSignatureFile.Name()})
+		bazSignatureFile.Name(), fooSignatureFile.Name(),
+	})
 	require.True(t, success)
 
 	// Write the output to disk
@@ -1144,7 +1146,8 @@ func TestGaiaCLIMultisign(t *testing.T) {
 
 	// Multisign
 	success, stdout, _ = f.TxMultisign(unsignedTxFile.Name(), keyFooBarBaz, []string{
-		fooSignatureFile.Name(), barSignatureFile.Name()})
+		fooSignatureFile.Name(), barSignatureFile.Name(),
+	})
 	require.True(t, success)
 
 	// Write the output to disk

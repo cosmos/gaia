@@ -290,7 +290,6 @@ func doBroadcast(t *testing.T, port string, tx auth.StdTx) (*http.Response, stri
 func doTransfer(
 	t *testing.T, port, seed, name, memo, pwd string, addr sdk.AccAddress, fees sdk.Coins,
 ) (sdk.AccAddress, sdk.TxResponse) {
-
 	resp, body, recvAddr := doTransferWithGas(
 		t, port, seed, name, memo, pwd, addr, "", 1.0, false, true, fees,
 	)
@@ -311,7 +310,6 @@ func doTransferWithGas(
 	t *testing.T, port, seed, name, memo, pwd string, addr sdk.AccAddress,
 	gas string, gasAdjustment float64, simulate, broadcast bool, fees sdk.Coins,
 ) (resp *http.Response, body string, receiveAddr sdk.AccAddress) {
-
 	// create receive address
 	kb := crkeys.NewInMemory()
 
@@ -357,7 +355,6 @@ func doTransferWithGasAccAuto(
 	t *testing.T, port, seed, name, memo, pwd string, addr sdk.AccAddress,
 	gas string, gasAdjustment float64, simulate, broadcast bool, fees sdk.Coins,
 ) (resp *http.Response, body string, receiveAddr sdk.AccAddress) {
-
 	// create receive address
 	kb := crkeys.NewInMemory()
 	acc := getAccount(t, port, addr)
@@ -398,7 +395,6 @@ func doTransferWithGasAccAuto(
 func signAndBroadcastGenTx(
 	t *testing.T, port, name, pwd, genTx string, acc auth.Account, gasAdjustment float64, simulate bool,
 ) (resp *http.Response, body string) {
-
 	chainID := viper.GetString(client.FlagChainID)
 
 	var tx auth.StdTx
@@ -433,7 +429,6 @@ func doDelegate(
 	t *testing.T, port, name, pwd string, delAddr sdk.AccAddress,
 	valAddr sdk.ValAddress, amount sdk.Int, fees sdk.Coins,
 ) sdk.TxResponse {
-
 	acc := getAccount(t, port, delAddr)
 	accnum := acc.GetAccountNumber()
 	sequence := acc.GetSequence()
@@ -470,7 +465,6 @@ func doUndelegate(
 	t *testing.T, port, name, pwd string, delAddr sdk.AccAddress,
 	valAddr sdk.ValAddress, amount sdk.Int, fees sdk.Coins,
 ) sdk.TxResponse {
-
 	acc := getAccount(t, port, delAddr)
 	accnum := acc.GetAccountNumber()
 	sequence := acc.GetSequence()
@@ -506,7 +500,6 @@ func doBeginRedelegation(
 	t *testing.T, port, name, pwd string, delAddr sdk.AccAddress, valSrcAddr,
 	valDstAddr sdk.ValAddress, amount sdk.Int, fees sdk.Coins,
 ) sdk.TxResponse {
-
 	acc := getAccount(t, port, delAddr)
 	accnum := acc.GetAccountNumber()
 	sequence := acc.GetSequence()
@@ -648,8 +641,8 @@ func getDelegation(t *testing.T, port string, delegatorAddr sdk.AccAddress, vali
 
 // GET /staking/delegators/{delegatorAddr}/unbonding_delegations/{validatorAddr} Query all unbonding delegations between a delegator and a validator
 func getUnbondingDelegation(t *testing.T, port string, delegatorAddr sdk.AccAddress,
-	validatorAddr sdk.ValAddress) staking.UnbondingDelegation {
-
+	validatorAddr sdk.ValAddress,
+) staking.UnbondingDelegation {
 	res, body := Request(t, port, "GET",
 		fmt.Sprintf("/staking/delegators/%s/unbonding_delegations/%s",
 			delegatorAddr, validatorAddr), nil)
@@ -719,7 +712,6 @@ func doSubmitProposal(
 	t *testing.T, port, seed, name, pwd string, proposerAddr sdk.AccAddress,
 	amount sdk.Int, fees sdk.Coins,
 ) sdk.TxResponse {
-
 	acc := getAccount(t, port, proposerAddr)
 	accnum := acc.GetAccountNumber()
 	sequence := acc.GetSequence()
@@ -757,7 +749,6 @@ func doSubmitParamChangeProposal(
 	t *testing.T, port, seed, name, pwd string, proposerAddr sdk.AccAddress,
 	amount sdk.Int, fees sdk.Coins,
 ) sdk.TxResponse {
-
 	acc := getAccount(t, port, proposerAddr)
 	accnum := acc.GetAccountNumber()
 	sequence := acc.GetSequence()
@@ -796,7 +787,6 @@ func doSubmitCommunityPoolSpendProposal(
 	t *testing.T, port, seed, name, pwd string, proposerAddr sdk.AccAddress,
 	amount sdk.Int, fees sdk.Coins,
 ) sdk.TxResponse {
-
 	acc := getAccount(t, port, proposerAddr)
 	accnum := acc.GetAccountNumber()
 	sequence := acc.GetSequence()
@@ -890,7 +880,6 @@ func doDeposit(
 	t *testing.T, port, seed, name, pwd string, proposerAddr sdk.AccAddress,
 	proposalID uint64, amount sdk.Int, fees sdk.Coins,
 ) sdk.TxResponse {
-
 	acc := getAccount(t, port, proposerAddr)
 	accnum := acc.GetAccountNumber()
 	sequence := acc.GetSequence()
@@ -947,7 +936,6 @@ func doVote(
 	t *testing.T, port, seed, name, pwd string, proposerAddr sdk.AccAddress,
 	proposalID uint64, option string, fees sdk.Coins,
 ) sdk.TxResponse {
-
 	// get the account to get the sequence
 	acc := getAccount(t, port, proposerAddr)
 	accnum := acc.GetAccountNumber()
@@ -1105,7 +1093,6 @@ func getSigningInfoList(t *testing.T, port string) []slashing.ValidatorSigningIn
 func doUnjail(
 	t *testing.T, port, seed, name, pwd string, valAddr sdk.ValAddress, fees sdk.Coins,
 ) sdk.TxResponse {
-
 	acc := getAccount(t, port, sdk.AccAddress(valAddr.Bytes()))
 	from := acc.GetAddress().String()
 	chainID := viper.GetString(client.FlagChainID)

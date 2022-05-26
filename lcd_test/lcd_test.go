@@ -486,9 +486,9 @@ func TestBonding(t *testing.T) {
 	require.Equal(t, operAddrs[1], delegatorDels[0].ValidatorAddress)
 
 	// TODO uncomment once all validators actually sign in the lcd tests
-	//validator2 := getValidator(t, port, operAddrs[1])
-	//delTokensAfterRedelegation := validator2.ShareTokens(delegatorDels[0].GetShares())
-	//require.Equal(t, rdTokens.ToDec(), delTokensAfterRedelegation)
+	// validator2 := getValidator(t, port, operAddrs[1])
+	// delTokensAfterRedelegation := validator2.ShareTokens(delegatorDels[0].GetShares())
+	// require.Equal(t, rdTokens.ToDec(), delTokensAfterRedelegation)
 
 	// verify balance after paying fees
 	acc = getAccount(t, port, addr)
@@ -1118,5 +1118,4 @@ func TestAccountBalanceQuery(t *testing.T) {
 	res, body = Request(t, port, "GET", fmt.Sprintf("/bank/balances/%s", someFakeAddr), nil)
 	require.Equal(t, http.StatusOK, res.StatusCode, body)
 	require.Contains(t, body, "[]")
-
 }

@@ -36,7 +36,6 @@ func TestBlackListedAddrs(t *testing.T) {
 }
 
 func setGenesis(gapp *GaiaApp) error {
-
 	genesisState := simapp.NewDefaultGenesisState()
 	stateBytes, err := codec.MarshalJSONIndent(gapp.cdc, genesisState)
 	if err != nil {

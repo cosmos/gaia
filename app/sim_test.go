@@ -63,8 +63,8 @@ func init() {
 func getSimulateFromSeedInput(tb testing.TB, w io.Writer, app *GaiaApp) (
 	testing.TB, io.Writer, *baseapp.BaseApp, simulation.AppStateFn, int64,
 	simulation.WeightedOperations, sdk.Invariants, int, int, int, int, string,
-	bool, bool, bool, bool, bool, map[string]bool) {
-
+	bool, bool, bool, bool, bool, map[string]bool,
+) {
 	exportParams := exportParamsPath != ""
 
 	return tb, w, app.BaseApp, appStateFn, seed,
@@ -76,7 +76,6 @@ func getSimulateFromSeedInput(tb testing.TB, w io.Writer, app *GaiaApp) (
 func appStateFn(
 	r *rand.Rand, accs []simulation.Account,
 ) (appState json.RawMessage, simAccs []simulation.Account, chainID string, genesisTimestamp time.Time) {
-
 	cdc := MakeCodec()
 
 	if genesisTime == 0 {
@@ -123,7 +122,6 @@ func appStateFn(
 func appStateRandomizedFn(
 	r *rand.Rand, accs []simulation.Account, genesisTimestamp time.Time, appParams simulation.AppParams,
 ) (json.RawMessage, []simulation.Account, string) {
-
 	cdc := MakeCodec()
 	genesisState := simapp.NewDefaultGenesisState()
 
@@ -589,10 +587,12 @@ func TestAppImportExport(t *testing.T) {
 	storeKeysPrefixes := []StoreKeysPrefixes{
 		{app.keys[baseapp.MainStoreKey], newApp.keys[baseapp.MainStoreKey], [][]byte{}},
 		{app.keys[auth.StoreKey], newApp.keys[auth.StoreKey], [][]byte{}},
-		{app.keys[staking.StoreKey], newApp.keys[staking.StoreKey],
+		{
+			app.keys[staking.StoreKey], newApp.keys[staking.StoreKey],
 			[][]byte{
 				staking.UnbondingQueueKey, staking.RedelegationQueueKey, staking.ValidatorQueueKey,
-			}}, // ordering may change but it doesn't matter
+			},
+		}, // ordering may change but it doesn't matter
 		{app.keys[slashing.StoreKey], newApp.keys[slashing.StoreKey], [][]byte{}},
 		{app.keys[mint.StoreKey], newApp.keys[mint.StoreKey], [][]byte{}},
 		{app.keys[distr.StoreKey], newApp.keys[distr.StoreKey], [][]byte{}},
@@ -611,7 +611,6 @@ func TestAppImportExport(t *testing.T) {
 		fmt.Printf("Compared %d key/value pairs between %s and %s\n", count, storeKeyA, storeKeyB)
 		require.True(t, equal, simapp.GetSimulationLog(storeKeyA.Name(), app.cdc, newApp.cdc, kvA, kvB))
 	}
-
 }
 
 func TestAppSimulationAfterImport(t *testing.T) {

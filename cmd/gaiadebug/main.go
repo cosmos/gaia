@@ -21,7 +21,6 @@ import (
 )
 
 func init() {
-
 	config := sdk.GetConfig()
 	config.SetBech32PrefixForAccount(sdk.Bech32PrefixAccAddr, sdk.Bech32PrefixAccPub)
 	config.SetBech32PrefixForValidator(sdk.Bech32PrefixValAddr, sdk.Bech32PrefixValPub)
@@ -190,7 +189,6 @@ func runAddrCmd(cmd *cobra.Command, args []string) error {
 			bech32 acc: %v
 			bech32 val: %v
 			`, err, err2, err3)
-
 			}
 		}
 	}
@@ -225,7 +223,7 @@ func runTxCmd(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	var tx = auth.StdTx{}
+	tx := auth.StdTx{}
 	cdc := gaia.MakeCodec()
 
 	err = cdc.UnmarshalBinaryLengthPrefixed(txBytes, &tx)

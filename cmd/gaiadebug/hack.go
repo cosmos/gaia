@@ -24,7 +24,6 @@ import (
 )
 
 func runHackCmd(cmd *cobra.Command, args []string) error {
-
 	if len(args) != 1 {
 		return fmt.Errorf("Expected 1 arg")
 	}
@@ -93,11 +92,9 @@ func base64ToPub(b64 string) ed25519.PubKeyEd25519 {
 	var pubKey ed25519.PubKeyEd25519
 	copy(pubKey[:], data)
 	return pubKey
-
 }
 
 func hexToBytes(h string) []byte {
 	trouble, _ := hex.DecodeString(h)
 	return trouble
-
 }

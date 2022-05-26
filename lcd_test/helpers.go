@@ -57,8 +57,8 @@ import (
 // and initAddrs are the accounts to initialize with some stake tokens. It
 // returns a cleanup function, a set of validator public keys, and a port.
 func InitializeLCD(nValidators int, initAddrs []sdk.AccAddress, minting bool, portExt ...string) (
-	cleanup func(), valConsPubKeys []crypto.PubKey, valOperAddrs []sdk.ValAddress, port string, err error) {
-
+	cleanup func(), valConsPubKeys []crypto.PubKey, valOperAddrs []sdk.ValAddress, port string, err error,
+) {
 	config, err := GetConfig()
 	if err != nil {
 		return
@@ -129,7 +129,8 @@ func InitializeLCD(nValidators int, initAddrs []sdk.AccAddress, minting bool, po
 }
 
 func defaultGenesis(config *tmcfg.Config, nValidators int, initAddrs []sdk.AccAddress, minting bool) (
-	genDoc *tmtypes.GenesisDoc, valConsPubKeys []crypto.PubKey, valOperAddrs []sdk.ValAddress, privVal *pvm.FilePV, err error) {
+	genDoc *tmtypes.GenesisDoc, valConsPubKeys []crypto.PubKey, valOperAddrs []sdk.ValAddress, privVal *pvm.FilePV, err error,
+) {
 	privVal = pvm.LoadOrGenFilePV(config.PrivValidatorKeyFile(),
 		config.PrivValidatorStateFile())
 	privVal.Reset()
@@ -303,7 +304,6 @@ func startTM(
 	tmcfg *tmcfg.Config, logger log.Logger, genDoc *tmtypes.GenesisDoc,
 	privVal tmtypes.PrivValidator, app *gapp.GaiaApp,
 ) (*nm.Node, error) {
-
 	genDocProvider := func() (*tmtypes.GenesisDoc, error) { return genDoc, nil }
 	dbProvider := func(*nm.DBContext) (dbm.DB, error) { return dbm.NewMemDB(), nil }
 	nodeKey, err := p2p.LoadOrGenNodeKey(tmcfg.NodeKeyFile())

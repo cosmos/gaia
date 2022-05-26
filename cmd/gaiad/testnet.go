@@ -45,7 +45,6 @@ var (
 func testnetCmd(ctx *server.Context, cdc *codec.Codec,
 	mbm module.BasicManager, genAccIterator genutiltypes.GenesisAccountsIterator,
 ) *cobra.Command {
-
 	cmd := &cobra.Command{
 		Use:   "testnet",
 		Short: "Initialize files for a Gaiad testnet",
@@ -100,8 +99,8 @@ const nodeDirPerm = 0755
 func InitTestnet(cmd *cobra.Command, config *tmconfig.Config, cdc *codec.Codec,
 	mbm module.BasicManager, genAccIterator genutiltypes.GenesisAccountsIterator,
 	outputDir, chainID, minGasPrices, nodeDirPrefix, nodeDaemonHome,
-	nodeCLIHome, startingIPAddress string, numValidators int) error {
-
+	nodeCLIHome, startingIPAddress string, numValidators int,
+) error {
 	if chainID == "" {
 		chainID = "chain-" + cmn.RandStr(6)
 	}
@@ -258,8 +257,8 @@ func InitTestnet(cmd *cobra.Command, config *tmconfig.Config, cdc *codec.Codec,
 }
 
 func initGenFiles(cdc *codec.Codec, mbm module.BasicManager, chainID string,
-	accs []genaccounts.GenesisAccount, genFiles []string, numValidators int) error {
-
+	accs []genaccounts.GenesisAccount, genFiles []string, numValidators int,
+) error {
 	appGenState := mbm.DefaultGenesis()
 
 	// set the accounts in the genesis state
@@ -289,8 +288,8 @@ func collectGenFiles(
 	cdc *codec.Codec, config *tmconfig.Config, chainID string,
 	monikers, nodeIDs []string, valPubKeys []crypto.PubKey,
 	numValidators int, outputDir, nodeDirPrefix, nodeDaemonHome string,
-	genAccIterator genutiltypes.GenesisAccountsIterator) error {
-
+	genAccIterator genutiltypes.GenesisAccountsIterator,
+) error {
 	var appState json.RawMessage
 	genTime := tmtime.Now()
 

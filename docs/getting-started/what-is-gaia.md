@@ -1,6 +1,7 @@
-<!--
+---
 order: 1
--->
+title: What is Gaia?
+---
 
 # What is Gaia?
 

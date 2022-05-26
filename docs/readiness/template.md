@@ -1,6 +1,5 @@
 <!--
-parent:
-  order: false
+order: false
 -->
 
 ---

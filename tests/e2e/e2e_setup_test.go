@@ -427,7 +427,40 @@ func noRestart(config *docker.HostConfig) {
 }
 
 func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
-	body, err := json.MarshalIndent(struct {
+	sendAmount := []sdk.Coin{
+		// 10photon
+		sdk.NewInt64Coin(photonDenom, 10),
+	}
+
+	type GovMessageSend struct {
+		Type   string     `json:"@type"`
+		From   string     `json:"from_address"`
+		To     string     `json:"to_address"`
+		Amount []sdk.Coin `json:"amount"`
+	}
+
+	message := []GovMessageSend{
+		GovMessageSend{
+			Type:   "/cosmos.bank.v1beta1.MsgSend",
+			From:   "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+			To:     "cosmos1pkueemdeps77dwrqma03pwqk93nw39nuhccz02",
+			Amount: sendAmount,
+		},
+	}
+
+	newGovBody, err := json.MarshalIndent(struct {
+		Message  []GovMessageSend `json:"message"`
+		Metadata string           `json:"metadata"`
+		Deposit  string           `json:"deposit"`
+	}{
+		Message:  message,
+		Metadata: "VGVzdGluZyAxLCAyLCAzIQ==",
+		Deposit:  "5000photon",
+	}, "", " ")
+
+	s.Require().NoError(err)
+
+	legacyGovBody, err := json.MarshalIndent(struct {
 		Title       string `json:"title"`
 		Description string `json:"description"`
 		Recipient   string `json:"recipient"`
@@ -436,16 +469,18 @@ func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
 	}{
 		Title:       "Community Pool Spend",
 		Description: "Fund Gov !",
-		Recipient:   "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+		Recipient:   "cosmos1pkueemdeps77dwrqma03pwqk93nw39nuhccz02",
 		Amount:      "1000photon",
 		Deposit:     "5000photon",
 	}, "", " ")
 
 	s.Require().NoError(err)
 
-	// write the updated genesis file to each validator
 	for _, val := range c.validators {
-		err = writeFile(filepath.Join(val.configDir(), "config", "proposal.json"), body)
+		err = writeFile(filepath.Join(val.configDir(), "config", "proposal.json"), legacyGovBody)
+		s.Require().NoError(err)
+
+		err = writeFile(filepath.Join(val.configDir(), "config", "proposal_2.json"), newGovBody)
 		s.Require().NoError(err)
 	}
 }

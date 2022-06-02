@@ -8,6 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
@@ -165,8 +166,6 @@ func (s *IntegrationTestSuite) TestSubmitLegacyGovProposal() {
 				proposal, err := queryGovProposal(chainAAPIEndpoint, 1)
 				s.Require().NoError(err)
 
-				s.T().Logf("Proposal Id: %d", proposal.GetProposal().ProposalId)
-
 				return (proposal.GetProposal().Status == govv1beta1.StatusDepositPeriod)
 			},
 			15*time.Second,
@@ -179,8 +178,6 @@ func (s *IntegrationTestSuite) TestSubmitLegacyGovProposal() {
 			func() bool {
 				proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId)
 				s.Require().NoError(err)
-
-				s.T().Logf("Proposal Status: %d", proposal.GetProposal().Status)
 
 				return (proposal.GetProposal().Status == govv1beta1.StatusVotingPeriod)
 			},
@@ -195,54 +192,45 @@ func (s *IntegrationTestSuite) TestVoteLegacyGovProposal() {
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 		fees := sdk.NewInt64Coin(photonDenom, 330000).String() // 0.33photon
 		proposalId := uint64(1)
-		vote := "yes"
 
 		senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
 		s.Require().NoError(err)
 		sender := senderAddress.String()
 
-		s.voteGovProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposalId, vote, fees)
+		s.voteGovProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposalId, "yes", fees)
 
 		s.Require().Eventually(
 			func() bool {
 				proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId)
 				s.Require().NoError(err)
 
-				s.T().Logf("Proposal Id: %d", proposal.GetProposal().ProposalId)
-
-				s.T().Logf("Proposal Status: %d", proposal.GetProposal().Status)
-
 				return (proposal.GetProposal().Status == govv1beta1.StatusPassed)
 			},
-			30*time.Second,
+			25*time.Second,
 			5*time.Second,
 		)
 	})
 }
 
-func (s *IntegrationTestSuite) TestSubmitGovProposal() {
-	s.Run("submit_deposit_proposal", func() {
-		s.T().Skip()
-
+func (s *IntegrationTestSuite) TestSubmitMsgSendGovProposal() {
+	s.T().Skip()
+	s.Run("submit_new_proposal", func() {
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-		fees := sdk.NewInt64Coin(photonDenom, 330000).String() // 0.33photon
-		proposalId := uint64(2)
-		depositAmount := sdk.NewInt64Coin(photonDenom, 10000000).String() // 10photon
+		depositAmount := sdk.NewInt64Coin(photonDenom, 10000000).String()
+		fees := sdk.NewInt64Coin(photonDenom, 330000).String()
+		govAddress := authtypes.NewModuleAddress(govtypes.ModuleName).String()
+		proposalId2 := uint64(2)
 
 		senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
 		s.Require().NoError(err)
 		sender := senderAddress.String()
 
-		// create recipient from mnemonic?
-
 		s.submitGovProposal(s.chainA, 0, chainAAPIEndpoint, sender, "/root/.gaia/config/proposal_2.json", fees)
 
 		s.Require().Eventually(
 			func() bool {
-				proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId)
+				proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId2)
 				s.Require().NoError(err)
-
-				s.T().Logf("Proposal Id: %d", proposal.GetProposal().ProposalId)
 
 				return (proposal.GetProposal().Status == govv1beta1.StatusDepositPeriod)
 			},
@@ -250,16 +238,38 @@ func (s *IntegrationTestSuite) TestSubmitGovProposal() {
 			5*time.Second,
 		)
 
-		s.depositGovProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposalId, depositAmount, fees)
+		s.depositGovProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposalId2, depositAmount, fees)
 
 		s.Require().Eventually(
 			func() bool {
-				proposal, err := queryGovProposal(chainAAPIEndpoint, 1)
+				proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId2)
 				s.Require().NoError(err)
 
-				s.T().Logf("Proposal Status: %d", proposal.GetProposal().Status)
-
 				return (proposal.GetProposal().Status == govv1beta1.StatusVotingPeriod)
+			},
+			15*time.Second,
+			5*time.Second,
+		)
+
+		s.voteGovProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposalId2, "yes", fees)
+
+		s.Require().Eventually(
+			func() bool {
+				proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId2)
+				s.Require().NoError(err)
+
+				return (proposal.GetProposal().Status == govv1beta1.StatusPassed)
+			},
+			15*time.Second,
+			5*time.Second,
+		)
+
+		s.Require().Eventually(
+			func() bool {
+				govBalance, err := getSpecificBalance(chainAAPIEndpoint, govAddress, photonDenom)
+				s.Require().NoError(err)
+
+				return govBalance.IsLT(sdk.NewInt64Coin(photonDenom, 1000))
 			},
 			15*time.Second,
 			5*time.Second,

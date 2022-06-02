@@ -9,6 +9,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/ory/dockertest/v3/docker"
 )
 
@@ -189,7 +190,6 @@ func (s *IntegrationTestSuite) fundCommunityPool(c *chain, valIdx int, endpoint 
 		"-y",
 	}
 
-	s.T().Logf("Executing command: %s", strings.Join(gaiaCommand, " "))
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
 	s.T().Logf("Successfully funded community pool")
 }
@@ -215,7 +215,6 @@ func (s *IntegrationTestSuite) submitLegacyGovProposal(c *chain, valIdx int, end
 		"-y",
 	}
 
-	s.T().Logf("Gaia Command: %s", strings.Join(gaiaCommand, " "))
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
 	s.T().Logf("Successfully submitted legacy proposal")
 }
@@ -239,7 +238,6 @@ func (s *IntegrationTestSuite) depositGovProposal(c *chain, valIdx int, endpoint
 		"-y",
 	}
 
-	s.T().Logf("Gaia Command: %s", strings.Join(gaiaCommand, " "))
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
 	s.T().Logf("Successfully deposited proposal")
 }
@@ -263,7 +261,6 @@ func (s *IntegrationTestSuite) voteGovProposal(c *chain, valIdx int, endpoint st
 		"-y",
 	}
 
-	s.T().Logf("Gaia Command: %s", strings.Join(gaiaCommand, " "))
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
 	s.T().Logf("Successfully voted on proposal")
 }
@@ -286,9 +283,8 @@ func (s *IntegrationTestSuite) submitGovProposal(c *chain, valIdx int, endpoint 
 		"-y",
 	}
 
-	s.T().Logf("Gaia Command: %s", strings.Join(gaiaCommand, " "))
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
-	s.T().Logf("Successfully voted on proposal")
+	s.T().Logf("Successfully submitted proposal %s", govProposalPath)
 }
 
 func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chain, gaiaCommand []string, valIdx int, endpoint string) {
@@ -309,7 +305,6 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 				Cmd:          gaiaCommand,
 			})
 			s.Require().NoError(err)
-			s.T().Logf("Created exec")
 
 			err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
 				Context:      ctx,
@@ -317,13 +312,7 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 				OutputStream: &outBuf,
 				ErrorStream:  &errBuf,
 			})
-
-			s.T().Logf("Out: %s", outBuf.String())
-			s.T().Logf("Err: %s", errBuf.String())
-
-			if err != nil {
-				s.T().Logf("Error %s", err)
-			}
+			s.Require().NoError(err)
 
 			s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
 			return strings.Contains(txResp.String(), "code: 0")

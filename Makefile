@@ -242,3 +242,9 @@ test-docker-push: test-docker
 
 .PHONY: all build-linux install format lint go-mod-cache draw-deps clean build \
 	start-gaia contract-tests benchmark docker-build-debug docker-build-hermes
+
+###############################################################################
+###                    generate_upgrade_proposal                            ###
+###############################################################################
+generate-upgrade-proposal:
+	go run ./contrib/generate_upgrade_proposal/main.go ./contrib/generate_upgrade_proposal/release.json

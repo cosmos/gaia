@@ -3,6 +3,9 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
 	"os"
 	"strings"
 	"text/template"
@@ -29,16 +32,20 @@ type ProposalInfo struct {
 }
 
 func main() {
-	pi := GetProposalInfo("./release.json", "../../artifacts/build_report")
+	 if len(os.Args) != 2 {
+	 	fmt.Println("please indicate the path of release.json file")
+	 	os.Exit(1)
+	 }
+
+	pi := GetProposalInfo(os.Args[1])
 	err := FormProposal(pi, "./proposal")
 	if err != nil {
 		panic(err)
 	}
-
 }
 
 // get proposal info from release.json and build_report
-func GetProposalInfo(releaseJson, buildReport string) ProposalInfo {
+func GetProposalInfo(releaseJson  string) ProposalInfo {
 	rdata, err := os.ReadFile(releaseJson)
 	if err != nil {
 		panic(err)
@@ -50,11 +57,11 @@ func GetProposalInfo(releaseJson, buildReport string) ProposalInfo {
 		panic(err)
 	}
 
-	shaData, err := os.ReadFile(buildReport)
+	report, err := GetBuildReport(upgradeJson.Upgrade_version)
 	if err != nil {
 		panic(err)
 	}
-	shaMap, err := ParseSha(string(shaData))
+	shaMap, err := ParseSha(string(report))
 
 	return ProposalInfo{
 		Upgrade_name:      upgradeJson.Upgrade_name,
@@ -98,6 +105,18 @@ gaiad tx gov submit-proposal software-upgrade {{ .Upgrade_name}} \
 
 	return nil
 }
+
+func GetBuildReport(version string) (string, error) {
+	resp, err := http.Get(fmt.Sprintf("https://github.com/cosmos/gaia/releases/download/%s/build_report", version))
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	b, err := io.ReadAll(resp.Body)
+	return string(b), err
+}
+
 
 // get sha info from build_report file
 func ParseSha(content string) (map[string]string, error) {

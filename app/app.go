@@ -8,6 +8,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/cosmos/cosmos-sdk/x/auth/ante"
+
 	"github.com/cosmos/cosmos-sdk/testutil/testdata_pulsar"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -121,7 +123,7 @@ import (
 	// routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v2/router/keeper"
 	// routertypes "github.com/strangelove-ventures/packet-forward-middleware/v2/router/types"
 
-	// gaiaante "github.com/cosmos/gaia/v8/ante"
+	gaiaante "github.com/cosmos/gaia/v8/ante"
 	gaiaappparams "github.com/cosmos/gaia/v8/app/params"
 
 	// unnamed import of statik for swagger UI support
@@ -680,28 +682,27 @@ func NewGaiaApp(
 	app.MountTransientStores(tkeys)
 	app.MountMemoryStores(memKeys)
 
-	// anteHandler, err := gaiaante.NewAnteHandler(
-	// 	gaiaante.HandlerOptions{
-	// 		HandlerOptions: ante.HandlerOptions{
-	// 			AccountKeeper:   app.AccountKeeper,
-	// 			BankKeeper:      app.BankKeeper,
-	// 			FeegrantKeeper:  app.FeeGrantKeeper,
-	// 			SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
-	// 			SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
-	// 		},
-	// 		IBCkeeper:            app.IBCKeeper,
-	// 		BypassMinFeeMsgTypes: cast.ToStringSlice(appOpts.Get(gaiaappparams.BypassMinFeeMsgTypesKey)),
-	// 	},
-	// )
-	// if err != nil {
-	// 	panic(fmt.Errorf("failed to create AnteHandler: %s", err))
-	// }
+	anteHandler, err := gaiaante.NewAnteHandler(
+		gaiaante.HandlerOptions{
+			HandlerOptions: ante.HandlerOptions{
+				AccountKeeper:   app.AccountKeeper,
+				BankKeeper:      app.BankKeeper,
+				FeegrantKeeper:  app.FeeGrantKeeper,
+				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
+				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+			},
+			IBCkeeper:            app.IBCKeeper,
+			BypassMinFeeMsgTypes: cast.ToStringSlice(appOpts.Get(gaiaappparams.BypassMinFeeMsgTypesKey)),
+		},
+	)
+	if err != nil {
+		panic(fmt.Errorf("failed to create AnteHandler: %s", err))
+	}
 
-	// app.SetAnteHandler(anteHandler)
+	app.SetAnteHandler(anteHandler)
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
-	//app.setTxHandler(encodingConfig.TxConfig, cast.ToStringSlice(appOpts.Get(server.FlagIndexEvents)))
 
 	app.UpgradeKeeper.SetUpgradeHandler(
 		upgradeName,

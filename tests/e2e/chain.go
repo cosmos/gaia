@@ -12,8 +12,8 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 
-	gaia "github.com/cosmos/gaia/v7/app"
-	"github.com/cosmos/gaia/v7/app/params"
+	gaia "github.com/cosmos/gaia/v8/app"
+	"github.com/cosmos/gaia/v8/app/params"
 )
 
 const (
@@ -27,7 +27,7 @@ var (
 )
 
 func init() {
-	encodingConfig = gaia.MakeEncodingConfig()
+	encodingConfig = gaia.MakeTestEncodingConfig()
 
 	encodingConfig.InterfaceRegistry.RegisterImplementations(
 		(*sdk.Msg)(nil),
@@ -39,7 +39,7 @@ func init() {
 		&ed25519.PubKey{},
 	)
 
-	cdc = encodingConfig.Marshaler
+	cdc = encodingConfig.Codec
 }
 
 type chain struct {
@@ -55,7 +55,7 @@ func newChain() (*chain, error) {
 	}
 
 	return &chain{
-		id:      "chain-" + tmrand.NewRand().Str(6),
+		id:      "chain-" + tmrand.Str(6),
 		dataDir: tmpDir,
 	}, nil
 }

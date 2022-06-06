@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -195,6 +196,20 @@ func queryGaiaTx(endpoint, txHash string) error {
 	}
 
 	return nil
+}
+
+func getSpecificBalance(endpoint, addr, denom string) (amt sdk.Coin, err error) {
+	balances, err := queryGaiaAllBalances(endpoint, addr)
+	if err != nil {
+		return amt, err
+	}
+	for _, c := range balances {
+		if strings.Contains(c.Denom, denom) {
+			amt = c
+			break
+		}
+	}
+	return
 }
 
 func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) {

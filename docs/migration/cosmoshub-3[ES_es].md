@@ -1,3 +1,6 @@
+---
+order: false
+---
 <!-- markdown-link-check-disable -->
 # Instrucciones de actualización del Cosmos Hub 3
 

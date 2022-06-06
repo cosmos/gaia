@@ -1,3 +1,7 @@
+---
+title: Cosmos Hub 4, Theta Upgrade
+order: 2
+---
 <!-- markdown-link-check-disable -->
 # Cosmos Hub 4, v7-Theta Upgrade, Instructions
 

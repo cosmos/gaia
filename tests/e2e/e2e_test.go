@@ -9,20 +9,26 @@ import (
 )
 
 func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
+	// TODO: Remove skip once IBC is reintegrated
+	s.T().Skip()
 	var ibcStakeDenom string
 
 	s.Run("send_photon_to_chainB", func() {
-		recipient := s.chainB.validators[0].keyInfo.GetAddress().String()
-		token := sdk.NewInt64Coin(photonDenom, 3300000000) // 3,300photon
-		s.sendIBC(s.chainA.id, s.chainB.id, recipient, token)
-
-		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
 
 		// require the recipient account receives the IBC tokens (IBC packets ACKd)
 		var (
 			balances sdk.Coins
 			err      error
 		)
+
+		address, err := s.chainB.validators[0].keyInfo.GetAddress()
+		s.Require().NoError(err)
+		recipient := address.String()
+		token := sdk.NewInt64Coin(photonDenom, 3300000000) // 3,300photon
+		s.sendIBC(s.chainA.id, s.chainB.id, recipient, token)
+
+		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
+
 		s.Require().Eventually(
 			func() bool {
 				balances, err = queryGaiaAllBalances(chainBAPIEndpoint, recipient)
@@ -43,5 +49,65 @@ func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
 		}
 
 		s.Require().NotEmpty(ibcStakeDenom)
+	})
+}
+
+func (s *IntegrationTestSuite) TestBankTokenTransfer() {
+	s.Run("send_photon_between_accounts", func() {
+
+		var (
+			err error
+		)
+
+		senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
+		s.Require().NoError(err)
+		sender := senderAddress.String()
+
+		recipientAddress, err := s.chainA.validators[1].keyInfo.GetAddress()
+		s.Require().NoError(err)
+		recipient := recipientAddress.String()
+
+		token := sdk.NewInt64Coin(photonDenom, 3300000000) // 3,300photon
+		fees := sdk.NewInt64Coin(photonDenom, 330000)      // 0.33photon
+
+		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+
+		var (
+			beforeSenderPhotonBalance    sdk.Coin
+			beforeRecipientPhotonBalance sdk.Coin
+		)
+
+		s.Require().Eventually(
+			func() bool {
+				beforeSenderPhotonBalance, err = getSpecificBalance(chainAAPIEndpoint, sender, "photon")
+				s.Require().NoError(err)
+
+				beforeRecipientPhotonBalance, err = getSpecificBalance(chainAAPIEndpoint, recipient, "photon")
+				s.Require().NoError(err)
+
+				return beforeSenderPhotonBalance.IsValid() && beforeRecipientPhotonBalance.IsValid()
+			},
+			10*time.Second,
+			5*time.Second,
+		)
+
+		s.sendMsgSend(s.chainA, 0, sender, recipient, token.String(), fees.String())
+
+		s.Require().Eventually(
+			func() bool {
+				afterSenderPhotonBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, "photon")
+				s.Require().NoError(err)
+
+				afterRecipientPhotonBalance, err := getSpecificBalance(chainAAPIEndpoint, recipient, "photon")
+				s.Require().NoError(err)
+
+				decremented := beforeSenderPhotonBalance.Sub(token).Sub(fees).IsEqual(afterSenderPhotonBalance)
+				incremented := beforeRecipientPhotonBalance.Add(token).IsEqual(afterRecipientPhotonBalance)
+
+				return decremented && incremented
+			},
+			time.Minute,
+			5*time.Second,
+		)
 	})
 }

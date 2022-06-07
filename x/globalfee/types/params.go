@@ -1,10 +1,8 @@
 package types
 
 import (
-//	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/params/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
@@ -16,8 +14,8 @@ func DefaultParams() Params {
 	return Params{MinimumGasPrices: sdk.DecCoins{}}
 }
 
-func ParamKeyTable() types.KeyTable {
-	return types.NewKeyTable().RegisterParamSet(&Params{})
+func ParamKeyTable() paramtypes.KeyTable {
+	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
 }
 
 // ValidateBasic performs basic validation.
@@ -28,7 +26,7 @@ func (p Params) ValidateBasic() error {
 // ParamSetPairs returns the parameter set pairs.
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
-		types.NewParamSetPair(
+		paramtypes.NewParamSetPair(
 			ParamStoreKeyMinGasPrices, &p.MinimumGasPrices, validateMinimumGasPrices,
 		),
 	}

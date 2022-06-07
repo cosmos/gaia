@@ -126,6 +126,6 @@ func (a AppModule) EndBlock(context sdk.Context, block abci.RequestEndBlock) []a
 // module. It should be incremented on each consensus-breaking change
 // introduced by the module. To avoid wrong/empty versions, the initial version
 // should be set to 1.
-func (am AppModule) ConsensusVersion() uint64 {
+func (a AppModule) ConsensusVersion() uint64 {
 	return 1
 }

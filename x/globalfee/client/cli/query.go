@@ -1,8 +1,6 @@
 package cli
 
 import (
-	"fmt"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
@@ -28,7 +26,7 @@ func GetCmdShowMinimumGasPrices() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "minimum-gas-prices",
 		Short:   "Show minimum gas prices",
-		Long:    fmt.Sprintf("Show all minimum gas prices"),
+		Long:    "Show all minimum gas prices",
 		Aliases: []string{"min"},
 		Args:    cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {

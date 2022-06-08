@@ -4,6 +4,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"github.com/cosmos/gaia/v8/x/globalfee"
 	ibcante "github.com/cosmos/ibc-go/v3/modules/core/ante"
 	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
 )
@@ -14,6 +16,7 @@ type HandlerOptions struct {
 	ante.HandlerOptions
 	IBCkeeper            *ibckeeper.Keeper
 	BypassMinFeeMsgTypes []string
+	GlobalFeeSubspace    paramtypes.Subspace
 }
 
 func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
@@ -26,9 +29,11 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 	if opts.SignModeHandler == nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "sign mode handler is required for ante builder")
 	}
-
 	if opts.IBCkeeper == nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "IBC keeper is required for middlewares")
+	}
+	if opts.GlobalFeeSubspace.Name() == "" {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "param store is required for ante builder")
 	}
 
 	var sigGasConsumer = opts.SigGasConsumer
@@ -44,7 +49,8 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewValidateMemoDecorator(opts.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
 		ante.NewDeductFeeDecorator(opts.AccountKeeper, opts.BankKeeper, opts.FeegrantKeeper, opts.TxFeeChecker),
-		ante.NewSetPubKeyDecorator(opts.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
+		globalfee.NewGlobalMinimumChainFeeDecorator(opts.GlobalFeeSubspace), // after local min fee check
+		ante.NewSetPubKeyDecorator(opts.AccountKeeper),                      // SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewValidateSigCountDecorator(opts.AccountKeeper),
 		ante.NewSigGasConsumeDecorator(opts.AccountKeeper, sigGasConsumer),
 		ante.NewSigVerificationDecorator(opts.AccountKeeper, opts.SignModeHandler),

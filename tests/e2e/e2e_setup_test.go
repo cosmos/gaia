@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -432,6 +434,8 @@ func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
 		sdk.NewInt64Coin(photonDenom, 10),
 	}
 
+	govAccountAddress := authtypes.NewModuleAddress(govtypes.ModuleName).String()
+
 	type GovMessageSend struct {
 		Type   string     `json:"@type"`
 		From   string     `json:"from_address"`
@@ -439,21 +443,21 @@ func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
 		Amount []sdk.Coin `json:"amount"`
 	}
 
-	message := []GovMessageSend{
+	messages := []GovMessageSend{
 		GovMessageSend{
 			Type:   "/cosmos.bank.v1beta1.MsgSend",
-			From:   "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+			From:   govAccountAddress,
 			To:     "cosmos1pkueemdeps77dwrqma03pwqk93nw39nuhccz02",
 			Amount: sendAmount,
 		},
 	}
 
 	newGovBody, err := json.MarshalIndent(struct {
-		Message  []GovMessageSend `json:"message"`
+		Messages []GovMessageSend `json:"messages"`
 		Metadata string           `json:"metadata"`
 		Deposit  string           `json:"deposit"`
 	}{
-		Message:  message,
+		Messages: messages,
 		Metadata: "VGVzdGluZyAxLCAyLCAzIQ==",
 		Deposit:  "5000photon",
 	}, "", " ")
@@ -469,7 +473,7 @@ func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
 	}{
 		Title:       "Community Pool Spend",
 		Description: "Fund Gov !",
-		Recipient:   "cosmos1pkueemdeps77dwrqma03pwqk93nw39nuhccz02",
+		Recipient:   govAccountAddress,
 		Amount:      "1000photon",
 		Deposit:     "5000photon",
 	}, "", " ")

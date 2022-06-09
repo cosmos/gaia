@@ -35,13 +35,9 @@ var (
 	}))
 )
 
-
-
 func init() {
 	ibctesting.DefaultTestingAppInit = SetupICATestingApp
 }
-
-
 
 func SetupICATestingApp() (ibctesting.TestingApp, map[string]json.RawMessage) {
 	db := dbm.NewMemDB()
@@ -49,8 +45,6 @@ func SetupICATestingApp() (ibctesting.TestingApp, map[string]json.RawMessage) {
 	app := gaiaapp.NewGaiaApp(log.NewNopLogger(), db, nil, true, map[int64]bool{}, gaiaapp.DefaultNodeHome, 5, encCdc, helpers.EmptyAppOptions{})
 	return app, gaiaapp.NewDefaultGenesisState()
 }
-
-
 
 // KeeperTestSuite is a testing suite to test keeper functions
 type KeeperTestSuite struct {

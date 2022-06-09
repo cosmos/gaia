@@ -2,12 +2,12 @@ syntax = "proto3";
 
 package mauth;
 
-option go_package = "github.com/cosmos/gaia/x/inter-tx/types";
+option go_package = "github.com/cosmos/gaia/x/icamauth/types";
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/any.proto";
 
-// Msg defines the intertx Msg service.
+// Msg defines the ica Msg service.
 service Msg {
   // Register defines a rpc handler for MsgRegisterAccount
   rpc RegisterAccount(MsgRegisterAccount) returns (MsgRegisterAccountResponse);

@@ -1,4 +1,4 @@
-package inter_tx
+package icamauth
 
 import (
 	"encoding/json"
@@ -14,9 +14,9 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cosmos/gaia/v8/x/inter-tx/client/cli"
-	"github.com/cosmos/gaia/v8/x/inter-tx/keeper"
-	"github.com/cosmos/gaia/v8/x/inter-tx/types"
+	"github.com/cosmos/gaia/v8/x/icamauth/client/cli"
+	"github.com/cosmos/gaia/v8/x/icamauth/keeper"
+	"github.com/cosmos/gaia/v8/x/icamauth/types"
 )
 
 var (
@@ -86,7 +86,7 @@ type AppModule struct {
 	keeper keeper.Keeper
 }
 
-// NewAppModule creates and returns a new intertx AppModule
+// NewAppModule creates and returns a new icamauth AppModule
 func NewAppModule(cdc codec.Codec, keeper keeper.Keeper) AppModule {
 	return AppModule{
 		AppModuleBasic: NewAppModuleBasic(cdc),

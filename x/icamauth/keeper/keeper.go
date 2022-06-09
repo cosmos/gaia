@@ -10,7 +10,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
-	"github.com/cosmos/gaia/v8/x/inter-tx/types"
+	"github.com/cosmos/gaia/v8/x/icamauth/types"
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/keeper"
 	host "github.com/cosmos/ibc-go/v3/modules/core/24-host"
 )
@@ -28,7 +28,6 @@ func NewKeeper(cdc codec.Codec, storeKey storetypes.StoreKey, iaKeeper icacontro
 	return Keeper{
 		cdc:      cdc,
 		storeKey: storeKey,
-
 		scopedKeeper:        scopedKeeper,
 		icaControllerKeeper: iaKeeper,
 	}

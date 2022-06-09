@@ -3,15 +3,15 @@ package cli
 import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/gaia/v8/x/inter-tx/types"
+	"github.com/cosmos/gaia/v8/x/icamauth/types"
 	"github.com/spf13/cobra"
 )
 
-// GetQueryCmd creates and returns the intertx query command
+// GetQueryCmd creates and returns the icamauth query command
 func GetQueryCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        types.ModuleName,
-		Short:                      "Querying commands for the inter-tx module",
+		Short:                      "Querying commands for the icamauth module",
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,

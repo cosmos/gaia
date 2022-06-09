@@ -126,9 +126,9 @@ import (
 
 	gaiaante "github.com/cosmos/gaia/v8/ante"
 	gaiaappparams "github.com/cosmos/gaia/v8/app/params"
-	intertx "github.com/cosmos/gaia/v8/x/inter-tx"
-	intertxkeeper "github.com/cosmos/gaia/v8/x/inter-tx/keeper"
-	intertxtypes "github.com/cosmos/gaia/v8/x/inter-tx/types"
+	"github.com/cosmos/gaia/v8/x/icamauth"
+	icamauthkeeper "github.com/cosmos/gaia/v8/x/icamauth/keeper"
+	icamauthtypes "github.com/cosmos/gaia/v8/x/icamauth/types"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
@@ -173,7 +173,7 @@ var (
 		liquidity.AppModuleBasic{},
 		// router.AppModuleBasic{},
 		ica.AppModuleBasic{},
-		intertx.AppModuleBasic{},
+		icamauth.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -226,7 +226,7 @@ type GaiaApp struct { // nolint: golint
 	IBCKeeper           *ibckeeper.Keeper
 	ICAControllerKeeper icacontrollerkeeper.Keeper
 	ICAHostKeeper       icahostkeeper.Keeper
-	InterTxKeeper       intertxkeeper.Keeper
+	ICAMauthKeeper      icamauthkeeper.Keeper
 	EvidenceKeeper      evidencekeeper.Keeper
 	TransferKeeper      ibctransferkeeper.Keeper
 	FeeGrantKeeper      feegrantkeeper.Keeper
@@ -241,7 +241,7 @@ type GaiaApp struct { // nolint: golint
 	ScopedTransferKeeper      capabilitykeeper.ScopedKeeper
 	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
 	ScopedICAHostKeeper       capabilitykeeper.ScopedKeeper
-	ScopedInterTxKeeper       capabilitykeeper.ScopedKeeper
+	ScopedICAMauthKeeper      capabilitykeeper.ScopedKeeper
 
 	// the module manager
 	mm *module.Manager
@@ -292,7 +292,7 @@ func NewGaiaApp(
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, liquiditytypes.StoreKey, ibctransfertypes.StoreKey,
-		capabilitytypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey /*routertypes.StoreKey,*/, icacontrollertypes.StoreKey, icahosttypes.StoreKey, intertxtypes.StoreKey, group.StoreKey,
+		capabilitytypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey /*routertypes.StoreKey,*/, icacontrollertypes.StoreKey, icahosttypes.StoreKey, icamauthtypes.StoreKey, group.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -330,7 +330,7 @@ func NewGaiaApp(
 	app.CapabilityKeeper = capabilitykeeper.NewKeeper(appCodec, keys[capabilitytypes.StoreKey], memKeys[capabilitytypes.MemStoreKey])
 	scopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
 	scopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
-	scopedInterTxKeeper := app.CapabilityKeeper.ScopeToModule(intertxtypes.ModuleName)
+	scopedICAMauthKeeper := app.CapabilityKeeper.ScopeToModule(icamauthtypes.ModuleName)
 	scopedICAControllerKeeper := app.CapabilityKeeper.ScopeToModule(icacontrollertypes.SubModuleName)
 	scopedICAHostKeeper := app.CapabilityKeeper.ScopeToModule(icahosttypes.SubModuleName)
 
@@ -518,17 +518,17 @@ func NewGaiaApp(
 	)
 	icaModule := ica.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper)
 
-	app.InterTxKeeper = intertxkeeper.NewKeeper(
+	app.ICAMauthKeeper = icamauthkeeper.NewKeeper(
 		appCodec,
-		keys[intertxtypes.StoreKey],
+		keys[icamauthtypes.StoreKey],
 		app.ICAControllerKeeper,
-		scopedInterTxKeeper,
+		scopedICAMauthKeeper,
 	)
-	interTxIBCModule := intertx.NewIBCModule(app.InterTxKeeper)
-	interTxModule := intertx.NewAppModule(appCodec, app.InterTxKeeper)
+	icaMauthIBCModule := icamauth.NewIBCModule(app.ICAMauthKeeper)
+	icaMauthModule := icamauth.NewAppModule(appCodec, app.ICAMauthKeeper)
 
 	icaHostIBCModule := icahost.NewIBCModule(app.ICAHostKeeper)
-	icaControllerIBCModule := icacontroller.NewIBCModule(app.ICAControllerKeeper, interTxIBCModule)
+	icaControllerIBCModule := icacontroller.NewIBCModule(app.ICAControllerKeeper, icaMauthIBCModule)
 	// app.RouterKeeper = routerkeeper.NewKeeper(appCodec, keys[routertypes.StoreKey], app.GetSubspace(routertypes.ModuleName), app.TransferKeeper, app.DistrKeeper)
 
 	// routerModule := router.NewAppModule(app.RouterKeeper, transferIBCModule)
@@ -537,7 +537,7 @@ func NewGaiaApp(
 	ibcRouter.AddRoute(icacontrollertypes.SubModuleName, icaControllerIBCModule).
 		AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
 		AddRoute(ibctransfertypes.ModuleName, transferIBCModule).
-		AddRoute(intertxtypes.ModuleName, icaControllerIBCModule)
+		AddRoute(icamauthtypes.ModuleName, icaControllerIBCModule)
 	app.IBCKeeper.SetRouter(ibcRouter)
 
 	// create evidence keeper with router
@@ -581,7 +581,7 @@ func NewGaiaApp(
 		liquidity.NewAppModule(appCodec, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.DistrKeeper),
 		transferModule,
 		icaModule,
-		interTxModule,
+		icaMauthModule,
 		// routerModule,
 	)
 
@@ -615,7 +615,7 @@ func NewGaiaApp(
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
 		icatypes.ModuleName,
-		intertxtypes.ModuleName,
+		icamauthtypes.ModuleName,
 	)
 	app.mm.SetOrderEndBlockers(
 		crisistypes.ModuleName,
@@ -641,7 +641,7 @@ func NewGaiaApp(
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		icatypes.ModuleName,
-		intertxtypes.ModuleName,
+		icamauthtypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -674,7 +674,7 @@ func NewGaiaApp(
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		icatypes.ModuleName,
-		intertxtypes.ModuleName,
+		icamauthtypes.ModuleName,
 	)
 
 	// Uncomment if you want to set a custom migration order here.
@@ -814,7 +814,7 @@ func NewGaiaApp(
 	app.ScopedTransferKeeper = scopedTransferKeeper
 	app.ScopedICAControllerKeeper = scopedICAControllerKeeper
 	app.ScopedICAHostKeeper = scopedICAHostKeeper
-	app.ScopedInterTxKeeper = scopedInterTxKeeper
+	app.ScopedICAMauthKeeper = scopedICAMauthKeeper
 
 	return app
 }

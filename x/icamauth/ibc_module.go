@@ -1,4 +1,4 @@
-package inter_tx
+package icamauth
 
 import (
 	proto "github.com/gogo/protobuf/proto"
@@ -7,7 +7,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
-	"github.com/cosmos/gaia/v8/x/inter-tx/keeper"
+	"github.com/cosmos/gaia/v8/x/icamauth/keeper"
 
 	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 	porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"

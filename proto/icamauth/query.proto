@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package mauth;
 
-option go_package = "github.com/cosmos/gaia/x/inter-tx/types";
+option go_package = "github.com/cosmos/gaia/x/icamauth/types";
 
 import "gogoproto/gogo.proto";
 

@@ -6,8 +6,8 @@ import (
 	channeltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 	ibctesting "github.com/cosmos/ibc-go/v3/testing"
 
-	"github.com/cosmos/gaia/v8/x/inter-tx/keeper"
-	"github.com/cosmos/gaia/v8/x/inter-tx/types"
+	"github.com/cosmos/gaia/v8/x/icamauth/keeper"
+	"github.com/cosmos/gaia/v8/x/icamauth/types"
 )
 
 func (suite *KeeperTestSuite) TestRegisterInterchainAccount() {
@@ -72,7 +72,7 @@ func (suite *KeeperTestSuite) TestRegisterInterchainAccount() {
 
 			tc.malleate() // malleate mutates test data
 
-			msgSrv := keeper.NewMsgServerImpl(suite.GetICAApp(suite.chainA).InterTxKeeper)
+			msgSrv := keeper.NewMsgServerImpl(suite.GetICAApp(suite.chainA).ICAMauthKeeper)
 			msg := types.NewMsgRegisterAccount(owner, path.EndpointA.ConnectionID)
 
 			res, err := msgSrv.RegisterAccount(sdk.WrapSDKContext(suite.chainA.GetContext()), msg)

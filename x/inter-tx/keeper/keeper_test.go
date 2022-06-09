@@ -63,8 +63,8 @@ type KeeperTestSuite struct {
 	chainB *ibctesting.TestChain
 }
 
-func (suite *KeeperTestSuite) GetICAApp(chain *ibctesting.TestChain) *gaiaapp.App {
-	app, ok := chain.App.(*gaiaapp.App)
+func (suite *KeeperTestSuite) GetICAApp(chain *ibctesting.TestChain) *gaiaapp.GaiaApp {
+	app, ok := chain.App.(*gaiaapp.GaiaApp)
 	if !ok {
 		panic("not ica app")
 	}

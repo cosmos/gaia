@@ -117,14 +117,15 @@ func (s *IntegrationTestSuite) TestSendTokensFromNewGovAccount() {
 	s.fundCommunityPool(chainAAPIEndpoint, sender)
 	s.submitLegacyProposalFundGovAccount(chainAAPIEndpoint, sender)
 	s.depositLegacyProposalFundGovAccount(chainAAPIEndpoint, sender)
-	s.voteLegacyProposalFundGovAccount(chainAAPIEndpoint, sender)
+	s.voteLegacyProposalFundGovAccount(chainAAPIEndpoint, sender, proposal1Id, "yes")
 
 	initialGovBalance, err := getSpecificBalance(chainAAPIEndpoint, govModuleAddress, photonDenom)
 	s.Require().NoError(err)
 
-	s.submitNewMsgSendFromGovProposal(chainAAPIEndpoint, sender)
-	s.depositNewMsgSendFromGovProposal(chainAAPIEndpoint, sender)
-	s.voteNewMsgSendFromGovProposal(chainAAPIEndpoint, sender)
+	s.T().Logf("Submitting Gov Proposal: Sending Tokens from Gov Module to Recipient")
+	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposal2Id, "/root/.gaia/config/proposal_2.json")
+	s.depositNewGovProposal(chainAAPIEndpoint, sender, proposal2Id)
+	s.voteGovProposal(chainAAPIEndpoint, sender, proposal2Id, "yes")
 
 	s.Run("new_msg_send_from_gov_proposal_successfully_funds_recipient_account", func() {
 		s.Require().Eventually(
@@ -143,6 +144,10 @@ func (s *IntegrationTestSuite) TestSendTokensFromNewGovAccount() {
 			5*time.Second,
 		)
 	})
+}
+
+func (s *IntegrationTestSuite) TestGovUpgrade() {
+
 }
 
 func (s *IntegrationTestSuite) fundCommunityPool(chainAAPIEndpoint string, sender string) {
@@ -199,21 +204,9 @@ func (s *IntegrationTestSuite) depositLegacyProposalFundGovAccount(chainAAPIEndp
 	})
 }
 
-func (s *IntegrationTestSuite) voteLegacyProposalFundGovAccount(chainAAPIEndpoint string, sender string) {
-	s.Run("vote_legacy_community_spend_to_fund_gov_proposal", func() {
-		s.execGovVoteProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposal1Id, "yes", fees.String())
-
-		s.Require().Eventually(
-			func() bool {
-				proposal, err := queryGovProposal(chainAAPIEndpoint, proposal1Id)
-				s.Require().NoError(err)
-
-				return (proposal.GetProposal().Status == govv1beta1.StatusPassed)
-			},
-			25*time.Second,
-			5*time.Second,
-		)
-
+func (s *IntegrationTestSuite) voteLegacyProposalFundGovAccount(chainAAPIEndpoint string, sender string, proposalId uint64, vote string) {
+	s.voteGovProposal(chainAAPIEndpoint, sender, proposalId, vote)
+	s.Run("verify_legacy_community_spend_funds_gov_successfully", func() {
 		s.Require().Eventually(
 			func() bool {
 				govBalance, err := getSpecificBalance(chainAAPIEndpoint, govModuleAddress, photonDenom)
@@ -227,13 +220,13 @@ func (s *IntegrationTestSuite) voteLegacyProposalFundGovAccount(chainAAPIEndpoin
 	})
 }
 
-func (s *IntegrationTestSuite) submitNewMsgSendFromGovProposal(chainAAPIEndpoint string, sender string) {
-	s.Run("submit_new_msg_send_from_gov_proposal", func() {
-		s.execGovSubmitProposal(s.chainA, 0, chainAAPIEndpoint, sender, "/root/.gaia/config/proposal_2.json", fees.String())
+func (s *IntegrationTestSuite) submitNewGovProposal(chainAAPIEndpoint string, sender string, proposalId uint64, proposalPath string) {
+	s.Run("submit_new_gov_proposal", func() {
+		s.execGovSubmitProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposalPath, fees.String())
 
 		s.Require().Eventually(
 			func() bool {
-				proposal, err := queryGovProposal(chainAAPIEndpoint, proposal2Id)
+				proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId)
 				s.Require().NoError(err)
 
 				return (proposal.GetProposal().Status == govv1beta1.StatusDepositPeriod)
@@ -244,13 +237,13 @@ func (s *IntegrationTestSuite) submitNewMsgSendFromGovProposal(chainAAPIEndpoint
 	})
 }
 
-func (s *IntegrationTestSuite) depositNewMsgSendFromGovProposal(chainAAPIEndpoint string, sender string) {
-	s.Run("submit_new_msg_send_from_gov_proposal", func() {
-		s.execGovDepositProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposal2Id, depositAmount, fees.String())
+func (s *IntegrationTestSuite) depositNewGovProposal(chainAAPIEndpoint string, sender string, proposalId uint64) {
+	s.Run("deposit_new_gov_proposal", func() {
+		s.execGovDepositProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposalId, depositAmount, fees.String())
 
 		s.Require().Eventually(
 			func() bool {
-				proposal, err := queryGovProposal(chainAAPIEndpoint, proposal2Id)
+				proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId)
 				s.Require().NoError(err)
 
 				return (proposal.GetProposal().Status == govv1beta1.StatusVotingPeriod)
@@ -261,13 +254,13 @@ func (s *IntegrationTestSuite) depositNewMsgSendFromGovProposal(chainAAPIEndpoin
 	})
 }
 
-func (s *IntegrationTestSuite) voteNewMsgSendFromGovProposal(chainAAPIEndpoint string, sender string) {
+func (s *IntegrationTestSuite) voteGovProposal(chainAAPIEndpoint string, sender string, proposalId uint64, vote string) {
 	s.Run("vote_new_msg_send_from_gov_proposal", func() {
-		s.execGovVoteProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposal2Id, "yes", fees.String())
+		s.execGovVoteProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposalId, vote, fees.String())
 
 		s.Require().Eventually(
 			func() bool {
-				proposal, err := queryGovProposal(chainAAPIEndpoint, proposal2Id)
+				proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId)
 				s.Require().NoError(err)
 
 				return (proposal.GetProposal().Status == govv1beta1.StatusPassed)

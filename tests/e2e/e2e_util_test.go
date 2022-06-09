@@ -170,11 +170,11 @@ func (s *IntegrationTestSuite) sendIBC(srcChainID, dstChainID, recipient string,
 	s.T().Log("successfully sent IBC tokens")
 }
 
-func (s *IntegrationTestSuite) fundCommunityPool(c *chain, valIdx int, endpoint string, from, amt, fees string) {
+func (s *IntegrationTestSuite) execDistributionFundCommunityPool(c *chain, valIdx int, endpoint string, from, amt, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	s.T().Logf("Funding community pool on chain %s", c.id)
+	s.T().Logf("Executing gaiad tx distribution fund-community-pool on chain %s", c.id)
 
 	gaiaCommand := []string{
 		"gaiad",
@@ -194,11 +194,11 @@ func (s *IntegrationTestSuite) fundCommunityPool(c *chain, valIdx int, endpoint 
 	s.T().Logf("Successfully funded community pool")
 }
 
-func (s *IntegrationTestSuite) submitLegacyGovProposal(c *chain, valIdx int, endpoint string, submitterAddr string, govProposalPath string, fees string, govProposalSubType string) {
+func (s *IntegrationTestSuite) execGovSubmitLegacyGovProposal(c *chain, valIdx int, endpoint string, submitterAddr string, govProposalPath string, fees string, govProposalSubType string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	s.T().Logf("Submitting legacy gov proposal from %s on chain %s", submitterAddr, c.id)
+	s.T().Logf("Executing gaiad tx gov submit-legacy-proposal on chain %s", c.id)
 
 	gaiaCommand := []string{
 		"gaiad",
@@ -219,9 +219,11 @@ func (s *IntegrationTestSuite) submitLegacyGovProposal(c *chain, valIdx int, end
 	s.T().Logf("Successfully submitted legacy proposal")
 }
 
-func (s *IntegrationTestSuite) depositGovProposal(c *chain, valIdx int, endpoint string, submitterAddr string, proposalId uint64, amount string, fees string) {
+func (s *IntegrationTestSuite) execGovDepositProposal(c *chain, valIdx int, endpoint string, submitterAddr string, proposalId uint64, amount string, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
+
+	s.T().Logf("Executing gaiad tx gov deposit on chain %s", c.id)
 
 	gaiaCommand := []string{
 		"gaiad",
@@ -242,9 +244,11 @@ func (s *IntegrationTestSuite) depositGovProposal(c *chain, valIdx int, endpoint
 	s.T().Logf("Successfully deposited proposal")
 }
 
-func (s *IntegrationTestSuite) voteGovProposal(c *chain, valIdx int, endpoint string, submitterAddr string, proposalId uint64, vote string, fees string) {
+func (s *IntegrationTestSuite) execGovVoteProposal(c *chain, valIdx int, endpoint string, submitterAddr string, proposalId uint64, vote string, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
+
+	s.T().Logf("Executing gaiad tx gov vote on chain %s", c.id)
 
 	gaiaCommand := []string{
 		"gaiad",
@@ -262,12 +266,14 @@ func (s *IntegrationTestSuite) voteGovProposal(c *chain, valIdx int, endpoint st
 	}
 
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
-	s.T().Logf("Successfully voted on proposal")
+	s.T().Logf("Successfully voted on proposal %d", proposalId)
 }
 
-func (s *IntegrationTestSuite) submitGovProposal(c *chain, valIdx int, endpoint string, submitterAddr string, govProposalPath string, fees string) {
+func (s *IntegrationTestSuite) execGovSubmitProposal(c *chain, valIdx int, endpoint string, submitterAddr string, govProposalPath string, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
+
+	s.T().Logf("Executing gaiad tx gov submit-proposal on chain %s", c.id)
 
 	gaiaCommand := []string{
 		"gaiad",

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"io"
 	"io/ioutil"
@@ -32,14 +33,22 @@ import (
 )
 
 const (
-	photonDenom    = "photon"
-	initBalanceStr = "110000000000stake,100000000000000000photon"
-	minGasPrice    = "0.00001"
+	photonDenom                = "photon"
+	initBalanceStr             = "110000000000stake,100000000000000000photon"
+	minGasPrice                = "0.00001"
+	proposal1Id                = uint64(1)
+	proposal2Id                = uint64(2)
+	govSendMsgRecipientAddress = "cosmos1pkueemdeps77dwrqma03pwqk93nw39nuhccz02"
 )
 
 var (
-	stakeAmount, _  = sdk.NewIntFromString("100000000000")
-	stakeAmountCoin = sdk.NewCoin("stake", stakeAmount)
+	stakeAmount, _    = sdk.NewIntFromString("100000000000")
+	stakeAmountCoin   = sdk.NewCoin("stake", stakeAmount)
+	tokenAmount       = sdk.NewInt64Coin(photonDenom, 3300000000) // 3,300photon
+	fees              = sdk.NewInt64Coin(photonDenom, 330000)
+	depositAmount     = sdk.NewInt64Coin(photonDenom, 10000000).String()
+	distModuleAddress = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
+	govModuleAddress  = authtypes.NewModuleAddress(govtypes.ModuleName).String()
 )
 
 type IntegrationTestSuite struct {
@@ -434,8 +443,6 @@ func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
 		sdk.NewInt64Coin(photonDenom, 10),
 	}
 
-	govAccountAddress := authtypes.NewModuleAddress(govtypes.ModuleName).String()
-
 	type GovMessageSend struct {
 		Type   string     `json:"@type"`
 		From   string     `json:"from_address"`
@@ -446,7 +453,7 @@ func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
 	messages := []GovMessageSend{
 		GovMessageSend{
 			Type:   "/cosmos.bank.v1beta1.MsgSend",
-			From:   govAccountAddress,
+			From:   govModuleAddress,
 			To:     govSendMsgRecipientAddress,
 			Amount: sendAmount,
 		},
@@ -473,7 +480,7 @@ func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
 	}{
 		Title:       "Community Pool Spend",
 		Description: "Fund Gov !",
-		Recipient:   govAccountAddress,
+		Recipient:   govModuleAddress,
 		Amount:      "1000photon",
 		Deposit:     "5000photon",
 	}, "", " ")

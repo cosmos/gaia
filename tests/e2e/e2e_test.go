@@ -13,6 +13,19 @@ import (
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
+const (
+	proposal1Id = uint64(1)
+	proposal2Id = uint64(2)
+)
+
+var (
+	tokenAmount       = sdk.NewInt64Coin(photonDenom, 3300000000) // 3,300photon
+	fees              = sdk.NewInt64Coin(photonDenom, 330000)
+	depositAmount     = sdk.NewInt64Coin(photonDenom, 10000000).String()
+	distModuleAddress = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
+	govModuleAddress  = authtypes.NewModuleAddress(govtypes.ModuleName).String()
+)
+
 func (s *IntegrationTestSuite) TestAIBCTokenTransfer() {
 	// TODO: Remove skip once IBC is reintegrated
 	s.T().Skip()
@@ -29,8 +42,7 @@ func (s *IntegrationTestSuite) TestAIBCTokenTransfer() {
 		address, err := s.chainB.validators[0].keyInfo.GetAddress()
 		s.Require().NoError(err)
 		recipient := address.String()
-		token := sdk.NewInt64Coin(photonDenom, 3300000000) // 3,300photon
-		s.sendIBC(s.chainA.id, s.chainB.id, recipient, token)
+		s.sendIBC(s.chainA.id, s.chainB.id, recipient, tokenAmount)
 
 		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
 
@@ -48,7 +60,7 @@ func (s *IntegrationTestSuite) TestAIBCTokenTransfer() {
 		for _, c := range balances {
 			if strings.Contains(c.Denom, "ibc/") {
 				ibcStakeDenom = c.Denom
-				s.Require().Equal(token.Amount.Int64(), c.Amount.Int64())
+				s.Require().Equal(tokenAmount.Amount.Int64(), c.Amount.Int64())
 				break
 			}
 		}
@@ -59,7 +71,6 @@ func (s *IntegrationTestSuite) TestAIBCTokenTransfer() {
 
 func (s *IntegrationTestSuite) TestBBankTokenTransfer() {
 	s.Run("send_photon_between_accounts", func() {
-
 		var (
 			err error
 		)
@@ -71,9 +82,6 @@ func (s *IntegrationTestSuite) TestBBankTokenTransfer() {
 		recipientAddress, err := s.chainA.validators[1].keyInfo.GetAddress()
 		s.Require().NoError(err)
 		recipient := recipientAddress.String()
-
-		token := sdk.NewInt64Coin(photonDenom, 3300000000) // 3,300photon
-		fees := sdk.NewInt64Coin(photonDenom, 330000)      // 0.33photon
 
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
@@ -96,7 +104,7 @@ func (s *IntegrationTestSuite) TestBBankTokenTransfer() {
 			5*time.Second,
 		)
 
-		s.sendMsgSend(s.chainA, 0, sender, recipient, token.String(), fees.String())
+		s.sendMsgSend(s.chainA, 0, sender, recipient, tokenAmount.String(), fees.String())
 
 		s.Require().Eventually(
 			func() bool {
@@ -106,8 +114,8 @@ func (s *IntegrationTestSuite) TestBBankTokenTransfer() {
 				afterRecipientPhotonBalance, err := getSpecificBalance(chainAAPIEndpoint, recipient, "photon")
 				s.Require().NoError(err)
 
-				decremented := beforeSenderPhotonBalance.Sub(token).Sub(fees).IsEqual(afterSenderPhotonBalance)
-				incremented := beforeRecipientPhotonBalance.Add(token).IsEqual(afterRecipientPhotonBalance)
+				decremented := beforeSenderPhotonBalance.Sub(tokenAmount).Sub(fees).IsEqual(afterSenderPhotonBalance)
+				incremented := beforeRecipientPhotonBalance.Add(tokenAmount).IsEqual(afterRecipientPhotonBalance)
 
 				return decremented && incremented
 			},
@@ -119,21 +127,17 @@ func (s *IntegrationTestSuite) TestBBankTokenTransfer() {
 
 func (s *IntegrationTestSuite) TestCDistributionFundCommunityPool() {
 	s.Run("fund_community_pool", func() {
+		s.T().Skip()
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-
-		token := sdk.NewInt64Coin(photonDenom, 3300000000) // 3,300photon
-		fees := sdk.NewInt64Coin(photonDenom, 330000)      // 0.33photon
-		distModuleAddress := authtypes.NewModuleAddress(distrtypes.ModuleName).String()
-
 		senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
 		s.Require().NoError(err)
 		sender := senderAddress.String()
 
-		s.fundCommunityPool(s.chainA, 0, chainAAPIEndpoint, sender, token.String(), fees.String())
+		s.fundCommunityPool(s.chainA, 0, chainAAPIEndpoint, sender, tokenAmount.String(), fees.String())
 
 		s.Require().Eventually(
 			func() bool {
-				afterDistPhotonBalance, err := getSpecificBalance(chainAAPIEndpoint, distModuleAddress, token.Denom)
+				afterDistPhotonBalance, err := getSpecificBalance(chainAAPIEndpoint, distModuleAddress, tokenAmount.Denom)
 				if err != nil {
 					s.T().Logf("Error getting balance: %s", afterDistPhotonBalance)
 				}
@@ -149,17 +153,14 @@ func (s *IntegrationTestSuite) TestCDistributionFundCommunityPool() {
 
 func (s *IntegrationTestSuite) TestDSubmitLegacyCommunitySpendFundGovProposal() {
 	s.Run("submit_deposit_legacy_community_spend_to_fund_gov_proposal", func() {
-
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-		fees := sdk.NewInt64Coin(photonDenom, 330000).String() // 0.33photon
-		proposalId := uint64(1)
-		depositAmount := sdk.NewInt64Coin(photonDenom, 10000000).String() // 10photon
 
 		senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
 		s.Require().NoError(err)
 		sender := senderAddress.String()
 
-		s.submitLegacyGovProposal(s.chainA, 0, chainAAPIEndpoint, sender, "/root/.gaia/config/proposal.json", fees, "community-pool-spend")
+		s.fundCommunityPool(s.chainA, 0, chainAAPIEndpoint, sender, tokenAmount.String(), fees.String())
+		s.submitLegacyGovProposal(s.chainA, 0, chainAAPIEndpoint, sender, "/root/.gaia/config/proposal.json", fees.String(), "community-pool-spend")
 
 		s.Require().Eventually(
 			func() bool {
@@ -172,11 +173,11 @@ func (s *IntegrationTestSuite) TestDSubmitLegacyCommunitySpendFundGovProposal() 
 			5*time.Second,
 		)
 
-		s.depositGovProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposalId, depositAmount, fees)
+		s.depositGovProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposal1Id, depositAmount, fees.String())
 
 		s.Require().Eventually(
 			func() bool {
-				proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId)
+				proposal, err := queryGovProposal(chainAAPIEndpoint, proposal1Id)
 				s.Require().NoError(err)
 
 				return (proposal.GetProposal().Status == govv1beta1.StatusVotingPeriod)
@@ -190,20 +191,16 @@ func (s *IntegrationTestSuite) TestDSubmitLegacyCommunitySpendFundGovProposal() 
 func (s *IntegrationTestSuite) TestEVoteLegacyCommunitySpendProposal() {
 	s.Run("vote_legacy_community_spend_to_fund_gov_proposal", func() {
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-		fees := sdk.NewInt64Coin(photonDenom, 330000).String() // 0.33photon
-		proposalId := uint64(1)
 
 		senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
 		s.Require().NoError(err)
 		sender := senderAddress.String()
 
-		govAccountAddress := authtypes.NewModuleAddress(govtypes.ModuleName).String()
-
-		s.voteGovProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposalId, "yes", fees)
+		s.voteGovProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposal1Id, "yes", fees.String())
 
 		s.Require().Eventually(
 			func() bool {
-				proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId)
+				proposal, err := queryGovProposal(chainAAPIEndpoint, proposal1Id)
 				s.Require().NoError(err)
 
 				return (proposal.GetProposal().Status == govv1beta1.StatusPassed)
@@ -214,7 +211,7 @@ func (s *IntegrationTestSuite) TestEVoteLegacyCommunitySpendProposal() {
 
 		s.Require().Eventually(
 			func() bool {
-				govBalance, err := getSpecificBalance(chainAAPIEndpoint, govAccountAddress, "photon")
+				govBalance, err := getSpecificBalance(chainAAPIEndpoint, govModuleAddress, "photon")
 				s.Require().NoError(err)
 
 				return (govBalance.IsEqual(sdk.NewInt64Coin(photonDenom, 1000)))
@@ -228,19 +225,15 @@ func (s *IntegrationTestSuite) TestEVoteLegacyCommunitySpendProposal() {
 func (s *IntegrationTestSuite) TestFSubmitMsgSendFromGovProposal() {
 	s.Run("submit_new_msg_send_from_gov_proposal", func() {
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-		depositAmount := sdk.NewInt64Coin(photonDenom, 10000000).String()
-		fees := sdk.NewInt64Coin(photonDenom, 330000).String()
-		proposalId2 := uint64(2)
-
 		senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
 		s.Require().NoError(err)
 		sender := senderAddress.String()
 
-		s.submitGovProposal(s.chainA, 0, chainAAPIEndpoint, sender, "/root/.gaia/config/proposal_2.json", fees)
+		s.submitGovProposal(s.chainA, 0, chainAAPIEndpoint, sender, "/root/.gaia/config/proposal_2.json", fees.String())
 
 		s.Require().Eventually(
 			func() bool {
-				proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId2)
+				proposal, err := queryGovProposal(chainAAPIEndpoint, proposal2Id)
 				s.Require().NoError(err)
 
 				return (proposal.GetProposal().Status == govv1beta1.StatusDepositPeriod)
@@ -249,11 +242,11 @@ func (s *IntegrationTestSuite) TestFSubmitMsgSendFromGovProposal() {
 			5*time.Second,
 		)
 
-		s.depositGovProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposalId2, depositAmount, fees)
+		s.depositGovProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposal2Id, depositAmount, fees.String())
 
 		s.Require().Eventually(
 			func() bool {
-				proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId2)
+				proposal, err := queryGovProposal(chainAAPIEndpoint, proposal2Id)
 				s.Require().NoError(err)
 
 				return (proposal.GetProposal().Status == govv1beta1.StatusVotingPeriod)
@@ -267,20 +260,15 @@ func (s *IntegrationTestSuite) TestFSubmitMsgSendFromGovProposal() {
 
 func (s *IntegrationTestSuite) TestGVoteMsgSendFromGovProposal() {
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-	fees := sdk.NewInt64Coin(photonDenom, 330000).String()
-	govAddress := authtypes.NewModuleAddress(govtypes.ModuleName).String()
-	proposalId2 := uint64(2)
-	recipientAddress := "cosmos1pkueemdeps77dwrqma03pwqk93nw39nuhccz02"
-
 	senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
 	s.Require().NoError(err)
 	sender := senderAddress.String()
 	s.Run("vote_new_msg_send_from_gov_proposal", func() {
-		s.voteGovProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposalId2, "yes", fees)
+		s.voteGovProposal(s.chainA, 0, chainAAPIEndpoint, sender, uint64(2), "yes", fees.String())
 
 		s.Require().Eventually(
 			func() bool {
-				proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId2)
+				proposal, err := queryGovProposal(chainAAPIEndpoint, proposal2Id)
 				s.Require().NoError(err)
 
 				return (proposal.GetProposal().Status == govv1beta1.StatusPassed)
@@ -294,10 +282,10 @@ func (s *IntegrationTestSuite) TestGVoteMsgSendFromGovProposal() {
 				remainingGovBalance := sdk.NewInt64Coin(photonDenom, 990)
 				newRecipientBalance := sdk.NewInt64Coin(photonDenom, 10)
 
-				govBalance, err := getSpecificBalance(chainAAPIEndpoint, govAddress, photonDenom)
+				govBalance, err := getSpecificBalance(chainAAPIEndpoint, govModuleAddress, photonDenom)
 				s.Require().NoError(err)
 
-				recipientBalance, err := getSpecificBalance(chainAAPIEndpoint, recipientAddress, photonDenom)
+				recipientBalance, err := getSpecificBalance(chainAAPIEndpoint, govSendMsgRecipientAddress, photonDenom)
 				s.Require().NoError(err)
 
 				return govBalance.IsEqual(remainingGovBalance) && recipientBalance.Equal(newRecipientBalance)

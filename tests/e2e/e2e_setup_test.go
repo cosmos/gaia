@@ -447,7 +447,7 @@ func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
 		GovMessageSend{
 			Type:   "/cosmos.bank.v1beta1.MsgSend",
 			From:   govAccountAddress,
-			To:     "cosmos1pkueemdeps77dwrqma03pwqk93nw39nuhccz02",
+			To:     govSendMsgRecipientAddress,
 			Amount: sendAmount,
 		},
 	}

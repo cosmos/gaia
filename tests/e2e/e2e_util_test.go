@@ -3,13 +3,17 @@ package e2e
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/ory/dockertest/v3/docker"
 )
 
@@ -321,13 +325,14 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 			s.Require().NoError(err)
 
 			s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
+			s.T().Logf("Tx reponse: %s", txResp)
 			return strings.Contains(txResp.String(), "code: 0")
 		},
 		5*time.Second,
 		time.Second,
 		"tx returned a non-zero code; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
 	)
-	s.Require().Eventuallyf(
+	s.Require().Eventually(
 		func() bool {
 			return queryGaiaTx(endpoint, txResp.TxHash) == nil
 		},
@@ -335,4 +340,90 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 		5*time.Second,
 		"stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
 	)
+}
+
+func (s *IntegrationTestSuite) queryGovProposal(endpoint string, proposalId uint64) (govv1beta1.QueryProposalResponse, error) {
+	var emptyProp govv1beta1.QueryProposalResponse
+
+	path := fmt.Sprintf("%s/cosmos/gov/v1beta1/proposals/%d", endpoint, proposalId)
+	resp, err := http.Get(path)
+
+	if err != nil {
+		s.T().Logf("This is the err: %s", err.Error())
+	}
+
+	if err != nil {
+		return emptyProp, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+
+	if err != nil {
+		s.T().Logf("This is the err: %s", err.Error())
+	}
+	if err != nil {
+
+		return emptyProp, err
+	}
+	s.T().Logf("This is the body: %s", body)
+	var govProposalResp govv1beta1.QueryProposalResponse
+
+	if err := cdc.UnmarshalJSON(body, &govProposalResp); err != nil {
+		return emptyProp, err
+	}
+	s.T().Logf("This is the gov response: %s", govProposalResp)
+
+	return govProposalResp, nil
+}
+
+func (s *IntegrationTestSuite) getLatestBlockHeight(c *chain, valIdx int) int {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	type status struct {
+		LatestHeight string `json:"latest_block_height"`
+	}
+
+	type syncInfo struct {
+		SyncInfo status `json:"SyncInfo"`
+	}
+
+	var (
+		outBuf        bytes.Buffer
+		errBuf        bytes.Buffer
+		block         syncInfo
+		currentHeight int
+	)
+
+	s.Require().Eventually(
+		func() bool {
+			exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
+				Context:      ctx,
+				AttachStdout: true,
+				AttachStderr: true,
+				Container:    s.valResources[c.id][valIdx].Container.ID,
+				User:         "root",
+				Cmd:          []string{"gaiad", "status"},
+			})
+			s.Require().NoError(err)
+
+			err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
+				Context:      ctx,
+				Detach:       false,
+				OutputStream: &outBuf,
+				ErrorStream:  &errBuf,
+			})
+			s.Require().NoError(err)
+			s.Require().NoError(json.Unmarshal(errBuf.Bytes(), &block))
+
+			currentHeight, err = strconv.Atoi(block.SyncInfo.LatestHeight)
+			s.Require().NoError(err)
+			return currentHeight > 0
+		},
+		5*time.Second,
+		time.Second,
+		"Get node status returned a non-zero code; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
+	)
+	return currentHeight
 }

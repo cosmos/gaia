@@ -36,8 +36,6 @@ const (
 	photonDenom                = "photon"
 	initBalanceStr             = "110000000000stake,100000000000000000photon"
 	minGasPrice                = "0.00001"
-	proposal1Id                = uint64(1)
-	proposal2Id                = uint64(2)
 	govSendMsgRecipientAddress = "cosmos1pkueemdeps77dwrqma03pwqk93nw39nuhccz02"
 )
 
@@ -50,6 +48,18 @@ var (
 	distModuleAddress = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
 	govModuleAddress  = authtypes.NewModuleAddress(govtypes.ModuleName).String()
 )
+
+type UpgradePlan struct {
+	Name   string `json:"name"`
+	Height int    `json:"height"`
+	Info   string `json:"info"`
+}
+
+type SoftwareUpgrade struct {
+	Type      string      `json:"@type"`
+	Authority string      `json:"authority"`
+	Plan      UpgradePlan `json:"plan"`
+}
 
 type IntegrationTestSuite struct {
 	suite.Suite
@@ -450,7 +460,7 @@ func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
 		Amount []sdk.Coin `json:"amount"`
 	}
 
-	messages := []GovMessageSend{
+	msgSendMessages := []GovMessageSend{
 		GovMessageSend{
 			Type:   "/cosmos.bank.v1beta1.MsgSend",
 			From:   govModuleAddress,
@@ -459,19 +469,19 @@ func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
 		},
 	}
 
-	newGovBody, err := json.MarshalIndent(struct {
+	msgSendBody, err := json.MarshalIndent(struct {
 		Messages []GovMessageSend `json:"messages"`
 		Metadata string           `json:"metadata"`
 		Deposit  string           `json:"deposit"`
 	}{
-		Messages: messages,
+		Messages: msgSendMessages,
 		Metadata: "VGVzdGluZyAxLCAyLCAzIQ==",
 		Deposit:  "5000photon",
 	}, "", " ")
 
 	s.Require().NoError(err)
 
-	legacyGovBody, err := json.MarshalIndent(struct {
+	legacyCommunitySpendBody, err := json.MarshalIndent(struct {
 		Title       string `json:"title"`
 		Description string `json:"description"`
 		Recipient   string `json:"recipient"`
@@ -488,10 +498,37 @@ func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
 	s.Require().NoError(err)
 
 	for _, val := range c.validators {
-		err = writeFile(filepath.Join(val.configDir(), "config", "proposal.json"), legacyGovBody)
+		err = writeFile(filepath.Join(val.configDir(), "config", "proposal.json"), legacyCommunitySpendBody)
 		s.Require().NoError(err)
 
-		err = writeFile(filepath.Join(val.configDir(), "config", "proposal_2.json"), newGovBody)
+		err = writeFile(filepath.Join(val.configDir(), "config", "proposal_2.json"), msgSendBody)
 		s.Require().NoError(err)
 	}
+}
+
+func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height int) {
+	upgradeSoftwareMessages := []SoftwareUpgrade{
+		SoftwareUpgrade{
+			Type:      "/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade",
+			Authority: govModuleAddress,
+			Plan: UpgradePlan{
+				Name:   "upgrade-1",
+				Height: height,
+				Info:   "binary-1",
+			},
+		},
+	}
+
+	upgradeProposalBody, err := json.MarshalIndent(struct {
+		Messages []SoftwareUpgrade `json:"messages"`
+		Metadata string            `json:"metadata"`
+		Deposit  string            `json:"deposit"`
+	}{
+		Messages: upgradeSoftwareMessages,
+		Metadata: "VGVzdGluZyAxLCAyLCAzIQ==",
+		Deposit:  "5000photon",
+	}, "", " ")
+
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_3.json"), upgradeProposalBody)
+	s.Require().NoError(err)
 }

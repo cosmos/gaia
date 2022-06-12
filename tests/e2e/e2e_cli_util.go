@@ -100,7 +100,7 @@ func queryGaiaDenomBalance(endpoint, addr, denom string) (sdk.Coin, error) {
 	return *balanceResp.Balance, nil
 }
 
-func queryGovProposal(endpoint string, proposalId uint64) (govv1beta1.QueryProposalResponse, error) {
+func queryGovProposal(endpoint string, proposalId int) (govv1beta1.QueryProposalResponse, error) {
 	var emptyProp govv1beta1.QueryProposalResponse
 
 	path := fmt.Sprintf("%s/cosmos/gov/v1beta1/proposals/%d", endpoint, proposalId)

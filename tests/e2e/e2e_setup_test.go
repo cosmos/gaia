@@ -47,6 +47,7 @@ var (
 	depositAmount     = sdk.NewInt64Coin(photonDenom, 10000000).String()
 	distModuleAddress = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
 	govModuleAddress  = authtypes.NewModuleAddress(govtypes.ModuleName).String()
+	proposalCounter   = 0
 )
 
 type UpgradePlan struct {
@@ -59,6 +60,11 @@ type SoftwareUpgrade struct {
 	Type      string      `json:"@type"`
 	Authority string      `json:"authority"`
 	Plan      UpgradePlan `json:"plan"`
+}
+
+type CancelSoftwareUpgrade struct {
+	Type      string `json:"@type"`
+	Authority string `json:"authority"`
 }
 
 type IntegrationTestSuite struct {
@@ -507,7 +513,7 @@ func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
 }
 
 func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height int) {
-	upgradeSoftwareMessages := []SoftwareUpgrade{
+	softwareUpgradeMessages := []SoftwareUpgrade{
 		SoftwareUpgrade{
 			Type:      "/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade",
 			Authority: govModuleAddress,
@@ -518,17 +524,36 @@ func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height 
 			},
 		},
 	}
+	cancelSoftwareUpgradeMessages := []CancelSoftwareUpgrade{
+		CancelSoftwareUpgrade{
+			Type:      "/cosmos.upgrade.v1beta1.MsgCancelUpgrade",
+			Authority: govModuleAddress,
+		},
+	}
 
 	upgradeProposalBody, err := json.MarshalIndent(struct {
 		Messages []SoftwareUpgrade `json:"messages"`
 		Metadata string            `json:"metadata"`
 		Deposit  string            `json:"deposit"`
 	}{
-		Messages: upgradeSoftwareMessages,
+		Messages: softwareUpgradeMessages,
+		Metadata: "VGVzdGluZyAxLCAyLCAzIQ==",
+		Deposit:  "5000photon",
+	}, "", " ")
+
+	cancelUpgradeProposalBody, err := json.MarshalIndent(struct {
+		Messages []CancelSoftwareUpgrade `json:"messages"`
+		Metadata string                  `json:"metadata"`
+		Deposit  string                  `json:"deposit"`
+	}{
+		Messages: cancelSoftwareUpgradeMessages,
 		Metadata: "VGVzdGluZyAxLCAyLCAzIQ==",
 		Deposit:  "5000photon",
 	}, "", " ")
 
 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_3.json"), upgradeProposalBody)
+	s.Require().NoError(err)
+
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_4.json"), cancelUpgradeProposalBody)
 	s.Require().NoError(err)
 }

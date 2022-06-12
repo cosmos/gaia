@@ -223,7 +223,7 @@ func (s *IntegrationTestSuite) execGovSubmitLegacyGovProposal(c *chain, valIdx i
 	s.T().Logf("Successfully submitted legacy proposal")
 }
 
-func (s *IntegrationTestSuite) execGovDepositProposal(c *chain, valIdx int, endpoint string, submitterAddr string, proposalId uint64, amount string, fees string) {
+func (s *IntegrationTestSuite) execGovDepositProposal(c *chain, valIdx int, endpoint string, submitterAddr string, proposalId int, amount string, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -245,10 +245,10 @@ func (s *IntegrationTestSuite) execGovDepositProposal(c *chain, valIdx int, endp
 	}
 
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
-	s.T().Logf("Successfully deposited proposal")
+	s.T().Logf("Successfully deposited proposal %d", proposalId)
 }
 
-func (s *IntegrationTestSuite) execGovVoteProposal(c *chain, valIdx int, endpoint string, submitterAddr string, proposalId uint64, vote string, fees string) {
+func (s *IntegrationTestSuite) execGovVoteProposal(c *chain, valIdx int, endpoint string, submitterAddr string, proposalId int, vote string, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -325,7 +325,6 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 			s.Require().NoError(err)
 
 			s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
-			s.T().Logf("Tx reponse: %s", txResp)
 			return strings.Contains(txResp.String(), "code: 0")
 		},
 		5*time.Second,

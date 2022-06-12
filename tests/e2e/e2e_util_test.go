@@ -273,6 +273,31 @@ func (s *IntegrationTestSuite) execGovVoteProposal(c *chain, valIdx int, endpoin
 	s.T().Logf("Successfully voted on proposal %d", proposalId)
 }
 
+func (s *IntegrationTestSuite) execGovWeightedVoteProposal(c *chain, valIdx int, endpoint string, submitterAddr string, proposalId int, vote string, fees string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx gov vote on chain %s", c.id)
+
+	gaiaCommand := []string{
+		"gaiad",
+		"tx",
+		"gov",
+		"weighted-vote",
+		fmt.Sprintf("%d", proposalId),
+		vote,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, submitterAddr),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		"--keyring-backend=test",
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
+	s.T().Logf("Successfully voted on proposal %d", proposalId)
+}
+
 func (s *IntegrationTestSuite) execGovSubmitProposal(c *chain, valIdx int, endpoint string, submitterAddr string, govProposalPath string, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()

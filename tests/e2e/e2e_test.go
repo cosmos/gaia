@@ -111,132 +111,123 @@ func (s *IntegrationTestSuite) TestBankTokenTransfer() {
 }
 
 func (s *IntegrationTestSuite) TestSendTokensFromNewGovAccount() {
-	s.Run("test_send_tokens_from_gov_account", func() {
-		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-		senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
-		s.Require().NoError(err)
-		sender := senderAddress.String()
-		proposalCounter++
-		s.T().Logf("Proposal number: %d", proposalCounter)
+	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
+	s.Require().NoError(err)
+	sender := senderAddress.String()
+	proposalCounter++
+	s.T().Logf("Proposal number: %d", proposalCounter)
 
-		s.fundCommunityPool(chainAAPIEndpoint, sender)
+	s.fundCommunityPool(chainAAPIEndpoint, sender)
 
-		s.T().Logf("Submitting Legacy Gov Proposal: Community Spend Funding Gov Module")
-		s.submitLegacyProposalFundGovAccount(chainAAPIEndpoint, sender)
-		s.T().Logf("Depositing Legacy Gov Proposal: Community Spend Funding Gov Module")
-		s.depositGovProposal(chainAAPIEndpoint, sender, proposalCounter)
-		s.T().Logf("Voting Legacy Gov Proposal: Community Spend Funding Gov Module")
-		s.voteGovProposal(chainAAPIEndpoint, sender, proposalCounter, "yes")
+	s.T().Logf("Submitting Legacy Gov Proposal: Community Spend Funding Gov Module")
+	s.submitLegacyProposalFundGovAccount(chainAAPIEndpoint, sender)
+	s.T().Logf("Depositing Legacy Gov Proposal: Community Spend Funding Gov Module")
+	s.depositGovProposal(chainAAPIEndpoint, sender, proposalCounter)
+	s.T().Logf("Voting Legacy Gov Proposal: Community Spend Funding Gov Module")
+	s.voteGovProposal(chainAAPIEndpoint, sender, proposalCounter, "yes", false)
 
-		initialGovBalance, err := getSpecificBalance(chainAAPIEndpoint, govModuleAddress, photonDenom)
-		s.Require().NoError(err)
-		proposalCounter++
+	initialGovBalance, err := getSpecificBalance(chainAAPIEndpoint, govModuleAddress, photonDenom)
+	s.Require().NoError(err)
+	proposalCounter++
 
-		s.T().Logf("Submitting Gov Proposal: Sending Tokens from Gov Module to Recipient")
-		s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, "/root/.gaia/config/proposal_2.json")
-		s.T().Logf("Depositing Gov Proposal: Sending Tokens from Gov Module to Recipient")
-		s.depositGovProposal(chainAAPIEndpoint, sender, proposalCounter)
-		s.T().Logf("Voting Gov Proposal: Sending Tokens from Gov Module to Recipient")
-		s.voteGovProposal(chainAAPIEndpoint, sender, proposalCounter, "yes")
-		s.Run("new_msg_send_from_gov_proposal_successfully_funds_recipient_account", func() {
-			s.Require().Eventually(
-				func() bool {
-					sendGovAmount := sdk.NewInt64Coin(photonDenom, 10)
+	s.T().Logf("Submitting Gov Proposal: Sending Tokens from Gov Module to Recipient")
+	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, "/root/.gaia/config/proposal_2.json")
+	s.T().Logf("Depositing Gov Proposal: Sending Tokens from Gov Module to Recipient")
+	s.depositGovProposal(chainAAPIEndpoint, sender, proposalCounter)
+	s.T().Logf("Voting Gov Proposal: Sending Tokens from Gov Module to Recipient")
+	s.voteGovProposal(chainAAPIEndpoint, sender, proposalCounter, "yes", false)
+	s.Require().Eventually(
+		func() bool {
+			sendGovAmount := sdk.NewInt64Coin(photonDenom, 10)
+			newGovBalance, err := getSpecificBalance(chainAAPIEndpoint, govModuleAddress, photonDenom)
+			s.Require().NoError(err)
 
-					newGovBalance, err := getSpecificBalance(chainAAPIEndpoint, govModuleAddress, photonDenom)
-					s.Require().NoError(err)
+			recipientBalance, err := getSpecificBalance(chainAAPIEndpoint, govSendMsgRecipientAddress, photonDenom)
+			s.Require().NoError(err)
+			return newGovBalance.IsEqual(initialGovBalance.Sub(sendGovAmount)) && recipientBalance.Equal(initialGovBalance.Sub(newGovBalance))
+		},
+		15*time.Second,
+		5*time.Second,
+	)
 
-					recipientBalance, err := getSpecificBalance(chainAAPIEndpoint, govSendMsgRecipientAddress, photonDenom)
-					s.Require().NoError(err)
-
-					return newGovBalance.IsEqual(initialGovBalance.Sub(sendGovAmount)) && recipientBalance.Equal(initialGovBalance.Sub(newGovBalance))
-				},
-				15*time.Second,
-				5*time.Second,
-			)
-		})
-	})
 }
 
 func (s *IntegrationTestSuite) TestGovSoftwareUpgrade() {
-	s.Run("test_new_gov_software_upgrade_proposal", func() {
-		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-		senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
-		s.Require().NoError(err)
-		sender := senderAddress.String()
-		height := s.getLatestBlockHeight(s.chainA, 0)
-		proposalHeight := height + 35
-		proposalCounter++
+	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
+	s.Require().NoError(err)
+	sender := senderAddress.String()
+	height := s.getLatestBlockHeight(s.chainA, 0)
+	proposalHeight := height + 35
+	proposalCounter++
 
-		s.T().Logf("Writing proposal %d on chain %s", proposalCounter, s.chainA.id)
-		s.writeGovUpgradeSoftwareProposal(s.chainA, proposalHeight)
+	s.T().Logf("Writing proposal %d on chain %s", proposalCounter, s.chainA.id)
+	s.writeGovUpgradeSoftwareProposal(s.chainA, proposalHeight)
 
-		s.T().Logf("Submitting Gov Proposal: Software Upgrade")
-		s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, "/root/.gaia/config/proposal_3.json")
-		s.T().Logf("Depositing Gov Proposal: Software Upgrade")
-		s.depositGovProposal(chainAAPIEndpoint, sender, proposalCounter)
-		s.T().Logf("Voting Gov Proposal: Software Upgrade")
-		s.voteGovProposal(chainAAPIEndpoint, sender, proposalCounter, "yes")
+	s.T().Logf("Submitting Gov Proposal: Software Upgrade")
+	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, "/root/.gaia/config/proposal_3.json")
+	s.T().Logf("Depositing Gov Proposal: Software Upgrade")
+	s.depositGovProposal(chainAAPIEndpoint, sender, proposalCounter)
+	s.T().Logf("Weighted Voting Gov Proposal: Software Upgrade")
+	s.voteGovProposal(chainAAPIEndpoint, sender, proposalCounter, "yes=0.8,no=0.1,abstain=0.05,no_with_veto=0.05", true)
 
-		s.verifyChainHaltedAtUpgradeHeight(s.chainA, 0, proposalHeight)
-		s.T().Logf("Successfully halted chain at height %d", proposalHeight)
+	s.verifyChainHaltedAtUpgradeHeight(s.chainA, 0, proposalHeight)
+	s.T().Logf("Successfully halted chain at height %d", proposalHeight)
 
-		currentChain := s.chainA
+	currentChain := s.chainA
 
-		for valIdx := range currentChain.validators {
-			var opts docker.RemoveContainerOptions
-			opts.ID = s.valResources[currentChain.id][valIdx].Container.ID
-			opts.Force = true
-			s.dkrPool.Client.RemoveContainer(opts)
-			s.T().Logf("Removed Container: %s", s.valResources[currentChain.id][valIdx].Container.Name[1:])
-		}
+	for valIdx := range currentChain.validators {
+		var opts docker.RemoveContainerOptions
+		opts.ID = s.valResources[currentChain.id][valIdx].Container.ID
+		opts.Force = true
+		s.dkrPool.Client.RemoveContainer(opts)
+		s.T().Logf("Removed Container: %s", s.valResources[currentChain.id][valIdx].Container.Name[1:])
+	}
 
-		s.T().Logf("Restarting containers")
-		s.SetupSuite()
+	s.T().Logf("Restarting containers")
+	s.SetupSuite()
 
-		s.Require().Eventually(
-			func() bool {
-				h := s.getLatestBlockHeight(s.chainA, 0)
-				s.Require().NoError(err)
+	s.Require().Eventually(
+		func() bool {
+			h := s.getLatestBlockHeight(s.chainA, 0)
+			s.Require().NoError(err)
 
-				return (h > 0)
-			},
-			30*time.Second,
-			5*time.Second,
-		)
+			return (h > 0)
+		},
+		30*time.Second,
+		5*time.Second,
+	)
 
-		proposalCounter = 0
-	})
+	proposalCounter = 0
 }
 
 func (s *IntegrationTestSuite) TestGovCancelSoftwareUpgrade() {
-	s.Run("test_new_gov_cancel_software_upgrade_proposal", func() {
-		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-		senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
-		s.Require().NoError(err)
-		sender := senderAddress.String()
-		height := s.getLatestBlockHeight(s.chainA, 0)
-		proposalHeight := height + 50
-		proposalCounter++
+	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
+	s.Require().NoError(err)
+	sender := senderAddress.String()
+	height := s.getLatestBlockHeight(s.chainA, 0)
+	proposalHeight := height + 50
+	proposalCounter++
 
-		s.T().Logf("Writing proposal %d on chain %s", proposalCounter, s.chainA.id)
-		s.writeGovUpgradeSoftwareProposal(s.chainA, proposalHeight)
+	s.T().Logf("Writing proposal %d on chain %s", proposalCounter, s.chainA.id)
+	s.writeGovUpgradeSoftwareProposal(s.chainA, proposalHeight)
 
-		s.T().Logf("Submitting Gov Proposal: Software Upgrade")
-		s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, "/root/.gaia/config/proposal_3.json")
-		s.depositGovProposal(chainAAPIEndpoint, sender, proposalCounter)
-		s.voteGovProposal(chainAAPIEndpoint, sender, proposalCounter, "yes")
+	s.T().Logf("Submitting Gov Proposal: Software Upgrade")
+	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, "/root/.gaia/config/proposal_3.json")
+	s.depositGovProposal(chainAAPIEndpoint, sender, proposalCounter)
+	s.voteGovProposal(chainAAPIEndpoint, sender, proposalCounter, "yes", false)
 
-		proposalCounter++
+	proposalCounter++
 
-		s.T().Logf("Submitting Gov Proposal: Cancel Software Upgrade")
-		s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, "/root/.gaia/config/proposal_4.json")
-		s.depositGovProposal(chainAAPIEndpoint, sender, proposalCounter)
-		s.voteGovProposal(chainAAPIEndpoint, sender, proposalCounter, "yes")
+	s.T().Logf("Submitting Gov Proposal: Cancel Software Upgrade")
+	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, "/root/.gaia/config/proposal_4.json")
+	s.depositGovProposal(chainAAPIEndpoint, sender, proposalCounter)
+	s.voteGovProposal(chainAAPIEndpoint, sender, proposalCounter, "yes", false)
 
-		s.verifyChainPassesUpgradeHeight(s.chainA, 0, proposalHeight)
-		s.T().Logf("Successfully canceled upgrade at height %d", proposalHeight)
-	})
+	s.verifyChainPassesUpgradeHeight(s.chainA, 0, proposalHeight)
+	s.T().Logf("Successfully canceled upgrade at height %d", proposalHeight)
 }
 
 func (s *IntegrationTestSuite) fundCommunityPool(chainAAPIEndpoint string, sender string) {
@@ -311,9 +302,13 @@ func (s *IntegrationTestSuite) depositGovProposal(chainAAPIEndpoint string, send
 	})
 }
 
-func (s *IntegrationTestSuite) voteGovProposal(chainAAPIEndpoint string, sender string, proposalId int, vote string) {
+func (s *IntegrationTestSuite) voteGovProposal(chainAAPIEndpoint string, sender string, proposalId int, vote string, weighted bool) {
 	s.Run("vote_gov_proposal", func() {
-		s.execGovVoteProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposalId, vote, fees.String())
+		if weighted {
+			s.execGovWeightedVoteProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposalId, vote, fees.String())
+		} else {
+			s.execGovVoteProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposalId, vote, fees.String())
+		}
 
 		s.Require().Eventually(
 			func() bool {

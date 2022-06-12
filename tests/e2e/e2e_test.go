@@ -111,53 +111,55 @@ func (s *IntegrationTestSuite) TestBankTokenTransfer() {
 }
 
 func (s *IntegrationTestSuite) TestSendTokensFromNewGovAccount() {
-	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-	senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
-	s.Require().NoError(err)
-	sender := senderAddress.String()
-	proposalCounter++
-	s.T().Logf("Proposal number: %d", proposalCounter)
+	s.Run("test_send_tokens_from_gov_account", func() {
+		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+		senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
+		s.Require().NoError(err)
+		sender := senderAddress.String()
+		proposalCounter++
+		s.T().Logf("Proposal number: %d", proposalCounter)
 
-	s.fundCommunityPool(chainAAPIEndpoint, sender)
+		s.fundCommunityPool(chainAAPIEndpoint, sender)
 
-	s.T().Logf("Submitting Legacy Gov Proposal: Community Spend Funding Gov Module")
-	s.submitLegacyProposalFundGovAccount(chainAAPIEndpoint, sender)
-	s.T().Logf("Depositing Legacy Gov Proposal: Community Spend Funding Gov Module")
-	s.depositGovProposal(chainAAPIEndpoint, sender, proposalCounter)
-	s.T().Logf("Voting Legacy Gov Proposal: Community Spend Funding Gov Module")
-	s.voteGovProposal(chainAAPIEndpoint, sender, proposalCounter, "yes")
+		s.T().Logf("Submitting Legacy Gov Proposal: Community Spend Funding Gov Module")
+		s.submitLegacyProposalFundGovAccount(chainAAPIEndpoint, sender)
+		s.T().Logf("Depositing Legacy Gov Proposal: Community Spend Funding Gov Module")
+		s.depositGovProposal(chainAAPIEndpoint, sender, proposalCounter)
+		s.T().Logf("Voting Legacy Gov Proposal: Community Spend Funding Gov Module")
+		s.voteGovProposal(chainAAPIEndpoint, sender, proposalCounter, "yes")
 
-	initialGovBalance, err := getSpecificBalance(chainAAPIEndpoint, govModuleAddress, photonDenom)
-	s.Require().NoError(err)
-	proposalCounter++
+		initialGovBalance, err := getSpecificBalance(chainAAPIEndpoint, govModuleAddress, photonDenom)
+		s.Require().NoError(err)
+		proposalCounter++
 
-	s.T().Logf("Submitting Gov Proposal: Sending Tokens from Gov Module to Recipient")
-	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, "/root/.gaia/config/proposal_2.json")
-	s.T().Logf("Depositing Gov Proposal: Sending Tokens from Gov Module to Recipient")
-	s.depositGovProposal(chainAAPIEndpoint, sender, proposalCounter)
-	s.T().Logf("Voting Gov Proposal: Sending Tokens from Gov Module to Recipient")
-	s.voteGovProposal(chainAAPIEndpoint, sender, proposalCounter, "yes")
-	s.Run("new_msg_send_from_gov_proposal_successfully_funds_recipient_account", func() {
-		s.Require().Eventually(
-			func() bool {
-				sendGovAmount := sdk.NewInt64Coin(photonDenom, 10)
+		s.T().Logf("Submitting Gov Proposal: Sending Tokens from Gov Module to Recipient")
+		s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, "/root/.gaia/config/proposal_2.json")
+		s.T().Logf("Depositing Gov Proposal: Sending Tokens from Gov Module to Recipient")
+		s.depositGovProposal(chainAAPIEndpoint, sender, proposalCounter)
+		s.T().Logf("Voting Gov Proposal: Sending Tokens from Gov Module to Recipient")
+		s.voteGovProposal(chainAAPIEndpoint, sender, proposalCounter, "yes")
+		s.Run("new_msg_send_from_gov_proposal_successfully_funds_recipient_account", func() {
+			s.Require().Eventually(
+				func() bool {
+					sendGovAmount := sdk.NewInt64Coin(photonDenom, 10)
 
-				newGovBalance, err := getSpecificBalance(chainAAPIEndpoint, govModuleAddress, photonDenom)
-				s.Require().NoError(err)
+					newGovBalance, err := getSpecificBalance(chainAAPIEndpoint, govModuleAddress, photonDenom)
+					s.Require().NoError(err)
 
-				recipientBalance, err := getSpecificBalance(chainAAPIEndpoint, govSendMsgRecipientAddress, photonDenom)
-				s.Require().NoError(err)
+					recipientBalance, err := getSpecificBalance(chainAAPIEndpoint, govSendMsgRecipientAddress, photonDenom)
+					s.Require().NoError(err)
 
-				return newGovBalance.IsEqual(initialGovBalance.Sub(sendGovAmount)) && recipientBalance.Equal(initialGovBalance.Sub(newGovBalance))
-			},
-			15*time.Second,
-			5*time.Second,
-		)
+					return newGovBalance.IsEqual(initialGovBalance.Sub(sendGovAmount)) && recipientBalance.Equal(initialGovBalance.Sub(newGovBalance))
+				},
+				15*time.Second,
+				5*time.Second,
+			)
+		})
 	})
 }
 
 func (s *IntegrationTestSuite) TestGovSoftwareUpgrade() {
-	s.Run("testing updating gov proposal", func() {
+	s.Run("test_new_gov_software_upgrade_proposal", func() {
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 		senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
 		s.Require().NoError(err)
@@ -208,7 +210,7 @@ func (s *IntegrationTestSuite) TestGovSoftwareUpgrade() {
 }
 
 func (s *IntegrationTestSuite) TestGovCancelSoftwareUpgrade() {
-	s.Run("testing updating gov proposal", func() {
+	s.Run("test_new_gov_cancel_software_upgrade_proposal", func() {
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 		senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
 		s.Require().NoError(err)

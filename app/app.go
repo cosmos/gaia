@@ -29,7 +29,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-//	authmiddleware "github.com/cosmos/cosmos-sdk/x/auth/middleware"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
@@ -199,8 +198,6 @@ type GaiaApp struct { // nolint: golint
 	legacyAmino       *codec.LegacyAmino
 	appCodec          codec.Codec
 	interfaceRegistry types.InterfaceRegistry
-//	msgSvcRouter      *authmiddleware.MsgServiceRouter
-//	legacyRouter      sdk.Router
 
 	invCheckPeriod uint
 
@@ -298,8 +295,6 @@ func NewGaiaApp(
 		legacyAmino:       legacyAmino,
 		appCodec:          appCodec,
 		interfaceRegistry: interfaceRegistry,
-		//legacyRouter:      authmiddleware.NewLegacyRouter(),
-		//msgSvcRouter:      authmiddleware.NewMsgServiceRouter(interfaceRegistry),
 		invCheckPeriod:    invCheckPeriod,
 		keys:              keys,
 		tkeys:             tkeys,

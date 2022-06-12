@@ -29,7 +29,7 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 
 	if opts.IBCkeeper == nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "IBC keeper is required for middlewares")
-}
+	}
 
 	var sigGasConsumer = opts.SigGasConsumer
 	if sigGasConsumer == nil {
@@ -37,20 +37,20 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 	}
 
 	anteDecorators := []sdk.AnteDecorator{
-		ante.NewSetUpContextDecorator(),
+		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
 		ante.NewExtensionOptionsDecorator(opts.ExtensionOptionChecker),
 		ante.NewValidateBasicDecorator(),
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(opts.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
 		ante.NewDeductFeeDecorator(opts.AccountKeeper, opts.BankKeeper, opts.FeegrantKeeper, opts.TxFeeChecker),
-		// SetPubKeyDecorator must be called before all signature verification decorators
-		ante.NewSetPubKeyDecorator(opts.AccountKeeper),
+		ante.NewSetPubKeyDecorator(opts.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewValidateSigCountDecorator(opts.AccountKeeper),
 		ante.NewSigGasConsumeDecorator(opts.AccountKeeper, sigGasConsumer),
 		ante.NewSigVerificationDecorator(opts.AccountKeeper, opts.SignModeHandler),
 		ante.NewIncrementSequenceDecorator(opts.AccountKeeper),
 		ibcante.NewAnteDecorator(opts.IBCkeeper),
+		//todo: add back bypass min fee
 	}
 
 	return sdk.ChainAnteDecorators(anteDecorators...), nil

@@ -8,6 +8,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/cosmos/cosmos-sdk/x/auth/ante"
+
 	"github.com/cosmos/cosmos-sdk/testutil/testdata_pulsar"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -16,7 +18,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/server/api"
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
@@ -28,7 +29,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	authmiddleware "github.com/cosmos/cosmos-sdk/x/auth/middleware"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
@@ -123,7 +123,7 @@ import (
 	// routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v2/router/keeper"
 	// routertypes "github.com/strangelove-ventures/packet-forward-middleware/v2/router/types"
 
-	// gaiaante "github.com/cosmos/gaia/v8/ante"
+	gaiaante "github.com/cosmos/gaia/v8/ante"
 	gaiaappparams "github.com/cosmos/gaia/v8/app/params"
 
 	// unnamed import of statik for swagger UI support
@@ -198,10 +198,7 @@ type GaiaApp struct { // nolint: revive
 	legacyAmino       *codec.LegacyAmino
 	appCodec          codec.Codec
 	interfaceRegistry types.InterfaceRegistry
-	msgSvcRouter      *authmiddleware.MsgServiceRouter
-	legacyRouter      sdk.Router
-
-	invCheckPeriod uint
+	invCheckPeriod    uint
 
 	// keys to access the substores
 	keys    map[string]*storetypes.KVStoreKey
@@ -270,7 +267,12 @@ func NewGaiaApp(
 	legacyAmino := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
 
-	bApp := baseapp.NewBaseApp(appName, logger, db, baseAppOptions...)
+	bApp := baseapp.NewBaseApp(
+		appName,
+		logger,
+		db,
+		encodingConfig.TxConfig.TxDecoder(),
+		baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetVersion(version.Version)
 	bApp.SetInterfaceRegistry(interfaceRegistry)
@@ -296,8 +298,6 @@ func NewGaiaApp(
 		legacyAmino:       legacyAmino,
 		appCodec:          appCodec,
 		interfaceRegistry: interfaceRegistry,
-		legacyRouter:      authmiddleware.NewLegacyRouter(),
-		msgSvcRouter:      authmiddleware.NewMsgServiceRouter(interfaceRegistry),
 		invCheckPeriod:    invCheckPeriod,
 		keys:              keys,
 		tkeys:             tkeys,
@@ -343,7 +343,7 @@ func NewGaiaApp(
 	app.AuthzKeeper = authzkeeper.NewKeeper(
 		keys[authzkeeper.StoreKey],
 		appCodec,
-		app.msgSvcRouter,
+		app.MsgServiceRouter(),
 		app.AccountKeeper,
 	)
 
@@ -355,7 +355,7 @@ func NewGaiaApp(
 	app.GroupKeeper = groupkeeper.NewKeeper(
 		keys[group.StoreKey],
 		appCodec,
-		app.msgSvcRouter,
+		app.MsgServiceRouter(),
 		app.AccountKeeper,
 		groupConfig,
 	)
@@ -459,7 +459,7 @@ func NewGaiaApp(
 		app.BankKeeper,
 		app.StakingKeeper,
 		govRouter,
-		app.msgSvcRouter,
+		app.MsgServiceRouter(),
 		govConfig,
 	)
 
@@ -494,7 +494,7 @@ func NewGaiaApp(
 		&app.IBCKeeper.PortKeeper,
 		app.AccountKeeper,
 		scopedICAHostKeeper,
-		app.msgSvcRouter,
+		app.MsgServiceRouter(),
 	)
 	icaModule := ica.NewAppModule(nil, &app.ICAHostKeeper)
 	icaHostIBCModule := icahost.NewIBCModule(app.ICAHostKeeper)
@@ -643,9 +643,9 @@ func NewGaiaApp(
 	// app.mm.SetOrderMigrations(custom order)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
-	app.mm.RegisterRoutes(app.legacyRouter, app.QueryRouter(), encodingConfig.Amino)
+	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
 
-	app.configurator = module.NewConfigurator(app.appCodec, app.msgSvcRouter, app.GRPCQueryRouter())
+	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	app.mm.RegisterServices(app.configurator)
 
 	// add test gRPC service for testing gRPC queries in isolation
@@ -681,28 +681,27 @@ func NewGaiaApp(
 	app.MountTransientStores(tkeys)
 	app.MountMemoryStores(memKeys)
 
-	// anteHandler, err := gaiaante.NewAnteHandler(
-	// 	gaiaante.HandlerOptions{
-	// 		HandlerOptions: ante.HandlerOptions{
-	// 			AccountKeeper:   app.AccountKeeper,
-	// 			BankKeeper:      app.BankKeeper,
-	// 			FeegrantKeeper:  app.FeeGrantKeeper,
-	// 			SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
-	// 			SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
-	// 		},
-	// 		IBCkeeper:            app.IBCKeeper,
-	// 		BypassMinFeeMsgTypes: cast.ToStringSlice(appOpts.Get(gaiaappparams.BypassMinFeeMsgTypesKey)),
-	// 	},
-	// )
-	// if err != nil {
-	// 	panic(fmt.Errorf("failed to create AnteHandler: %s", err))
-	// }
+	anteHandler, err := gaiaante.NewAnteHandler(
+		gaiaante.HandlerOptions{
+			HandlerOptions: ante.HandlerOptions{
+				AccountKeeper:   app.AccountKeeper,
+				BankKeeper:      app.BankKeeper,
+				FeegrantKeeper:  app.FeeGrantKeeper,
+				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
+				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+			},
+			IBCkeeper:            app.IBCKeeper,
+			BypassMinFeeMsgTypes: cast.ToStringSlice(appOpts.Get(gaiaappparams.BypassMinFeeMsgTypesKey)),
+		},
+	)
+	if err != nil {
+		panic(fmt.Errorf("failed to create AnteHandler: %s", err))
+	}
 
-	// app.SetAnteHandler(anteHandler)
+	app.SetAnteHandler(anteHandler)
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
-	app.setTxHandler(encodingConfig.TxConfig, cast.ToStringSlice(appOpts.Get(server.FlagIndexEvents)))
 
 	app.UpgradeKeeper.SetUpgradeHandler(
 		upgradeName,
@@ -776,30 +775,6 @@ func NewGaiaApp(
 	app.ScopedTransferKeeper = scopedTransferKeeper
 
 	return app
-}
-
-func (app *GaiaApp) setTxHandler(txConfig client.TxConfig, indexEventsStr []string) {
-	indexEvents := map[string]struct{}{}
-	for _, e := range indexEventsStr {
-		indexEvents[e] = struct{}{}
-	}
-	txHandler, err := authmiddleware.NewDefaultTxHandler(authmiddleware.TxHandlerOptions{
-		Debug:            app.Trace(),
-		IndexEvents:      indexEvents,
-		LegacyRouter:     app.legacyRouter,
-		MsgServiceRouter: app.msgSvcRouter,
-		AccountKeeper:    app.AccountKeeper,
-		BankKeeper:       app.BankKeeper,
-		FeegrantKeeper:   app.FeeGrantKeeper,
-		SignModeHandler:  txConfig.SignModeHandler(),
-		SigGasConsumer:   authmiddleware.DefaultSigVerificationGasConsumer,
-		TxDecoder:        txConfig.TxDecoder(),
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	app.SetTxHandler(txHandler)
 }
 
 // Name returns the name of the App
@@ -907,7 +882,6 @@ func (app *GaiaApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APICo
 	tmservice.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
 	// Register legacy and grpc-gateway routes for all modules.
-	ModuleBasics.RegisterRESTRoutes(clientCtx, apiSvr.Router)
 	ModuleBasics.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
 	// register swagger API from root so that other applications can override easily
@@ -923,7 +897,12 @@ func (app *GaiaApp) RegisterTxService(clientCtx client.Context) {
 
 // RegisterTendermintService implements the Application.RegisterTendermintService method.
 func (app *GaiaApp) RegisterTendermintService(clientCtx client.Context) {
-	tmservice.RegisterTendermintService(app.BaseApp.GRPCQueryRouter(), clientCtx, app.interfaceRegistry)
+	tmservice.RegisterTendermintService(
+		clientCtx,
+		app.BaseApp.GRPCQueryRouter(),
+		app.interfaceRegistry,
+		app.Query,
+	)
 }
 
 // RegisterSwaggerAPI registers swagger route with API Server

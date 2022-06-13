@@ -38,7 +38,11 @@ The Cosmos Hub is built using the [Cosmos SDK](https://github.com/cosmos/cosmos-
 ### ⚡ — Documentation & Introduction
 ___
 
-You can find an introduction to the Cosmos Hub and how to use the `gaiad` binary as a delegator, validator or node operator as well as how governance on the Cosmos Hub works in the [documentation](https://hub.cosmos.network/main/hub-overview/overview.html). 
+Cosmos Hub is a blockchain network that operates on Proof-of-Stake consensus. You can find an introduction to the Cosmos Hub and how to use the `gaiad` binary as a delegator, validator or node operator as well as how governance on the Cosmos Hub works in the [documentation](https://hub.cosmos.network/main/hub-overview/overview.html). 
+
+Alternatively, whether you're new to blockchain technology or interested in getting involed, the Cosmos Network [Course](https://tutorials.cosmos.network/academy/0-welcome/) will guide you through everything. The course walks you through the basics of blockchain technology, to staking, setting up your own node, and beyond.
+
+
 
 
 <br/>
@@ -57,12 +61,21 @@ If you're interested in running a node on the current Cosmos Hub, check out the 
 ### 🗣️ — Validators
 ___
 
-If you're running a validator node on the Cosmos Hub, reach out to a Janitor on the [Cosmos Developers Discord](https://discord.gg/cosmosnetwork) to join the `#validators-verified` channel.
+If you want to participate and help secure Cosmos Hub, check out becoming a validator. Information on what a validator is and how to participate as one can be found at the [Validator FAQ](https://hub.cosmos.network/main/validators/validator-faq.html#). If you're running a validator node on the Cosmos Hub, reach out to a Janitor on the [Cosmos Developers Discord](https://discord.gg/cosmosnetwork) to join the `#validators-verified` channel.
 
 
 <br/>
 <br/>
 
+
+### 👥 — Delegators
+___
+
+If you still want to participate on the Cosmos Hub, check out becoming a delegator. Information what a delegator is and how to participate as one can be found at the [Delegator FAQ](https://hub.cosmos.network/main/delegators/delegator-faq.html).
+
+
+<br/>
+<br/>
 
 ### 👥 — Testnet
 ___

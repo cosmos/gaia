@@ -111,3 +111,76 @@ func (s *IntegrationTestSuite) TestBankTokenTransfer() {
 		)
 	})
 }
+
+/*
+bank send with fees two fees.
+The following test is for the case that:
+photon fee: higher than or equal to min_gas_price in app.toml, but lower than the photon fee required in globalfee.
+stake fee: higher than stake fee required in globalfee.
+*/
+func (s *IntegrationTestSuite) TestGlobFee() {
+	s.Run("send_tokens_to_test_globalfee", func() {
+		var (
+			err error
+		)
+
+		senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
+		s.Require().NoError(err)
+		sender := senderAddress.String()
+
+		recipientAddress, err := s.chainA.validators[1].keyInfo.GetAddress()
+		s.Require().NoError(err)
+		recipient := recipientAddress.String()
+
+		token := sdk.NewInt64Coin(photonDenom, 3300000000) // 3,300photon
+		fees := sdk.Coins{}
+		photonfee := sdk.NewInt64Coin(photonDenom, 10) // 0.00001photon
+		stakefee := sdk.NewInt64Coin(stakeDenom, 2000000) // 2stake
+		fees = append(fees, photonfee, stakefee)
+		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+
+		var (
+			beforeSenderPhotonBalance    sdk.Coin
+			beforeSenderStakeBalance    sdk.Coin
+			beforeRecipientPhotonBalance sdk.Coin
+		)
+
+		s.Require().Eventually(
+			func() bool {
+				beforeSenderPhotonBalance, err = getSpecificBalance(chainAAPIEndpoint, sender, "photon")
+				s.Require().NoError(err)
+				beforeSenderStakeBalance, err = getSpecificBalance(chainAAPIEndpoint, sender, "stake")
+				s.Require().NoError(err)
+
+				beforeRecipientPhotonBalance, err = getSpecificBalance(chainAAPIEndpoint, recipient, "photon")
+				s.Require().NoError(err)
+
+				return beforeSenderPhotonBalance.IsValid() && beforeRecipientPhotonBalance.IsValid()
+			},
+			10*time.Second,
+			5*time.Second,
+		)
+
+		s.sendMsgSend(s.chainA, 0, sender, recipient, token.String(), fees.String())
+
+		s.Require().Eventually(
+			func() bool {
+				afterSenderPhotonBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, "photon")
+				s.Require().NoError(err)
+				afterSenderStakeBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, "stake")
+				s.Require().NoError(err)
+
+				afterRecipientPhotonBalance, err := getSpecificBalance(chainAAPIEndpoint, recipient, "photon")
+				s.Require().NoError(err)
+
+				decrementedPhoton := beforeSenderPhotonBalance.Sub(token).Sub(photonfee).IsEqual(afterSenderPhotonBalance)
+				decrementedStake := beforeSenderStakeBalance.Sub(stakefee).IsEqual(afterSenderStakeBalance)
+				incrementedPhoton := beforeRecipientPhotonBalance.Add(token).IsEqual(afterRecipientPhotonBalance)
+
+				return decrementedPhoton && decrementedStake && incrementedPhoton
+			},
+			time.Minute,
+			5*time.Second,
+		)
+	})
+}

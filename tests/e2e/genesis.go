@@ -11,6 +11,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	globfeetypes "github.com/cosmos/gaia/v8/x/globalfee/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 )
 
@@ -38,7 +39,7 @@ func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {
 	return doc, nil
 }
 
-func addGenesisAccount(path, moniker, amountStr string, accAddr sdk.AccAddress) error {
+func modifyGenesis(path, moniker, amountStr string, accAddr sdk.AccAddress, globfees string) error {
 	serverCtx := server.NewDefaultContext()
 	config := serverCtx.Config
 
@@ -100,11 +101,23 @@ func addGenesisAccount(path, moniker, amountStr string, accAddr sdk.AccAddress) 
 
 	appState[banktypes.ModuleName] = bankGenStateBz
 
+	// setup global fee in genesis
+	globfeeState := globfeetypes.GetGenesisStateFromAppState(cdc, appState)
+	minGases, err := sdk.ParseDecCoins(globfees)
+	if err != nil {
+		return fmt.Errorf("failed to parse fee coins: %w", err)
+	}
+	globfeeState.Params.MinimumGasPrices.Add(minGases...)
+	globfeeStateBz, err := cdc.MarshalJSON(globfeeState)
+	if err != nil {
+		return fmt.Errorf("failed to marshal global fee genesis state: %w", err)
+	}
+	appState[globfeetypes.ModuleName] = globfeeStateBz
+
 	appStateJSON, err := json.Marshal(appState)
 	if err != nil {
 		return fmt.Errorf("failed to marshal application genesis state: %w", err)
 	}
-
 	genDoc.AppState = appStateJSON
 	return genutil.ExportGenesisFile(genDoc, genFile)
 }

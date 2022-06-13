@@ -31,8 +31,10 @@ import (
 
 const (
 	photonDenom    = "photon"
+	stakeDenom     = "stake"
 	initBalanceStr = "110000000000stake,100000000000photon"
 	minGasPrice    = "0.00001"
+	globfees       = "0.00002photon,2stake"
 )
 
 var (
@@ -135,7 +137,7 @@ func (s *IntegrationTestSuite) initNodes(c *chain) {
 		address, err := val.keyInfo.GetAddress()
 		s.Require().NoError(err)
 		s.Require().NoError(
-			addGenesisAccount(val0ConfigDir, "", initBalanceStr, address),
+			modifyGenesis(val0ConfigDir, "", initBalanceStr, address, globfees),
 		)
 	}
 

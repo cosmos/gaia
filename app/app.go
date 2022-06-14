@@ -496,7 +496,6 @@ func NewGaiaApp(
 		app.BankKeeper,
 		scopedTransferKeeper,
 	)
-
 	transferModule := transfer.NewAppModule(app.TransferKeeper)
 	transferIBCModule := transfer.NewIBCModule(app.TransferKeeper)
 
@@ -670,11 +669,11 @@ func NewGaiaApp(
 		feegrant.ModuleName,
 		group.ModuleName,
 		// routertypes.ModuleName,
+		icatypes.ModuleName,
+		icamauthtypes.ModuleName,
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
-		icatypes.ModuleName,
-		icamauthtypes.ModuleName,
 	)
 
 	// Uncomment if you want to set a custom migration order here.
@@ -975,6 +974,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibchost.ModuleName)
 
 	// paramsKeeper.Subspace(routertypes.ModuleName).WithKeyTable(routertypes.ParamKeyTable())
+	paramsKeeper.Subspace(icacontrollertypes.SubModuleName)
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 
 	return paramsKeeper

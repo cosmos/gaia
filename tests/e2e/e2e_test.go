@@ -118,7 +118,7 @@ The following test is for the case that:
 photon fee: higher than or equal to min_gas_price in app.toml, but lower than the photon fee required in globalfee.
 stake fee: higher than stake fee required in globalfee.
 */
-func (s *IntegrationTestSuite) TestGlobFee() {
+func (s *IntegrationTestSuite) TestGlobalFee() {
 	s.Run("send_tokens_to_test_globalfee", func() {
 		var (
 			err error

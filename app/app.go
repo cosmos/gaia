@@ -8,6 +8,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/cosmos/cosmos-sdk/x/auth/ante"
+
 	"github.com/cosmos/cosmos-sdk/testutil/testdata_pulsar"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -16,7 +18,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/server/api"
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
@@ -28,7 +29,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	authmiddleware "github.com/cosmos/cosmos-sdk/x/auth/middleware"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
@@ -88,22 +88,24 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	// ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
-	// icacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
-	// icahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
-	// icahostkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/keeper"
-	// icahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
-	// icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
-	// "github.com/cosmos/ibc-go/v3/modules/apps/transfer"
-	// ibctransferkeeper "github.com/cosmos/ibc-go/v3/modules/apps/transfer/keeper"
-	// ibctransfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
-	// ibc "github.com/cosmos/ibc-go/v3/modules/core"
-	// ibcclient "github.com/cosmos/ibc-go/v3/modules/core/02-client"
-	// ibcclientclient "github.com/cosmos/ibc-go/v3/modules/core/02-client/client"
-	// ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
-	// porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
-	// ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
-	// ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
+	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
+	icacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
+	icahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
+	icahostkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/keeper"
+	icahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
+	icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
+	"github.com/cosmos/ibc-go/v3/modules/apps/transfer"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v3/modules/apps/transfer/keeper"
+	ibctransfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
+	ibc "github.com/cosmos/ibc-go/v3/modules/core"
+	ibcclient "github.com/cosmos/ibc-go/v3/modules/core/02-client"
+	ibcclientclient "github.com/cosmos/ibc-go/v3/modules/core/02-client/client"
+	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
+	porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
+
+	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
+	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
+
 	"github.com/gorilla/mux"
 
 	"github.com/gravity-devs/liquidity/v2/x/liquidity"
@@ -121,7 +123,7 @@ import (
 	// routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v2/router/keeper"
 	// routertypes "github.com/strangelove-ventures/packet-forward-middleware/v2/router/types"
 
-	// gaiaante "github.com/cosmos/gaia/v8/ante"
+	gaiaante "github.com/cosmos/gaia/v8/ante"
 	gaiaappparams "github.com/cosmos/gaia/v8/app/params"
 
 	// unnamed import of statik for swagger UI support
@@ -149,8 +151,8 @@ var (
 				distrclient.ProposalHandler,
 				upgradeclient.LegacyProposalHandler,
 				upgradeclient.LegacyCancelProposalHandler,
-				// ibcclientclient.UpdateClientProposalHandler,
-				// ibcclientclient.UpgradeProposalHandler,
+				ibcclientclient.UpdateClientProposalHandler,
+				ibcclientclient.UpgradeProposalHandler,
 			},
 		),
 		params.AppModuleBasic{},
@@ -159,27 +161,27 @@ var (
 		feegrantmodule.AppModuleBasic{},
 		authzmodule.AppModuleBasic{},
 		groupmodule.AppModuleBasic{},
-		// ibc.AppModuleBasic{},
+		ibc.AppModuleBasic{},
 		upgrade.AppModuleBasic{},
 		evidence.AppModuleBasic{},
-		// transfer.AppModuleBasic{},
+		transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		liquidity.AppModuleBasic{},
 		// router.AppModuleBasic{},
-		// ica.AppModuleBasic{},
+		ica.AppModuleBasic{},
 	)
 
 	// module account permissions
 	maccPerms = map[string][]string{
-		authtypes.FeeCollectorName: nil,
-		distrtypes.ModuleName:      nil,
-		// icatypes.ModuleName:            nil,
+		authtypes.FeeCollectorName:     nil,
+		distrtypes.ModuleName:          nil,
+		icatypes.ModuleName:            nil,
 		minttypes.ModuleName:           {authtypes.Minter},
 		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
-		// ibctransfertypes.ModuleName: {authtypes.Minter, authtypes.Burner},
+		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 	}
 )
 
@@ -196,10 +198,7 @@ type GaiaApp struct { // nolint: golint
 	legacyAmino       *codec.LegacyAmino
 	appCodec          codec.Codec
 	interfaceRegistry types.InterfaceRegistry
-	msgSvcRouter      *authmiddleware.MsgServiceRouter
-	legacyRouter      sdk.Router
-
-	invCheckPeriod uint
+	invCheckPeriod    uint
 
 	// keys to access the substores
 	keys    map[string]*storetypes.KVStoreKey
@@ -219,14 +218,15 @@ type GaiaApp struct { // nolint: golint
 	UpgradeKeeper    upgradekeeper.Keeper
 	ParamsKeeper     paramskeeper.Keeper
 	// IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
-	// IBCKeeper      *ibckeeper.Keeper
-	// ICAHostKeeper  icahostkeeper.Keeper
-	EvidenceKeeper evidencekeeper.Keeper
-	// TransferKeeper ibctransferkeeper.Keeper
+	IBCKeeper       *ibckeeper.Keeper
+	ICAHostKeeper   icahostkeeper.Keeper
+	EvidenceKeeper  evidencekeeper.Keeper
+	TransferKeeper  ibctransferkeeper.Keeper
 	FeeGrantKeeper  feegrantkeeper.Keeper
 	GroupKeeper     groupkeeper.Keeper
 	AuthzKeeper     authzkeeper.Keeper
 	LiquidityKeeper liquiditykeeper.Keeper
+
 	// RouterKeeper    routerkeeper.Keeper
 
 	// make scoped keepers public for test purposes
@@ -268,7 +268,12 @@ func NewGaiaApp(
 	legacyAmino := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
 
-	bApp := baseapp.NewBaseApp(appName, logger, db, baseAppOptions...)
+	bApp := baseapp.NewBaseApp(
+		appName,
+		logger,
+		db,
+		encodingConfig.TxConfig.TxDecoder(),
+		baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetVersion(version.Version)
 	bApp.SetInterfaceRegistry(interfaceRegistry)
@@ -276,9 +281,9 @@ func NewGaiaApp(
 	keys := sdk.NewKVStoreKeys(
 		authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey,
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
-		govtypes.StoreKey, paramstypes.StoreKey /*ibchost.StoreKey,*/, upgradetypes.StoreKey,
-		evidencetypes.StoreKey, liquiditytypes.StoreKey, /*ibctransfertypes.StoreKey,*/
-		capabilitytypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey /*routertypes.StoreKey,*/ /* icahosttypes.StoreKey,*/, group.StoreKey,
+		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
+		evidencetypes.StoreKey, liquiditytypes.StoreKey, ibctransfertypes.StoreKey,
+		capabilitytypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey /*routertypes.StoreKey,*/, icahosttypes.StoreKey, group.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -294,8 +299,6 @@ func NewGaiaApp(
 		legacyAmino:       legacyAmino,
 		appCodec:          appCodec,
 		interfaceRegistry: interfaceRegistry,
-		legacyRouter:      authmiddleware.NewLegacyRouter(),
-		msgSvcRouter:      authmiddleware.NewMsgServiceRouter(interfaceRegistry),
 		invCheckPeriod:    invCheckPeriod,
 		keys:              keys,
 		tkeys:             tkeys,
@@ -316,9 +319,9 @@ func NewGaiaApp(
 
 	// add capability keeper and ScopeToModule for ibc module
 	app.CapabilityKeeper = capabilitykeeper.NewKeeper(appCodec, keys[capabilitytypes.StoreKey], memKeys[capabilitytypes.MemStoreKey])
-	// scopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
-	// scopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
-	// scopedICAHostKeeper := app.CapabilityKeeper.ScopeToModule(icahosttypes.SubModuleName)
+	scopedIBCKeeper := app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
+	scopedTransferKeeper := app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
+	scopedICAHostKeeper := app.CapabilityKeeper.ScopeToModule(icahosttypes.SubModuleName)
 	app.CapabilityKeeper.Seal()
 
 	// add keepers
@@ -341,7 +344,7 @@ func NewGaiaApp(
 	app.AuthzKeeper = authzkeeper.NewKeeper(
 		keys[authzkeeper.StoreKey],
 		appCodec,
-		app.msgSvcRouter,
+		app.MsgServiceRouter(),
 		app.AccountKeeper,
 	)
 
@@ -353,7 +356,7 @@ func NewGaiaApp(
 	app.GroupKeeper = groupkeeper.NewKeeper(
 		keys[group.StoreKey],
 		appCodec,
-		app.msgSvcRouter,
+		app.MsgServiceRouter(),
 		app.AccountKeeper,
 		groupConfig,
 	)
@@ -415,14 +418,26 @@ func NewGaiaApp(
 		stakingtypes.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks()),
 	)
 
-	// app.IBCKeeper = ibckeeper.NewKeeper(
-	// 	appCodec,
-	// 	keys[ibchost.StoreKey],
-	// 	app.GetSubspace(ibchost.ModuleName),
-	// 	app.StakingKeeper,
-	// 	app.UpgradeKeeper,
-	// 	scopedIBCKeeper,
-	// )
+	// set the governance module account as the authority for conducting upgrades
+	// UpgradeKeeper must be created before IBCKeeper
+	app.UpgradeKeeper = upgradekeeper.NewKeeper(
+		skipUpgradeHeights,
+		keys[upgradetypes.StoreKey],
+		appCodec,
+		homePath,
+		app.BaseApp,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+	)
+
+	// UpgradeKeeper must be created before IBCKeeper
+	app.IBCKeeper = ibckeeper.NewKeeper(
+		appCodec,
+		keys[ibchost.StoreKey],
+		app.GetSubspace(ibchost.ModuleName),
+		app.StakingKeeper,
+		app.UpgradeKeeper,
+		scopedIBCKeeper,
+	)
 
 	// register the proposal types
 
@@ -430,8 +445,8 @@ func NewGaiaApp(
 	govRouter.AddRoute(govtypes.RouterKey, govv1beta1.ProposalHandler).
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
-		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper))
-		// AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
+		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
+		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
 	govConfig := govtypes.DefaultConfig()
 	/*
 		Example of setting gov params:
@@ -443,13 +458,12 @@ func NewGaiaApp(
 		app.GetSubspace(govtypes.ModuleName),
 		app.AccountKeeper,
 		app.BankKeeper,
-		&stakingKeeper,
+		app.StakingKeeper,
 		govRouter,
-		app.msgSvcRouter,
+		app.MsgServiceRouter(),
 		govConfig,
 	)
 
-	// set the governance module account as the authority for conducting upgrades
 	app.UpgradeKeeper = upgradekeeper.NewKeeper(
 		skipUpgradeHeights,
 		keys[upgradetypes.StoreKey],
@@ -459,41 +473,42 @@ func NewGaiaApp(
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
-	// app.TransferKeeper = ibctransferkeeper.NewKeeper(
-	// 	appCodec,
-	// 	keys[ibctransfertypes.StoreKey],
-	// 	app.GetSubspace(ibctransfertypes.ModuleName),
-	// 	app.IBCKeeper.ChannelKeeper,
-	// 	app.IBCKeeper.ChannelKeeper,
-	// 	&app.IBCKeeper.PortKeeper,
-	// 	app.AccountKeeper,
-	// 	app.BankKeeper,
-	// 	scopedTransferKeeper,
-	// )
-	// transferModule := transfer.NewAppModule(app.TransferKeeper)
-	// transferIBCModule := transfer.NewIBCModule(app.TransferKeeper)
+	app.TransferKeeper = ibctransferkeeper.NewKeeper(
+		appCodec,
+		keys[ibctransfertypes.StoreKey],
+		app.GetSubspace(ibctransfertypes.ModuleName),
+		app.IBCKeeper.ChannelKeeper,
+		app.IBCKeeper.ChannelKeeper,
+		&app.IBCKeeper.PortKeeper,
+		app.AccountKeeper,
+		app.BankKeeper,
+		scopedTransferKeeper,
+	)
 
-	// app.ICAHostKeeper = icahostkeeper.NewKeeper(
-	// 	appCodec, keys[icahosttypes.StoreKey],
-	// 	app.GetSubspace(icahosttypes.SubModuleName),
-	// 	app.IBCKeeper.ChannelKeeper,
-	// 	&app.IBCKeeper.PortKeeper,
-	// 	app.AccountKeeper,
-	// 	scopedICAHostKeeper,
-	// 	app.MsgServiceRouter(),
-	// )
-	// icaModule := ica.NewAppModule(nil, &app.ICAHostKeeper)
-	// icaHostIBCModule := icahost.NewIBCModule(app.ICAHostKeeper)
+	transferModule := transfer.NewAppModule(app.TransferKeeper)
+	transferIBCModule := transfer.NewIBCModule(app.TransferKeeper)
+
+	app.ICAHostKeeper = icahostkeeper.NewKeeper(
+		appCodec, keys[icahosttypes.StoreKey],
+		app.GetSubspace(icahosttypes.SubModuleName),
+		app.IBCKeeper.ChannelKeeper,
+		&app.IBCKeeper.PortKeeper,
+		app.AccountKeeper,
+		scopedICAHostKeeper,
+		app.MsgServiceRouter(),
+	)
+	icaModule := ica.NewAppModule(nil, &app.ICAHostKeeper)
+	icaHostIBCModule := icahost.NewIBCModule(app.ICAHostKeeper)
 
 	// app.RouterKeeper = routerkeeper.NewKeeper(appCodec, keys[routertypes.StoreKey], app.GetSubspace(routertypes.ModuleName), app.TransferKeeper, app.DistrKeeper)
 
 	// routerModule := router.NewAppModule(app.RouterKeeper, transferIBCModule)
 	// create static IBC router, add transfer route, then set and seal it
-	// ibcRouter := porttypes.NewRouter()
-	// ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
-	// 	AddRoute(ibctransfertypes.ModuleName, transferIBCModule)
+	ibcRouter := porttypes.NewRouter()
+	ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
+		AddRoute(ibctransfertypes.ModuleName, transferIBCModule)
 
-	// app.IBCKeeper.SetRouter(ibcRouter)
+	app.IBCKeeper.SetRouter(ibcRouter)
 
 	// create evidence keeper with router
 	evidenceKeeper := evidencekeeper.NewKeeper(
@@ -531,11 +546,11 @@ func NewGaiaApp(
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		groupmodule.NewAppModule(appCodec, app.GroupKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
-		// ibc.NewAppModule(app.IBCKeeper),
+		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		liquidity.NewAppModule(appCodec, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.DistrKeeper),
-		// transferModule,
-		// icaModule,
+		transferModule,
+		icaModule,
 		// routerModule,
 	)
 
@@ -558,9 +573,9 @@ func NewGaiaApp(
 		govtypes.ModuleName,
 		crisistypes.ModuleName,
 		liquiditytypes.ModuleName,
-		// ibctransfertypes.ModuleName,
-		// ibchost.ModuleName,
-		// icatypes.ModuleName,
+		ibctransfertypes.ModuleName,
+		ibchost.ModuleName,
+		icatypes.ModuleName,
 		// routertypes.ModuleName,
 		genutiltypes.ModuleName,
 		authz.ModuleName,
@@ -574,9 +589,9 @@ func NewGaiaApp(
 		govtypes.ModuleName,
 		stakingtypes.ModuleName,
 		liquiditytypes.ModuleName,
-		// ibctransfertypes.ModuleName,
-		// ibchost.ModuleName,
-		// icatypes.ModuleName,
+		ibctransfertypes.ModuleName,
+		ibchost.ModuleName,
+		icatypes.ModuleName,
 		// routertypes.ModuleName,
 		capabilitytypes.ModuleName,
 		authtypes.ModuleName,
@@ -611,9 +626,9 @@ func NewGaiaApp(
 		minttypes.ModuleName,
 		crisistypes.ModuleName,
 		genutiltypes.ModuleName,
-		// ibctransfertypes.ModuleName,
-		// ibchost.ModuleName,
-		// icatypes.ModuleName,
+		ibctransfertypes.ModuleName,
+		ibchost.ModuleName,
+		icatypes.ModuleName,
 		evidencetypes.ModuleName,
 		liquiditytypes.ModuleName,
 		authz.ModuleName,
@@ -629,9 +644,9 @@ func NewGaiaApp(
 	// app.mm.SetOrderMigrations(custom order)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
-	app.mm.RegisterRoutes(app.legacyRouter, app.QueryRouter(), encodingConfig.Amino)
+	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
 
-	app.configurator = module.NewConfigurator(app.appCodec, app.msgSvcRouter, app.GRPCQueryRouter())
+	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	app.mm.RegisterServices(app.configurator)
 
 	// add test gRPC service for testing gRPC queries in isolation
@@ -656,8 +671,8 @@ func NewGaiaApp(
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		groupmodule.NewAppModule(appCodec, app.GroupKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		liquidity.NewAppModule(appCodec, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.DistrKeeper),
-		// ibc.NewAppModule(app.IBCKeeper),
-		// transferModule,
+		ibc.NewAppModule(app.IBCKeeper),
+		transferModule,
 	)
 
 	app.sm.RegisterStoreDecoders()
@@ -667,74 +682,72 @@ func NewGaiaApp(
 	app.MountTransientStores(tkeys)
 	app.MountMemoryStores(memKeys)
 
-	// anteHandler, err := gaiaante.NewAnteHandler(
-	// 	gaiaante.HandlerOptions{
-	// 		HandlerOptions: ante.HandlerOptions{
-	// 			AccountKeeper:   app.AccountKeeper,
-	// 			BankKeeper:      app.BankKeeper,
-	// 			FeegrantKeeper:  app.FeeGrantKeeper,
-	// 			SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
-	// 			SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
-	// 		},
-	// 		IBCkeeper:            app.IBCKeeper,
-	// 		BypassMinFeeMsgTypes: cast.ToStringSlice(appOpts.Get(gaiaappparams.BypassMinFeeMsgTypesKey)),
-	// 	},
-	// )
-	// if err != nil {
-	// 	panic(fmt.Errorf("failed to create AnteHandler: %s", err))
-	// }
+	anteHandler, err := gaiaante.NewAnteHandler(
+		gaiaante.HandlerOptions{
+			HandlerOptions: ante.HandlerOptions{
+				AccountKeeper:   app.AccountKeeper,
+				BankKeeper:      app.BankKeeper,
+				FeegrantKeeper:  app.FeeGrantKeeper,
+				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
+				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+			},
+			IBCkeeper:            app.IBCKeeper,
+			BypassMinFeeMsgTypes: cast.ToStringSlice(appOpts.Get(gaiaappparams.BypassMinFeeMsgTypesKey)),
+		},
+	)
+	if err != nil {
+		panic(fmt.Errorf("failed to create AnteHandler: %s", err))
+	}
 
-	// app.SetAnteHandler(anteHandler)
+	app.SetAnteHandler(anteHandler)
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
-	app.setTxHandler(encodingConfig.TxConfig, cast.ToStringSlice(appOpts.Get(server.FlagIndexEvents)))
 
 	app.UpgradeKeeper.SetUpgradeHandler(
 		upgradeName,
 		func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 
-			// fromVM[icatypes.ModuleName] = icaModule.ConsensusVersion()
-			// // create ICS27 Controller submodule params
-			// controllerParams := icacontrollertypes.Params{}
-			// // create ICS27 Host submodule params
-			// hostParams := icahosttypes.Params{
-			// 	HostEnabled: true,
-			// 	AllowMessages: []string{
-			// 		authzMsgExec,
-			// 		authzMsgGrant,
-			// 		authzMsgRevoke,
-			// 		bankMsgSend,
-			// 		bankMsgMultiSend,
-			// 		distrMsgSetWithdrawAddr,
-			// 		distrMsgWithdrawValidatorCommission,
-			// 		distrMsgFundCommunityPool,
-			// 		distrMsgWithdrawDelegatorReward,
-			// 		feegrantMsgGrantAllowance,
-			// 		feegrantMsgRevokeAllowance,
-			// 		govMsgVoteWeighted,
-			// 		govMsgSubmitProposal,
-			// 		govMsgDeposit,
-			// 		govMsgVote,
-			// 		stakingMsgEditValidator,
-			// 		stakingMsgDelegate,
-			// 		stakingMsgUndelegate,
-			// 		stakingMsgBeginRedelegate,
-			// 		stakingMsgCreateValidator,
-			// 		vestingMsgCreateVestingAccount,
-			// 		transferMsgTransfer,
-			// 		liquidityMsgCreatePool,
-			// 		liquidityMsgSwapWithinBatch,
-			// 		liquidityMsgDepositWithinBatch,
-			// 		liquidityMsgWithdrawWithinBatch,
-			// 	},
-			// }
+			fromVM[icatypes.ModuleName] = icaModule.ConsensusVersion()
+			// create ICS27 Controller submodule params
+			controllerParams := icacontrollertypes.Params{}
+			// create ICS27 Host submodule params
+			hostParams := icahosttypes.Params{
+				HostEnabled: true,
+				AllowMessages: []string{
+					authzMsgExec,
+					authzMsgGrant,
+					authzMsgRevoke,
+					bankMsgSend,
+					bankMsgMultiSend,
+					distrMsgSetWithdrawAddr,
+					distrMsgWithdrawValidatorCommission,
+					distrMsgFundCommunityPool,
+					distrMsgWithdrawDelegatorReward,
+					feegrantMsgGrantAllowance,
+					feegrantMsgRevokeAllowance,
+					govMsgVoteWeighted,
+					govMsgSubmitProposal,
+					govMsgDeposit,
+					govMsgVote,
+					stakingMsgEditValidator,
+					stakingMsgDelegate,
+					stakingMsgUndelegate,
+					stakingMsgBeginRedelegate,
+					stakingMsgCreateValidator,
+					vestingMsgCreateVestingAccount,
+					transferMsgTransfer,
+					liquidityMsgCreatePool,
+					liquidityMsgSwapWithinBatch,
+					liquidityMsgDepositWithinBatch,
+					liquidityMsgWithdrawWithinBatch,
+				},
+			}
 
-			// ctx.Logger().Info("start to init interchainaccount module...")
+			ctx.Logger().Info("start to init interchainaccount module...")
 			// initialize ICS27 module
-			// icaModule.InitModule(ctx, controllerParams, hostParams)
-
-			// ctx.Logger().Info("start to run module migrations...")
+			icaModule.InitModule(ctx, controllerParams, hostParams)
+			ctx.Logger().Info("start to run module migrations...")
 
 			return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 		},
@@ -747,7 +760,7 @@ func NewGaiaApp(
 
 	if upgradeInfo.Name == upgradeName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := storetypes.StoreUpgrades{
-			// Added: []string{icahosttypes.StoreKey},
+			Added: []string{icahosttypes.StoreKey},
 		}
 
 		// configure store loader that checks if version == upgradeHeight and applies store upgrades
@@ -760,34 +773,10 @@ func NewGaiaApp(
 		}
 	}
 
-	// app.ScopedIBCKeeper = scopedIBCKeeper
-	// app.ScopedTransferKeeper = scopedTransferKeeper
+	app.ScopedIBCKeeper = scopedIBCKeeper
+	app.ScopedTransferKeeper = scopedTransferKeeper
 
 	return app
-}
-
-func (app *GaiaApp) setTxHandler(txConfig client.TxConfig, indexEventsStr []string) {
-	indexEvents := map[string]struct{}{}
-	for _, e := range indexEventsStr {
-		indexEvents[e] = struct{}{}
-	}
-	txHandler, err := authmiddleware.NewDefaultTxHandler(authmiddleware.TxHandlerOptions{
-		Debug:            app.Trace(),
-		IndexEvents:      indexEvents,
-		LegacyRouter:     app.legacyRouter,
-		MsgServiceRouter: app.msgSvcRouter,
-		AccountKeeper:    app.AccountKeeper,
-		BankKeeper:       app.BankKeeper,
-		FeegrantKeeper:   app.FeeGrantKeeper,
-		SignModeHandler:  txConfig.SignModeHandler(),
-		SigGasConsumer:   authmiddleware.DefaultSigVerificationGasConsumer,
-		TxDecoder:        txConfig.TxDecoder(),
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	app.SetTxHandler(txHandler)
 }
 
 // Name returns the name of the App
@@ -895,7 +884,6 @@ func (app *GaiaApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APICo
 	tmservice.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
 	// Register legacy and grpc-gateway routes for all modules.
-	ModuleBasics.RegisterRESTRoutes(clientCtx, apiSvr.Router)
 	ModuleBasics.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
 	// register swagger API from root so that other applications can override easily
@@ -911,7 +899,12 @@ func (app *GaiaApp) RegisterTxService(clientCtx client.Context) {
 
 // RegisterTendermintService implements the Application.RegisterTendermintService method.
 func (app *GaiaApp) RegisterTendermintService(clientCtx client.Context) {
-	tmservice.RegisterTendermintService(app.BaseApp.GRPCQueryRouter(), clientCtx, app.interfaceRegistry)
+	tmservice.RegisterTendermintService(
+		clientCtx,
+		app.BaseApp.GRPCQueryRouter(),
+		app.interfaceRegistry,
+		app.Query,
+	)
 }
 
 // RegisterSwaggerAPI registers swagger route with API Server
@@ -938,10 +931,11 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govv1.ParamKeyTable())
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(liquiditytypes.ModuleName)
-	// paramsKeeper.Subspace(ibctransfertypes.ModuleName)
-	// paramsKeeper.Subspace(ibchost.ModuleName)
+	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
+	paramsKeeper.Subspace(ibchost.ModuleName)
+
 	// paramsKeeper.Subspace(routertypes.ModuleName).WithKeyTable(routertypes.ParamKeyTable())
-	// paramsKeeper.Subspace(icahosttypes.SubModuleName)
+	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 
 	return paramsKeeper
 }

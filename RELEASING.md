@@ -1,50 +1,73 @@
+# Releasing
 
-### Long-Lived Version Branch Approach
+This document outlines the release process for https://github.com/cosmos/gaia. We use [Long-Lived Version Branch Approach](x) on a `main` branch and a `release` branch.
 
-Cherry-pick commits from `main` into the long-lived `release/vn.n.x` branch, e.g., `release/v3.0.x`. 
-It is fine to create a long-lived branch from main if the last commit is the release commit.
+We follow [Semver](https://semver.org/) in that any patch releases are non-breaking changes. It's important to note, that breaking changes in a Blockchain context include non-determinism. So if a code change is backwards compatible, it may still impact the amount of gas needed to execute an action, which means the change is in fact breaking as it results in a different apphash after the code is executed. It's important for non-breaking changes to be possible to be used on the live network prior to the release.
 
-### Release Procedure
+Each major release will have a release branch and patch releases will be tagged on this branch. No patched release has its own branch. (This branch strategy only applies to `v7` and later releases.)
 
-- Start on `main`
-- Create the release candidate branch `rc/v*` (going forward known as **RC**)
-  and ensure it's protected against pushing from anyone except the release
-  manager/coordinator
-    - **no PRs targeting this branch should be merged unless exceptional circumstances arise**
-- On the `RC` branch, prepare a new version section in the `CHANGELOG.md` and
-  kick off a large round of simulation testing (e.g. 400 seeds for 2k blocks)
-- If errors are found during the simulation testing, commit the fixes to `main`
-  and create a new `RC` branch (making sure to increment the `rcN`)
-- After simulation has successfully completed, create the release branch
-  (`release/vX.XX.X`) from the `RC` branch
-- Merge the release branch to `main` to incorporate the `CHANGELOG.md` updates
-- Delete the `RC` branches
+## Long-Lived Version Branch Approach
 
-### Point Release Procedure
+In the Gaia repo, there are two categories of long-lived branches:
 
-At the moment, only a single major release will be supported, so all point
-releases will be based off of that release.
+### Branch: `main`
+The `main` branch should be targeted for PRs that contain a bug-fix/feature/improvement that will be included for the next release. 
 
-- start on `vX.XX.X`
-- checkout a new branch `rcN/vX.X.X`
-- cherry pick the desired changes from `main`
-    - these changes should be small and NON-BREAKING (both API and state machine)
-- add entries to CHANGELOG.md and remove corresponding pending log entries
-- checkout a new branch `release/vX.X.X` based off of the previous release
-- create a PR merging `rcN/vX.X.X` into `release/vX.X.X`
-- run tests and simulations (noted in [Release Procedure](#release-procedure))
-- after tests and simulation have successfully completed, merge the `RC` branch into `release/vX.X.X`
-    - Make sure to delete the `RC` branch
-- create a PR into `main` containing ONLY the CHANGELOG.md updates
-- tag (use `git tag -a`) then push the tags (`git push --tags`)
+### Branch: `release`
+There are multiple long-lived branches with the `release/` prefix. Each release series follows the format `release/vn.0.x`, e.g. `release/v7.0.x`. The branch `release/vn.0.x` should point to the most updated `vn` release, e.g. `release/v5.0.x` should be the same as `release/v5.0.8` if that's the latest `v5.0` release.
 
-### Dependency review
+## Other Branches
+### branches for the next release:
 
-Check the `replace` line in `go.mod` of the [Cosmos SDK](https://github.com/cosmos/cosmos-sdk/blob/master/go.mod) for something like:
-```
-replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-```
-Ensure that the same replace line is also used in Gaia's `go.mod` file.
+Other feature/fix branches targeting at `main` contain commits preparing for the next release. When the `release-prepare-branch` is ready for next release, add label `A:backport/vn.0.x` to the PR of `release-prepare-branch` against `main`, then the mergifybot will create a new PR of `mergify/bp/release/vn.0.x`  against `Release/vn.0.x`.
+
+### branches for the backport release:
+
+If the feature/fix branches are for a backport release, `main` branch already contains the commits for the next major release  `vn`, the feature/fix branch's PR should target at `Release/vn-1` rather than `main`. 
+
+## Release Procedure
+
+### Checks and tests
+Before merge and release, the following tests checks need to be conducted:
+
+- check the `replace` line in `go.mod`, check all the versions in `go.mod` are correct.
+- run tests and simulations by `make run-tests`.
+- test version compatibilities for minor releases.
+
+### Major and minor Release
+
+For a new major release `n`, checkout `release/vn.0.x` from `main`. Merge or use mergify to merge the commits to `release/vn.0.x`, and tag the version.
+For minor release. Merge or use mergify to merge the commits to `release/vn.0.x`, and tag the version.
+
+Usually the first release on the `release/vn.0.x` is a release candidate.
+
+#### example of releasing `v8.0.0-rc0`:
+
+1. checkout `release/v8.0.x` off `main`
+1. get the `v8-prepare-branch` ready including CHANGELOG.md, create a PR to merge `v8-prepare-branch` to `main`, label this PR `A:backport/v8.0.x`.
+1. after merge  `v8-prepare-branch` to `main`, mergifybot will create a new PR of  `mergify/bp/release/v8.0.x` to `release/v8.0.x`. Check the PR, and merge this PR.
+1. checkout  `release/v8.0.x` and tag `v8.0.0-rc0`.
+
+#### example of releasing `v8.0.0`:
+
+1. get the `v800-prepare-branch` ready including CHANGELOG.md, create a PR to merge `v800-prepare-branch` to `main`, label this PR `A:backport/v8.0.x`.
+1. after merge  `v800-prepare-branch` to `main`, mergifybot will create a new PR of  `mergify/bp/release/v8.0.x` to `release/v8.0.x`. Check the PR, and merge this PR.
+1. checkout  `release/v8.0.x` and tag `v8.0.0`.
+
+#### example of releasing `v8.0.1`:
+
+1. get the `v801-prepare-branch`(off `main`) ready including CHANGELOG.md, create a PR to merge `v801-prepare-branch` to `main`, label this PR `A:backport/v8.0.x`.
+1. after merge  `v801-prepare-branch` to `main`, mergifybot will create a new PR of  `mergify/bp/release/v8.0.x` to `release/v8.0.x`. Check the PR, and merge this PR.
+1. checkout  `release/v8.0.x` and tag `v8.0.1`.
+
+### backport release
+For a backport release, checkout a new branch from the right release branch, for example, `release/vn-1.0.x`. Commits to this new branch and merge into `release/vn-1.0.x`, tag the backport version from `release/vn-1.0.x`.
+
+#### example of backport release `v7.0.5`:
+assume main branch is at `v8`.
+1. checkout `v705-prepare-branch` off `release/v7.0.x`, get the backport changes ready including CHANGELOG.md on `v705-prepare-branch`.
+1. create a PR to merge `v705-prepare-branch` to `release/v7.0.x`, and merge.
+1. checkout `release/v7.0.x`  tag `v7.0.5`.
 
 ### Tagging
 
@@ -52,7 +75,7 @@ The following steps are the default for tagging a specific branch commit (usuall
 1. Ensure you have checked out the commit you wish to tag
 1. `git pull --tags --dry-run`
 1. `git pull --tags`
-1. `git tag -a v3.0.1 -m 'Release v3.0.1'`
+1. `git tag -s v3.0.1 -m 'Release v3.0.1'`
    1. optional, add the `-s` tag to create a signed commit using your PGP key (which should be added to github beforehand)
 1. `git push --tags --dry-run`
 1. `git push --tags`
@@ -63,13 +86,13 @@ To re-create a tag:
 1. Proceed with the above steps to create a tag
 
 To tag and build without a public release (e.g., as part of a timed security release):
-1. Follow the steps above for tagging locally, but do not push the tags to the repository. 
+1. Follow the steps above for tagging locally, but do not push the tags to the repository.
 1. After adding the tag locally, you can build the binary, e.g., `make build-reproducible`.
-1. To finalize the release, push the local tags, create a release based off the newly pushed tag, and attach the binary. 
+1. To finalize the release, push the local tags, create a release based off the newly pushed tag, and attach the binaries.
 
 ### Release notes
 
-Ensure you run the reproducible build in order to generate sha256 hashes and platform binaries; 
+Ensure you run the reproducible build in order to generate sha256 hashes and platform binaries;
 these artifacts should be included in the release.
 
 ```bash

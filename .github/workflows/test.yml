@@ -27,7 +27,7 @@ jobs:
             **/**.go
             go.mod
             go.sum
-      - uses: actions/cache@v3.0.2
+      - uses: actions/cache@v3.0.4
         with:
           path: |
             ~/.cache/go-build
@@ -91,7 +91,7 @@ jobs:
             go.sum
       - name: Install Ignite CLI
         run: |
-          curl https://get.ignite.com/cli@v0.20.0! | bash
+          curl https://get.ignite.com/cli@v0.21.1! | bash
         if: env.GIT_DIFF
       - name: Start Local Network via Ignite CLI
         run: |

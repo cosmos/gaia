@@ -2,6 +2,7 @@ package gaia
 
 import (
 	"fmt"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"io"
 	stdlog "log"
 	"net/http"
@@ -690,6 +691,18 @@ func NewGaiaApp(
 				FeegrantKeeper:  app.FeeGrantKeeper,
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+				// TxFeeChecker is not the default fee check, it will not check if the fee meets min_gas_price, this is checked in NewFeeWithBypassDecorator already.
+				TxFeeChecker: func(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64, error) {
+					feeTx, ok := tx.(sdk.FeeTx)
+					if !ok {
+						return nil, 0, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
+					}
+
+					feeCoins := feeTx.GetFee()
+					priority := gaiaante.GetTxPriority(feeCoins)
+
+					return feeCoins, priority, nil
+				},
 			},
 			IBCkeeper:            app.IBCKeeper,
 			BypassMinFeeMsgTypes: cast.ToStringSlice(appOpts.Get(gaiaappparams.BypassMinFeeMsgTypesKey)),

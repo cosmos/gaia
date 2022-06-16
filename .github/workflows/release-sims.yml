@@ -50,7 +50,7 @@ jobs:
     needs: [build, install-runsim]
     steps:
       - uses: actions/checkout@v2.4.0
-      - uses: actions/cache@v3.0.2
+      - uses: actions/cache@v3.0.4
         with:
           path: ~/go/bin
           key: ${{ runner.os }}-go-runsim-binary
@@ -72,7 +72,7 @@ jobs:
             **/**.go
             go.mod
             go.sum
-      - uses: actions/cache@v3.0.2
+      - uses: actions/cache@v3.0.4
         with:
           path: ~/go/bin
           key: ${{ runner.os }}-go-runsim-binary

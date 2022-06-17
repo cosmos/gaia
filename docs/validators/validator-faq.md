@@ -1,6 +1,7 @@
-<!--
+---
 order: 3
--->
+title: Validator FAQ
+---
 
 # Validator FAQ
 
@@ -279,7 +280,7 @@ Running an effective operation is key to avoiding unexpected unbonding or slashi
 
 ### What are the maintenance requirements?
 
-Validators are expected to perform regular software updates to accommodate chain upgrades and bug fixes. It is suggested to consider using [Cosmovisor](https://docs.cosmos.network/master/run-node/cosmovisor.html) to partially automate this process.
+Validators are expected to perform regular software updates to accommodate chain upgrades and bug fixes. It is suggested to consider using [Cosmovisor](https://docs.cosmos.network/main/run-node/cosmovisor.html) to partially automate this process.
 
 During an chain upgrade, progress is discussed in a private channel in the [Cosmos Developer Discord](https://discord.gg/cosmosnetwork). If your validator is in the active set we encourage you to request access to that channel by contacting a moderator.
 

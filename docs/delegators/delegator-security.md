@@ -1,6 +1,7 @@
-<!--
+---
 order: 3
--->
+title: Delegator Security
+---
 
 # Delegator Security
 

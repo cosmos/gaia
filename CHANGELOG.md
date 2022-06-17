@@ -29,13 +29,44 @@ Types of changes (Stanzas):
 "Client Breaking" for breaking CLI commands and REST routes.
 "State Machine Breaking" for breaking the AppState
 
-
 Ref: https://keepachangelog.com/en/1.0.0/
 -->
 
 # Changelog
 
 ## [Unreleased]
+
+* (gaia-rho) Update Liquidity module to v2.0.0-beta1 to work with Cosmos-SDK v0.46.0-beta2
+* (gaia-rho) Update [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.46.0-beta2](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.46.0-beta2). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.46.0-beta2/CHANGELOG.md) for details.
+* (gaia-rho) Add [Groups Module](https://docs.cosmos.network/main/modules/group/#group-module).
+* (tests) Add E2E test for Bank Send.
+* (tests) Update liveness tests to use Ignite v0.21.1.
+
+## [v7.0.2] -2022-05-09
+
+* (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.4](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.4). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.4/CHANGELOG.md#v0454---2022-04-25) for details.
+* (gaia) [#1447](https://github.com/cosmos/gaia/pull/1447) Support custom message types to bypass minimum fee checks for.
+  If a transaction contains only bypassed message types, the transaction will not have minimum fee
+  checks performed during `CheckTx`. Operators can supply these message types via the `bypass-min-fee-msg-types`
+  configuration in `app.toml`. Note, by default they include various IBC message types.
+
+## [v7.0.1] -2022-04-13
+
+* (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.3](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.3). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.3/CHANGELOG.md#v0453---2022-04-12) for details.
+* (gaia) bump [tendermint](https://github.com/tendermint/tendermint) to [0.34.19](https://github.com/tendermint/tendermint/tree/v0.34.19). See [CHANGELOG.md](https://github.com/tendermint/tendermint/blob/v0.34.19/CHANGELOG.md#v03419) for details.
+* (gaia) bump [tm-db](https://github.com/tendermint/tm-db) to [v0.6.7](https://github.com/tendermint/tm-db/tree/v0.6.7). See [CHANGELOG.md](https://github.com/tendermint/tm-db/blob/v0.6.7/CHANGELOG.md#067) for details.
+
+## [v7.0.0] - 2022-03-24
+
+- (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.1](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.1). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.1/CHANGELOG.md#v0451---2022-02-03) for details.
+- (gaia) bump [ibc-go](https://github.com/cosmos/ibc-go) module to [v3.0.0](https://github.com/cosmos/ibc-go/releases/tag/v3.0.0). See [CHANGELOG.md](https://github.com/cosmos/ibc-go/blob/v3.0.0/CHANGELOG.md#v300---2022-03-15) for details.
+- (gaia) add [interchain account](https://github.com/cosmos/ibc-go/tree/main/modules/apps/27-interchain-accounts) module (interhchain-account module is part of ibc-go module).
+- (gaia) bump [liquidity](https://github.com/gravity-devs/liquidity) module to [v1.5.0](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.5.0). See [CHANGELOG.md](https://github.com/Gravity-Devs/liquidity/blob/v1.5.0/CHANGELOG.md#v150---20220223) for details.
+- (gaia) bump [packet-forward-middleware](https://github.com/strangelove-ventures/packet-forward-middleware) module to [v2.1.1](https://github.com/strangelove-ventures/packet-forward-middleware/releases/tag/v2.1.1).
+- (gaia) add migration logs for upgrade process.
+
+## [v6.0.4] - 2022-03-10
+
 * (gaia) Bump [Liquidity](https://github.com/gravity-devs/liquidity) module to [v1.4.6](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.4.6).
 * (gaia) Bump [IBC](https://github.com/cosmos/ibc-go) module to [2.0.3](https://github.com/cosmos/ibc-go/releases/tag/v2.0.3).
 * (gaia) [#1230](https://github.com/cosmos/gaia/pull/1230) Fix: update gRPC Web Configuration in `contrib/testnets/test_platform`.
@@ -45,13 +76,13 @@ Ref: https://keepachangelog.com/en/1.0.0/
 * * (gaia) Bump [Cosmos-SDK](https://github.com/cosmos/cosmos-sdk) to [v0.44.6](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.6)
 * (gaia) Bump [Versions](https://github.com/cosmos/gaia/pull/1100) of various smaller dependencies, remove the Cosmos SDK replace statement, update `initiClientCtx` params, ensure `stdout` and `stderr` are handled correctly in the CLI.
 
-## [v6.0.3] - 2021-02-18
+## [v6.0.3] - 2022-02-18
  * This is a reverted release that is the same as v6.0.0
 
-## [v6.0.2] - 2021-02-17
+## [v6.0.2] - 2022-02-17
  * Unusable release
 
-## [v6.0.1] - 2021-11-24
+## [v6.0.1] - 2022-02-10
  * Unusable release
 
 ## [v6.0.0] - 2021-11-24
@@ -64,6 +95,14 @@ Ref: https://keepachangelog.com/en/1.0.0/
  * (gaia) Add [IBC](https://github.com/cosmos/ibc-go) as a standalone module from the Cosmos SDK using version [v2.0.0](https://github.com/cosmos/ibc-go/releases/tag/v2.0.0). See the [CHANGELOG.md](https://github.com/cosmos/ibc-go/blob/v2.0.0/CHANGELOG.md) for details.
  * (gaia) Add [packet-forward-middleware](https://github.com/strangelove-ventures/packet-forward-middleware) [v1.0.1](https://github.com/strangelove-ventures/packet-forward-middleware/releases/tag/v1.0.1).
  * (gaia) [#969](https://github.com/cosmos/gaia/issues/969) Remove legacy migration code.
+
+## [v5.0.8] - 2021-10-14
+
+* (gaia) This release includes a new AnteHandler that rejects redundant IBC transactions to save relayers fees.
+
+## [v5.0.8] - 2021-10-14
+
+* (gaia) This release includes a new AnteHandler that rejects redundant IBC transactions to save relayers fees.
 
 ## [v5.0.7] - 2021-09-30
 
@@ -398,11 +437,16 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v6.0.3...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v7.0.3...HEAD
+[v7.0.2]: https://github.com/cosmos/gaia/releases/tag/v7.0.2
+[v7.0.1]: https://github.com/cosmos/gaia/releases/tag/v7.0.1
+[v7.0.0]: https://github.com/cosmos/gaia/releases/tag/v7.0.0
+[v6.0.4]: https://github.com/cosmos/gaia/releases/tag/v6.0.4
 [v6.0.3]: https://github.com/cosmos/gaia/releases/tag/v6.0.3
 [v6.0.2]: https://github.com/cosmos/gaia/releases/tag/v6.0.2
 [v6.0.1]: https://github.com/cosmos/gaia/releases/tag/v6.0.1
 [v6.0.0]: https://github.com/cosmos/gaia/releases/tag/v6.0.0
+[v5.0.8]: https://github.com/cosmos/gaia/releases/tag/v5.0.8
 [v5.0.7]: https://github.com/cosmos/gaia/releases/tag/v5.0.7
 [v5.0.6]: https://github.com/cosmos/gaia/releases/tag/v5.0.6
 [v5.0.5]: https://github.com/cosmos/gaia/releases/tag/v5.0.5

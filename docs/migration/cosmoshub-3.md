@@ -1,3 +1,7 @@
+---
+title: Cosmos Hub 3 Upgrade
+order: 5
+---
 <!-- markdown-link-check-disable -->
 # Cosmos Hub 3 Upgrade Instructions
 
@@ -71,7 +75,7 @@ major upgrade (`cosmoshub-3`). These changes notably consist of many new feature
 protocol changes, and application structural changes that favor developer ergonomics
 and application development.
 
-First and foremost, [IBC](https://docs.cosmos.network/master/ibc/overview.html) following 
+First and foremost, [IBC](https://docs.cosmos.network/main/ibc/overview.html) following 
 the [Interchain Standads](https://github.com/cosmos/ics#ibc-quick-references) will be enabled. 
 This upgrade comes with several improvements in efficiency, node synchronization and following blockchain upgrades.
 More details on the [Stargate Website](https://stargate.cosmos.network/).

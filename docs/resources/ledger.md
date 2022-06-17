@@ -1,6 +1,7 @@
-<!--
+---
 order: 4
--->
+title: Ledger Support
+---
 
 # Ledger Nano Support
 

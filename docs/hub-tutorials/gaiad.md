@@ -1,6 +1,7 @@
-<!--
-order: 1
--->
+---
+order: 5
+title: Interacting with Gaiad (CLI)
+---
 
 # Gaia Client
 
@@ -23,10 +24,18 @@ First, set up the address of the full-node you want to connect to:
 ```bash
 gaiad config node <host>:<port>
 
-# example: gaiad config node https://77.87.106.33:26657 (note: this is a placeholder)
+# example: gaiad config node https://77.87.106.33:26657
 ```
 
 If you run your own full-node, just use `tcp://localhost:26657` as the address.
+
+Then, let us set the default value of the `--trust-node` flag:
+
+```bash
+gaiad config trust-node true
+
+# Set to true if you trust the full-node you are connecting to, false otherwise
+```
 
 Finally, let us set the `chain-id` of the blockchain we want to interact with:
 
@@ -35,6 +44,12 @@ gaiad config chain-id cosmoshub-2
 ```
 
 ### Keys
+
+#### Keyring
+
+The keyring holds the private/public keypairs used to interact with a node. For instance, a validator key needs to be set up before running the blockchain node, so that blocks can be correctly signed. The private key can be stored in different locations, called "backends", such as a file or the operating system's own key storage.
+
+Headless enviroments are recommended to use either the `file` or `pass` backends. More information is available at the [SDK documentation page](https://docs.cosmos.network/main/run-node/keyring.html).
 
 #### Key Types
 
@@ -45,7 +60,7 @@ There are three types of key representations that are used:
   - Used to receive funds
   - e.g. `cosmos15h6vd5f0wqps26zjlwrc6chah08ryu4hzzdwhc`
 
-- `cosmosvaloper`
+* `cosmosvaloper`
   - Used to associate a validator to it's operator
   - Used to invoke staking commands
   - e.g. `cosmosvaloper1carzvgq3e6y3z5kz5y6gxp3wpy3qdrv928vyah`
@@ -210,7 +225,7 @@ When you query an account balance with zero tokens, you will get this error: `No
 The following command could be used to send coins from one account to another:
 
 ```bash
-gaiad tx bank send [from_key_or_address] [to_address] [amount] [flags] \
+gaiad tx bank send <sender_key_name_or_address> <recipient_address> 10faucetToken \
   --chain-id=<chain_id>
 ```
 
@@ -241,7 +256,7 @@ You can simulate a transaction without actually broadcasting it by appending the
 `--dry-run` flag to the command line:
 
 ```bash
-gaiad tx bank send [from_key_or_address] [to_address] [amount] [flags] \
+gaiad tx bank send <sender_key_name_or_address> <destination_cosmosaccaddr> 10faucetToken \
   --chain-id=<chain_id> \
   --dry-run
 ```
@@ -250,7 +265,7 @@ Furthermore, you can build a transaction and print its JSON format to STDOUT by
 appending `--generate-only` to the list of the command line arguments:
 
 ```bash
-gaiad tx bank send [from_key_or_address] [to_address] [amount] [flags] \
+gaiad tx bank send <sender_address> <recipient_address> 10faucetToken \
   --chain-id=<chain_id> \
   --generate-only > unsignedSendTx.json
 ```

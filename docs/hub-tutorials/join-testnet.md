@@ -1,6 +1,7 @@
-<!--
-order: 4
--->
+---
+order: 3
+title: Joining Testnet
+---
 
 # Join the Public Testnet
 
@@ -15,7 +16,7 @@ The current Cosmos Hub Testnet is running on the [Theta Upgrade](https://interch
 For those who just need instructions on performing the upgrade, see the [Upgrade](#upgrading) section.
 
 ## Releases
-If syncing before the Theta update, checkout [`v6.0.0`](https://github.com/cosmos/gaia/tree/v6.0.0). **If syncing after the upgrade, see [`v7.0.0-rc0`](https://github.com/cosmos/gaia/tree/release/v7.0.0-rc0).**
+If syncing before the Theta update, checkout [`v6.0.0`](https://github.com/cosmos/gaia/tree/v6.0.0). Until a release is cut for the upgrade, feel free to track the [`theta-prepare` branch](https://github.com/cosmos/gaia/tree/theta-prepare).
 
 ## Prerequisites
 
@@ -23,7 +24,7 @@ If syncing before the Theta update, checkout [`v6.0.0`](https://github.com/cosmo
 
 It's recommended that public testnet nodes are running on machines with at least `16GB` of RAM.
 
-**Make sure Go & Gaia are [properly installed](../getting-started/installation.md). The most recent Gaia version for the Theta Testnet is [`v7.0.0-rc0`](https://github.com/cosmos/gaia/tree/release/v7.0.0-rc0).**
+**Make sure Go & Gaia are [properly installed](../getting-started/installation.md). The most recent Gaia version for the Theta Testnet is [`v7.0.0-rc0`](https://github.com/cosmos/gaia/tree/v7.0.0-rc0).**
 
 
 This tutorial will provide all necessary instructions for joining the current public testnet. If you're interested in more advanced configuration and synchronization options, see [Join Mainnet](./join-mainnet.md) for a detailed walkthrough.
@@ -35,7 +36,7 @@ State Sync is far faster and more efficient than Blocksync, but Blocksync offers
 
 ### Configuration & Setup
 
-To get started, you'll need to install and configure the Gaia binary using the script below. **For Blocksync, it is important to checkout Gaia `release/v6.0.0`. For State Sync checkout the most recent Theta release [`v7.0.0-rc0`](https://github.com/cosmos/gaia/tree/release/v7.0.0-rc0)**
+To get started, you'll need to install and configure the Gaia binary using the script below. **For Blocksync, it is important to checkout Gaia `release/v6.0.0`. For State Sync checkout the most recent [testnet release](https://github.com/cosmos/gaia/tree/v6.0.0) until the upgrade is performed**
 
 This example is using the Theta testnet genesis. For up to date values like `seeds`, visit the [testnet repository](https://github.com/cosmos/testnets).
 
@@ -112,25 +113,18 @@ The following script installs, configures and starts Cosmovisor:
 # Install Cosmovisor
 go get github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor
 
-# Set environment variables
-echo "export DAEMON_NAME=gaiad" >> ~/.profile
-echo "export DAEMON_HOME=$HOME/.gaia" >> ~/.profile
-source ~/.profile
+> NOTE: If you ran a full node on a previous testnet, please skip to [Upgrading From Previous Testnet](#upgrading-from-previous-testnet).
 
-mkdir -p ~/.gaia/cosmovisor/upgrades
-mkdir -p ~/.gaia/cosmovisor/genesis/bin/
-cp $(which gaiad) ~/.gaia/cosmovisor/genesis/bin/
+To start a new node, the mainnet instructions apply:
 
-# Verify cosmovisor and gaiad versions are the same.
-cosmovisor version
+- [Join the mainnet](./join-mainnet.md)
+- [Deploy a validator](../validators/validator-setup.md)
 
-# Start Cosmovisor
-cosmovisor start --x-crisis-skip-assert-invariants
-```
+The only difference is the SDK version and genesis file. See the [testnet repo](https://github.com/cosmos/testnets) for information on testnets, including the correct version of the Cosmos-SDK to use and details about the genesis file.
 
-#### Upgrading
+## Upgrading Your Node
 
-Cosmovisor will continually poll the `$DAEMON_HOME/data/upgrade-info.json` for new upgrade instructions. When an upgrade is ready, node operators can download the new binary and place it under `$DAEMON_HOME/cosmovisor/upgrades/<name>/bin` where `<name>` is the URI-encoded name of the upgrade as specified in the upgrade module plan.
+These instructions are for full nodes that have ran on previous versions of and would like to upgrade to the latest testnet.
 
 When the chain reaches the upgrade block height, the chain will halt and you will have to download the new binary and move it to the correct folder. For the `Theta` upgrade, this would look like:
 ```
@@ -147,7 +141,9 @@ make install
 cp $GOPATH/bin/gaiad ~/.gaia/cosmovisor/upgrades/Theta/bin
 ```
 
-If Cosmovisor is already running, there's nothing left to do, otherwise run `cosmovisor start` to start the daemon.
+Your node is now in a pristine state while keeping the original `priv_validator.json` and `config.toml`. If you had any sentry nodes or full nodes setup before,
+your node will still try to connect to them, but may fail if they haven't also
+been upgraded.
 
 ### Blocksync
 Blocksync will require navigating the Theta upgrade either via [Cosmovisor](#using-cosmovisor) or manually.
@@ -160,9 +156,13 @@ Logs will show `ERR UPGRADE "Theta" NEEDED at height: XXXX`. Stop `gaiad` and ru
 cd $HOME/gaia
 git checkout <theta release candidate>
 make install
-
-# Verify the correct installation
-gaiad -version
 ```
+
+::: tip
+_NOTE_: If you have issues at this step, please check that you have the latest stable version of GO installed.
+:::
+
+Note we use `master` here since it contains the latest stable release.
+See the [testnet repo](https://github.com/cosmos/testnets) for details on which version is needed for which testnet, and the [Gaia release page](https://github.com/cosmos/gaia/releases) for details on each release.
 
 Once the new binary is installed, restart the Gaia daemon. Logs will show `INF applying upgrade "Theta" at height: XXXXX`. After a few minutes, the node will start syncing blocks.

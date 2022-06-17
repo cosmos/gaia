@@ -1,6 +1,7 @@
-<!--
+---
 order: 2
--->
+title: Installing Gaia
+---
 
 # Installation
 
@@ -29,7 +30,7 @@ sudo apt-get install -y make gcc
 ## Install Go
 
 ::: tip
-**Go 1.16+** or later is required for the Cosmos SDK.
+**Go 1.17+** or later is required for the Cosmos SDK.
 :::
 
 We suggest the following two ways to install Go. Check out the [official docs](https://golang.org/doc/install) and Go installer for the correct download for your operating system. Alternatively, you can install Go yourself from the command line. Detailed below are standard default installation locations, but feel free to customize.
@@ -93,10 +94,10 @@ You should see something similar to the following:
 ```bash
 name: gaia
 server_name: gaiad
-version: v6.0.4
+version: v7.0.0
 commit: 07f9892a927f451ae204d0c9d1a5601d8fc232a5
 build_tags: netgo,ledger
-go: go version go1.15 linux/amd64
+go: go version go1.17 linux/amd64
 ```
 
 ### Build Tags
@@ -120,4 +121,4 @@ The `replace` clause you add to `go.mod` must provide the correct import path:
 
 ## Next
 
-Now you can [join the mainnet](../hub-tutorials/join-mainnet.md), [the public testnet](../hub-tutorials/join-testnet.md) or [create you own testnet](../hub-tutorials/deploy-testnet.md)
+Now you can [join the mainnet](../hub-tutorials/join-mainnet.md), [the public testnet](../hub-tutorials/join-testnet.md).

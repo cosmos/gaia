@@ -43,7 +43,7 @@ var (
 	stakeAmount, _    = sdk.NewIntFromString("100000000000")
 	stakeAmountCoin   = sdk.NewCoin("stake", stakeAmount)
 	tokenAmount       = sdk.NewInt64Coin(photonDenom, 3300000000) // 3,300photon
-	fees              = sdk.NewInt64Coin(photonDenom, 330000)
+	fees              = sdk.NewInt64Coin(photonDenom, 330000) // 0.33photon
 	depositAmount     = sdk.NewInt64Coin(photonDenom, 10000000).String()
 	distModuleAddress = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
 	govModuleAddress  = authtypes.NewModuleAddress(govtypes.ModuleName).String()

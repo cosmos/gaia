@@ -4,6 +4,7 @@ const (
 	appName     = "GaiaApp"
 	upgradeName = "v8-Rho"
 
+	// allowed msg types of ica host
 	authzMsgExec                        = "/cosmos.authz.v1beta1.MsgExec"
 	authzMsgGrant                       = "/cosmos.authz.v1beta1.MsgGrant"
 	authzMsgRevoke                      = "/cosmos.authz.v1beta1.MsgRevoke"

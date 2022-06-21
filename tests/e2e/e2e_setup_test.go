@@ -38,6 +38,7 @@ const (
 	initBalanceStr             = "110000000000stake,100000000000000000photon"
 	minGasPrice                = "0.00001"
 	govSendMsgRecipientAddress = "cosmos1pkueemdeps77dwrqma03pwqk93nw39nuhccz02"
+	govProposalBlockBuffer     = 35
 )
 
 var (
@@ -49,6 +50,7 @@ var (
 	distModuleAddress = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
 	govModuleAddress  = authtypes.NewModuleAddress(govtypes.ModuleName).String()
 	proposalCounter   = 0
+	sendGovAmount     = sdk.NewInt64Coin(photonDenom, 10)
 )
 
 type UpgradePlan struct {
@@ -453,11 +455,6 @@ func noRestart(config *docker.HostConfig) {
 }
 
 func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
-	sendAmount := []sdk.Coin{
-		// 10photon
-		sdk.NewInt64Coin(photonDenom, 10),
-	}
-
 	type GovMessageSend struct {
 		Type   string     `json:"@type"`
 		From   string     `json:"from_address"`
@@ -466,11 +463,11 @@ func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
 	}
 
 	msgSendMessages := []GovMessageSend{
-		GovMessageSend{
+		{
 			Type:   "/cosmos.bank.v1beta1.MsgSend",
 			From:   govModuleAddress,
 			To:     govSendMsgRecipientAddress,
-			Amount: sendAmount,
+			Amount: []sdk.Coin{sendGovAmount},
 		},
 	}
 
@@ -513,7 +510,7 @@ func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
 
 func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height int) {
 	softwareUpgradeMessages := []SoftwareUpgrade{
-		SoftwareUpgrade{
+		{
 			Type:      "/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade",
 			Authority: govModuleAddress,
 			Plan: UpgradePlan{
@@ -524,7 +521,7 @@ func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height 
 		},
 	}
 	cancelSoftwareUpgradeMessages := []CancelSoftwareUpgrade{
-		CancelSoftwareUpgrade{
+		{
 			Type:      "/cosmos.upgrade.v1beta1.MsgCancelUpgrade",
 			Authority: govModuleAddress,
 		},

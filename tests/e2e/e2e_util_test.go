@@ -185,7 +185,7 @@ func (s *IntegrationTestSuite) execDistributionFundCommunityPool(c *chain, valId
 		"tx",
 		"distribution",
 		"fund-community-pool",
-		"300000000photon",
+		amt,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, from),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, fees),

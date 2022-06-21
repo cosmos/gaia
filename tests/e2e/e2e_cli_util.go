@@ -49,7 +49,7 @@ func getSpecificBalance(endpoint, addr, denom string) (amt sdk.Coin, err error) 
 			break
 		}
 	}
-	return
+	return amt, nil
 }
 
 func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) {

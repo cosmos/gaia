@@ -121,7 +121,7 @@ func (s *IntegrationTestSuite) TestSendTokensFromNewGovAccount() {
 	s.fundCommunityPool(chainAAPIEndpoint, sender)
 
 	s.T().Logf("Submitting Legacy Gov Proposal: Community Spend Funding Gov Module")
-	s.submitLegacyProposalFundGovAccount(chainAAPIEndpoint, sender)
+	s.submitLegacyProposalFundGovAccount(chainAAPIEndpoint, sender, proposalCounter)
 	s.T().Logf("Depositing Legacy Gov Proposal: Community Spend Funding Gov Module")
 	s.depositGovProposal(chainAAPIEndpoint, sender, proposalCounter)
 	s.T().Logf("Voting Legacy Gov Proposal: Community Spend Funding Gov Module")
@@ -139,7 +139,6 @@ func (s *IntegrationTestSuite) TestSendTokensFromNewGovAccount() {
 	s.voteGovProposal(chainAAPIEndpoint, sender, proposalCounter, "yes", false)
 	s.Require().Eventually(
 		func() bool {
-			sendGovAmount := sdk.NewInt64Coin(photonDenom, 10)
 			newGovBalance, err := getSpecificBalance(chainAAPIEndpoint, govModuleAddress, photonDenom)
 			s.Require().NoError(err)
 
@@ -159,7 +158,7 @@ func (s *IntegrationTestSuite) TestGovSoftwareUpgrade() {
 	s.Require().NoError(err)
 	sender := senderAddress.String()
 	height := s.getLatestBlockHeight(s.chainA, 0)
-	proposalHeight := height + 35
+	proposalHeight := height + govProposalBlockBuffer
 	proposalCounter++
 
 	s.T().Logf("Writing proposal %d on chain %s", proposalCounter, s.chainA.id)
@@ -232,6 +231,12 @@ func (s *IntegrationTestSuite) TestGovCancelSoftwareUpgrade() {
 
 func (s *IntegrationTestSuite) fundCommunityPool(chainAAPIEndpoint string, sender string) {
 	s.Run("fund_community_pool", func() {
+		beforeDistPhotonBalance, _ := getSpecificBalance(chainAAPIEndpoint, distModuleAddress, tokenAmount.Denom)
+		if beforeDistPhotonBalance.IsNil() {
+			// Set balance to 0 if previous balance does not exist
+			beforeDistPhotonBalance = sdk.NewInt64Coin("photon", 0)
+		}
+
 		s.execDistributionFundCommunityPool(s.chainA, 0, chainAAPIEndpoint, sender, tokenAmount.String(), fees.String())
 
 		s.Require().Eventually(
@@ -242,7 +247,7 @@ func (s *IntegrationTestSuite) fundCommunityPool(chainAAPIEndpoint string, sende
 				}
 				s.Require().NoError(err)
 
-				return afterDistPhotonBalance.IsValid()
+				return afterDistPhotonBalance.IsEqual(beforeDistPhotonBalance.Add(tokenAmount.Add(fees)))
 			},
 			15*time.Second,
 			5*time.Second,
@@ -250,13 +255,13 @@ func (s *IntegrationTestSuite) fundCommunityPool(chainAAPIEndpoint string, sende
 	})
 }
 
-func (s *IntegrationTestSuite) submitLegacyProposalFundGovAccount(chainAAPIEndpoint string, sender string) {
+func (s *IntegrationTestSuite) submitLegacyProposalFundGovAccount(chainAAPIEndpoint string, sender string, proposalId int) {
 	s.Run("submit_legacy_community_spend_proposal_to_fund_gov_acct", func() {
 		s.execGovSubmitLegacyGovProposal(s.chainA, 0, chainAAPIEndpoint, sender, "/root/.gaia/config/proposal.json", fees.String(), "community-pool-spend")
 
 		s.Require().Eventually(
 			func() bool {
-				proposal, err := queryGovProposal(chainAAPIEndpoint, 1)
+				proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId)
 				s.Require().NoError(err)
 
 				return (proposal.GetProposal().Status == govv1beta1.StatusDepositPeriod)
@@ -340,7 +345,7 @@ func (s *IntegrationTestSuite) verifyChainHaltedAtUpgradeHeight(c *chain, valIdx
 			currentHeight := s.getLatestBlockHeight(c, valIdx)
 
 			if currentHeight > upgradeHeight {
-				panic("Chain did not halt at upgrade height")
+				return false
 			}
 			if currentHeight == upgradeHeight {
 				counter++

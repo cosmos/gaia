@@ -53,9 +53,11 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		Use:   "gaiad",
 		Short: "Stargate Cosmos Hub App",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
-			initClientCtx = client.ReadHomeFlag(initClientCtx, cmd)
-
-			initClientCtx, err := config.ReadFromClientConfig(initClientCtx)
+			initClientCtx, err := client.ReadPersistentCommandFlags(initClientCtx, cmd.Flags())
+			if err != nil {
+				return err
+			}
+			initClientCtx, err = config.ReadFromClientConfig(initClientCtx)
 			if err != nil {
 				return err
 			}
@@ -102,6 +104,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 		keys.Commands(gaia.DefaultNodeHome),
 	)
 }
+
 func addModuleInitFlags(startCmd *cobra.Command) {
 	crisis.AddModuleInitFlags(startCmd)
 }
@@ -207,8 +210,8 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts serverty
 
 func createSimappAndExport(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, height int64, forZeroHeight bool, jailAllowedAddrs []string,
-	appOpts servertypes.AppOptions) (servertypes.ExportedApp, error) {
-
+	appOpts servertypes.AppOptions,
+) (servertypes.ExportedApp, error) {
 	encCfg := gaia.MakeEncodingConfig() // Ideally, we would reuse the one created by NewRootCmd.
 	encCfg.Marshaler = codec.NewProtoCodec(encCfg.InterfaceRegistry)
 	var gaiaApp *gaia.GaiaApp

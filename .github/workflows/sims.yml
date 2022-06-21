@@ -34,7 +34,7 @@ jobs:
   #      - uses: actions/setup-go@v3.0.0
   #        with:
   #          go-version: 1.17
-  #      - uses: technote-space/get-diff-action@v5.0.2
+  #      - uses: technote-space/get-diff-action@v6.1.0
   #        with:
   #          PATTERNS: |
   #            **/**.go
@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: Build
     steps:
-      - uses: technote-space/get-diff-action@v5.0.2
+      - uses: technote-space/get-diff-action@v6.1.0
         with:
           PATTERNS: |
             **/**.go
@@ -82,7 +82,7 @@ jobs:
         with:
           go-version: 1.17
       - uses: actions/checkout@v2.4.0
-      - uses: technote-space/get-diff-action@v5.0.2
+      - uses: technote-space/get-diff-action@v6.1.0
         with:
           PATTERNS: |
             **/**.go
@@ -106,7 +106,7 @@ jobs:
       - uses: actions/setup-go@v3.0.0
         with:
           go-version: 1.17
-      - uses: technote-space/get-diff-action@v5.0.2
+      - uses: technote-space/get-diff-action@v6.1.0
         with:
           PATTERNS: |
             **/**.go

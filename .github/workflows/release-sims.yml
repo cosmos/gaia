@@ -67,7 +67,7 @@ jobs:
       - uses: actions/setup-go@v3.0.0
         with:
           go-version: 1.16
-      - uses: technote-space/get-diff-action@v5.0.2
+      - uses: technote-space/get-diff-action@v6.1.0
         with:
           PATTERNS: |
             **/**.go

@@ -30,7 +30,7 @@ sudo apt-get install -y make gcc
 ## Install Go
 
 ::: tip
-**Go 1.17+** or later is required for the Cosmos SDK.
+**Go 1.18+** or later is required for the Cosmos SDK.
 :::
 
 We suggest the following two ways to install Go. Check out the [official docs](https://golang.org/doc/install) and Go installer for the correct download for your operating system. Alternatively, you can install Go yourself from the command line. Detailed below are standard default installation locations, but feel free to customize.
@@ -39,11 +39,11 @@ We suggest the following two ways to install Go. Check out the [official docs](h
 
 **Ubuntu:**
 
-At the time of this writing, the latest release is `1.17.4`. We're going to download the tarball, extract it to `/usr/local`, and export `GOROOT` to our `$PATH`
+At the time of this writing, the latest release is `1.18.2`. We're going to download the tarball, extract it to `/usr/local`, and export `GOROOT` to our `$PATH`
 ```bash
-curl -OL https://golang.org/dl/go1.17.4.linux-amd64.tar.gz
+curl -OL https://golang.org/dl/go1.18.2.linux-amd64.tar.gz
 
-sudo tar -C /usr/local -xvf go1.17.4.linux-amd64.tar.gz
+sudo tar -C /usr/local -xvf go1.18.2.linux-amd64.tar.gz
 
 export PATH=$PATH:/usr/local/go/bin
 
@@ -97,7 +97,7 @@ server_name: gaiad
 version: v7.0.0
 commit: 07f9892a927f451ae204d0c9d1a5601d8fc232a5
 build_tags: netgo,ledger
-go: go version go1.17 linux/amd64
+go: go version go1.18 linux/amd64
 ```
 
 ### Build Tags

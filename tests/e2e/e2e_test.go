@@ -55,7 +55,6 @@ func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
 
 func (s *IntegrationTestSuite) TestBankTokenTransfer() {
 	s.Run("send_photon_between_accounts", func() {
-		s.T().Skip()
 		var (
 			err error
 		)
@@ -111,6 +110,7 @@ func (s *IntegrationTestSuite) TestBankTokenTransfer() {
 }
 
 func (s *IntegrationTestSuite) TestSendTokensFromNewGovAccount() {
+	s.writeGovProposals((s.chainA))
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
 	s.Require().NoError(err)

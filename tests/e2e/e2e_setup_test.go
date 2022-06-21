@@ -2,6 +2,7 @@ package e2e
 
 import (
 	"context"
+	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -42,8 +43,8 @@ const (
 var (
 	stakeAmount, _    = sdk.NewIntFromString("100000000000")
 	stakeAmountCoin   = sdk.NewCoin("stake", stakeAmount)
-	tokenAmount       = sdk.NewInt64Coin(photonDenom, 3300000000) // 3,300photon
-	fees              = sdk.NewInt64Coin(photonDenom, 330000) // 0.33photon
+	tokenAmount       = sdk.NewInt64Coin(photonDenom, 3300000000)        // 3,300photon
+	fees              = sdk.NewInt64Coin(photonDenom, 330000)            // 0.33photon
 	depositAmount     = sdk.NewInt64Coin(photonDenom, 10000000).String() // 10photon
 	distModuleAddress = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
 	govModuleAddress  = authtypes.NewModuleAddress(govtypes.ModuleName).String()
@@ -112,8 +113,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.initNodes(s.chainA)
 	s.initGenesis(s.chainA)
 	s.initValidatorConfigs(s.chainA)
-	// Init proposals
-	s.writeGovProposals((s.chainA))
 	s.runValidators(s.chainA, 0)
 
 	// s.T().Logf("starting e2e infrastructure for chain B; chain-id: %s; datadir: %s", s.chainB.id, s.chainB.dataDir)
@@ -481,7 +480,7 @@ func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
 		Deposit  string           `json:"deposit"`
 	}{
 		Messages: msgSendMessages,
-		Metadata: "VGVzdGluZyAxLCAyLCAzIQ==",
+		Metadata: b64.StdEncoding.EncodeToString([]byte("Testing 1, 2, 3!")),
 		Deposit:  "5000photon",
 	}, "", " ")
 
@@ -537,7 +536,7 @@ func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height 
 		Deposit  string            `json:"deposit"`
 	}{
 		Messages: softwareUpgradeMessages,
-		Metadata: "VGVzdGluZyAxLCAyLCAzIQ==",
+		Metadata: b64.StdEncoding.EncodeToString([]byte("Testing 1, 2, 3!")),
 		Deposit:  "5000photon",
 	}, "", " ")
 

@@ -9,6 +9,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	db "github.com/tendermint/tm-db"
 
+	gaia "github.com/cosmos/gaia/v7/app"
 	gaia "github.com/cosmos/gaia/v8/app"
 )
 
@@ -35,4 +36,10 @@ func TestGaiaApp_BlockedModuleAccountAddrs(t *testing.T) {
 	// TODO: Blocked on updating to v0.46.x
 	// require.NotContains(t, blockedAddrs, authtypes.NewModuleAddress(grouptypes.ModuleName).String())
 	require.NotContains(t, blockedAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
+}
+
+func TestGaia_ShouldFail(t *testing.T) {
+	flag := false
+
+	require.Equal(t, flag, true)
 }

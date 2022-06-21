@@ -9,6 +9,14 @@ export PATH=$PATH:~/go/bin
 # Install Gaia.
 make install
 
+# NOTE: ABOVE YOU CAN USE ALTERNATIVE DATABASES, HERE ARE THE EXACT COMMANDS
+# go install -ldflags '-w -s -X github.com/cosmos/cosmos-sdk/types.DBBackend=rocksdb' -tags rocksdb ./...
+# go install -ldflags '-w -s -X github.com/cosmos/cosmos-sdk/types.DBBackend=badgerdb' -tags badgerdb ./...
+# go install -ldflags '-w -s -X github.com/cosmos/cosmos-sdk/types.DBBackend=boltdb' -tags boltdb ./...
+# Tendermint team is currently focusing efforts on badgerdb.
+
+
+
 # Initialize chain.
 gaiad init test --chain-id cosmoshub-4
 

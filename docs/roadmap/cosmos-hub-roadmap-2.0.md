@@ -32,7 +32,7 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Transfer ATOM, ETH, ERC-20, and other Cosmos tokens between Ethereum and the Gravity Bridge Chain and by extension all IBC connected chains.
   - Fee and reward model hosted across Cosmos and Ethereum
 
-## v7-Theta Upgrade (expected Q1 2022)
+## v7-Theta Upgrade (Completed March 25, 2022)
 - Gaia v7.0.x
 - Cosmos SDK v0.45
   - Minimal update with small fixes

@@ -26,9 +26,9 @@ jobs:
     steps:
       - uses: actions/setup-go@v3.0.0
         with:
-          go-version: 1.17
+          go-version: 1.18
       - name: Install runsim
-        run: export GO111MODULE="on" && go get github.com/cosmos/tools/cmd/runsim@v1.0.0
+        run: go install github.com/cosmos/tools/cmd/runsim@v1.0.0
       - uses: actions/cache@v3.0.4
         with:
           path: ~/go/bin
@@ -39,8 +39,7 @@ jobs:
     needs: build
     steps:
       - name: install runsim
-        run: |
-          export GO111MODULE="on" && go get github.com/cosmos/tools/cmd/runsim@v1.0.0
+        run: go install github.com/cosmos/tools/cmd/runsim@v1.0.0
       - uses: actions/cache@v3.0.4
         with:
           path: ~/go/bin

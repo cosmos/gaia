@@ -7,12 +7,13 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/ory/dockertest/v3/docker"
 )
 
@@ -173,89 +174,280 @@ func (s *IntegrationTestSuite) sendIBC(srcChainID, dstChainID, recipient string,
 	s.T().Log("successfully sent IBC tokens")
 }
 
-func queryGaiaTx(endpoint, txHash string) error {
-	resp, err := http.Get(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs/%s", endpoint, txHash))
-	if err != nil {
-		return fmt.Errorf("failed to execute HTTP request: %w", err)
+func (s *IntegrationTestSuite) execDistributionFundCommunityPool(c *chain, valIdx int, endpoint string, from, amt, fees string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx distribution fund-community-pool on chain %s", c.id)
+
+	gaiaCommand := []string{
+		"gaiad",
+		"tx",
+		"distribution",
+		"fund-community-pool",
+		amt,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, from),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, fees),
+		"--keyring-backend=test",
+		"--output=json",
+		"-y",
 	}
 
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		return fmt.Errorf("tx query returned non-200 status: %d", resp.StatusCode)
-	}
-
-	var result map[string]interface{}
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return fmt.Errorf("failed to read response body: %w", err)
-	}
-
-	txResp := result["tx_response"].(map[string]interface{})
-	if v := txResp["code"]; v.(float64) != 0 {
-		return fmt.Errorf("tx %s failed with status code %v", txHash, v)
-	}
-
-	return nil
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
+	s.T().Logf("Successfully funded community pool")
 }
 
-func getSpecificBalance(endpoint, addr, denom string) (amt sdk.Coin, err error) {
-	balances, err := queryGaiaAllBalances(endpoint, addr)
-	if err != nil {
-		return amt, err
+func (s *IntegrationTestSuite) execGovSubmitLegacyGovProposal(c *chain, valIdx int, endpoint string, submitterAddr string, govProposalPath string, fees string, govProposalSubType string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx gov submit-legacy-proposal on chain %s", c.id)
+
+	gaiaCommand := []string{
+		"gaiad",
+		"tx",
+		"gov",
+		"submit-legacy-proposal",
+		govProposalSubType,
+		govProposalPath,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, submitterAddr),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		"--keyring-backend=test",
+		"--output=json",
+		"-y",
 	}
-	for _, c := range balances {
-		if strings.Contains(c.Denom, denom) {
-			amt = c
-			break
-		}
-	}
-	return
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
+	s.T().Logf("Successfully submitted legacy proposal")
 }
 
-func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) {
-	resp, err := http.Get(fmt.Sprintf("%s/cosmos/bank/v1beta1/balances/%s", endpoint, addr))
-	if err != nil {
-		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
+func (s *IntegrationTestSuite) execGovDepositProposal(c *chain, valIdx int, endpoint string, submitterAddr string, proposalId int, amount string, fees string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx gov deposit on chain %s", c.id)
+
+	gaiaCommand := []string{
+		"gaiad",
+		"tx",
+		"gov",
+		"deposit",
+		fmt.Sprintf("%d", proposalId),
+		amount,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, submitterAddr),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		"--keyring-backend=test",
+		"--output=json",
+		"-y",
 	}
 
-	defer resp.Body.Close()
-
-	bz, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	var balancesResp banktypes.QueryAllBalancesResponse
-	if err := cdc.UnmarshalJSON(bz, &balancesResp); err != nil {
-		return nil, err
-	}
-
-	return balancesResp.Balances, nil
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
+	s.T().Logf("Successfully deposited proposal %d", proposalId)
 }
 
-func queryGaiaDenomBalance(endpoint, addr, denom string) (sdk.Coin, error) {
-	var zeroCoin sdk.Coin
+func (s *IntegrationTestSuite) execGovVoteProposal(c *chain, valIdx int, endpoint string, submitterAddr string, proposalId int, vote string, fees string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
 
-	path := fmt.Sprintf(
-		"%s/cosmos/bank/v1beta1/balances/%s/by_denom?denom=%s",
-		endpoint, addr, denom,
+	s.T().Logf("Executing gaiad tx gov vote on chain %s", c.id)
+
+	gaiaCommand := []string{
+		"gaiad",
+		"tx",
+		"gov",
+		"vote",
+		fmt.Sprintf("%d", proposalId),
+		vote,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, submitterAddr),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		"--keyring-backend=test",
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
+	s.T().Logf("Successfully voted on proposal %d", proposalId)
+}
+
+func (s *IntegrationTestSuite) execGovWeightedVoteProposal(c *chain, valIdx int, endpoint string, submitterAddr string, proposalId int, vote string, fees string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx gov vote on chain %s", c.id)
+
+	gaiaCommand := []string{
+		"gaiad",
+		"tx",
+		"gov",
+		"weighted-vote",
+		fmt.Sprintf("%d", proposalId),
+		vote,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, submitterAddr),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		"--keyring-backend=test",
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
+	s.T().Logf("Successfully voted on proposal %d", proposalId)
+}
+
+func (s *IntegrationTestSuite) execGovSubmitProposal(c *chain, valIdx int, endpoint string, submitterAddr string, govProposalPath string, fees string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx gov submit-proposal on chain %s", c.id)
+
+	gaiaCommand := []string{
+		"gaiad",
+		"tx",
+		"gov",
+		"submit-proposal",
+		govProposalPath,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, submitterAddr),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		"--keyring-backend=test",
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
+	s.T().Logf("Successfully submitted proposal %s", govProposalPath)
+}
+
+func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chain, gaiaCommand []string, valIdx int, endpoint string) {
+	var (
+		outBuf bytes.Buffer
+		errBuf bytes.Buffer
+		txResp sdk.TxResponse
 	)
+
+	s.Require().Eventually(
+		func() bool {
+			exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
+				Context:      ctx,
+				AttachStdout: true,
+				AttachStderr: true,
+				Container:    s.valResources[c.id][valIdx].Container.ID,
+				User:         "root",
+				Cmd:          gaiaCommand,
+			})
+			s.Require().NoError(err)
+
+			err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
+				Context:      ctx,
+				Detach:       false,
+				OutputStream: &outBuf,
+				ErrorStream:  &errBuf,
+			})
+			s.Require().NoError(err)
+
+			s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
+			return strings.Contains(txResp.String(), "code: 0")
+		},
+		5*time.Second,
+		time.Second,
+		"tx returned a non-zero code; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
+	)
+	s.Require().Eventually(
+		func() bool {
+			return queryGaiaTx(endpoint, txResp.TxHash) == nil
+		},
+		time.Minute,
+		5*time.Second,
+		"stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
+	)
+}
+
+func (s *IntegrationTestSuite) queryGovProposal(endpoint string, proposalId uint64) (govv1beta1.QueryProposalResponse, error) {
+	var emptyProp govv1beta1.QueryProposalResponse
+
+	path := fmt.Sprintf("%s/cosmos/gov/v1beta1/proposals/%d", endpoint, proposalId)
 	resp, err := http.Get(path)
+
 	if err != nil {
-		return zeroCoin, fmt.Errorf("failed to execute HTTP request: %w", err)
+		s.T().Logf("This is the err: %s", err.Error())
 	}
 
+	if err != nil {
+		return emptyProp, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
 	defer resp.Body.Close()
 
-	bz, err := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+
 	if err != nil {
-		return zeroCoin, err
+		s.T().Logf("This is the err: %s", err.Error())
+	}
+	if err != nil {
+
+		return emptyProp, err
+	}
+	s.T().Logf("This is the body: %s", body)
+	var govProposalResp govv1beta1.QueryProposalResponse
+
+	if err := cdc.UnmarshalJSON(body, &govProposalResp); err != nil {
+		return emptyProp, err
+	}
+	s.T().Logf("This is the gov response: %s", govProposalResp)
+
+	return govProposalResp, nil
+}
+
+func (s *IntegrationTestSuite) getLatestBlockHeight(c *chain, valIdx int) int {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	type status struct {
+		LatestHeight string `json:"latest_block_height"`
 	}
 
-	var balanceResp banktypes.QueryBalanceResponse
-	if err := cdc.UnmarshalJSON(bz, &balanceResp); err != nil {
-		return zeroCoin, err
+	type syncInfo struct {
+		SyncInfo status `json:"SyncInfo"`
 	}
 
-	return *balanceResp.Balance, nil
+	var (
+		outBuf        bytes.Buffer
+		errBuf        bytes.Buffer
+		block         syncInfo
+		currentHeight int
+	)
+
+	s.Require().Eventually(
+		func() bool {
+			exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
+				Context:      ctx,
+				AttachStdout: true,
+				AttachStderr: true,
+				Container:    s.valResources[c.id][valIdx].Container.ID,
+				User:         "root",
+				Cmd:          []string{"gaiad", "status"},
+			})
+			s.Require().NoError(err)
+
+			err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
+				Context:      ctx,
+				Detach:       false,
+				OutputStream: &outBuf,
+				ErrorStream:  &errBuf,
+			})
+			s.Require().NoError(err)
+			s.Require().NoError(json.Unmarshal(errBuf.Bytes(), &block))
+
+			currentHeight, err = strconv.Atoi(block.SyncInfo.LatestHeight)
+			s.Require().NoError(err)
+			return currentHeight > 0
+		},
+		5*time.Second,
+		time.Second,
+		"Get node status returned a non-zero code; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
+	)
+	return currentHeight
 }

@@ -44,7 +44,7 @@ The upgrades aim to add features such as liquidity, economic security, usability
     - Arbitrary messages are able to be submitted from the "Controller" blockchain to the "Host" blockchain to be executed on behalf of the Interchain Account.
     - Uses ordered IBC channels, one per account.
 
-## v8-Rho Upgrade (expected Q2 2022)
+## v8-Rho Upgrade (expected H2 2022)
 - Gaia v8.0.x
 - Cosmos SDK v0.46
   - Groups module:
@@ -71,7 +71,7 @@ The upgrades aim to add features such as liquidity, economic security, usability
 - Bech32 Prefix forwarding (stretch-goal)
   - https://github.com/osmosis-labs/bech32-ibc
 
-## v9-Lambda Upgrade (expected Q3 2022)
+## v9-Lambda Upgrade (expected H2 2022)
 - Gaia v9.0.x
 - Interchain Security v1 - Required Participation of Provider Chain Validators
   - The Cosmos solution to shared security that uses IBC Cross Chain Validation (CCV) to relay validator set composition from a Provider Chain (Cosmos Hub) to a Consumer Chain. This validator set is in charge of producing blocks on both networks using separate nodes. Misbehavior on the Consumer Chain results in slashing Provider Chain staking tokens (ATOM).

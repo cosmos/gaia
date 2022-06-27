@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"context"
 	"encoding/json"
 	"testing"
 	"time"
@@ -9,6 +10,7 @@ import (
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	"github.com/cosmos/cosmos-sdk/server/types"
+	"github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/testutil/mock"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -22,7 +24,6 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	gaiaapp "github.com/cosmos/gaia/v8/app"
-	"github.com/cosmos/gaia/v8/app/params"
 )
 
 // SimAppChainID hardcoded chainID for simulation
@@ -49,6 +50,18 @@ var DefaultConsensusParams = &tmproto.ConsensusParams{
 	},
 }
 
+// todo: check SetupOptions is not used.
+// SetupOptions defines arguments that are passed into GaiaApp constructor.
+type SetupOptions struct {
+	Logger             log.Logger
+	DB                 *dbm.MemDB
+	InvCheckPeriod     uint
+	HomePath           string
+	SkipUpgradeHeights map[int64]bool
+	EncConfig          params.EncodingConfig
+	AppOpts            types.AppOptions
+}
+
 type EmptyAppOptions struct{}
 
 func (EmptyAppOptions) Get(o string) interface{} { return nil }
@@ -58,7 +71,7 @@ func Setup(t *testing.T, isCheckTx bool, invCheckPeriod uint) *gaiaapp.GaiaApp {
 
 	privVal := mock.NewPV()
 	//todo check context here
-	pubKey, err := privVal.GetPubKey(nil)
+	pubKey, err := privVal.GetPubKey(context.TODO())
 	require.NoError(t, err)
 	// create validator set with single validator
 	validator := tmtypes.NewValidator(pubKey, 1)
@@ -76,21 +89,10 @@ func Setup(t *testing.T, isCheckTx bool, invCheckPeriod uint) *gaiaapp.GaiaApp {
 	return app
 }
 
-// SetupOptions defines arguments that are passed into `Simapp` constructor.
-type SetupOptions struct {
-	Logger             log.Logger
-	DB                 *dbm.MemDB
-	InvCheckPeriod     uint
-	HomePath           string
-	SkipUpgradeHeights map[int64]bool
-	EncConfig          params.EncodingConfig
-	AppOpts            types.AppOptions
-}
-
-// SetupWithGenesisValSet initializes a new SimApp with a validator set and genesis accounts
+// SetupWithGenesisValSet initializes a new GaiaApp with a validator set and genesis accounts
 // that also act as delegators. For simplicity, each validator is bonded with a delegation
-// of one consensus engine unit in the default token of the simapp from first genesis
-// account. A Nop logger is set in SimApp.
+// of one consensus engine unit in the default token of the GaiaApp from first genesis
+// account. A Nop logger is set in GaiaApp.
 func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount, balances ...banktypes.Balance) *gaiaapp.GaiaApp {
 	t.Helper()
 

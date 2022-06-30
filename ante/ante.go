@@ -48,6 +48,8 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(opts.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
+		NewBypassMinFeeDecorator(opts.BypassMinFeeMsgTypes),
+		// if opts.TxFeeCheck is nil,  it is the default fee check
 		ante.NewDeductFeeDecorator(opts.AccountKeeper, opts.BankKeeper, opts.FeegrantKeeper, opts.TxFeeChecker),
 		globalfee.NewGlobalMinimumChainFeeDecorator(opts.GlobalFeeSubspace), // after local min fee check
 		ante.NewSetPubKeyDecorator(opts.AccountKeeper),                      // SetPubKeyDecorator must be called before all signature verification decorators
@@ -56,7 +58,6 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewSigVerificationDecorator(opts.AccountKeeper, opts.SignModeHandler),
 		ante.NewIncrementSequenceDecorator(opts.AccountKeeper),
 		ibcante.NewAnteDecorator(opts.IBCkeeper),
-		//todo: add back bypass min fee
 	}
 
 	return sdk.ChainAnteDecorators(anteDecorators...), nil

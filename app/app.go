@@ -679,7 +679,7 @@ func NewGaiaApp(
 	var bypassMinFeeMsgTypes []string
 	bypassMinFeeConfig := appOpts.Get(gaiaappparams.BypassMinFeeMsgTypesKey)
 	if bypassMinFeeConfig != nil {
-		bypassMinFeeMsgTypes = cast.ToStringSlice(appOpts.Get(gaiaappparams.BypassMinFeeMsgTypesKey))
+		bypassMinFeeMsgTypes = cast.ToStringSlice(bypassMinFeeConfig)
 	} else {
 		bypassMinFeeMsgTypes = GetDefaultBypassFeeMessages()
 	}

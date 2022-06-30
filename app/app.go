@@ -21,6 +21,7 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata_pulsar"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -96,10 +97,10 @@ import (
 	ibcclient "github.com/cosmos/ibc-go/v3/modules/core/02-client"
 	ibcclientclient "github.com/cosmos/ibc-go/v3/modules/core/02-client/client"
 	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 	porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
 	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
-
 	"github.com/gorilla/mux"
 	"github.com/gravity-devs/liquidity/v2/x/liquidity"
 	liquiditykeeper "github.com/gravity-devs/liquidity/v2/x/liquidity/keeper"
@@ -675,6 +676,14 @@ func NewGaiaApp(
 	app.MountTransientStores(tkeys)
 	app.MountMemoryStores(memKeys)
 
+	var bypassMinFeeMsgTypes []string
+	bypassMinFeeConfig := appOpts.Get(gaiaappparams.BypassMinFeeMsgTypesKey)
+	if bypassMinFeeConfig != nil {
+		bypassMinFeeMsgTypes = cast.ToStringSlice(bypassMinFeeConfig)
+	} else {
+		bypassMinFeeMsgTypes = GetDefaultBypassFeeMessages()
+	}
+
 	anteHandler, err := gaiaante.NewAnteHandler(
 		gaiaante.HandlerOptions{
 			HandlerOptions: ante.HandlerOptions{
@@ -683,9 +692,21 @@ func NewGaiaApp(
 				FeegrantKeeper:  app.FeeGrantKeeper,
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+				// TxFeeChecker is not the default fee check, it will not check if the fee meets min_gas_price, this is checked in NewFeeWithBypassDecorator already.
+				TxFeeChecker: func(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64, error) {
+					feeTx, ok := tx.(sdk.FeeTx)
+					if !ok {
+						return nil, 0, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
+					}
+
+					feeCoins := feeTx.GetFee()
+					priority := gaiaante.GetTxPriority(feeCoins)
+
+					return feeCoins, priority, nil
+				},
 			},
 			IBCkeeper:            app.IBCKeeper,
-			BypassMinFeeMsgTypes: cast.ToStringSlice(appOpts.Get(gaiaappparams.BypassMinFeeMsgTypesKey)),
+			BypassMinFeeMsgTypes: bypassMinFeeMsgTypes,
 		},
 	)
 	if err != nil {
@@ -770,6 +791,14 @@ func NewGaiaApp(
 	app.ScopedTransferKeeper = scopedTransferKeeper
 
 	return app
+}
+
+func GetDefaultBypassFeeMessages() []string {
+	return []string{
+		sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),
+		sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
+		sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
+	}
 }
 
 // Name returns the name of the App

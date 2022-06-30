@@ -8,7 +8,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/cosmos/gaia/v8/x/globalfee"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
@@ -84,6 +83,7 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	"github.com/cosmos/gaia/v8/x/globalfee"
 
 	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
 	icacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
@@ -711,9 +711,9 @@ func NewGaiaApp(
 					return feeCoins, priority, nil
 				},
 			},
-			IBCkeeper: app.IBCKeeper,
+			IBCkeeper:            app.IBCKeeper,
 			BypassMinFeeMsgTypes: bypassMinFeeMsgTypes,
-			GlobalFeeSubspace: app.GetSubspace(globalfee.ModuleName),
+			GlobalFeeSubspace:    app.GetSubspace(globalfee.ModuleName),
 		},
 	)
 	if err != nil {

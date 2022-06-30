@@ -22,7 +22,7 @@ type BypassMinFeeDecorator struct {
 	BypassMinFeeMsgTypes []string
 }
 
-func NewFeeWithBypassDecorator(bypassMsgTypes []string) FeeWithBypassDecorator {
+func NewBypassMinFeeDecorator(bypassMsgTypes []string) BypassMinFeeDecorator {
 	return FeeWithBypassDecorator{
 		BypassMinFeeMsgTypes: bypassMsgTypes,
 	}

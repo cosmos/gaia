@@ -18,7 +18,7 @@ const maxBypassMinFeeMsgGasUsage = uint64(200_000)
 // CheckTx, then call next AnteHandler.
 //
 // CONTRACT: Tx must implement FeeTx to use FeeWithBypassDecorator
-type FeeWithBypassDecorator struct {
+type BypassMinFeeDecorator struct {
 	BypassMinFeeMsgTypes []string
 }
 

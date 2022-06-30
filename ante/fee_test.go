@@ -14,7 +14,7 @@ func (s *IntegrationTestSuite) TestMempoolFeeDecorator() {
 	s.SetupTest()
 	s.txBuilder = s.clientCtx.TxConfig.NewTxBuilder()
 
-	mfd := ante.NewFeeWithBypassDecorator([]string{
+	mfd := ante.NewBypassMinFeeDecorator([]string{
 		sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),
 		sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
 		sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),

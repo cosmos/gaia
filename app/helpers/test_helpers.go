@@ -9,8 +9,6 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
-	"github.com/cosmos/cosmos-sdk/server/types"
-	"github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/testutil/mock"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -50,18 +48,6 @@ var DefaultConsensusParams = &tmproto.ConsensusParams{
 	},
 }
 
-// todo: check SetupOptions is not used.
-// SetupOptions defines arguments that are passed into GaiaApp constructor.
-type SetupOptions struct {
-	Logger             log.Logger
-	DB                 *dbm.MemDB
-	InvCheckPeriod     uint
-	HomePath           string
-	SkipUpgradeHeights map[int64]bool
-	EncConfig          params.EncodingConfig
-	AppOpts            types.AppOptions
-}
-
 type EmptyAppOptions struct{}
 
 func (EmptyAppOptions) Get(o string) interface{} { return nil }
@@ -70,7 +56,6 @@ func Setup(t *testing.T, isCheckTx bool, invCheckPeriod uint) *gaiaapp.GaiaApp {
 	t.Helper()
 
 	privVal := mock.NewPV()
-	//todo check context here
 	pubKey, err := privVal.GetPubKey(context.TODO())
 	require.NoError(t, err)
 	// create validator set with single validator

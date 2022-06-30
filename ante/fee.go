@@ -23,12 +23,12 @@ type BypassMinFeeDecorator struct {
 }
 
 func NewBypassMinFeeDecorator(bypassMsgTypes []string) BypassMinFeeDecorator {
-	return FeeWithBypassDecorator{
+	return BypassMinFeeDecorator{
 		BypassMinFeeMsgTypes: bypassMsgTypes,
 	}
 }
 
-func (mfd FeeWithBypassDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
+func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
 	feeTx, ok := tx.(sdk.FeeTx)
 	if !ok {
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
@@ -64,7 +64,7 @@ func (mfd FeeWithBypassDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulat
 	return next(ctx, tx, simulate)
 }
 
-func (mfd FeeWithBypassDecorator) bypassMinFeeMsgs(msgs []sdk.Msg) bool {
+func (mfd BypassMinFeeDecorator) bypassMinFeeMsgs(msgs []sdk.Msg) bool {
 	for _, msg := range msgs {
 		if tmstrings.StringInSlice(sdk.MsgTypeURL(msg), mfd.BypassMinFeeMsgTypes) {
 			continue

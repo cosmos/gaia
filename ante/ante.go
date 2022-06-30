@@ -43,7 +43,7 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(opts.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
-		NewFeeWithBypassDecorator(opts.BypassMinFeeMsgTypes),
+		NewBypassMinFeeDecorator(opts.BypassMinFeeMsgTypes),
 		// if opts.TxFeeCheck is nil,  it is the default fee check
 		ante.NewDeductFeeDecorator(opts.AccountKeeper, opts.BankKeeper, opts.FeegrantKeeper, opts.TxFeeChecker),
 		// SetPubKeyDecorator must be called before all signature verification decorators

@@ -36,6 +36,8 @@ docker_containers=($(docker ps -q -f name=umeed --format='{{.Names}}'))
 
 while [ ${CNT} -lt $ITER ]; do
   curr_block=$(curl -s $NODEADDR:26657/status | jq -r '.result.sync_info.latest_block_height')
+  
+  tail liveness.out
 
   if [ ! -z ${curr_block} ]; then
     echo "Current block: ${curr_block}"

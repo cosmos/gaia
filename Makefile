@@ -222,11 +222,6 @@ format:
 ###############################################################################
 
 start-localnet-ci:
-	go env
-	ls ${GOPATH}
-	ls ${GOPATH}/bin
-	ls ${GOPATH}/pkg
-	ls build
 	./build/gaiad init liveness --chain-id liveness --home ~/.gaiad-liveness
 	./build/gaiad config chain-id liveness --home ~/.gaiad-liveness
 	./build/gaiad config keyring-backend test --home ~/.gaiad-liveness

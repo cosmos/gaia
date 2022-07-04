@@ -95,10 +95,10 @@ jobs:
         if: env.GIT_DIFF
       - name: Start Local Network
         run: |
-          make start-localnet-ci > liveness.out 2>&1 &
+          make start-localnet-ci
         if: env.GIT_DIFF
       - name: Test Local Network Liveness
         run: |
-          sleep 3m
+          sleep 1m
           ./contrib/scripts/test_localnet_liveness.sh 100 5 50 localhost
         if: env.GIT_DIFF

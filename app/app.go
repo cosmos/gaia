@@ -761,7 +761,7 @@ func NewGaiaApp(
 			ctx.Logger().Info("start to init interchainaccount module...")
 			// initialize ICS27 module
 			icaModule.InitModule(ctx, controllerParams, hostParams)
-			ctx.Logger().Info("start to run module migrations...")
+			ctx.Logger().Info("Start to run module migrations...")
 
 			return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 		},

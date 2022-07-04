@@ -78,7 +78,7 @@ func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 				}
 
 				if !feeCoins.IsAnyGTE(requiredGlobalFees) {
-					return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "got: %s required: %s", feeTx.GetFee(), requiredGlobalFees)
+					return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins, requiredGlobalFees)
 				}
 			}
 		}
@@ -97,7 +97,7 @@ func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 			}
 
 			// if passed global fee checks, but the denom is not in min_gas_price, skip the min gas price check
-			if !feeCoins.DenomsSubsetOf(requiredFees) {
+			if !feeCoins.DenomsSubsetOf(requiredFees.Sort()) {
 				return next(ctx, tx, simulate)
 			}
 

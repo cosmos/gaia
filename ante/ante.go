@@ -50,7 +50,7 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		NewBypassMinFeeDecorator(opts.BypassMinFeeMsgTypes, opts.GlobalFeeSubspace),
 		// if opts.TxFeeCheck is nil,  it is the default fee check
 		ante.NewDeductFeeDecorator(opts.AccountKeeper, opts.BankKeeper, opts.FeegrantKeeper, opts.TxFeeChecker),
-		ante.NewSetPubKeyDecorator(opts.AccountKeeper),                      // SetPubKeyDecorator must be called before all signature verification decorators
+		ante.NewSetPubKeyDecorator(opts.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewValidateSigCountDecorator(opts.AccountKeeper),
 		ante.NewSigGasConsumeDecorator(opts.AccountKeeper, sigGasConsumer),
 		ante.NewSigVerificationDecorator(opts.AccountKeeper, opts.SignModeHandler),

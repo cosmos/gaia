@@ -78,7 +78,6 @@ func (s *IntegrationTestSuite) TestGlobalMinimumChainFeeAnteHandler() {
             txCheck:         true,
             expErr:          false,
         },
-        
         "nonempty min_gas_price, empty global fee, fee lower than min_gas_price": {
             minGasPrice:     minGasPrice, // 0.002
             globalFeeParams: globalfeeParamsEmpty,

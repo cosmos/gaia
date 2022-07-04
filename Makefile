@@ -230,7 +230,7 @@ start-localnet-ci:
 	gaiad gentx val 1000000000stake --home ~/.gaiad-liveness --chain-id liveness
 	gaiad collect-gentxs --home ~/.gaiad-liveness 
 	sed -i '.bak' 's/minimum-gas-prices = ""/minimum-gas-prices = "0uatom"/' ~/.gaiad-liveness/config/app.toml
-	gaiad start --home ~/.gaiad-liveness
+	gaiad start --home ~/.gaiad-liveness --mode validator
 
 .PHONY: start-localnet-ci
 

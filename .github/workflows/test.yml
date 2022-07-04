@@ -99,6 +99,5 @@ jobs:
         if: env.GIT_DIFF
       - name: Test Local Network Liveness
         run: |
-          sleep 1m
           ./contrib/scripts/test_localnet_liveness.sh 100 5 50 localhost
         if: env.GIT_DIFF

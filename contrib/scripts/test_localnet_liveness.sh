@@ -30,6 +30,8 @@ if [ -z "$4" ]; then
   exit 1
 fi
 
+echo "running 'sh test_localnet_liveness.sh iterations=$ITER sleep=$SLEEP num-blocks=$NUMBLOCKS node-address=$NODEADDR'"
+
 docker_containers=($(docker ps -q -f name=umeed --format='{{.Names}}'))
 
 while [ ${CNT} -lt $ITER ]; do

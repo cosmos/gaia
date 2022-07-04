@@ -222,6 +222,8 @@ format:
 ###############################################################################
 
 start-localnet-ci:
+	ls -alh
+	which go
 	gaiad init liveness --chain-id liveness --home ~/.gaiad-liveness
 	gaiad config chain-id liveness --home ~/.gaiad-liveness
 	gaiad config keyring-backend test --home ~/.gaiad-liveness

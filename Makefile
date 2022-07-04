@@ -223,17 +223,15 @@ format:
 
 start-localnet-ci:
 	go env
-	ls -alh build
-	which go
-	gaiad init liveness --chain-id liveness --home ~/.gaiad-liveness
-	gaiad config chain-id liveness --home ~/.gaiad-liveness
-	gaiad config keyring-backend test --home ~/.gaiad-liveness
-	gaiad keys add val --home ~/.gaiad-liveness
-	gaiad add-genesis-account val 10000000000000000000000000stake --home ~/.gaiad-liveness --keyring-backend test
-	gaiad gentx val 1000000000stake --home ~/.gaiad-liveness --chain-id liveness
-	gaiad collect-gentxs --home ~/.gaiad-liveness 
+	${GOPATH}/bin/gaiad init liveness --chain-id liveness --home ~/.gaiad-liveness
+	${GOPATH}/bin/gaiad config chain-id liveness --home ~/.gaiad-liveness
+	${GOPATH}/bin/gaiad config keyring-backend test --home ~/.gaiad-liveness
+	${GOPATH}/bin/gaiad keys add val --home ~/.gaiad-liveness
+	${GOPATH}/bin/gaiad add-genesis-account val 10000000000000000000000000stake --home ~/.gaiad-liveness --keyring-backend test
+	${GOPATH}/bin/gaiad gentx val 1000000000stake --home ~/.gaiad-liveness --chain-id liveness
+	${GOPATH}/bin/gaiad collect-gentxs --home ~/.gaiad-liveness 
 	sed -i '.bak' 's/minimum-gas-prices = ""/minimum-gas-prices = "0uatom"/' ~/.gaiad-liveness/config/app.toml
-	gaiad start --home ~/.gaiad-liveness --mode validator
+	${GOPATH}/bin/gaiad start --home ~/.gaiad-liveness --mode validator
 
 .PHONY: start-localnet-ci
 

@@ -222,7 +222,14 @@ format:
 ###############################################################################
 
 start-localnet-ci:
-	@ignite chain serve --reset-once -v -c ./ignite.ci.yml
+	gaiad init liveness --chain-id liveness --home ~/.gaiad-liveness
+	gaiad config chain-id liveness --home ~/.gaiad-liveness
+	gaiad config keyring-backend test --home ~/.gaiad-liveness
+	gaiad keys add val --home ~/.gaiad-liveness
+	gaiad add-genesis-account val 10000000000000000000000000stake --home ~/.gaiad-liveness --keyring-backend test
+	gaiad gentx val 1000000000stake --home ~/.gaiad-liveness --chain-id liveness
+	gaiad collect-gentxs --home ~/.gaiad-liveness 
+	gaiad start --home ~/.gaiad-liveness
 
 .PHONY: start-localnet-ci
 

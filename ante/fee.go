@@ -52,8 +52,8 @@ func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 	if !ok {
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
 	}
-
-	feeCoins := feeTx.GetFee()
+	// todo check getFee only get non zero fees ?
+	feeCoins := feeTx.GetFee().Sort()
 	gas := feeTx.GetGas()
 	msgs := feeTx.GetMsgs()
 
@@ -66,6 +66,7 @@ func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 		if mfd.GlobalMinFee.Has(ctx, types.ParamStoreKeyMinGasPrices) {
 			var globalMinGasPrices sdk.DecCoins
 			mfd.GlobalMinFee.Get(ctx, types.ParamStoreKeyMinGasPrices, &globalMinGasPrices)
+			//one global fee is not zero
 			if !globalMinGasPrices.IsZero() {
 				requiredGlobalFees := make(sdk.Coins, len(globalMinGasPrices))
 				// Determine the required fees by multiplying each required minimum gas
@@ -76,8 +77,14 @@ func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 					amount := fee.Ceil().RoundInt()
 					requiredGlobalFees[i] = sdk.NewCoin(gp.Denom, amount)
 				}
-
-				if !feeCoins.IsAnyGTE(requiredGlobalFees) {
+				
+				// if fees contains any denom that is not in globalfee, return err.
+				// todo check DenomsSubsetOf: accoring to denomssubsetof  1stake is not subset of 0stake
+					if !feeCoins.DenomsSubsetOf(requiredGlobalFees.Sort()){
+						return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fees %s is not a subset of required global fees %s", feeCoins, requiredGlobalFees)
+					}
+					
+				if !feeCoins.IsAnyGTE(requiredGlobalFees.Sort()) {
 					return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins, requiredGlobalFees)
 				}
 			}
@@ -96,7 +103,7 @@ func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 				requiredFees[i] = sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt())
 			}
 
-			// if passed global fee checks, but the denom is not in min_gas_price, skip the min gas price check
+			// if passed global fee checks, but the denom is not in min_gas_price, skip the min gas price check, DenomsSubsetOf() will also skip requiredFees amt is 0: 1stake is not subset of 0stake
 			if !feeCoins.DenomsSubsetOf(requiredFees.Sort()) {
 				return next(ctx, tx, simulate)
 			}

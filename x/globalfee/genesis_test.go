@@ -32,9 +32,9 @@ func TestValidateGenesis(t *testing.T) {
 		"minimum not set": {
 			src: `{"params":{}}`,
 		},
-		"zero amount not allowed": {
+		"zero amount allowed": {
 			src:    `{"params":{"minimum_gas_prices":[{"denom":"ALX", "amount":"0"}]}}`,
-			expErr: true,
+			expErr: false,
 		},
 		"duplicate denoms not allowed": {
 			src:    `{"params":{"minimum_gas_prices":[{"denom":"ALX", "amount":"1"},{"denom":"ALX", "amount":"2"}]}}`,
@@ -43,6 +43,15 @@ func TestValidateGenesis(t *testing.T) {
 		"negative amounts not allowed": {
 			src:    `{"params":{"minimum_gas_prices":[{"denom":"ALX", "amount":"-1"}]}}`,
 			expErr: true,
+		},
+		//todo check why want to be sorted.
+		"denom must be sorted": {
+			src:    `{"params":{"minimum_gas_prices":[{"denom":"ZLX", "amount":"1"},{"denom":"ALX", "amount":"2"}]}}`,
+			expErr: true,
+		},
+		"sorted denoms is allowed": {
+			src:    `{"params":{"minimum_gas_prices":[{"denom":"ALX", "amount":"1"},{"denom":"ZLX", "amount":"2"}]}}`,
+			expErr: false,
 		},
 	}
 	for name, spec := range specs {

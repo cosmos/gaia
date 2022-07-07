@@ -27,6 +27,7 @@ func (p Params) ValidateBasic() error {
 
 // ParamSetPairs returns the parameter set pairs.
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
+    //todo check why the feecheck require sorted coins, and check the this line 's influence on genesis
     p.MinimumGasPrices = p.MinimumGasPrices.Sort()
     return paramtypes.ParamSetPairs{
         paramtypes.NewParamSetPair(

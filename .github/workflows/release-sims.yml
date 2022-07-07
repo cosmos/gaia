@@ -26,35 +26,23 @@ jobs:
     steps:
       - uses: actions/setup-go@v2.1.5
         with:
-          go-version: 1.17
+          go-version: 1.18
       - name: Install runsim
-        run: export GO111MODULE="on" && go install github.com/cosmos/tools/cmd/runsim@v1.0.0
-      - uses: actions/cache@v2.1.7
-        with:
-          path: ~/go/bin
-          key: ${{ runner.os }}-go-runsim-binary
+        run: go install github.com/cosmos/tools/cmd/runsim@v1.0.0
 
   install-runsim:
     runs-on: ubuntu-latest
     needs: build
     steps:
       - name: install runsim
-        run: |
-          export GO111MODULE="on" && go install github.com/cosmos/tools/cmd/runsim@v1.0.0
-      - uses: actions/cache@v2.1.7
-        with:
-          path: ~/go/bin
-          key: ${{ runner.os }}-go-runsim-binary
+        run: go install github.com/cosmos/tools/cmd/runsim@v1.0.0
+
 
   test-sim-multi-seed-long:
     runs-on: ubuntu-latest
     needs: [build, install-runsim]
     steps:
       - uses: actions/checkout@v2.4.0
-      - uses: actions/cache@v2.1.7
-        with:
-          path: ~/go/bin
-          key: ${{ runner.os }}-go-runsim-binary
       - name: test-sim-multi-seed-long
         run: |
           make test-sim-multi-seed-long

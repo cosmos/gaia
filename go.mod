@@ -291,6 +291,7 @@ require (
 
 replace (
 	github.com/cosmos/ibc-go/v3 => github.com/cosmos/ibc-go/v3 v3.0.0-alpha1.0.20220530074104-c7c115244bad
+	github.com/cosmos/ledger-go => github.com/empowerchain/ledger-go v0.9.3-0.20220531092147-dab46ea76974
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	github.com/zondax/hid => github.com/zondax/hid v0.9.0
 )

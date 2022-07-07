@@ -8,6 +8,7 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	tmstrings "github.com/tendermint/tendermint/libs/strings"
 
+	"github.com/cosmos/gaia/v8/x/globalfee"
 	"github.com/cosmos/gaia/v8/x/globalfee/types"
 )
 
@@ -26,15 +27,9 @@ var defaultZeroGlobalFee = []sdk.DecCoin{sdk.NewDecCoinFromDec("uatom", sdk.NewD
 
 var _ sdk.AnteDecorator = BypassMinFeeDecorator{}
 
-// paramSource is a read only subset of paramtypes.Subspace
-type paramSource interface {
-	Get(ctx sdk.Context, key []byte, ptr interface{})
-	Has(ctx sdk.Context, key []byte) bool
-}
-
 type BypassMinFeeDecorator struct {
 	BypassMinFeeMsgTypes []string
-	GlobalMinFee         paramSource
+	GlobalMinFee         globalfee.ParamSource
 }
 
 func NewBypassMinFeeDecorator(bypassMsgTypes []string, paramSpace paramtypes.Subspace) BypassMinFeeDecorator {

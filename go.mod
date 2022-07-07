@@ -3,7 +3,7 @@ module github.com/cosmos/gaia/v7
 go 1.17
 
 require (
-	github.com/cosmos/cosmos-sdk v0.45.4
+	github.com/cosmos/cosmos-sdk v0.45.6
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/ibc-go/v3 v3.0.0
 	github.com/golangci/golangci-lint v1.45.2

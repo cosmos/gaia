@@ -44,7 +44,6 @@ func TestValidateGenesis(t *testing.T) {
 			src:    `{"params":{"minimum_gas_prices":[{"denom":"ALX", "amount":"-1"}]}}`,
 			expErr: true,
 		},
-		//todo check why want to be sorted.
 		"denom must be sorted": {
 			src:    `{"params":{"minimum_gas_prices":[{"denom":"ZLX", "amount":"1"},{"denom":"ALX", "amount":"2"}]}}`,
 			expErr: true,

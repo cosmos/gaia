@@ -11,8 +11,8 @@ import (
     globfeetypes "github.com/cosmos/gaia/v8/x/globalfee/types"
 )
 
-// test global fees and min_gas_price  with bypass msg types.
-// please even globalfee=0, min_gas_price=0, we do not let fee=0random_denom pass, to prevent fee is flooded with a long list of 0fees
+// test global fees and min_gas_price with bypass msg types.
+// please note even globalfee=0, min_gas_price=0, we do not let fee=0random_denom pass, to prevent fee is flooded with a long list of 0fees
 func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
     // setup test
     s.SetupTest()
@@ -43,13 +43,13 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
             sdk.NewDecCoinFromDec("uatom", sdk.NewDec(100).Quo(sdk.NewDec(100000))),
         },
     }
+    // global fee must be sorted in denom
     globalfeeParamsNewDenom := &globfeetypes.Params{
         MinimumGasPrices: []sdk.DecCoin{
             sdk.NewDecCoinFromDec("photon", sdk.NewDec(400).Quo(sdk.NewDec(100000))),
             sdk.NewDecCoinFromDec("quark", sdk.NewDec(400).Quo(sdk.NewDec(100000))),
         },
     }
-    
     testCases := map[string]struct {
         minGasPrice     []sdk.DecCoin
         globalFeeParams *globfeetypes.Params
@@ -396,7 +396,6 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
     }
     
     for name, testCase := range testCases {
-      if name != "check!!! zero min_gas_price, empty global fee, nonzero fee in defaultZeroGlobalFee denom" {continue}
         s.Run(name, func() {
             // set globalfees and min gas price
             subspace := s.setupTestGlobalFeeStoreAndMinGasPrice(testCase.minGasPrice, testCase.globalFeeParams)

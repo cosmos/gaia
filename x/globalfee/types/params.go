@@ -2,7 +2,7 @@ package types
 
 import (
 	"fmt"
-	
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -28,8 +28,6 @@ func (p Params) ValidateBasic() error {
 
 // ParamSetPairs returns the parameter set pairs.
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
-	//todo check why the feecheck require sorted coins, and check the this line 's influence on genesis
-	p.MinimumGasPrices = p.MinimumGasPrices.Sort()
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(
 			ParamStoreKeyMinGasPrices, &p.MinimumGasPrices, validateMinimumGasPrices,

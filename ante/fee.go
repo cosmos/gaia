@@ -59,7 +59,12 @@ func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 	// not contain operator configured bypass messages. If the tx does contain
 	// operator configured bypass messages only, it's total gas must be less than
 	// or equal to a constant, otherwise minimum fees and global fees are checked to prevent spam.
-	if ctx.IsCheckTx() && !simulate && !(mfd.bypassMinFeeMsgs(msgs) && gas <= uint64(len(msgs))*maxBypassMinFeeMsgGasUsage) {
+
+	containsOnlyBypassMinFeeMsgs := mfd.bypassMinFeeMsgs(msgs)
+	doesNotExceedMaxGasUsage := gas <= uint64(len(msgs))*maxBypassMinFeeMsgGasUsage
+	allowedToBypassMinFee := containsOnlyBypassMinFeeMsgs && doesNotExceedMaxGasUsage
+
+	if ctx.IsCheckTx() && !simulate && !allowedToBypassMinFee {
 		// check global fees
 		if mfd.GlobalMinFee.Has(ctx, types.ParamStoreKeyMinGasPrices) {
 			//requiredGlobalFees is sorted

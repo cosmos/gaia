@@ -41,6 +41,17 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 	appKeepers.memKeys = sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
 }
 
+func (appKeepers *AppKeepers) GetKVStoreKey() map[string]*storetypes.KVStoreKey {
+	return appKeepers.keys
+}
+
+func (appKeepers *AppKeepers) GetTransientStoreKey() map[string]*storetypes.TransientStoreKey {
+	return appKeepers.tkeys
+}
+
+func (appKeepers *AppKeepers) GetMemoryStoreKey() map[string]*storetypes.MemoryStoreKey {
+	return appKeepers.memKeys
+}
 
 // GetKey returns the KVStoreKey for the provided store key.
 //

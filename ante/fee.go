@@ -14,8 +14,6 @@ import (
 
 const maxBypassMinFeeMsgGasUsage = uint64(200_000)
 
-var defaultZeroGlobalFee = []sdk.DecCoin{sdk.NewDecCoinFromDec("uatom", sdk.NewDec(0))}
-
 // FeeWithBypassDecorator will check if the transaction's fee is at least as large
 // as the local validator's minimum gasFee (defined in validator config) and global fee.
 //
@@ -31,6 +29,12 @@ type BypassMinFeeDecorator struct {
 	BypassMinFeeMsgTypes []string
 	GlobalMinFee         globalfee.ParamSource
 }
+
+var defaultZeroGlobalFee = []sdk.DecCoin{sdk.NewDecCoinFromDec("uatom", sdk.NewDec(0))}
+
+//func DefaultZeroGlobalFee(ctx sdk.Context) string {
+//	return []sdk.DecCoin{sdk.NewDecCoinFromDec(stakingKeeper.BondDenom(ctx), sdk.NewDec(0))}
+//}
 
 func NewBypassMinFeeDecorator(bypassMsgTypes []string, paramSpace paramtypes.Subspace) BypassMinFeeDecorator {
 	if !paramSpace.HasKeyTable() {
@@ -48,7 +52,6 @@ func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 	if !ok {
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
 	}
-	// getFee only get non zero fees?
 	feeCoins := feeTx.GetFee().Sort()
 	gas := feeTx.GetGas()
 	msgs := feeTx.GetMsgs()
@@ -72,8 +75,8 @@ func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 			if !DenomsSubsetOf(feeCoins, requiredGlobalFees) {
 				return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fees %s is not a subset of required global fees %s", feeCoins, requiredGlobalFees)
 			}
-
-			if !IsAnyGTE(feeCoins, requiredGlobalFees) {
+			// At least feeCoin amount must be greater than or equal to one of the requiredGlobalFees
+			if !IsAnyGTEIncludingZero(feeCoins, requiredGlobalFees) {
 				return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees for global fee; got: %s required: %s", feeCoins, requiredGlobalFees)
 			}
 		}
@@ -91,13 +94,14 @@ func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 				fee := gp.Amount.Mul(glDec)
 				requiredFees[i] = sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt())
 			}
-			// 1stake is not a subset of 0stake or 0photon or 1photon, skip the min gas price check
-			// can still the DenomsSubsetOf() from sdk
+			// 1stake is not a subset of 0stake or 0photon or 1photon, not skip the min gas price check. this case can still use the DenomsSubsetOf() from sdk
+			// empty set is subset of empty set for sdk DenomsSubsetOf
+			// 0 stake is a subset of a 1stake, but the custom IsAnyGTEIncludingZero will be true as well.
 			if !feeCoins.DenomsSubsetOf(requiredFees.Sort()) {
 				return next(ctx, tx, simulate)
 			}
-			// requiredFees here is ensured not all zero, when check min_gas_price, fee might be zero. if min_gas_price=0stake,1photon, and feecoins is 0stake, it should not return err. so use IsAnyGTE() rather than IsAnyGTE() from sdk.
-			if !IsAnyGTE(feeCoins, requiredFees) {
+			// requiredFees here is ensured not all zero, when check min_gas_price, fee might be zero. if min_gas_price=0stake,1photon, and feecoins is 0stake, it should not return err. so use IsAnyGTEIncludingZero() rather than IsAnyGTEIncludingZero() from sdk.
+			if !IsAnyGTEIncludingZero(feeCoins, requiredFees) {
 				return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins, requiredFees)
 			}
 		}
@@ -105,7 +109,7 @@ func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 
 	// when the tx is bypass msg type, still need to check the denom is not random denom
 	// this is to prevent the situation that a bypass msg carries random fee denoms
-	if ctx.IsCheckTx() && !simulate && (mfd.bypassMinFeeMsgs(msgs) && gas <= uint64(len(msgs))*maxBypassMinFeeMsgGasUsage) && mfd.GlobalMinFee.Has(ctx, types.ParamStoreKeyMinGasPrices) {
+	if ctx.IsCheckTx() && !simulate && allowedToBypassMinFee && mfd.GlobalMinFee.Has(ctx, types.ParamStoreKeyMinGasPrices) {
 		requiredFees := mfd.getGlobalFee(ctx, feeTx)
 		if !DenomsSubsetOf(feeCoins, requiredFees) {
 			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fees denom is wrong; got: %s required: %s", feeCoins, requiredFees)
@@ -149,7 +153,7 @@ func (mfd BypassMinFeeDecorator) bypassMinFeeMsgs(msgs []sdk.Msg) bool {
 	return true
 }
 
-//utils function: GetTxPriority, DenomsSubsetOf, IsAnyGTE
+//utils function: GetTxPriority, DenomsSubsetOf, IsAnyGTEIncludingZero
 
 // getTxPriority returns a naive tx priority based on the amount of the smallest denomination of the fee
 // provided in a transaction.
@@ -187,16 +191,20 @@ func DenomsSubsetOf(coins, coinsB sdk.Coins) bool {
 	return true
 }
 
-// overwrite the IsAnyGTE from sdk to allow zero coins.
-// IsAnyGTE returns true iff coins contains at least one denom that is present
+// overwrite the IsAnyGTEIncludingZero from sdk to allow zero coins.
+// IsAnyGTEIncludingZero returns true if coins contain at least one denom that is present
 // at a greater or equal amount in coinsB; it returns false otherwise.
-// NOTE: IsAnyGTE operates under the invariant that both coin sets are sorted
+// if CoinsB is emptyset, no coins sets are IsAnyGTEIncludingZero coinsB unless coins is also empty set.
+// NOTE: IsAnyGTEIncludingZero operates under the invariant that both coin sets are sorted
 // by denominations.
-func IsAnyGTE(coins, coinsB sdk.Coins) bool {
-	// this is different from sdk, sdk return false
+func IsAnyGTEIncludingZero(coins, coinsB sdk.Coins) bool {
+	// no set is empty set's subset except empty set
+	// this is different from sdk, sdk return false for coinsB empty
+	if len(coinsB) == 0 && len(coins) == 0 {
+		return true
+	}
 	if len(coinsB) == 0 {
-		// global fee should not be not empty
-		panic("empty coin set")
+		return false
 	}
 	// if feecoins empty, and globalfee has one denom of amt zero. feecoins equals to that 0denom.
 	if len(coins) == 0 {

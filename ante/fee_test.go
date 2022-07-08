@@ -12,7 +12,7 @@ import (
 )
 
 // test global fees and min_gas_price with bypass msg types.
-// please note even globalfee=0, min_gas_price=0, we do not let fee=0random_denom pass, to prevent fee is flooded with a long list of 0fees
+// please note even globalfee=0, min_gas_price=0, we do not let fee=0random_denom pass
 func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
     // setup test
     s.SetupTest()
@@ -424,7 +424,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
             expErr:          false,
         },
     }
-    
+    // todo check msg with bypass msg and need to pay msg
     for name, testCase := range testCases {
         s.Run(name, func() {
             // set globalfees and min gas price

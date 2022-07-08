@@ -30,11 +30,11 @@ type BypassMinFeeDecorator struct {
 	GlobalMinFee         globalfee.ParamSource
 }
 
-var defaultZeroGlobalFee = []sdk.DecCoin{sdk.NewDecCoinFromDec("uatom", sdk.NewDec(0))}
+const defaultZeroGlobalFeeDenom = "uatom"
 
-//func DefaultZeroGlobalFee(ctx sdk.Context) string {
-//	return []sdk.DecCoin{sdk.NewDecCoinFromDec(stakingKeeper.BondDenom(ctx), sdk.NewDec(0))}
-//}
+func DefaultZeroGlobalFee() []sdk.DecCoin {
+	return []sdk.DecCoin{sdk.NewDecCoinFromDec(defaultZeroGlobalFeeDenom, sdk.NewDec(0))}
+}
 
 func NewBypassMinFeeDecorator(bypassMsgTypes []string, paramSpace paramtypes.Subspace) BypassMinFeeDecorator {
 	if !paramSpace.HasKeyTable() {
@@ -126,7 +126,7 @@ func (mfd BypassMinFeeDecorator) getGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) 
 
 	// global fee is empty set, set global fee to 0uatom
 	if len(globalMinGasPrices) == 0 {
-		globalMinGasPrices = defaultZeroGlobalFee
+		globalMinGasPrices = DefaultZeroGlobalFee()
 	}
 	requiredGlobalFees := make(sdk.Coins, len(globalMinGasPrices))
 	// Determine the required fees by multiplying each required minimum gas
@@ -192,11 +192,9 @@ func DenomsSubsetOf(coins, coinsB sdk.Coins) bool {
 }
 
 // overwrite the IsAnyGTEIncludingZero from sdk to allow zero coins.
-// IsAnyGTEIncludingZero returns true if coins contain at least one denom that is present
-// at a greater or equal amount in coinsB; it returns false otherwise.
+// IsAnyGTEIncludingZero returns true if coins contain at least one denom that is present at a greater or equal amount in coinsB; it returns false otherwise.
 // if CoinsB is emptyset, no coins sets are IsAnyGTEIncludingZero coinsB unless coins is also empty set.
-// NOTE: IsAnyGTEIncludingZero operates under the invariant that both coin sets are sorted
-// by denominations.
+// NOTE: IsAnyGTEIncludingZero operates under the invariant that both coin sets are sorted by denoms.
 func IsAnyGTEIncludingZero(coins, coinsB sdk.Coins) bool {
 	// no set is empty set's subset except empty set
 	// this is different from sdk, sdk return false for coinsB empty

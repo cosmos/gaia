@@ -76,7 +76,7 @@ func (mfd BypassMinFeeDecorator) bypassMinFeeMsgs(msgs []sdk.Msg) bool {
 	return true
 }
 
-//utils function: GetTxPriority
+// utils function: GetTxPriority
 // getTxPriority returns a naive tx priority based on the amount of the smallest denomination of the fee
 // provided in a transaction.
 func GetTxPriority(fee sdk.Coins) int64 {

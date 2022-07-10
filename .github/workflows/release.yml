@@ -1,0 +1,90 @@
+name: create release
+
+on:
+    push:
+        tags:
+            - "v[0-9]+.[0-9]+.[0-9]+" # Push events to matching v*, i.e. v1.0, v20.15.10
+
+jobs:
+    build:
+        name: Create Release
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Checkout code
+                uses: actions/checkout@v3
+            -   name: set tag env
+                run: echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+            -   name: install go
+                uses: actions/setup-go@v3
+                with:
+                    go-version: '1.18'
+                    check-latest: true
+            -   name: Build Artifacts
+                run: make distclean build-reproducible
+            -   name: generate release note
+                run: go run ./contrib/generate_release_note/main.go ${{ env.VERSION }} ./artifacts/build_report ./CHANGELOG.md
+            -   name: Create Release
+                id: create_release
+                uses: actions/create-release@v1
+                env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                with:
+                    tag_name: ${{ github.ref }}
+                    release_name: Release ${{ github.ref }}
+                    body_path: ./releasenote
+                    draft: true
+                    prerelease: false
+            -   name: Upload linux-amd64 artifact
+                uses: actions/upload-release-asset@v1
+                env:
+                    GITHUB_TOKEN: ${{ github.token }}
+                with:
+                    upload_url: ${{ steps.create_release.outputs.upload_url }}
+                    asset_path: ./artifacts/gaiad-${{ env.VERSION }}-linux-amd64
+                    asset_name: gaiad-${{ env.VERSION }}-linux-amd64
+                    asset_content_type: application/binary
+            -   name: Upload build_report
+                uses: actions/upload-release-asset@v1
+                env:
+                    GITHUB_TOKEN: ${{ github.token }}
+                with:
+                    upload_url: ${{ steps.create_release.outputs.upload_url }}
+                    asset_path: ./artifacts/build_report
+                    asset_name: build_report
+                    asset_content_type: application/file
+            -   name: Upload linux-arm64 artifact
+                uses: actions/upload-release-asset@v1
+                env:
+                    GITHUB_TOKEN: ${{ github.token }}
+                with:
+                    upload_url: ${{ steps.create_release.outputs.upload_url }}
+                    asset_path: ./artifacts/gaiad-${{ env.VERSION }}-linux-arm64
+                    asset_name: gaiad-${{ env.VERSION }}-linux-arm64
+                    asset_content_type: application/binary
+            -   name: Upload darwin-amd64 artifact
+                uses: actions/upload-release-asset@v1
+                env:
+                    GITHUB_TOKEN: ${{ github.token }}
+                with:
+                    upload_url: ${{ steps.create_release.outputs.upload_url }}
+                    asset_path: ./artifacts/gaiad-${{ env.VERSION }}-darwin-amd64
+                    asset_name: gaiad-${{ env.VERSION }}-darwin-amd64
+                    asset_content_type: application/binary
+            -   name: Upload windows-amd64 artifact
+                uses: actions/upload-release-asset@v1
+                env:
+                    GITHUB_TOKEN: ${{ github.token }}
+                with:
+                    upload_url: ${{ steps.create_release.outputs.upload_url }}
+                    asset_path: ./artifacts/gaiad-${{ env.VERSION }}-windows-amd64.exe
+                    asset_name: gaiad-${{ env.VERSION }}-windows-amd64.exe
+                    asset_content_type: application/binary
+            -   name: Upload compression
+                uses: actions/upload-release-asset@v1
+                env:
+                    GITHUB_TOKEN: ${{ github.token }}
+                with:
+                    upload_url: ${{ steps.create_release.outputs.upload_url }}
+                    asset_path: ./artifacts/gaiad-${{ env.VERSION }}.tar.gz
+                    asset_name: gaiad-${{ env.RELEASE_VERSION }}.tar.gz
+                    asset_content_type: application/gzip

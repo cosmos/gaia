@@ -24,12 +24,12 @@ jobs:
   newbuild:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-go@v3.0.0
+      - uses: actions/setup-go@v2.1.5
         with:
-          go-version: 1.18
+          go-version: 1.17
       - name: Install runsim
-        run: go install github.com/cosmos/tools/cmd/runsim@v1.0.0
-      - uses: actions/cache@v3.0.4
+        run: export GO111MODULE="on" && go get github.com/cosmos/tools/cmd/runsim@v1.0.0
+      - uses: actions/cache@v2.1.7
         with:
           path: ~/go/bin
           key: ${{ runner.os }}-go-runsim-binary
@@ -39,8 +39,9 @@ jobs:
     needs: build
     steps:
       - name: install runsim
-        run: go install github.com/cosmos/tools/cmd/runsim@v1.0.0
-      - uses: actions/cache@v3.0.4
+        run: |
+          export GO111MODULE="on" && go get github.com/cosmos/tools/cmd/runsim@v1.0.0
+      - uses: actions/cache@v2.1.7
         with:
           path: ~/go/bin
           key: ${{ runner.os }}-go-runsim-binary
@@ -50,7 +51,7 @@ jobs:
     needs: [build, install-runsim]
     steps:
       - uses: actions/checkout@v2.4.0
-      - uses: actions/cache@v3.0.4
+      - uses: actions/cache@v2.1.7
         with:
           path: ~/go/bin
           key: ${{ runner.os }}-go-runsim-binary
@@ -63,7 +64,7 @@ jobs:
     needs: newbuild
     steps:
       - uses: actions/checkout@v2.4.0
-      - uses: actions/setup-go@v3.0.0
+      - uses: actions/setup-go@v2.1.5
         with:
           go-version: 1.16
       - uses: technote-space/get-diff-action@v5.0.2
@@ -72,7 +73,7 @@ jobs:
             **/**.go
             go.mod
             go.sum
-      - uses: actions/cache@v3.0.4
+      - uses: actions/cache@v2.1.7
         with:
           path: ~/go/bin
           key: ${{ runner.os }}-go-runsim-binary

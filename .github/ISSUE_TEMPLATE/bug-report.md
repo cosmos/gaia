@@ -30,5 +30,3 @@ ____
 - [ ] Appropriate labels applied
 - [ ] Appropriate contributors tagged
 - [ ] Contributor assigned/self-assigned
-- [ ] Is a spike necessary to map out how the issue should be approached?
-

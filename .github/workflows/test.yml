@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/setup-go@v3.0.0
         with:
-          go-version: 1.17
+          go-version: 1.18
       - uses: actions/checkout@v2.4.0
       - uses: technote-space/get-diff-action@v6.0.1
         with:
@@ -62,7 +62,7 @@ jobs:
     steps:
       - uses: actions/setup-go@v3.0.0
         with:
-          go-version: 1.17
+          go-version: 1.18
       - uses: actions/checkout@v2
       - uses: technote-space/get-diff-action@v6.0.1
         with:
@@ -89,16 +89,15 @@ jobs:
             **/**.go
             go.mod
             go.sum
-      - name: Install Ignite CLI
+      - name: Install Gaia
         run: |
-          curl https://get.ignite.com/cli@v0.21.1! | bash
+          make build
         if: env.GIT_DIFF
-      - name: Start Local Network via Ignite CLI
+      - name: Start Local Network
         run: |
-          make start-localnet-ci > ignite.out 2>&1 &
+          make start-localnet-ci > liveness.out 2>&1 &
         if: env.GIT_DIFF
       - name: Test Local Network Liveness
         run: |
-          sleep 3m
           ./contrib/scripts/test_localnet_liveness.sh 100 5 50 localhost
         if: env.GIT_DIFF

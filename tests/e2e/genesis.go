@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -11,6 +12,8 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	tmtypes "github.com/tendermint/tendermint/types"
 )
 
@@ -97,8 +100,24 @@ func addGenesisAccount(path, moniker, amountStr string, accAddr sdk.AccAddress) 
 	if err != nil {
 		return fmt.Errorf("failed to marshal bank genesis state: %w", err)
 	}
-
 	appState[banktypes.ModuleName] = bankGenStateBz
+
+	// Refactor to separate method
+	amnt, _ := sdk.NewIntFromString("10000")
+	quorum, _ := sdk.NewDecFromStr("0.000000000000000001")
+	threshold, _ := sdk.NewDecFromStr("0.000000000000000001")
+
+	govState := govv1beta1.NewGenesisState(1,
+		govv1beta1.NewDepositParams(sdk.NewCoins(sdk.NewCoin("photon", amnt)), 10*time.Minute),
+		govv1beta1.NewVotingParams(15*time.Second),
+		govv1beta1.NewTallyParams(quorum, threshold, govv1beta1.DefaultVetoThreshold),
+	)
+
+	govGenStateBz, err := cdc.MarshalJSON(govState)
+	if err != nil {
+		return fmt.Errorf("failed to marshal gov genesis state: %w", err)
+	}
+	appState[govtypes.ModuleName] = govGenStateBz
 
 	appStateJSON, err := json.Marshal(appState)
 	if err != nil {

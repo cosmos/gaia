@@ -28,8 +28,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 
-	// ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
-	// ibcchanneltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
@@ -101,12 +99,8 @@ func initAppConfig() (string, interface{}) {
 	srvCfg.StateSync.SnapshotKeepRecent = 10
 
 	return params.CustomConfigTemplate, params.CustomAppConfig{
-		Config: *srvCfg,
-		// BypassMinFeeMsgTypes: []string{
-		// 	sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),
-		// 	sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
-		// 	sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
-		// },
+		Config:               *srvCfg,
+		BypassMinFeeMsgTypes: gaia.GetDefaultBypassFeeMessages(),
 	}
 }
 
@@ -141,7 +135,6 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 	)
 
 	rootCmd.AddCommand(server.RosettaCommand(encodingConfig.InterfaceRegistry, encodingConfig.Codec))
-
 }
 
 func addModuleInitFlags(startCmd *cobra.Command) {
@@ -210,7 +203,6 @@ func (ac appCreator) newApp(
 	traceStore io.Writer,
 	appOpts servertypes.AppOptions,
 ) servertypes.Application {
-
 	var cache sdk.MultiStorePersistentCache
 
 	if cast.ToBool(appOpts.Get(server.FlagInterBlockCache)) {
@@ -268,7 +260,6 @@ func (ac appCreator) appExport(
 	jailAllowedAddrs []string,
 	appOpts servertypes.AppOptions,
 ) (servertypes.ExportedApp, error) {
-
 	homePath, ok := appOpts.Get(flags.FlagHome).(string)
 	if !ok || homePath == "" {
 		return servertypes.ExportedApp{}, errors.New("application home is not set")

@@ -16,7 +16,7 @@ The Cosmos SDK provides a convenient process manager that wraps around the `gaia
 To get started with Cosmovisor first download it
 
 ```bash
-go get github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor
+go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor
 ```
 
 Set up the environment variables

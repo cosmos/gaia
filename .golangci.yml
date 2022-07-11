@@ -2,6 +2,8 @@ run:
   tests: false
   skip-dirs:
     - tests/e2e
+  timeout: 5m
+
 
 linters:
   disable-all: true
@@ -10,21 +12,20 @@ linters:
     - deadcode
     - depguard
     - dogsled
-    # - errcheck
+    - errcheck
+    - exportloopref
     - goconst
     - gocritic
     - gofmt
     - goimports
-    - golint
     - gosec
     - gosimple
     - govet
     - ineffassign
-    - interfacer
-    - maligned
     - misspell
     - nakedret
     - prealloc
+    - revive
     - scopelint
     - staticcheck
     - structcheck
@@ -33,8 +34,6 @@ linters:
     - unconvert
     - unused
     - unparam
-    # - wsl
-    - nolintlint
 
 issues:
   exclude-rules:

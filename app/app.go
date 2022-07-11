@@ -257,7 +257,6 @@ func NewGaiaApp(
 	appOpts servertypes.AppOptions,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *GaiaApp {
-
 	appCodec := encodingConfig.Codec
 	legacyAmino := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
@@ -721,7 +720,6 @@ func NewGaiaApp(
 	app.UpgradeKeeper.SetUpgradeHandler(
 		upgradeName,
 		func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-
 			fromVM[icatypes.ModuleName] = icaModule.ConsensusVersion()
 			// create ICS27 Controller submodule params
 			controllerParams := icacontrollertypes.Params{}

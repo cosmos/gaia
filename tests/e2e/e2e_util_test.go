@@ -371,7 +371,6 @@ func (s *IntegrationTestSuite) queryGovProposal(endpoint string, proposalId uint
 
 	path := fmt.Sprintf("%s/cosmos/gov/v1beta1/proposals/%d", endpoint, proposalId)
 	resp, err := http.Get(path)
-
 	if err != nil {
 		s.T().Logf("This is the err: %s", err.Error())
 	}
@@ -382,12 +381,10 @@ func (s *IntegrationTestSuite) queryGovProposal(endpoint string, proposalId uint
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
-
 	if err != nil {
 		s.T().Logf("This is the err: %s", err.Error())
 	}
 	if err != nil {
-
 		return emptyProp, err
 	}
 	s.T().Logf("This is the body: %s", body)

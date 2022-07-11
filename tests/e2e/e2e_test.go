@@ -2,9 +2,10 @@ package e2e
 
 import (
 	"fmt"
-	"github.com/ory/dockertest/v3/docker"
 	"strings"
 	"time"
+
+	"github.com/ory/dockertest/v3/docker"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
@@ -16,7 +17,6 @@ func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
 	var ibcStakeDenom string
 
 	s.Run("send_photon_to_chainB", func() {
-
 		// require the recipient account receives the IBC tokens (IBC packets ACKd)
 		var (
 			balances sdk.Coins
@@ -55,9 +55,7 @@ func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
 
 func (s *IntegrationTestSuite) TestBankTokenTransfer() {
 	s.Run("send_photon_between_accounts", func() {
-		var (
-			err error
-		)
+		var err error
 
 		senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
 		s.Require().NoError(err)
@@ -149,7 +147,6 @@ func (s *IntegrationTestSuite) TestSendTokensFromNewGovAccount() {
 		15*time.Second,
 		5*time.Second,
 	)
-
 }
 
 func (s *IntegrationTestSuite) TestGovSoftwareUpgrade() {

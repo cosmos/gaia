@@ -369,8 +369,7 @@ func NewGaiaApp(
 		app.GetSubspace(liquiditytypes.ModuleName),
 		app.BankKeeper,
 		app.AccountKeeper,
-		app.DistrKeeper,
-	)
+		app.DistrKeeper)
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks

@@ -17,6 +17,7 @@ linters:
     - goconst
     - gocritic
     - gofmt
+    - gofumpt
     - goimports
     - gosec
     - gosimple

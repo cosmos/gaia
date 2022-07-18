@@ -51,6 +51,7 @@ There are many explorers for the Cosmos Hub. For reference while setting up a no
 - [Mintscan](https://www.mintscan.io/cosmos)
 - [Big Dipper](https://cosmos.bigdipper.live/)
 - [Hubble](https://hubble.figment.io/cosmos/chains/cosmoshub-4)
+<!-- markdown-link-check-disable-next-line -->
 - [Stake ID](https://cosmos.stake.id/)
 
 

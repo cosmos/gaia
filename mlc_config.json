@@ -1,18 +1,7 @@
 {
     "ignorePatterns": [ { "pattern": "^https://ipfs.io/ipfs/" } ],
     "replacementPatterns": [ ],
-    "httpHeaders": [
-    {
-        "comment": "Workaround as suggested here: https://github.com/tcort/markdown-link-check/issues/201",
-        "urls": [
-          "https://token.im/",
-          "https://cosmos.stake.id/"
-        ],
-        "headers": {
-          "Accept-Encoding": "zstd, br, gzip, deflate"
-        }
-      }
-    ],
+    "httpHeaders": [ ],
     "timeout": "20s",
     "retryOn429": true,
     "retryCount": 5,

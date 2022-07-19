@@ -12,10 +12,11 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
-	globfeetypes "github.com/cosmos/gaia/v8/x/globalfee/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	tmtypes "github.com/tendermint/tendermint/types"
+
+	globfeetypes "github.com/cosmos/gaia/v8/x/globalfee/types"
 )
 
 func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {
@@ -109,7 +110,7 @@ func modifyGenesis(path, moniker, amountStr string, accAddr sdk.AccAddress, glob
 	if err != nil {
 		return fmt.Errorf("failed to parse fee coins: %w", err)
 	}
-	globfeeState.Params.MinimumGasPrices.Add(minGases...)
+	globfeeState.Params.MinimumGasPrices = minGases
 	globfeeStateBz, err := cdc.MarshalJSON(globfeeState)
 	if err != nil {
 		return fmt.Errorf("failed to marshal global fee genesis state: %w", err)

@@ -2,8 +2,6 @@ package e2e
 
 import (
 	"fmt"
-	"github.com/ory/dockertest/v3/docker"
-	"strings"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -272,6 +270,22 @@ func (s *IntegrationTestSuite) submitLegacyProposalFundGovAccount(chainAAPIEndpo
 	})
 }
 
+func (s *IntegrationTestSuite) submitLegacyGovProposal(chainAAPIEndpoint string, sender string, proposalTypeSubCmd string, proposalId int, proposalPath string) {
+	s.Run("submit_legacy_gov_proposal", func() {
+		s.execGovSubmitLegacyGovProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposalPath, fees.String(), proposalTypeSubCmd)
+
+		s.Require().Eventually(
+			func() bool {
+				proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId)
+				s.Require().NoError(err)
+				return (proposal.GetProposal().Status == govv1beta1.StatusDepositPeriod)
+			},
+			15*time.Second,
+			5*time.Second,
+		)
+	})
+}
+
 func (s *IntegrationTestSuite) submitNewGovProposal(chainAAPIEndpoint string, sender string, proposalId int, proposalPath string) {
 	s.Run("submit_new_gov_proposal", func() {
 		s.execGovSubmitProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposalPath, fees.String())
@@ -442,3 +456,102 @@ func (s *IntegrationTestSuite) TestGlobalFee() {
 		)
 	})
 }
+
+// globalfee in genesis is set to be "0.00001photon"
+func (s *IntegrationTestSuite) TestQueryGlobalFeesInGenesis() {
+	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	feeInGenesis, err := sdk.ParseDecCoins(globalFee)
+	s.Require().NoError(err)
+	s.Require().Eventually(
+		func() bool {
+			fees, err := queryGlobalFees(chainAAPIEndpoint)
+			s.T().Logf("Global Fees in Genesis: %s", fees.String())
+			s.Require().NoError(err)
+
+		return fees.IsEqual(feeInGenesis)
+		},
+		15*time.Second,
+		5*time.Second,
+	)
+}
+
+// use gov to propose/change  global fees and then change back, so that this does not influence any other tx
+func (s *IntegrationTestSuite) TestGovProposeNewGlobalFees() {
+	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	submitterAddr, err := s.chainA.validators[0].keyInfo.GetAddress()
+	s.Require().NoError(err)
+	submitter := submitterAddr.String()
+
+	// prepare gov globalfee proposal
+	newfees, err := sdk.ParseDecCoins(newGlobalFees)
+	s.Require().NoError(err)
+	s.writeGovParamChangeProposalGlobalFees(s.chainA, newfees)
+
+	// gov proposing new fees
+	proposalCounter++
+	s.T().Logf("Proposal number: %d", proposalCounter)
+	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change global fees")
+	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, "param-change", proposalCounter, "/root/.gaia/config/proposal_globalfee.json")
+	s.depositGovProposal(chainAAPIEndpoint, submitter, proposalCounter)
+	s.voteGovProposal(chainAAPIEndpoint, submitter, proposalCounter, "yes", false)
+
+	// query the proposal status and new fee
+	s.Require().Eventually(
+		func() bool {
+			proposal, err := queryGovProposal(chainAAPIEndpoint, proposalCounter)
+			s.Require().NoError(err)
+			return (proposal.GetProposal().Status == govv1beta1.StatusPassed)
+		},
+		15*time.Second,
+		5*time.Second,
+	)
+
+	s.Require().Eventually(
+		func() bool {
+			fees, err := queryGlobalFees(chainAAPIEndpoint)
+			s.T().Logf("After gov new global fee proposal: %s", fees.String())
+			s.Require().NoError(err)
+
+			return fees.IsEqual(newfees)
+		},
+		15*time.Second,
+		5*time.Second,
+	)
+
+	// gov proposing to change back to original global fee
+	s.T().Logf("Propose to change back to original global fees: %s", globalFee)
+	oldfees, err := sdk.ParseDecCoins(globalFee)
+	s.Require().NoError(err)
+	s.writeGovParamChangeProposalGlobalFees(s.chainA, oldfees)
+
+	proposalCounter++
+	s.T().Logf("Proposal number: %d", proposalCounter)
+	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change back global fees")
+	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, "param-change", proposalCounter, "/root/.gaia/config/proposal_globalfee.json")
+	s.depositGovProposal(chainAAPIEndpoint, submitter, proposalCounter)
+	s.voteGovProposal(chainAAPIEndpoint, submitter, proposalCounter, "yes", false)
+
+	// query the proposal status and fee
+	s.Require().Eventually(
+		func() bool {
+			proposal, err := queryGovProposal(chainAAPIEndpoint, proposalCounter)
+			s.Require().NoError(err)
+			return (proposal.GetProposal().Status == govv1beta1.StatusPassed)
+		},
+		15*time.Second,
+		5*time.Second,
+	)
+
+	s.Require().Eventually(
+		func() bool {
+			fees, err := queryGlobalFees(chainAAPIEndpoint)
+			s.T().Logf("After gov proposal to change back global fees: %s", oldfees.String())
+			s.Require().NoError(err)
+
+			return fees.IsEqual(oldfees)
+		},
+		15*time.Second,
+		5*time.Second,
+	)
+}
+

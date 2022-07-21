@@ -14,13 +14,15 @@ import (
 const maxBypassMinFeeMsgGasUsage = uint64(200_000)
 
 // FeeWithBypassDecorator will check if the transaction's fee is at least as large
-// as the local validator's minimum gasFee (defined in validator config) and global fee.
+// as the local validator's minimum gasFee (defined in validator config) and global fee, and the fee denom should be in the global fees' denoms.
 //
 // If fee is too low, decorator returns error and tx is rejected from mempool.
 // Note this only applies when ctx.CheckTx = true. If fee is high enough or not
 // CheckTx, then call next AnteHandler.
 //
 // CONTRACT: Tx must implement FeeTx to use BypassMinFeeDecorator
+// If the tx msg type is one the bypass msg types, the tx is free from fee charge.
+// If the bypass tx still carries fees, the fee denom should be the same as global fee required.
 
 var _ sdk.AnteDecorator = BypassMinFeeDecorator{}
 
@@ -47,7 +49,7 @@ func NewBypassMinFeeDecorator(bypassMsgTypes []string, paramSpace paramtypes.Sub
 }
 
 func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
-	// after parsing feeflag, the zero fees are removed already
+	// please note: after parsing feeflag, the zero fees are removed already
 	feeTx, ok := tx.(sdk.FeeTx)
 	if !ok {
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
@@ -86,14 +88,13 @@ func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 		if !DenomsSubsetOfIncludingZero(feeCoins, allFees) {
 			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fees %s is not a subset of required fees %s", feeCoins, allFees)
 		}
-		// At least feeCoin amount must be greater than or equal to one of the requiredGlobalFees
+		// At least one feeCoin amount must be GTE to one of the requiredGlobalFees
 		if !IsAnyGTEIncludingZero(feeCoins, allFees) {
 			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees for global fee; got: %s required: %s", feeCoins, allFees)
 		}
 	}
 
 	// when the tx is bypass msg type, still need to check the denom is not random denom
-	// this is to prevent the situation that a bypass msg carries random fee denoms
 	if ctx.IsCheckTx() && !simulate && allowedToBypassMinFee && mfd.GlobalMinFee.Has(ctx, types.ParamStoreKeyMinGasPrices) {
 		requiredGlobalFees := mfd.getGlobalFee(ctx, feeTx)
 		// bypass tx without pay fee

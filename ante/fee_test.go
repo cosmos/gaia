@@ -35,6 +35,10 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 		sdk.NewDecCoinFromDec("photon", sdk.NewDec(0)),
 		sdk.NewDecCoinFromDec("uatom", sdk.NewDec(0)),
 	}}
+	globalfeeParamsContain0 := &globfeetypes.Params{MinimumGasPrices: []sdk.DecCoin{
+		sdk.NewDecCoinFromDec("photon", med),
+		sdk.NewDecCoinFromDec("uatom", sdk.NewDec(0)),
+	}}
 	minGasPrice0 := []sdk.DecCoin{
 		sdk.NewDecCoinFromDec("stake", sdk.NewDec(0)),
 		sdk.NewDecCoinFromDec("uatom", sdk.NewDec(0))}
@@ -364,6 +368,68 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			txMsg:    testdata.NewTestMsg(addr1),
 			txCheck:  true,
 			expErr:   false,
+		},
+		// cases from https://github.com/cosmos/gaia/pull/1570#issuecomment-1190524402
+		"globalfee contains zero coin, fee is lower than the nonzero coin": {
+			minGasPrice:     minGasPrice0,
+			globalFeeParams: globalfeeParamsContain0,
+			gasPrice:        sdk.NewCoins(sdk.NewCoin("photon", lowFeeAmt)),
+			gasLimit:        newTestGasLimit(),
+			txMsg:           testdata.NewTestMsg(addr1),
+			txCheck:         true,
+			expErr:          true,
+		},
+		"globalfee contains zero coin, fee contains zero coins of the same denom and a lower fee of the other denom in global fee": {
+			minGasPrice:     minGasPrice0,
+			globalFeeParams: globalfeeParamsContain0,
+			gasPrice: sdk.NewCoins(
+				sdk.NewCoin("photon", lowFeeAmt),
+				sdk.NewCoin("uatom", sdk.ZeroInt())),
+			gasLimit: newTestGasLimit(),
+			txMsg:    testdata.NewTestMsg(addr1),
+			txCheck:  true,
+			expErr:   true,
+		},
+		"globalfee contains zero coin, fee is empty": {
+			minGasPrice:     minGasPrice0,
+			globalFeeParams: globalfeeParamsContain0,
+			gasPrice:        sdk.Coins{},
+			gasLimit:        newTestGasLimit(),
+			txMsg:           testdata.NewTestMsg(addr1),
+			txCheck:         true,
+			expErr:          false,
+		},
+		"globalfee contains zero coin, fee contains lower fee of zero coins's denom, lobalfee also contains nonzero coin,fee contains higher fee of nonzero coins's denom, ": {
+			minGasPrice:     minGasPrice0,
+			globalFeeParams: globalfeeParamsContain0,
+			gasPrice: sdk.NewCoins(
+				sdk.NewCoin("photon", lowFeeAmt),
+				sdk.NewCoin("uatom", highFeeAmt)),
+			gasLimit: newTestGasLimit(),
+			txMsg:    testdata.NewTestMsg(addr1),
+			txCheck:  true,
+			expErr:   false,
+		},
+		"globalfee contains zero coin, fee is all zero coins but in global fee's denom": {
+			minGasPrice:     minGasPrice0,
+			globalFeeParams: globalfeeParamsContain0,
+			gasPrice:       sdk.NewCoins(
+				sdk.NewCoin("photon", sdk.ZeroInt()),
+				sdk.NewCoin("uatom", sdk.ZeroInt()),
+				),
+			gasLimit:        newTestGasLimit(),
+			txMsg:           testdata.NewTestMsg(addr1),
+			txCheck:         true,
+			expErr:          false,
+		},
+		"globalfee contains zero coin, fee is higher than the nonzero coin": {
+			minGasPrice:     minGasPrice0,
+			globalFeeParams: globalfeeParamsContain0,
+			gasPrice:        sdk.NewCoins(sdk.NewCoin("photon", highFeeAmt)),
+			gasLimit:        newTestGasLimit(),
+			txMsg:           testdata.NewTestMsg(addr1),
+			txCheck:         true,
+			expErr:          false,
 		},
 		// test bypass msg
 		"msg type ibc, zero fee in globalfee denom": {

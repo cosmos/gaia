@@ -1,7 +1,6 @@
 package ante
 
 import (
-	"fmt"
 	"math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -9,7 +8,7 @@ import (
 	tmstrings "github.com/tendermint/tendermint/libs/strings"
 )
 
-//coins must be sorted
+// ParamStoreKeyMinGasPrices type require coins sorted. getGlobalFee will also return sorted coins
 func (mfd BypassMinFeeDecorator) getGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) sdk.Coins {
 	var globalMinGasPrices sdk.DecCoins
 	mfd.GlobalMinFee.Get(ctx, types.ParamStoreKeyMinGasPrices, &globalMinGasPrices)
@@ -30,10 +29,11 @@ func (mfd BypassMinFeeDecorator) getGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) 
 	return requiredGlobalFees.Sort()
 }
 
+// getMinGasPrice will also return sorted coins
 func getMinGasPrice(ctx sdk.Context, feeTx sdk.FeeTx) sdk.Coins {
 	minGasPrices := ctx.MinGasPrices()
 	gas := feeTx.GetGas()
-	// if minGasPrices=[], requiredFees=[]
+	// special case: if minGasPrices=[], requiredFees=[]
 	requiredFees := make(sdk.Coins, len(minGasPrices))
 	// if not all coins are zero, check fee with min_gas_price
 	if !minGasPrices.IsZero() {
@@ -60,24 +60,9 @@ func (mfd BypassMinFeeDecorator) bypassMinFeeMsgs(msgs []sdk.Msg) bool {
 	return true
 }
 
-// getTxPriority returns a naive tx priority based on the amount of the smallest denomination of the fee
-// provided in a transaction.
-func GetTxPriority(fee sdk.Coins) int64 {
-	var priority int64
-	for _, c := range fee {
-		p := int64(math.MaxInt64)
-		if c.Amount.IsInt64() {
-			p = c.Amount.Int64()
-		}
-		if priority == 0 || p < priority {
-			priority = p
-		}
-	}
-
-	return priority
-}
-
-// overwrite DenomsSubsetOfIncludingZero from sdk, to allow zero amt coins in superset. e.g. 1stake is DenomsSubsetOfIncludingZero 0stake.
+// DenomsSubsetOfIncludingZero and IsAnyGTEIncludingZero are similar to DenomsSubsetOf and IsAnyGTE in sdk. Since we allow zero coins in global fee(zero coins means the chain does not want to set a global fee but still want to define the fee's denom)
+//
+// overwrite DenomsSubsetOfIncludingZero from sdk, to allow zero amt coins in superset. e.g. 1stake is DenomsSubsetOfIncludingZero 0stake. [] is the DenomsSubsetOfIncludingZero of [0stake] but not [1stake].
 // DenomsSubsetOfIncludingZero returns true if coins's denoms is subset of coinsB's denoms.
 // if coins is empty set, empty set is any sets' subset
 func DenomsSubsetOfIncludingZero(coins, coinsB sdk.Coins) bool {
@@ -86,6 +71,7 @@ func DenomsSubsetOfIncludingZero(coins, coinsB sdk.Coins) bool {
 		return false
 	}
 	// coins=[], coinsB=[0stake]
+	// todo let all len(coins) == 0 pass and reject later at IsAnyGTEIncludingZero ?
 	if len(coins) == 0 && containZeroCoins(coinsB) {
 		return true
 	}
@@ -156,15 +142,13 @@ func containZeroCoins(coinsB sdk.Coins) bool {
 	return false
 }
 
-// globalFees, minGasPrices must be valid, but CombinedFeeRequirement does not valid them.
-// combine globalfee and min_gas_price to check together
-// coinsA globlfee. coinsB min_gas_price
+// CombinedFeeRequirement will combine the global fee and min_gas_price. globalFees, minGasPrices must be valid, but CombinedFeeRequirement does not valid them.
 func CombinedFeeRequirement(globalFees, minGasPrices sdk.Coins) sdk.Coins {
 	// empty min_gas_price
 	if len(minGasPrices) == 0 {
 		return globalFees
 	}
-	// empty global fee, this is not possible if we set default global fee
+	// empty global fee is not possible if we set default global fee
 	if len(globalFees) == 0 && len(minGasPrices) != 0 {
 		return globalFees
 	}
@@ -174,7 +158,6 @@ func CombinedFeeRequirement(globalFees, minGasPrices sdk.Coins) sdk.Coins {
 	for _, fee := range globalFees {
 		// min_gas_price denom in global fee
 		ok, c := minGasPrices.Find(fee.Denom)
-		fmt.Println("find or not", fee.Denom, ok)
 		if ok {
 			if c.Amount.GT(fee.Amount) {
 				allFees = append(allFees, c)
@@ -187,4 +170,21 @@ func CombinedFeeRequirement(globalFees, minGasPrices sdk.Coins) sdk.Coins {
 	}
 
 	return allFees.Sort()
+}
+
+// getTxPriority returns a naive tx priority based on the amount of the smallest denomination of the fee
+// provided in a transaction.
+func GetTxPriority(fee sdk.Coins) int64 {
+	var priority int64
+	for _, c := range fee {
+		p := int64(math.MaxInt64)
+		if c.Amount.IsInt64() {
+			p = c.Amount.Int64()
+		}
+		if priority == 0 || p < priority {
+			priority = p
+		}
+	}
+
+	return priority
 }

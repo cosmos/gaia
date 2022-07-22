@@ -6,7 +6,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.46.0-rc1.0.20220616181117-53d0cc919f1a
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/ibc-go/v3 v3.0.0
-	github.com/golangci/golangci-lint v1.47.1
+	github.com/golangci/golangci-lint v1.47.2
 	github.com/gorilla/mux v1.8.0
 	// github.com/cosmos/ibc-go/v3 v3.0.0
 	github.com/gravity-devs/liquidity/v2 v2.0.0-rc1

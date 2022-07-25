@@ -21,10 +21,10 @@ jobs:
           go-version: 1.18
       - name: Install runsim
         run: go install github.com/cosmos/tools/cmd/runsim@v1.0.0
-#       - uses: actions/cache@v2.1.7
-#         with:
-#           path: ~/go/bin
-#           key: ${{ runner.os }}-go-runsim-binary
+      - uses: actions/cache@v2.1.7
+        with:
+          path: ~/go/bin
+          key: ${{ runner.os }}-go-runsim-binary
 
 #  test-sim-nondeterminism:
 #    runs-on: ubuntu-latest
@@ -64,11 +64,11 @@ jobs:
       - uses: actions/setup-go@v2.1.5
         with:
           go-version: 1.18
-#       - uses: actions/cache@v2.1.7
-#         with:
-#           path: ~/go/bin
-#           key: ${{ runner.os }}-go-runsim-binary
-#         if: "env.GIT_DIFF != ''"
+      - uses: actions/cache@v2.1.7
+        with:
+          path: ~/go/bin
+          key: ${{ runner.os }}-go-runsim-binary
+        if: "env.GIT_DIFF != ''"
       - name: test-sim-import-export
         run: |
           make test-sim-import-export
@@ -88,11 +88,11 @@ jobs:
             **/**.go
             go.mod
             go.sum
-#       - uses: actions/cache@v2.1.7
-#         with:
-#           path: ~/go/bin
-#           key: ${{ runner.os }}-go-runsim-binary
-#         if: "env.GIT_DIFF != ''"
+      - uses: actions/cache@v2.1.7
+        with:
+          path: ~/go/bin
+          key: ${{ runner.os }}-go-runsim-binary
+        if: "env.GIT_DIFF != ''"
       - name: test after import
         run: |
           make test-sim-after-import
@@ -112,11 +112,11 @@ jobs:
             **/**.go
             go.mod
             go.sum
-#       - uses: actions/cache@v2.1.7
-#         with:
-#           path: ~/go/bin
-#           key: ${{ runner.os }}-go-runsim-binary
-#         if: "env.GIT_DIFF != ''"
+      - uses: actions/cache@v2.1.7
+        with:
+          path: ~/go/bin
+          key: ${{ runner.os }}-go-runsim-binary
+        if: "env.GIT_DIFF != ''"
       - name: test-sim-multi-seed-short
         run: |
           make test-sim-multi-seed-short

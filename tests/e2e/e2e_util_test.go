@@ -66,7 +66,7 @@ func (s *IntegrationTestSuite) connectIBCChains() {
 	s.T().Logf("connected %s and %s chains via IBC", s.chainA.id, s.chainB.id)
 }
 
-func (s *IntegrationTestSuite) sendMsgSend(c *chain, valIdx int, from, to, amt, fees string) {
+func (s *IntegrationTestSuite) sendMsgSend(c *chain, valIdx int, from, to, amt, fees string, expectErr bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -111,13 +111,13 @@ func (s *IntegrationTestSuite) sendMsgSend(c *chain, valIdx int, from, to, amt, 
 
 	var txResp sdk.TxResponse
 	s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
-	fmt.Println("bank send resp:", txResp.String())
 	endpoint := fmt.Sprintf("http://%s", s.valResources[c.id][valIdx].GetHostPort("1317/tcp"))
 
 	// wait for the tx to be committed on chain
 	s.Require().Eventuallyf(
 		func() bool {
-			return queryGaiaTx(endpoint, txResp.TxHash) == nil
+				gotErr := queryGaiaTx(endpoint, txResp.TxHash) != nil
+				return gotErr == expectErr
 		},
 		time.Minute,
 		5*time.Second,
@@ -348,11 +348,6 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 				ErrorStream:  &errBuf,
 			})
 			s.Require().NoError(err)
-			// todo remove
-			fmt.Println("cmd:", gaiaCommand)
-			fmt.Println("txResp", txResp.String())
-			fmt.Println("outbuf", outBuf.String())
-			fmt.Println("errbuf", errBuf.String())
 			s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
 			return strings.Contains(txResp.String(), "code: 0")
 		},

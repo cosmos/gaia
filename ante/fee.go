@@ -77,7 +77,6 @@ func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 			//requiredGlobalFees is sorted
 			requiredGlobalFees := mfd.getGlobalFee(ctx, feeTx)
 			allFees = CombinedFeeRequirement(requiredGlobalFees, requiredFees)
-			fmt.Println("allfees:", allFees)
 		} else {
 			// todo if panic here ( not have global fee module)?
 			allFees = requiredFees

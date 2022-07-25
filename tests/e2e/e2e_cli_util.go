@@ -40,6 +40,7 @@ func queryGaiaTx(endpoint, txHash string) error {
 	return nil
 }
 
+// if coin is zero, return empty coin.
 func getSpecificBalance(endpoint, addr, denom string) (amt sdk.Coin, err error) {
 	balances, err := queryGaiaAllBalances(endpoint, addr)
 	if err != nil {

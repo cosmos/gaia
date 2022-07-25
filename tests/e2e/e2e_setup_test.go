@@ -34,13 +34,16 @@ import (
 )
 
 const (
-	photonDenom                = "photon"
-	stakeDenom                 = "stake"
-	initBalanceStr             = "110000000000stake,100000000000000000photon,100000000000000000uatom"
-	minGasPrice                = "0.00001"
+	photonDenom    = "photon"
+	uatomDenom     = "uatom"
+	initBalanceStr = "110000000000stake,100000000000000000photon,100000000000000000uatom"
+	minGasPrice    = "0.00001"
 	//the test globalfee in genesis is the same as minGasPrice
-	globalFee                  = "0.00001photon"
-	newGlobalFees              = "0.00002photon,2stake,0.00003quark"
+	// global fee lower/higher than min_gas_price
+	initialGlobalFeeAmt        = "0.00001"
+	lowGlobalFeesAmt           = "0.000001"
+	highGlobalFeeAmt           = "0.0001"
+	gas                        = 200000
 	govSendMsgRecipientAddress = "cosmos1pkueemdeps77dwrqma03pwqk93nw39nuhccz02"
 	govProposalBlockBuffer     = 35
 )
@@ -169,7 +172,7 @@ func (s *IntegrationTestSuite) initNodes(c *chain) {
 		address, err := val.keyInfo.GetAddress()
 		s.Require().NoError(err)
 		s.Require().NoError(
-			modifyGenesis(val0ConfigDir, "", initBalanceStr, address, globalFee),
+			modifyGenesis(val0ConfigDir, "", initBalanceStr, address, initialGlobalFeeAmt+photonDenom),
 		)
 	}
 
@@ -582,7 +585,7 @@ func (s *IntegrationTestSuite) writeGovParamChangeProposalGlobalFees(c *chain, c
 				Value:    coins,
 			},
 		},
-		Deposit: "5000photon",
+		Deposit: "",
 	}, "", " ")
 	s.Require().NoError(err)
 

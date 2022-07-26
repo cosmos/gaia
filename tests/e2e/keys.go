@@ -8,6 +8,7 @@ import (
 	"github.com/cosmos/go-bip39"
 )
 
+//nolint:unused // this is called during e2e tests
 func createMnemonic() (string, error) {
 	entropySeed, err := bip39.NewEntropy(256)
 	if err != nil {
@@ -22,6 +23,7 @@ func createMnemonic() (string, error) {
 	return mnemonic, nil
 }
 
+//nolint:unused,deadcode // this is called during e2e tests
 func createMemoryKey() (mnemonic string, info *keyring.Record, err error) {
 	mnemonic, err = createMnemonic()
 	if err != nil {
@@ -36,6 +38,7 @@ func createMemoryKey() (mnemonic string, info *keyring.Record, err error) {
 	return mnemonic, account, nil
 }
 
+//nolint:unused // this is called during e2e tests
 func createMemoryKeyFromMnemonic(mnemonic string) (*keyring.Record, error) {
 	kb, err := keyring.New("testnet", keyring.BackendMemory, "", nil, cdc)
 	if err != nil {

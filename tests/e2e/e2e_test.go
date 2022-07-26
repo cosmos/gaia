@@ -412,27 +412,27 @@ global fee e2e tests:
 0. initial globalfee = 0.00001photon, min_gas_price = 0.00001photon
 
 test1. gov proposal globalfee = [], query globalfee still get empty
-   - tx with fee denom photon, fail
-   - tx with zero fee denom photon, pass
-   - tx with fee denom uatom, pass
-   - tx with fee empty, pass
+  - tx with fee denom photon, fail
+  - tx with zero fee denom photon, pass
+  - tx with fee denom uatom, pass
+  - tx with fee empty, pass
 
 test2. gov propose globalfee =  0.000001photon(lower than min_gas_price)
-   - tx with fee higher than 0.000001photon but lower than 0.00001photon, fail
-   - tx with fee higher than/equal to 0.00001photon, pass
-   - tx with fee uatom fail
+  - tx with fee higher than 0.000001photon but lower than 0.00001photon, fail
+  - tx with fee higher than/equal to 0.00001photon, pass
+  - tx with fee uatom fail
 
 test3. gov propose globalfee = 0.0001photon (higher than min_gas_price)
-   - tx with fee equal to 0.0001photon, pass
-   - tx with fee equal to 0.00001photon, fail
+  - tx with fee equal to 0.0001photon, pass
+  - tx with fee equal to 0.00001photon, fail
 
 test4. gov propose globalfee =  0.000001photon (lower than min_gas_price), 0uatom
-   - tx with fee 0.000001photon, fail
-   - tx with fee 0.000001photon, pass
-   - tx with empty fee, pass
-   - tx with fee uatom pass
-   - tx with fee 0uatom, 0.000005photon fail
-   - tx with fee 0uatom, 0.00001photon pass
+  - tx with fee 0.000001photon, fail
+  - tx with fee 0.000001photon, pass
+  - tx with empty fee, pass
+  - tx with fee uatom pass
+  - tx with fee 0uatom, 0.000005photon fail
+  - tx with fee 0uatom, 0.00001photon pass
 5. check balance correct: all the sucessful tx sent token amt is received
 6. gov propose change back to initial globalfee = 0.00001photon, This is for not influence other e2e tests.
 */
@@ -719,5 +719,19 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 	)
 }
 
-// todo bypass min fee tests
-// todo test global fee coin wrong order
+func (s *IntegrationTestSuite) TestByPassMinFeeWithdrawReward() {
+	// time.Sleep(10)
+	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	paidFeeAmt := sdk.MustNewDecFromStr(minGasPrice).Mul(sdk.NewDec(gas)).String()
+
+	payee, err := s.chainA.validators[0].keyInfo.GetAddress()
+	s.Require().NoError(err)
+	// pass
+	s.withdrawReward(s.chainA, 0, chainAAPIEndpoint, payee.String(), paidFeeAmt+photonDenom, false)
+	// pass
+	s.withdrawReward(s.chainA, 0, chainAAPIEndpoint, payee.String(), "0"+photonDenom, false)
+	// pass
+	s.withdrawReward(s.chainA, 0, chainAAPIEndpoint, payee.String(), "0"+uatomDenom, false)
+	// fail
+	s.withdrawReward(s.chainA, 0, chainAAPIEndpoint, payee.String(), paidFeeAmt+uatomDenom, true)
+}

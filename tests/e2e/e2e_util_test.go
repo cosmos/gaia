@@ -116,8 +116,64 @@ func (s *IntegrationTestSuite) sendMsgSend(c *chain, valIdx int, from, to, amt, 
 	// wait for the tx to be committed on chain
 	s.Require().Eventuallyf(
 		func() bool {
-				gotErr := queryGaiaTx(endpoint, txResp.TxHash) != nil
-				return gotErr == expectErr
+			gotErr := queryGaiaTx(endpoint, txResp.TxHash) != nil
+			return gotErr == expectErr
+		},
+		time.Minute,
+		5*time.Second,
+		"stdout: %s, stderr: %s",
+		outBuf.String(), errBuf.String(),
+	)
+}
+
+func (s *IntegrationTestSuite) withdrawReward(c *chain, valIdx int, endpoint, payee, fees string, expectErr bool) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("%s withdraw-all-rewards on chain %s", payee, c.id)
+
+	exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
+		Context:      ctx,
+		AttachStdout: true,
+		AttachStderr: true,
+		Container:    s.valResources[c.id][valIdx].Container.ID,
+		User:         "root",
+		Cmd: []string{
+			"gaiad",
+			"tx",
+			"distribution",
+			"withdraw-all-rewards",
+			fmt.Sprintf("--%s=%s", flags.FlagFrom, payee),
+			fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
+			fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+			"--keyring-backend=test",
+			"--output=json",
+			"-y",
+		},
+	})
+	s.Require().NoError(err)
+
+	var (
+		outBuf bytes.Buffer
+		errBuf bytes.Buffer
+	)
+
+	err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
+		Context:      ctx,
+		Detach:       false,
+		OutputStream: &outBuf,
+		ErrorStream:  &errBuf,
+	})
+	s.Require().NoErrorf(err, "stdout: %s, stderr: %s", outBuf.String(), errBuf.String())
+
+	var txResp sdk.TxResponse
+	s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
+
+	// wait for the tx to be committed on chain
+	s.Require().Eventuallyf(
+		func() bool {
+			gotErr := queryGaiaTx(endpoint, txResp.TxHash) != nil
+			return gotErr == expectErr
 		},
 		time.Minute,
 		5*time.Second,

@@ -5,9 +5,6 @@ import (
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -22,8 +19,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"github.com/cosmos/gaia/v8/app/params"
+	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/spf13/viper"
@@ -299,7 +302,29 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 		appConfig.API.Enable = true
 		appConfig.MinGasPrices = fmt.Sprintf("%s%s", minGasPrice, photonDenom)
 
-		srvconfig.WriteConfigFile(appCfgPath, appConfig)
+	//	 srvconfig.WriteConfigFile(appCfgPath, appConfig)
+		appCustomConfig := params.CustomAppConfig{
+			Config: *appConfig,
+			BypassMinFeeMsgTypes: []string{
+				//todo: use ibc as exmaple ?
+				sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),
+				sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
+				sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
+				"/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"}}
+
+		customAppTemplate :=  `
+###############################################################################
+###                        Custom Gaia Configuration                        ###
+###############################################################################
+# bypass-min-fee-msg-types defines custom message types the operator may set that
+# will bypass minimum fee checks during CheckTx.
+#
+# Example:
+# ["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement", ...]
+bypass-min-fee-msg-types = ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward","/ibc.applications.transfer.v1.MsgTransfer"]
+` + srvconfig.DefaultConfigTemplate
+		srvconfig.SetConfigTemplate(customAppTemplate)
+		srvconfig.WriteConfigFile(appCfgPath, appCustomConfig)
 	}
 }
 

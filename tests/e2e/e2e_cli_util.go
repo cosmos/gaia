@@ -83,7 +83,7 @@ func queryGaiaDenomBalance(endpoint, addr, denom string) (sdk.Coin, error) {
 		"%s/cosmos/bank/v1beta1/balances/%s/by_denom?denom=%s",
 		endpoint, addr, denom,
 	)
-	resp, err := http.Get(path)
+	resp, err := http.Get(path) //nolint:gosec // this is used as a part of the e2e suite.
 	if err != nil {
 		return zeroCoin, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}

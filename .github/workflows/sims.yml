@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: Build
     steps:
-      - uses: technote-space/get-diff-action@v6.0.1
+      - uses: technote-space/get-diff-action@v6
         with:
           PATTERNS: |
             **/**.go
@@ -81,8 +81,8 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version: 1.18
-      - uses: actions/checkout@3
-      - uses: technote-space/get-diff-action@v6.0.1
+      - uses: actions/checkout@v3
+      - uses: technote-space/get-diff-action@v6
         with:
           PATTERNS: |
             **/**.go
@@ -106,7 +106,7 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version: 1.18
-      - uses: technote-space/get-diff-action@v6.0.1
+      - uses: technote-space/get-diff-action@v6
         with:
           PATTERNS: |
             **/**.go

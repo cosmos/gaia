@@ -29,7 +29,7 @@ sudo apt-get install -y make gcc
 ## Install Go
 
 ::: tip
-**Go 1.16+** or later is required for the Cosmos SDK.
+**Go 1.18+** or later is required for the Cosmos SDK.
 :::
 
 We suggest the following two ways to install Go. Check out the [official docs](https://golang.org/doc/install) and Go installer for the correct download for your operating system. Alternatively, you can install Go yourself from the command line. Detailed below are standard default installation locations, but feel free to customize.
@@ -38,11 +38,11 @@ We suggest the following two ways to install Go. Check out the [official docs](h
 
 **Ubuntu:**
 
-At the time of this writing, the latest release is `1.17.4`. We're going to download the tarball, extract it to `/usr/local`, and export `GOROOT` to our `$PATH`
+At the time of this writing, the latest release is `1.18.4`. We're going to download the tarball, extract it to `/usr/local`, and export `GOROOT` to our `$PATH`
 ```bash
-curl -OL https://golang.org/dl/go1.17.4.linux-amd64.tar.gz
+curl -OL https://golang.org/dl/go1.18.4.linux-amd64.tar.gz
 
-sudo tar -C /usr/local -xvf go1.17.4.linux-amd64.tar.gz
+sudo tar -C /usr/local -xvf go1.18.4.linux-amd64.tar.gz
 
 export PATH=$PATH:/usr/local/go/bin
 

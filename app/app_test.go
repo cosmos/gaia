@@ -9,7 +9,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	db "github.com/tendermint/tm-db"
 
-	gaia "github.com/cosmos/gaia/v7/app"
+	gaia "github.com/cosmos/gaia/v8/app"
 )
 
 type EmptyAppOptions struct{}
@@ -27,7 +27,7 @@ func TestGaiaApp_BlockedModuleAccountAddrs(t *testing.T) {
 		map[int64]bool{},
 		gaia.DefaultNodeHome,
 		0,
-		gaia.MakeEncodingConfig(),
+		gaia.MakeTestEncodingConfig(),
 		EmptyAppOptions{},
 	)
 	blockedAddrs := app.BlockedModuleAccountAddrs()

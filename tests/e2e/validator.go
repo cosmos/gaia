@@ -49,7 +49,7 @@ func (v *validator) configDir() string {
 
 func (v *validator) createConfig() error {
 	p := path.Join(v.configDir(), "config")
-	return os.MkdirAll(p, 0755)
+	return os.MkdirAll(p, 0o755)
 }
 
 func (v *validator) init() error {
@@ -112,12 +112,12 @@ func (v *validator) createConsensusKey() error {
 	config.Moniker = v.moniker
 
 	pvKeyFile := config.PrivValidator.KeyFile()
-	if err := tmos.EnsureDir(filepath.Dir(pvKeyFile), 0777); err != nil {
+	if err := tmos.EnsureDir(filepath.Dir(pvKeyFile), 0o777); err != nil {
 		return err
 	}
 
 	pvStateFile := config.PrivValidator.StateFile()
-	if err := tmos.EnsureDir(filepath.Dir(pvStateFile), 0777); err != nil {
+	if err := tmos.EnsureDir(filepath.Dir(pvStateFile), 0o777); err != nil {
 		return err
 	}
 

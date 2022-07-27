@@ -1,7 +1,7 @@
 run:
   tests: false
-  skip-dirs:
-    - tests/e2e
+  # timeout for analysis, e.g. 30s, 5m, default is 1m
+  timeout: 5m
 
 linters:
   disable-all: true
@@ -10,31 +10,27 @@ linters:
     - deadcode
     - depguard
     - dogsled
-    # - errcheck
+    - exportloopref
     - goconst
     - gocritic
     - gofmt
+    - gofumpt
     - goimports
-    - golint
     - gosec
     - gosimple
     - govet
     - ineffassign
-    - interfacer
-    - maligned
     - misspell
     - nakedret
-    - prealloc
-    - scopelint
+    - nolintlint
+    - revive
     - staticcheck
     - structcheck
     - stylecheck
     - typecheck
     - unconvert
-    - unused
     - unparam
-    # - wsl
-    - nolintlint
+    - unused
 
 issues:
   exclude-rules:
@@ -47,9 +43,6 @@ issues:
     - text: "don't use an underscore in package name"
       linters:
         - golint
-    - text: "put a space between `//` and comment text"
-      linters:
-        - gocritic
     - text: "ST1003:"
       linters:
         - stylecheck
@@ -58,9 +51,11 @@ issues:
     - text: "ST1016:"
       linters:
         - stylecheck
-    - text: "SA1019: codec.LegacyAmino is deprecated"
+    - path: "migrations"
+      text: "SA1019:"
       linters:
         - staticcheck
+
   max-issues-per-linter: 10000
   max-same-issues: 10000
 

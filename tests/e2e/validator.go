@@ -21,8 +21,8 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	tmcfg "github.com/tendermint/tendermint/config"
 	tmos "github.com/tendermint/tendermint/libs/os"
+	"github.com/tendermint/tendermint/p2p"
 	"github.com/tendermint/tendermint/privval"
-	tmtypes "github.com/tendermint/tendermint/types"
 
 	gaia "github.com/cosmos/gaia/v8/app"
 )
@@ -36,7 +36,7 @@ type validator struct {
 	privateKey       cryptotypes.PrivKey
 	consensusKey     privval.FilePVKey
 	consensusPrivKey cryptotypes.PrivKey
-	nodeKey          privval.NodeKeyFile
+	nodeKey          p2p.NodeKey
 }
 
 func (v *validator) instanceName() string {
@@ -81,8 +81,7 @@ func (v *validator) init() error {
 		return fmt.Errorf("failed to export app genesis state: %w", err)
 	}
 
-	tmcfg.WriteConfigFile(config.RootDir, config)
-
+	tmcfg.WriteConfigFile(filepath.Join(config.RootDir, "config", "config.toml"), config)
 	return nil
 }
 
@@ -93,12 +92,12 @@ func (v *validator) createNodeKey() error {
 	config.SetRoot(v.configDir())
 	config.Moniker = v.moniker
 
-	nodeKey, err := tmtypes.LoadOrGenNodeKey(config.NodeKeyFile())
+	nodeKey, err := p2p.LoadOrGenNodeKey(config.NodeKeyFile())
 	if err != nil {
 		return err
 	}
 
-	v.nodeKey = nodeKey
+	v.nodeKey = *nodeKey
 	return nil
 }
 
@@ -109,7 +108,7 @@ func (v *validator) createConsensusKey() error {
 	config.SetRoot(v.configDir())
 	config.Moniker = v.moniker
 
-	pvKeyFile := config.PrivValidator.KeyFile()
+	pvKeyFile := config.PrivValidatorKeyFile()
 	if err := tmos.EnsureDir(filepath.Dir(pvKeyFile), 0o777); err != nil {
 		return err
 	}
@@ -126,8 +125,7 @@ func (v *validator) createConsensusKey() error {
 }
 
 func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
-	dir := v.configDir()
-	kb, err := keyring.New(keyringAppName, keyring.BackendTest, dir, nil, cdc)
+	kb, err := keyring.New(keyringAppName, keyring.BackendTest, v.configDir())
 	if err != nil {
 		return err
 	}
@@ -153,7 +151,7 @@ func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
 		return err
 	}
 
-	v.keyInfo = *info
+	v.keyInfo = info
 	v.mnemonic = mnemonic
 	v.privateKey = privKey
 
@@ -178,21 +176,15 @@ func (v *validator) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
 	}
 
 	// get the initial validator min self delegation
-	minSelfDelegation, ok := sdk.NewIntFromString("1")
-	if !ok {
-		return nil, fmt.Errorf("NewIntFromString(\"1\") failed")
-	}
+	minSelfDelegation, _ := sdk.NewIntFromString("1")
 
 	valPubKey, err := cryptocodec.FromTmPubKeyInterface(v.consensusKey.PubKey)
 	if err != nil {
 		return nil, err
 	}
-	address, err := v.keyInfo.GetAddress()
-	if err != nil {
-		return nil, err
-	}
+
 	return stakingtypes.NewMsgCreateValidator(
-		sdk.ValAddress(address),
+		sdk.ValAddress(v.keyInfo.GetAddress()),
 		valPubKey,
 		amount,
 		description,
@@ -208,7 +200,7 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 		return nil, err
 	}
 
-	txBuilder.SetMemo(fmt.Sprintf("%s@%s:26656", v.nodeKey.ID, v.instanceName()))
+	txBuilder.SetMemo(fmt.Sprintf("%s@%s:26656", v.nodeKey.ID(), v.instanceName()))
 	txBuilder.SetFeeAmount(sdk.NewCoins())
 	txBuilder.SetGasLimit(200000)
 
@@ -226,12 +218,8 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 	// Note: This line is not needed for SIGN_MODE_LEGACY_AMINO, but putting it
 	// also doesn't affect its generated sign bytes, so for code's simplicity
 	// sake, we put it here.
-	pk, err := v.keyInfo.GetPubKey()
-	if err != nil {
-		return nil, err
-	}
 	sig := txsigning.SignatureV2{
-		PubKey: pk,
+		PubKey: v.keyInfo.GetPubKey(),
 		Data: &txsigning.SingleSignatureData{
 			SignMode:  txsigning.SignMode_SIGN_MODE_DIRECT,
 			Signature: nil,
@@ -256,12 +244,9 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 	if err != nil {
 		return nil, err
 	}
-	pk, err = v.keyInfo.GetPubKey()
-	if err != nil {
-		return nil, err
-	}
+
 	sig = txsigning.SignatureV2{
-		PubKey: pk,
+		PubKey: v.keyInfo.GetPubKey(),
 		Data: &txsigning.SingleSignatureData{
 			SignMode:  txsigning.SignMode_SIGN_MODE_DIRECT,
 			Signature: sigBytes,

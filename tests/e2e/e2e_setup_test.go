@@ -277,7 +277,7 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 			}
 
 			peer := c.validators[j]
-			peerID := fmt.Sprintf("%s@%s%d:26656", peer.nodeKey.ID, peer.moniker, j)
+			peerID := fmt.Sprintf("%s@%s%d:26656", peer.nodeKey.ID(), peer.moniker, j)
 			peers = append(peers, peerID)
 		}
 

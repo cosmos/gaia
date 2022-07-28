@@ -12,6 +12,7 @@ import (
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
+//nolint:deadcode,unused // this is called only by test files
 func queryGaiaTx(endpoint, txHash string) error {
 	resp, err := http.Get(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs/%s", endpoint, txHash))
 	if err != nil {
@@ -37,6 +38,7 @@ func queryGaiaTx(endpoint, txHash string) error {
 	return nil
 }
 
+//nolint:deadcode,unused // this is called only by test files
 func getSpecificBalance(endpoint, addr, denom string) (amt sdk.Coin, err error) {
 	balances, err := queryGaiaAllBalances(endpoint, addr)
 	if err != nil {
@@ -51,6 +53,7 @@ func getSpecificBalance(endpoint, addr, denom string) (amt sdk.Coin, err error) 
 	return amt, nil
 }
 
+//nolint:unused // this is called only by test files
 func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) {
 	resp, err := http.Get(fmt.Sprintf("%s/cosmos/bank/v1beta1/balances/%s", endpoint, addr))
 	if err != nil {
@@ -72,6 +75,7 @@ func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) {
 	return balancesResp.Balances, nil
 }
 
+//nolint:deadcode,unused // this is called only by test files
 func queryGaiaDenomBalance(endpoint, addr, denom string) (sdk.Coin, error) {
 	var zeroCoin sdk.Coin
 
@@ -79,7 +83,7 @@ func queryGaiaDenomBalance(endpoint, addr, denom string) (sdk.Coin, error) {
 		"%s/cosmos/bank/v1beta1/balances/%s/by_denom?denom=%s",
 		endpoint, addr, denom,
 	)
-	resp, err := http.Get(path)
+	resp, err := http.Get(path) //nolint:gosec // this is okay here because it is only in the tests.
 	if err != nil {
 		return zeroCoin, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
@@ -99,11 +103,12 @@ func queryGaiaDenomBalance(endpoint, addr, denom string) (sdk.Coin, error) {
 	return *balanceResp.Balance, nil
 }
 
-func queryGovProposal(endpoint string, proposalId int) (govv1beta1.QueryProposalResponse, error) {
+//nolint:deadcode,unused // this is called only by test files
+func queryGovProposal(endpoint string, proposalID int) (govv1beta1.QueryProposalResponse, error) {
 	var emptyProp govv1beta1.QueryProposalResponse
 
-	path := fmt.Sprintf("%s/cosmos/gov/v1beta1/proposals/%d", endpoint, proposalId)
-	resp, err := http.Get(path)
+	path := fmt.Sprintf("%s/cosmos/gov/v1beta1/proposals/%d", endpoint, proposalID)
+	resp, err := http.Get(path) //nolint:gosec // this is okay here because it is only in the tests.
 	if err != nil {
 		return emptyProp, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}

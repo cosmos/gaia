@@ -17,6 +17,7 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 )
 
+//nolint:unused // this is called only by test files
 func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {
 	serverCtx := server.NewDefaultContext()
 	config := serverCtx.Config
@@ -41,6 +42,7 @@ func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {
 	return doc, nil
 }
 
+//nolint:deadcode,unused // this is called only by test files
 func addGenesisAccount(path, moniker, amountStr string, accAddr sdk.AccAddress) error {
 	serverCtx := server.NewDefaultContext()
 	config := serverCtx.Config

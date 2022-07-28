@@ -125,7 +125,8 @@ func (v *validator) createConsensusKey() error {
 }
 
 func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
-	kb, err := keyring.New(keyringAppName, keyring.BackendTest, v.configDir())
+	dir := v.configDir()
+	kb, err := keyring.New(keyringAppName, keyring.BackendTest, dir, nil, cdc)
 	if err != nil {
 		return err
 	}
@@ -151,7 +152,7 @@ func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
 		return err
 	}
 
-	v.keyInfo = info
+	v.keyInfo = *info
 	v.mnemonic = mnemonic
 	v.privateKey = privKey
 
@@ -183,8 +184,13 @@ func (v *validator) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
 		return nil, err
 	}
 
+	address, err := v.keyInfo.GetAddress()
+	if err != nil {
+		return nil, err
+	}
+
 	return stakingtypes.NewMsgCreateValidator(
-		sdk.ValAddress(v.keyInfo.GetAddress()),
+		sdk.ValAddress(address),
 		valPubKey,
 		amount,
 		description,
@@ -218,8 +224,12 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 	// Note: This line is not needed for SIGN_MODE_LEGACY_AMINO, but putting it
 	// also doesn't affect its generated sign bytes, so for code's simplicity
 	// sake, we put it here.
+	pk, err := v.keyInfo.GetPubKey()
+	if err != nil {
+		return nil, err
+	}
 	sig := txsigning.SignatureV2{
-		PubKey: v.keyInfo.GetPubKey(),
+		PubKey: pk,
 		Data: &txsigning.SingleSignatureData{
 			SignMode:  txsigning.SignMode_SIGN_MODE_DIRECT,
 			Signature: nil,
@@ -246,7 +256,7 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 	}
 
 	sig = txsigning.SignatureV2{
-		PubKey: v.keyInfo.GetPubKey(),
+		PubKey: pk,
 		Data: &txsigning.SingleSignatureData{
 			SignMode:  txsigning.SignMode_SIGN_MODE_DIRECT,
 			Signature: sigBytes,

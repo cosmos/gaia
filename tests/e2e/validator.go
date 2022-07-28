@@ -36,7 +36,7 @@ type validator struct {
 	privateKey       cryptotypes.PrivKey
 	consensusKey     privval.FilePVKey
 	consensusPrivKey cryptotypes.PrivKey
-	nodeKey          tmtypes.NodeKey
+	nodeKey          privval.NodeKeyFile
 }
 
 func (v *validator) instanceName() string {
@@ -81,10 +81,8 @@ func (v *validator) init() error {
 		return fmt.Errorf("failed to export app genesis state: %w", err)
 	}
 
-	err = tmcfg.WriteConfigFile(config.RootDir, config)
-	if err != nil {
-		return err
-	}
+	tmcfg.WriteConfigFile(config.RootDir, config)
+
 	return nil
 }
 
@@ -116,15 +114,12 @@ func (v *validator) createConsensusKey() error {
 		return err
 	}
 
-	pvStateFile := config.PrivValidator.StateFile()
+	pvStateFile := config.PrivValidatorStateFile()
 	if err := tmos.EnsureDir(filepath.Dir(pvStateFile), 0o777); err != nil {
 		return err
 	}
 
-	filePV, err := privval.LoadOrGenFilePV(pvKeyFile, pvStateFile)
-	if err != nil {
-		return err
-	}
+	filePV := privval.LoadOrGenFilePV(pvKeyFile, pvStateFile)
 	v.consensusKey = filePV.Key
 
 	return nil

@@ -7,7 +7,7 @@ In cosmoshub, there are two types of fees:
 - min_gas_pricess
   
 ### Global Fees
-Global fees are set up through gov proposal,  global fees are [`sdk.DecCoins`](https://github.com/cosmos/cosmos-sdk/blob/a1777a87b65fad74732cfe1a4c27683dcffffbfe/types/dec_coin.go#L158) type and globally valid. [Valid global fees](https://github.com/cosmos/gaia/blob/82c4353ab1b04cf656a8c95d226c30c7845f157b/x/globalfee/types/params.go#L54-L99) have to be and sorted by denom, have have nonnegtive amount, with a valid and unique denomination(denom) (i.e no duplicates), Global fees allow zero coins! Zero coins can help define the desired fee denoms even the chain might not charge fees. Each transaction (except bypass transaction) has to meet the global fees' requirement:
+Global fees are [`sdk.DecCoins`](https://github.com/cosmos/cosmos-sdk/blob/a1777a87b65fad74732cfe1a4c27683dcffffbfe/types/dec_coin.go#L158) type and globally valid. Global fees are set up through gov proposal. [Valid global fees](https://github.com/cosmos/gaia/blob/82c4353ab1b04cf656a8c95d226c30c7845f157b/x/globalfee/types/params.go#L54-L99) have to be and sorted by denom, have have nonnegtive amount, with a valid and unique denomination(denom) (i.e no duplicates), Global fees allow zero coins! Zero coins can help define the desired fee denoms even the chain might not charge fees. Each transaction (except bypass transaction) has to meet the global fees' requirement:
  - all of paidfees' denoms (except zero coins) have to be a subset of the globalfee's denom set.
 - paidfees contain at least one denom that is present and greater/equal to the amount of the same denom in globalfee.
 

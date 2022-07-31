@@ -251,6 +251,7 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 	}
 }
 
+// initValidatorConfigs initializes the validator configs for the given chain.
 func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 	for i, val := range c.validators {
 		tmCfgPath := filepath.Join(val.configDir(), "config", "config.toml")
@@ -296,6 +297,7 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 	}
 }
 
+// runValidators runs the validators in the chain
 func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 	s.T().Logf("starting Gaia %s validator containers...", c.id)
 

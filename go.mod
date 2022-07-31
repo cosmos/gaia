@@ -5,9 +5,9 @@ go 1.18
 require (
 	github.com/cosmos/cosmos-sdk v0.46.0
 	github.com/cosmos/go-bip39 v1.0.0
+	github.com/cosmos/ibc-go/v5 v5.0.0-20220727204721-79cd69f707ee
 	github.com/golangci/golangci-lint v1.47.2
 	github.com/gorilla/mux v1.8.0
-	github.com/cosmos/ibc-go/v5 v5.0.0-20220727204721-79cd69f707ee
 	github.com/gravity-devs/liquidity/v2 v2.0.0-rc3
 	github.com/ory/dockertest/v3 v3.9.1
 	github.com/rakyll/statik v0.1.7

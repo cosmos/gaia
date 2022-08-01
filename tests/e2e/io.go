@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-//nolint:deadcode,unused // this is called only by test files
+
 func copyFile(src, dst string) (int64, error) {
 	sourceFileStat, err := os.Stat(src)
 	if err != nil {
@@ -34,7 +34,6 @@ func copyFile(src, dst string) (int64, error) {
 	return nBytes, err
 }
 
-//nolint:deadcode, unused // this is called only by test files
 func writeFile(path string, body []byte) error {
 	_, err := os.Create(path)
 	if err != nil {
@@ -42,4 +41,5 @@ func writeFile(path string, body []byte) error {
 	}
 
 	return ioutil.WriteFile(path, body, 0o600)
+
 }

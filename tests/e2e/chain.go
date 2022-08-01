@@ -23,7 +23,7 @@ const (
 
 var (
 	encodingConfig params.EncodingConfig
-	cdc            codec.Codec
+	cdc            codec.Codec //nolint:unused // this is called during e2e tests
 )
 
 func init() {
@@ -49,7 +49,7 @@ type chain struct {
 	validators []*validator
 }
 
-//nolint:deadcode,unused // this is called only by test files
+
 func newChain() (*chain, error) {
 	tmpDir, err := ioutil.TempDir("", "gaia-e2e-testnet-")
 	if err != nil {
@@ -62,12 +62,12 @@ func newChain() (*chain, error) {
 	}, nil
 }
 
-// this is called only by test files
+
 func (c *chain) configDir() string {
 	return fmt.Sprintf("%s/%s", c.dataDir, c.id)
 }
 
-// this is called only by test files
+
 func (c *chain) createAndInitValidators(count int) error {
 	for i := 0; i < count; i++ {
 		node := c.createValidator(i)
@@ -94,7 +94,7 @@ func (c *chain) createAndInitValidators(count int) error {
 	return nil
 }
 
-// this is called only by test files
+
 func (c *chain) createAndInitValidatorsWithMnemonics(count int, mnemonics []string) error {
 	for i := 0; i < count; i++ {
 		// create node
@@ -122,7 +122,7 @@ func (c *chain) createAndInitValidatorsWithMnemonics(count int, mnemonics []stri
 	return nil
 }
 
-// this is called only by test files
+
 func (c *chain) createValidator(index int) *validator {
 	return &validator{
 		chain:   c,

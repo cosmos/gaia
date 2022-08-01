@@ -289,7 +289,7 @@ func (s *IntegrationTestSuite) submitNewGovProposal(chainAAPIEndpoint string, se
 
 func (s *IntegrationTestSuite) depositGovProposal(chainAAPIEndpoint string, sender string, proposalId int) {
 	s.Run("deposit_gov_proposal", func() {
-		s.execGovDepositProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposalId, depositAmount, fees.String())
+		s.execGovDepositProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposalId, depositAmount.String(), fees.String())
 
 		s.Require().Eventually(
 			func() bool {

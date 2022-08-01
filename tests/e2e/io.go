@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-//nolint:unused,deadcode // this is called during e2e tests
+
 func copyFile(src, dst string) (int64, error) {
 	sourceFileStat, err := os.Stat(src)
 	if err != nil {
@@ -34,12 +34,12 @@ func copyFile(src, dst string) (int64, error) {
 	return nBytes, err
 }
 
-//nolint:unused,deadcode // this is called during e2e tests
 func writeFile(path string, body []byte) error {
 	_, err := os.Create(path)
 	if err != nil {
 		return err
 	}
 
-	return ioutil.WriteFile(path, body, 0o644) //nolint:gosec //common cosmos issue, but does not work at 600.
+	return ioutil.WriteFile(path, body, 0o600)
+
 }

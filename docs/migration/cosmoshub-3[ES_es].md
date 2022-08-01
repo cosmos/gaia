@@ -27,10 +27,10 @@ Si tienes un explorador de bloques, un monedero, un exchange, un validador o cua
 1. [Migración de endpoints REST](https://github.com/cosmos/cosmos-sdk/blob/master/docs/migrations/rest.md)
 1. [Recopilación de modificaciones de ruptura de los registros de cambios](https://github.com/cosmos/gaia/blob/main/docs/migration/breaking_changes.md)
 1. [Comunicación entre cadenas de bloques (IBC) - transacciones entre cadenas](https://figment.io/resources/cosmos-stargate-upgrade-overview/#ibc)
-1. [Migración de Protobuf - rendimiento de la cadena de bloques y aceleración del desarrollo](https://figment.network/resources/cosmos-stargate-upgrade-overview/#proto)
-1. [Sincronización de estados - minutos para sincronizar nuevos nodos](https://figment.network/resources/cosmos-stargate-upgrade-overview/#sync)
-1. [Clientes ligeros con todas las funciones](https://figment.network/resources/cosmos-stargate-upgrade-overview/#light)
-1. [Módulo de actualización de la cadena - automatización de la actualización](https://figment.network/resources/cosmos-stargate-upgrade-overview/#upgrade)
+1. [Migración de Protobuf - rendimiento de la cadena de bloques y aceleración del desarrollo](https://figment.io/resources/cosmos-stargate-upgrade-overview/#proto)
+1. [Sincronización de estados - minutos para sincronizar nuevos nodos](https://figment.io/resources/cosmos-stargate-upgrade-overview/#sync)
+1. [Clientes ligeros con todas las funciones](https://figment.io/resources/cosmos-stargate-upgrade-overview/#light)
+1. [Módulo de actualización de la cadena - automatización de la actualización](https://figment.io/resources/cosmos-stargate-upgrade-overview/#upgrade)
 
 Si quieres probar el procedimiento antes de que se produzca la actualización el 18 de febrero, consulta este [post](https://github.com/cosmos/gaia/issues/569#issuecomment-767910963) en relación a ello.
 

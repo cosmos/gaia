@@ -12,8 +12,6 @@ import (
 )
 
 func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
-	// TODO: Remove skip once IBC is reintegrated
-	s.T().Skip()
 	var ibcStakeDenom string
 
 	s.Run("send_photon_to_chainB", func() {

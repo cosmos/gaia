@@ -5,8 +5,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ory/dockertest/v3/docker"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
@@ -168,16 +166,8 @@ func (s *IntegrationTestSuite) TestGovSoftwareUpgrade() {
 
 	s.verifyChainHaltedAtUpgradeHeight(s.chainA, 0, proposalHeight)
 	s.T().Logf("Successfully halted chain at height %d", proposalHeight)
-
-	currentChain := s.chainA
-
-	for valIdx := range currentChain.validators {
-		var opts docker.RemoveContainerOptions
-		opts.ID = s.valResources[currentChain.id][valIdx].Container.ID
-		opts.Force = true
-		s.dkrPool.Client.RemoveContainer(opts)
-		s.T().Logf("Removed Container: %s", s.valResources[currentChain.id][valIdx].Container.Name[1:])
-	}
+	fmt.Println("s.valResources", s.valResources)
+	s.TearDownSuite()
 
 	s.T().Logf("Restarting containers")
 	s.SetupSuite()

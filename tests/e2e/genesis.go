@@ -18,7 +18,7 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 )
 
-//nolint:unused // this is called only by test files
+// this is called only by test files
 func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {
 	serverCtx := server.NewDefaultContext()
 	config := serverCtx.Config

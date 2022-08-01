@@ -53,7 +53,7 @@ func getSpecificBalance(endpoint, addr, denom string) (amt sdk.Coin, err error) 
 	return amt, nil
 }
 
-//nolint:unused // this is called only by test files
+// this is called only by test files
 func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) {
 	resp, err := http.Get(fmt.Sprintf("%s/cosmos/bank/v1beta1/balances/%s", endpoint, addr))
 	if err != nil {

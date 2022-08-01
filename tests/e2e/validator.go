@@ -28,7 +28,6 @@ import (
 	gaia "github.com/cosmos/gaia/v8/app"
 )
 
-//nolint:unused
 type validator struct {
 	chain            *chain
 	index            int
@@ -41,23 +40,19 @@ type validator struct {
 	nodeKey          p2p.NodeKey
 }
 
-//nolint:unused
 func (v *validator) instanceName() string {
 	return fmt.Sprintf("%s%d", v.moniker, v.index)
 }
 
-//nolint:unused
 func (v *validator) configDir() string {
 	return fmt.Sprintf("%s/%s", v.chain.configDir(), v.instanceName())
 }
 
-//nolint:unused
 func (v *validator) createConfig() error {
 	p := path.Join(v.configDir(), "config")
 	return os.MkdirAll(p, 0o755)
 }
 
-//nolint:unused
 func (v *validator) init() error {
 	if err := v.createConfig(); err != nil {
 		return err
@@ -91,7 +86,7 @@ func (v *validator) init() error {
 	return nil
 }
 
-//nolint:unused // this is called only by test files
+// this is called only by test files
 func (v *validator) createNodeKey() error {
 	serverCtx := server.NewDefaultContext()
 	config := serverCtx.Config
@@ -108,7 +103,6 @@ func (v *validator) createNodeKey() error {
 	return nil
 }
 
-//nolint:unused
 func (v *validator) createConsensusKey() error {
 	serverCtx := server.NewDefaultContext()
 	config := serverCtx.Config
@@ -132,7 +126,6 @@ func (v *validator) createConsensusKey() error {
 	return nil
 }
 
-//nolint:unused
 func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
 	dir := v.configDir()
 	kb, err := keyring.New(keyringAppName, keyring.BackendTest, dir, nil, cdc)
@@ -168,7 +161,7 @@ func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
 	return nil
 }
 
-//nolint:unused // this is called only by test files
+// this is called only by test files
 func (v *validator) createKey(name string) error {
 	mnemonic, err := createMnemonic()
 	if err != nil {
@@ -178,7 +171,7 @@ func (v *validator) createKey(name string) error {
 	return v.createKeyFromMnemonic(name, mnemonic)
 }
 
-//nolint:unused // this is called only by test files
+// this is called only by test files
 func (v *validator) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
 	description := stakingtypes.NewDescription(v.moniker, "", "", "", "")
 	commissionRates := stakingtypes.CommissionRates{
@@ -210,7 +203,7 @@ func (v *validator) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
 	)
 }
 
-//nolint:unused // this is called only by test files
+// this is called only by test files
 func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 	txBuilder := encodingConfig.TxConfig.NewTxBuilder()
 

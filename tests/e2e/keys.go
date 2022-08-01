@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/go-bip39"
 )
 
-//nolint:unused // this is called only by test files
+// this is called only by test files
 func createMnemonic() (string, error) {
 	entropySeed, err := bip39.NewEntropy(256)
 	if err != nil {
@@ -38,7 +38,7 @@ func createMemoryKey() (mnemonic string, info *keyring.Record, err error) {
 	return mnemonic, account, nil
 }
 
-//nolint:unused // this is called only by test files
+// this is called only by test files
 func createMemoryKeyFromMnemonic(mnemonic string) (*keyring.Record, error) {
 	kb, err := keyring.New("testnet", keyring.BackendMemory, "", nil, cdc)
 	if err != nil {

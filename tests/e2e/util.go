@@ -7,7 +7,6 @@ import (
 	sdktx "github.com/cosmos/cosmos-sdk/types/tx"
 )
 
-//nolint:unused
 func decodeTx(txBytes []byte) (*sdktx.Tx, error) {
 	var raw sdktx.TxRaw
 

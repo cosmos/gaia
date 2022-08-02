@@ -12,7 +12,6 @@ import (
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
-
 func queryGaiaTx(endpoint, txHash string) error {
 	resp, err := http.Get(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs/%s", endpoint, txHash))
 	if err != nil {
@@ -38,7 +37,6 @@ func queryGaiaTx(endpoint, txHash string) error {
 	return nil
 }
 
-
 func getSpecificBalance(endpoint, addr, denom string) (amt sdk.Coin, err error) {
 	balances, err := queryGaiaAllBalances(endpoint, addr)
 	if err != nil {
@@ -52,7 +50,6 @@ func getSpecificBalance(endpoint, addr, denom string) (amt sdk.Coin, err error) 
 	}
 	return amt, nil
 }
-
 
 func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) {
 	resp, err := http.Get(fmt.Sprintf("%s/cosmos/bank/v1beta1/balances/%s", endpoint, addr))
@@ -102,7 +99,6 @@ func queryGaiaDenomBalance(endpoint, addr, denom string) (sdk.Coin, error) {
 
 	return *balanceResp.Balance, nil
 }
-
 
 func queryGovProposal(endpoint string, proposalID int) (govv1beta1.QueryProposalResponse, error) {
 	var emptyProp govv1beta1.QueryProposalResponse

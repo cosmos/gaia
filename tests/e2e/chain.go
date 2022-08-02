@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 
@@ -39,7 +40,16 @@ func init() {
 		&ed25519.PubKey{},
 	)
 
+	encodingConfig.InterfaceRegistry.RegisterInterface(
+		"cosmos.auth.v1beta1.AccountI",
+		(*authtypes.AccountI)(nil),
+		&authtypes.BaseAccount{},
+		&authtypes.ModuleAccount{},
+	)
+
 	cdc = encodingConfig.Codec
+	fmt.Println("CDC WAS MADE", cdc)
+
 }
 
 // this is called only by test files
@@ -48,7 +58,6 @@ type chain struct {
 	id         string
 	validators []*validator
 }
-
 
 func newChain() (*chain, error) {
 	tmpDir, err := ioutil.TempDir("", "gaia-e2e-testnet-")
@@ -62,11 +71,9 @@ func newChain() (*chain, error) {
 	}, nil
 }
 
-
 func (c *chain) configDir() string {
 	return fmt.Sprintf("%s/%s", c.dataDir, c.id)
 }
-
 
 func (c *chain) createAndInitValidators(count int) error {
 	for i := 0; i < count; i++ {
@@ -94,7 +101,6 @@ func (c *chain) createAndInitValidators(count int) error {
 	return nil
 }
 
-
 func (c *chain) createAndInitValidatorsWithMnemonics(count int, mnemonics []string) error {
 	for i := 0; i < count; i++ {
 		// create node
@@ -121,7 +127,6 @@ func (c *chain) createAndInitValidatorsWithMnemonics(count int, mnemonics []stri
 
 	return nil
 }
-
 
 func (c *chain) createValidator(index int) *validator {
 	return &validator{

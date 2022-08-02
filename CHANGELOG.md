@@ -35,11 +35,21 @@ Ref: https://keepachangelog.com/en/1.0.0/
 # Changelog
 
 ## [Unreleased]
+<<<<<<< HEAD
 
 ## [v7.0.3] -2022-07-28
 
 * (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.6](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.6). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.6/CHANGELOG.md#v0456---2022-06-28) for details.
 * (gaia) bump [liquidity](https://github.com/gravity-devs/liquidity) to [v1.5.1](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.5.1) to be compatible with cosmos-sdk v0.45.6.
+=======
+* (gaia-rho) [#1573](https://github.com/cosmos/gaia/issues/1573), [#1576](https://github.com/cosmos/gaia/issues/1576) Update cosmos ledger version to [v.0.9.3](https://github.com/cosmos/ledger-go/releases/tag/v0.9.3)
+* (gaia-rho) Update go to 1.18
+* (gaia-rho) Update Liquidity module to v2.0.0-beta1 to work with Cosmos-SDK v0.46.0-beta2
+* (gaia-rho) Update [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.46.0-beta2](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.46.0-beta2). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.46.0-beta2/CHANGELOG.md) for details.
+* (gaia-rho) Add [Groups Module](https://docs.cosmos.network/main/modules/group/#group-module).
+* (tests) Add E2E test for Bank Send.
+* (tests) Update liveness tests to use Ignite v0.21.1.
+>>>>>>> 0420982 (Update cosmos/ledger-go to release version (#1634))
 
 ## [v7.0.2] -2022-05-09
 

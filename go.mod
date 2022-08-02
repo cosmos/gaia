@@ -61,9 +61,15 @@ require (
 	github.com/cosmos/gorocksdb v1.2.0 // indirect
 	github.com/cosmos/iavl v0.17.3 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.11.1 // indirect
+<<<<<<< HEAD
 	github.com/cosmos/ledger-go v0.9.2 // indirect
 	github.com/daixiang0/gci v0.3.3 // indirect
 	github.com/danieljoos/wincred v1.0.2 // indirect
+=======
+	github.com/cosmos/ledger-go v0.9.3 // indirect
+	github.com/daixiang0/gci v0.5.0 // indirect
+	github.com/danieljoos/wincred v1.1.2 // indirect
+>>>>>>> 0420982 (Update cosmos/ledger-go to release version (#1634))
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/denis-tingaikin/go-header v0.4.3 // indirect
 	github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f // indirect

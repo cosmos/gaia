@@ -8,7 +8,7 @@ require (
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/golangci/golangci-lint v1.47.2
 	github.com/gorilla/mux v1.8.0
-	github.com/gravity-devs/liquidity/v2 v2.0.0-rc3
+	github.com/gravity-devs/liquidity/v2 v2.0.0
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/cast v1.5.0
 	github.com/spf13/cobra v1.5.0

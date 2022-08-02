@@ -169,7 +169,7 @@ func (s *IntegrationTestSuite) TestGovSoftwareUpgrade() {
 	s.voteGovProposal(chainAAPIEndpoint, sender, proposalCounter, "yes=0.8,no=0.1,abstain=0.05,no_with_veto=0.05", true)
 
 	s.verifyChainHaltedAtUpgradeHeight(s.chainA, 0, proposalHeight)
-	s.T().Logf("Successfully halted chain at height %d", proposalHeight)
+	s.T().Logf("Successfully halted chain at  height %d", proposalHeight)
 
 	currentChain := s.chainA
 

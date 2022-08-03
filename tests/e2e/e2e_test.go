@@ -130,7 +130,7 @@ func (s *IntegrationTestSuite) TestSendTokensFromNewGovAccount() {
 	proposalCounter++
 
 	s.T().Logf("Submitting Gov Proposal: Sending Tokens from Gov Module to Recipient")
-	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, "/root/.gaia/config/proposal_2.json")
+	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, "/home/nonroot/.gaia/config/proposal_2.json")
 	s.T().Logf("Depositing Gov Proposal: Sending Tokens from Gov Module to Recipient")
 	s.depositGovProposal(chainAAPIEndpoint, sender, proposalCounter)
 	s.T().Logf("Voting Gov Proposal: Sending Tokens from Gov Module to Recipient")
@@ -162,14 +162,14 @@ func (s *IntegrationTestSuite) TestGovSoftwareUpgrade() {
 	s.writeGovUpgradeSoftwareProposal(s.chainA, proposalHeight)
 
 	s.T().Logf("Submitting Gov Proposal: Software Upgrade")
-	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, "/root/.gaia/config/proposal_3.json")
+	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, "/home/nonroot/.gaia/config/proposal_3.json")
 	s.T().Logf("Depositing Gov Proposal: Software Upgrade")
 	s.depositGovProposal(chainAAPIEndpoint, sender, proposalCounter)
 	s.T().Logf("Weighted Voting Gov Proposal: Software Upgrade")
 	s.voteGovProposal(chainAAPIEndpoint, sender, proposalCounter, "yes=0.8,no=0.1,abstain=0.05,no_with_veto=0.05", true)
 
 	s.verifyChainHaltedAtUpgradeHeight(s.chainA, 0, proposalHeight)
-	s.T().Logf("Successfully halted chain at height %d", proposalHeight)
+	s.T().Logf("Successfully halted chain at  height %d", proposalHeight)
 
 	currentChain := s.chainA
 
@@ -211,14 +211,14 @@ func (s *IntegrationTestSuite) TestGovCancelSoftwareUpgrade() {
 	s.writeGovUpgradeSoftwareProposal(s.chainA, proposalHeight)
 
 	s.T().Logf("Submitting Gov Proposal: Software Upgrade")
-	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, "/root/.gaia/config/proposal_3.json")
+	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, "/home/nonroot/.gaia/config/proposal_3.json")
 	s.depositGovProposal(chainAAPIEndpoint, sender, proposalCounter)
 	s.voteGovProposal(chainAAPIEndpoint, sender, proposalCounter, "yes", false)
 
 	proposalCounter++
 
 	s.T().Logf("Submitting Gov Proposal: Cancel Software Upgrade")
-	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, "/root/.gaia/config/proposal_4.json")
+	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, "/home/nonroot/.gaia/config/proposal_4.json")
 	s.depositGovProposal(chainAAPIEndpoint, sender, proposalCounter)
 	s.voteGovProposal(chainAAPIEndpoint, sender, proposalCounter, "yes", false)
 
@@ -254,7 +254,7 @@ func (s *IntegrationTestSuite) fundCommunityPool(chainAAPIEndpoint string, sende
 
 func (s *IntegrationTestSuite) submitLegacyProposalFundGovAccount(chainAAPIEndpoint string, sender string, proposalId int) {
 	s.Run("submit_legacy_community_spend_proposal_to_fund_gov_acct", func() {
-		s.execGovSubmitLegacyGovProposal(s.chainA, 0, chainAAPIEndpoint, sender, "/root/.gaia/config/proposal.json", fees.String(), "community-pool-spend")
+		s.execGovSubmitLegacyGovProposal(s.chainA, 0, chainAAPIEndpoint, sender, "/home/nonroot/.gaia/config/proposal.json", fees.String(), "community-pool-spend")
 
 		s.Require().Eventually(
 			func() bool {

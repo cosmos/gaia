@@ -273,7 +273,7 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 			}
 
 			if err := res.UnpackInterfaces(encodingConfig.InterfaceRegistry); err != nil {
-				fmt.Println("[DEBUG] UnpackInterfaces err:", err)
+				fmt.Println("[DEBUG] QueryAccountResponse#UnpackInterfaces err:", err)
 				return false
 			}
 

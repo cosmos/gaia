@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -16,6 +17,7 @@ import (
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	tmtypes "github.com/tendermint/tendermint/types"
 )
+
 
 func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {
 	serverCtx := server.NewDefaultContext()
@@ -40,6 +42,7 @@ func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {
 
 	return doc, nil
 }
+
 
 func addGenesisAccount(path, moniker, amountStr string, accAddr sdk.AccAddress) error {
 	serverCtx := server.NewDefaultContext()
@@ -103,7 +106,7 @@ func addGenesisAccount(path, moniker, amountStr string, accAddr sdk.AccAddress) 
 	appState[banktypes.ModuleName] = bankGenStateBz
 
 	// Refactor to separate method
-	amnt, _ := sdk.NewIntFromString("10000")
+	amnt := math.NewInt(10000)
 	quorum, _ := sdk.NewDecFromStr("0.000000000000000001")
 	threshold, _ := sdk.NewDecFromStr("0.000000000000000001")
 

@@ -8,6 +8,7 @@ import (
 	"github.com/cosmos/go-bip39"
 )
 
+
 func createMnemonic() (string, error) {
 	entropySeed, err := bip39.NewEntropy(256)
 	if err != nil {
@@ -22,6 +23,7 @@ func createMnemonic() (string, error) {
 	return mnemonic, nil
 }
 
+
 func createMemoryKey() (mnemonic string, info *keyring.Record, err error) {
 	mnemonic, err = createMnemonic()
 	if err != nil {
@@ -35,6 +37,7 @@ func createMemoryKey() (mnemonic string, info *keyring.Record, err error) {
 
 	return mnemonic, account, nil
 }
+
 
 func createMemoryKeyFromMnemonic(mnemonic string) (*keyring.Record, error) {
 	kb, err := keyring.New("testnet", keyring.BackendMemory, "", nil, cdc)

@@ -331,6 +331,7 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 
 	s.Require().Eventually(
 		func() bool {
+			time.Sleep(3 * time.Second)
 			exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
 				Context:      ctx,
 				AttachStdout: true,

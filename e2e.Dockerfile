@@ -14,7 +14,6 @@ RUN CGO_ENABLED=0 make install
 FROM distroless.dev/static:$IMG_TAG
 ARG IMG_TAG
 COPY --from=gaiad-builder /go/bin/gaiad /usr/local/bin/
-USER 0
 EXPOSE 26656 26657 1317 9090
 
 ENTRYPOINT ["gaiad", "start"]

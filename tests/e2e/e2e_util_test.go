@@ -13,7 +13,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	auth "github.com/cosmos/cosmos-sdk/x/auth/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/ory/dockertest/v3/docker"
 )
@@ -258,7 +258,7 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 		outBuf bytes.Buffer
 		errBuf bytes.Buffer
 		txResp sdk.TxResponse
-		// accountResp auth.QueryAccountResponse
+		// accountResp authtypes.QueryAccountResponse
 		err error
 	)
 	endpoint := fmt.Sprintf("http://%s", s.valResources[c.id][0].GetHostPort("1317/tcp"))
@@ -268,15 +268,21 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 	s.Require().Eventually(
 		func() bool {
 			res, err := s.queryAuthAccount(endpoint, from)
-			// if err != nil {
-			// 	fmt.Println("UnpackInterfaces err", err)
-			// }
+			if err != nil {
+				return false
+			}
+
+			if err := res.UnpackInterfaces(encodingConfig.InterfaceRegistry); err != nil {
+				fmt.Println("[DEBUG] UnpackInterfaces err:", err)
+				return false
+			}
+
 			// fmt.Println("cached value", account.Account.GetCachedValue())
 			fmt.Println("queryAccountResponse", res)
 
 			fmt.Println("all interfaces", encodingConfig.InterfaceRegistry.ListAllInterfaces())
 
-			var acc auth.AccountI
+			var acc authtypes.AccountI
 			// encodingConfig = gaia.MakeTestEncodingConfig()
 
 			// err = account.UnpackInterfaces(encodingConfig.InterfaceRegistry)
@@ -298,13 +304,13 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 			// 	fmt.Println("err", err)
 			// }
 
-			// var acc auth.BaseAccount
+			// var acc authtypes.BaseAccount
 			// err = cdc.UnmarshalInterface(account.Account.Value, &acc)
 			// fmt.Println("err", err)
 			// fmt.Println("acc", acc)
 
 			// fmt.Println("account.Account", account.Account)
-			// var acct auth.BaseAccount
+			// var acct authtypes.BaseAccount
 			// err = cdc.UnpackAny(account.Account, &acct)
 			// if err != nil {
 			// 	fmt.Println("err", err)
@@ -313,16 +319,16 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 			// }
 			// s.T().Skip()
 
-			// m := new(auth.BaseAccount)
+			// m := new(authtypes.BaseAccount)
 			// if err := sdk.UnmarshalTo(m); err != nil {
 			// 	fmt.Println("err2", err)
 			// }
 
 			// acct := account.GetAccount()
 
-			// v, ok := account.(auth.BaseAccount)
+			// v, ok := account.(authtypes.BaseAccount)
 
-			// var acct auth.BaseAccount
+			// var acct authtypes.BaseAccount
 			// err = cdc.UnmarshalInterface(account.Account.Value, &acct)
 			// fmt.Println("err", err)
 			// fmt.Println("account", account)
@@ -391,8 +397,8 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 
 }
 
-func (s *IntegrationTestSuite) queryAuthAccount(endpoint string, address string) (auth.QueryAccountResponse, error) {
-	var emptyResponse auth.QueryAccountResponse
+func (s *IntegrationTestSuite) queryAuthAccount(endpoint string, address string) (authtypes.QueryAccountResponse, error) {
+	var emptyResponse authtypes.QueryAccountResponse
 
 	path := fmt.Sprintf("%s/cosmos/auth/v1beta1/accounts/%s", endpoint, address)
 	fmt.Println("query", path)
@@ -415,7 +421,7 @@ func (s *IntegrationTestSuite) queryAuthAccount(endpoint string, address string)
 	}
 	s.T().Logf("This is the body: %s", body)
 
-	var accountResp auth.QueryAccountResponse
+	var accountResp authtypes.QueryAccountResponse
 	if err := cdc.UnmarshalJSON(body, &accountResp); err != nil {
 		return emptyResponse, err
 	}

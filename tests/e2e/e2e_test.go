@@ -187,13 +187,14 @@ func (s *IntegrationTestSuite) TestGovSoftwareUpgrade() {
 }
 
 func (s *IntegrationTestSuite) TestGovCancelSoftwareUpgrade() {
+	s.T().Skip()
 
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
 	s.Require().NoError(err)
 	sender := senderAddress.String()
 	height := s.getLatestBlockHeight(s.chainA, 0)
-	proposalHeight := height + 500
+	proposalHeight := height + 50
 	proposalCounter++
 
 	s.T().Logf("Writing proposal %d on chain %s", proposalCounter, s.chainA.id)

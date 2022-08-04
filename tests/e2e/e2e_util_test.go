@@ -331,6 +331,7 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 
 	s.Require().Eventually(
 		func() bool {
+			time.Sleep(3 * time.Second)
 			exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
 				Context:      ctx,
 				AttachStdout: true,
@@ -356,6 +357,7 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 		time.Second,
 		"tx returned a non-zero code; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
 	)
+	endpoint = fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	s.Require().Eventually(
 		func() bool {
 			return queryGaiaTx(endpoint, txResp.TxHash) == nil

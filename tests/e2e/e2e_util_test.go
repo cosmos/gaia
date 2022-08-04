@@ -383,6 +383,7 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 	)
 
 	err = nil
+	endpoint = fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	s.Require().Eventually(
 		func() bool {
 			err = queryGaiaTx(endpoint, txResp.TxHash)

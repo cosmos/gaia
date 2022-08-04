@@ -169,7 +169,7 @@ func (s *IntegrationTestSuite) TestGovSoftwareUpgrade() {
 
 	s.verifyChainHaltedAtUpgradeHeight(s.chainA, 0, proposalHeight)
 	s.T().Logf("Successfully halted chain at height %d", proposalHeight)
-	fmt.Println("s.valResources", s.valResources)
+
 	s.TearDownSuite()
 
 	s.T().Logf("Restarting containers")

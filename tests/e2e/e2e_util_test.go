@@ -267,6 +267,7 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 	// it's ok that this is executed within Eventually() because broadcast-mode is sync
 	s.Require().Eventually(
 		func() bool {
+
 			res, err := s.queryAuthAccount(endpoint, from)
 			if err != nil {
 				return false
@@ -383,6 +384,7 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 	)
 
 	err = nil
+
 	endpoint = fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	s.Require().Eventually(
 		func() bool {

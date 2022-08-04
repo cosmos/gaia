@@ -11,6 +11,7 @@ import (
 
 func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
 	s.T().Skip()
+
 	var ibcStakeDenom string
 
 	s.Run("send_photon_to_chainB", func() {
@@ -191,6 +192,7 @@ func (s *IntegrationTestSuite) TestGovSoftwareUpgrade() {
 
 func (s *IntegrationTestSuite) TestGovCancelSoftwareUpgrade() {
 	s.T().Skip()
+
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
 	s.Require().NoError(err)
@@ -234,6 +236,9 @@ func (s *IntegrationTestSuite) fundCommunityPool(chainAAPIEndpoint string, sende
 		s.execDistributionFundCommunityPool(s.chainA, 0, sender, tokenAmount.String(), fees.String())
 
 		// hard to calculate exactly how much the 2% of block reward going into the community pool so just giving a margin of error
+		marginOfErrorForBlockReward := sdk.NewInt64Coin("photon", 500)
+
+		// there are still tokens being added to the community pool through block production rewards but they should be less than 500 tokens
 		marginOfErrorForBlockReward := sdk.NewInt64Coin("photon", 500)
 
 		s.Require().Eventually(

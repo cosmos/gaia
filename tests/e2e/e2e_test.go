@@ -5,15 +5,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ory/dockertest/v3/docker"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
 func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
-	// TODO: Remove skip once IBC is reintegrated
-	s.T().Skip()
 	var ibcStakeDenom string
 
 	s.Run("send_photon_to_chainB", func() {
@@ -171,15 +167,7 @@ func (s *IntegrationTestSuite) TestGovSoftwareUpgrade() {
 	s.verifyChainHaltedAtUpgradeHeight(s.chainA, 0, proposalHeight)
 	s.T().Logf("Successfully halted chain at height %d", proposalHeight)
 
-	currentChain := s.chainA
-
-	for valIdx := range currentChain.validators {
-		var opts docker.RemoveContainerOptions
-		opts.ID = s.valResources[currentChain.id][valIdx].Container.ID
-		opts.Force = true
-		s.dkrPool.Client.RemoveContainer(opts)
-		s.T().Logf("Removed Container: %s", s.valResources[currentChain.id][valIdx].Container.Name[1:])
-	}
+	s.TearDownSuite()
 
 	s.T().Logf("Restarting containers")
 	s.SetupSuite()
@@ -199,6 +187,8 @@ func (s *IntegrationTestSuite) TestGovSoftwareUpgrade() {
 }
 
 func (s *IntegrationTestSuite) TestGovCancelSoftwareUpgrade() {
+	s.T().Skip()
+
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
 	s.Require().NoError(err)
@@ -236,6 +226,9 @@ func (s *IntegrationTestSuite) fundCommunityPool(chainAAPIEndpoint string, sende
 
 		s.execDistributionFundCommunityPool(s.chainA, 0, chainAAPIEndpoint, sender, tokenAmount.String(), fees.String())
 
+		// there are still tokens being added to the community pool through block production rewards but they should be less than 500 tokens
+		marginOfErrorForBlockReward := sdk.NewInt64Coin("photon", 500)
+
 		s.Require().Eventually(
 			func() bool {
 				afterDistPhotonBalance, err := getSpecificBalance(chainAAPIEndpoint, distModuleAddress, tokenAmount.Denom)
@@ -244,7 +237,7 @@ func (s *IntegrationTestSuite) fundCommunityPool(chainAAPIEndpoint string, sende
 				}
 				s.Require().NoError(err)
 
-				return afterDistPhotonBalance.IsEqual(beforeDistPhotonBalance.Add(tokenAmount.Add(fees)))
+				return afterDistPhotonBalance.Sub(beforeDistPhotonBalance.Add(tokenAmount.Add(fees))).IsLT(marginOfErrorForBlockReward)
 			},
 			15*time.Second,
 			5*time.Second,

@@ -9,7 +9,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"os/exec"
 	"path"
 	"path/filepath"
 	"strconv"
@@ -246,7 +245,7 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 	bz, err = tmjson.MarshalIndent(genDoc, "", "  ")
 	s.Require().NoError(err)
 
-	// write the updated genesis file to each validator.
+	// write the updated genesis file to each validator
 	for _, val := range c.validators {
 		err = writeFile(filepath.Join(val.configDir(), "config", "genesis.json"), bz)
 		s.Require().NoError(err)
@@ -309,12 +308,10 @@ func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 			Name:      val.instanceName(),
 			NetworkID: s.dkrNet.Network.ID,
 			Mounts: []string{
-				fmt.Sprintf("%s/:/home/nonroot/.gaia", val.configDir()),
+				fmt.Sprintf("%s/:/root/.gaia", val.configDir()),
 			},
 			Repository: "cosmos/gaiad-e2e",
 		}
-
-		s.Require().NoError(exec.Command("chmod", "-R", "0777", val.configDir()).Run())
 
 		// expose the first validator for debugging and communication
 		if val.index == 0 {

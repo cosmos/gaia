@@ -32,7 +32,7 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Transfer ATOM, ETH, ERC-20, and other Cosmos tokens between Ethereum and the Gravity Bridge Chain and by extension all IBC connected chains.
   - Fee and reward model hosted across Cosmos and Ethereum
 
-## v7-Theta Upgrade (expected Q1 2022)
+## v7-Theta Upgrade (Completed March 25, 2022)
 - Gaia v7.0.x
 - Cosmos SDK v0.45
   - Minimal update with small fixes
@@ -44,7 +44,7 @@ The upgrades aim to add features such as liquidity, economic security, usability
     - Arbitrary messages are able to be submitted from the "Controller" blockchain to the "Host" blockchain to be executed on behalf of the Interchain Account.
     - Uses ordered IBC channels, one per account.
 
-## v8-Rho Upgrade (expected Q2 2022)
+## v8-Rho Upgrade (expected H2 2022)
 - Gaia v8.0.x
 - Cosmos SDK v0.46
   - Groups module:
@@ -54,24 +54,19 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Gov Module Improvements
     - Execution of arbitraty transactions instead of just governance proposals.
     - Enables much more expressive governance module.
-- Tendermint v0.35
-  - Mempool Transaction Prioritization
-  - Lib P2P
 - IBC 3.1.0
   - Relayer Incentivisation so that IBC packets contain fees to pay for relayer costs.
 - Interchain Account Message Authorization Module
   - Authentication module that authorizes any Account to create an Interchain Account on any IBC connected "Host" blockchain that has the Interchain Account IBC module.
   - Accounts can be private key controlled users, and eventually the Gov Module and any Groups Module.
 - IBC Msg Whitelist to skip MinFee in CheckTX
-- [Budget Module](https://github.com/tendermint/budget) (stretch-goal)
-  - Inflation funding directed to arbitrary module and account addresses
 - Global Fee Module (stretch-goal)
   - Allows denoms and min-fees to be governance parameters so gas can be paid in various denoms.
   - Visible on [tgrade](https://github.com/confio/tgrade/tree/main/x/globalfee) already and enabled in [ante.go](https://github.com/confio/tgrade/blob/main/app/ante.go#L72-L92)
 - Bech32 Prefix forwarding (stretch-goal)
   - https://github.com/osmosis-labs/bech32-ibc
 
-## v9-Lambda Upgrade (expected Q3 2022)
+## v9-Lambda Upgrade (expected H2 2022)
 - Gaia v9.0.x
 - Interchain Security v1 - Required Participation of Provider Chain Validators
   - The Cosmos solution to shared security that uses IBC Cross Chain Validation (CCV) to relay validator set composition from a Provider Chain (Cosmos Hub) to a Consumer Chain. This validator set is in charge of producing blocks on both networks using separate nodes. Misbehavior on the Consumer Chain results in slashing Provider Chain staking tokens (ATOM).
@@ -99,6 +94,8 @@ The upgrades aim to add features such as liquidity, economic security, usability
 
 ## Future Considerations
 The Cosmos Hub is a decentralized network with many diverse contributors. As such there is no one authority of what is or can be part of the Cosmos Network. The Cosmos Hub team at Interchain does its best to maintain the Gaia repository, which is the primary codebase that operates the Cosmos Network. The Interchain Foundation is one of the sources of funding for engineering work that may make its way onto the Cosmos Hub. We do our best to participate in ongoing conversations about the mission, vision and purpose of the Cosmos Hub, so that we can best support work to enabling it via funding, engineering, coordination and communication. Some of the topics which have been discussed by contributors inside and outside of Interchain are listed below, although have not been developed to the point of being included in the roadmap:
+- Multi-Hop Routing
+  - Simplifies the topography of relayers such that packets from pairwise channels between chains can be routed through the hub while preserving the original channel and more importantly token denom path.
 - Chain Name Service
   - Chain-ID registry
   - Node registry

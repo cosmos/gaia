@@ -2,6 +2,7 @@ package e2e
 
 import (
 	"context"
+	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -14,6 +15,11 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"cosmossdk.io/math"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
@@ -30,15 +36,41 @@ import (
 )
 
 const (
-	photonDenom    = "photon"
-	initBalanceStr = "110000000000stake,100000000000photon"
-	minGasPrice    = "0.00001"
+	photonDenom                = "photon"
+	initBalanceStr             = "110000000000stake,100000000000000000photon"
+	minGasPrice                = "0.00001"
+	govSendMsgRecipientAddress = "cosmos1pkueemdeps77dwrqma03pwqk93nw39nuhccz02"
+	govProposalBlockBuffer     = 35
 )
 
 var (
-	stakeAmount, _  = sdk.NewIntFromString("100000000000")
-	stakeAmountCoin = sdk.NewCoin("stake", stakeAmount)
+	stakeAmount       = math.NewInt(100000000000)
+	stakeAmountCoin   = sdk.NewCoin("stake", stakeAmount)
+	tokenAmount       = sdk.NewCoin(photonDenom, math.NewInt(3300000000)) // 3,300photon
+	fees              = sdk.NewCoin(photonDenom, math.NewInt(330000))     // 0.33photon
+	depositAmount     = sdk.NewCoin(photonDenom, math.NewInt(10000000))   // 10photon
+	distModuleAddress = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
+	govModuleAddress  = authtypes.NewModuleAddress(govtypes.ModuleName).String()
+	proposalCounter   = 0
+	sendGovAmount     = sdk.NewInt64Coin(photonDenom, 10)
 )
+
+type UpgradePlan struct {
+	Name   string `json:"name"`
+	Height int    `json:"height"`
+	Info   string `json:"info"`
+}
+
+type SoftwareUpgrade struct {
+	Type      string      `json:"@type"`
+	Authority string      `json:"authority"`
+	Plan      UpgradePlan `json:"plan"`
+}
+
+type CancelSoftwareUpgrade struct {
+	Type      string `json:"@type"`
+	Authority string `json:"authority"`
+}
 
 type IntegrationTestSuite struct {
 	suite.Suite
@@ -220,6 +252,7 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 	}
 }
 
+// initValidatorConfigs initializes the validator configs for the given chain.
 func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 	for i, val := range c.validators {
 		tmCfgPath := filepath.Join(val.configDir(), "config", "config.toml")
@@ -246,14 +279,13 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 			}
 
 			peer := c.validators[j]
-			peerID := fmt.Sprintf("%s@%s%d:26656", peer.nodeKey.ID, peer.moniker, j)
+			peerID := fmt.Sprintf("%s@%s%d:26656", peer.nodeKey.ID(), peer.moniker, j)
 			peers = append(peers, peerID)
 		}
 
 		valConfig.P2P.PersistentPeers = strings.Join(peers, ",")
 
-		err := tmconfig.WriteConfigFile(val.configDir(), valConfig)
-		s.Require().NoError(err)
+		tmconfig.WriteConfigFile(tmCfgPath, valConfig)
 
 		// set application configuration
 		appCfgPath := filepath.Join(val.configDir(), "config", "app.toml")
@@ -266,6 +298,7 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 	}
 }
 
+// runValidators runs the validators in the chain
 func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 	s.T().Logf("starting Gaia %s validator containers...", c.id)
 
@@ -303,7 +336,7 @@ func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 		s.T().Logf("started Gaia %s validator container: %s", c.id, resource.Container.ID)
 	}
 
-	rpcClient, err := rpchttp.New("tcp://localhost:26657")
+	rpcClient, err := rpchttp.New("tcp://localhost:26657", "/websocket")
 	s.Require().NoError(err)
 
 	s.Require().Eventually(
@@ -340,7 +373,7 @@ func (s *IntegrationTestSuite) runIBCRelayer() {
 	gaiaBVal := s.chainB.validators[0]
 	hermesCfgPath := path.Join(tmpDir, "hermes")
 
-	s.Require().NoError(os.MkdirAll(hermesCfgPath, 0755))
+	s.Require().NoError(os.MkdirAll(hermesCfgPath, 0o755))
 	_, err = copyFile(
 		filepath.Join("./scripts/", "hermes_bootstrap.sh"),
 		filepath.Join(hermesCfgPath, "hermes_bootstrap.sh"),
@@ -422,4 +455,104 @@ func noRestart(config *docker.HostConfig) {
 	config.RestartPolicy = docker.RestartPolicy{
 		Name: "no",
 	}
+}
+
+func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
+	type GovMessageSend struct {
+		Type   string     `json:"@type"`
+		From   string     `json:"from_address"`
+		To     string     `json:"to_address"`
+		Amount []sdk.Coin `json:"amount"`
+	}
+
+	msgSendMessages := []GovMessageSend{
+		{
+			Type:   "/cosmos.bank.v1beta1.MsgSend",
+			From:   govModuleAddress,
+			To:     govSendMsgRecipientAddress,
+			Amount: []sdk.Coin{sendGovAmount},
+		},
+	}
+
+	msgSendBody, err := json.MarshalIndent(struct {
+		Messages []GovMessageSend `json:"messages"`
+		Metadata string           `json:"metadata"`
+		Deposit  string           `json:"deposit"`
+	}{
+		Messages: msgSendMessages,
+		Metadata: b64.StdEncoding.EncodeToString([]byte("Testing 1, 2, 3!")),
+		Deposit:  "5000photon",
+	}, "", " ")
+
+	s.Require().NoError(err)
+
+	legacyCommunitySpendBody, err := json.MarshalIndent(struct {
+		Title       string `json:"title"`
+		Description string `json:"description"`
+		Recipient   string `json:"recipient"`
+		Amount      string `json:"amount"`
+		Deposit     string `json:"deposit"`
+	}{
+		Title:       "Community Pool Spend",
+		Description: "Fund Gov !",
+		Recipient:   govModuleAddress,
+		Amount:      "1000photon",
+		Deposit:     "5000photon",
+	}, "", " ")
+
+	s.Require().NoError(err)
+
+	for _, val := range c.validators {
+		err = writeFile(filepath.Join(val.configDir(), "config", "proposal.json"), legacyCommunitySpendBody)
+		s.Require().NoError(err)
+
+		err = writeFile(filepath.Join(val.configDir(), "config", "proposal_2.json"), msgSendBody)
+		s.Require().NoError(err)
+	}
+}
+
+func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height int) {
+	softwareUpgradeMessages := []SoftwareUpgrade{
+		{
+			Type:      "/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade",
+			Authority: govModuleAddress,
+			Plan: UpgradePlan{
+				Name:   "upgrade-1",
+				Height: height,
+				Info:   "binary-1",
+			},
+		},
+	}
+	cancelSoftwareUpgradeMessages := []CancelSoftwareUpgrade{
+		{
+			Type:      "/cosmos.upgrade.v1beta1.MsgCancelUpgrade",
+			Authority: govModuleAddress,
+		},
+	}
+
+	upgradeProposalBody, err := json.MarshalIndent(struct {
+		Messages []SoftwareUpgrade `json:"messages"`
+		Metadata string            `json:"metadata"`
+		Deposit  string            `json:"deposit"`
+	}{
+		Messages: softwareUpgradeMessages,
+		Metadata: b64.StdEncoding.EncodeToString([]byte("Testing 1, 2, 3!")),
+		Deposit:  "5000photon",
+	}, "", " ")
+
+	cancelUpgradeProposalBody, err := json.MarshalIndent(struct {
+		Messages []CancelSoftwareUpgrade `json:"messages"`
+		Metadata string                  `json:"metadata"`
+		Deposit  string                  `json:"deposit"`
+	}{
+		Messages: cancelSoftwareUpgradeMessages,
+		Metadata: "VGVzdGluZyAxLCAyLCAzIQ==",
+		Deposit:  "5000photon",
+	}, "", " ")
+
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_3.json"), upgradeProposalBody)
+	s.Require().NoError(err)
+
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_4.json"), cancelUpgradeProposalBody)
+	s.Require().NoError(err)
 }

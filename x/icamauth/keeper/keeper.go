@@ -4,15 +4,14 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
-	"github.com/tendermint/tendermint/libs/log"
-
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/gaia/v8/x/icamauth/types"
-	icacontrollerkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/keeper"
-	host "github.com/cosmos/ibc-go/v3/modules/core/24-host"
+	icacontrollerkeeper "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/controller/keeper"
+	host "github.com/cosmos/ibc-go/v5/modules/core/24-host"
+	"github.com/tendermint/tendermint/libs/log"
 )
 
 type Keeper struct {

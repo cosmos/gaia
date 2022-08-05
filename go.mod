@@ -14,8 +14,7 @@ require (
 	github.com/spf13/cast v1.5.0
 	github.com/spf13/cobra v1.5.0
 	github.com/spf13/viper v1.12.0 // indirect
-	//	github.com/strangelove-ventures/packet-forward-middleware/v2 v2.1.1
-	github.com/strangelove-ventures/packet-forward-middleware v1.0.2-0.20220314155821-2c91784afc35
+	github.com/strangelove-ventures/packet-forward-middleware/v2 v2.1.4-0.20220802012200-5a62a55a7f1d
 	github.com/stretchr/testify v1.8.0
 	github.com/tendermint/tendermint v0.34.20
 	github.com/tendermint/tm-db v0.6.7
@@ -225,6 +224,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/ssgreg/nlreturn/v2 v2.2.1 // indirect
 	github.com/stbenjam/no-sprintf-host-port v0.1.1 // indirect
+	github.com/strangelove-ventures/packet-forward-middleware/v2 v2.1.4-0.20220802012200-5a62a55a7f1d // indirect
 	github.com/stretchr/objx v0.4.0 // indirect
 	github.com/subosito/gotenv v1.4.0 // indirect
 	github.com/sylvia7788/contextcheck v1.0.4 // indirect

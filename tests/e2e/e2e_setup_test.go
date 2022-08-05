@@ -546,7 +546,7 @@ func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height 
 		Deposit  string                  `json:"deposit"`
 	}{
 		Messages: cancelSoftwareUpgradeMessages,
-		Metadata: "VGVzdGluZyAxLCAyLCAzIQ==",
+		Metadata: b64.StdEncoding.EncodeToString([]byte("Testing 1, 2, 3!")),
 		Deposit:  "5000photon",
 	}, "", " ")
 

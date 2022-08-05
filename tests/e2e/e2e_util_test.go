@@ -263,129 +263,46 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 	)
 	endpoint := fmt.Sprintf("http://%s", s.valResources[c.id][0].GetHostPort("1317/tcp"))
 
-	i := 0
-	// it's ok that this is executed within Eventually() because broadcast-mode is sync
-	s.Require().Eventually(
-		func() bool {
+	res, err := s.queryAuthAccount(endpoint, from)
+	s.Require().NoError(err)
 
-			res, err := s.queryAuthAccount(endpoint, from)
-			if err != nil {
-				return false
-			}
+	var acc authtypes.AccountI
+	err = cdc.UnpackAny(res.Account, &acc)
+	s.Require().NoError(err)
+	sequence := acc.GetSequence()
 
-			if err := res.UnpackInterfaces(encodingConfig.InterfaceRegistry); err != nil {
-				fmt.Println("[DEBUG] QueryAccountResponse#UnpackInterfaces err:", err)
-				return false
-			}
+	exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
+		Context:      ctx,
+		AttachStdout: true,
+		AttachStderr: true,
+		Container:    s.valResources[c.id][valIdx].Container.ID,
+		User:         "root",
+		Cmd: append(gaiaCommand,
+			fmt.Sprintf("--%s=%s", flags.FlagFrom, from),
+			fmt.Sprintf("--%s=%d", flags.FlagSequence, sequence),
+			fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+			"--keyring-backend=test",
+			"--broadcast-mode=block",
+			"--output=json",
+			"-y"),
+	})
+	s.Require().NoError(err)
 
-			// fmt.Println("cached value", account.Account.GetCachedValue())
-			fmt.Println("queryAccountResponse", res)
+	err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
+		Context:      ctx,
+		Detach:       false,
+		OutputStream: &outBuf,
+		ErrorStream:  &errBuf,
+	})
+	s.Require().NoError(err)
+	if outBuf.Len() != 0 {
+		s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
+	} else {
+		s.Require().NoError(cdc.UnmarshalJSON(errBuf.Bytes(), &txResp))
+	}
 
-			fmt.Println("all interfaces", encodingConfig.InterfaceRegistry.ListAllInterfaces())
+	s.Require().True(strings.Contains(txResp.String(), "code: 0"), "tx contained a checkTx error:\n%s", txResp.String())
 
-			var acc authtypes.AccountI
-			// encodingConfig = gaia.MakeTestEncodingConfig()
-
-			// err = account.UnpackInterfaces(encodingConfig.InterfaceRegistry)
-			// if err != nil {
-			// 	fmt.Println("UnpackInterfaces err", err)
-			// }
-			// fmt.Println("account", account)
-
-			err = cdc.UnpackAny(res.Account, &acc)
-			if err != nil {
-				fmt.Println("UnpackAny err", err)
-			}
-			// if err := encodingConfig.InterfaceRegistry.UnpackAny(account.Account, &acc); err != nil {
-			// 	fmt.Println("UnpackAny err", err)
-			// }
-			fmt.Println("acc", acc)
-
-			// if err != nil {
-			// 	fmt.Println("err", err)
-			// }
-
-			// var acc authtypes.BaseAccount
-			// err = cdc.UnmarshalInterface(account.Account.Value, &acc)
-			// fmt.Println("err", err)
-			// fmt.Println("acc", acc)
-
-			// fmt.Println("account.Account", account.Account)
-			// var acct authtypes.BaseAccount
-			// err = cdc.UnpackAny(account.Account, &acct)
-			// if err != nil {
-			// 	fmt.Println("err", err)
-			// } else {
-			// 	fmt.Println("acct", acct)
-			// }
-			// s.T().Skip()
-
-			// m := new(authtypes.BaseAccount)
-			// if err := sdk.UnmarshalTo(m); err != nil {
-			// 	fmt.Println("err2", err)
-			// }
-
-			// acct := account.GetAccount()
-
-			// v, ok := account.(authtypes.BaseAccount)
-
-			// var acct authtypes.BaseAccount
-			// err = cdc.UnmarshalInterface(account.Account.Value, &acct)
-			// fmt.Println("err", err)
-			// fmt.Println("account", account)
-			// fmt.Println("account.Account", account.Account)
-			// fmt.Println("account.Account.Value", account.Account.Value)
-			// fmt.Println("string(account.Account.Value)", string(account.Account.Value))
-			// fmt.Println("acct", acct)
-
-			// fmt.Println(account)
-
-			i++
-			exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
-				Context:      ctx,
-				AttachStdout: true,
-				AttachStderr: true,
-				Container:    s.valResources[c.id][valIdx].Container.ID,
-				User:         "root",
-				Cmd: append(gaiaCommand,
-					fmt.Sprintf("--%s=%s", flags.FlagFrom, from),
-					fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-					"--keyring-backend=test",
-					"--broadcast-mode=sync",
-					"--output=json",
-					"-y"),
-			})
-			s.Require().NoError(err)
-
-			err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
-				Context:      ctx,
-				Detach:       false,
-				OutputStream: &outBuf,
-				ErrorStream:  &errBuf,
-			})
-			s.Require().NoError(err)
-
-			if outBuf.Len() != 0 {
-				s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
-			} else {
-				s.Require().NoError(cdc.UnmarshalJSON(errBuf.Bytes(), &txResp))
-			}
-
-			fmt.Println("outBuf", outBuf)
-			fmt.Println("errBuf", errBuf)
-
-			fmt.Println("txResp.String()", txResp.String())
-			fmt.Println("i = ", i)
-			return strings.Contains(txResp.String(), "code: 0")
-		},
-		20*time.Second,
-		5*time.Second,
-		"tx returned a non-zero code; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
-	)
-
-	err = nil
-
-	endpoint = fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	s.Require().Eventually(
 		func() bool {
 			err = queryGaiaTx(endpoint, txResp.TxHash)
@@ -395,16 +312,12 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 		5*time.Second,
 		"tx never got a successful query response; stdout: %s, stderr: %s, err: %s", outBuf.String(), errBuf.String(), err,
 	)
-
-	time.Sleep(6 * 1000) //
-
 }
 
 func (s *IntegrationTestSuite) queryAuthAccount(endpoint string, address string) (authtypes.QueryAccountResponse, error) {
 	var emptyResponse authtypes.QueryAccountResponse
 
 	path := fmt.Sprintf("%s/cosmos/auth/v1beta1/accounts/%s", endpoint, address)
-	fmt.Println("query", path)
 	resp, err := http.Get(path)
 	if err != nil {
 		s.T().Logf("This is the err: %s", err.Error())
@@ -422,13 +335,11 @@ func (s *IntegrationTestSuite) queryAuthAccount(endpoint string, address string)
 	if err != nil {
 		return emptyResponse, err
 	}
-	s.T().Logf("This is the body: %s", body)
 
 	var accountResp authtypes.QueryAccountResponse
 	if err := cdc.UnmarshalJSON(body, &accountResp); err != nil {
 		return emptyResponse, err
 	}
-	s.T().Logf("This is the auth response: %s", accountResp)
 
 	return accountResp, nil
 }

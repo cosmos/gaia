@@ -6,6 +6,7 @@ require (
 	cosmossdk.io/math v1.0.0-beta.3
 	github.com/cosmos/cosmos-sdk v0.46.0
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
+	github.com/cosmos/ibc-go/v5 v5.0.0-beta1
 	github.com/golangci/golangci-lint v1.48.0
 	github.com/gorilla/mux v1.8.0
 	github.com/gravity-devs/liquidity/v2 v2.0.0
@@ -13,13 +14,11 @@ require (
 	github.com/spf13/cast v1.5.0
 	github.com/spf13/cobra v1.5.0
 	github.com/spf13/viper v1.12.0 // indirect
-	// github.com/strangelove-ventures/packet-forward-middleware/v2 v2.1.1
+	github.com/strangelove-ventures/packet-forward-middleware/v2 v2.1.4-0.20220802012200-5a62a55a7f1d
 	github.com/stretchr/testify v1.8.0
 	github.com/tendermint/tendermint v0.34.20
 	github.com/tendermint/tm-db v0.6.7
 )
-
-require github.com/cosmos/ibc-go/v5 v5.0.0-20220801112651-041096304a27
 
 require (
 	4d63.com/gochecknoglobals v0.1.0 // indirect
@@ -225,6 +224,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/ssgreg/nlreturn/v2 v2.2.1 // indirect
 	github.com/stbenjam/no-sprintf-host-port v0.1.1 // indirect
+	github.com/strangelove-ventures/packet-forward-middleware/v2 v2.1.4-0.20220802012200-5a62a55a7f1d // indirect
 	github.com/stretchr/objx v0.4.0 // indirect
 	github.com/subosito/gotenv v1.4.0 // indirect
 	github.com/sylvia7788/contextcheck v1.0.4 // indirect

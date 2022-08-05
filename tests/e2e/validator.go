@@ -91,7 +91,6 @@ func (v *validator) init() error {
 	return nil
 }
 
-
 func (v *validator) createNodeKey() error {
 	serverCtx := server.NewDefaultContext()
 	config := serverCtx.Config
@@ -168,7 +167,6 @@ func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
 	return nil
 }
 
-
 func (v *validator) createKey(name string) error {
 	mnemonic, err := createMnemonic()
 	if err != nil {
@@ -177,7 +175,6 @@ func (v *validator) createKey(name string) error {
 
 	return v.createKeyFromMnemonic(name, mnemonic)
 }
-
 
 func (v *validator) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
 	description := stakingtypes.NewDescription(v.moniker, "", "", "", "")
@@ -209,7 +206,6 @@ func (v *validator) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
 		minSelfDelegation,
 	)
 }
-
 
 func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 	txBuilder := encodingConfig.TxConfig.NewTxBuilder()

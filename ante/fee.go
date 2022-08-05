@@ -18,7 +18,7 @@ const maxBypassMinFeeMsgGasUsage = uint64(200_000)
 // CheckTx, then call next AnteHandler.
 //
 // CONTRACT: Tx must implement FeeTx to use BypassMinFeeDecorator
-// If the tx msg type is one the bypass msg types, the tx is free from fee charge.
+// If the tx msg type is one of the bypass msg types, the tx is valid even if the min fee is lower than normally required.
 // If the bypass tx still carries fees, the fee denom should be the same as global fee required.
 
 var _ sdk.AnteDecorator = BypassMinFeeDecorator{}

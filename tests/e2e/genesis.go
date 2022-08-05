@@ -18,7 +18,6 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 )
 
-
 func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {
 	serverCtx := server.NewDefaultContext()
 	config := serverCtx.Config
@@ -42,7 +41,6 @@ func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {
 
 	return doc, nil
 }
-
 
 func addGenesisAccount(path, moniker, amountStr string, accAddr sdk.AccAddress) error {
 	serverCtx := server.NewDefaultContext()

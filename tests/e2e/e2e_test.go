@@ -10,7 +10,6 @@ import (
 )
 
 func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
-
 	var ibcStakeDenom string
 
 	s.Run("send_photon_to_chainB", func() {
@@ -105,7 +104,6 @@ func (s *IntegrationTestSuite) TestBankTokenTransfer() {
 }
 
 func (s *IntegrationTestSuite) TestSendTokensFromNewGovAccount() {
-
 	s.writeGovProposals((s.chainA))
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
@@ -148,7 +146,6 @@ func (s *IntegrationTestSuite) TestSendTokensFromNewGovAccount() {
 }
 
 func (s *IntegrationTestSuite) TestGovSoftwareUpgrade() {
-
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
 	s.Require().NoError(err)
@@ -190,7 +187,6 @@ func (s *IntegrationTestSuite) TestGovSoftwareUpgrade() {
 }
 
 func (s *IntegrationTestSuite) TestGovCancelSoftwareUpgrade() {
-
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
 	s.Require().NoError(err)
@@ -219,7 +215,6 @@ func (s *IntegrationTestSuite) TestGovCancelSoftwareUpgrade() {
 }
 
 func (s *IntegrationTestSuite) fundCommunityPool(chainAAPIEndpoint string, sender string) {
-
 	s.Run("fund_community_pool", func() {
 		beforeDistPhotonBalance, _ := getSpecificBalance(chainAAPIEndpoint, distModuleAddress, tokenAmount.Denom)
 		if beforeDistPhotonBalance.IsNil() {
@@ -249,7 +244,6 @@ func (s *IntegrationTestSuite) fundCommunityPool(chainAAPIEndpoint string, sende
 }
 
 func (s *IntegrationTestSuite) submitLegacyProposalFundGovAccount(chainAAPIEndpoint string, sender string, proposalId int) {
-
 	s.Run("submit_legacy_community_spend_proposal_to_fund_gov_acct", func() {
 		s.execGovSubmitLegacyGovProposal(s.chainA, 0, sender, "/root/.gaia/config/proposal.json", fees.String(), "community-pool-spend")
 
@@ -267,7 +261,6 @@ func (s *IntegrationTestSuite) submitLegacyProposalFundGovAccount(chainAAPIEndpo
 }
 
 func (s *IntegrationTestSuite) submitNewGovProposal(chainAAPIEndpoint string, sender string, proposalId int, proposalPath string) {
-
 	s.Run("submit_new_gov_proposal", func() {
 		s.execGovSubmitProposal(s.chainA, 0, sender, proposalPath, fees.String())
 
@@ -286,7 +279,6 @@ func (s *IntegrationTestSuite) submitNewGovProposal(chainAAPIEndpoint string, se
 }
 
 func (s *IntegrationTestSuite) depositGovProposal(chainAAPIEndpoint string, sender string, proposalId int) {
-
 	s.Run("deposit_gov_proposal", func() {
 		s.execGovDepositProposal(s.chainA, 0, sender, proposalId, depositAmount.String(), fees.String())
 
@@ -304,7 +296,6 @@ func (s *IntegrationTestSuite) depositGovProposal(chainAAPIEndpoint string, send
 }
 
 func (s *IntegrationTestSuite) voteGovProposal(chainAAPIEndpoint string, sender string, proposalId int, vote string, weighted bool) {
-
 	s.Run("vote_gov_proposal", func() {
 		if weighted {
 			s.execGovWeightedVoteProposal(s.chainA, 0, sender, proposalId, vote, fees.String())
@@ -326,7 +317,6 @@ func (s *IntegrationTestSuite) voteGovProposal(chainAAPIEndpoint string, sender 
 }
 
 func (s *IntegrationTestSuite) verifyChainHaltedAtUpgradeHeight(c *chain, valIdx int, upgradeHeight int) {
-
 	s.Require().Eventually(
 		func() bool {
 			currentHeight := s.getLatestBlockHeight(c, valIdx)
@@ -356,7 +346,6 @@ func (s *IntegrationTestSuite) verifyChainHaltedAtUpgradeHeight(c *chain, valIdx
 }
 
 func (s *IntegrationTestSuite) verifyChainPassesUpgradeHeight(c *chain, valIdx int, upgradeHeight int) {
-
 	s.Require().Eventually(
 		func() bool {
 			currentHeight := s.getLatestBlockHeight(c, valIdx)

@@ -69,6 +69,14 @@ assume main branch is at `v8`.
 1. create a PR to merge `v705-prepare-branch` to `release/v7.0.x`, and merge.
 1. checkout `release/v7.0.x`  tag `v7.0.5`.
 
+### Test building artifacts
+Before tagging the version, please test the building releasing artifacts by
+```bash
+make distclean build-reproducible
+```
+The above command will generate a directory 
+`gaia/artifacts` with different os and architecture binaries. If the above command runs sucessfully, delete the directory `rm -r gaia/artifacts`.
+
 ### Tagging
 
 The following steps are the default for tagging a specific branch commit (usually on a branch labeled `release/vX.X.X`):

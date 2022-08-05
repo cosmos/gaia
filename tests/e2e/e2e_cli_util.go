@@ -79,7 +79,8 @@ func queryGaiaDenomBalance(endpoint, addr, denom string) (sdk.Coin, error) {
 		"%s/cosmos/bank/v1beta1/balances/%s/by_denom?denom=%s",
 		endpoint, addr, denom,
 	)
-	resp, err := http.Get(path)
+
+	resp, err := http.Get(path) //nolint:gosec // this is used as a part of the e2e suite.
 	if err != nil {
 		return zeroCoin, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
@@ -99,11 +100,12 @@ func queryGaiaDenomBalance(endpoint, addr, denom string) (sdk.Coin, error) {
 	return *balanceResp.Balance, nil
 }
 
-func queryGovProposal(endpoint string, proposalId int) (govv1beta1.QueryProposalResponse, error) {
+func queryGovProposal(endpoint string, proposalID int) (govv1beta1.QueryProposalResponse, error) {
 	var emptyProp govv1beta1.QueryProposalResponse
 
-	path := fmt.Sprintf("%s/cosmos/gov/v1beta1/proposals/%d", endpoint, proposalId)
-	resp, err := http.Get(path)
+	path := fmt.Sprintf("%s/cosmos/gov/v1beta1/proposals/%d", endpoint, proposalID)
+
+	resp, err := http.Get(path) //nolint:gosec // this is only used during tests
 	if err != nil {
 		return emptyProp, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}

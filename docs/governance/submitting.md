@@ -78,7 +78,7 @@ For instance, this is the complete command that I could use to submit a **testne
 `gaiad tx gov submit-proposal param-change param.json --from gavin --chain-id gaia-13007 --node 45.77.218.219:26657`
 
 This is the complete command that I could use to submit a **mainnet** parameter-change proposal right now:
-`gaiad tx gov submit-proposal param-change param.json --from gavin --gas 500000 --fees 7500uatom --chain-id cosmoshub-3 --node cosmos-node-1.figment.network:26657`
+`gaiad tx gov submit-proposal param-change param.json --from gavin --gas 500000 --fees 7500uatom --chain-id cosmoshub-3 --node cosmos-node-1.figment.io:26657`
 
 1. `gaiad` is the command-line interface client that is used to send transactions and query the Cosmos Hub
 2. `tx gov submit-proposal param-change` indicates that the transaction is submitting a parameter-change proposal
@@ -92,8 +92,8 @@ This is the complete command that I could use to submit a **mainnet** parameter-
    - many nodes (including the Figment node) use a minimum fee to disincentivize transaction spamming
    - 7500uatom is equal to 0.0075 ATOM
 6. `--chain-id cosmoshub-3` is Cosmos Hub 3. For current and past chain-id's, please look at the [cosmos/mainnet resource](https://github.com/cosmos/mainnet)
-   - the testnet chain ID is [gaia-13007](https://hubble.figment.network/cosmos/chains/gaia-13007). For current and past testnet information, please look at the [testnet repository](https://github.com/cosmos/testnets)
-7. `--node cosmos-node-1.figment.network:26657` is using Figment Networks' node to send the transaction to the Cosmos Hub 3 network
+   - the testnet chain ID is [gaia-13007](https://hubble.figment.io/cosmos/chains/gaia-13007). For current and past testnet information, please look at the [testnet repository](https://github.com/cosmos/testnets)
+7. `--node cosmos-node-1.figment.io:26657` is using Figment Networks' node to send the transaction to the Cosmos Hub 3 network
 
 **Note**: be careful what you use for `--fees`. A mistake here could result in spending hundreds or thousands of ATOMs accidentally, which cannot be recovered.
 

@@ -5,8 +5,8 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	ibcante "github.com/cosmos/ibc-go/v3/modules/core/ante"
-	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
+	ibcante "github.com/cosmos/ibc-go/v5/modules/core/ante"
+	ibckeeper "github.com/cosmos/ibc-go/v5/modules/core/keeper"
 )
 
 // HandlerOptions extend the SDK's AnteHandler options by requiring the IBC
@@ -55,7 +55,7 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewSigGasConsumeDecorator(opts.AccountKeeper, sigGasConsumer),
 		ante.NewSigVerificationDecorator(opts.AccountKeeper, opts.SignModeHandler),
 		ante.NewIncrementSequenceDecorator(opts.AccountKeeper),
-		ibcante.NewAnteDecorator(opts.IBCkeeper),
+		ibcante.NewRedundantRelayDecorator(opts.IBCkeeper),
 	}
 
 	return sdk.ChainAnteDecorators(anteDecorators...), nil

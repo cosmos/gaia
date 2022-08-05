@@ -24,9 +24,12 @@ Do your own research and take precautions in regards to wallet security. Neither
 These community-maintained web and mobile wallets allow you to store & transfer ATOM, delegate ATOM to validators, and vote on on-chain governance proposals. Note that we do not endorse any of the wallets, they are listed for your convenience.
 
 * [Atomic Wallet](https://atomicwallet.io/) - Android, Linux, macOS, Windows
+* [Citadel.One](https://citadel.one/#mobile) - Android, iOS
 * [Cobo](https://cobo.com/) - Android, iOS
 * [Cosmostation](https://www.cosmostation.io/) - Android, iOS
+* [Crypto.com](https://crypto.com/) - Android, iOS
 * [Huobi Wallet](https://www.huobiwallet.com/) - Android, iOS
+* <!-- markdown-link-check-disable-next-line -->
 * [imToken](https://token.im/) - Android, iOS
 * [Keplr](https://wallet.keplr.app) - Web
 * [Ledger](https://www.ledger.com/cosmos-wallet) - Hardware
@@ -35,7 +38,6 @@ These community-maintained web and mobile wallets allow you to store & transfer 
 * [Rainbow Wallet](https://www.rainbow.one) - Android, iOS
 * [Trust Wallet](https://trustwallet.com/) Android, iOS
 * [Wetez](https://www.wetez.io/pc/homepage) - Android, iOS
-* [Crypto.com](https://crypto.com/) - Android, iOS
 
 
 ## Cosmos Hub Explorers
@@ -48,7 +50,7 @@ These block explorers allow you to search, view and analyze Cosmos Hub data&mdas
 * [Cosmos Overview](https://genesislab.net)
 * [Cosmoscan](https://cosmoscan.net/)
 * [Cosmos Visualizer](https://nylira.net/3d)
-* [Hubble](https://hubble.figment.network)
+* [Hubble](https://hubble.figment.io)
 * [IOBScan](https://cosmoshub.iobscan.io/)
 * [LOOK Explorer](https://cosmos.ping.pub)
 * [Lunie](https://lunie.io)

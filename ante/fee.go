@@ -1,14 +1,11 @@
 package ante
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"github.com/cosmos/gaia/v8/x/globalfee"
-	"github.com/cosmos/gaia/v8/x/globalfee/types"
 )
 
 const maxBypassMinFeeMsgGasUsage = uint64(200_000)
@@ -69,22 +66,16 @@ func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 	allowedToBypassMinFee := containsOnlyBypassMinFeeMsgs && doesNotExceedMaxGasUsage
 
 	var allFees sdk.Coins
+
 	requiredFees := getMinGasPrice(ctx, feeTx)
 
 	if ctx.IsCheckTx() && !simulate && !allowedToBypassMinFee {
-		// has global fee module
-		if mfd.GlobalMinFee.Has(ctx, types.ParamStoreKeyMinGasPrices) {
-			//requiredGlobalFees is sorted
-			requiredGlobalFees := mfd.getGlobalFee(ctx, feeTx)
-			allFees = CombinedFeeRequirement(requiredGlobalFees, requiredFees)
-			fmt.Println("allfees:", allFees)
-		} else {
-			// todo if panic here ( not have global fee module)?
-			allFees = requiredFees
-		}
+
+		requiredGlobalFees := mfd.getGlobalFee(ctx, feeTx)
+		allFees = CombinedFeeRequirement(requiredGlobalFees, requiredFees)
 
 		// this is to ban 1stake passing if the globalfee is 1photon or 0photon
-		// if feeCoins=[], requiredGlobalFees has 0 coins, pass.
+		// if feeCoins=[] and requiredGlobalFees has 0denom coins then it should pass.
 		if !DenomsSubsetOfIncludingZero(feeCoins, allFees) {
 			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fees %s is not a subset of required fees %s", feeCoins, allFees)
 		}
@@ -95,7 +86,7 @@ func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 	}
 
 	// when the tx is bypass msg type, still need to check the denom is not random denom
-	if ctx.IsCheckTx() && !simulate && allowedToBypassMinFee && mfd.GlobalMinFee.Has(ctx, types.ParamStoreKeyMinGasPrices) {
+	if ctx.IsCheckTx() && !simulate && allowedToBypassMinFee {
 		requiredGlobalFees := mfd.getGlobalFee(ctx, feeTx)
 		// bypass tx without pay fee
 		if len(feeCoins) == 0 {

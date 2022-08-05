@@ -293,19 +293,19 @@ func (s *feeUtilsTestSuite) TestIsAnyGTEIncludingZero() {
 	zeroCoinNewDenom1 := sdk.NewCoin("newphoton", sdk.NewInt(10))
 	zeroCoinNewDenom2 := sdk.NewCoin("newstake", sdk.NewInt(20))
 	zeroCoinNewDenom3 := sdk.NewCoin("newquark", sdk.NewInt(30))
-	//coinNewDenom1Zero := sdk.NewCoin("newphoton", sdk.ZeroInt())
+	// coinNewDenom1Zero := sdk.NewCoin("newphoton", sdk.ZeroInt())
 	// coins must be valid !!! and sorted!!!
 	coinsAllZero := sdk.Coins{zeroCoin1, zeroCoin2, zeroCoin3}.Sort()
 	coinsAllNewDenomAllZero := sdk.Coins{zeroCoinNewDenom1, zeroCoinNewDenom2, zeroCoinNewDenom3}.Sort()
 	coinsAllZeroShort := sdk.Coins{zeroCoin1, zeroCoin2}.Sort()
 	coinsContainZero := sdk.Coins{zeroCoin1, zeroCoin2, coin3}.Sort()
-	//coinsContainZeroNewDenoms := sdk.Coins{zeroCoin1, zeroCoin2, coinNewDenom1Zero}.Sort()
+	// coinsContainZeroNewDenoms := sdk.Coins{zeroCoin1, zeroCoin2, coinNewDenom1Zero}.Sort()
 
 	coins := sdk.Coins{coin1, coin2, coin3}.Sort()
 	coinsHighHigh := sdk.Coins{coin1High, coin2High}
 	coinsHighLow := sdk.Coins{coin1High, coin2Low}.Sort()
 	coinsLowLow := sdk.Coins{coin1Low, coin2Low}.Sort()
-	//coinsShort := sdk.Coins{coin1, coin2}.Sort()
+	// coinsShort := sdk.Coins{coin1, coin2}.Sort()
 	coinsAllNewDenom := sdk.Coins{coinNewDenom1, coinNewDenom2, coinNewDenom3}.Sort()
 	coinsOldNewDenom := sdk.Coins{coin1, coinNewDenom1, coinNewDenom2}.Sort()
 	coinsOldLowNewDenom := sdk.Coins{coin1Low, coinNewDenom1, coinNewDenom2}.Sort()

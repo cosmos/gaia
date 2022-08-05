@@ -1,4 +1,4 @@
-// +build exclude
+//go:build exclude
 
 package main
 

@@ -3,7 +3,7 @@ package ante_test
 import (
 	"fmt"
 	"testing"
-	
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
@@ -15,7 +15,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	
+
 	gaiaapp "github.com/cosmos/gaia/v8/app"
 	gaiahelpers "github.com/cosmos/gaia/v8/app/helpers"
 	"github.com/cosmos/gaia/v8/x/globalfee"
@@ -52,11 +52,11 @@ func (s *IntegrationTestSuite) SetupTest() {
 	s.clientCtx = client.Context{}.WithTxConfig(encodingConfig.TxConfig)
 }
 
-func (s *IntegrationTestSuite) setupTestGlobalFeeStoreAndMinGasPrice(minGasPrice []sdk.DecCoin, globalFeeParams *globfeetypes.Params) types.Subspace{
+func (s *IntegrationTestSuite) setupTestGlobalFeeStoreAndMinGasPrice(minGasPrice []sdk.DecCoin, globalFeeParams *globfeetypes.Params) types.Subspace {
 	subspace := s.app.GetSubspace(globalfee.ModuleName)
 	subspace.SetParamSet(s.ctx, globalFeeParams)
 	s.ctx = s.ctx.WithMinGasPrices(minGasPrice).WithIsCheckTx(true)
-	
+
 	return subspace
 }
 

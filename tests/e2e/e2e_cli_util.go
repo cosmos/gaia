@@ -14,7 +14,6 @@ import (
 
 func queryGaiaTx(endpoint, txHash string) error {
 	resp, err := http.Get(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs/%s", endpoint, txHash))
-
 	if err != nil {
 		return fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
@@ -111,9 +110,7 @@ func queryGovProposal(endpoint string, proposalId int) (govv1beta1.QueryProposal
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
-
 	if err != nil {
-
 		return emptyProp, err
 	}
 	var govProposalResp govv1beta1.QueryProposalResponse

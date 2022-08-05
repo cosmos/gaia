@@ -122,7 +122,6 @@ func IsAnyGTEIncludingZero(coins, coinsB sdk.Coins) bool {
 				return true
 			}
 		}
-
 	}
 
 	return false

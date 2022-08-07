@@ -50,7 +50,6 @@ func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
 }
 
 func (s *IntegrationTestSuite) TestBankTokenTransfer() {
-	s.T().Skip()
 	s.Run("send_photon_between_accounts", func() {
 		var err error
 
@@ -105,7 +104,6 @@ func (s *IntegrationTestSuite) TestBankTokenTransfer() {
 }
 
 func (s *IntegrationTestSuite) TestSendTokensFromNewGovAccount() {
-	s.T().Skip()
 	s.writeGovProposals((s.chainA))
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
@@ -148,7 +146,6 @@ func (s *IntegrationTestSuite) TestSendTokensFromNewGovAccount() {
 }
 
 func (s *IntegrationTestSuite) TestGovSoftwareUpgrade() {
-	s.T().Skip()
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
 	s.Require().NoError(err)
@@ -190,8 +187,6 @@ func (s *IntegrationTestSuite) TestGovSoftwareUpgrade() {
 }
 
 func (s *IntegrationTestSuite) TestGovCancelSoftwareUpgrade() {
-	s.T().Skip()
-
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
 	s.Require().NoError(err)
@@ -219,8 +214,11 @@ func (s *IntegrationTestSuite) TestGovCancelSoftwareUpgrade() {
 	s.T().Logf("Successfully canceled upgrade at height %d", proposalHeight)
 }
 
+func (s *IntegrationTestSuite) TestGroups() {
+	s.GroupsSendMsgTest()
+}
+
 func (s *IntegrationTestSuite) fundCommunityPool(chainAAPIEndpoint string, sender string) {
-	s.T().Skip()
 	s.Run("fund_community_pool", func() {
 		beforeDistPhotonBalance, _ := getSpecificBalance(chainAAPIEndpoint, distModuleAddress, tokenAmount.Denom)
 		if beforeDistPhotonBalance.IsNil() {

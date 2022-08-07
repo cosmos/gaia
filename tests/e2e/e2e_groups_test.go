@@ -50,7 +50,7 @@ var (
 	}
 )
 
-func (s *IntegrationTestSuite) TestGroupsSendMsg() {
+func (s *IntegrationTestSuite) GroupsSendMsgTest() {
 	thresholdPolicyMetadata := "Policy 1"
 	percentagePolicyMetadata := "Policy 2"
 	groupId := 1

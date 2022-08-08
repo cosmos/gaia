@@ -5,6 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/gaia/v8/ante"
+	gaiaapp "github.com/cosmos/gaia/v8/app"
 	globfeetypes "github.com/cosmos/gaia/v8/x/globalfee/types"
 	ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
@@ -528,11 +529,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			// set globalfees and min gas price
 			subspace := s.setupTestGlobalFeeStoreAndMinGasPrice(testCase.minGasPrice, testCase.globalFeeParams)
 			// setup antehandler
-			mfd := ante.NewBypassMinFeeDecorator([]string{
-				sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),
-				sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
-				sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
-			}, subspace)
+			mfd := ante.NewBypassMinFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), subspace)
 			antehandler := sdk.ChainAnteDecorators(mfd)
 
 			s.Require().NoError(s.txBuilder.SetMsgs(testCase.txMsg))

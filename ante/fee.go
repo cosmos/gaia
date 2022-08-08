@@ -83,7 +83,7 @@ func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 		}
 	}
 
-	// when the tx is bypass msg type, still need to check the denom is not random denom
+	// when the tx is bypass msg type, still need to check the denom is not some unknown denom
 	if ctx.IsCheckTx() && !simulate && allowedToBypassMinFee {
 		requiredGlobalFees := mfd.getGlobalFee(ctx, feeTx)
 		// bypass tx without pay fee

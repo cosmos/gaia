@@ -1,8 +1,9 @@
 package ante
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/stretchr/testify/suite"
 )
@@ -86,67 +87,67 @@ func (s *feeUtilsTestSuite) TestCombinedFeeRequirement() {
 		c        sdk.Coins
 		combined sdk.Coins
 	}{
-		"global fee empty, fee empty, combined fee empty": {
+		"global fee empty, min fee empty, combined fee empty": {
 			cGlobal:  coinsEmpty,
 			c:        coinsEmpty,
 			combined: coinsEmpty,
 		},
-		"global fee empty, fee nonempty, combined fee nonempty": {
+		"global fee empty, min fee nonempty, combined fee empty": {
 			cGlobal:  coinsEmpty,
 			c:        coinsNonEmpty,
 			combined: coinsEmpty,
 		},
-		"global fee nonempty, fee empty, combined fee = global fee": {
+		"global fee nonempty, min fee empty, combined fee = global fee": {
 			cGlobal:  coinsNonEmpty,
 			c:        coinsNonEmpty,
 			combined: coinsNonEmpty,
 		},
-		"global fee and fee have overlapping denom, fees amounts are all higher": {
+		"global fee and min fee have overlapping denom, min fees amounts are all higher": {
 			cGlobal:  coinsNonEmpty,
 			c:        coinsNonEmptyHigh,
 			combined: coinsNonEmptyHigh,
 		},
-		"global fee and fee have overlapping denom, one of fees amounts is higher": {
+		"global fee and min fee have overlapping denom, one of min fees amounts is higher": {
 			cGlobal:  coinsNonEmpty,
 			c:        coinsNonEmptyOneHigh,
 			combined: coinsNonEmptyOneHigh,
 		},
-		"global fee and fee have no overlapping denom, combined fee = global fee": {
+		"global fee and min fee have no overlapping denom, combined fee = global fee": {
 			cGlobal:  coinsNonEmpty,
 			c:        coinsNewDenom,
 			combined: coinsNonEmpty,
 		},
-		"global fees and fees have partial overlapping denom, fee amount <= global fee amount, combined fees = global fees": {
+		"global fees and min fees have partial overlapping denom, min fee amount <= global fee amount, combined fees = global fees": {
 			cGlobal:  coinsNonEmpty,
 			c:        coinsNewOldDenom,
 			combined: coinsNonEmpty,
 		},
-		"global fees and fees have partial overlapping denom, one fee amount > global fee amount, combined fee = global fee": {
+		"global fees and min fees have partial overlapping denom, one min fee amount > global fee amount, combined fee = overlapping highest": {
 			cGlobal:  coinsNonEmpty,
 			c:        coinsNewOldDenomHigh,
 			combined: sdk.Coins{coin1High, coin2},
 		},
-		"global fees have zero fees, fees have overlapping non-zero fees": {
+		"global fees have zero fees, min fees have overlapping non-zero fees, combined fees = overlapping highest": {
 			cGlobal:  coinsCointainZero,
 			c:        coinsNonEmpty,
 			combined: sdk.Coins{coin1, coin2},
 		},
-		"global fees have zero fees, fees have overlapping zero fees": {
+		"global fees have zero fees, min fees have overlapping zero fees": {
 			cGlobal:  coinsCointainZero,
 			c:        coinsCointainZero,
 			combined: coinsCointainZero,
 		},
-		"global fees have zero fees, fees have non-overlapping zero fees": {
+		"global fees have zero fees, min fees have non-overlapping zero fees": {
 			cGlobal:  coinsCointainZero,
 			c:        coinsCointainZeroNewDenom,
 			combined: coinsCointainZero,
 		},
-		"global fees are all zero fees, fees have overlapping zero fees": {
+		"global fees are all zero fees, min fees have overlapping zero fees": {
 			cGlobal:  coinsAllZero,
 			c:        coinsAllZero,
 			combined: coinsAllZero,
 		},
-		"global fees are all zero fees, fees have overlapping non-zero fees": {
+		"global fees are all zero fees, min fees have overlapping non-zero fees, combined fee = overlapping highest": {
 			cGlobal:  coinsAllZero,
 			c:        coinsCointainZeroNewDenom,
 			combined: sdk.Coins{coin1, zeroCoin2},
@@ -236,12 +237,12 @@ func (s *feeUtilsTestSuite) TestDenomsSubsetOfIncludingZero() {
 			set:      coinsShort,
 			subset:   true,
 		},
-		"supersets are zero coins, set's denoms are all in superset, DenomsSubsetOf = false": {
+		"supersets are zero coins, set's denoms are all in superset, DenomsSubsetOf = true": {
 			superset: coinsAllZero,
 			set:      coinsShort,
 			subset:   true,
 		},
-		"supersets contains zero coins, set's denoms are all in superset, DenomsSubsetOf = false": {
+		"supersets contains zero coins, set's denoms are all in superset, DenomsSubsetOf = true": {
 			superset: coinsContainZero,
 			set:      coinsShort,
 			subset:   true,
@@ -292,19 +293,19 @@ func (s *feeUtilsTestSuite) TestIsAnyGTEIncludingZero() {
 	zeroCoinNewDenom1 := sdk.NewCoin("newphoton", sdk.NewInt(10))
 	zeroCoinNewDenom2 := sdk.NewCoin("newstake", sdk.NewInt(20))
 	zeroCoinNewDenom3 := sdk.NewCoin("newquark", sdk.NewInt(30))
-	//coinNewDenom1Zero := sdk.NewCoin("newphoton", sdk.ZeroInt())
+	// coinNewDenom1Zero := sdk.NewCoin("newphoton", sdk.ZeroInt())
 	// coins must be valid !!! and sorted!!!
 	coinsAllZero := sdk.Coins{zeroCoin1, zeroCoin2, zeroCoin3}.Sort()
 	coinsAllNewDenomAllZero := sdk.Coins{zeroCoinNewDenom1, zeroCoinNewDenom2, zeroCoinNewDenom3}.Sort()
 	coinsAllZeroShort := sdk.Coins{zeroCoin1, zeroCoin2}.Sort()
 	coinsContainZero := sdk.Coins{zeroCoin1, zeroCoin2, coin3}.Sort()
-	//coinsContainZeroNewDenoms := sdk.Coins{zeroCoin1, zeroCoin2, coinNewDenom1Zero}.Sort()
+	// coinsContainZeroNewDenoms := sdk.Coins{zeroCoin1, zeroCoin2, coinNewDenom1Zero}.Sort()
 
 	coins := sdk.Coins{coin1, coin2, coin3}.Sort()
 	coinsHighHigh := sdk.Coins{coin1High, coin2High}
 	coinsHighLow := sdk.Coins{coin1High, coin2Low}.Sort()
 	coinsLowLow := sdk.Coins{coin1Low, coin2Low}.Sort()
-	//coinsShort := sdk.Coins{coin1, coin2}.Sort()
+	// coinsShort := sdk.Coins{coin1, coin2}.Sort()
 	coinsAllNewDenom := sdk.Coins{coinNewDenom1, coinNewDenom2, coinNewDenom3}.Sort()
 	coinsOldNewDenom := sdk.Coins{coin1, coinNewDenom1, coinNewDenom2}.Sort()
 	coinsOldLowNewDenom := sdk.Coins{coin1Low, coinNewDenom1, coinNewDenom2}.Sort()
@@ -328,7 +329,7 @@ func (s *feeUtilsTestSuite) TestIsAnyGTEIncludingZero() {
 			c2:  coinsAllZero,
 			gte: true,
 		},
-		"all zero coins, have all different denoms": {
+		"c2 is all zero coins, with different denoms from c1 which are all zero coins too": {
 			c1:  coinsAllZero,
 			c2:  coinsAllNewDenomAllZero,
 			gte: false,
@@ -343,7 +344,7 @@ func (s *feeUtilsTestSuite) TestIsAnyGTEIncludingZero() {
 			c2:  emptyCoins,
 			gte: true,
 		},
-		"empty coins are GET coins contain zero denom": {
+		"empty coins are GTE coins that contain zero denom": {
 			c1:  coinsContainZero,
 			c2:  emptyCoins,
 			gte: true,
@@ -353,23 +354,23 @@ func (s *feeUtilsTestSuite) TestIsAnyGTEIncludingZero() {
 			c2:  coinsAllZero,
 			gte: false,
 		},
-		"empty coins are not GET nonzero coins": {
+		"empty coins are not GTE nonzero coins": {
 			c1:  coins,
 			c2:  emptyCoins,
 			gte: false,
 		},
 		// special case, not the opposite result of the above case
-		"nonzero coins are not GET empty coins": {
+		"nonzero coins are not GTE empty coins": {
 			c1:  emptyCoins,
 			c2:  coins,
 			gte: false,
 		},
-		"nonzero coins are GET zero coins, has overlapping denom": {
+		"nonzero coins are GTE zero coins, has overlapping denom": {
 			c1:  coinsAllZero,
 			c2:  coins,
 			gte: true,
 		},
-		"nonzero coins are GET coins contain zero coins, zero coin is overlapping denom": {
+		"nonzero coins are GTE coins contain zero coins, zero coin is overlapping denom": {
 			c1:  coinsContainZero,
 			c2:  coins,
 			gte: true,

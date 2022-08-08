@@ -11,7 +11,6 @@ import (
 // ParamStoreKeyMinGasPrices store key
 var ParamStoreKeyMinGasPrices = []byte("MinimumGasPricesParam")
 
-// todo set DefaultGlobalFee
 // DefaultParams returns default parameters
 func DefaultParams() Params {
 	return Params{MinimumGasPrices: sdk.DecCoins{}}
@@ -39,8 +38,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 func validateMinimumGasPrices(i interface{}) error {
 	v, ok := i.(sdk.DecCoins)
 	if !ok {
-		// todo check if err type correct
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "type: %T", i)
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "type: %T, expected sdk.DecCoins", i)
 	}
 
 	dec := DecCoins(v)

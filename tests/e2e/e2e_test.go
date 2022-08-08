@@ -64,19 +64,19 @@ func (s *IntegrationTestSuite) TestBankTokenTransfer() {
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
 		var (
-			beforeSenderPhotonBalance    sdk.Coin
-			beforeRecipientPhotonBalance sdk.Coin
+			beforeSenderUAtomBalance    sdk.Coin
+			beforeRecipientUAtomBalance sdk.Coin
 		)
 
 		s.Require().Eventually(
 			func() bool {
-				beforeSenderPhotonBalance, err = getSpecificBalance(chainAAPIEndpoint, sender, "photon")
+				beforeSenderUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, sender, "uatom")
 				s.Require().NoError(err)
 
-				beforeRecipientPhotonBalance, err = getSpecificBalance(chainAAPIEndpoint, recipient, "photon")
+				beforeRecipientUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, recipient, "uatom")
 				s.Require().NoError(err)
 
-				return beforeSenderPhotonBalance.IsValid() && beforeRecipientPhotonBalance.IsValid()
+				return beforeSenderUAtomBalance.IsValid() && beforeRecipientUAtomBalance.IsValid()
 			},
 			10*time.Second,
 			5*time.Second,
@@ -86,14 +86,14 @@ func (s *IntegrationTestSuite) TestBankTokenTransfer() {
 
 		s.Require().Eventually(
 			func() bool {
-				afterSenderPhotonBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, "photon")
+				afterSenderUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, "uatom")
 				s.Require().NoError(err)
 
-				afterRecipientPhotonBalance, err := getSpecificBalance(chainAAPIEndpoint, recipient, "photon")
+				afterRecipientUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, recipient, "uatom")
 				s.Require().NoError(err)
 
-				decremented := beforeSenderPhotonBalance.Sub(tokenAmount).Sub(fees).IsEqual(afterSenderPhotonBalance)
-				incremented := beforeRecipientPhotonBalance.Add(tokenAmount).IsEqual(afterRecipientPhotonBalance)
+				decremented := beforeSenderUAtomBalance.Sub(tokenAmount).Sub(fees).IsEqual(afterSenderUAtomBalance)
+				incremented := beforeRecipientUAtomBalance.Add(tokenAmount).IsEqual(afterRecipientUAtomBalance)
 
 				return decremented && incremented
 			},
@@ -121,7 +121,7 @@ func (s *IntegrationTestSuite) TestSendTokensFromNewGovAccount() {
 	s.T().Logf("Voting Legacy Gov Proposal: Community Spend Funding Gov Module")
 	s.voteGovProposal(chainAAPIEndpoint, sender, fees.String(), proposalCounter, "yes", false)
 
-	initialGovBalance, err := getSpecificBalance(chainAAPIEndpoint, govModuleAddress, photonDenom)
+	initialGovBalance, err := getSpecificBalance(chainAAPIEndpoint, govModuleAddress, uatomDenom)
 	s.Require().NoError(err)
 	proposalCounter++
 
@@ -133,10 +133,10 @@ func (s *IntegrationTestSuite) TestSendTokensFromNewGovAccount() {
 	s.voteGovProposal(chainAAPIEndpoint, sender, fees.String(), proposalCounter, "yes", false)
 	s.Require().Eventually(
 		func() bool {
-			newGovBalance, err := getSpecificBalance(chainAAPIEndpoint, govModuleAddress, photonDenom)
+			newGovBalance, err := getSpecificBalance(chainAAPIEndpoint, govModuleAddress, uatomDenom)
 			s.Require().NoError(err)
 
-			recipientBalance, err := getSpecificBalance(chainAAPIEndpoint, govSendMsgRecipientAddress, photonDenom)
+			recipientBalance, err := getSpecificBalance(chainAAPIEndpoint, govSendMsgRecipientAddress, uatomDenom)
 			s.Require().NoError(err)
 			return newGovBalance.IsEqual(initialGovBalance.Sub(sendGovAmount)) && recipientBalance.Equal(initialGovBalance.Sub(newGovBalance))
 		},
@@ -278,7 +278,7 @@ func (s *IntegrationTestSuite) submitLegacyGovProposal(chainAAPIEndpoint string,
 	})
 }
 
-func (s *IntegrationTestSuite) submitNewGovProposal(chainAAPIEndpoint string, sender string, proposalId int, proposalPath string) {
+func (s *IntegrationTestSuite) submitNewGovProposal(chainAAPIEndpoint, sender string, proposalId int, proposalPath string) {
 	s.Run("submit_new_gov_proposal", func() {
 		s.execGovSubmitProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposalPath, fees.String())
 
@@ -296,9 +296,9 @@ func (s *IntegrationTestSuite) submitNewGovProposal(chainAAPIEndpoint string, se
 	})
 }
 
-func (s *IntegrationTestSuite) depositGovProposal(chainAAPIEndpoint string, sender string, fees string, proposalId int) {
+func (s *IntegrationTestSuite) depositGovProposal(chainAAPIEndpoint, sender string, fees string, proposalId int) {
 	s.Run("deposit_gov_proposal", func() {
-		s.execGovDepositProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposalId, depositAmount, fees)
+		s.execGovDepositProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposalId, depositAmount.String(), fees)
 
 		s.Require().Eventually(
 			func() bool {
@@ -313,7 +313,7 @@ func (s *IntegrationTestSuite) depositGovProposal(chainAAPIEndpoint string, send
 	})
 }
 
-func (s *IntegrationTestSuite) voteGovProposal(chainAAPIEndpoint string, sender string, fees string, proposalId int, vote string, weighted bool) {
+func (s *IntegrationTestSuite) voteGovProposal(chainAAPIEndpoint, sender string, fees string, proposalId int, vote string, weighted bool) {
 	s.Run("vote_gov_proposal", func() {
 		if weighted {
 			s.execGovWeightedVoteProposal(s.chainA, 0, chainAAPIEndpoint, sender, proposalId, vote, fees)

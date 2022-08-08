@@ -124,7 +124,7 @@ func modifyGenesis(path, moniker, amountStr string, accAddr sdk.AccAddress, glob
 	threshold, _ := sdk.NewDecFromStr("0.000000000000000001")
 
 	govState := govv1beta1.NewGenesisState(1,
-		govv1beta1.NewDepositParams(sdk.NewCoins(sdk.NewCoin("photon", amnt)), 10*time.Minute),
+		govv1beta1.NewDepositParams(sdk.NewCoins(sdk.NewCoin("uatom", amnt)), 10*time.Minute),
 		govv1beta1.NewVotingParams(15*time.Second),
 		govv1beta1.NewTallyParams(quorum, threshold, govv1beta1.DefaultVetoThreshold),
 	)

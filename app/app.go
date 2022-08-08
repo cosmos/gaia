@@ -2,7 +2,6 @@ package gaia
 
 import (
 	"fmt"
-	"github.com/cosmos/gaia/v8/x/globalfee"
 	"io"
 	stdlog "log"
 	"net/http"
@@ -116,6 +115,7 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	gaiaante "github.com/cosmos/gaia/v8/ante"
+	"github.com/cosmos/gaia/v8/x/globalfee"
 	gaiaappparams "github.com/cosmos/gaia/v8/app/params"
 
 	// unnamed import of statik for swagger UI support
@@ -545,6 +545,7 @@ func NewGaiaApp(
 		icaModule,
 		routerModule,
 		globalfee.NewAppModule(app.GetSubspace(globalfee.ModuleName)),
+		routerModule,
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that

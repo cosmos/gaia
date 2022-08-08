@@ -20,9 +20,11 @@ import (
 	"github.com/cosmos/gaia/v8/x/globalfee/types"
 )
 
-var _ module.AppModuleBasic = AppModuleBasic{}
-var _ module.AppModuleGenesis = AppModule{}
-var _ module.AppModule = AppModule{}
+var (
+	_ module.AppModuleBasic   = AppModuleBasic{}
+	_ module.AppModuleGenesis = AppModule{}
+	_ module.AppModule        = AppModule{}
+)
 
 // AppModuleBasic defines the basic application module used by the wasm module.
 type AppModuleBasic struct{}
@@ -96,6 +98,7 @@ func (a AppModule) ExportGenesis(ctx sdk.Context, marshaler codec.JSONCodec) jso
 	a.paramSpace.GetParamSet(ctx, &genState.Params)
 	return marshaler.MustMarshalJSON(&genState)
 }
+
 func (a AppModule) RegisterInvariants(registry sdk.InvariantRegistry) {
 }
 

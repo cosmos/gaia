@@ -8,11 +8,12 @@ import (
 	tmstrings "github.com/tendermint/tendermint/libs/strings"
 )
 
-// ParamStoreKeyMinGasPrices type require coins sorted. getGlobalFee will also return sorted coins
+// ParamStoreKeyMinGasPrices type require coins sorted. getGlobalFee will also return sorted coins (might return 0denom if globalMinGasPrice is 0)
 func (mfd BypassMinFeeDecorator) getGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) sdk.Coins {
 	var globalMinGasPrices sdk.DecCoins
-	mfd.GlobalMinFee.Get(ctx, types.ParamStoreKeyMinGasPrices, &globalMinGasPrices)
-
+	if mfd.GlobalMinFee.Has(ctx, types.ParamStoreKeyMinGasPrices) {
+		mfd.GlobalMinFee.Get(ctx, types.ParamStoreKeyMinGasPrices, &globalMinGasPrices)
+	}
 	// global fee is empty set, set global fee to 0uatom
 	if len(globalMinGasPrices) == 0 {
 		globalMinGasPrices = DefaultZeroGlobalFee()
@@ -121,7 +122,6 @@ func IsAnyGTEIncludingZero(coins, coinsB sdk.Coins) bool {
 				return true
 			}
 		}
-
 	}
 
 	return false
@@ -142,7 +142,7 @@ func containZeroCoins(coinsB sdk.Coins) bool {
 	return false
 }
 
-// CombinedFeeRequirement will combine the global fee and min_gas_price. globalFees, minGasPrices must be valid, but CombinedFeeRequirement does not valid them.
+// CombinedFeeRequirement will combine the global fee and min_gas_price. Both globalFees and minGasPrices must be valid, but CombinedFeeRequirement does not validate them so it may return 0denom.
 func CombinedFeeRequirement(globalFees, minGasPrices sdk.Coins) sdk.Coins {
 	// empty min_gas_price
 	if len(minGasPrices) == 0 {

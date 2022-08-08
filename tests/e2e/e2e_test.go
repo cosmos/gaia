@@ -12,7 +12,7 @@ import (
 func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
 	var ibcStakeDenom string
 
-	s.Run("send_photon_to_chainB", func() {
+	s.Run("send_uatom_to_chainB", func() {
 		// require the recipient account receives the IBC tokens (IBC packets ACKd)
 		var (
 			balances sdk.Coins
@@ -50,7 +50,7 @@ func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
 }
 
 func (s *IntegrationTestSuite) TestBankTokenTransfer() {
-	s.Run("send_photon_between_accounts", func() {
+	s.Run("send_uatom_between_accounts", func() {
 		var err error
 
 		senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
@@ -64,19 +64,19 @@ func (s *IntegrationTestSuite) TestBankTokenTransfer() {
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
 		var (
-			beforeSenderPhotonBalance    sdk.Coin
-			beforeRecipientPhotonBalance sdk.Coin
+			beforeSenderUAtomBalance    sdk.Coin
+			beforeRecipientUAtomBalance sdk.Coin
 		)
 
 		s.Require().Eventually(
 			func() bool {
-				beforeSenderPhotonBalance, err = getSpecificBalance(chainAAPIEndpoint, sender, "photon")
+				beforeSenderUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, sender, "uatom")
 				s.Require().NoError(err)
 
-				beforeRecipientPhotonBalance, err = getSpecificBalance(chainAAPIEndpoint, recipient, "photon")
+				beforeRecipientUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, recipient, "uatom")
 				s.Require().NoError(err)
 
-				return beforeSenderPhotonBalance.IsValid() && beforeRecipientPhotonBalance.IsValid()
+				return beforeSenderUAtomBalance.IsValid() && beforeRecipientUAtomBalance.IsValid()
 			},
 			10*time.Second,
 			5*time.Second,
@@ -86,14 +86,14 @@ func (s *IntegrationTestSuite) TestBankTokenTransfer() {
 
 		s.Require().Eventually(
 			func() bool {
-				afterSenderPhotonBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, "photon")
+				afterSenderUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, "uatom")
 				s.Require().NoError(err)
 
-				afterRecipientPhotonBalance, err := getSpecificBalance(chainAAPIEndpoint, recipient, "photon")
+				afterRecipientUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, recipient, "uatom")
 				s.Require().NoError(err)
 
-				decremented := beforeSenderPhotonBalance.Sub(tokenAmount).Sub(fees).IsEqual(afterSenderPhotonBalance)
-				incremented := beforeRecipientPhotonBalance.Add(tokenAmount).IsEqual(afterRecipientPhotonBalance)
+				decremented := beforeSenderUAtomBalance.Sub(tokenAmount).Sub(fees).IsEqual(afterSenderUAtomBalance)
+				incremented := beforeRecipientUAtomBalance.Add(tokenAmount).IsEqual(afterRecipientUAtomBalance)
 
 				return decremented && incremented
 			},
@@ -121,7 +121,7 @@ func (s *IntegrationTestSuite) TestSendTokensFromNewGovAccount() {
 	s.T().Logf("Voting Legacy Gov Proposal: Community Spend Funding Gov Module")
 	s.voteGovProposal(chainAAPIEndpoint, sender, proposalCounter, "yes", false)
 
-	initialGovBalance, err := getSpecificBalance(chainAAPIEndpoint, govModuleAddress, photonDenom)
+	initialGovBalance, err := getSpecificBalance(chainAAPIEndpoint, govModuleAddress, uatomDenom)
 	s.Require().NoError(err)
 	proposalCounter++
 
@@ -133,10 +133,10 @@ func (s *IntegrationTestSuite) TestSendTokensFromNewGovAccount() {
 	s.voteGovProposal(chainAAPIEndpoint, sender, proposalCounter, "yes", false)
 	s.Require().Eventually(
 		func() bool {
-			newGovBalance, err := getSpecificBalance(chainAAPIEndpoint, govModuleAddress, photonDenom)
+			newGovBalance, err := getSpecificBalance(chainAAPIEndpoint, govModuleAddress, uatomDenom)
 			s.Require().NoError(err)
 
-			recipientBalance, err := getSpecificBalance(chainAAPIEndpoint, govSendMsgRecipientAddress, photonDenom)
+			recipientBalance, err := getSpecificBalance(chainAAPIEndpoint, govSendMsgRecipientAddress, uatomDenom)
 			s.Require().NoError(err)
 			return newGovBalance.IsEqual(initialGovBalance.Sub(sendGovAmount)) && recipientBalance.Equal(initialGovBalance.Sub(newGovBalance))
 		},
@@ -218,26 +218,26 @@ func (s *IntegrationTestSuite) TestGovCancelSoftwareUpgrade() {
 
 func (s *IntegrationTestSuite) fundCommunityPool(chainAAPIEndpoint, sender string) {
 	s.Run("fund_community_pool", func() {
-		beforeDistPhotonBalance, _ := getSpecificBalance(chainAAPIEndpoint, distModuleAddress, tokenAmount.Denom)
-		if beforeDistPhotonBalance.IsNil() {
+		beforeDistUAtomBalance, _ := getSpecificBalance(chainAAPIEndpoint, distModuleAddress, tokenAmount.Denom)
+		if beforeDistUAtomBalance.IsNil() {
 			// Set balance to 0 if previous balance does not exist
-			beforeDistPhotonBalance = sdk.NewInt64Coin("photon", 0)
+			beforeDistUAtomBalance = sdk.NewInt64Coin("uatom", 0)
 		}
 
 		s.execDistributionFundCommunityPool(s.chainA, 0, chainAAPIEndpoint, sender, tokenAmount.String(), fees.String())
 
 		// there are still tokens being added to the community pool through block production rewards but they should be less than 500 tokens
-		marginOfErrorForBlockReward := sdk.NewInt64Coin("photon", 500)
+		marginOfErrorForBlockReward := sdk.NewInt64Coin("uatom", 500)
 
 		s.Require().Eventually(
 			func() bool {
-				afterDistPhotonBalance, err := getSpecificBalance(chainAAPIEndpoint, distModuleAddress, tokenAmount.Denom)
+				afterDistUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, distModuleAddress, tokenAmount.Denom)
 				if err != nil {
-					s.T().Logf("Error getting balance: %s", afterDistPhotonBalance)
+					s.T().Logf("Error getting balance: %s", afterDistUAtomBalance)
 				}
 				s.Require().NoError(err)
 
-				return afterDistPhotonBalance.Sub(beforeDistPhotonBalance.Add(tokenAmount.Add(fees))).IsLT(marginOfErrorForBlockReward)
+				return afterDistUAtomBalance.Sub(beforeDistUAtomBalance.Add(tokenAmount.Add(fees))).IsLT(marginOfErrorForBlockReward)
 			},
 			15*time.Second,
 			5*time.Second,

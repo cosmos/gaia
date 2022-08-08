@@ -36,8 +36,8 @@ import (
 )
 
 const (
-	photonDenom                = "photon"
-	initBalanceStr             = "110000000000stake,100000000000000000photon"
+	uatomDenom                 = "uatom"
+	initBalanceStr             = "110000000000stake,100000000000000000uatom"
 	minGasPrice                = "0.00001"
 	govSendMsgRecipientAddress = "cosmos1pkueemdeps77dwrqma03pwqk93nw39nuhccz02"
 	govProposalBlockBuffer     = 35
@@ -46,13 +46,13 @@ const (
 var (
 	stakeAmount       = math.NewInt(100000000000)
 	stakeAmountCoin   = sdk.NewCoin("stake", stakeAmount)
-	tokenAmount       = sdk.NewCoin(photonDenom, math.NewInt(3300000000)) // 3,300photon
-	fees              = sdk.NewCoin(photonDenom, math.NewInt(330000))     // 0.33photon
-	depositAmount     = sdk.NewCoin(photonDenom, math.NewInt(10000000))   // 10photon
+	tokenAmount       = sdk.NewCoin(uatomDenom, math.NewInt(3300000000)) // 3,300uatom
+	fees              = sdk.NewCoin(uatomDenom, math.NewInt(330000))     // 0.33uatom
+	depositAmount     = sdk.NewCoin(uatomDenom, math.NewInt(10000000))   // 10uatom
 	distModuleAddress = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
 	govModuleAddress  = authtypes.NewModuleAddress(govtypes.ModuleName).String()
 	proposalCounter   = 0
-	sendGovAmount     = sdk.NewInt64Coin(photonDenom, 10)
+	sendGovAmount     = sdk.NewInt64Coin(uatomDenom, 10)
 )
 
 type UpgradePlan struct {
@@ -197,13 +197,13 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 
 	bankGenState.DenomMetadata = append(bankGenState.DenomMetadata, banktypes.Metadata{
 		Description: "An example stable token",
-		Display:     photonDenom,
-		Base:        photonDenom,
-		Symbol:      photonDenom,
-		Name:        photonDenom,
+		Display:     uatomDenom,
+		Base:        uatomDenom,
+		Symbol:      uatomDenom,
+		Name:        uatomDenom,
 		DenomUnits: []*banktypes.DenomUnit{
 			{
-				Denom:    photonDenom,
+				Denom:    uatomDenom,
 				Exponent: 0,
 			},
 		},
@@ -292,7 +292,7 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 
 		appConfig := srvconfig.DefaultConfig()
 		appConfig.API.Enable = true
-		appConfig.MinGasPrices = fmt.Sprintf("%s%s", minGasPrice, photonDenom)
+		appConfig.MinGasPrices = fmt.Sprintf("%s%s", minGasPrice, uatomDenom)
 
 		srvconfig.WriteConfigFile(appCfgPath, appConfig)
 	}
@@ -481,7 +481,7 @@ func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
 	}{
 		Messages: msgSendMessages,
 		Metadata: b64.StdEncoding.EncodeToString([]byte("Testing 1, 2, 3!")),
-		Deposit:  "5000photon",
+		Deposit:  "5000uatom",
 	}, "", " ")
 
 	s.Require().NoError(err)
@@ -496,8 +496,8 @@ func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
 		Title:       "Community Pool Spend",
 		Description: "Fund Gov !",
 		Recipient:   govModuleAddress,
-		Amount:      "1000photon",
-		Deposit:     "5000photon",
+		Amount:      "1000uatom",
+		Deposit:     "5000uatom",
 	}, "", " ")
 
 	s.Require().NoError(err)
@@ -537,7 +537,7 @@ func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height 
 	}{
 		Messages: softwareUpgradeMessages,
 		Metadata: b64.StdEncoding.EncodeToString([]byte("Testing 1, 2, 3!")),
-		Deposit:  "5000photon",
+		Deposit:  "5000uatom",
 	}, "", " ")
 
 	cancelUpgradeProposalBody, err := json.MarshalIndent(struct {
@@ -547,7 +547,7 @@ func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height 
 	}{
 		Messages: cancelSoftwareUpgradeMessages,
 		Metadata: "VGVzdGluZyAxLCAyLCAzIQ==",
-		Deposit:  "5000photon",
+		Deposit:  "5000uatom",
 	}, "", " ")
 
 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_3.json"), upgradeProposalBody)

@@ -5,6 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/gaia/v8/ante"
+	gaiaapp "github.com/cosmos/gaia/v8/app"
 	globfeetypes "github.com/cosmos/gaia/v8/x/globalfee/types"
 	ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
@@ -302,7 +303,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			expErr:          true,
 		},
 		//  nonzero min_gas_price, zero global fee
-		"check!!! nonzero min_gas_price, zero global fee, fee is in global fee denom and lower than min_gas_price": {
+		"nonzero min_gas_price, zero global fee, fee is in global fee denom and lower than min_gas_price": {
 			minGasPrice:     minGasPrice,
 			globalFeeParams: globalfeeParams0,
 			gasPrice:        sdk.NewCoins(sdk.NewCoin("uatom", lowFeeAmt)),
@@ -320,7 +321,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			txCheck:         true,
 			expErr:          false,
 		},
-		"nonzero min_gas_price, zero global fee, fee is in min_gas_price denom and higher/equal than min_gas_price": {
+		"nonzero min_gas_price, zero global fee, fee is in min_gas_price denom which is not in global fee default, but higher/equal than min_gas_price": {
 			minGasPrice:     minGasPrice,
 			globalFeeParams: globalfeeParams0,
 			gasPrice:        sdk.NewCoins(sdk.NewCoin("stake", highFeeAmt)),
@@ -359,7 +360,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			txCheck:  true,
 			expErr:   true,
 		},
-		"fees contain denom not in globalfee with zero amount, fail": {
+		"fees contain denom not in globalfee with zero amount": {
 			minGasPrice:     minGasPrice,
 			globalFeeParams: globalfeeParamsLow,
 			gasPrice: sdk.NewCoins(sdk.NewCoin("uatom", highFeeAmt),
@@ -370,7 +371,11 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			expErr:   false,
 		},
 		// cases from https://github.com/cosmos/gaia/pull/1570#issuecomment-1190524402
-		"globalfee contains zero coin, fee is lower than the nonzero coin": {
+		// note: this is kind of a silly scenario but technically correct
+		// if there is a zero coin in the globalfee, the user could pay 0fees
+		// if the user includes any fee at all in the non-zero denom, it must be higher than that non-zero fee
+		// unlikely we will ever see zero and non-zero together but technically possible
+		"globalfee contains zero coin and non-zero coin, fee is lower than the nonzero coin": {
 			minGasPrice:     minGasPrice0,
 			globalFeeParams: globalfeeParamsContain0,
 			gasPrice:        sdk.NewCoins(sdk.NewCoin("photon", lowFeeAmt)),
@@ -399,7 +404,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			txCheck:         true,
 			expErr:          false,
 		},
-		"globalfee contains zero coin, fee contains lower fee of zero coins's denom, lobalfee also contains nonzero coin,fee contains higher fee of nonzero coins's denom, ": {
+		"globalfee contains zero coin, fee contains lower fee of zero coins's denom, globalfee also contains nonzero coin,fee contains higher fee of nonzero coins's denom, ": {
 			minGasPrice:     minGasPrice0,
 			globalFeeParams: globalfeeParamsContain0,
 			gasPrice: sdk.NewCoins(
@@ -482,7 +487,34 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			txCheck: true,
 			expErr:  false,
 		},
-		"disable checkTx: no fee check": {
+		"msg type non-ibc, nonzero fee in globalfee denom": {
+			minGasPrice:     minGasPrice,
+			globalFeeParams: globalfeeParamsLow,
+			gasPrice:        sdk.NewCoins(sdk.NewCoin("uatom", highFeeAmt)),
+			gasLimit:        newTestGasLimit(),
+			txMsg:           testdata.NewTestMsg(addr1),
+			txCheck:         true,
+			expErr:          false,
+		},
+		"msg type non-ibc, empty fee": {
+			minGasPrice:     minGasPrice,
+			globalFeeParams: globalfeeParamsLow,
+			gasPrice:        sdk.Coins{},
+			gasLimit:        newTestGasLimit(),
+			txMsg:           testdata.NewTestMsg(addr1),
+			txCheck:         true,
+			expErr:          true,
+		},
+		"msg type non-ibc, nonzero fee not in globalfee denom": {
+			minGasPrice:     minGasPrice,
+			globalFeeParams: globalfeeParamsLow,
+			gasPrice:        sdk.NewCoins(sdk.NewCoin("photon", highFeeAmt)),
+			gasLimit:        newTestGasLimit(),
+			txMsg:           testdata.NewTestMsg(addr1),
+			txCheck:         true,
+			expErr:          true,
+		},
+		"disable checkTx: no fee check. min_gas_price is low, global fee is low, tx fee is zero": {
 			minGasPrice:     minGasPrice,
 			globalFeeParams: globalfeeParamsLow,
 			gasPrice:        sdk.NewCoins(sdk.NewCoin("uatom", sdk.ZeroInt())),
@@ -498,11 +530,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			// set globalfees and min gas price
 			subspace := s.setupTestGlobalFeeStoreAndMinGasPrice(testCase.minGasPrice, testCase.globalFeeParams)
 			// setup antehandler
-			mfd := ante.NewBypassMinFeeDecorator([]string{
-				sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),
-				sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
-				sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
-			}, subspace)
+			mfd := ante.NewBypassMinFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), subspace)
 			antehandler := sdk.ChainAnteDecorators(mfd)
 
 			s.Require().NoError(s.txBuilder.SetMsgs(testCase.txMsg))

@@ -100,7 +100,7 @@ func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 		}
 		// bypass with fee, fee denom must in requiredGlobalFees
 		if !DenomsSubsetOfIncludingZero(feeCoins, requiredGlobalFees) {
-			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fees denom is wrong; got: %s required: %s", feeCoins, requiredFees)
+			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fees denom is wrong; got: %s required: %s", feeCoins, requiredGlobalFees)
 		}
 	}
 

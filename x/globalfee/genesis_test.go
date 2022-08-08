@@ -2,11 +2,20 @@ package globalfee
 
 import (
 	"testing"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/simapp"
+	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
+	"github.com/cosmos/cosmos-sdk/store"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/tendermint/tendermint/libs/log"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/gaia/v8/x/globalfee/types"
 )
@@ -32,9 +41,9 @@ func TestValidateGenesis(t *testing.T) {
 		"minimum not set": {
 			src: `{"params":{}}`,
 		},
-		"zero amount not allowed": {
+		"zero amount allowed": {
 			src:    `{"params":{"minimum_gas_prices":[{"denom":"ALX", "amount":"0"}]}}`,
-			expErr: true,
+			expErr: false,
 		},
 		"duplicate denoms not allowed": {
 			src:    `{"params":{"minimum_gas_prices":[{"denom":"ALX", "amount":"1"},{"denom":"ALX", "amount":"2"}]}}`,
@@ -43,6 +52,14 @@ func TestValidateGenesis(t *testing.T) {
 		"negative amounts not allowed": {
 			src:    `{"params":{"minimum_gas_prices":[{"denom":"ALX", "amount":"-1"}]}}`,
 			expErr: true,
+		},
+		"denom must be sorted": {
+			src:    `{"params":{"minimum_gas_prices":[{"denom":"ZLX", "amount":"1"},{"denom":"ALX", "amount":"2"}]}}`,
+			expErr: true,
+		},
+		"sorted denoms is allowed": {
+			src:    `{"params":{"minimum_gas_prices":[{"denom":"ALX", "amount":"1"},{"denom":"ZLX", "amount":"2"}]}}`,
+			expErr: false,
 		},
 	}
 	for name, spec := range specs {
@@ -87,4 +104,25 @@ func TestInitExportGenesis(t *testing.T) {
 			assert.Equal(t, spec.exp, got, string(gotJson))
 		})
 	}
+}
+
+func setupTestStore(t *testing.T) (sdk.Context, simappparams.EncodingConfig, paramstypes.Subspace) {
+	db := dbm.NewMemDB()
+	ms := store.NewCommitMultiStore(db)
+	encCfg := simapp.MakeTestEncodingConfig()
+	keyParams := sdk.NewKVStoreKey(paramstypes.StoreKey)
+	tkeyParams := sdk.NewTransientStoreKey(paramstypes.TStoreKey)
+	ms.MountStoreWithDB(keyParams, storetypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(tkeyParams, storetypes.StoreTypeTransient, db)
+	require.NoError(t, ms.LoadLatestVersion())
+
+	paramsKeeper := paramskeeper.NewKeeper(encCfg.Codec, encCfg.Amino, keyParams, tkeyParams)
+
+	ctx := sdk.NewContext(ms, tmproto.Header{
+		Height: 1234567,
+		Time:   time.Date(2020, time.April, 22, 12, 0, 0, 0, time.UTC),
+	}, false, log.NewNopLogger())
+
+	subspace := paramsKeeper.Subspace(ModuleName).WithKeyTable(types.ParamKeyTable())
+	return ctx, encCfg, subspace
 }

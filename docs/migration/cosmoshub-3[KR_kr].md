@@ -28,11 +28,11 @@ order: false
 1. [코스모스 v0.40 체인 업그레이드 가이드](https://github.com/cosmos/cosmos-sdk/blob/master/docs/migrations/chain-upgrade-guide-040.md)
 1. [REST 엔드포인트 마이그레이션](https://github.com/cosmos/cosmos-sdk/blob/master/docs/migrations/rest.md)
 1. [각 버전 체인지로그의 breaking change 모음](breaking_changes.md)
-1. [Inter-Blockchain Communication (IBC)– 체인간 트랜잭션](https://figment.network/resources/cosmos-stargate-upgrade-overview/#ibc)
-1. [Protobuf 마이그레이션 – 블록체인 성능 및 개발 과정 개선](https://figment.network/resources/cosmos-stargate-upgrade-overview/#proto)
-1. [State Sync – 몇 분 내에 완료되는 노드 동기화](https://figment.network/resources/cosmos-stargate-upgrade-overview/#sync)
-1. [강력한 기능을 포함한 라이트 클라이언트](https://figment.network/resources/cosmos-stargate-upgrade-overview/#light)
-1. [체인 업그레이드 모듈 – 업그레이드 자동화](https://figment.network/resources/cosmos-stargate-upgrade-overview/#upgrade)
+1. [Inter-Blockchain Communication (IBC)– 체인간 트랜잭션](https://figment.io/resources/cosmos-stargate-upgrade-overview/#ibc)
+1. [Protobuf 마이그레이션 – 블록체인 성능 및 개발 과정 개선](https://figment.io/resources/cosmos-stargate-upgrade-overview/#proto)
+1. [State Sync – 몇 분 내에 완료되는 노드 동기화](https://figment.io/resources/cosmos-stargate-upgrade-overview/#sync)
+1. [강력한 기능을 포함한 라이트 클라이언트](https://figment.io/resources/cosmos-stargate-upgrade-overview/#light)
+1. [체인 업그레이드 모듈 – 업그레이드 자동화](https://figment.io/resources/cosmos-stargate-upgrade-overview/#upgrade)
 
 만약 2월 18일 전에 업그레이드 과정을 미리 테스트 진행을 희망하시는 경우 [이 글](https://github.com/cosmos/gaia/issues/569#issuecomment-767910963)을 참고하세요
 

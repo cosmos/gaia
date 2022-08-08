@@ -174,7 +174,7 @@ func (s *IntegrationTestSuite) sendIBC(srcChainID, dstChainID, recipient string,
 	s.T().Log("successfully sent IBC tokens")
 }
 
-func (s *IntegrationTestSuite) execDistributionFundCommunityPool(c *chain, valIdx int, endpoint string, from, amt, fees string) {
+func (s *IntegrationTestSuite) execDistributionFundCommunityPool(c *chain, valIdx int, endpoint, from, amt, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -198,7 +198,7 @@ func (s *IntegrationTestSuite) execDistributionFundCommunityPool(c *chain, valId
 	s.T().Logf("Successfully funded community pool")
 }
 
-func (s *IntegrationTestSuite) execGovSubmitLegacyGovProposal(c *chain, valIdx int, endpoint string, submitterAddr string, govProposalPath string, fees string, govProposalSubType string) {
+func (s *IntegrationTestSuite) execGovSubmitLegacyGovProposal(c *chain, valIdx int, endpoint, submitterAddr, govProposalPath, fees, govProposalSubType string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -223,7 +223,7 @@ func (s *IntegrationTestSuite) execGovSubmitLegacyGovProposal(c *chain, valIdx i
 	s.T().Logf("Successfully submitted legacy proposal")
 }
 
-func (s *IntegrationTestSuite) execGovDepositProposal(c *chain, valIdx int, endpoint string, submitterAddr string, proposalId int, amount string, fees string) {
+func (s *IntegrationTestSuite) execGovDepositProposal(c *chain, valIdx int, endpoint, submitterAddr string, proposalId int, amount, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -248,7 +248,7 @@ func (s *IntegrationTestSuite) execGovDepositProposal(c *chain, valIdx int, endp
 	s.T().Logf("Successfully deposited proposal %d", proposalId)
 }
 
-func (s *IntegrationTestSuite) execGovVoteProposal(c *chain, valIdx int, endpoint string, submitterAddr string, proposalId int, vote string, fees string) {
+func (s *IntegrationTestSuite) execGovVoteProposal(c *chain, valIdx int, endpoint, submitterAddr string, proposalId int, vote, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -273,7 +273,7 @@ func (s *IntegrationTestSuite) execGovVoteProposal(c *chain, valIdx int, endpoin
 	s.T().Logf("Successfully voted on proposal %d", proposalId)
 }
 
-func (s *IntegrationTestSuite) execGovWeightedVoteProposal(c *chain, valIdx int, endpoint string, submitterAddr string, proposalId int, vote string, fees string) {
+func (s *IntegrationTestSuite) execGovWeightedVoteProposal(c *chain, valIdx int, endpoint, submitterAddr string, proposalId int, vote, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -298,7 +298,7 @@ func (s *IntegrationTestSuite) execGovWeightedVoteProposal(c *chain, valIdx int,
 	s.T().Logf("Successfully voted on proposal %d", proposalId)
 }
 
-func (s *IntegrationTestSuite) execGovSubmitProposal(c *chain, valIdx int, endpoint string, submitterAddr string, govProposalPath string, fees string) {
+func (s *IntegrationTestSuite) execGovSubmitProposal(c *chain, valIdx int, endpoint, submitterAddr, govProposalPath, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -331,6 +331,7 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 
 	s.Require().Eventually(
 		func() bool {
+			time.Sleep(3 * time.Second)
 			exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
 				Context:      ctx,
 				AttachStdout: true,
@@ -356,6 +357,7 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 		time.Second,
 		"tx returned a non-zero code; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
 	)
+	endpoint = fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	s.Require().Eventually(
 		func() bool {
 			return queryGaiaTx(endpoint, txResp.TxHash) == nil
@@ -371,7 +373,6 @@ func (s *IntegrationTestSuite) queryGovProposal(endpoint string, proposalId uint
 
 	path := fmt.Sprintf("%s/cosmos/gov/v1beta1/proposals/%d", endpoint, proposalId)
 	resp, err := http.Get(path)
-
 	if err != nil {
 		s.T().Logf("This is the err: %s", err.Error())
 	}
@@ -382,12 +383,10 @@ func (s *IntegrationTestSuite) queryGovProposal(endpoint string, proposalId uint
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
-
 	if err != nil {
 		s.T().Logf("This is the err: %s", err.Error())
 	}
 	if err != nil {
-
 		return emptyProp, err
 	}
 	s.T().Logf("This is the body: %s", body)

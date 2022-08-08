@@ -9,11 +9,17 @@ import (
 
 var _ types.QueryServer = &GrpcQuerier{}
 
-type GrpcQuerier struct {
-	paramSource paramSource
+// ParamSource is a read only subset of paramtypes.Subspace
+type ParamSource interface {
+	Get(ctx sdk.Context, key []byte, ptr interface{})
+	Has(ctx sdk.Context, key []byte) bool
 }
 
-func NewGrpcQuerier(paramSource paramSource) GrpcQuerier {
+type GrpcQuerier struct {
+	paramSource ParamSource
+}
+
+func NewGrpcQuerier(paramSource ParamSource) GrpcQuerier {
 	return GrpcQuerier{paramSource: paramSource}
 }
 

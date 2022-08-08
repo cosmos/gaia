@@ -232,6 +232,7 @@ start-localnet-ci:
 	sed -i'' 's/minimum-gas-prices = ""/minimum-gas-prices = "0uatom"/' ~/.gaiad-liveness/config/app.toml
 	./build/gaiad start --home ~/.gaiad-liveness --x-crisis-skip-assert-invariants
 
+
 .PHONY: start-localnet-ci
 
 ###############################################################################

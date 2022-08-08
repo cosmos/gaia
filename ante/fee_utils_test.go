@@ -293,13 +293,11 @@ func (s *feeUtilsTestSuite) TestIsAnyGTEIncludingZero() {
 	zeroCoinNewDenom1 := sdk.NewCoin("newphoton", sdk.NewInt(10))
 	zeroCoinNewDenom2 := sdk.NewCoin("newstake", sdk.NewInt(20))
 	zeroCoinNewDenom3 := sdk.NewCoin("newquark", sdk.NewInt(30))
-	// coinNewDenom1Zero := sdk.NewCoin("newphoton", sdk.ZeroInt())
 	// coins must be valid !!! and sorted!!!
 	coinsAllZero := sdk.Coins{zeroCoin1, zeroCoin2, zeroCoin3}.Sort()
 	coinsAllNewDenomAllZero := sdk.Coins{zeroCoinNewDenom1, zeroCoinNewDenom2, zeroCoinNewDenom3}.Sort()
 	coinsAllZeroShort := sdk.Coins{zeroCoin1, zeroCoin2}.Sort()
 	coinsContainZero := sdk.Coins{zeroCoin1, zeroCoin2, coin3}.Sort()
-	// coinsContainZeroNewDenoms := sdk.Coins{zeroCoin1, zeroCoin2, coinNewDenom1Zero}.Sort()
 
 	coins := sdk.Coins{coin1, coin2, coin3}.Sort()
 	coinsHighHigh := sdk.Coins{coin1High, coin2High}
@@ -329,7 +327,7 @@ func (s *feeUtilsTestSuite) TestIsAnyGTEIncludingZero() {
 			c2:  coinsAllZero,
 			gte: true,
 		},
-		"c2 is all zero coins, with different denoms from c1 which are all zero coins too": {
+		"all zero coins, have all different denoms": {
 			c1:  coinsAllZero,
 			c2:  coinsAllNewDenomAllZero,
 			gte: false,
@@ -344,7 +342,7 @@ func (s *feeUtilsTestSuite) TestIsAnyGTEIncludingZero() {
 			c2:  emptyCoins,
 			gte: true,
 		},
-		"empty coins are GTE coins that contain zero denom": {
+		"empty coins are GTE coins contain zero denom": {
 			c1:  coinsContainZero,
 			c2:  emptyCoins,
 			gte: true,

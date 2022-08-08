@@ -142,7 +142,7 @@ func containZeroCoins(coinsB sdk.Coins) bool {
 	return false
 }
 
-// CombinedFeeRequirement will combine the global fee and min_gas_price. globalFees, minGasPrices must be valid, but CombinedFeeRequirement does not valid them so they may return 0denom.
+// CombinedFeeRequirement will combine the global fee and min_gas_price. Both globalFees and minGasPrices must be valid, but CombinedFeeRequirement does not validate them so it may return 0denom.
 func CombinedFeeRequirement(globalFees, minGasPrices sdk.Coins) sdk.Coins {
 	// empty min_gas_price
 	if len(minGasPrices) == 0 {

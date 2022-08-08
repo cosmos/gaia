@@ -187,6 +187,7 @@ func (s *IntegrationTestSuite) TestGovSoftwareUpgrade() {
 }
 
 func (s *IntegrationTestSuite) TestGovCancelSoftwareUpgrade() {
+	s.T().Skip()
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
 	s.Require().NoError(err)

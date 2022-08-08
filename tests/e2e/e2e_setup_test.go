@@ -16,17 +16,18 @@ import (
 	"testing"
 	"time"
 
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+
 	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/cosmos/gaia/v8/app/params"
-	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
-	ibcchanneltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
+	ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/spf13/viper"
@@ -127,13 +128,13 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.initValidatorConfigs(s.chainA)
 	s.runValidators(s.chainA, 0)
 
-	// s.T().Logf("starting e2e infrastructure for chain B; chain-id: %s; datadir: %s", s.chainB.id, s.chainB.dataDir)
-	// s.initNodes(s.chainB)
-	// s.initGenesis(s.chainB)
-	// s.initValidatorConfigs(s.chainB)
-	// s.runValidators(s.chainB, 10)
+	s.T().Logf("starting e2e infrastructure for chain B; chain-id: %s; datadir: %s", s.chainB.id, s.chainB.dataDir)
+	s.initNodes(s.chainB)
+	s.initGenesis(s.chainB)
+	s.initValidatorConfigs(s.chainB)
+	s.runValidators(s.chainB, 10)
 
-	// s.runIBCRelayer()
+	s.runIBCRelayer()
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -148,7 +149,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 
 	s.T().Log("tearing down e2e integration test suite...")
 
-	// s.Require().NoError(s.dkrPool.Purge(s.hermesResource))
+	s.Require().NoError(s.dkrPool.Purge(s.hermesResource))
 
 	for _, vr := range s.valResources {
 		for _, r := range vr {
@@ -159,7 +160,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 	s.Require().NoError(s.dkrPool.RemoveNetwork(s.dkrNet))
 
 	os.RemoveAll(s.chainA.dataDir)
-	// os.RemoveAll(s.chainB.dataDir)
+	os.RemoveAll(s.chainB.dataDir)
 
 	for _, td := range s.tmpDirs {
 		os.RemoveAll(td)
@@ -260,6 +261,7 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 	}
 }
 
+// initValidatorConfigs initializes the validator configs for the given chain.
 func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 	for i, val := range c.validators {
 		tmCfgPath := filepath.Join(val.configDir(), "config", "config.toml")
@@ -286,14 +288,13 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 			}
 
 			peer := c.validators[j]
-			peerID := fmt.Sprintf("%s@%s%d:26656", peer.nodeKey.ID, peer.moniker, j)
+			peerID := fmt.Sprintf("%s@%s%d:26656", peer.nodeKey.ID(), peer.moniker, j)
 			peers = append(peers, peerID)
 		}
 
 		valConfig.P2P.PersistentPeers = strings.Join(peers, ",")
 
-		err := tmconfig.WriteConfigFile(val.configDir(), valConfig)
-		s.Require().NoError(err)
+		tmconfig.WriteConfigFile(tmCfgPath, valConfig)
 
 		// set application configuration
 		appCfgPath := filepath.Join(val.configDir(), "config", "app.toml")
@@ -302,7 +303,7 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 		appConfig.API.Enable = true
 		appConfig.MinGasPrices = fmt.Sprintf("%s%s", minGasPrice, photonDenom)
 
-	//	 srvconfig.WriteConfigFile(appCfgPath, appConfig)
+		//	 srvconfig.WriteConfigFile(appCfgPath, appConfig)
 		appCustomConfig := params.CustomAppConfig{
 			Config: *appConfig,
 			BypassMinFeeMsgTypes: []string{
@@ -312,7 +313,7 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 				sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
 				"/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"}}
 
-		customAppTemplate :=  `
+		customAppTemplate := `
 ###############################################################################
 ###                        Custom Gaia Configuration                        ###
 ###############################################################################
@@ -328,6 +329,7 @@ bypass-min-fee-msg-types = ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorRe
 	}
 }
 
+// runValidators runs the validators in the chain
 func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 	s.T().Logf("starting Gaia %s validator containers...", c.id)
 
@@ -365,7 +367,7 @@ func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 		s.T().Logf("started Gaia %s validator container: %s", c.id, resource.Container.ID)
 	}
 
-	rpcClient, err := rpchttp.New("tcp://localhost:26657")
+	rpcClient, err := rpchttp.New("tcp://localhost:26657", "/websocket")
 	s.Require().NoError(err)
 
 	s.Require().Eventually(
@@ -402,7 +404,7 @@ func (s *IntegrationTestSuite) runIBCRelayer() {
 	gaiaBVal := s.chainB.validators[0]
 	hermesCfgPath := path.Join(tmpDir, "hermes")
 
-	s.Require().NoError(os.MkdirAll(hermesCfgPath, 0755))
+	s.Require().NoError(os.MkdirAll(hermesCfgPath, 0o755))
 	_, err = copyFile(
 		filepath.Join("./scripts/", "hermes_bootstrap.sh"),
 		filepath.Join(hermesCfgPath, "hermes_bootstrap.sh"),

@@ -112,7 +112,7 @@ The following script installs, configures and starts Cosmovisor:
 ```
 # Install Cosmovisor
 go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor
-
+```
 > NOTE: If you ran a full node on a previous testnet, please skip to [Upgrading From Previous Testnet](#upgrading-from-previous-testnet).
 
 To start a new node, the mainnet instructions apply:

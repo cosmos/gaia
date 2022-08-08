@@ -27,7 +27,7 @@ jobs:
             **/**.go
             go.mod
             go.sum
-      - uses: actions/cache@v3.0.4
+      - uses: actions/cache@v3.0.6
         with:
           path: |
             ~/.cache/go-build
@@ -89,16 +89,15 @@ jobs:
             **/**.go
             go.mod
             go.sum
-      - name: Install Ignite CLI
+      - name: Install Gaia
         run: |
-          curl https://get.ignite.com/cli@v0.21.1! | bash
+          make build
         if: env.GIT_DIFF
-      - name: Start Local Network via Ignite CLI
+      - name: Start Local Network
         run: |
-          make start-localnet-ci > ignite.out 2>&1 &
+          make start-localnet-ci > liveness.out 2>&1 &
         if: env.GIT_DIFF
       - name: Test Local Network Liveness
         run: |
-          sleep 3m
           ./contrib/scripts/test_localnet_liveness.sh 100 5 50 localhost
         if: env.GIT_DIFF

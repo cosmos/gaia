@@ -6,8 +6,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/gaia/v8/ante"
 	globfeetypes "github.com/cosmos/gaia/v8/x/globalfee/types"
-	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
-	ibcchanneltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
+	ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
 )
 
 // test global fees and min_gas_price with bypass msg types.
@@ -413,14 +413,14 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 		"globalfee contains zero coin, fee is all zero coins but in global fee's denom": {
 			minGasPrice:     minGasPrice0,
 			globalFeeParams: globalfeeParamsContain0,
-			gasPrice:       sdk.NewCoins(
+			gasPrice: sdk.NewCoins(
 				sdk.NewCoin("photon", sdk.ZeroInt()),
 				sdk.NewCoin("uatom", sdk.ZeroInt()),
-				),
-			gasLimit:        newTestGasLimit(),
-			txMsg:           testdata.NewTestMsg(addr1),
-			txCheck:         true,
-			expErr:          false,
+			),
+			gasLimit: newTestGasLimit(),
+			txMsg:    testdata.NewTestMsg(addr1),
+			txCheck:  true,
+			expErr:   false,
 		},
 		"globalfee contains zero coin, fee is higher than the nonzero coin": {
 			minGasPrice:     minGasPrice0,

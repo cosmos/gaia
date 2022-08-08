@@ -42,7 +42,8 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 	}}
 	minGasPrice0 := []sdk.DecCoin{
 		sdk.NewDecCoinFromDec("stake", sdk.NewDec(0)),
-		sdk.NewDecCoinFromDec("uatom", sdk.NewDec(0))}
+		sdk.NewDecCoinFromDec("uatom", sdk.NewDec(0)),
+	}
 	globalfeeParamsHigh := &globfeetypes.Params{
 		MinimumGasPrices: []sdk.DecCoin{
 			sdk.NewDecCoinFromDec("uatom", high),
@@ -96,7 +97,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 		},
 		"nonempty min_gas_price with defaultGlobalFee denom, empty global fee, fee higher/equal than min_gas_price": {
 			minGasPrice:     minGasPrice,
-			globalFeeParams: globalfeeParamsEmpty, //default 0uatom
+			globalFeeParams: globalfeeParamsEmpty, // default 0uatom
 			gasPrice:        sdk.NewCoins(sdk.NewCoin("uatom", medFeeAmt)),
 			gasLimit:        testdata.NewTestGasLimit(),
 			txMsg:           testdata.NewTestMsg(addr1),

@@ -42,7 +42,7 @@ const (
 	uatomDenom     = "uatom"
 	initBalanceStr = "110000000000stake,100000000000000000photon,100000000000000000uatom"
 	minGasPrice    = "0.00001"
-	//the test globalfee in genesis is the same as minGasPrice
+	// the test globalfee in genesis is the same as minGasPrice
 	// global fee lower/higher than min_gas_price
 	initialGlobalFeeAmt        = "0.00001"
 	lowGlobalFeesAmt           = "0.000001"
@@ -307,11 +307,13 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 		appCustomConfig := params.CustomAppConfig{
 			Config: *appConfig,
 			BypassMinFeeMsgTypes: []string{
-				//todo: use ibc as exmaple ?
+				// todo: use ibc as exmaple ?
 				sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),
 				sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
 				sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
-				"/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"}}
+				"/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
+			},
+		}
 
 		customAppTemplate := `
 ###############################################################################

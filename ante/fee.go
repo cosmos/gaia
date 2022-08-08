@@ -56,7 +56,7 @@ func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 	gas := feeTx.GetGas()
 	msgs := feeTx.GetMsgs()
 
-	//todo if need to check gas > uint64(len(msgs))*maxBypassMinFeeMsgGasUsage) here ?
+	// todo if need to check gas > uint64(len(msgs))*maxBypassMinFeeMsgGasUsage) here ?
 
 	// Only check for minimum fees and global fee if the execution mode is CheckTx and the tx does
 	// not contain operator configured bypass messages. If the tx does contain
@@ -72,7 +72,7 @@ func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 	if ctx.IsCheckTx() && !simulate && !allowedToBypassMinFee {
 		// has global fee module
 		if mfd.GlobalMinFee.Has(ctx, types.ParamStoreKeyMinGasPrices) {
-			//requiredGlobalFees is sorted
+			// requiredGlobalFees is sorted
 			requiredGlobalFees := mfd.getGlobalFee(ctx, feeTx)
 			allFees = CombinedFeeRequirement(requiredGlobalFees, requiredFees)
 		} else {

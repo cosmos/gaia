@@ -2,7 +2,7 @@
 
 ## Gaia Fees
 
-In the CosmosHub, there are two types of fees, both of which, are derived from the [`sdk.DecCoins`](https://github.com/cosmos/cosmos-sdk/blob/a1777a87b65fad74732cfe1a4c27683dcffffbfe/types/dec_coin.go#L158) type:
+The CosmosHub has two types of fees, both of which, are the [sdk.DecCoins]((https://github.com/cosmos/cosmos-sdk/blob/a1777a87b65fad74732cfe1a4c27683dcffffbfe/types/dec_coin.go#L158)) type:
 - global fees (are defined at the network level, via [Gov Proposals](https://hub.cosmos.network/main/governance/proposals/))
 - min_gas_prices (are specified validator node, in the `config/app.toml` configuration file)
   
@@ -15,12 +15,12 @@ For a  [global fee](https://github.com/cosmos/gaia/blob/82c4353ab1b04cf656a8c95d
 
 Global fees allow denoms with zero coins or value.
 
-Zero value coins are used to define fee denoms, when the chain might does not charge fees. Each transaction (except bypass transactions) have to meet the following global fee requirements:
-- All of the paidfees' denoms (except zero coins) have to be a subset of the globalfee's denom set.
+Zero value coins are used to define fee denoms, when the chain does not charge fees. Each transaction (except bypass transactions) have to meet the following global fee requirements:
+- All denoms of the paid fees (except zero coins) have to be a subset of the global fee's denom set.
 - All paidfees' contain at least one denom that is present and greater than/or equal to the amount of the same denom in globalfee.
 
 ### Query global fees
-You can query the network, to retreive the globalfee value, by running the following commands:
+CLI queries to retrieve the global fee value:
 ```shell
 gaiad q globalfee minimum-gas-prices
 # or
@@ -30,7 +30,7 @@ gaiad q params subspace globalfee MinimumGasPricesParam
 When the global fee is not setup, the query will return an empty globalfee list: `minimum_gas_prices: []`. Gaiad will use `0uatom` as global fee in this case. This is due to the CosmosHub accepting uatom as fee denom by default.
 
 ### Setting up global fees via Gov Proposals
-An example of setting up a global fee by a [gov proposals](https://hub.cosmos.network/main/governance/proposals/) is shown below.
+An example of setting up a global fee by a gov proposals is shown below.
   
 ```shell
 gov submit-legacy-proposal param-change proposal.json
@@ -65,7 +65,7 @@ Only global fees might contain zero coins, which is used to define the allowed d
 
 The [Fee AnteHandle](https://github.com/cosmos/gaia/blob/yaru/fix-all-fees/ante/fee.go) will take global fees and min_gas_prices and merge them into one [combined `sdk.Deccoins`](https://github.com/cosmos/gaia/blob/f2be720353a969b6362feff369218eb9056a60b9/ante/fee.go#L79) according to the denoms and amounts of global fees and min_gas_prices.
 
-If the paid fee with denom a subset of this combined fees and the amount is higher than/equal to one the fee amount required in the combined fees, the transaction can pass the fee check, otherwise, an error will occur.
+If the paid fee is a subset of the combined fees set and the paid fee amount is greater than or equal to the required fees amount, the transaction can pass the fee check, otherwise an error will occur.
 
 ### Bypass Fees Message Types
 The above `global fee` and `min_as_prices` fee checks do not apply to bypass message types. Transactions of  bypass message types are free of fee charge. However, if the bypass type transactions still carry nonzero fees, the denom has to be a subset of denoms that global fees defined.
@@ -86,9 +86,7 @@ An example:
 bypass-min-fee-msg-types = ["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement","/ibc.applications.transfer.v1.MsgTransfer"]
 ```
 
-[comment]: <> (**Please note:**)
-
-[comment]: <> (Even each node can setup its own `min_gas_prices` and `bypass-min-fee-msg-types`, when the transactions entering validators' mempools, the transactions carried fees have to satisfy validators' `min_gas_prices` and `bypass-min-fee-msg-types`'s requirement in order for the validators to process the transactons.)
+[comment]: <> (Even though each node can set its own `min_gas_prices` and `bypass-min-fee-msg-types`, when the transactions enters a validator's mempool, the transactions carried fees have to satisfy the validator's `min_gas_prices` and `bypass-min-fee-msg-types`'s requirement in order for the validators to process the transacton.)
 
 ### Examples
 Here are a few examples to clarify the relationship between global fees, min_gas_prices and paid fees.

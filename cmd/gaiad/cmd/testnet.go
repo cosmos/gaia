@@ -6,7 +6,6 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"os"
 	"path/filepath"
@@ -402,7 +401,7 @@ func writeFile(name, dir string, contents []byte) error {
 		return err
 	}
 
-	err = ioutil.WriteFile(file, contents, 0o600)
+	err = os.WriteFile(file, contents, 0o600)
 	if err != nil {
 		return err
 	}

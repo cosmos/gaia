@@ -378,7 +378,7 @@ func (s *IntegrationTestSuite) verifyChainPassesUpgradeHeight(c *chain, valIdx, 
 // globalfee in genesis is set to be "0.00001photon"
 func (s *IntegrationTestSuite) TestQueryGlobalFeesInGenesis() {
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-	feeInGenesis, err := sdk.ParseDecCoins(initialGlobalFeeAmt + photonDenom)
+	feeInGenesis, err := sdk.ParseDecCoins(initialGlobalFeeAmt + uatomDenom)
 	s.Require().NoError(err)
 	s.Require().Eventually(
 		func() bool {
@@ -394,10 +394,10 @@ func (s *IntegrationTestSuite) TestQueryGlobalFeesInGenesis() {
 }
 
 /*
-global fee in genesis is "0.00001photon", which is the same as min_gas_price.
+global fee in genesis is "0.00001uatom", which is the same as min_gas_price.
 This initial value setup is for not to fail other e2e tests.
 global fee e2e tests:
-0. initial globalfee = 0.00001photon, min_gas_price = 0.00001photon
+0. initial globalfee = 0.00001uatom, min_gas_price = 0.00001uatom
 
 test1. gov proposal globalfee = [], query globalfee still get empty
   - tx with fee denom photon, fail
@@ -405,22 +405,22 @@ test1. gov proposal globalfee = [], query globalfee still get empty
   - tx with fee denom uatom, pass
   - tx with fee empty, pass
 
-test2. gov propose globalfee =  0.000001photon(lower than min_gas_price)
-  - tx with fee higher than 0.000001photon but lower than 0.00001photon, fail
-  - tx with fee higher than/equal to 0.00001photon, pass
-  - tx with fee uatom fail
+test2. gov propose globalfee =  0.000001uatom(lower than min_gas_price)
+  - tx with fee higher than 0.000001uatom but lower than 0.00001uatom, fail
+  - tx with fee higher than/equal to 0.00001uatom, pass
+  - tx with fee photon fail
 
-test3. gov propose globalfee = 0.0001photon (higher than min_gas_price)
-  - tx with fee equal to 0.0001photon, pass
-  - tx with fee equal to 0.00001photon, fail
+test3. gov propose globalfee = 0.0001uatom (higher than min_gas_price)
+  - tx with fee equal to 0.0001uatom, pass
+  - tx with fee equal to 0.00001uatom, fail
 
-test4. gov propose globalfee =  0.000001photon (lower than min_gas_price), 0uatom
-  - tx with fee 0.000001photon, fail
+test4. gov propose globalfee =  0.000001uatom (lower than min_gas_price), 0photon
+  - tx with fee 0.0000001photon, fail
   - tx with fee 0.000001photon, pass
   - tx with empty fee, pass
-  - tx with fee uatom pass
-  - tx with fee 0uatom, 0.000005photon fail
-  - tx with fee 0uatom, 0.00001photon pass
+  - tx with fee photon pass
+  - tx with fee 0photon, 0.000005uatom fail
+  - tx with fee 0photon, 0.00001uatom pass
 5. check balance correct: all the sucessful tx sent token amt is received
 6. gov propose change back to initial globalfee = 0.00001photon, This is for not influence other e2e tests.
 */
@@ -474,10 +474,10 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 		15*time.Second,
 		5*time.Second,
 	)
-
+	var globalFees sdk.DecCoins
 	s.Require().Eventually(
 		func() bool {
-			globalFees, err := queryGlobalFees(chainAAPIEndpoint)
+			globalFees, err = queryGlobalFees(chainAAPIEndpoint)
 			s.T().Logf("After gov new global fee proposal: %s", globalFees.String())
 			s.Require().NoError(err)
 
@@ -488,20 +488,22 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 		5*time.Second,
 	)
 
-	// test bank send with fees
+	s.T().Logf("test case: empty global fee, globalfee=%s, min_gas_price=%s", globalFees.String(), minGasPrice+uatomDenom)
+	s.T().Logf("Tx fee is zero coin with correct denom: uatom, pass")
 	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), "0"+uatomDenom, false)
 	sucessBankSendCount++
+	s.T().Logf("Tx fee is empty, pass")
 	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), "", false)
 	sucessBankSendCount++
-	// wrong denom
+	s.T().Logf("Tx with wrong denom: photon, fail")
 	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), "4"+photonDenom, true)
-	// zerofee wrong denom, pass
+	s.T().Logf("Tx fee is zero coins of wrong denom: photon, pass")
 	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), "0"+photonDenom, false)
 	sucessBankSendCount++
 
 	// ------------------ test2: globalfee lower than min_gas_price -----------------------------------
 	// prepare gov globalfee proposal
-	lowGlobalFee := sdk.DecCoins{sdk.NewDecCoinFromDec("photon", sdk.MustNewDecFromStr(lowGlobalFeesAmt))}
+	lowGlobalFee := sdk.DecCoins{sdk.NewDecCoinFromDec(uatomDenom, sdk.MustNewDecFromStr(lowGlobalFeesAmt))}
 	s.writeGovParamChangeProposalGlobalFees(s.chainA, lowGlobalFee)
 
 	// gov proposing new fees
@@ -539,19 +541,20 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 	paidFeeAmtLowMinGasHighGlobalFee := sdk.MustNewDecFromStr(lowGlobalFeesAmt).Mul(sdk.NewDec(2)).Mul(sdk.NewDec(gas)).String()
 	paidFeeAmtLowGLobalFee := sdk.MustNewDecFromStr(lowGlobalFeesAmt).Quo(sdk.NewDec(2)).String()
 
-	// paid fee higher than/equal to min_gas_price and global fee
-	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmt+photonDenom, false)
+	s.T().Logf("test case: global fee is lower than min_gas_price, globalfee=%s, min_gas_price=%s", globalFees.String(), minGasPrice+uatomDenom)
+	s.T().Logf("Tx fee higher than/equal to min_gas_price and global fee, pass")
+	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmt+uatomDenom, false)
 	sucessBankSendCount++
-	// paid fee lower than global fee
-	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmtLowGLobalFee+photonDenom, true)
-	// paid fee higher/equal than global fee lower than min_gas_pirce
-	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmtLowMinGasHighGlobalFee+photonDenom, true)
-	// wrong denom
-	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmt+uatomDenom, true)
+	s.T().Logf("Tx fee lower than/equal to min_gas_price and global fee, pass")
+	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmtLowGLobalFee+uatomDenom, true)
+	s.T().Logf("Tx fee lower than/equal global fee and lower than min_gas_price, fail")
+	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmtLowMinGasHighGlobalFee+uatomDenom, true)
+	s.T().Logf("Tx fee has wrong denom, fail")
+	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmt+photonDenom, true)
 
 	// ------------------ test3: globalfee higher than min_gas_price ----------------------------------
 	// prepare gov globalfee proposal
-	highGlobalFee := sdk.DecCoins{sdk.NewDecCoinFromDec("photon", sdk.MustNewDecFromStr(highGlobalFeeAmt))}
+	highGlobalFee := sdk.DecCoins{sdk.NewDecCoinFromDec(uatomDenom, sdk.MustNewDecFromStr(highGlobalFeeAmt))}
 	s.writeGovParamChangeProposalGlobalFees(s.chainA, highGlobalFee)
 
 	// gov proposing new fees
@@ -587,17 +590,19 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 
 	paidFeeAmt = sdk.MustNewDecFromStr(highGlobalFeeAmt).Mul(sdk.NewDec(gas)).String()
 	paidFeeAmtHigherMinGasLowerGalobalFee := sdk.MustNewDecFromStr(minGasPrice).Quo(sdk.NewDec(2)).String()
-	// paid fee higher than the global fee and min_gas_price
-	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmt+photonDenom, false)
+
+	s.T().Logf("test case: global fee is higher than min_gas_price, globalfee=%s, min_gas_price=%s", globalFees.String(), minGasPrice+uatomDenom)
+	s.T().Logf("Tx fee is higher than/equal to global fee and min_gas_price, pass")
+	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmt+uatomDenom, false)
 	sucessBankSendCount++
-	// paid fee higher than/equal to min_gas_price but lower than global fee
-	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmtHigherMinGasLowerGalobalFee+photonDenom, true)
+	s.T().Logf("Tx fee is higher than/equal to min_gas_price but lower than global fee, fail")
+	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmtHigherMinGasLowerGalobalFee+uatomDenom, true)
 
 	// ---------------------------- test4: global fee with two denoms -----------------------------------
 	// prepare gov globalfee proposal
 	mixGlobalFee := sdk.DecCoins{
-		sdk.NewDecCoinFromDec(photonDenom, sdk.MustNewDecFromStr(lowGlobalFeesAmt)),
-		sdk.NewDecCoinFromDec(uatomDenom, sdk.NewDec(0)),
+		sdk.NewDecCoinFromDec(photonDenom, sdk.NewDec(0)),
+		sdk.NewDecCoinFromDec(uatomDenom, sdk.MustNewDecFromStr(lowGlobalFeesAmt)),
 	}.Sort()
 	s.writeGovParamChangeProposalGlobalFees(s.chainA, mixGlobalFee)
 
@@ -634,25 +639,36 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 	// equal to min_gas_price
 	paidFeeAmt = sdk.MustNewDecFromStr(minGasPrice).Mul(sdk.NewDec(gas)).String()
 	paidFeeAmtLow := sdk.MustNewDecFromStr(lowGlobalFeesAmt).Quo(sdk.NewDec(2)).Mul(sdk.NewDec(gas)).String()
-	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmt+photonDenom, false)
+
+	s.T().Logf("test case: global fees contain multiple denoms: one zero coin, one non-zero coin, globalfee=%s, min_gas_price=%s", globalFees.String(), minGasPrice+uatomDenom)
+	//test4. gov propose globalfee =  0.000001uatom (lower than min_gas_price), 0photon
+	//  - tx with fee 0.0000001photon, fail
+	//  - tx with fee 0.000001photon, pass
+	//  - tx with empty fee, pass
+	//  - tx with fee photon pass
+	//  - tx with fee 0photon, 0.000005uatom fail
+	//  - tx with fee 0photon, 0.00001uatom pass
+	s.T().Logf("Tx with fee higher than/equal to one of denom's amount the global fee, pass")
+	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmt+uatomDenom, false)
 	sucessBankSendCount++
-	// paid fee lower than global fee
-	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmtLow+photonDenom, true)
-	// empty paid fee
+	s.T().Logf("Tx with fee lower than one of denom's amount the global fee, fail")
+	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmtLow+uatomDenom, true)
+	s.T().Logf("Tx with fee empty fee, pass")
 	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), "", false)
 	sucessBankSendCount++
-	// paid fee in uatom
-	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), "0"+uatomDenom, false)
+	s.T().Logf("Tx with zero coin in the denom of zero coin of global fee, pass")
+	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), "0"+photonDenom, false)
 	sucessBankSendCount++
-	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), "2"+uatomDenom, false)
+	s.T().Logf("Tx with non-zero coin in the denom of zero coin of global fee, pass")
+	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), "2"+photonDenom, false)
 	sucessBankSendCount++
-	// paid fee 0uatom and photon lower than global fee
-	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), "0"+uatomDenom+","+paidFeeAmtLow+photonDenom, true)
-	// paid fee 0uatom and photon higher than/equal to global fee
-	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), "0"+uatomDenom+","+paidFeeAmt+photonDenom, false)
+	s.T().Logf("Tx with mulitple fee coins, zero coin and low fee, fail")
+	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), "0"+photonDenom+","+paidFeeAmtLow+uatomDenom, true)
+	s.T().Logf("Tx with mulitple fee coins, zero coin and high fee, pass")
+	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), "0"+photonDenom+","+paidFeeAmt+uatomDenom, false)
 	sucessBankSendCount++
-	// paid fee 2uatom and photon higher than/equal to global fee
-	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), "2"+uatomDenom+","+paidFeeAmt+photonDenom, false)
+	s.T().Logf("Tx with mulitple fee coins, all higher than global fee and min_gas_price")
+	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), "2"+photonDenom+","+paidFeeAmt+uatomDenom, false)
 	sucessBankSendCount++
 	// ---------------------------------------------------------------------------
 
@@ -707,6 +723,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 	)
 }
 
+// todo log each test condition
 func (s *IntegrationTestSuite) TestByPassMinFeeWithdrawReward() {
 	// time.Sleep(10)
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
@@ -715,11 +732,17 @@ func (s *IntegrationTestSuite) TestByPassMinFeeWithdrawReward() {
 	payee, err := s.chainA.validators[0].keyInfo.GetAddress()
 	s.Require().NoError(err)
 	// pass
-	s.withdrawReward(s.chainA, 0, chainAAPIEndpoint, payee.String(), paidFeeAmt+photonDenom, false)
+	s.T().Logf("bypass-msg with fee in the denom of global fee, pass")
+	s.withdrawReward(s.chainA, 0, chainAAPIEndpoint, payee.String(), paidFeeAmt+uatomDenom, false)
 	// pass
-	s.withdrawReward(s.chainA, 0, chainAAPIEndpoint, payee.String(), "0"+photonDenom, false)
-	// pass
+	s.T().Logf("bypass-msg with zero coin in the denom of global fee, pass")
 	s.withdrawReward(s.chainA, 0, chainAAPIEndpoint, payee.String(), "0"+uatomDenom, false)
+	// pass
+	s.T().Logf("bypass-msg with zero coin not in the denom of global fee, pass")
+	s.withdrawReward(s.chainA, 0, chainAAPIEndpoint, payee.String(), "0"+photonDenom, false)
 	// fail
-	s.withdrawReward(s.chainA, 0, chainAAPIEndpoint, payee.String(), paidFeeAmt+uatomDenom, true)
+	s.T().Logf("bypass-msg with non-zero coin not in the denom of global fee, fail")
+	s.withdrawReward(s.chainA, 0, chainAAPIEndpoint, payee.String(), paidFeeAmt+photonDenom, true)
 }
+
+// todo add fee test with wrong denom order

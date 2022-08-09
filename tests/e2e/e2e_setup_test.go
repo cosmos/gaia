@@ -176,7 +176,7 @@ func (s *IntegrationTestSuite) initNodes(c *chain) {
 		address, err := val.keyInfo.GetAddress()
 		s.Require().NoError(err)
 		s.Require().NoError(
-			modifyGenesis(val0ConfigDir, "", initBalanceStr, address, initialGlobalFeeAmt+photonDenom),
+			modifyGenesis(val0ConfigDir, "", initBalanceStr, address, initialGlobalFeeAmt+uatomDenom),
 		)
 	}
 

@@ -9,10 +9,10 @@ import (
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
-func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
+func (s *IntegrationTestSuite) TestAIBCTokenTransfer() {
 	var ibcStakeDenom string
 
-	s.Run("send_photon_to_chainB", func() {
+	s.Run("send_uatom_to_chainB", func() {
 		// require the recipient account receives the IBC tokens (IBC packets ACKd)
 		var (
 			balances sdk.Coins
@@ -30,8 +30,7 @@ func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
 			func() bool {
 				balances, err = queryGaiaAllBalances(chainBAPIEndpoint, recipient)
 				s.Require().NoError(err)
-
-				return balances.Len() == 3
+				return balances.Len() != 0
 			},
 			time.Minute,
 			5*time.Second,
@@ -39,6 +38,7 @@ func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
 
 		for _, c := range balances {
 			if strings.Contains(c.Denom, "ibc/") {
+				fmt.Print("c.denom:", c.Denom, "c.amount:", c.Amount)
 				ibcStakeDenom = c.Denom
 				s.Require().Equal(tokenAmount.Amount.Int64(), c.Amount.Int64())
 				break
@@ -218,16 +218,16 @@ func (s *IntegrationTestSuite) TestGovCancelSoftwareUpgrade() {
 
 func (s *IntegrationTestSuite) fundCommunityPool(chainAAPIEndpoint, sender string) {
 	s.Run("fund_community_pool", func() {
-		beforeDistPhotonBalance, _ := getSpecificBalance(chainAAPIEndpoint, distModuleAddress, tokenAmount.Denom)
-		if beforeDistPhotonBalance.IsNil() {
+		beforeDistUatomBalance, _ := getSpecificBalance(chainAAPIEndpoint, distModuleAddress, tokenAmount.Denom)
+		if beforeDistUatomBalance.IsNil() {
 			// Set balance to 0 if previous balance does not exist
-			beforeDistPhotonBalance = sdk.NewInt64Coin("photon", 0)
+			beforeDistUatomBalance = sdk.NewInt64Coin(uatomDenom, 0)
 		}
 
 		s.execDistributionFundCommunityPool(s.chainA, 0, chainAAPIEndpoint, sender, tokenAmount.String(), fees.String())
 
 		// there are still tokens being added to the community pool through block production rewards but they should be less than 500 tokens
-		marginOfErrorForBlockReward := sdk.NewInt64Coin("photon", 500)
+		marginOfErrorForBlockReward := sdk.NewInt64Coin(uatomDenom, 500)
 
 		s.Require().Eventually(
 			func() bool {
@@ -237,7 +237,7 @@ func (s *IntegrationTestSuite) fundCommunityPool(chainAAPIEndpoint, sender strin
 				}
 				s.Require().NoError(err)
 
-				return afterDistPhotonBalance.Sub(beforeDistPhotonBalance.Add(tokenAmount.Add(fees))).IsLT(marginOfErrorForBlockReward)
+				return afterDistPhotonBalance.Sub(beforeDistUatomBalance.Add(tokenAmount.Add(fees))).IsLT(marginOfErrorForBlockReward)
 			},
 			15*time.Second,
 			5*time.Second,
@@ -399,11 +399,11 @@ This initial value setup is for not to fail other e2e tests.
 global fee e2e tests:
 0. initial globalfee = 0.00001uatom, min_gas_price = 0.00001uatom
 
-test1. gov proposal globalfee = [], query globalfee still get empty
+test1. gov proposal globalfee = [], min_gas_price=0.00001uatom, query globalfee still get empty
   - tx with fee denom photon, fail
-  - tx with zero fee denom photon, pass
+  - tx with zero fee denom photon, fail
   - tx with fee denom uatom, pass
-  - tx with fee empty, pass
+  - tx with fee empty, fail
 
 test2. gov propose globalfee =  0.000001uatom(lower than min_gas_price)
   - tx with fee higher than 0.000001uatom but lower than 0.00001uatom, fail
@@ -488,19 +488,21 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 		5*time.Second,
 	)
 
+	paidFeeAmt := sdk.MustNewDecFromStr(minGasPrice).Mul(sdk.NewDec(gas)).String()
+
 	s.T().Logf("test case: empty global fee, globalfee=%s, min_gas_price=%s", globalFees.String(), minGasPrice+uatomDenom)
-	s.T().Logf("Tx fee is zero coin with correct denom: uatom, pass")
-	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), "0"+uatomDenom, false)
-	sucessBankSendCount++
-	s.T().Logf("Tx fee is empty, pass")
-	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), "", false)
-	sucessBankSendCount++
+	s.T().Logf("Tx fee is zero coin with correct denom: uatom, fail")
+	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), "0"+uatomDenom, true)
+	s.T().Logf("Tx fee is empty, fail")
+	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), "", true)
 	s.T().Logf("Tx with wrong denom: photon, fail")
 	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), "4"+photonDenom, true)
-	s.T().Logf("Tx fee is zero coins of wrong denom: photon, pass")
-	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), "0"+photonDenom, false)
+	s.T().Logf("Tx fee is zero coins of wrong denom: photon, fail")
+	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), "0"+photonDenom, true)
+	s.T().Logf("Tx fee is higher than min_gas_price, pass")
+	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmt+uatomDenom, false)
 	sucessBankSendCount++
-
+	// todo add global fee test of a differnet zero coin denom.
 	// ------------------ test2: globalfee lower than min_gas_price -----------------------------------
 	// prepare gov globalfee proposal
 	lowGlobalFee := sdk.DecCoins{sdk.NewDecCoinFromDec(uatomDenom, sdk.MustNewDecFromStr(lowGlobalFeesAmt))}
@@ -510,9 +512,9 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 	proposalCounter++
 	s.T().Logf("Proposal number: %d", proposalCounter)
 	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change global fees empty")
-	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, "", "param-change", proposalCounter, "/root/.gaia/config/proposal_globalfee.json")
-	s.depositGovProposal(chainAAPIEndpoint, submitter, "", proposalCounter)
-	s.voteGovProposal(chainAAPIEndpoint, submitter, "", proposalCounter, "yes", false)
+	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, fees.String(), "param-change", proposalCounter, "/root/.gaia/config/proposal_globalfee.json")
+	s.depositGovProposal(chainAAPIEndpoint, submitter, fees.String(), proposalCounter)
+	s.voteGovProposal(chainAAPIEndpoint, submitter, fees.String(), proposalCounter, "yes", false)
 
 	// query the proposal status and new fee
 	s.Require().Eventually(
@@ -537,7 +539,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 		5*time.Second,
 	)
 
-	paidFeeAmt := sdk.MustNewDecFromStr(minGasPrice).Mul(sdk.NewDec(gas)).String()
+	paidFeeAmt = sdk.MustNewDecFromStr(minGasPrice).Mul(sdk.NewDec(gas)).String()
 	paidFeeAmtLowMinGasHighGlobalFee := sdk.MustNewDecFromStr(lowGlobalFeesAmt).Mul(sdk.NewDec(2)).Mul(sdk.NewDec(gas)).String()
 	paidFeeAmtLowGLobalFee := sdk.MustNewDecFromStr(lowGlobalFeesAmt).Quo(sdk.NewDec(2)).String()
 
@@ -561,9 +563,9 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 	proposalCounter++
 	s.T().Logf("Proposal number: %d", proposalCounter)
 	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change global fees empty")
-	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+photonDenom, "param-change", proposalCounter, "/root/.gaia/config/proposal_globalfee.json")
-	s.depositGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+photonDenom, proposalCounter)
-	s.voteGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+photonDenom, proposalCounter, "yes", false)
+	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, "param-change", proposalCounter, "/root/.gaia/config/proposal_globalfee.json")
+	s.depositGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, proposalCounter)
+	s.voteGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, proposalCounter, "yes", false)
 
 	// query the proposal status and new fee
 	s.Require().Eventually(
@@ -610,9 +612,9 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 	proposalCounter++
 	s.T().Logf("Proposal number: %d", proposalCounter)
 	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change global fees empty")
-	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+photonDenom, "param-change", proposalCounter, "/root/.gaia/config/proposal_globalfee.json")
-	s.depositGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+photonDenom, proposalCounter)
-	s.voteGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+photonDenom, proposalCounter, "yes", false)
+	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, "param-change", proposalCounter, "/root/.gaia/config/proposal_globalfee.json")
+	s.depositGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, proposalCounter)
+	s.voteGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, proposalCounter, "yes", false)
 
 	// query the proposal status and new fee
 	s.Require().Eventually(
@@ -641,13 +643,6 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 	paidFeeAmtLow := sdk.MustNewDecFromStr(lowGlobalFeesAmt).Quo(sdk.NewDec(2)).Mul(sdk.NewDec(gas)).String()
 
 	s.T().Logf("test case: global fees contain multiple denoms: one zero coin, one non-zero coin, globalfee=%s, min_gas_price=%s", globalFees.String(), minGasPrice+uatomDenom)
-	//test4. gov propose globalfee =  0.000001uatom (lower than min_gas_price), 0photon
-	//  - tx with fee 0.0000001photon, fail
-	//  - tx with fee 0.000001photon, pass
-	//  - tx with empty fee, pass
-	//  - tx with fee photon pass
-	//  - tx with fee 0photon, 0.000005uatom fail
-	//  - tx with fee 0photon, 0.00001uatom pass
 	s.T().Logf("Tx with fee higher than/equal to one of denom's amount the global fee, pass")
 	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmt+uatomDenom, false)
 	sucessBankSendCount++

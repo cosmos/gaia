@@ -400,11 +400,7 @@ func writeFile(name string, dir string, contents []byte) error {
 		return err
 	}
 
-<<<<<<< HEAD
-	err = tmos.WriteFile(file, contents, 0o644)
-=======
 	err = os.WriteFile(file, contents, 0o600)
->>>>>>> 6ac473a (cmd/gaiad/cmd: replace deprecated ioutil with os.WriteFile (#1660))
 	if err != nil {
 		return err
 	}

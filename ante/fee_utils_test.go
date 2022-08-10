@@ -327,7 +327,7 @@ func (s *feeUtilsTestSuite) TestIsAnyGTEIncludingZero() {
 			c2:  coinsAllZero,
 			gte: true,
 		},
-		"all zero coins, have all different denoms": {
+		"c2 is all zero coins, with different denoms from c1 which are all zero coins too": {
 			c1:  coinsAllZero,
 			c2:  coinsAllNewDenomAllZero,
 			gte: false,
@@ -342,7 +342,7 @@ func (s *feeUtilsTestSuite) TestIsAnyGTEIncludingZero() {
 			c2:  emptyCoins,
 			gte: true,
 		},
-		"empty coins are GTE coins contain zero denom": {
+		"empty coins are GTE coins that contain zero denom": {
 			c1:  coinsContainZero,
 			c2:  emptyCoins,
 			gte: true,

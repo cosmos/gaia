@@ -502,7 +502,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 	s.T().Logf("Tx fee is higher than min_gas_price, pass")
 	s.sendMsgSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmt+uatomDenom, false)
 	sucessBankSendCount++
-	// todo add global fee test of a differnet zero coin denom.
+
 	// ------------------ test2: globalfee lower than min_gas_price -----------------------------------
 	// prepare gov globalfee proposal
 	lowGlobalFee := sdk.DecCoins{sdk.NewDecCoinFromDec(uatomDenom, sdk.MustNewDecFromStr(lowGlobalFeesAmt))}
@@ -718,7 +718,6 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 	)
 }
 
-// todo log each test condition
 func (s *IntegrationTestSuite) TestByPassMinFeeWithdrawReward() {
 	// time.Sleep(10)
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))

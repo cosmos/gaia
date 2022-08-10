@@ -525,7 +525,6 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			expErr:          false,
 		},
 	}
-	// todo check msg with bypass msg and need to pay msg
 	for name, testCase := range testCases {
 		s.Run(name, func() {
 			// set globalfees and min gas price

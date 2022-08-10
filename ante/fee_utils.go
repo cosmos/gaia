@@ -72,7 +72,7 @@ func DenomsSubsetOfIncludingZero(coins, coinsB sdk.Coins) bool {
 		return false
 	}
 	// coins=[], coinsB=[0stake]
-	// todo let all len(coins) == 0 pass and reject later at IsAnyGTEIncludingZero ?
+	// let all len(coins) == 0 pass and reject later at IsAnyGTEIncludingZero
 	if len(coins) == 0 && containZeroCoins(coinsB) {
 		return true
 	}

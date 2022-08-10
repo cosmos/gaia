@@ -6,7 +6,6 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"github.com/cosmos/gaia/v8/x/globalfee"
-	"github.com/cosmos/gaia/v8/x/globalfee/types"
 )
 
 const maxBypassMinFeeMsgGasUsage = uint64(200_000)
@@ -19,7 +18,7 @@ const maxBypassMinFeeMsgGasUsage = uint64(200_000)
 // CheckTx, then call next AnteHandler.
 //
 // CONTRACT: Tx must implement FeeTx to use BypassMinFeeDecorator
-// If the tx msg type is one the bypass msg types, the tx is free from fee charge.
+// If the tx msg type is one of the bypass msg types, the tx is valid even if the min fee is lower than normally required.
 // If the bypass tx still carries fees, the fee denom should be the same as global fee required.
 
 var _ sdk.AnteDecorator = BypassMinFeeDecorator{}
@@ -56,8 +55,6 @@ func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 	gas := feeTx.GetGas()
 	msgs := feeTx.GetMsgs()
 
-	// todo if need to check gas > uint64(len(msgs))*maxBypassMinFeeMsgGasUsage) here ?
-
 	// Only check for minimum fees and global fee if the execution mode is CheckTx and the tx does
 	// not contain operator configured bypass messages. If the tx does contain
 	// operator configured bypass messages only, it's total gas must be less than
@@ -70,18 +67,12 @@ func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 	requiredFees := getMinGasPrice(ctx, feeTx)
 
 	if ctx.IsCheckTx() && !simulate && !allowedToBypassMinFee {
-		// has global fee module
-		if mfd.GlobalMinFee.Has(ctx, types.ParamStoreKeyMinGasPrices) {
-			// requiredGlobalFees is sorted
-			requiredGlobalFees := mfd.getGlobalFee(ctx, feeTx)
-			allFees = CombinedFeeRequirement(requiredGlobalFees, requiredFees)
-		} else {
-			// todo if panic here ( not have global fee module)?
-			allFees = requiredFees
-		}
+
+		requiredGlobalFees := mfd.getGlobalFee(ctx, feeTx)
+		allFees = CombinedFeeRequirement(requiredGlobalFees, requiredFees)
 
 		// this is to ban 1stake passing if the globalfee is 1photon or 0photon
-		// if feeCoins=[], requiredGlobalFees has 0 coins, pass.
+		// if feeCoins=[] and requiredGlobalFees has 0denom coins then it should pass.
 		if !DenomsSubsetOfIncludingZero(feeCoins, allFees) {
 			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fees %s is not a subset of required fees %s", feeCoins, allFees)
 		}
@@ -91,8 +82,8 @@ func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 		}
 	}
 
-	// when the tx is bypass msg type, still need to check the denom is not random denom
-	if ctx.IsCheckTx() && !simulate && allowedToBypassMinFee && mfd.GlobalMinFee.Has(ctx, types.ParamStoreKeyMinGasPrices) {
+	// when the tx is bypass msg type, still need to check the denom is not some unknown denom
+	if ctx.IsCheckTx() && !simulate && allowedToBypassMinFee {
 		requiredGlobalFees := mfd.getGlobalFee(ctx, feeTx)
 		// bypass tx without pay fee
 		if len(feeCoins) == 0 {

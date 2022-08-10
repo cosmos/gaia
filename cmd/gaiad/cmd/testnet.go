@@ -400,7 +400,7 @@ func writeFile(name string, dir string, contents []byte) error {
 		return err
 	}
 
-	err = tmos.WriteFile(file, contents, 0o644)
+	err = os.WriteFile(file, contents, 0o600)
 	if err != nil {
 		return err
 	}

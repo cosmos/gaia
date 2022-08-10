@@ -171,7 +171,7 @@ sync-docs:
 include sims.mk
 
 PACKAGES_UNIT=$(shell go list ./... | grep -v -e '/tests/e2e')
-PACKAGES_E2E=$(shell go list ./... | grep '/e2e')
+PACKAGES_E2E=$(shell cd tests/e2e && go list ./... | grep '/e2e')
 TEST_PACKAGES=./...
 TEST_TARGETS := test-unit test-unit-cover test-race test-e2e
 
@@ -228,9 +228,9 @@ start-localnet-ci:
 	./build/gaiad keys add val --home ~/.gaiad-liveness
 	./build/gaiad add-genesis-account val 10000000000000000000000000stake --home ~/.gaiad-liveness --keyring-backend test
 	./build/gaiad gentx val 1000000000stake --home ~/.gaiad-liveness --chain-id liveness
-	./build/gaiad collect-gentxs --home ~/.gaiad-liveness 
+	./build/gaiad collect-gentxs --home ~/.gaiad-liveness
 	sed -i'' 's/minimum-gas-prices = ""/minimum-gas-prices = "0uatom"/' ~/.gaiad-liveness/config/app.toml
-	./build/gaiad start --home ~/.gaiad-liveness --mode validator --x-crisis-skip-assert-invariants
+	./build/gaiad start --home ~/.gaiad-liveness --x-crisis-skip-assert-invariants
 
 .PHONY: start-localnet-ci
 

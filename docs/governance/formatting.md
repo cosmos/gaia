@@ -63,11 +63,11 @@ The `deposit 64000000 uatom` results in 64 ATOM being used from the proposal sub
 
 #### Real Example
 
-This is the governance proposal that [Gavin Birch](https://twitter.com/Ether_Gavin) ([Figment Networks](https://figment.io/)) used to create [Prop23, the first successful Cosmos Hub community-spend proposal](https://hubble.figment.io/cosmos/chains/cosmoshub-3 /governance/proposals/23).
+This is the governance proposal that [Gavin Birch](https://twitter.com/Ether_Gavin) ([Figment Networks](https://figment.io/)) used to create [Prop23, the first successful Cosmos Hub community-spend proposal](https://hubble.figment.io/cosmos/chains/cosmoshub-3/governance/proposals/23).
 
-You can query the proposal details with the gaiad command-line interface using this command: `gaiad q gov proposal 23 --chain-id cosmoshub-3 --node cosmos-node-1.figment.network:26657`
+You can query the proposal details with the gaiad command-line interface using this command: `gaiad q gov proposal 23 --chain-id cosmoshub-3 --node cosmos-node-1.figment.io:26657`
 
-You use can also use [Hubble](https://hubble.figment.io/cosmos/chains/cosmoshub-3 /blocks/424035/transactions/B8E2662DE82413F03919712B18F7B23AF00B50DAEB499DAD8C436514640EFC79?format=json) or gaiad to query the transaction that I sent to create this proposal on-chain in full detail: `gaiad q tx B8E2662DE82413F03919712B18F7B23AF00B50DAEB499DAD8C436514640EFC79 --chain-id cosmoshub-3 --node cosmos-node-1.figment.network:26657`
+You use can also use [Hubble](https://hubble.figment.io/cosmos/chains/cosmoshub-3/blocks/424035/transactions/B8E2662DE82413F03919712B18F7B23AF00B50DAEB499DAD8C436514640EFC79?format=json) or gaiad to query the transaction that I sent to create this proposal on-chain in full detail: `gaiad q tx B8E2662DE82413F03919712B18F7B23AF00B50DAEB499DAD8C436514640EFC79 --chain-id cosmoshub-3 --node cosmos-node-1.figment.io:26657`
 
 **Note**: "\n" is used to create a new line.
 

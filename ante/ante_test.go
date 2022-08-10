@@ -7,17 +7,19 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
-	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
+	"github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/stretchr/testify/suite"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	gaiaapp "github.com/cosmos/gaia/v8/app"
 	gaiahelpers "github.com/cosmos/gaia/v8/app/helpers"
+	"github.com/cosmos/gaia/v8/x/globalfee"
+	globfeetypes "github.com/cosmos/gaia/v8/x/globalfee/types"
 )
 
 type IntegrationTestSuite struct {
@@ -41,13 +43,21 @@ func (s *IntegrationTestSuite) SetupTest() {
 		Height:  1,
 	})
 
-	encodingConfig := simapp.MakeTestEncodingConfig()
+	encodingConfig := gaiaapp.MakeTestEncodingConfig()
 	encodingConfig.Amino.RegisterConcrete(&testdata.TestMsg{}, "testdata.TestMsg", nil)
 	testdata.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 
 	s.app = app
 	s.ctx = ctx
 	s.clientCtx = client.Context{}.WithTxConfig(encodingConfig.TxConfig)
+}
+
+func (s *IntegrationTestSuite) setupTestGlobalFeeStoreAndMinGasPrice(minGasPrice []sdk.DecCoin, globalFeeParams *globfeetypes.Params) types.Subspace {
+	subspace := s.app.GetSubspace(globalfee.ModuleName)
+	subspace.SetParamSet(s.ctx, globalFeeParams)
+	s.ctx = s.ctx.WithMinGasPrices(minGasPrice).WithIsCheckTx(true)
+
+	return subspace
 }
 
 func (s *IntegrationTestSuite) CreateTestTx(privs []cryptotypes.PrivKey, accNums []uint64, accSeqs []uint64, chainID string) (xauthsigning.Tx, error) {

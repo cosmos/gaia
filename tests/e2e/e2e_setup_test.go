@@ -5,9 +5,6 @@ import (
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -19,11 +16,18 @@ import (
 	"testing"
 	"time"
 
+	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"github.com/cosmos/gaia/v8/app/params"
+	ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/spf13/viper"
@@ -34,23 +38,30 @@ import (
 )
 
 const (
-	photonDenom                = "photon"
-	initBalanceStr             = "110000000000stake,100000000000000000photon"
-	minGasPrice                = "0.00001"
+	photonDenom    = "photon"
+	uatomDenom     = "uatom"
+	initBalanceStr = "110000000000stake,100000000000000000photon,100000000000000000uatom"
+	minGasPrice    = "0.00001"
+	// the test globalfee in genesis is the same as minGasPrice
+	// global fee lower/higher than min_gas_price
+	initialGlobalFeeAmt        = "0.00001"
+	lowGlobalFeesAmt           = "0.000001"
+	highGlobalFeeAmt           = "0.0001"
+	gas                        = 200000
 	govSendMsgRecipientAddress = "cosmos1pkueemdeps77dwrqma03pwqk93nw39nuhccz02"
 	govProposalBlockBuffer     = 35
 )
 
 var (
-	stakeAmount, _    = sdk.NewIntFromString("100000000000")
+	stakeAmount       = math.NewInt(100000000000)
 	stakeAmountCoin   = sdk.NewCoin("stake", stakeAmount)
-	tokenAmount       = sdk.NewInt64Coin(photonDenom, 3300000000)        // 3,300photon
-	fees              = sdk.NewInt64Coin(photonDenom, 330000)            // 0.33photon
-	depositAmount     = sdk.NewInt64Coin(photonDenom, 10000000).String() // 10photon
+	tokenAmount       = sdk.NewCoin(uatomDenom, math.NewInt(3300000000)) // 3,300uatom
+	fees              = sdk.NewCoin(uatomDenom, math.NewInt(330000))     // 0.33uatom
+	depositAmount     = sdk.NewCoin(uatomDenom, math.NewInt(10000000))   // 10uatom
 	distModuleAddress = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
 	govModuleAddress  = authtypes.NewModuleAddress(govtypes.ModuleName).String()
 	proposalCounter   = 0
-	sendGovAmount     = sdk.NewInt64Coin(photonDenom, 10)
+	sendGovAmount     = sdk.NewInt64Coin(uatomDenom, 10)
 )
 
 type UpgradePlan struct {
@@ -117,13 +128,13 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.initValidatorConfigs(s.chainA)
 	s.runValidators(s.chainA, 0)
 
-	// s.T().Logf("starting e2e infrastructure for chain B; chain-id: %s; datadir: %s", s.chainB.id, s.chainB.dataDir)
-	// s.initNodes(s.chainB)
-	// s.initGenesis(s.chainB)
-	// s.initValidatorConfigs(s.chainB)
-	// s.runValidators(s.chainB, 10)
+	s.T().Logf("starting e2e infrastructure for chain B; chain-id: %s; datadir: %s", s.chainB.id, s.chainB.dataDir)
+	s.initNodes(s.chainB)
+	s.initGenesis(s.chainB)
+	s.initValidatorConfigs(s.chainB)
+	s.runValidators(s.chainB, 10)
 
-	// s.runIBCRelayer()
+	s.runIBCRelayer()
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -138,7 +149,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 
 	s.T().Log("tearing down e2e integration test suite...")
 
-	// s.Require().NoError(s.dkrPool.Purge(s.hermesResource))
+	s.Require().NoError(s.dkrPool.Purge(s.hermesResource))
 
 	for _, vr := range s.valResources {
 		for _, r := range vr {
@@ -149,7 +160,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 	s.Require().NoError(s.dkrPool.RemoveNetwork(s.dkrNet))
 
 	os.RemoveAll(s.chainA.dataDir)
-	// os.RemoveAll(s.chainB.dataDir)
+	os.RemoveAll(s.chainB.dataDir)
 
 	for _, td := range s.tmpDirs {
 		os.RemoveAll(td)
@@ -165,7 +176,7 @@ func (s *IntegrationTestSuite) initNodes(c *chain) {
 		address, err := val.keyInfo.GetAddress()
 		s.Require().NoError(err)
 		s.Require().NoError(
-			addGenesisAccount(val0ConfigDir, "", initBalanceStr, address),
+			modifyGenesis(val0ConfigDir, "", initBalanceStr, address, initialGlobalFeeAmt+uatomDenom),
 		)
 	}
 
@@ -195,13 +206,13 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 
 	bankGenState.DenomMetadata = append(bankGenState.DenomMetadata, banktypes.Metadata{
 		Description: "An example stable token",
-		Display:     photonDenom,
-		Base:        photonDenom,
-		Symbol:      photonDenom,
-		Name:        photonDenom,
+		Display:     uatomDenom,
+		Base:        uatomDenom,
+		Symbol:      uatomDenom,
+		Name:        uatomDenom,
 		DenomUnits: []*banktypes.DenomUnit{
 			{
-				Denom:    photonDenom,
+				Denom:    uatomDenom,
 				Exponent: 0,
 			},
 		},
@@ -250,6 +261,7 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 	}
 }
 
+// initValidatorConfigs initializes the validator configs for the given chain.
 func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 	for i, val := range c.validators {
 		tmCfgPath := filepath.Join(val.configDir(), "config", "config.toml")
@@ -276,26 +288,50 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 			}
 
 			peer := c.validators[j]
-			peerID := fmt.Sprintf("%s@%s%d:26656", peer.nodeKey.ID, peer.moniker, j)
+			peerID := fmt.Sprintf("%s@%s%d:26656", peer.nodeKey.ID(), peer.moniker, j)
 			peers = append(peers, peerID)
 		}
 
 		valConfig.P2P.PersistentPeers = strings.Join(peers, ",")
 
-		err := tmconfig.WriteConfigFile(val.configDir(), valConfig)
-		s.Require().NoError(err)
+		tmconfig.WriteConfigFile(tmCfgPath, valConfig)
 
 		// set application configuration
 		appCfgPath := filepath.Join(val.configDir(), "config", "app.toml")
 
 		appConfig := srvconfig.DefaultConfig()
 		appConfig.API.Enable = true
-		appConfig.MinGasPrices = fmt.Sprintf("%s%s", minGasPrice, photonDenom)
+		appConfig.MinGasPrices = fmt.Sprintf("%s%s", minGasPrice, uatomDenom)
 
-		srvconfig.WriteConfigFile(appCfgPath, appConfig)
+		//	 srvconfig.WriteConfigFile(appCfgPath, appConfig)
+		appCustomConfig := params.CustomAppConfig{
+			Config: *appConfig,
+			BypassMinFeeMsgTypes: []string{
+				// todo: use ibc as exmaple ?
+				sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),
+				sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
+				sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
+				"/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
+			},
+		}
+
+		customAppTemplate := `
+###############################################################################
+###                        Custom Gaia Configuration                        ###
+###############################################################################
+# bypass-min-fee-msg-types defines custom message types the operator may set that
+# will bypass minimum fee checks during CheckTx.
+#
+# Example:
+# ["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement", ...]
+bypass-min-fee-msg-types = ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward","/ibc.applications.transfer.v1.MsgTransfer"]
+` + srvconfig.DefaultConfigTemplate
+		srvconfig.SetConfigTemplate(customAppTemplate)
+		srvconfig.WriteConfigFile(appCfgPath, appCustomConfig)
 	}
 }
 
+// runValidators runs the validators in the chain
 func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 	s.T().Logf("starting Gaia %s validator containers...", c.id)
 
@@ -333,7 +369,7 @@ func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 		s.T().Logf("started Gaia %s validator container: %s", c.id, resource.Container.ID)
 	}
 
-	rpcClient, err := rpchttp.New("tcp://localhost:26657")
+	rpcClient, err := rpchttp.New("tcp://localhost:26657", "/websocket")
 	s.Require().NoError(err)
 
 	s.Require().Eventually(
@@ -370,7 +406,7 @@ func (s *IntegrationTestSuite) runIBCRelayer() {
 	gaiaBVal := s.chainB.validators[0]
 	hermesCfgPath := path.Join(tmpDir, "hermes")
 
-	s.Require().NoError(os.MkdirAll(hermesCfgPath, 0755))
+	s.Require().NoError(os.MkdirAll(hermesCfgPath, 0o755))
 	_, err = copyFile(
 		filepath.Join("./scripts/", "hermes_bootstrap.sh"),
 		filepath.Join(hermesCfgPath, "hermes_bootstrap.sh"),
@@ -478,7 +514,7 @@ func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
 	}{
 		Messages: msgSendMessages,
 		Metadata: b64.StdEncoding.EncodeToString([]byte("Testing 1, 2, 3!")),
-		Deposit:  "5000photon",
+		Deposit:  "5000uatom",
 	}, "", " ")
 
 	s.Require().NoError(err)
@@ -493,8 +529,8 @@ func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
 		Title:       "Community Pool Spend",
 		Description: "Fund Gov !",
 		Recipient:   govModuleAddress,
-		Amount:      "1000photon",
-		Deposit:     "5000photon",
+		Amount:      "1000uatom",
+		Deposit:     "5000uatom",
 	}, "", " ")
 
 	s.Require().NoError(err)
@@ -534,7 +570,7 @@ func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height 
 	}{
 		Messages: softwareUpgradeMessages,
 		Metadata: b64.StdEncoding.EncodeToString([]byte("Testing 1, 2, 3!")),
-		Deposit:  "5000photon",
+		Deposit:  "5000uatom",
 	}, "", " ")
 
 	cancelUpgradeProposalBody, err := json.MarshalIndent(struct {
@@ -544,12 +580,44 @@ func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height 
 	}{
 		Messages: cancelSoftwareUpgradeMessages,
 		Metadata: "VGVzdGluZyAxLCAyLCAzIQ==",
-		Deposit:  "5000photon",
+		Deposit:  "5000uatom",
 	}, "", " ")
 
 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_3.json"), upgradeProposalBody)
 	s.Require().NoError(err)
 
 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_4.json"), cancelUpgradeProposalBody)
+	s.Require().NoError(err)
+}
+
+func (s *IntegrationTestSuite) writeGovParamChangeProposalGlobalFees(c *chain, coins sdk.DecCoins) {
+	type ParamInfo struct {
+		Subspace string       `json:"subspace"`
+		Key      string       `json:"key"`
+		Value    sdk.DecCoins `json:"value"`
+	}
+
+	type ParamChangeMessage struct {
+		Title       string      `json:"title"`
+		Description string      `json:"description"`
+		Changes     []ParamInfo `json:"changes"`
+		Deposit     string      `json:"deposit"`
+	}
+
+	paramChangeProposalBody, err := json.MarshalIndent(ParamChangeMessage{
+		Title:       "global fee test",
+		Description: "global fee change",
+		Changes: []ParamInfo{
+			{
+				Subspace: "globalfee",
+				Key:      "MinimumGasPricesParam",
+				Value:    coins,
+			},
+		},
+		Deposit: "",
+	}, "", " ")
+	s.Require().NoError(err)
+
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_globalfee.json"), paramChangeProposalBody)
 	s.Require().NoError(err)
 }

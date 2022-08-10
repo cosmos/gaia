@@ -77,7 +77,7 @@ func (s *IntegrationTestSuite) sendMsgSend(c *chain, valIdx int, from, to, amt, 
 		AttachStdout: true,
 		AttachStderr: true,
 		Container:    s.valResources[c.id][valIdx].Container.ID,
-		User:         "root",
+		User:         "nonroot",
 		Cmd: []string{
 			"gaiad",
 			"tx",
@@ -337,7 +337,7 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 				AttachStdout: true,
 				AttachStderr: true,
 				Container:    s.valResources[c.id][valIdx].Container.ID,
-				User:         "root",
+				User:         "nonroot",
 				Cmd:          gaiaCommand,
 			})
 			s.Require().NoError(err)
@@ -426,7 +426,7 @@ func (s *IntegrationTestSuite) getLatestBlockHeight(c *chain, valIdx int) int {
 				AttachStdout: true,
 				AttachStderr: true,
 				Container:    s.valResources[c.id][valIdx].Container.ID,
-				User:         "root",
+				User:         "nonroot",
 				Cmd:          []string{"gaiad", "status"},
 			})
 			s.Require().NoError(err)

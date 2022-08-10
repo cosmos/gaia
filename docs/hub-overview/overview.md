@@ -31,6 +31,7 @@ These community-maintained web and mobile wallets allow you to store & transfer 
 * [imToken](https://token.im/) - Android, iOS
 * [Keplr](https://wallet.keplr.app) - Web
 * [Ledger](https://www.ledger.com/cosmos-wallet) - Hardware
+<!-- markdown-link-check-disable-next-line -->
 * [Lunie](https://lunie.io) - Web
 * [Math Wallet](https://www.mathwallet.org/en/) - Android, iOS, Web
 * [Rainbow Wallet](https://www.rainbow.one) - Android, iOS
@@ -52,6 +53,7 @@ These block explorers allow you to search, view and analyze Cosmos Hub data&mdas
 * [Hubble](https://hubble.figment.io)
 * [IOBScan](https://cosmoshub.iobscan.io/)
 * [LOOK Explorer](https://cosmos.ping.pub)
+<!-- markdown-link-check-disable-next-line -->
 * [Lunie](https://lunie.io)
 * [Mintscan](https://mintscan.io)
 * [Stargazer](https://stargazer.certus.one)

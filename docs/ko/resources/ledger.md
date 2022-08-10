@@ -141,12 +141,13 @@ gaiad tx --help
 를 입력하세요.
 
 # Lunie.io
-
+<!-- markdown-link-check-disable-next-line -->
 Lunie 웹 지갑은 렛저 나노 S 기기를 사용해 서명하는 것을 지원합니다. 다음은 (Lunie.io)[https://lunie.io] 지갑을 Ledger 기기로 사용하는 방법을 정리합니다.
 
 ### 기기 연결하기
 
 - 렛저 기기를 컴퓨터에 연결하시고, 비밀번호를 입력하여 잠금해제한 후 코스모스 앱을 실행하세요
+<!-- markdown-link-check-disable-next-line -->
 - 웹 브라우저에서 [https://lunie.io](https://lunie.io)를 가세요
 - "Sign In"을 클릭하세요
 - "Sign in with Ledger Nano S"를 선택하세요

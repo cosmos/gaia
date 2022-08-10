@@ -64,7 +64,6 @@ func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 	allowedToBypassMinFee := containsOnlyBypassMinFeeMsgs && doesNotExceedMaxGasUsage
 
 	var allFees sdk.Coins
-
 	requiredFees := getMinGasPrice(ctx, feeTx)
 
 	if ctx.IsCheckTx() && !simulate && !allowedToBypassMinFee {
@@ -92,7 +91,7 @@ func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 		}
 		// bypass with fee, fee denom must in requiredGlobalFees
 		if !DenomsSubsetOfIncludingZero(feeCoins, requiredGlobalFees) {
-			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "wrong fees denom; got: %s required: %s", feeCoins, requiredGlobalFees)
+			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fees denom is wrong; got: %s required: %s", feeCoins, requiredGlobalFees)
 		}
 	}
 

@@ -17,15 +17,17 @@ import (
 	"time"
 
 	"cosmossdk.io/math"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-
 	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"github.com/cosmos/gaia/v8/app/params"
+	ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/spf13/viper"
@@ -36,9 +38,16 @@ import (
 )
 
 const (
-	uatomDenom                 = "uatom"
-	initBalanceStr             = "110000000000stake,100000000000000000uatom"
-	minGasPrice                = "0.00001"
+	photonDenom    = "photon"
+	uatomDenom     = "uatom"
+	initBalanceStr = "110000000000stake,100000000000000000photon,100000000000000000uatom"
+	minGasPrice    = "0.00001"
+	// the test globalfee in genesis is the same as minGasPrice
+	// global fee lower/higher than min_gas_price
+	initialGlobalFeeAmt        = "0.00001"
+	lowGlobalFeesAmt           = "0.000001"
+	highGlobalFeeAmt           = "0.0001"
+	gas                        = 200000
 	govSendMsgRecipientAddress = "cosmos1pkueemdeps77dwrqma03pwqk93nw39nuhccz02"
 	govProposalBlockBuffer     = 35
 )
@@ -167,7 +176,7 @@ func (s *IntegrationTestSuite) initNodes(c *chain) {
 		address, err := val.keyInfo.GetAddress()
 		s.Require().NoError(err)
 		s.Require().NoError(
-			addGenesisAccount(val0ConfigDir, "", initBalanceStr, address),
+			modifyGenesis(val0ConfigDir, "", initBalanceStr, address, initialGlobalFeeAmt+uatomDenom),
 		)
 	}
 
@@ -294,7 +303,31 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 		appConfig.API.Enable = true
 		appConfig.MinGasPrices = fmt.Sprintf("%s%s", minGasPrice, uatomDenom)
 
-		srvconfig.WriteConfigFile(appCfgPath, appConfig)
+		//	 srvconfig.WriteConfigFile(appCfgPath, appConfig)
+		appCustomConfig := params.CustomAppConfig{
+			Config: *appConfig,
+			BypassMinFeeMsgTypes: []string{
+				// todo: use ibc as exmaple ?
+				sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),
+				sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
+				sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
+				"/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
+			},
+		}
+
+		customAppTemplate := `
+###############################################################################
+###                        Custom Gaia Configuration                        ###
+###############################################################################
+# bypass-min-fee-msg-types defines custom message types the operator may set that
+# will bypass minimum fee checks during CheckTx.
+#
+# Example:
+# ["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement", ...]
+bypass-min-fee-msg-types = ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward","/ibc.applications.transfer.v1.MsgTransfer"]
+` + srvconfig.DefaultConfigTemplate
+		srvconfig.SetConfigTemplate(customAppTemplate)
+		srvconfig.WriteConfigFile(appCfgPath, appCustomConfig)
 	}
 }
 
@@ -554,5 +587,37 @@ func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height 
 	s.Require().NoError(err)
 
 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_4.json"), cancelUpgradeProposalBody)
+	s.Require().NoError(err)
+}
+
+func (s *IntegrationTestSuite) writeGovParamChangeProposalGlobalFees(c *chain, coins sdk.DecCoins) {
+	type ParamInfo struct {
+		Subspace string       `json:"subspace"`
+		Key      string       `json:"key"`
+		Value    sdk.DecCoins `json:"value"`
+	}
+
+	type ParamChangeMessage struct {
+		Title       string      `json:"title"`
+		Description string      `json:"description"`
+		Changes     []ParamInfo `json:"changes"`
+		Deposit     string      `json:"deposit"`
+	}
+
+	paramChangeProposalBody, err := json.MarshalIndent(ParamChangeMessage{
+		Title:       "global fee test",
+		Description: "global fee change",
+		Changes: []ParamInfo{
+			{
+				Subspace: "globalfee",
+				Key:      "MinimumGasPricesParam",
+				Value:    coins,
+			},
+		},
+		Deposit: "",
+	}, "", " ")
+	s.Require().NoError(err)
+
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_globalfee.json"), paramChangeProposalBody)
 	s.Require().NoError(err)
 }

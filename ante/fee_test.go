@@ -79,11 +79,12 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 		"empty min_gas_price, nonempty global fee, fee higher/equal than global_fee": {
 			minGasPrice:     minGasPriceEmpty,
 			globalFeeParams: globalfeeParamsHigh,
-			gasPrice:        sdk.NewCoins(sdk.NewCoin("uatom", highFeeAmt)),
-			gasLimit:        testdata.NewTestGasLimit(),
-			txMsg:           testdata.NewTestMsg(addr1),
-			txCheck:         true,
-			expErr:          false,
+			// sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String())
+			gasPrice: sdk.NewCoins(sdk.NewCoin("uatom", highFeeAmt)),
+			gasLimit: testdata.NewTestGasLimit(),
+			txMsg:    testdata.NewTestMsg(addr1),
+			txCheck:  true,
+			expErr:   false,
 		},
 		"empty min_gas_price, nonempty global fee, fee lower than global_fee": {
 			minGasPrice:     minGasPriceEmpty,
@@ -404,7 +405,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			txCheck:         true,
 			expErr:          false,
 		},
-		"globalfee contains zero coin, fee contains lower fee of zero coins's denom, globalfee also contains nonzero coin ,fee contains higher fee of nonzero coins's denom": {
+		"globalfee contains zero coin, fee contains lower fee of zero coins's denom, globalfee also contains nonzero coin,fee contains higher fee of nonzero coins's denom, ": {
 			minGasPrice:     minGasPrice0,
 			globalFeeParams: globalfeeParamsContain0,
 			gasPrice: sdk.NewCoins(

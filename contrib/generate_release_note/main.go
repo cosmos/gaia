@@ -48,7 +48,7 @@ func main() {
 	}
 }
 
-func FindChangelog(file string, version string) (string, error) {
+func FindChangelog(file, version string) (string, error) {
 	data, err := os.ReadFile(file)
 	if err != nil {
 		return "", errors.New("read changelog file failed.")

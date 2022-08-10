@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
 	"strconv"
@@ -16,6 +17,7 @@ import (
 	"testing"
 	"time"
 
+	"cosmossdk.io/math"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -43,11 +45,11 @@ const (
 )
 
 var (
-	stakeAmount, _    = sdk.NewIntFromString("100000000000")
+	stakeAmount       = math.NewInt(100000000000)
 	stakeAmountCoin   = sdk.NewCoin("stake", stakeAmount)
-	tokenAmount       = sdk.NewInt64Coin(photonDenom, 3300000000)        // 3,300photon
-	fees              = sdk.NewInt64Coin(photonDenom, 330000)            // 0.33photon
-	depositAmount     = sdk.NewInt64Coin(photonDenom, 10000000).String() // 10photon
+	tokenAmount       = sdk.NewCoin(photonDenom, math.NewInt(3300000000)) // 3,300photon
+	fees              = sdk.NewCoin(photonDenom, math.NewInt(330000))     // 0.33photon
+	depositAmount     = sdk.NewCoin(photonDenom, math.NewInt(10000000))   // 10photon
 	distModuleAddress = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
 	govModuleAddress  = authtypes.NewModuleAddress(govtypes.ModuleName).String()
 	proposalCounter   = 0
@@ -118,13 +120,13 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.initValidatorConfigs(s.chainA)
 	s.runValidators(s.chainA, 0)
 
-	// s.T().Logf("starting e2e infrastructure for chain B; chain-id: %s; datadir: %s", s.chainB.id, s.chainB.dataDir)
-	// s.initNodes(s.chainB)
-	// s.initGenesis(s.chainB)
-	// s.initValidatorConfigs(s.chainB)
-	// s.runValidators(s.chainB, 10)
+	s.T().Logf("starting e2e infrastructure for chain B; chain-id: %s; datadir: %s", s.chainB.id, s.chainB.dataDir)
+	s.initNodes(s.chainB)
+	s.initGenesis(s.chainB)
+	s.initValidatorConfigs(s.chainB)
+	s.runValidators(s.chainB, 10)
 
-	// s.runIBCRelayer()
+	s.runIBCRelayer()
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -139,7 +141,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 
 	s.T().Log("tearing down e2e integration test suite...")
 
-	// s.Require().NoError(s.dkrPool.Purge(s.hermesResource))
+	s.Require().NoError(s.dkrPool.Purge(s.hermesResource))
 
 	for _, vr := range s.valResources {
 		for _, r := range vr {
@@ -150,7 +152,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 	s.Require().NoError(s.dkrPool.RemoveNetwork(s.dkrNet))
 
 	os.RemoveAll(s.chainA.dataDir)
-	// os.RemoveAll(s.chainB.dataDir)
+	os.RemoveAll(s.chainB.dataDir)
 
 	for _, td := range s.tmpDirs {
 		os.RemoveAll(td)
@@ -244,13 +246,14 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 	bz, err = tmjson.MarshalIndent(genDoc, "", "  ")
 	s.Require().NoError(err)
 
-	// write the updated genesis file to each validator
+	// write the updated genesis file to each validator.
 	for _, val := range c.validators {
 		err = writeFile(filepath.Join(val.configDir(), "config", "genesis.json"), bz)
 		s.Require().NoError(err)
 	}
 }
 
+// initValidatorConfigs initializes the validator configs for the given chain.
 func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 	for i, val := range c.validators {
 		tmCfgPath := filepath.Join(val.configDir(), "config", "config.toml")
@@ -277,14 +280,13 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 			}
 
 			peer := c.validators[j]
-			peerID := fmt.Sprintf("%s@%s%d:26656", peer.nodeKey.ID, peer.moniker, j)
+			peerID := fmt.Sprintf("%s@%s%d:26656", peer.nodeKey.ID(), peer.moniker, j)
 			peers = append(peers, peerID)
 		}
 
 		valConfig.P2P.PersistentPeers = strings.Join(peers, ",")
 
-		err := tmconfig.WriteConfigFile(val.configDir(), valConfig)
-		s.Require().NoError(err)
+		tmconfig.WriteConfigFile(tmCfgPath, valConfig)
 
 		// set application configuration
 		appCfgPath := filepath.Join(val.configDir(), "config", "app.toml")
@@ -297,6 +299,7 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 	}
 }
 
+// runValidators runs the validators in the chain
 func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 	s.T().Logf("starting Gaia %s validator containers...", c.id)
 
@@ -306,10 +309,12 @@ func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 			Name:      val.instanceName(),
 			NetworkID: s.dkrNet.Network.ID,
 			Mounts: []string{
-				fmt.Sprintf("%s/:/root/.gaia", val.configDir()),
+				fmt.Sprintf("%s/:/home/nonroot/.gaia", val.configDir()),
 			},
 			Repository: "cosmos/gaiad-e2e",
 		}
+
+		s.Require().NoError(exec.Command("chmod", "-R", "0777", val.configDir()).Run())
 
 		// expose the first validator for debugging and communication
 		if val.index == 0 {
@@ -334,7 +339,7 @@ func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 		s.T().Logf("started Gaia %s validator container: %s", c.id, resource.Container.ID)
 	}
 
-	rpcClient, err := rpchttp.New("tcp://localhost:26657")
+	rpcClient, err := rpchttp.New("tcp://localhost:26657", "/websocket")
 	s.Require().NoError(err)
 
 	s.Require().Eventually(

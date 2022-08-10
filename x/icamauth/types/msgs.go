@@ -18,10 +18,11 @@ var (
 )
 
 // NewMsgRegisterAccount creates a new MsgRegisterAccount instance
-func NewMsgRegisterAccount(owner, connectionID string) *MsgRegisterAccount {
+func NewMsgRegisterAccount(owner, connectionID, version string) *MsgRegisterAccount {
 	return &MsgRegisterAccount{
 		Owner:        owner,
 		ConnectionId: connectionID,
+		Version:      version,
 	}
 }
 

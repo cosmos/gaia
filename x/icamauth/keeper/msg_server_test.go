@@ -73,7 +73,7 @@ func (suite *KeeperTestSuite) TestRegisterInterchainAccount() {
 			tc.malleate() // malleate mutates test data
 
 			msgSrv := keeper.NewMsgServerImpl(suite.GetICAApp(suite.chainA).ICAMauthKeeper)
-			msg := types.NewMsgRegisterAccount(owner, path.EndpointA.ConnectionID)
+			msg := types.NewMsgRegisterAccount(owner, path.EndpointA.ConnectionID, path.EndpointA.ChannelConfig.Version)
 
 			res, err := msgSrv.RegisterAccount(sdk.WrapSDKContext(suite.chainA.GetContext()), msg)
 

@@ -45,6 +45,7 @@ func getRegisterAccountCmd() *cobra.Command {
 			msg := types.NewMsgRegisterAccount(
 				clientCtx.GetFromAddress().String(),
 				viper.GetString(FlagConnectionID),
+				viper.GetString(FlagVersion),
 			)
 
 			if err := msg.ValidateBasic(); err != nil {
@@ -56,6 +57,7 @@ func getRegisterAccountCmd() *cobra.Command {
 	}
 
 	cmd.Flags().AddFlagSet(fsConnectionID)
+	cmd.Flags().AddFlagSet(fsVersion)
 	_ = cmd.MarkFlagRequired(FlagConnectionID)
 
 	flags.AddTxFlagsToCmd(cmd)

@@ -63,6 +63,69 @@ func (s *IntegrationTestSuite) connectIBCChains() {
 	s.T().Logf("connected %s and %s chains via IBC", s.chainA.id, s.chainB.id)
 }
 
+<<<<<<< HEAD
+=======
+func (s *IntegrationTestSuite) sendMsgSend(c *chain, valIdx int, from, to, amt, fees string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("sending %s tokens from %s to %s on chain %s", amt, from, to, c.id)
+
+	exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
+		Context:      ctx,
+		AttachStdout: true,
+		AttachStderr: true,
+		Container:    s.valResources[c.id][valIdx].Container.ID,
+		User:         "nonroot",
+		Cmd: []string{
+			"gaiad",
+			"tx",
+			"bank",
+			"send",
+			from,
+			to,
+			amt,
+			fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+			fmt.Sprintf("--%s=%s", flags.FlagFees, fees),
+			"--keyring-backend=test",
+			"--broadcast-mode=sync",
+			"--output=json",
+			"-y",
+		},
+	})
+	s.Require().NoError(err)
+
+	var (
+		outBuf bytes.Buffer
+		errBuf bytes.Buffer
+	)
+
+	err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
+		Context:      ctx,
+		Detach:       false,
+		OutputStream: &outBuf,
+		ErrorStream:  &errBuf,
+	})
+	s.Require().NoErrorf(err, "stdout: %s, stderr: %s", outBuf.String(), errBuf.String())
+
+	var txResp sdk.TxResponse
+	s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
+
+	endpoint := fmt.Sprintf("http://%s", s.valResources[c.id][valIdx].GetHostPort("1317/tcp"))
+
+	// wait for the tx to be committed on chain
+	s.Require().Eventuallyf(
+		func() bool {
+			return queryGaiaTx(endpoint, txResp.TxHash) == nil
+		},
+		time.Minute,
+		5*time.Second,
+		"stdout: %s, stderr: %s",
+		outBuf.String(), errBuf.String(),
+	)
+}
+
+>>>>>>> e011a10 (use distroless.dev/static base image (#1648))
 func (s *IntegrationTestSuite) sendIBC(srcChainID, dstChainID, recipient string, token sdk.Coin) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
@@ -160,9 +223,39 @@ func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) {
 func queryGaiaDenomBalance(endpoint, addr, denom string) (sdk.Coin, error) {
 	var zeroCoin sdk.Coin
 
+<<<<<<< HEAD
 	path := fmt.Sprintf(
 		"%s/cosmos/bank/v1beta1/balances/%s/by_denom?denom=%s",
 		endpoint, addr, denom,
+=======
+	s.Require().Eventually(
+		func() bool {
+			time.Sleep(3 * time.Second)
+			exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
+				Context:      ctx,
+				AttachStdout: true,
+				AttachStderr: true,
+				Container:    s.valResources[c.id][valIdx].Container.ID,
+				User:         "nonroot",
+				Cmd:          gaiaCommand,
+			})
+			s.Require().NoError(err)
+
+			err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
+				Context:      ctx,
+				Detach:       false,
+				OutputStream: &outBuf,
+				ErrorStream:  &errBuf,
+			})
+			s.Require().NoError(err)
+
+			s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
+			return strings.Contains(txResp.String(), "code: 0")
+		},
+		5*time.Second,
+		time.Second,
+		"tx returned a non-zero code; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
+>>>>>>> e011a10 (use distroless.dev/static base image (#1648))
 	)
 	resp, err := http.Get(path)
 	if err != nil {
@@ -181,5 +274,45 @@ func queryGaiaDenomBalance(endpoint, addr, denom string) (sdk.Coin, error) {
 		return zeroCoin, err
 	}
 
+<<<<<<< HEAD
 	return *balanceResp.Balance, nil
+=======
+	var (
+		outBuf        bytes.Buffer
+		errBuf        bytes.Buffer
+		block         syncInfo
+		currentHeight int
+	)
+
+	s.Require().Eventually(
+		func() bool {
+			exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
+				Context:      ctx,
+				AttachStdout: true,
+				AttachStderr: true,
+				Container:    s.valResources[c.id][valIdx].Container.ID,
+				User:         "nonroot",
+				Cmd:          []string{"gaiad", "status"},
+			})
+			s.Require().NoError(err)
+
+			err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
+				Context:      ctx,
+				Detach:       false,
+				OutputStream: &outBuf,
+				ErrorStream:  &errBuf,
+			})
+			s.Require().NoError(err)
+			s.Require().NoError(json.Unmarshal(errBuf.Bytes(), &block))
+
+			currentHeight, err = strconv.Atoi(block.SyncInfo.LatestHeight)
+			s.Require().NoError(err)
+			return currentHeight > 0
+		},
+		5*time.Second,
+		time.Second,
+		"Get node status returned a non-zero code; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
+	)
+	return currentHeight
+>>>>>>> e011a10 (use distroless.dev/static base image (#1648))
 }

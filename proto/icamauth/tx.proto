@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package mauth;
+package gaia.icamauth.v1beta1;
 
 option go_package = "github.com/cosmos/gaia/x/icamauth/types";
 

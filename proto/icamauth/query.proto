@@ -1,15 +1,18 @@
 syntax = "proto3";
 
-package mauth;
-
-option go_package = "github.com/cosmos/gaia/x/icamauth/types";
+package gaia.icamauth.v1beta1;
 
 import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+
+option go_package = "github.com/cosmos/gaia/x/icamauth/types";
 
 // Query defines the gRPC querier service.
 service Query {
   // QueryInterchainAccountFromAddress returns the interchain account for given owner address on a given connection pair
-  rpc InterchainAccountFromAddress(QueryInterchainAccountFromAddressRequest) returns (QueryInterchainAccountFromAddressResponse);
+  rpc InterchainAccountFromAddress(QueryInterchainAccountFromAddressRequest) returns (QueryInterchainAccountFromAddressResponse) {
+    option (google.api.http).get = "/gaia/icamauth/v1beta1/interchain_account_from_address/{owner}/{connection_id}";
+  }
 }
 
 // QueryInterchainAccountFromAddressRequest is the request type for the Query/InterchainAccountAddress RPC

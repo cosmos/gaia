@@ -9,7 +9,7 @@ import (
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
-func (s *IntegrationTestSuite) TestAIBCTokenTransfer() {
+func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
 	var ibcStakeDenom string
 
 	s.Run("send_uatom_to_chainB", func() {
@@ -681,8 +681,8 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 	)
 
 	// gov proposing to change back to original global fee
-	s.T().Logf("Propose to change back to original global fees: %s", initialGlobalFeeAmt+photonDenom)
-	oldfees, err := sdk.ParseDecCoins(initialGlobalFeeAmt + photonDenom)
+	s.T().Logf("Propose to change back to original global fees: %s", initialGlobalFeeAmt+uatomDenom)
+	oldfees, err := sdk.ParseDecCoins(initialGlobalFeeAmt + uatomDenom)
 	s.Require().NoError(err)
 	s.writeGovParamChangeProposalGlobalFees(s.chainA, oldfees)
 

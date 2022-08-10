@@ -94,7 +94,7 @@ __Note__: It is assumed you are currently operating a full-node running v0.34.6+
 - The version/commit hash of Gaia v2.0.3: `2f6783e298f25ff4e12cb84549777053ab88749a`
 - The upgrade height as agreed upon by governance: **2,902,000**
 - You may obtain the canonical UTC timestamp of the exported block by any of the following methods:
-  - Block explorer (e.g. [Hubble](https://hubble.figment.network/cosmos/chains/cosmoshub-2/blocks/2902000?format=json&kind=block))
+  - Block explorer (e.g. [Hubble](https://hubble.figment.io/cosmos/chains/cosmoshub-2/blocks/2902000?format=json&kind=block))
   - Through manually querying an RPC node (e.g. `/block?height=2902000`)
   - Through manually querying a Gaia REST client (e.g. `/blocks/2902000`)
 

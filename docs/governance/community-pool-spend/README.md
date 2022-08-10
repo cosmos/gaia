@@ -57,7 +57,7 @@ You may directly query the Cosmos Hub 3 for the balance of the Community Pool:
 
 ```gaiad q distribution community-pool --chain-id cosmoshub-3 --node cosmos-node-1.figment.network:26657```
 
-Alternatively, popular Cosmos explorers such as [Big Dipper](https://cosmos.bigdipper.live) and [Hubble](https://hubble.figment.network/cosmos/chains/cosmoshub-3) display the ongoing Community Pool balance.
+Alternatively, popular Cosmos explorers such as [Big Dipper](https://cosmos.bigdipper.live) and [Hubble](https://hubble.figment.io/cosmos/chains/cosmoshub-3 ) display the ongoing Community Pool balance.
 
 ### How can funds from the Community Pool be spent?
 

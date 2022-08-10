@@ -63,7 +63,7 @@ Global fees, min_gas_prices and the paid fees all allow zero coins setup. After 
 
 Only global fees might contain zero coins, which is used to define the allowed denoms of paid fees.
 
-The [Fee AnteHandle](https://github.com/cosmos/gaia/blob/yaru/fix-all-fees/ante/fee.go) will take global fees and min_gas_prices and merge them into one [combined `sdk.Deccoins`](https://github.com/cosmos/gaia/blob/f2be720353a969b6362feff369218eb9056a60b9/ante/fee.go#L79) according to the denoms and amounts of global fees and min_gas_prices.
+The [Fee AnteHandle](../../../ante/fee.go) will take global fees and min_gas_prices and merge them into one [combined `sdk.Deccoins`](https://github.com/cosmos/gaia/blob/f2be720353a969b6362feff369218eb9056a60b9/ante/fee.go#L79) according to the denoms and amounts of global fees and min_gas_prices.
 
 If the paid fee is a subset of the combined fees set and the paid fee amount is greater than or equal to the required fees amount, the transaction can pass the fee check, otherwise an error will occur.
 

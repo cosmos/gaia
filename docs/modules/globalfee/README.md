@@ -2,7 +2,7 @@
 
 ## Gaia Fees
 
-The CosmosHub has two types of fees, both of which, are the [sdk.DecCoins]((https://github.com/cosmos/cosmos-sdk/blob/a1777a87b65fad74732cfe1a4c27683dcffffbfe/types/dec_coin.go#L158)) type:
+The CosmosHub has two types of fees, both of which, are the [sdk.DecCoins](https://github.com/cosmos/cosmos-sdk/blob/a1143138716b64bc4fa0aa53c0f0fa59eb675bb7/types/dec_coin.go#L158) type:
 - global fees (are defined at the network level, via [Gov Proposals](https://hub.cosmos.network/main/governance/proposals/))
 - min_gas_prices (are specified validator node, in the `config/app.toml` configuration file)
   

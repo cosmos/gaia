@@ -27,6 +27,7 @@ These community-maintained web and mobile wallets allow you to store & transfer 
 * [Cobo](https://cobo.com/) - Android, iOS
 * [Cosmostation](https://www.cosmostation.io/) - Android, iOS
 * [Huobi Wallet](https://www.huobiwallet.com/) - Android, iOS
+<!-- markdown-link-check-disable-next-line -->
 * [imToken](https://token.im/) - Android, iOS
 * [Keplr](https://wallet.keplr.app) - Web
 * [Ledger](https://www.ledger.com/cosmos-wallet) - Hardware

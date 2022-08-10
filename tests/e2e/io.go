@@ -7,7 +7,6 @@ import (
 	"os"
 )
 
-
 func copyFile(src, dst string) (int64, error) {
 	sourceFileStat, err := os.Stat(src)
 	if err != nil {
@@ -41,5 +40,4 @@ func writeFile(path string, body []byte) error {
 	}
 
 	return ioutil.WriteFile(path, body, 0o600)
-
 }

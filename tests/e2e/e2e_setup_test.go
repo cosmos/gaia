@@ -5,10 +5,12 @@ import (
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/ory/dockertest"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
 	"strconv"
@@ -26,7 +28,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
-	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/suite"
@@ -245,7 +246,7 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 	bz, err = tmjson.MarshalIndent(genDoc, "", "  ")
 	s.Require().NoError(err)
 
-	// write the updated genesis file to each validator
+	// write the updated genesis file to each validator.
 	for _, val := range c.validators {
 		err = writeFile(filepath.Join(val.configDir(), "config", "genesis.json"), bz)
 		s.Require().NoError(err)
@@ -308,10 +309,12 @@ func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 			Name:      val.instanceName(),
 			NetworkID: s.dkrNet.Network.ID,
 			Mounts: []string{
-				fmt.Sprintf("%s/:/root/.gaia", val.configDir()),
+				fmt.Sprintf("%s/:/home/nonroot/.gaia", val.configDir()),
 			},
 			Repository: "cosmos/gaiad-e2e",
 		}
+
+		s.Require().NoError(exec.Command("chmod", "-R", "0777", val.configDir()).Run())
 
 		// expose the first validator for debugging and communication
 		if val.index == 0 {

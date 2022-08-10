@@ -49,7 +49,6 @@ type chain struct {
 	validators []*validator
 }
 
-
 func newChain() (*chain, error) {
 	tmpDir, err := ioutil.TempDir("", "gaia-e2e-testnet-")
 	if err != nil {
@@ -62,11 +61,9 @@ func newChain() (*chain, error) {
 	}, nil
 }
 
-
 func (c *chain) configDir() string {
 	return fmt.Sprintf("%s/%s", c.dataDir, c.id)
 }
-
 
 func (c *chain) createAndInitValidators(count int) error {
 	for i := 0; i < count; i++ {
@@ -94,7 +91,6 @@ func (c *chain) createAndInitValidators(count int) error {
 	return nil
 }
 
-
 func (c *chain) createAndInitValidatorsWithMnemonics(count int, mnemonics []string) error {
 	for i := 0; i < count; i++ {
 		// create node
@@ -121,7 +117,6 @@ func (c *chain) createAndInitValidatorsWithMnemonics(count int, mnemonics []stri
 
 	return nil
 }
-
 
 func (c *chain) createValidator(index int) *validator {
 	return &validator{

@@ -11,7 +11,7 @@ option go_package = "github.com/cosmos/gaia/x/icamauth/types";
 service Query {
   // QueryInterchainAccountFromAddress returns the interchain account for given owner address on a given connection pair
   rpc InterchainAccountFromAddress(QueryInterchainAccountFromAddressRequest) returns (QueryInterchainAccountFromAddressResponse) {
-    option (google.api.http).get = "/gaia/icamauth/v1beta1/interchain_account_from_address/{owner}/{connection_id}";
+    option (google.api.http).get = "/gaia/icamauth/v1beta1/interchain_account/owner/{owner}/connection/{connection_id}";
   }
 }
 

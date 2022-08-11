@@ -51,8 +51,7 @@ These block explorers allow you to search, view and analyze Cosmos Hub data&mdas
 * [Cosmos Visualizer](https://nylira.net/3d)
 * [Hubble](https://hubble.figment.io)
 * [IOBScan](https://cosmoshub.iobscan.io/)
-* [LOOK Explorer](https://cosmos.ping.pub)
-<!-- markdown-link-check-disable-next-line -->
+* [LOOK Explorer](https://cosmos.ping.pub)<!-- markdown-link-check-disable-next-line -->
 * [Lunie](https://lunie.io)
 * [Mintscan](https://mintscan.io)
 * [Stargazer](https://stargazer.certus.one)

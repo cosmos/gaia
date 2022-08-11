@@ -84,7 +84,6 @@ func (suite *KeeperTestSuite) TestRegisterInterchainAccount() {
 				suite.Require().Error(err)
 				suite.Require().Nil(res)
 			}
-
 		})
 	}
 }

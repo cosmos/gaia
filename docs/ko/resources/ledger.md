@@ -146,8 +146,7 @@ Lunie 웹 지갑은 렛저 나노 S 기기를 사용해 서명하는 것을 지�
 
 ### 기기 연결하기
 
-- 렛저 기기를 컴퓨터에 연결하시고, 비밀번호를 입력하여 잠금해제한 후 코스모스 앱을 실행하세요
-<!-- markdown-link-check-disable-next-line -->
+- 렛저 기기를 컴퓨터에 연결하시고, 비밀번호를 입력하여 잠금해제한 후 코스모스 앱을 실행하세요<!-- markdown-link-check-disable-next-line -->
 - 웹 브라우저에서 [https://lunie.io](https://lunie.io)를 가세요
 - "Sign In"을 클릭하세요
 - "Sign in with Ledger Nano S"를 선택하세요

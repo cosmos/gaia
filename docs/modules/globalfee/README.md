@@ -86,7 +86,7 @@ An example:
 bypass-min-fee-msg-types = ["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement","/ibc.applications.transfer.v1.MsgTransfer"]
 ```
 
-[comment]: <> (Even though each node can set its own `min_gas_prices` and `bypass-min-fee-msg-types`, when the transactions enters a validator's mempool, the transactions carried fees have to satisfy the validator's `min_gas_prices` and `bypass-min-fee-msg-types`'s requirement in order for the validators to process the transacton.)
+Even though each node can set its own `min_gas_prices` and `bypass-min-fee-msg-types`, when the transactions enters a validator's mempool, the transactions carried fees have to satisfy the validator's `min_gas_prices` and `bypass-min-fee-msg-types`'s requirement in order for the validators to process the transactions.
 
 ### Examples
 Here are a few examples to clarify the relationship between global fees, min_gas_prices and paid fees.

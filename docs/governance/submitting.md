@@ -19,7 +19,7 @@ censorship resistant data-hosting platform, like IPFS.
 
 Once you have drafted your proposal, ideally as a Markdown file, you
 can upload it to the IPFS network:
-
+<!-- markdown-link-check-disable -->
 1. either by [running an IPFS node and the IPFS software](https://ipfs.io), or
 2. using a service such as [https://pinata.cloud](https://pinata.cloud)
 <!-- markdown-link-check-disable -->

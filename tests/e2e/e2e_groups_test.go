@@ -74,26 +74,26 @@ func (s *IntegrationTestSuite) GroupsSendMsgTest() {
 	s.prepareGroupFiles(ctx, s.chainA, adminAddr.String(), aliceAddr, bobAddr, charlieAddr)
 
 	s.T().Logf("Creating Group")
-	s.execCreateGroup(s.chainA, 0, chainAAPIEndpoint, adminAddr.String(), "Cosmos Hub Group", fmt.Sprintf("/root/.gaia/config/%s", originalMembersFilename), fees.String())
+	s.execCreateGroup(s.chainA, 0, chainAAPIEndpoint, adminAddr.String(), "Cosmos Hub Group", fmt.Sprintf("/home/nonroot/.gaia/config/%s", originalMembersFilename), fees.String())
 	res, err = s.queryGroupMembers(chainAAPIEndpoint, 1)
 	s.Require().NoError(err)
 	s.Assert().Equal(len(res.Members), len(members))
 
 	s.T().Logf("Adding New Group Member")
-	s.execUpdateGroupMembers(s.chainA, 0, chainAAPIEndpoint, adminAddr.String(), strconv.Itoa(groupId), fmt.Sprintf("/root/.gaia/config/%s", addMemberFilename), fees.String())
+	s.execUpdateGroupMembers(s.chainA, 0, chainAAPIEndpoint, adminAddr.String(), strconv.Itoa(groupId), fmt.Sprintf("/home/nonroot/.gaia/config/%s", addMemberFilename), fees.String())
 	res, err = s.queryGroupMembers(chainAAPIEndpoint, 1)
 	s.Require().NoError(err)
 	s.Assert().Equal(len(res.Members), len(members)+1)
 
 	s.T().Logf("Removing New Group Member")
-	s.execUpdateGroupMembers(s.chainA, 0, chainAAPIEndpoint, adminAddr.String(), strconv.Itoa(groupId), fmt.Sprintf("/root/.gaia/config/%s", removeMemberFilename), fees.String())
+	s.execUpdateGroupMembers(s.chainA, 0, chainAAPIEndpoint, adminAddr.String(), strconv.Itoa(groupId), fmt.Sprintf("/home/nonroot/.gaia/config/%s", removeMemberFilename), fees.String())
 	res, err = s.queryGroupMembers(chainAAPIEndpoint, 1)
 	s.Require().NoError(err)
 	s.Assert().Equal(len(res.Members), len(members))
 
 	s.T().Logf("Creating Group Threshold Decision Policy")
 	s.writeGroupPolicies(s.chainA, thresholdPolicyFilename, percentagePolicyFilename, thresholdPolicy, percentagePolicy)
-	s.executeCreateGroupPolicy(s.chainA, 0, chainAAPIEndpoint, adminAddr.String(), strconv.Itoa(groupId), thresholdPolicyMetadata, fmt.Sprintf("/root/.gaia/config/%s", thresholdPolicyFilename), fees.String())
+	s.executeCreateGroupPolicy(s.chainA, 0, chainAAPIEndpoint, adminAddr.String(), strconv.Itoa(groupId), thresholdPolicyMetadata, fmt.Sprintf("/home/nonroot/.gaia/config/%s", thresholdPolicyFilename), fees.String())
 	policies, err := s.queryGroupPolicies(chainAAPIEndpoint, groupId)
 	s.Require().NoError(err)
 	policy, err := getPolicy(policies.GroupPolicies, thresholdPolicyMetadata, groupId)
@@ -105,7 +105,7 @@ func (s *IntegrationTestSuite) GroupsSendMsgTest() {
 
 	s.writeGroupProposal(s.chainA, policy.Address, adminAddr.String(), sendAmount, proposalMsgSendPath)
 	s.T().Logf("Submitting Group Proposal 1: Send 5 photon from group to Bob")
-	s.executeSubmitGroupProposal(s.chainA, 0, chainAAPIEndpoint, adminAddr.String(), fmt.Sprintf("/root/.gaia/config/%s", proposalMsgSendPath))
+	s.executeSubmitGroupProposal(s.chainA, 0, chainAAPIEndpoint, adminAddr.String(), fmt.Sprintf("/home/nonroot/.gaia/config/%s", proposalMsgSendPath))
 
 	s.T().Logf("Voting Group Proposal 1: Send 5 photon from group to Bob")
 	s.executeVoteGroupProposal(s.chainA, 0, chainAAPIEndpoint, strconv.Itoa(proposalId), adminAddr.String(), group.VOTE_OPTION_YES.String(), "Admin votes yes")
@@ -129,7 +129,7 @@ func (s *IntegrationTestSuite) GroupsSendMsgTest() {
 
 	proposalId++
 	s.T().Logf("Creating Group Percentage Decision Policy")
-	s.executeCreateGroupPolicy(s.chainA, 0, chainAAPIEndpoint, adminAddr.String(), strconv.Itoa(groupId), percentagePolicyMetadata, fmt.Sprintf("/root/.gaia/config/%s", percentagePolicyFilename), fees.String())
+	s.executeCreateGroupPolicy(s.chainA, 0, chainAAPIEndpoint, adminAddr.String(), strconv.Itoa(groupId), percentagePolicyMetadata, fmt.Sprintf("/home/nonroot/.gaia/config/%s", percentagePolicyFilename), fees.String())
 	policies, err = s.queryGroupPolicies(chainAAPIEndpoint, 1)
 	s.Require().NoError(err)
 	policy, err = getPolicy(policies.GroupPolicies, percentagePolicyMetadata, 1)
@@ -137,7 +137,7 @@ func (s *IntegrationTestSuite) GroupsSendMsgTest() {
 
 	s.writeGroupProposal(s.chainA, policy.Address, adminAddr.String(), sendAmount, proposalMsgSendPath)
 	s.T().Logf("Submitting Group Proposal 2: Send 5 photon from group to Bob")
-	s.executeSubmitGroupProposal(s.chainA, 0, chainAAPIEndpoint, adminAddr.String(), fmt.Sprintf("/root/.gaia/config/%s", proposalMsgSendPath))
+	s.executeSubmitGroupProposal(s.chainA, 0, chainAAPIEndpoint, adminAddr.String(), fmt.Sprintf("/home/nonroot/.gaia/config/%s", proposalMsgSendPath))
 
 	s.T().Logf("Voting Group Proposal 2: Send 5 photon from group to Bob")
 	s.executeVoteGroupProposal(s.chainA, 0, chainAAPIEndpoint, strconv.Itoa(proposalId), adminAddr.String(), group.VOTE_OPTION_YES.String(), "Admin votes yes")

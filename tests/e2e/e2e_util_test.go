@@ -349,6 +349,10 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 				OutputStream: &outBuf,
 				ErrorStream:  &errBuf,
 			})
+
+			s.T().Logf("stdOut: %s", outBuf.String())
+			s.T().Logf("stdErr: %s", errBuf.String())
+
 			s.Require().NoError(err)
 
 			s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))

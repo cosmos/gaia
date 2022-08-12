@@ -128,7 +128,7 @@ func (s *IntegrationTestSuite) GroupsSendMsgTest() {
 
 	s.T().Logf("Voting Group Proposal 2: Send 5 uatom from group to Bob")
 	s.executeVoteGroupProposal(s.chainA, 0, chainAAPIEndpoint, strconv.Itoa(proposalId), adminAddr, group.VOTE_OPTION_YES.String(), "Admin votes yes")
-	s.executeVoteGroupProposal(s.chainA, 1, chainAAPIEndpoint, strconv.Itoa(proposalId), aliceAddr, group.VOTE_OPTION_ABSTAIN.String(), "Admin votes yes")
+	s.executeVoteGroupProposal(s.chainA, 1, chainAAPIEndpoint, strconv.Itoa(proposalId), aliceAddr, group.VOTE_OPTION_ABSTAIN.String(), "Alice votes abstain")
 
 	s.Require().Eventually(
 		func() bool {

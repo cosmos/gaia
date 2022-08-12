@@ -126,7 +126,7 @@ func (s *IntegrationTestSuite) TestSendTokensFromNewGovAccount() {
 	proposalCounter++
 
 	s.T().Logf("Submitting Gov Proposal: Sending Tokens from Gov Module to Recipient")
-	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, "/root/.gaia/config/proposal_2.json")
+	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, "/home/nonroot/.gaia/config/proposal_2.json")
 	s.T().Logf("Depositing Gov Proposal: Sending Tokens from Gov Module to Recipient")
 	s.depositGovProposal(chainAAPIEndpoint, sender, fees.String(), proposalCounter)
 	s.T().Logf("Voting Gov Proposal: Sending Tokens from Gov Module to Recipient")
@@ -158,14 +158,14 @@ func (s *IntegrationTestSuite) TestGovSoftwareUpgrade() {
 	s.writeGovUpgradeSoftwareProposal(s.chainA, proposalHeight)
 
 	s.T().Logf("Submitting Gov Proposal: Software Upgrade")
-	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, "/root/.gaia/config/proposal_3.json")
+	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, "/home/nonroot/.gaia/config/proposal_3.json")
 	s.T().Logf("Depositing Gov Proposal: Software Upgrade")
 	s.depositGovProposal(chainAAPIEndpoint, sender, fees.String(), proposalCounter)
 	s.T().Logf("Weighted Voting Gov Proposal: Software Upgrade")
 	s.voteGovProposal(chainAAPIEndpoint, sender, fees.String(), proposalCounter, "yes=0.8,no=0.1,abstain=0.05,no_with_veto=0.05", true)
 
 	s.verifyChainHaltedAtUpgradeHeight(s.chainA, 0, proposalHeight)
-	s.T().Logf("Successfully halted chain at height %d", proposalHeight)
+	s.T().Logf("Successfully halted chain at  height %d", proposalHeight)
 
 	s.TearDownSuite()
 
@@ -201,14 +201,14 @@ func (s *IntegrationTestSuite) TestGovCancelSoftwareUpgrade() {
 	s.writeGovUpgradeSoftwareProposal(s.chainA, proposalHeight)
 
 	s.T().Logf("Submitting Gov Proposal: Software Upgrade")
-	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, "/root/.gaia/config/proposal_3.json")
+	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, "/home/nonroot/.gaia/config/proposal_3.json")
 	s.depositGovProposal(chainAAPIEndpoint, sender, fees.String(), proposalCounter)
 	s.voteGovProposal(chainAAPIEndpoint, sender, fees.String(), proposalCounter, "yes", false)
 
 	proposalCounter++
 
 	s.T().Logf("Submitting Gov Proposal: Cancel Software Upgrade")
-	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, "/root/.gaia/config/proposal_4.json")
+	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, "/home/nonroot/.gaia/config/proposal_4.json")
 	s.depositGovProposal(chainAAPIEndpoint, sender, fees.String(), proposalCounter)
 	s.voteGovProposal(chainAAPIEndpoint, sender, fees.String(), proposalCounter, "yes", false)
 
@@ -247,7 +247,7 @@ func (s *IntegrationTestSuite) fundCommunityPool(chainAAPIEndpoint, sender strin
 
 func (s *IntegrationTestSuite) submitLegacyProposalFundGovAccount(chainAAPIEndpoint, sender string, proposalId int) {
 	s.Run("submit_legacy_community_spend_proposal_to_fund_gov_acct", func() {
-		s.execGovSubmitLegacyGovProposal(s.chainA, 0, chainAAPIEndpoint, sender, "/root/.gaia/config/proposal.json", fees.String(), "community-pool-spend")
+		s.execGovSubmitLegacyGovProposal(s.chainA, 0, chainAAPIEndpoint, sender, "/home/nonroot/.gaia/config/proposal.json", fees.String(), "community-pool-spend")
 
 		s.Require().Eventually(
 			func() bool {
@@ -375,7 +375,7 @@ func (s *IntegrationTestSuite) verifyChainPassesUpgradeHeight(c *chain, valIdx, 
 	)
 }
 
-// globalfee in genesis is set to be "0.00001photon"
+// globalfee in genesis is set to be "0.00001uatom"
 func (s *IntegrationTestSuite) TestQueryGlobalFeesInGenesis() {
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	feeInGenesis, err := sdk.ParseDecCoins(initialGlobalFeeAmt + uatomDenom)
@@ -400,27 +400,27 @@ global fee e2e tests:
 0. initial globalfee = 0.00001uatom, min_gas_price = 0.00001uatom
 
 test1. gov proposal globalfee = [], min_gas_price=0.00001uatom, query globalfee still get empty
-  - tx with fee denom photon, fail
-  - tx with zero fee denom photon, fail
-  - tx with fee denom uatom, pass
-  - tx with fee empty, fail
+ - tx with fee denom photon, fail
+ - tx with zero fee denom photon, fail
+ - tx with fee denom uatom, pass
+ - tx with fee empty, fail
 
 test2. gov propose globalfee =  0.000001uatom(lower than min_gas_price)
-  - tx with fee higher than 0.000001uatom but lower than 0.00001uatom, fail
-  - tx with fee higher than/equal to 0.00001uatom, pass
-  - tx with fee photon fail
+ - tx with fee higher than 0.000001uatom but lower than 0.00001uatom, fail
+ - tx with fee higher than/equal to 0.00001uatom, pass
+ - tx with fee photon fail
 
 test3. gov propose globalfee = 0.0001uatom (higher than min_gas_price)
-  - tx with fee equal to 0.0001uatom, pass
-  - tx with fee equal to 0.00001uatom, fail
+ - tx with fee equal to 0.0001uatom, pass
+ - tx with fee equal to 0.00001uatom, fail
 
 test4. gov propose globalfee =  0.000001uatom (lower than min_gas_price), 0photon
-  - tx with fee 0.0000001photon, fail
-  - tx with fee 0.000001photon, pass
-  - tx with empty fee, pass
-  - tx with fee photon pass
-  - tx with fee 0photon, 0.000005uatom fail
-  - tx with fee 0photon, 0.00001uatom pass
+ - tx with fee 0.0000001photon, fail
+ - tx with fee 0.000001photon, pass
+ - tx with empty fee, pass
+ - tx with fee photon pass
+ - tx with fee 0photon, 0.000005uatom fail
+ - tx with fee 0photon, 0.00001uatom pass
 5. check balance correct: all the sucessful tx sent token amt is received
 6. gov propose change back to initial globalfee = 0.00001photon, This is for not influence other e2e tests.
 */
@@ -460,7 +460,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 	proposalCounter++
 	s.T().Logf("Proposal number: %d", proposalCounter)
 	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change global fees empty")
-	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, fees.String(), "param-change", proposalCounter, "/root/.gaia/config/proposal_globalfee.json")
+	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, fees.String(), "param-change", proposalCounter, "/home/nonroot/.gaia/config/proposal_globalfee.json")
 	s.depositGovProposal(chainAAPIEndpoint, submitter, fees.String(), proposalCounter)
 	s.voteGovProposal(chainAAPIEndpoint, submitter, fees.String(), proposalCounter, "yes", false)
 
@@ -512,7 +512,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 	proposalCounter++
 	s.T().Logf("Proposal number: %d", proposalCounter)
 	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change global fees empty")
-	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, fees.String(), "param-change", proposalCounter, "/root/.gaia/config/proposal_globalfee.json")
+	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, fees.String(), "param-change", proposalCounter, "/home/nonroot/.gaia/config/proposal_globalfee.json")
 	s.depositGovProposal(chainAAPIEndpoint, submitter, fees.String(), proposalCounter)
 	s.voteGovProposal(chainAAPIEndpoint, submitter, fees.String(), proposalCounter, "yes", false)
 
@@ -563,7 +563,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 	proposalCounter++
 	s.T().Logf("Proposal number: %d", proposalCounter)
 	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change global fees empty")
-	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, "param-change", proposalCounter, "/root/.gaia/config/proposal_globalfee.json")
+	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, "param-change", proposalCounter, "/home/nonroot/.gaia/config/proposal_globalfee.json")
 	s.depositGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, proposalCounter)
 	s.voteGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, proposalCounter, "yes", false)
 
@@ -612,7 +612,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 	proposalCounter++
 	s.T().Logf("Proposal number: %d", proposalCounter)
 	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change global fees empty")
-	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, "param-change", proposalCounter, "/root/.gaia/config/proposal_globalfee.json")
+	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, "param-change", proposalCounter, "/home/nonroot/.gaia/config/proposal_globalfee.json")
 	s.depositGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, proposalCounter)
 	s.voteGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, proposalCounter, "yes", false)
 
@@ -690,7 +690,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 	s.T().Logf("Proposal number: %d", proposalCounter)
 	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change back global fees")
 	// fee is 0uatom
-	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+photonDenom, "param-change", proposalCounter, "/root/.gaia/config/proposal_globalfee.json")
+	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+photonDenom, "param-change", proposalCounter, "/home/nonroot/.gaia/config/proposal_globalfee.json")
 	s.depositGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+photonDenom, proposalCounter)
 	s.voteGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+photonDenom, proposalCounter, "yes", false)
 

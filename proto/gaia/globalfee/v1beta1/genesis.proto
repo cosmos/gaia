@@ -3,7 +3,6 @@ package gaia.globalfee.v1beta1;
 
 import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
-// import "cosmwasm/wasm/v1/genesis.proto";
 
 option go_package = "github.com/cosmos/gaia/x/globalfee/types";
 

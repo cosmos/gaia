@@ -119,6 +119,7 @@ import (
 
 	gaiaante "github.com/cosmos/gaia/v8/ante"
 	gaiaappparams "github.com/cosmos/gaia/v8/app/params"
+	"github.com/cosmos/gaia/v8/x/globalfee"
 	"github.com/cosmos/gaia/v8/x/icamauth"
 	icamauthkeeper "github.com/cosmos/gaia/v8/x/icamauth/keeper"
 	icamauthtypes "github.com/cosmos/gaia/v8/x/icamauth/types"
@@ -167,6 +168,7 @@ var (
 		router.AppModuleBasic{},
 		ica.AppModuleBasic{},
 		icamauth.AppModuleBasic{},
+		globalfee.AppModule{},
 	)
 
 	// module account permissions
@@ -572,9 +574,11 @@ func NewGaiaApp(
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		liquidity.NewAppModule(appCodec, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.DistrKeeper),
+		globalfee.NewAppModule(app.GetSubspace(globalfee.ModuleName)),
 		transferModule,
 		icaModule,
 		icaMauthModule,
+		routerModule,
 		routerModule,
 	)
 
@@ -609,6 +613,7 @@ func NewGaiaApp(
 		vestingtypes.ModuleName,
 		icatypes.ModuleName,
 		icamauthtypes.ModuleName,
+		globalfee.ModuleName,
 	)
 	app.mm.SetOrderEndBlockers(
 		crisistypes.ModuleName,
@@ -635,6 +640,7 @@ func NewGaiaApp(
 		vestingtypes.ModuleName,
 		icatypes.ModuleName,
 		icamauthtypes.ModuleName,
+		globalfee.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -668,6 +674,7 @@ func NewGaiaApp(
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
+		globalfee.ModuleName,
 	)
 
 	// Uncomment if you want to set a custom migration order here.
@@ -740,6 +747,7 @@ func NewGaiaApp(
 			},
 			IBCkeeper:            app.IBCKeeper,
 			BypassMinFeeMsgTypes: bypassMinFeeMsgTypes,
+			GlobalFeeSubspace:    app.GetSubspace(globalfee.ModuleName),
 		},
 	)
 	if err != nil {
@@ -1008,6 +1016,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(routertypes.ModuleName).WithKeyTable(routertypes.ParamKeyTable())
 	paramsKeeper.Subspace(icacontrollertypes.SubModuleName)
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
+	paramsKeeper.Subspace(globalfee.ModuleName)
 
 	return paramsKeeper
 }

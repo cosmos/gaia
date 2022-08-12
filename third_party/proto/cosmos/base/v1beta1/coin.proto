@@ -38,3 +38,5 @@ message IntProto {
 message DecProto {
   string dec = 1 [(gogoproto.customtype) = "Dec", (gogoproto.nullable) = false];
 }
+
+

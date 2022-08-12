@@ -67,7 +67,7 @@ func (s *IntegrationTestSuite) connectIBCChains() {
 	s.T().Logf("connected %s and %s chains via IBC", s.chainA.id, s.chainB.id)
 }
 
-func (s *IntegrationTestSuite) sendMsgSend(c *chain, valIdx int, from, to, amt, fees string) {
+func (s *IntegrationTestSuite) sendMsgSend(c *chain, valIdx int, from, to, amt, fees string, expectErr bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -112,13 +112,69 @@ func (s *IntegrationTestSuite) sendMsgSend(c *chain, valIdx int, from, to, amt, 
 
 	var txResp sdk.TxResponse
 	s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
-
 	endpoint := fmt.Sprintf("http://%s", s.valResources[c.id][valIdx].GetHostPort("1317/tcp"))
 
 	// wait for the tx to be committed on chain
 	s.Require().Eventuallyf(
 		func() bool {
-			return queryGaiaTx(endpoint, txResp.TxHash) == nil
+			gotErr := queryGaiaTx(endpoint, txResp.TxHash) != nil
+			return gotErr == expectErr
+		},
+		time.Minute,
+		5*time.Second,
+		"stdout: %s, stderr: %s",
+		outBuf.String(), errBuf.String(),
+	)
+}
+
+func (s *IntegrationTestSuite) withdrawReward(c *chain, valIdx int, endpoint, payee, fees string, expectErr bool) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("%s withdraw-all-rewards on chain %s", payee, c.id)
+
+	exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
+		Context:      ctx,
+		AttachStdout: true,
+		AttachStderr: true,
+		Container:    s.valResources[c.id][valIdx].Container.ID,
+		User:         "nonroot",
+		Cmd: []string{
+			"gaiad",
+			"tx",
+			"distribution",
+			"withdraw-all-rewards",
+			fmt.Sprintf("--%s=%s", flags.FlagFrom, payee),
+			fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
+			fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+			"--keyring-backend=test",
+			"--output=json",
+			"-y",
+		},
+	})
+	s.Require().NoError(err)
+
+	var (
+		outBuf bytes.Buffer
+		errBuf bytes.Buffer
+	)
+
+	err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
+		Context:      ctx,
+		Detach:       false,
+		OutputStream: &outBuf,
+		ErrorStream:  &errBuf,
+	})
+	s.Require().NoErrorf(err, "stdout: %s, stderr: %s", outBuf.String(), errBuf.String())
+
+	var txResp sdk.TxResponse
+	s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
+
+	// wait for the tx to be committed on chain
+	s.Require().Eventuallyf(
+		func() bool {
+			gotErr := queryGaiaTx(endpoint, txResp.TxHash) != nil
+			return gotErr == expectErr
 		},
 		time.Minute,
 		5*time.Second,
@@ -354,7 +410,6 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 			s.T().Logf("stdErr: %s", errBuf.String())
 
 			s.Require().NoError(err)
-
 			s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
 			return strings.Contains(txResp.String(), "code: 0")
 		},

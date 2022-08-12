@@ -10,6 +10,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+
+	globalfee "github.com/cosmos/gaia/v8/x/globalfee/types"
 )
 
 func queryGaiaTx(endpoint, txHash string) error {
@@ -37,6 +39,7 @@ func queryGaiaTx(endpoint, txHash string) error {
 	return nil
 }
 
+// if coin is zero, return empty coin.
 func getSpecificBalance(endpoint, addr, denom string) (amt sdk.Coin, err error) {
 	balances, err := queryGaiaAllBalances(endpoint, addr)
 	if err != nil {
@@ -115,11 +118,31 @@ func queryGovProposal(endpoint string, proposalID int) (govv1beta1.QueryProposal
 	if err != nil {
 		return emptyProp, err
 	}
-	var govProposalResp govv1beta1.QueryProposalResponse
 
+	var govProposalResp govv1beta1.QueryProposalResponse
 	if err := cdc.UnmarshalJSON(body, &govProposalResp); err != nil {
 		return emptyProp, err
 	}
 
 	return govProposalResp, nil
+}
+
+func queryGlobalFees(endpoint string) (amt sdk.DecCoins, err error) {
+	resp, err := http.Get(fmt.Sprintf("%s/gaia/globalfee/v1beta1/minimum_gas_prices", endpoint))
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	bz, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var fees globalfee.QueryMinimumGasPricesResponse
+	if err := cdc.UnmarshalJSON(bz, &fees); err != nil {
+		return sdk.DecCoins{}, err
+	}
+
+	return fees.MinimumGasPrices, nil
 }

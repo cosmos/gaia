@@ -33,7 +33,7 @@ var (
 	percentagePolicyMetadata = "Policy 2"
 	dataDirectoryHome        = "/home/nonroot/.gaia/config"
 	proposalMsgSendPath      = "proposal1.json"
-	sendAmount               = sdk.NewInt64Coin(photonDenom, 5000000)
+	sendAmount               = sdk.NewInt64Coin(uatomDenom, 5000000)
 
 	windows = DecisionPolicyWindow{
 		MinExecutionPeriod: (0 * time.Second).String(),
@@ -87,14 +87,14 @@ func (s *IntegrationTestSuite) GroupsSendMsgTest() {
 	s.Require().NoError(err)
 
 	s.T().Logf("Funding Group Threshold Decision Policy")
-	s.sendMsgSend(s.chainA, 0, adminAddr, policy.Address, depositAmount.String(), fees.String())
+	s.sendMsgSend(s.chainA, 0, adminAddr, policy.Address, depositAmount.String(), fees.String(), false)
 	s.verifyBalanceChange(chainAAPIEndpoint, depositAmount, policy.Address)
 
 	s.writeGroupProposal(s.chainA, policy.Address, adminAddr, sendAmount, proposalMsgSendPath)
-	s.T().Logf("Submitting Group Proposal 1: Send 5 photon from group to Bob")
+	s.T().Logf("Submitting Group Proposal 1: Send 5 uatom from group to Bob")
 	s.executeSubmitGroupProposal(s.chainA, 0, chainAAPIEndpoint, adminAddr, filepath.Join("/home/nonroot/.gaia/config", proposalMsgSendPath))
 
-	s.T().Logf("Voting Group Proposal 1: Send 5 photon from group to Bob")
+	s.T().Logf("Voting Group Proposal 1: Send 5 uatom from group to Bob")
 	s.executeVoteGroupProposal(s.chainA, 0, chainAAPIEndpoint, strconv.Itoa(proposalId), adminAddr, group.VOTE_OPTION_YES.String(), "Admin votes yes")
 	s.executeVoteGroupProposal(s.chainA, 1, chainAAPIEndpoint, strconv.Itoa(proposalId), aliceAddr, group.VOTE_OPTION_YES.String(), "Admin votes yes")
 
@@ -108,9 +108,9 @@ func (s *IntegrationTestSuite) GroupsSendMsgTest() {
 		30*time.Second,
 		5*time.Second,
 	)
-	s.T().Logf("Group Proposal 1 Passed: Send 5 photon from group to Bob")
+	s.T().Logf("Group Proposal 1 Passed: Send 5 uatom from group to Bob")
 
-	s.T().Logf("Executing Group Proposal 1: Send 5 photon from group to Bob")
+	s.T().Logf("Executing Group Proposal 1: Send 5 uatom from group to Bob")
 	s.executeExecGroupProposal(s.chainA, 1, chainAAPIEndpoint, strconv.Itoa(proposalId), aliceAddr)
 	s.verifyBalanceChange(chainAAPIEndpoint, sendAmount, bobAddr)
 
@@ -123,10 +123,10 @@ func (s *IntegrationTestSuite) GroupsSendMsgTest() {
 	s.Require().NoError(err)
 
 	s.writeGroupProposal(s.chainA, policy.Address, adminAddr, sendAmount, proposalMsgSendPath)
-	s.T().Logf("Submitting Group Proposal 2: Send 5 photon from group to Bob")
+	s.T().Logf("Submitting Group Proposal 2: Send 5 uatom from group to Bob")
 	s.executeSubmitGroupProposal(s.chainA, 0, chainAAPIEndpoint, adminAddr, filepath.Join("/home/nonroot/.gaia/config", proposalMsgSendPath))
 
-	s.T().Logf("Voting Group Proposal 2: Send 5 photon from group to Bob")
+	s.T().Logf("Voting Group Proposal 2: Send 5 uatom from group to Bob")
 	s.executeVoteGroupProposal(s.chainA, 0, chainAAPIEndpoint, strconv.Itoa(proposalId), adminAddr, group.VOTE_OPTION_YES.String(), "Admin votes yes")
 	s.executeVoteGroupProposal(s.chainA, 1, chainAAPIEndpoint, strconv.Itoa(proposalId), aliceAddr, group.VOTE_OPTION_ABSTAIN.String(), "Admin votes yes")
 
@@ -140,16 +140,16 @@ func (s *IntegrationTestSuite) GroupsSendMsgTest() {
 		30*time.Second,
 		5*time.Second,
 	)
-	s.T().Logf("Group Proposal Rejected: Send 5 photon from group to Bob")
+	s.T().Logf("Group Proposal Rejected: Send 5 uatom from group to Bob")
 }
 
 func (s *IntegrationTestSuite) verifyBalanceChange(endpoint string, expectedAmount types.Coin, recipientAddress string) {
 	s.Require().Eventually(
 		func() bool {
-			afterPhotonBalance, err := getSpecificBalance(endpoint, recipientAddress, "photon")
+			afterAtomBalance, err := getSpecificBalance(endpoint, recipientAddress, uatomDenom)
 			s.Require().NoError(err)
 
-			return afterPhotonBalance.IsEqual(expectedAmount)
+			return afterAtomBalance.IsEqual(expectedAmount)
 		},
 		20*time.Second,
 		5*time.Second,
@@ -216,7 +216,7 @@ func (s *IntegrationTestSuite) writeGroupProposal(c *chain, policyAddress string
 	}{
 		GroupPolicyAddress: policyAddress,
 		Proposers:          []string{signingAddress},
-		Metadata:           "Send 5photon to Bob",
+		Metadata:           "Send 5uatom to Bob",
 		Messages:           []MsgSend{message},
 	}
 

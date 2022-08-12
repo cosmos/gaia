@@ -147,4 +147,48 @@ v5 Delta is supported until v7 Theta. A fairly strict **bugfix-only** rule appli
 
 # Stable Release Policy
 
+Incoming bugs are classified using the following criteria: Kind, Priority & Severity
+
+Bugs classified by kind:
+
+- Functional
+- Performance
+- Usability
+- Compatability
+- Security
+
+Bugs classified by priority:
+
+- Urgent
+- High Priority
+- Medium Priority
+- Low Priority
+
+Bugs classified by severity:
+
+- Critical 
+- High Severity
+- Medium Severity
+- Low Severity
+
+
+
+should add a definition for "bug-fix" since bugs that impact operating the network don't matter since the previous version networks are no longer in operation. More so it should be privilege escalation or anything that makes the software actually dangerous to operate on a user's machine. Maybe these should actually be applied to all previous versions since archive use will require them to be run.
+
+
+#1510
+#1511
+
+So, code formatting and the like are in fact security updates. If something were to happen, having maintained older gaias-- as well as people who maintain them, would be very important. That is why it makes sense to backport changes like these-- at the very least as far back as cosmoshub-4 genesis (iirc that is v4)
+
+generally looks good to me. Id put a EOL for v5 since this is coming up in the middle of things
+
+
+if we find a bug in v6, and our testnet and and hub are both at v7, we fix the bug of v6, and spin off a new testnet to test them, right? if it is not bug, it's just improvement of code, do we still improve v6 when we are at v7 ?
+
+ci
+code formatting
+use (and verification) of latest cosmos-sdk
+
+
 <!-- needs modifications from SDK's relevant to Gaia --> 

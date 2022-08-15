@@ -3,6 +3,7 @@ package e2e
 import (
 	"encoding/json"
 	"fmt"
+	staketypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"os"
 	"time"
 
@@ -117,6 +118,14 @@ func modifyGenesis(path, moniker, amountStr string, accAddr sdk.AccAddress, glob
 		return fmt.Errorf("failed to marshal global fee genesis state: %w", err)
 	}
 	appState[globfeetypes.ModuleName] = globfeeStateBz
+
+	stakingGenState := staketypes.GetGenesisStateFromAppState(cdc, appState)
+	stakingGenState.Params.BondDenom = "uatom"
+	stakingGenStateBz, err := cdc.MarshalJSON(stakingGenState)
+	if err != nil {
+		fmt.Errorf("Failed to marshal staking genesis state: %w", err)
+	}
+	appState[staketypes.ModuleName] = stakingGenStateBz
 
 	// Refactor to separate method
 	amnt := math.NewInt(10000)

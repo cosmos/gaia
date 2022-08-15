@@ -743,3 +743,6 @@ func (s *IntegrationTestSuite) TestByPassMinFeeWithdrawReward() {
 }
 
 // todo add fee test with wrong denom order
+func (s *IntegrationTestSuite) TestStaking() {
+	s.testStaking()
+}

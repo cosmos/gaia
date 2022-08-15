@@ -55,7 +55,7 @@ const (
 
 var (
 	stakeAmount       = math.NewInt(100000000000)
-	stakeAmountCoin   = sdk.NewCoin("stake", stakeAmount)
+	stakeAmountCoin   = sdk.NewCoin(uatomDenom, stakeAmount)
 	tokenAmount       = sdk.NewCoin(uatomDenom, math.NewInt(3300000000)) // 3,300uatom
 	fees              = sdk.NewCoin(uatomDenom, math.NewInt(330000))     // 0.33uatom
 	depositAmount     = sdk.NewCoin(uatomDenom, math.NewInt(10000000))   // 10uatom

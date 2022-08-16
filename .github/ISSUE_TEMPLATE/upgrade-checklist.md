@@ -12,7 +12,7 @@ Check mark each item if it has been completed and ready for the upgrade. If not 
 
 - [ ]  Upgrade to SDK version <SDK VERSION>
 - [ ]  Upgrade to IBC version <IBC VERSION>
-- [ ]  Integrate new modules
+- [ ]  Integrate new modules ([checklist](https://github.com/cosmos/hub-eng/blob/main/module_qa/module_checklist.md))
 
 - [ ]  Testnet
   - [ ]  Communication prep

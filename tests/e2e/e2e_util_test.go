@@ -394,7 +394,7 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 				AttachStdout: true,
 				AttachStderr: true,
 				Container:    s.valResources[c.id][valIdx].Container.ID,
-				User:         "nonroot",
+				User:         "root",
 				Cmd:          gaiaCommand,
 			})
 			s.Require().NoError(err)

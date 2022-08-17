@@ -406,6 +406,9 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 				ErrorStream:  &errBuf,
 			})
 
+			s.T().Logf("Outbuff: %s", outBuf.String())
+			s.T().Logf("Errbuff: %s", errBuf.String())
+
 			s.Require().NoError(err)
 			s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
 
@@ -939,6 +942,7 @@ func (s *IntegrationTestSuite) executeDelegate(c *chain, valIdx int, endpoint st
 		amount,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--%s=%s", flags.FlagGas, "auto"),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, delegateFees),
 		"--keyring-backend=test",
 		fmt.Sprintf("--%s=%s", flags.FlagHome, home),

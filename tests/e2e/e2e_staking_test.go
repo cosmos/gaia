@@ -12,6 +12,7 @@ func (s *IntegrationTestSuite) testStaking() {
 	seedAmount := sdk.NewCoin(uatomDenom, math.NewInt(1000000000)) // 2,200uatom
 	delegationAmount := math.NewInt(500000000)
 	delegation := sdk.NewCoin(uatomDenom, delegationAmount) // 2,200uatom
+	home := "/home/nonroot/.gaia"
 
 	validatorA := s.chainA.validators[0]
 	validatorB := s.chainA.validators[1]
@@ -23,7 +24,7 @@ func (s *IntegrationTestSuite) testStaking() {
 	valOperA := sdk.ValAddress(sender)
 	valOperB := sdk.ValAddress(validatorBAddr)
 
-	alice := s.executeGKeysAddCommand(s.chainA, 0, "alice", dataDirectoryHome)
+	alice := s.executeGKeysAddCommand(s.chainA, 0, "alice", home)
 	// up the amount
 	delegationFees := sdk.NewCoin(uatomDenom, math.NewInt(10))
 
@@ -31,8 +32,9 @@ func (s *IntegrationTestSuite) testStaking() {
 	s.sendMsgSend(s.chainA, 0, sender.String(), alice, seedAmount.String(), fees.String(), false)
 	s.verifyBalanceChange(chainAAPIEndpoint, seedAmount, alice)
 
+	s.debugConfig(s.chainA, 0, home)
 	// Alice delegate uatom to Validator A
-	s.executeDelegate(s.chainA, 0, chainAAPIEndpoint, delegation.String(), valOperA.String(), alice, dataDirectoryHome, delegationFees.String())
+	s.executeDelegate(s.chainA, 0, chainAAPIEndpoint, delegation.String(), valOperA.String(), alice, home, delegationFees.String())
 
 	// Validate delegation successful
 	s.Require().Eventually(
@@ -48,7 +50,7 @@ func (s *IntegrationTestSuite) testStaking() {
 	)
 
 	// Alice redelegate uatom from Validator A to Validator B
-	s.executeRedelegate(s.chainA, 0, chainAAPIEndpoint, delegation.String(), valOperA.String(), valOperB.String(), alice, dataDirectoryHome, delegationFees.String())
+	s.executeRedelegate(s.chainA, 0, chainAAPIEndpoint, delegation.String(), valOperA.String(), valOperB.String(), alice, home, delegationFees.String())
 
 	// Validate redelegation successful
 	s.Require().Eventually(

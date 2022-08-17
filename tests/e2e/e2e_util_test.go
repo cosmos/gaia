@@ -858,7 +858,7 @@ func (s *IntegrationTestSuite) executeGKeysAddCommand(c *chain, valIdx int, name
 				AttachStdout: true,
 				AttachStderr: true,
 				Container:    s.valResources[c.id][valIdx].Container.ID,
-				User:         "root",
+				User:         "nonroot",
 				Cmd:          gaiaCommand,
 			})
 			s.Require().NoError(err)
@@ -907,7 +907,7 @@ func (s *IntegrationTestSuite) executeKeysList(c *chain, valIdx int, home string
 				AttachStdout: true,
 				AttachStderr: true,
 				Container:    s.valResources[c.id][valIdx].Container.ID,
-				User:         "root",
+				User:         "nonroot",
 				Cmd:          gaiaCommand,
 			})
 			s.Require().NoError(err)
@@ -980,4 +980,50 @@ func (s *IntegrationTestSuite) executeRedelegate(c *chain, valIdx int, endpoint 
 
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
 	s.T().Logf("%s successfully redelegated %s from %s to %s", delegatorAddr, amount, originalValOperAddress, newValOperAddress)
+}
+
+func (s *IntegrationTestSuite) debugConfig(c *chain, valIdx int, home string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	var (
+		outBuf bytes.Buffer
+		errBuf bytes.Buffer
+	)
+
+	gaiaCommand := []string{
+		"gaiad",
+		"config",
+		//fmt.Sprintf("--%s=%s", flags.FlagHome, home),
+	}
+
+	s.Require().Eventually(
+		func() bool {
+			exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
+				Context:      ctx,
+				AttachStdout: true,
+				AttachStderr: true,
+				Container:    s.valResources[c.id][valIdx].Container.ID,
+				User:         "nonroot",
+				Cmd:          gaiaCommand,
+			})
+			s.Require().NoError(err)
+
+			err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
+				Context:      ctx,
+				Detach:       false,
+				OutputStream: &outBuf,
+				ErrorStream:  &errBuf,
+			})
+			s.Require().NoError(err)
+
+			s.T().Logf("This is the outbuf: %s", outBuf.String())
+			s.T().Logf("This is the errbuf: %s", errBuf.String())
+
+			return true
+		},
+		10*time.Second,
+		time.Second,
+		"Returned an error; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
+	)
 }

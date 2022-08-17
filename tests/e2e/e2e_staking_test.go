@@ -32,7 +32,6 @@ func (s *IntegrationTestSuite) testStaking() {
 	s.sendMsgSend(s.chainA, 0, sender.String(), alice, seedAmount.String(), fees.String(), false)
 	s.verifyBalanceChange(chainAAPIEndpoint, seedAmount, alice)
 
-	s.debugConfig(s.chainA, 0, home)
 	// Alice delegate uatom to Validator A
 	s.executeDelegate(s.chainA, 0, chainAAPIEndpoint, delegation.String(), valOperA.String(), alice, home, delegationFees.String())
 

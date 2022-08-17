@@ -24,7 +24,8 @@ func (s *IntegrationTestSuite) testStaking() {
 	valOperB := sdk.ValAddress(validatorBAddr)
 
 	alice := s.executeGKeysAddCommand(s.chainA, 0, "alice", dataDirectoryHome)
-	delegationFees := sdk.NewCoin(uatomDenom, math.NewInt(3))
+	// up the amount
+	delegationFees := sdk.NewCoin(uatomDenom, math.NewInt(10))
 
 	// Fund Alice
 	s.sendMsgSend(s.chainA, 0, sender.String(), alice, seedAmount.String(), fees.String(), false)

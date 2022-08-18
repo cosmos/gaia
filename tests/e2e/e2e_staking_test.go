@@ -9,9 +9,9 @@ import (
 
 func (s *IntegrationTestSuite) testStaking() {
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-	seedAmount := sdk.NewCoin(uatomDenom, math.NewInt(1000000000)) // 2,200uatom
+	seedAmount := sdk.NewCoin(uatomDenom, math.NewInt(1000000000)) // 1,000 atom
 	delegationAmount := math.NewInt(500000000)
-	delegation := sdk.NewCoin(uatomDenom, delegationAmount) // 2,200uatom
+	delegation := sdk.NewCoin(uatomDenom, delegationAmount) // 500 atom
 	home := "/home/nonroot/.gaia"
 
 	validatorA := s.chainA.validators[0]
@@ -25,7 +25,6 @@ func (s *IntegrationTestSuite) testStaking() {
 	valOperB := sdk.ValAddress(validatorBAddr)
 
 	alice := s.executeGKeysAddCommand(s.chainA, 0, "alice", home)
-	// up the amount
 	delegationFees := sdk.NewCoin(uatomDenom, math.NewInt(10))
 
 	// Fund Alice

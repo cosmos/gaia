@@ -94,6 +94,43 @@ type IntegrationTestSuite struct {
 	valResources   map[string][]*dockertest.Resource
 }
 
+type AddressResponse struct {
+	Name     string `json:"name"`
+	Type     string `json:"type"`
+	Address  string `json:"address"`
+	Mnemonic string `json:"mnemonic"`
+}
+
+type GroupMember struct {
+	Address  string `json:"address"`
+	Weight   string `json:"weight"`
+	Metadata string `json:"metadata"`
+}
+
+type MsgSend struct {
+	Type   string     `json:"@type"`
+	From   string     `json:"from_address"`
+	To     string     `json:"to_address"`
+	Amount []sdk.Coin `json:"amount"`
+}
+
+type ThresholdPolicy struct {
+	Type      string               `json:"@type"`
+	Threshold string               `json:"threshold"`
+	Windows   DecisionPolicyWindow `json:"windows"`
+}
+
+type PercentagePolicy struct {
+	Type       string               `json:"@type"`
+	Percentage string               `json:"percentage"`
+	Windows    DecisionPolicyWindow `json:"windows"`
+}
+
+type DecisionPolicyWindow struct {
+	VotingPeriod       string `json:"voting_period"`
+	MinExecutionPeriod string `json:"min_execution_period"`
+}
+
 func TestIntegrationTestSuite(t *testing.T) {
 	suite.Run(t, new(IntegrationTestSuite))
 }
@@ -591,6 +628,24 @@ func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height 
 
 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_4.json"), cancelUpgradeProposalBody)
 	s.Require().NoError(err)
+}
+
+func (s *IntegrationTestSuite) writeGroupMembers(c *chain, groupMembers []GroupMember, filename string) {
+	groupMembersBody, err := json.MarshalIndent(struct {
+		Members []GroupMember `json:"members"`
+	}{
+		Members: groupMembers,
+	}, "", " ")
+	s.Require().NoError(err)
+
+	s.writeFile(c, filename, groupMembersBody)
+}
+
+func (s *IntegrationTestSuite) writeFile(c *chain, filename string, body []byte) {
+	for _, val := range c.validators {
+		err := writeFile(filepath.Join(val.configDir(), "config", filename), body)
+		s.Require().NoError(err)
+	}
 }
 
 func (s *IntegrationTestSuite) writeGovParamChangeProposalGlobalFees(c *chain, coins sdk.DecCoins) {

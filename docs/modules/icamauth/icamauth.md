@@ -1,4 +1,4 @@
-# mAuth module
+# icamauth module
 
 ## Introduction to Interchain Accounts
 **Interchain Accounts** (ICA) is a standard that allows an account on a *controller* chain to create and securely control an address on a different *host* chain using the Inter Blockchain Protocol (IBC). Transactions that are native to the host chain are wrapped inside an IBC packet and get sent from the Interchain Account on the controller chain, to be executed on the host chain. 
@@ -7,10 +7,14 @@ The benefit of ICA is that there is no need to create a custom IBC implementatio
 
 For example, let’s say that you have an address on the Cosmos Hub (the controller) with OSMO tokens that you wanted to stake on Osmosis (the host). With Interchain Accounts, you can create and control a new address on Osmosis, without requiring a new private key. After sending your tokens to your Interchain Account using a regular IBC token transfer, you can send a wrapped `delegate` transaction over IBC which will then be unwrapped and executed natively on Osmosis.
 
-## The mAuth module
-Blockchains implementing Interchain Accounts can decide which messages they allow a controller chain to execute via a whitelist. The **mAuth module** whitelists all message types available to the Cosmos Hub, allowing any account on a controller chain to interact with the Cosmos Hub as if owning a native account on the chain itself.
+## The icamauth module
+Blockchains implementing Interchain Accounts can decide which messages they allow a controller chain to execute via a whitelist. The **icamuath module** whitelists most of the message types available to the Cosmos Hub, allowing any account on a controller chain to interact with the Cosmos Hub as if owning a native account on the chain itself.
+query message types that are allowed on a host chain:
+```
+gaiad q interchain-accounts host params
+```
 
-In the following tutorial, we will demonstrate how to use Interchain Accounts through the [mAuth module](https://github.com/cosmos/gaia/tree/ica-acct-auth/x/mauth) inside the Gaia binary.
+In the following tutorial, we will demonstrate how to use Interchain Accounts through the [icamauth module](../../../x/icamauth).
 
 ## Setup preparation
 We will run two Cosmos-SDK chains (controller chain: `test-1` and host chain: `test-2`), and a relayer to connect these two chains. We will create an account on chain `test-1` and call it `a`, and register an Interchain Account (that we'll call `aica`) for `a` on chain `test-2`. We will create a normal account `b` on chain `test-2` as well. 
@@ -40,7 +44,7 @@ Build the Hermes binary:
 ```shell
 git clone https://github.com/informalsystems/ibc-rs.git
 cd ibc-rs
-git checkout v0.9.0
+git checkout v0.15.0
 cargo build --release --no-default-features --bin hermes
 # binary path: ./target/release/hermes
 cp  ./target/release/hermes $HOME/.cargo/bin

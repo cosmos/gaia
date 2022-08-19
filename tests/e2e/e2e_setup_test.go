@@ -135,6 +135,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.initValidatorConfigs(s.chainB)
 	s.runValidators(s.chainB, 10)
 
+	time.Sleep(10 * time.Second)
 	s.runIBCRelayer()
 }
 
@@ -170,17 +171,27 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 
 func (s *IntegrationTestSuite) initNodes(c *chain) {
 	s.Require().NoError(c.createAndInitValidators(2))
-
+	// add two more addr to val0 dir, one addr is used as relayer wallet, one is used as ica owner
+	s.Require().NoError(c.addAccountFromMnemonic(2))
 	// initialize a genesis file for the first validator
 	val0ConfigDir := c.validators[0].configDir()
+	addrAll := []sdk.AccAddress{}
 	for _, val := range c.validators {
 		address, err := val.keyInfo.GetAddress()
 		s.Require().NoError(err)
-		s.Require().NoError(
-			modifyGenesis(val0ConfigDir, "", initBalanceStr, address, initialGlobalFeeAmt+uatomDenom),
-		)
+		addrAll = append(addrAll, address)
 	}
-
+	// relayer wallet addr
+	rlyAdrr, err := c.accounts[0].keyInfo.GetAddress()
+	s.Require().NoError(err)
+	addrAll = append(addrAll, rlyAdrr)
+	// acctAddr will be used as ica owner
+	acctAddr, err := c.accounts[1].keyInfo.GetAddress()
+	s.Require().NoError(err)
+	addrAll = append(addrAll, acctAddr)
+	s.Require().NoError(
+		modifyGenesis(val0ConfigDir, "", initBalanceStr, addrAll, initialGlobalFeeAmt+uatomDenom),
+	)
 	// copy the genesis file to the remaining validators
 	for _, val := range c.validators[1:] {
 		_, err := copyFile(
@@ -407,6 +418,10 @@ func (s *IntegrationTestSuite) runIBCRelayer() {
 
 	gaiaAVal := s.chainA.validators[0]
 	gaiaBVal := s.chainB.validators[0]
+
+	gaiaARly := s.chainA.accounts[0]
+	gaiaBRly := s.chainB.accounts[0]
+
 	hermesCfgPath := path.Join(tmpDir, "hermes")
 
 	s.Require().NoError(os.MkdirAll(hermesCfgPath, 0o755))
@@ -433,6 +448,8 @@ func (s *IntegrationTestSuite) runIBCRelayer() {
 				fmt.Sprintf("GAIA_B_E2E_CHAIN_ID=%s", s.chainB.id),
 				fmt.Sprintf("GAIA_A_E2E_VAL_MNEMONIC=%s", gaiaAVal.mnemonic),
 				fmt.Sprintf("GAIA_B_E2E_VAL_MNEMONIC=%s", gaiaBVal.mnemonic),
+				fmt.Sprintf("GAIA_A_E2E_RLY_MNEMONIC=%s", gaiaARly.mnemonic),
+				fmt.Sprintf("GAIA_B_E2E_RLY_MNEMONIC=%s", gaiaBRly.mnemonic),
 				fmt.Sprintf("GAIA_A_E2E_VAL_HOST=%s", s.valResources[s.chainA.id][0].Container.Name[1:]),
 				fmt.Sprintf("GAIA_B_E2E_VAL_HOST=%s", s.valResources[s.chainB.id][0].Container.Name[1:]),
 			},

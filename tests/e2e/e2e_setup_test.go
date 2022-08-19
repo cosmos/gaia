@@ -182,11 +182,11 @@ func (s *IntegrationTestSuite) initNodes(c *chain) {
 		addrAll = append(addrAll, address)
 	}
 	// relayer wallet addr
-	rlyAdrr, err := c.accounts[0].keyInfo.GetAddress()
+	rlyAdrr, err := c.accountsIngenesis[0].keyInfo.GetAddress()
 	s.Require().NoError(err)
 	addrAll = append(addrAll, rlyAdrr)
 	// acctAddr will be used as ica owner
-	acctAddr, err := c.accounts[1].keyInfo.GetAddress()
+	acctAddr, err := c.accountsIngenesis[1].keyInfo.GetAddress()
 	s.Require().NoError(err)
 	addrAll = append(addrAll, acctAddr)
 	s.Require().NoError(
@@ -419,8 +419,8 @@ func (s *IntegrationTestSuite) runIBCRelayer() {
 	gaiaAVal := s.chainA.validators[0]
 	gaiaBVal := s.chainB.validators[0]
 
-	gaiaARly := s.chainA.accounts[0]
-	gaiaBRly := s.chainB.accounts[0]
+	gaiaARly := s.chainA.accountsIngenesis[0]
+	gaiaBRly := s.chainB.accountsIngenesis[0]
 
 	hermesCfgPath := path.Join(tmpDir, "hermes")
 

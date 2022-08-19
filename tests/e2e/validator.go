@@ -211,7 +211,7 @@ func (c *chain) addAccountFromMnemonic(counts int) error {
 		acct.keyInfo = *info
 		acct.mnemonic = mnemonic
 		acct.privateKey = privKey
-		c.accounts = append(c.accounts, &acct)
+		c.accountsIngenesis = append(c.accountsIngenesis, &acct)
 	}
 
 	return nil

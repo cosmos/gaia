@@ -47,7 +47,8 @@ type chain struct {
 	dataDir    string
 	id         string
 	validators []*validator
-	accounts   []*account
+	// initial accounts in genesis
+	accountsIngenesis []*account
 }
 
 func newChain() (*chain, error) {

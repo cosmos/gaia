@@ -45,10 +45,9 @@ func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {
 	return doc, nil
 }
 
-func modifyGenesis(path, moniker, amountStr string, accAddr sdk.AccAddress, globfees string, denom string) error {
+func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, globfees string, denom string) error {
 	serverCtx := server.NewDefaultContext()
 	config := serverCtx.Config
-
 	config.SetRoot(path)
 	config.Moniker = moniker
 
@@ -57,8 +56,14 @@ func modifyGenesis(path, moniker, amountStr string, accAddr sdk.AccAddress, glob
 		return fmt.Errorf("failed to parse coins: %w", err)
 	}
 
-	balances := banktypes.Balance{Address: accAddr.String(), Coins: coins.Sort()}
-	genAccount := authtypes.NewBaseAccount(accAddr, nil, 0, 0)
+	balances := []banktypes.Balance{}
+	genAccounts := []*authtypes.BaseAccount{}
+	for _, addr := range addrAll {
+		balance := banktypes.Balance{Address: addr.String(), Coins: coins.Sort()}
+		balances = append(balances, balance)
+		genAccount := authtypes.NewBaseAccount(addr, nil, 0, 0)
+		genAccounts = append(genAccounts, genAccount)
+	}
 
 	genFile := config.GenesisFile()
 	appState, genDoc, err := genutiltypes.GenesisStateFromGenFile(genFile)
@@ -67,20 +72,23 @@ func modifyGenesis(path, moniker, amountStr string, accAddr sdk.AccAddress, glob
 	}
 
 	authGenState := authtypes.GetGenesisStateFromAppState(cdc, appState)
-
 	accs, err := authtypes.UnpackAccounts(authGenState.Accounts)
 	if err != nil {
 		return fmt.Errorf("failed to get accounts from any: %w", err)
 	}
 
-	if accs.Contains(accAddr) {
-		return fmt.Errorf("failed to add account to genesis state; account already exists: %s", accAddr)
+	for _, addr := range addrAll {
+		if accs.Contains(addr) {
+			return fmt.Errorf("failed to add account to genesis state; account already exists: %s", addr)
+		}
 	}
 
 	// Add the new account to the set of genesis accounts and sanitize the
 	// accounts afterwards.
-	accs = append(accs, genAccount)
-	accs = authtypes.SanitizeGenesisAccounts(accs)
+	for _, genAcct := range genAccounts {
+		accs = append(accs, genAcct)
+		accs = authtypes.SanitizeGenesisAccounts(accs)
+	}
 
 	genAccs, err := authtypes.PackAccounts(accs)
 	if err != nil {
@@ -93,11 +101,10 @@ func modifyGenesis(path, moniker, amountStr string, accAddr sdk.AccAddress, glob
 	if err != nil {
 		return fmt.Errorf("failed to marshal auth genesis state: %w", err)
 	}
-
 	appState[authtypes.ModuleName] = authGenStateBz
 
 	bankGenState := banktypes.GetGenesisStateFromAppState(cdc, appState)
-	bankGenState.Balances = append(bankGenState.Balances, balances)
+	bankGenState.Balances = append(bankGenState.Balances, balances...)
 	bankGenState.Balances = banktypes.SanitizeGenesisBalances(bankGenState.Balances)
 
 	bankGenStateBz, err := cdc.MarshalJSON(bankGenState)
@@ -149,5 +156,6 @@ func modifyGenesis(path, moniker, amountStr string, accAddr sdk.AccAddress, glob
 		return fmt.Errorf("failed to marshal application genesis state: %w", err)
 	}
 	genDoc.AppState = appStateJSON
+
 	return genutil.ExportGenesisFile(genDoc, genFile)
 }

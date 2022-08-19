@@ -1,10 +1,11 @@
 package e2e
 
 import (
-	"cosmossdk.io/math"
 	"fmt"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"time"
+
+	"cosmossdk.io/math"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (s *IntegrationTestSuite) testStaking() {

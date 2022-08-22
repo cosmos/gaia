@@ -3,7 +3,6 @@ package e2e
 import (
 	"encoding/json"
 	"fmt"
-	staketypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"io"
 	"net/http"
 	"strings"
@@ -11,6 +10,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	staketypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	globalfee "github.com/cosmos/gaia/v8/x/globalfee/types"
 )

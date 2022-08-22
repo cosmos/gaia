@@ -406,12 +406,10 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 				ErrorStream:  &errBuf,
 			})
 
-			s.T().Logf("stdOut: %s", outBuf.String())
-			s.T().Logf("stdErr: %s", errBuf.String())
-
 			s.Require().NoError(err)
 			s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
-			return strings.Contains(txResp.String(), "code: 0")
+
+			return strings.Contains(txResp.String(), "code: 0") || txResp.Code == uint32(0)
 		},
 		10*time.Second,
 		time.Second,
@@ -817,7 +815,23 @@ func (s *IntegrationTestSuite) queryGroupProposalByGroupPolicy(endpoint string, 
 	return res, nil
 }
 
-func (s *IntegrationTestSuite) executeGaiaKeysAddCommand(ctx context.Context, c *chain, valIdx int, name string) string {
+func (s *IntegrationTestSuite) verifyBalanceChange(endpoint string, expectedAmount sdk.Coin, recipientAddress string) {
+	s.Require().Eventually(
+		func() bool {
+			afterAtomBalance, err := getSpecificBalance(endpoint, recipientAddress, uatomDenom)
+			s.Require().NoError(err)
+
+			return afterAtomBalance.IsEqual(expectedAmount)
+		},
+		20*time.Second,
+		5*time.Second,
+	)
+}
+
+func (s *IntegrationTestSuite) executeGKeysAddCommand(c *chain, valIdx int, name string, home string) string {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
 	var (
 		outBuf     bytes.Buffer
 		errBuf     bytes.Buffer
@@ -829,6 +843,7 @@ func (s *IntegrationTestSuite) executeGaiaKeysAddCommand(ctx context.Context, c 
 		"keys",
 		"add",
 		name,
+		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
 		"--keyring-backend=test",
 		"--output=json",
 	}
@@ -840,7 +855,7 @@ func (s *IntegrationTestSuite) executeGaiaKeysAddCommand(ctx context.Context, c 
 				AttachStdout: true,
 				AttachStderr: true,
 				Container:    s.valResources[c.id][valIdx].Container.ID,
-				User:         "root",
+				User:         "nonroot",
 				Cmd:          gaiaCommand,
 			})
 			s.Require().NoError(err)
@@ -862,4 +877,104 @@ func (s *IntegrationTestSuite) executeGaiaKeysAddCommand(ctx context.Context, c 
 	)
 
 	return addrRecord.Address
+}
+
+func (s *IntegrationTestSuite) executeKeysList(c *chain, valIdx int, home string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	var (
+		outBuf bytes.Buffer
+		errBuf bytes.Buffer
+	)
+
+	gaiaCommand := []string{
+		"gaiad",
+		"keys",
+		"list",
+		"--keyring-backend=test",
+		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
+		"--output=json",
+	}
+
+	s.Require().Eventually(
+		func() bool {
+			exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
+				Context:      ctx,
+				AttachStdout: true,
+				AttachStderr: true,
+				Container:    s.valResources[c.id][valIdx].Container.ID,
+				User:         "nonroot",
+				Cmd:          gaiaCommand,
+			})
+			s.Require().NoError(err)
+
+			err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
+				Context:      ctx,
+				Detach:       false,
+				OutputStream: &outBuf,
+				ErrorStream:  &errBuf,
+			})
+			s.Require().NoError(err)
+			return true
+		},
+		10*time.Second,
+		time.Second,
+		"Returned an error; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
+	)
+}
+
+func (s *IntegrationTestSuite) executeDelegate(c *chain, valIdx int, endpoint string, amount string, valOperAddress string, delegatorAddr string, home string, delegateFees string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx staking delegate %s", c.id)
+
+	gaiaCommand := []string{
+		"gaiad",
+		"tx",
+		"staking",
+		"delegate",
+		valOperAddress,
+		amount,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--%s=%s", flags.FlagGas, "auto"),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, delegateFees),
+		"--keyring-backend=test",
+		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
+	s.T().Logf("%s successfully delegated %s to %s", delegatorAddr, amount, valOperAddress)
+}
+
+func (s *IntegrationTestSuite) executeRedelegate(c *chain, valIdx int, endpoint string, amount string, originalValOperAddress string, newValOperAddress string, delegatorAddr string, home string, delegateFees string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx staking redelegate %s", c.id)
+
+	gaiaCommand := []string{
+		"gaiad",
+		"tx",
+		"staking",
+		"redelegate",
+		originalValOperAddress,
+		newValOperAddress,
+		amount,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--%s=%s", flags.FlagGas, "auto"),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, delegateFees),
+		"--keyring-backend=test",
+		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
+	s.T().Logf("%s successfully redelegated %s from %s to %s", delegatorAddr, amount, originalValOperAddress, newValOperAddress)
 }

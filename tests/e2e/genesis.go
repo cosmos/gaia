@@ -15,6 +15,7 @@ import (
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	staketypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 
 	globfeetypes "github.com/cosmos/gaia/v8/x/globalfee/types"
@@ -44,7 +45,7 @@ func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {
 	return doc, nil
 }
 
-func modifyGenesis(path, moniker, amountStr string, accAddr sdk.AccAddress, globfees string) error {
+func modifyGenesis(path, moniker, amountStr string, accAddr sdk.AccAddress, globfees string, denom string) error {
 	serverCtx := server.NewDefaultContext()
 	config := serverCtx.Config
 
@@ -118,13 +119,21 @@ func modifyGenesis(path, moniker, amountStr string, accAddr sdk.AccAddress, glob
 	}
 	appState[globfeetypes.ModuleName] = globfeeStateBz
 
+	stakingGenState := staketypes.GetGenesisStateFromAppState(cdc, appState)
+	stakingGenState.Params.BondDenom = denom
+	stakingGenStateBz, err := cdc.MarshalJSON(stakingGenState)
+	if err != nil {
+		fmt.Errorf("Failed to marshal staking genesis state: %w", err)
+	}
+	appState[staketypes.ModuleName] = stakingGenStateBz
+
 	// Refactor to separate method
 	amnt := math.NewInt(10000)
 	quorum, _ := sdk.NewDecFromStr("0.000000000000000001")
 	threshold, _ := sdk.NewDecFromStr("0.000000000000000001")
 
 	govState := govv1beta1.NewGenesisState(1,
-		govv1beta1.NewDepositParams(sdk.NewCoins(sdk.NewCoin("uatom", amnt)), 10*time.Minute),
+		govv1beta1.NewDepositParams(sdk.NewCoins(sdk.NewCoin(denom, amnt)), 10*time.Minute),
 		govv1beta1.NewVotingParams(15*time.Second),
 		govv1beta1.NewTallyParams(quorum, threshold, govv1beta1.DefaultVetoThreshold),
 	)

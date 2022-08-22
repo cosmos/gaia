@@ -54,8 +54,8 @@ const (
 )
 
 var (
-	stakeAmount       = math.NewInt(100000000000)
-	stakeAmountCoin   = sdk.NewCoin("stake", stakeAmount)
+	stakingAmount     = math.NewInt(100000000000)
+	stakingAmountCoin = sdk.NewCoin(uatomDenom, stakingAmount)
 	tokenAmount       = sdk.NewCoin(uatomDenom, math.NewInt(3300000000)) // 3,300uatom
 	fees              = sdk.NewCoin(uatomDenom, math.NewInt(330000))     // 0.33uatom
 	depositAmount     = sdk.NewCoin(uatomDenom, math.NewInt(10000000))   // 10uatom
@@ -214,7 +214,7 @@ func (s *IntegrationTestSuite) initNodes(c *chain) {
 		address, err := val.keyInfo.GetAddress()
 		s.Require().NoError(err)
 		s.Require().NoError(
-			modifyGenesis(val0ConfigDir, "", initBalanceStr, address, initialGlobalFeeAmt+uatomDenom),
+			modifyGenesis(val0ConfigDir, "", initBalanceStr, address, initialGlobalFeeAmt+uatomDenom, uatomDenom),
 		)
 	}
 
@@ -266,7 +266,7 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 	// generate genesis txs
 	genTxs := make([]json.RawMessage, len(c.validators))
 	for i, val := range c.validators {
-		createValmsg, err := val.buildCreateValidatorMsg(stakeAmountCoin)
+		createValmsg, err := val.buildCreateValidatorMsg(stakingAmountCoin)
 		s.Require().NoError(err)
 		signedTx, err := val.signMsg(createValmsg)
 

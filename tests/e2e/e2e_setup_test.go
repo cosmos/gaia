@@ -1,6 +1,7 @@
 package e2e
 
 import (
+	"bytes"
 	"context"
 	b64 "encoding/base64"
 	"encoding/json"
@@ -18,6 +19,7 @@ import (
 	"time"
 
 	"cosmossdk.io/math"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -640,4 +642,52 @@ func (s *IntegrationTestSuite) writeGovParamChangeProposalGlobalFees(c *chain, c
 
 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_globalfee.json"), paramChangeProposalBody)
 	s.Require().NoError(err)
+}
+
+func (s *IntegrationTestSuite) writeICAtx(cmd []string, path string) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	cmd = append(cmd, fmt.Sprintf("--%s=%s", flags.FlagGenerateOnly, "true"))
+	s.T().Logf("dry run: ica tx %s", strings.Join(cmd, " "))
+
+	var (
+		outBuf bytes.Buffer
+		errBuf bytes.Buffer
+	)
+
+	type txResponse struct {
+		Body struct {
+			Messages []map[string]interface{}
+		}
+	}
+	txResp := txResponse{}
+
+	exe, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
+		Context:      ctx,
+		AttachStdout: true,
+		AttachStderr: true,
+		Container:    s.valResources[s.chainA.id][0].Container.ID,
+		User:         "nonroot",
+		Cmd:          cmd,
+	})
+	s.Require().NoError(err)
+
+	err = s.dkrPool.Client.StartExec(exe.ID, docker.StartExecOptions{
+		Context:      ctx,
+		Detach:       false,
+		OutputStream: &outBuf,
+		ErrorStream:  &errBuf,
+	})
+	s.Require().NoError(err)
+
+	s.Require().NoError(json.Unmarshal(outBuf.Bytes(), &txResp))
+	b, err := json.MarshalIndent(txResp.Body.Messages[0], "", " ")
+	s.Require().NoError(err)
+
+	err = writeFile(path, b)
+	s.Require().NoError(err)
+
+	s.T().Logf("write ica transaction json to %s", path)
 }

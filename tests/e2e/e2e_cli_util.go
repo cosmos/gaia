@@ -12,6 +12,7 @@ import (
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
 	globalfee "github.com/cosmos/gaia/v8/x/globalfee/types"
+	icamauth "github.com/cosmos/gaia/v8/x/icamauth/types"
 )
 
 func queryGaiaTx(endpoint, txHash string) error {
@@ -145,4 +146,27 @@ func queryGlobalFees(endpoint string) (amt sdk.DecCoins, err error) {
 	}
 
 	return fees.MinimumGasPrices, nil
+}
+
+func queryICAaddr(endpoint, owner, connectionID string) (string, error) {
+	resp, err := http.Get(fmt.Sprintf("%s/gaia/icamauth/v1beta1/interchain_account/owner/%s/connection/%s", endpoint, owner, connectionID))
+	if err != nil {
+		return "", fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	bz, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("tx query returned non-200 status: %d", resp.StatusCode)
+	}
+
+	icaAddrResp := icamauth.QueryInterchainAccountFromAddressResponse{}
+	if err = cdc.UnmarshalJSON(bz, &icaAddrResp); err != nil {
+		return "", err
+	}
+
+	return icaAddrResp.GetInterchainAccountAddress(), nil
 }

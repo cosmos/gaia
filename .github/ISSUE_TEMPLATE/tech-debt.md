@@ -14,9 +14,29 @@ v    Please also ensure that this is not a duplicate issue :)
 
 <!-- Description of the tech debt and rationale behind addressing it -->
 
+## Type
+
+<!-- 
+Select one or more categories of tech debt that fits the description of the issue.
+
+Architecture Debt
+Build Debt
+Code Debt
+Defect Debt
+Design Debt
+Documentation Debt
+Infrastructure Debt
+People Debt
+Process Debt
+Requirement Debt
+Service Debt
+Test Automation Debt
+Test Debt
+-->
+
 ## Impact
 
-<!-- Description of current impact or limitation imposed by the tech debt -->
+<!-- Description of current impact or limitation imposed by the tech debt and tradeoffs to addressing it. -->
 
 ## Proposed Solution
 

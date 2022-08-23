@@ -30,7 +30,7 @@ It's recommended that public testnet nodes are running on machines with at least
 This tutorial will provide all necessary instructions for joining the current public testnet. If you're interested in more advanced configuration and synchronization options, see [Join Mainnet](./join-mainnet.md) for a detailed walkthrough.
 
 ## Sync Options
-There are two ways to sync a testnet node, Fastsync and State Sync. [Fastsync](https://docs.tendermint.com/v0.34/tendermint-core/fast-sync.html) syncs the chain from genesis by downloading blocks in paralell and then verifying them. [State Sync](https://docs.tendermint.com/master/tendermint-core/state-sync/#) will look for snapshots from peers at a trusted height and then verifying a minimal set of snapshot chunks against the network.
+There are two ways to sync a testnet node, Fastsync and State Sync. [Fastsync](https://docs.tendermint.com/v0.34/tendermint-core/fast-sync.html) syncs the chain from genesis by downloading blocks in paralell and then verifying them. [State Sync](https://docs.tendermint.com/v0.34/tendermint-core/state-sync.html) will look for snapshots from peers at a trusted height and then verifying a minimal set of snapshot chunks against the network.
 
 State Sync is far faster and more efficient than Blocksync, but Blocksync offers higher data integrity and more robust history. For those who are concerned about storage and costs, State Sync can be the better option as it minimizes storage usage when rebuilding initial state.
 

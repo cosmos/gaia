@@ -127,7 +127,7 @@ func (s *IntegrationTestSuite) sendMsgSend(c *chain, valIdx int, from, to, amt, 
 	)
 }
 
-func (s *IntegrationTestSuite) withdrawReward(c *chain, valIdx int, endpoint, payee, fees string, expectErr bool) {
+func (s *IntegrationTestSuite) withdrawAllRewards(c *chain, valIdx int, endpoint, payee, fees string, expectErr bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -418,7 +418,7 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 	endpoint = fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	s.Require().Eventually(
 		func() bool {
-			return queryGaiaTx(endpoint, txResp.TxHash) == nil
+			return s.queryGaiaTx(endpoint, txResp.TxHash) == nil
 		},
 		time.Minute,
 		5*time.Second,
@@ -977,4 +977,80 @@ func (s *IntegrationTestSuite) executeRedelegate(c *chain, valIdx int, endpoint 
 
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
 	s.T().Logf("%s successfully redelegated %s from %s to %s", delegatorAddr, amount, originalValOperAddress, newValOperAddress)
+}
+
+func (s *IntegrationTestSuite) execSetWithrawAddress(c *chain, valIdx int, endpoint, fees string, delegatorAddress string, newWithdrawalAddress string, homePath string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Setting distribution withdrawal address on chain %s for %s to %s", c.id, delegatorAddress, newWithdrawalAddress)
+	gaiaCommand := []string{
+		"gaiad",
+		"tx",
+		"distribution",
+		"set-withdraw-addr",
+		newWithdrawalAddress,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddress),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--%s=%s", flags.FlagHome, homePath),
+		"--keyring-backend=test",
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
+	s.T().Logf("Successfully set new distribution withdrawal address for %s to %s", delegatorAddress, newWithdrawalAddress)
+}
+
+func (s *IntegrationTestSuite) execWithdrawReward(c *chain, valIdx int, endpoint, fees string, delegatorAddress string, validatorAddress string, homePath string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Withdrawing distribution rewards on chain %s for delegator %s from %s validator", c.id, delegatorAddress, validatorAddress)
+	gaiaCommand := []string{
+		"gaiad",
+		"tx",
+		"distribution",
+		"withdraw-rewards",
+		validatorAddress,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddress),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, "300uatom"),
+		fmt.Sprintf("--%s=%s", flags.FlagGas, "auto"),
+		fmt.Sprintf("--%s=%s", flags.FlagGasAdjustment, "1.5"),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--%s=%s", flags.FlagHome, homePath),
+		"--keyring-backend=test",
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
+	s.T().Logf("Successfully withdrew distribution rewards for delegator %s from validator %s", delegatorAddress, validatorAddress)
+}
+
+func (s *IntegrationTestSuite) queryGaiaTx(endpoint, txHash string) error {
+	resp, err := http.Get(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs/%s", endpoint, txHash))
+	if err != nil {
+		return fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("tx query returned non-200 status: %d", resp.StatusCode)
+	}
+
+	var result map[string]interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return fmt.Errorf("failed to read response body: %w", err)
+	}
+
+	txResp := result["tx_response"].(map[string]interface{})
+	s.T().Logf("tx resp: %s", txResp)
+	if v := txResp["code"]; v.(float64) != 0 {
+		return fmt.Errorf("tx %s failed with status code %v", txHash, v)
+	}
+
+	return nil
 }

@@ -1,6 +1,7 @@
 package e2e
 
 import (
+	"cosmossdk.io/math"
 	"fmt"
 	"strings"
 	"time"
@@ -730,19 +731,39 @@ func (s *IntegrationTestSuite) TestByPassMinFeeWithdrawReward() {
 	s.Require().NoError(err)
 	// pass
 	s.T().Logf("bypass-msg with fee in the denom of global fee, pass")
-	s.withdrawReward(s.chainA, 0, chainAAPIEndpoint, payee.String(), paidFeeAmt+uatomDenom, false)
+	s.withdrawAllRewards(s.chainA, 0, chainAAPIEndpoint, payee.String(), paidFeeAmt+uatomDenom, false)
 	// pass
 	s.T().Logf("bypass-msg with zero coin in the denom of global fee, pass")
-	s.withdrawReward(s.chainA, 0, chainAAPIEndpoint, payee.String(), "0"+uatomDenom, false)
+	s.withdrawAllRewards(s.chainA, 0, chainAAPIEndpoint, payee.String(), "0"+uatomDenom, false)
 	// pass
 	s.T().Logf("bypass-msg with zero coin not in the denom of global fee, pass")
-	s.withdrawReward(s.chainA, 0, chainAAPIEndpoint, payee.String(), "0"+photonDenom, false)
+	s.withdrawAllRewards(s.chainA, 0, chainAAPIEndpoint, payee.String(), "0"+photonDenom, false)
 	// fail
 	s.T().Logf("bypass-msg with non-zero coin not in the denom of global fee, fail")
-	s.withdrawReward(s.chainA, 0, chainAAPIEndpoint, payee.String(), paidFeeAmt+photonDenom, true)
+	s.withdrawAllRewards(s.chainA, 0, chainAAPIEndpoint, payee.String(), paidFeeAmt+photonDenom, true)
 }
 
 // todo add fee test with wrong denom order
 func (s *IntegrationTestSuite) TestStaking() {
-	s.testStaking()
+	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	home := "/home/nonroot/.gaia"
+
+	validatorA := s.chainA.validators[0]
+	validatorB := s.chainA.validators[1]
+	validatorAAddr, err := validatorA.keyInfo.GetAddress()
+	s.NoError(err)
+	validatorBAddr, err := validatorB.keyInfo.GetAddress()
+	s.NoError(err)
+
+	valOperA := sdk.ValAddress(validatorAAddr)
+	valOperB := sdk.ValAddress(validatorBAddr)
+
+	alice, err := s.chainA.accounts[2].keyInfo.GetAddress()
+	bob, err := s.chainA.accounts[3].keyInfo.GetAddress()
+
+	delegationFees := sdk.NewCoin(uatomDenom, math.NewInt(10))
+
+	// Fund Alice
+	s.testStaking(chainAAPIEndpoint, alice.String(), valOperA.String(), valOperB.String(), delegationFees, home)
+	s.testDistribution(chainAAPIEndpoint, alice.String(), bob.String(), valOperB.String(), home)
 }

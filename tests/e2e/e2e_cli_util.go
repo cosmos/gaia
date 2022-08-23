@@ -9,6 +9,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	staketypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
@@ -166,4 +167,25 @@ func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string
 	}
 
 	return delegationRes, nil
+}
+
+func queryDelegationWithdrawalAddress(endpoint string, delegatorAddr string) (disttypes.QueryDelegatorWithdrawAddressResponse, error) {
+	var res disttypes.QueryDelegatorWithdrawAddressResponse
+
+	resp, err := http.Get(fmt.Sprintf("%s/cosmos/distribution/v1beta1/delegators/%s/withdraw_address", endpoint, delegatorAddr)) //nolint:gosec // this is only used during tests
+	if err != nil {
+		return res, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return res, err
+	}
+
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return res, err
+	}
+
+	return res, nil
 }

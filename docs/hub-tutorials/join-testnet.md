@@ -30,7 +30,7 @@ It's recommended that public testnet nodes are running on machines with at least
 This tutorial will provide all necessary instructions for joining the current public testnet. If you're interested in more advanced configuration and synchronization options, see [Join Mainnet](./join-mainnet.md) for a detailed walkthrough.
 
 ## Sync Options
-There are two ways to sync a testnet node, Blocksync and State Sync. [Blocksync](https://docs.tendermint.com/v0.35/tendermint-core/block-sync/) syncs the chain from genesis by downloading blocks in paralell and then verifying them. [State Sync](https://docs.tendermint.com/master/tendermint-core/state-sync/#) will look for snapshots from peers at a trusted height and then verifying a minimal set of snapshot chunks against the network.
+There are two ways to sync a testnet node, Fastsync and State Sync. [Fastsync](https://docs.tendermint.com/v0.34/tendermint-core/fast-sync.html) syncs the chain from genesis by downloading blocks in paralell and then verifying them. [State Sync](https://docs.tendermint.com/master/tendermint-core/state-sync/#) will look for snapshots from peers at a trusted height and then verifying a minimal set of snapshot chunks against the network.
 
 State Sync is far faster and more efficient than Blocksync, but Blocksync offers higher data integrity and more robust history. For those who are concerned about storage and costs, State Sync can be the better option as it minimizes storage usage when rebuilding initial state.
 
@@ -69,7 +69,7 @@ State Sync requires Gaia version [`v6.0.0`](https://github.com/cosmos/gaia/tree/
 
 **Check out the [quickstart script](https://github.com/cosmos/testnets/tree/master/v7-theta/public-testnet#quickstart-on-a-fresh-machine-eg-on-digital-ocean-droplet) to bootstrap a Theta testnet node and configure as needed**
 
-There will need to be additional configuration to enable State Sync on the testnet. State Sync requires setting an initial list of `persistent_peers` to fetch snapshots from. This will change and eventually move to the p2p layer when the Cosmos Hub upgrades to [Tendermint `v0.35`](https://github.com/tendermint/tendermint/issues/6491). For the sake of simplicity, this step is already done in the [Configuration & Setup](#configuration-amp=-setup) section.
+There will need to be additional configuration to enable State Sync on the testnet. State Sync requires setting an initial list of `persistent_peers` to fetch snapshots from. For the sake of simplicity, this step is already done in the [Configuration & Setup](#configuration-amp=-setup) section.
 
 Visit a [testnet explorer](https://explorer.theta-testnet.polypore.xyz/) to get a recent block height and corresponding hash. A node operator can choose any height/hash in the current bonding period, but as the recommended snapshot period is 1000 blocks, it is advised to choose something close to current height - 1000. Set these parameters in the code snippet below `<BLOCK_HEIGHT>` and `<BLOCK_HASH>`
 

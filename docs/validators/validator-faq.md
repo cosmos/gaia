@@ -13,7 +13,7 @@ This is work in progress. Mechanisms and values are susceptible to change.
 
 ### What is a Cosmos validator?
 
-The [Cosmos Hub](../getting-started/what-is-gaia.md) is based on [Tendermint](https://docs.tendermint.com/v0.35/introduction/what-is-tendermint.html) that relies on a set of validators to secure the network. The role of validators is to run a full node and participate in consensus by broadcasting votes that contain cryptographic signatures signed by the validator's private key. Validators commit new blocks in the blockchain and receive revenue in exchange for their work. Validators must also participate in governance by voting on proposals. Validators are weighted according to their total stake.
+The [Cosmos Hub](../getting-started/what-is-gaia.md) is based on [Tendermint](https://docs.tendermint.com/v0.34/introduction/what-is-tendermint.html) that relies on a set of validators to secure the network. The role of validators is to run a full node and participate in consensus by broadcasting votes that contain cryptographic signatures signed by the validator's private key. Validators commit new blocks in the blockchain and receive revenue in exchange for their work. Validators must also participate in governance by voting on proposals. Validators are weighted according to their total stake.
 
 ### What is staking?
 
@@ -249,7 +249,7 @@ The community is expected to behave in a smart and self-preserving way. When a m
 
 A modest level of hardware specifications is initially required and rises as network use increases. Participating in the testnet is the best way to learn more. You can find the current hardware recommendations in the [Joining Mainnet documentation](../hub-tutorials/join-mainnet.md).
 
-Validators are recommended to set up [sentry nodes](https://docs.tendermint.com/master/nodes/validators.html#setting-up-a-validator) to protect your validator node from DDoS attacks.
+Validators are recommended to set up [sentry nodes](https://docs.tendermint.com/v0.34/tendermint-core/validators.html) to protect your validator node from DDoS attacks.
 
 ### What are software requirements?
 
@@ -296,4 +296,4 @@ Validator nodes are expected to connect only to full nodes they trust because th
 
 Sentry nodes can be quickly spun up or change their IP addresses. Because the links to the sentry nodes are in private IP space, an internet-based attack cannot disturb them directly. This strategy ensures that validator block proposals and votes have a much higher change to make it to the rest of the network.
 
-For more sentry node details, see the [Tendermint Documentation](https://docs.tendermint.com/master/nodes/validators.html#setting-up-a-validator) or the [Sentry Node Architecture Overview](https://forum.cosmos.network/t/sentry-node-architecture-overview/454) on the forum.
+For more sentry node details, see the [Tendermint Documentation](https://docs.tendermint.com/v0.34/tendermint-core/validators.html) or the [Sentry Node Architecture Overview](https://forum.cosmos.network/t/sentry-node-architecture-overview/454) on the forum.

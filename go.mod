@@ -3,7 +3,7 @@ module github.com/cosmos/gaia/v7
 go 1.18
 
 require (
-	github.com/cosmos/cosmos-sdk v0.45.7
+	github.com/cosmos/cosmos-sdk v0.45.6
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/ibc-go/v3 v3.0.2
 	github.com/golangci/golangci-lint v1.48.0
@@ -61,7 +61,7 @@ require (
 	github.com/containerd/continuity v0.3.0 // indirect
 	github.com/cosmos/btcutil v1.0.4 // indirect
 	github.com/cosmos/gorocksdb v1.2.0 // indirect
-	github.com/cosmos/iavl v0.19.1 // indirect
+	github.com/cosmos/iavl v0.19.0 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.11.1 // indirect
 	github.com/cosmos/ledger-go v0.9.3 // indirect
 	github.com/creachadair/taskgroup v0.3.2 // indirect

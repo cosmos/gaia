@@ -13,21 +13,15 @@ linters:
     # - errcheck
     - goconst
     - gocritic
-    - gofmt
-    - goimports
-    - golint
     - gosec
     - gosimple
     - govet
     - ineffassign
-    - interfacer
-    - maligned
     - misspell
     - nakedret
     - prealloc
-    - scopelint
     - staticcheck
-    - structcheck
+    - revive
     - stylecheck
     - typecheck
     - unconvert
@@ -41,12 +35,6 @@ issues:
     - text: "Use of weak random number generator"
       linters:
         - gosec
-    - text: "comment on exported var"
-      linters:
-        - golint
-    - text: "don't use an underscore in package name"
-      linters:
-        - golint
     - text: "put a space between `//` and comment text"
       linters:
         - gocritic

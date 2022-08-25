@@ -4,8 +4,9 @@ import (
 	"math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/gaia/v8/x/globalfee/types"
 	tmstrings "github.com/tendermint/tendermint/libs/strings"
+
+	"github.com/cosmos/gaia/v8/x/globalfee/types"
 )
 
 // ParamStoreKeyMinGasPrices type require coins sorted. getGlobalFee will also return sorted coins (might return 0denom if globalMinGasPrice is 0)

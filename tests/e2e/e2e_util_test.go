@@ -14,6 +14,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	group "github.com/cosmos/cosmos-sdk/x/group"
 	"github.com/ory/dockertest/v3/docker"
 )
 
@@ -404,11 +405,13 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 				OutputStream: &outBuf,
 				ErrorStream:  &errBuf,
 			})
+
 			s.Require().NoError(err)
 			s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
-			return strings.Contains(txResp.String(), "code: 0")
+
+			return strings.Contains(txResp.String(), "code: 0") || txResp.Code == uint32(0)
 		},
-		5*time.Second,
+		10*time.Second,
 		time.Second,
 		"tx returned a non-zero code; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
 	)
@@ -444,7 +447,6 @@ func (s *IntegrationTestSuite) queryGovProposal(endpoint string, proposalId uint
 	if err != nil {
 		return emptyProp, err
 	}
-	s.T().Logf("This is the body: %s", body)
 	var govProposalResp govv1beta1.QueryProposalResponse
 
 	if err := cdc.UnmarshalJSON(body, &govProposalResp); err != nil {
@@ -504,4 +506,475 @@ func (s *IntegrationTestSuite) getLatestBlockHeight(c *chain, valIdx int) int {
 		"Get node status returned a non-zero code; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
 	)
 	return currentHeight
+}
+
+func (s *IntegrationTestSuite) execCreateGroup(c *chain, valIdx int, endpoint string, adminAddr string, metadata string, groupMembersPath string, fees string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx group create-group on chain %s", c.id)
+
+	gaiaCommand := []string{
+		"gaiad",
+		"tx",
+		"group",
+		"create-group",
+		adminAddr,
+		metadata,
+		groupMembersPath,
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		"--keyring-backend=test",
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
+	s.T().Logf("%s successfully created group: %s", adminAddr, groupMembersPath)
+}
+
+func (s *IntegrationTestSuite) execUpdateGroupMembers(c *chain, valIdx int, endpoint string, adminAddr string, groupId string, groupMembersPath string, fees string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx group update-group-members %s", c.id)
+
+	gaiaCommand := []string{
+		"gaiad",
+		"tx",
+		"group",
+		"update-group-members",
+		adminAddr,
+		groupId,
+		groupMembersPath,
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		"--keyring-backend=test",
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
+	s.T().Logf("%s successfully updated group members: %s", adminAddr, groupMembersPath)
+}
+
+func (s *IntegrationTestSuite) executeCreateGroupPolicy(c *chain, valIdx int, endpoint string, adminAddr string, groupId string, metadata string, policyFile string, fees string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx group create-group-policy %s", c.id)
+
+	gaiaCommand := []string{
+		"gaiad",
+		"tx",
+		"group",
+		"create-group-policy",
+		adminAddr,
+		groupId,
+		metadata,
+		policyFile,
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		"--keyring-backend=test",
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
+	s.T().Logf("%s successfully created group policy: %s", adminAddr, policyFile)
+}
+
+func (s *IntegrationTestSuite) executeSubmitGroupProposal(c *chain, valIdx int, endpoint string, fromAddress string, proposalPath string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx group submit-proposal %s", c.id)
+
+	gaiaCommand := []string{
+		"gaiad",
+		"tx",
+		"group",
+		"submit-proposal",
+		proposalPath,
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, fromAddress),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		"--keyring-backend=test",
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
+	s.T().Logf("%s successfully submited group proposal: %s", fromAddress, proposalPath)
+}
+
+func (s *IntegrationTestSuite) executeVoteGroupProposal(c *chain, valIdx int, endpoint string, proposalId string, voterAddress string, voteOption string, metadata string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx group vote %s", c.id)
+
+	gaiaCommand := []string{
+		"gaiad",
+		"tx",
+		"group",
+		"vote",
+		proposalId,
+		voterAddress,
+		voteOption,
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
+		metadata,
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		"--keyring-backend=test",
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
+	s.T().Logf("%s successfully voted %s on proposal: %s", voterAddress, voteOption, proposalId)
+}
+
+func (s *IntegrationTestSuite) executeExecGroupProposal(c *chain, valIdx int, endpoint string, proposalId string, proposerAddress string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx group exec %s", c.id)
+
+	gaiaCommand := []string{
+		"gaiad",
+		"tx",
+		"group",
+		"exec",
+		proposalId,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, proposerAddress),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		"--keyring-backend=test",
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
+	s.T().Logf("%s successfully executed proposal: %s", proposerAddress, proposalId)
+}
+
+func (s *IntegrationTestSuite) executeUpdateGroupAdmin(c *chain, valIdx int, endpoint string, admin string, groupId string, newAdmin string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx group update-group-admin %s", c.id)
+
+	gaiaCommand := []string{
+		"gaiad",
+		"tx",
+		"group",
+		"update-group-admin",
+		admin,
+		groupId,
+		newAdmin,
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		"--keyring-backend=test",
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
+	s.T().Logf("Successfully updated group admin from %s to %s", admin, newAdmin)
+}
+
+func (s *IntegrationTestSuite) queryGroupMembers(endpoint string, groupId int) (group.QueryGroupMembersResponse, error) {
+	var res group.QueryGroupMembersResponse
+	path := fmt.Sprintf("%s/cosmos/group/v1/group_members/%d", endpoint, groupId)
+
+	resp, err := http.Get(path)
+	if err != nil {
+		return res, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return res, err
+	}
+
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return res, err
+	}
+
+	return res, nil
+}
+
+func (s *IntegrationTestSuite) queryGroupInfo(endpoint string, groupId int) (group.QueryGroupInfoResponse, error) {
+	var res group.QueryGroupInfoResponse
+	path := fmt.Sprintf("%s/cosmos/group/v1/group_info/%d", endpoint, groupId)
+
+	resp, err := http.Get(path)
+	if err != nil {
+		return res, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return res, err
+	}
+
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return res, err
+	}
+
+	return res, nil
+}
+
+func (s *IntegrationTestSuite) queryGroupsbyAdmin(endpoint string, adminAddress string) (group.QueryGroupsByAdminResponse, error) {
+	var res group.QueryGroupsByAdminResponse
+	path := fmt.Sprintf("%s/cosmos/group/v1/groups_by_admin/%s", endpoint, adminAddress)
+
+	resp, err := http.Get(path)
+	if err != nil {
+		return res, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return res, err
+	}
+
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return res, err
+	}
+
+	return res, nil
+}
+
+func (s *IntegrationTestSuite) queryGroupPolicies(endpoint string, groupId int) (group.QueryGroupPoliciesByGroupResponse, error) {
+	var res group.QueryGroupPoliciesByGroupResponse
+	path := fmt.Sprintf("%s/cosmos/group/v1/group_policies_by_group/%d", endpoint, groupId)
+
+	resp, err := http.Get(path)
+	if err != nil {
+		return res, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return res, err
+	}
+
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return res, err
+	}
+
+	return res, nil
+}
+
+func (s *IntegrationTestSuite) queryGroupProposal(endpoint string, groupId int) (group.QueryProposalResponse, error) {
+	var res group.QueryProposalResponse
+	path := fmt.Sprintf("%s/cosmos/group/v1/proposal/%d", endpoint, groupId)
+
+	resp, err := http.Get(path)
+	if err != nil {
+		return res, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return res, err
+	}
+
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return res, err
+	}
+
+	return res, nil
+}
+
+func (s *IntegrationTestSuite) queryGroupProposalByGroupPolicy(endpoint string, policyAddress string) (group.QueryProposalsByGroupPolicyResponse, error) {
+	var res group.QueryProposalsByGroupPolicyResponse
+	path := fmt.Sprintf("%s/cosmos/group/v1/proposals_by_group_policy/%s", endpoint, policyAddress)
+
+	resp, err := http.Get(path)
+	if err != nil {
+		return res, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return res, err
+	}
+
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return res, err
+	}
+
+	return res, nil
+}
+
+func (s *IntegrationTestSuite) verifyBalanceChange(endpoint string, expectedAmount sdk.Coin, recipientAddress string) {
+	s.Require().Eventually(
+		func() bool {
+			afterAtomBalance, err := getSpecificBalance(endpoint, recipientAddress, uatomDenom)
+			s.Require().NoError(err)
+
+			return afterAtomBalance.IsEqual(expectedAmount)
+		},
+		20*time.Second,
+		5*time.Second,
+	)
+}
+
+func (s *IntegrationTestSuite) executeGKeysAddCommand(c *chain, valIdx int, name string, home string) string {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	var (
+		outBuf     bytes.Buffer
+		errBuf     bytes.Buffer
+		addrRecord AddressResponse
+	)
+
+	gaiaCommand := []string{
+		"gaiad",
+		"keys",
+		"add",
+		name,
+		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
+		"--keyring-backend=test",
+		"--output=json",
+	}
+
+	s.Require().Eventually(
+		func() bool {
+			exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
+				Context:      ctx,
+				AttachStdout: true,
+				AttachStderr: true,
+				Container:    s.valResources[c.id][valIdx].Container.ID,
+				User:         "nonroot",
+				Cmd:          gaiaCommand,
+			})
+			s.Require().NoError(err)
+
+			err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
+				Context:      ctx,
+				Detach:       false,
+				OutputStream: &outBuf,
+				ErrorStream:  &errBuf,
+			})
+			s.Require().NoError(err)
+			s.Require().NoError(json.Unmarshal(errBuf.Bytes(), &addrRecord))
+
+			return strings.Contains(addrRecord.Address, "cosmos")
+		},
+		10*time.Second,
+		time.Second,
+		"Returned an error; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
+	)
+
+	return addrRecord.Address
+}
+
+func (s *IntegrationTestSuite) executeKeysList(c *chain, valIdx int, home string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	var (
+		outBuf bytes.Buffer
+		errBuf bytes.Buffer
+	)
+
+	gaiaCommand := []string{
+		"gaiad",
+		"keys",
+		"list",
+		"--keyring-backend=test",
+		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
+		"--output=json",
+	}
+
+	s.Require().Eventually(
+		func() bool {
+			exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
+				Context:      ctx,
+				AttachStdout: true,
+				AttachStderr: true,
+				Container:    s.valResources[c.id][valIdx].Container.ID,
+				User:         "nonroot",
+				Cmd:          gaiaCommand,
+			})
+			s.Require().NoError(err)
+
+			err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
+				Context:      ctx,
+				Detach:       false,
+				OutputStream: &outBuf,
+				ErrorStream:  &errBuf,
+			})
+			s.Require().NoError(err)
+			return true
+		},
+		10*time.Second,
+		time.Second,
+		"Returned an error; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
+	)
+}
+
+func (s *IntegrationTestSuite) executeDelegate(c *chain, valIdx int, endpoint string, amount string, valOperAddress string, delegatorAddr string, home string, delegateFees string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx staking delegate %s", c.id)
+
+	gaiaCommand := []string{
+		"gaiad",
+		"tx",
+		"staking",
+		"delegate",
+		valOperAddress,
+		amount,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--%s=%s", flags.FlagGas, "auto"),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, delegateFees),
+		"--keyring-backend=test",
+		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
+	s.T().Logf("%s successfully delegated %s to %s", delegatorAddr, amount, valOperAddress)
+}
+
+func (s *IntegrationTestSuite) executeRedelegate(c *chain, valIdx int, endpoint string, amount string, originalValOperAddress string, newValOperAddress string, delegatorAddr string, home string, delegateFees string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx staking redelegate %s", c.id)
+
+	gaiaCommand := []string{
+		"gaiad",
+		"tx",
+		"staking",
+		"redelegate",
+		originalValOperAddress,
+		newValOperAddress,
+		amount,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--%s=%s", flags.FlagGas, "auto"),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, delegateFees),
+		"--keyring-backend=test",
+		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
+	s.T().Logf("%s successfully redelegated %s from %s to %s", delegatorAddr, amount, originalValOperAddress, newValOperAddress)
 }

@@ -188,7 +188,6 @@ func (s *IntegrationTestSuite) TestGovSoftwareUpgrade() {
 
 func (s *IntegrationTestSuite) TestGovCancelSoftwareUpgrade() {
 	s.T().Skip()
-
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
 	s.Require().NoError(err)
@@ -216,7 +215,11 @@ func (s *IntegrationTestSuite) TestGovCancelSoftwareUpgrade() {
 	s.T().Logf("Successfully canceled upgrade at height %d", proposalHeight)
 }
 
-func (s *IntegrationTestSuite) fundCommunityPool(chainAAPIEndpoint, sender string) {
+func (s *IntegrationTestSuite) TestGroups() {
+	s.GroupsSendMsgTest()
+}
+
+func (s *IntegrationTestSuite) fundCommunityPool(chainAAPIEndpoint string, sender string) {
 	s.Run("fund_community_pool", func() {
 		beforeDistUatomBalance, _ := getSpecificBalance(chainAAPIEndpoint, distModuleAddress, tokenAmount.Denom)
 		if beforeDistUatomBalance.IsNil() {
@@ -740,3 +743,6 @@ func (s *IntegrationTestSuite) TestByPassMinFeeWithdrawReward() {
 }
 
 // todo add fee test with wrong denom order
+func (s *IntegrationTestSuite) TestStaking() {
+	s.testStaking()
+}

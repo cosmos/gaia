@@ -3,7 +3,7 @@ module github.com/cosmos/gaia/v7
 go 1.18
 
 require (
-	github.com/cosmos/cosmos-sdk v0.45.7
+	github.com/cosmos/cosmos-sdk v0.45.8
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/ibc-go/v3 v3.0.2
 	github.com/golangci/golangci-lint v1.48.0
@@ -250,6 +250,7 @@ require (
 	go.uber.org/multierr v1.8.0 // indirect
 	go.uber.org/zap v1.21.0 // indirect
 	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e // indirect
+	golang.org/x/exp v0.0.0-20220722155223-a9213eeb770e // indirect
 	golang.org/x/exp/typeparams v0.0.0-20220613132600-b0d781184e0d // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
 	golang.org/x/net v0.0.0-20220726230323-06994584191e // indirect

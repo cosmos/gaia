@@ -47,7 +47,7 @@ grpc_addr = 'http://$GAIA_A_E2E_VAL_HOST:9090'
 websocket_addr = 'ws://$GAIA_A_E2E_VAL_HOST:26657/websocket'
 rpc_timeout = '10s'
 account_prefix = 'cosmos'
-key_name = 'val01-gaia-a'
+key_name = 'rly01-gaia-a'
 store_prefix = 'ibc'
 max_gas = 6000000
 gas_price = { price = 0.00001, denom = 'uatom' }
@@ -63,7 +63,7 @@ grpc_addr = 'http://$GAIA_B_E2E_VAL_HOST:9090'
 websocket_addr = 'ws://$GAIA_B_E2E_VAL_HOST:26657/websocket'
 rpc_timeout = '10s'
 account_prefix = 'cosmos'
-key_name = 'val01-gaia-b'
+key_name = 'rly01-gaia-b'
 store_prefix = 'ibc'
 max_gas =  6000000
 gas_price = { price = 0.00001, denom = 'uatom' }
@@ -74,8 +74,8 @@ trust_threshold = { numerator = '1', denominator = '3' }
 EOF
 
 # import keys
-hermes keys restore ${GAIA_B_E2E_CHAIN_ID} -n "val01-gaia-b" -m "${GAIA_B_E2E_RLY_MNEMONIC}"
-hermes keys restore ${GAIA_A_E2E_CHAIN_ID} -n "val01-gaia-a" -m "${GAIA_A_E2E_RLY_MNEMONIC}"
+hermes keys restore ${GAIA_B_E2E_CHAIN_ID} -n "rly01-gaia-b" -m "${GAIA_B_E2E_RLY_MNEMONIC}"
+hermes keys restore ${GAIA_A_E2E_CHAIN_ID} -n "rly01-gaia-a" -m "${GAIA_A_E2E_RLY_MNEMONIC}"
 
 # start Hermes relayer
 hermes start

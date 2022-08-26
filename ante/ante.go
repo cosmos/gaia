@@ -1,6 +1,7 @@
 package ante
 
 import (
+	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
@@ -16,6 +17,7 @@ type HandlerOptions struct {
 	IBCkeeper            *ibckeeper.Keeper
 	BypassMinFeeMsgTypes []string
 	GlobalFeeSubspace    paramtypes.Subspace
+	Cdc                  codec.BinaryCodec
 }
 
 func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
@@ -48,6 +50,7 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewValidateMemoDecorator(opts.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
 		NewBypassMinFeeDecorator(opts.BypassMinFeeMsgTypes, opts.GlobalFeeSubspace),
+		NewMinCommissionDecorator(opts.Cdc),
 		// if opts.TxFeeCheck is nil,  it is the default fee check
 		ante.NewDeductFeeDecorator(opts.AccountKeeper, opts.BankKeeper, opts.FeegrantKeeper, opts.TxFeeChecker),
 		ante.NewSetPubKeyDecorator(opts.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators

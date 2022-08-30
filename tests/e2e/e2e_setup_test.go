@@ -210,9 +210,9 @@ func (s *IntegrationTestSuite) initNodes(c *chain) {
 	s.Require().NoError(c.createAndInitValidators(2))
 	/* Adding 4 accounts to val0 local directory
 	c.accounts[0]: Relayer Wallet
-	c.accounts[0]: ICA Owner
-	c.accounts[0]: Test Account 1
-	c.accounts[0]: Test Account 2
+	c.accounts[1]: ICA Owner
+	c.accounts[2]: Test Account 1
+	c.accounts[3]: Test Account 2
 	*/
 	s.Require().NoError(c.addAccountFromMnemonic(4))
 	// Initialize a genesis file for the first validator

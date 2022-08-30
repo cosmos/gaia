@@ -763,7 +763,6 @@ func (s *IntegrationTestSuite) TestStaking() {
 
 	delegationFees := sdk.NewCoin(uatomDenom, math.NewInt(10))
 
-	// Fund Alice
 	s.testStaking(chainAAPIEndpoint, alice.String(), valOperA.String(), valOperB.String(), delegationFees, home)
 	s.testDistribution(chainAAPIEndpoint, alice.String(), bob.String(), valOperB.String(), home)
 }

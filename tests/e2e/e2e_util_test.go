@@ -1047,7 +1047,6 @@ func (s *IntegrationTestSuite) queryGaiaTx(endpoint, txHash string) error {
 	}
 
 	txResp := result["tx_response"].(map[string]interface{})
-	s.T().Logf("tx resp: %s", txResp)
 	if v := txResp["code"]; v.(float64) != 0 {
 		return fmt.Errorf("tx %s failed with status code %v", txHash, v)
 	}

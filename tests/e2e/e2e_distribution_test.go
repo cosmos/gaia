@@ -33,7 +33,6 @@ func (s *IntegrationTestSuite) testDistribution(chainEndpoint string, delegatorA
 	s.Require().Eventually(
 		func() bool {
 			afterBalance, err := getSpecificBalance(chainEndpoint, newWithrawalAddress, uatomDenom)
-			s.T().Logf("After balance: %s", afterBalance)
 			s.Require().NoError(err)
 
 			return afterBalance.IsGTE(beforeBalance)

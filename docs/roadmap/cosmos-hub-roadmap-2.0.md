@@ -74,10 +74,10 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Changes required for Interchain Security
   - Liquid Staking module
     - Free, secure and low-risk delegations for use in other parts of the Cosmos ecosystem
+    - Features include enabling transfer of rewards and voting rights
 - Interchain Security v1 - Required Participation of Provider Chain Validators
   - The Cosmos solution to shared security that uses IBC Cross Chain Validation (CCV) to relay validator set composition from a Provider Chain (Cosmos Hub) to a Consumer Chain. This validator set is in charge of producing blocks on both networks using separate nodes. Misbehavior on the Consumer Chain results in slashing Provider Chain staking tokens (ATOM).
   - Allows independent modules like Gravity DEX or Bridge to live on separate chains with their own development cycles.
-  - Features include enabling transfer of rewards and voting rights
 
 ## v10-Epsilon (expected Q2 2023)
 - Gaia v10.0.x

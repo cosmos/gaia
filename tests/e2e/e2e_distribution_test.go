@@ -20,7 +20,7 @@ func (s *IntegrationTestSuite) testDistribution(chainEndpoint string, delegatorA
 	// Verify
 	s.Require().Eventually(
 		func() bool {
-			res, err := queryDelegationWithdrawalAddress(chainEndpoint, delegatorAddress)
+			res, err := queryDelegatorWithdrawalAddress(chainEndpoint, delegatorAddress)
 			s.Require().NoError(err)
 
 			return res.WithdrawAddress == newWithrawalAddress

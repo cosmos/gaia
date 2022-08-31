@@ -109,8 +109,6 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 		// step 4: ica sends some tokens from ica to val on chain b
 		s.submitICAtx(icaOnwer, connectionID, "/home/nonroot/.gaia/config/ica_bank_send.json")
 
-		time.Sleep(20 * time.Second)
-
 		s.Require().Eventually(
 			func() bool {
 				afterICAsendReceiverbalance, err := getSpecificBalance(chainBAPIEndpoint, receiver, uatomDenom)
@@ -123,7 +121,7 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 		)
 
 		// repeat step3: prepare ica ibc send
-		channel := "channel-1" // channel-0 is used for ibc bank send
+		channel := "channel-0"
 		sendIBCamt := sdk.NewInt(10)
 		icaIBCsendCmd := []string{
 			"gaiad",
@@ -143,8 +141,6 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 		s.writeICAtx(icaIBCsendCmd, path)
 
 		s.submitICAtx(icaOnwer, connectionID, "/home/nonroot/.gaia/config/ica_ibc_send.json")
-
-		time.Sleep(20 * time.Second)
 
 		var balances sdk.Coins
 		s.Require().Eventually(

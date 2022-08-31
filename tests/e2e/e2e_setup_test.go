@@ -56,8 +56,8 @@ const (
 )
 
 var (
-	stakeAmount       = math.NewInt(100000000000)
-	stakeAmountCoin   = sdk.NewCoin("stake", stakeAmount)
+	stakingAmount     = math.NewInt(100000000000)
+	stakingAmountCoin = sdk.NewCoin(uatomDenom, stakingAmount)
 	tokenAmount       = sdk.NewCoin(uatomDenom, math.NewInt(3300000000)) // 3,300uatom
 	fees              = sdk.NewCoin(uatomDenom, math.NewInt(330000))     // 0.33uatom
 	depositAmount     = sdk.NewCoin(uatomDenom, math.NewInt(10000000))   // 10uatom
@@ -94,6 +94,43 @@ type IntegrationTestSuite struct {
 	dkrNet         *dockertest.Network
 	hermesResource *dockertest.Resource
 	valResources   map[string][]*dockertest.Resource
+}
+
+type AddressResponse struct {
+	Name     string `json:"name"`
+	Type     string `json:"type"`
+	Address  string `json:"address"`
+	Mnemonic string `json:"mnemonic"`
+}
+
+type GroupMember struct {
+	Address  string `json:"address"`
+	Weight   string `json:"weight"`
+	Metadata string `json:"metadata"`
+}
+
+type MsgSend struct {
+	Type   string     `json:"@type"`
+	From   string     `json:"from_address"`
+	To     string     `json:"to_address"`
+	Amount []sdk.Coin `json:"amount"`
+}
+
+type ThresholdPolicy struct {
+	Type      string               `json:"@type"`
+	Threshold string               `json:"threshold"`
+	Windows   DecisionPolicyWindow `json:"windows"`
+}
+
+type PercentagePolicy struct {
+	Type       string               `json:"@type"`
+	Percentage string               `json:"percentage"`
+	Windows    DecisionPolicyWindow `json:"windows"`
+}
+
+type DecisionPolicyWindow struct {
+	VotingPeriod       string `json:"voting_period"`
+	MinExecutionPeriod string `json:"min_execution_period"`
 }
 
 func TestIntegrationTestSuite(t *testing.T) {
@@ -192,7 +229,7 @@ func (s *IntegrationTestSuite) initNodes(c *chain) {
 	s.Require().NoError(err)
 	addrAll = append(addrAll, acctAddr)
 	s.Require().NoError(
-		modifyGenesis(val0ConfigDir, "", initBalanceStr, addrAll, initialGlobalFeeAmt+uatomDenom),
+		modifyGenesis(val0ConfigDir, "", initBalanceStr, addrAll, initialGlobalFeeAmt+uatomDenom, uatomDenom),
 	)
 	// copy the genesis file to the remaining validators
 	for _, val := range c.validators[1:] {
@@ -242,7 +279,7 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 	// generate genesis txs
 	genTxs := make([]json.RawMessage, len(c.validators))
 	for i, val := range c.validators {
-		createValmsg, err := val.buildCreateValidatorMsg(stakeAmountCoin)
+		createValmsg, err := val.buildCreateValidatorMsg(stakingAmountCoin)
 		s.Require().NoError(err)
 		signedTx, err := val.signMsg(createValmsg)
 
@@ -284,7 +321,8 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 		vpr.SetConfigFile(tmCfgPath)
 		s.Require().NoError(vpr.ReadInConfig())
 
-		valConfig := &tmconfig.Config{}
+		valConfig := tmconfig.DefaultConfig()
+
 		s.Require().NoError(vpr.Unmarshal(valConfig))
 
 		valConfig.P2P.ListenAddress = "tcp://0.0.0.0:26656"
@@ -610,6 +648,24 @@ func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height 
 
 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_4.json"), cancelUpgradeProposalBody)
 	s.Require().NoError(err)
+}
+
+func (s *IntegrationTestSuite) writeGroupMembers(c *chain, groupMembers []GroupMember, filename string) {
+	groupMembersBody, err := json.MarshalIndent(struct {
+		Members []GroupMember `json:"members"`
+	}{
+		Members: groupMembers,
+	}, "", " ")
+	s.Require().NoError(err)
+
+	s.writeFile(c, filename, groupMembersBody)
+}
+
+func (s *IntegrationTestSuite) writeFile(c *chain, filename string, body []byte) {
+	for _, val := range c.validators {
+		err := writeFile(filepath.Join(val.configDir(), "config", filename), body)
+		s.Require().NoError(err)
+	}
 }
 
 func (s *IntegrationTestSuite) writeGovParamChangeProposalGlobalFees(c *chain, coins sdk.DecCoins) {

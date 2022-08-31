@@ -2,11 +2,11 @@ package e2e
 
 import (
 	"fmt"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"strings"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
 func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
@@ -400,27 +400,27 @@ global fee e2e tests:
 0. initial globalfee = 0.00001uatom, min_gas_price = 0.00001uatom
 
 test1. gov proposal globalfee = [], min_gas_price=0.00001uatom, query globalfee still get empty
- - tx with fee denom photon, fail
- - tx with zero fee denom photon, fail
- - tx with fee denom uatom, pass
- - tx with fee empty, fail
+- tx with fee denom photon, fail
+- tx with zero fee denom photon, fail
+- tx with fee denom uatom, pass
+- tx with fee empty, fail
 
 test2. gov propose globalfee =  0.000001uatom(lower than min_gas_price)
- - tx with fee higher than 0.000001uatom but lower than 0.00001uatom, fail
- - tx with fee higher than/equal to 0.00001uatom, pass
- - tx with fee photon fail
+- tx with fee higher than 0.000001uatom but lower than 0.00001uatom, fail
+- tx with fee higher than/equal to 0.00001uatom, pass
+- tx with fee photon fail
 
 test3. gov propose globalfee = 0.0001uatom (higher than min_gas_price)
- - tx with fee equal to 0.0001uatom, pass
- - tx with fee equal to 0.00001uatom, fail
+- tx with fee equal to 0.0001uatom, pass
+- tx with fee equal to 0.00001uatom, fail
 
 test4. gov propose globalfee =  0.000001uatom (lower than min_gas_price), 0photon
- - tx with fee 0.0000001photon, fail
- - tx with fee 0.000001photon, pass
- - tx with empty fee, pass
- - tx with fee photon pass
- - tx with fee 0photon, 0.000005uatom fail
- - tx with fee 0photon, 0.00001uatom pass
+- tx with fee 0.0000001photon, fail
+- tx with fee 0.000001photon, pass
+- tx with empty fee, pass
+- tx with fee photon pass
+- tx with fee 0photon, 0.000005uatom fail
+- tx with fee 0photon, 0.00001uatom pass
 5. check balance correct: all the sucessful tx sent token amt is received
 6. gov propose change back to initial globalfee = 0.00001photon, This is for not influence other e2e tests.
 */

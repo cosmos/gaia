@@ -1011,7 +1011,15 @@ func (s *IntegrationTestSuite) execSetWithrawAddress(
 	s.T().Logf("Successfully set new distribution withdrawal address for %s to %s", delegatorAddress, newWithdrawalAddress)
 }
 
-func (s *IntegrationTestSuite) execWithdrawReward(c *chain, valIdx int, endpoint, fees string, delegatorAddress string, validatorAddress string, homePath string) {
+func (s *IntegrationTestSuite) execWithdrawReward(
+	c *chain,
+	valIdx int,
+	endpoint,
+	fees,
+	delegatorAddress,
+	validatorAddress, 
+	homePath string,
+) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 

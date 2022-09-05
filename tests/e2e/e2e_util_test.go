@@ -979,7 +979,15 @@ func (s *IntegrationTestSuite) executeRedelegate(c *chain, valIdx int, endpoint 
 	s.T().Logf("%s successfully redelegated %s from %s to %s", delegatorAddr, amount, originalValOperAddress, newValOperAddress)
 }
 
-func (s *IntegrationTestSuite) execSetWithrawAddress(c *chain, valIdx int, endpoint, fees string, delegatorAddress string, newWithdrawalAddress string, homePath string) {
+func (s *IntegrationTestSuite) execSetWithrawAddress(
+	c *chain,
+	valIdx int,
+	endpoint,
+	fees,
+	delegatorAddress, 
+	newWithdrawalAddress, 
+	homePath string,
+) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 

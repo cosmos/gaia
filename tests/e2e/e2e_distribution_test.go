@@ -1,9 +1,10 @@
 package e2e
 
 import (
+	"time"
+	
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"time"
 )
 
 func (s *IntegrationTestSuite) testDistribution(chainEndpoint string, delegatorAddress string, newWithrawalAddress string, valOperAddressA string, homePath string) {

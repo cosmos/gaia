@@ -92,7 +92,7 @@ include contrib/devtools/Makefile
 ###                              Documentation                              ###
 ###############################################################################
 
-all: install lint test
+all: install lint run-tests test-e2e
 
 BUILD_TARGETS := build install
 
@@ -118,9 +118,9 @@ build-reproducible: go.sum
 build-linux: go.sum
 	LEDGER_ENABLED=false GOOS=linux GOARCH=amd64 $(MAKE) build
 
-build-contract-tests-hooks:
-	mkdir -p $(BUILDDIR)
-	go build -mod=readonly $(BUILD_FLAGS) -o $(BUILDDIR)/ ./cmd/contract_tests
+# build-contract-tests-hooks:
+# 	mkdir -p $(BUILDDIR)
+# 	go build -mod=readonly $(BUILD_FLAGS) -o $(BUILDDIR)/ ./cmd/contract_tests
 
 go-mod-cache: go.sum
 	@echo "--> Download go modules to local cache"
@@ -204,6 +204,8 @@ docker-build-debug:
 docker-build-hermes:
 	@cd tests/e2e/docker; docker build -t cosmos/hermes-e2e:latest -f hermes.Dockerfile .
 
+docker-build-all: docker-build-debug docker-build-hermes
+
 ###############################################################################
 ###                                Linting                                  ###
 ###############################################################################
@@ -221,7 +223,7 @@ format:
 ###                                Localnet                                 ###
 ###############################################################################
 
-start-localnet-ci:
+start-localnet-ci: build
 	./build/gaiad init liveness --chain-id liveness --home ~/.gaiad-liveness
 	./build/gaiad config chain-id liveness --home ~/.gaiad-liveness
 	./build/gaiad config keyring-backend test --home ~/.gaiad-liveness
@@ -249,4 +251,4 @@ test-docker-push: test-docker
 	@docker push ${TEST_DOCKER_REPO}:latest
 
 .PHONY: all build-linux install format lint go-mod-cache draw-deps clean build \
-	start-gaia contract-tests benchmark docker-build-debug docker-build-hermes
+	start-gaia contract-tests benchmark docker-build-debug docker-build-hermes docker-build-all

@@ -7,7 +7,13 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (s *IntegrationTestSuite) testDistribution(chainEndpoint string, delegatorAddress string, newWithrawalAddress string, valOperAddressA string, homePath string) {
+func (s *IntegrationTestSuite) testDistribution(
+	chainEndpoint,
+	delegatorAddress,
+	newWithrawalAddress,
+	valOperAddressA,
+	homePath string,
+) {
 	fees = sdk.NewCoin(uatomDenom, math.NewInt(1000))
 
 	beforeBalance, err := getSpecificBalance(chainEndpoint, newWithrawalAddress, uatomDenom)

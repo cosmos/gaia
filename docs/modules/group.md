@@ -11,7 +11,7 @@ See the following resources for additional information on using the `group` modu
 - [Cosmos Developer Portal Group Tutorial](https://tutorials.cosmos.network/tutorials/understanding-group/)
 
 ##### Group Administration
-Groups can be initialized with or without a decision policy. Groups must have an administrator account, but that account does not necessarily have to be a group member. Upon creating a group, each member is assigned a weight that will correspond to voting power with respect to policy proposals.
+Groups can be initialized with or without a decision policy. Groups must have an administrator account, but that account does not necessarily have to be a group member. The group may self-administer by setting the administrator to a group policy account. Upon creating a group, each member is assigned a weight that will correspond to voting power with respect to policy proposals.
 
 The administrator can update group members, replace themselves, and update decision policies.
 

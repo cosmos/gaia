@@ -3,7 +3,7 @@
 **The `group` module facilitates the creation and management of multisig accounts and enables members to configure group policies that can submit and vote on specific message execution proposals.**
 
 ## Overview
-A group can be thought of as a set of accounts that can have multiple multi-signature accounts in the form of decision policy. Furthermore, each decision policy can have a different threshold for voting on and passing proposals.
+A group is a set of accounts and associated weights. Group accounts may then be instantiated by creating a new decision policy. Each decision policy can have a different threshold for voting on and passing proposals.
 
 See the following resources for additional information on using the `group` module.
 

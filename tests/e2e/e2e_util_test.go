@@ -418,7 +418,7 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 	endpoint = fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	s.Require().Eventually(
 		func() bool {
-			return s.queryGaiaTx(endpoint, txResp.TxHash) == nil
+			return queryGaiaTx(endpoint, txResp.TxHash) == nil
 		},
 		time.Minute,
 		5*time.Second,
@@ -984,8 +984,8 @@ func (s *IntegrationTestSuite) execSetWithrawAddress(
 	valIdx int,
 	endpoint,
 	fees,
-	delegatorAddress, 
-	newWithdrawalAddress, 
+	delegatorAddress,
+	newWithdrawalAddress,
 	homePath string,
 ) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
@@ -1017,7 +1017,7 @@ func (s *IntegrationTestSuite) execWithdrawReward(
 	endpoint,
 	fees,
 	delegatorAddress,
-	validatorAddress, 
+	validatorAddress,
 	homePath string,
 ) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
@@ -1043,29 +1043,4 @@ func (s *IntegrationTestSuite) execWithdrawReward(
 
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
 	s.T().Logf("Successfully withdrew distribution rewards for delegator %s from validator %s", delegatorAddress, validatorAddress)
-}
-
-func (s *IntegrationTestSuite) queryGaiaTx(endpoint, txHash string) error {
-	resp, err := http.Get(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs/%s", endpoint, txHash))
-	if err != nil {
-		return fmt.Errorf("failed to execute HTTP request: %w", err)
-	}
-
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		return fmt.Errorf("tx query returned non-200 status: %d", resp.StatusCode)
-	}
-
-	var result map[string]interface{}
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return fmt.Errorf("failed to read response body: %w", err)
-	}
-
-	txResp := result["tx_response"].(map[string]interface{})
-	if v := txResp["code"]; v.(float64) != 0 {
-		return fmt.Errorf("tx %s failed with status code %v", txHash, v)
-	}
-
-	return nil
 }

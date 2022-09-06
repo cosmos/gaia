@@ -5,6 +5,11 @@ import (
 )
 
 var (
+	// StateSyncKey defines the configuration key for the
+	// app state-sync value.
+	//nolint: gosec
+	StateSyncKey = "state-sync"
+
 	// BypassMinFeeMsgTypesKey defines the configuration key for the
 	// BypassMinFeeMsgTypes value.
 	//nolint: gosec

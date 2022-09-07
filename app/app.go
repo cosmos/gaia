@@ -676,9 +676,8 @@ func NewGaiaApp(
 	app.MountTransientStores(tkeys)
 	app.MountMemoryStores(memKeys)
 
-	appStateSync := cast.ToStringMap(appOpts.Get(gaiaappparams.StateSyncKey))
-	bypassMinFeeMsgTypes, ok := appStateSync[gaiaappparams.BypassMinFeeMsgTypesKey]
-	if !ok || bypassMinFeeMsgTypes == nil {
+	bypassMinFeeMsgTypes := cast.ToStringSlice(appOpts.Get(gaiaappparams.BypassMinFeeMsgTypesKey))
+	if bypassMinFeeMsgTypes == nil {
 		bypassMinFeeMsgTypes = GetDefaultBypassFeeMessages()
 	}
 
@@ -704,7 +703,7 @@ func NewGaiaApp(
 				},
 			},
 			IBCkeeper:            app.IBCKeeper,
-			BypassMinFeeMsgTypes: cast.ToStringSlice(bypassMinFeeMsgTypes),
+			BypassMinFeeMsgTypes: bypassMinFeeMsgTypes,
 			GlobalFeeSubspace:    app.GetSubspace(globalfee.ModuleName),
 		},
 	)

@@ -163,7 +163,7 @@ func queryICAaddr(endpoint, owner, connectionID string) (string, error) {
 		return "", fmt.Errorf("tx query returned non-200 status: %d", resp.StatusCode)
 	}
 
-	icaAddrResp := icamauth.QueryInterchainAccountFromAddressResponse{}
+	icaAddrResp := icamauth.QueryInterchainAccountResponse{}
 	if err = cdc.UnmarshalJSON(bz, &icaAddrResp); err != nil {
 		return "", err
 	}

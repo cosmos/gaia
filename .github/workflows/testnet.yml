@@ -21,4 +21,4 @@ jobs:
         run: go install ./...
 
       - name: testnet
-        run: gaiad testnet start --enable-logging
+        run: gaiad testnet start

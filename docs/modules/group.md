@@ -25,7 +25,7 @@ Proposals are submitted on behalf of an individual decision policy account and v
 
 **1. Group Creation**
 
-A group is initialized by the administrator. Both options exist to create the group with our without its first decision policy.
+A group is initialized by the administrator. Both options exist to create the group with or without its first decision policy.
 
 **2. Policy Creation**
 

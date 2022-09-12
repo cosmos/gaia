@@ -124,7 +124,7 @@ Run `gaiad tx group create-group-policy [admin] [group-id] [metadata] [decision-
 ```
 
 ### Submitting a Proposal
-Once a group has at least one decision policy, members can begin to submit proposals on behalf of a specific policy account. Run `gaiad tx group submit-proposal [proposal_json_file] [flags]` to submit a group proposal and see below for an example of the `proposal.json`
+Once a group has at least one decision policy, members can begin to submit proposals on behalf of a specific policy account. Run `gaiad tx group submit-proposal [proposal_json_file] [flags]` to submit a group proposal, and see below for an example of the `proposal.json`
 
 > Note: Messages in the proposal can only be executed if the group policy account on the proposal has the authority to do so. In the below example, the policy account would have to have sufficient balance to execute the bank send message.
 

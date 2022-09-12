@@ -135,7 +135,7 @@ Checksums-Sha256:
 
 # Major Release Maintenance
 
-Major Release series continue to receive bug fixes (released as a Patch Release) until they reach End Of Life. Major Release series is maintained in compliance with the Stable Release Policy as described in this document. Note: not every Major Release is denoted as stable releases.
+Major Release series continue to receive bug fixes (released as a Patch Release) until they reach End Of Life. Major Release series are maintained in compliance with the Stable Release Policy as described in this document. Note: not every Major Release is denoted as a stable release.
 
 Only the following major release series have a stable release status:
 
@@ -145,50 +145,17 @@ v6 Vega is supported until v8 Rho. A fairly strict **bugfix-only** rule applies 
 
 v5 Delta is supported until v7 Theta. A fairly strict **bugfix-only** rule applies to pull requests that are requested to be included into a stable point-release.
 
+After two releases, a supported version will be transitioned to unsupported and will be deemed EOL with no further updates.
+
 # Stable Release Policy
 
-Incoming bugs are classified using the following criteria: Kind, Priority & Severity
+The intention of the Stable Release Policy is to ensure that all major release series that are not EOL, are maintained with the following categories of fixes:
 
-Bugs classified by kind:
+- Tooling improvements (including code formatting, linting, static analysis and updates to testing frameworks)
+- Performance enhancements for running archival and synching nodes
+- Test and benchmarking suites, ensuring that fixes are sound and there are no performance regressions
+- Library updates including point releases for core libraries such as IBC-Go, Cosmos SDK, Tendermint and other dependencies
+- General maintenance improvements, that are deemed necessary by the stewarding team, that help align different releases and reduce the workload on the stewarding team
+- Security fixes
 
-- Functional
-- Performance
-- Usability
-- Compatability
-- Security
-
-Bugs classified by priority:
-
-- Urgent
-- High Priority
-- Medium Priority
-- Low Priority
-
-Bugs classified by severity:
-
-- Critical 
-- High Severity
-- Medium Severity
-- Low Severity
-
-
-
-should add a definition for "bug-fix" since bugs that impact operating the network don't matter since the previous version networks are no longer in operation. More so it should be privilege escalation or anything that makes the software actually dangerous to operate on a user's machine. Maybe these should actually be applied to all previous versions since archive use will require them to be run.
-
-
-#1510
-#1511
-
-So, code formatting and the like are in fact security updates. If something were to happen, having maintained older gaias-- as well as people who maintain them, would be very important. That is why it makes sense to backport changes like these-- at the very least as far back as cosmoshub-4 genesis (iirc that is v4)
-
-generally looks good to me. Id put a EOL for v5 since this is coming up in the middle of things
-
-
-if we find a bug in v6, and our testnet and and hub are both at v7, we fix the bug of v6, and spin off a new testnet to test them, right? if it is not bug, it's just improvement of code, do we still improve v6 when we are at v7 ?
-
-ci
-code formatting
-use (and verification) of latest cosmos-sdk
-
-
-<!-- needs modifications from SDK's relevant to Gaia --> 
+Issues that are likely excluded, are any issues that impact operating a block producing network.

@@ -19,7 +19,7 @@ The administrator can update group members, replace themselves, and update decis
 There are two types of decision policies, threshold and percentage decision policies. A threshold decision policy sets the minimum voting power cast in favor of a proposal for it to pass. A percentage decision policy requires a minimum percentage of voting power cast in favor of a policy in order for it to pass. Policies can be updated by a group admin and are the actual abstraction of multi-signature accounts.
 
 ##### Proposals
-Proposals are submitted on behalf of an individual decision policy account and voted on. Proposals facilitate multiple arbitrary message execution as long as the decision policy account has the authority to execute them. For example, a decision policy account can't execute a bank send if it doesn't carry a balance.
+Proposals are submitted on behalf of an individual decision policy account and voted on. Proposals facilitate multiple arbitrary message execution as long as the decision policy account has the authority to execute them. For example, a decision policy account can't perform a bank send if it doesn't carry a balance.
 
 ## Group Lifecycle
 

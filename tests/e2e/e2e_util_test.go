@@ -924,17 +924,7 @@ func (s *IntegrationTestSuite) executeKeysList(c *chain, valIdx int, home string
 	)
 }
 
-func (s *IntegrationTestSuite) executeDelegate(
-	c *chain,
-	valIdx int,
-	endpoint,
-	valOperAddress,
-	delegatorAddr,
-	home,
-	delegateFees string,
-	amount sdk.Coin,
-	expectErr bool,
-) {
+func (s *IntegrationTestSuite) executeDelegate(c *chain, valIdx int, endpoint string, amount string, valOperAddress string, delegatorAddr string, home string, delegateFees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -946,7 +936,7 @@ func (s *IntegrationTestSuite) executeDelegate(
 		"staking",
 		"delegate",
 		valOperAddress,
-		amount.String(),
+		amount,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
 		fmt.Sprintf("--%s=%s", flags.FlagGas, "auto"),
@@ -959,20 +949,6 @@ func (s *IntegrationTestSuite) executeDelegate(
 
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
 	s.T().Logf("%s successfully delegated %s to %s", delegatorAddr, amount, valOperAddress)
-
-	// Validate delegation successful
-	s.Require().Eventually(
-		func() bool {
-			res, err := queryDelegation(endpoint, valOperAddress, delegatorAddr)
-			amt := res.GetDelegationResponse().GetDelegation().GetShares()
-			s.Require().NoError(err)
-
-			equal := amt.Equal(sdk.NewDecFromInt(amount.Amount))
-			return equal != expectErr
-		},
-		20*time.Second,
-		5*time.Second,
-	)
 }
 
 func (s *IntegrationTestSuite) executeRedelegate(c *chain, valIdx int, endpoint string, amount string, originalValOperAddress string, newValOperAddress string, delegatorAddr string, home string, delegateFees string) {

@@ -139,7 +139,7 @@ Major Release series continue to receive bug fixes (released as a Patch Release)
 
 Only the following major release series have a stable release status:
 
-v7 Theta is supported until v9 Epsilon. A fairly strict **bugfix-only** rule applies to pull requests that are requested to be included into a stable point-release.
+v7 Theta is supported until v9 Lambda. A fairly strict **bugfix-only** rule applies to pull requests that are requested to be included into a stable point-release.
 
 v6 Vega is supported until v8 Rho. A fairly strict **bugfix-only** rule applies to pull requests that are requested to be included into a stable point-release.
 

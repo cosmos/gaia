@@ -128,7 +128,7 @@ Increasing the value of the `SlashFractionDoubleSign` parameter will heighten th
 * `cosmoshub-4` default: `0.000100000000000000`
 * `cosmoshub-3` default: `0.000100000000000000`
 
-If a validator in the active set is offline for too long, the system will permanently burn ("slash") that validator's total delegations (aka stake-backing) by a `SlashFractionDowntime` of `0.000100000000000000` (0.01%). All delegators to an offending validator will lose 0.01% of all ATOMs delegated to this validator. At this point the validator will be "[jailed](https://docs.cosmos.network/main/modules/slashing/03_messages.html#unjail)," which means the validator will be temporarily removed from the active set of validators so the validator's stake-backing will only be slashed one time.
+If a validator in the active set is offline for too long, the system will permanently burn ("slash") that validator's total delegations (aka stake-backing) by a `SlashFractionDowntime` of `0.000100000000000000` (0.01%). All delegators to an offending validator will lose 0.01% of all ATOMs delegated to this validator. At this point the validator will be "[jailed](https://docs.cosmos.network/main/modules/slashing/section_03.html#unjail)," which means the validator will be temporarily removed from the active set of validators so the validator's stake-backing will only be slashed one time.
 
 #### Decreasing the value of `SlashFractionDowntime`
 Decreasing the value of the `SlashFractionDowntime` parameter will lessen the penalty for liveness violations, and offending validators will have a smaller proportion of their stake-backing burned. This may reduce the motivation for operators to ensure that their validators are online.

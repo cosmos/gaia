@@ -22,6 +22,7 @@ import (
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
@@ -45,24 +46,31 @@ const (
 	minGasPrice    = "0.00001"
 	// the test globalfee in genesis is the same as minGasPrice
 	// global fee lower/higher than min_gas_price
-	initialGlobalFeeAmt        = "0.00001"
-	lowGlobalFeesAmt           = "0.000001"
-	highGlobalFeeAmt           = "0.0001"
-	gas                        = 200000
-	govSendMsgRecipientAddress = "cosmos1pkueemdeps77dwrqma03pwqk93nw39nuhccz02"
-	govProposalBlockBuffer     = 35
+	initialGlobalFeeAmt    = "0.00001"
+	lowGlobalFeesAmt       = "0.000001"
+	highGlobalFeeAmt       = "0.0001"
+	gas                    = 200000
+	govProposalBlockBuffer = 35
+	periodJSONFile         = "test/time_period.json"
 )
 
 var (
-	stakingAmount     = math.NewInt(100000000000)
-	stakingAmountCoin = sdk.NewCoin(uatomDenom, stakingAmount)
-	tokenAmount       = sdk.NewCoin(uatomDenom, math.NewInt(3300000000)) // 3,300uatom
-	fees              = sdk.NewCoin(uatomDenom, math.NewInt(330000))     // 0.33uatom
-	depositAmount     = sdk.NewCoin(uatomDenom, math.NewInt(10000000))   // 10uatom
-	distModuleAddress = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
-	govModuleAddress  = authtypes.NewModuleAddress(govtypes.ModuleName).String()
-	proposalCounter   = 0
-	sendGovAmount     = sdk.NewInt64Coin(uatomDenom, 10)
+	govSendMsgRecipientAddress = Address()
+	stakingAmount              = math.NewInt(100000000000)
+	stakingAmountCoin          = sdk.NewCoin(uatomDenom, stakingAmount)
+	tokenAmount                = sdk.NewCoin(uatomDenom, math.NewInt(3300000000)) // 3,300uatom
+	fees                       = sdk.NewCoin(uatomDenom, math.NewInt(330000))     // 0.33uatom
+	depositAmount              = sdk.NewCoin(uatomDenom, math.NewInt(10000000))   // 10uatom
+	distModuleAddress          = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
+	govModuleAddress           = authtypes.NewModuleAddress(govtypes.ModuleName).String()
+	proposalCounter            = 0
+	sendGovAmount              = sdk.NewInt64Coin(uatomDenom, 10)
+	vestingDelayedAcc          = AccAddress()
+	vestingContinuousAcc       = AccAddress()
+	vestingAmount              = sdk.NewCoin(uatomDenom, math.NewInt(1000000000))
+	vestingBalance             = sdk.NewCoins(vestingAmount).Sort()
+	vestingEndTime             = time.Now().Add(20 * time.Second).Unix()
+	vestingStartTime           = time.Now().Add(10 * time.Second).Unix()
 )
 
 type UpgradePlan struct {
@@ -250,9 +258,36 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 	appGenState, genDoc, err := genutiltypes.GenesisStateFromGenFile(genFilePath)
 	s.Require().NoError(err)
 
-	var bankGenState banktypes.GenesisState
-	s.Require().NoError(cdc.UnmarshalJSON(appGenState[banktypes.ModuleName], &bankGenState))
+	authGenState := authtypes.GetGenesisStateFromAppState(cdc, appGenState)
 
+	// add continuous vesting account to the genesis
+	baseVestingContinuousAccount := authtypes.NewBaseAccount(vestingContinuousAcc, nil, 0, 0)
+	vestingContinuousAccount := authvesting.NewBaseVestingAccount(baseVestingContinuousAccount, vestingBalance, vestingEndTime)
+	vestingContinuousGenAccount := authvesting.NewContinuousVestingAccountRaw(vestingContinuousAccount, vestingStartTime)
+	s.Require().NoError(vestingContinuousGenAccount.Validate())
+
+	// add delayed vesting account to the genesis
+	baseVestingDelayedAccount := authtypes.NewBaseAccount(vestingDelayedAcc, nil, 0, 0)
+	vestingDelayedAccount := authvesting.NewBaseVestingAccount(baseVestingDelayedAccount, vestingBalance, vestingEndTime)
+	vestingDelayedGenAccount := authvesting.NewDelayedVestingAccountRaw(vestingDelayedAccount)
+	s.Require().NoError(vestingDelayedGenAccount.Validate())
+
+	// unpack and append accounts
+	accs, err := authtypes.UnpackAccounts(authGenState.Accounts)
+	s.Require().NoError(err)
+	accs = append(accs, vestingContinuousGenAccount, vestingDelayedGenAccount)
+	accs = authtypes.SanitizeGenesisAccounts(accs)
+	genAccs, err := authtypes.PackAccounts(accs)
+	s.Require().NoError(err)
+	authGenState.Accounts = genAccs
+
+	// save accounts
+	bz, err := cdc.MarshalJSON(&authGenState)
+	s.Require().NoError(err)
+	appGenState[authtypes.ModuleName] = bz
+
+	// update the denom metadata for the bank module
+	bankGenState := banktypes.GetGenesisStateFromAppState(cdc, appGenState)
 	bankGenState.DenomMetadata = append(bankGenState.DenomMetadata, banktypes.Metadata{
 		Description: "An example stable token",
 		Display:     uatomDenom,
@@ -267,7 +302,7 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 		},
 	})
 
-	bz, err := cdc.MarshalJSON(&bankGenState)
+	bz, err = cdc.MarshalJSON(bankGenState)
 	s.Require().NoError(err)
 	appGenState[banktypes.ModuleName] = bz
 

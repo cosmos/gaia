@@ -33,20 +33,7 @@ func (s *IntegrationTestSuite) testStaking() {
 	s.verifyBalanceChange(chainAAPIEndpoint, seedAmount, alice)
 
 	// Alice delegate uatom to Validator A
-	s.executeDelegate(s.chainA, 0, chainAAPIEndpoint, delegation.String(), valOperA.String(), alice, home, delegationFees.String())
-
-	// Validate delegation successful
-	s.Require().Eventually(
-		func() bool {
-			res, err := queryDelegation(chainAAPIEndpoint, valOperA.String(), alice)
-			amt := res.GetDelegationResponse().GetDelegation().GetShares()
-			s.Require().NoError(err)
-
-			return amt.Equal(sdk.NewDecFromInt(delegationAmount))
-		},
-		20*time.Second,
-		5*time.Second,
-	)
+	s.executeDelegate(s.chainA, 0, chainAAPIEndpoint, valOperA.String(), alice, home, delegationFees.String(), delegation, false)
 
 	// Alice redelegate uatom from Validator A to Validator B
 	s.executeRedelegate(s.chainA, 0, chainAAPIEndpoint, delegation.String(), valOperA.String(), valOperB.String(), alice, home, delegationFees.String())

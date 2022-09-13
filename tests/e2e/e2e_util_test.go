@@ -127,7 +127,7 @@ func (s *IntegrationTestSuite) sendMsgSend(c *chain, valIdx int, from, to, amt, 
 	)
 }
 
-func (s *IntegrationTestSuite) withdrawReward(c *chain, valIdx int, endpoint, payee, fees string, expectErr bool) {
+func (s *IntegrationTestSuite) withdrawAllRewards(c *chain, valIdx int, endpoint, payee, fees string, expectErr bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -1001,4 +1001,70 @@ func (s *IntegrationTestSuite) executeRedelegate(c *chain, valIdx int, endpoint 
 
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
 	s.T().Logf("%s successfully redelegated %s from %s to %s", delegatorAddr, amount, originalValOperAddress, newValOperAddress)
+}
+
+func (s *IntegrationTestSuite) execSetWithrawAddress(
+	c *chain,
+	valIdx int,
+	endpoint,
+	fees,
+	delegatorAddress,
+	newWithdrawalAddress,
+	homePath string,
+) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Setting distribution withdrawal address on chain %s for %s to %s", c.id, delegatorAddress, newWithdrawalAddress)
+	gaiaCommand := []string{
+		"gaiad",
+		"tx",
+		"distribution",
+		"set-withdraw-addr",
+		newWithdrawalAddress,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddress),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--%s=%s", flags.FlagHome, homePath),
+		"--keyring-backend=test",
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
+	s.T().Logf("Successfully set new distribution withdrawal address for %s to %s", delegatorAddress, newWithdrawalAddress)
+}
+
+func (s *IntegrationTestSuite) execWithdrawReward(
+	c *chain,
+	valIdx int,
+	endpoint,
+	fees,
+	delegatorAddress,
+	validatorAddress,
+	homePath string,
+) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Withdrawing distribution rewards on chain %s for delegator %s from %s validator", c.id, delegatorAddress, validatorAddress)
+	gaiaCommand := []string{
+		"gaiad",
+		"tx",
+		"distribution",
+		"withdraw-rewards",
+		validatorAddress,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddress),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, "300uatom"),
+		fmt.Sprintf("--%s=%s", flags.FlagGas, "auto"),
+		fmt.Sprintf("--%s=%s", flags.FlagGasAdjustment, "1.5"),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--%s=%s", flags.FlagHome, homePath),
+		"--keyring-backend=test",
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
+	s.T().Logf("Successfully withdrew distribution rewards for delegator %s from validator %s", delegatorAddress, validatorAddress)
 }

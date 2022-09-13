@@ -98,7 +98,7 @@ func initAppConfig() (string, interface{}) {
 	srvCfg.StateSync.SnapshotInterval = 1000
 	srvCfg.StateSync.SnapshotKeepRecent = 10
 
-	return params.CustomConfigTemplate, params.CustomAppConfig{
+	return params.CustomConfigTemplate(), params.CustomAppConfig{
 		Config:               *srvCfg,
 		BypassMinFeeMsgTypes: gaia.GetDefaultBypassFeeMessages(),
 	}

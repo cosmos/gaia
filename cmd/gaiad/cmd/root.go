@@ -83,6 +83,7 @@ func initAppConfig() (string, interface{}) {
 	srvCfg.StateSync.SnapshotInterval = 1000
 	srvCfg.StateSync.SnapshotKeepRecent = 10
 
+<<<<<<< HEAD
 	return params.CustomConfigTemplate, params.CustomAppConfig{
 		Config: *srvCfg,
 		BypassMinFeeMsgTypes: []string{
@@ -90,6 +91,11 @@ func initAppConfig() (string, interface{}) {
 			sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
 			sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
 		},
+=======
+	return params.CustomConfigTemplate(), params.CustomAppConfig{
+		Config:               *srvCfg,
+		BypassMinFeeMsgTypes: gaia.GetDefaultBypassFeeMessages(),
+>>>>>>> b50d37c (bug(app config): fix the wrong `bypass-min-fee-msg-types` key parse from the app config file (#1728))
 	}
 }
 

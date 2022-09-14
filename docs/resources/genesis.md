@@ -118,7 +118,7 @@ Let us break down the parameters:
 
 ### Bank
 
-The `bank` module handles tokens. The only parameter that needs to be defined in this section is wether `transfers` are enabled at genesis or not.
+The `bank` module handles tokens. The only parameter that needs to be defined in this section is whether `transfers` are enabled at genesis or not.
 
 ```json
 "bank": {
@@ -168,7 +168,7 @@ Let us break down the parameters:
 - `bonds`: List of last known delegation. Generally `null` in genesis (except if genesis was generated using a previous state).
 - `unbonding_delegations`: List of last known unbonding delegations. Generally `null` in genesis (except if genesis was generated using a previous state).
 - `redelegations`: List of last known redelegations. Generally `null` in genesis (except if genesis was generated using a previous state).
-- `exported`: Wether this genesis was generated using the export of a previous state.
+- `exported`: Whether this genesis was generated using the export of a previous state.
 
 ### Mint
 

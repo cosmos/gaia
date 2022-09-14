@@ -21,8 +21,8 @@ If you would like to search explorers for previous hub data, these are some link
 
 ### Hubble
 
-- [Cosmos Hub 1](https://hubble.figment.network/cosmos/chains/cosmoshub-1)
-- [Cosmos Hub 2](https://hubble.figment.network/cosmos/chains/cosmoshub-2)
-- [Cosmos Hub 3](https://hubble.figment.network/cosmos/chains/cosmoshub-3)
+- [Cosmos Hub 1](https://hubble.figment.io/cosmos/chains/cosmoshub-1)
+- [Cosmos Hub 2](https://hubble.figment.io/cosmos/chains/cosmoshub-2)
+- [Cosmos Hub 3](https://hubble.figment.io/cosmos/chains/cosmoshub-3)
 
 If you want to makes archives available to the community, feel free to open a PR to this file and add them.

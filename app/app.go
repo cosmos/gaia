@@ -472,15 +472,6 @@ func NewGaiaApp(
 		govConfig,
 	)
 
-	app.UpgradeKeeper = upgradekeeper.NewKeeper(
-		skipUpgradeHeights,
-		keys[upgradetypes.StoreKey],
-		appCodec,
-		homePath,
-		app.BaseApp,
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
-	)
-
 	app.TransferKeeper = ibctransferkeeper.NewKeeper(
 		appCodec,
 		keys[ibctransfertypes.StoreKey],
@@ -716,11 +707,8 @@ func NewGaiaApp(
 	app.MountTransientStores(tkeys)
 	app.MountMemoryStores(memKeys)
 
-	var bypassMinFeeMsgTypes []string
-	bypassMinFeeConfig := appOpts.Get(gaiaappparams.BypassMinFeeMsgTypesKey)
-	if bypassMinFeeConfig != nil {
-		bypassMinFeeMsgTypes = cast.ToStringSlice(bypassMinFeeConfig)
-	} else {
+	bypassMinFeeMsgTypes := cast.ToStringSlice(appOpts.Get(gaiaappparams.BypassMinFeeMsgTypesKey))
+	if bypassMinFeeMsgTypes == nil {
 		bypassMinFeeMsgTypes = GetDefaultBypassFeeMessages()
 	}
 

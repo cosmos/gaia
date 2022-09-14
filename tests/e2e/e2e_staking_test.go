@@ -1,44 +1,23 @@
 package e2e
 
 import (
-	"fmt"
 	"time"
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (s *IntegrationTestSuite) testStaking() {
-	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-	seedAmount := sdk.NewCoin(uatomDenom, math.NewInt(1000000000)) // 1,000 atom
+func (s *IntegrationTestSuite) testStaking(chainEndpoint string, delegatorAddress string, validatorAddressA string, validatorAddressB string, fees sdk.Coin, homePath string) {
 	delegationAmount := math.NewInt(500000000)
 	delegation := sdk.NewCoin(uatomDenom, delegationAmount) // 500 atom
-	home := "/home/nonroot/.gaia"
-
-	validatorA := s.chainA.validators[0]
-	validatorB := s.chainA.validators[1]
-	sender, err := validatorA.keyInfo.GetAddress()
-	s.NoError(err)
-	validatorBAddr, err := validatorB.keyInfo.GetAddress()
-	s.NoError(err)
-
-	valOperA := sdk.ValAddress(sender)
-	valOperB := sdk.ValAddress(validatorBAddr)
-
-	alice := s.executeGKeysAddCommand(s.chainA, 0, "alice", home)
-	delegationFees := sdk.NewCoin(uatomDenom, math.NewInt(10))
-
-	// Fund Alice
-	s.sendMsgSend(s.chainA, 0, sender.String(), alice, seedAmount.String(), fees.String(), false)
-	s.verifyBalanceChange(chainAAPIEndpoint, seedAmount, alice)
 
 	// Alice delegate uatom to Validator A
-	s.executeDelegate(s.chainA, 0, chainAAPIEndpoint, delegation.String(), valOperA.String(), alice, home, delegationFees.String())
+	s.executeDelegate(s.chainA, 0, chainEndpoint, delegation.String(), validatorAddressA, delegatorAddress, homePath, fees.String())
 
 	// Validate delegation successful
 	s.Require().Eventually(
 		func() bool {
-			res, err := queryDelegation(chainAAPIEndpoint, valOperA.String(), alice)
+			res, err := queryDelegation(chainEndpoint, validatorAddressA, delegatorAddress)
 			amt := res.GetDelegationResponse().GetDelegation().GetShares()
 			s.Require().NoError(err)
 
@@ -49,12 +28,12 @@ func (s *IntegrationTestSuite) testStaking() {
 	)
 
 	// Alice redelegate uatom from Validator A to Validator B
-	s.executeRedelegate(s.chainA, 0, chainAAPIEndpoint, delegation.String(), valOperA.String(), valOperB.String(), alice, home, delegationFees.String())
+	s.executeRedelegate(s.chainA, 0, chainEndpoint, delegation.String(), validatorAddressA, validatorAddressB, delegatorAddress, homePath, fees.String())
 
 	// Validate redelegation successful
 	s.Require().Eventually(
 		func() bool {
-			res, err := queryDelegation(chainAAPIEndpoint, valOperB.String(), alice)
+			res, err := queryDelegation(chainEndpoint, validatorAddressB, delegatorAddress)
 			amt := res.GetDelegationResponse().GetDelegation().GetShares()
 			s.Require().NoError(err)
 

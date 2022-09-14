@@ -19,5 +19,8 @@
     "gaia",
     "cosmos hub",
     "atom"
-  ]
+  ],
+  "devDependencies": {
+    "picocolors": "^1.0.0"
+  }
 }

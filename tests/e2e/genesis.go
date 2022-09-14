@@ -6,7 +6,6 @@ import (
 	"os"
 	"time"
 
-	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -135,7 +134,7 @@ func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, gl
 	appState[staketypes.ModuleName] = stakingGenStateBz
 
 	// Refactor to separate method
-	amnt := math.NewInt(10000)
+	amnt := sdk.NewInt(10000)
 	quorum, _ := sdk.NewDecFromStr("0.000000000000000001")
 	threshold, _ := sdk.NewDecFromStr("0.000000000000000001")
 

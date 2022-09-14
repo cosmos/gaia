@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"strings"
 	"time"
-	
-	"cosmossdk.io/math"	
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
@@ -752,17 +750,19 @@ func (s *IntegrationTestSuite) TestStaking() {
 	validatorA := s.chainA.validators[0]
 	validatorB := s.chainA.validators[1]
 	validatorAAddr, err := validatorA.keyInfo.GetAddress()
-	s.NoError(err)
+	s.Require().NoError(err)
 	validatorBAddr, err := validatorB.keyInfo.GetAddress()
-	s.NoError(err)
+	s.Require().NoError(err)
 
 	valOperA := sdk.ValAddress(validatorAAddr)
 	valOperB := sdk.ValAddress(validatorBAddr)
 
 	alice, err := s.chainA.accounts[2].keyInfo.GetAddress()
+	s.Require().NoError(err)
 	bob, err := s.chainA.accounts[3].keyInfo.GetAddress()
+	s.Require().NoError(err)
 
-	delegationFees := sdk.NewCoin(uatomDenom, math.NewInt(10))
+	delegationFees := sdk.NewCoin(uatomDenom, sdk.NewInt(10))
 
 	s.testStaking(chainAAPIEndpoint, alice.String(), valOperA.String(), valOperB.String(), delegationFees, home)
 	s.testDistribution(chainAAPIEndpoint, alice.String(), bob.String(), valOperB.String(), home)

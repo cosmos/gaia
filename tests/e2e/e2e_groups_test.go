@@ -53,7 +53,7 @@ var (
 
 func (s *IntegrationTestSuite) GroupsSendMsgTest() {
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-	s.setup()
+	s.setupGroupsSuite()
 
 	s.T().Logf("Creating Group")
 	s.execCreateGroup(s.chainA, 0, chainAAPIEndpoint, adminAddr, "Cosmos Hub Group", filepath.Join(dataDirectoryHome, originalMembersFilename), fees.String())
@@ -219,7 +219,7 @@ func (s *IntegrationTestSuite) writeGroupPolicies(c *chain, thresholdFilename st
 	s.writeFile(c, percentageFilename, percentageBody)
 }
 
-func (s *IntegrationTestSuite) setup() {
+func (s *IntegrationTestSuite) setupGroupsSuite() {
 	admin, err := s.chainA.validators[0].keyInfo.GetAddress()
 	s.Require().NoError(err)
 	adminAddr = admin.String()

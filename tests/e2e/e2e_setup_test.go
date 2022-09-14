@@ -17,7 +17,6 @@ import (
 	"testing"
 	"time"
 
-	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -54,11 +53,11 @@ const (
 )
 
 var (
-	stakingAmount     = math.NewInt(100000000000)
+	stakingAmount     = sdk.NewInt(100000000000)
 	stakingAmountCoin = sdk.NewCoin(uatomDenom, stakingAmount)
-	tokenAmount       = sdk.NewCoin(uatomDenom, math.NewInt(3300000000)) // 3,300uatom
-	fees              = sdk.NewCoin(uatomDenom, math.NewInt(330000))     // 0.33uatom
-	depositAmount     = sdk.NewCoin(uatomDenom, math.NewInt(10000000))   // 10uatom
+	tokenAmount       = sdk.NewCoin(uatomDenom, sdk.NewInt(3300000000)) // 3,300uatom
+	fees              = sdk.NewCoin(uatomDenom, sdk.NewInt(330000))     // 0.33uatom
+	depositAmount     = sdk.NewCoin(uatomDenom, sdk.NewInt(10000000))   // 10uatom
 	distModuleAddress = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
 	govModuleAddress  = authtypes.NewModuleAddress(govtypes.ModuleName).String()
 	proposalCounter   = 0

@@ -44,10 +44,12 @@ func init() {
 
 // this is called only by test files
 type chain struct {
-	dataDir    string
-	id         string
-	validators []*validator
-	accounts   []*account
+	dataDir              string
+	id                   string
+	validators           []*validator
+	accounts             []*account
+	delayedVestingAcc    sdk.AccAddress
+	continuousVestingAcc sdk.AccAddress
 }
 
 func newChain() (*chain, error) {

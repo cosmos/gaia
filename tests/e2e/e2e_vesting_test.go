@@ -11,38 +11,92 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api, home string) {
 	validatorA := s.chainA.validators[0]
 	sender, err := validatorA.keyInfo.GetAddress()
 	s.NoError(err)
-	valOpAddr := sdk.ValAddress(sender)
 
+	var (
+		delegationFees    = sdk.NewCoin(uatomDenom, sdk.NewInt(10))
+		valOpAddr         = sdk.ValAddress(sender)
+		vestingDelayedAcc = s.chainA.delayedVestingAcc
+		transferAmount    = sdk.NewCoin(uatomDenom, sdk.NewInt(1550000))
+		delegationAmount  = sdk.NewCoin(uatomDenom, sdk.NewInt(500000000))
+	)
 	s.Run("test delayed vesting genesis account", func() {
+		//	Balance should be zero
+		afterAtomBalance, err := getSpecificBalance(api, vestingDelayedAcc.String(), uatomDenom)
+		s.Require().NoError(err)
+		s.Require().Equal(vestingAmount, afterAtomBalance)
+
+		//	Transfer coins should fail
+		ad := Address()
+		fmt.Printf("transfer form %s to %s\n", vestingDelayedAcc.String(), ad)
+		s.sendMsgSend(
+			s.chainA,
+			0,
+			vestingDelayedAcc.String(),
+			ad,
+			transferAmount.String(),
+			fees.String(),
+			true,
+		)
+		//	Delegate coins should succeed
+		s.executeDelegate(s.chainA, 0, api, delegationAmount.String(), valOpAddr.String(), vestingDelayedAcc.String(), home, delegationFees.String())
+
+		// Validate delegation successful
+		s.Require().Eventually(
+			func() bool {
+				res, err := queryDelegation(api, valOpAddr.String(), vestingDelayedAcc.String())
+				amt := res.GetDelegationResponse().GetDelegation().GetShares()
+				s.Require().NoError(err)
+
+				return amt.Equal(sdk.NewDecFromInt(vestingAmount.Amount.Sub(delegationAmount.Amount)))
+			},
+			20*time.Second,
+			5*time.Second,
+		)
+
+		time.Sleep(vestingLength)
+
 		//	Balance should be equal to original vesting coins
-		s.verifyBalanceChange(api, vestingAmount, vestingDelayedAcc.String())
+		s.verifyBalanceChange(api, transferAmount, vestingDelayedAcc.String())
+		//	Transfer coins should fail
+		s.sendMsgSend(s.chainA, 0, vestingDelayedAcc.String(), Address(), transferAmount.String(), fees.String(), false)
 	})
 
-	s.Run("test delayed vesting created by API", func() {
-		newVestingAcc := Address()
-		s.execCreateVestingAccount(s.chainA, newVestingAcc, vestingAmount.String(), vestingEndTime)
-
-		//	Balance should be equal to original vesting coins
-		s.verifyBalanceChange(api, vestingAmount, vestingDelayedAcc.String())
-		//	Transfer coins should fail
-		s.sendMsgSend(s.chainA, 0, newVestingAcc, Address(), vestingAmount.String(), fees.String(), true)
-		//	Delegate coins should succeed
-		s.executeDelegate(s.chainA, 0, api, valOpAddr.String(), newVestingAcc, home, fees.String(), vestingAmount, false)
-
-		time.Sleep(10 * time.Second)
-
-		//	Balance should be equal to original vesting coins
-		s.verifyBalanceChange(api, vestingAmount, vestingDelayedAcc.String())
-		//	Delegate coins should succeed
-		s.executeDelegate(s.chainA, 0, api, valOpAddr.String(), newVestingAcc, home, fees.String(), vestingAmount, false)
-		//	Transfer coins should fail
-		s.sendMsgSend(s.chainA, 0, newVestingAcc, Address(), vestingAmount.String(), fees.String(), false)
-	})
+	//s.Run("test delayed vesting created by API", func() {
+	//	newVestingAddr := Address()
+	//	s.execCreateVestingAccount(s.chainA, newVestingAddr, vestingAmount.String(), vestingEndTime)
+	//
+	//	//	Balance should be equal to original vesting coins
+	//	s.verifyBalanceChange(api, amount, vestingDelayedAcc.String())
+	//	//	Transfer coins should fail
+	//	s.sendMsgSend(s.chainA, 0, newVestingAddr, Address(), amount.String(), fees.String(), true)
+	//	//	Delegate coins should succeed
+	//	s.executeDelegate(s.chainA, 0, api, amount.String(), valOpAddr.String(), newVestingAddr, home, fees.String())
+	//
+	//	// Validate delegation successful
+	//	s.Require().Eventually(
+	//		func() bool {
+	//			res, err := queryDelegation(api, valOpAddr.String(), newVestingAddr)
+	//			amt := res.GetDelegationResponse().GetDelegation().GetShares()
+	//			s.Require().NoError(err)
+	//
+	//			return amt.Equal(sdk.NewDecFromInt(amount.Amount))
+	//		},
+	//		20*time.Second,
+	//		5*time.Second,
+	//	)
+	//
+	//	time.Sleep(vestingLength)
+	//
+	//	//	Balance should be equal to original vesting coins
+	//	s.verifyBalanceChange(api, amount, vestingDelayedAcc.String())
+	//	//	Transfer coins should fail
+	//	s.sendMsgSend(s.chainA, 0, newVestingAddr, Address(), amount.String(), fees.String(), false)
+	//})
 }
 
 func (s *IntegrationTestSuite) testContinuousVestingAccount(api, home string) {
 	// TODO test genesis account
-	_ = vestingContinuousAcc
+	vestingContinuousAcc := s.chainA.continuousVestingAcc
 	fmt.Println(vestingContinuousAcc.String())
 
 	// Create a continuous vesting account

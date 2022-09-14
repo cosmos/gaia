@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
-	
-	"cosmossdk.io/math"	
+
+	"cosmossdk.io/math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
@@ -775,7 +775,7 @@ func (s *IntegrationTestSuite) TestVesting() {
 		home      = "/home/nonroot/.gaia"
 	)
 	s.testDelayedVestingAccount(chainAAPI, home)
-	s.testPermanentLockedAccount(chainAAPI, home)
-	s.testContinuousVestingAccount(chainAAPI, home)
-	s.testPeriodicVestingAccount(chainAAPI, home)
+	//s.testPermanentLockedAccount(chainAAPI, home)
+	//s.testContinuousVestingAccount(chainAAPI, home)
+	//s.testPeriodicVestingAccount(chainAAPI, home)
 }

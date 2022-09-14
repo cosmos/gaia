@@ -9,6 +9,14 @@ import (
 	"github.com/tendermint/tendermint/crypto/ed25519"
 )
 
+const (
+	// HDPathZero is the parts of the BIP44 HD path that are fixed by
+	// what we used during the ATOM fundraiser.
+	HDPathZero = "m/44'/118'/0'/0/0"
+	// HDPathOne is the second wallet from the BIP44 HD path.
+	HDPathOne = "m/44'/118'/0'/0/1"
+)
+
 // PubKey returns a sample account PubKey
 func PubKey() crypto.PubKey {
 	seed := []byte(strconv.Itoa(rand.Int()))

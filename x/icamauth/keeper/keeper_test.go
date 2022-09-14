@@ -1,5 +1,6 @@
 package keeper_test
 
+/*
 import (
 	"encoding/json"
 	"testing"
@@ -135,3 +136,4 @@ func RegisterInterchainAccount(endpoint *ibctesting.Endpoint, owner string) erro
 
 	return nil
 }
+*/

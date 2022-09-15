@@ -177,7 +177,7 @@ func (s *IntegrationTestSuite) testPermanentLockedAccount(api, home string) {
 		permanentLockedAddr, err := account.GetAddress()
 		s.Require().NoError(err)
 
-		s.execCreatePeriodicVestingAccount(s.chainA, home, permanentLockedAddr.String(), periodJSONFile,
+		s.execCreatePermanentLockedAccount(s.chainA, home, permanentLockedAddr.String(), periodJSONFile,
 			withKeyValue("from", sender.String()),
 		)
 
@@ -241,7 +241,8 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api, home string) {
 		periodicVestingAddr, err := account.GetAddress()
 		s.Require().NoError(err)
 
-		s.execCreatePeriodicVestingAccount(s.chainA, home, periodicVestingAddr.String(), periodJSONFile)
+		s.execCreatePeriodicVestingAccount(s.chainA, home, periodicVestingAddr.String(), periodJSONFile,
+			withKeyValue("from", sender.String()))
 
 		acc, err := queryPeriodicVestingAccount(api, periodicVestingAddr.String())
 		s.Require().NoError(err)

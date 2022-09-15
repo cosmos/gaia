@@ -34,7 +34,8 @@ func queryDelayedVestingAccount(endpoint, address string) (authvesting.DelayedVe
 	}
 	acc, ok := baseAcc.(*authvesting.DelayedVestingAccount)
 	if !ok {
-		return *acc, fmt.Errorf("cannot cast %v to DelayedVestingAccount", baseAcc)
+		return authvesting.DelayedVestingAccount{},
+			fmt.Errorf("cannot cast %v to DelayedVestingAccount", baseAcc)
 	}
 	return *acc, nil
 }
@@ -46,7 +47,33 @@ func queryContinuousVestingAccount(endpoint, address string) (authvesting.Contin
 	}
 	acc, ok := baseAcc.(*authvesting.ContinuousVestingAccount)
 	if !ok {
-		return *acc, fmt.Errorf("cannot cast %v to DelayedVestingAccount", baseAcc)
+		return authvesting.ContinuousVestingAccount{},
+			fmt.Errorf("cannot cast %v to ContinuousVestingAccount", baseAcc)
+	}
+	return *acc, nil
+}
+func queryPermanentLockedAccount(endpoint, address string) (authvesting.PermanentLockedAccount, error) {
+	baseAcc, err := queryAccount(endpoint, address)
+	if err != nil {
+		return authvesting.PermanentLockedAccount{}, err
+	}
+	acc, ok := baseAcc.(*authvesting.PermanentLockedAccount)
+	if !ok {
+		return authvesting.PermanentLockedAccount{},
+			fmt.Errorf("cannot cast %v to PermanentLockedAccount", baseAcc)
+	}
+	return *acc, nil
+}
+
+func queryPeriodicVestingAccount(endpoint, address string) (authvesting.PeriodicVestingAccount, error) {
+	baseAcc, err := queryAccount(endpoint, address)
+	if err != nil {
+		return authvesting.PeriodicVestingAccount{}, err
+	}
+	acc, ok := baseAcc.(*authvesting.PeriodicVestingAccount)
+	if !ok {
+		return authvesting.PeriodicVestingAccount{},
+			fmt.Errorf("cannot cast %v to PeriodicVestingAccount", baseAcc)
 	}
 	return *acc, nil
 }

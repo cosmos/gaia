@@ -2,12 +2,12 @@
   "start_time": 1625204910,
   "period": [
     {
-      "coins": "10000000uatom",
-      "length_seconds": 20
+      "coins": "400000000uatom",
+      "length_seconds": 40
     },
     {
-      "coins": "1000photon",
-      "length_seconds": 30
+      "coins": "400000000uatom",
+      "length_seconds": 80
     }
   ]
 }

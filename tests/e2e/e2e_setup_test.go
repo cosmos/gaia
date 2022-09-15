@@ -281,17 +281,15 @@ func (s *IntegrationTestSuite) generateAuthAndBankState(
 	// add continuous vesting account to the genesis
 	baseVestingContinuousAccount := authtypes.NewBaseAccount(
 		c.continuousVestingAcc, nil, 0, 0)
-	vestingContinuousAccount := authvesting.NewBaseVestingAccount(
-		baseVestingContinuousAccount,
-		sdk.NewCoins(vestingAmountVested),
-		time.Now().Add(5*vestingTimeLength).Unix(),
-	)
 	vestingContinuousGenAccount := authvesting.NewContinuousVestingAccountRaw(
-		vestingContinuousAccount,
-		time.Now().Add(vestingTimeLength).Unix(),
+		authvesting.NewBaseVestingAccount(
+			baseVestingContinuousAccount,
+			sdk.NewCoins(vestingAmountVested),
+			time.Now().Add(20*vestingTimeLength).Unix(),
+		),
+		time.Now().Add(10*vestingTimeLength).Unix(),
 	)
-	err = vestingContinuousGenAccount.Validate()
-	s.Require().NoError(err)
+	s.Require().NoError(vestingContinuousGenAccount.Validate())
 
 	// Use the second wallet from the same mnemonic by HD path
 	account, err = kb.NewAccount("delayed_vesting", vestingMnemonic, "", HDPathOne, algo)
@@ -303,14 +301,14 @@ func (s *IntegrationTestSuite) generateAuthAndBankState(
 	// add delayed vesting account to the genesis
 	baseVestingDelayedAccount := authtypes.NewBaseAccount(
 		c.delayedVestingAcc, nil, 0, 0)
-	vestingDelayedAccount := authvesting.NewBaseVestingAccount(
-		baseVestingDelayedAccount,
-		sdk.NewCoins(vestingAmountVested),
-		time.Now().Add(5*vestingTimeLength).Unix(),
+	vestingDelayedGenAccount := authvesting.NewDelayedVestingAccountRaw(
+		authvesting.NewBaseVestingAccount(
+			baseVestingDelayedAccount,
+			sdk.NewCoins(vestingAmountVested),
+			time.Now().Add(5*vestingTimeLength).Unix(),
+		),
 	)
-	vestingDelayedGenAccount := authvesting.NewDelayedVestingAccountRaw(vestingDelayedAccount)
-	err = vestingDelayedGenAccount.Validate()
-	s.Require().NoError(err)
+	s.Require().NoError(vestingDelayedGenAccount.Validate())
 
 	// unpack and append accounts
 	accs, err := authtypes.UnpackAccounts(authGenState.Accounts)

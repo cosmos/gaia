@@ -3,7 +3,7 @@ package e2e
 import (
 	"fmt"
 	"time"
-
+	
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -16,28 +16,19 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api, home string) {
 		delegationFees    = sdk.NewCoin(uatomDenom, sdk.NewInt(10))
 		valOpAddr         = sdk.ValAddress(sender)
 		vestingDelayedAcc = s.chainA.delayedVestingAcc
-		transferAmount    = sdk.NewCoin(uatomDenom, sdk.NewInt(1550000))
+		transferAmount    = sdk.NewCoin(uatomDenom, sdk.NewInt(80000000))
 		delegationAmount  = sdk.NewCoin(uatomDenom, sdk.NewInt(500000000))
 	)
 	s.Run("test delayed vesting genesis account", func() {
+		acc, err := queryDelayedVestingAccount(api, vestingDelayedAcc.String())
+		s.Require().NoError(err)
+
 		//	Balance should be zero
 		afterAtomBalance, err := getSpecificBalance(api, vestingDelayedAcc.String(), uatomDenom)
 		s.Require().NoError(err)
-		s.Require().Equal(vestingAmount, afterAtomBalance)
+		s.Require().Equal(vestingBalance.AmountOf(uatomDenom), afterAtomBalance.Amount)
 
-		//	Transfer coins should fail
-		ad := Address()
-		fmt.Printf("transfer form %s to %s\n", vestingDelayedAcc.String(), ad)
-		s.sendMsgSend(
-			s.chainA,
-			0,
-			vestingDelayedAcc.String(),
-			ad,
-			transferAmount.String(),
-			fees.String(),
-			true,
-		)
-		//	Delegate coins should succeed
+		// Delegate coins should succeed
 		s.executeDelegate(s.chainA, 0, api, delegationAmount.String(), valOpAddr.String(), vestingDelayedAcc.String(), home, delegationFees.String())
 
 		// Validate delegation successful
@@ -47,50 +38,33 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api, home string) {
 				amt := res.GetDelegationResponse().GetDelegation().GetShares()
 				s.Require().NoError(err)
 
-				return amt.Equal(sdk.NewDecFromInt(vestingAmount.Amount.Sub(delegationAmount.Amount)))
+				return amt.Equal(sdk.NewDecFromInt(delegationAmount.Amount))
 			},
 			20*time.Second,
 			5*time.Second,
 		)
 
-		time.Sleep(vestingLength)
-
-		//	Balance should be equal to original vesting coins
-		s.verifyBalanceChange(api, transferAmount, vestingDelayedAcc.String())
 		//	Transfer coins should fail
+		s.sendMsgSend(
+			s.chainA,
+			0,
+			vestingDelayedAcc.String(),
+			Address(),
+			transferAmount.String(),
+			fees.String(),
+			true,
+		)
+
+		waitTime := time.Duration(time.Now().Unix() - acc.EndTime)
+		time.Sleep(waitTime * time.Second)
+
+		//	Transfer coins should succeed
 		s.sendMsgSend(s.chainA, 0, vestingDelayedAcc.String(), Address(), transferAmount.String(), fees.String(), false)
 	})
 
 	//s.Run("test delayed vesting created by API", func() {
 	//	newVestingAddr := Address()
 	//	s.execCreateVestingAccount(s.chainA, newVestingAddr, vestingAmount.String(), vestingEndTime)
-	//
-	//	//	Balance should be equal to original vesting coins
-	//	s.verifyBalanceChange(api, amount, vestingDelayedAcc.String())
-	//	//	Transfer coins should fail
-	//	s.sendMsgSend(s.chainA, 0, newVestingAddr, Address(), amount.String(), fees.String(), true)
-	//	//	Delegate coins should succeed
-	//	s.executeDelegate(s.chainA, 0, api, amount.String(), valOpAddr.String(), newVestingAddr, home, fees.String())
-	//
-	//	// Validate delegation successful
-	//	s.Require().Eventually(
-	//		func() bool {
-	//			res, err := queryDelegation(api, valOpAddr.String(), newVestingAddr)
-	//			amt := res.GetDelegationResponse().GetDelegation().GetShares()
-	//			s.Require().NoError(err)
-	//
-	//			return amt.Equal(sdk.NewDecFromInt(amount.Amount))
-	//		},
-	//		20*time.Second,
-	//		5*time.Second,
-	//	)
-	//
-	//	time.Sleep(vestingLength)
-	//
-	//	//	Balance should be equal to original vesting coins
-	//	s.verifyBalanceChange(api, amount, vestingDelayedAcc.String())
-	//	//	Transfer coins should fail
-	//	s.sendMsgSend(s.chainA, 0, newVestingAddr, Address(), amount.String(), fees.String(), false)
 	//})
 }
 
@@ -133,7 +107,7 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api, home string) {
 
 func (s *IntegrationTestSuite) testPermanentLockedAccount(api, home string) {
 	newVestingAcc := Address()
-	s.execCreatePermanentLockedAccount(s.chainA, newVestingAcc, vestingAmount.String())
+	s.execCreatePermanentLockedAccount(s.chainA, newVestingAcc, vestingAmountVested.String())
 	fmt.Println(newVestingAcc)
 
 	// Create a permanently locked account

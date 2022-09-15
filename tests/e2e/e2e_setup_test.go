@@ -54,7 +54,7 @@ const (
 	gas                    = 200000
 	govProposalBlockBuffer = 35
 	periodJSONFile         = "test/time_period.json"
-	vestingLength          = 10 * time.Second
+	vestingTimeLength      = 20 * time.Second
 )
 
 var (
@@ -68,10 +68,9 @@ var (
 	govModuleAddress           = authtypes.NewModuleAddress(govtypes.ModuleName).String()
 	proposalCounter            = 0
 	sendGovAmount              = sdk.NewInt64Coin(uatomDenom, 10)
-	vestingAmount              = sdk.NewCoin(uatomDenom, math.NewInt(99900000000))
-	vestingBalance             = sdk.NewCoins(vestingAmount).Sort()
-	vestingEndTime             = time.Now().Add(100 * vestingLength).Unix()
-	vestingStartTime           = time.Now().Add(vestingLength).Unix()
+	vestingAmountVested        = sdk.NewCoin(uatomDenom, math.NewInt(99900000000))
+	vestingAmount              = sdk.NewCoin(uatomDenom, math.NewInt(330000))
+	vestingBalance             = sdk.NewCoins(vestingAmountVested).Add(vestingAmount)
 )
 
 type UpgradePlan struct {
@@ -280,9 +279,17 @@ func (s *IntegrationTestSuite) generateAuthAndBankState(
 	s.T().Logf("created vesting continuous genesis account %s\n", c.continuousVestingAcc.String())
 
 	// add continuous vesting account to the genesis
-	baseVestingContinuousAccount := authtypes.NewBaseAccount(c.continuousVestingAcc, nil, 0, 0)
-	vestingContinuousAccount := authvesting.NewBaseVestingAccount(baseVestingContinuousAccount, vestingBalance, vestingEndTime)
-	vestingContinuousGenAccount := authvesting.NewContinuousVestingAccountRaw(vestingContinuousAccount, vestingStartTime)
+	baseVestingContinuousAccount := authtypes.NewBaseAccount(
+		c.continuousVestingAcc, nil, 0, 0)
+	vestingContinuousAccount := authvesting.NewBaseVestingAccount(
+		baseVestingContinuousAccount,
+		sdk.NewCoins(vestingAmountVested),
+		time.Now().Add(5*vestingTimeLength).Unix(),
+	)
+	vestingContinuousGenAccount := authvesting.NewContinuousVestingAccountRaw(
+		vestingContinuousAccount,
+		time.Now().Add(vestingTimeLength).Unix(),
+	)
 	err = vestingContinuousGenAccount.Validate()
 	s.Require().NoError(err)
 
@@ -294,8 +301,13 @@ func (s *IntegrationTestSuite) generateAuthAndBankState(
 	s.T().Logf("created vesting delayed genesis account %s\n", c.delayedVestingAcc.String())
 
 	// add delayed vesting account to the genesis
-	baseVestingDelayedAccount := authtypes.NewBaseAccount(c.delayedVestingAcc, nil, 0, 0)
-	vestingDelayedAccount := authvesting.NewBaseVestingAccount(baseVestingDelayedAccount, vestingBalance, vestingEndTime)
+	baseVestingDelayedAccount := authtypes.NewBaseAccount(
+		c.delayedVestingAcc, nil, 0, 0)
+	vestingDelayedAccount := authvesting.NewBaseVestingAccount(
+		baseVestingDelayedAccount,
+		sdk.NewCoins(vestingAmountVested),
+		time.Now().Add(5*vestingTimeLength).Unix(),
+	)
 	vestingDelayedGenAccount := authvesting.NewDelayedVestingAccountRaw(vestingDelayedAccount)
 	err = vestingDelayedGenAccount.Validate()
 	s.Require().NoError(err)
@@ -314,8 +326,14 @@ func (s *IntegrationTestSuite) generateAuthAndBankState(
 	s.Require().NoError(err)
 
 	// update balances
-	vestingContinuousBalances := banktypes.Balance{Address: c.continuousVestingAcc.String(), Coins: vestingBalance}
-	vestingDelayedBalances := banktypes.Balance{Address: c.delayedVestingAcc.String(), Coins: vestingBalance}
+	vestingContinuousBalances := banktypes.Balance{
+		Address: c.continuousVestingAcc.String(),
+		Coins:   vestingBalance,
+	}
+	vestingDelayedBalances := banktypes.Balance{
+		Address: c.delayedVestingAcc.String(),
+		Coins:   vestingBalance,
+	}
 	bankGenState.Balances = append(bankGenState.Balances, vestingContinuousBalances, vestingDelayedBalances)
 	bankGenState.Balances = banktypes.SanitizeGenesisBalances(bankGenState.Balances)
 

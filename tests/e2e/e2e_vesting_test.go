@@ -40,7 +40,7 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api, home string) {
 	s.NoError(err)
 
 	var (
-		valOpAddr         = sdk.ValAddress(sender)
+		valOpAddr         = sdk.ValAddress(sender).String()
 		vestingDelayedAcc = s.chainA.delayedVestingAcc
 		delegationAmount  = sdk.NewCoin(uatomDenom, sdk.NewInt(500000000))
 		delegationFees    = sdk.NewCoin(uatomDenom, sdk.NewInt(10))
@@ -57,12 +57,12 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api, home string) {
 		s.Require().Equal(vestingBalance.AmountOf(uatomDenom), balance.Amount)
 
 		// Delegate coins should succeed
-		s.executeDelegate(s.chainA, 0, api, delegationAmount.String(), valOpAddr.String(), vestingDelayedAcc.String(), home, delegationFees.String())
+		s.executeDelegate(s.chainA, 0, api, delegationAmount.String(), valOpAddr, vestingDelayedAcc.String(), home, delegationFees.String())
 
 		// Validate delegation successful
 		s.Require().Eventually(
 			func() bool {
-				res, err := queryDelegation(api, valOpAddr.String(), vestingDelayedAcc.String())
+				res, err := queryDelegation(api, valOpAddr, vestingDelayedAcc.String())
 				amt := res.GetDelegationResponse().GetDelegation().GetShares()
 				s.Require().NoError(err)
 
@@ -102,7 +102,7 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api, home string) {
 		s.NoError(err)
 
 		var (
-			valOpAddr            = sdk.ValAddress(sender)
+			valOpAddr            = sdk.ValAddress(sender).String()
 			continuousVestingAcc = s.chainA.continuousVestingAcc
 		)
 
@@ -116,12 +116,12 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api, home string) {
 
 		// Delegate coins should succeed
 		s.executeDelegate(s.chainA, 0, api, vestingDelegationAmount.String(),
-			valOpAddr.String(), continuousVestingAcc.String(), home, vestingDelegationFees.String())
+			valOpAddr, continuousVestingAcc.String(), home, vestingDelegationFees.String())
 
 		// Validate delegation successful
 		s.Require().Eventually(
 			func() bool {
-				res, err := queryDelegation(api, valOpAddr.String(), continuousVestingAcc.String())
+				res, err := queryDelegation(api, valOpAddr, continuousVestingAcc.String())
 				amt := res.GetDelegationResponse().GetDelegation().GetShares()
 				s.Require().NoError(err)
 
@@ -172,15 +172,12 @@ func (s *IntegrationTestSuite) testPermanentLockedAccount(api, home string) {
 	s.Run("test permanent locked vesting genesis account", func() {
 		s.T().Parallel()
 
-		validatorA := s.chainB.validators[0]
-		sender, err := validatorA.keyInfo.GetAddress()
+		val := s.chainA.validators[0]
+		sender, err := val.keyInfo.GetAddress()
 		s.NoError(err)
 
-		var (
-			valOpAddr     = sdk.ValAddress(sender)
-			val0ConfigDir = s.chainA.validators[0].configDir()
-		)
-		kb, err := keyring.New(keyringAppName, keyring.BackendTest, val0ConfigDir, nil, cdc)
+		valOpAddr := sdk.ValAddress(sender).String()
+		kb, err := keyring.New(keyringAppName, keyring.BackendTest, val.configDir(), nil, cdc)
 		s.Require().NoError(err)
 
 		keyringAlgos, _ := kb.SupportedAlgorithms()
@@ -209,13 +206,13 @@ func (s *IntegrationTestSuite) testPermanentLockedAccount(api, home string) {
 		s.Require().Equal(vestingAmountVested.Amount, balance.Amount)
 
 		// Delegate coins should succeed
-		s.executeDelegate(s.chainA, 0, api, vestingDelegationAmount.String(), valOpAddr.String(),
+		s.executeDelegate(s.chainA, 0, api, vestingDelegationAmount.String(), valOpAddr,
 			permanentLockedAddr.String(), home, vestingDelegationFees.String())
 
 		// Validate delegation successful
 		s.Require().Eventually(
 			func() bool {
-				res, err := queryDelegation(api, valOpAddr.String(), permanentLockedAddr.String())
+				res, err := queryDelegation(api, valOpAddr, permanentLockedAddr.String())
 				amt := res.GetDelegationResponse().GetDelegation().GetShares()
 				s.Require().NoError(err)
 
@@ -235,15 +232,12 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api, home string) {
 	s.Run("test periodic vesting genesis account", func() {
 		s.T().Parallel()
 
-		validatorA := s.chainB.validators[1]
-		sender, err := validatorA.keyInfo.GetAddress()
+		val := s.chainB.validators[1]
+		sender, err := val.keyInfo.GetAddress()
 		s.NoError(err)
 
-		var (
-			valOpAddr     = sdk.ValAddress(sender)
-			val0ConfigDir = s.chainA.validators[0].configDir()
-		)
-		kb, err := keyring.New(keyringAppName, keyring.BackendTest, val0ConfigDir, nil, cdc)
+		valOpAddr := sdk.ValAddress(sender).String()
+		kb, err := keyring.New(keyringAppName, keyring.BackendTest, val.configDir(), nil, cdc)
 		s.Require().NoError(err)
 
 		keyringAlgos, _ := kb.SupportedAlgorithms()
@@ -296,13 +290,13 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api, home string) {
 		}
 
 		// Delegate coins should succeed
-		s.executeDelegate(s.chainA, 0, api, vestingDelegationAmount.String(), valOpAddr.String(),
+		s.executeDelegate(s.chainA, 0, api, vestingDelegationAmount.String(), valOpAddr,
 			periodicVestingAddr.String(), home, vestingDelegationFees.String())
 
 		// Validate delegation successful
 		s.Require().Eventually(
 			func() bool {
-				res, err := queryDelegation(api, valOpAddr.String(), periodicVestingAddr.String())
+				res, err := queryDelegation(api, valOpAddr, periodicVestingAddr.String())
 				amt := res.GetDelegationResponse().GetDelegation().GetShares()
 				s.Require().NoError(err)
 

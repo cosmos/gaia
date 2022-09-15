@@ -411,8 +411,8 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 
 			return strings.Contains(txResp.String(), "code: 0") || txResp.Code == uint32(0)
 		},
-		10*time.Second,
-		time.Second,
+		15*time.Second,
+		2*time.Second,
 		"tx returned a non-zero code; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
 	)
 	endpoint = fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))

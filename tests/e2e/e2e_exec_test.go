@@ -3,6 +3,7 @@ package e2e
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 	"strconv"
 	"time"
 )
@@ -104,11 +105,11 @@ func (s *IntegrationTestSuite) execCreatePermanentLockedAccount(
 func (s *IntegrationTestSuite) execCreatePeriodicVestingAccount(
 	c *chain,
 	home,
-	address,
-	periodFilepath string,
+	address string,
 	opt ...flagOption,
 ) {
+	jsonPath := filepath.Join(home, vestingPeriodFilePath)
 	s.T().Logf("Executing gaiad create periodic vesting account %s", c.id)
-	s.execVestingTx(c, home, "create-periodic-vesting-account", []string{address, periodFilepath}, opt...)
-	s.T().Logf("successfully created periodic vesting account %s with %s", address, periodFilepath)
+	s.execVestingTx(c, home, "create-periodic-vesting-account", []string{address, jsonPath}, opt...)
+	s.T().Logf("successfully created periodic vesting account %s with %s", address, jsonPath)
 }

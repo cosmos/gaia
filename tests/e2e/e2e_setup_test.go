@@ -53,8 +53,21 @@ const (
 	highGlobalFeeAmt       = "0.0001"
 	gas                    = 200000
 	govProposalBlockBuffer = 35
-	periodJSONFile         = "test/time_period.json"
 	vestingTimeLength      = 20 * time.Second
+	vestingPeriodFilePath  = "test_period.json"
+	vestingPeriod          = `{
+  "start_time": 1625204910,
+  "period": [
+    {
+      "coins": "400000000uatom",
+      "length_seconds": 40
+    },
+    {
+      "coins": "400000000uatom",
+      "length_seconds": 80
+    }
+  ]
+}`
 )
 
 var (
@@ -407,6 +420,9 @@ func (s *IntegrationTestSuite) initGenesis(c *chain, vestingMnemonic string) {
 	// write the updated genesis file to each validator.
 	for _, val := range c.validators {
 		err = writeFile(filepath.Join(val.configDir(), "config", "genesis.json"), bz)
+		s.Require().NoError(err)
+
+		err = writeFile(filepath.Join(val.configDir(), vestingPeriodFilePath), []byte(vestingPeriod))
 		s.Require().NoError(err)
 	}
 }

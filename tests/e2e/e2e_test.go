@@ -774,8 +774,8 @@ func (s *IntegrationTestSuite) TestVesting() {
 		chainAAPI = fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 		home      = "/home/nonroot/.gaia"
 	)
-	//s.testContinuousVestingAccount(chainAAPI, home)
-	//s.testDelayedVestingAccount(chainAAPI, home)
-	//s.testPermanentLockedAccount(chainAAPI, home)
+	s.testDelayedVestingAccount(chainAAPI, home)
+	s.testContinuousVestingAccount(chainAAPI, home)
+	s.testPermanentLockedAccount(chainAAPI, home)
 	s.testPeriodicVestingAccount(chainAAPI, home)
 }

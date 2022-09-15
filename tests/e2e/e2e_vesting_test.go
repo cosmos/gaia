@@ -172,13 +172,13 @@ func (s *IntegrationTestSuite) testPermanentLockedAccount(api, home string) {
 		s.Require().NoError(err)
 
 		// Use the first wallet from the same mnemonic by HD path
-		account, err := kb.NewAccount("continuous_vesting", mnemoinic, "", HDPathZero, algo)
+		account, err := kb.NewAccount("permanent_locked_vesting", mnemoinic, "", HDPathZero, algo)
 		s.Require().NoError(err)
 		permanentLockedAddr, err := account.GetAddress()
 		s.Require().NoError(err)
 
-		s.execCreatePermanentLockedAccount(s.chainA, home, permanentLockedAddr.String(), periodJSONFile,
-			withKeyValue("from", sender.String()),
+		s.execCreatePermanentLockedAccount(s.chainA, home, permanentLockedAddr.String(),
+			vestingAmountVested.String(), withKeyValue("from", sender.String()),
 		)
 
 		_, err = queryPermanentLockedAccount(api, permanentLockedAddr.String())
@@ -236,13 +236,17 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api, home string) {
 		s.Require().NoError(err)
 
 		// Use the first wallet from the same mnemonic by HD path
-		account, err := kb.NewAccount("continuous_vesting", mnemoinic, "", HDPathZero, algo)
+		account, err := kb.NewAccount("periodic_vesting", mnemoinic, "", HDPathZero, algo)
 		s.Require().NoError(err)
 		periodicVestingAddr, err := account.GetAddress()
 		s.Require().NoError(err)
 
-		s.execCreatePeriodicVestingAccount(s.chainA, home, periodicVestingAddr.String(), periodJSONFile,
-			withKeyValue("from", sender.String()))
+		s.execCreatePeriodicVestingAccount(
+			s.chainA,
+			home,
+			periodicVestingAddr.String(),
+			withKeyValue("from", sender.String()),
+		)
 
 		acc, err := queryPeriodicVestingAccount(api, periodicVestingAddr.String())
 		s.Require().NoError(err)

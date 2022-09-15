@@ -97,9 +97,9 @@ func (s *IntegrationTestSuite) execCreatePermanentLockedAccount(
 	amount string,
 	opt ...flagOption,
 ) {
-	s.T().Logf("Executing gaiad create a permanent vesting account %s", c.id)
+	s.T().Logf("Executing gaiad create a permanent locked vesting account %s", c.id)
 	s.execVestingTx(c, home, "create-permanent-locked-account", []string{address, amount}, opt...)
-	s.T().Logf("successfully created permanent vesting account %s with %s", address, amount)
+	s.T().Logf("successfully created permanent locked vesting account %s with %s", address, amount)
 }
 
 func (s *IntegrationTestSuite) execCreatePeriodicVestingAccount(

@@ -53,21 +53,6 @@ const (
 	highGlobalFeeAmt       = "0.0001"
 	gas                    = 200000
 	govProposalBlockBuffer = 35
-	vestingTimeLength      = 20 * time.Second
-	vestingPeriodFilePath  = "test_period.json"
-	vestingPeriod          = `{
-  "start_time": 1625204910,
-  "period": [
-    {
-      "coins": "400000000uatom",
-      "length_seconds": 40
-    },
-    {
-      "coins": "400000000uatom",
-      "length_seconds": 80
-    }
-  ]
-}`
 )
 
 var (
@@ -81,9 +66,6 @@ var (
 	govModuleAddress           = authtypes.NewModuleAddress(govtypes.ModuleName).String()
 	proposalCounter            = 0
 	sendGovAmount              = sdk.NewInt64Coin(uatomDenom, 10)
-	vestingAmountVested        = sdk.NewCoin(uatomDenom, math.NewInt(99900000000))
-	vestingAmount              = sdk.NewCoin(uatomDenom, math.NewInt(330000))
-	vestingBalance             = sdk.NewCoins(vestingAmountVested).Add(vestingAmount)
 )
 
 type UpgradePlan struct {
@@ -267,6 +249,7 @@ func (s *IntegrationTestSuite) initNodes(c *chain) {
 	}
 }
 
+// TODO find a better way to manipulate accounts to add genesis accounts
 func (s *IntegrationTestSuite) generateAuthAndBankState(
 	c *chain,
 	vestingMnemonic string,
@@ -298,9 +281,9 @@ func (s *IntegrationTestSuite) generateAuthAndBankState(
 		authvesting.NewBaseVestingAccount(
 			baseVestingContinuousAccount,
 			sdk.NewCoins(vestingAmountVested),
-			time.Now().Add(20*vestingTimeLength).Unix(),
+			time.Now().Add(160*time.Second).Unix(),
 		),
-		time.Now().Add(10*vestingTimeLength).Unix(),
+		time.Now().Add(90*time.Second).Unix(),
 	)
 	s.Require().NoError(vestingContinuousGenAccount.Validate())
 
@@ -318,7 +301,7 @@ func (s *IntegrationTestSuite) generateAuthAndBankState(
 		authvesting.NewBaseVestingAccount(
 			baseVestingDelayedAccount,
 			sdk.NewCoins(vestingAmountVested),
-			time.Now().Add(5*vestingTimeLength).Unix(),
+			time.Now().Add(90*time.Second).Unix(),
 		),
 	)
 	s.Require().NoError(vestingDelayedGenAccount.Validate())
@@ -417,12 +400,15 @@ func (s *IntegrationTestSuite) initGenesis(c *chain, vestingMnemonic string) {
 	bz, err = tmjson.MarshalIndent(genDoc, "", "  ")
 	s.Require().NoError(err)
 
+	vestingPeriod, err := generateVestingPeriod()
+	s.Require().NoError(err)
+
 	// write the updated genesis file to each validator.
 	for _, val := range c.validators {
 		err = writeFile(filepath.Join(val.configDir(), "config", "genesis.json"), bz)
 		s.Require().NoError(err)
 
-		err = writeFile(filepath.Join(val.configDir(), vestingPeriodFilePath), []byte(vestingPeriod))
+		err = writeFile(filepath.Join(val.configDir(), vestingPeriodFilePath), vestingPeriod)
 		s.Require().NoError(err)
 	}
 }

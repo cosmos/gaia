@@ -66,12 +66,18 @@ The upgrades aim to add features such as liquidity, economic security, usability
 
 ## v9-Lambda Upgrade (expected Q1 2023)
 - Gaia v9.0.x
+- Cosmos SDK v0.47
+  - Phasing out broadcast mode
+  - Remove proposer based rewards
+  - Consensus-param module
+    - With the deprecation of the param module, this will allow governance or another account to modify these parameters.
+  - Changes required for Interchain Security
+  - Liquid Staking module
+    - Free, secure and low-risk delegations for use in other parts of the Cosmos ecosystem
+    - Features include enabling transfer of rewards and voting rights
 - Interchain Security v1 - Required Participation of Provider Chain Validators
   - The Cosmos solution to shared security that uses IBC Cross Chain Validation (CCV) to relay validator set composition from a Provider Chain (Cosmos Hub) to a Consumer Chain. This validator set is in charge of producing blocks on both networks using separate nodes. Misbehavior on the Consumer Chain results in slashing Provider Chain staking tokens (ATOM).
   - Allows independent modules like Gravity DEX or Bridge to live on separate chains with their own development cycles.
-- Liquid Staking
-  - Frees secure and low-risk delegations for use in other parts of the Cosmos ecosystem
-  - Features include enabling transfer of rewards and voting rights
 
 ## v10-Epsilon (expected Q2 2023)
 - Gaia v10.0.x
@@ -79,14 +85,8 @@ The upgrades aim to add features such as liquidity, economic security, usability
 - Hub ATOM Liquidity (HAL)
   - Protocol Controlled Value application to acquire ATOM LP tokens with Interchain Security Tokens
 
-
 ## v11-Gamma (expected Q3 2023)
 - Gaia v11.0.x
-- Cosmos SDK v0.47
-  - Sparse Merkle Tree (SMT)
-    - Various storage and performance optimizations 
-  - Postgres indexing
-  - Protobuf v2
 - Interchain Security v2 - Layered Security
   - Where Consumer Chains combine their own staking token validator set with Provider Chain validator set.
 

@@ -19,7 +19,7 @@ import (
 	"github.com/ory/dockertest/v3/docker"
 )
 
-func (s *IntegrationTestSuite) connectIBCChains() {
+func (s *IntegrationTestSuite) createConnection() {
 	s.T().Logf("connecting %s and %s chains via IBC", s.chainA.id, s.chainB.id)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
@@ -34,11 +34,11 @@ func (s *IntegrationTestSuite) connectIBCChains() {
 		Cmd: []string{
 			"hermes",
 			"create",
-			"channel",
+			"connection",
+			"--a-chain",
 			s.chainA.id,
+			"--b-chain",
 			s.chainB.id,
-			"--port-a=transfer",
-			"--port-b=transfer",
 		},
 	})
 	s.Require().NoError(err)
@@ -59,11 +59,58 @@ func (s *IntegrationTestSuite) connectIBCChains() {
 		"failed connect chains; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
 	)
 
-	s.Require().Containsf(
-		errBuf.String(),
-		"successfully opened init channel",
-		"failed to connect chains via IBC: %s", errBuf.String(),
+	s.T().Logf("connected %s and %s chains via IBC", s.chainA.id, s.chainB.id)
+}
+
+func (s *IntegrationTestSuite) createChannel() {
+	s.T().Logf("connecting %s and %s chains via IBC", s.chainA.id, s.chainB.id)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
+		Context:      ctx,
+		AttachStdout: true,
+		AttachStderr: true,
+		Container:    s.hermesResource.Container.ID,
+		User:         "root",
+		Cmd: []string{
+			"hermes",
+			"tx",
+			"chan-open-init",
+			"--dst-chain",
+			s.chainA.id,
+			"--src-chain",
+			s.chainB.id,
+			"--dst-connection",
+			"connection-0",
+			"--src-port=transfer",
+			"--dst-port=transfer",
+		},
+	})
+	s.Require().NoError(err)
+
+	var (
+		outBuf bytes.Buffer
+		errBuf bytes.Buffer
 	)
+
+	err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
+		Context:      ctx,
+		Detach:       false,
+		OutputStream: &outBuf,
+		ErrorStream:  &errBuf,
+	})
+	s.Require().NoErrorf(
+		err,
+		"failed connect chains; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
+	)
+
+	//s.Require().Containsf(
+	//	errBuf.String(),
+	//	"successfully opened init channel",
+	//	"failed to connect chains via IBC: %s", errBuf.String(),
+	//)
 
 	s.T().Logf("connected %s and %s chains via IBC", s.chainA.id, s.chainB.id)
 }
@@ -184,32 +231,85 @@ func (s *IntegrationTestSuite) withdrawReward(c *chain, valIdx int, endpoint, pa
 	)
 }
 
-func (s *IntegrationTestSuite) sendIBC(srcChainID, dstChainID, recipient string, token sdk.Coin) {
+//
+//func (s *IntegrationTestSuite) sendIBC(srcChainID, dstChainID, recipient string, token sdk.Coin) {
+//	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+//	defer cancel()
+//
+//	s.T().Logf("sending %s from %s to %s (%s)", token, srcChainID, dstChainID, recipient)
+//
+//	exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
+//		Context:      ctx,
+//		AttachStdout: true,
+//		AttachStderr: true,
+//		Container:    s.hermesResource.Container.ID,
+//		User:         "root",
+//		Cmd: []string{
+//			"hermes",
+//			"tx",
+//			"raw",
+//			"ft-transfer",
+//			dstChainID,
+//			srcChainID,
+//			"transfer",  // source chain port ID
+//			"channel-0", // since only one connection/channel exists, assume 0
+//			token.Amount.String(),
+//			fmt.Sprintf("--denom=%s", token.Denom),
+//			fmt.Sprintf("--receiver=%s", recipient),
+//			"--timeout-height-offset=1000",
+//		},
+//	})
+//	s.Require().NoError(err)
+//
+//	var (
+//		outBuf bytes.Buffer
+//		errBuf bytes.Buffer
+//	)
+//
+//	err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
+//		Context:      ctx,
+//		Detach:       false,
+//		OutputStream: &outBuf,
+//		ErrorStream:  &errBuf,
+//	})
+//	s.Require().NoErrorf(
+//		err,
+//		"failed to send IBC tokens; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
+//	)
+//
+//	s.T().Log("successfully sent IBC tokens")
+//}
+
+func (s *IntegrationTestSuite) sendIBC(c *chain, valIdx int, sender, recipient, token, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	s.T().Logf("sending %s from %s to %s (%s)", token, srcChainID, dstChainID, recipient)
+	ibcCmd := []string{
+		"gaiad",
+		"tx",
+		"ibc-transfer",
+		"transfer",
+		"transfer",
+		"channel-0",
+		recipient,
+		token,
+		fmt.Sprintf("--from=%s", sender),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		"--keyring-backend=test",
+		"--broadcast-mode=sync",
+		"--output=json",
+		"-y",
+	}
+	s.T().Logf("sending %s from %s to %s (%s)", token, s.chainA.id, s.chainB.id, recipient)
 
 	exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
 		Context:      ctx,
 		AttachStdout: true,
 		AttachStderr: true,
-		Container:    s.hermesResource.Container.ID,
-		User:         "root",
-		Cmd: []string{
-			"hermes",
-			"tx",
-			"raw",
-			"ft-transfer",
-			dstChainID,
-			srcChainID,
-			"transfer",  // source chain port ID
-			"channel-0", // since only one connection/channel exists, assume 0
-			token.Amount.String(),
-			fmt.Sprintf("--denom=%s", token.Denom),
-			fmt.Sprintf("--receiver=%s", recipient),
-			"--timeout-height-offset=1000",
-		},
+		Container:    s.valResources[c.id][valIdx].Container.ID,
+		User:         "nonroot",
+		Cmd:          ibcCmd,
 	})
 	s.Require().NoError(err)
 
@@ -224,9 +324,21 @@ func (s *IntegrationTestSuite) sendIBC(srcChainID, dstChainID, recipient string,
 		OutputStream: &outBuf,
 		ErrorStream:  &errBuf,
 	})
-	s.Require().NoErrorf(
-		err,
-		"failed to send IBC tokens; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
+	s.Require().NoErrorf(err, "stdout: %s, stderr: %s", outBuf.String(), errBuf.String())
+	var txResp sdk.TxResponse
+	s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
+
+	endpoint := fmt.Sprintf("http://%s", s.valResources[c.id][valIdx].GetHostPort("1317/tcp"))
+	// wait for the tx to be committed on chain
+	s.Require().Eventuallyf(
+		func() bool {
+			err := queryGaiaTx(endpoint, txResp.TxHash)
+			return err == nil
+		},
+		time.Minute,
+		5*time.Second,
+		"stdout: %s, stderr: %s",
+		outBuf.String(), errBuf.String(),
 	)
 
 	s.T().Log("successfully sent IBC tokens")

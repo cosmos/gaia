@@ -474,7 +474,7 @@ func (s *IntegrationTestSuite) runIBCRelayer() {
 	s.hermesResource, err = s.dkrPool.RunWithOptions(
 		&dockertest.RunOptions{
 			Name:       fmt.Sprintf("%s-%s-relayer", s.chainA.id, s.chainB.id),
-			Repository: "ghcr.io/cosmos/hermes-e2e",
+			Repository: "cosmos/hermes-e2e",
 			Tag:        "latest",
 			NetworkID:  s.dkrNet.Network.ID,
 			Mounts: []string{
@@ -540,7 +540,9 @@ func (s *IntegrationTestSuite) runIBCRelayer() {
 	time.Sleep(10 * time.Second)
 
 	// create the client, connection and channel between the two Gaia chains
-	s.connectIBCChains()
+	s.createConnection()
+	time.Sleep(10 * time.Second)
+	s.createChannel()
 }
 
 func noRestart(config *docker.HostConfig) {

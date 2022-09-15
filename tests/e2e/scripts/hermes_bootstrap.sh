@@ -6,10 +6,13 @@ set -ex
 mkdir -p /root/.hermes/
 touch /root/.hermes/config.toml
 
+echo $GAIA_B_E2E_RLY_MNEMONIC > /root/.hermes/GAIA_B_E2E_RLY_MNEMONIC.txt
+echo $GAIA_A_E2E_RLY_MNEMONIC > /root/.hermes/GAIA_A_E2E_RLY_MNEMONIC.txt
+
 # setup Hermes relayer configuration
 tee /root/.hermes/config.toml <<EOF
 [global]
-log_level = 'info'
+log_level = 'debug'
 
 [mode]
 
@@ -51,7 +54,7 @@ key_name = 'rly01-gaia-a'
 store_prefix = 'ibc'
 max_gas = 6000000
 gas_price = { price = 0.00001, denom = 'uatom' }
-gas_adjustment = 1.0
+gas_multiplier = 1.2
 clock_drift = '1m' # to accomdate docker containers
 trusting_period = '14days'
 trust_threshold = { numerator = '1', denominator = '3' }
@@ -67,15 +70,16 @@ key_name = 'rly01-gaia-b'
 store_prefix = 'ibc'
 max_gas =  6000000
 gas_price = { price = 0.00001, denom = 'uatom' }
-gas_adjustment = 1.0
+gas_multiplier = 1.2
 clock_drift = '1m' # to accomdate docker containers
 trusting_period = '14days'
 trust_threshold = { numerator = '1', denominator = '3' }
 EOF
 
 # import keys
-hermes keys restore ${GAIA_B_E2E_CHAIN_ID} -n "rly01-gaia-b" -m "${GAIA_B_E2E_RLY_MNEMONIC}"
-hermes keys restore ${GAIA_A_E2E_CHAIN_ID} -n "rly01-gaia-a" -m "${GAIA_A_E2E_RLY_MNEMONIC}"
-
+hermes keys add  --key-name rly01-gaia-b  --chain $GAIA_B_E2E_CHAIN_ID --mnemonic-file /root/.hermes/GAIA_B_E2E_RLY_MNEMONIC.txt
+sleep 5
+hermes keys add  --key-name rly01-gaia-a  --chain $GAIA_A_E2E_CHAIN_ID --mnemonic-file /root/.hermes/GAIA_A_E2E_RLY_MNEMONIC.txt
+sleep 5
 # start Hermes relayer
 hermes start

@@ -2,14 +2,17 @@ package e2e
 
 import (
 	"fmt"
-	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	"strconv"
 	"strings"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
 func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
+	time.Sleep(30 * time.Second)
+
 	var ibcStakeDenom string
 
 	s.Run("send_uatom_to_chainB", func() {
@@ -19,10 +22,16 @@ func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
 			err      error
 		)
 
-		address, err := s.chainB.validators[0].keyInfo.GetAddress()
+		address, err := s.chainA.validators[0].keyInfo.GetAddress()
+		s.Require().NoError(err)
+		sender := address.String()
+
+		address, err = s.chainB.validators[0].keyInfo.GetAddress()
 		s.Require().NoError(err)
 		recipient := address.String()
-		s.sendIBC(s.chainA.id, s.chainB.id, recipient, tokenAmount)
+
+		tokenAmt := 3300000000
+		s.sendIBC(s.chainA, 0, sender, recipient, strconv.Itoa(tokenAmt)+uatomDenom, fees.String())
 
 		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
 
@@ -35,12 +44,10 @@ func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
 			time.Minute,
 			5*time.Second,
 		)
-
 		for _, c := range balances {
 			if strings.Contains(c.Denom, "ibc/") {
-				fmt.Print("c.denom:", c.Denom, "c.amount:", c.Amount)
 				ibcStakeDenom = c.Denom
-				s.Require().Equal(tokenAmount.Amount.Int64(), c.Amount.Int64())
+				s.Require().Equal(int64(tokenAmt), c.Amount.Int64())
 				break
 			}
 		}
@@ -738,5 +745,3 @@ func (s *IntegrationTestSuite) TestByPassMinFeeWithdrawReward() {
 	s.T().Logf("bypass-msg with non-zero coin not in the denom of global fee, fail")
 	s.withdrawReward(s.chainA, 0, chainAAPIEndpoint, payee.String(), paidFeeAmt+photonDenom, true)
 }
-
-// todo add fee test with wrong denom order

@@ -1,6 +1,6 @@
-FROM informalsystems/hermes:1.0.0 AS hermes-builder
+FROM --platform=linux/amd64 informalsystems/hermes:1.0.0 AS hermes-builder
 
-FROM debian:buster-slim
+FROM --platform=linux/amd64 debian:buster-slim
 USER root
 
 COPY --chown=0:0 --from=hermes-builder /usr/lib/x86_64-linux-gnu/libssl.so.1.1 /usr/lib/x86_64-linux-gnu/libssl.so.1.1

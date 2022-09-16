@@ -12,7 +12,7 @@ import (
 	"github.com/cosmos/gaia/v8/x/icamauth/types"
 )
 
-// InterchainAccountFromAddress implements the Query/InterchainAccount gRPC method
+// InterchainAccount implements the Query/InterchainAccount gRPC method
 func (k Keeper) InterchainAccount(goCtx context.Context, req *types.QueryInterchainAccountRequest) (*types.QueryInterchainAccountResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 

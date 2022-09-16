@@ -182,8 +182,6 @@ var (
 		govtypes.ModuleName:            {authtypes.Burner},
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-		// todo: check here from interchain-acount-demo
-		//		ibcfeetypes.ModuleName:         nil,
 	}
 )
 

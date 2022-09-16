@@ -8,7 +8,7 @@ Once a proposal is on-chain, it cannot be changed to reflect feedback or new inf
 The process of passing a proposal starts long before it goes on-chain!
 
 There are currently severaltypes of proposals supported by the Cosmos Hub: 
-- **Text** - Proposal to agree to a certain strategy, plan, commitment, future upgrade or other statement. Text proposals do not directly cause any changes, but they can be used to take a record of the community's opinion or commitment to a future idea.
+- **[Text](./text-prop.md)** - Proposal to agree to a certain strategy, plan, commitment, future upgrade or other statement. Text proposals do not directly cause any changes, but they can be used to take a record of the community's opinion or commitment to a future idea.
 - [**Community Pool Spend**](./community-pool-spend.md) - Proposal to spend funds from the community pool on a project.
 - [**Parameter Change**](./params-change.md) - Proposal to change a core on-chain parameter.
 - **Software Upgrade** - Proposal to upgrade the chain version.
@@ -27,10 +27,10 @@ There are many different ways to engage. One strategy involves a few stages of e
 
 **Why do it in stages?** It's a more conservative approach to save resources. The idea is to check in with key stakeholders at each stage before investing more resources into developing your proposal.
 
-In the first stage of this strategy, you should engage people (ideally experts) informally about your idea. You'll want to start with the minimal, critical components (name, value to cosmos hub, timeline, any funding needs) and check:
+In the first stage of this strategy, you should engage people (ideally experts) informally about your idea. You'll want to start with the minimal, critical components (name, value to Cosmos Hub, timeline, any funding needs) and check:
 - Does it make sense? 
 - Are there critical flaws? 
-- Does it need to be reconsidered? 
+- How will this affect other projects or properties of the Hub? 
 
 You should be enagaging with key stakeholders (e.g., a large validator operator) with a few short sentences to measure their support. Here's an example:
 

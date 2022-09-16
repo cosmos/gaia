@@ -193,6 +193,7 @@ func (s *IntegrationTestSuite) testPermanentLockedAccount(api, home string) {
 		permanentLockedAddr, err := account.GetAddress()
 		s.Require().NoError(err)
 
+		time.Sleep(5 * time.Second)
 		s.execCreatePermanentLockedAccount(s.chainA, home, permanentLockedAddr.String(),
 			vestingAmountVested.String(), withKeyValue("from", sender.String()),
 		)

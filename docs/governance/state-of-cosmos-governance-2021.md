@@ -1,3 +1,7 @@
+---
+order: 9
+---
+
 <!-- markdown-link-check-disable -->
 # State of Cosmos Governance 2021
 

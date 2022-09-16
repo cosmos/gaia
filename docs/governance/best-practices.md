@@ -2,7 +2,7 @@
 order: 3
 ---
 
-# Best Practices for Drafting a Proposal 
+# Off-Chain Proposal Process
 
 There are currently three types of proposals supported by the Cosmos Hub: 
 - [**Community Pool Spend**](./community-pool-spend) - Proposal to spend funds from the community pool on

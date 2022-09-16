@@ -12,7 +12,7 @@ echo $GAIA_A_E2E_RLY_MNEMONIC > /root/.hermes/GAIA_A_E2E_RLY_MNEMONIC.txt
 # setup Hermes relayer configuration
 tee /root/.hermes/config.toml <<EOF
 [global]
-log_level = 'debug'
+log_level = 'info'
 
 [mode]
 

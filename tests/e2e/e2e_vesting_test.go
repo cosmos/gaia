@@ -205,6 +205,10 @@ func (s *IntegrationTestSuite) testPermanentLockedAccount(api, home string) {
 		s.Require().NoError(err)
 		s.Require().Equal(vestingAmountVested.Amount, balance.Amount)
 
+		// Transfer coins to pay the delegation fee
+		s.sendMsgSend(s.chainA, 0, sender.String(), permanentLockedAddr.String(),
+			fees.String(), fees.String(), false)
+
 		// Delegate coins should succeed
 		s.executeDelegate(s.chainA, 0, api, vestingDelegationAmount.String(), valOpAddr,
 			permanentLockedAddr.String(), home, vestingDelegationFees.String())
@@ -253,6 +257,7 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api, home string) {
 		periodicVestingAddr, err := account.GetAddress()
 		s.Require().NoError(err)
 
+		time.Sleep(5 * time.Second)
 		s.execCreatePeriodicVestingAccount(
 			s.chainA,
 			home,

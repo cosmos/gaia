@@ -4,23 +4,19 @@ import (
 	"context"
 	"fmt"
 	"path/filepath"
-	"strconv"
 	"time"
 )
 
 const (
 	binaryName = "gaiad"
 
-	flagFrom             = "from"
-	flagHome             = "home"
-	flagFees             = "fees"
-	flagGas              = "gas"
-	flagOutput           = "output"
-	flagChainID          = "chain-id"
-	flagKeyringBackend   = "keyring-backend"
-	flagVestingAmount    = "vesting-amount"
-	flagVestingStartTime = "vesting-start-time"
-	flagVestingEndTime   = "vesting-end-time"
+	flagFrom           = "from"
+	flagHome           = "home"
+	flagFees           = "fees"
+	flagGas            = "gas"
+	flagOutput         = "output"
+	flagChainID        = "chain-id"
+	flagKeyringBackend = "keyring-backend"
 )
 
 type flagOption func(map[string]interface{})
@@ -75,19 +71,6 @@ func (s *IntegrationTestSuite) execVestingTx(
 
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, 0, "")
 	s.T().Logf("successfully %s with %v", method, args)
-}
-
-func (s *IntegrationTestSuite) execCreateVestingAccount(
-	c *chain,
-	home,
-	address,
-	amount string,
-	endtime int64,
-	opt ...flagOption,
-) {
-	s.T().Logf("Executing gaiad add genesis account %s", c.id)
-	s.execVestingTx(c, home, "create-vesting-account", []string{address, amount, strconv.Itoa(int(endtime))}, opt...)
-	s.T().Logf("successfully created genesis account %s with %s", address, amount)
 }
 
 func (s *IntegrationTestSuite) execCreatePermanentLockedAccount(

@@ -210,9 +210,14 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 
 func (s *IntegrationTestSuite) initNodes(c *chain) {
 	s.Require().NoError(c.createAndInitValidators(2))
-	// add two more addr to val0 dir, one addr is used as relayer wallet, one is used as ica owner
-	s.Require().NoError(c.addAccountFromMnemonic(2))
-	// initialize a genesis file for the first validator
+	/* Adding 4 accounts to val0 local directory
+	c.accountsIngenesis[0]: Relayer Wallet
+	c.accountsIngenesis[1]: ICA Owner
+	c.accountsIngenesis[2]: Test Account 1
+	c.accountsIngenesis[3]: Test Account 2
+	*/
+	s.Require().NoError(c.addAccountFromMnemonic(4))
+	// Initialize a genesis file for the first validator
 	val0ConfigDir := c.validators[0].configDir()
 	addrAll := []sdk.AccAddress{}
 	for _, val := range c.validators {
@@ -220,14 +225,13 @@ func (s *IntegrationTestSuite) initNodes(c *chain) {
 		s.Require().NoError(err)
 		addrAll = append(addrAll, address)
 	}
-	// relayer wallet addr
-	rlyAdrr, err := c.accountsIngenesis[0].keyInfo.GetAddress()
-	s.Require().NoError(err)
-	addrAll = append(addrAll, rlyAdrr)
-	// acctAddr will be used as ica owner
-	acctAddr, err := c.accountsIngenesis[1].keyInfo.GetAddress()
-	s.Require().NoError(err)
-	addrAll = append(addrAll, acctAddr)
+
+	for _, addr := range c.accountsIngenesis {
+		acctAddr, err := addr.keyInfo.GetAddress()
+		s.Require().NoError(err)
+		addrAll = append(addrAll, acctAddr)
+	}
+
 	s.Require().NoError(
 		modifyGenesis(val0ConfigDir, "", initBalanceStr, addrAll, initialGlobalFeeAmt+uatomDenom, uatomDenom),
 	)

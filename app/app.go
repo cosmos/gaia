@@ -3,11 +3,10 @@ package gaia
 import (
 	"fmt"
 	"io"
+	stdlog "log"
 	"net/http"
 	"os"
 	"path/filepath"
-
-	stdlog "log"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -102,6 +101,7 @@ import (
 	porttypes "github.com/cosmos/ibc-go/v5/modules/core/05-port/types"
 	ibchost "github.com/cosmos/ibc-go/v5/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v5/modules/core/keeper"
+	ibctestingtypes "github.com/cosmos/ibc-go/v5/testing/types"
 	"github.com/gorilla/mux"
 	"github.com/gravity-devs/liquidity/v2/x/liquidity"
 	liquiditykeeper "github.com/gravity-devs/liquidity/v2/x/liquidity/keeper"
@@ -182,8 +182,6 @@ var (
 		govtypes.ModuleName:            {authtypes.Burner},
 		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-		// todo: check here from interchain-acount-demo
-		//		ibcfeetypes.ModuleName:         nil,
 	}
 )
 
@@ -472,15 +470,6 @@ func NewGaiaApp(
 		govConfig,
 	)
 
-	app.UpgradeKeeper = upgradekeeper.NewKeeper(
-		skipUpgradeHeights,
-		keys[upgradetypes.StoreKey],
-		appCodec,
-		homePath,
-		app.BaseApp,
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
-	)
-
 	app.TransferKeeper = ibctransferkeeper.NewKeeper(
 		appCodec,
 		keys[ibctransfertypes.StoreKey],
@@ -716,11 +705,8 @@ func NewGaiaApp(
 	app.MountTransientStores(tkeys)
 	app.MountMemoryStores(memKeys)
 
-	var bypassMinFeeMsgTypes []string
-	bypassMinFeeConfig := appOpts.Get(gaiaappparams.BypassMinFeeMsgTypesKey)
-	if bypassMinFeeConfig != nil {
-		bypassMinFeeMsgTypes = cast.ToStringSlice(bypassMinFeeConfig)
-	} else {
+	bypassMinFeeMsgTypes := cast.ToStringSlice(appOpts.Get(gaiaappparams.BypassMinFeeMsgTypesKey))
+	if bypassMinFeeMsgTypes == nil {
 		bypassMinFeeMsgTypes = GetDefaultBypassFeeMessages()
 	}
 
@@ -1021,10 +1007,11 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	return paramsKeeper
 }
 
-// todo check
-// func (*App) OnTxSucceeded(ctx sdk.Context, sourcePort, sourceChannel string, txHash []byte, txBytes []byte) {}
-//
-// func (*App) OnTxFailed(ctx sdk.Context, sourcePort, sourceChannel string, txHash []byte, txBytes []byte) {}
+func (app *GaiaApp) OnTxSucceeded(ctx sdk.Context, sourcePort, sourceChannel string, txHash []byte, txBytes []byte) {
+}
+
+func (app *GaiaApp) OnTxFailed(ctx sdk.Context, sourcePort, sourceChannel string, txHash []byte, txBytes []byte) {
+}
 
 // TestingApp functions
 
@@ -1034,7 +1021,7 @@ func (app *GaiaApp) GetBaseApp() *baseapp.BaseApp {
 }
 
 // GetStakingKeeper implements the TestingApp interface.
-func (app *GaiaApp) GetStakingKeeper() stakingkeeper.Keeper {
+func (app *GaiaApp) GetStakingKeeper() ibctestingtypes.StakingKeeper {
 	return app.StakingKeeper
 }
 

@@ -99,7 +99,7 @@ moniker = "<custom_moniker>"
 
 Once the node is initialized, download the genesis file and move to the `/config` directory of the Gaia home directory.
 ```bash
-wget https://github.com/cosmos/mainnet/raw/master/genesis.cosmoshub-4.json.gz
+wget https://raw.githubusercontent.com/cosmos/mainnet/master/genesis/genesis.cosmoshub-4.json.gz
 gzip -d genesis.cosmoshub-4.json.gz
 mv genesis.cosmoshub-4.json ~/.gaia/config/genesis.json
 ```

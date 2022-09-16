@@ -4,7 +4,7 @@ set -eo pipefail
 
 protoc_gen_gocosmos() {
   if ! grep "github.com/gogo/protobuf => github.com/regen-network/protobuf" go.mod &>/dev/null ; then
-    echo -e "\tPlease run this command from somewhere inside the cosmos-sdk folder."
+    echo -e "\tPlease run this command from somewhere inside the gaia folder."
     return 1
   fi
 
@@ -15,7 +15,7 @@ protoc_gen_gocosmos
 
 proto_dirs=$(find ./proto -path -prune -o -name '*.proto' -print0 | xargs -0 -n1 dirname | sort | uniq)
 for dir in $proto_dirs; do
-  buf protoc \
+  protoc \
   -I "proto" \
   -I "third_party/proto" \
   --gocosmos_out=plugins=interfacetype+grpc,\
@@ -26,7 +26,7 @@ Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
 done
 #
 ## command to generate docs using protoc-gen-doc
-buf protoc \
+protoc \
 -I "proto" \
 -I "third_party/proto" \
 --doc_out=./docs/proto \
@@ -34,5 +34,5 @@ buf protoc \
 $(find "$(pwd)/proto" -maxdepth 5 -name '*.proto')
 
 # move proto files to the right places
-cp -r github.com/cosmos/gaia/* ./
+cp -r github.com/cosmos/gaia/x/* ./
 rm -rf github.com

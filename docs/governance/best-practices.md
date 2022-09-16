@@ -3,37 +3,42 @@ order: 3
 ---
 
 # Off-Chain Proposal Process
+Once a proposal is on-chain, it cannot be changed to reflect feedback or new information. It's very important to give a proposal time off-chain to receive feedback, input, and edits before going on-chain and asking for votes. 
 
-There are currently three types of proposals supported by the Cosmos Hub: 
-- [**Community Pool Spend**](./community-pool-spend) - Proposal to spend funds from the community pool on
-  an important project.
-- [**Parameter Change**](./params-change) - Proposal to change a core on-chain parameter.
-- **Text** - Proposal to agree to a certain strategy, plan, commitment, 
-  future upgrade or other statement. Text proposals are exclusively a 
-  signalling mechanism and focal point for future coordination - 
-  they do not directly cause any changes.
+The process of passing a proposal starts long before it goes on-chain!
 
-You'll first want to determine which kind of proposal you are making. Be sure to
-review all details of your specific proposal type. 
+There are currently severaltypes of proposals supported by the Cosmos Hub: 
+- **Text** - Proposal to agree to a certain strategy, plan, commitment, future upgrade or other statement. Text proposals do not directly cause any changes, but they can be used to take a record of the community's opinion or commitment to a future idea.
+- [**Community Pool Spend**](./community-pool-spend.md) - Proposal to spend funds from the community pool on a project.
+- [**Parameter Change**](./params-change.md) - Proposal to change a core on-chain parameter.
+- **Software Upgrade** - Proposal to upgrade the chain version.
+
+You'll first want to determine which kind of proposal you are making. Be sure to review all details of your specific proposal type. 
 
 ## Engage directly with the voting community and seek feedback
 
-Engagement is likely to be critical to the success of a proposal. The degree to which you engage with the Cosmos Hub community should be relative to the potential impact that your proposal may have on the stakeholders. This guide does not cover all ways of engaging: you could bring your idea to a podcast or a hackathon, host an AMA on [Reddit](https://www.reddit.com/r/cosmosnetwork) or host a Q&A (questions & answers). We encourage you to experiment and use your strengths to introduce proposal ideas and gather feedback.
+Engagement is likely to be critical to the success of a proposal. The degree to which you engage with the Cosmos Hub community should be relative to the potential impact that your proposal may have on the stakeholders. This guide does not cover all ways of engaging but here are some suggestions: 
+ - Post your idea to the [Cosmos Hub Forum](https://forum.cosmos.network/)
+ - Mention the idea in a community call (often hosted on [Twitter](https://twitter.com/CosmosHub))
+ - Host an AMA on [Reddit](https://www.reddit.com/r/cosmosnetwork) 
+ We encourage you to experiment and use your strengths to introduce proposal ideas and gather feedback.
 
-There are many different ways to engage. One strategy involves a few stages of engagement before and after submitting a proposal on chain. **Why do it in stages?** It's a more conservative approach to save resources. The idea is to check in with key stakeholders at each stage before investing more resources into developing your proposal.
+There are many different ways to engage. One strategy involves a few stages of engagement before and after submitting a proposal on chain. 
+
+**Why do it in stages?** It's a more conservative approach to save resources. The idea is to check in with key stakeholders at each stage before investing more resources into developing your proposal.
 
 In the first stage of this strategy, you should engage people (ideally experts) informally about your idea. You'll want to start with the minimal, critical components (name, value to cosmos hub, timeline, any funding needs) and check:
 - Does it make sense? 
 - Are there critical flaws? 
 - Does it need to be reconsidered? 
 
-You should be able enagaging with key stakeholders (eg. a large validator operator) with a few short sentences to measure their support. Here's an example:
+You should be enagaging with key stakeholders (e.g., a large validator operator) with a few short sentences to measure their support. Here's an example:
 
 "We are considering a proposal for funding to work on `project`. We think it will help the Hub to `outcome`. Timeline is `x`, and we're asking for `y` amount. Do you think that this is a proposal that `large validator` may support?"
 
 **Why a large validator?** They tend to be the de facto decision-makers on the Cosmos Hub, since their delegators also delegate their voting power. If you can establish a base layer of off-chain support, you can be more confident that it's worth proceeding to the next stage.
 
-**Note:** many will likely hesitate to commit support, and that's okay. It will be important to reassure these stakeholders that this isn't a binding a commitment. You're just canvasing the community to get a feel for whether it's worthwhile to proceed. It's also an opportunity to connect with new people and to answer their questions about what it is you're working on. It will be important for them to clearly understand why you think what you're proposing will be valuable to the Cosmos Hub, and if possible, why it will be valuable to them as long-term stakeholders.
+**Note:** Many validators will likely hesitate to commit support, and that's okay. It will be important to reassure these stakeholders that this isn't a binding a commitment. You're just canvasing the community to get a feel for whether it's worthwhile to proceed. It's also an opportunity to connect with new people and to answer their questions about what it is you're working on. It will be important for them to clearly understand why you think what you're proposing will be valuable to the Cosmos Hub, and if possible, why it will be valuable to them as long-term stakeholders.
 
 If you're already confident about your idea, [skip to Stage 2](#stage-2-your-draft-proposal).
 
@@ -43,33 +48,33 @@ If you're already confident about your idea, [skip to Stage 2](#stage-2-your-dra
 
 Great! Governance proposals potentially impact many stakeholders. Introduce your idea with known members of the community before investing resources into drafting a proposal. Don't let negative feedback dissuade you from exploring your idea if you think that it's still important. 
 
-If you know people who are very involved with the Cosmos Hub, send them a private message with a concise overview of what you think will result from your idea or proposed changes. Wait for them to ask questions before providing details. Do the same in semi-private channels where people tend to be respectful (and hopefully supportive). I recommend the private Cosmos Network VIP Telegram channel (ask for an invite [on the forum][forum] if you are or would like to be a Cosmos contributor).
+If you know people who are very involved with the Cosmos Hub, send them a private message with a concise overview of what you think will result from your idea or proposed changes. Wait for them to ask questions before providing details. Do the same in semi-private channels where people tend to be respectful (and hopefully supportive). 
+
 
 ### Confident with your idea?
 
-Great! However, remember that governance proposals potentially impact many stakeholders, which can happen in unexpected ways. Introduce your idea with members of the community before investing resources into drafting a proposal. At this point you should seek out and carefully consider critical feedback in order to protect yourself from [confirmation bias](https://en.wikipedia.org/wiki/Confirmation_bias). This is the ideal time to see a critical flaw, because submitting a flawed proposal will waste resources.
+Great! However, remember that governance proposals potentially impact many stakeholders, which can happen in unexpected ways. Introduce your idea with members of the community before investing resources into drafting a proposal. At this point you should seek out and carefully consider critical feedback in order to protect yourself from [confirmation bias](https://en.wikipedia.org/wiki/Confirmation_bias). This is the ideal time to see a critical flaw, because submitting a flawed proposal on-chain will waste resources and have reputational costs.
+
+Posting your idea to the [Cosmos Hub Forum](https://forum.cosmos.network/) is a great way to get broad feedback and perspective even if you don't have personal connections to any stakeholders or involved parties.
 
 ### Are you ready to draft a governance proposal?
 
 There will likely be differences of opinion about the value of what you're proposing to do and the strategy by which you're planning to do it. If you've considered feedback from broad perspectives and think that what you're doing is valuable and that your strategy should work, and you believe that others feel this way as well, it's likely worth drafting a proposal. However, remember that the largest ATOM stakers have the biggest vote, so a vocal minority isn't necessarily representative or predictive of the outcome of an on-chain vote. 
 
-A conservative approach is to have some confidence that you roughly have initial support from a majority of the voting power before proceeding to drafting your proposal. However, there are likely other approaches, and if your idea is important enough, you may want to pursue it regardless of whether or not you are confident that the voting power will support it.
+You could choose to take a conservative approach and wait until you have some confidence that you roughly have initial support from a majority of the voting power before proceeding to drafting the details of your proposal. Or you could propose the idea, or define the problem statement and let the community participate freely in drafting competing solutions to solve the issue,.
+
 
 ## Stage 2: Your Draft Proposal
 
-The next major section outlines and describes some potential elements of drafting a proposal. Ensure that you have considered your proposal and anticipated questions that the community will likely ask. Once your proposal is on-chain, you will not be able to change it.
+The next major section outlines and describes some potential elements of drafting a proposal. Ensure that you have considered your proposal and anticipated questions that the community will likely ask. **Once your proposal is on-chain, you will not be able to change it.**
 
 ### Proposal Elements 
 
 It will be important to balance two things: being detailed and being concise. You'll want to be concise so that people can assess your proposal quickly. You'll want to be detailed so that voters will have a clear, meaningful understanding of what the changes are and how they are likely to be impacted.
 
-There is a [proposal template](./proposals/proposal-template.md) with suggested sections. Each proposal should contain a summmary with key details:
-   
-- who is submitting the proposal
-- the amount of the proposal or parameter(s) being changed;
-- and deliverables and timeline
-- a reason for the proposal and potential impacts
-- a short summary of the history (what compelled this proposal), solution that's being presented, and future expectations
+Each major proposal type has a rough template available on the forum: [Text](https://forum.cosmos.network/t/about-the-signaling-text-category/5947), [community pool spend](https://forum.cosmos.network/t/about-the-community-spend-category/5949), [parameter change](https://forum.cosmos.network/t/about-the-parameter-change-category/5950), [software upgrade](https://forum.cosmos.network/t/about-the-software-upgrade-category/5951).
+
+Each proposal should contain a summmary with key details about what the proposal hopes to change. If you were viewing only the summary with no other context, it should be a good start to being able to make a decision.
 
 Assume that many people will stop reading at this point. However it is important to provide in-depth information, a few more pointers for Parameter-change and Community Spend proposals are below.
 
@@ -125,44 +130,24 @@ Assume that many people will stop reading at this point. However it is important
    - do you have conflicts of interest to declare?
 
 ### Begin with a well-considered draft proposal
-<!-- markdown-link-check-disable -->
+Ideally, a proposal is first sent to the forum in Markdown format so that it can be further edited and available for comments. A changelog is a great tool so that people can see how the idea has developed over time and in response to feedback.
 
-The ideal format for a proposal is as a Markdown file (ie. `.md`) in a github repo. Markdown
-is a simple and accessible format for writing plain text files that is easy to
-learn. See the [Github Markdown
-Guide](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax) for details on
-writing markdown files.
-
-If you don't have a [Github](http://github.com/) account already, register one. Then fork this
-repository, draft your proposal in the `proposals` directory, and make a
-pull-request back to this repository. For more details on using Github, see the
-[Github Forking Guide](https://docs.github.com/en/get-started/quickstart/contributing-to-projects). If you
-need help using Github, don't be afraid to ask someone!
-<!-- markdown-link-check-enale -->
-
-If you really don't want to deal with Github, you can always draft a proposal in
-Word or Google Docs, or directly in the forums, or otherwise. However Markdown
-on Github is the ultimate standard for distributed collaboration on text files.
+This Markdown-formatted post can eventually become the description text in a proposal sent on-chain.
 
 ### Engage the community with your draft proposal
 
-1. Post a draft of your proposal as a topic in the 'governance' category of the [Cosmos forum][forum]. Ideally this should contain a link to this repository, either directly to your proposal if it has been merged, or else to a pull-request containing your proposal if it has not been merged yet.
+1. Post a draft of your proposal as a topic in the appropriate category of the forum. [Hub Proposals](https://forum.cosmos.network/c/hub-proposals) is a catch-all if you are not sure where to post, but there are categories for all types of proposals.
+
 2. Directly engage key members of the community for feedback. These could be large contributors, those likely to be most impacted by the proposal, and entities with high stake-backing (eg. high-ranked validators; large stakers).
-3. Engage with the Cosmos Governance Working Group (GWG). These are people focused on Cosmos governance--they won't write your proposal, but will provide feedback and recommend resources to support your work. Members can be contacted on the [forum][forum] (they use the tag 'GWG' in posts) and in [Telegram](https://t.me/hubgov).
-4. Target members of the community in a semi-public way before bringing the draft to a full public audience. The burden of public scrutiny in a semi-anonymized environment (eg. Twitter) can be stressful and overwhelming without establishing support. Solicit opinions in places with people who have established reputations first. For example, there is a private Telegram group called Cosmos Network VIP (ask for an invite [on the forum][forum] if you are or would like to be a Cosmos contributor). 
-5. Alert the entire community to the draft proposal via
-   - Twitter, tagging accounts such as the All in Bits [Cosmos account](https://twitter.com/cosmos), the [Cosmos GWG](https://twitter.com/CosmosGov), and Today in Cosmos [@adriana_kalpa](https://twitter.com/adriana_kalpa)
-   - [Telegram](https://t.me/cosmosproject), [Adriana](https://t.me/adriana_KalpaTech) (All in Bits)
+
+3. Alert the entire community to the draft proposal on other platforms such as Twitter, tagging accounts such as the [Cosmos Hub account](https://twitter.com/cosmoshub), the [Cosmos Governance account](https://twitter.com/CosmosGov), and other governance-focused groups.
 
 ### Submit your proposal to the testnet
 
 I intend to expand this [guide to include testnet instructions](submitting.md#submitting-your-proposal-to-the-testnet). 
 
-You may want to submit your proposal to the testnet chain before the mainnet for a number of reasons, such as wanting to see what the proposal description will look like, to share what the proposal will look like in advance with stakeholders, and to signal that your proposal is about to go live on the mainnet.
+You may want to submit your proposal to the testnet chain before the mainnet for a number of reasons, such as wanting to see what the proposal description will look like, to share what the proposal will look like in advance with stakeholders, and to catch any errors before it hits the mainnet.
 
-Perhaps most importantly, for parameter change proposals, you can test the parameter changes in advance (if you have enough support from the voting power on the testnet).
-
-Submitting your proposal to the testnet increases the likelihood of engagement and the possibility that you will be alerted to a flaw before deploying your proposal to mainnet.
 
 ## Stage 3: Your On-Chain Proposal
 
@@ -174,9 +159,9 @@ See the [submitting guide](./submitting.md) for more on submitting proposals.
 
 The deposit period currently lasts 14 days. If you submitted your transaction with the minimum deposit (64 ATOM), your proposal will immediately enter the voting period. If you didn't submit the minimum deposit amount (currently 64 ATOM), then this may be an opportunity for others to show their support by contributing (and risking) their ATOMs as a bond for your proposal. You can request contributions openly and also contact stakeholders directly (particularly stakeholders who are enthusiastic about your proposal). Remember that each contributor is risking their funds, and you can [read more about the conditions for burning deposits here](./process.md#burned-deposits).
 
-This is a stage where proposals may begin to get broader attention. Most popular explorers currently display proposals that are in the deposit period, but due to proposal spamming, this may change. [Hubble](https://hubble.figment.io/cosmos/chains/cosmoshub-4/governance), for example, only displays proposals that have 10% or more of the minimum deposit, so 6.4 ATOM or more.
+This is a stage where proposals may begin to get broader attention. Some block explorers display proposals in the deposit period, while others don't show them until they hit voting period.
 
-A large cross-section of the blockchain/cryptocurrency community exists on Twitter. Having your proposal in the deposit period is a good time to engage the so-called 'crypto Twitter' Cosmos community to prepare validators to vote (eg. tag [@cosmosvalidator](https://twitter.com/cosmosvalidator)) and ATOM-holders that are staking (eg. tag [@cosmos](https://twitter.com/cosmos), [@adriana_kalpa](https://twitter.com/adriana_kalpa)). 
+A large cross-section of the blockchain/cryptocurrency community exists on Twitter. Having your proposal in the deposit period is a good time to engage the so-called 'crypto Twitter' Cosmos community to prepare validators to vote (eg. tag [@cosmosvalidator](https://twitter.com/cosmosvalidator)) and ATOM-holders that are staking (eg. tag [@cosmoshub](https://twitter.com/cosmoshub), [@CosmosGov](https://twitter.com/CosmosGov)). 
 
 ### The Voting Period
 
@@ -187,4 +172,4 @@ At this point you'll want to track which validator has voted and which has not. 
 
 Remember that any voter may change their vote at any time before the voting period ends. That historically doesn't happen often, but there may be an opportunity to convince a voter to change their vote. The biggest risk is that stakeholders won't vote at all (for a number of reasons). Validator operators tend to need multiple reminders to vote. How you choose to contact validator operators, how often, and what you say is up to you--remember that no validator is obligated to vote, and that operators are likely occupied by competing demands for their attention. Take care not to stress any potential relationship with validator operators.
 
-   [forum]: https://forum.cosmos.network/c/hub-proposals/25
+   [forum]: https://forum.cosmos.network

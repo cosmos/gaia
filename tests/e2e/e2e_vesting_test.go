@@ -232,7 +232,7 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api, home string) {
 	s.Run("test periodic vesting genesis account", func() {
 		s.T().Parallel()
 
-		val := s.chainB.validators[1]
+		val := s.chainA.validators[0]
 		sender, err := val.keyInfo.GetAddress()
 		s.NoError(err)
 
@@ -266,8 +266,24 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api, home string) {
 		//	Check address balance
 		balance, err := getSpecificBalance(api, periodicVestingAddr.String(), uatomDenom)
 		s.Require().NoError(err)
-		s.Require().Equal(sdk.NewCoin(uatomDenom, sdk.NewInt(1700000000)), balance)
 
+		expectedBalance := sdk.NewCoin(uatomDenom, sdk.NewInt(0))
+		for _, period := range acc.VestingPeriods {
+			_, coin := period.Amount.Find(uatomDenom)
+			expectedBalance = expectedBalance.Add(coin)
+		}
+		s.Require().Equal(expectedBalance, balance)
+
+		//	Transfer coins should fail
+		s.sendMsgSend(
+			s.chainA,
+			0,
+			periodicVestingAddr.String(),
+			Address(),
+			vestingTransferAmount.String(),
+			fees.String(),
+			true,
+		)
 		waitStartTime := acc.StartTime - time.Now().Unix()
 		if waitStartTime > 0 {
 			time.Sleep(time.Duration(waitStartTime) * time.Second)
@@ -317,7 +333,7 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api, home string) {
 			false,
 		)
 
-		waitSecondPeriod := acc.StartTime + acc.VestingPeriods[0].Length + acc.VestingPeriods[1].Length
+		waitSecondPeriod := acc.StartTime + acc.VestingPeriods[0].Length + acc.VestingPeriods[1].Length + 7
 		waitSecondPeriod -= time.Now().Unix()
 		if waitSecondPeriod > 0 {
 			time.Sleep(time.Duration(waitSecondPeriod) * time.Second)
@@ -338,15 +354,15 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api, home string) {
 
 func generateVestingPeriod() ([]byte, error) {
 	p := vestingPeriod{
-		StartTime: time.Now().Add(90 * time.Second).Unix(),
+		StartTime: time.Now().Add(100 * time.Second).Unix(),
 		Periods: []period{
 			{
-				Coins:  "850000000uatom",
-				Length: 30,
+				Coins:  "850000000" + uatomDenom,
+				Length: 35,
 			},
 			{
-				Coins:  "850000000uatom",
-				Length: 30,
+				Coins:  "2000000000" + uatomDenom,
+				Length: 35,
 			},
 		},
 	}

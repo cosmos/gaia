@@ -18,7 +18,7 @@ In the past, different people have considered contributions amounts differently.
 
 #### Burned deposits
 
-Deposits are burned only when proposals are vetoed i.e. 33.4% of voting power backing the 'NoWithVeto' option as documented in the [Cosmos SDK gov module spec](https://github.com/cosmos/cosmos-sdk/blob/main/x/gov/spec/01_concepts.md#deposit-refund-and-burn).
+Deposits are burned only when proposals are vetoed i.e. 33.4% of voting power backing the 'NoWithVeto' option as documented in the [Cosmos SDK gov module spec](https://docs.cosmos.network/main/modules/gov/#deposit-refund-and-burn).
 
 ### 2. Voting Period
 
@@ -33,7 +33,7 @@ The voting period is currently a fixed 14-day period. During the voting period, 
 
 As accepted by the community in [Proposal 6](https://ipfs.io/ipfs/QmRtR7qkeaZCpCzHDwHgJeJAZdTrbmHLxFDYXhw7RoF1pp), voters are expected to vote 'NoWithVeto' if a proposal leads to undesireable outcomes for the community. It states “if a proposal seems to be spam or is deemed to have caused a negative externality to Cosmos community, voters should vote _NoWithVeto_.”
 
-Voting 'NoWithVeto' provides a mechanism for a minority group representing a _third_ of the participating voting power to reject a proposal that would otherwise pass. This makes explicit an aspect of the consensus protocol: it works as long as only up to [a third of nodes fail](https://docs.tendermint.com/v0.35/introduction/what-is-tendermint.html). In other words, greater than a third of validators are always in a position to cause a proposal to fail outside the formalized governance process and the network's norms, such as by censoring transactions. The purpose of internalizing this aspect of the consensus protocol into the governance process is to discourage validators from relying on collusion and censorship tactics to influence voting outcomes.
+Voting 'NoWithVeto' provides a mechanism for a minority group representing a _third_ of the participating voting power to reject a proposal that would otherwise pass. This makes explicit an aspect of the consensus protocol: it works as long as only up to [a third of nodes fail](https://docs.tendermint.com/v0.34/introduction/what-is-tendermint.html). In other words, greater than a third of validators are always in a position to cause a proposal to fail outside the formalized governance process and the network's norms, such as by censoring transactions. The purpose of internalizing this aspect of the consensus protocol into the governance process is to discourage validators from relying on collusion and censorship tactics to influence voting outcomes.
 
 ## What determines whether or not a governance proposal passes?
 

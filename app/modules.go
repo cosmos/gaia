@@ -155,7 +155,7 @@ func appModules(
 func simulationModules(
 	app *GaiaApp,
 	encodingConfig gaiaappparams.EncodingConfig,
-	skipGenesisInvariants bool,
+	_ bool,
 ) []module.AppModuleSimulation {
 	appCodec := encodingConfig.Codec
 

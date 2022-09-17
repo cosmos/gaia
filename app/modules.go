@@ -41,9 +41,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	"github.com/cosmos/gaia/v8/x/globalfee"
-	"github.com/cosmos/gaia/v8/x/icamauth"
-	icamauthtypes "github.com/cosmos/gaia/v8/x/icamauth/types"
 	ica "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts"
 	icatypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/types"
 	"github.com/cosmos/ibc-go/v5/modules/apps/transfer"
@@ -57,6 +54,9 @@ import (
 	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v2/router/types"
 
 	gaiaappparams "github.com/cosmos/gaia/v8/app/params"
+	"github.com/cosmos/gaia/v8/x/globalfee"
+	"github.com/cosmos/gaia/v8/x/icamauth"
+	icamauthtypes "github.com/cosmos/gaia/v8/x/icamauth/types"
 )
 
 var maccPerms = map[string][]string{

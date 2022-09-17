@@ -43,9 +43,9 @@ Actualmente, no se pueden enviar fondos a la Community Pool, pero esperamos que 
 ### ¿Cuál es el saldo de la Community Pool?
 Puedes solicitar directamente al Cosmos Hub 3 el saldo de la Community Pool:
 
-```gaiad q distribution community-pool --chain-id cosmoshub-3 --node cosmos-node-1.figment.network:26657```
+```gaiad q distribution community-pool --chain-id cosmoshub-3 --node cosmos-node-1.figment.io:26657```
 
-De forma alternativa, los navegadores de Cosmos más populares como [Big Dipper](https://cosmos.bigdipper.live) y [Hubble](https://hubble.figment.network/cosmos/chains/cosmoshub-3) muestran la evolución del saldo de la Community Pool.
+De forma alternativa, los navegadores de Cosmos más populares como [Big Dipper](https://cosmos.bigdipper.live) y [Hubble](https://hubble.figment.io/cosmos/chains/cosmoshub-3) muestran la evolución del saldo de la Community Pool.
 
 ### ¿Cómo se pueden gastar los fondos de la Community Pool?
 Los fondos de la Cosmos Community Pool pueden ser gastados a través de propuestas de gobernanza aprobadas.

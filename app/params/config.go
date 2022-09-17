@@ -7,7 +7,7 @@ import (
 var (
 	// BypassMinFeeMsgTypesKey defines the configuration key for the
 	// BypassMinFeeMsgTypes value.
-	// nolint: gosec
+	//nolint: gosec
 	BypassMinFeeMsgTypesKey = "bypass-min-fee-msg-types"
 
 	// CustomConfigTemplate defines Gaia's custom application configuration TOML

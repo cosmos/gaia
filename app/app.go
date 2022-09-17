@@ -17,7 +17,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
-	"github.com/cosmos/cosmos-sdk/testutil/testdata_pulsar"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -28,8 +27,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
-	ibcchanneltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
+	ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
@@ -39,15 +38,12 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
-	// "github.com/strangelove-ventures/packet-forward-middleware/v2/router"
-	// routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v2/router/keeper"
-	// routertypes "github.com/strangelove-ventures/packet-forward-middleware/v2/router/types"
-
 	gaiaante "github.com/cosmos/gaia/v8/ante"
 	"github.com/cosmos/gaia/v8/app/keepers"
 	gaiaappparams "github.com/cosmos/gaia/v8/app/params"
 	"github.com/cosmos/gaia/v8/app/upgrades"
 	v8 "github.com/cosmos/gaia/v8/app/upgrades/v8"
+	"github.com/cosmos/gaia/v8/x/globalfee"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
@@ -68,7 +64,7 @@ var (
 // GaiaApp extends an ABCI application, but with most of its parameters exported.
 // They are exported for convenience in creating helper functions, as object
 // capabilities aren't needed for testing.
-type GaiaApp struct { // nolint: golint
+type GaiaApp struct { //nolint: revive
 	*baseapp.BaseApp
 	keepers.AppKeepers
 
@@ -105,7 +101,6 @@ func NewGaiaApp(
 	appOpts servertypes.AppOptions,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *GaiaApp {
-
 	appCodec := encodingConfig.Codec
 	legacyAmino := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
@@ -151,7 +146,6 @@ func NewGaiaApp(
 	// CanWithdrawInvariant invariant.
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	// NOTE: capability module's beginblocker must come before any modules using capabilities (e.g. IBC)
-
 	// Tell the app's module manager how to set the order of BeginBlockers, which are run at the beginning of every block.
 	app.mm.SetOrderBeginBlockers(orderBeginBlockers()...)
 
@@ -173,9 +167,6 @@ func NewGaiaApp(
 
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	app.mm.RegisterServices(app.configurator)
-
-	// add test gRPC service for testing gRPC queries in isolation
-	testdata_pulsar.RegisterQueryServer(app.GRPCQueryRouter(), testdata_pulsar.QueryImpl{})
 
 	// create the simulation manager and define the order of the modules for deterministic simulations
 	//
@@ -221,6 +212,7 @@ func NewGaiaApp(
 			},
 			IBCkeeper:            app.IBCKeeper,
 			BypassMinFeeMsgTypes: bypassMinFeeMsgTypes,
+			GlobalFeeSubspace:    app.GetSubspace(globalfee.ModuleName),
 		},
 	)
 	if err != nil {

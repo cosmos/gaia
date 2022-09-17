@@ -7,6 +7,7 @@ import (
 	"path"
 	"path/filepath"
 
+	"cosmossdk.io/math"
 	sdkcrypto "github.com/cosmos/cosmos-sdk/crypto"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -21,12 +22,13 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	tmcfg "github.com/tendermint/tendermint/config"
 	tmos "github.com/tendermint/tendermint/libs/os"
+	"github.com/tendermint/tendermint/p2p"
 	"github.com/tendermint/tendermint/privval"
-	tmtypes "github.com/tendermint/tendermint/types"
 
 	gaia "github.com/cosmos/gaia/v8/app"
 )
 
+//nolint:unused
 type validator struct {
 	chain            *chain
 	index            int
@@ -36,22 +38,26 @@ type validator struct {
 	privateKey       cryptotypes.PrivKey
 	consensusKey     privval.FilePVKey
 	consensusPrivKey cryptotypes.PrivKey
-	nodeKey          tmtypes.NodeKey
+	nodeKey          p2p.NodeKey
 }
 
+//nolint:unused // this is called during e2e tests
 func (v *validator) instanceName() string {
 	return fmt.Sprintf("%s%d", v.moniker, v.index)
 }
 
+//nolint:unused // this is called during e2e tests
 func (v *validator) configDir() string {
 	return fmt.Sprintf("%s/%s", v.chain.configDir(), v.instanceName())
 }
 
+//nolint:unused // this is called during e2e tests
 func (v *validator) createConfig() error {
 	p := path.Join(v.configDir(), "config")
-	return os.MkdirAll(p, 0755)
+	return os.MkdirAll(p, 0o755)
 }
 
+//nolint:unused // this is called during e2e tests
 func (v *validator) init() error {
 	if err := v.createConfig(); err != nil {
 		return err
@@ -81,10 +87,7 @@ func (v *validator) init() error {
 		return fmt.Errorf("failed to export app genesis state: %w", err)
 	}
 
-	err = tmcfg.WriteConfigFile(config.RootDir, config)
-	if err != nil {
-		return err
-	}
+	tmcfg.WriteConfigFile(filepath.Join(config.RootDir, "config", "config.toml"), config)
 	return nil
 }
 
@@ -95,15 +98,16 @@ func (v *validator) createNodeKey() error {
 	config.SetRoot(v.configDir())
 	config.Moniker = v.moniker
 
-	nodeKey, err := tmtypes.LoadOrGenNodeKey(config.NodeKeyFile())
+	nodeKey, err := p2p.LoadOrGenNodeKey(config.NodeKeyFile())
 	if err != nil {
 		return err
 	}
 
-	v.nodeKey = nodeKey
+	v.nodeKey = *nodeKey
 	return nil
 }
 
+//nolint:unused // this is called during e2e tests
 func (v *validator) createConsensusKey() error {
 	serverCtx := server.NewDefaultContext()
 	config := serverCtx.Config
@@ -111,25 +115,23 @@ func (v *validator) createConsensusKey() error {
 	config.SetRoot(v.configDir())
 	config.Moniker = v.moniker
 
-	pvKeyFile := config.PrivValidator.KeyFile()
-	if err := tmos.EnsureDir(filepath.Dir(pvKeyFile), 0777); err != nil {
+	pvKeyFile := config.PrivValidatorKeyFile()
+	if err := tmos.EnsureDir(filepath.Dir(pvKeyFile), 0o777); err != nil {
 		return err
 	}
 
-	pvStateFile := config.PrivValidator.StateFile()
-	if err := tmos.EnsureDir(filepath.Dir(pvStateFile), 0777); err != nil {
+	pvStateFile := config.PrivValidatorStateFile()
+	if err := tmos.EnsureDir(filepath.Dir(pvStateFile), 0o777); err != nil {
 		return err
 	}
 
-	filePV, err := privval.LoadOrGenFilePV(pvKeyFile, pvStateFile)
-	if err != nil {
-		return err
-	}
+	filePV := privval.LoadOrGenFilePV(pvKeyFile, pvStateFile)
 	v.consensusKey = filePV.Key
 
 	return nil
 }
 
+//nolint:unused // this is called during e2e tests
 func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
 	dir := v.configDir()
 	kb, err := keyring.New(keyringAppName, keyring.BackendTest, dir, nil, cdc)
@@ -183,19 +185,18 @@ func (v *validator) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
 	}
 
 	// get the initial validator min self delegation
-	minSelfDelegation, ok := sdk.NewIntFromString("1")
-	if !ok {
-		return nil, fmt.Errorf("NewIntFromString(\"1\") failed")
-	}
+	minSelfDelegation := math.OneInt()
 
 	valPubKey, err := cryptocodec.FromTmPubKeyInterface(v.consensusKey.PubKey)
 	if err != nil {
 		return nil, err
 	}
+
 	address, err := v.keyInfo.GetAddress()
 	if err != nil {
 		return nil, err
 	}
+
 	return stakingtypes.NewMsgCreateValidator(
 		sdk.ValAddress(address),
 		valPubKey,
@@ -213,7 +214,7 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 		return nil, err
 	}
 
-	txBuilder.SetMemo(fmt.Sprintf("%s@%s:26656", v.nodeKey.ID, v.instanceName()))
+	txBuilder.SetMemo(fmt.Sprintf("%s@%s:26656", v.nodeKey.ID(), v.instanceName()))
 	txBuilder.SetFeeAmount(sdk.NewCoins())
 	txBuilder.SetGasLimit(200000)
 
@@ -261,10 +262,7 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 	if err != nil {
 		return nil, err
 	}
-	pk, err = v.keyInfo.GetPubKey()
-	if err != nil {
-		return nil, err
-	}
+
 	sig = txsigning.SignatureV2{
 		PubKey: pk,
 		Data: &txsigning.SingleSignatureData{

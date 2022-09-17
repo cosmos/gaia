@@ -23,7 +23,7 @@ const (
 
 var (
 	encodingConfig params.EncodingConfig
-	cdc            codec.Codec
+	cdc            codec.Codec //nolint:unused // this is called during e2e tests
 )
 
 func init() {
@@ -42,6 +42,7 @@ func init() {
 	cdc = encodingConfig.Codec
 }
 
+// this is called only by test files
 type chain struct {
 	dataDir    string
 	id         string

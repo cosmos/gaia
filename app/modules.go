@@ -3,8 +3,8 @@ package gaia
 import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/vesting"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
@@ -41,15 +41,18 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
-	icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
-	"github.com/cosmos/ibc-go/v3/modules/apps/transfer"
-	ibctransfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
-	ibc "github.com/cosmos/ibc-go/v3/modules/core"
-	ibcclientclient "github.com/cosmos/ibc-go/v3/modules/core/02-client/client"
-	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
+	"github.com/cosmos/gaia/v8/x/globalfee"
+	ica "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts"
+	icatypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/types"
+	"github.com/cosmos/ibc-go/v5/modules/apps/transfer"
+	ibctransfertypes "github.com/cosmos/ibc-go/v5/modules/apps/transfer/types"
+	ibc "github.com/cosmos/ibc-go/v5/modules/core"
+	ibcclientclient "github.com/cosmos/ibc-go/v5/modules/core/02-client/client"
+	ibchost "github.com/cosmos/ibc-go/v5/modules/core/24-host"
 	"github.com/gravity-devs/liquidity/v2/x/liquidity"
 	liquiditytypes "github.com/gravity-devs/liquidity/v2/x/liquidity/types"
+	"github.com/strangelove-ventures/packet-forward-middleware/v2/router"
+	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v2/router/types"
 
 	gaiaappparams "github.com/cosmos/gaia/v8/app/params"
 )
@@ -65,7 +68,7 @@ var maccPerms = map[string][]string{
 	liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 	ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 }
- 
+
 // ModuleBasics defines the module BasicManager is in charge of setting up basic,
 // non-dependant module elements, such as codec registration
 // and genesis verification.
@@ -99,8 +102,9 @@ var ModuleBasics = module.NewBasicManager(
 	transfer.AppModuleBasic{},
 	vesting.AppModuleBasic{},
 	liquidity.AppModuleBasic{},
-	// router.AppModuleBasic{},
+	router.AppModuleBasic{},
 	ica.AppModuleBasic{},
+	globalfee.AppModule{},
 )
 
 func appModules(
@@ -137,6 +141,8 @@ func appModules(
 		liquidity.NewAppModule(appCodec, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.DistrKeeper),
 		app.TransferModule,
 		app.ICAModule,
+		app.RouterModule,
+		globalfee.NewAppModule(app.GetSubspace(globalfee.ModuleName)),
 	}
 }
 
@@ -166,7 +172,7 @@ func simulationModules(
 		liquidity.NewAppModule(appCodec, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.DistrKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		app.TransferModule,
-	}	
+	}
 }
 
 // orderBeginBlockers Tell the app's module manager how to set the order of
@@ -189,13 +195,14 @@ func orderBeginBlockers() []string {
 		ibctransfertypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
-		// routertypes.ModuleName,
+		routertypes.ModuleName,
 		genutiltypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
 		group.ModuleName,
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
+		globalfee.ModuleName,
 	}
 }
 
@@ -208,7 +215,7 @@ func orderEndBlockers() []string {
 		ibctransfertypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
-		// routertypes.ModuleName,
+		routertypes.ModuleName,
 		capabilitytypes.ModuleName,
 		authtypes.ModuleName,
 		banktypes.ModuleName,
@@ -223,6 +230,7 @@ func orderEndBlockers() []string {
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
+		globalfee.ModuleName,
 	}
 }
 
@@ -246,9 +254,10 @@ func orderInitBlockers() []string {
 		authz.ModuleName,
 		feegrant.ModuleName,
 		group.ModuleName,
-		// routertypes.ModuleName,
+		routertypes.ModuleName,
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
+		globalfee.ModuleName,
 	}
 }

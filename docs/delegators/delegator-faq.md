@@ -16,7 +16,7 @@ To become delegators, Atom holders need to send a ["Delegate transaction"](./del
 For a practical guide on how to become a delegator, click [here](./delegator-guide-cli.md).
 
 ## Choosing a validator
-
+<!-- markdown-link-check-disable-next-line -->
 In order to choose their validators, delegators have access to a range of information directly in [Lunie](https://lunie.io) or other Cosmos block explorers.
 
 - **Validator's moniker**: Name of the validator candidate.

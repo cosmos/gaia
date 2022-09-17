@@ -1,3 +1,4 @@
+//go:build exclude
 // +build exclude
 
 package main
@@ -47,22 +48,22 @@ func main() {
 	}
 }
 
-func FindChangelog(file string, version string) (string, error) {
+func FindChangelog(file, version string) (string, error) {
 	data, err := os.ReadFile(file)
 	if err != nil {
-		return "", errors.New("read changelog file failed.")
+		return "", errors.New("read changelog file failed")
 	}
 
 	changelogs := string(data)
 	i := strings.Index(changelogs, "["+version)
 	if i == -1 {
 		// -1 means not found
-		return "", errors.New(fmt.Sprintf("cannot find version %s\n", version))
+		return "", fmt.Errorf("cannot find version %s", version)
 	}
 	j := strings.Index(changelogs[i:], "##")
 	if j == -1 {
 		// -1 means not found
-		return "", errors.New(fmt.Sprintf("cannot find the end of  %s's changelog \n", version))
+		return "", fmt.Errorf("cannot find the end of  %s's changelog", version)
 	}
 
 	return changelogs[i : i+j], nil

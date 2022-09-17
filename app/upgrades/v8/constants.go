@@ -3,7 +3,7 @@ package v8
 import (
 	"github.com/cosmos/gaia/v8/app/upgrades"
 
-	icahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
+	icahosttypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/host/types"
 
 	store "github.com/cosmos/cosmos-sdk/store/types"
 )

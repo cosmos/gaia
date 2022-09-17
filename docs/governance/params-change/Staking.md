@@ -56,7 +56,7 @@ Decreasing the value of the `MaxValidators` parameter will likely reduce the num
 Increasing the value of the `MaxValidators` parameter will likely increase the number of validators actively participating in validating blocks, earning rewards, and governance voting for the Cosmos Hub. This may increase the time it takes to produce each new Cosmos Hub block.
 
 #### Notes
-Prior to `cosmoshub-3`, the Cosmos Hub had a maximum set of 100 active validators. Text-based governance proposal [Prop10](https://hubble.figment.network/cosmos/chains/cosmoshub-2/governance/proposals/10) signalled agreement that the active set be increased to 125 validators. Block times were ~6.94 seconds/block with 100 validators, and are now ~7.08 seconds/block with 125 validators.
+Prior to `cosmoshub-3`, the Cosmos Hub had a maximum set of 100 active validators. Text-based governance proposal [Prop10](https://hubble.figment.io/cosmos/chains/cosmoshub-2/governance/proposals/10) signalled agreement that the active set be increased to 125 validators. Block times were ~6.94 seconds/block with 100 validators, and are now ~7.08 seconds/block with 125 validators.
 
 It may be argued that after the Cosmos creators, the validator cohort may be the largest group of contributors to the Cosmos Hub community. Changes to the number of active validator participants may also affect the non-validator contributions to the Cosmos Hub.
 

@@ -73,7 +73,7 @@ You can find a list of available Cosmos Hub endpoints under the [API section](ht
 
 ## Credits
 
-This documentation was originally created by Gavin Birch ([Figment Networks](https://figment.network)). Its development was supported by funding approved on January 29, 2020 by the Cosmos Hub via Community Spend [Proposal 23](https://hubble.figment.network/cosmos/chains/cosmoshub-3/governance/proposals/23) ([full Proposal PDF here](https://ipfs.io/ipfs/QmSMGEoY2dfxADPfgoAsJxjjC6hwpSNx1dXAqePiCEMCbY)). In late 2021 and early 2022 significant updates were made by [Hypha, co-op](https://hypha.coop/), especially @dcwalk 🙏
+This documentation was originally created by Gavin Birch ([Figment Networks](https://figment.io)). Its development was supported by funding approved on January 29, 2020 by the Cosmos Hub via Community Spend [Proposal 23](https://hubble.figment.io/cosmos/chains/cosmoshub-3/governance/proposals/23) ([full Proposal PDF here](https://ipfs.io/ipfs/QmSMGEoY2dfxADPfgoAsJxjjC6hwpSNx1dXAqePiCEMCbY)). In late 2021 and early 2022 significant updates were made by [Hypha, co-op](https://hypha.coop/), especially @dcwalk 🙏
 
 **Special thanks** to the following for providing credible information:
 - Aleks (All in Bits; Fission Labs) for answering countless questions about these parameters

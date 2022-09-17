@@ -10,11 +10,12 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+
+	globalfee "github.com/cosmos/gaia/v8/x/globalfee/types"
 )
 
 func queryGaiaTx(endpoint, txHash string) error {
 	resp, err := http.Get(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs/%s", endpoint, txHash))
-
 	if err != nil {
 		return fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
@@ -38,6 +39,7 @@ func queryGaiaTx(endpoint, txHash string) error {
 	return nil
 }
 
+// if coin is zero, return empty coin.
 func getSpecificBalance(endpoint, addr, denom string) (amt sdk.Coin, err error) {
 	balances, err := queryGaiaAllBalances(endpoint, addr)
 	if err != nil {
@@ -80,7 +82,8 @@ func queryGaiaDenomBalance(endpoint, addr, denom string) (sdk.Coin, error) {
 		"%s/cosmos/bank/v1beta1/balances/%s/by_denom?denom=%s",
 		endpoint, addr, denom,
 	)
-	resp, err := http.Get(path)
+
+	resp, err := http.Get(path) //nolint:gosec // this is used as a part of the e2e suite.
 	if err != nil {
 		return zeroCoin, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
@@ -100,27 +103,46 @@ func queryGaiaDenomBalance(endpoint, addr, denom string) (sdk.Coin, error) {
 	return *balanceResp.Balance, nil
 }
 
-func queryGovProposal(endpoint string, proposalId int) (govv1beta1.QueryProposalResponse, error) {
+func queryGovProposal(endpoint string, proposalID int) (govv1beta1.QueryProposalResponse, error) {
 	var emptyProp govv1beta1.QueryProposalResponse
 
-	path := fmt.Sprintf("%s/cosmos/gov/v1beta1/proposals/%d", endpoint, proposalId)
-	resp, err := http.Get(path)
+	path := fmt.Sprintf("%s/cosmos/gov/v1beta1/proposals/%d", endpoint, proposalID)
+
+	resp, err := http.Get(path) //nolint:gosec // this is only used during tests
 	if err != nil {
 		return emptyProp, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
-
 	if err != nil {
-
 		return emptyProp, err
 	}
-	var govProposalResp govv1beta1.QueryProposalResponse
 
+	var govProposalResp govv1beta1.QueryProposalResponse
 	if err := cdc.UnmarshalJSON(body, &govProposalResp); err != nil {
 		return emptyProp, err
 	}
 
 	return govProposalResp, nil
+}
+
+func queryGlobalFees(endpoint string) (amt sdk.DecCoins, err error) {
+	resp, err := http.Get(fmt.Sprintf("%s/gaia/globalfee/v1beta1/minimum_gas_prices", endpoint))
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	bz, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var fees globalfee.QueryMinimumGasPricesResponse
+	if err := cdc.UnmarshalJSON(bz, &fees); err != nil {
+		return sdk.DecCoins{}, err
+	}
+
+	return fees.MinimumGasPrices, nil
 }

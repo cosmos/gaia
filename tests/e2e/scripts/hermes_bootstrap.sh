@@ -50,7 +50,7 @@ account_prefix = 'cosmos'
 key_name = 'val01-gaia-a'
 store_prefix = 'ibc'
 max_gas = 6000000
-gas_price = { price = 0.001, denom = 'photon' }
+gas_price = { price = 0.001, denom = 'uatom' }
 gas_adjustment = 1.0
 clock_drift = '1m' # to accomdate docker containers
 trusting_period = '14days'
@@ -66,7 +66,7 @@ account_prefix = 'cosmos'
 key_name = 'val01-gaia-b'
 store_prefix = 'ibc'
 max_gas = 6000000
-gas_price = { price = 0.001, denom = 'photon' }
+gas_price = { price = 0.001, denom = 'uatom' }
 gas_adjustment = 1.0
 clock_drift = '1m' # to accomdate docker containers
 trusting_period = '14days'

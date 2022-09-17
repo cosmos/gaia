@@ -8,7 +8,7 @@ require (
 	github.com/cosmos/ibc-go/v3 v3.0.2
 	github.com/golangci/golangci-lint v1.48.0
 	github.com/gorilla/mux v1.8.0
-	github.com/gravity-devs/liquidity v1.5.1
+	github.com/gravity-devs/liquidity v1.5.2
 	github.com/ory/dockertest/v3 v3.8.1
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/cast v1.5.0
@@ -277,5 +277,3 @@ replace (
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	google.golang.org/grpc => google.golang.org/grpc v1.33.2
 )
-
-replace github.com/gravity-devs/liquidity => github.com/notional-labs/liquidity v1.4.3-0.20220825182406-4b75925efe42

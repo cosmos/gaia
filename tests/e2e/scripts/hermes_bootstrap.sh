@@ -22,7 +22,7 @@ misbehaviour = true
 enabled = false
 
 [mode.channels]
-enabled = false
+enabled = true
 
 [mode.packets]
 enabled = true
@@ -50,7 +50,7 @@ account_prefix = 'cosmos'
 key_name = 'val01-gaia-a'
 store_prefix = 'ibc'
 max_gas = 6000000
-gas_price = { price = 0.001, denom = 'uatom' }
+gas_price = { price = 0.00001, denom = 'uatom' }
 gas_adjustment = 1.0
 clock_drift = '1m' # to accomdate docker containers
 trusting_period = '14days'
@@ -65,8 +65,8 @@ rpc_timeout = '10s'
 account_prefix = 'cosmos'
 key_name = 'val01-gaia-b'
 store_prefix = 'ibc'
-max_gas = 6000000
-gas_price = { price = 0.001, denom = 'uatom' }
+max_gas =  6000000
+gas_price = { price = 0.00001, denom = 'uatom' }
 gas_adjustment = 1.0
 clock_drift = '1m' # to accomdate docker containers
 trusting_period = '14days'
@@ -74,8 +74,8 @@ trust_threshold = { numerator = '1', denominator = '3' }
 EOF
 
 # import keys
-hermes keys restore ${GAIA_B_E2E_CHAIN_ID} -n "val01-gaia-b" -m "${GAIA_B_E2E_VAL_MNEMONIC}"
-hermes keys restore ${GAIA_A_E2E_CHAIN_ID} -n "val01-gaia-a" -m "${GAIA_A_E2E_VAL_MNEMONIC}"
+hermes keys restore ${GAIA_B_E2E_CHAIN_ID} -n "val01-gaia-b" -m "${GAIA_B_E2E_RLY_MNEMONIC}"
+hermes keys restore ${GAIA_A_E2E_CHAIN_ID} -n "val01-gaia-a" -m "${GAIA_A_E2E_RLY_MNEMONIC}"
 
 # start Hermes relayer
 hermes start

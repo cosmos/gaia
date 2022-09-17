@@ -42,6 +42,8 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	"github.com/cosmos/gaia/v8/x/globalfee"
+	"github.com/cosmos/gaia/v8/x/icamauth"
+	icamauthtypes "github.com/cosmos/gaia/v8/x/icamauth/types"
 	ica "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts"
 	icatypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/types"
 	"github.com/cosmos/ibc-go/v5/modules/apps/transfer"
@@ -104,6 +106,7 @@ var ModuleBasics = module.NewBasicManager(
 	liquidity.AppModuleBasic{},
 	router.AppModuleBasic{},
 	ica.AppModuleBasic{},
+	icamauth.AppModuleBasic{},
 	globalfee.AppModule{},
 )
 
@@ -139,10 +142,11 @@ func appModules(
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		liquidity.NewAppModule(appCodec, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.DistrKeeper),
+		globalfee.NewAppModule(app.GetSubspace(globalfee.ModuleName)),
 		app.TransferModule,
 		app.ICAModule,
+		app.ICAMauthModule,
 		app.RouterModule,
-		globalfee.NewAppModule(app.GetSubspace(globalfee.ModuleName)),
 	}
 }
 
@@ -202,6 +206,8 @@ func orderBeginBlockers() []string {
 		group.ModuleName,
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
+		icatypes.ModuleName,
+		icamauthtypes.ModuleName,
 		globalfee.ModuleName,
 	}
 }
@@ -230,6 +236,8 @@ func orderEndBlockers() []string {
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
+		icatypes.ModuleName,
+		icamauthtypes.ModuleName,
 		globalfee.ModuleName,
 	}
 }
@@ -255,6 +263,8 @@ func orderInitBlockers() []string {
 		feegrant.ModuleName,
 		group.ModuleName,
 		routertypes.ModuleName,
+		icatypes.ModuleName,
+		icamauthtypes.ModuleName,
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,

@@ -44,7 +44,6 @@ import (
 	"github.com/cosmos/gaia/v8/app/upgrades"
 	v8 "github.com/cosmos/gaia/v8/app/upgrades/v8"
 	"github.com/cosmos/gaia/v8/x/globalfee"
-
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
 )
@@ -181,11 +180,8 @@ func NewGaiaApp(
 	app.MountTransientStores(app.GetTransientStoreKey())
 	app.MountMemoryStores(app.GetMemoryStoreKey())
 
-	var bypassMinFeeMsgTypes []string
-	bypassMinFeeConfig := appOpts.Get(gaiaappparams.BypassMinFeeMsgTypesKey)
-	if bypassMinFeeConfig != nil {
-		bypassMinFeeMsgTypes = cast.ToStringSlice(bypassMinFeeConfig)
-	} else {
+	bypassMinFeeMsgTypes := cast.ToStringSlice(appOpts.Get(gaiaappparams.BypassMinFeeMsgTypesKey))
+	if bypassMinFeeMsgTypes == nil {
 		bypassMinFeeMsgTypes = GetDefaultBypassFeeMessages()
 	}
 
@@ -397,4 +393,30 @@ func RegisterSwaggerAPI(rtr *mux.Router) {
 
 	staticServer := http.FileServer(statikFS)
 	rtr.PathPrefix("/swagger/").Handler(http.StripPrefix("/swagger/", staticServer))
+}
+
+func (app *GaiaApp) OnTxSucceeded(ctx sdk.Context, sourcePort, sourceChannel string, txHash []byte, txBytes []byte) {
+}
+
+func (app *GaiaApp) OnTxFailed(ctx sdk.Context, sourcePort, sourceChannel string, txHash []byte, txBytes []byte) {
+}
+
+// TestingApp functions
+
+// GetBaseApp implements the TestingApp interface.
+func (app *GaiaApp) GetBaseApp() *baseapp.BaseApp {
+	return app.BaseApp
+}
+
+// GetTxConfig implements the TestingApp interface.
+func (app *GaiaApp) GetTxConfig() client.TxConfig {
+	return MakeTestEncodingConfig().TxConfig
+}
+
+// EmptyAppOptions is a stub implementing AppOptions
+type EmptyAppOptions struct{}
+
+// Get implements AppOptions
+func (ao EmptyAppOptions) Get(o string) interface{} {
+	return nil
 }

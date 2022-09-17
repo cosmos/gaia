@@ -36,6 +36,15 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+* (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.8](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.8). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.8/CHANGELOG.md) for details.
+* (gaia) bump [tendermint](https://github.com/tendermint/tendermint) to [v0.34.21](https://github.com/tendermint/tendermint/releases/tag/v0.34.21). See [CHANGELOG.md](https://github.com/tendermint/tendermint/blob/v0.34.21/CHANGELOG.md) for details.
+* (gaia) bump [liquidity](https://github.com/gravity-devs/liquidity) to [v1.5.2](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.5.2) to be compatible with cosmos-sdk v0.45.8.
+* (gaia) bump [ibc-go](https://github.com/cosmos/ibc-go) to [v3.0.2](https://github.com/cosmos/ibc-go/releases/tag/v3.0.2) to be compatible with cosmos-sdk v0.45.8.
+
+
+
+
+
 ## [v7.0.3] -2022-08-03
 
 * (golang) Update go to 1.18

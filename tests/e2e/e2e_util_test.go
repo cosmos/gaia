@@ -108,10 +108,12 @@ func (s *IntegrationTestSuite) sendMsgSend(c *chain, valIdx int, from, to, amt, 
 		OutputStream: &outBuf,
 		ErrorStream:  &errBuf,
 	})
-	s.Require().NoErrorf(err, "stdout: %s, stderr: %s", outBuf.String(), errBuf.String())
+	stdOut := outBuf.Bytes()
+	stdErr := errBuf.String()
+	s.Require().NoErrorf(err, "stdout: %s, stderr: %s", string(stdOut), stdErr)
 
 	var txResp sdk.TxResponse
-	s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
+	s.Require().NoError(cdc.UnmarshalJSON(stdOut, &txResp))
 	endpoint := fmt.Sprintf("http://%s", s.valResources[c.id][valIdx].GetHostPort("1317/tcp"))
 
 	// wait for the tx to be committed on chain
@@ -380,15 +382,13 @@ func (s *IntegrationTestSuite) execGovSubmitProposal(c *chain, valIdx int, endpo
 }
 
 func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chain, gaiaCommand []string, valIdx int, endpoint string) {
-	var (
-		outBuf bytes.Buffer
-		errBuf bytes.Buffer
-		txResp sdk.TxResponse
-	)
-
+	var txResp sdk.TxResponse
 	s.Require().Eventually(
 		func() bool {
-			time.Sleep(3 * time.Second)
+			var (
+				outBuf bytes.Buffer
+				errBuf bytes.Buffer
+			)
 			exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
 				Context:      ctx,
 				AttachStdout: true,
@@ -405,16 +405,17 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 				OutputStream: &outBuf,
 				ErrorStream:  &errBuf,
 			})
-
 			s.Require().NoError(err)
-			s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
 
-			return strings.Contains(txResp.String(), "code: 0") || txResp.Code == uint32(0)
+			sdtOut := outBuf.Bytes()
+			s.Require().NoError(cdc.UnmarshalJSON(sdtOut, &txResp))
+			s.T().Logf("tx return\nstdout: %s\nstderr: %s", string(sdtOut), errBuf.String())
+			return strings.Contains(txResp.String(), "code: 0") || txResp.Code == 0
 		},
 		15*time.Second,
 		2*time.Second,
-		"tx returned a non-zero code; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
 	)
+
 	endpoint = fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	s.Require().Eventually(
 		func() bool {
@@ -422,7 +423,6 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 		},
 		time.Minute,
 		5*time.Second,
-		"stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
 	)
 }
 

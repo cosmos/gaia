@@ -131,19 +131,20 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api, home string) {
 			5*time.Second,
 		)
 
-		//	Transfer coins should fail
-		s.sendMsgSend(
-			s.chainA,
-			0,
-			continuousVestingAcc.String(),
-			Address(),
-			vestingTransferAmount.String(),
-			fees.String(),
-			true,
-		)
-
 		waitStartTime := acc.StartTime - time.Now().Unix()
 		if waitStartTime > 0 {
+
+			//	Transfer coins should fail
+			s.sendMsgSend(
+				s.chainA,
+				0,
+				continuousVestingAcc.String(),
+				Address(),
+				vestingTransferAmount.String(),
+				fees.String(),
+				true,
+			)
+
 			time.Sleep(time.Duration(waitStartTime) * time.Second)
 		}
 
@@ -184,11 +185,11 @@ func (s *IntegrationTestSuite) testPermanentLockedAccount(api, home string) {
 		algo, err := keyring.NewSigningAlgoFromString(string(hd.Secp256k1Type), keyringAlgos)
 		s.Require().NoError(err)
 
-		mnemoinic, err := createMnemonic()
+		mnemonic, err := createMnemonic()
 		s.Require().NoError(err)
 
 		// Use the first wallet from the same mnemonic by HD path
-		account, err := kb.NewAccount("permanent_locked_vesting", mnemoinic, "", HDPathZero, algo)
+		account, err := kb.NewAccount("permanent_locked_vesting", mnemonic, "", HDPathZero, algo)
 		s.Require().NoError(err)
 		permanentLockedAddr, err := account.GetAddress()
 		s.Require().NoError(err)
@@ -249,16 +250,15 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api, home string) {
 		algo, err := keyring.NewSigningAlgoFromString(string(hd.Secp256k1Type), keyringAlgos)
 		s.Require().NoError(err)
 
-		mnemoinic, err := createMnemonic()
+		mnemonic, err := createMnemonic()
 		s.Require().NoError(err)
 
 		// Use the first wallet from the same mnemonic by HD path
-		account, err := kb.NewAccount("periodic_vesting", mnemoinic, "", HDPathZero, algo)
+		account, err := kb.NewAccount("periodic_vesting", mnemonic, "", HDPathZero, algo)
 		s.Require().NoError(err)
 		periodicVestingAddr, err := account.GetAddress()
 		s.Require().NoError(err)
 
-		time.Sleep(5 * time.Second)
 		s.execCreatePeriodicVestingAccount(
 			s.chainA,
 			home,

@@ -408,8 +408,8 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 			s.Require().NoError(err)
 
 			sdtOut := outBuf.Bytes()
-			s.Require().NoError(cdc.UnmarshalJSON(sdtOut, &txResp))
 			s.T().Logf("tx return\nstdout: %s\nstderr: %s", string(sdtOut), errBuf.String())
+			s.Require().NoError(cdc.UnmarshalJSON(sdtOut, &txResp))
 			return strings.Contains(txResp.String(), "code: 0") || txResp.Code == 0
 		},
 		15*time.Second,

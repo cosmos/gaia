@@ -72,19 +72,19 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api, home string) {
 			5*time.Second,
 		)
 
-		//	Transfer coins should fail
-		s.sendMsgSend(
-			s.chainA,
-			0,
-			vestingDelayedAcc.String(),
-			Address(),
-			vestingTransferAmount.String(),
-			fees.String(),
-			true,
-		)
-
-		waitTime := acc.EndTime - time.Now().Unix() + 5
+		waitTime := acc.EndTime - time.Now().Unix()
 		if waitTime > 0 {
+			//	Transfer coins should fail
+			s.sendMsgSend(
+				s.chainA,
+				0,
+				vestingDelayedAcc.String(),
+				Address(),
+				vestingTransferAmount.String(),
+				fees.String(),
+				true,
+			)
+			waitTime = acc.EndTime - time.Now().Unix()
 			time.Sleep(time.Duration(waitTime) * time.Second)
 		}
 
@@ -133,7 +133,6 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api, home string) {
 
 		waitStartTime := acc.StartTime - time.Now().Unix()
 		if waitStartTime > 0 {
-
 			//	Transfer coins should fail
 			s.sendMsgSend(
 				s.chainA,
@@ -144,23 +143,23 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api, home string) {
 				fees.String(),
 				true,
 			)
-
+			waitStartTime = acc.StartTime - time.Now().Unix()
 			time.Sleep(time.Duration(waitStartTime) * time.Second)
 		}
 
-		//	Transfer coins should fail
-		s.sendMsgSend(
-			s.chainA,
-			0,
-			continuousVestingAcc.String(),
-			Address(),
-			vestingTransferAmount.String(),
-			fees.String(),
-			true,
-		)
-
 		waitEndTime := acc.EndTime - time.Now().Unix()
 		if waitEndTime > 0 {
+			//	Transfer coins should fail
+			s.sendMsgSend(
+				s.chainA,
+				0,
+				continuousVestingAcc.String(),
+				Address(),
+				vestingTransferAmount.String(),
+				fees.String(),
+				true,
+			)
+			waitEndTime = acc.EndTime - time.Now().Unix()
 			time.Sleep(time.Duration(waitEndTime) * time.Second)
 		}
 
@@ -194,7 +193,6 @@ func (s *IntegrationTestSuite) testPermanentLockedAccount(api, home string) {
 		permanentLockedAddr, err := account.GetAddress()
 		s.Require().NoError(err)
 
-		time.Sleep(10 * time.Second)
 		s.execCreatePermanentLockedAccount(s.chainA, home, permanentLockedAddr.String(),
 			vestingAmountVested.String(), withKeyValue("from", sender.String()),
 		)
@@ -280,34 +278,35 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api, home string) {
 		}
 		s.Require().Equal(expectedBalance, balance)
 
-		//	Transfer coins should fail
-		s.sendMsgSend(
-			s.chainA,
-			0,
-			periodicVestingAddr.String(),
-			Address(),
-			vestingTransferAmount.String(),
-			fees.String(),
-			true,
-		)
 		waitStartTime := acc.StartTime - time.Now().Unix()
 		if waitStartTime > 0 {
+			//	Transfer coins should fail
+			s.sendMsgSend(
+				s.chainA,
+				0,
+				periodicVestingAddr.String(),
+				Address(),
+				vestingTransferAmount.String(),
+				fees.String(),
+				true,
+			)
+			waitStartTime = acc.StartTime - time.Now().Unix()
 			time.Sleep(time.Duration(waitStartTime) * time.Second)
 		}
 
-		//	Transfer coins should fail
-		s.sendMsgSend(
-			s.chainA,
-			0,
-			periodicVestingAddr.String(),
-			Address(),
-			vestingTransferAmount.String(),
-			fees.String(),
-			true,
-		)
-
 		waitFirstPeriod := (acc.StartTime + acc.VestingPeriods[0].Length) - time.Now().Unix()
 		if waitFirstPeriod > 0 {
+			//	Transfer coins should fail
+			s.sendMsgSend(
+				s.chainA,
+				0,
+				periodicVestingAddr.String(),
+				Address(),
+				vestingTransferAmount.String(),
+				fees.String(),
+				true,
+			)
+			waitFirstPeriod = (acc.StartTime + acc.VestingPeriods[0].Length) - time.Now().Unix()
 			time.Sleep(time.Duration(waitFirstPeriod) * time.Second)
 		}
 

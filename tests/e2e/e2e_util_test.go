@@ -125,7 +125,7 @@ func (s *IntegrationTestSuite) sendMsgSend(c *chain, valIdx int, from, to, amt, 
 		time.Minute,
 		5*time.Second,
 		"stdout: %s, stderr: %s",
-		outBuf.String(), errBuf.String(),
+		string(stdOut), stdErr,
 	)
 }
 

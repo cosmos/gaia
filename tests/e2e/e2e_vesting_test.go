@@ -12,6 +12,7 @@ import (
 
 const (
 	vestingPeriodFilePath = "test_period.json"
+	vestingTxDelay        = 5
 )
 
 type (
@@ -35,19 +36,19 @@ var (
 )
 
 func (s *IntegrationTestSuite) testDelayedVestingAccount(api, home string) {
-	val := s.chainA.validators[0]
+	var (
+		valIdx = 0
+		chain  = s.chainA
+		val    = chain.validators[valIdx]
+	)
 	sender, err := val.keyInfo.GetAddress()
 	s.NoError(err)
 
 	var (
 		valOpAddr         = sdk.ValAddress(sender).String()
-		vestingDelayedAcc = s.chainA.delayedVestingAcc
-		delegationAmount  = sdk.NewCoin(uatomDenom, sdk.NewInt(500000000))
-		delegationFees    = sdk.NewCoin(uatomDenom, sdk.NewInt(10))
+		vestingDelayedAcc = chain.delayedVestingAcc
 	)
 	s.Run("test delayed vesting genesis account", func() {
-		// s.T().Parallel()
-
 		acc, err := queryDelayedVestingAccount(api, vestingDelayedAcc.String())
 		s.Require().NoError(err)
 
@@ -57,7 +58,8 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api, home string) {
 		s.Require().Equal(vestingBalance.AmountOf(uatomDenom), balance.Amount)
 
 		// Delegate coins should succeed
-		s.executeDelegate(s.chainA, 0, api, delegationAmount.String(), valOpAddr, vestingDelayedAcc.String(), home, delegationFees.String())
+		s.executeDelegate(chain, valIdx, api, vestingDelegationAmount.String(), valOpAddr,
+			vestingDelayedAcc.String(), home, vestingDelegationFees.String())
 
 		// Validate delegation successful
 		s.Require().Eventually(
@@ -66,44 +68,50 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api, home string) {
 				amt := res.GetDelegationResponse().GetDelegation().GetShares()
 				s.Require().NoError(err)
 
-				return amt.Equal(sdk.NewDecFromInt(delegationAmount.Amount))
+				return amt.Equal(sdk.NewDecFromInt(vestingDelegationAmount.Amount))
 			},
 			20*time.Second,
 			5*time.Second,
 		)
 
 		waitTime := acc.EndTime - time.Now().Unix()
-		if waitTime > 0 {
+		if waitTime > vestingTxDelay {
 			//	Transfer coins should fail
+			balance, err := getSpecificBalance(api, vestingDelayedAcc.String(), uatomDenom)
+			s.Require().NoError(err)
 			s.sendMsgSend(
-				s.chainA,
-				0,
+				chain,
+				valIdx,
 				vestingDelayedAcc.String(),
 				Address(),
-				vestingTransferAmount.String(),
+				balance.Sub(fees).String(),
 				fees.String(),
 				true,
 			)
-			waitTime = acc.EndTime - time.Now().Unix()
+			waitTime = acc.EndTime - time.Now().Unix() + vestingTxDelay
 			time.Sleep(time.Duration(waitTime) * time.Second)
 		}
 
 		//	Transfer coins should succeed
-		s.sendMsgSend(s.chainA, 0, vestingDelayedAcc.String(), Address(), vestingTransferAmount.String(), fees.String(), false)
+		balance, err = getSpecificBalance(api, vestingDelayedAcc.String(), uatomDenom)
+		s.Require().NoError(err)
+		s.sendMsgSend(chain, valIdx, vestingDelayedAcc.String(), Address(), balance.Sub(fees).String(), fees.String(), false)
 	})
 }
 
 func (s *IntegrationTestSuite) testContinuousVestingAccount(api, home string) {
 	s.Run("test continuous vesting genesis account", func() {
-		// s.T().Parallel()
-
-		val := s.chainA.validators[0]
+		var (
+			valIdx = 0
+			chain  = s.chainA
+			val    = chain.validators[valIdx]
+		)
 		sender, err := val.keyInfo.GetAddress()
 		s.NoError(err)
 
 		var (
 			valOpAddr            = sdk.ValAddress(sender).String()
-			continuousVestingAcc = s.chainA.continuousVestingAcc
+			continuousVestingAcc = chain.continuousVestingAcc
 		)
 
 		acc, err := queryContinuousVestingAccount(api, continuousVestingAcc.String())
@@ -115,7 +123,7 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api, home string) {
 		s.Require().Equal(vestingBalance.AmountOf(uatomDenom), balance.Amount)
 
 		// Delegate coins should succeed
-		s.executeDelegate(s.chainA, 0, api, vestingDelegationAmount.String(),
+		s.executeDelegate(chain, valIdx, api, vestingDelegationAmount.String(),
 			valOpAddr, continuousVestingAcc.String(), home, vestingDelegationFees.String())
 
 		// Validate delegation successful
@@ -132,92 +140,85 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api, home string) {
 		)
 
 		waitStartTime := acc.StartTime - time.Now().Unix()
-		if waitStartTime > 0 {
+		if waitStartTime > vestingTxDelay {
 			//	Transfer coins should fail
+			balance, err := getSpecificBalance(api, continuousVestingAcc.String(), uatomDenom)
+			s.Require().NoError(err)
 			s.sendMsgSend(
-				s.chainA,
-				0,
+				chain,
+				valIdx,
 				continuousVestingAcc.String(),
 				Address(),
-				vestingTransferAmount.String(),
+				balance.Sub(fees).String(),
 				fees.String(),
 				true,
 			)
-			waitStartTime = acc.StartTime - time.Now().Unix()
+			waitStartTime = acc.StartTime - time.Now().Unix() + vestingTxDelay
 			time.Sleep(time.Duration(waitStartTime) * time.Second)
 		}
 
 		waitEndTime := acc.EndTime - time.Now().Unix()
-		if waitEndTime > 0 {
+		if waitEndTime > vestingTxDelay {
 			//	Transfer coins should fail
+			balance, err := getSpecificBalance(api, continuousVestingAcc.String(), uatomDenom)
+			s.Require().NoError(err)
 			s.sendMsgSend(
-				s.chainA,
-				0,
+				chain,
+				valIdx,
 				continuousVestingAcc.String(),
 				Address(),
-				vestingTransferAmount.String(),
+				balance.Sub(fees).String(),
 				fees.String(),
 				true,
 			)
-			waitEndTime = acc.EndTime - time.Now().Unix()
+			waitEndTime = acc.EndTime - time.Now().Unix() + vestingTxDelay
 			time.Sleep(time.Duration(waitEndTime) * time.Second)
 		}
 
 		//	Transfer coins should succeed
-		s.sendMsgSend(s.chainA, 0, continuousVestingAcc.String(), Address(), vestingTransferAmount.String(), fees.String(), false)
+		balance, err = getSpecificBalance(api, continuousVestingAcc.String(), uatomDenom)
+		s.Require().NoError(err)
+		s.sendMsgSend(chain, valIdx, continuousVestingAcc.String(), Address(), balance.Sub(fees).String(), fees.String(), false)
 	})
 }
 
 func (s *IntegrationTestSuite) testPermanentLockedAccount(api, home string) {
 	s.Run("test permanent locked vesting genesis account", func() {
-		// s.T().Parallel()
-
-		val := s.chainA.validators[0]
+		var (
+			valIdx = 0
+			chain  = s.chainA
+			val    = chain.validators[valIdx]
+		)
 		sender, err := val.keyInfo.GetAddress()
 		s.NoError(err)
-
 		valOpAddr := sdk.ValAddress(sender).String()
-		kb, err := keyring.New(keyringAppName, keyring.BackendTest, val.configDir(), nil, cdc)
+		permanentLockedAddr, err := createAccount(val.configDir(), "permanent_locked_vesting")
 		s.Require().NoError(err)
 
-		keyringAlgos, _ := kb.SupportedAlgorithms()
-		algo, err := keyring.NewSigningAlgoFromString(string(hd.Secp256k1Type), keyringAlgos)
-		s.Require().NoError(err)
-
-		mnemonic, err := createMnemonic()
-		s.Require().NoError(err)
-
-		// Use the first wallet from the same mnemonic by HD path
-		account, err := kb.NewAccount("permanent_locked_vesting", mnemonic, "", HDPathZero, algo)
-		s.Require().NoError(err)
-		permanentLockedAddr, err := account.GetAddress()
-		s.Require().NoError(err)
-
-		time.Sleep(5 * time.Second)
-		s.execCreatePermanentLockedAccount(s.chainA, home, permanentLockedAddr.String(),
+		s.execCreatePermanentLockedAccount(chain, home, permanentLockedAddr,
 			vestingAmountVested.String(), withKeyValue("from", sender.String()),
 		)
 
-		_, err = queryPermanentLockedAccount(api, permanentLockedAddr.String())
+		_, err = queryPermanentLockedAccount(api, permanentLockedAddr)
 		s.Require().NoError(err)
 
 		//	Check address balance
-		balance, err := getSpecificBalance(api, permanentLockedAddr.String(), uatomDenom)
+		balance, err := getSpecificBalance(api, permanentLockedAddr, uatomDenom)
 		s.Require().NoError(err)
 		s.Require().Equal(vestingAmountVested.Amount, balance.Amount)
 
 		// Transfer coins to pay the delegation fee
-		s.sendMsgSend(s.chainA, 0, sender.String(), permanentLockedAddr.String(),
+		s.sendMsgSend(chain, valIdx, sender.String(), permanentLockedAddr,
 			fees.String(), fees.String(), false)
 
 		// Delegate coins should succeed
-		s.executeDelegate(s.chainA, 0, api, vestingDelegationAmount.String(), valOpAddr,
-			permanentLockedAddr.String(), home, vestingDelegationFees.String())
+		s.executeDelegate(chain, valIdx, api, vestingDelegationAmount.String(), valOpAddr,
+			permanentLockedAddr, home, vestingDelegationFees.String())
 
 		// Validate delegation successful
 		s.Require().Eventually(
 			func() bool {
-				res, err := queryDelegation(api, valOpAddr, permanentLockedAddr.String())
+				res, err := queryDelegation(api, valOpAddr, permanentLockedAddr)
 				amt := res.GetDelegationResponse().GetDelegation().GetShares()
 				s.Require().NoError(err)
 
@@ -228,49 +229,39 @@ func (s *IntegrationTestSuite) testPermanentLockedAccount(api, home string) {
 		)
 
 		//	Transfer coins should fail
-		s.sendMsgSend(s.chainA, 0, permanentLockedAddr.String(), Address(),
-			vestingTransferAmount.String(), fees.String(), true)
+		balance, err = getSpecificBalance(api, permanentLockedAddr, uatomDenom)
+		s.Require().NoError(err)
+		s.sendMsgSend(chain, valIdx, permanentLockedAddr, Address(),
+			balance.Sub(fees).String(), fees.String(), true)
 	})
 }
 
 func (s *IntegrationTestSuite) testPeriodicVestingAccount(api, home string) {
 	s.Run("test periodic vesting genesis account", func() {
-		// s.T().Parallel()
-
-		val := s.chainA.validators[0]
+		var (
+			valIdx = 0
+			chain  = s.chainA
+			val    = chain.validators[valIdx]
+		)
 		sender, err := val.keyInfo.GetAddress()
 		s.NoError(err)
-
 		valOpAddr := sdk.ValAddress(sender).String()
-		kb, err := keyring.New(keyringAppName, keyring.BackendTest, val.configDir(), nil, cdc)
+
+		periodicVestingAddr, err := createAccount(val.configDir(), "periodic_vesting")
 		s.Require().NoError(err)
 
-		keyringAlgos, _ := kb.SupportedAlgorithms()
-		algo, err := keyring.NewSigningAlgoFromString(string(hd.Secp256k1Type), keyringAlgos)
-		s.Require().NoError(err)
-
-		mnemonic, err := createMnemonic()
-		s.Require().NoError(err)
-
-		// Use the first wallet from the same mnemonic by HD path
-		account, err := kb.NewAccount("periodic_vesting", mnemonic, "", HDPathZero, algo)
-		s.Require().NoError(err)
-		periodicVestingAddr, err := account.GetAddress()
-		s.Require().NoError(err)
-
-		time.Sleep(10 * time.Second)
 		s.execCreatePeriodicVestingAccount(
-			s.chainA,
+			chain,
 			home,
-			periodicVestingAddr.String(),
+			periodicVestingAddr,
 			withKeyValue("from", sender.String()),
 		)
 
-		acc, err := queryPeriodicVestingAccount(api, periodicVestingAddr.String())
+		acc, err := queryPeriodicVestingAccount(api, periodicVestingAddr)
 		s.Require().NoError(err)
 
 		//	Check address balance
-		balance, err := getSpecificBalance(api, periodicVestingAddr.String(), uatomDenom)
+		balance, err := getSpecificBalance(api, periodicVestingAddr, uatomDenom)
 		s.Require().NoError(err)
 
 		expectedBalance := sdk.NewCoin(uatomDenom, sdk.NewInt(0))
@@ -281,45 +272,50 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api, home string) {
 		s.Require().Equal(expectedBalance, balance)
 
 		waitStartTime := acc.StartTime - time.Now().Unix()
-		if waitStartTime > 0 {
+		if waitStartTime > vestingTxDelay {
 			//	Transfer coins should fail
+			balance, err = getSpecificBalance(api, periodicVestingAddr, uatomDenom)
+			s.Require().NoError(err)
 			s.sendMsgSend(
-				s.chainA,
-				0,
-				periodicVestingAddr.String(),
+				chain,
+				valIdx,
+				periodicVestingAddr,
 				Address(),
-				vestingTransferAmount.String(),
+				balance.Sub(fees).String(),
 				fees.String(),
 				true,
 			)
-			waitStartTime = acc.StartTime - time.Now().Unix()
+			waitStartTime = acc.StartTime - time.Now().Unix() + vestingTxDelay
 			time.Sleep(time.Duration(waitStartTime) * time.Second)
 		}
 
-		waitFirstPeriod := (acc.StartTime + acc.VestingPeriods[0].Length) - time.Now().Unix()
-		if waitFirstPeriod > 0 {
+		firstPeriod := acc.StartTime + acc.VestingPeriods[0].Length
+		waitFirstPeriod := firstPeriod - time.Now().Unix()
+		if waitFirstPeriod > vestingTxDelay {
 			//	Transfer coins should fail
+			balance, err = getSpecificBalance(api, periodicVestingAddr, uatomDenom)
+			s.Require().NoError(err)
 			s.sendMsgSend(
-				s.chainA,
-				0,
-				periodicVestingAddr.String(),
+				chain,
+				valIdx,
+				periodicVestingAddr,
 				Address(),
-				vestingTransferAmount.String(),
+				balance.Sub(fees).String(),
 				fees.String(),
 				true,
 			)
-			waitFirstPeriod = (acc.StartTime + acc.VestingPeriods[0].Length) - time.Now().Unix()
+			waitFirstPeriod = firstPeriod - time.Now().Unix() + vestingTxDelay
 			time.Sleep(time.Duration(waitFirstPeriod) * time.Second)
 		}
 
 		// Delegate coins should succeed
-		s.executeDelegate(s.chainA, 0, api, vestingDelegationAmount.String(), valOpAddr,
-			periodicVestingAddr.String(), home, vestingDelegationFees.String())
+		s.executeDelegate(chain, valIdx, api, vestingDelegationAmount.String(), valOpAddr,
+			periodicVestingAddr, home, vestingDelegationFees.String())
 
 		// Validate delegation successful
 		s.Require().Eventually(
 			func() bool {
-				res, err := queryDelegation(api, valOpAddr, periodicVestingAddr.String())
+				res, err := queryDelegation(api, valOpAddr, periodicVestingAddr)
 				amt := res.GetDelegationResponse().GetDelegation().GetShares()
 				s.Require().NoError(err)
 
@@ -330,35 +326,70 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api, home string) {
 		)
 
 		//	Transfer coins should succeed
+		balance, err = getSpecificBalance(api, periodicVestingAddr, uatomDenom)
+		s.Require().NoError(err)
 		s.sendMsgSend(
-			s.chainA,
-			0,
-			periodicVestingAddr.String(),
+			chain,
+			valIdx,
+			periodicVestingAddr,
 			Address(),
-			vestingTransferAmount.String(),
+			balance.Sub(fees).String(),
 			fees.String(),
 			false,
 		)
 
-		waitSecondPeriod := acc.StartTime + acc.VestingPeriods[0].Length + acc.VestingPeriods[1].Length + 7
-		waitSecondPeriod -= time.Now().Unix()
-		if waitSecondPeriod > 0 {
+		secondPeriod := firstPeriod + acc.VestingPeriods[1].Length
+		waitSecondPeriod := secondPeriod - time.Now().Unix()
+		if waitSecondPeriod > vestingTxDelay {
 			time.Sleep(time.Duration(waitSecondPeriod) * time.Second)
-		}
 
-		//	Transfer coins should succeed
-		s.sendMsgSend(
-			s.chainA,
-			0,
-			periodicVestingAddr.String(),
-			Address(),
-			vestingTransferAmount.String(),
-			fees.String(),
-			false,
-		)
+			//	Transfer coins should succeed
+			balance, err = getSpecificBalance(api, periodicVestingAddr, uatomDenom)
+			s.Require().NoError(err)
+			s.sendMsgSend(
+				chain,
+				valIdx,
+				periodicVestingAddr,
+				Address(),
+				balance.Sub(fees).String(),
+				fees.String(),
+				false,
+			)
+		}
 	})
 }
 
+// createAccount create a random account into key store and return the address
+func createAccount(configDir, name string) (string, error) {
+	kb, err := keyring.New(keyringAppName, keyring.BackendTest, configDir, nil, cdc)
+	if err != nil {
+		return "", err
+	}
+
+	keyringAlgos, _ := kb.SupportedAlgorithms()
+	algo, err := keyring.NewSigningAlgoFromString(string(hd.Secp256k1Type), keyringAlgos)
+	if err != nil {
+		return "", err
+	}
+
+	mnemonic, err := createMnemonic()
+	if err != nil {
+		return "", err
+	}
+
+	// Use the first wallet from the same mnemonic by HD path
+	account, err := kb.NewAccount(name, mnemonic, "", HDPathZero, algo)
+	if err != nil {
+		return "", err
+	}
+	periodicVestingAddr, err := account.GetAddress()
+	if err != nil {
+		return "", err
+	}
+	return periodicVestingAddr.String(), nil
+}
+
+// generateVestingPeriod generate the vesting period file
 func generateVestingPeriod() ([]byte, error) {
 	p := vestingPeriod{
 		StartTime: time.Now().Add(100 * time.Second).Unix(),

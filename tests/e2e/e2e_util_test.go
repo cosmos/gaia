@@ -124,7 +124,7 @@ func (s *IntegrationTestSuite) sendMsgSend(c *chain, valIdx int, from, to, amt, 
 		},
 		time.Minute,
 		5*time.Second,
-		"stdout: %s, stderr: %s",
+		"stdout: %s stderr: %s",
 		string(stdOut), stdErr,
 	)
 }
@@ -383,7 +383,6 @@ func (s *IntegrationTestSuite) execGovSubmitProposal(c *chain, valIdx int, endpo
 
 func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chain, gaiaCommand []string, valIdx int, endpoint string) {
 	var txResp sdk.TxResponse
-	time.Sleep(3 * time.Second)
 	s.Require().Eventually(
 		func() bool {
 			var (
@@ -409,8 +408,10 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 			s.Require().NoError(err)
 
 			sdtOut := outBuf.Bytes()
-			s.T().Logf("tx return\nstdout: %s\nstderr: %s", string(sdtOut), errBuf.String())
-			s.Require().NoError(cdc.UnmarshalJSON(sdtOut, &txResp))
+			if err := cdc.UnmarshalJSON(sdtOut, &txResp); err != nil {
+				s.Errorf(err, "stdout: %s, stderr: %s", string(sdtOut), errBuf.String())
+				return false
+			}
 			return strings.Contains(txResp.String(), "code: 0") || txResp.Code == 0
 		},
 		15*time.Second,

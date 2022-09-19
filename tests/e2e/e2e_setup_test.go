@@ -37,6 +37,7 @@ import (
 )
 
 const (
+	gaiaHomePath   = "/home/nonroot/.gaia"
 	photonDenom    = "photon"
 	uatomDenom     = "uatom"
 	initBalanceStr = "110000000000stake,100000000000000000photon,100000000000000000uatom"
@@ -54,6 +55,7 @@ const (
 )
 
 var (
+	gaiaConfigPath    = filepath.Join(gaiaHomePath, "config")
 	stakingAmount     = math.NewInt(100000000000)
 	stakingAmountCoin = sdk.NewCoin(uatomDenom, stakingAmount)
 	tokenAmount       = sdk.NewCoin(uatomDenom, math.NewInt(3300000000)) // 3,300uatom
@@ -395,7 +397,7 @@ func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 			Name:      val.instanceName(),
 			NetworkID: s.dkrNet.Network.ID,
 			Mounts: []string{
-				fmt.Sprintf("%s/:/home/nonroot/.gaia", val.configDir()),
+				fmt.Sprintf("%s/:%s", val.configDir(), gaiaHomePath),
 			},
 			Repository: "cosmos/gaiad-e2e",
 		}
@@ -654,4 +656,8 @@ func (s *IntegrationTestSuite) writeICAtx(cmd []string, path string) {
 	s.Require().NoError(err)
 
 	s.T().Logf("write ica transaction json to %s", path)
+}
+
+func configFile(filename string) string {
+	return filepath.Join(gaiaConfigPath, filename)
 }

@@ -107,7 +107,7 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 		s.writeICAtx(txCmd, path)
 
 		// step 4: ica sends some tokens from ica to val on chain b
-		s.submitICAtx(icaOwner, connectionID, "/home/nonroot/.gaia/config/ica_bank_send.json")
+		s.submitICAtx(icaOwner, connectionID, configFile("ica_bank_send.json"))
 
 		s.Require().Eventually(
 			func() bool {
@@ -140,7 +140,7 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 		path = filepath.Join(s.chainA.validators[0].configDir(), "config", "ica_ibc_send.json")
 		s.writeICAtx(icaIBCsendCmd, path)
 
-		s.submitICAtx(icaOwner, connectionID, "/home/nonroot/.gaia/config/ica_ibc_send.json")
+		s.submitICAtx(icaOwner, connectionID, configFile("ica_ibc_send.json"))
 
 		var balances sdk.Coins
 		s.Require().Eventually(

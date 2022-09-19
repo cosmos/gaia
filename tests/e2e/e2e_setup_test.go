@@ -38,6 +38,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	tmconfig "github.com/tendermint/tendermint/config"
 	tmjson "github.com/tendermint/tendermint/libs/json"
+	"github.com/tendermint/tendermint/libs/rand"
 	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 )
 
@@ -281,9 +282,9 @@ func (s *IntegrationTestSuite) generateAuthAndBankState(
 		authvesting.NewBaseVestingAccount(
 			baseVestingContinuousAccount,
 			sdk.NewCoins(vestingAmountVested),
-			time.Now().Add(160*time.Second).Unix(),
+			time.Now().Add(time.Duration(rand.Intn(100)+150)*time.Second).Unix(),
 		),
-		time.Now().Add(90*time.Second).Unix(),
+		time.Now().Add(time.Duration(rand.Intn(60)+90)*time.Second).Unix(),
 	)
 	s.Require().NoError(vestingContinuousGenAccount.Validate())
 
@@ -301,7 +302,7 @@ func (s *IntegrationTestSuite) generateAuthAndBankState(
 		authvesting.NewBaseVestingAccount(
 			baseVestingDelayedAccount,
 			sdk.NewCoins(vestingAmountVested),
-			time.Now().Add(90*time.Second).Unix(),
+			time.Now().Add(time.Duration(rand.Intn(60)+90)*time.Second).Unix(),
 		),
 	)
 	s.Require().NoError(vestingDelayedGenAccount.Validate())

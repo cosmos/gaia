@@ -35,8 +35,8 @@ var (
 )
 
 func (s *IntegrationTestSuite) testDelayedVestingAccount(api, home string) {
-	validatorA := s.chainA.validators[0]
-	sender, err := validatorA.keyInfo.GetAddress()
+	val := s.chainA.validators[0]
+	sender, err := val.keyInfo.GetAddress()
 	s.NoError(err)
 
 	var (
@@ -46,7 +46,7 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api, home string) {
 		delegationFees    = sdk.NewCoin(uatomDenom, sdk.NewInt(10))
 	)
 	s.Run("test delayed vesting genesis account", func() {
-		s.T().Parallel()
+		// s.T().Parallel()
 
 		acc, err := queryDelayedVestingAccount(api, vestingDelayedAcc.String())
 		s.Require().NoError(err)
@@ -95,10 +95,10 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api, home string) {
 
 func (s *IntegrationTestSuite) testContinuousVestingAccount(api, home string) {
 	s.Run("test continuous vesting genesis account", func() {
-		s.T().Parallel()
+		// s.T().Parallel()
 
-		validatorA := s.chainA.validators[1]
-		sender, err := validatorA.keyInfo.GetAddress()
+		val := s.chainA.validators[0]
+		sender, err := val.keyInfo.GetAddress()
 		s.NoError(err)
 
 		var (
@@ -170,7 +170,7 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api, home string) {
 
 func (s *IntegrationTestSuite) testPermanentLockedAccount(api, home string) {
 	s.Run("test permanent locked vesting genesis account", func() {
-		s.T().Parallel()
+		// s.T().Parallel()
 
 		val := s.chainA.validators[0]
 		sender, err := val.keyInfo.GetAddress()
@@ -193,6 +193,7 @@ func (s *IntegrationTestSuite) testPermanentLockedAccount(api, home string) {
 		permanentLockedAddr, err := account.GetAddress()
 		s.Require().NoError(err)
 
+		time.Sleep(5 * time.Second)
 		s.execCreatePermanentLockedAccount(s.chainA, home, permanentLockedAddr.String(),
 			vestingAmountVested.String(), withKeyValue("from", sender.String()),
 		)
@@ -234,7 +235,7 @@ func (s *IntegrationTestSuite) testPermanentLockedAccount(api, home string) {
 
 func (s *IntegrationTestSuite) testPeriodicVestingAccount(api, home string) {
 	s.Run("test periodic vesting genesis account", func() {
-		s.T().Parallel()
+		// s.T().Parallel()
 
 		val := s.chainA.validators[0]
 		sender, err := val.keyInfo.GetAddress()
@@ -257,6 +258,7 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api, home string) {
 		periodicVestingAddr, err := account.GetAddress()
 		s.Require().NoError(err)
 
+		time.Sleep(10 * time.Second)
 		s.execCreatePeriodicVestingAccount(
 			s.chainA,
 			home,

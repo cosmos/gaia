@@ -383,6 +383,7 @@ func (s *IntegrationTestSuite) execGovSubmitProposal(c *chain, valIdx int, endpo
 
 func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chain, gaiaCommand []string, valIdx int, endpoint string) {
 	var txResp sdk.TxResponse
+	time.Sleep(3 * time.Second)
 	s.Require().Eventually(
 		func() bool {
 			var (

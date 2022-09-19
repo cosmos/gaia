@@ -3,7 +3,6 @@ package e2e
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 )
 
@@ -39,5 +38,5 @@ func writeFile(path string, body []byte) error {
 		return err
 	}
 
-	return ioutil.WriteFile(path, body, 0o600)
+	return os.WriteFile(path, body, 0o600)
 }

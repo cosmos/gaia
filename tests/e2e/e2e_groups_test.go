@@ -9,7 +9,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	group "github.com/cosmos/cosmos-sdk/x/group"
+	"github.com/cosmos/cosmos-sdk/x/group"
 )
 
 var (
@@ -17,9 +17,7 @@ var (
 	aliceAddr                string
 	bobAddr                  string
 	charlieAddr              string
-	err                      error
 	members                  []GroupMember
-	membersRes               group.QueryGroupMembersResponse
 	groupId                  = 1
 	proposalId               = 1
 	originalMembersFilename  = "members1.json"
@@ -56,42 +54,42 @@ func (s *IntegrationTestSuite) GroupsSendMsgTest() {
 	s.setupGroupsSuite()
 
 	s.T().Logf("Creating Group")
-	s.execCreateGroup(s.chainA, 0, chainAAPIEndpoint, adminAddr, "Cosmos Hub Group", filepath.Join(dataDirectoryHome, originalMembersFilename), fees.String())
-	membersRes, err = s.queryGroupMembers(chainAAPIEndpoint, 1)
+	s.execCreateGroup(s.chainA, 0, adminAddr, "Cosmos Hub Group", filepath.Join(dataDirectoryHome, originalMembersFilename), fees.String())
+	membersRes, err := s.queryGroupMembers(chainAAPIEndpoint, 1)
 	s.Require().NoError(err)
 	s.Assert().Equal(len(membersRes.Members), 3)
 
 	s.T().Logf("Adding New Group Member")
-	s.execUpdateGroupMembers(s.chainA, 0, chainAAPIEndpoint, adminAddr, strconv.Itoa(groupId), filepath.Join(dataDirectoryHome, addMemberFilename), fees.String())
+	s.execUpdateGroupMembers(s.chainA, 0, adminAddr, strconv.Itoa(groupId), filepath.Join(dataDirectoryHome, addMemberFilename), fees.String())
 	membersRes, err = s.queryGroupMembers(chainAAPIEndpoint, 1)
 	s.Require().NoError(err)
 	s.Assert().Equal(len(membersRes.Members), 4)
 
 	s.T().Logf("Removing New Group Member")
-	s.execUpdateGroupMembers(s.chainA, 0, chainAAPIEndpoint, adminAddr, strconv.Itoa(groupId), filepath.Join(dataDirectoryHome, removeMemberFilename), fees.String())
+	s.execUpdateGroupMembers(s.chainA, 0, adminAddr, strconv.Itoa(groupId), filepath.Join(dataDirectoryHome, removeMemberFilename), fees.String())
 	membersRes, err = s.queryGroupMembers(chainAAPIEndpoint, 1)
 	s.Require().NoError(err)
 	s.Assert().Equal(len(membersRes.Members), 3)
 
 	s.T().Logf("Creating Group Threshold Decision Policy")
 	s.writeGroupPolicies(s.chainA, thresholdPolicyFilename, percentagePolicyFilename, thresholdPolicy, percentagePolicy)
-	s.executeCreateGroupPolicy(s.chainA, 0, chainAAPIEndpoint, adminAddr, strconv.Itoa(groupId), thresholdPolicyMetadata, filepath.Join(dataDirectoryHome, thresholdPolicyFilename), fees.String())
+	s.executeCreateGroupPolicy(s.chainA, 0, adminAddr, strconv.Itoa(groupId), thresholdPolicyMetadata, filepath.Join(dataDirectoryHome, thresholdPolicyFilename), fees.String())
 	policies, err := s.queryGroupPolicies(chainAAPIEndpoint, groupId)
 	s.Require().NoError(err)
 	policy, err := getPolicy(policies.GroupPolicies, thresholdPolicyMetadata, groupId)
 	s.Require().NoError(err)
 
 	s.T().Logf("Funding Group Threshold Decision Policy")
-	s.sendMsgSend(s.chainA, 0, adminAddr, policy.Address, depositAmount.String(), fees.String(), false)
+	s.execSendMsgSend(s.chainA, 0, adminAddr, policy.Address, depositAmount.String(), fees.String(), false)
 	s.verifyBalanceChange(chainAAPIEndpoint, depositAmount, policy.Address)
 
 	s.writeGroupProposal(s.chainA, policy.Address, adminAddr, sendAmount, proposalMsgSendPath)
 	s.T().Logf("Submitting Group Proposal 1: Send 5 uatom from group to Bob")
-	s.executeSubmitGroupProposal(s.chainA, 0, chainAAPIEndpoint, adminAddr, filepath.Join(dataDirectoryHome, proposalMsgSendPath))
+	s.executeSubmitGroupProposal(s.chainA, 0, adminAddr, filepath.Join(dataDirectoryHome, proposalMsgSendPath))
 
 	s.T().Logf("Voting Group Proposal 1: Send 5 uatom from group to Bob")
-	s.executeVoteGroupProposal(s.chainA, 0, chainAAPIEndpoint, strconv.Itoa(proposalId), adminAddr, group.VOTE_OPTION_YES.String(), "Admin votes yes")
-	s.executeVoteGroupProposal(s.chainA, 1, chainAAPIEndpoint, strconv.Itoa(proposalId), aliceAddr, group.VOTE_OPTION_YES.String(), "Alice votes yes")
+	s.executeVoteGroupProposal(s.chainA, 0, strconv.Itoa(proposalId), adminAddr, group.VOTE_OPTION_YES.String(), "Admin votes yes")
+	s.executeVoteGroupProposal(s.chainA, 1, strconv.Itoa(proposalId), aliceAddr, group.VOTE_OPTION_YES.String(), "Alice votes yes")
 
 	s.Require().Eventually(
 		func() bool {
@@ -106,12 +104,12 @@ func (s *IntegrationTestSuite) GroupsSendMsgTest() {
 	s.T().Logf("Group Proposal 1 Passed: Send 5 uatom from group to Bob")
 
 	s.T().Logf("Executing Group Proposal 1: Send 5 uatom from group to Bob")
-	s.executeExecGroupProposal(s.chainA, 1, chainAAPIEndpoint, strconv.Itoa(proposalId), aliceAddr)
+	s.executeExecGroupProposal(s.chainA, 1, strconv.Itoa(proposalId), aliceAddr)
 	s.verifyBalanceChange(chainAAPIEndpoint, sendAmount, bobAddr)
 
 	proposalId++
 	s.T().Logf("Creating Group Percentage Decision Policy")
-	s.executeCreateGroupPolicy(s.chainA, 0, chainAAPIEndpoint, adminAddr, strconv.Itoa(groupId), percentagePolicyMetadata, filepath.Join(dataDirectoryHome, percentagePolicyFilename), fees.String())
+	s.executeCreateGroupPolicy(s.chainA, 0, adminAddr, strconv.Itoa(groupId), percentagePolicyMetadata, filepath.Join(dataDirectoryHome, percentagePolicyFilename), fees.String())
 	policies, err = s.queryGroupPolicies(chainAAPIEndpoint, 1)
 	s.Require().NoError(err)
 	policy, err = getPolicy(policies.GroupPolicies, percentagePolicyMetadata, 1)
@@ -119,11 +117,11 @@ func (s *IntegrationTestSuite) GroupsSendMsgTest() {
 
 	s.writeGroupProposal(s.chainA, policy.Address, adminAddr, sendAmount, proposalMsgSendPath)
 	s.T().Logf("Submitting Group Proposal 2: Send 5 uatom from group to Bob")
-	s.executeSubmitGroupProposal(s.chainA, 0, chainAAPIEndpoint, adminAddr, filepath.Join(dataDirectoryHome, proposalMsgSendPath))
+	s.executeSubmitGroupProposal(s.chainA, 0, adminAddr, filepath.Join(dataDirectoryHome, proposalMsgSendPath))
 
 	s.T().Logf("Voting Group Proposal 2: Send 5 uatom from group to Bob")
-	s.executeVoteGroupProposal(s.chainA, 0, chainAAPIEndpoint, strconv.Itoa(proposalId), adminAddr, group.VOTE_OPTION_YES.String(), "Admin votes yes")
-	s.executeVoteGroupProposal(s.chainA, 1, chainAAPIEndpoint, strconv.Itoa(proposalId), aliceAddr, group.VOTE_OPTION_ABSTAIN.String(), "Alice votes abstain")
+	s.executeVoteGroupProposal(s.chainA, 0, strconv.Itoa(proposalId), adminAddr, group.VOTE_OPTION_YES.String(), "Admin votes yes")
+	s.executeVoteGroupProposal(s.chainA, 1, strconv.Itoa(proposalId), aliceAddr, group.VOTE_OPTION_ABSTAIN.String(), "Alice votes abstain")
 
 	s.Require().Eventually(
 		func() bool {

@@ -11,7 +11,7 @@ func (s *IntegrationTestSuite) testStaking(chainEndpoint string, delegatorAddres
 	delegation := sdk.NewCoin(uatomDenom, delegationAmount) // 500 atom
 
 	// Alice delegate uatom to Validator A
-	s.executeDelegate(s.chainA, 0, chainEndpoint, delegation.String(), validatorAddressA, delegatorAddress, homePath, fees.String())
+	s.executeDelegate(s.chainA, 0, delegation.String(), validatorAddressA, delegatorAddress, homePath, fees.String())
 
 	// Validate delegation successful
 	s.Require().Eventually(
@@ -26,10 +26,10 @@ func (s *IntegrationTestSuite) testStaking(chainEndpoint string, delegatorAddres
 		5*time.Second,
 	)
 
-	// Alice redelegate uatom from Validator A to Validator B
-	s.executeRedelegate(s.chainA, 0, chainEndpoint, delegation.String(), validatorAddressA, validatorAddressB, delegatorAddress, homePath, fees.String())
+	// Alice re-delegate uatom from Validator A to Validator B
+	s.executeRedelegate(s.chainA, 0, delegation.String(), validatorAddressA, validatorAddressB, delegatorAddress, homePath, fees.String())
 
-	// Validate redelegation successful
+	// Validate re-delegation successful
 	s.Require().Eventually(
 		func() bool {
 			res, err := queryDelegation(chainEndpoint, validatorAddressB, delegatorAddress)

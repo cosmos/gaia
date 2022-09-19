@@ -5,69 +5,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
-	group "github.com/cosmos/cosmos-sdk/x/group"
 	"github.com/ory/dockertest/v3/docker"
 )
 
-func (s *IntegrationTestSuite) connectIBCChains() {
-	s.T().Logf("connecting %s and %s chains via IBC", s.chainA.id, s.chainB.id)
-
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-
-	exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
-		Context:      ctx,
-		AttachStdout: true,
-		AttachStderr: true,
-		Container:    s.hermesResource.Container.ID,
-		User:         "root",
-		Cmd: []string{
-			"hermes",
-			"create",
-			"channel",
-			s.chainA.id,
-			s.chainB.id,
-			"--port-a=transfer",
-			"--port-b=transfer",
-		},
-	})
-	s.Require().NoError(err)
-
-	var (
-		outBuf bytes.Buffer
-		errBuf bytes.Buffer
-	)
-
-	err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
-		Context:      ctx,
-		Detach:       false,
-		OutputStream: &outBuf,
-		ErrorStream:  &errBuf,
-	})
-	s.Require().NoErrorf(
-		err,
-		"failed connect chains; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
-	)
-
-	s.Require().Containsf(
-		errBuf.String(),
-		"successfully opened init channel",
-		"failed to connect chains via IBC: %s", errBuf.String(),
-	)
-
-	s.T().Logf("connected %s and %s chains via IBC", s.chainA.id, s.chainB.id)
-}
-
-func (s *IntegrationTestSuite) sendMsgSend(c *chain, valIdx int, from, to, amt, fees string, expectErr bool) {
+func (s *IntegrationTestSuite) execSendMsgSend(c *chain, valIdx int, from, to, amt, fees string, expectErr bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -108,10 +54,12 @@ func (s *IntegrationTestSuite) sendMsgSend(c *chain, valIdx int, from, to, amt, 
 		OutputStream: &outBuf,
 		ErrorStream:  &errBuf,
 	})
-	s.Require().NoErrorf(err, "stdout: %s, stderr: %s", outBuf.String(), errBuf.String())
+	stdOut := outBuf.Bytes()
+	stdErr := errBuf.String()
+	s.Require().NoErrorf(err, "stdout: %s, stderr: %s", string(stdOut), stdErr)
 
 	var txResp sdk.TxResponse
-	s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
+	s.Require().NoError(cdc.UnmarshalJSON(stdOut, &txResp))
 	endpoint := fmt.Sprintf("http://%s", s.valResources[c.id][valIdx].GetHostPort("1317/tcp"))
 
 	// wait for the tx to be committed on chain
@@ -123,11 +71,11 @@ func (s *IntegrationTestSuite) sendMsgSend(c *chain, valIdx int, from, to, amt, 
 		time.Minute,
 		5*time.Second,
 		"stdout: %s, stderr: %s",
-		outBuf.String(), errBuf.String(),
+		string(stdOut), stdErr,
 	)
 }
 
-func (s *IntegrationTestSuite) withdrawAllRewards(c *chain, valIdx int, endpoint, payee, fees string, expectErr bool) {
+func (s *IntegrationTestSuite) execWithdrawAllRewards(c *chain, valIdx int, endpoint, payee, fees string, expectErr bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -183,55 +131,7 @@ func (s *IntegrationTestSuite) withdrawAllRewards(c *chain, valIdx int, endpoint
 	)
 }
 
-func (s *IntegrationTestSuite) sendIBC(srcChainID, dstChainID, recipient string, token sdk.Coin) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-
-	s.T().Logf("sending %s from %s to %s (%s)", token, srcChainID, dstChainID, recipient)
-
-	exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
-		Context:      ctx,
-		AttachStdout: true,
-		AttachStderr: true,
-		Container:    s.hermesResource.Container.ID,
-		User:         "root",
-		Cmd: []string{
-			"hermes",
-			"tx",
-			"raw",
-			"ft-transfer",
-			dstChainID,
-			srcChainID,
-			"transfer",  // source chain port ID
-			"channel-0", // since only one connection/channel exists, assume 0
-			token.Amount.String(),
-			fmt.Sprintf("--denom=%s", token.Denom),
-			fmt.Sprintf("--receiver=%s", recipient),
-			"--timeout-height-offset=1000",
-		},
-	})
-	s.Require().NoError(err)
-
-	var (
-		outBuf bytes.Buffer
-		errBuf bytes.Buffer
-	)
-
-	err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
-		Context:      ctx,
-		Detach:       false,
-		OutputStream: &outBuf,
-		ErrorStream:  &errBuf,
-	})
-	s.Require().NoErrorf(
-		err,
-		"failed to send IBC tokens; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
-	)
-
-	s.T().Log("successfully sent IBC tokens")
-}
-
-func (s *IntegrationTestSuite) execDistributionFundCommunityPool(c *chain, valIdx int, endpoint, from, amt, fees string) {
+func (s *IntegrationTestSuite) execDistributionFundCommunityPool(c *chain, valIdx int, from, amt, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -255,7 +155,7 @@ func (s *IntegrationTestSuite) execDistributionFundCommunityPool(c *chain, valId
 	s.T().Logf("Successfully funded community pool")
 }
 
-func (s *IntegrationTestSuite) execGovSubmitLegacyGovProposal(c *chain, valIdx int, endpoint, submitterAddr, govProposalPath, fees, govProposalSubType string) {
+func (s *IntegrationTestSuite) execGovSubmitLegacyGovProposal(c *chain, valIdx int, submitterAddr, govProposalPath, fees, govProposalSubType string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -280,7 +180,7 @@ func (s *IntegrationTestSuite) execGovSubmitLegacyGovProposal(c *chain, valIdx i
 	s.T().Logf("Successfully submitted legacy proposal")
 }
 
-func (s *IntegrationTestSuite) execGovDepositProposal(c *chain, valIdx int, endpoint, submitterAddr string, proposalId int, amount, fees string) {
+func (s *IntegrationTestSuite) execGovDepositProposal(c *chain, valIdx int, submitterAddr string, proposalId int, amount, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -305,7 +205,7 @@ func (s *IntegrationTestSuite) execGovDepositProposal(c *chain, valIdx int, endp
 	s.T().Logf("Successfully deposited proposal %d", proposalId)
 }
 
-func (s *IntegrationTestSuite) execGovVoteProposal(c *chain, valIdx int, endpoint, submitterAddr string, proposalId int, vote, fees string) {
+func (s *IntegrationTestSuite) execGovVoteProposal(c *chain, valIdx int, submitterAddr string, proposalId int, vote, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -330,7 +230,7 @@ func (s *IntegrationTestSuite) execGovVoteProposal(c *chain, valIdx int, endpoin
 	s.T().Logf("Successfully voted on proposal %d", proposalId)
 }
 
-func (s *IntegrationTestSuite) execGovWeightedVoteProposal(c *chain, valIdx int, endpoint, submitterAddr string, proposalId int, vote, fees string) {
+func (s *IntegrationTestSuite) execGovWeightedVoteProposal(c *chain, valIdx int, submitterAddr string, proposalId int, vote, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -355,7 +255,7 @@ func (s *IntegrationTestSuite) execGovWeightedVoteProposal(c *chain, valIdx int,
 	s.T().Logf("Successfully voted on proposal %d", proposalId)
 }
 
-func (s *IntegrationTestSuite) execGovSubmitProposal(c *chain, valIdx int, endpoint, submitterAddr, govProposalPath, fees string) {
+func (s *IntegrationTestSuite) execGovSubmitProposal(c *chain, valIdx int, submitterAddr, govProposalPath, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -380,15 +280,13 @@ func (s *IntegrationTestSuite) execGovSubmitProposal(c *chain, valIdx int, endpo
 }
 
 func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chain, gaiaCommand []string, valIdx int) {
-	var (
-		outBuf bytes.Buffer
-		errBuf bytes.Buffer
-		txResp sdk.TxResponse
-	)
-
+	var txResp sdk.TxResponse
 	s.Require().Eventually(
 		func() bool {
-			time.Sleep(3 * time.Second)
+			var (
+				outBuf bytes.Buffer
+				errBuf bytes.Buffer
+			)
 			exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
 				Context:      ctx,
 				AttachStdout: true,
@@ -405,16 +303,19 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 				OutputStream: &outBuf,
 				ErrorStream:  &errBuf,
 			})
-
 			s.Require().NoError(err)
-			s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
 
-			return strings.Contains(txResp.String(), "code: 0") || txResp.Code == uint32(0)
+			sdtOut := outBuf.Bytes()
+			if err := cdc.UnmarshalJSON(sdtOut, &txResp); err != nil {
+				s.Errorf(err, "stdout: %s, stderr: %s", string(sdtOut), errBuf.String())
+				return false
+			}
+			return strings.Contains(txResp.String(), "code: 0") || txResp.Code == 0
 		},
-		10*time.Second,
-		time.Second,
-		"tx returned a non-zero code; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
+		15*time.Second,
+		2*time.Second,
 	)
+
 	endpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	s.Require().Eventually(
 		func() bool {
@@ -422,93 +323,10 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 		},
 		time.Minute,
 		5*time.Second,
-		"stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
 	)
 }
 
-func (s *IntegrationTestSuite) queryGovProposal(endpoint string, proposalId uint64) (govv1beta1.QueryProposalResponse, error) {
-	var emptyProp govv1beta1.QueryProposalResponse
-
-	path := fmt.Sprintf("%s/cosmos/gov/v1beta1/proposals/%d", endpoint, proposalId)
-	resp, err := http.Get(path)
-	if err != nil {
-		s.T().Logf("This is the err: %s", err.Error())
-	}
-
-	if err != nil {
-		return emptyProp, fmt.Errorf("failed to execute HTTP request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		s.T().Logf("This is the err: %s", err.Error())
-	}
-	if err != nil {
-		return emptyProp, err
-	}
-	var govProposalResp govv1beta1.QueryProposalResponse
-
-	if err := cdc.UnmarshalJSON(body, &govProposalResp); err != nil {
-		return emptyProp, err
-	}
-	s.T().Logf("This is the gov response: %s", govProposalResp)
-
-	return govProposalResp, nil
-}
-
-func (s *IntegrationTestSuite) getLatestBlockHeight(c *chain, valIdx int) int {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-
-	type status struct {
-		LatestHeight string `json:"latest_block_height"`
-	}
-
-	type syncInfo struct {
-		SyncInfo status `json:"SyncInfo"`
-	}
-
-	var (
-		outBuf        bytes.Buffer
-		errBuf        bytes.Buffer
-		block         syncInfo
-		currentHeight int
-	)
-
-	s.Require().Eventually(
-		func() bool {
-			exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
-				Context:      ctx,
-				AttachStdout: true,
-				AttachStderr: true,
-				Container:    s.valResources[c.id][valIdx].Container.ID,
-				User:         "nonroot",
-				Cmd:          []string{"gaiad", "status"},
-			})
-			s.Require().NoError(err)
-
-			err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
-				Context:      ctx,
-				Detach:       false,
-				OutputStream: &outBuf,
-				ErrorStream:  &errBuf,
-			})
-			s.Require().NoError(err)
-			s.Require().NoError(json.Unmarshal(errBuf.Bytes(), &block))
-
-			currentHeight, err = strconv.Atoi(block.SyncInfo.LatestHeight)
-			s.Require().NoError(err)
-			return currentHeight > 0
-		},
-		5*time.Second,
-		time.Second,
-		"Get node status returned a non-zero code; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
-	)
-	return currentHeight
-}
-
-func (s *IntegrationTestSuite) execCreateGroup(c *chain, valIdx int, endpoint string, adminAddr string, metadata string, groupMembersPath string, fees string) {
+func (s *IntegrationTestSuite) execCreateGroup(c *chain, valIdx int, adminAddr, metadata, groupMembersPath, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -533,7 +351,7 @@ func (s *IntegrationTestSuite) execCreateGroup(c *chain, valIdx int, endpoint st
 	s.T().Logf("%s successfully created group: %s", adminAddr, groupMembersPath)
 }
 
-func (s *IntegrationTestSuite) execUpdateGroupMembers(c *chain, valIdx int, endpoint string, adminAddr string, groupId string, groupMembersPath string, fees string) {
+func (s *IntegrationTestSuite) execUpdateGroupMembers(c *chain, valIdx int, adminAddr, groupId, groupMembersPath, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -558,7 +376,7 @@ func (s *IntegrationTestSuite) execUpdateGroupMembers(c *chain, valIdx int, endp
 	s.T().Logf("%s successfully updated group members: %s", adminAddr, groupMembersPath)
 }
 
-func (s *IntegrationTestSuite) executeCreateGroupPolicy(c *chain, valIdx int, endpoint string, adminAddr string, groupId string, metadata string, policyFile string, fees string) {
+func (s *IntegrationTestSuite) executeCreateGroupPolicy(c *chain, valIdx int, adminAddr, groupId, metadata, policyFile, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -584,7 +402,7 @@ func (s *IntegrationTestSuite) executeCreateGroupPolicy(c *chain, valIdx int, en
 	s.T().Logf("%s successfully created group policy: %s", adminAddr, policyFile)
 }
 
-func (s *IntegrationTestSuite) executeSubmitGroupProposal(c *chain, valIdx int, endpoint string, fromAddress string, proposalPath string) {
+func (s *IntegrationTestSuite) executeSubmitGroupProposal(c *chain, valIdx int, fromAddress, proposalPath string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -608,7 +426,7 @@ func (s *IntegrationTestSuite) executeSubmitGroupProposal(c *chain, valIdx int, 
 	s.T().Logf("%s successfully submited group proposal: %s", fromAddress, proposalPath)
 }
 
-func (s *IntegrationTestSuite) executeVoteGroupProposal(c *chain, valIdx int, endpoint string, proposalId string, voterAddress string, voteOption string, metadata string) {
+func (s *IntegrationTestSuite) executeVoteGroupProposal(c *chain, valIdx int, proposalId, voterAddress, voteOption, metadata string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -634,7 +452,7 @@ func (s *IntegrationTestSuite) executeVoteGroupProposal(c *chain, valIdx int, en
 	s.T().Logf("%s successfully voted %s on proposal: %s", voterAddress, voteOption, proposalId)
 }
 
-func (s *IntegrationTestSuite) executeExecGroupProposal(c *chain, valIdx int, endpoint string, proposalId string, proposerAddress string) {
+func (s *IntegrationTestSuite) executeExecGroupProposal(c *chain, valIdx int, proposalId, proposerAddress string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -658,7 +476,7 @@ func (s *IntegrationTestSuite) executeExecGroupProposal(c *chain, valIdx int, en
 	s.T().Logf("%s successfully executed proposal: %s", proposerAddress, proposalId)
 }
 
-func (s *IntegrationTestSuite) executeUpdateGroupAdmin(c *chain, valIdx int, endpoint string, admin string, groupId string, newAdmin string) {
+func (s *IntegrationTestSuite) executeUpdateGroupAdmin(c *chain, valIdx int, admin, groupId, newAdmin string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -681,151 +499,6 @@ func (s *IntegrationTestSuite) executeUpdateGroupAdmin(c *chain, valIdx int, end
 
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx)
 	s.T().Logf("Successfully updated group admin from %s to %s", admin, newAdmin)
-}
-
-func (s *IntegrationTestSuite) queryGroupMembers(endpoint string, groupId int) (group.QueryGroupMembersResponse, error) {
-	var res group.QueryGroupMembersResponse
-	path := fmt.Sprintf("%s/cosmos/group/v1/group_members/%d", endpoint, groupId)
-
-	resp, err := http.Get(path)
-	if err != nil {
-		return res, fmt.Errorf("failed to execute HTTP request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return res, err
-	}
-
-	if err := cdc.UnmarshalJSON(body, &res); err != nil {
-		return res, err
-	}
-
-	return res, nil
-}
-
-func (s *IntegrationTestSuite) queryGroupInfo(endpoint string, groupId int) (group.QueryGroupInfoResponse, error) {
-	var res group.QueryGroupInfoResponse
-	path := fmt.Sprintf("%s/cosmos/group/v1/group_info/%d", endpoint, groupId)
-
-	resp, err := http.Get(path)
-	if err != nil {
-		return res, fmt.Errorf("failed to execute HTTP request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return res, err
-	}
-
-	if err := cdc.UnmarshalJSON(body, &res); err != nil {
-		return res, err
-	}
-
-	return res, nil
-}
-
-func (s *IntegrationTestSuite) queryGroupsbyAdmin(endpoint string, adminAddress string) (group.QueryGroupsByAdminResponse, error) {
-	var res group.QueryGroupsByAdminResponse
-	path := fmt.Sprintf("%s/cosmos/group/v1/groups_by_admin/%s", endpoint, adminAddress)
-
-	resp, err := http.Get(path)
-	if err != nil {
-		return res, fmt.Errorf("failed to execute HTTP request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return res, err
-	}
-
-	if err := cdc.UnmarshalJSON(body, &res); err != nil {
-		return res, err
-	}
-
-	return res, nil
-}
-
-func (s *IntegrationTestSuite) queryGroupPolicies(endpoint string, groupId int) (group.QueryGroupPoliciesByGroupResponse, error) {
-	var res group.QueryGroupPoliciesByGroupResponse
-	path := fmt.Sprintf("%s/cosmos/group/v1/group_policies_by_group/%d", endpoint, groupId)
-
-	resp, err := http.Get(path)
-	if err != nil {
-		return res, fmt.Errorf("failed to execute HTTP request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return res, err
-	}
-
-	if err := cdc.UnmarshalJSON(body, &res); err != nil {
-		return res, err
-	}
-
-	return res, nil
-}
-
-func (s *IntegrationTestSuite) queryGroupProposal(endpoint string, groupId int) (group.QueryProposalResponse, error) {
-	var res group.QueryProposalResponse
-	path := fmt.Sprintf("%s/cosmos/group/v1/proposal/%d", endpoint, groupId)
-
-	resp, err := http.Get(path)
-	if err != nil {
-		return res, fmt.Errorf("failed to execute HTTP request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return res, err
-	}
-
-	if err := cdc.UnmarshalJSON(body, &res); err != nil {
-		return res, err
-	}
-
-	return res, nil
-}
-
-func (s *IntegrationTestSuite) queryGroupProposalByGroupPolicy(endpoint string, policyAddress string) (group.QueryProposalsByGroupPolicyResponse, error) {
-	var res group.QueryProposalsByGroupPolicyResponse
-	path := fmt.Sprintf("%s/cosmos/group/v1/proposals_by_group_policy/%s", endpoint, policyAddress)
-
-	resp, err := http.Get(path)
-	if err != nil {
-		return res, fmt.Errorf("failed to execute HTTP request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return res, err
-	}
-
-	if err := cdc.UnmarshalJSON(body, &res); err != nil {
-		return res, err
-	}
-
-	return res, nil
-}
-
-func (s *IntegrationTestSuite) verifyBalanceChange(endpoint string, expectedAmount sdk.Coin, recipientAddress string) {
-	s.Require().Eventually(
-		func() bool {
-			afterAtomBalance, err := getSpecificBalance(endpoint, recipientAddress, uatomDenom)
-			s.Require().NoError(err)
-
-			return afterAtomBalance.IsEqual(expectedAmount)
-		},
-		20*time.Second,
-		5*time.Second,
-	)
 }
 
 func (s *IntegrationTestSuite) executeGKeysAddCommand(c *chain, valIdx int, name string, home string) string {
@@ -924,7 +597,7 @@ func (s *IntegrationTestSuite) executeKeysList(c *chain, valIdx int, home string
 	)
 }
 
-func (s *IntegrationTestSuite) executeDelegate(c *chain, valIdx int, endpoint string, amount string, valOperAddress string, delegatorAddr string, home string, delegateFees string) {
+func (s *IntegrationTestSuite) executeDelegate(c *chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -951,7 +624,8 @@ func (s *IntegrationTestSuite) executeDelegate(c *chain, valIdx int, endpoint st
 	s.T().Logf("%s successfully delegated %s to %s", delegatorAddr, amount, valOperAddress)
 }
 
-func (s *IntegrationTestSuite) executeRedelegate(c *chain, valIdx int, endpoint string, amount string, originalValOperAddress string, newValOperAddress string, delegatorAddr string, home string, delegateFees string) {
+func (s *IntegrationTestSuite) executeRedelegate(c *chain, valIdx int, amount, originalValOperAddress,
+	newValOperAddress, delegatorAddr, home, delegateFees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -982,7 +656,6 @@ func (s *IntegrationTestSuite) executeRedelegate(c *chain, valIdx int, endpoint 
 func (s *IntegrationTestSuite) execSetWithrawAddress(
 	c *chain,
 	valIdx int,
-	endpoint,
 	fees,
 	delegatorAddress,
 	newWithdrawalAddress,
@@ -1014,8 +687,6 @@ func (s *IntegrationTestSuite) execSetWithrawAddress(
 func (s *IntegrationTestSuite) execWithdrawReward(
 	c *chain,
 	valIdx int,
-	endpoint,
-	fees,
 	delegatorAddress,
 	validatorAddress,
 	homePath string,

@@ -15,9 +15,8 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	staketypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	tmtypes "github.com/tendermint/tendermint/types"
-
 	globfeetypes "github.com/cosmos/gaia/v8/x/globalfee/types"
+	tmtypes "github.com/tendermint/tendermint/types"
 )
 
 func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {
@@ -55,8 +54,8 @@ func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, gl
 		return fmt.Errorf("failed to parse coins: %w", err)
 	}
 
-	balances := []banktypes.Balance{}
-	genAccounts := []*authtypes.BaseAccount{}
+	var balances []banktypes.Balance
+	var genAccounts []*authtypes.BaseAccount
 	for _, addr := range addrAll {
 		balance := banktypes.Balance{Address: addr.String(), Coins: coins.Sort()}
 		balances = append(balances, balance)
@@ -129,7 +128,7 @@ func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, gl
 	stakingGenState.Params.BondDenom = denom
 	stakingGenStateBz, err := cdc.MarshalJSON(stakingGenState)
 	if err != nil {
-		fmt.Errorf("Failed to marshal staking genesis state: %w", err)
+		return fmt.Errorf("failed to marshal staking genesis state: %w", err)
 	}
 	appState[staketypes.ModuleName] = stakingGenStateBz
 

@@ -48,7 +48,7 @@ type chain struct {
 	id         string
 	validators []*validator
 	// initial accounts in genesis
-	accountsIngenesis []*account
+	genesisAccounts []*account
 }
 
 func newChain() (*chain, error) {

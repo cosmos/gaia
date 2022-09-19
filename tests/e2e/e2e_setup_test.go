@@ -211,10 +211,10 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 func (s *IntegrationTestSuite) initNodes(c *chain) {
 	s.Require().NoError(c.createAndInitValidators(2))
 	/* Adding 4 accounts to val0 local directory
-	c.accountsIngenesis[0]: Relayer Wallet
-	c.accountsIngenesis[1]: ICA Owner
-	c.accountsIngenesis[2]: Test Account 1
-	c.accountsIngenesis[3]: Test Account 2
+	c.genesisAccounts[0]: Relayer Wallet
+	c.genesisAccounts[1]: ICA Owner
+	c.genesisAccounts[2]: Test Account 1
+	c.genesisAccounts[3]: Test Account 2
 	*/
 	s.Require().NoError(c.addAccountFromMnemonic(4))
 	// Initialize a genesis file for the first validator
@@ -226,7 +226,7 @@ func (s *IntegrationTestSuite) initNodes(c *chain) {
 		addrAll = append(addrAll, address)
 	}
 
-	for _, addr := range c.accountsIngenesis {
+	for _, addr := range c.genesisAccounts {
 		acctAddr, err := addr.keyInfo.GetAddress()
 		s.Require().NoError(err)
 		addrAll = append(addrAll, acctAddr)
@@ -463,8 +463,8 @@ func (s *IntegrationTestSuite) runIBCRelayer() {
 	gaiaAVal := s.chainA.validators[0]
 	gaiaBVal := s.chainB.validators[0]
 
-	gaiaARly := s.chainA.accountsIngenesis[0]
-	gaiaBRly := s.chainB.accountsIngenesis[0]
+	gaiaARly := s.chainA.genesisAccounts[0]
+	gaiaBRly := s.chainB.genesisAccounts[0]
 
 	hermesCfgPath := path.Join(tmpDir, "hermes")
 
@@ -479,7 +479,7 @@ func (s *IntegrationTestSuite) runIBCRelayer() {
 		&dockertest.RunOptions{
 			Name:       fmt.Sprintf("%s-%s-relayer", s.chainA.id, s.chainB.id),
 			Repository: "ghcr.io/cosmos/hermes-e2e",
-			Tag:        "latest",
+			Tag:        "1.0.0",
 			NetworkID:  s.dkrNet.Network.ID,
 			Mounts: []string{
 				fmt.Sprintf("%s/:/root/hermes", hermesCfgPath),
@@ -724,7 +724,7 @@ func (s *IntegrationTestSuite) writeICAtx(cmd []string, path string) {
 			Messages []map[string]interface{}
 		}
 	}
-	txResp := txResponse{}
+	var txResp txResponse
 
 	exe, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
 		Context:      ctx,

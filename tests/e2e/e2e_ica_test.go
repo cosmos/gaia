@@ -13,10 +13,10 @@ import (
 
 // TestICARegister must run before any other
 func (s *IntegrationTestSuite) TestICA_1_Register() {
-	connectionID := "connection-0"
-	var owner string
 	s.Run("register_ICA", func() {
-		ownerAddr, err := s.chainA.accountsIngenesis[1].keyInfo.GetAddress()
+		connectionID := "connection-0"
+		var owner string
+		ownerAddr, err := s.chainA.genesisAccounts[1].keyInfo.GetAddress()
 		s.Require().NoError(err)
 		owner = ownerAddr.String()
 		s.registerICA(owner, connectionID)
@@ -43,7 +43,7 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
 		connectionID := "connection-0"
 		// step 1: get ica addr
-		icaOwnerAddr, err := s.chainA.accountsIngenesis[1].keyInfo.GetAddress()
+		icaOwnerAddr, err := s.chainA.genesisAccounts[1].keyInfo.GetAddress()
 		s.Require().NoError(err)
 		icaOnwer := icaOwnerAddr.String()
 

@@ -108,12 +108,10 @@ func (s *IntegrationTestSuite) sendMsgSend(c *chain, valIdx int, from, to, amt, 
 		OutputStream: &outBuf,
 		ErrorStream:  &errBuf,
 	})
-	stdOut := outBuf.Bytes()
-	stdErr := errBuf.String()
-	s.Require().NoErrorf(err, "stdout: %s, stderr: %s", string(stdOut), stdErr)
+	s.Require().NoErrorf(err, "stdout: %s, stderr: %s", outBuf.String(), errBuf.String())
 
 	var txResp sdk.TxResponse
-	s.Require().NoError(cdc.UnmarshalJSON(stdOut, &txResp))
+	s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
 	endpoint := fmt.Sprintf("http://%s", s.valResources[c.id][valIdx].GetHostPort("1317/tcp"))
 
 	// wait for the tx to be committed on chain
@@ -124,8 +122,8 @@ func (s *IntegrationTestSuite) sendMsgSend(c *chain, valIdx int, from, to, amt, 
 		},
 		time.Minute,
 		5*time.Second,
-		"stdout: %s stderr: %s",
-		string(stdOut), stdErr,
+		"stdout: %s, stderr: %s",
+		outBuf.String(), errBuf.String(),
 	)
 }
 

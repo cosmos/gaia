@@ -92,7 +92,7 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 		// step 3: prepare ica bank send json
 		sendamt := sdk.NewCoin(uatomDenom, math.NewInt(100000))
 		txCmd := []string{
-			"gaiad",
+			gaiadBinary,
 			"tx",
 			"bank",
 			"send",
@@ -124,7 +124,7 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 		channel := "channel-0"
 		sendIBCamt := math.NewInt(10)
 		icaIBCsendCmd := []string{
-			"gaiad",
+			gaiadBinary,
 			"tx",
 			"ibc-transfer",
 			"transfer",

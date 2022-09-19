@@ -67,7 +67,7 @@ func (s *IntegrationTestSuite) getLatestBlockHeight(c *chain, valIdx int) int {
 				AttachStderr: true,
 				Container:    s.valResources[c.id][valIdx].Container.ID,
 				User:         "nonroot",
-				Cmd:          []string{"gaiad", "status"},
+				Cmd:          []string{gaiadBinary, "status"},
 			})
 			s.Require().NoError(err)
 

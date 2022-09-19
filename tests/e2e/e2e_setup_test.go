@@ -37,6 +37,7 @@ import (
 )
 
 const (
+	gaiadBinary    = "gaiad"
 	gaiaHomePath   = "/home/nonroot/.gaia"
 	photonDenom    = "photon"
 	uatomDenom     = "uatom"

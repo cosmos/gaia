@@ -27,7 +27,7 @@ func (s *IntegrationTestSuite) execBankSend(c *chain, valIdx int, from, to, amt,
 		Container:    s.valResources[c.id][valIdx].Container.ID,
 		User:         "nonroot",
 		Cmd: []string{
-			"gaiad",
+			gaiadBinary,
 			"tx",
 			"bank",
 			"send",
@@ -89,7 +89,7 @@ func (s *IntegrationTestSuite) execWithdrawAllRewards(c *chain, valIdx int, endp
 		Container:    s.valResources[c.id][valIdx].Container.ID,
 		User:         "nonroot",
 		Cmd: []string{
-			"gaiad",
+			gaiadBinary,
 			"tx",
 			"distribution",
 			"withdraw-all-rewards",
@@ -139,7 +139,7 @@ func (s *IntegrationTestSuite) execDistributionFundCommunityPool(c *chain, valId
 	s.T().Logf("Executing gaiad tx distribution fund-community-pool on chain %s", c.id)
 
 	gaiaCommand := []string{
-		"gaiad",
+		gaiadBinary,
 		"tx",
 		"distribution",
 		"fund-community-pool",
@@ -163,7 +163,7 @@ func (s *IntegrationTestSuite) execGovSubmitLegacyGovProposal(c *chain, valIdx i
 	s.T().Logf("Executing gaiad tx gov submit-legacy-proposal on chain %s", c.id)
 
 	gaiaCommand := []string{
-		"gaiad",
+		gaiadBinary,
 		"tx",
 		"gov",
 		"submit-legacy-proposal",
@@ -188,7 +188,7 @@ func (s *IntegrationTestSuite) execGovDepositProposal(c *chain, valIdx int, subm
 	s.T().Logf("Executing gaiad tx gov deposit on chain %s", c.id)
 
 	gaiaCommand := []string{
-		"gaiad",
+		gaiadBinary,
 		"tx",
 		"gov",
 		"deposit",
@@ -213,7 +213,7 @@ func (s *IntegrationTestSuite) execGovVoteProposal(c *chain, valIdx int, submitt
 	s.T().Logf("Executing gaiad tx gov vote on chain %s", c.id)
 
 	gaiaCommand := []string{
-		"gaiad",
+		gaiadBinary,
 		"tx",
 		"gov",
 		"vote",
@@ -238,7 +238,7 @@ func (s *IntegrationTestSuite) execGovWeightedVoteProposal(c *chain, valIdx int,
 	s.T().Logf("Executing gaiad tx gov vote on chain %s", c.id)
 
 	gaiaCommand := []string{
-		"gaiad",
+		gaiadBinary,
 		"tx",
 		"gov",
 		"weighted-vote",
@@ -263,7 +263,7 @@ func (s *IntegrationTestSuite) execGovSubmitProposal(c *chain, valIdx int, submi
 	s.T().Logf("Executing gaiad tx gov submit-proposal on chain %s", c.id)
 
 	gaiaCommand := []string{
-		"gaiad",
+		gaiadBinary,
 		"tx",
 		"gov",
 		"submit-proposal",
@@ -334,7 +334,7 @@ func (s *IntegrationTestSuite) execCreateGroup(c *chain, valIdx int, adminAddr, 
 	s.T().Logf("Executing gaiad tx group create-group on chain %s", c.id)
 
 	gaiaCommand := []string{
-		"gaiad",
+		gaiadBinary,
 		"tx",
 		"group",
 		"create-group",
@@ -359,7 +359,7 @@ func (s *IntegrationTestSuite) execUpdateGroupMembers(c *chain, valIdx int, admi
 	s.T().Logf("Executing gaiad tx group update-group-members %s", c.id)
 
 	gaiaCommand := []string{
-		"gaiad",
+		gaiadBinary,
 		"tx",
 		"group",
 		"update-group-members",
@@ -384,7 +384,7 @@ func (s *IntegrationTestSuite) executeCreateGroupPolicy(c *chain, valIdx int, ad
 	s.T().Logf("Executing gaiad tx group create-group-policy %s", c.id)
 
 	gaiaCommand := []string{
-		"gaiad",
+		gaiadBinary,
 		"tx",
 		"group",
 		"create-group-policy",
@@ -410,7 +410,7 @@ func (s *IntegrationTestSuite) executeSubmitGroupProposal(c *chain, valIdx int, 
 	s.T().Logf("Executing gaiad tx group submit-proposal %s", c.id)
 
 	gaiaCommand := []string{
-		"gaiad",
+		gaiadBinary,
 		"tx",
 		"group",
 		"submit-proposal",
@@ -434,7 +434,7 @@ func (s *IntegrationTestSuite) executeVoteGroupProposal(c *chain, valIdx int, pr
 	s.T().Logf("Executing gaiad tx group vote %s", c.id)
 
 	gaiaCommand := []string{
-		"gaiad",
+		gaiadBinary,
 		"tx",
 		"group",
 		"vote",
@@ -460,7 +460,7 @@ func (s *IntegrationTestSuite) executeExecGroupProposal(c *chain, valIdx int, pr
 	s.T().Logf("Executing gaiad tx group exec %s", c.id)
 
 	gaiaCommand := []string{
-		"gaiad",
+		gaiadBinary,
 		"tx",
 		"group",
 		"exec",
@@ -484,7 +484,7 @@ func (s *IntegrationTestSuite) executeUpdateGroupAdmin(c *chain, valIdx int, adm
 	s.T().Logf("Executing gaiad tx group update-group-admin %s", c.id)
 
 	gaiaCommand := []string{
-		"gaiad",
+		gaiadBinary,
 		"tx",
 		"group",
 		"update-group-admin",
@@ -513,7 +513,7 @@ func (s *IntegrationTestSuite) executeGKeysAddCommand(c *chain, valIdx int, name
 	)
 
 	gaiaCommand := []string{
-		"gaiad",
+		gaiadBinary,
 		"keys",
 		"add",
 		name,
@@ -563,7 +563,7 @@ func (s *IntegrationTestSuite) executeKeysList(c *chain, valIdx int, home string
 	)
 
 	gaiaCommand := []string{
-		"gaiad",
+		gaiadBinary,
 		"keys",
 		"list",
 		"--keyring-backend=test",
@@ -605,7 +605,7 @@ func (s *IntegrationTestSuite) executeDelegate(c *chain, valIdx int, amount, val
 	s.T().Logf("Executing gaiad tx staking delegate %s", c.id)
 
 	gaiaCommand := []string{
-		"gaiad",
+		gaiadBinary,
 		"tx",
 		"staking",
 		"delegate",
@@ -633,7 +633,7 @@ func (s *IntegrationTestSuite) executeRedelegate(c *chain, valIdx int, amount, o
 	s.T().Logf("Executing gaiad tx staking redelegate %s", c.id)
 
 	gaiaCommand := []string{
-		"gaiad",
+		gaiadBinary,
 		"tx",
 		"staking",
 		"redelegate",
@@ -667,7 +667,7 @@ func (s *IntegrationTestSuite) execSetWithrawAddress(
 
 	s.T().Logf("Setting distribution withdrawal address on chain %s for %s to %s", c.id, delegatorAddress, newWithdrawalAddress)
 	gaiaCommand := []string{
-		"gaiad",
+		gaiadBinary,
 		"tx",
 		"distribution",
 		"set-withdraw-addr",
@@ -697,7 +697,7 @@ func (s *IntegrationTestSuite) execWithdrawReward(
 
 	s.T().Logf("Withdrawing distribution rewards on chain %s for delegator %s from %s validator", c.id, delegatorAddress, validatorAddress)
 	gaiaCommand := []string{
-		"gaiad",
+		gaiadBinary,
 		"tx",
 		"distribution",
 		"withdraw-rewards",
@@ -724,7 +724,7 @@ func (s *IntegrationTestSuite) submitICAtx(owner, connectionID, txJsonPath strin
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 	submitTX := []string{
-		"gaiad",
+		gaiadBinary,
 		"tx",
 		"icamauth",
 		"submit",
@@ -790,7 +790,7 @@ func (s *IntegrationTestSuite) registerICA(owner, connectionID string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 	registerICAcmd := []string{
-		"gaiad",
+		gaiadBinary,
 		"tx",
 		"icamauth",
 		"register",

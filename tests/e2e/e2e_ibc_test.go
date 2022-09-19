@@ -170,7 +170,7 @@ func (s *IntegrationTestSuite) sendIBC(c *chain, valIdx int, sender, recipient, 
 	defer cancel()
 
 	ibcCmd := []string{
-		"gaiad",
+		gaiadBinary,
 		"tx",
 		"ibc-transfer",
 		"transfer",

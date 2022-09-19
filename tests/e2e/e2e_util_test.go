@@ -382,13 +382,15 @@ func (s *IntegrationTestSuite) execGovSubmitProposal(c *chain, valIdx int, endpo
 }
 
 func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chain, gaiaCommand []string, valIdx int, endpoint string) {
-	var txResp sdk.TxResponse
+	var (
+		outBuf bytes.Buffer
+		errBuf bytes.Buffer
+		txResp sdk.TxResponse
+	)
+
 	s.Require().Eventually(
 		func() bool {
-			var (
-				outBuf bytes.Buffer
-				errBuf bytes.Buffer
-			)
+			time.Sleep(3 * time.Second)
 			exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
 				Context:      ctx,
 				AttachStdout: true,
@@ -405,19 +407,16 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 				OutputStream: &outBuf,
 				ErrorStream:  &errBuf,
 			})
+
 			s.Require().NoError(err)
+			s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
 
-			sdtOut := outBuf.Bytes()
-			if err := cdc.UnmarshalJSON(sdtOut, &txResp); err != nil {
-				s.Errorf(err, "stdout: %s, stderr: %s", string(sdtOut), errBuf.String())
-				return false
-			}
-			return strings.Contains(txResp.String(), "code: 0") || txResp.Code == 0
+			return strings.Contains(txResp.String(), "code: 0") || txResp.Code == uint32(0)
 		},
-		15*time.Second,
-		2*time.Second,
+		10*time.Second,
+		time.Second,
+		"tx returned a non-zero code; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
 	)
-
 	endpoint = fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	s.Require().Eventually(
 		func() bool {
@@ -425,6 +424,7 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 		},
 		time.Minute,
 		5*time.Second,
+		"stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
 	)
 }
 

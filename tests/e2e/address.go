@@ -23,11 +23,6 @@ func PubKey() crypto.PubKey {
 	return ed25519.GenPrivKeyFromSecret(seed).PubKey()
 }
 
-// ConsAddress returns a sample consensus address
-func ConsAddress() sdk.ConsAddress {
-	return sdk.ConsAddress(PubKey().Address())
-}
-
 // AccAddress returns a sample account address
 func AccAddress() sdk.AccAddress {
 	addr := PubKey().Address()
@@ -37,14 +32,4 @@ func AccAddress() sdk.AccAddress {
 // Address returns a sample string account address
 func Address() string {
 	return AccAddress().String()
-}
-
-// ValAddress returns a sample validator operator address
-func ValAddress() sdk.ValAddress {
-	return sdk.ValAddress(PubKey().Address())
-}
-
-// OperatorAddress returns a sample string validator operator address
-func OperatorAddress() string {
-	return ValAddress().String()
 }

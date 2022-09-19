@@ -3,11 +3,12 @@ package e2e
 import (
 	"time"
 
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (s *IntegrationTestSuite) testStaking(chainEndpoint string, delegatorAddress string, validatorAddressA string, validatorAddressB string, fees sdk.Coin, homePath string) {
-	delegationAmount := sdk.NewInt(500000000)
+	delegationAmount := math.NewInt(500000000)
 	delegation := sdk.NewCoin(uatomDenom, delegationAmount) // 500 atom
 
 	// Alice delegate uatom to Validator A

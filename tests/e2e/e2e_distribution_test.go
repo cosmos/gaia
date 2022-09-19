@@ -3,6 +3,7 @@ package e2e
 import (
 	"time"
 
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -13,12 +14,12 @@ func (s *IntegrationTestSuite) testDistribution(
 	valOperAddressA,
 	homePath string,
 ) {
-	fees = sdk.NewCoin(uatomDenom, sdk.NewInt(1000))
+	fees = sdk.NewCoin(uatomDenom, math.NewInt(1000))
 
 	beforeBalance, err := getSpecificBalance(chainEndpoint, newWithrawalAddress, uatomDenom)
 	s.Require().NoError(err)
 	if beforeBalance.IsNil() {
-		beforeBalance = sdk.NewCoin(uatomDenom, sdk.NewInt(0))
+		beforeBalance = sdk.NewCoin(uatomDenom, math.NewInt(0))
 	}
 
 	s.execSetWithrawAddress(s.chainA, 0, fees.String(), delegatorAddress, newWithrawalAddress, homePath)

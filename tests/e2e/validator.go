@@ -7,6 +7,7 @@ import (
 	"path"
 	"path/filepath"
 
+	"cosmossdk.io/math"
 	sdkcrypto "github.com/cosmos/cosmos-sdk/crypto"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -209,7 +210,7 @@ func (c *chain) addAccountFromMnemonic(counts int) error {
 		acct.keyInfo = *info
 		acct.mnemonic = mnemonic
 		acct.privateKey = privKey
-		c.accounts = append(c.accounts, &acct)
+		c.genesisAccounts = append(c.genesisAccounts, &acct)
 	}
 
 	return nil
@@ -233,7 +234,7 @@ func (v *validator) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
 	}
 
 	// get the initial validator min self delegation
-	minSelfDelegation := sdk.OneInt()
+	minSelfDelegation := math.OneInt()
 
 	valPubKey, err := cryptocodec.FromTmPubKeyInterface(v.consensusKey.PubKey)
 	if err != nil {

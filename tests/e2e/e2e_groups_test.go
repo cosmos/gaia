@@ -80,7 +80,7 @@ func (s *IntegrationTestSuite) GroupsSendMsgTest() {
 	s.Require().NoError(err)
 
 	s.T().Logf("Funding Group Threshold Decision Policy")
-	s.execSendMsgSend(s.chainA, 0, adminAddr, policy.Address, depositAmount.String(), fees.String(), false)
+	s.execBankSend(s.chainA, 0, adminAddr, policy.Address, depositAmount.String(), fees.String(), false)
 	s.verifyBalanceChange(chainAAPIEndpoint, depositAmount, policy.Address)
 
 	s.writeGroupProposal(s.chainA, policy.Address, adminAddr, sendAmount, proposalMsgSendPath)

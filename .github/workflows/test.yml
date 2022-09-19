@@ -1,6 +1,7 @@
 name: Build & Test
 on:
   schedule:
+    - cron: '0 0 0 * *'
     # * is a special character in YAML so you have to quote this string
     # ┌───────────── minute (0 - 59)
     # │ ┌───────────── hour (0 - 23)
@@ -12,7 +13,6 @@ on:
     # │ │ │ │ │
     # * * * * *
     # Every day at midnight - 12am
-    - cron:  '0 0 0 * *'
   pull_request:
   push:
     branches:

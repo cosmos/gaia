@@ -762,8 +762,8 @@ func (s *IntegrationTestSuite) TestStaking() {
 	valOperA := sdk.ValAddress(validatorAAddr)
 	valOperB := sdk.ValAddress(validatorBAddr)
 
-	alice, err := s.chainA.accountsIngenesis[2].keyInfo.GetAddress()
-	bob, err := s.chainA.accountsIngenesis[3].keyInfo.GetAddress()
+	alice, err := s.chainA.genesisAccounts[2].keyInfo.GetAddress()
+	bob, err := s.chainA.genesisAccounts[3].keyInfo.GetAddress()
 
 	delegationFees := sdk.NewCoin(uatomDenom, math.NewInt(10))
 

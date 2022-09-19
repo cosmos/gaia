@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
@@ -18,7 +19,7 @@ import (
 	"github.com/ory/dockertest/v3/docker"
 )
 
-func (s *IntegrationTestSuite) connectIBCChains() {
+func (s *IntegrationTestSuite) createConnection() {
 	s.T().Logf("connecting %s and %s chains via IBC", s.chainA.id, s.chainB.id)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
@@ -33,11 +34,11 @@ func (s *IntegrationTestSuite) connectIBCChains() {
 		Cmd: []string{
 			"hermes",
 			"create",
-			"channel",
+			"connection",
+			"--a-chain",
 			s.chainA.id,
+			"--b-chain",
 			s.chainB.id,
-			"--port-a=transfer",
-			"--port-b=transfer",
 		},
 	})
 	s.Require().NoError(err)
@@ -58,10 +59,51 @@ func (s *IntegrationTestSuite) connectIBCChains() {
 		"failed connect chains; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
 	)
 
-	s.Require().Containsf(
-		errBuf.String(),
-		"successfully opened init channel",
-		"failed to connect chains via IBC: %s", errBuf.String(),
+	s.T().Logf("connected %s and %s chains via IBC", s.chainA.id, s.chainB.id)
+}
+
+func (s *IntegrationTestSuite) createChannel() {
+	s.T().Logf("connecting %s and %s chains via IBC", s.chainA.id, s.chainB.id)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
+		Context:      ctx,
+		AttachStdout: true,
+		AttachStderr: true,
+		Container:    s.hermesResource.Container.ID,
+		User:         "root",
+		Cmd: []string{
+			"hermes",
+			"tx",
+			"chan-open-init",
+			"--dst-chain",
+			s.chainA.id,
+			"--src-chain",
+			s.chainB.id,
+			"--dst-connection",
+			"connection-0",
+			"--src-port=transfer",
+			"--dst-port=transfer",
+		},
+	})
+	s.Require().NoError(err)
+
+	var (
+		outBuf bytes.Buffer
+		errBuf bytes.Buffer
+	)
+
+	err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
+		Context:      ctx,
+		Detach:       false,
+		OutputStream: &outBuf,
+		ErrorStream:  &errBuf,
+	})
+	s.Require().NoErrorf(
+		err,
+		"failed connect chains; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
 	)
 
 	s.T().Logf("connected %s and %s chains via IBC", s.chainA.id, s.chainB.id)
@@ -183,32 +225,36 @@ func (s *IntegrationTestSuite) withdrawAllRewards(c *chain, valIdx int, endpoint
 	)
 }
 
-func (s *IntegrationTestSuite) sendIBC(srcChainID, dstChainID, recipient string, token sdk.Coin) {
+func (s *IntegrationTestSuite) sendIBC(c *chain, valIdx int, sender, recipient, token, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	s.T().Logf("sending %s from %s to %s (%s)", token, srcChainID, dstChainID, recipient)
+	ibcCmd := []string{
+		"gaiad",
+		"tx",
+		"ibc-transfer",
+		"transfer",
+		"transfer",
+		"channel-0",
+		recipient,
+		token,
+		fmt.Sprintf("--from=%s", sender),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		"--keyring-backend=test",
+		"--broadcast-mode=sync",
+		"--output=json",
+		"-y",
+	}
+	s.T().Logf("sending %s from %s to %s (%s)", token, s.chainA.id, s.chainB.id, recipient)
 
 	exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
 		Context:      ctx,
 		AttachStdout: true,
 		AttachStderr: true,
-		Container:    s.hermesResource.Container.ID,
-		User:         "root",
-		Cmd: []string{
-			"hermes",
-			"tx",
-			"raw",
-			"ft-transfer",
-			dstChainID,
-			srcChainID,
-			"transfer",  // source chain port ID
-			"channel-0", // since only one connection/channel exists, assume 0
-			token.Amount.String(),
-			fmt.Sprintf("--denom=%s", token.Denom),
-			fmt.Sprintf("--receiver=%s", recipient),
-			"--timeout-height-offset=1000",
-		},
+		Container:    s.valResources[c.id][valIdx].Container.ID,
+		User:         "nonroot",
+		Cmd:          ibcCmd,
 	})
 	s.Require().NoError(err)
 
@@ -223,9 +269,21 @@ func (s *IntegrationTestSuite) sendIBC(srcChainID, dstChainID, recipient string,
 		OutputStream: &outBuf,
 		ErrorStream:  &errBuf,
 	})
-	s.Require().NoErrorf(
-		err,
-		"failed to send IBC tokens; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
+	s.Require().NoErrorf(err, "stdout: %s, stderr: %s", outBuf.String(), errBuf.String())
+	var txResp sdk.TxResponse
+	s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
+
+	endpoint := fmt.Sprintf("http://%s", s.valResources[c.id][valIdx].GetHostPort("1317/tcp"))
+	// wait for the tx to be committed on chain
+	s.Require().Eventuallyf(
+		func() bool {
+			err := queryGaiaTx(endpoint, txResp.TxHash)
+			return err == nil
+		},
+		time.Minute,
+		5*time.Second,
+		"stdout: %s, stderr: %s",
+		outBuf.String(), errBuf.String(),
 	)
 
 	s.T().Log("successfully sent IBC tokens")
@@ -388,6 +446,7 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 
 	s.Require().Eventually(
 		func() bool {
+			// todo check why here sleep
 			time.Sleep(3 * time.Second)
 			exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
 				Context:      ctx,
@@ -1043,4 +1102,135 @@ func (s *IntegrationTestSuite) execWithdrawReward(
 
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
 	s.T().Logf("Successfully withdrew distribution rewards for delegator %s from validator %s", delegatorAddress, validatorAddress)
+}
+
+// register a ica on chainB from registrant on chainA
+func (s *IntegrationTestSuite) submitICAtx(owner, connectionID, txJsonPath string) {
+	fee := sdk.NewCoin(uatomDenom, math.NewInt(930000))
+	s.T().Logf("register an interchain account on chain %s for %s from chain %s", s.chainB.id, owner, s.chainA.id)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+	submitTX := []string{
+		"gaiad",
+		"tx",
+		"icamauth",
+		"submit",
+		txJsonPath,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
+		fmt.Sprintf("--%s=%s", "connection-id", connectionID),
+		fmt.Sprintf("--%s=%s", flags.FlagGas, flags.GasFlagAuto),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, fee),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, s.chainA.id),
+		"--keyring-backend=test",
+		"--broadcast-mode=sync",
+		"--output=json",
+		"-y",
+	}
+
+	exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
+		Context:      ctx,
+		AttachStdout: true,
+		AttachStderr: true,
+		Container:    s.valResources[s.chainA.id][0].Container.ID,
+		User:         "nonroot",
+		Cmd:          submitTX,
+	})
+	s.Require().NoError(err)
+
+	var (
+		outBuf bytes.Buffer
+		errBuf bytes.Buffer
+	)
+
+	err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
+		Context:      ctx,
+		Detach:       false,
+		OutputStream: &outBuf,
+		ErrorStream:  &errBuf,
+	})
+
+	s.Require().NoErrorf(
+		err,
+		"failed to submit ica tx; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
+	)
+
+	var txResp sdk.TxResponse
+	s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
+
+	endpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	s.Require().Eventuallyf(
+		func() bool {
+			return queryGaiaTx(endpoint, txResp.TxHash) == nil
+		},
+		time.Minute,
+		5*time.Second,
+		"stdout: %s, stderr: %s",
+		outBuf.String(), errBuf.String(),
+	)
+
+	s.T().Logf("%s submit a transaction on chain %s", owner, s.chainB.id)
+}
+
+func (s *IntegrationTestSuite) registerICA(owner, connectionID string) {
+	fee := sdk.NewCoin(uatomDenom, math.NewInt(930000))
+	s.T().Logf("register an interchain account on chain %s for %s from chain %s", s.chainB.id, owner, s.chainA.id)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+	registerICAcmd := []string{
+		"gaiad",
+		"tx",
+		"icamauth",
+		"register",
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
+		fmt.Sprintf("--%s=%s", "connection-id", connectionID),
+		fmt.Sprintf("--%s=%s", flags.FlagGas, flags.GasFlagAuto),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, fee),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, s.chainA.id),
+		"--keyring-backend=test",
+		"--broadcast-mode=sync",
+		"--output=json",
+		"-y",
+	}
+	exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
+		Context:      ctx,
+		AttachStdout: true,
+		AttachStderr: true,
+		Container:    s.valResources[s.chainA.id][0].Container.ID,
+		User:         "nonroot",
+		Cmd:          registerICAcmd,
+	})
+	s.Require().NoError(err)
+
+	var (
+		outBuf bytes.Buffer
+		errBuf bytes.Buffer
+	)
+
+	err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
+		Context:      ctx,
+		Detach:       false,
+		OutputStream: &outBuf,
+		ErrorStream:  &errBuf,
+	})
+
+	s.Require().NoErrorf(
+		err,
+		"failed to register ica; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
+	)
+
+	var txResp sdk.TxResponse
+	s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
+
+	endpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	s.Require().Eventuallyf(
+		func() bool {
+			return queryGaiaTx(endpoint, txResp.TxHash) == nil
+		},
+		time.Minute,
+		5*time.Second,
+		"stdout: %s, stderr: %s",
+		outBuf.String(), errBuf.String(),
+	)
+
+	s.T().Logf("%s reigstered an interchain account on chain %s from chain %s", owner, s.chainB.id, s.chainA.id)
 }

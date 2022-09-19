@@ -16,7 +16,7 @@ func (s *IntegrationTestSuite) TestICA_1_Register() {
 	s.Run("register_ICA", func() {
 		connectionID := "connection-0"
 		var owner string
-		ownerAddr, err := s.chainA.genesisAccounts[1].keyInfo.GetAddress()
+		ownerAddr, err := s.chainA.genesisAccounts[icaOwnerAccountIndex].keyInfo.GetAddress()
 		s.Require().NoError(err)
 		owner = ownerAddr.String()
 		s.registerICA(owner, connectionID)
@@ -43,14 +43,14 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
 		connectionID := "connection-0"
 		// step 1: get ica addr
-		icaOwnerAddr, err := s.chainA.genesisAccounts[1].keyInfo.GetAddress()
+		icaOwnerAddr, err := s.chainA.genesisAccounts[icaOwnerAccountIndex].keyInfo.GetAddress()
 		s.Require().NoError(err)
-		icaOnwer := icaOwnerAddr.String()
+		icaOwner := icaOwnerAddr.String()
 
 		var ica string
 		s.Require().Eventually(
 			func() bool {
-				ica, err = queryICAaddr(chainAAPIEndpoint, icaOnwer, connectionID)
+				ica, err = queryICAaddr(chainAAPIEndpoint, icaOwner, connectionID)
 				s.Require().NoError(err)
 
 				return err == nil && ica != ""
@@ -90,7 +90,7 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 		)
 
 		// step 3: prepare ica bank send json
-		sendamt := sdk.NewCoin(uatomDenom, math.NewInt(1000000))
+		sendamt := sdk.NewCoin(uatomDenom, math.NewInt(100000))
 		txCmd := []string{
 			"gaiad",
 			"tx",
@@ -107,7 +107,7 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 		s.writeICAtx(txCmd, path)
 
 		// step 4: ica sends some tokens from ica to val on chain b
-		s.submitICAtx(icaOnwer, connectionID, "/home/nonroot/.gaia/config/ica_bank_send.json")
+		s.submitICAtx(icaOwner, connectionID, "/home/nonroot/.gaia/config/ica_bank_send.json")
 
 		s.Require().Eventually(
 			func() bool {
@@ -130,7 +130,7 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 			"transfer",
 			"transfer",
 			channel,
-			icaOnwer,
+			icaOwner,
 			sendIBCamt.String() + uatomDenom,
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, ica),
 			fmt.Sprintf("--%s=%s", flags.FlagChainID, s.chainB.id),
@@ -140,12 +140,12 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 		path = filepath.Join(s.chainA.validators[0].configDir(), "config", "ica_ibc_send.json")
 		s.writeICAtx(icaIBCsendCmd, path)
 
-		s.submitICAtx(icaOnwer, connectionID, "/home/nonroot/.gaia/config/ica_ibc_send.json")
+		s.submitICAtx(icaOwner, connectionID, "/home/nonroot/.gaia/config/ica_ibc_send.json")
 
 		var balances sdk.Coins
 		s.Require().Eventually(
 			func() bool {
-				balances, err = queryGaiaAllBalances(chainAAPIEndpoint, icaOnwer)
+				balances, err = queryGaiaAllBalances(chainAAPIEndpoint, icaOwner)
 				s.Require().NoError(err)
 				return balances.Len() != 0
 			},

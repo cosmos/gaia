@@ -53,6 +53,8 @@ const (
 	gas                        = 200000
 	govSendMsgRecipientAddress = "cosmos1pkueemdeps77dwrqma03pwqk93nw39nuhccz02"
 	govProposalBlockBuffer     = 35
+	relayerAccountIndex        = 0
+	icaOwnerAccountIndex       = 1
 )
 
 var (
@@ -463,8 +465,8 @@ func (s *IntegrationTestSuite) runIBCRelayer() {
 	gaiaAVal := s.chainA.validators[0]
 	gaiaBVal := s.chainB.validators[0]
 
-	gaiaARly := s.chainA.genesisAccounts[0]
-	gaiaBRly := s.chainB.genesisAccounts[0]
+	gaiaARly := s.chainA.genesisAccounts[relayerAccountIndex]
+	gaiaBRly := s.chainB.genesisAccounts[relayerAccountIndex]
 
 	hermesCfgPath := path.Join(tmpDir, "hermes")
 

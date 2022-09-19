@@ -162,11 +162,11 @@ func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, gl
 		return fmt.Errorf("failed to parse fee coins: %w", err)
 	}
 	globfeeState.Params.MinimumGasPrices = minGases
-	globfeeStateBz, err := cdc.MarshalJSON(globfeeState)
+	globFeeStateBz, err := cdc.MarshalJSON(globfeeState)
 	if err != nil {
 		return fmt.Errorf("failed to marshal global fee genesis state: %w", err)
 	}
-	appState[globfeetypes.ModuleName] = globfeeStateBz
+	appState[globfeetypes.ModuleName] = globFeeStateBz
 
 	stakingGenState := staketypes.GetGenesisStateFromAppState(cdc, appState)
 	stakingGenState.Params.BondDenom = denom

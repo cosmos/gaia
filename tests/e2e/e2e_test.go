@@ -138,10 +138,7 @@ func (s *IntegrationTestSuite) fundCommunityPool(chainAAPIEndpoint, sender strin
 		s.Require().Eventually(
 			func() bool {
 				afterDistPhotonBalance, err := getSpecificBalance(chainAAPIEndpoint, distModuleAddress, tokenAmount.Denom)
-				if err != nil {
-					s.T().Logf("Error getting balance: %s", afterDistPhotonBalance)
-				}
-				s.Require().NoError(err)
+				s.Require().NoErrorf(err, "Error getting balance: %s", afterDistPhotonBalance)
 
 				return afterDistPhotonBalance.Sub(beforeDistUatomBalance.Add(tokenAmount.Add(fees))).IsLT(marginOfErrorForBlockReward)
 			},

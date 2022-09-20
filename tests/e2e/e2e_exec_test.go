@@ -649,8 +649,8 @@ func (s *IntegrationTestSuite) expectErrExecValidation(chain *chain, valIdx int,
 			},
 			time.Minute,
 			5*time.Second,
-			"%s: stdOut: %s, stdErr: %s",
-			err.Error(), string(stdOut), string(stdErr),
+			"stdOut: %s, stdErr: %s, err: %v",
+			string(stdOut), string(stdErr), err,
 		)
 		return true
 	}
@@ -671,8 +671,8 @@ func (s *IntegrationTestSuite) defaultExecValidation(chain *chain, valIdx int) f
 				},
 				time.Minute,
 				5*time.Second,
-				"%s: stdOut: %s, stdErr: %s",
-				err.Error(), string(stdOut), string(stdErr),
+				"stdOut: %s, stdErr: %s, err: %v",
+				string(stdOut), string(stdErr), err,
 			)
 			return true
 		}

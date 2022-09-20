@@ -20,116 +20,61 @@ func (s *IntegrationTestSuite) execBankSend(c *chain, valIdx int, from, to, amt,
 
 	s.T().Logf("sending %s tokens from %s to %s on chain %s", amt, from, to, c.id)
 
-	exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
-		Context:      ctx,
-		AttachStdout: true,
-		AttachStderr: true,
-		Container:    s.valResources[c.id][valIdx].Container.ID,
-		User:         "nonroot",
-		Cmd: []string{
-			gaiadBinary,
-			"tx",
-			"bank",
-			"send",
-			from,
-			to,
-			amt,
-			fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-			fmt.Sprintf("--%s=%s", flags.FlagFees, fees),
-			"--keyring-backend=test",
-			"--broadcast-mode=sync",
-			"--output=json",
-			"-y",
-		},
+	gaiaCommand := []string{
+		gaiadBinary,
+		"tx",
+		"bank",
+		"send",
+		from,
+		to,
+		amt,
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, fees),
+		"--keyring-backend=test",
+		"--broadcast-mode=sync",
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, func(i []byte) bool {
+		var txResp sdk.TxResponse
+		s.Require().NoError(cdc.UnmarshalJSON(i, &txResp))
+		endpoint := fmt.Sprintf("http://%s", s.valResources[c.id][valIdx].GetHostPort("1317/tcp"))
+
+		// wait for the tx to be committed on chain
+		var err error
+		s.Require().Eventuallyf(
+			func() bool {
+				gotErr := queryGaiaTx(endpoint, txResp.TxHash) != nil
+				return gotErr == expectErr
+			},
+			time.Minute,
+			5*time.Second,
+			"cannot query tx %s, err %s",
+			txResp.TxHash, err,
+		)
+		return true
 	})
-	s.Require().NoError(err)
-
-	var (
-		outBuf bytes.Buffer
-		errBuf bytes.Buffer
-	)
-
-	err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
-		Context:      ctx,
-		Detach:       false,
-		OutputStream: &outBuf,
-		ErrorStream:  &errBuf,
-	})
-	stdOut := outBuf.Bytes()
-	stdErr := errBuf.String()
-	s.Require().NoErrorf(err, "stdout: %s, stderr: %s", string(stdOut), stdErr)
-
-	var txResp sdk.TxResponse
-	s.Require().NoError(cdc.UnmarshalJSON(stdOut, &txResp))
-	endpoint := fmt.Sprintf("http://%s", s.valResources[c.id][valIdx].GetHostPort("1317/tcp"))
-
-	// wait for the tx to be committed on chain
-	s.Require().Eventuallyf(
-		func() bool {
-			gotErr := queryGaiaTx(endpoint, txResp.TxHash) != nil
-			return gotErr == expectErr
-		},
-		time.Minute,
-		5*time.Second,
-		"stdout: %s, stderr: %s",
-		string(stdOut), stdErr,
-	)
 }
 
 func (s *IntegrationTestSuite) execWithdrawAllRewards(c *chain, valIdx int, endpoint, payee, fees string, expectErr bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	s.T().Logf("%s withdraw-all-rewards on chain %s", payee, c.id)
+	gaiaCommand := []string{
+		gaiadBinary,
+		"tx",
+		"distribution",
+		"withdraw-all-rewards",
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, payee),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		"--keyring-backend=test",
+		"--output=json",
+		"-y",
+	}
 
-	exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
-		Context:      ctx,
-		AttachStdout: true,
-		AttachStderr: true,
-		Container:    s.valResources[c.id][valIdx].Container.ID,
-		User:         "nonroot",
-		Cmd: []string{
-			gaiadBinary,
-			"tx",
-			"distribution",
-			"withdraw-all-rewards",
-			fmt.Sprintf("--%s=%s", flags.FlagFrom, payee),
-			fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
-			fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-			"--keyring-backend=test",
-			"--output=json",
-			"-y",
-		},
-	})
-	s.Require().NoError(err)
-
-	var (
-		outBuf bytes.Buffer
-		errBuf bytes.Buffer
-	)
-
-	err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
-		Context:      ctx,
-		Detach:       false,
-		OutputStream: &outBuf,
-		ErrorStream:  &errBuf,
-	})
-	s.Require().NoErrorf(err, "stdout: %s, stderr: %s", outBuf.String(), errBuf.String())
-
-	var txResp sdk.TxResponse
-	s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
-
-	// wait for the tx to be committed on chain
-	s.Require().Eventuallyf(
-		func() bool {
-			gotErr := queryGaiaTx(endpoint, txResp.TxHash) != nil
-			return gotErr == expectErr
-		},
-		time.Minute,
-		5*time.Second,
-		"stdout: %s, stderr: %s",
-		outBuf.String(), errBuf.String(),
-	)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation())
 }
 
 func (s *IntegrationTestSuite) execDistributionFundCommunityPool(c *chain, valIdx int, from, amt, fees string) {
@@ -152,7 +97,7 @@ func (s *IntegrationTestSuite) execDistributionFundCommunityPool(c *chain, valId
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation())
 	s.T().Logf("Successfully funded community pool")
 }
 
@@ -177,7 +122,7 @@ func (s *IntegrationTestSuite) execGovSubmitLegacyGovProposal(c *chain, valIdx i
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation())
 	s.T().Logf("Successfully submitted legacy proposal")
 }
 
@@ -202,7 +147,7 @@ func (s *IntegrationTestSuite) execGovDepositProposal(c *chain, valIdx int, subm
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation())
 	s.T().Logf("Successfully deposited proposal %d", proposalId)
 }
 
@@ -227,7 +172,7 @@ func (s *IntegrationTestSuite) execGovVoteProposal(c *chain, valIdx int, submitt
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation())
 	s.T().Logf("Successfully voted on proposal %d", proposalId)
 }
 
@@ -252,7 +197,7 @@ func (s *IntegrationTestSuite) execGovWeightedVoteProposal(c *chain, valIdx int,
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation())
 	s.T().Logf("Successfully voted on proposal %d", proposalId)
 }
 
@@ -276,55 +221,64 @@ func (s *IntegrationTestSuite) execGovSubmitProposal(c *chain, valIdx int, submi
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation())
 	s.T().Logf("Successfully submitted proposal %s", govProposalPath)
 }
 
-func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chain, gaiaCommand []string, valIdx int) {
-	var txResp sdk.TxResponse
-	s.Require().Eventually(
-		func() bool {
-			var (
-				outBuf bytes.Buffer
-				errBuf bytes.Buffer
+func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chain, gaiaCommand []string, valIdx int, validation func([]byte) bool) {
+	if validation == nil {
+		validation = s.defaultExecValidation()
+	}
+	var (
+		outBuf bytes.Buffer
+		errBuf bytes.Buffer
+	)
+	exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
+		Context:      ctx,
+		AttachStdout: true,
+		AttachStderr: true,
+		Container:    s.valResources[c.id][valIdx].Container.ID,
+		User:         "nonroot",
+		Cmd:          gaiaCommand,
+	})
+	s.Require().NoError(err)
+
+	err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
+		Context:      ctx,
+		Detach:       false,
+		OutputStream: &outBuf,
+		ErrorStream:  &errBuf,
+	})
+	s.Require().NoError(err)
+
+	stdOut := outBuf.Bytes()
+	if !validation(stdOut) {
+		s.Require().FailNowf("tx validation failed", "stdout: %s, stderr: %s", string(stdOut), errBuf.String())
+	}
+}
+
+func (s *IntegrationTestSuite) defaultExecValidation() func([]byte) bool {
+	return func(i []byte) bool {
+		var txResp sdk.TxResponse
+		if err := cdc.UnmarshalJSON(i, &txResp); err != nil {
+			return false
+		}
+		if strings.Contains(txResp.String(), "code: 0") || txResp.Code == 0 {
+			endpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+			var err error
+			s.Require().Eventually(
+				func() bool {
+					return queryGaiaTx(endpoint, txResp.TxHash) == nil
+				},
+				time.Minute,
+				5*time.Second,
+				"cannot query tx %s, err %s",
+				txResp.TxHash, err,
 			)
-			exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
-				Context:      ctx,
-				AttachStdout: true,
-				AttachStderr: true,
-				Container:    s.valResources[c.id][valIdx].Container.ID,
-				User:         "nonroot",
-				Cmd:          gaiaCommand,
-			})
-			s.Require().NoError(err)
-
-			err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
-				Context:      ctx,
-				Detach:       false,
-				OutputStream: &outBuf,
-				ErrorStream:  &errBuf,
-			})
-			s.Require().NoError(err)
-
-			sdtOut := outBuf.Bytes()
-			if err := cdc.UnmarshalJSON(sdtOut, &txResp); err != nil {
-				s.Errorf(err, "stdout: %s, stderr: %s", string(sdtOut), errBuf.String())
-				return false
-			}
-			return strings.Contains(txResp.String(), "code: 0") || txResp.Code == 0
-		},
-		15*time.Second,
-		2*time.Second,
-	)
-
-	endpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-	s.Require().Eventually(
-		func() bool {
-			return queryGaiaTx(endpoint, txResp.TxHash) == nil
-		},
-		time.Minute,
-		5*time.Second,
-	)
+			return true
+		}
+		return false
+	}
 }
 
 func (s *IntegrationTestSuite) execCreateGroup(c *chain, valIdx int, adminAddr, metadata, groupMembersPath, fees string) {
@@ -348,7 +302,7 @@ func (s *IntegrationTestSuite) execCreateGroup(c *chain, valIdx int, adminAddr, 
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation())
 	s.T().Logf("%s successfully created group: %s", adminAddr, groupMembersPath)
 }
 
@@ -373,7 +327,7 @@ func (s *IntegrationTestSuite) execUpdateGroupMembers(c *chain, valIdx int, admi
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation())
 	s.T().Logf("%s successfully updated group members: %s", adminAddr, groupMembersPath)
 }
 
@@ -399,7 +353,7 @@ func (s *IntegrationTestSuite) executeCreateGroupPolicy(c *chain, valIdx int, ad
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation())
 	s.T().Logf("%s successfully created group policy: %s", adminAddr, policyFile)
 }
 
@@ -423,7 +377,7 @@ func (s *IntegrationTestSuite) executeSubmitGroupProposal(c *chain, valIdx int, 
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation())
 	s.T().Logf("%s successfully submited group proposal: %s", fromAddress, proposalPath)
 }
 
@@ -449,7 +403,7 @@ func (s *IntegrationTestSuite) executeVoteGroupProposal(c *chain, valIdx int, pr
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation())
 	s.T().Logf("%s successfully voted %s on proposal: %s", voterAddress, voteOption, proposalId)
 }
 
@@ -473,7 +427,7 @@ func (s *IntegrationTestSuite) executeExecGroupProposal(c *chain, valIdx int, pr
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation())
 	s.T().Logf("%s successfully executed proposal: %s", proposerAddress, proposalId)
 }
 
@@ -498,19 +452,13 @@ func (s *IntegrationTestSuite) executeUpdateGroupAdmin(c *chain, valIdx int, adm
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation())
 	s.T().Logf("Successfully updated group admin from %s to %s", admin, newAdmin)
 }
 
 func (s *IntegrationTestSuite) executeGKeysAddCommand(c *chain, valIdx int, name string, home string) string {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
-
-	var (
-		outBuf     bytes.Buffer
-		errBuf     bytes.Buffer
-		addrRecord AddressResponse
-	)
 
 	gaiaCommand := []string{
 		gaiadBinary,
@@ -522,45 +470,19 @@ func (s *IntegrationTestSuite) executeGKeysAddCommand(c *chain, valIdx int, name
 		"--output=json",
 	}
 
-	s.Require().Eventually(
-		func() bool {
-			exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
-				Context:      ctx,
-				AttachStdout: true,
-				AttachStderr: true,
-				Container:    s.valResources[c.id][valIdx].Container.ID,
-				User:         "nonroot",
-				Cmd:          gaiaCommand,
-			})
-			s.Require().NoError(err)
-
-			err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
-				Context:      ctx,
-				Detach:       false,
-				OutputStream: &outBuf,
-				ErrorStream:  &errBuf,
-			})
-			s.Require().NoError(err)
-			s.Require().NoError(json.Unmarshal(errBuf.Bytes(), &addrRecord))
-
-			return strings.Contains(addrRecord.Address, "cosmos")
-		},
-		10*time.Second,
-		time.Second,
-		"Returned an error; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
-	)
-
+	var addrRecord AddressResponse
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, func(i []byte) bool {
+		if err := json.Unmarshal(i, &addrRecord); err != nil {
+			return false
+		}
+		return strings.Contains(addrRecord.Address, "cosmos")
+	})
 	return addrRecord.Address
 }
 
 func (s *IntegrationTestSuite) executeKeysList(c *chain, valIdx int, home string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
-
-	var (
-		outBuf bytes.Buffer
-		errBuf bytes.Buffer
-	)
 
 	gaiaCommand := []string{
 		gaiadBinary,
@@ -571,31 +493,9 @@ func (s *IntegrationTestSuite) executeKeysList(c *chain, valIdx int, home string
 		"--output=json",
 	}
 
-	s.Require().Eventually(
-		func() bool {
-			exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
-				Context:      ctx,
-				AttachStdout: true,
-				AttachStderr: true,
-				Container:    s.valResources[c.id][valIdx].Container.ID,
-				User:         "nonroot",
-				Cmd:          gaiaCommand,
-			})
-			s.Require().NoError(err)
-
-			err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
-				Context:      ctx,
-				Detach:       false,
-				OutputStream: &outBuf,
-				ErrorStream:  &errBuf,
-			})
-			s.Require().NoError(err)
-			return true
-		},
-		10*time.Second,
-		time.Second,
-		"Returned an error; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
-	)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, func(i []byte) bool {
+		return true
+	})
 }
 
 func (s *IntegrationTestSuite) executeDelegate(c *chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) {
@@ -621,7 +521,7 @@ func (s *IntegrationTestSuite) executeDelegate(c *chain, valIdx int, amount, val
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation())
 	s.T().Logf("%s successfully delegated %s to %s", delegatorAddr, amount, valOperAddress)
 }
 
@@ -650,7 +550,7 @@ func (s *IntegrationTestSuite) executeRedelegate(c *chain, valIdx int, amount, o
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation())
 	s.T().Logf("%s successfully redelegated %s from %s to %s", delegatorAddr, amount, originalValOperAddress, newValOperAddress)
 }
 
@@ -681,7 +581,7 @@ func (s *IntegrationTestSuite) execSetWithrawAddress(
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation())
 	s.T().Logf("Successfully set new distribution withdrawal address for %s to %s", delegatorAddress, newWithdrawalAddress)
 }
 
@@ -713,7 +613,7 @@ func (s *IntegrationTestSuite) execWithdrawReward(
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation())
 	s.T().Logf("Successfully withdrew distribution rewards for delegator %s from validator %s", delegatorAddress, validatorAddress)
 }
 
@@ -721,8 +621,10 @@ func (s *IntegrationTestSuite) execWithdrawReward(
 func (s *IntegrationTestSuite) submitICAtx(owner, connectionID, txJsonPath string) {
 	fee := sdk.NewCoin(uatomDenom, math.NewInt(930000))
 	s.T().Logf("register an interchain account on chain %s for %s from chain %s", s.chainB.id, owner, s.chainA.id)
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
+
 	submitTX := []string{
 		gaiadBinary,
 		"tx",
@@ -740,46 +642,7 @@ func (s *IntegrationTestSuite) submitICAtx(owner, connectionID, txJsonPath strin
 		"-y",
 	}
 
-	exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
-		Context:      ctx,
-		AttachStdout: true,
-		AttachStderr: true,
-		Container:    s.valResources[s.chainA.id][0].Container.ID,
-		User:         "nonroot",
-		Cmd:          submitTX,
-	})
-	s.Require().NoError(err)
-
-	var (
-		outBuf bytes.Buffer
-		errBuf bytes.Buffer
-	)
-
-	err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
-		Context:      ctx,
-		Detach:       false,
-		OutputStream: &outBuf,
-		ErrorStream:  &errBuf,
-	})
-
-	s.Require().NoErrorf(
-		err,
-		"failed to submit ica tx; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
-	)
-
-	var txResp sdk.TxResponse
-	s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
-
-	endpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-	s.Require().Eventuallyf(
-		func() bool {
-			return queryGaiaTx(endpoint, txResp.TxHash) == nil
-		},
-		time.Minute,
-		5*time.Second,
-		"stdout: %s, stderr: %s",
-		outBuf.String(), errBuf.String(),
-	)
+	s.executeGaiaTxCommand(ctx, s.chainA, submitTX, 0, s.defaultExecValidation())
 
 	s.T().Logf("%s submit a transaction on chain %s", owner, s.chainB.id)
 }
@@ -787,8 +650,10 @@ func (s *IntegrationTestSuite) submitICAtx(owner, connectionID, txJsonPath strin
 func (s *IntegrationTestSuite) registerICA(owner, connectionID string) {
 	fee := sdk.NewCoin(uatomDenom, math.NewInt(930000))
 	s.T().Logf("register an interchain account on chain %s for %s from chain %s", s.chainB.id, owner, s.chainA.id)
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
+
 	registerICAcmd := []string{
 		gaiadBinary,
 		"tx",
@@ -804,46 +669,8 @@ func (s *IntegrationTestSuite) registerICA(owner, connectionID string) {
 		"--output=json",
 		"-y",
 	}
-	exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
-		Context:      ctx,
-		AttachStdout: true,
-		AttachStderr: true,
-		Container:    s.valResources[s.chainA.id][0].Container.ID,
-		User:         "nonroot",
-		Cmd:          registerICAcmd,
-	})
-	s.Require().NoError(err)
 
-	var (
-		outBuf bytes.Buffer
-		errBuf bytes.Buffer
-	)
-
-	err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
-		Context:      ctx,
-		Detach:       false,
-		OutputStream: &outBuf,
-		ErrorStream:  &errBuf,
-	})
-
-	s.Require().NoErrorf(
-		err,
-		"failed to register ica; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
-	)
-
-	var txResp sdk.TxResponse
-	s.Require().NoError(cdc.UnmarshalJSON(outBuf.Bytes(), &txResp))
-
-	endpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-	s.Require().Eventuallyf(
-		func() bool {
-			return queryGaiaTx(endpoint, txResp.TxHash) == nil
-		},
-		time.Minute,
-		5*time.Second,
-		"stdout: %s, stderr: %s",
-		outBuf.String(), errBuf.String(),
-	)
+	s.executeGaiaTxCommand(ctx, s.chainA, registerICAcmd, 0, s.defaultExecValidation())
 
 	s.T().Logf("%s reigstered an interchain account on chain %s from chain %s", owner, s.chainB.id, s.chainA.id)
 }

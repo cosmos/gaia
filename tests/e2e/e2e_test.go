@@ -2,16 +2,18 @@ package e2e
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
-	
-	"cosmossdk.io/math"	
 
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
 func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
+	time.Sleep(30 * time.Second)
+
 	var ibcStakeDenom string
 
 	s.Run("send_uatom_to_chainB", func() {
@@ -21,10 +23,16 @@ func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
 			err      error
 		)
 
-		address, err := s.chainB.validators[0].keyInfo.GetAddress()
+		address, err := s.chainA.validators[0].keyInfo.GetAddress()
+		s.Require().NoError(err)
+		sender := address.String()
+
+		address, err = s.chainB.validators[0].keyInfo.GetAddress()
 		s.Require().NoError(err)
 		recipient := address.String()
-		s.sendIBC(s.chainA.id, s.chainB.id, recipient, tokenAmount)
+
+		tokenAmt := 3300000000
+		s.sendIBC(s.chainA, 0, sender, recipient, strconv.Itoa(tokenAmt)+uatomDenom, fees.String())
 
 		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
 
@@ -37,12 +45,10 @@ func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
 			time.Minute,
 			5*time.Second,
 		)
-
 		for _, c := range balances {
 			if strings.Contains(c.Denom, "ibc/") {
-				fmt.Print("c.denom:", c.Denom, "c.amount:", c.Amount)
 				ibcStakeDenom = c.Denom
-				s.Require().Equal(tokenAmount.Amount.Int64(), c.Amount.Int64())
+				s.Require().Equal(int64(tokenAmt), c.Amount.Int64())
 				break
 			}
 		}
@@ -190,6 +196,7 @@ func (s *IntegrationTestSuite) TestGovSoftwareUpgrade() {
 
 func (s *IntegrationTestSuite) TestGovCancelSoftwareUpgrade() {
 	s.T().Skip()
+
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
 	s.Require().NoError(err)
@@ -217,11 +224,7 @@ func (s *IntegrationTestSuite) TestGovCancelSoftwareUpgrade() {
 	s.T().Logf("Successfully canceled upgrade at height %d", proposalHeight)
 }
 
-func (s *IntegrationTestSuite) TestGroups() {
-	s.GroupsSendMsgTest()
-}
-
-func (s *IntegrationTestSuite) fundCommunityPool(chainAAPIEndpoint string, sender string) {
+func (s *IntegrationTestSuite) fundCommunityPool(chainAAPIEndpoint, sender string) {
 	s.Run("fund_community_pool", func() {
 		beforeDistUatomBalance, _ := getSpecificBalance(chainAAPIEndpoint, distModuleAddress, tokenAmount.Denom)
 		if beforeDistUatomBalance.IsNil() {
@@ -405,28 +408,27 @@ global fee e2e tests:
 0. initial globalfee = 0.00001uatom, min_gas_price = 0.00001uatom
 
 test1. gov proposal globalfee = [], min_gas_price=0.00001uatom, query globalfee still get empty
-  - tx with fee denom photon, fail
-  - tx with zero fee denom photon, fail
-  - tx with fee denom uatom, pass
-  - tx with fee empty, fail
+- tx with fee denom photon, fail
+- tx with zero fee denom photon, fail
+- tx with fee denom uatom, pass
+- tx with fee empty, fail
 
 test2. gov propose globalfee =  0.000001uatom(lower than min_gas_price)
-  - tx with fee higher than 0.000001uatom but lower than 0.00001uatom, fail
-  - tx with fee higher than/equal to 0.00001uatom, pass
-  - tx with fee photon fail
+- tx with fee higher than 0.000001uatom but lower than 0.00001uatom, fail
+- tx with fee higher than/equal to 0.00001uatom, pass
+- tx with fee photon fail
 
 test3. gov propose globalfee = 0.0001uatom (higher than min_gas_price)
-  - tx with fee equal to 0.0001uatom, pass
-  - tx with fee equal to 0.00001uatom, fail
+- tx with fee equal to 0.0001uatom, pass
+- tx with fee equal to 0.00001uatom, fail
 
 test4. gov propose globalfee =  0.000001uatom (lower than min_gas_price), 0photon
-  - tx with fee 0.0000001photon, fail
-  - tx with fee 0.000001photon, pass
-  - tx with empty fee, pass
-  - tx with fee photon pass
-  - tx with fee 0photon, 0.000005uatom fail
-  - tx with fee 0photon, 0.00001uatom pass
-
+- tx with fee 0.0000001photon, fail
+- tx with fee 0.000001photon, pass
+- tx with empty fee, pass
+- tx with fee photon pass
+- tx with fee 0photon, 0.000005uatom fail
+- tx with fee 0photon, 0.00001uatom pass
 5. check balance correct: all the sucessful tx sent token amt is received
 6. gov propose change back to initial globalfee = 0.00001photon, This is for not influence other e2e tests.
 */
@@ -760,8 +762,8 @@ func (s *IntegrationTestSuite) TestStaking() {
 	valOperA := sdk.ValAddress(validatorAAddr)
 	valOperB := sdk.ValAddress(validatorBAddr)
 
-	alice, err := s.chainA.accounts[2].keyInfo.GetAddress()
-	bob, err := s.chainA.accounts[3].keyInfo.GetAddress()
+	alice, err := s.chainA.genesisAccounts[2].keyInfo.GetAddress()
+	bob, err := s.chainA.genesisAccounts[3].keyInfo.GetAddress()
 
 	delegationFees := sdk.NewCoin(uatomDenom, math.NewInt(10))
 

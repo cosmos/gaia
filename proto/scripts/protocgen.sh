@@ -29,10 +29,10 @@ done
 protoc \
 -I "proto" \
 -I "third_party/proto" \
---doc_out=../../docs/proto \
---doc_opt=../../docs/proto/protodoc-markdown.tmpl,proto-docs.md \
-$(find "$(pwd)/proto" -maxdepth 5 -name '*.proto')
+--doc_out=./docs/proto \
+--doc_opt=./docs/proto/protodoc-markdown.tmpl,proto-docs.md \
+$(find "${dir}" -maxdepth 5 -name '*.proto')
 
 # move proto files to the right places
-cp -r github.com/cosmos/gaia/x/* ./
+cp -r github.com/cosmos/gaia/x/* x/
 rm -rf github.com

@@ -28,7 +28,6 @@ var (
 	vestingAmountVested     = sdk.NewCoin(uatomDenom, math.NewInt(99900000000))
 	vestingAmount           = sdk.NewCoin(uatomDenom, math.NewInt(350000))
 	vestingBalance          = sdk.NewCoins(vestingAmountVested).Add(vestingAmount)
-	vestingTransferAmount   = sdk.NewCoin(uatomDenom, sdk.NewInt(800000000))
 	vestingDelegationAmount = sdk.NewCoin(uatomDenom, sdk.NewInt(500000000))
 	vestingDelegationFees   = sdk.NewCoin(uatomDenom, sdk.NewInt(10))
 )

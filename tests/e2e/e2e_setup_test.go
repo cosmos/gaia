@@ -58,6 +58,8 @@ const (
 	govProposalBlockBuffer = 35
 	relayerAccountIndex    = 0
 	icaOwnerAccountIndex   = 1
+	dockerUserRoot         = "root"
+	dockerUserNonRoot      = "nonroot"
 )
 
 var (

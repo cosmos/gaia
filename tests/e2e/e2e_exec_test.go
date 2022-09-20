@@ -16,6 +16,7 @@ const (
 	flagGas            = "gas"
 	flagOutput         = "output"
 	flagChainID        = "chain-id"
+	flagBroadcastMode  = "broadcast-mode"
 	flagKeyringBackend = "keyring-backend"
 )
 
@@ -34,6 +35,7 @@ func applyOptions(chainID, home string, options []flagOption) map[string]interfa
 		flagOutput:         "json",
 		flagGas:            "auto",
 		flagFrom:           "alice",
+		flagBroadcastMode:  "sync",
 		flagChainID:        chainID,
 		flagHome:           home,
 		flagFees:           fees.String(),
@@ -69,7 +71,7 @@ func (s *IntegrationTestSuite) execVestingTx(
 		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, 0, "")
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, 0, dockerUserRoot, "")
 	s.T().Logf("successfully %s with %v", method, args)
 }
 

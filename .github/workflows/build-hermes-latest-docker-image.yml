@@ -2,6 +2,7 @@
 name: Create and publish latest Hermes Docker image
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - tests/e2e/docker/**

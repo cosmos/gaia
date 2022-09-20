@@ -1,7 +1,6 @@
 package e2e
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -13,7 +12,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/cosmos/cosmos-sdk/x/group"
-	"github.com/ory/dockertest/v3/docker"
 )
 
 func (s *IntegrationTestSuite) queryGovProposal(endpoint string, proposalId uint64) (govv1beta1.QueryProposalResponse, error) {
@@ -44,50 +42,24 @@ func (s *IntegrationTestSuite) getLatestBlockHeight(c *chain, valIdx int) int {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	type status struct {
-		LatestHeight string `json:"latest_block_height"`
-	}
-
 	type syncInfo struct {
-		SyncInfo status `json:"SyncInfo"`
+		SyncInfo struct {
+			LatestHeight string `json:"latest_block_height"`
+		} `json:"SyncInfo"`
 	}
 
-	var (
-		outBuf        bytes.Buffer
-		errBuf        bytes.Buffer
-		block         syncInfo
-		currentHeight int
-	)
-
-	s.Require().Eventually(
-		func() bool {
-			exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
-				Context:      ctx,
-				AttachStdout: true,
-				AttachStderr: true,
-				Container:    s.valResources[c.id][valIdx].Container.ID,
-				User:         "nonroot",
-				Cmd:          []string{gaiadBinary, "status"},
-			})
-			s.Require().NoError(err)
-
-			err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
-				Context:      ctx,
-				Detach:       false,
-				OutputStream: &outBuf,
-				ErrorStream:  &errBuf,
-			})
-			s.Require().NoError(err)
-			s.Require().NoError(json.Unmarshal(errBuf.Bytes(), &block))
-
-			currentHeight, err = strconv.Atoi(block.SyncInfo.LatestHeight)
-			s.Require().NoError(err)
-			return currentHeight > 0
-		},
-		5*time.Second,
-		time.Second,
-		"Get node status returned a non-zero code; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
-	)
+	var currentHeight int
+	gaiaCommand := []string{gaiadBinary, "status"}
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, func(stdOut []byte, stdErr []byte) bool {
+		var (
+			err   error
+			block syncInfo
+		)
+		s.Require().NoError(json.Unmarshal(stdErr, &block))
+		currentHeight, err = strconv.Atoi(block.SyncInfo.LatestHeight)
+		s.Require().NoError(err)
+		return currentHeight > 0
+	})
 	return currentHeight
 }
 

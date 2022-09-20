@@ -1,7 +1,6 @@
 package e2e
 
 import (
-	"bytes"
 	"context"
 	b64 "encoding/base64"
 	"encoding/json"
@@ -612,49 +611,28 @@ func (s *IntegrationTestSuite) writeGovParamChangeProposalGlobalFees(c *chain, c
 }
 
 func (s *IntegrationTestSuite) writeICAtx(cmd []string, path string) {
-
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
 	cmd = append(cmd, fmt.Sprintf("--%s=%s", flags.FlagGenerateOnly, "true"))
 	s.T().Logf("dry run: ica tx %s", strings.Join(cmd, " "))
 
-	var (
-		outBuf bytes.Buffer
-		errBuf bytes.Buffer
-	)
-
 	type txResponse struct {
 		Body struct {
 			Messages []map[string]interface{}
 		}
 	}
-	var txResp txResponse
 
-	exe, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
-		Context:      ctx,
-		AttachStdout: true,
-		AttachStderr: true,
-		Container:    s.valResources[s.chainA.id][0].Container.ID,
-		User:         "nonroot",
-		Cmd:          cmd,
+	s.executeGaiaTxCommand(ctx, s.chainA, cmd, 0, func(stdOut []byte, stdErr []byte) bool {
+		var txResp txResponse
+		s.Require().NoError(json.Unmarshal(stdOut, &txResp))
+		b, err := json.MarshalIndent(txResp.Body.Messages[0], "", " ")
+		s.Require().NoError(err)
+
+		err = writeFile(path, b)
+		s.Require().NoError(err)
+		return true
 	})
-	s.Require().NoError(err)
-
-	err = s.dkrPool.Client.StartExec(exe.ID, docker.StartExecOptions{
-		Context:      ctx,
-		Detach:       false,
-		OutputStream: &outBuf,
-		ErrorStream:  &errBuf,
-	})
-	s.Require().NoError(err)
-
-	s.Require().NoError(json.Unmarshal(outBuf.Bytes(), &txResp))
-	b, err := json.MarshalIndent(txResp.Body.Messages[0], "", " ")
-	s.Require().NoError(err)
-
-	err = writeFile(path, b)
-	s.Require().NoError(err)
 
 	s.T().Logf("write ica transaction json to %s", path)
 }

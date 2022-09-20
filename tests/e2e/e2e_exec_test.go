@@ -397,8 +397,8 @@ func (s *IntegrationTestSuite) executeGKeysAddCommand(c *chain, valIdx int, name
 	}
 
 	var addrRecord AddressResponse
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, func(i []byte) bool {
-		if err := json.Unmarshal(i, &addrRecord); err != nil {
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, func(stdOut []byte, stdErr []byte) bool {
+		if err := json.Unmarshal(stdOut, &addrRecord); err != nil {
 			return false
 		}
 		return strings.Contains(addrRecord.Address, "cosmos")
@@ -419,7 +419,7 @@ func (s *IntegrationTestSuite) executeKeysList(c *chain, valIdx int, home string
 		"--output=json",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, func(i []byte) bool {
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, func([]byte, []byte) bool {
 		return true
 	})
 }
@@ -601,7 +601,7 @@ func (s *IntegrationTestSuite) registerICA(owner, connectionID string) {
 	s.T().Logf("%s reigstered an interchain account on chain %s from chain %s", owner, s.chainB.id, s.chainA.id)
 }
 
-func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chain, gaiaCommand []string, valIdx int, validation func([]byte) bool) {
+func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chain, gaiaCommand []string, valIdx int, validation func([]byte, []byte) bool) {
 	if validation == nil {
 		validation = s.defaultExecValidation(s.chainA, 0)
 	}
@@ -628,15 +628,17 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 	s.Require().NoError(err)
 
 	stdOut := outBuf.Bytes()
-	if !validation(stdOut) {
-		s.Require().FailNowf("tx validation failed", "stdout: %s, stderr: %s", string(stdOut), errBuf.String())
+	stdErr := errBuf.Bytes()
+	if !validation(stdOut, stdErr) {
+		s.Require().FailNowf("tx validation failed", "stdout: %s, stderr: %s",
+			string(stdOut), string(stdErr))
 	}
 }
 
-func (s *IntegrationTestSuite) expectErrExecValidation(chain *chain, valIdx int, expectErr bool) func([]byte) bool {
-	return func(i []byte) bool {
+func (s *IntegrationTestSuite) expectErrExecValidation(chain *chain, valIdx int, expectErr bool) func([]byte, []byte) bool {
+	return func(stdOut []byte, stdErr []byte) bool {
 		var txResp sdk.TxResponse
-		s.Require().NoError(cdc.UnmarshalJSON(i, &txResp))
+		s.Require().NoError(cdc.UnmarshalJSON(stdOut, &txResp))
 		endpoint := fmt.Sprintf("http://%s", s.valResources[chain.id][valIdx].GetHostPort("1317/tcp"))
 		// wait for the tx to be committed on chain
 		var err error
@@ -647,17 +649,17 @@ func (s *IntegrationTestSuite) expectErrExecValidation(chain *chain, valIdx int,
 			},
 			time.Minute,
 			5*time.Second,
-			"cannot query tx %s, err %s",
-			txResp.TxHash, err,
+			"%s: stdOut: %s, stdErr: %s",
+			err.Error(), string(stdOut), string(stdErr),
 		)
 		return true
 	}
 }
 
-func (s *IntegrationTestSuite) defaultExecValidation(chain *chain, valIdx int) func([]byte) bool {
-	return func(i []byte) bool {
+func (s *IntegrationTestSuite) defaultExecValidation(chain *chain, valIdx int) func([]byte, []byte) bool {
+	return func(stdOut []byte, stdErr []byte) bool {
 		var txResp sdk.TxResponse
-		if err := cdc.UnmarshalJSON(i, &txResp); err != nil {
+		if err := cdc.UnmarshalJSON(stdOut, &txResp); err != nil {
 			return false
 		}
 		if strings.Contains(txResp.String(), "code: 0") || txResp.Code == 0 {
@@ -669,8 +671,8 @@ func (s *IntegrationTestSuite) defaultExecValidation(chain *chain, valIdx int) f
 				},
 				time.Minute,
 				5*time.Second,
-				"cannot query tx %s, err %s",
-				txResp.TxHash, err,
+				"%s: stdOut: %s, stdErr: %s",
+				err.Error(), string(stdOut), string(stdErr),
 			)
 			return true
 		}

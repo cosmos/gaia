@@ -2,7 +2,7 @@ package e2e
 
 import (
 	"os/exec"
-	
+
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -85,5 +85,10 @@ func createRandomAccount(configDir, name string) (string, error) {
 	}
 
 	// TODO find a better way to add accounts on demand without giving folder permissions every time
-	return accAddr.String(), exec.Command("chmod", "-R", "0777", configDir).Run()
+	err = exec.Command("chmod", "-R", "755", configDir).Run()
+	if err != nil {
+		return "", err
+	}
+
+	return accAddr.String(), nil
 }

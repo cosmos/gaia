@@ -71,7 +71,7 @@ func (s *IntegrationTestSuite) execVestingTx(
 		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, 0, dockerUserRoot, "")
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, 0, "")
 	s.T().Logf("successfully %s with %v", method, args)
 }
 

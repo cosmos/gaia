@@ -263,11 +263,11 @@ func (s *IntegrationTestSuite) generateAuthAndBankState(
 	appGenState map[string]json.RawMessage,
 ) ([]byte, []byte) {
 	var (
-		authGenState  = authtypes.GetGenesisStateFromAppState(cdc, appGenState)
-		bankGenState  = banktypes.GetGenesisStateFromAppState(cdc, appGenState)
-		val0ConfigDir = c.validators[0].configDir()
+		authGenState = authtypes.GetGenesisStateFromAppState(cdc, appGenState)
+		bankGenState = banktypes.GetGenesisStateFromAppState(cdc, appGenState)
+		valConfigDir = c.validators[0].configDir()
 	)
-	kb, err := keyring.New(keyringAppName, keyring.BackendTest, val0ConfigDir, nil, cdc)
+	kb, err := keyring.New(keyringAppName, keyring.BackendTest, valConfigDir, nil, cdc)
 	s.Require().NoError(err)
 
 	keyringAlgos, _ := kb.SupportedAlgorithms()

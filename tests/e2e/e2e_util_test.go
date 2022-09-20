@@ -309,7 +309,7 @@ func (s *IntegrationTestSuite) execDistributionFundCommunityPool(c *chain, valId
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, dockerUserNonRoot, endpoint)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
 	s.T().Logf("Successfully funded community pool")
 }
 
@@ -334,7 +334,7 @@ func (s *IntegrationTestSuite) execGovSubmitLegacyGovProposal(c *chain, valIdx i
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, dockerUserNonRoot, endpoint)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
 	s.T().Logf("Successfully submitted legacy proposal")
 }
 
@@ -359,7 +359,7 @@ func (s *IntegrationTestSuite) execGovDepositProposal(c *chain, valIdx int, endp
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, dockerUserNonRoot, endpoint)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
 	s.T().Logf("Successfully deposited proposal %d", proposalId)
 }
 
@@ -384,7 +384,7 @@ func (s *IntegrationTestSuite) execGovVoteProposal(c *chain, valIdx int, endpoin
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, dockerUserNonRoot, endpoint)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
 	s.T().Logf("Successfully voted on proposal %d", proposalId)
 }
 
@@ -409,7 +409,7 @@ func (s *IntegrationTestSuite) execGovWeightedVoteProposal(c *chain, valIdx int,
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, dockerUserNonRoot, endpoint)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
 	s.T().Logf("Successfully voted on proposal %d", proposalId)
 }
 
@@ -433,11 +433,11 @@ func (s *IntegrationTestSuite) execGovSubmitProposal(c *chain, valIdx int, endpo
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, dockerUserNonRoot, endpoint)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
 	s.T().Logf("Successfully submitted proposal %s", govProposalPath)
 }
 
-func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chain, gaiaCommand []string, valIdx int, user, endpoint string) {
+func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chain, gaiaCommand []string, valIdx int, endpoint string) {
 	var (
 		outBuf bytes.Buffer
 		errBuf bytes.Buffer
@@ -453,7 +453,7 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 				AttachStdout: true,
 				AttachStderr: true,
 				Container:    s.valResources[c.id][valIdx].Container.ID,
-				User:         user,
+				User:         "nonroot",
 				Cmd:          gaiaCommand,
 			})
 			s.Require().NoError(err)
@@ -589,7 +589,7 @@ func (s *IntegrationTestSuite) execCreateGroup(c *chain, valIdx int, endpoint st
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, dockerUserNonRoot, endpoint)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
 	s.T().Logf("%s successfully created group: %s", adminAddr, groupMembersPath)
 }
 
@@ -614,7 +614,7 @@ func (s *IntegrationTestSuite) execUpdateGroupMembers(c *chain, valIdx int, endp
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, dockerUserNonRoot, endpoint)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
 	s.T().Logf("%s successfully updated group members: %s", adminAddr, groupMembersPath)
 }
 
@@ -640,7 +640,7 @@ func (s *IntegrationTestSuite) executeCreateGroupPolicy(c *chain, valIdx int, en
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, dockerUserNonRoot, endpoint)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
 	s.T().Logf("%s successfully created group policy: %s", adminAddr, policyFile)
 }
 
@@ -664,7 +664,7 @@ func (s *IntegrationTestSuite) executeSubmitGroupProposal(c *chain, valIdx int, 
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, dockerUserNonRoot, endpoint)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
 	s.T().Logf("%s successfully submited group proposal: %s", fromAddress, proposalPath)
 }
 
@@ -690,7 +690,7 @@ func (s *IntegrationTestSuite) executeVoteGroupProposal(c *chain, valIdx int, en
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, dockerUserNonRoot, endpoint)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
 	s.T().Logf("%s successfully voted %s on proposal: %s", voterAddress, voteOption, proposalId)
 }
 
@@ -714,7 +714,7 @@ func (s *IntegrationTestSuite) executeExecGroupProposal(c *chain, valIdx int, en
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, dockerUserNonRoot, endpoint)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
 	s.T().Logf("%s successfully executed proposal: %s", proposerAddress, proposalId)
 }
 
@@ -739,7 +739,7 @@ func (s *IntegrationTestSuite) executeUpdateGroupAdmin(c *chain, valIdx int, end
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, dockerUserNonRoot, endpoint)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
 	s.T().Logf("Successfully updated group admin from %s to %s", admin, newAdmin)
 }
 
@@ -1007,7 +1007,7 @@ func (s *IntegrationTestSuite) executeDelegate(c *chain, valIdx int, endpoint st
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, dockerUserNonRoot, endpoint)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
 	s.T().Logf("%s successfully delegated %s to %s", delegatorAddr, amount, valOperAddress)
 }
 
@@ -1035,7 +1035,7 @@ func (s *IntegrationTestSuite) executeRedelegate(c *chain, valIdx int, endpoint 
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, dockerUserNonRoot, endpoint)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
 	s.T().Logf("%s successfully redelegated %s from %s to %s", delegatorAddr, amount, originalValOperAddress, newValOperAddress)
 }
 
@@ -1067,7 +1067,7 @@ func (s *IntegrationTestSuite) execSetWithrawAddress(
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, dockerUserNonRoot, endpoint)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
 	s.T().Logf("Successfully set new distribution withdrawal address for %s to %s", delegatorAddress, newWithdrawalAddress)
 }
 
@@ -1101,7 +1101,7 @@ func (s *IntegrationTestSuite) execWithdrawReward(
 		"-y",
 	}
 
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, dockerUserNonRoot, endpoint)
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, endpoint)
 	s.T().Logf("Successfully withdrew distribution rewards for delegator %s from validator %s", delegatorAddress, validatorAddress)
 }
 

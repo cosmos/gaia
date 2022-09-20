@@ -629,24 +629,21 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 }
 
 func (s *IntegrationTestSuite) TestByPassMinFeeWithdrawReward() {
-	// time.Sleep(10)
-	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	paidFeeAmt := math.LegacyMustNewDecFromStr(minGasPrice).Mul(math.LegacyNewDec(gas)).String()
-
 	payee, err := s.chainA.validators[0].keyInfo.GetAddress()
 	s.Require().NoError(err)
 	// pass
 	s.T().Logf("bypass-msg with fee in the denom of global fee, pass")
-	s.execWithdrawAllRewards(s.chainA, 0, chainAAPIEndpoint, payee.String(), paidFeeAmt+uatomDenom, false)
+	s.execWithdrawAllRewards(s.chainA, 0, payee.String(), paidFeeAmt+uatomDenom, false)
 	// pass
 	s.T().Logf("bypass-msg with zero coin in the denom of global fee, pass")
-	s.execWithdrawAllRewards(s.chainA, 0, chainAAPIEndpoint, payee.String(), "0"+uatomDenom, false)
+	s.execWithdrawAllRewards(s.chainA, 0, payee.String(), "0"+uatomDenom, false)
 	// pass
 	s.T().Logf("bypass-msg with zero coin not in the denom of global fee, pass")
-	s.execWithdrawAllRewards(s.chainA, 0, chainAAPIEndpoint, payee.String(), "0"+photonDenom, false)
+	s.execWithdrawAllRewards(s.chainA, 0, payee.String(), "0"+photonDenom, false)
 	// fail
 	s.T().Logf("bypass-msg with non-zero coin not in the denom of global fee, fail")
-	s.execWithdrawAllRewards(s.chainA, 0, chainAAPIEndpoint, payee.String(), paidFeeAmt+photonDenom, true)
+	s.execWithdrawAllRewards(s.chainA, 0, payee.String(), paidFeeAmt+photonDenom, true)
 }
 
 // todo add fee test with wrong denom order

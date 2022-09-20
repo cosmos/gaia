@@ -36,7 +36,7 @@ func createMemoryKey() (mnemonic string, info *keyring.Record, err error) {
 }
 
 func createMemoryKeyFromMnemonic(mnemonic string) (*keyring.Record, error) {
-	kb, err := keyring.New("testnet", keyring.BackendMemory, "", nil, cdc)
+	kb, err := keyring.New(keyringAppName, keyring.BackendMemory, "", nil, cdc)
 	if err != nil {
 		return nil, err
 	}
@@ -53,4 +53,34 @@ func createMemoryKeyFromMnemonic(mnemonic string) (*keyring.Record, error) {
 	}
 
 	return account, nil
+}
+
+// createAccount create a random account into key store and return the address
+func createAccount(configDir, name, hdPath string) (string, error) {
+	kb, err := keyring.New(keyringAppName, keyring.BackendTest, configDir, nil, cdc)
+	if err != nil {
+		return "", err
+	}
+
+	keyringAlgos, _ := kb.SupportedAlgorithms()
+	algo, err := keyring.NewSigningAlgoFromString(string(hd.Secp256k1Type), keyringAlgos)
+	if err != nil {
+		return "", err
+	}
+
+	mnemonic, err := createMnemonic()
+	if err != nil {
+		return "", err
+	}
+
+	// Use the first wallet from the same mnemonic by HD path
+	account, err := kb.NewAccount(name, mnemonic, "", hdPath, algo)
+	if err != nil {
+		return "", err
+	}
+	periodicVestingAddr, err := account.GetAddress()
+	if err != nil {
+		return "", err
+	}
+	return periodicVestingAddr.String(), nil
 }

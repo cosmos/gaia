@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/crypto/hd"
-	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -192,7 +190,7 @@ func (s *IntegrationTestSuite) testPermanentLockedAccount(api, home string) {
 		sender, err := val.keyInfo.GetAddress()
 		s.NoError(err)
 		valOpAddr := sdk.ValAddress(sender).String()
-		permanentLockedAddr, err := createAccount(val.configDir(), "permanent_locked_vesting")
+		permanentLockedAddr, err := createAccount(val.configDir(), "permanent_locked_vesting", HDPathZero)
 		s.Require().NoError(err)
 
 		s.execCreatePermanentLockedAccount(chain, home, permanentLockedAddr,
@@ -247,7 +245,7 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api, home string) {
 		s.NoError(err)
 		valOpAddr := sdk.ValAddress(sender).String()
 
-		periodicVestingAddr, err := createAccount(val.configDir(), "periodic_vesting")
+		periodicVestingAddr, err := createAccount(val.configDir(), "periodic_vesting", HDPathOne)
 		s.Require().NoError(err)
 
 		s.execCreatePeriodicVestingAccount(
@@ -357,36 +355,6 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api, home string) {
 			)
 		}
 	})
-}
-
-// createAccount create a random account into key store and return the address
-func createAccount(configDir, name string) (string, error) {
-	kb, err := keyring.New(keyringAppName, keyring.BackendTest, configDir, nil, cdc)
-	if err != nil {
-		return "", err
-	}
-
-	keyringAlgos, _ := kb.SupportedAlgorithms()
-	algo, err := keyring.NewSigningAlgoFromString(string(hd.Secp256k1Type), keyringAlgos)
-	if err != nil {
-		return "", err
-	}
-
-	mnemonic, err := createMnemonic()
-	if err != nil {
-		return "", err
-	}
-
-	// Use the first wallet from the same mnemonic by HD path
-	account, err := kb.NewAccount(name, mnemonic, "", HDPathZero, algo)
-	if err != nil {
-		return "", err
-	}
-	periodicVestingAddr, err := account.GetAddress()
-	if err != nil {
-		return "", err
-	}
-	return periodicVestingAddr.String(), nil
 }
 
 // generateVestingPeriod generate the vesting period file

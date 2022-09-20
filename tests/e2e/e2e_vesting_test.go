@@ -190,7 +190,7 @@ func (s *IntegrationTestSuite) testPermanentLockedAccount(api, home string) {
 		sender, err := val.keyInfo.GetAddress()
 		s.NoError(err)
 		valOpAddr := sdk.ValAddress(sender).String()
-		permanentLockedAddr, err := createAccount(val.configDir(), "permanent_locked_vesting", HDPathZero)
+		permanentLockedAddr, err := createRandomAccount(val.configDir(), "permanent_locked_vesting")
 		s.Require().NoError(err)
 
 		s.execCreatePermanentLockedAccount(chain, home, permanentLockedAddr,
@@ -245,7 +245,7 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api, home string) {
 		s.NoError(err)
 		valOpAddr := sdk.ValAddress(sender).String()
 
-		periodicVestingAddr, err := createAccount(val.configDir(), "periodic_vesting", HDPathOne)
+		periodicVestingAddr, err := createRandomAccount(val.configDir(), "periodic_vesting")
 		s.Require().NoError(err)
 
 		s.execCreatePeriodicVestingAccount(

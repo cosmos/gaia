@@ -118,10 +118,6 @@ build-reproducible: go.sum
 build-linux: go.sum
 	LEDGER_ENABLED=false GOOS=linux GOARCH=amd64 $(MAKE) build
 
-# build-contract-tests-hooks:
-# 	mkdir -p $(BUILDDIR)
-# 	go build -mod=readonly $(BUILD_FLAGS) -o $(BUILDDIR)/ ./cmd/contract_tests
-
 go-mod-cache: go.sum
 	@echo "--> Download go modules to local cache"
 	@go mod download

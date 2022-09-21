@@ -1,6 +1,7 @@
 package e2e
 
 import (
+	"bytes"
 	"context"
 	b64 "encoding/base64"
 	"encoding/json"
@@ -18,6 +19,7 @@ import (
 	"time"
 
 	"cosmossdk.io/math"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -51,6 +53,8 @@ const (
 	gas                        = 200000
 	govSendMsgRecipientAddress = "cosmos1pkueemdeps77dwrqma03pwqk93nw39nuhccz02"
 	govProposalBlockBuffer     = 35
+	relayerAccountIndex        = 0
+	icaOwnerAccountIndex       = 1
 )
 
 var (
@@ -208,9 +212,14 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 
 func (s *IntegrationTestSuite) initNodes(c *chain) {
 	s.Require().NoError(c.createAndInitValidators(2))
-	// add two more addr to val0 dir, one addr is used as relayer wallet, one is used as ica owner
-	s.Require().NoError(c.addAccountFromMnemonic(2))
-	// initialize a genesis file for the first validator
+	/* Adding 4 accounts to val0 local directory
+	c.genesisAccounts[0]: Relayer Wallet
+	c.genesisAccounts[1]: ICA Owner
+	c.genesisAccounts[2]: Test Account 1
+	c.genesisAccounts[3]: Test Account 2
+	*/
+	s.Require().NoError(c.addAccountFromMnemonic(4))
+	// Initialize a genesis file for the first validator
 	val0ConfigDir := c.validators[0].configDir()
 	addrAll := []sdk.AccAddress{}
 	for _, val := range c.validators {
@@ -218,14 +227,13 @@ func (s *IntegrationTestSuite) initNodes(c *chain) {
 		s.Require().NoError(err)
 		addrAll = append(addrAll, address)
 	}
-	// relayer wallet addr
-	rlyAdrr, err := c.accounts[0].keyInfo.GetAddress()
-	s.Require().NoError(err)
-	addrAll = append(addrAll, rlyAdrr)
-	// acctAddr will be used as ica owner
-	acctAddr, err := c.accounts[1].keyInfo.GetAddress()
-	s.Require().NoError(err)
-	addrAll = append(addrAll, acctAddr)
+
+	for _, addr := range c.genesisAccounts {
+		acctAddr, err := addr.keyInfo.GetAddress()
+		s.Require().NoError(err)
+		addrAll = append(addrAll, acctAddr)
+	}
+
 	s.Require().NoError(
 		modifyGenesis(val0ConfigDir, "", initBalanceStr, addrAll, initialGlobalFeeAmt+uatomDenom, uatomDenom),
 	)
@@ -457,8 +465,8 @@ func (s *IntegrationTestSuite) runIBCRelayer() {
 	gaiaAVal := s.chainA.validators[0]
 	gaiaBVal := s.chainB.validators[0]
 
-	gaiaARly := s.chainA.accounts[0]
-	gaiaBRly := s.chainB.accounts[0]
+	gaiaARly := s.chainA.genesisAccounts[relayerAccountIndex]
+	gaiaBRly := s.chainB.genesisAccounts[relayerAccountIndex]
 
 	hermesCfgPath := path.Join(tmpDir, "hermes")
 
@@ -473,7 +481,7 @@ func (s *IntegrationTestSuite) runIBCRelayer() {
 		&dockertest.RunOptions{
 			Name:       fmt.Sprintf("%s-%s-relayer", s.chainA.id, s.chainB.id),
 			Repository: "ghcr.io/cosmos/hermes-e2e",
-			Tag:        "latest",
+			Tag:        "1.0.0",
 			NetworkID:  s.dkrNet.Network.ID,
 			Mounts: []string{
 				fmt.Sprintf("%s/:/root/hermes", hermesCfgPath),
@@ -538,7 +546,9 @@ func (s *IntegrationTestSuite) runIBCRelayer() {
 	time.Sleep(10 * time.Second)
 
 	// create the client, connection and channel between the two Gaia chains
-	s.connectIBCChains()
+	s.createConnection()
+	time.Sleep(10 * time.Second)
+	s.createChannel()
 }
 
 func noRestart(config *docker.HostConfig) {
@@ -696,4 +706,52 @@ func (s *IntegrationTestSuite) writeGovParamChangeProposalGlobalFees(c *chain, c
 
 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_globalfee.json"), paramChangeProposalBody)
 	s.Require().NoError(err)
+}
+
+func (s *IntegrationTestSuite) writeICAtx(cmd []string, path string) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	cmd = append(cmd, fmt.Sprintf("--%s=%s", flags.FlagGenerateOnly, "true"))
+	s.T().Logf("dry run: ica tx %s", strings.Join(cmd, " "))
+
+	var (
+		outBuf bytes.Buffer
+		errBuf bytes.Buffer
+	)
+
+	type txResponse struct {
+		Body struct {
+			Messages []map[string]interface{}
+		}
+	}
+	var txResp txResponse
+
+	exe, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
+		Context:      ctx,
+		AttachStdout: true,
+		AttachStderr: true,
+		Container:    s.valResources[s.chainA.id][0].Container.ID,
+		User:         "nonroot",
+		Cmd:          cmd,
+	})
+	s.Require().NoError(err)
+
+	err = s.dkrPool.Client.StartExec(exe.ID, docker.StartExecOptions{
+		Context:      ctx,
+		Detach:       false,
+		OutputStream: &outBuf,
+		ErrorStream:  &errBuf,
+	})
+	s.Require().NoError(err)
+
+	s.Require().NoError(json.Unmarshal(outBuf.Bytes(), &txResp))
+	b, err := json.MarshalIndent(txResp.Body.Messages[0], "", " ")
+	s.Require().NoError(err)
+
+	err = writeFile(path, b)
+	s.Require().NoError(err)
+
+	s.T().Logf("write ica transaction json to %s", path)
 }

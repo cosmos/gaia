@@ -18,15 +18,15 @@ For instructions to join as a validator, please also see the [Validator Guide](h
 <!-- DON'T FORGET TO KEEP INDEX UP TO DATE -->
 - [Explorers](#explorers)
 - [Getting Started](#getting-started)
-- [Hardware](#hardware)
+- [Hardware Requirements](#hardware)
 - [General Configuration](#general-configuration)
-  - [Initialize Chain](#initialize-chain)
-  - [Genesis File](#genesis-file)
-  - [Seeds & Peers](#seeds--peers)
-  - [Gas & Fees](#gas--fees)
-  - [Pruning of State](#pruning-of-state)
-  - [REST API](#rest-api)
-  - [GRPC](#grpc)
+    - [Initialize Chain](#initialize-chain)
+    - [Genesis File](#genesis-file)
+    - [Seeds & Peers](#seeds-amp-peers)
+    - [Gas & Fees](#gas-amp-fees)
+    - [Pruning of State](#pruning-of-state)
+    - [REST API](#rest-api)
+    - [GRPC](#grpc)
 - [Sync Options](#sync-options)
   - [Blocksync](#blocksync)
       - [Getting Started](#getting-started-1)
@@ -38,6 +38,7 @@ For instructions to join as a validator, please also see the [Validator Guide](h
 - [Running via Background Process](#running-via-background-process)
 - [Exporting State](#exporting-state)
 - [Verify Mainnet](#verify-mainnet)
+
 ### Background
 
 The current Cosmos Hub mainnet `cosmoshub-4`. Visit the [migration section](https://github.com/cosmos/gaia/tree/main/docs/migration) of the Hub's docs for more information on previous chain migrations.

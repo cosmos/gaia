@@ -67,7 +67,7 @@ sed -i 's/persistent_peers = ""/persistent_peers = "<persistent_peer_node_id_1@p
 State Sync requires Gaia version [`v6.0.0`](https://github.com/cosmos/gaia/tree/v6.0.0) until the upgrade is performed.
 :::
 
-**Check out the [quickstart script](https://github.com/cosmos/testnets/tree/master/v7-theta/public-testnet#quickstart-on-a-fresh-machine-eg-on-digital-ocean-droplet) to bootstrap a Theta testnet node and configure as needed**
+**Check out the [quickstart script](https://github.com/cosmos/testnets/tree/master/public) to bootstrap a Theta testnet node and configure as needed**
 
 There will need to be additional configuration to enable State Sync on the testnet. State Sync requires setting an initial list of `persistent_peers` to fetch snapshots from. For the sake of simplicity, this step is already done in the [Configuration & Setup](#configuration-amp=-setup) section.
 

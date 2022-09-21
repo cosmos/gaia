@@ -4,6 +4,16 @@
 
 ## Table of Contents
 
+- [gaia/globalfee/v1beta1/query.proto](#gaia/globalfee/v1beta1/query.proto)
+    - [QueryMinimumGasPricesRequest](#gaia.globalfee.v1beta1.QueryMinimumGasPricesRequest)
+    - [QueryMinimumGasPricesResponse](#gaia.globalfee.v1beta1.QueryMinimumGasPricesResponse)
+  
+    - [Query](#gaia.globalfee.v1beta1.Query)
+  
+- [gaia/globalfee/v1beta1/genesis.proto](#gaia/globalfee/v1beta1/genesis.proto)
+    - [GenesisState](#gaia.globalfee.v1beta1.GenesisState)
+    - [Params](#gaia.globalfee.v1beta1.Params)
+  
 - [gaia/icamauth/v1beta1/tx.proto](#gaia/icamauth/v1beta1/tx.proto)
     - [MsgRegisterAccount](#gaia.icamauth.v1beta1.MsgRegisterAccount)
     - [MsgRegisterAccountResponse](#gaia.icamauth.v1beta1.MsgRegisterAccountResponse)
@@ -19,6 +29,105 @@
     - [Query](#gaia.icamauth.v1beta1.Query)
   
 - [Scalar Value Types](#scalar-value-types)
+
+
+
+<a name="gaia/globalfee/v1beta1/query.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## gaia/globalfee/v1beta1/query.proto
+
+
+
+<a name="gaia.globalfee.v1beta1.QueryMinimumGasPricesRequest"></a>
+
+### QueryMinimumGasPricesRequest
+QueryMinimumGasPricesRequest is the request type for the
+Query/MinimumGasPrices RPC method.
+
+
+
+
+
+
+<a name="gaia.globalfee.v1beta1.QueryMinimumGasPricesResponse"></a>
+
+### QueryMinimumGasPricesResponse
+QueryMinimumGasPricesResponse is the response type for the
+Query/MinimumGasPrices RPC method.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `minimum_gas_prices` | [cosmos.base.v1beta1.DecCoin](#cosmos.base.v1beta1.DecCoin) | repeated |  |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="gaia.globalfee.v1beta1.Query"></a>
+
+### Query
+Query defines the gRPC querier service.
+
+| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
+| ----------- | ------------ | ------------- | ------------| ------- | -------- |
+| `MinimumGasPrices` | [QueryMinimumGasPricesRequest](#gaia.globalfee.v1beta1.QueryMinimumGasPricesRequest) | [QueryMinimumGasPricesResponse](#gaia.globalfee.v1beta1.QueryMinimumGasPricesResponse) |  | GET|/gaia/globalfee/v1beta1/minimum_gas_prices|
+
+ <!-- end services -->
+
+
+
+<a name="gaia/globalfee/v1beta1/genesis.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## gaia/globalfee/v1beta1/genesis.proto
+
+
+
+<a name="gaia.globalfee.v1beta1.GenesisState"></a>
+
+### GenesisState
+GenesisState - initial state of module
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#gaia.globalfee.v1beta1.Params) |  | Params of this module |
+
+
+
+
+
+
+<a name="gaia.globalfee.v1beta1.Params"></a>
+
+### Params
+Params defines the set of module parameters.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `minimum_gas_prices` | [cosmos.base.v1beta1.DecCoin](#cosmos.base.v1beta1.DecCoin) | repeated | Minimum stores the minimum gas price(s) for all TX on the chain. When multiple coins are defined then they are accepted alternatively. The list must be sorted by denoms asc. No duplicate denoms or zero amount values allowed. For more information see https://docs.cosmos.network/master/modules/auth/01_concepts.html |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
 
 
 

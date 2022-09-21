@@ -50,9 +50,8 @@ type chain struct {
 	validators []*validator
 	accounts   []*account
 	// initial accounts in genesis
-	genesisAccounts      []*account
-	delayedVestingAcc    sdk.AccAddress
-	continuousVestingAcc sdk.AccAddress
+	genesisAccounts        []*account
+	genesisVestingAccounts map[string]sdk.AccAddress
 }
 
 func newChain() (*chain, error) {

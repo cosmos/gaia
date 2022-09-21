@@ -58,8 +58,6 @@ const (
 	govProposalBlockBuffer = 35
 	relayerAccountIndex    = 0
 	icaOwnerAccountIndex   = 1
-	dockerUserRoot         = "root"
-	dockerUserNonRoot      = "nonroot"
 )
 
 var (
@@ -274,41 +272,41 @@ func (s *IntegrationTestSuite) generateAuthAndBankState(
 	algo, err := keyring.NewSigningAlgoFromString(string(hd.Secp256k1Type), keyringAlgos)
 	s.Require().NoError(err)
 
-	// Use the first wallet from the same mnemonic by HD path
-	account, err := kb.NewAccount("continuous_vesting", vestingMnemonic, "", HDPathZero, algo)
-	s.Require().NoError(err)
-	c.continuousVestingAcc, err = account.GetAddress()
-	s.Require().NoError(err)
-	s.T().Logf("created vesting continuous genesis account %s\n", c.continuousVestingAcc.String())
+	c.genesisVestingAccounts = make(map[string]sdk.AccAddress)
+	for i, key := range genesisVestingKeys {
+		// Use the first wallet from the same mnemonic by HD path
+		acc, err := kb.NewAccount(key, vestingMnemonic, "", HDPath(i), algo)
+		s.Require().NoError(err)
+		c.genesisVestingAccounts[key], err = acc.GetAddress()
+		s.Require().NoError(err)
+		s.T().Logf("created %s genesis account %s\n", key, c.genesisVestingAccounts[key].String())
+	}
+	var (
+		continuousVestingAcc = c.genesisVestingAccounts[continuousVestingKey]
+		delayedVestingAcc    = c.genesisVestingAccounts[delayedVestingKey]
+	)
 
 	// add continuous vesting account to the genesis
 	baseVestingContinuousAccount := authtypes.NewBaseAccount(
-		c.continuousVestingAcc, nil, 0, 0)
+		continuousVestingAcc, nil, 0, 0)
 	vestingContinuousGenAccount := authvesting.NewContinuousVestingAccountRaw(
 		authvesting.NewBaseVestingAccount(
 			baseVestingContinuousAccount,
 			sdk.NewCoins(vestingAmountVested),
-			time.Now().Add(time.Duration(rand.Intn(100)+150)*time.Second).Unix(),
+			time.Now().Add(time.Duration(rand.Intn(80)+150)*time.Second).Unix(),
 		),
-		time.Now().Add(time.Duration(rand.Intn(60)+90)*time.Second).Unix(),
+		time.Now().Add(time.Duration(rand.Intn(40)+90)*time.Second).Unix(),
 	)
 	s.Require().NoError(vestingContinuousGenAccount.Validate())
 
-	// Use the second wallet from the same mnemonic by HD path
-	account, err = kb.NewAccount("delayed_vesting", vestingMnemonic, "", HDPathOne, algo)
-	s.Require().NoError(err)
-	c.delayedVestingAcc, err = account.GetAddress()
-	s.Require().NoError(err)
-	s.T().Logf("created vesting delayed genesis account %s\n", c.delayedVestingAcc.String())
-
 	// add delayed vesting account to the genesis
 	baseVestingDelayedAccount := authtypes.NewBaseAccount(
-		c.delayedVestingAcc, nil, 0, 0)
+		delayedVestingAcc, nil, 0, 0)
 	vestingDelayedGenAccount := authvesting.NewDelayedVestingAccountRaw(
 		authvesting.NewBaseVestingAccount(
 			baseVestingDelayedAccount,
 			sdk.NewCoins(vestingAmountVested),
-			time.Now().Add(time.Duration(rand.Intn(60)+90)*time.Second).Unix(),
+			time.Now().Add(time.Duration(rand.Intn(40)+90)*time.Second).Unix(),
 		),
 	)
 	s.Require().NoError(vestingDelayedGenAccount.Validate())
@@ -328,11 +326,11 @@ func (s *IntegrationTestSuite) generateAuthAndBankState(
 
 	// update balances
 	vestingContinuousBalances := banktypes.Balance{
-		Address: c.continuousVestingAcc.String(),
+		Address: continuousVestingAcc.String(),
 		Coins:   vestingBalance,
 	}
 	vestingDelayedBalances := banktypes.Balance{
-		Address: c.delayedVestingAcc.String(),
+		Address: delayedVestingAcc.String(),
 		Coins:   vestingBalance,
 	}
 	bankGenState.Balances = append(bankGenState.Balances, vestingContinuousBalances, vestingDelayedBalances)

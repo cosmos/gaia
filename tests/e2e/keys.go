@@ -1,10 +1,6 @@
 package e2e
 
 import (
-	"bytes"
-	"fmt"
-	"os/exec"
-	
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -85,18 +81,6 @@ func createRandomAccount(configDir, name string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
-	cmd := exec.Command("chmod", "-R", "0777", configDir)
-	var out bytes.Buffer
-	var stderr bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &stderr
-	err = cmd.Run()
-	if err != nil {
-		err = fmt.Errorf("%s: %s", err.Error(), stderr.String())
-		return "", err
-	}
-	fmt.Println("Result: " + out.String())
 
 	return accAddr.String(), nil
 }

@@ -16,9 +16,6 @@ For instructions to join as a validator, please also see the [Validator Guide](h
 
 ### Overview
 <!-- DON'T FORGET TO KEEP INDEX UP TO DATE -->
-- [Join the Cosmos Hub Mainnet](#join-the-cosmos-hub-mainnet)
-    - [Overview](#overview)
-    - [Background](#background)
   - [Explorers](#explorers)
   - [Getting Started](#getting-started)
   - [Hardware](#hardware)
@@ -41,7 +38,6 @@ For instructions to join as a validator, please also see the [Validator Guide](h
   - [Running via Background Process](#running-via-background-process)
   - [Exporting State](#exporting-state)
   - [Verify Mainnet](#verify-mainnet)
-
 ### Background
 
 The current Cosmos Hub mainnet `cosmoshub-4`. Visit the [migration section](https://github.com/cosmos/gaia/tree/main/docs/migration) of the Hub's docs for more information on previous chain migrations.

@@ -10,8 +10,9 @@ import (
 	"github.com/tendermint/tendermint/crypto/ed25519"
 )
 
-func HDPath(walletID int) string {
-	return fmt.Sprintf("m/44'/118'/0'/0/%d", walletID)
+// HDPath generates an HD path based on the wallet index
+func HDPath(index int) string {
+	return fmt.Sprintf("m/44'/118'/0'/0/%d", index)
 }
 
 // PubKey returns a sample account PubKey

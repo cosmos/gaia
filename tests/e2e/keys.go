@@ -1,6 +1,8 @@
 package e2e
 
 import (
+	"bufio"
+	"fmt"
 	"os/exec"
 
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -85,9 +87,23 @@ func createRandomAccount(configDir, name string) (string, error) {
 	}
 
 	// TODO find a better way to add accounts on demand without giving folder permissions every time
-	err = exec.Command("chmod", "-R", "755", configDir).Run()
+	exec := exec.Command("chmod", "-R", "0777", configDir)
+	stdErr, err := exec.StderrPipe()
 	if err != nil {
 		return "", err
+	}
+
+	if err := exec.Run(); err != nil {
+		return "", err
+	}
+	errStd := bufio.NewReader(stdErr)
+	var buf []byte
+	_, err = errStd.Read(buf)
+	if err != nil {
+		return "", err
+	}
+	if len(buf) > 0 {
+		return "", fmt.Errorf(string(buf))
 	}
 
 	return accAddr.String(), nil

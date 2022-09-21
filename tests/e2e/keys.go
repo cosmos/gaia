@@ -1,8 +1,6 @@
 package e2e
 
 import (
-	"os/exec"
-
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -84,6 +82,5 @@ func createRandomAccount(configDir, name string) (string, error) {
 		return "", err
 	}
 
-	_ = exec.Command("chmod", "-R", "0777", configDir).Run()
 	return accAddr.String(), nil
 }

@@ -9,10 +9,12 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	staketypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	globalfee "github.com/cosmos/gaia/v8/x/globalfee/types"
+	icamauth "github.com/cosmos/gaia/v8/x/icamauth/types"
 )
 
 func queryGaiaTx(endpoint, txHash string) error {
@@ -147,23 +149,53 @@ func queryGlobalFees(endpoint string) (amt sdk.DecCoins, err error) {
 	return fees.MinimumGasPrices, nil
 }
 
-func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string) (staketypes.QueryDelegationResponse, error) {
-	var delegationRes staketypes.QueryDelegationResponse
-
-	resp, err := http.Get(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators/%s/delegations/%s", endpoint, validatorAddr, delegatorAddr)) //nolint:gosec // this is only used during tests
+func queryICAaddr(endpoint, owner, connectionID string) (string, error) {
+	resp, err := http.Get(fmt.Sprintf("%s/gaia/icamauth/v1beta1/interchain_account/owner/%s/connection/%s", endpoint, owner, connectionID))
 	if err != nil {
-		return delegationRes, fmt.Errorf("failed to execute HTTP request: %w", err)
+		return "", fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
 	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
+	bz, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return delegationRes, err
+		return "", err
+	}
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("tx query returned non-200 status: %d", resp.StatusCode)
 	}
 
-	if err := cdc.UnmarshalJSON(body, &delegationRes); err != nil {
-		return delegationRes, err
+	icaAddrResp := icamauth.QueryInterchainAccountResponse{}
+	if err = cdc.UnmarshalJSON(bz, &icaAddrResp); err != nil {
+		return "", err
 	}
 
-	return delegationRes, nil
+	return icaAddrResp.GetInterchainAccountAddress(), nil
+}
+
+func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string) (staketypes.QueryDelegationResponse, error) {
+	var res staketypes.QueryDelegationResponse
+
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators/%s/delegations/%s", endpoint, validatorAddr, delegatorAddr))
+	if err != nil {
+		return res, err
+	}
+
+	if err = cdc.UnmarshalJSON(body, &res); err != nil {
+		return res, err
+	}
+	return res, nil
+}
+
+func queryDelegatorWithdrawalAddress(endpoint string, delegatorAddr string) (disttypes.QueryDelegatorWithdrawAddressResponse, error) {
+	var res disttypes.QueryDelegatorWithdrawAddressResponse
+
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/distribution/v1beta1/delegators/%s/withdraw_address", endpoint, delegatorAddr))
+	if err != nil {
+		return res, err
+	}
+
+	if err = cdc.UnmarshalJSON(body, &res); err != nil {
+		return res, err
+	}
+	return res, nil
 }

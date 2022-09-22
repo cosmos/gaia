@@ -35,8 +35,11 @@ func copyFile(src, dst string) (int64, error) { //nolint:unused // this is calle
 
 // writeFile write a byte slice into a file path
 func writeFile(path string, body []byte) error { //nolint:unused // this is called during e2e tests
-	_, err := os.Create(path)
+	f, err := os.Create(path)
 	if err != nil {
+		return err
+	}
+	if err := f.Close(); err != nil {
 		return err
 	}
 

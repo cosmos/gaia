@@ -2,7 +2,7 @@ package e2e
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
@@ -10,10 +10,9 @@ import (
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
-
 	gaia "github.com/cosmos/gaia/v8/app"
 	"github.com/cosmos/gaia/v8/app/params"
+	tmrand "github.com/tendermint/tendermint/libs/rand"
 )
 
 const (
@@ -52,7 +51,7 @@ type chain struct {
 }
 
 func newChain() (*chain, error) {
-	tmpDir, err := ioutil.TempDir("", "gaia-e2e-testnet-")
+	tmpDir, err := os.MkdirTemp("", "gaia-e2e-testnet-")
 	if err != nil {
 		return nil, err
 	}

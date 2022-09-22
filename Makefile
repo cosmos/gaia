@@ -18,7 +18,7 @@ SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
 TM_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::') # grab everything after the space in "github.com/tendermint/tendermint v0.34.7"
 DOCKER := $(shell which docker)
 BUILDDIR ?= $(CURDIR)/build
-TEST_DOCKER_REPO=jackzampolin/gaiatest
+TEST_DOCKER_REPO=cosmos/contrib-gaiatest
 
 export GO111MODULE = on
 
@@ -92,7 +92,7 @@ include contrib/devtools/Makefile
 ###                              Documentation                              ###
 ###############################################################################
 
-all: install lint test
+all: install lint run-tests test-e2e
 
 BUILD_TARGETS := build install
 
@@ -117,10 +117,6 @@ build-reproducible: go.sum
 
 build-linux: go.sum
 	LEDGER_ENABLED=false GOOS=linux GOARCH=amd64 $(MAKE) build
-
-build-contract-tests-hooks:
-	mkdir -p $(BUILDDIR)
-	go build -mod=readonly $(BUILD_FLAGS) -o $(BUILDDIR)/ ./cmd/contract_tests
 
 go-mod-cache: go.sum
 	@echo "--> Download go modules to local cache"
@@ -204,6 +200,8 @@ docker-build-debug:
 docker-build-hermes:
 	@cd tests/e2e/docker; docker build -t cosmos/hermes-e2e:latest -f hermes.Dockerfile .
 
+docker-build-all: docker-build-debug docker-build-hermes
+
 ###############################################################################
 ###                                Linting                                  ###
 ###############################################################################
@@ -221,7 +219,8 @@ format:
 ###                                Localnet                                 ###
 ###############################################################################
 
-start-localnet-ci:
+start-localnet-ci: build
+	rm -rf ~/.gaiad-liveness
 	./build/gaiad init liveness --chain-id liveness --home ~/.gaiad-liveness
 	./build/gaiad config chain-id liveness --home ~/.gaiad-liveness
 	./build/gaiad config keyring-backend test --home ~/.gaiad-liveness
@@ -229,7 +228,7 @@ start-localnet-ci:
 	./build/gaiad add-genesis-account val 10000000000000000000000000stake --home ~/.gaiad-liveness --keyring-backend test
 	./build/gaiad gentx val 1000000000stake --home ~/.gaiad-liveness --chain-id liveness
 	./build/gaiad collect-gentxs --home ~/.gaiad-liveness
-	sed -i'' 's/minimum-gas-prices = ""/minimum-gas-prices = "0uatom"/' ~/.gaiad-liveness/config/app.toml
+	sed -i.bak'' 's/minimum-gas-prices = ""/minimum-gas-prices = "0uatom"/' ~/.gaiad-liveness/config/app.toml
 	./build/gaiad start --home ~/.gaiad-liveness --x-crisis-skip-assert-invariants
 
 .PHONY: start-localnet-ci
@@ -249,7 +248,7 @@ test-docker-push: test-docker
 	@docker push ${TEST_DOCKER_REPO}:latest
 
 .PHONY: all build-linux install format lint go-mod-cache draw-deps clean build \
-	start-gaia contract-tests benchmark docker-build-debug docker-build-hermes
+	docker-build-debug docker-build-hermes docker-build-all
 
 
 ###############################################################################

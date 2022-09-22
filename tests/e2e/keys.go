@@ -7,6 +7,7 @@ import (
 	"github.com/cosmos/go-bip39"
 )
 
+// createMnemonic creates a random string mnemonic
 func createMnemonic() (string, error) {
 	entropySeed, err := bip39.NewEntropy(256)
 	if err != nil {
@@ -21,22 +22,24 @@ func createMnemonic() (string, error) {
 	return mnemonic, nil
 }
 
-func createMemoryKey() (mnemonic string, info *keyring.Record, err error) {
-	mnemonic, err = createMnemonic()
+// createMemoryKey creates a key into keystore with a random mnemonic
+func createMemoryKey() (info *keyring.Record, err error) {
+	mnemonic, err := createMnemonic()
 	if err != nil {
-		return "", nil, err
+		return nil, err
 	}
 
 	account, err := createMemoryKeyFromMnemonic(mnemonic)
 	if err != nil {
-		return "", nil, err
+		return nil, err
 	}
 
-	return mnemonic, account, nil
+	return account, nil
 }
 
+// createMemoryKeyFromMnemonic creates a key into keystore from a mnemonic
 func createMemoryKeyFromMnemonic(mnemonic string) (*keyring.Record, error) {
-	kb, err := keyring.New("testnet", keyring.BackendMemory, "", nil, cdc)
+	kb, err := keyring.New(keyringAppName, keyring.BackendMemory, "", nil, cdc)
 	if err != nil {
 		return nil, err
 	}

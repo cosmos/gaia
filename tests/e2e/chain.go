@@ -2,7 +2,7 @@ package e2e
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
@@ -55,7 +55,7 @@ type chain struct {
 }
 
 func newChain() (*chain, error) {
-	tmpDir, err := ioutil.TempDir("", "gaia-e2e-testnet-")
+	tmpDir, err := os.MkdirTemp("", "gaia-e2e-testnet-")
 	if err != nil {
 		return nil, err
 	}

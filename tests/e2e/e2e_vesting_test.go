@@ -60,7 +60,7 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api, home string) {
 		s.Require().Equal(vestingBalance.AmountOf(uatomDenom), balance.Amount)
 
 		// Delegate coins should succeed
-		s.executeDelegate(chain, valIdx, api, vestingDelegationAmount.String(), valOpAddr,
+		s.executeDelegate(chain, valIdx, vestingDelegationAmount.String(), valOpAddr,
 			vestingDelayedAcc.String(), home, vestingDelegationFees.String())
 
 		// Validate delegation successful
@@ -81,7 +81,7 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api, home string) {
 			//	Transfer coins should fail
 			balance, err := getSpecificBalance(api, vestingDelayedAcc.String(), uatomDenom)
 			s.Require().NoError(err)
-			s.sendMsgSend(
+			s.execBankSend(
 				chain,
 				valIdx,
 				vestingDelayedAcc.String(),
@@ -97,7 +97,15 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api, home string) {
 		//	Transfer coins should succeed
 		balance, err = getSpecificBalance(api, vestingDelayedAcc.String(), uatomDenom)
 		s.Require().NoError(err)
-		s.sendMsgSend(chain, valIdx, vestingDelayedAcc.String(), Address(), balance.Sub(fees).String(), fees.String(), false)
+		s.execBankSend(
+			chain,
+			valIdx,
+			vestingDelayedAcc.String(),
+			Address(),
+			balance.Sub(fees).String(),
+			fees.String(),
+			false,
+		)
 	})
 }
 
@@ -122,7 +130,7 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api, home string) {
 		s.Require().Equal(vestingBalance.AmountOf(uatomDenom), balance.Amount)
 
 		// Delegate coins should succeed
-		s.executeDelegate(chain, valIdx, api, vestingDelegationAmount.String(),
+		s.executeDelegate(chain, valIdx, vestingDelegationAmount.String(),
 			valOpAddr, continuousVestingAcc.String(), home, vestingDelegationFees.String())
 
 		// Validate delegation successful
@@ -143,7 +151,7 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api, home string) {
 			//	Transfer coins should fail
 			balance, err := getSpecificBalance(api, continuousVestingAcc.String(), uatomDenom)
 			s.Require().NoError(err)
-			s.sendMsgSend(
+			s.execBankSend(
 				chain,
 				valIdx,
 				continuousVestingAcc.String(),
@@ -161,7 +169,7 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api, home string) {
 			//	Transfer coins should fail
 			balance, err := getSpecificBalance(api, continuousVestingAcc.String(), uatomDenom)
 			s.Require().NoError(err)
-			s.sendMsgSend(
+			s.execBankSend(
 				chain,
 				valIdx,
 				continuousVestingAcc.String(),
@@ -177,7 +185,15 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api, home string) {
 		//	Transfer coins should succeed
 		balance, err = getSpecificBalance(api, continuousVestingAcc.String(), uatomDenom)
 		s.Require().NoError(err)
-		s.sendMsgSend(chain, valIdx, continuousVestingAcc.String(), Address(), balance.Sub(fees).String(), fees.String(), false)
+		s.execBankSend(
+			chain,
+			valIdx,
+			continuousVestingAcc.String(),
+			Address(),
+			balance.Sub(fees).String(),
+			fees.String(),
+			false,
+		)
 	})
 }
 
@@ -206,11 +222,11 @@ func (s *IntegrationTestSuite) testPermanentLockedAccount(api, home string) {
 		s.Require().Equal(vestingAmountVested.Amount, balance.Amount)
 
 		// Transfer coins to pay the delegation fee
-		s.sendMsgSend(chain, valIdx, sender.String(), permanentLockedAddr,
+		s.execBankSend(chain, valIdx, sender.String(), permanentLockedAddr,
 			fees.String(), fees.String(), false)
 
 		// Delegate coins should succeed
-		s.executeDelegate(chain, valIdx, api, vestingDelegationAmount.String(), valOpAddr,
+		s.executeDelegate(chain, valIdx, vestingDelegationAmount.String(), valOpAddr,
 			permanentLockedAddr, home, vestingDelegationFees.String())
 
 		// Validate delegation successful
@@ -229,7 +245,7 @@ func (s *IntegrationTestSuite) testPermanentLockedAccount(api, home string) {
 		//	Transfer coins should fail
 		balance, err = getSpecificBalance(api, permanentLockedAddr, uatomDenom)
 		s.Require().NoError(err)
-		s.sendMsgSend(chain, valIdx, permanentLockedAddr, Address(),
+		s.execBankSend(chain, valIdx, permanentLockedAddr, Address(),
 			balance.Sub(fees).String(), fees.String(), true)
 	})
 }
@@ -272,7 +288,7 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api, home string) {
 			//	Transfer coins should fail
 			balance, err = getSpecificBalance(api, periodicVestingAddr, uatomDenom)
 			s.Require().NoError(err)
-			s.sendMsgSend(
+			s.execBankSend(
 				chain,
 				valIdx,
 				periodicVestingAddr,
@@ -291,7 +307,7 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api, home string) {
 			//	Transfer coins should fail
 			balance, err = getSpecificBalance(api, periodicVestingAddr, uatomDenom)
 			s.Require().NoError(err)
-			s.sendMsgSend(
+			s.execBankSend(
 				chain,
 				valIdx,
 				periodicVestingAddr,
@@ -305,7 +321,7 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api, home string) {
 		}
 
 		// Delegate coins should succeed
-		s.executeDelegate(chain, valIdx, api, vestingDelegationAmount.String(), valOpAddr,
+		s.executeDelegate(chain, valIdx, vestingDelegationAmount.String(), valOpAddr,
 			periodicVestingAddr, home, vestingDelegationFees.String())
 
 		// Validate delegation successful
@@ -324,7 +340,7 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api, home string) {
 		//	Transfer coins should succeed
 		balance, err = getSpecificBalance(api, periodicVestingAddr, uatomDenom)
 		s.Require().NoError(err)
-		s.sendMsgSend(
+		s.execBankSend(
 			chain,
 			valIdx,
 			periodicVestingAddr,
@@ -342,7 +358,7 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api, home string) {
 			//	Transfer coins should succeed
 			balance, err = getSpecificBalance(api, periodicVestingAddr, uatomDenom)
 			s.Require().NoError(err)
-			s.sendMsgSend(
+			s.execBankSend(
 				chain,
 				valIdx,
 				periodicVestingAddr,

@@ -6,6 +6,9 @@ set -ex
 mkdir -p /root/.hermes/
 touch /root/.hermes/config.toml
 
+echo $GAIA_B_E2E_RLY_MNEMONIC > /root/.hermes/GAIA_B_E2E_RLY_MNEMONIC.txt
+echo $GAIA_A_E2E_RLY_MNEMONIC > /root/.hermes/GAIA_A_E2E_RLY_MNEMONIC.txt
+
 # setup Hermes relayer configuration
 tee /root/.hermes/config.toml <<EOF
 [global]
@@ -22,7 +25,7 @@ misbehaviour = true
 enabled = false
 
 [mode.channels]
-enabled = false
+enabled = true
 
 [mode.packets]
 enabled = true
@@ -47,11 +50,11 @@ grpc_addr = 'http://$GAIA_A_E2E_VAL_HOST:9090'
 websocket_addr = 'ws://$GAIA_A_E2E_VAL_HOST:26657/websocket'
 rpc_timeout = '10s'
 account_prefix = 'cosmos'
-key_name = 'val01-gaia-a'
+key_name = 'rly01-gaia-a'
 store_prefix = 'ibc'
 max_gas = 6000000
-gas_price = { price = 0.001, denom = 'photon' }
-gas_adjustment = 1.0
+gas_price = { price = 0.00001, denom = 'uatom' }
+gas_multiplier = 1.2
 clock_drift = '1m' # to accomdate docker containers
 trusting_period = '14days'
 trust_threshold = { numerator = '1', denominator = '3' }
@@ -63,19 +66,20 @@ grpc_addr = 'http://$GAIA_B_E2E_VAL_HOST:9090'
 websocket_addr = 'ws://$GAIA_B_E2E_VAL_HOST:26657/websocket'
 rpc_timeout = '10s'
 account_prefix = 'cosmos'
-key_name = 'val01-gaia-b'
+key_name = 'rly01-gaia-b'
 store_prefix = 'ibc'
-max_gas = 6000000
-gas_price = { price = 0.001, denom = 'photon' }
-gas_adjustment = 1.0
+max_gas =  6000000
+gas_price = { price = 0.00001, denom = 'uatom' }
+gas_multiplier = 1.2
 clock_drift = '1m' # to accomdate docker containers
 trusting_period = '14days'
 trust_threshold = { numerator = '1', denominator = '3' }
 EOF
 
 # import keys
-hermes keys restore ${GAIA_B_E2E_CHAIN_ID} -n "val01-gaia-b" -m "${GAIA_B_E2E_VAL_MNEMONIC}"
-hermes keys restore ${GAIA_A_E2E_CHAIN_ID} -n "val01-gaia-a" -m "${GAIA_A_E2E_VAL_MNEMONIC}"
-
+hermes keys add  --key-name rly01-gaia-b  --chain $GAIA_B_E2E_CHAIN_ID --mnemonic-file /root/.hermes/GAIA_B_E2E_RLY_MNEMONIC.txt
+sleep 5
+hermes keys add  --key-name rly01-gaia-a  --chain $GAIA_A_E2E_CHAIN_ID --mnemonic-file /root/.hermes/GAIA_A_E2E_RLY_MNEMONIC.txt
+sleep 5
 # start Hermes relayer
 hermes start

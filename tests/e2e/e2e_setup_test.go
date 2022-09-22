@@ -5,11 +5,8 @@ import (
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io"
-	"io/ioutil"
-	"net/http"
 	"os"
-	"path"
+	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -17,15 +14,18 @@ import (
 	"time"
 
 	"cosmossdk.io/math"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	"github.com/cosmos/gaia/v8/app/params"
+	ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/spf13/viper"
@@ -36,23 +36,35 @@ import (
 )
 
 const (
-	photonDenom                = "photon"
-	initBalanceStr             = "110000000000stake,100000000000000000photon"
-	minGasPrice                = "0.00001"
+	gaiadBinary    = "gaiad"
+	gaiaHomePath   = "/home/nonroot/.gaia"
+	photonDenom    = "photon"
+	uatomDenom     = "uatom"
+	initBalanceStr = "110000000000stake,100000000000000000photon,100000000000000000uatom"
+	minGasPrice    = "0.00001"
+	// the test globalfee in genesis is the same as minGasPrice
+	// global fee lower/higher than min_gas_price
+	initialGlobalFeeAmt        = "0.00001"
+	lowGlobalFeesAmt           = "0.000001"
+	highGlobalFeeAmt           = "0.0001"
+	gas                        = 200000
 	govSendMsgRecipientAddress = "cosmos1pkueemdeps77dwrqma03pwqk93nw39nuhccz02"
 	govProposalBlockBuffer     = 35
+	relayerAccountIndex        = 0
+	icaOwnerAccountIndex       = 1
 )
 
 var (
-	stakeAmount       = math.NewInt(100000000000)
-	stakeAmountCoin   = sdk.NewCoin("stake", stakeAmount)
-	tokenAmount       = sdk.NewCoin(photonDenom, math.NewInt(3300000000)) // 3,300photon
-	fees              = sdk.NewCoin(photonDenom, math.NewInt(330000))     // 0.33photon
-	depositAmount     = sdk.NewCoin(photonDenom, math.NewInt(10000000))   // 10photon
+	gaiaConfigPath    = filepath.Join(gaiaHomePath, "config")
+	stakingAmount     = math.NewInt(100000000000)
+	stakingAmountCoin = sdk.NewCoin(uatomDenom, stakingAmount)
+	tokenAmount       = sdk.NewCoin(uatomDenom, math.NewInt(3300000000)) // 3,300uatom
+	fees              = sdk.NewCoin(uatomDenom, math.NewInt(330000))     // 0.33uatom
+	depositAmount     = sdk.NewCoin(uatomDenom, math.NewInt(10000000))   // 10uatom
 	distModuleAddress = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
 	govModuleAddress  = authtypes.NewModuleAddress(govtypes.ModuleName).String()
 	proposalCounter   = 0
-	sendGovAmount     = sdk.NewInt64Coin(photonDenom, 10)
+	sendGovAmount     = sdk.NewInt64Coin(uatomDenom, 10)
 )
 
 type UpgradePlan struct {
@@ -82,6 +94,43 @@ type IntegrationTestSuite struct {
 	dkrNet         *dockertest.Network
 	hermesResource *dockertest.Resource
 	valResources   map[string][]*dockertest.Resource
+}
+
+type AddressResponse struct {
+	Name     string `json:"name"`
+	Type     string `json:"type"`
+	Address  string `json:"address"`
+	Mnemonic string `json:"mnemonic"`
+}
+
+type GroupMember struct {
+	Address  string `json:"address"`
+	Weight   string `json:"weight"`
+	Metadata string `json:"metadata"`
+}
+
+type MsgSend struct {
+	Type   string     `json:"@type"`
+	From   string     `json:"from_address"`
+	To     string     `json:"to_address"`
+	Amount []sdk.Coin `json:"amount"`
+}
+
+type ThresholdPolicy struct {
+	Type      string               `json:"@type"`
+	Threshold string               `json:"threshold"`
+	Windows   DecisionPolicyWindow `json:"windows"`
+}
+
+type PercentagePolicy struct {
+	Type       string               `json:"@type"`
+	Percentage string               `json:"percentage"`
+	Windows    DecisionPolicyWindow `json:"windows"`
+}
+
+type DecisionPolicyWindow struct {
+	VotingPeriod       string `json:"voting_period"`
+	MinExecutionPeriod string `json:"min_execution_period"`
 }
 
 func TestIntegrationTestSuite(t *testing.T) {
@@ -125,6 +174,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.initValidatorConfigs(s.chainB)
 	s.runValidators(s.chainB, 10)
 
+	time.Sleep(10 * time.Second)
 	s.runIBCRelayer()
 }
 
@@ -160,17 +210,31 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 
 func (s *IntegrationTestSuite) initNodes(c *chain) {
 	s.Require().NoError(c.createAndInitValidators(2))
-
-	// initialize a genesis file for the first validator
+	/* Adding 4 accounts to val0 local directory
+	c.genesisAccounts[0]: Relayer Wallet
+	c.genesisAccounts[1]: ICA Owner
+	c.genesisAccounts[2]: Test Account 1
+	c.genesisAccounts[3]: Test Account 2
+	*/
+	s.Require().NoError(c.addAccountFromMnemonic(4))
+	// Initialize a genesis file for the first validator
 	val0ConfigDir := c.validators[0].configDir()
+	var addrAll []sdk.AccAddress
 	for _, val := range c.validators {
 		address, err := val.keyInfo.GetAddress()
 		s.Require().NoError(err)
-		s.Require().NoError(
-			addGenesisAccount(val0ConfigDir, "", initBalanceStr, address),
-		)
+		addrAll = append(addrAll, address)
 	}
 
+	for _, addr := range c.genesisAccounts {
+		acctAddr, err := addr.keyInfo.GetAddress()
+		s.Require().NoError(err)
+		addrAll = append(addrAll, acctAddr)
+	}
+
+	s.Require().NoError(
+		modifyGenesis(val0ConfigDir, "", initBalanceStr, addrAll, initialGlobalFeeAmt+uatomDenom, uatomDenom),
+	)
 	// copy the genesis file to the remaining validators
 	for _, val := range c.validators[1:] {
 		_, err := copyFile(
@@ -197,13 +261,13 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 
 	bankGenState.DenomMetadata = append(bankGenState.DenomMetadata, banktypes.Metadata{
 		Description: "An example stable token",
-		Display:     photonDenom,
-		Base:        photonDenom,
-		Symbol:      photonDenom,
-		Name:        photonDenom,
+		Display:     uatomDenom,
+		Base:        uatomDenom,
+		Symbol:      uatomDenom,
+		Name:        uatomDenom,
 		DenomUnits: []*banktypes.DenomUnit{
 			{
-				Denom:    photonDenom,
+				Denom:    uatomDenom,
 				Exponent: 0,
 			},
 		},
@@ -219,7 +283,7 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 	// generate genesis txs
 	genTxs := make([]json.RawMessage, len(c.validators))
 	for i, val := range c.validators {
-		createValmsg, err := val.buildCreateValidatorMsg(stakeAmountCoin)
+		createValmsg, err := val.buildCreateValidatorMsg(stakingAmountCoin)
 		s.Require().NoError(err)
 		signedTx, err := val.signMsg(createValmsg)
 
@@ -245,7 +309,7 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 	bz, err = tmjson.MarshalIndent(genDoc, "", "  ")
 	s.Require().NoError(err)
 
-	// write the updated genesis file to each validator
+	// write the updated genesis file to each validator.
 	for _, val := range c.validators {
 		err = writeFile(filepath.Join(val.configDir(), "config", "genesis.json"), bz)
 		s.Require().NoError(err)
@@ -261,7 +325,8 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 		vpr.SetConfigFile(tmCfgPath)
 		s.Require().NoError(vpr.ReadInConfig())
 
-		valConfig := &tmconfig.Config{}
+		valConfig := tmconfig.DefaultConfig()
+
 		s.Require().NoError(vpr.Unmarshal(valConfig))
 
 		valConfig.P2P.ListenAddress = "tcp://0.0.0.0:26656"
@@ -292,9 +357,33 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 
 		appConfig := srvconfig.DefaultConfig()
 		appConfig.API.Enable = true
-		appConfig.MinGasPrices = fmt.Sprintf("%s%s", minGasPrice, photonDenom)
+		appConfig.MinGasPrices = fmt.Sprintf("%s%s", minGasPrice, uatomDenom)
 
-		srvconfig.WriteConfigFile(appCfgPath, appConfig)
+		//	 srvconfig.WriteConfigFile(appCfgPath, appConfig)
+		appCustomConfig := params.CustomAppConfig{
+			Config: *appConfig,
+			BypassMinFeeMsgTypes: []string{
+				// todo: use ibc as exmaple ?
+				sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),
+				sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
+				sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
+				"/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
+			},
+		}
+
+		customAppTemplate := `
+###############################################################################
+###                        Custom Gaia Configuration                        ###
+###############################################################################
+# bypass-min-fee-msg-types defines custom message types the operator may set that
+# will bypass minimum fee checks during CheckTx.
+#
+# Example:
+# ["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement", ...]
+bypass-min-fee-msg-types = ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward","/ibc.applications.transfer.v1.MsgTransfer"]
+` + srvconfig.DefaultConfigTemplate
+		srvconfig.SetConfigTemplate(customAppTemplate)
+		srvconfig.WriteConfigFile(appCfgPath, appCustomConfig)
 	}
 }
 
@@ -308,10 +397,12 @@ func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 			Name:      val.instanceName(),
 			NetworkID: s.dkrNet.Network.ID,
 			Mounts: []string{
-				fmt.Sprintf("%s/:/root/.gaia", val.configDir()),
+				fmt.Sprintf("%s/:%s", val.configDir(), gaiaHomePath),
 			},
 			Repository: "cosmos/gaiad-e2e",
 		}
+
+		s.Require().NoError(exec.Command("chmod", "-R", "0777", val.configDir()).Run())
 
 		// expose the first validator for debugging and communication
 		if val.index == 0 {
@@ -362,94 +453,6 @@ func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 	)
 }
 
-func (s *IntegrationTestSuite) runIBCRelayer() {
-	s.T().Log("starting Hermes relayer container...")
-
-	tmpDir, err := ioutil.TempDir("", "gaia-e2e-testnet-hermes-")
-	s.Require().NoError(err)
-	s.tmpDirs = append(s.tmpDirs, tmpDir)
-
-	gaiaAVal := s.chainA.validators[0]
-	gaiaBVal := s.chainB.validators[0]
-	hermesCfgPath := path.Join(tmpDir, "hermes")
-
-	s.Require().NoError(os.MkdirAll(hermesCfgPath, 0o755))
-	_, err = copyFile(
-		filepath.Join("./scripts/", "hermes_bootstrap.sh"),
-		filepath.Join(hermesCfgPath, "hermes_bootstrap.sh"),
-	)
-	s.Require().NoError(err)
-
-	s.hermesResource, err = s.dkrPool.RunWithOptions(
-		&dockertest.RunOptions{
-			Name:       fmt.Sprintf("%s-%s-relayer", s.chainA.id, s.chainB.id),
-			Repository: "ghcr.io/cosmos/hermes-e2e",
-			Tag:        "latest",
-			NetworkID:  s.dkrNet.Network.ID,
-			Mounts: []string{
-				fmt.Sprintf("%s/:/root/hermes", hermesCfgPath),
-			},
-			PortBindings: map[docker.Port][]docker.PortBinding{
-				"3031/tcp": {{HostIP: "", HostPort: "3031"}},
-			},
-			Env: []string{
-				fmt.Sprintf("GAIA_A_E2E_CHAIN_ID=%s", s.chainA.id),
-				fmt.Sprintf("GAIA_B_E2E_CHAIN_ID=%s", s.chainB.id),
-				fmt.Sprintf("GAIA_A_E2E_VAL_MNEMONIC=%s", gaiaAVal.mnemonic),
-				fmt.Sprintf("GAIA_B_E2E_VAL_MNEMONIC=%s", gaiaBVal.mnemonic),
-				fmt.Sprintf("GAIA_A_E2E_VAL_HOST=%s", s.valResources[s.chainA.id][0].Container.Name[1:]),
-				fmt.Sprintf("GAIA_B_E2E_VAL_HOST=%s", s.valResources[s.chainB.id][0].Container.Name[1:]),
-			},
-			Entrypoint: []string{
-				"sh",
-				"-c",
-				"chmod +x /root/hermes/hermes_bootstrap.sh && /root/hermes/hermes_bootstrap.sh",
-			},
-		},
-		noRestart,
-	)
-	s.Require().NoError(err)
-
-	endpoint := fmt.Sprintf("http://%s/state", s.hermesResource.GetHostPort("3031/tcp"))
-	s.Require().Eventually(
-		func() bool {
-			resp, err := http.Get(endpoint)
-			if err != nil {
-				return false
-			}
-
-			defer resp.Body.Close()
-
-			bz, err := io.ReadAll(resp.Body)
-			if err != nil {
-				return false
-			}
-
-			var respBody map[string]interface{}
-			if err := json.Unmarshal(bz, &respBody); err != nil {
-				return false
-			}
-
-			status := respBody["status"].(string)
-			result := respBody["result"].(map[string]interface{})
-
-			return status == "success" && len(result["chains"].([]interface{})) == 2
-		},
-		5*time.Minute,
-		time.Second,
-		"hermes relayer not healthy",
-	)
-
-	s.T().Logf("started Hermes relayer container: %s", s.hermesResource.Container.ID)
-
-	// XXX: Give time to both networks to start, otherwise we might see gRPC
-	// transport errors.
-	time.Sleep(10 * time.Second)
-
-	// create the client, connection and channel between the two Gaia chains
-	s.connectIBCChains()
-}
-
 func noRestart(config *docker.HostConfig) {
 	// in this case we don't want the nodes to restart on failure
 	config.RestartPolicy = docker.RestartPolicy{
@@ -481,7 +484,7 @@ func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
 	}{
 		Messages: msgSendMessages,
 		Metadata: b64.StdEncoding.EncodeToString([]byte("Testing 1, 2, 3!")),
-		Deposit:  "5000photon",
+		Deposit:  "5000uatom",
 	}, "", " ")
 
 	s.Require().NoError(err)
@@ -496,8 +499,8 @@ func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
 		Title:       "Community Pool Spend",
 		Description: "Fund Gov !",
 		Recipient:   govModuleAddress,
-		Amount:      "1000photon",
-		Deposit:     "5000photon",
+		Amount:      "1000uatom",
+		Deposit:     "5000uatom",
 	}, "", " ")
 
 	s.Require().NoError(err)
@@ -537,7 +540,7 @@ func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height 
 	}{
 		Messages: softwareUpgradeMessages,
 		Metadata: b64.StdEncoding.EncodeToString([]byte("Testing 1, 2, 3!")),
-		Deposit:  "5000photon",
+		Deposit:  "5000uatom",
 	}, "", " ")
 
 	cancelUpgradeProposalBody, err := json.MarshalIndent(struct {
@@ -547,7 +550,7 @@ func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height 
 	}{
 		Messages: cancelSoftwareUpgradeMessages,
 		Metadata: "VGVzdGluZyAxLCAyLCAzIQ==",
-		Deposit:  "5000photon",
+		Deposit:  "5000uatom",
 	}, "", " ")
 
 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_3.json"), upgradeProposalBody)
@@ -555,4 +558,85 @@ func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height 
 
 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_4.json"), cancelUpgradeProposalBody)
 	s.Require().NoError(err)
+}
+
+func (s *IntegrationTestSuite) writeGroupMembers(c *chain, groupMembers []GroupMember, filename string) {
+	groupMembersBody, err := json.MarshalIndent(struct {
+		Members []GroupMember `json:"members"`
+	}{
+		Members: groupMembers,
+	}, "", " ")
+	s.Require().NoError(err)
+
+	s.writeFile(c, filename, groupMembersBody)
+}
+
+func (s *IntegrationTestSuite) writeFile(c *chain, filename string, body []byte) {
+	for _, val := range c.validators {
+		err := writeFile(filepath.Join(val.configDir(), "config", filename), body)
+		s.Require().NoError(err)
+	}
+}
+
+func (s *IntegrationTestSuite) writeGovParamChangeProposalGlobalFees(c *chain, coins sdk.DecCoins) {
+	type ParamInfo struct {
+		Subspace string       `json:"subspace"`
+		Key      string       `json:"key"`
+		Value    sdk.DecCoins `json:"value"`
+	}
+
+	type ParamChangeMessage struct {
+		Title       string      `json:"title"`
+		Description string      `json:"description"`
+		Changes     []ParamInfo `json:"changes"`
+		Deposit     string      `json:"deposit"`
+	}
+
+	paramChangeProposalBody, err := json.MarshalIndent(ParamChangeMessage{
+		Title:       "global fee test",
+		Description: "global fee change",
+		Changes: []ParamInfo{
+			{
+				Subspace: "globalfee",
+				Key:      "MinimumGasPricesParam",
+				Value:    coins,
+			},
+		},
+		Deposit: "",
+	}, "", " ")
+	s.Require().NoError(err)
+
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_globalfee.json"), paramChangeProposalBody)
+	s.Require().NoError(err)
+}
+
+func (s *IntegrationTestSuite) writeICAtx(cmd []string, path string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	cmd = append(cmd, fmt.Sprintf("--%s=%s", flags.FlagGenerateOnly, "true"))
+	s.T().Logf("dry run: ica tx %s", strings.Join(cmd, " "))
+
+	type txResponse struct {
+		Body struct {
+			Messages []map[string]interface{}
+		}
+	}
+
+	s.executeGaiaTxCommand(ctx, s.chainA, cmd, 0, func(stdOut []byte, stdErr []byte) bool {
+		var txResp txResponse
+		s.Require().NoError(json.Unmarshal(stdOut, &txResp))
+		b, err := json.MarshalIndent(txResp.Body.Messages[0], "", " ")
+		s.Require().NoError(err)
+
+		err = writeFile(path, b)
+		s.Require().NoError(err)
+		return true
+	})
+
+	s.T().Logf("write ica transaction json to %s", path)
+}
+
+func configFile(filename string) string {
+	return filepath.Join(gaiaConfigPath, filename)
 }

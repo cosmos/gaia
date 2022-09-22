@@ -20,6 +20,7 @@ import (
 
 	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -28,6 +29,7 @@ import (
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/cosmos/gaia/v8/app/params"
 	ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
@@ -275,9 +277,35 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 		},
 	})
 
-	bz, err := cdc.MarshalJSON(&bankGenState)
+	appGenState[banktypes.ModuleName], err = cdc.MarshalJSON(&bankGenState)
 	s.Require().NoError(err)
-	appGenState[banktypes.ModuleName] = bz
+
+	// add jailed validator
+	var stakingGenState stakingtypes.GenesisState
+	s.Require().NoError(cdc.UnmarshalJSON(appGenState[stakingtypes.ModuleName], &stakingGenState))
+
+	_, key, err := createMemoryKey()
+	s.Require().NoError(err)
+
+	valAddr := sdk.ValAddress(PubKey().Address())
+	val, err := stakingtypes.NewValidator(
+		valAddr,
+		key.PubKey.GetCachedValue().(cryptotypes.PubKey),
+		stakingtypes.NewDescription("bloop", "", "", "", ""),
+	)
+	val.Jailed = true
+	s.Require().NoError(err)
+	stakingGenState.Validators = append(stakingGenState.Validators, val)
+
+	stakingGenState.Params = stakingtypes.Params{
+		UnbondingTime: 10000,
+		MaxValidators: 1,
+		MaxEntries:    10,
+		BondDenom:     uatomDenom,
+	}
+
+	appGenState[stakingtypes.ModuleName], err = cdc.MarshalJSON(&stakingGenState)
+	s.Require().NoError(err)
 
 	var genUtilGenState genutiltypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[genutiltypes.ModuleName], &genUtilGenState))
@@ -299,16 +327,13 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 
 	genUtilGenState.GenTxs = genTxs
 
-	bz, err = cdc.MarshalJSON(&genUtilGenState)
-	s.Require().NoError(err)
-	appGenState[genutiltypes.ModuleName] = bz
-
-	bz, err = json.MarshalIndent(appGenState, "", "  ")
+	appGenState[genutiltypes.ModuleName], err = cdc.MarshalJSON(&genUtilGenState)
 	s.Require().NoError(err)
 
-	genDoc.AppState = bz
+	genDoc.AppState, err = json.MarshalIndent(appGenState, "", "  ")
+	s.Require().NoError(err)
 
-	bz, err = tmjson.MarshalIndent(genDoc, "", "  ")
+	bz, err := tmjson.MarshalIndent(genDoc, "", "  ")
 	s.Require().NoError(err)
 
 	// write the updated genesis file to each validator.

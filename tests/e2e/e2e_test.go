@@ -770,3 +770,8 @@ func (s *IntegrationTestSuite) TestStaking() {
 	s.testStaking(chainAAPIEndpoint, alice.String(), valOperA.String(), valOperB.String(), delegationFees, home)
 	s.testDistribution(chainAAPIEndpoint, alice.String(), bob.String(), valOperB.String(), home)
 }
+
+func (s *IntegrationTestSuite) TestSlashing() {
+	chainAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	s.testSlashing(chainAPI)
+}

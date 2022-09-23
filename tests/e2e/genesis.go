@@ -15,9 +15,9 @@ import (
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
-	staketypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	globfeetypes "github.com/cosmos/gaia/v8/x/globalfee/types"
 	icatypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/types"
+	staketypes "github.com/iqlusioninc/liquidity-staking-module/x/staking/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 )
 

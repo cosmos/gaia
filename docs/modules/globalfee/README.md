@@ -147,7 +147,7 @@ Here are a few examples to clarify the relationship between global fees, min_gas
   
 
 - Case 7:  globalfee=[0.0001uatom], min_gas_prices=0.0002uatom,1stake, gas=200000.
-  `bypass-min-fee-msg-types = ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"]`
+  `bypass-min-fee-msg-types = ["/liquidstaking.distribution.v1beta1.MsgWithdrawDelegatorReward"]`
    - msg withdraw-all-rewards with paidfee=0uatom, pass
   - msg withdraw-all-rewards with paidfee=200000 * 0.0001/2uatom, pass
   - msg withdraw-all-rewards with paidfee=0stake,0photon, pass

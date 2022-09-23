@@ -7,7 +7,6 @@ import (
 	"path"
 	"path/filepath"
 
-	"cosmossdk.io/math"
 	sdkcrypto "github.com/cosmos/cosmos-sdk/crypto"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -19,8 +18,8 @@ import (
 	txsigning "github.com/cosmos/cosmos-sdk/types/tx/signing"
 	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	gaia "github.com/cosmos/gaia/v8/app"
+	stakingtypes "github.com/iqlusioninc/liquidity-staking-module/x/staking/types"
 	tmcfg "github.com/tendermint/tendermint/config"
 	tmos "github.com/tendermint/tendermint/libs/os"
 	"github.com/tendermint/tendermint/p2p"
@@ -234,7 +233,7 @@ func (v *validator) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
 	}
 
 	// get the initial validator min self delegation
-	minSelfDelegation := math.OneInt()
+	// minSelfDelegation := math.OneInt()
 
 	valPubKey, err := cryptocodec.FromTmPubKeyInterface(v.consensusKey.PubKey)
 	if err != nil {
@@ -252,7 +251,6 @@ func (v *validator) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
 		amount,
 		description,
 		commissionRates,
-		minSelfDelegation,
 	)
 }
 

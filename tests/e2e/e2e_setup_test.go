@@ -380,7 +380,7 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 #
 # Example:
 # ["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement", ...]
-bypass-min-fee-msg-types = ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward","/ibc.applications.transfer.v1.MsgTransfer"]
+bypass-min-fee-msg-types = ["/liquidstaking.distribution.v1beta1.MsgWithdrawDelegatorReward","/ibc.applications.transfer.v1.MsgTransfer"]
 ` + srvconfig.DefaultConfigTemplate
 		srvconfig.SetConfigTemplate(customAppTemplate)
 		srvconfig.WriteConfigFile(appCfgPath, appCustomConfig)

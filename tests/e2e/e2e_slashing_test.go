@@ -1,18 +1,23 @@
 package e2e
 
-import "time"
+const jailedValidatorKey = "jailed"
 
 func (s *IntegrationTestSuite) testSlashing(chainEndpoint string) {
-	time.Sleep(30 * time.Second)
-	validators, err := queryValidators(chainEndpoint)
-	s.Require().NoError(err)
+	s.Run("test unjail validator", func() {
+		validators, err := queryValidators(chainEndpoint)
+		s.Require().NoError(err)
 
-	for _, val := range validators {
-		if val.Jailed {
+		for _, val := range validators {
+			if val.Jailed {
+				s.execUnjail(
+					s.chainA,
+					withKeyValue(flagFrom, val.Description.Identity),
+				)
 
-			valQ, err := queryValidator(chainEndpoint, val.OperatorAddress)
-			s.Require().NoError(err)
-			s.T().Logf("validator: %s", valQ)
+				valQ, err := queryValidator(chainEndpoint, val.OperatorAddress)
+				s.Require().NoError(err)
+				s.Require().False(valQ.Jailed)
+			}
 		}
-	}
+	})
 }

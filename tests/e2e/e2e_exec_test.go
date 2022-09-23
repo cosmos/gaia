@@ -14,6 +14,70 @@ import (
 	"github.com/ory/dockertest/v3/docker"
 )
 
+const (
+	binaryName = "gaiad"
+
+	flagFrom           = "from"
+	flagHome           = "home"
+	flagFees           = "fees"
+	flagGas            = "gas"
+	flagOutput         = "output"
+	flagChainID        = "chain-id"
+	flagBroadcastMode  = "broadcast-mode"
+	flagKeyringBackend = "keyring-backend"
+)
+
+type flagOption func(map[string]interface{})
+
+// withKeyValue add a new flag to command
+func withKeyValue(key string, value interface{}) flagOption {
+	return func(o map[string]interface{}) {
+		o[key] = value
+	}
+}
+
+func applyOptions(chainID string, options []flagOption) map[string]interface{} {
+	opts := map[string]interface{}{
+		flagHome:           gaiaHomePath,
+		flagKeyringBackend: "test",
+		flagOutput:         "json",
+		flagGas:            "auto",
+		flagFrom:           "alice",
+		flagBroadcastMode:  "sync",
+		flagChainID:        chainID,
+		flagFees:           fees.String(),
+	}
+	for _, apply := range options {
+		apply(opts)
+	}
+	return opts
+}
+
+func (s *IntegrationTestSuite) execUnjail(
+	c *chain,
+	opt ...flagOption,
+) {
+	opts := applyOptions(c.id, opt)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad slashing unjail %s with options: %v", c.id, opt)
+	gaiaCommand := []string{
+		binaryName,
+		"tx",
+		"slashing",
+		"unjail",
+		"-y",
+	}
+
+	for flag, value := range opts {
+		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, 0, s.defaultExecValidation(c, 0))
+	s.T().Logf("successfully unjail with options %v", opt)
+}
+
 func (s *IntegrationTestSuite) execBankSend(c *chain, valIdx int, from, to, amt, fees string, expectErr bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()

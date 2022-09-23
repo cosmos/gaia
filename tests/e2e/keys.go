@@ -22,24 +22,9 @@ func createMnemonic() (string, error) {
 	return mnemonic, nil
 }
 
-// createMemoryKey creates a key into keystore with a random mnemonic
-func createMemoryKey() (info *keyring.Record, err error) {
-	mnemonic, err := createMnemonic()
-	if err != nil {
-		return nil, err
-	}
-
-	account, err := createMemoryKeyFromMnemonic(mnemonic)
-	if err != nil {
-		return nil, err
-	}
-
-	return account, nil
-}
-
 // createMemoryKeyFromMnemonic creates a key into keystore from a mnemonic
-func createMemoryKeyFromMnemonic(mnemonic string) (*keyring.Record, error) {
-	kb, err := keyring.New(keyringAppName, keyring.BackendMemory, "", nil, cdc)
+func createMemoryKeyFromMnemonic(name, mnemonic, configDir string) (*keyring.Record, error) {
+	kb, err := keyring.New(keyringAppName, keyring.BackendTest, configDir, nil, cdc)
 	if err != nil {
 		return nil, err
 	}
@@ -50,10 +35,5 @@ func createMemoryKeyFromMnemonic(mnemonic string) (*keyring.Record, error) {
 		return nil, err
 	}
 
-	account, err := kb.NewAccount("", mnemonic, "", sdk.FullFundraiserPath, algo)
-	if err != nil {
-		return nil, err
-	}
-
-	return account, nil
+	return kb.NewAccount(name, mnemonic, "", sdk.FullFundraiserPath, algo)
 }

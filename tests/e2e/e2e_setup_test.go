@@ -15,7 +15,6 @@ import (
 
 	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -157,6 +156,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.valResources = make(map[string][]*dockertest.Resource)
 
+	jailedValMnemonic, err := createMnemonic()
+	s.Require().NoError(err)
+
 	// The boostrapping phase is as follows:
 	//
 	// 1. Initialize Gaia validator nodes.
@@ -166,13 +168,13 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.T().Logf("starting e2e infrastructure for chain A; chain-id: %s; datadir: %s", s.chainA.id, s.chainA.dataDir)
 	s.initNodes(s.chainA)
-	s.initGenesis(s.chainA)
+	s.initGenesis(s.chainA, jailedValMnemonic)
 	s.initValidatorConfigs(s.chainA)
 	s.runValidators(s.chainA, 0)
 
 	s.T().Logf("starting e2e infrastructure for chain B; chain-id: %s; datadir: %s", s.chainB.id, s.chainB.dataDir)
 	s.initNodes(s.chainB)
-	s.initGenesis(s.chainB)
+	s.initGenesis(s.chainB, jailedValMnemonic)
 	s.initValidatorConfigs(s.chainB)
 	s.runValidators(s.chainB, 10)
 
@@ -247,12 +249,15 @@ func (s *IntegrationTestSuite) initNodes(c *chain) {
 	}
 }
 
-func (s *IntegrationTestSuite) initGenesis(c *chain) {
-	serverCtx := server.NewDefaultContext()
-	config := serverCtx.Config
+func (s *IntegrationTestSuite) initGenesis(c *chain, jailedValMnemonic string) {
+	var (
+		serverCtx = server.NewDefaultContext()
+		config    = serverCtx.Config
+		validator = c.validators[0]
+	)
 
-	config.SetRoot(c.validators[0].configDir())
-	config.Moniker = c.validators[0].moniker
+	config.SetRoot(validator.configDir())
+	config.Moniker = validator.moniker
 
 	genFilePath := config.GenesisFile()
 	appGenState, genDoc, err := genutiltypes.GenesisStateFromGenFile(genFilePath)
@@ -282,14 +287,18 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 	var stakingGenState stakingtypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[stakingtypes.ModuleName], &stakingGenState))
 
-	key, err := createMemoryKey()
+	key, err := createMemoryKeyFromMnemonic(jailedValidatorKey, jailedValMnemonic, validator.configDir())
 	s.Require().NoError(err)
+	pubKey, err := key.GetPubKey()
+	s.Require().NoError(err)
+	valAcc, err := key.GetAddress()
+	s.Require().NoError(err)
+	valAddr := valAcc.String()
 
-	valAddr := sdk.ValAddress(PubKey().Address())
 	val, err := stakingtypes.NewValidator(
-		valAddr,
-		key.PubKey.GetCachedValue().(cryptotypes.PubKey),
-		stakingtypes.NewDescription("bloop", "", "", "", ""),
+		sdk.ValAddress(valAddr),
+		pubKey,
+		stakingtypes.NewDescription("jailed", valAddr, "", "", ""),
 	)
 	val.Jailed = true
 	s.Require().NoError(err)
@@ -388,7 +397,7 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 		appCustomConfig := params.CustomAppConfig{
 			Config: *appConfig,
 			BypassMinFeeMsgTypes: []string{
-				// todo: use ibc as exmaple ?
+				// todo: use ibc as example ?
 				sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),
 				sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
 				sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),

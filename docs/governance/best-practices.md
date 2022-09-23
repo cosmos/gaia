@@ -12,6 +12,7 @@ There are currently severaltypes of proposals supported by the Cosmos Hub:
 - [**Community Pool Spend**](./proposal-types/community-pool-spend.md) - Proposal to spend funds from the community pool on a project.
 - [**Parameter Change**](./proposal-types/param-change.md) - Proposal to change a core on-chain parameter.
 - **Software Upgrade** - Proposal to upgrade the chain version.
+- **IBC Client Update** - Proposal to update an IBC client.
 
 You'll first want to determine which kind of proposal you are making. Be sure to review all details of your specific proposal type. 
 

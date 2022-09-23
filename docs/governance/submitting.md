@@ -2,14 +2,17 @@
 order: 5
 ---
 
-# Submitting a Governance Proposal
+# Submitting a Proposal
 
 If you have a final draft of your proposal ready to submit, you may want to push your proposal live on the testnet first. These are the three primary steps to getting your proposal live on-chain.
 
-1. [Hosting supplementary materials](#hosting-supplementary-materials) for your proposal with IPFS (InterPlanetary File System)
-2. [Formatting the JSON file](#formatting-the-json-file-for-the-governance-proposal) for the governance proposal transaction that will be on-chain
-3. [Sending the transaction](#sending-the-transaction-that-submits-your-governance-proposal) that submits your governance proposal on-chain
+Interacting with the Cosmos Hub via the command line in order to run queries or submit proposals has several prerequisites:
+  - You will need to compile [`gaiad`](../../getting-started/installation.md) from source into a binary file executable by your operating system eg. MacOS, Windows, Linux
+  - You will need to indicate which chain you are querying, and currently this is `--chain-id cosmoshub-4`
+  - You will need to connect to a full node. You can find a list of available Cosmos Hub endpoints under the [API section](https://github.com/cosmos/chain-registry/blob/master/cosmoshub/chain.json) in the [Chain Registry](https://github.com/cosmos/chain-registry).
+  - More info is in the Walkthrough Example section.
 
+Running a full node can be difficult for those not technically-inclined, so you may choose to use a third-party's full node. In this case, the primary security risk is that of censorship: it's the single place where you have a single gateway to the network, and any messages submitted through an untrusted node could be censored.
 
 ## Hosting supplementary materials
 

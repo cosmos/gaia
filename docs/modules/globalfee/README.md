@@ -12,7 +12,7 @@ Global fees are the fees that each transaction (except [bypass fee message types
 
 For  [global fees](https://github.com/cosmos/gaia/blob/82c4353ab1b04cf656a8c95d226c30c7845f157b/x/globalfee/types/params.go#L54-L99) to be valid:
 - fees have to be alphabetically sorted by denomination (denom)
-- fees have to have non-negative amount, with a valid and unique denom (i.e no duplicates). 
+- fees must to have non-negative amount, with a valid and unique denom (i.e no duplicate denoms are allowed).
 
 Global fees allow denoms with zero coins or value.
 

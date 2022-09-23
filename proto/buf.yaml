@@ -6,10 +6,10 @@
 version: v1
 name: buf.build/cosmos/cosmoshub
 deps:
-  - buf.build/cosmos/cosmos-sdk
-  - buf.build/cosmos/cosmos-proto
-  - buf.build/cosmos/gogo-proto
-  - buf.build/googleapis/googleapis
+  - buf.build/cosmos/cosmos-sdk # which commit to use for sdk 0.46.x ?
+  - buf.build/cosmos/cosmos-proto:1935555c206d4afb9e94615dfd0fad31
+  - buf.build/cosmos/gogo-proto:bee5511075b7499da6178d9e4aaa628b
+  - buf.build/googleapis/googleapis:8d7204855ec14631a499bd7393ce1970
 breaking:
   use:
     - FILE

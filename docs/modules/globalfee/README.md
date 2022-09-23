@@ -8,7 +8,7 @@ The CosmosHub has two types of fees, both of which, are the [sdk.DecCoins](https
   
 ### Global Fees
 #### Global Fees Concept
-Global fees are the fees that each transaction (except [bypass fee message types](###Bypass Fees Message Types)) has to satisfy. Global fees are set up through governance proposal which must be voted on by validators. 
+Global fees are the fees that each transaction incurs—except [bypass fee message types](###Bypass Fees Message Types). Global fees are set up through a governance proposal which must be voted on by validators. 
 
 For  [global fees](https://github.com/cosmos/gaia/blob/82c4353ab1b04cf656a8c95d226c30c7845f157b/x/globalfee/types/params.go#L54-L99) to be valid:
 - fees have to be alphabetically sorted by denomination (denom)

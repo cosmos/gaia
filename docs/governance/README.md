@@ -7,7 +7,7 @@ parent:
 
 # Governance Overview
 
-The Cosmos Hub ("Gaia") has an on-chain governance mechanism for [signaling](./text-prop.md), changing [consensus parameters](./param-change.md), and spending [funds from the community pool](./community-pool-spend.md).
+The Cosmos Hub ("Gaia") has an on-chain governance mechanism for [signaling](./proposal-types/text-prop.md), changing [consensus parameters](./proposal-types/param-change.md), and spending [funds from the community pool](./proposal-types/community-pool-spend.md). 
 
 This repository provides background information on these different kinds of proposals and best-practices for drafting them and proposing them on-chain.
 

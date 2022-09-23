@@ -64,7 +64,7 @@ Voting power, whether backing a vote of 'Yes', 'Abstain', 'No', or 'NoWithVeto',
 - **Total voting power** refers to all staked ATOM at the end of the 14-day voting period. Liquid ATOMs are not part of the total voting power and thus cannot participate in voting. 
 - **Participating voting power** refers to only the ATOM which have been used to cast a vote on a particular proposal. Quorum is set to 40% of the **participating** voting power.
 
-Validators not in the active set can cast a vote, but their voting power (including the backing of their delegators) will not count toward the vote if they are not in the active set **when the voting period ends**. That means that ATOM is delegated to a validator that is jailed, tombstoned, or outside of the active set at the time that the voting period ends, that ATOM's stake-weight will not count in the vote.
+Validators not in the active set can cast a vote, but their voting power (including the backing of their delegators) will not count toward the vote if they are not in the active set **when the voting period ends**. That means that if ATOM is delegated to a validator that is jailed, tombstoned, or outside of the active set at the time that the voting period ends, that ATOM's stake-weight will not count in the vote.
 
 Though a simple majority 'Yes' vote (ie. 50% of participating voting power) is required for a governance proposal vote to pass, a 'NoWithVeto' vote of 33.4% of participating voting power or greater can override this outcome and cause the proposal to fail. This enables a minority group representing greater than 1/3 of participating voting power to fail a proposal that would otherwise pass.
 

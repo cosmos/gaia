@@ -8,9 +8,9 @@ Once a proposal is on-chain, it cannot be changed to reflect feedback or new inf
 The process of passing a proposal starts long before it goes on-chain!
 
 There are currently severaltypes of proposals supported by the Cosmos Hub: 
-- **[Text](./text-prop.md)** - Proposal to agree to a certain strategy, plan, commitment, future upgrade or other statement. Text proposals do not directly cause any changes, but they can be used to take a record of the community's opinion or commitment to a future idea.
-- [**Community Pool Spend**](./community-pool-spend.md) - Proposal to spend funds from the community pool on a project.
-- [**Parameter Change**](./params-change.md) - Proposal to change a core on-chain parameter.
+- **[Text](./proposal-types/text-prop.md)** - Proposal to agree to a certain strategy, plan, commitment, future upgrade or other statement. Text proposals do not directly cause any changes, but they can be used to take a record of the community's opinion or commitment to a future idea.
+- [**Community Pool Spend**](./proposal-types/community-pool-spend.md) - Proposal to spend funds from the community pool on a project.
+- [**Parameter Change**](./proposal-types/param-change.md) - Proposal to change a core on-chain parameter.
 - **Software Upgrade** - Proposal to upgrade the chain version.
 
 You'll first want to determine which kind of proposal you are making. Be sure to review all details of your specific proposal type. 
@@ -21,6 +21,7 @@ Engagement is likely to be critical to the success of a proposal. The degree to 
  - Post your idea to the [Cosmos Hub Forum](https://forum.cosmos.network/)
  - Mention the idea in a community call (often hosted on [Twitter](https://twitter.com/CosmosHub))
  - Host an AMA on [Reddit](https://www.reddit.com/r/cosmosnetwork) 
+ 
  We encourage you to experiment and use your strengths to introduce proposal ideas and gather feedback.
 
 There are many different ways to engage. One strategy involves a few stages of engagement before and after submitting a proposal on chain. 
@@ -61,7 +62,7 @@ Posting your idea to the [Cosmos Hub Forum](https://forum.cosmos.network/) is a 
 
 There will likely be differences of opinion about the value of what you're proposing to do and the strategy by which you're planning to do it. If you've considered feedback from broad perspectives and think that what you're doing is valuable and that your strategy should work, and you believe that others feel this way as well, it's likely worth drafting a proposal. However, remember that the largest ATOM stakers have the biggest vote, so a vocal minority isn't necessarily representative or predictive of the outcome of an on-chain vote. 
 
-You could choose to take a conservative approach and wait until you have some confidence that you roughly have initial support from a majority of the voting power before proceeding to drafting the details of your proposal. Or you could propose the idea, or define the problem statement and let the community participate freely in drafting competing solutions to solve the issue,.
+You could choose to take a conservative approach and wait until you have some confidence that you roughly have initial support from a majority of the voting power before proceeding to drafting the details of your proposal. Or you could propose the idea, or define the problem statement and let the community participate freely in drafting competing solutions to solve the issue.
 
 
 ## Stage 2: Your Draft Proposal
@@ -76,58 +77,55 @@ Each major proposal type has a rough template available on the forum: [Text](htt
 
 Each proposal should contain a summmary with key details about what the proposal hopes to change. If you were viewing only the summary with no other context, it should be a good start to being able to make a decision.
 
-Assume that many people will stop reading at this point. However it is important to provide in-depth information, a few more pointers for Parameter-change and Community Spend proposals are below.
+Assume that many people will stop reading at this point. However it is important to provide in-depth information. The on-chain proposal text should also include a link to an un-editable version of the text, such as an IPFS pin, and a link to where discussion about the idea is happening.
+
+A few more pointers for Parameter-change and Community Spend proposals are below.
 
 #### Parameter-Change
+An example of a successful parameter change proposal is [Proposal #66](https://forum.cosmos.network/t/proposal-66-accepted-increase-active-validator-spots-to-175/6118/53). Note that this proposal went on-chain without the recommended IPFS pin.
 
-1. Problem/Value - generally the problem or value that's motivating the parameter change(s)
-1. Solution - generally how changing the parameter(s) will address the problem or improve the network
-   - the beneficiaries of the change(s) (ie. who will these changes impact and how?)
-      - voters should understand the importance of the change(s) in a simple way
-1. Risks & Benefits - clearly describe how making this/these change(s) may expose stakeholders to new benefits and/or risks
-1. Supplementary materials - optional materials eg. models, graphs, tables, research, signed petition, etc
+1. Problem/Value - The problem or value that's motivating the parameter change(s).
+1. Solution - How changing the parameter(s) will address the problem or improve the network.
+1. Risks & Benefits - How making this/these change(s) may expose stakeholders to new benefits and/or risks.
+   - The beneficiaries of the change(s) (ie. who will these changes impact and how?)
+   - Voters should understand the importance of the change(s) in a simple way
+1. Supplementary materials - Optional materials eg. models, graphs, tables, research, signed petition, etc
 
 
 #### Community-Spend Proposal
+An example of a successful community spend proposal is [Proposal #63](https://forum.cosmos.network/t/proposal-63-accepted-activate-governance-discussions-on-the-discourse-forum-using-community-pool-funds/5833).
 
-1. Applicant(s) - the profile of the person(s)/entity making the proposal
-   - who you are and your involvement in Cosmos and/or other blockchain networks
-   - an overview of team members involved and their relevant experience
-   - brief mission statment for your organization/business (if applicable) eg. website
-   - past work you've done eg. include your Github
-   - some sort of proof of who you are eg. Keybase
-1. Problem - generally what you're solving and/or opportunity you're addressing
-   - past, present (and possibly a prediction of the future without this work being done)
-1. Solution - generally how you're proposing to deliver the solution
-   - your plan to fix the problem or deliver value
-   - the beneficiaries of this plan (ie. who will your plan impact and how?)
-     - follow the "as a user" template ie. write a short user story about the problem you are trying to solve and how users will interact with what you're proposing to deliver (eg. benefits and functionality from a user’s perspective)
-     - voters should understand the value of what you're providing in a simple way
-   - your reasons for selecting this plan
-   - your motivation for delivering this solution/value
-1. Funding - amount and denomination proposed eg. 5000 ATOM
-   - the entity controlling the account receiving the funding
-   - consider an itemized breakdown of funding per major deliverable
-   - consider outlining how the funds will be spent
-1. Deliverables and timeline - the specifics of what you're delivering and how, and what to expect
-   - what are the specific deliverables? (be detailed)
-   - when will each of these be delivered?
-   - will there be a date at which the project will be considered failed if the deliverables have not been met?
-   - how will each of these be delivered?
-   - what will happen if you do not deliver on time?
-     - what is the deadline for the project to be considered failed?
-     - do you have a plan to return the funds?
-   - how will you be accountable to the Cosmos Hub stakeholders?
-     - how will you communicate updates and how often?
-     - how can the community observe your progress?
-     - how can the community provide feedback?
-   - how should the quality of deliverables be assessed? eg. metrics
-1. Relationships and disclosures
-   - have you received or applied for grants or funding? for similar work? eg. from the Interchain Foundation
-   - how will you and/or your organization benefit?
-   - do you see this work continuing in the future and is there a plan?
-   - what are the risks involved with this work?
-   - do you have conflicts of interest to declare?
+1. Applicant(s) - The profile of the person(s)/entity making the proposal.
+   - Who you are and your involvement in Cosmos and/or other blockchain networks.
+   - An overview of team members involved and their relevant experience.
+1. Problem - What you're solving and/or opportunity you're addressing.
+   - Past, present (and possibly a prediction of the future without this work being done).
+1. Solution - How you're proposing to deliver the solution.
+   - Your plan to fix the problem or deliver value.
+   - The beneficiaries of this plan (ie. who will your plan impact and how?).
+   - Your reasons for selecting this plan.
+   - Your motivation for delivering this solution/value.
+1. Funding - amount and denomination proposed eg. 5000 ATOM.
+   - The entity controlling the account receiving the funding.
+   - Consider an itemized breakdown of funding per major deliverable.
+   - Note that the 'budget' of a spend proposal is generally the easiest thing to criticize. If your budget is vague, consider explaining the reasons you're unable to give a detailed breakdown and be clear about what happens if you do not meet you budget.
+1. Deliverables and timeline - the specifics of what you're delivering and how, and what to expect.
+   - What are the specific deliverables? (be detailed).
+   - When will each of these be delivered?
+   - How will each of these be delivered?
+   - What will happen if you do not deliver on time?
+   - Do you have a plan to return the funds if you're under-budget or the project fails?
+   - How will you be accountable to the Cosmos Hub stakeholders?
+     - How will you communicate updates and how often?
+     - How can the community observe your progress?
+     - How can the community provide feedback?
+   - How should the quality of deliverables be assessed? eg. metrics.
+1. Relationships and disclosures.
+   - Have you received or applied for grants or funding? for similar work? eg. from the Interchain Foundation.
+   - How will you and/or your organization benefit?
+   - Do you see this work continuing in the future and is there a plan?
+   - What are the risks involved with this work?
+   - Do you have conflicts of interest to declare?
 
 ### Begin with a well-considered draft proposal
 Ideally, a proposal is first sent to the forum in Markdown format so that it can be further edited and available for comments. A changelog is a great tool so that people can see how the idea has developed over time and in response to feedback.
@@ -144,10 +142,9 @@ This Markdown-formatted post can eventually become the description text in a pro
 
 ### Submit your proposal to the testnet
 
-I intend to expand this [guide to include testnet instructions](submitting.md#submitting-your-proposal-to-the-testnet). 
+Before going on mainnet, you can test your proposal on the [testnet](submitting.md#submitting-your-proposal-to-the-testnet). 
 
-You may want to submit your proposal to the testnet chain before the mainnet for a number of reasons, such as wanting to see what the proposal description will look like, to share what the proposal will look like in advance with stakeholders, and to catch any errors before it hits the mainnet.
-
+This is a great way to make sure your proposal looks the way you want and refine it before heading to mainnet.
 
 ## Stage 3: Your On-Chain Proposal
 

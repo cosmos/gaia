@@ -303,6 +303,11 @@ func (s *IntegrationTestSuite) initGenesis(c *chain, jailedValMnemonic string) {
 	val.Jailed = true
 	s.Require().NoError(err)
 	stakingGenState.Validators = append(stakingGenState.Validators, val)
+	stakingGenState.Delegations = append(stakingGenState.Delegations, stakingtypes.Delegation{
+		DelegatorAddress: valAddr,
+		ValidatorAddress: sdk.ValAddress(valAddr).String(),
+		Shares:           sdk.NewDec(10000),
+	})
 
 	stakingGenState.Params = stakingtypes.Params{
 		UnbondingTime: 10000,

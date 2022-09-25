@@ -249,6 +249,7 @@ func (s *IntegrationTestSuite) initNodes(c *chain) {
 	}
 }
 
+// TODO find a better way to manipulate accounts to add genesis accounts
 func (s *IntegrationTestSuite) initGenesis(c *chain, jailedValMnemonic string) {
 	var (
 		serverCtx = server.NewDefaultContext()
@@ -263,8 +264,66 @@ func (s *IntegrationTestSuite) initGenesis(c *chain, jailedValMnemonic string) {
 	appGenState, genDoc, err := genutiltypes.GenesisStateFromGenFile(genFilePath)
 	s.Require().NoError(err)
 
+	// create jailed validator keys
+	key, err := createMemoryKeyFromMnemonic(jailedValidatorKey, jailedValMnemonic, validator.configDir())
+	s.Require().NoError(err)
+
+	// parse staking genesis state
+	var stakingGenState stakingtypes.GenesisState
+	s.Require().NoError(cdc.UnmarshalJSON(appGenState[stakingtypes.ModuleName], &stakingGenState))
+
+	// add jailed validator
+	pubKey, err := key.GetPubKey()
+	s.Require().NoError(err)
+	valAcc, err := key.GetAddress()
+	s.Require().NoError(err)
+	valAddr := sdk.ValAddress(valAcc)
+	val, err := stakingtypes.NewValidator(
+		valAddr,
+		pubKey,
+		stakingtypes.NewDescription("jailed", "", "", "", ""),
+	)
+	s.Require().NoError(err)
+	val.Jailed = true
+	val.Tokens = sdk.NewInt(10000)
+	val.DelegatorShares = sdk.NewDec(10000)
+	stakingGenState.Validators = append(stakingGenState.Validators, val)
+
+	// add jailed validator delegations
+	stakingGenState.Delegations = append(stakingGenState.Delegations, stakingtypes.Delegation{
+		DelegatorAddress: valAcc.String(),
+		ValidatorAddress: valAddr.String(),
+		Shares:           sdk.NewDec(10000),
+	})
+
+	stakingGenState.Params = stakingtypes.Params{
+		UnbondingTime:     10000,
+		MaxValidators:     1,
+		MaxEntries:        10,
+		HistoricalEntries: 0,
+		BondDenom:         uatomDenom,
+		MinCommissionRate: sdk.NewDec(0),
+	}
+
+	appGenState[stakingtypes.ModuleName], err = cdc.MarshalJSON(&stakingGenState)
+	s.Require().NoError(err)
+
+	// parse bank genesis state
 	var bankGenState banktypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[banktypes.ModuleName], &bankGenState))
+
+	// add balances for the jailed validator and not bounded pool
+	bankGenState.Balances = append(bankGenState.Balances,
+		banktypes.Balance{
+			Address: valAcc.String(),
+			Coins:   sdk.NewCoins(tokenAmount),
+		},
+		banktypes.Balance{
+			Address: authtypes.NewModuleAddress(stakingtypes.NotBondedPoolName).String(),
+			Coins:   sdk.NewCoins(sdk.NewCoin(uatomDenom, math.NewInt(10000))),
+		},
+	)
+	bankGenState.Balances = banktypes.SanitizeGenesisBalances(bankGenState.Balances)
 
 	bankGenState.DenomMetadata = append(bankGenState.DenomMetadata, banktypes.Metadata{
 		Description: "An example stable token",
@@ -283,40 +342,24 @@ func (s *IntegrationTestSuite) initGenesis(c *chain, jailedValMnemonic string) {
 	appGenState[banktypes.ModuleName], err = cdc.MarshalJSON(&bankGenState)
 	s.Require().NoError(err)
 
-	// add jailed validator
-	var stakingGenState stakingtypes.GenesisState
-	s.Require().NoError(cdc.UnmarshalJSON(appGenState[stakingtypes.ModuleName], &stakingGenState))
+	// parse auth genesis state
+	var authGenState authtypes.GenesisState
+	s.Require().NoError(cdc.UnmarshalJSON(appGenState[authtypes.ModuleName], &authGenState))
 
-	key, err := createMemoryKeyFromMnemonic(jailedValidatorKey, jailedValMnemonic, validator.configDir())
-	s.Require().NoError(err)
-	pubKey, err := key.GetPubKey()
-	s.Require().NoError(err)
-	valAcc, err := key.GetAddress()
-	s.Require().NoError(err)
-	valAddr := valAcc.String()
+	// add jailed account to the genesis
+	baseJailedAccount := authtypes.NewBaseAccount(valAcc, pubKey, 0, 0)
+	s.Require().NoError(baseJailedAccount.Validate())
 
-	val, err := stakingtypes.NewValidator(
-		sdk.ValAddress(valAddr),
-		pubKey,
-		stakingtypes.NewDescription("jailed", valAddr, "", "", ""),
-	)
-	val.Jailed = true
+	// unpack and append jailed account
+	accs, err := authtypes.UnpackAccounts(authGenState.Accounts)
 	s.Require().NoError(err)
-	stakingGenState.Validators = append(stakingGenState.Validators, val)
-	stakingGenState.Delegations = append(stakingGenState.Delegations, stakingtypes.Delegation{
-		DelegatorAddress: valAddr,
-		ValidatorAddress: sdk.ValAddress(valAddr).String(),
-		Shares:           sdk.NewDec(10000),
-	})
+	accs = append(accs, baseJailedAccount)
+	accs = authtypes.SanitizeGenesisAccounts(accs)
+	genAccs, err := authtypes.PackAccounts(accs)
+	s.Require().NoError(err)
+	authGenState.Accounts = genAccs
 
-	stakingGenState.Params = stakingtypes.Params{
-		UnbondingTime: 10000,
-		MaxValidators: 1,
-		MaxEntries:    10,
-		BondDenom:     uatomDenom,
-	}
-
-	appGenState[stakingtypes.ModuleName], err = cdc.MarshalJSON(&stakingGenState)
+	appGenState[authtypes.ModuleName], err = cdc.MarshalJSON(&authGenState)
 	s.Require().NoError(err)
 
 	var genUtilGenState genutiltypes.GenesisState

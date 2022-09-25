@@ -11,7 +11,7 @@ func (s *IntegrationTestSuite) testSlashing(chainEndpoint string) {
 			if val.Jailed {
 				s.execUnjail(
 					s.chainA,
-					withKeyValue(flagFrom, val.Description.Identity),
+					withKeyValue(flagFrom, jailedValidatorKey),
 				)
 
 				valQ, err := queryValidator(chainEndpoint, val.OperatorAddress)

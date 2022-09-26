@@ -141,3 +141,29 @@ Checksums-Sha256:
  3895518436b74be8b042d7d0b868a60d03e1656e2556b12132be0f25bcb061ef  gaiad-4.0.0.tar.gz
 ```
 
+# Major Release Maintenance
+
+Major Release series continue to receive bug fixes (released as a Patch Release) until they reach End Of Life. Major Release series are maintained in compliance with the Stable Release Policy as described in this document. Note: not every Major Release is denoted as a stable release.
+
+Only the following major release series have a stable release status:
+
+v7 Theta is supported until v9 Lambda. A fairly strict **bugfix-only** rule applies to pull requests that are requested to be included into a stable point-release.
+
+v6 Vega is supported until v8 Rho. A fairly strict **bugfix-only** rule applies to pull requests that are requested to be included into a stable point-release.
+
+v5 Delta is supported until v7 Theta. A fairly strict **bugfix-only** rule applies to pull requests that are requested to be included into a stable point-release.
+
+After two releases, a supported version will be transitioned to unsupported and will be deemed EOL with no further updates.
+
+# Stable Release Policy
+
+The intention of the Stable Release Policy is to ensure that all major release series that are not EOL, are maintained with the following categories of fixes:
+
+- Tooling improvements (including code formatting, linting, static analysis and updates to testing frameworks)
+- Performance enhancements for running archival and synching nodes
+- Test and benchmarking suites, ensuring that fixes are sound and there are no performance regressions
+- Library updates including point releases for core libraries such as IBC-Go, Cosmos SDK, Tendermint and other dependencies
+- General maintenance improvements, that are deemed necessary by the stewarding team, that help align different releases and reduce the workload on the stewarding team
+- Security fixes
+
+Issues that are likely excluded, are any issues that impact operating a block producing network.

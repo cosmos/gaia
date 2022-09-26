@@ -12,8 +12,8 @@ import (
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	staketypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-
 	globalfee "github.com/cosmos/gaia/v8/x/globalfee/types"
+	icamauth "github.com/cosmos/gaia/v8/x/icamauth/types"
 )
 
 func queryGaiaTx(endpoint, txHash string) error {
@@ -77,34 +77,6 @@ func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) {
 	return balancesResp.Balances, nil
 }
 
-func queryGaiaDenomBalance(endpoint, addr, denom string) (sdk.Coin, error) {
-	var zeroCoin sdk.Coin
-
-	path := fmt.Sprintf(
-		"%s/cosmos/bank/v1beta1/balances/%s/by_denom?denom=%s",
-		endpoint, addr, denom,
-	)
-
-	resp, err := http.Get(path) //nolint:gosec // this is used as a part of the e2e suite.
-	if err != nil {
-		return zeroCoin, fmt.Errorf("failed to execute HTTP request: %w", err)
-	}
-
-	defer resp.Body.Close()
-
-	bz, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return zeroCoin, err
-	}
-
-	var balanceResp banktypes.QueryBalanceResponse
-	if err := cdc.UnmarshalJSON(bz, &balanceResp); err != nil {
-		return zeroCoin, err
-	}
-
-	return *balanceResp.Balance, nil
-}
-
 func queryGovProposal(endpoint string, proposalID int) (govv1beta1.QueryProposalResponse, error) {
 	var govProposalResp govv1beta1.QueryProposalResponse
 
@@ -146,6 +118,29 @@ func queryGlobalFees(endpoint string) (amt sdk.DecCoins, err error) {
 	}
 
 	return fees.MinimumGasPrices, nil
+}
+
+func queryICAaddr(endpoint, owner, connectionID string) (string, error) {
+	resp, err := http.Get(fmt.Sprintf("%s/gaia/icamauth/v1beta1/interchain_account/owner/%s/connection/%s", endpoint, owner, connectionID))
+	if err != nil {
+		return "", fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	bz, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("tx query returned non-200 status: %d", resp.StatusCode)
+	}
+
+	icaAddrResp := icamauth.QueryInterchainAccountResponse{}
+	if err = cdc.UnmarshalJSON(bz, &icaAddrResp); err != nil {
+		return "", err
+	}
+
+	return icaAddrResp.GetInterchainAccountAddress(), nil
 }
 
 func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string) (staketypes.QueryDelegationResponse, error) {

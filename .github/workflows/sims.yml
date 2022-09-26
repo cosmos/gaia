@@ -1,10 +1,12 @@
 name: Sims
 on:
+  workflow_call:
   workflow_dispatch:
   pull_request:
   push:
     branches:
       - main
+      
 jobs:
   cleanup-runs:
     runs-on: ubuntu-latest

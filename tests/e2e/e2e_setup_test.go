@@ -45,14 +45,15 @@ const (
 	minGasPrice    = "0.00001"
 	// the test globalfee in genesis is the same as minGasPrice
 	// global fee lower/higher than min_gas_price
-	initialGlobalFeeAmt        = "0.00001"
-	lowGlobalFeesAmt           = "0.000001"
-	highGlobalFeeAmt           = "0.0001"
-	gas                        = 200000
-	govSendMsgRecipientAddress = "cosmos1pkueemdeps77dwrqma03pwqk93nw39nuhccz02"
-	govProposalBlockBuffer     = 35
-	relayerAccountIndex        = 0
-	icaOwnerAccountIndex       = 1
+	initialGlobalFeeAmt              = "0.00001"
+	lowGlobalFeesAmt                 = "0.000001"
+	highGlobalFeeAmt                 = "0.0001"
+	gas                              = 200000
+	govSendMsgRecipientAddress       = "cosmos1pkueemdeps77dwrqma03pwqk93nw39nuhccz02"
+	govProposalBlockBuffer           = 35
+	relayerAccountIndex              = 0
+	icaOwnerAccountIndex             = 1
+	slashingShares             int64 = 10000
 )
 
 var (
@@ -285,15 +286,15 @@ func (s *IntegrationTestSuite) initGenesis(c *chain, jailedValMnemonic string) {
 	)
 	s.Require().NoError(err)
 	val.Jailed = true
-	val.Tokens = sdk.NewInt(10000)
-	val.DelegatorShares = sdk.NewDec(10000)
+	val.Tokens = sdk.NewInt(slashingShares)
+	val.DelegatorShares = sdk.NewDec(slashingShares)
 	stakingGenState.Validators = append(stakingGenState.Validators, val)
 
 	// add jailed validator delegations
 	stakingGenState.Delegations = append(stakingGenState.Delegations, stakingtypes.Delegation{
 		DelegatorAddress: valAcc.String(),
 		ValidatorAddress: valAddr.String(),
-		Shares:           sdk.NewDec(10000),
+		Shares:           sdk.NewDec(slashingShares),
 	})
 
 	stakingGenState.Params = stakingtypes.Params{
@@ -320,7 +321,7 @@ func (s *IntegrationTestSuite) initGenesis(c *chain, jailedValMnemonic string) {
 		},
 		banktypes.Balance{
 			Address: authtypes.NewModuleAddress(stakingtypes.NotBondedPoolName).String(),
-			Coins:   sdk.NewCoins(sdk.NewCoin(uatomDenom, math.NewInt(10000))),
+			Coins:   sdk.NewCoins(sdk.NewCoin(uatomDenom, math.NewInt(slashingShares))),
 		},
 	)
 	bankGenState.Balances = banktypes.SanitizeGenesisBalances(bankGenState.Balances)

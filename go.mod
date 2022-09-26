@@ -27,6 +27,8 @@ require (
 	google.golang.org/grpc v1.49.0
 )
 
+require github.com/osmosis-labs/bech32-ibc v0.0.0-00010101000000-000000000000
+
 require (
 	4d63.com/gochecknoglobals v0.1.0 // indirect
 	cloud.google.com/go v0.100.2 // indirect
@@ -284,5 +286,6 @@ require (
 
 replace (
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+	github.com/osmosis-labs/bech32-ibc => github.com/umee-network/bech32-ibc v0.3.0-rc1.0.20220831212913-42baad053f6e
 	github.com/zondax/hid => github.com/zondax/hid v0.9.0
 )

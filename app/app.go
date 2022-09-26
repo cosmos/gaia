@@ -106,6 +106,9 @@ import (
 	"github.com/gravity-devs/liquidity/v2/x/liquidity"
 	liquiditykeeper "github.com/gravity-devs/liquidity/v2/x/liquidity/keeper"
 	liquiditytypes "github.com/gravity-devs/liquidity/v2/x/liquidity/types"
+	"github.com/osmosis-labs/bech32-ibc/x/bech32ibc"
+	bech32ibckeeper "github.com/osmosis-labs/bech32-ibc/x/bech32ibc/keeper"
+	bech32ibctypes "github.com/osmosis-labs/bech32-ibc/x/bech32ibc/types"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
 	"github.com/strangelove-ventures/packet-forward-middleware/v2/router"
@@ -169,6 +172,7 @@ var (
 		ica.AppModuleBasic{},
 		icamauth.AppModuleBasic{},
 		globalfee.AppModule{},
+		bech32ibc.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -228,6 +232,7 @@ type GaiaApp struct { //nolint: revive
 	GroupKeeper         groupkeeper.Keeper
 	AuthzKeeper         authzkeeper.Keeper
 	LiquidityKeeper     liquiditykeeper.Keeper
+	bech32IbcKeeper     bech32ibckeeper.Keeper
 
 	RouterKeeper routerkeeper.Keeper
 
@@ -286,7 +291,7 @@ func NewGaiaApp(
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, liquiditytypes.StoreKey, ibctransfertypes.StoreKey,
-		capabilitytypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey, routertypes.StoreKey, icacontrollertypes.StoreKey, icahosttypes.StoreKey, icamauthtypes.StoreKey, group.StoreKey,
+		capabilitytypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey, routertypes.StoreKey, icacontrollertypes.StoreKey, icahosttypes.StoreKey, icamauthtypes.StoreKey, group.StoreKey, bech32ibctypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)

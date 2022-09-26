@@ -2,7 +2,7 @@ package e2e
 
 import (
 	"time"
-	
+
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -10,19 +10,19 @@ import (
 func (s *IntegrationTestSuite) testDistribution(
 	chainEndpoint,
 	delegatorAddress,
-	newWithrawalAddress,
+	newWithdrawalAddress,
 	valOperAddressA,
 	homePath string,
 ) {
 	fees = sdk.NewCoin(uatomDenom, math.NewInt(1000))
 
-	beforeBalance, err := getSpecificBalance(chainEndpoint, newWithrawalAddress, uatomDenom)
+	beforeBalance, err := getSpecificBalance(chainEndpoint, newWithdrawalAddress, uatomDenom)
 	s.Require().NoError(err)
 	if beforeBalance.IsNil() {
 		beforeBalance = sdk.NewCoin(uatomDenom, math.NewInt(0))
 	}
 
-	s.execSetWithrawAddress(s.chainA, 0, chainEndpoint, fees.String(), delegatorAddress, newWithrawalAddress, homePath)
+	s.execSetWithrawAddress(s.chainA, 0, fees.String(), delegatorAddress, newWithdrawalAddress, homePath)
 
 	// Verify
 	s.Require().Eventually(
@@ -30,16 +30,16 @@ func (s *IntegrationTestSuite) testDistribution(
 			res, err := queryDelegatorWithdrawalAddress(chainEndpoint, delegatorAddress)
 			s.Require().NoError(err)
 
-			return res.WithdrawAddress == newWithrawalAddress
+			return res.WithdrawAddress == newWithdrawalAddress
 		},
 		10*time.Second,
 		5*time.Second,
 	)
 
-	s.execWithdrawReward(s.chainA, 0, chainEndpoint, fees.String(), delegatorAddress, valOperAddressA, homePath)
+	s.execWithdrawReward(s.chainA, 0, delegatorAddress, valOperAddressA, homePath)
 	s.Require().Eventually(
 		func() bool {
-			afterBalance, err := getSpecificBalance(chainEndpoint, newWithrawalAddress, uatomDenom)
+			afterBalance, err := getSpecificBalance(chainEndpoint, newWithdrawalAddress, uatomDenom)
 			s.Require().NoError(err)
 
 			return afterBalance.IsGTE(beforeBalance)

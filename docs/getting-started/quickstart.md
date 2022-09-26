@@ -64,7 +64,11 @@ Node Operators can decide how much of historical state they want to preserve by 
 ```bash=
 sudo apt-get install wget liblz4-tool aria2 jq -y
 
-export URL=`curl https://quicksync.io/cosmos.json|jq -r '.[] |select(.file=="cosmoshub-4-default")|.url'`
+export URL=`curl -L https://quicksync.io/cosmos.json|jq -r '.[] |select(.file=="cosmoshub-4-default")|.url'`
+
+echo $URL
+
+cd $HOME/.gaia
 
 aria2c -x5 $URL
 ```
@@ -74,7 +78,11 @@ aria2c -x5 $URL
 ```bash=
 sudo apt-get install wget liblz4-tool aria2 jq -y
 
-export URL=`curl https://quicksync.io/cosmos.json|jq -r '.[] |select(.file=="cosmoshub-4-pruned")|.url'`
+export URL=`curl -L https://quicksync.io/cosmos.json|jq -r '.[] |select(.file=="cosmoshub-4-pruned")|.url'`
+
+echo $URL
+
+cd $HOME/.gaia
 
 aria2c -x5 $URL
 ```
@@ -84,7 +92,11 @@ aria2c -x5 $URL
 ```bash=
 sudo apt-get install wget liblz4-tool aria2 jq -y
 
-export URL=`curl https://quicksync.io/cosmos.json|jq -r '.[] |select(.file=="cosmoshub-4-archive")|.url'`
+export URL=`curl -L https://quicksync.io/cosmos.json|jq -r '.[] |select(.file=="cosmoshub-4-archive")|.url'`
+
+echo $URL
+
+cd $HOME/.gaia
 
 aria2c -x5 $URL
 ```

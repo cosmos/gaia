@@ -74,11 +74,11 @@ func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 		// this is to ban 1stake passing if the globalfee is 1photon or 0photon
 		// if feeCoins=[] and requiredGlobalFees has 0denom coins then it should pass.
 		if !DenomsSubsetOfIncludingZero(feeCoins, allFees) {
-			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fees %s is not a subset of required fees %s", feeCoins, allFees)
+			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fee is not a subset of required fees; got %s, required: %s", feeCoins, allFees)
 		}
 		// At least one feeCoin amount must be GTE to one of the requiredGlobalFees
 		if !IsAnyGTEIncludingZero(feeCoins, allFees) {
-			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees for global fee; got: %s required: %s", feeCoins, allFees)
+			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins, allFees)
 		}
 	}
 

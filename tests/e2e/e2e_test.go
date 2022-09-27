@@ -670,3 +670,7 @@ func (s *IntegrationTestSuite) TestStaking() {
 	s.testStaking(chainAAPIEndpoint, alice.String(), valOperA.String(), valOperB.String(), delegationFees, gaiaHomePath)
 	s.testDistribution(chainAAPIEndpoint, alice.String(), bob.String(), valOperB.String(), gaiaHomePath)
 }
+
+func (s *IntegrationTestSuite) TestGroups() {
+	s.GroupsSendMsgTest()
+}

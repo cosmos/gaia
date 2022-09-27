@@ -13,7 +13,6 @@ protoc_gen_gocosmos() {
 
 protoc_gen_gocosmos
 
-echo "Generating gogo proto code"
 cd proto
 proto_dirs=$(find ./gaia -path -prune -o -name '*.proto' -print0 | xargs -0 -n1 dirname | sort | uniq)
 for dir in $proto_dirs; do
@@ -27,15 +26,3 @@ cd ..
 # move proto files to the right places
 cp -r github.com/cosmos/gaia/* ./
 rm -rf github.com
-
-## command to generate docs using protoc-gen-doc
-#protoc \
-#-I "proto" \
-#-I "third_party/proto" \
-#--doc_out=./docs/proto \
-#--doc_opt=./docs/proto/protodoc-markdown.tmpl,proto-docs.md \
-#$(find "proto" -maxdepth 5 -name '*.proto')
-#
-## move proto files to the right places
-#cp -r github.com/cosmos/gaia/x/* x/
-#rm -rf github.com

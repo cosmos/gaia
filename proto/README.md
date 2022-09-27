@@ -8,4 +8,10 @@ cd proto
 buf mod update
 cd ..
 make proto-gen
+
+# update proto doc
+make proto-doc
+
+# update proto swagger
+make proto-swagger-gen
 ```

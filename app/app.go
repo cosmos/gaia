@@ -119,6 +119,8 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
+	uibctransfer "github.com/umee-network/umee/v3/x/ibctransfer"
+	uibctransferkeeper "github.com/umee-network/umee/v3/x/ibctransfer/keeper"
 
 	gaiaante "github.com/cosmos/gaia/v8/ante"
 	gaiaappparams "github.com/cosmos/gaia/v8/app/params"
@@ -233,6 +235,7 @@ type GaiaApp struct { //nolint: revive
 	AuthzKeeper         authzkeeper.Keeper
 	LiquidityKeeper     liquiditykeeper.Keeper
 	bech32IbcKeeper     bech32ibckeeper.Keeper
+	UIBCTransferKeeper  uibctransferkeeper.Keeper
 
 	RouterKeeper routerkeeper.Keeper
 
@@ -486,7 +489,10 @@ func NewGaiaApp(
 		app.BankKeeper,
 		scopedTransferKeeper,
 	)
+	app.UIBCTransferKeeper = uibctransferkeeper.New(app.TransferKeeper, app.BankKeeper)
 	transferModule := transfer.NewAppModule(app.TransferKeeper)
+	uibcTransferIBCModule := uibctransfer.NewIBCModule(
+		ibckeeper.NewIBCModule(app.TransferKeeper), app.UIBCTransferKeeper)
 	transferIBCModule := transfer.NewIBCModule(app.TransferKeeper)
 
 	app.ICAControllerKeeper = icacontrollerkeeper.NewKeeper(
@@ -494,6 +500,11 @@ func NewGaiaApp(
 		app.IBCKeeper.ChannelKeeper, // may be replaced with middleware such as ics29 fee
 		app.IBCKeeper.ChannelKeeper, &app.IBCKeeper.PortKeeper,
 		scopedICAControllerKeeper, app.MsgServiceRouter(),
+	)
+
+	app.bech32IbcKeeper = *bech32ibckeeper.NewKeeper(
+		app.IBCKeeper.ChannelKeeper, appCodec, keys[bech32ibctypes.StoreKey],
+		app.UIBCTransferKeeper,
 	)
 
 	app.ICAHostKeeper = icahostkeeper.NewKeeper(
@@ -528,6 +539,11 @@ func NewGaiaApp(
 		AddRoute(ibctransfertypes.ModuleName, transferIBCModule).
 		AddRoute(icamauthtypes.ModuleName, icaControllerIBCModule)
 	app.IBCKeeper.SetRouter(ibcRouter)
+
+	app.bech32IbcKeeper = *bech32ibckeeper.NewKeeper(
+		app.IBCKeeper.ChannelKeeper, appCodec, keys[bech32ibctypes.StoreKey],
+		app.UIBCTransferKeeper,
+	)
 
 	// create evidence keeper with router
 	evidenceKeeper := evidencekeeper.NewKeeper(

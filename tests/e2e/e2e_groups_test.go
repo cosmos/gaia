@@ -3,12 +3,12 @@ package e2e
 import (
 	"errors"
 	"fmt"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"path/filepath"
 	"strconv"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/group"
 )
 

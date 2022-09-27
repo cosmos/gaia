@@ -10,7 +10,7 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     container:
-      image: tendermintdev/docker-website-deployment
+      image: ghcr.io/cosmos/docker-website-deployment
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v3.0.2

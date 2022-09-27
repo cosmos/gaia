@@ -5,6 +5,7 @@ import (
 	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/x/group"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -101,36 +102,6 @@ type AddressResponse struct {
 	Type     string `json:"type"`
 	Address  string `json:"address"`
 	Mnemonic string `json:"mnemonic"`
-}
-
-type GroupMember struct {
-	Address  string `json:"address"`
-	Weight   string `json:"weight"`
-	Metadata string `json:"metadata"`
-}
-
-type MsgSend struct {
-	Type   string     `json:"@type"`
-	From   string     `json:"from_address"`
-	To     string     `json:"to_address"`
-	Amount []sdk.Coin `json:"amount"`
-}
-
-type ThresholdPolicy struct {
-	Type      string               `json:"@type"`
-	Threshold string               `json:"threshold"`
-	Windows   DecisionPolicyWindow `json:"windows"`
-}
-
-type PercentagePolicy struct {
-	Type       string               `json:"@type"`
-	Percentage string               `json:"percentage"`
-	Windows    DecisionPolicyWindow `json:"windows"`
-}
-
-type DecisionPolicyWindow struct {
-	VotingPeriod       string `json:"voting_period"`
-	MinExecutionPeriod string `json:"min_execution_period"`
 }
 
 func TestIntegrationTestSuite(t *testing.T) {
@@ -560,15 +531,15 @@ func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height 
 	s.Require().NoError(err)
 }
 
-func (s *IntegrationTestSuite) writeGroupMembers(c *chain, groupMembers []GroupMember, filename string) {
-	groupMembersBody, err := json.MarshalIndent(struct {
-		Members []GroupMember `json:"members"`
-	}{
+func (s *IntegrationTestSuite) writeGroupMembers(c *chain, groupMembers []group.MemberRequest, filename string) {
+	members := &group.MsgCreateGroup{
 		Members: groupMembers,
-	}, "", " ")
+	}
+
+	membersBody, err := cdc.MarshalJSON(members)
 	s.Require().NoError(err)
 
-	s.writeFile(c, filename, groupMembersBody)
+	s.writeFile(c, filename, membersBody)
 }
 
 func (s *IntegrationTestSuite) writeFile(c *chain, filename string, body []byte) {

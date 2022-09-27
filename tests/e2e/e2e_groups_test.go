@@ -1,9 +1,9 @@
 package e2e
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"path/filepath"
 	"strconv"
 	"time"
@@ -17,7 +17,6 @@ var (
 	aliceAddr                string
 	bobAddr                  string
 	charlieAddr              string
-	members                  []GroupMember
 	groupId                  = 1
 	proposalId               = 1
 	originalMembersFilename  = "members1.json"
@@ -30,19 +29,17 @@ var (
 	proposalMsgSendPath      = "proposal1.json"
 	sendAmount               = sdk.NewInt64Coin(uatomDenom, 5000000)
 
-	windows = DecisionPolicyWindow{
-		MinExecutionPeriod: (0 * time.Second).String(),
-		VotingPeriod:       (30 * time.Second).String(),
+	windows = &group.DecisionPolicyWindows{
+		MinExecutionPeriod: 0 * time.Second,
+		VotingPeriod:       30 * time.Second,
 	}
 
-	thresholdPolicy = ThresholdPolicy{
-		Type:      "/cosmos.group.v1.ThresholdDecisionPolicy",
+	thresholdPolicy = &group.ThresholdDecisionPolicy{
 		Threshold: "1",
 		Windows:   windows,
 	}
 
-	percentagePolicy = PercentagePolicy{
-		Type:       "/cosmos.group.v1.PercentageDecisionPolicy",
+	percentagePolicy = &group.PercentageDecisionPolicy{
 		Percentage: "0.5",
 		Windows:    windows,
 	}
@@ -145,7 +142,7 @@ func getPolicy(policies []*group.GroupPolicyInfo, metadata string, groupId int) 
 }
 
 func (s *IntegrationTestSuite) prepareGroupFiles(c *chain, adminAddr string, member1Address string, member2Address string, member3Address string) {
-	members = []GroupMember{
+	members := []group.MemberRequest{
 		{
 			Address:  adminAddr,
 			Weight:   "1",
@@ -162,16 +159,18 @@ func (s *IntegrationTestSuite) prepareGroupFiles(c *chain, adminAddr string, mem
 			Metadata: "Bob",
 		},
 	}
+
 	s.writeGroupMembers(c, members, originalMembersFilename)
 
-	newMembers := append(members, GroupMember{
+	newMembers := append(members, group.MemberRequest{
 		Address:  member3Address,
 		Weight:   "1",
 		Metadata: "Charlie",
 	})
+
 	s.writeGroupMembers(c, newMembers, addMemberFilename)
 
-	removeMembers := append(members, GroupMember{
+	removeMembers := append(members, group.MemberRequest{
 		Address:  charlieAddr,
 		Weight:   "0",
 		Metadata: "Charlie",
@@ -181,35 +180,32 @@ func (s *IntegrationTestSuite) prepareGroupFiles(c *chain, adminAddr string, mem
 }
 
 func (s *IntegrationTestSuite) writeGroupProposal(c *chain, policyAddress string, signingAddress string, sendAmount sdk.Coin, filename string) {
-	message := MsgSend{
-		Type:   "/cosmos.bank.v1beta1.MsgSend",
-		From:   policyAddress,
-		To:     bobAddr,
-		Amount: []sdk.Coin{sendAmount},
+	msg := &banktypes.MsgSend{
+		FromAddress: policyAddress,
+		ToAddress:   bobAddr,
+		Amount:      []sdk.Coin{sendAmount},
 	}
-	prop := struct {
-		GroupPolicyAddress string    `json:"group_policy_address"`
-		Proposers          []string  `json:"proposers"`
-		Metadata           string    `json:"metadata"`
-		Messages           []MsgSend `json:"messages"`
-	}{
+
+	proposal := &group.Proposal{
 		GroupPolicyAddress: policyAddress,
 		Proposers:          []string{signingAddress},
 		Metadata:           "Send 5uatom to Bob",
-		Messages:           []MsgSend{message},
 	}
 
-	body, err := json.MarshalIndent(prop, "", " ")
+	msgs := []sdk.Msg{msg}
+	proposal.SetMsgs(msgs)
+
+	body, err := cdc.MarshalJSON(proposal)
 	s.Require().NoError(err)
 
 	s.writeFile(c, filename, body)
 }
 
-func (s *IntegrationTestSuite) writeGroupPolicies(c *chain, thresholdFilename string, percentageFilename string, thresholdPolicyJson ThresholdPolicy, percentagePolicyJson PercentagePolicy) {
-	thresholdBody, err := json.MarshalIndent(thresholdPolicyJson, "", " ")
+func (s *IntegrationTestSuite) writeGroupPolicies(c *chain, thresholdFilename string, percentageFilename string, thresholdPolicy *group.ThresholdDecisionPolicy, percentagePolicy *group.PercentageDecisionPolicy) {
+	thresholdBody, err := cdc.MarshalInterfaceJSON(thresholdPolicy)
 	s.Require().NoError(err)
 
-	percentageBody, err := json.MarshalIndent(percentagePolicyJson, "", " ")
+	percentageBody, err := cdc.MarshalInterfaceJSON(percentagePolicy)
 	s.Require().NoError(err)
 
 	s.writeFile(c, thresholdFilename, thresholdBody)

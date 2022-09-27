@@ -330,7 +330,7 @@ func NewAppKeeper(
 		appKeepers.ScopedICAHostKeeper,
 		bApp.MsgServiceRouter(),
 	)
-	appKeepers.ICAModule = ica.NewAppModule(nil, &appKeepers.ICAHostKeeper)
+	appKeepers.ICAModule = ica.NewAppModule(&appKeepers.ICAControllerKeeper, &appKeepers.ICAHostKeeper)
 
 	appKeepers.ICAMauthKeeper = icamauthkeeper.NewKeeper(
 		appCodec,

@@ -462,7 +462,8 @@ func (s *IntegrationTestSuite) executeGKeysAddCommand(c *chain, valIdx int, name
 
 	var addrRecord AddressResponse
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, func(stdOut []byte, stdErr []byte) bool {
-		if err := json.Unmarshal(stdOut, &addrRecord); err != nil {
+		// Gaiad keys add by default returns payload to stdErr
+		if err := json.Unmarshal(stdErr, &addrRecord); err != nil {
 			return false
 		}
 		return strings.Contains(addrRecord.Address, "cosmos")

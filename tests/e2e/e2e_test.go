@@ -671,6 +671,10 @@ func (s *IntegrationTestSuite) TestStaking() {
 	s.testDistribution(chainAAPIEndpoint, alice.String(), bob.String(), valOperB.String(), gaiaHomePath)
 }
 
+func (s *IntegrationTestSuite) TestGroups() {
+	s.GroupsSendMsgTest()
+}
+
 func (s *IntegrationTestSuite) TestSlashing() {
 	chainAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	s.testSlashing(chainAPI)

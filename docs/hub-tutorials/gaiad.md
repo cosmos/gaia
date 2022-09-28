@@ -581,7 +581,7 @@ Some considerations about the voting process:
   - `((YesVotes+NoVotes+NoWithVetoVotes) / totalBondedStake) >= quorum`
 
 For more information about the governance process and how it works, please check
-out the Governance module [specification](https://github.com/cosmos/cosmos-sdk/tree/master/x/gov/spec).
+out the Governance module [specification](https://github.com/cosmos/cosmos-sdk/tree/main/x/gov#xgov).
 
 #### Create a Governance Proposal
 

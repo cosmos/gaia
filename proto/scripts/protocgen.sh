@@ -23,6 +23,6 @@ done
 
 cd ..
 
-# move proto files to the right places
+# move the generated proto files (*.pb.go / *.pb.gw.go) to x/gaia/<module-name>/types/ directory
 cp -r github.com/cosmos/gaia/* ./
 rm -rf github.com

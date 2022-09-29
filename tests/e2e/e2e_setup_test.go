@@ -298,7 +298,7 @@ func (s *IntegrationTestSuite) initGenesis(c *chain, jailedValMnemonic string) {
 	})
 
 	stakingGenState.Params = stakingtypes.Params{
-		UnbondingTime:     10000,
+		UnbondingTime:     1210000 * time.Second,
 		MaxValidators:     1,
 		MaxEntries:        10,
 		HistoricalEntries: 0,

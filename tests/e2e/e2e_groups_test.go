@@ -167,16 +167,11 @@ func (s *IntegrationTestSuite) prepareGroupFiles(c *chain, adminAddr string, mem
 		Weight:   "1",
 		Metadata: "Charlie",
 	})
-
 	s.writeGroupMembers(c, newMembers, addMemberFilename)
 
-	removeMembers := append(members, group.MemberRequest{
-		Address:  charlieAddr,
-		Weight:   "0",
-		Metadata: "Charlie",
-	})
-
-	s.writeGroupMembers(c, removeMembers, removeMemberFilename)
+	// Update weight to 0 to remove member from group
+	newMembers[2].Weight = "0"
+	s.writeGroupMembers(c, newMembers, removeMemberFilename)
 }
 
 func (s *IntegrationTestSuite) writeGroupProposal(c *chain, policyAddress string, signingAddress string, sendAmount sdk.Coin, filename string) {

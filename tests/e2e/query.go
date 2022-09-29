@@ -57,16 +57,9 @@ func getSpecificBalance(endpoint, addr, denom string) (amt sdk.Coin, err error) 
 }
 
 func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) {
-	resp, err := http.Get(fmt.Sprintf("%s/cosmos/bank/v1beta1/balances/%s", endpoint, addr))
+	bz, err := httpGet(fmt.Sprintf("%s/cosmos/bank/v1beta1/balances/%s", endpoint, addr))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
-	}
-
-	defer resp.Body.Close()
-
-	bz, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
 	}
 
 	var balancesResp banktypes.QueryAllBalancesResponse
@@ -81,16 +74,9 @@ func queryGovProposal(endpoint string, proposalID int) (govv1beta1.QueryProposal
 	var govProposalResp govv1beta1.QueryProposalResponse
 
 	path := fmt.Sprintf("%s/cosmos/gov/v1beta1/proposals/%d", endpoint, proposalID)
-
-	resp, err := http.Get(path) //nolint:gosec // this is only used during tests
+	body, err := httpGet(path) //nolint:gosec // this is only used during tests
 	if err != nil {
 		return govProposalResp, fmt.Errorf("failed to execute HTTP request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return govProposalResp, err
 	}
 
 	if err := cdc.UnmarshalJSON(body, &govProposalResp); err != nil {
@@ -101,19 +87,13 @@ func queryGovProposal(endpoint string, proposalID int) (govv1beta1.QueryProposal
 }
 
 func queryGlobalFees(endpoint string) (amt sdk.DecCoins, err error) {
-	resp, err := http.Get(fmt.Sprintf("%s/gaia/globalfee/v1beta1/minimum_gas_prices", endpoint))
+	body, err := httpGet(fmt.Sprintf("%s/gaia/globalfee/v1beta1/minimum_gas_prices", endpoint))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
-	defer resp.Body.Close()
-
-	bz, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
 
 	var fees globalfee.QueryMinimumGasPricesResponse
-	if err := cdc.UnmarshalJSON(bz, &fees); err != nil {
+	if err := cdc.UnmarshalJSON(body, &fees); err != nil {
 		return sdk.DecCoins{}, err
 	}
 
@@ -174,17 +154,12 @@ func queryDelegatorWithdrawalAddress(endpoint string, delegatorAddr string) (dis
 func queryValidator(endpoint, address string) (stakingtypes.Validator, error) {
 	var res stakingtypes.QueryValidatorResponse
 
-	resp, err := http.Get(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators/%s", endpoint, address))
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators/%s", endpoint, address))
 	if err != nil {
 		return stakingtypes.Validator{}, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
-	defer resp.Body.Close()
 
-	bz, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return stakingtypes.Validator{}, err
-	}
-	if err := cdc.UnmarshalJSON(bz, &res); err != nil {
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
 		return stakingtypes.Validator{}, err
 	}
 	return res.Validator, nil
@@ -192,17 +167,12 @@ func queryValidator(endpoint, address string) (stakingtypes.Validator, error) {
 
 func queryValidators(endpoint string) (stakingtypes.Validators, error) {
 	var res stakingtypes.QueryValidatorsResponse
-	resp, err := http.Get(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators", endpoint))
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators", endpoint))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
-	defer resp.Body.Close()
 
-	bz, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	if err := cdc.UnmarshalJSON(bz, &res); err != nil {
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
 		return nil, err
 	}
 	return res.Validators, nil

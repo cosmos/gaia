@@ -42,7 +42,7 @@ import (
 	"github.com/cosmos/gaia/v8/app/keepers"
 	gaiaappparams "github.com/cosmos/gaia/v8/app/params"
 	"github.com/cosmos/gaia/v8/app/upgrades"
-	v8 "github.com/cosmos/gaia/v8/app/upgrades/v8"
+	v7 "github.com/cosmos/gaia/v8/app/upgrades/v7"
 	"github.com/cosmos/gaia/v8/x/globalfee"
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
@@ -52,7 +52,7 @@ var (
 	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
 
-	Upgrades = []upgrades.Upgrade{v8.Upgrade}
+	Upgrades = []upgrades.Upgrade{v7.Upgrade}
 )
 
 var (

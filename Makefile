@@ -89,7 +89,7 @@ endif
 include contrib/devtools/Makefile
 
 ###############################################################################
-###                              Documentation                              ###
+###                              Build / Clean                              ###
 ###############################################################################
 
 all: install lint run-tests test-e2e
@@ -136,6 +136,8 @@ clean:
 
 distclean: clean
 	rm -rf vendor/
+
+.PHONY: all build-linux install go-mod-cache draw-deps clean build distclean
 
 ###############################################################################
 ###                                 Devdoc                                  ###
@@ -192,15 +194,41 @@ endif
 
 .PHONY: run-tests $(TEST_TARGETS)
 
+###############################################################################
+###                                Docker                                   ###
+###############################################################################
+
+test-docker:
+	@docker build -f contrib/Dockerfile.test -t ${TEST_DOCKER_REPO}:$(shell git rev-parse --short HEAD) .
+	@docker tag ${TEST_DOCKER_REPO}:$(shell git rev-parse --short HEAD) ${TEST_DOCKER_REPO}:$(shell git rev-parse --abbrev-ref HEAD | sed 's#/#_#g')
+	@docker tag ${TEST_DOCKER_REPO}:$(shell git rev-parse --short HEAD) ${TEST_DOCKER_REPO}:latest
+
+test-docker-push: test-docker
+	@docker push ${TEST_DOCKER_REPO}:$(shell git rev-parse --short HEAD)
+	@docker push ${TEST_DOCKER_REPO}:$(shell git rev-parse --abbrev-ref HEAD | sed 's#/#_#g')
+	@docker push ${TEST_DOCKER_REPO}:latest
+
+# e2e Gaia image
 docker-build-debug:
 	@docker build -t cosmos/gaiad-e2e -f e2e.Dockerfile .
+	@docker tag cosmos/gaiad-e2e:latest ghcr.io/cosmos/gaiad-e2e:latest
 
-# TODO: Push this to the Cosmos Dockerhub so we don't have to keep building it
-# in CI.
+# e2e Hermes image
 docker-build-hermes:
 	@cd tests/e2e/docker; docker build -t cosmos/hermes-e2e:latest -f hermes.Dockerfile .
+	@docker tag cosmos/hermes-e2e:latest ghcr.io/cosmos/hermes-e2e:latest
+
+docker-gitpod-image:
+	@cd contrib/gaia-gitpod; docker build -t cosmos/cosmos-gitpod-image:latest -f Dockerfile . ; docker tag cosmos/cosmos-gitpod-image:latest ghcr.io/cosmos/cosmos-gitpod-image:latest
 
 docker-build-all: docker-build-debug docker-build-hermes
+
+docker-push-images:
+	@docker push ghcr.io/cosmos/gaiad-e2e:latest
+	@docker push ghcr.io/cosmos/hermes-e2e:latest
+	@docker push ghcr.io/cosmos/cosmos-gitpod-image:latest
+
+.PHONY: docker-build-debug docker-build-hermes docker-gitpod-image docker-build-all docker-push-images
 
 ###############################################################################
 ###                                Linting                                  ###
@@ -213,7 +241,8 @@ lint:
 format:
 	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/docs/statik/statik.go" -not -path "./tests/mocks/*" -not -name "*.pb.go" -not -name "*.pb.gw.go" -not -name "*.pulsar.go" -not -path "./crypto/keys/secp256k1/*" | xargs gofumpt -w -l
 	golangci-lint run --fix
-.PHONY: format
+
+.PHONY: lint format
 
 ###############################################################################
 ###                                Localnet                                 ###
@@ -232,24 +261,6 @@ start-localnet-ci: build
 	./build/gaiad start --home ~/.gaiad-liveness --x-crisis-skip-assert-invariants
 
 .PHONY: start-localnet-ci
-
-###############################################################################
-###                                Docker                                   ###
-###############################################################################
-
-test-docker:
-	@docker build -f contrib/Dockerfile.test -t ${TEST_DOCKER_REPO}:$(shell git rev-parse --short HEAD) .
-	@docker tag ${TEST_DOCKER_REPO}:$(shell git rev-parse --short HEAD) ${TEST_DOCKER_REPO}:$(shell git rev-parse --abbrev-ref HEAD | sed 's#/#_#g')
-	@docker tag ${TEST_DOCKER_REPO}:$(shell git rev-parse --short HEAD) ${TEST_DOCKER_REPO}:latest
-
-test-docker-push: test-docker
-	@docker push ${TEST_DOCKER_REPO}:$(shell git rev-parse --short HEAD)
-	@docker push ${TEST_DOCKER_REPO}:$(shell git rev-parse --abbrev-ref HEAD | sed 's#/#_#g')
-	@docker push ${TEST_DOCKER_REPO}:latest
-
-.PHONY: all build-linux install format lint go-mod-cache draw-deps clean build \
-	docker-build-debug docker-build-hermes docker-build-all
-
 
 ###############################################################################
 ###                                Protobuf                                 ###

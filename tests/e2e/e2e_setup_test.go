@@ -297,15 +297,6 @@ func (s *IntegrationTestSuite) initGenesis(c *chain, jailedValMnemonic string) {
 		Shares:           sdk.NewDec(slashingShares),
 	})
 
-	stakingGenState.Params = stakingtypes.Params{
-		UnbondingTime:     1210000 * time.Second,
-		MaxValidators:     1,
-		MaxEntries:        10,
-		HistoricalEntries: 0,
-		BondDenom:         uatomDenom,
-		MinCommissionRate: sdk.NewDec(0),
-	}
-
 	appGenState[stakingtypes.ModuleName], err = cdc.MarshalJSON(&stakingGenState)
 	s.Require().NoError(err)
 

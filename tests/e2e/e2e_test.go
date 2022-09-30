@@ -671,13 +671,14 @@ func (s *IntegrationTestSuite) TestStaking() {
 	s.testDistribution(chainAAPIEndpoint, alice.String(), bob.String(), valOperB.String(), gaiaHomePath)
 }
 
+func (s *IntegrationTestSuite) TestGroups() {
+	s.GroupsSendMsgTest()
+}
+
 func (s *IntegrationTestSuite) TestVesting() {
-	var (
-		chainAAPI = fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-		home      = "/home/nonroot/.gaia"
-	)
-	s.testDelayedVestingAccount(chainAAPI, home)
-	s.testContinuousVestingAccount(chainAAPI, home)
-	s.testPermanentLockedAccount(chainAAPI, home)
-	s.testPeriodicVestingAccount(chainAAPI, home)
+	chainAAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	s.testDelayedVestingAccount(chainAAPI)
+	s.testContinuousVestingAccount(chainAAPI)
+	s.testPermanentLockedAccount(chainAAPI)
+	s.testPeriodicVestingAccount(chainAAPI)
 }

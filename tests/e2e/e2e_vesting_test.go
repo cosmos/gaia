@@ -39,7 +39,7 @@ var (
 	vestingDelegationFees   = sdk.NewCoin(uatomDenom, sdk.NewInt(10))
 )
 
-func (s *IntegrationTestSuite) testDelayedVestingAccount(api, home string) {
+func (s *IntegrationTestSuite) testDelayedVestingAccount(api string) {
 	var (
 		valIdx            = 0
 		chain             = s.chainA
@@ -61,7 +61,7 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api, home string) {
 
 		// Delegate coins should succeed
 		s.executeDelegate(chain, valIdx, vestingDelegationAmount.String(), valOpAddr,
-			vestingDelayedAcc.String(), home, vestingDelegationFees.String())
+			vestingDelayedAcc.String(), gaiaHomePath, vestingDelegationFees.String())
 
 		// Validate delegation successful
 		s.Require().Eventually(
@@ -109,7 +109,7 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api, home string) {
 	})
 }
 
-func (s *IntegrationTestSuite) testContinuousVestingAccount(api, home string) {
+func (s *IntegrationTestSuite) testContinuousVestingAccount(api string) {
 	s.Run("test continuous vesting genesis account", func() {
 		var (
 			valIdx               = 0
@@ -131,7 +131,7 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api, home string) {
 
 		// Delegate coins should succeed
 		s.executeDelegate(chain, valIdx, vestingDelegationAmount.String(),
-			valOpAddr, continuousVestingAcc.String(), home, vestingDelegationFees.String())
+			valOpAddr, continuousVestingAcc.String(), gaiaHomePath, vestingDelegationFees.String())
 
 		// Validate delegation successful
 		s.Require().Eventually(
@@ -197,7 +197,7 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api, home string) {
 	})
 }
 
-func (s *IntegrationTestSuite) testPermanentLockedAccount(api, home string) {
+func (s *IntegrationTestSuite) testPermanentLockedAccount(api string) {
 	s.Run("test permanent locked vesting genesis account", func() {
 		var (
 			valIdx              = 0
@@ -209,7 +209,7 @@ func (s *IntegrationTestSuite) testPermanentLockedAccount(api, home string) {
 		s.NoError(err)
 		valOpAddr := sdk.ValAddress(sender).String()
 
-		s.execCreatePermanentLockedAccount(chain, home, permanentLockedAddr,
+		s.execCreatePermanentLockedAccount(chain, permanentLockedAddr,
 			vestingAmountVested.String(), withKeyValue(flagFrom, sender.String()),
 		)
 
@@ -227,7 +227,7 @@ func (s *IntegrationTestSuite) testPermanentLockedAccount(api, home string) {
 
 		// Delegate coins should succeed
 		s.executeDelegate(chain, valIdx, vestingDelegationAmount.String(), valOpAddr,
-			permanentLockedAddr, home, vestingDelegationFees.String())
+			permanentLockedAddr, gaiaHomePath, vestingDelegationFees.String())
 
 		// Validate delegation successful
 		s.Require().Eventually(
@@ -250,7 +250,7 @@ func (s *IntegrationTestSuite) testPermanentLockedAccount(api, home string) {
 	})
 }
 
-func (s *IntegrationTestSuite) testPeriodicVestingAccount(api, home string) {
+func (s *IntegrationTestSuite) testPeriodicVestingAccount(api string) {
 	s.Run("test periodic vesting genesis account", func() {
 		var (
 			valIdx              = 0
@@ -264,7 +264,6 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api, home string) {
 
 		s.execCreatePeriodicVestingAccount(
 			chain,
-			home,
 			periodicVestingAddr,
 			withKeyValue(flagFrom, sender.String()),
 		)
@@ -322,7 +321,7 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api, home string) {
 
 		// Delegate coins should succeed
 		s.executeDelegate(chain, valIdx, vestingDelegationAmount.String(), valOpAddr,
-			periodicVestingAddr, home, vestingDelegationFees.String())
+			periodicVestingAddr, gaiaHomePath, vestingDelegationFees.String())
 
 		// Validate delegation successful
 		s.Require().Eventually(

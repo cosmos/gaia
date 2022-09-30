@@ -37,7 +37,7 @@ func withKeyValue(key string, value interface{}) flagOption {
 	}
 }
 
-func applyOptions(chainID, home string, options []flagOption) map[string]interface{} {
+func applyOptions(chainID string, options []flagOption) map[string]interface{} {
 	opts := map[string]interface{}{
 		flagKeyringBackend: "test",
 		flagOutput:         "json",
@@ -45,7 +45,7 @@ func applyOptions(chainID, home string, options []flagOption) map[string]interfa
 		flagFrom:           "alice",
 		flagBroadcastMode:  "sync",
 		flagChainID:        chainID,
-		flagHome:           home,
+		flagHome:           gaiaHomePath,
 		flagFees:           fees.String(),
 	}
 	for _, apply := range options {
@@ -56,12 +56,11 @@ func applyOptions(chainID, home string, options []flagOption) map[string]interfa
 
 func (s *IntegrationTestSuite) execVestingTx(
 	c *chain,
-	home,
 	method string,
 	args []string,
 	opt ...flagOption,
 ) {
-	opts := applyOptions(c.id, home, opt)
+	opts := applyOptions(c.id, opt)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -85,25 +84,23 @@ func (s *IntegrationTestSuite) execVestingTx(
 
 func (s *IntegrationTestSuite) execCreatePermanentLockedAccount(
 	c *chain,
-	home,
 	address,
 	amount string,
 	opt ...flagOption,
 ) {
 	s.T().Logf("Executing gaiad create a permanent locked vesting account %s", c.id)
-	s.execVestingTx(c, home, "create-permanent-locked-account", []string{address, amount}, opt...)
+	s.execVestingTx(c, "create-permanent-locked-account", []string{address, amount}, opt...)
 	s.T().Logf("successfully created permanent locked vesting account %s with %s", address, amount)
 }
 
 func (s *IntegrationTestSuite) execCreatePeriodicVestingAccount(
 	c *chain,
-	home,
 	address string,
 	opt ...flagOption,
 ) {
-	jsonPath := filepath.Join(home, vestingPeriodFilePath)
+	jsonPath := filepath.Join(gaiaHomePath, vestingPeriodFilePath)
 	s.T().Logf("Executing gaiad create periodic vesting account %s", c.id)
-	s.execVestingTx(c, home, "create-periodic-vesting-account", []string{address, jsonPath}, opt...)
+	s.execVestingTx(c, "create-periodic-vesting-account", []string{address, jsonPath}, opt...)
 	s.T().Logf("successfully created periodic vesting account %s with %s", address, jsonPath)
 }
 
@@ -491,7 +488,8 @@ func (s *IntegrationTestSuite) executeGKeysAddCommand(c *chain, valIdx int, name
 
 	var addrRecord AddressResponse
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, func(stdOut []byte, stdErr []byte) bool {
-		if err := json.Unmarshal(stdOut, &addrRecord); err != nil {
+		// Gaiad keys add by default returns payload to stdErr
+		if err := json.Unmarshal(stdErr, &addrRecord); err != nil {
 			return false
 		}
 		return strings.Contains(addrRecord.Address, "cosmos")

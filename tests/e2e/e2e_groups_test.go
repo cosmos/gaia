@@ -45,6 +45,26 @@ var (
 	}
 )
 
+/*
+GroupsSendMsgTest tests group lifecycle, policy creation, and proposal submission.
+Test Benchmarks:
+1. Create group with 3 members, including the administrator
+2. Update group members to add a new member
+3. Query and validate group size has increased to 4
+4. Update group members to remove recently added member
+5. Query and validate group size has returned to 3
+6. Create threshold decision policy (threshold = 1, tally of voter weights required to pass a proposal)
+7. Query and validate policy successfully created
+8. Fund threshold decision policy and validate balanced has increased by expected amount
+9. Submit and vote YES with sufficient threshold on a group proposal on behalf of the threshold decision policy to send tokens to Bob
+10. Validate that the proposal status is PROPOSAL_STATUS_ACCEPTED
+11. Execute passed proposal (execution must happen within MaxExecutionPeriod, fees are paid by executor)
+12. Validate proposal has passed by verifying Bob's balance has increased by expected amount
+13. Create percentage decision policy (percentage = 0.5, percentage of voting power required to pass a proposal)
+14. Query and validate policy successfully created
+15. Submit and vote NO with insufficient perfentage on a group proposal on behalf of the percentage decision policy to send tokens to bob
+16. Validate that the proposal status is PROPOSAL_STATUS_REJECTED
+*/
 func (s *IntegrationTestSuite) GroupsSendMsgTest() {
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	s.setupGroupsSuite()

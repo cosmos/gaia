@@ -719,10 +719,13 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 func (s *IntegrationTestSuite) expectErrExecValidation(chain *chain, valIdx int, expectErr bool) func([]byte, []byte) bool {
 	return func(stdOut []byte, stdErr []byte) bool {
 		var txResp sdk.TxResponse
-		s.Require().NoError(cdc.UnmarshalJSON(stdOut, &txResp))
+		gotErr := cdc.UnmarshalJSON(stdOut, &txResp) != nil
+		if gotErr {
+			s.Require().True(expectErr)
+		}
+
 		endpoint := fmt.Sprintf("http://%s", s.valResources[chain.id][valIdx].GetHostPort("1317/tcp"))
 		// wait for the tx to be committed on chain
-		var err error
 		s.Require().Eventuallyf(
 			func() bool {
 				gotErr := queryGaiaTx(endpoint, txResp.TxHash) != nil
@@ -730,8 +733,8 @@ func (s *IntegrationTestSuite) expectErrExecValidation(chain *chain, valIdx int,
 			},
 			time.Minute,
 			5*time.Second,
-			"stdOut: %s, stdErr: %s, err: %v",
-			string(stdOut), string(stdErr), err,
+			"stdOut: %s, stdErr: %s",
+			string(stdOut), string(stdErr),
 		)
 		return true
 	}

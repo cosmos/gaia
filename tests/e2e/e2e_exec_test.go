@@ -11,10 +11,92 @@ import (
 	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/ory/dockertest/v3/docker"
 )
 
-func (s *IntegrationTestSuite) execBankSend(c *chain, valIdx int, from, to, amt, fees string, expectErr bool) {
+const (
+	flagSpendLimit      = "spend-limit"
+	flagAllowedMessages = "allowed-messages"
+	flagFrom            = "from"
+	flagHome            = "home"
+	flagFees            = "fees"
+	flagFeeGranter      = "fee-granter"
+	flagGas             = "gas"
+	flagOutput          = "output"
+	flagChainID         = "chain-id"
+	flagBroadcastMode   = "broadcast-mode"
+	flagKeyringBackend  = "keyring-backend"
+)
+
+type flagOption func(map[string]interface{})
+
+// withKeyValue add a new flag to command
+func withKeyValue(key string, value interface{}) flagOption {
+	return func(o map[string]interface{}) {
+		o[key] = value
+	}
+}
+
+func applyOptions(chainID string, options []flagOption) map[string]interface{} {
+	opts := map[string]interface{}{
+		flagHome:           gaiaHomePath,
+		flagKeyringBackend: "test",
+		flagOutput:         "json",
+		flagGas:            "auto",
+		flagFrom:           "alice",
+		flagBroadcastMode:  "sync",
+		flagChainID:        chainID,
+		flagFees:           fees.String(),
+	}
+	for _, apply := range options {
+		apply(opts)
+	}
+	return opts
+}
+
+func (s *IntegrationTestSuite) execFeeGrant(c *chain, valIdx int, granter, grantee, spendLimit string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("granting %s fee from %s on chain %s", grantee, granter, c.id)
+
+	gaiaCommand := []string{
+		gaiadBinary,
+		"tx",
+		"feegrant",
+		"grant",
+		granter,
+		grantee,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, granter),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, fees.String()),
+		fmt.Sprintf("--%s=%s", flagSpendLimit, spendLimit),
+		fmt.Sprintf("--%s=%s", flagAllowedMessages, sdk.MsgTypeURL(&banktypes.MsgSend{})),
+		"--keyring-backend=test",
+		"--broadcast-mode=sync",
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
+}
+
+func (s *IntegrationTestSuite) execBankSend(
+	c *chain,
+	valIdx int,
+	from,
+	to,
+	amt,
+	fees string,
+	expectErr bool,
+	opt ...flagOption,
+) {
+	// TODO remove the hardcode opt after refactor
+	opt = append(opt, withKeyValue(flagFees, fees))
+	opt = append(opt, withKeyValue(flagFrom, from))
+	opts := applyOptions(c.id, opt)
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -28,12 +110,10 @@ func (s *IntegrationTestSuite) execBankSend(c *chain, valIdx int, from, to, amt,
 		from,
 		to,
 		amt,
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, fees),
-		"--keyring-backend=test",
-		"--broadcast-mode=sync",
-		"--output=json",
 		"-y",
+	}
+	for flag, value := range opts {
+		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
 	}
 
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.expectErrExecValidation(c, valIdx, expectErr))

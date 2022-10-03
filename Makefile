@@ -258,39 +258,12 @@ proto-gen:
 	@echo "Generating Protobuf files"
 	@sh ./proto/scripts/protocgen.sh
 
-TM_URL              = https://raw.githubusercontent.com/tendermint/tendermint/v0.34.21/proto/tendermint
+proto-doc:
+	@echo "Generating Protoc docs"
+	@sh ./proto/scripts/protoc-doc-gen.sh
 
-TM_CRYPTO_TYPES     = third_party/proto/tendermint/crypto
-TM_ABCI_TYPES       = third_party/proto/tendermint/abci
-TM_TYPES            = third_party/proto/tendermint/types
-TM_VERSION          = third_party/proto/tendermint/version
-TM_LIBS             = third_party/proto/tendermint/libs/bits
-TM_P2P              = third_party/proto/tendermint/p2p
+proto-swagger-gen:
+	@echo "Generating Protobuf Swagger"
+	@sh ./proto/scripts/protoc-swagger-gen.sh
 
-proto-update-deps:
-	@echo "Updating Protobuf tendermint"
-
-	@mkdir -p $(TM_ABCI_TYPES)
-	@curl -sSL $(TM_URL)/abci/types.proto > $(TM_ABCI_TYPES)/types.proto
-
-	@mkdir -p $(TM_VERSION)
-	@curl -sSL $(TM_URL)/version/types.proto > $(TM_VERSION)/types.proto
-
-	@mkdir -p $(TM_TYPES)
-	@curl -sSL $(TM_URL)/types/types.proto > $(TM_TYPES)/types.proto
-	@curl -sSL $(TM_URL)/types/evidence.proto > $(TM_TYPES)/evidence.proto
-	@curl -sSL $(TM_URL)/types/params.proto > $(TM_TYPES)/params.proto
-	@curl -sSL $(TM_URL)/types/validator.proto > $(TM_TYPES)/validator.proto
-	@curl -sSL $(TM_URL)/types/block.proto > $(TM_TYPES)/block.proto
-
-	@mkdir -p $(TM_CRYPTO_TYPES)
-	@curl -sSL $(TM_URL)/crypto/proof.proto > $(TM_CRYPTO_TYPES)/proof.proto
-	@curl -sSL $(TM_URL)/crypto/keys.proto > $(TM_CRYPTO_TYPES)/keys.proto
-
-	@mkdir -p $(TM_LIBS)
-	@curl -sSL $(TM_URL)/libs/bits/types.proto > $(TM_LIBS)/types.proto
-
-	@mkdir -p $(TM_P2P)
-	@curl -sSL $(TM_URL)/p2p/types.proto > $(TM_P2P)/types.proto
-
-.PHONY: proto-gen proto-update-deps
+.PHONY: proto-gen proto-doc proto-swagger-gen

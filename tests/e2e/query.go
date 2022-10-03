@@ -10,6 +10,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	staketypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	globalfee "github.com/cosmos/gaia/v8/x/globalfee/types"
@@ -161,6 +162,19 @@ func queryDelegatorWithdrawalAddress(endpoint string, delegatorAddr string) (dis
 	var res disttypes.QueryDelegatorWithdrawAddressResponse
 
 	body, err := httpGet(fmt.Sprintf("%s/cosmos/distribution/v1beta1/delegators/%s/withdraw_address", endpoint, delegatorAddr))
+	if err != nil {
+		return res, err
+	}
+
+	if err = cdc.UnmarshalJSON(body, &res); err != nil {
+		return res, err
+	}
+	return res, nil
+}
+
+func queryAllEvidence(endpoint string) (evidencetypes.QueryAllEvidenceResponse, error) {
+	var res evidencetypes.QueryAllEvidenceResponse
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/evidence/v1beta1/evidence", endpoint))
 	if err != nil {
 		return res, err
 	}

@@ -15,12 +15,15 @@ import (
 
 	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/cosmos/gaia/v8/app/params"
@@ -52,6 +55,7 @@ const (
 	govProposalBlockBuffer     = 35
 	relayerAccountIndex        = 0
 	icaOwnerAccountIndex       = 1
+	numberOfEvidences          = 10
 )
 
 var (
@@ -276,6 +280,26 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 	bz, err := cdc.MarshalJSON(&bankGenState)
 	s.Require().NoError(err)
 	appGenState[banktypes.ModuleName] = bz
+
+	var evidenceGenState evidencetypes.GenesisState
+	s.Require().NoError(cdc.UnmarshalJSON(appGenState[evidencetypes.ModuleName], &evidenceGenState))
+
+	evidenceGenState.Evidence = make([]*codectypes.Any, numberOfEvidences)
+	for i := range evidenceGenState.Evidence {
+		pk := ed25519.GenPrivKey()
+		evidence := &evidencetypes.Equivocation{
+			Height:           1,
+			Power:            100,
+			Time:             time.Now().UTC(),
+			ConsensusAddress: sdk.ConsAddress(pk.PubKey().Address().Bytes()).String(),
+		}
+		evidenceGenState.Evidence[i], err = codectypes.NewAnyWithValue(evidence)
+		s.Require().NoError(err)
+	}
+
+	bz, err = cdc.MarshalJSON(&evidenceGenState)
+	s.Require().NoError(err)
+	appGenState[evidencetypes.ModuleName] = bz
 
 	var genUtilGenState genutiltypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[genutiltypes.ModuleName], &genUtilGenState))

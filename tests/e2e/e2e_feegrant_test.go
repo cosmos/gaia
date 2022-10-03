@@ -1,10 +1,13 @@
 package e2e
 
+import "fmt"
+
 func (s *IntegrationTestSuite) TestFeeGrant() {
 	s.Run("test fee grant module", func() {
 		var (
 			valIdx = 0
 			chain  = s.chainA
+			api    = fmt.Sprintf("http://%s", s.valResources[chain.id][valIdx].GetHostPort("1317/tcp"))
 		)
 
 		alice, err := chain.genesisAccounts[0].keyInfo.GetAddress()
@@ -21,6 +24,9 @@ func (s *IntegrationTestSuite) TestFeeGrant() {
 			fees.String(),
 		)
 
+		bobBalance, err := getSpecificBalance(api, bob.String(), uatomDenom)
+		s.Require().NoError(err)
+
 		// withdrawal all balance + fee + fee granter flag should succeed
 		s.execBankSend(
 			chain,
@@ -32,6 +38,12 @@ func (s *IntegrationTestSuite) TestFeeGrant() {
 			false,
 			withKeyValue(flagFeeGranter, alice.String()),
 		)
+
+		// check if the bob balance was subtracted without the fees
+		expectedBobBalance := bobBalance.Sub(tokenAmount)
+		bobBalance, err = getSpecificBalance(api, bob.String(), uatomDenom)
+		s.Require().NoError(err)
+		s.Require().Equal(expectedBobBalance, bobBalance)
 
 		// tx should fail after spend limit reach
 		s.execBankSend(

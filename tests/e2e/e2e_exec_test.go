@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -481,7 +482,45 @@ func (s *IntegrationTestSuite) executeRedelegate(c *chain, valIdx int, amount, o
 	s.T().Logf("%s successfully redelegated %s from %s to %s", delegatorAddr, amount, originalValOperAddress, newValOperAddress)
 }
 
-func (s *IntegrationTestSuite) execSetWithrawAddress(
+func (s *IntegrationTestSuite) getLatestBlockHeight(c *chain, valIdx int) int {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	type syncInfo struct {
+		SyncInfo struct {
+			LatestHeight string `json:"latest_block_height"`
+		} `json:"SyncInfo"`
+	}
+
+	var currentHeight int
+	gaiaCommand := []string{gaiadBinary, "status"}
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, func(stdOut []byte, stdErr []byte) bool {
+		var (
+			err   error
+			block syncInfo
+		)
+		s.Require().NoError(json.Unmarshal(stdErr, &block))
+		currentHeight, err = strconv.Atoi(block.SyncInfo.LatestHeight)
+		s.Require().NoError(err)
+		return currentHeight > 0
+	})
+	return currentHeight
+}
+
+func (s *IntegrationTestSuite) verifyBalanceChange(endpoint string, expectedAmount sdk.Coin, recipientAddress string) {
+	s.Require().Eventually(
+		func() bool {
+			afterAtomBalance, err := getSpecificBalance(endpoint, recipientAddress, uatomDenom)
+			s.Require().NoError(err)
+
+			return afterAtomBalance.IsEqual(expectedAmount)
+		},
+		20*time.Second,
+		5*time.Second,
+	)
+}
+
+func (s *IntegrationTestSuite) execSetWithdrawAddress(
 	c *chain,
 	valIdx int,
 	fees,

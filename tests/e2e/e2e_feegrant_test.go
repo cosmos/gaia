@@ -1,7 +1,21 @@
 package e2e
 
-import "fmt"
+import (
+	"fmt"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+)
+
+/*
+TestFeeGrant creates a test to ensure that Alice can grant the fees for bob.
+Test Benchmarks:
+1. Execute fee grant CLI command for Alice to pay bob fees
+2. Send a transaction from bob with Alice as a fee granter
+3. Check the bob balances if the fee was not deducted
+4. Try to send a transaction from bob with Alice as a fee granter again. Should fail
+because all amount granted was expended
+*/
 func (s *IntegrationTestSuite) TestFeeGrant() {
 	s.Run("test fee grant module", func() {
 		var (
@@ -22,6 +36,7 @@ func (s *IntegrationTestSuite) TestFeeGrant() {
 			alice.String(),
 			bob.String(),
 			fees.String(),
+			withKeyValue(flagAllowedMessages, sdk.MsgTypeURL(&banktypes.MsgSend{})),
 		)
 
 		bobBalance, err := getSpecificBalance(api, bob.String(), uatomDenom)

@@ -11,7 +11,7 @@ import (
 	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	"github.com/ory/dockertest/v3/docker"
 )
 
@@ -55,7 +55,12 @@ func applyOptions(chainID string, options []flagOption) map[string]interface{} {
 	return opts
 }
 
-func (s *IntegrationTestSuite) execFeeGrant(c *chain, valIdx int, granter, grantee, spendLimit string) {
+func (s *IntegrationTestSuite) execFeeGrant(c *chain, valIdx int, granter, grantee, spendLimit string, opt ...flagOption) {
+	opt = append(opt, withKeyValue(flagFees, fees))
+	opt = append(opt, withKeyValue(flagFrom, granter))
+	opt = append(opt, withKeyValue(flagSpendLimit, spendLimit))
+	opts := applyOptions(c.id, opt)
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -64,19 +69,14 @@ func (s *IntegrationTestSuite) execFeeGrant(c *chain, valIdx int, granter, grant
 	gaiaCommand := []string{
 		gaiadBinary,
 		"tx",
-		"feegrant",
+		feegrant.ModuleName,
 		"grant",
 		granter,
 		grantee,
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, granter),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, fees.String()),
-		fmt.Sprintf("--%s=%s", flagSpendLimit, spendLimit),
-		fmt.Sprintf("--%s=%s", flagAllowedMessages, sdk.MsgTypeURL(&banktypes.MsgSend{})),
-		"--keyring-backend=test",
-		"--broadcast-mode=sync",
-		"--output=json",
 		"-y",
+	}
+	for flag, value := range opts {
+		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
 	}
 
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))

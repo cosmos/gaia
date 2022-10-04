@@ -8,7 +8,7 @@ import (
 )
 
 func (s *IntegrationTestSuite) TestEvidence() {
-	s.Run("teste query evidences", func() {
+	s.Run("test evidence queries", func() {
 		var (
 			valIdx   = 0
 			chain    = s.chainA

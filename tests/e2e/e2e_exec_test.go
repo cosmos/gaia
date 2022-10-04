@@ -16,8 +16,6 @@ import (
 )
 
 const (
-	binaryName = "gaiad"
-
 	flagFrom           = "from"
 	flagHome           = "home"
 	flagFees           = "fees"
@@ -66,7 +64,7 @@ func (s *IntegrationTestSuite) execVestingTx(
 
 	s.T().Logf("%s - Executing gaiad %s with %v", c.id, method, args)
 	gaiaCommand := []string{
-		binaryName,
+		gaiadBinary,
 		"tx",
 		"vesting",
 		method,

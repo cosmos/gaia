@@ -1,16 +1,23 @@
-package ante_test
+package antetest
 
 import (
+	"testing"
+
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
+	"github.com/stretchr/testify/suite"
 
-	"github.com/cosmos/gaia/v8/ante"
 	gaiaapp "github.com/cosmos/gaia/v8/app"
+	gaiafeeante "github.com/cosmos/gaia/v8/x/globalfee/ante"
 	globfeetypes "github.com/cosmos/gaia/v8/x/globalfee/types"
 )
+
+func TestIntegrationTestSuite(t *testing.T) {
+	suite.Run(t, new(IntegrationTestSuite))
+}
 
 // test global fees and min_gas_price with bypass msg types.
 // please note even globalfee=0, min_gas_price=0, we do not let fee=0random_denom pass
@@ -531,7 +538,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			// set globalfees and min gas price
 			subspace := s.setupTestGlobalFeeStoreAndMinGasPrice(testCase.minGasPrice, testCase.globalFeeParams)
 			// setup antehandler
-			mfd := ante.NewBypassMinFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), subspace)
+			mfd := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), subspace)
 			antehandler := sdk.ChainAnteDecorators(mfd)
 
 			s.Require().NoError(s.txBuilder.SetMsgs(testCase.txMsg))

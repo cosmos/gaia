@@ -120,6 +120,7 @@ import (
 	gaiaante "github.com/cosmos/gaia/v8/ante"
 	gaiaappparams "github.com/cosmos/gaia/v8/app/params"
 	"github.com/cosmos/gaia/v8/x/globalfee"
+	gaiafeeante "github.com/cosmos/gaia/v8/x/globalfee/ante"
 	"github.com/cosmos/gaia/v8/x/icamauth"
 	icamauthkeeper "github.com/cosmos/gaia/v8/x/icamauth/keeper"
 	icamauthtypes "github.com/cosmos/gaia/v8/x/icamauth/types"
@@ -726,7 +727,7 @@ func NewGaiaApp(
 					}
 
 					feeCoins := feeTx.GetFee()
-					priority := gaiaante.GetTxPriority(feeCoins)
+					priority := gaiafeeante.GetTxPriority(feeCoins)
 
 					return feeCoins, priority, nil
 				},

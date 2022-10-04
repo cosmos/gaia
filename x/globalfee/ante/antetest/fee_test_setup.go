@@ -1,8 +1,7 @@
-package ante_test
+package antetest
 
 import (
 	"fmt"
-	"testing"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -12,12 +11,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	"github.com/cosmos/cosmos-sdk/x/params/types"
+	gaiahelpers "github.com/cosmos/gaia/v8/app/helpers"
 	"github.com/stretchr/testify/suite"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	gaiaapp "github.com/cosmos/gaia/v8/app"
-	gaiahelpers "github.com/cosmos/gaia/v8/app/helpers"
 	"github.com/cosmos/gaia/v8/x/globalfee"
 	globfeetypes "github.com/cosmos/gaia/v8/x/globalfee/types"
 )
@@ -30,10 +29,6 @@ type IntegrationTestSuite struct {
 	ctx         sdk.Context
 	clientCtx   client.Context
 	txBuilder   client.TxBuilder
-}
-
-func TestIntegrationTestSuite(t *testing.T) {
-	suite.Run(t, new(IntegrationTestSuite))
 }
 
 func (s *IntegrationTestSuite) SetupTest() {

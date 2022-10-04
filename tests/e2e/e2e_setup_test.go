@@ -18,12 +18,15 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/cosmos/cosmos-sdk/x/group"
+	gov "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+  "github.com/cosmos/cosmos-sdk/x/group"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	"github.com/cosmos/gaia/v8/app/params"
 	ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
@@ -63,27 +66,15 @@ var (
 	fees              = sdk.NewCoin(uatomDenom, math.NewInt(330000))     // 0.33uatom
 	depositAmount     = sdk.NewCoin(uatomDenom, math.NewInt(10000000))   // 10uatom
 	distModuleAddress = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
-	govModuleAddress  = authtypes.NewModuleAddress(govtypes.ModuleName).String()
+	govModuleAddress  = authtypes.NewModuleAddress(gov.ModuleName).String()
 	proposalCounter   = 0
 	sendGovAmount     = sdk.NewInt64Coin(uatomDenom, 10)
+	fundGovAmount     = sdk.NewInt64Coin(uatomDenom, 1000)
+	proposalSendMsg   = &govtypes.MsgSubmitProposal{
+		InitialDeposit: sdk.Coins{depositAmount},
+		Metadata:       b64.StdEncoding.EncodeToString([]byte("Testing 1, 2, 3!")),
+	}
 )
-
-type UpgradePlan struct {
-	Name   string `json:"name"`
-	Height int    `json:"height"`
-	Info   string `json:"info"`
-}
-
-type SoftwareUpgrade struct {
-	Type      string      `json:"@type"`
-	Authority string      `json:"authority"`
-	Plan      UpgradePlan `json:"plan"`
-}
-
-type CancelSoftwareUpgrade struct {
-	Type      string `json:"@type"`
-	Authority string `json:"authority"`
-}
 
 type IntegrationTestSuite struct {
 	suite.Suite
@@ -432,99 +423,69 @@ func noRestart(config *docker.HostConfig) {
 }
 
 func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
-	type GovMessageSend struct {
-		Type   string     `json:"@type"`
-		From   string     `json:"from_address"`
-		To     string     `json:"to_address"`
-		Amount []sdk.Coin `json:"amount"`
+	bankSendMsg := &banktypes.MsgSend{
+		FromAddress: govModuleAddress,
+		ToAddress:   govSendMsgRecipientAddress,
+		Amount:      []sdk.Coin{sendGovAmount},
 	}
 
-	msgSendMessages := []GovMessageSend{
-		{
-			Type:   "/cosmos.bank.v1beta1.MsgSend",
-			From:   govModuleAddress,
-			To:     govSendMsgRecipientAddress,
-			Amount: []sdk.Coin{sendGovAmount},
-		},
-	}
-
-	msgSendBody, err := json.MarshalIndent(struct {
-		Messages []GovMessageSend `json:"messages"`
-		Metadata string           `json:"metadata"`
-		Deposit  string           `json:"deposit"`
-	}{
-		Messages: msgSendMessages,
-		Metadata: b64.StdEncoding.EncodeToString([]byte("Testing 1, 2, 3!")),
-		Deposit:  "5000uatom",
-	}, "", " ")
-
+	msgs := []sdk.Msg{bankSendMsg}
+	protoMsgs, err := txtypes.SetMsgs(msgs)
+	s.Require().NoError(err)
+	proposalSendMsg.Messages = protoMsgs
+	sendMsgBody, err := cdc.MarshalJSON(proposalSendMsg)
 	s.Require().NoError(err)
 
-	legacyCommunitySpendBody, err := json.MarshalIndent(struct {
-		Title       string `json:"title"`
-		Description string `json:"description"`
-		Recipient   string `json:"recipient"`
-		Amount      string `json:"amount"`
-		Deposit     string `json:"deposit"`
-	}{
+	proposalCommSpend := &distrtypes.CommunityPoolSpendProposalWithDeposit{
 		Title:       "Community Pool Spend",
 		Description: "Fund Gov !",
 		Recipient:   govModuleAddress,
 		Amount:      "1000uatom",
 		Deposit:     "5000uatom",
-	}, "", " ")
-
+	}
+	commSpendBody, err := json.MarshalIndent(proposalCommSpend, "", " ")
 	s.Require().NoError(err)
 
 	for _, val := range c.validators {
-		err = writeFile(filepath.Join(val.configDir(), "config", "proposal.json"), legacyCommunitySpendBody)
+		err = writeFile(filepath.Join(val.configDir(), "config", "proposal.json"), commSpendBody)
 		s.Require().NoError(err)
 
-		err = writeFile(filepath.Join(val.configDir(), "config", "proposal_2.json"), msgSendBody)
+		err = writeFile(filepath.Join(val.configDir(), "config", "proposal_2.json"), sendMsgBody)
 		s.Require().NoError(err)
 	}
 }
 
 func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height int) {
-	softwareUpgradeMessages := []SoftwareUpgrade{
-		{
-			Type:      "/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade",
-			Authority: govModuleAddress,
-			Plan: UpgradePlan{
-				Name:   "upgrade-1",
-				Height: height,
-				Info:   "binary-1",
-			},
-		},
-	}
-	cancelSoftwareUpgradeMessages := []CancelSoftwareUpgrade{
-		{
-			Type:      "/cosmos.upgrade.v1beta1.MsgCancelUpgrade",
-			Authority: govModuleAddress,
-		},
+	upgradePlan := &upgradetypes.Plan{
+		Name:   "upgrade-1",
+		Height: int64(height),
+		Info:   "binary-1",
 	}
 
-	upgradeProposalBody, err := json.MarshalIndent(struct {
-		Messages []SoftwareUpgrade `json:"messages"`
-		Metadata string            `json:"metadata"`
-		Deposit  string            `json:"deposit"`
-	}{
-		Messages: softwareUpgradeMessages,
-		Metadata: b64.StdEncoding.EncodeToString([]byte("Testing 1, 2, 3!")),
-		Deposit:  "5000uatom",
-	}, "", " ")
+	upgradeProp := &upgradetypes.MsgSoftwareUpgrade{
+		Authority: govModuleAddress,
+		Plan:      *upgradePlan,
+	}
 
-	cancelUpgradeProposalBody, err := json.MarshalIndent(struct {
-		Messages []CancelSoftwareUpgrade `json:"messages"`
-		Metadata string                  `json:"metadata"`
-		Deposit  string                  `json:"deposit"`
-	}{
-		Messages: cancelSoftwareUpgradeMessages,
-		Metadata: "VGVzdGluZyAxLCAyLCAzIQ==",
-		Deposit:  "5000uatom",
-	}, "", " ")
+	msgs := []sdk.Msg{upgradeProp}
+	protoMsgs, err := txtypes.SetMsgs(msgs)
+	s.Require().NoError(err)
+	proposalSendMsg.Messages = protoMsgs
+	upgradeProposalBody, err := cdc.MarshalJSON(proposalSendMsg)
+	s.Require().NoError(err)
 
 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_3.json"), upgradeProposalBody)
+	s.Require().NoError(err)
+}
+
+func (s *IntegrationTestSuite) writeGovCancelUpgradeSoftwareProposal(c *chain) {
+	cancelUpgradeProp := &upgradetypes.MsgCancelUpgrade{
+		Authority: govModuleAddress,
+	}
+	protoMsgs, err := txtypes.SetMsgs([]sdk.Msg{cancelUpgradeProp})
+	s.Require().NoError(err)
+	proposalSendMsg.Messages = protoMsgs
+	cancelUpgradeProposalBody, err := cdc.MarshalJSON(proposalSendMsg)
 	s.Require().NoError(err)
 
 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_4.json"), cancelUpgradeProposalBody)

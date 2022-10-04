@@ -11,6 +11,7 @@ import (
 	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	"github.com/ory/dockertest/v3/docker"
 )
 
@@ -600,6 +601,28 @@ func (s *IntegrationTestSuite) registerICA(owner, connectionID string) {
 	s.executeGaiaTxCommand(ctx, s.chainA, registerICAcmd, 0, s.defaultExecValidation(s.chainA, 0))
 
 	s.T().Logf("%s reigstered an interchain account on chain %s from chain %s", owner, s.chainB.id, s.chainA.id)
+}
+
+func (s *IntegrationTestSuite) execQueryEvidence(c *chain, valIdx int, hash string) (res evidencetypes.Equivocation) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("querying evidence %s on chain %s", hash, c.id)
+
+	gaiaCommand := []string{
+		gaiadBinary,
+		"q",
+		"evidence",
+		hash,
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, func(stdOut []byte, stdErr []byte) bool {
+		// TODO parse evidence after fix the SDK
+		// https://github.com/cosmos/cosmos-sdk/issues/13444
+		// s.Require().NoError(yaml.Unmarshal(stdOut, &res))
+		return true
+	})
+	return res
 }
 
 func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chain, gaiaCommand []string, valIdx int, validation func([]byte, []byte) bool) {

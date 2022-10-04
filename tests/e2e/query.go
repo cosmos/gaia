@@ -172,6 +172,20 @@ func queryDelegatorWithdrawalAddress(endpoint string, delegatorAddr string) (dis
 	return res, nil
 }
 
+func queryEvidence(endpoint, hash string) (evidencetypes.QueryEvidenceResponse, error) {
+	var res evidencetypes.QueryEvidenceResponse
+	url := fmt.Sprintf("%s/cosmos/evidence/v1beta1/evidence/%s", endpoint, hash)
+	body, err := httpGet(url)
+	if err != nil {
+		return res, err
+	}
+
+	if err = cdc.UnmarshalJSON(body, &res); err != nil {
+		return res, err
+	}
+	return res, nil
+}
+
 func queryAllEvidence(endpoint string) (evidencetypes.QueryAllEvidenceResponse, error) {
 	var res evidencetypes.QueryAllEvidenceResponse
 	body, err := httpGet(fmt.Sprintf("%s/cosmos/evidence/v1beta1/evidence", endpoint))

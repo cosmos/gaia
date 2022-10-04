@@ -70,6 +70,15 @@ jobs:
                     asset_path: ./artifacts/gaiad-${{ env.VERSION }}-darwin-amd64
                     asset_name: gaiad-${{ env.VERSION }}-darwin-amd64
                     asset_content_type: application/binary
+            -   name: Upload darwin-arm64 artifact
+                uses: actions/upload-release-asset@v1
+                env:
+                    GITHUB_TOKEN: ${{ github.token }}
+                with:
+                    upload_url: ${{ steps.create_release.outputs.upload_url }}
+                    asset_path: ./artifacts/gaiad-${{ env.VERSION }}-darwin-arm64
+                    asset_name: gaiad-${{ env.VERSION }}-darwin-arm64
+                    asset_content_type: application/binary
             -   name: Upload windows-amd64 artifact
                 uses: actions/upload-release-asset@v1
                 env:

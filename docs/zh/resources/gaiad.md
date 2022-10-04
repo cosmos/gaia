@@ -270,11 +270,11 @@ action标签始终等于相关message的`Type()`函数返回的消息类型。
 
 你可以在每个SDK的模块中找到目前的标签列表：
 
-- [Staking events](https://github.com/cosmos/cosmos-sdk/blob/master/x/staking/spec/07_events.md)
-- [Governance events](https://github.com/cosmos/cosmos-sdk/blob/master/x/gov/spec/04_events.md)
-- [Slashing events](https://github.com/cosmos/cosmos-sdk/blob/master/x/slashing/spec/06_events.md)
-- [Distribution events](https://github.com/cosmos/cosmos-sdk/blob/master/x/distribution/spec/06_events.md)
-- [Bank events](https://github.com/cosmos/cosmos-sdk/blob/master/x/bank/spec/04_events.md)
+- [Staking events](https://github.com/cosmos/cosmos-sdk/tree/main/x/staking#events)
+- [Governance events](https://github.com/cosmos/cosmos-sdk/tree/main/x/gov#events)
+- [Slashing events](https://github.com/cosmos/cosmos-sdk/tree/main/x/slashing#events)
+- [Distribution events](https://github.com/cosmos/cosmos-sdk/tree/main/x/distribution#events)
+- [Bank events](https://github.com/cosmos/cosmos-sdk/tree/main/x/bank#events)
 :::
 
 #### 匹配一笔交易的hash

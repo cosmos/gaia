@@ -1,13 +1,19 @@
 package e2e
 
 import (
+	"fmt"
+	"math/rand"
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	crypto "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/libs/rand"
 )
+
+// HDPath generates an HD path based on the wallet index
+func HDPath(index int) string {
+	return fmt.Sprintf("m/44'/118'/0'/0/%d", index)
+}
 
 // PubKey returns a sample account PubKey
 func PubKey() crypto.PubKey {
@@ -24,9 +30,4 @@ func AccAddress() sdk.AccAddress {
 // Address returns a sample string account address
 func Address() string {
 	return AccAddress().String()
-}
-
-// ConsAddress returns a sample consensus address
-func ConsAddress() sdk.ConsAddress {
-	return sdk.ConsAddress(PubKey().Address())
 }

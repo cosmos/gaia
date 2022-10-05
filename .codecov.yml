@@ -31,3 +31,7 @@ ignore:
   - "contrib/"
   - "docs/"
   - "networks/"
+  - "app/modules.go"
+  - "**/const.go"
+  - "**/constants.go"
+  - "**/keys.go"

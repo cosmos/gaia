@@ -32,6 +32,7 @@ ignore:
   - "docs/"
   - "networks/"
   - "app/modules.go"
+  - "app/params/"
   - "**/const.go"
   - "**/constants.go"
   - "**/keys.go"

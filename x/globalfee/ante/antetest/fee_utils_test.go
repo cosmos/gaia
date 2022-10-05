@@ -1,10 +1,12 @@
-package ante
+package antetest
 
 import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
+
+	"github.com/cosmos/gaia/v8/x/globalfee/ante"
 )
 
 type feeUtilsTestSuite struct {
@@ -55,7 +57,7 @@ func (s *feeUtilsTestSuite) TestContainZeroCoins() {
 	}
 
 	for _, test := range tests {
-		ok := containZeroCoins(test.c)
+		ok := ante.ContainZeroCoins(test.c)
 		s.Require().Equal(test.ok, ok)
 	}
 }
@@ -160,7 +162,7 @@ func (s *feeUtilsTestSuite) TestCombinedFeeRequirement() {
 
 	for name, test := range tests {
 		s.Run(name, func() {
-			allFees := CombinedFeeRequirement(test.cGlobal, test.c)
+			allFees := ante.CombinedFeeRequirement(test.cGlobal, test.c)
 			s.Require().Equal(test.combined, allFees)
 		})
 	}
@@ -265,7 +267,7 @@ func (s *feeUtilsTestSuite) TestDenomsSubsetOfIncludingZero() {
 
 	for name, test := range tests {
 		s.Run(name, func() {
-			subset := DenomsSubsetOfIncludingZero(test.set, test.superset)
+			subset := ante.DenomsSubsetOfIncludingZero(test.set, test.superset)
 			s.Require().Equal(test.subset, subset)
 		})
 	}
@@ -406,7 +408,7 @@ func (s *feeUtilsTestSuite) TestIsAnyGTEIncludingZero() {
 
 	for name, test := range tests {
 		s.Run(name, func() {
-			gte := IsAnyGTEIncludingZero(test.c2, test.c1)
+			gte := ante.IsAnyGTEIncludingZero(test.c2, test.c1)
 			s.Require().Equal(test.gte, gte)
 		})
 	}

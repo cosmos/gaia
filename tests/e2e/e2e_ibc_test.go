@@ -122,7 +122,7 @@ func (s *IntegrationTestSuite) sendIBC(c *chain, valIdx int, sender, recipient, 
 
 	ibcCmd := []string{
 		gaiadBinary,
-		"tx",
+		txCommand,
 		"ibc-transfer",
 		"transfer",
 		"transfer",
@@ -199,7 +199,7 @@ func (s *IntegrationTestSuite) createChannel() {
 		User:         "root",
 		Cmd: []string{
 			"hermes",
-			"tx",
+			txCommand,
 			"chan-open-init",
 			"--dst-chain",
 			s.chainA.id,

@@ -42,6 +42,8 @@ import (
 
 const (
 	gaiadBinary    = "gaiad"
+	txCommand      = "tx"
+	keysCommand    = "keys"
 	gaiaHomePath   = "/home/nonroot/.gaia"
 	photonDenom    = "photon"
 	uatomDenom     = "uatom"

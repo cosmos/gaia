@@ -11,6 +11,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	"github.com/cosmos/cosmos-sdk/x/group"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	globalfee "github.com/cosmos/gaia/v8/x/globalfee/types"
 	icamauth "github.com/cosmos/gaia/v8/x/icamauth/types"
@@ -57,33 +58,17 @@ func getSpecificBalance(endpoint, addr, denom string) (amt sdk.Coin, err error) 
 }
 
 func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) {
-	bz, err := httpGet(fmt.Sprintf("%s/cosmos/bank/v1beta1/balances/%s", endpoint, addr))
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/bank/v1beta1/balances/%s", endpoint, addr))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
 
 	var balancesResp banktypes.QueryAllBalancesResponse
-	if err := cdc.UnmarshalJSON(bz, &balancesResp); err != nil {
+	if err := cdc.UnmarshalJSON(body, &balancesResp); err != nil {
 		return nil, err
 	}
 
 	return balancesResp.Balances, nil
-}
-
-func queryGovProposal(endpoint string, proposalID int) (govv1beta1.QueryProposalResponse, error) {
-	var govProposalResp govv1beta1.QueryProposalResponse
-
-	path := fmt.Sprintf("%s/cosmos/gov/v1beta1/proposals/%d", endpoint, proposalID)
-	body, err := httpGet(path) //nolint:gosec // this is only used during tests
-	if err != nil {
-		return govProposalResp, fmt.Errorf("failed to execute HTTP request: %w", err)
-	}
-
-	if err := cdc.UnmarshalJSON(body, &govProposalResp); err != nil {
-		return govProposalResp, err
-	}
-
-	return govProposalResp, nil
 }
 
 func queryGlobalFees(endpoint string) (amt sdk.DecCoins, err error) {
@@ -149,6 +134,112 @@ func queryDelegatorWithdrawalAddress(endpoint string, delegatorAddr string) (dis
 		return res, err
 	}
 	return res, nil
+}
+
+func queryGroupMembers(endpoint string, groupId int) (group.QueryGroupMembersResponse, error) {
+	var res group.QueryGroupMembersResponse
+	path := fmt.Sprintf("%s/cosmos/group/v1/group_members/%d", endpoint, groupId)
+
+	body, err := httpGet(path)
+	if err != nil {
+		return res, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return res, err
+	}
+
+	return res, nil
+}
+
+func queryGroupInfo(endpoint string, groupId int) (group.QueryGroupInfoResponse, error) {
+	var res group.QueryGroupInfoResponse
+	path := fmt.Sprintf("%s/cosmos/group/v1/group_info/%d", endpoint, groupId)
+
+	body, err := httpGet(path)
+	if err != nil {
+		return res, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return res, err
+	}
+
+	return res, nil
+}
+
+func queryGroupsByAdmin(endpoint string, adminAddress string) (group.QueryGroupsByAdminResponse, error) {
+	var res group.QueryGroupsByAdminResponse
+	path := fmt.Sprintf("%s/cosmos/group/v1/groups_by_admin/%s", endpoint, adminAddress)
+
+	body, err := httpGet(path)
+	if err != nil {
+		return res, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return res, err
+	}
+
+	return res, nil
+}
+
+func queryGroupPolicies(endpoint string, groupId int) (group.QueryGroupPoliciesByGroupResponse, error) {
+	var res group.QueryGroupPoliciesByGroupResponse
+	path := fmt.Sprintf("%s/cosmos/group/v1/group_policies_by_group/%d", endpoint, groupId)
+
+	body, err := httpGet(path)
+	if err != nil {
+		return res, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return res, err
+	}
+
+	return res, nil
+}
+
+func queryGroupProposal(endpoint string, groupId int) (group.QueryProposalResponse, error) {
+	var res group.QueryProposalResponse
+	path := fmt.Sprintf("%s/cosmos/group/v1/proposal/%d", endpoint, groupId)
+
+	body, err := httpGet(path)
+	if err != nil {
+		return res, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return res, err
+	}
+
+	return res, nil
+}
+
+func queryGroupProposalByGroupPolicy(endpoint string, policyAddress string) (group.QueryProposalsByGroupPolicyResponse, error) {
+	var res group.QueryProposalsByGroupPolicyResponse
+	path := fmt.Sprintf("%s/cosmos/group/v1/proposals_by_group_policy/%s", endpoint, policyAddress)
+
+	body, err := httpGet(path)
+	if err != nil {
+		return res, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return res, err
+	}
+
+	return res, nil
+}
+
+func queryGovProposal(endpoint string, proposalID int) (govv1beta1.QueryProposalResponse, error) {
+	var govProposalResp govv1beta1.QueryProposalResponse
+
+	path := fmt.Sprintf("%s/cosmos/gov/v1beta1/proposals/%d", endpoint, proposalID)
+
+	body, err := httpGet(path) //nolint:gosec // this is only used during tests
+	if err != nil {
+		return govProposalResp, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+	if err := cdc.UnmarshalJSON(body, &govProposalResp); err != nil {
+		return govProposalResp, err
+	}
+
+	return govProposalResp, nil
 }
 
 func queryValidator(endpoint, address string) (stakingtypes.Validator, error) {

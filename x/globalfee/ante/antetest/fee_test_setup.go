@@ -24,11 +24,10 @@ import (
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	app         *gaiaapp.GaiaApp
-	anteHandler sdk.AnteHandler
-	ctx         sdk.Context
-	clientCtx   client.Context
-	txBuilder   client.TxBuilder
+	app       *gaiaapp.GaiaApp
+	ctx       sdk.Context
+	clientCtx client.Context
+	txBuilder client.TxBuilder
 }
 
 func (s *IntegrationTestSuite) SetupTest() {

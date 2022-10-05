@@ -15,11 +15,14 @@ import (
 
 	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/crypto/hd"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
@@ -36,6 +39,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	tmconfig "github.com/tendermint/tendermint/config"
 	tmjson "github.com/tendermint/tendermint/libs/json"
+	"github.com/tendermint/tendermint/libs/rand"
 	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 )
 
@@ -50,33 +54,50 @@ const (
 	minGasPrice    = "0.00001"
 	// the test globalfee in genesis is the same as minGasPrice
 	// global fee lower/higher than min_gas_price
-	initialGlobalFeeAmt        = "0.00001"
-	lowGlobalFeesAmt           = "0.000001"
-	highGlobalFeeAmt           = "0.0001"
-	gas                        = 200000
-	govSendMsgRecipientAddress = "cosmos1pkueemdeps77dwrqma03pwqk93nw39nuhccz02"
-	govProposalBlockBuffer     = 35
-	relayerAccountIndex        = 0
-	icaOwnerAccountIndex       = 1
+	initialGlobalFeeAmt    = "0.00001"
+	lowGlobalFeesAmt       = "0.000001"
+	highGlobalFeeAmt       = "0.0001"
+	gas                    = 200000
+	govProposalBlockBuffer = 35
+	relayerAccountIndex    = 0
+	icaOwnerAccountIndex   = 1
 )
 
 var (
-	gaiaConfigPath    = filepath.Join(gaiaHomePath, "config")
-	stakingAmount     = math.NewInt(100000000000)
-	stakingAmountCoin = sdk.NewCoin(uatomDenom, stakingAmount)
-	tokenAmount       = sdk.NewCoin(uatomDenom, math.NewInt(3300000000)) // 3,300uatom
-	fees              = sdk.NewCoin(uatomDenom, math.NewInt(330000))     // 0.33uatom
-	depositAmount     = sdk.NewCoin(uatomDenom, math.NewInt(10000000))   // 10uatom
-	distModuleAddress = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
-	govModuleAddress  = authtypes.NewModuleAddress(gov.ModuleName).String()
-	proposalCounter   = 0
-	sendGovAmount     = sdk.NewInt64Coin(uatomDenom, 10)
-	fundGovAmount     = sdk.NewInt64Coin(uatomDenom, 1000)
-	proposalSendMsg   = &govtypes.MsgSubmitProposal{
+	gaiaConfigPath             = filepath.Join(gaiaHomePath, "config")
+	stakingAmount              = math.NewInt(100000000000)
+	stakingAmountCoin          = sdk.NewCoin(uatomDenom, stakingAmount)
+	tokenAmount                = sdk.NewCoin(uatomDenom, math.NewInt(3300000000)) // 3,300uatom
+	fees                       = sdk.NewCoin(uatomDenom, math.NewInt(330000))     // 0.33uatom
+	depositAmount              = sdk.NewCoin(uatomDenom, math.NewInt(10000000))   // 10uatom
+	distModuleAddress          = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
+	govModuleAddress           = authtypes.NewModuleAddress(gov.ModuleName).String()
+	proposalCounter            = 0
+	govSendMsgRecipientAddress = Address()
+	sendGovAmount              = sdk.NewInt64Coin(uatomDenom, 10)
+	fundGovAmount              = sdk.NewInt64Coin(uatomDenom, 1000)
+	proposalSendMsg            = &govtypes.MsgSubmitProposal{
 		InitialDeposit: sdk.Coins{depositAmount},
 		Metadata:       b64.StdEncoding.EncodeToString([]byte("Testing 1, 2, 3!")),
 	}
 )
+
+type UpgradePlan struct {
+	Name   string `json:"name"`
+	Height int    `json:"height"`
+	Info   string `json:"info"`
+}
+
+type SoftwareUpgrade struct {
+	Type      string      `json:"@type"`
+	Authority string      `json:"authority"`
+	Plan      UpgradePlan `json:"plan"`
+}
+
+type CancelSoftwareUpgrade struct {
+	Type      string `json:"@type"`
+	Authority string `json:"authority"`
+}
 
 type IntegrationTestSuite struct {
 	suite.Suite
@@ -119,6 +140,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.valResources = make(map[string][]*dockertest.Resource)
 
+	vestingMnemonic, err := createMnemonic()
+	s.Require().NoError(err)
+
 	// The boostrapping phase is as follows:
 	//
 	// 1. Initialize Gaia validator nodes.
@@ -128,13 +152,13 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.T().Logf("starting e2e infrastructure for chain A; chain-id: %s; datadir: %s", s.chainA.id, s.chainA.dataDir)
 	s.initNodes(s.chainA)
-	s.initGenesis(s.chainA)
+	s.initGenesis(s.chainA, vestingMnemonic)
 	s.initValidatorConfigs(s.chainA)
 	s.runValidators(s.chainA, 0)
 
 	s.T().Logf("starting e2e infrastructure for chain B; chain-id: %s; datadir: %s", s.chainB.id, s.chainB.dataDir)
 	s.initNodes(s.chainB)
-	s.initGenesis(s.chainB)
+	s.initGenesis(s.chainB, vestingMnemonic)
 	s.initValidatorConfigs(s.chainB)
 	s.runValidators(s.chainB, 10)
 
@@ -209,20 +233,89 @@ func (s *IntegrationTestSuite) initNodes(c *chain) {
 	}
 }
 
-func (s *IntegrationTestSuite) initGenesis(c *chain) {
-	serverCtx := server.NewDefaultContext()
-	config := serverCtx.Config
-
-	config.SetRoot(c.validators[0].configDir())
-	config.Moniker = c.validators[0].moniker
-
-	genFilePath := config.GenesisFile()
-	appGenState, genDoc, err := genutiltypes.GenesisStateFromGenFile(genFilePath)
+// TODO find a better way to manipulate accounts to add genesis accounts
+func (s *IntegrationTestSuite) generateAuthAndBankState(
+	c *chain,
+	vestingMnemonic string,
+	appGenState map[string]json.RawMessage,
+) ([]byte, []byte) {
+	var (
+		authGenState = authtypes.GetGenesisStateFromAppState(cdc, appGenState)
+		bankGenState = banktypes.GetGenesisStateFromAppState(cdc, appGenState)
+		valConfigDir = c.validators[0].configDir()
+	)
+	kb, err := keyring.New(keyringAppName, keyring.BackendTest, valConfigDir, nil, cdc)
 	s.Require().NoError(err)
 
-	var bankGenState banktypes.GenesisState
-	s.Require().NoError(cdc.UnmarshalJSON(appGenState[banktypes.ModuleName], &bankGenState))
+	keyringAlgos, _ := kb.SupportedAlgorithms()
+	algo, err := keyring.NewSigningAlgoFromString(string(hd.Secp256k1Type), keyringAlgos)
+	s.Require().NoError(err)
 
+	c.genesisVestingAccounts = make(map[string]sdk.AccAddress)
+	for i, key := range genesisVestingKeys {
+		// Use the first wallet from the same mnemonic by HD path
+		acc, err := kb.NewAccount(key, vestingMnemonic, "", HDPath(i), algo)
+		s.Require().NoError(err)
+		c.genesisVestingAccounts[key], err = acc.GetAddress()
+		s.Require().NoError(err)
+		s.T().Logf("created %s genesis account %s\n", key, c.genesisVestingAccounts[key].String())
+	}
+	var (
+		continuousVestingAcc = c.genesisVestingAccounts[continuousVestingKey]
+		delayedVestingAcc    = c.genesisVestingAccounts[delayedVestingKey]
+	)
+
+	// add continuous vesting account to the genesis
+	baseVestingContinuousAccount := authtypes.NewBaseAccount(
+		continuousVestingAcc, nil, 0, 0)
+	vestingContinuousGenAccount := authvesting.NewContinuousVestingAccountRaw(
+		authvesting.NewBaseVestingAccount(
+			baseVestingContinuousAccount,
+			sdk.NewCoins(vestingAmountVested),
+			time.Now().Add(time.Duration(rand.Intn(80)+150)*time.Second).Unix(),
+		),
+		time.Now().Add(time.Duration(rand.Intn(40)+90)*time.Second).Unix(),
+	)
+	s.Require().NoError(vestingContinuousGenAccount.Validate())
+
+	// add delayed vesting account to the genesis
+	baseVestingDelayedAccount := authtypes.NewBaseAccount(
+		delayedVestingAcc, nil, 0, 0)
+	vestingDelayedGenAccount := authvesting.NewDelayedVestingAccountRaw(
+		authvesting.NewBaseVestingAccount(
+			baseVestingDelayedAccount,
+			sdk.NewCoins(vestingAmountVested),
+			time.Now().Add(time.Duration(rand.Intn(40)+90)*time.Second).Unix(),
+		),
+	)
+	s.Require().NoError(vestingDelayedGenAccount.Validate())
+
+	// unpack and append accounts
+	accs, err := authtypes.UnpackAccounts(authGenState.Accounts)
+	s.Require().NoError(err)
+	accs = append(accs, vestingContinuousGenAccount, vestingDelayedGenAccount)
+	accs = authtypes.SanitizeGenesisAccounts(accs)
+	genAccs, err := authtypes.PackAccounts(accs)
+	s.Require().NoError(err)
+	authGenState.Accounts = genAccs
+
+	// update auth module state
+	auth, err := cdc.MarshalJSON(&authGenState)
+	s.Require().NoError(err)
+
+	// update balances
+	vestingContinuousBalances := banktypes.Balance{
+		Address: continuousVestingAcc.String(),
+		Coins:   vestingBalance,
+	}
+	vestingDelayedBalances := banktypes.Balance{
+		Address: delayedVestingAcc.String(),
+		Coins:   vestingBalance,
+	}
+	bankGenState.Balances = append(bankGenState.Balances, vestingContinuousBalances, vestingDelayedBalances)
+	bankGenState.Balances = banktypes.SanitizeGenesisBalances(bankGenState.Balances)
+
+	// update the denom metadata for the bank module
 	bankGenState.DenomMetadata = append(bankGenState.DenomMetadata, banktypes.Metadata{
 		Description: "An example stable token",
 		Display:     uatomDenom,
@@ -237,9 +330,27 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 		},
 	})
 
-	bz, err := cdc.MarshalJSON(&bankGenState)
+	// update bank module state
+	bank, err := cdc.MarshalJSON(bankGenState)
 	s.Require().NoError(err)
-	appGenState[banktypes.ModuleName] = bz
+
+	return bank, auth
+}
+
+func (s *IntegrationTestSuite) initGenesis(c *chain, vestingMnemonic string) {
+	serverCtx := server.NewDefaultContext()
+	config := serverCtx.Config
+
+	config.SetRoot(c.validators[0].configDir())
+	config.Moniker = c.validators[0].moniker
+
+	genFilePath := config.GenesisFile()
+	appGenState, genDoc, err := genutiltypes.GenesisStateFromGenFile(genFilePath)
+	s.Require().NoError(err)
+
+	bankGenState, authGenState := s.generateAuthAndBankState(c, vestingMnemonic, appGenState)
+	appGenState[authtypes.ModuleName] = authGenState
+	appGenState[banktypes.ModuleName] = bankGenState
 
 	var genUtilGenState genutiltypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[genutiltypes.ModuleName], &genUtilGenState))
@@ -261,7 +372,7 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 
 	genUtilGenState.GenTxs = genTxs
 
-	bz, err = cdc.MarshalJSON(&genUtilGenState)
+	bz, err := cdc.MarshalJSON(&genUtilGenState)
 	s.Require().NoError(err)
 	appGenState[genutiltypes.ModuleName] = bz
 
@@ -273,9 +384,15 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 	bz, err = tmjson.MarshalIndent(genDoc, "", "  ")
 	s.Require().NoError(err)
 
+	vestingPeriod, err := generateVestingPeriod()
+	s.Require().NoError(err)
+
 	// write the updated genesis file to each validator.
 	for _, val := range c.validators {
 		err = writeFile(filepath.Join(val.configDir(), "config", "genesis.json"), bz)
+		s.Require().NoError(err)
+
+		err = writeFile(filepath.Join(val.configDir(), vestingPeriodFilePath), vestingPeriod)
 		s.Require().NoError(err)
 	}
 }

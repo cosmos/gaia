@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -20,6 +21,93 @@ import (
 	icamauth "github.com/cosmos/gaia/v8/x/icamauth/types"
 	"github.com/ory/dockertest/v3/docker"
 )
+
+const (
+	flagFrom           = "from"
+	flagHome           = "home"
+	flagFees           = "fees"
+	flagGas            = "gas"
+	flagOutput         = "output"
+	flagChainID        = "chain-id"
+	flagBroadcastMode  = "broadcast-mode"
+	flagKeyringBackend = "keyring-backend"
+)
+
+type flagOption func(map[string]interface{})
+
+// withKeyValue add a new flag to command
+func withKeyValue(key string, value interface{}) flagOption {
+	return func(o map[string]interface{}) {
+		o[key] = value
+	}
+}
+
+func applyOptions(chainID string, options []flagOption) map[string]interface{} {
+	opts := map[string]interface{}{
+		flagKeyringBackend: "test",
+		flagOutput:         "json",
+		flagGas:            "auto",
+		flagFrom:           "alice",
+		flagBroadcastMode:  "sync",
+		flagChainID:        chainID,
+		flagHome:           gaiaHomePath,
+		flagFees:           fees.String(),
+	}
+	for _, apply := range options {
+		apply(opts)
+	}
+	return opts
+}
+
+func (s *IntegrationTestSuite) execVestingTx(
+	c *chain,
+	method string,
+	args []string,
+	opt ...flagOption,
+) {
+	opts := applyOptions(c.id, opt)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("%s - Executing gaiad %s with %v", c.id, method, args)
+	gaiaCommand := []string{
+		gaiadBinary,
+		"tx",
+		"vesting",
+		method,
+		"-y",
+	}
+	gaiaCommand = append(gaiaCommand, args...)
+
+	for flag, value := range opts {
+		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, 0, s.defaultExecValidation(c, 0))
+	s.T().Logf("successfully %s with %v", method, args)
+}
+
+func (s *IntegrationTestSuite) execCreatePermanentLockedAccount(
+	c *chain,
+	address,
+	amount string,
+	opt ...flagOption,
+) {
+	s.T().Logf("Executing gaiad create a permanent locked vesting account %s", c.id)
+	s.execVestingTx(c, "create-permanent-locked-account", []string{address, amount}, opt...)
+	s.T().Logf("successfully created permanent locked vesting account %s with %s", address, amount)
+}
+
+func (s *IntegrationTestSuite) execCreatePeriodicVestingAccount(
+	c *chain,
+	address string,
+	opt ...flagOption,
+) {
+	jsonPath := filepath.Join(gaiaHomePath, vestingPeriodFilePath)
+	s.T().Logf("Executing gaiad create periodic vesting account %s", c.id)
+	s.execVestingTx(c, "create-periodic-vesting-account", []string{address, jsonPath}, opt...)
+	s.T().Logf("successfully created periodic vesting account %s with %s", address, jsonPath)
+}
 
 func (s *IntegrationTestSuite) execBankSend(c *chain, valIdx int, from, to, amt, fees string, expectErr bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)

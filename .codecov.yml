@@ -27,12 +27,15 @@ comment:
 ignore:
   - "*.md"
   - "*.rst"
+  - "**/const.go"
+  - "**/constants.go"
+  - "**/keys.go"
+  # Temporarily ignoring app specific files
+  # TODO: Add tests for these instead of ignoring them
+  - "app/modules.go"
+  - "app/params/"
+  - "app/upgrades/"
   - "cmd/"
   - "contrib/"
   - "docs/"
   - "networks/"
-  - "app/modules.go"
-  - "app/params/"
-  - "**/const.go"
-  - "**/constants.go"
-  - "**/keys.go"

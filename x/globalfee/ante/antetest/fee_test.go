@@ -536,7 +536,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 	for name, testCase := range testCases {
 		s.Run(name, func() {
 			// set globalfees and min gas price
-			subspace := s.setupTestGlobalFeeStoreAndMinGasPrice(testCase.minGasPrice, testCase.globalFeeParams)
+			subspace := s.SetupTestGlobalFeeStoreAndMinGasPrice(testCase.minGasPrice, testCase.globalFeeParams)
 			// setup antehandler
 			mfd := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), subspace)
 			antehandler := sdk.ChainAnteDecorators(mfd)

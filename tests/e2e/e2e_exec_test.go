@@ -5,12 +5,19 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
 	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	grouptypes "github.com/cosmos/cosmos-sdk/x/group"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	icamauth "github.com/cosmos/gaia/v8/x/icamauth/types"
 	"github.com/ory/dockertest/v3/docker"
 )
 
@@ -22,8 +29,8 @@ func (s *IntegrationTestSuite) execBankSend(c *chain, valIdx int, from, to, amt,
 
 	gaiaCommand := []string{
 		gaiadBinary,
-		"tx",
-		"bank",
+		txCommand,
+		banktypes.ModuleName,
 		"send",
 		from,
 		to,
@@ -45,8 +52,8 @@ func (s *IntegrationTestSuite) execWithdrawAllRewards(c *chain, valIdx int, paye
 
 	gaiaCommand := []string{
 		gaiadBinary,
-		"tx",
-		"distribution",
+		txCommand,
+		distributiontypes.ModuleName,
 		"withdraw-all-rewards",
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, payee),
 		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
@@ -67,8 +74,8 @@ func (s *IntegrationTestSuite) execDistributionFundCommunityPool(c *chain, valId
 
 	gaiaCommand := []string{
 		gaiadBinary,
-		"tx",
-		"distribution",
+		txCommand,
+		distributiontypes.ModuleName,
 		"fund-community-pool",
 		amt,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, from),
@@ -91,8 +98,8 @@ func (s *IntegrationTestSuite) execGovSubmitLegacyGovProposal(c *chain, valIdx i
 
 	gaiaCommand := []string{
 		gaiadBinary,
-		"tx",
-		"gov",
+		txCommand,
+		govtypes.ModuleName,
 		"submit-legacy-proposal",
 		govProposalSubType,
 		govProposalPath,
@@ -116,8 +123,8 @@ func (s *IntegrationTestSuite) execGovDepositProposal(c *chain, valIdx int, subm
 
 	gaiaCommand := []string{
 		gaiadBinary,
-		"tx",
-		"gov",
+		txCommand,
+		govtypes.ModuleName,
 		"deposit",
 		fmt.Sprintf("%d", proposalId),
 		amount,
@@ -141,8 +148,8 @@ func (s *IntegrationTestSuite) execGovVoteProposal(c *chain, valIdx int, submitt
 
 	gaiaCommand := []string{
 		gaiadBinary,
-		"tx",
-		"gov",
+		txCommand,
+		govtypes.ModuleName,
 		"vote",
 		fmt.Sprintf("%d", proposalId),
 		vote,
@@ -166,8 +173,8 @@ func (s *IntegrationTestSuite) execGovWeightedVoteProposal(c *chain, valIdx int,
 
 	gaiaCommand := []string{
 		gaiadBinary,
-		"tx",
-		"gov",
+		txCommand,
+		govtypes.ModuleName,
 		"weighted-vote",
 		fmt.Sprintf("%d", proposalId),
 		vote,
@@ -191,8 +198,8 @@ func (s *IntegrationTestSuite) execGovSubmitProposal(c *chain, valIdx int, submi
 
 	gaiaCommand := []string{
 		gaiadBinary,
-		"tx",
-		"gov",
+		txCommand,
+		govtypes.ModuleName,
 		"submit-proposal",
 		govProposalPath,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, submitterAddr),
@@ -215,8 +222,8 @@ func (s *IntegrationTestSuite) execCreateGroup(c *chain, valIdx int, adminAddr, 
 
 	gaiaCommand := []string{
 		gaiadBinary,
-		"tx",
-		"group",
+		txCommand,
+		grouptypes.ModuleName,
 		"create-group",
 		adminAddr,
 		metadata,
@@ -240,8 +247,8 @@ func (s *IntegrationTestSuite) execUpdateGroupMembers(c *chain, valIdx int, admi
 
 	gaiaCommand := []string{
 		gaiadBinary,
-		"tx",
-		"group",
+		txCommand,
+		grouptypes.ModuleName,
 		"update-group-members",
 		adminAddr,
 		groupId,
@@ -265,8 +272,8 @@ func (s *IntegrationTestSuite) executeCreateGroupPolicy(c *chain, valIdx int, ad
 
 	gaiaCommand := []string{
 		gaiadBinary,
-		"tx",
-		"group",
+		txCommand,
+		grouptypes.ModuleName,
 		"create-group-policy",
 		adminAddr,
 		groupId,
@@ -291,8 +298,8 @@ func (s *IntegrationTestSuite) executeSubmitGroupProposal(c *chain, valIdx int, 
 
 	gaiaCommand := []string{
 		gaiadBinary,
-		"tx",
-		"group",
+		txCommand,
+		grouptypes.ModuleName,
 		"submit-proposal",
 		proposalPath,
 		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
@@ -315,8 +322,8 @@ func (s *IntegrationTestSuite) executeVoteGroupProposal(c *chain, valIdx int, pr
 
 	gaiaCommand := []string{
 		gaiadBinary,
-		"tx",
-		"group",
+		txCommand,
+		grouptypes.ModuleName,
 		"vote",
 		proposalId,
 		voterAddress,
@@ -341,8 +348,8 @@ func (s *IntegrationTestSuite) executeExecGroupProposal(c *chain, valIdx int, pr
 
 	gaiaCommand := []string{
 		gaiadBinary,
-		"tx",
-		"group",
+		txCommand,
+		grouptypes.ModuleName,
 		"exec",
 		proposalId,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, proposerAddress),
@@ -365,8 +372,8 @@ func (s *IntegrationTestSuite) executeUpdateGroupAdmin(c *chain, valIdx int, adm
 
 	gaiaCommand := []string{
 		gaiadBinary,
-		"tx",
-		"group",
+		txCommand,
+		grouptypes.ModuleName,
 		"update-group-admin",
 		admin,
 		groupId,
@@ -388,7 +395,7 @@ func (s *IntegrationTestSuite) executeGKeysAddCommand(c *chain, valIdx int, name
 
 	gaiaCommand := []string{
 		gaiadBinary,
-		"keys",
+		keysCommand,
 		"add",
 		name,
 		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
@@ -413,7 +420,7 @@ func (s *IntegrationTestSuite) executeKeysList(c *chain, valIdx int, home string
 
 	gaiaCommand := []string{
 		gaiadBinary,
-		"keys",
+		keysCommand,
 		"list",
 		"--keyring-backend=test",
 		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
@@ -433,8 +440,8 @@ func (s *IntegrationTestSuite) executeDelegate(c *chain, valIdx int, amount, val
 
 	gaiaCommand := []string{
 		gaiadBinary,
-		"tx",
-		"staking",
+		txCommand,
+		stakingtypes.ModuleName,
 		"delegate",
 		valOperAddress,
 		amount,
@@ -461,8 +468,8 @@ func (s *IntegrationTestSuite) executeRedelegate(c *chain, valIdx int, amount, o
 
 	gaiaCommand := []string{
 		gaiadBinary,
-		"tx",
-		"staking",
+		txCommand,
+		stakingtypes.ModuleName,
 		"redelegate",
 		originalValOperAddress,
 		newValOperAddress,
@@ -481,7 +488,45 @@ func (s *IntegrationTestSuite) executeRedelegate(c *chain, valIdx int, amount, o
 	s.T().Logf("%s successfully redelegated %s from %s to %s", delegatorAddr, amount, originalValOperAddress, newValOperAddress)
 }
 
-func (s *IntegrationTestSuite) execSetWithrawAddress(
+func (s *IntegrationTestSuite) getLatestBlockHeight(c *chain, valIdx int) int {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	type syncInfo struct {
+		SyncInfo struct {
+			LatestHeight string `json:"latest_block_height"`
+		} `json:"SyncInfo"`
+	}
+
+	var currentHeight int
+	gaiaCommand := []string{gaiadBinary, "status"}
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, func(stdOut []byte, stdErr []byte) bool {
+		var (
+			err   error
+			block syncInfo
+		)
+		s.Require().NoError(json.Unmarshal(stdErr, &block))
+		currentHeight, err = strconv.Atoi(block.SyncInfo.LatestHeight)
+		s.Require().NoError(err)
+		return currentHeight > 0
+	})
+	return currentHeight
+}
+
+func (s *IntegrationTestSuite) verifyBalanceChange(endpoint string, expectedAmount sdk.Coin, recipientAddress string) {
+	s.Require().Eventually(
+		func() bool {
+			afterAtomBalance, err := getSpecificBalance(endpoint, recipientAddress, uatomDenom)
+			s.Require().NoError(err)
+
+			return afterAtomBalance.IsEqual(expectedAmount)
+		},
+		20*time.Second,
+		5*time.Second,
+	)
+}
+
+func (s *IntegrationTestSuite) execSetWithdrawAddress(
 	c *chain,
 	valIdx int,
 	fees,
@@ -495,8 +540,8 @@ func (s *IntegrationTestSuite) execSetWithrawAddress(
 	s.T().Logf("Setting distribution withdrawal address on chain %s for %s to %s", c.id, delegatorAddress, newWithdrawalAddress)
 	gaiaCommand := []string{
 		gaiadBinary,
-		"tx",
-		"distribution",
+		txCommand,
+		distributiontypes.ModuleName,
 		"set-withdraw-addr",
 		newWithdrawalAddress,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddress),
@@ -525,8 +570,8 @@ func (s *IntegrationTestSuite) execWithdrawReward(
 	s.T().Logf("Withdrawing distribution rewards on chain %s for delegator %s from %s validator", c.id, delegatorAddress, validatorAddress)
 	gaiaCommand := []string{
 		gaiadBinary,
-		"tx",
-		"distribution",
+		txCommand,
+		distributiontypes.ModuleName,
 		"withdraw-rewards",
 		validatorAddress,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddress),
@@ -554,8 +599,8 @@ func (s *IntegrationTestSuite) submitICAtx(owner, connectionID, txJsonPath strin
 
 	submitTX := []string{
 		gaiadBinary,
-		"tx",
-		"icamauth",
+		txCommand,
+		icamauth.ModuleName,
 		"submit",
 		txJsonPath,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
@@ -583,8 +628,8 @@ func (s *IntegrationTestSuite) registerICA(owner, connectionID string) {
 
 	registerICAcmd := []string{
 		gaiadBinary,
-		"tx",
-		"icamauth",
+		txCommand,
+		icamauth.ModuleName,
 		"register",
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
 		fmt.Sprintf("--%s=%s", "connection-id", connectionID),

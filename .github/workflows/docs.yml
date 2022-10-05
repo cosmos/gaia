@@ -13,7 +13,7 @@ jobs:
       image: tendermintdev/docker-website-deployment
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v2.4.0
+        uses: actions/checkout@v3.1.0
         with:
           persist-credentials: false
           fetch-depth: 0

@@ -1,7 +1,6 @@
 package e2e
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"path/filepath"
@@ -9,6 +8,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/group"
 )
 
@@ -17,7 +17,6 @@ var (
 	aliceAddr                string
 	bobAddr                  string
 	charlieAddr              string
-	members                  []GroupMember
 	groupId                  = 1
 	proposalId               = 1
 	originalMembersFilename  = "members1.json"
@@ -30,50 +29,68 @@ var (
 	proposalMsgSendPath      = "proposal1.json"
 	sendAmount               = sdk.NewInt64Coin(uatomDenom, 5000000)
 
-	windows = DecisionPolicyWindow{
-		MinExecutionPeriod: (0 * time.Second).String(),
-		VotingPeriod:       (30 * time.Second).String(),
+	windows = &group.DecisionPolicyWindows{
+		MinExecutionPeriod: 0 * time.Second,
+		VotingPeriod:       30 * time.Second,
 	}
 
-	thresholdPolicy = ThresholdPolicy{
-		Type:      "/cosmos.group.v1.ThresholdDecisionPolicy",
+	thresholdPolicy = &group.ThresholdDecisionPolicy{
 		Threshold: "1",
 		Windows:   windows,
 	}
 
-	percentagePolicy = PercentagePolicy{
-		Type:       "/cosmos.group.v1.PercentageDecisionPolicy",
+	percentagePolicy = &group.PercentageDecisionPolicy{
 		Percentage: "0.5",
 		Windows:    windows,
 	}
 )
 
+/*
+GroupsSendMsgTest tests group lifecycle, policy creation, and proposal submission.
+Test Benchmarks:
+1. Create group with 3 members, including the administrator
+2. Update group members to add a new member
+3. Query and validate group size has increased to 4
+4. Update group members to remove recently added member
+5. Query and validate group size has returned to 3
+6. Create threshold decision policy (threshold = 1, tally of voter weights required to pass a proposal)
+7. Query and validate policy successfully created
+8. Fund threshold decision policy and validate balanced has increased by expected amount
+9. Submit and vote YES with sufficient threshold on a group proposal on behalf of the threshold decision policy to send tokens to Bob
+10. Validate that the proposal status is PROPOSAL_STATUS_ACCEPTED
+11. Execute passed proposal (execution must happen within MaxExecutionPeriod, fees are paid by executor)
+12. Validate proposal has passed by verifying Bob's balance has increased by expected amount
+13. Create percentage decision policy (percentage = 0.5, percentage of voting power required to pass a proposal)
+14. Query and validate policy successfully created
+15. Submit and vote NO with insufficient perfentage on a group proposal on behalf of the percentage decision policy to send tokens to bob
+16. Validate that the proposal status is PROPOSAL_STATUS_REJECTED
+*/
 func (s *IntegrationTestSuite) GroupsSendMsgTest() {
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	s.setupGroupsSuite()
 
 	s.T().Logf("Creating Group")
 	s.execCreateGroup(s.chainA, 0, adminAddr, "Cosmos Hub Group", filepath.Join(gaiaConfigPath, originalMembersFilename), fees.String())
-	membersRes, err := s.queryGroupMembers(chainAAPIEndpoint, 1)
+	membersRes, err := queryGroupMembers(chainAAPIEndpoint, 1)
 	s.Require().NoError(err)
 	s.Assert().Equal(len(membersRes.Members), 3)
 
 	s.T().Logf("Adding New Group Member")
 	s.execUpdateGroupMembers(s.chainA, 0, adminAddr, strconv.Itoa(groupId), filepath.Join(gaiaConfigPath, addMemberFilename), fees.String())
-	membersRes, err = s.queryGroupMembers(chainAAPIEndpoint, 1)
+	membersRes, err = queryGroupMembers(chainAAPIEndpoint, 1)
 	s.Require().NoError(err)
 	s.Assert().Equal(len(membersRes.Members), 4)
 
 	s.T().Logf("Removing New Group Member")
 	s.execUpdateGroupMembers(s.chainA, 0, adminAddr, strconv.Itoa(groupId), filepath.Join(gaiaConfigPath, removeMemberFilename), fees.String())
-	membersRes, err = s.queryGroupMembers(chainAAPIEndpoint, 1)
+	membersRes, err = queryGroupMembers(chainAAPIEndpoint, 1)
 	s.Require().NoError(err)
 	s.Assert().Equal(len(membersRes.Members), 3)
 
 	s.T().Logf("Creating Group Threshold Decision Policy")
 	s.writeGroupPolicies(s.chainA, thresholdPolicyFilename, percentagePolicyFilename, thresholdPolicy, percentagePolicy)
 	s.executeCreateGroupPolicy(s.chainA, 0, adminAddr, strconv.Itoa(groupId), thresholdPolicyMetadata, filepath.Join(gaiaConfigPath, thresholdPolicyFilename), fees.String())
-	policies, err := s.queryGroupPolicies(chainAAPIEndpoint, groupId)
+	policies, err := queryGroupPolicies(chainAAPIEndpoint, groupId)
 	s.Require().NoError(err)
 	policy, err := getPolicy(policies.GroupPolicies, thresholdPolicyMetadata, groupId)
 	s.Require().NoError(err)
@@ -92,7 +109,7 @@ func (s *IntegrationTestSuite) GroupsSendMsgTest() {
 
 	s.Require().Eventually(
 		func() bool {
-			proposalRes, err := s.queryGroupProposal(chainAAPIEndpoint, 1)
+			proposalRes, err := queryGroupProposal(chainAAPIEndpoint, 1)
 			s.Require().NoError(err)
 
 			return proposalRes.Proposal.Status == group.PROPOSAL_STATUS_ACCEPTED
@@ -109,7 +126,7 @@ func (s *IntegrationTestSuite) GroupsSendMsgTest() {
 	proposalId++
 	s.T().Logf("Creating Group Percentage Decision Policy")
 	s.executeCreateGroupPolicy(s.chainA, 0, adminAddr, strconv.Itoa(groupId), percentagePolicyMetadata, filepath.Join(gaiaConfigPath, percentagePolicyFilename), fees.String())
-	policies, err = s.queryGroupPolicies(chainAAPIEndpoint, 1)
+	policies, err = queryGroupPolicies(chainAAPIEndpoint, 1)
 	s.Require().NoError(err)
 	policy, err = getPolicy(policies.GroupPolicies, percentagePolicyMetadata, 1)
 	s.Require().NoError(err)
@@ -124,7 +141,7 @@ func (s *IntegrationTestSuite) GroupsSendMsgTest() {
 
 	s.Require().Eventually(
 		func() bool {
-			proposalRes, err := s.queryGroupProposalByGroupPolicy(chainAAPIEndpoint, policy.Address)
+			proposalRes, err := queryGroupProposalByGroupPolicy(chainAAPIEndpoint, policy.Address)
 			s.Require().NoError(err)
 
 			return proposalRes.Proposals[0].Status == group.PROPOSAL_STATUS_REJECTED
@@ -145,7 +162,7 @@ func getPolicy(policies []*group.GroupPolicyInfo, metadata string, groupId int) 
 }
 
 func (s *IntegrationTestSuite) prepareGroupFiles(c *chain, adminAddr string, member1Address string, member2Address string, member3Address string) {
-	members = []GroupMember{
+	members := []group.MemberRequest{
 		{
 			Address:  adminAddr,
 			Weight:   "1",
@@ -162,54 +179,48 @@ func (s *IntegrationTestSuite) prepareGroupFiles(c *chain, adminAddr string, mem
 			Metadata: "Bob",
 		},
 	}
+
 	s.writeGroupMembers(c, members, originalMembersFilename)
 
-	newMembers := append(members, GroupMember{
+	newMembers := append(members, group.MemberRequest{
 		Address:  member3Address,
 		Weight:   "1",
 		Metadata: "Charlie",
 	})
 	s.writeGroupMembers(c, newMembers, addMemberFilename)
 
-	removeMembers := append(members, GroupMember{
-		Address:  charlieAddr,
-		Weight:   "0",
-		Metadata: "Charlie",
-	})
-
-	s.writeGroupMembers(c, removeMembers, removeMemberFilename)
+	// Update weight to 0 to remove member from group
+	newMembers[2].Weight = "0"
+	s.writeGroupMembers(c, newMembers, removeMemberFilename)
 }
 
 func (s *IntegrationTestSuite) writeGroupProposal(c *chain, policyAddress string, signingAddress string, sendAmount sdk.Coin, filename string) {
-	message := MsgSend{
-		Type:   "/cosmos.bank.v1beta1.MsgSend",
-		From:   policyAddress,
-		To:     bobAddr,
-		Amount: []sdk.Coin{sendAmount},
+	msg := &banktypes.MsgSend{
+		FromAddress: policyAddress,
+		ToAddress:   bobAddr,
+		Amount:      []sdk.Coin{sendAmount},
 	}
-	prop := struct {
-		GroupPolicyAddress string    `json:"group_policy_address"`
-		Proposers          []string  `json:"proposers"`
-		Metadata           string    `json:"metadata"`
-		Messages           []MsgSend `json:"messages"`
-	}{
+
+	proposal := &group.Proposal{
 		GroupPolicyAddress: policyAddress,
 		Proposers:          []string{signingAddress},
 		Metadata:           "Send 5uatom to Bob",
-		Messages:           []MsgSend{message},
 	}
 
-	body, err := json.MarshalIndent(prop, "", " ")
+	msgs := []sdk.Msg{msg}
+	proposal.SetMsgs(msgs)
+
+	body, err := cdc.MarshalJSON(proposal)
 	s.Require().NoError(err)
 
 	s.writeFile(c, filename, body)
 }
 
-func (s *IntegrationTestSuite) writeGroupPolicies(c *chain, thresholdFilename string, percentageFilename string, thresholdPolicyJson ThresholdPolicy, percentagePolicyJson PercentagePolicy) {
-	thresholdBody, err := json.MarshalIndent(thresholdPolicyJson, "", " ")
+func (s *IntegrationTestSuite) writeGroupPolicies(c *chain, thresholdFilename string, percentageFilename string, thresholdPolicy *group.ThresholdDecisionPolicy, percentagePolicy *group.PercentageDecisionPolicy) {
+	thresholdBody, err := cdc.MarshalInterfaceJSON(thresholdPolicy)
 	s.Require().NoError(err)
 
-	percentageBody, err := json.MarshalIndent(percentagePolicyJson, "", " ")
+	percentageBody, err := cdc.MarshalInterfaceJSON(percentagePolicy)
 	s.Require().NoError(err)
 
 	s.writeFile(c, thresholdFilename, thresholdBody)

@@ -9,6 +9,7 @@ import (
 	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 )
 
 // TestICARegister must run before any other
@@ -93,8 +94,8 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 		sendamt := sdk.NewCoin(uatomDenom, math.NewInt(100000))
 		txCmd := []string{
 			gaiadBinary,
-			"tx",
-			"bank",
+			txCommand,
+			banktypes.ModuleName,
 			"send",
 			ica,
 			receiver,
@@ -125,7 +126,7 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 		sendIBCamt := math.NewInt(10)
 		icaIBCsendCmd := []string{
 			gaiadBinary,
-			"tx",
+			txCommand,
 			"ibc-transfer",
 			"transfer",
 			"transfer",

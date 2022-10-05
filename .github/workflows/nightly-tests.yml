@@ -1,0 +1,16 @@
+name: "Nightly E2E run"
+on:
+  workflow_call:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+
+  run-tests:
+    uses: cosmos/gaia/.github/workflows/test.yml@main
+
+  run-simulations:
+    uses: cosmos/gaia/.github/workflows/sims.yml@main
+
+    

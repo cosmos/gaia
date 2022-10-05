@@ -28,7 +28,7 @@ import (
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	gov "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
-  "github.com/cosmos/cosmos-sdk/x/group"
+	"github.com/cosmos/cosmos-sdk/x/group"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	"github.com/cosmos/gaia/v8/app/params"
 	ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
@@ -44,6 +44,8 @@ import (
 
 const (
 	gaiadBinary    = "gaiad"
+	txCommand      = "tx"
+	keysCommand    = "keys"
 	gaiaHomePath   = "/home/nonroot/.gaia"
 	photonDenom    = "photon"
 	uatomDenom     = "uatom"

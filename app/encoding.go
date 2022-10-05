@@ -2,7 +2,7 @@ package gaia
 
 import (
 	"github.com/cosmos/cosmos-sdk/std"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
 	"github.com/cosmos/gaia/v8/app/params"
 )
 
@@ -16,6 +16,5 @@ func MakeTestEncodingConfig() params.EncodingConfig {
 	std.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	ModuleBasics.RegisterLegacyAminoCodec(encodingConfig.Amino)
 	ModuleBasics.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-	stakingtypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	return encodingConfig
 }

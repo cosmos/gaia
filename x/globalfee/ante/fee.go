@@ -17,13 +17,13 @@ const maxBypassMinFeeMsgGasUsage = uint64(200_000)
 // Note this only applies when ctx.CheckTx = true. If fee is high enough or not
 // CheckTx, then call next AnteHandler.
 //
-// CONTRACT: Tx must implement FeeTx to use BypassMinFeeDecorator
+// CONTRACT: Tx must implement FeeTx to use FeeDecorator
 // If the tx msg type is one of the bypass msg types, the tx is valid even if the min fee is lower than normally required.
 // If the bypass tx still carries fees, the fee denom should be the same as global fee required.
 
-var _ sdk.AnteDecorator = BypassMinFeeDecorator{}
+var _ sdk.AnteDecorator = FeeDecorator{}
 
-type BypassMinFeeDecorator struct {
+type FeeDecorator struct {
 	BypassMinFeeMsgTypes []string
 	GlobalMinFee         globalfee.ParamSource
 }
@@ -34,18 +34,18 @@ func DefaultZeroGlobalFee() []sdk.DecCoin {
 	return []sdk.DecCoin{sdk.NewDecCoinFromDec(defaultZeroGlobalFeeDenom, sdk.NewDec(0))}
 }
 
-func NewBypassMinFeeDecorator(bypassMsgTypes []string, paramSpace paramtypes.Subspace) BypassMinFeeDecorator {
+func NewFeeDecorator(bypassMsgTypes []string, paramSpace paramtypes.Subspace) FeeDecorator {
 	if !paramSpace.HasKeyTable() {
 		panic("global fee paramspace was not set up via module")
 	}
 
-	return BypassMinFeeDecorator{
+	return FeeDecorator{
 		BypassMinFeeMsgTypes: bypassMsgTypes,
 		GlobalMinFee:         paramSpace,
 	}
 }
 
-func (mfd BypassMinFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
+func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
 	// please note: after parsing feeflag, the zero fees are removed already
 	feeTx, ok := tx.(sdk.FeeTx)
 	if !ok {

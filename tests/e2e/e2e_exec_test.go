@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -59,6 +58,70 @@ func applyOptions(chainID string, options []flagOption) map[string]interface{} {
 	return opts
 }
 
+func (s *IntegrationTestSuite) execEncode(
+	c *chain,
+	txPath string,
+	opt ...flagOption,
+) string {
+	opts := applyOptions(c.id, opt)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("%s - Executing gaiad encoding with %v", c.id, txPath)
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		"encode",
+		txPath,
+	}
+	for flag, value := range opts {
+		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
+	}
+
+	var encoded string
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, 0, func(stdOut []byte, stdErr []byte) bool {
+		if stdErr != nil {
+			return false
+		}
+		encoded = strings.TrimSuffix(string(stdOut), "\n")
+		return true
+	})
+	s.T().Logf("successfully encode with %v", txPath)
+	return encoded
+}
+
+func (s *IntegrationTestSuite) execDecode(
+	c *chain,
+	txPath string,
+	opt ...flagOption,
+) string {
+	opts := applyOptions(c.id, opt)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("%s - Executing gaiad decoding with %v", c.id, txPath)
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		"decode",
+		txPath,
+	}
+	for flag, value := range opts {
+		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
+	}
+
+	var decoded string
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, 0, func(stdOut []byte, stdErr []byte) bool {
+		if stdErr != nil {
+			return false
+		}
+		decoded = strings.TrimSuffix(string(stdOut), "\n")
+		return true
+	})
+	s.T().Logf("successfully decode %v", txPath)
+	return decoded
+}
+
 func (s *IntegrationTestSuite) execVestingTx(
 	c *chain,
 	method string,
@@ -100,10 +163,10 @@ func (s *IntegrationTestSuite) execCreatePermanentLockedAccount(
 
 func (s *IntegrationTestSuite) execCreatePeriodicVestingAccount(
 	c *chain,
-	address string,
+	address,
+	jsonPath string,
 	opt ...flagOption,
 ) {
-	jsonPath := filepath.Join(gaiaHomePath, vestingPeriodFilePath)
 	s.T().Logf("Executing gaiad create periodic vesting account %s", c.id)
 	s.execVestingTx(c, "create-periodic-vesting-account", []string{address, jsonPath}, opt...)
 	s.T().Logf("successfully created periodic vesting account %s with %s", address, jsonPath)

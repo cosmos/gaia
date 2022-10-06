@@ -30,7 +30,6 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/cosmos-sdk/x/group"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	"github.com/cosmos/gaia/v8/app/params"
 	ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
 	"github.com/ory/dockertest/v3"
@@ -41,6 +40,8 @@ import (
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	"github.com/tendermint/tendermint/libs/rand"
 	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
+	
+	"github.com/cosmos/gaia/v8/app/params"
 )
 
 const (
@@ -384,15 +385,9 @@ func (s *IntegrationTestSuite) initGenesis(c *chain, vestingMnemonic string) {
 	bz, err = tmjson.MarshalIndent(genDoc, "", "  ")
 	s.Require().NoError(err)
 
-	vestingPeriod, err := generateVestingPeriod()
-	s.Require().NoError(err)
-
 	// write the updated genesis file to each validator.
 	for _, val := range c.validators {
 		err = writeFile(filepath.Join(val.configDir(), "config", "genesis.json"), bz)
-		s.Require().NoError(err)
-
-		err = writeFile(filepath.Join(val.configDir(), vestingPeriodFilePath), vestingPeriod)
 		s.Require().NoError(err)
 	}
 }

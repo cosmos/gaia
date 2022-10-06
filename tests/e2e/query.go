@@ -317,8 +317,7 @@ func queryPeriodicVestingAccount(endpoint, address string) (authvesting.Periodic
 
 func queryEvidence(endpoint, hash string) (evidencetypes.QueryEvidenceResponse, error) {
 	var res evidencetypes.QueryEvidenceResponse
-	url := fmt.Sprintf("%s/cosmos/evidence/v1beta1/evidence/%s", endpoint, hash)
-	body, err := httpGet(url)
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/evidence/v1beta1/evidence/%s", endpoint, hash))
 	if err != nil {
 		return res, err
 	}

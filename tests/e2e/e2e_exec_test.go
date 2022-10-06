@@ -829,7 +829,8 @@ func (s *IntegrationTestSuite) defaultExecValidation(chain *chain, valIdx int) f
 			var err error
 			s.Require().Eventually(
 				func() bool {
-					return queryGaiaTx(endpoint, txResp.TxHash) == nil
+					err = queryGaiaTx(endpoint, txResp.TxHash)
+					return err == nil
 				},
 				time.Minute,
 				5*time.Second,

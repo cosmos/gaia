@@ -9,10 +9,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	tmrand "github.com/tendermint/tendermint/libs/rand"
+
 	gaia "github.com/cosmos/gaia/v8/app"
 	"github.com/cosmos/gaia/v8/app/params"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
 )
 
 const (
@@ -38,6 +40,7 @@ func init() {
 		&ed25519.PubKey{},
 	)
 
+	authvesting.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	cdc = encodingConfig.Codec
 }
 
@@ -46,8 +49,10 @@ type chain struct {
 	dataDir    string
 	id         string
 	validators []*validator
+	accounts   []*account
 	// initial accounts in genesis
-	genesisAccounts []*account
+	genesisAccounts        []*account
+	genesisVestingAccounts map[string]sdk.AccAddress
 }
 
 func newChain() (*chain, error) {

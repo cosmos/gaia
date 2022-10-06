@@ -1,6 +1,7 @@
 package e2e
 
 import (
+	"fmt"
 	"math/rand"
 	"strconv"
 
@@ -8,6 +9,11 @@ import (
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/ed25519"
 )
+
+// HDPath generates an HD path based on the wallet index
+func HDPath(index int) string {
+	return fmt.Sprintf("m/44'/118'/0'/0/%d", index)
+}
 
 // PubKey returns a sample account PubKey
 func PubKey() crypto.PubKey {

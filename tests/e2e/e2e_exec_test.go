@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -18,22 +19,23 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	grouptypes "github.com/cosmos/cosmos-sdk/x/group"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	icamauth "github.com/cosmos/gaia/v8/x/icamauth/types"
 	"github.com/ory/dockertest/v3/docker"
+
+	icamauth "github.com/cosmos/gaia/v8/x/icamauth/types"
 )
 
 const (
-	flagSpendLimit      = "spend-limit"
-	flagAllowedMessages = "allowed-messages"
 	flagFrom            = "from"
 	flagHome            = "home"
 	flagFees            = "fees"
-	flagFeeGranter      = "fee-granter"
 	flagGas             = "gas"
 	flagOutput          = "output"
 	flagChainID         = "chain-id"
+	flagSpendLimit      = "spend-limit"
+	flagFeeGranter      = "fee-granter"
 	flagBroadcastMode   = "broadcast-mode"
 	flagKeyringBackend  = "keyring-backend"
+	flagAllowedMessages = "allowed-messages"
 )
 
 type flagOption func(map[string]interface{})
@@ -47,19 +49,69 @@ func withKeyValue(key string, value interface{}) flagOption {
 
 func applyOptions(chainID string, options []flagOption) map[string]interface{} {
 	opts := map[string]interface{}{
-		flagHome:           gaiaHomePath,
 		flagKeyringBackend: "test",
 		flagOutput:         "json",
 		flagGas:            "auto",
 		flagFrom:           "alice",
 		flagBroadcastMode:  "sync",
 		flagChainID:        chainID,
+		flagHome:           gaiaHomePath,
 		flagFees:           fees.String(),
 	}
 	for _, apply := range options {
 		apply(opts)
 	}
 	return opts
+}
+
+func (s *IntegrationTestSuite) execVestingTx(
+	c *chain,
+	method string,
+	args []string,
+	opt ...flagOption,
+) {
+	opts := applyOptions(c.id, opt)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("%s - Executing gaiad %s with %v", c.id, method, args)
+	gaiaCommand := []string{
+		gaiadBinary,
+		"tx",
+		"vesting",
+		method,
+		"-y",
+	}
+	gaiaCommand = append(gaiaCommand, args...)
+
+	for flag, value := range opts {
+		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, 0, s.defaultExecValidation(c, 0))
+	s.T().Logf("successfully %s with %v", method, args)
+}
+
+func (s *IntegrationTestSuite) execCreatePermanentLockedAccount(
+	c *chain,
+	address,
+	amount string,
+	opt ...flagOption,
+) {
+	s.T().Logf("Executing gaiad create a permanent locked vesting account %s", c.id)
+	s.execVestingTx(c, "create-permanent-locked-account", []string{address, amount}, opt...)
+	s.T().Logf("successfully created permanent locked vesting account %s with %s", address, amount)
+}
+
+func (s *IntegrationTestSuite) execCreatePeriodicVestingAccount(
+	c *chain,
+	address string,
+	opt ...flagOption,
+) {
+	jsonPath := filepath.Join(gaiaHomePath, vestingPeriodFilePath)
+	s.T().Logf("Executing gaiad create periodic vesting account %s", c.id)
+	s.execVestingTx(c, "create-periodic-vesting-account", []string{address, jsonPath}, opt...)
+	s.T().Logf("successfully created periodic vesting account %s with %s", address, jsonPath)
 }
 
 func (s *IntegrationTestSuite) execFeeGrant(c *chain, valIdx int, granter, grantee, spendLimit string, opt ...flagOption) {

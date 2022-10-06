@@ -411,3 +411,11 @@ func (s *IntegrationTestSuite) TestStaking() {
 func (s *IntegrationTestSuite) TestGroups() {
 	s.GroupsSendMsgTest()
 }
+
+func (s *IntegrationTestSuite) TestVesting() {
+	chainAAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	s.testDelayedVestingAccount(chainAAPI)
+	s.testContinuousVestingAccount(chainAAPI)
+	s.testPermanentLockedAccount(chainAAPI)
+	s.testPeriodicVestingAccount(chainAAPI)
+}

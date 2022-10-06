@@ -13,6 +13,7 @@ import (
 	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -73,8 +74,8 @@ func (s *IntegrationTestSuite) execVestingTx(
 	s.T().Logf("%s - Executing gaiad %s with %v", c.id, method, args)
 	gaiaCommand := []string{
 		gaiadBinary,
-		"tx",
-		"vesting",
+		txCommand,
+		vestingtypes.ModuleName,
 		method,
 		"-y",
 	}

@@ -28,6 +28,8 @@ func (s *IntegrationTestSuite) TestFeeGrant() {
 		s.Require().NoError(err)
 		bob, err := chain.genesisAccounts[1].keyInfo.GetAddress()
 		s.Require().NoError(err)
+		charlie, err := chain.genesisAccounts[2].keyInfo.GetAddress()
+		s.Require().NoError(err)
 
 		// add fee grant from alice to bob
 		s.execFeeGrant(
@@ -65,6 +67,36 @@ func (s *IntegrationTestSuite) TestFeeGrant() {
 			chain,
 			valIdx,
 			bob.String(),
+			Address(),
+			tokenAmount.String(),
+			fees.String(),
+			true,
+			withKeyValue(flagFeeGranter, alice.String()),
+		)
+
+		// add fee grant from alice to charlie
+		s.execFeeGrant(
+			chain,
+			valIdx,
+			alice.String(),
+			charlie.String(),
+			fees.String(), // spend limit
+			withKeyValue(flagAllowedMessages, sdk.MsgTypeURL(&banktypes.MsgSend{})),
+		)
+
+		// revoke fee grant from alice to charlie
+		s.execFeeGrantRevoke(
+			chain,
+			valIdx,
+			alice.String(),
+			charlie.String(),
+		)
+
+		// tx should fail because the grant was revoked
+		s.execBankSend(
+			chain,
+			valIdx,
+			charlie.String(),
 			Address(),
 			tokenAmount.String(),
 			fees.String(),

@@ -13,6 +13,7 @@ import (
 	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
@@ -77,8 +78,8 @@ func (s *IntegrationTestSuite) execVestingTx(
 	s.T().Logf("%s - Executing gaiad %s with %v", c.id, method, args)
 	gaiaCommand := []string{
 		gaiadBinary,
-		"tx",
-		"vesting",
+		txCommand,
+		vestingtypes.ModuleName,
 		method,
 		"-y",
 	}
@@ -115,7 +116,6 @@ func (s *IntegrationTestSuite) execCreatePeriodicVestingAccount(
 }
 
 func (s *IntegrationTestSuite) execFeeGrant(c *chain, valIdx int, granter, grantee, spendLimit string, opt ...flagOption) {
-	opt = append(opt, withKeyValue(flagFees, fees))
 	opt = append(opt, withKeyValue(flagFrom, granter))
 	opt = append(opt, withKeyValue(flagSpendLimit, spendLimit))
 	opts := applyOptions(c.id, opt)
@@ -127,9 +127,34 @@ func (s *IntegrationTestSuite) execFeeGrant(c *chain, valIdx int, granter, grant
 
 	gaiaCommand := []string{
 		gaiadBinary,
-		"tx",
+		txCommand,
 		feegrant.ModuleName,
 		"grant",
+		granter,
+		grantee,
+		"-y",
+	}
+	for flag, value := range opts {
+		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
+}
+
+func (s *IntegrationTestSuite) execFeeGrantRevoke(c *chain, valIdx int, granter, grantee string, opt ...flagOption) {
+	opt = append(opt, withKeyValue(flagFrom, granter))
+	opts := applyOptions(c.id, opt)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("revoking %s fee grant from %s on chain %s", grantee, granter, c.id)
+
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		feegrant.ModuleName,
+		"revoke",
 		granter,
 		grantee,
 		"-y",
@@ -845,15 +870,14 @@ func (s *IntegrationTestSuite) defaultExecValidation(chain *chain, valIdx int) f
 		}
 		if strings.Contains(txResp.String(), "code: 0") || txResp.Code == 0 {
 			endpoint := fmt.Sprintf("http://%s", s.valResources[chain.id][valIdx].GetHostPort("1317/tcp"))
-			var err error
 			s.Require().Eventually(
 				func() bool {
 					return queryGaiaTx(endpoint, txResp.TxHash) == nil
 				},
 				time.Minute,
 				5*time.Second,
-				"stdOut: %s, stdErr: %s, err: %v",
-				string(stdOut), string(stdErr), err,
+				"stdOut: %s, stdErr: %s",
+				string(stdOut), string(stdErr),
 			)
 			return true
 		}

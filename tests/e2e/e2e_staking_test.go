@@ -18,7 +18,7 @@ func (s *IntegrationTestSuite) testStaking(chainEndpoint string, delegatorAddres
 	s.Require().Eventually(
 		func() bool {
 			res, err := queryDelegation(chainEndpoint, validatorAddressA, delegatorAddress)
-			amt := res.GetDelegationResponse().GetDelegation().GetShares()
+			amt := res.DelegationResponse.Delegation.GetShares()
 			s.Require().NoError(err)
 
 			return amt.Equal(sdk.NewDecFromInt(delegationAmount))
@@ -34,7 +34,7 @@ func (s *IntegrationTestSuite) testStaking(chainEndpoint string, delegatorAddres
 	s.Require().Eventually(
 		func() bool {
 			res, err := queryDelegation(chainEndpoint, validatorAddressB, delegatorAddress)
-			amt := res.GetDelegationResponse().GetDelegation().GetShares()
+			amt := res.DelegationResponse.Delegation.GetShares()
 			s.Require().NoError(err)
 
 			return amt.Equal(sdk.NewDecFromInt(delegationAmount))

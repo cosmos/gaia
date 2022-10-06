@@ -17,8 +17,8 @@ import (
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	grouptypes "github.com/cosmos/cosmos-sdk/x/group"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	icamauth "github.com/cosmos/gaia/v8/x/icamauth/types"
+	stakingtypes "github.com/iqlusioninc/liquidity-staking-module/x/staking/types"
 	"github.com/ory/dockertest/v3/docker"
 )
 

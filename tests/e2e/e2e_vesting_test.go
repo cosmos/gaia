@@ -67,7 +67,7 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api string) {
 		s.Require().Eventually(
 			func() bool {
 				res, err := queryDelegation(api, valOpAddr, vestingDelayedAcc.String())
-				amt := res.GetDelegationResponse().GetDelegation().GetShares()
+				amt := res.DelegationResponse.Delegation.GetShares()
 				s.Require().NoError(err)
 
 				return amt.Equal(sdk.NewDecFromInt(vestingDelegationAmount.Amount))
@@ -137,7 +137,7 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api string) {
 		s.Require().Eventually(
 			func() bool {
 				res, err := queryDelegation(api, valOpAddr, continuousVestingAcc.String())
-				amt := res.GetDelegationResponse().GetDelegation().GetShares()
+				amt := res.DelegationResponse.Delegation.GetShares()
 				s.Require().NoError(err)
 
 				return amt.Equal(sdk.NewDecFromInt(vestingDelegationAmount.Amount))
@@ -233,7 +233,7 @@ func (s *IntegrationTestSuite) testPermanentLockedAccount(api string) {
 		s.Require().Eventually(
 			func() bool {
 				res, err := queryDelegation(api, valOpAddr, permanentLockedAddr)
-				amt := res.GetDelegationResponse().GetDelegation().GetShares()
+				amt := res.DelegationResponse.Delegation.GetShares()
 				s.Require().NoError(err)
 
 				return amt.Equal(sdk.NewDecFromInt(vestingDelegationAmount.Amount))
@@ -327,7 +327,7 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api string) {
 		s.Require().Eventually(
 			func() bool {
 				res, err := queryDelegation(api, valOpAddr, periodicVestingAddr)
-				amt := res.GetDelegationResponse().GetDelegation().GetShares()
+				amt := res.DelegationResponse.Delegation.GetShares()
 				s.Require().NoError(err)
 
 				return amt.Equal(sdk.NewDecFromInt(vestingDelegationAmount.Amount))

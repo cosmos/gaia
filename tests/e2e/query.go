@@ -14,9 +14,9 @@ import (
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/cosmos/cosmos-sdk/x/group"
-	staketypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	globalfee "github.com/cosmos/gaia/v8/x/globalfee/types"
 	icamauth "github.com/cosmos/gaia/v8/x/icamauth/types"
+	staketypes "github.com/iqlusioninc/liquidity-staking-module/x/staking/types"
 )
 
 func queryGaiaTx(endpoint, txHash string) error {

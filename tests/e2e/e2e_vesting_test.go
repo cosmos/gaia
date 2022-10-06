@@ -4,7 +4,6 @@ import (
 	"cosmossdk.io/math"
 	"encoding/json"
 	"math/rand"
-	"path/filepath"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -16,7 +15,8 @@ const (
 	lockedVestingKey     = "locker_vesting"
 	periodicVestingKey   = "periodic_vesting"
 
-	vestingTxDelay = 5
+	vestingPeriodFilePath = "test_period.json"
+	vestingTxDelay        = 5
 )
 
 type (
@@ -253,26 +253,18 @@ func (s *IntegrationTestSuite) testPermanentLockedAccount(api string) {
 func (s *IntegrationTestSuite) testPeriodicVestingAccount(api string) {
 	s.Run("test periodic vesting genesis account", func() {
 		var (
-			vestingPeriodFilePath = "test_period.json"
-			valIdx                = 0
-			chain                 = s.chainA
-			val                   = chain.validators[valIdx]
-			periodicVestingAddr   = chain.genesisVestingAccounts[periodicVestingKey].String()
+			valIdx              = 0
+			chain               = s.chainA
+			val                 = chain.validators[valIdx]
+			periodicVestingAddr = chain.genesisVestingAccounts[periodicVestingKey].String()
 		)
 		sender, err := val.keyInfo.GetAddress()
 		s.NoError(err)
 		valOpAddr := sdk.ValAddress(sender).String()
 
-		vestingPeriod, err := generateVestingPeriod()
-		s.Require().NoError(err)
-
-		err = writeFile(filepath.Join(val.configDir(), vestingPeriodFilePath), vestingPeriod)
-		s.Require().NoError(err)
-
 		s.execCreatePeriodicVestingAccount(
 			chain,
 			periodicVestingAddr,
-			filepath.Join(gaiaHomePath, vestingPeriodFilePath),
 			withKeyValue(flagFrom, sender.String()),
 		)
 

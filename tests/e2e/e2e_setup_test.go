@@ -50,6 +50,7 @@ import (
 const (
 	gaiadBinary    = "gaiad"
 	txCommand      = "tx"
+	queryCommand   = "query"
 	keysCommand    = "keys"
 	gaiaHomePath   = "/home/nonroot/.gaia"
 	photonDenom    = "photon"

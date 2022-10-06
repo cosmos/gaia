@@ -15,8 +15,8 @@ func (s *IntegrationTestSuite) execQueryEvidence(c *chain, valIdx int, hash stri
 
 	gaiaCommand := []string{
 		gaiadBinary,
-		"q",
-		"evidence",
+		queryCommand,
+		evidencetypes.ModuleName,
 		hash,
 	}
 

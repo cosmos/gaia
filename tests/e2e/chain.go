@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
@@ -12,7 +11,6 @@ import (
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	gaia "github.com/cosmos/gaia/v8/app"
-	"github.com/cosmos/gaia/v8/app/params"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 )
 
@@ -21,10 +19,7 @@ const (
 	keyringAppName    = "testnet"
 )
 
-var (
-	encodingConfig params.EncodingConfig
-	cdc            codec.Codec //nolint:unused // this is called during e2e tests
-)
+var ()
 
 func init() {
 	encodingConfig = gaia.MakeTestEncodingConfig()

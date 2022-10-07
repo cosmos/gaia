@@ -109,8 +109,13 @@ type IntegrationTestSuite struct {
 	dkrNet         *dockertest.Network
 	hermesResource *dockertest.Resource
 	valResources   map[string][]*dockertest.Resource
+	config         config
 }
 
+type config struct {
+	encodingConfig params.EncodingConfig
+	cdc            codec.Codec //nolint:unused // this is called during e2e tests
+}
 type AddressResponse struct {
 	Name     string `json:"name"`
 	Type     string `json:"type"`

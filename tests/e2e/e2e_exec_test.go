@@ -65,7 +65,6 @@ func (s *IntegrationTestSuite) execVestingTx(
 	args []string,
 	opt ...flagOption,
 ) {
-	opts := applyOptions(c.id, opt)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -79,11 +78,7 @@ func (s *IntegrationTestSuite) execVestingTx(
 	}
 	gaiaCommand = append(gaiaCommand, args...)
 
-	for flag, value := range opts {
-		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
-	}
-
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, 0, s.defaultExecValidation(c, 0))
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, 0, s.defaultExecValidation(c, 0), opt...)
 	s.T().Logf("successfully %s with %v", method, args)
 }
 
@@ -735,9 +730,21 @@ func (s *IntegrationTestSuite) registerICA(owner, connectionID string) {
 	s.T().Logf("%s reigstered an interchain account on chain %s from chain %s", owner, s.chainB.id, s.chainA.id)
 }
 
-func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chain, gaiaCommand []string, valIdx int, validation func([]byte, []byte) bool) {
+func (s *IntegrationTestSuite) executeGaiaTxCommand(
+	ctx context.Context,
+	c *chain,
+	gaiaCommand []string,
+	valIdx int,
+	validation func([]byte, []byte) bool,
+	opt ...flagOption,
+) {
+	opts := applyOptions(c.id, opt)
+	for flag, value := range opts {
+		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
+	}
+
 	if validation == nil {
-		validation = s.defaultExecValidation(s.chainA, 0)
+		validation = s.defaultExecValidation(c, valIdx)
 	}
 	var (
 		outBuf bytes.Buffer

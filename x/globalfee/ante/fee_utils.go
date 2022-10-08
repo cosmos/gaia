@@ -10,7 +10,7 @@ import (
 )
 
 // ParamStoreKeyMinGasPrices type require coins sorted. getGlobalFee will also return sorted coins (might return 0denom if globalMinGasPrice is 0)
-func (mfd BypassMinFeeDecorator) getGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) sdk.Coins {
+func (mfd FeeDecorator) getGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) sdk.Coins {
 	var globalMinGasPrices sdk.DecCoins
 	if mfd.GlobalMinFee.Has(ctx, types.ParamStoreKeyMinGasPrices) {
 		mfd.GlobalMinFee.Get(ctx, types.ParamStoreKeyMinGasPrices, &globalMinGasPrices)
@@ -51,7 +51,7 @@ func getMinGasPrice(ctx sdk.Context, feeTx sdk.FeeTx) sdk.Coins {
 	return requiredFees.Sort()
 }
 
-func (mfd BypassMinFeeDecorator) bypassMinFeeMsgs(msgs []sdk.Msg) bool {
+func (mfd FeeDecorator) bypassMinFeeMsgs(msgs []sdk.Msg) bool {
 	for _, msg := range msgs {
 		if tmstrings.StringInSlice(sdk.MsgTypeURL(msg), mfd.BypassMinFeeMsgTypes) {
 			continue
@@ -74,7 +74,7 @@ func DenomsSubsetOfIncludingZero(coins, coinsB sdk.Coins) bool {
 	}
 	// coins=[], coinsB=[0stake]
 	// let all len(coins) == 0 pass and reject later at IsAnyGTEIncludingZero
-	if len(coins) == 0 && containZeroCoins(coinsB) {
+	if len(coins) == 0 && ContainZeroCoins(coinsB) {
 		return true
 	}
 	// coins=1stake, coinsB=[0stake,1uatom]
@@ -109,7 +109,7 @@ func IsAnyGTEIncludingZero(coins, coinsB sdk.Coins) bool {
 	}
 	// if feecoins empty (len(coins)==0 && len(coinsB) != 0 ), and globalfee has one denom of amt zero, return true
 	if len(coins) == 0 {
-		return containZeroCoins(coinsB)
+		return ContainZeroCoins(coinsB)
 	}
 
 	//  len(coinsB) != 0 && len(coins) != 0
@@ -130,7 +130,7 @@ func IsAnyGTEIncludingZero(coins, coinsB sdk.Coins) bool {
 
 // return true if coinsB is empty or contains zero coins,
 // CoinsB must be validate coins !!!
-func containZeroCoins(coinsB sdk.Coins) bool {
+func ContainZeroCoins(coinsB sdk.Coins) bool {
 	if len(coinsB) == 0 {
 		return true
 	}
@@ -143,7 +143,7 @@ func containZeroCoins(coinsB sdk.Coins) bool {
 	return false
 }
 
-// CombinedFeeRequirement will combine the global fee and min_gas_price. Both globalFees and minGasPrices must be valid, but CombinedFeeRequirement does not validate them so it may return 0denom.
+// CombinedFeeRequirement will combine the global fee and min_gas_price. Both globalFees and minGasPrices must be valid, but CombinedFeeRequirement does not validate them, so it may return 0denom.
 func CombinedFeeRequirement(globalFees, minGasPrices sdk.Coins) sdk.Coins {
 	// empty min_gas_price
 	if len(minGasPrices) == 0 {

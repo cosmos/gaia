@@ -45,6 +45,8 @@ import (
 	v7 "github.com/cosmos/gaia/v8/app/upgrades/v7"
 	v8 "github.com/cosmos/gaia/v8/app/upgrades/v8"
 	"github.com/cosmos/gaia/v8/x/globalfee"
+	gaiafeeante "github.com/cosmos/gaia/v8/x/globalfee/ante"
+
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
 )
@@ -202,7 +204,7 @@ func NewGaiaApp(
 					}
 
 					feeCoins := feeTx.GetFee()
-					priority := gaiaante.GetTxPriority(feeCoins)
+					priority := gaiafeeante.GetTxPriority(feeCoins)
 
 					return feeCoins, priority, nil
 				},

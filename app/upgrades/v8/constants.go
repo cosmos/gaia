@@ -3,6 +3,7 @@ package v8
 import (
 	store "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/gaia/v8/app/upgrades"
+	"github.com/cosmos/gaia/v8/x/globalfee"
 )
 
 const (
@@ -14,6 +15,6 @@ var Upgrade = upgrades.Upgrade{
 	UpgradeName:          UpgradeName,
 	CreateUpgradeHandler: CreateUpgradeHandler,
 	StoreUpgrades: store.StoreUpgrades{
-		Added: []string{},
+		Added: []string{globalfee.ModuleName},
 	},
 }

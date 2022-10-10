@@ -92,6 +92,7 @@ func (a AppModule) InitModule(ctx sdk.Context, globalfeeParams types.Params) {
 	if !a.paramSpace.HasKeyTable() {
 		a.paramSpace = a.paramSpace.WithKeyTable(types.ParamKeyTable())
 	}
+	a.paramSpace.SetParamSet(ctx, &globalfeeParams)
 }
 
 func (a AppModule) InitGenesis(ctx sdk.Context, marshaler codec.JSONCodec, message json.RawMessage) []abci.ValidatorUpdate {

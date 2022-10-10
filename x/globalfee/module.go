@@ -86,6 +86,10 @@ func NewAppModule(paramSpace paramstypes.Subspace) *AppModule {
 	return &AppModule{paramSpace: paramSpace}
 }
 
+func (a AppModule) InitModule(ctx sdk.Context, globalfeeParams types.Params) {
+	a.paramSpace.SetParamSet(ctx, &globalfeeParams)
+}
+
 func (a AppModule) InitGenesis(ctx sdk.Context, marshaler codec.JSONCodec, message json.RawMessage) []abci.ValidatorUpdate {
 	var genesisState types.GenesisState
 	marshaler.MustUnmarshalJSON(message, &genesisState)

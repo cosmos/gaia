@@ -89,7 +89,9 @@ func NewAppModule(paramSpace paramstypes.Subspace) *AppModule {
 // InitModule will initialize the globalfee module.
 // It should only be called once and as an alternative to InitGenesis.
 func (a AppModule) InitModule(ctx sdk.Context, globalfeeParams types.Params) {
-	a.paramSpace.SetParamSet(ctx, &globalfeeParams)
+	if !a.paramSpace.HasKeyTable() {
+		a.paramSpace = a.paramSpace.WithKeyTable(types.ParamKeyTable())
+	}
 }
 
 func (a AppModule) InitGenesis(ctx sdk.Context, marshaler codec.JSONCodec, message json.RawMessage) []abci.ValidatorUpdate {

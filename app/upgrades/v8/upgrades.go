@@ -3,6 +3,8 @@ package v8
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	"github.com/cosmos/gaia/v8/app/keepers"
 )
@@ -13,6 +15,13 @@ func CreateUpgradeHandler(
 	keepers *keepers.AppKeepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+		// Fix export genesis error
+		banktypes.DefaultGenesisState().DenomMetadata = append(banktypes.DefaultGenesisState().DenomMetadata,
+			banktypes.Metadata{
+				Name:   "Cosmos Hub Atom",
+				Symbol: "Atom",
+			})
+		ctx.Logger().Info(authtypes.DefaultGenesisState().Params.String())
 
 		//controllerParams := icacontrollertypes.Params{}
 		//// allowmessages = [*]

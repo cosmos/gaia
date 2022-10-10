@@ -15,8 +15,10 @@ import (
 
 	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -25,6 +27,7 @@ import (
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	gov "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
@@ -47,6 +50,7 @@ import (
 const (
 	gaiadBinary    = "gaiad"
 	txCommand      = "tx"
+	queryCommand   = "query"
 	keysCommand    = "keys"
 	gaiaHomePath   = "/home/nonroot/.gaia"
 	photonDenom    = "photon"
@@ -62,6 +66,7 @@ const (
 	govProposalBlockBuffer = 35
 	relayerAccountIndex    = 0
 	icaOwnerAccountIndex   = 1
+	numberOfEvidences      = 10
 )
 
 var (
@@ -76,29 +81,11 @@ var (
 	proposalCounter            = 0
 	govSendMsgRecipientAddress = Address()
 	sendGovAmount              = sdk.NewInt64Coin(uatomDenom, 10)
-	fundGovAmount              = sdk.NewInt64Coin(uatomDenom, 1000)
 	proposalSendMsg            = &govtypes.MsgSubmitProposal{
 		InitialDeposit: sdk.Coins{depositAmount},
 		Metadata:       b64.StdEncoding.EncodeToString([]byte("Testing 1, 2, 3!")),
 	}
 )
-
-type UpgradePlan struct {
-	Name   string `json:"name"`
-	Height int    `json:"height"`
-	Info   string `json:"info"`
-}
-
-type SoftwareUpgrade struct {
-	Type      string      `json:"@type"`
-	Authority string      `json:"authority"`
-	Plan      UpgradePlan `json:"plan"`
-}
-
-type CancelSoftwareUpgrade struct {
-	Type      string `json:"@type"`
-	Authority string `json:"authority"`
-}
 
 type IntegrationTestSuite struct {
 	suite.Suite
@@ -352,6 +339,25 @@ func (s *IntegrationTestSuite) initGenesis(c *chain, vestingMnemonic string) {
 	bankGenState, authGenState := s.generateAuthAndBankState(c, vestingMnemonic, appGenState)
 	appGenState[authtypes.ModuleName] = authGenState
 	appGenState[banktypes.ModuleName] = bankGenState
+
+	var evidenceGenState evidencetypes.GenesisState
+	s.Require().NoError(cdc.UnmarshalJSON(appGenState[evidencetypes.ModuleName], &evidenceGenState))
+
+	evidenceGenState.Evidence = make([]*codectypes.Any, numberOfEvidences)
+	for i := range evidenceGenState.Evidence {
+		pk := ed25519.GenPrivKey()
+		evidence := &evidencetypes.Equivocation{
+			Height:           1,
+			Power:            100,
+			Time:             time.Now().UTC(),
+			ConsensusAddress: sdk.ConsAddress(pk.PubKey().Address().Bytes()).String(),
+		}
+		evidenceGenState.Evidence[i], err = codectypes.NewAnyWithValue(evidence)
+		s.Require().NoError(err)
+	}
+
+	appGenState[evidencetypes.ModuleName], err = cdc.MarshalJSON(&evidenceGenState)
+	s.Require().NoError(err)
 
 	var genUtilGenState genutiltypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[genutiltypes.ModuleName], &genUtilGenState))

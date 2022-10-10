@@ -801,7 +801,7 @@ func (s *IntegrationTestSuite) registerICA(owner, connectionID string) {
 
 	s.executeGaiaTxCommand(ctx, s.chainA, registerICAcmd, 0, s.defaultExecValidation(s.chainA, 0))
 
-	s.T().Logf("%s reigstered an interchain account on chain %s from chain %s", owner, s.chainB.id, s.chainA.id)
+	s.T().Logf("%s registered an interchain account on chain %s from chain %s", owner, s.chainB.id, s.chainA.id)
 }
 
 func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chain, gaiaCommand []string, valIdx int, validation func([]byte, []byte) bool) {

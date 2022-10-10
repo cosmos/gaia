@@ -12,9 +12,11 @@ import (
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/cosmos/cosmos-sdk/x/group"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
 	globalfee "github.com/cosmos/gaia/v8/x/globalfee/types"
 	icamauth "github.com/cosmos/gaia/v8/x/icamauth/types"
 )
@@ -338,4 +340,30 @@ func queryValidators(endpoint string) (stakingtypes.Validators, error) {
 		return nil, err
 	}
 	return res.Validators, nil
+}
+
+func queryEvidence(endpoint, hash string) (evidencetypes.QueryEvidenceResponse, error) {
+	var res evidencetypes.QueryEvidenceResponse
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/evidence/v1beta1/evidence/%s", endpoint, hash))
+	if err != nil {
+		return res, err
+	}
+
+	if err = cdc.UnmarshalJSON(body, &res); err != nil {
+		return res, err
+	}
+	return res, nil
+}
+
+func queryAllEvidence(endpoint string) (evidencetypes.QueryAllEvidenceResponse, error) {
+	var res evidencetypes.QueryAllEvidenceResponse
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/evidence/v1beta1/evidence", endpoint))
+	if err != nil {
+		return res, err
+	}
+
+	if err = cdc.UnmarshalJSON(body, &res); err != nil {
+		return res, err
+	}
+	return res, nil
 }

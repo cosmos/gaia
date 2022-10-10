@@ -7,6 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 
@@ -28,6 +29,7 @@ func init() {
 	encodingConfig = gaia.MakeTestEncodingConfig()
 	authvesting.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	stakingtypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	evidencetypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	cdc = encodingConfig.Codec
 }
 

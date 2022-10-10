@@ -10,6 +10,8 @@ import (
 )
 
 func (s *IntegrationTestSuite) TestGov() {
+	s.T().Skip()
+
 	s.SendTokensFromNewGovAccount()
 	s.GovSoftwareUpgrade()
 	s.GovCancelSoftwareUpgrade()
@@ -17,6 +19,8 @@ func (s *IntegrationTestSuite) TestGov() {
 
 // globalfee in genesis is set to be "0.00001uatom"
 func (s *IntegrationTestSuite) TestQueryGlobalFeesInGenesis() {
+	s.T().Skip()
+
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	feeInGenesis, err := sdk.ParseDecCoins(initialGlobalFeeAmt + uatomDenom)
 	s.Require().NoError(err)
@@ -65,6 +69,8 @@ test4. gov propose globalfee =  0.000001uatom (lower than min_gas_price), 0photo
 6. gov propose change back to initial globalfee = 0.00001photon, This is for not influence other e2e tests.
 */
 func (s *IntegrationTestSuite) TestGlobalFees() {
+	s.T().Skip()
+
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
 	submitterAddr, err := s.chainA.validators[0].keyInfo.GetAddress()
@@ -366,6 +372,8 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 }
 
 func (s *IntegrationTestSuite) TestByPassMinFeeWithdrawReward() {
+	s.T().Skip()
+
 	paidFeeAmt := math.LegacyMustNewDecFromStr(minGasPrice).Mul(math.LegacyNewDec(gas)).String()
 	payee, err := s.chainA.validators[0].keyInfo.GetAddress()
 	s.Require().NoError(err)
@@ -385,6 +393,8 @@ func (s *IntegrationTestSuite) TestByPassMinFeeWithdrawReward() {
 
 // todo add fee test with wrong denom order
 func (s *IntegrationTestSuite) TestStaking() {
+	s.T().Skip()
+
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
 	validatorA := s.chainA.validators[0]
@@ -409,10 +419,14 @@ func (s *IntegrationTestSuite) TestStaking() {
 }
 
 func (s *IntegrationTestSuite) TestGroups() {
+	s.T().Skip()
+
 	s.GroupsSendMsgTest()
 }
 
 func (s *IntegrationTestSuite) TestVesting() {
+	s.T().Skip()
+
 	chainAAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	s.testDelayedVestingAccount(chainAAPI)
 	s.testContinuousVestingAccount(chainAAPI)

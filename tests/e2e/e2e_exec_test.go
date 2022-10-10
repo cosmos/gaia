@@ -18,6 +18,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	grouptypes "github.com/cosmos/cosmos-sdk/x/group"
+	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/ory/dockertest/v3/docker"
 
@@ -178,6 +179,31 @@ func (s *IntegrationTestSuite) execCreatePeriodicVestingAccount(
 	s.T().Logf("successfully created periodic vesting account %s with %s", address, jsonPath)
 }
 
+func (s *IntegrationTestSuite) execUnjail(
+	c *chain,
+	opt ...flagOption,
+) {
+	opts := applyOptions(c.id, opt)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad slashing unjail %s with options: %v", c.id, opt)
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		slashingtypes.ModuleName,
+		"unjail",
+		"-y",
+	}
+
+	for flag, value := range opts {
+		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, 0, s.defaultExecValidation(c, 0))
+	s.T().Logf("successfully unjail with options %v", opt)
+}
+
 func (s *IntegrationTestSuite) execFeeGrant(c *chain, valIdx int, granter, grantee, spendLimit string, opt ...flagOption) {
 	opt = append(opt, withKeyValue(flagFrom, granter))
 	opt = append(opt, withKeyValue(flagSpendLimit, spendLimit))
@@ -239,7 +265,7 @@ func (s *IntegrationTestSuite) execBankSend(
 	expectErr bool,
 	opt ...flagOption,
 ) {
-	// TODO remove the hardcode opt after refactor
+	// TODO remove the hardcode opt after refactor, all methods should accept custom flags
 	opt = append(opt, withKeyValue(flagFees, fees))
 	opt = append(opt, withKeyValue(flagFrom, from))
 	opts := applyOptions(c.id, opt)

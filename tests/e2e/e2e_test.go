@@ -419,3 +419,8 @@ func (s *IntegrationTestSuite) TestVesting() {
 	s.testPermanentLockedAccount(chainAAPI)
 	s.testPeriodicVestingAccount(chainAAPI)
 }
+
+func (s *IntegrationTestSuite) TestSlashing() {
+	chainAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	s.testSlashing(chainAPI)
+}

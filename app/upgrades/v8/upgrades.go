@@ -16,7 +16,7 @@ func CreateUpgradeHandler(
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		// globalfee params
-		globalFeeParams := globalfeetypes.Params{}
+		globalFeeParams := globalfeetypes.DefaultParams()
 		globalFeeModule, err := mm.Modules[globalfee.ModuleName].(globalfee.AppModule)
 		if err {
 			panic("mm.Modules[globalfee.ModuleName] is not of type globalfee.AppModule")

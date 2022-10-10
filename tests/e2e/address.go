@@ -5,9 +5,9 @@ import (
 	"math/rand"
 	"strconv"
 
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
+	crypto "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/crypto"
-	"github.com/tendermint/tendermint/crypto/ed25519"
 )
 
 // HDPath generates an HD path based on the wallet index

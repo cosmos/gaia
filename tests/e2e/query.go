@@ -15,7 +15,7 @@ import (
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/cosmos/cosmos-sdk/x/group"
-	staketypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	globalfee "github.com/cosmos/gaia/v8/x/globalfee/types"
 	icamauth "github.com/cosmos/gaia/v8/x/icamauth/types"
@@ -112,8 +112,8 @@ func queryICAaddr(endpoint, owner, connectionID string) (string, error) {
 	return icaAddrResp.GetInterchainAccountAddress(), nil
 }
 
-func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string) (staketypes.QueryDelegationResponse, error) {
-	var res staketypes.QueryDelegationResponse
+func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string) (stakingtypes.QueryDelegationResponse, error) {
+	var res stakingtypes.QueryDelegationResponse
 
 	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators/%s/delegations/%s", endpoint, validatorAddr, delegatorAddr))
 	if err != nil {
@@ -313,6 +313,33 @@ func queryPeriodicVestingAccount(endpoint, address string) (authvesting.Periodic
 			fmt.Errorf("cannot cast %v to PeriodicVestingAccount", baseAcc)
 	}
 	return *acc, nil
+}
+
+func queryValidator(endpoint, address string) (stakingtypes.Validator, error) {
+	var res stakingtypes.QueryValidatorResponse
+
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators/%s", endpoint, address))
+	if err != nil {
+		return stakingtypes.Validator{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return stakingtypes.Validator{}, err
+	}
+	return res.Validator, nil
+}
+
+func queryValidators(endpoint string) (stakingtypes.Validators, error) {
+	var res stakingtypes.QueryValidatorsResponse
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators", endpoint))
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return nil, err
+	}
+	return res.Validators, nil
 }
 
 func queryEvidence(endpoint, hash string) (evidencetypes.QueryEvidenceResponse, error) {

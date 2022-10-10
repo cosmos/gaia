@@ -32,6 +32,7 @@ import (
 	gov "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/cosmos-sdk/x/group"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
@@ -59,14 +60,15 @@ const (
 	minGasPrice    = "0.00001"
 	// the test globalfee in genesis is the same as minGasPrice
 	// global fee lower/higher than min_gas_price
-	initialGlobalFeeAmt    = "0.00001"
-	lowGlobalFeesAmt       = "0.000001"
-	highGlobalFeeAmt       = "0.0001"
-	gas                    = 200000
-	govProposalBlockBuffer = 35
-	relayerAccountIndex    = 0
-	icaOwnerAccountIndex   = 1
-	numberOfEvidences      = 10
+	initialGlobalFeeAmt          = "0.00001"
+	lowGlobalFeesAmt             = "0.000001"
+	highGlobalFeeAmt             = "0.0001"
+	gas                          = 200000
+	govProposalBlockBuffer       = 35
+	relayerAccountIndex          = 0
+	icaOwnerAccountIndex         = 1
+	numberOfEvidences            = 10
+	slashingShares         int64 = 10000
 )
 
 var (
@@ -131,6 +133,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	vestingMnemonic, err := createMnemonic()
 	s.Require().NoError(err)
 
+	jailedValMnemonic, err := createMnemonic()
+	s.Require().NoError(err)
+
 	// The boostrapping phase is as follows:
 	//
 	// 1. Initialize Gaia validator nodes.
@@ -140,13 +145,13 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.T().Logf("starting e2e infrastructure for chain A; chain-id: %s; datadir: %s", s.chainA.id, s.chainA.dataDir)
 	s.initNodes(s.chainA)
-	s.initGenesis(s.chainA, vestingMnemonic)
+	s.initGenesis(s.chainA, vestingMnemonic, jailedValMnemonic)
 	s.initValidatorConfigs(s.chainA)
 	s.runValidators(s.chainA, 0)
 
 	s.T().Logf("starting e2e infrastructure for chain B; chain-id: %s; datadir: %s", s.chainB.id, s.chainB.dataDir)
 	s.initNodes(s.chainB)
-	s.initGenesis(s.chainB, vestingMnemonic)
+	s.initGenesis(s.chainB, vestingMnemonic, jailedValMnemonic)
 	s.initValidatorConfigs(s.chainB)
 	s.runValidators(s.chainB, 10)
 
@@ -222,16 +227,20 @@ func (s *IntegrationTestSuite) initNodes(c *chain) {
 }
 
 // TODO find a better way to manipulate accounts to add genesis accounts
-func (s *IntegrationTestSuite) generateAuthAndBankState(
+func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 	c *chain,
-	vestingMnemonic string,
+	valConfigDir,
+	vestingMnemonic,
+	jailedValMnemonic string,
 	appGenState map[string]json.RawMessage,
-) ([]byte, []byte) {
+) map[string]json.RawMessage {
 	var (
-		authGenState = authtypes.GetGenesisStateFromAppState(cdc, appGenState)
-		bankGenState = banktypes.GetGenesisStateFromAppState(cdc, appGenState)
-		valConfigDir = c.validators[0].configDir()
+		authGenState    = authtypes.GetGenesisStateFromAppState(cdc, appGenState)
+		bankGenState    = banktypes.GetGenesisStateFromAppState(cdc, appGenState)
+		stakingGenState = stakingtypes.GetGenesisStateFromAppState(cdc, appGenState)
 	)
+
+	// create genesis vesting accounts keys
 	kb, err := keyring.New(keyringAppName, keyring.BackendTest, valConfigDir, nil, cdc)
 	s.Require().NoError(err)
 
@@ -239,6 +248,11 @@ func (s *IntegrationTestSuite) generateAuthAndBankState(
 	algo, err := keyring.NewSigningAlgoFromString(string(hd.Secp256k1Type), keyringAlgos)
 	s.Require().NoError(err)
 
+	// create jailed validator account keys
+	jailedValKey, err := kb.NewAccount(jailedValidatorKey, jailedValMnemonic, "", sdk.FullFundraiserPath, algo)
+	s.Require().NoError(err)
+
+	// create genesis vesting accounts keys
 	c.genesisVestingAccounts = make(map[string]sdk.AccAddress)
 	for i, key := range genesisVestingKeys {
 		// Use the first wallet from the same mnemonic by HD path
@@ -252,6 +266,37 @@ func (s *IntegrationTestSuite) generateAuthAndBankState(
 		continuousVestingAcc = c.genesisVestingAccounts[continuousVestingKey]
 		delayedVestingAcc    = c.genesisVestingAccounts[delayedVestingKey]
 	)
+
+	// add jailed validator to staking store
+	pubKey, err := jailedValKey.GetPubKey()
+	s.Require().NoError(err)
+	jailedValAcc, err := jailedValKey.GetAddress()
+	s.Require().NoError(err)
+	jailedValAddr := sdk.ValAddress(jailedValAcc)
+	val, err := stakingtypes.NewValidator(
+		jailedValAddr,
+		pubKey,
+		stakingtypes.NewDescription("jailed", "", "", "", ""),
+	)
+	s.Require().NoError(err)
+	val.Jailed = true
+	val.Tokens = sdk.NewInt(slashingShares)
+	val.DelegatorShares = sdk.NewDec(slashingShares)
+	stakingGenState.Validators = append(stakingGenState.Validators, val)
+
+	// add jailed validator delegations
+	stakingGenState.Delegations = append(stakingGenState.Delegations, stakingtypes.Delegation{
+		DelegatorAddress: jailedValAcc.String(),
+		ValidatorAddress: jailedValAddr.String(),
+		Shares:           sdk.NewDec(slashingShares),
+	})
+
+	appGenState[stakingtypes.ModuleName], err = cdc.MarshalJSON(stakingGenState)
+	s.Require().NoError(err)
+
+	// add jailed account to the genesis
+	baseJailedAccount := authtypes.NewBaseAccount(jailedValAcc, pubKey, 0, 0)
+	s.Require().NoError(baseJailedAccount.Validate())
 
 	// add continuous vesting account to the genesis
 	baseVestingContinuousAccount := authtypes.NewBaseAccount(
@@ -281,14 +326,14 @@ func (s *IntegrationTestSuite) generateAuthAndBankState(
 	// unpack and append accounts
 	accs, err := authtypes.UnpackAccounts(authGenState.Accounts)
 	s.Require().NoError(err)
-	accs = append(accs, vestingContinuousGenAccount, vestingDelayedGenAccount)
+	accs = append(accs, vestingContinuousGenAccount, vestingDelayedGenAccount, baseJailedAccount)
 	accs = authtypes.SanitizeGenesisAccounts(accs)
 	genAccs, err := authtypes.PackAccounts(accs)
 	s.Require().NoError(err)
 	authGenState.Accounts = genAccs
 
 	// update auth module state
-	auth, err := cdc.MarshalJSON(&authGenState)
+	appGenState[authtypes.ModuleName], err = cdc.MarshalJSON(&authGenState)
 	s.Require().NoError(err)
 
 	// update balances
@@ -300,7 +345,21 @@ func (s *IntegrationTestSuite) generateAuthAndBankState(
 		Address: delayedVestingAcc.String(),
 		Coins:   vestingBalance,
 	}
-	bankGenState.Balances = append(bankGenState.Balances, vestingContinuousBalances, vestingDelayedBalances)
+	jailedValidatorBalances := banktypes.Balance{
+		Address: jailedValAcc.String(),
+		Coins:   sdk.NewCoins(tokenAmount),
+	}
+	stakingModuleBalances := banktypes.Balance{
+		Address: authtypes.NewModuleAddress(stakingtypes.NotBondedPoolName).String(),
+		Coins:   sdk.NewCoins(sdk.NewCoin(uatomDenom, math.NewInt(slashingShares))),
+	}
+	bankGenState.Balances = append(
+		bankGenState.Balances,
+		vestingContinuousBalances,
+		vestingDelayedBalances,
+		jailedValidatorBalances,
+		stakingModuleBalances,
+	)
 	bankGenState.Balances = banktypes.SanitizeGenesisBalances(bankGenState.Balances)
 
 	// update the denom metadata for the bank module
@@ -319,26 +378,33 @@ func (s *IntegrationTestSuite) generateAuthAndBankState(
 	})
 
 	// update bank module state
-	bank, err := cdc.MarshalJSON(bankGenState)
+	appGenState[banktypes.ModuleName], err = cdc.MarshalJSON(bankGenState)
 	s.Require().NoError(err)
 
-	return bank, auth
+	return appGenState
 }
 
-func (s *IntegrationTestSuite) initGenesis(c *chain, vestingMnemonic string) {
-	serverCtx := server.NewDefaultContext()
-	config := serverCtx.Config
+func (s *IntegrationTestSuite) initGenesis(c *chain, vestingMnemonic, jailedValMnemonic string) {
+	var (
+		serverCtx = server.NewDefaultContext()
+		config    = serverCtx.Config
+		validator = c.validators[0]
+	)
 
-	config.SetRoot(c.validators[0].configDir())
-	config.Moniker = c.validators[0].moniker
+	config.SetRoot(validator.configDir())
+	config.Moniker = validator.moniker
 
 	genFilePath := config.GenesisFile()
 	appGenState, genDoc, err := genutiltypes.GenesisStateFromGenFile(genFilePath)
 	s.Require().NoError(err)
 
-	bankGenState, authGenState := s.generateAuthAndBankState(c, vestingMnemonic, appGenState)
-	appGenState[authtypes.ModuleName] = authGenState
-	appGenState[banktypes.ModuleName] = bankGenState
+	appGenState = s.addGenesisVestingAndJailedAccounts(
+		c,
+		validator.configDir(),
+		vestingMnemonic,
+		jailedValMnemonic,
+		appGenState,
+	)
 
 	var evidenceGenState evidencetypes.GenesisState
 	s.Require().NoError(cdc.UnmarshalJSON(appGenState[evidencetypes.ModuleName], &evidenceGenState))
@@ -379,16 +445,13 @@ func (s *IntegrationTestSuite) initGenesis(c *chain, vestingMnemonic string) {
 
 	genUtilGenState.GenTxs = genTxs
 
-	bz, err := cdc.MarshalJSON(&genUtilGenState)
-	s.Require().NoError(err)
-	appGenState[genutiltypes.ModuleName] = bz
-
-	bz, err = json.MarshalIndent(appGenState, "", "  ")
+	appGenState[genutiltypes.ModuleName], err = cdc.MarshalJSON(&genUtilGenState)
 	s.Require().NoError(err)
 
-	genDoc.AppState = bz
+	genDoc.AppState, err = json.MarshalIndent(appGenState, "", "  ")
+	s.Require().NoError(err)
 
-	bz, err = tmjson.MarshalIndent(genDoc, "", "  ")
+	bz, err := tmjson.MarshalIndent(genDoc, "", "  ")
 	s.Require().NoError(err)
 
 	vestingPeriod, err := generateVestingPeriod()
@@ -451,7 +514,7 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 		appCustomConfig := params.CustomAppConfig{
 			Config: *appConfig,
 			BypassMinFeeMsgTypes: []string{
-				// todo: use ibc as exmaple ?
+				// todo: use ibc as example ?
 				sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),
 				sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
 				sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),

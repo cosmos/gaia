@@ -5,9 +5,6 @@ import (
 	"os"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
-	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
-	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
@@ -30,18 +27,8 @@ var (
 
 func init() {
 	encodingConfig = gaia.MakeTestEncodingConfig()
-
-	encodingConfig.InterfaceRegistry.RegisterImplementations(
-		(*sdk.Msg)(nil),
-		&stakingtypes.MsgCreateValidator{},
-	)
-	encodingConfig.InterfaceRegistry.RegisterImplementations(
-		(*cryptotypes.PubKey)(nil),
-		&secp256k1.PubKey{},
-		&ed25519.PubKey{},
-	)
-
 	authvesting.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	stakingtypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	evidencetypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	cdc = encodingConfig.Codec
 }

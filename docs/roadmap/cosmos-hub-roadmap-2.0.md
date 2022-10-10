@@ -58,11 +58,10 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Authentication module that authorizes any Account to create an Interchain Account on any IBC connected "Host" blockchain that has the Interchain Account IBC module.
   - Accounts can be private key controlled users, and eventually the Gov Module and any Groups Module.
 - IBC Msg Whitelist to skip MinFee in CheckTX
-- Global Fee Module (stretch-goal)
+- Global Fee Module
   - Allows denoms and min-fees to be governance parameters so gas can be paid in various denoms.
   - Visible on [tgrade](https://github.com/confio/tgrade/tree/main/x/globalfee) already and enabled in [ante.go](https://github.com/confio/tgrade/blob/main/app/ante.go#L72-L92)
-- Bech32 Prefix forwarding (stretch-goal)
-  - https://github.com/osmosis-labs/bech32-ibc
+
 
 ## v9-Lambda Upgrade (expected Q1 2023)
 - Gaia v9.0.x
@@ -75,9 +74,12 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Liquid Staking module
     - Free, secure and low-risk delegations for use in other parts of the Cosmos ecosystem
     - Features include enabling transfer of rewards and voting rights
-- Interchain Security v1 - Required Participation of Provider Chain Validators
+- Interchain Security - Required Participation of Provider Chain Validators
   - The Cosmos solution to shared security that uses IBC Cross Chain Validation (CCV) to relay validator set composition from a Provider Chain (Cosmos Hub) to a Consumer Chain. This validator set is in charge of producing blocks on both networks using separate nodes. Misbehavior on the Consumer Chain results in slashing Provider Chain staking tokens (ATOM).
-  - Allows independent modules like Gravity DEX or Bridge to live on separate chains with their own development cycles.
+- Bech32 Prefix forwarding
+  - https://github.com/osmosis-labs/bech32-ibc
+- Liquidity Module Deprecation
+  - Contains forced withdraw of liquidity
 
 ## v10-Epsilon (expected Q2 2023)
 - Gaia v10.0.x

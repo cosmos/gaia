@@ -137,7 +137,7 @@ func (s *IntegrationTestSuite) sendIBC(c *chain, valIdx int, sender, recipient, 
 		"--output=json",
 		"-y",
 	}
-	s.T().Logf("sending %s from %s to %s (%s)", token, s.chainA.id, s.chainB.id, recipient)
+	s.T().Logf("sending %s from %s (%s) to %s (%s)", token, s.chainA.id, sender, s.chainB.id, recipient)
 	s.executeGaiaTxCommand(ctx, c, ibcCmd, valIdx, s.defaultExecValidation(c, valIdx))
 	s.T().Log("successfully sent IBC tokens")
 }
@@ -322,10 +322,12 @@ func (s *IntegrationTestSuite) TestMultihopIBCTokenTransfer() {
 		tokenAmt := 3300000000
 
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
 
 		var (
 			beforeSenderUAtomBalance    sdk.Coin
 			beforeRecipientUAtomBalance sdk.Coin
+			beforeMiddleUAtomBalance    sdk.Coin
 		)
 
 		s.Require().Eventually(
@@ -336,11 +338,17 @@ func (s *IntegrationTestSuite) TestMultihopIBCTokenTransfer() {
 				beforeRecipientUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, recipient, "uatom")
 				s.Require().NoError(err)
 
-				return beforeSenderUAtomBalance.IsValid() && beforeRecipientUAtomBalance.IsValid()
+				beforeMiddleUAtomBalance, err = getSpecificBalance(chainBAPIEndpoint, middlehop, "uatom")
+				s.Require().NoError(err)
+
+				return beforeSenderUAtomBalance.IsValid() && beforeRecipientUAtomBalance.IsValid() && beforeMiddleUAtomBalance.IsValid()
 			},
 			5*time.Minute,
 			5*time.Second,
 		)
+		fmt.Println("beforeSenderUAtomBalance", beforeSenderUAtomBalance.String())
+		fmt.Println("beforeRecipientUAtomBalance", beforeRecipientUAtomBalance.String())
+		fmt.Println("beforeMiddleUAtomBalance", beforeMiddleUAtomBalance.String())
 
 		s.sendIBC(s.chainA, 0, sender, compiledRecipient, strconv.Itoa(tokenAmt)+uatomDenom, fees.String())
 
@@ -348,9 +356,15 @@ func (s *IntegrationTestSuite) TestMultihopIBCTokenTransfer() {
 			func() bool {
 				afterSenderUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, "uatom")
 				s.Require().NoError(err)
+				fmt.Println("afterSenderUAtomBalance", afterSenderUAtomBalance.String())
 
 				afterRecipientUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, recipient, "uatom")
 				s.Require().NoError(err)
+				fmt.Println("afterRecipientUAtomBalance", afterRecipientUAtomBalance.String())
+
+				afterMiddleUAtomBalance, err := queryGaiaAllBalances(chainBAPIEndpoint, middlehop)
+				s.Require().NoError(err)
+				fmt.Println("afterMiddleUAtomBalance", afterMiddleUAtomBalance.String())
 
 				decremented := beforeSenderUAtomBalance.Sub(tokenAmount).Sub(fees).IsEqual(afterSenderUAtomBalance)
 				fmt.Println("decremented", decremented)

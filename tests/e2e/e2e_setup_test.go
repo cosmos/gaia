@@ -167,7 +167,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
-	return
+
 	if str := os.Getenv("GAIA_E2E_SKIP_CLEANUP"); len(str) > 0 {
 		skipCleanup, err := strconv.ParseBool(str)
 		s.Require().NoError(err)

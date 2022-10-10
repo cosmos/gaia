@@ -2,7 +2,6 @@ package v8
 
 import (
 	store "github.com/cosmos/cosmos-sdk/store/types"
-
 	"github.com/cosmos/gaia/v8/app/upgrades"
 )
 

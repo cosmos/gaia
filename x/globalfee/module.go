@@ -86,6 +86,8 @@ func NewAppModule(paramSpace paramstypes.Subspace) *AppModule {
 	return &AppModule{paramSpace: paramSpace}
 }
 
+// InitModule will initialize the globalfee module.
+//It should only be called once and as an alternative to InitGenesis.
 func (a AppModule) InitModule(ctx sdk.Context, globalfeeParams types.Params) {
 	a.paramSpace.SetParamSet(ctx, &globalfeeParams)
 }

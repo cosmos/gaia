@@ -3,7 +3,6 @@ package v8
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	"github.com/cosmos/gaia/v8/app/keepers"
@@ -21,7 +20,6 @@ func CreateUpgradeHandler(
 				Name:   "Cosmos Hub Atom",
 				Symbol: "Atom",
 			})
-		ctx.Logger().Info(authtypes.DefaultGenesisState().Params.String())
 
 		//controllerParams := icacontrollertypes.Params{}
 		//// allowmessages = [*]

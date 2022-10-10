@@ -10,10 +10,12 @@ import (
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	tmrand "github.com/tendermint/tendermint/libs/rand"
+
 	gaia "github.com/cosmos/gaia/v8/app"
 	"github.com/cosmos/gaia/v8/app/params"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
 )
 
 const (
@@ -40,6 +42,7 @@ func init() {
 	)
 
 	authvesting.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	evidencetypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	cdc = encodingConfig.Codec
 }
 

@@ -12,6 +12,7 @@ import (
 	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -136,8 +137,8 @@ func (s *IntegrationTestSuite) execVestingTx(
 	s.T().Logf("%s - Executing gaiad %s with %v", c.id, method, args)
 	gaiaCommand := []string{
 		gaiadBinary,
-		"tx",
-		"vesting",
+		txCommand,
+		vestingtypes.ModuleName,
 		method,
 		"-y",
 	}
@@ -796,7 +797,7 @@ func (s *IntegrationTestSuite) registerICA(owner, connectionID string) {
 
 	s.executeGaiaTxCommand(ctx, s.chainA, registerICAcmd, 0, s.defaultExecValidation(s.chainA, 0))
 
-	s.T().Logf("%s reigstered an interchain account on chain %s from chain %s", owner, s.chainB.id, s.chainA.id)
+	s.T().Logf("%s registered an interchain account on chain %s from chain %s", owner, s.chainB.id, s.chainA.id)
 }
 
 func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chain, gaiaCommand []string, valIdx int, validation func([]byte, []byte) bool) {

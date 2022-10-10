@@ -270,11 +270,11 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 	// add jailed validator to staking store
 	pubKey, err := jailedValKey.GetPubKey()
 	s.Require().NoError(err)
-	valAcc, err := jailedValKey.GetAddress()
+	jailedValAcc, err := jailedValKey.GetAddress()
 	s.Require().NoError(err)
-	valAddr := sdk.ValAddress(valAcc)
+	jailedValAddr := sdk.ValAddress(jailedValAcc)
 	val, err := stakingtypes.NewValidator(
-		valAddr,
+		jailedValAddr,
 		pubKey,
 		stakingtypes.NewDescription("jailed", "", "", "", ""),
 	)
@@ -286,8 +286,8 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 
 	// add jailed validator delegations
 	stakingGenState.Delegations = append(stakingGenState.Delegations, stakingtypes.Delegation{
-		DelegatorAddress: valAcc.String(),
-		ValidatorAddress: valAddr.String(),
+		DelegatorAddress: jailedValAcc.String(),
+		ValidatorAddress: jailedValAddr.String(),
 		Shares:           sdk.NewDec(slashingShares),
 	})
 
@@ -295,7 +295,7 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 	s.Require().NoError(err)
 
 	// add jailed account to the genesis
-	baseJailedAccount := authtypes.NewBaseAccount(valAcc, pubKey, 0, 0)
+	baseJailedAccount := authtypes.NewBaseAccount(jailedValAcc, pubKey, 0, 0)
 	s.Require().NoError(baseJailedAccount.Validate())
 
 	// add continuous vesting account to the genesis
@@ -346,7 +346,7 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 		Coins:   vestingBalance,
 	}
 	jailedValidatorBalances := banktypes.Balance{
-		Address: valAcc.String(),
+		Address: jailedValAcc.String(),
 		Coins:   sdk.NewCoins(tokenAmount),
 	}
 	stakingModuleBalances := banktypes.Balance{

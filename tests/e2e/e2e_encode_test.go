@@ -2,6 +2,7 @@ package e2e
 
 import (
 	"encoding/base64"
+	"os/exec"
 	"path/filepath"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -17,8 +18,10 @@ func (s *IntegrationTestSuite) TestEncode() {
 	rawTx, encoded, err := buildRawTx()
 	s.Require().NoError(err)
 
-	err = writeFile(filepath.Join(val.configDir(), rawTxFilePath), rawTx)
+	rawTxFullPath := filepath.Join(val.configDir(), rawTxFilePath)
+	err = writeFile(rawTxFullPath, rawTx)
 	s.Require().NoError(err)
+	s.Require().NoError(exec.Command("chmod", "-R", "0777", rawTxFullPath).Run())
 
 	got := s.execEncode(chain, filepath.Join(gaiaHomePath, rawTxFilePath))
 	s.T().Logf("encoded tx: %s", got)

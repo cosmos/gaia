@@ -4,6 +4,7 @@ import (
 	"cosmossdk.io/math"
 	"encoding/json"
 	"math/rand"
+	"os/exec"
 	"path/filepath"
 	"time"
 
@@ -266,8 +267,10 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api string) {
 		vestingPeriod, err := generateVestingPeriod()
 		s.Require().NoError(err)
 
-		err = writeFile(filepath.Join(val.configDir(), vestingPeriodFilePath), vestingPeriod)
+		vestingPeriodFullPath := filepath.Join(val.configDir(), vestingPeriodFilePath)
+		err = writeFile(vestingPeriodFullPath, vestingPeriod)
 		s.Require().NoError(err)
+		s.Require().NoError(exec.Command("chmod", "-R", "0777", vestingPeriodFullPath).Run())
 
 		s.execCreatePeriodicVestingAccount(
 			chain,

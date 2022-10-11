@@ -4,6 +4,7 @@ import (
 	"cosmossdk.io/math"
 	"encoding/json"
 	"math/rand"
+	"path/filepath"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -15,8 +16,8 @@ const (
 	lockedVestingKey     = "locker_vesting"
 	periodicVestingKey   = "periodic_vesting"
 
-	vestingPeriodFilePath = "test_period.json"
-	vestingTxDelay        = 5
+	vestingPeriodFile = "test_period.json"
+	vestingTxDelay    = 5
 )
 
 type (
@@ -265,6 +266,7 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api string) {
 		s.execCreatePeriodicVestingAccount(
 			chain,
 			periodicVestingAddr,
+			filepath.Join(gaiaHomePath, vestingPeriodFile),
 			withKeyValue(flagFrom, sender.String()),
 		)
 

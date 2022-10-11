@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
@@ -22,7 +23,8 @@ const (
 
 var (
 	encodingConfig params.EncodingConfig
-	cdc            codec.Codec //nolint:unused // this is called during e2e tests
+	cdc            codec.Codec     //nolint:unused // this is called during e2e tests
+	txConfig       client.TxConfig //nolint:unused // this is called during e2e tests
 )
 
 func init() {
@@ -31,6 +33,7 @@ func init() {
 	stakingtypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	evidencetypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	cdc = encodingConfig.Codec
+	txConfig = encodingConfig.TxConfig
 }
 
 // this is called only by test files

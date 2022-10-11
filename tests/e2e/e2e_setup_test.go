@@ -457,12 +457,18 @@ func (s *IntegrationTestSuite) initGenesis(c *chain, vestingMnemonic, jailedValM
 	vestingPeriod, err := generateVestingPeriod()
 	s.Require().NoError(err)
 
+	rawTx, _, err := buildRawTx()
+	s.Require().NoError(err)
+
 	// write the updated genesis file to each validator.
 	for _, val := range c.validators {
 		err = writeFile(filepath.Join(val.configDir(), "config", "genesis.json"), bz)
 		s.Require().NoError(err)
 
-		err = writeFile(filepath.Join(val.configDir(), vestingPeriodFilePath), vestingPeriod)
+		err = writeFile(filepath.Join(val.configDir(), vestingPeriodFile), vestingPeriod)
+		s.Require().NoError(err)
+
+		err = writeFile(filepath.Join(val.configDir(), rawTxFile), rawTx)
 		s.Require().NoError(err)
 	}
 }

@@ -57,8 +57,8 @@ func CreateUpgradeHandler(
 		ctx.Logger().Info("start to init interchainaccount module...")
 
 		// initialize ICS27 module
-		icaModule, correctTypecast := mm.Modules[icatypes.ModuleName].(ica.AppModule)
-		if !correctTypecast {
+		icaModule, err := mm.Modules[icatypes.ModuleName].(ica.AppModule)
+		if err {
 			panic("mm.Modules[icatypes.ModuleName] is not of type ica.AppModule")
 		}
 		icaModule.InitModule(ctx, controllerParams, hostParams)

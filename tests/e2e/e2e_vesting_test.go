@@ -1,10 +1,11 @@
 package e2e
 
 import (
-	"cosmossdk.io/math"
 	"encoding/json"
 	"math/rand"
 	"time"
+
+	"cosmossdk.io/math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -86,8 +87,8 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api string) {
 				valIdx,
 				vestingDelayedAcc.String(),
 				Address(),
-				balance.Sub(fees).String(),
-				fees.String(),
+				balance.Sub(standardFees).String(),
+				standardFees.String(),
 				true,
 			)
 			waitTime = acc.EndTime - time.Now().Unix() + vestingTxDelay
@@ -102,8 +103,8 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api string) {
 			valIdx,
 			vestingDelayedAcc.String(),
 			Address(),
-			balance.Sub(fees).String(),
-			fees.String(),
+			balance.Sub(standardFees).String(),
+			standardFees.String(),
 			false,
 		)
 	})
@@ -156,8 +157,8 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api string) {
 				valIdx,
 				continuousVestingAcc.String(),
 				Address(),
-				balance.Sub(fees).String(),
-				fees.String(),
+				balance.Sub(standardFees).String(),
+				standardFees.String(),
 				true,
 			)
 			waitStartTime = acc.StartTime - time.Now().Unix() + vestingTxDelay
@@ -174,8 +175,8 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api string) {
 				valIdx,
 				continuousVestingAcc.String(),
 				Address(),
-				balance.Sub(fees).String(),
-				fees.String(),
+				balance.Sub(standardFees).String(),
+				standardFees.String(),
 				true,
 			)
 			waitEndTime = acc.EndTime - time.Now().Unix() + vestingTxDelay
@@ -190,8 +191,8 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api string) {
 			valIdx,
 			continuousVestingAcc.String(),
 			Address(),
-			balance.Sub(fees).String(),
-			fees.String(),
+			balance.Sub(standardFees).String(),
+			standardFees.String(),
 			false,
 		)
 	})
@@ -223,7 +224,7 @@ func (s *IntegrationTestSuite) testPermanentLockedAccount(api string) {
 
 		// Transfer coins to pay the delegation fee
 		s.execBankSend(chain, valIdx, sender.String(), permanentLockedAddr,
-			fees.String(), fees.String(), false)
+			standardFees.String(), standardFees.String(), false)
 
 		// Delegate coins should succeed
 		s.executeDelegate(chain, valIdx, vestingDelegationAmount.String(), valOpAddr,
@@ -246,7 +247,7 @@ func (s *IntegrationTestSuite) testPermanentLockedAccount(api string) {
 		balance, err = getSpecificBalance(api, permanentLockedAddr, uatomDenom)
 		s.Require().NoError(err)
 		s.execBankSend(chain, valIdx, permanentLockedAddr, Address(),
-			balance.Sub(fees).String(), fees.String(), true)
+			balance.Sub(standardFees).String(), standardFees.String(), true)
 	})
 }
 
@@ -292,8 +293,8 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api string) {
 				valIdx,
 				periodicVestingAddr,
 				Address(),
-				balance.Sub(fees).String(),
-				fees.String(),
+				balance.Sub(standardFees).String(),
+				standardFees.String(),
 				true,
 			)
 			waitStartTime = acc.StartTime - time.Now().Unix() + vestingTxDelay
@@ -311,8 +312,8 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api string) {
 				valIdx,
 				periodicVestingAddr,
 				Address(),
-				balance.Sub(fees).String(),
-				fees.String(),
+				balance.Sub(standardFees).String(),
+				standardFees.String(),
 				true,
 			)
 			waitFirstPeriod = firstPeriod - time.Now().Unix() + vestingTxDelay
@@ -344,8 +345,8 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api string) {
 			valIdx,
 			periodicVestingAddr,
 			Address(),
-			balance.Sub(fees).String(),
-			fees.String(),
+			balance.Sub(standardFees).String(),
+			standardFees.String(),
 			false,
 		)
 
@@ -362,8 +363,8 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api string) {
 				valIdx,
 				periodicVestingAddr,
 				Address(),
-				balance.Sub(fees).String(),
-				fees.String(),
+				balance.Sub(standardFees).String(),
+				standardFees.String(),
 				false,
 			)
 		}

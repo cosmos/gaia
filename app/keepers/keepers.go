@@ -369,7 +369,7 @@ func NewAppKeeper(
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.AddRoute(icacontrollertypes.SubModuleName, icaControllerIBCModule).
 		AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
-		AddRoute(ibctransfertypes.ModuleName, transferIBCModule).
+		AddRoute(ibctransfertypes.ModuleName, appKeepers.RouterModule).
 		AddRoute(icamauthtypes.ModuleName, icaControllerIBCModule)
 
 	appKeepers.IBCKeeper.SetRouter(ibcRouter)

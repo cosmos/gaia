@@ -51,7 +51,7 @@ func applyOptions(chainID string, options []flagOption) map[string]interface{} {
 		flagBroadcastMode:  "sync",
 		flagChainID:        chainID,
 		flagHome:           gaiaHomePath,
-		flagFees:           fees.String(),
+		flagFees:           standardFees.String(),
 	}
 	for _, apply := range options {
 		apply(opts)
@@ -390,7 +390,7 @@ func (s *IntegrationTestSuite) executeSubmitGroupProposal(c *chain, valIdx int, 
 		grouptypes.ModuleName,
 		"submit-proposal",
 		proposalPath,
-		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, standardFees),
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, fromAddress),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
 		"--keyring-backend=test",
@@ -416,7 +416,7 @@ func (s *IntegrationTestSuite) executeVoteGroupProposal(c *chain, valIdx int, pr
 		proposalId,
 		voterAddress,
 		voteOption,
-		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, standardFees),
 		metadata,
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
 		"--keyring-backend=test",
@@ -441,7 +441,7 @@ func (s *IntegrationTestSuite) executeExecGroupProposal(c *chain, valIdx int, pr
 		"exec",
 		proposalId,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, proposerAddress),
-		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, standardFees),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
 		"--keyring-backend=test",
 		"--output=json",
@@ -466,7 +466,7 @@ func (s *IntegrationTestSuite) executeUpdateGroupAdmin(c *chain, valIdx int, adm
 		admin,
 		groupId,
 		newAdmin,
-		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, standardFees),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
 		"--keyring-backend=test",
 		"--output=json",
@@ -766,8 +766,6 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 	if !validation(stdOut, stdErr) {
 		s.Require().FailNowf("tx validation failed", "stdout: %s, stderr: %s",
 			string(stdOut), string(stdErr))
-	} else {
-		fmt.Println("tx validation succeeded", "stdout: %s, stderr: %s", string(stdOut), string(stdErr))
 	}
 }
 

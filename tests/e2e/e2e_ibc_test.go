@@ -234,15 +234,13 @@ func (s *IntegrationTestSuite) createChannel() {
 
 func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
 	time.Sleep(30 * time.Second)
-
-	var ibcStakeDenom string
-
 	s.Run("send_uatom_to_chainB", func() {
 		// require the recipient account receives the IBC tokens (IBC packets ACKd)
 		var (
 			balances      sdk.Coins
 			err           error
 			beforeBalance int64
+			ibcStakeDenom string
 		)
 
 		address, err := s.chainA.validators[0].keyInfo.GetAddress()
@@ -476,7 +474,6 @@ func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
 func (s *IntegrationTestSuite) TestBankTokenTransfer() {
 	s.Run("send_photon_between_accounts", func() {
 		var err error
-
 		senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
 		s.Require().NoError(err)
 		sender := senderAddress.String()

@@ -3,6 +3,7 @@ package v8
 import (
 	store "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/x/group"
+	icacontrollertypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/controller/types"
 
 	"github.com/cosmos/gaia/v8/app/upgrades"
 	"github.com/cosmos/gaia/v8/x/globalfee"
@@ -22,6 +23,7 @@ var Upgrade = upgrades.Upgrade{
 			globalfee.ModuleName,
 			group.ModuleName,
 			icamauth.ModuleName,
+			icacontrollertypes.StoreKey,
 		},
 	},
 }

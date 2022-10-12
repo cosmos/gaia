@@ -22,24 +22,20 @@ func CreateUpgradeHandler(
 		atomMetaData.Name = "Cosmos Hub Atom"
 		atomMetaData.Symbol = "ATOM"
 
+		// Enable controller chain
 		controllerParams := icacontrollertypes.Params{
 			ControllerEnabled: true,
 		}
 
-		// allowmessages = [*]
+		// Change hostParams allow_messages = [*] instead of whitelisting individual messages
 		hostParams := icahosttypes.Params{
 			HostEnabled:   true,
 			AllowMessages: []string{"*"},
 		}
 
+		// Update params for host & controller keepers
 		keepers.ICAHostKeeper.SetParams(ctx, hostParams)
 		keepers.ICAControllerKeeper.SetParams(ctx, controllerParams)
-
-		//mauthModule, correctTypecast := mm.Modules[icamauth.ModuleName].(ica.AppModule)
-		//if !correctTypecast {
-		//	panic("mm.Modules[icamauth.ModuleName] is not of type ica.AppModule")
-		//}
-		//mauthModule.InitModule(ctx, controllerParams, hostParams)
 
 		ctx.Logger().Info("start to run module migrations...")
 		return mm.RunMigrations(ctx, configurator, vm)

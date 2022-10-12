@@ -17,19 +17,19 @@ gaiad q interchain-accounts host params
 In the following tutorial, we will demonstrate how to use Interchain Accounts through the [icamauth module](../../../x/icamauth).
 
 ## Setup preparation
-We will run two Cosmos-SDK chains (controller chain: `test-1` and host chain: `test-2`), and a relayer to connect these two chains. We will create an account on chain `test-1` and call it `a`, and register an Interchain Account (that we'll call `aica`) for `a` on chain `test-2`. We will create a normal account `b` on chain `test-2` as well. 
+We will run two Cosmos-SDK chains (controller chain: `test-0` and host chain: `test-1`), and a relayer to connect these two chains. We will create an account on chain `test-0` and call it `alice`, and register an Interchain Account (that we'll call `alice_ica`) for `alice` on chain `test-1`. We will create a normal account `bob` on chain `test-1` as well. 
 
 Through these 3 account, we can test if:
-- `a` can control its `aica` to transfer tokens to account `b` on chain `test-2`.
-- `a` can control its `aica` to tranfer `aica`'s token back to `a` using a regular IBC token transfer.
+- `alice` can control its `alice_ica` to transfer tokens to account `bob` on chain `test-1`.
+- `alice` can control its `alice_ica` to transfer `alice_ica`'s token back to `alice` using a regular IBC token transfer.
 
 ### Prepare to run two chains
 We've simplified the setup process via several shell scripts. If you'd like to learn more about what's happening under the hood we suggest you inspect the files more closely.
 
-Set up the two chains, create the keys for `a` and `b`, and start running both chains:
+Set up the two chains, create the keys for `alice` and `bob`, and start running both chains:
 ```shell
+sh init_test_0.sh
 sh init_test_1.sh
-sh init_test_2.sh
 ```
 
 ### Setting up a Hermes relayer
@@ -44,7 +44,7 @@ Build the Hermes binary:
 ```shell
 git clone https://github.com/informalsystems/ibc-rs.git
 cd ibc-rs
-git checkout v0.15.0
+git checkout v1.0.0
 cargo build --release --no-default-features --bin hermes
 # binary path: ./target/release/hermes
 cp  ./target/release/hermes $HOME/.cargo/bin
@@ -52,91 +52,60 @@ cp  ./target/release/hermes $HOME/.cargo/bin
 
 #### Create the IBC connection and start Hermes
 ```shell
-source hermes/rly-variables.sh
-sh hermes/rly-restore-keys.sh
-sh hermes/rly-create-conn.sh
-sh hermes/rly-start.sh
-```
-
-Now, you are running two Gaia (Cosmos Hub) blockchains in the background, as well as a Hermes relayer. Open a new terminal and config the Gaia home directories for the two chains.
-```shell
-sh gaia-home-config.sh
-```
-
-You can use the `--home` flag to let Gaia know which folder it should use for its configuration and data. This way, you can interact with multiple blockchains at once, using the same binary. Check your two Gaia home configs:
-```shell
-gaiad config --home test-1
-{
-	"chain-id": "test-1",
-	"keyring-backend": "test",
-	"output": "text",
-	"node": "http://localhost:16657",
-	"broadcast-mode": "sync"
-}
-```
-
-```shell
- gaiad config --home test-2
-{
-	"chain-id": "test-2",
-	"keyring-backend": "test",
-	"output": "text",
-	"node": "http://localhost:26657",
-	"broadcast-mode": "sync"
-}
+source hermes_setup.sh
 ```
 
 ## Trying out the Interchain Accounts functionality
-Before you can get started you'll need to register an Interchain Account on `test-2` by sending an `icamsgauth register` command signed by `a` on the `test-1` chain:
+Before you can get started you'll need to register an Interchain Account on `test-1` by sending an `icamsgauth register` command signed by `alice` on the `test-0` chain:
+
+Open a new terminal and add the following variables.
+```shell
+export HOME0=$HOME/test-0
+export HOME1=$HOME/test-1
+```
 
 ```shell
-gaiad tx icamsgauth register --from a --connection-id connection-0 --counterparty-connection-id connection-0 --gas 150000 --home test-1
+gaiad tx icamauth register --from alice --connection-id connection-0 --gas-prices 0.025stake --home test-0 --home $HOME0
 ```
 
 To make things easier during the next steps, export the account addresses to environment variables:
 ```shell
-export ICA_ADDR=$(gaiad query icamsgauth interchainaccounts $(gaiad keys show a -a --home test-1) connection-0 connection-0 --home test-1 -o json | jq -r '.interchain_account_address')
-export A=$(gaiad keys show a -a --home test-1)
-export B=$(gaiad keys show b -a --home test-2)
+export ALICE_ICA=$(gaiad query icamauth interchainaccounts connection-0  $(gaiad keys show alice -a --home $HOME0) --home $HOME0 -o json | jq -r '.interchain_account_address')
+export ALICE=$(gaiad keys show a -a --home test-0)
+export BOB=$(gaiad keys show b -a --home test-1)
 ```
 
-During the setup, `b` was given `100000000000stake` in one of the scripts, let's make sure `aica` also has some `stake`:
-```
-gaiad q bank balances $A --home test-2
-# b's balance is 100000000000stake, send 1000stake to aica
-gaiad tx bank send $B $AICA 1000stake --from b --home test-2
+Let's make sure `alice_ica` has some `stake`:
+```shell
+gaiad q bank balances $ALICE_ICA --home $HOME1
+gaiad tx bank send $BOB $ALICE_ICA 1000stake --from bob --home $HOME1
 ```
 
 ### Exercises
 We would like to invite you to try to perform the actions below yourself. If you're having issues, you can find the solutions at the bottom of this tutorial.
 
 > NOTE:
-> * `a` = account on `test-1`
-> * `aica` = account on `test-2` controlled by `a` on `test-1`
-> * `b` = account on `test-2`
+> * `alice` = account on `test-0`
+> * `alice_ica` = account on `test-1` owned by `alice` on `test-0`
+> * `bob` = account on `test-1`
 
-Q1: Let `a'` send `stake` to `b` (hint: using ICA)
+Q1: Let `alice` send `stake` to `bob` (hint: using ICA)
 
-Q2: Let `b` send `stake` back to `aica` (hint: via the Bank module)
+Q2: Let `bob` send `stake` back to `alice_ica` (hint: via the Bank module)
 
-Q3: Let `a` send `stake` to `b` (hint: via a regular IBC token transfer)
+Q3: Let `alice` send `stake` to `bob` (hint: via a regular IBC token transfer)
 
-Q4: Let `b` send `ibc/stake` to `aica` (hint: via the Bank module)
+Q4: Let `bob` send `ibc/stake` to `alice_ica` (hint: via the Bank module)
 
-Q5: Let `aica` send `ibc/stake` to `a` (hint: via ICA & IBC-Transfer)
-
-<p align="center">
-<img src="./ica.jpg" width="300" margin-left="auto"/>
-</p>
-<figcaption align = "center"><b>Fig.1 ICA exercise questions </b></figcaption>
+Q5: Let `alice_ica` send `ibc/stake` to `alice` (hint: via ICA & IBC-Transfer)
 
 ### Solutions
-#### Q1: `aica` sends tokens to `b` 
-Both `aica` and `b` are on chain `test-2`, however, we need `a` from `test-1` to sign the transaction, because `a` is the only account with access to `aica` over ICA.
+#### Q1: `alice_ica` sends tokens to `bob` 
+Both `alice_ica` and `bob` are on chain `test-1`, however, we need `alice` from `test-0` to sign the transaction, because `alice` is the only account with access to `alice_ica` over ICA.
 
 Step 1: generate the transaction json: 
 ```shell
-gaiad tx bank send $AICA $B --chain-id test-2 --from a --generate-only | jq '.body.messages[0]' > ./send-raw.json
+gaiad tx bank send $ALICE_ICA $BOB --from alice --generate-only | jq '.body.messages[0]' > ./send-raw.json
 
 cat send-raw.json
 ```
@@ -156,38 +125,41 @@ This will generate and display the following JSON file:
 }
 ```
 
-Step 2: send the generated transaction and let `a` sign it:
+Step 2: send the generated transaction and let `alice` sign it:
 ```shell
-gaiad tx icamsgauth submit-tx ./send-raw.json --connection-id connection-0 --counterparty-connection-id connection-0 --from a --chain-id test-1 --gas 150000 --home test-1
+gaiad tx icamauth submit ./send-raw.json --connection-id connection-0 --from alice --gas-prices 0.025stake --home $HOME0
 ```
 
-#### Q2: `b` sends the tokens back to `aica`
-Note that this transaction is just a regular coin transfer using the Bank module because both accounts exist on `test-2` and you are interacting directly with that chain via the `--home` flag.
+#### Q2: `bob` sends the tokens back to `alice_ica`
+Note that this transaction is just a regular coin transfer using the Bank module because both accounts exist on `test-1` and you are interacting directly with that chain via the `--home` flag.
 
 ```shell
-gaiad tx bank send $B $AICA 100stake --home test-2
+gaiad tx bank send $BOB $ALICE_ICA 100stake --home $HOME1
 ```
 
-#### Q3: `a` sends tokens to `b` via IBC
+#### Q3: `alice` sends tokens to `bob` via IBC
 Create a new IBC channel using Hermes:
 
 ```shell
-hermes -c hermes/rly-config.toml create channel --port-a transfer --port-b transfer test-1 test-2
+hermes -c hermes/rly-config.toml create channel --port-a transfer --port-b transfer --a-chain test-0 --a-connection connection-0
 ```
 
-Kill the Hermes process and restart:
-```shell
-hermes -c hermes/rly-config.toml start
-```
+[//]: # (Kill the Hermes process and restart:)
+
+[//]: # (```shell)
+
+[//]: # (hermes -c hermes/rly-config.toml start)
+
+[//]: # (```)
 
 Initiate the IBC token transfer:
 ```shell
-gaiad tx ibc-transfer transfer transfer channel-1 $B 200stake --from a --home test-1
+gaiad tx ibc-transfer transfer transfer channel-1 $BOB 200stake --from alice --home $HOME0
 ```
 
-IBC token transfers can take a while before they're confirmed. You can check the balance of `b` on `test-2`:
+IBC token transfers can take a while before they're confirmed. You can check the balance of `bob` on `test-1`:
 ```shell
-gaiad q bank balances $B --home test-2
+gaiad q bank balances $BOB --home $HOME1
 balances:
 - amount: "200"
   denom: ibc/3C3D7B3BE4ECC85A0E5B52A3AEC3B7DFC2AA9CA47C37821E57020D6807043BE9
@@ -200,23 +172,20 @@ pagination:
 
 Note how the `200stake` received has changed it's denom to `ibc/3C3D7B3BE4ECC85A0E5B52A3AEC3B7DFC2AA9CA47C37821E57020D6807043BE9`. This is because a token that's sent over IBC always contains information about it's origin in its denom.
 
-#### Q4: Let `b` send the `ibc/stake` it just received to `aica`
+#### Q4: Let `bob` send the `ibc/stake` it just received to `alice_ica`
 Notice how this is just a regular token transfer using the Bank module:
 ```shell
-gaiad tx bank send $B $AICA 200ibc/3C3D7B3BE4ECC85A0E5B52A3AEC3B7DFC2AA9CA47C37821E57020D6807043BE9 --from b --home test-2
+gaiad tx bank send $B $AICA 200ibc/3C3D7B3BE4ECC85A0E5B52A3AEC3B7DFC2AA9CA47C37821E57020D6807043BE9 --from bob --home $HOME1
 ```
 
-#### Q5: `aica` sends `100ibc/stake` to `a`
+#### Q5: `alice_ica` sends `100ibc/stake` to `alice`
 
-Create the channel for the IBC token transfer:
-```shell
-hermes create channel --port-a transfer --port-b transfer test-1 test-2
-```
+we have already created the channel in the above [#Q3], we can just use this channel to send the token back from `alice_ic`a to `alice`. 
 
 Step 1: prepare the transaction JSON file:
 
 ```shell
-gaiad tx ibc-transfer transfer transfer channel-1 $A 100ibc/3C3D7B3BE4ECC85A0E5B52A3AEC3B7DFC2AA9CA47C37821E57020D6807043BE9 --from $AICA --generate-only | jq '.body.messages[0]' > send-raw.json
+gaiad tx ibc-transfer transfer transfer channel-0 $ALICE 100ibc/3C3D7B3BE4ECC85A0E5B52A3AEC3B7DFC2AA9CA47C37821E57020D6807043BE9 --from $ALICE_ICA --generate-only | jq '.body.messages[0]' > send-raw.json
 cat send-raw.json
 ```
 
@@ -242,12 +211,11 @@ This will generate and display the following JSON file:
 
 Step 2: use Interchain Accounts to execute the IBC transfer in the JSON file:
 ```shell
-gaiad tx icamsgauth submit-tx send-raw.json --connection-id connection-1 --counterparty-connection-id connection-1 --from a --home test-1 --gas 150000
+gaiad tx icamauth submit send-raw.json --connection-id connection-1 --from alice --home $HOME0 --gas-prices 0.025stake
 ```
 
-The long denom we saw will be changed from `ibc/3C3D7B3BE4ECC85A0E5B52A3AEC3B7DFC2AA9CA47C37821E57020D6807043BE9` back to `stake` when the token is back to a on chain `test-1`.
+The long denom we saw will be changed from `ibc/3C3D7B3BE4ECC85A0E5B52A3AEC3B7DFC2AA9CA47C37821E57020D6807043BE9` back to `stake` when the token is back to a on chain `test-0`.
 
-You might need to kill the Hermes process and restart to receive the tokens.
 
 ## References:
 - [Hermes installation](https://hermes.informal.systems/installation.html)

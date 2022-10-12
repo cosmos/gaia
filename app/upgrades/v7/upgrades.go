@@ -13,9 +13,9 @@ import (
 )
 
 func CreateUpgradeHandler(
-	mm *module.Manager,
-	configurator module.Configurator,
-	keepers *keepers.AppKeepers,
+		mm *module.Manager,
+		configurator module.Configurator,
+		keepers *keepers.AppKeepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		vm[icatypes.ModuleName] = mm.Modules[icatypes.ModuleName].ConsensusVersion()
@@ -57,8 +57,8 @@ func CreateUpgradeHandler(
 		ctx.Logger().Info("start to init interchainaccount module...")
 
 		// initialize ICS27 module
-		icaModule, err := mm.Modules[icatypes.ModuleName].(ica.AppModule)
-		if err {
+		icaModule, correctTypecast := mm.Modules[icatypes.ModuleName].(ica.AppModule)
+		if !correctTypecast {
 			panic("mm.Modules[icatypes.ModuleName] is not of type ica.AppModule")
 		}
 		icaModule.InitModule(ctx, controllerParams, hostParams)

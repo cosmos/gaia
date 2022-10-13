@@ -20,12 +20,11 @@ import (
 	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	gaia "github.com/cosmos/gaia/v8/app"
 	tmcfg "github.com/tendermint/tendermint/config"
 	tmos "github.com/tendermint/tendermint/libs/os"
 	"github.com/tendermint/tendermint/p2p"
 	"github.com/tendermint/tendermint/privval"
-
-	gaia "github.com/cosmos/gaia/v8/app"
 )
 
 //nolint:unused
@@ -39,6 +38,13 @@ type validator struct {
 	consensusKey     privval.FilePVKey
 	consensusPrivKey cryptotypes.PrivKey
 	nodeKey          p2p.NodeKey
+}
+
+type account struct {
+	moniker    string
+	mnemonic   string
+	keyInfo    keyring.Record
+	privateKey cryptotypes.PrivKey
 }
 
 //nolint:unused // this is called during e2e tests
@@ -163,6 +169,49 @@ func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
 	v.keyInfo = *info
 	v.mnemonic = mnemonic
 	v.privateKey = privKey
+
+	return nil
+}
+
+func (c *chain) addAccountFromMnemonic(counts int) error {
+	val0ConfigDir := c.validators[0].configDir()
+	kb, err := keyring.New(keyringAppName, keyring.BackendTest, val0ConfigDir, nil, cdc)
+	if err != nil {
+		return err
+	}
+
+	keyringAlgos, _ := kb.SupportedAlgorithms()
+	algo, err := keyring.NewSigningAlgoFromString(string(hd.Secp256k1Type), keyringAlgos)
+	if err != nil {
+		return err
+	}
+
+	for i := 0; i < counts; i++ {
+		name := fmt.Sprintf("acct-%d", i)
+		mnemonic, err := createMnemonic()
+		if err != nil {
+			return err
+		}
+		info, err := kb.NewAccount(name, mnemonic, "", sdk.FullFundraiserPath, algo)
+		if err != nil {
+			return err
+		}
+
+		privKeyArmor, err := kb.ExportPrivKeyArmor(name, keyringPassphrase)
+		if err != nil {
+			return err
+		}
+
+		privKey, _, err := sdkcrypto.UnarmorDecryptPrivKey(privKeyArmor, keyringPassphrase)
+		if err != nil {
+			return err
+		}
+		acct := account{}
+		acct.keyInfo = *info
+		acct.mnemonic = mnemonic
+		acct.privateKey = privKey
+		c.genesisAccounts = append(c.genesisAccounts, &acct)
+	}
 
 	return nil
 }

@@ -15,9 +15,10 @@ import (
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
-	tmtypes "github.com/tendermint/tendermint/types"
-
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	globfeetypes "github.com/cosmos/gaia/v8/x/globalfee/types"
+	icatypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/types"
+	tmtypes "github.com/tendermint/tendermint/types"
 )
 
 func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {
@@ -44,10 +45,9 @@ func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {
 	return doc, nil
 }
 
-func modifyGenesis(path, moniker, amountStr string, accAddr sdk.AccAddress, globfees string) error {
+func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, globfees string, denom string) error {
 	serverCtx := server.NewDefaultContext()
 	config := serverCtx.Config
-
 	config.SetRoot(path)
 	config.Moniker = moniker
 
@@ -56,8 +56,14 @@ func modifyGenesis(path, moniker, amountStr string, accAddr sdk.AccAddress, glob
 		return fmt.Errorf("failed to parse coins: %w", err)
 	}
 
-	balances := banktypes.Balance{Address: accAddr.String(), Coins: coins.Sort()}
-	genAccount := authtypes.NewBaseAccount(accAddr, nil, 0, 0)
+	var balances []banktypes.Balance
+	var genAccounts []*authtypes.BaseAccount
+	for _, addr := range addrAll {
+		balance := banktypes.Balance{Address: addr.String(), Coins: coins.Sort()}
+		balances = append(balances, balance)
+		genAccount := authtypes.NewBaseAccount(addr, nil, 0, 0)
+		genAccounts = append(genAccounts, genAccount)
+	}
 
 	genFile := config.GenesisFile()
 	appState, genDoc, err := genutiltypes.GenesisStateFromGenFile(genFile)
@@ -66,20 +72,23 @@ func modifyGenesis(path, moniker, amountStr string, accAddr sdk.AccAddress, glob
 	}
 
 	authGenState := authtypes.GetGenesisStateFromAppState(cdc, appState)
-
 	accs, err := authtypes.UnpackAccounts(authGenState.Accounts)
 	if err != nil {
 		return fmt.Errorf("failed to get accounts from any: %w", err)
 	}
 
-	if accs.Contains(accAddr) {
-		return fmt.Errorf("failed to add account to genesis state; account already exists: %s", accAddr)
+	for _, addr := range addrAll {
+		if accs.Contains(addr) {
+			return fmt.Errorf("failed to add account to genesis state; account already exists: %s", addr)
+		}
 	}
 
 	// Add the new account to the set of genesis accounts and sanitize the
 	// accounts afterwards.
-	accs = append(accs, genAccount)
-	accs = authtypes.SanitizeGenesisAccounts(accs)
+	for _, genAcct := range genAccounts {
+		accs = append(accs, genAcct)
+		accs = authtypes.SanitizeGenesisAccounts(accs)
+	}
 
 	genAccs, err := authtypes.PackAccounts(accs)
 	if err != nil {
@@ -92,11 +101,10 @@ func modifyGenesis(path, moniker, amountStr string, accAddr sdk.AccAddress, glob
 	if err != nil {
 		return fmt.Errorf("failed to marshal auth genesis state: %w", err)
 	}
-
 	appState[authtypes.ModuleName] = authGenStateBz
 
 	bankGenState := banktypes.GetGenesisStateFromAppState(cdc, appState)
-	bankGenState.Balances = append(bankGenState.Balances, balances)
+	bankGenState.Balances = append(bankGenState.Balances, balances...)
 	bankGenState.Balances = banktypes.SanitizeGenesisBalances(bankGenState.Balances)
 
 	bankGenStateBz, err := cdc.MarshalJSON(bankGenState)
@@ -105,6 +113,48 @@ func modifyGenesis(path, moniker, amountStr string, accAddr sdk.AccAddress, glob
 	}
 	appState[banktypes.ModuleName] = bankGenStateBz
 
+	// add ica host allowed msg types
+	var icaGenesisState icatypes.GenesisState
+
+	if appState[icatypes.ModuleName] != nil {
+		cdc.MustUnmarshalJSON(appState[icatypes.ModuleName], &icaGenesisState)
+	}
+
+	icaGenesisState.HostGenesisState.Params.AllowMessages = []string{
+		"/cosmos.authz.v1beta1.MsgExec",
+		"/cosmos.authz.v1beta1.MsgGrant",
+		"/cosmos.authz.v1beta1.MsgRevoke",
+		"/cosmos.bank.v1beta1.MsgSend",
+		"/cosmos.bank.v1beta1.MsgMultiSend",
+		"/cosmos.distribution.v1beta1.MsgSetWithdrawAddress",
+		"/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission",
+		"/cosmos.distribution.v1beta1.MsgFundCommunityPool",
+		"/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
+		"/cosmos.feegrant.v1beta1.MsgGrantAllowance",
+		"/cosmos.feegrant.v1beta1.MsgRevokeAllowance",
+		"/cosmos.gov.v1beta1.MsgVoteWeighted",
+		"/cosmos.gov.v1beta1.MsgSubmitProposal",
+		"/cosmos.gov.v1beta1.MsgDeposit",
+		"/cosmos.gov.v1beta1.MsgVote",
+		"/cosmos.staking.v1beta1.MsgEditValidator",
+		"/cosmos.staking.v1beta1.MsgDelegate",
+		"/cosmos.staking.v1beta1.MsgUndelegate",
+		"/cosmos.staking.v1beta1.MsgBeginRedelegate",
+		"/cosmos.staking.v1beta1.MsgCreateValidator",
+		"/cosmos.vesting.v1beta1.MsgCreateVestingAccount",
+		"/ibc.applications.transfer.v1.MsgTransfer",
+		"/tendermint.liquidity.v1beta1.MsgCreatePool",
+		"/tendermint.liquidity.v1beta1.MsgSwapWithinBatch",
+		"/tendermint.liquidity.v1beta1.MsgDepositWithinBatch",
+		"/tendermint.liquidity.v1beta1.MsgWithdrawWithinBatch",
+	}
+
+	icaGenesisStateBz, err := cdc.MarshalJSON(&icaGenesisState)
+	if err != nil {
+		return fmt.Errorf("failed to marshal interchain accounts genesis state: %w", err)
+	}
+	appState[icatypes.ModuleName] = icaGenesisStateBz
+
 	// setup global fee in genesis
 	globfeeState := globfeetypes.GetGenesisStateFromAppState(cdc, appState)
 	minGases, err := sdk.ParseDecCoins(globfees)
@@ -112,11 +162,19 @@ func modifyGenesis(path, moniker, amountStr string, accAddr sdk.AccAddress, glob
 		return fmt.Errorf("failed to parse fee coins: %w", err)
 	}
 	globfeeState.Params.MinimumGasPrices = minGases
-	globfeeStateBz, err := cdc.MarshalJSON(globfeeState)
+	globFeeStateBz, err := cdc.MarshalJSON(globfeeState)
 	if err != nil {
 		return fmt.Errorf("failed to marshal global fee genesis state: %w", err)
 	}
-	appState[globfeetypes.ModuleName] = globfeeStateBz
+	appState[globfeetypes.ModuleName] = globFeeStateBz
+
+	stakingGenState := stakingtypes.GetGenesisStateFromAppState(cdc, appState)
+	stakingGenState.Params.BondDenom = denom
+	stakingGenStateBz, err := cdc.MarshalJSON(stakingGenState)
+	if err != nil {
+		return fmt.Errorf("failed to marshal staking genesis state: %w", err)
+	}
+	appState[stakingtypes.ModuleName] = stakingGenStateBz
 
 	// Refactor to separate method
 	amnt := math.NewInt(10000)
@@ -124,7 +182,7 @@ func modifyGenesis(path, moniker, amountStr string, accAddr sdk.AccAddress, glob
 	threshold, _ := sdk.NewDecFromStr("0.000000000000000001")
 
 	govState := govv1beta1.NewGenesisState(1,
-		govv1beta1.NewDepositParams(sdk.NewCoins(sdk.NewCoin("uatom", amnt)), 10*time.Minute),
+		govv1beta1.NewDepositParams(sdk.NewCoins(sdk.NewCoin(denom, amnt)), 10*time.Minute),
 		govv1beta1.NewVotingParams(15*time.Second),
 		govv1beta1.NewTallyParams(quorum, threshold, govv1beta1.DefaultVetoThreshold),
 	)
@@ -140,5 +198,6 @@ func modifyGenesis(path, moniker, amountStr string, accAddr sdk.AccAddress, glob
 		return fmt.Errorf("failed to marshal application genesis state: %w", err)
 	}
 	genDoc.AppState = appStateJSON
+
 	return genutil.ExportGenesisFile(genDoc, genFile)
 }

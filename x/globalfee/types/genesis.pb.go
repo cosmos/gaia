@@ -77,7 +77,7 @@ type Params struct {
 	// When multiple coins are defined then they are accepted alternatively.
 	// The list must be sorted by denoms asc. No duplicate denoms or zero amount
 	// values allowed. For more information see
-	// https://docs.cosmos.network/master/modules/auth/01_concepts.html
+	// https://docs.cosmos.network/main/modules/auth#concepts
 	MinimumGasPrices github_com_cosmos_cosmos_sdk_types.DecCoins `protobuf:"bytes,1,rep,name=minimum_gas_prices,json=minimumGasPrices,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.DecCoins" json:"minimum_gas_prices,omitempty" yaml:"minimum_gas_prices"`
 }
 

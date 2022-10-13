@@ -15,24 +15,29 @@ This document describes the steps for validator and full node operators for the 
 - Migration logs for upgrade process.
 
 TOC:
-- [On-chain governance proposal attains consensus](#on-chain-governance-proposal-attains-consensus)
-- [Upgrade will take place April 12, 2022](#upgrade-will-take-place-april-12-2022)
-- [Chain-id will remain the same](#chain-id-will-remain-the-same)
-- [Preparing for the upgrade](#preparing-for-the-upgrade)
+- [Cosmos Hub 4, v7-Theta Upgrade, Instructions](#cosmos-hub-4-v7-theta-upgrade-instructions)
+  - [On-chain governance proposal attains consensus](#on-chain-governance-proposal-attains-consensus)
+  - [Upgrade will take place April 12, 2022](#upgrade-will-take-place-april-12-2022)
+  - [Chain-id will remain the same](#chain-id-will-remain-the-same)
+  - [Preparing for the upgrade](#preparing-for-the-upgrade)
     - [System requirement](#system-requirement)
     - [Backups](#backups)
     - [Testing](#testing)
-    - [Current runtime, cosmoshub-4 (pre-v7-Theta upgrade) is running Gaia v6.0.x](#current-runtime-cosmoshub-4-pre-v7-Theta-upgrade-is-running-gaia-v60x)
-    - [Target runtime, cosmoshub-4 (post-v7-Theta upgrade) will run Gaia v7.0.0](#target-runtime-cosmoshub-4-post-v7-Theta-upgrade-will-run-gaia-v700)
-- [v7-Theta upgrade steps](#v7-Theta-upgrade-steps)
+    - [Current runtime, cosmoshub-4 (pre-v7-Theta upgrade) is running Gaia v6.0.x](#current-runtime-cosmoshub-4-pre-v7-theta-upgrade-is-running-gaia-v60x)
+    - [Target runtime, cosmoshub-4 (post-v7-Theta upgrade) will run Gaia v7.0.0](#target-runtime-cosmoshub-4-post-v7-theta-upgrade-will-run-gaia-v700)
+  - [v7-Theta upgrade steps](#v7-theta-upgrade-steps)
     - [Method I: manual upgrade](#method-i-manual-upgrade)
     - [Method II: upgrade using Cosmovisor by manually preparing the Gaia v7.0.0 binary](#method-ii-upgrade-using-cosmovisor-by-manually-preparing-the-gaia-v700-binary)
-  - [Method III: upgrade using Cosmovisor by auto-downloading the Gaia v7.0.0 binary (not recommended!)](#method-iii-upgrade-using-cosmovisor-by-auto-downloading-the-gaia-v604-binary-not-recommended)
-- [Upgrade duration](#upgrade-duration)
-- [Rollback plan](#rollback-plan)
-- [Communications](#communications)
-- [Risks](#risks)
-- [Reference](#reference)
+      - [Preparation](#preparation)
+      - [Expected ugprade result](#expected-ugprade-result)
+    - [Method III: upgrade using Cosmovisor by auto-downloading the Gaia v7.0.0 binary (not recommended!)](#method-iii-upgrade-using-cosmovisor-by-auto-downloading-the-gaia-v700-binary-not-recommended)
+      - [Preparation](#preparation-1)
+      - [Expected result](#expected-result)
+  - [Upgrade duration](#upgrade-duration)
+  - [Rollback plan](#rollback-plan)
+  - [Communications](#communications)
+  - [Risks](#risks)
+  - [Reference](#reference)
 
 
 ## On-chain governance proposal attains consensus
@@ -71,7 +76,7 @@ It is critically important for validator operators to back-up the `.gaia/data/pr
 
 ### Testing
 
-For those validator and full node operators that are interested in ensuring preparedness for the impending upgrade, you can join in our [v7-Theta public-testnet](https://github.com/cosmos/testnets/tree/master/v7-theta/public-testnet) or run a [v7-Theta local testnet](https://github.com/cosmos/testnets/tree/master/v7-theta/local-testnet).
+For those validator and full node operators that are interested in ensuring preparedness for the impending upgrade, you can join in our [v7-Theta public-testnet](https://github.com/cosmos/testnets/tree/master/v7-theta/public-testnet) or run a [v7-Theta local testnet](https://github.com/cosmos/testnets/tree/master/local/previous-local-testnets/theta).
 
 ### Current runtime, cosmoshub-4 (pre-v7-Theta upgrade) is running Gaia v6.0.x
 

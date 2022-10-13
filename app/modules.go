@@ -50,8 +50,8 @@ import (
 	ibchost "github.com/cosmos/ibc-go/v5/modules/core/24-host"
 	"github.com/gravity-devs/liquidity/v2/x/liquidity"
 	liquiditytypes "github.com/gravity-devs/liquidity/v2/x/liquidity/types"
-	"github.com/strangelove-ventures/packet-forward-middleware/v5/router"
-	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v5/router/types"
+	"github.com/strangelove-ventures/packet-forward-middleware/v2/router"
+	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v2/router/types"
 
 	gaiaappparams "github.com/cosmos/gaia/v8/app/params"
 	"github.com/cosmos/gaia/v8/x/globalfee"

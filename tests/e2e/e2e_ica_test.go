@@ -14,6 +14,7 @@ import (
 
 // TestICARegister must run before any other
 func (s *IntegrationTestSuite) TestICA_1_Register() {
+	// s.T().Skip()
 	s.Run("register_ICA", func() {
 		connectionID := "connection-0"
 		var owner string
@@ -39,6 +40,7 @@ func (s *IntegrationTestSuite) TestICA_1_Register() {
 }
 
 func (s *IntegrationTestSuite) TestICA_2_BankSend() {
+	// s.T().Skip()
 
 	s.Run("test ica transactions", func() {
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))

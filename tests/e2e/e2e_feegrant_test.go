@@ -17,6 +17,7 @@ Test Benchmarks:
 because all amount granted was expended
 */
 func (s *IntegrationTestSuite) TestFeeGrant() {
+	// s.T().Skip()
 	s.Run("test fee grant module", func() {
 		var (
 			valIdx = 0

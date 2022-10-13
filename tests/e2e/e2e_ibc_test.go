@@ -233,6 +233,7 @@ func (s *IntegrationTestSuite) createChannel() {
 }
 
 func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
+	// s.T().Skip()
 	time.Sleep(30 * time.Second)
 	s.Run("send_uatom_to_chainB", func() {
 		// require the recipient account receives the IBC tokens (IBC packets ACKd)
@@ -434,6 +435,7 @@ func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
 			func() bool {
 				beforeSenderUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, sender, "uatom")
 				s.Require().NoError(err)
+				// fmt.Println("beforeSenderUAtomBalance", beforeSenderUAtomBalance)
 
 				beforeMiddleIBCBalance, err = getSpecificBalance(chainBAPIEndpoint, middlehop, "ibc/")
 				s.Require().True(beforeMiddleIBCBalance.IsNil())
@@ -447,18 +449,28 @@ func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
 
 		s.sendIBC(s.chainA, 0, sender, compiledRecipient, strconv.Itoa(tokenAmt)+uatomDenom, standardFees.String())
 
-		time.Sleep(30 * time.Second) // just in case the middlehop balance is correct temporarily before the next ibc packet is sent
+		// time.Sleep(30 * time.Second) // just in case the middlehop balance is correct temporarily before the next ibc packet is sent
 
 		s.Require().Eventually(
 			func() bool {
 				afterSenderUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, "uatom")
 				s.Require().NoError(err)
+				// fmt.Println("afterSenderUAtomBalance", afterSenderUAtomBalance)
 
 				afterMiddleIBCBalance, err := getSpecificBalance(chainBAPIEndpoint, middlehop, "ibc/")
 				s.Require().NoError(err)
 
+				if afterMiddleIBCBalance.IsNil() {
+					return false
+				}
+
 				decremented := beforeSenderUAtomBalance.Sub(tokenAmount).Sub(standardFees).IsEqual(afterSenderUAtomBalance)
 
+				// fmt.Println("tokenAmount", tokenAmount)
+				// fmt.Println("afterMiddleIBCBalance", afterMiddleIBCBalance)
+
+				// fmt.Println("tokenAmount.Amount", tokenAmount.Amount)
+				// fmt.Println("afterMiddleIBCBalance.Amount", afterMiddleIBCBalance.Amount)
 				// NOTE: this will fail if there is more than one IBC denom in this account
 				incremented := tokenAmount.Amount.Equal(afterMiddleIBCBalance.Amount)
 
@@ -472,6 +484,7 @@ func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
 }
 
 func (s *IntegrationTestSuite) TestBankTokenTransfer() {
+	// s.T().Skip()
 	s.Run("send_photon_between_accounts", func() {
 		var err error
 		senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()

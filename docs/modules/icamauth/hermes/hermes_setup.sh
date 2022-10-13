@@ -20,7 +20,7 @@ sleep 5
 echo "Initiating connection handshake..."
 $HERMES_BINARY --config $CONFIG_DIR create connection --a-chain test-0 --b-chain test-1
 
-echo "sleeping
+echo "sleeping"
 sleep 5
 
 echo "Starting hermes relayer..."

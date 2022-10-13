@@ -30,7 +30,9 @@ if ! mkdir -p $HOME_0 2>/dev/null; then
 fi
 
 echo "Initializing $CHAINID_0..."
-gaiad init test0 --chain-id=$CHAINID_0 --home $HOME_0
+$BINARY init test0 --chain-id=$CHAINID_0 --home $HOME_0
+sed -i '' 's/stake/uatom/g' $HOME_0/config/genesis.json
+
 $BINARY config chain-id $CHAIN_ID_0 --home $HOME_0
 $BINARY config keyring-backend test --home $HOME_0
 $BINARY config broadcast-mode block --home $HOME_0

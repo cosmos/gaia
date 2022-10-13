@@ -26,12 +26,13 @@ if ! mkdir -p $HOME_1 2>/dev/null; then
 fi
 
 echo "Initializing $CHAINID_1..."
-gaiad init test1 --chain-id=$CHAINID_1 --home $HOME_1
+$BINARY init test1 --chain-id=$CHAINID_1 --home $HOME_1
+sed -i '' 's/stake/uatom/g' $HOME_1/config/genesis.json
+
 $BINARY config chain-id $CHAIN_ID_1 --home $HOME_1
 $BINARY config keyring-backend test --home $HOME_1
 $BINARY config broadcast-mode block --home $HOME_1
 $BINARY config node tcp://localhost:$RPCPORT_1 --home $HOME_1
-
 
 echo "Adding genesis accounts..."
 $BINARY keys add val1  --home=$HOME_1

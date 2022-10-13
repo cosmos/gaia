@@ -19,8 +19,7 @@ require (
 	github.com/spf13/cobra v1.6.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.13.0
-	// github.com/strangelove-ventures/packet-forward-middleware/v5 v5.0.0-20221006203904-d5492a6827c1
-	github.com/strangelove-ventures/packet-forward-middleware/v2 v2.1.4-0.20220829223110-634f28ec1eb2
+	github.com/strangelove-ventures/packet-forward-middleware/v5 v5.0.0-20221006203904-d5492a6827c1
 	github.com/stretchr/testify v1.8.0
 	github.com/tendermint/tendermint v0.34.21
 	github.com/tendermint/tm-db v0.6.7

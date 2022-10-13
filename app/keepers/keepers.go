@@ -62,9 +62,9 @@ import (
 	ibctestingtypes "github.com/cosmos/ibc-go/v5/testing/types"
 	liquiditykeeper "github.com/gravity-devs/liquidity/v2/x/liquidity/keeper"
 	liquiditytypes "github.com/gravity-devs/liquidity/v2/x/liquidity/types"
-	"github.com/strangelove-ventures/packet-forward-middleware/v2/router"
-	routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v2/router/keeper"
-	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v2/router/types"
+	"github.com/strangelove-ventures/packet-forward-middleware/v5/router"
+	routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v5/router/keeper"
+	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v5/router/types"
 	tmos "github.com/tendermint/tendermint/libs/os"
 
 	"github.com/cosmos/gaia/v8/x/globalfee"
@@ -361,10 +361,15 @@ func NewAppKeeper(
 		appCodec, appKeepers.keys[routertypes.StoreKey],
 		appKeepers.GetSubspace(routertypes.ModuleName),
 		appKeepers.TransferKeeper,
+		appKeepers.IBCKeeper.ChannelKeeper,
 		appKeepers.DistrKeeper,
 	)
 
-	appKeepers.RouterModule = router.NewAppModule(appKeepers.RouterKeeper, transferIBCModule)
+	appKeepers.RouterModule = router.NewAppModule(appKeepers.RouterKeeper, transferIBCModule, 0,
+		routerkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
+		routerkeeper.DefaultRefundTransferPacketTimeoutTimestamp,
+	)
+
 	// create static IBC router, add transfer route, then set and seal it
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.AddRoute(icacontrollertypes.SubModuleName, icaControllerIBCModule).

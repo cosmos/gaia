@@ -11,6 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	"github.com/cosmos/cosmos-sdk/x/params/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	gaiahelpers "github.com/cosmos/gaia/v8/app/helpers"
 	"github.com/stretchr/testify/suite"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
@@ -52,6 +53,12 @@ func (s *IntegrationTestSuite) SetupTestGlobalFeeStoreAndMinGasPrice(minGasPrice
 	s.ctx = s.ctx.WithMinGasPrices(minGasPrice).WithIsCheckTx(true)
 
 	return subspace
+}
+
+// in the fee test, set uatom as bond denom.
+func (s *IntegrationTestSuite) SetupTestStakingSubspace() types.Subspace {
+	s.app.GetSubspace(stakingtypes.ModuleName).Set(s.ctx, stakingtypes.KeyBondDenom, "uatom")
+	return s.app.GetSubspace(stakingtypes.ModuleName)
 }
 
 func (s *IntegrationTestSuite) CreateTestTx(privs []cryptotypes.PrivKey, accNums []uint64, accSeqs []uint64, chainID string) (xauthsigning.Tx, error) {

@@ -226,7 +226,7 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 		vpr.SetConfigFile(tmCfgPath)
 		s.Require().NoError(vpr.ReadInConfig())
 
-		valConfig := &tmconfig.Config{}
+		valConfig := tmconfig.DefaultConfig()
 		s.Require().NoError(vpr.Unmarshal(valConfig))
 
 		valConfig.P2P.ListenAddress = "tcp://0.0.0.0:26656"
@@ -249,7 +249,6 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 		}
 
 		valConfig.P2P.PersistentPeers = strings.Join(peers, ",")
-
 		tmconfig.WriteConfigFile(tmCfgPath, valConfig)
 
 		// set application configuration

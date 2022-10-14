@@ -36,6 +36,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+* (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.9](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.9) security release.
+
 ## [v7.0.3] -2022-08-03
 
 * (golang) Update go to 1.18

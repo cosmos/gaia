@@ -273,8 +273,11 @@ require (
 	nhooyr.io/websocket v1.8.6 // indirect
 )
 
+// replace github.com/confio/ics23/go => github.com/cosmos/cosmos-sdk/ics23/go v0.8.0-alpha.1
+
+
 replace (
-	github.com/confio/ics23 => github.com/cosmos/cosmos-sdk/ics23/ v0.45.9
+	// github.com/confio/ics23 => github.com/cosmos/cosmos-sdk/ics23/go v0.45.9
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	google.golang.org/grpc => google.golang.org/grpc v1.33.2
 )

@@ -18,6 +18,7 @@ type HandlerOptions struct {
 	IBCkeeper            *ibckeeper.Keeper
 	BypassMinFeeMsgTypes []string
 	GlobalFeeSubspace    paramtypes.Subspace
+	StakingSubspace      paramtypes.Subspace
 }
 
 func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
@@ -36,6 +37,9 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 	if opts.GlobalFeeSubspace.Name() == "" {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "param store is required for ante builder")
 	}
+	if opts.StakingSubspace.Name() == "" {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "param store is required for ante builder")
+	}
 
 	sigGasConsumer := opts.SigGasConsumer
 	if sigGasConsumer == nil {
@@ -49,7 +53,7 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(opts.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
-		gaiafeeante.NewFeeDecorator(opts.BypassMinFeeMsgTypes, opts.GlobalFeeSubspace),
+		gaiafeeante.NewFeeDecorator(opts.BypassMinFeeMsgTypes, opts.GlobalFeeSubspace, opts.StakingSubspace),
 		// if opts.TxFeeCheck is nil,  it is the default fee check
 		ante.NewDeductFeeDecorator(opts.AccountKeeper, opts.BankKeeper, opts.FeegrantKeeper, opts.TxFeeChecker),
 		ante.NewSetPubKeyDecorator(opts.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators

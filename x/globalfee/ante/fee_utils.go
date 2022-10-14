@@ -4,6 +4,7 @@ import (
 	"math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	tmstrings "github.com/tendermint/tendermint/libs/strings"
 
 	"github.com/cosmos/gaia/v8/x/globalfee/types"
@@ -17,7 +18,7 @@ func (mfd FeeDecorator) getGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) sdk.Coins
 	}
 	// global fee is empty set, set global fee to 0uatom
 	if len(globalMinGasPrices) == 0 {
-		globalMinGasPrices = DefaultZeroGlobalFee()
+		globalMinGasPrices = mfd.DefaultZeroGlobalFee(ctx)
 	}
 	requiredGlobalFees := make(sdk.Coins, len(globalMinGasPrices))
 	// Determine the required fees by multiplying each required minimum gas
@@ -29,6 +30,24 @@ func (mfd FeeDecorator) getGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) sdk.Coins
 	}
 
 	return requiredGlobalFees.Sort()
+}
+
+func (mfd FeeDecorator) DefaultZeroGlobalFee(ctx sdk.Context) []sdk.DecCoin {
+	bondDenom := mfd.getBondDenom(ctx)
+	if bondDenom == "" { //todo: check bonddenom is only one denom
+		panic("staking bond denom is empty")
+	}
+
+	return []sdk.DecCoin{sdk.NewDecCoinFromDec(bondDenom, sdk.NewDec(0))}
+}
+
+func (mfd FeeDecorator) getBondDenom(ctx sdk.Context) string {
+	var bondDenom string
+	if mfd.StakingSubspace.Has(ctx, stakingtypes.KeyBondDenom) {
+		mfd.StakingSubspace.Get(ctx, stakingtypes.KeyBondDenom, &bondDenom)
+	}
+
+	return bondDenom
 }
 
 // getMinGasPrice will also return sorted coins

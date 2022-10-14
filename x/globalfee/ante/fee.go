@@ -26,22 +26,22 @@ var _ sdk.AnteDecorator = FeeDecorator{}
 type FeeDecorator struct {
 	BypassMinFeeMsgTypes []string
 	GlobalMinFee         globalfee.ParamSource
+	StakingSubspace      paramtypes.Subspace
 }
 
-const defaultZeroGlobalFeeDenom = "uatom"
-
-func DefaultZeroGlobalFee() []sdk.DecCoin {
-	return []sdk.DecCoin{sdk.NewDecCoinFromDec(defaultZeroGlobalFeeDenom, sdk.NewDec(0))}
-}
-
-func NewFeeDecorator(bypassMsgTypes []string, paramSpace paramtypes.Subspace) FeeDecorator {
-	if !paramSpace.HasKeyTable() {
+func NewFeeDecorator(bypassMsgTypes []string, globalfeeSubspace, stakingSubspace paramtypes.Subspace) FeeDecorator {
+	if !globalfeeSubspace.HasKeyTable() {
 		panic("global fee paramspace was not set up via module")
+	}
+
+	if !stakingSubspace.HasKeyTable() {
+		panic("staking paramspace was not set up via module")
 	}
 
 	return FeeDecorator{
 		BypassMinFeeMsgTypes: bypassMsgTypes,
-		GlobalMinFee:         paramSpace,
+		GlobalMinFee:         globalfeeSubspace,
+		StakingSubspace:      stakingSubspace,
 	}
 }
 

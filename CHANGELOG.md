@@ -36,6 +36,9 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+
+## [v7.1.0] -2022-10-14
+
 * (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.9](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.9) security release.
 
 ## [v7.0.3] -2022-08-03
@@ -441,7 +444,8 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v7.0.3...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v7.1.0...HEAD
+[v7.1.0]: https://github.com/cosmos/gaia/releases/tag/v7.1.0
 [v7.0.3]: https://github.com/cosmos/gaia/releases/tag/v7.0.3
 [v7.0.2]: https://github.com/cosmos/gaia/releases/tag/v7.0.2
 [v7.0.1]: https://github.com/cosmos/gaia/releases/tag/v7.0.1

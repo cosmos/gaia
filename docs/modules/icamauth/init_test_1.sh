@@ -27,7 +27,6 @@ fi
 
 echo "Initializing $CHAINID_1..."
 $BINARY init test1 --chain-id=$CHAINID_1 --home $HOME_1
-sed -i '' 's/stake/uatom/g' $HOME_1/config/genesis.json
 
 $BINARY config chain-id $CHAIN_ID_1 --home $HOME_1
 $BINARY config keyring-backend test --home $HOME_1
@@ -38,12 +37,12 @@ echo "Adding genesis accounts..."
 $BINARY keys add val1  --home=$HOME_1
 echo $MNEMONIC_BOB | $BINARY keys add bob --recover --home=$HOME_1
 echo $MNEMONIC_RLY1 | $BINARY keys add rly1 --recover --home=$HOME_1
-$BINARY add-genesis-account $($BINARY keys show val1 -a --home=$HOME_1) 100000000000uatom --home=$HOME_1
-$BINARY add-genesis-account $($BINARY keys show bob -a --home=$HOME_1) 100000000000uatom --home=$HOME_1
-$BINARY add-genesis-account $($BINARY keys show rly1 -a --home=$HOME_1) 100000000000uatom --home=$HOME_1
+$BINARY add-genesis-account $($BINARY keys show val1 -a --home=$HOME_1) 100000000000stake --home=$HOME_1
+$BINARY add-genesis-account $($BINARY keys show bob -a --home=$HOME_1) 100000000000stake --home=$HOME_1
+$BINARY add-genesis-account $($BINARY keys show rly1 -a --home=$HOME_1) 100000000000stake --home=$HOME_1
 
 echo "Creating and collecting gentx..."
-$BINARY gentx val1 7000000000uatom --chain-id $CHAINID_1 --home=$HOME_1
+$BINARY gentx val1 7000000000stake --chain-id $CHAINID_1 --home=$HOME_1
 $BINARY collect-gentxs --home=$HOME_1
 
 echo "Change setups in app.toml and config.toml files..."
@@ -60,7 +59,7 @@ sed -i -e 's#"tcp://0.0.0.0:1317"#"tcp://0.0.0.0:'"$RESTPORT_1"'"#g' $HOME_1/con
 sed -i -e 's#":8080"#":'"$ROSETTA_1"'"#g' $HOME_1/config/app.toml
 
 #set min_gas_prices
-sed -i '' 's/minimum-gas-prices = ""/minimum-gas-prices = "0.025uatom"/g' $HOME_1/config/app.toml
+sed -i '' 's/minimum-gas-prices = ""/minimum-gas-prices = "0.025stake"/g' $HOME_1/config/app.toml
 
 # Update host chain genesis to allow all msg types
 sed -i '' 's/\"allow_messages\": \[\]/\"allow_messages\": \["*"\]/g' $HOME_0/config/genesis.json

@@ -40,7 +40,7 @@ account_prefix = 'cosmos'
 key_name = 'hermes-rly0'
 store_prefix = 'ibc'
 max_gas = 4000000
-gas_price = { price = 0.025, denom = 'uatom' }
+gas_price = { price = 0.025, denom = 'stake' }
 gas_multiplier = 1.5
 clock_drift = '1m' # to accomdate docker containers
 trusting_period = '14days'
@@ -56,7 +56,7 @@ account_prefix = 'cosmos'
 key_name = 'hermes-rly1'
 store_prefix = 'ibc'
 max_gas =  4000000
-gas_price = { price = 0.025, denom = 'uatom' }
+gas_price = { price = 0.025, denom = 'stake' }
 gas_multiplier = 1.5
 clock_drift = '1m' # to accomdate docker containers
 trusting_period = '14days'

@@ -5,7 +5,7 @@
 
 The benefit of ICA is that there is no need to create a custom IBC implementation for each of the unique transactions that a sovereign blockchain might have (trading on a DEX, executing a specific smart contract, etc). Instead, a **generic** implementation allows blockchains to speak to each other, much like contracts can interact on Ethereum or other smart contract platforms.
 
-For example, let’s say that you have an address on the Cosmos Hub (the controller) with OSMO tokens that you wanted to uatom on Osmosis (the host). With Interchain Accounts, you can create and control a new address on Osmosis, without requiring a new private key. After sending your tokens to your Interchain Account using a regular IBC token transfer, you can send a wrapped `delegate` transaction over IBC which will then be unwrapped and executed natively on Osmosis.
+For example, let’s say that you have an address on the Cosmos Hub (the controller) with OSMO tokens that you wanted to stake on Osmosis (the host). With Interchain Accounts, you can create and control a new address on Osmosis, without requiring a new private key. After sending your tokens to your Interchain Account using a regular IBC token transfer, you can send a wrapped `delegate` transaction over IBC which will then be unwrapped and executed natively on Osmosis.
 
 ## The icamauth module
 Blockchains implementing Interchain Accounts can decide which messages they allow a controller chain to execute via a whitelist. The **icamuath module** whitelists most of the message types available to the Cosmos Hub, allowing any account on a controller chain to interact with the Cosmos Hub as if owning a native account on the chain itself.
@@ -65,7 +65,7 @@ export HOME1=$HOME/test-1
 ```
 
 ```shell
-gaiad tx icamauth register --from alice --connection-id connection-0 --gas-prices 0.03uatom --home test-0 --home $HOME0
+gaiad tx icamauth register --from alice --connection-id connection-0 --gas-prices 0.03stake --home test-0 --home $HOME0
 ```
 query alice's ica:
 ```shell
@@ -78,10 +78,10 @@ export ALICE=$(gaiad keys show alice -a --home $HOME0)
 export BOB=$(gaiad keys show bob -a --home $HOME1)
 ```
 
-Let's make sure `alice_ica` has some `uatom`:
+Let's make sure `alice_ica` has some `stake`:
 ```shell
 gaiad q bank balances $ALICE_ICA --home $HOME1
-gaiad tx bank send $BOB $ALICE_ICA 1000uatom --from bob --gas-prices 0.025uatom --home $HOME1
+gaiad tx bank send $BOB $ALICE_ICA 1000stake --from bob --gas-prices 0.025stake --home $HOME1
 gaiad q bank balances $ALICE_ICA --home $HOME1
 ```
 
@@ -93,15 +93,15 @@ We would like to invite you to try to perform the actions below yourself. If you
 > * `alice_ica` = account on `test-1` owned by `alice` on `test-0`
 > * `bob` = account on `test-1`
 
-Q1: Let `alice` send `uatom` to `bob` (hint: using ICA)
+Q1: Let `alice` send `stake` to `bob` (hint: using ICA)
 
-Q2: Let `bob` send `uatom` back to `alice_ica` (hint: via the Bank module)
+Q2: Let `bob` send `stake` back to `alice_ica` (hint: via the Bank module)
 
-Q3: Let `alice` send `uatom` to `bob` (hint: via a regular IBC token transfer)
+Q3: Let `alice` send `stake` to `bob` (hint: via a regular IBC token transfer)
 
-Q4: Let `bob` send `ibc/uatom` to `alice_ica` (hint: via the Bank module)
+Q4: Let `bob` send `ibc/stake` to `alice_ica` (hint: via the Bank module)
 
-Q5: Let `alice_ica` send `ibc/uatom` to `alice` (hint: via ICA & IBC-Transfer)
+Q5: Let `alice_ica` send `ibc/stake` to `alice` (hint: via ICA & IBC-Transfer)
 
 ### Solutions
 #### Q1: `alice_ica` sends tokens to `bob` 
@@ -109,7 +109,7 @@ Both `alice_ica` and `bob` are on chain `test-1`, however, we need `alice` from 
 
 Step 1: generate the transaction json: 
 ```shell
-gaiad tx bank send $ALICE_ICA $BOB --from alice 100uatom --generate-only | jq '.body.messages[0]' > ./send-raw.json
+gaiad tx bank send $ALICE_ICA $BOB --from alice 100stake --generate-only | jq '.body.messages[0]' > ./send-raw.json
 
 cat send-raw.json
 ```
@@ -122,7 +122,7 @@ This will generate and display a JSON file similar to this following file:
   "to_address": "cosmos1jl3p6e62ey4xad8c5x0vh4p26j5ml8ejxr936t",
   "amount": [
     {
-      "denom": "uatom",
+      "denom": "stake",
       "amount": "100"
     }
   ]
@@ -131,14 +131,14 @@ This will generate and display a JSON file similar to this following file:
 
 Step 2: send the generated transaction and let `alice` sign it:
 ```shell
-gaiad tx icamauth submit ./send-raw.json --connection-id connection-0 --from alice --gas-prices 0.025uatom --home $HOME0
+gaiad tx icamauth submit ./send-raw.json --connection-id connection-0 --from alice --gas-prices 0.025stake --home $HOME0
 ```
 
 #### Q2: `bob` sends the tokens back to `alice_ica`
 Note that this transaction is just a regular coin transfer using the Bank module because both accounts exist on `test-1` and you are interacting directly with that chain via the `--home` flag.
 
 ```shell
-gaiad tx bank send $BOB $ALICE_ICA 100uatom --home $HOME1
+gaiad tx bank send $BOB $ALICE_ICA 100stake --home $HOME1
 ```
 
 #### Q3: `alice` sends tokens to `bob` via IBC
@@ -158,7 +158,7 @@ Create a new IBC channel using Hermes:
 
 Initiate the IBC token transfer:
 ```shell
-gaiad tx ibc-transfer transfer transfer channel-1 $BOB 200uatom --from alice --gas-prices 0.025uatom --home $HOME0
+gaiad tx ibc-transfer transfer transfer channel-1 $BOB 200stake --from alice --gas-prices 0.025stake --home $HOME0
 ```
 
 IBC token transfers can take a while before they're confirmed. You can check the balance of `bob` on `test-1`:
@@ -168,21 +168,21 @@ balances:
 - amount: "200"
   denom: ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9
 - amount: "99999999000"
-  denom: uatom
+  denom: stake
 pagination:
   next_key: null
   total: "0"
 ```
 
-Note how the `200uatom` received has changed its denom to `ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9`. Tokens sending over IBC always are encoded with information about its origin in its denom.
+Note how the `200stake` received has changed its denom to `ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9`. Tokens sending over IBC always are encoded with information about its origin in its denom.
 
-#### Q4: Let `bob` send the `ibc/uatom` it just received to `alice_ica`
+#### Q4: Let `bob` send the `ibc/stake` it just received to `alice_ica`
 Notice how this is just a regular token transfer using the Bank module:
 ```shell
-gaiad tx bank send $BOB $AICA_ICA 200ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9 --from bob --gas-prices 0.025uatom --home $HOME1
+gaiad tx bank send $BOB $AICA_ICA 200ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9 --from bob --gas-prices 0.025stake --home $HOME1
 ```
 
-#### Q5: `alice_ica` sends `100ibc/uatom` to `alice`
+#### Q5: `alice_ica` sends `100ibc/stake` to `alice`
 
 we have already created the channel in the above [#Q3], we can just use this channel to send the token back from `alice_ica` to `alice`. 
 
@@ -216,10 +216,10 @@ This will generate and display the following JSON file:
 
 Step 2: use Interchain Accounts to execute the IBC transfer in the JSON file:
 ```shell
-gaiad tx icamauth submit send-raw.json --connection-id connection-0 --from alice --home $HOME0 --gas-prices 0.025uatom
+gaiad tx icamauth submit send-raw.json --connection-id connection-0 --from alice --home $HOME0 --gas-prices 0.025stake
 ```
 
-The long denom we saw will be changed from `ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9` back to `uatom` when the token is back to a on chain `test-0`.
+The long denom we saw will be changed from `ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9` back to `stake` when the token is back to a on chain `test-0`.
 
 
 ## References:

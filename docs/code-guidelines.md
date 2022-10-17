@@ -65,7 +65,7 @@ These guidelines are the conventions that govern our code. These conventions cov
 
 The goal of this guide is to manage this complexity by describing in detail the Dos and Don'ts of writing Go code. These rules keep the code base manageable while allowing engineers to use Go language features productively.
 
-Try to avoid extensive methods and always test your code. All PRs should have unless 95% of code coverage.
+Try to avoid extensive methods and always test your code. All PRs should have at least 95% of code coverage.
 
 - [Project organization](#project-organization)
 - [Guidelines](#guidelines)

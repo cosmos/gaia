@@ -34,7 +34,8 @@ func (mfd FeeDecorator) getGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) sdk.Coins
 
 func (mfd FeeDecorator) DefaultZeroGlobalFee(ctx sdk.Context) []sdk.DecCoin {
 	bondDenom := mfd.getBondDenom(ctx)
-	if bondDenom == "" { //todo: check bonddenom is only one denom
+	// todo: check bonddenom is only one denom
+	if bondDenom == "" {
 		panic("staking bond denom is empty")
 	}
 

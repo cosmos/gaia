@@ -29,16 +29,16 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "bank keeper is required for AnteHandler")
 	}
 	if opts.SignModeHandler == nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "sign mode handler is required for ante builder")
+		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "sign mode handler is required for AnteHandler")
 	}
 	if opts.IBCkeeper == nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "IBC keeper is required for middlewares")
+		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "IBC keeper is required for AnteHandler")
 	}
 	if opts.GlobalFeeSubspace.Name() == "" {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "param store is required for ante builder")
+		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "globalfee param store is required for AnteHandler")
 	}
 	if opts.StakingSubspace.Name() == "" {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "param store is required for ante builder")
+		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "staking param store is required for AnteHandler")
 	}
 
 	sigGasConsumer := opts.SigGasConsumer

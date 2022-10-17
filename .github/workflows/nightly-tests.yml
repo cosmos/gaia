@@ -1,4 +1,5 @@
 name: "Nightly E2E run"
+runs-on: self-hosted
 on:
   workflow_call:
   workflow_dispatch:

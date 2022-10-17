@@ -1,5 +1,4 @@
 name: "Nightly E2E run"
-runs-on: self-hosted
 on:
   workflow_call:
   workflow_dispatch:
@@ -7,11 +6,12 @@ on:
     - cron: "0 0 * * *"
 
 jobs:
-
   run-tests:
+    runs-on: self-hosted
     uses: cosmos/gaia/.github/workflows/test.yml@main
 
   run-simulations:
+    runs-on: self-hosted
     uses: cosmos/gaia/.github/workflows/sims.yml@main
 
     

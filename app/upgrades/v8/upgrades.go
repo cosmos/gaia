@@ -15,13 +15,6 @@ func CreateUpgradeHandler(
 	keepers *keepers.AppKeepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-		// Fix export genesis error
-		atomMetaData, found := keepers.BankKeeper.GetDenomMetaData(ctx, "uatom")
-		if !found {
-		}
-		atomMetaData.Name = "Cosmos Hub Atom"
-		atomMetaData.Symbol = "ATOM"
-
 		// Enable controller chain
 		controllerParams := icacontrollertypes.Params{
 			ControllerEnabled: true,

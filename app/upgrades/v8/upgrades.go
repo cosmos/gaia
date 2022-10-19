@@ -23,7 +23,7 @@ func CreateUpgradeHandler(
 		if !found {
 			return nil, errors.New("atom denom not found")
 		}
-		atomMetaData.Name = "Cosmos"
+		atomMetaData.Name = "Cosmos Hub Atom"
 		atomMetaData.Symbol = "ATOM"
 		keepers.BankKeeper.SetDenomMetaData(ctx, atomMetaData)
 

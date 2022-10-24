@@ -30,7 +30,7 @@ func (s *IntegrationTestSuite) SendTokensFromNewGovAccount() {
 	s.fundCommunityPool(chainAAPIEndpoint, sender)
 
 	s.T().Logf("Submitting Legacy Gov Proposal: Community Spend Funding Gov Module")
-	s.submitLegacyGovProposal(chainAAPIEndpoint, sender, fees.String(), "community-pool-spend", proposalCounter, configFile("proposal.json"))
+	s.submitLegacyGovProposal(chainAAPIEndpoint, sender, fees.String(), "community-pool-spend", proposalCounter, configFile(proposal1))
 	s.T().Logf("Depositing Legacy Gov Proposal: Community Spend Funding Gov Module")
 	s.depositGovProposal(chainAAPIEndpoint, sender, fees.String(), proposalCounter)
 	s.T().Logf("Voting Legacy Gov Proposal: Community Spend Funding Gov Module")
@@ -41,7 +41,7 @@ func (s *IntegrationTestSuite) SendTokensFromNewGovAccount() {
 	proposalCounter++
 
 	s.T().Logf("Submitting Gov Proposal: Sending Tokens from Gov Module to Recipient")
-	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, configFile("proposal_2.json"))
+	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, configFile(proposal2))
 	s.T().Logf("Depositing Gov Proposal: Sending Tokens from Gov Module to Recipient")
 	s.depositGovProposal(chainAAPIEndpoint, sender, fees.String(), proposalCounter)
 	s.T().Logf("Voting Gov Proposal: Sending Tokens from Gov Module to Recipient")
@@ -83,7 +83,7 @@ func (s *IntegrationTestSuite) GovSoftwareUpgrade() {
 	s.writeGovUpgradeSoftwareProposal(s.chainA, proposalHeight)
 
 	s.T().Logf("Submitting Gov Proposal: Software Upgrade")
-	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, configFile("proposal_3.json"))
+	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, configFile(proposal3))
 	s.T().Logf("Depositing Gov Proposal: Software Upgrade")
 	s.depositGovProposal(chainAAPIEndpoint, sender, fees.String(), proposalCounter)
 	s.T().Logf("Weighted Voting Gov Proposal: Software Upgrade")
@@ -134,14 +134,14 @@ func (s *IntegrationTestSuite) GovCancelSoftwareUpgrade() {
 	s.writeGovCancelUpgradeSoftwareProposal(s.chainA)
 
 	s.T().Logf("Submitting Gov Proposal: Software Upgrade")
-	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, configFile("proposal_3.json"))
+	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, configFile(proposal3))
 	s.depositGovProposal(chainAAPIEndpoint, sender, fees.String(), proposalCounter)
 	s.voteGovProposal(chainAAPIEndpoint, sender, fees.String(), proposalCounter, "yes", false)
 
 	proposalCounter++
 
 	s.T().Logf("Submitting Gov Proposal: Cancel Software Upgrade")
-	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, configFile("proposal_4.json"))
+	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, configFile(proposal4))
 	s.depositGovProposal(chainAAPIEndpoint, sender, fees.String(), proposalCounter)
 	s.voteGovProposal(chainAAPIEndpoint, sender, fees.String(), proposalCounter, "yes", false)
 

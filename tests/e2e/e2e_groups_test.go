@@ -13,21 +13,16 @@ import (
 )
 
 var (
-	adminAddr                string
-	aliceAddr                string
-	bobAddr                  string
-	charlieAddr              string
-	groupId                  = 1
-	proposalId               = 1
-	originalMembersFilename  = "members1.json"
-	addMemberFilename        = "members2.json"
-	removeMemberFilename     = "members3.json"
-	thresholdPolicyFilename  = "policy1.json"
-	percentagePolicyFilename = "policy2.json"
-	thresholdPolicyMetadata  = "Policy 1"
-	percentagePolicyMetadata = "Policy 2"
-	proposalMsgSendPath      = "proposal1.json"
-	sendAmount               = sdk.NewInt64Coin(uatomDenom, 5000000)
+	// TODO remove those global vars
+	adminAddr   string
+	aliceAddr   string
+	bobAddr     string
+	charlieAddr string
+)
+
+var (
+	proposalId = 1
+	sendAmount = sdk.NewInt64Coin(uatomDenom, 5000000)
 
 	windows = &group.DecisionPolicyWindows{
 		MinExecutionPeriod: 0 * time.Second,
@@ -43,6 +38,18 @@ var (
 		Percentage: "0.5",
 		Windows:    windows,
 	}
+)
+
+const (
+	groupId                  = 1
+	originalMembersFilename  = "members1.json"
+	addMemberFilename        = "members2.json"
+	removeMemberFilename     = "members3.json"
+	thresholdPolicyFilename  = "policy1.json"
+	percentagePolicyFilename = "policy2.json"
+	thresholdPolicyMetadata  = "Policy 1"
+	percentagePolicyMetadata = "Policy 2"
+	proposalMsgSendPath      = "proposal1.json"
 )
 
 /*

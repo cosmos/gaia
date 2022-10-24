@@ -206,7 +206,7 @@ func (s *IntegrationTestSuite) createChannel() {
 			"--src-chain",
 			s.chainB.id,
 			"--dst-connection",
-			"connection-0",
+			icaConnectionID,
 			"--src-port=transfer",
 			"--dst-port=transfer",
 		},

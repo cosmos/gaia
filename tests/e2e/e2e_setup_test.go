@@ -34,6 +34,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/group"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	icatypes "github.com/cosmos/gaia/v8/x/icamauth/types"
 	ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
 	"github.com/ory/dockertest/v3"
@@ -49,15 +50,22 @@ import (
 )
 
 const (
-	gaiadBinary    = "gaiad"
-	txCommand      = "tx"
-	queryCommand   = "query"
-	keysCommand    = "keys"
-	gaiaHomePath   = "/home/nonroot/.gaia"
-	photonDenom    = "photon"
-	uatomDenom     = "uatom"
-	initBalanceStr = "110000000000stake,100000000000000000photon,100000000000000000uatom"
-	minGasPrice    = "0.00001"
+	gaiadBinary     = "gaiad"
+	txCommand       = "tx"
+	queryCommand    = "query"
+	keysCommand     = "keys"
+	gaiaHomePath    = "/home/nonroot/.gaia"
+	photonDenom     = "photon"
+	uatomDenom      = "uatom"
+	initBalanceStr  = "110000000000stake,100000000000000000photon,100000000000000000uatom"
+	minGasPrice     = "0.00001"
+	proposal1       = "proposal.json"
+	proposal2       = "proposal_2.json"
+	proposal3       = "proposal_3.json"
+	proposal4       = "proposal_4.json"
+	proposalICA     = "proposal_ica.json"
+	icaConnectionID = "connection-0"
+
 	// the test globalfee in genesis is the same as minGasPrice
 	// global fee lower/higher than min_gas_price
 	initialGlobalFeeAmt          = "0.00001"
@@ -641,11 +649,27 @@ func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
 	commSpendBody, err := json.MarshalIndent(proposalCommSpend, "", " ")
 	s.Require().NoError(err)
 
+	//{
+	//  "@type": "/gaia.icamauth.v1beta1.MsgRegisterAccount",
+	//  "owner": "cosmos1yyrrkw53pqcddfxxr0z7umrv5x8gh24fxsedqj",
+	//  "connection_id": "connection-0",
+	//  "version": ""
+	//}
+	icaProposal := &icatypes.MsgRegisterAccount{
+		Owner:        "",
+		ConnectionId: icaConnectionID,
+	}
+	icaProposalBody, err := json.MarshalIndent(icaProposal, "", " ")
+	s.Require().NoError(err)
+
 	for _, val := range c.validators {
-		err = writeFile(filepath.Join(val.configDir(), "config", "proposal.json"), commSpendBody)
+		err = writeFile(filepath.Join(val.configDir(), "config", proposal1), commSpendBody)
 		s.Require().NoError(err)
 
-		err = writeFile(filepath.Join(val.configDir(), "config", "proposal_2.json"), sendMsgBody)
+		err = writeFile(filepath.Join(val.configDir(), "config", proposal2), sendMsgBody)
+		s.Require().NoError(err)
+
+		err = writeFile(filepath.Join(val.configDir(), "config", proposalICA), icaProposalBody)
 		s.Require().NoError(err)
 	}
 }
@@ -669,7 +693,7 @@ func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height 
 	upgradeProposalBody, err := cdc.MarshalJSON(proposalSendMsg)
 	s.Require().NoError(err)
 
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_3.json"), upgradeProposalBody)
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposal3), upgradeProposalBody)
 	s.Require().NoError(err)
 }
 
@@ -683,7 +707,7 @@ func (s *IntegrationTestSuite) writeGovCancelUpgradeSoftwareProposal(c *chain) {
 	cancelUpgradeProposalBody, err := cdc.MarshalJSON(proposalSendMsg)
 	s.Require().NoError(err)
 
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_4.json"), cancelUpgradeProposalBody)
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposal4), cancelUpgradeProposalBody)
 	s.Require().NoError(err)
 }
 

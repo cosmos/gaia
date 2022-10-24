@@ -16,7 +16,7 @@ The current Cosmos Hub Testnet is running on the [Theta Upgrade](https://interch
 For those who just need instructions on performing the upgrade, see the [Upgrade](#upgrading) section.
 
 ## Releases
-If syncing before the Theta update, checkout [`v6.0.0`](https://github.com/cosmos/gaia/tree/v6.0.0). Until a release is cut for the upgrade, feel free to track the [`theta-prepare` branch](https://github.com/cosmos/gaia/tree/theta-prepare).
+If syncing before the Theta update, checkout [`v6.0.0`](https://github.com/cosmos/gaia/tree/v6.0.0). Until a release is cut for the upgrade, feel free to track the `theta-prepare` branch (deleted).
 
 ## Prerequisites
 

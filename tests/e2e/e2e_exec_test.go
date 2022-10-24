@@ -292,6 +292,32 @@ func (s *IntegrationTestSuite) execBankSend(
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.expectErrExecValidation(c, valIdx, expectErr))
 }
 
+type txBankSend struct {
+	from      string
+	to        string
+	amt       string
+	fees      string
+	log       string
+	expectErr bool
+}
+
+func (s *IntegrationTestSuite) execBankSendBatch(
+	c *chain,
+	valIdx int,
+	txs []txBankSend,
+) int {
+	sucessBankSendCount := 0
+	for _, tx := range txs {
+		s.T().Logf(tx.log)
+		s.execBankSend(c, valIdx, tx.from, tx.to, tx.amt, tx.fees, tx.expectErr)
+		if !tx.expectErr {
+			sucessBankSendCount++
+		}
+	}
+
+	return sucessBankSendCount
+}
+
 func (s *IntegrationTestSuite) execWithdrawAllRewards(c *chain, valIdx int, payee, fees string, expectErr bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()

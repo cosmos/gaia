@@ -72,6 +72,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 	recipientAddress, err := s.chainA.validators[1].keyInfo.GetAddress()
 	s.Require().NoError(err)
 	recipient := recipientAddress.String()
+
 	var beforeRecipientPhotonBalance sdk.Coin
 	s.Require().Eventually(
 		func() bool {
@@ -90,6 +91,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 	sendAmt := int64(1000)
 	token := sdk.NewInt64Coin(photonDenom, sendAmt) // send 1000photon each time
 	sucessBankSendCount := 0
+
 	// ---------------------------- test1: globalfee empty --------------------------------------------
 	// prepare gov globalfee proposal
 	emptyGlobalFee := sdk.DecCoins{}
@@ -98,17 +100,49 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 	paidFeeAmt := math.LegacyMustNewDecFromStr(minGasPrice).Mul(math.LegacyNewDec(gas)).String()
 
 	s.T().Logf("test case: empty global fee, globalfee=%s, min_gas_price=%s", emptyGlobalFee.String(), minGasPrice+uatomDenom)
-	s.T().Logf("Tx fee is zero coin with correct denom: uatom, fail")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "0"+uatomDenom, true)
-	s.T().Logf("Tx fee is empty, fail")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "", true)
-	s.T().Logf("Tx with wrong denom: photon, fail")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "4"+photonDenom, true)
-	s.T().Logf("Tx fee is zero coins of wrong denom: photon, fail")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "0"+photonDenom, true)
-	s.T().Logf("Tx fee is higher than min_gas_price, pass")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmt+uatomDenom, false)
-	sucessBankSendCount++
+	txBankSends := []txBankSend{
+		{
+			from:      submitter,
+			to:        recipient,
+			amt:       token.String(),
+			fees:      "0" + uatomDenom,
+			log:       "Tx fee is zero coin with correct denom: uatom, fail",
+			expectErr: true,
+		},
+		{
+			from:      submitter,
+			to:        recipient,
+			amt:       token.String(),
+			fees:      "",
+			log:       "Tx fee is empty, fail",
+			expectErr: true,
+		},
+		{
+			from:      submitter,
+			to:        recipient,
+			amt:       token.String(),
+			fees:      "4" + photonDenom,
+			log:       "Tx with wrong denom: photon, fail",
+			expectErr: true,
+		},
+		{
+			from:      submitter,
+			to:        recipient,
+			amt:       token.String(),
+			fees:      "0" + photonDenom,
+			log:       "Tx fee is zero coins of wrong denom: photon, fail",
+			expectErr: true,
+		},
+		{
+			from:      submitter,
+			to:        recipient,
+			amt:       token.String(),
+			fees:      paidFeeAmt + uatomDenom,
+			log:       "Tx fee is higher than min_gas_price, pass",
+			expectErr: false,
+		},
+	}
+	sucessBankSendCount += s.execBankSendBatch(s.chainA, 0, txBankSends)
 
 	// ------------------ test2: globalfee lower than min_gas_price -----------------------------------
 	// prepare gov globalfee proposal
@@ -124,15 +158,41 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 	paidFeeAmtLowGlobalFee := math.LegacyMustNewDecFromStr(lowGlobalFeesAmt).Quo(math.LegacyNewDec(2)).String()
 
 	s.T().Logf("test case: global fee is lower than min_gas_price, globalfee=%s, min_gas_price=%s", lowGlobalFee.String(), minGasPrice+uatomDenom)
-	s.T().Logf("Tx fee higher than/equal to min_gas_price and global fee, pass")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmt+uatomDenom, false)
-	sucessBankSendCount++
-	s.T().Logf("Tx fee lower than/equal to min_gas_price and global fee, pass")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmtLowGlobalFee+uatomDenom, true)
-	s.T().Logf("Tx fee lower than/equal global fee and lower than min_gas_price, fail")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmtLowMinGasHighGlobalFee+uatomDenom, true)
-	s.T().Logf("Tx fee has wrong denom, fail")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmt+photonDenom, true)
+	txBankSends = []txBankSend{
+		{
+			from:      submitter,
+			to:        recipient,
+			amt:       token.String(),
+			fees:      paidFeeAmt + uatomDenom,
+			log:       "Tx fee higher than/equal to min_gas_price and global fee, pass",
+			expectErr: false,
+		},
+		{
+			from:      submitter,
+			to:        recipient,
+			amt:       token.String(),
+			fees:      paidFeeAmtLowGlobalFee + uatomDenom,
+			log:       "Tx fee lower than/equal to min_gas_price and global fee, pass",
+			expectErr: true,
+		},
+		{
+			from:      submitter,
+			to:        recipient,
+			amt:       token.String(),
+			fees:      paidFeeAmtLowMinGasHighGlobalFee + uatomDenom,
+			log:       "Tx fee lower than/equal global fee and lower than min_gas_price, fail",
+			expectErr: true,
+		},
+		{
+			from:      submitter,
+			to:        recipient,
+			amt:       token.String(),
+			fees:      paidFeeAmt + photonDenom,
+			log:       "Tx fee has wrong denom, fail",
+			expectErr: true,
+		},
+	}
+	sucessBankSendCount += s.execBankSendBatch(s.chainA, 0, txBankSends)
 
 	// ------------------ test3: globalfee higher than min_gas_price ----------------------------------
 	// prepare gov globalfee proposal
@@ -145,11 +205,25 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 		Quo(math.LegacyNewDec(2)).String()
 
 	s.T().Logf("test case: global fee is higher than min_gas_price, globalfee=%s, min_gas_price=%s", highGlobalFee.String(), minGasPrice+uatomDenom)
-	s.T().Logf("Tx fee is higher than/equal to global fee and min_gas_price, pass")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmt+uatomDenom, false)
-	sucessBankSendCount++
-	s.T().Logf("Tx fee is higher than/equal to min_gas_price but lower than global fee, fail")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmtHigherMinGasLowerGalobalFee+uatomDenom, true)
+	txBankSends = []txBankSend{
+		{
+			from:      submitter,
+			to:        recipient,
+			amt:       token.String(),
+			fees:      paidFeeAmt + uatomDenom,
+			log:       "Tx fee is higher than/equal to global fee and min_gas_price, pass",
+			expectErr: false,
+		},
+		{
+			from:      submitter,
+			to:        recipient,
+			amt:       token.String(),
+			fees:      paidFeeAmtHigherMinGasLowerGalobalFee + uatomDenom,
+			log:       "Tx fee is higher than/equal to min_gas_price but lower than global fee, fail",
+			expectErr: true,
+		},
+	}
+	sucessBankSendCount += s.execBankSendBatch(s.chainA, 0, txBankSends)
 
 	// ---------------------------- test4: global fee with two denoms -----------------------------------
 	// prepare gov globalfee proposal
@@ -168,30 +242,84 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 		String()
 
 	s.T().Logf("test case: global fees contain multiple denoms: one zero coin, one non-zero coin, globalfee=%s, min_gas_price=%s", mixGlobalFee.String(), minGasPrice+uatomDenom)
-	s.T().Logf("Tx with fee higher than/equal to one of denom's amount the global fee, pass")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmt+uatomDenom, false)
-	sucessBankSendCount++
-	s.T().Logf("Tx with fee lower than one of denom's amount the global fee, fail")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmtLow+uatomDenom, true)
-	s.T().Logf("Tx with fee empty fee, pass")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "", false)
-	sucessBankSendCount++
-	s.T().Logf("Tx with zero coin in the denom of zero coin of global fee, pass")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "0"+photonDenom, false)
-	sucessBankSendCount++
-	s.T().Logf("Tx with non-zero coin in the denom of zero coin of global fee, pass")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "2"+photonDenom, false)
-	sucessBankSendCount++
-	s.T().Logf("Tx with mulitple fee coins, zero coin and low fee, fail")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "0"+photonDenom+","+paidFeeAmtLow+uatomDenom, true)
-	s.T().Logf("Tx with mulitple fee coins, zero coin and high fee, pass")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "0"+photonDenom+","+paidFeeAmt+uatomDenom, false)
-	sucessBankSendCount++
-	s.T().Logf("Tx with mulitple fee coins, all higher than global fee and min_gas_price")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "2"+photonDenom+","+paidFeeAmt+uatomDenom, false)
-	sucessBankSendCount++
-	// ---------------------------------------------------------------------------
+	txBankSends = []txBankSend{
+		{
+			from:      submitter,
+			to:        recipient,
+			amt:       token.String(),
+			fees:      paidFeeAmt + uatomDenom,
+			log:       "Tx with fee higher than/equal to one of denom's amount the global fee, pass",
+			expectErr: false,
+		},
+		{
+			from:      submitter,
+			to:        recipient,
+			amt:       token.String(),
+			fees:      paidFeeAmtLow + uatomDenom,
+			log:       "Tx with fee lower than one of denom's amount the global fee, fail",
+			expectErr: true,
+		},
+		{
+			from:      submitter,
+			to:        recipient,
+			amt:       token.String(),
+			fees:      "",
+			log:       "Tx with fee empty fee, pass",
+			expectErr: false,
+		},
+		{
+			from:      submitter,
+			to:        recipient,
+			amt:       token.String(),
+			fees:      "0" + photonDenom,
+			log:       "Tx with zero coin in the denom of zero coin of global fee, pass",
+			expectErr: false,
+		},
+		{
+			from:      submitter,
+			to:        recipient,
+			amt:       token.String(),
+			fees:      "0" + photonDenom,
+			log:       "Tx with zero coin in the denom of zero coin of global fee, pass",
+			expectErr: false,
+		},
+		{
+			from:      submitter,
+			to:        recipient,
+			amt:       token.String(),
+			fees:      "2" + photonDenom,
+			log:       "Tx with non-zero coin in the denom of zero coin of global fee, pass",
+			expectErr: false,
+		},
+		{
+			from:      submitter,
+			to:        recipient,
+			amt:       token.String(),
+			fees:      "0" + photonDenom + "," + paidFeeAmtLow + uatomDenom,
+			log:       "Tx with multiple fee coins, zero coin and low fee, fail",
+			expectErr: true,
+		},
+		{
+			from:      submitter,
+			to:        recipient,
+			amt:       token.String(),
+			fees:      "0" + photonDenom + "," + paidFeeAmt + uatomDenom,
+			log:       "Tx with multiple fee coins, zero coin and high fee, pass",
+			expectErr: false,
+		},
 
+		{
+			from:      submitter,
+			to:        recipient,
+			amt:       token.String(),
+			fees:      "2" + photonDenom + "," + paidFeeAmt + uatomDenom,
+			log:       "Tx with multiple fee coins, all higher than global fee and min_gas_price",
+			expectErr: false,
+		},
+	}
+	sucessBankSendCount += s.execBankSendBatch(s.chainA, 0, txBankSends)
+
+	// ---------------------------------------------------------------------------
 	// check the balance is correct after previous txs
 	s.Require().Eventually(
 		func() bool {

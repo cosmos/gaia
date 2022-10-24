@@ -38,35 +38,34 @@ func (s *IntegrationTestSuite) TestQueryGlobalFeesInGenesis() {
 }
 
 /*
-global fee in genesis is "0.00001uatom", which is the same as min_gas_price.
-This initial value setup is for not to fail other e2e tests.
 global fee e2e tests:
-0. initial globalfee = 0.00001uatom, min_gas_price = 0.00001uatom
+initial setup: initial globalfee = 0.00001uatom, min_gas_price = 0.00001uatom
+(This initial value setup is to pass other e2e tests)
 
-test1. gov proposal globalfee = [], min_gas_price=0.00001uatom, query globalfee still get empty
+test1: gov proposal globalfee = [], min_gas_price=0.00001uatom, query globalfee still get empty
 - tx with fee denom photon, fail
 - tx with zero fee denom photon, fail
 - tx with fee denom uatom, pass
 - tx with fee empty, fail
 
-test2. gov propose globalfee =  0.000001uatom(lower than min_gas_price)
+test2: gov propose globalfee =  0.000001uatom(lower than min_gas_price)
 - tx with fee higher than 0.000001uatom but lower than 0.00001uatom, fail
 - tx with fee higher than/equal to 0.00001uatom, pass
 - tx with fee photon fail
 
-test3. gov propose globalfee = 0.0001uatom (higher than min_gas_price)
+test3: gov propose globalfee = 0.0001uatom (higher than min_gas_price)
 - tx with fee equal to 0.0001uatom, pass
 - tx with fee equal to 0.00001uatom, fail
 
-test4. gov propose globalfee =  0.000001uatom (lower than min_gas_price), 0photon
+test4: gov propose globalfee =  0.000001uatom (lower than min_gas_price), 0photon
 - tx with fee 0.0000001photon, fail
 - tx with fee 0.000001photon, pass
 - tx with empty fee, pass
 - tx with fee photon pass
 - tx with fee 0photon, 0.000005uatom fail
 - tx with fee 0photon, 0.00001uatom pass
-5. check balance correct: all the sucessful tx sent token amt is received
-6. gov propose change back to initial globalfee = 0.00001photon, This is for not influence other e2e tests.
+test5: check balance correct: all the successful bank sent tokens are received
+test6: gov propose change back to initial globalfee = 0.00001photon, This is for not influence other e2e tests.
 */
 func (s *IntegrationTestSuite) TestGlobalFees() {
 	s.T().Skip()
@@ -436,4 +435,9 @@ func (s *IntegrationTestSuite) TestSlashing() {
 	s.T().Skip()
 	chainAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	s.testSlashing(chainAPI)
+}
+
+func (s *IntegrationTestSuite) TestICA() {
+	s.icaRegister()
+	s.icaBankSend()
 }

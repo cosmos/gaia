@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
 	"strconv"
@@ -211,7 +212,7 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 	bz, err = tmjson.MarshalIndent(genDoc, "", "  ")
 	s.Require().NoError(err)
 
-	// write the updated genesis file to each validator
+	// write the updated genesis file to each validator.
 	for _, val := range c.validators {
 		writeFile(filepath.Join(val.configDir(), "config", "genesis.json"), bz)
 	}
@@ -225,7 +226,7 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 		vpr.SetConfigFile(tmCfgPath)
 		s.Require().NoError(vpr.ReadInConfig())
 
-		valConfig := &tmconfig.Config{}
+		valConfig := tmconfig.DefaultConfig()
 		s.Require().NoError(vpr.Unmarshal(valConfig))
 
 		valConfig.P2P.ListenAddress = "tcp://0.0.0.0:26656"
@@ -248,7 +249,6 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 		}
 
 		valConfig.P2P.PersistentPeers = strings.Join(peers, ",")
-
 		tmconfig.WriteConfigFile(tmCfgPath, valConfig)
 
 		// set application configuration
@@ -271,10 +271,12 @@ func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 			Name:      val.instanceName(),
 			NetworkID: s.dkrNet.Network.ID,
 			Mounts: []string{
-				fmt.Sprintf("%s/:/root/.gaia", val.configDir()),
+				fmt.Sprintf("%s/:/home/nonroot/.gaia", val.configDir()),
 			},
 			Repository: "cosmos/gaiad-e2e",
 		}
+
+		s.Require().NoError(exec.Command("chmod", "-R", "0777", val.configDir()).Run())
 
 		// expose the first validator for debugging and communication
 		if val.index == 0 {
@@ -347,7 +349,7 @@ func (s *IntegrationTestSuite) runIBCRelayer() {
 		&dockertest.RunOptions{
 			Name:       fmt.Sprintf("%s-%s-relayer", s.chainA.id, s.chainB.id),
 			Repository: "ghcr.io/cosmos/hermes-e2e",
-			Tag:        "latest",
+			Tag:        "0.12.0",
 			NetworkID:  s.dkrNet.Network.ID,
 			Mounts: []string{
 				fmt.Sprintf("%s/:/root/hermes", hermesCfgPath),

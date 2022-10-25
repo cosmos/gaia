@@ -42,6 +42,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 * (gaia-rho) Add [Groups Module](https://docs.cosmos.network/main/modules/group/#group-module).
 * (tests) Add E2E test for Bank Send.
 * (tests) Update liveness tests to use Ignite v0.21.1.
+* (gaia-rho) Add bech32-convert command to gaiad
 
 ## [v7.0.2] -2022-05-09
 

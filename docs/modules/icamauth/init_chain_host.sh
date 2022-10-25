@@ -10,7 +10,7 @@ GRPCWEBPORT_1=9082
 RESTPORT_1=1317
 ROSETTA_1=8081
 
-# Stop if it is already running
+# Stop the binary if it is already running
 if pgrep -x  "$BINARY" >/dev/null; then
     echo "Terminating $BINARY..."
     killall gaiad
@@ -58,12 +58,12 @@ sed -i -e 's/swagger = false/swagger = true/g' $HOME_1/config/app.toml
 sed -i -e 's#"tcp://0.0.0.0:1317"#"tcp://0.0.0.0:'"$RESTPORT_1"'"#g' $HOME_1/config/app.toml
 sed -i -e 's#":8080"#":'"$ROSETTA_1"'"#g' $HOME_1/config/app.toml
 
-#set min_gas_prices
+# set min_gas_prices
 sed -i '' 's/minimum-gas-prices = ""/minimum-gas-prices = "0.025stake"/g' $HOME_1/config/app.toml
 
-# Update host chain genesis to allow all msg types
+# Update host chain genesis to allow all msg types ("*" represents all msg types)
 sed -i '' 's/\"allow_messages\": \[\]/\"allow_messages\": \["*"\]/g' $HOME_0/config/genesis.json
 
- echo "Starting $CHAINID_1..."
- echo "Creating log file at gaia1.log"
-# $BINARY start --home=$HOME_1 --log_level=trace --log_format=json --pruning=nothing > gaia1.log 2>&1 &
+echo "Starting $CHAINID_1..."
+echo "Creating log file at gaia1.log"
+$BINARY start --home=$HOME_1 --log_level=trace --log_format=json --pruning=nothing > gaia1.log 2>&1 &

@@ -8,7 +8,7 @@ The benefit of ICA is that there is no need to create a custom IBC implementatio
 For example, let’s say that you have an address on the Cosmos Hub (the controller) with OSMO tokens that you wanted to stake on Osmosis (the host). With Interchain Accounts, you can create and control a new address on Osmosis, without requiring a new private key. After sending your tokens to your Interchain Account using a regular IBC token transfer, you can send a wrapped `delegate` transaction over IBC which will then be unwrapped and executed natively on Osmosis.
 
 ## The icamauth module
-Blockchains implementing Interchain Accounts can decide which messages they allow a controller chain to execute via a whitelist. The **icamuath module** whitelists most of the message types available to the Cosmos Hub, allowing any account on a controller chain to interact with the Cosmos Hub as if owning a native account on the chain itself.
+Blockchains implementing Interchain Accounts can decide which messages they allow a controller chain to execute via a whitelist. The **icamuath (interchain account message authentication) module** whitelists most of the message types available to the Cosmos Hub, allowing any account on a controller chain to interact with the Cosmos Hub as if owning a native account on the chain itself.
 query message types that are allowed on a host chain:
 ```
 gaiad q interchain-accounts host params
@@ -17,10 +17,10 @@ gaiad q interchain-accounts host params
 In the following tutorial, we will demonstrate how to use Interchain Accounts through the [icamauth module](../../../x/icamauth).
 
 ## Setup preparation
-We will run two Cosmos-SDK chains (controller chain: `test-0` and host chain: `test-1`), and a relayer to connect these two chains. We will create an account on chain `test-0` and call it `alice`, and register an Interchain Account (that we'll call `alice_ica`) for `alice` on chain `test-1`. We will create a normal account `bob` on chain `test-1` as well. 
+We will run two Cosmos-SDK chains (controller chain: `test-0` and host chain: `test-1`), and a relayer to connect these two chains. We will create an account on chain `test-0` and call it `alice`, and register an Interchain Account (that we'll call `alice_ica`)  on chain `test-1` for `alice` on chain `test-0`. We will also create a normal account `bob` on chain `test-1`.
 
 Through these 3 account, we can test if:
-- `alice` can control its `alice_ica` to transfer tokens to account `bob` on chain `test-1`.
+- `alice` on chain `test-0` can control its `alice_ica` to transfer tokens to account `bob` on chain `test-1`.
 - `alice` can control its `alice_ica` to transfer `alice_ica`'s token back to `alice` using a regular IBC token transfer.
 
 ### Prepare to run two chains
@@ -28,8 +28,8 @@ We've simplified the setup process via several shell scripts. If you'd like to l
 
 Set up the two chains, create the keys for `alice` and `bob`, and start running both chains:
 ```shell
-sh init_test_0.sh
-sh init_test_1.sh
+sh init_chain_controller.sh
+sh init_chain_host.sh
 ```
 
 ### Setting up a Hermes relayer
@@ -50,13 +50,13 @@ cargo build --release --no-default-features --bin hermes
 cp  ./target/release/hermes $HOME/.cargo/bin
 ```
 
-#### Create the IBC connection and start Hermes
+#### Create the IBC connection
 ```shell
 source hermes_setup.sh
 ```
 
-## Trying out the Interchain Accounts functionality
-Before you can get started you'll need to register an Interchain Account on `test-1` by sending an `icamsgauth register` command signed by `alice` on the `test-0` chain:
+## Testing the Interchain Accounts functionality
+First of all, you need to register an Interchain Account on `test-1` for `alice` by sending an `icamauth register` command signed by `alice` on the `test-0` chain:
 
 Open a new terminal and add the following variables.
 ```shell
@@ -105,7 +105,7 @@ Q5: Let `alice_ica` send `ibc/stake` to `alice` (hint: via ICA & IBC-Transfer)
 
 ### Solutions
 #### Q1: `alice_ica` sends tokens to `bob` 
-Both `alice_ica` and `bob` are on chain `test-1`, however, we need `alice` from `test-0` to sign the transaction, because `alice` is the only account with access to `alice_ica` over ICA.
+Both `alice_ica` and `bob` are on chain `test-1`, however, we need `alice` from `test-0` to sign the transaction, because `alice` is the only account with access to `alice_ica` over `icamuath`.
 
 Step 1: generate the transaction json: 
 ```shell
@@ -147,14 +147,6 @@ Create a new IBC channel using Hermes:
 ```shell
  hermes -c rly-config.toml create channel --a-chain test-0 --a-connection connection-0 --port-a transfer --port-b transfer
 ```
-
-[//]: # (Kill the Hermes process and restart:)
-
-[//]: # (```shell)
-
-[//]: # (hermes -c hermes/rly-config.toml start)
-
-[//]: # (```)
 
 Initiate the IBC token transfer:
 ```shell
@@ -220,7 +212,6 @@ gaiad tx icamauth submit send-raw.json --connection-id connection-0 --from alice
 ```
 
 The long denom we saw will be changed from `ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9` back to `stake` when the token is back to a on chain `test-0`.
-
 
 ## References:
 - [Hermes installation](https://hermes.informal.systems/installation.html)

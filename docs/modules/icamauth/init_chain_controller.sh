@@ -69,6 +69,6 @@ sed -i '' 's/minimum-gas-prices = ""/minimum-gas-prices = "0.025stake"/g' $HOME_
 # Update host chain genesis to allow all msg types
 sed -i '' 's/\"allow_messages\": \[\]/\"allow_messages\": \["*"\]/g' $HOME_0/config/genesis.json
 
- echo "Starting $CHAINID_0..."
- echo "Creating log file at gaia0.log"
-# $BINARY start --home=$HOME_0 --log_level=trace --log_format=json --pruning=nothing > gaia0.log 2>&1 &
+echo "Starting $CHAINID_0..."
+echo "Creating log file at gaia0.log"
+$BINARY start --home=$HOME_0 --log_level=trace --log_format=json --pruning=nothing > gaia0.log 2>&1 &

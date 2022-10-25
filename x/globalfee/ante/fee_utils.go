@@ -1,6 +1,7 @@
 package ante
 
 import (
+	"errors"
 	"math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -13,12 +14,16 @@ import (
 // ParamStoreKeyMinGasPrices type require coins sorted. getGlobalFee will also return sorted coins (might return 0denom if globalMinGasPrice is 0)
 func (mfd FeeDecorator) getGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) sdk.Coins {
 	var globalMinGasPrices sdk.DecCoins
+	var err error
 	if mfd.GlobalMinFee.Has(ctx, types.ParamStoreKeyMinGasPrices) {
 		mfd.GlobalMinFee.Get(ctx, types.ParamStoreKeyMinGasPrices, &globalMinGasPrices)
 	}
 	// global fee is empty set, set global fee to 0uatom
 	if len(globalMinGasPrices) == 0 {
-		globalMinGasPrices = mfd.DefaultZeroGlobalFee(ctx)
+		globalMinGasPrices, err = mfd.DefaultZeroGlobalFee(ctx)
+		if err != nil {
+			panic(err)
+		}
 	}
 	requiredGlobalFees := make(sdk.Coins, len(globalMinGasPrices))
 	// Determine the required fees by multiplying each required minimum gas
@@ -32,13 +37,13 @@ func (mfd FeeDecorator) getGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) sdk.Coins
 	return requiredGlobalFees.Sort()
 }
 
-func (mfd FeeDecorator) DefaultZeroGlobalFee(ctx sdk.Context) []sdk.DecCoin {
+func (mfd FeeDecorator) DefaultZeroGlobalFee(ctx sdk.Context) ([]sdk.DecCoin, error) {
 	bondDenom := mfd.getBondDenom(ctx)
 	if bondDenom == "" {
-		panic("staking bond denom is empty")
+		return []sdk.DecCoin{}, errors.New("empty staking bond denomination")
 	}
 
-	return []sdk.DecCoin{sdk.NewDecCoinFromDec(bondDenom, sdk.NewDec(0))}
+	return []sdk.DecCoin{sdk.NewDecCoinFromDec(bondDenom, sdk.NewDec(0))}, nil
 }
 
 func (mfd FeeDecorator) getBondDenom(ctx sdk.Context) string {

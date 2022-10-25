@@ -26,8 +26,12 @@ func (s *IntegrationTestSuite) TestGetDefaultGlobalFees() {
 	stakingSubspace := s.SetupTestStakingSubspace(bondDenom)
 	// setup antehandler
 	mfd := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), globalfeeSubspace, stakingSubspace)
-	if mfd.DefaultZeroGlobalFee(s.ctx)[0].Denom != bondDenom {
-		s.T().Fatalf("bond denom: %s, default global fee denom: %s", bondDenom, mfd.DefaultZeroGlobalFee(s.ctx)[0].Denom)
+
+	defaultGlobalFees, err := mfd.DefaultZeroGlobalFee(s.ctx)
+	s.Require().NoError(err)
+
+	if defaultGlobalFees[0].Denom != bondDenom {
+		s.T().Fatalf("bond denom: %s, default global fee denom: %s", bondDenom, defaultGlobalFees[0].Denom)
 	}
 }
 

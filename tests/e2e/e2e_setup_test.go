@@ -65,6 +65,7 @@ const (
 	proposal4       = "proposal_4.json"
 	proposalICA     = "proposal_ica.json"
 	icaConnectionID = "connection-0"
+	icaChannelID    = "channel-0"
 
 	// the test globalfee in genesis is the same as minGasPrice
 	// global fee lower/higher than min_gas_price

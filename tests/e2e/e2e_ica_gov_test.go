@@ -12,35 +12,16 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 )
 
-// TestICARegister must run before any other
-func (s *IntegrationTestSuite) TestICA_1_Register() {
-	s.Run("register_ICA", func() {
-		var owner string
-		ownerAddr, err := s.chainA.genesisAccounts[icaOwnerAccountIndex].keyInfo.GetAddress()
-		s.Require().NoError(err)
-		owner = ownerAddr.String()
-		s.registerICA(owner, icaConnectionID)
-
-		time.Sleep(2 * time.Minute)
-
-		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-		s.Require().Eventually(
-			func() bool {
-				icaAddr, err := queryICAaddr(chainAAPIEndpoint, owner, icaConnectionID)
-				s.T().Logf("%s's interchain account on chain %s: %s", owner, s.chainB.id, icaAddr)
-				s.Require().NoError(err)
-				return owner != "" && icaAddr != ""
-			},
-			2*time.Minute,
-			10*time.Second,
-		)
-	})
-}
-
-func (s *IntegrationTestSuite) TestICA_2_BankSend() {
+func (s *IntegrationTestSuite) TestICA_3_Gov() {
 	s.Run("test ica transactions", func() {
-		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
+		var (
+			portID    = "1317/tcp"
+			resourceA = s.valResources[s.chainA.id][0]
+			resourceB = s.valResources[s.chainB.id][0]
+			chainAAPI = fmt.Sprintf("http://%s", resourceA.GetHostPort(portID))
+			chainBAPI = fmt.Sprintf("http://%s", resourceB.GetHostPort(portID))
+		)
+
 		// step 1: get ica addr
 		icaOwnerAddr, err := s.chainA.genesisAccounts[icaOwnerAccountIndex].keyInfo.GetAddress()
 		s.Require().NoError(err)
@@ -49,7 +30,7 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 		var ica string
 		s.Require().Eventually(
 			func() bool {
-				ica, err = queryICAaddr(chainAAPIEndpoint, icaOwner, icaConnectionID)
+				ica, err = queryICAaddr(chainAAPI, icaOwner, icaConnectionID)
 				s.Require().NoError(err)
 
 				return err == nil && ica != ""
@@ -67,7 +48,7 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 
 		s.Require().Eventually(
 			func() bool {
-				afterSenderICAbalance, err := getSpecificBalance(chainBAPIEndpoint, ica, uatomDenom)
+				afterSenderICAbalance, err := getSpecificBalance(chainBAPI, ica, uatomDenom)
 				s.Require().NoError(err)
 				return afterSenderICAbalance.IsEqual(tokenAmount)
 			},
@@ -79,7 +60,7 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 		var beforeICASendReceiverBalance sdk.Coin
 		s.Require().Eventually(
 			func() bool {
-				beforeICASendReceiverBalance, err = getSpecificBalance(chainBAPIEndpoint, receiver, uatomDenom)
+				beforeICASendReceiverBalance, err = getSpecificBalance(chainBAPI, receiver, uatomDenom)
 				s.Require().NoError(err)
 
 				return !beforeICASendReceiverBalance.IsNil()
@@ -110,7 +91,7 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 
 		s.Require().Eventually(
 			func() bool {
-				afterICASendReceiverBalance, err := getSpecificBalance(chainBAPIEndpoint, receiver, uatomDenom)
+				afterICASendReceiverBalance, err := getSpecificBalance(chainBAPI, receiver, uatomDenom)
 				s.Require().NoError(err)
 
 				return afterICASendReceiverBalance.Sub(beforeICASendReceiverBalance).IsEqual(sendamt)
@@ -143,7 +124,7 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 		var balances sdk.Coins
 		s.Require().Eventually(
 			func() bool {
-				balances, err = queryGaiaAllBalances(chainAAPIEndpoint, icaOwner)
+				balances, err = queryGaiaAllBalances(chainAAPI, icaOwner)
 				s.Require().NoError(err)
 				return balances.Len() != 0
 			},

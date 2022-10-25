@@ -86,12 +86,6 @@ func NewAppModule(paramSpace paramstypes.Subspace) *AppModule {
 	return &AppModule{paramSpace: paramSpace}
 }
 
-// InitModule will initialize the globalfee module.
-// It should only be called once and as an alternative to InitGenesis.
-func (a AppModule) InitModule(ctx sdk.Context, globalfeeParams types.Params) {
-	a.paramSpace.SetParamSet(ctx, &globalfeeParams)
-}
-
 func (a AppModule) InitGenesis(ctx sdk.Context, marshaler codec.JSONCodec, message json.RawMessage) []abci.ValidatorUpdate {
 	var genesisState types.GenesisState
 	marshaler.MustUnmarshalJSON(message, &genesisState)

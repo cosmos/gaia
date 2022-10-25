@@ -35,10 +35,10 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "IBC keeper is required for AnteHandler")
 	}
 	if opts.GlobalFeeSubspace.Name() == "" {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "globalfee param store is required for AnteHandler")
+		return nil, sdkerrors.Wrap(sdkerrors.ErrNotFound, "globalfee param store is required for AnteHandler")
 	}
 	if opts.StakingSubspace.Name() == "" {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "staking param store is required for AnteHandler")
+		return nil, sdkerrors.Wrap(sdkerrors.ErrNotFound, "staking param store is required for AnteHandler")
 	}
 
 	sigGasConsumer := opts.SigGasConsumer

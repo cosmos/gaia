@@ -115,7 +115,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 		AddGenesisAccountCmd(gaia.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
 		testnetCmd(gaia.ModuleBasics, banktypes.GenesisBalancesIterator{}),
-		injectConvertBech32Command(debug.Cmd()),
+		addDebugCommands(debug.Cmd()),
 		config.Cmd(),
 	)
 

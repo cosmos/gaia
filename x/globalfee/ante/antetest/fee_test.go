@@ -19,6 +19,18 @@ func TestIntegrationTestSuite(t *testing.T) {
 	suite.Run(t, new(IntegrationTestSuite))
 }
 
+func (s *IntegrationTestSuite) TestGetDefaultGlobalFees() {
+	bondDenom := "uatom"
+	// set globalfees and min gas price
+	globalfeeSubspace := s.SetupTestGlobalFeeStoreAndMinGasPrice([]sdk.DecCoin{}, &globfeetypes.Params{})
+	stakingSubspace := s.SetupTestStakingSubspace(bondDenom)
+	// setup antehandler
+	mfd := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), globalfeeSubspace, stakingSubspace)
+	if mfd.DefaultZeroGlobalFee(s.ctx)[0].Denom != bondDenom {
+		s.T().Fatalf("bond denom: %s, default global fee denom: %s", bondDenom, mfd.DefaultZeroGlobalFee(s.ctx)[0].Denom)
+	}
+}
+
 // test global fees and min_gas_price with bypass msg types.
 // please note even globalfee=0, min_gas_price=0, we do not let fee=0random_denom pass
 // paid fees are already sanitized by removing zero coins(through feeFlag parsing), so use sdk.NewCoins() to create it.
@@ -537,7 +549,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 		s.Run(name, func() {
 			// set globalfees and min gas price
 			globalfeeSubspace := s.SetupTestGlobalFeeStoreAndMinGasPrice(testCase.minGasPrice, testCase.globalFeeParams)
-			stakingSubspace := s.SetupTestStakingSubspace()
+			stakingSubspace := s.SetupTestStakingSubspace("uatom")
 			// setup antehandler
 			mfd := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), globalfeeSubspace, stakingSubspace)
 			antehandler := sdk.ChainAnteDecorators(mfd)

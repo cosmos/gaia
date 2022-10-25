@@ -12,16 +12,264 @@ import (
 	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	grouptypes "github.com/cosmos/cosmos-sdk/x/group"
+	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	icamauth "github.com/cosmos/gaia/v8/x/icamauth/types"
 	"github.com/ory/dockertest/v3/docker"
+
+	icamauth "github.com/cosmos/gaia/v8/x/icamauth/types"
 )
 
-func (s *IntegrationTestSuite) execBankSend(c *chain, valIdx int, from, to, amt, fees string, expectErr bool) {
+const (
+	flagFrom            = "from"
+	flagHome            = "home"
+	flagFees            = "fees"
+	flagGas             = "gas"
+	flagOutput          = "output"
+	flagChainID         = "chain-id"
+	flagSpendLimit      = "spend-limit"
+	flagFeeGranter      = "fee-granter"
+	flagBroadcastMode   = "broadcast-mode"
+	flagKeyringBackend  = "keyring-backend"
+	flagAllowedMessages = "allowed-messages"
+)
+
+type flagOption func(map[string]interface{})
+
+// withKeyValue add a new flag to command
+func withKeyValue(key string, value interface{}) flagOption {
+	return func(o map[string]interface{}) {
+		o[key] = value
+	}
+}
+
+func applyOptions(chainID string, options []flagOption) map[string]interface{} {
+	opts := map[string]interface{}{
+		flagKeyringBackend: "test",
+		flagOutput:         "json",
+		flagGas:            "auto",
+		flagFrom:           "alice",
+		flagBroadcastMode:  "sync",
+		flagChainID:        chainID,
+		flagHome:           gaiaHomePath,
+		flagFees:           fees.String(),
+	}
+	for _, apply := range options {
+		apply(opts)
+	}
+	return opts
+}
+
+func (s *IntegrationTestSuite) execEncode(
+	c *chain,
+	txPath string,
+	opt ...flagOption,
+) string {
+	opts := applyOptions(c.id, opt)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("%s - Executing gaiad encoding with %v", c.id, txPath)
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		"encode",
+		txPath,
+	}
+	for flag, value := range opts {
+		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
+	}
+
+	var encoded string
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, 0, func(stdOut []byte, stdErr []byte) bool {
+		if stdErr != nil {
+			return false
+		}
+		encoded = strings.TrimSuffix(string(stdOut), "\n")
+		return true
+	})
+	s.T().Logf("successfully encode with %v", txPath)
+	return encoded
+}
+
+func (s *IntegrationTestSuite) execDecode(
+	c *chain,
+	txPath string,
+	opt ...flagOption,
+) string {
+	opts := applyOptions(c.id, opt)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("%s - Executing gaiad decoding with %v", c.id, txPath)
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		"decode",
+		txPath,
+	}
+	for flag, value := range opts {
+		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
+	}
+
+	var decoded string
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, 0, func(stdOut []byte, stdErr []byte) bool {
+		if stdErr != nil {
+			return false
+		}
+		decoded = strings.TrimSuffix(string(stdOut), "\n")
+		return true
+	})
+	s.T().Logf("successfully decode %v", txPath)
+	return decoded
+}
+
+func (s *IntegrationTestSuite) execVestingTx(
+	c *chain,
+	method string,
+	args []string,
+	opt ...flagOption,
+) {
+	opts := applyOptions(c.id, opt)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("%s - Executing gaiad %s with %v", c.id, method, args)
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		vestingtypes.ModuleName,
+		method,
+		"-y",
+	}
+	gaiaCommand = append(gaiaCommand, args...)
+
+	for flag, value := range opts {
+		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, 0, s.defaultExecValidation(c, 0))
+	s.T().Logf("successfully %s with %v", method, args)
+}
+
+func (s *IntegrationTestSuite) execCreatePermanentLockedAccount(
+	c *chain,
+	address,
+	amount string,
+	opt ...flagOption,
+) {
+	s.T().Logf("Executing gaiad create a permanent locked vesting account %s", c.id)
+	s.execVestingTx(c, "create-permanent-locked-account", []string{address, amount}, opt...)
+	s.T().Logf("successfully created permanent locked vesting account %s with %s", address, amount)
+}
+
+func (s *IntegrationTestSuite) execCreatePeriodicVestingAccount(
+	c *chain,
+	address,
+	jsonPath string,
+	opt ...flagOption,
+) {
+	s.T().Logf("Executing gaiad create periodic vesting account %s", c.id)
+	s.execVestingTx(c, "create-periodic-vesting-account", []string{address, jsonPath}, opt...)
+	s.T().Logf("successfully created periodic vesting account %s with %s", address, jsonPath)
+}
+
+func (s *IntegrationTestSuite) execUnjail(
+	c *chain,
+	opt ...flagOption,
+) {
+	opts := applyOptions(c.id, opt)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad slashing unjail %s with options: %v", c.id, opt)
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		slashingtypes.ModuleName,
+		"unjail",
+		"-y",
+	}
+
+	for flag, value := range opts {
+		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, 0, s.defaultExecValidation(c, 0))
+	s.T().Logf("successfully unjail with options %v", opt)
+}
+
+func (s *IntegrationTestSuite) execFeeGrant(c *chain, valIdx int, granter, grantee, spendLimit string, opt ...flagOption) {
+	opt = append(opt, withKeyValue(flagFrom, granter))
+	opt = append(opt, withKeyValue(flagSpendLimit, spendLimit))
+	opts := applyOptions(c.id, opt)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("granting %s fee from %s on chain %s", grantee, granter, c.id)
+
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		feegrant.ModuleName,
+		"grant",
+		granter,
+		grantee,
+		"-y",
+	}
+	for flag, value := range opts {
+		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
+}
+
+func (s *IntegrationTestSuite) execFeeGrantRevoke(c *chain, valIdx int, granter, grantee string, opt ...flagOption) {
+	opt = append(opt, withKeyValue(flagFrom, granter))
+	opts := applyOptions(c.id, opt)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("revoking %s fee grant from %s on chain %s", grantee, granter, c.id)
+
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		feegrant.ModuleName,
+		"revoke",
+		granter,
+		grantee,
+		"-y",
+	}
+	for flag, value := range opts {
+		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
+}
+
+func (s *IntegrationTestSuite) execBankSend(
+	c *chain,
+	valIdx int,
+	from,
+	to,
+	amt,
+	fees string,
+	expectErr bool,
+	opt ...flagOption,
+) {
+	// TODO remove the hardcode opt after refactor, all methods should accept custom flags
+	opt = append(opt, withKeyValue(flagFees, fees))
+	opt = append(opt, withKeyValue(flagFrom, from))
+	opts := applyOptions(c.id, opt)
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -35,12 +283,10 @@ func (s *IntegrationTestSuite) execBankSend(c *chain, valIdx int, from, to, amt,
 		from,
 		to,
 		amt,
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, fees),
-		"--keyring-backend=test",
-		"--broadcast-mode=sync",
-		"--output=json",
 		"-y",
+	}
+	for flag, value := range opts {
+		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
 	}
 
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.expectErrExecValidation(c, valIdx, expectErr))
@@ -644,7 +890,7 @@ func (s *IntegrationTestSuite) registerICA(owner, connectionID string) {
 
 	s.executeGaiaTxCommand(ctx, s.chainA, registerICAcmd, 0, s.defaultExecValidation(s.chainA, 0))
 
-	s.T().Logf("%s reigstered an interchain account on chain %s from chain %s", owner, s.chainB.id, s.chainA.id)
+	s.T().Logf("%s registered an interchain account on chain %s from chain %s", owner, s.chainB.id, s.chainA.id)
 }
 
 func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chain, gaiaCommand []string, valIdx int, validation func([]byte, []byte) bool) {
@@ -684,10 +930,13 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 func (s *IntegrationTestSuite) expectErrExecValidation(chain *chain, valIdx int, expectErr bool) func([]byte, []byte) bool {
 	return func(stdOut []byte, stdErr []byte) bool {
 		var txResp sdk.TxResponse
-		s.Require().NoError(cdc.UnmarshalJSON(stdOut, &txResp))
+		gotErr := cdc.UnmarshalJSON(stdOut, &txResp) != nil
+		if gotErr {
+			s.Require().True(expectErr)
+		}
+
 		endpoint := fmt.Sprintf("http://%s", s.valResources[chain.id][valIdx].GetHostPort("1317/tcp"))
 		// wait for the tx to be committed on chain
-		var err error
 		s.Require().Eventuallyf(
 			func() bool {
 				gotErr := queryGaiaTx(endpoint, txResp.TxHash) != nil
@@ -695,8 +944,8 @@ func (s *IntegrationTestSuite) expectErrExecValidation(chain *chain, valIdx int,
 			},
 			time.Minute,
 			5*time.Second,
-			"stdOut: %s, stdErr: %s, err: %v",
-			string(stdOut), string(stdErr), err,
+			"stdOut: %s, stdErr: %s",
+			string(stdOut), string(stdErr),
 		)
 		return true
 	}
@@ -710,15 +959,14 @@ func (s *IntegrationTestSuite) defaultExecValidation(chain *chain, valIdx int) f
 		}
 		if strings.Contains(txResp.String(), "code: 0") || txResp.Code == 0 {
 			endpoint := fmt.Sprintf("http://%s", s.valResources[chain.id][valIdx].GetHostPort("1317/tcp"))
-			var err error
 			s.Require().Eventually(
 				func() bool {
 					return queryGaiaTx(endpoint, txResp.TxHash) == nil
 				},
 				time.Minute,
 				5*time.Second,
-				"stdOut: %s, stdErr: %s, err: %v",
-				string(stdOut), string(stdErr), err,
+				"stdOut: %s, stdErr: %s",
+				string(stdOut), string(stdErr),
 			)
 			return true
 		}

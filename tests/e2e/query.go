@@ -8,11 +8,15 @@ import (
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/cosmos/cosmos-sdk/x/group"
-	staketypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
 	globalfee "github.com/cosmos/gaia/v8/x/globalfee/types"
 	icamauth "github.com/cosmos/gaia/v8/x/icamauth/types"
 )
@@ -108,8 +112,8 @@ func queryICAaddr(endpoint, owner, connectionID string) (string, error) {
 	return icaAddrResp.GetInterchainAccountAddress(), nil
 }
 
-func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string) (staketypes.QueryDelegationResponse, error) {
-	var res staketypes.QueryDelegationResponse
+func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string) (stakingtypes.QueryDelegationResponse, error) {
+	var res stakingtypes.QueryDelegationResponse
 
 	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators/%s/delegations/%s", endpoint, validatorAddr, delegatorAddr))
 	if err != nil {
@@ -240,4 +244,126 @@ func queryGovProposal(endpoint string, proposalID int) (govv1beta1.QueryProposal
 	}
 
 	return govProposalResp, nil
+}
+
+func queryAccount(endpoint, address string) (acc authtypes.AccountI, err error) {
+	var res authtypes.QueryAccountResponse
+	resp, err := http.Get(fmt.Sprintf("%s/cosmos/auth/v1beta1/accounts/%s", endpoint, address))
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	bz, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	if err := cdc.UnmarshalJSON(bz, &res); err != nil {
+		return nil, err
+	}
+	return acc, cdc.UnpackAny(res.Account, &acc)
+}
+
+func queryDelayedVestingAccount(endpoint, address string) (authvesting.DelayedVestingAccount, error) {
+	baseAcc, err := queryAccount(endpoint, address)
+	if err != nil {
+		return authvesting.DelayedVestingAccount{}, err
+	}
+	acc, ok := baseAcc.(*authvesting.DelayedVestingAccount)
+	if !ok {
+		return authvesting.DelayedVestingAccount{},
+			fmt.Errorf("cannot cast %v to DelayedVestingAccount", baseAcc)
+	}
+	return *acc, nil
+}
+
+func queryContinuousVestingAccount(endpoint, address string) (authvesting.ContinuousVestingAccount, error) {
+	baseAcc, err := queryAccount(endpoint, address)
+	if err != nil {
+		return authvesting.ContinuousVestingAccount{}, err
+	}
+	acc, ok := baseAcc.(*authvesting.ContinuousVestingAccount)
+	if !ok {
+		return authvesting.ContinuousVestingAccount{},
+			fmt.Errorf("cannot cast %v to ContinuousVestingAccount", baseAcc)
+	}
+	return *acc, nil
+}
+func queryPermanentLockedAccount(endpoint, address string) (authvesting.PermanentLockedAccount, error) {
+	baseAcc, err := queryAccount(endpoint, address)
+	if err != nil {
+		return authvesting.PermanentLockedAccount{}, err
+	}
+	acc, ok := baseAcc.(*authvesting.PermanentLockedAccount)
+	if !ok {
+		return authvesting.PermanentLockedAccount{},
+			fmt.Errorf("cannot cast %v to PermanentLockedAccount", baseAcc)
+	}
+	return *acc, nil
+}
+
+func queryPeriodicVestingAccount(endpoint, address string) (authvesting.PeriodicVestingAccount, error) {
+	baseAcc, err := queryAccount(endpoint, address)
+	if err != nil {
+		return authvesting.PeriodicVestingAccount{}, err
+	}
+	acc, ok := baseAcc.(*authvesting.PeriodicVestingAccount)
+	if !ok {
+		return authvesting.PeriodicVestingAccount{},
+			fmt.Errorf("cannot cast %v to PeriodicVestingAccount", baseAcc)
+	}
+	return *acc, nil
+}
+
+func queryValidator(endpoint, address string) (stakingtypes.Validator, error) {
+	var res stakingtypes.QueryValidatorResponse
+
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators/%s", endpoint, address))
+	if err != nil {
+		return stakingtypes.Validator{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return stakingtypes.Validator{}, err
+	}
+	return res.Validator, nil
+}
+
+func queryValidators(endpoint string) (stakingtypes.Validators, error) {
+	var res stakingtypes.QueryValidatorsResponse
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators", endpoint))
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return nil, err
+	}
+	return res.Validators, nil
+}
+
+func queryEvidence(endpoint, hash string) (evidencetypes.QueryEvidenceResponse, error) {
+	var res evidencetypes.QueryEvidenceResponse
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/evidence/v1beta1/evidence/%s", endpoint, hash))
+	if err != nil {
+		return res, err
+	}
+
+	if err = cdc.UnmarshalJSON(body, &res); err != nil {
+		return res, err
+	}
+	return res, nil
+}
+
+func queryAllEvidence(endpoint string) (evidencetypes.QueryAllEvidenceResponse, error) {
+	var res evidencetypes.QueryAllEvidenceResponse
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/evidence/v1beta1/evidence", endpoint))
+	if err != nil {
+		return res, err
+	}
+
+	if err = cdc.UnmarshalJSON(body, &res); err != nil {
+		return res, err
+	}
+	return res, nil
 }

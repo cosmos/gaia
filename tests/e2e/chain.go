@@ -4,15 +4,16 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
-	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
-	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	tmrand "github.com/tendermint/tendermint/libs/rand"
+
 	gaia "github.com/cosmos/gaia/v8/app"
 	"github.com/cosmos/gaia/v8/app/params"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
 )
 
 const (
@@ -22,23 +23,17 @@ const (
 
 var (
 	encodingConfig params.EncodingConfig
-	cdc            codec.Codec //nolint:unused // this is called during e2e tests
+	cdc            codec.Codec     //nolint:unused // this is called during e2e tests
+	txConfig       client.TxConfig //nolint:unused // this is called during e2e tests
 )
 
 func init() {
 	encodingConfig = gaia.MakeTestEncodingConfig()
-
-	encodingConfig.InterfaceRegistry.RegisterImplementations(
-		(*sdk.Msg)(nil),
-		&stakingtypes.MsgCreateValidator{},
-	)
-	encodingConfig.InterfaceRegistry.RegisterImplementations(
-		(*cryptotypes.PubKey)(nil),
-		&secp256k1.PubKey{},
-		&ed25519.PubKey{},
-	)
-
+	authvesting.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	stakingtypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	evidencetypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	cdc = encodingConfig.Codec
+	txConfig = encodingConfig.TxConfig
 }
 
 // this is called only by test files
@@ -46,8 +41,10 @@ type chain struct {
 	dataDir    string
 	id         string
 	validators []*validator
+	accounts   []*account
 	// initial accounts in genesis
-	genesisAccounts []*account
+	genesisAccounts        []*account
+	genesisVestingAccounts map[string]sdk.AccAddress
 }
 
 func newChain() (*chain, error) {

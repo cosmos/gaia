@@ -18,7 +18,7 @@ func CreateUpgradeHandler(
 	keepers *keepers.AppKeepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-			// Add atom name and symbol into the bank keeper
+		// Add atom name and symbol into the bank keeper
 		atomMetaData, found := keepers.BankKeeper.GetDenomMetaData(ctx, "uatom")
 		if !found {
 			return nil, errors.New("atom denom not found")

@@ -8,7 +8,6 @@ import (
 )
 
 func (s *IntegrationTestSuite) TestEvidence() {
-	s.T().Skip()
 	s.Run("test evidence queries", func() {
 		var (
 			valIdx   = 0

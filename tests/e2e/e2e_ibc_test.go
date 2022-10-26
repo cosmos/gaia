@@ -233,7 +233,6 @@ func (s *IntegrationTestSuite) createChannel() {
 }
 
 func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
-	s.T().Skip()
 	time.Sleep(30 * time.Second)
 	s.Run("send_uatom_to_chainB", func() {
 		// require the recipient account receives the IBC tokens (IBC packets ACKd)
@@ -481,7 +480,6 @@ func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
 }
 
 func (s *IntegrationTestSuite) TestBankTokenTransfer() {
-	s.T().Skip()
 	s.Run("send_photon_between_accounts", func() {
 		var err error
 		senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()

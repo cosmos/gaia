@@ -12,7 +12,6 @@ const (
 )
 
 func (s *IntegrationTestSuite) TestEncode() {
-	s.T().Skip()
 	chain := s.chainA
 	_, encoded, err := buildRawTx()
 	s.Require().NoError(err)
@@ -23,7 +22,6 @@ func (s *IntegrationTestSuite) TestEncode() {
 }
 
 func (s *IntegrationTestSuite) TestDecode() {
-	s.T().Skip()
 	chain := s.chainA
 	rawTx, encoded, err := buildRawTx()
 	s.Require().NoError(err)

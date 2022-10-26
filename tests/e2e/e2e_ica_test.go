@@ -15,10 +15,9 @@ import (
 // TestICARegister must run before any other
 func (s *IntegrationTestSuite) TestICA_1_Register() {
 	s.Run("register_ICA", func() {
-		var owner string
 		ownerAddr, err := s.chainA.genesisAccounts[icaOwnerAccountIndex].keyInfo.GetAddress()
 		s.Require().NoError(err)
-		owner = ownerAddr.String()
+		owner := ownerAddr.String()
 		s.registerICA(owner, icaConnectionID)
 
 		time.Sleep(2 * time.Minute)
@@ -41,6 +40,7 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 	s.Run("test ica transactions", func() {
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
+
 		// step 1: get ica addr
 		icaOwnerAddr, err := s.chainA.genesisAccounts[icaOwnerAccountIndex].keyInfo.GetAddress()
 		s.Require().NoError(err)

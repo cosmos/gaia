@@ -182,6 +182,33 @@ func (s *IntegrationTestSuite) fundCommunityPool(chainAAPIEndpoint, sender strin
 	})
 }
 
+func (s *IntegrationTestSuite) TestGovCreateICA() {
+	s.Run("test create ica from gov module", func() {
+		var (
+			portID    = "1317/tcp"
+			resourceA = s.valResources[s.chainA.id][0]
+			chainAAPI = fmt.Sprintf("http://%s", resourceA.GetHostPort(portID))
+		)
+		icaOwnerAcc, err := s.chainA.genesisAccounts[icaGovOwnerAccountIndex].keyInfo.GetAddress()
+		s.Require().NoError(err)
+		icaOwnerAddr := icaOwnerAcc.String()
+
+		s.submitNewGovProposal(chainAAPI, icaOwnerAddr, proposalCounter, configFile(proposalICA))
+		s.voteGovProposal(chainAAPI, icaOwnerAddr, fees.String(), proposalCounter, "yes", false)
+
+		s.Require().Eventually(
+			func() bool {
+				icaAddr, err := queryICAaddr(chainAAPI, icaOwnerAddr, icaConnectionID)
+				s.T().Logf("%s's interchain account on chain %s: %s", icaOwnerAddr, s.chainB.id, icaAddr)
+				s.Require().NoError(err)
+				return icaOwnerAddr != "" && icaAddr != ""
+			},
+			2*time.Minute,
+			10*time.Second,
+		)
+	})
+}
+
 func (s *IntegrationTestSuite) verifyChainHaltedAtUpgradeHeight(c *chain, valIdx, upgradeHeight int) {
 	s.Require().Eventually(
 		func() bool {

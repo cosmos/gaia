@@ -75,9 +75,14 @@ const (
 	gas                          = 200000
 	govProposalBlockBuffer       = 35
 	relayerAccountIndex          = 0
-	icaOwnerAccountIndex         = 1
 	numberOfEvidences            = 10
 	slashingShares         int64 = 10000
+)
+
+const (
+	// genesis accounts enum
+	icaOwnerAccountIndex = iota + 1
+	icaGovOwnerAccountIndex
 )
 
 var (
@@ -650,14 +655,10 @@ func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
 	commSpendBody, err := json.MarshalIndent(proposalCommSpend, "", " ")
 	s.Require().NoError(err)
 
-	//{
-	//  "@type": "/gaia.icamauth.v1beta1.MsgRegisterAccount",
-	//  "owner": "cosmos1yyrrkw53pqcddfxxr0z7umrv5x8gh24fxsedqj",
-	//  "connection_id": "connection-0",
-	//  "version": ""
-	//}
+	icaOwnerAddr, err := s.chainA.genesisAccounts[icaGovOwnerAccountIndex].keyInfo.GetAddress()
+	s.Require().NoError(err)
 	icaProposal := &icatypes.MsgRegisterAccount{
-		Owner:        "",
+		Owner:        icaOwnerAddr.String(),
 		ConnectionId: icaConnectionID,
 	}
 	icaProposalBody, err := json.MarshalIndent(icaProposal, "", " ")

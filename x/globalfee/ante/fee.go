@@ -72,7 +72,10 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 
 	if ctx.IsCheckTx() && !simulate && !allowedToBypassMinFee {
 
-		requiredGlobalFees := mfd.getGlobalFee(ctx, feeTx)
+		requiredGlobalFees, err := mfd.getGlobalFee(ctx, feeTx)
+		if err != nil {
+			panic(err)
+		}
 		allFees = CombinedFeeRequirement(requiredGlobalFees, requiredFees)
 
 		// this is to ban 1stake passing if the globalfee is 1photon or 0photon
@@ -88,7 +91,10 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 
 	// when the tx is bypass msg type, still need to check the denom is not some unknown denom
 	if ctx.IsCheckTx() && !simulate && allowedToBypassMinFee {
-		requiredGlobalFees := mfd.getGlobalFee(ctx, feeTx)
+		requiredGlobalFees, err := mfd.getGlobalFee(ctx, feeTx)
+		if err != nil {
+			panic(err)
+		}
 		// bypass tx without pay fee
 		if len(feeCoins) == 0 {
 			return next(ctx, tx, simulate)
@@ -103,7 +109,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 }
 
 // ParamStoreKeyMinGasPrices type require coins sorted. getGlobalFee will also return sorted coins (might return 0denom if globalMinGasPrice is 0)
-func (mfd FeeDecorator) getGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) sdk.Coins {
+func (mfd FeeDecorator) getGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) (sdk.Coins, error) {
 	var (
 		globalMinGasPrices sdk.DecCoins
 		err                error
@@ -115,9 +121,6 @@ func (mfd FeeDecorator) getGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) sdk.Coins
 	// global fee is empty set, set global fee to 0uatom
 	if len(globalMinGasPrices) == 0 {
 		globalMinGasPrices, err = mfd.DefaultZeroGlobalFee(ctx)
-		if err != nil {
-			panic(err)
-		}
 	}
 	requiredGlobalFees := make(sdk.Coins, len(globalMinGasPrices))
 	// Determine the required fees by multiplying each required minimum gas
@@ -128,7 +131,7 @@ func (mfd FeeDecorator) getGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) sdk.Coins
 		requiredGlobalFees[i] = sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt())
 	}
 
-	return requiredGlobalFees.Sort()
+	return requiredGlobalFees.Sort(), err
 }
 
 func (mfd FeeDecorator) DefaultZeroGlobalFee(ctx sdk.Context) ([]sdk.DecCoin, error) {

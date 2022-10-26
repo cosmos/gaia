@@ -307,12 +307,9 @@ Steps:
 func (s *IntegrationTestSuite) TestMultihopIBCTokenTransfer() {
 	time.Sleep(30 * time.Second)
 
-	// var ibcStakeDenom string
-
 	s.Run("send_successful_multihop_uatom_to_chainA_from_chainA", func() {
 		// require the recipient account receives the IBC tokens (IBC packets ACKd)
 		var (
-			// balances sdk.Coins
 			err error
 		)
 
@@ -331,7 +328,8 @@ func (s *IntegrationTestSuite) TestMultihopIBCTokenTransfer() {
 		forwardPort := "transfer"
 		forwardChannel := "channel-0"
 
-		// // {intermediate_refund_address}|{foward_port}/{forward_channel}:{final_destination_address}
+		// Address should be formatted like:
+		// {intermediate_refund_address}|{foward_port}/{forward_channel}:{final_destination_address}
 		compiledRecipient := middlehop + "|" + forwardPort + "/" + forwardChannel + ":" + recipient
 
 		tokenAmt := 3300000000
@@ -393,12 +391,9 @@ Steps:
 func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
 	time.Sleep(30 * time.Second)
 
-	// var ibcStakeDenom string
-
 	s.Run("send_failed_multihop_uatom_to_chainA_from_chainA", func() {
 		// require the recipient account receives the IBC tokens (IBC packets ACKd)
 		var (
-			// balances sdk.Coins
 			err error
 		)
 
@@ -417,7 +412,8 @@ func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
 		forwardPort := "transfer"
 		forwardChannel := "channel-0"
 
-		// // {intermediate_refund_address}|{foward_port}/{forward_channel}:{final_destination_address}
+		// Address should be formatted like:
+		// {intermediate_refund_address}|{foward_port}/{forward_channel}:{final_destination_address}
 		compiledRecipient := middlehop + "|" + forwardPort + "/" + forwardChannel + ":" + recipient
 
 		tokenAmt := 3300000000
@@ -434,7 +430,6 @@ func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
 			func() bool {
 				beforeSenderUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, sender, "uatom")
 				s.Require().NoError(err)
-				// fmt.Println("beforeSenderUAtomBalance", beforeSenderUAtomBalance)
 
 				beforeMiddleIBCBalance, err = getSpecificBalance(chainBAPIEndpoint, middlehop, "ibc/")
 				s.Require().True(beforeMiddleIBCBalance.IsNil())

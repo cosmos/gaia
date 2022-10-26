@@ -56,8 +56,8 @@ func (s *IntegrationTestSuite) SetupTestGlobalFeeStoreAndMinGasPrice(minGasPrice
 }
 
 // SetupTestStakingSubspace sets uatom as bond denom for the fee tests.
-func (s *IntegrationTestSuite) SetupTestStakingSubspace(bondDenom string) types.Subspace {
-	s.app.GetSubspace(stakingtypes.ModuleName).Set(s.ctx, stakingtypes.KeyBondDenom, bondDenom)
+func (s *IntegrationTestSuite) SetupTestStakingSubspace(params stakingtypes.Params) types.Subspace {
+	s.app.GetSubspace(stakingtypes.ModuleName).SetParamSet(s.ctx, &params)
 	return s.app.GetSubspace(stakingtypes.ModuleName)
 }
 

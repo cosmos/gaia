@@ -6,6 +6,7 @@ import (
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
 	"github.com/stretchr/testify/suite"
@@ -20,10 +21,15 @@ func TestIntegrationTestSuite(t *testing.T) {
 }
 
 func (s *IntegrationTestSuite) TestGetDefaultGlobalFees() {
-	bondDenom := "uatom"
 	// set globalfees and min gas price
 	globalfeeSubspace := s.SetupTestGlobalFeeStoreAndMinGasPrice([]sdk.DecCoin{}, &globfeetypes.Params{})
-	stakingSubspace := s.SetupTestStakingSubspace(bondDenom)
+
+	// set staking params
+	stakingParam := stakingtypes.DefaultParams()
+	bondDenom := "uatom"
+	stakingParam.BondDenom = bondDenom
+	stakingSubspace := s.SetupTestStakingSubspace(stakingParam)
+
 	// setup antehandler
 	mfd := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), globalfeeSubspace, stakingSubspace)
 
@@ -553,7 +559,9 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 		s.Run(name, func() {
 			// set globalfees and min gas price
 			globalfeeSubspace := s.SetupTestGlobalFeeStoreAndMinGasPrice(testCase.minGasPrice, testCase.globalFeeParams)
-			stakingSubspace := s.SetupTestStakingSubspace("uatom")
+			stakingParam := stakingtypes.DefaultParams()
+			stakingParam.BondDenom = "uatom"
+			stakingSubspace := s.SetupTestStakingSubspace(stakingParam)
 			// setup antehandler
 			mfd := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), globalfeeSubspace, stakingSubspace)
 			antehandler := sdk.ChainAnteDecorators(mfd)

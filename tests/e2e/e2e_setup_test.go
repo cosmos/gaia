@@ -97,10 +97,6 @@ var (
 	proposalCounter            = 0
 	govSendMsgRecipientAddress = Address()
 	sendGovAmount              = sdk.NewInt64Coin(uatomDenom, 10)
-	proposalSendMsg            = &govtypes.MsgSubmitProposal{
-		InitialDeposit: sdk.Coins{depositAmount},
-		Metadata:       b64.StdEncoding.EncodeToString([]byte("Testing 1, 2, 3!")),
-	}
 )
 
 type IntegrationTestSuite struct {
@@ -632,19 +628,6 @@ func noRestart(config *docker.HostConfig) {
 }
 
 func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
-	bankSendMsg := &banktypes.MsgSend{
-		FromAddress: govModuleAddress,
-		ToAddress:   govSendMsgRecipientAddress,
-		Amount:      []sdk.Coin{sendGovAmount},
-	}
-
-	msgs := []sdk.Msg{bankSendMsg}
-	protoMsgs, err := txtypes.SetMsgs(msgs)
-	s.Require().NoError(err)
-	proposalSendMsg.Messages = protoMsgs
-	sendMsgBody, err := cdc.MarshalJSON(proposalSendMsg)
-	s.Require().NoError(err)
-
 	proposalCommSpend := &distrtypes.CommunityPoolSpendProposalWithDeposit{
 		Title:       "Community Pool Spend",
 		Description: "Fund Gov !",
@@ -655,23 +638,18 @@ func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
 	commSpendBody, err := json.MarshalIndent(proposalCommSpend, "", " ")
 	s.Require().NoError(err)
 
-	icaOwnerAddr, err := s.chainA.genesisAccounts[icaGovOwnerAccountIndex].keyInfo.GetAddress()
-	s.Require().NoError(err)
-	icaProposal := &icatypes.MsgRegisterAccount{
-		Owner:        icaOwnerAddr.String(),
-		ConnectionId: icaConnectionID,
-	}
-	icaProposalBody, err := json.MarshalIndent(icaProposal, "", " ")
+	proposalBankSend, err := createGovProposalJSON(&banktypes.MsgSend{
+		FromAddress: govModuleAddress,
+		ToAddress:   govSendMsgRecipientAddress,
+		Amount:      []sdk.Coin{sendGovAmount},
+	})
 	s.Require().NoError(err)
 
 	for _, val := range c.validators {
 		err = writeFile(filepath.Join(val.configDir(), "config", proposal1), commSpendBody)
 		s.Require().NoError(err)
 
-		err = writeFile(filepath.Join(val.configDir(), "config", proposal2), sendMsgBody)
-		s.Require().NoError(err)
-
-		err = writeFile(filepath.Join(val.configDir(), "config", proposalICA), icaProposalBody)
+		err = writeFile(filepath.Join(val.configDir(), "config", proposal2), proposalBankSend)
 		s.Require().NoError(err)
 	}
 }
@@ -682,34 +660,36 @@ func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height 
 		Height: int64(height),
 		Info:   "binary-1",
 	}
-
-	upgradeProp := &upgradetypes.MsgSoftwareUpgrade{
+	proposalUpgrade, err := createGovProposalJSON(&upgradetypes.MsgSoftwareUpgrade{
 		Authority: govModuleAddress,
 		Plan:      *upgradePlan,
-	}
-
-	msgs := []sdk.Msg{upgradeProp}
-	protoMsgs, err := txtypes.SetMsgs(msgs)
-	s.Require().NoError(err)
-	proposalSendMsg.Messages = protoMsgs
-	upgradeProposalBody, err := cdc.MarshalJSON(proposalSendMsg)
+	})
 	s.Require().NoError(err)
 
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposal3), upgradeProposalBody)
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposal3), proposalUpgrade)
 	s.Require().NoError(err)
 }
 
 func (s *IntegrationTestSuite) writeGovCancelUpgradeSoftwareProposal(c *chain) {
-	cancelUpgradeProp := &upgradetypes.MsgCancelUpgrade{
+	proposalCancelUpgrade, err := createGovProposalJSON(&upgradetypes.MsgCancelUpgrade{
 		Authority: govModuleAddress,
-	}
-	protoMsgs, err := txtypes.SetMsgs([]sdk.Msg{cancelUpgradeProp})
-	s.Require().NoError(err)
-	proposalSendMsg.Messages = protoMsgs
-	cancelUpgradeProposalBody, err := cdc.MarshalJSON(proposalSendMsg)
+	})
 	s.Require().NoError(err)
 
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposal4), cancelUpgradeProposalBody)
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposal4), proposalCancelUpgrade)
+	s.Require().NoError(err)
+}
+
+func (s *IntegrationTestSuite) writeGovICAProposal(c *chain) {
+	icaOwnerAddr, err := s.chainA.genesisAccounts[icaGovOwnerAccountIndex].keyInfo.GetAddress()
+	s.Require().NoError(err)
+	proposalICAAcc, err := createGovProposalJSON(&icatypes.MsgRegisterAccount{
+		Owner:        icaOwnerAddr.String(),
+		ConnectionId: icaConnectionID,
+	})
+	s.Require().NoError(err)
+
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalICA), proposalICAAcc)
 	s.Require().NoError(err)
 }
 
@@ -792,4 +772,17 @@ func (s *IntegrationTestSuite) writeICAtx(cmd []string, path string) {
 
 func configFile(filename string) string {
 	return filepath.Join(gaiaConfigPath, filename)
+}
+
+func createGovProposalJSON(msgs ...sdk.Msg) ([]byte, error) {
+	protoMsgs, err := txtypes.SetMsgs(msgs)
+	if err != nil {
+		return nil, err
+	}
+	proposal := &govtypes.MsgSubmitProposal{
+		InitialDeposit: sdk.Coins{depositAmount},
+		Metadata:       b64.StdEncoding.EncodeToString([]byte("Testing 1, 2, 3!")),
+		Messages:       protoMsgs,
+	}
+	return cdc.MarshalJSON(proposal)
 }

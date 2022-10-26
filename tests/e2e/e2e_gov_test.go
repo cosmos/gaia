@@ -150,6 +150,42 @@ func (s *IntegrationTestSuite) GovCancelSoftwareUpgrade() {
 }
 
 /*
+GovCreateICA tests the create a ICA account from a government proposal.
+Test Benchmarks:
+1. Create the ICA proposal
+2. Approve proposal
+3. Check if ICA account exist
+*/
+func (s *IntegrationTestSuite) GovCreateICA() {
+	s.Run("test create ica from gov module", func() {
+		var (
+			portID    = "1317/tcp"
+			chain     = s.chainA
+			resourceA = s.valResources[chain.id][0]
+			chainAAPI = fmt.Sprintf("http://%s", resourceA.GetHostPort(portID))
+		)
+		s.writeGovICAProposal(chain)
+		icaOwnerAcc, err := chain.genesisAccounts[icaGovOwnerAccountIndex].keyInfo.GetAddress()
+		s.Require().NoError(err)
+		icaOwnerAddr := icaOwnerAcc.String()
+
+		s.submitNewGovProposal(chainAAPI, icaOwnerAddr, proposalCounter, configFile(proposalICA))
+		s.voteGovProposal(chainAAPI, icaOwnerAddr, fees.String(), proposalCounter, "yes", false)
+
+		s.Require().Eventually(
+			func() bool {
+				icaAddr, err := queryICAaddr(chainAAPI, icaOwnerAddr, icaConnectionID)
+				s.T().Logf("%s's interchain account on chain %s: %s", icaOwnerAddr, s.chainB.id, icaAddr)
+				s.Require().NoError(err)
+				return icaOwnerAddr != "" && icaAddr != ""
+			},
+			2*time.Minute,
+			10*time.Second,
+		)
+	})
+}
+
+/*
 fundCommunityPool tests the funding of the community pool on behalf of the distribution module.
 Test Benchmarks:
 1. Validation that balance of the distribution module account before funding
@@ -178,33 +214,6 @@ func (s *IntegrationTestSuite) fundCommunityPool(chainAAPIEndpoint, sender strin
 			},
 			15*time.Second,
 			5*time.Second,
-		)
-	})
-}
-
-func (s *IntegrationTestSuite) TestGovCreateICA() {
-	s.Run("test create ica from gov module", func() {
-		var (
-			portID    = "1317/tcp"
-			resourceA = s.valResources[s.chainA.id][0]
-			chainAAPI = fmt.Sprintf("http://%s", resourceA.GetHostPort(portID))
-		)
-		icaOwnerAcc, err := s.chainA.genesisAccounts[icaGovOwnerAccountIndex].keyInfo.GetAddress()
-		s.Require().NoError(err)
-		icaOwnerAddr := icaOwnerAcc.String()
-
-		s.submitNewGovProposal(chainAAPI, icaOwnerAddr, proposalCounter, configFile(proposalICA))
-		s.voteGovProposal(chainAAPI, icaOwnerAddr, fees.String(), proposalCounter, "yes", false)
-
-		s.Require().Eventually(
-			func() bool {
-				icaAddr, err := queryICAaddr(chainAAPI, icaOwnerAddr, icaConnectionID)
-				s.T().Logf("%s's interchain account on chain %s: %s", icaOwnerAddr, s.chainB.id, icaAddr)
-				s.Require().NoError(err)
-				return icaOwnerAddr != "" && icaAddr != ""
-			},
-			2*time.Minute,
-			10*time.Second,
 		)
 	})
 }

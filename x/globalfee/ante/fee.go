@@ -104,8 +104,11 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 
 // ParamStoreKeyMinGasPrices type require coins sorted. getGlobalFee will also return sorted coins (might return 0denom if globalMinGasPrice is 0)
 func (mfd FeeDecorator) getGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) sdk.Coins {
-	var globalMinGasPrices sdk.DecCoins
-	var err error
+	var (
+		globalMinGasPrices sdk.DecCoins
+		err                error
+	)
+
 	if mfd.GlobalMinFee.Has(ctx, types.ParamStoreKeyMinGasPrices) {
 		mfd.GlobalMinFee.Get(ctx, types.ParamStoreKeyMinGasPrices, &globalMinGasPrices)
 	}
@@ -131,7 +134,7 @@ func (mfd FeeDecorator) getGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) sdk.Coins
 func (mfd FeeDecorator) DefaultZeroGlobalFee(ctx sdk.Context) ([]sdk.DecCoin, error) {
 	bondDenom := mfd.getBondDenom(ctx)
 	if bondDenom == "" {
-		return []sdk.DecCoin{}, errors.New("empty staking bond denomination")
+		return nil, errors.New("empty staking bond denomination")
 	}
 
 	return []sdk.DecCoin{sdk.NewDecCoinFromDec(bondDenom, sdk.NewDec(0))}, nil

@@ -35,6 +35,7 @@ func (s *IntegrationTestSuite) TestGetDefaultGlobalFees() {
 
 	defaultGlobalFees, err := mfd.DefaultZeroGlobalFee(s.ctx)
 	s.Require().NoError(err)
+	s.Require().Greater(len(defaultGlobalFees), 0)
 
 	if defaultGlobalFees[0].Denom != bondDenom {
 		s.T().Fatalf("bond denom: %s, default global fee denom: %s", bondDenom, defaultGlobalFees[0].Denom)

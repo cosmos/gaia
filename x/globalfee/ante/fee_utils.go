@@ -1,59 +1,11 @@
 package ante
 
 import (
-	"errors"
 	"math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	tmstrings "github.com/tendermint/tendermint/libs/strings"
-
-	"github.com/cosmos/gaia/v8/x/globalfee/types"
 )
-
-// ParamStoreKeyMinGasPrices type require coins sorted. getGlobalFee will also return sorted coins (might return 0denom if globalMinGasPrice is 0)
-func (mfd FeeDecorator) getGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) sdk.Coins {
-	var globalMinGasPrices sdk.DecCoins
-	var err error
-	if mfd.GlobalMinFee.Has(ctx, types.ParamStoreKeyMinGasPrices) {
-		mfd.GlobalMinFee.Get(ctx, types.ParamStoreKeyMinGasPrices, &globalMinGasPrices)
-	}
-	// global fee is empty set, set global fee to 0uatom
-	if len(globalMinGasPrices) == 0 {
-		globalMinGasPrices, err = mfd.DefaultZeroGlobalFee(ctx)
-		if err != nil {
-			panic(err)
-		}
-	}
-	requiredGlobalFees := make(sdk.Coins, len(globalMinGasPrices))
-	// Determine the required fees by multiplying each required minimum gas
-	// price by the gas limit, where fee = ceil(minGasPrice * gasLimit).
-	glDec := sdk.NewDec(int64(feeTx.GetGas()))
-	for i, gp := range globalMinGasPrices {
-		fee := gp.Amount.Mul(glDec)
-		requiredGlobalFees[i] = sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt())
-	}
-
-	return requiredGlobalFees.Sort()
-}
-
-func (mfd FeeDecorator) DefaultZeroGlobalFee(ctx sdk.Context) ([]sdk.DecCoin, error) {
-	bondDenom := mfd.getBondDenom(ctx)
-	if bondDenom == "" {
-		return []sdk.DecCoin{}, errors.New("empty staking bond denomination")
-	}
-
-	return []sdk.DecCoin{sdk.NewDecCoinFromDec(bondDenom, sdk.NewDec(0))}, nil
-}
-
-func (mfd FeeDecorator) getBondDenom(ctx sdk.Context) string {
-	var bondDenom string
-	if mfd.StakingSubspace.Has(ctx, stakingtypes.KeyBondDenom) {
-		mfd.StakingSubspace.Get(ctx, stakingtypes.KeyBondDenom, &bondDenom)
-	}
-
-	return bondDenom
-}
 
 // getMinGasPrice will also return sorted coins
 func getMinGasPrice(ctx sdk.Context, feeTx sdk.FeeTx) sdk.Coins {

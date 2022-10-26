@@ -343,10 +343,10 @@ func (s *IntegrationTestSuite) TestMultihopIBCTokenTransfer() {
 
 		s.Require().Eventually(
 			func() bool {
-				beforeSenderUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, sender, "uatom")
+				beforeSenderUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
 				s.Require().NoError(err)
 
-				beforeRecipientUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, recipient, "uatom")
+				beforeRecipientUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, recipient, uatomDenom)
 				s.Require().NoError(err)
 
 				return beforeSenderUAtomBalance.IsValid() && beforeRecipientUAtomBalance.IsValid()
@@ -359,10 +359,10 @@ func (s *IntegrationTestSuite) TestMultihopIBCTokenTransfer() {
 
 		s.Require().Eventually(
 			func() bool {
-				afterSenderUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, "uatom")
+				afterSenderUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
 				s.Require().NoError(err)
 
-				afterRecipientUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, recipient, "uatom")
+				afterRecipientUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, recipient, uatomDenom)
 				s.Require().NoError(err)
 
 				decremented := beforeSenderUAtomBalance.Sub(tokenAmount).Sub(standardFees).IsEqual(afterSenderUAtomBalance)
@@ -428,7 +428,7 @@ func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
 
 		s.Require().Eventually(
 			func() bool {
-				beforeSenderUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, sender, "uatom")
+				beforeSenderUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
 				s.Require().NoError(err)
 
 				beforeMiddleIBCBalance, err = getSpecificBalance(chainBAPIEndpoint, middlehop, "ibc/")
@@ -446,7 +446,7 @@ func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
 		// Sender account should be initially decremented the full amount
 		s.Require().Eventually(
 			func() bool {
-				afterSenderUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, "uatom")
+				afterSenderUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
 				s.Require().NoError(err)
 
 				returned := beforeSenderUAtomBalance.Sub(tokenAmount).Sub(standardFees).IsEqual(afterSenderUAtomBalance)
@@ -460,7 +460,7 @@ func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
 		// since the forward receiving account is invalid, it should be refunded to the original sender (minus the original fee)
 		s.Require().Eventually(
 			func() bool {
-				afterSenderUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, "uatom")
+				afterSenderUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
 				s.Require().NoError(err)
 
 				returned := beforeSenderUAtomBalance.Sub(standardFees).IsEqual(afterSenderUAtomBalance)
@@ -494,10 +494,10 @@ func (s *IntegrationTestSuite) TestBankTokenTransfer() {
 
 		s.Require().Eventually(
 			func() bool {
-				beforeSenderUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, sender, "uatom")
+				beforeSenderUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
 				s.Require().NoError(err)
 
-				beforeRecipientUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, recipient, "uatom")
+				beforeRecipientUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, recipient, uatomDenom)
 				s.Require().NoError(err)
 
 				return beforeSenderUAtomBalance.IsValid() && beforeRecipientUAtomBalance.IsValid()
@@ -510,10 +510,10 @@ func (s *IntegrationTestSuite) TestBankTokenTransfer() {
 
 		s.Require().Eventually(
 			func() bool {
-				afterSenderUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, "uatom")
+				afterSenderUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
 				s.Require().NoError(err)
 
-				afterRecipientUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, recipient, "uatom")
+				afterRecipientUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, recipient, uatomDenom)
 				s.Require().NoError(err)
 
 				decremented := beforeSenderUAtomBalance.Sub(tokenAmount).Sub(standardFees).IsEqual(afterSenderUAtomBalance)

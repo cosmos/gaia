@@ -24,28 +24,28 @@ func (s *IntegrationTestSuite) SendTokensFromNewGovAccount() {
 	s.Require().NoError(err)
 	sender := senderAddress.String()
 	// Gov tests may be run in arbitrary order, each test must increment proposalCounter to have the correct proposal id to submit and query
-	proposalCounter++
-	s.T().Logf("Proposal number: %d", proposalCounter)
+	s.proposalCounter++
+	s.T().Logf("Proposal number: %d", s.proposalCounter)
 
 	s.fundCommunityPool(chainAAPIEndpoint, sender)
 
 	s.T().Logf("Submitting Legacy Gov Proposal: Community Spend Funding Gov Module")
-	s.submitLegacyGovProposal(chainAAPIEndpoint, sender, fees.String(), "community-pool-spend", proposalCounter, configFile(proposal1))
+	s.submitLegacyGovProposal(chainAAPIEndpoint, sender, fees.String(), "community-pool-spend", s.proposalCounter, configFile(proposal1))
 	s.T().Logf("Depositing Legacy Gov Proposal: Community Spend Funding Gov Module")
-	s.depositGovProposal(chainAAPIEndpoint, sender, fees.String(), proposalCounter)
+	s.depositGovProposal(chainAAPIEndpoint, sender, fees.String(), s.proposalCounter)
 	s.T().Logf("Voting Legacy Gov Proposal: Community Spend Funding Gov Module")
-	s.voteGovProposal(chainAAPIEndpoint, sender, fees.String(), proposalCounter, "yes", false)
+	s.voteGovProposal(chainAAPIEndpoint, sender, fees.String(), s.proposalCounter, "yes", false)
 
 	initialGovBalance, err := getSpecificBalance(chainAAPIEndpoint, govModuleAddress, uatomDenom)
 	s.Require().NoError(err)
-	proposalCounter++
+	s.proposalCounter++
 
 	s.T().Logf("Submitting Gov Proposal: Sending Tokens from Gov Module to Recipient")
-	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, configFile(proposal2))
+	s.submitNewGovProposal(chainAAPIEndpoint, sender, s.proposalCounter, configFile(proposal2))
 	s.T().Logf("Depositing Gov Proposal: Sending Tokens from Gov Module to Recipient")
-	s.depositGovProposal(chainAAPIEndpoint, sender, fees.String(), proposalCounter)
+	s.depositGovProposal(chainAAPIEndpoint, sender, fees.String(), s.proposalCounter)
 	s.T().Logf("Voting Gov Proposal: Sending Tokens from Gov Module to Recipient")
-	s.voteGovProposal(chainAAPIEndpoint, sender, fees.String(), proposalCounter, "yes", false)
+	s.voteGovProposal(chainAAPIEndpoint, sender, fees.String(), s.proposalCounter, "yes", false)
 	s.Require().Eventually(
 		func() bool {
 			newGovBalance, err := getSpecificBalance(chainAAPIEndpoint, govModuleAddress, uatomDenom)
@@ -70,45 +70,46 @@ Test Benchmarks:
 TODO: Perform upgrade in place of chain restart
 */
 func (s *IntegrationTestSuite) GovSoftwareUpgrade() {
-	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-	senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
-	s.Require().NoError(err)
-	sender := senderAddress.String()
-	height := s.getLatestBlockHeight(s.chainA, 0)
-	proposalHeight := height + govProposalBlockBuffer
-	// Gov tests may be run in arbitrary order, each test must increment proposalCounter to have the correct proposal id to submit and query
-	proposalCounter++
+	s.Run("Gov software upgrade", func() {
+		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+		senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
+		s.Require().NoError(err)
+		sender := senderAddress.String()
+		height := s.getLatestBlockHeight(s.chainA, 0)
+		proposalHeight := height + govProposalBlockBuffer
+		// Gov tests may be run in arbitrary order, each test must increment proposalCounter to have the correct proposal id to submit and query
 
-	s.T().Logf("Writing proposal %d on chain %s", proposalCounter, s.chainA.id)
-	s.writeGovUpgradeSoftwareProposal(s.chainA, proposalHeight)
+		s.proposalCounter++
+		s.T().Logf("Writing proposal %d on chain %s", s.proposalCounter, s.chainA.id)
+		s.writeGovUpgradeSoftwareProposal(s.chainA, proposalHeight)
 
-	s.T().Logf("Submitting Gov Proposal: Software Upgrade")
-	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, configFile(proposal3))
-	s.T().Logf("Depositing Gov Proposal: Software Upgrade")
-	s.depositGovProposal(chainAAPIEndpoint, sender, fees.String(), proposalCounter)
-	s.T().Logf("Weighted Voting Gov Proposal: Software Upgrade")
-	s.voteGovProposal(chainAAPIEndpoint, sender, fees.String(), proposalCounter, "yes=0.8,no=0.1,abstain=0.05,no_with_veto=0.05", true)
+		s.T().Logf("Submitting Gov Proposal: Software Upgrade")
+		s.submitNewGovProposal(chainAAPIEndpoint, sender, s.proposalCounter, configFile(proposal3))
+		s.T().Logf("Depositing Gov Proposal: Software Upgrade")
+		s.depositGovProposal(chainAAPIEndpoint, sender, fees.String(), s.proposalCounter)
+		s.T().Logf("Weighted Voting Gov Proposal: Software Upgrade")
+		s.voteGovProposal(chainAAPIEndpoint, sender, fees.String(), s.proposalCounter, "yes=0.8,no=0.1,abstain=0.05,no_with_veto=0.05", true)
 
-	s.verifyChainHaltedAtUpgradeHeight(s.chainA, 0, proposalHeight)
-	s.T().Logf("Successfully halted chain at  height %d", proposalHeight)
+		s.verifyChainHaltedAtUpgradeHeight(s.chainA, 0, proposalHeight)
+		s.T().Logf("Successfully halted chain at  height %d", proposalHeight)
 
-	s.TearDownSuite()
+		s.TearDownSuite()
 
-	s.T().Logf("Restarting containers")
-	s.SetupSuite()
+		s.T().Logf("Restarting containers")
+		s.SetupSuite()
 
-	s.Require().Eventually(
-		func() bool {
-			h := s.getLatestBlockHeight(s.chainA, 0)
-			s.Require().NoError(err)
+		s.Require().Eventually(
+			func() bool {
+				h := s.getLatestBlockHeight(s.chainA, 0)
+				s.Require().NoError(err)
 
-			return h > 0
-		},
-		30*time.Second,
-		5*time.Second,
-	)
-
-	proposalCounter = 0
+				return h > 0
+			},
+			30*time.Second,
+			5*time.Second,
+		)
+		s.proposalCounter = 0
+	})
 }
 
 /*
@@ -120,33 +121,32 @@ Test Benchmarks:
 */
 func (s *IntegrationTestSuite) GovCancelSoftwareUpgrade() {
 	s.T().Skip()
+	s.Run("Gov software upgrade cancel", func() {
+		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+		senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
+		s.Require().NoError(err)
+		sender := senderAddress.String()
+		height := s.getLatestBlockHeight(s.chainA, 0)
+		proposalHeight := height + 50
+		// Gov tests may be run in arbitrary order, each test must increment proposalCounter to have the correct proposal id to submit and query
+		s.proposalCounter++
+		s.T().Logf("Writing proposal %d on chain %s", s.proposalCounter, s.chainA.id)
+		s.writeGovCancelUpgradeSoftwareProposal(s.chainA)
 
-	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-	senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
-	s.Require().NoError(err)
-	sender := senderAddress.String()
-	height := s.getLatestBlockHeight(s.chainA, 0)
-	proposalHeight := height + 50
-	// Gov tests may be run in arbitrary order, each test must increment proposalCounter to have the correct proposal id to submit and query
-	proposalCounter++
+		s.T().Logf("Submitting Gov Proposal: Software Upgrade")
+		s.submitNewGovProposal(chainAAPIEndpoint, sender, s.proposalCounter, configFile(proposal3))
+		s.depositGovProposal(chainAAPIEndpoint, sender, fees.String(), s.proposalCounter)
+		s.voteGovProposal(chainAAPIEndpoint, sender, fees.String(), s.proposalCounter, "yes", false)
 
-	s.T().Logf("Writing proposal %d on chain %s", proposalCounter, s.chainA.id)
-	s.writeGovCancelUpgradeSoftwareProposal(s.chainA)
+		s.proposalCounter++
+		s.T().Logf("Submitting Gov Proposal: Cancel Software Upgrade")
+		s.submitNewGovProposal(chainAAPIEndpoint, sender, s.proposalCounter, configFile(proposal4))
+		s.depositGovProposal(chainAAPIEndpoint, sender, fees.String(), s.proposalCounter)
+		s.voteGovProposal(chainAAPIEndpoint, sender, fees.String(), s.proposalCounter, "yes", false)
 
-	s.T().Logf("Submitting Gov Proposal: Software Upgrade")
-	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, configFile(proposal3))
-	s.depositGovProposal(chainAAPIEndpoint, sender, fees.String(), proposalCounter)
-	s.voteGovProposal(chainAAPIEndpoint, sender, fees.String(), proposalCounter, "yes", false)
-
-	proposalCounter++
-
-	s.T().Logf("Submitting Gov Proposal: Cancel Software Upgrade")
-	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, configFile(proposal4))
-	s.depositGovProposal(chainAAPIEndpoint, sender, fees.String(), proposalCounter)
-	s.voteGovProposal(chainAAPIEndpoint, sender, fees.String(), proposalCounter, "yes", false)
-
-	s.verifyChainPassesUpgradeHeight(s.chainA, 0, proposalHeight)
-	s.T().Logf("Successfully canceled upgrade at height %d", proposalHeight)
+		s.verifyChainPassesUpgradeHeight(s.chainA, 0, proposalHeight)
+		s.T().Logf("Successfully canceled upgrade at height %d", proposalHeight)
+	})
 }
 
 /*
@@ -161,23 +161,26 @@ func (s *IntegrationTestSuite) GovCreateICA() {
 		var (
 			portID    = "1317/tcp"
 			chain     = s.chainA
+			validator = chain.validators[0]
 			resourceA = s.valResources[chain.id][0]
 			chainAAPI = fmt.Sprintf("http://%s", resourceA.GetHostPort(portID))
 		)
 		s.writeGovICAProposal(chain)
-		icaOwnerAcc, err := chain.genesisAccounts[icaGovOwnerAccountIndex].keyInfo.GetAddress()
-		s.Require().NoError(err)
-		icaOwnerAddr := icaOwnerAcc.String()
 
-		s.submitNewGovProposal(chainAAPI, icaOwnerAddr, proposalCounter, configFile(proposalICA))
-		s.voteGovProposal(chainAAPI, icaOwnerAddr, fees.String(), proposalCounter, "yes", false)
+		senderAddress, err := validator.keyInfo.GetAddress()
+		s.Require().NoError(err)
+		sender := senderAddress.String()
+
+		s.proposalCounter++
+		s.submitNewGovProposal(chainAAPI, sender, s.proposalCounter, configFile(proposalICA))
+		s.voteGovProposal(chainAAPI, sender, fees.String(), s.proposalCounter, "yes", false)
 
 		s.Require().Eventually(
 			func() bool {
-				icaAddr, err := queryICAaddr(chainAAPI, icaOwnerAddr, icaConnectionID)
-				s.T().Logf("%s's interchain account on chain %s: %s", icaOwnerAddr, s.chainB.id, icaAddr)
+				icaAddr, err := queryICAaddr(chainAAPI, sender, icaConnectionID)
+				s.T().Logf("%s's interchain account on chain %s: %s", sender, chain.id, icaAddr)
 				s.Require().NoError(err)
-				return icaOwnerAddr != "" && icaAddr != ""
+				return sender != "" && icaAddr != ""
 			},
 			2*time.Minute,
 			10*time.Second,
@@ -193,7 +196,7 @@ Test Benchmarks:
 3. Verification that correct funds have been deposited to distribution module account
 */
 func (s *IntegrationTestSuite) fundCommunityPool(chainAAPIEndpoint, sender string) {
-	s.Run("fund_community_pool", func() {
+	s.Run("funding community pool", func() {
 		beforeDistUatomBalance, _ := getSpecificBalance(chainAAPIEndpoint, distModuleAddress, tokenAmount.Denom)
 		if beforeDistUatomBalance.IsNil() {
 			// Set balance to 0 if previous balance does not exist
@@ -260,73 +263,65 @@ func (s *IntegrationTestSuite) verifyChainPassesUpgradeHeight(c *chain, valIdx, 
 }
 
 func (s *IntegrationTestSuite) submitLegacyGovProposal(chainAAPIEndpoint string, sender string, fees string, proposalTypeSubCmd string, proposalId int, proposalPath string) {
-	s.Run("submit_legacy_gov_proposal", func() {
-		s.execGovSubmitLegacyGovProposal(s.chainA, 0, sender, proposalPath, fees, proposalTypeSubCmd)
+	s.execGovSubmitLegacyGovProposal(s.chainA, 0, sender, proposalPath, fees, proposalTypeSubCmd)
 
-		s.Require().Eventually(
-			func() bool {
-				proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId)
-				s.Require().NoError(err)
-				return proposal.GetProposal().Status == govv1beta1.StatusDepositPeriod
-			},
-			15*time.Second,
-			5*time.Second,
-		)
-	})
+	s.Require().Eventually(
+		func() bool {
+			proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId)
+			s.Require().NoError(err)
+			return proposal.GetProposal().Status == govv1beta1.StatusDepositPeriod
+		},
+		15*time.Second,
+		5*time.Second,
+	)
 }
 
 func (s *IntegrationTestSuite) submitNewGovProposal(chainAAPIEndpoint, sender string, proposalId int, proposalPath string) {
-	s.Run("submit_new_gov_proposal", func() {
-		s.execGovSubmitProposal(s.chainA, 0, sender, proposalPath, fees.String())
+	s.execGovSubmitProposal(s.chainA, 0, sender, proposalPath, fees.String())
 
-		s.Require().Eventually(
-			func() bool {
-				proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId)
-				s.T().Logf("Proposal: %s", proposal.String())
-				s.Require().NoError(err)
+	s.Require().Eventually(
+		func() bool {
+			proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId)
+			s.T().Logf("Proposal: %s", proposal.String())
+			s.Require().NoError(err)
 
-				return proposal.GetProposal().Status == govv1beta1.StatusDepositPeriod
-			},
-			15*time.Second,
-			5*time.Second,
-		)
-	})
+			return proposal.GetProposal().Status == govv1beta1.StatusDepositPeriod
+		},
+		15*time.Second,
+		5*time.Second,
+	)
 }
 
 func (s *IntegrationTestSuite) depositGovProposal(chainAAPIEndpoint, sender string, fees string, proposalId int) {
-	s.Run("deposit_gov_proposal", func() {
-		s.execGovDepositProposal(s.chainA, 0, sender, proposalId, depositAmount.String(), fees)
+	s.execGovDepositProposal(s.chainA, 0, sender, proposalId, depositAmount.String(), fees)
 
-		s.Require().Eventually(
-			func() bool {
-				proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId)
-				s.Require().NoError(err)
+	s.Require().Eventually(
+		func() bool {
+			proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId)
+			s.Require().NoError(err)
 
-				return proposal.GetProposal().Status == govv1beta1.StatusVotingPeriod
-			},
-			15*time.Second,
-			5*time.Second,
-		)
-	})
+			return proposal.GetProposal().Status == govv1beta1.StatusVotingPeriod
+		},
+		15*time.Second,
+		5*time.Second,
+	)
 }
 
 func (s *IntegrationTestSuite) voteGovProposal(chainAAPIEndpoint, sender string, fees string, proposalId int, vote string, weighted bool) {
-	s.Run("vote_gov_proposal", func() {
-		if weighted {
-			s.execGovWeightedVoteProposal(s.chainA, 0, sender, proposalId, vote, fees)
-		} else {
-			s.execGovVoteProposal(s.chainA, 0, sender, proposalId, vote, fees)
-		}
+	if weighted {
+		s.execGovWeightedVoteProposal(s.chainA, 0, sender, proposalId, vote, fees)
+	} else {
+		s.execGovVoteProposal(s.chainA, 0, sender, proposalId, vote, fees)
+	}
 
-		s.Require().Eventually(
-			func() bool {
-				proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId)
-				s.Require().NoError(err)
+	s.Require().Eventually(
+		func() bool {
+			proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId)
+			s.Require().NoError(err)
 
-				return proposal.GetProposal().Status == govv1beta1.StatusPassed
-			},
-			15*time.Second,
-			5*time.Second,
-		)
-	})
+			return proposal.GetProposal().Status == govv1beta1.StatusPassed
+		},
+		15*time.Second,
+		5*time.Second,
+	)
 }

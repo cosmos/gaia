@@ -94,7 +94,6 @@ var (
 	depositAmount              = sdk.NewCoin(uatomDenom, math.NewInt(10000000))   // 10uatom
 	distModuleAddress          = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
 	govModuleAddress           = authtypes.NewModuleAddress(gov.ModuleName).String()
-	proposalCounter            = 0
 	govSendMsgRecipientAddress = Address()
 	sendGovAmount              = sdk.NewInt64Coin(uatomDenom, 10)
 )
@@ -102,13 +101,14 @@ var (
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	tmpDirs        []string
-	chainA         *chain
-	chainB         *chain
-	dkrPool        *dockertest.Pool
-	dkrNet         *dockertest.Network
-	hermesResource *dockertest.Resource
-	valResources   map[string][]*dockertest.Resource
+	tmpDirs         []string
+	chainA          *chain
+	chainB          *chain
+	dkrPool         *dockertest.Pool
+	dkrNet          *dockertest.Network
+	hermesResource  *dockertest.Resource
+	valResources    map[string][]*dockertest.Resource
+	proposalCounter int
 }
 
 type AddressResponse struct {
@@ -681,10 +681,10 @@ func (s *IntegrationTestSuite) writeGovCancelUpgradeSoftwareProposal(c *chain) {
 }
 
 func (s *IntegrationTestSuite) writeGovICAProposal(c *chain) {
-	icaOwnerAddr, err := s.chainA.genesisAccounts[icaGovOwnerAccountIndex].keyInfo.GetAddress()
-	s.Require().NoError(err)
+	//icaOwnerAddr, err := s.chainA.genesisAccounts[icaGovOwnerAccountIndex].keyInfo.GetAddress()
+	//s.Require().NoError(err)
 	proposalICAAcc, err := createGovProposalJSON(&icatypes.MsgRegisterAccount{
-		Owner:        icaOwnerAddr.String(),
+		Owner:        govModuleAddress,
 		ConnectionId: icaConnectionID,
 	})
 	s.Require().NoError(err)

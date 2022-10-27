@@ -66,304 +66,308 @@ test4. gov propose globalfee =  0.000001uatom (lower than min_gas_price), 0photo
 6. gov propose change back to initial globalfee = 0.00001photon, This is for not influence other e2e tests.
 */
 func (s *IntegrationTestSuite) TestGlobalFees() {
-	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	s.Run("global fees", func() {
+		var globalFees sdk.DecCoins
 
-	submitterAddr, err := s.chainA.validators[0].keyInfo.GetAddress()
-	s.Require().NoError(err)
-	submitter := submitterAddr.String()
-	recipientAddress, err := s.chainA.validators[1].keyInfo.GetAddress()
-	s.Require().NoError(err)
-	recipient := recipientAddress.String()
-	var beforeRecipientPhotonBalance sdk.Coin
-	s.Require().Eventually(
-		func() bool {
-			beforeRecipientPhotonBalance, err = getSpecificBalance(chainAAPIEndpoint, recipient, photonDenom)
-			s.Require().NoError(err)
+		paidFeeAmt := math.LegacyMustNewDecFromStr(minGasPrice).Mul(math.LegacyNewDec(gas)).String()
+		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
-			return beforeRecipientPhotonBalance.IsValid()
-		},
-		10*time.Second,
-		5*time.Second,
-	)
-	if beforeRecipientPhotonBalance.Equal(sdk.Coin{}) {
-		beforeRecipientPhotonBalance = sdk.NewCoin(photonDenom, math.ZeroInt())
-	}
+		submitterAddr, err := s.chainA.validators[0].keyInfo.GetAddress()
+		s.Require().NoError(err)
+		submitter := submitterAddr.String()
+		recipientAddress, err := s.chainA.validators[1].keyInfo.GetAddress()
+		s.Require().NoError(err)
+		recipient := recipientAddress.String()
+		var beforeRecipientPhotonBalance sdk.Coin
+		s.Require().Eventually(
+			func() bool {
+				beforeRecipientPhotonBalance, err = getSpecificBalance(chainAAPIEndpoint, recipient, photonDenom)
+				s.Require().NoError(err)
 
-	sendAmt := int64(1000)
-	token := sdk.NewInt64Coin(photonDenom, sendAmt) // send 1000photon each time
-	sucessBankSendCount := 0
-	// ---------------------------- test1: globalfee empty --------------------------------------------
-	// prepare gov globalfee proposal
-	emptyGlobalFee := sdk.DecCoins{}
-	s.writeGovParamChangeProposalGlobalFees(s.chainA, emptyGlobalFee)
+				return beforeRecipientPhotonBalance.IsValid()
+			},
+			10*time.Second,
+			5*time.Second,
+		)
+		if beforeRecipientPhotonBalance.Equal(sdk.Coin{}) {
+			beforeRecipientPhotonBalance = sdk.NewCoin(photonDenom, math.ZeroInt())
+		}
 
-	// gov proposing new fees
-	proposalCounter++
-	s.T().Logf("Proposal number: %d", proposalCounter)
-	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change global fees empty")
-	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, fees.String(), "param-change", proposalCounter, configFile("proposal_globalfee.json"))
-	s.depositGovProposal(chainAAPIEndpoint, submitter, fees.String(), proposalCounter)
-	s.voteGovProposal(chainAAPIEndpoint, submitter, fees.String(), proposalCounter, "yes", false)
+		sendAmt := int64(1000)
+		token := sdk.NewInt64Coin(photonDenom, sendAmt) // send 1000photon each time
+		sucessBankSendCount := 0
 
-	// query the proposal status and new fee
-	s.Require().Eventually(
-		func() bool {
-			proposal, err := queryGovProposal(chainAAPIEndpoint, proposalCounter)
-			s.Require().NoError(err)
-			return proposal.GetProposal().Status == govv1beta1.StatusPassed
-		},
-		15*time.Second,
-		5*time.Second,
-	)
-	var globalFees sdk.DecCoins
-	s.Require().Eventually(
-		func() bool {
-			globalFees, err = queryGlobalFees(chainAAPIEndpoint)
-			s.T().Logf("After gov new global fee proposal: %s", globalFees.String())
-			s.Require().NoError(err)
+		s.Run("empty global fee", func() {
+			// prepare gov globalfee proposal
+			emptyGlobalFee := sdk.DecCoins{}
+			s.writeGovParamChangeProposalGlobalFees(s.chainA, emptyGlobalFee)
 
-			// attention: when global fee is empty, when query, it shows empty rather than default ante.DefaultZeroGlobalFee() = 0uatom.
-			return globalFees.IsEqual(emptyGlobalFee)
-		},
-		15*time.Second,
-		5*time.Second,
-	)
+			// gov proposing new fees
+			s.proposalCounter++
+			s.T().Logf("Proposal number: %d", s.proposalCounter)
+			s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change global fees empty")
+			s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, fees.String(), "param-change", s.proposalCounter, configFile("proposal_globalfee.json"))
+			s.depositGovProposal(chainAAPIEndpoint, submitter, fees.String(), s.proposalCounter)
+			s.voteGovProposal(chainAAPIEndpoint, submitter, fees.String(), s.proposalCounter, "yes", false)
 
-	paidFeeAmt := math.LegacyMustNewDecFromStr(minGasPrice).Mul(math.LegacyNewDec(gas)).String()
+			// query the proposal status and new fee
+			s.Require().Eventually(
+				func() bool {
+					proposal, err := queryGovProposal(chainAAPIEndpoint, s.proposalCounter)
+					s.Require().NoError(err)
+					return proposal.GetProposal().Status == govv1beta1.StatusPassed
+				},
+				15*time.Second,
+				5*time.Second,
+			)
 
-	s.T().Logf("test case: empty global fee, globalfee=%s, min_gas_price=%s", globalFees.String(), minGasPrice+uatomDenom)
-	s.T().Logf("Tx fee is zero coin with correct denom: uatom, fail")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "0"+uatomDenom, true)
-	s.T().Logf("Tx fee is empty, fail")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "", true)
-	s.T().Logf("Tx with wrong denom: photon, fail")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "4"+photonDenom, true)
-	s.T().Logf("Tx fee is zero coins of wrong denom: photon, fail")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "0"+photonDenom, true)
-	s.T().Logf("Tx fee is higher than min_gas_price, pass")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmt+uatomDenom, false)
-	sucessBankSendCount++
+			s.Require().Eventually(
+				func() bool {
+					globalFees, err = queryGlobalFees(chainAAPIEndpoint)
+					s.T().Logf("After gov new global fee proposal: %s", globalFees.String())
+					s.Require().NoError(err)
 
-	// ------------------ test2: globalfee lower than min_gas_price -----------------------------------
-	// prepare gov globalfee proposal
-	lowGlobalFee := sdk.DecCoins{sdk.NewDecCoinFromDec(uatomDenom, sdk.MustNewDecFromStr(lowGlobalFeesAmt))}
-	s.writeGovParamChangeProposalGlobalFees(s.chainA, lowGlobalFee)
+					// attention: when global fee is empty, when query, it shows empty rather than default ante.DefaultZeroGlobalFee() = 0uatom.
+					return globalFees.IsEqual(emptyGlobalFee)
+				},
+				15*time.Second,
+				5*time.Second,
+			)
 
-	// gov proposing new fees
-	proposalCounter++
-	s.T().Logf("Proposal number: %d", proposalCounter)
-	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change global fees empty")
-	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, fees.String(), "param-change", proposalCounter, configFile("proposal_globalfee.json"))
-	s.depositGovProposal(chainAAPIEndpoint, submitter, fees.String(), proposalCounter)
-	s.voteGovProposal(chainAAPIEndpoint, submitter, fees.String(), proposalCounter, "yes", false)
+			s.T().Logf("test case: empty global fee, globalfee=%s, min_gas_price=%s", globalFees.String(), minGasPrice+uatomDenom)
+			s.T().Logf("Tx fee is zero coin with correct denom: uatom, fail")
+			s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "0"+uatomDenom, true)
+			s.T().Logf("Tx fee is empty, fail")
+			s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "", true)
+			s.T().Logf("Tx with wrong denom: photon, fail")
+			s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "4"+photonDenom, true)
+			s.T().Logf("Tx fee is zero coins of wrong denom: photon, fail")
+			s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "0"+photonDenom, true)
+			s.T().Logf("Tx fee is higher than min_gas_price, pass")
+			s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmt+uatomDenom, false)
+			sucessBankSendCount++
+		})
 
-	// query the proposal status and new fee
-	s.Require().Eventually(
-		func() bool {
-			proposal, err := queryGovProposal(chainAAPIEndpoint, proposalCounter)
-			s.Require().NoError(err)
-			return proposal.GetProposal().Status == govv1beta1.StatusPassed
-		},
-		15*time.Second,
-		5*time.Second,
-	)
+		s.Run("global fee lower than min_gas_price", func() {
+			// prepare gov globalfee proposal
+			lowGlobalFee := sdk.DecCoins{sdk.NewDecCoinFromDec(uatomDenom, sdk.MustNewDecFromStr(lowGlobalFeesAmt))}
+			s.writeGovParamChangeProposalGlobalFees(s.chainA, lowGlobalFee)
 
-	s.Require().Eventually(
-		func() bool {
-			globalFees, err := queryGlobalFees(chainAAPIEndpoint)
-			s.T().Logf("After gov new global fee proposal: %s", globalFees.String())
-			s.Require().NoError(err)
+			// gov proposing new fees
+			s.proposalCounter++
+			s.T().Logf("Proposal number: %d", s.proposalCounter)
+			s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change global fees empty")
+			s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, fees.String(), "param-change", s.proposalCounter, configFile("proposal_globalfee.json"))
+			s.depositGovProposal(chainAAPIEndpoint, submitter, fees.String(), s.proposalCounter)
+			s.voteGovProposal(chainAAPIEndpoint, submitter, fees.String(), s.proposalCounter, "yes", false)
 
-			return globalFees.IsEqual(lowGlobalFee)
-		},
-		15*time.Second,
-		5*time.Second,
-	)
+			// query the proposal status and new fee
+			s.Require().Eventually(
+				func() bool {
+					proposal, err := queryGovProposal(chainAAPIEndpoint, s.proposalCounter)
+					s.Require().NoError(err)
+					return proposal.GetProposal().Status == govv1beta1.StatusPassed
+				},
+				15*time.Second,
+				5*time.Second,
+			)
 
-	paidFeeAmt = math.LegacyMustNewDecFromStr(minGasPrice).Mul(math.LegacyNewDec(gas)).String()
-	paidFeeAmtLowMinGasHighGlobalFee := math.LegacyMustNewDecFromStr(lowGlobalFeesAmt).
-		Mul(math.LegacyNewDec(2)).
-		Mul(math.LegacyNewDec(gas)).
-		String()
-	paidFeeAmtLowGlobalFee := math.LegacyMustNewDecFromStr(lowGlobalFeesAmt).Quo(math.LegacyNewDec(2)).String()
+			s.Require().Eventually(
+				func() bool {
+					globalFees, err := queryGlobalFees(chainAAPIEndpoint)
+					s.T().Logf("After gov new global fee proposal: %s", globalFees.String())
+					s.Require().NoError(err)
 
-	s.T().Logf("test case: global fee is lower than min_gas_price, globalfee=%s, min_gas_price=%s", globalFees.String(), minGasPrice+uatomDenom)
-	s.T().Logf("Tx fee higher than/equal to min_gas_price and global fee, pass")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmt+uatomDenom, false)
-	sucessBankSendCount++
-	s.T().Logf("Tx fee lower than/equal to min_gas_price and global fee, pass")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmtLowGlobalFee+uatomDenom, true)
-	s.T().Logf("Tx fee lower than/equal global fee and lower than min_gas_price, fail")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmtLowMinGasHighGlobalFee+uatomDenom, true)
-	s.T().Logf("Tx fee has wrong denom, fail")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmt+photonDenom, true)
+					return globalFees.IsEqual(lowGlobalFee)
+				},
+				15*time.Second,
+				5*time.Second,
+			)
 
-	// ------------------ test3: globalfee higher than min_gas_price ----------------------------------
-	// prepare gov globalfee proposal
-	highGlobalFee := sdk.DecCoins{sdk.NewDecCoinFromDec(uatomDenom, sdk.MustNewDecFromStr(highGlobalFeeAmt))}
-	s.writeGovParamChangeProposalGlobalFees(s.chainA, highGlobalFee)
+			paidFeeAmtLowMinGasHighGlobalFee := math.LegacyMustNewDecFromStr(lowGlobalFeesAmt).
+				Mul(math.LegacyNewDec(2)).
+				Mul(math.LegacyNewDec(gas)).
+				String()
+			paidFeeAmtLowGlobalFee := math.LegacyMustNewDecFromStr(lowGlobalFeesAmt).Quo(math.LegacyNewDec(2)).String()
 
-	// gov proposing new fees
-	proposalCounter++
-	s.T().Logf("Proposal number: %d", proposalCounter)
-	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change global fees empty")
-	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, "param-change", proposalCounter, configFile("proposal_globalfee.json"))
-	s.depositGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, proposalCounter)
-	s.voteGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, proposalCounter, "yes", false)
+			s.T().Logf("test case: global fee is lower than min_gas_price, globalfee=%s, min_gas_price=%s", globalFees.String(), minGasPrice+uatomDenom)
+			s.T().Logf("Tx fee higher than/equal to min_gas_price and global fee, pass")
+			s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmt+uatomDenom, false)
+			sucessBankSendCount++
+			s.T().Logf("Tx fee lower than/equal to min_gas_price and global fee, pass")
+			s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmtLowGlobalFee+uatomDenom, true)
+			s.T().Logf("Tx fee lower than/equal global fee and lower than min_gas_price, fail")
+			s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmtLowMinGasHighGlobalFee+uatomDenom, true)
+			s.T().Logf("Tx fee has wrong denom, fail")
+			s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmt+photonDenom, true)
+		})
 
-	// query the proposal status and new fee
-	s.Require().Eventually(
-		func() bool {
-			proposal, err := queryGovProposal(chainAAPIEndpoint, proposalCounter)
-			s.Require().NoError(err)
-			return proposal.GetProposal().Status == govv1beta1.StatusPassed
-		},
-		15*time.Second,
-		5*time.Second,
-	)
+		s.Run("global fee higher than min_gas_price", func() {
+			// prepare gov globalfee proposal
+			highGlobalFee := sdk.DecCoins{sdk.NewDecCoinFromDec(uatomDenom, sdk.MustNewDecFromStr(highGlobalFeeAmt))}
+			s.writeGovParamChangeProposalGlobalFees(s.chainA, highGlobalFee)
 
-	s.Require().Eventually(
-		func() bool {
-			globalFees, err := queryGlobalFees(chainAAPIEndpoint)
-			s.T().Logf("After gov new global fee proposal: %s", globalFees.String())
-			s.Require().NoError(err)
+			// gov proposing new fees
+			s.proposalCounter++
+			s.T().Logf("Proposal number: %d", s.proposalCounter)
+			s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change global fees empty")
+			s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, "param-change", s.proposalCounter, configFile("proposal_globalfee.json"))
+			s.depositGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, s.proposalCounter)
+			s.voteGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, s.proposalCounter, "yes", false)
 
-			return globalFees.IsEqual(highGlobalFee)
-		},
-		15*time.Second,
-		5*time.Second,
-	)
+			// query the proposal status and new fee
+			s.Require().Eventually(
+				func() bool {
+					proposal, err := queryGovProposal(chainAAPIEndpoint, s.proposalCounter)
+					s.Require().NoError(err)
+					return proposal.GetProposal().Status == govv1beta1.StatusPassed
+				},
+				15*time.Second,
+				5*time.Second,
+			)
 
-	paidFeeAmt = math.LegacyMustNewDecFromStr(highGlobalFeeAmt).Mul(math.LegacyNewDec(gas)).String()
-	paidFeeAmtHigherMinGasLowerGalobalFee := math.LegacyMustNewDecFromStr(minGasPrice).
-		Quo(math.LegacyNewDec(2)).String()
+			s.Require().Eventually(
+				func() bool {
+					globalFees, err := queryGlobalFees(chainAAPIEndpoint)
+					s.T().Logf("After gov new global fee proposal: %s", globalFees.String())
+					s.Require().NoError(err)
 
-	s.T().Logf("test case: global fee is higher than min_gas_price, globalfee=%s, min_gas_price=%s", globalFees.String(), minGasPrice+uatomDenom)
-	s.T().Logf("Tx fee is higher than/equal to global fee and min_gas_price, pass")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmt+uatomDenom, false)
-	sucessBankSendCount++
-	s.T().Logf("Tx fee is higher than/equal to min_gas_price but lower than global fee, fail")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmtHigherMinGasLowerGalobalFee+uatomDenom, true)
+					return globalFees.IsEqual(highGlobalFee)
+				},
+				15*time.Second,
+				5*time.Second,
+			)
 
-	// ---------------------------- test4: global fee with two denoms -----------------------------------
-	// prepare gov globalfee proposal
-	mixGlobalFee := sdk.DecCoins{
-		sdk.NewDecCoinFromDec(photonDenom, sdk.NewDec(0)),
-		sdk.NewDecCoinFromDec(uatomDenom, sdk.MustNewDecFromStr(lowGlobalFeesAmt)),
-	}.Sort()
-	s.writeGovParamChangeProposalGlobalFees(s.chainA, mixGlobalFee)
+			paidFeeAmtHigherMinGasLowerGalobalFee := math.LegacyMustNewDecFromStr(minGasPrice).
+				Quo(math.LegacyNewDec(2)).String()
 
-	// gov proposing new fees
-	proposalCounter++
-	s.T().Logf("Proposal number: %d", proposalCounter)
-	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change global fees empty")
-	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, "param-change", proposalCounter, configFile("proposal_globalfee.json"))
-	s.depositGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, proposalCounter)
-	s.voteGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, proposalCounter, "yes", false)
+			s.T().Logf("test case: global fee is higher than min_gas_price, globalfee=%s, min_gas_price=%s", globalFees.String(), minGasPrice+uatomDenom)
+			s.T().Logf("Tx fee is higher than/equal to global fee and min_gas_price, pass")
+			s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmt+uatomDenom, false)
+			sucessBankSendCount++
+			s.T().Logf("Tx fee is higher than/equal to min_gas_price but lower than global fee, fail")
+			s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmtHigherMinGasLowerGalobalFee+uatomDenom, true)
+		})
 
-	// query the proposal status and new fee
-	s.Require().Eventually(
-		func() bool {
-			proposal, err := queryGovProposal(chainAAPIEndpoint, proposalCounter)
-			s.Require().NoError(err)
-			return proposal.GetProposal().Status == govv1beta1.StatusPassed
-		},
-		15*time.Second,
-		5*time.Second,
-	)
+		s.Run("global fees with two denoms", func() {
+			// prepare gov globalfee proposal
+			mixGlobalFee := sdk.DecCoins{
+				sdk.NewDecCoinFromDec(photonDenom, sdk.NewDec(0)),
+				sdk.NewDecCoinFromDec(uatomDenom, sdk.MustNewDecFromStr(lowGlobalFeesAmt)),
+			}.Sort()
+			s.writeGovParamChangeProposalGlobalFees(s.chainA, mixGlobalFee)
 
-	s.Require().Eventually(
-		func() bool {
-			globalFees, err := queryGlobalFees(chainAAPIEndpoint)
-			s.T().Logf("After gov new global fee proposal: %s", globalFees.String())
-			s.Require().NoError(err)
-			return globalFees.IsEqual(mixGlobalFee)
-		},
-		15*time.Second,
-		5*time.Second,
-	)
+			// gov proposing new fees
+			s.proposalCounter++
+			s.T().Logf("Proposal number: %d", s.proposalCounter)
+			s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change global fees empty")
+			s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, "param-change", s.proposalCounter, configFile("proposal_globalfee.json"))
+			s.depositGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, s.proposalCounter)
+			s.voteGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, s.proposalCounter, "yes", false)
 
-	// equal to min_gas_price
-	paidFeeAmt = math.LegacyMustNewDecFromStr(minGasPrice).Mul(math.LegacyNewDec(gas)).String()
-	paidFeeAmtLow := math.LegacyMustNewDecFromStr(lowGlobalFeesAmt).
-		Quo(math.LegacyNewDec(2)).
-		Mul(math.LegacyNewDec(gas)).
-		String()
+			// query the proposal status and new fee
+			s.Require().Eventually(
+				func() bool {
+					proposal, err := queryGovProposal(chainAAPIEndpoint, s.proposalCounter)
+					s.Require().NoError(err)
+					return proposal.GetProposal().Status == govv1beta1.StatusPassed
+				},
+				15*time.Second,
+				5*time.Second,
+			)
 
-	s.T().Logf("test case: global fees contain multiple denoms: one zero coin, one non-zero coin, globalfee=%s, min_gas_price=%s", globalFees.String(), minGasPrice+uatomDenom)
-	s.T().Logf("Tx with fee higher than/equal to one of denom's amount the global fee, pass")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmt+uatomDenom, false)
-	sucessBankSendCount++
-	s.T().Logf("Tx with fee lower than one of denom's amount the global fee, fail")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmtLow+uatomDenom, true)
-	s.T().Logf("Tx with fee empty fee, pass")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "", false)
-	sucessBankSendCount++
-	s.T().Logf("Tx with zero coin in the denom of zero coin of global fee, pass")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "0"+photonDenom, false)
-	sucessBankSendCount++
-	s.T().Logf("Tx with non-zero coin in the denom of zero coin of global fee, pass")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "2"+photonDenom, false)
-	sucessBankSendCount++
-	s.T().Logf("Tx with mulitple fee coins, zero coin and low fee, fail")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "0"+photonDenom+","+paidFeeAmtLow+uatomDenom, true)
-	s.T().Logf("Tx with mulitple fee coins, zero coin and high fee, pass")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "0"+photonDenom+","+paidFeeAmt+uatomDenom, false)
-	sucessBankSendCount++
-	s.T().Logf("Tx with mulitple fee coins, all higher than global fee and min_gas_price")
-	s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "2"+photonDenom+","+paidFeeAmt+uatomDenom, false)
-	sucessBankSendCount++
-	// ---------------------------------------------------------------------------
+			s.Require().Eventually(
+				func() bool {
+					globalFees, err := queryGlobalFees(chainAAPIEndpoint)
+					s.T().Logf("After gov new global fee proposal: %s", globalFees.String())
+					s.Require().NoError(err)
+					return globalFees.IsEqual(mixGlobalFee)
+				},
+				15*time.Second,
+				5*time.Second,
+			)
 
-	// check the balance is correct after previous txs
-	s.Require().Eventually(
-		func() bool {
-			afterRecipientPhotonBalance, err := getSpecificBalance(chainAAPIEndpoint, recipient, photonDenom)
-			s.Require().NoError(err)
-			IncrementedPhoton := afterRecipientPhotonBalance.Sub(beforeRecipientPhotonBalance)
-			photonSent := sdk.NewInt64Coin(photonDenom, sendAmt*int64(sucessBankSendCount))
-			return IncrementedPhoton.IsEqual(photonSent)
-		},
-		time.Minute,
-		5*time.Second,
-	)
+			// equal to min_gas_price
+			paidFeeAmtLow := math.LegacyMustNewDecFromStr(lowGlobalFeesAmt).
+				Quo(math.LegacyNewDec(2)).
+				Mul(math.LegacyNewDec(gas)).
+				String()
 
-	// gov proposing to change back to original global fee
-	s.T().Logf("Propose to change back to original global fees: %s", initialGlobalFeeAmt+uatomDenom)
-	oldfees, err := sdk.ParseDecCoins(initialGlobalFeeAmt + uatomDenom)
-	s.Require().NoError(err)
-	s.writeGovParamChangeProposalGlobalFees(s.chainA, oldfees)
+			s.T().Logf("test case: global fees contain multiple denoms: one zero coin, one non-zero coin, globalfee=%s, min_gas_price=%s", globalFees.String(), minGasPrice+uatomDenom)
+			s.T().Logf("Tx with fee higher than/equal to one of denom's amount the global fee, pass")
+			s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmt+uatomDenom, false)
+			sucessBankSendCount++
+			s.T().Logf("Tx with fee lower than one of denom's amount the global fee, fail")
+			s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), paidFeeAmtLow+uatomDenom, true)
+			s.T().Logf("Tx with fee empty fee, pass")
+			s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "", false)
+			sucessBankSendCount++
+			s.T().Logf("Tx with zero coin in the denom of zero coin of global fee, pass")
+			s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "0"+photonDenom, false)
+			sucessBankSendCount++
+			s.T().Logf("Tx with non-zero coin in the denom of zero coin of global fee, pass")
+			s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "2"+photonDenom, false)
+			sucessBankSendCount++
+			s.T().Logf("Tx with mulitple fee coins, zero coin and low fee, fail")
+			s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "0"+photonDenom+","+paidFeeAmtLow+uatomDenom, true)
+			s.T().Logf("Tx with mulitple fee coins, zero coin and high fee, pass")
+			s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "0"+photonDenom+","+paidFeeAmt+uatomDenom, false)
+			sucessBankSendCount++
+			s.T().Logf("Tx with mulitple fee coins, all higher than global fee and min_gas_price")
+			s.execBankSend(s.chainA, 0, submitter, recipient, token.String(), "2"+photonDenom+","+paidFeeAmt+uatomDenom, false)
+			sucessBankSendCount++
+		})
 
-	proposalCounter++
-	s.T().Logf("Proposal number: %d", proposalCounter)
-	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change back global fees")
-	// fee is 0uatom
-	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+photonDenom, "param-change", proposalCounter, configFile("proposal_globalfee.json"))
-	s.depositGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+photonDenom, proposalCounter)
-	s.voteGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+photonDenom, proposalCounter, "yes", false)
+		// check the balance is correct after previous txs
+		s.Require().Eventually(
+			func() bool {
+				afterRecipientPhotonBalance, err := getSpecificBalance(chainAAPIEndpoint, recipient, photonDenom)
+				s.Require().NoError(err)
+				IncrementedPhoton := afterRecipientPhotonBalance.Sub(beforeRecipientPhotonBalance)
+				photonSent := sdk.NewInt64Coin(photonDenom, sendAmt*int64(sucessBankSendCount))
+				return IncrementedPhoton.IsEqual(photonSent)
+			},
+			time.Minute,
+			5*time.Second,
+		)
 
-	// query the proposal status and fee
-	s.Require().Eventually(
-		func() bool {
-			proposal, err := queryGovProposal(chainAAPIEndpoint, proposalCounter)
-			s.Require().NoError(err)
-			return proposal.GetProposal().Status == govv1beta1.StatusPassed
-		},
-		15*time.Second,
-		5*time.Second,
-	)
+		// gov proposing to change back to original global fee
+		s.T().Logf("Propose to change back to original global fees: %s", initialGlobalFeeAmt+uatomDenom)
+		oldfees, err := sdk.ParseDecCoins(initialGlobalFeeAmt + uatomDenom)
+		s.Require().NoError(err)
+		s.writeGovParamChangeProposalGlobalFees(s.chainA, oldfees)
 
-	s.Require().Eventually(
-		func() bool {
-			fees, err := queryGlobalFees(chainAAPIEndpoint)
-			s.T().Logf("After gov proposal to change back global fees: %s", oldfees.String())
-			s.Require().NoError(err)
+		s.proposalCounter++
+		s.T().Logf("Proposal number: %d", s.proposalCounter)
+		s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change back global fees")
+		// fee is 0uatom
+		s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+photonDenom, "param-change", s.proposalCounter, configFile("proposal_globalfee.json"))
+		s.depositGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+photonDenom, s.proposalCounter)
+		s.voteGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+photonDenom, s.proposalCounter, "yes", false)
 
-			return fees.IsEqual(oldfees)
-		},
-		15*time.Second,
-		5*time.Second,
-	)
+		// query the proposal status and fee
+		s.Require().Eventually(
+			func() bool {
+				proposal, err := queryGovProposal(chainAAPIEndpoint, s.proposalCounter)
+				s.Require().NoError(err)
+				return proposal.GetProposal().Status == govv1beta1.StatusPassed
+			},
+			15*time.Second,
+			5*time.Second,
+		)
+
+		s.Require().Eventually(
+			func() bool {
+				fees, err := queryGlobalFees(chainAAPIEndpoint)
+				s.T().Logf("After gov proposal to change back global fees: %s", oldfees.String())
+				s.Require().NoError(err)
+
+				return fees.IsEqual(oldfees)
+			},
+			15*time.Second,
+			5*time.Second,
+		)
+	})
 }
 
 func (s *IntegrationTestSuite) TestByPassMinFeeWithdrawReward() {

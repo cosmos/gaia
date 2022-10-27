@@ -33,6 +33,16 @@ source ./docs/modules/icamauth/init_chain_host.sh
 ```
 
 ### Setting up a Hermes relayer
+You can download or build the Hermes binary from the source code.
+#### Download the Hermes binary
+You can find the hermes download information for different os architectures [here](https://github.com/informalsystems/hermes/releases). 
+```shell
+curl -OL https://github.com/informalsystems/hermes/releases/download/v1.0.0/hermes-v1.0.0-x86_64-apple-darwin.zip
+mkdir -p $HOME/.hermes/bin
+tar -C $HOME/.hermes/bin/ -vxzf hermes-v1.0.0-x86_64-apple-darwin.zip
+export PATH="$HOME/.hermes/bin:$PATH"
+```
+
 #### Build the Hermes binary
 Install Rust:
 ```shell
@@ -48,6 +58,7 @@ git checkout v1.0.0
 cargo build --release --no-default-features --bin hermes
 # binary path: ./target/release/hermes
 cp  ./target/release/hermes $HOME/.cargo/bin
+export PATH="$HOME/.hermes/bin:$PATH"
 ```
 
 #### Create the IBC connection

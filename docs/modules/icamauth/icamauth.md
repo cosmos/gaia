@@ -1,25 +1,25 @@
 # icamauth module
 
 ## Introduction to Interchain Accounts
-**Interchain Accounts** (ICA) is a standard that allows an account on a *controller* chain to create and securely control an address on a different *host* chain using the Inter Blockchain Protocol (IBC). Transactions that are native to the host chain are wrapped inside an IBC packet and get sent from the Interchain Account on the controller chain, to be executed on the host chain. 
+**Interchain Accounts** (ICA) is a standard that allows an account on a *controller* chain to create and securely control an address on a different *host* chain using the Inter Blockchain Protocol (IBC). Transactions native to the host chain are wrapped inside an IBC packet and sent from the Interchain Account Owner on the controller chain to be executed on the host chain.
 
-The benefit of ICA is that there is no need to create a custom IBC implementation for each of the unique transactions that a sovereign blockchain might have (trading on a DEX, executing a specific smart contract, etc). Instead, a **generic** implementation allows blockchains to speak to each other, much like contracts can interact on Ethereum or other smart contract platforms.
+The benefit of ICA is that there is no need to create a custom IBC implementation for each unique transaction that a sovereign blockchain might have (trading on a DEX, executing a specific smart contract, etc.). Instead, a **generic** implementation allows blockchains to speak to each other, much like contracts can interact on Ethereum or other smart contract platforms.
 
-For example, let’s say that you have an address on the Cosmos Hub (the controller) with OSMO tokens that you wanted to stake on Osmosis (the host). With Interchain Accounts, you can create and control a new address on Osmosis, without requiring a new private key. After sending your tokens to your Interchain Account using a regular IBC token transfer, you can send a wrapped `delegate` transaction over IBC which will then be unwrapped and executed natively on Osmosis.
+For example, let's say that you have an address on the Cosmos Hub (the controller) with OSMO tokens that you want to stake on Osmosis (the host). With Interchain Accounts, you can create and control a new address on Osmosis without requiring a new private key. After sending your tokens to your Interchain Account using a regular IBC token transfer, you can send a wrapped `delegate` transaction over IBC, which will then be unwrapped and executed natively on Osmosis.
 
 ## The icamauth module
 Blockchains implementing Interchain Accounts can decide which messages they allow a controller chain to execute via a whitelist. The **icamuath (interchain account message authentication) module** whitelists most of the message types available to the Cosmos Hub, allowing any account on a controller chain to interact with the Cosmos Hub as if owning a native account on the chain itself.
 query message types that are allowed on a host chain:
-```
+```shell
 gaiad q interchain-accounts host params
 ```
 
-In the following tutorial, we will demonstrate how to use Interchain Accounts through the [icamauth module](../../../x/icamauth).
+The following tutorial will demonstrate how to use Interchain Accounts through the [icamauth module](../../../x/icamauth).
 
 ## Setup preparation
-We will run two Cosmos-SDK chains (controller chain: `test-0` and host chain: `test-1`), and a relayer to connect these two chains. We will create an account on chain `test-0` and call it `alice`, and register an Interchain Account (that we'll call `alice_ica`)  on chain `test-1` for `alice` on chain `test-0`. We will also create a normal account `bob` on chain `test-1`.
+We will run two Cosmos-SDK chains (controller chain: `test-0` and host chain: `test-1`) and a relayer to connect these two chains. We will create an account on chain `test-0` and call it `alice`, and register an Interchain Account (that we'll call `alice_ica`)  on chain `test-1` for `alice` on chain `test-0`. We will also create a standard account, `bob` on chain `test-1`.
 
-Through these 3 account, we can test if:
+Through these 3 accounts, we can test if:
 - `alice` on chain `test-0` can control its `alice_ica` to transfer tokens to account `bob` on chain `test-1`.
 - `alice` can control its `alice_ica` to transfer `alice_ica`'s token back to `alice` using a regular IBC token transfer.
 
@@ -28,8 +28,8 @@ We've simplified the setup process via several shell scripts. If you'd like to l
 
 Set up the two chains, create the keys for `alice` and `bob`, and start running both chains:
 ```shell
-sh init_chain_controller.sh
-sh init_chain_host.sh
+source ./docs/modules/icamauth/init_chain_controller.sh
+source ./docs/modules/icamauth/init_chain_host.sh
 ```
 
 ### Setting up a Hermes relayer
@@ -51,7 +51,9 @@ cp  ./target/release/hermes $HOME/.cargo/bin
 ```
 
 #### Create the IBC connection
+Run the following command in `gaia/docs/modules/icamauth` directory to create an IBC connection:
 ```shell
+cd ./docs/modules/icamauth
 source hermes_setup.sh
 ```
 

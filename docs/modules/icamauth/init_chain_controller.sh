@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BINARY=gaiad
+BINARY=$(which gaiad)
 # please do not reveal your private key in production !!!
 MNEMONIC_RLY0="alley afraid soup fall idea toss can goose become valve initial strong forward bright dish figure check leopard decide warfare hub unusual join cart"
 

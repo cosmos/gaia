@@ -670,8 +670,10 @@ func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height 
 	upgradeProposalBody, err := cdc.MarshalJSON(proposalSendMsg)
 	s.Require().NoError(err)
 
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_3.json"), upgradeProposalBody)
+	path := filepath.Join(c.validators[0].configDir(), "config", "proposal_3.json")
+	err = writeFile(path, upgradeProposalBody)
 	s.Require().NoError(err)
+	fmt.Println("saved proposal_3.json to ", path)
 }
 
 func (s *IntegrationTestSuite) writeGovCancelUpgradeSoftwareProposal(c *chain) {
@@ -766,5 +768,7 @@ func (s *IntegrationTestSuite) writeICAtx(cmd []string, path string) {
 }
 
 func configFile(filename string) string {
-	return filepath.Join(gaiaConfigPath, filename)
+	filepath := filepath.Join(gaiaConfigPath, filename)
+	fmt.Println("retrieving filepath ", filepath)
+	return filepath
 }

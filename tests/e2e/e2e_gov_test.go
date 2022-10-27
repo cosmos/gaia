@@ -131,7 +131,7 @@ func (s *IntegrationTestSuite) GovCancelSoftwareUpgrade() {
 	proposalCounter++
 
 	s.T().Logf("Writing proposal %d on chain %s", proposalCounter, s.chainA.id)
-	s.writeGovCancelUpgradeSoftwareProposal(s.chainA)
+	s.writeGovUpgradeSoftwareProposal(s.chainA, proposalHeight)
 
 	s.T().Logf("Submitting Gov Proposal: Software Upgrade")
 	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, configFile("proposal_3.json"))
@@ -139,6 +139,9 @@ func (s *IntegrationTestSuite) GovCancelSoftwareUpgrade() {
 	s.voteGovProposal(chainAAPIEndpoint, sender, standardFees.String(), proposalCounter, "yes", false)
 
 	proposalCounter++
+
+	s.T().Logf("Writing proposal %d on chain %s", proposalCounter, s.chainA.id)
+	s.writeGovCancelUpgradeSoftwareProposal(s.chainA)
 
 	s.T().Logf("Submitting Gov Proposal: Cancel Software Upgrade")
 	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, configFile("proposal_4.json"))

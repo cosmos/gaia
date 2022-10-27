@@ -1,5 +1,3 @@
-cosmossdk.io/math v1.0.0-beta.2/go.mod h1:u/MXvf8wbUbCsAEyQSSYXXMsczAsFX48e2D6JI86T4o=
-github.com/DATA-DOG/go-sqlmock v1.5.0 h1:Shsta01QNfFxHCfpW6YH2STWB0MudeXXEWMr20OEh60=
 github.com/GaijinEntertainment/go-exhaustruct/v2 v2.2.2/go.mod h1:xj0D2jwLdp6tOKLheyZCsfL0nz8DaicmJxSwj3VcHtY=
 github.com/bufbuild/buf v1.7.0/go.mod h1:Go40fMAF46PnPLC7jJgTQhAI95pmC0+VtxFKVC0qLq0=
 github.com/bufbuild/connect-go v0.2.0/go.mod h1:4efZ2eXFENwd4p7tuLaL9m0qtTsCOzuBvrohvRGevDM=
@@ -9,10 +7,6 @@ github.com/containerd/typeurl v1.0.2/go.mod h1:9trJWW2sRlGub4wZJRTW83VtbOLS6hwcD
 github.com/cosmos/cosmos-sdk v0.46.1/go.mod h1:2+o8Qw8qnE02V+lQVZDJFQ8tri/hsiA5GmWaPERqVa0=
 github.com/cosmos/cosmos-sdk/db v1.0.0-beta.1/go.mod h1:JUMM2MxF9wuwzRWZJjb8BjXsn1BmPmdBd3a75pIct4I=
 github.com/cosmos/iavl v0.19.0/go.mod h1:l5h9pAB3m5fihB3pXVgwYqdY8aBsMagqz7T0MUjxZeA=
-github.com/cosmos/ibc-go/v5 v5.0.0-beta1 h1:YqC9giQlZId8Wui8xpaUFI+TpVmEupQZSoDlmxAu6yI=
-github.com/cosmos/ibc-go/v5 v5.0.0-beta1/go.mod h1:9mmcbzuidgX7nhafIKng/XhXAHDEnRqDjGy/60W1cvg=
-github.com/cristalhq/acmd v0.7.0/go.mod h1:LG5oa43pE/BbxtfMoImHCQN++0Su7dzipdgBjMCBVDQ=
-github.com/curioswitch/go-reassign v0.1.2/go.mod h1:bFJIHgtTM3hRm2sKXSPkbwNjSFyGURQXyn4IXD2qwfQ=
 github.com/daixiang0/gci v0.6.2/go.mod h1:EpVfrztufwVgQRXjnX4zuNinEpLj5OmMjtu/+MB0V0c=
 github.com/danieljoos/wincred v1.0.2/go.mod h1:SnuYRW9lp1oJrZX/dXJqr0cPK5gYXqx3EJbmjhLdK9U=
 github.com/docker/distribution v2.8.1+incompatible/go.mod h1:J2gT2udsDAN96Uj4KfcMRqY0/ypR+oyYUYmja8H+y+w=

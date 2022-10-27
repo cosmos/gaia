@@ -9,7 +9,7 @@ For example, let's say that you have an address on the Cosmos Hub (the controlle
 
 ## The icamauth module
 Blockchains implementing Interchain Accounts can decide which messages they allow a controller chain to execute via a whitelist. The **icamuath (interchain account message authentication) module** whitelists most of the message types available to the Cosmos Hub, allowing any account on a controller chain to interact with the Cosmos Hub as if owning a native account on the chain itself.
-query message types that are allowed on a host chain:
+The following command allows you to query all the allowed message types on a host chain:
 ```shell
 gaiad q interchain-accounts host params
 ```

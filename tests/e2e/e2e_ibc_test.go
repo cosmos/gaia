@@ -393,9 +393,6 @@ func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
 
 	s.Run("send_failed_multihop_uatom_to_chainA_from_chainA", func() {
 		// require the recipient account receives the IBC tokens (IBC packets ACKd)
-		var (
-			err error
-		)
 
 		address, err := s.chainA.validators[0].keyInfo.GetAddress()
 		s.Require().NoError(err)

@@ -1,9 +1,8 @@
 #!/bin/bash
 
 BINARY=$(which gaiad)
-# please do not reveal your private key in production !!!
-MNEMONIC_RLY0="alley afraid soup fall idea toss can goose become valve initial strong forward bright dish figure check leopard decide warfare hub unusual join cart"
-
+# please do not reveal your mnemonic in production !!!
+MNEMONIC_RLY0=`cat docs/modules/icamauth/rly0-mnemonic.txt`
 MNEMONIC_ALICE="captain six loyal advice caution cost orient large mimic spare radar excess quote orchard error biology choice shop dish master quantum dumb accident between"
 CHAINID_0=test-0
 HOME_0=$HOME/test-0

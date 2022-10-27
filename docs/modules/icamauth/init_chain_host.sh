@@ -1,7 +1,8 @@
 #!/bin/bash
 
 BINARY=$(which gaiad)
-MNEMONIC_RLY1="record gift you once hip style during joke field prize dust unique length more pencil transfer quit train device arrive energy sort steak upset"
+# please do not reveal your mnemonic in production !!!
+MNEMONIC_RLY1=`cat docs/modules/icamauth/rly1-mnemonic.txt`
 MNEMONIC_BOB="uphold train large action document mixed exact cherry input evil sponsor digital used child engine fire attract sing little jeans decrease despair unfair what"
 CHAINID_1=test-1
 HOME_1=$HOME/test-1

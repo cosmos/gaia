@@ -8,7 +8,7 @@ A group is a set of accounts and associated weights. Group accounts may then be 
 See the following resources for additional information on using the `group` module.
 
 - [Cosmos SDK Group Module Docs](https://docs.cosmos.network/v0.46/modules/group/)
-- [Cosmos Developer Portal Group Tutorial](https://tutorials.cosmos.network/tutorials/understanding-group/)
+- [Cosmos Developer Portal Group Tutorial](https://tutorials.cosmos.network/tutorials/7-understand-sdk-modules/3-group.html)
 
 ##### Group Administration
 Groups can be initialized with or without a decision policy. Groups must have an administrator account, but that account does not necessarily have to be a group member. The group may self-administer by setting the administrator to a group policy account. Upon creating a group, each member is assigned a weight corresponding to proposal voting power.

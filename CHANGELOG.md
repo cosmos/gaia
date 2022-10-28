@@ -35,13 +35,20 @@ Ref: https://keepachangelog.com/en/1.0.0/
 # Changelog
 
 ## [Unreleased]
-* (gaia-rho) [#1573](https://github.com/cosmos/gaia/issues/1573), [#1576](https://github.com/cosmos/gaia/issues/1576) Update cosmos ledger version to [v.0.9.3](https://github.com/cosmos/ledger-go/releases/tag/v0.9.3)
-* (gaia-rho) Update go to 1.18
-* (gaia-rho) Update Liquidity module to v2.0.0-beta1 to work with Cosmos-SDK v0.46.0-beta2
-* (gaia-rho) Update [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.46.0-beta2](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.46.0-beta2). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.46.0-beta2/CHANGELOG.md) for details.
-* (gaia-rho) Add [Groups Module](https://docs.cosmos.network/main/modules/group/#group-module).
-* (tests) Add E2E test for Bank Send.
-* (tests) Update liveness tests to use Ignite v0.21.1.
+* (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.46.3](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.46.3). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.46.3/CHANGELOG.md) for details.
+* (gaia) [#1573](https://github.com/cosmos/gaia/issues/1573), [#1576](https://github.com/cosmos/gaia/issues/1576) update [cosmos ledger](https://github.com/cosmos/ledger-go) version to [v.0.9.3](https://github.com/cosmos/ledger-go/releases/tag/v0.9.3).
+* (gaia) bump [Liquidity](https://github.com/Gravity-Devs/liquidity) module to [v2.0.1](https://github.com/Gravity-Devs/liquidity/releases/tag/v2.0.1).
+* (gaia) bump [ibc-go](https://github.com/cosmos/ibc-go) module to [v5.0.1](https://github.com/cosmos/ibc-go/releases/tag/v5.0.1). See [CHANGELOG.md](https://github.com/cosmos/ibc-go/blob/v5.0.1/CHANGELOG.md) for details.
+* (gaia) bump [packet-forwarding-middleware](https://github.com/strangelove-ventures/packet-forward-middleware) to depend on ibc-go v5.
+* (gaia) Update go to 1.18.
+* (feat) Add [Groups](https://docs.cosmos.network/main/modules/grthaoup/#group-module) module.
+* (feat) add [icamauch](https://github.com/cosmos/gaia/tree/main/x/icamauth) (Interchain Account Message Authorization) module.
+* (feat) add [globalfee](https://github.com/cosmos/gaia/tree/main/x/globalfee) module.
+* (feat) replace `MempoolFeeDecorator` with [FeeDecorator](https://github.com/cosmos/gaia/blob/main/x/globalfee/ante/fee.go) to check fees.
+* (tests) add [E2E tests](https://github.com/cosmos/gaia/tree/main/tests/e2e) The tests cover transactions/queries tests of different modules, including Bank,
+  Distribution, Encode, Evidence, FeeGrant Global Fee, Legacy Gov, New Gov, Groups,
+  IBC, ICA, packet forwarding middleware, Slashing, Staking, and Vesting module.
+* (tests) use gaiad to swap out [Ignite](https://github.com/ignite/cli) in [liveness tests](https://github.com/cosmos/gaia/blob/main/.github/workflows/test.yml).
 
 ## [v7.0.2] -2022-05-09
 

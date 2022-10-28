@@ -22,7 +22,7 @@ import (
 	ibctransfertypes "github.com/cosmos/ibc-go/v5/modules/apps/transfer/types"
 	ibchost "github.com/cosmos/ibc-go/v5/modules/core/24-host"
 	liquiditytypes "github.com/gravity-devs/liquidity/v2/x/liquidity/types"
-	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v2/router/types"
+	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v5/router/types"
 
 	icamauthtypes "github.com/cosmos/gaia/v8/x/icamauth/types"
 )

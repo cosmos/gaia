@@ -39,6 +39,7 @@ func (s *IntegrationTestSuite) TestICA_1_Register() {
 }
 
 func (s *IntegrationTestSuite) TestICA_2_BankSend() {
+
 	s.Run("test ica transactions", func() {
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
@@ -65,7 +66,7 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 		s.Require().NoError(err)
 		sender := senderAddr.String()
 
-		s.execBankSend(s.chainB, 0, sender, ica, tokenAmount.String(), fees.String(), false)
+		s.execBankSend(s.chainB, 0, sender, ica, tokenAmount.String(), standardFees.String(), false)
 
 		s.Require().Eventually(
 			func() bool {

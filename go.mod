@@ -6,12 +6,12 @@ require (
 	cosmossdk.io/math v1.0.0-beta.3
 	github.com/cosmos/cosmos-sdk v0.46.3
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
-	github.com/cosmos/ibc-go/v5 v5.0.1-0.20221027123418-7575859366f0
+	github.com/cosmos/ibc-go/v5 v5.0.1
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
 	github.com/golangci/golangci-lint v1.50.0
 	github.com/gorilla/mux v1.8.0
-	github.com/gravity-devs/liquidity/v2 v2.0.0
+	github.com/gravity-devs/liquidity/v2 v2.0.1
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7
@@ -292,4 +292,6 @@ require (
 replace (
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	github.com/zondax/hid => github.com/zondax/hid v0.9.0
+	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.46.3
+	github.com/cosmos/ibc-go => github.com/cosmos/ibc-go v5.0.1
 )

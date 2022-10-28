@@ -36,7 +36,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 * (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.46.3](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.46.3). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.46.3/CHANGELOG.md) for details.
-* (gaia) [#1573](https://github.com/cosmos/gaia/issues/1573), [#1576](https://github.com/cosmos/gaia/issues/1576) update cosmos ledger version to [v.0.9.3](https://github.com/cosmos/ledger-go/releases/tag/v0.9.3).
+* (gaia) [#1573](https://github.com/cosmos/gaia/issues/1573), [#1576](https://github.com/cosmos/gaia/issues/1576) update [cosmos ledger](https://github.com/cosmos/ledger-go) version to [v.0.9.3](https://github.com/cosmos/ledger-go/releases/tag/v0.9.3).
 * (gaia) bump [Liquidity](https://github.com/Gravity-Devs/liquidity) module to [v2.0.1](https://github.com/Gravity-Devs/liquidity/releases/tag/v2.0.1).
 * (gaia) bump [ibc-go](https://github.com/cosmos/ibc-go) module to [v5.0.1](https://github.com/cosmos/ibc-go/releases/tag/v5.0.1). See [CHANGELOG.md](https://github.com/cosmos/ibc-go/blob/v5.0.1/CHANGELOG.md) for details.
 * (gaia) bump [packet-forwarding-middleware](https://github.com/strangelove-ventures/packet-forward-middleware) to depend on ibc-go v5.
@@ -46,7 +46,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 * (feat) add [globalfee](https://github.com/cosmos/gaia/tree/main/x/globalfee) module.
 * (feat) replace `MempoolFeeDecorator` with [FeeDecorator](https://github.com/cosmos/gaia/blob/main/x/globalfee/ante/fee.go) to check fees.
 * (tests) add [E2E tests](https://github.com/cosmos/gaia/tree/main/tests/e2e) The tests cover transactions/queries tests of different modules, including Bank,
-  Distribution, Encode, Evidence, FeeGrant Global Fee, Legacy Gov, New Gov, Groups
+  Distribution, Encode, Evidence, FeeGrant Global Fee, Legacy Gov, New Gov, Groups,
   IBC, ICA, packet forwarding middleware, Slashing, Staking, and Vesting module.
 * (tests) use gaiad to swap out [Ignite](https://github.com/ignite/cli) in [liveness tests](https://github.com/cosmos/gaia/blob/main/.github/workflows/test.yml).
 

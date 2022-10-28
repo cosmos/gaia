@@ -42,6 +42,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 * (gaia-rho) Add [Groups Module](https://docs.cosmos.network/main/modules/group/#group-module).
 * (tests) Add E2E test for Bank Send.
 * (tests) Update liveness tests to use Ignite v0.21.1.
+* (deps) [#1801](https://github.com/cosmos/gaia/pull/1801) Use master branch of cosmos/ledger-cosmos-go 
+
 
 ## [v7.0.2] -2022-05-09
 

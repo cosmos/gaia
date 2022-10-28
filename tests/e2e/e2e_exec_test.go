@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"cosmossdk.io/math"
@@ -301,21 +302,44 @@ type txBankSend struct {
 	expectErr bool
 }
 
+type successBankSend struct {
+	mu           sync.Mutex
+	successCount int
+}
+
+func (sc *successBankSend) inc() {
+	sc.mu.Lock()
+	defer sc.mu.Unlock()
+
+	sc.successCount++
+}
+
 func (s *IntegrationTestSuite) execBankSendBatch(
 	c *chain,
 	valIdx int,
 	txs []txBankSend,
 ) int {
-	sucessBankSendCount := 0
-	for _, tx := range txs {
-		s.T().Logf(tx.log)
-		s.execBankSend(c, valIdx, tx.from, tx.to, tx.amt, tx.fees, tx.expectErr)
-		if !tx.expectErr {
-			sucessBankSendCount++
-		}
+	sucessBankSendCount := successBankSend{
+		successCount: 0,
+	}
+	var wg sync.WaitGroup
+
+	for i := 0; i < len(txs); i++ {
+		wg.Add(1)
+		go func(idx int) {
+			defer wg.Done()
+
+			s.T().Logf(txs[idx].log)
+			s.execBankSend(c, valIdx, txs[idx].from, txs[idx].to, txs[idx].amt, txs[idx].fees, txs[idx].expectErr)
+			if !txs[idx].expectErr {
+				sucessBankSendCount.inc()
+			}
+		}(i)
+
+		wg.Wait()
 	}
 
-	return sucessBankSendCount
+	return sucessBankSendCount.successCount
 }
 
 func (s *IntegrationTestSuite) execWithdrawAllRewards(c *chain, valIdx int, payee, fees string, expectErr bool) {

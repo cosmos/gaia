@@ -43,8 +43,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 * (gaia) bump [Liquidity](https://github.com/Gravity-Devs/liquidity) module to [v2.0.1](https://github.com/Gravity-Devs/liquidity/releases/tag/v2.0.1).
 * (gaia) bump [ibc-go](https://github.com/cosmos/ibc-go) module to [v5.0.1](https://github.com/cosmos/ibc-go/releases/tag/v5.0.1). See [CHANGELOG.md](https://github.com/cosmos/ibc-go/blob/v5.0.1/CHANGELOG.md) for details.
 * (gaia) bump [packet-forwarding-middleware](https://github.com/strangelove-ventures/packet-forward-middleware) to depend on ibc-go v5.
-* (gaia) Update go to 1.18.
-* (feat) Add [Groups](https://docs.cosmos.network/main/modules/grthaoup/#group-module) module.
+* (gaia) update go to 1.18.
+* (feat) add [Groups](https://docs.cosmos.network/main/modules/grthaoup/#group-module) module.
 * (feat) add [icamauch](https://github.com/cosmos/gaia/tree/main/x/icamauth) (Interchain Account Message Authorization) module.
 * (feat) add [globalfee](https://github.com/cosmos/gaia/tree/main/x/globalfee) module.
 * (feat) replace `MempoolFeeDecorator` with [FeeDecorator](https://github.com/cosmos/gaia/blob/main/x/globalfee/ante/fee.go) to check fees.

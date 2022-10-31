@@ -12,10 +12,6 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 )
 
-const (
-	icaIBCSend = "ica_ibc_send.json"
-)
-
 // TestICARegister must run before any other
 func (s *IntegrationTestSuite) TestICA_1_Register() {
 	s.Run("register_ICA", func() {
@@ -41,7 +37,6 @@ func (s *IntegrationTestSuite) TestICA_1_Register() {
 }
 
 func (s *IntegrationTestSuite) TestICA_2_BankSend() {
-
 	s.Run("test ica transactions", func() {
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
@@ -140,10 +135,10 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 			"--keyring-backend=test",
 		}
 
-		path = filepath.Join(s.chainA.validators[0].configDir(), "config", "ica_ibc_send.json")
+		path = filepath.Join(s.chainA.validators[0].configDir(), "config", icaIBCSend)
 		s.writeICAtx(icaIBCsendCmd, path)
 
-		s.submitICAtx(icaOwner, icaConnectionID, configFile("ica_ibc_send.json"))
+		s.submitICAtx(icaOwner, icaConnectionID, configFile(icaIBCSend))
 
 		var balances sdk.Coins
 		s.Require().Eventually(

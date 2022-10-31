@@ -10,7 +10,6 @@ import (
 )
 
 func (s *IntegrationTestSuite) TestGov() {
-
 	s.SendTokensFromNewGovAccount()
 	s.GovSoftwareUpgrade()
 	s.GovCancelSoftwareUpgrade()
@@ -19,7 +18,6 @@ func (s *IntegrationTestSuite) TestGov() {
 
 // globalfee in genesis is set to be "0.00001uatom"
 func (s *IntegrationTestSuite) TestQueryGlobalFeesInGenesis() {
-
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	feeInGenesis, err := sdk.ParseDecCoins(initialGlobalFeeAmt + uatomDenom)
 	s.Require().NoError(err)
@@ -108,7 +106,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 			s.proposalCounter++
 			s.T().Logf("Proposal number: %d", s.proposalCounter)
 			s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change global fees empty")
-			s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, standardFees.String(), "param-change", s.proposalCounter, configFile("proposal_globalfee.json"))
+			s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, standardFees.String(), "param-change", s.proposalCounter, configFile(proposalGlobalFee))
 			s.depositGovProposal(chainAAPIEndpoint, submitter, standardFees.String(), s.proposalCounter)
 			s.voteGovProposal(chainAAPIEndpoint, submitter, standardFees.String(), s.proposalCounter, "yes", false)
 
@@ -159,7 +157,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 			s.proposalCounter++
 			s.T().Logf("Proposal number: %d", s.proposalCounter)
 			s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change global fees empty")
-			s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, standardFees.String(), "param-change", s.proposalCounter, configFile("proposal_globalfee.json"))
+			s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, standardFees.String(), "param-change", s.proposalCounter, configFile(proposalGlobalFee))
 			s.depositGovProposal(chainAAPIEndpoint, submitter, standardFees.String(), s.proposalCounter)
 			s.voteGovProposal(chainAAPIEndpoint, submitter, standardFees.String(), s.proposalCounter, "yes", false)
 
@@ -213,7 +211,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 			s.proposalCounter++
 			s.T().Logf("Proposal number: %d", s.proposalCounter)
 			s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change global fees empty")
-			s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, "param-change", s.proposalCounter, configFile("proposal_globalfee.json"))
+			s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, "param-change", s.proposalCounter, configFile(proposalGlobalFee))
 			s.depositGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, s.proposalCounter)
 			s.voteGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, s.proposalCounter, "yes", false)
 
@@ -264,7 +262,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 			s.proposalCounter++
 			s.T().Logf("Proposal number: %d", s.proposalCounter)
 			s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change global fees empty")
-			s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, "param-change", s.proposalCounter, configFile("proposal_globalfee.json"))
+			s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, "param-change", s.proposalCounter, configFile(proposalGlobalFee))
 			s.depositGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, s.proposalCounter)
 			s.voteGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+uatomDenom, s.proposalCounter, "yes", false)
 
@@ -344,7 +342,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 		s.T().Logf("Proposal number: %d", s.proposalCounter)
 		s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change back global fees")
 		// fee is 0uatom
-		s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+photonDenom, "param-change", s.proposalCounter, configFile("proposal_globalfee.json"))
+		s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+photonDenom, "param-change", s.proposalCounter, configFile(proposalGlobalFee))
 		s.depositGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+photonDenom, s.proposalCounter)
 		s.voteGovProposal(chainAAPIEndpoint, submitter, paidFeeAmt+photonDenom, s.proposalCounter, "yes", false)
 

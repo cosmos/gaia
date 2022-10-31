@@ -63,8 +63,10 @@ const (
 	proposal2         = "proposal_2.json"
 	proposal3         = "proposal_3.json"
 	proposal4         = "proposal_4.json"
+	proposalGlobalFee = "proposal_globalfee.json"
 	proposalICACreate = "proposal_ica_create.json"
 	proposalICASend   = "proposal_ica_send.json"
+	icaIBCSend        = "ica_ibc_send.json"
 	icaConnectionID   = "connection-0"
 	icaChannelID      = "channel-0"
 
@@ -668,9 +670,10 @@ func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height 
 	})
 	s.Require().NoError(err)
 
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposal3), proposalUpgrade)
+	path := filepath.Join(c.validators[0].configDir(), "config", proposal3)
+	err = writeFile(path, proposalUpgrade)
 	s.Require().NoError(err)
-	fmt.Println("saved proposal_3.json to ", path)
+	fmt.Printf("saved %s to %s", proposal3, path)
 }
 
 func (s *IntegrationTestSuite) writeGovCancelUpgradeSoftwareProposal(c *chain) {
@@ -759,7 +762,7 @@ func (s *IntegrationTestSuite) writeGovParamChangeProposalGlobalFees(c *chain, c
 	}, "", " ")
 	s.Require().NoError(err)
 
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_globalfee.json"), paramChangeProposalBody)
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalGlobalFee), paramChangeProposalBody)
 	s.Require().NoError(err)
 }
 

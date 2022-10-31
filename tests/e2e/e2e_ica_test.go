@@ -71,9 +71,9 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 
 		s.Require().Eventually(
 			func() bool {
-				afterSenderICAbalance, err := getSpecificBalance(chainBAPIEndpoint, ica, uatomDenom)
+				afterSenderICABalance, err := getSpecificBalance(chainBAPIEndpoint, ica, uatomDenom)
 				s.Require().NoError(err)
-				return afterSenderICAbalance.IsEqual(tokenAmount)
+				return afterSenderICABalance.IsEqual(tokenAmount)
 			},
 			time.Minute,
 			5*time.Second,

@@ -50,22 +50,23 @@ import (
 )
 
 const (
-	gaiadBinary     = "gaiad"
-	txCommand       = "tx"
-	queryCommand    = "query"
-	keysCommand     = "keys"
-	gaiaHomePath    = "/home/nonroot/.gaia"
-	photonDenom     = "photon"
-	uatomDenom      = "uatom"
-	initBalanceStr  = "110000000000stake,100000000000000000photon,100000000000000000uatom"
-	minGasPrice     = "0.00001"
-	proposal1       = "proposal.json"
-	proposal2       = "proposal_2.json"
-	proposal3       = "proposal_3.json"
-	proposal4       = "proposal_4.json"
-	proposalICA     = "proposal_ica.json"
-	icaConnectionID = "connection-0"
-	icaChannelID    = "channel-0"
+	gaiadBinary       = "gaiad"
+	txCommand         = "tx"
+	queryCommand      = "query"
+	keysCommand       = "keys"
+	gaiaHomePath      = "/home/nonroot/.gaia"
+	photonDenom       = "photon"
+	uatomDenom        = "uatom"
+	initBalanceStr    = "110000000000stake,100000000000000000photon,100000000000000000uatom"
+	minGasPrice       = "0.00001"
+	proposal1         = "proposal.json"
+	proposal2         = "proposal_2.json"
+	proposal3         = "proposal_3.json"
+	proposal4         = "proposal_4.json"
+	proposalICACreate = "proposal_ica_create.json"
+	proposalICASend   = "proposal_ica_send.json"
+	icaConnectionID   = "connection-0"
+	icaChannelID      = "channel-0"
 
 	// the test globalfee in genesis is the same as minGasPrice
 	// global fee lower/higher than min_gas_price
@@ -681,15 +682,32 @@ func (s *IntegrationTestSuite) writeGovCancelUpgradeSoftwareProposal(c *chain) {
 }
 
 func (s *IntegrationTestSuite) writeGovICAProposal(c *chain) {
-	//icaOwnerAddr, err := s.chainA.genesisAccounts[icaGovOwnerAccountIndex].keyInfo.GetAddress()
-	//s.Require().NoError(err)
-	proposalICAAcc, err := createGovProposalJSON(&icatypes.MsgRegisterAccount{
+	proposalICACreateJSON, err := createGovProposalJSON(&icatypes.MsgRegisterAccount{
 		Owner:        govModuleAddress,
 		ConnectionId: icaConnectionID,
 	})
 	s.Require().NoError(err)
 
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalICA), proposalICAAcc)
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalICACreate), proposalICACreateJSON)
+	s.Require().NoError(err)
+
+	protoMsg, err := codectypes.NewAnyWithValue(
+		&banktypes.MsgSend{
+			FromAddress: govModuleAddress,
+			ToAddress:   govSendMsgRecipientAddress,
+			Amount:      []sdk.Coin{sendGovAmount},
+		},
+	)
+	s.Require().NoError(err)
+
+	proposalICASendJSON, err := createGovProposalJSON(&icatypes.MsgSubmitTx{
+		Owner:        govModuleAddress,
+		ConnectionId: icaConnectionID,
+		Msg:          protoMsg,
+	})
+	s.Require().NoError(err)
+
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalICASend), proposalICASendJSON)
 	s.Require().NoError(err)
 }
 

@@ -159,31 +159,64 @@ Test Benchmarks:
 func (s *IntegrationTestSuite) GovCreateICA() {
 	s.Run("test create ica from gov module", func() {
 		var (
-			portID    = "1317/tcp"
-			chain     = s.chainA
-			validator = chain.validators[0]
-			resourceA = s.valResources[chain.id][0]
-			chainAAPI = fmt.Sprintf("http://%s", resourceA.GetHostPort(portID))
+			portID          = "1317/tcp"
+			validatorChainA = s.chainA.validators[0]
+			validatorChainB = s.chainB.validators[0]
+			resourceChainA  = s.valResources[s.chainA.id][0]
+			resourceChainB  = s.valResources[s.chainA.id][0]
+			chainAAPI       = fmt.Sprintf("http://%s", resourceChainA.GetHostPort(portID))
+			chainBAPI       = fmt.Sprintf("http://%s", resourceChainB.GetHostPort(portID))
 		)
-		s.writeGovICAProposal(chain)
+		// write and submit ICA gov proposal
+		s.writeGovICAProposal(s.chainA)
 
-		senderAddress, err := validator.keyInfo.GetAddress()
+		senderAddress, err := validatorChainA.keyInfo.GetAddress()
 		s.Require().NoError(err)
 		sender := senderAddress.String()
 
 		s.proposalCounter++
-		s.submitNewGovProposal(chainAAPI, sender, s.proposalCounter, configFile(proposalICA))
+		s.submitNewGovProposal(chainAAPI, sender, s.proposalCounter, configFile(proposalICACreate))
 		s.voteGovProposal(chainAAPI, sender, fees.String(), s.proposalCounter, "yes", false)
 
 		s.Require().Eventually(
 			func() bool {
 				icaAddr, err := queryICAaddr(chainAAPI, sender, icaConnectionID)
-				s.T().Logf("%s's interchain account on chain %s: %s", sender, chain.id, icaAddr)
+				s.T().Logf("%s's interchain account on chain %s: %s", sender, s.chainA.id, icaAddr)
 				s.Require().NoError(err)
 				return sender != "" && icaAddr != ""
 			},
 			2*time.Minute,
 			10*time.Second,
+		)
+
+		// get the chain B ICA account
+		var icaAddress string
+		s.Require().Eventually(
+			func() bool {
+				icaAddress, err = queryICAaddr(chainAAPI, govModuleAddress, icaConnectionID)
+				s.Require().NoError(err)
+
+				return err == nil && icaAddress != ""
+			},
+			time.Minute,
+			5*time.Second,
+		)
+
+		// fund ica, send tokens from chain b val to ica on chain b
+		valChainBKey, err := validatorChainB.keyInfo.GetAddress()
+		s.Require().NoError(err)
+		valChainBAddr := valChainBKey.String()
+
+		s.execBankSend(s.chainB, 0, valChainBAddr, icaAddress, tokenAmount.String(), fees.String(), false)
+
+		s.Require().Eventually(
+			func() bool {
+				afterSenderICABalance, err := getSpecificBalance(chainBAPI, icaAddress, uatomDenom)
+				s.Require().NoError(err)
+				return afterSenderICABalance.IsEqual(tokenAmount)
+			},
+			time.Minute,
+			5*time.Second,
 		)
 	})
 }

@@ -238,6 +238,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 				5*time.Second,
 			)
 
+			paidFeeAmt := math.LegacyMustNewDecFromStr(highGlobalFeeAmt).Mul(math.LegacyNewDec(gas)).String()
 			paidFeeAmtHigherMinGasLowerGalobalFee := math.LegacyMustNewDecFromStr(minGasPrice).
 				Quo(math.LegacyNewDec(2)).String()
 

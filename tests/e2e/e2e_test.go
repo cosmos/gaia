@@ -10,6 +10,7 @@ import (
 )
 
 func (s *IntegrationTestSuite) TestGov() {
+
 	s.SendTokensFromNewGovAccount()
 	s.GovSoftwareUpgrade()
 	s.GovCancelSoftwareUpgrade()
@@ -18,6 +19,7 @@ func (s *IntegrationTestSuite) TestGov() {
 
 // globalfee in genesis is set to be "0.00001uatom"
 func (s *IntegrationTestSuite) TestQueryGlobalFeesInGenesis() {
+
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	feeInGenesis, err := sdk.ParseDecCoins(initialGlobalFeeAmt + uatomDenom)
 	s.Require().NoError(err)
@@ -106,9 +108,9 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 			s.proposalCounter++
 			s.T().Logf("Proposal number: %d", s.proposalCounter)
 			s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change global fees empty")
-			s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, fees.String(), "param-change", s.proposalCounter, configFile("proposal_globalfee.json"))
-			s.depositGovProposal(chainAAPIEndpoint, submitter, fees.String(), s.proposalCounter)
-			s.voteGovProposal(chainAAPIEndpoint, submitter, fees.String(), s.proposalCounter, "yes", false)
+			s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, standardFees.String(), "param-change", s.proposalCounter, configFile("proposal_globalfee.json"))
+			s.depositGovProposal(chainAAPIEndpoint, submitter, standardFees.String(), s.proposalCounter)
+			s.voteGovProposal(chainAAPIEndpoint, submitter, standardFees.String(), s.proposalCounter, "yes", false)
 
 			// query the proposal status and new fee
 			s.Require().Eventually(
@@ -157,9 +159,9 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 			s.proposalCounter++
 			s.T().Logf("Proposal number: %d", s.proposalCounter)
 			s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change global fees empty")
-			s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, fees.String(), "param-change", s.proposalCounter, configFile("proposal_globalfee.json"))
-			s.depositGovProposal(chainAAPIEndpoint, submitter, fees.String(), s.proposalCounter)
-			s.voteGovProposal(chainAAPIEndpoint, submitter, fees.String(), s.proposalCounter, "yes", false)
+			s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, standardFees.String(), "param-change", s.proposalCounter, configFile("proposal_globalfee.json"))
+			s.depositGovProposal(chainAAPIEndpoint, submitter, standardFees.String(), s.proposalCounter)
+			s.voteGovProposal(chainAAPIEndpoint, submitter, standardFees.String(), s.proposalCounter, "yes", false)
 
 			// query the proposal status and new fee
 			s.Require().Eventually(
@@ -372,6 +374,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 }
 
 func (s *IntegrationTestSuite) TestByPassMinFeeWithdrawReward() {
+
 	paidFeeAmt := math.LegacyMustNewDecFromStr(minGasPrice).Mul(math.LegacyNewDec(gas)).String()
 	payee, err := s.chainA.validators[0].keyInfo.GetAddress()
 	s.Require().NoError(err)
@@ -391,6 +394,7 @@ func (s *IntegrationTestSuite) TestByPassMinFeeWithdrawReward() {
 
 // todo add fee test with wrong denom order
 func (s *IntegrationTestSuite) TestStaking() {
+
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
 	validatorA := s.chainA.validators[0]

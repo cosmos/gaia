@@ -77,33 +77,33 @@ func (s *IntegrationTestSuite) GroupsSendMsgTest() {
 	s.setupGroupsSuite()
 
 	s.T().Logf("Creating Group")
-	s.execCreateGroup(s.chainA, 0, adminAddr, "Cosmos Hub Group", filepath.Join(gaiaConfigPath, originalMembersFilename), fees.String())
+	s.execCreateGroup(s.chainA, 0, adminAddr, "Cosmos Hub Group", filepath.Join(gaiaConfigPath, originalMembersFilename), standardFees.String())
 	membersRes, err := queryGroupMembers(chainAAPIEndpoint, 1)
 	s.Require().NoError(err)
 	s.Assert().Equal(len(membersRes.Members), 3)
 
 	s.T().Logf("Adding New Group Member")
-	s.execUpdateGroupMembers(s.chainA, 0, adminAddr, strconv.Itoa(groupId), filepath.Join(gaiaConfigPath, addMemberFilename), fees.String())
+	s.execUpdateGroupMembers(s.chainA, 0, adminAddr, strconv.Itoa(groupId), filepath.Join(gaiaConfigPath, addMemberFilename), standardFees.String())
 	membersRes, err = queryGroupMembers(chainAAPIEndpoint, 1)
 	s.Require().NoError(err)
 	s.Assert().Equal(len(membersRes.Members), 4)
 
 	s.T().Logf("Removing New Group Member")
-	s.execUpdateGroupMembers(s.chainA, 0, adminAddr, strconv.Itoa(groupId), filepath.Join(gaiaConfigPath, removeMemberFilename), fees.String())
+	s.execUpdateGroupMembers(s.chainA, 0, adminAddr, strconv.Itoa(groupId), filepath.Join(gaiaConfigPath, removeMemberFilename), standardFees.String())
 	membersRes, err = queryGroupMembers(chainAAPIEndpoint, 1)
 	s.Require().NoError(err)
 	s.Assert().Equal(len(membersRes.Members), 3)
 
 	s.T().Logf("Creating Group Threshold Decision Policy")
 	s.writeGroupPolicies(s.chainA, thresholdPolicyFilename, percentagePolicyFilename, thresholdPolicy, percentagePolicy)
-	s.executeCreateGroupPolicy(s.chainA, 0, adminAddr, strconv.Itoa(groupId), thresholdPolicyMetadata, filepath.Join(gaiaConfigPath, thresholdPolicyFilename), fees.String())
+	s.executeCreateGroupPolicy(s.chainA, 0, adminAddr, strconv.Itoa(groupId), thresholdPolicyMetadata, filepath.Join(gaiaConfigPath, thresholdPolicyFilename), standardFees.String())
 	policies, err := queryGroupPolicies(chainAAPIEndpoint, groupId)
 	s.Require().NoError(err)
 	policy, err := getPolicy(policies.GroupPolicies, thresholdPolicyMetadata, groupId)
 	s.Require().NoError(err)
 
 	s.T().Logf("Funding Group Threshold Decision Policy")
-	s.execBankSend(s.chainA, 0, adminAddr, policy.Address, depositAmount.String(), fees.String(), false)
+	s.execBankSend(s.chainA, 0, adminAddr, policy.Address, depositAmount.String(), standardFees.String(), false)
 	s.verifyBalanceChange(chainAAPIEndpoint, depositAmount, policy.Address)
 
 	s.writeGroupProposal(s.chainA, policy.Address, adminAddr, sendAmount, proposalMsgSendPath)
@@ -132,7 +132,7 @@ func (s *IntegrationTestSuite) GroupsSendMsgTest() {
 
 	proposalId++
 	s.T().Logf("Creating Group Percentage Decision Policy")
-	s.executeCreateGroupPolicy(s.chainA, 0, adminAddr, strconv.Itoa(groupId), percentagePolicyMetadata, filepath.Join(gaiaConfigPath, percentagePolicyFilename), fees.String())
+	s.executeCreateGroupPolicy(s.chainA, 0, adminAddr, strconv.Itoa(groupId), percentagePolicyMetadata, filepath.Join(gaiaConfigPath, percentagePolicyFilename), standardFees.String())
 	policies, err = queryGroupPolicies(chainAAPIEndpoint, 1)
 	s.Require().NoError(err)
 	policy, err = getPolicy(policies.GroupPolicies, percentagePolicyMetadata, 1)

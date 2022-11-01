@@ -336,8 +336,8 @@ func (s *IntegrationTestSuite) execBankSendBatch(
 			}
 		}(i)
 
-		wg.Wait()
 	}
+	wg.Wait()
 
 	return sucessBankSendCount.successCount
 }

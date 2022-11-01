@@ -43,6 +43,6 @@ community members, including:
 
 - [Forum](http://forum.cosmos.network/)
 - [Reddit](http://reddit.com/r/cosmosnetwork)
-- [Telegram](https://t.me/cosmosproject)
+- [Telegram](https://t.me/atomgov)
 - anywhere else you might interact with members of the Cosmos community!
 

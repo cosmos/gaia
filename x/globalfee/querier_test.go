@@ -19,10 +19,9 @@ import (
 type testSuite struct {
 	suite.Suite
 
-	app *gaia.GaiaApp
-	ctx sdk.Context
-
-	queryClient *globalfee.GrpcQuerier
+	app         *gaia.GaiaApp
+	ctx         sdk.Context
+	queryClient globalfee.GrpcQuerier
 }
 
 func TestGRPCQueryMinimumGasPricesSuite(t *testing.T) {
@@ -32,32 +31,38 @@ func TestGRPCQueryMinimumGasPricesSuite(t *testing.T) {
 func (s *testSuite) TestGRPCQueryMinimumGasPrices() {
 	s.setup()
 
-	ctx, queryClient := s.ctx, s.queryClient
-	response, err := queryClient.MinimumGasPrices(ctx, &types.QueryMinimumGasPricesRequest{})
-	s.Require().Error(err)
+	// MinimumGasPrices: empty coins
+	emptyCoins := sdk.DecCoins{}
+	globalFeeParams := types.Params{
+		MinimumGasPrices: emptyCoins,
+	}
+	s.setupGrpcQuerier(&globalFeeParams)
+	response, err := s.queryClient.MinimumGasPrices(s.ctx, &types.QueryMinimumGasPricesRequest{})
+	s.Require().NoError(err)
 	s.Require().Equal(response.MinimumGasPrices.String(), sdk.DecCoins{}.String())
 
+	// MinimumGasPrices: zero coin
 	zeroStake := sdk.DecCoins{sdk.NewDecCoin("stake", sdk.ZeroInt())}
-	globalFeeParams := &types.Params{
+	globalFeeParams = types.Params{
 		MinimumGasPrices: zeroStake,
 	}
-	s.setupGrpcQuerier(globalFeeParams)
-	response, err = queryClient.MinimumGasPrices(ctx, &types.QueryMinimumGasPricesRequest{})
-	s.Require().Error(err)
+	s.setupGrpcQuerier(&globalFeeParams)
+	response, err = s.queryClient.MinimumGasPrices(s.ctx, &types.QueryMinimumGasPricesRequest{})
+	s.Require().NoError(err)
 	s.Require().Equal(response.MinimumGasPrices.String(), zeroStake.String())
 
+	// MinimumGasPrices: mix coins
 	mixCoins := sdk.DecCoins{
 		sdk.NewDecCoin("photon", sdk.OneInt()),
 		sdk.NewDecCoin("stake", sdk.ZeroInt()),
 	}
-	globalFeeParams1 := types.Params{
+	globalFeeParams = types.Params{
 		MinimumGasPrices: mixCoins,
 	}
-	s.setupGrpcQuerier(&globalFeeParams1)
-	response, err = queryClient.MinimumGasPrices(ctx, &types.QueryMinimumGasPricesRequest{})
-	s.Require().Error(err)
+	s.setupGrpcQuerier(&globalFeeParams)
+	response, err = s.queryClient.MinimumGasPrices(s.ctx, &types.QueryMinimumGasPricesRequest{})
+	s.Require().NoError(err)
 	s.Require().Equal(response.MinimumGasPrices.String(), mixCoins.String())
-
 }
 
 func (s *testSuite) setup() {
@@ -79,5 +84,5 @@ func (s *testSuite) setupGrpcQuerier(globalFeeParams *types.Params) {
 	subspace := s.app.GetSubspace(globalfee.ModuleName)
 	subspace.SetParamSet(s.ctx, globalFeeParams)
 
-	*s.queryClient = globalfee.NewGrpcQuerier(subspace)
+	s.queryClient = globalfee.NewGrpcQuerier(subspace)
 }

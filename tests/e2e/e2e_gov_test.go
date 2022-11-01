@@ -181,11 +181,12 @@ func (s *IntegrationTestSuite) GovCreateICA() {
 
 		s.proposalCounter++
 		s.submitNewGovProposal(chainAAPI, sender, s.proposalCounter, configFile(proposalICACreate))
+		s.depositGovProposal(chainAAPI, sender, standardFees.String(), s.proposalCounter)
 		s.voteGovProposal(chainAAPI, sender, standardFees.String(), s.proposalCounter, "yes", false)
 
 		s.Require().Eventually(
 			func() bool {
-				icaAddr, err := queryICAaddr(chainAAPI, sender, icaConnectionID)
+				icaAddr, err := queryICAAddress(chainAAPI, govModuleAddress, icaConnectionID)
 				s.T().Logf("%s's interchain account on chain %s: %s", sender, s.chainA.id, icaAddr)
 				s.Require().NoError(err)
 				return sender != "" && icaAddr != ""
@@ -198,7 +199,7 @@ func (s *IntegrationTestSuite) GovCreateICA() {
 		var icaAddress string
 		s.Require().Eventually(
 			func() bool {
-				icaAddress, err = queryICAaddr(chainAAPI, govModuleAddress, icaConnectionID)
+				icaAddress, err = queryICAAddress(chainBAPI, govModuleAddress, icaConnectionID)
 				s.Require().NoError(err)
 
 				return err == nil && icaAddress != ""

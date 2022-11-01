@@ -69,6 +69,7 @@ const (
 	icaIBCSend        = "ica_ibc_send.json"
 	icaConnectionID   = "connection-0"
 	icaChannelID      = "channel-0"
+	icaPortID         = "transfer"
 
 	// the test globalfee in genesis is the same as minGasPrice
 	// global fee lower/higher than min_gas_price
@@ -89,6 +90,7 @@ const (
 )
 
 var (
+	icaVersion                 = fmt.Sprintf(`{"version": "ics27-1","controller_connection_id": "%s","host_connection_id": "%s","encoding": "proto3","tx_type": "sdk_multi_msg"}`, icaConnectionID, icaConnectionID)
 	gaiaConfigPath             = filepath.Join(gaiaHomePath, "config")
 	stakingAmount              = math.NewInt(100000000000)
 	stakingAmountCoin          = sdk.NewCoin(uatomDenom, stakingAmount)
@@ -687,9 +689,19 @@ func (s *IntegrationTestSuite) writeGovCancelUpgradeSoftwareProposal(c *chain) {
 }
 
 func (s *IntegrationTestSuite) writeGovICAProposal(c *chain) {
+
+	/*
+	   "@type": "/ibc.applications.interchain_accounts.controller.v1.MsgRegisterInterchainAccount",
+	   "connection_id": "connection-0",
+	   "owner": "cosmos1afk9zr2hn2jsac63h4hm60vl9z3e5u69gndzf7c99cqge3vzwjzsfwkgpd",
+	   "version":
+	*/
+
+	ibc
 	proposalICACreateJSON, err := createGovProposalJSON(&icatypes.MsgRegisterAccount{
 		Owner:        govModuleAddress,
 		ConnectionId: icaConnectionID,
+		Version:      icaVersion,
 	})
 	s.Require().NoError(err)
 

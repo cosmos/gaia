@@ -25,7 +25,7 @@ func (s *IntegrationTestSuite) TestICA_1_Register() {
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 		s.Require().Eventually(
 			func() bool {
-				icaAddr, err := queryICAaddr(chainAAPIEndpoint, owner, icaConnectionID)
+				icaAddr, err := queryICAAddress(chainAAPIEndpoint, owner, icaConnectionID)
 				s.T().Logf("%s's interchain account on chain %s: %s", owner, s.chainB.id, icaAddr)
 				s.Require().NoError(err)
 				return owner != "" && icaAddr != ""
@@ -49,7 +49,7 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 		var ica string
 		s.Require().Eventually(
 			func() bool {
-				ica, err = queryICAaddr(chainAAPIEndpoint, icaOwner, icaConnectionID)
+				ica, err = queryICAAddress(chainAAPIEndpoint, icaOwner, icaConnectionID)
 				s.Require().NoError(err)
 
 				return err == nil && ica != ""

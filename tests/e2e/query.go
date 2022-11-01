@@ -89,8 +89,9 @@ func queryGlobalFees(endpoint string) (amt sdk.DecCoins, err error) {
 	return fees.MinimumGasPrices, nil
 }
 
-func queryICAaddr(endpoint, owner, connectionID string) (string, error) {
-	resp, err := http.Get(fmt.Sprintf("%s/gaia/icamauth/v1beta1/interchain_account/owner/%s/connection/%s", endpoint, owner, connectionID))
+func queryICAAddress(endpoint, owner, connectionID string) (string, error) {
+	url := fmt.Sprintf("%s/gaia/icamauth/v1beta1/interchain_account/owner/%s/connection/%s", endpoint, owner, connectionID)
+	resp, err := http.Get(url)
 	if err != nil {
 		return "", fmt.Errorf("failed to execute HTTP request: %w", err)
 	}

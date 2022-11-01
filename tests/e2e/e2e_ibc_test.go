@@ -302,7 +302,6 @@ Steps:
 3. Account 1 on Chain 1 sends x tokens to Account 2 on Chain 1 via Account 1 on Chain 2
 4. Check Balance of Account 1 on Chain 1, confirm it is original minus x tokens
 5. Check Balance of Account 2 on Chain 1, confirm it is original plus x tokens
-
 */
 func (s *IntegrationTestSuite) TestMultihopIBCTokenTransfer() {
 	time.Sleep(30 * time.Second)
@@ -325,12 +324,9 @@ func (s *IntegrationTestSuite) TestMultihopIBCTokenTransfer() {
 		s.Require().NoError(err)
 		recipient := address.String()
 
-		forwardPort := "transfer"
-		forwardChannel := "channel-0"
-
 		// Address should be formatted like:
 		// {intermediate_refund_address}|{foward_port}/{forward_channel}:{final_destination_address}
-		compiledRecipient := middlehop + "|" + forwardPort + "/" + forwardChannel + ":" + recipient
+		compiledRecipient := middlehop + "|" + icaPortID + "/" + icaChannelID + ":" + recipient
 
 		tokenAmt := 3300000000
 
@@ -406,12 +402,9 @@ func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
 		s.Require().NoError(err)
 		recipient := strings.Replace(address.String(), "cosmos", "foobar", 1) // this should be an invalid recipient but only fail the final send so it will be returned
 
-		forwardPort := "transfer"
-		forwardChannel := "channel-0"
-
 		// Address should be formatted like:
 		// {intermediate_refund_address}|{foward_port}/{forward_channel}:{final_destination_address}
-		compiledRecipient := middlehop + "|" + forwardPort + "/" + forwardChannel + ":" + recipient
+		compiledRecipient := middlehop + "|" + icaPortID + "/" + icaChannelID + ":" + recipient
 
 		tokenAmt := 3300000000
 

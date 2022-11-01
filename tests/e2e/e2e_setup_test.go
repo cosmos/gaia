@@ -34,7 +34,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/group"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	icatypes "github.com/cosmos/gaia/v8/x/icamauth/types"
+	icamauthtypes "github.com/cosmos/gaia/v8/x/icamauth/types"
 	ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
 	"github.com/ory/dockertest/v3"
@@ -689,16 +689,13 @@ func (s *IntegrationTestSuite) writeGovCancelUpgradeSoftwareProposal(c *chain) {
 }
 
 func (s *IntegrationTestSuite) writeGovICAProposal(c *chain) {
-
 	/*
 	   "@type": "/ibc.applications.interchain_accounts.controller.v1.MsgRegisterInterchainAccount",
 	   "connection_id": "connection-0",
 	   "owner": "cosmos1afk9zr2hn2jsac63h4hm60vl9z3e5u69gndzf7c99cqge3vzwjzsfwkgpd",
 	   "version":
 	*/
-
-	ibc
-	proposalICACreateJSON, err := createGovProposalJSON(&icatypes.MsgRegisterAccount{
+	proposalICACreateJSON, err := createGovProposalJSON(&icamauthtypes.MsgRegisterAccount{
 		Owner:        govModuleAddress,
 		ConnectionId: icaConnectionID,
 		Version:      icaVersion,
@@ -717,7 +714,7 @@ func (s *IntegrationTestSuite) writeGovICAProposal(c *chain) {
 	)
 	s.Require().NoError(err)
 
-	proposalICASendJSON, err := createGovProposalJSON(&icatypes.MsgSubmitTx{
+	proposalICASendJSON, err := createGovProposalJSON(&icamauthtypes.MsgSubmitTx{
 		Owner:        govModuleAddress,
 		ConnectionId: icaConnectionID,
 		Msg:          protoMsg,

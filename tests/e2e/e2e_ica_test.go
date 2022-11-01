@@ -65,7 +65,7 @@ func (s *IntegrationTestSuite) icaBankSend() {
 		s.Require().NoError(err)
 		sender := senderAddr.String()
 
-		s.execBankSend(s.chainB, 0, sender, ica, tokenAmount.String(), fees.String(), false)
+		s.execBankSend(s.chainB, 0, sender, ica, tokenAmount.String(), standardFees.String(), false)
 
 		s.Require().Eventually(
 			func() bool {

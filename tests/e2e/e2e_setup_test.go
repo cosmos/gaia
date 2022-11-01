@@ -78,7 +78,7 @@ var (
 	stakingAmount              = math.NewInt(100000000000)
 	stakingAmountCoin          = sdk.NewCoin(uatomDenom, stakingAmount)
 	tokenAmount                = sdk.NewCoin(uatomDenom, math.NewInt(3300000000)) // 3,300uatom
-	fees                       = sdk.NewCoin(uatomDenom, math.NewInt(330000))     // 0.33uatom
+	standardFees               = sdk.NewCoin(uatomDenom, math.NewInt(330000))     // 0.33uatom
 	depositAmount              = sdk.NewCoin(uatomDenom, math.NewInt(10000000))   // 10uatom
 	distModuleAddress          = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
 	govModuleAddress           = authtypes.NewModuleAddress(gov.ModuleName).String()
@@ -162,6 +162,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
+
 	if str := os.Getenv("GAIA_E2E_SKIP_CLEANUP"); len(str) > 0 {
 		skipCleanup, err := strconv.ParseBool(str)
 		s.Require().NoError(err)
@@ -671,8 +672,10 @@ func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height 
 	upgradeProposalBody, err := cdc.MarshalJSON(proposalSendMsg)
 	s.Require().NoError(err)
 
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_3.json"), upgradeProposalBody)
+	path := filepath.Join(c.validators[0].configDir(), "config", "proposal_3.json")
+	err = writeFile(path, upgradeProposalBody)
 	s.Require().NoError(err)
+	fmt.Println("saved proposal_3.json to ", path)
 }
 
 func (s *IntegrationTestSuite) writeGovCancelUpgradeSoftwareProposal(c *chain) {
@@ -767,5 +770,7 @@ func (s *IntegrationTestSuite) writeICAtx(cmd []string, path string) {
 }
 
 func configFile(filename string) string {
-	return filepath.Join(gaiaConfigPath, filename)
+	filepath := filepath.Join(gaiaConfigPath, filename)
+	fmt.Println("retrieving filepath ", filepath)
+	return filepath
 }

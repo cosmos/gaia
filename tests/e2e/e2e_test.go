@@ -9,6 +9,7 @@ import (
 )
 
 func (s *IntegrationTestSuite) TestGov() {
+
 	s.SendTokensFromNewGovAccount()
 	s.GovSoftwareUpgrade()
 	s.GovCancelSoftwareUpgrade()
@@ -16,6 +17,7 @@ func (s *IntegrationTestSuite) TestGov() {
 
 // globalfee in genesis is set to be "0.00001uatom"
 func (s *IntegrationTestSuite) TestQueryGlobalFeesInGenesis() {
+
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	feeInGenesis, err := sdk.ParseDecCoins(initialGlobalFeeAmt + uatomDenom)
 	s.Require().NoError(err)
@@ -64,6 +66,7 @@ test6: gov propose change back to initial globalfee = 0.00001photon, This is for
 */
 
 func (s *IntegrationTestSuite) TestGlobalFees() {
+
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
 	submitterAddr, err := s.chainA.validators[0].keyInfo.GetAddress()
@@ -96,7 +99,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 	// prepare gov globalfee proposal
 	emptyGlobalFee := sdk.DecCoins{}
 	proposalCounter++
-	s.govProposeNewGlobalfee(emptyGlobalFee, proposalCounter, submitter, fees.String())
+	s.govProposeNewGlobalfee(emptyGlobalFee, proposalCounter, submitter, standardFees.String())
 	paidFeeAmt := math.LegacyMustNewDecFromStr(minGasPrice).Mul(math.LegacyNewDec(gas)).String()
 
 	s.T().Logf("test case: empty global fee, globalfee=%s, min_gas_price=%s", emptyGlobalFee.String(), minGasPrice+uatomDenom)
@@ -148,7 +151,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 	// prepare gov globalfee proposal
 	lowGlobalFee := sdk.DecCoins{sdk.NewDecCoinFromDec(uatomDenom, sdk.MustNewDecFromStr(lowGlobalFeesAmt))}
 	proposalCounter++
-	s.govProposeNewGlobalfee(lowGlobalFee, proposalCounter, submitter, fees.String())
+	s.govProposeNewGlobalfee(lowGlobalFee, proposalCounter, submitter, standardFees.String())
 
 	paidFeeAmt = math.LegacyMustNewDecFromStr(minGasPrice).Mul(math.LegacyNewDec(gas)).String()
 	paidFeeAmtLowMinGasHighGlobalFee := math.LegacyMustNewDecFromStr(lowGlobalFeesAmt).
@@ -342,6 +345,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 }
 
 func (s *IntegrationTestSuite) TestByPassMinFeeWithdrawReward() {
+
 	paidFeeAmt := math.LegacyMustNewDecFromStr(minGasPrice).Mul(math.LegacyNewDec(gas)).String()
 	payee, err := s.chainA.validators[0].keyInfo.GetAddress()
 	s.Require().NoError(err)
@@ -361,6 +365,7 @@ func (s *IntegrationTestSuite) TestByPassMinFeeWithdrawReward() {
 
 // todo add fee test with wrong denom order
 func (s *IntegrationTestSuite) TestStaking() {
+
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
 	validatorA := s.chainA.validators[0]

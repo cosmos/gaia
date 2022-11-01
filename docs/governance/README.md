@@ -20,6 +20,8 @@ If you'd like to draft a proposal, start [here](./best-practices.md).
 See the contents below for more background on the governance system,
 the different types of proposals, and how to submit one.
 
+ATOM stakers can find active on-chain proposals to vote on [here](https://www.mintscan.io/cosmos/proposals).
+
 ## Contents
 
 - [On-Chain Process](./process.md)
@@ -41,5 +43,6 @@ community members, including:
 
 - [Forum](http://forum.cosmos.network/)
 - [Reddit](http://reddit.com/r/cosmosnetwork)
-- [Telegram (Governance Working Group)](https://t.me/hubgov)
+- [Telegram](https://t.me/cosmosproject)
 - anywhere else you might interact with members of the Cosmos community!
+

@@ -78,7 +78,7 @@ export HOME1=$HOME/test-1
 ```
 
 ```shell
-gaiad tx icamauth register --from alice --connection-id connection-0 --gas-prices 0.03stake --home test-0 --home $HOME0
+gaiad tx icamauth register --from alice --connection-id connection-0 --gas-prices 0.04stake --home $HOME0
 ```
 query alice's ica:
 ```shell

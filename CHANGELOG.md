@@ -49,6 +49,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
   Distribution, Encode, Evidence, FeeGrant Global Fee, Legacy Gov, New Gov, Groups,
   IBC, ICA, packet forwarding middleware, Slashing, Staking, and Vesting module.
 * (tests) use gaiad to swap out [Ignite](https://github.com/ignite/cli) in [liveness tests](https://github.com/cosmos/gaia/blob/main/.github/workflows/test.yml).
+* (gaia) [#1845](https://github.com/cosmos/gaia/pull/1447) Add bech32-convert command to gaiad 
+
 
 ## [v7.0.2] -2022-05-09
 

@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestParamsEqual(t *testing.T) {
+func TestDefaultParams(t *testing.T) {
 	p := DefaultParams()
 	require.EqualValues(t, p.MinimumGasPrices, sdk.DecCoins{})
 }

@@ -26,18 +26,6 @@ func Test_validateParams(t *testing.T) {
 			sdk.Coins{sdk.NewCoin("photon", math.OneInt())},
 			true,
 		},
-		//"coin denom does not match the denom reg expr, fail": {
-		//	sdk.DecCoins{
-		//		sdk.NewDecCoin("**!", math.OneInt()),
-		//	},
-		//	true,
-		//},
-		//"coin amount is negtive, fail": {
-		//	sdk.DecCoins{
-		//		sdk.NewDecCoin("photon", math.NewInt(-1)),
-		//	},
-		//	true,
-		//},
 		"coins amounts are zero, pass": {
 			sdk.DecCoins{
 				sdk.NewDecCoin("atom", math.ZeroInt()),

@@ -168,7 +168,7 @@ func (s *IntegrationTestSuite) GovCreateICA() {
 			validatorChainA = s.chainA.validators[0]
 			validatorChainB = s.chainB.validators[0]
 			resourceChainA  = s.valResources[s.chainA.id][0]
-			resourceChainB  = s.valResources[s.chainA.id][0]
+			resourceChainB  = s.valResources[s.chainB.id][0]
 			chainAAPI       = fmt.Sprintf("http://%s", resourceChainA.GetHostPort(portID))
 			chainBAPI       = fmt.Sprintf("http://%s", resourceChainB.GetHostPort(portID))
 		)

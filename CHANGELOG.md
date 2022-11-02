@@ -38,7 +38,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 
 ## [v8.0.0] - 2022-10-31
-* (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.46.3](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.46.3). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.46.3/CHANGELOG.md) for details.
+* (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.46.4](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.46.4). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.46.4/CHANGELOG.md) for details.
 * (gaia) [#1573](https://github.com/cosmos/gaia/issues/1573), [#1576](https://github.com/cosmos/gaia/issues/1576) update [cosmos ledger](https://github.com/cosmos/ledger-go) version to [v.0.9.3](https://github.com/cosmos/ledger-go/releases/tag/v0.9.3).
 * (gaia) bump [Liquidity](https://github.com/Gravity-Devs/liquidity) module to [v2.0.1](https://github.com/Gravity-Devs/liquidity/releases/tag/v2.0.1).
 * (gaia) bump [ibc-go](https://github.com/cosmos/ibc-go) module to [v5.0.1](https://github.com/cosmos/ibc-go/releases/tag/v5.0.1). See [CHANGELOG.md](https://github.com/cosmos/ibc-go/blob/v5.0.1/CHANGELOG.md) for details.
@@ -51,6 +51,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
   Distribution, Encode, Evidence, FeeGrant Global Fee, Legacy Gov, New Gov, Groups,
   IBC, ICA, packet forwarding middleware, Slashing, Staking, and Vesting module.
 * (tests) use gaiad to swap out [Ignite](https://github.com/ignite/cli) in [liveness tests](https://github.com/cosmos/gaia/blob/main/.github/workflows/test.yml).
+* (gaia) [#1845](https://github.com/cosmos/gaia/pull/1447) Add bech32-convert command to gaiad 
+
 
 ## [v7.1.0] -2022-10-14
 * (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.9](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.9) to fix the security vulnerability! See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.9/CHANGELOG.md) for details.

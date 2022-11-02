@@ -35,14 +35,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 # Changelog
 
 ## [Unreleased]
-<<<<<<< HEAD
-* (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.46.3](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.46.3). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.46.3/CHANGELOG.md) for details.
-=======
 
 
 ## [v8.0.0] - 2022-10-31
 * (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.46.4](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.46.4). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.46.4/CHANGELOG.md) for details.
->>>>>>> f0397fd (prepare v8 release (#1860))
 * (gaia) [#1573](https://github.com/cosmos/gaia/issues/1573), [#1576](https://github.com/cosmos/gaia/issues/1576) update [cosmos ledger](https://github.com/cosmos/ledger-go) version to [v.0.9.3](https://github.com/cosmos/ledger-go/releases/tag/v0.9.3).
 * (gaia) bump [Liquidity](https://github.com/Gravity-Devs/liquidity) module to [v2.0.1](https://github.com/Gravity-Devs/liquidity/releases/tag/v2.0.1).
 * (gaia) bump [ibc-go](https://github.com/cosmos/ibc-go) module to [v5.0.1](https://github.com/cosmos/ibc-go/releases/tag/v5.0.1). See [CHANGELOG.md](https://github.com/cosmos/ibc-go/blob/v5.0.1/CHANGELOG.md) for details.

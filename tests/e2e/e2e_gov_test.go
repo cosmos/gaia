@@ -180,7 +180,7 @@ func (s *IntegrationTestSuite) GovCreateICA() {
 		sender := senderAddress.String()
 
 		s.proposalCounter++
-		s.submitNewGovProposal(chainAAPI, sender, s.proposalCounter, configFile(proposalICACreate))
+		s.submitNewGovProposal(chainAAPI, sender, s.proposalCounter, configFile(proposalICAGovCreate))
 		s.depositGovProposal(chainAAPI, sender, standardFees.String(), s.proposalCounter)
 		s.voteGovProposal(chainAAPI, sender, standardFees.String(), s.proposalCounter, "yes", false)
 

@@ -50,26 +50,28 @@ import (
 )
 
 const (
-	gaiadBinary       = "gaiad"
-	txCommand         = "tx"
-	queryCommand      = "query"
-	keysCommand       = "keys"
-	gaiaHomePath      = "/home/nonroot/.gaia"
-	photonDenom       = "photon"
-	uatomDenom        = "uatom"
-	initBalanceStr    = "110000000000stake,100000000000000000photon,100000000000000000uatom"
-	minGasPrice       = "0.00001"
-	proposal1         = "proposal.json"
-	proposal2         = "proposal_2.json"
-	proposal3         = "proposal_3.json"
-	proposal4         = "proposal_4.json"
-	proposalGlobalFee = "proposal_globalfee.json"
-	proposalICACreate = "proposal_ica_create.json"
-	proposalICASend   = "proposal_ica_send.json"
-	icaIBCSend        = "ica_ibc_send.json"
-	icaConnectionID   = "connection-0"
-	icaChannelID      = "channel-0"
-	icaPortID         = "transfer"
+	gaiadBinary            = "gaiad"
+	txCommand              = "tx"
+	queryCommand           = "query"
+	keysCommand            = "keys"
+	gaiaHomePath           = "/home/nonroot/.gaia"
+	photonDenom            = "photon"
+	uatomDenom             = "uatom"
+	initBalanceStr         = "110000000000stake,100000000000000000photon,100000000000000000uatom"
+	minGasPrice            = "0.00001"
+	proposal1              = "proposal.json"
+	proposal2              = "proposal_2.json"
+	proposal3              = "proposal_3.json"
+	proposal4              = "proposal_4.json"
+	proposalGlobalFee      = "proposal_globalfee.json"
+	proposalICAGovCreate   = "proposal_ica_gov_create.json"
+	proposalICAGovSend     = "proposal_ica_gov_send.json"
+	proposalICAGroupCreate = "proposal_ica_group_create.json"
+	proposalICAGroupSend   = "proposal_ica_group_send.json"
+	icaIBCSend             = "ica_ibc_send.json"
+	icaConnectionID        = "connection-0"
+	icaChannelID           = "channel-0"
+	icaPortID              = "transfer"
 
 	// the test globalfee in genesis is the same as minGasPrice
 	// global fee lower/higher than min_gas_price
@@ -689,12 +691,6 @@ func (s *IntegrationTestSuite) writeGovCancelUpgradeSoftwareProposal(c *chain) {
 }
 
 func (s *IntegrationTestSuite) writeGovICAProposal(c *chain) {
-	/*
-	   "@type": "/ibc.applications.interchain_accounts.controller.v1.MsgRegisterInterchainAccount",
-	   "connection_id": "connection-0",
-	   "owner": "cosmos1afk9zr2hn2jsac63h4hm60vl9z3e5u69gndzf7c99cqge3vzwjzsfwkgpd",
-	   "version":
-	*/
 	proposalICACreateJSON, err := createGovProposalJSON(&icamauthtypes.MsgRegisterAccount{
 		Owner:        govModuleAddress,
 		ConnectionId: icaConnectionID,
@@ -702,7 +698,7 @@ func (s *IntegrationTestSuite) writeGovICAProposal(c *chain) {
 	})
 	s.Require().NoError(err)
 
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalICACreate), proposalICACreateJSON)
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalICAGovCreate), proposalICACreateJSON)
 	s.Require().NoError(err)
 
 	protoMsg, err := codectypes.NewAnyWithValue(
@@ -721,7 +717,7 @@ func (s *IntegrationTestSuite) writeGovICAProposal(c *chain) {
 	})
 	s.Require().NoError(err)
 
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalICASend), proposalICASendJSON)
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalICAGovSend), proposalICASendJSON)
 	s.Require().NoError(err)
 }
 

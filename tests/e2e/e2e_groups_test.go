@@ -3,6 +3,8 @@ package e2e
 import (
 	"errors"
 	"fmt"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	icamauthtypes "github.com/cosmos/gaia/v8/x/icamauth/types"
 	"path/filepath"
 	"strconv"
 	"time"
@@ -69,7 +71,7 @@ Test Benchmarks:
 12. Validate proposal has passed by verifying Bob's balance has increased by expected amount
 13. Create percentage decision policy (percentage = 0.5, percentage of voting power required to pass a proposal)
 14. Query and validate policy successfully created
-15. Submit and vote NO with insufficient perfentage on a group proposal on behalf of the percentage decision policy to send tokens to bob
+15. Submit and vote NO with insufficient percentage on a group proposal on behalf of the percentage decision policy to send tokens to bob
 16. Validate that the proposal status is PROPOSAL_STATUS_REJECTED
 */
 func (s *IntegrationTestSuite) GroupsSendMsgTest() {
@@ -223,7 +225,56 @@ func (s *IntegrationTestSuite) writeGroupProposal(c *chain, policyAddress string
 	s.writeFile(c, filename, body)
 }
 
-func (s *IntegrationTestSuite) writeGroupPolicies(c *chain, thresholdFilename string, percentageFilename string, thresholdPolicy *group.ThresholdDecisionPolicy, percentagePolicy *group.PercentageDecisionPolicy) {
+func (s *IntegrationTestSuite) TestICAGroupPolicy() {
+	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	s.setupGroupsSuite()
+
+	s.T().Logf("Creating ICA Group")
+	s.execCreateGroup(s.chainA, 0, adminAddr, "ICA Group", filepath.Join(gaiaConfigPath, originalMembersFilename), standardFees.String())
+	membersRes, err := queryGroupMembers(chainAAPIEndpoint, 1)
+	s.Require().NoError(err)
+	s.Assert().Equal(len(membersRes.Members), 3)
+
+}
+
+func (s *IntegrationTestSuite) writeICAGroupPolicy(groupAddr string) {
+	proposalICACreateJSON, err := createGovProposalJSON(&icamauthtypes.MsgRegisterAccount{
+		Owner:        groupAddr,
+		ConnectionId: icaConnectionID,
+		Version:      icaVersion,
+	})
+	s.Require().NoError(err)
+
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalICAGovCreate), proposalICACreateJSON)
+	s.Require().NoError(err)
+
+	protoMsg, err := codectypes.NewAnyWithValue(
+		&banktypes.MsgSend{
+			FromAddress: govModuleAddress,
+			ToAddress:   govSendMsgRecipientAddress,
+			Amount:      []sdk.Coin{sendGovAmount},
+		},
+	)
+	s.Require().NoError(err)
+
+	proposalICASendJSON, err := createGovProposalJSON(&icamauthtypes.MsgSubmitTx{
+		Owner:        govModuleAddress,
+		ConnectionId: icaConnectionID,
+		Msg:          protoMsg,
+	})
+	s.Require().NoError(err)
+
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalICAGovSend), proposalICASendJSON)
+	s.Require().NoError(err)
+}
+
+func (s *IntegrationTestSuite) writeGroupPolicies(
+	c *chain,
+	thresholdFilename,
+	percentageFilename string,
+	thresholdPolicy *group.ThresholdDecisionPolicy,
+	percentagePolicy *group.PercentageDecisionPolicy,
+) {
 	thresholdBody, err := cdc.MarshalInterfaceJSON(thresholdPolicy)
 	s.Require().NoError(err)
 

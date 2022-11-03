@@ -2,14 +2,15 @@ package v8
 
 import (
 	"errors"
+	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	"github.com/cosmos/gaia/v8/app/keepers"
 	icacontrollertypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/controller/types"
 	icahosttypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/host/types"
-
-	"github.com/cosmos/gaia/v8/app/keepers"
 )
 
 func CreateUpgradeHandler(
@@ -18,6 +19,15 @@ func CreateUpgradeHandler(
 	keepers *keepers.AppKeepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+
+		// retrieve metadata
+		actualMetadata := make([]banktypes.Metadata, 0)
+		keepers.BankKeeper.IterateAllDenomMetaData(ctx, func(metadata banktypes.Metadata) bool {
+			actualMetadata = append(actualMetadata, metadata)
+			return false
+		})
+		fmt.Println("actualMetadata", actualMetadata)
+
 		// Add atom name and symbol into the bank keeper
 		atomMetaData, found := keepers.BankKeeper.GetDenomMetaData(ctx, "uatom")
 		if !found {

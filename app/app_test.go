@@ -1,7 +1,6 @@
 package gaia_test
 
 import (
-	"os"
 	"testing"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -11,6 +10,7 @@ import (
 	db "github.com/tendermint/tm-db"
 
 	gaia "github.com/cosmos/gaia/v8/app"
+	gaiahelpers "github.com/cosmos/gaia/v8/app/helpers"
 )
 
 type EmptyAppOptions struct{}
@@ -33,23 +33,12 @@ func TestGaiaApp_BlockedModuleAccountAddrs(t *testing.T) {
 	)
 	blockedAddrs := app.BlockedModuleAccountAddrs()
 
-	// TODO: Blocked on updating to v0.46.x
-	// require.NotContains(t, blockedAddrs, authtypes.NewModuleAddress(grouptypes.ModuleName).String())
 	require.NotContains(t, blockedAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 }
 
 func TestGaiaApp_Export(t *testing.T) {
-	logger := log.NewTMLogger(log.NewSyncWriter(os.Stdout))
-	app := gaia.NewGaiaApp(
-		logger,
-		db.NewMemDB(),
-		nil,
-		true,
-		map[int64]bool{},
-		gaia.DefaultNodeHome,
-		0,
-		gaia.MakeTestEncodingConfig(),
-		EmptyAppOptions{})
-	_, err := app.ExportAppStateAndValidators(false, []string{})
+	app := gaiahelpers.Setup(t, false, 1)
+
+	_, err := app.ExportAppStateAndValidators(true, []string{})
 	require.NoError(t, err, "ExportAppStateAndValidators should not have an error")
 }

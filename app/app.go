@@ -105,6 +105,7 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
+	ibctypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
 	ibcprovider "github.com/cosmos/interchain-security/x/ccv/provider"
 	ibcproviderclient "github.com/cosmos/interchain-security/x/ccv/provider/client"
 	ibcproviderkeeper "github.com/cosmos/interchain-security/x/ccv/provider/keeper"
@@ -922,4 +923,34 @@ func (app *GaiaApp) GetE2eSlashingKeeper() e2e.E2eSlashingKeeper {
 // Returns a distribution keeper interface with more capabilities than the expected_keepers interface
 func (app *GaiaApp) GetE2eDistributionKeeper() e2e.E2eDistributionKeeper {
 	return app.DistrKeeper
+}
+
+// ibc-go additions
+func (app *GaiaApp) GetBaseApp() *baseapp.BaseApp {
+	return app.BaseApp
+}
+
+func (app *GaiaApp) GetStakingKeeper() ibctypes.StakingKeeper {
+	return app.StakingKeeper
+}
+
+func (app *GaiaApp) GetIBCKeeper() *ibckeeper.Keeper {
+	return app.IBCKeeper
+}
+
+func (app *GaiaApp) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper {
+	return app.ScopedIBCKeeper
+}
+
+func (app *GaiaApp) GetTxConfig() client.TxConfig {
+	return MakeEncodingConfig().TxConfig
+}
+
+// Implemented by BaseApp
+func (app *GaiaApp) LastCommitID() sdk.CommitID {
+	return app.BaseApp.LastCommitID()
+}
+
+func (app *GaiaApp) LastBlockHeight() int64 {
+	return app.BaseApp.LastBlockHeight()
 }

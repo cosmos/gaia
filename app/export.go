@@ -73,7 +73,7 @@ func (app *GaiaApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs [
 	app.StakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypes.ValidatorI) (stop bool) {
 		_, err := app.DistrKeeper.WithdrawValidatorCommission(ctx, val.GetOperator())
 		if err != nil {
-			return true
+			app.Logger().Error(err.Error(), "ValOperatorAddress", val.GetOperator())
 		}
 		return false
 	})

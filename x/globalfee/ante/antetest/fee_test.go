@@ -555,6 +555,15 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			txCheck:         false,
 			expErr:          false,
 		},
+		"disable checkTx: no fee check. min_gas_price is low, global fee is low, tx fee's denom is not in global fees denoms set": {
+			minGasPrice:     minGasPrice,
+			globalFeeParams: globalfeeParamsLow,
+			gasPrice:        sdk.NewCoins(sdk.NewCoin("quark", sdk.ZeroInt())),
+			gasLimit:        newTestGasLimit(),
+			txMsg:           testdata.NewTestMsg(addr1),
+			txCheck:         false,
+			expErr:          false,
+		},
 	}
 	for name, testCase := range testCases {
 		s.Run(name, func() {

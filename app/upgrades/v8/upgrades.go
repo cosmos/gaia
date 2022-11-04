@@ -20,13 +20,28 @@ func CreateUpgradeHandler(
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 
-		// retrieve metadata
+		// // retrieve metadata
+		// actualMetadata := make([]banktypes.Metadata, 0)
+		// keepers.BankKeeper.IterateAllDenomMetaData(ctx, func(metadata banktypes.Metadata) bool {
+		// 	actualMetadata = append(actualMetadata, metadata)
+		// 	return false
+		// })
+		// fmt.Println("actualMetadata", actualMetadata)
+
 		actualMetadata := make([]banktypes.Metadata, 0)
 		keepers.BankKeeper.IterateAllDenomMetaData(ctx, func(metadata banktypes.Metadata) bool {
 			actualMetadata = append(actualMetadata, metadata)
+
+			fmt.Printf("base is: '%s'\n", metadata.Base)
+
+			actualMetadata, found := keepers.BankKeeper.GetDenomMetaData(ctx, metadata.Base)
+			if !found {
+				fmt.Println("wasn't able to retrieve with the same string that was just retrieved!!!")
+			} else {
+				fmt.Println("SUCCESS: actualMetadata", actualMetadata)
+			}
 			return false
 		})
-		fmt.Println("actualMetadata", actualMetadata)
 
 		// Add atom name and symbol into the bank keeper
 		atomMetaData, found := keepers.BankKeeper.GetDenomMetaData(ctx, "uatom")

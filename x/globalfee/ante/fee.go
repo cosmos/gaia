@@ -68,14 +68,18 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	allowedToBypassMinFee := containsOnlyBypassMinFeeMsgs && doesNotExceedMaxGasUsage
 
 	var allFees sdk.Coins
+	requiredGlobalFees, err := mfd.getGlobalFee(ctx, feeTx)
+	if err != nil {
+		panic(err)
+	}
 	requiredFees := getMinGasPrice(ctx, feeTx)
 
-	if ctx.IsCheckTx() && !simulate && !allowedToBypassMinFee {
+	if !ctx.IsCheckTx() && simulate {
+		return next(ctx, tx, simulate)
+	}
 
-		requiredGlobalFees, err := mfd.getGlobalFee(ctx, feeTx)
-		if err != nil {
-			panic(err)
-		}
+	if !allowedToBypassMinFee {
+
 		allFees = CombinedFeeRequirement(requiredGlobalFees, requiredFees)
 
 		// this is to ban 1stake passing if the globalfee is 1photon or 0photon
@@ -87,18 +91,12 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 		if !IsAnyGTEIncludingZero(feeCoins, allFees) {
 			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins, allFees)
 		}
-	}
-
-	// when the tx is bypass msg type, still need to check the denom is not some unknown denom
-	if ctx.IsCheckTx() && !simulate && allowedToBypassMinFee {
-		requiredGlobalFees, err := mfd.getGlobalFee(ctx, feeTx)
-		if err != nil {
-			panic(err)
-		}
+	} else {
 		// bypass tx without pay fee
 		if len(feeCoins) == 0 {
 			return next(ctx, tx, simulate)
 		}
+		// when the tx is bypass msg type, still need to check the denom is not some unknown denom
 		// bypass with fee, fee denom must in requiredGlobalFees
 		if !DenomsSubsetOfIncludingZero(feeCoins, requiredGlobalFees) {
 			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fees denom is wrong; got: %s required: %s", feeCoins, requiredGlobalFees)

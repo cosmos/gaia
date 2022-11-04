@@ -4,8 +4,10 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	"github.com/cosmos/gaia/v8/app/keepers"
@@ -27,6 +29,17 @@ func CreateUpgradeHandler(
 		// 	return false
 		// })
 		// fmt.Println("actualMetadata", actualMetadata)
+
+		store := ctx.KVStore(sdk.NewKVStoreKey(banktypes.StoreKey))
+		denomMetaDataStore := prefix.NewStore(store, banktypes.DenomMetadataPrefix)
+
+		iterator := denomMetaDataStore.Iterator(nil, nil)
+		defer iterator.Close()
+
+		for ; iterator.Valid(); iterator.Next() {
+			fmt.Printf("iterator.Key() is '%s'\n", string(iterator.Key()))
+			fmt.Printf("iterator.Value() is '%s'\n", string(iterator.Value()))
+		}
 
 		keepers.BankKeeper.IterateAllDenomMetaData(ctx, func(metadata banktypes.Metadata) bool {
 			fmt.Printf("base is: '%s'\n", metadata.Base)

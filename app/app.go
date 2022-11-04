@@ -3,7 +3,6 @@ package gaia
 import (
 	"fmt"
 	"io"
-	stdlog "log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -85,7 +84,7 @@ type GaiaApp struct { //nolint: revive
 func init() {
 	userHomeDir, err := os.UserHomeDir()
 	if err != nil {
-		stdlog.Printf("Failed to get home dir %s", err.Error())
+		panic(err)
 	}
 
 	DefaultNodeHome = filepath.Join(userHomeDir, ".gaia")

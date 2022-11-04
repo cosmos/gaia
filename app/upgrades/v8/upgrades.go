@@ -28,10 +28,7 @@ func CreateUpgradeHandler(
 		// })
 		// fmt.Println("actualMetadata", actualMetadata)
 
-		actualMetadata := make([]banktypes.Metadata, 0)
 		keepers.BankKeeper.IterateAllDenomMetaData(ctx, func(metadata banktypes.Metadata) bool {
-			actualMetadata = append(actualMetadata, metadata)
-
 			fmt.Printf("base is: '%s'\n", metadata.Base)
 
 			actualMetadata, found := keepers.BankKeeper.GetDenomMetaData(ctx, metadata.Base)

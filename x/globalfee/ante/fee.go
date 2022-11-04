@@ -74,7 +74,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	}
 	requiredFees := getMinGasPrice(ctx, feeTx)
 
-	if !ctx.IsCheckTx() && simulate {
+	if !ctx.IsCheckTx() || simulate {
 		return next(ctx, tx, simulate)
 	}
 

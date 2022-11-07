@@ -61,7 +61,7 @@ Next, let's install the latest version of Gaia. Make sure you `git checkout` the
 correct [released version](https://github.com/cosmos/gaia/releases).
 
 ```bash
-git clone -b <latest-release-tag> git@github.com:cosmos/gaia.git
+git clone -b <latest-release-tag> https://github.com/cosmos/gaia.git
 cd gaia && make install
 ```
 
@@ -94,7 +94,7 @@ You should see something similar to the following:
 ```bash
 name: gaia
 server_name: gaiad
-version: v7.0.0
+version: v7.1.0
 commit: 07f9892a927f451ae204d0c9d1a5601d8fc232a5
 build_tags: netgo,ledger
 go: go version go1.18 linux/amd64

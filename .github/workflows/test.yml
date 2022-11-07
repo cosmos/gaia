@@ -1,5 +1,6 @@
 name: Build & Test
 on:
+  workflow_call:
   pull_request:
   push:
     branches:
@@ -20,14 +21,14 @@ jobs:
       - uses: actions/setup-go@v3.0.0
         with:
           go-version: 1.18
-      - uses: actions/checkout@v3.0.2
+      - uses: actions/checkout@v3.1.0
       - uses: technote-space/get-diff-action@v6.0.1
         with:
           PATTERNS: |
             **/**.go
             go.mod
             go.sum
-      - uses: actions/cache@v3.0.8
+      - uses: actions/cache@v3.0.10
         with:
           path: |
             ~/.cache/go-build
@@ -58,12 +59,12 @@ jobs:
 
   test-e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 45
     steps:
       - uses: actions/setup-go@v3.0.0
         with:
           go-version: 1.18
-      - uses: actions/checkout@v3.0.2
+      - uses: actions/checkout@v3.1.0
       - uses: technote-space/get-diff-action@v6.0.1
         with:
           PATTERNS: |
@@ -79,7 +80,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v3.0.2
+      - uses: actions/checkout@v3.1.0
       - uses: actions/setup-go@v3
         with:
           go-version: 1.18

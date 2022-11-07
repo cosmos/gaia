@@ -14,7 +14,7 @@ func (s *IntegrationTestSuite) testDistribution(
 	valOperAddressA,
 	homePath string,
 ) {
-	fees = sdk.NewCoin(uatomDenom, math.NewInt(1000))
+	fees := sdk.NewCoin(uatomDenom, math.NewInt(1000))
 
 	beforeBalance, err := getSpecificBalance(chainEndpoint, newWithdrawalAddress, uatomDenom)
 	s.Require().NoError(err)
@@ -22,7 +22,7 @@ func (s *IntegrationTestSuite) testDistribution(
 		beforeBalance = sdk.NewCoin(uatomDenom, math.NewInt(0))
 	}
 
-	s.execSetWithrawAddress(s.chainA, 0, fees.String(), delegatorAddress, newWithdrawalAddress, homePath)
+	s.execSetWithdrawAddress(s.chainA, 0, fees.String(), delegatorAddress, newWithdrawalAddress, homePath)
 
 	// Verify
 	s.Require().Eventually(

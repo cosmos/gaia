@@ -9,6 +9,7 @@ import (
 	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 )
 
 // TestICARegister must run before any other
@@ -38,6 +39,7 @@ func (s *IntegrationTestSuite) TestICA_1_Register() {
 }
 
 func (s *IntegrationTestSuite) TestICA_2_BankSend() {
+
 	s.Run("test ica transactions", func() {
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
@@ -64,7 +66,7 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 		s.Require().NoError(err)
 		sender := senderAddr.String()
 
-		s.execBankSend(s.chainB, 0, sender, ica, tokenAmount.String(), fees.String(), false)
+		s.execBankSend(s.chainB, 0, sender, ica, tokenAmount.String(), standardFees.String(), false)
 
 		s.Require().Eventually(
 			func() bool {
@@ -93,8 +95,8 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 		sendamt := sdk.NewCoin(uatomDenom, math.NewInt(100000))
 		txCmd := []string{
 			gaiadBinary,
-			"tx",
-			"bank",
+			txCommand,
+			banktypes.ModuleName,
 			"send",
 			ica,
 			receiver,
@@ -125,7 +127,7 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 		sendIBCamt := math.NewInt(10)
 		icaIBCsendCmd := []string{
 			gaiadBinary,
-			"tx",
+			txCommand,
 			"ibc-transfer",
 			"transfer",
 			"transfer",

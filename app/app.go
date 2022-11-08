@@ -2,12 +2,13 @@ package gaia
 
 import (
 	"fmt"
-	"github.com/cosmos/interchain-security/testutil/e2e"
 	"io"
 	stdlog "log"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/cosmos/interchain-security/testutil/e2e"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -144,7 +145,8 @@ var (
 			upgradeclient.CancelProposalHandler,
 			ibcclientclient.UpdateClientProposalHandler,
 			ibcclientclient.UpgradeProposalHandler,
-			ibcproviderclient.ProposalHandler,
+			ibcproviderclient.ConsumerAdditionProposalHandler,
+			ibcproviderclient.ConsumerRemovalProposalHandler,
 		),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},

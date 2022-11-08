@@ -3,10 +3,10 @@ module github.com/cosmos/gaia/v7
 go 1.18
 
 require (
-	github.com/cosmos/cosmos-sdk v0.45.7-0.20221102130246-f317bd0aa9e6
+	github.com/cosmos/cosmos-sdk v0.45.7-0.20221104161803-456ca5663c5e
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/ibc-go/v3 v3.0.0
-	github.com/cosmos/interchain-security v0.0.0-20221028153426-602b7ed47785
+	github.com/cosmos/interchain-security v0.2.0
 	github.com/golangci/golangci-lint v1.45.2
 	github.com/gorilla/mux v1.8.0
 	github.com/gravity-devs/liquidity v1.4.5

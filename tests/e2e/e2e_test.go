@@ -13,7 +13,6 @@ func (s *IntegrationTestSuite) TestGov() {
 	s.SendTokensFromNewGovAccount()
 	s.GovSoftwareUpgrade()
 	s.GovCancelSoftwareUpgrade()
-	s.GovCreateICA()
 }
 
 // globalfee in genesis is set to be "0.00001uatom"

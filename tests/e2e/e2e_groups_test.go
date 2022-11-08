@@ -3,8 +3,6 @@ package e2e
 import (
 	"errors"
 	"fmt"
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	icamauthtypes "github.com/cosmos/gaia/v8/x/icamauth/types"
 	"path/filepath"
 	"strconv"
 	"time"
@@ -43,7 +41,11 @@ var (
 )
 
 const (
-	groupId                  = 1
+	groupId = iota + 1
+	groupICAId
+)
+
+const (
 	originalMembersFilename  = "members1.json"
 	addMemberFilename        = "members2.json"
 	removeMemberFilename     = "members3.json"
@@ -235,37 +237,6 @@ func (s *IntegrationTestSuite) TestICAGroupPolicy() {
 	s.Require().NoError(err)
 	s.Assert().Equal(len(membersRes.Members), 3)
 
-}
-
-func (s *IntegrationTestSuite) writeICAGroupPolicy(groupAddr string) {
-	proposalICACreateJSON, err := createGovProposalJSON(&icamauthtypes.MsgRegisterAccount{
-		Owner:        groupAddr,
-		ConnectionId: icaConnectionID,
-		Version:      icaVersion,
-	})
-	s.Require().NoError(err)
-
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalICAGovCreate), proposalICACreateJSON)
-	s.Require().NoError(err)
-
-	protoMsg, err := codectypes.NewAnyWithValue(
-		&banktypes.MsgSend{
-			FromAddress: govModuleAddress,
-			ToAddress:   govSendMsgRecipientAddress,
-			Amount:      []sdk.Coin{sendGovAmount},
-		},
-	)
-	s.Require().NoError(err)
-
-	proposalICASendJSON, err := createGovProposalJSON(&icamauthtypes.MsgSubmitTx{
-		Owner:        govModuleAddress,
-		ConnectionId: icaConnectionID,
-		Msg:          protoMsg,
-	})
-	s.Require().NoError(err)
-
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalICAGovSend), proposalICASendJSON)
-	s.Require().NoError(err)
 }
 
 func (s *IntegrationTestSuite) writeGroupPolicies(

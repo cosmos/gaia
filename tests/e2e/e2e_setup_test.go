@@ -34,9 +34,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/group"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	icamauthtypes "github.com/cosmos/gaia/v8/x/icamauth/types"
+	controllertypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/controller/types"
+	icatypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/types"
 	ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
+	ibctesting "github.com/cosmos/ibc-go/v5/testing"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/spf13/viper"
@@ -64,8 +66,6 @@ const (
 	proposal3              = "proposal_3.json"
 	proposal4              = "proposal_4.json"
 	proposalGlobalFee      = "proposal_globalfee.json"
-	proposalICAGovCreate   = "proposal_ica_gov_create.json"
-	proposalICAGovSend     = "proposal_ica_gov_send.json"
 	proposalICAGroupCreate = "proposal_ica_group_create.json"
 	proposalICAGroupSend   = "proposal_ica_group_send.json"
 	icaIBCSend             = "ica_ibc_send.json"
@@ -88,7 +88,7 @@ const (
 const (
 	// genesis accounts enum
 	icaOwnerAccountIndex = iota + 1
-	icaGovOwnerAccountIndex
+	icaGroupOwnerAccountIndex
 )
 
 var (
@@ -690,35 +690,65 @@ func (s *IntegrationTestSuite) writeGovCancelUpgradeSoftwareProposal(c *chain) {
 	s.Require().NoError(err)
 }
 
-func (s *IntegrationTestSuite) writeGovICAProposal(c *chain) {
-	proposalICACreateJSON, err := createGovProposalJSON(&icamauthtypes.MsgRegisterAccount{
-		Owner:        govModuleAddress,
-		ConnectionId: icaConnectionID,
-		Version:      icaVersion,
-	})
+func (s *IntegrationTestSuite) writeGroupICAProposal(c *chain) {
+	var (
+		portID        = "1317/tcp"
+		resourceChain = s.valResources[c.id][0]
+		chainAPI      = fmt.Sprintf("http://%s", resourceChain.GetHostPort(portID))
+	)
+
+	policies, err := queryGroupPolicies(chainAPI, groupICAId)
+	s.Require().NoError(err)
+	policy, err := getPolicy(policies.GroupPolicies, thresholdPolicyMetadata, groupICAId)
 	s.Require().NoError(err)
 
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalICAGovCreate), proposalICACreateJSON)
+	msgRegisterAccount := controllertypes.NewMsgRegisterInterchainAccount(ibctesting.FirstConnectionID, groupPolicyAddr, icatypes.NewDefaultMetadataString(ibctesting.FirstConnectionID, ibctesting.FirstConnectionID))
+
+	msgSubmitProposal, err := grouptypes.NewMsgSubmitProposal(groupPolicyAddr, []string{chainAAddress}, []sdk.Msg{msgRegisterAccount}, DefaultMetadata, grouptypes.Exec_EXEC_UNSPECIFIED)
+	s.Require().NoError(err)
+}
+
+func (s *IntegrationTestSuite) writeGroupICACreteProposal(c *chain) {
+	ownerAddr, err := s.chainA.genesisAccounts[icaGroupOwnerAccountIndex].keyInfo.GetAddress()
 	s.Require().NoError(err)
 
-	protoMsg, err := codectypes.NewAnyWithValue(
-		&banktypes.MsgSend{
-			FromAddress: govModuleAddress,
-			ToAddress:   govSendMsgRecipientAddress,
-			Amount:      []sdk.Coin{sendGovAmount},
+	members := []group.MemberRequest{
+		{
+			Address: ownerAddr.String(),
+			Weight:  "1",
 		},
+	}
+	decisionPolicy := group.NewThresholdDecisionPolicy(
+		"1",
+		time.Minute,
+		time.Duration(0),
+	)
+	msgCreateGroupWithPolicy, err := group.NewMsgCreateGroupWithPolicy(
+		ownerAddr.String(),
+		members,
+		"group/ica metadata",
+		"policy group/ica metadata",
+		true,
+		decisionPolicy,
 	)
 	s.Require().NoError(err)
 
-	proposalICASendJSON, err := createGovProposalJSON(&icamauthtypes.MsgSubmitTx{
-		Owner:        govModuleAddress,
-		ConnectionId: icaConnectionID,
-		Msg:          protoMsg,
-	})
+	groupICAPolicy, err := cdc.MarshalJSON(msgCreateGroupWithPolicy)
 	s.Require().NoError(err)
 
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalICAGovSend), proposalICASendJSON)
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalICAGroupCreate), groupICAPolicy)
 	s.Require().NoError(err)
+
+	//s.writeGroupICAProposal(s.chainA)
+	//s.executeCreateGroupPolicy(
+	//	s.chainA,
+	//	0,
+	//	ownerAddr.String(),
+	//	strconv.Itoa(groupId),
+	//	thresholdPolicyMetadata,
+	//	configFile(proposalICAGroupCreate),
+	//	standardFees.String(),
+	//)
 }
 
 func (s *IntegrationTestSuite) writeGroupMembers(c *chain, groupMembers []group.MemberRequest, filename string) {

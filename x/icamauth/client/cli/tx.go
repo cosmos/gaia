@@ -58,7 +58,10 @@ func getRegisterAccountCmd() *cobra.Command {
 
 	cmd.Flags().AddFlagSet(fsConnectionID)
 	cmd.Flags().AddFlagSet(fsVersion)
-	_ = cmd.MarkFlagRequired(FlagConnectionID)
+	err := cmd.MarkFlagRequired(FlagConnectionID)
+	if err != nil {
+		panic(err)
+	}
 
 	flags.AddTxFlagsToCmd(cmd)
 
@@ -105,7 +108,10 @@ func getSubmitTxCmd() *cobra.Command {
 	}
 
 	cmd.Flags().AddFlagSet(fsConnectionID)
-	_ = cmd.MarkFlagRequired(FlagConnectionID)
+	err := cmd.MarkFlagRequired(FlagConnectionID)
+	if err != nil {
+		panic(err)
+	}
 
 	flags.AddTxFlagsToCmd(cmd)
 

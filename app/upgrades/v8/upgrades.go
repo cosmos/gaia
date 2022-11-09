@@ -2,8 +2,8 @@ package v8
 
 import (
 	"errors"
-	"fmt"
 
+	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
@@ -13,6 +13,26 @@ import (
 	icacontrollertypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/controller/types"
 	icahosttypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/host/types"
 )
+
+func fixBank(ctx sdk.Context, keepers *keepers.AppKeepers) {
+	key := keepers.GetKey("bank")
+	store := ctx.KVStore(key)
+
+	oldDenomMetaDataStore := prefix.NewStore(store, banktypes.DenomMetadataPrefix)
+
+	oldDenomMetaDataIter := oldDenomMetaDataStore.Iterator(nil, nil)
+	defer oldDenomMetaDataIter.Close()
+
+	for ; oldDenomMetaDataIter.Valid(); oldDenomMetaDataIter.Next() {
+		oldKey := oldDenomMetaDataIter.Key()
+		l := len(oldKey) - 1
+
+		newKey := make([]byte, l)
+		copy(newKey, oldKey[:l])
+		oldDenomMetaDataStore.Set(newKey, oldDenomMetaDataIter.Value())
+		oldDenomMetaDataStore.Delete(oldKey)
+	}
+}
 
 func CreateUpgradeHandler(
 	mm *module.Manager,
@@ -25,77 +45,18 @@ func CreateUpgradeHandler(
 		mvm, err := mm.RunMigrations(ctx, configurator, vm)
 
 		if err != nil {
-			fmt.Println("Migration error")
 			return mvm, err
 		}
 
-		fmt.Println("upgrade handler triggered")
-
-		// // retrieve metadata
-		// actualMetadata := make([]banktypes.Metadata, 0)
-		// keepers.BankKeeper.IterateAllDenomMetaData(ctx, func(metadata banktypes.Metadata) bool {
-		// 	actualMetadata = append(actualMetadata, metadata)
-		// 	return false
-		// })
-		// fmt.Println("actualMetadata", actualMetadata)
-
-		// store := ctx.KVStore(sdk.NewKVStoreKey(banktypes.StoreKey))
-		// denomMetaDataStore := prefix.NewStore(store, banktypes.DenomMetadataPrefix)
-
-		// iterator := denomMetaDataStore.Iterator(nil, nil)
-		// defer iterator.Close()
-
-		// for ; iterator.Valid(); iterator.Next() {
-		// 	fmt.Printf("iterator.Key() is '%s'\n", string(iterator.Key()))
-		// 	fmt.Printf("iterator.Value() is '%s'\n", string(iterator.Value()))
-		// }
-
-		keepers.BankKeeper.IterateAllDenomMetaData(ctx, func(metadata banktypes.Metadata) bool {
-			fmt.Printf("base is: '%s'\n", metadata.Base)
-
-			actualMetadata, found := keepers.BankKeeper.GetDenomMetaData(ctx, metadata.Base)
-			if !found {
-				fmt.Println("wasn't able to retrieve with the same string that was just retrieved!!!")
-			} else {
-				fmt.Println("SUCCESS: actualMetadata", actualMetadata)
-			}
-			return false
-		})
+		// fixes issue https://github.com/cosmos/cosmos-sdk/issues/13797
+		// should be removed if upgrading to a patched version of the SDK
+		fixBank(ctx, keepers)
 
 		// Add atom name and symbol into the bank keeper
 		atomMetaData, found := keepers.BankKeeper.GetDenomMetaData(ctx, "uatom")
 		if !found {
 			return nil, errors.New("atom denom not found")
 		}
-
-		// [{
-		// 	"base": "uatom",
-		// 	"denom_units": [
-		// 		{
-		// 			"aliases": [
-		// 				"microatom"
-		// 			],
-		// 			"denom": "uatom",
-		// 			"exponent": 0
-		// 		},
-		// 		{
-		// 			"aliases": [
-		// 				"milliatom"
-		// 			],
-		// 			"denom": "matom",
-		// 			"exponent": 3
-		// 		},
-		// 		{
-		// 			"aliases": [],
-		// 			"denom": "atom",
-		// 			"exponent": 6
-		// 		}
-		// 	],
-		// 	"description": "The native staking token of the Cosmos Hub.",
-		// 	"display": "atom",
-		// 	"name": "",
-		// 	"symbol": ""
-		// }]
 		atomMetaData.Name = "Cosmos Hub Atom"
 		atomMetaData.Symbol = "ATOM"
 		keepers.BankKeeper.SetDenomMetaData(ctx, atomMetaData)

@@ -12,7 +12,7 @@ import (
 	"github.com/cosmos/gaia/v8/x/globalfee"
 )
 
-const maxBypassMinFeeMsgGasUsage = uint64(200_000)
+const maxBypassMinFeeMsgGasUsage uint64 = 200_000
 
 // FeeWithBypassDecorator will check if the transaction's fee is at least as large
 // as the local validator's minimum gasFee (defined in validator config) and global fee, and the fee denom should be in the global fees' denoms.

@@ -52,7 +52,7 @@ type EmptyAppOptions struct{}
 
 func (EmptyAppOptions) Get(o string) interface{} { return nil }
 
-func Setup(t *testing.T, isCheckTx bool, invCheckPeriod uint) *gaiaapp.GaiaApp {
+func Setup(t *testing.T) *gaiaapp.GaiaApp {
 	t.Helper()
 
 	privVal := mock.NewPV()

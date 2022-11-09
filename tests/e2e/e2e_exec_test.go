@@ -34,6 +34,7 @@ const (
 	flagOutput          = "output"
 	flagChainID         = "chain-id"
 	flagSpendLimit      = "spend-limit"
+	flagGasAdjustment   = "gas-adjustment"
 	flagFeeGranter      = "fee-granter"
 	flagBroadcastMode   = "broadcast-mode"
 	flagKeyringBackend  = "keyring-backend"
@@ -56,6 +57,7 @@ func applyOptions(chainID string, options []flagOption) map[string]interface{} {
 		flagGas:            "auto",
 		flagFrom:           "alice",
 		flagBroadcastMode:  "sync",
+		flagGasAdjustment:  "1.5",
 		flagChainID:        chainID,
 		flagHome:           gaiaHomePath,
 		flagFees:           standardFees.String(),

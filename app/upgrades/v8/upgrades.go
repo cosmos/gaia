@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
@@ -22,6 +21,16 @@ func CreateUpgradeHandler(
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 
+		ctx.Logger().Info("start to run module migrations...")
+		mvm, err := mm.RunMigrations(ctx, configurator, vm)
+
+		if err != nil {
+			fmt.Println("Migration error")
+			return mvm, err
+		}
+
+		fmt.Println("upgrade handler triggered")
+
 		// // retrieve metadata
 		// actualMetadata := make([]banktypes.Metadata, 0)
 		// keepers.BankKeeper.IterateAllDenomMetaData(ctx, func(metadata banktypes.Metadata) bool {
@@ -30,16 +39,16 @@ func CreateUpgradeHandler(
 		// })
 		// fmt.Println("actualMetadata", actualMetadata)
 
-		store := ctx.KVStore(sdk.NewKVStoreKey(banktypes.StoreKey))
-		denomMetaDataStore := prefix.NewStore(store, banktypes.DenomMetadataPrefix)
+		// store := ctx.KVStore(sdk.NewKVStoreKey(banktypes.StoreKey))
+		// denomMetaDataStore := prefix.NewStore(store, banktypes.DenomMetadataPrefix)
 
-		iterator := denomMetaDataStore.Iterator(nil, nil)
-		defer iterator.Close()
+		// iterator := denomMetaDataStore.Iterator(nil, nil)
+		// defer iterator.Close()
 
-		for ; iterator.Valid(); iterator.Next() {
-			fmt.Printf("iterator.Key() is '%s'\n", string(iterator.Key()))
-			fmt.Printf("iterator.Value() is '%s'\n", string(iterator.Value()))
-		}
+		// for ; iterator.Valid(); iterator.Next() {
+		// 	fmt.Printf("iterator.Key() is '%s'\n", string(iterator.Key()))
+		// 	fmt.Printf("iterator.Value() is '%s'\n", string(iterator.Value()))
+		// }
 
 		keepers.BankKeeper.IterateAllDenomMetaData(ctx, func(metadata banktypes.Metadata) bool {
 			fmt.Printf("base is: '%s'\n", metadata.Base)
@@ -58,6 +67,35 @@ func CreateUpgradeHandler(
 		if !found {
 			return nil, errors.New("atom denom not found")
 		}
+
+		// [{
+		// 	"base": "uatom",
+		// 	"denom_units": [
+		// 		{
+		// 			"aliases": [
+		// 				"microatom"
+		// 			],
+		// 			"denom": "uatom",
+		// 			"exponent": 0
+		// 		},
+		// 		{
+		// 			"aliases": [
+		// 				"milliatom"
+		// 			],
+		// 			"denom": "matom",
+		// 			"exponent": 3
+		// 		},
+		// 		{
+		// 			"aliases": [],
+		// 			"denom": "atom",
+		// 			"exponent": 6
+		// 		}
+		// 	],
+		// 	"description": "The native staking token of the Cosmos Hub.",
+		// 	"display": "atom",
+		// 	"name": "",
+		// 	"symbol": ""
+		// }]
 		atomMetaData.Name = "Cosmos Hub Atom"
 		atomMetaData.Symbol = "ATOM"
 		keepers.BankKeeper.SetDenomMetaData(ctx, atomMetaData)
@@ -77,8 +115,6 @@ func CreateUpgradeHandler(
 		keepers.ICAHostKeeper.SetParams(ctx, hostParams)
 		keepers.ICAControllerKeeper.SetParams(ctx, controllerParams)
 
-		ctx.Logger().Info("start to run module migrations...")
-
-		return mm.RunMigrations(ctx, configurator, vm)
+		return mvm, err
 	}
 }

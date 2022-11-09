@@ -228,6 +228,7 @@ func NewGaiaApp(
 	app.setupUpgradeStoreLoaders()
 
 	if loadLatest {
+		fmt.Println("loadLatest", loadLatest)
 		if err := app.LoadLatestVersion(); err != nil {
 			tmos.Exit(fmt.Sprintf("failed to load latest version: %s", err))
 		}
@@ -359,6 +360,8 @@ func (app *GaiaApp) RegisterTendermintService(clientCtx client.Context) {
 
 // configure store loader that checks if version == upgradeHeight and applies store upgrades
 func (app *GaiaApp) setupUpgradeStoreLoaders() {
+	fmt.Println("setupUpgradeStoreLoaders")
+
 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
 		panic(fmt.Sprintf("failed to read upgrade info from disk %s", err))
@@ -367,12 +370,14 @@ func (app *GaiaApp) setupUpgradeStoreLoaders() {
 	if app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		return
 	}
-
+	fmt.Println("store migrations begun")
 	for _, upgrade := range Upgrades {
 		if upgradeInfo.Name == upgrade.UpgradeName {
+			fmt.Println("upgradeInfo.Height", upgradeInfo.Height)
 			app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &upgrade.StoreUpgrades))
 		}
 	}
+	fmt.Println("store migrations complete")
 }
 
 func (app *GaiaApp) setupUpgradeHandlers() {

@@ -10,6 +10,7 @@ import (
 	db "github.com/tendermint/tm-db"
 
 	gaia "github.com/cosmos/gaia/v8/app"
+	gaiahelpers "github.com/cosmos/gaia/v8/app/helpers"
 )
 
 type EmptyAppOptions struct{}
@@ -32,7 +33,12 @@ func TestGaiaApp_BlockedModuleAccountAddrs(t *testing.T) {
 	)
 	blockedAddrs := app.BlockedModuleAccountAddrs()
 
-	// TODO: Blocked on updating to v0.46.x
-	// require.NotContains(t, blockedAddrs, authtypes.NewModuleAddress(grouptypes.ModuleName).String())
 	require.NotContains(t, blockedAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
+}
+
+func TestGaiaApp_Export(t *testing.T) {
+	app := gaiahelpers.Setup(t)
+
+	_, err := app.ExportAppStateAndValidators(true, []string{})
+	require.NoError(t, err, "ExportAppStateAndValidators should not have an error")
 }

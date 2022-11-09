@@ -172,7 +172,7 @@ func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, gl
 	stakingGenState.Params.BondDenom = denom
 	stakingGenStateBz, err := cdc.MarshalJSON(stakingGenState)
 	if err != nil {
-		return fmt.Errorf("failed to marshal staking genesis state: %w", err)
+		return fmt.Errorf("failed to marshal staking genesis state: %s", err)
 	}
 	appState[stakingtypes.ModuleName] = stakingGenStateBz
 

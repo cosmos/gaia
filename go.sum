@@ -291,6 +291,8 @@ github.com/cosmos/interchain-security v0.0.0-20221028153426-602b7ed47785 h1:t2Bz
 github.com/cosmos/interchain-security v0.0.0-20221028153426-602b7ed47785/go.mod h1:MmQ0Wh7TvzZkAnHMQR/sd7fy+cx35lp/7ZvVXNDqf/o=
 github.com/cosmos/interchain-security v0.2.0 h1:YAfy1QqDrAVTOu6HOXuimOJ34RkD2SzQuwk6o1DYrfs=
 github.com/cosmos/interchain-security v0.2.0/go.mod h1:Ntu6JyaSD0pH+HJYCgHsyYX6FJxk0gCDR8D4SYbbxA4=
+github.com/cosmos/interchain-security v0.2.1 h1:wzg1ydRtm4h+Xce87kQvD8OWNCNEkSVjCCb5khyS6b8=
+github.com/cosmos/interchain-security v0.2.1/go.mod h1:Ntu6JyaSD0pH+HJYCgHsyYX6FJxk0gCDR8D4SYbbxA4=
 github.com/cosmos/ledger-cosmos-go v0.11.1 h1:9JIYsGnXP613pb2vPjFeMMjBI5lEDsEaF6oYorTy6J4=
 github.com/cosmos/ledger-cosmos-go v0.11.1/go.mod h1:J8//BsAGTo3OC/vDLjMRFLW6q0WAaXvHnVc7ZmE8iUY=
 github.com/cosmos/ledger-go v0.9.2/go.mod h1:oZJ2hHAZROdlHiwTg4t7kP+GKIIkBT+o6c9QWFanOyI=

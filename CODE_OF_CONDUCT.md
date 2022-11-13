@@ -1,3 +1,5 @@
+Note: this document only applies if you're someone who used to work for Jae, who we wish to marginalize.  Jae can do and say whatever.
+
 
 # Contributor Covenant Code of Conduct
 

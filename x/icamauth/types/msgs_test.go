@@ -2,7 +2,6 @@ package types
 
 import (
 	"errors"
-	"reflect"
 	"testing"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -10,6 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -139,86 +139,109 @@ func TestMsgSubmitTx_GetSigners(t *testing.T) {
 }
 
 func TestMsgSubmitTx_GetTxMsg(t *testing.T) {
-	type fields struct {
-		Owner        string
-		ConnectionId string
-		Msg          *codectypes.Any
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		want   types.Msg
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			msg := &MsgSubmitTx{
-				Owner:        tt.fields.Owner,
-				ConnectionId: tt.fields.ConnectionId,
-				Msg:          tt.fields.Msg,
-			}
-			if got := msg.GetTxMsg(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetTxMsg() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
+	t.Run("bank message", func(t *testing.T) {
+		msg := &banktypes.MsgSend{
+			FromAddress: "cosmos1a6zlyvpnksx8wr6wz8wemur2xe8zyh0yxeh27a",
+			ToAddress:   "cosmos1a6zlyvpnksx8wr6wz8wemur2xe8zyh0yxeh27a",
+			Amount:      sdk.NewCoins(sdk.NewCoin("atom", sdk.NewInt(10))),
+		}
+		anyMsg, err := PackTxMsgAny(msg)
+		require.NoError(t, err)
+		submitTx := MsgSubmitTx{Msg: anyMsg}
+		require.Equal(t, msg, submitTx.GetTxMsg())
+	})
 
-func TestMsgSubmitTx_UnpackInterfaces(t *testing.T) {
-	type fields struct {
-		Owner        string
-		ConnectionId string
-		Msg          *codectypes.Any
-	}
-	type args struct {
-		unpacker codectypes.AnyUnpacker
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			msg := MsgSubmitTx{
-				Owner:        tt.fields.Owner,
-				ConnectionId: tt.fields.ConnectionId,
-				Msg:          tt.fields.Msg,
-			}
-			if err := msg.UnpackInterfaces(tt.args.unpacker); (err != nil) != tt.wantErr {
-				t.Errorf("UnpackInterfaces() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
+	t.Run("staking message", func(t *testing.T) {
+		msg := &stakingtypes.MsgDelegate{
+			DelegatorAddress: "cosmos1a6zlyvpnksx8wr6wz8wemur2xe8zyh0yxeh27a",
+			ValidatorAddress: "cosmos1a6zlyvpnksx8wr6wz8wemur2xe8zyh0yxeh27a",
+			Amount:           sdk.NewCoin("atom", sdk.NewInt(10)),
+		}
+		anyMsg, err := PackTxMsgAny(msg)
+		require.NoError(t, err)
+		submitTx := MsgSubmitTx{Msg: anyMsg}
+		require.Equal(t, msg, submitTx.GetTxMsg())
+	})
 }
 
 func TestMsgSubmitTx_ValidateBasic(t *testing.T) {
-	type fields struct {
-		Owner        string
-		ConnectionId string
-		Msg          *codectypes.Any
-	}
 	tests := []struct {
-		name    string
-		fields  fields
-		wantErr bool
+		name string
+		msg  MsgSubmitTx
+		err  error
 	}{
-		// TODO: Add test cases.
+		{
+			name: "empty owner",
+			msg: MsgSubmitTx{
+				Owner: "",
+			},
+			err: sdkerrors.ErrInvalidAddress,
+		}, {
+			name: "invalid bech32 owner address",
+			msg: MsgSubmitTx{
+				Owner: "invalid_address",
+			},
+			err: sdkerrors.ErrInvalidAddress,
+		}, {
+			name: "valid mesage",
+			msg: MsgSubmitTx{
+				Owner: "cosmos1a6zlyvpnksx8wr6wz8wemur2xe8zyh0yxeh27a",
+			},
+			err: nil,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			msg := MsgSubmitTx{
-				Owner:        tt.fields.Owner,
-				ConnectionId: tt.fields.ConnectionId,
-				Msg:          tt.fields.Msg,
+			err := tt.msg.ValidateBasic()
+			if tt.err != nil {
+				require.ErrorIs(t, tt.err, err)
+				return
 			}
-			if err := msg.ValidateBasic(); (err != nil) != tt.wantErr {
-				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
-			}
+			require.NoError(t, err)
 		})
 	}
+}
+
+func TestNewMsgRegisterAccount(t *testing.T) {
+	var (
+		connectionID = "connection-0"
+		owner        = "cosmos1a6zlyvpnksx8wr6wz8wemur2xe8zyh0yxeh27a"
+		version      = "1"
+		got          = NewMsgRegisterAccount(owner, connectionID, version)
+	)
+	require.Equal(t, connectionID, got.ConnectionId)
+	require.Equal(t, owner, got.Owner)
+	require.Equal(t, version, got.Version)
+}
+
+func TestNewMsgSubmitTx(t *testing.T) {
+	var (
+		connectionID = "connection-0"
+		owner        = "cosmos1a6zlyvpnksx8wr6wz8wemur2xe8zyh0yxeh27a"
+	)
+
+	t.Run("valid message", func(t *testing.T) {
+		msg := &banktypes.MsgSend{
+			FromAddress: "cosmos1a6zlyvpnksx8wr6wz8wemur2xe8zyh0yxeh27a",
+			ToAddress:   "cosmos1a6zlyvpnksx8wr6wz8wemur2xe8zyh0yxeh27a",
+			Amount:      sdk.NewCoins(sdk.NewCoin("atom", sdk.NewInt(10))),
+		}
+		got, err := NewMsgSubmitTx(msg, connectionID, owner)
+		require.NoError(t, err)
+
+		anyMsg, err := PackTxMsgAny(msg)
+		require.NoError(t, err)
+
+		want := &MsgSubmitTx{
+			Owner:        owner,
+			ConnectionId: connectionID,
+			Msg:          anyMsg,
+		}
+		require.EqualValues(t, want, got)
+	})
+
+	t.Run("invalid message field", func(t *testing.T) {
+		_, err := NewMsgSubmitTx(nil, connectionID, owner)
+		require.ErrorIs(t, sdkerrors.ErrPackAny, err)
+	})
 }

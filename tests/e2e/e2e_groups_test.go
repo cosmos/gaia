@@ -206,7 +206,7 @@ func (s *IntegrationTestSuite) prepareGroupFiles(c *chain, adminAddr string, mem
 	s.writeGroupMembers(c, newMembers, removeMemberFilename)
 }
 
-func (s *IntegrationTestSuite) creatICAGroupProposal(c *chain) {
+func (s *IntegrationTestSuite) creatICAGroupProposal(c *chain) string {
 	var (
 		portID        = "1317/tcp"
 		resourceChain = s.valResources[c.id][0]
@@ -237,13 +237,13 @@ func (s *IntegrationTestSuite) creatICAGroupProposal(c *chain) {
 
 	s.writeFile(c, ICAGroupProposal, body)
 
-	s.writeGroupProposal(s.chainA, policy.Address, adminAddr, sendAmount, ICAGroupProposal)
+	s.writeGroupProposal(c, policy.Address, adminAddr, sendAmount, ICAGroupProposal)
 	s.T().Logf("Submitting Group ICA Proposal")
-	s.executeSubmitGroupProposal(s.chainA, 0, adminAddr, filepath.Join(gaiaConfigPath, ICAGroupProposal))
+	s.executeSubmitGroupProposal(c, 0, adminAddr, filepath.Join(gaiaConfigPath, ICAGroupProposal))
 
 	s.T().Logf("Voting Group ICA Proposal")
-	s.executeVoteGroupProposal(s.chainA, 0, 1, adminAddr, group.VOTE_OPTION_YES.String(), "Admin votes yes")
-	s.executeVoteGroupProposal(s.chainA, 1, 1, aliceAddr, group.VOTE_OPTION_YES.String(), "Alice votes yes")
+	s.executeVoteGroupProposal(c, 0, 1, adminAddr, group.VOTE_OPTION_YES.String(), "Admin votes yes")
+	s.executeVoteGroupProposal(c, 1, 1, aliceAddr, group.VOTE_OPTION_YES.String(), "Alice votes yes")
 
 	s.Require().Eventually(
 		func() bool {
@@ -258,7 +258,9 @@ func (s *IntegrationTestSuite) creatICAGroupProposal(c *chain) {
 	s.T().Logf("Group ICA Proposal Passed")
 
 	s.T().Logf("Executing Group ICA Proposal")
-	s.executeExecGroupProposal(s.chainA, 1, 1, aliceAddr)
+	s.executeExecGroupProposal(c, 1, 1, aliceAddr)
+
+	return policy.Address
 }
 
 func (s *IntegrationTestSuite) writeGroupProposal(c *chain, policyAddress, signingAddress string, sendAmount sdk.Coin, filename string) {
@@ -292,15 +294,13 @@ func (s *IntegrationTestSuite) TestICAGroupPolicy() {
 		chainAAPI     = fmt.Sprintf("http://%s", resourceChain.GetHostPort(portID))
 		chainBAPI     = fmt.Sprintf("http://%s", resourceChain.GetHostPort(portID))
 	)
-	admin, err := chain.validators[0].keyInfo.GetAddress()
-	s.Require().NoError(err)
 	s.setupGroupsSuite()
 
 	s.T().Logf("Creating ICA Group")
 	s.execCreateGroupWithPolicy(
 		chain,
 		0,
-		admin.String(),
+		adminAddr,
 		ICAGroupMetadata,
 		ICAGroupPolicyMetadata,
 		configFile(originalMembersFilename),
@@ -308,12 +308,12 @@ func (s *IntegrationTestSuite) TestICAGroupPolicy() {
 		standardFees.String(),
 	)
 
-	s.creatICAGroupProposal(chain)
+	owner := s.creatICAGroupProposal(chain)
 
 	var ica string
 	s.Require().Eventually(
 		func() bool {
-			ica, err = queryICAAddress(chainAAPI, adminAddr, icaConnectionID)
+			ica, err := queryICAAddress(chainAAPI, owner, icaConnectionID)
 			s.Require().NoError(err)
 
 			return err == nil && ica != ""

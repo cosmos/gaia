@@ -106,7 +106,7 @@ func TestMsgSubmitTx_GetSigners(t *testing.T) {
 		err  error
 	}{
 		{
-			name: "",
+			name: "valid signers",
 			msg: MsgSubmitTx{
 				Owner: "cosmos1a6zlyvpnksx8wr6wz8wemur2xe8zyh0yxeh27a",
 			},

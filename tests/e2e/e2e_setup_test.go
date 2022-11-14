@@ -34,11 +34,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/group"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	controllertypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/controller/types"
-	icatypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/types"
 	ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
-	ibctesting "github.com/cosmos/ibc-go/v5/testing"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/spf13/viper"
@@ -52,26 +49,25 @@ import (
 )
 
 const (
-	gaiadBinary            = "gaiad"
-	txCommand              = "tx"
-	queryCommand           = "query"
-	keysCommand            = "keys"
-	gaiaHomePath           = "/home/nonroot/.gaia"
-	photonDenom            = "photon"
-	uatomDenom             = "uatom"
-	initBalanceStr         = "110000000000stake,100000000000000000photon,100000000000000000uatom"
-	minGasPrice            = "0.00001"
-	proposal1              = "proposal.json"
-	proposal2              = "proposal_2.json"
-	proposal3              = "proposal_3.json"
-	proposal4              = "proposal_4.json"
-	proposalGlobalFee      = "proposal_globalfee.json"
-	proposalICAGroupCreate = "proposal_ica_group_create.json"
-	proposalICAGroupSend   = "proposal_ica_group_send.json"
-	icaIBCSend             = "ica_ibc_send.json"
-	icaConnectionID        = "connection-0"
-	icaChannelID           = "channel-0"
-	icaPortID              = "transfer"
+	gaiadBinary       = "gaiad"
+	txCommand         = "tx"
+	queryCommand      = "query"
+	keysCommand       = "keys"
+	gaiaHomePath      = "/home/nonroot/.gaia"
+	photonDenom       = "photon"
+	uatomDenom        = "uatom"
+	initBalanceStr    = "110000000000stake,100000000000000000photon,100000000000000000uatom"
+	minGasPrice       = "0.00001"
+	proposal1         = "proposal.json"
+	proposal2         = "proposal_2.json"
+	proposal3         = "proposal_3.json"
+	proposal4         = "proposal_4.json"
+	proposalGlobalFee = "proposal_globalfee.json"
+	ICAGroupProposal  = "ica_proposal_group.json"
+	icaIBCSend        = "ica_ibc_send.json"
+	icaConnectionID   = "connection-0"
+	icaChannelID      = "channel-0"
+	icaPortID         = "transfer"
 
 	// the test globalfee in genesis is the same as minGasPrice
 	// global fee lower/higher than min_gas_price
@@ -83,12 +79,7 @@ const (
 	relayerAccountIndex          = 0
 	numberOfEvidences            = 10
 	slashingShares         int64 = 10000
-)
-
-const (
-	// genesis accounts enum
-	icaOwnerAccountIndex = iota + 1
-	icaGroupOwnerAccountIndex
+	icaOwnerAccountIndex         = 1
 )
 
 var (
@@ -688,67 +679,6 @@ func (s *IntegrationTestSuite) writeGovCancelUpgradeSoftwareProposal(c *chain) {
 
 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposal4), proposalCancelUpgrade)
 	s.Require().NoError(err)
-}
-
-func (s *IntegrationTestSuite) writeGroupICAProposal(c *chain) {
-	var (
-		portID        = "1317/tcp"
-		resourceChain = s.valResources[c.id][0]
-		chainAPI      = fmt.Sprintf("http://%s", resourceChain.GetHostPort(portID))
-	)
-
-	policies, err := queryGroupPolicies(chainAPI, groupICAId)
-	s.Require().NoError(err)
-	policy, err := getPolicy(policies.GroupPolicies, thresholdPolicyMetadata, groupICAId)
-	s.Require().NoError(err)
-
-	msgRegisterAccount := controllertypes.NewMsgRegisterInterchainAccount(ibctesting.FirstConnectionID, groupPolicyAddr, icatypes.NewDefaultMetadataString(ibctesting.FirstConnectionID, ibctesting.FirstConnectionID))
-
-	msgSubmitProposal, err := grouptypes.NewMsgSubmitProposal(groupPolicyAddr, []string{chainAAddress}, []sdk.Msg{msgRegisterAccount}, DefaultMetadata, grouptypes.Exec_EXEC_UNSPECIFIED)
-	s.Require().NoError(err)
-}
-
-func (s *IntegrationTestSuite) writeGroupICACreteProposal(c *chain) {
-	ownerAddr, err := s.chainA.genesisAccounts[icaGroupOwnerAccountIndex].keyInfo.GetAddress()
-	s.Require().NoError(err)
-
-	members := []group.MemberRequest{
-		{
-			Address: ownerAddr.String(),
-			Weight:  "1",
-		},
-	}
-	decisionPolicy := group.NewThresholdDecisionPolicy(
-		"1",
-		time.Minute,
-		time.Duration(0),
-	)
-	msgCreateGroupWithPolicy, err := group.NewMsgCreateGroupWithPolicy(
-		ownerAddr.String(),
-		members,
-		"group/ica metadata",
-		"policy group/ica metadata",
-		true,
-		decisionPolicy,
-	)
-	s.Require().NoError(err)
-
-	groupICAPolicy, err := cdc.MarshalJSON(msgCreateGroupWithPolicy)
-	s.Require().NoError(err)
-
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalICAGroupCreate), groupICAPolicy)
-	s.Require().NoError(err)
-
-	//s.writeGroupICAProposal(s.chainA)
-	//s.executeCreateGroupPolicy(
-	//	s.chainA,
-	//	0,
-	//	ownerAddr.String(),
-	//	strconv.Itoa(groupId),
-	//	thresholdPolicyMetadata,
-	//	configFile(proposalICAGroupCreate),
-	//	standardFees.String(),
-	//)
 }
 
 func (s *IntegrationTestSuite) writeGroupMembers(c *chain, groupMembers []group.MemberRequest, filename string) {

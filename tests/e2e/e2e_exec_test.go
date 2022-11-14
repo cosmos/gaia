@@ -319,7 +319,7 @@ func (sc *successBankSend) inc() {
 func (s *IntegrationTestSuite) execBankSendBatch(
 	c *chain,
 	valIdx int,
-	txs []txBankSend,
+	txs ...txBankSend,
 ) int {
 	sucessBankSendCount := successBankSend{
 		successCount: 0,

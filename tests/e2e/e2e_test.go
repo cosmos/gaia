@@ -145,7 +145,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 			expectErr: false,
 		},
 	}
-	sucessBankSendCount += s.execBankSendBatch(s.chainA, 0, txBankSends)
+	sucessBankSendCount += s.execBankSendBatch(s.chainA, 0, txBankSends...)
 
 	// ------------------ test2: globalfee lower than min_gas_price -----------------------------------
 	// prepare gov globalfee proposal
@@ -195,7 +195,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 			expectErr: true,
 		},
 	}
-	sucessBankSendCount += s.execBankSendBatch(s.chainA, 0, txBankSends)
+	sucessBankSendCount += s.execBankSendBatch(s.chainA, 0, txBankSends...)
 
 	// ------------------ test3: globalfee higher than min_gas_price ----------------------------------
 	// prepare gov globalfee proposal
@@ -226,7 +226,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 			expectErr: true,
 		},
 	}
-	sucessBankSendCount += s.execBankSendBatch(s.chainA, 0, txBankSends)
+	sucessBankSendCount += s.execBankSendBatch(s.chainA, 0, txBankSends...)
 
 	// ---------------------------- test4: global fee with two denoms -----------------------------------
 	// prepare gov globalfee proposal
@@ -320,7 +320,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 			expectErr: false,
 		},
 	}
-	sucessBankSendCount += s.execBankSendBatch(s.chainA, 0, txBankSends)
+	sucessBankSendCount += s.execBankSendBatch(s.chainA, 0, txBankSends...)
 
 	// ---------------------------------------------------------------------------
 	// check the balance is correct after previous txs

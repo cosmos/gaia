@@ -238,10 +238,10 @@ func (s *IntegrationTestSuite) creatICAGroupProposal(c *chain) {
 	s.writeFile(c, ICAGroupProposal, body)
 
 	s.writeGroupProposal(s.chainA, policy.Address, adminAddr, sendAmount, ICAGroupProposal)
-	s.T().Logf("Submitting Group Proposal 1: Send 5 uatom from group to Bob")
+	s.T().Logf("Submitting Group ICA Proposal")
 	s.executeSubmitGroupProposal(s.chainA, 0, adminAddr, filepath.Join(gaiaConfigPath, ICAGroupProposal))
 
-	s.T().Logf("Voting Group Proposal 1: Send 5 uatom from group to Bob")
+	s.T().Logf("Voting Group ICA Proposal")
 	s.executeVoteGroupProposal(s.chainA, 0, 1, adminAddr, group.VOTE_OPTION_YES.String(), "Admin votes yes")
 	s.executeVoteGroupProposal(s.chainA, 1, 1, aliceAddr, group.VOTE_OPTION_YES.String(), "Alice votes yes")
 
@@ -255,9 +255,9 @@ func (s *IntegrationTestSuite) creatICAGroupProposal(c *chain) {
 		30*time.Second,
 		5*time.Second,
 	)
-	s.T().Logf("Group Proposal 1 Passed: Send 5 uatom from group to Bob")
+	s.T().Logf("Group ICA Proposal Passed")
 
-	s.T().Logf("Executing Group Proposal 1: Send 5 uatom from group to Bob")
+	s.T().Logf("Executing Group ICA Proposal")
 	s.executeExecGroupProposal(s.chainA, 1, 1, aliceAddr)
 }
 
@@ -285,14 +285,20 @@ func (s *IntegrationTestSuite) writeGroupProposal(c *chain, policyAddress, signi
 }
 
 func (s *IntegrationTestSuite) TestICAGroupPolicy() {
-	chain := s.chainA
+	var (
+		portID        = "1317/tcp"
+		chain         = s.chainA
+		resourceChain = s.valResources[chain.id][0]
+		chainAAPI     = fmt.Sprintf("http://%s", resourceChain.GetHostPort(portID))
+		chainBAPI     = fmt.Sprintf("http://%s", resourceChain.GetHostPort(portID))
+	)
 	admin, err := chain.validators[0].keyInfo.GetAddress()
 	s.Require().NoError(err)
 	s.setupGroupsSuite()
 
 	s.T().Logf("Creating ICA Group")
 	s.execCreateGroupWithPolicy(
-		s.chainA,
+		chain,
 		0,
 		admin.String(),
 		ICAGroupMetadata,
@@ -303,6 +309,35 @@ func (s *IntegrationTestSuite) TestICAGroupPolicy() {
 	)
 
 	s.creatICAGroupProposal(chain)
+
+	var ica string
+	s.Require().Eventually(
+		func() bool {
+			ica, err = queryICAAddress(chainAAPI, adminAddr, icaConnectionID)
+			s.Require().NoError(err)
+
+			return err == nil && ica != ""
+		},
+		time.Minute,
+		5*time.Second,
+	)
+
+	// step 2: fund ica, send tokens from chain b val to ica on chain b
+	senderAddr, err := s.chainB.validators[0].keyInfo.GetAddress()
+	s.Require().NoError(err)
+	sender := senderAddr.String()
+
+	s.execBankSend(s.chainB, 0, sender, ica, tokenAmount.String(), standardFees.String(), false)
+
+	s.Require().Eventually(
+		func() bool {
+			afterSenderICABalance, err := getSpecificBalance(chainBAPI, ica, uatomDenom)
+			s.Require().NoError(err)
+			return afterSenderICABalance.IsEqual(tokenAmount)
+		},
+		time.Minute,
+		5*time.Second,
+	)
 }
 
 func (s *IntegrationTestSuite) writeGroupPolicies(

@@ -4,7 +4,7 @@
   "description": "Gaia Documentation",
   "main": "index.js",
   "dependencies": {
-    "vue": "2.6.11",
+    "vue": "3.2.45",
     "vue-server-renderer": "2.6.11",
     "vue-tabs-component": "^1.5.0",
     "vue-template-compiler": "^2.6.11",

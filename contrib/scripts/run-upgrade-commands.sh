@@ -15,7 +15,7 @@ fi
 #   exit 1
 # fi
 
-# HOMEDIR=./build/.gaia
+# NODE_HOME=./build/.gaia
 NODE_HOME=$(realpath ./build/.gaia)
 echo "NODE_HOME = ${NODE_HOME}"
 
@@ -33,10 +33,10 @@ if test -f "$BINARY"; then
   sleep 10
 
 
-	$BINARY config chain-id $CHAINID --home $HOMEDIR
-	$BINARY config output json --home $HOMEDIR
-	$BINARY config keyring-backend test --home $HOMEDIR
-  $BINARY keys list --home $HOMEDIR
+	$BINARY config chain-id $CHAINID --home $NODE_HOME
+	$BINARY config output json --home $NODE_HOME
+	$BINARY config keyring-backend test --home $NODE_HOME
+  $BINARY keys list --home $NODE_HOME
   echo "\n"
   echo "Submitting proposal... \n"
   $BINARY tx gov submit-proposal software-upgrade v8-Rho \
@@ -50,7 +50,7 @@ if test -f "$BINARY"; then
   --from val \
   --keyring-backend test \
   --chain-id $CHAINID \
-  --home $HOMEDIR \
+  --home $NODE_HOME \
   --node tcp://localhost:26657 \
   --yes
   echo "Done \n"
@@ -62,7 +62,7 @@ if test -f "$BINARY"; then
   --from val \
   --keyring-backend test \
   --chain-id $CHAINID \
-  --home $HOMEDIR \
+  --home $NODE_HOME \
   --gas auto \
   --fees 400uatom \
   --node tcp://localhost:26657 \

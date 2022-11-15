@@ -31,20 +31,18 @@ fi
 mkdir -p $NODE_HOME/cosmovisor/upgrades/v8-Rho/bin
 cp ./build/gaiad8 $NODE_HOME/cosmovisor/upgrades/v8-Rho/bin/gaiad
 
-echo $(go env GOPATH)
 GOPATH=$(go env GOPATH)
-echo "GOPATH IS" $GOPATH
 
 export DAEMON_NAME=gaiad
 export DAEMON_HOME=$NODE_HOME
 COSMOVISOR=$GOPATH/bin/cosmovisor
 
 
-if ! command -v $COSMOVISOR &> /dev/null
-then
-    echo "cosmovisor could not be found"
-    exit
-fi
+# if ! command -v $COSMOVISOR &> /dev/null
+# then
+#     echo "cosmovisor could not be found"
+#     exit
+# fi
 
 
 

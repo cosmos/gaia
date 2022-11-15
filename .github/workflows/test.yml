@@ -115,7 +115,6 @@ jobs:
         with:
           PATTERNS: |
             **/**.go
-            **/**.yml
             go.mod
             go.sum
       - name: Install GaiaV8
@@ -124,9 +123,9 @@ jobs:
           cp ./build/gaiad ./build/gaiad8
         if: env.GIT_DIFF
       - name: Install GaiaV7
-        uses: actions/checkout@v3.1.0
-          with:
-            ref: v7.1.0
+        # uses: actions/checkout@v3.1.0
+        #   with:
+        #     ref: v7.1.0
         run: |
           make build
           cp ./build/gaiad ./build/gaiad7

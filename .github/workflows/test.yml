@@ -143,6 +143,7 @@ jobs:
         if: env.GIT_DIFF
       - name: Submit Upgrade Commands
         run: |
+          ls ./contrib/scripts
           ./contrib/scripts/run-upgrade-commands.sh 15
         if: env.GIT_DIFF
       - name: Check for successful upgrade

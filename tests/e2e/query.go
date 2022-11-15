@@ -58,6 +58,9 @@ func getSpecificBalance(endpoint, addr, denom string) (amt sdk.Coin, err error) 
 			break
 		}
 	}
+	if amt.IsNil() || amt.IsZero() {
+		return amt, fmt.Errorf("coin denom %s not found for %s", denom, addr)
+	}
 	return amt, nil
 }
 

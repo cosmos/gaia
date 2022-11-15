@@ -287,17 +287,17 @@ func (s *IntegrationTestSuite) writeGroupProposal(c *chain, policyAddress, signi
 
 func (s *IntegrationTestSuite) TestICAGroupProposal() {
 	var (
-		portID        = "1317/tcp"
-		chain         = s.chainA
-		resourceChain = s.valResources[chain.id][0]
-		chainAAPI     = fmt.Sprintf("http://%s", resourceChain.GetHostPort(portID))
-		chainBAPI     = fmt.Sprintf("http://%s", resourceChain.GetHostPort(portID))
+		portID         = "1317/tcp"
+		resourceChainA = s.valResources[s.chainA.id][0]
+		resourceChainB = s.valResources[s.chainB.id][0]
+		chainAAPI      = fmt.Sprintf("http://%s", resourceChainA.GetHostPort(portID))
+		chainBAPI      = fmt.Sprintf("http://%s", resourceChainB.GetHostPort(portID))
 	)
 	s.setupGroupsSuite()
 
 	s.T().Logf("Creating ICA Group")
 	s.execCreateGroupWithPolicy(
-		chain,
+		s.chainA,
 		0,
 		adminAddr,
 		ICAGroupMetadata,
@@ -307,12 +307,13 @@ func (s *IntegrationTestSuite) TestICAGroupProposal() {
 		standardFees.String(),
 	)
 
-	owner := s.creatICAGroupProposal(chain)
+	owner := s.creatICAGroupProposal(s.chainA)
 
 	var ica string
 	s.Require().Eventually(
 		func() bool {
-			ica, err := queryICAAddress(chainAAPI, owner, icaConnectionID)
+			var err error
+			ica, err = queryICAAddress(chainAAPI, owner, icaConnectionID)
 			s.Require().NoError(err)
 
 			return err == nil && ica != ""
@@ -333,6 +334,29 @@ func (s *IntegrationTestSuite) TestICAGroupProposal() {
 			afterSenderICABalance, err := getSpecificBalance(chainBAPI, ica, uatomDenom)
 			s.Require().NoError(err)
 			return afterSenderICABalance.IsEqual(tokenAmount)
+		},
+		time.Minute,
+		5*time.Second,
+	)
+
+	s.Require().Eventually(
+		func() bool {
+			afterSenderICABalance, err := getSpecificBalance(chainBAPI, ica, uatomDenom)
+			s.Require().NoError(err)
+			return afterSenderICABalance.IsEqual(tokenAmount)
+		},
+		time.Minute,
+		5*time.Second,
+	)
+
+	receiver := sender
+	var beforeICASendReceiverBalance sdk.Coin
+	s.Require().Eventually(
+		func() bool {
+			beforeICASendReceiverBalance, err = getSpecificBalance(chainBAPI, receiver, uatomDenom)
+			s.Require().NoError(err)
+
+			return !beforeICASendReceiverBalance.IsNil()
 		},
 		time.Minute,
 		5*time.Second,

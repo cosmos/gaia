@@ -135,6 +135,7 @@ jobs:
         run: |
           go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.0.0
           which cosmovisor
+          go env
         if: env.GIT_DIFF
       - name: Start GaiaV7
         run: |

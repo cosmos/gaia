@@ -15,7 +15,13 @@ fi
 #   exit 1
 # fi
 
-HOMEDIR=./build/.gaia
+# HOMEDIR=./build/.gaia
+NODE_HOME=$(realpath ./build/.gaia)
+echo "NODE_HOME = ${NODE_HOME}"
+
+BINARY=$NODE_HOME/cosmovisor/genesis/bin/gaiad
+echo "BINARY = ${BINARY}"
+
 
 
 BINARY=./build/gaiad7

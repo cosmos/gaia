@@ -3,7 +3,9 @@
 set -o errexit -o nounset
 
 NODE_HOME=$(realpath ./build/.gaia)
+echo "NODE_HOME = ${NODE_HOME}"
 BINARY=$NODE_HOME/cosmovisor/genesis/bin/gaiad
+echo "BINARY = ${BINARY}"
 CHAINID=cosmoshub-4
 
 if ! test -f "./build/gaiad7"; then

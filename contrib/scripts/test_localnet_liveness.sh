@@ -32,10 +32,9 @@ fi
 
 echo "running 'sh test_localnet_liveness.sh iterations=$ITER sleep=$SLEEP num-blocks=$NUMBLOCKS node-address=$NODEADDR'"
 
-docker_containers=($(docker ps -q -f name=umeed --format='{{.Names}}'))
-
 while [ ${CNT} -lt $ITER ]; do
   curr_block=$(curl -s $NODEADDR:26657/status | jq -r '.result.sync_info.latest_block_height')
+  curr_ver=$(curl -s $NODEADDR:1317/node_info | jq -r '.application_version.version')
   
   tail liveness.out
 

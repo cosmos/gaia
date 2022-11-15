@@ -57,10 +57,14 @@ func CreateUpgradeHandler(
 	keepers *keepers.AppKeepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+		ctx.Logger().Info("start to run module migrations...")
+
 		vm, err := mm.RunMigrations(ctx, configurator, vm)
 		if err != nil {
 			return vm, err
 		}
+
+		ctx.Logger().Info("running the rest of the upgrade handler...")
 
 		err = fixBankMetadata(ctx, keepers)
 		if err != nil {
@@ -82,7 +86,7 @@ func CreateUpgradeHandler(
 		keepers.ICAHostKeeper.SetParams(ctx, hostParams)
 		keepers.ICAControllerKeeper.SetParams(ctx, controllerParams)
 
-		ctx.Logger().Info("start to run module migrations...")
+		ctx.Logger().Info("upgrade complete")
 
 		return vm, err
 	}

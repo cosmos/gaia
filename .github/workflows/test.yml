@@ -127,6 +127,8 @@ jobs:
         #   with:
         #     ref: v7.1.0
         run: |
+          git branch -l
+          git checkout v7.1.0
           make build
           cp ./build/gaiad ./build/gaiad7
         if: env.GIT_DIFF

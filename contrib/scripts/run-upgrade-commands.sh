@@ -22,7 +22,7 @@ echo "NODE_HOME = ${NODE_HOME}"
 BINARY=$NODE_HOME/cosmovisor/genesis/bin/gaiad
 echo "BINARY = ${BINARY}"
 
-
+USER_MNEMONIC="abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art"
 
 BINARY=./build/gaiad7
 CHAINID=cosmoshub-4
@@ -36,7 +36,11 @@ if test -f "$BINARY"; then
 	$BINARY config chain-id $CHAINID --home $NODE_HOME
 	$BINARY config output json --home $NODE_HOME
 	$BINARY config keyring-backend test --home $NODE_HOME
+
+  echo $USER_MNEMONIC | $BINARY --home $NODE_HOME keys add val --recover --keyring-backend=test
+
   $BINARY keys list --home $NODE_HOME
+
   echo "\n"
   echo "Submitting proposal... \n"
   $BINARY tx gov submit-proposal software-upgrade v8-Rho \

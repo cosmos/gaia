@@ -8,6 +8,8 @@ BINARY=$NODE_HOME/cosmovisor/genesis/bin/gaiad
 echo "BINARY = ${BINARY}"
 CHAINID=cosmoshub-4
 
+USER_MNEMONIC="abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art"
+
 if ! test -f "./build/gaiad7"; then
   echo "has not gaiad7"
   exit
@@ -59,8 +61,7 @@ sed -i -e 's%"threshold": "0.500000000000000000",%"threshold": "0.00000000000000
 # voting period to 60s
 sed -i -e 's%"voting_period": "172800s"%"voting_period": "30s"%g' $NODE_HOME/config/genesis.json
 
-
-cosmovisor keys add val --home $NODE_HOME --keyring-backend test
+echo $USER_MNEMONIC | cosmovisor --home $NODE_HOME keys add val --recover --keyring-backend=test
 cosmovisor add-genesis-account val 10000000000000000000000000uatom --home $NODE_HOME --keyring-backend test
 cosmovisor gentx val 1000000000uatom --home $NODE_HOME --chain-id $CHAINID
 cosmovisor collect-gentxs --home $NODE_HOME

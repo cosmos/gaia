@@ -15,93 +15,93 @@ jobs:
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
-  test-coverage-upload:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/setup-go@v3.0.0
-        with:
-          go-version: 1.18
-      - uses: actions/checkout@v3.1.0
-      - uses: technote-space/get-diff-action@v6.0.1
-        with:
-          PATTERNS: |
-            **/**.go
-            go.mod
-            go.sum
-      - uses: actions/cache@v3.0.10
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.mod') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
-      - name: build
-        run: make build
-      - name: test & coverage report creation
-        run: |
-          make test-unit-cover
-      - name: filter out DONTCOVER
-        run: |
-          excludelist="$(find ./ -type f -name '*.go' | xargs grep -l 'DONTCOVER')"
-          excludelist+=" $(find ./ -type f -name '*.pb.go')"
-          excludelist+=" $(find ./ -type f -path './tests/mocks/*.go')"
-          for filename in ${excludelist}; do
-            filename=$(echo $filename | sed 's/^./github.com\/cosmos\/cosmos-sdk/g')
-            echo "Excluding ${filename} from coverage report..."
-            sed -i.bak "/$(echo $filename | sed 's/\//\\\//g')/d" coverage.txt
-          done
+  # test-coverage-upload:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/setup-go@v3.0.0
+  #       with:
+  #         go-version: 1.18
+  #     - uses: actions/checkout@v3.1.0
+  #     - uses: technote-space/get-diff-action@v6.0.1
+  #       with:
+  #         PATTERNS: |
+  #           **/**.go
+  #           go.mod
+  #           go.sum
+  #     - uses: actions/cache@v3.0.10
+  #       with:
+  #         path: |
+  #           ~/.cache/go-build
+  #           ~/go/pkg/mod
+  #         key: ${{ runner.os }}-go-${{ hashFiles('**/go.mod') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-go-
+  #     - name: build
+  #       run: make build
+  #     - name: test & coverage report creation
+  #       run: |
+  #         make test-unit-cover
+  #     - name: filter out DONTCOVER
+  #       run: |
+  #         excludelist="$(find ./ -type f -name '*.go' | xargs grep -l 'DONTCOVER')"
+  #         excludelist+=" $(find ./ -type f -name '*.pb.go')"
+  #         excludelist+=" $(find ./ -type f -path './tests/mocks/*.go')"
+  #         for filename in ${excludelist}; do
+  #           filename=$(echo $filename | sed 's/^./github.com\/cosmos\/cosmos-sdk/g')
+  #           echo "Excluding ${filename} from coverage report..."
+  #           sed -i.bak "/$(echo $filename | sed 's/\//\\\//g')/d" coverage.txt
+  #         done
 
-      - uses: codecov/codecov-action@v3.1.1
-        with:
-          file: ./coverage.txt # optional
-          fail_ci_if_error: true
+  #     - uses: codecov/codecov-action@v3.1.1
+  #       with:
+  #         file: ./coverage.txt # optional
+  #         fail_ci_if_error: true
 
-  test-e2e:
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-    steps:
-      - uses: actions/setup-go@v3.0.0
-        with:
-          go-version: 1.18
-      - uses: actions/checkout@v3.1.0
-      - uses: technote-space/get-diff-action@v6.0.1
-        with:
-          PATTERNS: |
-            **/**.go
-            go.mod
-            go.sum
-      - name: Build Docker Image
-        run: make docker-build-debug
-      - name: Test E2E
-        run: make test-e2e
+  # test-e2e:
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 45
+  #   steps:
+  #     - uses: actions/setup-go@v3.0.0
+  #       with:
+  #         go-version: 1.18
+  #     - uses: actions/checkout@v3.1.0
+  #     - uses: technote-space/get-diff-action@v6.0.1
+  #       with:
+  #         PATTERNS: |
+  #           **/**.go
+  #           go.mod
+  #           go.sum
+  #     - name: Build Docker Image
+  #       run: make docker-build-debug
+  #     - name: Test E2E
+  #       run: make test-e2e
 
-  liveness-test:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v3.1.0
-      - uses: actions/setup-go@v3
-        with:
-          go-version: 1.18
-      - uses: technote-space/get-diff-action@v6.0.1
-        with:
-          PATTERNS: |
-            **/**.go
-            go.mod
-            go.sum
-      - name: Install Gaia
-        run: |
-          make build
-        if: env.GIT_DIFF
-      - name: Start Local Network
-        run: |
-          make start-localnet-ci > liveness.out 2>&1 &
-        if: env.GIT_DIFF
-      - name: Test Local Network Liveness
-        run: |
-          ./contrib/scripts/test_localnet_liveness.sh 100 5 50 localhost
-        if: env.GIT_DIFF
+  # liveness-test:
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 10
+  #   steps:
+  #     - uses: actions/checkout@v3.1.0
+  #     - uses: actions/setup-go@v3
+  #       with:
+  #         go-version: 1.18
+  #     - uses: technote-space/get-diff-action@v6.0.1
+  #       with:
+  #         PATTERNS: |
+  #           **/**.go
+  #           go.mod
+  #           go.sum
+  #     - name: Install Gaia
+  #       run: |
+  #         make build
+  #       if: env.GIT_DIFF
+  #     - name: Start Local Network
+  #       run: |
+  #         make start-localnet-ci > liveness.out 2>&1 &
+  #       if: env.GIT_DIFF
+  #     - name: Test Local Network Liveness
+  #       run: |
+  #         ./contrib/scripts/test_localnet_liveness.sh 100 5 50 localhost
+  #       if: env.GIT_DIFF
 
   upgrade-test:
     runs-on: ubuntu-latest

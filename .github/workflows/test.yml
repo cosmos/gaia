@@ -137,7 +137,7 @@ jobs:
         if: env.GIT_DIFF
       - name: Start GaiaV7
         run: |
-          ./contrib/scripts/run-gaia-v7.sh > v7.out 2>&1 &
+          ./contrib/scripts/run-gaia-v7.sh
         if: env.GIT_DIFF
       - name: Submit Upgrade Commands
         run: |

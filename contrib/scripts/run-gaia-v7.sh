@@ -38,14 +38,6 @@ export DAEMON_HOME=$NODE_HOME
 COSMOVISOR=$GOPATH/bin/cosmovisor
 
 
-# if ! command -v $COSMOVISOR &> /dev/null
-# then
-#     echo "cosmovisor could not be found"
-#     exit
-# fi
-
-
-
 $BINARY config chain-id $CHAINID --home $NODE_HOME
 $BINARY config keyring-backend test --home $NODE_HOME
 tmp=$(mktemp)
@@ -61,7 +53,7 @@ sed -i -e 's%"amount": "10000000",%"amount": "1",%g' $NODE_HOME/config/genesis.j
 sed -i -e 's%"quorum": "0.334000000000000000",%"quorum": "0.000000000000000001",%g' $NODE_HOME/config/genesis.json
 # the minimum proportion of "yes" votes requires for the proposal to pass
 sed -i -e 's%"threshold": "0.500000000000000000",%"threshold": "0.000000000000000001",%g' $NODE_HOME/config/genesis.json
-# voting period to 60s
+# voting period to 30s
 sed -i -e 's%"voting_period": "172800s"%"voting_period": "30s"%g' $NODE_HOME/config/genesis.json
 
 echo $USER_MNEMONIC | $BINARY --home $NODE_HOME keys add val --recover --keyring-backend=test
@@ -70,13 +62,10 @@ $BINARY gentx val 1000000000uatom --home $NODE_HOME --chain-id $CHAINID
 $BINARY collect-gentxs --home $NODE_HOME
 
 sed -i.bak'' 's/minimum-gas-prices = ""/minimum-gas-prices = "0uatom"/' $NODE_HOME/config/app.toml
-# sed -i.bak'' 's/enable = false/enable = true/' $NODE_HOME/config/app.toml
 
 perl -i~ -0777 -pe 's/# Enable defines if the API server should be enabled.
 enable = false/# Enable defines if the API server should be enabled.
 enable = true/g' $NODE_HOME/config/app.toml
-
-# sed -i.bak'' '0,/enable = false/s//enable = true/' $NODE_HOME/config/app.toml
 
 $COSMOVISOR start --home $NODE_HOME --x-crisis-skip-assert-invariants
 

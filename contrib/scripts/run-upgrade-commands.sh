@@ -30,15 +30,18 @@ if test -f "$BINARY"; then
   echo "wait 10 seconds for blockchain to start"
   sleep 10
 
-
 	$BINARY config chain-id $CHAINID --home $NODE_HOME
 	$BINARY config output json --home $NODE_HOME
 	$BINARY config keyring-backend test --home $NODE_HOME
-  $BINARY config
+  $BINARY config --home $NODE_HOME
 
-  echo $USER_MNEMONIC | $BINARY --home $NODE_HOME keys add val --recover --keyring-backend=test
 
-  $BINARY keys list --home $NODE_HOME
+  key=$($BINARY keys show val --home $NODE_HOME)
+  if [ key == "" ]; then
+    echo $USER_MNEMONIC | $BINARY --home $NODE_HOME keys add val --recover --keyring-backend=test
+  fi
+
+  # $BINARY keys list --home $NODE_HOME
 
   echo "\n"
   echo "Submitting proposal... \n"

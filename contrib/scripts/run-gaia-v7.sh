@@ -19,13 +19,13 @@ cp ./build/gaiad7 $NODE_HOME/cosmovisor/genesis/bin/gaiad
 $BINARY init upgrader --chain-id $CHAINID --home $NODE_HOME
 
 
-if ! test -f "./build/gaiad"; then
+if ! test -f "./build/gaiad8"; then
   echo "has not gaiad v8"
   exit
 fi
 
 mkdir -p $NODE_HOME/cosmovisor/upgrades/v8-Rho/bin
-cp ./build/gaiad $NODE_HOME/cosmovisor/upgrades/v8-Rho/bin
+cp ./build/gaiad8 $NODE_HOME/cosmovisor/upgrades/v8-Rho/bin/gaiad
 
 
 

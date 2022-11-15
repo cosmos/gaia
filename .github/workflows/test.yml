@@ -117,6 +117,7 @@ jobs:
         with:
           PATTERNS: |
             **/**.go
+            **/**.yml
             go.mod
             go.sum
       - name: Install GaiaV8

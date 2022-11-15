@@ -50,9 +50,13 @@ func Test_validateParams(t *testing.T) {
 	}
 
 	for name, test := range tests {
-		t.Log(name)
-		err := validateMinimumGasPrices(test.coins)
-
-		require.Equal(t, err == nil, !test.expectErr)
+		t.Run(name, func(t *testing.T) {
+			err := validateMinimumGasPrices(test.coins)
+			if test.expectErr {
+				require.Error(t, err)	
+				return
+			}
+			require.NoError(t, err)
+		})
 	}
 }

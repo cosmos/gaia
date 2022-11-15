@@ -638,6 +638,8 @@ func (s *IntegrationTestSuite) executeExecGroupProposal(c *chain, valIdx, propos
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, proposerAddress),
 		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, standardFees),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--%s=%s", flags.FlagGas, "auto"),
+		fmt.Sprintf("--%s=%s", flags.FlagGasAdjustment, "1.5"),
 		"--keyring-backend=test",
 		"--output=json",
 		"-y",

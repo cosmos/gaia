@@ -237,7 +237,6 @@ func (s *IntegrationTestSuite) creatICAGroupProposal(c *chain) string {
 
 	s.writeFile(c, ICAGroupProposal, body)
 
-	s.writeGroupProposal(c, policy.Address, adminAddr, sendAmount, ICAGroupProposal)
 	s.T().Logf("Submitting Group ICA Proposal")
 	s.executeSubmitGroupProposal(c, 0, adminAddr, filepath.Join(gaiaConfigPath, ICAGroupProposal))
 
@@ -286,7 +285,7 @@ func (s *IntegrationTestSuite) writeGroupProposal(c *chain, policyAddress, signi
 	s.writeFile(c, filename, body)
 }
 
-func (s *IntegrationTestSuite) TestICAGroupPolicy() {
+func (s *IntegrationTestSuite) TestICAGroupProposal() {
 	var (
 		portID        = "1317/tcp"
 		chain         = s.chainA

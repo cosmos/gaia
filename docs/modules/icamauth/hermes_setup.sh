@@ -1,6 +1,6 @@
 #!/bin/bash
 
-HERMES_BINARY=hermes
+HERMES_BINARY=$(which hermes)
 CONFIG_DIR=./rly-config.toml
 
 # Restore Keys

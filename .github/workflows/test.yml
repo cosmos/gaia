@@ -119,19 +119,17 @@ jobs:
             **/**.go
             go.mod
             go.sum
-      - name: Install GaiaV8
-        run: |
-          make build
-          cp ./build/gaiad ./build/gaiad8
-        if: env.GIT_DIFF
       - name: Install GaiaV7
-        # uses: actions/checkout@v3.1.0
-        #   with:
-        #     ref: v7.1.0
         run: |
           git checkout v7.1.0
           make build
           cp ./build/gaiad ./build/gaiad7
+        if: env.GIT_DIFF
+      - name: Install GaiaV8
+        run: |
+          git checkout -
+          make build
+          cp ./build/gaiad ./build/gaiad8
         if: env.GIT_DIFF
       - name: Install Cosmovisor
         run: |

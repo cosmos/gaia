@@ -42,9 +42,11 @@ then
     exit
 fi
 
+COSMOVISOR=$GOPATH/bin/cosmovisor
 
-cosmovisor config chain-id $CHAINID --home $NODE_HOME
-cosmovisor config keyring-backend test --home $NODE_HOME
+
+$COSMOVISOR config chain-id $CHAINID --home $NODE_HOME
+$COSMOVISOR config keyring-backend test --home $NODE_HOME
 tmp=$(mktemp)
 
 # add bank part of genesis
@@ -61,10 +63,10 @@ sed -i -e 's%"threshold": "0.500000000000000000",%"threshold": "0.00000000000000
 # voting period to 60s
 sed -i -e 's%"voting_period": "172800s"%"voting_period": "30s"%g' $NODE_HOME/config/genesis.json
 
-echo $USER_MNEMONIC | cosmovisor --home $NODE_HOME keys add val --recover --keyring-backend=test
-cosmovisor add-genesis-account val 10000000000000000000000000uatom --home $NODE_HOME --keyring-backend test
-cosmovisor gentx val 1000000000uatom --home $NODE_HOME --chain-id $CHAINID
-cosmovisor collect-gentxs --home $NODE_HOME
+echo $USER_MNEMONIC | $COSMOVISOR --home $NODE_HOME keys add val --recover --keyring-backend=test
+$COSMOVISOR add-genesis-account val 10000000000000000000000000uatom --home $NODE_HOME --keyring-backend test
+$COSMOVISOR gentx val 1000000000uatom --home $NODE_HOME --chain-id $CHAINID
+$COSMOVISOR collect-gentxs --home $NODE_HOME
 
 sed -i.bak'' 's/minimum-gas-prices = ""/minimum-gas-prices = "0uatom"/' $NODE_HOME/config/app.toml
 # sed -i.bak'' 's/enable = false/enable = true/' $NODE_HOME/config/app.toml
@@ -75,5 +77,5 @@ enable = true/g' $NODE_HOME/config/app.toml
 
 # sed -i.bak'' '0,/enable = false/s//enable = true/' $NODE_HOME/config/app.toml
 
-cosmovisor start --home $NODE_HOME --x-crisis-skip-assert-invariants
+$COSMOVISOR start --home $NODE_HOME --x-crisis-skip-assert-invariants
 

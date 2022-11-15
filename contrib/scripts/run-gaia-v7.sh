@@ -31,6 +31,7 @@ fi
 mkdir -p $NODE_HOME/cosmovisor/upgrades/v8-Rho/bin
 cp ./build/gaiad8 $NODE_HOME/cosmovisor/upgrades/v8-Rho/bin/gaiad
 
+$GOPATH=$(go env GOPATH)
 
 
 export DAEMON_NAME=gaiad

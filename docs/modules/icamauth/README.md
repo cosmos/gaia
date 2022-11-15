@@ -227,5 +227,5 @@ gaiad tx icamauth submit send-raw.json --connection-id connection-0 --from alice
 The long denom we saw will be changed from `ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9` back to `stake` when the token is back to a on chain `test-0`.
 
 ## References:
-- [Hermes installation](https://hermes.informal.systems/installation.html)
+- [Hermes installation](https://hermes.informal.systems/quick-start/installation.html)
 - [Interchain Accounts tutorial](https://github.com/cosmos/interchain-accounts/blob/master/README.md)

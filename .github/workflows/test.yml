@@ -134,6 +134,7 @@ jobs:
       - name: Install Cosmovisor
         run: |
           go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.0.0
+          which cosmovisor
         if: env.GIT_DIFF
       - name: Start GaiaV7
         run: |

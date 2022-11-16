@@ -436,7 +436,10 @@ func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
 			func() bool {
 				afterSenderUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
 				s.Require().NoError(err)
-
+				fmt.Println("tokenAmount", tokenAmount)
+				fmt.Println("beforeSenderUAtomBalance", beforeSenderUAtomBalance)
+				fmt.Println("standardFees", standardFees)
+				fmt.Println("afterSenderUAtomBalance", afterSenderUAtomBalance)
 				returned := beforeSenderUAtomBalance.Sub(tokenAmount).Sub(standardFees).IsEqual(afterSenderUAtomBalance)
 
 				return returned

@@ -26,9 +26,12 @@ Through these 3 accounts, we can test if:
 ### Prepare to run two chains
 We've simplified the setup process via several shell scripts. If you'd like to learn more about what's happening under the hood we suggest you inspect the files more closely.
 
-Set up the two chains, create the keys for `alice` and `bob`, and start running both chains:
+Set up the two chains, create the keys for `alice` and `bob`, and start running both chains in different terminals:
 ```shell
 source ./docs/modules/icamauth/init_chain_controller.sh
+```
+and ni another temrinal:
+```shell
 source ./docs/modules/icamauth/init_chain_host.sh
 ```
 
@@ -78,7 +81,7 @@ export HOME1=$HOME/test-1
 ```
 
 ```shell
-gaiad tx icamauth register --from alice --connection-id connection-0 --gas-prices 0.04stake --home $HOME0
+gaiad tx icamauth register --from alice --connection-id connection-0 --gas-prices 0.4stake --home $HOME0
 ```
 query alice's ica:
 ```shell
@@ -122,7 +125,7 @@ Both `alice_ica` and `bob` are on chain `test-1`, however, we need `alice` from 
 
 Step 1: generate the transaction json: 
 ```shell
-gaiad tx bank send $ALICE_ICA $BOB --from alice 100stake --generate-only | jq '.body.messages[0]' > ./send-raw.json
+gaiad tx bank send $ALICE_ICA $BOB --from alice 100stake --generate-only --home $HOME1 | jq '.body.messages[0]' > ./send-raw.json
 
 cat send-raw.json
 ```
@@ -142,23 +145,30 @@ This will generate and display a JSON file similar to this following file:
 }
 ```
 
-Step 2: send the generated transaction and let `alice` sign it:
+Step 2: Check the balance of Bob's account before the transfer, then send the generated transaction and let `alice` sign it:
 ```shell
+gaiad q bank balances $BOB --home $HOME1
+
 gaiad tx icamauth submit ./send-raw.json --connection-id connection-0 --from alice --gas-prices 0.025stake --home $HOME0
+```
+
+Step 3: check the balance of Bob's account after the transfer to make sure it went through:
+```shell
+gaiad q bank balances $BOB --home $HOME1
 ```
 
 #### Q2: `bob` sends the tokens back to `alice_ica`
 Note that this transaction is just a regular coin transfer using the Bank module because both accounts exist on `test-1` and you are interacting directly with that chain via the `--home` flag.
 
 ```shell
-gaiad tx bank send $BOB $ALICE_ICA 100stake --home $HOME1
+gaiad tx bank send $BOB $ALICE_ICA 100stake --gas-prices 0.025stake --home $HOME1
 ```
 
 #### Q3: `alice` sends tokens to `bob` via IBC
 Create a new IBC channel using Hermes:
 
 ```shell
- hermes -c rly-config.toml create channel --a-chain test-0 --a-connection connection-0 --port-a transfer --port-b transfer
+ hermes --config ./docs/modules/icamauth/rly-config.toml create channel --a-chain test-0 --a-connection connection-0 --a-port transfer --b-port transfer
 ```
 
 Initiate the IBC token transfer:
@@ -182,9 +192,11 @@ pagination:
 Note how the `200stake` received has changed its denom to `ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9`. Tokens sending over IBC always are encoded with information about its origin in its denom.
 
 #### Q4: Let `bob` send the `ibc/stake` it just received to `alice_ica`
-Notice how this is just a regular token transfer using the Bank module:
+Notice how this is just a regular token transfer using the Bank module. Also make sure the ibc denom is correct as it will be different for each chain.
+
 ```shell
-gaiad tx bank send $BOB $AICA_ICA 200ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9 --from bob --gas-prices 0.025stake --home $HOME1
+export IBC_DENOM=ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9
+gaiad tx bank send $BOB $ALICE_ICA 200$IBC_DENOM --from bob --gas-prices 0.025stake --home $HOME1
 ```
 
 #### Q5: `alice_ica` sends `100ibc/stake` to `alice`
@@ -194,7 +206,7 @@ we have already created the channel in the above [#Q3], we can just use this cha
 Step 1: prepare the transaction JSON file:
 
 ```shell
-gaiad tx ibc-transfer transfer transfer channel-1 $ALICE 100ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9 --from $ALICE_ICA --generate-only | jq '.body.messages[0]' > send-raw.json
+gaiad tx ibc-transfer transfer transfer channel-1 $ALICE 100$IBC_DENOM --from $ALICE_ICA --generate-only --home $HOME1 | jq '.body.messages[0]' > send-raw.json
 
 cat send-raw.json
 ```
@@ -219,9 +231,13 @@ This will generate and display the following JSON file:
 }
 ```
 
-Step 2: use Interchain Accounts to execute the IBC transfer in the JSON file:
+Step 2: use Interchain Accounts to execute the IBC transfer in the JSON file.
+Don't forget to confirm Alice's balance before and after the transfer to see the IBC denom disappear (it may take a moment for the entire sequence to complete):
+
 ```shell
+gaiad q bank balances $ALICE_ICA --home $HOME1
 gaiad tx icamauth submit send-raw.json --connection-id connection-0 --from alice --home $HOME0 --gas-prices 0.025stake
+gaiad q bank balances $ALICE_ICA --home $HOME1
 ```
 
 The long denom we saw will be changed from `ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9` back to `stake` when the token is back to a on chain `test-0`.

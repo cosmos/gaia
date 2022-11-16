@@ -65,8 +65,8 @@ sed -i -e 's#":8080"#":'"$ROSETTA_1"'"#g' $HOME_1/config/app.toml
 sed -i '' 's/minimum-gas-prices = ""/minimum-gas-prices = "0.025stake"/g' $HOME_1/config/app.toml
 
 # Update host chain genesis to allow all msg types ("*" represents all msg types)
-sed -i '' 's/\"allow_messages\": \[\]/\"allow_messages\": \["*"\]/g' $HOME_0/config/genesis.json
+sed -i '' 's/\"allow_messages\": \[\]/\"allow_messages\": \["*"\]/g' $HOME_1/config/genesis.json
 
 echo "Starting $CHAINID_1..."
 echo "Creating log file at gaia1.log"
-$BINARY start --home=$HOME_1 --log_level=trace --log_format=json --pruning=nothing > gaia1.log 2>&1 &
+$BINARY start --home=$HOME_1 --log_level=trace --log_format=json --pruning=nothing

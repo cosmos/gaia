@@ -14,7 +14,7 @@ The following command allows you to query all the allowed message types on a hos
 gaiad q interchain-accounts host params
 ```
 
-The following tutorial will demonstrate how to use Interchain Accounts through the [icamauth module](../../../x/icamauth).
+The following tutorial will demonstrate how to use Interchain Accounts through the [icamauth module](../../x/icamauth).
 
 ## Setup preparation
 We will run two Cosmos-SDK chains (controller chain: `test-0` and host chain: `test-1`) and a relayer to connect these two chains. We will create an account on chain `test-0` and call it `alice`, and register an Interchain Account (that we'll call `alice_ica`)  on chain `test-1` for `alice` on chain `test-0`. We will also create a standard account, `bob` on chain `test-1`.

@@ -59,10 +59,9 @@ func DenomsSubsetOfIncludingZero(coins, coinsB sdk.Coins) bool {
 		if err != nil {
 			panic(err)
 		}
-		// TODO: need to add a custom Find function for Coins type
-		// if ok, _ := coinsB.Find(coin.Denom); !ok {
-		// 	return false
-		// }
+		if ok, _ := Find(coinsB, coin.Denom); !ok {
+			return false
+		}
 	}
 
 	return true
@@ -90,17 +89,16 @@ func IsAnyGTEIncludingZero(coins, coinsB sdk.Coins) bool {
 
 	//  len(coinsB) != 0 && len(coins) != 0
 	// special case: coins=1stake, coinsB=[2stake,0uatom], fail
-	// for _, coin := range coins {
-	// not find coin in CoinsB
-	// TODO: need to add a custom Find function for Coins type
-	// if ok, _ := coinsB.Find(coin.Denom); ok {
-	// 	// find coin in coinsB, and if the amt == 0, mean either coin=0denom or coinsB=0denom...both true
-	// 	amt := coinsB.AmountOf(coin.Denom)
-	// 	if coin.Amount.GTE(amt) {
-	// 		return true
-	// 	}
-	// }
-	// }
+	for _, coin := range coins {
+		// not find coin in CoinsB
+		if ok, _ := Find(coinsB, coin.Denom); ok {
+			// find coin in coinsB, and if the amt == 0, mean either coin=0denom or coinsB=0denom...both true
+			amt := coinsB.AmountOf(coin.Denom)
+			if coin.Amount.GTE(amt) {
+				return true
+			}
+		}
+	}
 
 	return false
 }
@@ -133,20 +131,19 @@ func CombinedFeeRequirement(globalFees, minGasPrices sdk.Coins) sdk.Coins {
 
 	// if find min_gas_price denom in globalfee, and amt is higher than globalfee, add it
 	var allFees sdk.Coins
-	// for _, fee := range globalFees {
-	// min_gas_price denom in global fee
-	// TODO: need to add a custom Find function for Coins type
-	// ok, c := minGasPrices.Find(fee.Denom)
-	// if ok {
-	// 	if c.Amount.GT(fee.Amount) {
-	// 		allFees = append(allFees, c)
-	// 	} else {
-	// 		allFees = append(allFees, fee)
-	// 	}
-	// } else {
-	// 	allFees = append(allFees, fee)
-	// }
-	// }
+	for _, fee := range globalFees {
+		// min_gas_price denom in global fee
+		ok, c := Find(minGasPrices, fee.Denom)
+		if ok {
+			if c.Amount.GT(fee.Amount) {
+				allFees = append(allFees, c)
+			} else {
+				allFees = append(allFees, fee)
+			}
+		} else {
+			allFees = append(allFees, fee)
+		}
+	}
 
 	return allFees.Sort()
 }
@@ -166,4 +163,31 @@ func GetTxPriority(fee sdk.Coins) int64 {
 	}
 
 	return priority
+}
+
+// Find replaces the functionality of Coins.Find from SDK v0.46.x
+func Find(coins sdk.Coins, denom string) (bool, sdk.Coin) {
+	switch len(coins) {
+	case 0:
+		return false, sdk.Coin{}
+
+	case 1:
+		coin := coins[0]
+		if coin.Denom == denom {
+			return true, coin
+		}
+		return false, sdk.Coin{}
+
+	default:
+		midIdx := len(coins) / 2 // 2:1, 3:1, 4:2
+		coin := coins[midIdx]
+		switch {
+		case denom < coin.Denom:
+			return Find(coins[:midIdx], denom)
+		case denom == coin.Denom:
+			return true, coin
+		default:
+			return Find(coins[midIdx+1:], denom)
+		}
+	}
 }

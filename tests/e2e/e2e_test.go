@@ -408,8 +408,7 @@ func (s *IntegrationTestSuite) TestVesting() {
 	s.testDelayedVestingAccount(chainAAPI)
 	s.testContinuousVestingAccount(chainAAPI)
 	s.testPermanentLockedAccount(chainAAPI)
-	// TODO: add this one back for v0.45 Rho
-	// s.testPeriodicVestingAccount(chainAAPI)
+	s.testPeriodicVestingAccount(chainAAPI)
 }
 
 func (s *IntegrationTestSuite) TestSlashing() {

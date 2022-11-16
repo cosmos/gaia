@@ -18,9 +18,9 @@ fi
 
 rm -rf ./build/.gaia
 
-mkdir -p $NODE_HOME/cosmovisor/genesis/bin
-cp ./build/gaiad7 $NODE_HOME/cosmovisor/genesis/bin/gaiad
-$BINARY init upgrader --chain-id $CHAINID --home $NODE_HOME
+mkdir -p "$NODE_HOME"/cosmovisor/genesis/bin
+cp ./build/gaiad7 "$NODE_HOME"/cosmovisor/genesis/bin/gaiad
+$BINARY init upgrader --chain-id $CHAINID --home "$NODE_HOME"
 
 
 if ! test -f "./build/gaiad8"; then

@@ -8,4 +8,5 @@ Updated Modules in V8 Rho
 
 ## New Modules in Rho V8
 - [Group](./group.md)
+- [ICA-Mauth](./icamauth/)
 

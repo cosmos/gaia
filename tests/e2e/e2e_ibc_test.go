@@ -412,15 +412,13 @@ func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
 		var (
 			beforeSenderUAtomBalance sdk.Coin
 			beforeMiddleIBCBalance   sdk.Coin
+			err                      error
 		)
 
 		s.Require().Eventually(
 			func() bool {
-				beforeSenderUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
+				beforeSenderUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
 				s.Require().NoError(err)
-				fmt.Println("beforeSenderUAtomBalance", beforeSenderUAtomBalance)
-				fmt.Println("beforeSenderUAtomBalance.IsValid()", beforeSenderUAtomBalance.IsValid())
-
 				beforeMiddleIBCBalance, err = getSpecificBalance(chainBAPIEndpoint, middlehop, "ibc/")
 				s.Require().True(beforeMiddleIBCBalance.IsNil())
 				s.Require().NoError(err)
@@ -438,10 +436,6 @@ func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
 			func() bool {
 				afterSenderUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
 				s.Require().NoError(err)
-				fmt.Println("tokenAmount", tokenAmount)
-				fmt.Println("beforeSenderUAtomBalance", beforeSenderUAtomBalance)
-				fmt.Println("standardFees", standardFees)
-				fmt.Println("afterSenderUAtomBalance", afterSenderUAtomBalance)
 				returned := beforeSenderUAtomBalance.Sub(tokenAmount).Sub(standardFees).IsEqual(afterSenderUAtomBalance)
 
 				return returned

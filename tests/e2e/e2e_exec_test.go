@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
@@ -17,12 +16,9 @@ import (
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	grouptypes "github.com/cosmos/cosmos-sdk/x/group"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/ory/dockertest/v3/docker"
-
-	icamauth "github.com/cosmos/gaia/v8/x/icamauth/types"
 )
 
 const (
@@ -462,181 +458,6 @@ func (s *IntegrationTestSuite) execGovSubmitProposal(c *chain, valIdx int, submi
 	s.T().Logf("Successfully submitted proposal %s", govProposalPath)
 }
 
-func (s *IntegrationTestSuite) execCreateGroup(c *chain, valIdx int, adminAddr, metadata, groupMembersPath, fees string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-
-	s.T().Logf("Executing gaiad tx group create-group on chain %s", c.id)
-
-	gaiaCommand := []string{
-		gaiadBinary,
-		txCommand,
-		grouptypes.ModuleName,
-		"create-group",
-		adminAddr,
-		metadata,
-		groupMembersPath,
-		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-		"--keyring-backend=test",
-		"--output=json",
-		"-y",
-	}
-
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
-	s.T().Logf("%s successfully created group: %s", adminAddr, groupMembersPath)
-}
-
-func (s *IntegrationTestSuite) execUpdateGroupMembers(c *chain, valIdx int, adminAddr, groupId, groupMembersPath, fees string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-
-	s.T().Logf("Executing gaiad tx group update-group-members %s", c.id)
-
-	gaiaCommand := []string{
-		gaiadBinary,
-		txCommand,
-		grouptypes.ModuleName,
-		"update-group-members",
-		adminAddr,
-		groupId,
-		groupMembersPath,
-		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-		"--keyring-backend=test",
-		"--output=json",
-		"-y",
-	}
-
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
-	s.T().Logf("%s successfully updated group members: %s", adminAddr, groupMembersPath)
-}
-
-func (s *IntegrationTestSuite) executeCreateGroupPolicy(c *chain, valIdx int, adminAddr, groupId, metadata, policyFile, fees string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-
-	s.T().Logf("Executing gaiad tx group create-group-policy %s", c.id)
-
-	gaiaCommand := []string{
-		gaiadBinary,
-		txCommand,
-		grouptypes.ModuleName,
-		"create-group-policy",
-		adminAddr,
-		groupId,
-		metadata,
-		policyFile,
-		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-		"--keyring-backend=test",
-		"--output=json",
-		"-y",
-	}
-
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
-	s.T().Logf("%s successfully created group policy: %s", adminAddr, policyFile)
-}
-
-func (s *IntegrationTestSuite) executeSubmitGroupProposal(c *chain, valIdx int, fromAddress, proposalPath string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-
-	s.T().Logf("Executing gaiad tx group submit-proposal %s", c.id)
-
-	gaiaCommand := []string{
-		gaiadBinary,
-		txCommand,
-		grouptypes.ModuleName,
-		"submit-proposal",
-		proposalPath,
-		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, standardFees),
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, fromAddress),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-		"--keyring-backend=test",
-		"--output=json",
-		"-y",
-	}
-
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
-	s.T().Logf("%s successfully submited group proposal: %s", fromAddress, proposalPath)
-}
-
-func (s *IntegrationTestSuite) executeVoteGroupProposal(c *chain, valIdx int, proposalId, voterAddress, voteOption, metadata string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-
-	s.T().Logf("Executing gaiad tx group vote %s", c.id)
-
-	gaiaCommand := []string{
-		gaiadBinary,
-		txCommand,
-		grouptypes.ModuleName,
-		"vote",
-		proposalId,
-		voterAddress,
-		voteOption,
-		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, standardFees),
-		metadata,
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-		"--keyring-backend=test",
-		"--output=json",
-		"-y",
-	}
-
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
-	s.T().Logf("%s successfully voted %s on proposal: %s", voterAddress, voteOption, proposalId)
-}
-
-func (s *IntegrationTestSuite) executeExecGroupProposal(c *chain, valIdx int, proposalId, proposerAddress string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-
-	s.T().Logf("Executing gaiad tx group exec %s", c.id)
-
-	gaiaCommand := []string{
-		gaiadBinary,
-		txCommand,
-		grouptypes.ModuleName,
-		"exec",
-		proposalId,
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, proposerAddress),
-		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, standardFees),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-		"--keyring-backend=test",
-		"--output=json",
-		"-y",
-	}
-
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
-	s.T().Logf("%s successfully executed proposal: %s", proposerAddress, proposalId)
-}
-
-func (s *IntegrationTestSuite) executeUpdateGroupAdmin(c *chain, valIdx int, admin, groupId, newAdmin string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-
-	s.T().Logf("Executing gaiad tx group update-group-admin %s", c.id)
-
-	gaiaCommand := []string{
-		gaiadBinary,
-		txCommand,
-		grouptypes.ModuleName,
-		"update-group-admin",
-		admin,
-		groupId,
-		newAdmin,
-		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, standardFees),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-		"--keyring-backend=test",
-		"--output=json",
-		"-y",
-	}
-
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
-	s.T().Logf("Successfully updated group admin from %s to %s", admin, newAdmin)
-}
-
 func (s *IntegrationTestSuite) executeGKeysAddCommand(c *chain, valIdx int, name string, home string) string {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
@@ -835,64 +656,6 @@ func (s *IntegrationTestSuite) execWithdrawReward(
 
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
 	s.T().Logf("Successfully withdrew distribution rewards for delegator %s from validator %s", delegatorAddress, validatorAddress)
-}
-
-// register a ica on chainB from registrant on chainA
-func (s *IntegrationTestSuite) submitICAtx(owner, connectionID, txJsonPath string) {
-	fee := sdk.NewCoin(uatomDenom, math.NewInt(930000))
-	s.T().Logf("register an interchain account on chain %s for %s from chain %s", s.chainB.id, owner, s.chainA.id)
-
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-
-	submitTX := []string{
-		gaiadBinary,
-		txCommand,
-		icamauth.ModuleName,
-		"submit",
-		txJsonPath,
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
-		fmt.Sprintf("--%s=%s", "connection-id", connectionID),
-		fmt.Sprintf("--%s=%s", flags.FlagGas, flags.GasFlagAuto),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, fee),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, s.chainA.id),
-		"--keyring-backend=test",
-		"--broadcast-mode=sync",
-		"--output=json",
-		"-y",
-	}
-
-	s.executeGaiaTxCommand(ctx, s.chainA, submitTX, 0, s.defaultExecValidation(s.chainA, 0))
-
-	s.T().Logf("%s submit a transaction on chain %s", owner, s.chainB.id)
-}
-
-func (s *IntegrationTestSuite) registerICA(owner, connectionID string) {
-	fee := sdk.NewCoin(uatomDenom, math.NewInt(930000))
-	s.T().Logf("register an interchain account on chain %s for %s from chain %s", s.chainB.id, owner, s.chainA.id)
-
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-
-	registerICAcmd := []string{
-		gaiadBinary,
-		txCommand,
-		icamauth.ModuleName,
-		"register",
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
-		fmt.Sprintf("--%s=%s", "connection-id", connectionID),
-		fmt.Sprintf("--%s=%s", flags.FlagGas, flags.GasFlagAuto),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, fee),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, s.chainA.id),
-		"--keyring-backend=test",
-		"--broadcast-mode=sync",
-		"--output=json",
-		"-y",
-	}
-
-	s.executeGaiaTxCommand(ctx, s.chainA, registerICAcmd, 0, s.defaultExecValidation(s.chainA, 0))
-
-	s.T().Logf("%s registered an interchain account on chain %s from chain %s", owner, s.chainB.id, s.chainA.id)
 }
 
 func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chain, gaiaCommand []string, valIdx int, validation func([]byte, []byte) bool) {

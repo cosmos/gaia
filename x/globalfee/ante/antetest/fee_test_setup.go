@@ -32,7 +32,8 @@ type IntegrationTestSuite struct {
 }
 
 func (s *IntegrationTestSuite) SetupTest() {
-	app := gaiahelpers.Setup(s.T())
+	// TODO: check to make sure false and 1 are correct values
+	app := gaiahelpers.Setup(s.T(), false, 1)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{
 		ChainID: fmt.Sprintf("test-chain-%s", tmrand.Str(4)),
 		Height:  1,

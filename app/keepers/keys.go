@@ -11,7 +11,6 @@ import (
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/cosmos/cosmos-sdk/x/group"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
@@ -23,8 +22,6 @@ import (
 	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
 	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
 	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v2/router/types"
-
-	icamauthtypes "github.com/cosmos/gaia/v8/x/icamauth/types"
 )
 
 func (appKeepers *AppKeepers) GenerateKeys() {
@@ -36,7 +33,7 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, liquiditytypes.StoreKey, ibctransfertypes.StoreKey,
 		capabilitytypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey, routertypes.StoreKey,
-		icacontrollertypes.StoreKey, icahosttypes.StoreKey, icamauthtypes.StoreKey, group.StoreKey,
+		icacontrollertypes.StoreKey, icahosttypes.StoreKey,
 	)
 
 	// Define transient store keys

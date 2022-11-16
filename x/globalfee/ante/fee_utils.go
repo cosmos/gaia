@@ -59,10 +59,10 @@ func DenomsSubsetOfIncludingZero(coins, coinsB sdk.Coins) bool {
 		if err != nil {
 			panic(err)
 		}
-
-		if ok, _ := coinsB.Find(coin.Denom); !ok {
-			return false
-		}
+		//TODO: need to add a custom Find function for Coins type
+		// if ok, _ := coinsB.Find(coin.Denom); !ok {
+		// 	return false
+		// }
 	}
 
 	return true
@@ -90,16 +90,17 @@ func IsAnyGTEIncludingZero(coins, coinsB sdk.Coins) bool {
 
 	//  len(coinsB) != 0 && len(coins) != 0
 	// special case: coins=1stake, coinsB=[2stake,0uatom], fail
-	for _, coin := range coins {
-		// not find coin in CoinsB
-		if ok, _ := coinsB.Find(coin.Denom); ok {
-			// find coin in coinsB, and if the amt == 0, mean either coin=0denom or coinsB=0denom...both true
-			amt := coinsB.AmountOf(coin.Denom)
-			if coin.Amount.GTE(amt) {
-				return true
-			}
-		}
-	}
+	// for _, coin := range coins {
+	// not find coin in CoinsB
+	// TODO: need to add a custom Find function for Coins type
+	// if ok, _ := coinsB.Find(coin.Denom); ok {
+	// 	// find coin in coinsB, and if the amt == 0, mean either coin=0denom or coinsB=0denom...both true
+	// 	amt := coinsB.AmountOf(coin.Denom)
+	// 	if coin.Amount.GTE(amt) {
+	// 		return true
+	// 	}
+	// }
+	// }
 
 	return false
 }
@@ -132,19 +133,20 @@ func CombinedFeeRequirement(globalFees, minGasPrices sdk.Coins) sdk.Coins {
 
 	// if find min_gas_price denom in globalfee, and amt is higher than globalfee, add it
 	var allFees sdk.Coins
-	for _, fee := range globalFees {
-		// min_gas_price denom in global fee
-		ok, c := minGasPrices.Find(fee.Denom)
-		if ok {
-			if c.Amount.GT(fee.Amount) {
-				allFees = append(allFees, c)
-			} else {
-				allFees = append(allFees, fee)
-			}
-		} else {
-			allFees = append(allFees, fee)
-		}
-	}
+	// for _, fee := range globalFees {
+	// min_gas_price denom in global fee
+	// TODO: need to add a custom Find function for Coins type
+	// ok, c := minGasPrices.Find(fee.Denom)
+	// if ok {
+	// 	if c.Amount.GT(fee.Amount) {
+	// 		allFees = append(allFees, c)
+	// 	} else {
+	// 		allFees = append(allFees, fee)
+	// 	}
+	// } else {
+	// 	allFees = append(allFees, fee)
+	// }
+	// }
 
 	return allFees.Sort()
 }

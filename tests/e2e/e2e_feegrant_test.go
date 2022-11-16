@@ -24,12 +24,9 @@ func (s *IntegrationTestSuite) TestFeeGrant() {
 			api    = fmt.Sprintf("http://%s", s.valResources[chain.id][valIdx].GetHostPort("1317/tcp"))
 		)
 
-		alice, err := chain.genesisAccounts[1].keyInfo.GetAddress()
-		s.Require().NoError(err)
-		bob, err := chain.genesisAccounts[2].keyInfo.GetAddress()
-		s.Require().NoError(err)
-		charlie, err := chain.genesisAccounts[3].keyInfo.GetAddress()
-		s.Require().NoError(err)
+		alice := chain.genesisAccounts[1].keyInfo.GetAddress()
+		bob := chain.genesisAccounts[2].keyInfo.GetAddress()
+		charlie := chain.genesisAccounts[3].keyInfo.GetAddress()
 
 		// add fee grant from alice to bob
 		s.execFeeGrant(

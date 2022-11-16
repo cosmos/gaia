@@ -6,15 +6,16 @@ import (
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	gov "github.com/cosmos/cosmos-sdk/x/gov/types"
+	// govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
-func (s *IntegrationTestSuite) TestGov() {
+// func (s *IntegrationTestSuite) TestGov() {
 
-	s.SendTokensFromNewGovAccount()
-	s.GovSoftwareUpgrade()
-	s.GovCancelSoftwareUpgrade()
-}
+// 	s.SendTokensFromNewGovAccount()
+// 	s.GovSoftwareUpgrade()
+// 	s.GovCancelSoftwareUpgrade()
+// }
 
 // globalfee in genesis is set to be "0.00001uatom"
 func (s *IntegrationTestSuite) TestQueryGlobalFeesInGenesis() {
@@ -70,16 +71,14 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
-	submitterAddr, err := s.chainA.validators[0].keyInfo.GetAddress()
-	s.Require().NoError(err)
+	submitterAddr := s.chainA.validators[0].keyInfo.GetAddress()
 	submitter := submitterAddr.String()
-	recipientAddress, err := s.chainA.validators[1].keyInfo.GetAddress()
-	s.Require().NoError(err)
+	recipientAddress := s.chainA.validators[1].keyInfo.GetAddress()
 	recipient := recipientAddress.String()
 	var beforeRecipientPhotonBalance sdk.Coin
 	s.Require().Eventually(
 		func() bool {
-			beforeRecipientPhotonBalance, err = getSpecificBalance(chainAAPIEndpoint, recipient, photonDenom)
+			beforeRecipientPhotonBalance, err := getSpecificBalance(chainAAPIEndpoint, recipient, photonDenom)
 			s.Require().NoError(err)
 
 			return beforeRecipientPhotonBalance.IsValid()
@@ -88,7 +87,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 		5*time.Second,
 	)
 	if beforeRecipientPhotonBalance.Equal(sdk.Coin{}) {
-		beforeRecipientPhotonBalance = sdk.NewCoin(photonDenom, math.ZeroInt())
+		beforeRecipientPhotonBalance = sdk.NewCoin(photonDenom, sdk.ZeroInt())
 	}
 
 	sendAmt := int64(1000)
@@ -112,7 +111,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 		func() bool {
 			proposal, err := queryGovProposal(chainAAPIEndpoint, proposalCounter)
 			s.Require().NoError(err)
-			return proposal.GetProposal().Status == govv1beta1.StatusPassed
+			return proposal.GetProposal().Status == gov.StatusPassed
 		},
 		15*time.Second,
 		5*time.Second,
@@ -120,7 +119,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 	var globalFees sdk.DecCoins
 	s.Require().Eventually(
 		func() bool {
-			globalFees, err = queryGlobalFees(chainAAPIEndpoint)
+			globalFees, err := queryGlobalFees(chainAAPIEndpoint)
 			s.T().Logf("After gov new global fee proposal: %s", globalFees.String())
 			s.Require().NoError(err)
 
@@ -164,7 +163,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 		func() bool {
 			proposal, err := queryGovProposal(chainAAPIEndpoint, proposalCounter)
 			s.Require().NoError(err)
-			return proposal.GetProposal().Status == govv1beta1.StatusPassed
+			return proposal.GetProposal().Status == gov.StatusPassed
 		},
 		15*time.Second,
 		5*time.Second,
@@ -218,7 +217,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 		func() bool {
 			proposal, err := queryGovProposal(chainAAPIEndpoint, proposalCounter)
 			s.Require().NoError(err)
-			return proposal.GetProposal().Status == govv1beta1.StatusPassed
+			return proposal.GetProposal().Status == gov.StatusPassed
 		},
 		15*time.Second,
 		5*time.Second,
@@ -268,7 +267,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 		func() bool {
 			proposal, err := queryGovProposal(chainAAPIEndpoint, proposalCounter)
 			s.Require().NoError(err)
-			return proposal.GetProposal().Status == govv1beta1.StatusPassed
+			return proposal.GetProposal().Status == gov.StatusPassed
 		},
 		15*time.Second,
 		5*time.Second,
@@ -349,7 +348,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 		func() bool {
 			proposal, err := queryGovProposal(chainAAPIEndpoint, proposalCounter)
 			s.Require().NoError(err)
-			return proposal.GetProposal().Status == govv1beta1.StatusPassed
+			return proposal.GetProposal().Status == gov.StatusPassed
 		},
 		15*time.Second,
 		5*time.Second,
@@ -371,8 +370,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 func (s *IntegrationTestSuite) TestByPassMinFeeWithdrawReward() {
 
 	paidFeeAmt := math.LegacyMustNewDecFromStr(minGasPrice).Mul(math.LegacyNewDec(gas)).String()
-	payee, err := s.chainA.validators[0].keyInfo.GetAddress()
-	s.Require().NoError(err)
+	payee := s.chainA.validators[0].keyInfo.GetAddress()
 	// pass
 	s.T().Logf("bypass-msg with fee in the denom of global fee, pass")
 	s.execWithdrawAllRewards(s.chainA, 0, payee.String(), paidFeeAmt+uatomDenom, false)
@@ -394,27 +392,19 @@ func (s *IntegrationTestSuite) TestStaking() {
 
 	validatorA := s.chainA.validators[0]
 	validatorB := s.chainA.validators[1]
-	validatorAAddr, err := validatorA.keyInfo.GetAddress()
-	s.Require().NoError(err)
-	validatorBAddr, err := validatorB.keyInfo.GetAddress()
-	s.Require().NoError(err)
+	validatorAAddr := validatorA.keyInfo.GetAddress()
+	validatorBAddr := validatorB.keyInfo.GetAddress()
 
 	valOperA := sdk.ValAddress(validatorAAddr)
 	valOperB := sdk.ValAddress(validatorBAddr)
 
-	alice, err := s.chainA.genesisAccounts[2].keyInfo.GetAddress()
-	s.Require().NoError(err)
-	bob, err := s.chainA.genesisAccounts[3].keyInfo.GetAddress()
-	s.Require().NoError(err)
+	alice := s.chainA.genesisAccounts[2].keyInfo.GetAddress()
+	bob := s.chainA.genesisAccounts[3].keyInfo.GetAddress()
 
-	delegationFees := sdk.NewCoin(uatomDenom, math.NewInt(10))
+	delegationFees := sdk.NewCoin(uatomDenom, sdk.NewInt(10))
 
 	s.testStaking(chainAAPIEndpoint, alice.String(), valOperA.String(), valOperB.String(), delegationFees, gaiaHomePath)
 	s.testDistribution(chainAAPIEndpoint, alice.String(), bob.String(), valOperB.String(), gaiaHomePath)
-}
-
-func (s *IntegrationTestSuite) TestGroups() {
-	s.GroupsSendMsgTest()
 }
 
 func (s *IntegrationTestSuite) TestVesting() {
@@ -422,7 +412,8 @@ func (s *IntegrationTestSuite) TestVesting() {
 	s.testDelayedVestingAccount(chainAAPI)
 	s.testContinuousVestingAccount(chainAAPI)
 	s.testPermanentLockedAccount(chainAAPI)
-	s.testPeriodicVestingAccount(chainAAPI)
+	// TODO: add this one back for v0.45 Rho
+	// s.testPeriodicVestingAccount(chainAAPI)
 }
 
 func (s *IntegrationTestSuite) TestSlashing() {

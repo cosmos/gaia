@@ -418,6 +418,8 @@ func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
 			func() bool {
 				beforeSenderUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
 				s.Require().NoError(err)
+				fmt.Println("beforeSenderUAtomBalance", beforeSenderUAtomBalance)
+				fmt.Println("beforeSenderUAtomBalance.IsValid()", beforeSenderUAtomBalance.IsValid())
 
 				beforeMiddleIBCBalance, err = getSpecificBalance(chainBAPIEndpoint, middlehop, "ibc/")
 				s.Require().True(beforeMiddleIBCBalance.IsNil())

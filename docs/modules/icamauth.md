@@ -1,4 +1,4 @@
-# icamauth module
+# Icamauth Module
 
 ## Introduction to Interchain Accounts
 **Interchain Accounts** (ICA) is a standard that allows an account on a *controller* chain to create and securely control an address on a different *host* chain using the Inter Blockchain Protocol (IBC). Transactions native to the host chain are wrapped inside an IBC packet and sent from the Interchain Account Owner on the controller chain to be executed on the host chain.

@@ -1,14 +1,18 @@
 package ante
 
 import (
+	"errors"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/cosmos/gaia/v8/x/globalfee/types"
 
 	"github.com/cosmos/gaia/v8/x/globalfee"
 )
 
-const maxBypassMinFeeMsgGasUsage = uint64(200_000)
+const maxBypassMinFeeMsgGasUsage uint64 = 200_000
 
 // FeeWithBypassDecorator will check if the transaction's fee is at least as large
 // as the local validator's minimum gasFee (defined in validator config) and global fee, and the fee denom should be in the global fees' denoms.
@@ -26,22 +30,22 @@ var _ sdk.AnteDecorator = FeeDecorator{}
 type FeeDecorator struct {
 	BypassMinFeeMsgTypes []string
 	GlobalMinFee         globalfee.ParamSource
+	StakingSubspace      paramtypes.Subspace
 }
 
-const defaultZeroGlobalFeeDenom = "uatom"
-
-func DefaultZeroGlobalFee() []sdk.DecCoin {
-	return []sdk.DecCoin{sdk.NewDecCoinFromDec(defaultZeroGlobalFeeDenom, sdk.NewDec(0))}
-}
-
-func NewFeeDecorator(bypassMsgTypes []string, paramSpace paramtypes.Subspace) FeeDecorator {
-	if !paramSpace.HasKeyTable() {
+func NewFeeDecorator(bypassMsgTypes []string, globalfeeSubspace, stakingSubspace paramtypes.Subspace) FeeDecorator {
+	if !globalfeeSubspace.HasKeyTable() {
 		panic("global fee paramspace was not set up via module")
+	}
+
+	if !stakingSubspace.HasKeyTable() {
+		panic("staking paramspace was not set up via module")
 	}
 
 	return FeeDecorator{
 		BypassMinFeeMsgTypes: bypassMsgTypes,
-		GlobalMinFee:         paramSpace,
+		GlobalMinFee:         globalfeeSubspace,
+		StakingSubspace:      stakingSubspace,
 	}
 }
 
@@ -64,11 +68,18 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	allowedToBypassMinFee := containsOnlyBypassMinFeeMsgs && doesNotExceedMaxGasUsage
 
 	var allFees sdk.Coins
+	requiredGlobalFees, err := mfd.getGlobalFee(ctx, feeTx)
+	if err != nil {
+		panic(err)
+	}
 	requiredFees := getMinGasPrice(ctx, feeTx)
 
-	if ctx.IsCheckTx() && !simulate && !allowedToBypassMinFee {
+	if !ctx.IsCheckTx() || simulate {
+		return next(ctx, tx, simulate)
+	}
 
-		requiredGlobalFees := mfd.getGlobalFee(ctx, feeTx)
+	if !allowedToBypassMinFee {
+
 		allFees = CombinedFeeRequirement(requiredGlobalFees, requiredFees)
 
 		// this is to ban 1stake passing if the globalfee is 1photon or 0photon
@@ -80,15 +91,12 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 		if !IsAnyGTEIncludingZero(feeCoins, allFees) {
 			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins, allFees)
 		}
-	}
-
-	// when the tx is bypass msg type, still need to check the denom is not some unknown denom
-	if ctx.IsCheckTx() && !simulate && allowedToBypassMinFee {
-		requiredGlobalFees := mfd.getGlobalFee(ctx, feeTx)
+	} else {
 		// bypass tx without pay fee
 		if len(feeCoins) == 0 {
 			return next(ctx, tx, simulate)
 		}
+		// when the tx is bypass msg type, still need to check the denom is not some unknown denom
 		// bypass with fee, fee denom must in requiredGlobalFees
 		if !DenomsSubsetOfIncludingZero(feeCoins, requiredGlobalFees) {
 			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fees denom is wrong; got: %s required: %s", feeCoins, requiredGlobalFees)
@@ -96,4 +104,48 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	}
 
 	return next(ctx, tx, simulate)
+}
+
+// ParamStoreKeyMinGasPrices type require coins sorted. getGlobalFee will also return sorted coins (might return 0denom if globalMinGasPrice is 0)
+func (mfd FeeDecorator) getGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) (sdk.Coins, error) {
+	var (
+		globalMinGasPrices sdk.DecCoins
+		err                error
+	)
+
+	if mfd.GlobalMinFee.Has(ctx, types.ParamStoreKeyMinGasPrices) {
+		mfd.GlobalMinFee.Get(ctx, types.ParamStoreKeyMinGasPrices, &globalMinGasPrices)
+	}
+	// global fee is empty set, set global fee to 0uatom
+	if len(globalMinGasPrices) == 0 {
+		globalMinGasPrices, err = mfd.DefaultZeroGlobalFee(ctx)
+	}
+	requiredGlobalFees := make(sdk.Coins, len(globalMinGasPrices))
+	// Determine the required fees by multiplying each required minimum gas
+	// price by the gas limit, where fee = ceil(minGasPrice * gasLimit).
+	glDec := sdk.NewDec(int64(feeTx.GetGas()))
+	for i, gp := range globalMinGasPrices {
+		fee := gp.Amount.Mul(glDec)
+		requiredGlobalFees[i] = sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt())
+	}
+
+	return requiredGlobalFees.Sort(), err
+}
+
+func (mfd FeeDecorator) DefaultZeroGlobalFee(ctx sdk.Context) ([]sdk.DecCoin, error) {
+	bondDenom := mfd.getBondDenom(ctx)
+	if bondDenom == "" {
+		return nil, errors.New("empty staking bond denomination")
+	}
+
+	return []sdk.DecCoin{sdk.NewDecCoinFromDec(bondDenom, sdk.NewDec(0))}, nil
+}
+
+func (mfd FeeDecorator) getBondDenom(ctx sdk.Context) string {
+	var bondDenom string
+	if mfd.StakingSubspace.Has(ctx, stakingtypes.KeyBondDenom) {
+		mfd.StakingSubspace.Get(ctx, stakingtypes.KeyBondDenom, &bondDenom)
+	}
+
+	return bondDenom
 }

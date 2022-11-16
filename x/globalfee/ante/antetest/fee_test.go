@@ -6,6 +6,7 @@ import (
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
 	"github.com/stretchr/testify/suite"
@@ -17,6 +18,28 @@ import (
 
 func TestIntegrationTestSuite(t *testing.T) {
 	suite.Run(t, new(IntegrationTestSuite))
+}
+
+func (s *IntegrationTestSuite) TestGetDefaultGlobalFees() {
+	// set globalfees and min gas price
+	globalfeeSubspace := s.SetupTestGlobalFeeStoreAndMinGasPrice([]sdk.DecCoin{}, &globfeetypes.Params{})
+
+	// set staking params
+	stakingParam := stakingtypes.DefaultParams()
+	bondDenom := "uatom"
+	stakingParam.BondDenom = bondDenom
+	stakingSubspace := s.SetupTestStakingSubspace(stakingParam)
+
+	// setup antehandler
+	mfd := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), globalfeeSubspace, stakingSubspace)
+
+	defaultGlobalFees, err := mfd.DefaultZeroGlobalFee(s.ctx)
+	s.Require().NoError(err)
+	s.Require().Greater(len(defaultGlobalFees), 0)
+
+	if defaultGlobalFees[0].Denom != bondDenom {
+		s.T().Fatalf("bond denom: %s, default global fee denom: %s", bondDenom, defaultGlobalFees[0].Denom)
+	}
 }
 
 // test global fees and min_gas_price with bypass msg types.
@@ -532,13 +555,25 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			txCheck:         false,
 			expErr:          false,
 		},
+		"disable checkTx: no fee check. min_gas_price is low, global fee is low, tx fee's denom is not in global fees denoms set": {
+			minGasPrice:     minGasPrice,
+			globalFeeParams: globalfeeParamsLow,
+			gasPrice:        sdk.NewCoins(sdk.NewCoin("quark", sdk.ZeroInt())),
+			gasLimit:        newTestGasLimit(),
+			txMsg:           testdata.NewTestMsg(addr1),
+			txCheck:         false,
+			expErr:          false,
+		},
 	}
 	for name, testCase := range testCases {
 		s.Run(name, func() {
 			// set globalfees and min gas price
-			subspace := s.SetupTestGlobalFeeStoreAndMinGasPrice(testCase.minGasPrice, testCase.globalFeeParams)
+			globalfeeSubspace := s.SetupTestGlobalFeeStoreAndMinGasPrice(testCase.minGasPrice, testCase.globalFeeParams)
+			stakingParam := stakingtypes.DefaultParams()
+			stakingParam.BondDenom = "uatom"
+			stakingSubspace := s.SetupTestStakingSubspace(stakingParam)
 			// setup antehandler
-			mfd := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), subspace)
+			mfd := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), globalfeeSubspace, stakingSubspace)
 			antehandler := sdk.ChainAnteDecorators(mfd)
 
 			s.Require().NoError(s.txBuilder.SetMsgs(testCase.txMsg))

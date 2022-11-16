@@ -36,7 +36,7 @@ func (s *IntegrationTestSuite) TestDecode() {
 func buildRawTx() ([]byte, string, error) {
 	builder := txConfig.NewTxBuilder()
 	builder.SetGasLimit(gas)
-	builder.SetFeeAmount(sdk.NewCoins(fees))
+	builder.SetFeeAmount(sdk.NewCoins(standardFees))
 	builder.SetMemo("foomemo")
 	tx, err := txConfig.TxJSONEncoder()(builder.GetTx())
 	if err != nil {

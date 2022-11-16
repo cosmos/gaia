@@ -267,6 +267,7 @@ func queryContinuousVestingAccount(endpoint, address string) (authvesting.Contin
 	}
 	return *acc, nil
 }
+
 func queryPermanentLockedAccount(endpoint, address string) (authvesting.PermanentLockedAccount, error) {
 	baseAcc, err := queryAccount(endpoint, address)
 	if err != nil {

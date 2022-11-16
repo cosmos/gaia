@@ -26,7 +26,6 @@ import (
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
-	tmcfg "github.com/tendermint/tendermint/config"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
@@ -77,17 +76,18 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	return rootCmd, encodingConfig
 }
 
-// initTendermintConfig helps to override default Tendermint Config values.
-// return tmcfg.DefaultConfig if no custom configuration is required for the application.
-func initTendermintConfig() *tmcfg.Config {
-	cfg := tmcfg.DefaultConfig()
+// TODO: investigate why this was needed.
+// // initTendermintConfig helps to override default Tendermint Config values.
+// // return tmcfg.DefaultConfig if no custom configuration is required for the application.
+// func initTendermintConfig() *tmcfg.Config {
+// 	cfg := tmcfg.DefaultConfig()
 
-	// these values put a higher strain on node memory
-	// cfg.P2P.MaxNumInboundPeers = 100
-	// cfg.P2P.MaxNumOutboundPeers = 40
+// 	// these values put a higher strain on node memory
+// 	// cfg.P2P.MaxNumInboundPeers = 100
+// 	// cfg.P2P.MaxNumOutboundPeers = 40
 
-	return cfg
-}
+// 	return cfg
+// }
 
 func initAppConfig() (string, interface{}) {
 	srvCfg := serverconfig.DefaultConfig()

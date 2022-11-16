@@ -529,7 +529,8 @@ func (s *IntegrationTestSuite) executeDelegate(c *chain, valIdx int, amount, val
 }
 
 func (s *IntegrationTestSuite) executeRedelegate(c *chain, valIdx int, amount, originalValOperAddress,
-	newValOperAddress, delegatorAddr, home, delegateFees string) {
+	newValOperAddress, delegatorAddr, home, delegateFees string,
+) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 

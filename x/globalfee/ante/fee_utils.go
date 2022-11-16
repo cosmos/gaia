@@ -59,7 +59,7 @@ func DenomsSubsetOfIncludingZero(coins, coinsB sdk.Coins) bool {
 		if err != nil {
 			panic(err)
 		}
-		//TODO: need to add a custom Find function for Coins type
+		// TODO: need to add a custom Find function for Coins type
 		// if ok, _ := coinsB.Find(coin.Denom); !ok {
 		// 	return false
 		// }

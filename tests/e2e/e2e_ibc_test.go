@@ -368,7 +368,6 @@ func (s *IntegrationTestSuite) TestMultihopIBCTokenTransfer() {
 			1*time.Minute,
 			5*time.Second,
 		)
-
 	})
 }
 
@@ -459,7 +458,6 @@ func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
 			5*time.Minute,
 			5*time.Second,
 		)
-
 	})
 }
 

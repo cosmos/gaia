@@ -59,7 +59,7 @@ func (v *validator) configDir() string {
 //nolint:unused // this is called during e2e tests
 func (v *validator) createConfig() error {
 	p := path.Join(v.configDir(), "config")
-	return os.MkdirAll(p, 0755)
+	return os.MkdirAll(p, 0o755)
 }
 
 //nolint:unused // this is called during e2e tests

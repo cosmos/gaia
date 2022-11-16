@@ -19,7 +19,6 @@ import (
 
 // globalfee in genesis is set to be "0.00001uatom"
 func (s *IntegrationTestSuite) TestQueryGlobalFeesInGenesis() {
-
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	feeInGenesis, err := sdk.ParseDecCoins(initialGlobalFeeAmt + uatomDenom)
 	s.Require().NoError(err)
@@ -68,7 +67,6 @@ test4. gov propose globalfee =  0.000001uatom (lower than min_gas_price), 0photo
 6. gov propose change back to initial globalfee = 0.00001photon, This is for not influence other e2e tests.
 */
 func (s *IntegrationTestSuite) TestGlobalFees() {
-
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
 	submitterAddr := s.chainA.validators[0].keyInfo.GetAddress()
@@ -368,7 +366,6 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 }
 
 func (s *IntegrationTestSuite) TestByPassMinFeeWithdrawReward() {
-
 	paidFeeAmt := math.LegacyMustNewDecFromStr(minGasPrice).Mul(math.LegacyNewDec(gas)).String()
 	payee := s.chainA.validators[0].keyInfo.GetAddress()
 	// pass
@@ -387,7 +384,6 @@ func (s *IntegrationTestSuite) TestByPassMinFeeWithdrawReward() {
 
 // todo add fee test with wrong denom order
 func (s *IntegrationTestSuite) TestStaking() {
-
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
 	validatorA := s.chainA.validators[0]

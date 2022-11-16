@@ -11,7 +11,7 @@ CHAINID=cosmoshub-4
 USER_MNEMONIC="abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art"
 
 if ! test -f "./build/gaiad7"; then
-  echo "has not gaiad7"
+  echo "gaiad v7 does not exist"
   exit
 fi
 

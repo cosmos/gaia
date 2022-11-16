@@ -26,17 +26,17 @@ Through these 3 accounts, we can test if:
 ### Prepare to run two chains
 We've simplified the setup process via several shell scripts. If you'd like to learn more about what's happening under the hood we suggest you inspect the files more closely.
 
-Set up the two chains by [`init_chain_controller.sh`](https://github.com/cosmos/gaia/blob/main/docs/modules/icamauth/init_chain_controller.sh) and [`init_chain_host.sh`](https://github.com/cosmos/gaia/blob/main/docs/modules/icamauth/init_chain_host.sh), create the keys for `alice` and `bob`, and start running both chains in different terminals:
+Set up the two chains by [`init_chain_controller.sh`](https://github.com/cosmos/gaia/blob/main/docs/modules/icamauth_scripts/init_chain_controller.sh) and [`init_chain_host.sh`](https://github.com/cosmos/gaia/blob/main/docs/modules/icamauth_scripts/init_chain_host.sh), create the keys for `alice` and `bob`, and start running both chains in different terminals:
 ```shell
 cd gaia
 
-source ./docs/modules/icamauth/init_chain_controller.sh
+source ./docs/modules/icamauth_scripts/init_chain_controller.sh
 ```
 and in another terminal:
 ```shell
 cd gaia
 
-source ./docs/modules/icamauth/init_chain_host.sh
+source ./docs/modules/icamauth_scripts/init_chain_host.sh
 ```
 
 
@@ -70,9 +70,9 @@ export PATH="$HOME/.hermes/bin:$PATH"
 ```
 
 #### Create the IBC connection
-Run the following script [`gaia/docs/modules/icamauth/hermes_setup.sh`](https://github.com/cosmos/gaia/blob/main/docs/modules/icamauth/hermes_setup.sh) to create an IBC connection:
+Run the following script [`gaia/docs/modules/icamauth_scripts/hermes_setup.sh`](https://github.com/cosmos/gaia/blob/main/docs/modules/icamauth_scripts/hermes_setup.sh) to create an IBC connection:
 ```shell
-cd ./docs/modules/icamauth
+cd ./docs/modules/icamauth_scripts
 source hermes_setup.sh
 ```
 
@@ -173,7 +173,7 @@ gaiad tx bank send $BOB $ALICE_ICA 100stake --gas-prices 0.025stake --home $HOME
 Create a new IBC channel using Hermes:
 
 ```shell
-hermes --config ./docs/modules/icamauth/rly-config.toml create channel --a-chain test-0 --a-connection connection-0 --a-port transfer --b-port transfer
+hermes --config ./docs/modules/icamauth_scripts/rly-config.toml create channel --a-chain test-0 --a-connection connection-0 --a-port transfer --b-port transfer
 ```
 
 Initiate the IBC token transfer:

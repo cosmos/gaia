@@ -28,7 +28,7 @@ func fixBankMetadata(ctx sdk.Context, keepers *keepers.AppKeepers) error {
 		store := ctx.KVStore(key)
 		oldDenomMetaDataStore := prefix.NewStore(store, banktypes.DenomMetadataPrefix)
 		oldKey := make([]byte, len(malformedDenom))
-		copy(oldKey, []byte(malformedDenom))
+		copy(oldKey, malformedDenom)
 		oldDenomMetaDataStore.Delete(oldKey)
 
 		// confirm whether the old key is still accessible

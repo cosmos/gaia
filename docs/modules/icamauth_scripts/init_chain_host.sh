@@ -2,7 +2,7 @@
 
 BINARY=$(which gaiad)
 # please do not reveal your mnemonic in production !!!
-MNEMONIC_RLY1=`cat docs/modules/icamauth/rly1-mnemonic.txt`
+MNEMONIC_RLY1=`cat docs/modules/icamauth_scripts/rly1-mnemonic.txt`
 MNEMONIC_BOB="uphold train large action document mixed exact cherry input evil sponsor digital used child engine fire attract sing little jeans decrease despair unfair what"
 CHAINID_1=test-1
 HOME_1=$HOME/test-1

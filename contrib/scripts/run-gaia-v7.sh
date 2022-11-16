@@ -24,7 +24,7 @@ $BINARY init upgrader --chain-id $CHAINID --home "$NODE_HOME"
 
 
 if ! test -f "./build/gaiad8"; then
-  echo "has not gaiad v8"
+  echo "gaiad v8 does not exist"
   exit
 fi
 

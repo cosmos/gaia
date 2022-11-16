@@ -1,4 +1,4 @@
-# Gaia Fee Ante-handler
+# Gaia Fees and Fees Check
 
 ## Gaia Fees
 
@@ -12,7 +12,7 @@ Global fees are the fees that each transaction incurs—except [bypass fee messa
 
 For  [global fees](https://github.com/cosmos/gaia/blob/82c4353ab1b04cf656a8c95d226c30c7845f157b/x/globalfee/types/params.go#L54-L99) to be valid:
 - fees have to be alphabetically sorted by denomination (denom)
-- fees must to have non-negative amount, with a valid and unique denom (i.e no duplicate denoms are allowed).
+- fees must have non-negative amount, with a valid and unique denom (i.e. no duplicate denoms are allowed).
 
 Global fees allow denoms with zero coins or value.
 
@@ -64,7 +64,7 @@ Global fees, min_gas_prices and the paid fees all allow zero coins setup. After 
 
 Only global fees might contain zero coins, which is used to define the allowed denoms of paid fees.
 
-The [Fee AnteHandle](../../../x/globalfee/ante/fee.go) will take global fees and min_gas_prices and merge them into one [combined `sdk.Deccoins`](https://github.com/cosmos/gaia/blob/f2be720353a969b6362feff369218eb9056a60b9/ante/fee.go#L79) according to the denoms and amounts of global fees and min_gas_prices.
+The [Fee AnteHandle](../../x/globalfee/ante/fee.go) will take global fees and min_gas_prices and merge them into one [combined `sdk.Deccoins`](https://github.com/cosmos/gaia/blob/f2be720353a969b6362feff369218eb9056a60b9/ante/fee.go#L79) according to the denoms and amounts of global fees and min_gas_prices.
 
 If the paid fee is a subset of the combined fees set and the paid fee amount is greater than or equal to the required fees amount, the transaction can pass the fee check, otherwise an error will occur.
 

@@ -69,6 +69,8 @@ const (
 	icaOwnerAccountIndex         = 1
 	numberOfEvidences            = 10
 	slashingShares         int64 = 10000
+
+	proposalGlobalFee = "proposal_globalfee.json"
 )
 
 var (
@@ -736,7 +738,7 @@ func (s *IntegrationTestSuite) writeGovParamChangeProposalGlobalFees(c *chain, c
 	}, "", " ")
 	s.Require().NoError(err)
 
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_globalfee.json"), paramChangeProposalBody)
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalGlobalFee), paramChangeProposalBody)
 	s.Require().NoError(err)
 }
 

@@ -68,7 +68,9 @@ test4. gov propose globalfee =  0.000001uatom (lower than min_gas_price), 0photo
 5. check balance correct: all the sucessful tx sent token amt is received
 6. gov propose change back to initial globalfee = 0.00001photon, This is for not influence other e2e tests.
 */
+// TODO: add back global fee tests
 func (s *IntegrationTestSuite) TestGlobalFees() {
+	s.T().Skip()
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
 	submitterAddr := s.chainA.validators[0].keyInfo.GetAddress()
@@ -316,19 +318,18 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 	sucessBankSendCount++
 	// ---------------------------------------------------------------------------
 
-	// TODO: fix this test
 	// check the balance is correct after previous txs
-	// s.Require().Eventually(
-	// 	func() bool {
-	// 		afterRecipientPhotonBalance, err := getSpecificBalance(chainAAPIEndpoint, recipient, photonDenom)
-	// 		s.Require().NoError(err)
-	// 		IncrementedPhoton := afterRecipientPhotonBalance.Sub(beforeRecipientPhotonBalance)
-	// 		photonSent := sdk.NewInt64Coin(photonDenom, sendAmt*int64(sucessBankSendCount))
-	// 		return IncrementedPhoton.IsEqual(photonSent)
-	// 	},
-	// 	time.Minute,
-	// 	5*time.Second,
-	// )
+	s.Require().Eventually(
+		func() bool {
+			afterRecipientPhotonBalance, err := getSpecificBalance(chainAAPIEndpoint, recipient, photonDenom)
+			s.Require().NoError(err)
+			IncrementedPhoton := afterRecipientPhotonBalance.Sub(beforeRecipientPhotonBalance)
+			photonSent := sdk.NewInt64Coin(photonDenom, sendAmt*int64(sucessBankSendCount))
+			return IncrementedPhoton.IsEqual(photonSent)
+		},
+		time.Minute,
+		5*time.Second,
+	)
 
 	// gov proposing to change back to original global fee
 	s.T().Logf("Propose to change back to original global fees: %s", initialGlobalFeeAmt+uatomDenom)
@@ -410,8 +411,11 @@ func (s *IntegrationTestSuite) TestVesting() {
 	chainAAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	s.testDelayedVestingAccount(chainAAPI)
 	s.testContinuousVestingAccount(chainAAPI)
-	// s.testPermanentLockedAccount(chainAAPI)
-	// s.testPeriodicVestingAccount(chainAAPI)
+
+	// TODO: Add back vesting account here
+	s.T().Skip()
+	s.testPermanentLockedAccount(chainAAPI)
+	s.testPeriodicVestingAccount(chainAAPI)
 }
 
 func (s *IntegrationTestSuite) TestSlashing() {

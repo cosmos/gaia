@@ -155,27 +155,29 @@ func (s *IntegrationTestSuite) execVestingTx(
 	s.T().Logf("successfully %s with %v", method, args)
 }
 
-func (s *IntegrationTestSuite) execCreatePermanentLockedAccount(
-	c *chain,
-	address,
-	amount string,
-	opt ...flagOption,
-) {
-	s.T().Logf("Executing gaiad create a permanent locked vesting account %s", c.id)
-	s.execVestingTx(c, "create-permanent-locked-account", []string{address, amount}, opt...)
-	s.T().Logf("successfully created permanent locked vesting account %s with %s", address, amount)
-}
+// TODO: Add back if there's another way to make permanent vesting accounts with v0.45.x
+// func (s *IntegrationTestSuite) execCreatePermanentLockedAccount(
+// 	c *chain,
+// 	address,
+// 	amount string,
+// 	opt ...flagOption,
+// ) {
+// 	s.T().Logf("Executing gaiad create a permanent locked vesting account %s", c.id)
+// 	s.execVestingTx(c, "create-permanent-locked-account", []string{address, amount}, opt...)
+// 	s.T().Logf("successfully created permanent locked vesting account %s with %s", address, amount)
+// }
 
-func (s *IntegrationTestSuite) execCreatePeriodicVestingAccount(
-	c *chain,
-	address,
-	jsonPath string,
-	opt ...flagOption,
-) {
-	s.T().Logf("Executing gaiad create periodic vesting account %s", c.id)
-	s.execVestingTx(c, "create-periodic-vesting-account", []string{address, jsonPath}, opt...)
-	s.T().Logf("successfully created periodic vesting account %s with %s", address, jsonPath)
-}
+// TODO: Add back if there's another way to make periodic vesting accounts with v0.45.x
+// func (s *IntegrationTestSuite) execCreatePeriodicVestingAccount(
+// 	c *chain,
+// 	address,
+// 	jsonPath string,
+// 	opt ...flagOption,
+// ) {
+// 	s.T().Logf("Executing gaiad create periodic vesting account %s", c.id)
+// 	s.execVestingTx(c, "create-periodic-vesting-account", []string{address, jsonPath}, opt...)
+// 	s.T().Logf("successfully created periodic vesting account %s with %s", address, jsonPath)
+// }
 
 func (s *IntegrationTestSuite) execUnjail(
 	c *chain,
@@ -338,13 +340,13 @@ func (s *IntegrationTestSuite) execGovSubmitLegacyGovProposal(c *chain, valIdx i
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	s.T().Logf("Executing gaiad tx gov submit-legacy-proposal on chain %s", c.id)
+	s.T().Logf("Executing gaiad tx gov submit-proposal on chain %s", c.id)
 
 	gaiaCommand := []string{
 		gaiadBinary,
 		txCommand,
 		govtypes.ModuleName,
-		"submit-legacy-proposal",
+		"submit-proposal",
 		govProposalSubType,
 		govProposalPath,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, submitterAddr),

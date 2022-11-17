@@ -34,7 +34,7 @@ When the global fee is not setup, the query will return an empty globalfee list:
 An example of setting up a global fee by a gov proposals is shown below.
   
 ```shell
-gov submit-legacy-proposal param-change proposal.json
+gov submit-proposal param-change proposal.json
 ````
 A `proposal.json` example:
 ```

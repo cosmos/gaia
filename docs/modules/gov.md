@@ -22,7 +22,7 @@ The **[Cosmos Hub Forum](https://forum.cosmos.network/)** is the main discussion
 
 #### Submission Updates
 
-Additionally the new gov module now accommodates proposals with multiple arbitrary message execution. For `v0.46` of the Cosmos SDK, only `MsgSend`, `MsgSoftwareUpgrade`, and `MsgCancelUpgrade` are supported by executing `submit-proposal`. Signaling proposals can also be submitted with the new api by leaving the messages field empty and populating the metadata field with the corresponding proposal text. The remaining proposal types must use `submit-legacy-proposal` until more message types are supported.
+Additionally the new gov module now accommodates proposals with multiple arbitrary message execution. For `v0.46` of the Cosmos SDK, only `MsgSend`, `MsgSoftwareUpgrade`, and `MsgCancelUpgrade` are supported by executing `submit-proposal`. Signaling proposals can also be submitted with the new api by leaving the messages field empty and populating the metadata field with the corresponding proposal text. The remaining proposal types must use `submit-proposal` until more message types are supported.
 
 This means that a single proposal could execute multiple bank send messages, or both a software upgrade and bank send message.
 
@@ -168,7 +168,7 @@ It is possible to submit legacy proposals with each field in the command. Howeve
 
 **Community Spend Proposal**
 
-`gaiad tx gov submit-legacy-proposal community-pool-spend "path/to/proposal.json" --from signing_key [flags]`
+`gaiad tx gov submit-proposal community-pool-spend "path/to/proposal.json" --from signing_key [flags]`
 ```json
 {
   "title": "Community Pool Spend",
@@ -181,7 +181,7 @@ It is possible to submit legacy proposals with each field in the command. Howeve
 
 **Param Change**
 
-`gaiad tx gov submit-legacy-proposal param-change "path/to/proposal.json" --from signing_key [flags]`
+`gaiad tx gov submit-proposal param-change "path/to/proposal.json" --from signing_key [flags]`
 
 ```json
 {
@@ -200,12 +200,12 @@ It is possible to submit legacy proposals with each field in the command. Howeve
 
 **IBC Client Update**
 
-`gaiad tx gov submit-legacy-proposal update-client [subject-client-id] [substitute-client-id] [flags]`
+`gaiad tx gov submit-proposal update-client [subject-client-id] [substitute-client-id] [flags]`
 
 **IBC Upgrade**
 See the [IBC Upgrade via Gov Proposal Docs](https://ibc.cosmos.network/main/ibc/proposals.html) for more a more comprehensive guide.
 
-` gaiad tx gov submit-legacy-proposal ibc-upgrade [name] [height] [path/to/upgraded_client_state.json] [flags]`
+` gaiad tx gov submit-proposal ibc-upgrade [name] [height] [path/to/upgraded_client_state.json] [flags]`
 
 ### Queries
 

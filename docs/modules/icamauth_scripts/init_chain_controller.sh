@@ -2,7 +2,7 @@
 
 BINARY=$(which gaiad)
 # please do not reveal your mnemonic in production !!!
-MNEMONIC_RLY0=`cat docs/modules/icamauth/rly0-mnemonic.txt`
+MNEMONIC_RLY0=`cat docs/modules/icamauth_scripts/rly0-mnemonic.txt`
 MNEMONIC_ALICE="captain six loyal advice caution cost orient large mimic spare radar excess quote orchard error biology choice shop dish master quantum dumb accident between"
 CHAINID_0=test-0
 HOME_0=$HOME/test-0

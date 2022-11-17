@@ -2,7 +2,7 @@ package cli
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -58,7 +58,10 @@ func getRegisterAccountCmd() *cobra.Command {
 
 	cmd.Flags().AddFlagSet(fsConnectionID)
 	cmd.Flags().AddFlagSet(fsVersion)
-	_ = cmd.MarkFlagRequired(FlagConnectionID)
+	err := cmd.MarkFlagRequired(FlagConnectionID)
+	if err != nil {
+		panic(err)
+	}
 
 	flags.AddTxFlagsToCmd(cmd)
 
@@ -81,7 +84,7 @@ func getSubmitTxCmd() *cobra.Command {
 			if err := cdc.UnmarshalInterfaceJSON([]byte(args[0]), &txMsg); err != nil {
 
 				// check for file path if JSON input is not provided
-				contents, err := ioutil.ReadFile(args[0])
+				contents, err := os.ReadFile(args[0])
 				if err != nil {
 					return errors.Wrap(err, "neither JSON input nor path to .json file for sdk msg were provided")
 				}
@@ -105,7 +108,10 @@ func getSubmitTxCmd() *cobra.Command {
 	}
 
 	cmd.Flags().AddFlagSet(fsConnectionID)
-	_ = cmd.MarkFlagRequired(FlagConnectionID)
+	err := cmd.MarkFlagRequired(FlagConnectionID)
+	if err != nil {
+		panic(err)
+	}
 
 	flags.AddTxFlagsToCmd(cmd)
 

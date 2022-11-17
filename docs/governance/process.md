@@ -18,7 +18,7 @@ In the past, different people have considered contributions amounts differently.
 
 #### Burned deposits
 
-Deposits are burned only when proposals are vetoed i.e. 33.4% of voting power backing the 'NoWithVeto' option as documented in the [Cosmos SDK gov module spec](https://docs.cosmos.network/main/modules/gov/#deposit-refund-and-burn).
+Deposits are burned only when proposals are vetoed i.e. 33.4% of voting power backing the 'NoWithVeto' option as documented in the [Cosmos SDK gov module spec](https://docs.cosmos.network/main/modules/gov#deposit-refund-and-burn).
 
 ### 2. Voting Period
 
@@ -29,7 +29,7 @@ The voting period is currently a fixed 14-day period. During the voting period, 
 1. **Abstain:** indicates that the voter is impartial to the outcome of the proposal.
 2. **Yes:** indicates approval of the proposal in its current form.
 3. **No:** indicates disapproval of the proposal in its current form.
-4. **NoWithVeto:** indicates stronger opposition to the proposal than simply voting 'No'. If the number of 'NoWithVeto' votes is greater than a third of total votes excluding 'Abstain' votes, the proposal is rejected and the deposits are [burned](#burned-deposits).
+4. **NoWithVeto:** indicates stronger opposition to the proposal than simply voting 'No'. If the number of 'NoWithVeto' votes is greater than a third of total votes including 'Abstain' votes, the proposal is rejected and the deposits are [burned](#burned-deposits).
 
 As accepted by the community in [Proposal 6](https://ipfs.io/ipfs/QmRtR7qkeaZCpCzHDwHgJeJAZdTrbmHLxFDYXhw7RoF1pp), voters are expected to vote 'NoWithVeto' if a proposal leads to undesireable outcomes for the community. It states “if a proposal seems to be spam or is deemed to have caused a negative externality to Cosmos community, voters should vote _NoWithVeto_.”
 

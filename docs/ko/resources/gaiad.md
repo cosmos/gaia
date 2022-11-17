@@ -277,11 +277,11 @@ gaiad query txs --events='message.sender=cosmos1...' --page=1 --limit=20
 
 각 SDK 모듈에 대한 `events`는 여기에서 확인할 수 있습니다:
 
-- [Staking events](https://github.com/cosmos/cosmos-sdk/blob/master/x/staking/spec/07_events.md)
-- [Governance events](https://github.com/cosmos/cosmos-sdk/blob/master/x/gov/spec/04_events.md)
-- [Slashing events](https://github.com/cosmos/cosmos-sdk/blob/master/x/slashing/spec/06_events.md)
-- [Distribution events](https://github.com/cosmos/cosmos-sdk/blob/master/x/distribution/spec/06_events.md)
-- [Bank events](https://github.com/cosmos/cosmos-sdk/blob/master/x/bank/spec/04_events.md)
+- [Staking events](https://github.com/cosmos/cosmos-sdk/tree/main/x/staking#events)
+- [Governance events](https://github.com/cosmos/cosmos-sdk/tree/main/x/gov#events)
+- [Slashing events](https://github.com/cosmos/cosmos-sdk/tree/main/x/slashing#events)
+- [Distribution events](https://github.com/cosmos/cosmos-sdk/tree/main/x/distribution#events)
+- [Bank events](https://github.com/cosmos/cosmos-sdk/tree/main/x/bank#events)
 :::
 
 #### 트랜잭션 해시로 검색하기

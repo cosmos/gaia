@@ -35,13 +35,32 @@ Ref: https://keepachangelog.com/en/1.0.0/
 # Changelog
 
 ## [Unreleased]
-* (gaia-rho) [#1573](https://github.com/cosmos/gaia/issues/1573), [#1576](https://github.com/cosmos/gaia/issues/1576) Update cosmos ledger version to [v.0.9.3](https://github.com/cosmos/ledger-go/releases/tag/v0.9.3)
-* (gaia-rho) Update go to 1.18
-* (gaia-rho) Update Liquidity module to v2.0.0-beta1 to work with Cosmos-SDK v0.46.0-beta2
-* (gaia-rho) Update [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.46.0-beta2](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.46.0-beta2). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.46.0-beta2/CHANGELOG.md) for details.
-* (gaia-rho) Add [Groups Module](https://docs.cosmos.network/main/modules/group/#group-module).
-* (tests) Add E2E test for Bank Send.
-* (tests) Update liveness tests to use Ignite v0.21.1.
+
+
+## [v8.0.0] - 2022-10-31
+* (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.46.4](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.46.4). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.46.4/CHANGELOG.md) for details. Notably, Gov module has major changes while remaining backwards compatible.
+* (gaia) [#1573](https://github.com/cosmos/gaia/issues/1573), [#1576](https://github.com/cosmos/gaia/issues/1576) update [cosmos ledger](https://github.com/cosmos/ledger-go) version to [v.0.9.3](https://github.com/cosmos/ledger-go/releases/tag/v0.9.3).
+* (gaia) bump [Liquidity](https://github.com/Gravity-Devs/liquidity) module to [v2.0.1](https://github.com/Gravity-Devs/liquidity/releases/tag/v2.0.1).
+* (gaia) bump [ibc-go](https://github.com/cosmos/ibc-go) module to [v5.0.1](https://github.com/cosmos/ibc-go/releases/tag/v5.0.1). See [CHANGELOG.md](https://github.com/cosmos/ibc-go/blob/v5.0.1/CHANGELOG.md) for details.
+* (gaia) bump [packet-forwarding-middleware](https://github.com/strangelove-ventures/packet-forward-middleware) to depend on ibc-go v5.
+* (feat) add [Groups](https://docs.cosmos.network/main/modules/grthaoup/#group-module) module.
+* (feat) add [icamauch](https://github.com/cosmos/gaia/tree/main/x/icamauth) (Interchain Account Message Authorization) module.
+* (feat) add [globalfee](https://github.com/cosmos/gaia/tree/main/x/globalfee) module.
+* (feat) replace `MempoolFeeDecorator` with [FeeDecorator](https://hub.cosmos.network/main/modules/globalfee/) in order to bypass min fee of messages whitelisted by node operators in app.toml.
+* (tests) add [E2E tests](https://github.com/cosmos/gaia/tree/main/tests/e2e) The tests cover transactions/queries tests of different modules, including Bank,
+  Distribution, Encode, Evidence, FeeGrant, Global Fee, Legacy Gov, New Gov, Groups,
+  IBC, ICA, packet forwarding middleware, Slashing, Staking, and Vesting module.
+* (tests) use gaiad to swap out [Ignite](https://github.com/ignite/cli) in [liveness tests](https://github.com/cosmos/gaia/blob/main/.github/workflows/test.yml).
+* (gaia) [#1845](https://github.com/cosmos/gaia/pull/1447) Add bech32-convert command to gaiad 
+
+## [v7.1.0] -2022-10-14
+* (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.9](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.9) to fix the security vulnerability! See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.9/CHANGELOG.md) for details.
+
+## [v7.0.3] -2022-08-03
+* (gaia) update go to 1.18.
+* (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.6](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.6). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.6/CHANGELOG.md) for details.
+* (gaia) bump [Liquidity](https://github.com/Gravity-Devs/liquidity) module to [v1.5.1](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.5.1).
+* (gaia) bump [cosmos ledger](https://github.com/cosmos/ledger-go) to [v0.9.3](https://github.com/cosmos/ledger-go/releases/tag/v0.9.3) to fix issue [#1573](https://github.com/cosmos/gaia/issues/1573) - Ledger Nano S Plus not detected by gaiad.
 
 ## [v7.0.2] -2022-05-09
 
@@ -438,7 +457,10 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v7.0.3...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v8.0.0...HEAD
+[v8.0.0]: https://github.com/cosmos/gaia/releases/tag/v8.0.0
+[v7.1.0]: https://github.com/cosmos/gaia/releases/tag/v7.1.0
+[v7.0.3]: https://github.com/cosmos/gaia/releases/tag/v7.0.3
 [v7.0.2]: https://github.com/cosmos/gaia/releases/tag/v7.0.2
 [v7.0.1]: https://github.com/cosmos/gaia/releases/tag/v7.0.1
 [v7.0.0]: https://github.com/cosmos/gaia/releases/tag/v7.0.0

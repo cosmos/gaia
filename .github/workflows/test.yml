@@ -1,9 +1,17 @@
-name: Build & Test
+name: Test
+
 on:
+  workflow_call:
   pull_request:
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
   push:
     branches:
       - main
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
 
 jobs:
   cleanup-runs:
@@ -17,17 +25,14 @@ jobs:
   test-coverage-upload:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-go@v3.0.0
-        with:
-          go-version: 1.18
-      - uses: actions/checkout@v3.0.2
-      - uses: technote-space/get-diff-action@v6.0.1
+      - uses: actions/checkout@v3.1.0
+      - uses: technote-space/get-diff-action@v6.1.1
         with:
           PATTERNS: |
             **/**.go
             go.mod
             go.sum
-      - uses: actions/cache@v3.0.8
+      - uses: actions/cache@v3.0.11
         with:
           path: |
             ~/.cache/go-build
@@ -35,35 +40,38 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.mod') }}
           restore-keys: |
             ${{ runner.os }}-go-
-      - name: build
-        run: make build
+      - uses: actions/setup-go@v3.3.1
+        with:
+          go-version: 1.18
       - name: test & coverage report creation
         run: |
-          make test-unit-cover
-      - name: filter out DONTCOVER
+          go test -v -coverprofile=coverage.txt -covermode=atomic -coverpkg=./... $(go list ./...)
+      - name: filter non-testable files
         run: |
           excludelist="$(find ./ -type f -name '*.go' | xargs grep -l 'DONTCOVER')"
           excludelist+=" $(find ./ -type f -name '*.pb.go')"
-          excludelist+=" $(find ./ -type f -path './tests/mocks/*.go')"
+          excludelist+=" $(find ./ -type f -name '*.pb.gw.go')"
+          excludelist+=" $(find ./cmd -type d)"
+          excludelist+=" $(find ./tests -type d)"
           for filename in ${excludelist}; do
-            filename=$(echo $filename | sed 's/^./github.com\/cosmos\/cosmos-sdk/g')
+            filename=${filename#".//"}
             echo "Excluding ${filename} from coverage report..."
-            sed -i.bak "/$(echo $filename | sed 's/\//\\\//g')/d" coverage.txt
+            filename=$(echo "$filename" | sed 's/\//\\\//g')
+            sed -i.bak "/""$filename""/d" coverage.txt
           done
-
       - uses: codecov/codecov-action@v3.1.1
         with:
-          file: ./coverage.txt # optional
+          file: ./coverage.txt
           fail_ci_if_error: true
 
   test-e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 45
     steps:
       - uses: actions/setup-go@v3.0.0
         with:
           go-version: 1.18
-      - uses: actions/checkout@v3.0.2
+      - uses: actions/checkout@v3.1.0
       - uses: technote-space/get-diff-action@v6.0.1
         with:
           PATTERNS: |
@@ -79,7 +87,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v3.0.2
+      - uses: actions/checkout@v3.1.0
       - uses: actions/setup-go@v3
         with:
           go-version: 1.18

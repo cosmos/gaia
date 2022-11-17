@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+// copyFile copy file from src to dst
 func copyFile(src, dst string) (int64, error) {
 	sourceFileStat, err := os.Stat(src)
 	if err != nil {
@@ -32,6 +33,7 @@ func copyFile(src, dst string) (int64, error) {
 	return nBytes, err
 }
 
+// writeFile write a byte slice into a file path
 func writeFile(path string, body []byte) error {
 	_, err := os.Create(path)
 	if err != nil {

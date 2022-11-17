@@ -363,6 +363,7 @@ func NewAppKeeper(
 		appKeepers.TransferKeeper,
 		appKeepers.IBCKeeper.ChannelKeeper,
 		appKeepers.DistrKeeper,
+		appKeepers.BankKeeper,
 	)
 
 	appKeepers.RouterModule = router.NewAppModule(appKeepers.RouterKeeper, transferIBCModule, 1,

@@ -8,10 +8,10 @@ RUN go mod download
 COPY . .
 ENV PACKAGES curl make git libc-dev bash gcc linux-headers eudev-dev python3
 RUN apk add --no-cache $PACKAGES
-RUN CGO_ENABLED=0 make install
+RUN make install
 
 # Add to a distroless container
-FROM distroless.dev/static:$IMG_TAG
+FROM distroless.dev/ko:$IMG_TAG
 ARG IMG_TAG
 COPY --from=gaiad-builder /go/bin/gaiad /usr/local/bin/
 EXPOSE 26656 26657 1317 9090

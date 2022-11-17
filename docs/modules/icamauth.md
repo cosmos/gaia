@@ -1,4 +1,4 @@
-# icamauth module
+# Icamauth Module
 
 ## Introduction to Interchain Accounts
 **Interchain Accounts** (ICA) is a standard that allows an account on a *controller* chain to create and securely control an address on a different *host* chain using the Inter Blockchain Protocol (IBC). Transactions native to the host chain are wrapped inside an IBC packet and sent from the Interchain Account Owner on the controller chain to be executed on the host chain.
@@ -14,7 +14,7 @@ The following command allows you to query all the allowed message types on a hos
 gaiad q interchain-accounts host params
 ```
 
-The following tutorial will demonstrate how to use Interchain Accounts through the [icamauth module](../../../x/icamauth).
+The following tutorial will demonstrate how to use Interchain Accounts through the [icamauth module](../../x/icamauth).
 
 ## Setup preparation
 We will run two Cosmos-SDK chains (controller chain: `test-0` and host chain: `test-1`) and a relayer to connect these two chains. We will create an account on chain `test-0` and call it `alice`, and register an Interchain Account (that we'll call `alice_ica`)  on chain `test-1` for `alice` on chain `test-0`. We will also create a standard account, `bob` on chain `test-1`.
@@ -26,14 +26,19 @@ Through these 3 accounts, we can test if:
 ### Prepare to run two chains
 We've simplified the setup process via several shell scripts. If you'd like to learn more about what's happening under the hood we suggest you inspect the files more closely.
 
-Set up the two chains, create the keys for `alice` and `bob`, and start running both chains in different terminals:
+Set up the two chains by [`init_chain_controller.sh`](https://github.com/cosmos/gaia/blob/main/docs/modules/icamauth_scripts/init_chain_controller.sh) and [`init_chain_host.sh`](https://github.com/cosmos/gaia/blob/main/docs/modules/icamauth_scripts/init_chain_host.sh), create the keys for `alice` and `bob`, and start running both chains in different terminals:
 ```shell
-source ./docs/modules/icamauth/init_chain_controller.sh
+cd gaia
+
+source ./docs/modules/icamauth_scripts/init_chain_controller.sh
 ```
-and ni another temrinal:
+and in another terminal:
 ```shell
-source ./docs/modules/icamauth/init_chain_host.sh
+cd gaia
+
+source ./docs/modules/icamauth_scripts/init_chain_host.sh
 ```
+
 
 ### Setting up a Hermes relayer
 You can download or build the Hermes binary from the source code.
@@ -65,9 +70,9 @@ export PATH="$HOME/.hermes/bin:$PATH"
 ```
 
 #### Create the IBC connection
-Run the following command in `gaia/docs/modules/icamauth` directory to create an IBC connection:
+Run the following script [`gaia/docs/modules/icamauth_scripts/hermes_setup.sh`](https://github.com/cosmos/gaia/blob/main/docs/modules/icamauth_scripts/hermes_setup.sh) to create an IBC connection:
 ```shell
-cd ./docs/modules/icamauth
+cd ./docs/modules/icamauth_scripts
 source hermes_setup.sh
 ```
 
@@ -168,7 +173,7 @@ gaiad tx bank send $BOB $ALICE_ICA 100stake --gas-prices 0.025stake --home $HOME
 Create a new IBC channel using Hermes:
 
 ```shell
- hermes --config ./docs/modules/icamauth/rly-config.toml create channel --a-chain test-0 --a-connection connection-0 --a-port transfer --b-port transfer
+hermes --config ./docs/modules/icamauth_scripts/rly-config.toml create channel --a-chain test-0 --a-connection connection-0 --a-port transfer --b-port transfer
 ```
 
 Initiate the IBC token transfer:

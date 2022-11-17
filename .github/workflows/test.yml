@@ -3,9 +3,15 @@ name: Test
 on:
   workflow_call:
   pull_request:
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
   push:
     branches:
       - main
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
 
 jobs:
   cleanup-runs:

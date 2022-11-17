@@ -14,7 +14,7 @@ import (
 	"github.com/cosmos/gaia/v8/app/keepers"
 )
 
-func fixBankMetadata(ctx sdk.Context, keepers *keepers.AppKeepers) error {
+func FixBankMetadata(ctx sdk.Context, keepers *keepers.AppKeepers) error {
 	malformedDenom := "uatomu"
 	correctDenom := "uatom"
 
@@ -27,9 +27,7 @@ func fixBankMetadata(ctx sdk.Context, keepers *keepers.AppKeepers) error {
 		key := keepers.GetKey(banktypes.ModuleName)
 		store := ctx.KVStore(key)
 		oldDenomMetaDataStore := prefix.NewStore(store, banktypes.DenomMetadataPrefix)
-		oldKey := make([]byte, len(malformedDenom))
-		copy(oldKey, malformedDenom)
-		oldDenomMetaDataStore.Delete(oldKey)
+		oldDenomMetaDataStore.Delete([]byte(malformedDenom))
 
 		// confirm whether the old key is still accessible
 		foundMalformed = keepers.BankKeeper.HasDenomMetaData(ctx, malformedDenom)
@@ -66,7 +64,7 @@ func CreateUpgradeHandler(
 
 		ctx.Logger().Info("running the rest of the upgrade handler...")
 
-		err = fixBankMetadata(ctx, keepers)
+		err = FixBankMetadata(ctx, keepers)
 		if err != nil {
 			return vm, err
 		}

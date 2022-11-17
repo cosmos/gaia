@@ -9,7 +9,7 @@ COPY . .
 ENV KO_DOCKER_REPO=ghcr.io/cosmos
 ENV PACKAGES curl make git libc-dev bash gcc linux-headers eudev-dev python3
 RUN apk add --no-cache $PACKAGES
-RUN make install
+RUN CGO_ENABLED=0 make install
 
 # Add to a distroless container
 FROM distroless.dev/ko:$IMG_TAG

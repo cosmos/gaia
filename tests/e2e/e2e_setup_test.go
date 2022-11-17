@@ -63,6 +63,8 @@ const (
 	icaOwnerAccountIndex         = 1
 	numberOfEvidences            = 10
 	slashingShares         int64 = 10000
+
+	proposalGlobalFee = "proposal_globalfee.json"
 )
 
 var (
@@ -606,77 +608,77 @@ func noRestart(config *docker.HostConfig) {
 	}
 }
 
-// func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
-// 	bankSendMsg := &banktypes.MsgSend{
-// 		FromAddress: govModuleAddress,
-// 		ToAddress:   govSendMsgRecipientAddress,
-// 		Amount:      []sdk.Coin{sendGovAmount},
-// 	}
+func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
+	// bankSendMsg := &banktypes.MsgSend{
+	// 	FromAddress: govModuleAddress,
+	// 	ToAddress:   govSendMsgRecipientAddress,
+	// 	Amount:      []sdk.Coin{sendGovAmount},
+	// }
 
-// 	msgs := []sdk.Msg{bankSendMsg}
-// 	protoMsgs, err := txtypes.SetMsgs(msgs)
-// 	s.Require().NoError(err)
-// 	proposalSendMsg.Messages = protoMsgs
-// 	sendMsgBody, err := cdc.MarshalJSON(proposalSendMsg)
-// 	s.Require().NoError(err)
+	// msgs := []sdk.Msg{bankSendMsg}
+	// protoMsgs, err := txtypes.SetMsgs(msgs)
+	// s.Require().NoError(err)
+	// proposalSendMsg.Messages = protoMsgs
+	// sendMsgBody, err := cdc.MarshalJSON(proposalSendMsg)
+	// s.Require().NoError(err)
 
-// 	proposalCommSpend := &distrtypes.CommunityPoolSpendProposalWithDeposit{
-// 		Title:       "Community Pool Spend",
-// 		Description: "Fund Gov !",
-// 		Recipient:   govModuleAddress,
-// 		Amount:      "1000uatom",
-// 		Deposit:     "5000uatom",
-// 	}
-// 	commSpendBody, err := json.MarshalIndent(proposalCommSpend, "", " ")
-// 	s.Require().NoError(err)
+	// proposalCommSpend := &distrtypes.CommunityPoolSpendProposalWithDeposit{
+	// 	Title:       "Community Pool Spend",
+	// 	Description: "Fund Gov !",
+	// 	Recipient:   govModuleAddress,
+	// 	Amount:      "1000uatom",
+	// 	Deposit:     "5000uatom",
+	// }
+	// commSpendBody, err := json.MarshalIndent(proposalCommSpend, "", " ")
+	// s.Require().NoError(err)
 
-// 	for _, val := range c.validators {
-// 		err = writeFile(filepath.Join(val.configDir(), "config", "proposal.json"), commSpendBody)
-// 		s.Require().NoError(err)
+	// for _, val := range c.validators {
+	// 	err = writeFile(filepath.Join(val.configDir(), "config", "proposal.json"), commSpendBody)
+	// 	s.Require().NoError(err)
 
-// 		err = writeFile(filepath.Join(val.configDir(), "config", "proposal_2.json"), sendMsgBody)
-// 		s.Require().NoError(err)
-// 	}
-// }
+	// 	err = writeFile(filepath.Join(val.configDir(), "config", "proposal_2.json"), sendMsgBody)
+	// 	s.Require().NoError(err)
+	// }
+}
 
-// func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height int) {
-// 	upgradePlan := &upgradetypes.Plan{
-// 		Name:   "upgrade-1",
-// 		Height: int64(height),
-// 		Info:   "binary-1",
-// 	}
+func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height int) {
+	// upgradePlan := &upgradetypes.Plan{
+	// 	Name:   "upgrade-1",
+	// 	Height: int64(height),
+	// 	Info:   "binary-1",
+	// }
 
-// 	upgradeProp := &upgradetypes.MsgSoftwareUpgrade{
-// 		Authority: govModuleAddress,
-// 		Plan:      *upgradePlan,
-// 	}
+	// upgradeProp := &upgradetypes.MsgSoftwareUpgrade{
+	// 	Authority: govModuleAddress,
+	// 	Plan:      *upgradePlan,
+	// }
 
-// 	msgs := []sdk.Msg{upgradeProp}
-// 	protoMsgs, err := txtypes.SetMsgs(msgs)
-// 	s.Require().NoError(err)
-// 	proposalSendMsg.Messages = protoMsgs
-// 	upgradeProposalBody, err := cdc.MarshalJSON(proposalSendMsg)
-// 	s.Require().NoError(err)
+	// msgs := []sdk.Msg{upgradeProp}
+	// protoMsgs, err := txtypes.SetMsgs(msgs)
+	// s.Require().NoError(err)
+	// proposalSendMsg.Messages = protoMsgs
+	// upgradeProposalBody, err := cdc.MarshalJSON(proposalSendMsg)
+	// s.Require().NoError(err)
 
-// 	path := filepath.Join(c.validators[0].configDir(), "config", "proposal_3.json")
-// 	err = writeFile(path, upgradeProposalBody)
-// 	s.Require().NoError(err)
-// 	fmt.Println("saved proposal_3.json to ", path)
-// }
+	// path := filepath.Join(c.validators[0].configDir(), "config", "proposal_3.json")
+	// err = writeFile(path, upgradeProposalBody)
+	// s.Require().NoError(err)
+	// fmt.Println("saved proposal_3.json to ", path)
+}
 
-// func (s *IntegrationTestSuite) writeGovCancelUpgradeSoftwareProposal(c *chain) {
-// 	cancelUpgradeProp := &upgradetypes.MsgCancelUpgrade{
-// 		Authority: govModuleAddress,
-// 	}
-// 	protoMsgs, err := txtypes.SetMsgs([]sdk.Msg{cancelUpgradeProp})
-// 	s.Require().NoError(err)
-// 	proposalSendMsg.Messages = protoMsgs
-// 	cancelUpgradeProposalBody, err := cdc.MarshalJSON(proposalSendMsg)
-// 	s.Require().NoError(err)
+func (s *IntegrationTestSuite) writeGovCancelUpgradeSoftwareProposal(c *chain) {
+	// cancelUpgradeProp := &upgradetypes.MsgCancelUpgrade{
+	// 	Authority: govModuleAddress,
+	// }
+	// protoMsgs, err := txtypes.SetMsgs([]sdk.Msg{cancelUpgradeProp})
+	// s.Require().NoError(err)
+	// proposalSendMsg.Messages = protoMsgs
+	// cancelUpgradeProposalBody, err := cdc.MarshalJSON(proposalSendMsg)
+	// s.Require().NoError(err)
 
-// 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_4.json"), cancelUpgradeProposalBody)
-// 	s.Require().NoError(err)
-// }
+	// err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_4.json"), cancelUpgradeProposalBody)
+	// s.Require().NoError(err)
+}
 
 func (s *IntegrationTestSuite) writeFile(c *chain, filename string, body []byte) {
 	for _, val := range c.validators {
@@ -713,7 +715,7 @@ func (s *IntegrationTestSuite) writeGovParamChangeProposalGlobalFees(c *chain, c
 	}, "", " ")
 	s.Require().NoError(err)
 
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_globalfee.json"), paramChangeProposalBody)
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalGlobalFee), paramChangeProposalBody)
 	s.Require().NoError(err)
 }
 

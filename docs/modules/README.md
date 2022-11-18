@@ -9,5 +9,5 @@ Updated Modules in V8 Rho
 ## New Modules in Rho V8
 - [Global Fee](./globalfee.md)
 - [Group](./group.md)
-- [ICA-Mauth](./icamauth/)
+- [ICA-Mauth](./icamauth.md)
 

@@ -153,7 +153,7 @@ func (s *IntegrationTestSuite) sendIBC(c *chain, valIdx int, sender, recipient, 
 		"--output=json",
 		"-y",
 	}
-	s.T().Logf("sending %s from %s (%s) to %s (%s)", token, s.chainA.id, sender, s.chainB.id, recipient)
+	s.T().Logf("sending %s from %s (%s) to %s (%s) with memo %s", token, s.chainA.id, sender, s.chainB.id, recipient, note)
 	s.executeGaiaTxCommand(ctx, c, ibcCmd, valIdx, s.defaultExecValidation(c, valIdx))
 	s.T().Log("successfully sent IBC tokens")
 }
@@ -320,7 +320,7 @@ Steps:
 */
 // TODO: Add back only if packet forward middleware has a working version compatible with IBC v3.0.x
 func (s *IntegrationTestSuite) TestMultihopIBCTokenTransfer() {
-
+	s.T().Skip()
 	time.Sleep(30 * time.Second)
 
 	s.Run("send_successful_multihop_uatom_to_chainA_from_chainA", func() {
@@ -408,7 +408,9 @@ Steps:
 4. Check Balance of Account 1 on Chain 1, confirm it is original minus x tokens
 5. Check Balance of Account 1 on Chain 2, confirm it is original plus x tokens
 */
+// TODO: Add  back
 func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
+	s.T().Skip()
 	time.Sleep(30 * time.Second)
 
 	s.Run("send_failed_multihop_uatom_to_chainA_from_chainA", func() {

@@ -42,7 +42,7 @@ func TestFixBankMetadata(t *testing.T) {
 	store := ctx.KVStore(key)
 	oldDenomMetaDataStore := prefix.NewStore(store, banktypes.DenomMetadataPrefix)
 	m := cdc.MustMarshal(&denomMetaData)
-	oldDenomMetaDataStore.Set([]byte(malformedDebom), m)
+	oldDenomMetaDataStore.Set([]byte(malformedDenom), m)
 
 	correctDenom := "uatom"
 
@@ -54,5 +54,8 @@ func TestFixBankMetadata(t *testing.T) {
 
 	_, foundCorrect = app.AppKeepers.BankKeeper.GetDenomMetaData(ctx, correctDenom)
 	require.True(t, foundCorrect)
+
+	_, foundMalformed := app.AppKeepers.BankKeeper.GetDenomMetaData(ctx, malformedDenom)
+	require.False(t, foundMalformed)
 
 }

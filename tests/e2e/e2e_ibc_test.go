@@ -320,7 +320,7 @@ Steps:
 */
 // TODO: Add back only if packet forward middleware has a working version compatible with IBC v3.0.x
 func (s *IntegrationTestSuite) TestMultihopIBCTokenTransfer() {
-	s.T().Skip()
+
 	time.Sleep(30 * time.Second)
 
 	s.Run("send_successful_multihop_uatom_to_chainA_from_chainA", func() {
@@ -408,87 +408,92 @@ Steps:
 4. Check Balance of Account 1 on Chain 1, confirm it is original minus x tokens
 5. Check Balance of Account 1 on Chain 2, confirm it is original plus x tokens
 */
-// TODO: Add back only if packet forward middleware has a working version compatible with IBC v3.0.x
-// func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
-// 	time.Sleep(30 * time.Second)
+func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
+	time.Sleep(30 * time.Second)
 
-// 	s.Run("send_failed_multihop_uatom_to_chainA_from_chainA", func() {
-// 		// require the recipient account receives the IBC tokens (IBC packets ACKd)
+	s.Run("send_failed_multihop_uatom_to_chainA_from_chainA", func() {
+		// require the recipient account receives the IBC tokens (IBC packets ACKd)
 
-// 		address := s.chainA.validators[0].keyInfo.GetAddress()
-// 		sender := address.String()
+		address := s.chainA.validators[0].keyInfo.GetAddress()
+		sender := address.String()
 
-// 		address = s.chainB.validators[0].keyInfo.GetAddress()
-// 		middlehop := address.String()
+		address = s.chainB.validators[0].keyInfo.GetAddress()
+		middlehop := address.String()
 
-// 		address = s.chainA.validators[1].keyInfo.GetAddress()
-// 		recipient := strings.Replace(address.String(), "cosmos", "foobar", 1) // this should be an invalid recipient but only fail the final send so it will be returned
+		address = s.chainA.validators[1].keyInfo.GetAddress()
+		recipient := strings.Replace(address.String(), "cosmos", "foobar", 1) // this should be an invalid recipient but only fail the final send so it will be returned
 
-// 		forwardPort := "transfer"
-// 		forwardChannel := "channel-0"
+		forwardPort := "transfer"
+		forwardChannel := "channel-0"
 
-// 		tokenAmt := 3300000000
+		tokenAmt := 3300000000
 
-// 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-// 		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
+		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
 
-// 		var (
-// 			beforeSenderUAtomBalance sdk.Coin
-// 			beforeMiddleIBCBalance   sdk.Coin
-// 			err                      error
-// 		)
+		var (
+			beforeSenderUAtomBalance sdk.Coin
+			beforeMiddleIBCBalance   sdk.Coin
+			err                      error
+		)
 
-// 		s.Require().Eventually(
-// 			func() bool {
-// 				beforeSenderUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
-// 				s.Require().NoError(err)
-// 				beforeMiddleIBCBalance, err = getSpecificBalance(chainBAPIEndpoint, middlehop, "ibc/")
-// 				s.Require().True(beforeMiddleIBCBalance.IsNil())
-// 				s.Require().NoError(err)
+		s.Require().Eventually(
+			func() bool {
+				beforeSenderUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
+				s.Require().NoError(err)
+				beforeMiddleIBCBalance, err = getSpecificBalance(chainBAPIEndpoint, middlehop, "ibc/")
+				s.Require().True(beforeMiddleIBCBalance.IsNil())
+				s.Require().NoError(err)
 
-// 				return beforeSenderUAtomBalance.IsValid()
-// 			},
-// 			1*time.Minute,
-// 			5*time.Second,
-// 		)
+				return beforeSenderUAtomBalance.IsValid()
+			},
+			1*time.Minute,
+			5*time.Second,
+		)
 
-// 		s.sendIBC(s.chainA, 0, sender, compiledRecipient, strconv.Itoa(tokenAmt)+uatomDenom, standardFees.String())
+		firstHopMetadata := &PacketMetadata{
+			Forward: &ForwardMetadata{
+				Receiver: recipient,
+				Channel:  forwardChannel,
+				Port:     forwardPort,
+				Next:     nil,
+			},
+		}
 
-// firstHopMetadata := &PacketMetadata{
-// 	Forward: &ForwardMetadata{
-// 		Receiver: recipient,
-// 		Channel:  forwardChannel,
-// 		Port:     forwardPort,
-// 		Next:     nil,
-// 	},
-// }
+		memo, err := json.Marshal(firstHopMetadata)
+		s.Require().NoError(err)
 
-// memo, err := json.Marshal(firstHopMetadata)
-// s.Require().NoError(err)
+		s.sendIBC(s.chainA, 0, sender, middlehop, strconv.Itoa(tokenAmt)+uatomDenom, standardFees.String(), string(memo))
 
-// s.sendIBC(s.chainA, 0, sender, middlehop, strconv.Itoa(tokenAmt)+uatomDenom, standardFees.String(), string(memo))
+		// Sender account should be initially decremented the full amount
+		s.Require().Eventually(
+			func() bool {
+				afterSenderUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
+				s.Require().NoError(err)
 
-// 				return returned
-// 			},
-// 			1*time.Minute,
-// 			1*time.Second,
-// 		)
+				returned := beforeSenderUAtomBalance.Sub(tokenAmount).Sub(standardFees).IsEqual(afterSenderUAtomBalance)
 
-// 		// since the forward receiving account is invalid, it should be refunded to the original sender (minus the original fee)
-// 		s.Require().Eventually(
-// 			func() bool {
-// 				afterSenderUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
-// 				s.Require().NoError(err)
+				return returned
+			},
+			1*time.Minute,
+			1*time.Second,
+		)
 
-// 				returned := beforeSenderUAtomBalance.Sub(standardFees).IsEqual(afterSenderUAtomBalance)
+		// since the forward receiving account is invalid, it should be refunded to the original sender (minus the original fee)
+		s.Require().Eventually(
+			func() bool {
+				afterSenderUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
+				s.Require().NoError(err)
 
-// 				return returned
-// 			},
-// 			5*time.Minute,
-// 			5*time.Second,
-// 		)
-// 	})
-// }
+				returned := beforeSenderUAtomBalance.Sub(standardFees).IsEqual(afterSenderUAtomBalance)
+
+				return returned
+			},
+			5*time.Minute,
+			5*time.Second,
+		)
+	})
+}
 
 func (s *IntegrationTestSuite) TestBankTokenTransfer() {
 	s.Run("send_photon_between_accounts", func() {

@@ -21,7 +21,7 @@ import (
 	ibctransfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
 	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
 	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
-	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v2/router/types"
+	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v3/router/types"
 )
 
 func (appKeepers *AppKeepers) GenerateKeys() {

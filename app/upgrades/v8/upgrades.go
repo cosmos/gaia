@@ -30,7 +30,7 @@ func FixBankMetadata(ctx sdk.Context, keepers *keepers.AppKeepers) error {
 		oldDenomMetaDataStore.Delete([]byte(malformedDenom))
 
 		// confirm whether the old key is still accessible
-		foundMalformed = keepers.BankKeeper.HasDenomMetaData(ctx, malformedDenom)
+		_, foundMalformed = keepers.BankKeeper.GetDenomMetaData(ctx, malformedDenom)
 		if foundMalformed {
 			return errors.New("malformed 'uatomu' denom not fixed")
 		}

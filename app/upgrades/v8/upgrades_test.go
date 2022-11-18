@@ -9,29 +9,28 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	gaiahelpers "github.com/cosmos/gaia/v8/app/helpers"
-	v8 "github.com/cosmos/gaia/v8/app/upgrades/v8"
 	"github.com/stretchr/testify/require"
 )
 
 func TestFixBankMetadata(t *testing.T) {
-	app := gaiahelpers.Setup(t)
+	app := gaiahelpers.Setup(t, false, 1)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{
 		ChainID: fmt.Sprintf("test-chain-%s", tmrand.Str(4)),
 		Height:  1,
 	})
-
 	cdc := app.AppCodec()
 
-	malformedDenom := "uatomu"
+	v7Key := "uatomuatom"
 	denomMetaData := banktypes.Metadata{
-		Name:        "Cosmos Hub Atom",
-		Symbol:      "ATOM",
+		Name:        "foo",
+		Symbol:      "bar",
 		Description: "The native staking token of the Cosmos Hub.",
 		DenomUnits: []*banktypes.DenomUnit{
-			{"uatom", uint32(0), []string{"microatom"}},
-			{"matom", uint32(3), []string{"milliatom"}},
-			{"atom", uint32(6), nil},
+			{Denom: "uatom", Exponent: uint32(0), Aliases: []string{"microatom"}},
+			{Denom: "matom", Exponent: uint32(3), Aliases: []string{"milliatom"}},
+			{Denom: "atom", Exponent: uint32(6), Aliases: nil},
 		},
 		Base:    "uatom",
 		Display: "atom",
@@ -42,19 +41,24 @@ func TestFixBankMetadata(t *testing.T) {
 	store := ctx.KVStore(key)
 	oldDenomMetaDataStore := prefix.NewStore(store, banktypes.DenomMetadataPrefix)
 	m := cdc.MustMarshal(&denomMetaData)
-	oldDenomMetaDataStore.Set([]byte(malformedDenom), m)
+	oldDenomMetaDataStore.Set([]byte(v7Key), m)
+
+	rhoUpgrade := upgradetypes.Plan{
+		Name:   "v8-Rho",
+		Info:   "some text here",
+		Height: 100,
+	}
+	app.AppKeepers.UpgradeKeeper.ApplyUpgrade(ctx, rhoUpgrade)
 
 	correctDenom := "uatom"
 
-	_, foundCorrect := app.AppKeepers.BankKeeper.GetDenomMetaData(ctx, correctDenom)
-	require.False(t, foundCorrect)
-
-	err := v8.FixBankMetadata(ctx, &app.AppKeepers)
-	require.NoError(t, err)
-
-	_, foundCorrect = app.AppKeepers.BankKeeper.GetDenomMetaData(ctx, correctDenom)
+	metadata, foundCorrect := app.AppKeepers.BankKeeper.GetDenomMetaData(ctx, correctDenom)
 	require.True(t, foundCorrect)
 
+	require.Equal(t, metadata.Name, "Cosmos Hub Atom")
+	require.Equal(t, metadata.Symbol, "ATOM")
+
+	malformedDenom := "uatomu"
 	_, foundMalformed := app.AppKeepers.BankKeeper.GetDenomMetaData(ctx, malformedDenom)
 	require.False(t, foundMalformed)
 

@@ -70,6 +70,7 @@ func (EmptyAppOptions) Get(o string) interface{} { return nil }
 func Setup(t *testing.T, isCheckTx bool, invCheckPeriod uint) *gaiaapp.GaiaApp {
 	t.Helper()
 
+	// TODO: investigate the following:
 	// The following has been modified to work with v0.45 but it's incomplete somehow. It causes tests to break because the changes
 	// are not properly integrated into the v0.45 test suite. It deserves a closer look to determine why adding custom validator and
 	// populated accounts was an improvement and whether it's important to add them back to this versin of the test suite.

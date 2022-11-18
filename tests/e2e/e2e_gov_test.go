@@ -102,8 +102,6 @@ func (s *IntegrationTestSuite) GovSoftwareUpgrade() {
 		s.Require().Eventually(
 			func() bool {
 				h := s.getLatestBlockHeight(s.chainA, 0)
-				s.Require().NoError(err)
-
 				return h > 0
 			},
 			30*time.Second,
@@ -191,7 +189,6 @@ func (s *IntegrationTestSuite) verifyChainHaltedAtUpgradeHeight(c *chain, valIdx
 	s.Require().Eventually(
 		func() bool {
 			currentHeight := s.getLatestBlockHeight(c, valIdx)
-
 			return currentHeight == upgradeHeight
 		},
 		30*time.Second,
@@ -202,7 +199,6 @@ func (s *IntegrationTestSuite) verifyChainHaltedAtUpgradeHeight(c *chain, valIdx
 	s.Require().Eventually(
 		func() bool {
 			currentHeight := s.getLatestBlockHeight(c, valIdx)
-
 			if currentHeight > upgradeHeight {
 				return false
 			}
@@ -220,7 +216,6 @@ func (s *IntegrationTestSuite) verifyChainPassesUpgradeHeight(c *chain, valIdx, 
 	s.Require().Eventually(
 		func() bool {
 			currentHeight := s.getLatestBlockHeight(c, valIdx)
-
 			return currentHeight > upgradeHeight
 		},
 		30*time.Second,

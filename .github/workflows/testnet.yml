@@ -21,4 +21,4 @@ jobs:
         run: go install ./...
 
       - name: testnet
-        run: gaiad testnet start
+        run: gaiad testnet start --keyring-backend test

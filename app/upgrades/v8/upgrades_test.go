@@ -23,7 +23,7 @@ func TestFixBankMetadata(t *testing.T) {
 
 	cdc := app.AppCodec()
 
-	malformedDebom := "uatomu"
+	malformedDenom := "uatomu"
 	denomMetaData := banktypes.Metadata{
 		Name:        "Cosmos Hub Atom",
 		Symbol:      "ATOM",

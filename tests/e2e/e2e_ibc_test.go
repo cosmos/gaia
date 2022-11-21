@@ -20,6 +20,20 @@ import (
 	"github.com/ory/dockertest/v3/docker"
 )
 
+type ForwardMetadata struct {
+	Receiver       string        `json:"receiver"`
+	Port           string        `json:"port"`
+	Channel        string        `json:"channel"`
+	Timeout        time.Duration `json:"timeout"`
+	Retries        *uint8        `json:"retries,omitempty"`
+	Next           *string       `json:"next,omitempty"`
+	RefundSequence *uint64       `json:"refund_sequence,omitempty"`
+}
+
+type PacketMetadata struct {
+	Forward *ForwardMetadata `json:"forward"`
+}
+
 func (s *IntegrationTestSuite) runIBCRelayer() {
 	s.T().Log("starting Hermes relayer container...")
 
@@ -116,7 +130,7 @@ func (s *IntegrationTestSuite) runIBCRelayer() {
 	s.createChannel()
 }
 
-func (s *IntegrationTestSuite) sendIBC(c *chain, valIdx int, sender, recipient, token, fees string) {
+func (s *IntegrationTestSuite) sendIBC(c *chain, valIdx int, sender, recipient, token, fees, note string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -132,6 +146,8 @@ func (s *IntegrationTestSuite) sendIBC(c *chain, valIdx int, sender, recipient, 
 		fmt.Sprintf("--from=%s", sender),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, fees),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		// fmt.Sprintf("--%s=%s", flags.FlagNote, note),
+		fmt.Sprintf("--memo=%s", note),
 		"--keyring-backend=test",
 		"--broadcast-mode=sync",
 		"--output=json",
@@ -270,7 +286,7 @@ func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
 		}
 
 		tokenAmt := 3300000000
-		s.sendIBC(s.chainA, 0, sender, recipient, strconv.Itoa(tokenAmt)+uatomDenom, standardFees.String())
+		s.sendIBC(s.chainA, 0, sender, recipient, strconv.Itoa(tokenAmt)+uatomDenom, standardFees.String(), "")
 
 		s.Require().Eventually(
 			func() bool {
@@ -324,10 +340,6 @@ func (s *IntegrationTestSuite) TestMultihopIBCTokenTransfer() {
 		s.Require().NoError(err)
 		recipient := address.String()
 
-		// Address should be formatted like:
-		// {intermediate_refund_address}|{foward_port}/{forward_channel}:{final_destination_address}
-		compiledRecipient := middlehop + "|" + icaPortID + "/" + icaChannelID + ":" + recipient
-
 		tokenAmt := 3300000000
 
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
@@ -351,7 +363,19 @@ func (s *IntegrationTestSuite) TestMultihopIBCTokenTransfer() {
 			5*time.Second,
 		)
 
-		s.sendIBC(s.chainA, 0, sender, compiledRecipient, strconv.Itoa(tokenAmt)+uatomDenom, standardFees.String())
+		firstHopMetadata := &PacketMetadata{
+			Forward: &ForwardMetadata{
+				Receiver: recipient,
+				Channel:  icaChannelID\,
+				Port:     icaPortID,
+				Next:     nil,
+			},
+		}
+
+		memo, err := json.Marshal(firstHopMetadata)
+		s.Require().NoError(err)
+
+		s.sendIBC(s.chainA, 0, sender, middlehop, strconv.Itoa(tokenAmt)+uatomDenom, standardFees.String(), string(memo))
 
 		s.Require().Eventually(
 			func() bool {
@@ -385,6 +409,7 @@ Steps:
 5. Check Balance of Account 1 on Chain 2, confirm it is original plus x tokens
 */
 func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
+
 	time.Sleep(30 * time.Second)
 
 	s.Run("send_failed_multihop_uatom_to_chainA_from_chainA", func() {
@@ -401,10 +426,6 @@ func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
 		address, err = s.chainA.validators[1].keyInfo.GetAddress()
 		s.Require().NoError(err)
 		recipient := strings.Replace(address.String(), "cosmos", "foobar", 1) // this should be an invalid recipient but only fail the final send so it will be returned
-
-		// Address should be formatted like:
-		// {intermediate_refund_address}|{foward_port}/{forward_channel}:{final_destination_address}
-		compiledRecipient := middlehop + "|" + icaPortID + "/" + icaChannelID + ":" + recipient
 
 		tokenAmt := 3300000000
 
@@ -431,7 +452,19 @@ func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
 			5*time.Second,
 		)
 
-		s.sendIBC(s.chainA, 0, sender, compiledRecipient, strconv.Itoa(tokenAmt)+uatomDenom, standardFees.String())
+		firstHopMetadata := &PacketMetadata{
+			Forward: &ForwardMetadata{
+				Receiver: recipient,
+				Channel:  icaChannelID,
+				Port:     icaPortID,
+				Next:     nil,
+			},
+		}
+
+		memo, err := json.Marshal(firstHopMetadata)
+		s.Require().NoError(err)
+
+		s.sendIBC(s.chainA, 0, sender, middlehop, strconv.Itoa(tokenAmt)+uatomDenom, standardFees.String(), string(memo))
 
 		// Sender account should be initially decremented the full amount
 		s.Require().Eventually(

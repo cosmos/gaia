@@ -13,7 +13,7 @@ import (
 )
 
 // TestICARegister must run before any other
-func (s *IntegrationTestSuite) TestICA_1_Register() {
+func (s *IntegrationTestSuite) icaRegister() {
 	s.Run("register_ICA", func() {
 		ownerAddr, err := s.chainA.genesisAccounts[icaOwnerAccountIndex].keyInfo.GetAddress()
 		s.Require().NoError(err)
@@ -36,7 +36,7 @@ func (s *IntegrationTestSuite) TestICA_1_Register() {
 	})
 }
 
-func (s *IntegrationTestSuite) TestICA_2_BankSend() {
+func (s *IntegrationTestSuite) icaBankSend() {
 	s.Run("test ica transactions", func() {
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
@@ -161,6 +161,5 @@ func (s *IntegrationTestSuite) TestICA_2_BankSend() {
 
 		s.Require().Equal(sendIBCamt, ibcAmt)
 
-		// todo add ica delegation after delegation e2e merged
 	})
 }

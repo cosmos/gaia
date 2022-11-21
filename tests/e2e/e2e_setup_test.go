@@ -81,6 +81,8 @@ const (
 	relayerAccountIndex          = 0
 	numberOfEvidences            = 10
 	slashingShares         int64 = 10000
+
+	proposalGlobalFee = "proposal_globalfee.json"
 )
 
 const (

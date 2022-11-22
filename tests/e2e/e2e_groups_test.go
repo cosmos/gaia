@@ -43,7 +43,8 @@ var (
 )
 
 const (
-	groupId = iota + 1
+	groupDefaultID = iota + 1
+	groupICAID
 )
 
 const (
@@ -85,27 +86,27 @@ func (s *IntegrationTestSuite) testGroupsSendMsg() {
 
 		s.T().Logf("Creating Group")
 		s.execCreateGroup(s.chainA, 0, adminAddr, "Cosmos Hub Group", filepath.Join(gaiaConfigPath, originalMembersFilename), standardFees.String())
-		membersRes, err := queryGroupMembers(chainAAPIEndpoint, 1)
+		membersRes, err := queryGroupMembers(chainAAPIEndpoint, groupDefaultID)
 		s.Require().NoError(err)
 		s.Assert().Equal(len(membersRes.Members), 3)
 
 		s.T().Logf("Adding New Group Member")
-		s.execUpdateGroupMembers(s.chainA, 0, adminAddr, strconv.Itoa(groupId), filepath.Join(gaiaConfigPath, addMemberFilename), standardFees.String())
-		membersRes, err = queryGroupMembers(chainAAPIEndpoint, 1)
+		s.execUpdateGroupMembers(s.chainA, 0, adminAddr, strconv.Itoa(groupDefaultID), filepath.Join(gaiaConfigPath, addMemberFilename), standardFees.String())
+		membersRes, err = queryGroupMembers(chainAAPIEndpoint, groupDefaultID)
 		s.Require().NoError(err)
 		s.Assert().Equal(len(membersRes.Members), 4)
 
 		s.T().Logf("Removing New Group Member")
-		s.execUpdateGroupMembers(s.chainA, 0, adminAddr, strconv.Itoa(groupId), filepath.Join(gaiaConfigPath, removeMemberFilename), standardFees.String())
-		membersRes, err = queryGroupMembers(chainAAPIEndpoint, 1)
+		s.execUpdateGroupMembers(s.chainA, 0, adminAddr, strconv.Itoa(groupDefaultID), filepath.Join(gaiaConfigPath, removeMemberFilename), standardFees.String())
+		membersRes, err = queryGroupMembers(chainAAPIEndpoint, groupDefaultID)
 		s.Require().NoError(err)
 		s.Assert().Equal(len(membersRes.Members), 3)
 
 		s.T().Logf("Creating Group Threshold Decision Policy")
-		s.executeCreateGroupPolicy(s.chainA, 0, adminAddr, strconv.Itoa(groupId), thresholdPolicyMetadata, filepath.Join(gaiaConfigPath, thresholdPolicyFilename), standardFees.String())
-		policies, err := queryGroupPolicies(chainAAPIEndpoint, groupId)
+		s.executeCreateGroupPolicy(s.chainA, 0, adminAddr, strconv.Itoa(groupDefaultID), thresholdPolicyMetadata, filepath.Join(gaiaConfigPath, thresholdPolicyFilename), standardFees.String())
+		policies, err := queryGroupPolicies(chainAAPIEndpoint, groupDefaultID)
 		s.Require().NoError(err)
-		policy, err := getPolicy(policies.GroupPolicies, thresholdPolicyMetadata, groupId)
+		policy, err := getPolicy(policies.GroupPolicies, thresholdPolicyMetadata, groupDefaultID)
 		s.Require().NoError(err)
 
 		s.T().Logf("Funding Group Threshold Decision Policy")
@@ -122,7 +123,7 @@ func (s *IntegrationTestSuite) testGroupsSendMsg() {
 
 		s.Require().Eventually(
 			func() bool {
-				proposalRes, err := queryGroupProposal(chainAAPIEndpoint, groupId)
+				proposalRes, err := queryGroupProposal(chainAAPIEndpoint, groupDefaultID)
 				s.Require().NoError(err)
 
 				return proposalRes.Proposal.Status == group.PROPOSAL_STATUS_ACCEPTED
@@ -138,10 +139,10 @@ func (s *IntegrationTestSuite) testGroupsSendMsg() {
 
 		proposalId++
 		s.T().Logf("Creating Group Percentage Decision Policy")
-		s.executeCreateGroupPolicy(s.chainA, 0, adminAddr, strconv.Itoa(groupId), percentagePolicyMetadata, filepath.Join(gaiaConfigPath, percentagePolicyFilename), standardFees.String())
-		policies, err = queryGroupPolicies(chainAAPIEndpoint, 1)
+		s.executeCreateGroupPolicy(s.chainA, 0, adminAddr, strconv.Itoa(groupDefaultID), percentagePolicyMetadata, filepath.Join(gaiaConfigPath, percentagePolicyFilename), standardFees.String())
+		policies, err = queryGroupPolicies(chainAAPIEndpoint, groupDefaultID)
 		s.Require().NoError(err)
-		policy, err = getPolicy(policies.GroupPolicies, percentagePolicyMetadata, groupId)
+		policy, err = getPolicy(policies.GroupPolicies, percentagePolicyMetadata, groupDefaultID)
 		s.Require().NoError(err)
 
 		s.writeGroupProposal(s.chainA, policy.Address, adminAddr, sendAmount, proposalMsgSendPath)
@@ -214,9 +215,9 @@ func (s *IntegrationTestSuite) creatICAGroupProposal(c *chain) string {
 		chainAPI      = fmt.Sprintf("http://%s", resourceChain.GetHostPort(portID))
 	)
 
-	policies, err := queryGroupPolicies(chainAPI, groupId)
+	policies, err := queryGroupPolicies(chainAPI, groupICAID)
 	s.Require().NoError(err)
-	policy, err := getPolicy(policies.GroupPolicies, ICAGroupPolicyMetadata, groupId)
+	policy, err := getPolicy(policies.GroupPolicies, ICAGroupPolicyMetadata, groupICAID)
 	s.Require().NoError(err)
 
 	registerICAMsg := &icamauthtypes.MsgRegisterAccount{
@@ -247,7 +248,7 @@ func (s *IntegrationTestSuite) creatICAGroupProposal(c *chain) string {
 
 	s.Require().Eventually(
 		func() bool {
-			proposalRes, err := queryGroupProposal(chainAPI, groupId)
+			proposalRes, err := queryGroupProposal(chainAPI, groupDefaultID)
 			s.Require().NoError(err)
 
 			return proposalRes.Proposal.Status == group.PROPOSAL_STATUS_ACCEPTED

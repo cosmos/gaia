@@ -366,7 +366,7 @@ func (s *IntegrationTestSuite) TestMultihopIBCTokenTransfer() {
 		firstHopMetadata := &PacketMetadata{
 			Forward: &ForwardMetadata{
 				Receiver: recipient,
-				Channel:  icaChannelID\,
+				Channel:  icaChannelID,
 				Port:     icaPortID,
 				Next:     nil,
 			},

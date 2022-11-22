@@ -166,11 +166,8 @@ func (s *IntegrationTestSuite) GovCreateICA() {
 		var (
 			portID          = "1317/tcp"
 			validatorChainA = s.chainA.validators[0]
-			validatorChainB = s.chainB.validators[0]
 			resourceChainA  = s.valResources[s.chainA.id][0]
-			resourceChainB  = s.valResources[s.chainB.id][0]
 			chainAAPI       = fmt.Sprintf("http://%s", resourceChainA.GetHostPort(portID))
-			chainBAPI       = fmt.Sprintf("http://%s", resourceChainB.GetHostPort(portID))
 		)
 		// write and submit ICA gov proposal
 		s.writeGovICAProposal(s.chainA)
@@ -184,45 +181,16 @@ func (s *IntegrationTestSuite) GovCreateICA() {
 		s.depositGovProposal(chainAAPI, sender, standardFees.String(), s.proposalCounter)
 		s.voteGovProposal(chainAAPI, sender, standardFees.String(), s.proposalCounter, "yes", false)
 
+		// check if the ICA address exist
 		s.Require().Eventually(
 			func() bool {
 				icaAddr, err := queryICAAddress(chainAAPI, govModuleAddress, icaConnectionID)
 				s.T().Logf("%s's interchain account on chain %s: %s", sender, s.chainA.id, icaAddr)
 				s.Require().NoError(err)
-				return sender != "" && icaAddr != ""
+				return icaAddr != ""
 			},
 			2*time.Minute,
 			10*time.Second,
-		)
-
-		// get the chain B ICA account
-		var icaAddress string
-		s.Require().Eventually(
-			func() bool {
-				icaAddress, err = queryICAAddress(chainBAPI, govModuleAddress, icaConnectionID)
-				s.Require().NoError(err)
-
-				return err == nil && icaAddress != ""
-			},
-			time.Minute,
-			5*time.Second,
-		)
-
-		// fund ica, send tokens from chain b val to ica on chain b
-		valChainBKey, err := validatorChainB.keyInfo.GetAddress()
-		s.Require().NoError(err)
-		valChainBAddr := valChainBKey.String()
-
-		s.execBankSend(s.chainB, 0, valChainBAddr, icaAddress, tokenAmount.String(), standardFees.String(), false)
-
-		s.Require().Eventually(
-			func() bool {
-				afterSenderICABalance, err := getSpecificBalance(chainBAPI, icaAddress, uatomDenom)
-				s.Require().NoError(err)
-				return afterSenderICABalance.IsEqual(tokenAmount)
-			},
-			time.Minute,
-			5*time.Second,
 		)
 	})
 }

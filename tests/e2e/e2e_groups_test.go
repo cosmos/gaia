@@ -66,7 +66,7 @@ Test Benchmarks:
 */
 func (s *IntegrationTestSuite) testGroupsSendMsg() {
 	s.Run("send group message", func() {
-		s.groupProposalCounter = 1
+		s.groupProposalCounter++
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
 		s.T().Logf("Creating Group")
@@ -199,6 +199,7 @@ func (s *IntegrationTestSuite) creatICAGroupProposal(c *chain) string {
 		resourceChain = s.valResources[c.id][0]
 		chainAPI      = fmt.Sprintf("http://%s", resourceChain.GetHostPort(portID))
 	)
+	s.groupProposalCounter++
 
 	policies, err := queryGroupPolicies(chainAPI, groupICAID)
 	s.Require().NoError(err)
@@ -245,9 +246,7 @@ func (s *IntegrationTestSuite) creatICAGroupProposal(c *chain) string {
 
 	s.T().Logf("Executing Group ICA Proposal")
 	s.executeExecGroupProposal(c, 1, s.groupProposalCounter, aliceAddr)
-
-	s.groupProposalCounter++
-
+	
 	return policy.Address
 }
 
@@ -328,6 +327,8 @@ func (s *IntegrationTestSuite) writeGroupPolicies(
 }
 
 func (s *IntegrationTestSuite) setupGroupsSuite() {
+	s.groupProposalCounter = 0
+
 	admin, err := s.chainA.validators[0].keyInfo.GetAddress()
 	s.Require().NoError(err)
 	adminAddr = admin.String()

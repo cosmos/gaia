@@ -400,7 +400,6 @@ func (s *IntegrationTestSuite) TestGroups() {
 	s.setupGroupsSuite()
 	s.testGroupsSendMsg()
 	s.testGroupICAProposal()
-	s.groupProposalCounter = 0
 }
 
 func (s *IntegrationTestSuite) TestVesting() {

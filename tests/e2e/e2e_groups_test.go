@@ -23,23 +23,7 @@ var (
 )
 
 var (
-	proposalId = 1
 	sendAmount = sdk.NewInt64Coin(uatomDenom, 5000000)
-
-	windows = &group.DecisionPolicyWindows{
-		MinExecutionPeriod: 0 * time.Second,
-		VotingPeriod:       30 * time.Second,
-	}
-
-	thresholdPolicy = &group.ThresholdDecisionPolicy{
-		Threshold: "1",
-		Windows:   windows,
-	}
-
-	percentagePolicy = &group.PercentageDecisionPolicy{
-		Percentage: "0.5",
-		Windows:    windows,
-	}
 )
 
 const (
@@ -82,6 +66,7 @@ Test Benchmarks:
 */
 func (s *IntegrationTestSuite) testGroupsSendMsg() {
 	s.Run("send group message", func() {
+		s.groupProposalCounter = 1
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
 		s.T().Logf("Creating Group")
@@ -118,8 +103,8 @@ func (s *IntegrationTestSuite) testGroupsSendMsg() {
 		s.executeSubmitGroupProposal(s.chainA, 0, adminAddr, filepath.Join(gaiaConfigPath, proposalMsgSendPath))
 
 		s.T().Logf("Voting Group Proposal 1: Send 5 uatom from group to Bob")
-		s.executeVoteGroupProposal(s.chainA, 0, proposalId, adminAddr, group.VOTE_OPTION_YES.String(), "Admin votes yes")
-		s.executeVoteGroupProposal(s.chainA, 1, proposalId, aliceAddr, group.VOTE_OPTION_YES.String(), "Alice votes yes")
+		s.executeVoteGroupProposal(s.chainA, 0, s.groupProposalCounter, adminAddr, group.VOTE_OPTION_YES.String(), "Admin votes yes")
+		s.executeVoteGroupProposal(s.chainA, 1, s.groupProposalCounter, aliceAddr, group.VOTE_OPTION_YES.String(), "Alice votes yes")
 
 		s.Require().Eventually(
 			func() bool {
@@ -134,10 +119,10 @@ func (s *IntegrationTestSuite) testGroupsSendMsg() {
 		s.T().Logf("Group Proposal 1 Passed: Send 5 uatom from group to Bob")
 
 		s.T().Logf("Executing Group Proposal 1: Send 5 uatom from group to Bob")
-		s.executeExecGroupProposal(s.chainA, 1, proposalId, aliceAddr)
+		s.executeExecGroupProposal(s.chainA, 1, s.groupProposalCounter, aliceAddr)
 		s.verifyBalanceChange(chainAAPIEndpoint, sendAmount, bobAddr)
 
-		proposalId++
+		s.groupProposalCounter++
 		s.T().Logf("Creating Group Percentage Decision Policy")
 		s.executeCreateGroupPolicy(s.chainA, 0, adminAddr, strconv.Itoa(groupDefaultID), percentagePolicyMetadata, filepath.Join(gaiaConfigPath, percentagePolicyFilename), standardFees.String())
 		policies, err = queryGroupPolicies(chainAAPIEndpoint, groupDefaultID)
@@ -150,8 +135,8 @@ func (s *IntegrationTestSuite) testGroupsSendMsg() {
 		s.executeSubmitGroupProposal(s.chainA, 0, adminAddr, filepath.Join(gaiaConfigPath, proposalMsgSendPath))
 
 		s.T().Logf("Voting Group Proposal 2: Send 5 uatom from group to Bob")
-		s.executeVoteGroupProposal(s.chainA, 0, proposalId, adminAddr, group.VOTE_OPTION_YES.String(), "Admin votes yes")
-		s.executeVoteGroupProposal(s.chainA, 1, proposalId, aliceAddr, group.VOTE_OPTION_ABSTAIN.String(), "Alice votes abstain")
+		s.executeVoteGroupProposal(s.chainA, 0, s.groupProposalCounter, adminAddr, group.VOTE_OPTION_YES.String(), "Admin votes yes")
+		s.executeVoteGroupProposal(s.chainA, 1, s.groupProposalCounter, aliceAddr, group.VOTE_OPTION_ABSTAIN.String(), "Alice votes abstain")
 
 		s.Require().Eventually(
 			func() bool {
@@ -243,8 +228,8 @@ func (s *IntegrationTestSuite) creatICAGroupProposal(c *chain) string {
 	s.executeSubmitGroupProposal(c, 0, adminAddr, filepath.Join(gaiaConfigPath, ICAGroupProposal))
 
 	s.T().Logf("Voting Group ICA Proposal")
-	s.executeVoteGroupProposal(c, 0, 1, adminAddr, group.VOTE_OPTION_YES.String(), "Admin votes yes")
-	s.executeVoteGroupProposal(c, 1, 1, aliceAddr, group.VOTE_OPTION_YES.String(), "Alice votes yes")
+	s.executeVoteGroupProposal(c, 0, s.groupProposalCounter, adminAddr, group.VOTE_OPTION_YES.String(), "Admin votes yes")
+	s.executeVoteGroupProposal(c, 1, s.groupProposalCounter, aliceAddr, group.VOTE_OPTION_YES.String(), "Alice votes yes")
 
 	s.Require().Eventually(
 		func() bool {
@@ -259,7 +244,9 @@ func (s *IntegrationTestSuite) creatICAGroupProposal(c *chain) string {
 	s.T().Logf("Group ICA Proposal Passed")
 
 	s.T().Logf("Executing Group ICA Proposal")
-	s.executeExecGroupProposal(c, 1, 1, aliceAddr)
+	s.executeExecGroupProposal(c, 1, s.groupProposalCounter, aliceAddr)
+
+	s.groupProposalCounter++
 
 	return policy.Address
 }
@@ -353,6 +340,21 @@ func (s *IntegrationTestSuite) setupGroupsSuite() {
 	charlieAddr = s.executeGKeysAddCommand(s.chainA, 0, "charlie", gaiaHomePath)
 
 	s.prepareGroupFiles(s.chainA, adminAddr, aliceAddr, bobAddr, charlieAddr)
+
+	var (
+		windows = &group.DecisionPolicyWindows{
+			MinExecutionPeriod: 0 * time.Second,
+			VotingPeriod:       30 * time.Second,
+		}
+		thresholdPolicy = &group.ThresholdDecisionPolicy{
+			Threshold: "1",
+			Windows:   windows,
+		}
+		percentagePolicy = &group.PercentageDecisionPolicy{
+			Percentage: "0.5",
+			Windows:    windows,
+		}
+	)
 	s.writeGroupPolicies(
 		s.chainA,
 		thresholdPolicyFilename,

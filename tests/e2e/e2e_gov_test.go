@@ -24,29 +24,29 @@ func (s *IntegrationTestSuite) SendTokensFromNewGovAccount() {
 	senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
 	s.Require().NoError(err)
 	sender := senderAddress.String()
-	// Gov tests may be run in arbitrary order, each test must increment proposalCounter to have the correct proposal id to submit and query
-	s.proposalCounter++
-	s.T().Logf("Proposal number: %d", s.proposalCounter)
+	// Gov tests may be run in arbitrary order, each test must increment govProposalCounter to have the correct proposal id to submit and query
+	s.govProposalCounter++
+	s.T().Logf("Proposal number: %d", s.govProposalCounter)
 
 	s.fundCommunityPool(chainAAPIEndpoint, sender)
 
 	s.T().Logf("Submitting Legacy Gov Proposal: Community Spend Funding Gov Module")
-	s.submitLegacyGovProposal(chainAAPIEndpoint, sender, standardFees.String(), "community-pool-spend", s.proposalCounter, configFile(proposal1))
+	s.submitLegacyGovProposal(chainAAPIEndpoint, sender, standardFees.String(), "community-pool-spend", s.govProposalCounter, configFile(proposal1))
 	s.T().Logf("Depositing Legacy Gov Proposal: Community Spend Funding Gov Module")
-	s.depositGovProposal(chainAAPIEndpoint, sender, standardFees.String(), s.proposalCounter)
+	s.depositGovProposal(chainAAPIEndpoint, sender, standardFees.String(), s.govProposalCounter)
 	s.T().Logf("Voting Legacy Gov Proposal: Community Spend Funding Gov Module")
-	s.voteGovProposal(chainAAPIEndpoint, sender, standardFees.String(), s.proposalCounter, "yes", false)
+	s.voteGovProposal(chainAAPIEndpoint, sender, standardFees.String(), s.govProposalCounter, "yes", false)
 
 	initialGovBalance, err := getSpecificBalance(chainAAPIEndpoint, govModuleAddress, uatomDenom)
 	s.Require().NoError(err)
-	s.proposalCounter++
+	s.govProposalCounter++
 
 	s.T().Logf("Submitting Gov Proposal: Sending Tokens from Gov Module to Recipient")
-	s.submitNewGovProposal(chainAAPIEndpoint, sender, s.proposalCounter, configFile(proposal2))
+	s.submitNewGovProposal(chainAAPIEndpoint, sender, s.govProposalCounter, configFile(proposal2))
 	s.T().Logf("Depositing Gov Proposal: Sending Tokens from Gov Module to Recipient")
-	s.depositGovProposal(chainAAPIEndpoint, sender, standardFees.String(), s.proposalCounter)
+	s.depositGovProposal(chainAAPIEndpoint, sender, standardFees.String(), s.govProposalCounter)
 	s.T().Logf("Voting Gov Proposal: Sending Tokens from Gov Module to Recipient")
-	s.voteGovProposal(chainAAPIEndpoint, sender, standardFees.String(), s.proposalCounter, "yes", false)
+	s.voteGovProposal(chainAAPIEndpoint, sender, standardFees.String(), s.govProposalCounter, "yes", false)
 	s.Require().Eventually(
 		func() bool {
 			newGovBalance, err := getSpecificBalance(chainAAPIEndpoint, govModuleAddress, uatomDenom)
@@ -67,7 +67,7 @@ Test Benchmarks:
 1. Submission, deposit and vote of message based proposal to upgrade the chain at a height (current height + buffer)
 2. Validation that chain halted at upgrade height
 3. Teardown & restart chains
-4. Reset proposalCounter so subsequent tests have the correct last effective proposal id for chainA
+4. Reset govProposalCounter so subsequent tests have the correct last effective proposal id for chainA
 TODO: Perform upgrade in place of chain restart
 */
 func (s *IntegrationTestSuite) GovSoftwareUpgrade() {
@@ -78,18 +78,18 @@ func (s *IntegrationTestSuite) GovSoftwareUpgrade() {
 		sender := senderAddress.String()
 		height := s.getLatestBlockHeight(s.chainA, 0)
 		proposalHeight := height + govProposalBlockBuffer
-		// Gov tests may be run in arbitrary order, each test must increment proposalCounter to have the correct proposal id to submit and query
+		// Gov tests may be run in arbitrary order, each test must increment govProposalCounter to have the correct proposal id to submit and query
 
-		s.proposalCounter++
-		s.T().Logf("Writing proposal %d on chain %s", s.proposalCounter, s.chainA.id)
+		s.govProposalCounter++
+		s.T().Logf("Writing proposal %d on chain %s", s.govProposalCounter, s.chainA.id)
 		s.writeGovUpgradeSoftwareProposal(s.chainA, proposalHeight)
 
 		s.T().Logf("Submitting Gov Proposal: Software Upgrade")
-		s.submitNewGovProposal(chainAAPIEndpoint, sender, s.proposalCounter, configFile(proposal3))
+		s.submitNewGovProposal(chainAAPIEndpoint, sender, s.govProposalCounter, configFile(proposal3))
 		s.T().Logf("Depositing Gov Proposal: Software Upgrade")
-		s.depositGovProposal(chainAAPIEndpoint, sender, standardFees.String(), s.proposalCounter)
+		s.depositGovProposal(chainAAPIEndpoint, sender, standardFees.String(), s.govProposalCounter)
 		s.T().Logf("Weighted Voting Gov Proposal: Software Upgrade")
-		s.voteGovProposal(chainAAPIEndpoint, sender, standardFees.String(), s.proposalCounter, "yes=0.8,no=0.1,abstain=0.05,no_with_veto=0.05", true)
+		s.voteGovProposal(chainAAPIEndpoint, sender, standardFees.String(), s.govProposalCounter, "yes=0.8,no=0.1,abstain=0.05,no_with_veto=0.05", true)
 
 		s.verifyChainHaltedAtUpgradeHeight(s.chainA, 0, proposalHeight)
 		s.T().Logf("Successfully halted chain at  height %d", proposalHeight)
@@ -107,7 +107,7 @@ func (s *IntegrationTestSuite) GovSoftwareUpgrade() {
 			30*time.Second,
 			5*time.Second,
 		)
-		s.proposalCounter = 0
+		s.govProposalCounter = 0
 	})
 }
 
@@ -126,26 +126,26 @@ func (s *IntegrationTestSuite) GovCancelSoftwareUpgrade() {
 		sender := senderAddress.String()
 		height := s.getLatestBlockHeight(s.chainA, 0)
 		proposalHeight := height + 50
-		// Gov tests may be run in arbitrary order, each test must increment proposalCounter to have the correct proposal id to submit and query
-		s.proposalCounter++
+		// Gov tests may be run in arbitrary order, each test must increment govProposalCounter to have the correct proposal id to submit and query
+		s.govProposalCounter++
 
-		s.T().Logf("Writing proposal %d on chain %s", s.proposalCounter, s.chainA.id)
+		s.T().Logf("Writing proposal %d on chain %s", s.govProposalCounter, s.chainA.id)
 		s.writeGovUpgradeSoftwareProposal(s.chainA, proposalHeight)
 
 		s.T().Logf("Submitting Gov Proposal: Software Upgrade")
-		s.submitNewGovProposal(chainAAPIEndpoint, sender, s.proposalCounter, configFile(proposal3))
-		s.depositGovProposal(chainAAPIEndpoint, sender, standardFees.String(), s.proposalCounter)
-		s.voteGovProposal(chainAAPIEndpoint, sender, standardFees.String(), s.proposalCounter, "yes", false)
+		s.submitNewGovProposal(chainAAPIEndpoint, sender, s.govProposalCounter, configFile(proposal3))
+		s.depositGovProposal(chainAAPIEndpoint, sender, standardFees.String(), s.govProposalCounter)
+		s.voteGovProposal(chainAAPIEndpoint, sender, standardFees.String(), s.govProposalCounter, "yes", false)
 
-		s.proposalCounter++
+		s.govProposalCounter++
 
-		s.T().Logf("Writing proposal %d on chain %s", s.proposalCounter, s.chainA.id)
+		s.T().Logf("Writing proposal %d on chain %s", s.govProposalCounter, s.chainA.id)
 		s.writeGovCancelUpgradeSoftwareProposal(s.chainA)
 
 		s.T().Logf("Submitting Gov Proposal: Cancel Software Upgrade")
-		s.submitNewGovProposal(chainAAPIEndpoint, sender, s.proposalCounter, configFile(proposal4))
-		s.depositGovProposal(chainAAPIEndpoint, sender, standardFees.String(), s.proposalCounter)
-		s.voteGovProposal(chainAAPIEndpoint, sender, standardFees.String(), s.proposalCounter, "yes", false)
+		s.submitNewGovProposal(chainAAPIEndpoint, sender, s.govProposalCounter, configFile(proposal4))
+		s.depositGovProposal(chainAAPIEndpoint, sender, standardFees.String(), s.govProposalCounter)
+		s.voteGovProposal(chainAAPIEndpoint, sender, standardFees.String(), s.govProposalCounter, "yes", false)
 
 		s.verifyChainPassesUpgradeHeight(s.chainA, 0, proposalHeight)
 		s.T().Logf("Successfully canceled upgrade at height %d", proposalHeight)

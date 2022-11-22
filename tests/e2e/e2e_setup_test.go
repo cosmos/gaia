@@ -99,14 +99,15 @@ var (
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	tmpDirs         []string
-	chainA          *chain
-	chainB          *chain
-	dkrPool         *dockertest.Pool
-	dkrNet          *dockertest.Network
-	hermesResource  *dockertest.Resource
-	valResources    map[string][]*dockertest.Resource
-	proposalCounter int
+	tmpDirs              []string
+	chainA               *chain
+	chainB               *chain
+	dkrPool              *dockertest.Pool
+	dkrNet               *dockertest.Network
+	hermesResource       *dockertest.Resource
+	valResources         map[string][]*dockertest.Resource
+	govProposalCounter   int
+	groupProposalCounter int
 }
 
 type AddressResponse struct {

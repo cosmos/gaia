@@ -98,8 +98,8 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 
 			// prepare gov globalfee proposal
 			emptyGlobalFee := sdk.DecCoins{}
-			s.proposalCounter++
-			s.govProposeNewGlobalfee(emptyGlobalFee, s.proposalCounter, submitter, standardFees.String())
+			s.govProposalCounter++
+			s.govProposeNewGlobalfee(emptyGlobalFee, s.govProposalCounter, submitter, standardFees.String())
 			paidFeeAmt := math.LegacyMustNewDecFromStr(minGasPrice).Mul(math.LegacyNewDec(gas)).String()
 
 			s.T().Logf("test case: empty global fee, globalfee=%s, min_gas_price=%s", emptyGlobalFee.String(), minGasPrice+uatomDenom)
@@ -152,8 +152,8 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 
 			// prepare gov globalfee proposal
 			lowGlobalFee := sdk.DecCoins{sdk.NewDecCoinFromDec(uatomDenom, sdk.MustNewDecFromStr(lowGlobalFeesAmt))}
-			s.proposalCounter++
-			s.govProposeNewGlobalfee(lowGlobalFee, s.proposalCounter, submitter, standardFees.String())
+			s.govProposalCounter++
+			s.govProposeNewGlobalfee(lowGlobalFee, s.govProposalCounter, submitter, standardFees.String())
 
 			paidFeeAmt = math.LegacyMustNewDecFromStr(minGasPrice).Mul(math.LegacyNewDec(gas)).String()
 			paidFeeAmtLowMinGasHighGlobalFee := math.LegacyMustNewDecFromStr(lowGlobalFeesAmt).
@@ -204,8 +204,8 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 
 			// prepare gov globalfee proposal
 			highGlobalFee := sdk.DecCoins{sdk.NewDecCoinFromDec(uatomDenom, sdk.MustNewDecFromStr(highGlobalFeeAmt))}
-			s.proposalCounter++
-			s.govProposeNewGlobalfee(highGlobalFee, s.proposalCounter, submitter, paidFeeAmt+uatomDenom)
+			s.govProposalCounter++
+			s.govProposeNewGlobalfee(highGlobalFee, s.govProposalCounter, submitter, paidFeeAmt+uatomDenom)
 
 			paidFeeAmt = math.LegacyMustNewDecFromStr(highGlobalFeeAmt).Mul(math.LegacyNewDec(gas)).String()
 			paidFeeAmtHigherMinGasLowerGalobalFee := math.LegacyMustNewDecFromStr(minGasPrice).
@@ -240,8 +240,8 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 				sdk.NewDecCoinFromDec(photonDenom, sdk.NewDec(0)),
 				sdk.NewDecCoinFromDec(uatomDenom, sdk.MustNewDecFromStr(lowGlobalFeesAmt)),
 			}.Sort()
-			s.proposalCounter++
-			s.govProposeNewGlobalfee(mixGlobalFee, s.proposalCounter, submitter, paidFeeAmt+uatomDenom)
+			s.govProposalCounter++
+			s.govProposeNewGlobalfee(mixGlobalFee, s.govProposalCounter, submitter, paidFeeAmt+uatomDenom)
 
 			// equal to min_gas_price
 			paidFeeAmt = math.LegacyMustNewDecFromStr(minGasPrice).Mul(math.LegacyNewDec(gas)).String()
@@ -346,8 +346,8 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 		s.T().Logf("Propose to change back to original global fees: %s", initialGlobalFeeAmt+uatomDenom)
 		oldfees, err := sdk.ParseDecCoins(initialGlobalFeeAmt + uatomDenom)
 		s.Require().NoError(err)
-		s.proposalCounter++
-		s.govProposeNewGlobalfee(oldfees, s.proposalCounter, submitter, paidFeeAmt+photonDenom)
+		s.govProposalCounter++
+		s.govProposeNewGlobalfee(oldfees, s.govProposalCounter, submitter, paidFeeAmt+photonDenom)
 	})
 }
 
@@ -400,6 +400,7 @@ func (s *IntegrationTestSuite) TestGroups() {
 	s.setupGroupsSuite()
 	s.testGroupsSendMsg()
 	s.testGroupICAProposal()
+	s.groupProposalCounter = 0
 }
 
 func (s *IntegrationTestSuite) TestVesting() {

@@ -109,3 +109,48 @@ jobs:
         run: |
           ./contrib/scripts/test_localnet_liveness.sh 100 5 50 localhost
         if: env.GIT_DIFF
+
+  upgrade-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v3.1.0
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.18
+      - uses: technote-space/get-diff-action@v6.0.1
+        with:
+          PATTERNS: |
+            **/**.go
+            go.mod
+            go.sum
+      - name: Install GaiaV7
+        run: |
+          git checkout v7.1.0
+          make build
+          cp ./build/gaiad ./build/gaiad7
+        if: env.GIT_DIFF
+      - name: Install GaiaV8
+        run: |
+          git checkout -
+          make build
+          cp ./build/gaiad ./build/gaiad8
+        if: env.GIT_DIFF
+      - name: Install Cosmovisor
+        run: |
+          go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.0.0
+        if: env.GIT_DIFF
+      - name: Start GaiaV7
+        run: |
+          ./contrib/scripts/run-gaia-v7.sh > v7.out 2>&1 &
+        if: env.GIT_DIFF
+      - name: Submit Upgrade Commands
+        run: |
+          ./contrib/scripts/run-upgrade-commands.sh 15
+        if: env.GIT_DIFF
+      - name: Check for successful upgrade
+        run: |
+          ./contrib/scripts/test_upgrade.sh 20 5 16 localhost
+        if: env.GIT_DIFF

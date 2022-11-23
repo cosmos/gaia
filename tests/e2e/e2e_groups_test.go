@@ -108,7 +108,7 @@ func (s *IntegrationTestSuite) testGroupsSendMsg() {
 
 		s.Require().Eventually(
 			func() bool {
-				proposalRes, err := queryGroupProposal(chainAAPIEndpoint, groupDefaultID)
+				proposalRes, err := queryGroupProposal(chainAAPIEndpoint, s.groupProposalCounter)
 				s.Require().NoError(err)
 
 				return proposalRes.Proposal.Status == group.PROPOSAL_STATUS_ACCEPTED
@@ -234,7 +234,7 @@ func (s *IntegrationTestSuite) creatICAGroupProposal(c *chain) string {
 
 	s.Require().Eventually(
 		func() bool {
-			proposalRes, err := queryGroupProposal(chainAPI, groupDefaultID)
+			proposalRes, err := queryGroupProposal(chainAPI, s.groupProposalCounter)
 			s.Require().NoError(err)
 
 			return proposalRes.Proposal.Status == group.PROPOSAL_STATUS_ACCEPTED
@@ -246,7 +246,7 @@ func (s *IntegrationTestSuite) creatICAGroupProposal(c *chain) string {
 
 	s.T().Logf("Executing Group ICA Proposal")
 	s.executeExecGroupProposal(c, 1, s.groupProposalCounter, aliceAddr)
-	
+
 	return policy.Address
 }
 

@@ -209,9 +209,9 @@ func queryGroupPolicies(endpoint string, groupId int) (group.QueryGroupPoliciesB
 	return res, nil
 }
 
-func queryGroupProposal(endpoint string, groupId int) (group.QueryProposalResponse, error) {
+func queryGroupProposal(endpoint string, proposalID int) (group.QueryProposalResponse, error) {
 	var res group.QueryProposalResponse
-	path := fmt.Sprintf("%s/cosmos/group/v1/proposal/%d", endpoint, groupId)
+	path := fmt.Sprintf("%s/cosmos/group/v1/proposal/%d", endpoint, proposalID)
 
 	body, err := httpGet(path)
 	if err != nil {

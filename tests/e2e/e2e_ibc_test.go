@@ -431,19 +431,14 @@ func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
 
-		var (
-			beforeSenderUAtomBalance sdk.Coin
-			beforeMiddleIBCBalance   sdk.Coin
-		)
-
+		var beforeSenderUAtomBalance sdk.Coin
 		s.Require().Eventually(
 			func() bool {
 				beforeSenderUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
 				s.Require().NoError(err)
 
-				beforeMiddleIBCBalance, err = getSpecificBalance(chainBAPIEndpoint, middlehop, "ibc/")
-				s.Require().True(beforeMiddleIBCBalance.IsNil())
-				s.Require().NoError(err)
+				_, err = getSpecificBalance(chainBAPIEndpoint, middlehop, "ibc/")
+				s.Require().Error(err)
 
 				return beforeSenderUAtomBalance.IsValid()
 			},

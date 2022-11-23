@@ -140,7 +140,7 @@ func (s *IntegrationTestSuite) sendIBC(c *chain, valIdx int, sender, recipient, 
 		"ibc-transfer",
 		"transfer",
 		icaPortID,
-		icaChannelID,
+		ibcTransferChannelID,
 		recipient,
 		token,
 		fmt.Sprintf("--from=%s", sender),
@@ -366,7 +366,7 @@ func (s *IntegrationTestSuite) TestMultihopIBCTokenTransfer() {
 		firstHopMetadata := &PacketMetadata{
 			Forward: &ForwardMetadata{
 				Receiver: recipient,
-				Channel:  icaChannelID,
+				Channel:  ibcTransferChannelID,
 				Port:     icaPortID,
 				Next:     nil,
 			},
@@ -455,7 +455,7 @@ func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
 		firstHopMetadata := &PacketMetadata{
 			Forward: &ForwardMetadata{
 				Receiver: recipient,
-				Channel:  icaChannelID,
+				Channel:  ibcTransferChannelID,
 				Port:     icaPortID,
 				Next:     nil,
 			},

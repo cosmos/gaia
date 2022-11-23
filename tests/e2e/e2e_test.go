@@ -18,8 +18,6 @@ func (s *IntegrationTestSuite) TestGov() {
 
 // globalfee in genesis is set to be "0.00001uatom"
 func (s *IntegrationTestSuite) TestQueryGlobalFeesInGenesis() {
-	// TODO: Fix and add back this test
-	s.T().Skip()
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	feeInGenesis, err := sdk.ParseDecCoins(initialGlobalFeeAmt + uatomDenom)
 	s.Require().NoError(err)
@@ -66,9 +64,7 @@ test4: gov propose globalfee =  0.000001uatom (lower than min_gas_price), 0photo
 test5: check balance correct: all the successful bank sent tokens are received
 test6: gov propose change back to initial globalfee = 0.00001photon, This is for not influence other e2e tests.
 */
-// TODO: add back global fee tests
 func (s *IntegrationTestSuite) TestGlobalFees() {
-	s.T().Skip()
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
 	submitterAddr := s.chainA.validators[0].keyInfo.GetAddress()

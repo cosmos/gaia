@@ -300,7 +300,7 @@ func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
 		for _, c := range balances {
 			if strings.Contains(c.Denom, "ibc/") {
 				ibcStakeDenom = c.Denom
-				s.Require().Equal((int64(tokenAmt) + beforeBalance), c.Amount.Int64())
+				s.Require().Equal(int64(tokenAmt)+beforeBalance, c.Amount.Int64())
 				break
 			}
 		}
@@ -409,10 +409,9 @@ Steps:
 5. Check Balance of Account 1 on Chain 2, confirm it is original plus x tokens
 */
 func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
-
 	time.Sleep(30 * time.Second)
 
-	s.Run("send_failed_multihop_uatom_to_chainA_from_chainA", func() {
+	s.Run("send failed multihop uatom to chainA from chainA", func() {
 		// require the recipient account receives the IBC tokens (IBC packets ACKd)
 
 		address, err := s.chainA.validators[0].keyInfo.GetAddress()

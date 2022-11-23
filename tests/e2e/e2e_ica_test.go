@@ -127,7 +127,7 @@ func (s *IntegrationTestSuite) icaBankSend() {
 			"ibc-transfer",
 			"transfer",
 			"transfer",
-			icaChannelID,
+			ibcTransferChannelID,
 			icaOwner,
 			sendIBCamt.String() + uatomDenom,
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, ica),

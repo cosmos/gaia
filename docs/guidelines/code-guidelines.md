@@ -8,29 +8,6 @@ This documents idiomatic conventions in the Go code that we follow at Uber. A lo
 2. [Go Common Mistakes](https://github.com/golang/go/wiki/CommonMistakes)
 3. [Go Code Review Comments](https://github.com/golang/go/wiki/CodeReviewComments)
 
-## How to make a clean pull request
-
-Look for a project's contribution instructions and follow them:
-
-- Create a personal fork of the project on GitHub.
-- Clone the fork on your local machine. Your remote repo on Github is called `origin`.
-- Add the original repository as a remote called `upstream`.
-- If you created your fork a while ago, pull upstream changes should be into your local repository.
-- Create a new branch to work on! Start your branch from `main`.
-- Implement/fix your feature, and comment on your code.
-- Follow the code style of the project, including indentation. Use `gofmt` and `goimports` if you are unsure.
-- Run the tests
-- Write or adapt tests as needed.
-- Add or change the documentation and comments as needed.
-- Write your commit messages in the present tense. Your commit message should describe what the commit, when applied, does to the code, not what you did to the code.
-- Push your branch to your fork on GitHub, the remote `origin`.
-- Avoid push force after the review already start. The commit history should tell a narrative.
-- From your fork, open a pull request in the correct branch. Target the project's `main` branch.
-- If we request further changes, push them to your branch. The PR will be updated automatically.
-- Once the pull request is approved and merged, you can pull the changes from `upstream` to your local repo and delete your extra branch(es).
-
-Is it not uncommon for a PR to accumulate commits and merges with time. Gaia is in constant change. If your PR falls out of sync with the upstream `main`, you need to rebase. We can't reliably review code that is spread over too many other changes to the codebase.
-
 ## Run tests
 
 - Run unit tests
@@ -100,6 +77,11 @@ Try to avoid extensive methods and always test your code. All PRs should have at
             - [Specifying Slice Capacity](#specifying-slice-capacity)
     - [Function Grouping and Ordering](#function-grouping-and-ordering)
     - [Reduce Nesting](#reduce-nesting)
+    - [Writing Tests](#writing-tests)
+      - [Use Subtests](#use-subtests)
+    - [Avoid writing directly in the stdout](#avoid-writing-directly-in-the-stdout)
+    - [Avoid panic](#avoid-panic)
+    - [Handle error on the top level](#handle-error-on-the-top-level)
 
 ## Project organization
 
@@ -112,6 +94,8 @@ Try to avoid extensive methods and always test your code. All PRs should have at
 
 - /build: Packaging and Continuous Integration.
     - docker stuff
+
+- /docs: Gaia docs.
 
 - /test (tests): Additional external test apps and test data.
     - /e2e
@@ -137,7 +121,7 @@ Try to avoid extensive methods and always test your code. All PRs should have at
 - /tools: Supporting tools for this project.
     - /proto
 
-- /x: Cosmos Modules
+- /x: Cosmos Modules.
 
 
 ### Line Length
@@ -284,7 +268,8 @@ When naming packages, choose a name that is:
 - Does not need to be renamed using named imports at most call sites.
 - Short and succinct. Remember that the name is identified in full at every call site.
 - Not plural. For example, `net/url`, not `net/urls`.
-- Not "common", "util", "shared", or "lib". These are bad, uninformative names.
+- Not `common`, `util`, `shared`, or `lib`. These are bad, uninformative names.
+- To distinguish SDK and Gaia with the same package name, add SDK or Gaia or the module name as the prefix. E.g.: `sdk/types`, `gaia/types` and `gaia/x/globalfee/types`, can use `sdktype`, `gaiatype`, `globalfeetype`.
 
 See also [Package Names] and [Style guideline for Go packages].
 
@@ -907,93 +892,6 @@ Considering the above, some situations in which `init()` may be preferable or ne
 
   [Google Cloud Functions]: https://cloud.google.com/functions/docs/bestpractices/tips#use_global_variables_to_reuse_objects_in_future_invocations
 
-
-### Function Grouping and Ordering
-
-- Functions should be sorted in rough call order.
-- The receiver should group functions in a file.
-
-Therefore, exported functions should appear first in a file, after `struct`, `const`, and `var` definitions.
-
-A `newXYZ()`/`NewXYZ()` may appear after the type is defined but before the rest of the methods on the receiver.
-
-Since the receiver groups functions, plain utility functions should appear toward the end of the file.
-
-- Bad
-
-```go
-func (s *something) Cost() {
-  return calcCost(s.weights)
-}
-
-type something struct{ ... }
-
-func calcCost(n []int) int {...}
-
-func (s *something) Stop() {...}
-
-func newSomething() *something {
-    return &something{}
-}
-```
-
-- Good
-
-```go
-type something struct{ ... }
-
-func newSomething() *something {
-    return &something{}
-}
-
-func (s *something) Cost() {
-  return calcCost(s.weights)
-}
-
-func (s *something) Stop() {...}
-
-func calcCost(n []int) int {...}
-```
-
-
-### Reduce Nesting
-
-Code should reduce nesting where possible by handling error cases/special conditions first and returning early or continuing the loop. Reduce the amount of code that is nested on multiple levels.
-
-- Bad
-
-```go
-for _, v := range data {
-  if v.F1 == 1 {
-    v = process(v)
-    if err := v.Call(); err == nil {
-      v.Send()
-    } else {
-      return err
-    }
-  } else {
-    log.Printf("Invalid v: %v", v)
-  }
-}
-```
-
-- Good
-
-```go
-for _, v := range data {
-  if v.F1 != 1 {
-    log.Printf("Invalid v: %v", v)
-    continue
-  }
-
-  v = process(v)
-  if err := v.Call(); err != nil {
-    return err
-  }
-  v.Send()
-}
-```
-
 ## Performance
 
 Performance-specific guidelines apply only to the hot path.
@@ -1025,6 +923,8 @@ for i := 0; i < b.N; i++ {
 ```
 BenchmarkStrconv-4    64.2 ns/op    1 allocs/op
 ```
+
+**avoid use "+" for string concatenation**
 
 #### Avoid string-to-byte conversion
 
@@ -1138,4 +1038,217 @@ for n := 0; n < b.N; n++ {
 ```
 BenchmarkGood-4   100000000    0.21s
 ```
+
+### Function Grouping and Ordering
+
+- Functions should be sorted in rough call order.
+- The receiver should group functions in a file.
+
+Therefore, exported functions should appear first in a file, after `struct`, `const`, and `var` definitions.
+
+A `newXYZ()`/`NewXYZ()` may appear after the type is defined but before the rest of the methods on the receiver.
+
+Since the receiver groups functions, plain utility functions should appear toward the end of the file.
+
+- Bad
+
+```go
+func (s *something) Cost() {
+  return calcCost(s.weights)
+}
+
+type something struct{ ... }
+
+func calcCost(n []int) int {...}
+
+func (s *something) Stop() {...}
+
+func newSomething() *something {
+    return &something{}
+}
+```
+
+- Good
+
+```go
+type something struct{ ... }
+
+func newSomething() *something {
+    return &something{}
+}
+
+func (s *something) Cost() {
+  return calcCost(s.weights)
+}
+
+func (s *something) Stop() {...}
+
+func calcCost(n []int) int {...}
+```
+
+### Reduce Nesting
+
+Code should reduce nesting where possible by handling error cases/special conditions first and returning early or continuing the loop. Reduce the amount of code that is nested on multiple levels.
+
+- Bad
+
+```go
+for _, v := range data {
+  if v.F1 == 1 {
+    v = process(v)
+    if err := v.Call(); err == nil {
+      v.Send()
+    } else {
+      return err
+    }
+  } else {
+    log.Printf("Invalid v: %v", v)
+  }
+}
+```
+
+- Good
+
+```go
+for _, v := range data {
+  if v.F1 != 1 {
+    log.Printf("Invalid v: %v", v)
+    continue
+  }
+
+  v = process(v)
+  if err := v.Call(); err != nil {
+    return err
+  }
+  v.Send()
+}
+```
+
+### Writing Tests
+
+Use table-driven tests with [subtests] to avoid duplicating code when the core
+test logic is repetitive.
+
+[subtests]: https://blog.golang.org/subtests
+
+- Bad:
+
+```go
+// func TestSplitHostPort(t *testing.T)
+
+host, port, err := net.SplitHostPort("192.0.2.0:8000")
+require.NoError(t, err)
+assert.Equal(t, "192.0.2.0", host)
+assert.Equal(t, "8000", port)
+
+host, port, err = net.SplitHostPort("192.0.2.0:http")
+require.NoError(t, err)
+assert.Equal(t, "192.0.2.0", host)
+assert.Equal(t, "http", port)
+
+host, port, err = net.SplitHostPort(":8000")
+require.NoError(t, err)
+assert.Equal(t, "", host)
+assert.Equal(t, "8000", port)
+
+host, port, err = net.SplitHostPort("1:8")
+require.NoError(t, err)
+assert.Equal(t, "1", host)
+assert.Equal(t, "8", port)
+```
+
+- Good:
+
+```go
+// func TestSplitHostPort(t *testing.T)
+
+tests := []struct{
+  give     string
+  wantHost string
+  wantPort string
+}{
+  {
+    give:     "192.0.2.0:8000",
+    wantHost: "192.0.2.0",
+    wantPort: "8000",
+  },
+  {
+    give:     "192.0.2.0:http",
+    wantHost: "192.0.2.0",
+    wantPort: "http",
+  },
+  {
+    give:     ":8000",
+    wantHost: "",
+    wantPort: "8000",
+  },
+  {
+    give:     "1:8",
+    wantHost: "1",
+    wantPort: "8",
+  },
+}
+
+for _, tt := range tests {
+  t.Run(tt.give, func(t *testing.T) {
+    host, port, err := net.SplitHostPort(tt.give)
+    require.NoError(t, err)
+    assert.Equal(t, tt.wantHost, host)
+    assert.Equal(t, tt.wantPort, port)
+  })
+}
+```
+
+Test tables make it easier to add context to error messages, reduce duplicate logic, and add new test cases.
+
+We follow the convention that the slice of structs is referred to as `tests` and each test case `tt`. Further, we encourage explicating the input and output  values for each test case with `give` and `want` prefixes.
+
+```go
+tests := []struct{
+  give     string
+  wantHost string
+  wantPort string
+}{
+  // ...
+}
+
+for _, tt := range tests {
+  // ...
+}
+```
+
+Parallel tests, like some specialized loops (for example, those that spawn goroutines or capture references as part of the loop body), must take care to explicitly assign loop variables within the loop's scope to ensure that they hold the expected values.
+
+```go
+tests := []struct{
+  give string
+  // ...
+}{
+  // ...
+}
+
+for _, tt := range tests {
+  tt := tt // for t.Parallel
+  t.Run(tt.give, func(t *testing.T) {
+    t.Parallel()
+    // ...
+  })
+}
+```
+
+In the example above, we must declare a `tt` variable scoped to the loop iteration because of the use of `t.Parallel()` below. If we do not do that, most or all tests will receive an unexpected value for `tt` or a value that changes as they run.
+
+#### Use Subtests
+
+Always use subtest beside you are using or not table drive tests. This can reduce the scope of the tests and be more transparent and easy to maintain. Each small case of the tests should be a new subtest.
+
+### Avoid writing directly in the stdout
+
+Avoid writing logs directly to the stdout or stderr. Use a proper log package for it.
+It's also easier to maintain. We don't need to find all prints and change the code if we need to change.
+
+### Avoid panic
+
+Avoid panic in simple and small methods; all errors should be handled on the top level and application, and we can decide if we will panic or not.
+We can also create a proper panic recovery to close all states, open connection from the application, and graceful exit without breaking anything. 
 

@@ -92,7 +92,7 @@ include contrib/devtools/Makefile
 ###                              Documentation                              ###
 ###############################################################################
 
-all: install lint run-tests test-e2e
+all: install lint run-tests test-e2e vulncheck
 
 BUILD_TARGETS := build install
 
@@ -103,6 +103,10 @@ $(BUILD_TARGETS): go.sum $(BUILDDIR)/
 
 $(BUILDDIR)/:
 	mkdir -p $(BUILDDIR)/
+
+vulncheck: $(BUILDDIR)/
+	GOBIN=$(BUILDDIR) go install golang.org/x/vuln/cmd/govulncheck@latest
+	$(BUILDDIR)/govulncheck ./...
 
 build-reproducible: go.sum
 	$(DOCKER) rm latest-build || true

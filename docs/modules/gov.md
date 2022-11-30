@@ -22,7 +22,6 @@ The **[Cosmos Hub Forum](https://forum.cosmos.network/)** is the main discussion
 
 #### Submission Updates
 
-Additionally the new gov module now accommodates proposals with multiple arbitrary message execution. For `v0.46` of the Cosmos SDK, only `MsgSend`, `MsgSoftwareUpgrade`, and `MsgCancelUpgrade` are supported by executing `submit-proposal`. Signaling proposals can also be submitted with the new api by leaving the messages field empty and populating the metadata field with the corresponding proposal text. The remaining proposal types must use `submit-proposal` until more message types are supported.
 
 This means that a single proposal could execute multiple bank send messages, or both a software upgrade and bank send message.
 

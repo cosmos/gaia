@@ -3,8 +3,9 @@ module github.com/cosmos/gaia/v8
 go 1.18
 
 require (
-	github.com/cosmos/cosmos-sdk v0.45.11
+	github.com/cosmos/cosmos-sdk v0.45.10
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
+	github.com/cosmos/iavl v0.19.3 // indirect
 	github.com/cosmos/ibc-go/v3 v3.4.0
 	github.com/cosmos/interchain-security v0.2.1
 	github.com/gogo/protobuf v1.3.3
@@ -21,7 +22,7 @@ require (
 	github.com/spf13/viper v1.14.0 // indirect
 	github.com/strangelove-ventures/packet-forward-middleware/v3 v3.0.0
 	github.com/stretchr/testify v1.8.1
-	github.com/tendermint/tendermint v0.34.23
+	github.com/tendermint/tendermint v0.34.22
 	github.com/tendermint/tm-db v0.6.7
 	google.golang.org/genproto v0.0.0-20221024183307-1bc688fe9f3e
 	google.golang.org/grpc v1.50.1
@@ -65,7 +66,6 @@ require (
 	github.com/confio/ics23/go v0.7.0 // indirect
 	github.com/cosmos/btcutil v1.0.4 // indirect
 	github.com/cosmos/gorocksdb v1.2.0 // indirect
-	github.com/cosmos/iavl v0.19.4 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.11.1 // indirect
 	github.com/cosmos/ledger-go v0.9.3 // indirect
 	github.com/creachadair/taskgroup v0.3.2 // indirect
@@ -261,8 +261,11 @@ require (
 )
 
 replace (
-	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.9
-	github.com/cosmos/ibc-go/v3 => github.com/cosmos/ibc-go/v3 v3.4.0
+	// github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.9
+	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.7-0.20221104161803-456ca5663c5e
+	github.com/cosmos/iavl => github.com/cosmos/iavl v0.17.3
+	github.com/cosmos/ibc-go/v3 => github.com/informalsystems/ibc-go/v3 v3.0.0-beta1.0.20220816140824-aba9c2f2b943
+	// github.com/cosmos/ibc-go/v3 => github.com/cosmos/ibc-go/v3 v3.4.0
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	github.com/zondax/hid => github.com/zondax/hid v0.9.0
 )

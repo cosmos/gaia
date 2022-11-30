@@ -15,19 +15,17 @@ import (
 // TestICARegister must run before any other
 func (s *IntegrationTestSuite) icaRegister() {
 	s.Run("register_ICA", func() {
-		connectionID := "connection-0"
-		var owner string
 		ownerAddr, err := s.chainA.genesisAccounts[icaOwnerAccountIndex].keyInfo.GetAddress()
 		s.Require().NoError(err)
-		owner = ownerAddr.String()
-		s.registerICA(owner, connectionID)
+		owner := ownerAddr.String()
+		s.registerICA(owner, icaConnectionID)
 
 		time.Sleep(2 * time.Minute)
 
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 		s.Require().Eventually(
 			func() bool {
-				icaAddr, err := queryICAaddr(chainAAPIEndpoint, owner, connectionID)
+				icaAddr, err := queryICAAddress(chainAAPIEndpoint, owner, icaConnectionID)
 				s.T().Logf("%s's interchain account on chain %s: %s", owner, s.chainB.id, icaAddr)
 				s.Require().NoError(err)
 				return owner != "" && icaAddr != ""
@@ -42,7 +40,7 @@ func (s *IntegrationTestSuite) icaBankSend() {
 	s.Run("test ica transactions", func() {
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
-		connectionID := "connection-0"
+
 		// step 1: get ica addr
 		icaOwnerAddr, err := s.chainA.genesisAccounts[icaOwnerAccountIndex].keyInfo.GetAddress()
 		s.Require().NoError(err)
@@ -51,7 +49,7 @@ func (s *IntegrationTestSuite) icaBankSend() {
 		var ica string
 		s.Require().Eventually(
 			func() bool {
-				ica, err = queryICAaddr(chainAAPIEndpoint, icaOwner, connectionID)
+				ica, err = queryICAAddress(chainAAPIEndpoint, icaOwner, icaConnectionID)
 				s.Require().NoError(err)
 
 				return err == nil && ica != ""
@@ -69,9 +67,9 @@ func (s *IntegrationTestSuite) icaBankSend() {
 
 		s.Require().Eventually(
 			func() bool {
-				afterSenderICAbalance, err := getSpecificBalance(chainBAPIEndpoint, ica, uatomDenom)
+				afterSenderICABalance, err := getSpecificBalance(chainBAPIEndpoint, ica, uatomDenom)
 				s.Require().NoError(err)
-				return afterSenderICAbalance.IsEqual(tokenAmount)
+				return afterSenderICABalance.IsEqual(tokenAmount)
 			},
 			time.Minute,
 			5*time.Second,
@@ -104,11 +102,11 @@ func (s *IntegrationTestSuite) icaBankSend() {
 			fmt.Sprintf("--%s=%s", flags.FlagChainID, s.chainA.id),
 			"--keyring-backend=test",
 		}
-		path := filepath.Join(s.chainA.validators[0].configDir(), "config", "ica_bank_send.json")
+		path := filepath.Join(s.chainA.validators[0].configDir(), "config", icaIBCSend)
 		s.writeICAtx(txCmd, path)
 
 		// step 4: ica sends some tokens from ica to val on chain b
-		s.submitICAtx(icaOwner, connectionID, configFile("ica_bank_send.json"))
+		s.submitICAtx(icaOwner, icaConnectionID, configFile(icaIBCSend))
 
 		s.Require().Eventually(
 			func() bool {
@@ -122,7 +120,6 @@ func (s *IntegrationTestSuite) icaBankSend() {
 		)
 
 		// repeat step3: prepare ica ibc send
-		channel := "channel-0"
 		sendIBCamt := math.NewInt(10)
 		icaIBCsendCmd := []string{
 			gaiadBinary,
@@ -130,7 +127,7 @@ func (s *IntegrationTestSuite) icaBankSend() {
 			"ibc-transfer",
 			"transfer",
 			"transfer",
-			channel,
+			ibcTransferChannelID,
 			icaOwner,
 			sendIBCamt.String() + uatomDenom,
 			fmt.Sprintf("--%s=%s", flags.FlagFrom, ica),
@@ -138,10 +135,10 @@ func (s *IntegrationTestSuite) icaBankSend() {
 			"--keyring-backend=test",
 		}
 
-		path = filepath.Join(s.chainA.validators[0].configDir(), "config", "ica_ibc_send.json")
+		path = filepath.Join(s.chainA.validators[0].configDir(), "config", icaIBCSend)
 		s.writeICAtx(icaIBCsendCmd, path)
 
-		s.submitICAtx(icaOwner, connectionID, configFile("ica_ibc_send.json"))
+		s.submitICAtx(icaOwner, icaConnectionID, configFile(icaIBCSend))
 
 		var balances sdk.Coins
 		s.Require().Eventually(

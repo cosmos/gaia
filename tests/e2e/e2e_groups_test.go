@@ -10,43 +10,42 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/group"
+
+	icamauthtypes "github.com/cosmos/gaia/v8/x/icamauth/types"
 )
 
 var (
-	adminAddr                string
-	aliceAddr                string
-	bobAddr                  string
-	charlieAddr              string
-	groupId                  = 1
-	proposalId               = 1
+	// TODO remove those global vars
+	adminAddr   string
+	aliceAddr   string
+	bobAddr     string
+	charlieAddr string
+)
+
+var (
+	sendAmount = sdk.NewInt64Coin(uatomDenom, 5000000)
+)
+
+const (
+	groupDefaultID = iota + 1
+	groupICAID
+)
+
+const (
 	originalMembersFilename  = "members1.json"
 	addMemberFilename        = "members2.json"
 	removeMemberFilename     = "members3.json"
 	thresholdPolicyFilename  = "policy1.json"
 	percentagePolicyFilename = "policy2.json"
+	ICAGroupMetadata         = "ICA Group"
+	ICAGroupPolicyMetadata   = "ICA Group Policy"
 	thresholdPolicyMetadata  = "Policy 1"
 	percentagePolicyMetadata = "Policy 2"
 	proposalMsgSendPath      = "proposal1.json"
-	sendAmount               = sdk.NewInt64Coin(uatomDenom, 5000000)
-
-	windows = &group.DecisionPolicyWindows{
-		MinExecutionPeriod: 0 * time.Second,
-		VotingPeriod:       30 * time.Second,
-	}
-
-	thresholdPolicy = &group.ThresholdDecisionPolicy{
-		Threshold: "1",
-		Windows:   windows,
-	}
-
-	percentagePolicy = &group.PercentageDecisionPolicy{
-		Percentage: "0.5",
-		Windows:    windows,
-	}
 )
 
 /*
-GroupsSendMsgTest tests group lifecycle, policy creation, and proposal submission.
+testGroupsSendMsg tests group lifecycle, policy creation, and proposal submission.
 Test Benchmarks:
 1. Create group with 3 members, including the administrator
 2. Update group members to add a new member
@@ -62,94 +61,95 @@ Test Benchmarks:
 12. Validate proposal has passed by verifying Bob's balance has increased by expected amount
 13. Create percentage decision policy (percentage = 0.5, percentage of voting power required to pass a proposal)
 14. Query and validate policy successfully created
-15. Submit and vote NO with insufficient perfentage on a group proposal on behalf of the percentage decision policy to send tokens to bob
+15. Submit and vote NO with insufficient percentage on a group proposal on behalf of the percentage decision policy to send tokens to bob
 16. Validate that the proposal status is PROPOSAL_STATUS_REJECTED
 */
-func (s *IntegrationTestSuite) GroupsSendMsgTest() {
-	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-	s.setupGroupsSuite()
+func (s *IntegrationTestSuite) testGroupsSendMsg() {
+	s.Run("send group message", func() {
+		s.groupProposalCounter++
+		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
-	s.T().Logf("Creating Group")
-	s.execCreateGroup(s.chainA, 0, adminAddr, "Cosmos Hub Group", filepath.Join(gaiaConfigPath, originalMembersFilename), standardFees.String())
-	membersRes, err := queryGroupMembers(chainAAPIEndpoint, 1)
-	s.Require().NoError(err)
-	s.Assert().Equal(len(membersRes.Members), 3)
+		s.T().Logf("Creating Group")
+		s.execCreateGroup(s.chainA, 0, adminAddr, "Cosmos Hub Group", filepath.Join(gaiaConfigPath, originalMembersFilename), standardFees.String())
+		membersRes, err := queryGroupMembers(chainAAPIEndpoint, groupDefaultID)
+		s.Require().NoError(err)
+		s.Assert().Equal(len(membersRes.Members), 3)
 
-	s.T().Logf("Adding New Group Member")
-	s.execUpdateGroupMembers(s.chainA, 0, adminAddr, strconv.Itoa(groupId), filepath.Join(gaiaConfigPath, addMemberFilename), standardFees.String())
-	membersRes, err = queryGroupMembers(chainAAPIEndpoint, 1)
-	s.Require().NoError(err)
-	s.Assert().Equal(len(membersRes.Members), 4)
+		s.T().Logf("Adding New Group Member")
+		s.execUpdateGroupMembers(s.chainA, 0, adminAddr, strconv.Itoa(groupDefaultID), filepath.Join(gaiaConfigPath, addMemberFilename), standardFees.String())
+		membersRes, err = queryGroupMembers(chainAAPIEndpoint, groupDefaultID)
+		s.Require().NoError(err)
+		s.Assert().Equal(len(membersRes.Members), 4)
 
-	s.T().Logf("Removing New Group Member")
-	s.execUpdateGroupMembers(s.chainA, 0, adminAddr, strconv.Itoa(groupId), filepath.Join(gaiaConfigPath, removeMemberFilename), standardFees.String())
-	membersRes, err = queryGroupMembers(chainAAPIEndpoint, 1)
-	s.Require().NoError(err)
-	s.Assert().Equal(len(membersRes.Members), 3)
+		s.T().Logf("Removing New Group Member")
+		s.execUpdateGroupMembers(s.chainA, 0, adminAddr, strconv.Itoa(groupDefaultID), filepath.Join(gaiaConfigPath, removeMemberFilename), standardFees.String())
+		membersRes, err = queryGroupMembers(chainAAPIEndpoint, groupDefaultID)
+		s.Require().NoError(err)
+		s.Assert().Equal(len(membersRes.Members), 3)
 
-	s.T().Logf("Creating Group Threshold Decision Policy")
-	s.writeGroupPolicies(s.chainA, thresholdPolicyFilename, percentagePolicyFilename, thresholdPolicy, percentagePolicy)
-	s.executeCreateGroupPolicy(s.chainA, 0, adminAddr, strconv.Itoa(groupId), thresholdPolicyMetadata, filepath.Join(gaiaConfigPath, thresholdPolicyFilename), standardFees.String())
-	policies, err := queryGroupPolicies(chainAAPIEndpoint, groupId)
-	s.Require().NoError(err)
-	policy, err := getPolicy(policies.GroupPolicies, thresholdPolicyMetadata, groupId)
-	s.Require().NoError(err)
+		s.T().Logf("Creating Group Threshold Decision Policy")
+		s.executeCreateGroupPolicy(s.chainA, 0, adminAddr, strconv.Itoa(groupDefaultID), thresholdPolicyMetadata, filepath.Join(gaiaConfigPath, thresholdPolicyFilename), standardFees.String())
+		policies, err := queryGroupPolicies(chainAAPIEndpoint, groupDefaultID)
+		s.Require().NoError(err)
+		policy, err := getPolicy(policies.GroupPolicies, thresholdPolicyMetadata, groupDefaultID)
+		s.Require().NoError(err)
 
-	s.T().Logf("Funding Group Threshold Decision Policy")
-	s.execBankSend(s.chainA, 0, adminAddr, policy.Address, depositAmount.String(), standardFees.String(), false)
-	s.verifyBalanceChange(chainAAPIEndpoint, depositAmount, policy.Address)
+		s.T().Logf("Funding Group Threshold Decision Policy")
+		s.execBankSend(s.chainA, 0, adminAddr, policy.Address, depositAmount.String(), standardFees.String(), false)
+		s.verifyBalanceChange(chainAAPIEndpoint, depositAmount, policy.Address)
 
-	s.writeGroupProposal(s.chainA, policy.Address, adminAddr, sendAmount, proposalMsgSendPath)
-	s.T().Logf("Submitting Group Proposal 1: Send 5 uatom from group to Bob")
-	s.executeSubmitGroupProposal(s.chainA, 0, adminAddr, filepath.Join(gaiaConfigPath, proposalMsgSendPath))
+		s.writeGroupProposal(s.chainA, policy.Address, adminAddr, sendAmount, proposalMsgSendPath)
+		s.T().Logf("Submitting Group Proposal 1: Send 5 uatom from group to Bob")
+		s.executeSubmitGroupProposal(s.chainA, 0, adminAddr, filepath.Join(gaiaConfigPath, proposalMsgSendPath))
 
-	s.T().Logf("Voting Group Proposal 1: Send 5 uatom from group to Bob")
-	s.executeVoteGroupProposal(s.chainA, 0, strconv.Itoa(proposalId), adminAddr, group.VOTE_OPTION_YES.String(), "Admin votes yes")
-	s.executeVoteGroupProposal(s.chainA, 1, strconv.Itoa(proposalId), aliceAddr, group.VOTE_OPTION_YES.String(), "Alice votes yes")
+		s.T().Logf("Voting Group Proposal 1: Send 5 uatom from group to Bob")
+		s.executeVoteGroupProposal(s.chainA, 0, s.groupProposalCounter, adminAddr, group.VOTE_OPTION_YES.String(), "Admin votes yes")
+		s.executeVoteGroupProposal(s.chainA, 1, s.groupProposalCounter, aliceAddr, group.VOTE_OPTION_YES.String(), "Alice votes yes")
 
-	s.Require().Eventually(
-		func() bool {
-			proposalRes, err := queryGroupProposal(chainAAPIEndpoint, 1)
-			s.Require().NoError(err)
+		s.Require().Eventually(
+			func() bool {
+				proposalRes, err := queryGroupProposal(chainAAPIEndpoint, s.groupProposalCounter)
+				s.Require().NoError(err)
 
-			return proposalRes.Proposal.Status == group.PROPOSAL_STATUS_ACCEPTED
-		},
-		30*time.Second,
-		5*time.Second,
-	)
-	s.T().Logf("Group Proposal 1 Passed: Send 5 uatom from group to Bob")
+				return proposalRes.Proposal.Status == group.PROPOSAL_STATUS_ACCEPTED
+			},
+			30*time.Second,
+			5*time.Second,
+		)
+		s.T().Logf("Group Proposal 1 Passed: Send 5 uatom from group to Bob")
 
-	s.T().Logf("Executing Group Proposal 1: Send 5 uatom from group to Bob")
-	s.executeExecGroupProposal(s.chainA, 1, strconv.Itoa(proposalId), aliceAddr)
-	s.verifyBalanceChange(chainAAPIEndpoint, sendAmount, bobAddr)
+		s.T().Logf("Executing Group Proposal 1: Send 5 uatom from group to Bob")
+		s.executeExecGroupProposal(s.chainA, 1, s.groupProposalCounter, aliceAddr)
+		s.verifyBalanceChange(chainAAPIEndpoint, sendAmount, bobAddr)
 
-	proposalId++
-	s.T().Logf("Creating Group Percentage Decision Policy")
-	s.executeCreateGroupPolicy(s.chainA, 0, adminAddr, strconv.Itoa(groupId), percentagePolicyMetadata, filepath.Join(gaiaConfigPath, percentagePolicyFilename), standardFees.String())
-	policies, err = queryGroupPolicies(chainAAPIEndpoint, 1)
-	s.Require().NoError(err)
-	policy, err = getPolicy(policies.GroupPolicies, percentagePolicyMetadata, 1)
-	s.Require().NoError(err)
+		s.groupProposalCounter++
+		s.T().Logf("Creating Group Percentage Decision Policy")
+		s.executeCreateGroupPolicy(s.chainA, 0, adminAddr, strconv.Itoa(groupDefaultID), percentagePolicyMetadata, filepath.Join(gaiaConfigPath, percentagePolicyFilename), standardFees.String())
+		policies, err = queryGroupPolicies(chainAAPIEndpoint, groupDefaultID)
+		s.Require().NoError(err)
+		policy, err = getPolicy(policies.GroupPolicies, percentagePolicyMetadata, groupDefaultID)
+		s.Require().NoError(err)
 
-	s.writeGroupProposal(s.chainA, policy.Address, adminAddr, sendAmount, proposalMsgSendPath)
-	s.T().Logf("Submitting Group Proposal 2: Send 5 uatom from group to Bob")
-	s.executeSubmitGroupProposal(s.chainA, 0, adminAddr, filepath.Join(gaiaConfigPath, proposalMsgSendPath))
+		s.writeGroupProposal(s.chainA, policy.Address, adminAddr, sendAmount, proposalMsgSendPath)
+		s.T().Logf("Submitting Group Proposal 2: Send 5 uatom from group to Bob")
+		s.executeSubmitGroupProposal(s.chainA, 0, adminAddr, filepath.Join(gaiaConfigPath, proposalMsgSendPath))
 
-	s.T().Logf("Voting Group Proposal 2: Send 5 uatom from group to Bob")
-	s.executeVoteGroupProposal(s.chainA, 0, strconv.Itoa(proposalId), adminAddr, group.VOTE_OPTION_YES.String(), "Admin votes yes")
-	s.executeVoteGroupProposal(s.chainA, 1, strconv.Itoa(proposalId), aliceAddr, group.VOTE_OPTION_ABSTAIN.String(), "Alice votes abstain")
+		s.T().Logf("Voting Group Proposal 2: Send 5 uatom from group to Bob")
+		s.executeVoteGroupProposal(s.chainA, 0, s.groupProposalCounter, adminAddr, group.VOTE_OPTION_YES.String(), "Admin votes yes")
+		s.executeVoteGroupProposal(s.chainA, 1, s.groupProposalCounter, aliceAddr, group.VOTE_OPTION_ABSTAIN.String(), "Alice votes abstain")
 
-	s.Require().Eventually(
-		func() bool {
-			proposalRes, err := queryGroupProposalByGroupPolicy(chainAAPIEndpoint, policy.Address)
-			s.Require().NoError(err)
+		s.Require().Eventually(
+			func() bool {
+				proposalRes, err := queryGroupProposalByGroupPolicy(chainAAPIEndpoint, policy.Address)
+				s.Require().NoError(err)
 
-			return proposalRes.Proposals[0].Status == group.PROPOSAL_STATUS_REJECTED
-		},
-		30*time.Second,
-		5*time.Second,
-	)
-	s.T().Logf("Group Proposal Rejected: Send 5 uatom from group to Bob")
+				return proposalRes.Proposals[0].Status == group.PROPOSAL_STATUS_REJECTED
+			},
+			30*time.Second,
+			5*time.Second,
+		)
+		s.T().Logf("Group Proposal Rejected: Send 5 uatom from group to Bob")
+	})
 }
 
 func getPolicy(policies []*group.GroupPolicyInfo, metadata string, groupId int) (*group.GroupPolicyInfo, error) {
@@ -158,7 +158,7 @@ func getPolicy(policies []*group.GroupPolicyInfo, metadata string, groupId int) 
 			return p, nil
 		}
 	}
-	return policies[0], errors.New("No matching policy found")
+	return policies[0], errors.New("no matching policy found")
 }
 
 func (s *IntegrationTestSuite) prepareGroupFiles(c *chain, adminAddr string, member1Address string, member2Address string, member3Address string) {
@@ -179,7 +179,6 @@ func (s *IntegrationTestSuite) prepareGroupFiles(c *chain, adminAddr string, mem
 			Metadata: "Bob",
 		},
 	}
-
 	s.writeGroupMembers(c, members, originalMembersFilename)
 
 	newMembers := append(members, group.MemberRequest{
@@ -194,7 +193,64 @@ func (s *IntegrationTestSuite) prepareGroupFiles(c *chain, adminAddr string, mem
 	s.writeGroupMembers(c, newMembers, removeMemberFilename)
 }
 
-func (s *IntegrationTestSuite) writeGroupProposal(c *chain, policyAddress string, signingAddress string, sendAmount sdk.Coin, filename string) {
+func (s *IntegrationTestSuite) creatICAGroupProposal(c *chain) string {
+	var (
+		portID        = "1317/tcp"
+		resourceChain = s.valResources[c.id][0]
+		chainAPI      = fmt.Sprintf("http://%s", resourceChain.GetHostPort(portID))
+	)
+	s.groupProposalCounter++
+
+	policies, err := queryGroupPolicies(chainAPI, groupICAID)
+	s.Require().NoError(err)
+	policy, err := getPolicy(policies.GroupPolicies, ICAGroupPolicyMetadata, groupICAID)
+	s.Require().NoError(err)
+
+	registerICAMsg := &icamauthtypes.MsgRegisterAccount{
+		Owner:        policy.Address,
+		ConnectionId: icaConnectionID,
+		Version:      icaVersion,
+	}
+	proposal := &group.Proposal{
+		GroupPolicyAddress: policy.Address,
+		Proposers:          []string{adminAddr},
+		Metadata:           ICAGroupMetadata,
+	}
+
+	err = proposal.SetMsgs([]sdk.Msg{registerICAMsg})
+	s.Require().NoError(err)
+
+	body, err := cdc.MarshalJSON(proposal)
+	s.Require().NoError(err)
+
+	s.writeFile(c, ICAGroupProposal, body)
+
+	s.T().Logf("Submitting Group ICA Proposal")
+	s.executeSubmitGroupProposal(c, 0, adminAddr, filepath.Join(gaiaConfigPath, ICAGroupProposal))
+
+	s.T().Logf("Voting Group ICA Proposal")
+	s.executeVoteGroupProposal(c, 0, s.groupProposalCounter, adminAddr, group.VOTE_OPTION_YES.String(), "Admin votes yes")
+	s.executeVoteGroupProposal(c, 1, s.groupProposalCounter, aliceAddr, group.VOTE_OPTION_YES.String(), "Alice votes yes")
+
+	s.Require().Eventually(
+		func() bool {
+			proposalRes, err := queryGroupProposal(chainAPI, s.groupProposalCounter)
+			s.Require().NoError(err)
+
+			return proposalRes.Proposal.Status == group.PROPOSAL_STATUS_ACCEPTED
+		},
+		30*time.Second,
+		5*time.Second,
+	)
+	s.T().Logf("Group ICA Proposal Passed")
+
+	s.T().Logf("Executing Group ICA Proposal")
+	s.executeExecGroupProposal(c, 1, s.groupProposalCounter, aliceAddr)
+
+	return policy.Address
+}
+
+func (s *IntegrationTestSuite) writeGroupProposal(c *chain, policyAddress, signingAddress string, sendAmount sdk.Coin, filename string) {
 	msg := &banktypes.MsgSend{
 		FromAddress: policyAddress,
 		ToAddress:   bobAddr,
@@ -208,7 +264,8 @@ func (s *IntegrationTestSuite) writeGroupProposal(c *chain, policyAddress string
 	}
 
 	msgs := []sdk.Msg{msg}
-	proposal.SetMsgs(msgs)
+	err := proposal.SetMsgs(msgs)
+	s.Require().NoError(err)
 
 	body, err := cdc.MarshalJSON(proposal)
 	s.Require().NoError(err)
@@ -216,7 +273,49 @@ func (s *IntegrationTestSuite) writeGroupProposal(c *chain, policyAddress string
 	s.writeFile(c, filename, body)
 }
 
-func (s *IntegrationTestSuite) writeGroupPolicies(c *chain, thresholdFilename string, percentageFilename string, thresholdPolicy *group.ThresholdDecisionPolicy, percentagePolicy *group.PercentageDecisionPolicy) {
+func (s *IntegrationTestSuite) testGroupICAProposal() {
+	s.Run("create ICA from group", func() {
+		var (
+			portID         = "1317/tcp"
+			resourceChainA = s.valResources[s.chainA.id][0]
+			chainAAPI      = fmt.Sprintf("http://%s", resourceChainA.GetHostPort(portID))
+		)
+		s.T().Logf("Creating ICA Group")
+		s.execCreateGroupWithPolicy(
+			s.chainA,
+			0,
+			adminAddr,
+			ICAGroupMetadata,
+			ICAGroupPolicyMetadata,
+			configFile(originalMembersFilename),
+			configFile(thresholdPolicyFilename),
+			standardFees.String(),
+		)
+
+		owner := s.creatICAGroupProposal(s.chainA)
+
+		var ica string
+		s.Require().Eventually(
+			func() bool {
+				var err error
+				ica, err = queryICAAddress(chainAAPI, owner, icaConnectionID)
+				s.Require().NoError(err)
+
+				return ica != ""
+			},
+			time.Minute,
+			5*time.Second,
+		)
+	})
+}
+
+func (s *IntegrationTestSuite) writeGroupPolicies(
+	c *chain,
+	thresholdFilename,
+	percentageFilename string,
+	thresholdPolicy *group.ThresholdDecisionPolicy,
+	percentagePolicy *group.PercentageDecisionPolicy,
+) {
 	thresholdBody, err := cdc.MarshalInterfaceJSON(thresholdPolicy)
 	s.Require().NoError(err)
 
@@ -228,6 +327,8 @@ func (s *IntegrationTestSuite) writeGroupPolicies(c *chain, thresholdFilename st
 }
 
 func (s *IntegrationTestSuite) setupGroupsSuite() {
+	s.groupProposalCounter = 0
+
 	admin, err := s.chainA.validators[0].keyInfo.GetAddress()
 	s.Require().NoError(err)
 	adminAddr = admin.String()
@@ -240,4 +341,26 @@ func (s *IntegrationTestSuite) setupGroupsSuite() {
 	charlieAddr = s.executeGKeysAddCommand(s.chainA, 0, "charlie", gaiaHomePath)
 
 	s.prepareGroupFiles(s.chainA, adminAddr, aliceAddr, bobAddr, charlieAddr)
+
+	var (
+		windows = &group.DecisionPolicyWindows{
+			MinExecutionPeriod: 0 * time.Second,
+			VotingPeriod:       30 * time.Second,
+		}
+		thresholdPolicy = &group.ThresholdDecisionPolicy{
+			Threshold: "1",
+			Windows:   windows,
+		}
+		percentagePolicy = &group.PercentageDecisionPolicy{
+			Percentage: "0.5",
+			Windows:    windows,
+		}
+	)
+	s.writeGroupPolicies(
+		s.chainA,
+		thresholdPolicyFilename,
+		percentagePolicyFilename,
+		thresholdPolicy,
+		percentagePolicy,
+	)
 }

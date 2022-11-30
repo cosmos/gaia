@@ -75,7 +75,8 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 	var beforeRecipientPhotonBalance sdk.Coin
 	s.Require().Eventually(
 		func() bool {
-			beforeRecipientPhotonBalance, err := getSpecificBalance(chainAAPIEndpoint, recipient, photonDenom)
+			var err error
+			beforeRecipientPhotonBalance, err = getSpecificBalance(chainAAPIEndpoint, recipient, photonDenom)
 			s.Require().NoError(err)
 
 			return beforeRecipientPhotonBalance.IsValid()

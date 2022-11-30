@@ -45,6 +45,8 @@ import (
 	ibc "github.com/cosmos/ibc-go/v3/modules/core"
 	ibcclientclient "github.com/cosmos/ibc-go/v3/modules/core/02-client/client"
 	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
+	ibcproviderclient "github.com/cosmos/interchain-security/x/ccv/provider/client"
+	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
 	"github.com/gravity-devs/liquidity/x/liquidity"
 	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
 	"github.com/strangelove-ventures/packet-forward-middleware/v3/router"
@@ -84,6 +86,8 @@ var ModuleBasics = module.NewBasicManager(
 		upgradeclient.CancelProposalHandler,
 		ibcclientclient.UpdateClientProposalHandler,
 		ibcclientclient.UpgradeProposalHandler,
+		ibcproviderclient.ConsumerAdditionProposalHandler,
+		ibcproviderclient.ConsumerRemovalProposalHandler,
 	),
 	params.AppModuleBasic{},
 	crisis.AppModuleBasic{},
@@ -136,6 +140,7 @@ func appModules(
 		app.TransferModule,
 		app.ICAModule,
 		app.RouterModule,
+		providerModule,
 	}
 }
 
@@ -195,6 +200,7 @@ func orderBeginBlockers() []string {
 		vestingtypes.ModuleName,
 		icatypes.ModuleName,
 		globalfee.ModuleName,
+		providertypes.ModuleName,
 	}
 }
 
@@ -223,6 +229,7 @@ func orderEndBlockers() []string {
 		vestingtypes.ModuleName,
 		icatypes.ModuleName,
 		globalfee.ModuleName,
+		providertypes.ModuleName,
 	}
 }
 
@@ -251,5 +258,6 @@ func orderInitBlockers() []string {
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		globalfee.ModuleName,
+		providertypes.ModuleName,
 	}
 }

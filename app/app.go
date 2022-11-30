@@ -2,6 +2,8 @@ package gaia
 
 import (
 	"fmt"
+	"github.com/cosmos/interchain-security/testutil/e2e"
+	ibcproviderkeeper "github.com/cosmos/interchain-security/x/ccv/provider/keeper"
 	"io"
 	"net/http"
 	"os"
@@ -423,4 +425,29 @@ type EmptyAppOptions struct{}
 // Get implements AppOptions
 func (ao EmptyAppOptions) Get(o string) interface{} {
 	return nil
+}
+
+// GetProviderKeeper implements the ProviderApp interface.
+func (app *GaiaApp) GetProviderKeeper() ibcproviderkeeper.Keeper {
+	return app.ProviderKeeper
+}
+
+// Returns a provider keeper interface with more capabilities than the expected_keepers interface
+func (app *GaiaApp) GetE2eStakingKeeper() e2e.E2eStakingKeeper {
+	return app.StakingKeeper
+}
+
+// Returns a bank keeper interface with more capabilities than the expected_keepers interface
+func (app *GaiaApp) GetE2eBankKeeper() e2e.E2eBankKeeper {
+	return app.BankKeeper
+}
+
+// Returns a slashing keeper interface with more capabilities than the expected_keepers interface
+func (app *GaiaApp) GetE2eSlashingKeeper() e2e.E2eSlashingKeeper {
+	return app.SlashingKeeper
+}
+
+// Returns a distribution keeper interface with more capabilities than the expected_keepers interface
+func (app *GaiaApp) GetE2eDistributionKeeper() e2e.E2eDistributionKeeper {
+	return app.DistrKeeper
 }

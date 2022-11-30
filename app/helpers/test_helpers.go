@@ -5,11 +5,13 @@ import (
 	"testing"
 	"time"
 
-	"cosmossdk.io/math"
+	"github.com/tendermint/tendermint/crypto"
+	// "github.com/tendermint/tendermint/crypto/secp256k1"
+
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
-	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
-	"github.com/cosmos/cosmos-sdk/testutil/mock"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
+	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -48,28 +50,65 @@ var DefaultConsensusParams = &abci.ConsensusParams{
 	},
 }
 
+type PV struct {
+	PrivKey cryptotypes.PrivKey
+}
+
+func NewPV() PV {
+	return PV{ed25519.GenPrivKey()}
+}
+
+// GetPubKey implements PrivValidator interface
+func (pv PV) GetPubKey() (crypto.PubKey, error) {
+	return cryptocodec.ToTmPubKeyInterface(pv.PrivKey.PubKey())
+}
+
 type EmptyAppOptions struct{}
 
 func (EmptyAppOptions) Get(o string) interface{} { return nil }
 
-func Setup(t *testing.T) *gaiaapp.GaiaApp {
+func Setup(t *testing.T, isCheckTx bool, invCheckPeriod uint) *gaiaapp.GaiaApp {
 	t.Helper()
 
-	privVal := mock.NewPV()
-	pubKey, err := privVal.GetPubKey()
-	require.NoError(t, err)
-	// create validator set with single validator
-	validator := tmtypes.NewValidator(pubKey, 1)
-	valSet := tmtypes.NewValidatorSet([]*tmtypes.Validator{validator})
+	// TODO: investigate the following:
+	// The following has been modified to work with v0.45 but it's incomplete somehow. It causes tests to break because the changes
+	// are not properly integrated into the v0.45 test suite. It deserves a closer look to determine why adding custom validator and
+	// populated accounts was an improvement and whether it's important to add them back to this versin of the test suite.
 
-	// generate genesis account
-	senderPrivKey := secp256k1.GenPrivKey()
-	acc := authtypes.NewBaseAccount(senderPrivKey.PubKey().Address().Bytes(), senderPrivKey.PubKey(), 0, 0)
-	balance := banktypes.Balance{
-		Address: acc.GetAddress().String(),
-		Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100000000000000))),
+	// privVal := NewPV()
+	// pubKey, err := privVal.GetPubKey()
+	// require.NoError(t, err)
+	// // create validator set with single validator
+	// validator := tmtypes.NewValidator(pubKey, 1)
+	// valSet := tmtypes.NewValidatorSet([]*tmtypes.Validator{validator})
+
+	// // generate genesis account
+	// senderPrivKey := secp256k1.GenPrivKey()
+	// senderPubKey := senderPrivKey.PubKey()
+
+	// acc := authtypes.NewBaseAccount(senderPubKey.Address().Bytes(), senderPubKey, 0, 0)
+	// balance := banktypes.Balance{
+	// 	Address: acc.GetAddress().String(),
+	// 	Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100000000000000))),
+	// }
+	// genesisState := []authtypes.GenesisAccount{acc}
+	// app := SetupWithGenesisValSet(t, valSet, genesisState, balance)
+
+	app, genesisState := setup(!isCheckTx, invCheckPeriod)
+	if !isCheckTx {
+		// InitChain must be called to stop deliverState from being nil
+		stateBytes, err := json.MarshalIndent(genesisState, "", " ")
+		require.NoError(t, err)
+
+		// Initialize the chain
+		app.InitChain(
+			abci.RequestInitChain{
+				Validators:      []abci.ValidatorUpdate{},
+				ConsensusParams: DefaultConsensusParams,
+				AppStateBytes:   stateBytes,
+			},
+		)
 	}
-	app := SetupWithGenesisValSet(t, valSet, []authtypes.GenesisAccount{acc}, balance)
 
 	return app
 }

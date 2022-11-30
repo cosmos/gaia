@@ -11,20 +11,17 @@ import (
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	"github.com/cosmos/cosmos-sdk/x/group"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	icacontrollertypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/controller/types"
-	icahosttypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/host/types"
-	ibctransfertypes "github.com/cosmos/ibc-go/v5/modules/apps/transfer/types"
-	ibchost "github.com/cosmos/ibc-go/v5/modules/core/24-host"
-	liquiditytypes "github.com/gravity-devs/liquidity/v2/x/liquidity/types"
-	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v5/router/types"
-
-	icamauthtypes "github.com/cosmos/gaia/v8/x/icamauth/types"
+	icacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
+	icahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
+	ibctransfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
+	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
+	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
+	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v3/router/types"
 )
 
 func (appKeepers *AppKeepers) GenerateKeys() {
@@ -36,7 +33,7 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, liquiditytypes.StoreKey, ibctransfertypes.StoreKey,
 		capabilitytypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey, routertypes.StoreKey,
-		icacontrollertypes.StoreKey, icahosttypes.StoreKey, icamauthtypes.StoreKey, group.StoreKey,
+		icacontrollertypes.StoreKey, icahosttypes.StoreKey,
 	)
 
 	// Define transient store keys

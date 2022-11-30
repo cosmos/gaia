@@ -153,7 +153,7 @@ func (s *IntegrationTestSuite) sendIBC(c *chain, valIdx int, sender, recipient, 
 		"--output=json",
 		"-y",
 	}
-	s.T().Logf("sending %s from %s (%s) to %s (%s)", token, s.chainA.id, sender, s.chainB.id, recipient)
+	s.T().Logf("sending %s from %s (%s) to %s (%s) with memo %s", token, s.chainA.id, sender, s.chainB.id, recipient, note)
 	s.executeGaiaTxCommand(ctx, c, ibcCmd, valIdx, s.defaultExecValidation(c, valIdx))
 	s.T().Log("successfully sent IBC tokens")
 }
@@ -259,12 +259,10 @@ func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
 			ibcStakeDenom string
 		)
 
-		address, err := s.chainA.validators[0].keyInfo.GetAddress()
-		s.Require().NoError(err)
+		address := s.chainA.validators[0].keyInfo.GetAddress()
 		sender := address.String()
 
-		address, err = s.chainB.validators[0].keyInfo.GetAddress()
-		s.Require().NoError(err)
+		address = s.chainB.validators[0].keyInfo.GetAddress()
 		recipient := address.String()
 
 		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
@@ -320,7 +318,9 @@ Steps:
 5. Check Balance of Account 2 on Chain 1, confirm it is original plus x tokens
 
 */
+// TODO: Add back only if packet forward middleware has a working version compatible with IBC v3.0.x
 func (s *IntegrationTestSuite) TestMultihopIBCTokenTransfer() {
+	s.T().Skip()
 	time.Sleep(30 * time.Second)
 
 	s.Run("send_successful_multihop_uatom_to_chainA_from_chainA", func() {
@@ -329,16 +329,13 @@ func (s *IntegrationTestSuite) TestMultihopIBCTokenTransfer() {
 			err error
 		)
 
-		address, err := s.chainA.validators[0].keyInfo.GetAddress()
-		s.Require().NoError(err)
+		address := s.chainA.validators[0].keyInfo.GetAddress()
 		sender := address.String()
 
-		address, err = s.chainB.validators[0].keyInfo.GetAddress()
-		s.Require().NoError(err)
+		address = s.chainB.validators[0].keyInfo.GetAddress()
 		middlehop := address.String()
 
-		address, err = s.chainA.validators[1].keyInfo.GetAddress()
-		s.Require().NoError(err)
+		address = s.chainA.validators[1].keyInfo.GetAddress()
 		recipient := address.String()
 
 		forwardPort := "transfer"
@@ -397,7 +394,6 @@ func (s *IntegrationTestSuite) TestMultihopIBCTokenTransfer() {
 			1*time.Minute,
 			5*time.Second,
 		)
-
 	})
 }
 
@@ -412,23 +408,21 @@ Steps:
 4. Check Balance of Account 1 on Chain 1, confirm it is original minus x tokens
 5. Check Balance of Account 1 on Chain 2, confirm it is original plus x tokens
 */
+// TODO: Add  back
 func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
-
+	s.T().Skip()
 	time.Sleep(30 * time.Second)
 
 	s.Run("send_failed_multihop_uatom_to_chainA_from_chainA", func() {
 		// require the recipient account receives the IBC tokens (IBC packets ACKd)
 
-		address, err := s.chainA.validators[0].keyInfo.GetAddress()
-		s.Require().NoError(err)
+		address := s.chainA.validators[0].keyInfo.GetAddress()
 		sender := address.String()
 
-		address, err = s.chainB.validators[0].keyInfo.GetAddress()
-		s.Require().NoError(err)
+		address = s.chainB.validators[0].keyInfo.GetAddress()
 		middlehop := address.String()
 
-		address, err = s.chainA.validators[1].keyInfo.GetAddress()
-		s.Require().NoError(err)
+		address = s.chainA.validators[1].keyInfo.GetAddress()
 		recipient := strings.Replace(address.String(), "cosmos", "foobar", 1) // this should be an invalid recipient but only fail the final send so it will be returned
 
 		forwardPort := "transfer"
@@ -442,13 +436,13 @@ func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
 		var (
 			beforeSenderUAtomBalance sdk.Coin
 			beforeMiddleIBCBalance   sdk.Coin
+			err                      error
 		)
 
 		s.Require().Eventually(
 			func() bool {
 				beforeSenderUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
 				s.Require().NoError(err)
-
 				beforeMiddleIBCBalance, err = getSpecificBalance(chainBAPIEndpoint, middlehop, "ibc/")
 				s.Require().True(beforeMiddleIBCBalance.IsNil())
 				s.Require().NoError(err)
@@ -500,19 +494,16 @@ func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
 			5*time.Minute,
 			5*time.Second,
 		)
-
 	})
 }
 
 func (s *IntegrationTestSuite) TestBankTokenTransfer() {
 	s.Run("send_photon_between_accounts", func() {
 		var err error
-		senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
-		s.Require().NoError(err)
+		senderAddress := s.chainA.validators[0].keyInfo.GetAddress()
 		sender := senderAddress.String()
 
-		recipientAddress, err := s.chainA.validators[1].keyInfo.GetAddress()
-		s.Require().NoError(err)
+		recipientAddress := s.chainA.validators[1].keyInfo.GetAddress()
 		recipient := recipientAddress.String()
 
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))

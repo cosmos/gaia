@@ -5,8 +5,8 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	gov "github.com/cosmos/cosmos-sdk/x/gov/types"
+	// govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
 /*
@@ -21,8 +21,7 @@ Test Benchmarks:
 func (s *IntegrationTestSuite) SendTokensFromNewGovAccount() {
 	s.writeGovProposals(s.chainA)
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-	senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
-	s.Require().NoError(err)
+	senderAddress := s.chainA.validators[0].keyInfo.GetAddress()
 	sender := senderAddress.String()
 	// Gov tests may be run in arbitrary order, each test must increment proposalCounter to have the correct proposal id to submit and query
 	proposalCounter++
@@ -72,8 +71,7 @@ TODO: Perform upgrade in place of chain restart
 */
 func (s *IntegrationTestSuite) GovSoftwareUpgrade() {
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-	senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
-	s.Require().NoError(err)
+	senderAddress := s.chainA.validators[0].keyInfo.GetAddress()
 	sender := senderAddress.String()
 	height := s.getLatestBlockHeight(s.chainA, 0)
 	proposalHeight := height + govProposalBlockBuffer
@@ -101,8 +99,6 @@ func (s *IntegrationTestSuite) GovSoftwareUpgrade() {
 	s.Require().Eventually(
 		func() bool {
 			h := s.getLatestBlockHeight(s.chainA, 0)
-			s.Require().NoError(err)
-
 			return h > 0
 		},
 		30*time.Second,
@@ -122,8 +118,8 @@ Test Benchmarks:
 func (s *IntegrationTestSuite) GovCancelSoftwareUpgrade() {
 
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-	senderAddress, err := s.chainA.validators[0].keyInfo.GetAddress()
-	s.Require().NoError(err)
+	senderAddress := s.chainA.validators[0].keyInfo.GetAddress()
+
 	sender := senderAddress.String()
 	height := s.getLatestBlockHeight(s.chainA, 0)
 	proposalHeight := height + 50
@@ -234,7 +230,7 @@ func (s *IntegrationTestSuite) submitLegacyGovProposal(chainAAPIEndpoint string,
 			func() bool {
 				proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId)
 				s.Require().NoError(err)
-				return proposal.GetProposal().Status == govv1beta1.StatusDepositPeriod
+				return proposal.GetProposal().Status == gov.StatusDepositPeriod
 			},
 			15*time.Second,
 			5*time.Second,
@@ -252,7 +248,7 @@ func (s *IntegrationTestSuite) submitNewGovProposal(chainAAPIEndpoint, sender st
 				s.T().Logf("Proposal: %s", proposal.String())
 				s.Require().NoError(err)
 
-				return proposal.GetProposal().Status == govv1beta1.StatusDepositPeriod
+				return proposal.GetProposal().Status == gov.StatusDepositPeriod
 			},
 			15*time.Second,
 			5*time.Second,
@@ -269,7 +265,7 @@ func (s *IntegrationTestSuite) depositGovProposal(chainAAPIEndpoint, sender stri
 				proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId)
 				s.Require().NoError(err)
 
-				return proposal.GetProposal().Status == govv1beta1.StatusVotingPeriod
+				return proposal.GetProposal().Status == gov.StatusVotingPeriod
 			},
 			15*time.Second,
 			5*time.Second,
@@ -290,7 +286,7 @@ func (s *IntegrationTestSuite) voteGovProposal(chainAAPIEndpoint, sender string,
 				proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId)
 				s.Require().NoError(err)
 
-				return proposal.GetProposal().Status == govv1beta1.StatusPassed
+				return proposal.GetProposal().Status == gov.StatusPassed
 			},
 			15*time.Second,
 			5*time.Second,

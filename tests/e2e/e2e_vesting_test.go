@@ -6,9 +6,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"cosmossdk.io/math"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/gaia/v8/x/globalfee/ante"
 )
 
 const (
@@ -34,8 +33,8 @@ type (
 
 var (
 	genesisVestingKeys      = []string{continuousVestingKey, delayedVestingKey, lockedVestingKey, periodicVestingKey}
-	vestingAmountVested     = sdk.NewCoin(uatomDenom, math.NewInt(99900000000))
-	vestingAmount           = sdk.NewCoin(uatomDenom, math.NewInt(350000))
+	vestingAmountVested     = sdk.NewCoin(uatomDenom, sdk.NewInt(99900000000))
+	vestingAmount           = sdk.NewCoin(uatomDenom, sdk.NewInt(350000))
 	vestingBalance          = sdk.NewCoins(vestingAmountVested).Add(vestingAmount)
 	vestingDelegationAmount = sdk.NewCoin(uatomDenom, sdk.NewInt(500000000))
 	vestingDelegationFees   = sdk.NewCoin(uatomDenom, sdk.NewInt(10))
@@ -48,8 +47,7 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api string) {
 		val               = chain.validators[valIdx]
 		vestingDelayedAcc = chain.genesisVestingAccounts[delayedVestingKey]
 	)
-	sender, err := val.keyInfo.GetAddress()
-	s.NoError(err)
+	sender := val.keyInfo.GetAddress()
 	valOpAddr := sdk.ValAddress(sender).String()
 
 	s.Run("test delayed vesting genesis account", func() {
@@ -119,8 +117,7 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api string) {
 			val                  = chain.validators[valIdx]
 			continuousVestingAcc = chain.genesisVestingAccounts[continuousVestingKey]
 		)
-		sender, err := val.keyInfo.GetAddress()
-		s.NoError(err)
+		sender := val.keyInfo.GetAddress()
 		valOpAddr := sdk.ValAddress(sender).String()
 
 		acc, err := queryContinuousVestingAccount(api, continuousVestingAcc.String())
@@ -207,15 +204,14 @@ func (s *IntegrationTestSuite) testPermanentLockedAccount(api string) {
 			val                 = chain.validators[valIdx]
 			permanentLockedAddr = chain.genesisVestingAccounts[lockedVestingKey].String()
 		)
-		sender, err := val.keyInfo.GetAddress()
-		s.NoError(err)
+		sender := val.keyInfo.GetAddress()
 		valOpAddr := sdk.ValAddress(sender).String()
 
 		s.execCreatePermanentLockedAccount(chain, permanentLockedAddr,
 			vestingAmountVested.String(), withKeyValue(flagFrom, sender.String()),
 		)
 
-		_, err = queryPermanentLockedAccount(api, permanentLockedAddr)
+		_, err := queryPermanentLockedAccount(api, permanentLockedAddr)
 		s.Require().NoError(err)
 
 		//	Check address balance
@@ -260,8 +256,7 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api string) {
 			val                 = chain.validators[valIdx]
 			periodicVestingAddr = chain.genesisVestingAccounts[periodicVestingKey].String()
 		)
-		sender, err := val.keyInfo.GetAddress()
-		s.NoError(err)
+		sender := val.keyInfo.GetAddress()
 		valOpAddr := sdk.ValAddress(sender).String()
 
 		s.execCreatePeriodicVestingAccount(
@@ -280,7 +275,7 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api string) {
 
 		expectedBalance := sdk.NewCoin(uatomDenom, sdk.NewInt(0))
 		for _, period := range acc.VestingPeriods {
-			_, coin := period.Amount.Find(uatomDenom)
+			_, coin := ante.Find(period.Amount, uatomDenom)
 			expectedBalance = expectedBalance.Add(coin)
 		}
 		s.Require().Equal(expectedBalance, balance)

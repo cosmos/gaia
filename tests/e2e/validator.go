@@ -7,7 +7,6 @@ import (
 	"path"
 	"path/filepath"
 
-	"cosmossdk.io/math"
 	sdkcrypto "github.com/cosmos/cosmos-sdk/crypto"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -33,7 +32,7 @@ type validator struct {
 	index            int
 	moniker          string
 	mnemonic         string
-	keyInfo          keyring.Record
+	keyInfo          keyring.Info
 	privateKey       cryptotypes.PrivKey
 	consensusKey     privval.FilePVKey
 	consensusPrivKey cryptotypes.PrivKey
@@ -43,7 +42,7 @@ type validator struct {
 type account struct {
 	moniker    string
 	mnemonic   string
-	keyInfo    keyring.Record
+	keyInfo    keyring.Info
 	privateKey cryptotypes.PrivKey
 }
 
@@ -60,7 +59,7 @@ func (v *validator) configDir() string {
 //nolint:unused // this is called during e2e tests
 func (v *validator) createConfig() error {
 	p := path.Join(v.configDir(), "config")
-	return os.MkdirAll(p, 0755)
+	return os.MkdirAll(p, 0o755)
 }
 
 //nolint:unused // this is called during e2e tests
@@ -140,7 +139,7 @@ func (v *validator) createConsensusKey() error {
 //nolint:unused // this is called during e2e tests
 func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
 	dir := v.configDir()
-	kb, err := keyring.New(keyringAppName, keyring.BackendTest, dir, nil, cdc)
+	kb, err := keyring.New(keyringAppName, keyring.BackendTest, dir, nil)
 	if err != nil {
 		return err
 	}
@@ -166,7 +165,7 @@ func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
 		return err
 	}
 
-	v.keyInfo = *info
+	v.keyInfo = info
 	v.mnemonic = mnemonic
 	v.privateKey = privKey
 
@@ -175,7 +174,7 @@ func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
 
 func (c *chain) addAccountFromMnemonic(counts int) error {
 	val0ConfigDir := c.validators[0].configDir()
-	kb, err := keyring.New(keyringAppName, keyring.BackendTest, val0ConfigDir, nil, cdc)
+	kb, err := keyring.New(keyringAppName, keyring.BackendTest, val0ConfigDir, nil)
 	if err != nil {
 		return err
 	}
@@ -207,7 +206,7 @@ func (c *chain) addAccountFromMnemonic(counts int) error {
 			return err
 		}
 		acct := account{}
-		acct.keyInfo = *info
+		acct.keyInfo = info
 		acct.mnemonic = mnemonic
 		acct.privateKey = privKey
 		c.genesisAccounts = append(c.genesisAccounts, &acct)
@@ -234,20 +233,15 @@ func (v *validator) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
 	}
 
 	// get the initial validator min self delegation
-	minSelfDelegation := math.OneInt()
+	minSelfDelegation := sdk.OneInt()
 
 	valPubKey, err := cryptocodec.FromTmPubKeyInterface(v.consensusKey.PubKey)
 	if err != nil {
 		return nil, err
 	}
 
-	address, err := v.keyInfo.GetAddress()
-	if err != nil {
-		return nil, err
-	}
-
 	return stakingtypes.NewMsgCreateValidator(
-		sdk.ValAddress(address),
+		sdk.ValAddress(v.keyInfo.GetAddress()),
 		valPubKey,
 		amount,
 		description,
@@ -281,12 +275,8 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 	// Note: This line is not needed for SIGN_MODE_LEGACY_AMINO, but putting it
 	// also doesn't affect its generated sign bytes, so for code's simplicity
 	// sake, we put it here.
-	pk, err := v.keyInfo.GetPubKey()
-	if err != nil {
-		return nil, err
-	}
 	sig := txsigning.SignatureV2{
-		PubKey: pk,
+		PubKey: v.keyInfo.GetPubKey(),
 		Data: &txsigning.SingleSignatureData{
 			SignMode:  txsigning.SignMode_SIGN_MODE_DIRECT,
 			Signature: nil,
@@ -313,7 +303,7 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 	}
 
 	sig = txsigning.SignatureV2{
-		PubKey: pk,
+		PubKey: v.keyInfo.GetPubKey(),
 		Data: &txsigning.SingleSignatureData{
 			SignMode:  txsigning.SignMode_SIGN_MODE_DIRECT,
 			Signature: sigBytes,

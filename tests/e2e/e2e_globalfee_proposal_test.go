@@ -5,7 +5,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	gov "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
 func (s *IntegrationTestSuite) govProposeNewGlobalfee(newGlobalfee sdk.DecCoins, proposalCounter int, submitter string, fees string) {
@@ -23,7 +23,7 @@ func (s *IntegrationTestSuite) govProposeNewGlobalfee(newGlobalfee sdk.DecCoins,
 		func() bool {
 			proposal, err := queryGovProposal(chainAAPIEndpoint, proposalCounter)
 			s.Require().NoError(err)
-			return proposal.GetProposal().Status == govv1beta1.StatusPassed
+			return proposal.GetProposal().Status == gov.StatusPassed
 		},
 		15*time.Second,
 		5*time.Second,

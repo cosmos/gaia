@@ -131,7 +131,7 @@ func NewGaiaApp(
 		legacyAmino,
 		maccPerms,
 		moduleAccountAddresses,
-		app.BlockedModuleAccountAddrs(),
+		app.BlockedModuleAccountAddrs(moduleAccountAddresses),
 		skipUpgradeHeights,
 		homePath,
 		invCheckPeriod,
@@ -287,9 +287,7 @@ func (app *GaiaApp) ModuleAccountAddrs() map[string]bool {
 
 // BlockedModuleAccountAddrs returns all the app's blocked module account
 // addresses.
-func (app *GaiaApp) BlockedModuleAccountAddrs() map[string]bool {
-	modAccAddrs := app.ModuleAccountAddrs()
-
+func (app *GaiaApp) BlockedModuleAccountAddrs(modAccAddrs map[string]bool) map[string]bool {
 	// remove module accounts that are ALLOWED to received funds
 	delete(modAccAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 

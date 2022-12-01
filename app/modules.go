@@ -47,6 +47,7 @@ import (
 	ibc "github.com/cosmos/ibc-go/v3/modules/core"
 	ibcclientclient "github.com/cosmos/ibc-go/v3/modules/core/02-client/client"
 	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
+	ibcprovider "github.com/cosmos/interchain-security/x/ccv/provider"
 	ibcproviderclient "github.com/cosmos/interchain-security/x/ccv/provider/client"
 	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
 	"github.com/gravity-devs/liquidity/x/liquidity"
@@ -100,6 +101,7 @@ var ModuleBasics = module.NewBasicManager(
 	//router.AppModuleBasic{},
 	ica.AppModuleBasic{},
 	globalfee.AppModule{},
+	ibcprovider.AppModuleBasic{},
 )
 
 func appModules(

@@ -264,7 +264,7 @@ replace (
 	// github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.9
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.7-0.20221104161803-456ca5663c5e
 	github.com/cosmos/iavl => github.com/cosmos/iavl v0.17.3
-	//github.com/cosmos/ibc-go/v3 => github.com/informalsystems/ibc-go/v3 v3.0.0-beta1.0.20220816140824-aba9c2f2b943
+	github.com/cosmos/ibc-go/v3 => github.com/informalsystems/ibc-go/v3 v3.0.0-beta1.0.20220816140824-aba9c2f2b943
 	// github.com/cosmos/ibc-go/v3 => github.com/cosmos/ibc-go/v3 v3.4.0
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	github.com/zondax/hid => github.com/zondax/hid v0.9.0

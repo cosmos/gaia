@@ -13,16 +13,26 @@ protoc_gen_gocosmos() {
 
 protoc_gen_gocosmos
 
-cd proto
-proto_dirs=$(find ./gaia -path -prune -o -name '*.proto' -print0 | xargs -0 -n1 dirname | sort | uniq)
+proto_dirs=$(find ./proto -path -prune -o -name '*.proto' -print0 | xargs -0 -n1 dirname | sort | uniq)
 for dir in $proto_dirs; do
-  for file in $(find "${dir}" -maxdepth 2 -name '*.proto'); do
-      buf generate --template buf.gen.gogo.yaml $file
-  done
+  protoc \
+  -I "proto" \
+  -I "third_party/proto" \
+  --gocosmos_out=plugins=interfacetype+grpc,\
+Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
+  --grpc-gateway_out=logtostderr=true:. \
+  $(find "${dir}" -maxdepth 1 -name '*.proto')
+
 done
 
-cd ..
+# command to generate docs using protoc-gen-doc
+protoc \
+-I "proto" \
+-I "third_party/proto" \
+--doc_out=./docs/proto \
+--doc_opt=./docs/proto/protodoc-markdown.tmpl,proto-docs.md \
+$(find "proto" -maxdepth 5 -name '*.proto')
 
-# move the generated proto files (*.pb.go / *.pb.gw.go) to x/gaia/<module-name>/types/ directory
-cp -r github.com/cosmos/gaia/* ./
+# move proto files to the right places
+cp -r github.com/cosmos/gaia/x/* x/
 rm -rf github.com

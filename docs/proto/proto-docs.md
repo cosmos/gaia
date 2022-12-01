@@ -4,63 +4,17 @@
 
 ## Table of Contents
 
-- [gaia/globalfee/v1beta1/genesis.proto](#gaia/globalfee/v1beta1/genesis.proto)
-    - [GenesisState](#gaia.globalfee.v1beta1.GenesisState)
-    - [Params](#gaia.globalfee.v1beta1.Params)
-  
 - [gaia/globalfee/v1beta1/query.proto](#gaia/globalfee/v1beta1/query.proto)
     - [QueryMinimumGasPricesRequest](#gaia.globalfee.v1beta1.QueryMinimumGasPricesRequest)
     - [QueryMinimumGasPricesResponse](#gaia.globalfee.v1beta1.QueryMinimumGasPricesResponse)
   
     - [Query](#gaia.globalfee.v1beta1.Query)
-
+  
+- [gaia/globalfee/v1beta1/genesis.proto](#gaia/globalfee/v1beta1/genesis.proto)
+    - [GenesisState](#gaia.globalfee.v1beta1.GenesisState)
+    - [Params](#gaia.globalfee.v1beta1.Params)
+  
 - [Scalar Value Types](#scalar-value-types)
-
-
-
-<a name="gaia/globalfee/v1beta1/genesis.proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## gaia/globalfee/v1beta1/genesis.proto
-
-
-
-<a name="gaia.globalfee.v1beta1.GenesisState"></a>
-
-### GenesisState
-GenesisState - initial state of module
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `params` | [Params](#gaia.globalfee.v1beta1.Params) |  | Params of this module |
-
-
-
-
-
-
-<a name="gaia.globalfee.v1beta1.Params"></a>
-
-### Params
-Params defines the set of module parameters.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `minimum_gas_prices` | [cosmos.base.v1beta1.DecCoin](#cosmos.base.v1beta1.DecCoin) | repeated | Minimum stores the minimum gas price(s) for all TX on the chain. When multiple coins are defined then they are accepted alternatively. The list must be sorted by denoms asc. No duplicate denoms or zero amount values allowed. For more information see https://docs.cosmos.network/main/modules/auth#concepts |
-
-
-
-
-
- <!-- end messages -->
-
- <!-- end enums -->
-
- <!-- end HasExtensions -->
-
- <!-- end services -->
 
 
 
@@ -115,6 +69,51 @@ Query defines the gRPC querier service.
 
  <!-- end services -->
 
+
+
+<a name="gaia/globalfee/v1beta1/genesis.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## gaia/globalfee/v1beta1/genesis.proto
+
+
+
+<a name="gaia.globalfee.v1beta1.GenesisState"></a>
+
+### GenesisState
+GenesisState - initial state of module
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `params` | [Params](#gaia.globalfee.v1beta1.Params) |  | Params of this module |
+
+
+
+
+
+
+<a name="gaia.globalfee.v1beta1.Params"></a>
+
+### Params
+Params defines the set of module parameters.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| `minimum_gas_prices` | [cosmos.base.v1beta1.DecCoin](#cosmos.base.v1beta1.DecCoin) | repeated | Minimum stores the minimum gas price(s) for all TX on the chain. When multiple coins are defined then they are accepted alternatively. The list must be sorted by denoms asc. No duplicate denoms or zero amount values allowed. For more information see https://docs.cosmos.network/main/modules/auth#concepts |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
 
 
 

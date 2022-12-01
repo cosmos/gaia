@@ -249,6 +249,7 @@ func (s *IntegrationTestSuite) createChannel() {
 }
 
 func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
+	s.T().Skip()
 	time.Sleep(30 * time.Second)
 	s.Run("send_uatom_to_chainB", func() {
 		// require the recipient account receives the IBC tokens (IBC packets ACKd)

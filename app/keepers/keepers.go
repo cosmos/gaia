@@ -270,7 +270,7 @@ func NewAppKeeper(
 		authtypes.FeeCollectorName,
 	)
 
-	providerModule := ibcprovider.NewAppModule(&appKeepers.ProviderKeeper)
+	appKeepers.ProviderModule = ibcprovider.NewAppModule(&appKeepers.ProviderKeeper)
 
 	govRouter := govtypes.NewRouter()
 	govRouter.
@@ -345,7 +345,7 @@ func NewAppKeeper(
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
 		AddRoute(ibctransfertypes.ModuleName, transferIBCModule).
-		AddRoute(providertypes.ModuleName, providerModule)
+		AddRoute(providertypes.ModuleName, appKeepers.ProviderModule)
 
 	appKeepers.IBCKeeper.SetRouter(ibcRouter)
 

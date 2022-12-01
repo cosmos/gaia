@@ -22,7 +22,7 @@ import (
 	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
 	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
 	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
-	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v3/router/types"
+	//routertypes "github.com/strangelove-ventures/packet-forward-middleware/v3/router/types"
 )
 
 func (appKeepers *AppKeepers) GenerateKeys() {
@@ -33,7 +33,8 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, liquiditytypes.StoreKey, ibctransfertypes.StoreKey,
-		capabilitytypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey, routertypes.StoreKey,
+		capabilitytypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey,
+		//routertypes.StoreKey,
 		icacontrollertypes.StoreKey, icahosttypes.StoreKey, providertypes.StoreKey,
 	)
 

@@ -38,6 +38,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	gaiaappparams "github.com/cosmos/gaia/v8/app/params"
+	"github.com/cosmos/gaia/v8/x/globalfee"
 	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
 	icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
 	"github.com/cosmos/ibc-go/v3/modules/apps/transfer"
@@ -49,11 +51,6 @@ import (
 	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
 	"github.com/gravity-devs/liquidity/x/liquidity"
 	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
-	"github.com/strangelove-ventures/packet-forward-middleware/v3/router"
-	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v3/router/types"
-
-	gaiaappparams "github.com/cosmos/gaia/v8/app/params"
-	"github.com/cosmos/gaia/v8/x/globalfee"
 )
 
 var maccPerms = map[string][]string{
@@ -100,7 +97,7 @@ var ModuleBasics = module.NewBasicManager(
 	transfer.AppModuleBasic{},
 	vesting.AppModuleBasic{},
 	liquidity.AppModuleBasic{},
-	router.AppModuleBasic{},
+	//router.AppModuleBasic{},
 	ica.AppModuleBasic{},
 	globalfee.AppModule{},
 )
@@ -139,8 +136,8 @@ func appModules(
 		globalfee.NewAppModule(app.GetSubspace(globalfee.ModuleName)),
 		app.TransferModule,
 		app.ICAModule,
-		app.RouterModule,
-		providerModule,
+		app.ProviderModule,
+		//app.RouterModule,
 	}
 }
 
@@ -192,7 +189,7 @@ func orderBeginBlockers() []string {
 		ibctransfertypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
-		routertypes.ModuleName,
+		//routertypes.ModuleName,
 		genutiltypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
@@ -213,7 +210,7 @@ func orderEndBlockers() []string {
 		ibctransfertypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
-		routertypes.ModuleName,
+		//routertypes.ModuleName,
 		capabilitytypes.ModuleName,
 		authtypes.ModuleName,
 		banktypes.ModuleName,
@@ -252,7 +249,7 @@ func orderInitBlockers() []string {
 		liquiditytypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
-		routertypes.ModuleName,
+		//routertypes.ModuleName,
 		icatypes.ModuleName,
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,

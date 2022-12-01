@@ -57,9 +57,9 @@ import (
 	ibcproviderkeeper "github.com/cosmos/interchain-security/x/ccv/provider/keeper"
 	liquiditykeeper "github.com/gravity-devs/liquidity/x/liquidity/keeper"
 	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
-	"github.com/strangelove-ventures/packet-forward-middleware/v3/router"
-	routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v3/router/keeper"
-	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v3/router/types"
+	//"github.com/strangelove-ventures/packet-forward-middleware/v3/router"
+	//routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v3/router/keeper"
+	//routertypes "github.com/strangelove-ventures/packet-forward-middleware/v3/router/types"
 
 	"github.com/cosmos/gaia/v8/x/globalfee"
 
@@ -95,7 +95,7 @@ type AppKeepers struct {
 	AuthzKeeper         authzkeeper.Keeper
 	LiquidityKeeper     liquiditykeeper.Keeper
 
-	RouterKeeper routerkeeper.Keeper
+	//RouterKeeper routerkeeper.Keeper
 
 	// ICS
 	ProviderKeeper ibcproviderkeeper.Keeper
@@ -103,7 +103,8 @@ type AppKeepers struct {
 	// Modules
 	ICAModule      ica.AppModule
 	TransferModule transfer.AppModule
-	RouterModule   router.AppModule
+	ProviderModule ibcprovider.AppModule
+	//RouterModule   router.AppModule
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
@@ -328,17 +329,17 @@ func NewAppKeeper(
 	appKeepers.ICAModule = ica.NewAppModule(&appKeepers.ICAControllerKeeper, &appKeepers.ICAHostKeeper)
 	icaHostIBCModule := icahost.NewIBCModule(appKeepers.ICAHostKeeper)
 
-	appKeepers.RouterKeeper = routerkeeper.NewKeeper(
-		appCodec, appKeepers.keys[routertypes.StoreKey],
-		appKeepers.GetSubspace(routertypes.ModuleName),
-		appKeepers.TransferKeeper,
-		appKeepers.IBCKeeper.ChannelKeeper,
-		appKeepers.DistrKeeper,
-		appKeepers.BankKeeper,
-	)
-
-	appKeepers.RouterModule = router.NewAppModule(appKeepers.RouterKeeper, transferIBCModule, 0,
-		routerkeeper.DefaultForwardTransferPacketTimeoutTimestamp, routerkeeper.DefaultRefundTransferPacketTimeoutTimestamp)
+	//appKeepers.RouterKeeper = routerkeeper.NewKeeper(
+	//	appCodec, appKeepers.keys[routertypes.StoreKey],
+	//	appKeepers.GetSubspace(routertypes.ModuleName),
+	//	appKeepers.TransferKeeper,
+	//	appKeepers.IBCKeeper.ChannelKeeper,
+	//	appKeepers.DistrKeeper,
+	//	appKeepers.BankKeeper,
+	//)
+	//
+	//appKeepers.RouterModule = router.NewAppModule(appKeepers.RouterKeeper, transferIBCModule, 0,
+	//	routerkeeper.DefaultForwardTransferPacketTimeoutTimestamp, routerkeeper.DefaultRefundTransferPacketTimeoutTimestamp)
 
 	// create static IBC router, add transfer route, then set and seal it
 	ibcRouter := porttypes.NewRouter()
@@ -380,7 +381,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 
-	paramsKeeper.Subspace(routertypes.ModuleName).WithKeyTable(routertypes.ParamKeyTable())
+	//paramsKeeper.Subspace(routertypes.ModuleName).WithKeyTable(routertypes.ParamKeyTable())
 	paramsKeeper.Subspace(icacontrollertypes.SubModuleName)
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.Subspace(globalfee.ModuleName)

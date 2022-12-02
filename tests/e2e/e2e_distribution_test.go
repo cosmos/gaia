@@ -15,10 +15,12 @@ func (s *IntegrationTestSuite) testDistribution() {
 	validatorBAddr := validatorB.keyInfo.GetAddress()
 
 	valOperAddressA := sdk.ValAddress(validatorBAddr).String()
+	fmt.Println("valOperAddressA", valOperAddressA)
 
 	delegatorAddress := s.chainA.genesisAccounts[2].keyInfo.GetAddress().String()
-	newWithdrawalAddress := s.chainA.genesisAccounts[3].keyInfo.GetAddress().String()
+	fmt.Println("delegatorAddress", delegatorAddress)
 
+	newWithdrawalAddress := s.chainA.genesisAccounts[3].keyInfo.GetAddress().String()
 	fees := sdk.NewCoin(uatomDenom, sdk.NewInt(1000))
 
 	beforeBalance, err := getSpecificBalance(chainEndpoint, newWithdrawalAddress, uatomDenom)

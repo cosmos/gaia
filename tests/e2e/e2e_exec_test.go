@@ -286,6 +286,7 @@ func (s *IntegrationTestSuite) execBankSend(
 	for flag, value := range opts {
 		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
 	}
+	fmt.Println(gaiaCommand)
 
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.expectErrExecValidation(c, valIdx, expectErr))
 }
@@ -684,6 +685,7 @@ func (s *IntegrationTestSuite) execWithdrawReward(
 		"--output=json",
 		"-y",
 	}
+	fmt.Println(gaiaCommand)
 
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
 	s.T().Logf("Successfully withdrew distribution rewards for delegator %s from validator %s", delegatorAddress, validatorAddress)

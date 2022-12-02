@@ -177,22 +177,25 @@ func (app *GaiaApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs [
 
 	counter := int16(0)
 
-	defer iter.Close()
-	for ; iter.Valid(); iter.Next() {
-		addr := sdk.ValAddress(stakingtypes.AddressFromValidatorsKey(iter.Key()))
-		validator, found := app.StakingKeeper.GetValidator(ctx, addr)
-		if !found {
-			panic("expected validator, not found")
-		}
+	// Closure to ensure iterator doesn't leak.
+	func() {
+		defer iter.Close()
+		for ; iter.Valid(); iter.Next() {
+			addr := sdk.ValAddress(stakingtypes.AddressFromValidatorsKey(iter.Key()))
+			validator, found := app.StakingKeeper.GetValidator(ctx, addr)
+			if !found {
+				panic("expected validator, not found")
+			}
 
-		validator.UnbondingHeight = 0
-		if applyAllowedAddrs && !allowedAddrsMap[addr.String()] {
-			validator.Jailed = true
-		}
+			validator.UnbondingHeight = 0
+			if applyAllowedAddrs && !allowedAddrsMap[addr.String()] {
+				validator.Jailed = true
+			}
 
-		app.StakingKeeper.SetValidator(ctx, validator)
-		counter++
-	}
+			app.StakingKeeper.SetValidator(ctx, validator)
+			counter++
+		}
+	}()
 
 	_, err := app.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
 	if err != nil {

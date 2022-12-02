@@ -15,8 +15,6 @@ import (
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	// govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
-	// "github.com/cosmos/cosmos-sdk/x/group"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	globalfee "github.com/cosmos/gaia/v8/x/globalfee/types"

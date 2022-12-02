@@ -129,17 +129,13 @@ func CombinedFeeRequirement(globalFees, minGasPrices sdk.Coins) sdk.Coins {
 		return globalFees
 	}
 
-	// if find min_gas_price denom in globalfee, and amt is higher than globalfee, add it
+	// if min_gas_price denom is in globalfee, and the amount is higher than globalfee, add min_gas_price to allFees
 	var allFees sdk.Coins
 	for _, fee := range globalFees {
 		// min_gas_price denom in global fee
 		ok, c := Find(minGasPrices, fee.Denom)
-		if ok {
-			if c.Amount.GT(fee.Amount) {
-				allFees = append(allFees, c)
-			} else {
-				allFees = append(allFees, fee)
-			}
+		if ok && c.Amount.GT(fee.Amount) {
+			allFees = append(allFees, c)
 		} else {
 			allFees = append(allFees, fee)
 		}

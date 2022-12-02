@@ -133,7 +133,7 @@ func NewGaiaApp(
 		legacyAmino,
 		maccPerms,
 		moduleAccountAddresses,
-		app.BlockedModuleAccountAddrs(),
+		app.BlockedModuleAccountAddrs(moduleAccountAddresses),
 		skipUpgradeHeights,
 		homePath,
 		invCheckPeriod,
@@ -199,18 +199,6 @@ func NewGaiaApp(
 				FeegrantKeeper:  app.FeeGrantKeeper,
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
-				// TxFeeChecker is not the default fee check, it will not check if the fee meets min_gas_price, this is checked in NewFeeWithBypassDecorator already.
-				// TxFeeChecker: func(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64, error) {
-				// 	feeTx, ok := tx.(sdk.FeeTx)
-				// 	if !ok {
-				// 		return nil, 0, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
-				// 	}
-
-				// 	feeCoins := feeTx.GetFee()
-				// 	priority := gaiafeeante.GetTxPriority(feeCoins)
-
-				// 	return feeCoins, priority, nil
-				// },
 			},
 			IBCkeeper:            app.IBCKeeper,
 			BypassMinFeeMsgTypes: bypassMinFeeMsgTypes,
@@ -289,9 +277,7 @@ func (app *GaiaApp) ModuleAccountAddrs() map[string]bool {
 
 // BlockedModuleAccountAddrs returns all the app's blocked module account
 // addresses.
-func (app *GaiaApp) BlockedModuleAccountAddrs() map[string]bool {
-	modAccAddrs := app.ModuleAccountAddrs()
-
+func (app *GaiaApp) BlockedModuleAccountAddrs(modAccAddrs map[string]bool) map[string]bool {
 	// remove module accounts that are ALLOWED to received funds
 	delete(modAccAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
@@ -350,13 +336,6 @@ func (app *GaiaApp) RegisterTxService(clientCtx client.Context) {
 // RegisterTendermintService implements the Application.RegisterTendermintService method.
 func (app *GaiaApp) RegisterTendermintService(clientCtx client.Context) {
 	tmservice.RegisterTendermintService(app.BaseApp.GRPCQueryRouter(), clientCtx, app.interfaceRegistry)
-
-	// tmservice.RegisterTendermintService(
-	// 	clientCtx,
-	// 	app.BaseApp.GRPCQueryRouter(),
-	// 	app.interfaceRegistry,
-	// 	app.Query,
-	// )
 }
 
 // configure store loader that checks if version == upgradeHeight and applies store upgrades

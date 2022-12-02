@@ -30,7 +30,8 @@ func TestGaiaApp_BlockedModuleAccountAddrs(t *testing.T) {
 		gaia.MakeTestEncodingConfig(),
 		EmptyAppOptions{},
 	)
-	blockedAddrs := app.BlockedModuleAccountAddrs()
+	moduleAccountAddresses := app.ModuleAccountAddrs()
+	blockedAddrs := app.BlockedModuleAccountAddrs(moduleAccountAddresses)
 
 	require.NotContains(t, blockedAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 }

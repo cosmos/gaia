@@ -76,19 +76,6 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	return rootCmd, encodingConfig
 }
 
-// TODO: investigate why this was needed.
-// // initTendermintConfig helps to override default Tendermint Config values.
-// // return tmcfg.DefaultConfig if no custom configuration is required for the application.
-// func initTendermintConfig() *tmcfg.Config {
-// 	cfg := tmcfg.DefaultConfig()
-
-// 	// these values put a higher strain on node memory
-// 	// cfg.P2P.MaxNumInboundPeers = 100
-// 	// cfg.P2P.MaxNumOutboundPeers = 40
-
-// 	return cfg
-// }
-
 func initAppConfig() (string, interface{}) {
 	srvCfg := serverconfig.DefaultConfig()
 	srvCfg.StateSync.SnapshotInterval = 1000

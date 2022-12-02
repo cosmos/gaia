@@ -21,7 +21,7 @@ require (
 	github.com/spf13/viper v1.14.0 // indirect
 	//github.com/strangelove-ventures/packet-forward-middleware/v3 v3.0.0
 	github.com/stretchr/testify v1.8.1
-	github.com/tendermint/tendermint v0.34.22
+	github.com/tendermint/tendermint v0.34.23
 	github.com/tendermint/tm-db v0.6.7
 	google.golang.org/genproto v0.0.0-20221024183307-1bc688fe9f3e
 	google.golang.org/grpc v1.50.1

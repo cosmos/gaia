@@ -21,13 +21,13 @@ import (
 )
 
 type ForwardMetadata struct {
-	Receiver       string        `json:"receiver"`
-	Port           string        `json:"port"`
-	Channel        string        `json:"channel"`
-	Timeout        time.Duration `json:"timeout"`
-	Retries        *uint8        `json:"retries,omitempty"`
-	Next           *string       `json:"next,omitempty"`
-	RefundSequence *uint64       `json:"refund_sequence,omitempty"`
+	Receiver string `json:"receiver"`
+	Port     string `json:"port"`
+	Channel  string `json:"channel"`
+	// Timeout        time.Duration `json:"timeout"`
+	// Retries        *uint8        `json:"retries,omitempty"`
+	// Next           *string       `json:"next,omitempty"`
+	// RefundSequence *uint64       `json:"refund_sequence,omitempty"`
 }
 
 type PacketMetadata struct {
@@ -353,9 +353,11 @@ func (s *IntegrationTestSuite) testMultihopIBCTokenTransfer() {
 			func() bool {
 				beforeSenderUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
 				s.Require().NoError(err)
+				fmt.Println("beforeSenderUAtomBalance", beforeSenderUAtomBalance)
 
 				beforeRecipientUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, recipient, uatomDenom)
 				s.Require().NoError(err)
+				fmt.Print("beforeRecipientUAtomBalance", beforeRecipientUAtomBalance)
 
 				return beforeSenderUAtomBalance.IsValid() && beforeRecipientUAtomBalance.IsValid()
 			},
@@ -368,7 +370,6 @@ func (s *IntegrationTestSuite) testMultihopIBCTokenTransfer() {
 				Receiver: recipient,
 				Channel:  forwardChannel,
 				Port:     forwardPort,
-				Next:     nil,
 			},
 		}
 
@@ -381,9 +382,11 @@ func (s *IntegrationTestSuite) testMultihopIBCTokenTransfer() {
 			func() bool {
 				afterSenderUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
 				s.Require().NoError(err)
+				fmt.Println("afterSenderUAtomBalance", afterSenderUAtomBalance)
 
 				afterRecipientUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, recipient, uatomDenom)
 				s.Require().NoError(err)
+				fmt.Println("afterRecipientUAtomBalance", afterRecipientUAtomBalance)
 
 				decremented := beforeSenderUAtomBalance.Sub(tokenAmount).Sub(standardFees).IsEqual(afterSenderUAtomBalance)
 				incremented := beforeRecipientUAtomBalance.Add(tokenAmount).IsEqual(afterRecipientUAtomBalance)
@@ -455,7 +458,6 @@ func (s *IntegrationTestSuite) testFailedMultihopIBCTokenTransfer() {
 				Receiver: recipient,
 				Channel:  forwardChannel,
 				Port:     forwardPort,
-				Next:     nil,
 			},
 		}
 

@@ -11,7 +11,7 @@ var (
 	runEvidenceTest               = true
 	runFeeGrantTest               = false
 	runGlobalFeesTest             = true
-	runGovTest                    = true
+	runGovTest                    = false
 	runIBCTest                    = true
 	runSlashingTest               = true
 	runStakingAndDistributionTest = true

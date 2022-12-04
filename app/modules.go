@@ -45,6 +45,8 @@ import (
 	ibc "github.com/cosmos/ibc-go/v3/modules/core"
 	ibcclientclient "github.com/cosmos/ibc-go/v3/modules/core/02-client/client"
 	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
+	ibcprovider "github.com/cosmos/interchain-security/x/ccv/provider"
+	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
 	"github.com/gravity-devs/liquidity/x/liquidity"
 	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
 	"github.com/strangelove-ventures/packet-forward-middleware/v3/router"
@@ -99,6 +101,7 @@ var ModuleBasics = module.NewBasicManager(
 	router.AppModuleBasic{},
 	ica.AppModuleBasic{},
 	globalfee.AppModule{},
+	ibcprovider.AppModuleBasic{},
 )
 
 func appModules(
@@ -136,6 +139,7 @@ func appModules(
 		app.TransferModule,
 		app.ICAModule,
 		app.RouterModule,
+		app.ProviderModule,
 	}
 }
 
@@ -167,8 +171,18 @@ func simulationModules(
 	}
 }
 
-// orderBeginBlockers Tell the app's module manager how to set the order of
-// BeginBlockers, which are run at the beginning of every block.
+/*
+orderBeginBlockers tells the app's module manager how to set the order of
+BeginBlockers, which are run at the beginning of every block.
+
+Interchain Security Requirements:
+  During begin block slashing happens after distr.BeginBlocker so that
+  there is nothing left over in the validator fee pool, so as to keep the
+  CanWithdrawInvariant invariant.
+  NOTE: staking module is required if HistoricalEntries param > 0
+  NOTE: capability module's beginblocker must come before any modules using capabilities (e.g. IBC)
+*/
+
 func orderBeginBlockers() []string {
 	return []string{
 		// upgrades should be run first
@@ -195,9 +209,18 @@ func orderBeginBlockers() []string {
 		vestingtypes.ModuleName,
 		icatypes.ModuleName,
 		globalfee.ModuleName,
+		providertypes.ModuleName,
 	}
 }
 
+/*
+Interchain Security Requirements:
+  - provider.EndBlock gets validator updates from the staking module;
+  thus, staking.EndBlock must be executed before provider.EndBlock;
+  - creating a new consumer chain requires the following order,
+  CreateChildClient(), staking.EndBlock, provider.EndBlock;
+  thus, gov.EndBlock must be executed before staking.EndBlock
+*/
 func orderEndBlockers() []string {
 	return []string{
 		crisistypes.ModuleName,
@@ -223,18 +246,27 @@ func orderEndBlockers() []string {
 		vestingtypes.ModuleName,
 		icatypes.ModuleName,
 		globalfee.ModuleName,
+		providertypes.ModuleName,
 	}
 }
 
+/*
+NOTE: The genutils module must occur after staking so that pools are
+ properly initialized with tokens from genesis accounts.
+ NOTE: The genutils module must also occur after auth so that it can access the params from auth.
+ NOTE: Capability module must occur first so that it can initialize any capabilities
+ so that other modules that want to create or claim capabilities afterwards in InitChain
+ can do so safely.
+*/
 func orderInitBlockers() []string {
 	return []string{
 		capabilitytypes.ModuleName,
 		authtypes.ModuleName,
 		banktypes.ModuleName,
 		distrtypes.ModuleName,
+		govtypes.ModuleName,
 		stakingtypes.ModuleName,
 		slashingtypes.ModuleName,
-		govtypes.ModuleName,
 		minttypes.ModuleName,
 		crisistypes.ModuleName,
 		genutiltypes.ModuleName,
@@ -251,5 +283,6 @@ func orderInitBlockers() []string {
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		globalfee.ModuleName,
+		providertypes.ModuleName,
 	}
 }

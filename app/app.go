@@ -28,6 +28,8 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
+	"github.com/cosmos/interchain-security/testutil/e2e"
+	ibcproviderkeeper "github.com/cosmos/interchain-security/x/ccv/provider/keeper"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
@@ -279,6 +281,11 @@ func (app *GaiaApp) BlockedModuleAccountAddrs(modAccAddrs map[string]bool) map[s
 	// remove module accounts that are ALLOWED to received funds
 	delete(modAccAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
+	// Remove the fee-pool from the group of blocked recipient addresses in bank
+	// this is required for the provider chain to be able to receive tokens from
+	// the consumer chain
+	delete(modAccAddrs, authtypes.NewModuleAddress(authtypes.FeeCollectorName).String())
+
 	return modAccAddrs
 }
 
@@ -402,4 +409,31 @@ type EmptyAppOptions struct{}
 // Get implements AppOptions
 func (ao EmptyAppOptions) Get(o string) interface{} {
 	return nil
+}
+
+// ProviderApp interface implementations for e2e tests
+
+// GetProviderKeeper implements the ProviderApp interface.
+func (app *GaiaApp) GetProviderKeeper() ibcproviderkeeper.Keeper {
+	return app.ProviderKeeper
+}
+
+// GetE2eStakingKeeper implements the ProviderApp interface.
+func (app *GaiaApp) GetE2eStakingKeeper() e2e.E2eStakingKeeper {
+	return app.StakingKeeper
+}
+
+// GetE2eBankKeeper implements the ProviderApp interface.
+func (app *GaiaApp) GetE2eBankKeeper() e2e.E2eBankKeeper {
+	return app.BankKeeper
+}
+
+// GetE2eSlashingKeeper implements the ProviderApp interface.
+func (app *GaiaApp) GetE2eSlashingKeeper() e2e.E2eSlashingKeeper {
+	return app.SlashingKeeper
+}
+
+// GetE2eDistributionKeeper implements the ProviderApp interface.
+func (app *GaiaApp) GetE2eDistributionKeeper() e2e.E2eDistributionKeeper {
+	return app.DistrKeeper
 }

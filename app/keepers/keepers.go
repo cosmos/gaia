@@ -4,7 +4,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	"github.com/cosmos/cosmos-sdk/store/streaming"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -39,6 +38,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	"github.com/cosmos/gaia/v8/x/globalfee"
 	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/keeper"
 	icacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
@@ -53,14 +53,12 @@ import (
 	porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
 	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
+	ibcprovider "github.com/cosmos/interchain-security/x/ccv/provider"
 	liquiditykeeper "github.com/gravity-devs/liquidity/x/liquidity/keeper"
 	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
 	"github.com/strangelove-ventures/packet-forward-middleware/v3/router"
 	routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v3/router/keeper"
 	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v3/router/types"
-	tmos "github.com/tendermint/tendermint/libs/os"
-
-	"github.com/cosmos/gaia/v8/x/globalfee"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
@@ -100,6 +98,7 @@ type AppKeepers struct {
 	ICAModule      ica.AppModule
 	TransferModule transfer.AppModule
 	RouterModule   router.AppModule
+	ProviderModule ibcprovider.AppModule
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
@@ -127,9 +126,9 @@ func NewAppKeeper(
 
 	// configure state listening capabilities using AppOptions
 	// we are doing nothing with the returned streamingServices and waitGroup in this case
-	if _, _, err := streaming.LoadStreamingServices(bApp, appOpts, appCodec, appKeepers.keys); err != nil {
-		tmos.Exit(err.Error())
-	}
+	//if _, _, err := streaming.LoadStreamingServices(bApp, appOpts, appCodec, appKeepers.keys); err != nil {
+	//	tmos.Exit(err.Error())
+	//}
 
 	appKeepers.ParamsKeeper = initParamsKeeper(
 		appCodec,

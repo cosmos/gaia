@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	cosmossdk.io/math v1.0.0-beta.3
-	github.com/cosmos/cosmos-sdk v0.46.1
+	github.com/cosmos/cosmos-sdk v0.45.11
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/ory/dockertest/v3 v3.9.1
 	github.com/spf13/viper v1.12.0
@@ -144,3 +144,11 @@ require (
 	nhooyr.io/websocket v1.8.6 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
+
+replace (
+	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.12-0.20221116140330-9c145c827001
+	github.com/cosmos/ibc-go/v3 => github.com/cosmos/ibc-go/v3 v3.4.0
+	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+	github.com/zondax/hid => github.com/zondax/hid v0.9.0
+)
+

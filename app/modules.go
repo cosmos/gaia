@@ -46,6 +46,7 @@ import (
 	ibcclientclient "github.com/cosmos/ibc-go/v3/modules/core/02-client/client"
 	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
 	ibcprovider "github.com/cosmos/interchain-security/x/ccv/provider"
+	ibcproviderclient "github.com/cosmos/interchain-security/x/ccv/provider/client"
 	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
 	"github.com/gravity-devs/liquidity/x/liquidity"
 	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
@@ -86,6 +87,8 @@ var ModuleBasics = module.NewBasicManager(
 		upgradeclient.CancelProposalHandler,
 		ibcclientclient.UpdateClientProposalHandler,
 		ibcclientclient.UpgradeProposalHandler,
+		ibcproviderclient.ConsumerAdditionProposalHandler,
+		ibcproviderclient.ConsumerRemovalProposalHandler,
 	),
 	params.AppModuleBasic{},
 	crisis.AppModuleBasic{},

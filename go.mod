@@ -65,7 +65,7 @@ require (
 	github.com/cosmos/btcutil v1.0.4 // indirect
 	github.com/cosmos/gorocksdb v1.2.0 // indirect
 	github.com/cosmos/iavl v0.19.4 // indirect
-	github.com/cosmos/ledger-cosmos-go v0.11.1 // indirect
+	github.com/cosmos/ledger-cosmos-go v0.12.0 // indirect
 	github.com/cosmos/ledger-go v0.9.3 // indirect
 	github.com/creachadair/taskgroup v0.3.2 // indirect
 	github.com/curioswitch/go-reassign v0.2.0 // indirect
@@ -231,7 +231,8 @@ require (
 	github.com/uudashr/gocognit v1.0.6 // indirect
 	github.com/yagipy/maintidx v1.0.0 // indirect
 	github.com/yeya24/promlinter v0.2.0 // indirect
-	github.com/zondax/hid v0.9.1-0.20220302062450-5552068d2266 // indirect
+	github.com/zondax/hid v0.9.1 // indirect
+	github.com/zondax/ledger-go v0.14.0 // indirect
 	gitlab.com/bosi/decorder v0.2.3 // indirect
 	go.etcd.io/bbolt v1.3.6 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
@@ -260,8 +261,12 @@ require (
 )
 
 replace (
-	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.9
-	github.com/cosmos/ibc-go/v3 => github.com/cosmos/ibc-go/v3 v3.4.0
+	// dragonberry
+	github.com/confio/ics23/go => github.com/cosmos/cosmos-sdk/ics23/go v0.8.0
+	// use cosmos style protobufs
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-	github.com/zondax/hid => github.com/zondax/hid v0.9.0
+	// latest grpc doesn't work with with our modified proto compiler, so we need to enforce
+	// the following version across all dependencies.
+	google.golang.org/grpc => google.golang.org/grpc v1.33.2
 )
+

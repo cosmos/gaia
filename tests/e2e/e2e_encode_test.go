@@ -11,7 +11,7 @@ const (
 	rawTxFile = "tx_raw.json"
 )
 
-func (s *IntegrationTestSuite) TestEncode() {
+func (s *IntegrationTestSuite) testEncode() {
 	chain := s.chainA
 	_, encoded, err := buildRawTx()
 	s.Require().NoError(err)
@@ -21,7 +21,7 @@ func (s *IntegrationTestSuite) TestEncode() {
 	s.Require().Equal(encoded, got)
 }
 
-func (s *IntegrationTestSuite) TestDecode() {
+func (s *IntegrationTestSuite) testDecode() {
 	chain := s.chainA
 	rawTx, encoded, err := buildRawTx()
 	s.Require().NoError(err)

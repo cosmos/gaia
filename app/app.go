@@ -2,6 +2,7 @@ package gaia
 
 import (
 	"fmt"
+	ibctesting "github.com/cosmos/ibc-go/v3/testing"
 	"io"
 	"net/http"
 	"os"
@@ -60,6 +61,7 @@ var (
 var (
 	_ simapp.App              = (*GaiaApp)(nil)
 	_ servertypes.Application = (*GaiaApp)(nil)
+	_ ibctesting.TestingApp   = (*GaiaApp)(nil)
 )
 
 // GaiaApp extends an ABCI application, but with most of its parameters exported.

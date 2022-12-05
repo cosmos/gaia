@@ -16,9 +16,7 @@ Test Benchmarks:
 4. Try to send a transaction from bob with Alice as a fee granter again. Should fail
 because all amount granted was expended
 */
-func (s *IntegrationTestSuite) TestFeeGrant() {
-	// TODO: Fix and add back this test
-	s.T().Skip()
+func (s *IntegrationTestSuite) testFeeGrant() {
 	s.Run("test fee grant module", func() {
 		var (
 			valIdx = 0

@@ -179,11 +179,11 @@ orderBeginBlockers tells the app's module manager how to set the order of
 BeginBlockers, which are run at the beginning of every block.
 
 Interchain Security Requirements:
-  During begin block slashing happens after distr.BeginBlocker so that
-  there is nothing left over in the validator fee pool, so as to keep the
-  CanWithdrawInvariant invariant.
-  NOTE: staking module is required if HistoricalEntries param > 0
-  NOTE: capability module's beginblocker must come before any modules using capabilities (e.g. IBC)
+During begin block slashing happens after distr.BeginBlocker so that
+there is nothing left over in the validator fee pool, so as to keep the
+CanWithdrawInvariant invariant.
+NOTE: staking module is required if HistoricalEntries param > 0
+NOTE: capability module's beginblocker must come before any modules using capabilities (e.g. IBC)
 */
 
 func orderBeginBlockers() []string {
@@ -218,11 +218,11 @@ func orderBeginBlockers() []string {
 
 /*
 Interchain Security Requirements:
-  - provider.EndBlock gets validator updates from the staking module;
-  thus, staking.EndBlock must be executed before provider.EndBlock;
-  - creating a new consumer chain requires the following order,
-  CreateChildClient(), staking.EndBlock, provider.EndBlock;
-  thus, gov.EndBlock must be executed before staking.EndBlock
+- provider.EndBlock gets validator updates from the staking module;
+thus, staking.EndBlock must be executed before provider.EndBlock;
+- creating a new consumer chain requires the following order,
+CreateChildClient(), staking.EndBlock, provider.EndBlock;
+thus, gov.EndBlock must be executed before staking.EndBlock
 */
 func orderEndBlockers() []string {
 	return []string{

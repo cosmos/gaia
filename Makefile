@@ -99,7 +99,7 @@ BUILD_TARGETS := build install
 build: BUILD_ARGS=-o $(BUILDDIR)/
 
 $(BUILD_TARGETS): go.sum $(BUILDDIR)/
-	go $@ $(BUILD_FLAGS) $(BUILD_ARGS) ./...
+	go $@ -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./...
 
 $(BUILDDIR)/:
 	mkdir -p $(BUILDDIR)/
@@ -188,10 +188,10 @@ $(TEST_TARGETS): run-tests
 run-tests:
 ifneq (,$(shell which tparse 2>/dev/null))
 	@echo "--> Running tests"
-	@go test -json $(ARGS) $(TEST_PACKAGES) | tparse
+	@go test -mod=readonly -json $(ARGS) $(TEST_PACKAGES) | tparse
 else
 	@echo "--> Running tests"
-	@go test $(ARGS) $(TEST_PACKAGES)
+	@go test -mod=readonly $(ARGS) $(TEST_PACKAGES)
 endif
 
 .PHONY: run-tests $(TEST_TARGETS)

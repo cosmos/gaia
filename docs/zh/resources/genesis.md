@@ -194,7 +194,7 @@ gaiad add-genesis-account <account-address> <amount><denom>
   - `annual_provisions`: 每块重新计算。初始值是 `0.000000000000000000`。
 - `params`
   - `mint_denom`: 增发权益代币面值，此处是 `uatom`。
-  - `inflation_rate_change`: 通胀每年最大变化。 
+  - `inflation_rate_change`: 通胀每年最大变化。
   - `inflation_max`: 最高通胀水平。
   - `inflation_min`: 最低通胀水平。
   - `goal_bonded`: 目标绑定量占总供应量百分比。如果委托 token 的百分比低于此目标，则通胀率会增加（在`inflation_rate_change`之后），直至达到`inflation_max`。 如果委托 token 的百分比高于此目标，则通胀率会下降（在`inflation_rate_change`之后），直至达到`inflation_min`。

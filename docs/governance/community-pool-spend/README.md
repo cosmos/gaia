@@ -28,6 +28,7 @@ Drafting and submitting a proposal is a process that takes time, attention, and 
 
 If you are considering drafting a proposal, you should review the general
 background on drafting and submitting a proposal:
+
 1. [How the voting process and governance mechanism works](../process.md)
 1. [How to draft your proposal and engage with the Cosmos community about it](../best-practices.md)
 1. [How to format proposals](../formatting.md)
@@ -48,6 +49,7 @@ Though the rate of funding is currently fixed at 2% of staking rewards, the effe
 The current 2% tax rate of funding may be modified with a governance proposal and enacted immediately after the proposal passes.
 
 Currently, funds cannot be sent to the Community Pool, but we should expect this to change with the next upgrade. Read more about this new functionality [here](https://github.com/cosmos/cosmos-sdk/pull/5249). What makes this functionality important?
+
 1. Funded projects that fail to deliver may return funding to Community Pool;
 2. Entities may help fund the Community Pool by depositing funds directly to the account.
 
@@ -68,6 +70,7 @@ Funds from the Cosmos Community Pool may be spent via successful governance prop
 We don't know 🤷
 
 The prevailing assumption is that funds should be spent in a way that brings value to the Cosmos Hub. However, there is debate about how to keep the fund sustainable. There is also some debate about who should receive funding. For example, part of the community believes that the funds should only be used for those who need funding most. Other topics of concern include:
+
 - retroactive grants
 - price negotiation
 - fund disbursal (eg. payments in stages; payments pegged to reduce volitiliy)

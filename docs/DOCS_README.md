@@ -18,7 +18,7 @@ If you want to open a PR on Gaia to update the documentation, please follow the 
 
 The documentation for Gaia is hosted at:
 
-- https://hub.cosmos.network/
+- <https://hub.cosmos.network/>
 
 built from the files in this (`/docs`) directory for [main](https://github.com/cosmos/gaia/tree/main/docs).
 
@@ -69,19 +69,23 @@ to send users to the GitHub.
 To build and serve the documentation locally, make sure you're in the `docs` directory and run the following:
 
 Clear `node_modules` for a clean install. This is not necessary every time.
+
 ```bash
 rm -rf node_modules
 ```
 
 Install project dependencies
+
 ```bash
 npm install
 ```
 
 Serve the app
+
 ```bash
 npm run serve
 ```
+
 then navigate to `localhost:8080` in your browser.
 
 To build documentation as a static website run `npm run build`. You will find the website in `.vuepress/dist` directory.
@@ -98,14 +102,17 @@ much as possible with its [counterpart in the Tendermint Core repo](https://gith
 ### Update and Build the RPC docs
 
 1. Execute the following command at the root directory to install the swagger-ui generate tool.
+
    ```bash
    make tools
    ```
+
 2. Edit API docs
    1. Directly Edit API docs manually: `cmd/gaiad/swagger-ui/swagger.yaml`.
    2. Edit API docs within the [Swagger Editor](https://editor.swagger.io/). Please refer to this [document](https://swagger.io/docs/specification/2-0/basic-structure/) for the correct structure in `.yaml`.
 3. Download `swagger.yaml` and replace the old `swagger.yaml` under fold `cmd/gaiad/swagger-ui`.
 4. Compile gaiad
+
    ```bash
    make install
    ```

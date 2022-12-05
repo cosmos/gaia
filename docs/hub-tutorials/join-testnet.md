@@ -9,13 +9,14 @@ title: Joining Testnet
 | --------------- | -------------- | -------------------- | ---------------- |
 | Theta           | `theta-testnet-001` | 9283650   | March 17 2021 |
 
-
 ## Background
+
 The current Cosmos Hub Testnet is running on the [Theta Upgrade](https://interchain-io.medium.com/preparing-for-the-cosmos-hub-v7-theta-upgrade-2fc41ce34787). Visit the [testnet explorer](https://explorer.theta-testnet.polypore.xyz/) to view all on chain activity.
 
 For those who just need instructions on performing the upgrade, see the [Upgrade](#upgrading) section.
 
 ## Releases
+
 If syncing before the Theta update, checkout [`v6.0.0`](https://github.com/cosmos/gaia/tree/v6.0.0). Until a release is cut for the upgrade, feel free to track the `theta-prepare` branch (deleted).
 
 ## Prerequisites
@@ -26,10 +27,10 @@ It's recommended that public testnet nodes are running on machines with at least
 
 **Make sure Go & Gaia are [properly installed](../getting-started/installation.md). The most recent Gaia version for the Theta Testnet is [`v7.0.0-rc0`](https://github.com/cosmos/gaia/tree/v7.0.0-rc0).**
 
-
 This tutorial will provide all necessary instructions for joining the current public testnet. If you're interested in more advanced configuration and synchronization options, see [Join Mainnet](./join-mainnet.md) for a detailed walkthrough.
 
 ## Sync Options
+
 There are two ways to sync a testnet node, Fastsync and State Sync. [Fastsync](https://docs.tendermint.com/v0.34/tendermint-core/fast-sync.html) syncs the chain from genesis by downloading blocks in paralell and then verifying them. [State Sync](https://docs.tendermint.com/v0.34/tendermint-core/state-sync.html) will look for snapshots from peers at a trusted height and then verifying a minimal set of snapshot chunks against the network.
 
 State Sync is far faster and more efficient than Blocksync, but Blocksync offers higher data integrity and more robust history. For those who are concerned about storage and costs, State Sync can be the better option as it minimizes storage usage when rebuilding initial state.
@@ -92,6 +93,7 @@ Cosmovisor is a process manager that monitors the governance module for incoming
 Cosmovisor can be used when syncing with Blocksync or State Sync. Make sure to follow the Cosmovisor setup below, and then run `cosmovisor start` in place of `gaiad start`.
 
 Cosmovisor requires the creation the following directory structure:
+
 ```shell
 .
 ├── current -> genesis or upgrades/<name>
@@ -113,6 +115,7 @@ The following script installs, configures and starts Cosmovisor:
 # Install Cosmovisor
 go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor
 ```
+
 > NOTE: If you ran a full node on a previous testnet, please skip to [Upgrading From Previous Testnet](#upgrading-from-previous-testnet).
 
 To start a new node, the mainnet instructions apply:
@@ -127,6 +130,7 @@ The only difference is the SDK version and genesis file. See the [testnet repo](
 These instructions are for full nodes that have ran on previous versions of and would like to upgrade to the latest testnet.
 
 When the chain reaches the upgrade block height, the chain will halt and you will have to download the new binary and move it to the correct folder. For the `Theta` upgrade, this would look like:
+
 ```
 # Prepare Theta upgrade directory
 mkdir -p ~/.gaia/cosmovisor/upgrades/Theta/bin
@@ -146,6 +150,7 @@ your node will still try to connect to them, but may fail if they haven't also
 been upgraded.
 
 ### Blocksync
+
 Blocksync will require navigating the Theta upgrade either via [Cosmovisor](#using-cosmovisor) or manually.
 
 Manually updating `gaiad` will require stopping the chain and installing the new binary once it halts at the expected block height (some time on March 17, TBA).

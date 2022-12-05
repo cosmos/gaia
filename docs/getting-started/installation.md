@@ -15,12 +15,12 @@ At present, the SDK fully supports installation on linux distributions. For the 
 2. [Install Go](#install-go)
 3. [Install `Gaiad` binaries](#install-the-binaries)
 
-
 ## Build Tools
 
 Install `make` and `gcc`.
 
 **Ubuntu:**
+
 ```bash
 sudo apt-get update
 
@@ -40,6 +40,7 @@ We suggest the following two ways to install Go. Check out the [official docs](h
 **Ubuntu:**
 
 At the time of this writing, the latest release is `1.18.2`. We're going to download the tarball, extract it to `/usr/local`, and export `GOROOT` to our `$PATH`
+
 ```bash
 curl -OL https://golang.org/dl/go1.18.2.linux-amd64.tar.gz
 

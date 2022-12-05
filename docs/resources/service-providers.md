@@ -25,7 +25,6 @@ This document describes:
 - [REST API](#rest-api)
   - [Listen for incoming transactions](#listen-for-incoming-transaction)
 
-
 ## Connection Options
 
 There are four main technologies to consider to connect to the Cosmos Hub:
@@ -183,8 +182,6 @@ You can run these commands as remote control or when you are running it on your 
 ### Create a Key Pair
 
 The default key is `secp256k1 elliptic curve`. Use the `gaiad keys` command to list the keys and generate a new key.
-
-
 
 ```bash
 gaiad keys add <your_key_name>

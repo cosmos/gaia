@@ -21,6 +21,7 @@ import (
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
+	"github.com/cosmos/cosmos-sdk/x/genutil/types"
 	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
 
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
@@ -404,7 +405,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 }
 
 // GetStakingKeeper implements the TestingApp interface. Needed for ICS.
-func (appKeepers *AppKeepers) GetStakingKeeper() stakingkeeper.Keeper {
+func (appKeepers *AppKeepers) GetStakingKeeper() types.StakingKeeper {
 	return appKeepers.StakingKeeper
 }
 

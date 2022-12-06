@@ -4,6 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	"github.com/cosmos/cosmos-sdk/store/streaming"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -22,6 +23,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
 	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
+	tmos "github.com/tendermint/tendermint/libs/os"
 
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -134,10 +136,9 @@ func NewAppKeeper(
 		configure state listening capabilities using AppOptions
 		we are doing nothing with the returned streamingServices and waitGroup in this case
 	*/
-
-	// if _, _, err := streaming.LoadStreamingServices(bApp, appOpts, appCodec, appKeepers.keys); err != nil {
-	//	tmos.Exit(err.Error())
-	// }
+	if _, _, err := streaming.LoadStreamingServices(bApp, appOpts, appCodec, appKeepers.keys); err != nil {
+		tmos.Exit(err.Error())
+	}
 
 	appKeepers.ParamsKeeper = initParamsKeeper(
 		appCodec,

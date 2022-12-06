@@ -20,7 +20,7 @@ You should be able to find the Tendermint app in Ledger Live.
 
 ## KMS configuration
 
-In this section, we will configure a KMS to use a Ledger device running the Tendermint Validator App. 
+In this section, we will configure a KMS to use a Ledger device running the Tendermint Validator App.
 
 ### Config file
 

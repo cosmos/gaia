@@ -10,7 +10,6 @@ If you have a final draft of your proposal ready to submit, you may want to push
 2. [Formatting the JSON file](#formatting-the-json-file-for-the-governance-proposal) for the governance proposal transaction that will be on-chain
 3. [Sending the transaction](#sending-the-transaction-that-submits-your-governance-proposal) that submits your governance proposal on-chain
 
-
 ## Hosting supplementary materials
 
 In general we try to minimize the amount of data pushed to the blockchain.
@@ -24,15 +23,15 @@ can upload it to the IPFS network:
 2. using a service such as [https://pinata.cloud](https://pinata.cloud)
 <!-- markdown-link-check-disable -->
 
-Ensure that you "pin" the file so that it continues to be available on the network. You should get a URL like this: https://ipfs.io/ipfs/QmbkQNtCAdR1CNbFE8ujub2jcpwUcmSRpSCg8gVWrTHSWD
+Ensure that you "pin" the file so that it continues to be available on the network. You should get a URL like this: <https://ipfs.io/ipfs/QmbkQNtCAdR1CNbFE8ujub2jcpwUcmSRpSCg8gVWrTHSWD>
 The value QmbkQNtCAdR1CNbFE8ujub2jcpwUcmSRpSCg8gVWrTHSWD is called the `CID` of
 your file - it is effectively the file's hash.
 <!-- markdown-link-check-enable -->
 
 If you uploaded a markdown file, you can use the IPFS markdown viewer to render
 the document for better viewing. Links for the markdown viewer look like
-`https://ipfs.io/ipfs/QmTkzDwWqPbnAh5YiV5VwcTLnGdwSNsNTn2aDxdXBFca7D/example#/ipfs/<CID>`, where `<CID>` is your CID. For instance the link above would be: 
-https://ipfs.io/ipfs/QmTkzDwWqPbnAh5YiV5VwcTLnGdwSNsNTn2aDxdXBFca7D/example#/ipfs/QmbkQNtCAdR1CNbFE8ujub2jcpwUcmSRpSCg8gVWrTHSWD
+`https://ipfs.io/ipfs/QmTkzDwWqPbnAh5YiV5VwcTLnGdwSNsNTn2aDxdXBFca7D/example#/ipfs/<CID>`, where `<CID>` is your CID. For instance the link above would be:
+<https://ipfs.io/ipfs/QmTkzDwWqPbnAh5YiV5VwcTLnGdwSNsNTn2aDxdXBFca7D/example#/ipfs/QmbkQNtCAdR1CNbFE8ujub2jcpwUcmSRpSCg8gVWrTHSWD>
 
 Share the URL with others and verify that your file is publicly accessible.
 
@@ -52,7 +51,6 @@ See the relevant section for the type of proposal you are drafting:
 Once on-chain, most people will rely upon network explorers to interpret this information with a graphical user interface (GUI).
 
 **Note**: In future, this formatting [may be changed to be more standardized](https://github.com/cosmos/cosmos-sdk/issues/5783) with other the types of governance proposals.
-
 
 ## Sending the transaction that submits your governance proposal
 
@@ -104,6 +102,7 @@ After posting your transaction, your command line interface (gaiad) will provide
 ### Troubleshooting a failed transaction
 
 There are a number of reasons why a transaction may fail. Here are two examples:
+
 1. **Running out of gas** - The more data there is in a transaction, the more gas it will need to be processed. If you don't specify enough gas, the transaction will fail.
 
 2. **Incorrect denomination** - You may have specified an amount in 'utom' or 'atom' instead of 'uatom', causing the transaction to fail.
@@ -111,6 +110,7 @@ There are a number of reasons why a transaction may fail. Here are two examples:
 If you encounter a problem, try to troubleshoot it first, and then ask for help on the Cosmos Hub forum: [https://forum.cosmos.network](https://forum.cosmos.network/c/hub-proposals/25). We can learn from failed attempts and use them to improve upon this guide.
 
 ### Depositing funds after a proposal has been submitted
+
 Sometimes a proposal is submitted without having the minimum token amount deposited yet. In these cases you would want to be able to deposit more tokens to get the proposal into the voting stage. In order to deposit tokens, you'll need to know what your proposal ID is after you've submitted your proposal. You can query all proposals by the following command:
 
 ```
@@ -135,12 +135,14 @@ The `<deposit>` is written as `500000uatom`, just like the example above.
 ### Submitting your proposal to the testnet
 
 You may want to submit your proposal to the testnet chain before the mainnet for a number of reasons:
+
 1. To see what the proposal description will look like
 2. To signal that your proposal is about to go live on the mainnet
 3. To share what the proposal will look like in advance with stakeholders
 4. To test the functionality of the governance features
 
 Submitting your proposal to the testnet increases the likelihood that you will discover a flaw before deploying your proposal on mainnet. A few things to keep in mind:
+
 - you'll need testnet tokens for your proposal (ask around for a faucet)
 - the parameters for testnet proposals are different (eg. voting period timing, deposit amount, deposit denomination)
 - the deposit denomination is in 'muon' instead of 'uatom'

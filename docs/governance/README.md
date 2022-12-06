@@ -27,9 +27,9 @@ ATOM stakers can find active on-chain proposals to vote on [here](https://www.mi
 - [On-Chain Process](./process.md)
 - [Best Practices for Drafting a Proposal](./best-practices.md)
 - Proposal Types:
-    - Text Proposal
-    - [Parameter Change Proposal](./params-change)
-    - [Community Spend Proposal](./community-pool-spend)
+  - Text Proposal
+  - [Parameter Change Proposal](./params-change)
+  - [Community Spend Proposal](./community-pool-spend)
 - [Submitting a Proposal](./submitting.md)
 - [List of Proposals](./proposals)
 
@@ -45,4 +45,3 @@ community members, including:
 - [Reddit](http://reddit.com/r/cosmosnetwork)
 - [Telegram](https://t.me/atomgov)
 - anywhere else you might interact with members of the Cosmos community!
-

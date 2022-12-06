@@ -1,6 +1,6 @@
 # Releasing
 
-This document outlines the release process for https://github.com/cosmos/gaia. We use [Long-Lived Version Branch Approach](x) on a `main` branch and a `release` branch.
+This document outlines the release process for <https://github.com/cosmos/gaia>. We use [Long-Lived Version Branch Approach](x) on a `main` branch and a `release` branch.
 
 We follow [Semver](https://semver.org/) in that any patch releases are non-breaking changes. It's important to note, that breaking changes in a Blockchain context include non-determinism. So if a code change is backwards compatible, it may still impact the amount of gas needed to execute an action, which means the change is in fact breaking as it results in a different apphash after the code is executed. It's important for non-breaking changes to be possible to be used on the live network prior to the release.
 
@@ -11,23 +11,27 @@ Each major release will have a release branch and patch releases will be tagged 
 In the Gaia repo, there are two categories of long-lived branches:
 
 ### Branch: `main`
-The `main` branch should be targeted for PRs that contain a bug-fix/feature/improvement that will be included for the next release. 
+
+The `main` branch should be targeted for PRs that contain a bug-fix/feature/improvement that will be included for the next release.
 
 ### Branch: `release`
+
 There are multiple long-lived branches with the `release/` prefix. Each release series follows the format `release/vn.0.x`, e.g. `release/v7.0.x`. The branch `release/vn.0.x` should point to the most updated `vn` release, e.g. `release/v5.0.x` should be the same as `release/v5.0.8` if that's the latest `v5.0` release.
 
 ## Other Branches
-### branches for the next release:
+
+### branches for the next release
 
 Other feature/fix branches targeting at `main` contain commits preparing for the next release. When the `release-prepare-branch` is ready for next release, add label `A:backport/vn.0.x` to the PR of `release-prepare-branch` against `main`, then the mergifybot will create a new PR of `mergify/bp/release/vn.0.x`  against `Release/vn.0.x`.
 
-### branches for the backport release:
+### branches for the backport release
 
-If the feature/fix branches are for a backport release, `main` branch already contains the commits for the next major release  `vn`, the feature/fix branch's PR should target at `Release/vn-1` rather than `main`. 
+If the feature/fix branches are for a backport release, `main` branch already contains the commits for the next major release  `vn`, the feature/fix branch's PR should target at `Release/vn-1` rather than `main`.
 
 ## Release Procedure
 
 ### Checks and tests
+
 Before merge and release, the following tests checks need to be conducted:
 
 - check the `replace` line in `go.mod`, check all the versions in `go.mod` are correct.
@@ -41,45 +45,52 @@ For minor release. Merge or use mergify to merge the commits to `release/vn.0.x`
 
 Usually the first release on the `release/vn.0.x` is a release candidate.
 
-#### example of releasing `v8.0.0-rc0`:
+#### example of releasing `v8.0.0-rc0`
 
 1. checkout `release/v8.0.x` off `main`
 1. get the `v8-prepare-branch` ready including CHANGELOG.md, create a PR to merge `v8-prepare-branch` to `main`, label this PR `A:backport/v8.0.x`.
 1. after merge  `v8-prepare-branch` to `main`, mergifybot will create a new PR of  `mergify/bp/release/v8.0.x` to `release/v8.0.x`. Check the PR, and merge this PR.
 1. checkout  `release/v8.0.x` and tag `v8.0.0-rc0`.
 
-#### example of releasing `v8.0.0`:
+#### example of releasing `v8.0.0`
 
 1. get the `v800-prepare-branch` ready including CHANGELOG.md, create a PR to merge `v800-prepare-branch` to `main`, label this PR `A:backport/v8.0.x`.
 1. after merge  `v800-prepare-branch` to `main`, mergifybot will create a new PR of  `mergify/bp/release/v8.0.x` to `release/v8.0.x`. Check the PR, and merge this PR.
 1. checkout  `release/v8.0.x` and tag `v8.0.0`.
 
-#### example of releasing `v8.0.1`:
+#### example of releasing `v8.0.1`
 
 1. get the `v801-prepare-branch`(off `main`) ready including CHANGELOG.md, create a PR to merge `v801-prepare-branch` to `main`, label this PR `A:backport/v8.0.x`.
 1. after merge  `v801-prepare-branch` to `main`, mergifybot will create a new PR of  `mergify/bp/release/v8.0.x` to `release/v8.0.x`. Check the PR, and merge this PR.
 1. checkout  `release/v8.0.x` and tag `v8.0.1`.
 
 ### backport release
+
 For a backport release, checkout a new branch from the right release branch, for example, `release/vn-1.0.x`. Commits to this new branch and merge into `release/vn-1.0.x`, tag the backport version from `release/vn-1.0.x`.
 
-#### example of backport release `v7.0.5`:
+#### example of backport release `v7.0.5`
+
 assume main branch is at `v8`.
+
 1. checkout `v705-prepare-branch` off `release/v7.0.x`, get the backport changes ready including CHANGELOG.md on `v705-prepare-branch`.
 1. create a PR to merge `v705-prepare-branch` to `release/v7.0.x`, and merge.
 1. checkout `release/v7.0.x`  tag `v7.0.5`.
 
 ### Test building artifacts
+
 Before tagging the version, please test the building releasing artifacts by
+
 ```bash
 make distclean build-reproducible
 ```
-The above command will generate a directory 
+
+The above command will generate a directory
 `gaia/artifacts` with different os and architecture binaries. If the above command runs sucessfully, delete the directory `rm -r gaia/artifacts`.
 
 ### Tagging
 
 The following steps are the default for tagging a specific branch commit (usually on a branch labeled `release/vX.X.X`):
+
 1. Ensure you have checked out the commit you wish to tag
 1. `git pull --tags --dry-run`
 1. `git pull --tags`
@@ -89,11 +100,13 @@ The following steps are the default for tagging a specific branch commit (usuall
 1. `git push --tags`
 
 To re-create a tag:
+
 1. `git tag -d v4.0.0` to delete a tag locally
 1. `git push --delete origin v4.0.0`, to push the deletion to the remote
 1. Proceed with the above steps to create a tag
 
 To tag and build without a public release (e.g., as part of a timed security release):
+
 1. Follow the steps above for tagging locally, but do not push the tags to the repository.
 1. After adding the tag locally, you can build the binary, e.g., `make build-reproducible`.
 1. To finalize the release, push the local tags, create a release based off the newly pushed tag, and attach the binaries.

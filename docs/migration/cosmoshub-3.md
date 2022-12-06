@@ -14,38 +14,39 @@ There is a strong social consensus around proposal `Cosmos Hub 4 Upgrade Proposa
 on `cosmoshub-3`. Following proposals #[27](https://www.mintscan.io/cosmos/proposals/27), #[35](https://www.mintscan.io/cosmos/proposals/35) and #[36](https://www.mintscan.io/cosmos/proposals/36).
 This indicates that the upgrade procedure should be performed on `February 18, 2021 at 06:00 UTC`.
 
-  - [Summary](#summary)
-  - [Migrations](#migrations)
-  - [Preliminary](#preliminary)
-  - [Major Updates](#major-updates)
-  - [Risks](#risks)
-  - [Recovery](#recovery)
-  - [Upgrade Procedure](#upgrade-procedure)
-  - [Guidance for Full Node Operators](#guidance-for-full-node-operators)
-  - [Notes for Service Providers](#notes-for-service-providers)
- 
+- [Summary](#summary)
+- [Migrations](#migrations)
+- [Preliminary](#preliminary)
+- [Major Updates](#major-updates)
+- [Risks](#risks)
+- [Recovery](#recovery)
+- [Upgrade Procedure](#upgrade-procedure)
+- [Guidance for Full Node Operators](#guidance-for-full-node-operators)
+- [Notes for Service Providers](#notes-for-service-providers)
+
 # Summary
 
 The Cosmoshub-3 will undergo a scheduled upgrade to Cosmoshub-4 on Feb 18, 2021 at 6 UTC.
 
 The following is a short summary of the upgrade steps:
-    1. Stopping the running Gaia v2.0.x instance 
+    1. Stopping the running Gaia v2.0.x instance
     1. Backing up configs, data, and keys used for running Cosmoshub-3
     1. Resetting state to clear the local Cosmoshub-3 state
     1. Copying the cosmoshub-4 genesis file to the Gaia config folder (either after migrating an existing cosmoshub-3 genesis export, or downloading the cosmoshub-4 genesis from the mainnet github)
     1. Installing the Gaia v4.0.x release
     1. Starting the Gaia v4.0.x instance to resume the Cosmos hub chain at a height of <cosmoshub3 height> + 1.
 
-Specific instructions for validators are available in [Upgrade Procedure](#upgrade-procedure), 
+Specific instructions for validators are available in [Upgrade Procedure](#upgrade-procedure),
 and specific instructions for full node operators are available in [Guidance for Full Node Operators](#guidance-for-full-node-operators).
 
 Upgrade coordination and support for validators will be available on the #validators-verified channel of the [Cosmos Discord](https://discord.gg/cosmosnetwork).
 
 The network upgrade can take the following potential pathways:
+
 1. Happy path: Validator successfully migrates the cosmoshub-3 genesis file to a cosmoshub-4 genesis file, and the validator can successfully start Gaia v4 with the cosmoshub-4 genesis within 1-2 hours of the scheduled upgrade.
 1. Not-so-happy path: Validators have trouble migrating the cosmoshub-3 genesis to a cosmoshub-4 genesis, but can obtain the genesis file from the Cosmos mainnet github repo and can successfully start Gaia v4 within 1-2 hours of the scheduled upgrade.  
-1. Abort path: In the rare event that the team becomes aware of critical issues, which result in an unsuccessful migration within a few hours, the upgrade will be announced as aborted 
-   on the #validators-verified channel of [Discord](https://discord.gg/cosmosnetwork), and validators will need to resume running cosmoshub-3 network without any updates or changes. 
+1. Abort path: In the rare event that the team becomes aware of critical issues, which result in an unsuccessful migration within a few hours, the upgrade will be announced as aborted
+   on the #validators-verified channel of [Discord](https://discord.gg/cosmosnetwork), and validators will need to resume running cosmoshub-3 network without any updates or changes.
    A new governance proposal for the upgrade will need to be issued and voted on by the community.
 
 # Migrations
@@ -66,7 +67,7 @@ If you’re running a block explorer, wallet, exchange, validator, or any other 
 
 If you want to test the procedure before the update happens on 18th of February, please see this post accordingly:
 
-https://github.com/cosmos/gaia/issues/569#issuecomment-767910963
+<https://github.com/cosmos/gaia/issues/569#issuecomment-767910963>
 
 ## Preliminary
 
@@ -75,8 +76,8 @@ major upgrade (`cosmoshub-3`). These changes notably consist of many new feature
 protocol changes, and application structural changes that favor developer ergonomics
 and application development.
 
-First and foremost, [IBC](https://docs.cosmos.network/main/ibc/overview.html) following 
-the [Interchain Standads](https://github.com/cosmos/ics#ibc-quick-references) will be enabled. 
+First and foremost, [IBC](https://docs.cosmos.network/main/ibc/overview.html) following
+the [Interchain Standads](https://github.com/cosmos/ics#ibc-quick-references) will be enabled.
 This upgrade comes with several improvements in efficiency, node synchronization and following blockchain upgrades.
 More details on the [Stargate Website](https://stargate.cosmos.network/).
 
@@ -89,20 +90,20 @@ Validators should expect that at least 16GB of RAM needs to be provisioned to pr
 ## Major Updates
 
 There are many notable features and changes in the upcoming release of the SDK. Many of these
-are discussed at a high level 
+are discussed at a high level
 [here](https://github.com/cosmos/stargate).
 
 Some of the biggest changes to take note on when upgrading as a developer or client are the the following:
 
-- **Protocol Buffers**: Initially the Cosmos SDK used Amino codecs for nearly all encoding and decoding. 
+- __Protocol Buffers__: Initially the Cosmos SDK used Amino codecs for nearly all encoding and decoding.
 In this version a major upgrade to Protocol Buffers have been integrated. It is expected that with Protocol Buffers
 applications gain in speed, readability, convinience and interoperability with many programming languages.
 [Read more](https://github.com/cosmos/cosmos-sdk/blob/master/docs/migrations/app_and_modules.md#protocol-buffers)
-- **CLI**: The CLI and the daemon for a blockchain were seperated in previous versions of the Cosmos SDK. This 
+- __CLI__: The CLI and the daemon for a blockchain were seperated in previous versions of the Cosmos SDK. This
 led to a `gaiad` and `gaiacli` binary which were seperated and could be used for different interactions with the
 blockchain. Both of these have been merged into one `gaiad` which now supports the commands the `gaiacli` previously
 supported.
-- **Node Configuration**: Previously blockchain data and node configuration was stored in `~/.gaia/`, these will
+- __Node Configuration__: Previously blockchain data and node configuration was stored in `~/.gaia/`, these will
 now reside in `~/.gaia/`, if you use scripts that make use of the configuration or blockchain data, make sure to update the path.
 
 ## Risks
@@ -154,13 +155,13 @@ The version/commit hash of Gaia v2.0.15: `89cf7e6fc166eaabf47ad2755c443d455feda0
     perl -i -pe 's/^halt-time =.*/halt-time = 1613628000/' ~/.gaia/config/app.toml
     ```
 
- 1. After the chain has halted, make a backup of your `.gaia` directory
+1. After the chain has halted, make a backup of your `.gaia` directory
 
     ```bash
     mv ~/.gaia ./gaiad_backup
     ```
 
-    **NOTE**: It is recommended for validators and operators to take a full data snapshot at the export
+    __NOTE__: It is recommended for validators and operators to take a full data snapshot at the export
    height before proceeding in case the upgrade does not go as planned or if not enough voting power
    comes online in a sufficient and agreed upon amount of time. In such a case, the chain will fallback
    to continue operating `cosmoshub-3`. See [Recovery](#recovery) for details on how to proceed.
@@ -168,7 +169,7 @@ The version/commit hash of Gaia v2.0.15: `89cf7e6fc166eaabf47ad2755c443d455feda0
 1. Export existing state from `cosmoshub-3`:
 
    Before exporting state via the following command, the `gaiad` binary must be stopped!
-   As a validator, you can see the last block height created in the 
+   As a validator, you can see the last block height created in the
    `~/.gaia/data/priv_validator_state.json` - or now residing in `gaiad_backup` when you made
     a backup as in the last step - and obtain it with
 
@@ -177,13 +178,14 @@ The version/commit hash of Gaia v2.0.15: `89cf7e6fc166eaabf47ad2755c443d455feda0
    ```
 
    ```bash
-   $ gaiad export --height=<height> > cosmoshub_3_genesis_export.json
+   gaiad export --height=<height> > cosmoshub_3_genesis_export.json
    ```
+
    _this might take a while, you can expect an hour for this step_
 
 1. Verify the SHA256 of the (sorted) exported genesis file:
 
-    Compare this value with other validators / full node operators of the network. 
+    Compare this value with other validators / full node operators of the network.
     Going forward it will be important that all parties can create the same genesis file export.
 
    ```bash
@@ -192,13 +194,13 @@ The version/commit hash of Gaia v2.0.15: `89cf7e6fc166eaabf47ad2755c443d455feda0
    ```
 
 1. At this point you now have a valid exported genesis state! All further steps now require
-v4.0.2 of [Gaia](https://github.com/cosmos/gaia). 
+v4.0.2 of [Gaia](https://github.com/cosmos/gaia).
 Cross check your genesis hash with other peers (other validators) in the chat rooms.
 
-   **NOTE**: Go [1.15+](https://golang.org/dl/) is required!
+   __NOTE__: Go [1.15+](https://golang.org/dl/) is required!
 
    ```bash
-   $ git clone https://github.com/cosmos/gaia.git && cd gaia && git checkout v4.0.2; make install
+   git clone https://github.com/cosmos/gaia.git && cd gaia && git checkout v4.0.2; make install
    ```
 
 1. Verify you are currently running the correct version (v4.0.2) of the _Gaia_:
@@ -211,12 +213,13 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
     build_tags: netgo,ledger
     ...
    ```
+
     The version/commit hash of Gaia v4.0.2: `6d46572f3273423ad9562cf249a86ecc8206e207`
 
 1. Migrate exported state from the current v2.0.15 version to the new v4.0.2 version:
 
    ```bash
-   $ gaiad migrate cosmoshub_3_genesis_export.json --chain-id=cosmoshub-4 --initial-height [last_cosmoshub-3_block+1] > genesis.json
+   gaiad migrate cosmoshub_3_genesis_export.json --chain-id=cosmoshub-4 --initial-height [last_cosmoshub-3_block+1] > genesis.json
    ```
 
    This will migrate our exported state into the required `genesis.json` file to start the cosmoshub-4.
@@ -228,16 +231,16 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
    [SHA256_VALUE]  genesis.json
    ```
 
-    Compare this value with other validators / full node operators of the network. 
+    Compare this value with other validators / full node operators of the network.
     It is important that each party can reproduce the same genesis.json file from the steps accordingly.
 
 1. Reset state:
 
-   **NOTE**: Be sure you have a complete backed up state of your node before proceeding with this step.
+   __NOTE__: Be sure you have a complete backed up state of your node before proceeding with this step.
    See [Recovery](#recovery) for details on how to proceed.
 
    ```bash
-   $ gaiad unsafe-reset-all
+   gaiad unsafe-reset-all
    ```
 
 1. Move the new `genesis.json` to your `.gaia/config/` directory
@@ -246,13 +249,13 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
     cp genesis.json ~/.gaia/config/
     ```
 
-1. Start your blockchain 
+1. Start your blockchain
 
     ```bash
     gaiad start
     ```
 
-    Automated audits of the genesis state can take 30-120 min using the crisis module. This can be disabled by 
+    Automated audits of the genesis state can take 30-120 min using the crisis module. This can be disabled by
     `gaiad start --x-crisis-skip-assert-invariants`.
 
 # Guidance for Full Node Operators
@@ -278,9 +281,9 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
    mv ~/.gaia ./gaiad_backup
    ```
 
-   **NOTE**: It is recommended for validators and operators to take a full data snapshot at the export
+   __NOTE__: It is recommended for validators and operators to take a full data snapshot at the export
    height before proceeding in case the upgrade does not go as planned or if not enough voting power
-   comes online in a sufficient and agreed upon amount of time. That means the backup of `.gaia` should 
+   comes online in a sufficient and agreed upon amount of time. That means the backup of `.gaia` should
    only take place once the chain has halted at UNIX time `1613628000`.
    In such a case, the chain will fallback
    to continue operating `cosmoshub-3`. See [Recovery](#recovery) for details on how to proceed.
@@ -292,10 +295,10 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
 
 1. Install v4.0.2 of [Gaia](https://github.com/cosmos/gaia).
 
-   **NOTE**: Go [1.15+](https://golang.org/dl/) is required!
+   __NOTE__: Go [1.15+](https://golang.org/dl/) is required!
 
    ```bash
-   $ git clone https://github.com/cosmos/gaia.git && cd gaia && git checkout v4.0.2; make install
+   git clone https://github.com/cosmos/gaia.git && cd gaia && git checkout v4.0.2; make install
    ```
 
 1. Verify you are currently running the correct version (v4.0.2) of the _Gaia_:
@@ -308,16 +311,16 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
     build_tags: netgo,ledger
     ...
    ```
-   
+
    The version/commit hash of Gaia v4.0.2: `6d46572f3273423ad9562cf249a86ecc8206e207`
 
 1. Reset state:
 
-   **NOTE**: Be sure you have a complete backed up state of your node before proceeding with this step.
+   __NOTE__: Be sure you have a complete backed up state of your node before proceeding with this step.
    See [Recovery](#recovery) for details on how to proceed.
 
    ```bash
-   $ gaiad unsafe-reset-all
+   gaiad unsafe-reset-all
    ```
 
 1. Move the new `genesis.json` to your `.gaia/config/` directory
@@ -334,7 +337,7 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
 
    Automated audits of the genesis state can take 30-120 min using the crisis module. This can be disabled by
    `gaiad start --x-crisis-skip-assert-invariants`.
-   
+
 ## Notes for Service Providers
 
 # REST server

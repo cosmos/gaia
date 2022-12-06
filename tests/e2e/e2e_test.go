@@ -9,7 +9,7 @@ var (
 	runBypassMinFeeTest           = true
 	runEncodeTest                 = true
 	runEvidenceTest               = true
-	runFeeGrantTest               = false // not sure why this isn't working
+	runFeeGrantTest               = true
 	runGlobalFeesTest             = true
 	runGovTest                    = false // legacy gov system needs to be added back
 	runIBCTest                    = true

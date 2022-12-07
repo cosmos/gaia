@@ -239,7 +239,7 @@ require (
 	go.uber.org/multierr v1.8.0 // indirect
 	go.uber.org/zap v1.23.0 // indirect
 	golang.org/x/crypto v0.1.0 // indirect
-	golang.org/x/exp v0.0.0-20220722155223-a9213eeb770e // indirect
+	golang.org/x/exp v0.0.0-20221025133541-111beb427cde // indirect
 	golang.org/x/exp/typeparams v0.0.0-20220827204233-334a2380cb91 // indirect
 	golang.org/x/mod v0.6.0 // indirect
 	golang.org/x/net v0.1.0 // indirect
@@ -262,7 +262,8 @@ require (
 
 replace (
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.12-0.20221116140330-9c145c827001
-	github.com/cosmos/interchain-security => github.com/cosmos/interchain-security v0.2.2-0.20221202170316-0781daff021a
+	//github.com/cosmos/interchain-security => github.com/cosmos/interchain-security v0.2.2-0.20221202170316-0781daff021a
+	github.com/cosmos/interchain-security => github.com/cosmos/interchain-security v0.2.2-0.20221206221628-b3d79ac88924
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	github.com/zondax/hid => github.com/zondax/hid v0.9.0
 )

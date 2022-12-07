@@ -30,7 +30,7 @@ const (
 	flagChainID         = "chain-id"
 	flagSpendLimit      = "spend-limit"
 	flagGasAdjustment   = "gas-adjustment"
-	flagFeeGranter      = "fee-granter"
+	flagFeeAccount      = "fee-account"
 	flagBroadcastMode   = "broadcast-mode"
 	flagKeyringBackend  = "keyring-backend"
 	flagAllowedMessages = "allowed-messages"

@@ -12,7 +12,13 @@ make install
 
 # MAKE HOME FOLDER AND GET GENESIS
 gaiad init test 
-wget -O ~/.gaia/config/genesis.json https://cloudflare-ipfs.com/ipfs/Qmc54DreioPpPDUdJW6bBTYUKepmcPsscfqsfFcFmTaVig
+wget https://github.com/cosmos/mainnet/raw/master/genesis/genesis.cosmoshub-4.json.gz
+gzip -d genesis.cosmoshub-4.json.gz
+mv genesis.cosmoshub-4.json ~/.gaia/config/genesis.json
+rm genesis.cosmoshub-4.json.gz
+
+# IPFS hosted alternative download link
+# wget -O ~/.gaia/config/genesis.json https://cloudflare-ipfs.com/ipfs/Qmc54DreioPpPDUdJW6bBTYUKepmcPsscfqsfFcFmTaVig
 
 INTERVAL=1000
 

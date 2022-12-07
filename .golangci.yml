@@ -1,5 +1,5 @@
 run:
-  tests: false
+  tests: true
   skip-dirs:
     - tests/e2e
 
@@ -7,33 +7,24 @@ linters:
   disable-all: true
   enable:
     - bodyclose
-    - deadcode
     - depguard
     - dogsled
-    # - errcheck
     - goconst
     - gocritic
-    - gofmt
-    - goimports
-    - golint
+    - gofumpt
     - gosec
     - gosimple
     - govet
     - ineffassign
-    - interfacer
-    - maligned
     - misspell
     - nakedret
-    - prealloc
-    - scopelint
     - staticcheck
-    - structcheck
+    - revive
     - stylecheck
     - typecheck
     - unconvert
     - unused
     - unparam
-    # - wsl
     - nolintlint
 
 issues:

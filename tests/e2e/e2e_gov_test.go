@@ -5,60 +5,9 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	gov "github.com/cosmos/cosmos-sdk/x/gov/types"
-	// govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
-
-/*
-SendTokensFromNewGovAccount tests passing a gov proposal that sends tokens on behalf of the gov module to a recipient.
-Test Benchmarks:
-1. Subtest to fund the community pool via the distribution module
-2. Submission, deposit and vote of legacy proposal to fund the gov account from the community pool
-3. Validation that funds have been deposited to gov account
-4. Submission, deposit and vote of message based proposal to send funds from the gov account to a recipient account
-5. Validation that funds have been deposited to recipient account
-*/
-func (s *IntegrationTestSuite) SendTokensFromNewGovAccount() {
-	s.writeGovProposals(s.chainA)
-	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-	senderAddress := s.chainA.validators[0].keyInfo.GetAddress()
-	sender := senderAddress.String()
-	// Gov tests may be run in arbitrary order, each test must increment proposalCounter to have the correct proposal id to submit and query
-	proposalCounter++
-	s.T().Logf("Proposal number: %d", proposalCounter)
-
-	s.fundCommunityPool(chainAAPIEndpoint, sender)
-
-	s.T().Logf("Submitting Legacy Gov Proposal: Community Spend Funding Gov Module")
-	s.submitLegacyGovProposal(chainAAPIEndpoint, sender, standardFees.String(), "community-pool-spend", proposalCounter, configFile("proposal.json"))
-	s.T().Logf("Depositing Legacy Gov Proposal: Community Spend Funding Gov Module")
-	s.depositGovProposal(chainAAPIEndpoint, sender, standardFees.String(), proposalCounter)
-	s.T().Logf("Voting Legacy Gov Proposal: Community Spend Funding Gov Module")
-	s.voteGovProposal(chainAAPIEndpoint, sender, standardFees.String(), proposalCounter, "yes", false)
-
-	initialGovBalance, err := getSpecificBalance(chainAAPIEndpoint, govModuleAddress, uatomDenom)
-	s.Require().NoError(err)
-	proposalCounter++
-
-	s.T().Logf("Submitting Gov Proposal: Sending Tokens from Gov Module to Recipient")
-	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, configFile("proposal_2.json"))
-	s.T().Logf("Depositing Gov Proposal: Sending Tokens from Gov Module to Recipient")
-	s.depositGovProposal(chainAAPIEndpoint, sender, standardFees.String(), proposalCounter)
-	s.T().Logf("Voting Gov Proposal: Sending Tokens from Gov Module to Recipient")
-	s.voteGovProposal(chainAAPIEndpoint, sender, standardFees.String(), proposalCounter, "yes", false)
-	s.Require().Eventually(
-		func() bool {
-			newGovBalance, err := getSpecificBalance(chainAAPIEndpoint, govModuleAddress, uatomDenom)
-			s.Require().NoError(err)
-
-			recipientBalance, err := getSpecificBalance(chainAAPIEndpoint, govSendMsgRecipientAddress, uatomDenom)
-			s.Require().NoError(err)
-			return newGovBalance.IsEqual(initialGovBalance.Sub(sendGovAmount)) && recipientBalance.Equal(initialGovBalance.Sub(newGovBalance))
-		},
-		15*time.Second,
-		5*time.Second,
-	)
-}
 
 /*
 GovSoftwareUpgrade tests passing a gov proposal to upgrade the chain at a given height.
@@ -79,10 +28,9 @@ func (s *IntegrationTestSuite) GovSoftwareUpgrade() {
 	proposalCounter++
 
 	s.T().Logf("Writing proposal %d on chain %s", proposalCounter, s.chainA.id)
-	s.writeGovUpgradeSoftwareProposal(s.chainA, proposalHeight)
 
 	s.T().Logf("Submitting Gov Proposal: Software Upgrade")
-	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, configFile("proposal_3.json"))
+	s.submitGovProposal(chainAAPIEndpoint, sender, proposalCounter, nil, upgradetypes.ProposalTypeSoftwareUpgrade)
 	s.T().Logf("Depositing Gov Proposal: Software Upgrade")
 	s.depositGovProposal(chainAAPIEndpoint, sender, standardFees.String(), proposalCounter)
 	s.T().Logf("Weighted Voting Gov Proposal: Software Upgrade")
@@ -126,18 +74,12 @@ func (s *IntegrationTestSuite) GovCancelSoftwareUpgrade() {
 	// Gov tests may be run in arbitrary order, each test must increment proposalCounter to have the correct proposal id to submit and query
 	proposalCounter++
 
-	s.T().Logf("Writing proposal %d on chain %s", proposalCounter, s.chainA.id)
-	s.writeGovUpgradeSoftwareProposal(s.chainA, proposalHeight)
-
 	s.T().Logf("Submitting Gov Proposal: Software Upgrade")
 	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, configFile("proposal_3.json"))
 	s.depositGovProposal(chainAAPIEndpoint, sender, standardFees.String(), proposalCounter)
 	s.voteGovProposal(chainAAPIEndpoint, sender, standardFees.String(), proposalCounter, "yes", false)
 
 	proposalCounter++
-
-	s.T().Logf("Writing proposal %d on chain %s", proposalCounter, s.chainA.id)
-	s.writeGovCancelUpgradeSoftwareProposal(s.chainA)
 
 	s.T().Logf("Submitting Gov Proposal: Cancel Software Upgrade")
 	s.submitNewGovProposal(chainAAPIEndpoint, sender, proposalCounter, configFile("proposal_4.json"))
@@ -230,7 +172,7 @@ func (s *IntegrationTestSuite) submitLegacyGovProposal(chainAAPIEndpoint string,
 			func() bool {
 				proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId)
 				s.Require().NoError(err)
-				return proposal.GetProposal().Status == gov.StatusDepositPeriod
+				return proposal.GetProposal().Status == govtypes.StatusDepositPeriod
 			},
 			15*time.Second,
 			5*time.Second,
@@ -248,7 +190,27 @@ func (s *IntegrationTestSuite) submitNewGovProposal(chainAAPIEndpoint, sender st
 				s.T().Logf("Proposal: %s", proposal.String())
 				s.Require().NoError(err)
 
-				return proposal.GetProposal().Status == gov.StatusDepositPeriod
+				return proposal.GetProposal().Status == govtypes.StatusDepositPeriod
+			},
+			15*time.Second,
+			5*time.Second,
+		)
+	})
+}
+
+func (s *IntegrationTestSuite) submitGovUpgradeProposal(chainAAPIEndpoint, sender string, proposalId int) {
+	s.Run("submit_new_gov_proposal", func() {
+		propX := upgradetypes.ProposalTypeSoftwareUpgrade
+
+		s.execGovSubmitProposal(s.chainA, 0, sender, proposalPath, standardFees.String())
+
+		s.Require().Eventually(
+			func() bool {
+				proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId)
+				s.T().Logf("Proposal: %s", proposal.String())
+				s.Require().NoError(err)
+
+				return proposal.GetProposal().Status == govtypes.StatusDepositPeriod
 			},
 			15*time.Second,
 			5*time.Second,
@@ -265,7 +227,7 @@ func (s *IntegrationTestSuite) depositGovProposal(chainAAPIEndpoint, sender stri
 				proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId)
 				s.Require().NoError(err)
 
-				return proposal.GetProposal().Status == gov.StatusVotingPeriod
+				return proposal.GetProposal().Status == govtypes.StatusVotingPeriod
 			},
 			15*time.Second,
 			5*time.Second,
@@ -286,7 +248,7 @@ func (s *IntegrationTestSuite) voteGovProposal(chainAAPIEndpoint, sender string,
 				proposal, err := queryGovProposal(chainAAPIEndpoint, proposalId)
 				s.Require().NoError(err)
 
-				return proposal.GetProposal().Status == gov.StatusPassed
+				return proposal.GetProposal().Status == govtypes.StatusPassed
 			},
 			15*time.Second,
 			5*time.Second,

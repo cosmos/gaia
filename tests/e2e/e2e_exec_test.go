@@ -488,6 +488,30 @@ func (s *IntegrationTestSuite) execGovSubmitProposal(c *chain, valIdx int, submi
 	s.T().Logf("Successfully submitted proposal %s", govProposalPath)
 }
 
+func (s *IntegrationTestSuite) execGovSubmitUpgradeProposal(c *chain, valIdx int, submitterAddr, upgradeFlags map[string]interface{}, fees string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx gov submit-proposal on chain %s", c.id)
+
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		govtypes.ModuleName,
+		"submit-proposal",
+		upgradeFlags,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, submitterAddr),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		"--keyring-backend=test",
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
+	s.T().Logf("Successfully submitted proposal %s")
+}
+
 func (s *IntegrationTestSuite) executeGKeysAddCommand(c *chain, valIdx int, name string, home string) string {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()

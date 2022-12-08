@@ -488,18 +488,18 @@ func (s *IntegrationTestSuite) execGovSubmitProposal(c *chain, valIdx int, submi
 	s.T().Logf("Successfully submitted proposal %s", govProposalPath)
 }
 
-func (s *IntegrationTestSuite) execGovSubmitUpgradeProposal(c *chain, valIdx int, submitterAddr, upgradeFlags map[string]interface{}, fees string) {
+func (s *IntegrationTestSuite) runGovExec(c *chain, valIdx int, submitterAddr, proposalType string, govCommand string, proposalFlags []string, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
-
-	s.T().Logf("Executing gaiad tx gov submit-proposal on chain %s", c.id)
 
 	gaiaCommand := []string{
 		gaiadBinary,
 		txCommand,
 		govtypes.ModuleName,
-		"submit-proposal",
-		upgradeFlags,
+		govCommand,
+	}
+
+	gaiaCommandFlags := []string{
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, submitterAddr),
 		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
@@ -508,8 +508,12 @@ func (s *IntegrationTestSuite) execGovSubmitUpgradeProposal(c *chain, valIdx int
 		"-y",
 	}
 
+	gaiaCommand = appendFlags(gaiaCommand, proposalFlags)
+	gaiaCommand = appendFlags(gaiaCommand, gaiaCommandFlags)
+
+	s.T().Logf("Executing gaiad tx gov %s on chain %s", govCommand, c.id)
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
-	s.T().Logf("Successfully submitted proposal %s")
+	s.T().Logf("Successfully executed %s", govCommand)
 }
 
 func (s *IntegrationTestSuite) executeGKeysAddCommand(c *chain, valIdx int, name string, home string) string {

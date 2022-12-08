@@ -44,3 +44,10 @@ func decodeTx(txBytes []byte) (*sdktx.Tx, error) {
 		Signatures: raw.Signatures,
 	}, nil
 }
+
+func appendFlags(originalCollection []string, flags []string) []string {
+	for _, flag := range flags {
+		originalCollection = append(originalCollection, flag)
+	}
+	return originalCollection
+}

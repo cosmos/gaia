@@ -11,7 +11,7 @@ var (
 	runEvidenceTest               = true
 	runFeeGrantTest               = true
 	runGlobalFeesTest             = true
-	runGovTest                    = false // legacy gov system needs to be added back
+	runGovTest                    = true
 	runIBCTest                    = true
 	runSlashingTest               = true
 	runStakingAndDistributionTest = true
@@ -68,7 +68,6 @@ func (s *IntegrationTestSuite) TestGov() {
 	if !runGovTest {
 		s.T().Skip()
 	}
-	s.SendTokensFromNewGovAccount()
 	s.GovSoftwareUpgrade()
 	s.GovCancelSoftwareUpgrade()
 }
@@ -97,6 +96,7 @@ func (s *IntegrationTestSuite) TestStakingAndDistribution() {
 	}
 	s.testStaking()
 	s.testDistribution()
+	s.fundCommunityPool()
 }
 
 func (s *IntegrationTestSuite) TestVesting() {

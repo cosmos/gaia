@@ -13,7 +13,7 @@ Any of the zones can themselves be hubs to form an acyclic graph, but for the sa
 
 The Hub has long been envisioned as a central point in the IBC architecture. In the battle to build and ship IBC this central vision has remained unchanged, but with so much focus on the need to build out other zones with real economies to support this network (the CosmosSDK is the result of this effort), the idea of the hub as an Interchain Router hasn't been discussed in a serious context for quite a while.
 
-This is understandable: Cosmos needed so many other pieces to come together before the Hub had a chance to even start performing this function. Those other zones have been created, they each have products and economies. The bootstrapping era of IBC is well underway.
+This is understandable: Cosmos needed so many other pieces to come together before the Hub had a chance to even start performing this function. Those other zones have been created, they each have products and economies. The bootstrapping era of IBC is well underway. 
 
 These new zones joining are noticing a problem: they need to maintain a large amount of infrastructure (archive nodes and relayers for each counterparty chain) to connect with all the chains in the ecosystem, a number that is continuing to increase quickly.
 

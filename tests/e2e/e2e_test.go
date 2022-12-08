@@ -12,7 +12,7 @@ var (
 	runFeeGrantTest               = true
 	runGlobalFeesTest             = true
 	runGovTest                    = false // legacy gov system needs to be added back
-	runIBCTest                    = false // multihop ibc test is not working
+	runIBCTest                    = true
 	runSlashingTest               = true
 	runStakingAndDistributionTest = true
 	runVestingTest                = true

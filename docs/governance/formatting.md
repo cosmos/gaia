@@ -68,7 +68,7 @@ The `deposit": "1000000uatom` results in 1 ATOM being used from the proposal sub
 
 ## Param Change
 
-**Note:** Changes to the [`gov` module](https://docs.cosmos.network/main/modules/gov/) are different from the other kinds of parameter changes because `gov` has subkeys, [as discussed here](https://github.com/cosmos/cosmos-sdk/issues/5800). Only the `key` part of the JSON file is different for `gov` parameter-change proposals.
+**Note:** Changes to the [`gov` module](https://docs.cosmos.network/main/modules/gov) are different from the other kinds of parameter changes because `gov` has subkeys, [as discussed here](https://github.com/cosmos/cosmos-sdk/issues/5800). Only the `key` part of the JSON file is different for `gov` parameter-change proposals.
 
 For parameter-change proposals, there are arguably seven (7) components, though three are nested beneath 'Changes':
 

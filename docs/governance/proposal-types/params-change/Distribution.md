@@ -55,7 +55,7 @@ The Cosmos Hub transaction fee volume is proportionally very low in value compar
 ###  `bonusproposerreward`
 **The maximum additional reward bonus for the validator proposing a block, as a proportion of transaction fees.**
 
-All validators in the active set share the rewards for producing a block equally, except for the proposer of a valid block. If that validator includes more than a minimum of 2/3 of precommit signatures from the other validators in the active set, they are eligible to receive the `bonusproposerreward` of up to 4% (`0.040000000000000000`), beyond the 1% `baseproposerreward`. The bonus proposer reward amount that a validator receives depends upon how many precommit signatures are included in the proposed block (additional to the requisite 2/3). All in Bits has published more in-depth information [here](../../validators/validator-faq.md#how-are-fees-distributed).
+All validators in the active set share the rewards for producing a block equally, except for the proposer of a valid block. If that validator includes more than a minimum of 2/3 of precommit signatures from the other validators in the active set, they are eligible to receive the `bonusproposerreward` of up to 4% (`0.040000000000000000`), beyond the 1% `baseproposerreward`. The bonus proposer reward amount that a validator receives depends upon how many precommit signatures are included in the proposed block (additional to the requisite 2/3). All in Bits has published more in-depth information [here](https://hub.cosmos.network/main/validators/validator-faq.html#how-are-fees-distributed).
 
 * on-chain value: `{{ $themeConfig.currentParameters.distribution.bonusproposerreward }}`
 * `cosmoshub-4` default: `0.040000000000000000`

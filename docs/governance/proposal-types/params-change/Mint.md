@@ -51,7 +51,7 @@ Cosmos Hub's inflation rate can change faster or slower, depending on staking pa
 ```
 inflationRateChangePerYear = (1 - bondedRatio/params.GoalBonded) * params.InflationRateChange
 ```
-[The source for this information can be found here](https://github.com/cosmos/cosmos-sdk/blob/master/x/mint/spec/03_begin_block.md).
+[The source for this information can be found here](https://github.com/cosmos/cosmos-sdk/tree/main/x/mint#begin-block).
 
 The inflation rate increases when under 67% of the token supply is staking, and it will take less time to reach the maximum of rate of 20% inflation if (for example) 30% of the token supply is staking than if 50% is staking. 
 

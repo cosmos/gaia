@@ -25,7 +25,7 @@ In the past, different people have considered contributions amounts differently.
 
 ### Burned deposits
 
-Deposits are burned only when proposals are vetoed as documented in the [Cosmos SDK gov module spec](https://docs.cosmos.network/main/modules/gov/#deposit-refund-and-burn). Deposits are not burned for failing to meet quorum or for being rejected. 
+Deposits are burned only when proposals are vetoed as documented in the [Cosmos SDK gov module spec](https://docs.cosmos.network/main/modules/gov#deposit-refund-and-burn). Deposits are not burned for failing to meet quorum or for being rejected. 
 
 ## 2. Voting Period
 

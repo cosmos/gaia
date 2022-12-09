@@ -17,14 +17,14 @@ Drafting and submitting a parameter-change governance proposal involves two kind
 The complete parameters of the Cosmos Hub are split up into different modules, each of which has its own set of parameters. Any of them can be updated with a Param Change Proposal. If you are technically inclined, this is the full [list of modules](https://github.com/cosmos/cosmos-sdk/tree/master/x) in the Cosmos SDK. The Cosmos Hub is built using the Cosmos SDK, but not all available modules are in use on the Hub.
 
 There are currently 8 modules active in the Cosmos Hub with parameters that may be altered via governance proposal. New modules may be introduced in the future.
-1. [auth](./Auth.md) - Authentication of accounts and transactions
-2. [bank](./Bank.md) - Token transfer functionalities
-3. [gov](./Governance.md) - On-chain governance proposals and voting
-4. [staking](./Staking.md) - Proof-of-stake layer
-5. [slashing](./Slashing.md) - Validator punishment mechanisms
-6. [distribution](./Distribution.md) - Fee distribution and staking token provision distribution
-7. [crisis](./Crisis.md) - Halting the blockchain under certain circumstances (ie. if an invariant is broken)
-8. [mint](./Mint.md) - Creation of new units of staking token
+1. [auth](./params-change/Auth.md) - Authentication of accounts and transactions
+2. [bank](./params-change/Bank.md) - Token transfer functionalities
+3. [gov](./params-change/Governance.md) - On-chain governance proposals and voting
+4. [staking](./params-change/Staking.md) - Proof-of-stake layer
+5. [slashing](./params-change/Slashing.md) - Validator punishment mechanisms
+6. [distribution](./params-change/Distribution.md) - Fee distribution and staking token provision distribution
+7. [crisis](./params-change/Crisis.md) - Halting the blockchain under certain circumstances (ie. if an invariant is broken)
+8. [mint](./params-change/Mint.md) - Creation of new units of staking token
 <!-- markdown-link-check-disable -->
 
 ## What are the current parameter values?
@@ -65,8 +65,8 @@ This documentation was originally created by Gavin Birch ([Figment Networks](htt
 
 **Special thanks** to the following for providing credible information:
 - Aleks (All in Bits; Fission Labs) for answering countless questions about these parameters
-- Alessio (All in Bits) for explaining how [`SigVerifyCostED25519`](./Auth.md#4-sigverifycosted25519) & [`SigVerifyCostSecp256k1`](./Auth.md#5-sigverifycostsecp256k1) work, and detailed answers to my many questions
-- Vidor for volunteering to explain [`ConstantFee`](./Crisis.md#1-constantfee) and answering my many questions in detail
-- Hyung (B-Harvest) for volunteering how [`InflationRateChange`](./Mint.md#2-inflationratechange) works
+- Alessio (All in Bits) for explaining how [`SigVerifyCostED25519`](https://hub.cosmos.network/main/governance/params-change/Auth.html#4-sigverifycosted25519) & [`SigVerifyCostSecp256k1`](https://hub.cosmos.network/main/governance/params-change/Auth.html#5-sigverifycostsecp256k1) work, and detailed answers to my many questions
+- Vidor for volunteering to explain [`ConstantFee`](https://hub.cosmos.network/main/governance/params-change/Crisis.html#1-constantfee) and answering my many questions in detail
+- Hyung (B-Harvest) for volunteering how [`InflationRateChange`](https://hub.cosmos.network/main/governance/params-change/Mint.html#2-inflationratechange) works
 - Joe (Chorus One) for explaining the security details involved with using full nodes for transactions
-- Sunny (All in Bits; Sikka) for volunteering an explanation of the purpose of [`withdrawaddrenabled`](./Distribution.md#4-withdrawaddrenabled)
+- Sunny (All in Bits; Sikka) for volunteering an explanation of the purpose of [`withdrawaddrenabled`](https://hub.cosmos.network/main/governance/params-change/Distribution.html#4-withdrawaddrenabled)

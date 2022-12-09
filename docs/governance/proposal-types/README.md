@@ -6,9 +6,9 @@ parent:
 
 # Proposal Types
 
-- **[Text](./proposal-types/text-prop.md)** 
-- [**Community Pool Spend**](./proposal-types/community-pool-spend.md) 
-- [**Parameter Change**](./proposal-types/param-change.md) 
+- [**Text**](../proposal-types/text-prop.md)
+- [**Community Pool Spend**](../proposal-types/community-pool-spend.md) 
+- [**Parameter Change**](../proposal-types/param-change.md) 
 - **Software Upgrade** 
 - **IBC Client Update** 
 

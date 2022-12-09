@@ -44,9 +44,6 @@ jobs:
       - uses: actions/setup-go@v3.3.1
         with:
           go-version: 1.18
-      - name: test & coverage report creation
-        run: |
-          go test -v -coverprofile=coverage.txt -covermode=atomic -coverpkg=./... $(go list ./...)
       - name: filter non-testable files
         run: |
           excludelist="$(find ./ -type f -name '*.go' | xargs grep -l 'DONTCOVER')"
@@ -60,6 +57,9 @@ jobs:
             filename=$(echo "$filename" | sed 's/\//\\\//g')
             sed -i.bak "/""$filename""/d" coverage.txt
           done
+      - name: test & coverage report creation
+        run: |
+          go test -v -coverprofile=coverage.txt -covermode=atomic -coverpkg=./... $(go list ./...)
       - uses: codecov/codecov-action@v3.1.1
         with:
           file: ./coverage.txt

@@ -47,21 +47,13 @@ The upgrades aim to add features such as liquidity, economic security, usability
     - Arbitrary messages are able to be submitted from the "Controller" blockchain to the "Host" blockchain to be executed on behalf of the Interchain Account.
     - Uses ordered IBC channels, one per account.
 
-## v8-Rho Upgrade (expected H2 2022)
+## v8-Rho Upgrade (expected Q1 2023)
 
 - Gaia v8.0.x
-- Cosmos SDK v0.46
-  - Groups module:
-    - Enables higher-level multisig permissioned accounts, e.g., weight-based voting policies
-  - Gov Module Improvements
-    - Execution of arbitraty transactions instead of just governance proposals.
-    - Enables much more expressive governance module.
-- IBC 5.x
-  - Relayer Incentivisation so that IBC packets contain fees to pay for relayer costs.
-- Interchain Account Message Authorization Module
-  - Authentication module that authorizes any Account to create an Interchain Account on any IBC connected "Host" blockchain that has the Interchain Account IBC module.
-  - Accounts can be private key controlled users, and eventually the Gov Module and any Groups Module.
-- IBC Msg Whitelist to skip MinFee in CheckTX
+- Cosmos SDK v0.45
+  - Minimal update with small fixes
+- Interchain Security - Required Participation of Provider Chain Validators
+  - The Cosmos solution to shared security that uses IBC Cross Chain Validation (CCV) to relay validator set composition from a Provider Chain (Cosmos Hub) to a Consumer Chain. This validator set is in charge of producing blocks on both networks using separate nodes. Misbehavior on the Consumer Chain results in slashing Provider Chain staking tokens (ATOM).
 - Global Fee Module
   - Allows denoms and min-fees to be governance parameters so gas can be paid in various denoms.
   - Visible on [tgrade](https://github.com/confio/tgrade/tree/main/x/globalfee) already and enabled in [ante.go](https://github.com/confio/tgrade/blob/main/app/ante.go#L72-L92)
@@ -70,6 +62,11 @@ The upgrades aim to add features such as liquidity, economic security, usability
 
 - Gaia v9.0.x
 - Cosmos SDK v0.47
+  - Groups module:
+    - Enables higher-level multisig permissioned accounts, e.g., weight-based voting policies
+  - Gov Module Improvements
+    - Execution of arbitraty transactions instead of just governance proposals.
+    - Enables much more expressive governance module.
   - Phasing out broadcast mode
   - Remove proposer based rewards
   - Consensus-param module
@@ -78,8 +75,12 @@ The upgrades aim to add features such as liquidity, economic security, usability
   - Liquid Staking module
     - Free, secure and low-risk delegations for use in other parts of the Cosmos ecosystem
     - Features include enabling transfer of rewards and voting rights
-- Interchain Security - Required Participation of Provider Chain Validators
-  - The Cosmos solution to shared security that uses IBC Cross Chain Validation (CCV) to relay validator set composition from a Provider Chain (Cosmos Hub) to a Consumer Chain. This validator set is in charge of producing blocks on both networks using separate nodes. Misbehavior on the Consumer Chain results in slashing Provider Chain staking tokens (ATOM).
+- IBC 5.x
+  - Relayer Incentivisation so that IBC packets contain fees to pay for relayer costs.
+- Interchain Account Message Authorization Module
+  - Authentication module that authorizes any Account to create an Interchain Account on any IBC connected "Host" blockchain that has the Interchain Account IBC module.
+  - Accounts can be private key controlled users, and eventually the Gov Module and any Groups Module.
+- IBC Msg Whitelist to skip MinFee in CheckTX
 - Bech32 Prefix forwarding
   - <https://github.com/osmosis-labs/bech32-ibc>
 - Liquidity Module Deprecation

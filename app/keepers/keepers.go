@@ -405,7 +405,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 }
 
 // GetStakingKeeper implements the TestingApp interface. Needed for ICS.
-func (appKeepers *AppKeepers) GetStakingKeeper() ibcclienttypes.StakingKeeper {
+func (appKeepers *AppKeepers) GetStakingKeeper() stakingkeeper.Keeper {
 	return appKeepers.StakingKeeper
 }
 

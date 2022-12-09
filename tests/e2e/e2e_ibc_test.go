@@ -382,11 +382,9 @@ func (s *IntegrationTestSuite) testMultihopIBCTokenTransfer() {
 			func() bool {
 				afterSenderUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
 				s.Require().NoError(err)
-				fmt.Println("afterSenderUAtomBalance", afterSenderUAtomBalance)
 
 				afterRecipientUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, recipient, uatomDenom)
 				s.Require().NoError(err)
-				fmt.Println("afterRecipientUAtomBalance", afterRecipientUAtomBalance)
 
 				decremented := beforeSenderUAtomBalance.Sub(tokenAmount).Sub(standardFees).IsEqual(afterSenderUAtomBalance)
 				incremented := beforeRecipientUAtomBalance.Add(tokenAmount).IsEqual(afterRecipientUAtomBalance)
@@ -400,22 +398,13 @@ func (s *IntegrationTestSuite) testMultihopIBCTokenTransfer() {
 }
 
 /*
-TestFailedMultihopIBCTokenTransfer tests that sending a failing IBC transfer using the IBC Packet Forward Middleware will preserve the tokens
-on the middle hop chain in the designated address.
-
-Steps:
-1. Check balance of Account 1 on Chain 1
-2. Check balance of Account 1 on Chain 2
-3. Account 1 on Chain 1 sends x tokens to Account 1 on non-existent chain via Account 1 on Chain 2
-4. Check Balance of Account 1 on Chain 1, confirm it is original minus x tokens
-5. Check Balance of Account 1 on Chain 2, confirm it is original plus x tokens
+TestFailedMultihopIBCTokenTransfer tests that sending a failing IBC transfer using the IBC Packet Forward
+Middleware will send the tokens back to the original account after failing.
 */
 func (s *IntegrationTestSuite) testFailedMultihopIBCTokenTransfer() {
 	time.Sleep(30 * time.Second)
 
 	s.Run("send_failed_multihop_uatom_to_chainA_from_chainA", func() {
-		// require the recipient account receives the IBC tokens (IBC packets ACKd)
-
 		address := s.chainA.validators[0].keyInfo.GetAddress()
 		sender := address.String()
 
@@ -423,7 +412,7 @@ func (s *IntegrationTestSuite) testFailedMultihopIBCTokenTransfer() {
 		middlehop := address.String()
 
 		address = s.chainA.validators[1].keyInfo.GetAddress()
-		recipient := strings.Replace(address.String(), "cosmos", "foobar", 1) // this should be an invalid recipient but only fail the final send so it will be returned
+		recipient := strings.Replace(address.String(), "cosmos", "foobar", 1) // this should be an invalid recipient to force the tx to fail
 
 		forwardPort := "transfer"
 		forwardChannel := "channel-0"
@@ -431,20 +420,15 @@ func (s *IntegrationTestSuite) testFailedMultihopIBCTokenTransfer() {
 		tokenAmt := 3300000000
 
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
 
 		var (
 			beforeSenderUAtomBalance sdk.Coin
-			beforeMiddleIBCBalance   sdk.Coin
 			err                      error
 		)
 
 		s.Require().Eventually(
 			func() bool {
 				beforeSenderUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
-				s.Require().NoError(err)
-				beforeMiddleIBCBalance, err = getSpecificBalance(chainBAPIEndpoint, middlehop, "ibc/")
-				s.Require().True(beforeMiddleIBCBalance.IsNil())
 				s.Require().NoError(err)
 
 				return beforeSenderUAtomBalance.IsValid()

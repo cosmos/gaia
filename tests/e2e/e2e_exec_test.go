@@ -364,7 +364,7 @@ func (s *IntegrationTestSuite) execDistributionFundCommunityPool(c *chain, valId
 	s.T().Logf("Successfully funded community pool")
 }
 
-func (s *IntegrationTestSuite) runGovExec(c *chain, valIdx int, submitterAddr, proposalType string, govCommand string, proposalFlags []string, fees string) {
+func (s *IntegrationTestSuite) runGovExec(c *chain, valIdx int, submitterAddr, govCommand string, proposalFlags []string, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -375,7 +375,7 @@ func (s *IntegrationTestSuite) runGovExec(c *chain, valIdx int, submitterAddr, p
 		govCommand,
 	}
 
-	gaiaCommandFlags := []string{
+	generalFlags := []string{
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, submitterAddr),
 		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
@@ -384,8 +384,7 @@ func (s *IntegrationTestSuite) runGovExec(c *chain, valIdx int, submitterAddr, p
 		"-y",
 	}
 
-	gaiaCommand = appendFlags(gaiaCommand, proposalFlags)
-	gaiaCommand = appendFlags(gaiaCommand, gaiaCommandFlags)
+	gaiaCommand = concatFlags(gaiaCommand, proposalFlags, generalFlags)
 
 	s.T().Logf("Executing gaiad tx gov %s on chain %s", govCommand, c.id)
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))

@@ -60,7 +60,7 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 		s.T().Skip()
 	}
 	s.testGlobalFees()
-	//s.testQueryGlobalFeesInGenesis()
+	s.testQueryGlobalFeesInGenesis()
 }
 
 // TODO: Add back gov tests using the legacy gov system
@@ -68,8 +68,8 @@ func (s *IntegrationTestSuite) TestGov() {
 	if !runGovTest {
 		s.T().Skip()
 	}
-	//s.GovSoftwareUpgrade()
-	//s.GovCancelSoftwareUpgrade()
+	s.GovSoftwareUpgrade()
+	s.GovCancelSoftwareUpgrade()
 	s.GovCommunityPoolSpend()
 }
 

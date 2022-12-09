@@ -45,9 +45,10 @@ func decodeTx(txBytes []byte) (*sdktx.Tx, error) {
 	}, nil
 }
 
-func appendFlags(originalCollection []string, flags []string) []string {
-	for _, flag := range flags {
-		originalCollection = append(originalCollection, flag)
-	}
+//nolint:unused // this is called during e2e tests
+func concatFlags(originalCollection []string, commandFlags []string, generalFlags []string) []string {
+	originalCollection = append(originalCollection, commandFlags...)
+	originalCollection = append(originalCollection, generalFlags...)
+
 	return originalCollection
 }

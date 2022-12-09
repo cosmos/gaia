@@ -125,11 +125,11 @@ func (s *IntegrationTestSuite) GovCommunityPoolSpend() {
 
 func (s *IntegrationTestSuite) runGovProcess(chainAAPIEndpoint, sender string, proposalId int, proposalType string, submitFlags []string, depositFlags []string, voteFlags []string, voteCommand string) {
 	s.T().Logf("Submitting Gov Proposal: %s", proposalType)
-	s.submitGovCommand(chainAAPIEndpoint, sender, proposalId, proposalType, "submit-proposal", submitFlags, govtypes.StatusDepositPeriod)
+	s.submitGovCommand(chainAAPIEndpoint, sender, proposalId, "submit-proposal", submitFlags, govtypes.StatusDepositPeriod)
 	s.T().Logf("Depositing Gov Proposal: %s", proposalType)
-	s.submitGovCommand(chainAAPIEndpoint, sender, proposalId, proposalType, "deposit", depositFlags, govtypes.StatusVotingPeriod)
+	s.submitGovCommand(chainAAPIEndpoint, sender, proposalId, "deposit", depositFlags, govtypes.StatusVotingPeriod)
 	s.T().Logf("Voting Gov Proposal: %s", proposalType)
-	s.submitGovCommand(chainAAPIEndpoint, sender, proposalId, proposalType, voteCommand, voteFlags, govtypes.StatusPassed)
+	s.submitGovCommand(chainAAPIEndpoint, sender, proposalId, voteCommand, voteFlags, govtypes.StatusPassed)
 }
 
 func (s *IntegrationTestSuite) verifyChainHaltedAtUpgradeHeight(c *chain, valIdx, upgradeHeight int) {
@@ -173,9 +173,9 @@ func (s *IntegrationTestSuite) verifyChainPassesUpgradeHeight(c *chain, valIdx, 
 	)
 }
 
-func (s *IntegrationTestSuite) submitGovCommand(chainAAPIEndpoint, sender string, proposalId int, proposalType string, govCommand string, proposalFlags []string, expectedSuccessStatus govtypes.ProposalStatus) {
+func (s *IntegrationTestSuite) submitGovCommand(chainAAPIEndpoint, sender string, proposalId int, govCommand string, proposalFlags []string, expectedSuccessStatus govtypes.ProposalStatus) {
 	s.Run(fmt.Sprintf("Running tx gov %s", govCommand), func() {
-		s.runGovExec(s.chainA, 0, sender, proposalType, govCommand, proposalFlags, standardFees.String())
+		s.runGovExec(s.chainA, 0, sender, govCommand, proposalFlags, standardFees.String())
 
 		s.Require().Eventually(
 			func() bool {

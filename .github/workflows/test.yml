@@ -32,6 +32,7 @@ jobs:
             **/**.go
             go.mod
             go.sum
+            !tests/e2e/*
       - uses: actions/cache@v3.0.11
         with:
           path: |

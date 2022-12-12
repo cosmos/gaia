@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # `auth` subspace
 
 The `auth` module is responsible for authenticating accounts and transactions. It has the following parameters:

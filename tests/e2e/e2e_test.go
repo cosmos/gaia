@@ -5,16 +5,16 @@ import (
 )
 
 var (
-	runBankTest                   = true
-	runBypassMinFeeTest           = true
-	runEncodeTest                 = true
-	runEvidenceTest               = true
-	runFeeGrantTest               = true
-	runGlobalFeesTest             = true
-	runGovTest                    = true
-	runIBCTest                    = true
-	runSlashingTest               = true
-	runStakingAndDistributionTest = true
+	runBankTest                   = false
+	runBypassMinFeeTest           = false
+	runEncodeTest                 = false
+	runEvidenceTest               = false
+	runFeeGrantTest               = false
+	runGlobalFeesTest             = false
+	runGovTest                    = false
+	runIBCTest                    = false
+	runSlashingTest               = false
+	runStakingAndDistributionTest = false
 	runVestingTest                = true
 )
 
@@ -54,7 +54,6 @@ func (s *IntegrationTestSuite) TestFeeGrant() {
 	s.testFeeGrant()
 }
 
-// TODO: Add back after antehandler is fixed
 func (s *IntegrationTestSuite) TestGlobalFees() {
 	if !runGlobalFeesTest {
 		s.T().Skip()
@@ -63,7 +62,6 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 	s.testQueryGlobalFeesInGenesis()
 }
 
-// TODO: Add back gov tests using the legacy gov system
 func (s *IntegrationTestSuite) TestGov() {
 	if !runGovTest {
 		s.T().Skip()

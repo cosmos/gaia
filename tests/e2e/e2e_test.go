@@ -106,8 +106,5 @@ func (s *IntegrationTestSuite) TestVesting() {
 	chainAAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	s.testDelayedVestingAccount(chainAAPI)
 	s.testContinuousVestingAccount(chainAAPI)
-
-	// TODO: Add back vesting account here
-	// s.testPermanentLockedAccount(chainAAPI)
-	// s.testPeriodicVestingAccount(chainAAPI)
+	s.testPeriodicVestingAccount(chainAAPI)
 }

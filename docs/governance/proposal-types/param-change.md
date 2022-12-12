@@ -65,8 +65,8 @@ This documentation was originally created by Gavin Birch ([Figment Networks](htt
 
 **Special thanks** to the following for providing credible information:
 - Aleks (All in Bits; Fission Labs) for answering countless questions about these parameters
-- Alessio (All in Bits) for explaining how [`SigVerifyCostED25519`](https://hub.cosmos.network/main/governance/params-change/Auth.html#4-sigverifycosted25519) & [`SigVerifyCostSecp256k1`](https://hub.cosmos.network/main/governance/params-change/Auth.html#5-sigverifycostsecp256k1) work, and detailed answers to my many questions
-- Vidor for volunteering to explain [`ConstantFee`](https://hub.cosmos.network/main/governance/params-change/Crisis.html#1-constantfee) and answering my many questions in detail
-- Hyung (B-Harvest) for volunteering how [`InflationRateChange`](https://hub.cosmos.network/main/governance/params-change/Mint.html#2-inflationratechange) works
+- Alessio (All in Bits) for explaining how [`SigVerifyCostED25519`](https://hub.cosmos.network/main/governance/proposal-types/params-change/Auth.html#4-sigverifycosted25519) & [`SigVerifyCostSecp256k1`](https://hub.cosmos.network/main/governance/proposal-types/params-change/Auth.html#5-sigverifycostsecp256k1) work, and detailed answers to my many questions
+- Vidor for volunteering to explain [`ConstantFee`](https://hub.cosmos.network/main/governance/proposal-types/params-change/Crisis.html#1-constantfee) and answering my many questions in detail
+- Hyung (B-Harvest) for volunteering how [`InflationRateChange`](https://hub.cosmos.network/main/governance/proposal-types/params-change/Mint.html#2-inflationratechange) works
 - Joe (Chorus One) for explaining the security details involved with using full nodes for transactions
-- Sunny (All in Bits; Sikka) for volunteering an explanation of the purpose of [`withdrawaddrenabled`](https://hub.cosmos.network/main/governance/params-change/Distribution.html#4-withdrawaddrenabled)
+- Sunny (All in Bits; Sikka) for volunteering an explanation of the purpose of [`withdrawaddrenabled`](https://hub.cosmos.network/main/governance/proposal-types/params-change/Distribution.html#4-withdrawaddrenabled)

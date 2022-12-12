@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/tendermint/tendermint/crypto"
+
 	// "github.com/tendermint/tendermint/crypto/secp256k1"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -67,48 +68,27 @@ type EmptyAppOptions struct{}
 
 func (EmptyAppOptions) Get(o string) interface{} { return nil }
 
-func Setup(t *testing.T, isCheckTx bool, invCheckPeriod uint) *gaiaapp.GaiaApp {
+func Setup(t *testing.T) *gaiaapp.GaiaApp {
 	t.Helper()
 
-	// TODO: investigate the following:
-	// The following has been modified to work with v0.45 but it's incomplete somehow. It causes tests to break because the changes
-	// are not properly integrated into the v0.45 test suite. It deserves a closer look to determine why adding custom validator and
-	// populated accounts was an improvement and whether it's important to add them back to this versin of the test suite.
+	privVal := NewPV()
+	pubKey, err := privVal.GetPubKey()
+	require.NoError(t, err)
+	// create validator set with single validator
+	validator := tmtypes.NewValidator(pubKey, 1)
+	valSet := tmtypes.NewValidatorSet([]*tmtypes.Validator{validator})
 
-	// privVal := NewPV()
-	// pubKey, err := privVal.GetPubKey()
-	// require.NoError(t, err)
-	// // create validator set with single validator
-	// validator := tmtypes.NewValidator(pubKey, 1)
-	// valSet := tmtypes.NewValidatorSet([]*tmtypes.Validator{validator})
+	// generate genesis account
+	senderPrivKey := NewPV()
+	senderPubKey := senderPrivKey.PrivKey.PubKey()
 
-	// // generate genesis account
-	// senderPrivKey := secp256k1.GenPrivKey()
-	// senderPubKey := senderPrivKey.PubKey()
-
-	// acc := authtypes.NewBaseAccount(senderPubKey.Address().Bytes(), senderPubKey, 0, 0)
-	// balance := banktypes.Balance{
-	// 	Address: acc.GetAddress().String(),
-	// 	Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100000000000000))),
-	// }
-	// genesisState := []authtypes.GenesisAccount{acc}
-	// app := SetupWithGenesisValSet(t, valSet, genesisState, balance)
-
-	app, genesisState := setup(!isCheckTx, invCheckPeriod)
-	if !isCheckTx {
-		// InitChain must be called to stop deliverState from being nil
-		stateBytes, err := json.MarshalIndent(genesisState, "", " ")
-		require.NoError(t, err)
-
-		// Initialize the chain
-		app.InitChain(
-			abci.RequestInitChain{
-				Validators:      []abci.ValidatorUpdate{},
-				ConsensusParams: DefaultConsensusParams,
-				AppStateBytes:   stateBytes,
-			},
-		)
+	acc := authtypes.NewBaseAccount(senderPubKey.Address().Bytes(), senderPubKey, 0, 0)
+	balance := banktypes.Balance{
+		Address: acc.GetAddress().String(),
+		Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100000000000000))),
 	}
+	genesisAccounts := []authtypes.GenesisAccount{acc}
+	app := SetupWithGenesisValSet(t, valSet, genesisAccounts, balance)
 
 	return app
 }
@@ -120,7 +100,7 @@ func Setup(t *testing.T, isCheckTx bool, invCheckPeriod uint) *gaiaapp.GaiaApp {
 func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount, balances ...banktypes.Balance) *gaiaapp.GaiaApp {
 	t.Helper()
 
-	gaiaApp, genesisState := setup(true, 5)
+	gaiaApp, genesisState := setup()
 	genesisState = genesisStateWithValSet(t, gaiaApp, genesisState, valSet, genAccs, balances...)
 
 	stateBytes, err := json.MarshalIndent(genesisState, "", " ")
@@ -147,9 +127,10 @@ func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs 
 	return gaiaApp
 }
 
-func setup(withGenesis bool, invCheckPeriod uint) (*gaiaapp.GaiaApp, gaiaapp.GenesisState) {
+func setup() (*gaiaapp.GaiaApp, gaiaapp.GenesisState) {
 	db := dbm.NewMemDB()
 	encCdc := gaiaapp.MakeTestEncodingConfig()
+	var invCheckPeriod uint = 5
 	gaiaApp := gaiaapp.NewGaiaApp(
 		log.NewNopLogger(),
 		db,
@@ -161,11 +142,7 @@ func setup(withGenesis bool, invCheckPeriod uint) (*gaiaapp.GaiaApp, gaiaapp.Gen
 		encCdc,
 		EmptyAppOptions{},
 	)
-	if withGenesis {
-		return gaiaApp, gaiaapp.NewDefaultGenesisState()
-	}
-
-	return gaiaApp, gaiaapp.GenesisState{}
+	return gaiaApp, gaiaapp.NewDefaultGenesisState()
 }
 
 func genesisStateWithValSet(t *testing.T,

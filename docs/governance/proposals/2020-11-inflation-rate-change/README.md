@@ -9,16 +9,18 @@ In this proposal we will be looking at adjusting the inflation rate change varia
 
 - When the cosmos hub inflation dynamics were originally designed, the goal was for the hub to go from the minimum rate (7%) to the maximum rate (20%) in roughly one year after a shock had unbond occurred. Thus, for the variable “inflation rate change” a value of .13 was chosen. Unfortunately, in practice the variable didn’t work as intended due to the fact the change in the inflation rate for the hub is proportional to the Target Bonded / current bonded ratio.
 
+
 **How to select “inflation rate change” AKA Maximum Slope of the inflation curve**
 
 The purpose of changing the network's inflation rate is to protect it from unbonding shocks that can threaten to compromise the security of the network. When the bonded ratio gets below the goal bonded ratio (currently at 66% on the hub) the inflation rate & effective yield of staked atoms goes up in order to incentivize holders to bond new ATOMs with a view to securing the network. Inversely, if we regain a desired amount of staked tokens, the yield will drop and thusly decrease effective yields for all delegators. Ideally the inflation rate starts changing fast, optimizing network security over monetary hardness. To figure out what an appropriate selection for the cosmos hub would be, I created excel sheets to run through all the different scenarios to find what value made the inflation rate react in an optimal manner. **I came to the conclusion that 1 (AKA 100% per year is the maximum slope of the inflation curve) gave the most ideal characteristics, with the added benefit of simplifying the equation**. I’ll give some examples on how it would react. Since unbonding is what we are protecting against, I will look at flash unbonds while the inflation rate is at the floor due to that being the #1 time of vulnerability.
 
 **Scenarios of Shock Unbonds**
-# 1. Cosmos hub Bonded ratio flash crashes to 60%, which is not bad, but still 10% below the target. With our current variable of .13, it would take approx. 9.6 years to make it to the ceiling rate of 20%. On the other hand, if this variable was 1, the hub would reach it ceiling 17.2 months after the unbond shock (assuming bonded % stays at 60% the entire time for simplicity).
+#1. Cosmos hub Bonded ratio flash crashes to 60%, which is not bad, but still 10% below the target. With our current variable of .13, it would take approx. 9.6 years to make it to the ceiling rate of 20%. On the other hand, if this variable was 1, the hub would reach it ceiling 17.2 months after the unbond shock (assuming bonded % stays at 60% the entire time for simplicity).
 
-# 2 Cosmos hub Bonded ratio flash crashes to 50%, starting to get a little scary, but only 25% below the 66% target. With our current variable of .13, it would take aprox. 4 years to make it to the ceiling rate of 20%. On the other hand, if this variable was 1, the hub would reach it ceiling 6.4 months after the unbond.
 
-# 3 Cosmos hub Bonded ratio flash crashes to 35%, NOT GOOD!!!! We need to get more atoms staked ASAP! With our current variable of .13, it would take aprox 25 months to reach the ceiling rate of 20%. On the other hand, if this variable was 1, the hub would reach its ceiling 3.3 months after the unbond and the inflation rate would be increasing at a rate of 3.91% per month.
+#2 Cosmos hub Bonded ratio flash crashes to 50%, starting to get a little scary, but only 25% below the 66% target. With our current variable of .13, it would take aprox. 4 years to make it to the ceiling rate of 20%. On the other hand, if this variable was 1, the hub would reach it ceiling 6.4 months after the unbond.
+
+#3 Cosmos hub Bonded ratio flash crashes to 35%, NOT GOOD!!!! We need to get more atoms staked ASAP! With our current variable of .13, it would take aprox 25 months to reach the ceiling rate of 20%. On the other hand, if this variable was 1, the hub would reach its ceiling 3.3 months after the unbond and the inflation rate would be increasing at a rate of 3.91% per month.
 
 All of the data above, graphs, and much more can be found at [https://docs.google.com/spreadsheets/d/1ZJWNzkNB7HUG3fsom9UO8bXODao8cJfFHkgdZ12IOnA/edit#gid=0](https://docs.google.com/spreadsheets/d/1ZJWNzkNB7HUG3fsom9UO8bXODao8cJfFHkgdZ12IOnA/edit#gid=0)
 

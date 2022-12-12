@@ -5,12 +5,12 @@ go 1.18
 require (
 	github.com/cosmos/cosmos-sdk v0.45.12-0.20221116140330-9c145c827001
 	github.com/cosmos/go-bip39 v1.0.0
-	github.com/cosmos/ibc-go/v3 v3.0.0
+	github.com/cosmos/ibc-go/v3 v3.4.0
 	github.com/cosmos/interchain-security v0.2.2-0.20221206221628-b3d79ac88924
 	github.com/golangci/golangci-lint v1.50.1
 	github.com/gorilla/mux v1.8.0
 	github.com/gravity-devs/liquidity v1.4.5
-	github.com/ory/dockertest/v3 v3.8.1
+	github.com/ory/dockertest/v3 v3.9.1
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/cast v1.5.0
 	github.com/spf13/cobra v1.6.0
@@ -32,7 +32,7 @@ require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
 	github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d // indirect
 	github.com/DataDog/zstd v1.4.5 // indirect
-	github.com/Djarvur/go-err113 v0.0.0-20210108212216-aea10b59be24 // indirect
+	github.com/Djarvur/go-err113 v0.1.0 // indirect
 	github.com/GaijinEntertainment/go-exhaustruct/v2 v2.3.0 // indirect
 	github.com/Masterminds/semver v1.5.0 // indirect
 	github.com/Microsoft/go-winio v0.6.0 // indirect
@@ -41,7 +41,7 @@ require (
 	github.com/Workiva/go-datastructures v1.0.53 // indirect
 	github.com/alexkohler/prealloc v1.0.0 // indirect
 	github.com/alingse/asasalint v0.0.11 // indirect
-	github.com/armon/go-metrics v0.3.10 // indirect
+	github.com/armon/go-metrics v0.4.0 // indirect
 	github.com/ashanbrown/forbidigo v1.3.0 // indirect
 	github.com/ashanbrown/makezero v1.1.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -53,7 +53,7 @@ require (
 	github.com/breml/errchkjson v0.3.0 // indirect
 	github.com/btcsuite/btcd v0.22.1 // indirect
 	github.com/butuzov/ireturn v0.1.1 // indirect
-	github.com/cenkalti/backoff/v4 v4.1.2 // indirect
+	github.com/cenkalti/backoff/v4 v4.1.3 // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/charithe/durationcheck v0.0.9 // indirect
@@ -76,7 +76,7 @@ require (
 	github.com/dgraph-io/badger/v2 v2.2007.2 // indirect
 	github.com/dgraph-io/ristretto v0.0.3 // indirect
 	github.com/dgryski/go-farm v0.0.0-20200201041132-a6ae2369ad13 // indirect
-	github.com/docker/cli v20.10.11+incompatible // indirect
+	github.com/docker/cli v20.10.17+incompatible // indirect
 	github.com/docker/docker v20.10.19+incompatible // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
@@ -143,7 +143,7 @@ require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hdevalence/ed25519consensus v0.0.0-20210204194344-59a8610d2b87 // indirect
 	github.com/hexops/gotextdiff v1.0.3 // indirect
-	github.com/imdario/mergo v0.3.12 // indirect
+	github.com/imdario/mergo v0.3.13 // indirect
 	github.com/improbable-eng/grpc-web v0.14.1 // indirect
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/jgautheron/goconst v1.5.1 // indirect
@@ -243,7 +243,7 @@ require (
 	github.com/ultraware/funlen v0.0.3 // indirect
 	github.com/ultraware/whitespace v0.0.5 // indirect
 	github.com/uudashr/gocognit v1.0.6 // indirect
-	github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f // indirect
+	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
 	github.com/yagipy/maintidx v1.0.0 // indirect
@@ -279,6 +279,17 @@ require (
 )
 
 replace (
+	// dragonberry
+	github.com/confio/ics23/go => github.com/cosmos/cosmos-sdk/ics23/go v0.8.0
+
+	// force all dependecies to use the same versions of ibc, tendermint and cosmos-sdk
+	github.com/cosmos/ibc-go/v3 => github.com/informalsystems/ibc-go/v3 v3.4.1-0.20221202165607-3dc5ba251371
+
+	// use cosmos style protobufs
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+	github.com/tendermint/tendermint => github.com/tendermint/tendermint v0.34.24
+
+	// latest grpc doesn't work with with our modified proto compiler, so we need to enforce
+	// the following version across all dependencies.
 	google.golang.org/grpc => google.golang.org/grpc v1.33.2
 )

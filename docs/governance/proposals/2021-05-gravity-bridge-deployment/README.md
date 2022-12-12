@@ -29,7 +29,7 @@ Cosmos Hub validators will run three key software components of the Gravity brid
 - The Gravity bridge Orchestrator
 - A Geth light client or any Ethereum full node implementing the JSON-rpc standard
 
-### Cosmos to Ethereum
+### Cosmos to Ethereum:
 
 To send transactions from Cosmos to Ethereum, the Gravity Bridge module of a validator's Gaia instance first packages the transaction data, and makes it available on an endpoint. The Orchestrator then signs this data with the validator’s Ethereum key, and submits it as a message to the Ethereum network. The Ethereum signature of each Cosmos validator needs to be assembled and submitted to the Ethereum chain by relayers.
 
@@ -41,7 +41,7 @@ Validators may also be slashed if they sign a message with their Ethereum key th
 
 Gravity bridge has no other slashing conditions.
 
-### Ethereum to Cosmos
+### Ethereum to Cosmos:
 
 The Orchestrator also monitors the Ethereum chain, submitting events that occur on Ethereum to Cosmos as messages. When more than 2/3 of the active voting power has sent a message observing the same Ethereum event, the Gravity module will take action.
 
@@ -51,7 +51,7 @@ The oracle was designed to adhere to the Cosmos Hub validator security model wit
 
 ### Slashing Conditions Spec
 
-<https://github.com/cosmos/gravity-bridge/blob/main/spec/slashing-spec.md>
+https://github.com/cosmos/gravity-bridge/blob/main/spec/slashing-spec.md
 
 ## How does it work?
 
@@ -103,7 +103,7 @@ The Gravity Bridge has been continuously tested throughout Q1/Q2 2021 by multipl
 The Althea team is committed to playing a long-term role in upgrading, documenting, and supporting Gravity over the coming years.
 The Gravity bridge is currently live and running in a testnet, which validators can join by following the instructions [here](https://github.com/althea-net/althea-chain/blob/main/docs/althea/testnet-2.md)
 
-### Audit
+### Audit:
 
 The Gravity bridge module is currently undergoing an audit with Informal Systems estimated to be completed by the end of July, 2021.
 
@@ -111,7 +111,7 @@ Phase one of the audit has been completed, which resulted in the addition of evi
 
 The phase two design audit will be completed by the end of June. To be followed by phrase three, an implementation audit to be completed by the end of July.
 
-### Conclusion
+### Conclusion:
 
 With this proposal, the Althea team, together with Cosmos ecosystem partners, will expedite the development of the Gravity Bridge with an incentivized testnet and launch in Q3 2021. Althea will be closely shepherding the Gravity Bridge throughout all phases related to the testing, audit, and implementation process on the Cosmos Hub.
 

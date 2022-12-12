@@ -288,11 +288,11 @@ replace (
 
 	// force all dependecies to use the same versions of ibc, tendermint and cosmos-sdk
 	github.com/cosmos/ibc-go/v3 => github.com/cosmos/ibc-go/v3 v3.4.0
-	github.com/tendermint/tendermint => github.com/tendermint/tendermint v0.34.24
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.11
 
 	// use cosmos style protobufs
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+	github.com/tendermint/tendermint => github.com/tendermint/tendermint v0.34.24
 
 	// latest grpc doesn't work with with our modified proto compiler, so we need to enforce
 	// the following version across all dependencies.

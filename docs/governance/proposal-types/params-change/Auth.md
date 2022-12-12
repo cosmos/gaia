@@ -30,7 +30,9 @@ There is an option to include a "memo," or additional information (data) to Cosm
 Decreasing the value of `MaxMemoCharacters` will decrease the character limit for each transaction memo. This may break the functionality of applications that rely upon the data in the memo field. For example, an exchange may use a common deposit address for all of its users, and then individualize account deposits using the memo field. If the memo field suddenly decreased, the exchange may no longer automatically sort its users' transactions.
 
 #### Increasing the value of `MaxMemoCharacters`
+<!-- markdown-link-check-disable -->
 Increasing the value of `MaxMemoCharacters` will increase the character limit for each transaction memo. This may enable new functionality for applications that use transaction memos. It may also enable an increase in the amount of data in each block, leading to an increased storage need for the blockchain and [state bloat](https://thecontrol.co/state-growth-a-look-at-the-problem-and-its-solutions-6de9d7634b0b).
+<!-- markdown-link-check-enable -->
 
 ### `TxSigLimit`
 **The max number of signatures per transaction**

@@ -36,10 +36,9 @@ func TestGaiaApp_BlockedModuleAccountAddrs(t *testing.T) {
 	require.NotContains(t, blockedAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 }
 
-// TODO: add back
-// func TestGaiaApp_Export(t *testing.T) {
-// 	app := gaiahelpers.Setup(t)
+func TestGaiaApp_Export(t *testing.T) {
+	app := gaiahelpers.Setup(t)
 
-// 	_, err := app.ExportAppStateAndValidators(true, []string{})
-// 	require.NoError(t, err, "ExportAppStateAndValidators should not have an error")
-// }
+	_, err := app.ExportAppStateAndValidators(true, []string{})
+	require.NoError(t, err, "ExportAppStateAndValidators should not have an error")
+}

@@ -23,8 +23,8 @@ const (
 
 var (
 	encodingConfig params.EncodingConfig
-	cdc            codec.Codec     //nolint:unused // this is called during e2e tests
-	txConfig       client.TxConfig //nolint:unused // this is called during e2e tests
+	cdc            codec.Codec
+	txConfig       client.TxConfig
 )
 
 func init() {
@@ -36,17 +36,17 @@ func init() {
 	txConfig = encodingConfig.TxConfig
 }
 
-type chain struct { //nolint:unused // this is called during e2e tests
+type chain struct {
 	dataDir    string
 	id         string
 	validators []*validator
-	accounts   []*account
+	accounts   []*account //nolint:unused
 	// initial accounts in genesis
 	genesisAccounts        []*account
 	genesisVestingAccounts map[string]sdk.AccAddress
 }
 
-func newChain() (*chain, error) { //nolint:unused // this is called during e2e tests
+func newChain() (*chain, error) {
 	tmpDir, err := os.MkdirTemp("", "gaia-e2e-testnet-")
 	if err != nil {
 		return nil, err
@@ -58,11 +58,11 @@ func newChain() (*chain, error) { //nolint:unused // this is called during e2e t
 	}, nil
 }
 
-func (c *chain) configDir() string { //nolint:unused // this is called during e2e tests
+func (c *chain) configDir() string {
 	return fmt.Sprintf("%s/%s", c.dataDir, c.id)
 }
 
-func (c *chain) createAndInitValidators(count int) error { //nolint:unused // this is called during e2e tests
+func (c *chain) createAndInitValidators(count int) error {
 	for i := 0; i < count; i++ {
 		node := c.createValidator(i)
 
@@ -115,7 +115,7 @@ func (c *chain) createAndInitValidatorsWithMnemonics(count int, mnemonics []stri
 	return nil
 }
 
-func (c *chain) createValidator(index int) *validator { //nolint:unused // this is called during e2e tests
+func (c *chain) createValidator(index int) *validator {
 	return &validator{
 		chain:   c,
 		index:   index,

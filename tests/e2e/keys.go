@@ -5,7 +5,7 @@ import (
 )
 
 // createMnemonic creates a random string mnemonic
-func createMnemonic() (string, error) { //nolint:unused // this is called during e2e tests
+func createMnemonic() (string, error) {
 	entropySeed, err := bip39.NewEntropy(256)
 	if err != nil {
 		return "", err

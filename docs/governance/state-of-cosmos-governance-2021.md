@@ -1,3 +1,7 @@
+---
+order: 9
+---
+
 <!-- markdown-link-check-disable -->
 # State of Cosmos Governance 2021
 
@@ -7,7 +11,7 @@
 
 The Cosmos ecosystem emphasizes governance mechanisms in order to achieve the vision of an ecosystem of interoperable blockchains supported by interchain infrastructure and services on the Cosmos Hub and beyond. The intent is that Cosmos Hub is operated by the community of code development teams supported by the Interchain Foundation, validators and ATOM token holders as a form of distributed organization.
 
-Cosmos Hub has a [Governance (x/gov) module](https://docs.cosmos.network/main/modules/gov) for coordinating various changes to the blockchain through parameters, upgrades and proposals (the [white paper](https://v1.cosmos.network/resources/whitepaper) refers to text amendments to the "human-readable constitution" setting out Cosmos Hub policies). However, the ecosystem also has additional on- and off- chain processes that exist to set technical direction and inculcate social norms.
+Cosmos Hub has a [Governance (x/gov) module](https://docs.cosmos.network/main/modules/gov/) for coordinating various changes to the blockchain through parameters, upgrades and proposals (the [white paper](https://v1.cosmos.network/resources/whitepaper) refers to text amendments to the "human-readable constitution" setting out Cosmos Hub policies). However, the ecosystem also has additional on- and off- chain processes that exist to set technical direction and inculcate social norms.
 
 Reviewing existing governance documentation and discussion, a few key themes surfaced:
 
@@ -21,7 +25,7 @@ Each blockchain in the Cosmos ecosystem can be tailored to a specific applicatio
 
 ### Development of Governance Processes Over Time
 
-The existing [governance module](https://docs.cosmos.network/main/modules/gov)  is described as a minimum viable product for the governance module, with [ideas for future improvement](https://docs.cosmos.network/main/modules/gov#future-improvements) . For example an active product team is currently aligning [groups and governance functionality](https://docs.google.com/document/d/1w-fwa8i8kkgirbn9DOFklHwcu9xO_IdbMN910ASr2oQ/edit#)  will change current governance practices and open up new avenues to explore and support through on- and off- chain processes
+The existing [governance module](https://docs.cosmos.network/main/modules/gov/)  is described as a minimum viable product for the governance module, with [ideas for future improvement](https://docs.cosmos.network/main/modules/gov/05_future_improvements.html) . For example an active product team is currently aligning [groups and governance functionality](https://docs.google.com/document/d/1w-fwa8i8kkgirbn9DOFklHwcu9xO_IdbMN910ASr2oQ/edit#)  will change current governance practices and open up new avenues to explore and support through on- and off- chain processes
 
 
 ## On- and off-chain Governance Structure

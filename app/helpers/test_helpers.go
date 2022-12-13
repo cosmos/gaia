@@ -7,8 +7,6 @@ import (
 
 	"github.com/tendermint/tendermint/crypto"
 
-	// "github.com/tendermint/tendermint/crypto/secp256k1"
-
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"

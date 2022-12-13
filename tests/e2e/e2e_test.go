@@ -54,7 +54,6 @@ func (s *IntegrationTestSuite) TestFeeGrant() {
 	s.testFeeGrant()
 }
 
-// TODO: Add back after antehandler is fixed
 func (s *IntegrationTestSuite) TestGlobalFees() {
 	if !runGlobalFeesTest {
 		s.T().Skip()
@@ -63,7 +62,6 @@ func (s *IntegrationTestSuite) TestGlobalFees() {
 	s.testQueryGlobalFeesInGenesis()
 }
 
-// TODO: Add back gov tests using the legacy gov system
 func (s *IntegrationTestSuite) TestGov() {
 	if !runGovTest {
 		s.T().Skip()
@@ -106,8 +104,5 @@ func (s *IntegrationTestSuite) TestVesting() {
 	chainAAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	s.testDelayedVestingAccount(chainAAPI)
 	s.testContinuousVestingAccount(chainAAPI)
-
-	// TODO: Add back vesting account here
-	// s.testPermanentLockedAccount(chainAAPI)
-	// s.testPeriodicVestingAccount(chainAAPI)
+	// s.testPeriodicVestingAccount(chainAAPI) TODO: add back when v0.45 adds the missing CLI command.
 }

@@ -15,7 +15,7 @@ import (
 )
 
 func TestFixBankMetadata(t *testing.T) {
-	app := gaiahelpers.Setup(t, false, 1)
+	app := gaiahelpers.Setup(t)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{
 		ChainID: fmt.Sprintf("test-chain-%s", tmrand.Str(4)),
 		Height:  1,

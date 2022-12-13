@@ -285,9 +285,6 @@ replace (
 	// dragonberry
 	github.com/confio/ics23/go => github.com/cosmos/cosmos-sdk/ics23/go v0.8.0
 
-	// force all dependecies to use the same versions of ibc, tendermint and cosmos-sdk
-	github.com/cosmos/ibc-go/v3 => github.com/cosmos/ibc-go/v3 v3.4.0
-
 	// use cosmos style protobufs
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 

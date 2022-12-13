@@ -39,7 +39,7 @@ type validator struct {
 	nodeKey          p2p.NodeKey
 }
 
-type account struct {
+type account struct { //nolint:unused // this is called during e2e tests
 	moniker    string
 	mnemonic   string
 	keyInfo    keyring.Info
@@ -96,7 +96,7 @@ func (v *validator) init() error {
 	return nil
 }
 
-func (v *validator) createNodeKey() error {
+func (v *validator) createNodeKey() error { //nolint:unused // this is called during e2e tests
 	serverCtx := server.NewDefaultContext()
 	config := serverCtx.Config
 
@@ -172,7 +172,7 @@ func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
 	return nil
 }
 
-func (c *chain) addAccountFromMnemonic(counts int) error {
+func (c *chain) addAccountFromMnemonic(counts int) error { //nolint:unused // this is called during e2e tests
 	val0ConfigDir := c.validators[0].configDir()
 	kb, err := keyring.New(keyringAppName, keyring.BackendTest, val0ConfigDir, nil)
 	if err != nil {
@@ -215,7 +215,7 @@ func (c *chain) addAccountFromMnemonic(counts int) error {
 	return nil
 }
 
-func (v *validator) createKey(name string) error {
+func (v *validator) createKey(name string) error { //nolint:unused // this is called during e2e tests
 	mnemonic, err := createMnemonic()
 	if err != nil {
 		return err
@@ -224,7 +224,7 @@ func (v *validator) createKey(name string) error {
 	return v.createKeyFromMnemonic(name, mnemonic)
 }
 
-func (v *validator) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
+func (v *validator) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) { //nolint:unused // this is called during e2e tests
 	description := stakingtypes.NewDescription(v.moniker, "", "", "", "")
 	commissionRates := stakingtypes.CommissionRates{
 		Rate:          sdk.MustNewDecFromStr("0.1"),
@@ -250,7 +250,7 @@ func (v *validator) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
 	)
 }
 
-func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
+func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) { //nolint:unused // this is called during e2e tests
 	txBuilder := encodingConfig.TxConfig.NewTxBuilder()
 
 	if err := txBuilder.SetMsgs(msgs...); err != nil {

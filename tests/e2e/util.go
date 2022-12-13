@@ -44,3 +44,11 @@ func decodeTx(txBytes []byte) (*sdktx.Tx, error) {
 		Signatures: raw.Signatures,
 	}, nil
 }
+
+//nolint:unused // this is called during e2e tests
+func concatFlags(originalCollection []string, commandFlags []string, generalFlags []string) []string {
+	originalCollection = append(originalCollection, commandFlags...)
+	originalCollection = append(originalCollection, generalFlags...)
+
+	return originalCollection
+}

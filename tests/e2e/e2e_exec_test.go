@@ -30,7 +30,7 @@ const (
 	flagChainID         = "chain-id"
 	flagSpendLimit      = "spend-limit"
 	flagGasAdjustment   = "gas-adjustment"
-	flagFeeGranter      = "fee-granter"
+	flagFeeAccount      = "fee-account"
 	flagBroadcastMode   = "broadcast-mode"
 	flagKeyringBackend  = "keyring-backend"
 	flagAllowedMessages = "allowed-messages"
@@ -364,19 +364,18 @@ func (s *IntegrationTestSuite) execDistributionFundCommunityPool(c *chain, valId
 	s.T().Logf("Successfully funded community pool")
 }
 
-func (s *IntegrationTestSuite) execGovSubmitLegacyGovProposal(c *chain, valIdx int, submitterAddr, govProposalPath, fees, govProposalSubType string) {
+func (s *IntegrationTestSuite) runGovExec(c *chain, valIdx int, submitterAddr, govCommand string, proposalFlags []string, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
-
-	s.T().Logf("Executing gaiad tx gov submit-proposal on chain %s", c.id)
 
 	gaiaCommand := []string{
 		gaiadBinary,
 		txCommand,
 		govtypes.ModuleName,
-		"submit-proposal",
-		govProposalSubType,
-		govProposalPath,
+		govCommand,
+	}
+
+	generalFlags := []string{
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, submitterAddr),
 		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
@@ -385,107 +384,11 @@ func (s *IntegrationTestSuite) execGovSubmitLegacyGovProposal(c *chain, valIdx i
 		"-y",
 	}
 
+	gaiaCommand = concatFlags(gaiaCommand, proposalFlags, generalFlags)
+
+	s.T().Logf("Executing gaiad tx gov %s on chain %s", govCommand, c.id)
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
-	s.T().Logf("Successfully submitted legacy proposal")
-}
-
-func (s *IntegrationTestSuite) execGovDepositProposal(c *chain, valIdx int, submitterAddr string, proposalId int, amount, fees string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-
-	s.T().Logf("Executing gaiad tx gov deposit on chain %s", c.id)
-
-	gaiaCommand := []string{
-		gaiadBinary,
-		txCommand,
-		govtypes.ModuleName,
-		"deposit",
-		fmt.Sprintf("%d", proposalId),
-		amount,
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, submitterAddr),
-		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-		"--keyring-backend=test",
-		"--output=json",
-		"-y",
-	}
-
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
-	s.T().Logf("Successfully deposited proposal %d", proposalId)
-}
-
-func (s *IntegrationTestSuite) execGovVoteProposal(c *chain, valIdx int, submitterAddr string, proposalId int, vote, fees string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-
-	s.T().Logf("Executing gaiad tx gov vote on chain %s", c.id)
-
-	gaiaCommand := []string{
-		gaiadBinary,
-		txCommand,
-		govtypes.ModuleName,
-		"vote",
-		fmt.Sprintf("%d", proposalId),
-		vote,
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, submitterAddr),
-		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-		"--keyring-backend=test",
-		"--output=json",
-		"-y",
-	}
-
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
-	s.T().Logf("Successfully voted on proposal %d", proposalId)
-}
-
-func (s *IntegrationTestSuite) execGovWeightedVoteProposal(c *chain, valIdx int, submitterAddr string, proposalId int, vote, fees string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-
-	s.T().Logf("Executing gaiad tx gov vote on chain %s", c.id)
-
-	gaiaCommand := []string{
-		gaiadBinary,
-		txCommand,
-		govtypes.ModuleName,
-		"weighted-vote",
-		fmt.Sprintf("%d", proposalId),
-		vote,
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, submitterAddr),
-		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-		"--keyring-backend=test",
-		"--output=json",
-		"-y",
-	}
-
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
-	s.T().Logf("Successfully voted on proposal %d", proposalId)
-}
-
-func (s *IntegrationTestSuite) execGovSubmitProposal(c *chain, valIdx int, submitterAddr, govProposalPath, fees string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-
-	s.T().Logf("Executing gaiad tx gov submit-proposal on chain %s", c.id)
-
-	gaiaCommand := []string{
-		gaiadBinary,
-		txCommand,
-		govtypes.ModuleName,
-		"submit-proposal",
-		govProposalPath,
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, submitterAddr),
-		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-		"--keyring-backend=test",
-		"--output=json",
-		"-y",
-	}
-
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
-	s.T().Logf("Successfully submitted proposal %s", govProposalPath)
+	s.T().Logf("Successfully executed %s", govCommand)
 }
 
 func (s *IntegrationTestSuite) executeGKeysAddCommand(c *chain, valIdx int, name string, home string) string {

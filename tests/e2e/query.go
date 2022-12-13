@@ -20,7 +20,7 @@ import (
 	globalfee "github.com/cosmos/gaia/v8/x/globalfee/types"
 )
 
-func queryGaiaTx(endpoint, txHash string) error {
+func queryGaiaTx(endpoint, txHash string) error { //nolint:unused // this is called during e2e tests
 	resp, err := http.Get(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs/%s", endpoint, txHash))
 	if err != nil {
 		return fmt.Errorf("failed to execute HTTP request: %w", err)
@@ -46,7 +46,7 @@ func queryGaiaTx(endpoint, txHash string) error {
 }
 
 // if coin is zero, return empty coin.
-func getSpecificBalance(endpoint, addr, denom string) (amt sdk.Coin, err error) {
+func getSpecificBalance(endpoint, addr, denom string) (amt sdk.Coin, err error) { //nolint:unused // this is called during e2e tests
 	balances, err := queryGaiaAllBalances(endpoint, addr)
 	if err != nil {
 		return amt, err
@@ -60,7 +60,7 @@ func getSpecificBalance(endpoint, addr, denom string) (amt sdk.Coin, err error) 
 	return amt, nil
 }
 
-func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) {
+func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) { //nolint:unused // this is called during e2e tests
 	body, err := httpGet(fmt.Sprintf("%s/cosmos/bank/v1beta1/balances/%s", endpoint, addr))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
@@ -74,7 +74,7 @@ func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) {
 	return balancesResp.Balances, nil
 }
 
-func queryGlobalFees(endpoint string) (amt sdk.DecCoins, err error) {
+func queryGlobalFees(endpoint string) (amt sdk.DecCoins, err error) { //nolint:unused // this is called during e2e tests
 	body, err := httpGet(fmt.Sprintf("%s/gaia/globalfee/v1beta1/minimum_gas_prices", endpoint))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
@@ -88,7 +88,7 @@ func queryGlobalFees(endpoint string) (amt sdk.DecCoins, err error) {
 	return fees.MinimumGasPrices, nil
 }
 
-func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string) (stakingtypes.QueryDelegationResponse, error) {
+func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string) (stakingtypes.QueryDelegationResponse, error) { //nolint:unused // this is called during e2e tests
 	var res stakingtypes.QueryDelegationResponse
 
 	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators/%s/delegations/%s", endpoint, validatorAddr, delegatorAddr))
@@ -102,7 +102,7 @@ func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string
 	return res, nil
 }
 
-func queryDelegatorWithdrawalAddress(endpoint string, delegatorAddr string) (disttypes.QueryDelegatorWithdrawAddressResponse, error) {
+func queryDelegatorWithdrawalAddress(endpoint string, delegatorAddr string) (disttypes.QueryDelegatorWithdrawAddressResponse, error) { //nolint:unused // this is called during e2e tests
 	var res disttypes.QueryDelegatorWithdrawAddressResponse
 
 	body, err := httpGet(fmt.Sprintf("%s/cosmos/distribution/v1beta1/delegators/%s/withdraw_address", endpoint, delegatorAddr))
@@ -116,102 +116,12 @@ func queryDelegatorWithdrawalAddress(endpoint string, delegatorAddr string) (dis
 	return res, nil
 }
 
-// func queryGroupMembers(endpoint string, groupId int) (group.QueryGroupMembersResponse, error) {
-// 	var res group.QueryGroupMembersResponse
-// 	path := fmt.Sprintf("%s/cosmos/group/v1/group_members/%d", endpoint, groupId)
-
-// 	body, err := httpGet(path)
-// 	if err != nil {
-// 		return res, fmt.Errorf("failed to execute HTTP request: %w", err)
-// 	}
-// 	if err := cdc.UnmarshalJSON(body, &res); err != nil {
-// 		return res, err
-// 	}
-
-// 	return res, nil
-// }
-
-// func queryGroupInfo(endpoint string, groupId int) (group.QueryGroupInfoResponse, error) {
-// 	var res group.QueryGroupInfoResponse
-// 	path := fmt.Sprintf("%s/cosmos/group/v1/group_info/%d", endpoint, groupId)
-
-// 	body, err := httpGet(path)
-// 	if err != nil {
-// 		return res, fmt.Errorf("failed to execute HTTP request: %w", err)
-// 	}
-// 	if err := cdc.UnmarshalJSON(body, &res); err != nil {
-// 		return res, err
-// 	}
-
-// 	return res, nil
-// }
-
-// func queryGroupsByAdmin(endpoint string, adminAddress string) (group.QueryGroupsByAdminResponse, error) {
-// 	var res group.QueryGroupsByAdminResponse
-// 	path := fmt.Sprintf("%s/cosmos/group/v1/groups_by_admin/%s", endpoint, adminAddress)
-
-// 	body, err := httpGet(path)
-// 	if err != nil {
-// 		return res, fmt.Errorf("failed to execute HTTP request: %w", err)
-// 	}
-// 	if err := cdc.UnmarshalJSON(body, &res); err != nil {
-// 		return res, err
-// 	}
-
-// 	return res, nil
-// }
-
-// func queryGroupPolicies(endpoint string, groupId int) (group.QueryGroupPoliciesByGroupResponse, error) {
-// 	var res group.QueryGroupPoliciesByGroupResponse
-// 	path := fmt.Sprintf("%s/cosmos/group/v1/group_policies_by_group/%d", endpoint, groupId)
-
-// 	body, err := httpGet(path)
-// 	if err != nil {
-// 		return res, fmt.Errorf("failed to execute HTTP request: %w", err)
-// 	}
-// 	if err := cdc.UnmarshalJSON(body, &res); err != nil {
-// 		return res, err
-// 	}
-
-// 	return res, nil
-// }
-
-// func queryGroupProposal(endpoint string, groupId int) (group.QueryProposalResponse, error) {
-// 	var res group.QueryProposalResponse
-// 	path := fmt.Sprintf("%s/cosmos/group/v1/proposal/%d", endpoint, groupId)
-
-// 	body, err := httpGet(path)
-// 	if err != nil {
-// 		return res, fmt.Errorf("failed to execute HTTP request: %w", err)
-// 	}
-// 	if err := cdc.UnmarshalJSON(body, &res); err != nil {
-// 		return res, err
-// 	}
-
-// 	return res, nil
-// }
-
-// func queryGroupProposalByGroupPolicy(endpoint string, policyAddress string) (group.QueryProposalsByGroupPolicyResponse, error) {
-// 	var res group.QueryProposalsByGroupPolicyResponse
-// 	path := fmt.Sprintf("%s/cosmos/group/v1/proposals_by_group_policy/%s", endpoint, policyAddress)
-
-// 	body, err := httpGet(path)
-// 	if err != nil {
-// 		return res, fmt.Errorf("failed to execute HTTP request: %w", err)
-// 	}
-// 	if err := cdc.UnmarshalJSON(body, &res); err != nil {
-// 		return res, err
-// 	}
-
-// 	return res, nil
-// }
-
-func queryGovProposal(endpoint string, proposalID int) (govtypes.QueryProposalResponse, error) {
+func queryGovProposal(endpoint string, proposalID int) (govtypes.QueryProposalResponse, error) { //nolint:unused // this is called during e2e tests
 	var govProposalResp govtypes.QueryProposalResponse
 
 	path := fmt.Sprintf("%s/cosmos/gov/v1beta1/proposals/%d", endpoint, proposalID)
 
-	body, err := httpGet(path) //nolint:gosec // this is only used during tests
+	body, err := httpGet(path)
 	if err != nil {
 		return govProposalResp, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
@@ -222,7 +132,7 @@ func queryGovProposal(endpoint string, proposalID int) (govtypes.QueryProposalRe
 	return govProposalResp, nil
 }
 
-func queryAccount(endpoint, address string) (acc authtypes.AccountI, err error) {
+func queryAccount(endpoint, address string) (acc authtypes.AccountI, err error) { //nolint:unused // this is called during e2e tests
 	var res authtypes.QueryAccountResponse
 	resp, err := http.Get(fmt.Sprintf("%s/cosmos/auth/v1beta1/accounts/%s", endpoint, address))
 	if err != nil {
@@ -240,7 +150,7 @@ func queryAccount(endpoint, address string) (acc authtypes.AccountI, err error) 
 	return acc, cdc.UnpackAny(res.Account, &acc)
 }
 
-func queryDelayedVestingAccount(endpoint, address string) (authvesting.DelayedVestingAccount, error) {
+func queryDelayedVestingAccount(endpoint, address string) (authvesting.DelayedVestingAccount, error) { //nolint:unused // this is called during e2e tests
 	baseAcc, err := queryAccount(endpoint, address)
 	if err != nil {
 		return authvesting.DelayedVestingAccount{}, err
@@ -253,7 +163,7 @@ func queryDelayedVestingAccount(endpoint, address string) (authvesting.DelayedVe
 	return *acc, nil
 }
 
-func queryContinuousVestingAccount(endpoint, address string) (authvesting.ContinuousVestingAccount, error) {
+func queryContinuousVestingAccount(endpoint, address string) (authvesting.ContinuousVestingAccount, error) { //nolint:unused // this is called during e2e tests
 	baseAcc, err := queryAccount(endpoint, address)
 	if err != nil {
 		return authvesting.ContinuousVestingAccount{}, err
@@ -266,7 +176,7 @@ func queryContinuousVestingAccount(endpoint, address string) (authvesting.Contin
 	return *acc, nil
 }
 
-func queryPermanentLockedAccount(endpoint, address string) (authvesting.PermanentLockedAccount, error) {
+func queryPermanentLockedAccount(endpoint, address string) (authvesting.PermanentLockedAccount, error) { //nolint:unused // this is called during e2e tests
 	baseAcc, err := queryAccount(endpoint, address)
 	if err != nil {
 		return authvesting.PermanentLockedAccount{}, err
@@ -279,7 +189,7 @@ func queryPermanentLockedAccount(endpoint, address string) (authvesting.Permanen
 	return *acc, nil
 }
 
-func queryPeriodicVestingAccount(endpoint, address string) (authvesting.PeriodicVestingAccount, error) {
+func queryPeriodicVestingAccount(endpoint, address string) (authvesting.PeriodicVestingAccount, error) { //nolint:unused // this is called during e2e tests
 	baseAcc, err := queryAccount(endpoint, address)
 	if err != nil {
 		return authvesting.PeriodicVestingAccount{}, err
@@ -292,7 +202,7 @@ func queryPeriodicVestingAccount(endpoint, address string) (authvesting.Periodic
 	return *acc, nil
 }
 
-func queryValidator(endpoint, address string) (stakingtypes.Validator, error) {
+func queryValidator(endpoint, address string) (stakingtypes.Validator, error) { //nolint:unused // this is called during e2e tests
 	var res stakingtypes.QueryValidatorResponse
 
 	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators/%s", endpoint, address))
@@ -306,7 +216,7 @@ func queryValidator(endpoint, address string) (stakingtypes.Validator, error) {
 	return res.Validator, nil
 }
 
-func queryValidators(endpoint string) (stakingtypes.Validators, error) {
+func queryValidators(endpoint string) (stakingtypes.Validators, error) { //nolint:unused // this is called during e2e tests
 	var res stakingtypes.QueryValidatorsResponse
 	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators", endpoint))
 	if err != nil {
@@ -319,7 +229,7 @@ func queryValidators(endpoint string) (stakingtypes.Validators, error) {
 	return res.Validators, nil
 }
 
-func queryEvidence(endpoint, hash string) (evidencetypes.QueryEvidenceResponse, error) {
+func queryEvidence(endpoint, hash string) (evidencetypes.QueryEvidenceResponse, error) { //nolint:unused // this is called during e2e tests
 	var res evidencetypes.QueryEvidenceResponse
 	body, err := httpGet(fmt.Sprintf("%s/cosmos/evidence/v1beta1/evidence/%s", endpoint, hash))
 	if err != nil {
@@ -332,7 +242,7 @@ func queryEvidence(endpoint, hash string) (evidencetypes.QueryEvidenceResponse, 
 	return res, nil
 }
 
-func queryAllEvidence(endpoint string) (evidencetypes.QueryAllEvidenceResponse, error) {
+func queryAllEvidence(endpoint string) (evidencetypes.QueryAllEvidenceResponse, error) { //nolint:unused // this is called during e2e tests
 	var res evidencetypes.QueryAllEvidenceResponse
 	body, err := httpGet(fmt.Sprintf("%s/cosmos/evidence/v1beta1/evidence", endpoint))
 	if err != nil {

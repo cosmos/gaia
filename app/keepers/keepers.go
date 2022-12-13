@@ -326,7 +326,7 @@ func NewAppKeeper(
 	// create static IBC router, add transfer route, then set and seal it
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
-		AddRoute(ibctransfertypes.ModuleName, transferIBCModule)
+		AddRoute(ibctransfertypes.ModuleName, appKeepers.RouterModule)
 
 	appKeepers.IBCKeeper.SetRouter(ibcRouter)
 

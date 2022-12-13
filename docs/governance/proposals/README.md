@@ -1,3 +1,9 @@
+---
+order: 1
+parent:
+  order: 8
+---
+
 # Proposals
 
-A home for governance proposal drafts
+A historical record of past proposals.

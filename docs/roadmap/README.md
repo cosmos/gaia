@@ -12,6 +12,7 @@ parent:
 For current roadmap, check out the Cosmos 2.0 [Roadmap](./cosmos-hub-roadmap-2.0.md).
 
 ## Cosmos Hub History
+
 | Upgrade Name        | Date          | Height    | Chain Identifier | Tm      | Cosmos SDK | Gaia                     | IBC                      |
 |---------------------|---------------|-----------|---------------|------------|------------|--------------------------|--------------------------|
 | Mainnet Launch      | 13/03/19    | 0         | `cosmoshub-1` | [v0.31.x](https://github.com/tendermint/tendermint/releases/tag/v0.31.11)          | [v0.33.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.33.2)    |  _Included in Cosmos SDK_ | n/a                      |

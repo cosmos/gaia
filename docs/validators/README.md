@@ -14,5 +14,5 @@ This folder contains documentation relevant to validators of the Cosmos Hub and 
 - [Validator FAQ](./validator-faq.md)
 - [Validator Security Notice](./security.md)
 - Key Management System
-    + [Intro to KMS](./kms/kms.md)
-    + [KMS + Ledger](./kms/kms_ledger.md)
+  - [Intro to KMS](./kms/kms.md)
+  - [KMS + Ledger](./kms/kms_ledger.md)

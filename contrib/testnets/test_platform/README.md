@@ -15,9 +15,8 @@ This tool aims to simplify testing of key Cosmos Hub operations, such as module 
 1. Supports taking a pre-existing genesis file and creating a network with a sufficient number of validators. The network
    creates as many validators as needed to attain majority voting power on the new network (and produce new blocks with pre-existing genesis file).
    The validators that are replaced is the set that provides at least 66% of the total voting power given in the genesis file.
-   
-   **This feature allows testing upgrades and module migrations of existing networks, using their pre-existing genesis** :star:
 
+   **This feature allows testing upgrades and module migrations of existing networks, using their pre-existing genesis** :star:
 
 ## Usage
 
@@ -27,13 +26,14 @@ This tool aims to simplify testing of key Cosmos Hub operations, such as module 
       1. Set `num_of_nodes_to_apply` to the _number of nodes to run_, e.g., `num_of_nodes_to_apply=4`
    1. To create a network based on an existing genesis file:
       1. Set `replacement_genesis` to the source genesis file; `.tar.gz` files are also supported
-      1. Set `replacement_genesis_make_safe` to `True` in order to create as many nodes as needed to run a majority of validators. 
-      1. Otherwise, set `replacement_genesis_make_safe` value to blank to create `num_of_nodes_to_apply` nodes, e.g., `replacement_genesis_make_safe=`. 
+      1. Set `replacement_genesis_make_safe` to `True` in order to create as many nodes as needed to run a majority of validators.
+      1. Otherwise, set `replacement_genesis_make_safe` value to blank to create `num_of_nodes_to_apply` nodes, e.g., `replacement_genesis_make_safe=`.
          Important: if the `replacement_genesis_make_safe` is not set, then the validator keys in the genesis file aren't replaced and so the network may not produce new blocks.
    1. Optionally, set `LOG_LEVEL` to one of _(trace | debug | info | warn | error | fatal | panic)_; default _info_
 1. Start  `gaiad_config_manager.py`
 
-Notes for `template/replacement_defaults.txt`: 
+Notes for `template/replacement_defaults.txt`:
+
 - only the last occurrence of a key and it's value are used, i.e., earlier occurrences are overwritten.
 - keys ending in `_PORT` are automatically incremented for each node
 

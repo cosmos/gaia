@@ -12,8 +12,6 @@ import (
 	"github.com/cosmos/gaia/v8/x/globalfee"
 )
 
-const maxBypassMinFeeMsgGasUsage uint64 = 200_000
-
 // FeeWithBypassDecorator will check if the transaction's fee is at least as large
 // as the local validator's minimum gasFee (defined in validator config) and global fee, and the fee denom should be in the global fees' denoms.
 //
@@ -28,12 +26,13 @@ const maxBypassMinFeeMsgGasUsage uint64 = 200_000
 var _ sdk.AnteDecorator = FeeDecorator{}
 
 type FeeDecorator struct {
-	BypassMinFeeMsgTypes []string
-	GlobalMinFee         globalfee.ParamSource
-	StakingSubspace      paramtypes.Subspace
+	BypassMinFeeMsgTypes       []string
+	GlobalMinFee               globalfee.ParamSource
+	StakingSubspace            paramtypes.Subspace
+	MaxBypassMinFeeMsgGasUsage uint64
 }
 
-func NewFeeDecorator(bypassMsgTypes []string, globalfeeSubspace, stakingSubspace paramtypes.Subspace) FeeDecorator {
+func NewFeeDecorator(bypassMsgTypes []string, globalfeeSubspace, stakingSubspace paramtypes.Subspace, maxBypassMinFeeMsgGasUsage uint64) FeeDecorator {
 	if !globalfeeSubspace.HasKeyTable() {
 		panic("global fee paramspace was not set up via module")
 	}
@@ -43,9 +42,10 @@ func NewFeeDecorator(bypassMsgTypes []string, globalfeeSubspace, stakingSubspace
 	}
 
 	return FeeDecorator{
-		BypassMinFeeMsgTypes: bypassMsgTypes,
-		GlobalMinFee:         globalfeeSubspace,
-		StakingSubspace:      stakingSubspace,
+		BypassMinFeeMsgTypes:       bypassMsgTypes,
+		GlobalMinFee:               globalfeeSubspace,
+		StakingSubspace:            stakingSubspace,
+		MaxBypassMinFeeMsgGasUsage: maxBypassMinFeeMsgGasUsage,
 	}
 }
 
@@ -64,7 +64,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	// operator configured bypass messages only, it's total gas must be less than
 	// or equal to a constant, otherwise minimum fees and global fees are checked to prevent spam.
 	containsOnlyBypassMinFeeMsgs := mfd.bypassMinFeeMsgs(msgs)
-	doesNotExceedMaxGasUsage := gas <= uint64(len(msgs))*maxBypassMinFeeMsgGasUsage
+	doesNotExceedMaxGasUsage := gas <= uint64(len(msgs))*mfd.MaxBypassMinFeeMsgGasUsage
 	allowedToBypassMinFee := containsOnlyBypassMinFeeMsgs && doesNotExceedMaxGasUsage
 
 	var allFees sdk.Coins

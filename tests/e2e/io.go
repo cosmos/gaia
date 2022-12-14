@@ -7,7 +7,7 @@ import (
 )
 
 // copyFile copy file from src to dst
-func copyFile(src, dst string) (int64, error) { //nolint:unused // this is called during e2e tests
+func copyFile(src, dst string) (int64, error) { //nolint:unparam
 	sourceFileStat, err := os.Stat(src)
 	if err != nil {
 		return 0, err
@@ -34,7 +34,7 @@ func copyFile(src, dst string) (int64, error) { //nolint:unused // this is calle
 }
 
 // writeFile write a byte slice into a file path
-func writeFile(path string, body []byte) error { //nolint:unused // this is called during e2e tests
+func writeFile(path string, body []byte) error {
 	_, err := os.Create(path)
 	if err != nil {
 		return err

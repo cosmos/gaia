@@ -1,3 +1,4 @@
+//nolint:unused
 package e2e
 
 import (
@@ -290,7 +291,7 @@ type txBankSend struct {
 
 func (s *IntegrationTestSuite) execBankSendBatch(
 	c *chain,
-	valIdx int,
+	valIdx int, //nolint:unparam
 	txs ...txBankSend,
 ) int {
 	sucessBankSendCount := 0
@@ -309,7 +310,7 @@ func (s *IntegrationTestSuite) execBankSendBatch(
 	return sucessBankSendCount
 }
 
-func (s *IntegrationTestSuite) execWithdrawAllRewards(c *chain, valIdx int, payee, fees string, expectErr bool) {
+func (s *IntegrationTestSuite) execWithdrawAllRewards(c *chain, valIdx int, payee, fees string, expectErr bool) { //nolint:unparam
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -423,7 +424,7 @@ func (s *IntegrationTestSuite) executeKeysList(c *chain, valIdx int, home string
 	})
 }
 
-func (s *IntegrationTestSuite) executeDelegate(c *chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) {
+func (s *IntegrationTestSuite) executeDelegate(c *chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) { //nolint:unparam
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 

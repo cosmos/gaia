@@ -19,6 +19,7 @@ on:
     branches: [ main ]
     paths-ignore:
       - "**/*.md"
+      - "tests/e2e/**"
   schedule:
     - cron: '0 * * * *'
 

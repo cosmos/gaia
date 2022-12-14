@@ -34,6 +34,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/group"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	icamauthtypes "github.com/cosmos/gaia/v8/x/icamauth/types"
 	ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
 	"github.com/ory/dockertest/v3"
@@ -63,6 +64,8 @@ const (
 	proposal3            = "proposal_3.json"
 	proposal4            = "proposal_4.json"
 	proposalGlobalFee    = "proposal_globalfee.json"
+	proposalICACreate    = "proposal_ica_create.json"
+	proposalICASend      = "proposal_ica_send.json"
 	ICAGroupProposal     = "ica_proposal_group.json"
 	icaIBCSend           = "ica_ibc_send.json"
 	icaConnectionID      = "connection-0"
@@ -79,7 +82,12 @@ const (
 	relayerAccountIndex          = 0
 	numberOfEvidences            = 10
 	slashingShares         int64 = 10000
-	icaOwnerAccountIndex         = 1
+)
+
+const (
+	// genesis accounts enum
+	icaOwnerAccountIndex = iota + 1
+	icaGovOwnerAccountIndex
 )
 
 var (
@@ -106,7 +114,7 @@ type IntegrationTestSuite struct {
 	dkrNet               *dockertest.Network
 	hermesResource       *dockertest.Resource
 	valResources         map[string][]*dockertest.Resource
-	govProposalCounter   int
+	proposalCounter      int
 	groupProposalCounter int
 }
 
@@ -679,6 +687,43 @@ func (s *IntegrationTestSuite) writeGovCancelUpgradeSoftwareProposal(c *chain) {
 	s.Require().NoError(err)
 
 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposal4), proposalCancelUpgrade)
+	s.Require().NoError(err)
+}
+
+func (s *IntegrationTestSuite) writeGovICAProposal(c *chain) {
+	/*
+	   "@type": "/ibc.applications.interchain_accounts.controller.v1.MsgRegisterInterchainAccount",
+	   "connection_id": "connection-0",
+	   "owner": "cosmos1afk9zr2hn2jsac63h4hm60vl9z3e5u69gndzf7c99cqge3vzwjzsfwkgpd",
+	   "version":
+	*/
+	proposalICACreateJSON, err := createGovProposalJSON(&icamauthtypes.MsgRegisterAccount{
+		Owner:        govModuleAddress,
+		ConnectionId: icaConnectionID,
+		Version:      icaVersion,
+	})
+	s.Require().NoError(err)
+
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalICACreate), proposalICACreateJSON)
+	s.Require().NoError(err)
+
+	protoMsg, err := codectypes.NewAnyWithValue(
+		&banktypes.MsgSend{
+			FromAddress: govModuleAddress,
+			ToAddress:   govSendMsgRecipientAddress,
+			Amount:      []sdk.Coin{sendGovAmount},
+		},
+	)
+	s.Require().NoError(err)
+
+	proposalICASendJSON, err := createGovProposalJSON(&icamauthtypes.MsgSubmitTx{
+		Owner:        govModuleAddress,
+		ConnectionId: icaConnectionID,
+		Msg:          protoMsg,
+	})
+	s.Require().NoError(err)
+
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalICASend), proposalICASendJSON)
 	s.Require().NoError(err)
 }
 

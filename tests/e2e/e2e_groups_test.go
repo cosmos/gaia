@@ -23,7 +23,23 @@ var (
 )
 
 var (
+	proposalId = 1
 	sendAmount = sdk.NewInt64Coin(uatomDenom, 5000000)
+
+	windows = &group.DecisionPolicyWindows{
+		MinExecutionPeriod: 0 * time.Second,
+		VotingPeriod:       30 * time.Second,
+	}
+
+	thresholdPolicy = &group.ThresholdDecisionPolicy{
+		Threshold: "1",
+		Windows:   windows,
+	}
+
+	percentagePolicy = &group.PercentageDecisionPolicy{
+		Percentage: "0.5",
+		Windows:    windows,
+	}
 )
 
 const (

@@ -25,8 +25,7 @@ Through these 3 accounts, we can test if:
 
 ### Prepare to run two chains
 We've simplified the setup process via several shell scripts. If you'd like to learn more about what's happening under the hood we suggest you inspect the files more closely.
-<!-- markdown-link-check-disable-next-line -->
-Set up the two chains by [`init_chain_controller.sh`](https://github.com/cosmos/gaia/blob/main/docs/modules/icamauth_scripts/init_chain_controller.sh) and [`init_chain_host.sh`](https://github.com/cosmos/gaia/blob/main/docs/modules/icamauth_scripts/init_chain_host.sh), create the keys for `alice` and `bob`, and start running both chains in different terminals:
+Set up the two chains by [`init_chain_controller.sh`](https://github.com/cosmos/gaia/tree/target-v0-46/docs/modules/icamauth_scripts/init_chain_controller.sh) and [`init_chain_host.sh`](https://github.com/cosmos/gaia/tree/target-v0-46/docs/modules/icamauth_scripts/init_chain_host.sh), create the keys for `alice` and `bob`, and start running both chains in different terminals:
 ```shell
 cd gaia
 
@@ -70,8 +69,7 @@ export PATH="$HOME/.hermes/bin:$PATH"
 ```
 
 #### Create the IBC connection
-<!-- markdown-link-check-disable-next-line -->
-Run the following script [`gaia/docs/modules/icamauth_scripts/hermes_setup.sh`](https://github.com/cosmos/gaia/blob/main/docs/modules/icamauth_scripts/hermes_setup.sh) to create an IBC connection:
+Run the following script [`gaia/docs/modules/icamauth_scripts/hermes_setup.sh`](https://github.com/cosmos/gaia/tree/target-v0-46/docs/modules/icamauth_scripts/hermes_setup.sh) to create an IBC connection:
 ```shell
 cd ./docs/modules/icamauth_scripts
 source hermes_setup.sh

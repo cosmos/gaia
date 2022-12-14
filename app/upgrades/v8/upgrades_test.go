@@ -61,5 +61,4 @@ func TestFixBankMetadata(t *testing.T) {
 	malformedDenom := "uatomu"
 	_, foundMalformed := app.AppKeepers.BankKeeper.GetDenomMetaData(ctx, malformedDenom)
 	require.False(t, foundMalformed)
-
 }

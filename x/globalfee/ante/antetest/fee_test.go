@@ -31,7 +31,7 @@ func (s *IntegrationTestSuite) TestGetDefaultGlobalFees() {
 	stakingSubspace := s.SetupTestStakingSubspace(stakingParam)
 
 	// setup antehandler
-	mfd := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), globalfeeSubspace, stakingSubspace)
+	mfd := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), globalfeeSubspace, stakingSubspace, newTestGasLimit())
 
 	defaultGlobalFees, err := mfd.DefaultZeroGlobalFee(s.ctx)
 	s.Require().NoError(err)
@@ -573,7 +573,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			stakingParam.BondDenom = "uatom"
 			stakingSubspace := s.SetupTestStakingSubspace(stakingParam)
 			// setup antehandler
-			mfd := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), globalfeeSubspace, stakingSubspace)
+			mfd := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), globalfeeSubspace, stakingSubspace, newTestGasLimit())
 			antehandler := sdk.ChainAnteDecorators(mfd)
 
 			s.Require().NoError(s.txBuilder.SetMsgs(testCase.txMsg))

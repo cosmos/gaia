@@ -20,7 +20,7 @@ import (
 	globalfee "github.com/cosmos/gaia/v8/x/globalfee/types"
 )
 
-func queryGaiaTx(endpoint, txHash string) error { //nolint:unused // this is called during e2e tests
+func queryGaiaTx(endpoint, txHash string) error {
 	resp, err := http.Get(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs/%s", endpoint, txHash))
 	if err != nil {
 		return fmt.Errorf("failed to execute HTTP request: %w", err)
@@ -46,7 +46,7 @@ func queryGaiaTx(endpoint, txHash string) error { //nolint:unused // this is cal
 }
 
 // if coin is zero, return empty coin.
-func getSpecificBalance(endpoint, addr, denom string) (amt sdk.Coin, err error) { //nolint:unused // this is called during e2e tests
+func getSpecificBalance(endpoint, addr, denom string) (amt sdk.Coin, err error) {
 	balances, err := queryGaiaAllBalances(endpoint, addr)
 	if err != nil {
 		return amt, err
@@ -60,7 +60,7 @@ func getSpecificBalance(endpoint, addr, denom string) (amt sdk.Coin, err error) 
 	return amt, nil
 }
 
-func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) { //nolint:unused // this is called during e2e tests
+func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) {
 	body, err := httpGet(fmt.Sprintf("%s/cosmos/bank/v1beta1/balances/%s", endpoint, addr))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
@@ -74,7 +74,7 @@ func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) { //nolint:u
 	return balancesResp.Balances, nil
 }
 
-func queryGlobalFees(endpoint string) (amt sdk.DecCoins, err error) { //nolint:unused // this is called during e2e tests
+func queryGlobalFees(endpoint string) (amt sdk.DecCoins, err error) {
 	body, err := httpGet(fmt.Sprintf("%s/gaia/globalfee/v1beta1/minimum_gas_prices", endpoint))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
@@ -88,7 +88,7 @@ func queryGlobalFees(endpoint string) (amt sdk.DecCoins, err error) { //nolint:u
 	return fees.MinimumGasPrices, nil
 }
 
-func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string) (stakingtypes.QueryDelegationResponse, error) { //nolint:unused // this is called during e2e tests
+func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string) (stakingtypes.QueryDelegationResponse, error) {
 	var res stakingtypes.QueryDelegationResponse
 
 	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators/%s/delegations/%s", endpoint, validatorAddr, delegatorAddr))
@@ -102,7 +102,7 @@ func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string
 	return res, nil
 }
 
-func queryDelegatorWithdrawalAddress(endpoint string, delegatorAddr string) (disttypes.QueryDelegatorWithdrawAddressResponse, error) { //nolint:unused // this is called during e2e tests
+func queryDelegatorWithdrawalAddress(endpoint string, delegatorAddr string) (disttypes.QueryDelegatorWithdrawAddressResponse, error) {
 	var res disttypes.QueryDelegatorWithdrawAddressResponse
 
 	body, err := httpGet(fmt.Sprintf("%s/cosmos/distribution/v1beta1/delegators/%s/withdraw_address", endpoint, delegatorAddr))
@@ -116,7 +116,7 @@ func queryDelegatorWithdrawalAddress(endpoint string, delegatorAddr string) (dis
 	return res, nil
 }
 
-func queryGovProposal(endpoint string, proposalID int) (govtypes.QueryProposalResponse, error) { //nolint:unused // this is called during e2e tests
+func queryGovProposal(endpoint string, proposalID int) (govtypes.QueryProposalResponse, error) {
 	var govProposalResp govtypes.QueryProposalResponse
 
 	path := fmt.Sprintf("%s/cosmos/gov/v1beta1/proposals/%d", endpoint, proposalID)
@@ -132,7 +132,7 @@ func queryGovProposal(endpoint string, proposalID int) (govtypes.QueryProposalRe
 	return govProposalResp, nil
 }
 
-func queryAccount(endpoint, address string) (acc authtypes.AccountI, err error) { //nolint:unused // this is called during e2e tests
+func queryAccount(endpoint, address string) (acc authtypes.AccountI, err error) {
 	var res authtypes.QueryAccountResponse
 	resp, err := http.Get(fmt.Sprintf("%s/cosmos/auth/v1beta1/accounts/%s", endpoint, address))
 	if err != nil {
@@ -150,7 +150,7 @@ func queryAccount(endpoint, address string) (acc authtypes.AccountI, err error) 
 	return acc, cdc.UnpackAny(res.Account, &acc)
 }
 
-func queryDelayedVestingAccount(endpoint, address string) (authvesting.DelayedVestingAccount, error) { //nolint:unused // this is called during e2e tests
+func queryDelayedVestingAccount(endpoint, address string) (authvesting.DelayedVestingAccount, error) {
 	baseAcc, err := queryAccount(endpoint, address)
 	if err != nil {
 		return authvesting.DelayedVestingAccount{}, err
@@ -163,7 +163,7 @@ func queryDelayedVestingAccount(endpoint, address string) (authvesting.DelayedVe
 	return *acc, nil
 }
 
-func queryContinuousVestingAccount(endpoint, address string) (authvesting.ContinuousVestingAccount, error) { //nolint:unused // this is called during e2e tests
+func queryContinuousVestingAccount(endpoint, address string) (authvesting.ContinuousVestingAccount, error) {
 	baseAcc, err := queryAccount(endpoint, address)
 	if err != nil {
 		return authvesting.ContinuousVestingAccount{}, err
@@ -202,7 +202,7 @@ func queryPeriodicVestingAccount(endpoint, address string) (authvesting.Periodic
 	return *acc, nil
 }
 
-func queryValidator(endpoint, address string) (stakingtypes.Validator, error) { //nolint:unused // this is called during e2e tests
+func queryValidator(endpoint, address string) (stakingtypes.Validator, error) {
 	var res stakingtypes.QueryValidatorResponse
 
 	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators/%s", endpoint, address))
@@ -216,7 +216,7 @@ func queryValidator(endpoint, address string) (stakingtypes.Validator, error) { 
 	return res.Validator, nil
 }
 
-func queryValidators(endpoint string) (stakingtypes.Validators, error) { //nolint:unused // this is called during e2e tests
+func queryValidators(endpoint string) (stakingtypes.Validators, error) {
 	var res stakingtypes.QueryValidatorsResponse
 	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators", endpoint))
 	if err != nil {
@@ -242,7 +242,7 @@ func queryEvidence(endpoint, hash string) (evidencetypes.QueryEvidenceResponse, 
 	return res, nil
 }
 
-func queryAllEvidence(endpoint string) (evidencetypes.QueryAllEvidenceResponse, error) { //nolint:unused // this is called during e2e tests
+func queryAllEvidence(endpoint string) (evidencetypes.QueryAllEvidenceResponse, error) {
 	var res evidencetypes.QueryAllEvidenceResponse
 	body, err := httpGet(fmt.Sprintf("%s/cosmos/evidence/v1beta1/evidence", endpoint))
 	if err != nil {

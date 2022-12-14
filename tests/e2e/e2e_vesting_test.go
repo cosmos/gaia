@@ -196,7 +196,7 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api string) {
 	})
 }
 
-func (s *IntegrationTestSuite) testPeriodicVestingAccount(api string) {
+func (s *IntegrationTestSuite) testPeriodicVestingAccount(api string) { //nolint:unused
 	s.Run("test periodic vesting genesis account", func() {
 		var (
 			valIdx              = 0

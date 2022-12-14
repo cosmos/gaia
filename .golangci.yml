@@ -1,5 +1,5 @@
 run:
-  tests: false
+  tests: true
   # timeout for analysis, e.g. 30s, 5m, default is 1m
   timeout: 5m
 
@@ -8,6 +8,7 @@ linters:
   enable:
     - depguard
     - dogsled
+    - errcheck
     - exportloopref
     - goconst
     - gocritic

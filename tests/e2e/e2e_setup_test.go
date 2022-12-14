@@ -66,6 +66,7 @@ const (
 	proposalGlobalFee    = "proposal_globalfee.json"
 	proposalICACreate    = "proposal_ica_create.json"
 	proposalICASend      = "proposal_ica_send.json"
+	ICAGroupProposal     = "ica_proposal_group.json"
 	icaIBCSend           = "ica_ibc_send.json"
 	icaConnectionID      = "connection-0"
 	icaPortID            = "transfer"
@@ -106,14 +107,15 @@ var (
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	tmpDirs         []string
-	chainA          *chain
-	chainB          *chain
-	dkrPool         *dockertest.Pool
-	dkrNet          *dockertest.Network
-	hermesResource  *dockertest.Resource
-	valResources    map[string][]*dockertest.Resource
-	proposalCounter int
+	tmpDirs              []string
+	chainA               *chain
+	chainB               *chain
+	dkrPool              *dockertest.Pool
+	dkrNet               *dockertest.Network
+	hermesResource       *dockertest.Resource
+	valResources         map[string][]*dockertest.Resource
+	proposalCounter      int
+	groupProposalCounter int
 }
 
 type AddressResponse struct {

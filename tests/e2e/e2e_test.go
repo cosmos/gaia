@@ -398,7 +398,9 @@ func (s *IntegrationTestSuite) TestStaking() {
 }
 
 func (s *IntegrationTestSuite) TestGroups() {
-	s.GroupsSendMsgTest()
+	s.setupGroupsSuite()
+	s.testGroupsSendMsg()
+	s.testGroupICAProposal()
 }
 
 func (s *IntegrationTestSuite) TestVesting() {

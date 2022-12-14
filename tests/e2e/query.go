@@ -58,6 +58,9 @@ func getSpecificBalance(endpoint, addr, denom string) (amt sdk.Coin, err error) 
 			break
 		}
 	}
+	if amt.IsNil() || amt.IsZero() {
+		return amt, fmt.Errorf("coin denom %s not found for %s", denom, addr)
+	}
 	return amt, nil
 }
 
@@ -90,7 +93,12 @@ func queryGlobalFees(endpoint string) (amt sdk.DecCoins, err error) {
 }
 
 func queryICAAddress(endpoint, owner, connectionID string) (string, error) {
-	url := fmt.Sprintf("%s/gaia/icamauth/v1beta1/interchain_account/owner/%s/connection/%s", endpoint, owner, connectionID)
+	url := fmt.Sprintf(
+		"%s/gaia/icamauth/v1beta1/interchain_account/owner/%s/connection/%s",
+		endpoint,
+		owner,
+		connectionID,
+	)
 	resp, err := http.Get(url)
 	if err != nil {
 		return "", fmt.Errorf("failed to execute HTTP request: %w", err)
@@ -201,9 +209,9 @@ func queryGroupPolicies(endpoint string, groupId int) (group.QueryGroupPoliciesB
 	return res, nil
 }
 
-func queryGroupProposal(endpoint string, groupId int) (group.QueryProposalResponse, error) {
+func queryGroupProposal(endpoint string, proposalID int) (group.QueryProposalResponse, error) {
 	var res group.QueryProposalResponse
-	path := fmt.Sprintf("%s/cosmos/group/v1/proposal/%d", endpoint, groupId)
+	path := fmt.Sprintf("%s/cosmos/group/v1/proposal/%d", endpoint, proposalID)
 
 	body, err := httpGet(path)
 	if err != nil {

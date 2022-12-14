@@ -517,6 +517,41 @@ func (s *IntegrationTestSuite) execCreateGroup(c *chain, valIdx int, adminAddr, 
 	s.T().Logf("%s successfully created group: %s", adminAddr, groupMembersPath)
 }
 
+func (s *IntegrationTestSuite) execCreateGroupWithPolicy(
+	c *chain,
+	valIdx int,
+	adminAddr,
+	metadata,
+	policyMetadata,
+	groupMembersPath,
+	groupPolicyPath,
+	fees string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx group create-group-with-policy on chain %s", c.id)
+
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		grouptypes.ModuleName,
+		"create-group-with-policy",
+		adminAddr,
+		metadata,
+		policyMetadata,
+		groupMembersPath,
+		groupPolicyPath,
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		"--keyring-backend=test",
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
+	s.T().Logf("%s successfully created group: %s", adminAddr, groupMembersPath)
+}
+
 func (s *IntegrationTestSuite) execUpdateGroupMembers(c *chain, valIdx int, adminAddr, groupId, groupMembersPath, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
@@ -592,7 +627,7 @@ func (s *IntegrationTestSuite) executeSubmitGroupProposal(c *chain, valIdx int, 
 	s.T().Logf("%s successfully submited group proposal: %s", fromAddress, proposalPath)
 }
 
-func (s *IntegrationTestSuite) executeVoteGroupProposal(c *chain, valIdx int, proposalId, voterAddress, voteOption, metadata string) {
+func (s *IntegrationTestSuite) executeVoteGroupProposal(c *chain, valIdx, proposalId int, voterAddress, voteOption, metadata string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -603,11 +638,11 @@ func (s *IntegrationTestSuite) executeVoteGroupProposal(c *chain, valIdx int, pr
 		txCommand,
 		grouptypes.ModuleName,
 		"vote",
-		proposalId,
+		strconv.Itoa(proposalId),
 		voterAddress,
 		voteOption,
-		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, standardFees),
 		metadata,
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, standardFees),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
 		"--keyring-backend=test",
 		"--output=json",
@@ -615,10 +650,10 @@ func (s *IntegrationTestSuite) executeVoteGroupProposal(c *chain, valIdx int, pr
 	}
 
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
-	s.T().Logf("%s successfully voted %s on proposal: %s", voterAddress, voteOption, proposalId)
+	s.T().Logf("%s successfully voted %s on proposal: %d", voterAddress, voteOption, proposalId)
 }
 
-func (s *IntegrationTestSuite) executeExecGroupProposal(c *chain, valIdx int, proposalId, proposerAddress string) {
+func (s *IntegrationTestSuite) executeExecGroupProposal(c *chain, valIdx, proposalId int, proposerAddress string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -629,17 +664,19 @@ func (s *IntegrationTestSuite) executeExecGroupProposal(c *chain, valIdx int, pr
 		txCommand,
 		grouptypes.ModuleName,
 		"exec",
-		proposalId,
+		strconv.Itoa(proposalId),
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, proposerAddress),
 		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, standardFees),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--%s=%s", flags.FlagGas, "auto"),
+		fmt.Sprintf("--%s=%s", flags.FlagGasAdjustment, "1.5"),
 		"--keyring-backend=test",
 		"--output=json",
 		"-y",
 	}
 
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
-	s.T().Logf("%s successfully executed proposal: %s", proposerAddress, proposalId)
+	s.T().Logf("%s successfully executed proposal: %d", proposerAddress, proposalId)
 }
 
 func (s *IntegrationTestSuite) executeUpdateGroupAdmin(c *chain, valIdx int, admin, groupId, newAdmin string) {

@@ -67,7 +67,7 @@ Test Benchmarks:
 1. Submission, deposit and vote of message based proposal to upgrade the chain at a height (current height + buffer)
 2. Validation that chain halted at upgrade height
 3. Teardown & restart chains
-4. Reset proposalCounter so subsequent tests have the correct last effective proposal id for chainA
+4. Reset govProposalCounter so subsequent tests have the correct last effective proposal id for chainA
 TODO: Perform upgrade in place of chain restart
 */
 func (s *IntegrationTestSuite) GovSoftwareUpgrade() {
@@ -232,7 +232,6 @@ func (s *IntegrationTestSuite) verifyChainHaltedAtUpgradeHeight(c *chain, valIdx
 	s.Require().Eventually(
 		func() bool {
 			currentHeight := s.getLatestBlockHeight(c, valIdx)
-
 			return currentHeight == upgradeHeight
 		},
 		30*time.Second,
@@ -243,7 +242,6 @@ func (s *IntegrationTestSuite) verifyChainHaltedAtUpgradeHeight(c *chain, valIdx
 	s.Require().Eventually(
 		func() bool {
 			currentHeight := s.getLatestBlockHeight(c, valIdx)
-
 			if currentHeight > upgradeHeight {
 				return false
 			}
@@ -261,7 +259,6 @@ func (s *IntegrationTestSuite) verifyChainPassesUpgradeHeight(c *chain, valIdx, 
 	s.Require().Eventually(
 		func() bool {
 			currentHeight := s.getLatestBlockHeight(c, valIdx)
-
 			return currentHeight > upgradeHeight
 		},
 		30*time.Second,

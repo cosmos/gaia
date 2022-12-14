@@ -139,7 +139,7 @@ func (s *IntegrationTestSuite) sendIBC(c *chain, valIdx int, sender, recipient, 
 		txCommand,
 		"ibc-transfer",
 		"transfer",
-		"transfer",
+		icaPortID,
 		ibcTransferChannelID,
 		recipient,
 		token,
@@ -300,7 +300,7 @@ func (s *IntegrationTestSuite) TestIBCTokenTransfer() {
 		for _, c := range balances {
 			if strings.Contains(c.Denom, "ibc/") {
 				ibcStakeDenom = c.Denom
-				s.Require().Equal((int64(tokenAmt) + beforeBalance), c.Amount.Int64())
+				s.Require().Equal(int64(tokenAmt)+beforeBalance, c.Amount.Int64())
 				break
 			}
 		}
@@ -409,10 +409,9 @@ Steps:
 5. Check Balance of Account 1 on Chain 2, confirm it is original plus x tokens
 */
 func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
-
 	time.Sleep(30 * time.Second)
 
-	s.Run("send_failed_multihop_uatom_to_chainA_from_chainA", func() {
+	s.Run("send failed multihop uatom to chainA from chainA", func() {
 		// require the recipient account receives the IBC tokens (IBC packets ACKd)
 
 		address, err := s.chainA.validators[0].keyInfo.GetAddress()
@@ -432,19 +431,14 @@ func (s *IntegrationTestSuite) TestFailedMultihopIBCTokenTransfer() {
 		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
 
-		var (
-			beforeSenderUAtomBalance sdk.Coin
-			beforeMiddleIBCBalance   sdk.Coin
-		)
-
+		var beforeSenderUAtomBalance sdk.Coin
 		s.Require().Eventually(
 			func() bool {
 				beforeSenderUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
 				s.Require().NoError(err)
 
-				beforeMiddleIBCBalance, err = getSpecificBalance(chainBAPIEndpoint, middlehop, "ibc/")
-				s.Require().True(beforeMiddleIBCBalance.IsNil())
-				s.Require().NoError(err)
+				_, err = getSpecificBalance(chainBAPIEndpoint, middlehop, "ibc/")
+				s.Require().Error(err)
 
 				return beforeSenderUAtomBalance.IsValid()
 			},

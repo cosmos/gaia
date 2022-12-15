@@ -171,6 +171,7 @@ jobs:
             **/**.go
             go.mod
             go.sum
+            **/**.yml
       - name: Install GaiaV7
         run: |
           git checkout v7.1.0

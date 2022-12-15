@@ -22,8 +22,8 @@ import (
 
 func TestDefaultGenesis(t *testing.T) {
 	encCfg := simapp.MakeTestEncodingConfig()
-	gotJson := AppModuleBasic{}.DefaultGenesis(encCfg.Marshaler)
-	assert.JSONEq(t, `{"params":{"minimum_gas_prices":[]}}`, string(gotJson), string(gotJson))
+	gotJSON := AppModuleBasic{}.DefaultGenesis(encCfg.Marshaler)
+	assert.JSONEq(t, `{"params":{"minimum_gas_prices":[]}}`, string(gotJSON), string(gotJSON))
 }
 
 func TestValidateGenesis(t *testing.T) {
@@ -81,16 +81,16 @@ func TestInitExportGenesis(t *testing.T) {
 	}{
 		"single fee": {
 			src: `{"params":{"minimum_gas_prices":[{"denom":"ALX", "amount":"1"}]}}`,
-			exp: types.GenesisState{types.Params{MinimumGasPrices: sdk.NewDecCoins(sdk.NewDecCoin("ALX", sdk.NewInt(1)))}},
+			exp: types.GenesisState{Params: types.Params{MinimumGasPrices: sdk.NewDecCoins(sdk.NewDecCoin("ALX", sdk.NewInt(1)))}},
 		},
 		"multiple fee options": {
 			src: `{"params":{"minimum_gas_prices":[{"denom":"ALX", "amount":"1"}, {"denom":"BLX", "amount":"0.001"}]}}`,
-			exp: types.GenesisState{types.Params{MinimumGasPrices: sdk.NewDecCoins(sdk.NewDecCoin("ALX", sdk.NewInt(1)),
+			exp: types.GenesisState{Params: types.Params{MinimumGasPrices: sdk.NewDecCoins(sdk.NewDecCoin("ALX", sdk.NewInt(1)),
 				sdk.NewDecCoinFromDec("BLX", sdk.NewDecWithPrec(1, 3)))}},
 		},
 		"no fee set": {
 			src: `{"params":{}}`,
-			exp: types.GenesisState{types.Params{MinimumGasPrices: sdk.DecCoins{}}},
+			exp: types.GenesisState{Params: types.Params{MinimumGasPrices: sdk.DecCoins{}}},
 		},
 	}
 	for name, spec := range specs {
@@ -98,10 +98,10 @@ func TestInitExportGenesis(t *testing.T) {
 			ctx, encCfg, subspace := setupTestStore(t)
 			m := NewAppModule(subspace)
 			m.InitGenesis(ctx, encCfg.Marshaler, []byte(spec.src))
-			gotJson := m.ExportGenesis(ctx, encCfg.Marshaler)
+			gotJSON := m.ExportGenesis(ctx, encCfg.Marshaler)
 			var got types.GenesisState
-			require.NoError(t, encCfg.Marshaler.UnmarshalJSON(gotJson, &got))
-			assert.Equal(t, spec.exp, got, string(gotJson))
+			require.NoError(t, encCfg.Marshaler.UnmarshalJSON(gotJSON, &got))
+			assert.Equal(t, spec.exp, got, string(gotJSON))
 		})
 	}
 }

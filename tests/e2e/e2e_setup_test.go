@@ -542,7 +542,7 @@ func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 			Repository: "cosmos/gaiad-e2e",
 		}
 
-		s.Require().NoError(exec.Command("chmod", "-R", "0777", val.configDir()).Run())
+		s.Require().NoError(exec.Command("chmod", "-R", "0777", val.configDir()).Run()) //nolint:gosec // this is a test
 
 		// expose the first validator for debugging and communication
 		if val.index == 0 {

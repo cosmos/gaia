@@ -19,7 +19,7 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 )
 
-func getGenDoc(path string) (*tmtypes.GenesisDoc, error) { //nolint:unused // this is called during e2e tests
+func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {
 	serverCtx := server.NewDefaultContext()
 	config := serverCtx.Config
 	config.SetRoot(path)
@@ -43,7 +43,7 @@ func getGenDoc(path string) (*tmtypes.GenesisDoc, error) { //nolint:unused // th
 	return doc, nil
 }
 
-func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, globfees string, denom string) error { //nolint:unused // this is called during e2e tests
+func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, globfees string, denom string) error {
 	serverCtx := server.NewDefaultContext()
 	config := serverCtx.Config
 	config.SetRoot(path)

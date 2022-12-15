@@ -45,7 +45,7 @@ export DAEMON_NAME=gaiad
 export DAEMON_HOME=$NODE_HOME
 COSMOVISOR=$GOPATH/bin/cosmovisor
 
-
+$BINARY config broadcast-mode block --home $NODE_HOME
 $BINARY config chain-id $CHAINID --home $NODE_HOME
 $BINARY config keyring-backend test --home $NODE_HOME
 

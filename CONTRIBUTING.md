@@ -1,18 +1,25 @@
 # Contributing
 
 - [Contributing](#contributing)
-  - [Pull Requests](#pull-requests)
-    - [Process for reviewing PRs](#process-for-reviewing-prs)
-    - [Updating Documentation](#updating-documentation)
-  - [Forking](#forking)
-  - [Dependencies](#dependencies)
-  - [Testing](#testing)
-  - [Branching Model and Release](#branching-model-and-release)
-    - [PR Targeting](#pr-targeting)
-    - [Development Procedure](#development-procedure)
-    - [Pull Merge Procedure](#pull-merge-procedure)
-    - [Release Procedure](#release-procedure)
-    - [Point Release Procedure](#point-release-procedure)
+    - [Pull Requests](#pull-requests)
+        - [Process for reviewing PRs](#process-for-reviewing-prs)
+        - [Updating Documentation](#updating-documentation)
+    - [Forking](#forking)
+    - [Dependencies](#dependencies)
+    - [Testing](#testing)
+    - [Branching Model and Release](#branching-model-and-release)
+        - [PR Targeting](#pr-targeting)
+        - [Development Procedure](#development-procedure)
+        - [Pull Merge Procedure](#pull-merge-procedure)
+        - [Release Procedure](#release-procedure)
+        - [Point Release Procedure](#point-release-procedure)
+        - [Semantic PR title](#semantic-pr-title)
+        - [Branch name](#branch-name)
+            - [Branch naming conventions](#branch-naming-conventions)
+            - [Use slashes to separate parts](#use-slashes-to-separate-parts)
+            - [Avoid long descriptive names](#avoid-long-descriptive-names)
+        - [Commit message](#commit-message)
+      - [Code guidelines](#code-guidelines)
 
 Thank you for considering making contributions to Gaia and related
 repositories!
@@ -25,23 +32,23 @@ contributors, a general procedure for contributing has been established:
    [find](https://github.com/cosmos/gaia/issues) an issue you'd like to help with
 2. Participate in thoughtful discussion on that issue
 3. If you would like to contribute:
-   1. If the issue is a proposal, ensure that the proposal has been accepted
-   2. Ensure that nobody else has already begun working on this issue, if they have
-      make sure to contact them to collaborate
-   3. If nobody has been assigned the issue and you would like to work on it
-      make a comment on the issue to inform the community of your intentions
-      to begin work
-   4. Follow standard Github best practices: fork the repo, branch from the
-      HEAD of `main`, make some commits, and submit a PR to `main`
-      - For core developers working within the Gaia repo, to ensure a clear
-      ownership of branches, branches must be named with the convention
-      `{moniker}/{issue#}-branch-name`
-   5. Be sure to submit the PR in `Draft` mode. Submit your PR early, even if
-      it's incomplete as this indicates to the community you're working on
-      something and allows them to provide comments early in the development process
-   6. When the code is complete it can be marked `Ready for Review`
-   7. Be sure to include a relevant change log entry in the `Unreleased` section
-      of `CHANGELOG.md` (see file for log format)
+    1. If the issue is a proposal, ensure that the proposal has been accepted
+    2. Ensure that nobody else has already begun working on this issue, if they have
+       make sure to contact them to collaborate
+    3. If nobody has been assigned the issue and you would like to work on it
+       make a comment on the issue to inform the community of your intentions
+       to begin work
+    4. Follow standard Github best practices: fork the repo, branch from the
+       HEAD of `main`, make some commits, and submit a PR to `main`
+        - For core developers working within the Gaia repo, to ensure a clear
+          ownership of branches, branches must be named with the convention
+          `{moniker}/{issue#}-branch-name`
+    5. Be sure to submit the PR in `Draft` mode. Submit your PR early, even if
+       it's incomplete as this indicates to the community you're working on
+       something and allows them to provide comments early in the development process
+    6. When the code is complete it can be marked `Ready for Review`
+    7. Be sure to include a relevant change log entry in the `Unreleased` section
+       of `CHANGELOG.md` (see file for log format)
 
 Note that for very small or blatantly obvious problems (such as typos) it is
 not required to an open issue to submit a PR, but be aware that for more complex
@@ -82,7 +89,7 @@ The issue can then be used to develop multiple well-scoped PRs that are easy to 
 The following PR structuring checklist can be used when submitting changes to the Gaia repository for review:
 
 - [ ] Proto files: PR updating proto files. As a suggested next step, don't regenerate updated protobuf
-   implementations using `protgen`, since this will break existing code.
+  implementations using `protgen`, since this will break existing code.
 - [ ] Broken code: If `protogen` is run, a PR disabling broken code
 - [ ] Validation: PR with validation of types
 - [ ] Functionality: PR integrating supporting functionality
@@ -94,17 +101,22 @@ The following PR structuring checklist can be used when submitting changes to th
 
 ### Process for reviewing PRs
 
-All PRs require at least one review before merge (except docs changes, or variable name-changes which only require one). When reviewing PRs please use the following review explanations:
+All PRs require at least one review before merge (except docs changes, or variable name-changes which only require one).
+When reviewing PRs please use the following review explanations:
 
-- `LGTM` without an explicit approval means that the changes look good, but you haven't pulled down the code, run tests locally and thoroughly reviewed it.
-- `Approval` through the GH UI means that you understand the code, documentation/spec is updated in the right places, you have pulled down and tested the code locally. In addition:
-  - You must also think through anything which ought to be included but is not
-  - You must think through whether any added code could be partially combined (DRYed) with existing code
-  - You must think through any potential security issues or incentive-compatibility flaws introduced by the changes
-  - Naming must be consistent with conventions and the rest of the codebase
-  - Code must live in a reasonable location, considering dependency structures (e.g. not importing testing modules in production code, or including example code modules in production code).
-  - if you approve of the PR, you are responsible for fixing any of the issues mentioned here and more
-- If you sat down with the PR submitter and did a pairing review please note that in the `Approval`, or your PR comments.
+- `LGTM` without an explicit approval means that the changes look good, but you haven't pulled down the code, run tests
+  locally and thoroughly reviewed it.
+- `Approval` through the GH UI means that you understand the code, documentation/spec is updated in the right places,
+  you have pulled down and tested the code locally. In addition:
+    - You must also think through anything which ought to be included but is not
+    - You must think through whether any added code could be partially combined (DRYed) with existing code
+    - You must think through any potential security issues or incentive-compatibility flaws introduced by the changes
+    - Naming must be consistent with conventions and the rest of the codebase
+    - Code must live in a reasonable location, considering dependency structures (e.g. not importing testing modules in
+      production code, or including example code modules in production code).
+    - if you approve of the PR, you are responsible for fixing any of the issues mentioned here and more
+- If you sat down with the PR submitter and did a pairing review please note that in the `Approval`, or your PR
+  comments.
 - If you are only making "surface level" reviews, submit any notes as `Comments` without adding a review.
 
 ### Updating Documentation
@@ -156,15 +168,6 @@ build, in which case we can fall back on `go mod tidy -v`.
 
 ## Testing
 
-All repos should be hooked up to [CircleCI](https://circleci.com/).
-
-If they have `.go` files in the root directory, they will be automatically
-tested by circle using `go test -v -race ./...`. If not, they will need a
-`circle.yml`. Ideally, every repo has a `Makefile` that defines `make test` and
-includes its continuous integration status using a badge in the `README.md`.
-
-We expect tests to use `require` or `assert` rather than `t.Skip` or `t.Fail`,
-unless there is a reason to do otherwise.
 When testing a function under a variety of different inputs, we prefer to use
 [table driven tests](https://github.com/golang/go/wiki/TableDrivenTests).
 Table driven test error messages should follow the following format
@@ -179,11 +182,11 @@ Here is an example check:
 ```go
 <some table>
 for tcIndex, tc := range cases {
-  <some code>
-  for i := 0; i < tc.numTxsToTest; i++ {
-      <some code>
-      require.Equal(t, expectedTx[:32], calculatedTx[:32],
-      "First 32 bytes of the txs differed. tc #%d, i #%d", tcIndex, i)
+<some code>
+for i := 0; i < tc.numTxsToTest; i++ {
+<some code>
+require.Equal(t, expectedTx[:32], calculatedTx[:32],
+"First 32 bytes of the txs differed. tc #%d, i #%d", tcIndex, i)
 ```
 
 ## Branching Model and Release
@@ -216,3 +219,94 @@ only pull requests targeted directly against main.
 - ensure pull branch is rebased on `main`
 - run `make test` and `make test_cli` to ensure that all tests pass
 - merge pull request
+
+### Semantic PR title
+
+Starts the title of the pull request with feat:, indicating that the contents of the pull request can best be
+characterized as a new feature. This follows the convention used on top of commit messages:
+
+- `feat` for a new feature for the user, not a new feature for build script. Such commit will trigger a release bumping
+  a MINOR version.
+- `fix` for a bug fix for the user, not a fix to a build script. Such commit will trigger a release bumping a PATCH
+  version.
+- `chore` for updating grunt tasks etc; no production code change.
+- `perf` for performance improvements. Such commit will trigger a release bumping a PATCH version.
+- `docs` for changes to the documentation.
+- `style` for formatting changes, missing semicolons, etc.
+- `refactor` for refactoring production code, e.g. renaming a variable.
+- `test` for adding missing tests, refactoring tests; no production code change.
+- `build` for updating build configuration, development tools or other changes irrelevant to the user.
+
+[This GitHub action](https://github.com/zeke/semantic-pull-requests) helps to follow this guideline.
+
+### Branch name
+
+#### Branch naming conventions
+
+Starts the branch name indicates the content of the pull request:
+
+- `feat`: Feature I'm adding or expanding
+- `fix`: Bug fix
+- `chore`:  No code logic change
+- `test`: Adding more tests
+- `junk`: Throwaway branch created to experiment
+
+##### Use slashes to separate parts
+
+You may use most any delimiter you like in branch names, but I find slashes to be the most flexible. You might prefer to
+use dashes or dots. But slashes let you do some branch renaming when pushing or fetching to/from a remote.
+
+$ git push origin 'refs/heads/feature/*:refs/heads/phord/feat/*'
+$ git push origin 'refs/heads/bug/*:refs/heads/review/bugfix/*'
+
+For me, slashes also work better for tab expansion (command completion) in my shell. The way I have it configured I can
+search for branches with different sub-parts by typing the first characters of the part and pressing the TAB key. Zsh
+then gives me a list of branches which match the part of the token I have typed. This works for preceding tokens as well
+as embedded ones.
+
+```shell
+$ git checkout feat<TAB>
+Menu:  feat/frabnotz   feat/foo   feat/bar
+```
+
+```shell
+$ git checkout foo<TAB>
+Menu:  feat/foo   fix/foo   chore/foo
+```
+
+It also lets you search for branches in many git commands, like this:
+
+```shell
+git branch --list "feat/*"
+git log --graph --oneline --decorate --branches="feat/*"
+gitk --branches="feat/*"
+```
+
+#### Avoid long descriptive names
+
+Long branch names can be very helpful when you are looking at a list of branches. But it can get in the way when looking
+at decorated one-line logs as the branch names can eat up most of the single line and abbreviate the visible part of the
+log.
+On the other hand long branch names can be more helpful in "merge commits" if you do not habitually rewrite them by
+hand. The default merge commit message is Merge branch 'branch-name'. You may find it more helpful to have merge
+messages show up as Merge branch 'fix/CR15032/crash-when-unformatted-disk-inserted' instead of just Merge branch '
+fix/CR15032'.
+
+### Commit message
+
+- Do not end the subject line with a period
+- Capitalize the subject line and each paragraph
+- Use the imperative mood in the subject line
+- Wrap lines at 72 characters
+- Information in commit messages
+- Describe why a change is being made.
+- Do not assume the reviewer understands what the original problem was.
+- Do not assume the code is self-evident/self-documenting.
+- Read the commit message to see if it hints at improved code structure.
+- Describe any limitations of the current code.
+- Do not include patch set-specific comments.
+
+## Code Guidelines
+
+If you want to contribute to a project and improve it, your help is welcome. We want to make Gaia as good as it can be. Contributing is also a great way to learn more about blockchain technology and improve it. 
+Please read the [code guidelines document](docs/guidelines/code-guidelines.md) and follow it.

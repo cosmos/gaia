@@ -142,7 +142,7 @@ gaiad tx --help
 
 # Lunie.io
 <!-- markdown-link-check-disable-next-line -->
-Lunie 웹 지갑은 렛저 나노 S 기기를 사용해 서명하는 것을 지원합니다. 다음은 (Lunie.io)[https://lunie.io] 지갑을 Ledger 기기로 사용하는 방법을 정리합니다.
+Lunie 웹 지갑은 렛저 나노 S 기기를 사용해 서명하는 것을 지원합니다. 다음은 [Lunie.io](https://lunie.io) 지갑을 Ledger 기기로 사용하는 방법을 정리합니다.
 
 ### 기기 연결하기
 

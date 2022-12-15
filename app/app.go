@@ -17,7 +17,6 @@ import (
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
@@ -27,8 +26,8 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
-	ibcchanneltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
+	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
@@ -44,7 +43,6 @@ import (
 	"github.com/cosmos/gaia/v8/app/upgrades"
 	v8 "github.com/cosmos/gaia/v8/app/upgrades/v8"
 	"github.com/cosmos/gaia/v8/x/globalfee"
-	gaiafeeante "github.com/cosmos/gaia/v8/x/globalfee/ante"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
@@ -123,13 +121,17 @@ func NewGaiaApp(
 		interfaceRegistry: interfaceRegistry,
 		invCheckPeriod:    invCheckPeriod,
 	}
+
+	moduleAccountAddresses := app.ModuleAccountAddrs()
+
 	// Setup keepers
 	app.AppKeepers = keepers.NewAppKeeper(
 		appCodec,
 		bApp,
 		legacyAmino,
 		maccPerms,
-		app.BlockedModuleAccountAddrs(),
+		moduleAccountAddresses,
+		app.BlockedModuleAccountAddrs(moduleAccountAddresses),
 		skipUpgradeHeights,
 		homePath,
 		invCheckPeriod,
@@ -195,18 +197,6 @@ func NewGaiaApp(
 				FeegrantKeeper:  app.FeeGrantKeeper,
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
-				// TxFeeChecker is not the default fee check, it will not check if the fee meets min_gas_price, this is checked in NewFeeWithBypassDecorator already.
-				TxFeeChecker: func(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64, error) {
-					feeTx, ok := tx.(sdk.FeeTx)
-					if !ok {
-						return nil, 0, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
-					}
-
-					feeCoins := feeTx.GetFee()
-					priority := gaiafeeante.GetTxPriority(feeCoins)
-
-					return feeCoins, priority, nil
-				},
 			},
 			IBCkeeper:            app.IBCKeeper,
 			BypassMinFeeMsgTypes: bypassMinFeeMsgTypes,
@@ -285,13 +275,8 @@ func (app *GaiaApp) ModuleAccountAddrs() map[string]bool {
 
 // BlockedModuleAccountAddrs returns all the app's blocked module account
 // addresses.
-func (app *GaiaApp) BlockedModuleAccountAddrs() map[string]bool {
-	modAccAddrs := app.ModuleAccountAddrs()
-
+func (app *GaiaApp) BlockedModuleAccountAddrs(modAccAddrs map[string]bool) map[string]bool {
 	// remove module accounts that are ALLOWED to received funds
-	//
-	// TODO: Blocked on updating to v0.46.x
-	// delete(modAccAddrs, authtypes.NewModuleAddress(grouptypes.ModuleName).String())
 	delete(modAccAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
 	return modAccAddrs
@@ -348,12 +333,7 @@ func (app *GaiaApp) RegisterTxService(clientCtx client.Context) {
 
 // RegisterTendermintService implements the Application.RegisterTendermintService method.
 func (app *GaiaApp) RegisterTendermintService(clientCtx client.Context) {
-	tmservice.RegisterTendermintService(
-		clientCtx,
-		app.BaseApp.GRPCQueryRouter(),
-		app.interfaceRegistry,
-		app.Query,
-	)
+	tmservice.RegisterTendermintService(app.BaseApp.GRPCQueryRouter(), clientCtx, app.interfaceRegistry)
 }
 
 // configure store loader that checks if version == upgradeHeight and applies store upgrades

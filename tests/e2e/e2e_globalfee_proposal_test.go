@@ -2,28 +2,32 @@ package e2e
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	gov "github.com/cosmos/cosmos-sdk/x/gov/types"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 )
 
-func (s *IntegrationTestSuite) govProposeNewGlobalfee(newGlobalfee sdk.DecCoins, proposalCounter int, submitter string, fees string) {
+func (s *IntegrationTestSuite) govProposeNewGlobalfee(newGlobalfee sdk.DecCoins, proposalCounter int, submitter string, fees string) { //nolint:unparam
 	s.writeGovParamChangeProposalGlobalFees(s.chainA, newGlobalfee)
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	submitGovFlags := []string{"param-change", configFile(proposalGlobalFeeFilename)}
+	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
+	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes"}
+
 	// gov proposing new fees
 	s.T().Logf("Proposal number: %d", proposalCounter)
 	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change global fee to %s", newGlobalfee.String())
-	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, fees, "param-change", proposalCounter, configFile(proposalGlobalFee))
-	s.depositGovProposal(chainAAPIEndpoint, submitter, fees, proposalCounter)
-	s.voteGovProposal(chainAAPIEndpoint, submitter, fees, proposalCounter, "yes", false)
+	s.runGovProcess(chainAAPIEndpoint, submitter, proposalCounter, paramtypes.ProposalTypeChange, submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 
 	// query the proposal status and new fee
 	s.Require().Eventually(
 		func() bool {
 			proposal, err := queryGovProposal(chainAAPIEndpoint, proposalCounter)
 			s.Require().NoError(err)
-			return proposal.GetProposal().Status == govv1beta1.StatusPassed
+			return proposal.GetProposal().Status == gov.StatusPassed
 		},
 		15*time.Second,
 		5*time.Second,

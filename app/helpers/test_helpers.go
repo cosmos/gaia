@@ -5,11 +5,12 @@ import (
 	"testing"
 	"time"
 
-	"cosmossdk.io/math"
+	"github.com/tendermint/tendermint/crypto"
+
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
-	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
-	"github.com/cosmos/cosmos-sdk/testutil/mock"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
+	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -48,6 +49,19 @@ var DefaultConsensusParams = &abci.ConsensusParams{
 	},
 }
 
+type PV struct {
+	PrivKey cryptotypes.PrivKey
+}
+
+func NewPV() PV {
+	return PV{ed25519.GenPrivKey()}
+}
+
+// GetPubKey implements PrivValidator interface
+func (pv PV) GetPubKey() (crypto.PubKey, error) {
+	return cryptocodec.ToTmPubKeyInterface(pv.PrivKey.PubKey())
+}
+
 type EmptyAppOptions struct{}
 
 func (EmptyAppOptions) Get(o string) interface{} { return nil }
@@ -55,7 +69,7 @@ func (EmptyAppOptions) Get(o string) interface{} { return nil }
 func Setup(t *testing.T) *gaiaapp.GaiaApp {
 	t.Helper()
 
-	privVal := mock.NewPV()
+	privVal := NewPV()
 	pubKey, err := privVal.GetPubKey()
 	require.NoError(t, err)
 	// create validator set with single validator
@@ -63,13 +77,16 @@ func Setup(t *testing.T) *gaiaapp.GaiaApp {
 	valSet := tmtypes.NewValidatorSet([]*tmtypes.Validator{validator})
 
 	// generate genesis account
-	senderPrivKey := secp256k1.GenPrivKey()
-	acc := authtypes.NewBaseAccount(senderPrivKey.PubKey().Address().Bytes(), senderPrivKey.PubKey(), 0, 0)
+	senderPrivKey := NewPV()
+	senderPubKey := senderPrivKey.PrivKey.PubKey()
+
+	acc := authtypes.NewBaseAccount(senderPubKey.Address().Bytes(), senderPubKey, 0, 0)
 	balance := banktypes.Balance{
 		Address: acc.GetAddress().String(),
-		Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100000000000000))),
+		Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100000000000000))),
 	}
-	app := SetupWithGenesisValSet(t, valSet, []authtypes.GenesisAccount{acc}, balance)
+	genesisAccounts := []authtypes.GenesisAccount{acc}
+	app := SetupWithGenesisValSet(t, valSet, genesisAccounts, balance)
 
 	return app
 }
@@ -81,7 +98,7 @@ func Setup(t *testing.T) *gaiaapp.GaiaApp {
 func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount, balances ...banktypes.Balance) *gaiaapp.GaiaApp {
 	t.Helper()
 
-	gaiaApp, genesisState := setup(true, 5)
+	gaiaApp, genesisState := setup()
 	genesisState = genesisStateWithValSet(t, gaiaApp, genesisState, valSet, genAccs, balances...)
 
 	stateBytes, err := json.MarshalIndent(genesisState, "", " ")
@@ -108,9 +125,10 @@ func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs 
 	return gaiaApp
 }
 
-func setup(withGenesis bool, invCheckPeriod uint) (*gaiaapp.GaiaApp, gaiaapp.GenesisState) {
+func setup() (*gaiaapp.GaiaApp, gaiaapp.GenesisState) {
 	db := dbm.NewMemDB()
 	encCdc := gaiaapp.MakeTestEncodingConfig()
+	var invCheckPeriod uint = 5
 	gaiaApp := gaiaapp.NewGaiaApp(
 		log.NewNopLogger(),
 		db,
@@ -122,11 +140,7 @@ func setup(withGenesis bool, invCheckPeriod uint) (*gaiaapp.GaiaApp, gaiaapp.Gen
 		encCdc,
 		EmptyAppOptions{},
 	)
-	if withGenesis {
-		return gaiaApp, gaiaapp.NewDefaultGenesisState()
-	}
-
-	return gaiaApp, gaiaapp.GenesisState{}
+	return gaiaApp, gaiaapp.NewDefaultGenesisState()
 }
 
 func genesisStateWithValSet(t *testing.T,

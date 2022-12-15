@@ -6,7 +6,6 @@ import (
 	"os"
 	"time"
 
-	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -14,10 +13,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	globfeetypes "github.com/cosmos/gaia/v8/x/globalfee/types"
-	icatypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/types"
+	icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 )
 
@@ -177,14 +175,14 @@ func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, gl
 	appState[stakingtypes.ModuleName] = stakingGenStateBz
 
 	// Refactor to separate method
-	amnt := math.NewInt(10000)
+	amnt := sdk.NewInt(10000)
 	quorum, _ := sdk.NewDecFromStr("0.000000000000000001")
 	threshold, _ := sdk.NewDecFromStr("0.000000000000000001")
 
-	govState := govv1beta1.NewGenesisState(1,
-		govv1beta1.NewDepositParams(sdk.NewCoins(sdk.NewCoin(denom, amnt)), 10*time.Minute),
-		govv1beta1.NewVotingParams(15*time.Second),
-		govv1beta1.NewTallyParams(quorum, threshold, govv1beta1.DefaultVetoThreshold),
+	govState := govtypes.NewGenesisState(1,
+		govtypes.NewDepositParams(sdk.NewCoins(sdk.NewCoin(denom, amnt)), 10*time.Minute),
+		govtypes.NewVotingParams(15*time.Second),
+		govtypes.NewTallyParams(quorum, threshold, govtypes.DefaultVetoThreshold),
 	)
 
 	govGenStateBz, err := cdc.MarshalJSON(govState)

@@ -8,8 +8,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	icacontrollertypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/controller/types"
-	icahosttypes "github.com/cosmos/ibc-go/v5/modules/apps/27-interchain-accounts/host/types"
+	icacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
+	icahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
 
 	"github.com/cosmos/gaia/v8/app/keepers"
 )
@@ -30,7 +30,7 @@ func FixBankMetadata(ctx sdk.Context, keepers *keepers.AppKeepers) error {
 		oldDenomMetaDataStore.Delete([]byte(malformedDenom))
 
 		// confirm whether the old key is still accessible
-		foundMalformed = keepers.BankKeeper.HasDenomMetaData(ctx, malformedDenom)
+		_, foundMalformed = keepers.BankKeeper.GetDenomMetaData(ctx, malformedDenom)
 		if foundMalformed {
 			return errors.New("malformed 'uatomu' denom not fixed")
 		}

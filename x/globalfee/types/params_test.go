@@ -1,7 +1,6 @@
 package types
 
 import (
-	"cosmossdk.io/math"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -23,27 +22,27 @@ func Test_validateParams(t *testing.T) {
 			false,
 		},
 		"DecCoins conversion fails, fail": {
-			sdk.Coins{sdk.NewCoin("photon", math.OneInt())},
+			sdk.Coins{sdk.NewCoin("photon", sdk.OneInt())},
 			true,
 		},
 		"coins amounts are zero, pass": {
 			sdk.DecCoins{
-				sdk.NewDecCoin("atom", math.ZeroInt()),
-				sdk.NewDecCoin("photon", math.ZeroInt()),
+				sdk.NewDecCoin("atom", sdk.ZeroInt()),
+				sdk.NewDecCoin("photon", sdk.ZeroInt()),
 			},
 			false,
 		},
 		"duplicate coins denoms, fail": {
 			sdk.DecCoins{
-				sdk.NewDecCoin("photon", math.OneInt()),
-				sdk.NewDecCoin("photon", math.OneInt()),
+				sdk.NewDecCoin("photon", sdk.OneInt()),
+				sdk.NewDecCoin("photon", sdk.OneInt()),
 			},
 			true,
 		},
 		"coins are not sorted by denom alphabetically, fail": {
 			sdk.DecCoins{
-				sdk.NewDecCoin("photon", math.OneInt()),
-				sdk.NewDecCoin("atom", math.OneInt()),
+				sdk.NewDecCoin("photon", sdk.OneInt()),
+				sdk.NewDecCoin("atom", sdk.OneInt()),
 			},
 			true,
 		},
@@ -53,7 +52,7 @@ func Test_validateParams(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			err := validateMinimumGasPrices(test.coins)
 			if test.expectErr {
-				require.Error(t, err)	
+				require.Error(t, err)
 				return
 			}
 			require.NoError(t, err)

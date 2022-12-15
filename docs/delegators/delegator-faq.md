@@ -11,7 +11,7 @@ People that cannot or do not want to operate [validator nodes](../validators/ove
 
 **Delegators share the revenue of their validators, but they also share the risks.** In terms of revenue, validators and delegators differ in that validators can apply a commission on the revenue that goes to their delegator before it is distributed. This commission is known to delegators beforehand and can only change according to predefined constraints (see [section](#choosing-a-validator) below). In terms of risk, delegators' Atoms can be slashed if their validator misbehaves. For more, see [Risks](#risks) section.
 
-To become delegators, Atom holders need to send a ["Delegate transaction"](./delegator-guide-cli.md#sending-transactions) where they specify how many Atoms they want to bond and to which validator. A list of validator candidates will be displayed in Cosmos Hub explorers. Later, if a delegator wants to unbond part or all of their stake, they needs to send an "Unbond transaction". From there, the delegator will have to wait 3 weeks to retrieve their Atoms. Delegators can also send a "Rebond Transaction" to switch from one validator to another, without having to go through the 3 weeks waiting period. 
+To become delegators, Atom holders need to send a ["Delegate transaction"](./delegator-guide-cli.md#sending-transactions) where they specify how many Atoms they want to bond and to which validator. A list of validator candidates will be displayed in Cosmos Hub explorers. Later, if a delegator wants to unbond part or all of their stake, they needs to send an "Unbond transaction". From there, the delegator will have to wait 3 weeks to retrieve their Atoms. Delegators can also send a "Rebond Transaction" to switch from one validator to another, without having to go through the 3 weeks waiting period.
 
 For a practical guide on how to become a delegator, click [here](./delegator-guide-cli.md).
 
@@ -23,9 +23,9 @@ In order to choose their validators, delegators have access to a range of inform
 - **Validator's description**: Description provided by the validator operator.
 - **Validator's website**: Link to the validator's website.
 - **Initial commission rate**: The commission rate on revenue charged to any delegator by the validator (see below for more detail).
-- **Commission max change rate:** The maximum daily increase of the validator's commission. This parameter cannot be changed by the validator operator. 
-- **Maximum commission:** The maximum commission rate this validator candidate can charge. This parameter cannot be changed by the validator operator. 
-- **Minimum self-bond amount**: Minimum amount of Atoms the validator candidate need to have bonded at all time. If the validator's self-bonded stake falls below this limit, their entire staking pool (i.e. all its delegators) will unbond. This parameter exists as a safeguard for delegators. Indeed, when a validator misbehaves, part of their total stake gets slashed. This included the validator's self-delegateds stake as well as their delegators' stake. Thus, a validator with a high amount of self-delegated Atoms has more skin-in-the-game than a validator with a low amount. The minimum self-bond amount parameter guarantees to delegators that a validator will never fall below a certain amount of self-bonded stake, thereby ensuring a minimum level of skin-in-the-game. This parameter can only be increased by the validator operator. 
+- **Commission max change rate:** The maximum daily increase of the validator's commission. This parameter cannot be changed by the validator operator.
+- **Maximum commission:** The maximum commission rate this validator candidate can charge. This parameter cannot be changed by the validator operator.
+- **Minimum self-bond amount**: Minimum amount of Atoms the validator candidate need to have bonded at all time. If the validator's self-bonded stake falls below this limit, their entire staking pool (i.e. all its delegators) will unbond. This parameter exists as a safeguard for delegators. Indeed, when a validator misbehaves, part of their total stake gets slashed. This included the validator's self-delegateds stake as well as their delegators' stake. Thus, a validator with a high amount of self-delegated Atoms has more skin-in-the-game than a validator with a low amount. The minimum self-bond amount parameter guarantees to delegators that a validator will never fall below a certain amount of self-bonded stake, thereby ensuring a minimum level of skin-in-the-game. This parameter can only be increased by the validator operator.
 
 ## Directives of delegators
 
@@ -55,7 +55,7 @@ This amounts to a total of 1000 Atoms and 100 Photons to be distributed among al
 
 Our validator's staking pool represents 10% of the total stake, which means the pool obtains 100 Atoms and 10 Photons. Now let us look at the internal distribution of revenue:
 
-- Commission = `10% * 80% * 100` Atoms = 8 Atoms 
+- Commission = `10% * 80% * 100` Atoms = 8 Atoms
 - Validator's revenue = `20% * 100` Atoms + Commission = 28 Atoms
 - Delegators' total revenue = `80% * 100` Atoms - Commission = 72 Atoms
 
@@ -67,6 +67,6 @@ Staking Atoms is not free of risk. First, staked Atoms are locked up, and retrie
 
 There is one main slashing condition:
 
-- **Double signing:** If someone reports on that a validator signed two different blocks with the same chain ID at the same height, this validator will get slashed. 
+- **Double signing:** If someone reports on that a validator signed two different blocks with the same chain ID at the same height, this validator will get slashed.
 
 This is why Atom holders should perform careful due diligence on validators before delegating. It is also important that delegators actively monitor the activity of their validators. If a validator behaves suspiciously or is too often offline, delegators can choose to unbond from them or switch to another validator. **Delegators can also mitigate risk by distributing their stake across multiple validators.**s

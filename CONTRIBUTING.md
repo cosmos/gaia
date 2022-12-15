@@ -19,7 +19,7 @@
             - [Use slashes to separate parts](#use-slashes-to-separate-parts)
             - [Avoid long descriptive names](#avoid-long-descriptive-names)
         - [Commit message](#commit-message)
-        - [Code guidelines](#code-guidelines)
+      - [Code guidelines](#code-guidelines)
 
 Thank you for considering making contributions to Gaia and related
 repositories!
@@ -306,7 +306,7 @@ fix/CR15032'.
 - Describe any limitations of the current code.
 - Do not include patch set-specific comments.
 
-### Code Guidelines
+## Code Guidelines
 
 If you want to contribute to a project and improve it, your help is welcome. We want to make Gaia as good as it can be. Contributing is also a great way to learn more about blockchain technology and improve it. 
 Please read the [code guidelines document](docs/guidelines/code-guidelines.md) and follow it.

@@ -45,6 +45,10 @@ The goal of this guide is to manage this complexity by describing in detail the 
 Try to avoid extensive methods and always test your code. All PRs should have at least 95% of code coverage.
 
 - [Project organization](#project-organization)
+- [How to test this project locally](#how-to-test-this-project-locally)
+    - [Unit Tests](#unit-tests)
+    - [End-to-End Tests](#end-to-end-tests)
+    - [Upgrade Test](#upgrade-test)
 - [Guidelines](#guidelines)
     - [Line Length](#line-length)
     - [Doc Comments](#doc-comments)
@@ -85,44 +89,114 @@ Try to avoid extensive methods and always test your code. All PRs should have at
 
 ## Project organization
 
-- /cmd: Main applications for this project.
-    - genaccounts.go
-    - cmd.go
-    - cmd_test.go
-    - testnet.go
+- /ante: Where the ante-handler logic is defined.
+
+- /app: Where the application is defined.
+
+- /client: OpenAPI/Swagger specs, JSON schema files, protocol definition files.
+    - /swagger-ui
+
+- /cmd/gaiad: Main applications for this project.
+    - cmd/
     - main.go
 
-- /build: Packaging and Continuous Integration.
-    - docker stuff
-
-- /docs: Gaia docs.
-
-- /test (tests): Additional external test apps and test data.
-    - /e2e
-
-- /API (client): OpenAPI/Swagger specs, JSON schema files, protocol definition files.
-    - /swagger
-
-- /scripts (contrib): Scripts to perform various build, install, analysis, etc operations.
+- /contrib (scripts): Scripts to perform various build, install, analysis, etc operations.
     - /devtools
     - /generate_release_note
+    - /githooks
     - /scripts
     - /testnets
-    - /githooks
+
+- /docs: Gaia docs.
 
 - /pkg: Library code that's to be reusable.
     - /address
     - /genesis
 
-- /internal: Private application and library code.
-    - /ante
-    - /app
+- /proto: Proto type definitions
+
+- /tests/e2e: Additional external test apps and test data.
+
+- /third_party/proto: External proto type definitions
 
 - /tools: Supporting tools for this project.
-    - /proto
 
 - /x: Cosmos Modules.
 
+## How to test this project locally
+
+### Unit Tests
+
+Running unit tests locally should ensure that the tests inside of `/tests/e2e` are not run. These tests require active running docker containers.
+
+```sh
+make test-unit
+```
+
+### End-to-End Tests
+
+To run the E2E tests you need to have an instance of Docker running. Then make sure you have the most recent version of the code built in the containers by running:
+
+```sh
+make docker-build-debug
+```
+
+Then run the tests:
+
+```sh
+make test-e2e
+```
+
+### Upgrade Test
+
+Instructions for running the upgrade test locally
+
+#### Build current version and move into ./build:
+```sh
+make build
+cp ./build/gaiad ./build/gaiad8
+```
+
+#### Build gaia v7.1.0 and move into ./build:
+```sh
+git checkout v7.1.0
+make build
+cp ./build/gaiad ./build/gaiad7
+```
+
+#### Go back to your previous working branch
+```sh
+git checkout -
+```
+
+#### Install cosmovisor
+```sh
+go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.0.0
+```
+
+#### Run the Chain
+
+This script prepares the chain and starts it using cosmovisor
+```sh
+./contrib/scripts/run-gaia-v7.sh
+```
+
+#### Run the upgrade
+In another terminal window, run the script that waits 10 seconds for gaia to start then makes gov proposal to perform an upgrade at height 15
+```sh
+./contrib/scripts/run-upgrade-commands.sh 15
+```
+
+#### Monitor for success
+In a third window run the upgrade monitoring script that will exit without error when the upgrade succeeds.
+```sh
+./contrib/scripts/test_upgrade.sh 20 5 16 localhost
+```
+
+This should show logs that demonstrate a successful upgrade by reaching block height 16 before 100 seconds is reached.
+
+
+## Guidelines
 
 ### Line Length
 
@@ -150,7 +224,7 @@ The former declares a nil slice value, while the latter is non-nil but zero-leng
 
 Note that there are limited circumstances where a non-nil but the zero-length slice is preferred, such as when encoding JSON objects (a `nil` slice encodes to `null`, while `[]string{}` encodes to the JSON array `[]`).
 
-When designing interfaces, avoid distinguishing between a nil slice and a non-nil, zero-length slice, as this can lead to subtle programming errors.
+When designing interfaces, avoid distinguishing between a nil slice and a non-nil, zero-length slice, as this can lead to subtle programming errors. It's also important to distinguish if a map key exists from whether its value is `zero`/`nil`/`false`.
 
 For more discussion about nil in Go see Francesc Campoy's talk [Understanding Nil](https://www.youtube.com/watch?v=ynoY2xz-F8s).
 

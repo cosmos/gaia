@@ -3,6 +3,7 @@
 set -o errexit -o nounset
 
 UPGRADE_HEIGHT=$1
+SLEEP=$2
 
 if [ -z "$1" ]; then
   echo "Need to add an upgrade height"
@@ -17,12 +18,12 @@ BINARY=$NODE_HOME/cosmovisor/genesis/bin/gaiad
 echo "BINARY = ${BINARY}"
 
 USER_MNEMONIC="abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art"
-CHAINID=cosmoshub-4
+CHAINID=local-testnet
 
 if test -f "$BINARY"; then
 
-  echo "wait 10 seconds for blockchain to start"
-  sleep 10
+  echo "wait $SLEEP seconds for blockchain to start"
+  sleep $SLEEP
 
 	$BINARY config chain-id $CHAINID --home $NODE_HOME
 	$BINARY config output json --home $NODE_HOME
@@ -56,9 +57,14 @@ if test -f "$BINARY"; then
   echo "Done \n"
 
   sleep 6
-  echo "Casting vote... \n"
 
-  $BINARY tx gov vote 1 yes \
+  PROPOSAL_ID=$($BINARY q gov proposals --home $NODE_HOME --output json | jq -r '.proposals | last.proposal_id')
+
+
+  echo "Casting vote for proposal $PROPOSAL_ID... \n"
+
+
+  $BINARY tx gov vote $PROPOSAL_ID yes \
   --from val \
   --keyring-backend test \
   --chain-id $CHAINID \

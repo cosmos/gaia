@@ -1,4 +1,5 @@
 <!-- markdown-link-check-disable -->
+
 # 제네시스 파일
 
 이 문서는 코스모스 허브 메인넷의 제네시스 파일의 구조를 설명합니다. 또한, 자체 gaia 테스트넷을 운영하기 위해 자체적으로 제네시스 파일을 작성하는 방법을 설명합니다.
@@ -317,7 +318,7 @@ gaiad add-genesis-account <계정_주소(account_address)> <수량(amount)> <단
   - `min_signed_per_window`: 검증인이 온라인으로 간주되기 위해`singed_blocks_window` 내에 포함되어야하는 최소 `precommit` %.
   - `downtime_jail_duration`: 다운 타임 슬래싱으로 발생하는 제일(jail) 기간(**나노초(nanosecond)** 단위.
   - `slash_fraction_double_sign`: 검증인이 더블 사이닝을 할 경우 슬래싱되는 위임자 위임량의 % 단위.
-  - `slash_fraction_downtime`: 검증인이 오프라인인 경우 슬래싱되는 위임자 워임량의 % 단위.
+  - `slash_fraction_downtime`: 검증인이 오프라인인 경우 슬래싱되는 위임자 위임량의 % 단위.
 - `signing_infos`: `slashing` 모듈이 사용하는 각 검증인의 정보. 과거 상태에서 제네시스가 생성되지 않은 경우 `{}` 값이 기본 설정입니다.
 - `missed_blocks`: `slashing` 모듈이 사용하는 missed blocks 정보. 과거 상태에서 제네시스가 생성되지 않은 경우 `{}` 값이 기본 설정입니다.
 
@@ -332,4 +333,5 @@ gaiad collect-gentxs
 ```
 
 위 명령어는 `~/.gaia/config/gentx`에 있는 모든 `gentxs`를 제네시스 파일에 추가합니다. 제네시스 트랜잭션을 생성하기 위해서는 [여기](./validators/validator-setup.md#participate-in-genesis-as-a-validator)를 확인하세요.
+
 <!-- markdown-link-check-enable -->

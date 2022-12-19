@@ -1,42 +1,33 @@
-# source: https://docs.github.com/en/enterprise-cloud@latest/actions/publishing-packages/publishing-docker-images
-name: Create and publish a Docker image
-
+# publish linux/arm64 and linux/amd64 to ghcr.io/cosmos
+name: Create and publish images
 on:
   push:
-    branches: ['release']
-
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+" # Push events to matching v*, i.e. v1.0, v20.15.10
 jobs:
   build-and-push-image:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-
+      id-token: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3.1.0
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+      - uses: actions/setup-go@v3
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@12cce9efe0d49980455aaaca9b071c0befcdd702
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@c84f38281176d4c9cdb1626ffafcd6b3911b5d94
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          go-version: 1.18
+          check-latest: true
+      - uses: imjasonh/setup-ko@v0.6
+      - run: ko version
+      - name: set tag env
+        run: echo "VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - name: Build and push image
+        working-directory: ./
+        env:
+          KO_DOCKER_REPO: ghcr.io/${{ github.repository }}
+          COSIGN_EXPERIMENTAL: 'true'
+        run: |
+          echo "${{ github.token }}" | ko login ghcr.io --username "${{ github.actor }}" --password-stdin
+          img=$(ko build ./cmd/gaiad -B --platform linux/amd64,linux/arm64 -t ${{ env.VERSION }}  -t ${{ github.sha }})
+          echo "built ${img}"

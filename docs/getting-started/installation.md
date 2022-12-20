@@ -105,7 +105,7 @@ go: go version go1.18 linux/amd64
 ```bash
 curl https://install.cosmos.network/gaia@latest | bash
 ```
-This service will return shell scripts to detect the platform OS and architecture, and to find the gaiad binary of certain version and move it into the PATH.
+This service will return shell scripts to detect the platform OS and architecture, and to find the gaiad binary of a certain version and move it into the PATH.
 
 ### Build Tags
 

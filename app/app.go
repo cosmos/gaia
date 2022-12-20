@@ -28,7 +28,6 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
-	ibctesting "github.com/cosmos/ibc-go/v3/testing"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
@@ -59,7 +58,6 @@ var (
 var (
 	_ simapp.App              = (*GaiaApp)(nil)
 	_ servertypes.Application = (*GaiaApp)(nil)
-	_ ibctesting.TestingApp   = (*GaiaApp)(nil)
 )
 
 // GaiaApp extends an ABCI application, but with most of its parameters exported.

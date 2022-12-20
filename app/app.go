@@ -416,26 +416,26 @@ func (ao EmptyAppOptions) Get(o string) interface{} {
 // ProviderApp interface implementations for e2e tests
 
 // GetProviderKeeper implements the ProviderApp interface.
-func (app *GaiaApp) GetProviderKeeper() ibcproviderkeeper.Keeper {
+func (app *GaiaApp) GetProviderKeeper() ibcproviderkeeper.Keeper { //nolint:unused
 	return app.ProviderKeeper
 }
 
 // GetE2eStakingKeeper implements the ProviderApp interface.
-func (app *GaiaApp) GetE2eStakingKeeper() e2e.E2eStakingKeeper {
+func (app *GaiaApp) GetE2eStakingKeeper() e2e.E2eStakingKeeper { //nolint:unused
 	return app.StakingKeeper
 }
 
 // GetE2eBankKeeper implements the ProviderApp interface.
-func (app *GaiaApp) GetE2eBankKeeper() e2e.E2eBankKeeper {
+func (app *GaiaApp) GetE2eBankKeeper() e2e.E2eBankKeeper { //nolint:unused
 	return app.BankKeeper
 }
 
 // GetE2eSlashingKeeper implements the ProviderApp interface.
-func (app *GaiaApp) GetE2eSlashingKeeper() e2e.E2eSlashingKeeper {
+func (app *GaiaApp) GetE2eSlashingKeeper() e2e.E2eSlashingKeeper { //nolint:unused
 	return app.SlashingKeeper
 }
 
 // GetE2eDistributionKeeper implements the ProviderApp interface.
-func (app *GaiaApp) GetE2eDistributionKeeper() e2e.E2eDistributionKeeper {
+func (app *GaiaApp) GetE2eDistributionKeeper() e2e.E2eDistributionKeeper { //nolint:unused
 	return app.DistrKeeper
 }

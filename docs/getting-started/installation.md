@@ -57,8 +57,8 @@ export PATH=$PATH:$(go env GOPATH)/bin
 ```
 
 ## Install the binaries
-
-Next, let's install the latest version of Gaia. Make sure you `git checkout` the
+### Build from source
+Let's install the latest version of Gaia. Make sure you `git checkout` the
 correct [released version](https://github.com/cosmos/gaia/releases).
 
 ```bash
@@ -100,6 +100,12 @@ commit: 07f9892a927f451ae204d0c9d1a5601d8fc232a5
 build_tags: netgo,ledger
 go: go version go1.18 linux/amd64
 ```
+
+### Install by downloading
+```bash
+curl https://install.cosmos.network/gaia@latest | bash
+```
+This service will return shell scripts to detect the platform OS and architecture, and to find the gaiad binary of certain version and move it into the PATH.
 
 ### Build Tags
 

@@ -29,8 +29,6 @@ import (
 	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 	ibctesting "github.com/cosmos/ibc-go/v3/testing"
-	"github.com/cosmos/interchain-security/testutil/e2e"
-	ibcproviderkeeper "github.com/cosmos/interchain-security/x/ccv/provider/keeper"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
@@ -413,29 +411,29 @@ func (ao EmptyAppOptions) Get(o string) interface{} {
 	return nil
 }
 
-// ProviderApp interface implementations for e2e tests
-
-// GetProviderKeeper implements the ProviderApp interface.
-func (app *GaiaApp) GetProviderKeeper() ibcproviderkeeper.Keeper { //nolint:unused
-	return app.ProviderKeeper
-}
-
-// GetE2eStakingKeeper implements the ProviderApp interface.
-func (app *GaiaApp) GetE2eStakingKeeper() e2e.E2eStakingKeeper { //nolint:unused
-	return app.StakingKeeper
-}
-
-// GetE2eBankKeeper implements the ProviderApp interface.
-func (app *GaiaApp) GetE2eBankKeeper() e2e.E2eBankKeeper { //nolint:unused
-	return app.BankKeeper
-}
-
-// GetE2eSlashingKeeper implements the ProviderApp interface.
-func (app *GaiaApp) GetE2eSlashingKeeper() e2e.E2eSlashingKeeper { //nolint:unused
-	return app.SlashingKeeper
-}
-
-// GetE2eDistributionKeeper implements the ProviderApp interface.
-func (app *GaiaApp) GetE2eDistributionKeeper() e2e.E2eDistributionKeeper { //nolint:unused
-	return app.DistrKeeper
-}
+//// ProviderApp interface implementations for e2e tests
+//
+//// GetProviderKeeper implements the ProviderApp interface.
+//func (app *GaiaApp) GetProviderKeeper() ibcproviderkeeper.Keeper { //nolint:unused
+//	return app.ProviderKeeper
+//}
+//
+//// GetE2eStakingKeeper implements the ProviderApp interface.
+//func (app *GaiaApp) GetE2eStakingKeeper() e2e.E2eStakingKeeper { //nolint:unused
+//	return app.StakingKeeper
+//}
+//
+//// GetE2eBankKeeper implements the ProviderApp interface.
+//func (app *GaiaApp) GetE2eBankKeeper() e2e.E2eBankKeeper { //nolint:unused
+//	return app.BankKeeper
+//}
+//
+//// GetE2eSlashingKeeper implements the ProviderApp interface.
+//func (app *GaiaApp) GetE2eSlashingKeeper() e2e.E2eSlashingKeeper { //nolint:unused
+//	return app.SlashingKeeper
+//}
+//
+//// GetE2eDistributionKeeper implements the ProviderApp interface.
+//func (app *GaiaApp) GetE2eDistributionKeeper() e2e.E2eDistributionKeeper { //nolint:unused
+//	return app.DistrKeeper
+//}

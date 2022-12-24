@@ -1,7 +1,5 @@
 run:
   tests: true
-  skip-dirs:
-    - tests/e2e
 
 linters:
   disable-all: true
@@ -12,20 +10,14 @@ linters:
     - errcheck
     - goconst
     - gocritic
-    - gofmt
-    - goimports
-    - golint
+    - gofumpt
     - gosec
     - gosimple
     - govet
     - ineffassign
-    - interfacer
     - misspell
     - nakedret
-    - prealloc
-    - scopelint
     - staticcheck
-    - structcheck
     - stylecheck
     - typecheck
     - unconvert

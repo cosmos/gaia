@@ -24,7 +24,7 @@ type IntegrationTestSuite struct {
 	suite.Suite
 
 	app         *gaiaapp.GaiaApp
-	anteHandler sdk.AnteHandler
+	anteHandler sdk.AnteHandler //nolint:unused // this is for testing
 	ctx         sdk.Context
 	clientCtx   client.Context
 	txBuilder   client.TxBuilder

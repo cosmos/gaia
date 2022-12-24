@@ -1,3 +1,4 @@
+//nolint:gosec
 package e2e
 
 import (
@@ -5,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"os/exec"
@@ -214,7 +214,7 @@ func (s *IntegrationTestSuite) initGenesis(c *chain) {
 
 	// write the updated genesis file to each validator.
 	for _, val := range c.validators {
-		writeFile(filepath.Join(val.configDir(), "config", "genesis.json"), bz)
+		writeFile(filepath.Join(val.configDir(), "config", "genesis.json"), bz) //nolint:errcheck
 	}
 }
 
@@ -276,7 +276,7 @@ func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 			Repository: "cosmos/gaiad-e2e",
 		}
 
-		s.Require().NoError(exec.Command("chmod", "-R", "0777", val.configDir()).Run())
+		s.Require().NoError(exec.Command("chmod", "-R", "0777", val.configDir()).Run()) //nolint:gosec // only used in tests
 
 		// expose the first validator for debugging and communication
 		if val.index == 0 {
@@ -330,7 +330,7 @@ func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 func (s *IntegrationTestSuite) runIBCRelayer() {
 	s.T().Log("starting Hermes relayer container...")
 
-	tmpDir, err := ioutil.TempDir("", "gaia-e2e-testnet-hermes-")
+	tmpDir, err := os.MkdirTemp("", "gaia-e2e-testnet-hermes-")
 	s.Require().NoError(err)
 	s.tmpDirs = append(s.tmpDirs, tmpDir)
 

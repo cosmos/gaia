@@ -21,7 +21,7 @@ func createMnemonic() (string, error) {
 	return mnemonic, nil
 }
 
-func createMemoryKey() (mnemonic string, info *keyring.Info, err error) {
+func createMemoryKey() (mnemonic string, info *keyring.Info, err error) { //nolint:unused // this is for testing
 	mnemonic, err = createMnemonic()
 	if err != nil {
 		return "", nil, err
@@ -35,7 +35,7 @@ func createMemoryKey() (mnemonic string, info *keyring.Info, err error) {
 	return mnemonic, account, nil
 }
 
-func createMemoryKeyFromMnemonic(mnemonic string) (*keyring.Info, error) {
+func createMemoryKeyFromMnemonic(mnemonic string) (*keyring.Info, error) { //nolint:unused // this is for testing
 	kb, err := keyring.New("testnet", keyring.BackendMemory, "", nil)
 	if err != nil {
 		return nil, err

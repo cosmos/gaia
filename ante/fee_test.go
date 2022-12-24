@@ -48,6 +48,7 @@ func (s *IntegrationTestSuite) TestMempoolFeeDecorator() {
 	))
 
 	oracleTx, err := s.CreateTestTx(privs, accNums, accSeqs, s.ctx.ChainID())
+	s.Require().NoError(err)
 	_, err = antehandler(s.ctx, oracleTx, false)
 	s.Require().NoError(err, "expected min fee bypass for IBC messages")
 

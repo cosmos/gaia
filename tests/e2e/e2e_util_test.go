@@ -111,7 +111,7 @@ func (s *IntegrationTestSuite) sendIBC(srcChainID, dstChainID, recipient string,
 	s.T().Log("successfully sent IBC tokens")
 }
 
-func queryGaiaTx(endpoint, txHash string) error {
+func queryGaiaTx(endpoint, txHash string) error { //nolint:unused // used in tests
 	resp, err := http.Get(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs/%s", endpoint, txHash))
 	if err != nil {
 		return fmt.Errorf("failed to execute HTTP request: %w", err)
@@ -157,14 +157,14 @@ func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) {
 	return balancesResp.Balances, nil
 }
 
-func queryGaiaDenomBalance(endpoint, addr, denom string) (sdk.Coin, error) {
+func queryGaiaDenomBalance(endpoint, addr, denom string) (sdk.Coin, error) { //nolint:unused
 	var zeroCoin sdk.Coin
 
 	path := fmt.Sprintf(
 		"%s/cosmos/bank/v1beta1/balances/%s/by_denom?denom=%s",
 		endpoint, addr, denom,
 	)
-	resp, err := http.Get(path)
+	resp, err := http.Get(path) //nolint:gosec
 	if err != nil {
 		return zeroCoin, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}

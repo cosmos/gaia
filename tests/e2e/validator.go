@@ -35,7 +35,7 @@ type validator struct {
 	keyInfo          keyring.Info
 	privateKey       cryptotypes.PrivKey
 	consensusKey     privval.FilePVKey
-	consensusPrivKey cryptotypes.PrivKey
+	consensusPrivKey cryptotypes.PrivKey //nolint:unused
 	nodeKey          p2p.NodeKey
 }
 

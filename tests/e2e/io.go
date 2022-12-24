@@ -3,11 +3,10 @@ package e2e
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 )
 
-func copyFile(src, dst string) (int64, error) {
+func copyFile(src, dst string) (int64, error) { //nolint:unparam // this is for testing
 	sourceFileStat, err := os.Stat(src)
 	if err != nil {
 		return 0, err
@@ -39,5 +38,5 @@ func writeFile(path string, body []byte) error {
 		return err
 	}
 
-	return ioutil.WriteFile(path, body, 0o600)
+	return os.WriteFile(path, body, 0o600)
 }

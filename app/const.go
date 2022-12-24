@@ -1,6 +1,6 @@
 package gaia
 
-//nolint: gosec
+//nolint:gosec // these are not hard coded credentials
 const (
 	appName     = "GaiaApp"
 	upgradeName = "v7-Theta"

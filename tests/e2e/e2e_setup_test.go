@@ -377,7 +377,7 @@ func (s *IntegrationTestSuite) runIBCRelayer() {
 	endpoint := fmt.Sprintf("http://%s/state", s.hermesResource.GetHostPort("3031/tcp"))
 	s.Require().Eventually(
 		func() bool {
-			resp, err := http.Get(endpoint)
+			resp, err := http.Get(endpoint) //nolint:gosec
 			if err != nil {
 				return false
 			}

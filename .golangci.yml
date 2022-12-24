@@ -1,5 +1,5 @@
 run:
-  tests: false
+  tests: true
   skip-dirs:
     - tests/e2e
 
@@ -7,10 +7,9 @@ linters:
   disable-all: true
   enable:
     - bodyclose
-    - deadcode
     - depguard
     - dogsled
-    # - errcheck
+    - errcheck
     - goconst
     - gocritic
     - gofmt
@@ -21,7 +20,6 @@ linters:
     - govet
     - ineffassign
     - interfacer
-    - maligned
     - misspell
     - nakedret
     - prealloc
@@ -33,7 +31,6 @@ linters:
     - unconvert
     - unused
     - unparam
-    # - wsl
     - nolintlint
 
 issues:
@@ -67,9 +64,6 @@ issues:
 linters-settings:
   dogsled:
     max-blank-identifiers: 3
-  maligned:
-    # print struct with more effective memory layout or not, false by default
-    suggest-new: true
   nolintlint:
     allow-unused: false
     allow-leading-space: true

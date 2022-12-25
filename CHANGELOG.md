@@ -34,9 +34,23 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 # Changelog
 
+## [v8.0.0] - 2022-12-25
+
+* (gaia) Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v3.4.0](https://github.com/cosmos/ibc-go/blob/v3.4.0/CHANGELOG.md) to fix a vulnerability in ICA. See [v3.4.0 CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.9/CHANGELOG.md) and [v3.2.1 Release Notes](https://github.com/cosmos/ibc-go/releases/tag/v3.2.1) for details.
+* (gaia) Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.11](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.11). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/release/v0.45.x/CHANGELOG.md) for details.
+* (gaia) Bump [tendermint](https://github.com/tendermint/tendermint) to [0.34.24](https://github.com/tendermint/tendermint/tree/v0.34.24). See [CHANGELOG.md](https://github.com/tendermint/tendermint/blob/v0.34.24/CHANGELOG.md) for details.
+* (feat) Add [globalfee](https://github.com/cosmos/gaia/tree/main/x/globalfee) module.
+* (feat) [#1845](https://github.com/cosmos/gaia/pull/1845) Add bech32-convert command to gaiad.
+* (fix) [Adds new fee decorator](https://github.com/cosmos/gaia/pull/1961) to change `MaxBypassMinFeeMsgGasUsage` so importers of x/globalfee can change `MaxGas`.
+* (fix) [#1924](https://github.com/cosmos/gaia/issues/1924) Refactor iterator closures.
+* (fix) [#1870](https://github.com/cosmos/gaia/issues/1870) Fix bank denom metadata in migration. See [#1892](https://github.com/cosmos/gaia/pull/1892) for more details.
+* (tests) Add [E2E tests](https://github.com/cosmos/gaia/tree/main/tests/e2e). The tests cover transactions/queries tests of different modules, including Bank, Distribution, Encode, Evidence, FeeGrant, Global Fee, Gov, IBC, ICA, packet forwarding middleware, Slashing, Staking, and Vesting module.
+* (tests) [#1941](https://github.com/cosmos/gaia/pull/1941) Fix packet foward configuration for e2e tests.
+* (tests) Use gaiad to swap out [Ignite](https://github.com/ignite/cli) in [liveness tests](https://github.com/cosmos/gaia/blob/main/.github/workflows/test.yml).
+
 ## [Unreleased]
 
-## [v8.0.0] - 2022-10-31
+## [v8.0.0-rc] - 2022-10-31
 
 * (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.46.4](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.46.4). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.46.4/CHANGELOG.md) for details. Notably, Gov module has major changes while remaining backwards compatible.
 * (gaia) [#1573](https://github.com/cosmos/gaia/issues/1573), [#1576](https://github.com/cosmos/gaia/issues/1576) update [cosmos ledger](https://github.com/cosmos/ledger-go) version to [v.0.9.3](https://github.com/cosmos/ledger-go/releases/tag/v0.9.3).

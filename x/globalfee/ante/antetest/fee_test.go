@@ -7,8 +7,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
-	ibcchanneltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
+	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 	"github.com/stretchr/testify/suite"
 
 	gaiaapp "github.com/cosmos/gaia/v8/app"
@@ -31,7 +31,7 @@ func (s *IntegrationTestSuite) TestGetDefaultGlobalFees() {
 	stakingSubspace := s.SetupTestStakingSubspace(stakingParam)
 
 	// setup antehandler
-	mfd := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), globalfeeSubspace, stakingSubspace)
+	mfd := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), globalfeeSubspace, stakingSubspace, newTestGasLimit())
 
 	defaultGlobalFees, err := mfd.DefaultZeroGlobalFee(s.ctx)
 	s.Require().NoError(err)
@@ -555,6 +555,15 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			txCheck:         false,
 			expErr:          false,
 		},
+		"disable checkTx: no fee check. min_gas_price is low, global fee is low, tx fee's denom is not in global fees denoms set": {
+			minGasPrice:     minGasPrice,
+			globalFeeParams: globalfeeParamsLow,
+			gasPrice:        sdk.NewCoins(sdk.NewCoin("quark", sdk.ZeroInt())),
+			gasLimit:        newTestGasLimit(),
+			txMsg:           testdata.NewTestMsg(addr1),
+			txCheck:         false,
+			expErr:          false,
+		},
 	}
 	for name, testCase := range testCases {
 		s.Run(name, func() {
@@ -564,7 +573,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			stakingParam.BondDenom = "uatom"
 			stakingSubspace := s.SetupTestStakingSubspace(stakingParam)
 			// setup antehandler
-			mfd := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), globalfeeSubspace, stakingSubspace)
+			mfd := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), globalfeeSubspace, stakingSubspace, newTestGasLimit())
 			antehandler := sdk.ChainAnteDecorators(mfd)
 
 			s.Require().NoError(s.txBuilder.SetMsgs(testCase.txMsg))

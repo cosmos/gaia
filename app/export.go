@@ -2,7 +2,6 @@ package gaia
 
 import (
 	"encoding/json"
-	"log"
 
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -59,7 +58,7 @@ func (app *GaiaApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs [
 	for _, addr := range jailAllowedAddrs {
 		_, err := sdk.ValAddressFromBech32(addr)
 		if err != nil {
-			log.Fatal(err)
+			panic(err)
 		}
 		allowedAddrsMap[addr] = true
 	}
@@ -71,7 +70,10 @@ func (app *GaiaApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs [
 
 	// withdraw all validator commission
 	app.StakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypes.ValidatorI) (stop bool) {
-		_, _ = app.DistrKeeper.WithdrawValidatorCommission(ctx, val.GetOperator())
+		_, err := app.DistrKeeper.WithdrawValidatorCommission(ctx, val.GetOperator())
+		if err != nil {
+			app.Logger().Error(err.Error(), "ValOperatorAddress", val.GetOperator())
+		}
 		return false
 	})
 
@@ -87,7 +89,11 @@ func (app *GaiaApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs [
 		if err != nil {
 			panic(err)
 		}
-		_, _ = app.DistrKeeper.WithdrawDelegationRewards(ctx, delAddr, valAddr)
+
+		_, err = app.DistrKeeper.WithdrawDelegationRewards(ctx, delAddr, valAddr)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	// clear validator slash events
@@ -100,6 +106,21 @@ func (app *GaiaApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs [
 	height := ctx.BlockHeight()
 	ctx = ctx.WithBlockHeight(0)
 
+	// reinitialize all validators (v0.46 version)
+	// app.StakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypes.ValidatorI) (stop bool) {
+	// 	// donate any unwithdrawn outstanding reward fraction tokens to the community pool
+	// 	scraps := app.DistrKeeper.GetValidatorOutstandingRewardsCoins(ctx, val.GetOperator())
+	// 	feePool := app.DistrKeeper.GetFeePool(ctx)
+	// 	feePool.CommunityPool = feePool.CommunityPool.Add(scraps...)
+	// 	app.DistrKeeper.SetFeePool(ctx, feePool)
+
+	// 	err := app.DistrKeeper.Hooks().AfterValidatorCreated(ctx, val.GetOperator())
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+	// 	return false
+	// })
+
 	// reinitialize all validators
 	app.StakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypes.ValidatorI) (stop bool) {
 		// donate any unwithdrawn outstanding reward fraction tokens to the community pool
@@ -108,10 +129,7 @@ func (app *GaiaApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs [
 		feePool.CommunityPool = feePool.CommunityPool.Add(scraps...)
 		app.DistrKeeper.SetFeePool(ctx, feePool)
 
-		err := app.DistrKeeper.Hooks().AfterValidatorCreated(ctx, val.GetOperator())
-		if err != nil {
-			log.Fatal(err)
-		}
+		app.DistrKeeper.Hooks().AfterValidatorCreated(ctx, val.GetOperator())
 		return false
 	})
 
@@ -125,15 +143,8 @@ func (app *GaiaApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs [
 		if err != nil {
 			panic(err)
 		}
-		err = app.DistrKeeper.Hooks().BeforeDelegationCreated(ctx, delAddr, valAddr)
-		if err != nil {
-			panic(err)
-		}
-		err = app.DistrKeeper.Hooks().AfterDelegationModified(ctx, delAddr, valAddr)
-		if err != nil {
-			panic(err)
-		}
-
+		app.DistrKeeper.Hooks().BeforeDelegationCreated(ctx, delAddr, valAddr)
+		app.DistrKeeper.Hooks().AfterDelegationModified(ctx, delAddr, valAddr)
 	}
 
 	// reset context height
@@ -163,29 +174,32 @@ func (app *GaiaApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs [
 	// update bond intra-tx counters.
 	store := ctx.KVStore(app.GetKey(stakingtypes.StoreKey))
 	iter := sdk.KVStoreReversePrefixIterator(store, stakingtypes.ValidatorsKey)
+
 	counter := int16(0)
 
-	for ; iter.Valid(); iter.Next() {
-		addr := sdk.ValAddress(stakingtypes.AddressFromValidatorsKey(iter.Key()))
-		validator, found := app.StakingKeeper.GetValidator(ctx, addr)
-		if !found {
-			panic("expected validator, not found")
+	// Closure to ensure iterator doesn't leak.
+	func() {
+		defer iter.Close()
+		for ; iter.Valid(); iter.Next() {
+			addr := sdk.ValAddress(stakingtypes.AddressFromValidatorsKey(iter.Key()))
+			validator, found := app.StakingKeeper.GetValidator(ctx, addr)
+			if !found {
+				panic("expected validator, not found")
+			}
+
+			validator.UnbondingHeight = 0
+			if applyAllowedAddrs && !allowedAddrsMap[addr.String()] {
+				validator.Jailed = true
+			}
+
+			app.StakingKeeper.SetValidator(ctx, validator)
+			counter++
 		}
-
-		validator.UnbondingHeight = 0
-		if applyAllowedAddrs && !allowedAddrsMap[addr.String()] {
-			validator.Jailed = true
-		}
-
-		app.StakingKeeper.SetValidator(ctx, validator)
-		counter++
-	}
-
-	iter.Close()
+	}()
 
 	_, err := app.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	/* Handle slashing state. */

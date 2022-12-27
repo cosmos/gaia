@@ -59,8 +59,7 @@ func DenomsSubsetOfIncludingZero(coins, coinsB sdk.Coins) bool {
 		if err != nil {
 			panic(err)
 		}
-
-		if ok, _ := coinsB.Find(coin.Denom); !ok {
+		if ok, _ := Find(coinsB, coin.Denom); !ok {
 			return false
 		}
 	}
@@ -92,7 +91,7 @@ func IsAnyGTEIncludingZero(coins, coinsB sdk.Coins) bool {
 	// special case: coins=1stake, coinsB=[2stake,0uatom], fail
 	for _, coin := range coins {
 		// not find coin in CoinsB
-		if ok, _ := coinsB.Find(coin.Denom); ok {
+		if ok, _ := Find(coinsB, coin.Denom); ok {
 			// find coin in coinsB, and if the amt == 0, mean either coin=0denom or coinsB=0denom...both true
 			amt := coinsB.AmountOf(coin.Denom)
 			if coin.Amount.GTE(amt) {
@@ -130,17 +129,13 @@ func CombinedFeeRequirement(globalFees, minGasPrices sdk.Coins) sdk.Coins {
 		return globalFees
 	}
 
-	// if find min_gas_price denom in globalfee, and amt is higher than globalfee, add it
+	// if min_gas_price denom is in globalfee, and the amount is higher than globalfee, add min_gas_price to allFees
 	var allFees sdk.Coins
 	for _, fee := range globalFees {
 		// min_gas_price denom in global fee
-		ok, c := minGasPrices.Find(fee.Denom)
-		if ok {
-			if c.Amount.GT(fee.Amount) {
-				allFees = append(allFees, c)
-			} else {
-				allFees = append(allFees, fee)
-			}
+		ok, c := Find(minGasPrices, fee.Denom)
+		if ok && c.Amount.GT(fee.Amount) {
+			allFees = append(allFees, c)
 		} else {
 			allFees = append(allFees, fee)
 		}
@@ -164,4 +159,31 @@ func GetTxPriority(fee sdk.Coins) int64 {
 	}
 
 	return priority
+}
+
+// Find replaces the functionality of Coins.Find from SDK v0.46.x
+func Find(coins sdk.Coins, denom string) (bool, sdk.Coin) {
+	switch len(coins) {
+	case 0:
+		return false, sdk.Coin{}
+
+	case 1:
+		coin := coins[0]
+		if coin.Denom == denom {
+			return true, coin
+		}
+		return false, sdk.Coin{}
+
+	default:
+		midIdx := len(coins) / 2 // 2:1, 3:1, 4:2
+		coin := coins[midIdx]
+		switch {
+		case denom < coin.Denom:
+			return Find(coins[:midIdx], denom)
+		case denom == coin.Denom:
+			return true, coin
+		default:
+			return Find(coins[midIdx+1:], denom)
+		}
+	}
 }

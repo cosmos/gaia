@@ -1,4 +1,5 @@
 <!-- markdown-link-check-disable -->
+
 # 제네시스 파일
 
 이 문서는 코스모스 허브 메인넷의 제네시스 파일의 구조를 설명합니다. 또한, 자체 gaia 테스트넷을 운영하기 위해 자체적으로 제네시스 파일을 작성하는 방법을 설명합니다.
@@ -36,12 +37,12 @@ gaiad init <명칭(moniker)> --chain-id <체인_아이디(chain-id)>
 이후 제네시스 파일은 컨센서스 파라미터 값을 정의합니다. 컨센서스 파라미터는 모든 합의 계층(`gaia`의 경우 `Tendermint` 계층) 관련 값을 리그룹(regroup)합니다. 파라미터 값에 대해 알아보겠습니다:
 
 - `block`
-    + `max_bytes`: 블록 최대 바이트 크기
-    + `max_gas`: 블록 가스 한도(gas limit). 블록에 포함되는 모든 트랜잭션은 가스를 소모합니다. 블록에 포함되어있는 트랜잭션들의 총 가스 사용량은 이 한도를 초과할 수 없습니다.
+  - `max_bytes`: 블록 최대 바이트 크기
+  - `max_gas`: 블록 가스 한도(gas limit). 블록에 포함되는 모든 트랜잭션은 가스를 소모합니다. 블록에 포함되어있는 트랜잭션들의 총 가스 사용량은 이 한도를 초과할 수 없습니다.
 - `evidence`
-    + `max_age`: 증거(evidence)는 검증인이 동일한 블록 높이와 합의 라운드(round)에서 두개의 블록을 동시했다는 증거입니다. 위와 같은 행동은 명백한 악의적 행동으로 간주되며 스테이트 머신 계층에서 페널티를 부과합니다. `max_age` 값은 증거 유효성이 유지되는 최대 _블록_ 개수를 의미합니다.
+  - `max_age`: 증거(evidence)는 검증인이 동일한 블록 높이와 합의 라운드(round)에서 두개의 블록을 동시했다는 증거입니다. 위와 같은 행동은 명백한 악의적 행동으로 간주되며 스테이트 머신 계층에서 페널티를 부과합니다. `max_age` 값은 증거 유효성이 유지되는 최대 _블록_ 개수를 의미합니다.
 - `validator`
-    + `pub_key_types`: 검증인이 사용할 수 있는 pubkey 형태입니다(`ed25519`, `secp256k1`, ...). 현재 `ed25519`만 지원됩니다.
+  - `pub_key_types`: 검증인이 사용할 수 있는 pubkey 형태입니다(`ed25519`, `secp256k1`, ...). 현재 `ed25519`만 지원됩니다.
 
 ```json
 "consensus_params": {
@@ -151,13 +152,13 @@ gaiad add-genesis-account <계정_주소(account_address)> <수량(amount)> <단
 각 파라미터 값에 대해 알아보겠습니다:
 
 - `pool`
-    + `not_bonded_tokens`: 제네시스 시점에서 위임되지 않은 토큰의 수량을 정의합니다. 대부분의 상황에서 이 값은 스테이킹 토큰의 총 발행량을 뜻합니다 (이 예시에서는 `uatom` 단위로 정의됩니다).
-    + `bonded_tokens`: 제네시스 시점에서 위임된 토큰의 수량입니다. 대부분 상황에서 이 값은 `0`입니다.
+  - `not_bonded_tokens`: 제네시스 시점에서 위임되지 않은 토큰의 수량을 정의합니다. 대부분의 상황에서 이 값은 스테이킹 토큰의 총 발행량을 뜻합니다 (이 예시에서는 `uatom` 단위로 정의됩니다).
+  - `bonded_tokens`: 제네시스 시점에서 위임된 토큰의 수량입니다. 대부분 상황에서 이 값은 `0`입니다.
 - `params`
-    + `unbonding_time`: 토큰의 언본딩이 완료될 때까지의 기간을 _나노초(nanosecond)_ 단위로 정의합니다.
-    + `max_validators`: 최대 검증인 수입니다.
-    + `max_entries`: 특정 검증인/위임자 쌍에서 동시에 진행될 수 있는 최대 언본딩/재위임 회수.
-    + `bond_denom`: 스테이킹 토큰 단위.
+  - `unbonding_time`: 토큰의 언본딩이 완료될 때까지의 기간을 _나노초(nanosecond)_ 단위로 정의합니다.
+  - `max_validators`: 최대 검증인 수입니다.
+  - `max_entries`: 특정 검증인/위임자 쌍에서 동시에 진행될 수 있는 최대 언본딩/재위임 회수.
+  - `bond_denom`: 스테이킹 토큰 단위.
 - `last_total_power`: 보팅 파워 수치. 통상 제네시스 시점에서 `0`입니다 (다만, 과거 블록체인 상태를 기반으로 제네시스가 생성되었을 경우 다를 수 있습니다).
 - `last_validator_powers`: 각 검증인의 가장 최근 보팅 파워 수치입니다. 통상 제네시스 시점에서 `null`입니다. (다만, 과거 블록체인 상태를 기반으로 제네시스가 생성되었을 경우 다를 수 있습니다).
 - `validators`: 가장 최근 검증인 목록. 통상 제네시스 시점에서 `null`입니다. (다만, 과거 블록체인 상태를 기반으로 제네시스가 생성되었을 경우 다를 수 있습니다).
@@ -190,15 +191,15 @@ gaiad add-genesis-account <계정_주소(account_address)> <수량(amount)> <단
 각 파라미터 값에 대해 알아보겠습니다:
 
 - `minter`
-    + `inflation`: 토큰 총 발행량의 기본 연간 인플레이션 % (주 단위 복리 기준). `0.070000000000000000` 값은 주 단위 복리 기준으로 연간 `7%` 인플레이션을 뜻합니다.
-    + `annual_provisions`: 매 블록마다 계산됨. 기본 값은 `0.000000000000000000`으로 시작합니다.
+  - `inflation`: 토큰 총 발행량의 기본 연간 인플레이션 % (주 단위 복리 기준). `0.070000000000000000` 값은 주 단위 복리 기준으로 연간 `7%` 인플레이션을 뜻합니다.
+  - `annual_provisions`: 매 블록마다 계산됨. 기본 값은 `0.000000000000000000`으로 시작합니다.
 - `params`
-    + `mint_denom`: 인플레이션 대상 스테이킹 토큰의 단위.
-    + `inflation_rate_change`: 연간 인플레이션 변화율.
-    + `inflation_max`: 인플레이션 최대 수치.
-    + `inflation_min`: 인플레이션 최소 수치.
-    + `goal_bonded`: 총 발행량 중 위임 목표 % 수치. 만약 현재 위임 비율이 해당 이 값보다 낮은 경우, 인플레이션은 `inflation_rate_change` 값을 따라 `inflation_max`까지 증가합니다. 반대로 현재 위임 비율이 이 수치보다 높을 경우 `inflation_rate_change` 값을 따라 `inflation_min`까지 감소합니다.
-    + `blocks_per_year`: 연간 생성되는 블록 예상 수치. 스테이킹 토큰 인플레이션으로 발생하는 토큰을 각 블록당 지급(블록 프로비젼, block provisions)하는데 계산하는 용도로 사용됩니다.
+  - `mint_denom`: 인플레이션 대상 스테이킹 토큰의 단위.
+  - `inflation_rate_change`: 연간 인플레이션 변화율.
+  - `inflation_max`: 인플레이션 최대 수치.
+  - `inflation_min`: 인플레이션 최소 수치.
+  - `goal_bonded`: 총 발행량 중 위임 목표 % 수치. 만약 현재 위임 비율이 해당 이 값보다 낮은 경우, 인플레이션은 `inflation_rate_change` 값을 따라 `inflation_max`까지 증가합니다. 반대로 현재 위임 비율이 이 수치보다 높을 경우 `inflation_rate_change` 값을 따라 `inflation_min`까지 감소합니다.
+  - `blocks_per_year`: 연간 생성되는 블록 예상 수치. 스테이킹 토큰 인플레이션으로 발생하는 토큰을 각 블록당 지급(블록 프로비젼, block provisions)하는데 계산하는 용도로 사용됩니다.
 
 ### 분배(distribution)
 
@@ -227,7 +228,7 @@ gaiad add-genesis-account <계정_주소(account_address)> <수량(amount)> <단
 각 파라미터 값에 대해 알아보겠습니다:
 
 - `fee_pool`
-    + `community_pool`: 커뮤니티 풀은 임무 수행(개발, 커뮤니티 빌딩, 등)의 보상으로 제공될 수 있는 토큰 자금입니다. 토큰 풀의 사용은 거버넌스 프로포절을 통해 결정됩니다. 통상 제네시스 시점에서 `null`입니다.
+  - `community_pool`: 커뮤니티 풀은 임무 수행(개발, 커뮤니티 빌딩, 등)의 보상으로 제공될 수 있는 토큰 자금입니다. 토큰 풀의 사용은 거버넌스 프로포절을 통해 결정됩니다. 통상 제네시스 시점에서 `null`입니다.
 - `community_tax`: 블록 보상과 수수료 중 커뮤니티 풀로 예치될 '세금' %.
 - `base_proposer_reward`: 유효한 블록의 트랜잭션 수수료 중 블록 프로포저에게 지급될 리워드. 값이 `0.010000000000000000`인 경우, 수수료의 1%가 블록 프로포저에게 지급됩니다.
 - `bonus_proposer_reward`: 유효한 블록의 트랜잭션 수수료 중 블록 프로포저에게 지급될 리워드의 _최대 한도_. 보너스 수량은 블록 프로포저가 포함한 `precommit` 수량에 비례합니다. 만약 프로포저가 보팅 파워 기준으로`precommit`의 2/3을 포함한 경우 (2/3는 유효한 블록을 생성하기 위한 최소 한도입니다), `base_proposer_reward` 만큼의 보너스를 지급 받습니다. 보너스는 블록 프로포저가 `precommit`의 100%를 포함하는 경우 최대 `bonus_proposer_reward`까지 선의적(linearly)으로 증가합니다.
@@ -278,19 +279,19 @@ gaiad add-genesis-account <계정_주소(account_address)> <수량(amount)> <단
 - `deposits`: 각 프로포절 ID에 대한 보증금 목록입니다. 과거 상태에서 제네시스가 생성되지 않은 경우 `null` 값이 기본 설정입니다.
 - `votes`: 각 프로포절 ID에 대한 투표 목록입니다. 과거 상태에서 제네시스가 생성되지 않은 경우 `null` 값이 기본 설정입니다.
 - `votes`: 각 프로포절 ID에 대한 투표 목록입니다. 과거 상태에서 제네시스가 생성되지 않은 경우 `null` 값이 기본 설정입니다.
-- `proposals`: 각 프로포절 ID에 대한 프로포절 목록입니다. 
+- `proposals`: 각 프로포절 ID에 대한 프로포절 목록입니다.
 - `deposit_params`
-    + `min_deposit`: 프로포절의 `voting period` 단계를 시작하기 위해 필요한 최소 보증금 수량입니다. 만약 다수 단위를 적용할 경우 `OR` 연산자를 사용하세요.
-    + `max_deposit_period`: 프로포절 보증금 추가가 가능한 기간 (**나노초(nanosecond)** 단위로 입력). 이 기간이 지난 이후에는 프로포절 보증금 추가가 불가능합니다.
+  - `min_deposit`: 프로포절의 `voting period` 단계를 시작하기 위해 필요한 최소 보증금 수량입니다. 만약 다수 단위를 적용할 경우 `OR` 연산자를 사용하세요.
+  - `max_deposit_period`: 프로포절 보증금 추가가 가능한 기간 (**나노초(nanosecond)** 단위로 입력). 이 기간이 지난 이후에는 프로포절 보증금 추가가 불가능합니다.
 - `voting_params`
-    + `voting_period`: 프로포절의 투표 기간(**나노초(nanosecond)** 단위로 입력).
+  - `voting_period`: 프로포절의 투표 기간(**나노초(nanosecond)** 단위로 입력).
 - `tally_params`
-    + `quorum`: 프로포절 투표 결과가 유효하기 위한 위임된 스테이킹 토큰의 투표율.
-    + `threshold`: 프로포절 투표가 통과하기 위해 필요한 최소 `YES` 투표 %.
-    + `veto`: 프로포절 투표 결과가 유효하기 위한 `NO_WITH_VETO` 투표 %의 최대 한도.
-    + `governance_penalty`: 프로포절 투표에 참여하지 않은 검증인들에 부과하는 페널티.
+  - `quorum`: 프로포절 투표 결과가 유효하기 위한 위임된 스테이킹 토큰의 투표율.
+  - `threshold`: 프로포절 투표가 통과하기 위해 필요한 최소 `YES` 투표 %.
+  - `veto`: 프로포절 투표 결과가 유효하기 위한 `NO_WITH_VETO` 투표 %의 최대 한도.
+  - `governance_penalty`: 프로포절 투표에 참여하지 않은 검증인들에 부과하는 페널티.
 
-### 슬래싱(slashing) 
+### 슬래싱(slashing)
 
 `slashing` 모듈은 검증인의 악의적인 행동으로 발생하는 위임자 슬래싱 페널티 로직을 처리합니다.
 
@@ -312,12 +313,12 @@ gaiad add-genesis-account <계정_주소(account_address)> <수량(amount)> <단
 각 파라미터 값에 대해 알아보겠습니다:
 
 - `params`
-    + `max_evidence_age`: 증거 최대 유효기간 (**나노초(nanosecond)** 단위) 
-    + `signed_blocks_window`: 오프라인 검증인 판단을 위해 검토되는 최근 블록 개수.
-    + `min_signed_per_window`: 검증인이 온라인으로 간주되기 위해`singed_blocks_window` 내에 포함되어야하는 최소 `precommit` %.
-    + `downtime_jail_duration`: 다운 타임 슬래싱으로 발생하는 제일(jail) 기간(**나노초(nanosecond)** 단위.
-    + `slash_fraction_double_sign`: 검증인이 더블 사이닝을 할 경우 슬래싱되는 위임자 위임량의 % 단위.
-    + `slash_fraction_downtime`: 검증인이 오프라인인 경우 슬래싱되는 위임자 워임량의 % 단위.
+  - `max_evidence_age`: 증거 최대 유효기간 (**나노초(nanosecond)** 단위)
+  - `signed_blocks_window`: 오프라인 검증인 판단을 위해 검토되는 최근 블록 개수.
+  - `min_signed_per_window`: 검증인이 온라인으로 간주되기 위해`singed_blocks_window` 내에 포함되어야하는 최소 `precommit` %.
+  - `downtime_jail_duration`: 다운 타임 슬래싱으로 발생하는 제일(jail) 기간(**나노초(nanosecond)** 단위.
+  - `slash_fraction_double_sign`: 검증인이 더블 사이닝을 할 경우 슬래싱되는 위임자 위임량의 % 단위.
+  - `slash_fraction_downtime`: 검증인이 오프라인인 경우 슬래싱되는 위임자 위임량의 % 단위.
 - `signing_infos`: `slashing` 모듈이 사용하는 각 검증인의 정보. 과거 상태에서 제네시스가 생성되지 않은 경우 `{}` 값이 기본 설정입니다.
 - `missed_blocks`: `slashing` 모듈이 사용하는 missed blocks 정보. 과거 상태에서 제네시스가 생성되지 않은 경우 `{}` 값이 기본 설정입니다.
 
@@ -332,4 +333,5 @@ gaiad collect-gentxs
 ```
 
 위 명령어는 `~/.gaia/config/gentx`에 있는 모든 `gentxs`를 제네시스 파일에 추가합니다. 제네시스 트랜잭션을 생성하기 위해서는 [여기](./validators/validator-setup.md#participate-in-genesis-as-a-validator)를 확인하세요.
+
 <!-- markdown-link-check-enable -->

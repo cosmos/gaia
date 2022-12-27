@@ -29,6 +29,7 @@ git checkout v4.2.1
 ```
 
 The buildsystem supports and produces binaries for the following architectures:
+
 * **darwin/amd64**
 * **linux/amd64**
 * **linux/arm64**

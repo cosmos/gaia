@@ -10,6 +10,9 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	icacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
 	icahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
+	icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
+	ibctmtypes "github.com/cosmos/ibc-go/v3/modules/light-clients/07-tendermint/types"
 
 	"github.com/cosmos/gaia/v8/app/keepers"
 )
@@ -49,6 +52,65 @@ func FixBankMetadata(ctx sdk.Context, keepers *keepers.AppKeepers) error {
 	return nil
 }
 
+func QuicksilverFix(ctx sdk.Context, keepers *keepers.AppKeepers) error {
+	// Refund stuck coins from ica address
+	sourceAddress, err := sdk.AccAddressFromBech32("cosmos13dqvh4qtg4gzczuktgnw8gc2ewnwmhdwnctekxctyr4azz4dcyysecgq7e")
+
+	if err != nil {
+		return errors.New("invalid source address")
+	}
+	destinationAddress, err := sdk.AccAddressFromBech32("cosmos1jc24kwznud9m3mwqmcz3xw33ndjuufnghstaag")
+	if err != nil {
+		return errors.New("invalid destination address")
+	}
+
+	// Get balance from stuck address and subtract 1 uatom sent by bad actor
+	sourceBalance := keepers.BankKeeper.GetBalance(ctx, sourceAddress, "uatom")
+	refundBalance := sourceBalance.SubAmount(sdk.NewInt(1))
+	keepers.BankKeeper.SendCoins(ctx, sourceAddress, destinationAddress, sdk.NewCoins(refundBalance))
+
+	// Get connection to quicksilver chain
+	connectionId, err := getConnectionIdForChainId(ctx, keepers, "quicksilver-1")
+	if err != nil {
+		return err
+	}
+
+	// Close channels
+	closeChannel(keepers, ctx, connectionId, "icacontroller-cosmoshub-4.deposit")
+	closeChannel(keepers, ctx, connectionId, "icacontroller-cosmoshub-4.withdrawal")
+	closeChannel(keepers, ctx, connectionId, "icacontroller-cosmoshub-4.performance")
+	closeChannel(keepers, ctx, connectionId, "icacontroller-cosmoshub-4.delegate")
+
+	return nil
+}
+
+func closeChannel(keepers *keepers.AppKeepers, ctx sdk.Context, connectionId string, port string) {
+	activeChannelId, found := keepers.ICAHostKeeper.GetActiveChannelID(ctx, connectionId, port)
+	if found {
+		channel, found := keepers.IBCKeeper.ChannelKeeper.GetChannel(ctx, icatypes.PortID, activeChannelId)
+		if found {
+			channel.State = ibcchanneltypes.CLOSED
+			keepers.IBCKeeper.ChannelKeeper.SetChannel(ctx, icatypes.PortID, activeChannelId, channel)
+		}
+	}
+}
+
+func getConnectionIdForChainId(ctx sdk.Context, keepers *keepers.AppKeepers, chainId string) (string, error) {
+	connections := keepers.IBCKeeper.ConnectionKeeper.GetAllConnections(ctx)
+	for _, conn := range connections {
+		clientState, found := keepers.IBCKeeper.ClientKeeper.GetClientState(ctx, conn.ClientId)
+		if !found {
+			continue
+		}
+		client, ok := clientState.(*ibctmtypes.ClientState)
+		if ok && client.ChainId == chainId {
+			return conn.Id, nil
+		}
+	}
+
+	return "", errors.New("failed to get connection for the chain id")
+}
+
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
@@ -65,6 +127,11 @@ func CreateUpgradeHandler(
 		ctx.Logger().Info("running the rest of the upgrade handler...")
 
 		err = FixBankMetadata(ctx, keepers)
+		if err != nil {
+			return vm, err
+		}
+
+		err = QuicksilverFix(ctx, keepers)
 		if err != nil {
 			return vm, err
 		}

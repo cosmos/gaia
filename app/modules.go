@@ -171,6 +171,7 @@ func simulationModules(
 		liquidity.NewAppModule(appCodec, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.DistrKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		app.TransferModule,
+		app.ProviderModule,
 	}
 }
 

@@ -141,7 +141,7 @@ var (
 // GaiaApp extends an ABCI application, but with most of its parameters exported.
 // They are exported for convenience in creating helper functions, as object
 // capabilities aren't needed for testing.
-type GaiaApp struct { // nolint: golint
+type GaiaApp struct { //nolint:revive
 	*baseapp.BaseApp
 	legacyAmino       *codec.LegacyAmino
 	appCodec          codec.Marshaler
@@ -195,7 +195,6 @@ func NewGaiaApp(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool, skipUpgradeHeights map[int64]bool,
 	homePath string, invCheckPeriod uint, encodingConfig gaiaappparams.EncodingConfig, appOpts servertypes.AppOptions, baseAppOptions ...func(*baseapp.BaseApp),
 ) *GaiaApp {
-
 	appCodec := encodingConfig.Marshaler
 	legacyAmino := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
@@ -305,7 +304,7 @@ func NewGaiaApp(
 	/****  Module Options ****/
 
 	/****  Module Options ****/
-	var skipGenesisInvariants = false
+	skipGenesisInvariants := false
 	opt := appOpts.Get(crisis.FlagSkipGenesisInvariants)
 	if opt, ok := opt.(bool); ok {
 		skipGenesisInvariants = opt

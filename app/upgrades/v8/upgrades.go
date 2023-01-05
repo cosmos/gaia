@@ -113,7 +113,7 @@ func CreateUpgradeHandler(
 
 		err = QuicksilverFix(ctx, keepers)
 		if err != nil {
-			return vm, err
+			ctx.Logger().Error("Quicksilver migration failed")
 		}
 
 		// Enable controller chain

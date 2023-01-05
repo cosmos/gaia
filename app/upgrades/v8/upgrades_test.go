@@ -9,8 +9,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	gaiahelpers "github.com/cosmos/gaia/v8/app/helpers"
+	upgrade "github.com/cosmos/gaia/v8/app/upgrades/v8"
 	"github.com/stretchr/testify/require"
 )
 
@@ -43,12 +43,8 @@ func TestFixBankMetadata(t *testing.T) {
 	m := cdc.MustMarshal(&denomMetaData)
 	oldDenomMetaDataStore.Set([]byte(v7Key), m)
 
-	rhoUpgrade := upgradetypes.Plan{
-		Name:   "v8-Rho",
-		Info:   "some text here",
-		Height: 100,
-	}
-	app.AppKeepers.UpgradeKeeper.ApplyUpgrade(ctx, rhoUpgrade)
+	err := upgrade.FixBankMetadata(ctx, &app.AppKeepers)
+	require.NoError(t, err)
 
 	correctDenom := "uatom"
 

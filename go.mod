@@ -6,7 +6,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.45.12-0.20221116140330-9c145c827001
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/ibc-go/v3 v3.4.0
-	github.com/cosmos/interchain-security v0.2.2-0.20221226232214-aa0d35b650d7
+	github.com/cosmos/interchain-security v0.2.2-0.20230104092917-582de0746e3e
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
 	github.com/golangci/golangci-lint v1.50.1
@@ -287,7 +287,8 @@ replace (
 	github.com/confio/ics23/go => github.com/cosmos/cosmos-sdk/ics23/go v0.8.0
 
 	// enforce same SDK, Tendermint and IBC on all dependencies
-	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.12-0.20221116140330-9c145c827001
+	//github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.12-0.20221116140330-9c145c827001
+	github.com/cosmos/cosmos-sdk => /Users/lg/github.com/github/cosmos-sdk
 	github.com/cosmos/ibc-go/v3 => github.com/cosmos/ibc-go/v3 v3.4.0
 
 	// ICS

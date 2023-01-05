@@ -64,6 +64,9 @@ func QuicksilverFix(ctx sdk.Context, keepers *keepers.AppKeepers) error {
 
 	// Get balance from stuck address and subtract 1 uatom sent by bad actor
 	sourceBalance := keepers.BankKeeper.GetBalance(ctx, sourceAddress, "uatom")
+	if sourceBalance.IsZero() {
+		return errors.New("zero source balance")
+	}
 	refundBalance := sourceBalance.SubAmount(sdk.NewInt(1))
 	err = keepers.BankKeeper.SendCoins(ctx, sourceAddress, destinationAddress, sdk.NewCoins(refundBalance))
 	if err != nil {

@@ -34,7 +34,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 # Changelog
 
-## [v8.0.0] - 2023-01-06
+## [v8.0.0-rc1] - 2023-01-06
 
 * (gaia) Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v3.4.0](https://github.com/cosmos/ibc-go/blob/v3.4.0/CHANGELOG.md) to fix a vulnerability in ICA. See [v3.4.0 CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.9/CHANGELOG.md) and [v3.2.1 Release Notes](https://github.com/cosmos/ibc-go/releases/tag/v3.2.1) for details.
 * (gaia) Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.11](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.11). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/release/v0.45.x/CHANGELOG.md) for details.
@@ -468,7 +468,7 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 <!-- Release links -->
 
 [Unreleased]: https://github.com/cosmos/gaia/compare/v8.0.0...HEAD
-[v8.0.0]: https://github.com/cosmos/gaia/releases/tag/v8.0.0
+[v8.0.0-rc1]: https://github.com/cosmos/gaia/releases/tag/v8.0.0-rc1
 [v7.1.0]: https://github.com/cosmos/gaia/releases/tag/v7.1.0
 [v7.0.3]: https://github.com/cosmos/gaia/releases/tag/v7.0.3
 [v7.0.2]: https://github.com/cosmos/gaia/releases/tag/v7.0.2

@@ -64,10 +64,12 @@ func QuicksilverFix(ctx sdk.Context, keepers *keepers.AppKeepers) error {
 
 	// Get balance from stuck address and subtract 1 uatom sent by bad actor
 	sourceBalance := keepers.BankKeeper.GetBalance(ctx, sourceAddress, "uatom")
-	refundBalance := sourceBalance.SubAmount(sdk.NewInt(1))
-	err = keepers.BankKeeper.SendCoins(ctx, sourceAddress, destinationAddress, sdk.NewCoins(refundBalance))
-	if err != nil {
-		return errors.New("unable to refund coins")
+	if sourceBalance.IsGTE(sdk.NewCoin("uatom", sdk.NewInt(1))) {
+		refundBalance := sourceBalance.SubAmount(sdk.NewInt(1))
+		err = keepers.BankKeeper.SendCoins(ctx, sourceAddress, destinationAddress, sdk.NewCoins(refundBalance))
+		if err != nil {
+			return errors.New("unable to refund coins")
+		}
 	}
 
 	// Close channels

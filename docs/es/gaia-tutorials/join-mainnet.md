@@ -33,6 +33,7 @@ Puede editar el apodo (`moniker`) después, en el archivo `~/.gaia/config/config
 # A custom human readable name for this node
 moniker = "<tu nombre personalizado>"
 ```
+
 Puede editar el archivo `~/.gaia/config/app.toml` para activar el mecanismo antispam y rechazar las transacciones entrantes con valores inferiores a los precios mínimos para el _gas_:
 
 ```
@@ -95,7 +96,7 @@ Las transacciones en la red del Hub de Cosmos deben incluir una tarifa de transa
 tarifa = techo(gas * precioPorGas)
 ```
 
-El `gas` depende de la transacción. Diferentes transacciones requieren diferentes cantidades de `gas`. La cantidad de `gas` para una transacción se calcula mientras se procesa, pero hay una forma previa de estimarla usando el valor `auto` para el indicador de `gas`. Por supuesto, esto sólo da una estimación. Puede ajustar esta estimación con el identificador `--gas-adjustment` (por defecto `1.0`) si quiere estar seguro de que proporciona suficiente `gas` para la transacción. 
+El `gas` depende de la transacción. Diferentes transacciones requieren diferentes cantidades de `gas`. La cantidad de `gas` para una transacción se calcula mientras se procesa, pero hay una forma previa de estimarla usando el valor `auto` para el indicador de `gas`. Por supuesto, esto sólo da una estimación. Puede ajustar esta estimación con el identificador `--gas-adjustment` (por defecto `1.0`) si quiere estar seguro de que proporciona suficiente `gas` para la transacción.
 
 El `gasPrice` (i.e `precioPorGas`) es el precio de cada unidad de `gas`. Cada validador establece un valor de `min-gas-price`, y sólo incluirá transacciones que tengan un `gasPrice` mayor que su `min-gas-price`.
 

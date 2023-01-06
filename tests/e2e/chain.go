@@ -23,8 +23,8 @@ const (
 
 var (
 	encodingConfig params.EncodingConfig
-	cdc            codec.Codec     //nolint:unused // this is called during e2e tests
-	txConfig       client.TxConfig //nolint:unused // this is called during e2e tests
+	cdc            codec.Codec
+	txConfig       client.TxConfig
 )
 
 func init() {
@@ -36,12 +36,11 @@ func init() {
 	txConfig = encodingConfig.TxConfig
 }
 
-// this is called only by test files
 type chain struct {
 	dataDir    string
 	id         string
 	validators []*validator
-	accounts   []*account
+	accounts   []*account //nolint:unused
 	// initial accounts in genesis
 	genesisAccounts        []*account
 	genesisVestingAccounts map[string]sdk.AccAddress
@@ -89,7 +88,7 @@ func (c *chain) createAndInitValidators(count int) error {
 	return nil
 }
 
-func (c *chain) createAndInitValidatorsWithMnemonics(count int, mnemonics []string) error {
+func (c *chain) createAndInitValidatorsWithMnemonics(count int, mnemonics []string) error { //nolint:unused // this is called during e2e tests
 	for i := 0; i < count; i++ {
 		// create node
 		node := c.createValidator(i)

@@ -2,7 +2,6 @@ package e2e
 
 import (
 	"context"
-	b64 "encoding/base64"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -13,8 +12,6 @@ import (
 	"testing"
 	"time"
 
-	"cosmossdk.io/math"
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
@@ -22,20 +19,15 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
-	gov "github.com/cosmos/cosmos-sdk/x/gov/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
-	"github.com/cosmos/cosmos-sdk/x/group"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
-	ibcchanneltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
+	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/spf13/viper"
@@ -66,27 +58,22 @@ const (
 	gas                          = 200000
 	govProposalBlockBuffer       = 35
 	relayerAccountIndex          = 0
-	icaOwnerAccountIndex         = 1
 	numberOfEvidences            = 10
 	slashingShares         int64 = 10000
+
+	proposalGlobalFeeFilename      = "proposal_globalfee.json"
+	proposalCommunitySpendFilename = "proposal_community_spend.json"
 )
 
 var (
-	gaiaConfigPath             = filepath.Join(gaiaHomePath, "config")
-	stakingAmount              = math.NewInt(100000000000)
-	stakingAmountCoin          = sdk.NewCoin(uatomDenom, stakingAmount)
-	tokenAmount                = sdk.NewCoin(uatomDenom, math.NewInt(3300000000)) // 3,300uatom
-	standardFees               = sdk.NewCoin(uatomDenom, math.NewInt(330000))     // 0.33uatom
-	depositAmount              = sdk.NewCoin(uatomDenom, math.NewInt(10000000))   // 10uatom
-	distModuleAddress          = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
-	govModuleAddress           = authtypes.NewModuleAddress(gov.ModuleName).String()
-	proposalCounter            = 0
-	govSendMsgRecipientAddress = Address()
-	sendGovAmount              = sdk.NewInt64Coin(uatomDenom, 10)
-	proposalSendMsg            = &govtypes.MsgSubmitProposal{
-		InitialDeposit: sdk.Coins{depositAmount},
-		Metadata:       b64.StdEncoding.EncodeToString([]byte("Testing 1, 2, 3!")),
-	}
+	gaiaConfigPath    = filepath.Join(gaiaHomePath, "config")
+	stakingAmount     = sdk.NewInt(100000000000)
+	stakingAmountCoin = sdk.NewCoin(uatomDenom, stakingAmount)
+	tokenAmount       = sdk.NewCoin(uatomDenom, sdk.NewInt(3300000000)) // 3,300uatom
+	standardFees      = sdk.NewCoin(uatomDenom, sdk.NewInt(330000))     // 0.33uatom
+	depositAmount     = sdk.NewCoin(uatomDenom, sdk.NewInt(10000000))   // 10uatom
+	distModuleAddress = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
+	proposalCounter   = 0
 )
 
 type IntegrationTestSuite struct {
@@ -160,7 +147,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
-
 	if str := os.Getenv("GAIA_E2E_SKIP_CLEANUP"); len(str) > 0 {
 		skipCleanup, err := strconv.ParseBool(str)
 		s.Require().NoError(err)
@@ -203,14 +189,12 @@ func (s *IntegrationTestSuite) initNodes(c *chain) {
 	val0ConfigDir := c.validators[0].configDir()
 	var addrAll []sdk.AccAddress
 	for _, val := range c.validators {
-		address, err := val.keyInfo.GetAddress()
-		s.Require().NoError(err)
+		address := val.keyInfo.GetAddress()
 		addrAll = append(addrAll, address)
 	}
 
 	for _, addr := range c.genesisAccounts {
-		acctAddr, err := addr.keyInfo.GetAddress()
-		s.Require().NoError(err)
+		acctAddr := addr.keyInfo.GetAddress()
 		addrAll = append(addrAll, acctAddr)
 	}
 
@@ -242,7 +226,7 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 	)
 
 	// create genesis vesting accounts keys
-	kb, err := keyring.New(keyringAppName, keyring.BackendTest, valConfigDir, nil, cdc)
+	kb, err := keyring.New(keyringAppName, keyring.BackendTest, valConfigDir, nil)
 	s.Require().NoError(err)
 
 	keyringAlgos, _ := kb.SupportedAlgorithms()
@@ -259,8 +243,7 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 		// Use the first wallet from the same mnemonic by HD path
 		acc, err := kb.NewAccount(key, vestingMnemonic, "", HDPath(i), algo)
 		s.Require().NoError(err)
-		c.genesisVestingAccounts[key], err = acc.GetAddress()
-		s.Require().NoError(err)
+		c.genesisVestingAccounts[key] = acc.GetAddress()
 		s.T().Logf("created %s genesis account %s\n", key, c.genesisVestingAccounts[key].String())
 	}
 	var (
@@ -269,10 +252,8 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 	)
 
 	// add jailed validator to staking store
-	pubKey, err := jailedValKey.GetPubKey()
-	s.Require().NoError(err)
-	jailedValAcc, err := jailedValKey.GetAddress()
-	s.Require().NoError(err)
+	pubKey := jailedValKey.GetPubKey()
+	jailedValAcc := jailedValKey.GetAddress()
 	jailedValAddr := sdk.ValAddress(jailedValAcc)
 	val, err := stakingtypes.NewValidator(
 		jailedValAddr,
@@ -352,7 +333,7 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 	}
 	stakingModuleBalances := banktypes.Balance{
 		Address: authtypes.NewModuleAddress(stakingtypes.NotBondedPoolName).String(),
-		Coins:   sdk.NewCoins(sdk.NewCoin(uatomDenom, math.NewInt(slashingShares))),
+		Coins:   sdk.NewCoins(sdk.NewCoin(uatomDenom, sdk.NewInt(slashingShares))),
 	}
 	bankGenState.Balances = append(
 		bankGenState.Balances,
@@ -560,7 +541,7 @@ func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 			Repository: "cosmos/gaiad-e2e",
 		}
 
-		s.Require().NoError(exec.Command("chmod", "-R", "0777", val.configDir()).Run())
+		s.Require().NoError(exec.Command("chmod", "-R", "0777", val.configDir()).Run()) //nolint:gosec // this is a test
 
 		// expose the first validator for debugging and communication
 		if val.index == 0 {
@@ -618,96 +599,6 @@ func noRestart(config *docker.HostConfig) {
 	}
 }
 
-func (s *IntegrationTestSuite) writeGovProposals(c *chain) {
-	bankSendMsg := &banktypes.MsgSend{
-		FromAddress: govModuleAddress,
-		ToAddress:   govSendMsgRecipientAddress,
-		Amount:      []sdk.Coin{sendGovAmount},
-	}
-
-	msgs := []sdk.Msg{bankSendMsg}
-	protoMsgs, err := txtypes.SetMsgs(msgs)
-	s.Require().NoError(err)
-	proposalSendMsg.Messages = protoMsgs
-	sendMsgBody, err := cdc.MarshalJSON(proposalSendMsg)
-	s.Require().NoError(err)
-
-	proposalCommSpend := &distrtypes.CommunityPoolSpendProposalWithDeposit{
-		Title:       "Community Pool Spend",
-		Description: "Fund Gov !",
-		Recipient:   govModuleAddress,
-		Amount:      "1000uatom",
-		Deposit:     "5000uatom",
-	}
-	commSpendBody, err := json.MarshalIndent(proposalCommSpend, "", " ")
-	s.Require().NoError(err)
-
-	for _, val := range c.validators {
-		err = writeFile(filepath.Join(val.configDir(), "config", "proposal.json"), commSpendBody)
-		s.Require().NoError(err)
-
-		err = writeFile(filepath.Join(val.configDir(), "config", "proposal_2.json"), sendMsgBody)
-		s.Require().NoError(err)
-	}
-}
-
-func (s *IntegrationTestSuite) writeGovUpgradeSoftwareProposal(c *chain, height int) {
-	upgradePlan := &upgradetypes.Plan{
-		Name:   "upgrade-1",
-		Height: int64(height),
-		Info:   "binary-1",
-	}
-
-	upgradeProp := &upgradetypes.MsgSoftwareUpgrade{
-		Authority: govModuleAddress,
-		Plan:      *upgradePlan,
-	}
-
-	msgs := []sdk.Msg{upgradeProp}
-	protoMsgs, err := txtypes.SetMsgs(msgs)
-	s.Require().NoError(err)
-	proposalSendMsg.Messages = protoMsgs
-	upgradeProposalBody, err := cdc.MarshalJSON(proposalSendMsg)
-	s.Require().NoError(err)
-
-	path := filepath.Join(c.validators[0].configDir(), "config", "proposal_3.json")
-	err = writeFile(path, upgradeProposalBody)
-	s.Require().NoError(err)
-	fmt.Println("saved proposal_3.json to ", path)
-}
-
-func (s *IntegrationTestSuite) writeGovCancelUpgradeSoftwareProposal(c *chain) {
-	cancelUpgradeProp := &upgradetypes.MsgCancelUpgrade{
-		Authority: govModuleAddress,
-	}
-	protoMsgs, err := txtypes.SetMsgs([]sdk.Msg{cancelUpgradeProp})
-	s.Require().NoError(err)
-	proposalSendMsg.Messages = protoMsgs
-	cancelUpgradeProposalBody, err := cdc.MarshalJSON(proposalSendMsg)
-	s.Require().NoError(err)
-
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_4.json"), cancelUpgradeProposalBody)
-	s.Require().NoError(err)
-}
-
-func (s *IntegrationTestSuite) writeGroupMembers(c *chain, groupMembers []group.MemberRequest, filename string) {
-	members := &group.MsgCreateGroup{
-		Members: groupMembers,
-	}
-
-	membersBody, err := cdc.MarshalJSON(members)
-	s.Require().NoError(err)
-
-	s.writeFile(c, filename, membersBody)
-}
-
-func (s *IntegrationTestSuite) writeFile(c *chain, filename string, body []byte) {
-	for _, val := range c.validators {
-		err := writeFile(filepath.Join(val.configDir(), "config", filename), body)
-		s.Require().NoError(err)
-	}
-}
-
 func (s *IntegrationTestSuite) writeGovParamChangeProposalGlobalFees(c *chain, coins sdk.DecCoins) {
 	type ParamInfo struct {
 		Subspace string       `json:"subspace"`
@@ -736,39 +627,26 @@ func (s *IntegrationTestSuite) writeGovParamChangeProposalGlobalFees(c *chain, c
 	}, "", " ")
 	s.Require().NoError(err)
 
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", "proposal_globalfee.json"), paramChangeProposalBody)
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalGlobalFeeFilename), paramChangeProposalBody)
 	s.Require().NoError(err)
 }
 
-func (s *IntegrationTestSuite) writeICAtx(cmd []string, path string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-
-	cmd = append(cmd, fmt.Sprintf("--%s=%s", flags.FlagGenerateOnly, "true"))
-	s.T().Logf("dry run: ica tx %s", strings.Join(cmd, " "))
-
-	type txResponse struct {
-		Body struct {
-			Messages []map[string]interface{}
-		}
+func (s *IntegrationTestSuite) writeGovCommunitySpendProposal(c *chain, amount string, recipient string) {
+	proposalCommSpend := &distrtypes.CommunityPoolSpendProposalWithDeposit{
+		Title:       "Community Pool Spend",
+		Description: "Fund Team!",
+		Recipient:   recipient,
+		Amount:      amount,
+		Deposit:     "100uatom",
 	}
+	commSpendBody, err := json.MarshalIndent(proposalCommSpend, "", " ")
+	s.Require().NoError(err)
 
-	s.executeGaiaTxCommand(ctx, s.chainA, cmd, 0, func(stdOut []byte, stdErr []byte) bool {
-		var txResp txResponse
-		s.Require().NoError(json.Unmarshal(stdOut, &txResp))
-		b, err := json.MarshalIndent(txResp.Body.Messages[0], "", " ")
-		s.Require().NoError(err)
-
-		err = writeFile(path, b)
-		s.Require().NoError(err)
-		return true
-	})
-
-	s.T().Logf("write ica transaction json to %s", path)
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalCommunitySpendFilename), commSpendBody)
+	s.Require().NoError(err)
 }
 
 func configFile(filename string) string {
 	filepath := filepath.Join(gaiaConfigPath, filename)
-	fmt.Println("retrieving filepath ", filepath)
 	return filepath
 }

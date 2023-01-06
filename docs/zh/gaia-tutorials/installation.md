@@ -35,8 +35,8 @@ cd gaia && make install
 等`gaiad`和`gaiad`可执行程序安装完之后，请检查:
 
 ```bash
-$ gaiad version --long
-$ gaiad version --long
+gaiad version --long
+gaiad version --long
 ```
 
 `gaiad`的返回应该类似于：

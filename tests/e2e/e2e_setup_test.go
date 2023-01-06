@@ -213,11 +213,11 @@ func (s *IntegrationTestSuite) initNodes(c *chain) {
 
 // TODO find a better way to manipulate accounts to add genesis accounts
 func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
-		c *chain,
-		valConfigDir,
-		vestingMnemonic,
-		jailedValMnemonic string,
-		appGenState map[string]json.RawMessage,
+	c *chain,
+	valConfigDir,
+	vestingMnemonic,
+	jailedValMnemonic string,
+	appGenState map[string]json.RawMessage,
 ) map[string]json.RawMessage {
 	var (
 		authGenState    = authtypes.GetGenesisStateFromAppState(cdc, appGenState)

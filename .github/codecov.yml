@@ -27,4 +27,4 @@ ignore:
   - "docs"
   - "proto"
   - "tests/e2e"
-  - "**/sim_*.go"
+  - "app/sim/sim_*.go"

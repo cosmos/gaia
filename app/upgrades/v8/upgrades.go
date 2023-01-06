@@ -8,7 +8,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	icacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
 	icahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
 
 	"github.com/cosmos/gaia/v8/app/keepers"
@@ -69,11 +68,6 @@ func CreateUpgradeHandler(
 			return vm, err
 		}
 
-		// Enable controller chain
-		controllerParams := icacontrollertypes.Params{
-			ControllerEnabled: true,
-		}
-
 		// Change hostParams allow_messages = [*] instead of whitelisting individual messages
 		hostParams := icahosttypes.Params{
 			HostEnabled:   true,
@@ -82,7 +76,6 @@ func CreateUpgradeHandler(
 
 		// Update params for host & controller keepers
 		keepers.ICAHostKeeper.SetParams(ctx, hostParams)
-		keepers.ICAControllerKeeper.SetParams(ctx, controllerParams)
 
 		ctx.Logger().Info("upgrade complete")
 

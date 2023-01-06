@@ -27,3 +27,4 @@ ignore:
   - "docs"
   - "proto"
   - "tests/e2e"
+  - "app/sim"

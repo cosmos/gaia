@@ -3,11 +3,12 @@ package sim
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/cosmos/gaia/v8/app"
 	"io"
 	"math/rand"
 	"os"
 	"time"
+
+	"github.com/cosmos/gaia/v8/app"
 
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	tmtypes "github.com/tendermint/tendermint/types"

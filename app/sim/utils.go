@@ -3,8 +3,9 @@ package sim
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/cosmos/gaia/v8/app"
 	"os"
+
+	"github.com/cosmos/gaia/v8/app"
 
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"

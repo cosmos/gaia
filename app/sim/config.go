@@ -2,6 +2,7 @@ package sim
 
 import (
 	"flag"
+
 	"github.com/cosmos/cosmos-sdk/types/simulation"
 )
 

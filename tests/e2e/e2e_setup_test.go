@@ -58,7 +58,6 @@ const (
 	gas                          = 200000
 	govProposalBlockBuffer       = 35
 	relayerAccountIndex          = 0
-	icaOwnerAccountIndex         = 1
 	numberOfEvidences            = 10
 	slashingShares         int64 = 10000
 

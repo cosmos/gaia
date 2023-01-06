@@ -36,23 +36,6 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
-<<<<<<< HEAD
-
-## [v8.0.0] - 2022-10-31
-* (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.46.4](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.46.4). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.46.4/CHANGELOG.md) for details.
-* (gaia) [#1573](https://github.com/cosmos/gaia/issues/1573), [#1576](https://github.com/cosmos/gaia/issues/1576) update [cosmos ledger](https://github.com/cosmos/ledger-go) version to [v.0.9.3](https://github.com/cosmos/ledger-go/releases/tag/v0.9.3).
-* (gaia) bump [Liquidity](https://github.com/Gravity-Devs/liquidity) module to [v2.0.1](https://github.com/Gravity-Devs/liquidity/releases/tag/v2.0.1).
-* (gaia) bump [ibc-go](https://github.com/cosmos/ibc-go) module to [v5.0.1](https://github.com/cosmos/ibc-go/releases/tag/v5.0.1). See [CHANGELOG.md](https://github.com/cosmos/ibc-go/blob/v5.0.1/CHANGELOG.md) for details.
-* (gaia) bump [packet-forwarding-middleware](https://github.com/strangelove-ventures/packet-forward-middleware) to depend on ibc-go v5.
-* (feat) add [Groups](https://docs.cosmos.network/main/modules/grthaoup/#group-module) module.
-* (feat) add [icamauch](https://github.com/cosmos/gaia/tree/main/x/icamauth) (Interchain Account Message Authorization) module.
-* (feat) add [globalfee](https://github.com/cosmos/gaia/tree/main/x/globalfee) module.
-* (feat) replace `MempoolFeeDecorator` with [FeeDecorator](https://github.com/cosmos/gaia/blob/main/x/globalfee/ante/fee.go) to check fees.
-* (tests) add [E2E tests](https://github.com/cosmos/gaia/tree/main/tests/e2e) The tests cover transactions/queries tests of different modules, including Bank,
-  Distribution, Encode, Evidence, FeeGrant Global Fee, Legacy Gov, New Gov, Groups,
-  IBC, ICA, packet forwarding middleware, Slashing, Staking, and Vesting module.
-* (tests) use gaiad to swap out [Ignite](https://github.com/ignite/cli) in [liveness tests](https://github.com/cosmos/gaia/blob/main/.github/workflows/test.yml).
-=======
 ## [v8.0.0-rc1] - 2023-01-06
 
 * (gaia) Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v3.4.0](https://github.com/cosmos/ibc-go/blob/v3.4.0/CHANGELOG.md) to fix a vulnerability in ICA. See [v3.4.0 CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.9/CHANGELOG.md) and [v3.2.1 Release Notes](https://github.com/cosmos/ibc-go/releases/tag/v3.2.1) for details.
@@ -78,7 +61,6 @@ Ref: https://keepachangelog.com/en/1.0.0/
 * (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.6](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.6). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.6/CHANGELOG.md) for details.
 * (gaia) bump [Liquidity](https://github.com/Gravity-Devs/liquidity) module to [v1.5.1](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.5.1).
 * (gaia) bump [cosmos ledger](https://github.com/cosmos/ledger-go) to [v0.9.3](https://github.com/cosmos/ledger-go/releases/tag/v0.9.3) to fix issue [#1573](https://github.com/cosmos/gaia/issues/1573) - Ledger Nano S Plus not detected by gaiad.
->>>>>>> 2da9182 (preparing for v8.0.0-rc1 release (#1994))
 
 ## [v7.1.0] -2022-10-14
 * (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.9](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.9) to fix the security vulnerability! See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.9/CHANGELOG.md) for details.

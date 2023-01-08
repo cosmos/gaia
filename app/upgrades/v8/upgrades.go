@@ -2,6 +2,7 @@ package v8
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -21,6 +22,10 @@ func FixBankMetadata(ctx sdk.Context, keepers *keepers.AppKeepers) error {
 
 	atomMetaData, foundMalformed := keepers.BankKeeper.GetDenomMetaData(ctx, malformedDenom)
 	if foundMalformed {
+
+		ctx.Logger().Info(fmt.Sprintf("Malformed metadata found: %t", foundMalformed))
+		ctx.Logger().Info(fmt.Sprintf("Atom metadata: %s", atomMetaData.String()))
+
 		// save it with the correct denom
 		keepers.BankKeeper.SetDenomMetaData(ctx, atomMetaData)
 
@@ -39,6 +44,9 @@ func FixBankMetadata(ctx sdk.Context, keepers *keepers.AppKeepers) error {
 
 	// proceed with the original intention of populating the missing Name and Symbol fields
 	atomMetaData, foundCorrect := keepers.BankKeeper.GetDenomMetaData(ctx, correctDenom)
+	ctx.Logger().Info(fmt.Sprintf("Found correct: %t", foundCorrect))
+	ctx.Logger().Info(fmt.Sprintf("Atom metadata: %s", atomMetaData.String()))
+
 	if !foundCorrect {
 		return errors.New("atom denom not found")
 	}
@@ -97,23 +105,19 @@ func CreateUpgradeHandler(
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("start to run module migrations...")
 
-		vm, err := mm.RunMigrations(ctx, configurator, vm)
+		ctx.Logger().Info("running fix-bank-metadata")
+		err := FixBankMetadata(ctx, keepers)
 		if err != nil {
 			return vm, err
 		}
 
-		ctx.Logger().Info("running the rest of the upgrade handler...")
-
-		err = FixBankMetadata(ctx, keepers)
-		if err != nil {
-			return vm, err
-		}
-
+		ctx.Logger().Info("running fix-quicksilver")
 		err = QuicksilverFix(ctx, keepers)
 		if err != nil {
 			return vm, err
 		}
 
+		ctx.Logger().Info("update ICA params")
 		// Change hostParams allow_messages = [*] instead of whitelisting individual messages
 		hostParams := icahosttypes.Params{
 			HostEnabled:   true,
@@ -122,6 +126,14 @@ func CreateUpgradeHandler(
 
 		// Update params for host & controller keepers
 		keepers.ICAHostKeeper.SetParams(ctx, hostParams)
+
+		ctx.Logger().Info("running the rest of the upgrade handler...")
+
+		vm, err = mm.RunMigrations(ctx, configurator, vm)
+		if err != nil {
+			ctx.Logger().Info("error occurred migrating modules")
+			return vm, err
+		}
 
 		ctx.Logger().Info("upgrade complete")
 

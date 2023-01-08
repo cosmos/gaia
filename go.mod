@@ -3,10 +3,10 @@ module github.com/cosmos/gaia/v8
 go 1.18
 
 require (
-	github.com/cosmos/cosmos-sdk v0.45.12-0.20221116140330-9c145c827001
+	github.com/cosmos/cosmos-sdk v0.45.11
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/ibc-go/v3 v3.4.0
-	github.com/cosmos/interchain-security v0.2.2-0.20230104092917-582de0746e3e
+	github.com/cosmos/interchain-security v0.2.2-0.20230108195201-bb542f70f043
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
 	github.com/golangci/golangci-lint v1.50.1
@@ -291,7 +291,7 @@ replace (
 	github.com/cosmos/ibc-go/v3 => github.com/cosmos/ibc-go/v3 v3.4.0
 
 	// ICS
-	github.com/cosmos/interchain-security => github.com/cosmos/interchain-security v0.2.2-0.20221226232214-aa0d35b650d7
+	github.com/cosmos/interchain-security => github.com/cosmos/interchain-security v0.2.2-0.20230108195201-bb542f70f043
 
 	// use cosmos style protobufs
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1

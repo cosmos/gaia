@@ -56,7 +56,7 @@ import (
 	porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
 	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
-	ibcstakinginterface "github.com/cosmos/interchain-security/ibc/core"
+	ibcstakinginterface "github.com/cosmos/interchain-security/legacy_ibc_testing/core"
 	ibcprovider "github.com/cosmos/interchain-security/x/ccv/provider"
 	ibcproviderkeeper "github.com/cosmos/interchain-security/x/ccv/provider/keeper"
 	liquiditykeeper "github.com/gravity-devs/liquidity/x/liquidity/keeper"

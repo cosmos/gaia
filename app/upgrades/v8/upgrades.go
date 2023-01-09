@@ -108,12 +108,13 @@ func CreateUpgradeHandler(
 		ctx.Logger().Info("running fix-bank-metadata")
 		err := FixBankMetadata(ctx, keepers)
 		if err != nil {
-			return vm, err
+			ctx.Logger().Info(fmt.Sprintf("Error fix-bank-metadata: %s", err.Error()))
 		}
 
 		ctx.Logger().Info("running fix-quicksilver")
 		err = QuicksilverFix(ctx, keepers)
 		if err != nil {
+			ctx.Logger().Info(fmt.Sprintf("Error fix-bank-metadata: %s", err.Error()))
 			return vm, err
 		}
 

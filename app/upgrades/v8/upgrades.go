@@ -2,6 +2,7 @@ package v8
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -106,11 +107,12 @@ func CreateUpgradeHandler(
 
 		err = FixBankMetadata(ctx, keepers)
 		if err != nil {
-			return vm, err
+			ctx.Logger().Info(fmt.Sprintf("Error fix-bank-metadata: %s", err.Error()))
 		}
 
 		err = QuicksilverFix(ctx, keepers)
 		if err != nil {
+			ctx.Logger().Info(fmt.Sprintf("Error fix-quicksilver: %s", err.Error()))
 			return vm, err
 		}
 

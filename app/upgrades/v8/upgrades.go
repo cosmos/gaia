@@ -2,6 +2,7 @@ package v8
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -22,6 +23,7 @@ func FixBankMetadata(ctx sdk.Context, keepers *keepers.AppKeepers) error {
 	atomMetaData, foundMalformed := keepers.BankKeeper.GetDenomMetaData(ctx, malformedDenom)
 	if foundMalformed {
 		// save it with the correct denom
+		ctx.Logger().Info(fmt.Sprintf("malformed denom: %s is found", malformedDenom)
 		keepers.BankKeeper.SetDenomMetaData(ctx, atomMetaData)
 
 		// delete the old format
@@ -40,7 +42,7 @@ func FixBankMetadata(ctx sdk.Context, keepers *keepers.AppKeepers) error {
 	// proceed with the original intention of populating the missing Name and Symbol fields
 	atomMetaData, foundCorrect := keepers.BankKeeper.GetDenomMetaData(ctx, correctDenom)
 	if !foundCorrect {
-		return errors.New("atom denom not found")
+		return errors.New(fmt.Sprintf("denom %s not found", correctDenom))
 	}
 
 	atomMetaData.Name = "Cosmos Hub Atom"
@@ -120,7 +122,7 @@ func CreateUpgradeHandler(
 			AllowMessages: []string{"*"},
 		}
 
-		// Update params for host & controller keepers
+		// Update params for ica host
 		keepers.ICAHostKeeper.SetParams(ctx, hostParams)
 
 		ctx.Logger().Info("upgrade complete")

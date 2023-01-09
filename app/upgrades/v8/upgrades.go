@@ -2,6 +2,7 @@ package v8
 
 import (
 	"errors"
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -96,7 +97,7 @@ func CreateUpgradeHandler(
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("check version map pre upgrade")
 		for k, v := range vm {
-			ctx.Logger().Info(k, v)
+			ctx.Logger().Info(fmt.Sprintf("Key: %s, Val: %d", k, v))
 		}
 
 		ctx.Logger().Info("start to run module migrations...")
@@ -132,9 +133,9 @@ func CreateUpgradeHandler(
 
 		ctx.Logger().Info("check version map post upgrade")
 		for k, v := range vm {
-			ctx.Logger().Info(k, v)
+			ctx.Logger().Info(fmt.Sprintf("Key: %s, Val: %d", k, v))
 		}
-		
+
 		return vm, err
 	}
 }

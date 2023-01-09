@@ -94,7 +94,7 @@ func CreateUpgradeHandler(
 	keepers *keepers.AppKeepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-		ctx.Logger().Info("check version map")
+		ctx.Logger().Info("check version map pre upgrade")
 		for k, v := range vm {
 			ctx.Logger().Info(k, v)
 		}
@@ -130,6 +130,11 @@ func CreateUpgradeHandler(
 
 		ctx.Logger().Info("upgrade complete")
 
+		ctx.Logger().Info("check version map post upgrade")
+		for k, v := range vm {
+			ctx.Logger().Info(k, v)
+		}
+		
 		return vm, err
 	}
 }

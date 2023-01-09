@@ -3,7 +3,7 @@ set -eux
 # your gaiad binary name
 BIN=althea
 
-CHAIN_ID="gravity-test"
+CHAIN_ID="althea-test-1"
 
 NODES=$1
 

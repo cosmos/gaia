@@ -38,6 +38,9 @@ linters:
 
 issues:
   exclude-rules:
+    - text: "leading space"
+      linters:
+        - nolintlint
     - text: "Use of weak random number generator"
       linters:
         - gosec

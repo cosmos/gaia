@@ -23,10 +23,12 @@ func (wad WrappedAnteHandler) AnteHandle(
 	tx sdk.Tx, simulate bool,
 	next sdk.AnteHandler,
 ) (newCtx sdk.Context, err error) {
+	ctx.Logger().Info("Enter WAD AnteHandle", "tx", tx)
 	modCtx, ok := wad.anteHandler(ctx, tx, simulate)
 	if ok != nil {
 		return modCtx, err
 	}
+	ctx.Logger().Info("After WAD wrapped antehandler", "tx", tx)
 	return next(modCtx, tx, simulate)
 }
 
@@ -56,7 +58,7 @@ func (lad LockAnteDecorator) AnteHandle(
 	simulate bool,
 	next sdk.AnteHandler,
 ) (newCtx sdk.Context, err error) {
-	ctx.Logger().Info("Enter AnteHandle", "tx", tx)
+	ctx.Logger().Info("Enter LAD AnteHandle", "tx", tx)
 	if lad.lockupKeeper.GetChainLocked(ctx) {
 		lockedMsgTypesSet := lad.lockupKeeper.GetLockedMessageTypesSet(ctx)
 		exemptSet := lad.lockupKeeper.GetLockExemptAddressesSet(ctx)

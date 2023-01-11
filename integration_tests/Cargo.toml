@@ -1,0 +1,3 @@
+[workspace]
+members = ["proto_build", "test_runner", "althea_proto"]
+default-members = ["test_runner"]

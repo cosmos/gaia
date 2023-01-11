@@ -33,8 +33,6 @@ pub async fn main() {
 
     // keys for the primary test chain
     let keys = get_keys();
-    // keys for the IBC chain connected to the main test chain
-    let (_ibc_keys, ibc_phrases) = parse_ibc_validator_keys();
 
     // assert that the validators have a balance of the footoken we use
     // for test transfers

@@ -46,15 +46,16 @@ async fn fund_lock_exempt_user(
         denom: STAKING_TOKEN.clone(),
         amount: one_atom() * 100u16.into(),
     };
-    send_funds_bulk(
-        contact,
-        sender,
-        &[lock_exempt.cosmos_address],
-        amount,
-        Some(OPERATION_TIMEOUT),
-    )
-    .await
-    .expect("Unable to send funds to lock exempt user!");
+    contact
+        .send_coins(
+            amount.clone(),
+            Some(amount),
+            lock_exempt.cosmos_address,
+            Some(OPERATION_TIMEOUT),
+            sender,
+        )
+        .await
+        .expect("Unable to send funds to lock exempt user!");
 }
 
 pub async fn lockup_the_chain(

@@ -34,10 +34,3 @@ LOG_LEVEL="--log_level error"
 ARGS="$GAIA_HOME $LISTEN_ADDRESS $RPC_ADDRESS $GRPC_ADDRESS $LOG_LEVEL $P2P_ADDRESS"
 $BIN $ARGS start > /validator$i/logs &
 done
-
-# let the cosmos chain settle before starting eth as it
-# consumes a lot of processing power
-sleep 10
-
-bash /althea/tests/container-scripts/run-eth.sh &
-sleep 10

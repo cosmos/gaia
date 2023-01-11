@@ -6,8 +6,7 @@ TEST_TYPE=$2
 set -eux
 
 # Stop any currently running peggy and eth processes
-pkill peggyd || true # allowed to fail
-pkill geth || true # allowed to fail
+pkill althea || true # allowed to fail
 
 # Wipe filesystem changes
 for i in $(seq 1 $NODES);

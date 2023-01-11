@@ -48,7 +48,6 @@ pub async fn main() {
         .unwrap()
         .is_some());
 
-    start_ibc_relayer(&contact, &keys, &ibc_phrases).await;
     let test_type = env::var("TEST_TYPE");
 
     info!("Starting tests with {:?}", test_type);

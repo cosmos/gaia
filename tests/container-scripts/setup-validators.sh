@@ -37,18 +37,13 @@ GAIA_HOME="--home /validator$i"
 GENTX_HOME="--home-client /validator$i"
 ARGS="$GAIA_HOME --keyring-backend test"
 
-# Generate a validator key, orchestrator key, and eth key for each validator
 $BIN keys add $ARGS validator$i 2>> /validator-phrases
-$BIN keys add $ARGS orchestrator$i 2>> /orchestrator-phrases
-$BIN eth_keys add >> /validator-eth-keys
 
 VALIDATOR_KEY=$($BIN keys show validator$i -a $ARGS)
-ORCHESTRATOR_KEY=$($BIN keys show orchestrator$i -a $ARGS)
 # move the genesis in
 mkdir -p /validator$i/config/
 mv /genesis.json /validator$i/config/genesis.json
 $BIN add-genesis-account $ARGS $VALIDATOR_KEY $ALLOCATION
-$BIN add-genesis-account $ARGS $ORCHESTRATOR_KEY $ALLOCATION
 # move the genesis back out
 mv /validator$i/config/genesis.json /genesis.json
 done
@@ -59,12 +54,10 @@ do
 cp /genesis.json /validator$i/config/genesis.json
 GAIA_HOME="--home /validator$i"
 ARGS="$GAIA_HOME --keyring-backend test"
-ORCHESTRATOR_KEY=$($BIN keys show orchestrator$i -a $ARGS)
-ETHEREUM_KEY=$(grep address /validator-eth-keys | sed -n "$i"p | sed 's/.*://')
 # the /8 containing 7.7.7.7 is assigned to the DOD and never routable on the public internet
 # we're using it in private to prevent gaia from blacklisting it as unroutable
 # and allow local pex
-$BIN gentx $ARGS $GAIA_HOME --moniker validator$i --chain-id=$CHAIN_ID --ip 7.7.7.$i validator$i 500000000ualtg $ETHEREUM_KEY $ORCHESTRATOR_KEY
+$BIN gentx $ARGS $GAIA_HOME --moniker validator$i --chain-id=$CHAIN_ID --ip 7.7.7.$i validator$i 500000000ualtg
 # obviously we don't need to copy validator1's gentx to itself
 if [ $i -gt 1 ]; then
 cp /validator$i/config/gentx/* /validator1/config/gentx/

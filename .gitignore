@@ -19,6 +19,8 @@ docs/tutorial
 dist
 tools-stamp
 docs/node_modules
+integration_tests/target
+integration_tests/*/target
 
 # Data - ideally these don't exist
 baseapp/data/*

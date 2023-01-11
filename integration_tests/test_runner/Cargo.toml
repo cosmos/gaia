@@ -1,0 +1,43 @@
+[package]
+name = "test_runner"
+version = "0.1.0"
+authors = ["Justin Kilpatrick <justin@althea.net>", "Christian Borst <christian@althea.systems>"]
+edition = "2018"
+description = "Integration tests and their associated runner for the Althea Blockchain"
+
+[lib]
+name = "test_runner"
+path = "src/lib.rs"
+crate-type = ["lib"]
+
+[[bin]]
+name = "test-runner"
+path = "src/bin/main.rs"
+
+[dependencies]
+althea_proto = { path = "../althea_proto" }
+
+bytes = "1"
+prost = "0.10"
+prost-types = "0.10"
+deep_space = {version = "2.15", features = ["ethermint"]}
+serde_derive = "1.0"
+clarity = "0.5"
+docopt = "1"
+serde = "1.0"
+actix = "0.13"
+actix-rt = "2.2"
+lazy_static = "1"
+url = "2"
+web30 = "0.20"
+num = "0.4.0"
+num256 = "0.3"
+log = "0.4"
+env_logger = "0.9"
+tokio = "1.4.0"
+rand = "0.8"
+tonic = "0.7"
+futures = "0.3"
+serde_json = "1.0"
+ibc = "0.19.0"
+ibc-relayer = "0.19.0"

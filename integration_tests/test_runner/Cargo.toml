@@ -2,7 +2,7 @@
 name = "test_runner"
 version = "0.1.0"
 authors = ["Justin Kilpatrick <justin@althea.net>", "Christian Borst <christian@althea.systems>"]
-edition = "2021"
+edition = "2018"
 description = "Integration tests and their associated runner for the Althea Blockchain"
 
 [lib]

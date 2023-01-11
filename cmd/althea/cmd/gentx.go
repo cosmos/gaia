@@ -19,7 +19,6 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	tmtypes "github.com/tendermint/tendermint/types"
 
-	gravitytypes "github.com/althea-net/cosmos-gravity-bridge/module/x/gravity/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -43,17 +42,17 @@ func GenTxCmd(mbm module.BasicManager, txEncCfg client.TxEncodingConfig, genBalI
 	fsCreateValidator, defaultsDesc := cli.CreateValidatorMsgFlagSet(ipDefault)
 
 	cmd := &cobra.Command{
-		Use:   "gentx [key_name] [amount] [eth-address] [orchestrator-address]",
-		Short: "Generate a genesis tx carrying a self delegation, oracle key delegation and orchestrator key delegation",
-		Args:  cobra.ExactArgs(4),
-		Long: fmt.Sprintf(`Generate a genesis transaction that creates a validator with a self-delegation, oracle key 
-delegation and orchestrator key delegation that is signed by the key in the Keyring referenced by a given name. A node 
+		Use:   "gentx [key_name] [amount]",
+		Short: "Generate a genesis tx carrying a self delegation for the given amount",
+		Args:  cobra.ExactArgs(2),
+		Long: fmt.Sprintf(`Generate a genesis transaction that creates a validator with a self-delegation
+that is signed by the key in the Keyring referenced by a given name. A node
 ID and Bech32 consensus pubkey may optionally be provided. If they are omitted, they will be retrieved from the 
 priv_validator.json file. The following default parameters are included:
     %s
 
 Example:
-$ %s gentx my-key-name 1000000stake 0x033030FEeBd93E3178487c35A9c8cA80874353C9 cosmos1ahx7f8wyertuus9r20284ej0asrs085case3kn --home=/path/to/home/dir --keyring-backend=os --chain-id=test-chain-1 \
+$ %s gentx my-key-name 1000000ualtg --home=/path/to/home/dir --keyring-backend=os --chain-id=althea-1 \
     --moniker="myvalidator" \
     --commission-max-change-rate=0.01 \
     --commission-max-rate=1.0 \
@@ -114,17 +113,6 @@ $ %s gentx my-key-name 1000000stake 0x033030FEeBd93E3178487c35A9c8cA80874353C9 c
 				return errors.Wrapf(err, "failed to fetch '%s' from the keyring", name)
 			}
 
-			ethAddress := args[2]
-
-			if err := gravitytypes.ValidateEthAddress(ethAddress); err != nil {
-				return errors.Wrapf(err, "invalid ethereum address")
-			}
-
-			orchAddress, err := sdk.AccAddressFromBech32(args[3])
-			if err != nil {
-				return errors.Wrapf(err, "failed to parse orchAddress(%s)", args[3])
-			}
-
 			moniker := config.Moniker
 			if m, _ := cmd.Flags().GetString(cli.FlagMoniker); m != "" {
 				moniker = m
@@ -173,13 +161,7 @@ $ %s gentx my-key-name 1000000stake 0x033030FEeBd93E3178487c35A9c8cA80874353C9 c
 				return errors.Wrap(err, "failed to build create-validator message")
 			}
 
-			delegatePeggyMsg := &gravitytypes.MsgSetOrchestratorAddress{
-				Validator:    sdk.ValAddress(key.GetAddress()).String(),
-				Orchestrator: orchAddress.String(),
-				EthAddress:   ethAddress,
-			}
-
-			msgs := []sdk.Msg{msg, delegatePeggyMsg}
+			msgs := []sdk.Msg{msg}
 
 			if key.GetType() == keyring.TypeOffline || key.GetType() == keyring.TypeMulti {
 				cmd.PrintErrln("Offline key passed in. Use `tx sign` command to sign.")

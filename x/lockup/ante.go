@@ -56,6 +56,7 @@ func (lad LockAnteDecorator) AnteHandle(
 	simulate bool,
 	next sdk.AnteHandler,
 ) (newCtx sdk.Context, err error) {
+	ctx.Logger().Info("Enter AnteHandle", "tx", tx)
 	if lad.lockupKeeper.GetChainLocked(ctx) {
 		lockedMsgTypesSet := lad.lockupKeeper.GetLockedMessageTypesSet(ctx)
 		exemptSet := lad.lockupKeeper.GetLockExemptAddressesSet(ctx)

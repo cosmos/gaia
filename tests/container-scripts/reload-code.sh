@@ -22,9 +22,6 @@ make install
 tests/container-scripts/setup-validators.sh $NODES
 tests/container-scripts/run-testnet.sh $NODES
 
-# deploy the ethereum contracts
-DEPLOY_CONTRACTS=1 RUST_BACKTRACE=full TEST_TYPE=$TEST_TYPE RUST_LOG=INFO test-runner
-
 # This keeps the script open to prevent Docker from stopping the container
 # immediately if the nodes are killed by a different process
 read -p "Press Return to Close..."

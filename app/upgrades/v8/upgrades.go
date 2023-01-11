@@ -9,7 +9,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	icahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
 	icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 
@@ -91,9 +90,9 @@ func closeChannel(keepers *keepers.AppKeepers, ctx sdk.Context, channelID string
 }
 
 func CreateUpgradeHandler(
-	mm *module.Manager,
-	configurator module.Configurator,
-	keepers *keepers.AppKeepers,
+		mm *module.Manager,
+		configurator module.Configurator,
+		keepers *keepers.AppKeepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("start to run module migrations...")
@@ -116,13 +115,13 @@ func CreateUpgradeHandler(
 		}
 
 		// Change hostParams allow_messages = [*] instead of whitelisting individual messages
-		hostParams := icahosttypes.Params{
-			HostEnabled:   true,
-			AllowMessages: []string{"*"},
-		}
-
-		// Update params for host & controller keepers
-		keepers.ICAHostKeeper.SetParams(ctx, hostParams)
+		//hostParams := icahosttypes.Params{
+		//	HostEnabled:   true,
+		//	AllowMessages: []string{"*"},
+		//}
+		//
+		//// Update params for host & controller keepers
+		//keepers.ICAHostKeeper.SetParams(ctx, hostParams)
 
 		ctx.Logger().Info("upgrade complete")
 

@@ -111,16 +111,16 @@ type AppKeepers struct {
 }
 
 func NewAppKeeper(
-	appCodec codec.Codec,
-	bApp *baseapp.BaseApp,
-	legacyAmino *codec.LegacyAmino,
-	maccPerms map[string][]string,
-	modAccAddrs map[string]bool,
-	blockedAddress map[string]bool,
-	skipUpgradeHeights map[int64]bool,
-	homePath string,
-	invCheckPeriod uint,
-	appOpts servertypes.AppOptions,
+		appCodec codec.Codec,
+		bApp *baseapp.BaseApp,
+		legacyAmino *codec.LegacyAmino,
+		maccPerms map[string][]string,
+		modAccAddrs map[string]bool,
+		blockedAddress map[string]bool,
+		skipUpgradeHeights map[int64]bool,
+		homePath string,
+		invCheckPeriod uint,
+		appOpts servertypes.AppOptions,
 ) AppKeepers {
 	appKeepers := AppKeepers{}
 
@@ -294,6 +294,8 @@ func NewAppKeeper(
 	var transferStack porttypes.IBCModule
 	transferStack = transfer.NewIBCModule(appKeepers.TransferKeeper)
 	transferStack = ibcfee.NewIBCMiddleware(transferStack, appKeepers.IBCFeeKeeper)
+	transferStack = router.NewIBCMiddleware(transferStack, appKeepers.RouterKeeper, 0,
+		routerkeeper.DefaultForwardTransferPacketTimeoutTimestamp, routerkeeper.DefaultRefundTransferPacketTimeoutTimestamp) // todo check here
 
 	appKeepers.ICAControllerKeeper = icacontrollerkeeper.NewKeeper(
 		appCodec, appKeepers.keys[icacontrollertypes.StoreKey], appKeepers.GetSubspace(icacontrollertypes.SubModuleName),
@@ -342,7 +344,6 @@ func NewAppKeeper(
 	// create static IBC router, add transfer route, then set and seal it
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostStack).
-		AddRoute(ibctransfertypes.ModuleName, router.IBCMiddleware{}). // todo check here
 		AddRoute(ibctransfertypes.ModuleName, transferStack)
 
 	appKeepers.IBCKeeper.SetRouter(ibcRouter)

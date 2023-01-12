@@ -2,6 +2,7 @@ package v8
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -95,18 +96,11 @@ func CreateUpgradeHandler(
 	keepers *keepers.AppKeepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-		ctx.Logger().Info("start to run module migrations...")
+		ctx.Logger().Info("running upgrade fixes...")
 
-		vm, err := mm.RunMigrations(ctx, configurator, vm)
+		err := FixBankMetadata(ctx, keepers)
 		if err != nil {
-			return vm, err
-		}
-
-		ctx.Logger().Info("running the rest of the upgrade handler...")
-
-		err = FixBankMetadata(ctx, keepers)
-		if err != nil {
-			return vm, err
+			ctx.Logger().Info(fmt.Sprintf("Error fixing bank metadata: %s", err.Error()))
 		}
 
 		err = QuicksilverFix(ctx, keepers)
@@ -123,8 +117,14 @@ func CreateUpgradeHandler(
 		// Update params for host & controller keepers
 		keepers.ICAHostKeeper.SetParams(ctx, hostParams)
 
-		ctx.Logger().Info("upgrade complete")
+		ctx.Logger().Info("start to run module migrations...")
 
+		vm, err = mm.RunMigrations(ctx, configurator, vm)
+		if err != nil {
+			return vm, err
+		}
+
+		ctx.Logger().Info("upgrade complete")
 		return vm, err
 	}
 }

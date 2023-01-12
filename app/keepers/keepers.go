@@ -22,10 +22,8 @@ import (
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
-
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
@@ -39,29 +37,31 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
-	icacontrollerkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/keeper"
-	icacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
-	icahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
-	icahostkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/keeper"
-	icahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
-	"github.com/cosmos/ibc-go/v3/modules/apps/transfer"
-	ibctransferkeeper "github.com/cosmos/ibc-go/v3/modules/apps/transfer/keeper"
-	ibctransfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
-	ibcclient "github.com/cosmos/ibc-go/v3/modules/core/02-client"
-	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
-	porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
-	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
-	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
+	ica "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts"
+	icacontrollerkeeper "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/controller/keeper"
+	icacontrollertypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/controller/types"
+	icahost "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host"
+	icahostkeeper "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/keeper"
+	icahosttypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/types"
+	ibcfee "github.com/cosmos/ibc-go/v4/modules/apps/29-fee"
+	ibcfeekeeper "github.com/cosmos/ibc-go/v4/modules/apps/29-fee/keeper"
+	ibcfeetypes "github.com/cosmos/ibc-go/v4/modules/apps/29-fee/types"
+	"github.com/cosmos/ibc-go/v4/modules/apps/transfer"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v4/modules/apps/transfer/keeper"
+	ibctransfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
+	ibcclient "github.com/cosmos/ibc-go/v4/modules/core/02-client"
+	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
+	porttypes "github.com/cosmos/ibc-go/v4/modules/core/05-port/types"
+	ibchost "github.com/cosmos/ibc-go/v4/modules/core/24-host"
+	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
 	liquiditykeeper "github.com/gravity-devs/liquidity/x/liquidity/keeper"
 	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
-	"github.com/strangelove-ventures/packet-forward-middleware/v3/router"
-	routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v3/router/keeper"
-	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v3/router/types"
 	tmos "github.com/tendermint/tendermint/libs/os"
+	"github.com/yaruwangway/packet-forward-middleware/v3/router"
+	routerkeeper "github.com/yaruwangway/packet-forward-middleware/v3/router/keeper"
+	routertypes "github.com/yaruwangway/packet-forward-middleware/v3/router/types"
 
 	"github.com/cosmos/gaia/v8/x/globalfee"
-
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
 )
@@ -86,6 +86,7 @@ type AppKeepers struct {
 	ParamsKeeper     paramskeeper.Keeper
 	// IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	IBCKeeper           *ibckeeper.Keeper
+	IBCFeeKeeper        ibcfeekeeper.Keeper
 	ICAControllerKeeper icacontrollerkeeper.Keeper
 	ICAHostKeeper       icahostkeeper.Keeper
 	EvidenceKeeper      evidencekeeper.Keeper
@@ -104,21 +105,22 @@ type AppKeepers struct {
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
 	ScopedTransferKeeper      capabilitykeeper.ScopedKeeper
+	ScopedIBCFeeKeeper        capabilitykeeper.ScopedKeeper
 	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
 	ScopedICAHostKeeper       capabilitykeeper.ScopedKeeper
 }
 
 func NewAppKeeper(
-	appCodec codec.Codec,
-	bApp *baseapp.BaseApp,
-	legacyAmino *codec.LegacyAmino,
-	maccPerms map[string][]string,
-	modAccAddrs map[string]bool,
-	blockedAddress map[string]bool,
-	skipUpgradeHeights map[int64]bool,
-	homePath string,
-	invCheckPeriod uint,
-	appOpts servertypes.AppOptions,
+		appCodec codec.Codec,
+		bApp *baseapp.BaseApp,
+		legacyAmino *codec.LegacyAmino,
+		maccPerms map[string][]string,
+		modAccAddrs map[string]bool,
+		blockedAddress map[string]bool,
+		skipUpgradeHeights map[int64]bool,
+		homePath string,
+		invCheckPeriod uint,
+		appOpts servertypes.AppOptions,
 ) AppKeepers {
 	appKeepers := AppKeepers{}
 
@@ -281,7 +283,7 @@ func NewAppKeeper(
 		appCodec,
 		appKeepers.keys[ibctransfertypes.StoreKey],
 		appKeepers.GetSubspace(ibctransfertypes.ModuleName),
-		appKeepers.IBCKeeper.ChannelKeeper,
+		appKeepers.IBCFeeKeeper,
 		appKeepers.IBCKeeper.ChannelKeeper,
 		&appKeepers.IBCKeeper.PortKeeper,
 		appKeepers.AccountKeeper,
@@ -289,13 +291,24 @@ func NewAppKeeper(
 		appKeepers.ScopedTransferKeeper,
 	)
 	appKeepers.TransferModule = transfer.NewAppModule(appKeepers.TransferKeeper)
-	transferIBCModule := transfer.NewIBCModule(appKeepers.TransferKeeper)
+	var transferStack porttypes.IBCModule
+	transferStack = transfer.NewIBCModule(appKeepers.TransferKeeper)
+	transferStack = ibcfee.NewIBCMiddleware(transferStack, appKeepers.IBCFeeKeeper)
 
 	appKeepers.ICAControllerKeeper = icacontrollerkeeper.NewKeeper(
 		appCodec, appKeepers.keys[icacontrollertypes.StoreKey], appKeepers.GetSubspace(icacontrollertypes.SubModuleName),
 		appKeepers.IBCKeeper.ChannelKeeper, // may be replaced with middleware such as ics29 fee
 		appKeepers.IBCKeeper.ChannelKeeper, &appKeepers.IBCKeeper.PortKeeper,
 		appKeepers.ScopedICAControllerKeeper, bApp.MsgServiceRouter(),
+	)
+
+	// IBC Fee Module keeper
+	appKeepers.IBCFeeKeeper = ibcfeekeeper.NewKeeper(
+		appCodec, appKeepers.keys[ibcfeetypes.StoreKey],
+		appKeepers.GetSubspace(ibcfeetypes.ModuleName),
+		appKeepers.IBCKeeper.ChannelKeeper, // todo may be replaced with IBC middleware
+		appKeepers.IBCKeeper.ChannelKeeper,
+		&appKeepers.IBCKeeper.PortKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper,
 	)
 
 	appKeepers.ICAHostKeeper = icahostkeeper.NewKeeper(
@@ -309,7 +322,9 @@ func NewAppKeeper(
 	)
 
 	appKeepers.ICAModule = ica.NewAppModule(&appKeepers.ICAControllerKeeper, &appKeepers.ICAHostKeeper)
-	icaHostIBCModule := icahost.NewIBCModule(appKeepers.ICAHostKeeper)
+	var icaHostStack porttypes.IBCModule
+	icaHostStack = icahost.NewIBCModule(appKeepers.ICAHostKeeper)
+	icaHostStack = ibcfee.NewIBCMiddleware(icaHostStack, appKeepers.IBCFeeKeeper)
 
 	appKeepers.RouterKeeper = routerkeeper.NewKeeper(
 		appCodec, appKeepers.keys[routertypes.StoreKey],
@@ -318,15 +333,17 @@ func NewAppKeeper(
 		appKeepers.IBCKeeper.ChannelKeeper,
 		appKeepers.DistrKeeper,
 		appKeepers.BankKeeper,
+		appKeepers.IBCKeeper.PortKeeper,
+		appKeepers.IBCFeeKeeper,
 	)
 
-	appKeepers.RouterModule = router.NewAppModule(appKeepers.RouterKeeper, transferIBCModule, 0,
-		routerkeeper.DefaultForwardTransferPacketTimeoutTimestamp, routerkeeper.DefaultRefundTransferPacketTimeoutTimestamp)
+	appKeepers.RouterModule = router.NewAppModule(appKeepers.RouterKeeper)
 
 	// create static IBC router, add transfer route, then set and seal it
 	ibcRouter := porttypes.NewRouter()
-	ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
-		AddRoute(ibctransfertypes.ModuleName, appKeepers.RouterModule)
+	ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostStack).
+		AddRoute(ibctransfertypes.ModuleName, appKeepers.RouterModule).
+		AddRoute(ibctransfertypes.ModuleName, transferStack)
 
 	appKeepers.IBCKeeper.SetRouter(ibcRouter)
 

@@ -38,17 +38,19 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
-	icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
-	"github.com/cosmos/ibc-go/v3/modules/apps/transfer"
-	ibctransfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
-	ibc "github.com/cosmos/ibc-go/v3/modules/core"
-	ibcclientclient "github.com/cosmos/ibc-go/v3/modules/core/02-client/client"
-	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
+	ica "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts"
+	icatypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/types"
+	ibcfee "github.com/cosmos/ibc-go/v4/modules/apps/29-fee"
+	ibcfeetypes "github.com/cosmos/ibc-go/v4/modules/apps/29-fee/types"
+	"github.com/cosmos/ibc-go/v4/modules/apps/transfer"
+	ibctransfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
+	ibc "github.com/cosmos/ibc-go/v4/modules/core"
+	ibcclientclient "github.com/cosmos/ibc-go/v4/modules/core/02-client/client"
+	ibchost "github.com/cosmos/ibc-go/v4/modules/core/24-host"
 	"github.com/gravity-devs/liquidity/x/liquidity"
 	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
-	"github.com/strangelove-ventures/packet-forward-middleware/v3/router"
-	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v3/router/types"
+	"github.com/yaruwangway/packet-forward-middleware/v3/router"
+	routertypes "github.com/yaruwangway/packet-forward-middleware/v3/router/types"
 
 	gaiaappparams "github.com/cosmos/gaia/v8/app/params"
 	"github.com/cosmos/gaia/v8/x/globalfee"
@@ -64,6 +66,7 @@ var maccPerms = map[string][]string{
 	govtypes.ModuleName:            {authtypes.Burner},
 	liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 	ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
+	ibcfeetypes.ModuleName:         nil,
 }
 
 // ModuleBasics defines the module BasicManager is in charge of setting up basic,
@@ -99,6 +102,7 @@ var ModuleBasics = module.NewBasicManager(
 	router.AppModuleBasic{},
 	ica.AppModuleBasic{},
 	globalfee.AppModule{},
+	ibcfee.AppModuleBasic{},
 )
 
 func appModules(
@@ -133,6 +137,7 @@ func appModules(
 		params.NewAppModule(app.ParamsKeeper),
 		liquidity.NewAppModule(appCodec, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.DistrKeeper),
 		globalfee.NewAppModule(app.GetSubspace(globalfee.ModuleName)),
+		ibcfee.NewAppModule(app.IBCFeeKeeper),
 		app.TransferModule,
 		app.ICAModule,
 		app.RouterModule,
@@ -194,6 +199,7 @@ func orderBeginBlockers() []string {
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
 		icatypes.ModuleName,
+		ibcfeetypes.ModuleName,
 		globalfee.ModuleName,
 	}
 }
@@ -222,6 +228,7 @@ func orderEndBlockers() []string {
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		icatypes.ModuleName,
+		ibcfeetypes.ModuleName,
 		globalfee.ModuleName,
 	}
 }
@@ -247,6 +254,7 @@ func orderInitBlockers() []string {
 		feegrant.ModuleName,
 		routertypes.ModuleName,
 		icatypes.ModuleName,
+		ibcfeetypes.ModuleName,
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,

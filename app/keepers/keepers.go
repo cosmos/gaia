@@ -296,6 +296,7 @@ func NewAppKeeper(
 		bApp.MsgServiceRouter(),
 	)
 
+	appKeepers.ICAModule = ica.NewAppModule(nil, &appKeepers.ICAHostKeeper)
 	icaHostIBCModule := icahost.NewIBCModule(appKeepers.ICAHostKeeper)
 
 	appKeepers.RouterKeeper = routerkeeper.NewKeeper(

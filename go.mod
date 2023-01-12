@@ -3,7 +3,7 @@ module github.com/cosmos/gaia/v8
 go 1.18
 
 require (
-	github.com/cosmos/cosmos-sdk v0.45.11
+	github.com/cosmos/cosmos-sdk v0.45.12-0.20230111125903-4163a1a01572
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/ibc-go/v3 v3.4.0
 	github.com/gogo/protobuf v1.3.3
@@ -286,7 +286,7 @@ replace (
 	github.com/confio/ics23/go => github.com/cosmos/cosmos-sdk/ics23/go v0.8.0
 
 	// enforce same SDK, Tendermint and IBC on all dependencies
-	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.11
+	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.12-0.20230111125903-4163a1a01572
 	github.com/cosmos/ibc-go/v3 => github.com/cosmos/ibc-go/v3 v3.4.0
 
 	// use cosmos style protobufs

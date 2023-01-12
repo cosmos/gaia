@@ -39,25 +39,25 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
-	icacontrollerkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/keeper"
-	icacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
-	icahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
-	icahostkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/keeper"
-	icahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
-	"github.com/cosmos/ibc-go/v3/modules/apps/transfer"
-	ibctransferkeeper "github.com/cosmos/ibc-go/v3/modules/apps/transfer/keeper"
-	ibctransfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
-	ibcclient "github.com/cosmos/ibc-go/v3/modules/core/02-client"
-	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
-	porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
-	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
-	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
+	ica "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts"
+	icacontrollerkeeper "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/controller/keeper"
+	icacontrollertypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/controller/types"
+	icahost "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host"
+	icahostkeeper "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/keeper"
+	icahosttypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/types"
+	"github.com/cosmos/ibc-go/v4/modules/apps/transfer"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v4/modules/apps/transfer/keeper"
+	ibctransfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
+	ibcclient "github.com/cosmos/ibc-go/v4/modules/core/02-client"
+	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
+	porttypes "github.com/cosmos/ibc-go/v4/modules/core/05-port/types"
+	ibchost "github.com/cosmos/ibc-go/v4/modules/core/24-host"
+	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
 	liquiditykeeper "github.com/gravity-devs/liquidity/x/liquidity/keeper"
 	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
-	"github.com/strangelove-ventures/packet-forward-middleware/v3/router"
-	routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v3/router/keeper"
-	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v3/router/types"
+	"github.com/strangelove-ventures/packet-forward-middleware/v4/router"
+	routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v4/router/keeper"
+	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
 	tmos "github.com/tendermint/tendermint/libs/os"
 
 	"github.com/cosmos/gaia/v8/x/globalfee"
@@ -277,6 +277,7 @@ func NewAppKeeper(
 		govRouter,
 	)
 
+	// Create Transfer Keepers
 	appKeepers.TransferKeeper = ibctransferkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[ibctransfertypes.StoreKey],
@@ -315,13 +316,10 @@ func NewAppKeeper(
 		appCodec, appKeepers.keys[routertypes.StoreKey],
 		appKeepers.GetSubspace(routertypes.ModuleName),
 		appKeepers.TransferKeeper,
-		appKeepers.IBCKeeper.ChannelKeeper,
 		appKeepers.DistrKeeper,
-		appKeepers.BankKeeper,
 	)
 
-	appKeepers.RouterModule = router.NewAppModule(appKeepers.RouterKeeper, transferIBCModule, 0,
-		routerkeeper.DefaultForwardTransferPacketTimeoutTimestamp, routerkeeper.DefaultRefundTransferPacketTimeoutTimestamp)
+	appKeepers.RouterModule = router.NewAppModule(appKeepers.RouterKeeper)
 
 	// create static IBC router, add transfer route, then set and seal it
 	ibcRouter := porttypes.NewRouter()

@@ -243,8 +243,8 @@ github.com/cosmos/gorocksdb v1.2.0 h1:d0l3jJG8M4hBouIZq0mDUHZ+zjOx044J3nGRskwTb4
 github.com/cosmos/gorocksdb v1.2.0/go.mod h1:aaKvKItm514hKfNJpUJXnnOWeBnk2GL4+Qw9NHizILw=
 github.com/cosmos/iavl v0.19.4 h1:t82sN+Y0WeqxDLJRSpNd8YFX5URIrT+p8n6oJbJ2Dok=
 github.com/cosmos/iavl v0.19.4/go.mod h1:X9PKD3J0iFxdmgNLa7b2LYWdsGd90ToV5cAONApkEPw=
-github.com/cosmos/ibc-go/v3 v3.4.0 h1:ha3cqEG36pqMWqA1D+kxDWBTZXpeFMd/aZIQF7I0xro=
-github.com/cosmos/ibc-go/v3 v3.4.0/go.mod h1:VwB/vWu4ysT5DN2aF78d17LYmx3omSAdq6gpKvM7XRA=
+github.com/cosmos/ibc-go/v4 v4.2.0 h1:Fx/kKq/uvawrAxk6ZrQ6sEIgffLRU5Cs/AUnvpPBrHI=
+github.com/cosmos/ibc-go/v4 v4.2.0/go.mod h1:57qWScDtfCx3FOMLYmBIKPbOLE6xiVhrgxHAQmbWYXM=
 github.com/cosmos/ledger-cosmos-go v0.11.1 h1:9JIYsGnXP613pb2vPjFeMMjBI5lEDsEaF6oYorTy6J4=
 github.com/cosmos/ledger-cosmos-go v0.11.1/go.mod h1:J8//BsAGTo3OC/vDLjMRFLW6q0WAaXvHnVc7ZmE8iUY=
 github.com/cosmos/ledger-go v0.9.2 h1:Nnao/dLwaVTk1Q5U9THldpUMMXU94BOTWPddSmVB6pI=
@@ -860,6 +860,8 @@ github.com/nishanths/exhaustive v0.8.3 h1:pw5O09vwg8ZaditDp/nQRqVnrMczSJDxRDJMow
 github.com/nishanths/exhaustive v0.8.3/go.mod h1:qj+zJJUgJ76tR92+25+03oYUhzF4R7/2Wk7fGTfCHmg=
 github.com/nishanths/predeclared v0.2.2 h1:V2EPdZPliZymNAn79T8RkNApBjMmVKh5XRpLm/w98Vk=
 github.com/nishanths/predeclared v0.2.2/go.mod h1:RROzoN6TnGQupbC+lqggsOlcgysk3LMK/HI84Mp280c=
+github.com/notional-labs/packet-forward-middleware/v4 v4.0.0-20221218195547-7e00445e7534 h1:rO0sia4KI0JvS0IYXCAL7QTnLbnUBtHX6/r4m0l2HLo=
+github.com/notional-labs/packet-forward-middleware/v4 v4.0.0-20221218195547-7e00445e7534/go.mod h1:zDsRdoeNhwyQ9j9984HDCZgUZneHklUCz/J9mj5ll5I=
 github.com/nxadm/tail v1.4.4 h1:DQuhQpB1tVlglWS2hLQ5OV6B5r8aGxSrPc5Qo6uTN78=
 github.com/nxadm/tail v1.4.4/go.mod h1:kenIhsEOeOJmVchQTgglprH7qJGnHDVpk1VPCcaMI8A=
 github.com/oklog/oklog v0.3.2/go.mod h1:FCV+B7mhrz4o+ueLpx+KqkyXRGMWOYEvfiXtdGtbWGs=
@@ -1094,8 +1096,6 @@ github.com/ssgreg/nlreturn/v2 v2.2.1/go.mod h1:E/iiPB78hV7Szg2YfRgyIrk1AD6JVMTRk
 github.com/status-im/keycard-go v0.0.0-20190316090335-8537d3370df4/go.mod h1:RZLeN1LMWmRsyYjvAu+I6Dm9QmlDaIIt+Y+4Kd7Tp+Q=
 github.com/stbenjam/no-sprintf-host-port v0.1.1 h1:tYugd/yrm1O0dV+ThCbaKZh195Dfm07ysF0U6JQXczc=
 github.com/stbenjam/no-sprintf-host-port v0.1.1/go.mod h1:TLhvtIvONRzdmkFiio4O8LHsN9N74I+PhRquPsxpL0I=
-github.com/strangelove-ventures/packet-forward-middleware/v3 v3.0.0 h1:V1RVRa2hga4TV//RQpk2PCt314slS3N12024TsJoJUo=
-github.com/strangelove-ventures/packet-forward-middleware/v3 v3.0.0/go.mod h1:sRBHb6KwuHQVc07vy8Ice9wUKVdvzn7eEms9scr2Zco=
 github.com/streadway/amqp v0.0.0-20190404075320-75d898a42a94/go.mod h1:AZpEONHx3DKn8O/DFsRAY58/XVQiIPMTMB1SddzLXVw=
 github.com/streadway/amqp v0.0.0-20190827072141-edfb9018d271/go.mod h1:AZpEONHx3DKn8O/DFsRAY58/XVQiIPMTMB1SddzLXVw=
 github.com/streadway/handy v0.0.0-20190108123426-d5acb3125c2a/go.mod h1:qNTQ5P5JnDBl6z3cMAg/SywNDC5ABu5ApDIw6lUbRmI=

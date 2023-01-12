@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/cosmos/cosmos-sdk v0.45.11
 	github.com/cosmos/go-bip39 v1.0.0
-	github.com/cosmos/ibc-go/v3 v3.4.0
+	github.com/cosmos/ibc-go/v4 v4.2.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
 	github.com/golangci/golangci-lint v1.50.1
@@ -18,7 +18,7 @@ require (
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.14.0
-	github.com/strangelove-ventures/packet-forward-middleware/v3 v3.0.0
+	github.com/strangelove-ventures/packet-forward-middleware/v4 v4.0.0
 	github.com/stretchr/testify v1.8.1
 	github.com/tendermint/tendermint v0.34.24
 	github.com/tendermint/tm-db v0.6.7
@@ -287,10 +287,13 @@ replace (
 
 	// enforce same SDK, Tendermint and IBC on all dependencies
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.11
-	github.com/cosmos/ibc-go/v3 => github.com/cosmos/ibc-go/v3 v3.4.0
+	github.com/cosmos/ibc-go/v4 => github.com/cosmos/ibc-go/v4 v4.2.0
 
 	// use cosmos style protobufs
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+
+	// temporarily use the v4 PFM, replace this with a proper release from SL if we will use it for v8
+	github.com/strangelove-ventures/packet-forward-middleware/v4 => github.com/notional-labs/packet-forward-middleware/v4 v4.0.0-20221218195547-7e00445e7534
 	github.com/tendermint/tendermint => github.com/informalsystems/tendermint v0.34.24
 
 	// latest grpc doesn't work with with our modified proto compiler, so we need to enforce

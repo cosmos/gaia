@@ -106,9 +106,9 @@ var ModuleBasics = module.NewBasicManager(
 )
 
 func appModules(
-	app *GaiaApp,
-	encodingConfig gaiaappparams.EncodingConfig,
-	skipGenesisInvariants bool,
+		app *GaiaApp,
+		encodingConfig gaiaappparams.EncodingConfig,
+		skipGenesisInvariants bool,
 ) []module.AppModule {
 	appCodec := encodingConfig.Codec
 
@@ -147,9 +147,9 @@ func appModules(
 // simulationModules returns modules for simulation manager
 // define the order of the modules for deterministic simulations
 func simulationModules(
-	app *GaiaApp,
-	encodingConfig gaiaappparams.EncodingConfig,
-	_ bool,
+		app *GaiaApp,
+		encodingConfig gaiaappparams.EncodingConfig,
+		_ bool,
 ) []module.AppModuleSimulation {
 	appCodec := encodingConfig.Codec
 
@@ -198,7 +198,6 @@ func orderBeginBlockers() []string {
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
-		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		globalfee.ModuleName,
 	}
@@ -227,7 +226,6 @@ func orderEndBlockers() []string {
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
-		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		globalfee.ModuleName,
 	}
@@ -253,7 +251,6 @@ func orderInitBlockers() []string {
 		authz.ModuleName,
 		feegrant.ModuleName,
 		routertypes.ModuleName,
-		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,

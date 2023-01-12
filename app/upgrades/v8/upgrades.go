@@ -11,7 +11,8 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
-
+	pfm "github.com/strangelove-ventures/packet-forward-middleware/v3/router/types"
+	
 	"github.com/cosmos/gaia/v8/app/keepers"
 )
 
@@ -90,13 +91,14 @@ func closeChannel(keepers *keepers.AppKeepers, ctx sdk.Context, channelID string
 }
 
 func CreateUpgradeHandler(
-		mm *module.Manager,
-		configurator module.Configurator,
-		keepers *keepers.AppKeepers,
+	mm *module.Manager,
+	configurator module.Configurator,
+	keepers *keepers.AppKeepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("start to run module migrations...")
 
+		vm[pfm.ModuleName] = 2
 		vm, err := mm.RunMigrations(ctx, configurator, vm)
 		if err != nil {
 			return vm, err

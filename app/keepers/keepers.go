@@ -279,6 +279,15 @@ func NewAppKeeper(
 		govRouter,
 	)
 
+	// IBC Fee Module keeper
+	appKeepers.IBCFeeKeeper = ibcfeekeeper.NewKeeper(
+		appCodec, appKeepers.keys[ibcfeetypes.StoreKey],
+		appKeepers.GetSubspace(ibcfeetypes.ModuleName),
+		appKeepers.IBCKeeper.ChannelKeeper, // todo may be replaced with IBC middleware
+		appKeepers.IBCKeeper.ChannelKeeper,
+		&appKeepers.IBCKeeper.PortKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper,
+	)
+
 	appKeepers.TransferKeeper = ibctransferkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[ibctransfertypes.StoreKey],
@@ -302,15 +311,6 @@ func NewAppKeeper(
 		appKeepers.IBCKeeper.ChannelKeeper, // may be replaced with middleware such as ics29 fee
 		appKeepers.IBCKeeper.ChannelKeeper, &appKeepers.IBCKeeper.PortKeeper,
 		appKeepers.ScopedICAControllerKeeper, bApp.MsgServiceRouter(),
-	)
-
-	// IBC Fee Module keeper
-	appKeepers.IBCFeeKeeper = ibcfeekeeper.NewKeeper(
-		appCodec, appKeepers.keys[ibcfeetypes.StoreKey],
-		appKeepers.GetSubspace(ibcfeetypes.ModuleName),
-		appKeepers.IBCKeeper.ChannelKeeper, // todo may be replaced with IBC middleware
-		appKeepers.IBCKeeper.ChannelKeeper,
-		&appKeepers.IBCKeeper.PortKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper,
 	)
 
 	appKeepers.ICAHostKeeper = icahostkeeper.NewKeeper(

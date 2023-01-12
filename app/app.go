@@ -412,15 +412,20 @@ func NewAltheaApp(
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetAnteHandler(
-		// Wrap a LockupAnteHandler around the default AnteHandler to incorporate future sdk changes
-		// while enabling the lockup module on every transaction
-		lockup.NewWrappedLockupAnteHandler(
-			ante.NewAnteHandler(
-				app.AccountKeeper, app.BankKeeper, ante.DefaultSigVerificationGasConsumer,
-				encodingConfig.TxConfig.SignModeHandler(),
-			),
-			app.LockupKeeper,
+		ante.NewAnteHandler(
+			app.AccountKeeper, app.BankKeeper, ante.DefaultSigVerificationGasConsumer,
+			encodingConfig.TxConfig.SignModeHandler(),
 		),
+
+		// // Wrap a LockupAnteHandler around the default AnteHandler to incorporate future sdk changes
+		// // while enabling the lockup module on every transaction
+		// lockup.NewWrappedLockupAnteHandler(
+		// 	ante.NewAnteHandler(
+		// 		app.AccountKeeper, app.BankKeeper, ante.DefaultSigVerificationGasConsumer,
+		// 		encodingConfig.TxConfig.SignModeHandler(),
+		// 	),
+		// 	app.LockupKeeper,
+		// ),
 	)
 	app.SetEndBlocker(app.EndBlocker)
 

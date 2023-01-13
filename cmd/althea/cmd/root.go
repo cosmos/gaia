@@ -16,11 +16,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
+	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/snapshots"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	vestingcli "github.com/cosmos/cosmos-sdk/x/auth/vesting/client/cli"
@@ -39,7 +39,7 @@ import (
 func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	encodingConfig := althea.MakeEncodingConfig()
 	initClientCtx := client.Context{}.
-		WithJSONMarshaler(encodingConfig.Marshaler).
+		WithJSONCodec(encodingConfig.Marshaler).
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
 		WithTxConfig(encodingConfig.TxConfig).
 		WithLegacyAmino(encodingConfig.Amino).
@@ -56,13 +56,38 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 				return err
 			}
 
-			return server.InterceptConfigsPreRunHandler(cmd)
+			altheaAppTemplate, altheaAppConfig := initAppConfig()
+
+			return server.InterceptConfigsPreRunHandler(cmd, altheaAppTemplate, altheaAppConfig)
 		},
 	}
 
 	initRootCmd(rootCmd, encodingConfig)
 
 	return rootCmd, encodingConfig
+}
+
+// initAppConfig defines the default configuration for a gravity instance. These defaults can be overridden via an
+// app.toml file or with flags provided on the command line
+func initAppConfig() (string, interface{}) {
+	type AltheaAppConfig struct {
+		serverconfig.Config
+	}
+
+	// DEFAULT SERVER CONFIGURATIONS
+	srvConfig := serverconfig.DefaultConfig()
+
+	// CUSTOM APP CONFIG - add members to this struct to add althea-specific configuration options
+	// NOTE: Make sure config options are explained with their default values in altheaAppTemplate
+	altheaAppConfig := AltheaAppConfig{
+		Config: *srvConfig,
+	}
+
+	// CUSTOM CONFIG TEMPLATE - add to this string when adding althea-specific configurations have been added to
+	// AltheaAppConfig above, an example can be seen at https://github.com/cosmos/cosmos-sdk/blob/master/simapp/simd/cmd/root.go
+	altheaAppTemplate := serverconfig.DefaultConfigTemplate
+
+	return altheaAppTemplate, altheaAppConfig
 }
 
 // Execute executes the root command.
@@ -85,8 +110,6 @@ func Execute(rootCmd *cobra.Command) error {
 }
 
 func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
-	authclient.Codec = encodingConfig.Marshaler
-
 	rootCmd.AddCommand(
 		genutilcli.InitCmd(althea.ModuleBasics, althea.DefaultNodeHome),
 		CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, althea.DefaultNodeHome),

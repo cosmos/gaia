@@ -1,9 +1,6 @@
 package althea
 
 import (
-	"encoding/binary"
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -27,14 +24,5 @@ func init() {
 	config.SetBech32PrefixForAccount(Bech32PrefixAccAddr, Bech32PrefixAccPub)
 	config.SetBech32PrefixForValidator(Bech32PrefixValAddr, Bech32PrefixValPub)
 	config.SetBech32PrefixForConsensusNode(Bech32PrefixConsAddr, Bech32PrefixConsPub)
-	config.SetAddressVerifier(func(bytes []byte) error {
-		n := len(bytes)
-		if n == sdk.AddrLen {
-			return nil
-		}
-		if n <= binary.MaxVarintLen64+1 {
-			return nil
-		}
-		return fmt.Errorf("unexpected address length %d", n)
-	})
+	config.Seal()
 }

@@ -7,6 +7,7 @@ import (
 	"log"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/codec/legacy"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil/types"
@@ -58,8 +59,8 @@ func loadKeydataFromFile(clientCtx client.Context, replacementrJSON string, genD
 	var stakingGenesis staking.GenesisState
 	var slashingGenesis slashing.GenesisState
 
-	clientCtx.JSONMarshaler.MustUnmarshalJSON(state[staking.ModuleName], &stakingGenesis)
-	clientCtx.JSONMarshaler.MustUnmarshalJSON(state[slashing.ModuleName], &slashingGenesis)
+	clientCtx.JSONCodec.MustUnmarshalJSON(state[staking.ModuleName], &stakingGenesis)
+	clientCtx.JSONCodec.MustUnmarshalJSON(state[slashing.ModuleName], &slashingGenesis)
 
 	for i, val := range stakingGenesis.Validators {
 		idx, replacement := replacementKeys.isReplacedValidator(val.OperatorAddress)
@@ -68,8 +69,12 @@ func loadKeydataFromFile(clientCtx client.Context, replacementrJSON string, genD
 
 			toReplaceValConsAddress, _ := val.GetConsAddr()
 
-			consPubKey, err := sdk.GetPubKeyFromBech32(sdk.Bech32PubKeyTypeConsPub, replacement.ConsensusPubkey)
+			consPubKeyBz, err := sdk.GetFromBech32(replacement.ConsensusPubkey, sdk.GetConfig().GetBech32ConsensusPubPrefix())
+			if err != nil {
+				log.Fatal(fmt.Errorf("failed to decode key:%s %w", consPubKeyBz, err))
+			}
 
+			consPubKey, err := legacy.PubKeyFromBytes(consPubKeyBz)
 			if err != nil {
 				log.Fatal(fmt.Errorf("failed to decode key:%s %w", consPubKey, err))
 			}
@@ -108,8 +113,8 @@ func loadKeydataFromFile(clientCtx client.Context, replacementrJSON string, genD
 		}
 
 	}
-	state[staking.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(&stakingGenesis)
-	state[slashing.ModuleName] = clientCtx.JSONMarshaler.MustMarshalJSON(&slashingGenesis)
+	state[staking.ModuleName] = clientCtx.JSONCodec.MustMarshalJSON(&stakingGenesis)
+	state[slashing.ModuleName] = clientCtx.JSONCodec.MustMarshalJSON(&slashingGenesis)
 
 	genDoc.AppState, err = json.Marshal(state)
 

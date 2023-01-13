@@ -17,6 +17,8 @@ import (
 )
 
 func FixBankMetadata(ctx sdk.Context, keepers *keepers.AppKeepers) error {
+	ctx.Logger().Info("Starting fix bank metadata...")
+
 	malformedDenom := "uatomu"
 	correctDenom := "uatom"
 
@@ -34,32 +36,36 @@ func FixBankMetadata(ctx sdk.Context, keepers *keepers.AppKeepers) error {
 		// confirm whether the old key is still accessible
 		_, foundMalformed = keepers.BankKeeper.GetDenomMetaData(ctx, malformedDenom)
 		if foundMalformed {
-			return errors.New("malformed 'uatomu' denom not fixed")
+			return errors.New("Malformed 'uatomu' denom not fixed")
 		}
 	}
 
 	// proceed with the original intention of populating the missing Name and Symbol fields
 	atomMetaData, foundCorrect := keepers.BankKeeper.GetDenomMetaData(ctx, correctDenom)
 	if !foundCorrect {
-		return errors.New("atom denom not found")
+		return errors.New("Atom denom not found")
 	}
 
 	atomMetaData.Name = "Cosmos Hub Atom"
 	atomMetaData.Symbol = "ATOM"
 	keepers.BankKeeper.SetDenomMetaData(ctx, atomMetaData)
 
+	ctx.Logger().Info("Fix bank metadata complete")
+
 	return nil
 }
 
 func QuicksilverFix(ctx sdk.Context, keepers *keepers.AppKeepers) error {
+	ctx.Logger().Info("Starting fix quicksilver...")
+
 	// Refund stuck coins from ica address
 	sourceAddress, err := sdk.AccAddressFromBech32("cosmos13dqvh4qtg4gzczuktgnw8gc2ewnwmhdwnctekxctyr4azz4dcyysecgq7e")
 	if err != nil {
-		return errors.New("invalid source address")
+		return errors.New("Invalid source address")
 	}
 	destinationAddress, err := sdk.AccAddressFromBech32("cosmos1jc24kwznud9m3mwqmcz3xw33ndjuufnghstaag")
 	if err != nil {
-		return errors.New("invalid destination address")
+		return errors.New("Invalid destination address")
 	}
 
 	// Get balance from stuck address and subtract 1 uatom sent by bad actor
@@ -68,7 +74,7 @@ func QuicksilverFix(ctx sdk.Context, keepers *keepers.AppKeepers) error {
 		refundBalance := sourceBalance.SubAmount(sdk.NewInt(1))
 		err = keepers.BankKeeper.SendCoins(ctx, sourceAddress, destinationAddress, sdk.NewCoins(refundBalance))
 		if err != nil {
-			return errors.New("unable to refund coins")
+			return errors.New("Unable to refund coins")
 		}
 	}
 
@@ -78,6 +84,8 @@ func QuicksilverFix(ctx sdk.Context, keepers *keepers.AppKeepers) error {
 	closeChannel(keepers, ctx, "channel-464")
 	closeChannel(keepers, ctx, "channel-465")
 	closeChannel(keepers, ctx, "channel-466")
+
+	ctx.Logger().Info("Fix quicksilver complete")
 
 	return nil
 }
@@ -96,7 +104,7 @@ func CreateUpgradeHandler(
 	keepers *keepers.AppKeepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-		ctx.Logger().Info("running upgrade fixes...")
+		ctx.Logger().Info("Running upgrade fixes...")
 
 		err := FixBankMetadata(ctx, keepers)
 		if err != nil {
@@ -117,14 +125,14 @@ func CreateUpgradeHandler(
 		// Update params for host & controller keepers
 		keepers.ICAHostKeeper.SetParams(ctx, hostParams)
 
-		ctx.Logger().Info("start to run module migrations...")
+		ctx.Logger().Info("Starting module migrations...")
 
 		vm, err = mm.RunMigrations(ctx, configurator, vm)
 		if err != nil {
 			return vm, err
 		}
 
-		ctx.Logger().Info("upgrade complete")
+		ctx.Logger().Info("Upgrade complete")
 		return vm, err
 	}
 }

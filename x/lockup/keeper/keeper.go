@@ -11,10 +11,10 @@ import (
 type Keeper struct {
 	storeKey   sdk.StoreKey
 	paramSpace paramstypes.Subspace
-	cdc        codec.BinaryMarshaler
+	cdc        codec.BinaryCodec
 }
 
-func NewKeeper(cdc codec.BinaryMarshaler, storeKey sdk.StoreKey, paramSpace paramstypes.Subspace) Keeper {
+func NewKeeper(cdc codec.BinaryCodec, storeKey sdk.StoreKey, paramSpace paramstypes.Subspace) Keeper {
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())

@@ -688,11 +688,13 @@ func NewAltheaApp(
 		SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 	}
 
+	// Create the lockup AnteHandler, to ensure sufficient decentralization before funds may be transferred
 	ah, err := ante.NewAnteHandler(options)
 	if err != nil {
 		panic("invalid antehandler created")
 	}
-	app.SetAnteHandler(ah)
+	lockupAnteHandler := lockup.NewWrappedLockupAnteHandler(ah, lockupKeeper)
+	app.SetAnteHandler(lockupAnteHandler)
 
 	app.SetEndBlocker(app.EndBlocker)
 

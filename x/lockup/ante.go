@@ -60,7 +60,7 @@ func (lad LockAnteDecorator) AnteHandle(
 		lockedMsgTypesSet := lad.lockupKeeper.GetLockedMessageTypesSet(ctx)
 		exemptSet := lad.lockupKeeper.GetLockExemptAddressesSet(ctx)
 		for _, msg := range tx.GetMsgs() {
-			if _, typePresent := lockedMsgTypesSet[msg.Type()]; typePresent {
+			if _, typePresent := lockedMsgTypesSet[sdk.MsgTypeURL(msg)]; typePresent {
 				if allow, err := allowMessage(msg, exemptSet); !allow {
 					return ctx, sdkerrors.Wrap(err,
 						fmt.Sprintf("Transaction %v blocked because of message %v", tx, msg))
@@ -87,8 +87,8 @@ func NewLockupAnteDecorator(lockupKeeper keeper.Keeper) LockAnteDecorator {
 // allowMessage checks that an input `msg` was sent by only addresses in `exemptSet`
 // returns true if `msg` is either permissible or not a type of message this module blocks
 func allowMessage(msg sdk.Msg, exemptSet map[string]struct{}) (bool, error) {
-	switch msg.Type() {
-	case banktypes.TypeMsgSend:
+	switch sdk.MsgTypeURL(msg) {
+	case sdk.MsgTypeURL(&banktypes.MsgSend{}):
 		msgSend := msg.(*banktypes.MsgSend)
 		if _, present := exemptSet[msgSend.FromAddress]; !present {
 			// Message sent from a non-exempt address while the chain is locked up, returning error
@@ -96,7 +96,7 @@ func allowMessage(msg sdk.Msg, exemptSet map[string]struct{}) (bool, error) {
 				"The chain is locked, only exempt addresses may be the FromAddress in a Send message")
 		}
 		return true, nil
-	case banktypes.TypeMsgMultiSend:
+	case sdk.MsgTypeURL(&banktypes.MsgMultiSend{}):
 		msgMultiSend := msg.(*banktypes.MsgMultiSend)
 		for _, input := range msgMultiSend.Inputs {
 			if _, present := exemptSet[input.Address]; !present {
@@ -109,6 +109,8 @@ func allowMessage(msg sdk.Msg, exemptSet map[string]struct{}) (bool, error) {
 	default:
 		return false, sdkerrors.Wrap(types.ErrUnhandled,
 			fmt.Sprintf("Message type %v does not have a case in allowMessage, unable to handle messages like this",
-				msg.Type()))
+				sdk.MsgTypeURL(msg),
+			),
+		)
 	}
 }

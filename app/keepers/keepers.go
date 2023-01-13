@@ -272,12 +272,11 @@ func NewAppKeeper(
 		govRouter,
 	)
 
-	// TODO: Confirm TransferKeeper wiring correct after strangelove backports https://github.com/strangelove-ventures/packet-forward-middleware/blob/6867bcaac00fef1267c4ea99c3cbb6ee8bc6a025/router/keeper/keeper.go#L49
 	appKeepers.TransferKeeper = ibctransferkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[ibctransfertypes.StoreKey],
 		appKeepers.GetSubspace(ibctransfertypes.ModuleName),
-		appKeepers.RouterKeeper,
+		appKeepers.IBCKeeper.ChannelKeeper,
 		appKeepers.IBCKeeper.ChannelKeeper,
 		&appKeepers.IBCKeeper.PortKeeper,
 		appKeepers.AccountKeeper,

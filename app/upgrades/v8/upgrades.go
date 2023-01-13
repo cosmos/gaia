@@ -36,14 +36,14 @@ func FixBankMetadata(ctx sdk.Context, keepers *keepers.AppKeepers) error {
 		// confirm whether the old key is still accessible
 		_, foundMalformed = keepers.BankKeeper.GetDenomMetaData(ctx, malformedDenom)
 		if foundMalformed {
-			return errors.New("Malformed 'uatomu' denom not fixed")
+			return errors.New("malformed 'uatomu' denom not fixed")
 		}
 	}
 
 	// proceed with the original intention of populating the missing Name and Symbol fields
 	atomMetaData, foundCorrect := keepers.BankKeeper.GetDenomMetaData(ctx, correctDenom)
 	if !foundCorrect {
-		return errors.New("Atom denom not found")
+		return errors.New("atom denom not found")
 	}
 
 	atomMetaData.Name = "Cosmos Hub Atom"
@@ -61,11 +61,11 @@ func QuicksilverFix(ctx sdk.Context, keepers *keepers.AppKeepers) error {
 	// Refund stuck coins from ica address
 	sourceAddress, err := sdk.AccAddressFromBech32("cosmos13dqvh4qtg4gzczuktgnw8gc2ewnwmhdwnctekxctyr4azz4dcyysecgq7e")
 	if err != nil {
-		return errors.New("Invalid source address")
+		return errors.New("invalid source address")
 	}
 	destinationAddress, err := sdk.AccAddressFromBech32("cosmos1jc24kwznud9m3mwqmcz3xw33ndjuufnghstaag")
 	if err != nil {
-		return errors.New("Invalid destination address")
+		return errors.New("invalid destination address")
 	}
 
 	// Get balance from stuck address and subtract 1 uatom sent by bad actor
@@ -74,7 +74,7 @@ func QuicksilverFix(ctx sdk.Context, keepers *keepers.AppKeepers) error {
 		refundBalance := sourceBalance.SubAmount(sdk.NewInt(1))
 		err = keepers.BankKeeper.SendCoins(ctx, sourceAddress, destinationAddress, sdk.NewCoins(refundBalance))
 		if err != nil {
-			return errors.New("Unable to refund coins")
+			return errors.New("unable to refund coins")
 		}
 	}
 
@@ -108,7 +108,7 @@ func CreateUpgradeHandler(
 
 		err := FixBankMetadata(ctx, keepers)
 		if err != nil {
-			ctx.Logger().Info(fmt.Sprintf("Error fixing bank metadata: %s", err.Error()))
+			ctx.Logger().Info(fmt.Sprintf("error fixing bank metadata: %s", err.Error()))
 		}
 
 		err = QuicksilverFix(ctx, keepers)

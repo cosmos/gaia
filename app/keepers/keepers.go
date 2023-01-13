@@ -91,7 +91,7 @@ type AppKeepers struct {
 	AuthzKeeper     authzkeeper.Keeper
 	LiquidityKeeper liquiditykeeper.Keeper
 
-	RouterKeeper routerkeeper.Keeper
+	RouterKeeper *routerkeeper.Keeper
 
 	// Modules
 	ICAModule      ica.AppModule
@@ -276,7 +276,7 @@ func NewAppKeeper(
 		appCodec,
 		appKeepers.keys[ibctransfertypes.StoreKey],
 		appKeepers.GetSubspace(ibctransfertypes.ModuleName),
-		appKeepers.IBCKeeper.ChannelKeeper,
+		*appKeepers.RouterKeeper,
 		appKeepers.IBCKeeper.ChannelKeeper,
 		&appKeepers.IBCKeeper.PortKeeper,
 		appKeepers.AccountKeeper,
@@ -298,7 +298,7 @@ func NewAppKeeper(
 	appKeepers.ICAModule = ica.NewAppModule(nil, &appKeepers.ICAHostKeeper)
 	icaHostIBCModule := icahost.NewIBCModule(appKeepers.ICAHostKeeper)
 
-	appKeepers.RouterKeeper = routerkeeper.NewKeeper(
+	*appKeepers.RouterKeeper = routerkeeper.NewKeeper(
 		appCodec, appKeepers.keys[routertypes.StoreKey],
 		appKeepers.GetSubspace(routertypes.ModuleName),
 		appKeepers.TransferKeeper,
@@ -309,13 +309,13 @@ func NewAppKeeper(
 		appKeepers.IBCKeeper.ChannelKeeper,
 	)
 
-	appKeepers.RouterModule = router.NewAppModule(appKeepers.RouterKeeper)
+	appKeepers.RouterModule = router.NewAppModule(*appKeepers.RouterKeeper)
 
 	var ibcStack porttypes.IBCModule
 	ibcStack = transfer.NewIBCModule(appKeepers.TransferKeeper)
 	ibcStack = router.NewIBCMiddleware(
 		ibcStack,
-		appKeepers.RouterKeeper,
+		*appKeepers.RouterKeeper,
 		0,
 		routerkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
 		routerkeeper.DefaultRefundTransferPacketTimeoutTimestamp,

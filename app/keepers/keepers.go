@@ -272,18 +272,32 @@ func NewAppKeeper(
 		govRouter,
 	)
 
-	// TODO: Confirm TransferKeeper wiring correct after strangelove backports https://github.com/strangelove-ventures/packet-forward-middleware/blob/6867bcaac00fef1267c4ea99c3cbb6ee8bc6a025/router/keeper/keeper.go#L49
+	// RouterKeeper must be created before TransferKeeper
+	appKeepers.RouterKeeper = *routerkeeper.NewKeeper(
+		appCodec, appKeepers.keys[routertypes.StoreKey],
+		appKeepers.GetSubspace(routertypes.ModuleName),
+		appKeepers.TransferKeeper,
+		appKeepers.IBCKeeper.ChannelKeeper,
+		appKeepers.DistrKeeper,
+		appKeepers.BankKeeper,
+		&appKeepers.IBCKeeper.PortKeeper,
+		appKeepers.IBCKeeper.ChannelKeeper,
+	)
+
 	appKeepers.TransferKeeper = ibctransferkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[ibctransfertypes.StoreKey],
 		appKeepers.GetSubspace(ibctransfertypes.ModuleName),
-		appKeepers.RouterKeeper,
+		&appKeepers.RouterKeeper,
 		appKeepers.IBCKeeper.ChannelKeeper,
 		&appKeepers.IBCKeeper.PortKeeper,
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
 		appKeepers.ScopedTransferKeeper,
 	)
+
+	appKeepers.RouterKeeper.SetTransferKeeper(appKeepers.TransferKeeper)
+
 	appKeepers.TransferModule = transfer.NewAppModule(appKeepers.TransferKeeper)
 
 	appKeepers.ICAHostKeeper = icahostkeeper.NewKeeper(
@@ -299,24 +313,13 @@ func NewAppKeeper(
 	appKeepers.ICAModule = ica.NewAppModule(nil, &appKeepers.ICAHostKeeper)
 	icaHostIBCModule := icahost.NewIBCModule(appKeepers.ICAHostKeeper)
 
-	appKeepers.RouterKeeper = routerkeeper.NewKeeper(
-		appCodec, appKeepers.keys[routertypes.StoreKey],
-		appKeepers.GetSubspace(routertypes.ModuleName),
-		appKeepers.TransferKeeper,
-		appKeepers.IBCKeeper.ChannelKeeper,
-		appKeepers.DistrKeeper,
-		appKeepers.BankKeeper,
-		&appKeepers.IBCKeeper.PortKeeper,
-		appKeepers.IBCKeeper.ChannelKeeper,
-	)
-
 	appKeepers.RouterModule = router.NewAppModule(appKeepers.RouterKeeper)
 
 	var ibcStack porttypes.IBCModule
 	ibcStack = transfer.NewIBCModule(appKeepers.TransferKeeper)
 	ibcStack = router.NewIBCMiddleware(
 		ibcStack,
-		appKeepers.RouterKeeper,
+		&appKeepers.RouterKeeper,
 		0,
 		routerkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
 		routerkeeper.DefaultRefundTransferPacketTimeoutTimestamp,

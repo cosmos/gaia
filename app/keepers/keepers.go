@@ -56,10 +56,10 @@ import (
 	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
 	liquiditykeeper "github.com/gravity-devs/liquidity/x/liquidity/keeper"
 	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
+	"github.com/strangelove-ventures/packet-forward-middleware/v4/router"
+	routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v4/router/keeper"
+	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
 	tmos "github.com/tendermint/tendermint/libs/os"
-	"github.com/yaruwangway/packet-forward-middleware/v3/router"
-	routerkeeper "github.com/yaruwangway/packet-forward-middleware/v3/router/keeper"
-	routertypes "github.com/yaruwangway/packet-forward-middleware/v3/router/types"
 
 	"github.com/cosmos/gaia/v8/x/globalfee"
 	// unnamed import of statik for swagger UI support
@@ -300,11 +300,30 @@ func NewAppKeeper(
 		appKeepers.ScopedTransferKeeper,
 	)
 	appKeepers.TransferModule = transfer.NewAppModule(appKeepers.TransferKeeper)
+
+	appKeepers.RouterKeeper = routerkeeper.NewKeeper(
+		appCodec, appKeepers.keys[routertypes.StoreKey],
+		appKeepers.GetSubspace(routertypes.ModuleName),
+		appKeepers.TransferKeeper,
+		appKeepers.IBCKeeper.ChannelKeeper,
+		appKeepers.DistrKeeper,
+		appKeepers.BankKeeper,
+		&appKeepers.IBCKeeper.PortKeeper, // todo check here
+		appKeepers.IBCFeeKeeper,
+	)
+
+	appKeepers.RouterModule = router.NewAppModule(appKeepers.RouterKeeper)
+
 	var transferStack porttypes.IBCModule
 	transferStack = transfer.NewIBCModule(appKeepers.TransferKeeper)
 	transferStack = ibcfee.NewIBCMiddleware(transferStack, appKeepers.IBCFeeKeeper)
-	transferStack = router.NewIBCMiddleware(transferStack, appKeepers.RouterKeeper, 0,
-		routerkeeper.DefaultForwardTransferPacketTimeoutTimestamp, routerkeeper.DefaultRefundTransferPacketTimeoutTimestamp) // todo check here
+	transferStack = router.NewIBCMiddleware(
+		transferStack,
+		appKeepers.RouterKeeper,
+		0,
+		routerkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
+		routerkeeper.DefaultRefundTransferPacketTimeoutTimestamp,
+	)
 
 	appKeepers.ICAControllerKeeper = icacontrollerkeeper.NewKeeper(
 		appCodec, appKeepers.keys[icacontrollertypes.StoreKey], appKeepers.GetSubspace(icacontrollertypes.SubModuleName),
@@ -328,20 +347,7 @@ func NewAppKeeper(
 	icaHostStack = icahost.NewIBCModule(appKeepers.ICAHostKeeper)
 	icaHostStack = ibcfee.NewIBCMiddleware(icaHostStack, appKeepers.IBCFeeKeeper)
 
-	appKeepers.RouterKeeper = routerkeeper.NewKeeper(
-		appCodec, appKeepers.keys[routertypes.StoreKey],
-		appKeepers.GetSubspace(routertypes.ModuleName),
-		appKeepers.TransferKeeper,
-		appKeepers.IBCKeeper.ChannelKeeper,
-		appKeepers.DistrKeeper,
-		appKeepers.BankKeeper,
-		&appKeepers.IBCKeeper.PortKeeper, // todo check here
-		appKeepers.IBCFeeKeeper,
-	)
-
-	appKeepers.RouterModule = router.NewAppModule(appKeepers.RouterKeeper)
-
-	// create static IBC router, add transfer route, then set and seal it
+	// create static IBC router,transfer route and ICA host route, then set and seal it
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostStack).
 		AddRoute(ibctransfertypes.ModuleName, transferStack)
@@ -378,6 +384,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(liquiditytypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
+	paramsKeeper.Subspace(ibcfeetypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 
 	paramsKeeper.Subspace(routertypes.ModuleName).WithKeyTable(routertypes.ParamKeyTable())

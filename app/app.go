@@ -695,7 +695,7 @@ func NewAltheaApp(
 	if err != nil {
 		panic("invalid antehandler created")
 	}
-	lockupAnteHandler := lockup.NewWrappedLockupAnteHandler(ah, lockupKeeper)
+	lockupAnteHandler := lockup.NewWrappedLockupAnteHandler(ah, lockupKeeper, appCodec)
 	app.SetAnteHandler(lockupAnteHandler)
 
 	app.SetEndBlocker(app.EndBlocker)

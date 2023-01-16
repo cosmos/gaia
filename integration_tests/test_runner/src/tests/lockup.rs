@@ -1,3 +1,5 @@
+use std::time::SystemTime;
+
 use crate::type_urls::{
     GENERIC_AUTHORIZATION_TYPE_URL, MSG_EXEC_TYPE_URL, MSG_GRANT_TYPE_URL, MSG_MULTI_SEND_TYPE_URL,
     MSG_SEND_TYPE_URL,
@@ -27,10 +29,24 @@ pub const LOCK_EXEMPT_PARAM_KEY: &str = "lockExempt";
 /// and asserting that balances can successfully be transferred
 pub async fn lockup_test(contact: &Contact, validator_keys: Vec<ValidatorKeys>) {
     let lock_exempt = get_user_key(None);
+    let msg_send_authorized = get_user_key(None);
+    let msg_multi_send_authorized = get_user_key(None);
     fund_lock_exempt_user(contact, &validator_keys, lock_exempt).await;
+    fund_authorized_users(
+        contact,
+        &validator_keys,
+        msg_send_authorized,
+        msg_multi_send_authorized,
+    )
+    .await;
     lockup_the_chain(contact, &validator_keys, &lock_exempt).await;
 
-    fail_to_send(contact, &validator_keys).await;
+    fail_to_send(
+        contact,
+        &validator_keys,
+        (msg_send_authorized, msg_multi_send_authorized),
+    )
+    .await;
     send_from_lock_exempt(contact, lock_exempt).await;
 
     unlock_the_chain(contact, &validator_keys).await;
@@ -47,6 +63,8 @@ async fn fund_lock_exempt_user(
         denom: STAKING_TOKEN.clone(),
         amount: one_atom() * 100u16.into(),
     };
+
+    info!("Funding lock exempt user {}", lock_exempt.cosmos_address);
     contact
         .send_coins(
             amount.clone(),
@@ -57,6 +75,41 @@ async fn fund_lock_exempt_user(
         )
         .await
         .expect("Unable to send funds to lock exempt user!");
+}
+
+async fn fund_authorized_users(
+    contact: &Contact,
+    validator_keys: &[ValidatorKeys],
+    auth_1: CosmosUser,
+    auth_2: CosmosUser,
+) {
+    let sender = validator_keys.get(0).unwrap().validator_key;
+    let amount = Coin {
+        denom: STAKING_TOKEN.clone(),
+        amount: one_atom(),
+    };
+    info!("Funding auth_1 user {}", auth_1.cosmos_address);
+    contact
+        .send_coins(
+            amount.clone(),
+            Some(amount.clone()),
+            auth_1.cosmos_address,
+            Some(OPERATION_TIMEOUT),
+            sender,
+        )
+        .await
+        .expect("Unable to send funds to auth_1 user!");
+    info!("Funding auth_2 user {}", auth_2.cosmos_address);
+    contact
+        .send_coins(
+            amount.clone(),
+            Some(amount),
+            auth_2.cosmos_address,
+            Some(OPERATION_TIMEOUT),
+            sender,
+        )
+        .await
+        .expect("Unable to send funds to auth_2 user!");
 }
 
 pub async fn lockup_the_chain(
@@ -102,7 +155,11 @@ pub fn create_lockup_param_changes(exempt_user: Address) -> Vec<ParamChange> {
     vec![locked, lock_exempt, locked_msg_types]
 }
 
-pub async fn fail_to_send(contact: &Contact, validator_keys: &[ValidatorKeys]) {
+pub async fn fail_to_send(
+    contact: &Contact,
+    validator_keys: &[ValidatorKeys],
+    authorized_users: (CosmosUser, CosmosUser),
+) {
     let sender = validator_keys.get(0).unwrap().validator_key;
     let receiver = get_user_key(None);
     let amount = ProtoCoin {
@@ -114,8 +171,7 @@ pub async fn fail_to_send(contact: &Contact, validator_keys: &[ValidatorKeys]) {
     let res = contact
         .send_message(&[msg_send], None, &[], Some(OPERATION_TIMEOUT), sender)
         .await;
-    info!("Tried to send via bank MsgSend: {:?}", res);
-    res.expect_err("Successfully sent? Should not be possible!");
+    res.expect_err("Successfully sent via bank MsgSend? Should not be possible!");
     let msg_multi_send =
         create_bank_msg_multi_send(sender, receiver.cosmos_address, amount.clone());
     let res = contact
@@ -127,38 +183,48 @@ pub async fn fail_to_send(contact: &Contact, validator_keys: &[ValidatorKeys]) {
             sender,
         )
         .await;
-    info!("Tried to send via bank MsgMultiSend: {:?}", res);
-    res.expect_err("Successfully sent? Should not be possible!");
-    let (authz_send, authorized) =
-        create_authz_bank_msg_send(contact, sender, receiver.cosmos_address, amount.clone())
-            .await
-            .unwrap();
+    res.expect_err("Successfully sent via bank MsgMultiSend? Should not be possible!");
+
+    let msg_send_authorized = authorized_users.0;
+    let authz_send = create_authz_bank_msg_send(
+        contact,
+        sender,
+        msg_send_authorized,
+        receiver.cosmos_address,
+        amount.clone(),
+    )
+    .await
+    .unwrap();
     let res = contact
         .send_message(
-            &[authz_send],
+            &[authz_send.clone()],
             None,
             &[],
             Some(OPERATION_TIMEOUT),
-            authorized.cosmos_key,
+            msg_send_authorized.cosmos_key,
         )
         .await;
-    info!("Tried to send via authz MsgSend: {:?}", res);
-    res.expect_err("Successfully sent? Should not be possible!");
-    let (authz_multi_send, authorized) =
-        create_authz_bank_msg_multi_send(contact, sender, receiver.cosmos_address, amount.clone())
-            .await
-            .unwrap();
+    res.expect_err("Successfully sent via authz Exec(MsgSend)? Should not be possible!");
+    let msg_multi_send_authorized = authorized_users.1;
+    let authz_multi_send = create_authz_bank_msg_multi_send(
+        contact,
+        sender,
+        msg_multi_send_authorized,
+        receiver.cosmos_address,
+        amount.clone(),
+    )
+    .await
+    .unwrap();
     let res = contact
         .send_message(
-            &[authz_multi_send],
+            &[authz_multi_send.clone()],
             None,
             &[],
             Some(OPERATION_TIMEOUT),
-            authorized.cosmos_key,
+            msg_multi_send_authorized.cosmos_key,
         )
         .await;
-    info!("Tried to send via authz MsgSend: {:?}", res);
-    res.expect_err("Successfully sent? Should not be possible!");
+    res.expect_err("Successfully sent via authz Exec(MsgMultiSend)? Should not be possible!");
 }
 
 /// Creates a x/bank MsgSend to transfer `amount` from `sender` to `receiver`
@@ -198,10 +264,10 @@ pub fn create_bank_msg_multi_send(
 pub async fn create_authz_bank_msg_send(
     contact: &Contact,
     sender: impl PrivateKey,
+    authorizee: CosmosUser,
     receiver: Address,
     amount: ProtoCoin,
-) -> Result<(Msg, CosmosUser), CosmosGrpcError> {
-    let authorizee = get_user_key(None);
+) -> Result<Msg, CosmosGrpcError> {
     let grant_msg_send = create_authorization(
         sender.clone(),
         authorizee.cosmos_address,
@@ -228,7 +294,7 @@ pub async fn create_authz_bank_msg_send(
     };
     let exec_msg = Msg::new(MSG_EXEC_TYPE_URL, exec);
 
-    Ok((exec_msg, authorizee))
+    Ok(exec_msg)
 }
 
 /// Submits an Authorization using x/authz to give the returned private key control over `sender`'s tokens, then crafts
@@ -236,10 +302,10 @@ pub async fn create_authz_bank_msg_send(
 pub async fn create_authz_bank_msg_multi_send(
     contact: &Contact,
     sender: impl PrivateKey,
+    authorizee: CosmosUser,
     receiver: Address,
     amount: ProtoCoin,
-) -> Result<(Msg, CosmosUser), CosmosGrpcError> {
-    let authorizee = get_user_key(None);
+) -> Result<Msg, CosmosGrpcError> {
     let grant_msg_multi_send = create_authorization(
         sender.clone(),
         authorizee.cosmos_address,
@@ -266,7 +332,7 @@ pub async fn create_authz_bank_msg_multi_send(
     };
     let exec_msg = Msg::new(MSG_EXEC_TYPE_URL, exec);
 
-    Ok((exec_msg, authorizee))
+    Ok(exec_msg)
 }
 
 /// Creates a MsgGrant to give a GenericAuthorization for `authorizee` to submit any Msg with the given `msg_type_url`
@@ -282,10 +348,18 @@ pub fn create_authorization(
     let auth = GenericAuthorization { msg: msg_type_url };
     let auth_any = encode_any(auth, GENERIC_AUTHORIZATION_TYPE_URL.to_string());
 
-    // The authorization and any associated auth expiration
+    let now = SystemTime::now()
+        .duration_since(SystemTime::UNIX_EPOCH)
+        .unwrap()
+        .as_secs() as i64;
+    let expir = prost_types::Timestamp {
+        seconds: now + 60 * 60 * 24 * 365 * 4,
+        nanos: 0,
+    }; // 4 years
+       // The authorization and any associated auth expiration
     let grant = Grant {
         authorization: Some(auth_any),
-        expiration: None,
+        expiration: Some(expir),
     };
 
     // The msg which must be submitted by the granter to give the grantee the specific authorization (with expiration)

@@ -193,7 +193,6 @@ func orderBeginBlockers() []string {
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
-		icatypes.ModuleName,
 		globalfee.ModuleName,
 	}
 }
@@ -221,7 +220,6 @@ func orderEndBlockers() []string {
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
-		icatypes.ModuleName,
 		globalfee.ModuleName,
 	}
 }
@@ -246,7 +244,6 @@ func orderInitBlockers() []string {
 		authz.ModuleName,
 		feegrant.ModuleName,
 		routertypes.ModuleName,
-		icatypes.ModuleName,
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,

@@ -627,6 +627,7 @@ func NewAltheaApp(
 		genutiltypes.ModuleName,
 		authz.ModuleName,
 		paramstypes.ModuleName,
+		lockuptypes.ModuleName,
 	)
 	mm.SetOrderInitGenesis(
 		capabilitytypes.ModuleName,
@@ -645,6 +646,7 @@ func NewAltheaApp(
 		authz.ModuleName,
 		crisistypes.ModuleName,
 		paramstypes.ModuleName,
+		lockuptypes.ModuleName,
 	)
 
 	mm.RegisterInvariants(&crisisKeeper)

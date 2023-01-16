@@ -18,10 +18,8 @@ func DefaultGenesisState() *GenesisState {
 
 func DefaultParams() *Params {
 	return &Params{
-		Locked: false,
-		LockExempt: []string{
-			"0x0000000000000000000000000000000000000000",
-		},
+		Locked:     false,
+		LockExempt: []string{},
 		LockedMessageTypes: []string{
 			sdk.MsgTypeURL(&banktypes.MsgSend{}),
 			sdk.MsgTypeURL(&banktypes.MsgMultiSend{}),
@@ -48,12 +46,9 @@ func ValidateLocked(i interface{}) error {
 }
 
 func ValidateLockExempt(i interface{}) error {
-	v, ok := i.([]string)
+	_, ok := i.([]string)
 	if !ok {
 		return fmt.Errorf("invalid lock exempt type: %T", i)
-	}
-	if len(v) == 0 {
-		return fmt.Errorf("no lock exempt addresses")
 	}
 	return nil
 }

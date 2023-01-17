@@ -11,9 +11,13 @@ import (
 )
 
 func TestCCVTestSuite(t *testing.T) {
+	// Pass in concrete app types that implement the interfaces defined in https://github.com/cosmos/interchain-security/testutil/e2e/interfaces.go
+	// IMPORTANT: the concrete app types passed in as type parameters here must match the
+	// concrete app types returned by the relevant app initers.
 	ccvSuite := e2e.NewCCVTestSuite[*app.GaiaApp, *appConsumer.App](
 		// Pass in ibctesting.AppIniters for gaia (provider) and consumer.
 		icstestingutils.GaiaAppIniter, icstestingutils.ConsumerAppIniter, []string{})
 
+	// Run tests
 	suite.Run(t, ccvSuite)
 }

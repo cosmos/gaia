@@ -28,6 +28,7 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
+	ibctesting "github.com/cosmos/interchain-security/legacy_ibc_testing/testing"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
@@ -58,6 +59,7 @@ var (
 var (
 	_ simapp.App              = (*GaiaApp)(nil)
 	_ servertypes.Application = (*GaiaApp)(nil)
+	_ ibctesting.TestingApp   = (*GaiaApp)(nil)
 )
 
 // GaiaApp extends an ABCI application, but with most of its parameters exported.
@@ -278,6 +280,11 @@ func (app *GaiaApp) ModuleAccountAddrs() map[string]bool {
 func (app *GaiaApp) BlockedModuleAccountAddrs(modAccAddrs map[string]bool) map[string]bool {
 	// remove module accounts that are ALLOWED to received funds
 	delete(modAccAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
+
+	// Remove the fee-pool from the group of blocked recipient addresses in bank
+	// this is required for the provider chain to be able to receive tokens from
+	// the consumer chain
+	delete(modAccAddrs, authtypes.NewModuleAddress(authtypes.FeeCollectorName).String())
 
 	return modAccAddrs
 }

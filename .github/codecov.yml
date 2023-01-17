@@ -8,7 +8,8 @@ coverage:
         threshold: 1% # allow this much decrease on project
       app:
         target: 80%
-        paths: "app/"
+        paths:   # this must be a list type
+          - "app/"
     changes: false
 
 comment:
@@ -27,3 +28,5 @@ ignore:
   - "docs"
   - "proto"
   - "tests/e2e"
+  - "app/app_helpers.go"
+  - "app/sim"

@@ -313,7 +313,7 @@ func NewAppKeeper(
 	appKeepers.ICAModule = ica.NewAppModule(nil, &appKeepers.ICAHostKeeper)
 	icaHostIBCModule := icahost.NewIBCModule(appKeepers.ICAHostKeeper)
 
-	appKeepers.RouterModule = router.NewAppModule(appKeepers.RouterKeeper)
+	appKeepers.RouterModule = router.NewAppModule(&appKeepers.RouterKeeper)
 
 	var ibcStack porttypes.IBCModule
 	ibcStack = transfer.NewIBCModule(appKeepers.TransferKeeper)

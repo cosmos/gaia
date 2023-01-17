@@ -30,3 +30,4 @@ ignore:
   - "tests/e2e"
   - "app/app_helpers.go"
   - "app/sim"
+  - "app/upgrades"

@@ -43,10 +43,6 @@ func TestFixBankMetadata(t *testing.T) {
 	m := cdc.MustMarshal(&denomMetaData)
 	oldDenomMetaDataStore.Set([]byte(v7Key), m)
 
-	// send tokens from bank module to source address
-	// test helper
-	// helper.seedAccount(sourceAddress, amount)
-
 	rhoUpgrade := upgradetypes.Plan{
 		Name:   "v8-Rho",
 		Info:   "some text here",

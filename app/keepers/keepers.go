@@ -95,7 +95,7 @@ type AppKeepers struct {
 	AuthzKeeper         authzkeeper.Keeper
 	LiquidityKeeper     liquiditykeeper.Keeper
 
-	RouterKeeper routerkeeper.Keeper
+	RouterKeeper *routerkeeper.Keeper
 
 	// Modules
 	ICAModule      ica.AppModule
@@ -302,7 +302,8 @@ func NewAppKeeper(
 	appKeepers.TransferModule = transfer.NewAppModule(appKeepers.TransferKeeper)
 
 	appKeepers.RouterKeeper = routerkeeper.NewKeeper(
-		appCodec, appKeepers.keys[routertypes.StoreKey],
+		appCodec,
+		appKeepers.keys[routertypes.StoreKey],
 		appKeepers.GetSubspace(routertypes.ModuleName),
 		appKeepers.TransferKeeper,
 		appKeepers.IBCKeeper.ChannelKeeper,

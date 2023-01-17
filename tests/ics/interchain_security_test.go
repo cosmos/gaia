@@ -1,13 +1,13 @@
 package ics
 
-// TODO: Comment back in when ICS removed reference to Gaia
 import (
 	"encoding/json"
+	"testing"
+
 	appConsumer "github.com/cosmos/interchain-security/app/consumer"
 	"github.com/cosmos/interchain-security/tests/e2e"
 	icstestingutils "github.com/cosmos/interchain-security/testutil/ibc_testing"
 	"github.com/stretchr/testify/suite"
-	"testing"
 
 	gaiaApp "github.com/cosmos/gaia/v9/app"
 	ibctesting "github.com/cosmos/interchain-security/legacy_ibc_testing/testing"

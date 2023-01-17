@@ -37,7 +37,7 @@ import (
 	"github.com/tendermint/tendermint/libs/rand"
 	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 
-	"github.com/cosmos/gaia/v8/app/params"
+	"github.com/cosmos/gaia/v9/app/params"
 )
 
 const (

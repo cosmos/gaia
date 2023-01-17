@@ -34,7 +34,7 @@ import (
 	// ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
 	// ibcchanneltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 
-	"github.com/cosmos/gaia/v8/app/params"
+	"github.com/cosmos/gaia/v9/app/params"
 )
 
 var (

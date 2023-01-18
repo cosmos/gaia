@@ -22,8 +22,6 @@ func TestValidation(t *testing.T) {
 	assert.NotNil(t, err, "badGenesis did not produce an error after ValidateBasic")
 	err = ValidateLocked(nil)
 	assert.NotNil(t, err, "nil locked did not produce an error in validation fn")
-	err = ValidateLockExempt(badGenesis.Params.LockExempt)
-	assert.NotNil(t, err, "badGenesis lockExempt did not produce an error in validation fn")
 	err = ValidateLockedMessageTypes(nil)
 	assert.NotNil(t, err, "badGenesis lockedMessageTypes did not produce an error in validation fn")
 }

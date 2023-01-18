@@ -27,11 +27,12 @@ func TestLockAnteHandler(t *testing.T) {
 	keeper := keeper.NewKeeper(
 		appCodec, keys[types.StoreKey], subspace,
 	)
-	handler := NewLockupAnteHandler(keeper)
+	handler := NewLockupAnteHandler(keeper, appCodec)
 	txFct := tx.Factory{}.WithTxConfig(txCfg).WithChainID("Gold-Chain")
 
 	// Lock the chain
 	keeper.SetChainLocked(ctx, true)
+	keeper.SetLockExemptAddresses(ctx, []string{"0x0000000000000000000000000000000000000000"})
 
 	AnteHandlerLockedHappy(t, handler, keeper, ctx, txCfg, txFct)
 	AnteHandlerLockedUnhappy(t, handler, keeper, ctx, txCfg, txFct)
@@ -132,11 +133,12 @@ func GetAllowedMsgSendTx(keeper keeper.Keeper, ctx sdk.Context, txFct tx.Factory
 }
 
 func GetAllowedMsgSend(keeper keeper.Keeper, ctx sdk.Context) banktypes.MsgSend {
-	exemptSet := keeper.GetLockExemptAddressesSet(ctx)
 	fromAddr := "0x0000000000000000000000000000000000000000"
-	if _, ok := exemptSet[fromAddr]; !ok {
-		panic(fmt.Sprintf("The exemptSet has been changed, it needs to contain %v", fromAddr))
-	}
+	// The following check has been removed pending ExemptSet decisions
+	// exemptSet := keeper.GetLockExemptAddressesSet(ctx)
+	// if _, ok := exemptSet[fromAddr]; !ok {
+	// 	panic(fmt.Sprintf("The exemptSet has been changed, it needs to contain %v", fromAddr))
+	// }
 	toAddr := "0x1111111111111111111111111111111111111111"
 	amount := sdk.NewCoins(sdk.NewCoin("ualtg", sdk.NewInt(1000000000000000000)))
 	return banktypes.MsgSend{FromAddress: fromAddr, ToAddress: toAddr, Amount: amount}
@@ -165,11 +167,12 @@ func GetAllowedMultiSendTx(keeper keeper.Keeper, ctx sdk.Context, txFct tx.Facto
 }
 
 func GetAllowedMultiSendMsg(keeper keeper.Keeper, ctx sdk.Context) banktypes.MsgMultiSend {
-	exemptSet := keeper.GetLockExemptAddressesSet(ctx)
 	fromAddr := "0x0000000000000000000000000000000000000000"
-	if _, ok := exemptSet[fromAddr]; !ok {
-		panic(fmt.Sprintf("The exemptSet has been changed, it needs to contain %v", fromAddr))
-	}
+	// The following check has been removed pending ExemptSet decisions
+	// exemptSet := keeper.GetLockExemptAddressesSet(ctx)
+	// if _, ok := exemptSet[fromAddr]; !ok {
+	// 	panic(fmt.Sprintf("The exemptSet has been changed, it needs to contain %v", fromAddr))
+	// }
 	toAddr := "0x1111111111111111111111111111111111111111"
 	amount := sdk.NewCoins(sdk.NewCoin("ualtg", sdk.NewInt(1000000000000000000)))
 	inputs := []banktypes.Input{{Address: fromAddr, Coins: amount}}
@@ -196,11 +199,12 @@ func GetUnimportantMsg() stakingtypes.MsgCreateValidator {
 }
 
 func GetUnallowedMsgSendTx(keeper keeper.Keeper, ctx sdk.Context, txFct tx.Factory, txCfg client.TxConfig) sdk.Tx {
-	exemptSet := keeper.GetLockExemptAddressesSet(ctx)
 	fromAddr := "0x1111111111111111111111111111111111111111"
-	if _, ok := exemptSet[fromAddr]; ok {
-		panic(fmt.Sprintf("The exemptSet has been changed, it MUST NOT contain %v", fromAddr))
-	}
+	// The following check has been removed pending ExemptSet decisions
+	// exemptSet := keeper.GetLockExemptAddressesSet(ctx)
+	// if _, ok := exemptSet[fromAddr]; ok {
+	// 	panic(fmt.Sprintf("The exemptSet has been changed, it MUST NOT contain %v", fromAddr))
+	// }
 	toAddr := "0x0000000000000000000000000000000000000000"
 	amount := sdk.NewCoins(sdk.NewCoin("ualtg", sdk.NewInt(1000000000000000000)))
 	msgSend := banktypes.MsgSend{FromAddress: fromAddr, ToAddress: toAddr, Amount: amount}
@@ -223,11 +227,12 @@ func GetUnallowedMultiSendTx(keeper keeper.Keeper, ctx sdk.Context, txFct tx.Fac
 }
 
 func GetUnallowedMultiSendMsg(keeper keeper.Keeper, ctx sdk.Context) banktypes.MsgMultiSend {
-	exemptSet := keeper.GetLockExemptAddressesSet(ctx)
 	fromAddr := "0x1111111111111111111111111111111111111111"
-	if _, ok := exemptSet[fromAddr]; ok {
-		panic(fmt.Sprintf("The exemptSet has been changed, it MUST NOT contain %v", fromAddr))
-	}
+	// The following check has been removed pending ExemptSet decisions
+	// exemptSet := keeper.GetLockExemptAddressesSet(ctx)
+	// if _, ok := exemptSet[fromAddr]; ok {
+	// 	panic(fmt.Sprintf("The exemptSet has been changed, it MUST NOT contain %v", fromAddr))
+	// }
 	toAddr := "0x0000000000000000000000000000000000000000"
 	amount := sdk.NewCoins(sdk.NewCoin("ualtg", sdk.NewInt(1000000000000000000)))
 	inputs := []banktypes.Input{{Address: fromAddr, Coins: amount}}

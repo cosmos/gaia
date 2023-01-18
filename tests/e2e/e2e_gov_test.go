@@ -3,7 +3,10 @@ package e2e
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
+
+	ccvtypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -122,6 +125,63 @@ func (s *IntegrationTestSuite) GovCommunityPoolSpend() {
 		10*time.Second,
 		5*time.Second,
 	)
+}
+
+/*
+AddRemoveConsumerChain tests adding and subsequently removing a new consumer chain to Gaia.
+Test Benchmarks:
+1. Submit and pass proposal to add consumer chain
+2. Validation that consumer chain was added
+3. Submit and pass proposal to remove consumer chain
+4. Validation that consumer chain was removed
+*/
+func (s *IntegrationTestSuite) AddRemoveConsumerChain() {
+	s.fundCommunityPool()
+	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	proposerAddress := s.chainA.validators[0].keyInfo.GetAddress()
+	sender := proposerAddress.String()
+	consumerChainID := "consumer"
+	s.writeAddRemoveConsumerProposals(s.chainA, consumerChainID)
+
+	// Gov tests may be run in arbitrary order, each test must increment proposalCounter to have the correct proposal id to submit and query
+	// Add Consumer Chain
+	proposalCounter++
+	submitGovFlags := []string{"consumer-addition", configFile(proposalAddConsumerChainFilename)}
+	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
+	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes"}
+	s.runGovProcess(chainAAPIEndpoint, sender, proposalCounter, ccvtypes.ProposalTypeConsumerAddition, submitGovFlags, depositGovFlags, voteGovFlags, "vote")
+
+	// Query and assert consumer has been added
+	s.execQueryConsumerChains(s.chainA, 0, gaiaHomePath, validateConsumerAddition, consumerChainID)
+
+	// Remove Consumer Chain
+	proposalCounter++
+	submitGovFlags = []string{"consumer-removal", configFile(proposalRemoveConsumerChainFilename)}
+	depositGovFlags = []string{strconv.Itoa(proposalCounter), depositAmount.String()}
+	voteGovFlags = []string{strconv.Itoa(proposalCounter), "yes"}
+	s.runGovProcess(chainAAPIEndpoint, sender, proposalCounter, ccvtypes.ProposalTypeConsumerRemoval, submitGovFlags, depositGovFlags, voteGovFlags, "vote")
+
+	// Query and ssert consumer has been removed
+	s.execQueryConsumerChains(s.chainA, 0, gaiaHomePath, validateConsumerRemoval, consumerChainID)
+}
+
+func validateConsumerAddition(res ccvtypes.QueryConsumerChainsResponse, consumerChainID string) bool {
+	if res.Size() == 0 {
+		return false
+	}
+	for _, chain := range res.GetChains() {
+		return strings.Compare(chain.ChainId, consumerChainID) == 0
+	}
+	return false
+}
+
+func validateConsumerRemoval(res ccvtypes.QueryConsumerChainsResponse, consumerChainID string) bool {
+	if res.Size() > 0 {
+		for _, chain := range res.GetChains() {
+			return !(strings.Compare(chain.ChainId, consumerChainID) == 0)
+		}
+	}
+	return true
 }
 
 func (s *IntegrationTestSuite) runGovProcess(chainAAPIEndpoint, sender string, proposalID int, proposalType string, submitFlags []string, depositFlags []string, voteFlags []string, voteCommand string) {

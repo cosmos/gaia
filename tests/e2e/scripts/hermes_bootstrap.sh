@@ -81,5 +81,7 @@ hermes keys add  --key-name rly01-gaia-b  --chain $GAIA_B_E2E_CHAIN_ID --mnemoni
 sleep 5
 hermes keys add  --key-name rly01-gaia-a  --chain $GAIA_A_E2E_CHAIN_ID --mnemonic-file /root/.hermes/GAIA_A_E2E_RLY_MNEMONIC.txt
 sleep 5
-# start Hermes relayer
-hermes start
+
+# sleep so the container doesn't exit
+# hermes start should be called from the e2e test
+sleep infinity

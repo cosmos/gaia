@@ -143,7 +143,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.runValidators(s.chainB, 10)
 
 	time.Sleep(10 * time.Second)
-	s.runIBCRelayer()
+
+	s.setupIBCRelayer()
+	s.startRelayer()
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {

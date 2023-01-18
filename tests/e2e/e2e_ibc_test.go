@@ -34,7 +34,9 @@ type PacketMetadata struct {
 	Forward *ForwardMetadata `json:"forward"`
 }
 
-func (s *IntegrationTestSuite) runIBCRelayer() {
+// setupIBCRelayer creates a Hermes relayer container and establishes
+// connections and channels between the two test chains.
+func (s *IntegrationTestSuite) setupIBCRelayer() {
 	s.T().Log("starting Hermes relayer container...")
 
 	tmpDir, err := os.MkdirTemp("", "gaia-e2e-testnet-hermes-")
@@ -87,38 +89,6 @@ func (s *IntegrationTestSuite) runIBCRelayer() {
 		noRestart,
 	)
 	s.Require().NoError(err)
-
-	endpoint := fmt.Sprintf("http://%s/state", s.hermesResource.GetHostPort("3031/tcp"))
-	s.Require().Eventually(
-		func() bool {
-			resp, err := http.Get(endpoint) //nolint:gosec // this is a test
-			if err != nil {
-				return false
-			}
-
-			defer resp.Body.Close()
-
-			bz, err := io.ReadAll(resp.Body)
-			if err != nil {
-				return false
-			}
-
-			var respBody map[string]interface{}
-			if err := json.Unmarshal(bz, &respBody); err != nil {
-				return false
-			}
-
-			status := respBody["status"].(string)
-			result := respBody["result"].(map[string]interface{})
-
-			return status == "success" && len(result["chains"].([]interface{})) == 2
-		},
-		5*time.Minute,
-		time.Second,
-		"hermes relayer not healthy",
-	)
-
-	s.T().Logf("started Hermes relayer container: %s", s.hermesResource.Container.ID)
 
 	// XXX: Give time to both networks to start, otherwise we might see gRPC
 	// transport errors.
@@ -246,6 +216,67 @@ func (s *IntegrationTestSuite) createChannel() {
 	)
 
 	s.T().Logf("connected %s and %s chains via IBC", s.chainA.id, s.chainB.id)
+}
+
+// startRelayer starts relaying between the two test cheins.
+func (s *IntegrationTestSuite) startRelayer() {
+	s.T().Logf("starting hermes relayer")
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute*1)
+	defer cancel()
+
+	s.T().Logf("started Hermes relayer container: %s", s.hermesResource.Container.ID)
+
+	exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
+		Context:   ctx,
+		Container: s.hermesResource.Container.ID,
+		User:      "root",
+		Cmd: []string{
+			"hermes",
+			"start",
+		},
+	})
+	s.Require().NoError(err)
+
+	err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
+		Context: ctx,
+		Detach:  true,
+	})
+
+	s.Require().NoErrorf(err, "failed to run 'hermes start'")
+
+	// wait for hermes to come online
+	endpoint := fmt.Sprintf("http://%s/state", s.hermesResource.GetHostPort("3031/tcp"))
+	s.Require().Eventually(
+		func() bool {
+			resp, err := http.Get(endpoint) //nolint:gosec // this is a test
+			if err != nil {
+				return false
+			}
+
+			defer resp.Body.Close()
+
+			bz, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return false
+			}
+
+			var respBody map[string]interface{}
+			if err := json.Unmarshal(bz, &respBody); err != nil {
+				return false
+			}
+
+			status := respBody["status"].(string)
+			result := respBody["result"].(map[string]interface{})
+
+			return status == "success" && len(result["chains"].([]interface{})) == 2
+		},
+		5*time.Minute,
+		time.Second,
+		"hermes relayer not healthy",
+	)
+
+	s.T().Logf("started relaying between %s and %s chains", s.chainA.id, s.chainB.id)
 }
 
 func (s *IntegrationTestSuite) testIBCTokenTransfer() {

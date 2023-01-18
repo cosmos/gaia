@@ -14,7 +14,7 @@ ALLOCATION="10000000000ualtg,10000000000footoken"
 STARTING_VALIDATOR=1
 STARTING_VALIDATOR_HOME="--home /validator$STARTING_VALIDATOR"
 # todo add git hash to chain name
-$BIN init $STARTING_VALIDATOR_HOME --chain-id=$CHAIN_ID validator1
+$BIN init $STARTING_VALIDATOR_HOME --chain-id=$CHAIN_ID validator$STARTING_VALIDATOR
 
 
 ## Modify generated genesis.json to our liking by editing fields using jq
@@ -37,19 +37,19 @@ mv /edited-genesis.json /genesis.json
 # the --home parameter on gaiad
 for i in $(seq 1 $NODES);
 do
-GAIA_HOME="--home /validator$i"
-GENTX_HOME="--home-client /validator$i"
-ARGS="$GAIA_HOME --keyring-backend test"
+    GAIA_HOME="--home /validator$i"
+    GENTX_HOME="--home-client /validator$i"
+    ARGS="$GAIA_HOME --keyring-backend test"
 
-$BIN keys add $ARGS validator$i 2>> /validator-phrases
+    $BIN keys add $ARGS validator$i 2>> /validator-phrases
 
-VALIDATOR_KEY=$($BIN keys show validator$i -a $ARGS)
-# move the genesis in
-mkdir -p /validator$i/config/
-mv /genesis.json /validator$i/config/genesis.json
-$BIN add-genesis-account $ARGS $VALIDATOR_KEY $ALLOCATION
-# move the genesis back out
-mv /validator$i/config/genesis.json /genesis.json
+    VALIDATOR_KEY=$($BIN keys show validator$i -a $ARGS)
+    # move the genesis in
+    mkdir -p /validator$i/config/
+    mv /genesis.json /validator$i/config/genesis.json
+    $BIN add-genesis-account $ARGS $VALIDATOR_KEY $ALLOCATION
+    # move the genesis back out
+    mv /validator$i/config/genesis.json /genesis.json
 done
 
 

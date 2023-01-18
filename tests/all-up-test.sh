@@ -4,23 +4,34 @@ set -eux
 # to be run with any PWD
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-result=$( docker images -q althea-base )
-
 # builds the container containing various system deps
-# also builds Peggy once in order to cache Go deps, this container
-# must be rebuilt every time you run this test if you want a faster
-# solution use start chains and then run tests
+# also builds althea-chain once in order to cache Go deps, this container
+# must be rebuilt every time you run this test because it pulls in the
+# current repo state by reading the latest git commit during image creation
+# if you want a faster solution use start chains and then run tests
+# if you are running many tests on the same code set the NO_IMAGE_BUILD=1 env var
+set +u
+if [[ -z ${NO_IMAGE_BUILD} ]]; then
 bash $DIR/build-container.sh
+fi
+set -u
 
 # Remove existing container instance
 set +e
 docker rm -f althea_all_up_test_instance
 set -e
 
-NODES=3
+NODES=4
 set +u
 TEST_TYPE=$1
 set -u
 
-# Run new test container instance
-docker run --name althea_all_up_test_instance --cap-add=NET_ADMIN -t althea-base /bin/bash /althea/tests/container-scripts/all-up-test-internal.sh $NODES $TEST_TYPE
+# setup for Mac M1 Compatibility
+PLATFORM_CMD=""
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    if [[ -n $(sysctl -a | grep brand | grep "M1") ]]; then
+       echo "Setting --platform=linux/amd64 for Mac M1 compatibility"
+       PLATFORM_CMD="--platform=linux/amd64"; fi
+fi
+
+docker run --name althea_all_up_test_instance $PLATFORM_CMD --cap-add=NET_ADMIN -t althea-base /bin/bash /althea/tests/container-scripts/all-up-test-internal.sh $NODES $TEST_TYPE

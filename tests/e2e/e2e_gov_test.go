@@ -178,7 +178,9 @@ func validateConsumerAddition(res ccvtypes.QueryConsumerChainsResponse, consumer
 func validateConsumerRemoval(res ccvtypes.QueryConsumerChainsResponse, consumerChainID string) bool {
 	if res.Size() > 0 {
 		for _, chain := range res.GetChains() {
-			return !(strings.Compare(chain.ChainId, consumerChainID) == 0)
+			if strings.Compare(chain.ChainId, consumerChainID) == 0 {
+				return false
+			}
 		}
 	}
 	return true

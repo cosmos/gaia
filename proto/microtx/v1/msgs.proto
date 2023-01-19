@@ -29,3 +29,13 @@ message MsgXfer {
 }
 
 message MsgXferResponse {}
+
+// A type for the block's event log, every successful Xfer must create one of
+// these in the event log
+message EventXfer {
+  string sender = 1;
+  string receiver = 2;
+  repeated cosmos.base.v1beta1.Coin amounts = 3
+      [ (gogoproto.nullable) = false ];
+  repeated cosmos.base.v1beta1.Coin fee = 4 [ (gogoproto.nullable) = false ];
+}

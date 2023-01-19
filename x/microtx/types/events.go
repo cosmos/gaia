@@ -1,7 +1,10 @@
 package types
 
 const (
-	EventTypeName = "name"
+	EventTypeName = "xfer"
 
-	AttributeKeyName = "name"
+	XferKeySender   = "sender"
+	XferKeyReceiver = "receiver"
+	XferKeyAmount   = "amount"
+	XferKeyFee      = "fee"
 )

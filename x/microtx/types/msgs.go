@@ -1,42 +1,50 @@
 package types
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // nolint: exhaustruct
 var (
-	_ sdk.Msg = &MsgName{}
+	_ sdk.Msg = &MsgXfer{}
 )
 
-// NewMsgName returns a new MsgName
-func NewMsgName(name string) *MsgName {
-	return &MsgName{
-		Name: name,
+// NewMsgXfer returns a new MsgXfer
+func NewMsgXfer(sender string, reciever string, amounts sdk.Coins) *MsgXfer {
+	return &MsgXfer{
+		sender,
+		reciever,
+		amounts,
 	}
 }
 
 // Route should return the name of the module
-func (msg *MsgName) Route() string { return RouterKey }
+func (msg *MsgXfer) Route() string { return RouterKey }
 
 // ValidateBasic performs stateless checks
-func (msg *MsgName) ValidateBasic() (err error) {
-	if msg.Name == "bob" {
-		return fmt.Errorf("Bob get outta here, I'm trying to program")
+func (msg *MsgXfer) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		return sdkerrors.Wrap(err, "invalid sender in microtx msg xfer")
+	}
+	_, err = sdk.AccAddressFromBech32(msg.Receiver)
+	if err != nil {
+		return sdkerrors.Wrap(err, "invalid receiver in microtx msg xfer")
+	}
+	for _, amt := range msg.Amounts {
+		if err := amt.Validate(); err != nil {
+			return sdkerrors.Wrap(err, "invalid coin in microtx msg xfer")
+		}
 	}
 	return nil
 }
 
 // GetSigners defines whose signature is required
-func (msg *MsgName) GetSigners() []sdk.AccAddress {
-	// TODO: get all the users who must sign the message for the blockchain to be
-	// convinced that they all gave consent for state to be updated
-
-	// acc, err := sdk.AccAddressFromBech32(msg.Signer)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	return []sdk.AccAddress{}
+func (msg *MsgXfer) GetSigners() []sdk.AccAddress {
+	acc, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{acc}
 }

@@ -18,7 +18,7 @@ func init() {
 // nolint: exhaustruct
 func RegisterInterfaces(registry types.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgName{},
+		&MsgXfer{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
@@ -27,5 +27,5 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 // RegisterCodec registers concrete types on the Amino codec
 // nolint: exhaustruct
 func RegisterCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgName{}, "microtx/MsgName", nil)
+	cdc.RegisterConcrete(&MsgXfer{}, "microtx/MsgXfer", nil)
 }

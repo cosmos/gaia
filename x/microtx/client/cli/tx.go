@@ -6,6 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/althea-net/althea-chain/x/microtx/types"
@@ -23,31 +24,51 @@ func GetTxCmd(storeKey string) *cobra.Command {
 	}
 
 	microtxTxCmd.AddCommand([]*cobra.Command{
-		CmdName(),
+		CmdXfer(),
 	}...)
 
 	return microtxTxCmd
 }
 
-// CmdName is an example CLI interface for submitting a Tx containing a MsgName
-func CmdName() *cobra.Command {
+// CmdXfer crafts and submits a MsgXfer to the chain
+func CmdXfer() *cobra.Command {
 	// nolint: exhaustruct
 	cmd := &cobra.Command{
-		Use:   "name [arg0]",
-		Short: "short description",
-		Args:  cobra.ExactArgs(2),
+		Use:   "xfer [sender] [receiver] [amount1] [[amount2] [amount3] ...]",
+		Short: "xfer sends all provided amounts from sender to receiver",
+		Args:  cobra.MinimumNArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
-			// cosmosAddr := cliCtx.GetFromAddress()
+
+			sender, err := sdk.AccAddressFromBech32(args[0])
+			if err != nil {
+				return sdkerrors.Wrapf(err, "provided sender address is invalid: %v", args[0])
+			}
+
+			receiver, err := sdk.AccAddressFromBech32(args[1])
+			if err != nil {
+				return sdkerrors.Wrapf(err, "provided receiver address is invalid: %v", args[1])
+			}
+
+			var amounts sdk.Coins
+			for i := 2; i < len(args); i++ {
+				amount := args[i]
+				coin, err := sdk.ParseCoinNormalized(amount)
+				if err != nil {
+					return sdkerrors.Wrapf(err, "invalid amount provided: %v", amount)
+				}
+				amounts = amounts.Add(coin)
+			}
 
 			// Make the message
-			msg := types.NewMsgName(args[0])
+			msg := types.NewMsgXfer(sender.String(), receiver.String(), amounts)
 			if err := msg.ValidateBasic(); err != nil {
-				return sdkerrors.Wrap(err, "No Bobs allowed :P")
+				return sdkerrors.Wrap(err, "invalid argument provided")
 			}
+
 			// Send it
 			return tx.GenerateOrBroadcastTxCLI(cliCtx, cmd.Flags(), msg)
 		},

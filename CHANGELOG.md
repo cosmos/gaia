@@ -36,6 +36,11 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+## [v9.0.0-rc0] - 2023-01-19
+
+* (feat) Add [Interchain-Security](https://github.com/cosmos/interchain-security) [v1.0.0-rc2](https://github.com/cosmos/interchain-security/releases/tag/v1.0.0-rc2) provider module. See the [ICS Spec](https://github.com/cosmos/ibc/blob/main/spec/app/ics-028-cross-chain-validation/README.md) for more details.
+* (tests) Add [E2E ccv tests](https://github.com/cosmos/gaia/tree/main/tests/e2e). New tests covering functionality added by the provider module to add and remove a consumer chain via governance proposal.
+
 ## [v8.0.0-rc3] - 2023-01-17
 
 * (gaia) Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v3.4.0](https://github.com/cosmos/ibc-go/blob/v3.4.0/CHANGELOG.md) to fix a vulnerability in ICA. See [v3.4.0 CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.9/CHANGELOG.md) and [v3.2.1 Release Notes](https://github.com/cosmos/ibc-go/releases/tag/v3.2.1) for details.

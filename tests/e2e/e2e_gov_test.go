@@ -161,7 +161,7 @@ func (s *IntegrationTestSuite) AddRemoveConsumerChain() {
 	voteGovFlags = []string{strconv.Itoa(proposalCounter), "yes"}
 	s.runGovProcess(chainAAPIEndpoint, sender, proposalCounter, ccvtypes.ProposalTypeConsumerRemoval, submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 
-	// Query and ssert consumer has been removed
+	// Query and assert consumer has been removed
 	s.execQueryConsumerChains(s.chainA, 0, gaiaHomePath, validateConsumerRemoval, consumerChainID)
 }
 

@@ -611,38 +611,7 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 	stdOut := outBuf.Bytes()
 	stdErr := errBuf.Bytes()
 	if !validation(stdOut, stdErr) {
-		s.Require().FailNowf("tx validation failed", "stdout: %s, stderr: %s",
-			string(stdOut), string(stdErr))
-	}
-}
-
-func (s *IntegrationTestSuite) executeGaiaQueryCommand(ctx context.Context, c *chain, gaiaCommand []string, valIdx int, validation func([]byte, []byte) bool) {
-	var (
-		outBuf bytes.Buffer
-		errBuf bytes.Buffer
-	)
-	exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
-		Context:      ctx,
-		AttachStdout: true,
-		AttachStderr: true,
-		Container:    s.valResources[c.id][valIdx].Container.ID,
-		User:         "nonroot",
-		Cmd:          gaiaCommand,
-	})
-	s.Require().NoError(err)
-
-	err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
-		Context:      ctx,
-		Detach:       false,
-		OutputStream: &outBuf,
-		ErrorStream:  &errBuf,
-	})
-	s.Require().NoError(err)
-
-	stdOut := outBuf.Bytes()
-	stdErr := errBuf.Bytes()
-	if !validation(stdOut, stdErr) {
-		s.Require().FailNowf("query validation failed", "stdout: %s, stderr: %s",
+		s.Require().FailNowf("Exec validation failed", "stdout: %s, stderr: %s",
 			string(stdOut), string(stdErr))
 	}
 }

@@ -1,3 +1,4 @@
+//nolint:unused
 package e2e
 
 import (
@@ -31,7 +32,7 @@ func (s *IntegrationTestSuite) execQueryConsumerChains(
 		"--output=json",
 	}
 
-	s.executeGaiaQueryCommand(ctx, c, gaiaCommand, valIdx, s.validateQueryConsumers(queryValidation, consumerChainID))
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.validateQueryConsumers(queryValidation, consumerChainID))
 	s.T().Logf("Successfully queried consumer chains for chain %s", c.id)
 }
 

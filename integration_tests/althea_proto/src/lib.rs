@@ -6,5 +6,7 @@
 
 pub use cosmos_sdk_proto;
 pub mod lockup {
-    include!("prost/lockup.v1.rs");
+    pub mod v1 {
+        include!("prost/lockup.v1.rs");
+    }
 }

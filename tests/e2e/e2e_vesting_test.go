@@ -7,7 +7,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/gaia/v8/x/globalfee/ante"
+	"github.com/cosmos/gaia/v9/x/globalfee/ante"
 )
 
 const (

@@ -11,9 +11,9 @@ import (
 	ibcchanneltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
 	"github.com/stretchr/testify/suite"
 
-	gaiaapp "github.com/cosmos/gaia/v8/app"
-	gaiafeeante "github.com/cosmos/gaia/v8/x/globalfee/ante"
-	globfeetypes "github.com/cosmos/gaia/v8/x/globalfee/types"
+	gaiaapp "github.com/cosmos/gaia/v9/app"
+	gaiafeeante "github.com/cosmos/gaia/v9/x/globalfee/ante"
+	globfeetypes "github.com/cosmos/gaia/v9/x/globalfee/types"
 )
 
 func TestIntegrationTestSuite(t *testing.T) {

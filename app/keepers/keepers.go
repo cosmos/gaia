@@ -41,7 +41,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	"github.com/cosmos/gaia/v8/x/globalfee"
+	"github.com/cosmos/gaia/v9/x/globalfee"
 	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
 	icahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
 	icahostkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/keeper"
@@ -54,7 +54,6 @@ import (
 	porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
 	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
-	ibcstakinginterface "github.com/cosmos/interchain-security/legacy_ibc_testing/core"
 	ibcprovider "github.com/cosmos/interchain-security/x/ccv/provider"
 	ibcproviderkeeper "github.com/cosmos/interchain-security/x/ccv/provider/keeper"
 	liquiditykeeper "github.com/gravity-devs/liquidity/x/liquidity/keeper"
@@ -404,19 +403,4 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(providertypes.ModuleName)
 
 	return paramsKeeper
-}
-
-// GetStakingKeeper implements the TestingApp interface. Needed for ICS.
-func (appKeepers *AppKeepers) GetStakingKeeper() ibcstakinginterface.StakingKeeper { //nolint:nolintlint
-	return appKeepers.StakingKeeper
-}
-
-// GetIBCKeeper implements the TestingApp interface.
-func (appKeepers *AppKeepers) GetIBCKeeper() *ibckeeper.Keeper { //nolint:nolintlint
-	return appKeepers.IBCKeeper
-}
-
-// GetScopedIBCKeeper implements the TestingApp interface.
-func (appKeepers *AppKeepers) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper { //nolint:nolintlint
-	return appKeepers.ScopedIBCKeeper
 }

@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/cosmos/gaia/v8/app"
+	"github.com/cosmos/gaia/v9/app"
 
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	tmtypes "github.com/tendermint/tendermint/types"

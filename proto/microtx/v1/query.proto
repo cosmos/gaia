@@ -1,0 +1,11 @@
+syntax = "proto3";
+package microtx.v1;
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/any.proto";
+import "cosmos_proto/cosmos.proto";
+option go_package = "github.com/althea-net/althea-chain/x/microtx/types";
+
+// Msg defines the state transitions possible within microtx
+service Query {}

@@ -63,18 +63,19 @@ fn compile_protos(out_dir: &Path, tmp_dir: &Path) {
 
     let mut lockup_proto_dir = root.clone();
     lockup_proto_dir.push("proto/lockup/v1/");
+    let mut microtx_proto_dir = root.clone();
+    microtx_proto_dir.push("proto/microtx/v1/");
 
-    let mut althea_proto_include_dir = root;
+    let mut althea_proto_include_dir = root.clone();
     althea_proto_include_dir.push("proto/");
-    // let mut third_party_proto_include_dir = root;
-    // third_party_proto_include_dir.push("third_party/proto");
+    let mut third_party_proto_include_dir = root;
+    third_party_proto_include_dir.push("third_party/proto");
 
     // Paths
-    let proto_paths = [lockup_proto_dir];
+    let proto_paths = [lockup_proto_dir, microtx_proto_dir];
     // we need to have an include which is just the folder of our protos to satisfy protoc
     // which insists that any passed file be included in a directory passed as an include
-    // let proto_include_paths = [althea_proto_include_dir, third_party_proto_include_dir];
-    let proto_include_paths = [althea_proto_include_dir];
+    let proto_include_paths = [althea_proto_include_dir, third_party_proto_include_dir];
 
     // List available proto files
     let mut protos: Vec<PathBuf> = vec![];

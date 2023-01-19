@@ -10,3 +10,8 @@ pub mod lockup {
         include!("prost/lockup.v1.rs");
     }
 }
+pub mod microtx {
+    pub mod v1 {
+        include!("prost/microtx.v1.rs");
+    }
+}

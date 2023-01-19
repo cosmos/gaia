@@ -9,16 +9,23 @@ option go_package = "github.com/althea-net/althea-chain/x/microtx/types";
 
 // Msg defines the state transitions possible within microtx
 service Msg {
-  // Example service called "Name"
-  rpc Name(MsgName) returns (MsgNameResponse) {
-    option (google.api.http).post = "/microtx/v1/name";
+  // The Xfer service is a customizeable version of the bank module's Send
+  rpc Xfer(MsgXfer) returns (MsgXferResponse) {
+    option (google.api.http).post = "/microtx/v1/xfer";
   }
 }
 
-// MsgName
-// an example Msg for a Tx which is input for the above defined Name service
-// NAME
-// An example field used as input to the Name service
-message MsgName { string name = 1; }
+// MsgXfer A Msg meant to send funds from one Althea network wallet to another,
+// via an automated device.
+// SENDER The account sending funds to receiver, must also be the signer of the
+// message
+// RECEIVER The account receiving funds from sender
+// AMOUNTS The tokens and their quantities which should be transferred
+message MsgXfer {
+  string sender = 1;
+  string receiver = 2;
+  repeated cosmos.base.v1beta1.Coin amounts = 3
+      [ (gogoproto.nullable) = false ];
+}
 
-message MsgNameResponse { string response = 1; }
+message MsgXferResponse {}

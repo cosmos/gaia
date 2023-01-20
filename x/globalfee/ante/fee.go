@@ -70,7 +70,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	var allFees sdk.Coins
 	requiredGlobalFees, err := mfd.getGlobalFee(ctx, feeTx)
 	if err != nil {
-		panic(err)
+		return ctx, err
 	}
 	requiredFees := getMinGasPrice(ctx, feeTx)
 

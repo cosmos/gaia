@@ -7,12 +7,12 @@ title: Joining Testnet
 
 This tutorial will provide all necessary instructions for joining the current public testnet. If you're interested in more advanced configuration and synchronization options, see [Join Mainnet](./join-mainnet.md) for a detailed walkthrough.
 
-* Current Version: v7-Theta
+* Current Version: v8-Rho
 * Chain ID: `theta-testnet-001`
 
 ## Background
 
-The current Cosmos Hub Testnet is running on the [Theta Upgrade](https://interchain-io.medium.com/preparing-for-the-cosmos-hub-v7-theta-upgrade-2fc41ce34787). Visit the [testnet explorer](https://explorer.theta-testnet.polypore.xyz/) to view all on-chain activity.
+The Cosmos Hub Public Testnet is currently running Gaia v8. Visit the [testnet explorer](https://explorer.theta-testnet.polypore.xyz/) to view all on-chain activity.
 
 For those who just need instructions on performing the upgrade, see the [Upgrading Your Node](#upgrading-your-node) section.
 
@@ -69,7 +69,7 @@ export PATH=$PATH:/usr/local/go/bin
 
 ### Installation & Configuration
 
-You will need to install and configure the Gaia binary using the script below. The Cosmos Hub Public Testnet is running Gaia [`v7.1.0`](https://github.com/cosmos/gaia/releases/tag/v7.1.0).
+You will need to install and configure the Gaia binary using the script below. The Cosmos Hub Public Testnet is running Gaia [`v8.0.0-rc3`](https://github.com/cosmos/gaia/releases/tag/v8.0.0-rc3).
 
 * For up-to-date endpoints like seeds and state sync RPC servers, visit the [testnets repository](https://github.com/cosmos/testnets/tree/master/public).
 
@@ -79,7 +79,7 @@ cd $HOME
 git clone https://github.com/cosmos/gaia
 cd gaia
 # To sync from genesis, comment out the next line.
-git checkout v7.1.0
+git checkout v8.0.0-rc3
 # To sync from genesis, uncomment the next line and skip the State Sync Setup section.
 # git checkout v6.0.4
 make install
@@ -180,6 +180,7 @@ Environment='DAEMON_HOME=/root/.gaia'
 Environment='DAEMON_ALLOW_DOWNLOAD_BINARIES=true'
 Environment='DAEMON_RESTART_AFTER_UPGRADE=true'
 Environment='DAEMON_LOG_BUFFER_SIZE=512'
+Environment='UNSAFE_SKIP_BACKUP=true'
 
 [Install]
 WantedBy=multi-user.target

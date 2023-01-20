@@ -44,12 +44,13 @@ func (mfd FeeDecorator) bypassMinFeeMsgs(msgs []sdk.Msg) bool {
 // DenomsSubsetOfIncludingZero returns true if coins's denoms is subset of coinsB's denoms.
 // if coins is empty set, empty set is any sets' subset
 func DenomsSubsetOfIncludingZero(coins, coinsB sdk.Coins) bool {
-	// more denoms in B than in receiver
+	// return false if more denoms in paid fee than in globalfee
 	if len(coins) > len(coinsB) {
 		return false
 	}
 	// coins=[], coinsB=[0stake]
-	// let all len(coins) == 0 pass and reject later at IsAnyGTEIncludingZero
+	// let all len(coins) == 0 pass, and reject later at IsAnyGTEIncludingZero
+	// if len(paid_fee) == 0,  paid fee's denom is a subset of global fee if global fee contains zero coins
 	if len(coins) == 0 && ContainZeroCoins(coinsB) {
 		return true
 	}
@@ -57,7 +58,8 @@ func DenomsSubsetOfIncludingZero(coins, coinsB sdk.Coins) bool {
 	for _, coin := range coins {
 		err := sdk.ValidateDenom(coin.Denom)
 		if err != nil {
-			panic(err)
+			// if the paid fee coin is not a valid coin, its denom is not a subset of global fees denoms, return false
+			return false
 		}
 		if ok, _ := Find(coinsB, coin.Denom); !ok {
 			return false
@@ -162,6 +164,7 @@ func GetTxPriority(fee sdk.Coins) int64 {
 }
 
 // Find replaces the functionality of Coins.Find from SDK v0.46.x
+// Find returns true if the denom exists in coins. Otherwise, it returns false
 func Find(coins sdk.Coins, denom string) (bool, sdk.Coin) {
 	switch len(coins) {
 	case 0:

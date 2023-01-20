@@ -34,7 +34,7 @@ TOC:
 
 ## On-chain governance proposal attains consensus
 
-[Proposal #59](https://www.mintscan.io/cosmos/proposals/59) is the reference on-chain governance proposal for this upgrade, which has passed with overwhleming community support. Neither core developers nor core funding entities control the governance, and this governance proposal has passed in a _fully decentralized_ way.
+[Proposal #59](https://www.mintscan.io/cosmos/proposals/59) is the reference on-chain governance proposal for this upgrade, which has passed with overwhelming community support. Neither core developers nor core funding entities control the governance, and this governance proposal has passed in a _fully decentralized_ way.
 
 ## Upgrade will take place December 14, 2021
 
@@ -161,7 +161,7 @@ cosmovisor start --x-crisis-skip-assert-invariants
 
 Skipping the invariant checks is strongly encouraged since it decreases the upgrade time significantly and since there are some other improvements coming to the crisis module in the next release of the Cosmos SDK.
 
-#### Expected ugprade result
+#### Expected upgrade result
 
 When the upgrade block height is reached, you can find the following information in the log:
 

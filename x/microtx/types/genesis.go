@@ -18,7 +18,7 @@ var (
 	// Ensure that params implements the proper interface
 	_ paramtypes.ParamSet = &Params{}
 
-	ParamsStoreKeyParam = "Param"
+	ParamsStoreKeyXferFeeBasisPoints = "XferFeeBasisPoints"
 )
 
 // ValidateBasic validates genesis state by looping through the params and
@@ -39,13 +39,15 @@ func DefaultGenesisState() *GenesisState {
 
 // DefaultParams returns a copy of the default params
 func DefaultParams() *Params {
-	return &Params{}
+	return &Params{
+		XferFeeBasisPoints: 1000,
+	}
 }
 
 // ValidateBasic checks that the parameters have valid values.
 func (p Params) ValidateBasic() error {
-	if err := validateParam(p.Param); err != nil {
-		return sdkerrors.Wrap(err, "param")
+	if err := validateXferFeeBasisPoints(p.XferFeeBasisPoints); err != nil {
+		return sdkerrors.Wrap(err, "XferFeeBasisPoints")
 	}
 	return nil
 }
@@ -59,7 +61,7 @@ func ParamKeyTable() paramtypes.KeyTable {
 // pairs of auth module's parameters.
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair([]byte(ParamsStoreKeyParam), &p.Param, validateParam),
+		paramtypes.NewParamSetPair([]byte(ParamsStoreKeyXferFeeBasisPoints), &p.XferFeeBasisPoints, validateXferFeeBasisPoints),
 	}
 }
 
@@ -70,10 +72,14 @@ func (p Params) Equal(p2 Params) bool {
 	return bytes.Equal(bz1, bz2)
 }
 
-func validateParam(i interface{}) error {
-	_, ok := i.(int64)
+func validateXferFeeBasisPoints(i interface{}) error {
+	v, ok := i.(uint64)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if v >= 10000 {
+		return fmt.Errorf("excessive xfer fee of at least 100 percent")
 	}
 	return nil
 }

@@ -1,7 +1,6 @@
 package microtx
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"math/rand"
@@ -82,10 +81,10 @@ func (AppModuleBasic) GetTxCmd() *cobra.Command {
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the distribution module.
 // also implements app module basic
 func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
-	err := types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
-	if err != nil {
-		panic("Failed to register query handler")
-	}
+	// err := types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
+	// if err != nil {
+	// panic("Failed to register query handler")
+	// }
 }
 
 // RegisterInterfaces implements app module basic

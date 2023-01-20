@@ -4,8 +4,7 @@ use std::thread;
 use crate::utils::ValidatorKeys;
 use crate::utils::OPERATION_TIMEOUT;
 use crate::utils::{
-    get_deposit, get_gravity_chain_id, get_ibc_chain_id, HERMES_CONFIG, RELAYER_ADDRESS,
-    RELAYER_MNEMONIC,
+    get_chain_id, get_deposit, get_ibc_chain_id, HERMES_CONFIG, RELAYER_ADDRESS, RELAYER_MNEMONIC,
 };
 use deep_space::private_key::{CosmosPrivateKey, PrivateKey, DEFAULT_COSMOS_HD_PATH};
 use deep_space::Contact;
@@ -82,7 +81,7 @@ pub fn setup_relayer_keys(
     let mut keyring = KeyRing::new(
         Store::Test,
         "gravity",
-        &ChainId::from_string(&get_gravity_chain_id()),
+        &ChainId::from_string(&get_chain_id()),
     )?;
 
     let key = keyring.key_from_mnemonic(
@@ -114,7 +113,7 @@ pub fn create_ibc_channel(hermes_base: &mut Command) {
     let create_channel = hermes_base.args([
         "create",
         "channel",
-        &get_gravity_chain_id(),
+        &get_chain_id(),
         &get_ibc_chain_id(),
         "--port-a",
         "transfer",

@@ -134,6 +134,8 @@ func (m *MsgXferResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgXferResponse proto.InternalMessageInfo
 
+// A type for the block's event log, every successful Xfer must create one of
+// these in the event log
 type EventXfer struct {
 	Sender   string       `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
 	Receiver string       `protobuf:"bytes,2,opt,name=receiver,proto3" json:"receiver,omitempty"`

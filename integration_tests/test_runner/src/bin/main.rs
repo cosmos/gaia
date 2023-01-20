@@ -11,6 +11,7 @@ use deep_space::PrivateKey;
 use std::env;
 use test_runner::bootstrapping::get_keys;
 use test_runner::tests::lockup::lockup_test;
+use test_runner::tests::microtx_fees::microtx_fees_test;
 use test_runner::utils::{
     get_test_token_name, wait_for_cosmos_online, ADDRESS_PREFIX, COSMOS_NODE_GRPC,
     OPERATION_TIMEOUT, TOTAL_TIMEOUT,
@@ -55,6 +56,10 @@ pub async fn main() {
         if test_type == "LOCKUP" {
             info!("Starting Lockup test");
             lockup_test(&contact, keys).await;
+            return;
+        } else if test_type == "MICROTX_FEES" {
+            info!("Starting microtx fees test");
+            microtx_fees_test(&contact, keys).await;
             return;
         }
     }

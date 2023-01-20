@@ -18,9 +18,9 @@ use deep_space::{Address, Contact, EthermintPrivateKey};
 use futures::future::join_all;
 use prost::{DecodeError, Message};
 use prost_types::Any;
-use rand::Rng;
-use std::env;
+use rand::{rngs::ThreadRng, Rng};
 use std::time::{Duration, Instant};
+use std::{convert::TryInto, env};
 use tokio::time::sleep;
 
 use crate::type_urls::{PARAMETER_CHANGE_PROPOSAL_TYPE_URL, SOFTWARE_UPGRADE_PROPOSAL_TYPE_URL};
@@ -98,7 +98,7 @@ pub fn get_test_token_name() -> String {
 }
 
 /// Returns the chain-id of the gravity instance running, see GRAVITY CHAIN CONSTANTS above
-pub fn get_gravity_chain_id() -> String {
+pub fn get_chain_id() -> String {
     "althea-test-1".to_string()
 }
 
@@ -164,18 +164,28 @@ pub const HIGH_GAS_PRICE: u64 = 1_000_000_000u64;
 // Generates a new BridgeUserKey through randomly generated secrets
 // cosmos_prefix allows for generation of a cosmos_address with a different prefix than "gravity"
 pub fn get_user_key(cosmos_prefix: Option<&str>) -> CosmosUser {
+    *bulk_get_user_keys(cosmos_prefix, 1).get(0).unwrap()
+}
+
+// Generates many CosmosUser keys + addresses
+pub fn bulk_get_user_keys(cosmos_prefix: Option<&str>, num_users: i64) -> Vec<CosmosUser> {
     let cosmos_prefix = cosmos_prefix.unwrap_or(ADDRESS_PREFIX.as_str());
 
     let mut rng = rand::thread_rng();
-    let secret: [u8; 32] = rng.gen();
-    let cosmos_key = CosmosPrivateKey::from_secret(&secret);
-    let cosmos_address = cosmos_key.to_address(cosmos_prefix).unwrap();
-    let mut rng = rand::thread_rng();
-    let _secret: [u8; 32] = rng.gen();
-    CosmosUser {
-        cosmos_address,
-        cosmos_key,
+    let mut users = Vec::with_capacity(num_users.try_into().unwrap());
+    for _ in 0..num_users {
+        let secret: [u8; 32] = rng.gen();
+        let cosmos_key = CosmosPrivateKey::from_secret(&secret);
+        let cosmos_address = cosmos_key.to_address(cosmos_prefix).unwrap();
+        let user = CosmosUser {
+            cosmos_address,
+            cosmos_key,
+        };
+
+        users.push(user)
     }
+
+    users
 }
 
 #[derive(Debug, Eq, PartialEq, Clone, Copy, Hash)]

@@ -1,14 +1,14 @@
 package keeper
 
 import (
-	"github.com/althea-net/althea-chain/x/microtx/types"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+
+	"github.com/althea-net/althea-chain/x/microtx/types"
 )
 
 // Keeper maintains the link to storage and exposes getter/setter methods for the various parts of the state machine
@@ -60,29 +60,19 @@ func NewKeeper(
 	return k
 }
 
-// ReadData is an example store read function
-func (k Keeper) ReadData(ctx sdk.Context, key string) (string, error) {
-	// store := ctx.KVStore(k.storeKey)
-
-	// TODO: Implement data fetching
-	return "", nil
-}
-
-// SetValue is an example store write function
-func (k Keeper) SetValue(ctx sdk.Context, key string, value string) (string, error) {
-	// store := ctx.KVStore(k.storeKey)
-	// if store.Has([]byte(key)) {
-	// 	panic("Oh no what do I do?")
-	// }
-	// store.Set([]byte(key), []byte(value))
-	// return "Job's done", nil
-
-	// TODO: Implement data storage
-	return "", nil
-}
-
 func (k Keeper) GetParams(ctx sdk.Context) (params types.Params) {
 	k.paramSpace.GetParamSet(ctx, &params)
+	return
+}
+
+func (k Keeper) GetParamsIfSet(ctx sdk.Context) (params types.Params, err error) {
+	for _, pair := range params.ParamSetPairs() {
+		if !k.paramSpace.Has(ctx, pair.Key) {
+			return types.Params{}, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "the param key %s has not been set", string(pair.Key))
+		}
+		k.paramSpace.Get(ctx, pair.Key, pair.Value)
+	}
+
 	return
 }
 

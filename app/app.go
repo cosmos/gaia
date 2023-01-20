@@ -104,8 +104,11 @@ import (
 
 	altheaappparams "github.com/althea-net/althea-chain/app/params"
 	lockup "github.com/althea-net/althea-chain/x/lockup"
-	lockupKeeper "github.com/althea-net/althea-chain/x/lockup/keeper"
+	lockupkeeper "github.com/althea-net/althea-chain/x/lockup/keeper"
 	lockuptypes "github.com/althea-net/althea-chain/x/lockup/types"
+	"github.com/althea-net/althea-chain/x/microtx"
+	microtxkeeper "github.com/althea-net/althea-chain/x/microtx/keeper"
+	microtxtypes "github.com/althea-net/althea-chain/x/microtx/types"
 )
 
 const appName = "app"
@@ -143,6 +146,7 @@ var (
 		transfer.AppModuleBasic{},
 		bech32ibc.AppModuleBasic{},
 		lockup.AppModuleBasic{},
+		microtx.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -155,6 +159,7 @@ var (
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		lockuptypes.ModuleName:         nil,
+		microtxtypes.ModuleName:        nil,
 	}
 
 	// module accounts that are allowed to receive tokens
@@ -212,7 +217,8 @@ type AltheaApp struct { // nolint: golint
 	ibcKeeper         *ibckeeper.Keeper
 	evidenceKeeper    *evidencekeeper.Keeper
 	ibcTransferKeeper *ibctransferkeeper.Keeper
-	lockupKeeper      *lockupKeeper.Keeper
+	lockupKeeper      *lockupkeeper.Keeper
+	microtxKeeper     *microtxkeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      *capabilitykeeper.ScopedKeeper
@@ -281,6 +287,9 @@ func (app AltheaApp) ValidateMembers() {
 	}
 	if app.lockupKeeper == nil {
 		panic("Nil lockupKeeper!")
+	}
+	if app.microtxKeeper == nil {
+		panic("Nil microtxKeeper!")
 	}
 
 	// scoped keepers
@@ -508,10 +517,15 @@ func NewAltheaApp(
 	)
 	app.evidenceKeeper = &evidenceKeeper
 
-	lockupKeeper := lockupKeeper.NewKeeper(
+	lockupKeeper := lockupkeeper.NewKeeper(
 		appCodec, keys[lockuptypes.StoreKey], app.GetSubspace(lockuptypes.ModuleName),
 	)
 	app.lockupKeeper = &lockupKeeper
+
+	microtxKeeper := microtxkeeper.NewKeeper(
+		keys[microtxtypes.StoreKey], app.GetSubspace(microtxtypes.ModuleName), appCodec, &bankKeeper, &accountKeeper,
+	)
+	app.microtxKeeper = &microtxKeeper
 
 	/****  Module Options ****/
 
@@ -587,6 +601,7 @@ func NewAltheaApp(
 		params.NewAppModule(paramsKeeper),
 		ibcTransferAppModule,
 		lockup.NewAppModule(lockupKeeper, bankKeeper),
+		microtx.NewAppModule(microtxKeeper, bankKeeper),
 	)
 	app.mm = &mm
 
@@ -609,6 +624,7 @@ func NewAltheaApp(
 		govtypes.ModuleName,
 		paramstypes.ModuleName,
 		lockuptypes.ModuleName,
+		microtxtypes.ModuleName,
 	)
 	mm.SetOrderEndBlockers(
 		crisistypes.ModuleName,
@@ -628,6 +644,7 @@ func NewAltheaApp(
 		authz.ModuleName,
 		paramstypes.ModuleName,
 		lockuptypes.ModuleName,
+		microtxtypes.ModuleName,
 	)
 	mm.SetOrderInitGenesis(
 		capabilitytypes.ModuleName,
@@ -647,6 +664,7 @@ func NewAltheaApp(
 		crisistypes.ModuleName,
 		paramstypes.ModuleName,
 		lockuptypes.ModuleName,
+		microtxtypes.ModuleName,
 	)
 
 	mm.RegisterInvariants(&crisisKeeper)
@@ -888,6 +906,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(lockuptypes.ModuleName)
+	paramsKeeper.Subspace(microtxtypes.ModuleName)
 
 	return paramsKeeper
 }

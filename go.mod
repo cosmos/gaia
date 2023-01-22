@@ -5,8 +5,8 @@ go 1.18
 require (
 	github.com/cosmos/cosmos-sdk v0.45.11
 	github.com/cosmos/go-bip39 v1.0.0
-	github.com/cosmos/ibc-go/v3 v3.4.0
-	github.com/cosmos/interchain-security v1.0.0-rc2
+	github.com/cosmos/ibc-go/v4 v4.2.0
+	github.com/cosmos/interchain-security v1.0.0-rc2.0.20230120130136-d86a63f44f5d
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
 	github.com/golangci/golangci-lint v1.50.1
@@ -19,7 +19,7 @@ require (
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.14.0
-	github.com/strangelove-ventures/packet-forward-middleware/v3 v3.1.1
+	github.com/strangelove-ventures/packet-forward-middleware/v4 v4.0.1
 	github.com/stretchr/testify v1.8.1
 	github.com/tendermint/tendermint v0.34.24
 	github.com/tendermint/tm-db v0.6.7
@@ -294,10 +294,10 @@ replace (
 
 	// enforce same SDK, Tendermint and IBC on all dependencies
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.11-ics
-	github.com/cosmos/ibc-go/v3 => github.com/cosmos/ibc-go/v3 v3.4.0
+	github.com/cosmos/ibc-go/v4 => github.com/cosmos/ibc-go/v4 v4.2.0
 
 	// ICS
-	github.com/cosmos/interchain-security => github.com/cosmos/interchain-security v1.0.0-rc2
+	github.com/cosmos/interchain-security => github.com/cosmos/interchain-security v1.0.0-rc2.0.20230120130136-d86a63f44f5d
 
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2

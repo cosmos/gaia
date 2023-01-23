@@ -18,7 +18,7 @@ use deep_space::{Address, Contact, EthermintPrivateKey};
 use futures::future::join_all;
 use prost::{DecodeError, Message};
 use prost_types::Any;
-use rand::{rngs::ThreadRng, Rng};
+use rand::Rng;
 use std::time::{Duration, Instant};
 use std::{convert::TryInto, env};
 use tokio::time::sleep;

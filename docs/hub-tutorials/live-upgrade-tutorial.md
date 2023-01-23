@@ -46,7 +46,7 @@ governance process.
    Note that the process will hang indefinitely (doesn't exit to avoid restart loops). So, you must
    manually kill the process and replace it with a new binary. Do so now with `Ctrl+C` or `killall gaiad`.
 
-   In `gaia/app/app.go`, after `upgrade.Keeper` is initialized and set in the app, set the the
+   In `gaia/app/app.go`, after `upgrade.Keeper` is initialized and set in the app, set the
    corresponding upgrade `Handler` with the correct `<plan-name>`:
 
    ```go

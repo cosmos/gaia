@@ -50,7 +50,7 @@ There are many notable features and changes in the upcoming release of the SDK. 
 are discussed at a high level in July's Cosmos development update found
 [here](https://blog.cosmos.network/cosmos-development-update-july-2019-8df2ade5ba0a).
 
-Some of the biggest changes to take note on when upgrading as a developer or client are the the following:
+Some of the biggest changes to take note on when upgrading as a developer or client are the following:
 
 - __Tagging/Events__: The entire system of what we used to call tags has been replaced by a more
   robust and flexible system called events. Any client that depended on querying or subscribing to

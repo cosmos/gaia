@@ -9,7 +9,7 @@ This document describes the steps for validator and full node operators for the 
 
 - [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.1](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.1). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.1/CHANGELOG.md#v0451---2022-02-03) for details.
 - [ibc-go](https://github.com/cosmos/ibc-go) module to [v3.0.0](https://github.com/cosmos/ibc-go/releases/tag/v3.0.0). See [CHANGELOG.md](https://github.com/cosmos/ibc-go/blob/v3.0.0/CHANGELOG.md#v300---2022-03-15) for details.
-- [interchain account](https://github.com/cosmos/ibc-go/tree/main/modules/apps/27-interchain-accounts) module (interhchain-account module is part of ibc-go module).
+- [interchain account](https://github.com/cosmos/ibc-go/tree/main/modules/apps/27-interchain-accounts) module (interchain-account module is part of ibc-go module).
 - [liquidity](https://github.com/gravity-devs/liquidity) module to [v1.5.0](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.5.0). See [CHANGELOG.md](https://github.com/Gravity-Devs/liquidity/blob/v1.5.0/CHANGELOG.md#v150---20220223) for details.
 - [packet-forward-middleware](https://github.com/strangelove-ventures/packet-forward-middleware) module to [v2.1.1](https://github.com/strangelove-ventures/packet-forward-middleware/releases/tag/v2.1.1).
 - Migration logs for upgrade process.
@@ -30,7 +30,7 @@ TOC:
     - [Method I: manual upgrade](#method-i-manual-upgrade)
     - [Method II: upgrade using Cosmovisor by manually preparing the Gaia v7.0.0 binary](#method-ii-upgrade-using-cosmovisor-by-manually-preparing-the-gaia-v700-binary)
       - [Preparation](#preparation)
-      - [Expected ugprade result](#expected-ugprade-result)
+      - [Expected upgrade result](#expected-upgrade-result)
     - [Method III: upgrade using Cosmovisor by auto-downloading the Gaia v7.0.0 binary (not recommended!)](#method-iii-upgrade-using-cosmovisor-by-auto-downloading-the-gaia-v700-binary-not-recommended)
       - [Preparation](#preparation-1)
       - [Expected result](#expected-result)
@@ -42,7 +42,7 @@ TOC:
 
 ## On-chain governance proposal attains consensus
 
-[Proposal #65](https://www.mintscan.io/cosmos/proposals/65) is the reference on-chain governance proposal for this upgrade, which has passed with overwhleming community support. Neither core developers nor core funding entities control the governance, and this governance proposal has passed in a _fully decentralized_ way.
+[Proposal #65](https://www.mintscan.io/cosmos/proposals/65) is the reference on-chain governance proposal for this upgrade, which has passed with overwhelming community support. Neither core developers nor core funding entities control the governance, and this governance proposal has passed in a _fully decentralized_ way.
 
 ## Upgrade will take place April 12, 2022
 
@@ -85,7 +85,7 @@ The Cosmos Hub mainnet network, `cosmoshub-4`, is currently running [Gaia v6.0.4
 
 ### Target runtime, cosmoshub-4 (post-v7-Theta upgrade) will run Gaia v7.0.0
 
-The Comsos Hub mainnet network, `cosmoshub-4`, will run [Gaia v7.0.0](https://github.com/cosmos/gaia/releases/tag/v7.0.0). Operators _MUST_ use this version post-upgrade to remain connected to the network.
+The Cosmos Hub mainnet network, `cosmoshub-4`, will run [Gaia v7.0.0](https://github.com/cosmos/gaia/releases/tag/v7.0.0). Operators _MUST_ use this version post-upgrade to remain connected to the network.
 
 ## v7-Theta upgrade steps
 
@@ -169,7 +169,7 @@ cosmovisor start --x-crisis-skip-assert-invariants
 
 Skipping the invariant checks is strongly encouraged since it decreases the upgrade time significantly and since there are some other improvements coming to the crisis module in the next release of the Cosmos SDK.
 
-#### Expected ugprade result
+#### Expected upgrade result
 
 When the upgrade block height is reached, you can find the following information in the log:
 

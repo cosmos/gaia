@@ -2,7 +2,7 @@ package gaia
 
 import (
 	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
-	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
+	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
 	ibcstakinginterface "github.com/cosmos/interchain-security/legacy_ibc_testing/core"
 	"github.com/cosmos/interchain-security/testutil/e2e"
 	ibcproviderkeeper "github.com/cosmos/interchain-security/x/ccv/provider/keeper"

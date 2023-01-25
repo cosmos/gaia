@@ -84,7 +84,6 @@ func initAppConfig() (string, interface{}) {
 	srvCfg.StateSync.SnapshotKeepRecent = 10
 	srvCfg.BaseConfig.IAVLDisableFastNode = false // enable fastnode by default
 
-
 	return params.CustomConfigTemplate(), params.CustomAppConfig{
 		Config: *srvCfg,
 		BypassMinFeeMsgTypes: []string{

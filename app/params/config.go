@@ -1,8 +1,6 @@
 package params
 
 import (
-	"strings"
-
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 )
 
@@ -12,8 +10,9 @@ var (
 	//nolint: gosec
 	BypassMinFeeMsgTypesKey = "bypass-min-fee-msg-types"
 
-	// customGaiaConfigTemplate defines Gaia's custom application configuration TOML template.
-	customGaiaConfigTemplate = `
+	// CustomConfigTemplate defines Gaia's custom application configuration TOML
+	// template. It extends the core SDK template.
+	CustomConfigTemplate = serverconfig.DefaultConfigTemplate + `
 ###############################################################################
 ###                        Custom Gaia Configuration                        ###
 ###############################################################################
@@ -25,16 +24,6 @@ var (
 bypass-min-fee-msg-types = [{{ range .BypassMinFeeMsgTypes }}{{ printf "%q, " . }}{{end}}]
 `
 )
-
-// CustomConfigTemplate defines Gaia's custom application configuration TOML
-// template. It extends the core SDK template.
-func CustomConfigTemplate() string {
-	config := serverconfig.DefaultConfigTemplate
-	lines := strings.Split(config, "\n")
-	// add the Gaia config at the second line of the file
-	lines[2] += customGaiaConfigTemplate
-	return strings.Join(lines, "\n")
-}
 
 // CustomAppConfig defines Gaia's custom application configuration.
 type CustomAppConfig struct {

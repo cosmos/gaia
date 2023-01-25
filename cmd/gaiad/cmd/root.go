@@ -80,7 +80,6 @@ func initAppConfig() (string, interface{}) {
 	srvCfg := serverconfig.DefaultConfig()
 	srvCfg.StateSync.SnapshotInterval = 1000
 	srvCfg.StateSync.SnapshotKeepRecent = 10
-	srvCfg.BaseConfig.IAVLDisableFastNode = false // enable fastnode by default
 
 	return params.CustomConfigTemplate(), params.CustomAppConfig{
 		Config:               *srvCfg,
@@ -94,7 +93,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 	cfg.Seal()
 
 	rootCmd.AddCommand(
-		InitCmd(gaia.ModuleBasics, gaia.DefaultNodeHome),
+		genutilcli.InitCmd(gaia.ModuleBasics, gaia.DefaultNodeHome),
 		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, gaia.DefaultNodeHome),
 		genutilcli.GenTxCmd(gaia.ModuleBasics, encodingConfig.TxConfig, banktypes.GenesisBalancesIterator{}, gaia.DefaultNodeHome),
 		genutilcli.ValidateGenesisCmd(gaia.ModuleBasics),

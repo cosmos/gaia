@@ -1,0 +1,20 @@
+{
+    "node_id": "d5299d90f726f5c080799183d4e4149226a90d4c",
+    "ip": "158.69.211.98",
+    "validator": {
+      "pub_key": {
+        "type": "AC26791624DE60",
+        "value": "TzEMM4eaL7/oyrQnF9/Zig5mW00ZCoSQClOIV7oRszg="
+      },
+      "power": 100,
+      "name": "cwgoes"
+    },
+    "app_gen_tx": {
+      "name": "cwgoes",
+      "address": "7410EA0FF8C2A7B8CF0343694C29F9B82A9E3270",
+      "pub_key": {
+        "type": "AC26791624DE60",
+        "value": "TzEMM4eaL7/oyrQnF9/Zig5mW00ZCoSQClOIV7oRszg="
+      }
+    }
+}

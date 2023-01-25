@@ -1,0 +1,45 @@
+{
+  "type": "cosmos-sdk/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cosmos-sdk/MsgCreateValidator",
+        "value": {
+          "description": {
+            "moniker": "the-mandalorian",
+            "identity": "",
+            "website": "",
+            "details": ""
+          },
+          "commission": {
+            "rate": "0.100000000000000000",
+            "max_rate": "0.200000000000000000",
+            "max_change_rate": "0.100000000000000000"
+          },
+          "min_self_delegation": "1",
+          "delegator_address": "cosmos14q6agytpqj0khyhzgcrft7y6xyw8azhemqjpm4",
+          "validator_address": "cosmosvaloper14q6agytpqj0khyhzgcrft7y6xyw8azhe75x5hx",
+          "pubkey": "cosmosvalconspub1zcjduepqdmqm6twqfkmztxs2wc6llg2wejeq374fqf5gmz2xs074gnr8s4ns77qy6p",
+          "value": {
+            "denom": "umuon",
+            "amount": "50000000000"
+          }
+        }
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas": "200000"
+    },
+    "signatures": [
+      {
+        "pub_key": {
+          "type": "tendermint/PubKeySecp256k1",
+          "value": "Ag+61R+uTy0UajImJyLTwUn4s+8BJ/2SG6mJwiw9FvdO"
+        },
+        "signature": "R3TWe88uTCjE540SewHm+89PG7j8On1B8b8GygmaoUhjUZtIsKqw4LFxzviGK/0xZ5nJABdIR15oU+u4SzLdMg=="
+      }
+    ],
+    "memo": "865a3800e4f3a79a6f1ba16d968a6cae4f22a706@3.136.194.108:26656"
+  }
+}

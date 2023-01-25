@@ -1,0 +1,20 @@
+{
+  "node_id": "07d52b45fa3234233a59967fef94fc4e3bad994a",
+  "ip": "159.65.103.58",
+  "validator": {
+    "pub_key": {
+      "type": "AC26791624DE60",
+      "value": "KvTZlSyanepClmPFihzcjqC2f8l3JtTgloxB+9+8HYE="
+    },
+    "power": 100,
+    "name": ""
+  },
+  "app_gen_tx": {
+    "name": "jlandrews",
+    "address": "4002644AAA2FF30FFE360A220B4A536CDCE4E11D",
+    "pub_key": {
+      "type": "AC26791624DE60",
+      "value": "KvTZlSyanepClmPFihzcjqC2f8l3JtTgloxB+9+8HYE="
+    }
+  }
+}

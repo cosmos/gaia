@@ -1,0 +1,79 @@
+{"chain_id":"internal-1","node_id":"a2dd1751ddcc480710bb06bb3fd93cdb43a62d9f","ip":"94.130.9.167","app_state":{
+  "accounts": [
+    {
+      "address": "0809BCA4DA5C8E44C29FD222AD540842049F1AF6",
+      "coins": [
+        {
+          "denom": "fermion",
+          "amount": 1000
+        }
+      ]
+    }
+  ],
+  "stake": {
+    "pool": {
+      "total_supply": 100,
+      "bonded_shares": {
+        "num": 100,
+        "denom": 1
+      },
+      "unbonded_shares": {
+        "num": 0,
+        "denom": 1
+      },
+      "bonded_pool": 100,
+      "unbonded_pool": 0,
+      "inflation_last_time": 0,
+      "inflation": {
+        "num": 7,
+        "denom": 100
+      }
+    },
+    "params": {
+      "inflation_rate_change": {
+        "num": 13,
+        "denom": 100
+      },
+      "inflation_max": {
+        "num": 20,
+        "denom": 100
+      },
+      "inflation_min": {
+        "num": 7,
+        "denom": 100
+      },
+      "goal_bonded": {
+        "num": 67,
+        "denom": 100
+      },
+      "max_validators": 100,
+      "bond_denom": "fermion"
+    },
+    "candidates": [
+      {
+        "status": 1,
+        "owner": "0809BCA4DA5C8E44C29FD222AD540842049F1AF6",
+        "pub_key": {
+          "type": "AC26791624DE60",
+          "value": "F5qF1KbyNuCGcUEVNPHOirrQzMPc1j1HeQjnArVWhBU="
+        },
+        "assets": {
+          "num": 100,
+          "denom": 1
+        },
+        "liabilities": {
+          "num": 0,
+          "denom": 1
+        },
+        "description": {
+          "moniker": "adrian",
+          "identity": "",
+          "website": "",
+          "details": ""
+        },
+        "validator_bond_height": 0,
+        "validator_bond_counter": 0
+      }
+    ]
+  }
+},"validators":[{"pub_key":{"type":"AC26791624DE60","value":"F5qF1KbyNuCGcUEVNPHOirrQzMPc1j1HeQjnArVWhBU="},"power":100,"name":""}]}

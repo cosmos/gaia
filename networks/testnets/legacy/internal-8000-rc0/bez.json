@@ -1,0 +1,17 @@
+{
+  "node_id": "82b81c4c394cdcbc4bd7c4eff41d00e2fc72716e",
+  "ip": "192.81.210.227",
+  "validator": {
+    "pub_key": {
+      "type": "tendermint/PubKeyEd25519",
+      "value": "ol/dlEIGkReOCj5SV3f+oVG7TjTCph8lfyLbD/l9CEE="
+    },
+    "power": "100",
+    "name": ""
+  },
+  "app_gen_tx": {
+    "name": "bez",
+    "address": "cosmosaccaddr1gf395f7d2xuadlt6e8sumx44mj0tdj7pdqz8ut",
+    "pub_key": "cosmosaccpub1zcjduepq5f0am9zzq6g30rs28ef9wal759gmkn35c2np7ftlytdsl7tappqsyznpj9"
+  }
+}

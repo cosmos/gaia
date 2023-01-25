@@ -1,0 +1,17 @@
+{
+    "node_id": "61deec52e3f312c130731d9674b528389b402227",
+    "ip": "192.168.1.19",
+    "validator": {
+      "pub_key": {
+        "type": "tendermint/PubKeyEd25519",
+        "value": "X/GXTgdvua61T/01kDgW5oHE3IDoTsWPkOvTJ1rOgF8="
+      },
+      "power": "100",
+      "name": ""
+    },
+    "app_gen_tx": {
+      "name": "asripal",
+      "address": "cosmosaccaddr1t0kfrykytgpq9sncy27d95ez2jne7q635fkmcz",
+      "pub_key": "cosmosaccpub1zcjduepqtlcewns8d7u6ad20l56eqwqku6qufhyqap8vtrusa0fjwkkwsp0s4syzdz"
+    }
+}

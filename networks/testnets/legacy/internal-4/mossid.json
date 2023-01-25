@@ -1,0 +1,21 @@
+ {
+    "node_id": "d43c0ac0dd387082eb05a6ce45d3ecf93bdb9429",
+    "ip": "172.31.23.97",
+    "validator": {
+      "pub_key": {
+        "type": "AC26791624DE60",
+        "value": "ADIG1nxf8qjwaiiD6j3/Wz4nmZRkbmh9M8NeR450zmg="
+      },
+      "power": 100,
+      "name": ""
+    },
+    "app_gen_tx": {
+      "name": "mossid",
+      "address": "7A04EE3DD030E178C7BB56706B694C4ADEF1556E",
+      "pub_key": {
+        "type": "AC26791624DE60",
+        "value": "ADIG1nxf8qjwaiiD6j3/Wz4nmZRkbmh9M8NeR450zmg="
+      }
+    }
+  }
+

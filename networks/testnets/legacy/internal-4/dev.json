@@ -1,0 +1,20 @@
+{
+  "node_id": "29d778e6c6d6724d619c9bb2d513fb45cd9c3931",
+  "ip": "165.227.98.198",
+  "validator": {
+    "pub_key": {
+      "type": "AC26791624DE60",
+      "value": "UCSf74wMI4cbwki5yogF7jzR5IyYgIfjwzcK63rMfYY="
+    },
+    "power": 100,
+    "name": ""
+  },
+  "app_gen_tx": {
+    "name": "dev",
+    "address": "DD33E69ECA8013214DDE22AC3FB15A8DFB261F8A",
+    "pub_key": {
+      "type": "AC26791624DE60",
+      "value": "UCSf74wMI4cbwki5yogF7jzR5IyYgIfjwzcK63rMfYY="
+    }
+  }
+}

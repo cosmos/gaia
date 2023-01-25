@@ -1,0 +1,20 @@
+{
+  "node_id": "fad346d946b291345b052d26bc7e366ef20e522e",
+  "ip": "46.101.196.65",
+  "validator": {
+    "pub_key": {
+      "type": "AC26791624DE60",
+      "value": "jF2iXckz2jZNsCx6iN8mJxjgyOTNMQLKlIJQ0/UuxVM="
+    },
+    "power": 100,
+    "name": ""
+  },
+  "app_gen_tx": {
+    "name": "Sunny",
+    "address": "C164F8C2C44D9A0F6A7C91FCBB1440A632270073",
+    "pub_key": {
+      "type": "AC26791624DE60",
+      "value": "jF2iXckz2jZNsCx6iN8mJxjgyOTNMQLKlIJQ0/UuxVM="
+    }
+  }
+}

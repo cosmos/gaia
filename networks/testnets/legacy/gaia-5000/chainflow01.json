@@ -1,0 +1,20 @@
+{
+  "node_id": "4a82e59127e198fd27d3409af94079a83cac7bcc",
+  "ip": "139.162.19.186",
+  "validator": {
+    "pub_key": {
+      "type": "AC26791624DE60",
+      "value": "3odNO4JQ3PZXRmzwc2u9aMcttefKKEni0hgmllG+61M="
+    },
+    "power": 100,
+    "name": ""
+  },
+  "app_gen_tx": {
+    "name": "chainflow01",
+    "address": "B7D4ACC1819EE2E39E778D5E89515822F3D4FEBE",
+    "pub_key": {
+      "type": "AC26791624DE60",
+      "value": "3odNO4JQ3PZXRmzwc2u9aMcttefKKEni0hgmllG+61M="
+    }
+  }
+}

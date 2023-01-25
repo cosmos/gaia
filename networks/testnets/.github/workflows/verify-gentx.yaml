@@ -1,0 +1,25 @@
+name: Gentx
+on:
+  pull_request:
+    paths:
+      - /**/gentx/*.json
+jobs:
+  verify-gentx:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: gentx-validation
+        run: |
+          bash -x ./scripts/verify-gentx.sh
+      # - name: gentx-verification-failed
+      #   if: ${{ failure() }}
+      #   uses: mshick/add-pr-comment@v1
+      #   with:
+      #     message: "Invalid Gentx. Please create a new Gentx"
+      #     repo-token: ${{ secrets.GITHUB_TOKEN }}
+      # - name: gentx-verification-success
+      #   if: ${{ !failure() }}
+      #   uses: mshick/add-pr-comment@v1
+      #   with:
+      #     message: "Valid Gentx. Thank you!"
+      #     repo-token: ${{ secrets.GITHUB_TOKEN }}

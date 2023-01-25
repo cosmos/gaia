@@ -1,0 +1,114 @@
+{
+  "genesis_time": "2018-11-29T20:49:23.92585Z",
+  "chain_id": "gaia-9002",
+  "consensus_params": {
+    "block_size": {
+      "max_bytes": "22020096",
+      "max_gas": "-1"
+    },
+    "evidence": {
+      "max_age": "100000"
+    },
+    "validator": {
+      "pub_key_types": [
+        "ed25519"
+      ]
+    }
+  },
+  "app_hash": "",
+  "app_state": {
+    "accounts": null,
+    "auth": {
+      "collected_fees": null
+    },
+    "stake": {
+      "pool": {
+        "loose_tokens": "0.0000000000",
+        "bonded_tokens": "0.0000000000"
+      },
+      "params": {
+        "unbonding_time": "259200000000000",
+        "max_validators": 300,
+        "bond_denom": "STAKE"
+      },
+      "intra_tx_counter": 0,
+      "last_total_power": "0",
+      "last_validator_powers": null,
+      "validators": null,
+      "bonds": null,
+      "unbonding_delegations": null,
+      "redelegations": null,
+      "exported": false
+    },
+    "mint": {
+      "minter": {
+        "last_update": "1970-01-01T00:00:00Z",
+        "inflation": "0.1300000000",
+        "annual_provisions": "0.0000000000"
+      },
+      "params": {
+        "mint_denom": "STAKE",
+        "inflation_rate_change": "0.1300000000",
+        "inflation_max": "0.0000000000",
+        "inflation_min": "100.0000000000",
+        "goal_bonded": "0.9900000000",
+        "blocks_per_year": "6311520"
+      }
+    },
+    "distr": {
+      "fee_pool": {
+        "val_accum": {
+          "update_height": "0",
+          "accum": "0.0000000000"
+        },
+        "val_pool": [],
+        "community_pool": []
+      },
+      "community_tax": "0.0200000000",
+      "base_proposer_reward": "0.2000000000",
+      "bonus_proposer_reward": "0.0400000000",
+      "validator_dist_infos": null,
+      "delegator_dist_infos": null,
+      "delegator_withdraw_infos": null,
+      "previous_proposer": "cosmosvalcons1m46yrx"
+    },
+    "gov": {
+      "starting_proposal_id": "1",
+      "deposits": null,
+      "votes": null,
+      "proposals": null,
+      "deposit_params": {
+        "min_deposit": [
+          {
+            "denom": "STAKE",
+            "amount": "10"
+          }
+        ],
+        "max_deposit_period": "172800000000000"
+      },
+      "voting_params": {
+        "voting_period": "172800000000000"
+      },
+      "tally_params": {
+        "threshold": "0.5000000000",
+        "veto": "0.3340000000",
+        "governance_penalty": "0.0100000000"
+      }
+    },
+    "slashing": {
+      "params": {
+        "max-evidence-age": "120000000000",
+        "signed-blocks-window": "5000",
+        "min-signed-per-window": "0.5000000000",
+        "double-sign-unbond-duration": "300000000000",
+        "downtime-unbond-duration": "600000000000",
+        "slash-fraction-double-sign": "0.2000000000",
+        "slash-fraction-downtime": "0.0100000000"
+      },
+      "signing_infos": {},
+      "missed_blocks": {},
+      "slashing_periods": []
+    },
+    "gentxs": null
+  }
+}

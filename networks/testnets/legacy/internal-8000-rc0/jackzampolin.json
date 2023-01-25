@@ -1,0 +1,17 @@
+{
+    "node_id": "d443b4a86200d33dde9deacb1b1f73a3b3795c20",
+    "ip": "10.138.0.2",
+    "validator": {
+      "pub_key": {
+        "type": "tendermint/PubKeyEd25519",
+        "value": "tOEqjO2t51PEgO9Tv0B7qM0yPmy1n5tMa3Beg0tp3ns="
+      },
+      "power": "100",
+      "name": ""
+    },
+    "app_gen_tx": {
+      "name": "jackzampolin",
+      "address": "cosmosaccaddr12v9y8lqcnry34xt0exhp3fxfm9l3d6d7ypljue",
+      "pub_key": "cosmosaccpub1zcjduepqknsj4r8d4hn483yqaafm7srm4rxny0nvkk0eknrtwp0gxjmfmeasqvrux2"
+    }
+  }

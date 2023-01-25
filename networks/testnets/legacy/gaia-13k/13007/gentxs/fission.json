@@ -1,0 +1,45 @@
+{
+  "type": "cosmos-sdk/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cosmos-sdk/MsgCreateValidator",
+        "value": {
+          "description": {
+            "moniker": "fissionlabs",
+            "identity": "",
+            "website": "fissionlabs.io",
+            "details": ""
+          },
+          "commission": {
+            "rate": "0.500000000000000000",
+            "max_rate": "1.000000000000000000",
+            "max_change_rate": "1.000000000000000000"
+          },
+          "min_self_delegation": "1",
+          "delegator_address": "cosmos1y3v65vhz5f93k8uk7vnz5v7yr7ks5gdce0udvs",
+          "validator_address": "cosmosvaloper1y3v65vhz5f93k8uk7vnz5v7yr7ks5gdcumgcqr",
+          "pubkey": "cosmosvalconspub1zcjduepqndtvyf7ggaamy2qzafjm9fnn3us4fllv89wtl40nt586q5g90rnsaxtvlz",
+          "value": {
+            "denom": "umuon",
+            "amount": "50000000000"
+          }
+        }
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas": "200000"
+    },
+    "signatures": [
+      {
+        "pub_key": {
+          "type": "tendermint/PubKeySecp256k1",
+          "value": "AnL2ez2x+lCdeBk82DsuwWsH5g053KM55bf5i4UF0C6a"
+        },
+        "signature": "1Y5aRx3n76tk8NvSNTWkYknc5u8aF7l97XGsdsholURYYMRi0IpGNgX7zquQ/Vyd66ZC9B0wlOXU/Watzy+oIw=="
+      }
+    ],
+    "memo": "75b2cd99f9123a6a19fbaf3ca0d555c340f9754b@172.31.9.93:26656"
+  }
+}

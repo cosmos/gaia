@@ -1,0 +1,4 @@
+cosmos-sdk: 0.30.0-0-ge003c5ebe
+git commit: e003c5ebe02bed51056e46d5ff1a232e2bd00dda
+vendor hash: 
+go version go1.11.4 darwin/amd64

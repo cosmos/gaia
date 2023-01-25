@@ -1,0 +1,79 @@
+{"chain_id":"internal-1","node_id":"be19a7d6c3f8472ad0073b5dcfcbc39f7e0ec9b3","ip":"167.99.160.171","app_state":{
+  "accounts": [
+    {
+      "address": "90A9EF09EEB2A6658F9D5B4617727F2ED51FB59C",
+      "coins": [
+        {
+          "denom": "fermion",
+          "amount": 1000
+        }
+      ]
+    }
+  ],
+  "stake": {
+    "pool": {
+      "total_supply": 100,
+      "bonded_shares": {
+        "num": 100,
+        "denom": 1
+      },
+      "unbonded_shares": {
+        "num": 0,
+        "denom": 1
+      },
+      "bonded_pool": 100,
+      "unbonded_pool": 0,
+      "inflation_last_time": 0,
+      "inflation": {
+        "num": 7,
+        "denom": 100
+      }
+    },
+    "params": {
+      "inflation_rate_change": {
+        "num": 13,
+        "denom": 100
+      },
+      "inflation_max": {
+        "num": 20,
+        "denom": 100
+      },
+      "inflation_min": {
+        "num": 7,
+        "denom": 100
+      },
+      "goal_bonded": {
+        "num": 67,
+        "denom": 100
+      },
+      "max_validators": 100,
+      "bond_denom": "fermion"
+    },
+    "candidates": [
+      {
+        "status": 1,
+        "owner": "90A9EF09EEB2A6658F9D5B4617727F2ED51FB59C",
+        "pub_key": {
+          "type": "AC26791624DE60",
+          "value": "Y+FiWjkDJTIRg1v25LaojD0MCCp37yVNqy6eFgO3Q4U="
+        },
+        "assets": {
+          "num": 100,
+          "denom": 1
+        },
+        "liabilities": {
+          "num": 0,
+          "denom": 1
+        },
+        "description": {
+          "moniker": "rigel",
+          "identity": "",
+          "website": "",
+          "details": ""
+        },
+        "validator_bond_height": 0,
+        "validator_bond_counter": 0
+      }
+    ]
+  }
+},"validators":[{"pub_key":{"type":"AC26791624DE60","value":"Y+FiWjkDJTIRg1v25LaojD0MCCp37yVNqy6eFgO3Q4U="},"power":100,"name":""}]}

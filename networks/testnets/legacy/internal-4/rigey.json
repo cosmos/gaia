@@ -1,0 +1,20 @@
+{
+    "node_id": "2c564e0da522d08a9956e7bf5b49a5a0e6fa50e7",
+    "ip": "165.227.36.71",
+    "validator": {
+      "pub_key": {
+        "type": "AC26791624DE60",
+        "value": "iSefPukSDw/XLFF5eRyQ/G8cHrGIIDMU01nAaxZxXzU="
+      },
+      "power": 100,
+      "name": ""
+    },
+    "app_gen_tx": {
+      "name": "rigey",
+      "address": "F6F44FBC704CD5A3E79084EE07CBB6C0143A0E1E",
+      "pub_key": {
+        "type": "AC26791624DE60",
+        "value": "iSefPukSDw/XLFF5eRyQ/G8cHrGIIDMU01nAaxZxXzU="
+      }
+    }
+}

@@ -1,0 +1,415 @@
+{
+  "genesis_time": "2018-08-13T17:43:19.344582344Z",
+  "chain_id": "internal-8000-rc0",
+  "consensus_params": {
+    "block_size_params": {
+      "max_bytes": "22020096",
+      "max_txs": "10000",
+      "max_gas": "-1"
+    },
+    "tx_size_params": {
+      "max_bytes": "10240",
+      "max_gas": "-1"
+    },
+    "block_gossip_params": {
+      "block_part_size_bytes": "65536"
+    },
+    "evidence_params": {
+      "max_age": "100000"
+    }
+  },
+  "validators": [
+    {
+      "pub_key": {
+        "type": "tendermint/PubKeyEd25519",
+        "value": "hQQcUZXHqRBdVYj/xt8gqZxu8USYIch9eNL9vlpJCSw="
+      },
+      "power": "100",
+      "name": ""
+    },
+    {
+      "pub_key": {
+        "type": "tendermint/PubKeyEd25519",
+        "value": "X/GXTgdvua61T/01kDgW5oHE3IDoTsWPkOvTJ1rOgF8="
+      },
+      "power": "100",
+      "name": ""
+    },
+    {
+      "pub_key": {
+        "type": "tendermint/PubKeyEd25519",
+        "value": "ol/dlEIGkReOCj5SV3f+oVG7TjTCph8lfyLbD/l9CEE="
+      },
+      "power": "100",
+      "name": ""
+    },
+    {
+      "pub_key": {
+        "type": "tendermint/PubKeyEd25519",
+        "value": "PVkIp8D1THzFTopTwsKj97Z3nAjYhiES2nRX1fZnLzM="
+      },
+      "power": "100",
+      "name": ""
+    },
+    {
+      "pub_key": {
+        "type": "tendermint/PubKeyEd25519",
+        "value": "FuzJ0bjeyRV/yGkiQh//wa0KW0a8gAW17DEiaVWsOLM="
+      },
+      "power": "100",
+      "name": ""
+    },
+    {
+      "pub_key": {
+        "type": "tendermint/PubKeyEd25519",
+        "value": "tOEqjO2t51PEgO9Tv0B7qM0yPmy1n5tMa3Beg0tp3ns="
+      },
+      "power": "100",
+      "name": ""
+    },
+    {
+      "pub_key": {
+        "type": "tendermint/PubKeyEd25519",
+        "value": "Pxi5lF1ll1gv+d5h45fFT5MQf+NrSt4jgQiyhKTY6zE="
+      },
+      "power": "100",
+      "name": ""
+    }
+  ],
+  "app_hash": "",
+  "app_state": {
+    "accounts": [
+      {
+        "address": "cosmosaccaddr1wca2elvww0tjgcz2kcqzflyd6k6fd36wtrn4e5",
+        "coins": [
+          {
+            "denom": "cwgoesToken",
+            "amount": "1000"
+          },
+          {
+            "denom": "steak",
+            "amount": "50"
+          }
+        ]
+      },
+      {
+        "address": "cosmosaccaddr1t0kfrykytgpq9sncy27d95ez2jne7q635fkmcz",
+        "coins": [
+          {
+            "denom": "asripalToken",
+            "amount": "1000"
+          },
+          {
+            "denom": "steak",
+            "amount": "50"
+          }
+        ]
+      },
+      {
+        "address": "cosmosaccaddr1gf395f7d2xuadlt6e8sumx44mj0tdj7pdqz8ut",
+        "coins": [
+          {
+            "denom": "bezToken",
+            "amount": "1000"
+          },
+          {
+            "denom": "steak",
+            "amount": "50"
+          }
+        ]
+      },
+      {
+        "address": "cosmosaccaddr1p5x2gjue76st9ded85ex9hgztppzxja2a2axw6",
+        "coins": [
+          {
+            "denom": "adrianToken",
+            "amount": "1000"
+          },
+          {
+            "denom": "steak",
+            "amount": "50"
+          }
+        ]
+      },
+      {
+        "address": "cosmosaccaddr1j84gl9qm5vzwnjasj2cyk899s242jdpg9kjj9w",
+        "coins": [
+          {
+            "denom": "crsToken",
+            "amount": "1000"
+          },
+          {
+            "denom": "steak",
+            "amount": "50"
+          }
+        ]
+      },
+      {
+        "address": "cosmosaccaddr12v9y8lqcnry34xt0exhp3fxfm9l3d6d7ypljue",
+        "coins": [
+          {
+            "denom": "jackzampolinToken",
+            "amount": "1000"
+          },
+          {
+            "denom": "steak",
+            "amount": "50"
+          }
+        ]
+      },
+      {
+        "address": "cosmosaccaddr1qk540xc697ym7fa66q6gmf4ae0rmpxzgsj9c5f",
+        "coins": [
+          {
+            "denom": "devToken",
+            "amount": "1000"
+          },
+          {
+            "denom": "steak",
+            "amount": "50"
+          }
+        ]
+      }
+    ],
+    "stake": {
+      "pool": {
+        "loose_tokens": "1050",
+        "bonded_tokens": "0",
+        "inflation_last_time": "1970-01-01T00:00:00Z",
+        "inflation": "7/100",
+        "date_last_commission_reset": "0",
+        "prev_bonded_shares": "0"
+      },
+      "params": {
+        "inflation_rate_change": "13/100",
+        "inflation_max": "1/5",
+        "inflation_min": "7/100",
+        "goal_bonded": "67/100",
+        "unbonding_time": "259200000000000",
+        "max_validators": 100,
+        "bond_denom": "steak"
+      },
+      "validators": [
+        {
+          "owner": "cosmosaccaddr1wca2elvww0tjgcz2kcqzflyd6k6fd36wtrn4e5",
+          "pub_key": {
+            "type": "tendermint/PubKeyEd25519",
+            "value": "hQQcUZXHqRBdVYj/xt8gqZxu8USYIch9eNL9vlpJCSw="
+          },
+          "revoked": false,
+          "status": 0,
+          "tokens": "100",
+          "delegator_shares": "100",
+          "description": {
+            "moniker": "cwgoes",
+            "identity": "",
+            "website": "",
+            "details": ""
+          },
+          "bond_height": "0",
+          "bond_intra_tx_counter": 0,
+          "proposer_reward_pool": [],
+          "commission": "0",
+          "commission_max": "0",
+          "commission_change_rate": "0",
+          "commission_change_today": "0",
+          "prev_bonded_tokens": "0"
+        },
+        {
+          "owner": "cosmosaccaddr1t0kfrykytgpq9sncy27d95ez2jne7q635fkmcz",
+          "pub_key": {
+            "type": "tendermint/PubKeyEd25519",
+            "value": "X/GXTgdvua61T/01kDgW5oHE3IDoTsWPkOvTJ1rOgF8="
+          },
+          "revoked": false,
+          "status": 0,
+          "tokens": "100",
+          "delegator_shares": "100",
+          "description": {
+            "moniker": "asripal",
+            "identity": "",
+            "website": "",
+            "details": ""
+          },
+          "bond_height": "0",
+          "bond_intra_tx_counter": 0,
+          "proposer_reward_pool": [],
+          "commission": "0",
+          "commission_max": "0",
+          "commission_change_rate": "0",
+          "commission_change_today": "0",
+          "prev_bonded_tokens": "0"
+        },
+        {
+          "owner": "cosmosaccaddr1gf395f7d2xuadlt6e8sumx44mj0tdj7pdqz8ut",
+          "pub_key": {
+            "type": "tendermint/PubKeyEd25519",
+            "value": "ol/dlEIGkReOCj5SV3f+oVG7TjTCph8lfyLbD/l9CEE="
+          },
+          "revoked": false,
+          "status": 0,
+          "tokens": "100",
+          "delegator_shares": "100",
+          "description": {
+            "moniker": "bez",
+            "identity": "",
+            "website": "",
+            "details": ""
+          },
+          "bond_height": "0",
+          "bond_intra_tx_counter": 0,
+          "proposer_reward_pool": [],
+          "commission": "0",
+          "commission_max": "0",
+          "commission_change_rate": "0",
+          "commission_change_today": "0",
+          "prev_bonded_tokens": "0"
+        },
+        {
+          "owner": "cosmosaccaddr1p5x2gjue76st9ded85ex9hgztppzxja2a2axw6",
+          "pub_key": {
+            "type": "tendermint/PubKeyEd25519",
+            "value": "PVkIp8D1THzFTopTwsKj97Z3nAjYhiES2nRX1fZnLzM="
+          },
+          "revoked": false,
+          "status": 0,
+          "tokens": "100",
+          "delegator_shares": "100",
+          "description": {
+            "moniker": "adrian",
+            "identity": "",
+            "website": "",
+            "details": ""
+          },
+          "bond_height": "0",
+          "bond_intra_tx_counter": 0,
+          "proposer_reward_pool": [],
+          "commission": "0",
+          "commission_max": "0",
+          "commission_change_rate": "0",
+          "commission_change_today": "0",
+          "prev_bonded_tokens": "0"
+        },
+        {
+          "owner": "cosmosaccaddr1j84gl9qm5vzwnjasj2cyk899s242jdpg9kjj9w",
+          "pub_key": {
+            "type": "tendermint/PubKeyEd25519",
+            "value": "FuzJ0bjeyRV/yGkiQh//wa0KW0a8gAW17DEiaVWsOLM="
+          },
+          "revoked": false,
+          "status": 0,
+          "tokens": "100",
+          "delegator_shares": "100",
+          "description": {
+            "moniker": "crs",
+            "identity": "",
+            "website": "",
+            "details": ""
+          },
+          "bond_height": "0",
+          "bond_intra_tx_counter": 0,
+          "proposer_reward_pool": [],
+          "commission": "0",
+          "commission_max": "0",
+          "commission_change_rate": "0",
+          "commission_change_today": "0",
+          "prev_bonded_tokens": "0"
+        },
+        {
+          "owner": "cosmosaccaddr12v9y8lqcnry34xt0exhp3fxfm9l3d6d7ypljue",
+          "pub_key": {
+            "type": "tendermint/PubKeyEd25519",
+            "value": "tOEqjO2t51PEgO9Tv0B7qM0yPmy1n5tMa3Beg0tp3ns="
+          },
+          "revoked": false,
+          "status": 0,
+          "tokens": "100",
+          "delegator_shares": "100",
+          "description": {
+            "moniker": "jackzampolin",
+            "identity": "",
+            "website": "",
+            "details": ""
+          },
+          "bond_height": "0",
+          "bond_intra_tx_counter": 0,
+          "proposer_reward_pool": [],
+          "commission": "0",
+          "commission_max": "0",
+          "commission_change_rate": "0",
+          "commission_change_today": "0",
+          "prev_bonded_tokens": "0"
+        },
+        {
+          "owner": "cosmosaccaddr1qk540xc697ym7fa66q6gmf4ae0rmpxzgsj9c5f",
+          "pub_key": {
+            "type": "tendermint/PubKeyEd25519",
+            "value": "Pxi5lF1ll1gv+d5h45fFT5MQf+NrSt4jgQiyhKTY6zE="
+          },
+          "revoked": false,
+          "status": 0,
+          "tokens": "100",
+          "delegator_shares": "100",
+          "description": {
+            "moniker": "dev",
+            "identity": "",
+            "website": "",
+            "details": ""
+          },
+          "bond_height": "0",
+          "bond_intra_tx_counter": 0,
+          "proposer_reward_pool": [],
+          "commission": "0",
+          "commission_max": "0",
+          "commission_change_rate": "0",
+          "commission_change_today": "0",
+          "prev_bonded_tokens": "0"
+        }
+      ],
+      "bonds": [
+        {
+          "delegator_addr": "cosmosaccaddr1wca2elvww0tjgcz2kcqzflyd6k6fd36wtrn4e5",
+          "validator_addr": "cosmosaccaddr1wca2elvww0tjgcz2kcqzflyd6k6fd36wtrn4e5",
+          "shares": "100",
+          "height": "0"
+        },
+        {
+          "delegator_addr": "cosmosaccaddr1t0kfrykytgpq9sncy27d95ez2jne7q635fkmcz",
+          "validator_addr": "cosmosaccaddr1t0kfrykytgpq9sncy27d95ez2jne7q635fkmcz",
+          "shares": "100",
+          "height": "0"
+        },
+        {
+          "delegator_addr": "cosmosaccaddr1gf395f7d2xuadlt6e8sumx44mj0tdj7pdqz8ut",
+          "validator_addr": "cosmosaccaddr1gf395f7d2xuadlt6e8sumx44mj0tdj7pdqz8ut",
+          "shares": "100",
+          "height": "0"
+        },
+        {
+          "delegator_addr": "cosmosaccaddr1p5x2gjue76st9ded85ex9hgztppzxja2a2axw6",
+          "validator_addr": "cosmosaccaddr1p5x2gjue76st9ded85ex9hgztppzxja2a2axw6",
+          "shares": "100",
+          "height": "0"
+        },
+        {
+          "delegator_addr": "cosmosaccaddr1j84gl9qm5vzwnjasj2cyk899s242jdpg9kjj9w",
+          "validator_addr": "cosmosaccaddr1j84gl9qm5vzwnjasj2cyk899s242jdpg9kjj9w",
+          "shares": "100",
+          "height": "0"
+        },
+        {
+          "delegator_addr": "cosmosaccaddr12v9y8lqcnry34xt0exhp3fxfm9l3d6d7ypljue",
+          "validator_addr": "cosmosaccaddr12v9y8lqcnry34xt0exhp3fxfm9l3d6d7ypljue",
+          "shares": "100",
+          "height": "0"
+        },
+        {
+          "delegator_addr": "cosmosaccaddr1qk540xc697ym7fa66q6gmf4ae0rmpxzgsj9c5f",
+          "validator_addr": "cosmosaccaddr1qk540xc697ym7fa66q6gmf4ae0rmpxzgsj9c5f",
+          "shares": "100",
+          "height": "0"
+        }
+      ]
+    }
+  }
+}

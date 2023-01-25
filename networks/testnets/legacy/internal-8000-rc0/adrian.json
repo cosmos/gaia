@@ -1,0 +1,17 @@
+{
+  "node_id": "8396f406df29d3c61ce4b9e88fe209010fd4ed2c",
+  "ip": "35.234.118.211",
+  "validator": {
+    "pub_key": {
+      "type": "tendermint/PubKeyEd25519",
+      "value": "PVkIp8D1THzFTopTwsKj97Z3nAjYhiES2nRX1fZnLzM="
+    },
+    "power": "100",
+    "name": ""
+  },
+  "app_gen_tx": {
+    "name": "adrian",
+    "address": "cosmosaccaddr1p5x2gjue76st9ded85ex9hgztppzxja2a2axw6",
+    "pub_key": "cosmosaccpub1zcjduepq84vs3f7q74x8e32w3ffu9s4r77m808qgmzrzzyk6w3tatan89ues00jxpe"
+  }
+}

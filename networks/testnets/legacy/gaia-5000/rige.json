@@ -1,0 +1,20 @@
+{
+    "node_id": "03b977aaecb87315fb64d4925c3cd72305129f2a",
+    "ip": "138.197.161.235",
+    "validator": {
+      "pub_key": {
+        "type": "AC26791624DE60",
+        "value": "qwQyuWl3e6bx2S6lZpUA8cI/J0I4CrVZPLagFxrFAVc="
+      },
+      "power": 100,
+      "name": ""
+    },
+    "app_gen_tx": {
+      "name": "rige",
+      "address": "45DDB0A454A1DE8E554637EAD2F1495376C9E31C",
+      "pub_key": {
+        "type": "AC26791624DE60",
+        "value": "qwQyuWl3e6bx2S6lZpUA8cI/J0I4CrVZPLagFxrFAVc="
+      }
+    }
+  }

@@ -1,0 +1,20 @@
+{
+    "node_id": "801bdd7d17e01466feeae9e6d4d46caa1d0c9e0c",
+    "ip": "18.208.82.127",
+    "validator": {
+      "pub_key": {
+        "type": "AC26791624DE60",
+        "value": "Q8TCWfe9UOzrBomCpS1kY0P69fIlBsKG220ULEGVC9A="
+      },
+      "power": 100,
+      "name": ""
+    },
+    "app_gen_tx": {
+      "name": "staked",
+      "address": "0C90608B95F8723BA7D215AEC24D84DE862786E7",
+      "pub_key": {
+        "type": "AC26791624DE60",
+        "value": "Q8TCWfe9UOzrBomCpS1kY0P69fIlBsKG220ULEGVC9A="
+      }
+    }
+}

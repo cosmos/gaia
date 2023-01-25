@@ -1,0 +1,44 @@
+{
+    "type": "auth/StdTx",
+    "value": {
+        "msg": [
+            {
+                "type": "cosmos-sdk/MsgCreateValidator",
+                "value": {
+                    "description": {
+                        "moniker": "StakedGame",
+                        "identity": "",
+                        "website": "",
+                        "details": ""
+                    },
+                    "commission": {
+                        "rate": "1.000000000000000000",
+                        "max_rate": "1.000000000000000000",
+                        "max_change_rate": "1.000000000000000000"
+                    },
+                    "delegator_address": "cosmos18vspjrcxgq66spd5c4s42eg8v7u20wquqs7faw",
+                    "validator_address": "cosmosvaloper18vspjrcxgq66spd5c4s42eg8v7u20wqu9y2u3a",
+                    "pubkey": "cosmosvalconspub1zcjduepq7we482wta0vq7snd32kcgglrkvfjpkw0kn6040595z7tpywfr2asd9ec30",
+                    "value": {
+                        "denom": "stake",
+                        "amount": "10000"
+                    }
+                }
+            }
+        ],
+        "fee": {
+            "amount": null,
+            "gas": "200000"
+        },
+        "signatures": [
+            {
+                "pub_key": {
+                    "type": "tendermint/PubKeySecp256k1",
+                    "value": "A4XybJrkjSCI1iW6x+n33BfHqti03ZAoxJff2hRjJiDt"
+                },
+                "signature": "7ktxYNV8Q4QfRmR3GUdvM9ppWL9pQ3Ql8PhSlVaf1GwaOpharWFprPq5pJi1/OCNZpmNSMDVN95/eB0thsJw6A=="
+            }
+        ],
+        "memo": "c7bfa5e5116b1c79c1cf292b9da9fdf5652d633b@10.2.89.52:26656"
+    }
+}

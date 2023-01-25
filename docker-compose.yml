@@ -3,7 +3,7 @@ version: '3'
 services:
   gaiadnode0:
     container_name: gaiadnode0
-    image: "tendermint/gaiadnode"
+    image: "ghcr.io/cosmos/gaia/gaiadnode"
     ports:
       - "26656-26657:26656-26657"
     environment:
@@ -17,7 +17,7 @@ services:
 
   gaiadnode1:
     container_name: gaiadnode1
-    image: "tendermint/gaiadnode"
+    image: "ghcr.io/cosmos/gaia/gaiadnode"
     ports:
       - "26659-26660:26656-26657"
     environment:
@@ -31,7 +31,7 @@ services:
 
   gaiadnode2:
     container_name: gaiadnode2
-    image: "tendermint/gaiadnode"
+    image: "ghcr.io/cosmos/gaia/gaiadnode"
     environment:
       - ID=2
       - LOG=${LOG:-gaiad.log}
@@ -45,7 +45,7 @@ services:
 
   gaiadnode3:
     container_name: gaiadnode3
-    image: "tendermint/gaiadnode"
+    image: "ghcr.io/cosmos/gaia/gaiadnode"
     environment:
       - ID=3
       - LOG=${LOG:-gaiad.log}
@@ -63,6 +63,4 @@ networks:
     ipam:
       driver: default
       config:
-      -
-        subnet: 192.168.10.0/16
-
+        - subnet: 192.168.10.0/16

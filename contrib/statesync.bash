@@ -35,7 +35,7 @@ gaiad init test
 
 # Get Genesis
 wget https://github.com/cosmos/mainnet/raw/master/genesis/genesis.cosmoshub-4.json.gz
-mv genesis.json ~/.gaia/config/genesis.json
+mv genesis.json ~/.gaiad/config/genesis.json
 
 # Get "trust_hash" and "trust_height".
 INTERVAL=1000

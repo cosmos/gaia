@@ -1,39 +1,62 @@
 #!/bin/bash
 # microtick and bitcanna contributed significantly here.
+# Pebbledb state sync script.
+# invoke like: bash scripts/ss.bash
+
+## USAGE RUNDOWN
+# Not for use on live nodes
+# For use when testing.
+# Assumes that ~/.evmosd doesn't exist
+# can be modified to suit your purposes if ~/.evmosd does already exist
+
 set -uxe
 
-# set environment variables
+# Set Golang environment variables.
 export GOPATH=~/go
 export PATH=$PATH:~/go/bin
 
+# Install with pebbledb (uncomment for incredible performance)
+# go mod edit -replace github.com/tendermint/tm-db=github.com/baabeetaa/tm-db@pebble
+# go mod tidy
+# go install -ldflags '-w -s -X github.com/cosmos/cosmos-sdk/types.DBBackend=pebbledb -X github.com/tendermint/tm-db.ForceSync=1' -tags pebbledb ./...
 
-# Install Gaia
-make install
+# install (comment if ussing pebble for incredible performance)
+go install ./...
 
-# MAKE HOME FOLDER AND GET GENESIS
-gaiad init test 
-wget -O ~/.gaia/config/genesis.json https://cloudflare-ipfs.com/ipfs/Qmc54DreioPpPDUdJW6bBTYUKepmcPsscfqsfFcFmTaVig
+# NOTE: ABOVE YOU CAN USE ALTERNATIVE DATABASES, HERE ARE THE EXACT COMMANDS
+# go install -ldflags '-w -s -X github.com/cosmos/cosmos-sdk/types.DBBackend=rocksdb' -tags rocksdb ./...
+# go install -ldflags '-w -s -X github.com/cosmos/cosmos-sdk/types.DBBackend=badgerdb' -tags badgerdb ./...
+# go install -ldflags '-w -s -X github.com/cosmos/cosmos-sdk/types.DBBackend=boltdb' -tags boltdb ./...
+# go install -ldflags '-w -s -X github.com/cosmos/cosmos-sdk/types.DBBackend=pebbledb -X github.com/tendermint/tm-db.ForceSync=1' -tags pebbledb ./...
 
+
+# Initialize chain.
+gaiad init test
+
+# Get Genesis
+wget https://github.com/cosmos/mainnet/raw/master/genesis/genesis.cosmoshub-4.json.gz
+mv genesis.json ~/.gaia/config/genesis.json
+
+# Get "trust_hash" and "trust_height".
 INTERVAL=1000
+LATEST_HEIGHT=$(curl -s https://gaia-rpc.polkachu.com/block | jq -r .result.block.header.height)
+BLOCK_HEIGHT=$((LATEST_HEIGHT - INTERVAL))
+TRUST_HASH=$(curl -s "https://gaia-rpc.polkachu.com/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
 
-# GET TRUST HASH AND TRUST HEIGHT
+# Print out block and transaction hash from which to sync state.
+echo "trust_height: $BLOCK_HEIGHT"
+echo "trust_hash: $TRUST_HASH"
 
-LATEST_HEIGHT=$(curl -s https://cosmoshub-4.technofractal.com/block | jq -r .result.block.header.height);
-BLOCK_HEIGHT=$(($LATEST_HEIGHT-$INTERVAL)) 
-TRUST_HASH=$(curl -s "https://cosmoshub-4.technofractal.com/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
-
-
-# TELL USER WHAT WE ARE DOING
-echo "TRUST HEIGHT: $BLOCK_HEIGHT"
-echo "TRUST HASH: $TRUST_HASH"
-
-
-# export state sync vars
+# Export state sync variables.
 export GAIAD_STATESYNC_ENABLE=true
 export GAIAD_P2P_MAX_NUM_OUTBOUND_PEERS=200
-export GAIAD_STATESYNC_RPC_SERVERS="https://cosmoshub.validator.network:443,https://cosmoshub-4.technofractal.com:443"
+export GAIAD_STATESYNC_RPC_SERVERS="https://gaia-rpc.polkachu.com:443,https://gaia-rpc.polkachu.com:443"
 export GAIAD_STATESYNC_TRUST_HEIGHT=$BLOCK_HEIGHT
 export GAIAD_STATESYNC_TRUST_HASH=$TRUST_HASH
-export GAIAD_P2P_SEEDS="bf8328b66dceb4987e5cd94430af66045e59899f@public-seed.cosmos.vitwit.com:26656,cfd785a4224c7940e9a10f6c1ab24c343e923bec@164.68.107.188:26656,d72b3011ed46d783e369fdf8ae2055b99a1e5074@173.249.50.25:26656,ba3bacc714817218562f743178228f23678b2873@public-seed-node.cosmoshub.certus.one:26656,3c7cad4154967a294b3ba1cc752e40e8779640ad@84.201.128.115:26656,366ac852255c3ac8de17e11ae9ec814b8c68bddb@51.15.94.196:26656"
 
-gaiad start --x-crisis-skip-assert-invariants
+# Fetch and set list of seeds from chain registry.
+GAIAD_P2P_SEEDS=$(curl -s https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/chain.json | jq -r '[foreach .peers.seeds[] as $item (""; "\($item.id)@\($item.address)")] | join(",")')
+export GAIAD_P2P_SEEDS
+
+# Start chain.
+gaiad start --x-crisis-skip-assert-invariants 

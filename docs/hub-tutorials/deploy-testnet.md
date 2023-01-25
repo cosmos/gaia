@@ -75,7 +75,7 @@ From the [networks/local directory](https://github.com/cosmos/gaia/tree/main/net
 
 ### Build
 
-Build the `gaiad` binary (linux) and the `ghcr.io/cosmos/gaia/gaiadnode` docker image required for running the `localnet` commands. This binary will be mounted into the container and can be updated without rebuilding the image, so you only need to build the image once.
+Build the `gaiad` binary (linux) and the `ghcr.io/cosmos/gaia/gaiadnode:7.0.x` docker image required for running the `localnet` commands. This binary will be mounted into the container and can be updated without rebuilding the image, so you only need to build the image once.
 
 ```bash
 # Clone the gaia repo
@@ -87,7 +87,7 @@ cd gaia
 # Build the linux binary in ./build
 make build-linux
 
-# Build ghcr.io/cosmos/gaia/gaiadnode image
+# Build ghcr.io/cosmos/gaia/gaiadnode:7.0.x image
 make build-docker-gaiadnode
 ```
 

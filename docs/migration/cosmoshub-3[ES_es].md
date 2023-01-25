@@ -44,9 +44,9 @@ Hay muchas características y cambios notables en la próxima versión del SDK. 
 
 Algunos de los principales cambios que hay que tener en cuenta a la hora de actualizar como desarrollador o cliente son los siguientes:
 
-- **Protocol Buffers**: Inicialmente el SDK de Cosmos utilizaba _codecs_ de Amino para casi toda la codificación y decodificación. En esta versión se ha integrado una importante actualización de los Protocol Buffers. Se espera que con los Protocol Buffers las aplicaciones ganen en velocidad, legibilidad, conveniencia e interoperabilidad con muchos lenguajes de programación. Para más información consulta [aquí](https://github.com/cosmos/cosmos-sdk/blob/master/docs/migrations/app_and_modules.md#protocol-buffers).
-- **CLI**: El CLI y el commando de full node para la cadena de bloques estaban separados en las versiones anteriores del SDK de Cosmos. Esto dio lugar a dos binarios, `gaiad` y `gaiacli`, que estaban separados y podían utilizarse para diferentes interacciones con la cadena de bloques. Ambos se han fusionado en un solo comando `gaiad` que ahora soporta los comandos que antes soportaba el `gaiacli`.
-- **Configuración del nodo**: Anteriormente los datos de la cadena de bloques y la configuración de los nodos se almacenaban en `~/.gaia/`, ahora residirán en `~/.gaia/`, si utilizas scripts que hacen uso de la configuración o de los datos de la cadena de bloques, asegúrate de actualizar la ruta.
+- __Protocol Buffers__: Inicialmente el SDK de Cosmos utilizaba _codecs_ de Amino para casi toda la codificación y decodificación. En esta versión se ha integrado una importante actualización de los Protocol Buffers. Se espera que con los Protocol Buffers las aplicaciones ganen en velocidad, legibilidad, conveniencia e interoperabilidad con muchos lenguajes de programación. Para más información consulta [aquí](https://github.com/cosmos/cosmos-sdk/blob/master/docs/migrations/app_and_modules.md#protocol-buffers).
+- __CLI__: El CLI y el commando de full node para la cadena de bloques estaban separados en las versiones anteriores del SDK de Cosmos. Esto dio lugar a dos binarios, `gaiad` y `gaiacli`, que estaban separados y podían utilizarse para diferentes interacciones con la cadena de bloques. Ambos se han fusionado en un solo comando `gaiad` que ahora soporta los comandos que antes soportaba el `gaiacli`.
+- __Configuración del nodo__: Anteriormente los datos de la cadena de bloques y la configuración de los nodos se almacenaban en `~/.gaia/`, ahora residirán en `~/.gaia/`, si utilizas scripts que hacen uso de la configuración o de los datos de la cadena de bloques, asegúrate de actualizar la ruta.
 
 ## Riesgos
 
@@ -88,12 +88,14 @@ El hash de la versión/commit de Gaia v2.0.15: `89cf7e6fc166eaabf47ad2755c443d45
     ```bash
     perl -i -pe 's/^halt-time =.*/halt-time = 1613628000/' ~/.gaia/config/app.toml
     ```
+
 1. Después de que la cadena se haya detenido, haz una copia de seguridad de tu directorio `.gaia`.
 
     ```bash
     mv ~/.gaia ./gaiad_backup
     ```
-    **NOTA**: Se recomienda a los validadores y operadores que tomen una instantánea completa de los datos a la altura de la exportación antes de proceder en caso de que la actualización no vaya según lo previsto o si no se pone en línea suficiente poder de voto en un tiempo determinado y acordado. En tal caso, la cadena volverá a funcionar con `cosmoshub-3`. Consulte [Recuperación](#recuperación) para saber cómo proceder.
+
+    __NOTA__: Se recomienda a los validadores y operadores que tomen una instantánea completa de los datos a la altura de la exportación antes de proceder en caso de que la actualización no vaya según lo previsto o si no se pone en línea suficiente poder de voto en un tiempo determinado y acordado. En tal caso, la cadena volverá a funcionar con `cosmoshub-3`. Consulte [Recuperación](#recuperación) para saber cómo proceder.
 
 1. Exportar el estado existente de `cosmoshub-3`:
 
@@ -102,10 +104,11 @@ El hash de la versión/commit de Gaia v2.0.15: `89cf7e6fc166eaabf47ad2755c443d45
     ```bash
     cat ~/.gaia/config/data/priv_validator_state.json | jq '.height'
     ```
-   
+
    ```bash
-   $ gaiad export --for-zero-height --height=<height> > cosmoshub_3_genesis_export.json
+   gaiad export --for-zero-height --height=<height> > cosmoshub_3_genesis_export.json
    ```
+
    _esto puede llevar un tiempo, puede esperar una hora para este paso_
 
 1. Verifique el SHA256 del archivo génesis exportado (ordenado):
@@ -121,10 +124,10 @@ El hash de la versión/commit de Gaia v2.0.15: `89cf7e6fc166eaabf47ad2755c443d45
 1. En este punto, ya tiene un estado de génesis exportado válido. Todos los pasos posteriores requieren ahora v4.0.0 de [Gaia](https://github.com/cosmos/gaia).
 Compruebe el hash de su génesis con otros compañeros (otros validadores) en las salas de chat.
 
-   **NOTA**: Go [1.15+](https://golang.org/dl/) es necesario!
+   __NOTA__: Go [1.15+](https://golang.org/dl/) es necesario!
 
    ```bash
-   $ git clone https://github.com/cosmos/gaia.git && cd gaia && git checkout v4.0.0; make install
+   git clone https://github.com/cosmos/gaia.git && cd gaia && git checkout v4.0.0; make install
    ```
 
 1. Verifique que está ejecutando la versión correcta (v4.0.0) de _Gaia_:
@@ -140,12 +143,13 @@ Compruebe el hash de su génesis con otros compañeros (otros validadores) en la
     build_deps:
     ...
     ```
+
     El hash y versión/commit de Gaia v4.0.0: `2bb04266266586468271c4ab322367acbf41188f`
 
 1. Migrar el estado exportado de la versión actual v2.0.15 a la nueva versión v4.0.0:
 
     ```bash
-    $ gaiad migrate cosmoshub_3_genesis_export.json --chain-id=cosmoshub-4 --initial-height [last_cosmoshub-3_block+1] > genesis.json
+    gaiad migrate cosmoshub_3_genesis_export.json --chain-id=cosmoshub-4 --initial-height [last_cosmoshub-3_block+1] > genesis.json
     ```
 
     Esto migrará nuestro estado exportado del archivo `genesis.json` requerido para iniciar el cosmoshub-4.
@@ -157,16 +161,16 @@ Compruebe el hash de su génesis con otros compañeros (otros validadores) en la
     [SHA256_VALUE]  genesis.json
     ```
 
-    Compare este valor con otros validadores / operadores de nodos de la red. 
+    Compare este valor con otros validadores / operadores de nodos de la red.
     Es importante que cada parte pueda reproducir el mismo archivo genesis.json de los pasos correspondientes.
 
 1. Reinicio del estado:
 
-    **NOTA**: Asegúrese de tener una copia de seguridad completa de su nodo antes de proceder con este paso.
+    __NOTA__: Asegúrese de tener una copia de seguridad completa de su nodo antes de proceder con este paso.
    Consulte [Recuperación](#recuperación) para obtener detalles sobre cómo proceder.
 
     ```bash
-    $ gaiad unsafe-reset-all
+    gaiad unsafe-reset-all
     ```
 
 1. Mueve el nuevo `genesis.json` a tu directorio `.gaia/config/`.
@@ -181,7 +185,7 @@ Compruebe el hash de su génesis con otros compañeros (otros validadores) en la
     gaiad start
     ```
 
-    Las auditorías automatizadas del estado de génesis pueden durar entre 30 y 120 minutos utilizando el módulo de crisis. Esto se puede desactivar mediante 
+    Las auditorías automatizadas del estado de génesis pueden durar entre 30 y 120 minutos utilizando el módulo de crisis. Esto se puede desactivar mediante
     `gaiad start --x-crisis-skip-assert-invariants`.
 
 ## Notas para los proveedores de servicios

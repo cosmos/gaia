@@ -10,11 +10,9 @@
 
 ## 새로운 노드 세팅하기
 
-
 다음 절차는 새로운 풀노드를 처음부터 세팅하는 절차입니다.
 
 우선 노드를 실행하고 필요한 config 파일을 생성합니다:
-
 
 ```bash
 gaiad init <your_custom_moniker>
@@ -59,7 +57,7 @@ mkdir -p $HOME/.gaia/config
 curl https://raw.githubusercontent.com/cosmos/launch/master/genesis.json > $HOME/.gaia/config/genesis.json
 ```
 
-위 예시에서는 최신 테스트넷에 대한 정보가 포함되어있는 [launch repo](https://github.com/cosmos/launch)의 `latest` 디렉토리를 이용하는 것을 참고하세요. 
+위 예시에서는 최신 테스트넷에 대한 정보가 포함되어있는 [launch repo](https://github.com/cosmos/launch)의 `latest` 디렉토리를 이용하는 것을 참고하세요.
 
 ::: tip
 만약 다른 퍼블릭 테스트넷에 연결하신다면 [여기](./join-testnet.md)에 있는 정보를 확인하세요.
@@ -70,6 +68,7 @@ curl https://raw.githubusercontent.com/cosmos/launch/master/genesis.json > $HOME
 ```bash
 gaiad start
 ```
+
 ### 시드 노드 추가하기
 
 이제 노드가 다른 피어들을 찾는 방법을 알아야합니다. `$HOME/.gaia/config/config.toml`에 안정적인 시드 노드들을 추가할 차례입니다. [`launch`](https://github.com/cosmos/launch) repo에 몇 개 시드 노드 링크가 포함되어있습니다.
@@ -87,7 +86,6 @@ gaiad start
 :::
 
 코스모스 허브 네트워크는 트랜잭션 처리를 위해 트랜잭션 수수료를 부과합니다. 해당 수수료는 트랜잭션을 실행하기 위한 가스로 사용됩니다. 공식은 다음과 같습니다:
-
 
 ```
 수수료(Fee) = 가스(Gas) * 가스 값(GasPrices)
@@ -107,7 +105,7 @@ gaiad start
 
 풀노드는 컨펌되지 않은 트랜잭션을 멤풀에 보관합니다. 스팸 트랜잭션으로부터 풀노드를 보호하기 위해서 노드 멤풀에 보관되기 위한 트랜잭션의 최소 가스 가격(`minimum-gas-prices`)을 설정할 것을 권장합니다. 해당 파라미터는 `~/.gaia/config/gaiad.toml`에서 설정하실 수 있씁니다.
 
-기본 권장 `minimum-gas-prices`는 `0.0025uatom`이지만, 추후 바꾸실 수 있습니다. 
+기본 권장 `minimum-gas-prices`는 `0.0025uatom`이지만, 추후 바꾸실 수 있습니다.
 
 ## 풀노드 운영하기
 

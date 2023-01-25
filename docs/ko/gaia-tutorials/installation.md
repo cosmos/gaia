@@ -46,8 +46,8 @@ LDFLAGS="" make install
 위 절차를 따라하시면 `gaiad`와 `gaiad` 바이너리가 설치될 것입니다. 설치가 잘 되어있는지 확인하십시오:
 
 ```bash
-$ gaiad version --long
-$ gaiad version --long
+gaiad version --long
+gaiad version --long
 ```
 
 `gaiad` 명령어는 다음과 비슷한 아웃풋을 내보냅니다:

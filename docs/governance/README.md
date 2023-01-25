@@ -25,9 +25,9 @@ the different types of proposals, and how to submit one.
 - [On-Chain Process](./process.md)
 - [Best Practices for Drafting a Proposal](./best-practices.md)
 - Proposal Types:
-    - Text Proposal
-    - [Parameter Change Proposal](./params-change)
-    - [Community Spend Proposal](./community-pool-spend)
+  - Text Proposal
+  - [Parameter Change Proposal](./params-change)
+  - [Community Spend Proposal](./community-pool-spend)
 - [Submitting a Proposal](./submitting.md)
 - [List of Proposals](./proposals)
 

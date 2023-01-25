@@ -75,13 +75,14 @@ code refactoring and cleanup should be submitted as a separate PRs from bugfixes
 
 In order to simplify reviewing large changes, submissions should have a created an issue
 with a description of the submission, a description tracking the changes and relevant discussions,
-and a checklist of changes and tasks to be done. 
+and a checklist of changes and tasks to be done.
 
 The issue can then be used to develop multiple well-scoped PRs that are easy to review.
 
 The following PR structuring checklist can be used when submitting changes to the Gaia repository for review:
-- [ ] Proto files: PR updating proto files. As a suggested next step, don't regenerate updated protobuf 
-   implementations using `protgen`, since this will break existing code.   
+
+- [ ] Proto files: PR updating proto files. As a suggested next step, don't regenerate updated protobuf
+   implementations using `protgen`, since this will break existing code.
 - [ ] Broken code: If `protogen` is run, a PR disabling broken code
 - [ ] Validation: PR with validation of types
 - [ ] Functionality: PR integrating supporting functionality

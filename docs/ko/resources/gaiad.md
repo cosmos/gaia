@@ -49,7 +49,7 @@ gaiad config chain-id cosmoshub-2
   - 자금을 받는데 사용
   - 예시) `cosmos15h6vd5f0wqps26zjlwrc6chah08ryu4hzzdwhc`
 
-* `cosmosvaloper`
+- `cosmosvaloper`
   - 특정 검증인을 운영자와 연관하는데 사용됨
   - 스테이킹 명령 요청에 이용됨
   - 예시) `cosmosvaloper1carzvgq3e6y3z5kz5y6gxp3wpy3qdrv928vyah`
@@ -229,7 +229,6 @@ gaiad tx send <보내는이_주소(sender_address)> <수신자_주소(destinatio
 `--generate-only` 명령어는 `gaiad`가 로컬 키베이스를 액세스하지 않습니다. `--generate-only` 플래그를 사용하시는 경우, `<보내는_사람_키_명칭_또는_주소(sender_key_name_or_address)>` 값은 키 명칭이 아닌 주소 값을 입력하세요.
 :::
 
-
 이제 `--generate-only`를 통해 프린트된 트랜잭션 파일을 서명하시려면 다음 명령어를 통해 키를 입력하시면 됩니다:
 
 ```bash
@@ -348,6 +347,7 @@ gaiad query minting annual-provisions
 ### 스테이킹
 
 #### 검증인 세팅하기
+
 검증인 후보가 되기 위한 가이드는 [검증인 세팅](../validators/validator-setup.md) 문서를 참고하세요.
 
 #### 검증인에게 위임하기
@@ -371,7 +371,6 @@ gaiad query staking validator <cosmosval_계정(account_cosmosval)>
 #### 토큰 본딩하기
 
 코스모스 허브 메인넷에서는 `uatom` 단위로 위임이 가능하며 `1atom = 1000000uatom`입니다. 테스트넷 검증인에게 위임하는 방법은 다음과 같습니다.
-
 
 ```bash
 gaiad tx staking delegate \
@@ -502,6 +501,7 @@ gaiad query staking pool
 ```
 
 `pool` 명령은 다음과 같은 정보에 대한 현재 값을 제공합니다:
+
 - 본딩된 토큰 / 본딩 되어있지 않은 토큰
 - 총 토큰 수량
 - 연 인플레이션 비율과 가장 최근에 인플레이션이 변경된 블록 높이
@@ -644,7 +644,6 @@ gaiad query gov deposit <프로포절_ID(proposal_id)> <보증금_제공자_주�
 
 프로포절의 보증금이 `MinDeposit` 값에 도달하면 투표 기간이 시작됩니다. 본딩된 `Atom`을 보유한 홀더들은 각자 투표를 할 수 있습니다:
 
-
 ```bash
 gaiad tx gov vote <프로포절_ID(proposal_id)> <Yes/No/NoWithVeto/Abstain(표 선택)> \
   --from=<키_명칭(key_name)> \
@@ -658,6 +657,7 @@ gaiad tx gov vote <프로포절_ID(proposal_id)> <Yes/No/NoWithVeto/Abstain(표 
 ```bash
 gaiad query gov vote <프로포절_ID(proposal_id)> <투표자_주소(voter_address)>
 ```
+
 과거 프로포절에 대한 표 정보를 확인하기 위해서는:
 
 ```bash

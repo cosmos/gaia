@@ -44,21 +44,21 @@ gaiad config chain-id cosmoshub-2
 
 有如下类型的key：
 
-+ `cosmos` 
-	+ 从通过`gaiad keys add`生成的账户私钥中产生
-	+ 用于接收资金
-	+ 例如 `cosmos15h6vd5f0wqps26zjlwrc6chah08ryu4hzzdwhc`
++ `cosmos`
+  + 从通过`gaiad keys add`生成的账户私钥中产生
+  + 用于接收资金
+  + 例如 `cosmos15h6vd5f0wqps26zjlwrc6chah08ryu4hzzdwhc`
 + `cosmosvaloper`
-	+ 用于关联一个验证人和其操作者
-	+ 用于发起staking操作命令
-	+ 例如 `cosmosvaloper1carzvgq3e6y3z5kz5y6gxp3wpy3qdrv928vyah`
+  + 用于关联一个验证人和其操作者
+  + 用于发起staking操作命令
+  + 例如 `cosmosvaloper1carzvgq3e6y3z5kz5y6gxp3wpy3qdrv928vyah`
 + `cosmospub`
-	+ 从通过`gaiad keys add`生成的账户私钥中产生
-	+ 例如 `cosmospub1zcjduc3q7fu03jnlu2xpl75s2nkt7krm6grh4cc5aqth73v0zwmea25wj2hsqhlqzm`
+  + 从通过`gaiad keys add`生成的账户私钥中产生
+  + 例如 `cosmospub1zcjduc3q7fu03jnlu2xpl75s2nkt7krm6grh4cc5aqth73v0zwmea25wj2hsqhlqzm`
 + `cosmosvalconspub`
-	+ 在使用`gaiad init`创建节点时生成
-	+ 使用`gaiad tendermint show-validator`获得该值
-	+ 例如 `cosmosvalconspub1zcjduepq0ms2738680y72v44tfyqm3c9ppduku8fs6sr73fx7m666sjztznqzp2emf`
+  + 在使用`gaiad init`创建节点时生成
+  + 使用`gaiad tendermint show-validator`获得该值
+  + 例如 `cosmosvalconspub1zcjduepq0ms2738680y72v44tfyqm3c9ppduku8fs6sr73fx7m666sjztznqzp2emf`
 
 #### 生成 Key
 
@@ -107,6 +107,7 @@ gaiad tendermint show-validator
 :::
 
 #### 生成多签公钥
+
 你可以生成一个多签公钥并将其打印：
 
 ```bash
@@ -155,7 +156,6 @@ gaiad tx send ... --fees=50000uatom
 ```bash
 gaiad tx send ... --gas-prices=0.0025uatom
 ```
-
 
 ### 账户
 
@@ -279,11 +279,11 @@ action标签始终等于相关message的`Type()`函数返回的消息类型。
 
 你可以在每个SDK的模块中找到目前的标签列表：
 
-- [Staking events](https://github.com/cosmos/cosmos-sdk/blob/master/x/staking/spec/07_events.md)
-- [Governance events](https://github.com/cosmos/cosmos-sdk/blob/master/x/gov/spec/04_events.md)
-- [Slashing events](https://github.com/cosmos/cosmos-sdk/blob/master/x/slashing/spec/06_events.md)
-- [Distribution events](https://github.com/cosmos/cosmos-sdk/blob/master/x/distribution/spec/06_events.md)
-- [Bank events](https://github.com/cosmos/cosmos-sdk/blob/master/x/bank/spec/04_events.md)
++ [Staking events](https://github.com/cosmos/cosmos-sdk/blob/master/x/staking/spec/07_events.md)
++ [Governance events](https://github.com/cosmos/cosmos-sdk/blob/master/x/gov/spec/04_events.md)
++ [Slashing events](https://github.com/cosmos/cosmos-sdk/blob/master/x/slashing/spec/06_events.md)
++ [Distribution events](https://github.com/cosmos/cosmos-sdk/blob/master/x/distribution/spec/06_events.md)
++ [Bank events](https://github.com/cosmos/cosmos-sdk/blob/master/x/bank/spec/04_events.md)
 :::
 
 #### 匹配一笔交易的hash
@@ -311,7 +311,6 @@ gaiad tx slashing unjail --from <validator-operator-addr>
 ```bash
 gaiad query slashing signing-info <validator-pubkey>
 ```
-
 
 #### 查询参数
 
@@ -384,6 +383,7 @@ gaiad query staking delegations <delegator_addr>
 你还可以通过添加`--height`标识来获取先前的委托状态。
 
 #### 解绑 Token
+
 如果出于一些原因验证人行为异常，或者你想解绑一定数量的token，请使用以下命令。
 
 ```bash
@@ -474,6 +474,7 @@ gaiad query staking params
 所有这些值都将通过对一个`ParameterChange`提案的`governance`流程进行更新。
 
 #### 查询抵押池
+
 一个抵押池定义了当前状态的动态参数。你可以通过以下命令查询：
 
 ```bash
@@ -488,6 +489,7 @@ gaiad query staking pool
 + 最后记录的绑定股权
 
 #### 查询对验证人的绑定
+
 你可以查询对某个验证人的所有绑定：
 
 ```bash
@@ -499,6 +501,7 @@ gaiad query delegations-to <account_cosmosval>
 治理是Cosmos Hub的用户可以就软件升级，主网的参数或自定义文本提案并达成共识的过程。这是通过对提案进行投票来完成的，提案将由主要网络上的`Atom`持有者提交。
 
 关于投票过程的一些考虑因素：
+
 + 投票由绑定`Atom`的持有者以1个绑定的`Atom`对应1票方式投出
 + 委托人不投票的话会将票权继承给其验证人
 + **验证人必须对每个提案进行投票**。如果验证人未对提案进行投票，则会对其进行削减处罚。
@@ -557,13 +560,13 @@ gaiad tx gov submit-proposal param-change <path/to/proposal.json> \
 
 ::: danger Warning
 
-Currently parameter changes are _evaluated_ but not _validated_, so it is very important
+Currently parameter changes are *evaluated* but not *validated*, so it is very important
 that any `value` change is valid (ie. correct type and within bounds) for its
 respective parameter, eg. `MaxValidators` should be an integer and not a decimal.
 
 Proper vetting of a parameter change proposal should prevent this from happening
 (no deposits should occur during the governance process), but it should be noted
-regardless. 
+regardless.
 
 目前，参数更改已经过*评估*但未*经过验证*，因此`value`对于其相应参数，任何更改都是有效的（即正确类型和边界内）非常重要，例如 `MaxValidators` 应该是整数而不是小数。
 
@@ -611,8 +614,8 @@ gaiad tx gov deposit <proposal_id> "10000000uatom" \
 
 > 注意：达到`MaxDepositPeriod`后，将删除不符合此要求的提案。
 
-
 #### 查询存入金
+
 创建新提案后，你可以查询提交其所有存款：
 
 ```bash

@@ -38,7 +38,6 @@ These community-maintained web and mobile wallets allow you to store & transfer 
 * [Wetez](https://www.wetez.io/pc/homepage) - Android, iOS
 * [Crypto.com](https://crypto.com/) - Android, iOS
 
-
 ## Cosmos Hub Explorers
 
 These block explorers allow you to search, view and analyze Cosmos Hub data&mdash;like blocks, transactions, validators, etc.
@@ -57,7 +56,6 @@ These block explorers allow you to search, view and analyze Cosmos Hub data&mdas
 * [Mintscan](https://mintscan.io)
 * [Stargazer](https://stargazer.certus.one)
 * [Union Market](https://union.market/token/cosmos)
-
 
 ## Cosmos Hub CLI
 

@@ -121,7 +121,6 @@ gaiad tx staking edit-validator
 + 必须在 0 和 验证人的`commission-max-rate` 之间
 + 不得超过 验证人的`commission-max-change-rate`, 该参数标识**每日**最大的百分点变化数。也就是，一个验证人在`commission-max-change-rate`的界限内每日一次可调整的最大佣金变化。
 
-
 ## 查看验证人的描述信息
 
 通过该命令查看验证人的描述信息:
@@ -145,8 +144,8 @@ gaiad query slashing signing-info <validator-pubkey>\
 
 ```bash
 gaiad tx slashing unjail \
-	--from=<key_name> \
-	--chain-id=<chain_id>
+ --from=<key_name> \
+ --chain-id=<chain_id>
 ```
 
 ## 确认你的验证人节点正在运行
@@ -184,7 +183,6 @@ gaiad status
 ```
 
 你可能会注意到你的投票权比之前要少。这是由于你的下线受到的削减处罚！
-
 
 ### 问题 #2 : 我的`gaiad`由于`too many open files`而崩溃
 

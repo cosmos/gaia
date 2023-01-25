@@ -1,4 +1,4 @@
-# Advancing Ethermint - Governance Proposal: GTM and Engineering Plan for the Ethermint Chain 
+# Advancing Ethermint - Governance Proposal: GTM and Engineering Plan for the Ethermint Chain
 
 > **NOTE**: this is a short version of the full proposal. To read the full document click [here](https://forum.cosmos.network/t/advancing-ethermint-governance-proposal-gtm-and-engineering-plan-for-the-ethermint-chain/4554).
 
@@ -54,7 +54,7 @@ These are the items that are mandatory for the release of funds. The items will 
 
 > NOTE: Some of the items below are currently stated under ChainSafe's service agreement with the ICF for Ethermint. Our team will collaborate with them on these items so that they are included by the time the EVM chain is launched. These items are marked below as [CS]
 
-#### Milestone 1: Developer Usability and Testing 
+#### Milestone 1: Developer Usability and Testing
 
 This milestone aims to reach a stage where developers can begin deployments of Ethermint with the latest Cosmos SDK version and test their smart contracts in what will feel like a seamless experience.
 
@@ -111,6 +111,6 @@ See the [full version](https://forum.cosmos.network/t/advancing-ethermint-govern
 
 ## Conclusion
 
-With this proposal, Tharsis plans to expedite the Ethermint chain's development and launch the network by Q4 2021. Ethermint will be the first EVM-compatible chain on Cosmos that will be fully interoperable with other BFT and EVM chains via IBC and the Gravity bridge. 
+With this proposal, Tharsis plans to expedite the Ethermint chain's development and launch the network by Q4 2021. Ethermint will be the first EVM-compatible chain on Cosmos that will be fully interoperable with other BFT and EVM chains via IBC and the Gravity bridge.
 
 By creating and envisioning this long-term roadmap, we believe Ethermint can act as the vital component of the Interchain and serve as the gateway between the Ethereum and Cosmos ecosystems: The Ethermint launch will combine the Cosmos and Ethereum communities and provide new economic opportunities for millions of users.

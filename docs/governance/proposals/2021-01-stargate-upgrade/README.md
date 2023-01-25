@@ -70,7 +70,6 @@ Most exchanges and wallets have taken self-certification on directly. Our team c
 
 We have conducted numerous testnets with different partners. A particularly important testnet conducted with a significant fraction of the Hub validator set was a simulated upgrade of the cosmoshub on Nov 25th,2020. This tested the full upgrade flow including the prop29 implementation and height preserving upgrade functionality.
 
-
 ### Conclusion
 
 The governance proposal is our report back to the community on the success of the Stargate program. We have compiled detailed information for the community as a reference in the Stargate [repository](https://github.com/cosmosdevs/stargate).

@@ -9,12 +9,12 @@ There is a strong social consensus around proposal `Cosmos Hub 3 Upgrade Proposa
 on `cosmoshub-2`. This indicates that the upgrade procedure should be performed
 on `December 11, 2019 at or around 14:27 UTC` on block `2,902,000`.
 
-  - [Preliminary](#preliminary)
-  - [Major Updates](#major-updates)
-  - [Risks](#risks)
-  - [Recovery](#recovery)
-  - [Upgrade Procedure](#upgrade-procedure)
-  - [Notes for Service Providers](#notes-for-service-providers)
+- [Preliminary](#preliminary)
+- [Major Updates](#major-updates)
+- [Risks](#risks)
+- [Recovery](#recovery)
+- [Upgrade Procedure](#upgrade-procedure)
+- [Notes for Service Providers](#notes-for-service-providers)
 
 ## Preliminary
 
@@ -47,12 +47,12 @@ are discussed at a high level in July's Cosmos development update found
 
 Some of the biggest changes to take note on when upgrading as a developer or client are the the following:
 
-- **Tagging/Events**: The entire system of what we used to call tags has been replaced by a more
+- __Tagging/Events__: The entire system of what we used to call tags has been replaced by a more
   robust and flexible system called events. Any client that depended on querying or subscribing to
   tags should take note on the new format as old queries will not work and must be updated. More in
   depth docs on the events system can be found [here](https://github.com/tendermint/tendermint/blob/master/rpc/core/events.go).
   In addition, each module documents its own events in the specs (e.g. [slashing](https://github.com/cosmos/cosmos-sdk/blob/v0.36.0/docs/spec/slashing/06_events.md)).
-- **Height Queries**: Both the CLI and REST clients now (re-)enable height queries via the
+- __Height Queries__: Both the CLI and REST clients now (re-)enable height queries via the
   `--height` and `?height` arguments respectively. An important note to keep in mind are that height
   queries against pruning nodes will return errors when a pruned height is queried against. When no
   height is provided, the latest height will be used by default keeping current behavior intact. In
@@ -87,7 +87,7 @@ v0.34.6+ of the _Cosmos SDK_ and restore to their latest snapshot before restart
 __Note__: It is assumed you are currently operating a full-node running v0.34.6+ of the _Cosmos SDK_.
 
 - The version/commit hash of Gaia v2.0.3: `2f6783e298f25ff4e12cb84549777053ab88749a`
-- The upgrade height as agreed upon by governance: **2,902,000**
+- The upgrade height as agreed upon by governance: __2,902,000__
 - You may obtain the canonical UTC timestamp of the exported block by any of the following methods:
   - Block explorer (e.g. [Hubble](https://hubble.figment.network/cosmos/chains/cosmoshub-2/blocks/2902000?format=json&kind=block))
   - Through manually querying an RPC node (e.g. `/block?height=2902000`)
@@ -106,7 +106,7 @@ __Note__: It is assumed you are currently operating a full-node running v0.34.6+
 
 2. Export existing state from `cosmoshub-2`:
 
-   **NOTE**: It is recommended for validators and operators to take a full data snapshot at the export
+   __NOTE__: It is recommended for validators and operators to take a full data snapshot at the export
    height before proceeding in case the upgrade does not go as planned or if not enough voting power
    comes online in a sufficient and agreed upon amount of time. In such a case, the chain will fallback
    to continue operating `cosmoshub-2`. See [Recovery](#recovery) for details on how to proceed.
@@ -114,7 +114,7 @@ __Note__: It is assumed you are currently operating a full-node running v0.34.6+
    Before exporting state via the following command, the `gaiad` binary must be stopped!
 
    ```bash
-   $ gaiad export --for-zero-height --height=2902000 > cosmoshub_2_genesis_export.json
+   gaiad export --for-zero-height --height=2902000 > cosmoshub_2_genesis_export.json
    ```
 
 3. Verify the SHA256 of the (sorted) exported genesis file:
@@ -127,10 +127,10 @@ __Note__: It is assumed you are currently operating a full-node running v0.34.6+
 4. At this point you now have a valid exported genesis state! All further steps now require
 v2.0.3 of [Gaia](https://github.com/cosmos/gaia).
 
-   **NOTE**: Go [1.13+](https://golang.org/dl/) is required!
+   __NOTE__: Go [1.13+](https://golang.org/dl/) is required!
 
    ```bash
-   $ git clone https://github.com/cosmos/gaia.git && cd gaia && git checkout v2.0.3; make install
+   git clone https://github.com/cosmos/gaia.git && cd gaia && git checkout v2.0.3; make install
    ```
 
 5. Verify you are currently running the correct version (v2.0.3) of the _Gaia_:
@@ -149,10 +149,10 @@ v2.0.3 of [Gaia](https://github.com/cosmos/gaia).
 6. Migrate exported state from the current v0.34.6+ version to the new v2.0.3 version:
 
    ```bash
-   $ gaiad migrate v0.36 cosmoshub_2_genesis_export.json --chain-id=cosmoshub-3 --genesis-time=[PLACEHOLDER]> genesis.json
+   gaiad migrate v0.36 cosmoshub_2_genesis_export.json --chain-id=cosmoshub-3 --genesis-time=[PLACEHOLDER]> genesis.json
    ```
 
-   **NOTE**: The `migrate` command takes an input genesis state and migrates it to a targeted version.
+   __NOTE__: The `migrate` command takes an input genesis state and migrates it to a targeted version.
    Both v0.36 and v0.37 are compatible as far as state structure is concerned.
 
    Genesis time should be computed relative to the blocktime of `2,902,000`. The genesis time
@@ -168,7 +168,7 @@ v2.0.3 of [Gaia](https://github.com/cosmos/gaia).
 single parameter, `max_validators`, that we're upgrading based on [proposal 10](https://www.mintscan.io/proposals/10)
 
    ```bash
-   $ cat genesis.json | jq '.app_state["staking"]["params"]["max_validators"]=125' > tmp_genesis.json && mv tmp_genesis.json genesis.json
+   cat genesis.json | jq '.app_state["staking"]["params"]["max_validators"]=125' > tmp_genesis.json && mv tmp_genesis.json genesis.json
    ```
 
 8. Verify the SHA256 of the final genesis JSON:
@@ -180,11 +180,11 @@ single parameter, `max_validators`, that we're upgrading based on [proposal 10](
 
 9. Reset state:
 
-   **NOTE**: Be sure you have a complete backed up state of your node before proceeding with this step.
+   __NOTE__: Be sure you have a complete backed up state of your node before proceeding with this step.
    See [Recovery](#recovery) for details on how to proceed.
 
    ```bash
-   $ gaiad unsafe-reset-all
+   gaiad unsafe-reset-all
    ```
 
 10. Move the new `genesis.json` to your `.gaia/config/` directory
@@ -197,7 +197,7 @@ single parameter, `max_validators`, that we're upgrading based on [proposal 10](
 12. Note, if you have any application configuration in `gaiad.toml`, that file has now been renamed to `app.toml`:
 
     ```bash
-    $ mv .gaia/config/gaiad.toml .gaia/config/app.toml
+    mv .gaia/config/gaiad.toml .gaia/config/app.toml
     ```
 
 ## Notes for Service Providers

@@ -83,7 +83,7 @@ cd cosmos-sdk
 # Build the linux binary in ./build
 make build-linux
 
-# Build ghcr.io/cosmos/gaia/gaiadnode image
+# Build ghcr.io/cosmos/gaia/gaiadnode:7.0.x image
 make build-docker-gaiadnode
 ```
 

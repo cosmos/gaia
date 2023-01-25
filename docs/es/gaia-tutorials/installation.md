@@ -51,8 +51,8 @@ LDFLAGS="" make install
 Esto debería instalar los binarios de `gaiad`y `gaiad`. Verifique que todo esta OK:
 
 ```bash
-$ gaiad version --long
-$ gaiad version --long
+gaiad version --long
+gaiad version --long
 ```
 
 `gaiad` por su parte, debería dar como resultado algo similar a:

@@ -5,7 +5,7 @@ order: 2
 # Running a Validator
 
 ::: tip
-We suggest you try out joining a public testnet first. Information on how to join the most recent testnet can be found [here](../hub-tutorials/join-testnet.md). 
+We suggest you try out joining a public testnet first. Information on how to join the most recent testnet can be found [here](../hub-tutorials/join-testnet.md).
 :::
 
 Before setting up a validator node, make sure to have completed the [Joining Mainnet](../hub-tutorials/join-mainnet.md) guide.
@@ -32,8 +32,8 @@ gaiad tendermint show-validator
 
 To create your validator, just use the following command:
 
-::: warning 
-Don't use more `uatom` than you have! 
+::: warning
+Don't use more `uatom` than you have!
 :::
 
 ```bash
@@ -86,7 +86,7 @@ gaiad tx staking edit-validator
 Please note that some parameters such as `commission-max-rate` and `commission-max-change-rate` cannot be changed once your validator is up and running.
 :::
 
-__Note__: The `commission-rate` value must adhere to the following rules:
+**Note**: The `commission-rate` value must adhere to the following rules:
 
 - Must be between 0 and the validator's `commission-max-rate`
 - Must not exceed the validator's `commission-max-change-rate` which is maximum
@@ -116,8 +116,8 @@ When a validator is "jailed" for downtime, you must submit an `Unjail` transacti
 
 ```bash
 gaiad tx slashing unjail \
-	--from=<key_name> \
-	--chain-id=<chain_id>
+ --from=<key_name> \
+ --chain-id=<chain_id>
 ```
 
 ## Confirm Your Validator is Running
@@ -136,13 +136,14 @@ When attempting to perform routine maintenance or planning for an upcoming coord
 the block.
 
 ## Advanced configuration
+
 You can find more advanced information about running a node or a validator on the [Tendermint Core documentation](https://docs.tendermint.com/v0.35/nodes/).
 
 ## Common Problems
 
 ### Problem #1: My validator has `voting_power: 0`
 
-Your validator has become jailed. Validators get jailed, i.e. get removed from the active validator set, if they do not vote on at least `500` of the last `10,000` blocks, or if they double sign. 
+Your validator has become jailed. Validators get jailed, i.e. get removed from the active validator set, if they do not vote on at least `500` of the last `10,000` blocks, or if they double sign.
 
 If you got jailed for downtime, you can get your voting power back to your validator. First, if you're not using [Cosmovisor](https://docs.cosmos.network/master/run-node/cosmovisor.html) and `gaiad` is not running, start it up again:
 

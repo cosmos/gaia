@@ -69,7 +69,7 @@ gaiad start
 
 ### 빌드
 
-`localnet` 커맨드를 운영하기 위한 `gaiad` 바이너리(리눅스)와 `ghcr.io/cosmos/gaia/gaiadnode` docker 이미지를 생성합니다. 해당 바이너리는 컨테이너에 마운팅 되며 업데이트를 통해 이미지를 리빌드 하실 수 있습니다.
+`localnet` 커맨드를 운영하기 위한 `gaiad` 바이너리(리눅스)와 `ghcr.io/cosmos/gaia/gaiadnode:7.0.x` docker 이미지를 생성합니다. 해당 바이너리는 컨테이너에 마운팅 되며 업데이트를 통해 이미지를 리빌드 하실 수 있습니다.
 
 ```bash
 # Clone the gaia repo
@@ -81,7 +81,7 @@ cd gaia
 # Build the linux binary in ./build
 make build-linux
 
-# Build ghcr.io/cosmos/gaia/gaiadnode image
+# Build ghcr.io/cosmos/gaia/gaiadnode:7.0.x image
 make build-docker-gaiadnode
 ```
 

@@ -28,4 +28,4 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ghcr.io/cosmos/gaia:7.0.x
+            ghcr.io/cosmos/gaia/gaiadnode:7.0.x

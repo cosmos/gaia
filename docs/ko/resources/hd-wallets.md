@@ -15,7 +15,6 @@
 
 예를 들어, `path` 값이 `0`으로 지정된 경우, 지갑은 시드로부터 `Private Key 0`을 생성합니다. 이후 `Private Key 0`으로부터 `Public Key 0`을 생성하며, 마지막으로 `Public Key 0`으로 부터`Address 0`가 생성됩니다. 이 모든 과정을 일방적으로만 진행될 수 있습니다. 즉, `Address`로 부터 `Public Key`를 찾을 수 없고, `Public Key`로 부터 `Private Key` 값을 찾을 수 없스비낟.
 
-
 ```
      Account 0                         Account 1                         Account 2
 

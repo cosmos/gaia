@@ -75,7 +75,6 @@ Since we are aware of the superiority of the project over any similar efforts on
 
 Funds will be released to a multi-sig committee which in turn may - depending on each initiative and based on a majority multisignature approval - release the funds to: 1) Tendermint (AiB) that will act as a liaison between Cosmos Hub community and third parties and distribute the payments according with the marketing proposal or where appropriate, 2) directly to the entities or individuals ( e.g. contest winners or various contributors)
 
-
 **Funds’ Distribution:**
 
 The distribution of funds will be administered by 5 community members that have been selected via the governance working group. At least 3 will have to approve each spend for it to be released to AiB or any third party, according with the marketing proposal.

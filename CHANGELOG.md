@@ -36,7 +36,6 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
-
 ## [v7.1.0] -2022-10-14
 
 * (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.9](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.9) security release.
@@ -77,31 +76,31 @@ Ref: https://keepachangelog.com/en/1.0.0/
 * (gaia) [#1135](https://github.com/cosmos/gaia/pull/1135) Fix rocksdb build tag usage.
 * (gaia) [#1160](https://github.com/cosmos/gaia/pull/1160) Improvement: update state sync configs.
 * (gaia) [#1208](https://github.com/cosmos/gaia/pull/1208) Update statesync.bash.
-* * (gaia) Bump [Cosmos-SDK](https://github.com/cosmos/cosmos-sdk) to [v0.44.6](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.6)
+  * * (gaia) Bump [Cosmos-SDK](https://github.com/cosmos/cosmos-sdk) to [v0.44.6](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.6)
 * (gaia) Bump [Versions](https://github.com/cosmos/gaia/pull/1100) of various smaller dependencies, remove the Cosmos SDK replace statement, update `initiClientCtx` params, ensure `stdout` and `stderr` are handled correctly in the CLI.
 
 ## [v6.0.3] - 2022-02-18
 
- * This is a reverted release that is the same as v6.0.0
+* This is a reverted release that is the same as v6.0.0
 
 ## [v6.0.2] - 2022-02-17
 
- * Unusable release
+* Unusable release
 
 ## [v6.0.1] - 2022-02-10
 
- * Unusable release
+* Unusable release
 
 ## [v6.0.0] - 2021-11-24
 
- * (gaia) Add NewSetUpContextDecorator to anteDecorators
- * (gaia) Reconfigure SetUpgradeHandler to ensure vesting is configured after auth and new modules have InitGenesis run.
- * (golang) Bump golang prerequisite to 1.17. 
- * (gaia) Bump [Liquidity](https://github.com/gravity-devs/liquidity) module to [v1.4.2](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.4.2).
- * (gaia) Bump [Cosmos SDK](https://github.com/cosmos/cosmos-sdk) to [v0.44.3](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.3). See the [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/release/v0.44.x/CHANGELOG.md#v0443---2021-10-21) for details.
- * (gaia) Add [IBC](https://github.com/cosmos/ibc-go) as a standalone module from the Cosmos SDK using version [v2.0.0](https://github.com/cosmos/ibc-go/releases/tag/v2.0.0). See the [CHANGELOG.md](https://github.com/cosmos/ibc-go/blob/v2.0.0/CHANGELOG.md) for details.
- * (gaia) Add [packet-forward-middleware](https://github.com/strangelove-ventures/packet-forward-middleware) [v1.0.1](https://github.com/strangelove-ventures/packet-forward-middleware/releases/tag/v1.0.1).
- * (gaia) [#969](https://github.com/cosmos/gaia/issues/969) Remove legacy migration code.
+* (gaia) Add NewSetUpContextDecorator to anteDecorators
+* (gaia) Reconfigure SetUpgradeHandler to ensure vesting is configured after auth and new modules have InitGenesis run.
+* (golang) Bump golang prerequisite to 1.17.
+* (gaia) Bump [Liquidity](https://github.com/gravity-devs/liquidity) module to [v1.4.2](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.4.2).
+* (gaia) Bump [Cosmos SDK](https://github.com/cosmos/cosmos-sdk) to [v0.44.3](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.3). See the [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/release/v0.44.x/CHANGELOG.md#v0443---2021-10-21) for details.
+* (gaia) Add [IBC](https://github.com/cosmos/ibc-go) as a standalone module from the Cosmos SDK using version [v2.0.0](https://github.com/cosmos/ibc-go/releases/tag/v2.0.0). See the [CHANGELOG.md](https://github.com/cosmos/ibc-go/blob/v2.0.0/CHANGELOG.md) for details.
+* (gaia) Add [packet-forward-middleware](https://github.com/strangelove-ventures/packet-forward-middleware) [v1.0.1](https://github.com/strangelove-ventures/packet-forward-middleware/releases/tag/v1.0.1).
+* (gaia) [#969](https://github.com/cosmos/gaia/issues/969) Remove legacy migration code.
 
 ## [v5.0.8] - 2021-10-14
 
@@ -113,19 +112,19 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [v5.0.7] - 2021-09-30
 
-  * (gaia) Bump Cosmos SDK to 0.42.10
+* (gaia) Bump Cosmos SDK to 0.42.10
 
 ## [v5.0.6] - 2021-09-16
 
- * (gaia) Bump tendermint to 0.34.13
+* (gaia) Bump tendermint to 0.34.13
 
- 
 ## [v5.0.5] - 2021-08-05
 
- * (gaia) Bump SDK to [0.42.9](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42.9) to resolve IBC channel restart issue ([9800](https://github.com/cosmos/cosmos-sdk/issues/9800)).
+* (gaia) Bump SDK to [0.42.9](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.42.9) to resolve IBC channel restart issue ([9800](https://github.com/cosmos/cosmos-sdk/issues/9800)).
 
 ## [v5.0.4] - 2021-07-31
- * (chore) Fix release to include intended items from `v5.0.3`.
+
+* (chore) Fix release to include intended items from `v5.0.3`.
 
 ## [v5.0.3] - 2021-07-30
 

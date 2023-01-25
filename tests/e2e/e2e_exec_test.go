@@ -611,7 +611,7 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 	stdOut := outBuf.Bytes()
 	stdErr := errBuf.Bytes()
 	if !validation(stdOut, stdErr) {
-		s.Require().FailNowf("tx validation failed", "stdout: %s, stderr: %s",
+		s.Require().FailNowf("Exec validation failed", "stdout: %s, stderr: %s",
 			string(stdOut), string(stdErr))
 	}
 }

@@ -27,7 +27,7 @@ TOC:
 
 ## On-chain governance proposal attains consensus
 
-[Proposal #51](https://www.mintscan.io/cosmos/proposals/51) is the reference on-chain governance proposal for the this upgrade, which has passed with overwhleming community support. Neither core developers nor core funding entities control the governance, and this governance proposal has passed in a _fully decentralized_ way.  
+[Proposal #51](https://www.mintscan.io/cosmos/proposals/51) is the reference on-chain governance proposal for this upgrade, which has passed with overwhelming community support. Neither core developers nor core funding entities control the governance, and this governance proposal has passed in a _fully decentralized_ way.  
 
 ## Upgrade will take place July 12, 2021
 

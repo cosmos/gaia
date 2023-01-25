@@ -51,7 +51,7 @@ The network upgrade can take the following potential pathways:
 
 # Migrations
 
-These chapters contains all the migration guides to update your app and modules to Cosmos v0.40 Stargate.
+These chapters contain all the migration guides to update your app and modules to Cosmos v0.40 Stargate.
 
 If you’re running a block explorer, wallet, exchange, validator, or any other service (eg. custody provider) that depends upon the Cosmos Hub or Cosmos ecosystem, you’ll want to pay attention, because this upgrade will involve substantial changes.
 
@@ -93,14 +93,14 @@ There are many notable features and changes in the upcoming release of the SDK. 
 are discussed at a high level
 [here](https://github.com/cosmos/stargate).
 
-Some of the biggest changes to take note on when upgrading as a developer or client are the the following:
+Some of the biggest changes to take note on when upgrading as a developer or client are the following:
 
 - __Protocol Buffers__: Initially the Cosmos SDK used Amino codecs for nearly all encoding and decoding.
 In this version a major upgrade to Protocol Buffers have been integrated. It is expected that with Protocol Buffers
-applications gain in speed, readability, convinience and interoperability with many programming languages.
+applications gain in speed, readability, convenience and interoperability with many programming languages.
 [Read more](https://github.com/cosmos/cosmos-sdk/blob/master/docs/migrations/app_and_modules.md#protocol-buffers)
-- __CLI__: The CLI and the daemon for a blockchain were seperated in previous versions of the Cosmos SDK. This
-led to a `gaiad` and `gaiacli` binary which were seperated and could be used for different interactions with the
+- __CLI__: The CLI and the daemon for a blockchain were separated in previous versions of the Cosmos SDK. This
+led to a `gaiad` and `gaiacli` binary which were separated and could be used for different interactions with the
 blockchain. Both of these have been merged into one `gaiad` which now supports the commands the `gaiacli` previously
 supported.
 - __Node Configuration__: Previously blockchain data and node configuration was stored in `~/.gaia/`, these will

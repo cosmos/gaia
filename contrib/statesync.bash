@@ -40,9 +40,9 @@ mv genesis.cosmoshub-4.json ~/.gaia/config/genesis.json
 
 # Get "trust_hash" and "trust_height".
 INTERVAL=1000
-LATEST_HEIGHT=$(curl -s https://gaia-rpc.polkachu.com/block | jq -r .result.block.header.height)
+LATEST_HEIGHT=$(curl -s https://cosmos-rpc.polkachu.com/block | jq -r .result.block.header.height)
 BLOCK_HEIGHT=$((LATEST_HEIGHT - INTERVAL))
-TRUST_HASH=$(curl -s "https://gaia-rpc.polkachu.com/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
+TRUST_HASH=$(curl -s "https://cosmos-rpc.polkachu.com/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
 
 # Print out block and transaction hash from which to sync state.
 echo "trust_height: $BLOCK_HEIGHT"

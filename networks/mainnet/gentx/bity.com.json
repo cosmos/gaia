@@ -1,0 +1,45 @@
+{
+  "type": "auth/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cosmos-sdk/MsgCreateValidator",
+        "value": {
+          "description": {
+            "moniker": "bity.com",
+            "identity": "",
+            "website": "https://bity.com",
+            "details": "We offer professional, secure, and reliable crypto staking services for investors looking to stake their coins with trusted third parties, such as the Cosmos Network."
+          },
+          "commission": {
+            "rate": "0.200000000000000000",
+            "max_rate": "1.000000000000000000",
+            "max_change_rate": "0.010000000000000000"
+          },
+          "min_self_delegation": "1",
+          "delegator_address": "cosmos1uv26ytrnmydyctq0s58ve2k6wn2p653m9yn69g",
+          "validator_address": "cosmosvaloper1uv26ytrnmydyctq0s58ve2k6wn2p653mqs80fm",
+          "pubkey": "cosmosvalconspub1zcjduepqmpm39a9aqllqr8dm9w3ww0sp0v32vvphqmgxt20fpw7949ayhhqshx7n9c",
+          "value": {
+            "denom": "uatom",
+            "amount": "20000000000"
+          }
+        }
+      }
+    ],
+    "fee": {
+      "amount": null,
+      "gas": "200000"
+    },
+    "signatures": [
+      {
+        "pub_key": {
+          "type": "tendermint/PubKeySecp256k1",
+          "value": "A/MVFYmNRfeBJraFOJMmdVvdZRLNpfkSgwZy8j90DzoM"
+        },
+        "signature": "4WmtMo09/FO+SP5+ThIbr8xWI0LLc0d2+4cAhgIn6HtFGlKktIzvga3uf3W/Oq1xac7D8Wau64bnruiMz4Wa8Q=="
+      }
+    ],
+    "memo": "659787510cdb818ad1a3a2eed3ce68a6827354e2@cosmos.bity.com:26656"
+  }
+}

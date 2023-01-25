@@ -1,0 +1,15 @@
+{
+  "addr": "cosmos176m2p8l3fps3dal7h8gf9jvrv98tu3rqfdht86",
+  "type":"multisig",
+  "threshold":3,
+  "pubs":[
+    "cosmospub1addwnpepq2x0wlwht23ryczd965svezt89vsaeg968l64avuq26qfdhr3uvtu32vq0g",
+    "cosmospub1addwnpepq24auj0u2xyzrgv6um6dhef68hmx6jjfh08gy56yv9n4heqjmjwlxagn3hu",
+    "cosmospub1addwnpepqvc486pmqxyzqtwunq3mkes6n4q4dfssgmu9mzkddnmas097uxyjk8rcytp",
+    "cosmospub1addwnpepqg9w5mmz5whu4ekdntwjyx82gj6cwsdydy4af4d7ry9txlzpuqv5zp6v9w6",
+    "cosmospub1addwnpepqfs8yh5g9d7pzjqs95llkluduw0akp6ksffa5zxdvqptaletjkszclrr65t"
+  ],
+  "amount":21842188.81,
+  "vesting":"22 months",
+  "vesting_delay":"2 months"
+}

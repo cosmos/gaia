@@ -1,0 +1,45 @@
+{
+  "type": "auth/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cosmos-sdk/MsgCreateValidator",
+        "value": {
+          "description": {
+            "moniker": "Sentinel",
+            "identity": "D54C8032CF19C407",
+            "website": "sentinel.co",
+            "details": "We are Team-Sentinel https://github.com/sentinel-official/sentinel"
+          },
+          "commission": {
+            "rate": "0.100000000000000000",
+            "max_rate": "1.000000000000000000",
+            "max_change_rate": "0.100000000000000000"
+          },
+          "min_self_delegation": "1000000",
+          "delegator_address": "cosmos1u6ddcsjueax884l3tfrs66497c7g86skk24gr0",
+          "validator_address": "cosmosvaloper1u6ddcsjueax884l3tfrs66497c7g86skn7pa0u",
+          "pubkey": "cosmosvalconspub1zcjduepq87zcnf8sm4ewacjafqujfevt8rhwj5qk9uwtx4ef89ctuqmndkeq446ahw",
+          "value": {
+            "denom": "uatom",
+            "amount": "1500000000"
+          }
+        }
+      }
+    ],
+    "fee": {
+      "amount": null,
+      "gas": "200000"
+    },
+    "signatures": [
+      {
+        "pub_key": {
+          "type": "tendermint/PubKeySecp256k1",
+          "value": "A9OBEL9yE1gG2+gbzUxKa3T1GIPInHGkzi34CXdDXq+0"
+        },
+        "signature": "rmc8rAi/u2kLkGaXvYvIvm9hb7zPOHyKJF0ogXg8R6Ra0AagGKTn6m2IJhPi1VzBkrjPTLlUQjJgay/N5Rdr9g=="
+      }
+    ],
+    "memo": ""
+  }
+}

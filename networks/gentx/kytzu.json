@@ -1,0 +1,45 @@
+{
+    "type": "auth/StdTx",
+    "value": {
+        "msg": [
+            {
+                "type": "cosmos-sdk/MsgCreateValidator",
+                "value": {
+                    "description": {
+                        "moniker": "kytzu",
+                        "identity": "",
+                        "website": "",
+                        "details": ""
+                    },
+                    "commission": {
+                        "rate": "0.100000000000000000",
+                        "max_rate": "0.200000000000000000",
+                        "max_change_rate": "0.010000000000000000"
+                    },
+                    "min_self_delegation": "1000000",
+                    "delegator_address": "cosmos1wtv0kp6ydt03edd8kyr5arr4f3yc52vp5g7na0",
+                    "validator_address": "cosmosvaloper1wtv0kp6ydt03edd8kyr5arr4f3yc52vp3u2x3u",
+                    "pubkey": "cosmosvalconspub1zcjduepq0zyaquh6c8vmjfzft43uqylf2ejjpjcvup2zrtsk40uyz8xsq29s0k4eaw",
+                    "value": {
+                        "denom": "uatom",
+                        "amount": "1490000000"
+                    }
+                }
+            }
+        ],
+        "fee": {
+            "amount": null,
+            "gas": "200000"
+        },
+        "signatures": [
+            {
+                "pub_key": {
+                    "type": "tendermint/PubKeySecp256k1",
+                    "value": "A2Jl4SgkOkb8cD3D0GQjaDndOCbTftt9ziWQ0oQFwV7O"
+                },
+                "signature": "aeE+ZC9nl0AYfCRn+jrVKC2lBFSUDERVLZK26DJVlHARCZwGkj8CoxMY+hs7CA9kcm05LDIWqy13hQ705Ze2rw=="
+            }
+        ],
+        "memo": "b236fa97193239ce5e4032be0caf55957ac17a3c@167.86.70.194:26656"
+    }
+}

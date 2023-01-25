@@ -1,0 +1,45 @@
+{
+  "type": "auth/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cosmos-sdk/MsgCreateValidator",
+        "value": {
+          "description": {
+            "moniker": "Tezos Capital",
+            "identity": "",
+            "website": "https://tezos.capital",
+            "details": ""
+          },
+          "commission": {
+            "rate": "0.200000000000000000",
+            "max_rate": "1.000000000000000000",
+            "max_change_rate": "0.010000000000000000"
+          },
+          "min_self_delegation": "1",
+          "delegator_address": "cosmos1s7jnk7t6yqzensdgpvkvkag022udk8429exc87",
+          "validator_address": "cosmosvaloper1s7jnk7t6yqzensdgpvkvkag022udk842qdjdtd",
+          "pubkey": "cosmosvalconspub1zcjduepqnnh28nlj55sc329ppnhcr0xx7kuc9vnsp3dpwc28wdhhxtjc7jfs9k57f7",
+          "value": {
+            "denom": "uatom",
+            "amount": "1500000000"
+          }
+        }
+      }
+    ],
+    "fee": {
+      "amount": null,
+      "gas": "200000"
+    },
+    "signatures": [
+      {
+        "pub_key": {
+          "type": "tendermint/PubKeySecp256k1",
+          "value": "Ag+I0OzjX2AHatgaW1kJjNRs+Ck/2UQe8t0eDr5Av3/6"
+        },
+        "signature": "pFmZrSFtfH/LrHnLAyWvs9o/YJJDb9TA5RbnKxmLua1rNlOv3x+zHgelJeFCsy8n4qedMqZ9QZbxJ7snUZacQA=="
+      }
+    ],
+    "memo": ""
+  }
+}

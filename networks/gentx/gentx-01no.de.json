@@ -1,0 +1,45 @@
+{
+  "type": "auth/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cosmos-sdk/MsgCreateValidator",
+        "value": {
+          "description": {
+            "moniker": "clawmvp | 01no.de",
+            "identity": "",
+            "website": "",
+            "details": ""
+          },
+          "commission": {
+            "rate": "0.100000000000000000",
+            "max_rate": "0.200000000000000000",
+            "max_change_rate": "0.010000000000000000"
+          },
+          "min_self_delegation": "1",
+          "delegator_address": "cosmos17mggn4znyeyg25wd7498qxl7r2jhgue8ep585n",
+          "validator_address": "cosmosvaloper17mggn4znyeyg25wd7498qxl7r2jhgue8u4qjcq",
+          "pubkey": "cosmosvalconspub1zcjduepqlzmd0spn9m0m3eq9zp93d4w6e5tugamv44yqjzyacelnvra634fqnfec0r",
+          "value": {
+            "denom": "uatom",
+            "amount": "20000000000"
+          }
+        }
+      }
+    ],
+    "fee": {
+      "amount": null,
+      "gas": "200000"
+    },
+    "signatures": [
+      {
+        "pub_key": {
+          "type": "tendermint/PubKeySecp256k1",
+          "value": "A9isBJO7xtwuV0PlTRTcJJN9Vk+cYDtjD35IUExoWVGW"
+        },
+        "signature": "DqgDxTiOvltlH1Oy2PFfvocGXHnxH8a5gDne50RjD7J+l0iglJQ5UdE2vI+F0ybQ+JXHahMJaKJebwB62tHB9g=="
+      }
+    ],
+    "memo": "01no.de@0.0.0.0:26656"
+  }
+}

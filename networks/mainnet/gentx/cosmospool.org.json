@@ -1,0 +1,45 @@
+{
+  "type": "auth/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cosmos-sdk/MsgCreateValidator",
+        "value": {
+          "description": {
+            "moniker": "cosmospool.org",
+            "identity": "",
+            "website": "http://cosmospool.org",
+            "details": "Cosmospool.org Delegation Services"
+          },
+          "commission": {
+            "rate": "0.100000000000000000",
+            "max_rate": "0.400000000000000000",
+            "max_change_rate": "0.010000000000000000"
+          },
+          "min_self_delegation": "100000000",
+          "delegator_address": "cosmos1ps7dmygt4wm72t8l9kdjetelhggsv8w7m0ezaz",
+          "validator_address": "cosmosvaloper1ps7dmygt4wm72t8l9kdjetelhggsv8w77mdh33",
+          "pubkey": "cosmosvalconspub1zcjduepqupgzsdq2w7m77h4xyrtywzx8mlqnj97ucdv7kaae78w5p7xadqfs3e34w8",
+          "value": {
+            "denom": "uatom",
+            "amount": "20000000000"
+          }
+        }
+      }
+    ],
+    "fee": {
+      "amount": null,
+      "gas": "200000"
+    },
+    "signatures": [
+      {
+        "pub_key": {
+          "type": "tendermint/PubKeySecp256k1",
+          "value": "A7noP7sKUSsy4PJeNJf/yApZQa/V1rcuBYk5IalYItyc"
+        },
+        "signature": "jedggMAw6ArULMZiLKe6efia7DqPXTVWa9yz9RNoH29vDVCs8238roGA4HYonV27kf8zdp9momNToaY7fvgS2Q=="
+      }
+    ],
+    "memo": ""
+  }
+}

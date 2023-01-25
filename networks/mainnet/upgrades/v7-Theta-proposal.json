@@ -1,0 +1,42 @@
+{
+    "body": {
+      "messages": [
+        {
+          "@type": "/cosmos.gov.v1beta1.MsgSubmitProposal",
+          "content": {
+            "@type": "/cosmos.upgrade.v1beta1.SoftwareUpgradeProposal",
+            "title": "v7-Theta",
+            "description": "This on-chain upgrade governance proposal is to adopt gaia v7.0.0 which includes a number of updates and fixes. By voting YES to this proposal, you approve of adding these \r\n\r\nFor instructions on performing the upgrade see https://hub.cosmos.network/main/hub-tutorials/upgrade-node.html\r\n\r\n# Background\r\n\r\nSince the last v6-Vega upgrade at height 86950000 there have been a number of updates, fixes and new modules added to the Cosmos SDK, IBC and Tendermint.\r\n\r\nThis is a proposal to adopt the first release for the [v7-Theta](https://github.com/cosmos/gaia/blob/main/docs/roadmap/cosmos-hub-roadmap-2.0.md#v7-theta-upgrade-expected-q2-2022) upgrade the `cosmoshub-4` mainnet.\r\n\r\nIt contains the following changes:\r\n\r\n- (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.1](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.1). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.1/CHANGELOG.md#v0451---2022-02-03) for details.\r\n- (gaia) bump [ibc-go](https://github.com/cosmos/ibc-go) module to [v3.0.0](https://github.com/cosmos/ibc-go/releases/tag/v3.0.0). See [CHANGELOG.md](https://github.com/cosmos/ibc-go/blob/v3.0.0/CHANGELOG.md#v300---2022-03-15) for details.\r\n- (gaia) add [interhcian account](https://github.com/cosmos/ibc-go/tree/main/modules/apps/27-interchain-accounts) module (interhchain-account module is part of ibc-go module).\r\n- (gaia) bump [liquidity](github.com/gravity-devs/liquidity/x/liquidity) module to [v1.5.0](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.5.0). See [CHANGELOG.md](https://github.com/Gravity-Devs/liquidity/blob/v1.5.0/CHANGELOG.md#v150---20220223) for details.\r\n- (gaia) bump [packet-forward-middleware](https://github.com/strangelove-ventures/packet-forward-middleware) module to [v2.1.1](https://github.com/strangelove-ventures/packet-forward-middleware/releases/tag/v2.1.1).\r\n- (gaia) add migration logs for upgrade process.\r\n\r\n# On-Chain Upgrade Process\r\nWhen the network reaches the halt height, the state machine program of the Cosmos Hub will be halted. The classic method for upgrading requires all validators and node operators to manually substitute the existing state machine binary with the new binary. There is also a newer method that relies on Cosmovisor to swap the binaries automatically. Cosmovisor also includes the ability to download the binaries automatically before swapping them. To test a simulated local upgrade please see the local testnet documentation. Because it is an onchain upgrade process, the blockchain will be continued with all the accumulated history with continuous block height.\r\n\r\nFor full instructions please see https://hub.cosmos.network/main/hub-tutorials/upgrade-node.html\r\n\r### Potential Risk Factors\r\n\r\nAlthough very extensive testing and simulation has taken place there always still exists a risk that the Cosmos Hub might experience problems due to potential bugs or errors from the new features. In the case of serious problems, validators should stop operating the network immediately. Cosmos Core Contributors will coordinate with validators in the `#validators-verified channel` of the [Cosmos Developer Discord](https://discord.gg/cosmosnetwork) to create and execute a contingency plan. Likely this will be an emergency release with fixes or the recommendation to consider the upgrade aborted and revert back to the previous release of gaia (v6.0.x).",
+            "plan": {
+              "name": "v7-Theta",
+              "time": "0001-01-01T00:00:00Z",
+              "height": "10085397",
+              "info": "{\"binaries\":{\"linux/amd64\":\"https://github.com/cosmos/gaia/releases/download/v7.0.0/gaiad-v7.0.0-linux-amd64?checksum=sha256:dc0e5b6690a55f0f1c41ad96f068049e25d9e85d53c0587284b7f1a1f9a51545\",\"linux/arm64\":\"https://github.com/cosmos/gaia/releases/download/v7.0.0/gaiad-v7.0.0-linux-arm64?checksum=sha256:994f67ec8134504ae032a1ae58caf769b5a9a1581a38705efd94ab654a7f6173\",\"darwin/amd64\":\"https://github.com/cosmos/gaia/releases/download/v7.0.0/gaiad-v7.0.0-darwin-amd64?checksum=sha256:2b7425b27e1c04877f0e9230f1657bee1b3274b73bee8f550a290cc505444dbf\",\"windows/amd64\":\"https://github.com/cosmos/gaia/releases/download/v7.0.0/gaiad-v7.0.0-windows-amd64.exe?checksum=sha256:1362b026e942cc16ab2b7f35a3ff39fb9075dcde70570635485d4b1866e1d036\"}}",
+              "upgraded_client_state": null
+            }
+          },
+          "initial_deposit": [
+            {
+              "denom": "uatom",
+              "amount": "50000"
+            }
+          ],
+          "proposer": "cosmos1hxv7mpztvln45eghez6evw2ypcw4vjmsmr8cdx"
+        }
+      ],
+      "memo": "",
+      "timeout_height": "0",
+      "extension_options": [],
+      "non_critical_extension_options": []
+    },
+    "auth_info": {
+      "signer_infos": [],
+      "fee": {
+        "amount": [],
+        "gas_limit": "1000000",
+        "payer": "",
+        "granter": ""
+      }
+    },
+    "signatures": []
+  }

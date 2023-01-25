@@ -1,0 +1,45 @@
+{
+  "type": "auth/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cosmos-sdk/MsgCreateValidator",
+        "value": {
+          "description": {
+            "moniker": "stake.fish",
+            "identity": "",
+            "website": "stake.fish",
+            "details": "Winner of the Game of Stakes. Brought to you by stake.fish and bitfish."
+          },
+          "commission": {
+            "rate": "0.040000000000000000",
+            "max_rate": "1.000000000000000000",
+            "max_change_rate": "0.010000000000000000"
+          },
+          "min_self_delegation": "1",
+          "delegator_address": "cosmos1sjllsnramtg3ewxqwwrwjxfgc4n4ef9u0tvx7u",
+          "validator_address": "cosmosvaloper1sjllsnramtg3ewxqwwrwjxfgc4n4ef9u2lcnj0",
+          "pubkey": "cosmosvalconspub1zcjduepq6fpkt3qn9xd7u44478ypkhrvtx45uhfj3uhdny420hzgsssrvh3qnzwdpe",
+          "value": {
+            "denom": "uatom",
+            "amount": "19000000000"
+          }
+        }
+      }
+    ],
+    "fee": {
+      "amount": null,
+      "gas": "200000"
+    },
+    "signatures": [
+      {
+        "pub_key": {
+          "type": "tendermint/PubKeySecp256k1",
+          "value": "A2/+IgTx8HlG4xa68Nkw6dXOWobR+PFOKDhMTrYS5q0r"
+        },
+        "signature": "gOrq4fFvvAB9fCh561hK8lzKPklftQoowQ7u52gkk1Zk13i0bYa3V/aFCZWXIaxlBs74Z2jlxXHGg64TYorrYw=="
+      }
+    ],
+    "memo": ""
+  }
+}

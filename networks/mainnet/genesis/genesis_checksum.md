@@ -1,0 +1,5 @@
+
+# Genesis sha256sum
+- genesis.cosmoshub-1.json: 73a866b21723ecbc28b6d15951b2eb3aa2f2443650ff6df489bf55ac5edceefa
+- genesis.cosmoshub-2.json: 1e349fb39b85f7707ee78d39879f9d5d61f4d30f67980bb0bf07bd35b2f8bf30
+- genesis.cosmoshub-4.json.gz: 7fe946e6bb3c378da546767f4d078585c38f256c8ec17888d71aeee3b7edd5c7

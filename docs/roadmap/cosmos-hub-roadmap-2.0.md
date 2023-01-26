@@ -50,8 +50,12 @@ The upgrades aim to add features such as liquidity, economic security, usability
 ## v8-Rho Upgrade (expected Q1 2023)
 
 - Gaia v8.0.x
-- Cosmos SDK v0.45
-  - Minimal update with small fixes
+- Cosmos SDK v0.45.11
+  - Version bump with a number of fixes
+  - See [changelog](https://github.com/cosmos/cosmos-sdk/blob/v0.45.11/CHANGELOG.md) for details
+- IBC v3.4
+  - See [changelog](https://github.com/cosmos/ibc-go/blob/v3.4.0/CHANGELOG.md) for details
+- IBC Packet Forward Middleware v4.0.1
 - IBC Msg Whitelist to skip MinFee in CheckTX
 - Global Fee Module
   - Allows denoms and min-fees to be governance parameters so gas can be paid in various denoms.
@@ -61,9 +65,9 @@ The upgrades aim to add features such as liquidity, economic security, usability
 
 - Gaia v9.0.x
 - Cosmos SDK v0.45
+- IBC 4.2
 - Interchain Security - Required Participation of Provider Chain Validators
   - The Cosmos solution to shared security that uses IBC Cross Chain Validation (CCV) to relay validator set composition from a Provider Chain (Cosmos Hub) to a Consumer Chain. This validator set is in charge of producing blocks on both networks using separate nodes. Misbehavior on the Consumer Chain results in slashing Provider Chain staking tokens (ATOM).
-  - IBC 4.x
 
 ## v10-Epsilon (expected Q2 2023)
 

@@ -141,9 +141,9 @@ var (
 // GaiaApp extends an ABCI application, but with most of its parameters exported.
 // They are exported for convenience in creating helper functions, as object
 // capabilities aren't needed for testing.
-type GaiaApp struct { // nolint: golint
+type GaiaApp struct {
 	*baseapp.BaseApp
-	legacyAmino       *codec.LegacyAmino
+	legacyAmino       *codec.LegacyAmino //nolint:staticcheck // SA1019: codec.LegacyAmino is deprecated
 	appCodec          codec.Marshaler
 	interfaceRegistry types.InterfaceRegistry
 
@@ -195,7 +195,6 @@ func NewGaiaApp(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool, skipUpgradeHeights map[int64]bool,
 	homePath string, invCheckPeriod uint, encodingConfig gaiaappparams.EncodingConfig, appOpts servertypes.AppOptions, baseAppOptions ...func(*baseapp.BaseApp),
 ) *GaiaApp {
-
 	appCodec := encodingConfig.Marshaler
 	legacyAmino := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
@@ -305,7 +304,7 @@ func NewGaiaApp(
 	/****  Module Options ****/
 
 	/****  Module Options ****/
-	var skipGenesisInvariants = false
+	skipGenesisInvariants := false
 	opt := appOpts.Get(crisis.FlagSkipGenesisInvariants)
 	if opt, ok := opt.(bool); ok {
 		skipGenesisInvariants = opt
@@ -424,7 +423,7 @@ func NewGaiaApp(
 // MakeCodecs constructs the *std.Codec and *codec.LegacyAmino instances used by
 // Gaia. It is useful for tests and clients who do not want to construct the
 // full gaia application
-func MakeCodecs() (codec.Marshaler, *codec.LegacyAmino) {
+func MakeCodecs() (codec.Marshaler, *codec.LegacyAmino) { //nolint:staticcheck // SA1019: codec.LegacyAmino is deprecated
 	config := MakeEncodingConfig()
 	return config.Marshaler, config.Amino
 }
@@ -470,7 +469,7 @@ func (app *GaiaApp) ModuleAccountAddrs() map[string]bool {
 //
 // NOTE: This is solely to be used for testing purposes as it may be desirable
 // for modules to register their own custom testing types.
-func (app *GaiaApp) LegacyAmino() *codec.LegacyAmino {
+func (app *GaiaApp) LegacyAmino() *codec.LegacyAmino { //nolint:staticcheck // SA1019: codec.LegacyAmino is deprecated
 	return app.legacyAmino
 }
 
@@ -574,7 +573,7 @@ func GetMaccPerms() map[string][]string {
 }
 
 // initParamsKeeper init params keeper and its subspaces
-func initParamsKeeper(appCodec codec.BinaryMarshaler, legacyAmino *codec.LegacyAmino, key, tkey sdk.StoreKey) paramskeeper.Keeper {
+func initParamsKeeper(appCodec codec.BinaryMarshaler, legacyAmino *codec.LegacyAmino, key, tkey sdk.StoreKey) paramskeeper.Keeper { //nolint:staticcheck // SA1019: codec.LegacyAmino is deprecated
 	paramsKeeper := paramskeeper.NewKeeper(appCodec, legacyAmino, key, tkey)
 
 	paramsKeeper.Subspace(authtypes.ModuleName)

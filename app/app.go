@@ -320,7 +320,6 @@ func (app *GaiaApp) SimulationManager() *module.SimulationManager {
 // RegisterAPIRoutes registers all application module routes with the provided
 // API server.
 func (app *GaiaApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig) {
-
 	clientCtx := apiSvr.ClientCtx
 	rpc.RegisterRoutes(clientCtx, apiSvr.Router)
 	// Register legacy tx routes.
@@ -338,7 +337,6 @@ func (app *GaiaApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APICo
 	if apiConfig.Swagger {
 		RegisterSwaggerAPI(apiSvr.Router)
 	}
-
 }
 
 // RegisterTxService implements the Application.RegisterTxService method.

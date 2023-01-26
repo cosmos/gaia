@@ -183,7 +183,7 @@ gaiad keys list --home ./build/node0/gaiad
 
 如果你拥有多个不同名称的可执行程序，则可以使用 BINARY 环境变量指定要运行的可执行程序。可执行程序的路径是相对于挂载的卷。例如：
 
-```
+```bash
 # Run with custom binary
 BINARY=gaiafoo make localnet-start
 ```
@@ -202,7 +202,7 @@ BINARY=gaiafoo make localnet-start
 - 创建一个具有 EC2 实例创建能力的[ASW API token](https://docs.aws.amazon.com/general/latest/gr/managing-aws-access-keys.html)
 - 创建 SSH 密钥
 
-```
+```bash
 export AWS_ACCESS_KEY_ID="2345234jk2lh4234"
 export AWS_SECRET_ACCESS_KEY="234jhkg234h52kh4g5khg34"
 export TESTNET_NAME="remotenet"
@@ -215,25 +215,25 @@ export SSH_PUBLIC_FILE="$HOME/.ssh/id_rsa.pub"
 
 ### 创建一个远程网络
 
-```
+```bash
 SERVERS=1 REGION_LIMIT=1 make validators-start
 ```
 
 测试网络的名称将由`--chain-id`定义，集群的名称则是 AWS 中服务器管理标识。该代码将在每个可用区中创建服务器数量的服务器，最多为 REGION_LIMIT，从 us-east-2 开始。（us-east-1 被排除在外）下面的 BaSH 脚本也是如此，但更便于输入。
 
-```
+```bash
 ./new-testnet.sh "$TESTNET_NAME" "$CLUSTER_NAME" 1 1
 ```
 
 ### 快速查询状态入口
 
-```
+```bash
 make validators-status
 ```
 
 ### 删除服务器
 
-```
+```bash
 make validators-stop
 ```
 
@@ -253,6 +253,6 @@ ansible-playbook -i inventory/digital_ocean.py -l remotenet logzio.yml -e LOGZIO
 
 你可以安装 DataDog 代理：
 
-```
+```bash
 make datadog-install
 ```

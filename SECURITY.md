@@ -58,7 +58,7 @@ Communications to Cosmos Hub Validators will include the following details:
 
 An example notice looks like:
 
-```
+```markdown
 Dear Cosmos Hub Validators,
 
 A critical security vulnerability has been identified in Gaia v4.0.x. 

@@ -31,7 +31,7 @@ moniker = "<your_custom_moniker>"
 
 你可以编辑`~/.gaia/config/config.toml`文件来开启垃圾交易过滤机制以拒绝收到的手续费过低的交易：
 
-```
+```toml
 # This is a TOML config file.
 # For more information, see https://github.com/toml-lang/toml
 
@@ -85,7 +85,7 @@ gaiad start
 
 Cosmos Hub网络中的交易需要支付一笔交易手续费以得到处理。手续费支付执行交易所消耗的gas。计算公式如下：
 
-```
+```go
 fees = gas * gasPrices
 ```
 

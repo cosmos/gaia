@@ -33,6 +33,7 @@ A summary report of current marketing activities and related analytics can be fo
 ### Spend Overview
 
 As of 2021-03-31, a total of 41,912 ATOM have been spent in the following ways:
+
 * Meme Contest: 0 ATOM
 * Banner ads - 8,750 ATOM
 * Influencers: twitter posts and youtube shows - 25,462 ATOM
@@ -41,6 +42,7 @@ As of 2021-03-31, a total of 41,912 ATOM have been spent in the following ways:
 * Signers fee: 500 ATOM
 
 Additionally as of 2021-04-21, a total of 22,610 ATOM have been spent for:
+
 * Meme contest: 240 ATOM
 * PR company: 990 ATOM
 * Twitter influencers: 9,550 ATOM

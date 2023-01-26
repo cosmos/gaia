@@ -133,7 +133,7 @@ The effective rate of inflation tends to be different than the set rate of infla
 - `cosmoshub-4` default: `0.670000000000000000`
 - `cosmoshub-3` default: `0.670000000000000000`
 
-`GoalBonded` is the target proportion of staking participation, relative to the ATOM supply. Currently the goal of the system's design is to have 67% (`0.670000000000000000`) of the total ATOM supply bonded and participating in staking. When over 67% of the supply is staked, the inflation set rate begins decreasing at a maximum yearly rate of [`InflationRateChange`](#inflationratechange) until it reaches and remains at the [`InflationMin`](#inflationmin) of 7%. When under 67% of the supply is staked, the inflation set rate begins increasing at a maximum yearly rate of [`InflationRateChange`](#InflationRateChange) until it reaches and remains at the [`InflationMax`](#inflationmax) of 20%.
+`GoalBonded` is the target proportion of staking participation, relative to the ATOM supply. Currently the goal of the system's design is to have 67% (`0.670000000000000000`) of the total ATOM supply bonded and participating in staking. When over 67% of the supply is staked, the inflation set rate begins decreasing at a maximum yearly rate of [`InflationRateChange`](#inflationratechange) until it reaches and remains at the [`InflationMin`](#inflationmin) of 7%. When under 67% of the supply is staked, the inflation set rate begins increasing at a maximum yearly rate of [`InflationRateChange`](#inflationratechange) until it reaches and remains at the [`InflationMax`](#inflationmax) of 20%.
 
 #### Decreasing the value of `GoalBonded`
 

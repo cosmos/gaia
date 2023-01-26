@@ -19,7 +19,7 @@ TOC:
   - [Target runtime, cosmoshub-4 (post-Vega upgrade) will run Gaia v6.0.0](#target-runtime-cosmoshub-4-post-vega-upgrade-will-run-gaia-v600)
 - [Vega upgrade steps](#vega-upgrade-steps)
   - [Method I: manual upgrade](#method-i-manual-upgrade)
-  - - [Method II: upgrade using Cosmovisor by manually preparing the Gaia v6.0.0 binary](#method-ii-upgrade-using-cosmovisor-by-manually-preparing-the-gaia-v600-binary)
+      - - [Method II: upgrade using Cosmovisor by manually preparing the Gaia v6.0.0 binary](#method-ii-upgrade-using-cosmovisor-by-manually-preparing-the-gaia-v600-binary)
   - [Method III: upgrade using Cosmovisor by auto-downloading the Gaia v6.0.0 binary (not recommended!)](#method-iii-upgrade-using-cosmovisor-by-auto-downloading-the-gaia-v600-binary-not-recommended)
 - [Upgrade duration](#upgrade-duration)
 - [Rollback plan](#rollback-plan)

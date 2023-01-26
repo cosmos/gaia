@@ -340,7 +340,7 @@ Cross check your genesis hash with other peers (other validators) in the chat ro
 In case you have been running REST server with the command `gaiacli rest-server` previously, running this command will not be necessary anymore.
 API server is now in-process with daemon and can be enabled/disabled by API configuration in your `.gaia/config/app.toml`:
 
-```
+```toml
 [api]
 # Enable defines if the API server should be enabled.
 enable = false

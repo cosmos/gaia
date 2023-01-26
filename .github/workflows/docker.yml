@@ -1,9 +1,9 @@
-name: ci
+name: Publish Docker Image
 
 on:
   push:
     branches:
-      - "main"
+      - "release/v7.0.x"
 
 jobs:
   docker:

@@ -221,6 +221,7 @@ different modules:
         }
       }
       ```
+
   - [rpc] [\#4141](https://github.com/tendermint/tendermint/pull/4141) Remove `#event` suffix from the ID in event responses.
       `{"jsonrpc": "2.0", "id": 0, "result": ...}`
   - [rpc] [\#4141](https://github.com/tendermint/tendermint/pull/4141) Switch to integer IDs instead of `json-client-XYZ`
@@ -231,6 +232,7 @@ different modules:
       id=1 method=/abci_query
       id=1 result=...
       ```
+
     - ID is unique for each request;
     - Request.ID is now optional. Notification is a Request without an ID. Previously ID="" or ID=0 were considered as notifications.
 

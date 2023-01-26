@@ -110,6 +110,7 @@ The upgrades aim to add features such as liquidity, economic security, usability
 ## Future Considerations
 
 The Cosmos Hub is a decentralized network with many diverse contributors. As such there is no one authority of what is or can be part of the Cosmos Network. The Cosmos Hub team at Interchain does it's best to maintain the Gaia repository, which is the primary codebase that operates the Cosmos Network. The Interchain Foundation is one of the sources of funding for engineering work that may make its way onto the Cosmos Hub. We do our best to participate in ongoing conversations about the mission, vision and purpose of the Cosmos Hub, so that we can best support work to enabling it via funding, engineering, coordination and communication. Some of the topics which have been discussed by contributors inside and outside of Interchain are listed below, although have not been developed to the point of being included in the roadmap:
+
 - Privacy
 - Smart Contracts
 - Rollups

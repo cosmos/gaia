@@ -16,15 +16,15 @@ All the following instructions have been tested on *Ubuntu 18.04.2 LTS* with *do
 
 Clone `gaia`:
 
-```
+```bash
 git clone https://github.com/cosmos/gaia.git
 ```
 
 Checkout the commit, branch, or release tag you want to build:
 
-```
+```bash
 cd gaia/
-git checkout v4.2.1
+git checkout v7.0.x
 ```
 
 The buildsystem supports and produces binaries for the following architectures:
@@ -36,7 +36,7 @@ The buildsystem supports and produces binaries for the following architectures:
 
 Run the following command to launch a build for all supported architectures:
 
-```
+```bash
 make distclean build-reproducible
 ```
 
@@ -44,7 +44,7 @@ The build system generates both the binaries and deterministic build report in t
 The `artifacts/build_report` file contains the list of the build artifacts and their respective checksums, and can be used to verify
 build sanity. An example of its contents follows:
 
-```
+```text
 App: gaiad
 Version: v4.2.1
 Commit: dbd8a6fb522c571debf958837f9113c56d418f6b

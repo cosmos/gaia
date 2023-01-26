@@ -113,8 +113,17 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
+replace (
+	// use updated cosmos-sdk that supports fast node
+	github.com/cosmos/cosmos-sdk => github.com/notional-labs/cosmos-sdk v0.42.12-0.20230104183952-af9243bd1113
 
-replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+	// use cosmos flavored protobufs
+	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
-replace github.com/cosmos/cosmos-sdk => github.com/notional-labs/cosmos-sdk v0.42.12-0.20230104183952-af9243bd1113
+	// use informal fork of tendermint
+	github.com/tendermint/tendermint => github.com/informalsystems/tendermint v0.34.24
+
+	// use grpc compatible with cosmos flavored protobufs
+	google.golang.org/grpc => google.golang.org/grpc v1.33.2
+
+)

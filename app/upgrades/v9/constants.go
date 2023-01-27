@@ -1,15 +1,15 @@
-package v8
+package v9
 
 import (
 	store "github.com/cosmos/cosmos-sdk/store/types"
+	ccvprovider "github.com/cosmos/interchain-security/x/ccv/provider/types"
 
 	"github.com/cosmos/gaia/v9/app/upgrades"
-	"github.com/cosmos/gaia/v9/x/globalfee"
 )
 
 const (
 	// UpgradeName defines the on-chain upgrade name.
-	UpgradeName = "v8-Rho"
+	UpgradeName = "v9-Lambda"
 )
 
 var Upgrade = upgrades.Upgrade{
@@ -17,7 +17,7 @@ var Upgrade = upgrades.Upgrade{
 	CreateUpgradeHandler: CreateUpgradeHandler,
 	StoreUpgrades: store.StoreUpgrades{
 		Added: []string{
-			globalfee.ModuleName,
+			ccvprovider.ModuleName,
 		},
 	},
 }

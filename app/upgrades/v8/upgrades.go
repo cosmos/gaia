@@ -2,20 +2,23 @@ package v8
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	icahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
-	icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
-	ibcchanneltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
+	icahosttypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/types"
+	icatypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
 
-	"github.com/cosmos/gaia/v8/app/keepers"
+	"github.com/cosmos/gaia/v9/app/keepers"
 )
 
 func FixBankMetadata(ctx sdk.Context, keepers *keepers.AppKeepers) error {
+	ctx.Logger().Info("Starting fix bank metadata...")
+
 	malformedDenom := "uatomu"
 	correctDenom := "uatom"
 
@@ -47,10 +50,14 @@ func FixBankMetadata(ctx sdk.Context, keepers *keepers.AppKeepers) error {
 	atomMetaData.Symbol = "ATOM"
 	keepers.BankKeeper.SetDenomMetaData(ctx, atomMetaData)
 
+	ctx.Logger().Info("Fix bank metadata complete")
+
 	return nil
 }
 
 func QuicksilverFix(ctx sdk.Context, keepers *keepers.AppKeepers) error {
+	ctx.Logger().Info("Starting fix quicksilver...")
+
 	// Refund stuck coins from ica address
 	sourceAddress, err := sdk.AccAddressFromBech32("cosmos13dqvh4qtg4gzczuktgnw8gc2ewnwmhdwnctekxctyr4azz4dcyysecgq7e")
 	if err != nil {
@@ -78,6 +85,8 @@ func QuicksilverFix(ctx sdk.Context, keepers *keepers.AppKeepers) error {
 	closeChannel(keepers, ctx, "channel-465")
 	closeChannel(keepers, ctx, "channel-466")
 
+	ctx.Logger().Info("Fix quicksilver complete")
+
 	return nil
 }
 
@@ -95,18 +104,11 @@ func CreateUpgradeHandler(
 	keepers *keepers.AppKeepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-		ctx.Logger().Info("start to run module migrations...")
+		ctx.Logger().Info("Running upgrade fixes...")
 
-		vm, err := mm.RunMigrations(ctx, configurator, vm)
+		err := FixBankMetadata(ctx, keepers)
 		if err != nil {
-			return vm, err
-		}
-
-		ctx.Logger().Info("running the rest of the upgrade handler...")
-
-		err = FixBankMetadata(ctx, keepers)
-		if err != nil {
-			return vm, err
+			ctx.Logger().Info(fmt.Sprintf("error fixing bank metadata: %s", err.Error()))
 		}
 
 		err = QuicksilverFix(ctx, keepers)
@@ -123,8 +125,14 @@ func CreateUpgradeHandler(
 		// Update params for host & controller keepers
 		keepers.ICAHostKeeper.SetParams(ctx, hostParams)
 
-		ctx.Logger().Info("upgrade complete")
+		ctx.Logger().Info("Starting module migrations...")
 
+		vm, err = mm.RunMigrations(ctx, configurator, vm)
+		if err != nil {
+			return vm, err
+		}
+
+		ctx.Logger().Info("Upgrade complete")
 		return vm, err
 	}
 }

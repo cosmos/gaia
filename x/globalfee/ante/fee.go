@@ -63,6 +63,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	// not contain operator configured bypass messages. If the tx does contain
 	// operator configured bypass messages only, it's total gas must be less than
 	// or equal to a constant, otherwise minimum fees and global fees are checked to prevent spam.
+	// please note bypassing fees requires 1. all the msgs are bypass msgs types, 2. total gas of bypass msgs should be <= len(msgs)*mfd.MaxBypassMinFeeMsgGasUsage (presently MaxBypassMinFeeMsgGasUsage is 200,000). Please check ../../../docs/modules/globalfee.md for more info.
 	containsOnlyBypassMinFeeMsgs := mfd.bypassMinFeeMsgs(msgs)
 	doesNotExceedMaxGasUsage := gas <= uint64(len(msgs))*mfd.MaxBypassMinFeeMsgGasUsage
 	allowedToBypassMinFee := containsOnlyBypassMinFeeMsgs && doesNotExceedMaxGasUsage

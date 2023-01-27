@@ -86,11 +86,15 @@ If the paid fee is a subset of the combined fees set and the paid fee amount is 
 
 ### Bypass Fees Message Types
 
-The above global fee and min_as_prices fee checks do not apply to bypass message types. Transactions of  bypass message types are free of fee charge. However, if the bypass type transactions still carry nonzero fees, the denom has to be a subset of denoms that global fees defined.
+Bypass messages are messages that are exempt from paying fees. The above global fee and min_as_prices fee checks do not apply to bypass message types under two conditions:
+- all transaction messages should be bypass message types.
+- the total gas of the messages should be less than or equal to `len(messages)*MaxBypassMinFeeMsgGasUsage` (Please note: the current `MaxBypassMinFeeMsgGasUsage` is set to 200,000).
 
-A node can set up its own bypass message types by modify the configuration parameter `bypass-min-fee-msg-types` in `config/app.toml` file. Nodes using `app.toml` files initialized by gaiad version of v7.0.1 or earlier might not have `bypass-min-fee-msg-types`, users can insert it before the field `[telemetry]` in `app.toml`.
+However, if the bypass type transactions satisfy the above condition and still carry nonzero fees, the denom has to be a subset of denoms that global fees defined.
 
-An example:
+Each node can configure its own desired `bypass-min-fee-msg-types` in `config/app.toml`. Node inited by Gaiad `v7.0.2` or later will get default bypass messages `["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement","/ibc.applications.transfer.v1.MsgTransfer"]` in `app.toml`. Node with `bypass-min-fee-msg-types = []` or missing this field in `app.toml` will also use default bypass message types. Node inited by Gaiad `v7.0.1` or earlier might not have `bypass-min-fee-msg-types`, users can insert it before the field `[telemetry]` in `app.toml`.
+
+An example of `bypass-min-fee-msg-types` in `app.toml`:
 
 ```shell
 

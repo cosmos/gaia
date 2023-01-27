@@ -20,7 +20,6 @@ require (
 	github.com/spf13/viper v1.14.0
 	github.com/strangelove-ventures/packet-forward-middleware/v3 v3.1.1
 	github.com/stretchr/testify v1.8.1
-	github.com/tendermint/tendermint v0.34.24
 	github.com/tendermint/tm-db v0.6.7
 	google.golang.org/genproto v0.0.0-20221024183307-1bc688fe9f3e
 	google.golang.org/grpc v1.50.1
@@ -29,6 +28,7 @@ require (
 require (
 	cosmossdk.io/math v1.0.0-beta.4
 	github.com/ory/dockertest/v3 v3.9.1
+	github.com/tendermint/tendermint v0.34.24
 )
 
 require (
@@ -284,7 +284,7 @@ replace (
 	// Use cosmos keyring
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
-	// enforce same SDK, Tendermint and IBC on all dependencies
+	// enforce same SDK and IBC on all dependencies
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.12
 	github.com/cosmos/ibc-go/v3 => github.com/cosmos/ibc-go/v3 v3.4.0
 
@@ -295,6 +295,8 @@ replace (
 
 	// use cosmos style protobufs
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+
+	// Use Informal Systems fork of Tendermint
 	github.com/tendermint/tendermint => github.com/informalsystems/tendermint v0.34.24
 
 	// latest grpc doesn't work with with our modified proto compiler, so we need to enforce

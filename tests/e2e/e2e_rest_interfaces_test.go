@@ -8,8 +8,7 @@ import (
 )
 
 // Helper function to read the response body and unmarshal it into a map
-func readJson(resp *http.Response) (map[string]interface{}, error) {
-
+func readJSON(resp *http.Response) (map[string]interface{}, error) {
 	defer resp.Body.Close()
 
 	body, readErr := io.ReadAll(resp.Body)
@@ -39,9 +38,8 @@ func readJson(resp *http.Response) (map[string]interface{}, error) {
 //   - /validatorsets/{height}
 func (s *IntegrationTestSuite) testRestInterfaces() {
 	s.Run("test rest interfaces", func() {
-
 		var (
-			test_ok       = true
+			testOk        = true
 			valIdx        = 0
 			c             = s.chainA
 			endpointURL   = fmt.Sprintf("http://%s", s.valResources[c.id][valIdx].GetHostPort("1317/tcp"))
@@ -60,27 +58,26 @@ func (s *IntegrationTestSuite) testRestInterfaces() {
 			// Call the required endpoint
 			resp, err := http.Get(endpointURL + endpoint.Path)
 			if err != nil {
-				test_ok = false
+				testOk = false
 				s.T().Logf("failed to get endpoint: %s, %v", endpointURL+endpoint.Path, err)
 				continue
 			}
 
 			// Decode the JSON resopnse
-			jsonBody, errJson := readJson(resp)
-			if errJson != nil {
-				test_ok = false
-				s.T().Logf("failed to read body of endpoint: %s, %v", endpointURL+endpoint.Path, errJson)
+			jsonBody, errJSON := readJSON(resp)
+			if errJSON != nil {
+				testOk = false
+				s.T().Logf("failed to read body of endpoint: %s, %v", endpointURL+endpoint.Path, errJSON)
 				continue
 			}
 
 			if endpoint.ExpectedFail == false && jsonBody["message"] == "Not Implemented" {
-				test_ok = false
+				testOk = false
 				s.T().Logf("Encountered a Not implemented endpoint: %s", endpointURL+endpoint.Path)
 				continue
 			}
 		}
 
-		s.Require().Equal(true, test_ok)
-
+		s.Require().Equal(true, testOk)
 	})
 }

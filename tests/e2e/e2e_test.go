@@ -25,6 +25,7 @@ func (s *IntegrationTestSuite) TestRestInterfaces() {
 	}
 	s.testRestInterfaces()
 }
+
 func (s *IntegrationTestSuite) TestBank() {
 	if !runBankTest {
 		s.T().Skip()

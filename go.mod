@@ -20,6 +20,7 @@ require (
 	github.com/spf13/viper v1.14.0
 	github.com/strangelove-ventures/packet-forward-middleware/v3 v3.1.1
 	github.com/stretchr/testify v1.8.1
+	github.com/tendermint/tendermint v0.34.24
 	github.com/tendermint/tm-db v0.6.7
 	google.golang.org/genproto v0.0.0-20221024183307-1bc688fe9f3e
 	google.golang.org/grpc v1.50.1
@@ -28,7 +29,6 @@ require (
 require (
 	cosmossdk.io/math v1.0.0-beta.4
 	github.com/ory/dockertest/v3 v3.9.1
-	github.com/tendermint/tendermint v0.34.24
 )
 
 require (

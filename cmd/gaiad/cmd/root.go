@@ -83,7 +83,7 @@ func initAppConfig() (string, interface{}) {
 
 	return params.CustomConfigTemplate(), params.CustomAppConfig{
 		Config:               *srvCfg,
-		BypassMinFeeMsgTypes: gaia.GetDefaultBypassFeeMessages(),
+		BypassMinFeeMsgTypes: []string{},
 	}
 }
 

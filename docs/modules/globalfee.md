@@ -2,42 +2,49 @@
 
 ## Gaia Fees
 
-The CosmosHub has two types of fees, both of which, are the [sdk.DecCoins](https://github.com/cosmos/cosmos-sdk/blob/a1143138716b64bc4fa0aa53c0f0fa59eb675bb7/types/dec_coin.go#L158) type:
+The CosmosHub has two types of fees, both of which defined as [sdk.DecCoins](https://github.com/cosmos/cosmos-sdk/blob/82ce891aa67f635f3b324b7a52386d5405c5abd0/types/dec_coin.go#L158) 
+(i.e., a list of coins, each denoted by an amount and a denomination):
 
-- global fees (are defined at the network level, via [Gov Proposals](https://hub.cosmos.network/main/governance/proposals/))
-- minimum-gas-prices (are specified validator node, in the `config/app.toml` configuration file)
+- global fees (defined at the network level, via [Gov Proposals](https://hub.cosmos.network/main/governance/proposals/));
+- `minimum-gas-prices` (specified by validator nodes, in the `config/app.toml` configuration file).
   
 ### Global Fees
 
 #### Global Fees Concept
 
-Global fees are the fees that each transaction incurs—except [bypass fee message types](#Bypass-Fees-Message-Types). Global fees are set up through a governance proposal which must be voted on by validators.
+Global fees consist of a list of `sdk.DecCoins` e.g., `[1uatom, 2stake]`. 
+Every transaction must pay per unit of gas **at least** one of the amounts stated in this list in the corresponding denomination (denom). 
+There are two exceptions to this rule:
 
-For  [global fees](https://github.com/cosmos/gaia/blob/82c4353ab1b04cf656a8c95d226c30c7845f157b/x/globalfee/types/params.go#L54-L99) to be valid:
+- first, transactions that contain only [message types that can bypass the minimum fee](#bypass-fees-message-types) may have zero fees; we refer to this as _bypass transactions_;
+- second, if one of the entries in the global fees list has a zero amount, e.g., `0uatom`, and the corresponding denom, e.g., `uatom`, is not present in `minimum-gas-prices`.
 
-- fees have to be alphabetically sorted by denomination (denom)
+Global fees are set up through a governance proposal which must be voted on by validators.
+
+For the [global fees](https://github.com/cosmos/gaia/blob/82c4353ab1b04cf656a8c95d226c30c7845f157b/x/globalfee/types/params.go#L54-L99) to be valid:
+
+- fees have to be alphabetically sorted by denom; 
 - fees must have non-negative amount, with a valid and unique denom (i.e. no duplicate denoms are allowed).
 
-Global fees allow denoms with zero coins. Zero value coins are used to define fee denoms, in cases where a fee payment is made voluntarily, even if the chain does not enforce fees, zero-value coins can be used to define the fee denoms this chain accepts.
+Global fees allow zero value coins that are used to define accepted denoms without imposing a minimum requirement on the amount. 
+For example, `[0uatom]` means that transactions with fees in other denoms than `uatom` will be rejected.
 
-Each transaction (except bypass transactions) have to meet the following global fee requirements:
+Every transaction (except bypass transactions) have to meet the following global fee requirements:
 
-- All denoms of the paid fees have to be a subset of the global fee's denom set.
-- All paidfees' contain at least one denom that is present and greater than/or equal to the amount of the same denom in globalfee.
+- All the denoms of the paid fees have to be a subset of the denoms from the global fees list.
+- The paid fees contain at least one denom from the global fees list and the corresponding amount per unit of gas is greater than or equal to the corresponding amount in the global fees list.
 
 #### Query Global Fees
 
 CLI queries to retrieve the global fee value:
 
 ```shell
-gaiad q globalfee minimum-gas-prices
-# or
 gaiad q params subspace globalfee MinimumGasPricesParam
 ```
 
 #### Empty Global Fees and Default Global Fees
 
-When the global fee is not setup, the query will return an empty globalfee list: `minimum_gas_prices: []`. Gaiad will use `0uatom` as global fee in this case. This is due to the CosmosHub accepting uatom as fee denom by default.
+When the global fee is not set, the query will return an empty global fees list: `minimum_gas_prices: []`. However, the Cosmos Hub will use `0uatom` as global fee in this case.
 
 #### Setting Up Global Fees via Gov Proposals
 
@@ -64,23 +71,19 @@ A `proposal.json` example:
 }
 ```
 
-Please note: in the above "value" field, coins must sorted alphabetically by denom.
+**Note:** in the above "value" field, coins must sorted alphabetically by denom.
 
 ### minimum-gas-prices
 
-minimum-gas-prices are a node's further requirement of fees. Zero coins are removed from minimum-gas-prices when [parsing minimum-gas-prices](https://github.com/cosmos/cosmos-sdk/blob/3a097012b59413641ac92f18f226c5d6b674ae42/baseapp/options.go#L27), this is different from global fees.
+The `minimum-gas-prices` config parameter is a node's further requirement for minimum fees. Unlike the global fees list, the zero coins are removed when [parsing minimum-gas-prices](https://github.com/cosmos/cosmos-sdk/blob/3a097012b59413641ac92f18f226c5d6b674ae42/baseapp/options.go#L27).
 
 - If the minimum-gas-prices set a denom that is not global fees's denom set. This minimum-gas-prices denom will not be considered when paying fees.
 - If the minimum-gas-prices have a denom in global fees's denom set, and the  minimum-gas-prices are lower than global fees, the fee still need to meet the global fees.
 - If the minimum-gas-prices have a denom in global fees's denom set, and the  minimum-gas-prices are higher than global fees, the fee need to meet the minimum-gas-prices.
 
-## Fee Checks
+## Fee AnteHandler
 
-Global fees, minimum-gas-prices and the paid fees all allow zero coins setup. After parsing the fee coins, zero coins and paid fees will be removed from the minimum-gas-prices and paid fees.
-
-Only global fees might contain zero coins, which is used to define the allowed denoms of paid fees.
-
-The [Fee AnteHandle](../../x/globalfee/ante/fee.go) will take global fees and minimum-gas-prices and merge them into one [combined `sdk.Deccoins`](https://github.com/cosmos/gaia/blob/f2be720353a969b6362feff369218eb9056a60b9/ante/fee.go#L79) according to the denoms and amounts of global fees and minimum-gas-prices.
+The denoms in the global fees list and the minimum-gas-prices param are merge and de-duplicated while keeping the higher amounts. Denoms that are only in the minimum-gas-prices param are discarded. 
 
 If the paid fee is a subset of the combined fees set and the paid fee amount is greater than or equal to the required fees amount, the transaction can pass the fee check, otherwise an error will occur.
 

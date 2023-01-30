@@ -51,6 +51,7 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 	// bypass the minimum fee can be accepted with a zero fee.
 	// For details, see gaiafeeante.NewFeeDecorator()
 	var maxBypassMinFeeMsgGasUsage uint64 = 200_000
+
 	anteDecorators := []sdk.AnteDecorator{
 		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
 		ante.NewRejectExtensionOptionsDecorator(),

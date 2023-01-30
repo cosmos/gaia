@@ -54,7 +54,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ## [v8.0.0-rc4] - 2023-01-30
 
 * (gaia) Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v3.4.0](https://github.com/cosmos/ibc-go/blob/v3.4.0/CHANGELOG.md) to fix a vulnerability in ICA. See [v3.4.0 CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.9/CHANGELOG.md) and [v3.2.1 Release Notes](https://github.com/cosmos/ibc-go/releases/tag/v3.2.1) for details.
-* (gaia) Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.12](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.12). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/release/v0.45.x/CHANGELOG.md) for details.
+* (gaia) Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.11](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.11). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/release/v0.45.x/CHANGELOG.md) for details.
 * (gaia) Bump [tendermint](https://github.com/informalsystems/tendermint) to [0.34.24](https://github.com/informalsystems/tendermint/tree/v0.34.24). See [CHANGELOG.md](https://github.com/informalsystems/tendermint/blob/v0.34.24/CHANGELOG.md) for details.
 * (gaia) Bump [liquidity](https://github.com/Gravity-Devs/liquidity) to [v1.5.3](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.5.3).
 * (gaia) Bump [packet-forwarding-middleware](https://github.com/strangelove-ventures/packet-forward-middleware) to [v3.1.1](https://github.com/strangelove-ventures/packet-forward-middleware/releases/tag/v3.1.1).

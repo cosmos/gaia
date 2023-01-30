@@ -18,11 +18,11 @@ For  [global fees](https://github.com/cosmos/gaia/blob/82c4353ab1b04cf656a8c95d2
 - fees have to be alphabetically sorted by denomination (denom)
 - fees must have non-negative amount, with a valid and unique denom (i.e. no duplicate denoms are allowed).
 
-Global fees allow denoms with zero coins or value.
+Global fees allow denoms with zero coins. Zero value coins are used to define fee denoms, in cases where a fee payment is made voluntarily, even if the chain does not enforce fees, zero-value coins can be used to define the fee denoms this chain accepts.
 
-Zero value coins are used to define fee denoms, when the chain does not charge fees. Each transaction (except bypass transactions) have to meet the following global fee requirements:
+Each transaction (except bypass transactions) have to meet the following global fee requirements:
 
-- All denoms of the paid fees (except zero coins) have to be a subset of the global fee's denom set.
+- All denoms of the paid fees have to be a subset of the global fee's denom set.
 - All paidfees' contain at least one denom that is present and greater than/or equal to the amount of the same denom in globalfee.
 
 #### Query Global Fees
@@ -115,45 +115,40 @@ Even though each node can set its own `min_gas_prices` and `bypass-min-fee-msg-t
 
 Here are a few examples to clarify the relationship between global fees, min_gas_prices and paid fees.
 
-- **Case 1**: globalfee=[], min_gas_prices=0.0001uatom, gas=2000000
+*Please note that transactions can include zero coins as paid fees. For example, when adding zero coins as fees in a transaction through the CLI, they will be removed from the fees during the fee [parsing](https://github.com/cosmos/cosmos-sdk/blob/e716e4103e934344aa7be6dc9b5c453bdec5f225/client/tx/factory.go#L144)/[santitizing](https://github.com/cosmos/cosmos-sdk/blob/e716e4103e934344aa7be6dc9b5c453bdec5f225/types/dec_coin.go#L172) before reaching the fee handler. This means `paidfee = "1uatom, 0stake"` and `paidfee = "1uatom"` are equivalent, and similarly, `paidfee = "0uatom"` is equivalent to `paidfee = ""`. In the following examples, zero coins are removed from paidfees for simplicity.*
 
+- **Case 1**: globalfee=[], min_gas_prices=0.0001uatom, gas=2000000
   This is the same case as globalfee=0uatom, min_gas_prices=0.0001uatom, gas=2000000.
   - paidfee = "2000000 * 0.0001uatom", pass
-  - paidfee = "2000000 * 0.0001uatom, 0stake", pass
   - paidfee = "2000000 * 0.0001uatom, 1stake", fail
   - paidfee = "2000000 * 0.0001/2uatom", fail
-  - paidfee = "", pass
+  - paidfee = "", fail
 
-- **Case 2**: globalfee=[], min_gas_prices="", gas=2000000
+- **Case 2**: globalfee=[], min_gas_prices="", gas=2000000 (When globalfee empty, the [default globalfee of 0uatom](https://github.com/cosmos/gaia/blob/d6d2933ede1aa1a13040f5aee2f0f7b795c168d0/x/globalfee/ante/fee.go#L135) will be used.)
   - paidfee = "", pass
-  - paidfee = "0uatom", pass
-  - paidfee = "1uatom", pass
-  - paidfee = "0uatom, 0stake", pass
-  - paidfee = "0uatom, 1stake", fail
+  - paidfee = "2000000 * 0.0001uatom", pass
+  - paidfee = "2000000 * 0.0001stake", fail
   
 - **Case 3**: globalfee=0.0002uatom, min_gas_prices=0.0001uatom, gas=2000000 (global fee is lower than min_as_price)
   - paidfee = "2000000 * 0.0002uatom", pass
   - paidfee = "2000000 * 0.0001uatom", fail
   - paidfee = "2000000 * 0.0002uatom, 1stake", fail
-  - paidfee = "2000000 * 0.0002uatom, 0stake", pass
   - paidfee = "2000000 * 0.0002stake", fail
   - paidfee = "", fail
-  - paidfee = 0uatom, fail
   
 - **Case 4**:  globalfee=0.0001uatom, min_gas_prices=0.0002uatom, gas=2000000 (global fee is higher than min_as_price)
   - paidfee = "2000000 * 0.0002uatom", pass
   - paidfee = "2000000 * 0.0001uatom", fail
   - paidfee = "2000000 * 0.0002uatom, 1stake", fail
-  - paidfee = "2000000 * 0.0002uatom, 0stake", pass
+  - paidfee = "2000000 * 0.0002uatom", pass
   - paidfee = "2000000 * 0.0002stake", fail
   - paidfee = "", fail
   - paidfee = 0uatom, fail
   
 - **Case 5**: globalfee=[0uatom, 1stake], min_gas_prices="", gas=200000.
-- fees="2000000 *0uatom, 2000000* 0.5stake", fail, (this is due to [fee parsing, zero coins are removed](https://github.com/cosmos/cosmos-sdk/blob/e716e4103e934344aa7be6dc9b5c453bdec5f225/client/tx/factory.go#L144), it equals to paidfees = 0.5stake in this case)
+- paidfees="2000000 * 0.5stake", fail
 - paidfees="", pass
 - paidfees="2000000 * 1uatom, 0.5stake", pass
-- paidfees="0uatom, 0stake" pass, (due to the parsing of paidfees, it makes paidfees="")
 - paidfees="2000000 * 1stake", pass
 
 - **Case 6**: globalfee=[0.001uatom, 1stake], min_gas_prices=0.002uatom, gas=200000.
@@ -161,17 +156,16 @@ Here are a few examples to clarify the relationship between global fees, min_gas
   - paidfee = "2000000 * 0.0001uatom", fail
   - paidfee = "2000000 * 1stake", pass
   - paidfee = "2000000 * 1/2stake", fail
-  - paidfee = "2000000 *0.0001uatom, 2000000*1stake", pass
-  - paidfee = "2000000 *0.0002atom, 2000000*1/2stake", pass
-  - paidfee = "2000000 *0.0001uatom, 2000000*1/2stake", fail
+  - paidfee = "2000000 * 0.0001uatom, 2000000 * 1stake", pass
+  - paidfee = "2000000 * 0.0002atom, 2000000 * 1/2stake", pass
+  - paidfee = "2000000 * 0.0001uatom, 2000000 * 1/2stake", fail
   
 - **Case 7**:globalfee=[0.0001uatom], min_gas_prices=0.0002uatom,1stake, gas=200000.
 
    `bypass-min-fee-msg-types = ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"]`
-  - msg withdraw-all-rewards with paidfee=0uatom, pass
-  - msg withdraw-all-rewards with paidfee=200000 * 0.0001/2uatom, pass
-  - msg withdraw-all-rewards with paidfee=0stake,0photon, pass
-  - msg withdraw-all-rewards with paidfee=200000 * 1stake, 0photon, fail
+  - msg withdraw-all-rewards with paidfee="", pass
+  - msg withdraw-all-rewards with paidfee="200000 * 0.0001/2uatom", pass
+  - msg withdraw-all-rewards with paidfee="200000 * 1stake", fail
 
 ## Reference
 

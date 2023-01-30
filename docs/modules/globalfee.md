@@ -146,10 +146,10 @@ Here are a few examples to clarify the relationship between global fees, min_gas
   - paidfee = 0uatom, fail
   
 - **Case 5**: globalfee=[0uatom, 1stake], min_gas_prices="", gas=200000.
-- paidfees="2000000 * 0.5stake", fail
-- paidfees="", pass
-- paidfees="2000000 * 1uatom, 0.5stake", pass
-- paidfees="2000000 * 1stake", pass
+  - paidfees="2000000 * 0.5stake", fail
+  - paidfees="", pass
+  - paidfees="2000000 * 1uatom, 0.5stake", pass
+  - paidfees="2000000 * 1stake", pass
 
 - **Case 6**: globalfee=[0.001uatom, 1stake], min_gas_prices=0.002uatom, gas=200000.
   - paidfee = "2000000 * 0.0002uatom", pass

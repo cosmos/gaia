@@ -50,9 +50,9 @@ The upgrades aim to add features such as liquidity, economic security, usability
 ## v8-Rho Upgrade (expected Q1 2023)
 
 - Gaia v8.0.x
-- Cosmos SDK v0.45.11
+- Cosmos SDK v0.45.12
   - Version bump with a number of fixes
-  - See [changelog](https://github.com/cosmos/cosmos-sdk/blob/v0.45.11/CHANGELOG.md) for details
+  - See [changelog](https://github.com/cosmos/cosmos-sdk/blob/v0.45.12/CHANGELOG.md) for details
 - IBC v3.4
   - See [changelog](https://github.com/cosmos/ibc-go/blob/v3.4.0/CHANGELOG.md) for details
 - IBC Packet Forward Middleware v4.0.1

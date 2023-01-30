@@ -26,7 +26,7 @@ Test Module REST Endpoints
 8. Staking params
 */
 
-var (
+const (
 	valSetLatestPath                    = "/validatorsets/latest"
 	valSetHeightPath                    = "/validatorsets/1"
 	blocksLatestPath                    = "/blocks/latest"

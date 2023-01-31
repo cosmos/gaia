@@ -25,43 +25,40 @@ Every transaction must pay per unit of gas **at least** one of the amounts state
 
 The paid fees must be paid in at least one denom from the global fees list and the corresponding amount per unit of gas must be greater than or equal to the corresponding amount in the global fees list.
 
-A global fee list must meet the following properties:
+A global fees list must meet the following properties:
 - fees have to be alphabetically sorted by denom; 
 - fees must have non-negative amount, with a valid and unique denom (i.e. no duplicate denoms are allowed).
 
 
-There are **two exceptions** from the global fee rules that allow zero fee transactions:
+There are **two exceptions** from the global fees rules that allow zero fee transactions:
 
-1. transactions that contain only [message types that can bypass the minimum fee](#bypass-fees-message-types) may have zero fees; we refer to this as _bypass transactions_;
+1. Transactions that contain only [message types that can bypass the minimum fee](#bypass-fees-message-types) may have zero fees. We refer to this as _bypass transactions_. Node operators can choose to define these message types (for each node) via the `bypass-fee-message-types` configuration parameter.
 
-2. if one of the entries in the global fees list has a zero amount, e.g., `0uatom`, and the corresponding denom, e.g., `uatom`, is not present in `minimum-gas-prices`.
+2. If one of the entries in the global fees list has a zero amount, e.g., `0uatom`, and the corresponding denom, e.g., `uatom`, is not present in `minimum-gas-prices`.
 
-Some message types can be excluded from paying any fees and therefore are allowed to **bypass the global fee mechanism**.
-Node operators can choose to define an exclusion list for each node via the [bypass-fee-message-types](###Bypass Fees Message Types) configuration parameter.
-
-Additionally, node operators may set additional minimum gas prices which can be larger than the minimum gas prices defined on chain.
+Additionally, node operators may set additional minimum gas prices which can be larger than the _global_ minimum gas prices defined on chain.
 
 
 ### minimum-gas-prices
 
-The `minimum-gas-prices` config parameter allows node operators to impose additional requirements for minimum fees.
+The `minimum-gas-prices` config parameter allows node operators to impose additional requirements for minimum fees. The following rules apply:
 
-Amounts in `min-gas-prices` cannot be configured to be less than the global fee amount.
-Also, denoms not present in global fees are ignored, meaning that a node cannot be configured to accept denoms not listed in global fees.
-
+- The denoms in `min-gas-prices` that are not present in the global fees list are ignored. 
+- The amounts in `min-gas-prices` are considered only if they are greater than the amounts for the corresponding denoms in the global fees list. 
 
 ## Bypass Fees Message Types
 
-Bypass messages are messages that are exempt from paying fees. The above global fee and `minimum-gas-prices` checks do not apply to bypass message types if these two conditions are met:
-- the transaction list contains only bypass message types (bypass messages and non-bypass messages cannot be combined in a single transaction list)
-- the total gas of used is less than or equal to `len(messages) * MaxBypassMinFeeMsgGasUsage` (Please note: the current `MaxBypassMinFeeMsgGasUsage` is set to 200,000).
-- the transaction fee denom has to be a subset of denoms defined by the global fee
+Bypass messages are messages that are exempt from paying fees. The above global fees and `minimum-gas-prices` checks do not apply for transactions that satisfy the following conditions: 
+
+- Contains only bypass message types, i.e., bypass transactions.
+- The total gas used is less than or equal to `len(messages) * MaxBypassMinFeeMsgGasUsage`. Note: the current `MaxBypassMinFeeMsgGasUsage` is set to `200,000`.
+- In case of non-zero transaction fees, the denom has to be a subset of denoms defined in the global fees list.
 
 Node operators can configure `bypass-min-fee-msg-types` in `config/app.toml`.
 
 Nodes inited by Gaiad `v7.0.2` or later use `["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement","/ibc.applications.transfer.v1.MsgTransfer"]` as defaults. Nodes with `bypass-min-fee-msg-types = []` or missing this field in `app.toml` also use default bypass message types.
 
-Nodes created using Gaiad `v7.0.1` or earlier do not have `bypass-min-fee-msg-types` configured in `config/app.toml` - they are alsousing default values. The `bypass-min-fee-msg-types` config option can be added to `config/app.toml` before the `[telemetry]` field.
+Nodes created using Gaiad `v7.0.1` or earlier do not have `bypass-min-fee-msg-types` configured in `config/app.toml` - they are also using default values. The `bypass-min-fee-msg-types` config option can be added to `config/app.toml` before the `[telemetry]` field.
 
 An example of `bypass-min-fee-msg-types` in `app.toml`:
 
@@ -78,15 +75,12 @@ An example of `bypass-min-fee-msg-types` in `app.toml`:
 bypass-min-fee-msg-types = ["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement","/ibc.applications.transfer.v1.MsgTransfer"]
 ```
 
-Since each node can be configured with `minimum-gas-prices` and `bypass-min-fee-msg-types` all transactions must satisfy the configured gas fee requirements in order to be processed.
-
 
 ## Fee AnteHandler Behaviour
 
-The denoms in the global fees list and the minimum-gas-prices param are merged and de-duplicated while keeping the higher amounts. Denoms that are only in the `minimum-gas-prices` param are discarded. 
+The denoms in the global fees list and the `minimum-gas-prices` param are merged and de-duplicated while keeping the higher amounts. Denoms that are only in the `minimum-gas-prices` param are discarded. 
 
-If the paid fee is a subset of the combined fees set and the paid fee amount is greater than or equal to the required fees amount, the transaction can pass the fee check, otherwise an error will occur.
-
+If the denoms of the transaction fees are a subset of the merged fees and at least one of the amounts of the transaction fees is greater than or equal to the corresponding required fees amount, the transaction can pass the fee check, otherwise an error will occur.
 
 ## Queries
 
@@ -130,74 +124,99 @@ A `proposal.json` example:
 
 ## Examples
 
-Here are a few examples to clarify the relationship between global fees, minimum-gas-prices and paid fees.
+Here are a few examples to clarify the relationship between global fees, minimum-gas-prices and transaction fees.
 
-*Please note that transactions can include zero coins as paid fees. For example, when adding zero coins as fees in a transaction through the CLI, they will be removed from the fees during the fee [parsing](https://github.com/cosmos/cosmos-sdk/blob/e716e4103e934344aa7be6dc9b5c453bdec5f225/client/tx/factory.go#L144)/[santitizing](https://github.com/cosmos/cosmos-sdk/blob/e716e4103e934344aa7be6dc9b5c453bdec5f225/types/dec_coin.go#L172) before reaching the fee handler. This means `paidfee = "1uatom, 0stake"` and `paidfee = "1uatom"` are equivalent, and similarly, `paidfee = "0uatom"` is equivalent to `paidfee = ""`. In the following examples, zero coins are removed from paidfees for simplicity.*
+**Note:** Transactions can include zero-coin fees. However, these fees are removed from the transaction fees during the fee [parsing](https://github.com/cosmos/cosmos-sdk/blob/e716e4103e934344aa7be6dc9b5c453bdec5f225/client/tx/factory.go#L144) / [santitizing](https://github.com/cosmos/cosmos-sdk/blob/e716e4103e934344aa7be6dc9b5c453bdec5f225/types/dec_coin.go#L172) before reaching the fee AnteHandler. 
+This means `paidfee = "1uatom, 0stake"` and `paidfee = "1uatom"` are equivalent, and similarly, `paidfee = "0uatom"` is equivalent to `paidfee = ""`. 
+In the following examples, zero-coin fees are removed from the transaction fees.
 
-**Case 1:**
+### Case 1
 
-globalfee=[], minimum-gas-prices=0.0001uatom, gas=2000000
-  This is the same case as globalfee=0uatom, minimum-gas-prices=0.0001uatom, gas=2000000.
+**Setting:** globalfee=[], minimum-gas-prices=0.0001uatom, gas=2000000. 
+
+Note that this is the same case as globalfee=0uatom, minimum-gas-prices=0.0001uatom, gas=2000000.
+
   - paidfee = "2000000 * 0.0001uatom", `pass`
-  - paidfee = "2000000 * 0.0001uatom, 1stake", `fail`
-  - paidfee = "2000000 * 0.0001/2uatom", `fail`
-  - paidfee = "", `fail`
+  - paidfee = "2000000 * 0.0001uatom, 1stake", `fail` (unexpected denom)
+  - paidfee = "", `fail` (insufficient funds)
 
-**Case 2:**
+### Case 2
 
-globalfee=[], minimum-gas-prices="", gas=2000000 (When globalfee empty, the [default globalfee of 0uatom](https://github.com/cosmos/gaia/blob/d6d2933ede1aa1a13040f5aee2f0f7b795c168d0/x/globalfee/ante/fee.go#L135) will be used.)
+**Setting:** globalfee=[], minimum-gas-prices="", gas=2000000.
+
+Note that this is the same case as globalfee=0uatom, minimum-gas-prices="", gas=2000000.
+
   - paidfee = "", `pass`
   - paidfee = "2000000 * 0.0001uatom", `pass`
-  - paidfee = "2000000 * 0.0001stake", `fail`
+  - paidfee = "2000000 * 0.0001stake", `fail` (unexpected denom)
   
-**Case 3**
+### Case 3
 
- globalfee=0.0002uatom, minimum-gas-prices=0.0001uatom, gas=2000000 (global fee is lower than min_as_price)
+**Setting:** globalfee=0.0002uatom, minimum-gas-prices=0.0001uatom, gas=2000000 (global fee is higher than min_as_price).
+
+Note that this is the same case as globalfee=0.0002uatom, minimum-gas-prices="", gas=2000000.
+
   - paidfee = "2000000 * 0.0002uatom", `pass`
-  - paidfee = "2000000 * 0.0001uatom", `fail`
-  - paidfee = "2000000 * 0.0002uatom, 1stake", `fail`
-  - paidfee = "2000000 * 0.0002stake", `fail`
-  - paidfee = "", `fail`
+  - paidfee = "2000000 * 0.0001uatom", `fail` (insufficient funds)
+  - paidfee = "2000000 * 0.0002uatom, 1stake", `fail` (unexpected denom)
+  - paidfee = "2000000 * 0.0002stake", `fail` (unexpected denom)
+  - paidfee = "", `fail` (insufficient funds)
   
-**Case 4**
+### Case 4
 
-  globalfee=0.0001uatom, minimum-gas-prices=0.0002uatom, gas=2000000 (global fee is higher than min_as_price)
+**Setting:** globalfee=0.0001uatom, minimum-gas-prices=0.0002uatom, gas=2000000 (global fee is lower than min_as_price).
+
+Note that the required amount in globalfee is overwritten by the amount in minimum-gas-prices. 
+
   - paidfee = "2000000 * 0.0002uatom", `pass`
-  - paidfee = "2000000 * 0.0001uatom", `fail`
-  - paidfee = "2000000 * 0.0002uatom, 1stake", `fail`
-  - paidfee = "2000000 * 0.0002uatom", `pass`
-  - paidfee = "2000000 * 0.0002stake", `fail`
-  - paidfee = "", `fail`
-  - paidfee = 0uatom, `fail`
+  - paidfee = "2000000 * 0.0001uatom", `fail` (insufficient funds)
+  - paidfee = "2000000 * 0.0002uatom, 1stake", `fail` (unexpected denom)
+  - paidfee = "2000000 * 0.0002stake", `fail` (unexpected denom)
+  - paidfee = "", `fail` (insufficient funds)
+  - paidfee = 0uatom, `fail` (insufficient funds)
   
-**Case 5**
+### Case 5
 
- globalfee=[0uatom, 1stake], minimum-gas-prices="", gas=200000.
-  - paidfee ="2000000 * 0.5stake", `fail`
+**Setting:** globalfee=[0uatom, 1stake], minimum-gas-prices="", gas=200000.
+
+  - paidfee ="2000000 * 0.5stake", `fail` (insufficient funds)
   - paidfee ="", `pass`
   - paidfee ="2000000 * 1uatom, 0.5stake", `pass`
   - paidfee ="2000000 * 1stake", `pass`
 
-**Case 6**
+### Case 6
 
- globalfee=[0.001uatom, 1stake], minimum-gas-prices=0.002uatom, gas=200000.
-  - paidfee = "2000000 * 0.0002uatom", `pass`
-  - paidfee = "2000000 * 0.0001uatom", `fail`
+**Setting:** globalfee=[0.001uatom, 1stake], minimum-gas-prices=0.002uatom, gas=200000.
+
+Note that the required amount of `uatom` in globalfee is overwritten by the amount in minimum-gas-prices. 
+
+  - paidfee = "2000000 * 0.002uatom", `pass`
+  - paidfee = "2000000 * 0.001uatom", `fail` (insufficient funds)
   - paidfee = "2000000 * 1stake", `pass`
-  - paidfee = "2000000 * 1/2stake", `fail`
-  - paidfee = "2000000 * 0.0001uatom, 2000000 * 1stake", `pass`
-  - paidfee = "2000000 * 0.0002atom, 2000000 * 1/2stake", `pass`
-  - paidfee = "2000000 * 0.0001uatom, 2000000 * 1/2stake", `fail`
+  - paidfee = "2000000 * 0.5stake", `fail` (insufficient funds)
+  - paidfee = "2000000 * 0.001uatom, 2000000 * 1stake", `pass`
+  - paidfee = "2000000 * 0.002atom, 2000000 * 0.5stake", `pass`
+  - paidfee = "2000000 * 0.001uatom, 2000000 * 0.5stake", `fail` (insufficient funds)
   
-**Case 7**
+### Case 7
 
-globalfee=[0.0001uatom], minimum-gas-prices=0.0002uatom,1stake, gas=200000.
+**Setting:** globalfee=0.1uatom, minimum-gas-prices=0.2uatom,1stake, gas=200000, bypass-min-fee-msg-types = ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"]
 
-   `bypass-min-fee-msg-types = ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"]`
+Note that the required amount of `uatom` in globalfee is overwritten by the amount in minimum-gas-prices. 
+Also, the `1stake` in minimum-gas-prices is ignored.
+
   - msg withdraw-all-rewards with paidfee="", `pass`
-  - msg withdraw-all-rewards with paidfee="200000 * 0.0001/2uatom", `pass`
-  - msg withdraw-all-rewards with paidfee="200000 * 1stake", `fail`
+  - msg withdraw-all-rewards with paidfee="200000 * 0.05uatom", `pass`
+  - msg withdraw-all-rewards with paidfee="200000 * 1stake", `fail` (unexpected denom)
+
+### Case 8
+
+**Setting:** globalfee=1uatom, minimum-gas-prices="", gas=300000, bypass-min-fee-msg-types = ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"]
+
+  - msg withdraw-all-rewards with paidfee="", `fail` (gas limit exceeded for bypass transactions)
+  - msg withdraw-all-rewards with paidfee="300000 * 0.5uatom", `fail` (gas limit exceeded for bypass transactions)
+  - msg withdraw-all-rewards with paidfee="300000 * 5uatom", `pass` 
 
 ## References
 
-- [Fee caculations: fee and gas](https://docs.cosmos.network/main/basics/gas-fees.html)
+- [Gas and Fees in Cosmos SDK](https://docs.cosmos.network/main/basics/gas-fees.html)

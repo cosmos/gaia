@@ -51,7 +51,7 @@ This Cosmos Hub roadmap serves as a reference for the current planned features o
   - See [changelog](https://github.com/cosmos/cosmos-sdk/blob/v0.45.12/CHANGELOG.md) for details
 - IBC v3.4
   - See [changelog](https://github.com/cosmos/ibc-go/blob/v3.4.0/CHANGELOG.md) for details
-- IBC Packet Forward Middleware v4.0.1
+- IBC Packet Forward Middleware v3.1.1
 - IBC Msg Whitelist to skip MinFee in CheckTX
 - Global Fee Module
   - Allows denoms and min-fees to be governance parameters so gas can be paid in various denoms.

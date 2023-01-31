@@ -306,13 +306,13 @@ func NewAppKeeper(
 
 	// RouterKeeper must be created before TransferKeeper
 	appKeepers.RouterKeeper = routerkeeper.NewKeeper(
-		appCodec, appKeepers.keys[routertypes.StoreKey],
+		appCodec,
+		appKeepers.keys[routertypes.StoreKey],
 		appKeepers.GetSubspace(routertypes.ModuleName),
 		appKeepers.TransferKeeper,
 		appKeepers.IBCKeeper.ChannelKeeper,
 		appKeepers.DistrKeeper,
 		appKeepers.BankKeeper,
-		&appKeepers.IBCKeeper.PortKeeper,
 		appKeepers.IBCKeeper.ChannelKeeper,
 	)
 

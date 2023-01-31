@@ -63,7 +63,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	// 	- the tx contains only message types that can bypass the minimum fee,
 	//	see BypassMinFeeMsgTypes;
 	//	- the total gas limit per message does not exceed MaxBypassMinFeeMsgGasUsage,
-	//	i.e., <= len(msgs) * MaxBypassMinFeeMsgGasUsage
+	//	i.e., totalGas <= len(msgs) * MaxBypassMinFeeMsgGasUsage
 	// Otherwise, minimum fees and global fees are checked to prevent spam.
 	containsOnlyBypassMinFeeMsgs := mfd.bypassMinFeeMsgs(msgs)
 	doesNotExceedMaxGasUsage := gas <= uint64(len(msgs))*mfd.MaxBypassMinFeeMsgGasUsage

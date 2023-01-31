@@ -132,12 +132,12 @@ In the following examples, zero-coin fees are removed from the transaction fees.
 
 ### Case 1
 
-**Setting:** globalfee=[], minimum-gas-prices=0.0001uatom, gas=2000000. 
+**Setting:** globalfee=[], minimum-gas-prices=0.1uatom, gas=2000000. 
 
-Note that this is the same case as globalfee=0uatom, minimum-gas-prices=0.0001uatom, gas=2000000.
+Note that this is the same case as globalfee=0uatom, minimum-gas-prices=0.1uatom, gas=2000000.
 
-  - paidfee = "2000000 * 0.0001uatom", `pass`
-  - paidfee = "2000000 * 0.0001uatom, 1stake", `fail` (unexpected denom)
+  - paidfee = "2000000 * 0.1uatom", `pass`
+  - paidfee = "2000000 * 0.1uatom, 1stake", `fail` (unexpected denom)
   - paidfee = "", `fail` (insufficient funds)
 
 ### Case 2
@@ -147,31 +147,31 @@ Note that this is the same case as globalfee=0uatom, minimum-gas-prices=0.0001ua
 Note that this is the same case as globalfee=0uatom, minimum-gas-prices="", gas=2000000.
 
   - paidfee = "", `pass`
-  - paidfee = "2000000 * 0.0001uatom", `pass`
-  - paidfee = "2000000 * 0.0001stake", `fail` (unexpected denom)
+  - paidfee = "2000000 * 0.1uatom", `pass`
+  - paidfee = "2000000 * 0.1stake", `fail` (unexpected denom)
   
 ### Case 3
 
-**Setting:** globalfee=0.0002uatom, minimum-gas-prices=0.0001uatom, gas=2000000 (global fee is higher than min_as_price).
+**Setting:** globalfee=[0.2uatom], minimum-gas-prices=0.1uatom, gas=2000000 (global fee is higher than min_as_price).
 
-Note that this is the same case as globalfee=0.0002uatom, minimum-gas-prices="", gas=2000000.
+Note that this is the same case as globalfee=0.2uatom, minimum-gas-prices="", gas=2000000.
 
-  - paidfee = "2000000 * 0.0002uatom", `pass`
-  - paidfee = "2000000 * 0.0001uatom", `fail` (insufficient funds)
-  - paidfee = "2000000 * 0.0002uatom, 1stake", `fail` (unexpected denom)
-  - paidfee = "2000000 * 0.0002stake", `fail` (unexpected denom)
+  - paidfee = "2000000 * 0.2uatom", `pass`
+  - paidfee = "2000000 * 0.1uatom", `fail` (insufficient funds)
+  - paidfee = "2000000 * 0.2uatom, 1stake", `fail` (unexpected denom)
+  - paidfee = "2000000 * 0.2stake", `fail` (unexpected denom)
   - paidfee = "", `fail` (insufficient funds)
   
 ### Case 4
 
-**Setting:** globalfee=0.0001uatom, minimum-gas-prices=0.0002uatom, gas=2000000 (global fee is lower than min_as_price).
+**Setting:** globalfee=[0.1uatom], minimum-gas-prices=0.2uatom, gas=2000000 (global fee is lower than min_as_price).
 
 Note that the required amount in globalfee is overwritten by the amount in minimum-gas-prices. 
 
-  - paidfee = "2000000 * 0.0002uatom", `pass`
-  - paidfee = "2000000 * 0.0001uatom", `fail` (insufficient funds)
-  - paidfee = "2000000 * 0.0002uatom, 1stake", `fail` (unexpected denom)
-  - paidfee = "2000000 * 0.0002stake", `fail` (unexpected denom)
+  - paidfee = "2000000 * 0.2uatom", `pass`
+  - paidfee = "2000000 * 0.1uatom", `fail` (insufficient funds)
+  - paidfee = "2000000 * 0.2uatom, 1stake", `fail` (unexpected denom)
+  - paidfee = "2000000 * 0.2stake", `fail` (unexpected denom)
   - paidfee = "", `fail` (insufficient funds)
   - paidfee = 0uatom, `fail` (insufficient funds)
   
@@ -186,17 +186,17 @@ Note that the required amount in globalfee is overwritten by the amount in minim
 
 ### Case 6
 
-**Setting:** globalfee=[0.001uatom, 1stake], minimum-gas-prices=0.002uatom, gas=200000.
+**Setting:** globalfee=[0.1uatom, 1stake], minimum-gas-prices=0.2uatom, gas=200000.
 
 Note that the required amount of `uatom` in globalfee is overwritten by the amount in minimum-gas-prices. 
 
-  - paidfee = "2000000 * 0.002uatom", `pass`
-  - paidfee = "2000000 * 0.001uatom", `fail` (insufficient funds)
+  - paidfee = "2000000 * 0.2uatom", `pass`
+  - paidfee = "2000000 * 0.1uatom", `fail` (insufficient funds)
   - paidfee = "2000000 * 1stake", `pass`
   - paidfee = "2000000 * 0.5stake", `fail` (insufficient funds)
-  - paidfee = "2000000 * 0.001uatom, 2000000 * 1stake", `pass`
-  - paidfee = "2000000 * 0.002atom, 2000000 * 0.5stake", `pass`
-  - paidfee = "2000000 * 0.001uatom, 2000000 * 0.5stake", `fail` (insufficient funds)
+  - paidfee = "2000000 * 0.1uatom, 2000000 * 1stake", `pass`
+  - paidfee = "2000000 * 0.2atom, 2000000 * 0.5stake", `pass`
+  - paidfee = "2000000 * 0.1uatom, 2000000 * 0.5stake", `fail` (insufficient funds)
   
 ### Case 7
 
@@ -214,8 +214,8 @@ Also, the `1stake` in minimum-gas-prices is ignored.
 **Setting:** globalfee=[1uatom], minimum-gas-prices="", gas=300000, bypass-min-fee-msg-types = ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"]
 
   - msg withdraw-all-rewards with paidfee="", `fail` (gas limit exceeded for bypass transactions)
-  - msg withdraw-all-rewards with paidfee="300000 * 0.5uatom", `fail` (gas limit exceeded for bypass transactions)
-  - msg withdraw-all-rewards with paidfee="300000 * 5uatom", `pass` 
+  - msg withdraw-all-rewards with paidfee="300000 * 0.5uatom", `fail` (gas limit exceeded for bypass transactions, insufficient funds)
+  - msg withdraw-all-rewards with paidfee="300000 * 1uatom", `pass` 
 
 ## References
 

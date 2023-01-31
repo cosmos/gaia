@@ -11,7 +11,7 @@ This parameter is part of the node configuration, it can be set in the `config/a
 
 3. `bypass-min-fee-msg-types`
 This parameter is part of the node configuration, it can be set in the `config/app.toml` configuration file.
-This represent a list of message types that will be excluded from paying any fees for inclusion in a block.
+This represents a list of message types that will be excluded from paying any fees for inclusion in a block.
 
 Both global fees (`MinimumGasPricesParam`) and `minimum-gas-prices` represent a list of coins, each denoted by an amount and domination as defined by [sdk.DecCoins](https://github.com/cosmos/cosmos-sdk/blob/82ce891aa67f635f3b324b7a52386d5405c5abd0/types/dec_coin.go#L158) 
 
@@ -34,7 +34,7 @@ There are **two exceptions** from the global fees rules that allow zero fee tran
 
 1. Transactions that contain only [message types that can bypass the minimum fee](#bypass-fees-message-types) may have zero fees. We refer to this as _bypass transactions_. Node operators can choose to define these message types (for each node) via the `bypass-fee-message-types` configuration parameter.
 
-2. If one of the entries in the global fees list has a zero amount, e.g., `0uatom`, and the corresponding denom, e.g., `uatom`, is not present in `minimum-gas-prices`.
+2. One of the entries in the global fees list has a zero amount, e.g., `0uatom`, and the corresponding denom, e.g., `uatom`, is not present in `minimum-gas-prices`.
 
 Additionally, node operators may set additional minimum gas prices which can be larger than the _global_ minimum gas prices defined on chain.
 
@@ -200,7 +200,7 @@ Note that the required amount of `uatom` in globalfee is overwritten by the amou
   
 ### Case 7
 
-**Setting:** globalfee=0.1uatom, minimum-gas-prices=0.2uatom,1stake, gas=200000, bypass-min-fee-msg-types = ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"]
+**Setting:** globalfee=[0.1uatom], minimum-gas-prices=0.2uatom,1stake, gas=200000, bypass-min-fee-msg-types = ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"]
 
 Note that the required amount of `uatom` in globalfee is overwritten by the amount in minimum-gas-prices. 
 Also, the `1stake` in minimum-gas-prices is ignored.
@@ -211,7 +211,7 @@ Also, the `1stake` in minimum-gas-prices is ignored.
 
 ### Case 8
 
-**Setting:** globalfee=1uatom, minimum-gas-prices="", gas=300000, bypass-min-fee-msg-types = ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"]
+**Setting:** globalfee=[1uatom], minimum-gas-prices="", gas=300000, bypass-min-fee-msg-types = ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"]
 
   - msg withdraw-all-rewards with paidfee="", `fail` (gas limit exceeded for bypass transactions)
   - msg withdraw-all-rewards with paidfee="300000 * 0.5uatom", `fail` (gas limit exceeded for bypass transactions)

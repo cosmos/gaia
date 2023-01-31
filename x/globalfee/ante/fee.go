@@ -59,11 +59,12 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	gas := feeTx.GetGas()
 	msgs := feeTx.GetMsgs()
 
-	// Only check for minimum fees and global fee if the execution mode is CheckTx and the tx does
-	// not contain operator configured bypass messages. If the tx does contain
-	// operator configured bypass messages only, it's total gas must be less than
-	// or equal to a constant, otherwise minimum fees and global fees are checked to prevent spam.
-	// please note bypassing fees requires 1. all the msgs are bypass msgs types, 2. total gas of bypass msgs should be <= len(msgs)*mfd.MaxBypassMinFeeMsgGasUsage (presently MaxBypassMinFeeMsgGasUsage is 200,000). Please check ../../../docs/modules/globalfee.md for more info.
+	// Accept zero fee transactions only if both of the following statements are true:
+	// 	- the tx contains only message types that can bypass the minimum fee,
+	//	see BypassMinFeeMsgTypes;
+	//	- the total gas limit per message does not exceed MaxBypassMinFeeMsgGasUsage,
+	//	i.e., totalGas <= len(msgs) * MaxBypassMinFeeMsgGasUsage
+	// Otherwise, minimum fees and global fees are checked to prevent spam.
 	containsOnlyBypassMinFeeMsgs := mfd.bypassMinFeeMsgs(msgs)
 	doesNotExceedMaxGasUsage := gas <= uint64(len(msgs))*mfd.MaxBypassMinFeeMsgGasUsage
 	allowedToBypassMinFee := containsOnlyBypassMinFeeMsgs && doesNotExceedMaxGasUsage
@@ -75,30 +76,38 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	}
 	requiredFees := getMinGasPrice(ctx, feeTx)
 
+	// Only check for minimum fees and global fee if the execution mode is CheckTx
 	if !ctx.IsCheckTx() || simulate {
 		return next(ctx, tx, simulate)
 	}
 
 	if !allowedToBypassMinFee {
+		// Either the transaction contains at least on message of a type
+		// that cannot bypass the minimum fee or the total gas limit exceeds
+		// the imposed threshold. As a result, check that the fees are in
+		// expected denominations and the amounts are greater or equal than
+		// the expected amounts.
 
 		allFees = CombinedFeeRequirement(requiredGlobalFees, requiredFees)
 
-		// this is to ban 1stake passing if the globalfee is 1photon or 0photon
-		// if feeCoins=[] and requiredGlobalFees has 0denom coins then it should pass.
+		// Check that the fees are in expected denominations. Note that a zero fee
+		// is accepted if the global fee has an entry with a zero amount, e.g., 0uatoms.
 		if !DenomsSubsetOfIncludingZero(feeCoins, allFees) {
 			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fee is not a subset of required fees; got %s, required: %s", feeCoins, allFees)
 		}
-		// At least one feeCoin amount must be GTE to one of the requiredGlobalFees
+		// Check that the amounts of the fees are greater or equal than
+		// the expected amounts, i.e., at least one feeCoin amount must
+		// be greater or equal to one of the combined required fees.
 		if !IsAnyGTEIncludingZero(feeCoins, allFees) {
 			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins, allFees)
 		}
 	} else {
-		// bypass tx without pay fee
+		// Transactions with zero fees are accepted
 		if len(feeCoins) == 0 {
 			return next(ctx, tx, simulate)
 		}
-		// when the tx is bypass msg type, still need to check the denom is not some unknown denom
-		// bypass with fee, fee denom must in requiredGlobalFees
+		// If the transaction fee is non-zero, then check that the fees are in
+		// expected denominations.
 		if !DenomsSubsetOfIncludingZero(feeCoins, requiredGlobalFees) {
 			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fees denom is wrong; got: %s required: %s", feeCoins, requiredGlobalFees)
 		}

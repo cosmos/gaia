@@ -54,7 +54,6 @@ These block explorers allow you to search, view and analyze Cosmos Hub data&mdas
 * [LOOK Explorer](https://cosmos.ping.pub)
 * [Lunie](https://lunie.io)
 * [Mintscan](https://mintscan.io)
-* [Stargazer](https://stargazer.certus.one)
 * [Union Market](https://union.market/token/cosmos)
 
 ## Cosmos Hub CLI

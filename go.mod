@@ -273,9 +273,18 @@ require (
 	nhooyr.io/websocket v1.8.6 // indirect
 )
 
-replace github.com/confio/ics23/go => github.com/cosmos/cosmos-sdk/ics23/go v0.8.0
 
 replace (
+
+	// griefing patch
+	github.com/tendermint/tendermint => github.com/public-awesome/tendermint v0.34.24-stargaze
+
+	// dragonberry patch
+	github.com/confio/ics23/go => github.com/cosmos/cosmos-sdk/ics23/go v0.8.0
+
+	// use cosmos protobuf
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+
+	// use grpc compatible with cosmos protobuf
 	google.golang.org/grpc => google.golang.org/grpc v1.33.2
 )

@@ -6,7 +6,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.45.11
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/ibc-go/v4 v4.2.0
-	github.com/cosmos/interchain-security v1.0.0-rc3
+	github.com/cosmos/interchain-security v1.0.0-rc4
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
 	github.com/golangci/golangci-lint v1.50.1
@@ -298,7 +298,7 @@ replace (
 	github.com/cosmos/ibc-go/v4 => github.com/cosmos/ibc-go/v4 v4.2.0
 
 	// ICS
-	github.com/cosmos/interchain-security => github.com/cosmos/interchain-security v1.0.0-rc3
+	github.com/cosmos/interchain-security => github.com/cosmos/interchain-security v1.0.0-rc4
 
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2

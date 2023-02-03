@@ -49,7 +49,7 @@ gaiad config chain-id cosmoshub-2
 
 The keyring holds the private/public keypairs used to interact with a node. For instance, a validator key needs to be set up before running the blockchain node, so that blocks can be correctly signed. The private key can be stored in different locations, called "backends", such as a file or the operating system's own key storage.
 
-Headless enviroments are recommended to use either the `file` or `pass` backends. More information is available at the [SDK documentation page](https://docs.cosmos.network/main/run-node/keyring.html).
+Headless environments are recommended to use either the `file` or `pass` backends. More information is available at the [SDK documentation page](https://docs.cosmos.network/main/run-node/keyring.html).
 
 #### Key Types
 
@@ -61,7 +61,7 @@ There are three types of key representations that are used:
   - e.g. `cosmos15h6vd5f0wqps26zjlwrc6chah08ryu4hzzdwhc`
 
 - `cosmosvaloper`
-  - Used to associate a validator to it's operator
+  - Used to associate a validator to its operator
   - Used to invoke staking commands
   - e.g. `cosmosvaloper1carzvgq3e6y3z5kz5y6gxp3wpy3qdrv928vyah`
 
@@ -184,7 +184,7 @@ is included in a block.
 Each transaction may either supply fees or gas prices, but not both.
 
 Validator's have a minimum gas price (multi-denom) configuration and they use
-this value when when determining if they should include the transaction in a block during `CheckTx`, where `gasPrices >= minGasPrices`. Note, your transaction must supply fees that are greater than or equal to **any** of the denominations the validator requires.
+this value when determining if they should include the transaction in a block during `CheckTx`, where `gasPrices >= minGasPrices`. Note, your transaction must supply fees that are greater than or equal to **any** of the denominations the validator requires.
 
 **Note**: With such a mechanism in place, validators may start to prioritize
 txs by `gasPrice` in the mempool, so providing higher fees or gas prices may yield higher tx priority.
@@ -437,13 +437,13 @@ While tokens are bonded, they are pooled with all the other bonded tokens in the
 
 ##### Query Delegations
 
-Once submitted a delegation to a validator, you can see it's information by using the following command:
+Once submitted a delegation to a validator, you can see its information by using the following command:
 
 ```bash
 gaiad query staking delegation <delegator_addr> <validator_addr>
 ```
 
-Or if you want to check all your current delegations with disctinct validators:
+Or if you want to check all your current delegations with distinct validators:
 
 ```bash
 gaiad query staking delegations <delegator_addr>
@@ -452,7 +452,7 @@ gaiad query staking delegations <delegator_addr>
 #### Unbond Tokens
 
 If for any reason the validator misbehaves, or you just want to unbond a certain
-amount of tokens, use this following command.
+amount of tokens, use the following command.
 
 ```bash
 gaiad tx staking unbond \
@@ -503,7 +503,7 @@ The redelegation will be automatically completed when the unbonding period has p
 
 ##### Query Redelegations
 
-Once you begin an redelegation, you can see it's information by using the following command:
+Once you begin a redelegation, you can see its information by using the following command:
 
 ```bash
 gaiad query staking redelegation <delegator_addr> <src_val_addr> <dst_val_addr>
@@ -535,7 +535,7 @@ With the above command you will get the values for:
 - Maximum numbers of validators
 - Coin denomination for staking
 
-All these values will be subject to updates though a `governance` process by `ParameterChange` proposals.
+All these values will be subject to updates through a `governance` process by `ParameterChange` proposals.
 
 #### Query Pool
 
@@ -589,7 +589,7 @@ In order to create a governance proposal, you must submit an initial deposit
 along with a title and description. Various modules outside of governance may
 implement their own proposal types and handlers (eg. parameter changes), where
 the governance module itself supports `Text` proposals. Any module
-outside of governance has it's command mounted on top of `submit-proposal`.
+outside of governance has its command mounted on top of `submit-proposal`.
 
 To submit a `Text` proposal:
 

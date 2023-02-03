@@ -29,7 +29,7 @@ These community-maintained web and mobile wallets allow you to store & transfer 
 * [Cosmostation](https://www.cosmostation.io/) - Android, iOS
 * [Crypto.com](https://crypto.com/) - Android, iOS
 * [Huobi Wallet](https://www.huobiwallet.com/) - Android, iOS
-* <!-- markdown-link-check-disable-next-line -->
+* [ShapeShift Wallet](https://app.shapeshift.com/) - Android, iOS
 * [imToken](https://token.im/) - Android, iOS
 * [Keplr](https://wallet.keplr.app) - Web
 * [Ledger](https://www.ledger.com/cosmos-wallet) - Hardware

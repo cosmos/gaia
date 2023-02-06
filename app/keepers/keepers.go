@@ -275,6 +275,7 @@ func NewAppKeeper(
 		appKeepers.StakingKeeper,
 		appKeepers.SlashingKeeper,
 		appKeepers.AccountKeeper,
+		appKeepers.EvidenceKeeper,
 		authtypes.FeeCollectorName,
 	)
 
@@ -287,7 +288,7 @@ func NewAppKeeper(
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(appKeepers.DistrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(appKeepers.UpgradeKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(appKeepers.IBCKeeper.ClientKeeper)).
-		AddRoute(providertypes.RouterKey, ibcprovider.NewConsumerChainProposalHandler(appKeepers.ProviderKeeper))
+		AddRoute(providertypes.RouterKey, ibcprovider.NewProviderProposalHandler(appKeepers.ProviderKeeper))
 
 	/*
 		Example of setting gov params:

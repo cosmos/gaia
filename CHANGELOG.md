@@ -34,7 +34,9 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 # Changelog
 
-## [Unreleased]
+## [v7.1.1] -2023-02-06
+
+* (gaia) bump [tendermint](https://github.com/tendermint/tendermint) to [0.34.25](https://github.com/informalsystems/tendermint/releases/tag/v0.34.25) to patch p2p issue. See [CHANGELOG.md](https://github.com/informalsystems/tendermint/blob/v0.34.25/CHANGELOG.md#v03425) for details.
 
 ## [v7.1.0] -2022-10-14
 
@@ -76,7 +78,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 * (gaia) [#1135](https://github.com/cosmos/gaia/pull/1135) Fix rocksdb build tag usage.
 * (gaia) [#1160](https://github.com/cosmos/gaia/pull/1160) Improvement: update state sync configs.
 * (gaia) [#1208](https://github.com/cosmos/gaia/pull/1208) Update statesync.bash.
-  * * (gaia) Bump [Cosmos-SDK](https://github.com/cosmos/cosmos-sdk) to [v0.44.6](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.6)
+    * * (gaia) Bump [Cosmos-SDK](https://github.com/cosmos/cosmos-sdk) to [v0.44.6](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.6)
 * (gaia) Bump [Versions](https://github.com/cosmos/gaia/pull/1100) of various smaller dependencies, remove the Cosmos SDK replace statement, update `initiClientCtx` params, ensure `stdout` and `stderr` are handled correctly in the CLI.
 
 ## [v6.0.3] - 2022-02-18
@@ -443,7 +445,6 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v7.1.0...HEAD
 [v7.1.0]: https://github.com/cosmos/gaia/releases/tag/v7.1.0
 [v7.0.3]: https://github.com/cosmos/gaia/releases/tag/v7.0.3
 [v7.0.2]: https://github.com/cosmos/gaia/releases/tag/v7.0.2

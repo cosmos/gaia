@@ -34,7 +34,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 # Changelog
 
-## [v7.1.1] -2023-02-05
+## [v7.1.1] -2023-02-06
 
 * (gaia) bump [tendermint](https://github.com/tendermint/tendermint) to [0.34.25](https://github.com/informalsystems/tendermint/releases/tag/v0.34.25) to patch p2p issue. See [CHANGELOG.md](https://github.com/informalsystems/tendermint/blob/v0.34.25/CHANGELOG.md#v03425) for details.
 

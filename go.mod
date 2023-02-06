@@ -297,7 +297,7 @@ replace (
 	// dragonberry
 	github.com/confio/ics23/go => github.com/confio/ics23/go v0.9.0
 
-	// enforce same SDK, Tendermint and IBC on all dependencies
+	// enforce same SDK and IBC on all dependencies
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.12-ics
 	github.com/cosmos/ibc-go/v4 => github.com/cosmos/ibc-go/v4 v4.2.0
 
@@ -311,6 +311,8 @@ replace (
 
 	// use cosmos style protobufs
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+
+	// Tendermint
 	github.com/tendermint/tendermint => github.com/informalsystems/tendermint v0.34.25
 
 	// latest grpc doesn't work with with our modified proto compiler, so we need to enforce

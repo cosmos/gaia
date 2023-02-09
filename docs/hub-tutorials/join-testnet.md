@@ -7,7 +7,7 @@ title: Joining Testnet
 
 This tutorial will provide all necessary instructions for joining the current public testnet. If you're interested in more advanced configuration and synchronization options, see [Join Mainnet](./join-mainnet.md) for a detailed walkthrough.
 
-* Current Version: v8-Rho
+* Current Version: v9-Lambda
 * Chain ID: `theta-testnet-001`
 
 ## Background
@@ -20,11 +20,12 @@ For those who just need instructions on performing the upgrade, see the [Upgradi
 
 The table below shows all past and upcoming versions of the public testnet.
 
-| Release | Upgrade Block Height | Upgrade Date |
-|:--:|:---:|:---:|
-| v8.0.0-rc3 | 14,175,595 | 2023-01-20 |
-| v7.0.0-rc0 | 9,283,650 | 2022-03-17 |
-| v6.0.0 |  Genesis | Launched 2022-03-10 |
+|  Release   | Upgrade Block Height |    Upgrade Date     |
+|:----------:|:--------------------:|:-------------------:|
+| v9.0.0-rc3 |      14,476,206      |     2023-02-08      |
+| v8.0.0-rc3 |      14,175,595      |     2023-01-20      |
+| v7.0.0-rc0 |      9,283,650       |     2022-03-17      |
+|   v6.0.0   |       Genesis        | Launched 2022-03-10 |
 
 See the [Gaia release page](https://github.com/cosmos/gaia/releases) for details on each release.
 
@@ -62,14 +63,14 @@ Install build tools and Go.
 ```shell
 sudo apt-get update
 sudo apt-get install -y make gcc
-wget https://go.dev/dl/go1.19.4.linux-amd64.tar.gz
-sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.19.4.linux-amd64.tar.gz
+wget https://go.dev/dl/go1.18.5.linux-amd64.tar.gz
+sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.18.5.linux-amd64.tar.gz
 export PATH=$PATH:/usr/local/go/bin
 ```
 
 ### Installation & Configuration
 
-You will need to install and configure the Gaia binary using the script below. The Cosmos Hub Public Testnet is running Gaia [`v8.0.0-rc3`](https://github.com/cosmos/gaia/releases/tag/v8.0.0-rc3).
+You will need to install and configure the Gaia binary using the script below. The Cosmos Hub Public Testnet is running Gaia [`v9.0.0-rc3`](https://github.com/cosmos/gaia/releases/tag/v9.0.0-rc3).
 
 * For up-to-date endpoints like seeds and state sync RPC servers, visit the [testnets repository](https://github.com/cosmos/testnets/tree/master/public).
 
@@ -79,7 +80,7 @@ cd $HOME
 git clone https://github.com/cosmos/gaia
 cd gaia
 # To sync from genesis, comment out the next line.
-git checkout v8.0.0-rc3
+git checkout v9.0.0-rc3
 # To sync from genesis, uncomment the next line and skip the State Sync Setup section.
 # git checkout v6.0.4
 make install
@@ -96,7 +97,7 @@ mv genesis.json $HOME/.gaia/config/genesis.json
 
 # Set minimum gas price & peers
 cd $HOME/.gaia/config
-sed -i 's/minimum-gas-prices = ""/minimum-gas-prices = "0.001uatom"/' app.toml
+sed -i 's/minimum-gas-prices = ""/minimum-gas-prices = "0.0025uatom"/' app.toml
 sed -i 's/seeds = ""/seeds = "639d50339d7045436c756a042906b9a69970913f@seed-01.theta-testnet.polypore.xyz:26656,3e506472683ceb7ed75c1578d092c79785c27857@seed-02.theta-testnet.polypore.xyz:26656"/' config.toml
 ```
 
@@ -231,7 +232,7 @@ There are three ways you can update the binary:
 
 The instructions below are for option 2. For more information on auto-download with Cosmovisor, see the relevant [documentation](https://github.com/cosmos/cosmos-sdk/tree/main/tools/cosmovisor#auto-download) in the Cosmos SDK repo.
 
-If the environment variable `DAEMON_ALLOW_DOWNLOAD_BINARIES` is set to `false`, Cosmovisor will look for the new binary in a folder that matches the name of the upgrade specified in the software upgrade proposal. For the `v8-Rho` upgrade, the expected folder structure would look as follows:
+If the environment variable `DAEMON_ALLOW_DOWNLOAD_BINARIES` is set to `false`, Cosmovisor will look for the new binary in a folder that matches the name of the upgrade specified in the software upgrade proposal. For the `v9-Lambda` upgrade, the expected folder structure would look as follows:
 
 ```shell
 .gaia
@@ -241,12 +242,12 @@ If the environment variable `DAEMON_ALLOW_DOWNLOAD_BINARIES` is set to `false`, 
     │   └── bin
     |       └── gaiad
     └── upgrades
-        └── v8-rho
+        └── v9-lambda
             └── bin
                 └── gaiad
 ```
 
-> Note: for Cosmovisor v1.0.0, the upgrade name folder is not lowercased (use `cosmovisor/upgrades/v8-Rho/bin` instead)
+> Note: for Cosmovisor v1.0.0, the upgrade name folder is not lowercased (use `cosmovisor/upgrades/v9-Lambda/bin` instead)
 
 Prepare the upgrade directory
 ```
@@ -257,11 +258,11 @@ Download and install the new binary version.
 ```
 cd $HOME/gaia
 git pull
-git checkout v8.0.0-rc3
+git checkout v8.0.0
 make install
 
 # Copy the new binary to the v8-Rho upgrade directory
-cp ~/go/bin/gaiad ~/.gaia/cosmovisor/upgrades/v8-rho/bin/gaiad
+cp ~/go/bin/gaiad ~/.gaia/cosmovisor/upgrades/v9-lambda/bin/gaiad
 ```
 
 When the upgrade height is reached, Cosmovisor will stop the gaiad binary, copy the new binary to the `current/bin` folder and restart. After a few minutes, the node should start syncing blocks using the new binary.

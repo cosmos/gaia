@@ -89,6 +89,7 @@ var ModuleBasics = module.NewBasicManager(
 		ibcclientclient.UpgradeProposalHandler,
 		ibcproviderclient.ConsumerAdditionProposalHandler,
 		ibcproviderclient.ConsumerRemovalProposalHandler,
+		ibcproviderclient.EquivocationProposalHandler,
 	),
 	params.AppModuleBasic{},
 	crisis.AppModuleBasic{},

@@ -70,7 +70,7 @@ export PATH=$PATH:/usr/local/go/bin
 
 ### Installation & Configuration
 
-You will need to install and configure the Gaia binary using the script below. The Cosmos Hub Public Testnet is running Gaia [`v9.0.0-rc3`](https://github.com/cosmos/gaia/releases/tag/v9.0.0-rc3).
+You will need to install and configure the Gaia binary using the script below. The Cosmos Hub Public Testnet is running Gaia [`v9.0.0-rc6`](https://github.com/cosmos/gaia/releases/tag/v9.0.0-rc6).
 
 * For up-to-date endpoints like seeds and state sync RPC servers, visit the [testnets repository](https://github.com/cosmos/testnets/tree/master/public).
 

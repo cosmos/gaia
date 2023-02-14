@@ -80,7 +80,7 @@ cd $HOME
 git clone https://github.com/cosmos/gaia
 cd gaia
 # To sync from genesis, comment out the next line.
-git checkout v9.0.0-rc3
+git checkout v9.0.0-rc6
 # To sync from genesis, uncomment the next line and skip the State Sync Setup section.
 # git checkout v6.0.4
 make install

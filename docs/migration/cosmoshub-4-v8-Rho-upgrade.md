@@ -85,7 +85,7 @@ It is critically important for validator operators to back-up the `.gaia/data/pr
 
 ### Testing
 
-For those validator and full node operators that are interested in ensuring preparedness for the impending upgrade, you can join in our [v8-Rho public-testnet](https://github.com/cosmos/testnets/tree/master/v8-rho/public-testnet) or run a [v8-Rho local testnet](https://github.com/cosmos/testnets/tree/master/local/previous-local-testnets/rho).
+For those validator and full node operators that are interested in ensuring preparedness for the impending upgrade, you can join in our v8-Rho public-testnet or run a v8-Rho local testnet.
 
 ### Current runtime, cosmoshub-4 (pre-v8-Rho upgrade) is running Gaia v7.0.x
 
@@ -251,7 +251,7 @@ The upgrade may take a few minutes to several hours to complete because cosmoshu
 
 During the network upgrade, core Cosmos teams will be keeping an ever vigilant eye and communicating with operators on the status of their upgrades. During this time, the core teams will listen to operator needs to determine if the upgrade is experiencing unintended challenges. In the event of unexpected challenges, the core teams, after conferring with operators and attaining social consensus, may choose to declare that the upgrade will be skipped.
 
-Steps to skip this upgrade proposal are simply to resume the cosmoshub-4 network with the (downgraded) v6.0.x binary using the following command:
+Steps to skip this upgrade proposal are simply to resume the cosmoshub-4 network with the (downgraded) v7.1.1 binary using the following command:
 
 > gaiad start --unsafe-skip-upgrade 14099412
 
@@ -271,7 +271,6 @@ The riskiest thing a validator can do is discover that they made a mistake and r
 
 ## Reference
 
-[cosmos/v8-Theta-test](https://github.com/cosmos/testnets/tree/master/v8-rho)
 [join Cosmos Hub Mainnet](https://github.com/cosmos/mainnet)
 
 <!-- markdown-link-check-enable -->

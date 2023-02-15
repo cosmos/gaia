@@ -3,7 +3,7 @@ module github.com/cosmos/gaia/v9
 go 1.18
 
 require (
-	github.com/cosmos/cosmos-sdk v0.45.12
+	github.com/cosmos/cosmos-sdk v0.45.13-ics
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/ibc-go/v4 v4.2.0
 	github.com/cosmos/interchain-security v1.0.0-rc7
@@ -296,13 +296,6 @@ replace (
 
 	// dragonberry
 	github.com/confio/ics23/go => github.com/confio/ics23/go v0.9.0
-
-	// enforce same SDK and IBC on all dependencies
-	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.13-ics
-	github.com/cosmos/ibc-go/v4 => github.com/cosmos/ibc-go/v4 v4.2.0
-
-	// ICS
-	github.com/cosmos/interchain-security => github.com/cosmos/interchain-security v1.0.0-rc7
 
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2

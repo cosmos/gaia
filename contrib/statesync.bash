@@ -18,10 +18,10 @@ export PATH=$PATH:~/go/bin
 # Install with pebbledb (uncomment for incredible performance)
 # go mod edit -replace github.com/tendermint/tm-db=github.com/baabeetaa/tm-db@pebble
 # go mod tidy
-# go install -ldflags '-w -s -X github.com/cosmos/cosmos-sdk/types.DBBackend=pebbledb -X github.com/tendermint/tm-db.ForceSync=1' -tags pebbledb ./...
+go install -ldflags '-w -s -X github.com/cosmos/cosmos-sdk/types.DBBackend=pebbledb -X github.com/tendermint/tm-db.ForceSync=1' -tags pebbledb ./...
 
 # install (comment if ussing pebble for incredible performance)
-go install ./...
+# go install ./...
 
 # NOTE: ABOVE YOU CAN USE ALTERNATIVE DATABASES, HERE ARE THE EXACT COMMANDS
 # go install -ldflags '-w -s -X github.com/cosmos/cosmos-sdk/types.DBBackend=rocksdb' -tags rocksdb ./...
@@ -60,4 +60,4 @@ GAIAD_P2P_SEEDS=$(curl -s https://raw.githubusercontent.com/cosmos/chain-registr
 export GAIAD_P2P_SEEDS
 
 # Start chain.
-gaiad start --x-crisis-skip-assert-invariants 
+gaiad start --x-crisis-skip-assert-invariants --db_backend pebbledb --iavl-disable-fastnode false

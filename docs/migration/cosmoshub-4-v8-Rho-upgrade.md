@@ -35,13 +35,14 @@ TOC:
     - [Current runtime, cosmoshub-4 (pre-v8-Rho upgrade) is running Gaia v7.0.x](#current-runtime-cosmoshub-4-pre-v7-theta-upgrade-is-running-gaia-v60x)
     - [Target runtime, cosmoshub-4 (post-v8-Rho upgrade) will run Gaia v8.0.0](#target-runtime-cosmoshub-4-post-v8-rho-upgrade-will-run-gaia-v800)
   - [v8-Rho upgrade steps](#v8-Rho-upgrade-steps)
-    - [Method I: manual upgrade](#method-i-manual-upgrade)
-    - [Method II: upgrade using Cosmovisor by manually preparing the Gaia v8.0.0 binary](#method-ii-upgrade-using-cosmovisor-by-manually-preparing-the-gaia-v700-binary)
-      - [Preparation](#preparation)
-      - [Expected upgrade result](#expected-upgrade-result)
-    - [Method III: upgrade using Cosmovisor by auto-downloading the Gaia v8.0.0 binary (not recommended!)](#method-iii-upgrade-using-cosmovisor-by-auto-downloading-the-gaia-v800-binary-not-recommended)
-      - [Preparation](#preparation-1)
-      - [Expected result](#expected-result)
+    - [Method I: Manual Upgrade](#method-i-manual-upgrade)
+    - [Method II: Upgrade using Cosmovisor](#method-ii-upgrade-using-cosmovisor)
+      - [Manually preparing the binary](#manually-preparing-the-gaia-v800-binary)
+        - [Preparation](#preparation)
+        - [Expected upgrade result](#expected-upgrade-result)
+      - [Auto-Downloading the Gaia v8.0.0 binary (not recommended!)](#auto-downloading-the-gaia-v800-binary-not-recommended)
+        - [Preparation](#preparation-1)
+        - [Expected result](#expected-result)
   - [Upgrade duration](#upgrade-duration)
   - [Rollback plan](#rollback-plan)
   - [Communications](#communications)
@@ -106,7 +107,7 @@ There are 2 major ways to upgrade a node:
 
 If you prefer to use Cosmovisor to upgrade, some preparation work is needed before upgrade.
 
-### Method I: manual upgrade
+### Method I: Manual Upgrade
 
 Run Gaia v7.1.1 till upgrade height, the node will panic:
 
@@ -118,7 +119,7 @@ Stop the node, and install Gaia v8.0.0 and re-start by `gaiad start`.
 
 It may take several minutes to a few hours until validators with a total sum voting power > 2/3 to complete their nodes upgrades. After that, the chain can continue to produce blocks.
 
-### Method II: upgrade using Cosmovisor
+### Method II: Upgrade using Cosmovisor
 
 > **Warning**  <span style="color:red">**Please Read Before Proceeding**</span><br>
 > **Using Cosmovisor 1.2.0 and higher requires a lowercase naming convention for upgrade version directory. For Cosmovisor 1.1.0 and earlier, the upgrade version is not lowercased.**       

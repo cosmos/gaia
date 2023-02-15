@@ -118,14 +118,38 @@ Stop the node, and install Gaia v8.0.0 and re-start by `gaiad start`.
 
 It may take several minutes to a few hours until validators with a total sum voting power > 2/3 to complete their nodes upgrades. After that, the chain can continue to produce blocks.
 
-### Method II: upgrade using Cosmovisor by manually preparing the Gaia v8.0.0 binary
+### Method II: upgrade using Cosmovisor
 
-#### Preparation
+> **Warning**  <span style="color:red">**Please Read Before Proceeding**</span><br>
+> **Using Cosmovisor 1.2.0 and higher requires a lowercase naming convention for upgrade version directory. For Cosmovisor 1.1.0 and earlier, the upgrade version is not lowercased.**       
+> 
+> **For Example:** <br>
+> **Cosmovisor =< `1.1.0`: `/upgrades/v8-Rho/bin/gaiad`**<br>
+> **Cosmovisor >= `1.2.0`: `/upgrades/v8-rho/bin/gaiad`**<br>
 
-Install the latest version of Cosmovisor:
+| Cosmovisor Version | Binary Name in Path |
+|--------------------|---------------------|
+| 1.3                | v8-rho              |
+| 1.2                | v8-rho              |
+| 1.1                | v8-Rho              |
+| 1.0                | v8-Rho              |
+
+
+
+### _Manually preparing the Gaia v8.0.0 binary_
+
+##### Preparation
+
+Install the latest version of Cosmovisor (`1.3.0`):
 
 ```shell
 go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@latest
+```
+
+**Verify Cosmovisor Version**
+```shell
+cosmovisor version
+cosmovisor version: v1.3.0
 ```
 
 Create a cosmovisor folder:
@@ -137,11 +161,11 @@ mkdir -p $GAIA_HOME/cosmovisor/genesis/bin
 cp $(which gaiad) $GAIA_HOME/cosmovisor/genesis/bin
 ````
 
-build Gaia v8.0.0, and move gaiad v8.0.0 to `$GAIA_HOME/cosmovisor/upgrades/v8-Rho/bin`
+build Gaia v8.0.0, and move gaiad v8.0.0 to `$GAIA_HOME/cosmovisor/upgrades/v8-rho/bin`
 
 ```shell
-mkdir -p  $GAIA_HOME/cosmovisor/upgrades/v8-Rho/bin
-cp $(which gaiad) $GAIA_HOME/cosmovisor/upgrades/v8-Rho/bin
+mkdir -p  $GAIA_HOME/cosmovisor/upgrades/v8-rho/bin
+cp $(which gaiad) $GAIA_HOME/cosmovisor/upgrades/v8-rho/bin
 ```
 
 Then you should get the following structure:
@@ -153,7 +177,7 @@ Then you should get the following structure:
 │   └── bin
 │       └── gaiad  #v7.1.1
 └── upgrades
-    └── v8-Rho
+    └── v8-rho
         └── bin
             └── gaiad  #v8.0.0
 ```
@@ -179,14 +203,13 @@ Skipping the invariant checks is strongly encouraged since it decreases the upgr
 
 When the upgrade block height is reached, Gaia will panic and stop:
 
- This may take 7 minutes to a few hours.
- After upgrade, the chain will continue to produce blocks when validators with a total sum voting power > 2/3 complete their nodes upgrades.
+This may take 7 minutes to a few hours.
+After upgrade, the chain will continue to produce blocks when validators with a total sum voting power > 2/3 complete their nodes upgrades.
 
-### Method III: upgrade using Cosmovisor by auto-downloading the Gaia v8.0.0 binary (not recommended!)
-
+### _Auto-Downloading the Gaia v8.0.0 binary (not recommended!)_
 #### Preparation
 
-Install Cosmovisor v1.1.0
+Install the latest version of Cosmovisor (`1.3.0`):
 
 ```shell
 go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@latest
@@ -235,7 +258,7 @@ When the upgrade block height is reached, you can find the following information
 ERR UPGRADE "v8-Rho" NEEDED at height: 14099412: upgrade to v7-Theta and applying upgrade "v8-Rho" at height:14099412
 ```
 
-Then the Cosmovisor will create `$GAIA_HOME/cosmovisor/upgrades/v8-Rho/bin` and download the Gaia v8.0.0 binary to this folder according to links in the `--info` field of the upgrade proposal 97.
+Then the Cosmovisor will create `$GAIA_HOME/cosmovisor/upgrades/v8-rho/bin` and download the Gaia v8.0.0 binary to this folder according to links in the `--info` field of the upgrade proposal 97.
 This may take 7 minutes to a few hours, afterwards, the chain will continue to produce blocks once validators with a total sum voting power > 2/3 complete their nodes upgrades.
 
 _Please Note:_

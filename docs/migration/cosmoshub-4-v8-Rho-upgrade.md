@@ -5,7 +5,7 @@ order: 2
 <!-- markdown-link-check-disable -->
 # Cosmos Hub 4, v8-Rho Upgrade, Instructions
 
-This document describes the steps for validator and full node operators for the successful execution of the [v8-Rho Upgrade](https://github.com/cosmos/gaia/blob/main/docs/roadmap/cosmos-hub-roadmap-2.0.md), which contains the following main new features/improvement:
+This document describes the steps for validator and full node operators for the successful execution of the [v8-Rho Upgrade](https://github.com/cosmos/gaia/blob/main/docs/roadmap/cosmos-hub-roadmap-2.0.md#v8-rho-upgrade-expected-q1-2023), which contains the following main new features/improvement:
 
 * (gaia) Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v3.4.0](https://github.com/cosmos/ibc-go/blob/v3.4.0/CHANGELOG.md) to fix a vulnerability in ICA. See [v3.4.0 CHANGELOG.md](https://github.com/cosmos/ibc-go/releases/tag/v3.4.0) and [v3.2.1 Release Notes](https://github.com/cosmos/ibc-go/releases/tag/v3.2.1) for details.
 * (gaia) Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.12](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.12). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/release/v0.45.x/CHANGELOG.md) for details.
@@ -110,6 +110,10 @@ If you prefer to use Cosmovisor to upgrade, some preparation work is needed befo
 
 Run Gaia v7.0.x till upgrade height, the node will panic:
 
+```shell
+ERR UPGRADE "v8-Rho" NEEDED at height: 14099412: upgrade to v7-Theta and applying upgrade "v8-Rho" at height:14099412
+```
+
 Stop the node, and install Gaia v8.0.0 and re-start by `gaiad start`.
 
 It may take several minutes to a few hours until validators with a total sum voting power > 2/3 to complete their nodes upgrades. After that, the chain can continue to produce blocks.
@@ -173,11 +177,7 @@ Skipping the invariant checks is strongly encouraged since it decreases the upgr
 
 #### Expected upgrade result
 
-When the upgrade block height is reached, you can find the following information in the log:
-
-```shell
-ERR UPGRADE "v8-Rho" NEEDED at height: 14099412: upgrade to v8-Rho and applying upgrade "v8-Rho" at height:14099412.
-```
+When the upgrade block height is reached, Gaia will panic and stop:
 
  This may take 7 minutes to a few hours.
  After upgrade, the chain will continue to produce blocks when validators with a total sum voting power > 2/3 complete their nodes upgrades.

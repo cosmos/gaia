@@ -297,6 +297,8 @@ replace (
 	// dragonberry
 	github.com/confio/ics23/go => github.com/confio/ics23/go v0.9.0
 
+	github.com/cosmos/cosmos-sdk => github.com/smarshall-spitzbart/cosmos-sdk v0.45.5-0.20230215060606-ea7a3a0939d2
+
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
 	// TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409

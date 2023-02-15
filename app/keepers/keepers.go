@@ -263,6 +263,14 @@ func NewAppKeeper(
 		appKeepers.ScopedIBCKeeper,
 	)
 
+	// EvidenceKeeper must be created before ProviderKeeper
+	appKeepers.EvidenceKeeper = *evidencekeeper.NewKeeper(
+		appCodec,
+		appKeepers.keys[evidencetypes.StoreKey],
+		&appKeepers.StakingKeeper,
+		appKeepers.SlashingKeeper,
+	)
+
 	appKeepers.ProviderKeeper = ibcproviderkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[providertypes.StoreKey],
@@ -365,13 +373,6 @@ func NewAppKeeper(
 		AddRoute(providertypes.ModuleName, appKeepers.ProviderModule)
 
 	appKeepers.IBCKeeper.SetRouter(ibcRouter)
-
-	appKeepers.EvidenceKeeper = *evidencekeeper.NewKeeper(
-		appCodec,
-		appKeepers.keys[evidencetypes.StoreKey],
-		&appKeepers.StakingKeeper,
-		appKeepers.SlashingKeeper,
-	)
 
 	return appKeepers
 }

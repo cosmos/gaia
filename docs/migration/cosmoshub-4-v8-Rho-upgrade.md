@@ -87,7 +87,7 @@ It is critically important for validator operators to back-up the `.gaia/data/pr
 
 For those validator and full node operators that are interested in ensuring preparedness for the impending upgrade, you can join in our v8-Rho public-testnet or run a v8-Rho local testnet.
 
-### Current runtime, cosmoshub-4 (pre-v8-Rho upgrade) is running Gaia v7.0.x
+### Current runtime, cosmoshub-4 (pre-v8-Rho upgrade) is running Gaia v7.1.1
 
 The Cosmos Hub mainnet network, `cosmoshub-4`, is currently running [Gaia v7.1.1](https://github.com/cosmos/gaia/releases/v7.1.1). We anticipate that operators who are running on v7.1.1, will be able to upgrade successfully; however, this is untested and it is up to operators to ensure that their systems are capable of performing the upgrade.
 
@@ -108,7 +108,7 @@ If you prefer to use Cosmovisor to upgrade, some preparation work is needed befo
 
 ### Method I: manual upgrade
 
-Run Gaia v7.0.x till upgrade height, the node will panic:
+Run Gaia v7.1.1 till upgrade height, the node will panic:
 
 ```shell
 ERR UPGRADE "v8-Rho" NEEDED at height: 14099412: upgrade to v7-Theta and applying upgrade "v8-Rho" at height:14099412
@@ -235,7 +235,7 @@ When the upgrade block height is reached, you can find the following information
 ERR UPGRADE "v8-Rho" NEEDED at height: 14099412: upgrade to v7-Theta and applying upgrade "v8-Rho" at height:14099412
 ```
 
-Then the Cosmovisor will create `$GAIA_HOME/cosmovisor/upgrades/v7-Theta/bin` and download Gaia v7.0.0 binary to this folder according to links in the `--info` field of the upgrade proposal 97.
+Then the Cosmovisor will create `$GAIA_HOME/cosmovisor/upgrades/v8-Rho/bin` and download the Gaia v8.0.0 binary to this folder according to links in the `--info` field of the upgrade proposal 97.
 This may take 7 minutes to a few hours, afterwards, the chain will continue to produce blocks once validators with a total sum voting power > 2/3 complete their nodes upgrades.
 
 _Please Note:_

@@ -39,7 +39,7 @@ gzip -d genesis.cosmoshub-4.json.gz
 mv genesis.cosmoshub-4.json ~/.gaia/config/genesis.json
 
 # Get "trust_hash" and "trust_height".
-INTERVAL=1000
+INTERVAL=100
 LATEST_HEIGHT=$(curl -s https://cosmos-rpc.polkachu.com/block | jq -r .result.block.header.height)
 BLOCK_HEIGHT=$((LATEST_HEIGHT - INTERVAL))
 TRUST_HASH=$(curl -s "https://cosmos-rpc.polkachu.com/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
@@ -51,7 +51,7 @@ echo "trust_hash: $TRUST_HASH"
 # Export state sync variables.
 export GAIAD_STATESYNC_ENABLE=true
 export GAIAD_P2P_MAX_NUM_OUTBOUND_PEERS=200
-export GAIAD_STATESYNC_RPC_SERVERS="https://cosmos-rpc.polkachu.com:443,https://rpc-cosmoshub-ia.cosmosia.notional.ventures:443,https://rpc.cosmoshub.strange.love:443"
+export GAIAD_STATESYNC_RPC_SERVERS="https://cosmos-rpc.polkachu.com:443,https://rpc-cosmoshub-ia.cosmosia.notional.ventures:443"
 export GAIAD_STATESYNC_TRUST_HEIGHT=$BLOCK_HEIGHT
 export GAIAD_STATESYNC_TRUST_HASH=$TRUST_HASH
 

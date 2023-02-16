@@ -157,11 +157,11 @@ make build
 cp ./build/gaiad ./build/gaiad8
 ```
 
-#### Build gaia v7.1.0 and move into ./build:
+#### Build gaia v8.0.0 and move into ./build:
 ```sh
-git checkout v7.1.0
+git checkout v8.0.0
 make build
-cp ./build/gaiad ./build/gaiad7
+cp ./build/gaiad ./build/gaiad8
 ```
 
 #### Go back to your previous working branch
@@ -171,14 +171,14 @@ git checkout -
 
 #### Install cosmovisor
 ```sh
-go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.0.0
+go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.3.0
 ```
 
 #### Run the Chain
 
 This script prepares the chain and starts it using cosmovisor
 ```sh
-./contrib/scripts/run-gaia-v7.sh
+./contrib/scripts/run-gaia-v8.sh
 ```
 
 #### Run the upgrade

@@ -95,10 +95,10 @@ You should see something similar to the following:
 ```bash
 name: gaia
 server_name: gaiad
-version: v7.1.0
-commit: 07f9892a927f451ae204d0c9d1a5601d8fc232a5
+version: v8.0.0
+commit: f9507c7e79f258aaa9a2265ca7d94e53988ffe16
 build_tags: netgo,ledger
-go: go version go1.18 linux/amd64
+go: go version go1.18.10 darwin/arm64
 ```
 
 ### Build Tags

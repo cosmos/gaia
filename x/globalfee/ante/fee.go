@@ -26,13 +26,13 @@ import (
 var _ sdk.AnteDecorator = FeeDecorator{}
 
 type FeeDecorator struct {
-	BypassMinFeeMsgTypes       []string
-	GlobalMinFee               globalfee.ParamSource
-	StakingSubspace            paramtypes.Subspace
-	MaxBypassMinFeeMsgGasUsage uint64
+	BypassMinFeeMsgTypes            []string
+	GlobalMinFee                    globalfee.ParamSource
+	StakingSubspace                 paramtypes.Subspace
+	MaxTotalBypassMinFeeMsgGasUsage uint64
 }
 
-func NewFeeDecorator(bypassMsgTypes []string, globalfeeSubspace, stakingSubspace paramtypes.Subspace, maxBypassMinFeeMsgGasUsage uint64) FeeDecorator {
+func NewFeeDecorator(bypassMsgTypes []string, globalfeeSubspace, stakingSubspace paramtypes.Subspace, maxTotalBypassMinFeeMsgGasUsage uint64) FeeDecorator {
 	if !globalfeeSubspace.HasKeyTable() {
 		panic("global fee paramspace was not set up via module")
 	}
@@ -42,10 +42,10 @@ func NewFeeDecorator(bypassMsgTypes []string, globalfeeSubspace, stakingSubspace
 	}
 
 	return FeeDecorator{
-		BypassMinFeeMsgTypes:       bypassMsgTypes,
-		GlobalMinFee:               globalfeeSubspace,
-		StakingSubspace:            stakingSubspace,
-		MaxBypassMinFeeMsgGasUsage: maxBypassMinFeeMsgGasUsage,
+		BypassMinFeeMsgTypes:            bypassMsgTypes,
+		GlobalMinFee:                    globalfeeSubspace,
+		StakingSubspace:                 stakingSubspace,
+		MaxTotalBypassMinFeeMsgGasUsage: maxTotalBypassMinFeeMsgGasUsage,
 	}
 }
 
@@ -62,11 +62,11 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	// Accept zero fee transactions only if both of the following statements are true:
 	// 	- the tx contains only message types that can bypass the minimum fee,
 	//	see BypassMinFeeMsgTypes;
-	//	- the total gas limit per message does not exceed MaxBypassMinFeeMsgGasUsage,
-	//	i.e., totalGas <= len(msgs) * MaxBypassMinFeeMsgGasUsage
+	//	- the total gas limit per message does not exceed MaxTotalBypassMinFeeMsgGasUsage,
+	//	i.e., totalGas <= MaxTotalBypassMinFeeMsgGasUsage
 	// Otherwise, minimum fees and global fees are checked to prevent spam.
 	containsOnlyBypassMinFeeMsgs := mfd.bypassMinFeeMsgs(msgs)
-	doesNotExceedMaxGasUsage := gas <= uint64(len(msgs))*mfd.MaxBypassMinFeeMsgGasUsage
+	doesNotExceedMaxGasUsage := gas <= mfd.MaxTotalBypassMinFeeMsgGasUsage
 	allowedToBypassMinFee := containsOnlyBypassMinFeeMsgs && doesNotExceedMaxGasUsage
 
 	var allFees sdk.Coins

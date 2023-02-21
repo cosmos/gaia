@@ -10,9 +10,10 @@ import (
 	"github.com/cosmos/gaia/v9/x/globalfee/types"
 
 	"github.com/cosmos/gaia/v9/x/globalfee"
+	tmstrings "github.com/tendermint/tendermint/libs/strings"
 )
 
-// FeeWithBypassDecorator will check if the transaction's fee is at least as large
+// FeeWithBypassDecorator checks if the transaction's fee is at least as large
 // as the local validator's minimum gasFee (defined in validator config) and global fee, and the fee denom should be in the global fees' denoms.
 //
 // If fee is too low, decorator returns error and tx is rejected from mempool.
@@ -49,58 +50,43 @@ func NewFeeDecorator(bypassMsgTypes []string, globalfeeSubspace, stakingSubspace
 	}
 }
 
+// AnteHandle implements the AnteDecorator interface
 func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
 	// please note: after parsing feeflag, the zero fees are removed already
 	feeTx, ok := tx.(sdk.FeeTx)
 	if !ok {
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
 	}
-	feeCoins := feeTx.GetFee().Sort()
-	gas := feeTx.GetGas()
-	msgs := feeTx.GetMsgs()
-
-	// Accept zero fee transactions only if both of the following statements are true:
-	// 	- the tx contains only message types that can bypass the minimum fee,
-	//	see BypassMinFeeMsgTypes;
-	//	- the total gas limit per message does not exceed MaxTotalBypassMinFeeMsgGasUsage,
-	//	i.e., totalGas <= MaxTotalBypassMinFeeMsgGasUsage
-	// Otherwise, minimum fees and global fees are checked to prevent spam.
-	doesNotExceedMaxGasUsage := gas <= mfd.MaxTotalBypassMinFeeMsgGasUsage
-	allowedToBypassMinFee := mfd.containsOnlyBypassMinFeeMsgs(msgs) && doesNotExceedMaxGasUsage
-
-	var allFees sdk.Coins
-	requiredGlobalFees, err := mfd.getGlobalFee(ctx, feeTx)
-	if err != nil {
-		panic(err)
-	}
-	requiredFees := getMinGasPrice(ctx, feeTx)
 
 	// Only check for minimum fees and global fee if the execution mode is CheckTx
 	if !ctx.IsCheckTx() || simulate {
 		return next(ctx, tx, simulate)
 	}
 
-	if !allowedToBypassMinFee {
-		// Either the transaction contains at least on message of a type
-		// that cannot bypass the minimum fee or the total gas limit exceeds
-		// the imposed threshold. As a result, check that the fees are in
-		// expected denominations and the amounts are greater or equal than
-		// the expected amounts.
+	// sort fee tx's coins
+	feeCoins := feeTx.GetFee().Sort()
+	gas := feeTx.GetGas()
+	msgs := feeTx.GetMsgs()
 
-		allFees = CombinedFeeRequirement(requiredGlobalFees, requiredFees)
+	// Get required Global Fee and min gas price
+	requiredGlobalFees, err := mfd.getGlobalFee(ctx, feeTx)
+	if err != nil {
+		panic(err)
+	}
+	requiredFees := getMinGasPrice(ctx, feeTx)
 
-		// Check that the fees are in expected denominations. Note that a zero fee
-		// is accepted if the global fee has an entry with a zero amount, e.g., 0uatoms.
-		if !DenomsSubsetOfIncludingZero(feeCoins, allFees) {
-			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fee is not a subset of required fees; got %s, required: %s", feeCoins, allFees)
-		}
-		// Check that the amounts of the fees are greater or equal than
-		// the expected amounts, i.e., at least one feeCoin amount must
-		// be greater or equal to one of the combined required fees.
-		if !IsAnyGTEIncludingZero(feeCoins, allFees) {
-			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins, allFees)
-		}
-	} else {
+	// Accept zero fee transactions only if both of the following statements are true:
+	//
+	// 	- the tx contains only message types that can bypass the minimum fee,
+	//	see BypassMinFeeMsgTypes;
+	//	- the total gas limit per message does not exceed MaxBypassMinFeeMsgGasUsage,
+	//	i.e., totalGas <= len(msgs) * MaxBypassMinFeeMsgGasUsage
+	//
+	// Otherwise, minimum fees and global fees are checked to prevent spam.
+	doesNotExceedMaxGasUsage := gas <= uint64(len(msgs))*mfd.MaxBypassMinFeeMsgGasUsage
+	allowedToBypassMinFee := mfd.containsOnlyBypassMinFeeMsgs(msgs) && doesNotExceedMaxGasUsage
+
+	if allowedToBypassMinFee {
 		// Transactions with zero fees are accepted
 		if len(feeCoins) == 0 {
 			return next(ctx, tx, simulate)
@@ -112,10 +98,32 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 		}
 	}
 
+	// Either the transaction contains at least on message of a type
+	// that cannot bypass the minimum fee or the total gas limit exceeds
+	// the imposed threshold. As a result, check that the fees are in
+	// expected denominations and the amounts are greater or equal than
+	// the expected amounts.
+
+	allFees := CombinedFeeRequirement(requiredGlobalFees, requiredFees)
+
+	// Check that the fees are in expected denominations. Note that a zero fee
+	// is accepted if the global fee has an entry with a zero amount, e.g., 0uatoms.
+	if !DenomsSubsetOfIncludingZero(feeCoins, allFees) {
+		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fee is not a subset of required fees; got %s, required: %s", feeCoins, allFees)
+	}
+	// Check that the amounts of the fees are greater or equal than
+	// the expected amounts, i.e., at least one feeCoin amount must
+	// be greater or equal to one of the combined required fees.
+	if !IsAnyGTEIncludingZero(feeCoins, allFees) {
+		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins, allFees)
+	}
+
 	return next(ctx, tx, simulate)
 }
 
-// ParamStoreKeyMinGasPrices type require coins sorted. getGlobalFee will also return sorted coins (might return 0denom if globalMinGasPrice is 0)
+// getGlobalFee returns the global fees for a given fee tx's gas (might also returns 0denom if globalMinGasPrice is 0)
+// sorted in ascending order.
+// Note that ParamStoreKeyMinGasPrices type requires coins sorted.
 func (mfd FeeDecorator) getGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) (sdk.Coins, error) {
 	var (
 		globalMinGasPrices sdk.DecCoins
@@ -128,6 +136,9 @@ func (mfd FeeDecorator) getGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) (sdk.Coin
 	// global fee is empty set, set global fee to 0uatom
 	if len(globalMinGasPrices) == 0 {
 		globalMinGasPrices, err = mfd.DefaultZeroGlobalFee(ctx)
+		if err != nil {
+			return sdk.Coins{}, err
+		}
 	}
 	requiredGlobalFees := make(sdk.Coins, len(globalMinGasPrices))
 	// Determine the required fees by multiplying each required minimum gas
@@ -138,7 +149,7 @@ func (mfd FeeDecorator) getGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) (sdk.Coin
 		requiredGlobalFees[i] = sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt())
 	}
 
-	return requiredGlobalFees.Sort(), err
+	return requiredGlobalFees.Sort(), nil
 }
 
 func (mfd FeeDecorator) DefaultZeroGlobalFee(ctx sdk.Context) ([]sdk.DecCoin, error) {
@@ -157,4 +168,17 @@ func (mfd FeeDecorator) getBondDenom(ctx sdk.Context) string {
 	}
 
 	return bondDenom
+}
+
+// containsOnlyBypassMinFeeMsgs returns true if all the given msgs type are listed
+// in the BypassMinFeeMsgTypes of the FeeDecorator.
+func (mfd FeeDecorator) containsOnlyBypassMinFeeMsgs(msgs []sdk.Msg) bool {
+	for _, msg := range msgs {
+		if tmstrings.StringInSlice(sdk.MsgTypeURL(msg), mfd.BypassMinFeeMsgTypes) {
+			continue
+		}
+		return false
+	}
+
+	return true
 }

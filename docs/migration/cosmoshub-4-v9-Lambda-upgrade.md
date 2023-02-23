@@ -7,7 +7,7 @@ order: 1
 
 > <span style="color:red">**V9 Lambda has not yet passed and is still in the voting period**</span>
 
-This document describes the steps for validator and full node operators for the successful execution of the [v9-Lambda Upgrade](https://github.com/cosmos/gaia/blob/main/docs/roadmap/cosmos-hub-roadmap-2.0.md#v8-rho-upgrade-expected-q1-2023), which contains the following main new features/improvement:
+This document describes the steps for validator and full node operators for the successful execution of the [v9-Lambda Upgrade](https://github.com/cosmos/gaia/blob/main/docs/roadmap/cosmos-hub-roadmap-2.0.md#v9-lambda-upgrade-expected-q1-2023), which contains the following main new features/improvement:
 
 - [Interchain-Security](https://github.com/cosmos/interchain-security) [v1.0.0](https://github.com/cosmos/interchain-security/releases/tag/v1.0.0) provider module. See the [ICS Spec](https://github.com/cosmos/ibc/blob/main/spec/app/ics-028-cross-chain-validation/README.md) for more details.
 - [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.13-ics](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.13-ics). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/releases/tag/v0.45.13-ics) for details.
@@ -50,7 +50,7 @@ TOC:
 
 ## Upgrade will take place March 15, 2023
 
-The upgrade will take place at a block height of `14470501`. At the time of writing, and at current block times (around 7s/block), this block height corresponds approximately to `Wednesday, 15-March-23 12:52:12 CET`. This date/time is approximate as blocks are not generated at a constant interval. You can stay up-to-date using this [live countdown](https://chain-monitor.cros-nest.com/d/Upgrades/upgrades?var-chain_id=cosmoshub-4&orgId=1&refresh=1m) page.
+The upgrade will take place at a block height of `14470501`. At the time of writing, and at current block times (around 7s/block), this block height corresponds approximately to `Wednesday, 15-March-23 12:52:12 CET`. This date/time is approximate as blocks are not generated at a constant interval. You can stay up-to-date using this [live countdown](hhttps://www.mintscan.io/cosmos/blocks/14470501) page.
 
 ## Chain-id will remain the same
 
@@ -85,7 +85,7 @@ For those validator and full node operators that are interested in ensuring prep
 
 ### Current runtime, cosmoshub-4 (pre-v9-Lambda upgrade) is running Gaia v8.0.1
 
-The Cosmos Hub mainnet network, `cosmoshub-4`, is currently running [Gaia v8.0.1](https://github.com/cosmos/gaia/releases/v8.0.1). We anticipate that operators who are running on v8.0.1, will be able to upgrade successfully; however, this is untested and it is up to operators to ensure that their systems are capable of performing the upgrade.
+The Cosmos Hub mainnet network, `cosmoshub-4`, is currently running [Gaia v8.0.1](https://github.com/cosmos/gaia/releases/v8.0.1). We anticipate that operators who are running on v8.0.1, will be able to upgrade successfully; however, validators are expected to ensure that their systems are up to date and capable of performing the upgrade. This includes running the correct binary, or if building from source, building with go `1.18`.
 
 ### Target runtime, cosmoshub-4 (post-v9-Lambda upgrade) will run Gaia v9.0.0
 
@@ -114,7 +114,7 @@ ERR UPGRADE "v9-Lambda" NEEDED at height: 14470501: upgrade to v9-Lambda and app
 
 Stop the node, and switch the binary to Gaia v9.0.0 and re-start by `gaiad start`.
 
-It may take several minutes to a few hours until validators with a total sum voting power > 2/3 to complete their nodes upgrades. After that, the chain can continue to produce blocks.
+It may take several minutes to a few hours until validators with a total sum voting power > 2/3 to complete their node upgrades. After that, the chain can continue to produce blocks.
 
 ### Method II: Upgrade using Cosmovisor
 
@@ -202,7 +202,7 @@ Skipping the invariant checks is strongly encouraged since it decreases the upgr
 When the upgrade block height is reached, Gaia will panic and stop:
 
 This may take 7 minutes to a few hours.
-After upgrade, the chain will continue to produce blocks when validators with a total sum voting power > 2/3 complete their nodes upgrades.
+After upgrade, the chain will continue to produce blocks when validators with a total sum voting power > 2/3 complete their node upgrades.
 
 ### _Auto-Downloading the Gaia v9.0.0 binary (not recommended!)_
 #### Preparation
@@ -253,7 +253,7 @@ Skipping the invariant checks is strongly encouraged since it decreases the upgr
 When the upgrade block height is reached, you can find the following information in the log:
 
 ```shell
-ERR UPGRADE "v9-Lambda" NEEDED at height: 14470501: upgrade to v8-Rho and applying upgrade "v9-Lambda" at height:14470501
+ERR UPGRADE "v9-Lambda" NEEDED at height: 14470501: upgrade to v9-Lambda and applying upgrade "v9-Lambda" at height:14470501
 ```
 
 Then the Cosmovisor will create `$GAIA_HOME/cosmovisor/upgrades/v9-lambda/bin` and download the Gaia v9.0.0 binary to this folder according to links in the `--info` field of the upgrade proposal 97.
@@ -272,7 +272,7 @@ The upgrade may take a few minutes to several hours to complete because cosmoshu
 
 During the network upgrade, core Cosmos teams will be keeping an ever vigilant eye and communicating with operators on the status of their upgrades. During this time, the core teams will listen to operator needs to determine if the upgrade is experiencing unintended challenges. In the event of unexpected challenges, the core teams, after conferring with operators and attaining social consensus, may choose to declare that the upgrade will be skipped.
 
-Steps to skip this upgrade proposal are simply to resume the cosmoshub-4 network with the (downgraded) v7.1.1 binary using the following command:
+Steps to skip this upgrade proposal are simply to resume the cosmoshub-4 network with the (downgraded) v8.0.1 binary using the following command:
 
 > gaiad start --unsafe-skip-upgrade 14470501
 

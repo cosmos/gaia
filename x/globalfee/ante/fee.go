@@ -65,9 +65,8 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	//	- the total gas limit per message does not exceed MaxTotalBypassMinFeeMsgGasUsage,
 	//	i.e., totalGas <= MaxTotalBypassMinFeeMsgGasUsage
 	// Otherwise, minimum fees and global fees are checked to prevent spam.
-	containsOnlyBypassMinFeeMsgs := mfd.bypassMinFeeMsgs(msgs)
 	doesNotExceedMaxGasUsage := gas <= mfd.MaxTotalBypassMinFeeMsgGasUsage
-	allowedToBypassMinFee := containsOnlyBypassMinFeeMsgs && doesNotExceedMaxGasUsage
+	allowedToBypassMinFee := mfd.containsOnlyBypassMinFeeMsgs(msgs) && doesNotExceedMaxGasUsage
 
 	var allFees sdk.Coins
 	requiredGlobalFees, err := mfd.getGlobalFee(ctx, feeTx)

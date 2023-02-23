@@ -2,6 +2,7 @@ package ante
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	tmstrings "github.com/tendermint/tendermint/libs/strings"
 )
 
 // getMinGasPrice returns the validator's minimum gas prices
@@ -23,6 +24,17 @@ func getMinGasPrice(ctx sdk.Context, feeTx sdk.FeeTx) sdk.Coins {
 	}
 
 	return requiredFees.Sort()
+}
+
+func (mfd FeeDecorator) containsOnlyBypassMinFeeMsgs(msgs []sdk.Msg) bool {
+	for _, msg := range msgs {
+		if tmstrings.StringInSlice(sdk.MsgTypeURL(msg), mfd.BypassMinFeeMsgTypes) {
+			continue
+		}
+		return false
+	}
+
+	return true
 }
 
 // DenomsSubsetOfIncludingZero and IsAnyGTEIncludingZero are similar to DenomsSubsetOf and IsAnyGTE in sdk.

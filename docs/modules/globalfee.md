@@ -51,14 +51,15 @@ The `minimum-gas-prices` config parameter allows node operators to impose additi
 Bypass messages are messages that are exempt from paying fees. The above global fees and `minimum-gas-prices` checks do not apply for transactions that satisfy the following conditions: 
 
 - Contains only bypass message types, i.e., bypass transactions.
-- The total gas used is less than or equal to `len(messages) * MaxBypassMinFeeMsgGasUsage`. Note: the current `MaxBypassMinFeeMsgGasUsage` is set to `200,000`.
+- The total gas used is less than or equal to `MaxTotalBypassMinFeeMsgGasUsage`. Note: the current `MaxTotalBypassMinFeeMsgGasUsage` is set to `1,000,000`.
 - In case of non-zero transaction fees, the denom has to be a subset of denoms defined in the global fees list.
 
 Node operators can configure `bypass-min-fee-msg-types` in `config/app.toml`.
 
-Nodes created using Gaiad `v7.0.2` or later use `["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement","/ibc.applications.transfer.v1.MsgTransfer"]` as defaults. Nodes with `bypass-min-fee-msg-types = []` or missing this field in `app.toml` also use default bypass message types.
-
-Nodes created using Gaiad `v7.0.1` or earlier do not have `bypass-min-fee-msg-types` configured in `config/app.toml` - they are also using default values. The `bypass-min-fee-msg-types` config option can be added to `config/app.toml` before the `[telemetry]` field.
+- Nodes created using Gaiad `v7.0.2` or later use `["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement","/ibc.applications.transfer.v1.MsgTransfer"]` as defaults. 
+- Nodes created using Gaiad `v9.0.1` or later use `["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement","/ibc.applications.transfer.v1.MsgTransfer", "/ibc.core.channel.v1.MsgTimeout", "/ibc.core.channel.v1.MsgTimeoutOnClose"]` as defaults. 
+- Node Nodes with `bypass-min-fee-msg-types = []` or missing this field in `app.toml` also use default bypass message types.
+- Nodes created using Gaiad `v7.0.1` and `v7.0.0` do not have `bypass-min-fee-msg-types` configured in `config/app.toml` - they are also using same default values as in `v7.0.2`. The `bypass-min-fee-msg-types` config option can be added to `config/app.toml` before the `[telemetry]` field.
 
 An example of `bypass-min-fee-msg-types` in `app.toml`:
 
@@ -72,7 +73,7 @@ An example of `bypass-min-fee-msg-types` in `app.toml`:
 #
 # Example:
 # ["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement", ...]
-bypass-min-fee-msg-types = ["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement","/ibc.applications.transfer.v1.MsgTransfer"]
+bypass-min-fee-msg-types = ["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement","/ibc.applications.transfer.v1.MsgTransfer", "/ibc.core.channel.v1.MsgTimeout", "/ibc.core.channel.v1.MsgTimeoutOnClose"]
 ```
 
 

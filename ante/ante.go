@@ -50,7 +50,7 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 	// so that a transaction that contains only message types that can
 	// bypass the minimum fee can be accepted with a zero fee.
 	// For details, see gaiafeeante.NewFeeDecorator()
-	var maxBypassMinFeeMsgGasUsage uint64 = 200_000
+	var maxTotalBypassMinFeeMsgGasUsage uint64 = 1_000_000
 
 	anteDecorators := []sdk.AnteDecorator{
 		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
@@ -59,7 +59,7 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(opts.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
-		gaiafeeante.NewFeeDecorator(opts.BypassMinFeeMsgTypes, opts.GlobalFeeSubspace, opts.StakingSubspace, maxBypassMinFeeMsgGasUsage),
+		gaiafeeante.NewFeeDecorator(opts.BypassMinFeeMsgTypes, opts.GlobalFeeSubspace, opts.StakingSubspace, maxTotalBypassMinFeeMsgGasUsage),
 
 		ante.NewDeductFeeDecorator(opts.AccountKeeper, opts.BankKeeper, opts.FeegrantKeeper),
 		ante.NewSetPubKeyDecorator(opts.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators

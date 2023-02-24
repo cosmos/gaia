@@ -202,6 +202,7 @@ func NewGaiaApp(
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
+			Codec:                app.appCodec,
 			IBCkeeper:            app.IBCKeeper,
 			GovKeeper:            &app.GovKeeper,
 			BypassMinFeeMsgTypes: bypassMinFeeMsgTypes,

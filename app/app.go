@@ -203,6 +203,7 @@ func NewGaiaApp(
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
 			IBCkeeper:            app.IBCKeeper,
+			GovKeeper:            &app.GovKeeper,
 			BypassMinFeeMsgTypes: bypassMinFeeMsgTypes,
 			GlobalFeeSubspace:    app.GetSubspace(globalfee.ModuleName),
 			StakingSubspace:      app.GetSubspace(stakingtypes.ModuleName),

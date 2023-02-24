@@ -498,7 +498,7 @@ func (s *IntegrationTestSuite) getLatestBlockHeight(c *chain, valIdx int) int {
 			err   error
 			block syncInfo
 		)
-		s.Require().NoError(json.Unmarshal(stdErr, &block))
+		s.Require().NoError(json.Unmarshal(stdOut, &block))
 		currentHeight, err = strconv.Atoi(block.SyncInfo.LatestHeight)
 		s.Require().NoError(err)
 		return currentHeight > 0

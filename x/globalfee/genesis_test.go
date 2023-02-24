@@ -17,7 +17,7 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/cosmos/gaia/v8/x/globalfee/types"
+	"github.com/cosmos/gaia/v9/x/globalfee/types"
 )
 
 func TestDefaultGenesis(t *testing.T) {

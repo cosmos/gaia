@@ -3,171 +3,266 @@ order: 3
 title: Joining Testnet
 ---
 
-# Join the Public Testnet
-
-| Current Upgrade | Chain Id       | Upgrade Block Height | Upgrade Date     |
-| --------------- | -------------- | -------------------- | ---------------- |
-| Theta           | `theta-testnet-001` | 9283650   | March 17 2021 |
-
-## Background
-
-The current Cosmos Hub Testnet is running on the [Theta Upgrade](https://interchain-io.medium.com/preparing-for-the-cosmos-hub-v7-theta-upgrade-2fc41ce34787). Visit the [testnet explorer](https://explorer.theta-testnet.polypore.xyz/) to view all on chain activity.
-
-For those who just need instructions on performing the upgrade, see the [Upgrade](#upgrading) section.
-
-## Releases
-
-If syncing before the Theta update, checkout [`v6.0.0`](https://github.com/cosmos/gaia/tree/v6.0.0). Until a release is cut for the upgrade, feel free to track the `theta-prepare` branch (deleted).
-
-## Prerequisites
-
-**Hardware**
-
-It's recommended that public testnet nodes are running on machines with at least `16GB` of RAM.
-
-**Make sure Go & Gaia are [properly installed](../getting-started/installation.md). The most recent Gaia version for the Theta Testnet is [`v7.0.0-rc0`](https://github.com/cosmos/gaia/tree/v7.0.0-rc0).**
+# Join the Cosmos Hub Public Testnet
 
 This tutorial will provide all necessary instructions for joining the current public testnet. If you're interested in more advanced configuration and synchronization options, see [Join Mainnet](./join-mainnet.md) for a detailed walkthrough.
 
+* Current Version: v9-Lambda
+* Chain ID: `theta-testnet-001`
+
+## Background
+
+The Cosmos Hub Public Testnet is currently running Gaia v8. Visit the [testnet explorer](https://explorer.theta-testnet.polypore.xyz/) to view all on-chain activity.
+
+For those who just need instructions on performing the upgrade, see the [Upgrading Your Node](#upgrading-your-node) section.
+
+### Version History
+
+The table below shows all past and upcoming versions of the public testnet.
+
+|  Release   | Upgrade Block Height |    Upgrade Date     |
+|:----------:|:--------------------:|:-------------------:|
+| v9.0.0-rc3 |      14,476,206      |     2023-02-08      |
+| v8.0.0-rc3 |      14,175,595      |     2023-01-20      |
+| v7.0.0-rc0 |      9,283,650       |     2022-03-17      |
+|   v6.0.0   |       Genesis        | Launched 2022-03-10 |
+
+See the [Gaia release page](https://github.com/cosmos/gaia/releases) for details on each release.
+
+## How to Join
+
+We offer three ways to set up a node in the testnet:
+
+* Quickstart scripts
+  * The [testnets](https://github.com/cosmos/testnets/tree/master/public#bash-script) repo has shell scripts to set up a node with a single command.
+* Ansible playbooks
+  * The [cosmos-ansible](https://github.com/hyphacoop/cosmos-ansible#-quick-start) repo has an inventory file to set up a node with a single command.
+* Step-by-step instructions
+  * The rest of this document provides a step-by-step walkthrough for setting up a testnet node.
+
+We recommend running public testnet nodes on machines with at least 8 cores, 16GB of RAM, and 300GB of disk space.
+
 ## Sync Options
 
-There are two ways to sync a testnet node, Fastsync and State Sync. [Fastsync](https://docs.tendermint.com/v0.34/tendermint-core/fast-sync.html) syncs the chain from genesis by downloading blocks in paralell and then verifying them. [State Sync](https://docs.tendermint.com/v0.34/tendermint-core/state-sync.html) will look for snapshots from peers at a trusted height and then verifying a minimal set of snapshot chunks against the network.
+There are two ways to sync a testnet node, Fastsync and State Sync.
 
-State Sync is far faster and more efficient than Blocksync, but Blocksync offers higher data integrity and more robust history. For those who are concerned about storage and costs, State Sync can be the better option as it minimizes storage usage when rebuilding initial state.
+* [Fast Sync](https://docs.tendermint.com/v0.34/tendermint-core/fast-sync.html) syncs the chain from genesis by downloading blocks in parallel and then verifying them.
+* [State Sync](https://docs.tendermint.com/v0.34/tendermint-core/state-sync.html) will look for snapshots from peers at a trusted height and then verifying a minimal set of snapshot chunks against the network.
 
-### Configuration & Setup
+State Sync is far faster and more efficient than Fast Sync, but Fast Sync offers higher data integrity and more robust history. For those who are concerned about storage and costs, State Sync can be the better option as it minimizes storage usage when rebuilding initial state.
 
-To get started, you'll need to install and configure the Gaia binary using the script below. **For Blocksync, it is important to checkout Gaia `release/v6.0.0`. For State Sync checkout the most recent [testnet release](https://github.com/cosmos/gaia/tree/v6.0.0) until the upgrade is performed**
+## Step-by-Step Setup
 
-This example is using the Theta testnet genesis. For up to date values like `seeds`, visit the [testnet repository](https://github.com/cosmos/testnets).
+The following set of instructions assumes you are logged in as root.
+* You can run the relevant commands from a sudoer account.
+* The `/root/` part in service file paths can be changed to `/home/<username>/`.
 
-> **Note**: Cosmos Hub recommends running `gaiad` or `cosmovisor` with the `--x-crisis-skip-assert-invariants` flag. If checking for invariants, operators are likely to see `rounding error withdrawing rewards from validator`. These are expected. For more information see [Verify Mainnet](./join-mainnet.md#verify-mainnet)
+### Build Tools
 
+Install build tools and Go.
+```shell
+sudo apt-get update
+sudo apt-get install -y make gcc
+wget https://go.dev/dl/go1.18.5.linux-amd64.tar.gz
+sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.18.5.linux-amd64.tar.gz
+export PATH=$PATH:/usr/local/go/bin
 ```
-# Build gaiad binary and initialize chain
-cd $HOME
-git clone -b release/<release_version> https://github.com/cosmos/gaia
-cd gaia
-make install
-gaiad init <custom_moniker>
 
-# Prepare genesis file
-wget https://github.com/hyphacoop/testnets/raw/add-theta-testnet/v7-theta/public-testnet/genesis.json.gz
+### Installation & Configuration
+
+You will need to install and configure the Gaia binary using the script below. The Cosmos Hub Public Testnet is running Gaia [`v9.0.0-rc6`](https://github.com/cosmos/gaia/releases/tag/v9.0.0-rc6).
+
+* For up-to-date endpoints like seeds and state sync RPC servers, visit the [testnets repository](https://github.com/cosmos/testnets/tree/master/public).
+
+Build the gaiad binary and initialize the chain home folder.
+```
+cd $HOME
+git clone https://github.com/cosmos/gaia
+cd gaia
+# To sync from genesis, comment out the next line.
+git checkout v9.0.0-rc6
+# To sync from genesis, uncomment the next line and skip the State Sync Setup section.
+# git checkout v6.0.4
+make install
+export PATH=$PATH:$HOME/go/bin
+gaiad init <custom_moniker>
+```
+
+Prepare the genesis file.
+```
+cd $HOME
+wget https://github.com/cosmos/testnets/raw/master/public/genesis.json.gz
 gzip -d genesis.json.gz
 mv genesis.json $HOME/.gaia/config/genesis.json
 
 # Set minimum gas price & peers
 cd $HOME/.gaia/config
-sed -i 's/minimum-gas-prices = ""/minimum-gas-prices = "0.001uatom"/' app.toml
-sed -i 's/persistent_peers = ""/persistent_peers = "<persistent_peer_node_id_1@persistent_peer_address_1:p2p_port>,<persistent_peer_node_id_2@persistent_peer_address_2:p2p_port>"/' config.toml
+sed -i 's/minimum-gas-prices = ""/minimum-gas-prices = "0.0025uatom"/' app.toml
+sed -i 's/seeds = ""/seeds = "639d50339d7045436c756a042906b9a69970913f@seed-01.theta-testnet.polypore.xyz:26656,3e506472683ceb7ed75c1578d092c79785c27857@seed-02.theta-testnet.polypore.xyz:26656"/' config.toml
 ```
 
-### State Sync
+#### State Sync Setup (Recommended)
 
-::: warning
-State Sync requires Gaia version [`v6.0.0`](https://github.com/cosmos/gaia/tree/v6.0.0) until the upgrade is performed.
-:::
+State sync requires you to configure a trust height and trust hash. These depend on the current block height, so they will vary depending on when you are joining the network.
 
-**Check out the [quickstart script](https://github.com/cosmos/testnets/tree/master/public) to bootstrap a Theta testnet node and configure as needed**
+* Visit a [testnet explorer](https://explorer.theta-testnet.polypore.xyz/) to find the block and hash for the current height - 1000.
+* Set these parameters in the code snippet below: `<BLOCK_HEIGHT>` and `<BLOCK_HASH>`.
 
-There will need to be additional configuration to enable State Sync on the testnet. State Sync requires setting an initial list of `persistent_peers` to fetch snapshots from. For the sake of simplicity, this step is already done in the [Configuration & Setup](#configuration-amp=-setup) section.
-
-Visit a [testnet explorer](https://explorer.theta-testnet.polypore.xyz/) to get a recent block height and corresponding hash. A node operator can choose any height/hash in the current bonding period, but as the recommended snapshot period is 1000 blocks, it is advised to choose something close to current height - 1000. Set these parameters in the code snippet below `<BLOCK_HEIGHT>` and `<BLOCK_HASH>`
-
-For up to date values like `rpc_servers`, visit the current [testnet repository](https://github.com/cosmos/testnets).
 
 ```
 cd $HOME/.gaia/config
 sed -i 's/enable = false/enable = true/' config.toml
 sed -i 's/trust_height = 0/trust_height = <BLOCK_HEIGHT>/' config.toml
 sed -i 's/trust_hash = ""/trust_hash = "<BLOCK_HASH>"/' config.toml
-sed -i 's/rpc_servers = ""/rpc_servers = "<rpc_address_1>:26657,<rpc_address_2>:26657"/' config.toml
+sed -i 's/rpc_servers = ""/rpc_servers = "http:\/\/state-sync-01.theta-testnet.polypore.xyz:26657,http:\/\/state-sync-02.theta-testnet.polypore.xyz:26657"/' config.toml
 ```
 
-Now run `gaiad start --x-crisis-skip-assert-invariants` or if using [Cosmovisor](#using-cosmovisor),  `cosmovisor start --x-crisis-skip-assert-invariants`. Once a snapshot is found and verified, the chain will start syncing via regular consensus within minutes.
+* For example, if the block explorer lists a current block height of 12,563,326, we could use a trust height of [12,562,000](https://explorer.theta-testnet.polypore.xyz/blocks/12562000) and the trust hash would be `6F958861E1FA409639C8F2DA899D09B9F50A66DBBD49CE021A2FF680FA8A9204`.
 
-### Using Cosmovisor
+### Cosmovisor Setup (Optional)
 
-Cosmovisor is a process manager that monitors the governance module for incoming chain upgrade proposals. When a proposal is approved, Cosmovisor can automatically download the new binary, stop the chain when it hits the upgrade height, switch to the new binary, and restart the daemon. This tutorial will provide instructions for the most efficient way to sync via Cosmovisor. For more information on configuration, check out the Cosmos SDK's [Cosmovisor repository documentation](https://github.com/cosmos/cosmos-sdk/tree/v0.45.0/cosmovisor#auto-download).
+Cosmovisor is a process manager that monitors the governance module for incoming chain upgrade proposals. When a proposal is approved, Cosmovisor can automatically download the new binary, stop the chain binary when it hits the upgrade height, switch to the new binary, and restart the daemon. Cosmovisor can be used with either Fast Sync or State Sync. 
 
-Cosmovisor can be used when syncing with Blocksync or State Sync. Make sure to follow the Cosmovisor setup below, and then run `cosmovisor start` in place of `gaiad start`.
+The instructions below provide a simple way to sync via Cosmovisor. For more information on configuration, check out the Cosmos SDK's [Cosmovisor documentation](https://github.com/cosmos/cosmos-sdk/tree/main/tools/cosmovisor).
 
-Cosmovisor requires the creation the following directory structure:
+Cosmovisor requires the creation of the following directory structure:
 
 ```shell
-.
-├── current -> genesis or upgrades/<name>
-├── genesis
-│   └── bin
-│       └── gaiad
-└── upgrades
-    └── v7-Theta
-        ├── bin
-        │   └── gaiad
-        └── upgrade-info.json
+.gaia
+└── cosmovisor
+    └── genesis
+        └── bin
+            └── gaiad
 ```
 
-It is possible to enable autodownload for the new binary, but for the purpose of this tutorial, the setup instructions will include how to do this manually. For more information on autodownload with Cosmovisor, see the full docs on [setting up Cosmosvisor](https://github.com/cosmos/cosmos-sdk/tree/v0.45.0/cosmovisor/README.md).
-
-The following script installs, configures and starts Cosmovisor:
-
+Install Cosmovisor and copy Gaia binary to genesis folder
 ```
-# Install Cosmovisor
-go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor
+go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.3.0
+mkdir -p ~/.gaia/cosmovisor/genesis/bin
+cp ~/go/bin/gaiad ~/.gaia/cosmovisor/genesis/bin/
 ```
 
-> NOTE: If you ran a full node on a previous testnet, please skip to [Upgrading From Previous Testnet](#upgrading-from-previous-testnet).
+### Create Service File
 
-To start a new node, the mainnet instructions apply:
+* Cosmos Hub recommends running `gaiad` or `cosmovisor` with the `--x-crisis-skip-assert-invariants` flag. If checking for invariants, operators are likely to see `rounding error withdrawing rewards from validator`. These are expected. For more information see [Verify Mainnet](./join-mainnet.md#verify-mainnet).
 
-- [Join the mainnet](./join-mainnet.md)
-- [Deploy a validator](../validators/validator-setup.md)
 
-The only difference is the SDK version and genesis file. See the [testnet repo](https://github.com/cosmos/testnets) for information on testnets, including the correct version of the Cosmos-SDK to use and details about the genesis file.
+Create one of the following service files.
+
+If you are not using Cosmovisor: `/etc/systemd/system/gaiad.service`
+```
+[Unit]
+Description=Gaia service
+After=network-online.target
+
+[Service]
+User=root
+ExecStart=/root/go/bin/gaiad start --x-crisis-skip-assert-invariants --home /root/.gaia
+Restart=no
+LimitNOFILE=4096
+
+[Install]
+WantedBy=multi-user.target
+```
+
+If you are using Cosmovisor: `/etc/systemd/system/cosmovisor.service`
+```
+[Unit]
+Description=Cosmovisor service
+After=network-online.target
+
+[Service]
+User=root
+ExecStart=/root/go/bin/cosmovisor run start --x-crisis-skip-assert-invariants --home /root/.gaia
+Restart=no
+LimitNOFILE=4096
+Environment='DAEMON_NAME=gaiad'
+Environment='DAEMON_HOME=/root/.gaia'
+Environment='DAEMON_ALLOW_DOWNLOAD_BINARIES=true'
+Environment='DAEMON_RESTART_AFTER_UPGRADE=true'
+Environment='DAEMON_LOG_BUFFER_SIZE=512'
+Environment='UNSAFE_SKIP_BACKUP=true'
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### Start the Service
+
+Reload the systemd manager configuration.
+```
+systemctl daemon-reload
+systemctl restart systemd-journald
+```
+
+If you are not using Cosmovisor:
+```
+systemctl enable gaiad.service
+systemctl start gaiad.service
+```
+
+If you are using Cosmovisor:
+```
+systemctl enable cosmovisor.service
+systemctl start cosmovisor.service
+```
+
+To follow the service log, run `journalctl -fu gaiad` or `journalctl -fu cosmovisor`.
+
+* If you are using State Sync, the chain will start syncing once a snapshot is found and verified. Syncing to the current block height should take less than half an hour.
+* If you are using Fast Sync, the chain will start syncing once the first block after genesis is found among the peers. **Syncing to the current block height will take several days**.
+
+## Create a Validator (Optional)
+
+If you want to create a validator in the testnet, request tokens through the [faucet Discord channel](https://discord.com/channels/669268347736686612/953697793476821092) and follow the [Running a validator](../validators/validator-setup.md) instructions provided for mainnet.
 
 ## Upgrading Your Node
 
-These instructions are for full nodes that have ran on previous versions of and would like to upgrade to the latest testnet.
+Follow these instructions if you have a node that is already synced and wish to participate in a scheduled testnet software upgrade.
 
-When the chain reaches the upgrade block height, the chain will halt and you will have to download the new binary and move it to the correct folder. For the `Theta` upgrade, this would look like:
+When the chain reaches the upgrade block height specified by a software upgrade proposal, the chain binary will halt and expect the new binary to be run (the system log will show `ERR UPGRADE "<Upgrade name>" NEEDED at height: XXXX` or something similar).
 
+There are three ways you can update the binary:
+1. Without Cosmovisor: You must build or download the new binary ahead of the upgrade. When the chain binary halts at the upgrade height:
+  * Stop the gaiad service with `systemctl stop gaiad.service`.
+  * Build or download the new binary, replacing the existing `~/go/bin` one.
+  * Start the gaiad service with `systemctl start gaiad.service`.
+2. With Cosmovisor: You must build or download the new binary and copy it to the appropriate folder ahead of the upgrade.
+3. With Cosmovisor: Using the auto-download feature, assuming the proposal includes the binaries for your system architecture.
+
+The instructions below are for option 2. For more information on auto-download with Cosmovisor, see the relevant [documentation](https://github.com/cosmos/cosmos-sdk/tree/main/tools/cosmovisor#auto-download) in the Cosmos SDK repo.
+
+If the environment variable `DAEMON_ALLOW_DOWNLOAD_BINARIES` is set to `false`, Cosmovisor will look for the new binary in a folder that matches the name of the upgrade specified in the software upgrade proposal. For the `v9-Lambda` upgrade, the expected folder structure would look as follows:
+
+```shell
+.gaia
+└── cosmovisor
+    ├── current
+    ├── genesis
+    │   └── bin
+    |       └── gaiad
+    └── upgrades
+        └── v9-lambda
+            └── bin
+                └── gaiad
 ```
-# Prepare Theta upgrade directory
-mkdir -p ~/.gaia/cosmovisor/upgrades/Theta/bin
 
-# Download and install the new binary version.
+> Note: for Cosmovisor v1.0.0, the upgrade name folder is not lowercased (use `cosmovisor/upgrades/v9-Lambda/bin` instead)
+
+Prepare the upgrade directory
+```
+mkdir -p ~/.gaia/cosmovisor/upgrades/v8-rho/bin
+```
+
+Download and install the new binary version.
+```
 cd $HOME/gaia
 git pull
-git checkout <upgrade-release>
+git checkout v8.0.0
 make install
 
-# Move the new binary to the Theta upgrade directory
-cp $GOPATH/bin/gaiad ~/.gaia/cosmovisor/upgrades/Theta/bin
+# Copy the new binary to the v8-Rho upgrade directory
+cp ~/go/bin/gaiad ~/.gaia/cosmovisor/upgrades/v9-lambda/bin/gaiad
 ```
 
-Your node is now in a pristine state while keeping the original `priv_validator.json` and `config.toml`. If you had any sentry nodes or full nodes setup before,
-your node will still try to connect to them, but may fail if they haven't also
-been upgraded.
-
-### Blocksync
-
-Blocksync will require navigating the Theta upgrade either via [Cosmovisor](#using-cosmovisor) or manually.
-
-Manually updating `gaiad` will require stopping the chain and installing the new binary once it halts at the expected block height (some time on March 17, TBA).
-
-Logs will show `ERR UPGRADE "Theta" NEEDED at height: XXXX`. Stop `gaiad` and run the following:
-
-```
-cd $HOME/gaia
-git checkout <theta release candidate>
-make install
-```
-
-::: tip
-_NOTE_: If you have issues at this step, please check that you have the latest stable version of GO installed.
-:::
-
-Note we use `master` here since it contains the latest stable release.
-See the [testnet repo](https://github.com/cosmos/testnets) for details on which version is needed for which testnet, and the [Gaia release page](https://github.com/cosmos/gaia/releases) for details on each release.
-
-Once the new binary is installed, restart the Gaia daemon. Logs will show `INF applying upgrade "Theta" at height: XXXXX`. After a few minutes, the node will start syncing blocks.
+When the upgrade height is reached, Cosmovisor will stop the gaiad binary, copy the new binary to the `current/bin` folder and restart. After a few minutes, the node should start syncing blocks using the new binary.

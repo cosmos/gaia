@@ -12,6 +12,8 @@ import (
 	"testing"
 	"time"
 
+	ccvprovider "github.com/cosmos/interchain-security/x/ccv/provider/types"
+
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
@@ -26,8 +28,8 @@ import (
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	ibcclienttypes "github.com/cosmos/ibc-go/v3/modules/core/02-client/types"
-	ibcchanneltypes "github.com/cosmos/ibc-go/v3/modules/core/04-channel/types"
+	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/spf13/viper"
@@ -37,7 +39,7 @@ import (
 	"github.com/tendermint/tendermint/libs/rand"
 	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 
-	"github.com/cosmos/gaia/v8/app/params"
+	"github.com/cosmos/gaia/v9/app/params"
 )
 
 const (
@@ -58,12 +60,13 @@ const (
 	gas                          = 200000
 	govProposalBlockBuffer       = 35
 	relayerAccountIndex          = 0
-	icaOwnerAccountIndex         = 1
 	numberOfEvidences            = 10
 	slashingShares         int64 = 10000
 
-	proposalGlobalFeeFilename      = "proposal_globalfee.json"
-	proposalCommunitySpendFilename = "proposal_community_spend.json"
+	proposalGlobalFeeFilename           = "proposal_globalfee.json"
+	proposalCommunitySpendFilename      = "proposal_community_spend.json"
+	proposalAddConsumerChainFilename    = "proposal_add_consumer.json"
+	proposalRemoveConsumerChainFilename = "proposal_remove_consumer.json"
 )
 
 var (
@@ -644,6 +647,45 @@ func (s *IntegrationTestSuite) writeGovCommunitySpendProposal(c *chain, amount s
 	s.Require().NoError(err)
 
 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalCommunitySpendFilename), commSpendBody)
+	s.Require().NoError(err)
+}
+
+func (s *IntegrationTestSuite) writeAddRemoveConsumerProposals(c *chain, consumerChainID string) {
+	hash, _ := json.Marshal("Z2VuX2hhc2g=")
+	addProp := &ccvprovider.ConsumerAdditionProposal{
+		Title:       "Create consumer chain",
+		Description: "First consumer chain",
+		ChainId:     consumerChainID,
+		InitialHeight: ibcclienttypes.Height{
+			RevisionHeight: 1,
+		},
+		GenesisHash:                       hash,
+		BinaryHash:                        hash,
+		SpawnTime:                         time.Now(),
+		UnbondingPeriod:                   time.Duration(100000000000),
+		CcvTimeoutPeriod:                  time.Duration(100000000000),
+		TransferTimeoutPeriod:             time.Duration(100000000000),
+		ConsumerRedistributionFraction:    "0.75",
+		BlocksPerDistributionTransmission: 10,
+		HistoricalEntries:                 10000,
+	}
+
+	removeProp := &ccvprovider.ConsumerRemovalProposal{
+		Title:       "Remove consumer chain",
+		Description: "Removing consumer chain",
+		ChainId:     consumerChainID,
+		StopTime:    time.Now(),
+	}
+
+	consumerAddBody, err := json.MarshalIndent(addProp, "", " ")
+	s.Require().NoError(err)
+
+	consumerRemoveBody, err := json.MarshalIndent(removeProp, "", " ")
+	s.Require().NoError(err)
+
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalAddConsumerChainFilename), consumerAddBody)
+	s.Require().NoError(err)
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalRemoveConsumerChainFilename), consumerRemoveBody)
 	s.Require().NoError(err)
 }
 

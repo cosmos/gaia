@@ -16,7 +16,15 @@ var (
 	runSlashingTest               = true
 	runStakingAndDistributionTest = true
 	runVestingTest                = true
+	runRestInterfacesTest         = true
 )
+
+func (s *IntegrationTestSuite) TestRestInterfaces() {
+	if !runRestInterfacesTest {
+		s.T().Skip()
+	}
+	s.testRestInterfaces()
+}
 
 func (s *IntegrationTestSuite) TestBank() {
 	if !runBankTest {
@@ -69,6 +77,7 @@ func (s *IntegrationTestSuite) TestGov() {
 	s.GovSoftwareUpgrade()
 	s.GovCancelSoftwareUpgrade()
 	s.GovCommunityPoolSpend()
+	s.AddRemoveConsumerChain()
 }
 
 func (s *IntegrationTestSuite) TestIBC() {

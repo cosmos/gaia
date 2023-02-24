@@ -16,12 +16,12 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	icacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
-	icahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
-	ibctransfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
-	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
+	icahosttypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/types"
+	ibctransfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
+	ibchost "github.com/cosmos/ibc-go/v4/modules/core/24-host"
+	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
 	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
-	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v3/router/types"
+	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
 )
 
 func (appKeepers *AppKeepers) GenerateKeys() {
@@ -33,7 +33,7 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, liquiditytypes.StoreKey, ibctransfertypes.StoreKey,
 		capabilitytypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey, routertypes.StoreKey,
-		icacontrollertypes.StoreKey, icahosttypes.StoreKey,
+		icahosttypes.StoreKey, providertypes.StoreKey,
 	)
 
 	// Define transient store keys

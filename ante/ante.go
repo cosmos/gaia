@@ -11,7 +11,7 @@ import (
 	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
 
 	gaiafeeante "github.com/cosmos/gaia/v9/x/globalfee/ante"
-	gaiagovantee "github.com/cosmos/gaia/v9/x/gov/ante"
+	gaiagovante "github.com/cosmos/gaia/v9/x/gov/ante"
 )
 
 // HandlerOptions extend the SDK's AnteHandler options by requiring the IBC
@@ -68,7 +68,7 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewValidateMemoDecorator(opts.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
 		gaiafeeante.NewFeeDecorator(opts.BypassMinFeeMsgTypes, opts.GlobalFeeSubspace, opts.StakingSubspace, maxBypassMinFeeMsgGasUsage),
-		gaiagovantee.NewGovPreventSpamDecorator(opts.Codec, opts.GovKeeper),
+		gaiagovante.NewGovPreventSpamDecorator(opts.Codec, opts.GovKeeper),
 		ante.NewDeductFeeDecorator(opts.AccountKeeper, opts.BankKeeper, opts.FeegrantKeeper),
 		ante.NewSetPubKeyDecorator(opts.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewValidateSigCountDecorator(opts.AccountKeeper),

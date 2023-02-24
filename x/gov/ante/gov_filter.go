@@ -28,10 +28,7 @@ func (gpsd GovPreventSpamDecorator) AnteHandle(
 	simulate bool, next sdk.AnteHandler,
 ) (newCtx sdk.Context, err error) {
 	msgs := tx.GetMsgs()
-
-	err = gpsd.checkSpamSubmitProposalMsg(ctx, msgs)
-
-	if err != nil {
+	if err = gpsd.checkSpamSubmitProposalMsg(ctx, msgs); err != nil {
 		return ctx, err
 	}
 
@@ -40,7 +37,7 @@ func (gpsd GovPreventSpamDecorator) AnteHandle(
 
 func (gpsd GovPreventSpamDecorator) checkSpamSubmitProposalMsg(ctx sdk.Context, msgs []sdk.Msg) error {
 	validMsg := func(m sdk.Msg) error {
-		switch msg := m.(type) {
+		switch msg := m.(type) { //nolint:gocritic
 		case *govtypes.MsgSubmitProposal:
 			// prevent spam gov msg
 			depositParams := gpsd.govKeeper.GetDepositParams(ctx)
@@ -56,13 +53,11 @@ func (gpsd GovPreventSpamDecorator) checkSpamSubmitProposalMsg(ctx sdk.Context, 
 	validAuthz := func(execMsg *authz.MsgExec) error {
 		for _, v := range execMsg.Msgs {
 			var innerMsg sdk.Msg
-			err := gpsd.cdc.UnpackAny(v, &innerMsg)
-			if err != nil {
+			if err := gpsd.cdc.UnpackAny(v, &innerMsg); err != nil {
 				return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "cannot unmarshal authz exec msgs")
 			}
 
-			err = validMsg(innerMsg)
-			if err != nil {
+			if err := validMsg(innerMsg); err != nil {
 				return err
 			}
 		}
@@ -79,8 +74,7 @@ func (gpsd GovPreventSpamDecorator) checkSpamSubmitProposalMsg(ctx sdk.Context, 
 		}
 
 		// validate normal msgs
-		err := validMsg(m)
-		if err != nil {
+		if err := validMsg(m); err != nil {
 			return err
 		}
 	}

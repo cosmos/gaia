@@ -9,7 +9,7 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
-var MiniumInitialDepositRate = sdk.NewDecWithPrec(20, 2)
+var MiniumInitialDepositRate = sdk.NewDecWithPrec(10, 2)
 
 type GovPreventSpamDecorator struct {
 	govKeeper *govkeeper.Keeper

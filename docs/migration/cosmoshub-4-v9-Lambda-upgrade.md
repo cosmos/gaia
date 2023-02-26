@@ -292,6 +292,6 @@ The riskiest thing a validator can do is discover that they made a mistake and r
 
 ## Reference
 
-[join Cosmos Hub Mainnet](https://github.com/cosmos/mainnet)
+[Join Cosmos Hub Mainnet](https://github.com/cosmos/mainnet)
 
 <!-- markdown-link-check-enable -->

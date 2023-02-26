@@ -43,7 +43,7 @@ func (gpsd GovPreventSpamDecorator) checkSpamSubmitProposalMsg(ctx sdk.Context, 
 			depositParams := gpsd.govKeeper.GetDepositParams(ctx)
 			miniumInitialDeposit := gpsd.calcMiniumInitialDeposit(depositParams.MinDeposit)
 			if msg.InitialDeposit.IsAllLT(miniumInitialDeposit) {
-				return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "not enough initial deposit. required: %v", miniumInitialDeposit)
+				return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "not enough initial deposit. required: %v", miniumInitialDeposit)
 			}
 		}
 

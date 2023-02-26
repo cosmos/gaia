@@ -50,7 +50,7 @@ TOC:
 
 ## Upgrade will take place March 15, 2023
 
-The upgrade will take place at a block height of `14470501`. At the time of writing, and at current block times (around 7s/block), this block height corresponds approximately to `Wednesday, 15-March-23 12:52:12 CET`. This date/time is approximate as blocks are not generated at a constant interval. You can stay up-to-date using this [live countdown](hhttps://www.mintscan.io/cosmos/blocks/14470501) page.
+The upgrade will take place at a block height of `14470501`. At the time of writing, and at current block times (around 7s/block), this block height corresponds approximately to `Wednesday, 15-March-23 12:52:12 CET`. This date/time is approximate as blocks are not generated at a constant interval. You can stay up-to-date using this [live countdown](https://www.mintscan.io/cosmos/blocks/14470501) page.
 
 ## Chain-id will remain the same
 

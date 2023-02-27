@@ -75,7 +75,7 @@ var (
 	stakingAmountCoin = sdk.NewCoin(uatomDenom, stakingAmount)
 	tokenAmount       = sdk.NewCoin(uatomDenom, sdk.NewInt(3300000000)) // 3,300uatom
 	standardFees      = sdk.NewCoin(uatomDenom, sdk.NewInt(330000))     // 0.33uatom
-	depositAmount     = sdk.NewCoin(uatomDenom, sdk.NewInt(10000000))   // 10uatom
+	depositAmount     = sdk.NewCoin(uatomDenom, sdk.NewInt(3300000000)) // 3,300uatom
 	distModuleAddress = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
 	proposalCounter   = 0
 )

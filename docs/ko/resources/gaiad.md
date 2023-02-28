@@ -565,7 +565,7 @@ gaiad tx gov submit-proposal param-change <프로포절/파일/경로/프로포�
   "deposit": [
     {
       "denom": "stake",
-      "amount": "10000000"
+      "amount": "1000000000"
     }
   ]
 }

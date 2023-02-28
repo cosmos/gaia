@@ -543,7 +543,7 @@ gaiad tx gov submit-proposal param-change <path/to/proposal.json> \
   "deposit": [
     {
       "denom": "stake",
-      "amount": "10000000"
+      "amount": "1000000000"
     }
   ]
 }

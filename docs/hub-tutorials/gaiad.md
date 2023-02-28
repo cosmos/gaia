@@ -631,7 +631,7 @@ Where `proposal.json` contains the following:
   "deposit": [
     {
       "denom": "stake",
-      "amount": "10000000"
+      "amount": "1000000000"
     }
   ]
 }

@@ -85,7 +85,7 @@ For those validator and full node operators that are interested in ensuring prep
 
 ### Current runtime, cosmoshub-4 (pre-v9-Lambda upgrade) is running Gaia v8.0.1
 
-The Cosmos Hub mainnet network, `cosmoshub-4`, is currently running [Gaia v8.0.1](https://github.com/cosmos/gaia/releases/v8.0.1). We anticipate that operators who are running on v8.0.1, will be able to upgrade successfully; however, validators are expected to ensure that their systems are up to date and capable of performing the upgrade. This includes running the correct binary, or if building from source, building with go `1.18`.
+The Cosmos Hub mainnet network, `cosmoshub-4`, is currently running [Gaia v8.0.1](https://github.com/cosmos/gaia/releases/v8.0.1). We anticipate that operators who are running on v8.0.1, will be able to upgrade successfully. Validators are expected to ensure that their systems are up to date and capable of performing the upgrade. This includes running the correct binary, or if building from source, building with go `1.18`.
 
 ### Target runtime, cosmoshub-4 (post-v9-Lambda upgrade) will run Gaia v9.0.0
 

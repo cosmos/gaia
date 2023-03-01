@@ -104,7 +104,7 @@ If you prefer to use Cosmovisor to upgrade, some preparation work is needed befo
 
 ### Method I: Manual Upgrade
 
-Make sure Gaia v9.0.0 is installed by either downloading a [compatable binary](https://github.com/cosmos/gaia/releases/tag/v9.0.0), or building from source.
+Make sure Gaia v9.0.0 is installed by either downloading a [compatable binary](https://github.com/cosmos/gaia/releases/tag/v9.0.0), or building from source. Building from source requires go 1.18.
 
 Run Gaia v8.0.1 till upgrade height, the node will panic:
 

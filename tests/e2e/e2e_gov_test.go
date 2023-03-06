@@ -190,7 +190,7 @@ func (s *IntegrationTestSuite) runGovProcess(chainAAPIEndpoint, sender string, p
 	// min deposit of 1000uatom is required in e2e tests, otherwise the gov antehandler causes the proposal to be dropped
 	sflags := submitFlags
 	if withDeposit {
-		sflags = append(submitFlags, "--deposit=1000uatom")
+		sflags = append(sflags, "--deposit=1000uatom")
 	}
 	s.submitGovCommand(chainAAPIEndpoint, sender, proposalID, "submit-proposal", sflags, govtypes.StatusDepositPeriod)
 	// s.T().Logf("Depositing Gov Proposal: %s", proposalType)

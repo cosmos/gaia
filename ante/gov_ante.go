@@ -9,7 +9,8 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
-var MinInitialDepositAmount = sdk.NewDecWithPrec(10, 2)
+// initial deposit must be greater than or equal to 10% of the minimum deposit
+var minInitialDepositFraction = sdk.NewDecWithPrec(10, 2)
 
 type GovPreventSpamDecorator struct {
 	govKeeper *govkeeper.Keeper
@@ -87,7 +88,7 @@ func (g GovPreventSpamDecorator) ValidateGovMsgs(ctx sdk.Context, msgs []sdk.Msg
 
 func (g GovPreventSpamDecorator) calcMinInitialDeposit(minDeposit sdk.Coins) (minInitialDeposit sdk.Coins) {
 	for _, coin := range minDeposit {
-		minInitialCoins := MinInitialDepositAmount.MulInt(coin.Amount).RoundInt()
+		minInitialCoins := minInitialDepositFraction.MulInt(coin.Amount).RoundInt()
 		minInitialDeposit = minInitialDeposit.Add(sdk.NewCoin(coin.Denom, minInitialCoins))
 	}
 	return

@@ -21,10 +21,7 @@ import (
 var (
 	minCoins          = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000000))
 	insufficientCoins = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 100))
-	addrs             = []sdk.AccAddress{
-		sdk.AccAddress("test1"),
-		sdk.AccAddress("test2"),
-	}
+	testAddr          = sdk.AccAddress("test1")
 )
 
 type GovAnteHandlerTestSuite struct {
@@ -65,8 +62,8 @@ func (s *GovAnteHandlerTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 		initialDeposit     sdk.Coins
 		expectPass         bool
 	}{
-		{"Passing proposal", "the purpose of this proposal is to pass", govtypes.ProposalTypeText, addrs[0], minCoins, true},
-		{"Failing proposal", "the purpose of this proposal is to fail", govtypes.ProposalTypeText, addrs[0], insufficientCoins, false},
+		{"Passing proposal", "the purpose of this proposal is to pass", govtypes.ProposalTypeText, testAddr, minCoins, true},
+		{"Failing proposal", "the purpose of this proposal is to fail", govtypes.ProposalTypeText, testAddr, insufficientCoins, false},
 	}
 
 	decorator := ante.NewGovPreventSpamDecorator(s.app.AppCodec(), &s.app.GovKeeper)

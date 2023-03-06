@@ -35,7 +35,7 @@ func (s *IntegrationTestSuite) GovSoftwareUpgrade() {
 	submitGovFlags := []string{"software-upgrade", "Upgrade-0", "--title='Upgrade V1'", "--description='Software Upgrade'", fmt.Sprintf("--upgrade-height=%d", proposalHeight)}
 	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
 	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes=0.8,no=0.1,abstain=0.05,no_with_veto=0.05"}
-	s.runGovProcess(chainAAPIEndpoint, sender, proposalCounter, upgradetypes.ProposalTypeSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "weighted-vote")
+	s.runGovProcess(chainAAPIEndpoint, sender, proposalCounter, upgradetypes.ProposalTypeSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "weighted-vote", true)
 
 	s.verifyChainHaltedAtUpgradeHeight(s.chainA, 0, proposalHeight)
 	s.T().Logf("Successfully halted chain at  height %d", proposalHeight)
@@ -76,13 +76,13 @@ func (s *IntegrationTestSuite) GovCancelSoftwareUpgrade() {
 	submitGovFlags := []string{"software-upgrade", "Upgrade-1", "--title='Upgrade V1'", "--description='Software Upgrade'", fmt.Sprintf("--upgrade-height=%d", proposalHeight)}
 	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
 	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes"}
-	s.runGovProcess(chainAAPIEndpoint, sender, proposalCounter, upgradetypes.ProposalTypeSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "vote")
+	s.runGovProcess(chainAAPIEndpoint, sender, proposalCounter, upgradetypes.ProposalTypeSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "vote", true)
 
 	proposalCounter++
 	submitGovFlags = []string{"cancel-software-upgrade", "--title='Upgrade V1'", "--description='Software Upgrade'"}
 	depositGovFlags = []string{strconv.Itoa(proposalCounter), depositAmount.String()}
 	voteGovFlags = []string{strconv.Itoa(proposalCounter), "yes"}
-	s.runGovProcess(chainAAPIEndpoint, sender, proposalCounter, upgradetypes.ProposalTypeCancelSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "vote")
+	s.runGovProcess(chainAAPIEndpoint, sender, proposalCounter, upgradetypes.ProposalTypeCancelSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "vote", true)
 
 	s.verifyChainPassesUpgradeHeight(s.chainA, 0, proposalHeight)
 	s.T().Logf("Successfully canceled upgrade at height %d", proposalHeight)
@@ -113,7 +113,7 @@ func (s *IntegrationTestSuite) GovCommunityPoolSpend() {
 	submitGovFlags := []string{"community-pool-spend", configFile(proposalCommunitySpendFilename)}
 	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
 	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes"}
-	s.runGovProcess(chainAAPIEndpoint, sender, proposalCounter, distrtypes.ProposalTypeCommunityPoolSpend, submitGovFlags, depositGovFlags, voteGovFlags, "vote")
+	s.runGovProcess(chainAAPIEndpoint, sender, proposalCounter, distrtypes.ProposalTypeCommunityPoolSpend, submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
 
 	s.Require().Eventually(
 		func() bool {
@@ -149,7 +149,7 @@ func (s *IntegrationTestSuite) AddRemoveConsumerChain() {
 	submitGovFlags := []string{"consumer-addition", configFile(proposalAddConsumerChainFilename)}
 	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
 	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes"}
-	s.runGovProcess(chainAAPIEndpoint, sender, proposalCounter, ccvtypes.ProposalTypeConsumerAddition, submitGovFlags, depositGovFlags, voteGovFlags, "vote")
+	s.runGovProcess(chainAAPIEndpoint, sender, proposalCounter, ccvtypes.ProposalTypeConsumerAddition, submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
 
 	// Query and assert consumer has been added
 	s.execQueryConsumerChains(s.chainA, 0, gaiaHomePath, validateConsumerAddition, consumerChainID)
@@ -159,8 +159,7 @@ func (s *IntegrationTestSuite) AddRemoveConsumerChain() {
 	submitGovFlags = []string{"consumer-removal", configFile(proposalRemoveConsumerChainFilename)}
 	depositGovFlags = []string{strconv.Itoa(proposalCounter), depositAmount.String()}
 	voteGovFlags = []string{strconv.Itoa(proposalCounter), "yes"}
-	s.runGovProcess(chainAAPIEndpoint, sender, proposalCounter, ccvtypes.ProposalTypeConsumerRemoval, submitGovFlags, depositGovFlags, voteGovFlags, "vote")
-
+	s.runGovProcess(chainAAPIEndpoint, sender, proposalCounter, ccvtypes.ProposalTypeConsumerRemoval, submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
 	// Query and assert consumer has been removed
 	s.execQueryConsumerChains(s.chainA, 0, gaiaHomePath, validateConsumerRemoval, consumerChainID)
 }
@@ -186,12 +185,17 @@ func validateConsumerRemoval(res ccvtypes.QueryConsumerChainsResponse, consumerC
 	return true
 }
 
-func (s *IntegrationTestSuite) runGovProcess(chainAAPIEndpoint, sender string, proposalID int, proposalType string, submitFlags []string, depositFlags []string, voteFlags []string, voteCommand string) {
+func (s *IntegrationTestSuite) runGovProcess(chainAAPIEndpoint, sender string, proposalID int, proposalType string, submitFlags []string, depositFlags []string, voteFlags []string, voteCommand string, withDeposit bool) {
 	s.T().Logf("Submitting Gov Proposal: %s", proposalType)
-	s.submitGovCommand(chainAAPIEndpoint, sender, proposalID, "submit-proposal", submitFlags, govtypes.StatusDepositPeriod)
-	s.T().Logf("Depositing Gov Proposal: %s", proposalType)
+	// min deposit of 1000uatom is required in e2e tests, otherwise the gov antehandler causes the proposal to be dropped
+	sflags := submitFlags
+	if withDeposit {
+		sflags = append(submitFlags, "--deposit=1000uatom")
+	}
+	s.submitGovCommand(chainAAPIEndpoint, sender, proposalID, "submit-proposal", sflags, govtypes.StatusDepositPeriod)
+	// s.T().Logf("Depositing Gov Proposal: %s", proposalType)
 	s.submitGovCommand(chainAAPIEndpoint, sender, proposalID, "deposit", depositFlags, govtypes.StatusVotingPeriod)
-	s.T().Logf("Voting Gov Proposal: %s", proposalType)
+	// s.T().Logf("Voting Gov Proposal: %s", proposalType)
 	s.submitGovCommand(chainAAPIEndpoint, sender, proposalID, voteCommand, voteFlags, govtypes.StatusPassed)
 }
 

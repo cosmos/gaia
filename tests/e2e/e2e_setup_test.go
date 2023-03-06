@@ -75,7 +75,7 @@ var (
 	stakingAmountCoin = sdk.NewCoin(uatomDenom, stakingAmount)
 	tokenAmount       = sdk.NewCoin(uatomDenom, sdk.NewInt(3300000000)) // 3,300uatom
 	standardFees      = sdk.NewCoin(uatomDenom, sdk.NewInt(330000))     // 0.33uatom
-	depositAmount     = sdk.NewCoin(uatomDenom, sdk.NewInt(1000000000)) // 1,000uatom
+	depositAmount     = sdk.NewCoin(uatomDenom, sdk.NewInt(330000000))  // 3,300uatom
 	distModuleAddress = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
 	proposalCounter   = 0
 )
@@ -627,7 +627,7 @@ func (s *IntegrationTestSuite) writeGovParamChangeProposalGlobalFees(c *chain, c
 				Value:    coins,
 			},
 		},
-		Deposit: "",
+		Deposit: "1000uatom",
 	}, "", " ")
 	s.Require().NoError(err)
 
@@ -641,13 +641,23 @@ func (s *IntegrationTestSuite) writeGovCommunitySpendProposal(c *chain, amount s
 		Description: "Fund Team!",
 		Recipient:   recipient,
 		Amount:      amount,
-		Deposit:     "100uatom",
+		Deposit:     "1000uatom",
 	}
 	commSpendBody, err := json.MarshalIndent(proposalCommSpend, "", " ")
 	s.Require().NoError(err)
 
 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalCommunitySpendFilename), commSpendBody)
 	s.Require().NoError(err)
+}
+
+type ConsumerAdditionProposalWithDeposit struct {
+	ccvprovider.ConsumerAdditionProposal
+	Deposit string `json:"deposit"`
+}
+
+type ConsumerRemovalProposalWithDeposit struct {
+	ccvprovider.ConsumerRemovalProposal
+	Deposit string `json:"deposit"`
 }
 
 func (s *IntegrationTestSuite) writeAddRemoveConsumerProposals(c *chain, consumerChainID string) {
@@ -669,6 +679,10 @@ func (s *IntegrationTestSuite) writeAddRemoveConsumerProposals(c *chain, consume
 		BlocksPerDistributionTransmission: 10,
 		HistoricalEntries:                 10000,
 	}
+	addPropWithDeposit := ConsumerAdditionProposalWithDeposit{
+		ConsumerAdditionProposal: *addProp,
+		Deposit:                  "1000uatom",
+	}
 
 	removeProp := &ccvprovider.ConsumerRemovalProposal{
 		Title:       "Remove consumer chain",
@@ -677,10 +691,15 @@ func (s *IntegrationTestSuite) writeAddRemoveConsumerProposals(c *chain, consume
 		StopTime:    time.Now(),
 	}
 
-	consumerAddBody, err := json.MarshalIndent(addProp, "", " ")
+	removePropWithDeposit := ConsumerRemovalProposalWithDeposit{
+		ConsumerRemovalProposal: *removeProp,
+		Deposit:                 "1000uatom",
+	}
+
+	consumerAddBody, err := json.MarshalIndent(addPropWithDeposit, "", " ")
 	s.Require().NoError(err)
 
-	consumerRemoveBody, err := json.MarshalIndent(removeProp, "", " ")
+	consumerRemoveBody, err := json.MarshalIndent(removePropWithDeposit, "", " ")
 	s.Require().NoError(err)
 
 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalAddConsumerChainFilename), consumerAddBody)

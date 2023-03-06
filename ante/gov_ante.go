@@ -27,7 +27,6 @@ func (g GovPreventSpamDecorator) AnteHandle(
 	ctx sdk.Context, tx sdk.Tx,
 	simulate bool, next sdk.AnteHandler,
 ) (newCtx sdk.Context, err error) {
-
 	// run checks only on CheckTx or simulate
 	if !ctx.IsCheckTx() || simulate {
 		return next(ctx, tx, simulate)

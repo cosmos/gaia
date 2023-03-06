@@ -19,8 +19,9 @@ import (
 )
 
 var (
-	minCoins          = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000000))
 	insufficientCoins = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 100))
+	minCoins          = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000000))
+	moreThanMinCoins  = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 2500000))
 	testAddr          = sdk.AccAddress("test1")
 )
 
@@ -62,7 +63,8 @@ func (s *GovAnteHandlerTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 		initialDeposit     sdk.Coins
 		expectPass         bool
 	}{
-		{"Passing proposal", "the purpose of this proposal is to pass", govtypes.ProposalTypeText, testAddr, minCoins, true},
+		{"Passing proposal 1", "the purpose of this proposal is to pass", govtypes.ProposalTypeText, testAddr, minCoins, true},
+		{"Passing proposal 2", "the purpose of this proposal is to pass with more coins than minimum", govtypes.ProposalTypeText, testAddr, moreThanMinCoins, true},
 		{"Failing proposal", "the purpose of this proposal is to fail", govtypes.ProposalTypeText, testAddr, insufficientCoins, false},
 	}
 
@@ -80,11 +82,11 @@ func (s *GovAnteHandlerTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 
 		s.Require().NoError(err)
 
+		err = decorator.ValidateGovMsgs(s.ctx, []sdk.Msg{msg})
 		if tc.expectPass {
-			err := decorator.ValidateGovMsgs(s.ctx, []sdk.Msg{msg})
 			s.Require().NoError(err, "expected %v to pass", tc.title)
 		} else {
-			s.Require().NoError(err, "expected %v to fail", tc.title)
+			s.Require().Error(err, "expected %v to fail", tc.title)
 		}
 	}
 }

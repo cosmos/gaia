@@ -5,8 +5,6 @@ order: 1
 <!-- markdown-link-check-disable -->
 # Cosmos Hub 4, v9-Lambda Upgrade, Instructions
 
-> <span style="color:red">**V9 Lambda has not yet passed and is still in the voting period**</span>
-
 This document describes the steps for validator and full node operators for the successful execution of the [v9-Lambda Upgrade](https://github.com/cosmos/gaia/blob/main/docs/roadmap/cosmos-hub-roadmap-2.0.md#v9-lambda-upgrade-expected-q1-2023), which contains the following main new features/improvement:
 
 - [Interchain-Security](https://github.com/cosmos/interchain-security) [v1.0.0](https://github.com/cosmos/interchain-security/releases/tag/v1.0.0) provider module. See the [ICS Spec](https://github.com/cosmos/ibc/blob/main/spec/app/ics-028-cross-chain-validation/README.md) for more details.
@@ -118,9 +116,11 @@ It may take several minutes to a few hours until validators with a total sum vot
 
 ### Method II: Upgrade using Cosmovisor
 
-> **Warning**  <span style="color:red">**Please Read Before Proceeding**</span><br>
-> **Using Cosmovisor 1.2.0 and higher requires a lowercase naming convention for upgrade version directory. For Cosmovisor 1.1.0 and earlier, the upgrade version is not lowercased.**
->
+::: warning
+<span style="color:red">**Please Read Before Proceeding**</span><br>
+Using Cosmovisor 1.2.0 and higher requires a lowercase naming convention for upgrade version directory. For Cosmovisor 1.1.0 and earlier, the upgrade version is not lowercased.
+:::
+
 > **For Example:** <br>
 > **Cosmovisor =< `1.1.0`: `/upgrades/v9-Lambda/bin/gaiad`**<br>
 > **Cosmovisor >= `1.2.0`: `/upgrades/v9-lambda/bin/gaiad`**<br>
@@ -131,7 +131,6 @@ It may take several minutes to a few hours until validators with a total sum vot
 | 1.2                | v9-lambda           |
 | 1.1                | v9-Lambda           |
 | 1.0                | v9-Lambda           |
-
 
 
 ### _Manually preparing the Gaia v9.0.0 binary_

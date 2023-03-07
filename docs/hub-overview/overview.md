@@ -3,6 +3,15 @@ order: 1
 title: Introduction
 ---
 
+::: warning
+### **v9-Lambda Upgrade**
+Cosmos Hub will upgrade at height: **14,470,501**
+
+Upgrade is estimated to take place around **2023-03-15 12:00 UTC**
+
+Upgrade guide is available [**here**](../migration/cosmoshub-4-v9-Lambda-upgrade.html)
+:::
+
 ![Welcome to the Cosmos Hub](../images/cosmos-hub-image.jpg)
 
 # Introduction

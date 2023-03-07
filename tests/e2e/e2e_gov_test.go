@@ -193,9 +193,9 @@ func (s *IntegrationTestSuite) runGovProcess(chainAAPIEndpoint, sender string, p
 		sflags = append(sflags, "--deposit=1000uatom")
 	}
 	s.submitGovCommand(chainAAPIEndpoint, sender, proposalID, "submit-proposal", sflags, govtypes.StatusDepositPeriod)
-	// s.T().Logf("Depositing Gov Proposal: %s", proposalType)
+	s.T().Logf("Depositing Gov Proposal: %s", proposalType)
 	s.submitGovCommand(chainAAPIEndpoint, sender, proposalID, "deposit", depositFlags, govtypes.StatusVotingPeriod)
-	// s.T().Logf("Voting Gov Proposal: %s", proposalType)
+	s.T().Logf("Voting Gov Proposal: %s", proposalType)
 	s.submitGovCommand(chainAAPIEndpoint, sender, proposalID, voteCommand, voteFlags, govtypes.StatusPassed)
 }
 

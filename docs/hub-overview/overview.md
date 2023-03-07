@@ -9,7 +9,7 @@ Cosmos Hub will upgrade at height: **14,470,501**
 
 Upgrade is estimated to take place around **2023-03-15 12:00 UTC**
 
-Upgrade guide is available [**here**](../migration/cosmoshub-4-v9-Lambda-upgrade.html)
+Upgrade guide is available [**here**](../migration/cosmoshub-4-v9-Lambda-upgrade.md)
 :::
 
 ![Welcome to the Cosmos Hub](../images/cosmos-hub-image.jpg)

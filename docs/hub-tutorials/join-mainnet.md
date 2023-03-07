@@ -30,7 +30,7 @@ For instructions to join as a validator, please also see the [Validator Guide](h
   - [Blocksync](#blocksync)
   - [State Sync](#state-sync)
   - [Quicksync](#quicksync)
-- [Snapshots](#snapshots)=
+- [Snapshots](#snapshots)
 - [Releases](#releases-amp-upgrades)
 - [Cosmovisor](#cosmovisor)
 - [Running via Background Process](#running-via-background-process)

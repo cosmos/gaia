@@ -48,7 +48,7 @@ TOC:
 
 [Proposal #187](https://www.mintscan.io/cosmos/proposals/187) is the reference on-chain governance proposal for this upgrade, which is still in its voting period. Neither core developers nor core funding entities control the governance, and this governance proposal has passed in a _fully decentralized_ way.
 
-## Upgrade will take place March 15, 2023
+## Upgrade will take place March 14-16, 2023
 
 The upgrade will take place at a block height of `14470501`. The date/time of the upgrade is subject to change as blocks are not generated at a constant interval. You can stay up-to-date using this [live countdown](https://www.mintscan.io/cosmos/blocks/14470501) page.
 
@@ -81,7 +81,7 @@ It is critically important for validator operators to back-up the `.gaia/data/pr
 
 ### Testing
 
-For those validator and full node operators that are interested in ensuring preparedness for the impending upgrade, you can run a [v8-Rho local testnet](https://github.com/cosmos/testnets/tree/master/local).
+For those validator and full node operators that are interested in ensuring preparedness for the impending upgrade, you can run a [v8-Rho local testnet](https://github.com/cosmos/testnets/tree/master/local) or join in our [v9-Lambda public-testnet](https://github.com/cosmos/testnets/tree/master/public).
 
 ### Current runtime, cosmoshub-4 (pre-v9-Lambda upgrade) is running Gaia v8.0.1
 
@@ -185,14 +185,15 @@ Export the environmental variables:
 ```shell
 export DAEMON_NAME=gaiad
 # please change to your own gaia home dir
-export DAEMON_HOME= $GAIA_HOME
+# please note `DAEMON_HOME` has to be absolute path
+export DAEMON_HOME=$GAIA_HOME
 export DAEMON_RESTART_AFTER_UPGRADE=true
 ```
 
 Start the node:
 
 ```shell
-cosmovisor start --x-crisis-skip-assert-invariants
+cosmovisor run  start --x-crisis-skip-assert-invariants --home $DAEMON_HOME
 ```
 
 Skipping the invariant checks is strongly encouraged since it decreases the upgrade time significantly and since there are some other improvements coming to the crisis module in the next release of the Cosmos SDK.
@@ -235,7 +236,7 @@ Export the environmental variables:
 ```shell
 export DAEMON_NAME=gaiad
 # please change to your own gaia home dir
-export DAEMON_HOME= $GAIA_HOME
+export DAEMON_HOME=$GAIA_HOME
 export DAEMON_RESTART_AFTER_UPGRADE=true
 export DAEMON_ALLOW_DOWNLOAD_BINARIES=true
 ```
@@ -243,10 +244,10 @@ export DAEMON_ALLOW_DOWNLOAD_BINARIES=true
 Start the node:
 
 ```shell
-cosmovisor start --x-crisis-skip-assert-invariants
+cosmovisor run start --x-crisis-skip-assert-invariants --home $DAEMON_HOME
 ```
 
-Skipping the invariant checks is strongly encouraged since it decreases the upgrade time significantly and since there are some other improvements coming to the crisis module in the next release of the Cosmos SDK.
+Skipping the invariant checks can help decrease the upgrade time significantly.
 
 #### Expected result
 
@@ -282,7 +283,7 @@ Important: A social consensus decision to skip the upgrade will be based solely 
 
 ## Communications
 
-Operators are encouraged to join the `#validators-verified` channel of the Cosmos Community Discord. This channel is the primary communication tool for operators to ask questions, report upgrade status, report technical issues, and to build social consensus should the need arise. This channel is restricted to known operators and requires verification beforehand. Requests to join the `#validators-verified` channel can be sent to the `#general-support` channel.
+Operators are encouraged to join the `#cosmos-hub-validators-verified` channel of the Cosmos Hub Community Discord. This channel is the primary communication tool for operators to ask questions, report upgrade status, report technical issues, and to build social consensus should the need arise. This channel is restricted to known operators and requires verification beforehand. Requests to join the `#cosmos-hub-validators-verified` channel can be sent to the `#general-support` channel.
 
 ## Risks
 

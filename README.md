@@ -119,6 +119,7 @@ We have active, helpful communities on Twitter, Discord, and Telegram.
 | -- | -- |
 | Cosmos Developers Discord | <a href="https://discord.gg/cosmosnetwork"><img src="https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white" alt="Discord" height="30"/></a> |
 | Cosmos Twitter | <a href="https://twitter.com/cosmos"><img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Tweet" height="30"/></a> |
+| Cosmos Gov Twitter | <a href="https://twitter.com/CosmosGov"><img src="https://img.shields.io/badge/Twitter-FEFEFE?style=for-the-badge&logo=twitter&logoColor=blue" alt="Tweet" height="30"/></a> |
 | Cosmos Telegram | <a href="https://t.me/cosmosproject"><img src="https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram" height="30"/></a> |
 
 For updates on the Cosmos Hub team's activities follow us on the [Cosmos Hub Twitter](https://twitter.com/cosmoshub) account.

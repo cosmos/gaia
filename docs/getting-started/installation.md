@@ -98,7 +98,7 @@ server_name: gaiad
 version: v9.0.0
 commit: 682770f2410ab0d33ac7f0c7203519d7a99fa2b6
 build_tags: netgo,ledger
-go: go version go1.18.10 darwin/arm64
+go: go version go1.18.10 linux/amd64
 ```
 
 ### Build Tags

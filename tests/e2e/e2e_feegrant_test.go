@@ -16,24 +16,21 @@ Test Benchmarks:
 4. Try to send a transaction from bob with Alice as a fee granter again. Should fail
 because all amount granted was expended
 */
-func (s *IntegrationTestSuite) TestFeeGrant() {
+func (s *IntegrationTestSuite) testFeeGrant() {
 	s.Run("test fee grant module", func() {
 		var (
 			valIdx = 0
-			chain  = s.chainA
-			api    = fmt.Sprintf("http://%s", s.valResources[chain.id][valIdx].GetHostPort("1317/tcp"))
+			c      = s.chainA
+			api    = fmt.Sprintf("http://%s", s.valResources[c.id][valIdx].GetHostPort("1317/tcp"))
 		)
 
-		alice, err := chain.genesisAccounts[1].keyInfo.GetAddress()
-		s.Require().NoError(err)
-		bob, err := chain.genesisAccounts[2].keyInfo.GetAddress()
-		s.Require().NoError(err)
-		charlie, err := chain.genesisAccounts[3].keyInfo.GetAddress()
-		s.Require().NoError(err)
+		alice := c.genesisAccounts[1].keyInfo.GetAddress()
+		bob := c.genesisAccounts[2].keyInfo.GetAddress()
+		charlie := c.genesisAccounts[3].keyInfo.GetAddress()
 
 		// add fee grant from alice to bob
 		s.execFeeGrant(
-			chain,
+			c,
 			valIdx,
 			alice.String(),
 			bob.String(),
@@ -46,14 +43,14 @@ func (s *IntegrationTestSuite) TestFeeGrant() {
 
 		// withdrawal all balance + fee + fee granter flag should succeed
 		s.execBankSend(
-			chain,
+			c,
 			valIdx,
 			bob.String(),
 			Address(),
 			tokenAmount.String(),
 			standardFees.String(),
 			false,
-			withKeyValue(flagFeeGranter, alice.String()),
+			withKeyValue(flagFeeAccount, alice.String()),
 		)
 
 		// check if the bob balance was subtracted without the fees
@@ -64,19 +61,19 @@ func (s *IntegrationTestSuite) TestFeeGrant() {
 
 		// tx should fail after spend limit reach
 		s.execBankSend(
-			chain,
+			c,
 			valIdx,
 			bob.String(),
 			Address(),
 			tokenAmount.String(),
 			standardFees.String(),
 			true,
-			withKeyValue(flagFeeGranter, alice.String()),
+			withKeyValue(flagFeeAccount, alice.String()),
 		)
 
 		// add fee grant from alice to charlie
 		s.execFeeGrant(
-			chain,
+			c,
 			valIdx,
 			alice.String(),
 			charlie.String(),
@@ -86,7 +83,7 @@ func (s *IntegrationTestSuite) TestFeeGrant() {
 
 		// revoke fee grant from alice to charlie
 		s.execFeeGrantRevoke(
-			chain,
+			c,
 			valIdx,
 			alice.String(),
 			charlie.String(),
@@ -94,14 +91,14 @@ func (s *IntegrationTestSuite) TestFeeGrant() {
 
 		// tx should fail because the grant was revoked
 		s.execBankSend(
-			chain,
+			c,
 			valIdx,
 			charlie.String(),
 			Address(),
 			tokenAmount.String(),
 			standardFees.String(),
 			true,
-			withKeyValue(flagFeeGranter, alice.String()),
+			withKeyValue(flagFeeAccount, alice.String()),
 		)
 	})
 }

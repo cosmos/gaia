@@ -1,115 +1,44 @@
 <!-- This file is auto-generated. Please do not modify it yourself. -->
 # Protobuf Documentation
+
 <a name="top"></a>
 
 ## Table of Contents
 
-- [gaia/globalfee/v1beta1/genesis.proto](#gaia/globalfee/v1beta1/genesis.proto)
-    - [GenesisState](#gaia.globalfee.v1beta1.GenesisState)
-    - [Params](#gaia.globalfee.v1beta1.Params)
-  
 - [gaia/globalfee/v1beta1/query.proto](#gaia/globalfee/v1beta1/query.proto)
-    - [QueryMinimumGasPricesRequest](#gaia.globalfee.v1beta1.QueryMinimumGasPricesRequest)
-    - [QueryMinimumGasPricesResponse](#gaia.globalfee.v1beta1.QueryMinimumGasPricesResponse)
+  - [QueryMinimumGasPricesRequest](#gaia.globalfee.v1beta1.QueryMinimumGasPricesRequest)
+  - [QueryMinimumGasPricesResponse](#gaia.globalfee.v1beta1.QueryMinimumGasPricesResponse)
   
-    - [Query](#gaia.globalfee.v1beta1.Query)
+  - [Query](#gaia.globalfee.v1beta1.Query)
   
-- [gaia/icamauth/v1beta1/query.proto](#gaia/icamauth/v1beta1/query.proto)
-    - [QueryInterchainAccountRequest](#gaia.icamauth.v1beta1.QueryInterchainAccountRequest)
-    - [QueryInterchainAccountResponse](#gaia.icamauth.v1beta1.QueryInterchainAccountResponse)
-  
-    - [Query](#gaia.icamauth.v1beta1.Query)
-  
-- [gaia/icamauth/v1beta1/tx.proto](#gaia/icamauth/v1beta1/tx.proto)
-    - [MsgRegisterAccount](#gaia.icamauth.v1beta1.MsgRegisterAccount)
-    - [MsgRegisterAccountResponse](#gaia.icamauth.v1beta1.MsgRegisterAccountResponse)
-    - [MsgSubmitTx](#gaia.icamauth.v1beta1.MsgSubmitTx)
-    - [MsgSubmitTxResponse](#gaia.icamauth.v1beta1.MsgSubmitTxResponse)
-  
-    - [Msg](#gaia.icamauth.v1beta1.Msg)
+- [gaia/globalfee/v1beta1/genesis.proto](#gaia/globalfee/v1beta1/genesis.proto)
+  - [GenesisState](#gaia.globalfee.v1beta1.GenesisState)
+  - [Params](#gaia.globalfee.v1beta1.Params)
   
 - [Scalar Value Types](#scalar-value-types)
-
-
-
-<a name="gaia/globalfee/v1beta1/genesis.proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## gaia/globalfee/v1beta1/genesis.proto
-
-
-
-<a name="gaia.globalfee.v1beta1.GenesisState"></a>
-
-### GenesisState
-GenesisState - initial state of module
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `params` | [Params](#gaia.globalfee.v1beta1.Params) |  | Params of this module |
-
-
-
-
-
-
-<a name="gaia.globalfee.v1beta1.Params"></a>
-
-### Params
-Params defines the set of module parameters.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `minimum_gas_prices` | [cosmos.base.v1beta1.DecCoin](#cosmos.base.v1beta1.DecCoin) | repeated | Minimum stores the minimum gas price(s) for all TX on the chain. When multiple coins are defined then they are accepted alternatively. The list must be sorted by denoms asc. No duplicate denoms or zero amount values allowed. For more information see https://docs.cosmos.network/main/modules/auth#concepts |
-
-
-
-
-
- <!-- end messages -->
-
- <!-- end enums -->
-
- <!-- end HasExtensions -->
-
- <!-- end services -->
-
-
 
 <a name="gaia/globalfee/v1beta1/query.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
 ## gaia/globalfee/v1beta1/query.proto
 
-
-
 <a name="gaia.globalfee.v1beta1.QueryMinimumGasPricesRequest"></a>
 
 ### QueryMinimumGasPricesRequest
+
 QueryMinimumGasPricesRequest is the request type for the
 Query/MinimumGasPrices RPC method.
-
-
-
-
-
 
 <a name="gaia.globalfee.v1beta1.QueryMinimumGasPricesResponse"></a>
 
 ### QueryMinimumGasPricesResponse
+
 QueryMinimumGasPricesResponse is the response type for the
 Query/MinimumGasPrices RPC method.
-
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | `minimum_gas_prices` | [cosmos.base.v1beta1.DecCoin](#cosmos.base.v1beta1.DecCoin) | repeated |  |
-
-
-
-
 
  <!-- end messages -->
 
@@ -117,10 +46,10 @@ Query/MinimumGasPrices RPC method.
 
  <!-- end HasExtensions -->
 
-
 <a name="gaia.globalfee.v1beta1.Query"></a>
 
 ### Query
+
 Query defines the gRPC querier service.
 
 | Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
@@ -129,44 +58,30 @@ Query defines the gRPC querier service.
 
  <!-- end services -->
 
-
-
-<a name="gaia/icamauth/v1beta1/query.proto"></a>
+<a name="gaia/globalfee/v1beta1/genesis.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
-## gaia/icamauth/v1beta1/query.proto
+## gaia/globalfee/v1beta1/genesis.proto
 
+<a name="gaia.globalfee.v1beta1.GenesisState"></a>
 
+### GenesisState
 
-<a name="gaia.icamauth.v1beta1.QueryInterchainAccountRequest"></a>
-
-### QueryInterchainAccountRequest
-QueryInterchainAccountRequest is the request type for the Query/InterchainAccountAddress RPC
-
+GenesisState - initial state of module
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `owner` | [string](#string) |  |  |
-| `connection_id` | [string](#string) |  |  |
+| `params` | [Params](#gaia.globalfee.v1beta1.Params) |  | Params of this module |
 
+<a name="gaia.globalfee.v1beta1.Params"></a>
 
+### Params
 
-
-
-
-<a name="gaia.icamauth.v1beta1.QueryInterchainAccountResponse"></a>
-
-### QueryInterchainAccountResponse
-QueryInterchainAccountResponse the response type for the Query/InterchainAccountAddress RPC
-
+Params defines the set of module parameters.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `interchain_account_address` | [string](#string) |  |  |
-
-
-
-
+| `minimum_gas_prices` | [cosmos.base.v1beta1.DecCoin](#cosmos.base.v1beta1.DecCoin) | repeated | Minimum stores the minimum gas price(s) for all TX on the chain. When multiple coins are defined then they are accepted alternatively. The list must be sorted by denoms asc. No duplicate denoms or zero amount values allowed. For more information see <https://docs.cosmos.network/main/modules/auth#concepts> |
 
  <!-- end messages -->
 
@@ -174,100 +89,7 @@ QueryInterchainAccountResponse the response type for the Query/InterchainAccount
 
  <!-- end HasExtensions -->
 
-
-<a name="gaia.icamauth.v1beta1.Query"></a>
-
-### Query
-Query defines the gRPC querier service.
-
-| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
-| ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `InterchainAccount` | [QueryInterchainAccountRequest](#gaia.icamauth.v1beta1.QueryInterchainAccountRequest) | [QueryInterchainAccountResponse](#gaia.icamauth.v1beta1.QueryInterchainAccountResponse) | QueryInterchainAccount returns the interchain account for given owner address on a given connection pair | GET|/gaia/icamauth/v1beta1/interchain_account/owner/{owner}/connection/{connection_id}|
-
  <!-- end services -->
-
-
-
-<a name="gaia/icamauth/v1beta1/tx.proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## gaia/icamauth/v1beta1/tx.proto
-
-
-
-<a name="gaia.icamauth.v1beta1.MsgRegisterAccount"></a>
-
-### MsgRegisterAccount
-MsgRegisterAccount defines the payload for Msg/RegisterAccount
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `owner` | [string](#string) |  |  |
-| `connection_id` | [string](#string) |  |  |
-| `version` | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="gaia.icamauth.v1beta1.MsgRegisterAccountResponse"></a>
-
-### MsgRegisterAccountResponse
-MsgRegisterAccountResponse defines the response for Msg/RegisterAccount
-
-
-
-
-
-
-<a name="gaia.icamauth.v1beta1.MsgSubmitTx"></a>
-
-### MsgSubmitTx
-MsgSubmitTx defines the payload for Msg/SubmitTx
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| `owner` | [string](#string) |  |  |
-| `connection_id` | [string](#string) |  |  |
-| `msg` | [google.protobuf.Any](#google.protobuf.Any) |  |  |
-
-
-
-
-
-
-<a name="gaia.icamauth.v1beta1.MsgSubmitTxResponse"></a>
-
-### MsgSubmitTxResponse
-MsgSubmitTxResponse defines the response for Msg/SubmitTx
-
-
-
-
-
- <!-- end messages -->
-
- <!-- end enums -->
-
- <!-- end HasExtensions -->
-
-
-<a name="gaia.icamauth.v1beta1.Msg"></a>
-
-### Msg
-Msg defines the ica Msg service.
-
-| Method Name | Request Type | Response Type | Description | HTTP Verb | Endpoint |
-| ----------- | ------------ | ------------- | ------------| ------- | -------- |
-| `RegisterAccount` | [MsgRegisterAccount](#gaia.icamauth.v1beta1.MsgRegisterAccount) | [MsgRegisterAccountResponse](#gaia.icamauth.v1beta1.MsgRegisterAccountResponse) | Register defines a rpc handler for MsgRegisterAccount | |
-| `SubmitTx` | [MsgSubmitTx](#gaia.icamauth.v1beta1.MsgSubmitTx) | [MsgSubmitTxResponse](#gaia.icamauth.v1beta1.MsgSubmitTxResponse) | SubmitTx defines a rpc handler for MsgSubmitTx | |
-
- <!-- end services -->
-
-
 
 ## Scalar Value Types
 
@@ -288,4 +110,3 @@ Msg defines the ica Msg service.
 | <a name="bool" /> bool |  | bool | boolean | boolean | bool | bool | boolean | TrueClass/FalseClass |
 | <a name="string" /> string | A string must always contain UTF-8 encoded or 7-bit ASCII text. | string | String | str/unicode | string | string | string | String (UTF-8) |
 | <a name="bytes" /> bytes | May contain any arbitrary sequence of bytes. | string | ByteString | str | []byte | ByteString | string | String (ASCII-8BIT) |
-

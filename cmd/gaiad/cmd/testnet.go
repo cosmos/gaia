@@ -30,10 +30,11 @@ import (
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	"github.com/tendermint/tendermint/types"
 	tmtime "github.com/tendermint/tendermint/types/time"
-	// ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
-	// ibcchanneltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
 
-	"github.com/cosmos/gaia/v8/app/params"
+	// ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
+	// ibcchanneltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
+
+	"github.com/cosmos/gaia/v9/app/params"
 )
 
 var (
@@ -201,7 +202,7 @@ func InitTestnet(
 		memo := fmt.Sprintf("%s@%s:26656", nodeIDs[i], ip)
 		genFiles = append(genFiles, nodeConfig.GenesisFile())
 
-		kb, err := keyring.New(sdk.KeyringServiceName(), keyringBackend, nodeDir, inBuf, clientCtx.Codec)
+		kb, err := keyring.New(sdk.KeyringServiceName(), keyringBackend, nodeDir, inBuf)
 		if err != nil {
 			return err
 		}

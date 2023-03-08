@@ -7,13 +7,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	ibcclienttypes "github.com/cosmos/ibc-go/v5/modules/core/02-client/types"
-	ibcchanneltypes "github.com/cosmos/ibc-go/v5/modules/core/04-channel/types"
+	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
 	"github.com/stretchr/testify/suite"
 
-	gaiaapp "github.com/cosmos/gaia/v8/app"
-	gaiafeeante "github.com/cosmos/gaia/v8/x/globalfee/ante"
-	globfeetypes "github.com/cosmos/gaia/v8/x/globalfee/types"
+	gaiaapp "github.com/cosmos/gaia/v9/app"
+	gaiafeeante "github.com/cosmos/gaia/v9/x/globalfee/ante"
+	globfeetypes "github.com/cosmos/gaia/v9/x/globalfee/types"
 )
 
 func TestIntegrationTestSuite(t *testing.T) {
@@ -31,7 +31,7 @@ func (s *IntegrationTestSuite) TestGetDefaultGlobalFees() {
 	stakingSubspace := s.SetupTestStakingSubspace(stakingParam)
 
 	// setup antehandler
-	mfd := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), globalfeeSubspace, stakingSubspace)
+	mfd := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), globalfeeSubspace, stakingSubspace, newTestGasLimit())
 
 	defaultGlobalFees, err := mfd.DefaultZeroGlobalFee(s.ctx)
 	s.Require().NoError(err)
@@ -573,7 +573,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			stakingParam.BondDenom = "uatom"
 			stakingSubspace := s.SetupTestStakingSubspace(stakingParam)
 			// setup antehandler
-			mfd := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), globalfeeSubspace, stakingSubspace)
+			mfd := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), globalfeeSubspace, stakingSubspace, newTestGasLimit())
 			antehandler := sdk.ChainAnteDecorators(mfd)
 
 			s.Require().NoError(s.txBuilder.SetMsgs(testCase.txMsg))

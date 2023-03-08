@@ -39,12 +39,12 @@ if test -f "$BINARY"; then
 
   echo "\n"
   echo "Submitting proposal... \n"
-  $BINARY tx gov submit-proposal software-upgrade v8-Rho \
-  --title v8-Rho \
+  $BINARY tx gov submit-proposal software-upgrade v9-Lambda \
+  --title v9-Lambda \
   --deposit 10000000uatom \
   --upgrade-height $UPGRADE_HEIGHT \
-  --upgrade-info "upgrade to v8-Rho" \
-  --description "upgrade to v8-Rho" \
+  --upgrade-info "upgrade to v9-Lambda" \
+  --description "upgrade to v9-Lambda" \
   --gas auto \
   --fees 400uatom \
   --from val \
@@ -71,5 +71,5 @@ if test -f "$BINARY"; then
   echo "Done \n"
 
 else
-  echo "Please build gaia v7 and move to ./build/gaiad7"
+  echo "Please build gaia v8 and move to ./build/gaiad8"
 fi

@@ -13,14 +13,6 @@
           "Params": "GlobalfeeParams"
         }
       }
-    },
-    {
-      "url":  "./tmp-swagger-gen/gaia/icamauth/v1beta1/query.swagger.json",
-      "operationIds": {
-        "rename": {
-          "Params": "ICAmauthParams"
-        }
-      }
     }
   ]
 }

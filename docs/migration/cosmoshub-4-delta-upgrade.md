@@ -5,9 +5,10 @@ order: 4
 <!-- markdown-link-check-disable -->
 # Cosmos Hub 4, Delta Upgrade, Instructions
 
-This document describes the steps for validator and full node operators for the successful execution of the [Delta Upgrade](https://github.com/cosmos/gaia/blob/main/docs/roadmap/cosmos-hub-roadmap-2.0.md#Delta-Upgrade), which adds the __Gravity DEX__ to the Cosmos Hub. 
+This document describes the steps for validator and full node operators for the successful execution of the [Delta Upgrade](https://github.com/cosmos/gaia/blob/main/docs/roadmap/cosmos-hub-roadmap-2.0.md#Delta-Upgrade), which adds the __Gravity DEX__ to the Cosmos Hub.
 
 TOC:
+
 - [On-chain governance proposal attains consensus](#on-chain-governance-proposal-attains-consensus)
 - [Upgrade will take place July 12, 2021](#upgrade-will-take-place-july-12-2021)
 - [Chain-id will remain the same](#chain-id-will-remain-the-same)
@@ -26,7 +27,7 @@ TOC:
 
 ## On-chain governance proposal attains consensus
 
-[Proposal #51](https://www.mintscan.io/cosmos/proposals/51) is the reference on-chain governance proposal for the this upgrade, which has passed with overwhleming community support. Neither core developers nor core funding entities control the governance, and this governance proposal has passed in a _fully decentralized_ way.  
+[Proposal #51](https://www.mintscan.io/cosmos/proposals/51) is the reference on-chain governance proposal for this upgrade, which has passed with overwhelming community support. Neither core developers nor core funding entities control the governance, and this governance proposal has passed in a _fully decentralized_ way.  
 
 ## Upgrade will take place July 12, 2021
 
@@ -54,11 +55,11 @@ Validator and full node operators that wish to test their systems on a public te
 
 ### Current runtime, cosmoshub-4 (pre-Delta upgrade) is running Gaia v4.2.1
 
-The Cosmos Hub mainnet network, `cosmoshub-4`, is currently running [Gaia v4.2.1](https://github.com/cosmos/gaia/releases/tag/v4.2.1). We anticipate that operators who are running earlier versions of Gaia, e.g., v4.2.x, will be able to upgrade successfully; however, this is untested and it is up to operators to ensure that their systems are capable of performing the upgrade. 
+The Cosmos Hub mainnet network, `cosmoshub-4`, is currently running [Gaia v4.2.1](https://github.com/cosmos/gaia/releases/tag/v4.2.1). We anticipate that operators who are running earlier versions of Gaia, e.g., v4.2.x, will be able to upgrade successfully; however, this is untested and it is up to operators to ensure that their systems are capable of performing the upgrade.
 
 ### Target runtime, cosmoshub-4 (post-Delta upgrade) will run Gaia v5.0.0
 
-The Comsos Hub mainnet network, `cosmoshub-4`, will run [Gaia v5.0.0](https://github.com/cosmos/gaia/releases/tag/v5.0.0). Operators _MUST_ use this version post-upgrade to remain connected to the network. 
+The Comsos Hub mainnet network, `cosmoshub-4`, will run [Gaia v5.0.0](https://github.com/cosmos/gaia/releases/tag/v5.0.0). Operators _MUST_ use this version post-upgrade to remain connected to the network.
 
 ## Delta upgrade steps
 
@@ -71,7 +72,7 @@ The following steps assume that an operator is running v4.2.1 (running an earlie
 >
 > panic: UPGRADE "Gravity-DEX" NEEDED at height: 6910000: v5.0.0-4760cf1f1266accec7a107f440d46d9724c6fd08
 
-**IMPORTANT: PLEASE WAIT FOR THE BINARY TO HALT ON ITS OWN**. Do NOT shutdown the node yourself. If the node shuts down before the panic message, start the node and let it run until the panic stops the node for you. 
+__IMPORTANT: PLEASE WAIT FOR THE BINARY TO HALT ON ITS OWN__. Do NOT shutdown the node yourself. If the node shuts down before the panic message, start the node and let it run until the panic stops the node for you.
 
 3. Important note to all validators: Although the upgrade path is essentially to replace the binary when the software panics and halts at the upgrade height, an important disaster recovery operation is to take a snapshot of your state after the halt and before starting v5.0.0.
 
@@ -79,8 +80,8 @@ The following steps assume that an operator is running v4.2.1 (running an earlie
 cp -r ~/.gaia ./gaia_backup
 ```
 
-Note: use the home directory relevant to your node's Gaia configuration (if different from `~/.gaia`). 
-    
+Note: use the home directory relevant to your node's Gaia configuration (if different from `~/.gaia`).
+
 4. Replace the Gaia v4.2.1 binary with the Gaia v5.0.0 binary
 5. Start the Gaia v5.0.0 binary using the following command (also applying any additional flags and parameters to the binary needed by the operator, e.g., `--home $HOME`):
 
@@ -91,8 +92,8 @@ IMPORTANT: The flag `--x-crisis-skip-assert-invariants` is optional and can be u
 5. Wait until 2/3+ of voting power has upgraded for the network to start producing blocks
 6. You can use the following commands to check peering status and state:
 
-> curl -s http://127.0.0.1:26657/net_info | grep n_peers
-> 
+> curl -s <http://127.0.0.1:26657/net_info> | grep n_peers
+>
 > curl -s localhost:26657/consensus_state | jq -r .result.round_state.height_vote_set[].prevotes_bit_array
 
 ## Upgrade duration
@@ -101,7 +102,7 @@ The upgrade may take several hours to complete because cosmoshub-4 participants 
 
 ## Rollback plan
 
-During the network upgrade, core Cosmos teams will be keeping an ever vigilant eye and communicating with operators on the status of their upgrades. During this time, the core teams will listen to operator needs to determine if the upgrade is experiencing unintended challenges. In the event of unexpected challenges, the core teams, after conferring with operators and attaining social consensus, may choose to declare that the upgrade will be skipped. 
+During the network upgrade, core Cosmos teams will be keeping an ever vigilant eye and communicating with operators on the status of their upgrades. During this time, the core teams will listen to operator needs to determine if the upgrade is experiencing unintended challenges. In the event of unexpected challenges, the core teams, after conferring with operators and attaining social consensus, may choose to declare that the upgrade will be skipped.
 
 Steps to skip this upgrade proposal are simply to resume the cosmoshub-4 network with the (downgraded) v4.2.1 binary using the following command:
 
@@ -119,15 +120,16 @@ Operators are encouraged to join the `#validators-verified` channel of the Cosmo
 
 As a validator performing the upgrade procedure on your consensus nodes carries a heightened risk of double-signing and being slashed. The most important piece of this procedure is verifying your software version and genesis file hash before starting your validator and signing.
 
-The riskiest thing a validator can do is discover that they made a mistake and repeat the upgrade procedure again during the network startup. If you discover a mistake in the process, the best thing to do is wait for the network to start before correcting it. 
+The riskiest thing a validator can do is discover that they made a mistake and repeat the upgrade procedure again during the network startup. If you discover a mistake in the process, the best thing to do is wait for the network to start before correcting it.
 
 ## FAQ
 
 1. If I am a new operator and I want to join the network, what should I do?
 
 In order to join the cosmoshub-4 network after the Delta upgrade, you have two options:
- - Use a post-delta upgrade state snapshot, such as one provided by [quicksync](https://cosmos.quicksync.io/) and start a node using the gaia v5.0.0 binary. 
- - If not using a snapshot, or using a pre-delta upgrade snapshot, sync with the network using the gaia v4.2.1 binary until the upgrade height and panic, then switch the gaia binary for v5.0.0.
+
+- Use a post-delta upgrade state snapshot, such as one provided by [quicksync](https://cosmos.quicksync.io/) and start a node using the gaia v5.0.0 binary.
+- If not using a snapshot, or using a pre-delta upgrade snapshot, sync with the network using the gaia v4.2.1 binary until the upgrade height and panic, then switch the gaia binary for v5.0.0.
   
 2. Does the post-Delta upgrade introduce any changes of note?
 

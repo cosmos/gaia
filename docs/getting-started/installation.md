@@ -15,12 +15,12 @@ At present, the SDK fully supports installation on linux distributions. For the 
 2. [Install Go](#install-go)
 3. [Install `Gaiad` binaries](#install-the-binaries)
 
-
 ## Build Tools
 
 Install `make` and `gcc`.
 
 **Ubuntu:**
+
 ```bash
 sudo apt-get update
 
@@ -40,6 +40,7 @@ We suggest the following two ways to install Go. Check out the [official docs](h
 **Ubuntu:**
 
 At the time of this writing, the latest release is `1.18.2`. We're going to download the tarball, extract it to `/usr/local`, and export `GOROOT` to our `$PATH`
+
 ```bash
 curl -OL https://golang.org/dl/go1.18.2.linux-amd64.tar.gz
 
@@ -94,10 +95,10 @@ You should see something similar to the following:
 ```bash
 name: gaia
 server_name: gaiad
-version: v7.1.0
-commit: 07f9892a927f451ae204d0c9d1a5601d8fc232a5
+version: v8.0.0
+commit: f9507c7e79f258aaa9a2265ca7d94e53988ffe16
 build_tags: netgo,ledger
-go: go version go1.18 linux/amd64
+go: go version go1.18.10 darwin/arm64
 ```
 
 ### Build Tags

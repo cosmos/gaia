@@ -1,6 +1,6 @@
-# The Cosmos Hub Roadmap
+# Cosmos Hub Release Log
 
-This Cosmos Hub roadmap serves as a reference for the current planned features of upcoming releases, as well as providing a record of past releases.
+This Cosmos Hub release log serves as a reference for the current planned features of upcoming releases, as well as providing a record of past releases.
 
 ## Delta Upgrade (Completed July 12, 2021)
 
@@ -43,7 +43,7 @@ This Cosmos Hub roadmap serves as a reference for the current planned features o
     - Arbitrary messages are able to be submitted from the "Controller" blockchain to the "Host" blockchain to be executed on behalf of the Interchain Account.
     - Uses ordered IBC channels, one per account.
 
-## v8-Rho Upgrade (expected Q1 2023)
+## v8-Rho Upgrade (Completed February 16, 2023)
 
 - Gaia v8.0.x
 - Cosmos SDK v0.45.12
@@ -57,7 +57,7 @@ This Cosmos Hub roadmap serves as a reference for the current planned features o
   - Allows denoms and min-fees to be governance parameters so gas can be paid in various denoms.
   - Visible on [tgrade](https://github.com/confio/tgrade/tree/main/x/globalfee) already and enabled in [ante.go](https://github.com/confio/tgrade/blob/main/app/ante.go#L72-L92)
 
-## v9-Lambda Upgrade (expected Q1 2023)
+## v9-Lambda Upgrade (expected March 15, 2023)
 
 - Gaia v9.0.x
 - Cosmos SDK v0.45

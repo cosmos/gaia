@@ -74,7 +74,7 @@ If you still want to participate on the Cosmos Hub, check out becoming a delegat
 
 ___
 
-To participate in or utilize the current Cosmos Hub testnet, take a look at the [cosmos/testnets](https://github.com/cosmos/testnets) repository. This testnet is for the Theta Upgrade expected in Q1 2022. For future upgrades of the Cosmos Hub take a look at the [roadmap](https://github.com/cosmos/gaia/blob/main/docs/roadmap/cosmos-hub-roadmap-2.0.md).
+To participate in or utilize the current Cosmos Hub testnet, take a look at the [cosmos/testnets](https://github.com/cosmos/testnets) repository. This testnet is for the Lambda Upgrade expected in Q1 2023. For future upgrades of the Cosmos Hub take a look at the [roadmap](https://github.com/cosmos/gaia/blob/main/docs/roadmap/cosmos-hub-release-log.md).
 
 <br/>
 <br/>
@@ -83,7 +83,7 @@ To participate in or utilize the current Cosmos Hub testnet, take a look at the 
 
 ___
 
-For an overview of upcoming changes to the Cosmos Hub take a look at the [Roadmap](https://github.com/cosmos/gaia/blob/main/docs/roadmap/cosmos-hub-roadmap-2.0.md).
+For an overview of upcoming changes to the Cosmos Hub take a look at the [Roadmap](https://github.com/cosmos/gaia/blob/main/docs/roadmap/cosmos-hub-release-log.md).
 
 <br/>
 <br/>

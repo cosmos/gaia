@@ -5,7 +5,7 @@ order: 1
 <!-- markdown-link-check-disable -->
 # Cosmos Hub 4, v9-Lambda Upgrade, Instructions
 
-This document describes the steps for validator and full node operators for the successful execution of the [v9-Lambda Upgrade](https://github.com/cosmos/gaia/blob/main/docs/roadmap/cosmos-hub-roadmap-2.0.md#v9-lambda-upgrade-expected-q1-2023), which contains the following main new features/improvement:
+This document describes the steps for validator and full node operators for the successful execution of the [v9-Lambda Upgrade](../roadmap/cosmos-hub-release-log.md#v9-lambda-upgrade-expected-march-15-2023), which contains the following main new features/improvement:
 
 - [Interchain-Security](https://github.com/cosmos/interchain-security) [v1.0.0](https://github.com/cosmos/interchain-security/releases/tag/v1.0.0) provider module. See the [ICS Spec](https://github.com/cosmos/ibc/blob/main/spec/app/ics-028-cross-chain-validation/README.md) for more details.
 - [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.13-ics](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.13-ics). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/releases/tag/v0.45.13-ics) for details.

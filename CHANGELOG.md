@@ -34,11 +34,6 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 # Changelog
 
-
-## [v9.1.0] - 2023-03-09
-
-* (feat) [add spam prevention antehandler](https://github.com/cosmos/gaia/pull/2262) to alleviate recent governance spam issues
-
 ## [v9.0.0] - 2023-02-21
 
 * (feat) Add [Interchain-Security](https://github.com/cosmos/interchain-security) [v1.0.0](https://github.com/cosmos/interchain-security/releases/tag/v1.0.0) provider module. See the [ICS Spec](https://github.com/cosmos/ibc/blob/main/spec/app/ics-028-cross-chain-validation/README.md) for more details.
@@ -72,6 +67,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 * (tests) Use gaiad to swap out [Ignite](https://github.com/ignite/cli) in [liveness tests](https://github.com/cosmos/gaia/blob/main/.github/workflows/test.yml).
 
 ## [Unreleased]
+
+## [v9.1.0-rc0] - 2023-03-09
+
+* (feat) [add spam prevention antehandler](https://github.com/cosmos/gaia/pull/2262) to alleviate recent governance spam issues.
 
 ## [v9.0.0-rc7] - 2023-02-17
 

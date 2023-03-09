@@ -56,7 +56,7 @@ If you're interested in running a node on the current Cosmos Hub, check out the 
 
 ___
 
-If you want to participate and help secure Cosmos Hub, check out becoming a validator. Information on what a validator is and how to participate as one can be found at the [Validator FAQ](https://hub.cosmos.network/main/validators/validator-faq.html#). If you're running a validator node on the Cosmos Hub, reach out to a Janitor on the [Cosmos Developers Discord](https://discord.gg/cosmosnetwork) to join the `#validators-verified` channel.
+If you want to participate and help secure Cosmos Hub, check out becoming a validator. Information on what a validator is and how to participate as one can be found at the [Validator FAQ](https://hub.cosmos.network/main/validators/validator-faq.html#). If you're running a validator node on the Cosmos Hub, reach out to a Janitor on the [Cosmos Developers Discord](https://discord.gg/cosmosnetwork) to join the `#cosmos-hub-validators-verified` channel.
 
 <br/>
 <br/>
@@ -119,6 +119,7 @@ We have active, helpful communities on Twitter, Discord, and Telegram.
 | -- | -- |
 | Cosmos Developers Discord | <a href="https://discord.gg/cosmosnetwork"><img src="https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white" alt="Discord" height="30"/></a> |
 | Cosmos Twitter | <a href="https://twitter.com/cosmos"><img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Tweet" height="30"/></a> |
+| Cosmos Gov Twitter | <a href="https://twitter.com/CosmosGov"><img src="https://img.shields.io/badge/Twitter-FEFEFE?style=for-the-badge&logo=twitter&logoColor=blue" alt="Tweet" height="30"/></a> |
 | Cosmos Telegram | <a href="https://t.me/cosmosproject"><img src="https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram" height="30"/></a> |
 
 For updates on the Cosmos Hub team's activities follow us on the [Cosmos Hub Twitter](https://twitter.com/cosmoshub) account.

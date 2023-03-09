@@ -68,7 +68,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
-## [v9.1.0-rc0] - 2023-03-09
+## [v9.0.1-rc0] - 2023-03-09
 
 * (feat) [add spam prevention antehandler](https://github.com/cosmos/gaia/pull/2262) to alleviate recent governance spam issues.
 

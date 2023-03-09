@@ -38,11 +38,11 @@ If recorded decisions turned out to be lacking, convene a discussion, record the
 ### Process
 
 1. Copy the `template.md` file. Use the following filename pattern: `adr-next_number-title.md`
-2. Link the ADR in the related [feature epic](../../.github/ISSUE_TEMPLATE/feature-readiness.md)
-2. Create a draft Pull Request if you want to get early feedback.
-3. Make sure the context and a solution is clear and well documented.
-4. Add an entry to a list in the README file [Table of Contents](#ADR-Table-of-Contents).
-5. Create a Pull Request to publish the ADR proposal.
+2. Link the ADR in the related feature epic
+3. Create a draft Pull Request if you want to get early feedback.
+4. Make sure the context and a solution is clear and well documented.
+5. Add an entry to a list in the README file [Table of Contents](#ADR-Table-of-Contents).
+6. Create a Pull Request to publish the ADR proposal.
 
 ### Life cycle
 

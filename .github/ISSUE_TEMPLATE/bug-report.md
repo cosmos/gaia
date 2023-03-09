@@ -1,7 +1,7 @@
 ---
 name: Bug Report 
 about: Create a report to help us squash bugs!
-
+labels: bug, needs-triage
 ---
 
 <!-- < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < ☺ 

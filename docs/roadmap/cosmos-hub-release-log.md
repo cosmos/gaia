@@ -2,7 +2,10 @@
 
 This Cosmos Hub release log serves as a reference for the current planned features of upcoming releases, as well as providing a record of past releases.
 
-## Delta Upgrade (Completed July 12, 2021)
+## Delta Upgrade
+::: warning
+**Completed July 12, 2021**
+:::
 
 - Gaia v5.0.x
 - Gravity DEX:
@@ -10,7 +13,10 @@ This Cosmos Hub release log serves as a reference for the current planned featur
   - Drives liquidity for tokens on the Cosmos Hub
   - Delivers price consistency and order execution
 
-## Vega Upgrade (Completed December 14, 2021)
+## Vega Upgrade
+::: warning
+**Completed December 14, 2021**
+:::
 
 - Gaia v6.0.x
 - Cosmos SDK v0.44
@@ -30,7 +36,10 @@ This Cosmos Hub release log serves as a reference for the current planned featur
   - Transfer ATOM, ETH, ERC-20, and other Cosmos tokens between Ethereum and the Gravity Bridge Chain and by extension all IBC connected chains.
   - Fee and reward model hosted across Cosmos and Ethereum
 
-## v7-Theta Upgrade (Completed March 25, 2022)
+## v7-Theta Upgrade
+::: warning
+**Completed March 25, 2022**
+:::
 
 - Gaia v7.0.x
 - Cosmos SDK v0.45
@@ -43,7 +52,11 @@ This Cosmos Hub release log serves as a reference for the current planned featur
     - Arbitrary messages are able to be submitted from the "Controller" blockchain to the "Host" blockchain to be executed on behalf of the Interchain Account.
     - Uses ordered IBC channels, one per account.
 
-## v8-Rho Upgrade (Completed February 16, 2023)
+## v8-Rho Upgrade
+::: warning
+**Completed February 16, 2023**
+:::
+
 
 - Gaia v8.0.x
 - Cosmos SDK v0.45.12
@@ -57,7 +70,11 @@ This Cosmos Hub release log serves as a reference for the current planned featur
   - Allows denoms and min-fees to be governance parameters so gas can be paid in various denoms.
   - Visible on [tgrade](https://github.com/confio/tgrade/tree/main/x/globalfee) already and enabled in [ante.go](https://github.com/confio/tgrade/blob/main/app/ante.go#L72-L92)
 
-## v9-Lambda Upgrade (expected March 15, 2023)
+## v9-Lambda Upgrade
+::: warning
+**expected March 15, 2023**
+:::
+
 
 - Gaia v9.0.x
 - Cosmos SDK v0.45

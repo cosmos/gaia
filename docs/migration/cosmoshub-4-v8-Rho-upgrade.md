@@ -5,7 +5,7 @@ order: 2
 <!-- markdown-link-check-disable -->
 # Cosmos Hub 4, v8-Rho Upgrade, Instructions
 
-This document describes the steps for validator and full node operators for the successful execution of the [v8-Rho Upgrade](../roadmap/cosmos-hub-release-log.md#v8-rho-upgrade-completed-february-16-2023), which contains the following main new features/improvement:
+This document describes the steps for validator and full node operators for the successful execution of the [v8-Rho Upgrade](../roadmap/cosmos-hub-release-log.md#v8-rho-upgrade), which contains the following main new features/improvement:
 
 - [ibc-go](https://github.com/cosmos/ibc-go) to [v3.4.0](https://github.com/cosmos/ibc-go/blob/v3.4.0/CHANGELOG.md) to fix a vulnerability in ICA. See [v3.4.0 CHANGELOG.md](https://github.com/cosmos/ibc-go/releases/tag/v3.4.0) and [v3.2.1 Release Notes](https://github.com/cosmos/ibc-go/releases/tag/v3.2.1) for details.
 - [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.12](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.12). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/release/v0.45.x/CHANGELOG.md) for details.

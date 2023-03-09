@@ -5,7 +5,7 @@ order: 2
 <!-- markdown-link-check-disable -->
 # Cosmos Hub 4, v7-Theta Upgrade, Instructions
 
-This document describes the steps for validator and full node operators for the successful execution of the [v7-Theta Upgrade](../roadmap/cosmos-hub-release-log.md#v7-theta-upgrade-completed-march-25-2022), which contains the following main new features/improvement:
+This document describes the steps for validator and full node operators for the successful execution of the [v7-Theta Upgrade](../roadmap/cosmos-hub-release-log.md#v7-theta-upgrade), which contains the following main new features/improvement:
 
 - [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.1](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.1). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.1/CHANGELOG.md#v0451---2022-02-03) for details.
 - [ibc-go](https://github.com/cosmos/ibc-go) module to [v3.0.0](https://github.com/cosmos/ibc-go/releases/tag/v3.0.0). See [CHANGELOG.md](https://github.com/cosmos/ibc-go/blob/v3.0.0/CHANGELOG.md#v300---2022-03-15) for details.

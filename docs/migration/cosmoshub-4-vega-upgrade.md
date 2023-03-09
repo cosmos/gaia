@@ -5,7 +5,7 @@ order: 3
 <!-- markdown-link-check-disable -->
 # Cosmos Hub 4, Vega Upgrade, Instructions
 
-This document describes the steps for validator and full node operators for the successful execution of the [Vega Upgrade](../roadmap/cosmos-hub-release-log.md#vega-upgrade-completed-december-14-2021), which contains the following main new features:
+This document describes the steps for validator and full node operators for the successful execution of the [Vega Upgrade](../roadmap/cosmos-hub-release-log.md#vega-upgrade), which contains the following main new features:
 
 - [authz](https://github.com/cosmos/cosmos-sdk/tree/v0.44.3/x/authz/spec) and [feegrant modules](https://github.com/cosmos/cosmos-sdk/tree/v0.44.3/x/feegrant/spec)
 - [packet-forward-middleware](https://github.com/strangelove-ventures/packet-forward-middleware)

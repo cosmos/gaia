@@ -80,22 +80,23 @@ func InitCmd(mbm module.BasicManager, defaultNodeHome string) *cobra.Command {
 			serverCtx := server.GetServerContextFromCmd(cmd)
 			config := serverCtx.Config
 
-			//This is a slice of SEED nodes, not peers.  They must be configured in seed mode.
+
 			//An easy way to run a lightweight seed node is to use tenderseed: github.com/binaryholdings/tenderseed
 
 			seeds := []string{
 				"bf8328b66dceb4987e5cd94430af66045e59899f@public-seed.cosmos.vitwit.com:26656",         // vitwit
 				"ba3bacc714817218562f743178228f23678b2873@public-seed-node.cosmoshub.certus.one:26656", // Certus One
-				"d85a36ad765a9ac7557f0a2f39ec637db5cac13c@162.55.132.230:2011"}                         // Notional
+				"d85a36ad765a9ac7557f0a2f39ec637db5cac13c@162.55.132.230:2011",
+			} // Notional
 
-			//Override default settings in config.toml
+
 			config.P2P.Seeds = strings.Join(seeds, ",")
 			config.P2P.MaxNumInboundPeers = 300
 			config.P2P.MaxNumOutboundPeers = 40
 
 			config.SetRoot(clientCtx.HomeDir)
 
-			//Override default settings in app.toml
+
 			appConfig := appcfg.DefaultConfig()
 
 			chainID, _ := cmd.Flags().GetString(flags.FlagChainID)

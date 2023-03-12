@@ -69,6 +69,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ## [Unreleased]
 * (gaia: ux) Add seed nodes to init.go
 
+## [v9.0.1-rc0] - 2023-03-09
+
+* (feat) [add spam prevention antehandler](https://github.com/cosmos/gaia/pull/2262) to alleviate recent governance spam issues.
+
 ## [v9.0.0-rc7] - 2023-02-17
 
 * (feat) Add [Interchain-Security](https://github.com/cosmos/interchain-security) [v1.0.0-rc7](https://github.com/cosmos/interchain-security/releases/tag/v1.0.0-rc7) provider module. See the [ICS Spec](https://github.com/cosmos/ibc/blob/main/spec/app/ics-028-cross-chain-validation/README.md) for more details.

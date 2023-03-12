@@ -7,7 +7,7 @@ title: Introduction
 ### **v9-Lambda Upgrade**
 Cosmos Hub will upgrade at height: **14,470,501**
 
-Upgrade is estimated to take place around **2023-03-15 12:00 UTC**
+Upgrade countdown is available [**here**](https://www.mintscan.io/cosmos/blocks/14470501)
 
 Upgrade guide is available [**here**](../migration/cosmoshub-4-v9-Lambda-upgrade.md)
 :::

@@ -20,7 +20,7 @@ func (s *IntegrationTestSuite) govProposeNewGlobalfee(newGlobalfee sdk.DecCoins,
 	// gov proposing new fees
 	s.T().Logf("Proposal number: %d", proposalCounter)
 	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change global fee to %s", newGlobalfee.String())
-	s.runGovProcess(chainAAPIEndpoint, submitter, proposalCounter, paramtypes.ProposalTypeChange, submitGovFlags, depositGovFlags, voteGovFlags, "vote")
+	s.runGovProcess(chainAAPIEndpoint, submitter, proposalCounter, paramtypes.ProposalTypeChange, submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
 
 	// query the proposal status and new fee
 	s.Require().Eventually(

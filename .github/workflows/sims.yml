@@ -1,9 +1,12 @@
 name: Sims
 on:
+  workflow_call:
+  workflow_dispatch:
   pull_request:
   push:
     branches:
       - main
+      
 jobs:
   cleanup-runs:
     runs-on: ubuntu-latest
@@ -16,103 +19,55 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-go@v2.1.3
+      - uses: actions/setup-go@v3
         with:
-          go-version: 1.16
+          go-version: 1.18
       - name: Install runsim
-        run: export GO111MODULE="on" && go get github.com/cosmos/tools/cmd/runsim@v1.0.0
-      - uses: actions/cache@v1
+        run: go install github.com/cosmos/tools/cmd/runsim@v1.0.0
+      - uses: actions/cache@v3.2.0
         with:
           path: ~/go/bin
           key: ${{ runner.os }}-go-runsim-binary
 
-#  test-sim-nondeterminism:
-#    runs-on: ubuntu-latest
-#    needs: Build
-#    steps:
-#      - uses: actions/checkout@v2
-#      - uses: actions/setup-go@v2.1.3
-#        with:
-#          go-version: 1.16
-#      - uses: technote-space/get-diff-action@v4
-#        with:
-#          PATTERNS: |
-#            **/**.go
-#            go.mod
-#            go.sum
-#      - uses: actions/cache@v1
-#        with:
-#          path: ~/go/bin
-#          key: ${{ runner.os }}-go-runsim-binary
-#        if: "env.GIT_DIFF != ''"
-#      - name: test nondeterminism
-#        run: |
-#          make test-sim-nondeterminism
-#        if: "env.GIT_DIFF != ''"
-
-  test-sim-import-export:
+  test-sim-nondeterminism:
     runs-on: ubuntu-latest
-    needs: Build
+    needs: newbuild
     steps:
-      - uses: technote-space/get-diff-action@v4
+      - uses: actions/checkout@v3.3.0
+      - uses: actions/setup-go@v3.0.0
+        with:
+          go-version: 1.18
+      - uses: technote-space/get-diff-action@v6.0.1
         with:
           PATTERNS: |
             **/**.go
             go.mod
             go.sum
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2.1.3
-        with:
-          go-version: 1.16
-      - uses: actions/cache@v1
+      - uses: actions/cache@v3.2.0
         with:
           path: ~/go/bin
           key: ${{ runner.os }}-go-runsim-binary
         if: "env.GIT_DIFF != ''"
-      - name: test-sim-import-export
+      - name: test nondeterminism
         run: |
-          make test-sim-import-export
-        if: "env.GIT_DIFF != ''"
-
-  test-sim-after-import:
-    runs-on: ubuntu-latest
-    needs: Build
-    steps:
-      - uses: actions/setup-go@v2.1.3
-        with:
-          go-version: 1.16
-      - uses: actions/checkout@v2
-      - uses: technote-space/get-diff-action@v4
-        with:
-          PATTERNS: |
-            **/**.go
-            go.mod
-            go.sum
-      - uses: actions/cache@v1
-        with:
-          path: ~/go/bin
-          key: ${{ runner.os }}-go-runsim-binary
-        if: "env.GIT_DIFF != ''"
-      - name: test after import
-        run: |
-          make test-sim-after-import
+          make test-sim-nondeterminism
         if: "env.GIT_DIFF != ''"
 
   test-sim-multi-seed-short:
     runs-on: ubuntu-latest
-    needs: Build
+    needs: build
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2.1.3
+      - uses: actions/checkout@v3.3.0
+      - uses: actions/setup-go@v3
         with:
-          go-version: 1.16
-      - uses: technote-space/get-diff-action@v4
+          go-version: 1.18
+      - uses: technote-space/get-diff-action@v6
         with:
           PATTERNS: |
             **/**.go
             go.mod
             go.sum
-      - uses: actions/cache@v2.1.3
+      - uses: actions/cache@v3.2.0
         with:
           path: ~/go/bin
           key: ${{ runner.os }}-go-runsim-binary
@@ -122,26 +77,42 @@ jobs:
           make test-sim-multi-seed-short
         if: "env.GIT_DIFF != ''"
 
-  test-liveness:
+  newbuild:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/setup-go@v3.0.0
+          with:
+            go-version: 1.18
+        - name: Install runsim
+          run: go install github.com/cosmos/tools/cmd/runsim@v1.0.0
+        - uses: actions/cache@v3.2.0
+          with:
+            path: ~/go/bin
+            key: ${{ runner.os }}-go-runsim-binary
+
+  install-runsim:
     runs-on: ubuntu-latest
-    needs: Build
-    timeout-minutes: 10
+    needs: build
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2.1.3
+      - name: install runsim
+        run: go install github.com/cosmos/tools/cmd/runsim@v1.0.0
+      - uses: actions/cache@v3.2.0
         with:
-          go-version: 1.16
-      - uses: technote-space/get-diff-action@v4
+          path: ~/go/bin
+          key: ${{ runner.os }}-go-runsim-binary
+
+  test-sim-multi-seed-long:
+    runs-on: ubuntu-latest
+    needs: [build, install-runsim]
+    steps:
+      - uses: actions/setup-go@v3
         with:
-          PATTERNS: |
-            **/**.go
-            go.mod
-            go.sum
-      - name: start localnet
+          go-version: 1.18
+      - uses: actions/checkout@v3.3.0
+      - uses: actions/cache@v3.2.0
+        with:
+          path: ~/go/bin
+          key: ${{ runner.os }}-go-runsim-binary
+      - name: test-sim-multi-seed-long
         run: |
-          make clean localnet-start
-        if: "env.GIT_DIFF != ''"
-      - name: test liveness
-        run: |
-          ./contrib/localnet-blocks-test.sh 100 5 50 localhost
-        if: "env.GIT_DIFF != ''"
+          make test-sim-multi-seed-long

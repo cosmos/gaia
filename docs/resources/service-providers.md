@@ -1,12 +1,13 @@
-<!--
-order: 5
--->
+---
+order: 6
+title: Service Providers
+---
 
 # Service Providers
 
 'Service Providers' are defined as entities that provide services for end-users that involve some form of interaction with the Cosmos Hub. More specifically, this document is focused on interactions with tokens.
 
-Service Providers are expected to act as trusted points of contact to the blockchain for their end-users. This Service Providers section does not apply to wallet builders that want to provide Light Client functionalities. 
+Service Providers are expected to act as trusted points of contact to the blockchain for their end-users. This Service Providers section does not apply to wallet builders that want to provide Light Client functionalities.
 
 This document describes:
 
@@ -24,12 +25,11 @@ This document describes:
 - [REST API](#rest-api)
   - [Listen for incoming transactions](#listen-for-incoming-transaction)
 
-
 ## Connection Options
 
 There are four main technologies to consider to connect to the Cosmos Hub:
 
-- Full Nodes: Interact with the blockchain. 
+- Full Nodes: Interact with the blockchain.
 - REST Server: Serves for HTTP calls.
 - REST API: Use available endpoints for the REST Server.
 - GRPC: Connect to the Cosmos Hub using gRPC.
@@ -38,15 +38,15 @@ There are four main technologies to consider to connect to the Cosmos Hub:
 
 ### What is a Full Node?
 
-A Full Node is a network node that syncs up with the state of the blockchain. It provides blockchain data to others by using RESTful APIs, a replica of the database by exposing data with interfaces. A Full Node keeps in syncs with the rest of the blockchain nodes and stores the state on disk. If the full node does not have the queried block on disk the full node can go find the blockchain where the queried data lives. 
+A Full Node is a network node that syncs up with the state of the blockchain. It provides blockchain data to others by using RESTful APIs, a replica of the database by exposing data with interfaces. A Full Node keeps in syncs with the rest of the blockchain nodes and stores the state on disk. If the full node does not have the queried block on disk the full node can go find the blockchain where the queried data lives.
 
 ### Installation and Configuration
 
 This section describes the steps to run and interact with a full node for the Cosmos Hub.
 
-First, you need to [install the software](../gaia-tutorials/installation.md).
+First, you need to [install the software](../getting-started/installation.md).
 
-Consider running your own [Cosmos Hub Full Node](../gaia-tutorials/join-mainnet.md).
+Consider running your own [Cosmos Hub Full Node](../hub-tutorials/join-mainnet.md).
 
 ## Command-Line Interface
 
@@ -64,7 +64,7 @@ gaiad version --long
 All available CLI commands are shown when you run the `gaiad` command:
 
 ```bash
-gaiad 
+gaiad
 ```
 
 ```bash
@@ -105,7 +105,7 @@ Flags:
 Use "gaiad [command] --help" for more information about a command.
 ```
 
-For each displayed command, you can use the `--help` flag to get further information. 
+For each displayed command, you can use the `--help` flag to get further information.
 
 ```bash
 gaiad query --help
@@ -165,18 +165,10 @@ First, set up the address of the full node you want to connect to:
 ```bash
 gaiad config node <host>:<port
 
-// example: gaiad config node https://77.87.106.33:26657
+// example: gaiad config node https://77.87.106.33:26657 (note: this is a placeholder)
 ```
 
-If you run your own full node locally, use `tcp://localhost:26657` as the address. 
-
-Set the default value of the `--trust-node` flag:
-
-```bash
-gaiad config trust-node false
-
-// Set to true if you run a light client node
-```
+If you run your own full node locally, use `tcp://localhost:26657` as the address.
 
 Finally, set the `chain-id` of the blockchain you want to interact with:
 
@@ -191,8 +183,6 @@ You can run these commands as remote control or when you are running it on your 
 
 The default key is `secp256k1 elliptic curve`. Use the `gaiad keys` command to list the keys and generate a new key.
 
-
-
 ```bash
 gaiad keys add <your_key_name>
 ```
@@ -200,7 +190,7 @@ gaiad keys add <your_key_name>
 You will be asked to create a password (at least 8 characters) for this key-pair. This will return the information listed below:
 
 - `NAME`: Name of your key
-- `TYPE`: Type of your key, always `local`. 
+- `TYPE`: Type of your key, always `local`.
 - `ADDRESS`: Your address. Used to receive funds.
 - `PUBKEY`: Your public key. Useful for validators.
 - `MNEMONIC`: 24-word phrase. **Save this mnemonic somewhere safe**. This phrase is required to recover your private key in case you forget the password. The mnemonic is displayed at the end of the output.
@@ -250,7 +240,7 @@ Each `balances` entry contains an `amount` held, connected to a `denom` identifi
 The typical $ATOM token is identified by the denom `uatom`. Where 1 `uatom` is 0.000001 ATOM.
 
 ```bash
-balances: 
+balances:
 - amount: "12345678"
   denom: uatom
 pagination:
@@ -272,8 +262,7 @@ pagination:
 To send coins using the CLI:
 
 ```bash
-gaiad tx send <from_key_or_address> <to_address> <amount> \
-    --chain-id=<your_chain_id> 
+gaiad tx bank send [from_key_or_address] [to_address] [amount] [flags]
 ```
 
 Parameters:
@@ -289,8 +278,8 @@ Flags:
 
 ## REST API
 
-The [REST API documents](https://cosmos.network/rpc/) list all the available endpoints that you can use to interact
-with your full node. Learn [how to enable the REST API](../gaia-tutorials/join-mainnet.md#enable-the-rest-api) on your full node.
+The [REST API documents](https://v1.cosmos.network/rpc/v0.44.5) list all the available endpoints that you can use to interact
+with your full node. Learn [how to enable the REST API](../hub-tutorials/join-mainnet.md#enable-the-rest-api) on your full node.
 
 ### Listen for Incoming Transactions
 

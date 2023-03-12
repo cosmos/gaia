@@ -1,0 +1,31 @@
+syntax = "proto3";
+package gaia.globalfee.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "github.com/cosmos/gaia/x/globalfee/types";
+
+// GenesisState - initial state of module
+message GenesisState {
+  // Params of this module
+  Params params = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.jsontag) = "params,omitempty"
+  ];
+}
+
+// Params defines the set of module parameters.
+message Params {
+  // Minimum stores the minimum gas price(s) for all TX on the chain.
+  // When multiple coins are defined then they are accepted alternatively.
+  // The list must be sorted by denoms asc. No duplicate denoms or zero amount
+  // values allowed. For more information see
+  // https://docs.cosmos.network/main/modules/auth#concepts
+  repeated cosmos.base.v1beta1.DecCoin minimum_gas_prices = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.jsontag) = "minimum_gas_prices,omitempty",
+    (gogoproto.moretags) = "yaml:\"minimum_gas_prices\"",
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins"
+  ];
+}

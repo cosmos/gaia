@@ -1,11 +1,11 @@
 # Security
 
-This security document is the process that the Gaia team follows regarding security issues 
-that can impact partners and users of Gaia and the Cosmos Hub network. 
+This security document is the process that the Gaia team follows regarding security issues
+that can impact partners and users of Gaia and the Cosmos Hub network.
 
 ## Prerequisites
 
-If a vulnerability and its exploit are both publicly known, the security process may not apply. 
+If a vulnerability and its exploit are both publicly known, the security process may not apply.
 However, in such cases, resolutions and mitigation strategies may still be eligible for rewards through a bounty program.
 
 ## Reporting a Bug
@@ -48,6 +48,7 @@ This process can take some time. Every effort will be made to handle the bug in 
 ### Disclosure Communications
 
 Communications to Cosmos Hub Validators will include the following details:
+
 1. Affected version(s)
 1. New release version
 1. Impact on user funds
@@ -56,6 +57,7 @@ Communications to Cosmos Hub Validators will include the following details:
 1. Potential actions to take if an adverse condition arises during the security release process
 
 An example notice looks like:
+
 ```
 Dear Cosmos Hub Validators,
 

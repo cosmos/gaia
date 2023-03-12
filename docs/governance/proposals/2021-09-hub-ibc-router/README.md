@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # ⚛️ Make the Cosmos Hub the IBC Router ⚛️
 
 The following is a selection from the [Cosmos Whitepaper](https://v1.cosmos.network/resources/whitepaper):
@@ -42,6 +43,7 @@ This is a proposal to include a new feature to IBC on the Hub that allows for mu
 
 Strangelove Ventures has delivered an [IBC Middleware module](https://github.com/cosmos/ibc-go/pull/373) that will allow the hub to play the role of IBC Router that was always envisioned for it. Passing of this propsal will begin the era of the Hub offering interchain services to other chains and profiting from those relationships.
 
-To pay the hub validators and stakers, this proposal implements a governance configurable fee (which we propose should be initially set to 0.0 to encourage adoption) that will be taken out of each packet and given to the community pool. The community pool will then periodically trade these fees for ATOM and distribute them to staked holders. The exact distribution method of these fees is left TBD in this proposal as it is not initially required and can be implemented in a future governance proposal. One way to do this would be using the [Groups module](https://docs.cosmos.network/master/architecture/adr-042-group-module.html), Community spend proposals and the Gravity DEX.
+To pay the hub validators and stakers, this proposal implements a governance configurable fee (which we propose should be initially set to 0.0 to encourage adoption) that will be taken out of each packet and given to the community pool. The community pool will then periodically trade these fees for ATOM and distribute them to staked holders. The exact distribution method of these fees is left TBD in this proposal as it is not initially required and can be implemented in a future governance proposal. One way to do this would be using the [Groups module](https://docs.cosmos.network/main/architecture/adr-042-group-module.html), Community spend proposals and the Gravity DEX.
 
 A vote YES on this proposal indicates that this feature should be included in the next hub upgrade. We (as the Hub) believe that time is critical right now and we cannot wait to begin providing this service to other chains. A NO vote indicates that this shouldn't be included in the next upgrade.
+<!-- markdown-link-check-enable -->

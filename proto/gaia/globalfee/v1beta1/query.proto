@@ -1,0 +1,32 @@
+syntax = "proto3";
+package gaia.globalfee.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "github.com/cosmos/gaia/x/globalfee/types";
+
+// Query defines the gRPC querier service.
+service Query {
+  rpc MinimumGasPrices(QueryMinimumGasPricesRequest)
+      returns (QueryMinimumGasPricesResponse) {
+    option (google.api.http).get =
+        "/gaia/globalfee/v1beta1/minimum_gas_prices";
+  }
+}
+
+// QueryMinimumGasPricesRequest is the request type for the
+// Query/MinimumGasPrices RPC method.
+message QueryMinimumGasPricesRequest {}
+
+// QueryMinimumGasPricesResponse is the response type for the
+// Query/MinimumGasPrices RPC method.
+message QueryMinimumGasPricesResponse {
+  repeated cosmos.base.v1beta1.DecCoin minimum_gas_prices = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.jsontag) = "minimum_gas_prices,omitempty",
+    (gogoproto.moretags) = "yaml:\"minimum_gas_prices\"",
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins"
+  ];
+}

@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # Cosmos Hub to Launch Mainnet
 
 ## Pre-launch Dependencies & How to Safely Claim Your Atoms
@@ -198,7 +199,7 @@ words with us, and we will always use our official blog, Twitter and GitHub
 accounts to communicate important news directly to the Cosmos community.*
 
 [whitepaper]: https://cosmos.network/resources/whitepaper
-[fundraiser]: https://fundraiser.cosmos.network/
+[fundraiser]: https://github.com/cosmos/fundraiser
 [releases]: https://github.com/cosmos/cosmos-sdk/releases
 [cosmos]: https://cosmos.network/launch
 [social]: https://en.wikipedia.org/wiki/Social_engineering_%28security%29
@@ -206,7 +207,7 @@ accounts to communicate important news directly to the Cosmos community.*
 [spearphishing]: https://en.wikipedia.org/wiki/Phishing#Spear_phishing
 [inbox]: https://www.umass.edu/it/security/phishing-fraudulent-emails-text-messages-phone-calls
 [opportunities]: https://jia.sipa.columbia.edu/weaponization-social-media-spear-phishing-and-cyberattacks-democracy
-[cli]: https://github.com/cosmos/cosmos-sdk/blob/develop/docs/gaia/delegator-guide-cli.md
+[cli]: https://hub.cosmos.network/main/delegators/delegator-guide-cli.html
 [webinar]: https://register.gotowebinar.com/register/5028753165739687691
 [terms]: https://github.com/cosmos/cosmos/blob/master/fundraiser/Interchain%20Cosmos%20Contribution%20Terms%20-%20FINAL.pdf
 [apache]: https://www.apache.org/licenses/LICENSE-2.0
@@ -220,3 +221,4 @@ accounts to communicate important news directly to the Cosmos community.*
 [rc]: https://github.com/cosmos/cosmos-sdk/projects/27
 [compromised site]: https://blog.malwarebytes.com/cybercrime/2013/02/tools-of-the-trade-exploit-kits/
 [quiz]: https://phishingquiz.withgoogle.com/
+<!-- markdown-link-check-enable -->

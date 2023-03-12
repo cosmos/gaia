@@ -1,18 +1,56 @@
-pull_request_rules:
-  - name: automerge to main with label automerge and branch protection passing
+queue_rules:
+  - name: default
     conditions:
-      - "#approved-reviews-by>0"
+      - "#approved-reviews-by>1"
+
+pull_request_rules:
+  - name: Automatic merge on approval to the main branch
+    conditions:
+      - "#approved-reviews-by>=1"
       - base=main
-      - label=automerge
+      - label=A:automerge
     actions:
+      queue:
+        name: default
       merge:
         method: squash
-        strict: true
-  - name: backport patches to v4.2.x branch
+        commit_message_template: |
+          {{ title }} (#{{ number }})
+          {{ body }}
+
+  - name: Backport patches to the release/v7.0.x branch
     conditions:
       - base=main
-      - label=backport/4.2.x
+      - label=A:backport/v7.0.x
     actions:
       backport:
         branches:
-          - release/v4.2.x
+          - release/v7.0.x
+
+  - name: Backport patches to the release/v8.0.x branch
+    conditions:
+      - base=main
+      - label=A:backport/v8.0.x
+      - "#commits-unverified>=0"
+    actions:
+      backport:
+        branches:
+          - release/v8.0.x
+
+  - name: Backport patches to the release/v9.0.x branch
+    conditions:
+      - base=main
+      - label=A:backport/v9.0.x
+    actions:
+      backport:
+        branches:
+          - release/v9.0.x
+
+  - name: Backport patches to the release/v10.0.x branch
+    conditions:
+      - base=main
+      - label=A:backport/v10.0.x
+    actions:
+      backport:
+        branches:
+          - release/v10.0.x

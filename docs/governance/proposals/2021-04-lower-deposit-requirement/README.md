@@ -1,3 +1,4 @@
+<!-- markdown-link-check-disable -->
 # Parameter change: lower minimum proposal deposit amount
 
 ## Summary
@@ -55,3 +56,5 @@ The following items summarise the voting options and what it means for this prop
 - **NO**: You disapprove of the parameter change in its current form (please indicate in the Cosmos Forum why this is the case).
 - **NO WITH VETO**: You are strongly opposed to this change and will exit the network if passed.
 - **ABSTAIN**: You are impartial to the outcome of the proposal.
+
+<!-- markdown-link-check-enable -->

@@ -1,38 +1,39 @@
-<!--
+---
 order: 1
--->
+title: Overview
+---
 
 # Validators Overview
 
 ## Introduction
 
-The [Cosmos Hub](../README.md) is based on [Tendermint](https://github.com/tendermint/tendermint/tree/master/docs/introduction), which relies on a set of validators that are responsible for committing new blocks in the blockchain. These validators participate in the consensus protocol by broadcasting votes which contain cryptographic signatures signed by each validator's private key.
+The [Cosmos Hub](../README.md) is based on [Tendermint](https://github.com/tendermint/tendermint/tree/master/docs/introduction) that relies on a set of validators that are responsible for committing new blocks in the blockchain. These validators participate in the consensus protocol by broadcasting votes that contain cryptographic signatures signed by each validator's private key.
 
-Validator candidates can bond their own Atoms and have Atoms ["delegated"](../delegators/delegator-guide-cli.md), or staked, to them by token holders. The Cosmos Hub will have 125 validators, but over time this will increase to 300 validators according to a predefined schedule. The validators are determined by who has the most stake delegated to them — the top 125 validator candidates with the most stake will become Cosmos validators.
+Validator candidates can bond their own ATOM and have ATOM ["delegated"](../delegators/delegator-guide-cli.md), or staked, to them by token holders. The Cosmos Hub has [175 validators](https://www.mintscan.io/cosmos/proposals/66), but over time the number of validators can be increased with governance proposals. The validators are determined by the total number of ATOM tokens delegated to them — the top 175 validator candidates with the most voting power are the current Cosmos validators.
 
-Validators and their delegators will earn Atoms as block provisions and tokens as transaction fees through execution of the Tendermint consensus protocol. Initially, transaction fees will be paid in Atoms but in the future, any token in the Cosmos ecosystem will be valid as fee tender if it is whitelisted by governance. Note that validators can set commission on the fees their delegators receive as additional incentive.
+Validators and their delegators earn ATOM as block provisions and tokens as transaction fees through execution of the Tendermint consensus protocol. Note that validators can set a commission percentage on the fees their delegators receive as additional incentive. You can find an overview of all current validators and their voting power on [Mintscan](https://www.mintscan.io/cosmos/validators).
 
-If validators double sign, are frequently offline or do not participate in governance, their staked Atoms (including Atoms of users that delegated to them) can be slashed. The penalty depends on the severity of the violation.
+If validators double sign or are offline for an [extended period](./validator-faq.md#what-are-the-slashing-conditions), their staked ATOM (including ATOM of users that delegated to them) can be slashed. The penalty depends on the severity of the violation.
 
 ## Hardware
 
-There currently exists no appropriate cloud solution for validator key management. This may change in 2018 when cloud SGX becomes more widely available. For this reason, validators must set up a physical operation secured with restricted access. A good starting place, for example, would be co-locating in secure data centers.
+For validator key management, validators must set up a physical operation that is secured with restricted access. A good starting place, for example, would be co-locating in secure data centers.
 
-Validators should expect to equip their datacenter location with redundant power, connectivity, and storage backups. Expect to have several redundant networking boxes for fiber, firewall and switching and then small servers with redundant hard drive and failover. Hardware can be on the low end of datacenter gear to start out with.
+Validators are expected to equip their datacenter location with redundant power, connectivity, and storage backups. Expect to have several redundant networking boxes for fiber, firewall, and switching and then small servers with redundant hard drive and failover.
 
-We anticipate that network requirements will be low initially. The current testnet requires minimal resources. Then bandwidth, CPU and memory requirements will rise as the network grows. Large hard drives are recommended for storing years of blockchain history.
+You can find the minimum hardware requirements on the instructions for [joining the Cosmos Hub mainnet](../hub-tutorials/join-mainnet.md). As the network grows, bandwidth, CPU, and memory requirements rise. Large hard drives are recommended for storing years of blockchain history, as well as significant RAM to process the increasing amount of transactions.
 
-## Set Up a Website
+## Create a Validator Website
 
-Set up a dedicated validator's website and signal your intention to become a validator on our [forum](https://forum.cosmos.network/t/validator-candidates-websites/127/3). This is important since delegators will want to have information about the entity they are delegating their Atoms to.
+To get started as a validator, create your dedicated validator website and signal your intention to become a validator in the [Cosmos Discord](https://discord.gg/cosmosnetwork). Posting your validator website is essential because delegators want to have information about the entity they are delegating their ATOM to.
 
 ## Seek Legal Advice
 
-Seek legal advice if you intend to run a Validator.
+As always, do your own research and seek legal advice if you intend to run a validator node.
 
 ## Community
 
-Discuss the finer details of being a validator on our community chat and forum:
+Discuss the finer details of being a validator on our community Discord and sign up for the Cosmos newsletter to get regular updates:
 
-* [Validator Chat](https://riot.im/app/#/room/#cosmos_validators:matrix.org)
-* [Validator Forum](https://forum.cosmos.network/c/validating)
+* [Cosmos Developers Discord](https://discord.gg/cosmosnetwork)
+* [Newsletter](https://cosmos.network/updates/signup/)

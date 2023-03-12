@@ -53,6 +53,6 @@ You can ship logs to Logz.io, an Elastic stack (Elastic search, Logstash and Kib
 yum install systemd-devel || echo "This will only work on RHEL-based systems."
 apt-get install libsystemd-dev || echo "This will only work on Debian-based systems."
 
-go get github.com/mheese/journalbeat
+go install github.com/mheese/journalbeat
 ansible-playbook -i inventory/digital_ocean.py -l remotenet logzio.yml -e LOGZIO_TOKEN=ABCDEFGHIJKLMNOPQRSTUVWXYZ012345
 ```

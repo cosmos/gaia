@@ -10,21 +10,22 @@ Welcome to the documentation of the **Cosmos Hub application: `gaia`**.
 
 ## What is Gaia?
 
-- [Intro to the `gaia` software](./gaia-tutorials/what-is-gaia.md)
+- [Intro to the `gaia` software](./getting-started/what-is-gaia.md)
+- [Interacting with the `gaiad` binary](./hub-tutorials/gaiad.md)
 
 ## Join the Cosmos Hub Mainnet
 
-- [Install the `gaia` application](./gaia-tutorials/installation.md)
-- [Set up a full node and join the mainnet](./gaia-tutorials/join-mainnet.md)
+- [Install the `gaia` application](./getting-started/installation.md)
+- [Set up a full node and join the mainnet](./hub-tutorials/join-mainnet.md)
 - [Upgrade to a validator node](./validators/validator-setup.md)
 
 ## Join the Cosmos Hub Public Testnet
 
-- [Join the testnet](./gaia-tutorials/join-testnet.md)
+- [Join the testnet](./hub-tutorials/join-testnet.md)
 
 ## Setup Your Own `gaia` Testnet
 
-- [Setup your own `gaia` testnet](./gaia-tutorials/deploy-testnet.md)
+- [Setup your own `gaia` testnet](https://github.com/cosmos/testnets/tree/master/local/previous-local-testnets/theta)
 
 ## Additional Resources
 

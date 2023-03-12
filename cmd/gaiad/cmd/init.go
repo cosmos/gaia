@@ -75,27 +75,25 @@ func InitCmd(mbm module.BasicManager, defaultNodeHome string) *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
-			cdc := clientCtx.JSONCodec
+			cdc := clientCtx.Codec
 
 			serverCtx := server.GetServerContextFromCmd(cmd)
 			config := serverCtx.Config
 
-
-			//An easy way to run a lightweight seed node is to use tenderseed: github.com/binaryholdings/tenderseed
+			// An easy way to run a lightweight seed node is to use tenderseed: github.com/binaryholdings/tenderseed
 
 			seeds := []string{
-				"bf8328b66dceb4987e5cd94430af66045e59899f@public-seed.cosmos.vitwit.com:26656",         // vitwit
-				"ba3bacc714817218562f743178228f23678b2873@public-seed-node.cosmoshub.certus.one:26656", // Certus One
-				"d85a36ad765a9ac7557f0a2f39ec637db5cac13c@162.55.132.230:2011",
-			} // Notional
-
+				"ba3bacc714817218562f743178228f23678b2873@public-seed-node.cosmoshub.certus.one:26656",
+				"ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@seeds.polkachu.com:14956",
+				"20e1000e88125698264454a884812746c2eb4807@seeds.lavenderfive.com:14956",
+				"57a5297537b9b6ef8b105c08a8ad3f6ac452c423@seeds.goldenratiostaking.net:1618",
+			}
 
 			config.P2P.Seeds = strings.Join(seeds, ",")
 			config.P2P.MaxNumInboundPeers = 300
 			config.P2P.MaxNumOutboundPeers = 40
 
 			config.SetRoot(clientCtx.HomeDir)
-
 
 			appConfig := appcfg.DefaultConfig()
 

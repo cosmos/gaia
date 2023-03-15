@@ -149,7 +149,52 @@ make test-e2e
 
 ### Upgrade Test
 
-To find information about the upgrade test, please refer to the [cosmos/testnets repository](https://github.com/cosmos/testnets/tree/master).
+Instructions for running the upgrade test locally
+
+#### Build current version and move into ./build:
+```sh
+git checkout v8.0.0
+make build 
+mv ./build/gaiad ./build/gaiad8
+```
+
+#### Build gaia v9.0.0 and move into ./build:
+```sh
+git checkout v9.0.0
+make build 
+mv ./build/gaiad ./build/gaiad9
+```
+
+#### Go back to your previous working branch
+```sh
+git checkout -
+```
+
+#### Install cosmovisor
+```sh
+go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.3.0
+```
+
+#### Run the Chain
+
+This script prepares the chain and starts it using cosmovisor
+```sh
+./contrib/scripts/run-gaia-v8.sh
+```
+
+#### Run the upgrade
+In another terminal window, run the script that waits 10 seconds for gaia to start then makes gov proposal to perform an upgrade at height 15
+```sh
+./contrib/scripts/run-upgrade-commands.sh 30
+```
+
+#### Monitor for success
+In a third window run the upgrade monitoring script that will exit without error when the upgrade succeeds.
+```sh
+./contrib/scripts/test_upgrade.sh 20 5 16 localhost
+```
+
+This should show logs that demonstrate a successful upgrade by reaching block height 16.
 
 ## Guidelines
 

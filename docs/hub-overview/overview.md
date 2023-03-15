@@ -5,11 +5,9 @@ title: Introduction
 
 ::: warning
 ### **v9-Lambda Upgrade**
-Cosmos Hub will upgrade at height: **14,470,501**
+Cosmos Hub upgraded at height: **14,470,501**
 
-Upgrade countdown is available [**here**](https://www.mintscan.io/cosmos/blocks/14470501)
-
-Upgrade guide is available [**here**](../migration/cosmoshub-4-v9-Lambda-upgrade.md)
+To upgrade from v8-Rho check the [**upgrade guide**](../migration/cosmoshub-4-v9-Lambda-upgrade.md)
 :::
 
 ![Welcome to the Cosmos Hub](../images/cosmos-hub-image.jpg)

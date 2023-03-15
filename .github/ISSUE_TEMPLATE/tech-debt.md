@@ -1,6 +1,7 @@
 ---
 name: Tech Debt
 about: Create an issue to address and reduce technical debt
+label: technical-debt, needs-triage
 
 ---
 

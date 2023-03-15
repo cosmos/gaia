@@ -28,8 +28,8 @@ if ! test -f "./build/gaiad9"; then
   exit
 fi
 
-mkdir -p "$NODE_HOME"/cosmovisor/upgrades/v9-Lambda/bin
-cp ./build/gaiad9 "$NODE_HOME"/cosmovisor/upgrades/v9-Lambda/bin/gaiad
+mkdir -p "$NODE_HOME"/cosmovisor/upgrades/v9-lambda/bin
+cp ./build/gaiad9 "$NODE_HOME"/cosmovisor/upgrades/v9-lambda/bin/gaiad
 
 GOPATH=$(go env GOPATH)
 

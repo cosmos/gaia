@@ -5,7 +5,9 @@ title: Joining Mainnet
 
 # Join the Cosmos Hub Mainnet
 
-The current Cosmos Hub mainnet, `cosmoshub-4`, has been performing in place store migration upgrades as of the [Delta Upgrade](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md) July 2021. The most recent upgrade was [Theta](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-v7-Theta-upgrade.md) April 2022. This type of upgrade preserves the same chain-id but state before the upgrade height is only accessible by corresponding versions of the binary (ie. queries of state between height `6910000` and `8695000` should use `gaia v5.0.x` (Delta) after `86950000` and before `10085397` should use `gaia v6.0.x` (Vega) to guarantee correctly encoded responses. The roadmap documentation contains a [history of upgrades](https://github.com/cosmos/gaia/tree/main/docs/roadmap).). Visit the [migration section](https://github.com/cosmos/gaia/tree/main/docs/migration) of the Hub's docs for more information on previous chain migrations.
+The current Cosmos Hub mainnet, `cosmoshub-4`, has been performing in place store migration upgrades as of the [Delta Upgrade](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md) July 2021. The most recent upgrade was [Lambda](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-v9-Lambda-upgrade.md) March 2023.  
+
+This type of upgrade preserves the same chain-id but state before the upgrade height is only accessible by corresponding versions of the binary (ie. queries of state between height `6910000` and `8695000` should use `gaia v5.0.x` (Delta) after `86950000` and before `10085397` should use `gaia v6.0.x` (Vega) to guarantee correctly encoded responses. The roadmap documentation contains a [history of upgrades](https://github.com/cosmos/gaia/tree/main/docs/roadmap).). Visit the [migration section](https://github.com/cosmos/gaia/tree/main/docs/migration) of the Hub's docs for more information on previous chain migrations.
 
 **This guide includes full instructions for joining the mainnet either as an archive/full node or a pruned node.**
 
@@ -368,7 +370,7 @@ snapshot-keep-recent = 10
 
 **See all [Gaia Releases](https://github.com/cosmos/gaia/releases)**
 
-The most up to date release of Gaia is [`V8.0.0`](https://github.com/cosmos/gaia/releases/tag/v8.0.0). For those that want to use state sync or quicksync to get their node up to speed, starting with the most recent version of Gaia is sufficient.
+The most up to date release of Gaia is [`V9.0.1`](https://github.com/cosmos/gaia/releases/tag/v9.0.1). For those that want to use state sync or quicksync to get their node up to speed, starting with the most recent version of Gaia is sufficient.
 
 To sync an archive or full node from scratch, it is important to note that you must start with [`V4.2.1`](https://github.com/cosmos/gaia/releases/tag/v4.2.1) and proceed through two different upgrades Delta at block height `6910000` and Vega at block height `8695000`.
 
@@ -398,6 +400,7 @@ Again, make sure to backup `~/.gaia`
 
 Install Gaia [`V6.0.0`](https://github.com/cosmos/gaia/releases/tag/v6.0.0) and restart the daemon.
 
+This process will continue, with versions from v6.0.0 to the current version, which is highlighted at the top of this document.
 
 ## Cosmovisor
 

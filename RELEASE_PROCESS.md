@@ -43,7 +43,7 @@ A _major release_ is an increment of the first number (eg: `v7.1.0` → `v8.0.0`
 * In the release branch prepare a new version section in the `CHANGELOG.md`
     * All links must point to their respective pull request.
     * The `CHANGELOG.md` must contain only the changes of that specific released version. 
-      All other changelog entries must be deleted and linked to the `main` branch changelog ([example](TBA)).
+      All other changelog entries must be deleted and linked to the `main` branch changelog ([example]([TBA](https://github.com/cosmos/gaia/blob/release/v9.0.x/CHANGELOG.md))).
     * Create release notes, in `RELEASE_NOTES.md`, highlighting the new features and changes in the version. 
       This is needed so the bot knows which entries to add to the release page on GitHub.
     * Additionally verify that the `UPGRADING.md` file is up to date and contains all the necessary information for upgrading to the new version.

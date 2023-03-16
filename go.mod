@@ -28,7 +28,7 @@ require (
 )
 
 require (
-	cosmossdk.io/math v1.0.0-beta.6
+	cosmossdk.io/math v1.0.0-rc.0
 	github.com/ory/dockertest/v3 v3.9.1
 )
 

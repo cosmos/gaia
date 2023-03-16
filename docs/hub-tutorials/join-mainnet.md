@@ -15,29 +15,6 @@ For instructions to join as a validator, please also see the [Validator Guide](h
 
 ### Overview
 <!-- DON'T FORGET TO KEEP INDEX UP TO DATE -->
-<<<<<<< HEAD
-- [Explorers](#explorers)
-- [Getting Started](#getting-started)
-- [Hardware Requirements](#hardware)
-- [General Configuration](#general-configuration)
-  - [Initialize Chain](#initialize-chain)
-  - [Genesis File](#genesis-file)
-  - [Seeds & Peers](#seeds-amp-peers)
-  - [Gas & Fees](#gas-amp-fees)
-  - [Pruning of State](#pruning-of-state)
-  - [REST API](#rest-api)
-  - [GRPC](#grpc)
-- [Sync Options](#sync-options)
-  - [Blocksync](#blocksync)
-  - [State Sync](#state-sync)
-  - [Quicksync](#quicksync)
-- [Snapshots](#snapshots)=
-- [Releases](#releases-amp-upgrades)
-- [Cosmovisor](#cosmovisor)
-- [Running via Background Process](#running-via-background-process)
-- [Exporting State](#exporting-state)
-- [Verify Mainnet](#verify-mainnet)
-=======
 - [Join the Cosmos Hub Mainnet](#join-the-cosmos-hub-mainnet)
     - [Overview](#overview)
     - [Background](#background)
@@ -63,7 +40,6 @@ For instructions to join as a validator, please also see the [Validator Guide](h
   - [Running via Background Process](#running-via-background-process)
   - [Exporting State](#exporting-state)
   - [Verify Mainnet](#verify-mainnet)
->>>>>>> 53a07ee (Fix broken links (#2297))
 
 ### Background
 

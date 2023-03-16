@@ -5,12 +5,7 @@ title: Joining Mainnet
 
 # Join the Cosmos Hub Mainnet
 
-<<<<<<< HEAD
-The current Cosmos Hub mainnet, `cosmoshub-4`, has been performing in place store migration upgrades as of the [Delta Upgrade](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md) July 2021. The most recent upgrade was [Theta](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-v7-Theta-upgrade.md) April 2022. This type of upgrade preserves the same chain-id but state before the upgrade height is only accessible by corresponding versions of the binary (ie. queries of state between height `6910000` and `8695000` should use `gaia v5.0.x` (Delta) after `86950000` and before `10085397` should use `gaia v6.0.x` (Vega) to guarantee correctly encoded responses. The roadmap documentation contains a [history of upgrades](https://github.com/cosmos/gaia/tree/main/docs/roadmap).). Visit the [migration section](https://github.com/cosmos/gaia/tree/main/docs/migration) of the Hub's docs for more information on previous chain migrations.
-=======
-
 The current Cosmos Hub mainnet, `cosmoshub-4`, has been performing in place store migration upgrades as of the [Delta Upgrade](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md) July 2021. The most recent upgrade was [Lambda](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-v9-Lambda-upgrade.md) March 2023. This type of upgrade preserves the same chain-id but state before the upgrade height is only accessible by corresponding versions of the binary (ie. queries of state between height `6,910,000` and `8,695,000` should use `gaia v5.0.x` (Delta), between `8,695,000` and `10,085,397` use `gaia v6.0.x` (Vega), between `10,085,397` and `14,099,412` use `gaia v7.0.x` (Theta),  between `14,099,412` and `14,470,501` use `gaia v8.0.x` (Rho),  after `14,470,501` use `gaia v9.0.x` (Lambda) to guarantee correctly encoded responses. The roadmap documentation contains a [history of upgrades](https://github.com/cosmos/gaia/tree/main/docs/roadmap).). Visit the [migration section](https://github.com/cosmos/gaia/tree/main/docs/migration) of the Hub's docs for more information on previous chain migrations.
->>>>>>> fc55f12 (docs: update quick-start docs for v9 (#2267))
 
 **This guide includes full instructions for joining the mainnet either as an archive/full node or a pruned node.**
 
@@ -404,8 +399,6 @@ Again, make sure to backup `~/.gaia`
 
 Install Gaia [`V6.0.0`](https://github.com/cosmos/gaia/releases/tag/v6.0.0) and restart the daemon.
 
-<<<<<<< HEAD
-=======
 **[Theta Instructions](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-v7-Theta-upgrade.md)**
 
 Once `V6` reaches the upgrade block height, the chain will halt and display the following message:
@@ -442,8 +435,6 @@ ERR UPGRADE "Lambda" NEEDED at height: 14470501
 Again, make sure to backup `~/.gaia`
 
 Install Gaia [`V9.0.0`](https://github.com/cosmos/gaia/releases/tag/v9.0.0) and restart the daemon.
-
->>>>>>> fc55f12 (docs: update quick-start docs for v9 (#2267))
 
 ## Cosmovisor
 

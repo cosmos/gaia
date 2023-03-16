@@ -7,13 +7,7 @@ title: Introduction
 ### **v9-Lambda Upgrade**
 Cosmos Hub upgraded at height: **14,470,501**
 
-<<<<<<< HEAD
-Upgrade is estimated to take place around **2023-03-15 12:00 UTC**
-
-Upgrade guide is available [**here**](../migration/cosmoshub-4-v9-Lambda-upgrade.md)
-=======
 To upgrade from v8-Rho check the [**upgrade guide**](../migration/cosmoshub-4-v9-Lambda-upgrade.md)
->>>>>>> fc55f12 (docs: update quick-start docs for v9 (#2267))
 :::
 
 ![Welcome to the Cosmos Hub](../images/cosmos-hub-image.jpg)

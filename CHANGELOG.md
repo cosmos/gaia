@@ -43,6 +43,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 * (gaia) Bump [packet-forward-middleware](https://github.com/strangelove-ventures/packet-forward-middleware) to [v4.0.4](https://github.com/strangelove-ventures/packet-forward-middleware/releases/tag/v4.0.4).
 * (tests) Add [E2E ccv tests](https://github.com/cosmos/gaia/blob/main/tests/e2e/e2e_gov_test.go#L138). Tests covering new functionality introduced by the provider module to add and remove a consumer chain via governance proposal.
 * (tests) Add [integration ccv tests](https://github.com/cosmos/gaia/blob/main/tests/ics/interchain_security_test.go). Imports Interchain-Security's `TestCCVTestSuite` and implements Gaia as the provider chain.
+* (fix) [#2017](https://github.com/cosmos/gaia/issues/2017) Fix Gaiad binary build tag for ubuntu system. See [#2018](https://github.com/cosmos/gaia/pull/2018) for details.
 
 ## [v8.0.1] - 2023-02-17
 

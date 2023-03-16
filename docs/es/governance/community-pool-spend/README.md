@@ -51,7 +51,7 @@ Puedes solicitar directamente al Cosmos Hub 3 el saldo de la Community Pool:
 
 ```gaiad q distribution community-pool --chain-id cosmoshub-3 --node cosmos-node-1.figment.io:26657```
 
-De forma alternativa, los navegadores de Cosmos más populares como [Big Dipper](https://cosmos.bigdipper.live) y [Hubble](https://hubble.figment.io/cosmos/chains/cosmoshub-3) muestran la evolución del saldo de la Community Pool.
+De forma alternativa, los navegadores de Cosmos más populares como [Mintscan](https://www.mintscan.io/cosmos) y [Big Dipper](https://cosmos.bigdipper.live) muestran la evolución del saldo de la Community Pool.
 
 ### ¿Cómo se pueden gastar los fondos de la Community Pool?
 

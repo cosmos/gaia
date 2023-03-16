@@ -15,6 +15,7 @@ For instructions to join as a validator, please also see the [Validator Guide](h
 
 ### Overview
 <!-- DON'T FORGET TO KEEP INDEX UP TO DATE -->
+<<<<<<< HEAD
 - [Explorers](#explorers)
 - [Getting Started](#getting-started)
 - [Hardware Requirements](#hardware)
@@ -36,6 +37,33 @@ For instructions to join as a validator, please also see the [Validator Guide](h
 - [Running via Background Process](#running-via-background-process)
 - [Exporting State](#exporting-state)
 - [Verify Mainnet](#verify-mainnet)
+=======
+- [Join the Cosmos Hub Mainnet](#join-the-cosmos-hub-mainnet)
+    - [Overview](#overview)
+    - [Background](#background)
+  - [Explorers](#explorers)
+  - [Getting Started](#getting-started)
+  - [Hardware](#hardware)
+  - [General Configuration](#general-configuration)
+    - [Initialize Chain](#initialize-chain)
+    - [Genesis File](#genesis-file)
+    - [Seeds \& Peers](#seeds--peers)
+    - [Gas \& Fees](#gas--fees)
+    - [Pruning of State](#pruning-of-state)
+    - [REST API](#rest-api)
+    - [GRPC](#grpc)
+  - [Sync Options](#sync-options)
+    - [Blocksync](#blocksync)
+        - [Getting Started](#getting-started-1)
+    - [State Sync](#state-sync)
+    - [Quicksync](#quicksync)
+  - [Snapshots](#snapshots)
+  - [Releases \& Upgrades](#releases--upgrades)
+  - [Cosmovisor](#cosmovisor)
+  - [Running via Background Process](#running-via-background-process)
+  - [Exporting State](#exporting-state)
+  - [Verify Mainnet](#verify-mainnet)
+>>>>>>> 53a07ee (Fix broken links (#2297))
 
 ### Background
 
@@ -47,7 +75,6 @@ There are many explorers for the Cosmos Hub. For reference while setting up a no
 
 - [Mintscan](https://www.mintscan.io/cosmos)
 - [Big Dipper](https://cosmos.bigdipper.live/)
-- [Hubble](https://hubble.figment.io/cosmos/chains/cosmoshub-4)
 <!-- markdown-link-check-disable-next-line -->
 - [Stake ID](https://cosmos.stake.id/)
 

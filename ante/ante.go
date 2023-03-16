@@ -53,9 +53,10 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		sigGasConsumer = ante.DefaultSigVerificationGasConsumer
 	}
 
-	// maxBypassMinFeeMsgGasUsage is the maximum gas usage per message
-	// so that a transaction that contains only message types that can
-	// bypass the minimum fee can be accepted with a zero fee.
+	// maxTotalBypassMinFeeMsgGasUsage is the allowed maximum gas usage
+	// for all the bypass msgs in a transactions.
+	// A transaction that contains only bypass message types and the gas usage does not
+	// exceed maxTotalBypassMinFeeMsgGasUsage can be accepted with a zero fee.
 	// For details, see gaiafeeante.NewFeeDecorator()
 	var maxTotalBypassMinFeeMsgGasUsage uint64 = 1_000_000
 

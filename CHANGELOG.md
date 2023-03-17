@@ -36,6 +36,9 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+* (build) [#2018](https://github.com/cosmos/gaia/pull/2018) Consistently generate build tags on Make 4.3+
+* (docs) [#2053](https://github.com/cosmos/gaia/pull/2053) Added Shapeshift Wallet
+
 ## [v8.0.1] - 2023-02-17
 
 * (gaia) Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.14](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.14). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/release/v0.45.x/CHANGELOG.md) for details.
@@ -64,6 +67,6 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v8.0.1...HEAD
+[Unreleased]: https://github.com/cosmos/gaia/compare/v8.0.1...release/v8.0.x
 [v8.0.1]: https://github.com/cosmos/gaia/releases/tag/v8.0.1
 [v8.0.0]: https://github.com/cosmos/gaia/releases/tag/v8.0.0

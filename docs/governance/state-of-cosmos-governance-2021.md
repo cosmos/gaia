@@ -135,25 +135,25 @@ The Cosmos Hub has an on-chain governance mechanism, which allow ATOM token hold
 
 The Cosmos Hub is implemented modularly using the Cosmos SDK, where each module brings a different set of functions. Some modules have "governable" parameters, i.e., parameters that are alterable through on-chain "parameter change" governance proposals. Parameter change proposals allows token-holders to adjust the Cosmos Hub's functionality live on the blockchain, without the need for a new software release. It's interesting to note that parameters related to the governance module, i.e., x/gov module in the Cosmos SDK which implements the technical functionality of on-chain governance, is itself governable through parameter change proposals.
 
-Example:  [Proposal 47](https://hubble.figment.io/cosmos/chains/cosmoshub-4/governance/proposals/47) asked to lower the minimum proposal deposit amount from 512 ATOMs to 64 ATOMs.
+Example:  [Proposal 47](https://www.mintscan.io/cosmos/proposals/47) asked to lower the minimum proposal deposit amount from 512 ATOMs to 64 ATOMs.
 
 #### Pass text proposals
 
 Text proposals are used by delegators to agree to a certain strategy, plan, commitment, future upgrade, or any other statement in the form of text. Aside from having a record of the proposal outcome on the Cosmos Hub chain, a text proposal has no direct effect on the change Cosmos Hub.
 
-Example:  [Proposal 12](https://hubble.figment.io/cosmos/chains/cosmoshub-4/governance/proposals/12) asked if the Cosmos Hub community of validators charging 0% commission was harmful to the success of the Cosmos Hub?
+Example:  [Proposal 12](https://www.mintscan.io/cosmos/proposals/12) asked if the Cosmos Hub community of validators charging 0% commission was harmful to the success of the Cosmos Hub?
 
 #### Spend funds from the community pool
 
 Cosmos Hub has a pool of ATOMs that can be spent through governance proposals. As of July 2nd, 2021 there are 645,961.01 ATOM in the community pool [according to cosmoscan](https://cosmoscan.net/).
 
-Example: [Proposal 45](https://hubble.figment.io/cosmos/chains/cosmoshub-4/governance/proposals/45) asked to allow the spending of 5,000 ATOMS for the Gravity DEX Incentivized Testnet (Trading Competition) from the community pool.
+Example: [Proposal 45](https://www.mintscan.io/cosmos/proposals/45) asked to allow the spending of 5,000 ATOMS for the Gravity DEX Incentivized Testnet (Trading Competition) from the community pool.
 
 #### Pass software upgrade proposals
 
 A software upgrade proposal, when passed, will halt the chain until the node operator upgrades their software. If passed, the expectation is validators will update their software in accordance wi
 
-Example: [Proposal 51](https://hubble.figment.io/cosmos/chains/cosmoshub-4/governance/proposals/51) asked to adopt the Gravity DEX protocol on Cosmos Hub.
+Example: [Proposal 51](https://www.mintscan.io/cosmos/proposals/51) asked to adopt the Gravity DEX protocol on Cosmos Hub.
 
 ### User Story: Chain-Wide Governance
 

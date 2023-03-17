@@ -36,9 +36,6 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
- * (docs) [#2240](https://github.com/cosmos/gaia/pull/2240) Add upgrade v9 migration docs
- * (docs) [#2267](https://github.com/cosmos/gaia/pull/2267) Update quick-start docs for v9
-
  ## [v9.0.1] - 2023-03-09
 
  * (feat) [add spam prevention antehandler](https://github.com/cosmos/gaia/pull/2262) to alleviate recent governance spam issues.
@@ -60,5 +57,5 @@ Ref: https://keepachangelog.com/en/1.0.0/
 <!-- Release links -->
 
 [Unreleased]: https://github.com/cosmos/gaia/compare/v9.0.1...release/v9.0.x
- [v9.0.1]: https://github.com/cosmos/gaia/releases/tag/v9.0.1
- [v9.0.0]: https://github.com/cosmos/gaia/releases/tag/v9.0.0
+[v9.0.1]: https://github.com/cosmos/gaia/releases/tag/v9.0.1
+[v9.0.0]: https://github.com/cosmos/gaia/releases/tag/v9.0.0

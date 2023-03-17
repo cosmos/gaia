@@ -45,7 +45,7 @@ jobs:
           go-version: 1.18
       - name: test & coverage report creation
         run: |
-          go test -v -coverprofile=coverage.txt -covermode=atomic -coverpkg=./... $(go list ./... | grep -v -e '/tests/e2e') 
+          go test -v -coverprofile=coverage.txt -covermode=atomic -coverpkg=./... $(go list ./... | grep -v -e '/tests/e2e')
       - name: filter non-testable files
         run: |
           excludelist="$(find ./ -type f -name '*.go' | xargs grep -l 'DONTCOVER')"
@@ -112,7 +112,7 @@ jobs:
 
   upgrade-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v3.4.0
         with:

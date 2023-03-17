@@ -36,6 +36,25 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+* (docs) [#2260](https://github.com/cosmos/gaia/pull/2260) Added the Twitter handle for cosmosGov to the socials section.
+* (docs) [#2266](https://github.com/cosmos/gaia/pull/2266) Update validators Discord channel in README.
+
+### Dependencies
+
+* [#2233](https://github.com/cosmos/gaia/pull/2233) bump golang.org/x/net from 0.5.0 to 0.7.0
+* [#2274](https://github.com/cosmos/gaia/pull/2274) bump github.com/golang/protobuf from 1.5.2 to 1.5.3
+* [#2237](https://github.com/cosmos/gaia/pull/2237) bump actions/cache from 3.2.0 to 3.2.6
+* [#2227](https://github.com/cosmos/gaia/pull/2227) bump github.com/golangci/golangci-lint from 1.50.1 to 1.51.2
+* [#2252](https://github.com/cosmos/gaia/pull/2252) bump github.com/stretchr/testify from 1.8.1 to 1.8.2
+* [#2148](https://github.com/cosmos/gaia/pull/2148) bump cosmossdk.io/math from 1.0.0-beta.4 to 1.0.0-beta.6
+* [#2115](https://github.com/cosmos/gaia/pull/2115) bump docker/build-push-action from 3.2.0 to 4.0.0
+* [#2048](https://github.com/cosmos/gaia/pull/2048) bump github.com/spf13/viper from 1.14.0 to 1.15.0
+* [#2288](https://github.com/cosmos/gaia/pull/2288) bump cosmossdk.io/math from 1.0.0-beta.6 to 1.0.0-rc.0
+* [#2020](https://github.com/cosmos/gaia/pull/2020) bump docker/metadata-action from 4.1.1 to 4.3.0
+* [#2286](https://github.com/cosmos/gaia/pull/2286) bump actions/cache from 3.2.6 to 3.3.1
+* [#2299](https://github.com/cosmos/gaia/pull/2299) bump actions/checkout from 3.3.0 to 3.4.0
+* [#2300](https://github.com/cosmos/gaia/pull/2300) bump actions/setup-go from 3 to 4
+
 ## [v9.0.1] - 2023-03-09
 
 * (feat) [Add spam prevention antehandler](https://github.com/cosmos/gaia/pull/2262) to alleviate recent governance spam issues.
@@ -479,7 +498,6 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v9.0.1...HEAD
 [v9.0.1]: https://github.com/cosmos/gaia/releases/tag/v9.0.1
 [v9.0.0]: https://github.com/cosmos/gaia/releases/tag/v9.0.0
 [v8.0.1]: https://github.com/cosmos/gaia/releases/tag/v8.0.1

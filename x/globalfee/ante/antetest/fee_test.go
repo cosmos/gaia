@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	gaiaapp "github.com/cosmos/gaia/v9/app"
-	"github.com/cosmos/gaia/v9/x/globalfee/ante"
 	gaiafeeante "github.com/cosmos/gaia/v9/x/globalfee/ante"
 	globfeetypes "github.com/cosmos/gaia/v9/x/globalfee/types"
 )
@@ -686,7 +685,7 @@ func (s *IntegrationTestSuite) TestGetMinGasPrice() {
 		s.Run(tc.name, func() {
 			s.SetupTestGlobalFeeStoreAndMinGasPrice(tc.minGasPrice, &globfeetypes.Params{})
 
-			fees := ante.GetMinGasPrice(s.ctx, int64(tc.feeTxGasLimit))
+			fees := gaiafeeante.GetMinGasPrice(s.ctx, int64(tc.feeTxGasLimit))
 			// s.Require().True(sort.IsSorted(fees))
 			s.Require().True(tc.expCoins.Sort().IsEqual(fees))
 		})

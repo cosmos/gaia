@@ -27,7 +27,7 @@ func getMinGasPrice(ctx sdk.Context, feeTx sdk.FeeTx) sdk.Coins {
 	return requiredFees.Sort()
 }
 
-func (mfd FeeDecorator) bypassMinFeeMsgs(msgs []sdk.Msg) bool {
+func (mfd FeeDecorator) containsOnlyBypassMinFeeMsgs(msgs []sdk.Msg) bool {
 	for _, msg := range msgs {
 		if tmstrings.StringInSlice(sdk.MsgTypeURL(msg), mfd.BypassMinFeeMsgTypes) {
 			continue

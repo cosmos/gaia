@@ -35,6 +35,9 @@ Ref: https://keepachangelog.com/en/1.0.0/
 # Changelog
 
 ## [Unreleased]
+* 
+* (feat) Add two more msg types `/ibc.core.channel.v1.MsgTimeout` and `/ibc.core.channel.v1.MsgTimeoutOnClose` to default `bypass-min-fee-msg-types`.
+* (feat) Change the bypassing gas usage criteria. Instead of requiring 200,000 gas per `bypass-min-fee-msg`, we will now allow a maximum total usage of 1,000,000 gas for all bypassed messages in a transaction. Note that all messages in the transaction must be the `bypass-min-fee-msg-types` for the bypass min fee to take effect, otherwise, fee payment will still apply.
 
 ## [v9.0.1] - 2023-03-09
 

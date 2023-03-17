@@ -14,12 +14,13 @@ There is a strong social consensus around proposal `Cosmos Hub 3 Upgrade Proposa
 on `cosmoshub-2`. This indicates that the upgrade procedure should be performed
 on `December 11, 2019 at or around 14:27 UTC` on block `2,902,000`.
 
-- [Preliminary](#preliminary)
-- [Major Updates](#major-updates)
-- [Risks](#risks)
-- [Recovery](#recovery)
-- [Upgrade Procedure](#upgrade-procedure)
-- [Notes for Service Providers](#notes-for-service-providers)
+- [Cosmos Hub 2 Upgrade Instructions](#cosmos-hub-2-upgrade-instructions)
+  - [Preliminary](#preliminary)
+  - [Major Updates](#major-updates)
+  - [Risks](#risks)
+  - [Recovery](#recovery)
+  - [Upgrade Procedure](#upgrade-procedure)
+  - [Notes for Service Providers](#notes-for-service-providers)
 
 ## Preliminary
 
@@ -94,7 +95,7 @@ __Note__: It is assumed you are currently operating a full-node running v0.34.6+
 - The version/commit hash of Gaia v2.0.3: `2f6783e298f25ff4e12cb84549777053ab88749a`
 - The upgrade height as agreed upon by governance: __2,902,000__
 - You may obtain the canonical UTC timestamp of the exported block by any of the following methods:
-  - Block explorer (e.g. [Hubble](https://hubble.figment.io/cosmos/chains/cosmoshub-2/blocks/2902000?format=json&kind=block))
+  - Block explorer
   - Through manually querying an RPC node (e.g. `/block?height=2902000`)
   - Through manually querying a Gaia REST client (e.g. `/blocks/2902000`)
 
@@ -138,7 +139,7 @@ v2.0.3 of [Gaia](https://github.com/cosmos/gaia).
    git clone https://github.com/cosmos/gaia.git && cd gaia && git checkout v2.0.3; make install
    ```
 
-5. Verify you are currently running the correct version (v2.0.3) of the _Gaia_:
+1. Verify you are currently running the correct version (v2.0.3) of the _Gaia_:
 
    ```bash
    $ gaiad version --long
@@ -151,7 +152,7 @@ v2.0.3 of [Gaia](https://github.com/cosmos/gaia).
    go: go version go1.13.3 darwin/amd64
    ```
 
-6. Migrate exported state from the current v0.34.6+ version to the new v2.0.3 version:
+2. Migrate exported state from the current v0.34.6+ version to the new v2.0.3 version:
 
    ```bash
    gaiad migrate v0.36 cosmoshub_2_genesis_export.json --chain-id=cosmoshub-3 --genesis-time=[PLACEHOLDER]> genesis.json
@@ -169,21 +170,21 @@ v2.0.3 of [Gaia](https://github.com/cosmos/gaia).
    curl https://stargate.cosmos.network:26657/block\?height\=2902000 | jq -r '.result["block_meta"]["header"]["time"]'|xargs -0 date -v +60M  -j  -f "%Y-%m-%dT%H:%M:%S" +"%Y-%m-%dT%H:%M:%SZ"
    ```
 
-7. Now we must update all parameters that have been agreed upon through governance. There is only a
+3. Now we must update all parameters that have been agreed upon through governance. There is only a
 single parameter, `max_validators`, that we're upgrading based on [proposal 10](https://www.mintscan.io/proposals/10)
 
    ```bash
    cat genesis.json | jq '.app_state["staking"]["params"]["max_validators"]=125' > tmp_genesis.json && mv tmp_genesis.json genesis.json
    ```
 
-8. Verify the SHA256 of the final genesis JSON:
+1. Verify the SHA256 of the final genesis JSON:
 
    ```bash
    $ jq -S -c -M '' genesis.json | shasum -a 256
    [PLACEHOLDER]  genesis.json
    ```
 
-9. Reset state:
+2. Reset state:
 
    __NOTE__: Be sure you have a complete backed up state of your node before proceeding with this step.
    See [Recovery](#recovery) for details on how to proceed.
@@ -192,14 +193,14 @@ single parameter, `max_validators`, that we're upgrading based on [proposal 10](
    gaiad unsafe-reset-all
    ```
 
-10. Move the new `genesis.json` to your `.gaia/config/` directory
-11. Replace the `db_backend` on `.gaia/config/config.toml` to:
+3.  Move the new `genesis.json` to your `.gaia/config/` directory
+4.  Replace the `db_backend` on `.gaia/config/config.toml` to:
 
     ```toml
     db_backend = "goleveldb"
     ```
 
-12. Note, if you have any application configuration in `gaiad.toml`, that file has now been renamed to `app.toml`:
+5.  Note, if you have any application configuration in `gaiad.toml`, that file has now been renamed to `app.toml`:
 
     ```bash
     mv .gaia/config/gaiad.toml .gaia/config/app.toml

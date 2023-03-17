@@ -4,27 +4,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// getMinGasPrice returns the validator's minimum gas prices
-// for a given fee tx's gas sorted in ascending order
-func getMinGasPrice(ctx sdk.Context, feeTx sdk.FeeTx) sdk.Coins {
-	minGasPrices := ctx.MinGasPrices()
-	gas := feeTx.GetGas()
-	// special case: if minGasPrices=[], requiredFees=[]
-	requiredFees := make(sdk.Coins, len(minGasPrices))
-	// if not all coins are zero, check fee with min_gas_price
-	if !minGasPrices.IsZero() {
-		// Determine the required fees by multiplying each required minimum gas
-		// price by the gas limit, where fee = ceil(minGasPrice * gasLimit).
-		glDec := sdk.NewDec(int64(gas))
-		for i, gp := range minGasPrices {
-			fee := gp.Amount.Mul(glDec)
-			requiredFees[i] = sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt())
-		}
-	}
-
-	return requiredFees.Sort()
-}
-
 // DenomsSubsetOfIncludingZero and IsAnyGTEIncludingZero are similar to DenomsSubsetOf and IsAnyGTE in sdk.
 // Since we allow zero coins in global fee(zero coins means the chain does not want to set a global fee but still want to define the fee's denom)
 //

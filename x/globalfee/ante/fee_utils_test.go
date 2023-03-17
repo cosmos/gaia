@@ -1,12 +1,11 @@
-package antetest
+package ante
 
 import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/gaia/v9/x/globalfee/ante/antetest"
 	"github.com/stretchr/testify/suite"
-
-	"github.com/cosmos/gaia/v9/x/globalfee/ante"
 )
 
 type feeUtilsTestSuite struct {
@@ -57,7 +56,7 @@ func (s *feeUtilsTestSuite) TestContainZeroCoins() {
 	}
 
 	for _, test := range tests {
-		ok := ante.ContainZeroCoins(test.c)
+		ok := ContainZeroCoins(test.c)
 		s.Require().Equal(test.ok, ok)
 	}
 }
@@ -162,7 +161,7 @@ func (s *feeUtilsTestSuite) TestCombinedFeeRequirement() {
 
 	for name, test := range tests {
 		s.Run(name, func() {
-			allFees := ante.CombinedFeeRequirement(test.cGlobal, test.c)
+			allFees := CombinedFeeRequirement(test.cGlobal, test.c)
 			s.Require().Equal(test.combined, allFees)
 		})
 	}
@@ -267,7 +266,7 @@ func (s *feeUtilsTestSuite) TestDenomsSubsetOfIncludingZero() {
 
 	for name, test := range tests {
 		s.Run(name, func() {
-			subset := ante.DenomsSubsetOfIncludingZero(test.set, test.superset)
+			subset := DenomsSubsetOfIncludingZero(test.set, test.superset)
 			s.Require().Equal(test.subset, subset)
 		})
 	}
@@ -408,8 +407,32 @@ func (s *feeUtilsTestSuite) TestIsAnyGTEIncludingZero() {
 
 	for name, test := range tests {
 		s.Run(name, func() {
-			gte := ante.IsAnyGTEIncludingZero(test.c2, test.c1)
+			gte := IsAnyGTEIncludingZero(test.c2, test.c1)
 			s.Require().Equal(test.gte, gte)
 		})
 	}
+}
+
+func (s *antetest.IntegrationTestSuite) TestGetMinGasPrice(t *testing.T) {
+	// app := gaiahelpers.Setup(t)
+	// ctx := app.BaseApp.NewContext(false, tmproto.Header{
+	// 	ChainID: fmt.Sprintf("test-chain-%s", tmrand.Str(4)),
+	// 	Height:  1,
+	// })
+
+	// testCases := []struct {
+	// 	minGasPrice   []sdk.DecCoin
+	// 	feeTxGasLimit uint64
+	// 	expCoins      []sdk.Coin
+	// }{{
+	// 	minGasPrice:   []sdk.DecCoin{sdk.NewDecCoinFromDec("uatom", sdk.NewDec(1))},
+	// 	feeTxGasLimit: uint64(1000),
+	// 	expCoins:      []sdk.Coin{sdk.NewCoin("uatom", sdk.NewInt(1))},
+	// },
+	// }
+
+	// for _, tc := range testCases {
+	// 	ctx.Set
+	// 	GetMinGasPrice(ctx, int64(tc.feeTxGasLimit))
+	// }
 }

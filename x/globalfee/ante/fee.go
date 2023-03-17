@@ -63,7 +63,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	if err != nil {
 		panic(err)
 	}
-	requiredFees := getMinGasPrice(ctx, feeTx)
+	requiredFees := GetMinGasPrice(ctx, int64(feeTx.GetGas()))
 
 	// Only check for minimum fees and global fee if the execution mode is CheckTx
 	if !ctx.IsCheckTx() || simulate {
@@ -97,7 +97,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fees denom is wrong; got: %s required: %s", feeCoins, requiredGlobalFees)
 		}
 	} else {
-		// Either the transaction contains at least on message of a type
+		// Either the transaction contains at least one message of a type
 		// that cannot bypass the minimum fee or the total gas limit exceeds
 		// the imposed threshold. As a result, check that the fees are in
 		// expected denominations and the amounts are greater or equal than
@@ -181,4 +181,25 @@ func (mfd FeeDecorator) containsOnlyBypassMinFeeMsgs(msgs []sdk.Msg) bool {
 	}
 
 	return true
+}
+
+// GetMinGasPrice returns the validator's minimum gas prices
+// fees given a gas limit
+func GetMinGasPrice(ctx sdk.Context, gasLimit int64) sdk.Coins {
+	minGasPrices := ctx.MinGasPrices()
+	// special case: if minGasPrices=[], requiredFees=[]
+	requiredFees := make(sdk.Coins, len(minGasPrices))
+	// if not all coins are zero, check fee with min_gas_price
+	if !minGasPrices.IsZero() {
+		// Determine the required fees by multiplying each required minimum gas
+		// price by the gas limit, where fee = ceil(minGasPrice * gasLimit).
+		glDec := sdk.NewDec(gasLimit)
+
+		for i, gp := range minGasPrices {
+			fee := gp.Amount.Mul(glDec)
+			requiredFees[i] = sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt())
+		}
+	}
+
+	return requiredFees.Sort()
 }

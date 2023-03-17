@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	gaiaapp "github.com/cosmos/gaia/v9/app"
+	"github.com/cosmos/gaia/v9/x/globalfee/ante"
 	gaiafeeante "github.com/cosmos/gaia/v9/x/globalfee/ante"
 	globfeetypes "github.com/cosmos/gaia/v9/x/globalfee/types"
 )
@@ -636,6 +637,58 @@ func newTestGasLimit() uint64 {
 	return 200000
 }
 
-func newTestMaxTotalBypassMinFeeMsgGasUsage() uint64 {
-	return 1000000
+func (s *IntegrationTestSuite) TestGetMinGasPrice() {
+	// set globalfees and min gas price
+
+	expCoins := sdk.Coins{
+		sdk.NewCoin("photon", sdk.NewInt(2000)),
+		sdk.NewCoin("uatom", sdk.NewInt(3000)),
+	}
+
+	testCases := []struct {
+		name          string
+		minGasPrice   []sdk.DecCoin
+		feeTxGasLimit uint64
+		expCoins      sdk.Coins
+	}{{
+		"empty min gas price should return zero coins",
+		[]sdk.DecCoin{},
+		uint64(1000),
+		sdk.Coins{},
+	}, {
+		"unsorted min gas price",
+		[]sdk.DecCoin{
+			sdk.NewDecCoinFromDec("uatom", sdk.NewDec(3)),
+			sdk.NewDecCoinFromDec("photon", sdk.NewDec(2)),
+		},
+		uint64(1000),
+		expCoins,
+	}, {
+		"sorted min gas price",
+		[]sdk.DecCoin{
+			sdk.NewDecCoinFromDec("photon", sdk.NewDec(2)),
+			sdk.NewDecCoinFromDec("uatom", sdk.NewDec(3)),
+		},
+		uint64(1000),
+		expCoins,
+	}, {
+		"sorted min gas price",
+		[]sdk.DecCoin{
+			sdk.NewDecCoinFromDec("photon", sdk.NewDec(2)),
+			sdk.NewDecCoinFromDec("uatom", sdk.NewDec(3)),
+		},
+		uint64(1000),
+		expCoins,
+	},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			s.SetupTestGlobalFeeStoreAndMinGasPrice(tc.minGasPrice, &globfeetypes.Params{})
+
+			fees := ante.GetMinGasPrice(s.ctx, int64(tc.feeTxGasLimit))
+			// s.Require().True(sort.IsSorted(fees))
+			s.Require().True(tc.expCoins.Sort().IsEqual(fees))
+		})
+	}
 }

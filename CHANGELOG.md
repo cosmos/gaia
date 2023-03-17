@@ -37,7 +37,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ## [Unreleased]
 
 * (build) [#2018](https://github.com/cosmos/gaia/pull/2018) Consistently generate build tags on Make 4.3+
-* (docs) [#2053](https://github.com/cosmos/gaia/pull/2053) Added Shapeshift Wallet
+* (docs) [#2053](https://github.com/cosmos/gaia/pull/2053) Added Shapeshift Wallet.
 
 ## [v8.0.1] - 2023-02-17
 

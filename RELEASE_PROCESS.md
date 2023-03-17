@@ -3,7 +3,7 @@
 - [Release Process](#release-process)
   - [Major Release Procedure](#major-release-procedure)
     - [Tagging Procedure](#tagging-procedure)
-  - [Patch Release Procedure](#patch-release-procedure)
+  - [Non-major Release Procedure](#non-major-release-procedure)
   - [Major Release Maintenance](#major-release-maintenance)
   - [Stable Release Policy](#stable-release-policy)
 - [Old Release Process](#old-release-process)
@@ -21,23 +21,29 @@
 
 This document outlines the release process for Cosmos Hub (Gaia).
 
-Gaia follows [semantic versioning](https://semver.org), but with the following deviations to account for state-machine breaking changes: 
-- Changes that requires upgrade trough governance will result in an increase of the major version X (X.y.z). Note that most likely this entails state-machine breaking changes.
-- Changes that are state-machine breaking but do not require upgrade through governance (e.g., emergency upgrades) will result in an increase of the minor version Y (x.Y.z | x > 0).
-- Changes that are not state-machine breaking will result in an increase of the patch version Z (x.x.Z | x > 0).
+Gaia follows [semantic versioning](https://semver.org), but with the following deviations to account for state-machine and API breaking changes: 
+
+- State-machine breaking changes will result in an increase of the major version X (X.y.z).
+- API breaking changes will result in an increase of the minor version Y (x.Y.z | x > 0).
+- All other changes will result in an increase of the patch version Z (x.x.Z | x > 0).
+
+**State compatibility**: 
+It is critical for the patch and minor releases to be state-machine compatible with prior releases in the same major version. 
+For example, v9.2.1 must be compatible with v9.1.0 and v9.0.0. 
+This is to ensure determinism, i.e. that given the same input, the nodes will always produce the same output. 
+State-incompatibility is allowed for major upgrades because all nodes in the network perform it at the same time. 
+Therefore, after the upgrade, the nodes continue functioning in a deterministic way.
 
 **Note**: State-machine breaking changes include changes that impact the amount of gas needed to execute a transaction as it results in a different `apphash` after the code is executed.
 
-Every major release will have a release branch and patch releases will be tagged on this branch. No patch releases have their own branch. (This branch strategy only applies to `v7` and later releases.)
-
 ## Major Release Procedure
 
-A _major release_ is an increment of the first number (eg: `v7.1.0` → `v8.0.0`) or the _point number_ (eg: `v7.0.0 → v7.1.0`, also called _point release_). Each major release opens a _stable release series_ and receives updates outlined in the [Major Release Maintenance](#major-release-maintenance) section.
+A _major release_ is an increment of the first number (eg: `v7.1.0` → `v8.0.0`). Each major release opens a _stable release series_ and receives updates outlined in the [Major Release Maintenance](#major-release-maintenance) section.
 
 > Note: Generally, PRs should target `main` (expect PRs open via the Github mergify integration). 
 
 * Once the team feels that `main` is feature complete, we create a `release/vY` branch (going forward known a release branch), 
-  where `Y` is the version number, with the patch part substituted to `x` (eg: 8.0.x). 
+  where `Y` is the version number, with the minor and patch part substituted to `x` (eg: 8.x). 
   * Update the [GitHub mergify integration](./.mergify.yml) by adding instructions for automatically backporting commits from `main` to the `release/vY` using the `A:backport/vY` label.
   * **PRs targeting directly a release branch can be merged _only_ when exceptional circumstances arise**.
 * In the release branch prepare a new version section in the `CHANGELOG.md`
@@ -86,11 +92,12 @@ To tag and build without a public release (e.g., as part of a timed security rel
 2. After adding the tag locally, you can build the binary, e.g., `make build-reproducible`.
 3. To finalize the release, push the local tags, create a release based off the newly pushed tag, and attach the binaries.
 
-## Patch Release Procedure
+## Non-major Release Procedure
 
+A minor release_ is an increment of the _point number_ (eg: `v7.0.0 → v7.1.0`, also called _point release_). 
 A _patch release_ is an increment of the patch number (eg: `v8.0.0` → `v8.0.1`).
 
-**Patch release must not break consensus.**
+**Non-major releases must not break consensus.**
 
 Updates to the release branch should come from `main` by backporting PRs 
 (usually done by automatic cherry pick followed by a PRs to the release branch). 
@@ -100,7 +107,7 @@ ensure CI passes. If a PR originates from an external contributor, a core team m
 responsibility to perform this process instead of the original author.
 Lastly, it is core team's responsibility to ensure that the PR meets all the Stable Release Update (SRU) criteria.
 
-Point Release must follow the [Stable Release Policy](#stable-release-policy).
+Non-major Release must follow the [Stable Release Policy](#stable-release-policy).
 
 After the release branch has all commits required for the next patch release:
 
@@ -110,12 +117,12 @@ After the release branch has all commits required for the next patch release:
 
 ## Major Release Maintenance
 
-Major Release series continue to receive bug fixes (released as a Patch Release) until they reach **End Of Life**.
+Major Release series continue to receive bug fixes (released as either a Minor or a Patch Release) until they reach **End Of Life**.
 Major Release series is maintained in compliance with the **Stable Release Policy** as described in this document.
 Note: not every Major Release is denoted as stable releases.
 
 After two major releases, a supported major release will be transitioned to unsupported and will be deemed EOL with no further updates.
-For example, `release/v7.1.x` is deemed EOL once the network upgrades to `release/v9.0.x`. 
+For example, `release/v10.x` is deemed EOL once the network upgrades to `release/v12.x`. 
 
 ## Stable Release Policy
 

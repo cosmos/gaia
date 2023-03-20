@@ -43,6 +43,8 @@ if test -f "$BINARY"; then
 
   # $BINARY keys list --home $NODE_HOME
 
+  tail -f ./v8.out
+
   echo "\n"
   echo "Submitting proposal... \n"
   $BINARY tx gov submit-proposal software-upgrade v9-lambda \
@@ -75,6 +77,7 @@ if test -f "$BINARY"; then
   --yes
 
   echo "Done \n"
+
 
 else
   echo "Please build gaia v8 and move to ./build/gaiad8"

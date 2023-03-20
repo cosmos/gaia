@@ -717,7 +717,7 @@ func (s *IntegrationTestSuite) TestContainsOnlyBypassMinFeeMsgs() {
 			true,
 		},
 		{
-			"expect a single bypass min fee msg to pass",
+			"expect ibc msg to pass",
 			[]sdk.Msg{
 				ibcchanneltypes.NewMsgRecvPacket(ibcchanneltypes.Packet{}, nil, ibcclienttypes.Height{}, ""),
 				ibcchanneltypes.NewMsgAcknowledgement(ibcchanneltypes.Packet{}, []byte{1}, []byte{1}, ibcclienttypes.Height{}, ""),
@@ -725,7 +725,7 @@ func (s *IntegrationTestSuite) TestContainsOnlyBypassMinFeeMsgs() {
 			true,
 		},
 		{
-			"expect bypass min fee msgs to pass",
+			"expect ibc msgs to pass",
 			[]sdk.Msg{
 				ibcchanneltypes.NewMsgRecvPacket(ibcchanneltypes.Packet{}, nil, ibcclienttypes.Height{}, ""),
 				ibcchanneltypes.NewMsgAcknowledgement(ibcchanneltypes.Packet{}, []byte{1}, []byte{1}, ibcclienttypes.Height{}, ""),
@@ -733,7 +733,7 @@ func (s *IntegrationTestSuite) TestContainsOnlyBypassMinFeeMsgs() {
 			true,
 		},
 		{
-			"expect mixed msg type to not pass",
+			"msgs contains non-ibc msg - should not pass",
 			[]sdk.Msg{
 				ibcchanneltypes.NewMsgRecvPacket(ibcchanneltypes.Packet{}, nil, ibcclienttypes.Height{}, ""),
 				stakingtypes.NewMsgDelegate(sdk.AccAddress{}, sdk.ValAddress{}, sdk.Coin{}),
@@ -741,9 +741,8 @@ func (s *IntegrationTestSuite) TestContainsOnlyBypassMinFeeMsgs() {
 			false,
 		},
 		{
-			"expect non bypass fee msgs to not pass",
+			"non-ibc msgs - should not pass",
 			[]sdk.Msg{
-				ibcchanneltypes.NewMsgRecvPacket(ibcchanneltypes.Packet{}, nil, ibcclienttypes.Height{}, ""),
 				stakingtypes.NewMsgDelegate(sdk.AccAddress{}, sdk.ValAddress{}, sdk.Coin{}),
 			},
 			false,

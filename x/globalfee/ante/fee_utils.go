@@ -72,7 +72,7 @@ func IsAnyGTEIncludingZero(coins, coinsB sdk.Coins) bool {
 	return false
 }
 
-// ContainZeroCoins returns true if the given coins is empty or contains zero coins,
+// ContainZeroCoins returns true if the given coins are empty or contain zero coins,
 // Note that the coins denoms must be validated, see sdk.ValidateDenom
 func ContainZeroCoins(coins sdk.Coins) bool {
 	if len(coins) == 0 {

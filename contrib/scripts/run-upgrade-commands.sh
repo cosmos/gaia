@@ -45,8 +45,8 @@ if test -f "$BINARY"; then
 
   echo "\n"
   echo "Submitting proposal... \n"
-  $BINARY tx gov submit-proposal software-upgrade v9-Lambda \
-  --title v9-Lambda \
+  $BINARY tx gov submit-proposal software-upgrade v9-lambda \
+  --title v9-lambda \
   --deposit 10000000uatom \
   --upgrade-height $UPGRADE_HEIGHT \
   --upgrade-info "upgrade to v9-Lambda" \

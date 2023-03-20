@@ -79,12 +79,12 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	//
 	// 	- the tx contains only message types that can bypass the minimum fee,
 	//	see BypassMinFeeMsgTypes;
-	//	- the total gas limit per message does not exceed MaxBypassMinFeeMsgGasUsage,
-	//	i.e., totalGas <= len(msgs) * MaxBypassMinFeeMsgGasUsage
+	//	- the total gas limit per message does not exceed MaxTotalBypassMinFeeMsgGasUsage,
+	//	i.e., totalGas <=  MaxBypassMinFeeMsgGasUsage
 	//
 	// Otherwise, minimum fees and global fees are checked to prevent spam.
-	doesNotExceedMaxGasUsage := gas <= uint64(len(msgs))*mfd.MaxBypassMinFeeMsgGasUsage
-	allowedToBypassMinFee := mfd.containsOnlyBypassMinFeeMsgs(msgs) && doesNotExceedMaxGasUsage
+	doesNotExceedMaxGasUsage := gas <= mfd.MaxTotalBypassMinFeeMsgGasUsage
+	allowedToBypassMinFee := mfd.ContainsOnlyBypassMinFeeMsgs(msgs) && doesNotExceedMaxGasUsage
 
 	if allowedToBypassMinFee {
 		// Transactions with zero fees are accepted
@@ -170,9 +170,9 @@ func (mfd FeeDecorator) getBondDenom(ctx sdk.Context) string {
 	return bondDenom
 }
 
-// containsOnlyBypassMinFeeMsgs returns true if all the given msgs type are listed
+// ContainsOnlyBypassMinFeeMsgs returns true if all the given msgs type are listed
 // in the BypassMinFeeMsgTypes of the FeeDecorator.
-func (mfd FeeDecorator) containsOnlyBypassMinFeeMsgs(msgs []sdk.Msg) bool {
+func (mfd FeeDecorator) ContainsOnlyBypassMinFeeMsgs(msgs []sdk.Msg) bool {
 	for _, msg := range msgs {
 		if tmstrings.StringInSlice(sdk.MsgTypeURL(msg), mfd.BypassMinFeeMsgTypes) {
 			continue

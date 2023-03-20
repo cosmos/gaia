@@ -77,5 +77,4 @@ func (coins DecCoins) Validate() error {
 	}
 
 	return nil
-
 }

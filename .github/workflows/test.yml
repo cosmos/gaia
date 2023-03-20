@@ -140,7 +140,7 @@ jobs:
         if: env.GIT_DIFF
       - name: Install Cosmovisor
         run: |
-          go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.0.0
+          go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@latest
         if: env.GIT_DIFF
       - name: Start GaiaV8
         run: |
@@ -152,5 +152,5 @@ jobs:
         if: env.GIT_DIFF
       - name: Check for successful upgrade
         run: |
-          ./contrib/scripts/test_upgrade.sh 20 5 16 localhost
+          ./contrib/scripts/test_upgrade.sh 30 5 16 localhost
         if: env.GIT_DIFF

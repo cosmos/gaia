@@ -37,7 +37,7 @@ if test -f "$BINARY"; then
   echo "binary:"
   echo $BINARY
 
-  if [ key == "" ]; then
+  if [ -z "$key" ]; then
     echo $USER_MNEMONIC | $BINARY --home $NODE_HOME keys add val --recover --keyring-backend=test
   fi
 
@@ -77,7 +77,6 @@ if test -f "$BINARY"; then
   --yes
 
   echo "Done \n"
-
 
 else
   echo "Please build gaia v8 and move to ./build/gaiad8"

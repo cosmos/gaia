@@ -76,6 +76,8 @@ if test -f "$BINARY"; then
 
   echo "Done \n"
 
+  tail -f ./v8.out
+
 else
   echo "Please build gaia v8 and move to ./build/gaiad8"
 fi

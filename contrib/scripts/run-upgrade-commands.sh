@@ -43,8 +43,6 @@ if test -f "$BINARY"; then
 
   # $BINARY keys list --home $NODE_HOME
 
-  tail -f ./v8.out
-
   echo "\n"
   echo "Submitting proposal... \n"
   $BINARY tx gov submit-proposal software-upgrade v9-lambda \

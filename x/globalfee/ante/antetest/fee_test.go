@@ -705,7 +705,7 @@ func (s *IntegrationTestSuite) TestContainsOnlyBypassMinFeeMsgs() {
 			true,
 		},
 		{
-			"msgs contains non-ibc msg - should not pass",
+			"msgs contain non-bypass msg - should not pass",
 			[]sdk.Msg{
 				ibcchanneltypes.NewMsgRecvPacket(ibcchanneltypes.Packet{}, nil, ibcclienttypes.Height{}, ""),
 				stakingtypes.NewMsgDelegate(sdk.AccAddress{}, sdk.ValAddress{}, sdk.Coin{}),

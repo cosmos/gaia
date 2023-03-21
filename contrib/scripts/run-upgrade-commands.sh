@@ -31,7 +31,8 @@ if test -f "$BINARY"; then
 
 
   key=$($BINARY keys show val --home $NODE_HOME)
-  if [ key == "" ]; then
+
+  if [ -z "$key" ]; then
     echo $USER_MNEMONIC | $BINARY --home $NODE_HOME keys add val --recover --keyring-backend=test
   fi
 

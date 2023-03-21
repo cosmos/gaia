@@ -632,7 +632,7 @@ func (s *IntegrationTestSuite) TestGetMinGasPrice() {
 		expCoins      sdk.Coins
 	}{
 		{
-			"empty min gas price should return zero coins",
+			"empty min gas price should return empty coins",
 			[]sdk.DecCoin{},
 			uint64(1000),
 			sdk.Coins{},

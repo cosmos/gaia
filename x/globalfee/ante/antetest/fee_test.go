@@ -617,6 +617,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 	}
 }
 
+// TestGetMinGasPrice tests the parsing of minGasPrice from app.toml.
 func (s *IntegrationTestSuite) TestGetMinGasPrice() {
 
 	expCoins := sdk.Coins{
@@ -631,7 +632,7 @@ func (s *IntegrationTestSuite) TestGetMinGasPrice() {
 		expCoins      sdk.Coins
 	}{
 		{
-			"empty min gas price should return zero coins",
+			"empty min gas price should return empty coins",
 			[]sdk.DecCoin{},
 			uint64(1000),
 			sdk.Coins{},
@@ -687,7 +688,7 @@ func (s *IntegrationTestSuite) TestContainsOnlyBypassMinFeeMsgs() {
 			true,
 		},
 		{
-			"expect ibc msg to pass",
+			"expect default bypass msg to pass",
 			[]sdk.Msg{
 				ibcchanneltypes.NewMsgRecvPacket(ibcchanneltypes.Packet{}, nil, ibcclienttypes.Height{}, ""),
 				ibcchanneltypes.NewMsgAcknowledgement(ibcchanneltypes.Packet{}, []byte{1}, []byte{1}, ibcclienttypes.Height{}, ""),
@@ -695,7 +696,7 @@ func (s *IntegrationTestSuite) TestContainsOnlyBypassMinFeeMsgs() {
 			true,
 		},
 		{
-			"expect ibc msgs to pass",
+			"expect default bypass msgs to pass",
 			[]sdk.Msg{
 				ibcchanneltypes.NewMsgRecvPacket(ibcchanneltypes.Packet{}, nil, ibcclienttypes.Height{}, ""),
 				ibcchanneltypes.NewMsgAcknowledgement(ibcchanneltypes.Packet{}, []byte{1}, []byte{1}, ibcclienttypes.Height{}, ""),
@@ -703,7 +704,7 @@ func (s *IntegrationTestSuite) TestContainsOnlyBypassMinFeeMsgs() {
 			true,
 		},
 		{
-			"msgs contains non-ibc msg - should not pass",
+			"msgs contain non-bypass msg - should not pass",
 			[]sdk.Msg{
 				ibcchanneltypes.NewMsgRecvPacket(ibcchanneltypes.Packet{}, nil, ibcclienttypes.Height{}, ""),
 				stakingtypes.NewMsgDelegate(sdk.AccAddress{}, sdk.ValAddress{}, sdk.Coin{}),
@@ -711,7 +712,7 @@ func (s *IntegrationTestSuite) TestContainsOnlyBypassMinFeeMsgs() {
 			false,
 		},
 		{
-			"non-ibc msgs - should not pass",
+			"msgs contain only non-bypass msgs - should not pass",
 			[]sdk.Msg{
 				stakingtypes.NewMsgDelegate(sdk.AccAddress{}, sdk.ValAddress{}, sdk.Coin{}),
 			},

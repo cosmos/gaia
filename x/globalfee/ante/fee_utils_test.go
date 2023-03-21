@@ -47,8 +47,8 @@ func TestContainZeroCoins(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		_ = ContainZeroCoins(test.c)
-		// require().Equal(test.ok, ok)
+		ok := ContainZeroCoins(test.c)
+		require.Equal(t, test.ok, ok)
 	}
 }
 

@@ -1,5 +1,4 @@
 #!/bin/sh
-set +e
 
 set -o errexit -o nounset
 
@@ -32,17 +31,12 @@ if test -f "$BINARY"; then
 
 
   key=$($BINARY keys show val --home $NODE_HOME)
-  echo "key:"
-  echo $key
-  echo "binary:"
-  echo $BINARY
 
   if [ -z "$key" ]; then
     echo $USER_MNEMONIC | $BINARY --home $NODE_HOME keys add val --recover --keyring-backend=test
   fi
 
   # $BINARY keys list --home $NODE_HOME
-
 
   echo "\n"
   echo "Submitting proposal... \n"

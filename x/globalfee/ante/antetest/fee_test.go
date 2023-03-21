@@ -617,6 +617,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 	}
 }
 
+// TestGetMinGasPrice tests the parsing of minGasPrice from app.toml.
 func (s *IntegrationTestSuite) TestGetMinGasPrice() {
 	// set globalfees and min gas price
 

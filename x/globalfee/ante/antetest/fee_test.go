@@ -697,7 +697,7 @@ func (s *IntegrationTestSuite) TestContainsOnlyBypassMinFeeMsgs() {
 			true,
 		},
 		{
-			"expect ibc msgs to pass",
+			"expect default bypass msgs to pass",
 			[]sdk.Msg{
 				ibcchanneltypes.NewMsgRecvPacket(ibcchanneltypes.Packet{}, nil, ibcclienttypes.Height{}, ""),
 				ibcchanneltypes.NewMsgAcknowledgement(ibcchanneltypes.Packet{}, []byte{1}, []byte{1}, ibcclienttypes.Height{}, ""),

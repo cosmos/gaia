@@ -11,16 +11,11 @@ import (
 	ibcchanneltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
 	"github.com/stretchr/testify/suite"
 
-	gaiaapp "github.com/cosmos/gaia/v9/app"
 	gaiafeeante "github.com/cosmos/gaia/v9/x/globalfee/ante"
 	globfeetypes "github.com/cosmos/gaia/v9/x/globalfee/types"
 )
 
-var (
-	testBondDenom                              = "uatom"
-	testGasLimit                        uint64 = 200_000
-	testMaxTotalBypassMinFeeMsgGasUsage uint64 = 1_000_000
-)
+var testGasLimit uint64 = 200_000
 
 func TestIntegrationTestSuite(t *testing.T) {
 	suite.Run(t, new(IntegrationTestSuite))
@@ -28,17 +23,9 @@ func TestIntegrationTestSuite(t *testing.T) {
 
 func (s *IntegrationTestSuite) TestGetDefaultGlobalFees() {
 	// set globalfees and min gas price
-	globalfeeSubspace := s.SetupTestGlobalFeeStoreAndMinGasPrice([]sdk.DecCoin{}, &globfeetypes.Params{})
+	feeDecorator, _ := s.SetupTestGlobalFeeStoreAndMinGasPrice([]sdk.DecCoin{}, &globfeetypes.Params{})
 
-	// set staking params
-	stakingParam := stakingtypes.DefaultParams()
-	stakingParam.BondDenom = testBondDenom
-	stakingSubspace := s.SetupTestStakingSubspace(stakingParam)
-
-	// setup antehandler
-	mfd := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), globalfeeSubspace, stakingSubspace, testMaxTotalBypassMinFeeMsgGasUsage)
-
-	defaultGlobalFees, err := mfd.DefaultZeroGlobalFee(s.ctx)
+	defaultGlobalFees, err := feeDecorator.DefaultZeroGlobalFee(s.ctx)
 	s.Require().NoError(err)
 	s.Require().Greater(len(defaultGlobalFees), 0)
 
@@ -504,7 +491,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice:     minGasPrice,
 			globalFeeParams: globalfeeParamsLow,
 			gasPrice:        sdk.NewCoins(sdk.NewCoin("uatom", sdk.ZeroInt())),
-			gasLimit:        2 * testGasLimit,
+			gasLimit:        2 * testMaxTotalBypassMinFeeMsgGasUsage,
 			txMsg: ibcchanneltypes.NewMsgTimeout(
 				ibcchanneltypes.Packet{}, 2, nil, ibcclienttypes.Height{}, ""),
 			txCheck: true,
@@ -609,13 +596,10 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			// set globalfees and min gas price
-			globalfeeSubspace := s.SetupTestGlobalFeeStoreAndMinGasPrice(tc.minGasPrice, tc.globalFeeParams)
-			stakingParam := stakingtypes.DefaultParams()
-			stakingParam.BondDenom = testBondDenom
-			stakingSubspace := s.SetupTestStakingSubspace(stakingParam)
-			// setup antehandler
-			mfd := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), globalfeeSubspace, stakingSubspace, testGasLimit)
-			antehandler := sdk.ChainAnteDecorators(mfd)
+			_, antehandler := s.SetupTestGlobalFeeStoreAndMinGasPrice(tc.minGasPrice, tc.globalFeeParams)
+
+			// set fee decorator to ante handler
+
 			s.Require().NoError(s.txBuilder.SetMsgs(tc.txMsg))
 			s.txBuilder.SetFeeAmount(tc.gasPrice)
 			s.txBuilder.SetGasLimit(tc.gasLimit)
@@ -692,14 +676,7 @@ func (s *IntegrationTestSuite) TestGetMinGasPrice() {
 
 func (s *IntegrationTestSuite) TestContainsOnlyBypassMinFeeMsgs() {
 	// set globalfees and min gas price
-	globalfeeSubspace := s.SetupTestGlobalFeeStoreAndMinGasPrice([]sdk.DecCoin{}, &globfeetypes.Params{})
-	stakingParam := stakingtypes.DefaultParams()
-	stakingParam.BondDenom = testBondDenom
-	stakingSubspace := s.SetupTestStakingSubspace(stakingParam)
-	// setup antehandler
-	mfd := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), globalfeeSubspace, stakingSubspace, testMaxTotalBypassMinFeeMsgGasUsage)
-
-	sdk.ChainAnteDecorators(mfd)
+	feeDecorator, _ := s.SetupTestGlobalFeeStoreAndMinGasPrice([]sdk.DecCoin{}, &globfeetypes.Params{})
 
 	testCases := []struct {
 		name    string
@@ -746,7 +723,7 @@ func (s *IntegrationTestSuite) TestContainsOnlyBypassMinFeeMsgs() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			res := mfd.ContainsOnlyBypassMinFeeMsgs(tc.msgs)
+			res := feeDecorator.ContainsOnlyBypassMinFeeMsgs(tc.msgs)
 			s.Require().True(tc.expPass == res)
 		})
 	}

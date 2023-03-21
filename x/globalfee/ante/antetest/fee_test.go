@@ -618,7 +618,6 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 }
 
 func (s *IntegrationTestSuite) TestGetMinGasPrice() {
-	// set globalfees and min gas price
 
 	expCoins := sdk.Coins{
 		sdk.NewCoin("photon", sdk.NewInt(2000)),
@@ -668,7 +667,6 @@ func (s *IntegrationTestSuite) TestGetMinGasPrice() {
 			s.SetupTestGlobalFeeStoreAndMinGasPrice(tc.minGasPrice, &globfeetypes.Params{})
 
 			fees := gaiafeeante.GetMinGasPrice(s.ctx, int64(tc.feeTxGasLimit))
-			// s.Require().True(sort.IsSorted(fees))
 			s.Require().True(tc.expCoins.Sort().IsEqual(fees))
 		})
 	}

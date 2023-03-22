@@ -53,11 +53,12 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		sigGasConsumer = ante.DefaultSigVerificationGasConsumer
 	}
 
-	// maxBypassMinFeeMsgGasUsage is the maximum gas usage per message
-	// so that a transaction that contains only message types that can
-	// bypass the minimum fee can be accepted with a zero fee.
+	// maxTotalBypassMinFeeMsgGasUsage is the allowed maximum gas usage
+	// for all the bypass msgs in a transactions.
+	// A transaction that contains only bypass message types and the gas usage does not
+	// exceed maxTotalBypassMinFeeMsgGasUsage can be accepted with a zero fee.
 	// For details, see gaiafeeante.NewFeeDecorator()
-	var maxBypassMinFeeMsgGasUsage uint64 = 200_000
+	var maxTotalBypassMinFeeMsgGasUsage uint64 = 1_000_000
 
 	anteDecorators := []sdk.AnteDecorator{
 		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
@@ -67,7 +68,7 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewValidateMemoDecorator(opts.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
 		NewGovPreventSpamDecorator(opts.Codec, opts.GovKeeper),
-		gaiafeeante.NewFeeDecorator(opts.BypassMinFeeMsgTypes, opts.GlobalFeeSubspace, opts.StakingSubspace, maxBypassMinFeeMsgGasUsage),
+		gaiafeeante.NewFeeDecorator(opts.BypassMinFeeMsgTypes, opts.GlobalFeeSubspace, opts.StakingSubspace, maxTotalBypassMinFeeMsgGasUsage),
 
 		ante.NewDeductFeeDecorator(opts.AccountKeeper, opts.BankKeeper, opts.FeegrantKeeper),
 		ante.NewSetPubKeyDecorator(opts.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators

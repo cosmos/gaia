@@ -468,14 +468,53 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			txCheck:         true,
 			expErr:          false,
 		},
-		// test bypass msg
-		"msg type ibc, zero fee in globalfee denom": {
+		"bypass msg type: ibc.core.channel.v1.MsgRecvPacket": {
 			minGasPrice:     minGasPrice,
 			globalFeeParams: globalfeeParamsLow,
 			gasPrice:        sdk.NewCoins(sdk.NewCoin("uatom", sdk.ZeroInt())),
 			gasLimit:        newTestGasLimit(),
 			txMsg: ibcchanneltypes.NewMsgRecvPacket(
 				ibcchanneltypes.Packet{}, nil, ibcclienttypes.Height{}, ""),
+			txCheck: true,
+			expErr:  false,
+		},
+		"bypass msg type: ibc.core.channel.v1.MsgTimeout": {
+			minGasPrice:     minGasPrice,
+			globalFeeParams: globalfeeParamsLow,
+			gasPrice:        sdk.NewCoins(sdk.NewCoin("uatom", sdk.ZeroInt())),
+			gasLimit:        newTestGasLimit(),
+			txMsg: ibcchanneltypes.NewMsgTimeout(
+				ibcchanneltypes.Packet{}, 1, nil, ibcclienttypes.Height{}, ""),
+			txCheck: true,
+			expErr:  false,
+		},
+		"bypass msg type: ibc.core.channel.v1.MsgTimeoutOnClose": {
+			minGasPrice:     minGasPrice,
+			globalFeeParams: globalfeeParamsLow,
+			gasPrice:        sdk.NewCoins(sdk.NewCoin("uatom", sdk.ZeroInt())),
+			gasLimit:        newTestGasLimit(),
+			txMsg: ibcchanneltypes.NewMsgTimeout(
+				ibcchanneltypes.Packet{}, 2, nil, ibcclienttypes.Height{}, ""),
+			txCheck: true,
+			expErr:  false,
+		},
+		"bypass msg gas usage exceeds maxTotalBypassMinFeeMsgGasUsage": {
+			minGasPrice:     minGasPrice,
+			globalFeeParams: globalfeeParamsLow,
+			gasPrice:        sdk.NewCoins(sdk.NewCoin("uatom", sdk.ZeroInt())),
+			gasLimit:        2 * newTestMaxTotalBypassMinFeeMsgGasUsage(),
+			txMsg: ibcchanneltypes.NewMsgTimeout(
+				ibcchanneltypes.Packet{}, 2, nil, ibcclienttypes.Height{}, ""),
+			txCheck: true,
+			expErr:  true,
+		},
+		"bypass msg gas usage equals to maxTotalBypassMinFeeMsgGasUsage": {
+			minGasPrice:     minGasPrice,
+			globalFeeParams: globalfeeParamsLow,
+			gasPrice:        sdk.NewCoins(sdk.NewCoin("uatom", sdk.ZeroInt())),
+			gasLimit:        newTestMaxTotalBypassMinFeeMsgGasUsage(),
+			txMsg: ibcchanneltypes.NewMsgTimeout(
+				ibcchanneltypes.Packet{}, 3, nil, ibcclienttypes.Height{}, ""),
 			txCheck: true,
 			expErr:  false,
 		},
@@ -573,9 +612,8 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			stakingParam.BondDenom = "uatom"
 			stakingSubspace := s.SetupTestStakingSubspace(stakingParam)
 			// setup antehandler
-			mfd := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), globalfeeSubspace, stakingSubspace, newTestGasLimit())
+			mfd := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), globalfeeSubspace, stakingSubspace, newTestMaxTotalBypassMinFeeMsgGasUsage())
 			antehandler := sdk.ChainAnteDecorators(mfd)
-
 			s.Require().NoError(s.txBuilder.SetMsgs(testCase.txMsg))
 			s.txBuilder.SetFeeAmount(testCase.gasPrice)
 			s.txBuilder.SetGasLimit(testCase.gasLimit)
@@ -596,4 +634,8 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 // helpers
 func newTestGasLimit() uint64 {
 	return 200000
+}
+
+func newTestMaxTotalBypassMinFeeMsgGasUsage() uint64 {
+	return 1000000
 }

@@ -155,14 +155,14 @@ Instructions for running the upgrade test locally
 ```sh
 git checkout v8.0.0
 make build 
-mv ./build/gaiad ./build/gaiad8
+cp ./build/gaiad ./build/gaiad8
 ```
 
 #### Build gaia v9.0.0 and move into ./build:
 ```sh
 git checkout v9.0.0
 make build 
-mv ./build/gaiad ./build/gaiad9
+cp ./build/gaiad ./build/gaiad9
 ```
 
 #### Go back to your previous working branch
@@ -185,7 +185,7 @@ This script prepares the chain and starts it using cosmovisor
 #### Run the upgrade
 In another terminal window, run the script that waits 10 seconds for gaia to start then makes gov proposal to perform an upgrade at height 15
 ```sh
-./contrib/scripts/run-upgrade-commands.sh 30
+./contrib/scripts/run-upgrade-commands.sh 15
 ```
 
 #### Monitor for success

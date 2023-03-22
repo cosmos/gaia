@@ -52,6 +52,9 @@ func TestContainZeroCoins(t *testing.T) {
 	}
 }
 
+// Note that in a real Gaia deployment all zero coins can be removed from minGasPrice.
+// This sanitizing happens when the minGasPrice is set into the context.
+// (see baseapp.SetMinGasPrices in gaia/cmd/root.go line 221)
 func TestCombinedFeeRequirement(t *testing.T) {
 	zeroCoin1 := sdk.NewCoin("photon", sdk.ZeroInt())
 	zeroCoin2 := sdk.NewCoin("stake", sdk.ZeroInt())
@@ -73,17 +76,11 @@ func TestCombinedFeeRequirement(t *testing.T) {
 	coinsCointainZero := sdk.Coins{coin1, zeroCoin2}.Sort()
 	coinsCointainZeroNewDenom := sdk.Coins{coin1, zeroCoin3}.Sort()
 	coinsAllZero := sdk.Coins{zeroCoin1, zeroCoin2}.Sort()
-	twoNilsCoins := make(sdk.Coins, 2)
 	tests := map[string]struct {
 		cGlobal  sdk.Coins
 		c        sdk.Coins
 		combined sdk.Coins
 	}{
-		"min fee is two nils": {
-			cGlobal:  coinsAllZero,
-			c:        twoNilsCoins,
-			combined: coinsCointainZero,
-		},
 		"global fee empty, min fee empty, combined fee empty": {
 			cGlobal:  coinsEmpty,
 			c:        coinsEmpty,

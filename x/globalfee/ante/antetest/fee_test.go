@@ -1,7 +1,6 @@
 package antetest
 
 import (
-	"fmt"
 	"testing"
 
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
@@ -35,9 +34,9 @@ func (s *IntegrationTestSuite) TestGetDefaultGlobalFees() {
 	}
 }
 
-// test global fees and min_gas_price with bypass msg types.
-// please note even globalfee=0, min_gas_price=0, we do not let fee=0random_denom pass
-// paid fees are already sanitized by removing zero coins(through feeFlag parsing), so use sdk.NewCoins() to create it.
+// Test global fees and min_gas_price with bypass msg types.
+// Please note even globalfee=0, min_gas_price=0, we do not let fee=0random_denom pass.
+// Paid fees are already sanitized by removing zero coins(through feeFlag parsing), so use sdk.NewCoins() to create it.
 func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 	s.txBuilder = s.clientCtx.TxConfig.NewTxBuilder()
 	priv1, _, addr1 := testdata.KeyTestPubAddr()
@@ -618,10 +617,10 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 	}
 }
 
-// TestGetMinGasPrice tests how the operator fees are determined using various min gas prices.
+// Test how the operator fees are determined using various min gas prices.
 //
-// Note that in a real Gaia deployment the parsing of minGasPrice removed all the zero coins.
-// This sanitzing happens when the SDK base app sets the minGasPrice into the context.
+// Note that in a real Gaia deployment all zero coins can be removed from minGasPrice.
+// This sanitizing happens when the minGasPrice is set into the context.
 // (see baseapp.SetMinGasPrices in gaia/cmd/root.go line 221)
 func (s *IntegrationTestSuite) TestGetMinGasPrice() {
 
@@ -689,11 +688,6 @@ func (s *IntegrationTestSuite) TestGetMinGasPrice() {
 			s.SetupTestGlobalFeeStoreAndMinGasPrice(tc.minGasPrice, &globfeetypes.Params{})
 
 			fees := gaiafeeante.GetMinGasPrice(s.ctx, int64(tc.feeTxGasLimit))
-			fmt.Println(tc.name)
-			fmt.Println("fees:")
-			fmt.Printf("%#+v\n", fees)
-			fmt.Println("exp fees")
-			fmt.Printf("%#+v\n", tc.expCoins.Sort())
 			s.Require().True(tc.expCoins.Sort().IsEqual(fees))
 		})
 	}

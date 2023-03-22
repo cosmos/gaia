@@ -642,6 +642,7 @@ func (s *IntegrationTestSuite) TestGetMinGasPrice() {
 			sdk.Coins{},
 		},
 		{
+			// should never happen due to sanitizing
 			"zero coins min gas price should return empty coins",
 			[]sdk.DecCoin{
 				sdk.NewDecCoinFromDec("stake", sdk.NewDec(0)),
@@ -651,6 +652,7 @@ func (s *IntegrationTestSuite) TestGetMinGasPrice() {
 			sdk.Coins{},
 		},
 		{
+			// should never happen due to sanitizing
 			"zero coins, non-zero coins mix should return zero coin and non-zero coins",
 			[]sdk.DecCoin{
 				sdk.NewDecCoinFromDec("stake", sdk.NewDec(0)),

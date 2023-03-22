@@ -618,7 +618,11 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 	}
 }
 
-// TestGetMinGasPrice tests the parsing of minGasPrice from app.toml.
+// TestGetMinGasPrice tests how the operator fees are determined using various min gas prices.
+//
+// Note that in a real Gaia deployment the parsing of minGasPrice removed all the zero coins.
+// This sanitzing happens when the SDK base app sets the minGasPrice into the context.
+// (see baseapp.SetMinGasPrices in gaia/cmd/root.go line 221)
 func (s *IntegrationTestSuite) TestGetMinGasPrice() {
 
 	expCoins := sdk.Coins{
@@ -633,6 +637,12 @@ func (s *IntegrationTestSuite) TestGetMinGasPrice() {
 		expCoins      sdk.Coins
 	}{
 		{
+			"empty min gas price should return empty coins",
+			[]sdk.DecCoin{},
+			uint64(1000),
+			sdk.Coins{},
+		},
+		{
 			"zero coins min gas price should return empty coins",
 			[]sdk.DecCoin{
 				sdk.NewDecCoinFromDec("stake", sdk.NewDec(0)),
@@ -642,7 +652,7 @@ func (s *IntegrationTestSuite) TestGetMinGasPrice() {
 			sdk.Coins{},
 		},
 		{
-			"zero coins, non-zero coins mix should return the non-zero coins only",
+			"zero coins, non-zero coins mix should return zero coin and non-zero coins",
 			[]sdk.DecCoin{
 				sdk.NewDecCoinFromDec("stake", sdk.NewDec(0)),
 				sdk.NewDecCoinFromDec("uatom", sdk.NewDec(1)),
@@ -653,20 +663,9 @@ func (s *IntegrationTestSuite) TestGetMinGasPrice() {
 				sdk.NewCoin("uatom", sdk.NewInt(1000)),
 			},
 		},
+
 		{
-			"zero gas limit should return min gas price",
-			[]sdk.DecCoin{},
-			uint64(0),
-			sdk.Coins{},
-		},
-		{
-			"empty min gas price should return empty coins",
-			[]sdk.DecCoin{},
-			uint64(1000),
-			sdk.Coins{},
-		},
-		{
-			"unsorted min gas price",
+			"unsorted min gas price should return sorted coins",
 			[]sdk.DecCoin{
 				sdk.NewDecCoinFromDec("uatom", sdk.NewDec(3)),
 				sdk.NewDecCoinFromDec("photon", sdk.NewDec(2)),
@@ -675,16 +674,7 @@ func (s *IntegrationTestSuite) TestGetMinGasPrice() {
 			expCoins,
 		},
 		{
-			"sorted min gas price",
-			[]sdk.DecCoin{
-				sdk.NewDecCoinFromDec("photon", sdk.NewDec(2)),
-				sdk.NewDecCoinFromDec("uatom", sdk.NewDec(3)),
-			},
-			uint64(1000),
-			expCoins,
-		},
-		{
-			"sorted min gas price",
+			"sorted min gas price should return same conins",
 			[]sdk.DecCoin{
 				sdk.NewDecCoinFromDec("photon", sdk.NewDec(2)),
 				sdk.NewDecCoinFromDec("uatom", sdk.NewDec(3)),

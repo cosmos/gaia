@@ -187,20 +187,21 @@ func (mfd FeeDecorator) ContainsOnlyBypassMinFeeMsgs(msgs []sdk.Msg) bool {
 
 // GetMinGasPrice returns the validator's minimum gas prices
 // fees given a gas limit
-func GetMinGasPrice(ctx sdk.Context, gasLimit int64) (requiredFees sdk.Coins) {
+func GetMinGasPrice(ctx sdk.Context, gasLimit int64) sdk.Coins {
 	minGasPrices := ctx.MinGasPrices()
-	// if not all coins are zero, check fee with min_gas_price
-	if !minGasPrices.IsZero() {
-		// Determine the required fees by multiplying each required minimum gas
-		// price by the gas limit, where fee = ceil(minGasPrice * gasLimit).
-		glDec := sdk.NewDec(gasLimit)
-
-		for _, gp := range minGasPrices {
-			fee := gp.Amount.Mul(glDec)
-			requiredFees = append(requiredFees, sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt()))
-		}
-		requiredFees.Sort()
+	// special case: if minGasPrices=[], requiredFees=[]
+	if minGasPrices.IsZero() {
+		return sdk.Coins{}
 	}
 
-	return
+	requiredFees := make(sdk.Coins, len(minGasPrices))
+	// Determine the required fees by multiplying each required minimum gas
+	// price by the gas limit, where fee = ceil(minGasPrice * gasLimit).
+	glDec := sdk.NewDec(gasLimit)
+	for i, gp := range minGasPrices {
+		fee := gp.Amount.Mul(glDec)
+		requiredFees[i] = sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt())
+	}
+
+	return requiredFees.Sort()
 }

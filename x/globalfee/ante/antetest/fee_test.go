@@ -1,7 +1,6 @@
 package antetest
 
 import (
-	"fmt"
 	"testing"
 
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
@@ -689,11 +688,6 @@ func (s *IntegrationTestSuite) TestGetMinGasPrice() {
 			s.SetupTestGlobalFeeStoreAndMinGasPrice(tc.minGasPrice, &globfeetypes.Params{})
 
 			fees := gaiafeeante.GetMinGasPrice(s.ctx, int64(tc.feeTxGasLimit))
-			fmt.Println(tc.name)
-			fmt.Println("fees:")
-			fmt.Printf("%#+v\n", fees)
-			fmt.Println("exp fees")
-			fmt.Printf("%#+v\n", tc.expCoins.Sort())
 			s.Require().True(tc.expCoins.Sort().IsEqual(fees))
 		})
 	}

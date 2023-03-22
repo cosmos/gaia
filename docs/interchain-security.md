@@ -94,6 +94,7 @@ There are a number of IBC application layer modules and packets that need to be 
 There are three types of operations within Cross Chain Validation which must be present for Interchain Security to take place:
 
 * Validator Set Updates
+* Reward Distribution
 * Evidence
 
 ### Validator Set Updates
@@ -132,7 +133,7 @@ Instead of aligning as closely as possible with the current staking module, a wr
 
 ## Consumer Chain Distribution Module
 
-Delegators and validators on the Provider Chain would likely not risk their ATOMs in order to be included in the validator set on a Consumer Chain unless there was some incentive to do so. At a minimum, transaction fees gained from processing transactions could be considered as a possible incentive. There may also be incentives completely outside the state machine, like a service agreement that comes with regular payments through traditional means of money transmission. More likely it is expected that Consumer Chains include some type of block reward as seen in traditional validation schemes. This could be in a child-chain specific token used for gas, governance or some other use.
+Delegators and validators on the Provider Chain would likely not risk their ATOMs in order to be included in the validator set on a Consumer Chain unless there was some incentive to do so. At a minimum, transaction fees gained from processing transactions could be considered as a possible incentive. There may also be incentives completely outside the state machine, like a service agreement that comes with regular payments through traditional means of money transmission. More likely it is expected that Consumer Chains include some type of block reward as seen in traditional validation schemes. This could be in a Consumer-Chain specific token used for gas, governance or some other use.
 
 Regardless of how exactly a reward is calculated it is left up to the Consumer Chain to design a system that is attractive enough for Provider Chain validators to risk their staking token in order to be eligible. Once that reward is calculated it needs to be distributed back to the validators that have earned it. These rewards could be deposited on the Consumer Chain or the Provider Chain. If deposited on the Consumer Chain it would only be possible to record to which validator they were rewarded and over which time period since the per-delegator metrics are stored only on the Provider Chain.
 
@@ -142,8 +143,8 @@ In order to allow delegators to have a similar reward distribution as they curre
 
 Interchain Security consists of many moving pieces, each of which has a variable scope of functionality. Throughout this document the various capabilities are referred to as V1, V2 and V3. There are further outstanding questions including the exact implementation details for each of the modules included in the Interchain Security stack. These further give rise to expected user flows for each step as well as edge cases like:
 
-* Child or Provider Chain halting
-* Child of Provider Chain upgrading
+* Consumer or Provider Chain halting
+* Consumer or Provider Chain upgrading
 * Contentious forks of either Provider Chain or Consumer Chain
 * Versions of IBC on each side fall out of sync
 

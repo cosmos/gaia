@@ -620,7 +620,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 // Test how the operator fees are determined using various min gas prices.
 //
 // Note that in a real Gaia deployment all zero coins are removed from minGasPrice.
-// This sanitzing happens when the minGasPrice is set into the context.
+// This sanitizing happens when the minGasPrice is set into the context.
 // (see baseapp.SetMinGasPrices in gaia/cmd/root.go line 221)
 func (s *IntegrationTestSuite) TestGetMinGasPrice() {
 

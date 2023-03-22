@@ -53,7 +53,7 @@ func TestContainZeroCoins(t *testing.T) {
 }
 
 // Note that in a real Gaia deployment all zero coins are removed from minGasPrice.
-// This sanitzing happens when the minGasPrice is set into the context.
+// This sanitizing happens when the minGasPrice is set into the context.
 // (see baseapp.SetMinGasPrices in gaia/cmd/root.go line 221)
 func TestCombinedFeeRequirement(t *testing.T) {
 	zeroCoin1 := sdk.NewCoin("photon", sdk.ZeroInt())

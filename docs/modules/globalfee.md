@@ -40,6 +40,7 @@ Additionally, node operators may set additional minimum gas prices which can be 
 
 
 ### minimum-gas-prices
+Each node can set up `minimum-gas-prices` in the `config/app.toml` file. Please note: `minimum-gas-prices` can be set to include zero coins, but zero coins are santitized when [`SetMinGasPrices`](https://github.com/cosmos/gaia/blob/76dea00bd6d11bfef043f6062f41e858225820ab/cmd/gaiad/cmd/root.go#L221) from `minimum-gas-prices`.
 
 The `minimum-gas-prices` config parameter allows node operators to impose additional requirements for minimum fees. The following rules apply:
 

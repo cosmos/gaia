@@ -57,7 +57,7 @@ func (coins DecCoins) Validate() error {
 	lowDenom := ""
 	seenDenoms := make(map[string]bool)
 
-	for _, coin := range coins {
+	for i, coin := range coins {
 		if seenDenoms[coin.Denom] {
 			return fmt.Errorf("duplicate denomination %s", coin.Denom)
 		}

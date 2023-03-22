@@ -73,11 +73,17 @@ func TestCombinedFeeRequirement(t *testing.T) {
 	coinsCointainZero := sdk.Coins{coin1, zeroCoin2}.Sort()
 	coinsCointainZeroNewDenom := sdk.Coins{coin1, zeroCoin3}.Sort()
 	coinsAllZero := sdk.Coins{zeroCoin1, zeroCoin2}.Sort()
+	twoNilsCoins := make(sdk.Coins, 2)
 	tests := map[string]struct {
 		cGlobal  sdk.Coins
 		c        sdk.Coins
 		combined sdk.Coins
 	}{
+		"min fee is two nils": {
+			cGlobal:  coinsAllZero,
+			c:        twoNilsCoins,
+			combined: coinsCointainZero,
+		},
 		"global fee empty, min fee empty, combined fee empty": {
 			cGlobal:  coinsEmpty,
 			c:        coinsEmpty,

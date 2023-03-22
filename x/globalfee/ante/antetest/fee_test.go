@@ -1,6 +1,7 @@
 package antetest
 
 import (
+	"fmt"
 	"testing"
 
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
@@ -632,11 +633,39 @@ func (s *IntegrationTestSuite) TestGetMinGasPrice() {
 		expCoins      sdk.Coins
 	}{
 		{
+			"zero coins min gas price should return empty coins",
+			[]sdk.DecCoin{
+				sdk.NewDecCoinFromDec("stake", sdk.NewDec(0)),
+				sdk.NewDecCoinFromDec("uatom", sdk.NewDec(0)),
+			},
+			uint64(1000),
+			sdk.Coins{},
+		},
+		{
+			"zero coins, non-zero coins mix should return the non-zero coins only",
+			[]sdk.DecCoin{
+				sdk.NewDecCoinFromDec("stake", sdk.NewDec(0)),
+				sdk.NewDecCoinFromDec("uatom", sdk.NewDec(1)),
+			},
+			uint64(1000),
+			sdk.Coins{
+				sdk.NewCoin("stake", sdk.NewInt(0)),
+				sdk.NewCoin("uatom", sdk.NewInt(1000)),
+			},
+		},
+		{
+			"zero gas limit should return min gas price",
+			[]sdk.DecCoin{},
+			uint64(0),
+			sdk.Coins{},
+		},
+		{
 			"empty min gas price should return empty coins",
 			[]sdk.DecCoin{},
 			uint64(1000),
 			sdk.Coins{},
-		}, {
+		},
+		{
 			"unsorted min gas price",
 			[]sdk.DecCoin{
 				sdk.NewDecCoinFromDec("uatom", sdk.NewDec(3)),
@@ -644,7 +673,8 @@ func (s *IntegrationTestSuite) TestGetMinGasPrice() {
 			},
 			uint64(1000),
 			expCoins,
-		}, {
+		},
+		{
 			"sorted min gas price",
 			[]sdk.DecCoin{
 				sdk.NewDecCoinFromDec("photon", sdk.NewDec(2)),
@@ -652,7 +682,8 @@ func (s *IntegrationTestSuite) TestGetMinGasPrice() {
 			},
 			uint64(1000),
 			expCoins,
-		}, {
+		},
+		{
 			"sorted min gas price",
 			[]sdk.DecCoin{
 				sdk.NewDecCoinFromDec("photon", sdk.NewDec(2)),
@@ -668,6 +699,11 @@ func (s *IntegrationTestSuite) TestGetMinGasPrice() {
 			s.SetupTestGlobalFeeStoreAndMinGasPrice(tc.minGasPrice, &globfeetypes.Params{})
 
 			fees := gaiafeeante.GetMinGasPrice(s.ctx, int64(tc.feeTxGasLimit))
+			fmt.Println(tc.name)
+			fmt.Println("fees:")
+			fmt.Printf("%#+v\n", fees)
+			fmt.Println("exp fees")
+			fmt.Printf("%#+v\n", tc.expCoins.Sort())
 			s.Require().True(tc.expCoins.Sort().IsEqual(fees))
 		})
 	}

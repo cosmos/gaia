@@ -7,10 +7,12 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
 	"github.com/cosmos/gaia/v9/x/globalfee/types"
 
-	"github.com/cosmos/gaia/v9/x/globalfee"
 	tmstrings "github.com/tendermint/tendermint/libs/strings"
+
+	"github.com/cosmos/gaia/v9/x/globalfee"
 )
 
 // FeeWithBypassDecorator checks if the transaction's fee is at least as large
@@ -61,7 +63,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	// Get required Global Fee and min gas price
 	requiredGlobalFees, err := mfd.getGlobalFee(ctx, feeTx)
 	if err != nil {
-		panic(err)
+		return ctx, err
 	}
 	requiredFees := GetMinGasPrice(ctx, int64(feeTx.GetGas()))
 
@@ -185,21 +187,20 @@ func (mfd FeeDecorator) ContainsOnlyBypassMinFeeMsgs(msgs []sdk.Msg) bool {
 
 // GetMinGasPrice returns the validator's minimum gas prices
 // fees given a gas limit
-func GetMinGasPrice(ctx sdk.Context, gasLimit int64) sdk.Coins {
+func GetMinGasPrice(ctx sdk.Context, gasLimit int64) (requiredFees sdk.Coins) {
 	minGasPrices := ctx.MinGasPrices()
-	// special case: if minGasPrices=[], requiredFees=[]
-	requiredFees := make(sdk.Coins, len(minGasPrices))
 	// if not all coins are zero, check fee with min_gas_price
 	if !minGasPrices.IsZero() {
 		// Determine the required fees by multiplying each required minimum gas
 		// price by the gas limit, where fee = ceil(minGasPrice * gasLimit).
 		glDec := sdk.NewDec(gasLimit)
 
-		for i, gp := range minGasPrices {
+		for _, gp := range minGasPrices {
 			fee := gp.Amount.Mul(glDec)
-			requiredFees[i] = sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt())
+			requiredFees = append(requiredFees, sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt()))
 		}
+		requiredFees.Sort()
 	}
 
-	return requiredFees.Sort()
+	return
 }

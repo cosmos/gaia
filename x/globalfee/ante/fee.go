@@ -59,9 +59,12 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	if !ok {
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
 	}
-
+	globalFeesAll, err := mfd.getGlobalFees(ctx, feeTx)
+	if err != nil {
+		return ctx, err
+	}
 	// Get required Global Fees(nonzero globalfee coins, all globalfee coins and zero globalfees denom)
-	nonZeroGlobalFees, globalFeesAll, zeroGlobalFeesDenom, err := mfd.getGlobalFees(ctx, feeTx)
+	nonZeroGlobalFees, zeroGlobalFeesDenom := splitGlobalFees(globalFeesAll)
 	if err != nil {
 		return ctx, err
 	}
@@ -133,10 +136,8 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	return next(ctx, tx, simulate)
 }
 
-// getGlobalFee returns the global fees(nonzero coins and all coins in global fee,  and zero denoms in globalfee) for a given fee tx's gas
-// sorted in ascending order.
-// Note that ParamStoreKeyMinGasPrices type requires coins sorted.
-func (mfd FeeDecorator) getGlobalFees(ctx sdk.Context, feeTx sdk.FeeTx) (sdk.Coins, sdk.Coins, map[string]bool, error) {
+// ParamStoreKeyMinGasPrices type require coins sorted. getGlobalFee will also return sorted coins (might return 0denom if globalMinGasPrice is 0)
+func (mfd FeeDecorator) getGlobalFees(ctx sdk.Context, feeTx sdk.FeeTx) (sdk.Coins, error) {
 	var (
 		globalMinGasPrices sdk.DecCoins
 		err                error
@@ -148,30 +149,17 @@ func (mfd FeeDecorator) getGlobalFees(ctx sdk.Context, feeTx sdk.FeeTx) (sdk.Coi
 	// global fee is empty set, set global fee to 0uatom
 	if len(globalMinGasPrices) == 0 {
 		globalMinGasPrices, err = mfd.DefaultZeroGlobalFee(ctx)
-		if err != nil {
-			return nil, nil, nil, err
-		}
 	}
-	requiredGlobalFeesNonZero := sdk.Coins{}
-	requiredGlobalFeesAll := sdk.Coins{}
-	requiredGlobalFeesZeroDenom := map[string]bool{}
-
+	requiredGlobalFees := make(sdk.Coins, len(globalMinGasPrices))
 	// Determine the required fees by multiplying each required minimum gas
 	// price by the gas limit, where fee = ceil(minGasPrice * gasLimit).
 	glDec := sdk.NewDec(int64(feeTx.GetGas()))
-	var fee sdk.Dec
-	for _, gp := range globalMinGasPrices {
-		fee = gp.Amount.Mul(glDec)
-		// if globalfee is zerocoins, record it in requiredGlobalFeesZeroDenom
-		if fee.IsZero() {
-			requiredGlobalFeesZeroDenom[gp.Denom] = true
-		} else {
-			requiredGlobalFeesNonZero = append(requiredGlobalFeesNonZero, sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt()))
-		}
-		requiredGlobalFeesAll = append(requiredGlobalFeesAll, sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt()))
+	for i, gp := range globalMinGasPrices {
+		fee := gp.Amount.Mul(glDec)
+		requiredGlobalFees[i] = sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt())
 	}
 
-	return requiredGlobalFeesNonZero.Sort(), requiredGlobalFeesAll.Sort(), requiredGlobalFeesZeroDenom, nil
+	return requiredGlobalFees.Sort(), err
 }
 
 func (mfd FeeDecorator) DefaultZeroGlobalFee(ctx sdk.Context) ([]sdk.DecCoin, error) {

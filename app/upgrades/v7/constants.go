@@ -41,8 +41,7 @@ const (
 )
 
 var Upgrade = upgrades.Upgrade{
-	UpgradeName:          UpgradeName,
-	CreateUpgradeHandler: CreateUpgradeHandler,
+	UpgradeName: UpgradeName,
 	StoreUpgrades: store.StoreUpgrades{
 		Added: []string{icahosttypes.StoreKey},
 	},

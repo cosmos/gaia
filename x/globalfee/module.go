@@ -39,7 +39,7 @@ func (a AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 	})
 }
 
-func (a AppModuleBasic) ValidateGenesis(marshaler codec.JSONCodec, config client.TxEncodingConfig, message json.RawMessage) error {
+func (a AppModuleBasic) ValidateGenesis(marshaler codec.JSONCodec, _ client.TxEncodingConfig, message json.RawMessage) error {
 	var data types.GenesisState
 	err := marshaler.UnmarshalJSON(message, &data)
 	if err != nil {
@@ -51,10 +51,10 @@ func (a AppModuleBasic) ValidateGenesis(marshaler codec.JSONCodec, config client
 	return nil
 }
 
-func (a AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) {
+func (a AppModuleBasic) RegisterInterfaces(_ codectypes.InterfaceRegistry) {
 }
 
-func (a AppModuleBasic) RegisterRESTRoutes(context client.Context, router *mux.Router) {
+func (a AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {
 }
 
 func (a AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
@@ -69,7 +69,7 @@ func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
 	return cli.GetQueryCmd()
 }
 
-func (a AppModuleBasic) RegisterLegacyAminoCodec(amino *codec.LegacyAmino) {
+func (a AppModuleBasic) RegisterLegacyAminoCodec(_ *codec.LegacyAmino) {
 }
 
 type AppModule struct {
@@ -99,7 +99,7 @@ func (a AppModule) ExportGenesis(ctx sdk.Context, marshaler codec.JSONCodec) jso
 	return marshaler.MustMarshalJSON(&genState)
 }
 
-func (a AppModule) RegisterInvariants(registry sdk.InvariantRegistry) {
+func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {
 }
 
 func (a AppModule) Route() sdk.Route {
@@ -110,7 +110,7 @@ func (a AppModule) QuerierRoute() string {
 	return types.QuerierRoute
 }
 
-func (a AppModule) LegacyQuerierHandler(amino *codec.LegacyAmino) sdk.Querier {
+func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier {
 	return nil
 }
 
@@ -118,10 +118,10 @@ func (a AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterQueryServer(cfg.QueryServer(), NewGrpcQuerier(a.paramSpace))
 }
 
-func (a AppModule) BeginBlock(context sdk.Context, block abci.RequestBeginBlock) {
+func (a AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {
 }
 
-func (a AppModule) EndBlock(context sdk.Context, block abci.RequestEndBlock) []abci.ValidatorUpdate {
+func (a AppModule) EndBlock(_ sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
 	return nil
 }
 

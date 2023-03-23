@@ -128,7 +128,8 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 		// the expected amounts, i.e., at least one feeCoin amount must
 		// be greater or equal to one of the combined required fees.
 		// special case: if len(feeCoinsNoZeroDenomCoins) = 0, feeCoinsNoZeroDenomCoins.IsAnyGTE(combinedNonZeroFees) = false
-		if !feeCoinsNoZeroDenomCoins.IsAnyGTE(combinedNonZeroFees) {
+		// len(feeCoins) == len(feeCoinsNoZeroDenomCoins) means feeCoins do not contain globalfee zero Coins'denom
+		if !feeCoinsNoZeroDenomCoins.IsAnyGTE(combinedNonZeroFees) && len(feeCoins) == len(feeCoinsNoZeroDenomCoins) {
 			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins, combinedNonZeroFees)
 		}
 	}

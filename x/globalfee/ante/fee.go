@@ -60,11 +60,12 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
 	}
 
-	// Get required Global Fee and min gas price
-	requiredGlobalFees, err := mfd.getGlobalFee(ctx, feeTx)
+	// Get required Global Fees(nonzero globalfee coins, all globalfee coins and zero globalfees denom)
+	nonZeroGlobalFees, globalFeesAll, zeroGlobalFeesDenom, err := mfd.getGlobalFees(ctx, feeTx)
 	if err != nil {
 		return ctx, err
 	}
+	// get minimum-gas-prices from app.toml or cli flag
 	requiredFees := GetMinGasPrice(ctx, int64(feeTx.GetGas()))
 
 	// Only check for minimum fees and global fee if the execution mode is CheckTx
@@ -72,10 +73,16 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 		return next(ctx, tx, simulate)
 	}
 
-	// sort fee tx's coins
+	// sort fee tx's coins, feeCoins' zero coins are already removed
 	feeCoins := feeTx.GetFee().Sort()
 	gas := feeTx.GetGas()
 	msgs := feeTx.GetMsgs()
+
+	// feeCoinsNoZeroDenomCoins is feeCoins after removing the coins whose denom is zero coins' denom in globalfees
+	// e.g. feeCoins=[1atom,2photon], globalfee=[0atom,1photon,1quark], then feeCoinsNoZeroDenomCoins = [2photon]
+	// feeCoinsNoZeroDenomCoins are used to check if the fees are meet the requirement imposed by combinedNonZeroFees
+	// the coins in feeCoins that is in the denom of globalfees's zero coins do not need to check the feeCoin amount
+	feeCoinsNoZeroDenomCoins := RemovingZeroDenomCoins(feeCoins, zeroGlobalFeesDenom)
 
 	// Accept zero fee transactions only if both of the following statements are true:
 	//
@@ -95,8 +102,9 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 		}
 		// If the transaction fee is non-zero, then check that the fees are in
 		// expected denominations.
-		if !DenomsSubsetOfIncludingZero(feeCoins, requiredGlobalFees) {
-			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fees denom is wrong; got: %s required: %s", feeCoins, requiredGlobalFees)
+		// special case: if len(feeCoinsNoZeroDenomCoins) = 0, feeCoinsNoZeroDenomCoins.DenomsSubsetOf(nonZeroGlobalFees) = true
+		if !feeCoinsNoZeroDenomCoins.DenomsSubsetOf(nonZeroGlobalFees) {
+			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fees denom is wrong; got: %s required: %s", feeCoins, globalFeesAll)
 		}
 	} else {
 		// Either the transaction contains at least one message of a type
@@ -105,28 +113,30 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 		// expected denominations and the amounts are greater or equal than
 		// the expected amounts.
 
-		combinedFees := CombinedFeeRequirement(requiredGlobalFees, requiredFees)
+		// combinedNonZeroFees only contains non-zero coins in global fee and minimum-gas-prices setup by a node
+		combinedNonZeroFees := CombinedFeeRequirement(nonZeroGlobalFees, requiredFees)
 
-		// Check that the fees are in expected denominations. Note that a zero fee
-		// is accepted if the global fee has an entry with a zero amount, e.g., 0uatoms.
-		if !DenomsSubsetOfIncludingZero(feeCoins, combinedFees) {
-			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fee is not a subset of required fees; got %s, required: %s", feeCoins, combinedFees)
+		// Check that the fees are in expected denominations.
+		// special case: if len(feeCoinsNoZeroDenomCoins) = 0,  feeCoinsNoZeroDenomCoins.DenomsSubsetOf(nonZeroGlobalFees) = true
+		if !feeCoinsNoZeroDenomCoins.DenomsSubsetOf(combinedNonZeroFees) {
+			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fee is not a subset of required fees; got %s, required: %s", feeCoins, combinedNonZeroFees)
 		}
 		// Check that the amounts of the fees are greater or equal than
 		// the expected amounts, i.e., at least one feeCoin amount must
 		// be greater or equal to one of the combined required fees.
-		if !IsAnyGTEIncludingZero(feeCoins, combinedFees) {
-			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins, combinedFees)
+		// special case: if len(feeCoinsNoZeroDenomCoins) = 0, feeCoinsNoZeroDenomCoins.IsAnyGTE(combinedNonZeroFees) = false
+		if !feeCoinsNoZeroDenomCoins.IsAnyGTE(combinedNonZeroFees) {
+			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins, combinedNonZeroFees)
 		}
 	}
 
 	return next(ctx, tx, simulate)
 }
 
-// getGlobalFee returns the global fees for a given fee tx's gas (might also returns 0denom if globalMinGasPrice is 0)
+// getGlobalFee returns the global fees(nonzero coins and all coins in global fee,  and zero denoms in globalfee) for a given fee tx's gas
 // sorted in ascending order.
 // Note that ParamStoreKeyMinGasPrices type requires coins sorted.
-func (mfd FeeDecorator) getGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) (sdk.Coins, error) {
+func (mfd FeeDecorator) getGlobalFees(ctx sdk.Context, feeTx sdk.FeeTx) (sdk.Coins, sdk.Coins, map[string]bool, error) {
 	var (
 		globalMinGasPrices sdk.DecCoins
 		err                error
@@ -139,19 +149,29 @@ func (mfd FeeDecorator) getGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) (sdk.Coin
 	if len(globalMinGasPrices) == 0 {
 		globalMinGasPrices, err = mfd.DefaultZeroGlobalFee(ctx)
 		if err != nil {
-			return sdk.Coins{}, err
+			return nil, nil, nil, err
 		}
 	}
-	requiredGlobalFees := make(sdk.Coins, len(globalMinGasPrices))
+	requiredGlobalFeesNonZero := sdk.Coins{}
+	requiredGlobalFeesAll := sdk.Coins{}
+	requiredGlobalFeesZeroDenom := map[string]bool{}
+
 	// Determine the required fees by multiplying each required minimum gas
 	// price by the gas limit, where fee = ceil(minGasPrice * gasLimit).
 	glDec := sdk.NewDec(int64(feeTx.GetGas()))
-	for i, gp := range globalMinGasPrices {
-		fee := gp.Amount.Mul(glDec)
-		requiredGlobalFees[i] = sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt())
+	var fee sdk.Dec
+	for _, gp := range globalMinGasPrices {
+		fee = gp.Amount.Mul(glDec)
+		// if globalfee is zerocoins, record it in requiredGlobalFeesZeroDenom
+		if fee.IsZero() {
+			requiredGlobalFeesZeroDenom[gp.Denom] = true
+		} else {
+			requiredGlobalFeesNonZero = append(requiredGlobalFeesNonZero, sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt()))
+		}
+		requiredGlobalFeesAll = append(requiredGlobalFeesAll, sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt()))
 	}
 
-	return requiredGlobalFees.Sort(), nil
+	return requiredGlobalFeesNonZero.Sort(), requiredGlobalFeesAll.Sort(), requiredGlobalFeesZeroDenom, nil
 }
 
 func (mfd FeeDecorator) DefaultZeroGlobalFee(ctx sdk.Context) ([]sdk.DecCoin, error) {

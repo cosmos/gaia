@@ -378,10 +378,10 @@ func RegisterSwaggerAPI(rtr *mux.Router) {
 	rtr.PathPrefix("/swagger/").Handler(http.StripPrefix("/swagger/", staticServer))
 }
 
-func (app *GaiaApp) OnTxSucceeded(ctx sdk.Context, sourcePort, sourceChannel string, txHash []byte, txBytes []byte) {
+func (app *GaiaApp) OnTxSucceeded(_ sdk.Context, _, _ string, _ []byte, _ []byte) {
 }
 
-func (app *GaiaApp) OnTxFailed(ctx sdk.Context, sourcePort, sourceChannel string, txHash []byte, txBytes []byte) {
+func (app *GaiaApp) OnTxFailed(_ sdk.Context, _, _ string, _ []byte, _ []byte) {
 }
 
 // TestingApp functions
@@ -400,6 +400,6 @@ func (app *GaiaApp) GetTxConfig() client.TxConfig {
 type EmptyAppOptions struct{}
 
 // Get implements AppOptions
-func (ao EmptyAppOptions) Get(o string) interface{} {
+func (ao EmptyAppOptions) Get(_ string) interface{} {
 	return nil
 }

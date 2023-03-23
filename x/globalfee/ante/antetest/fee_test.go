@@ -623,7 +623,6 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 // This sanitizing happens when the minGasPrice is set into the context.
 // (see baseapp.SetMinGasPrices in gaia/cmd/root.go line 221)
 func (s *IntegrationTestSuite) TestGetMinGasPrice() {
-
 	expCoins := sdk.Coins{
 		sdk.NewCoin("photon", sdk.NewInt(2000)),
 		sdk.NewCoin("uatom", sdk.NewInt(3000)),

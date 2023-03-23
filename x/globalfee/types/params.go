@@ -64,7 +64,7 @@ func (coins DecCoins) Validate() error {
 		if err := sdk.ValidateDenom(coin.Denom); err != nil {
 			return err
 		}
-// skip the denom order check for the first denom in the coins list
+		// skip the denom order check for the first denom in the coins list
 		if i != 0 && coin.Denom <= lowDenom {
 			return fmt.Errorf("denomination %s is not sorted", coin.Denom)
 		}

@@ -3,20 +3,36 @@ updates:
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
-      interval: daily
+      interval: weekly
     open-pull-requests-limit: 10
-  - package-ecosystem: npm
-    directory: "/docs"
+    labels:
+      - "A:automerge"
+
+  - package-ecosystem: gomod
+    directory: "/"
     schedule:
-      interval: daily
+      interval: weekly
     open-pull-requests-limit: 10
-    reviewers:
-      - fadeev
+    labels:
+      - "A:automerge"
+      - dependencies
+
   - package-ecosystem: gomod
     directory: "/"
     schedule:
       interval: daily
-    open-pull-requests-limit: 10
+    target-branch: "release/v9.0.x"
+    # Only allow automated security-related dependency updates on release branches.
+    open-pull-requests-limit: 0
     labels:
-      - "A:automerge"
+      - dependencies
+
+  - package-ecosystem: gomod
+    directory: "/"
+    schedule:
+      interval: daily
+    target-branch: "release/v8.0.x"
+    # Only allow automated security-related dependency updates on release branches.
+    open-pull-requests-limit: 0
+    labels:
       - dependencies

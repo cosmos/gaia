@@ -308,7 +308,7 @@ linters-settings:
   gofumpt:
     # Module path which contains the source code being formatted.
     # Default: ""
-    module-path: github.com/cosmos/cosmos-sdk
+    module-path: github.com/cosmos/gaia
     # Choose whether to use the extra rules.
     # Default: false
     extra-rules: true

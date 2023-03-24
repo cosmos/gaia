@@ -44,7 +44,7 @@ func decodeTx(txBytes []byte) (*sdktx.Tx, error) {
 	}, nil
 }
 
-func concatFlags(originalCollection []string, commandFlags []string, generalFlags []string) []string {
+func concatFlags(originalCollection, commandFlags, generalFlags []string) []string {
 	originalCollection = append(originalCollection, commandFlags...)
 	originalCollection = append(originalCollection, generalFlags...)
 

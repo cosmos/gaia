@@ -36,7 +36,7 @@ func (s *IntegrationTestSuite) execQueryConsumerChains(
 }
 
 func (s *IntegrationTestSuite) validateQueryConsumers(queryValidation func(ccvtypes.QueryConsumerChainsResponse, string) bool, consumerChainID string) func([]byte, []byte) bool {
-	return func(stdOut []byte, stdErr []byte) bool {
+	return func(stdOut, stdErr []byte) bool {
 		var queryConsumersRes ccvtypes.QueryConsumerChainsResponse
 		if err := cdc.UnmarshalJSON(stdOut, &queryConsumersRes); err != nil {
 			s.T().Logf("Error unmarshalling query consumer chains: %s", err.Error())

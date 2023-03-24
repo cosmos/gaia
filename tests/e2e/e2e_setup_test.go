@@ -635,7 +635,7 @@ func (s *IntegrationTestSuite) writeGovParamChangeProposalGlobalFees(c *chain, c
 	s.Require().NoError(err)
 }
 
-func (s *IntegrationTestSuite) writeGovCommunitySpendProposal(c *chain, amount string, recipient string) {
+func (s *IntegrationTestSuite) writeGovCommunitySpendProposal(c *chain, amount, recipient string) {
 	proposalCommSpend := &distrtypes.CommunityPoolSpendProposalWithDeposit{
 		Title:       "Community Pool Spend",
 		Description: "Fund Team!",

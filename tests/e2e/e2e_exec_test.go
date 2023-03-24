@@ -85,7 +85,7 @@ func (s *IntegrationTestSuite) execEncode(
 	}
 
 	var encoded string
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, 0, func(stdOut []byte, stdErr []byte) bool {
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, 0, func(stdOut, stdErr []byte) bool {
 		if stdErr != nil {
 			return false
 		}
@@ -117,7 +117,7 @@ func (s *IntegrationTestSuite) execDecode(
 	}
 
 	var decoded string
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, 0, func(stdOut []byte, stdErr []byte) bool {
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, 0, func(stdOut, stdErr []byte) bool {
 		if stdErr != nil {
 			return false
 		}
@@ -381,7 +381,7 @@ func (s *IntegrationTestSuite) runGovExec(c *chain, valIdx int, submitterAddr, g
 	s.T().Logf("Successfully executed %s", govCommand)
 }
 
-func (s *IntegrationTestSuite) executeGKeysAddCommand(c *chain, valIdx int, name string, home string) string {
+func (s *IntegrationTestSuite) executeGKeysAddCommand(c *chain, valIdx int, name, home string) string {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -396,7 +396,7 @@ func (s *IntegrationTestSuite) executeGKeysAddCommand(c *chain, valIdx int, name
 	}
 
 	var addrRecord AddressResponse
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, func(stdOut []byte, stdErr []byte) bool {
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, func(stdOut, stdErr []byte) bool {
 		// Gaiad keys add by default returns payload to stdErr
 		if err := json.Unmarshal(stdErr, &addrRecord); err != nil {
 			return false
@@ -493,7 +493,7 @@ func (s *IntegrationTestSuite) getLatestBlockHeight(c *chain, valIdx int) int {
 
 	var currentHeight int
 	gaiaCommand := []string{gaiadBinary, "status"}
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, func(stdOut []byte, stdErr []byte) bool {
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, func(stdOut, stdErr []byte) bool {
 		var (
 			err   error
 			block syncInfo
@@ -617,7 +617,7 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 }
 
 func (s *IntegrationTestSuite) expectErrExecValidation(chain *chain, valIdx int, expectErr bool) func([]byte, []byte) bool {
-	return func(stdOut []byte, stdErr []byte) bool {
+	return func(stdOut, stdErr []byte) bool {
 		var txResp sdk.TxResponse
 		gotErr := cdc.UnmarshalJSON(stdOut, &txResp) != nil
 		if gotErr {
@@ -641,7 +641,7 @@ func (s *IntegrationTestSuite) expectErrExecValidation(chain *chain, valIdx int,
 }
 
 func (s *IntegrationTestSuite) defaultExecValidation(chain *chain, valIdx int) func([]byte, []byte) bool {
-	return func(stdOut []byte, stdErr []byte) bool {
+	return func(stdOut, stdErr []byte) bool {
 		var txResp sdk.TxResponse
 		if err := cdc.UnmarshalJSON(stdOut, &txResp); err != nil {
 			return false

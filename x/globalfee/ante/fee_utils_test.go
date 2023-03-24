@@ -218,7 +218,62 @@ func TestRemovingZeroDenomCoins(t *testing.T) {
 	}
 }
 
+func TestSplitGlobalFees(t *testing.T) {
+	photon0 := sdk.NewCoin("photon", sdk.ZeroInt())
+	uatom0 := sdk.NewCoin("uatom", sdk.ZeroInt())
+	photon1 := sdk.NewCoin("photon", sdk.OneInt())
+	uatom1 := sdk.NewCoin("uatom", sdk.OneInt())
+
+	globalFeesEmpty := sdk.Coins{}
+	globalFees := sdk.Coins{photon1, uatom1}.Sort()
+	globalFeesZeroCoins := sdk.Coins{photon0, uatom0}.Sort()
+	globalFeesMix := sdk.Coins{photon0, uatom1}.Sort()
+
+	tests := map[string]struct {
+		globalfees          sdk.Coins
+		zeroGlobalFeesDenom map[string]bool
+		globalfeesNonZero   sdk.Coins
+	}{
+		"empty global fees": {
+			globalfees:          globalFeesEmpty,
+			zeroGlobalFeesDenom: map[string]bool{},
+			globalfeesNonZero:   sdk.Coins{},
+		},
+		"nonzero coins global fees": {
+			globalfees:          globalFees,
+			zeroGlobalFeesDenom: map[string]bool{},
+			globalfeesNonZero:   globalFees,
+		},
+		"zero coins global fees": {
+			globalfees: globalFeesZeroCoins,
+			zeroGlobalFeesDenom: map[string]bool{
+				"photon": true,
+				"uatom":  true,
+			},
+			globalfeesNonZero: sdk.Coins{},
+		},
+		"mix zero, nonzero coins global fees": {
+			globalfees: globalFeesMix,
+			zeroGlobalFeesDenom: map[string]bool{
+				"photon": true,
+			},
+			globalfeesNonZero: sdk.NewCoins(uatom1),
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			nonZeroCoins, zeroCoinsMap := splitGlobalFees(test.globalfees)
+			require.True(t, nonZeroCoins.IsEqual(test.globalfeesNonZero))
+			require.True(t, equalMap(zeroCoinsMap, test.zeroGlobalFeesDenom))
+		})
+	}
+}
+
 func equalMap(a, b map[string]bool) bool {
+	if len(a) != len(b) {
+		return false
+	}
 	if len(a) == 0 && len(b) == 0 {
 		return true
 	}

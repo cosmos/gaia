@@ -185,7 +185,7 @@ func (mfd FeeDecorator) ContainsOnlyBypassMinFeeMsgs(msgs []sdk.Msg) bool {
 	return true
 }
 
-// GetMinGasPrice returns the validator's minimum gas prices
+// GetMinGasPrice returns a nodes's local minimum gas prices
 // fees given a gas limit
 func GetMinGasPrice(ctx sdk.Context, gasLimit int64) sdk.Coins {
 	minGasPrices := ctx.MinGasPrices()

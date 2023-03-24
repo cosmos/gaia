@@ -6,12 +6,11 @@
 ## USAGE RUNDOWN
 # Not for use on live nodes
 # For use when testing.
-# Assumes that ~/.evmosd doesn't exist
-# can be modified to suit your purposes if ~/.evmosd does already exist
 
 set -uxe
 
 # Set Golang environment variables.
+# ! Adapt as required, depending on your system configuration
 export GOPATH=~/go
 export PATH=$PATH:~/go/bin
 
@@ -21,8 +20,8 @@ export PATH=$PATH:~/go/bin
 
 # go install -ldflags '-w -s -X github.com/cosmos/cosmos-sdk/types.DBBackend=pebbledb -X github.com/tendermint/tm-db.ForceSync=1' -tags pebbledb ./...
 
-# install (comment if ussing pebble for incredible performance)
-go install ./...
+# install (comment if using pebble for incredible performance)
+# go install ./...
 
 # NOTE: ABOVE YOU CAN USE ALTERNATIVE DATABASES, HERE ARE THE EXACT COMMANDS
 # go install -ldflags '-w -s -X github.com/cosmos/cosmos-sdk/types.DBBackend=rocksdb' -tags rocksdb ./...

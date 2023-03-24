@@ -60,6 +60,6 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v9.0.1...HEAD
- [v9.0.1]: https://github.com/cosmos/gaia/releases/tag/v9.0.1
- [v9.0.0]: https://github.com/cosmos/gaia/releases/tag/v9.0.0
+[Unreleased]: https://github.com/cosmos/gaia/compare/v9.0.1...release/v9.0.x
+[v9.0.1]: https://github.com/cosmos/gaia/releases/tag/v9.0.1
+[v9.0.0]: https://github.com/cosmos/gaia/releases/tag/v9.0.0

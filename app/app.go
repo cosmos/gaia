@@ -56,32 +56,36 @@ var (
 	DefaultNodeHome string
 
 	Upgrades = []upgrades.Upgrade{v9.Upgrade}
-)
 
-var (
 	_ simapp.App              = (*GaiaApp)(nil)
 	_ servertypes.Application = (*GaiaApp)(nil)
 	_ ibctesting.TestingApp   = (*GaiaApp)(nil)
 )
 
-// GaiaApp extends an ABCI application, but with most of its parameters exported.
-// They are exported for convenience in creating helper functions, as object
-// capabilities aren't needed for testing.
-type GaiaApp struct { //nolint: revive
-	*baseapp.BaseApp
-	keepers.AppKeepers
+type (
 
-	legacyAmino       *codec.LegacyAmino
-	appCodec          codec.Codec
-	interfaceRegistry types.InterfaceRegistry
-	invCheckPeriod    uint
+	// EmptyAppOptions is a stub implementing AppOptions
+	EmptyAppOptions struct{}
 
-	// the module manager
-	mm *module.Manager
-	// simulation manager
-	sm           *module.SimulationManager
-	configurator module.Configurator
-}
+	// GaiaApp extends an ABCI application, but with most of its parameters exported.
+	// They are exported for convenience in creating helper functions, as object
+	// capabilities aren't needed for testing.
+	GaiaApp struct { //nolint: revive
+		*baseapp.BaseApp
+		keepers.AppKeepers
+
+		legacyAmino       *codec.LegacyAmino
+		appCodec          codec.Codec
+		interfaceRegistry types.InterfaceRegistry
+		invCheckPeriod    uint
+
+		// the module manager
+		mm *module.Manager
+		// simulation manager
+		sm           *module.SimulationManager
+		configurator module.Configurator
+	}
+)
 
 func init() {
 	userHomeDir, err := os.UserHomeDir()
@@ -293,7 +297,7 @@ func (app *GaiaApp) LoadHeight(height int64) error {
 }
 
 // ModuleAccountAddrs returns all the app's module account addresses.
-func (app *GaiaApp) ModuleAccountAddrs() map[string]bool {
+func (*GaiaApp) ModuleAccountAddrs() map[string]bool {
 	modAccAddrs := make(map[string]bool)
 	for acc := range maccPerms {
 		modAccAddrs[authtypes.NewModuleAddress(acc).String()] = true
@@ -304,7 +308,7 @@ func (app *GaiaApp) ModuleAccountAddrs() map[string]bool {
 
 // BlockedModuleAccountAddrs returns all the app's blocked module account
 // addresses.
-func (app *GaiaApp) BlockedModuleAccountAddrs(modAccAddrs map[string]bool) map[string]bool {
+func (*GaiaApp) BlockedModuleAccountAddrs(modAccAddrs map[string]bool) map[string]bool {
 	// remove module accounts that are ALLOWED to received funds
 	delete(modAccAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
@@ -344,7 +348,7 @@ func (app *GaiaApp) SimulationManager() *module.SimulationManager {
 
 // RegisterAPIRoutes registers all application module routes with the provided
 // API server.
-func (app *GaiaApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig) {
+func (*GaiaApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig) {
 	clientCtx := apiSvr.ClientCtx
 	rpc.RegisterRoutes(clientCtx, apiSvr.Router)
 	// Register legacy tx routes.
@@ -416,10 +420,10 @@ func RegisterSwaggerAPI(rtr *mux.Router) {
 	rtr.PathPrefix("/swagger/").Handler(http.StripPrefix("/swagger/", staticServer))
 }
 
-func (app *GaiaApp) OnTxSucceeded(ctx sdk.Context, sourcePort, sourceChannel string, txHash, txBytes []byte) {
+func (*GaiaApp) OnTxSucceeded(_ sdk.Context, _, _ string, _, _ []byte) {
 }
 
-func (app *GaiaApp) OnTxFailed(ctx sdk.Context, sourcePort, sourceChannel string, txHash, txBytes []byte) {
+func (*GaiaApp) OnTxFailed(_ sdk.Context, _, _ string, _, _ []byte) {
 }
 
 // TestingApp functions
@@ -430,14 +434,11 @@ func (app *GaiaApp) GetBaseApp() *baseapp.BaseApp {
 }
 
 // GetTxConfig implements the TestingApp interface.
-func (app *GaiaApp) GetTxConfig() client.TxConfig {
+func (*GaiaApp) GetTxConfig() client.TxConfig {
 	return MakeTestEncodingConfig().TxConfig
 }
 
-// EmptyAppOptions is a stub implementing AppOptions
-type EmptyAppOptions struct{}
-
 // Get implements AppOptions
-func (ao EmptyAppOptions) Get(o string) interface{} {
+func (EmptyAppOptions) Get(string) interface{} {
 	return nil
 }

@@ -20,19 +20,21 @@ import (
 	"github.com/ory/dockertest/v3/docker"
 )
 
-type ForwardMetadata struct {
-	Receiver string `json:"receiver"`
-	Port     string `json:"port"`
-	Channel  string `json:"channel"`
-	// Timeout        time.Duration `json:"timeout"`
-	// Retries        *uint8        `json:"retries,omitempty"`
-	// Next           *string       `json:"next,omitempty"`
-	// RefundSequence *uint64       `json:"refund_sequence,omitempty"`
-}
+type (
+	ForwardMetadata struct {
+		Receiver string `json:"receiver"`
+		Port     string `json:"port"`
+		Channel  string `json:"channel"`
+		// Timeout        time.Duration `json:"timeout"`
+		// Retries        *uint8        `json:"retries,omitempty"`
+		// Next           *string       `json:"next,omitempty"`
+		// RefundSequence *uint64       `json:"refund_sequence,omitempty"`
+	}
 
-type PacketMetadata struct {
-	Forward *ForwardMetadata `json:"forward"`
-}
+	PacketMetadata struct {
+		Forward *ForwardMetadata `json:"forward"`
+	}
+)
 
 func (s *IntegrationTestSuite) runIBCRelayer() {
 	s.T().Log("starting Hermes relayer container...")

@@ -80,24 +80,36 @@ var (
 	proposalCounter   = 0
 )
 
-type IntegrationTestSuite struct {
-	suite.Suite
+type (
+	ConsumerAdditionProposalWithDeposit struct {
+		ccvprovider.ConsumerAdditionProposal
+		Deposit string `json:"deposit"`
+	}
 
-	tmpDirs        []string
-	chainA         *chain
-	chainB         *chain
-	dkrPool        *dockertest.Pool
-	dkrNet         *dockertest.Network
-	hermesResource *dockertest.Resource
-	valResources   map[string][]*dockertest.Resource
-}
+	ConsumerRemovalProposalWithDeposit struct {
+		ccvprovider.ConsumerRemovalProposal
+		Deposit string `json:"deposit"`
+	}
 
-type AddressResponse struct {
-	Name     string `json:"name"`
-	Type     string `json:"type"`
-	Address  string `json:"address"`
-	Mnemonic string `json:"mnemonic"`
-}
+	IntegrationTestSuite struct {
+		suite.Suite
+
+		tmpDirs        []string
+		chainA         *chain
+		chainB         *chain
+		dkrPool        *dockertest.Pool
+		dkrNet         *dockertest.Network
+		hermesResource *dockertest.Resource
+		valResources   map[string][]*dockertest.Resource
+	}
+
+	AddressResponse struct {
+		Name     string `json:"name"`
+		Type     string `json:"type"`
+		Address  string `json:"address"`
+		Mnemonic string `json:"mnemonic"`
+	}
+)
 
 func TestIntegrationTestSuite(t *testing.T) {
 	suite.Run(t, new(IntegrationTestSuite))
@@ -172,11 +184,14 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 
 	s.Require().NoError(s.dkrPool.RemoveNetwork(s.dkrNet))
 
-	os.RemoveAll(s.chainA.dataDir)
-	os.RemoveAll(s.chainB.dataDir)
+	err := os.RemoveAll(s.chainA.dataDir)
+	s.Require().NoError(err)
+	err = os.RemoveAll(s.chainB.dataDir)
+	s.Require().NoError(err)
 
 	for _, td := range s.tmpDirs {
-		os.RemoveAll(td)
+		err = os.RemoveAll(td)
+		s.Require().NoError(err)
 	}
 }
 
@@ -648,16 +663,6 @@ func (s *IntegrationTestSuite) writeGovCommunitySpendProposal(c *chain, amount, 
 
 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalCommunitySpendFilename), commSpendBody)
 	s.Require().NoError(err)
-}
-
-type ConsumerAdditionProposalWithDeposit struct {
-	ccvprovider.ConsumerAdditionProposal
-	Deposit string `json:"deposit"`
-}
-
-type ConsumerRemovalProposalWithDeposit struct {
-	ccvprovider.ConsumerRemovalProposal
-	Deposit string `json:"deposit"`
 }
 
 func (s *IntegrationTestSuite) writeAddRemoveConsumerProposals(c *chain, consumerChainID string) {

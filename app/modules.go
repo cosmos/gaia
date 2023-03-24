@@ -57,55 +57,57 @@ import (
 	"github.com/cosmos/gaia/v9/x/globalfee"
 )
 
-var maccPerms = map[string][]string{
-	authtypes.FeeCollectorName:     nil,
-	distrtypes.ModuleName:          nil,
-	icatypes.ModuleName:            nil,
-	minttypes.ModuleName:           {authtypes.Minter},
-	stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
-	stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
-	govtypes.ModuleName:            {authtypes.Burner},
-	liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
-	ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-}
+var (
+	maccPerms = map[string][]string{
+		authtypes.FeeCollectorName:     nil,
+		distrtypes.ModuleName:          nil,
+		icatypes.ModuleName:            nil,
+		minttypes.ModuleName:           {authtypes.Minter},
+		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
+		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
+		govtypes.ModuleName:            {authtypes.Burner},
+		liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
+		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
+	}
 
-// ModuleBasics defines the module BasicManager is in charge of setting up basic,
-// non-dependant module elements, such as codec registration
-// and genesis verification.
-var ModuleBasics = module.NewBasicManager(
-	auth.AppModuleBasic{},
-	genutil.AppModuleBasic{},
-	bank.AppModuleBasic{},
-	capability.AppModuleBasic{},
-	staking.AppModuleBasic{},
-	mint.AppModuleBasic{},
-	distr.AppModuleBasic{},
-	gov.NewAppModuleBasic(
-		paramsclient.ProposalHandler,
-		distrclient.ProposalHandler,
-		upgradeclient.ProposalHandler,
-		upgradeclient.CancelProposalHandler,
-		ibcclientclient.UpdateClientProposalHandler,
-		ibcclientclient.UpgradeProposalHandler,
-		ibcproviderclient.ConsumerAdditionProposalHandler,
-		ibcproviderclient.ConsumerRemovalProposalHandler,
-		ibcproviderclient.EquivocationProposalHandler,
-	),
-	params.AppModuleBasic{},
-	crisis.AppModuleBasic{},
-	slashing.AppModuleBasic{},
-	feegrantmodule.AppModuleBasic{},
-	authzmodule.AppModuleBasic{},
-	ibc.AppModuleBasic{},
-	upgrade.AppModuleBasic{},
-	evidence.AppModuleBasic{},
-	transfer.AppModuleBasic{},
-	vesting.AppModuleBasic{},
-	liquidity.AppModuleBasic{},
-	router.AppModuleBasic{},
-	ica.AppModuleBasic{},
-	globalfee.AppModule{},
-	ibcprovider.AppModuleBasic{},
+	// ModuleBasics defines the module BasicManager is in charge of setting up basic,
+	// non-dependant module elements, such as codec registration
+	// and genesis verification.
+	ModuleBasics = module.NewBasicManager(
+		auth.AppModuleBasic{},
+		genutil.AppModuleBasic{},
+		bank.AppModuleBasic{},
+		capability.AppModuleBasic{},
+		staking.AppModuleBasic{},
+		mint.AppModuleBasic{},
+		distr.AppModuleBasic{},
+		gov.NewAppModuleBasic(
+			paramsclient.ProposalHandler,
+			distrclient.ProposalHandler,
+			upgradeclient.ProposalHandler,
+			upgradeclient.CancelProposalHandler,
+			ibcclientclient.UpdateClientProposalHandler,
+			ibcclientclient.UpgradeProposalHandler,
+			ibcproviderclient.ConsumerAdditionProposalHandler,
+			ibcproviderclient.ConsumerRemovalProposalHandler,
+			ibcproviderclient.EquivocationProposalHandler,
+		),
+		params.AppModuleBasic{},
+		crisis.AppModuleBasic{},
+		slashing.AppModuleBasic{},
+		feegrantmodule.AppModuleBasic{},
+		authzmodule.AppModuleBasic{},
+		ibc.AppModuleBasic{},
+		upgrade.AppModuleBasic{},
+		evidence.AppModuleBasic{},
+		transfer.AppModuleBasic{},
+		vesting.AppModuleBasic{},
+		liquidity.AppModuleBasic{},
+		router.AppModuleBasic{},
+		ica.AppModuleBasic{},
+		globalfee.AppModule{},
+		ibcprovider.AppModuleBasic{},
+	)
 )
 
 func appModules(

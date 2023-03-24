@@ -26,25 +26,25 @@ import (
 	"github.com/tendermint/tendermint/privval"
 )
 
-//nolint:unused
-type validator struct {
-	chain            *chain
-	index            int
-	moniker          string
-	mnemonic         string
-	keyInfo          keyring.Info
-	privateKey       cryptotypes.PrivKey
-	consensusKey     privval.FilePVKey
-	consensusPrivKey cryptotypes.PrivKey
-	nodeKey          p2p.NodeKey
-}
+type (
+	validator struct {
+		chain        *chain
+		index        int
+		moniker      string
+		mnemonic     string
+		keyInfo      keyring.Info
+		privateKey   cryptotypes.PrivKey
+		consensusKey privval.FilePVKey
+		nodeKey      p2p.NodeKey
+	}
 
-type account struct {
-	moniker    string //nolint:unused
-	mnemonic   string
-	keyInfo    keyring.Info
-	privateKey cryptotypes.PrivKey
-}
+	account struct {
+		moniker    string //nolint:unused
+		mnemonic   string
+		keyInfo    keyring.Info
+		privateKey cryptotypes.PrivKey
+	}
+)
 
 func (v *validator) instanceName() string {
 	return fmt.Sprintf("%s%d", v.moniker, v.index)

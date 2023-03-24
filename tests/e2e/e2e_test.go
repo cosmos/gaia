@@ -19,7 +19,7 @@ var (
 	runRestInterfacesTest         = true
 )
 
-func (s *IntegrationTestSuite) TestRestInterfaces() {
+func (s *IntegrationTestSuite) TestRestInterfaces() { //nolint:revive // the naming isn't confusing
 	if !runRestInterfacesTest {
 		s.T().Skip()
 	}
@@ -40,7 +40,7 @@ func (s *IntegrationTestSuite) TestByPassMinFee() {
 	s.testByPassMinFeeWithdrawReward()
 }
 
-func (s *IntegrationTestSuite) TestEncode() {
+func (s *IntegrationTestSuite) TestEncode() { //nolint:revive // the naming isn't confusing
 	if !runEncodeTest {
 		s.T().Skip()
 	}
@@ -48,14 +48,14 @@ func (s *IntegrationTestSuite) TestEncode() {
 	s.testDecode()
 }
 
-func (s *IntegrationTestSuite) TestEvidence() {
+func (s *IntegrationTestSuite) TestEvidence() { //nolint:revive // the naming isn't confusing
 	if !runEvidenceTest {
 		s.T().Skip()
 	}
 	s.testEvidence()
 }
 
-func (s *IntegrationTestSuite) TestFeeGrant() {
+func (s *IntegrationTestSuite) TestFeeGrant() { //nolint:revive // the naming isn't confusing
 	if !runFeeGrantTest {
 		s.T().Skip()
 	}
@@ -89,7 +89,7 @@ func (s *IntegrationTestSuite) TestIBC() {
 	s.testFailedMultihopIBCTokenTransfer()
 }
 
-func (s *IntegrationTestSuite) TestSlashing() {
+func (s *IntegrationTestSuite) TestSlashing() { //nolint:revive // the naming isn't confusing
 	if !runSlashingTest {
 		s.T().Skip()
 	}

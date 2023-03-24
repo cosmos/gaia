@@ -26,20 +26,27 @@ var (
 	_ module.AppModule        = AppModule{}
 )
 
-// AppModuleBasic defines the basic application module used by the wasm module.
-type AppModuleBasic struct{}
+type (
+	// AppModuleBasic defines the basic application module used by the wasm module.
+	AppModuleBasic struct{}
 
-func (a AppModuleBasic) Name() string {
+	AppModule struct {
+		AppModuleBasic
+		paramSpace paramstypes.Subspace
+	}
+)
+
+func (AppModuleBasic) Name() string {
 	return types.ModuleName
 }
 
-func (a AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
+func (AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 	return cdc.MustMarshalJSON(&types.GenesisState{
 		Params: types.DefaultParams(),
 	})
 }
 
-func (a AppModuleBasic) ValidateGenesis(marshaler codec.JSONCodec, config client.TxEncodingConfig, message json.RawMessage) error {
+func (AppModuleBasic) ValidateGenesis(marshaler codec.JSONCodec, _ client.TxEncodingConfig, message json.RawMessage) error {
 	var data types.GenesisState
 	err := marshaler.UnmarshalJSON(message, &data)
 	if err != nil {
@@ -51,30 +58,25 @@ func (a AppModuleBasic) ValidateGenesis(marshaler codec.JSONCodec, config client
 	return nil
 }
 
-func (a AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) {
+func (AppModuleBasic) RegisterInterfaces(_ codectypes.InterfaceRegistry) {
 }
 
-func (a AppModuleBasic) RegisterRESTRoutes(context client.Context, router *mux.Router) {
+func (AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {
 }
 
-func (a AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
+func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
 	_ = types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
 }
 
-func (a AppModuleBasic) GetTxCmd() *cobra.Command {
+func (AppModuleBasic) GetTxCmd() *cobra.Command {
 	return nil
 }
 
-func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
+func (AppModuleBasic) GetQueryCmd() *cobra.Command {
 	return cli.GetQueryCmd()
 }
 
-func (a AppModuleBasic) RegisterLegacyAminoCodec(amino *codec.LegacyAmino) {
-}
-
-type AppModule struct {
-	AppModuleBasic
-	paramSpace paramstypes.Subspace
+func (AppModuleBasic) RegisterLegacyAminoCodec(_ *codec.LegacyAmino) {
 }
 
 // NewAppModule constructor
@@ -99,18 +101,18 @@ func (a AppModule) ExportGenesis(ctx sdk.Context, marshaler codec.JSONCodec) jso
 	return marshaler.MustMarshalJSON(&genState)
 }
 
-func (a AppModule) RegisterInvariants(registry sdk.InvariantRegistry) {
+func (AppModule) RegisterInvariants(sdk.InvariantRegistry) {
 }
 
-func (a AppModule) Route() sdk.Route {
+func (AppModule) Route() sdk.Route {
 	return sdk.Route{}
 }
 
-func (a AppModule) QuerierRoute() string {
+func (AppModule) QuerierRoute() string {
 	return types.QuerierRoute
 }
 
-func (a AppModule) LegacyQuerierHandler(amino *codec.LegacyAmino) sdk.Querier {
+func (AppModule) LegacyQuerierHandler(*codec.LegacyAmino) sdk.Querier {
 	return nil
 }
 
@@ -118,10 +120,10 @@ func (a AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterQueryServer(cfg.QueryServer(), NewGrpcQuerier(a.paramSpace))
 }
 
-func (a AppModule) BeginBlock(context sdk.Context, block abci.RequestBeginBlock) {
+func (AppModule) BeginBlock(sdk.Context, abci.RequestBeginBlock) {
 }
 
-func (a AppModule) EndBlock(context sdk.Context, block abci.RequestEndBlock) []abci.ValidatorUpdate {
+func (AppModule) EndBlock(sdk.Context, abci.RequestEndBlock) []abci.ValidatorUpdate {
 	return nil
 }
 
@@ -129,6 +131,6 @@ func (a AppModule) EndBlock(context sdk.Context, block abci.RequestEndBlock) []a
 // module. It should be incremented on each consensus-breaking change
 // introduced by the module. To avoid wrong/empty versions, the initial version
 // should be set to 1.
-func (a AppModule) ConsensusVersion() uint64 {
+func (AppModule) ConsensusVersion() uint64 {
 	return 1
 }

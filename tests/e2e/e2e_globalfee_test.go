@@ -56,7 +56,7 @@ test4: gov propose globalfee =  0.000001uatom (lower than min_gas_price), 0photo
 test5: check balance correct: all the successful bank sent tokens are received
 test6: gov propose change back to initial globalfee = 0.00001photon, This is for not influence other e2e tests.
 */
-func (s *IntegrationTestSuite) testGlobalFees() {
+func (s *IntegrationTestSuite) testGlobalFees() { //nolint:revive // the naming isn't confusing
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
 	submitterAddr := s.chainA.validators[0].keyInfo.GetAddress()
@@ -317,9 +317,9 @@ func (s *IntegrationTestSuite) testGlobalFees() {
 		func() bool {
 			afterRecipientPhotonBalance, err := getSpecificBalance(chainAAPIEndpoint, recipient, photonDenom)
 			s.Require().NoError(err)
-			IncrementedPhoton := afterRecipientPhotonBalance.Sub(beforeRecipientPhotonBalance)
+			incrementedPhoton := afterRecipientPhotonBalance.Sub(beforeRecipientPhotonBalance)
 			photonSent := sdk.NewInt64Coin(photonDenom, sendAmt*int64(sucessBankSendCount))
-			return IncrementedPhoton.IsEqual(photonSent)
+			return incrementedPhoton.IsEqual(photonSent)
 		},
 		time.Minute,
 		5*time.Second,

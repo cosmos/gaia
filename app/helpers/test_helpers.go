@@ -30,6 +30,14 @@ const (
 	SimAppChainID = "gaia-app"
 )
 
+type (
+	EmptyAppOptions struct{}
+
+	PV struct {
+		PrivKey cryptotypes.PrivKey
+	}
+)
+
 // DefaultConsensusParams defines the default Tendermint consensus params used
 // in GaiaApp testing.
 var DefaultConsensusParams = &abci.ConsensusParams{
@@ -49,10 +57,6 @@ var DefaultConsensusParams = &abci.ConsensusParams{
 	},
 }
 
-type PV struct {
-	PrivKey cryptotypes.PrivKey
-}
-
 func NewPV() PV {
 	return PV{ed25519.GenPrivKey()}
 }
@@ -62,9 +66,7 @@ func (pv PV) GetPubKey() (crypto.PubKey, error) {
 	return cryptocodec.ToTmPubKeyInterface(pv.PrivKey.PubKey())
 }
 
-type EmptyAppOptions struct{}
-
-func (EmptyAppOptions) Get(o string) interface{} { return nil }
+func (EmptyAppOptions) Get(string) interface{} { return nil }
 
 func Setup(t *testing.T) *gaiaapp.GaiaApp {
 	t.Helper()
@@ -98,7 +100,7 @@ func Setup(t *testing.T) *gaiaapp.GaiaApp {
 func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount, balances ...banktypes.Balance) *gaiaapp.GaiaApp {
 	t.Helper()
 
-	gaiaApp, genesisState := setup()
+	gaiaApp, genesisState := doSetup()
 	genesisState = genesisStateWithValSet(t, gaiaApp, genesisState, valSet, genAccs, balances...)
 
 	stateBytes, err := json.MarshalIndent(genesisState, "", " ")
@@ -125,7 +127,7 @@ func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs 
 	return gaiaApp
 }
 
-func setup() (*gaiaapp.GaiaApp, gaiaapp.GenesisState) {
+func doSetup() (*gaiaapp.GaiaApp, gaiaapp.GenesisState) {
 	db := dbm.NewMemDB()
 	encCdc := gaiaapp.MakeTestEncodingConfig()
 	var invCheckPeriod uint = 5
@@ -148,15 +150,18 @@ func genesisStateWithValSet(t *testing.T,
 	valSet *tmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount,
 	balances ...banktypes.Balance,
 ) gaiaapp.GenesisState {
+	t.Helper()
 	// set genesis accounts
 	authGenesis := authtypes.NewGenesisState(authtypes.DefaultParams(), genAccs)
 	genesisState[authtypes.ModuleName] = app.AppCodec().MustMarshalJSON(authGenesis)
 
+	// make validators and delegations
 	validators := make([]stakingtypes.Validator, 0, len(valSet.Validators))
 	delegations := make([]stakingtypes.Delegation, 0, len(valSet.Validators))
 
 	bondAmt := sdk.DefaultPowerReduction
 
+	// create a delegation and a validator per validator
 	for _, val := range valSet.Validators {
 		pk, err := cryptocodec.FromTmPubKeyInterface(val.PubKey)
 		require.NoError(t, err)
@@ -177,7 +182,6 @@ func genesisStateWithValSet(t *testing.T,
 		}
 		validators = append(validators, validator)
 		delegations = append(delegations, stakingtypes.NewDelegation(genAccs[0].GetAddress(), val.Address.Bytes(), sdk.OneDec()))
-
 	}
 	// set validators and delegations
 	stakingGenesis := stakingtypes.NewGenesisState(stakingtypes.DefaultParams(), validators, delegations)

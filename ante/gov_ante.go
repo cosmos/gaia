@@ -86,10 +86,10 @@ func (g GovPreventSpamDecorator) ValidateGovMsgs(ctx sdk.Context, msgs []sdk.Msg
 	return nil
 }
 
-func (g GovPreventSpamDecorator) calcMinInitialDeposit(minDeposit sdk.Coins) (minInitialDeposit sdk.Coins) {
+func (GovPreventSpamDecorator) calcMinInitialDeposit(minDeposit sdk.Coins) (minInitialDeposit sdk.Coins) {
 	for _, coin := range minDeposit {
 		minInitialCoins := minInitialDepositFraction.MulInt(coin.Amount).RoundInt()
 		minInitialDeposit = minInitialDeposit.Add(sdk.NewCoin(coin.Denom, minInitialCoins))
 	}
-	return
+	return minInitialDeposit
 }

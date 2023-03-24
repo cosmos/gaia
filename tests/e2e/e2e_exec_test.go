@@ -37,7 +37,18 @@ const (
 	flagAllowedMessages = "allowed-messages"
 )
 
-type flagOption func(map[string]interface{})
+type (
+	flagOption func(map[string]interface{})
+
+	txBankSend struct {
+		from      string
+		to        string
+		amt       string
+		fees      string
+		log       string
+		expectErr bool
+	}
+)
 
 // withKeyValue add a new flag to command
 func withKeyValue(key string, value interface{}) flagOption {
@@ -278,15 +289,6 @@ func (s *IntegrationTestSuite) execBankSend(
 	}
 
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.expectErrExecValidation(c, valIdx, expectErr))
-}
-
-type txBankSend struct {
-	from      string
-	to        string
-	amt       string
-	fees      string
-	log       string
-	expectErr bool
 }
 
 func (s *IntegrationTestSuite) execBankSendBatch(

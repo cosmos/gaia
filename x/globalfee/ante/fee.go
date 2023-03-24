@@ -60,17 +60,17 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
 	}
 
+	// Only check for minimum fees and global fee if the execution mode is CheckTx
+	if !ctx.IsCheckTx() || simulate {
+		return next(ctx, tx, simulate)
+	}
+
 	// Get required Global Fee and min gas price
 	requiredGlobalFees, err := mfd.getGlobalFee(ctx, feeTx)
 	if err != nil {
 		return ctx, err
 	}
 	requiredFees := GetMinGasPrice(ctx, int64(feeTx.GetGas()))
-
-	// Only check for minimum fees and global fee if the execution mode is CheckTx
-	if !ctx.IsCheckTx() || simulate {
-		return next(ctx, tx, simulate)
-	}
 
 	// sort fee tx's coins
 	feeCoins := feeTx.GetFee().Sort()
@@ -82,7 +82,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	// 	- the tx contains only message types that can bypass the minimum fee,
 	//	see BypassMinFeeMsgTypes;
 	//	- the total gas limit per message does not exceed MaxTotalBypassMinFeeMsgGasUsage,
-	//	i.e., totalGas <=  MaxBypassMinFeeMsgGasUsage
+	//	i.e., totalGas <=  MaxTotalBypassMinFeeMsgGasUsage
 	//
 	// Otherwise, minimum fees and global fees are checked to prevent spam.
 	doesNotExceedMaxGasUsage := gas <= mfd.MaxTotalBypassMinFeeMsgGasUsage

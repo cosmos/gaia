@@ -5,7 +5,6 @@ import (
 )
 
 // DenomsSubsetOfIncludingZero and IsAnyGTEIncludingZero are similar to DenomsSubsetOf and IsAnyGTE in sdk.
-// Since we allow zero coins in global fee(zero coins means the chain does not want to set a global fee but still want to define the fee's denom)
 //
 // DenomsSubsetOfIncludingZero overwrites DenomsSubsetOf from sdk, to allow zero amt coins in superset. e.g.
 // e.g. [1stake] is the DenomsSubsetOfIncludingZero of [0stake] and
@@ -73,7 +72,6 @@ func IsAnyGTEIncludingZero(coins, coinsB sdk.Coins) bool {
 }
 
 // ContainZeroCoins returns true if the given coins are empty or contain zero coins,
-// Note that the coins denoms must be validated, see sdk.ValidateDenom
 func ContainZeroCoins(coins sdk.Coins) bool {
 	if len(coins) == 0 {
 		return true

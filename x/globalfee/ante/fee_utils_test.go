@@ -263,7 +263,7 @@ func TestSplitGlobalFees(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			nonZeroCoins, zeroCoinsMap := splitGlobalFees(test.globalfees)
+			nonZeroCoins, zeroCoinsMap := splitFees(test.globalfees)
 			require.True(t, nonZeroCoins.IsEqual(test.globalfeesNonZero))
 			require.True(t, equalMap(zeroCoinsMap, test.zeroGlobalFeesDenom))
 		})

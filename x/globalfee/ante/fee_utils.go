@@ -87,20 +87,20 @@ func RemovingZeroDenomCoins(feeCoins sdk.Coins, zeroGlobalFeesDenom map[string]b
 	return feeCoinsNoZeroDenomCoins
 }
 
-// splitGlobalFees returns the sorted nonzero coins  and zero denoms in globalfee
-func splitGlobalFees(globalfees sdk.Coins) (sdk.Coins, map[string]bool) {
+// splitFees returns the sorted nonzero coins  and zero denoms in globalfee
+func splitFees(fees sdk.Coins) (sdk.Coins, map[string]bool) {
 
-	requiredGlobalFeesNonZero := sdk.Coins{}
-	requiredGlobalFeesZeroDenom := map[string]bool{}
+	requiredFeesNonZero := sdk.Coins{}
+	requiredFeesZeroDenom := map[string]bool{}
 
-	for _, gf := range globalfees {
+	for _, gf := range fees {
 
 		if gf.IsZero() {
-			requiredGlobalFeesZeroDenom[gf.Denom] = true
+			requiredFeesZeroDenom[gf.Denom] = true
 		} else {
-			requiredGlobalFeesNonZero = append(requiredGlobalFeesNonZero, gf)
+			requiredFeesNonZero = append(requiredFeesNonZero, gf)
 		}
 	}
 
-	return requiredGlobalFeesNonZero.Sort(), requiredGlobalFeesZeroDenom
+	return requiredFeesNonZero.Sort(), requiredFeesZeroDenom
 }

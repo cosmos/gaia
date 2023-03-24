@@ -27,7 +27,7 @@ There are three components:
 
 ### Real example
 
-[Proposal 12](https://hubble.figment.io/cosmos/chains/cosmoshub-4/governance/proposals/12) asked if the Cosmos Hub community of validators charging 0% commission was harmful to the success of the Cosmos Hub.
+[Proposal 12](https://www.mintscan.io/cosmos/proposals/12) asked if the Cosmos Hub community of validators charging 0% commission was harmful to the success of the Cosmos Hub.
 
 ```json
 {

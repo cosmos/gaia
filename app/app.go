@@ -188,10 +188,20 @@ func NewGaiaApp(
 	app.MountTransientStores(app.GetTransientStoreKey())
 	app.MountMemoryStores(app.GetMemoryStoreKey())
 
-	bypassMinFeeMsgTypes := cast.ToStringSlice(appOpts.Get(gaiaappparams.BypassMinFeeMsgTypesKey))
-	if bypassMinFeeMsgTypes == nil {
+	var bypassMinFeeMsgTypes []string
+	bypassMinFeeMsgTypesOptions := appOpts.Get(gaiaappparams.BypassMinFeeMsgTypesKey)
+	if bypassMinFeeMsgTypesOptions == nil {
 		bypassMinFeeMsgTypes = GetDefaultBypassFeeMessages()
+	} else {
+		bypassMinFeeMsgTypes = cast.ToStringSlice(bypassMinFeeMsgTypesOptions)
 	}
+
+	if err := app.ValidateBypassFeeMsgTypes(bypassMinFeeMsgTypes); err != nil {
+		app.Logger().Error("invalid 'bypass-min-fee-msg-types' config option", "error", err)
+		panic(fmt.Sprintf("invalid 'bypass-min-fee-msg-types' config option: %s", err))
+	}
+
+	app.Logger().Info("min fee bypass activated for message types", "types", bypassMinFeeMsgTypes)
 
 	anteHandler, err := gaiaante.NewAnteHandler(
 		gaiaante.HandlerOptions{
@@ -237,6 +247,17 @@ func GetDefaultBypassFeeMessages() []string {
 		sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
 		sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
 	}
+}
+
+// ValidateBypassFeeMsgTypes checks that a proto message type exists for all MsgTypes in bypassMinFeeMsgTypes
+// An error is returned for the first msgType that cannot be resolved
+func (app *GaiaApp) ValidateBypassFeeMsgTypes(bypassMinFeeMsgTypes []string) error {
+	for _, msgType := range bypassMinFeeMsgTypes {
+		if _, err := app.interfaceRegistry.Resolve(msgType); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // Name returns the name of the App

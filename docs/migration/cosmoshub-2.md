@@ -14,12 +14,13 @@ There is a strong social consensus around proposal `Cosmos Hub 3 Upgrade Proposa
 on `cosmoshub-2`. This indicates that the upgrade procedure should be performed
 on `December 11, 2019 at or around 14:27 UTC` on block `2,902,000`.
 
-- [Preliminary](#preliminary)
-- [Major Updates](#major-updates)
-- [Risks](#risks)
-- [Recovery](#recovery)
-- [Upgrade Procedure](#upgrade-procedure)
-- [Notes for Service Providers](#notes-for-service-providers)
+- [Cosmos Hub 2 Upgrade Instructions](#cosmos-hub-2-upgrade-instructions)
+  - [Preliminary](#preliminary)
+  - [Major Updates](#major-updates)
+  - [Risks](#risks)
+  - [Recovery](#recovery)
+  - [Upgrade Procedure](#upgrade-procedure)
+  - [Notes for Service Providers](#notes-for-service-providers)
 
 ## Preliminary
 
@@ -94,7 +95,7 @@ __Note__: It is assumed you are currently operating a full-node running v0.34.6+
 - The version/commit hash of Gaia v2.0.3: `2f6783e298f25ff4e12cb84549777053ab88749a`
 - The upgrade height as agreed upon by governance: __2,902,000__
 - You may obtain the canonical UTC timestamp of the exported block by any of the following methods:
-  - Block explorer (e.g. [Hubble](https://hubble.figment.io/cosmos/chains/cosmoshub-2/blocks/2902000?format=json&kind=block))
+  - Block explorer
   - Through manually querying an RPC node (e.g. `/block?height=2902000`)
   - Through manually querying a Gaia REST client (e.g. `/blocks/2902000`)
 
@@ -192,14 +193,14 @@ single parameter, `max_validators`, that we're upgrading based on [proposal 10](
    gaiad unsafe-reset-all
    ```
 
-10. Move the new `genesis.json` to your `.gaia/config/` directory
-11. Replace the `db_backend` on `.gaia/config/config.toml` to:
+10.  Move the new `genesis.json` to your `.gaia/config/` directory
+11.  Replace the `db_backend` on `.gaia/config/config.toml` to:
 
     ```toml
     db_backend = "goleveldb"
     ```
 
-12. Note, if you have any application configuration in `gaiad.toml`, that file has now been renamed to `app.toml`:
+12.  Note, if you have any application configuration in `gaiad.toml`, that file has now been renamed to `app.toml`:
 
     ```bash
     mv .gaia/config/gaiad.toml .gaia/config/app.toml

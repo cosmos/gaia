@@ -17,13 +17,8 @@ jobs:
     steps:
       - uses: actions/setup-go@v3
         with:
-<<<<<<< HEAD
-          go-version: 1.18
-      - uses: actions/checkout@v3.1.0
-=======
           go-version: 1.19
       - uses: actions/checkout@v3.4.0
->>>>>>> 715b5f5 (update linter workflow (#2324))
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:

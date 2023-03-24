@@ -216,5 +216,21 @@ func TestRemovingZeroDenomCoins(t *testing.T) {
 			require.Equal(t, test.expectedCoins, feeCoinsNoZeroDenoms)
 		})
 	}
+}
 
+func equalMap(a, b map[string]bool) bool {
+	if len(a) == 0 && len(b) == 0 {
+		return true
+	}
+	if len(a) == 0 {
+		return false
+	}
+
+	for k, _ := range a {
+		if _, ok := b[k]; !ok {
+			return false
+		}
+	}
+
+	return true
 }

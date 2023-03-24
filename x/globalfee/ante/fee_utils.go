@@ -22,6 +22,7 @@ func ContainZeroCoins(coins sdk.Coins) bool {
 // CombinedFeeRequirement returns the global fee and min_gas_price combined and sorted.
 // Both globalFees and minGasPrices must be valid, but CombinedFeeRequirement
 // does not validate them, so it may return 0denom.
+// if globalfee is empty, CombinedFeeRequirement return sdk.Coins{}
 func CombinedFeeRequirement(globalFees, minGasPrices sdk.Coins) sdk.Coins {
 	// empty min_gas_price
 	if len(minGasPrices) == 0 {
@@ -29,7 +30,7 @@ func CombinedFeeRequirement(globalFees, minGasPrices sdk.Coins) sdk.Coins {
 	}
 	// empty global fee is not possible if we set default global fee
 	if len(globalFees) == 0 && len(minGasPrices) != 0 {
-		return globalFees
+		return sdk.Coins{}
 	}
 
 	// if min_gas_price denom is in globalfee, and the amount is higher than globalfee, add min_gas_price to allFees

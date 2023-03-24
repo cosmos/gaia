@@ -152,6 +152,9 @@ func (mfd FeeDecorator) getGlobalFees(ctx sdk.Context, feeTx sdk.FeeTx) (sdk.Coi
 	// global fee is empty set, set global fee to 0uatom
 	if len(globalMinGasPrices) == 0 {
 		globalMinGasPrices, err = mfd.DefaultZeroGlobalFee(ctx)
+		if err != nil {
+			return sdk.Coins{}, err
+		}
 	}
 	requiredGlobalFees := make(sdk.Coins, len(globalMinGasPrices))
 	// Determine the required fees by multiplying each required minimum gas
@@ -162,7 +165,7 @@ func (mfd FeeDecorator) getGlobalFees(ctx sdk.Context, feeTx sdk.FeeTx) (sdk.Coi
 		requiredGlobalFees[i] = sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt())
 	}
 
-	return requiredGlobalFees.Sort(), err
+	return requiredGlobalFees.Sort(), nil
 }
 
 func (mfd FeeDecorator) DefaultZeroGlobalFee(ctx sdk.Context) ([]sdk.DecCoin, error) {

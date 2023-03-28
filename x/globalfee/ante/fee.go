@@ -84,11 +84,18 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	}
 	nonZeroCoinFeesReq, zeroCoinFeesDenomReq := splitFees(combinedFeeRequirement)
 
-	// feeCoinsNoZeroDenomCoins is feeCoins after removing the coins whose denom is zero coins' denom in globalfees
-	// e.g. feeCoins=[1atom,2photon], globalfee=[0atom,1photon,1quark], then feeCoinsNoZeroDenomCoins = [2photon]
-	// feeCoinsNoZeroDenomCoins are used to check if the fees are meet the requirement imposed by combinedNonZeroFees
-	// the coins in feeCoins that is in the denom of globalfees's zero coins do not need to check the feeCoin amount
-	feeCoinsNoZeroDenomCoins := RemovingZeroDenomCoins(feeCoins, zeroCoinFeesDenomReq)
+	// feeCoinsNoZeroDenom is feeCoins after removing the coins whose denom is zero coins' denom in globalfees
+	// e.g. feeCoins=[1atom,2photon], globalfee=[0atom,1photon,1quark], then feeCoinsNoZeroDenom = [2photon]
+	// feeCoinsNoZeroDenom are used to check if the fees are meet the requirement imposed by combinedNonZeroFees
+	// when feeCoins does not contain zero coins'denoms in combinedFeeRequirement
+	feeCoinsNoZeroDenom, feeCoinsZeroDenom := SplitCoinsByDenoms(feeCoins, zeroCoinFeesDenomReq)
+
+	// Check that the fees are in expected denominations.
+	// if len(feeCoinsNoZeroDenom) = 0, DenomsSubsetOf returns true
+	// if len(feeCoinsNoZeroDenom) != 0 && len(nonZeroCoinFeesReq) = 0, return false
+	if !feeCoinsNoZeroDenom.DenomsSubsetOf(nonZeroCoinFeesReq) {
+		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fee is not a subset of required fees; got %s, required: %s", feeCoins, combinedFeeRequirement)
+	}
 
 	// Accept zero fee transactions only if both of the following statements are true:
 	//
@@ -101,42 +108,28 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	doesNotExceedMaxGasUsage := gas <= mfd.MaxTotalBypassMinFeeMsgGasUsage
 	allowedToBypassMinFee := mfd.ContainsOnlyBypassMinFeeMsgs(msgs) && doesNotExceedMaxGasUsage
 
-	// Check that the fees are in expected denominations.
-	// if len(feeCoinsNoZeroDenomCoins) = 0, DenomsSubsetOf returns true
-	if !feeCoinsNoZeroDenomCoins.DenomsSubsetOf(nonZeroCoinFeesReq) {
-		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fee is not a subset of required fees; got %s, required: %s", feeCoins, combinedFeeRequirement)
-	}
+	// Either the transaction contains at least one message of a type
+	// that cannot bypass the minimum fee or the total gas limit exceeds
+	// the imposed threshold. As a result, besides check the fees are in
+	// expected denominations, check the amounts are greater or equal than
+	// the expected amounts.
 
-	if !allowedToBypassMinFee {
-		// Either the transaction contains at least one message of a type
-		// that cannot bypass the minimum fee or the total gas limit exceeds
-		// the imposed threshold. As a result, check that the fees are in
-		// expected denominations and the amounts are greater or equal than
-		// the expected amounts.
-
-		//// feeCoins=[] while there is no zero coins in combinedFeeRequirement, return err
-		//if len(feeCoins) == 0 && len(zeroCoinFeesDenomReq) != 0 {
-		//	return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins, combinedFeeRequirement)
-		//}
-
-		// if fee denoms are subset of combinedFeeRequirement, pass the transaction.
-		// this ensured len(nonZeroCoinFeesReq) != 0 later
-		if len(zeroCoinFeesDenomReq) != 0 {
+	// only check feeCoinsNoZeroDenom has coins IsAnyGTE than nonZeroCoinFeesReq
+	// when feeCoins does not contain denoms of zero denoms in combinedFeeRequirement
+	if !allowedToBypassMinFee && len(feeCoinsZeroDenom) == 0 {
+		// This is for dealing special case when feeCoins=[]
+		if len(feeCoins) == 0 && len(zeroCoinFeesDenomReq) != 0 {
 			return next(ctx, tx, simulate)
 		}
 
 		// Check that the amounts of the fees are greater or equal than
 		// the expected amounts, i.e., at least one feeCoin amount must
 		// be greater or equal to one of the combined required fees.
-		// if feeCoins with removing coins of combinedFee zero coins denom is
-		//  not paying enough fees, and feeCoins does not contain
-		// combinedFeeRequirement zero coins denom, fail the transaction
 
-		// A.IsAnyGTE(B), if len(A) = 0 || if len(B) = 0, return false
-
-		// 1. if feeCoins(empty or not) do not contain required zero coins
-		// 2. if feeCoins does not IsAnyGTE the nonZeroCoinFeesReq, return err
-		if !feeCoinsNoZeroDenomCoins.IsAnyGTE(nonZeroCoinFeesReq) { // nonZeroCoinFeesReq is not empty
+		// if len(feeCoinsNoZeroDenom) = 0, return false
+		// if len(nonZeroCoinFeesReq) = 0, return false (this situation should not happen
+		// because when nonZeroCoinFeesReq empty, the denom check already failed before)
+		if !feeCoinsNoZeroDenom.IsAnyGTE(nonZeroCoinFeesReq) {
 			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins, combinedFeeRequirement)
 		}
 	}

@@ -75,16 +75,22 @@ func Find(coins sdk.Coins, denom string) (bool, sdk.Coin) {
 	}
 }
 
-// RemovingZeroDenomCoins return feeCoins with removing coins whose denom is zero coin's denom in globalfees
-func RemovingZeroDenomCoins(feeCoins sdk.Coins, zeroGlobalFeesDenom map[string]bool) sdk.Coins {
-	feeCoinsNoZeroDenomCoins := []sdk.Coin{}
+// SplitCoinsByDenoms return feeCoins with splitting coins
+// according to a denom map
+func SplitCoinsByDenoms(feeCoins sdk.Coins, zeroDenom map[string]bool) (sdk.Coins, sdk.Coins) {
+	feeCoinsNoZeroDenom := []sdk.Coin{}
+	feeCoinsZeroDenom := []sdk.Coin{}
+
 	for _, fc := range feeCoins {
-		if _, found := zeroGlobalFeesDenom[fc.Denom]; !found {
-			feeCoinsNoZeroDenomCoins = append(feeCoinsNoZeroDenomCoins, fc)
+		_, found := zeroDenom[fc.Denom]
+		if found {
+			feeCoinsZeroDenom = append(feeCoinsZeroDenom, fc)
+		} else {
+			feeCoinsNoZeroDenom = append(feeCoinsNoZeroDenom, fc)
 		}
 	}
 
-	return feeCoinsNoZeroDenomCoins
+	return feeCoinsNoZeroDenom, feeCoinsZeroDenom
 }
 
 // splitFees returns the sorted nonzero coins  and zero denoms in globalfee

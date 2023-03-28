@@ -161,7 +161,7 @@ func TestCombinedFeeRequirement(t *testing.T) {
 	}
 }
 
-func TestRemovingZeroDenomCoins(t *testing.T) {
+func TestSplitCoinsByDenoms(t *testing.T) {
 	zeroGlobalFeesDenom0 := map[string]bool{}
 	zeroGlobalFeesDenom1 := map[string]bool{
 		"uatom":  true,
@@ -179,41 +179,48 @@ func TestRemovingZeroDenomCoins(t *testing.T) {
 	feeCoins := sdk.NewCoins(photon, uatom)
 
 	tests := map[string]struct {
-		feeCoins            sdk.Coins
-		zeroGlobalFeesDenom map[string]bool
-		expectedCoins       sdk.Coins
+		feeCoins             sdk.Coins
+		zeroGlobalFeesDenom  map[string]bool
+		expectedNonZeroCoins sdk.Coins
+		expectedZeroCoins    sdk.Coins
 	}{
 		"no zero coins in global fees": {
-			feeCoins:            feeCoins,
-			zeroGlobalFeesDenom: zeroGlobalFeesDenom0,
-			expectedCoins:       feeCoins,
+			feeCoins:             feeCoins,
+			zeroGlobalFeesDenom:  zeroGlobalFeesDenom0,
+			expectedNonZeroCoins: feeCoins,
+			expectedZeroCoins:    sdk.Coins{},
 		},
-		"no removal of fee coins": {
-			feeCoins:            feeCoins,
-			zeroGlobalFeesDenom: zeroGlobalFeesDenom3,
-			expectedCoins:       feeCoins,
+		"no split of fee coins": {
+			feeCoins:             feeCoins,
+			zeroGlobalFeesDenom:  zeroGlobalFeesDenom3,
+			expectedNonZeroCoins: feeCoins,
+			expectedZeroCoins:    sdk.Coins{},
 		},
-		"remove some of the fee coins": {
-			feeCoins:            feeCoins,
-			zeroGlobalFeesDenom: zeroGlobalFeesDenom2,
-			expectedCoins:       sdk.NewCoins(photon),
+		"split the fee coins": {
+			feeCoins:             feeCoins,
+			zeroGlobalFeesDenom:  zeroGlobalFeesDenom2,
+			expectedNonZeroCoins: sdk.NewCoins(photon),
+			expectedZeroCoins:    sdk.NewCoins(uatom),
 		},
 		"remove all of the fee coins": {
-			feeCoins:            feeCoins,
-			zeroGlobalFeesDenom: zeroGlobalFeesDenom1,
-			expectedCoins:       sdk.Coins{},
+			feeCoins:             feeCoins,
+			zeroGlobalFeesDenom:  zeroGlobalFeesDenom1,
+			expectedNonZeroCoins: sdk.Coins{},
+			expectedZeroCoins:    feeCoins,
 		},
 		"fee coins are empty": {
-			feeCoins:            sdk.Coins{},
-			zeroGlobalFeesDenom: zeroGlobalFeesDenom1,
-			expectedCoins:       sdk.Coins{},
+			feeCoins:             sdk.Coins{},
+			zeroGlobalFeesDenom:  zeroGlobalFeesDenom1,
+			expectedNonZeroCoins: sdk.Coins{},
+			expectedZeroCoins:    sdk.Coins{},
 		},
 	}
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			feeCoinsNoZeroDenoms := RemovingZeroDenomCoins(test.feeCoins, test.zeroGlobalFeesDenom)
-			require.Equal(t, test.expectedCoins, feeCoinsNoZeroDenoms)
+			feeCoinsNoZeroDenoms, feeCoinsZeroDenoms := SplitCoinsByDenoms(test.feeCoins, test.zeroGlobalFeesDenom)
+			require.Equal(t, test.expectedNonZeroCoins, feeCoinsNoZeroDenoms)
+			require.Equal(t, test.expectedZeroCoins, feeCoinsZeroDenoms)
 		})
 	}
 }

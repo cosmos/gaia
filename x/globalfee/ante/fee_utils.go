@@ -95,12 +95,10 @@ func SplitCoinsByDenoms(feeCoins sdk.Coins, zeroDenom map[string]bool) (sdk.Coin
 
 // splitFees returns the sorted nonzero coins  and zero denoms in globalfee
 func splitFees(fees sdk.Coins) (sdk.Coins, map[string]bool) {
-
 	requiredFeesNonZero := sdk.Coins{}
 	requiredFeesZeroDenom := map[string]bool{}
 
 	for _, gf := range fees {
-
 		if gf.IsZero() {
 			requiredFeesZeroDenom[gf.Denom] = true
 		} else {

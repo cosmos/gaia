@@ -288,7 +288,7 @@ func equalMap(a, b map[string]bool) bool {
 		return false
 	}
 
-	for k, _ := range a {
+	for k := range a {
 		if _, ok := b[k]; !ok {
 			return false
 		}

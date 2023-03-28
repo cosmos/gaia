@@ -131,6 +131,7 @@ require (
 replace (
 	// use cosmos keyring
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
+
 	// use updated cosmos-sdk that supports fast node
 	github.com/cosmos/cosmos-sdk => github.com/notional-labs/cosmos-sdk v0.42.12-0.20230214100526-569ca3aae235
 

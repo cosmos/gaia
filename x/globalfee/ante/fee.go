@@ -80,8 +80,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 
 	combinedFeeRequirement := CombinedFeeRequirement(globalFeesAll, localFees)
 	if len(combinedFeeRequirement) == 0 {
-		// todo return err
-		return ctx, nil
+		return ctx, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "required fees are not setup.")
 	}
 	nonZeroCoinFeesReq, zeroCoinFeesDenomReq := splitFees(combinedFeeRequirement)
 

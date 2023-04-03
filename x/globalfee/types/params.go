@@ -6,14 +6,34 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
 )
 
+// DefaultBypassMinFeeMsgTypes defines the list of IBC message types
+// which bypass the global min fee
+func DefaultBypassMinFeeMsgTypes() []string {
+	return []string{
+		sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),
+		sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
+		sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
+		sdk.MsgTypeURL(&ibcchanneltypes.MsgTimeout{}),
+		sdk.MsgTypeURL(&ibcchanneltypes.MsgTimeoutOnClose{}),
+	}
+}
+
 // ParamStoreKeyMinGasPrices store key
-var ParamStoreKeyMinGasPrices = []byte("MinimumGasPricesParam")
+var (
+	ParamStoreKeyMinGasPrices         = []byte("MinimumGasPricesParam")
+	ParamStoreKeyBypassMinFeeMsgTypes = []byte("BypassMinFeeMsgTypesParam")
+)
 
 // DefaultParams returns default parameters
 func DefaultParams() Params {
-	return Params{MinimumGasPrices: sdk.DecCoins{}}
+	return Params{
+		MinimumGasPrices:     sdk.DecCoins{},
+		BypassMinFeeMsgTypes: DefaultBypassMinFeeMsgTypes(),
+	}
 }
 
 func ParamKeyTable() paramtypes.KeyTable {
@@ -22,7 +42,15 @@ func ParamKeyTable() paramtypes.KeyTable {
 
 // ValidateBasic performs basic validation.
 func (p Params) ValidateBasic() error {
-	return validateMinimumGasPrices(p.MinimumGasPrices)
+	if err := validateMinimumGasPrices(p.MinimumGasPrices); err != nil {
+		return err
+	}
+
+	if err := validateBypassMinFeeMsgTypes(p.BypassMinFeeMsgTypes); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // ParamSetPairs returns the parameter set pairs.
@@ -30,6 +58,9 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(
 			ParamStoreKeyMinGasPrices, &p.MinimumGasPrices, validateMinimumGasPrices,
+		),
+		paramtypes.NewParamSetPair(
+			ParamStoreKeyBypassMinFeeMsgTypes, &p.BypassMinFeeMsgTypes, validateBypassMinFeeMsgTypes,
 		),
 	}
 }
@@ -43,6 +74,25 @@ func validateMinimumGasPrices(i interface{}) error {
 
 	dec := DecCoins(v)
 	return dec.Validate()
+}
+
+type BypassMinFeeMsgTypes []string
+
+// TODO: add more conditions to verify the message type name
+//
+// validateBypassMinFeeMsgTypes checks that bypass msg types aren't empty
+func validateBypassMinFeeMsgTypes(i interface{}) error {
+	bypassMinFeeMsgTypes, ok := i.([]string)
+	if !ok {
+		return fmt.Errorf("invalid bypass msg type: %T", bypassMinFeeMsgTypes)
+	}
+
+	for _, msgType := range bypassMinFeeMsgTypes {
+		if msgType == "" {
+			return fmt.Errorf("invalid empty bypass msg type")
+		}
+	}
+	return nil
 }
 
 type DecCoins sdk.DecCoins

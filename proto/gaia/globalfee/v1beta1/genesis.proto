@@ -17,7 +17,7 @@ message GenesisState {
 
 // Params defines the set of module parameters.
 message Params {
-  // Minimum stores the minimum gas price(s) for all TX on the chain.
+  // minimum_gas_prices stores the minimum gas price(s) for all TX on the chain.
   // When multiple coins are defined then they are accepted alternatively.
   // The list must be sorted by denoms asc. No duplicate denoms or zero amount
   // values allowed. For more information see
@@ -27,5 +27,11 @@ message Params {
     (gogoproto.jsontag) = "minimum_gas_prices,omitempty",
     (gogoproto.moretags) = "yaml:\"minimum_gas_prices\"",
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins"
+  ];
+  // bypass_min_fee_msg_types defines the exhaustive list of IBC message url types
+  // that can bypass the minimum fee
+  repeated string bypass_min_fee_msg_types = 2 [
+    (gogoproto.jsontag) = "bypass_min_fee_msg_types,omitempty",
+    (gogoproto.moretags) = "yaml:\"bypass_min_fee_msg_types\""
   ];
 }

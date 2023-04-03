@@ -10,9 +10,10 @@ import (
 func TestDefaultParams(t *testing.T) {
 	p := DefaultParams()
 	require.EqualValues(t, p.MinimumGasPrices, sdk.DecCoins{})
+	require.EqualValues(t, p.BypassMinFeeMsgTypes, DefaultBypassMinFeeMsgTypes)
 }
 
-func Test_validateParams(t *testing.T) {
+func Test_validateMinGasPrices(t *testing.T) {
 	tests := map[string]struct {
 		coins     interface{} // not sdk.DeCoins, but Decoins defined in glboalfee
 		expectErr bool
@@ -63,6 +64,41 @@ func Test_validateParams(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			err := validateMinimumGasPrices(test.coins)
+			if test.expectErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+		})
+	}
+}
+
+func Test_validateBypassMinFeeMsgTypes(t *testing.T) {
+	tests := map[string]struct {
+		msgTypes  interface{} // not sdk.DeCoins, but Decoins defined in global fee
+		expectErr bool
+	}{
+		"DefaultParams, pass": {
+			DefaultParams().BypassMinFeeMsgTypes,
+			false,
+		},
+		"wrong msg type should make conversion fail, fail": {
+			[]int{0, 1, 2, 3},
+			true,
+		},
+		"empty msg types, pass": {
+			[]string{},
+			false,
+		},
+		"empty msg type, fail": {
+			[]string{""},
+			true,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			err := validateBypassMinFeeMsgTypes(test.msgTypes)
 			if test.expectErr {
 				require.Error(t, err)
 				return

@@ -7,11 +7,10 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/cosmos/gaia/v9/x/globalfee/types"
-
 	tmstrings "github.com/tendermint/tendermint/libs/strings"
 
 	"github.com/cosmos/gaia/v9/x/globalfee"
+	"github.com/cosmos/gaia/v9/x/globalfee/types"
 )
 
 // FeeWithBypassDecorator checks if the transaction's fee is at least as large

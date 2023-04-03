@@ -374,19 +374,19 @@ gaiad query slashing params
 You can query for the minting/inflation parameters via:
 
 ```bash
-gaiad query minting params
+gaiad query mint params
 ```
 
 To query for the current inflation value:
 
 ```bash
-gaiad query minting inflation
+gaiad query mint inflation
 ```
 
 To query for the current annual provisions value:
 
 ```bash
-gaiad query minting annual-provisions
+gaiad query mint annual-provisions
 ```
 
 ### Staking

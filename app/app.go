@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/cosmos/gaia/v9/x/globalfee"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
@@ -28,8 +30,6 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
-	ibcchanneltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
 	ibctesting "github.com/cosmos/interchain-security/legacy_ibc_testing/testing"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
@@ -45,7 +45,7 @@ import (
 	gaiaappparams "github.com/cosmos/gaia/v9/app/params"
 	"github.com/cosmos/gaia/v9/app/upgrades"
 	v9 "github.com/cosmos/gaia/v9/app/upgrades/v9"
-	"github.com/cosmos/gaia/v9/x/globalfee"
+	globalfeetypes "github.com/cosmos/gaia/v9/x/globalfee/types"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
@@ -212,12 +212,11 @@ func NewGaiaApp(
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
-			Codec:                appCodec,
-			IBCkeeper:            app.IBCKeeper,
-			GovKeeper:            &app.GovKeeper,
-			BypassMinFeeMsgTypes: bypassMinFeeMsgTypes,
-			GlobalFeeSubspace:    app.GetSubspace(globalfee.ModuleName),
-			StakingSubspace:      app.GetSubspace(stakingtypes.ModuleName),
+			Codec:             appCodec,
+			IBCkeeper:         app.IBCKeeper,
+			GovKeeper:         &app.GovKeeper,
+			GlobalFeeSubspace: app.GetSubspace(globalfee.ModuleName),
+			StakingSubspace:   app.GetSubspace(stakingtypes.ModuleName),
 		},
 	)
 	if err != nil {
@@ -242,13 +241,7 @@ func NewGaiaApp(
 }
 
 func GetDefaultBypassFeeMessages() []string {
-	return []string{
-		sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),
-		sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
-		sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
-		sdk.MsgTypeURL(&ibcchanneltypes.MsgTimeout{}),
-		sdk.MsgTypeURL(&ibcchanneltypes.MsgTimeoutOnClose{}),
-	}
+	return globalfeetypes.DefaultBypassMinFeeMsgTypes
 }
 
 // ValidateBypassFeeMsgTypes checks that a proto message type exists for all MsgTypes in bypassMinFeeMsgTypes

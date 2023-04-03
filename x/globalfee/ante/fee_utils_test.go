@@ -218,7 +218,7 @@ func TestSplitCoinsByDenoms(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			feeCoinsNoZeroDenoms, feeCoinsZeroDenoms := SplitCoinsByDenoms(test.feeCoins, test.zeroGlobalFeesDenom)
+			feeCoinsNoZeroDenoms, feeCoinsZeroDenoms := splitCoinsByDenoms(test.feeCoins, test.zeroGlobalFeesDenom)
 			require.Equal(t, test.expectedNonZeroCoins, feeCoinsNoZeroDenoms)
 			require.Equal(t, test.expectedZeroCoins, feeCoinsZeroDenoms)
 		})

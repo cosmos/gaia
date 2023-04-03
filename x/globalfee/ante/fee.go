@@ -52,7 +52,6 @@ func NewFeeDecorator(bypassMsgTypes []string, globalfeeSubspace, stakingSubspace
 
 // AnteHandle implements the AnteDecorator interface
 func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
-	// please note: after parsing feeflag, the zero fees are removed already
 	feeTx, ok := tx.(sdk.FeeTx)
 	if !ok {
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
@@ -63,35 +62,34 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 		return next(ctx, tx, simulate)
 	}
 
-	// sort fee tx's coins, feeCoins' zero coins are already removed
+	// sort fee tx's coins, zero coins in feeCoins are already removed
 	feeCoins := feeTx.GetFee().Sort()
 	gas := feeTx.GetGas()
 	msgs := feeTx.GetMsgs()
 
-	// Get required Global Fee and min gas price
-	globalFeesAll, err := mfd.getGlobalFees(ctx, feeTx)
+	// Get required Global Fee
+	requiredGlobalFees, err := mfd.GetGlobalFee(ctx, feeTx)
 	if err != nil {
 		return ctx, err
 	}
 
-	// get minimum-gas-prices from app.toml or cli flag
+	// get local minimum-gas-prices
 	localFees := GetMinGasPrice(ctx, int64(feeTx.GetGas()))
 
-	combinedFeeRequirement := CombinedFeeRequirement(globalFeesAll, localFees)
+	combinedFeeRequirement := CombinedFeeRequirement(requiredGlobalFees, localFees)
 	if len(combinedFeeRequirement) == 0 {
 		return ctx, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "required fees are not setup.")
 	}
 	nonZeroCoinFeesReq, zeroCoinFeesDenomReq := splitFees(combinedFeeRequirement)
 
-	// feeCoinsNoZeroDenom is feeCoins after removing the coins whose denom is zero coins' denom in globalfees
-	// e.g. feeCoins=[1atom,2photon], globalfee=[0atom,1photon,1quark], then feeCoinsNoZeroDenom = [2photon]
+	// feeCoinsNoZeroDenom is feeCoins after removing the coins whose denom is zero coins' denom in combinedFeeRequirement
 	// feeCoinsNoZeroDenom are used to check if the fees are meet the requirement imposed by combinedNonZeroFees
 	// when feeCoins does not contain zero coins'denoms in combinedFeeRequirement
-	feeCoinsNoZeroDenom, feeCoinsZeroDenom := SplitCoinsByDenoms(feeCoins, zeroCoinFeesDenomReq)
+	feeCoinsNoZeroDenom, feeCoinsZeroDenom := splitCoinsByDenoms(feeCoins, zeroCoinFeesDenomReq)
 
 	// Check that the fees are in expected denominations.
-	// if len(feeCoinsNoZeroDenom) = 0, DenomsSubsetOf returns true
-	// if len(feeCoinsNoZeroDenom) != 0 && len(nonZeroCoinFeesReq) = 0, return false
+	// if feeCoinsNoZeroDenom=[], DenomsSubsetOf returns true
+	// if feeCoinsNoZeroDenom is not empty, but nonZeroCoinFeesReq empty, return false
 	if !feeCoinsNoZeroDenom.DenomsSubsetOf(nonZeroCoinFeesReq) {
 		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fee is not a subset of required fees; got %s, required: %s", feeCoins, combinedFeeRequirement)
 	}
@@ -116,7 +114,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	// only check feeCoinsNoZeroDenom has coins IsAnyGTE than nonZeroCoinFeesReq
 	// when feeCoins does not contain denoms of zero denoms in combinedFeeRequirement
 	if !allowedToBypassMinFee && len(feeCoinsZeroDenom) == 0 {
-		// This is for dealing special case when feeCoins=[]
+		// special case: when feeCoins=[] and there is zero coin in fee requirement
 		if len(feeCoins) == 0 && len(zeroCoinFeesDenomReq) != 0 {
 			return next(ctx, tx, simulate)
 		}
@@ -125,9 +123,10 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 		// the expected amounts, i.e., at least one feeCoin amount must
 		// be greater or equal to one of the combined required fees.
 
-		// if len(feeCoinsNoZeroDenom) = 0, return false
-		// if len(nonZeroCoinFeesReq) = 0, return false (this situation should not happen
-		// because when nonZeroCoinFeesReq empty, the denom check already failed before)
+		// if feeCoinsNoZeroDenom=[], return false
+		// if nonZeroCoinFeesReq=[], return false (this situation should not happen
+		// because when nonZeroCoinFeesReq empty, and DenomsSubsetOf check passed,
+		// the tx should already passed before)
 		if !feeCoinsNoZeroDenom.IsAnyGTE(nonZeroCoinFeesReq) {
 			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins, combinedFeeRequirement)
 		}
@@ -136,8 +135,11 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	return next(ctx, tx, simulate)
 }
 
-// ParamStoreKeyMinGasPrices type require coins sorted. getGlobalFee will also return sorted coins (might return 0denom if globalMinGasPrice is 0)
-func (mfd FeeDecorator) getGlobalFees(ctx sdk.Context, feeTx sdk.FeeTx) (sdk.Coins, error) {
+// GetGlobalFee returns the global fees for a given fee tx's gas
+// (might also return 0denom if globalMinGasPrice is 0)
+// sorted in ascending order.
+// Note that ParamStoreKeyMinGasPrices type requires coins sorted.
+func (mfd FeeDecorator) GetGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) (sdk.Coins, error) {
 	var (
 		globalMinGasPrices sdk.DecCoins
 		err                error

@@ -28,4 +28,8 @@ message Params {
     (gogoproto.moretags) = "yaml:\"minimum_gas_prices\"",
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins"
   ];
+
+  //  bypass_min_fee_msg_types are setup for tx msgs free of fee charge
+  repeated string bypass_min_fee_msg_types = 2 [(gogoproto.moretags) = "yaml:\"bypass_min_fee_msg_types\""];
+  uint64 max_total_bypass_minFee_msg_gas_usage = 3;
 }

@@ -80,7 +80,7 @@ func queryGlobalFees(endpoint string) (amt sdk.DecCoins, err error) {
 		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
 
-	var fees globalfee.QueryMinimumGasPricesResponse
+	var fees globalfee.QueryParamsResponse
 	if err := cdc.UnmarshalJSON(body, &fees); err != nil {
 		return sdk.DecCoins{}, err
 	}

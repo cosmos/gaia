@@ -4,7 +4,6 @@ import (
 	"math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	tmstrings "github.com/tendermint/tendermint/libs/strings"
 )
 
 // getMinGasPrice will also return sorted coins
@@ -25,17 +24,6 @@ func getMinGasPrice(ctx sdk.Context, feeTx sdk.FeeTx) sdk.Coins {
 	}
 
 	return requiredFees.Sort()
-}
-
-func (mfd FeeDecorator) containsOnlyBypassMinFeeMsgs(msgs []sdk.Msg) bool {
-	for _, msg := range msgs {
-		if tmstrings.StringInSlice(sdk.MsgTypeURL(msg), mfd.BypassMinFeeMsgTypes) {
-			continue
-		}
-		return false
-	}
-
-	return true
 }
 
 // DenomsSubsetOfIncludingZero and IsAnyGTEIncludingZero are similar to DenomsSubsetOf and IsAnyGTE in sdk. Since we allow zero coins in global fee(zero coins means the chain does not want to set a global fee but still want to define the fee's denom)

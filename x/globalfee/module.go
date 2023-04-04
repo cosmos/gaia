@@ -93,9 +93,28 @@ func NewAppModule(paramSpace paramstypes.Subspace) *AppModule {
 func (a AppModule) InitGenesis(ctx sdk.Context, marshaler codec.JSONCodec, message json.RawMessage) []abci.ValidatorUpdate {
 	var genesisState types.GenesisState
 	marshaler.MustUnmarshalJSON(message, &genesisState)
+
+	// if err := a.ValidateBypassFeeMsgTypes(genesisState.Params.BypassMinFeeMsgTypes); err != nil {
+	// 	a.Logger().Error("invalid 'bypass-min-fee-msg-types' config option", "error", err)
+	// 	panic(fmt.Sprintf("invalid 'bypass-min-fee-msg-types' config option: %s", err))
+	// }
+
+	// a.Logger().Info("min fee bypass activated for message types", "types", bypassMinFeeMsgTypes)
+
 	a.paramSpace.SetParamSet(ctx, &genesisState.Params)
 	return nil
 }
+
+// ValidateBypassFeeMsgTypes checks that a proto message type exists for all MsgTypes in bypassMinFeeMsgTypes
+// An error is returned for the first msgType that cannot be resolved
+// func (a AppModule) ValidateBypassFeeMsgTypes(bypassMinFeeMsgTypes []string) error {
+// 	for _, msgType := range bypassMinFeeMsgTypes {
+// 		if _, err := a.Get.interfaceRegistry.Resolve(msgType); err != nil {
+// 			return err
+// 		}
+// 	}
+// 	return nil
+// }
 
 func (a AppModule) ExportGenesis(ctx sdk.Context, marshaler codec.JSONCodec) json.RawMessage {
 	var genState types.GenesisState

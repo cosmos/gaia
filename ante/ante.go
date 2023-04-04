@@ -24,12 +24,11 @@ var maxTotalBypassMinFeeMsgGasUsage uint64 = 1_000_000
 // channel keeper.
 type HandlerOptions struct {
 	ante.HandlerOptions
-	Codec                codec.BinaryCodec
-	GovKeeper            *govkeeper.Keeper
-	IBCkeeper            *ibckeeper.Keeper
-	BypassMinFeeMsgTypes []string
-	GlobalFeeSubspace    paramtypes.Subspace
-	StakingSubspace      paramtypes.Subspace
+	Codec             codec.BinaryCodec
+	GovKeeper         *govkeeper.Keeper
+	IBCkeeper         *ibckeeper.Keeper
+	GlobalFeeSubspace paramtypes.Subspace
+	StakingSubspace   paramtypes.Subspace
 }
 
 func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {

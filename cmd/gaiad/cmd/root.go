@@ -81,10 +81,7 @@ func initAppConfig() (string, interface{}) {
 	srvCfg.StateSync.SnapshotInterval = 1000
 	srvCfg.StateSync.SnapshotKeepRecent = 10
 
-	return params.CustomConfigTemplate(), params.CustomAppConfig{
-		Config:               *srvCfg,
-		BypassMinFeeMsgTypes: gaia.GetDefaultBypassFeeMessages(),
-	}
+	return serverconfig.DefaultConfigTemplate, *srvCfg
 }
 
 func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {

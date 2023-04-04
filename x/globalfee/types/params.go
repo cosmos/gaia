@@ -113,53 +113,37 @@ func validateMaxTotalBypassMinFeeMsgGasUsage(i interface{}) error {
 	return nil
 }
 
-// Validate checks that the DecCoins are sorted, have nonnegtive amount, with a valid and unique
-// denomination (i.e no duplicates). Otherwise, it returns an error.
 type DecCoins sdk.DecCoins
 
+// Validate checks that the DecCoins are sorted, have nonnegtive amount, with a valid and unique
+// denomination (i.e no duplicates). Otherwise, it returns an error.
 func (coins DecCoins) Validate() error {
-	switch len(coins) {
-	case 0:
-		return nil
-
-	case 1:
-		// match the denom reg expr
-		if err := sdk.ValidateDenom(coins[0].Denom); err != nil {
-			return err
-		}
-		if coins[0].IsNegative() {
-			return fmt.Errorf("coin %s amount is negtive", coins[0])
-		}
-		return nil
-	default:
-		// check single coin case
-		if err := (DecCoins{coins[0]}).Validate(); err != nil {
-			return err
-		}
-
-		lowDenom := coins[0].Denom
-		seenDenoms := make(map[string]bool)
-		seenDenoms[lowDenom] = true
-
-		for _, coin := range coins[1:] {
-			if seenDenoms[coin.Denom] {
-				return fmt.Errorf("duplicate denomination %s", coin.Denom)
-			}
-			if err := sdk.ValidateDenom(coin.Denom); err != nil {
-				return err
-			}
-			if coin.Denom <= lowDenom {
-				return fmt.Errorf("denomination %s is not sorted", coin.Denom)
-			}
-			if coin.IsNegative() {
-				return fmt.Errorf("coin %s amount is negtive", coin.Denom)
-			}
-
-			// we compare each coin against the last denom
-			lowDenom = coin.Denom
-			seenDenoms[coin.Denom] = true
-		}
-
+	if len(coins) == 0 {
 		return nil
 	}
+
+	lowDenom := ""
+	seenDenoms := make(map[string]bool)
+
+	for i, coin := range coins {
+		if seenDenoms[coin.Denom] {
+			return fmt.Errorf("duplicate denomination %s", coin.Denom)
+		}
+		if err := sdk.ValidateDenom(coin.Denom); err != nil {
+			return err
+		}
+		// skip the denom order check for the first denom in the coins list
+		if i != 0 && coin.Denom <= lowDenom {
+			return fmt.Errorf("denomination %s is not sorted", coin.Denom)
+		}
+		if coin.IsNegative() {
+			return fmt.Errorf("coin %s amount is negative", coin.Amount)
+		}
+
+		// we compare each coin against the last denom
+		lowDenom = coin.Denom
+		seenDenoms[coin.Denom] = true
+	}
+
+	return nil
 }

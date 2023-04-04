@@ -7,8 +7,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/cosmos/gaia/v9/x/globalfee"
-
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
@@ -45,6 +43,7 @@ import (
 	gaiaappparams "github.com/cosmos/gaia/v9/app/params"
 	"github.com/cosmos/gaia/v9/app/upgrades"
 	v9 "github.com/cosmos/gaia/v9/app/upgrades/v9"
+	"github.com/cosmos/gaia/v9/x/globalfee"
 	globalfeetypes "github.com/cosmos/gaia/v9/x/globalfee/types"
 
 	// unnamed import of statik for swagger UI support

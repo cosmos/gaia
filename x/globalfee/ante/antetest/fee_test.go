@@ -596,7 +596,13 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			// set globalfees and min gas price
-			_, antehandler := s.SetupTestGlobalFeeStoreAndMinGasPrice(tc.minGasPrice, tc.globalFeeParams)
+			_, antehandler := s.SetupTestGlobalFeeStoreAndMinGasPrice(
+				tc.minGasPrice,
+				&globfeetypes.Params{
+					MinimumGasPrices:     tc.globalFeeParams.MinimumGasPrices,
+					BypassMinFeeMsgTypes: globfeetypes.DefaultBypassMinFeeMsgTypes(),
+				},
+			)
 
 			// set fee decorator to ante handler
 
@@ -694,7 +700,8 @@ func (s *IntegrationTestSuite) TestGetMinGasPrice() {
 
 func (s *IntegrationTestSuite) TestContainsOnlyBypassMinFeeMsgs() {
 	// set globalfees and min gas price
-	feeDecorator, _ := s.SetupTestGlobalFeeStoreAndMinGasPrice([]sdk.DecCoin{}, &globfeetypes.Params{})
+	feeDecorator, _ := s.SetupTestGlobalFeeStoreAndMinGasPrice([]sdk.DecCoin{}, &globfeetypes.Params{BypassMinFeeMsgTypes: globfeetypes.DefaultBypassMinFeeMsgTypes()})
+	feeDecorator.ContainsOnlyBypassMinFeeMsgs(s.ctx, []sdk.Msg{ibcchanneltypes.NewMsgRecvPacket(ibcchanneltypes.Packet{}, nil, ibcclienttypes.Height{}, "")})
 
 	testCases := []struct {
 		name    string
@@ -741,7 +748,7 @@ func (s *IntegrationTestSuite) TestContainsOnlyBypassMinFeeMsgs() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			res := feeDecorator.ContainsOnlyBypassMinFeeMsgs(tc.msgs)
+			res := feeDecorator.ContainsOnlyBypassMinFeeMsgs(s.ctx, tc.msgs)
 			s.Require().True(tc.expPass == res)
 		})
 	}

@@ -29,13 +29,12 @@ import (
 var _ sdk.AnteDecorator = FeeDecorator{}
 
 type FeeDecorator struct {
-	BypassMinFeeMsgTypes            []string
 	GlobalMinFee                    globalfee.ParamSource
 	StakingSubspace                 paramtypes.Subspace
 	MaxTotalBypassMinFeeMsgGasUsage uint64
 }
 
-func NewFeeDecorator(bypassMsgTypes []string, globalfeeSubspace, stakingSubspace paramtypes.Subspace, maxTotalBypassMinFeeMsgGasUsage uint64) FeeDecorator {
+func NewFeeDecorator(globalfeeSubspace, stakingSubspace paramtypes.Subspace, maxTotalBypassMinFeeMsgGasUsage uint64) FeeDecorator {
 	if !globalfeeSubspace.HasKeyTable() {
 		panic("global fee paramspace was not set up via module")
 	}
@@ -45,7 +44,6 @@ func NewFeeDecorator(bypassMsgTypes []string, globalfeeSubspace, stakingSubspace
 	}
 
 	return FeeDecorator{
-		BypassMinFeeMsgTypes:            bypassMsgTypes,
 		GlobalMinFee:                    globalfeeSubspace,
 		StakingSubspace:                 stakingSubspace,
 		MaxTotalBypassMinFeeMsgGasUsage: maxTotalBypassMinFeeMsgGasUsage,
@@ -86,7 +84,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	//
 	// Otherwise, minimum fees and global fees are checked to prevent spam.
 	doesNotExceedMaxGasUsage := gas <= mfd.MaxTotalBypassMinFeeMsgGasUsage
-	allowedToBypassMinFee := mfd.ContainsOnlyBypassMinFeeMsgs(msgs) && doesNotExceedMaxGasUsage
+	allowedToBypassMinFee := mfd.ContainsOnlyBypassMinFeeMsgs(ctx, msgs) && doesNotExceedMaxGasUsage
 
 	if allowedToBypassMinFee {
 		// Transactions with zero fees are accepted
@@ -172,11 +170,21 @@ func (mfd FeeDecorator) getBondDenom(ctx sdk.Context) string {
 	return bondDenom
 }
 
+func (mfd FeeDecorator) getBypassMsgTypes(ctx sdk.Context) []string {
+	var bypassMinFeeMsgTypes []string
+
+	if mfd.GlobalMinFee.Has(ctx, types.ParamStoreKeyBypassMinFeeMsgTypes) {
+		mfd.GlobalMinFee.Get(ctx, types.ParamStoreKeyBypassMinFeeMsgTypes, &bypassMinFeeMsgTypes)
+	}
+
+	return bypassMinFeeMsgTypes
+}
+
 // ContainsOnlyBypassMinFeeMsgs returns true if all the given msgs type are listed
 // in the BypassMinFeeMsgTypes of the FeeDecorator.
-func (mfd FeeDecorator) ContainsOnlyBypassMinFeeMsgs(msgs []sdk.Msg) bool {
+func (mfd FeeDecorator) ContainsOnlyBypassMinFeeMsgs(ctx sdk.Context, msgs []sdk.Msg) bool {
 	for _, msg := range msgs {
-		if tmstrings.StringInSlice(sdk.MsgTypeURL(msg), mfd.BypassMinFeeMsgTypes) {
+		if tmstrings.StringInSlice(sdk.MsgTypeURL(msg), mfd.getBypassMsgTypes(ctx)) {
 			continue
 		}
 		return false

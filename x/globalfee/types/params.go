@@ -90,8 +90,13 @@ func validateMinimumGasPrices(i interface{}) error {
 	return dec.Validate()
 }
 
-// todo check if args string
+// todo check if correct?
 func validateBypassMinFeeMsgTypes(i interface{}) error {
+	_, ok := i.([]sdk.Msg)
+	if !ok {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "type: %T, expected []sdk.Msg", i)
+	}
+
 	return nil
 }
 

@@ -1,36 +1,16 @@
 package ante
 
 import (
-	"math"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// getMinGasPrice will also return sorted coins
-func getMinGasPrice(ctx sdk.Context, feeTx sdk.FeeTx) sdk.Coins {
-	minGasPrices := ctx.MinGasPrices()
-	gas := feeTx.GetGas()
-	// special case: if minGasPrices=[], requiredFees=[]
-	requiredFees := make(sdk.Coins, len(minGasPrices))
-	// if not all coins are zero, check fee with min_gas_price
-	if !minGasPrices.IsZero() {
-		// Determine the required fees by multiplying each required minimum gas
-		// price by the gas limit, where fee = ceil(minGasPrice * gasLimit).
-		glDec := sdk.NewDec(int64(gas))
-		for i, gp := range minGasPrices {
-			fee := gp.Amount.Mul(glDec)
-			requiredFees[i] = sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt())
-		}
-	}
-
-	return requiredFees.Sort()
-}
-
-// DenomsSubsetOfIncludingZero and IsAnyGTEIncludingZero are similar to DenomsSubsetOf and IsAnyGTE in sdk. Since we allow zero coins in global fee(zero coins means the chain does not want to set a global fee but still want to define the fee's denom)
+// DenomsSubsetOfIncludingZero and IsAnyGTEIncludingZero are similar to DenomsSubsetOf and IsAnyGTE in sdk.
 //
-// overwrite DenomsSubsetOfIncludingZero from sdk, to allow zero amt coins in superset. e.g. 1stake is DenomsSubsetOfIncludingZero 0stake. [] is the DenomsSubsetOfIncludingZero of [0stake] but not [1stake].
+// DenomsSubsetOfIncludingZero overwrites DenomsSubsetOf from sdk, to allow zero amt coins in superset. e.g.
+// e.g. [1stake] is the DenomsSubsetOfIncludingZero of [0stake] and
+// [] is the DenomsSubsetOfIncludingZero of [0stake] but not [1stake].
 // DenomsSubsetOfIncludingZero returns true if coins's denoms is subset of coinsB's denoms.
-// if coins is empty set, empty set is any sets' subset
+// If coins is empty set, empty set is any sets' subset
 func DenomsSubsetOfIncludingZero(coins, coinsB sdk.Coins) bool {
 	// more denoms in B than in receiver
 	if len(coins) > len(coinsB) {
@@ -55,9 +35,9 @@ func DenomsSubsetOfIncludingZero(coins, coinsB sdk.Coins) bool {
 	return true
 }
 
-// overwrite the IsAnyGTEIncludingZero from sdk to allow zero coins in coins and coinsB.
-// IsAnyGTEIncludingZero returns true if coins contain at least one denom that is present at a greater or equal amount in coinsB; it returns false otherwise.
-// if CoinsB is emptyset, no coins sets are IsAnyGTEIncludingZero coinsB unless coins is also empty set.
+// IsAnyGTEIncludingZero overwrites the IsAnyGTE from sdk to allow zero coins in coins and coinsB.
+// IsAnyGTEIncludingZero returns true if coins contain at least one denom that is present at a greater or equal amount in coinsB;
+// it returns false otherwise. If CoinsB is emptyset, no coins sets are IsAnyGTEIncludingZero coinsB unless coins is also empty set.
 // NOTE: IsAnyGTEIncludingZero operates under the invariant that both coin sets are sorted by denoms.
 // contract !!!! coins must be DenomsSubsetOfIncludingZero of coinsB
 func IsAnyGTEIncludingZero(coins, coinsB sdk.Coins) bool {
@@ -91,13 +71,12 @@ func IsAnyGTEIncludingZero(coins, coinsB sdk.Coins) bool {
 	return false
 }
 
-// return true if coinsB is empty or contains zero coins,
-// CoinsB must be validate coins !!!
-func ContainZeroCoins(coinsB sdk.Coins) bool {
-	if len(coinsB) == 0 {
+// ContainZeroCoins returns true if the given coins are empty or contain zero coins,
+func ContainZeroCoins(coins sdk.Coins) bool {
+	if len(coins) == 0 {
 		return true
 	}
-	for _, coin := range coinsB {
+	for _, coin := range coins {
 		if coin.IsZero() {
 			return true
 		}
@@ -106,7 +85,9 @@ func ContainZeroCoins(coinsB sdk.Coins) bool {
 	return false
 }
 
-// CombinedFeeRequirement will combine the global fee and min_gas_price. Both globalFees and minGasPrices must be valid, but CombinedFeeRequirement does not validate them, so it may return 0denom.
+// CombinedFeeRequirement returns the global fee and min_gas_price combined and sorted.
+// Both globalFees and minGasPrices must be valid, but CombinedFeeRequirement
+// does not validate them, so it may return 0denom.
 func CombinedFeeRequirement(globalFees, minGasPrices sdk.Coins) sdk.Coins {
 	// empty min_gas_price
 	if len(minGasPrices) == 0 {
@@ -130,23 +111,6 @@ func CombinedFeeRequirement(globalFees, minGasPrices sdk.Coins) sdk.Coins {
 	}
 
 	return allFees.Sort()
-}
-
-// getTxPriority returns a naive tx priority based on the amount of the smallest denomination of the fee
-// provided in a transaction.
-func GetTxPriority(fee sdk.Coins) int64 {
-	var priority int64
-	for _, c := range fee {
-		p := int64(math.MaxInt64)
-		if c.Amount.IsInt64() {
-			p = c.Amount.Int64()
-		}
-		if priority == 0 || p < priority {
-			priority = p
-		}
-	}
-
-	return priority
 }
 
 // Find replaces the functionality of Coins.Find from SDK v0.46.x

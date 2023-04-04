@@ -92,7 +92,7 @@ func validateMinimumGasPrices(i interface{}) error {
 
 // todo check if correct?
 func validateBypassMinFeeMsgTypes(i interface{}) error {
-	_, ok := i.([]sdk.Msg)
+	_, ok := i.([]string)
 	if !ok {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "type: %T, expected []sdk.Msg", i)
 	}
@@ -107,7 +107,7 @@ func validateMaxTotalBypassMinFeeMsgGasUsage(i interface{}) error {
 	}
 
 	if v < 0 {
-		return fmt.Errorf("gas usage %s is negtive", v)
+		return fmt.Errorf("gas usage %d is negtive", v)
 	}
 
 	return nil

@@ -12,10 +12,12 @@ import (
 	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	"github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	gaiahelpers "github.com/cosmos/gaia/v9/app/helpers"
 	"github.com/stretchr/testify/suite"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+
+	gaiahelpers "github.com/cosmos/gaia/v9/app/helpers"
+	gaiafeeante "github.com/cosmos/gaia/v9/x/globalfee/ante"
 
 	gaiaapp "github.com/cosmos/gaia/v9/app"
 	"github.com/cosmos/gaia/v9/x/globalfee"
@@ -30,6 +32,8 @@ type IntegrationTestSuite struct {
 	clientCtx client.Context
 	txBuilder client.TxBuilder
 }
+
+var testBondDenom = "uatom"
 
 func (s *IntegrationTestSuite) SetupTest() {
 	app := gaiahelpers.Setup(s.T())
@@ -47,12 +51,23 @@ func (s *IntegrationTestSuite) SetupTest() {
 	s.clientCtx = client.Context{}.WithTxConfig(encodingConfig.TxConfig)
 }
 
-func (s *IntegrationTestSuite) SetupTestGlobalFeeStoreAndMinGasPrice(minGasPrice []sdk.DecCoin, globalFeeParams *globfeetypes.Params) types.Subspace {
+func (s *IntegrationTestSuite) SetupTestGlobalFeeStoreAndMinGasPrice(minGasPrice []sdk.DecCoin, globalFeeParams *globfeetypes.Params) (gaiafeeante.FeeDecorator, sdk.AnteHandler) {
 	subspace := s.app.GetSubspace(globalfee.ModuleName)
 	subspace.SetParamSet(s.ctx, globalFeeParams)
 	s.ctx = s.ctx.WithMinGasPrices(minGasPrice).WithIsCheckTx(true)
 
-	return subspace
+	// set staking params
+	stakingParam := stakingtypes.DefaultParams()
+	stakingParam.BondDenom = testBondDenom
+	stakingSubspace := s.SetupTestStakingSubspace(stakingParam)
+
+	// build fee decorator
+	feeDecorator := gaiafeeante.NewFeeDecorator(subspace, stakingSubspace)
+
+	// chain fee decorator to antehandler
+	antehandler := sdk.ChainAnteDecorators(feeDecorator)
+
+	return feeDecorator, antehandler
 }
 
 // SetupTestStakingSubspace sets uatom as bond denom for the fee tests.

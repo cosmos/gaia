@@ -15,38 +15,28 @@ import (
 	globfeetypes "github.com/cosmos/gaia/v9/x/globalfee/types"
 )
 
+var testGasLimit uint64 = 200_000
+
 func TestIntegrationTestSuite(t *testing.T) {
 	suite.Run(t, new(IntegrationTestSuite))
 }
 
 func (s *IntegrationTestSuite) TestGetDefaultGlobalFees() {
 	// set globalfees and min gas price
-	globalfeeSubspace := s.SetupTestGlobalFeeStoreAndMinGasPrice([]sdk.DecCoin{}, &globfeetypes.Params{})
-
-	// set staking params
-	stakingParam := stakingtypes.DefaultParams()
-	bondDenom := "uatom"
-	stakingParam.BondDenom = bondDenom
-	stakingSubspace := s.SetupTestStakingSubspace(stakingParam)
-
-	// setup antehandler
-	mfd := gaiafeeante.NewFeeDecorator(globalfeeSubspace, stakingSubspace)
-
-	defaultGlobalFees, err := mfd.DefaultZeroGlobalFee(s.ctx)
+	feeDecorator, _ := s.SetupTestGlobalFeeStoreAndMinGasPrice([]sdk.DecCoin{}, &globfeetypes.Params{})
+	defaultGlobalFees, err := feeDecorator.DefaultZeroGlobalFee(s.ctx)
 	s.Require().NoError(err)
 	s.Require().Greater(len(defaultGlobalFees), 0)
 
-	if defaultGlobalFees[0].Denom != bondDenom {
-		s.T().Fatalf("bond denom: %s, default global fee denom: %s", bondDenom, defaultGlobalFees[0].Denom)
+	if defaultGlobalFees[0].Denom != testBondDenom {
+		s.T().Fatalf("bond denom: %s, default global fee denom: %s", testBondDenom, defaultGlobalFees[0].Denom)
 	}
 }
 
-// test global fees and min_gas_price with bypass msg types.
-// please note even globalfee=0, min_gas_price=0, we do not let fee=0random_denom pass
-// paid fees are already sanitized by removing zero coins(through feeFlag parsing), so use sdk.NewCoins() to create it.
+// Test global fees and min_gas_price with bypass msg types.
+// Please note even globalfee=0, min_gas_price=0, we do not let fee=0random_denom pass.
+// Paid fees are already sanitized by removing zero coins(through feeFlag parsing), so use sdk.NewCoins() to create it.
 func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
-	// setup test
-	s.SetupTest()
 	s.txBuilder = s.clientCtx.TxConfig.NewTxBuilder()
 	priv1, _, addr1 := testdata.KeyTestPubAddr()
 	privs, accNums, accSeqs := []cryptotypes.PrivKey{priv1}, []uint64{0}, []uint64{0}
@@ -106,7 +96,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			globalFee:   globalfeeParamsHigh,
 			// sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String())
 			gasPrice: sdk.NewCoins(sdk.NewCoin("uatom", highFeeAmt)),
-			gasLimit: testdata.NewTestGasLimit(),
+			gasLimit: testGasLimit,
 			txMsg:    testdata.NewTestMsg(addr1),
 			txCheck:  true,
 			expErr:   false,
@@ -115,7 +105,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPriceEmpty,
 			globalFee:   globalfeeParamsHigh,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("uatom", lowFeeAmt)),
-			gasLimit:    testdata.NewTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      true,
@@ -124,7 +114,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice,
 			globalFee:   globalfeeParamsEmpty, // default 0uatom
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("uatom", medFeeAmt)),
-			gasLimit:    testdata.NewTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      false,
@@ -133,7 +123,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice,
 			globalFee:   globalfeeParamsEmpty,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("uatom", lowFeeAmt)),
-			gasLimit:    testdata.NewTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      true,
@@ -142,7 +132,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPriceEmpty,
 			globalFee:   globalfeeParamsEmpty,
 			gasPrice:    sdk.Coins{},
-			gasLimit:    testdata.NewTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      false,
@@ -152,7 +142,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice0,
 			globalFee:   globalfeeParams0,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("uatom", sdk.ZeroInt()), sdk.NewCoin("photon", sdk.ZeroInt())),
-			gasLimit:    testdata.NewTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      false,
@@ -161,7 +151,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice0,
 			globalFee:   globalfeeParams0,
 			gasPrice:    sdk.Coins{},
-			gasLimit:    testdata.NewTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      false,
@@ -171,7 +161,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice0,
 			globalFee:   globalfeeParams0,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("stake", sdk.ZeroInt())),
-			gasLimit:    testdata.NewTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      false,
@@ -182,7 +172,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			gasPrice: sdk.NewCoins(
 				sdk.NewCoin("stake", sdk.ZeroInt()),
 				sdk.NewCoin("uatom", sdk.ZeroInt())),
-			gasLimit: testdata.NewTestGasLimit(),
+			gasLimit: testGasLimit,
 			txMsg:    testdata.NewTestMsg(addr1),
 			txCheck:  true,
 			expErr:   false,
@@ -192,7 +182,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice0,
 			globalFee:   globalfeeParamsEmpty,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("stake", sdk.ZeroInt())),
-			gasLimit:    testdata.NewTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      false,
@@ -201,7 +191,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice0,
 			globalFee:   globalfeeParamsEmpty,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("quark", sdk.ZeroInt())),
-			gasLimit:    testdata.NewTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      false,
@@ -210,7 +200,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice0,
 			globalFee:   globalfeeParamsEmpty,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("uatom", sdk.ZeroInt())),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      false,
@@ -219,7 +209,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice0,
 			globalFee:   globalfeeParamsEmpty,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("uatom", lowFeeAmt)),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      false,
@@ -228,7 +218,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice0,
 			globalFee:   globalfeeParamsEmpty,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("quark", highFeeAmt)),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      true,
@@ -238,7 +228,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPriceEmpty,
 			globalFee:   globalfeeParams0,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("uatom", sdk.ZeroInt())),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      false,
@@ -247,7 +237,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPriceEmpty,
 			globalFee:   globalfeeParams0,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("stake", sdk.ZeroInt())),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      false,
@@ -256,7 +246,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPriceEmpty,
 			globalFee:   globalfeeParams0,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("uatom", lowFeeAmt)),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      false,
@@ -265,7 +255,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPriceEmpty,
 			globalFee:   globalfeeParams0,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("stake", highFeeAmt)),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      true,
@@ -275,7 +265,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice0,
 			globalFee:   globalfeeParamsLow,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("uatom", lowFeeAmt)),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      false,
@@ -285,7 +275,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice,
 			globalFee:   globalfeeParamsHigh,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("uatom", highFeeAmt)),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      false,
@@ -294,7 +284,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice,
 			globalFee:   globalfeeParamsHigh,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("uatom", lowFeeAmt)),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      true,
@@ -305,7 +295,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			gasPrice: sdk.NewCoins(
 				sdk.NewCoin("photon", lowFeeAmt),
 				sdk.NewCoin("quark", highFeeAmt)),
-			gasLimit: newTestGasLimit(),
+			gasLimit: testGasLimit,
 			txMsg:    testdata.NewTestMsg(addr1),
 			txCheck:  true,
 			expErr:   false,
@@ -314,7 +304,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice,
 			globalFee:   globalfeeParamsHigh,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("uatom", medFeeAmt)),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      true,
@@ -323,7 +313,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice,
 			globalFee:   globalfeeParamsLow,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("uatom", lowFeeAmt)),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      true,
@@ -333,7 +323,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice,
 			globalFee:   globalfeeParams0,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("uatom", lowFeeAmt)),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      true,
@@ -342,7 +332,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice,
 			globalFee:   globalfeeParams0,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("uatom", medFeeAmt)),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      false,
@@ -351,7 +341,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice,
 			globalFee:   globalfeeParams0,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("stake", highFeeAmt)),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      true,
@@ -361,7 +351,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice,
 			globalFee:   globalfeeParamsNewDenom,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("photon", highFeeAmt)),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      false,
@@ -370,7 +360,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice,
 			globalFee:   globalfeeParamsNewDenom,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("stake", highFeeAmt)),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      true,
@@ -381,7 +371,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			gasPrice: sdk.NewCoins(
 				sdk.NewCoin("uatom", highFeeAmt),
 				sdk.NewCoin("quark", highFeeAmt)),
-			gasLimit: newTestGasLimit(),
+			gasLimit: testGasLimit,
 			txMsg:    testdata.NewTestMsg(addr1),
 			txCheck:  true,
 			expErr:   true,
@@ -391,7 +381,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			globalFee:   globalfeeParamsLow,
 			gasPrice: sdk.NewCoins(sdk.NewCoin("uatom", highFeeAmt),
 				sdk.NewCoin("quark", sdk.ZeroInt())),
-			gasLimit: newTestGasLimit(),
+			gasLimit: testGasLimit,
 			txMsg:    testdata.NewTestMsg(addr1),
 			txCheck:  true,
 			expErr:   false,
@@ -405,7 +395,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice0,
 			globalFee:   globalfeeParamsContain0,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("photon", lowFeeAmt)),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      true,
@@ -416,7 +406,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			gasPrice: sdk.NewCoins(
 				sdk.NewCoin("photon", lowFeeAmt),
 				sdk.NewCoin("uatom", sdk.ZeroInt())),
-			gasLimit: newTestGasLimit(),
+			gasLimit: testGasLimit,
 			txMsg:    testdata.NewTestMsg(addr1),
 			txCheck:  true,
 			expErr:   true,
@@ -425,7 +415,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice0,
 			globalFee:   globalfeeParamsContain0,
 			gasPrice:    sdk.Coins{},
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      false,
@@ -436,7 +426,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			gasPrice: sdk.NewCoins(
 				sdk.NewCoin("photon", lowFeeAmt),
 				sdk.NewCoin("uatom", highFeeAmt)),
-			gasLimit: newTestGasLimit(),
+			gasLimit: testGasLimit,
 			txMsg:    testdata.NewTestMsg(addr1),
 			txCheck:  true,
 			expErr:   false,
@@ -448,7 +438,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 				sdk.NewCoin("photon", sdk.ZeroInt()),
 				sdk.NewCoin("uatom", sdk.ZeroInt()),
 			),
-			gasLimit: newTestGasLimit(),
+			gasLimit: testGasLimit,
 			txMsg:    testdata.NewTestMsg(addr1),
 			txCheck:  true,
 			expErr:   false,
@@ -457,7 +447,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice0,
 			globalFee:   globalfeeParamsContain0,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("photon", highFeeAmt)),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      false,
@@ -466,7 +456,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice,
 			globalFee:   globalfeeParamsLow,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("uatom", sdk.ZeroInt())),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg: ibcchanneltypes.NewMsgRecvPacket(
 				ibcchanneltypes.Packet{}, nil, ibcclienttypes.Height{}, ""),
 			txCheck: true,
@@ -476,7 +466,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice,
 			globalFee:   globalfeeParamsLow,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("uatom", sdk.ZeroInt())),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg: ibcchanneltypes.NewMsgTimeout(
 				// todo check here
 				ibcchanneltypes.Packet{}, 1, nil, ibcclienttypes.Height{}, ""),
@@ -487,7 +477,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice,
 			globalFee:   globalfeeParamsLow,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("uatom", sdk.ZeroInt())),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg: ibcchanneltypes.NewMsgTimeout(
 				ibcchanneltypes.Packet{}, 2, nil, ibcclienttypes.Height{}, ""),
 			txCheck: true,
@@ -497,7 +487,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice,
 			globalFee:   globalfeeParamsLow,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("uatom", sdk.ZeroInt())),
-			gasLimit:    2 * newTestMaxTotalBypassMinFeeMsgGasUsage(),
+			gasLimit:    2 * globfeetypes.DefaultmaxTotalBypassMinFeeMsgGasUsage,
 			txMsg: ibcchanneltypes.NewMsgTimeout(
 				ibcchanneltypes.Packet{}, 2, nil, ibcclienttypes.Height{}, ""),
 			txCheck: true,
@@ -507,7 +497,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice,
 			globalFee:   globalfeeParamsLow,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("uatom", sdk.ZeroInt())),
-			gasLimit:    newTestMaxTotalBypassMinFeeMsgGasUsage(),
+			gasLimit:    globfeetypes.DefaultmaxTotalBypassMinFeeMsgGasUsage,
 			txMsg: ibcchanneltypes.NewMsgTimeout(
 				ibcchanneltypes.Packet{}, 3, nil, ibcclienttypes.Height{}, ""),
 			txCheck: true,
@@ -517,7 +507,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice,
 			globalFee:   globalfeeParamsLow,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("photon", sdk.ZeroInt())),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg: ibcchanneltypes.NewMsgRecvPacket(
 				ibcchanneltypes.Packet{}, nil, ibcclienttypes.Height{}, ""),
 			txCheck: true,
@@ -527,7 +517,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice,
 			globalFee:   globalfeeParamsLow,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("uatom", highFeeAmt)),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg: ibcchanneltypes.NewMsgRecvPacket(
 				ibcchanneltypes.Packet{}, nil, ibcclienttypes.Height{}, ""),
 			txCheck: true,
@@ -537,7 +527,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice,
 			globalFee:   globalfeeParamsLow,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("photon", highFeeAmt)),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg: ibcchanneltypes.NewMsgRecvPacket(
 				ibcchanneltypes.Packet{}, nil, ibcclienttypes.Height{}, ""),
 			txCheck: true,
@@ -547,7 +537,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice,
 			globalFee:   globalfeeParamsLow,
 			gasPrice:    sdk.Coins{},
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg: ibcchanneltypes.NewMsgRecvPacket(
 				ibcchanneltypes.Packet{}, nil, ibcclienttypes.Height{}, ""),
 			txCheck: true,
@@ -557,7 +547,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice,
 			globalFee:   globalfeeParamsLow,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("uatom", highFeeAmt)),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      false,
@@ -566,7 +556,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice,
 			globalFee:   globalfeeParamsLow,
 			gasPrice:    sdk.Coins{},
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      true,
@@ -575,7 +565,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice,
 			globalFee:   globalfeeParamsLow,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("photon", highFeeAmt)),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     true,
 			expErr:      true,
@@ -584,7 +574,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice,
 			globalFee:   globalfeeParamsLow,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("uatom", sdk.ZeroInt())),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     false,
 			expErr:      false,
@@ -593,33 +583,34 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			minGasPrice: minGasPrice,
 			globalFee:   globalfeeParamsLow,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("quark", sdk.ZeroInt())),
-			gasLimit:    newTestGasLimit(),
+			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     false,
 			expErr:      false,
 		},
 	}
-	for name, testCase := range testCases {
+
+	globalfeeParams := &globfeetypes.Params{
+		BypassMinFeeMsgTypes:            globfeetypes.DefaultBypassMinFeeMsgTypes,
+		MaxTotalBypassMinFeeMsgGasUsage: globfeetypes.DefaultmaxTotalBypassMinFeeMsgGasUsage,
+	}
+	for name, tc := range testCases {
 		s.Run(name, func() {
 			// set globalfees and min gas price
-			globalFeeparams := globfeetypes.DefaultParams()
-			globalFeeparams.MinimumGasPrices = testCase.globalFee
-			globalfeeSubspace := s.SetupTestGlobalFeeStoreAndMinGasPrice(testCase.minGasPrice, &globalFeeparams)
-			stakingParam := stakingtypes.DefaultParams()
-			stakingParam.BondDenom = "uatom"
-			stakingSubspace := s.SetupTestStakingSubspace(stakingParam)
-			// setup antehandler
-			mfd := gaiafeeante.NewFeeDecorator(globalfeeSubspace, stakingSubspace)
-			antehandler := sdk.ChainAnteDecorators(mfd)
-			s.Require().NoError(s.txBuilder.SetMsgs(testCase.txMsg))
-			s.txBuilder.SetFeeAmount(testCase.gasPrice)
-			s.txBuilder.SetGasLimit(testCase.gasLimit)
+			globalfeeParams.MinimumGasPrices = tc.globalFee
+			_, antehandler := s.SetupTestGlobalFeeStoreAndMinGasPrice(tc.minGasPrice, globalfeeParams)
+
+			// set fee decorator to ante handler
+
+			s.Require().NoError(s.txBuilder.SetMsgs(tc.txMsg))
+			s.txBuilder.SetFeeAmount(tc.gasPrice)
+			s.txBuilder.SetGasLimit(tc.gasLimit)
 			tx, err := s.CreateTestTx(privs, accNums, accSeqs, s.ctx.ChainID())
 			s.Require().NoError(err)
 
-			s.ctx = s.ctx.WithIsCheckTx(testCase.txCheck)
+			s.ctx = s.ctx.WithIsCheckTx(tc.txCheck)
 			_, err = antehandler(s.ctx, tx, false)
-			if !testCase.expErr {
+			if !tc.expErr {
 				s.Require().NoError(err)
 			} else {
 				s.Require().Error(err)
@@ -628,11 +619,135 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 	}
 }
 
-// helpers
-func newTestGasLimit() uint64 {
-	return 200000
+// Test how the operator fees are determined using various min gas prices.
+//
+// Note that in a real Gaia deployment all zero coins can be removed from minGasPrice.
+// This sanitizing happens when the minGasPrice is set into the context.
+// (see baseapp.SetMinGasPrices in gaia/cmd/root.go line 221)
+func (s *IntegrationTestSuite) TestGetMinGasPrice() {
+	expCoins := sdk.Coins{
+		sdk.NewCoin("photon", sdk.NewInt(2000)),
+		sdk.NewCoin("uatom", sdk.NewInt(3000)),
+	}
+
+	testCases := []struct {
+		name          string
+		minGasPrice   []sdk.DecCoin
+		feeTxGasLimit uint64
+		expCoins      sdk.Coins
+	}{
+		{
+			"empty min gas price should return empty coins",
+			[]sdk.DecCoin{},
+			uint64(1000),
+			sdk.Coins{},
+		},
+		{
+			"zero coins min gas price should return empty coins",
+			[]sdk.DecCoin{
+				sdk.NewDecCoinFromDec("stake", sdk.NewDec(0)),
+				sdk.NewDecCoinFromDec("uatom", sdk.NewDec(0)),
+			},
+			uint64(1000),
+			sdk.Coins{},
+		},
+		{
+			"zero coins, non-zero coins mix should return zero coin and non-zero coins",
+			[]sdk.DecCoin{
+				sdk.NewDecCoinFromDec("stake", sdk.NewDec(0)),
+				sdk.NewDecCoinFromDec("uatom", sdk.NewDec(1)),
+			},
+			uint64(1000),
+			sdk.Coins{
+				sdk.NewCoin("stake", sdk.NewInt(0)),
+				sdk.NewCoin("uatom", sdk.NewInt(1000)),
+			},
+		},
+
+		{
+			"unsorted min gas price should return sorted coins",
+			[]sdk.DecCoin{
+				sdk.NewDecCoinFromDec("uatom", sdk.NewDec(3)),
+				sdk.NewDecCoinFromDec("photon", sdk.NewDec(2)),
+			},
+			uint64(1000),
+			expCoins,
+		},
+		{
+			"sorted min gas price should return same conins",
+			[]sdk.DecCoin{
+				sdk.NewDecCoinFromDec("photon", sdk.NewDec(2)),
+				sdk.NewDecCoinFromDec("uatom", sdk.NewDec(3)),
+			},
+			uint64(1000),
+			expCoins,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			s.SetupTestGlobalFeeStoreAndMinGasPrice(tc.minGasPrice, &globfeetypes.Params{})
+
+			fees := gaiafeeante.GetMinGasPrice(s.ctx, int64(tc.feeTxGasLimit))
+			s.Require().True(tc.expCoins.Sort().IsEqual(fees))
+		})
+	}
 }
 
-func newTestMaxTotalBypassMinFeeMsgGasUsage() uint64 {
-	return 1000000
+func (s *IntegrationTestSuite) TestContainsOnlyBypassMinFeeMsgs() {
+	// set globalfees params and min gas price
+	globalfeeParams := &globfeetypes.Params{
+		BypassMinFeeMsgTypes:            globfeetypes.DefaultBypassMinFeeMsgTypes,
+		MaxTotalBypassMinFeeMsgGasUsage: globfeetypes.DefaultmaxTotalBypassMinFeeMsgGasUsage,
+	}
+	feeDecorator, _ := s.SetupTestGlobalFeeStoreAndMinGasPrice([]sdk.DecCoin{}, globalfeeParams)
+	testCases := []struct {
+		name    string
+		msgs    []sdk.Msg
+		expPass bool
+	}{
+		{
+			"expect empty msgs to pass",
+			[]sdk.Msg{},
+			true,
+		},
+		{
+			"expect default bypass msg to pass",
+			[]sdk.Msg{
+				ibcchanneltypes.NewMsgRecvPacket(ibcchanneltypes.Packet{}, nil, ibcclienttypes.Height{}, ""),
+				ibcchanneltypes.NewMsgAcknowledgement(ibcchanneltypes.Packet{}, []byte{1}, []byte{1}, ibcclienttypes.Height{}, ""),
+			},
+			true,
+		},
+		{
+			"expect default bypass msgs to pass",
+			[]sdk.Msg{
+				ibcchanneltypes.NewMsgRecvPacket(ibcchanneltypes.Packet{}, nil, ibcclienttypes.Height{}, ""),
+				ibcchanneltypes.NewMsgAcknowledgement(ibcchanneltypes.Packet{}, []byte{1}, []byte{1}, ibcclienttypes.Height{}, ""),
+			},
+			true,
+		},
+		{
+			"msgs contain non-bypass msg - should not pass",
+			[]sdk.Msg{
+				ibcchanneltypes.NewMsgRecvPacket(ibcchanneltypes.Packet{}, nil, ibcclienttypes.Height{}, ""),
+				stakingtypes.NewMsgDelegate(sdk.AccAddress{}, sdk.ValAddress{}, sdk.Coin{}),
+			},
+			false,
+		},
+		{
+			"msgs contain only non-bypass msgs - should not pass",
+			[]sdk.Msg{
+				stakingtypes.NewMsgDelegate(sdk.AccAddress{}, sdk.ValAddress{}, sdk.Coin{}),
+			},
+			false,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			res := feeDecorator.ContainsOnlyBypassMinFeeMsgs(s.ctx, tc.msgs)
+			s.Require().True(tc.expPass == res)
+		})
+	}
 }

@@ -201,7 +201,7 @@ Note that the required amount of `uatom` in globalfee is overwritten by the amou
   
 ### Case 7
 
-**Setting:** globalfee=[0.1uatom], minimum-gas-prices=0.2uatom,1stake, gas=200000, bypass-min-fee-msg-types = ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"]
+**Setting:** globalfee=[0.1uatom], minimum-gas-prices=[0.2uatom, 1stake], gas=200000, bypass-min-fee-msg-types = ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"]
 
 Note that the required amount of `uatom` in globalfee is overwritten by the amount in minimum-gas-prices. 
 Also, the `1stake` in minimum-gas-prices is ignored.

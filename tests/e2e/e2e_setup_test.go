@@ -514,6 +514,7 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 			},
 		}
 
+		// todo remove
 		customAppTemplate := `
 ###############################################################################
 ###                        Custom Gaia Configuration                        ###

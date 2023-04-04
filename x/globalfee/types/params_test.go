@@ -12,6 +12,7 @@ func TestDefaultParams(t *testing.T) {
 	require.EqualValues(t, p.MinimumGasPrices, sdk.DecCoins{})
 }
 
+// todo: add test for bypass and maxGas validation
 func Test_validateParams(t *testing.T) {
 	tests := map[string]struct {
 		coins     interface{} // not sdk.DeCoins, but Decoins defined in glboalfee

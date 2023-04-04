@@ -29,7 +29,6 @@ import (
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
-	ibcchanneltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/spf13/viper"
@@ -38,8 +37,6 @@ import (
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	"github.com/tendermint/tendermint/libs/rand"
 	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
-
-	"github.com/cosmos/gaia/v9/app/params"
 )
 
 const (
@@ -509,31 +506,8 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 		appConfig.API.Enable = true
 		appConfig.MinGasPrices = fmt.Sprintf("%s%s", minGasPrice, uatomDenom)
 
-		//	 srvconfig.WriteConfigFile(appCfgPath, appConfig)
-		appCustomConfig := params.CustomAppConfig{
-			Config: *appConfig,
-			BypassMinFeeMsgTypes: []string{
-				// todo: use ibc as example ?
-				sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),
-				sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
-				sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
-				"/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
-			},
-		}
-
-		customAppTemplate := `
-###############################################################################
-###                        Custom Gaia Configuration                        ###
-###############################################################################
-# bypass-min-fee-msg-types defines custom message types the operator may set that
-# will bypass minimum fee checks during CheckTx.
-#
-# Example:
-# ["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement", ...]
-bypass-min-fee-msg-types = ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward","/ibc.applications.transfer.v1.MsgTransfer"]
-` + srvconfig.DefaultConfigTemplate
-		srvconfig.SetConfigTemplate(customAppTemplate)
-		srvconfig.WriteConfigFile(appCfgPath, appCustomConfig)
+		srvconfig.SetConfigTemplate(srvconfig.DefaultConfigTemplate)
+		srvconfig.WriteConfigFile(appCfgPath, appConfig)
 	}
 }
 

@@ -8,13 +8,13 @@ ifeq (,$(VERSION))
   VERSION := $(shell git describe --exact-match 2>/dev/null)
   # if VERSION is empty, then populate it with branch's name and raw commit hash
   ifeq (,$(VERSION))
-    VERSION := $(BRANCH)-$(COMMIT)
+    VERSION := $(BRANCH)-$(COMMIT)<
   endif
 endif
 
 PACKAGES_SIMTEST=$(shell go list ./... | grep '/simulation')
 LEDGER_ENABLED ?= true
-SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
+SDK_PACK := $(shell go list -m github.com/s/cosmos-sdk | sed  's/ /\@/g')
 TM_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::') # grab everything after the space in "github.com/tendermint/tendermint v0.34.7"
 DOCKER := $(shell which docker)
 BUILDDIR ?= $(CURDIR)/build

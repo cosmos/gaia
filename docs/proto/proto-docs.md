@@ -47,7 +47,7 @@ Query/MinimumGasPrices RPC method.
 | ----- | ---- | ----- | ----------- |
 | `minimum_gas_prices` | [cosmos.base.v1beta1.DecCoin](#cosmos.base.v1beta1.DecCoin) | repeated |  |
 | `bypass_min_fee_msg_types` | [string](#string) | repeated |  |
-| `max_total_bypass_minFee_msg_gas_usage` | [uint64](#uint64) |  |  |
+| `max_total_bypass_min_fee_msg_gas_usage` | [uint64](#uint64) |  |  |
 
 
 
@@ -105,7 +105,7 @@ Params defines the set of module parameters.
 | ----- | ---- | ----- | ----------- |
 | `minimum_gas_prices` | [cosmos.base.v1beta1.DecCoin](#cosmos.base.v1beta1.DecCoin) | repeated | Minimum stores the minimum gas price(s) for all TX on the chain. When multiple coins are defined then they are accepted alternatively. The list must be sorted by denoms asc. No duplicate denoms or zero amount values allowed. For more information see https://docs.cosmos.network/main/modules/auth#concepts |
 | `bypass_min_fee_msg_types` | [string](#string) | repeated | bypass_min_fee_msg_types are setup for tx msgs free of fee charge |
-| `max_total_bypass_minFee_msg_gas_usage` | [uint64](#uint64) |  |  |
+| `max_total_bypass_min_fee_msg_gas_usage` | [uint64](#uint64) |  |  |
 
 
 

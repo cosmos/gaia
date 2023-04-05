@@ -31,5 +31,5 @@ message QueryParamsResponse {
   ];
 
   repeated string bypass_min_fee_msg_types = 2 [(gogoproto.moretags) = "yaml:\"bypass_min_fee_msg_types\""];
-  uint64 max_total_bypass_minFee_msg_gas_usage = 3;
+  uint64 max_total_bypass_min_fee_msg_gas_usage = 3;
 }

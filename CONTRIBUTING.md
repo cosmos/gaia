@@ -55,7 +55,7 @@ The developers work in sprints, which are available in a [GitHub Project](https:
 * Create a branch to start work:
     * Fork the repo (core developers must create a branch directly in the Gaia repo),
     branch from the HEAD of `main`, make some commits, and submit a PR to `main`.
-    * For core developers working within the `gaia` repo, follow branch name conventions to ensure a clear
+    * For core developers working within the `gaia` repo, follow branch name conventions to ensure clear
     ownership of branches: `{moniker}/{issue#}-branch-name`.
     * See [Branching Model](#branching-model-and-release) for more details.
 * Be sure to run `make format` before every commit. The easiest way

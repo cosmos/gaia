@@ -62,7 +62,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 		return next(ctx, tx, simulate)
 	}
 
-	// sort fee tx's coins, zero coins in feeCoins are already removed
+	// Sort fee tx's coins, zero coins in feeCoins are already removed
 	feeCoins := feeTx.GetFee().Sort()
 	gas := feeTx.GetGas()
 	msgs := feeTx.GetMsgs()
@@ -73,24 +73,25 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 		return ctx, err
 	}
 
-	// get local minimum-gas-prices
+	// Get local minimum-gas-prices
 	localFees := GetMinGasPrice(ctx, int64(feeTx.GetGas()))
 
 	combinedFeeRequirement := CombinedFeeRequirement(requiredGlobalFees, localFees)
 	if len(combinedFeeRequirement) == 0 {
 		return ctx, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "required fees are not setup.")
 	}
+
 	nonZeroCoinFeesReq, zeroCoinFeesDenomReq := splitFees(combinedFeeRequirement)
 
 	// feeCoinsNoZeroDenom is feeCoins after removing the coins whose denom is zero coins' denom in combinedFeeRequirement
-	// feeCoinsNoZeroDenom are used to check if the fees are meet the requirement imposed by combinedNonZeroFees
-	// when feeCoins does not contain zero coins'denoms in combinedFeeRequirement
-	feeCoinsNoZeroDenom, feeCoinsZeroDenom := splitCoinsByDenoms(feeCoins, zeroCoinFeesDenomReq)
+	// feeCoinsNoZeroDenom is used to check if the fees meets the requirement imposed by nonZeroCoinFeesReq
+	// when feeCoins does not contain zero coins' denoms in combinedFeeRequirement
+	feeCoinsNonZeroDenom, feeCoinsZeroDenom := splitCoinsByDenoms(feeCoins, zeroCoinFeesDenomReq)
 
 	// Check that the fees are in expected denominations.
 	// if feeCoinsNoZeroDenom=[], DenomsSubsetOf returns true
 	// if feeCoinsNoZeroDenom is not empty, but nonZeroCoinFeesReq empty, return false
-	if !feeCoinsNoZeroDenom.DenomsSubsetOf(nonZeroCoinFeesReq) {
+	if !feeCoinsNonZeroDenom.DenomsSubsetOf(nonZeroCoinFeesReq) {
 		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fee is not a subset of required fees; got %s, required: %s", feeCoins, combinedFeeRequirement)
 	}
 
@@ -127,7 +128,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 		// if nonZeroCoinFeesReq=[], return false (this situation should not happen
 		// because when nonZeroCoinFeesReq empty, and DenomsSubsetOf check passed,
 		// the tx should already passed before)
-		if !feeCoinsNoZeroDenom.IsAnyGTE(nonZeroCoinFeesReq) {
+		if !feeCoinsNonZeroDenom.IsAnyGTE(nonZeroCoinFeesReq) {
 			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins, combinedFeeRequirement)
 		}
 	}

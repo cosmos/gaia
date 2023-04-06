@@ -15,7 +15,6 @@ governance process.
    $ gaiad start
 
    # set up the cli config
-   $ gaiad config trust-node true
    $ gaiad config chain-id testing
 
    # create an upgrade governance proposal

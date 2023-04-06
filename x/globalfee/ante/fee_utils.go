@@ -75,25 +75,23 @@ func Find(coins sdk.Coins, denom string) (bool, sdk.Coin) {
 	}
 }
 
-// splitCoinsByDenoms return feeCoins with splitting coins
-// according to a denom map
-func splitCoinsByDenoms(feeCoins sdk.Coins, denomMap map[string]bool) (sdk.Coins, sdk.Coins) {
-	feeCoinsNoZeroDenom := []sdk.Coin{}
-	feeCoinsZeroDenom := []sdk.Coin{}
-
+// splitCoinsByDenoms returns the given coins split in two whether
+// their demon is or isn't found in the given denom map.
+func splitCoinsByDenoms(feeCoins sdk.Coins, denomMap map[string]bool) (feeCoinsNonZeroDenom sdk.Coins, feeCoinsZeroDenom sdk.Coins) {
 	for _, fc := range feeCoins {
 		_, found := denomMap[fc.Denom]
 		if found {
 			feeCoinsZeroDenom = append(feeCoinsZeroDenom, fc)
 		} else {
-			feeCoinsNoZeroDenom = append(feeCoinsNoZeroDenom, fc)
+			feeCoinsNonZeroDenom = append(feeCoinsNonZeroDenom, fc)
 		}
 	}
 
-	return feeCoinsNoZeroDenom, feeCoinsZeroDenom
+	return feeCoinsNonZeroDenom.Sort(), feeCoinsZeroDenom.Sort()
 }
 
-// splitFees returns the sorted nonzero coins and a Map of zero denoms in feeRequirement
+// splitFees returns the given fees nonzero coins
+// and a map storing the zero coins's denoms
 func splitFees(fees sdk.Coins) (sdk.Coins, map[string]bool) {
 	requiredFeesNonZero := sdk.Coins{}
 	requiredFeesZeroDenom := map[string]bool{}

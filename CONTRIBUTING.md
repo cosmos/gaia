@@ -186,7 +186,7 @@ Gaia follows [semantic versioning](https://semver.org), but with the following d
 
 - State-machine breaking changes will result in an increase of the major version X (X.y.z).
 - API breaking changes will result in an increase of the minor version Y (x.Y.z | x > 0).
-- All other changes will result in an increase of the patch version Z (x.x.Z | x > 0).
+- All other changes will result in an increase of the patch version Z (x.y.Z | x > 0).
 
 ### PR Targeting
 

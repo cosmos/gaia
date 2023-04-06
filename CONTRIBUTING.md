@@ -41,7 +41,7 @@ problems/features, if a PR is opened before an adequate design discussion has
 taken place in a GitHub issue, that PR runs a high likelihood of being rejected 
 without review.
 
-## Teams Dev Calls
+## Team Organization
 
 Gaia has many stakeholders contributing and shaping the project. The Core Gaia team is composed of Informal Systems developers. Any long-term contributors and additional maintainers from other projects are welcome. We use self-organizing principles to coordinate and collaborate across organizations in structured "EPIC" that focus on specific problem domains or architectural components of Gaia.
 

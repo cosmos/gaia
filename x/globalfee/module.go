@@ -3,6 +3,7 @@ package globalfee
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -17,6 +18,7 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/cosmos/gaia/v9/x/globalfee/client/cli"
+	"github.com/cosmos/gaia/v9/x/globalfee/keeper"
 	"github.com/cosmos/gaia/v9/x/globalfee/types"
 )
 
@@ -139,6 +141,11 @@ func (a AppModule) LegacyQuerierHandler(amino *codec.LegacyAmino) sdk.Querier {
 
 func (a AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterQueryServer(cfg.QueryServer(), NewGrpcQuerier(a.paramSpace))
+
+	m := keeper.NewMigrator(a.paramSpace)
+	if err := cfg.RegisterMigration(types.ModuleName, 1, m.Migrate1to2); err != nil {
+		panic(fmt.Sprintf("failed to migrate x/globalfee from version 1 to 2: %v", err))
+	}
 }
 
 func (a AppModule) BeginBlock(context sdk.Context, block abci.RequestBeginBlock) {
@@ -153,5 +160,5 @@ func (a AppModule) EndBlock(context sdk.Context, block abci.RequestEndBlock) []a
 // introduced by the module. To avoid wrong/empty versions, the initial version
 // should be set to 1.
 func (a AppModule) ConsensusVersion() uint64 {
-	return 1
+	return 2
 }

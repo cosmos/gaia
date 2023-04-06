@@ -35,6 +35,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 # Changelog
 
 ## [Unreleased]
+* Add `bypass-min-fee-msg-types` and `maxTotalBypassMinFeeMsgGagUsage` to globalfee params (state breaking and API breaking!!!).
 
 ## [v9.0.2] - 2023-04-03
 * (feat) Bump [Interchain-Security](https://github.com/cosmos/interchain-security) [v1.1.0](https://github.com/cosmos/interchain-security/releases/tag/v1.1.0) provider module. See the [release notes](https://github.com/cosmos/interchain-security/releases/tag/v1.1.0) for details.

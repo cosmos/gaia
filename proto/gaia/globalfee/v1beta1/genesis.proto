@@ -28,10 +28,14 @@ message Params {
     (gogoproto.moretags) = "yaml:\"minimum_gas_prices\"",
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins"
   ];
-  // bypass_min_fee_msg_types defines the exhaustive list of IBC message url types
-  // that can bypass the minimum fee
+  // bypass_min_fee_msg_types defines a list of IBC message type urls
+  // that are free of fee charge
   repeated string bypass_min_fee_msg_types = 2 [
     (gogoproto.jsontag) = "bypass_min_fee_msg_types,omitempty",
     (gogoproto.moretags) = "yaml:\"bypass_min_fee_msg_types\""
   ];
+
+  // max_total_bypass_min_fee_msg_gas_usage defines the total maximum gas usage
+  // allowed to bypass fee charge
+  uint64 max_total_bypass_min_fee_msg_gas_usage = 3;
 }

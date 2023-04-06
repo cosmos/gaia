@@ -33,10 +33,7 @@ type IntegrationTestSuite struct {
 	txBuilder client.TxBuilder
 }
 
-var (
-	testBondDenom                              = "uatom"
-	testMaxTotalBypassMinFeeMsgGasUsage uint64 = 1_000_000
-)
+var testBondDenom = "uatom"
 
 func (s *IntegrationTestSuite) SetupTest() {
 	app := gaiahelpers.Setup(s.T())
@@ -65,7 +62,7 @@ func (s *IntegrationTestSuite) SetupTestGlobalFeeStoreAndMinGasPrice(minGasPrice
 	stakingSubspace := s.SetupTestStakingSubspace(stakingParam)
 
 	// build fee decorator
-	feeDecorator := gaiafeeante.NewFeeDecorator(subspace, stakingSubspace, uint64(1_000_000))
+	feeDecorator := gaiafeeante.NewFeeDecorator(subspace, stakingSubspace)
 
 	// chain fee decorator to antehandler
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)

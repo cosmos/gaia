@@ -75,17 +75,17 @@ func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) {
 }
 
 func queryGlobalFees(endpoint string) (amt sdk.DecCoins, err error) {
-	body, err := httpGet(fmt.Sprintf("%s/gaia/globalfee/v1beta1/minimum_gas_prices", endpoint))
+	body, err := httpGet(fmt.Sprintf("%s/gaia/globalfee/v1beta1/params", endpoint))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
 
-	var fees globalfee.QueryMinimumGasPricesResponse
-	if err := cdc.UnmarshalJSON(body, &fees); err != nil {
+	var params globalfee.QueryParamsResponse
+	if err := cdc.UnmarshalJSON(body, &params); err != nil {
 		return sdk.DecCoins{}, err
 	}
 
-	return fees.MinimumGasPrices, nil
+	return params.MinimumGasPrices, nil
 }
 
 func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string) (stakingtypes.QueryDelegationResponse, error) {

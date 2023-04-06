@@ -10,29 +10,35 @@ import (
 	ibcchanneltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
 )
 
-// DefaultBypassMinFeeMsgTypes defines the list of IBC message types
-// which bypass the global min fee
-func DefaultBypassMinFeeMsgTypes() []string {
-	return []string{
+var (
+	// ParamStoreKeyMinGasPrices store key
+	ParamStoreKeyMinGasPrices                    = []byte("MinimumGasPricesParam")
+	ParamStoreKeyBypassMinFeeMsgTypes            = []byte("BypassMinFeeMsgTypes")
+	ParamStoreKeyMaxTotalBypassMinFeeMsgGasUsage = []byte("MaxTotalBypassMinFeeMsgGasUsage")
+
+	DefaultMinGasPrices         = sdk.DecCoins{}
+	DefaultBypassMinFeeMsgTypes = []string{
 		sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),
 		sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
 		sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
 		sdk.MsgTypeURL(&ibcchanneltypes.MsgTimeout{}),
 		sdk.MsgTypeURL(&ibcchanneltypes.MsgTimeoutOnClose{}),
 	}
-}
 
-// ParamStoreKeyMinGasPrices store key
-var (
-	ParamStoreKeyMinGasPrices         = []byte("MinimumGasPricesParam")
-	ParamStoreKeyBypassMinFeeMsgTypes = []byte("BypassMinFeeMsgTypesParam")
+	// maxTotalBypassMinFeeMsgGasUsage is the allowed maximum gas usage
+	// for all the bypass msgs in a transactions.
+	// A transaction that contains only bypass message types and the gas usage does not
+	// exceed maxTotalBypassMinFeeMsgGasUsage can be accepted with a zero fee.
+	// For details, see gaiafeeante.NewFeeDecorator()
+	DefaultmaxTotalBypassMinFeeMsgGasUsage uint64 = 1_000_000
 )
 
 // DefaultParams returns default parameters
 func DefaultParams() Params {
 	return Params{
-		MinimumGasPrices:     sdk.DecCoins{},
-		BypassMinFeeMsgTypes: DefaultBypassMinFeeMsgTypes(),
+		MinimumGasPrices:                DefaultMinGasPrices,
+		BypassMinFeeMsgTypes:            DefaultBypassMinFeeMsgTypes,
+		MaxTotalBypassMinFeeMsgGasUsage: DefaultmaxTotalBypassMinFeeMsgGasUsage,
 	}
 }
 
@@ -50,6 +56,10 @@ func (p Params) ValidateBasic() error {
 		return err
 	}
 
+	if err := validateMaxTotalBypassMinFeeMsgGasUsage(p.MaxTotalBypassMinFeeMsgGasUsage); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -61,6 +71,9 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		),
 		paramtypes.NewParamSetPair(
 			ParamStoreKeyBypassMinFeeMsgTypes, &p.BypassMinFeeMsgTypes, validateBypassMinFeeMsgTypes,
+		),
+		paramtypes.NewParamSetPair(
+			ParamStoreKeyMaxTotalBypassMinFeeMsgGasUsage, &p.MaxTotalBypassMinFeeMsgGasUsage, validateMaxTotalBypassMinFeeMsgGasUsage,
 		),
 	}
 }
@@ -84,7 +97,7 @@ type BypassMinFeeMsgTypes []string
 func validateBypassMinFeeMsgTypes(i interface{}) error {
 	bypassMinFeeMsgTypes, ok := i.([]string)
 	if !ok {
-		return fmt.Errorf("invalid bypass msg type: %T", bypassMinFeeMsgTypes)
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "type: %T, expected []sdk.Msg", i)
 	}
 
 	for _, msgType := range bypassMinFeeMsgTypes {
@@ -92,6 +105,16 @@ func validateBypassMinFeeMsgTypes(i interface{}) error {
 			return fmt.Errorf("invalid empty bypass msg type")
 		}
 	}
+
+	return nil
+}
+
+func validateMaxTotalBypassMinFeeMsgGasUsage(i interface{}) error {
+	_, ok := i.(uint64)
+	if !ok {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "type: %T, expected uint64", i)
+	}
+
 	return nil
 }
 

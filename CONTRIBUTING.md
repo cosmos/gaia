@@ -33,7 +33,7 @@ contributors, a general procedure for contributing has been established:
    3. If nobody has been assigned for the issue and you would like to work on it,
       make a comment on the issue to inform the community of your intentions
       to begin work.
-5. To submit your work as a contribution to the repository follow standard GitHub best practices. See [pull request guideline](#pull-requests) below.
+5. To submit your work as a contribution to the repository, follow standard GitHub best practices. See [pull request guideline](#pull-requests) below.
 
 **Note:** For very small or blatantly obvious problems such as typos, you are
 not required to an open issue to submit a PR, but be aware that for more complex

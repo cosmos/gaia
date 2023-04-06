@@ -29,14 +29,6 @@ gaiad config node <host>:<port>
 
 If you run your own full-node, just use `tcp://localhost:26657` as the address.
 
-Then, let us set the default value of the `--trust-node` flag:
-
-```bash
-gaiad config trust-node true
-
-# Set to true if you trust the full-node you are connecting to, false otherwise
-```
-
 Finally, let us set the `chain-id` of the blockchain we want to interact with:
 
 ```bash

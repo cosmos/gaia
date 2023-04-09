@@ -316,7 +316,7 @@ replace (
 	github.com/confio/ics23/go => github.com/confio/ics23/go v0.9.0
 
 	// Cosmos SDK & IBC
-	github.com/cosmos/cosmos-sdk => github.com/notional-labs/cosmos-sdk v0.45.16-ics
+	github.com/cosmos/cosmos-sdk => github.com/notional-labs/cosmos-sdk v0.45.16-0.20230409045610-02ca186689c9
 	github.com/cosmos/ibc-go/v4 => github.com/cosmos/ibc-go/v4 v4.2.0
 
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134

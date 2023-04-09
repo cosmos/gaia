@@ -317,7 +317,8 @@ replace (
 	github.com/confio/ics23/go => github.com/confio/ics23/go v0.9.0
 
 	// Cosmos SDK & IBC
-	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.15-ics
+	// this is the sdk branch https://github.com/notional-labs/cosmos-sdk/tree/patch-cache-multi
+	github.com/cosmos/cosmos-sdk => github.com/notional-labs/cosmos-sdk v0.45.16-0.20230409050322-1846175439ec
 	github.com/cosmos/ibc-go/v4 => github.com/cosmos/ibc-go/v4 v4.2.0
 
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134

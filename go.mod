@@ -310,11 +310,13 @@ replace (
 	// Use cosmos keyring
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
+	github.com/btcsuite/btcd => github.com/btcsuite/btcd v0.22.2 // indirect
+
 	// dragonberry
 	github.com/confio/ics23/go => github.com/confio/ics23/go v0.9.0
 
 	// Cosmos SDK & IBC
-	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.16-ics
+	github.com/cosmos/cosmos-sdk => github.com/notional-labs/cosmos-sdk v0.45.16-ics
 	github.com/cosmos/ibc-go/v4 => github.com/cosmos/ibc-go/v4 v4.2.0
 
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134

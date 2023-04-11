@@ -64,7 +64,7 @@ func (pv PV) GetPubKey() (crypto.PubKey, error) {
 
 type EmptyAppOptions struct{}
 
-func (EmptyAppOptions) Get(o string) interface{} { return nil }
+func (EmptyAppOptions) Get(_ string) interface{} { return nil }
 
 func Setup(t *testing.T) *gaiaapp.GaiaApp {
 	t.Helper()
@@ -148,6 +148,7 @@ func genesisStateWithValSet(t *testing.T,
 	valSet *tmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount,
 	balances ...banktypes.Balance,
 ) gaiaapp.GenesisState {
+	t.Helper()
 	// set genesis accounts
 	authGenesis := authtypes.NewGenesisState(authtypes.DefaultParams(), genAccs)
 	genesisState[authtypes.ModuleName] = app.AppCodec().MustMarshalJSON(authGenesis)

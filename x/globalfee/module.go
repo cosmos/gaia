@@ -58,7 +58,11 @@ func (a AppModuleBasic) RegisterRESTRoutes(context client.Context, router *mux.R
 }
 
 func (a AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
-	_ = types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
+	err := types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
+	if err != nil {
+		// same behavior as in cosmos-sdk
+		panic(err)
+	}
 }
 
 func (a AppModuleBasic) GetTxCmd() *cobra.Command {

@@ -28,8 +28,8 @@ if ! test -f "./build/gaiad9"; then
   exit
 fi
 
-mkdir -p "$NODE_HOME"/cosmovisor/upgrades/v9-Lambda/bin
-cp ./build/gaiad9 "$NODE_HOME"/cosmovisor/upgrades/v9-Lambda/bin/gaiad
+mkdir -p "$NODE_HOME"/cosmovisor/upgrades/v9-lambda/bin
+cp ./build/gaiad9 "$NODE_HOME"/cosmovisor/upgrades/v9-lambda/bin/gaiad
 
 GOPATH=$(go env GOPATH)
 
@@ -67,5 +67,5 @@ perl -i~ -0777 -pe 's/# Enable defines if the API server should be enabled.
 enable = false/# Enable defines if the API server should be enabled.
 enable = true/g' $NODE_HOME/config/app.toml
 
-$COSMOVISOR start --home $NODE_HOME --x-crisis-skip-assert-invariants
+$COSMOVISOR run start --home $NODE_HOME --x-crisis-skip-assert-invariants
 

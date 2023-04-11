@@ -153,15 +153,16 @@ Instructions for running the upgrade test locally
 
 #### Build current version and move into ./build:
 ```sh
-make build
+git checkout v8.0.0
+make build 
 cp ./build/gaiad ./build/gaiad8
 ```
 
-#### Build gaia v7.1.0 and move into ./build:
+#### Build gaia v9.0.0 and move into ./build:
 ```sh
-git checkout v7.1.0
-make build
-cp ./build/gaiad ./build/gaiad7
+git checkout v9.0.0
+make build 
+cp ./build/gaiad ./build/gaiad9
 ```
 
 #### Go back to your previous working branch
@@ -171,14 +172,14 @@ git checkout -
 
 #### Install cosmovisor
 ```sh
-go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.0.0
+go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.3.0
 ```
 
 #### Run the Chain
 
 This script prepares the chain and starts it using cosmovisor
 ```sh
-./contrib/scripts/run-gaia-v7.sh
+./contrib/scripts/run-gaia-v8.sh
 ```
 
 #### Run the upgrade
@@ -193,8 +194,7 @@ In a third window run the upgrade monitoring script that will exit without error
 ./contrib/scripts/test_upgrade.sh 20 5 16 localhost
 ```
 
-This should show logs that demonstrate a successful upgrade by reaching block height 16 before 100 seconds is reached.
-
+This should show logs that demonstrate a successful upgrade by reaching block height 16.
 
 ## Guidelines
 

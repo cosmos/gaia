@@ -3,6 +3,13 @@ order: 1
 title: Introduction
 ---
 
+::: warning
+### **v9-Lambda Upgrade**
+Cosmos Hub upgraded at height: **14,470,501**
+
+To upgrade from v8-Rho check the [**upgrade guide**](../migration/cosmoshub-4-v9-Lambda-upgrade.md)
+:::
+
 ![Welcome to the Cosmos Hub](../images/cosmos-hub-image.jpg)
 
 # Introduction
@@ -49,7 +56,6 @@ These block explorers allow you to search, view and analyze Cosmos Hub data&mdas
 * [Cosmos Overview](https://genesislab.net)
 * [Cosmoscan](https://cosmoscan.net/)
 * [Cosmos Visualizer](https://nylira.net/3d)
-* [Hubble](https://hubble.figment.io)
 * [IOBScan](https://cosmoshub.iobscan.io/)
 * [LOOK Explorer](https://cosmos.ping.pub)
 * [Lunie](https://lunie.io)

@@ -1,23 +1,13 @@
-package antetest
+package ante
 
 import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/suite"
-
-	"github.com/cosmos/gaia/v9/x/globalfee/ante"
+	"github.com/stretchr/testify/require"
 )
 
-type feeUtilsTestSuite struct {
-	suite.Suite
-}
-
-func TestFeeUtilsTestSuite(t *testing.T) {
-	suite.Run(t, new(feeUtilsTestSuite))
-}
-
-func (s *feeUtilsTestSuite) TestContainZeroCoins() {
+func TestContainZeroCoins(t *testing.T) {
 	zeroCoin1 := sdk.NewCoin("photon", sdk.ZeroInt())
 	zeroCoin2 := sdk.NewCoin("stake", sdk.ZeroInt())
 	coin1 := sdk.NewCoin("photon", sdk.NewInt(1))
@@ -57,12 +47,15 @@ func (s *feeUtilsTestSuite) TestContainZeroCoins() {
 	}
 
 	for _, test := range tests {
-		ok := ante.ContainZeroCoins(test.c)
-		s.Require().Equal(test.ok, ok)
+		ok := ContainZeroCoins(test.c)
+		require.Equal(t, test.ok, ok)
 	}
 }
 
-func (s *feeUtilsTestSuite) TestCombinedFeeRequirement() {
+// Note that in a real Gaia deployment all zero coins can be removed from minGasPrice.
+// This sanitizing happens when the minGasPrice is set into the context.
+// (see baseapp.SetMinGasPrices in gaia/cmd/root.go line 221)
+func TestCombinedFeeRequirement(t *testing.T) {
 	zeroCoin1 := sdk.NewCoin("photon", sdk.ZeroInt())
 	zeroCoin2 := sdk.NewCoin("stake", sdk.ZeroInt())
 	zeroCoin3 := sdk.NewCoin("quark", sdk.ZeroInt())
@@ -161,14 +154,14 @@ func (s *feeUtilsTestSuite) TestCombinedFeeRequirement() {
 	}
 
 	for name, test := range tests {
-		s.Run(name, func() {
-			allFees := ante.CombinedFeeRequirement(test.cGlobal, test.c)
-			s.Require().Equal(test.combined, allFees)
+		t.Run(name, func(t *testing.T) {
+			allFees := CombinedFeeRequirement(test.cGlobal, test.c)
+			require.Equal(t, test.combined, allFees)
 		})
 	}
 }
 
-func (s *feeUtilsTestSuite) TestDenomsSubsetOfIncludingZero() {
+func TestDenomsSubsetOfIncludingZero(t *testing.T) {
 	emptyCoins := sdk.Coins{}
 
 	zeroCoin1 := sdk.NewCoin("photon", sdk.ZeroInt())
@@ -266,14 +259,14 @@ func (s *feeUtilsTestSuite) TestDenomsSubsetOfIncludingZero() {
 	}
 
 	for name, test := range tests {
-		s.Run(name, func() {
-			subset := ante.DenomsSubsetOfIncludingZero(test.set, test.superset)
-			s.Require().Equal(test.subset, subset)
+		t.Run(name, func(t *testing.T) {
+			subset := DenomsSubsetOfIncludingZero(test.set, test.superset)
+			require.Equal(t, test.subset, subset)
 		})
 	}
 }
 
-func (s *feeUtilsTestSuite) TestIsAnyGTEIncludingZero() {
+func TestIsAnyGTEIncludingZero(t *testing.T) {
 	emptyCoins := sdk.Coins{}
 
 	zeroCoin1 := sdk.NewCoin("photon", sdk.ZeroInt())
@@ -407,9 +400,9 @@ func (s *feeUtilsTestSuite) TestIsAnyGTEIncludingZero() {
 	}
 
 	for name, test := range tests {
-		s.Run(name, func() {
-			gte := ante.IsAnyGTEIncludingZero(test.c2, test.c1)
-			s.Require().Equal(test.gte, gte)
+		t.Run(name, func(t *testing.T) {
+			gte := IsAnyGTEIncludingZero(test.c2, test.c1)
+			require.Equal(t, test.gte, gte)
 		})
 	}
 }

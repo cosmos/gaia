@@ -322,19 +322,19 @@ gaiad query slashing params
 민팅/인플레이션 파라미터 값은 다음과 같이 조회하실 수 있습니다:
 
 ```bash
-gaiad query minting params
+gaiad query mint params
 ```
 
 현재 인플레이션 값은 다음과 같이 조회하실 수 있습니다:
 
 ```bash
-gaiad query minting inflation
+gaiad query mint inflation
 ```
 
 현재 프로비젼(provisions) 값은 다음과 같이 조회하실 수 있습니다:
 
 ```bash
-gaiad query minting annual-provisions
+gaiad query mint annual-provisions
 ```
 
 ### 스테이킹

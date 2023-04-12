@@ -27,6 +27,7 @@ your handle next to the items reviewed if you only reviewed selected items.*
 
 I have...
 
-- [ ] confirmed the correct [type prefix](https://github.com/commitizen/conventional-commit-types/blob/v3.0.0/index.json) in the PR title
-- [ ] confirmed all author checklist items have been addressed
-- [ ] confirmed that this PR does not change production code
+- [ ] Confirmed the correct [type prefix](https://github.com/commitizen/conventional-commit-types/blob/v3.0.0/index.json) in the PR title
+- [ ] Confirmed all author checklist items have been addressed
+- [ ] Confirmed that this PR does not change production code
+

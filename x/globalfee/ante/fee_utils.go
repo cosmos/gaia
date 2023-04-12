@@ -90,9 +90,9 @@ func splitCoinsByDenoms(feeCoins sdk.Coins, denomMap map[string]bool) (feeCoinsN
 	return feeCoinsNonZeroDenom.Sort(), feeCoinsZeroDenom.Sort()
 }
 
-// splitFees returns the given fees nonzero coins
+// getNonZeroFees returns the given fees nonzero coins
 // and a map storing the zero coins's denoms
-func splitFees(fees sdk.Coins) (sdk.Coins, map[string]bool) {
+func getNonZeroFees(fees sdk.Coins) (sdk.Coins, map[string]bool) {
 	requiredFeesNonZero := sdk.Coins{}
 	requiredFeesZeroDenom := map[string]bool{}
 

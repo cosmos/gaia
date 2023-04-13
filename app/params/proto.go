@@ -19,3 +19,17 @@ func MakeTestEncodingConfig() EncodingConfig {
 		Amino:             amino,
 	}
 }
+
+func MakeEncodingConfig() EncodingConfig {
+	amino := codec.NewLegacyAmino()
+	interfaceRegistry := codectypes.NewInterfaceRegistry()
+	cdc := codec.NewProtoCodec(interfaceRegistry)
+	txCfg := tx.NewTxConfig(cdc, tx.DefaultSignModes)
+
+	return EncodingConfig{
+		InterfaceRegistry: interfaceRegistry,
+		Codec:             cdc,
+		TxConfig:          txCfg,
+		Amino:             amino,
+	}
+}

@@ -18,7 +18,7 @@ const (
 func decoderCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "decoder",
-		Short: "Example gaiad decode -p 8888, which would run decoder server on specified port",
+		Short: "Example gaiad decoder -p 8080, which would run decoder server on specified port",
 		Long:  "decoder command runs decoder server to decode byte array to General Cosmos messages",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			decodeServerFlag, err := cmd.Flags().GetString(decodeServerPort)

@@ -1,0 +1,26 @@
+syntax = "proto3";
+package decoder;
+
+option go_package = "github.com/cosmos/gaia/v9/cmd/gaiad/cmd/decoder"
+
+
+message GeneralCosmosMsg {
+  string          type    = 1;
+  string          message = 2;
+  repeated string signers = 3;
+}
+
+message DecodeRequest {
+  bytes txByte = 1;
+}
+
+message DecodeResponse {
+  repeated GeneralCosmosMsg msgs = 1;
+  string txResult = 2;
+}
+
+// Service proto
+
+service CosmosDecoder {
+  rpc Decode(DecodeRequest) returns (DecodeResponse) {}
+}

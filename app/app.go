@@ -201,7 +201,8 @@ func NewGaiaApp(
 		panic(fmt.Sprintf("invalid 'bypass-min-fee-msg-types' config option: %s", err))
 	}
 
-	app.Logger().Info("min fee bypass activated for message types", "types", bypassMinFeeMsgTypes)
+	// Logging stuff here end up in the genesis export
+	// app.Logger().Info("min fee bypass activated for message types", "types", bypassMinFeeMsgTypes)
 
 	anteHandler, err := gaiaante.NewAnteHandler(
 		gaiaante.HandlerOptions{

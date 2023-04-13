@@ -1,0 +1,33 @@
+panic: UnmarshalJSON cannot decode empty bytes
+
+goroutine 1 [running]:
+github.com/cosmos/cosmos-sdk/x/params/types.Subspace.Get({{_, _}, _, {_, _}, {_, _}, {_, _, _}, ...}, ...)
+	github.com/cosmos/cosmos-sdk@v0.45.11/x/params/types/subspace.go:109 +0x204
+github.com/cosmos/cosmos-sdk/x/params/types.Subspace.GetParamSet({{_, _}, _, {_, _}, {_, _}, {_, _, _}, ...}, ...)
+	github.com/cosmos/cosmos-sdk@v0.45.11/x/params/types/subspace.go:222 +0x114
+github.com/cosmos/cosmos-sdk/x/auth/keeper.AccountKeeper.GetParams(...)
+	github.com/cosmos/cosmos-sdk@v0.45.11/x/auth/keeper/params.go:15
+github.com/cosmos/cosmos-sdk/x/auth.ExportGenesis({{0x10475ac40, 0x14000124008}, {0x104769840, 0x14000d07a40}, {{0x0, 0x0}, {0x0, 0x0}, 0x0, {0x0, ...}, ...}, ...}, ...)
+	github.com/cosmos/cosmos-sdk@v0.45.11/x/auth/genesis.go:32 +0xec
+github.com/cosmos/cosmos-sdk/x/auth.AppModule.ExportGenesis({{}, {{0x1047479d0, 0x1400119d520}, {0x104767cb0, 0x1400119ddf0}, {{0x104767cb0, 0x1400119ddf0}, 0x140001214f0, {0x1047479d0, 0x1400119d590}, ...}, ...}, ...}, ...)
+	github.com/cosmos/cosmos-sdk@v0.45.11/x/auth/module.go:151 +0x64
+github.com/cosmos/cosmos-sdk/types/module.(*Manager).ExportGenesis(_, {{0x10475ac40, 0x14000124008}, {0x104769840, 0x14000d07a40}, {{0x0, 0x0}, {0x0, 0x0}, 0x0, ...}, ...}, ...)
+	github.com/cosmos/cosmos-sdk@v0.45.11/types/module/module.go:348 +0xd0
+github.com/cosmos/gaia/v8/app.(*GaiaApp).ExportAppStateAndValidators(0x14000c74000, 0x0, {0x10552bf20, 0x0, 0x0})
+	github.com/cosmos/gaia/v8/app/export.go:30 +0x164
+github.com/cosmos/gaia/v8/cmd/gaiad/cmd.appCreator.appExport({{{0x10475fdf8, 0x14000fa4738}, {0x10476c918, 0x1400119ddf0}, {0x104765920, 0x1400118e580}, 0x140001214f0}}, {0x10475bae8, 0x14001211bc0}, {0x104768bf8, ...}, ...)
+	github.com/cosmos/gaia/v8/cmd/gaiad/cmd/root.go:272 +0x184
+github.com/cosmos/cosmos-sdk/server.ExportCmd.func1(0x14001206c00?, {0x140005679e0?, 0x0?, 0x2?})
+	github.com/cosmos/cosmos-sdk@v0.45.11/server/export.go:70 +0x2dc
+github.com/spf13/cobra.(*Command).execute(0x14001206c00, {0x140005679c0, 0x2, 0x2})
+	github.com/spf13/cobra@v1.6.1/command.go:916 +0x5c8
+github.com/spf13/cobra.(*Command).ExecuteC(0x1400115cc00)
+	github.com/spf13/cobra@v1.6.1/command.go:1044 +0x35c
+github.com/spf13/cobra.(*Command).Execute(...)
+	github.com/spf13/cobra@v1.6.1/command.go:968
+github.com/spf13/cobra.(*Command).ExecuteContext(...)
+	github.com/spf13/cobra@v1.6.1/command.go:961
+github.com/cosmos/cosmos-sdk/server/cmd.Execute(0x14000088768?, {0x140011d00d8, 0x12})
+	github.com/cosmos/cosmos-sdk@v0.45.11/server/cmd/execute.go:36 +0x1a0
+main.main()
+	github.com/cosmos/gaia/v8/cmd/gaiad/main.go:16 +0x3c

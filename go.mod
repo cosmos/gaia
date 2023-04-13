@@ -20,19 +20,11 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.14.0
 	github.com/strangelove-ventures/packet-forward-middleware/v4 v4.0.4
-<<<<<<< HEAD
-	github.com/stretchr/testify v1.8.1
-	github.com/tendermint/tendermint v0.34.26
-	github.com/tendermint/tm-db v0.6.7
-	google.golang.org/genproto v0.0.0-20221024183307-1bc688fe9f3e
-	google.golang.org/grpc v1.50.1
-=======
 	github.com/stretchr/testify v1.8.2
 	github.com/tendermint/tendermint v0.34.27
 	github.com/tendermint/tm-db v0.6.7
 	google.golang.org/genproto v0.0.0-20230125152338-dcaf20b6aeaa
 	google.golang.org/grpc v1.52.3
->>>>>>> 345b75d (Bump sdk and add comet replace (#2329))
 )
 
 require (
@@ -41,15 +33,11 @@ require (
 )
 
 require (
-<<<<<<< HEAD
-	4d63.com/gochecknoglobals v0.1.0 // indirect
-=======
 	4d63.com/gocheckcompilerdirectives v1.2.1 // indirect
 	4d63.com/gochecknoglobals v0.2.1 // indirect
 	cosmossdk.io/api v0.2.6 // indirect
 	cosmossdk.io/core v0.5.1 // indirect
 	cosmossdk.io/depinject v1.0.0-alpha.3 // indirect
->>>>>>> 345b75d (Bump sdk and add comet replace (#2329))
 	filippo.io/edwards25519 v1.0.0-rc.1 // indirect
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
 	github.com/99designs/keyring v1.2.1 // indirect
@@ -70,13 +58,8 @@ require (
 	github.com/Workiva/go-datastructures v1.0.53 // indirect
 	github.com/alexkohler/prealloc v1.0.0 // indirect
 	github.com/alingse/asasalint v0.0.11 // indirect
-<<<<<<< HEAD
-	github.com/armon/go-metrics v0.4.0 // indirect
-	github.com/ashanbrown/forbidigo v1.3.0 // indirect
-=======
 	github.com/armon/go-metrics v0.4.1 // indirect
 	github.com/ashanbrown/forbidigo v1.4.0 // indirect
->>>>>>> 345b75d (Bump sdk and add comet replace (#2329))
 	github.com/ashanbrown/makezero v1.1.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bgentry/speakeasy v0.1.1-0.20220910012023-760eaf8b6816 // indirect
@@ -91,15 +74,11 @@ require (
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/charithe/durationcheck v0.0.9 // indirect
-<<<<<<< HEAD
-	github.com/chavacava/garif v0.0.0-20220630083739-93517212f375 // indirect
-=======
 	github.com/chavacava/garif v0.0.0-20221024190013-b3ef35877348 // indirect
 	github.com/cockroachdb/errors v1.9.1 // indirect
 	github.com/cockroachdb/logtags v0.0.0-20230118201751-21c54148d20b // indirect
 	github.com/cockroachdb/pebble v0.0.0-20220817183557-09c6e030a677 // indirect
 	github.com/cockroachdb/redact v1.1.3 // indirect
->>>>>>> 345b75d (Bump sdk and add comet replace (#2329))
 	github.com/coinbase/rosetta-sdk-go v0.7.9 // indirect
 	github.com/cometbft/cometbft-db v0.7.0 // indirect
 	github.com/confio/ics23/go v0.9.0 // indirect
@@ -135,12 +114,8 @@ require (
 	github.com/firefart/nonamedreturns v1.0.4 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/fzipp/gocyclo v0.6.0 // indirect
-<<<<<<< HEAD
-	github.com/go-critic/go-critic v0.6.5 // indirect
-=======
 	github.com/getsentry/sentry-go v0.17.0 // indirect
 	github.com/go-critic/go-critic v0.6.7 // indirect
->>>>>>> 345b75d (Bump sdk and add comet replace (#2329))
 	github.com/go-kit/kit v0.12.0 // indirect
 	github.com/go-kit/log v0.2.1 // indirect
 	github.com/go-logfmt/logfmt v0.5.1 // indirect

@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -78,7 +79,6 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	}
 }
 
-// this requires the fee non-negative
 func validateMinimumGasPrices(i interface{}) error {
 	v, ok := i.(sdk.DecCoins)
 	if !ok {
@@ -91,8 +91,6 @@ func validateMinimumGasPrices(i interface{}) error {
 
 type BypassMinFeeMsgTypes []string
 
-// TODO: add more conditions to verify the message type name
-//
 // validateBypassMinFeeMsgTypes checks that bypass msg types aren't empty
 func validateBypassMinFeeMsgTypes(i interface{}) error {
 	bypassMinFeeMsgTypes, ok := i.([]string)
@@ -103,6 +101,10 @@ func validateBypassMinFeeMsgTypes(i interface{}) error {
 	for _, msgType := range bypassMinFeeMsgTypes {
 		if msgType == "" {
 			return fmt.Errorf("invalid empty bypass msg type")
+		}
+
+		if !strings.HasPrefix(msgType, sdk.MsgTypeURL(nil)) {
+			return fmt.Errorf("invalid bypass msg type name %s", msgType)
 		}
 	}
 

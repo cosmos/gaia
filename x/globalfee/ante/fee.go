@@ -158,13 +158,9 @@ func (mfd FeeDecorator) DefaultZeroGlobalFee(ctx sdk.Context) ([]sdk.DecCoin, er
 	return []sdk.DecCoin{sdk.NewDecCoinFromDec(bondDenom, sdk.NewDec(0))}, nil
 }
 
-func (mfd FeeDecorator) getBondDenom(ctx sdk.Context) string {
-	var bondDenom string
-	if mfd.StakingSubspace.Has(ctx, stakingtypes.KeyBondDenom) {
-		mfd.StakingSubspace.Get(ctx, stakingtypes.KeyBondDenom, &bondDenom)
-	}
-
-	return bondDenom
+func (mfd FeeDecorator) getBondDenom(ctx sdk.Context) (res string) {
+	mfd.StakingSubspace.Get(ctx, stakingtypes.KeyBondDenom, &res)
+	return
 }
 
 func (mfd FeeDecorator) ContainsOnlyBypassMinFeeMsgs(ctx sdk.Context, msgs []sdk.Msg) bool {
@@ -179,24 +175,14 @@ func (mfd FeeDecorator) ContainsOnlyBypassMinFeeMsgs(ctx sdk.Context, msgs []sdk
 	return true
 }
 
-func (mfd FeeDecorator) GetBypassMsgTypes(ctx sdk.Context) []string {
-	bypassMsgs := []string{}
-	if mfd.GlobalMinFee.Has(ctx, types.ParamStoreKeyBypassMinFeeMsgTypes) {
-		mfd.GlobalMinFee.Get(ctx, types.ParamStoreKeyBypassMinFeeMsgTypes, &bypassMsgs)
-	}
-
-	// todo if check err: ParamStoreKeyBypassMinFeeMsgTypes does not exist
-	return bypassMsgs
+func (mfd FeeDecorator) GetBypassMsgTypes(ctx sdk.Context) (res []string) {
+	mfd.GlobalMinFee.Get(ctx, types.ParamStoreKeyBypassMinFeeMsgTypes, &res)
+	return
 }
 
-func (mfd FeeDecorator) GetMaxTotalBypassMinFeeMsgGasUsage(ctx sdk.Context) uint64 {
-	var maxTotalBypassMinFeeMsgGasUsage uint64
-	if mfd.GlobalMinFee.Has(ctx, types.ParamStoreKeyMaxTotalBypassMinFeeMsgGasUsage) {
-		mfd.GlobalMinFee.Get(ctx, types.ParamStoreKeyMaxTotalBypassMinFeeMsgGasUsage, &maxTotalBypassMinFeeMsgGasUsage)
-	}
-
-	// todo if check err: maxTotalBypassMinFeeMsgGasUsage does not exist
-	return maxTotalBypassMinFeeMsgGasUsage
+func (mfd FeeDecorator) GetMaxTotalBypassMinFeeMsgGasUsage(ctx sdk.Context) (res uint64) {
+	mfd.GlobalMinFee.Get(ctx, types.ParamStoreKeyMaxTotalBypassMinFeeMsgGasUsage, &res)
+	return
 }
 
 // GetMinGasPrice returns a nodes's local minimum gas prices

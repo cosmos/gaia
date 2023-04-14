@@ -29,14 +29,6 @@ gaiad config node <host>:<port>
 
 If you run your own full-node, just use `tcp://localhost:26657` as the address.
 
-Then, let us set the default value of the `--trust-node` flag:
-
-```bash
-gaiad config trust-node true
-
-# Set to true if you trust the full-node you are connecting to, false otherwise
-```
-
 Finally, let us set the `chain-id` of the blockchain we want to interact with:
 
 ```bash
@@ -374,19 +366,19 @@ gaiad query slashing params
 You can query for the minting/inflation parameters via:
 
 ```bash
-gaiad query minting params
+gaiad query mint params
 ```
 
 To query for the current inflation value:
 
 ```bash
-gaiad query minting inflation
+gaiad query mint inflation
 ```
 
 To query for the current annual provisions value:
 
 ```bash
-gaiad query minting annual-provisions
+gaiad query mint annual-provisions
 ```
 
 ### Staking

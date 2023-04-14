@@ -5,7 +5,8 @@ title: Joining Mainnet
 
 # Join the Cosmos Hub Mainnet
 
-The current Cosmos Hub mainnet, `cosmoshub-4`, has been performing in place store migration upgrades as of the [Delta Upgrade](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md) July 2021. The most recent upgrade was [Theta](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-v7-Theta-upgrade.md) April 2022. This type of upgrade preserves the same chain-id but state before the upgrade height is only accessible by corresponding versions of the binary (ie. queries of state between height `6910000` and `8695000` should use `gaia v5.0.x` (Delta) after `86950000` and before `10085397` should use `gaia v6.0.x` (Vega) to guarantee correctly encoded responses. The roadmap documentation contains a [history of upgrades](https://github.com/cosmos/gaia/tree/main/docs/roadmap).). Visit the [migration section](https://github.com/cosmos/gaia/tree/main/docs/migration) of the Hub's docs for more information on previous chain migrations.
+
+The current Cosmos Hub mainnet, `cosmoshub-4`, has been performing in place store migration upgrades as of the [Delta Upgrade](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md) July 2021. The most recent upgrade was [Lambda](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-v9-Lambda-upgrade.md) March 2023. This type of upgrade preserves the same chain-id but state before the upgrade height is only accessible by corresponding versions of the binary (ie. queries of state between height `6,910,000` and `8,695,000` should use `gaia v5.0.x` (Delta), between `8,695,000` and `10,085,397` use `gaia v6.0.x` (Vega), between `10,085,397` and `14,099,412` use `gaia v7.0.x` (Theta),  between `14,099,412` and `14,470,501` use `gaia v8.0.x` (Rho),  after `14,470,501` use `gaia v9.0.x` (Lambda) to guarantee correctly encoded responses. The roadmap documentation contains a [history of upgrades](https://github.com/cosmos/gaia/tree/main/docs/roadmap).). Visit the [migration section](https://github.com/cosmos/gaia/tree/main/docs/migration) of the Hub's docs for more information on previous chain migrations.
 
 **This guide includes full instructions for joining the mainnet either as an archive/full node or a pruned node.**
 
@@ -15,27 +16,31 @@ For instructions to join as a validator, please also see the [Validator Guide](h
 
 ### Overview
 <!-- DON'T FORGET TO KEEP INDEX UP TO DATE -->
-- [Explorers](#explorers)
-- [Getting Started](#getting-started)
-- [Hardware Requirements](#hardware)
-- [General Configuration](#general-configuration)
-  - [Initialize Chain](#initialize-chain)
-  - [Genesis File](#genesis-file)
-  - [Seeds & Peers](#seeds-amp-peers)
-  - [Gas & Fees](#gas-amp-fees)
-  - [Pruning of State](#pruning-of-state)
-  - [REST API](#rest-api)
-  - [GRPC](#grpc)
-- [Sync Options](#sync-options)
-  - [Blocksync](#blocksync)
-  - [State Sync](#state-sync)
-  - [Quicksync](#quicksync)
-- [Snapshots](#snapshots)=
-- [Releases](#releases-amp-upgrades)
-- [Cosmovisor](#cosmovisor)
-- [Running via Background Process](#running-via-background-process)
-- [Exporting State](#exporting-state)
-- [Verify Mainnet](#verify-mainnet)
+- [Join the Cosmos Hub Mainnet](#join-the-cosmos-hub-mainnet)
+    - [Overview](#overview)
+    - [Background](#background)
+  - [Explorers](#explorers)
+  - [Getting Started](#getting-started)
+  - [Hardware](#hardware)
+  - [General Configuration](#general-configuration)
+    - [Initialize Chain](#initialize-chain)
+    - [Genesis File](#genesis-file)
+    - [Seeds \& Peers](#seeds--peers)
+    - [Gas \& Fees](#gas--fees)
+    - [Pruning of State](#pruning-of-state)
+    - [REST API](#rest-api)
+    - [GRPC](#grpc)
+  - [Sync Options](#sync-options)
+    - [Blocksync](#blocksync)
+        - [Getting Started](#getting-started-1)
+    - [State Sync](#state-sync)
+    - [Quicksync](#quicksync)
+  - [Snapshots](#snapshots)
+  - [Releases \& Upgrades](#releases--upgrades)
+  - [Cosmovisor](#cosmovisor)
+  - [Running via Background Process](#running-via-background-process)
+  - [Exporting State](#exporting-state)
+  - [Verify Mainnet](#verify-mainnet)
 
 ### Background
 
@@ -47,7 +52,6 @@ There are many explorers for the Cosmos Hub. For reference while setting up a no
 
 - [Mintscan](https://www.mintscan.io/cosmos)
 - [Big Dipper](https://cosmos.bigdipper.live/)
-- [Hubble](https://hubble.figment.io/cosmos/chains/cosmoshub-4)
 <!-- markdown-link-check-disable-next-line -->
 - [Stake ID](https://cosmos.stake.id/)
 
@@ -56,8 +60,8 @@ There are many explorers for the Cosmos Hub. For reference while setting up a no
 Make sure the following prerequisites are completed:
 
 - Choose the proper hardware/server configuration. See the [hardware guide](#hardware).
-- Ensure Gaia is properly installed. See the [installation guide](https://hub.cosmos.network/main/getting-started/installation.html) for a walkthrough.
-- Follow the [configuration guide](#General-Configuration) to intialize and prepare the node to sync with the network.
+- Ensure Gaia is properly installed. See the [installation guide](https://hub.cosmos.network/main/getting-started/installation.html) for a walk-through.
+- Follow the [configuration guide](#General-Configuration) to initialize and prepare the node to sync with the network.
 
 ## Hardware
 
@@ -368,13 +372,15 @@ snapshot-keep-recent = 10
 
 **See all [Gaia Releases](https://github.com/cosmos/gaia/releases)**
 
-The most up to date release of Gaia is [`V8.0.0`](https://github.com/cosmos/gaia/releases/tag/v8.0.0). For those that want to use state sync or quicksync to get their node up to speed, starting with the most recent version of Gaia is sufficient.
+The most up to date release of Gaia is [`V9.0.1`](https://github.com/cosmos/gaia/releases/tag/v9.0.1). For those that want to use state sync or quicksync to get their node up to speed, starting with the most recent version of Gaia is sufficient.
 
-To sync an archive or full node from scratch, it is important to note that you must start with [`V4.2.1`](https://github.com/cosmos/gaia/releases/tag/v4.2.1) and proceed through two different upgrades Delta at block height `6910000` and Vega at block height `8695000`.
+
+To sync an archive or full node from scratch, it is important to note that you must start with [`V4.2.1`](https://github.com/cosmos/gaia/releases/tag/v4.2.1) and proceed through two different upgrades Delta at block height `6,910,000`, Vega at block height `8,695,000`, Theta at block height `10,085,397`, Rho at block height `14099412` and Lambda at block height `14,470,501`.
 
 The process is summarized below but make sure to follow the manual upgrade instructions for each release:
 
 **[Delta Instructions](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md#Upgrade-will-take-place-July-12,-2021)**
+
 Once `V4` reaches the upgrade block height, expect the chain to halt and to see the following message:
 
 ```bash
@@ -391,19 +397,55 @@ Once `V5` reaches the upgrade block height, the chain will halt and display the 
 
 ```bash
 ERR UPGRADE "Vega" NEEDED at height: 8695000
-
 ```
 
 Again, make sure to backup `~/.gaia`
 
 Install Gaia [`V6.0.0`](https://github.com/cosmos/gaia/releases/tag/v6.0.0) and restart the daemon.
 
+**[Theta Instructions](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-v7-Theta-upgrade.md)**
+
+Once `V6` reaches the upgrade block height, the chain will halt and display the following message:
+
+```bash
+ERR UPGRADE "Theta" NEEDED at height: 10085397
+```
+
+Again, make sure to backup `~/.gaia`
+
+Install Gaia [`V7.0.0`](https://github.com/cosmos/gaia/releases/tag/v7.0.0) and restart the daemon.
+
+
+**[Rho Instructions](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-v8-Rho-upgrade.md)**
+
+Once `V7` reaches the upgrade block height, the chain will halt and display the following message:
+
+```bash
+ERR UPGRADE "Rho" NEEDED at height: 14099412
+```
+
+Again, make sure to backup `~/.gaia`
+
+Install Gaia [`V8.0.0`](https://github.com/cosmos/gaia/releases/tag/v8.0.0) and restart the daemon.
+
+**[Lambda Instructions](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-v9-Lambda-upgrade.md)**
+
+Once `V8` reaches the upgrade block height, the chain will halt and display the following message:
+
+```bash
+ERR UPGRADE "Lambda" NEEDED at height: 14470501
+```
+
+Again, make sure to backup `~/.gaia`
+
+Install Gaia [`V9.0.0`](https://github.com/cosmos/gaia/releases/tag/v9.0.0) and restart the daemon.
+
 
 ## Cosmovisor
 
 Cosmovisor is a process manager developed to relieve node operators of having to manually intervene every time there is an upgrade. Cosmovisor monitors the governance module for upgrade proposals; it will take care of downloading the new binary, stopping the old one, switching to the new one, and restarting.
 
-For more information on how to run a node via Cosmovisor, check out the [docs](https://github.com/cosmos/cosmos-sdk/blob/v0.45.0/cosmovisor/README.md).
+For more information on how to run a node via Cosmovisor, check out the [docs](https://github.com/cosmos/cosmos-sdk/tree/main/tools/cosmovisor).
 
 ## Running via Background Process
 
@@ -480,10 +522,10 @@ gaiad export --height [height] --for-zero-height > [filename].json
 ## Verify Mainnet
 
 Help to prevent a catastrophe by running invariants on each block on your full
-node. In essence, by running invariants the node operator ensures that the state of mainnet is the correct expected state. One vital invariant check is that no atoms are being created or destroyed outside of expected protocol, however there are many other invariant checks each unique to their respective module. Because invariant checks are computationally expensive, they are not enabled by default. To run a node with these checks start your node with the assert-invariants-blockly flag:
+node. In essence, by running invariants the node operator ensures that the state of mainnet is the correct expected state. One vital invariant check is that no atoms are being created or destroyed outside of expected protocol, however there are many other invariant checks each unique to their respective module. Because invariant checks are computationally expensive, they are not enabled by default. To run a node with these checks start your node with the --x-crisis-skip-assert-invariants flag:
 
 ```bash
-gaiad start --assert-invariants-blockly
+gaiad start --x-crisis-skip-assert-invariants
 ```
 
 If an invariant is broken on the node, it will panic and prompt the operator to send a transaction which will halt mainnet. For example the provided message may look like:

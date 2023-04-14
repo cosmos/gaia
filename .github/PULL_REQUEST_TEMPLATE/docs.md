@@ -28,10 +28,11 @@ your handle next to the items reviewed if you only reviewed selected items.*
 
 I have...
 
-- [ ] confirmed the correct `docs:` prefix in the PR title
-- [ ] confirmed all author checklist items have been addressed 
-- [ ] confirmed that this PR only changes documentation
-- [ ] reviewed content for consistency
-- [ ] reviewed content for thoroughness
-- [ ] reviewed content for spelling and grammar
-- [ ] tested instructions (if applicable)
+- [ ] Confirmed the correct `docs:` prefix in the PR title
+- [ ] Confirmed all author checklist items have been addressed 
+- [ ] Confirmed that this PR only changes documentation
+- [ ] Reviewed content for consistency
+- [ ] Reviewed content for thoroughness
+- [ ] Reviewed content for spelling and grammar
+- [ ] Tested instructions (if applicable)
+

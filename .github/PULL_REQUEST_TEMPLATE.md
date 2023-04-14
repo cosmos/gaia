@@ -32,7 +32,7 @@ I have...
 * [ ] Added a changelog entry to `CHANGELOG.md`
 * [ ] Included comments for [documenting Go code](https://blog.golang.org/godoc)
 * [ ] Updated the relevant documentation or specification
-* [ ] Reviewed "Files changed" and left comments if necessary
+* [ ] Reviewed "Files changed" and left comments if necessary <!-- relevant if the changes are not obvious  -->
 * [ ] Confirmed all CI checks have passed
 
 ### Reviewers Checklist

@@ -17,7 +17,7 @@ I have...
 - [ ] Included the correct [type prefix](https://github.com/commitizen/conventional-commit-types/blob/v3.0.0/index.json) in the PR title
 - [ ] Targeted the correct branch (see [PR Targeting](https://github.com/cosmos/gaia/blob/main/CONTRIBUTING.md#pr-targeting))
 - [ ] Provided a link to the relevant issue or specification
-- [ ] Reviewed "Files changed" and left comments if necessary
+- [ ] Reviewed "Files changed" and left comments if necessary <!-- relevant if the changes are not obvious -->
 - [ ] Confirmed all CI checks have passed
 
 ### Reviewers Checklist
@@ -29,5 +29,5 @@ I have...
 
 - [ ] Confirmed the correct [type prefix](https://github.com/commitizen/conventional-commit-types/blob/v3.0.0/index.json) in the PR title
 - [ ] Confirmed all author checklist items have been addressed
-- [ ] Confirmed that this PR does not change production code
+- [ ] Confirmed that this PR does not change production code <!-- e.g., updating tests -->
 

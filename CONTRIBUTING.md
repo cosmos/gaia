@@ -1,7 +1,7 @@
 # Contributing
 
 - [Contributing](#contributing)
-  - [Teams Dev Calls](#teams-dev-calls)
+  - [Team Organization](#team-organization)
   - [Development Procedure](#development-procedure)
     - [Testing](#testing)
     - [Pull Requests](#pull-requests)
@@ -43,7 +43,7 @@ without review.
 
 ## Team Organization
 
-Gaia has many stakeholders contributing and shaping the project. The Core Gaia team is composed of Informal Systems developers. Any long-term contributors and additional maintainers from other projects are welcome. We use self-organizing principles to coordinate and collaborate across organizations in structured "EPIC" that focus on specific problem domains or architectural components of Gaia.
+Gaia has many stakeholders contributing and shaping the project. The Core Gaia team is composed of Informal Systems developers. Any long-term contributors and additional maintainers from other projects are welcome. We use self-organizing principles to coordinate and collaborate across organizations in structured "EPIC" that focus on specific problem domains or architectural components of Gaia. For details, see the [GitHub Project board](https://github.com/orgs/cosmos/projects/28/views/11). 
 
 The developers work in sprints, which are available in a [GitHub Project](https://github.com/orgs/cosmos/projects/28/views/2). 
 

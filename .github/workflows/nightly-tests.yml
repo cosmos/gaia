@@ -1,3 +1,18 @@
+name: "Nightly E2E run"
+on:
+  workflow_call:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+
+  run-tests:
+    uses: cosmos/gaia/.github/workflows/test.yml@main
+
+  run-simulations:
+    uses: cosmos/gaia/.github/workflows/sims.yml@main
+
   run-vulncheck:
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -12,6 +27,7 @@
 
   run-vulncheck-test-notification:
     needs: run-vulncheck
+    if: ${{ failure() }}
     runs-on: ubuntu-latest
     steps:
       - name: Notify Slack on failure

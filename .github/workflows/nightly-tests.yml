@@ -8,10 +8,10 @@ on:
 jobs:
 
   run-tests:
-    uses: cosmos/gaia/.github/workflows/test.yml@main
+    uses: mmulji-ic/gaia/.github/workflows/test.yml@main
 
   run-simulations:
-    uses: cosmos/gaia/.github/workflows/sims.yml@main
+    uses: mmulji-ic/gaia/.github/workflows/sims.yml@main
 
   run-vulncheck:
     runs-on: ubuntu-latest

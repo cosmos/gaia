@@ -24,10 +24,7 @@ jobs:
       - name: run-vulncheck
         id: vulncheck
         run: |
-          MESSAGE=$(cat << EOF
-          make vulncheck 2>&1
-          EOF
-          )
+          MESSAGE=$( make vulncheck 2>&1 | tr '\n' ' ')
           echo VULCHECK_LOG=$MESSAGE >> $GITHUB_ENV        
 
   run-vulncheck-test-notification:

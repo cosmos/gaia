@@ -23,8 +23,7 @@ jobs:
           go-version: 1.19.1
       - name: run-vulncheck
         id: vulncheck
-#         run: echo "VULCHECK_LOG=$(make vulncheck 2>&1)" >> $GITHUB_OUTPUT
-        run: echo "VULCHECK_LOG=$(make vulncheck 2>&1)" >> $GITHUB_ENV
+        run: echo "VULCHECK_LOG=$(make vulncheck 2>&1)" >> $GITHUB_OUTPUT
 
   run-vulncheck-test-notification:
     needs: run-vulncheck
@@ -46,7 +45,7 @@ jobs:
                   "type": "header",
                   "text": {
                     "type": "plain_text",
-                    "text": "❗Vunerability tests failed❗\n\n ${{ env.VULCHECK_LOG }}",
+                    "text": "❗Vunerability tests failed❗\n\n ${{ steps.vulncheck.outputs.VULCHECK_LOG }}",
                     "emoji": true
                   }
                 },

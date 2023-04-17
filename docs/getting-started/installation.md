@@ -39,12 +39,13 @@ We suggest the following two ways to install Go. Check out the [official docs](h
 
 **Ubuntu:**
 
-At the time of this writing, the latest release is `1.18.10`. We're going to download the tarball, extract it to `/usr/local`, and export `GOROOT` to our `$PATH`
+At the time of this writing, the latest release is `1.2.10`. We're going to download the tarball, extract it to `/usr/local`, and export `GOROOT` to our `$PATH`
 
 ```bash
-curl -OL https://golang.org/dl/go1.18.10.linux-amd64.tar.gz
+curl -OL https://go.dev/dl/go1.20.3.linux-amd64.tar.gz
 
-sudo tar -C /usr/local -xvf go1.18.10.linux-amd64.tar.gz
+sudo tar -C /usr/local -xvf https://go.dev/dl/go1.20.3.linux-amd64.tar.gz
+
 
 export PATH=$PATH:/usr/local/go/bin
 
@@ -98,7 +99,7 @@ server_name: gaiad
 version: v9.0.0
 commit: 682770f2410ab0d33ac7f0c7203519d7a99fa2b6
 build_tags: netgo,ledger
-go: go version go1.18.10 linux/amd64
+go: go version go1.20.3 linux/amd64
 ```
 
 ### Build Tags

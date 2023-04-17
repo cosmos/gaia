@@ -37,7 +37,7 @@ func (s *IntegrationTestSuite) TestByPassMinFee() {
 	if !runBypassMinFeeTest {
 		s.T().Skip()
 	}
-	s.testByPassMinFeeWithdrawReward()
+	s.testBypassMinFeeWithdrawReward()
 }
 
 func (s *IntegrationTestSuite) TestEncode() {

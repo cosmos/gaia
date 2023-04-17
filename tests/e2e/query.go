@@ -74,7 +74,7 @@ func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) {
 	return balancesResp.Balances, nil
 }
 
-func queryGlobalFees(endpoint string) (amt sdk.DecCoins, err error) {
+func queryGlobalFees(endpoint string) (sdk.DecCoins, error) {
 	body, err := httpGet(fmt.Sprintf("%s/gaia/globalfee/v1beta1/params", endpoint))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
@@ -86,6 +86,20 @@ func queryGlobalFees(endpoint string) (amt sdk.DecCoins, err error) {
 	}
 
 	return params.MinimumGasPrices, nil
+}
+
+func queryBypassMsgs(endpoint string) ([]string, error) {
+	body, err := httpGet(fmt.Sprintf("%s/gaia/globalfee/v1beta1/params", endpoint))
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	var params globalfee.QueryParamsResponse
+	if err := cdc.UnmarshalJSON(body, &params); err != nil {
+		return []string{}, err
+	}
+
+	return params.BypassMinFeeMsgTypes, nil
 }
 
 func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string) (stakingtypes.QueryDelegationResponse, error) {
@@ -126,6 +140,7 @@ func queryGovProposal(endpoint string, proposalID int) (govtypes.QueryProposalRe
 		return govProposalResp, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
 	if err := cdc.UnmarshalJSON(body, &govProposalResp); err != nil {
+		// panic(string(body))
 		return govProposalResp, err
 	}
 

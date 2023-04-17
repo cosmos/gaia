@@ -5,10 +5,11 @@ import (
 	"time"
 
 	"cosmossdk.io/math"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 )
 
-func (s *IntegrationTestSuite) testByPassMinFeeWithdrawReward() {
-	// todo gov propose withdraw to be bypass-msg first
+func (s *IntegrationTestSuite) testBypassMinFeeWithdrawReward() {
 	// s.T().Skip()
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
@@ -24,6 +25,11 @@ func (s *IntegrationTestSuite) testByPassMinFeeWithdrawReward() {
 		15*time.Second,
 		5*time.Second,
 	)
+
+	// gov propose withdraw to be bypass-msg first
+	submitterAddr := s.chainA.validators[0].keyInfo.GetAddress()
+	submitter := submitterAddr.String()
+	s.govProposeNewBypassMsgs([]string{sdk.MsgTypeURL(&distributiontypes.MsgWithdrawDelegatorReward{})}, proposalCounter, submitter, standardFees.String())
 
 	// GlobalFee == minGasPrice+uatomDenom
 	paidFeeAmt := math.LegacyMustNewDecFromStr(minGasPrice).Mul(math.LegacyNewDec(gas)).String()

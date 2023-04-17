@@ -61,6 +61,7 @@ const (
 	slashingShares         int64 = 10000
 
 	proposalGlobalFeeFilename           = "proposal_globalfee.json"
+	proposalBypassMsgFilename           = "proposal_bypass_msg.json"
 	proposalCommunitySpendFilename      = "proposal_community_spend.json"
 	proposalAddConsumerChainFilename    = "proposal_add_consumer.json"
 	proposalRemoveConsumerChainFilename = "proposal_remove_consumer.json"
@@ -606,6 +607,37 @@ func (s *IntegrationTestSuite) writeGovParamChangeProposalGlobalFees(c *chain, c
 	s.Require().NoError(err)
 
 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalGlobalFeeFilename), paramChangeProposalBody)
+	s.Require().NoError(err)
+}
+
+func (s *IntegrationTestSuite) writeGovParamChangeProposalBypassMsgs(c *chain, msgs []string) {
+	type ParamInfo struct {
+		Subspace string   `json:"subspace"`
+		Key      string   `json:"key"`
+		Value    []string `json:"value"`
+	}
+
+	type ParamChangeMessage struct {
+		Title       string      `json:"title"`
+		Description string      `json:"description"`
+		Changes     []ParamInfo `json:"changes"`
+		Deposit     string      `json:"deposit"`
+	}
+	paramChangeProposalBody, err := json.MarshalIndent(ParamChangeMessage{
+		Title:       "global fee test",
+		Description: "global fee change",
+		Changes: []ParamInfo{
+			{
+				Subspace: "globalfee",
+				Key:      "BypassMinFeeMsgTypes",
+				Value:    msgs,
+			},
+		},
+		Deposit: "1000uatom",
+	}, "", " ")
+	s.Require().NoError(err)
+
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalBypassMsgFilename), paramChangeProposalBody)
 	s.Require().NoError(err)
 }
 

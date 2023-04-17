@@ -3,6 +3,16 @@ on:
   workflow_call:
   workflow_dispatch:
   schedule:
+    # run every day at 03:00 UTC
+    #        ┌───────────── minute (0 - 59)
+    #        │  ┌───────────── hour (0 - 23)
+    #        │  │ ┌───────────── day of the month (1 - 31)
+    #        │  │ │ ┌───────────── month (1 - 12 or JAN-DEC)
+    #        │  │ │ │ ┌───────────── day of the week (0 - 6 or SUN-SAT)
+    #        │  │ │ │ │
+    #        │  │ │ │ │
+    #        │  │ │ │ │
+    #        *  * * * *  
     - cron: "0 0 * * *"
 
 jobs:
@@ -23,11 +33,10 @@ jobs:
           go-version: 1.19.1
       - name: run-vulncheck
         id: vulncheck
-        run: |
-          MESSAGE=$( make vulncheck 2>&1 | tr '\n' ' ')
-          echo VULCHECK_LOG=$MESSAGE >> $GITHUB_ENV        
+        run: make vulncheck
 
   run-vulncheck-test-notification:
+    if: failure()
     needs: run-vulncheck
     runs-on: ubuntu-latest
     steps:
@@ -43,25 +52,12 @@ jobs:
           payload: |
             {
               "blocks": [
-                {
-                  "type": "header",
-                  "text": {
-                    "type": "plain_text",
-                    "text": "❗Vunerability tests failed",
-                    "emoji": true
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": ":skull: See the <${{ env.RUN_URL }}|run details>"
-                  },
                   {
                   "type": "section",
                   "text": {
                     "type": "plain_text",
-                    "text": "${{ env.VULCHECK_LOG }}"
+                    "text": "❗govulncheck failed on the nightly build, see the <${{ env.RUN_URL }}|run details>",
+                    "emoji" : true
                   }                  
                 }
               ]

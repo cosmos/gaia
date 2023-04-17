@@ -59,7 +59,7 @@ jobs:
             filename=$(echo "$filename" | sed 's/\//\\\//g')
             sed -i.bak "/""$filename""/d" coverage.txt
           done
-      - uses: codecov/codecov-action@v3.1.1
+      - uses: codecov/codecov-action@v3.1.2
         with:
           file: ./coverage.txt
           fail_ci_if_error: true

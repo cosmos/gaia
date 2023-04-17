@@ -23,11 +23,7 @@ jobs:
           go-version: 1.19.1
       - name: run-vulncheck
         id: vulncheck
-        run: >- 
-          echo "::set-output name=VULCHECK_LOG::$(
-            make vulncheck
-          )"
-          
+        run: echo "VULCHECK_LOG=$(make vulncheck 2>&1)" >> $GITHUB_OUTPUT
 
   run-vulncheck-test-notification:
     needs: run-vulncheck

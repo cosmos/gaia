@@ -22,11 +22,15 @@ jobs:
         with:
           go-version: 1.20.3
       - name: run-vulncheck
-        run: make vulncheck
+        id: vulncheck
+        run: >- 
+          echo "::set-output name=VULCHECK_LOG::$(
+            make vulncheck
+          )"
+          
 
   run-vulncheck-test-notification:
     needs: run-vulncheck
-    if: ${{ failure() }}
     runs-on: ubuntu-latest
     steps:
       - name: Notify Slack on failure
@@ -45,7 +49,7 @@ jobs:
                   "type": "header",
                   "text": {
                     "type": "plain_text",
-                    "text": "❗Vunerability tests failed❗",
+                    "text": "❗Vunerability tests failed❗\n\n ${{ steps.vulncheck.outputs.VULCHECK_LOG }}",
                     "emoji": true
                   }
                 },

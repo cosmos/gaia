@@ -55,7 +55,7 @@ jobs:
                   {
                   "type": "section",
                   "text": {
-                    "type": "plain_text",
+                    "type": "mrkdwn",
                     "text": "❗govulncheck failed on the nightly build, see the <${{ env.RUN_URL }}|run details>",
                     "emoji" : true
                   }                  

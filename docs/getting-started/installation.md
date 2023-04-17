@@ -30,7 +30,7 @@ sudo apt-get install -y make gcc
 ## Install Go
 
 ::: tip
-**Go 1.19+** is required.
+**Go 1.20+** is required.
 :::
 
 We suggest the following two ways to install Go. Check out the [official docs](https://golang.org/doc/install) and Go installer for the correct download for your operating system. Alternatively, you can install Go yourself from the command line. Detailed below are standard default installation locations, but feel free to customize.

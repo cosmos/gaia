@@ -1,7 +1,7 @@
 ARG IMG_TAG=latest
 
 # Compile the gaiad binary
-FROM golang:1.19-alpine AS gaiad-builder
+FROM golang:1.20-alpine AS gaiad-builder
 WORKDIR /src/app/
 COPY go.mod go.sum* ./
 RUN go mod download

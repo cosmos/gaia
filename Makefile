@@ -21,7 +21,7 @@ BUILDDIR ?= $(CURDIR)/build
 TEST_DOCKER_REPO=cosmos/contrib-gaiatest
 
 GO_SYSTEM_VERSION = $(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f1-2)
-REQUIRE_GO_VERSION = 1.19
+REQUIRE_GO_VERSION = 1.20
 
 export GO111MODULE = on
 
@@ -98,7 +98,7 @@ include contrib/devtools/Makefile
 check_version:
 ifneq ($(GO_SYSTEM_VERSION), $(REQUIRE_GO_VERSION))
 	@echo $(GO_SYSTEM_VERSION) $(REQUIRE_GO_VERSION)
-	@echo "ERROR: Go version 1.19 is required for $(VERSION) of Gaia."
+	@echo "ERROR: Go version 1.20 is required for $(VERSION) of Gaia."
 	exit 1
 endif
 
@@ -220,7 +220,7 @@ docker-build-all: docker-build-debug docker-build-hermes
 ###                                Linting                                  ###
 ###############################################################################
 golangci_lint_cmd=golangci-lint
-golangci_version=v1.50.1
+golangci_version=v1.52.2
 
 lint:
 	@echo "--> Running linter"

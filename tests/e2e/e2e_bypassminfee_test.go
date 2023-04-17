@@ -1,12 +1,31 @@
 package e2e
 
 import (
+	"fmt"
+	"time"
+
 	"cosmossdk.io/math"
 )
 
 func (s *IntegrationTestSuite) testByPassMinFeeWithdrawReward() {
 	// todo gov propose withdraw to be bypass-msg first
 	// s.T().Skip()
+	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+
+	s.Require().Eventually(
+		func() bool {
+			globalFees, err := queryGlobalFees(chainAAPIEndpoint)
+			s.T().Logf("After gov new global fee proposal: %s", globalFees.String())
+			s.Require().NoError(err)
+			return true
+
+			// attention: if global fee is empty, when query globalfee, it shows empty rather than default ante.DefaultZeroGlobalFee() = 0uatom.
+		},
+		15*time.Second,
+		5*time.Second,
+	)
+
+	// GlobalFee == minGasPrice+uatomDenom
 	paidFeeAmt := math.LegacyMustNewDecFromStr(minGasPrice).Mul(math.LegacyNewDec(gas)).String()
 	payee := s.chainA.validators[0].keyInfo.GetAddress()
 	// pass

@@ -39,7 +39,7 @@ We suggest the following two ways to install Go. Check out the [official docs](h
 
 **Ubuntu:**
 
-At the time of this writing, the latest release is `1.2.10`. We're going to download the tarball, extract it to `/usr/local`, and export `GOROOT` to our `$PATH`
+At the time of this writing, the latest release is `1.20.3`. We're going to download the tarball, extract it to `/usr/local`, and export `GOROOT` to our `$PATH`
 
 ```bash
 curl -OL https://go.dev/dl/go1.20.3.linux-amd64.tar.gz

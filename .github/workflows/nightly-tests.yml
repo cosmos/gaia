@@ -47,7 +47,7 @@ jobs:
                   "type": "header",
                   "text": {
                     "type": "plain_text",
-                    "text": "❗Vunerability tests failed❗\n\n ${{ env.VULCHECK_LOG }}",
+                    "text": "❗Vunerability tests failed",
                     "emoji": true
                   }
                 },
@@ -56,7 +56,13 @@ jobs:
                   "text": {
                     "type": "mrkdwn",
                     "text": ":skull: See the <${{ env.RUN_URL }}|run details>"
-                  }
+                  },
+                  {
+                  "type": "section",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "${{ env.VULCHECK_LOG }}"
+                  }                  
                 }
               ]
             }

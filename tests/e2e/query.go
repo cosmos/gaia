@@ -96,6 +96,7 @@ func queryBypassMsgs(endpoint string) ([]string, error) {
 
 	var params globalfee.QueryParamsResponse
 	if err := cdc.UnmarshalJSON(body, &params); err != nil {
+		panic(string(body))
 		return []string{}, err
 	}
 

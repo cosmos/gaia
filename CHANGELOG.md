@@ -37,8 +37,6 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ## [Unreleased]
 
 ## [v9.0.3] - 2023-04-19
-* (fix) [#2092](https://github.com/cosmos/gaia/pull/2092) Change `bypass-min-fee-msg-types` parsing in `app.toml` to allow operators to use empty bypass list.
- The default was changed to be an empty list (no bypass allowed).
  * (deps) [#2399](https://github.com/cosmos/gaia/pull/2399) Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.15-ics](https://github.com/cosmos/cosmos
 sdk/releases/tag/v0.45.15-ics) and migrate to [CometBFT](https://github.com/cometbft/cometbft).
 

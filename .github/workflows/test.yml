@@ -131,6 +131,7 @@ jobs:
           git checkout v8.0.0
           make build
           cp ./build/gaiad ./build/gaiad8
+          go clean -modcache
         if: env.GIT_DIFF
       - uses: actions/setup-go@v4
         with:

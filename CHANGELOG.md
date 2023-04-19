@@ -37,8 +37,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ## [Unreleased]
 
 ## [v9.0.3] - 2023-04-19
-* (fix) [#2092](https://github.com/cosmos/gaia/pull/2092) change bypass-min-fee-types parsing; change defaults
-* (bump) [#2399](https://github.com/cosmos/gaia/pull/2399) bump sdk and replace comet
+* (deps) [#2399](https://github.com/cosmos/gaia/pull/2399) Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.15-ics](https://github.com/cosmos/cosmos
+sdk/releases/tag/v0.45.15-ics) and migrate to [CometBFT](https://github.com/cometbft/cometbft).
 
 ## [v9.0.2] - 2023-04-03
 * (feat) Bump [Interchain-Security](https://github.com/cosmos/interchain-security) [v1.1.0](https://github.com/cosmos/interchain-security/releases/tag/v1.1.0) provider module. See the [release notes](https://github.com/cosmos/interchain-security/releases/tag/v1.1.0) for details.
@@ -490,7 +490,8 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
-[Unreleased]: https://github.com/cosmos/gaia/compare/v9.0.1...HEAD
+[v9.0.3]: https://github.com/cosmos/gaia/releases/tag/v9.0.3
+[v9.0.2]: https://github.com/cosmos/gaia/releases/tag/v9.0.2
 [v9.0.1]: https://github.com/cosmos/gaia/releases/tag/v9.0.1
 [v9.0.0]: https://github.com/cosmos/gaia/releases/tag/v9.0.0
 [v8.0.1]: https://github.com/cosmos/gaia/releases/tag/v8.0.1

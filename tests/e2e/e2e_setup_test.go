@@ -51,17 +51,19 @@ const (
 	minGasPrice    = "0.00001"
 	// the test globalfee in genesis is the same as minGasPrice
 	// global fee lower/higher than min_gas_price
-	initialGlobalFeeAmt          = "0.00001"
-	lowGlobalFeesAmt             = "0.000001"
-	highGlobalFeeAmt             = "0.0001"
-	gas                          = 200000
-	govProposalBlockBuffer       = 35
-	relayerAccountIndex          = 0
-	numberOfEvidences            = 10
-	slashingShares         int64 = 10000
+	initialGlobalFeeAmt                   = "0.00001"
+	lowGlobalFeesAmt                      = "0.000001"
+	highGlobalFeeAmt                      = "0.0001"
+	maxTotalBypassMinFeeMsgGasUsage       = "1"
+	gas                                   = 200000
+	govProposalBlockBuffer                = 35
+	relayerAccountIndex                   = 0
+	numberOfEvidences                     = 10
+	slashingShares                  int64 = 10000
 
 	proposalGlobalFeeFilename           = "proposal_globalfee.json"
 	proposalBypassMsgFilename           = "proposal_bypass_msg.json"
+	proposalMaxTotalBypassFilename      = "proposal_max_total_bypass.json"
 	proposalCommunitySpendFilename      = "proposal_community_spend.json"
 	proposalAddConsumerChainFilename    = "proposal_add_consumer.json"
 	proposalRemoveConsumerChainFilename = "proposal_remove_consumer.json"
@@ -162,7 +164,9 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 
 	s.T().Log("tearing down e2e integration test suite...")
 
-	s.Require().NoError(s.dkrPool.Purge(s.hermesResource))
+	if runIBCTest {
+		s.Require().NoError(s.dkrPool.Purge(s.hermesResource))
+	}
 
 	for _, vr := range s.valResources {
 		for _, r := range vr {
@@ -626,7 +630,7 @@ func (s *IntegrationTestSuite) writeGovParamChangeProposalBypassMsgs(c *chain, m
 		Deposit     string      `json:"deposit"`
 	}
 	paramChangeProposalBody, err := json.MarshalIndent(ParamChangeMessage{
-		Title:       "global fee test",
+		Title:       "ChangeProposalBypassMsgs",
 		Description: "global fee change",
 		Changes: []ParamInfo{
 			{
@@ -640,6 +644,37 @@ func (s *IntegrationTestSuite) writeGovParamChangeProposalBypassMsgs(c *chain, m
 	s.Require().NoError(err)
 
 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalBypassMsgFilename), paramChangeProposalBody)
+	s.Require().NoError(err)
+}
+
+func (s *IntegrationTestSuite) writeGovParamChangeProposalMaxTotalBypass(c *chain, gas uint64) {
+	type ParamInfo struct {
+		Subspace string `json:"subspace"`
+		Key      string `json:"key"`
+		Value    string `json:"value"`
+	}
+
+	type ParamChangeMessage struct {
+		Title       string      `json:"title"`
+		Description string      `json:"description"`
+		Changes     []ParamInfo `json:"changes"`
+		Deposit     string      `json:"deposit"`
+	}
+	paramChangeProposalBody, err := json.MarshalIndent(ParamChangeMessage{
+		Title:       "ChangeProposalMaxTotalBypass",
+		Description: "global fee change",
+		Changes: []ParamInfo{
+			{
+				Subspace: "globalfee",
+				Key:      "MaxTotalBypassMinFeeMsgGasUsage",
+				Value:    strconv.FormatInt(int64(gas), 10),
+			},
+		},
+		Deposit: "1000uatom",
+	}, "", " ")
+	s.Require().NoError(err)
+
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalMaxTotalBypassFilename), paramChangeProposalBody)
 	s.Require().NoError(err)
 }
 

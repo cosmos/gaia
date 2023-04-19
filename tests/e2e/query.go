@@ -96,11 +96,24 @@ func queryBypassMsgs(endpoint string) ([]string, error) {
 
 	var params globalfee.QueryParamsResponse
 	if err := cdc.UnmarshalJSON(body, &params); err != nil {
-		panic(string(body))
 		return []string{}, err
 	}
 
 	return params.BypassMinFeeMsgTypes, nil
+}
+
+func queryMaxTotalBypass(endpoint string) (uint64, error) {
+	body, err := httpGet(fmt.Sprintf("%s/gaia/globalfee/v1beta1/params", endpoint))
+	if err != nil {
+		return 0, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	var params globalfee.QueryParamsResponse
+	if err := cdc.UnmarshalJSON(body, &params); err != nil {
+		return 0, err
+	}
+
+	return params.MaxTotalBypassMinFeeMsgGasUsage, nil
 }
 
 func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string) (stakingtypes.QueryDelegationResponse, error) {

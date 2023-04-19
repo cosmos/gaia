@@ -52,13 +52,20 @@ jobs:
           payload: |
             {
               "blocks": [
-                  {
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "❗Vunerability tests failed",
+                    "emoji": true
+                  }
+                },
+                {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "❗govulncheck failed on the nightly build, see the <${{ env.RUN_URL }}|run details>",
-                    "emoji" : true
-                  }                  
+                    "text": "See the <${{ env.RUN_URL }}|run details>"
+                  }
                 }
               ]
             }

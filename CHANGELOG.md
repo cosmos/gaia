@@ -66,7 +66,7 @@ sdk/releases/tag/v0.45.15-ics) and migrate to [CometBFT](https://github.com/come
 [CHANGELOG of previous versions](https://github.com/cosmos/gaia/blob/main/CHANGELOG.md)
 
 <!-- Release links -->
-
+[Unreleased]: https://github.com/cosmos/gaia/compare/v9.0.3...release/v9.0.x
 [v9.0.3]: https://github.com/cosmos/gaia/releases/tag/v9.0.3
 [v9.0.2]: https://github.com/cosmos/gaia/releases/tag/v9.0.2
 [v9.0.1]: https://github.com/cosmos/gaia/releases/tag/v9.0.1

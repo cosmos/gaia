@@ -92,18 +92,6 @@ func (s *IntegrationTestSuite) govProposeNewMaxTotalBypassMinFeeMsgGasUsage(newG
 	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
 	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes"}
 
-	s.Require().Eventually(
-		func() bool {
-			gas, err := queryMaxTotalBypass(chainAAPIEndpoint)
-			s.T().Logf("Before gov new global fee proposal: %d", gas)
-			s.Require().NoError(err)
-
-			return true
-		},
-		15*time.Second,
-		5*time.Second,
-	)
-
 	// gov proposing new fees
 	s.T().Logf("Proposal number: %d", proposalCounter)
 	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change maxTotalBypassMinFeeMsgGasUsage to %d", newGas)

@@ -46,6 +46,18 @@ func Test_validateParams(t *testing.T) {
 			},
 			true,
 		},
+		"negative amount, fail": {
+			sdk.DecCoins{
+				sdk.DecCoin{Denom: "photon", Amount: sdk.OneDec().Neg()},
+			},
+			true,
+		},
+		"invalid denom, fail": {
+			sdk.DecCoins{
+				sdk.DecCoin{Denom: "photon!", Amount: sdk.OneDec().Neg()},
+			},
+			true,
+		},
 	}
 
 	for name, test := range tests {

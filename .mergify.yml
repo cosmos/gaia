@@ -1,3 +1,9 @@
+defaults:
+  actions:
+    backport:
+      assignees:
+        - "{{ author }}"
+
 queue_rules:
   - name: default
     conditions:
@@ -17,15 +23,6 @@ pull_request_rules:
         commit_message_template: |
           {{ title }} (#{{ number }})
           {{ body }}
-
-  - name: Backport patches to the release/v7.0.x branch
-    conditions:
-      - base=main
-      - label=A:backport/v7.0.x
-    actions:
-      backport:
-        branches:
-          - release/v7.0.x
 
   - name: Backport patches to the release/v8.0.x branch
     conditions:

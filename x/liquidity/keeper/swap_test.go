@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	"github.com/cosmos/gaia/v9/app"
+	app "github.com/cosmos/gaia/v9/app"
 	"github.com/cosmos/gaia/v9/x/liquidity"
 	"github.com/cosmos/gaia/v9/x/liquidity/types"
 )
@@ -138,7 +138,7 @@ func TestSwapExecution(t *testing.T) {
 	}
 }
 
-func testSwapEdgeCases(t *testing.T, r *rand.Rand, simapp *app.LiquidityApp, ctx sdk.Context, X, Y sdk.Int, depositBalance sdk.Coins, addrs []sdk.AccAddress) {
+func testSwapEdgeCases(t *testing.T, r *rand.Rand, simapp *app.GaiaApp, ctx sdk.Context, X, Y sdk.Int, depositBalance sdk.Coins, addrs []sdk.AccAddress) {
 	// simapp, ctx := createTestInput()
 	simapp.LiquidityKeeper.SetParams(ctx, types.DefaultParams())
 	params := simapp.LiquidityKeeper.GetParams(ctx)
@@ -347,7 +347,7 @@ func TestSwapWithDepletedPool(t *testing.T) {
 	liquidity.EndBlocker(ctx, simapp.LiquidityKeeper)
 }
 
-func createPool(simapp *app.LiquidityApp, ctx sdk.Context, X, Y sdk.Int, denomX, denomY string) (types.Pool, error) {
+func createPool(simapp *app.GaiaApp, ctx sdk.Context, X, Y sdk.Int, denomX, denomY string) (types.Pool, error) {
 	params := simapp.LiquidityKeeper.GetParams(ctx)
 
 	coins := sdk.NewCoins(sdk.NewCoin(denomX, X), sdk.NewCoin(denomY, Y))

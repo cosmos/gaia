@@ -17,7 +17,7 @@ import (
 	govcli "github.com/cosmos/cosmos-sdk/x/gov/client/cli"
 	paramscli "github.com/cosmos/cosmos-sdk/x/params/client/cli"
 
-	liquidityapp "github.com/cosmos/gaia/v9/app"
+	GaiaApp "github.com/cosmos/gaia/v9/app"
 	liquiditycli "github.com/cosmos/gaia/v9/x/liquidity/client/cli"
 
 	dbm "github.com/tendermint/tm-db"
@@ -29,17 +29,17 @@ func NewConfig(dbm *dbm.MemDB) network.Config {
 	encCfg := simapp.MakeTestEncodingConfig()
 
 	cfg := network.DefaultConfig()
-	cfg.AppConstructor = NewAppConstructor(encCfg, dbm)                    // the ABCI application constructor
-	cfg.GenesisState = liquidityapp.ModuleBasics.DefaultGenesis(cfg.Codec) // liquidity genesis state to provide
+	cfg.AppConstructor = NewAppConstructor(encCfg, dbm)               // the ABCI application constructor
+	cfg.GenesisState = GaiaApp.ModuleBasics.DefaultGenesis(cfg.Codec) // liquidity genesis state to provide
 	return cfg
 }
 
 // NewAppConstructor returns a new network AppConstructor.
 func NewAppConstructor(encodingCfg params.EncodingConfig, db *dbm.MemDB) network.AppConstructor {
 	return func(val network.Validator) servertypes.Application {
-		return liquidityapp.NewLiquidityApp(
+		return GaiaApp.NewGaiaApp(
 			val.Ctx.Logger, db, nil, true, make(map[int64]bool), val.Ctx.Config.RootDir, 0,
-			liquidityapp.MakeEncodingConfig(),
+			GaiaApp.MakeTestEncodingConfig(),
 			simapp.EmptyAppOptions{},
 			baseapp.SetPruning(storetypes.NewPruningOptionsFromString(val.AppConfig.Pruning)),
 			baseapp.SetMinGasPrices(val.AppConfig.MinGasPrices),

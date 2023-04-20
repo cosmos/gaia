@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	"github.com/cosmos/gaia/v9/app"
+	app "github.com/cosmos/gaia/v9/app"
 	"github.com/cosmos/gaia/v9/x/liquidity"
 	"github.com/cosmos/gaia/v9/x/liquidity/types"
 )

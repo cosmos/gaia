@@ -11,7 +11,7 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	"github.com/cosmos/gaia/v9/app"
+	app "github.com/cosmos/gaia/v9/app"
 	"github.com/cosmos/gaia/v9/x/liquidity/keeper"
 	"github.com/cosmos/gaia/v9/x/liquidity/types"
 )

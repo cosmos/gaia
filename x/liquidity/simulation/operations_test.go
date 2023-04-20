@@ -184,7 +184,7 @@ func TestSimulateMsgSwapWithinBatch(t *testing.T) {
 	require.Len(t, futureOperations, 0)
 }
 
-func createTestApp(isCheckTx bool) (*lapp.LiquidityApp, sdk.Context) {
+func createTestApp(isCheckTx bool) (*lapp.GaiaApp, sdk.Context) {
 	app := lapp.Setup(false)
 
 	ctx := app.BaseApp.NewContext(isCheckTx, tmproto.Header{})
@@ -194,7 +194,7 @@ func createTestApp(isCheckTx bool) (*lapp.LiquidityApp, sdk.Context) {
 	return app, ctx
 }
 
-func getTestingAccounts(t *testing.T, r *rand.Rand, app *lapp.LiquidityApp, ctx sdk.Context, n int) []simtypes.Account {
+func getTestingAccounts(t *testing.T, r *rand.Rand, app *lapp.GaiaApp, ctx sdk.Context, n int) []simtypes.Account {
 	accounts := simtypes.RandomAccounts(r, n)
 
 	initAmt := sdk.TokensFromConsensusPower(1_000_000, sdk.DefaultPowerReduction)
@@ -210,7 +210,7 @@ func getTestingAccounts(t *testing.T, r *rand.Rand, app *lapp.LiquidityApp, ctx 
 	return accounts
 }
 
-func setupLiquidityPools(t *testing.T, r *rand.Rand, app *lapp.LiquidityApp, ctx sdk.Context, accounts []simtypes.Account) {
+func setupLiquidityPools(t *testing.T, r *rand.Rand, app *lapp.GaiaApp, ctx sdk.Context, accounts []simtypes.Account) {
 	params := app.StakingKeeper.GetParams(ctx)
 
 	for _, account := range accounts {

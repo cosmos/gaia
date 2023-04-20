@@ -1568,15 +1568,15 @@ func (s *IntegrationTestSuite) TestExportGenesis() {
 			logger := serverCtx.Logger
 			db := s.db
 
-			var app *lapp.LiquidityApp
+			var app *lapp.GaiaApp
 			if height != -1 {
-				app = lapp.NewLiquidityApp(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), encCfg, appOpts)
+				app = lapp.NewGaiaApp(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), encCfg, appOpts)
 
 				if err := app.LoadHeight(height); err != nil {
 					return servertypes.ExportedApp{}, err
 				}
 			} else {
-				app = lapp.NewLiquidityApp(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), encCfg, appOpts)
+				app = lapp.NewGaiaApp(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), encCfg, appOpts)
 			}
 
 			return app.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)

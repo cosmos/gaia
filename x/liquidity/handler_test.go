@@ -9,7 +9,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/stretchr/testify/require"
 
-	"github.com/cosmos/gaia/v9/app"
+	app "github.com/cosmos/gaia/v9/app"
 	"github.com/cosmos/gaia/v9/x/liquidity"
 	"github.com/cosmos/gaia/v9/x/liquidity/types"
 )

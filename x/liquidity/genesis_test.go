@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	"github.com/cosmos/gaia/v9/app"
+	app "github.com/cosmos/gaia/v9/app"
 	"github.com/cosmos/gaia/v9/x/liquidity"
 	"github.com/cosmos/gaia/v9/x/liquidity/types"
 )

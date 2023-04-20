@@ -454,7 +454,8 @@ func CheckSwapPrice(matchResultXtoY, matchResultYtoX []MatchResult, swapPrice sd
 
 // Find matched orders and set status for msgs
 func FindOrderMatch(direction OrderDirection, swapMsgStates []*SwapMsgState, executableAmt, swapPrice sdk.Dec, height int64) (
-	matchResults []MatchResult, poolXDelta, poolYDelta sdk.Dec) {
+	matchResults []MatchResult, poolXDelta, poolYDelta sdk.Dec,
+) {
 	poolXDelta = sdk.ZeroDec()
 	poolYDelta = sdk.ZeroDec()
 
@@ -550,7 +551,8 @@ func FindOrderMatch(direction OrderDirection, swapMsgStates []*SwapMsgState, exe
 
 // UpdateSwapMsgStates updates SwapMsgStates using the MatchResults.
 func UpdateSwapMsgStates(x, y sdk.Dec, xToY, yToX []*SwapMsgState, matchResultXtoY, matchResultYtoX []MatchResult) (
-	[]*SwapMsgState, []*SwapMsgState, sdk.Dec, sdk.Dec, sdk.Dec, sdk.Dec) {
+	[]*SwapMsgState, []*SwapMsgState, sdk.Dec, sdk.Dec, sdk.Dec, sdk.Dec,
+) {
 	sort.SliceStable(xToY, func(i, j int) bool {
 		return xToY[i].Msg.OrderPrice.GT(xToY[j].Msg.OrderPrice)
 	})

@@ -5,18 +5,18 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/cosmos/gaia/v9/app"
+	app "github.com/cosmos/gaia/v9/app"
 	"github.com/cosmos/gaia/v9/x/liquidity"
 	"github.com/cosmos/gaia/v9/x/liquidity/types"
 )
 
 // createTestInput Returns a simapp with custom LiquidityKeeper
 // to avoid messing with the hooks.
-func createTestInput() (*app.LiquidityApp, sdk.Context) {
+func createTestInput() (*app.GaiaApp, sdk.Context) {
 	return app.CreateTestInput()
 }
 
-func createLiquidity(t *testing.T, ctx sdk.Context, simapp *app.LiquidityApp) (
+func createLiquidity(t *testing.T, ctx sdk.Context, simapp *app.GaiaApp) (
 	[]sdk.AccAddress, []types.Pool, []types.PoolBatch,
 	[]types.DepositMsgState, []types.WithdrawMsgState,
 ) {
@@ -78,7 +78,7 @@ func createLiquidity(t *testing.T, ctx sdk.Context, simapp *app.LiquidityApp) (
 	return addrs, pools, batches, depositMsgs, withdrawMsgs
 }
 
-func createTestPool(X, Y sdk.Coin) (*app.LiquidityApp, sdk.Context, types.Pool, sdk.AccAddress, error) {
+func createTestPool(X, Y sdk.Coin) (*app.GaiaApp, sdk.Context, types.Pool, sdk.AccAddress, error) {
 	simapp, ctx := createTestInput()
 	params := simapp.LiquidityKeeper.GetParams(ctx)
 

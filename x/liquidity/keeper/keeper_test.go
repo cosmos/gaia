@@ -16,7 +16,7 @@ import (
 type KeeperTestSuite struct {
 	suite.Suite
 
-	app          *lapp.LiquidityApp
+	app          *lapp.GaiaApp
 	ctx          sdk.Context
 	addrs        []sdk.AccAddress
 	pools        []types.Pool

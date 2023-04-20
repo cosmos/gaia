@@ -51,9 +51,9 @@ func TestSwapScenario(t *testing.T) {
 	xOrderAddrs := addrs[1:2]
 	yOrderAddrs := addrs[2:3]
 	_, batch := app.TestSwapPool(t, simapp, ctx, xOfferCoins, xOrderPrices, xOrderAddrs, poolID, false)
-	_, batch = app.TestSwapPool(t, simapp, ctx, xOfferCoins, xOrderPrices, xOrderAddrs, poolID, false)
-	_, batch = app.TestSwapPool(t, simapp, ctx, xOfferCoins, xOrderPrices, xOrderAddrs, poolID, false)
-	_, batch = app.TestSwapPool(t, simapp, ctx, yOfferCoins, yOrderPrices, yOrderAddrs, poolID, false)
+	_, _ = app.TestSwapPool(t, simapp, ctx, xOfferCoins, xOrderPrices, xOrderAddrs, poolID, false)
+	_, _ = app.TestSwapPool(t, simapp, ctx, xOfferCoins, xOrderPrices, xOrderAddrs, poolID, false)
+	_, _ = app.TestSwapPool(t, simapp, ctx, yOfferCoins, yOrderPrices, yOrderAddrs, poolID, false)
 
 	// Set the execution status flag of messages to true.
 	msgs := simapp.LiquidityKeeper.GetAllPoolBatchSwapMsgStatesAsPointer(ctx, batch)
@@ -246,8 +246,8 @@ func TestMaxOrderRatio(t *testing.T) {
 	require.NoError(t, err)
 
 	// Success case, same GetMaxOrderRatio orders
-	offerCoin = sdk.NewCoin(denomX, X.ToDec().Mul(maxOrderRatio).TruncateInt().AddRaw(1))
-	offerCoinY = sdk.NewCoin(denomY, Y.ToDec().Mul(maxOrderRatio).TruncateInt().AddRaw(1))
+	_ = sdk.NewCoin(denomX, X.ToDec().Mul(maxOrderRatio).TruncateInt().AddRaw(1))
+	_ = sdk.NewCoin(denomY, Y.ToDec().Mul(maxOrderRatio).TruncateInt().AddRaw(1))
 
 	offerCoin = sdk.NewCoin(denomX, params.MinInitDepositAmount.Quo(sdk.NewInt(2)))
 	offerCoinY = sdk.NewCoin(denomY, params.MinInitDepositAmount.Quo(sdk.NewInt(10)))

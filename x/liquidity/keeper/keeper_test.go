@@ -23,7 +23,6 @@ type KeeperTestSuite struct {
 	batches      []types.PoolBatch
 	depositMsgs  []types.DepositMsgState
 	withdrawMsgs []types.WithdrawMsgState
-	swapMsgs     []types.SwapMsgState
 	queryClient  types.QueryClient
 }
 

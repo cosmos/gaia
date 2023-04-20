@@ -184,7 +184,7 @@ func TestSimulateMsgSwapWithinBatch(t *testing.T) {
 	require.Len(t, futureOperations, 0)
 }
 
-func createTestApp(isCheckTx bool) (*lapp.GaiaApp, sdk.Context) {
+func createTestApp(isCheckTx bool) (*lapp.GaiaApp, sdk.Context) { //nolint:unparam
 	app := lapp.Setup(false)
 
 	ctx := app.BaseApp.NewContext(isCheckTx, tmproto.Header{})
@@ -194,7 +194,7 @@ func createTestApp(isCheckTx bool) (*lapp.GaiaApp, sdk.Context) {
 	return app, ctx
 }
 
-func getTestingAccounts(_ *testing.T, r *rand.Rand, app *lapp.GaiaApp, ctx sdk.Context, n int) []simtypes.Account {
+func getTestingAccounts(_ *testing.T, r *rand.Rand, app *lapp.GaiaApp, ctx sdk.Context, n int) []simtypes.Account { //nolint:unparam
 	accounts := simtypes.RandomAccounts(r, n)
 
 	initAmt := sdk.TokensFromConsensusPower(1_000_000, sdk.DefaultPowerReduction)

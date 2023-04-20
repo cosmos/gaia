@@ -10,6 +10,7 @@ import (
 	"github.com/cosmos/gaia/v9/x/liquidity/types"
 )
 
+//nolint:revive // these variable names aren't worth changing right now
 const (
 	DefaultPoolTypeId = uint32(1)
 	DefaultPoolId     = uint64(1)
@@ -217,7 +218,7 @@ func TestMsgPanics(t *testing.T) {
 }
 
 func TestMsgValidateBasic(t *testing.T) {
-	validPoolTypeId := DefaultPoolTypeId
+	validPoolTypeID := DefaultPoolTypeId
 	validAddr := sdk.AccAddress(crypto.AddressHash([]byte("testAccount"))).String()
 	validCoin := sdk.NewCoin(DenomY, sdk.NewInt(10000))
 
@@ -244,17 +245,17 @@ func TestMsgValidateBasic(t *testing.T) {
 				types.ErrBadPoolTypeID.Error(),
 			},
 			{
-				types.MsgCreatePool{PoolTypeId: validPoolTypeId},
+				types.MsgCreatePool{PoolTypeId: validPoolTypeID},
 				types.ErrInvalidPoolCreatorAddr.Error(),
 			},
 			{
-				types.MsgCreatePool{PoolCreatorAddress: validAddr, PoolTypeId: validPoolTypeId},
+				types.MsgCreatePool{PoolCreatorAddress: validAddr, PoolTypeId: validPoolTypeID},
 				types.ErrNumOfReserveCoin.Error(),
 			},
 			{
 				types.MsgCreatePool{
 					PoolCreatorAddress: validAddr,
-					PoolTypeId:         validPoolTypeId,
+					PoolTypeId:         validPoolTypeID,
 					DepositCoins:       coinsWithInvalidDenom,
 				},
 				invalidDenomErrMsg,
@@ -262,7 +263,7 @@ func TestMsgValidateBasic(t *testing.T) {
 			{
 				types.MsgCreatePool{
 					PoolCreatorAddress: validAddr,
-					PoolTypeId:         validPoolTypeId,
+					PoolTypeId:         validPoolTypeID,
 					DepositCoins:       coinsWithNegative,
 				},
 				negativeCoinErrMsg,
@@ -270,7 +271,7 @@ func TestMsgValidateBasic(t *testing.T) {
 			{
 				types.MsgCreatePool{
 					PoolCreatorAddress: validAddr,
-					PoolTypeId:         validPoolTypeId,
+					PoolTypeId:         validPoolTypeID,
 					DepositCoins:       coinsWithZero,
 				},
 				zeroCoinErrMsg,
@@ -278,7 +279,7 @@ func TestMsgValidateBasic(t *testing.T) {
 			{
 				types.MsgCreatePool{
 					PoolCreatorAddress: validAddr,
-					PoolTypeId:         validPoolTypeId,
+					PoolTypeId:         validPoolTypeID,
 					DepositCoins:       sdk.NewCoins(sdk.NewCoin(DenomX, sdk.NewInt(int64(types.MinReserveCoinNum)-1))),
 				},
 				types.ErrNumOfReserveCoin.Error(),
@@ -286,7 +287,7 @@ func TestMsgValidateBasic(t *testing.T) {
 			{
 				types.MsgCreatePool{
 					PoolCreatorAddress: validAddr,
-					PoolTypeId:         validPoolTypeId,
+					PoolTypeId:         validPoolTypeID,
 					DepositCoins:       sdk.NewCoins(sdk.NewCoin(DenomX, sdk.NewInt(int64(types.MaxReserveCoinNum)+1))),
 				},
 				types.ErrNumOfReserveCoin.Error(),

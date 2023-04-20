@@ -7,15 +7,14 @@ import (
 )
 
 func (s *IntegrationTestSuite) testBypassMinFeeWithdrawReward() {
-	// s.T().Skip()
 
-	// gov propose withdraw to be bypass-msg first
+	// submit gov prop to change bypass-msg param to MsgWithdrawDelegatorReward
 	submitterAddr := s.chainA.validators[0].keyInfo.GetAddress()
 	submitter := submitterAddr.String()
 	proposalCounter++
 	s.govProposeNewBypassMsgs([]string{sdk.MsgTypeURL(&distributiontypes.MsgWithdrawDelegatorReward{})}, proposalCounter, submitter, standardFees.String())
 
-	// GlobalFee == minGasPrice+uatomDenom
+	// Note that the global fee min gas prices is equal to minGasPrice+uatomDenom
 	paidFeeAmt := math.LegacyMustNewDecFromStr(minGasPrice).Mul(math.LegacyNewDec(gas)).String()
 	payee := s.chainA.validators[0].keyInfo.GetAddress()
 

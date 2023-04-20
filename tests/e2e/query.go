@@ -154,7 +154,6 @@ func queryGovProposal(endpoint string, proposalID int) (govtypes.QueryProposalRe
 		return govProposalResp, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
 	if err := cdc.UnmarshalJSON(body, &govProposalResp); err != nil {
-		// panic(string(body))
 		return govProposalResp, err
 	}
 

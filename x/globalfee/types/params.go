@@ -57,7 +57,7 @@ func (p Params) ValidateBasic() error {
 		return err
 	}
 
-	if err := validateMaxTotalBypassMinFeeMsgGasUsage(p.MaxTotalBypassMinFeeMsgGasUsage); err != nil {
+	if err := validateMaxTotalBypassMinFeeMsgGasUsage(p.MaxTotalBypassMinFeeMsgGasUsage); err != nil { //nolint:revive
 		return err
 	}
 

@@ -5,18 +5,18 @@ import (
 )
 
 var (
-	runBankTest                   = false
+	runBankTest                   = true
 	runBypassMinFeeTest           = true
-	runEncodeTest                 = false
-	runEvidenceTest               = false
-	runFeeGrantTest               = false
-	runGlobalFeesTest             = false
-	runGovTest                    = false
-	runIBCTest                    = false
-	runSlashingTest               = false
-	runStakingAndDistributionTest = false
-	runVestingTest                = false
-	runRestInterfacesTest         = false
+	runEncodeTest                 = true
+	runEvidenceTest               = true
+	runFeeGrantTest               = true
+	runGlobalFeesTest             = true
+	runGovTest                    = true
+	runIBCTest                    = true
+	runSlashingTest               = true
+	runStakingAndDistributionTest = true
+	runVestingTest                = true
+	runRestInterfacesTest         = true
 )
 
 func (s *IntegrationTestSuite) TestRestInterfaces() {

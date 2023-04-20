@@ -20,8 +20,79 @@ jobs:
   run-tests:
     uses: mmulji-ic/gaia/.github/workflows/test.yml@main
 
+  warn-if-tests-failure:
+    if: failure()
+    needs: run-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Slack on failure
+        uses: slackapi/slack-github-action@v1.23.0
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+          BRANCH: ${{ github.ref_name }}
+          RUN_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          COMMITS_URL: "${{ github.server_url }}/${{ github.repository }}/commits/${{ github.ref_name }}"
+        with:
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "❗Nightly tests failed",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "See the <${{ env.RUN_URL }}|run details>"
+                  }
+                }
+              ]
+            }
+  
+
   run-simulations:
     uses: mmulji-ic/gaia/.github/workflows/sims.yml@main
+
+  warn-if-sims-failure:
+    if: failure()
+    needs: run-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Slack on failure
+        uses: slackapi/slack-github-action@v1.23.0
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+          BRANCH: ${{ github.ref_name }}
+          RUN_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          COMMITS_URL: "${{ github.server_url }}/${{ github.repository }}/commits/${{ github.ref_name }}"
+        with:
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "❗Nightly sims failed",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "See the <${{ env.RUN_URL }}|run details>"
+                  }
+                }
+              ]
+            }
 
   run-vulncheck:
     runs-on: ubuntu-latest
@@ -35,7 +106,7 @@ jobs:
         id: vulncheck
         run: make vulncheck
 
-  run-vulncheck-test-notification:
+  warn-if-vulncheck-failure:
     if: failure()
     needs: run-vulncheck
     runs-on: ubuntu-latest

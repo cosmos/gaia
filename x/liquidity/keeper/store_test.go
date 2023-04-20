@@ -55,7 +55,7 @@ func TestGetAllLiquidityPoolBatchSwapMsgs(t *testing.T) {
 		pool, found := simapp.LiquidityKeeper.GetPool(ctx, poolID)
 		require.True(t, found)
 
-		poolBatch, found := simapp.LiquidityKeeper.GetPoolBatch(ctx, poolID)
+		poolBatch, _ := simapp.LiquidityKeeper.GetPoolBatch(ctx, poolID)
 		require.Equal(t, uint64(1), poolBatch.SwapMsgIndex)
 
 		for i, msg := range xToY {
@@ -94,7 +94,7 @@ func TestGetAllLiquidityPoolBatchSwapMsgs(t *testing.T) {
 		msgs = simapp.LiquidityKeeper.GetAllPoolBatchSwapMsgStatesAsPointer(ctx, poolBatch)
 		require.Equal(t, 10, len(msgs))
 
-		poolBatch, found = simapp.LiquidityKeeper.GetPoolBatch(ctx, poolID)
+		poolBatch, _ = simapp.LiquidityKeeper.GetPoolBatch(ctx, poolID)
 		require.Equal(t, uint64(21), poolBatch.SwapMsgIndex)
 
 		poolBatch.SwapMsgIndex = uint64(18446744073709551610)

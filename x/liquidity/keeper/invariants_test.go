@@ -136,7 +136,7 @@ func TestLiquidityPoolsEscrowAmountInvariant(t *testing.T) {
 	err := simapp.BankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, addrs[0],
 		sdk.NewCoins(sdk.NewCoin(xOfferCoins[0].Denom, xOfferCoins[0].Amount.QuoRaw(2))))
 	require.NoError(t, err)
-	escrowAmt = simapp.BankKeeper.GetAllBalances(ctx, batchEscrowAcc)
+	_ = simapp.BankKeeper.GetAllBalances(ctx, batchEscrowAcc)
 
 	msg, broken := invariant(ctx)
 	require.True(t, broken)

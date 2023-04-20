@@ -82,7 +82,7 @@ func (a AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the liquidity module.
 func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
-	types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
+	_ = types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
 }
 
 // RegisterServices registers module services.
@@ -91,7 +91,7 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 	querier := keeper.Querier{Keeper: am.keeper}
 	types.RegisterQueryServer(cfg.QueryServer(), querier)
 	m := keeper.NewMigrator(am.keeper)
-	cfg.RegisterMigration(types.ModuleName, 1, m.Migrate1to2)
+	_ = cfg.RegisterMigration(types.ModuleName, 1, m.Migrate1to2)
 }
 
 // AppModule implements an application module for the liquidity module.

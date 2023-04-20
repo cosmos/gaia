@@ -138,7 +138,7 @@ func TestSwapExecution(t *testing.T) {
 	}
 }
 
-func testSwapEdgeCases(t *testing.T, r *rand.Rand, simapp *app.GaiaApp, ctx sdk.Context, X, Y sdk.Int, depositBalance sdk.Coins, addrs []sdk.AccAddress) {
+func testSwapEdgeCases(t *testing.T, r *rand.Rand, simapp *app.GaiaApp, ctx sdk.Context, x, y sdk.Int, depositBalance sdk.Coins, addrs []sdk.AccAddress) {
 	// simapp, ctx := createTestInput()
 	simapp.LiquidityKeeper.SetParams(ctx, types.DefaultParams())
 	params := simapp.LiquidityKeeper.GetParams(ctx)
@@ -168,7 +168,7 @@ func testSwapEdgeCases(t *testing.T, r *rand.Rand, simapp *app.GaiaApp, ctx sdk.
 	remainingSwapMsgs := simapp.LiquidityKeeper.GetAllNotProcessedPoolBatchSwapMsgStates(ctx, batch)
 	if ctx.BlockHeight() == 0 || len(remainingSwapMsgs) == 0 {
 		// make random orders, set buyer, seller accounts for the orders
-		xToY, yToX = app.GetRandomSizeOrders(denomX, denomY, X, Y, r, 100, 100)
+		xToY, yToX = app.GetRandomSizeOrders(denomX, denomY, x, y, r, 100, 100)
 		buyerAddrs := app.AddTestAddrsIncremental(simapp, ctx, len(xToY), sdk.NewInt(0))
 		sellerAddrs := app.AddTestAddrsIncremental(simapp, ctx, len(yToX), sdk.NewInt(0))
 

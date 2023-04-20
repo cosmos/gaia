@@ -17,10 +17,15 @@ jobs:
     steps:
       - uses: actions/setup-go@v3
         with:
+<<<<<<< HEAD
           go-version: 1.19
       - uses: actions/checkout@v3.4.0
+=======
+          go-version: 1.20.x
+      - uses: actions/checkout@v3.5.2
+>>>>>>> cb523c0 (build: bump Go to v1.20 (#2409))
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
           # Optional: version of golangci-lint to use in form of v1.2 or v1.2.3 or `latest` to use the latest version
-          version: v1.51.2
+          version: v1.52.2

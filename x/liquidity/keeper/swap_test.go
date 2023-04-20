@@ -347,10 +347,10 @@ func TestSwapWithDepletedPool(t *testing.T) {
 	liquidity.EndBlocker(ctx, simapp.LiquidityKeeper)
 }
 
-func createPool(simapp *app.GaiaApp, ctx sdk.Context, X, Y sdk.Int, denomX, denomY string) (types.Pool, error) {
+func createPool(simapp *app.GaiaApp, ctx sdk.Context, x, y sdk.Int, denomX, denomY string) (types.Pool, error) {
 	params := simapp.LiquidityKeeper.GetParams(ctx)
 
-	coins := sdk.NewCoins(sdk.NewCoin(denomX, X), sdk.NewCoin(denomY, Y))
+	coins := sdk.NewCoins(sdk.NewCoin(denomX, x), sdk.NewCoin(denomY, y))
 	addr := app.AddRandomTestAddr(simapp, ctx, coins.Add(params.PoolCreationFee...))
 
 	return simapp.LiquidityKeeper.CreatePool(ctx, types.NewMsgCreatePool(addr, types.DefaultPoolTypeID, coins))

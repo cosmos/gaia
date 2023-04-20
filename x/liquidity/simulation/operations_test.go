@@ -194,7 +194,7 @@ func createTestApp(isCheckTx bool) (*lapp.GaiaApp, sdk.Context) {
 	return app, ctx
 }
 
-func getTestingAccounts(t *testing.T, r *rand.Rand, app *lapp.GaiaApp, ctx sdk.Context, n int) []simtypes.Account {
+func getTestingAccounts(_ *testing.T, r *rand.Rand, app *lapp.GaiaApp, ctx sdk.Context, n int) []simtypes.Account {
 	accounts := simtypes.RandomAccounts(r, n)
 
 	initAmt := sdk.TokensFromConsensusPower(1_000_000, sdk.DefaultPowerReduction)

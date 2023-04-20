@@ -35,7 +35,7 @@ func NewConfig(dbm *dbm.MemDB) network.Config {
 }
 
 // NewAppConstructor returns a new network AppConstructor.
-func NewAppConstructor(encodingCfg params.EncodingConfig, db *dbm.MemDB) network.AppConstructor {
+func NewAppConstructor(_ params.EncodingConfig, db *dbm.MemDB) network.AppConstructor {
 	return func(val network.Validator) servertypes.Application {
 		return GaiaApp.NewGaiaApp(
 			val.Ctx.Logger, db, nil, true, make(map[int64]bool), val.Ctx.Config.RootDir, 0,
@@ -55,7 +55,7 @@ var commonArgs = []string{
 
 // MsgCreatePoolExec creates a transaction for creating liquidity pool.
 func MsgCreatePoolExec(clientCtx client.Context, from, poolID, depositCoins string,
-	extraArgs ...string,
+	_ ...string,
 ) (testutil.BufferWriter, error) {
 	args := append([]string{
 		poolID,
@@ -70,7 +70,7 @@ func MsgCreatePoolExec(clientCtx client.Context, from, poolID, depositCoins stri
 
 // MsgDepositWithinBatchExec creates a transaction to deposit new amounts to the pool.
 func MsgDepositWithinBatchExec(clientCtx client.Context, from, poolID, depositCoins string,
-	extraArgs ...string,
+	_ ...string,
 ) (testutil.BufferWriter, error) {
 	args := append([]string{
 		poolID,
@@ -85,7 +85,7 @@ func MsgDepositWithinBatchExec(clientCtx client.Context, from, poolID, depositCo
 
 // MsgWithdrawWithinBatchExec creates a transaction to withraw pool coin amount from the pool.
 func MsgWithdrawWithinBatchExec(clientCtx client.Context, from, poolID, poolCoin string,
-	extraArgs ...string,
+	_ ...string,
 ) (testutil.BufferWriter, error) {
 	args := append([]string{
 		poolID,
@@ -100,7 +100,7 @@ func MsgWithdrawWithinBatchExec(clientCtx client.Context, from, poolID, poolCoin
 
 // MsgSwapWithinBatchExec creates a transaction to swap coins in the pool.
 func MsgSwapWithinBatchExec(clientCtx client.Context, from, poolID, swapTypeID,
-	offerCoin, demandCoinDenom, orderPrice, swapFeeRate string, extraArgs ...string,
+	offerCoin, demandCoinDenom, orderPrice, swapFeeRate string, _ ...string,
 ) (testutil.BufferWriter, error) {
 	args := append([]string{
 		poolID,

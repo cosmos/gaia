@@ -298,7 +298,7 @@ func (k Querier) PoolBatchWithdrawMsgs(c context.Context, req *types.QueryPoolBa
 }
 
 // Params queries params of liquidity module.
-func (k Querier) Params(c context.Context, req *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+func (k Querier) Params(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 	params := k.GetParams(ctx)
 

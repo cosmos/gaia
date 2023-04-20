@@ -29,7 +29,7 @@ const (
 )
 
 // GenLiquidityPoolTypes return default PoolType temporarily, It will be randomized in the liquidity v2
-func GenLiquidityPoolTypes(r *rand.Rand) (liquidityPoolTypes []types.PoolType) {
+func GenLiquidityPoolTypes(_ *rand.Rand) (liquidityPoolTypes []types.PoolType) {
 	return types.DefaultPoolTypes
 }
 

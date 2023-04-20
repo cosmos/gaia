@@ -243,7 +243,7 @@ func SwapMatchingInvariants(xToY, yToX []*types.SwapMsgState, matchResultXtoY, m
 }
 
 // SwapPriceInvariants checks swap price invariants.
-func SwapPriceInvariants(matchResultXtoY, matchResultYtoX []types.MatchResult, poolXDelta, poolYDelta, poolXDelta2, poolYDelta2 sdk.Dec, result types.BatchResult) {
+func SwapPriceInvariants(matchResultXtoY, matchResultYtoX []types.MatchResult, _, _, poolXDelta2, poolYDelta2 sdk.Dec, result types.BatchResult) {
 	invariantCheckX := sdk.ZeroDec()
 	invariantCheckY := sdk.ZeroDec()
 

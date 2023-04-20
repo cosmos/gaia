@@ -20,9 +20,26 @@ jobs:
   run-tests:
     uses: mmulji-ic/gaia/.github/workflows/test.yml@main
 
-  warn-if-tests-failure:
+  run-simulations:
+    uses: mmulji-ic/gaia/.github/workflows/sims.yml@main
+
+  run-vulncheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v3.3.0
+      - uses: actions/setup-go@v4
+        with:
+          go-version: 1.19.1
+      - name: check curl install
+        run: which curl          
+      - name: run-vulncheck
+        id: vulncheck
+        run: make vulncheck
+
+  warn-if-failure:
     if: failure()
-    needs: run-tests
+    needs: [ run-tests, run-vulncheck, run-simulations]
     runs-on: ubuntu-latest
     steps:
       - name: Notify Slack on failure
@@ -42,94 +59,6 @@ jobs:
                   "text": {
                     "type": "plain_text",
                     "text": "❗Nightly tests failed",
-                    "emoji": true
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "See the <${{ env.RUN_URL }}|run details>"
-                  }
-                }
-              ]
-            }
-  
-
-  run-simulations:
-    uses: mmulji-ic/gaia/.github/workflows/sims.yml@main
-
-  warn-if-sims-failure:
-    if: failure()
-    needs: run-simulations
-    runs-on: ubuntu-latest
-    steps:
-      - name: Notify Slack on failure
-        uses: slackapi/slack-github-action@v1.23.0
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-          BRANCH: ${{ github.ref_name }}
-          RUN_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          COMMITS_URL: "${{ github.server_url }}/${{ github.repository }}/commits/${{ github.ref_name }}"
-        with:
-          payload: |
-            {
-              "blocks": [
-                {
-                  "type": "header",
-                  "text": {
-                    "type": "plain_text",
-                    "text": "❗Nightly sims failed",
-                    "emoji": true
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "See the <${{ env.RUN_URL }}|run details>"
-                  }
-                }
-              ]
-            }
-
-  run-vulncheck:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v3.3.0
-      - uses: actions/setup-go@v4
-        with:
-          go-version: 1.19.1
-      - name: check curl install
-        run: which curl          
-      - name: run-vulncheck
-        id: vulncheck
-        run: make vulncheck
-
-  warn-if-vulncheck-failure:
-    if: failure()
-    needs: run-vulncheck
-    runs-on: ubuntu-latest
-    steps:
-      - name: Notify Slack on failure
-        uses: slackapi/slack-github-action@v1.23.0
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-          BRANCH: ${{ github.ref_name }}
-          RUN_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          COMMITS_URL: "${{ github.server_url }}/${{ github.repository }}/commits/${{ github.ref_name }}"
-        with:
-          payload: |
-            {
-              "blocks": [
-                {
-                  "type": "header",
-                  "text": {
-                    "type": "plain_text",
-                    "text": "❗Vunerability tests failed",
                     "emoji": true
                   }
                 },

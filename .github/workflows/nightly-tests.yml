@@ -61,7 +61,7 @@ jobs:
 
   warn-if-sims-failure:
     if: failure()
-    needs: run-tests
+    needs: run-simulations
     runs-on: ubuntu-latest
     steps:
       - name: Notify Slack on failure
@@ -102,6 +102,8 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version: 1.19.1
+      - name: check curl install
+        run: which curl          
       - name: run-vulncheck
         id: vulncheck
         run: make vulncheck

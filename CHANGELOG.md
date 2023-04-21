@@ -35,6 +35,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 # Changelog
 
 ## [Unreleased]
+* (gaia) Rebuild proto files and use a newer proto builder.  
 * (gaia) Bump Golang prerequisite from 1.18 to 1.20 see (https://go.dev/blog/go1.20) for details.
 
 ## [v9.0.3] - 2023-04-19

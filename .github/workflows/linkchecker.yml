@@ -4,7 +4,7 @@ jobs:
   markdown-link-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3.5.0
+      - uses: actions/checkout@v3.5.2
       - uses: gaurav-nelson/github-action-markdown-link-check@1.0.13
         with:
           folder-path: "docs"

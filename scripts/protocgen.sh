@@ -18,13 +18,13 @@ for dir in $proto_dirs; do
     fi
   done
 done
+cd ..
 
-protoc_install_proto_gen_doc
+# protoc_install_proto_gen_doc
 
 # echo "Generating proto docs"
 # buf generate --template buf.gen.doc.yaml
 
-cd ..
 
 
 

@@ -29,6 +29,7 @@ require (
 
 require (
 	cosmossdk.io/math v1.0.0
+	github.com/cosmos/gogoproto v1.4.3
 	github.com/ory/dockertest/v3 v3.9.1
 )
 

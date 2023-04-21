@@ -1,46 +1,80 @@
 package v2_test
 
 import (
-	"fmt"
 	"testing"
 
-	v2 "github.com/cosmos/gaia/v9/x/globalfee/migrations/v2"
+	"github.com/cosmos/cosmos-sdk/store"
+	"github.com/tendermint/tendermint/libs/log"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdktypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/stretchr/testify/require"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
+	"github.com/cosmos/cosmos-sdk/codec"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	gaiahelpers "github.com/cosmos/gaia/v9/app/helpers" // todo this is v9 when other packages gose to v10
-	"github.com/cosmos/gaia/v9/x/globalfee"
-	globalfeetypes "github.com/cosmos/gaia/v9/x/globalfee/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdktypes "github.com/cosmos/cosmos-sdk/x/params/types"
+
+	"github.com/stretchr/testify/require"
+	tmdb "github.com/tendermint/tm-db"
+
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+
+	v2 "github.com/cosmos/gaia/v10/x/globalfee/migrations/v2"
+	globalfeetypes "github.com/cosmos/gaia/v10/x/globalfee/types"
 )
 
 func TestMigrateStore(t *testing.T) {
-	appV9 := gaiahelpers.Setup(t)
-	ctx := appV9.BaseApp.NewContext(false, tmproto.Header{
-		ChainID: fmt.Sprintf("test-chain-%s", tmrand.Str(4)),
-		Height:  1,
-	})
+	db := tmdb.NewMemDB()
+	stateStore := store.NewCommitMultiStore(db)
 
-	globalfeeSubspace := appV9.GetSubspace(globalfee.ModuleName)
+	storeKey := sdk.NewKVStoreKey(paramtypes.StoreKey)
+	memStoreKey := storetypes.NewMemoryStoreKey("mem_key")
 
-	// todo: add this check back when the module is v10
-	//_, ok := getBypassMsgTypes(globalfeeSubspace, ctx)
-	//require.Equal(t, ok, false)
-	//_, ok = getMaxTotalBypassMinFeeMsgGasUsage(globalfeeSubspace, ctx)
-	//require.Equal(t, ok, false)
+	stateStore.MountStoreWithDB(storeKey, sdk.StoreTypeIAVL, db)
+	stateStore.MountStoreWithDB(memStoreKey, sdk.StoreTypeMemory, nil)
+	require.NoError(t, stateStore.LoadLatestVersion())
 
-	err := v2.MigrateStore(ctx, globalfeeSubspace)
+	registry := codectypes.NewInterfaceRegistry()
+	cdc := codec.NewProtoCodec(registry)
+	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())
+
+	require.NoError(t, stateStore.LoadLatestVersion())
+
+	// Create new empty subspace
+	newSubspace := paramtypes.NewSubspace(cdc,
+		codec.NewLegacyAmino(),
+		storeKey,
+		memStoreKey,
+		paramtypes.ModuleName,
+	)
+	newSubspace.WithKeyTable(globalfeetypes.ParamKeyTable())
+
+	// check MinGasPrices isn't set
+	_, ok := getMinGasPrice(newSubspace, ctx)
+	require.Equal(t, ok, false)
+
+	// set a minGasPrice different that default value
+	minGasPrices := sdk.NewDecCoins(sdk.NewDecCoin("uatom", sdk.OneInt()))
+	newSubspace.Set(ctx, globalfeetypes.ParamStoreKeyMinGasPrices, minGasPrices)
+	require.False(t, minGasPrices.IsEqual(globalfeetypes.DefaultMinGasPrices))
+
+	// check that the new parameters aren't set
+	_, ok = getBypassMsgTypes(newSubspace, ctx)
+	require.Equal(t, ok, false)
+	_, ok = getMaxTotalBypassMinFeeMsgGasUsage(newSubspace, ctx)
+	require.Equal(t, ok, false)
+
+	// run global fee migration
+	err := v2.MigrateStore(ctx, newSubspace)
 	require.NoError(t, err)
 
-	bypassMsgTypes, _ := getBypassMsgTypes(globalfeeSubspace, ctx)
-	maxGas, _ := getMaxTotalBypassMinFeeMsgGasUsage(globalfeeSubspace, ctx)
+	newMinGasPrices, _ := getMinGasPrice(newSubspace, ctx)
+	bypassMsgTypes, _ := getBypassMsgTypes(newSubspace, ctx)
+	maxGas, _ := getMaxTotalBypassMinFeeMsgGasUsage(newSubspace, ctx)
 
 	require.Equal(t, bypassMsgTypes, globalfeetypes.DefaultBypassMinFeeMsgTypes)
 	require.Equal(t, maxGas, globalfeetypes.DefaultmaxTotalBypassMinFeeMsgGasUsage)
-	require.Equal(t, sdk.DecCoins{}, globalfeetypes.DefaultMinGasPrices)
+	require.Equal(t, minGasPrices, newMinGasPrices)
 }
 
 func getBypassMsgTypes(globalfeeSubspace sdktypes.Subspace, ctx sdk.Context) ([]string, bool) {
@@ -63,4 +97,15 @@ func getMaxTotalBypassMinFeeMsgGasUsage(globalfeeSubspace sdktypes.Subspace, ctx
 	}
 
 	return maxTotalBypassMinFeeMsgGasUsage, true
+}
+
+func getMinGasPrice(globalfeeSubspace sdktypes.Subspace, ctx sdk.Context) (sdk.DecCoins, bool) {
+	var globalMinGasPrices sdk.DecCoins
+	if globalfeeSubspace.Has(ctx, globalfeetypes.ParamStoreKeyMinGasPrices) {
+		globalfeeSubspace.Get(ctx, globalfeetypes.ParamStoreKeyMinGasPrices, &globalMinGasPrices)
+	} else {
+		return globalMinGasPrices, false
+	}
+
+	return globalMinGasPrices, true
 }

@@ -1,4 +1,4 @@
-module github.com/cosmos/gaia/v9
+module github.com/cosmos/gaia/v10
 
 go 1.18
 

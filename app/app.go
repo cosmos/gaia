@@ -38,12 +38,12 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
-	gaiaante "github.com/cosmos/gaia/v9/ante"
-	"github.com/cosmos/gaia/v9/app/keepers"
-	gaiaappparams "github.com/cosmos/gaia/v9/app/params"
-	"github.com/cosmos/gaia/v9/app/upgrades"
-	v9 "github.com/cosmos/gaia/v9/app/upgrades/v9"
-	"github.com/cosmos/gaia/v9/x/globalfee"
+	gaiaante "github.com/cosmos/gaia/v10/ante"
+	"github.com/cosmos/gaia/v10/app/keepers"
+	gaiaappparams "github.com/cosmos/gaia/v10/app/params"
+	"github.com/cosmos/gaia/v10/app/upgrades"
+	v10 "github.com/cosmos/gaia/v10/app/upgrades/v10"
+	"github.com/cosmos/gaia/v10/x/globalfee"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
@@ -53,7 +53,7 @@ var (
 	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
 
-	Upgrades = []upgrades.Upgrade{v9.Upgrade}
+	Upgrades = []upgrades.Upgrade{v10.Upgrade}
 )
 
 var (

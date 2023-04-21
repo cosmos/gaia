@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	"github.com/cosmos/gaia/v9/x/globalfee/types"
+	"github.com/cosmos/gaia/v10/x/globalfee/types"
 )
 
 // MigrateStore performs in-place params migrations of
@@ -21,22 +21,21 @@ import (
 // todo check name, migrateStore or migrateParams?
 func MigrateStore(ctx sdk.Context, globalfeeSubspace paramtypes.Subspace) error {
 	var globalMinGasPrices sdk.DecCoins
-
-	if globalfeeSubspace.Has(ctx, types.ParamStoreKeyMinGasPrices) {
-		globalfeeSubspace.Get(ctx, types.ParamStoreKeyMinGasPrices, &globalMinGasPrices)
-	} else {
-		// todo return err
-		return nil
-	}
-
-	var params types.Params
+	globalfeeSubspace.Get(ctx, types.ParamStoreKeyMinGasPrices, &globalMinGasPrices)
 
 	defaultParams := types.DefaultParams()
-	params.MinimumGasPrices = globalMinGasPrices
-	params.BypassMinFeeMsgTypes = defaultParams.BypassMinFeeMsgTypes
-	params.MaxTotalBypassMinFeeMsgGasUsage = defaultParams.MaxTotalBypassMinFeeMsgGasUsage
+	params := types.Params{
+		MinimumGasPrices:                globalMinGasPrices,
+		BypassMinFeeMsgTypes:            defaultParams.BypassMinFeeMsgTypes,
+		MaxTotalBypassMinFeeMsgGasUsage: defaultParams.MaxTotalBypassMinFeeMsgGasUsage,
+	}
 
-	globalfeeSubspace.SetParamSet(ctx, &params)
+	if globalfeeSubspace.HasKeyTable() {
+		globalfeeSubspace.SetParamSet(ctx, &params)
+	} else {
+		globalfeeSubspace.WithKeyTable(types.ParamKeyTable())
+		globalfeeSubspace.SetParamSet(ctx, &params)
+	}
 
 	return nil
 }

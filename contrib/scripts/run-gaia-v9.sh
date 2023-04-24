@@ -67,5 +67,8 @@ perl -i~ -0777 -pe 's/# Enable defines if the API server should be enabled.
 enable = false/# Enable defines if the API server should be enabled.
 enable = true/g' $NODE_HOME/config/app.toml
 
-$COSMOVISOR run start --home $NODE_HOME --x-crisis-skip-assert-invariants
+pwd
+ls $NODE_HOME
+
+$COSMOVISOR run start --home $NODE_HOME --x-crisis-skip-assert-invariants > v9.out 2>&1 &
 

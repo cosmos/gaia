@@ -10,11 +10,15 @@ if [ -z "$1" ]; then
 fi
 
 # NODE_HOME=./build/.gaia
+pwd
 NODE_HOME=$(realpath ./build/.gaia)
+
 echo "NODE_HOME = ${NODE_HOME}"
 
 BINARY=$NODE_HOME/cosmovisor/genesis/bin/gaiad
 echo "BINARY = ${BINARY}"
+
+$BINARY version
 
 USER_MNEMONIC="abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art"
 CHAINID=cosmoshub-4
@@ -71,5 +75,5 @@ if test -f "$BINARY"; then
   echo "Done \n"
 
 else
-  echo "Please build gaia v8 and move to ./build/gaiad9"
+  echo "Please build gaia v9 and move to ./build/gaiad9"
 fi

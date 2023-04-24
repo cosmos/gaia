@@ -45,9 +45,7 @@ Query/MinimumGasPrices RPC method.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| `minimum_gas_prices` | [cosmos.base.v1beta1.DecCoin](#cosmos.base.v1beta1.DecCoin) | repeated |  |
-| `bypass_min_fee_msg_types` | [string](#string) | repeated |  |
-| `max_total_bypass_min_fee_msg_gas_usage` | [uint64](#uint64) |  |  |
+| `params` | [Params](#gaia.globalfee.v1beta1.Params) |  |  |
 
 
 

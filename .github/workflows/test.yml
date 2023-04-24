@@ -122,6 +122,9 @@ jobs:
             **/**.go
             go.mod
             go.sum
+      - uses: actions/setup-go@v4
+        with:
+          go-version: 1.18
       - name: Install GaiaV9
         run: |
           git checkout v9.0.0
@@ -131,7 +134,7 @@ jobs:
         if: env.GIT_DIFF
       - uses: actions/setup-go@v4
         with:
-          go-version: 1.20
+          go-version: 1.20.x
       - name: Install GaiaV10
         run: |
           git checkout -
@@ -150,6 +153,8 @@ jobs:
       - name: Submit Upgrade Commands
         run: |
           ./contrib/scripts/run-upgrade-commands-v10.sh 15
+        if: env.GIT_DIFF
       - name: Check for successful upgrade
+        run: |
           ./contrib/scripts/test_upgrade.sh 20 5 16 localhost
         if: env.GIT_DIFF

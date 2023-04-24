@@ -97,7 +97,7 @@ include contrib/devtools/Makefile
 
 check_version:
 ifneq ($(GO_SYSTEM_VERSION), $(REQUIRE_GO_VERSION))
-	@echo "ERROR: Go version 1.18 is required for $(VERSION) of Gaia."
+	@echo "ERROR: Go version 1.20 is required for $(VERSION) of Gaia."
 	exit 1
 endif
 
@@ -219,7 +219,7 @@ docker-build-all: docker-build-debug docker-build-hermes
 ###                                Linting                                  ###
 ###############################################################################
 golangci_lint_cmd=golangci-lint
-golangci_version=v1.50.1
+golangci_version=v1.52.2
 
 lint:
 	@echo "--> Running linter"

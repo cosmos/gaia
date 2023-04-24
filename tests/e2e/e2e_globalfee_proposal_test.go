@@ -85,7 +85,7 @@ func (s *IntegrationTestSuite) govProposeNewBypassMsgs(newBypassMsgs []string, p
 	)
 }
 
-func (s *IntegrationTestSuite) govProposeNewMaxTotalBypassMinFeeMsgGasUsage(newGas uint64, proposalCounter int, submitter string) { //nolint:unparam
+func (s *IntegrationTestSuite) govProposeNewMaxTotalBypassMinFeeMsgGasUsage(newGas uint64, proposalCounter int, submitter string) {
 	s.writeGovParamChangeProposalMaxTotalBypass(s.chainA, newGas)
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	submitGovFlags := []string{"param-change", configFile(proposalMaxTotalBypassFilename)}

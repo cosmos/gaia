@@ -85,7 +85,7 @@ func queryGlobalFees(endpoint string) (sdk.DecCoins, error) {
 		return sdk.DecCoins{}, err
 	}
 
-	return params.MinimumGasPrices, nil
+	return params.Params.MinimumGasPrices, nil
 }
 
 func queryBypassMsgs(endpoint string) ([]string, error) {
@@ -99,7 +99,7 @@ func queryBypassMsgs(endpoint string) ([]string, error) {
 		return []string{}, err
 	}
 
-	return params.BypassMinFeeMsgTypes, nil
+	return params.Params.BypassMinFeeMsgTypes, nil
 }
 
 func queryMaxTotalBypass(endpoint string) (uint64, error) {
@@ -113,7 +113,7 @@ func queryMaxTotalBypass(endpoint string) (uint64, error) {
 		return 0, err
 	}
 
-	return params.MaxTotalBypassMinFeeMsgGasUsage, nil
+	return params.Params.MaxTotalBypassMinFeeMsgGasUsage, nil
 }
 
 func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string) (stakingtypes.QueryDelegationResponse, error) {

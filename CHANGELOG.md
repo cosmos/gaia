@@ -36,7 +36,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 * (gaia) Bump Golang prerequisite from 1.18 to 1.20 see (https://go.dev/blog/go1.20) for details.
-* (feat!)[#2352] Add the global fee migration store script  
+* (feat!) [#2352] Create v10 upgrade handler and migration scripts adding `bypass-min-fee-msg-types` and `MaxBypassMinFeeMsgGasUsage` to the global fee module params.
 
 
 ## [v9.0.3] - 2023-04-19

@@ -57,11 +57,7 @@ func (p Params) ValidateBasic() error {
 		return err
 	}
 
-	if err := validateMaxTotalBypassMinFeeMsgGasUsage(p.MaxTotalBypassMinFeeMsgGasUsage); err != nil {
-		return err
-	}
-
-	return nil
+	return validateMaxTotalBypassMinFeeMsgGasUsage(p.MaxTotalBypassMinFeeMsgGasUsage)
 }
 
 // ParamSetPairs returns the parameter set pairs.

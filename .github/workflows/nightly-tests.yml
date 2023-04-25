@@ -15,11 +15,10 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]       # We can add custom runners - https://github.com/actions/runner
     runs-on: ${{ matrix.os }}
-
-  run-tests:
-    uses: cosmos/gaia/.github/workflows/test.yml@main
-
-  run-simulations:
-    uses: cosmos/gaia/.github/workflows/sims.yml@main
+    steps:
+      - name: run-tests
+        uses: cosmos/gaia/.github/workflows/test.yml@main
+      - name: run-simulations
+        uses: cosmos/gaia/.github/workflows/sims.yml@main
 
     

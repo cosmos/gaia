@@ -340,8 +340,8 @@ func TestDepositPool(t *testing.T, simapp *GaiaApp, ctx sdk.Context, x, y sdk.In
 		require.Equal(t, moduleAccEscrowAmtX, moduleAccEscrowAmtXAfter)
 		require.Equal(t, moduleAccEscrowAmtY, moduleAccEscrowAmtYAfter)
 	}
-	batch, bool := simapp.LiquidityKeeper.GetPoolBatch(ctx, poolID)
-	require.True(t, bool)
+	batch, found := simapp.LiquidityKeeper.GetPoolBatch(ctx, poolID)
+	require.True(t, found)
 
 	// endblock
 	if withEndblock {
@@ -401,8 +401,8 @@ func TestWithdrawPool(t *testing.T, simapp *GaiaApp, ctx sdk.Context, poolCoinAm
 		// endblock
 		liquidity.EndBlocker(ctx, simapp.LiquidityKeeper)
 
-		batch, bool := simapp.LiquidityKeeper.GetPoolBatch(ctx, poolID)
-		require.True(t, bool)
+		batch, found := simapp.LiquidityKeeper.GetPoolBatch(ctx, poolID)
+		require.True(t, found)
 
 		// verify burned pool coin
 		poolCoinAfter := simapp.LiquidityKeeper.GetPoolCoinTotalSupply(ctx, pool)

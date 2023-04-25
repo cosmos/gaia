@@ -21,7 +21,7 @@ BUILDDIR ?= $(CURDIR)/build
 TEST_DOCKER_REPO=cosmos/contrib-gaiatest
 
 GO_SYSTEM_VERSION = $(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f1-2)
-REQUIRE_GO_VERSION = 1.20
+REQUIRE_GO_VERSION = 1.18
 
 export GO111MODULE = on
 
@@ -97,7 +97,7 @@ include contrib/devtools/Makefile
 
 check_version:
 ifneq ($(GO_SYSTEM_VERSION), $(REQUIRE_GO_VERSION))
-	@echo "ERROR: Go version 1.20 is required for $(VERSION) of Gaia."
+	@echo "ERROR: Go version 1.18 is required for $(VERSION) of Gaia."
 	exit 1
 endif
 
@@ -218,24 +218,14 @@ docker-build-all: docker-build-debug docker-build-hermes
 ###############################################################################
 ###                                Linting                                  ###
 ###############################################################################
-golangci_lint_cmd=golangci-lint
-golangci_version=v1.52.2
 
 lint:
 	@echo "--> Running linter"
-	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@$(golangci_version)
-	@$(golangci_lint_cmd) run --timeout=10m
-
-lint-fix:
-	@echo "--> Running linter"
-	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@$(golangci_version)
-	@$(golangci_lint_cmd) run --fix --out-format=tab --issues-exit-code=0
+	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run --timeout=10m
 
 format:
-	@go install mvdan.cc/gofumpt@latest
-	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@$(golangci_version)
 	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/docs/statik/statik.go" -not -path "./tests/mocks/*" -not -name "*.pb.go" -not -name "*.pb.gw.go" -not -name "*.pulsar.go" -not -path "./crypto/keys/secp256k1/*" | xargs gofumpt -w -l
-	$(golangci_lint_cmd) run --fix
+	golangci-lint run --fix
 .PHONY: format
 
 ###############################################################################

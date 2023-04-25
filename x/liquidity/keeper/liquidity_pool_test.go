@@ -39,7 +39,7 @@ func TestCreatePool(t *testing.T) {
 	poolTypeID := types.DefaultPoolTypeID
 	addrs := app.AddTestAddrs(simapp, ctx, 3, params.PoolCreationFee)
 
-	denomA := "uETH"
+	denomA := "uETH" //nolint
 	denomB := "uUSD"
 	denomA, denomB = types.AlphabeticalDenomPair(denomA, denomB)
 
@@ -704,13 +704,14 @@ func TestReserveAccManipulation(t *testing.T) {
 
 	// send coin to manipulate reserve account
 	err = simapp.BankKeeper.SendCoins(ctx, addrs[1], reserveAcc, sdk.NewCoins(manipulationReserveA1))
+	require.NoError(t, err)
 	metadata := simapp.LiquidityKeeper.GetPoolMetaData(ctx, pool)
 	require.Equal(t, depositA.Add(manipulationReserveA1).Amount, metadata.ReserveCoins.AmountOf(denomA))
 
 	_ = simapp.LiquidityKeeper.GetPoolCoinTotalSupply(ctx, pool)
 	withdrawerPoolCoinBefore := simapp.BankKeeper.GetBalance(ctx, addrs[0], pool.PoolCoinDenom)
 	withdrawMsg := types.NewMsgWithdrawWithinBatch(addrs[0], pool.Id, sdk.NewCoin(pool.PoolCoinDenom, withdrawerPoolCoinBefore.Amount.QuoRaw(2)))
-	simapp.LiquidityKeeper.WithdrawWithinBatch(ctx, withdrawMsg)
+	_, _ = simapp.LiquidityKeeper.WithdrawWithinBatch(ctx, withdrawMsg)
 
 	poolBatch, _ := simapp.LiquidityKeeper.GetPoolBatch(ctx, withdrawMsg.PoolId)
 	_ = simapp.LiquidityKeeper.GetAllPoolBatchWithdrawMsgStates(ctx, poolBatch)
@@ -718,8 +719,8 @@ func TestReserveAccManipulation(t *testing.T) {
 	liquidity.BeginBlocker(ctx, simapp.LiquidityKeeper)
 
 	// send coin to manipulate reserve account
-	simapp.BankKeeper.SendCoins(ctx, addrs[1], reserveAcc, sdk.NewCoins(manipulationReserveA2))
-	simapp.BankKeeper.SendCoins(ctx, addrs[1], reserveAcc, sdk.NewCoins(manipulationReserveOther))
+	_ = simapp.BankKeeper.SendCoins(ctx, addrs[1], reserveAcc, sdk.NewCoins(manipulationReserveA2))
+	_ = simapp.BankKeeper.SendCoins(ctx, addrs[1], reserveAcc, sdk.NewCoins(manipulationReserveOther))
 	_ = simapp.BankKeeper.GetAllBalances(ctx, reserveAcc)
 	metadata = simapp.LiquidityKeeper.GetPoolMetaData(ctx, pool)
 	require.NotEqual(t, manipulationReserveOther, metadata.ReserveCoins.AmountOf(sdk.DefaultBondDenom))
@@ -729,7 +730,7 @@ func TestReserveAccManipulation(t *testing.T) {
 	withdrawerPoolCoinBefore = simapp.BankKeeper.GetBalance(ctx, addrs[0], pool.PoolCoinDenom)
 	withdrawMsg = types.NewMsgWithdrawWithinBatch(addrs[0], pool.Id, sdk.NewCoin(pool.PoolCoinDenom, poolCoinBefore))
 
-	_, err = simapp.LiquidityKeeper.WithdrawWithinBatch(ctx, withdrawMsg)
+	_, _ = simapp.LiquidityKeeper.WithdrawWithinBatch(ctx, withdrawMsg)
 	require.NoError(t, err)
 
 	poolBatch, _ = simapp.LiquidityKeeper.GetPoolBatch(ctx, withdrawMsg.PoolId)

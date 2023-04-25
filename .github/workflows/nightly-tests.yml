@@ -3,71 +3,23 @@ on:
   workflow_call:
   workflow_dispatch:
   schedule:
-    # run every day at 03:00 UTC
-    #        ┌───────────── minute (0 - 59)
-    #        │  ┌───────────── hour (0 - 23)
-    #        │  │ ┌───────────── day of the month (1 - 31)
-    #        │  │ │ ┌───────────── month (1 - 12 or JAN-DEC)
-    #        │  │ │ │ ┌───────────── day of the week (0 - 6 or SUN-SAT)
-    #        │  │ │ │ │
-    #        │  │ │ │ │
-    #        │  │ │ │ │
-    #        *  * * * *  
     - cron: "0 0 * * *"
+  push:
+    branches: [ main, rc/v*, release/v* ]
 
 jobs:
+  matrix-tests:
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]       # We can add custom runners - https://github.com/actions/runner
+    runs-on: ${{ matrix.os }}
 
   run-tests:
-    uses: mmulji-ic/gaia/.github/workflows/test.yml@main
+    uses: cosmos/gaia/.github/workflows/test.yml@main
 
   run-simulations:
-    uses: mmulji-ic/gaia/.github/workflows/sims.yml@main
+    uses: cosmos/gaia/.github/workflows/sims.yml@main
 
-  run-vulncheck:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v3.3.0
-      - uses: actions/setup-go@v4
-        with:
-          go-version: 1.19.1
-      - name: check curl install
-        run: which curl          
-      - name: run-vulncheck
-        id: vulncheck
-        run: make vulncheck
-
-  warn-if-failure:
-    if: failure()
-    needs: [ run-tests, run-vulncheck, run-simulations]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Notify Slack on failure
-        uses: slackapi/slack-github-action@v1.23.0
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-          BRANCH: ${{ github.ref_name }}
-          RUN_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          COMMITS_URL: "${{ github.server_url }}/${{ github.repository }}/commits/${{ github.ref_name }}"
-        with:
-          payload: |
-            {
-              "blocks": [
-                {
-                  "type": "header",
-                  "text": {
-                    "type": "plain_text",
-                    "text": "❗Nightly tests failed",
-                    "emoji": true
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "See the <${{ env.RUN_URL }}|run details>"
-                  }
-                }
-              ]
-            }
+    

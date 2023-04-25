@@ -20,6 +20,7 @@ func createLiquidity(t *testing.T, ctx sdk.Context, simapp *app.GaiaApp) (
 	[]sdk.AccAddress, []types.Pool, []types.PoolBatch,
 	[]types.DepositMsgState, []types.WithdrawMsgState,
 ) {
+	t.Helper()
 	simapp.LiquidityKeeper.SetParams(ctx, types.DefaultParams())
 
 	// define test denom X, Y for Liquidity Pool
@@ -78,11 +79,11 @@ func createLiquidity(t *testing.T, ctx sdk.Context, simapp *app.GaiaApp) (
 	return addrs, pools, batches, depositMsgs, withdrawMsgs
 }
 
-func createTestPool(X, Y sdk.Coin) (*app.GaiaApp, sdk.Context, types.Pool, sdk.AccAddress, error) {
+func createTestPool(x, y sdk.Coin) (*app.GaiaApp, sdk.Context, types.Pool, sdk.AccAddress, error) {
 	simapp, ctx := createTestInput()
 	params := simapp.LiquidityKeeper.GetParams(ctx)
 
-	depositCoins := sdk.NewCoins(X, Y)
+	depositCoins := sdk.NewCoins(x, y)
 	creatorAddr := app.AddRandomTestAddr(simapp, ctx, depositCoins.Add(params.PoolCreationFee...))
 
 	pool, err := simapp.LiquidityKeeper.CreatePool(ctx, types.NewMsgCreatePool(creatorAddr, types.DefaultPoolTypeID, depositCoins))

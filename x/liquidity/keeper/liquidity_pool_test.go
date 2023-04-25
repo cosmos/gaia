@@ -703,7 +703,7 @@ func TestReserveAccManipulation(t *testing.T) {
 	require.Equal(t, reserveAccBalances, sdk.NewCoins(depositA, depositB))
 
 	// send coin to manipulate reserve account
-	simapp.BankKeeper.SendCoins(ctx, addrs[1], reserveAcc, sdk.NewCoins(manipulationReserveA1))
+	err = simapp.BankKeeper.SendCoins(ctx, addrs[1], reserveAcc, sdk.NewCoins(manipulationReserveA1))
 	metadata := simapp.LiquidityKeeper.GetPoolMetaData(ctx, pool)
 	require.Equal(t, depositA.Add(manipulationReserveA1).Amount, metadata.ReserveCoins.AmountOf(denomA))
 

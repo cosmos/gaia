@@ -572,9 +572,9 @@ func TestLiquidityScenario(t *testing.T) {
 
 	// create two pools with the different denomY of 1000X and 1000Y coins
 	poolID := app.TestCreatePool(t, simapp, ctx, X, Y, denomX, denomY, addrs[0])
-	poolId2 := app.TestCreatePool(t, simapp, ctx, X, Y, denomX, "testDenom", addrs[0])
+	poolID2 := app.TestCreatePool(t, simapp, ctx, X, Y, denomX, "testDenom", addrs[0])
 	require.Equal(t, uint64(1), poolID)
-	require.Equal(t, uint64(2), poolId2)
+	require.Equal(t, uint64(2), poolID2)
 
 	app.TestDepositPool(t, simapp, ctx, X, Y, addrs[1:10], poolID, true)
 

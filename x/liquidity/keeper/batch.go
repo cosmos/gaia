@@ -140,18 +140,15 @@ func (k Keeper) ExecutePoolBatches(ctx sdk.Context) {
 
 // HoldEscrow sends coins to the module account for an escrow.
 func (k Keeper) HoldEscrow(ctx sdk.Context, depositor sdk.AccAddress, depositCoins sdk.Coins) error {
-	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, depositor, types.ModuleName, depositCoins); err != nil {
-		return err
-	}
-	return nil
+	err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, depositor, types.ModuleName, depositCoins)
+	return err
 }
 
 // If batch messages have expired or have not been processed, coins that were deposited with this function are refunded to the escrow.
 func (k Keeper) ReleaseEscrow(ctx sdk.Context, withdrawer sdk.AccAddress, withdrawCoins sdk.Coins) error {
-	if err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, withdrawer, withdrawCoins); err != nil {
-		return err
-	}
-	return nil
+	err := k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, withdrawer, withdrawCoins)
+
+	return err
 }
 
 // Generate inputs and outputs to treat escrow refunds atomically.

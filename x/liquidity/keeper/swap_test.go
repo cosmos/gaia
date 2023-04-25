@@ -139,6 +139,7 @@ func TestSwapExecution(t *testing.T) {
 }
 
 func testSwapEdgeCases(t *testing.T, r *rand.Rand, simapp *app.GaiaApp, ctx sdk.Context, x, y sdk.Int, depositBalance sdk.Coins, addrs []sdk.AccAddress) {
+	t.Helper()
 	// simapp, ctx := createTestInput()
 	simapp.LiquidityKeeper.SetParams(ctx, types.DefaultParams())
 	params := simapp.LiquidityKeeper.GetParams(ctx)

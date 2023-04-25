@@ -32,8 +32,8 @@ func TestMsgServerCreatePool(t *testing.T) {
 	poolTypeID := types.DefaultPoolTypeID
 	addrs := app.AddTestAddrs(simapp, ctx, 3, params.PoolCreationFee)
 
-	denomA := "uETH"
-	denomB := "uUSD"
+	denomA := "uETH" //nolint:goconst // this is redefined so we won't use a constant
+	denomB := "uUSD" //nolint:goconst // this is redefined so we won't use a constant
 	denomA, denomB = types.AlphabeticalDenomPair(denomA, denomB)
 
 	deposit := sdk.NewCoins(sdk.NewCoin(denomA, sdk.NewInt(100*1000000)), sdk.NewCoin(denomB, sdk.NewInt(2000*1000000)))

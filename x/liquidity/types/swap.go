@@ -218,17 +218,17 @@ func (orderBook OrderBook) CalculateMatch(direction PriceDirection, x, y sdk.Dec
 		if (direction == Increasing && order.Price.LT(currentPrice)) ||
 			(direction == Decreasing && order.Price.GT(currentPrice)) {
 			continue
-		} else {
-			orderPrice := order.Price
-			r := orderBook.CalculateSwap(direction, x, y, orderPrice, lastOrderPrice)
-			// Check to see if it exceeds a value that can be a decimal error
-			if (direction == Increasing && r.PoolY.Sub(r.EX.Quo(r.SwapPrice)).GTE(sdk.OneDec())) ||
-				(direction == Decreasing && r.PoolX.Sub(r.EY.Mul(r.SwapPrice)).GTE(sdk.OneDec())) {
-				continue
-			}
-			matchScenarios = append(matchScenarios, r)
-			lastOrderPrice = orderPrice
 		}
+		orderPrice := order.Price
+		r := orderBook.CalculateSwap(direction, x, y, orderPrice, lastOrderPrice)
+		// Check to see if it exceeds a value that can be a decimal error
+		if (direction == Increasing && r.PoolY.Sub(r.EX.Quo(r.SwapPrice)).GTE(sdk.OneDec())) ||
+			(direction == Decreasing && r.PoolX.Sub(r.EY.Mul(r.SwapPrice)).GTE(sdk.OneDec())) {
+			continue
+		}
+		matchScenarios = append(matchScenarios, r)
+		lastOrderPrice = orderPrice
+
 	}
 	maxScenario = NewBatchResult()
 	for _, s := range matchScenarios {

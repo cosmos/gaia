@@ -21,8 +21,8 @@ func TestGetAllLiquidityPoolBatchSwapMsgs(t *testing.T) {
 		params := simapp.LiquidityKeeper.GetParams(ctx)
 
 		// define test denom X, Y for Liquidity Pool
-		denomX := "denomX"
-		denomY := "denomY"
+		denomX := "denomX" //nolint:goconst // for testing
+		denomY := "denomY" //nolint:goconst // for testing
 		denomX, denomY = types.AlphabeticalDenomPair(denomX, denomY)
 
 		// get random X, Y amount for create pool
@@ -169,7 +169,7 @@ func TestIterateAllBatchMsgs(t *testing.T) {
 
 	addrs := app.AddTestAddrsIncremental(simapp, ctx, 20, sdk.NewInt(10000))
 	poolID := app.TestCreatePool(t, simapp, ctx, X, Y, denomX, denomY, addrs[0])
-	poolId2 := app.TestCreatePool(t, simapp, ctx, A, B, denomA, denomB, addrs[4])
+	poolID2 := app.TestCreatePool(t, simapp, ctx, A, B, denomA, denomB, addrs[4])
 	batch, found := simapp.LiquidityKeeper.GetPoolBatch(ctx, poolID)
 	require.True(t, found)
 
@@ -196,17 +196,17 @@ func TestIterateAllBatchMsgs(t *testing.T) {
 	ctx = ctx.WithBlockHeight(ctx.BlockHeight() + 1)
 	liquidity.BeginBlocker(ctx, simapp.LiquidityKeeper)
 
-	app.TestDepositPool(t, simapp, ctx, A, B.QuoRaw(10), addrs[4:5], poolId2, false)
-	app.TestWithdrawPool(t, simapp, ctx, sdk.NewInt(1000), addrs[4:5], poolId2, false)
-	app.TestSwapPool(t, simapp, ctx, offerCoins2, xOrderPrices, addrs[4:5], poolId2, true)
+	app.TestDepositPool(t, simapp, ctx, A, B.QuoRaw(10), addrs[4:5], poolID2, false)
+	app.TestWithdrawPool(t, simapp, ctx, sdk.NewInt(1000), addrs[4:5], poolID2, false)
+	app.TestSwapPool(t, simapp, ctx, offerCoins2, xOrderPrices, addrs[4:5], poolID2, true)
 
 	// next block
 	ctx = ctx.WithBlockHeight(ctx.BlockHeight() + 1)
 	liquidity.BeginBlocker(ctx, simapp.LiquidityKeeper)
 
-	app.TestDepositPool(t, simapp, ctx, A, B.QuoRaw(10), addrs[4:5], poolId2, false)
-	app.TestWithdrawPool(t, simapp, ctx, sdk.NewInt(1000), addrs[4:5], poolId2, false)
-	app.TestSwapPool(t, simapp, ctx, offerCoins2, xOrderPrices, addrs[4:5], poolId2, true)
+	app.TestDepositPool(t, simapp, ctx, A, B.QuoRaw(10), addrs[4:5], poolID2, false)
+	app.TestWithdrawPool(t, simapp, ctx, sdk.NewInt(1000), addrs[4:5], poolID2, false)
+	app.TestSwapPool(t, simapp, ctx, offerCoins2, xOrderPrices, addrs[4:5], poolID2, true)
 
 	// next block,
 	ctx = ctx.WithBlockHeight(ctx.BlockHeight() + 1)
@@ -250,8 +250,8 @@ func TestIterateAllBatchMsgs(t *testing.T) {
 	require.Equal(t, 3, len(withdrawMsgsNotToDelete))
 	require.NotEqual(t, withdrawMsgsNotToDelete, withdrawMsgs)
 
-	app.TestDepositPool(t, simapp, ctx, A, B.QuoRaw(10), addrs[4:5], poolId2, false)
-	app.TestWithdrawPool(t, simapp, ctx, sdk.NewInt(1000), addrs[4:5], poolId2, false)
+	app.TestDepositPool(t, simapp, ctx, A, B.QuoRaw(10), addrs[4:5], poolID2, false)
+	app.TestWithdrawPool(t, simapp, ctx, sdk.NewInt(1000), addrs[4:5], poolID2, false)
 
 	depositMsgs = simapp.LiquidityKeeper.GetAllDepositMsgStates(ctx)
 	require.Equal(t, 5, len(depositMsgs))
@@ -302,7 +302,7 @@ func TestIterateAllBatchMsgs(t *testing.T) {
 	app.TestSwapPool(t, simapp, ctx, xOfferCoins, xOrderPrices, xOrderAddrs, poolID, false)
 	app.TestSwapPool(t, simapp, ctx, xOfferCoins, xOrderPrices, xOrderAddrs, poolID, false)
 	app.TestSwapPool(t, simapp, ctx, yOfferCoins, yOrderPrices, yOrderAddrs, poolID, false)
-	app.TestSwapPool(t, simapp, ctx, offerCoins2, xOrderPrices, addrs[4:5], poolId2, false)
+	app.TestSwapPool(t, simapp, ctx, offerCoins2, xOrderPrices, addrs[4:5], poolID2, false)
 
 	swapMsgsPool1 := simapp.LiquidityKeeper.GetAllPoolBatchSwapMsgStates(ctx, batch)
 	require.Equal(t, 4, len(swapMsgsPool1))

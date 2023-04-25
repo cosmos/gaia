@@ -388,8 +388,7 @@ func TestWithdrawPool(t *testing.T, simapp *GaiaApp, ctx sdk.Context, poolCoinAm
 		require.Equal(t, moduleAccEscrowAmtPool, moduleAccEscrowAmtPoolAfter)
 
 		balancePoolCoinAfter := simapp.BankKeeper.GetBalance(ctx, addrs[i], pool.PoolCoinDenom)
-		if balancePoolCoin.Amount.Equal(withdrawCoin.Amount) {
-		} else {
+		if !balancePoolCoin.Amount.Equal(withdrawCoin.Amount) {
 			require.Equal(t, balancePoolCoin.Sub(withdrawCoin).Amount, balancePoolCoinAfter.Amount)
 		}
 
@@ -481,6 +480,7 @@ func TestSwapPool(t *testing.T, simapp *GaiaApp, ctx sdk.Context, offerCoins []s
 func GetSwapMsg(t *testing.T, simapp *GaiaApp, ctx sdk.Context, offerCoins []sdk.Coin, orderPrices []sdk.Dec,
 	addrs []sdk.AccAddress, poolID uint64,
 ) []*types.MsgSwapWithinBatch {
+	t.Helper()
 	if len(offerCoins) != len(orderPrices) || len(orderPrices) != len(addrs) {
 		require.True(t, false)
 	}

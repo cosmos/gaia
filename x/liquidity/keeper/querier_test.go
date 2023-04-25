@@ -19,6 +19,7 @@ import (
 const custom = "custom"
 
 func getQueriedLiquidityPool(t *testing.T, ctx sdk.Context, cdc *codec.LegacyAmino, querier sdk.Querier, poolID uint64) (types.Pool, error) {
+	t.Helper()
 	query := abci.RequestQuery{
 		Path: strings.Join([]string{custom, types.QuerierRoute, types.QueryLiquidityPool}, "/"),
 		Data: cdc.MustMarshalJSON(types.QueryLiquidityPoolParams{PoolId: poolID}),
@@ -34,6 +35,7 @@ func getQueriedLiquidityPool(t *testing.T, ctx sdk.Context, cdc *codec.LegacyAmi
 }
 
 func getQueriedLiquidityPools(t *testing.T, ctx sdk.Context, cdc *codec.LegacyAmino, querier sdk.Querier) (types.Pools, error) {
+	t.Helper()
 	queryDelParams := types.NewQueryLiquidityPoolsParams(1, 100)
 	bz, errRes := cdc.MarshalJSON(queryDelParams)
 	fmt.Println(bz, errRes)
@@ -100,9 +102,9 @@ func TestQueries(t *testing.T) {
 	addrs := app.AddTestAddrsIncremental(simapp, ctx, 20, sdk.NewInt(10000))
 
 	poolID := app.TestCreatePool(t, simapp, ctx, X, Y, denomX, denomY, addrs[0])
-	poolId2 := app.TestCreatePool(t, simapp, ctx, X, Y, denomX, "testDenom", addrs[0])
+	poolID2 := app.TestCreatePool(t, simapp, ctx, X, Y, denomX, "testDenom", addrs[0])
 	require.Equal(t, uint64(1), poolID)
-	require.Equal(t, uint64(2), poolId2)
+	require.Equal(t, uint64(2), poolID2)
 
 	// begin block, init
 	app.TestDepositPool(t, simapp, ctx, X, Y, addrs[1:10], poolID, true)

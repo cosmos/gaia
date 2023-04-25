@@ -77,7 +77,9 @@ func Find(coins sdk.Coins, denom string) (bool, sdk.Coin) {
 
 // splitCoinsByDenoms returns the given coins split in two whether
 // their demon is or isn't found in the given denom map.
-func splitCoinsByDenoms(feeCoins sdk.Coins, denomMap map[string]bool) (feeCoinsNonZeroDenom sdk.Coins, feeCoinsZeroDenom sdk.Coins) {
+func splitCoinsByDenoms(feeCoins sdk.Coins, denomMap map[string]bool) (sdk.Coins, sdk.Coins) {
+	feeCoinsNonZeroDenom, feeCoinsZeroDenom := sdk.Coins{}, sdk.Coins{}
+
 	for _, fc := range feeCoins {
 		_, found := denomMap[fc.Denom]
 		if found {

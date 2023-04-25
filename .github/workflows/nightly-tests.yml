@@ -3,6 +3,16 @@ on:
   workflow_call:
   workflow_dispatch:
   schedule:
+    # run every day at 03:00 UTC
+    #        ┌───────────── minute (0 - 59)
+    #        │  ┌───────────── hour (0 - 23)
+    #        │  │ ┌───────────── day of the month (1 - 31)
+    #        │  │ │ ┌───────────── month (1 - 12 or JAN-DEC)
+    #        │  │ │ │ ┌───────────── day of the week (0 - 6 or SUN-SAT)
+    #        │  │ │ │ │
+    #        │  │ │ │ │
+    #        │  │ │ │ │
+    #        *  * * * *  
     - cron: "0 0 * * *"
 
 jobs:
@@ -17,14 +27,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: run-tests
       - uses: actions/checkout@v3.3.0
+      - uses: actions/setup-go@v4
+        with:
+          go-version: 1.19.1      
       - name: run-vulncheck
+        id: vulncheck
         run: make vulncheck
 
-  run-vulncheck-test-fail:
-    needs: run-vulncheck
-    if: ${{ failure() }}
+  warn-if-failure:
+    if: failure()
+    needs: [ run-tests, run-vulncheck, run-simulations]
     runs-on: ubuntu-latest
     steps:
       - name: Notify Slack on failure
@@ -43,7 +56,7 @@ jobs:
                   "type": "header",
                   "text": {
                     "type": "plain_text",
-                    "text": "❗Vunerability tests failed❗",
+                    "text": "❗Nightly tests failed",
                     "emoji": true
                   }
                 },
@@ -51,7 +64,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": ":skull: See the <${{ env.RUN_URL }}|run details>"
+                    "text": "See the <${{ env.RUN_URL }}|run details>"
                   }
                 }
               ]

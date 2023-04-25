@@ -447,11 +447,12 @@ func TestSwapPool(t *testing.T, simapp *GaiaApp, ctx sdk.Context, offerCoins []s
 			SaveAccountWithFee(simapp, ctx, addrs[i], sdk.NewCoins(offerCoins[i]), offerCoins[i])
 		}
 		var demandCoinDenom string
-		if pool.ReserveCoinDenoms[0] == offerCoins[i].Denom {
+		switch offerCoins[i].Denom {
+		case pool.ReserveCoinDenoms[0]:
 			demandCoinDenom = pool.ReserveCoinDenoms[1]
-		} else if pool.ReserveCoinDenoms[1] == offerCoins[i].Denom {
+		case pool.ReserveCoinDenoms[1]:
 			demandCoinDenom = pool.ReserveCoinDenoms[0]
-		} else {
+		default:
 			require.True(t, false)
 		}
 
@@ -497,11 +498,12 @@ func GetSwapMsg(t *testing.T, simapp *GaiaApp, ctx sdk.Context, offerCoins []sdk
 			SaveAccountWithFee(simapp, ctx, addrs[i], sdk.NewCoins(offerCoins[i]), offerCoins[i])
 		}
 		var demandCoinDenom string
-		if pool.ReserveCoinDenoms[0] == offerCoins[i].Denom {
+		switch offerCoins[i].Denom {
+		case pool.ReserveCoinDenoms[0]:
 			demandCoinDenom = pool.ReserveCoinDenoms[1]
-		} else if pool.ReserveCoinDenoms[1] == offerCoins[i].Denom {
+		case pool.ReserveCoinDenoms[1]:
 			demandCoinDenom = pool.ReserveCoinDenoms[0]
-		} else {
+		default:
 			require.True(t, false)
 		}
 

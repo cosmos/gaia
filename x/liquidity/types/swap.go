@@ -187,12 +187,12 @@ func (orderBook OrderBook) CalculateMatchStay(currentPrice sdk.Dec) (r BatchResu
 	r.PriceDirection = Staying
 
 	s := r.SwapPrice.Mul(r.EY)
-	if r.EX.IsZero() || r.EY.IsZero() {
+	switch {
+	case r.EX.IsZero() || r.EY.IsZero():
 		r.MatchType = NoMatch
-	} else if r.EX.Equal(s) { // Normalization to an integrator for easy determination of exactMatch
+	case r.EX.Equal(s):
 		r.MatchType = ExactMatch
-	} else {
-		// Decimal Error, When calculating the Executable value, conservatively Truncated decimal
+	default:
 		r.MatchType = FractionalMatch
 		if r.EX.GT(s) {
 			r.EX = s
@@ -200,6 +200,7 @@ func (orderBook OrderBook) CalculateMatchStay(currentPrice sdk.Dec) (r BatchResu
 			r.EY = r.EX.Quo(r.SwapPrice)
 		}
 	}
+
 	return
 }
 
@@ -318,12 +319,13 @@ func (orderBook OrderBook) PriceDirection(currentPrice sdk.Dec) PriceDirection {
 	sellAmtAtCurrentPrice := sdk.ZeroDec()
 
 	for _, order := range orderBook {
-		if order.Price.GT(currentPrice) {
+		switch {
+		case order.Price.GT(currentPrice):
 			buyAmtOverCurrentPrice = buyAmtOverCurrentPrice.Add(order.BuyOfferAmt.ToDec())
-		} else if order.Price.Equal(currentPrice) {
+		case order.Price.Equal(currentPrice):
 			buyAmtAtCurrentPrice = buyAmtAtCurrentPrice.Add(order.BuyOfferAmt.ToDec())
 			sellAmtAtCurrentPrice = sellAmtAtCurrentPrice.Add(order.SellOfferAmt.ToDec())
-		} else if order.Price.LT(currentPrice) {
+		case order.Price.LT(currentPrice):
 			sellAmtUnderCurrentPrice = sellAmtUnderCurrentPrice.Add(order.SellOfferAmt.ToDec())
 		}
 	}

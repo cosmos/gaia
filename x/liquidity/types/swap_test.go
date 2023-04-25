@@ -525,7 +525,7 @@ func TestCalculateNoMatchEdgeCase(t *testing.T) {
 	require.NoError(t, err)
 	var orderBook types.OrderBook
 	orderbookEdgeCase := `[{"Price":"1.007768598527187219","BuyOfferAmt":"0","SellOfferAmt":"417269600","BatchPoolSwapMsgs":[{"msg_index":1,"executed":true,"exchanged_offer_coin":{"denom":"denomY","amount":"0"},"remaining_offer_coin":{"denom":"denomY","amount":"417269600"},"msg":{"swap_requester_address":"cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgqjwl8sq","pool_id":1,"pool_type_id":1,"offer_coin":{"denom":"denomY","amount":"417269600"},"demand_coin_denom":"denomX","order_price":"1.007768598527187219"}}]},{"Price":"1.011799672921295968","BuyOfferAmt":"0","SellOfferAmt":"2190665400","BatchPoolSwapMsgs":[{"msg_index":2,"executed":true,"exchanged_offer_coin":{"denom":"denomY","amount":"0"},"remaining_offer_coin":{"denom":"denomY","amount":"2190665400"},"msg":{"swap_requester_address":"cosmos15ky9du8a2wlstz6fpx3p4mqpjyrm5cgp0ctjdj","pool_id":1,"pool_type_id":1,"offer_coin":{"denom":"denomY","amount":"2190665400"},"demand_coin_denom":"denomX","order_price":"1.011799672921295968"}}]}]`
-	json.Unmarshal([]byte(orderbookEdgeCase), &orderBook)
+	_ = json.Unmarshal([]byte(orderbookEdgeCase), &orderBook)
 	r := orderBook.CalculateMatchStay(currentPrice)
 	require.Equal(t, types.NoMatch, r.MatchType)
 	// stay case with fractional

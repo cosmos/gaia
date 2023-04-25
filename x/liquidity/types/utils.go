@@ -73,11 +73,12 @@ func GetCoinsTotalAmount(coins sdk.Coins) sdk.Int {
 // ValidateReserveCoinLimit checks if total amounts of depositCoins exceed maxReserveCoinAmount.
 func ValidateReserveCoinLimit(maxReserveCoinAmount sdk.Int, depositCoins sdk.Coins) error {
 	totalAmount := GetCoinsTotalAmount(depositCoins)
-	if maxReserveCoinAmount.IsZero() {
+	switch {
+	case maxReserveCoinAmount.IsZero():
 		return nil
-	} else if totalAmount.GT(maxReserveCoinAmount) {
+	case totalAmount.GT(maxReserveCoinAmount):
 		return ErrExceededReserveCoinLimit
-	} else {
+	default:
 		return nil
 	}
 }

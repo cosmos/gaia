@@ -211,6 +211,7 @@ func getTestingAccounts(_ *testing.T, r *rand.Rand, app *lapp.GaiaApp, ctx sdk.C
 }
 
 func setupLiquidityPools(t *testing.T, r *rand.Rand, app *lapp.GaiaApp, ctx sdk.Context, accounts []simtypes.Account) {
+	t.Helper()
 	params := app.StakingKeeper.GetParams(ctx)
 
 	for _, account := range accounts {

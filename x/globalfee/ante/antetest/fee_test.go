@@ -1,6 +1,7 @@
 package antetest
 
 import (
+	"fmt"
 	"testing"
 
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
@@ -745,4 +746,32 @@ func (s *IntegrationTestSuite) TestContainsOnlyBypassMinFeeMsgs() {
 			s.Require().True(tc.expPass == res)
 		})
 	}
+}
+
+func (s *IntegrationTestSuite) TestGetTxFeeRequired() {
+	// testCases := []struct {
+	// 	// feeTx        sdk.Tx
+	// 	globalFee    sdk.Coins
+	// 	minGasPrices sdk.Coins
+	// }{}
+	s.txBuilder = s.clientCtx.TxConfig.NewTxBuilder()
+	priv1, _, addr1 := testdata.KeyTestPubAddr()
+	privs, accNums, accSeqs := []cryptotypes.PrivKey{priv1}, []uint64{0}, []uint64{0}
+
+	globalfeeParamsEmpty := &globfeetypes.Params{MinimumGasPrices: []sdk.DecCoin{}}
+	minGasPriceEmpty := []sdk.DecCoin{}
+	mfd, _ := s.SetupTestGlobalFeeStoreAndMinGasPrice(minGasPriceEmpty, globalfeeParamsEmpty)
+
+	// set fee decorator to ante handler
+
+	s.Require().NoError(s.txBuilder.SetMsgs(testdata.NewTestMsg(addr1)))
+	s.txBuilder.SetFeeAmount(sdk.NewCoins(sdk.NewCoin("uatom", sdk.ZeroInt())))
+	s.txBuilder.SetGasLimit(uint64(1))
+	tx, err := s.CreateTestTx(privs, accNums, accSeqs, s.ctx.ChainID())
+	s.Require().NoError(err)
+
+	fmt.Println(s.ctx.IsCheckTx())
+	fmt.Println(s.ctx.WithIsCheckTx(false))
+
+	mfd.GetTxFeeRequired(s.ctx, tx)
 }

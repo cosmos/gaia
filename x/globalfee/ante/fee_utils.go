@@ -29,7 +29,7 @@ func CombinedFeeRequirement(globalFees, minGasPrices sdk.Coins) sdk.Coins {
 		return globalFees
 	}
 	// empty global fee is not possible if we set default global fee
-	if len(globalFees) == 0 && len(minGasPrices) != 0 {
+	if len(globalFees) == 0 {
 		return sdk.Coins{}
 	}
 

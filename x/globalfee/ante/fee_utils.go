@@ -2,6 +2,7 @@ package ante
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // ContainZeroCoins returns true if the given coins are empty or contain zero coins,
@@ -23,14 +24,16 @@ func ContainZeroCoins(coins sdk.Coins) bool {
 // Both globalFees and minGasPrices must be valid, but CombinedFeeRequirement
 // does not validate them, so it may return 0denom.
 // if globalfee is empty, CombinedFeeRequirement return sdk.Coins{}
-func CombinedFeeRequirement(globalFees, minGasPrices sdk.Coins) sdk.Coins {
+func CombinedFeeRequirement(globalFees, minGasPrices sdk.Coins) (sdk.Coins, error) {
+	// global fees should never be since it has a zero default value
+	//  using the staking bond denom
+	if len(globalFees) == 0 {
+		return sdk.Coins{}, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "global fee cannot be empty")
+	}
+
 	// empty min_gas_price
 	if len(minGasPrices) == 0 {
-		return globalFees
-	}
-	// empty global fee is not possible if we set default global fee
-	if len(globalFees) == 0 {
-		return sdk.Coins{}
+		return globalFees, nil
 	}
 
 	// if min_gas_price denom is in globalfee, and the amount is higher than globalfee, add min_gas_price to allFees
@@ -45,7 +48,7 @@ func CombinedFeeRequirement(globalFees, minGasPrices sdk.Coins) sdk.Coins {
 		}
 	}
 
-	return allFees.Sort()
+	return allFees.Sort(), nil
 }
 
 // Find replaces the functionality of Coins.Find from SDK v0.46.x

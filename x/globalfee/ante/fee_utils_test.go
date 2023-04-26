@@ -81,14 +81,9 @@ func TestCombinedFeeRequirement(t *testing.T) {
 		c        sdk.Coins
 		combined sdk.Coins
 	}{
-		"global fee empty, min fee empty, combined fee empty": {
+		"global fee invalid, return combined fee empty and non nil error": {
 			cGlobal:  coinsEmpty,
 			c:        coinsEmpty,
-			combined: coinsEmpty,
-		},
-		"global fee empty, min fee nonempty, combined fee empty": {
-			cGlobal:  coinsEmpty,
-			c:        coinsNonEmpty,
 			combined: coinsEmpty,
 		},
 		"global fee nonempty, min fee empty, combined fee = global fee": {
@@ -155,7 +150,12 @@ func TestCombinedFeeRequirement(t *testing.T) {
 
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
-			allFees := CombinedFeeRequirement(test.cGlobal, test.c)
+			allFees, err := CombinedFeeRequirement(test.cGlobal, test.c)
+			if len(test.cGlobal) == 0 {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
 			require.Equal(t, test.combined, allFees)
 		})
 	}

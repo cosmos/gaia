@@ -149,9 +149,9 @@ func (mfd FeeDecorator) GetTxFeeRequired(ctx sdk.Context, tx sdk.FeeTx) (sdk.Coi
 
 	// feeRequirement should never be empty since
 	// global fee is set to its default value, i.e. 0uatom, if empty
-	feeReq := CombinedFeeRequirement(globalFees, localFees)
-	if len(feeReq) == 0 {
-		return sdk.Coins{}, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "required fees are not setup.")
+	feeReq, err := CombinedFeeRequirement(globalFees, localFees)
+	if err != nil {
+		return sdk.Coins{}, err
 	}
 
 	return feeReq, nil

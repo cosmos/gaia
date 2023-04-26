@@ -1,7 +1,6 @@
 package antetest
 
 import (
-	"fmt"
 	"testing"
 
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
@@ -750,24 +749,27 @@ func (s *IntegrationTestSuite) TestContainsOnlyBypassMinFeeMsgs() {
 }
 
 func (s *IntegrationTestSuite) TestGetTxFeeRequired() {
+	// set up default gloabal fee i.e. "0utaom"
 	globalfeeParamsEmpty := &globfeetypes.Params{MinimumGasPrices: []sdk.DecCoin{}}
-	// minGasPriceEmpty := []sdk.DecCoin{}
-	minGasPriceNonZero := []sdk.DecCoin{
-		sdk.NewDecCoinFromDec("uatom", sdk.NewDec(1)),
-	}
 
 	// setup decorator
-	feeDecorator, _ := s.SetupTestGlobalFeeStoreAndMinGasPrice(minGasPriceNonZero, globalfeeParamsEmpty)
+	feeDecorator, _ := s.SetupTestGlobalFeeStoreAndMinGasPrice([]sdk.DecCoin{}, globalfeeParamsEmpty)
 
 	// reset decorator staking subspace
 	feeDecorator.StakingSubspace = paramtypes.Subspace{}
 
-	// check error is returned
+	// check an error is returned when staking subspace isn't set
 	_, err := feeDecorator.GetTxFeeRequired(s.ctx, nil)
 	s.Require().Equal(err.Error(), "empty staking bond denomination")
 
-	// define test cases for CheckTx and DeliverTx
-	feeDecorator, _ = s.SetupTestGlobalFeeStoreAndMinGasPrice(minGasPriceNonZero, globalfeeParamsEmpty)
+	// set non-zero local min gas price
+	localMinGasPrices := sdk.NewCoins(sdk.NewCoin("uatom", sdk.NewInt(1)))
+
+	// setup decorator
+	feeDecorator, _ = s.SetupTestGlobalFeeStoreAndMinGasPrice(
+		sdk.NewDecCoinsFromCoins(localMinGasPrices...),
+		globalfeeParamsEmpty,
+	)
 
 	// mock tx data
 	s.txBuilder = s.clientCtx.TxConfig.NewTxBuilder()
@@ -776,24 +778,26 @@ func (s *IntegrationTestSuite) TestGetTxFeeRequired() {
 
 	s.Require().NoError(s.txBuilder.SetMsgs(testdata.NewTestMsg(addr1)))
 	s.txBuilder.SetFeeAmount(sdk.NewCoins(sdk.NewCoin("uatom", sdk.ZeroInt())))
+
 	s.txBuilder.SetGasLimit(uint64(1))
 	tx, err := s.CreateTestTx(privs, accNums, accSeqs, s.ctx.ChainID())
 	s.Require().NoError(err)
 
+	// check that in CheckTx the combined fee is returned
+	// i.e. local min gas prices as it has higher amount of uatom than global fee
+	s.Require().True(s.ctx.IsCheckTx())
 	res, err := feeDecorator.GetTxFeeRequired(s.ctx, tx)
 
-	s.Require().True(res.IsEqual(sdk.NewCoins(sdk.NewCoin(minGasPriceNonZero[0].Denom, sdk.NewInt(1)))))
+	s.Require().True(res.IsEqual(localMinGasPrices))
 	s.Require().NoError(err)
 
+	// check that in DeliverTx the global fee is returned
 	globalFee, err := feeDecorator.GetGlobalFee(s.ctx, tx)
 	s.Require().NoError(err)
-	fmt.Println(globalFee.String())
 
 	ctx := s.ctx.WithIsCheckTx(false)
-
 	res, err = feeDecorator.GetTxFeeRequired(ctx, tx)
 	s.Require().NoError(err)
-
-	fmt.Println(res.String())
 	s.Require().True(res.IsEqual(globalFee))
+
 }

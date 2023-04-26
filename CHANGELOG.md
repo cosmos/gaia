@@ -35,7 +35,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 # Changelog
 
 ## [Unreleased]
-* (feat!) [#2424] Add `bypass-min-fee-msg-types` and `maxTotalBypassMinFeeMsgGagUsage` to globalfee params (state breaking and API breaking!!!).
+* (feat!) [#2424] Add `bypass-min-fee-msg-types` and `maxTotalBypassMinFeeMsgGagUsage` to globalfee params. Note that this change is both state breaking and API breaking.
 
 ## [v9.0.3] - 2023-04-19
 * (fix) [#2092](https://github.com/cosmos/gaia/pull/2092) change bypass-min-fee-types parsing; change defaults

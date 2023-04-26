@@ -2,6 +2,7 @@ package e2e
 
 import (
 	"encoding/json"
+	"fmt"
 	"math/rand"
 	"path/filepath"
 	"time"
@@ -59,6 +60,17 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api string) {
 		s.Require().NoError(err)
 		s.Require().Equal(vestingBalance.AmountOf(uatomDenom), balance.Amount)
 
+		s.Require().Eventually(
+			func() bool {
+				balances, err := queryGaiaAllBalances(api, vestingDelayedAcc.String())
+				s.Require().NoError(err)
+				s.T().Log(balances.String())
+				return balances.Len() != 0
+			},
+			time.Minute,
+			20*time.Second,
+		)
+
 		// Delegate coins should succeed
 		s.executeDelegate(chain, valIdx, vestingDelegationAmount.String(), valOpAddr,
 			vestingDelayedAcc.String(), gaiaHomePath, vestingDelegationFees.String())
@@ -75,6 +87,8 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api string) {
 			20*time.Second,
 			5*time.Second,
 		)
+		59755500uatom
+		99900350000uatom
 
 		waitTime := acc.EndTime - time.Now().Unix()
 		if waitTime > vestingTxDelay {
@@ -125,8 +139,10 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api string) {
 
 		//	Check address balance
 		balance, err := getSpecificBalance(api, continuousVestingAcc.String(), uatomDenom)
+		fmt.Println(balance.String())
 		s.Require().NoError(err)
 		s.Require().Equal(vestingBalance.AmountOf(uatomDenom), balance.Amount)
+		fmt.Println(vestingBalance.AmountOf(uatomDenom))
 
 		// Delegate coins should succeed
 		s.executeDelegate(chain, valIdx, vestingDelegationAmount.String(),

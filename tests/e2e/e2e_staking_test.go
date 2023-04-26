@@ -25,6 +25,17 @@ func (s *IntegrationTestSuite) testStaking() {
 	delegationAmount := sdk.NewInt(500000000)
 	delegation := sdk.NewCoin(uatomDenom, delegationAmount) // 500 atom
 
+	s.Require().Eventually(
+		func() bool {
+			balances, err := queryGaiaAllBalances(chainEndpoint, delegatorAddress)
+			s.Require().NoError(err)
+			s.T().Log(balances.String())
+			return balances.Len() != 0
+		},
+		time.Minute,
+		5*time.Second,
+	)
+
 	// Alice delegate uatom to Validator A
 	s.executeDelegate(s.chainA, 0, delegation.String(), validatorAddressA, delegatorAddress, gaiaHomePath, fees.String())
 
@@ -38,6 +49,17 @@ func (s *IntegrationTestSuite) testStaking() {
 			return amt.Equal(sdk.NewDecFromInt(delegationAmount))
 		},
 		20*time.Second,
+		5*time.Second,
+	)
+
+	s.Require().Eventually(
+		func() bool {
+			balances, err := queryGaiaAllBalances(chainEndpoint, delegatorAddress)
+			s.Require().NoError(err)
+			s.T().Log(balances.String())
+			return balances.Len() != 0
+		},
+		time.Minute,
 		5*time.Second,
 	)
 

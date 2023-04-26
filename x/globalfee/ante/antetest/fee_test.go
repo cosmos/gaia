@@ -575,23 +575,32 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			txCheck:         true,
 			expErr:          true,
 		},
-		"disable checkTx: no fee check. min_gas_price is low, global fee is low, tx fee is zero": {
+		"disable checkTx: no fee check. min_gas_price is med, global fee is low, tx fee is low": {
+			minGasPrice:     minGasPrice,
+			globalFeeParams: globalfeeParamsLow,
+			gasPrice:        sdk.NewCoins(sdk.NewCoin("uatom", lowFeeAmt)),
+			gasLimit:        testGasLimit,
+			txMsg:           testdata.NewTestMsg(addr1),
+			txCheck:         false,
+			expErr:          false,
+		},
+		"disable checkTx: no fee check. min_gas_price is med, global fee is low, tx is zero": {
 			minGasPrice:     minGasPrice,
 			globalFeeParams: globalfeeParamsLow,
 			gasPrice:        sdk.NewCoins(sdk.NewCoin("uatom", sdk.ZeroInt())),
 			gasLimit:        testGasLimit,
 			txMsg:           testdata.NewTestMsg(addr1),
 			txCheck:         false,
-			expErr:          false,
+			expErr:          true,
 		},
-		"disable checkTx: no fee check. min_gas_price is low, global fee is low, tx fee's denom is not in global fees denoms set": {
+		"disable checkTx: min_gas_price is low, global fee is low, tx fee's denom is not in global fees denoms set": {
 			minGasPrice:     minGasPrice,
 			globalFeeParams: globalfeeParamsLow,
 			gasPrice:        sdk.NewCoins(sdk.NewCoin("quark", sdk.ZeroInt())),
 			gasLimit:        testGasLimit,
 			txMsg:           testdata.NewTestMsg(addr1),
 			txCheck:         false,
-			expErr:          false,
+			expErr:          true,
 		},
 	}
 	for name, tc := range testCases {
@@ -799,5 +808,4 @@ func (s *IntegrationTestSuite) TestGetTxFeeRequired() {
 	res, err = feeDecorator.GetTxFeeRequired(ctx, tx)
 	s.Require().NoError(err)
 	s.Require().True(res.IsEqual(globalFee))
-
 }

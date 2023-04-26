@@ -7,6 +7,7 @@ import (
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
@@ -749,20 +750,29 @@ func (s *IntegrationTestSuite) TestContainsOnlyBypassMinFeeMsgs() {
 }
 
 func (s *IntegrationTestSuite) TestGetTxFeeRequired() {
-	// testCases := []struct {
-	// 	// feeTx        sdk.Tx
-	// 	globalFee    sdk.Coins
-	// 	minGasPrices sdk.Coins
-	// }{}
+	globalfeeParamsEmpty := &globfeetypes.Params{MinimumGasPrices: []sdk.DecCoin{}}
+	// minGasPriceEmpty := []sdk.DecCoin{}
+	minGasPriceNonZero := []sdk.DecCoin{
+		sdk.NewDecCoinFromDec("uatom", sdk.NewDec(1)),
+	}
+
+	// setup decorator
+	feeDecorator, _ := s.SetupTestGlobalFeeStoreAndMinGasPrice(minGasPriceNonZero, globalfeeParamsEmpty)
+
+	// reset decorator staking subspace
+	feeDecorator.StakingSubspace = paramtypes.Subspace{}
+
+	// check error is returned
+	_, err := feeDecorator.GetTxFeeRequired(s.ctx, nil)
+	s.Require().Equal(err.Error(), "empty staking bond denomination")
+
+	// define test cases for CheckTx and DeliverTx
+	feeDecorator, _ = s.SetupTestGlobalFeeStoreAndMinGasPrice(minGasPriceNonZero, globalfeeParamsEmpty)
+
+	// mock tx data
 	s.txBuilder = s.clientCtx.TxConfig.NewTxBuilder()
 	priv1, _, addr1 := testdata.KeyTestPubAddr()
 	privs, accNums, accSeqs := []cryptotypes.PrivKey{priv1}, []uint64{0}, []uint64{0}
-
-	globalfeeParamsEmpty := &globfeetypes.Params{MinimumGasPrices: []sdk.DecCoin{}}
-	minGasPriceEmpty := []sdk.DecCoin{}
-	mfd, _ := s.SetupTestGlobalFeeStoreAndMinGasPrice(minGasPriceEmpty, globalfeeParamsEmpty)
-
-	// set fee decorator to ante handler
 
 	s.Require().NoError(s.txBuilder.SetMsgs(testdata.NewTestMsg(addr1)))
 	s.txBuilder.SetFeeAmount(sdk.NewCoins(sdk.NewCoin("uatom", sdk.ZeroInt())))
@@ -770,8 +780,20 @@ func (s *IntegrationTestSuite) TestGetTxFeeRequired() {
 	tx, err := s.CreateTestTx(privs, accNums, accSeqs, s.ctx.ChainID())
 	s.Require().NoError(err)
 
-	fmt.Println(s.ctx.IsCheckTx())
-	fmt.Println(s.ctx.WithIsCheckTx(false))
+	res, err := feeDecorator.GetTxFeeRequired(s.ctx, tx)
 
-	mfd.GetTxFeeRequired(s.ctx, tx)
+	s.Require().True(res.IsEqual(sdk.NewCoins(sdk.NewCoin(minGasPriceNonZero[0].Denom, sdk.NewInt(1)))))
+	s.Require().NoError(err)
+
+	globalFee, err := feeDecorator.GetGlobalFee(s.ctx, tx)
+	s.Require().NoError(err)
+	fmt.Println(globalFee.String())
+
+	ctx := s.ctx.WithIsCheckTx(false)
+
+	res, err = feeDecorator.GetTxFeeRequired(ctx, tx)
+	s.Require().NoError(err)
+
+	fmt.Println(res.String())
+	s.Require().True(res.IsEqual(globalFee))
 }

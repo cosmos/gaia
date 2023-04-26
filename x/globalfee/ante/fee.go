@@ -199,10 +199,13 @@ func (mfd FeeDecorator) DefaultZeroGlobalFee(ctx sdk.Context) ([]sdk.DecCoin, er
 }
 
 func (mfd FeeDecorator) getBondDenom(ctx sdk.Context) string {
-	var bondDenom string
-	if mfd.StakingSubspace.Has(ctx, stakingtypes.KeyBondDenom) {
-		mfd.StakingSubspace.Get(ctx, stakingtypes.KeyBondDenom, &bondDenom)
+	// prevent panic if staking subspace isn't set
+	if !mfd.StakingSubspace.HasKeyTable() {
+		return ""
 	}
+
+	var bondDenom string
+	mfd.StakingSubspace.Get(ctx, stakingtypes.KeyBondDenom, &bondDenom)
 
 	return bondDenom
 }

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/cosmos/gaia/v9/x/globalfee/ante"
 )
 
@@ -35,7 +36,7 @@ type (
 var (
 	genesisVestingKeys      = []string{continuousVestingKey, delayedVestingKey, lockedVestingKey, periodicVestingKey}
 	vestingAmountVested     = sdk.NewCoin(uatomDenom, sdk.NewInt(99900000000))
-	vestingAmount           = sdk.NewCoin(uatomDenom, sdk.NewInt(350000))
+	vestingAmount           = sdk.NewCoin(uatomDenom, sdk.NewInt(35000000000))
 	vestingBalance          = sdk.NewCoins(vestingAmountVested).Add(vestingAmount)
 	vestingDelegationAmount = sdk.NewCoin(uatomDenom, sdk.NewInt(500000000))
 	vestingDelegationFees   = sdk.NewCoin(uatomDenom, sdk.NewInt(10))
@@ -87,8 +88,6 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api string) {
 			20*time.Second,
 			5*time.Second,
 		)
-		59755500uatom
-		99900350000uatom
 
 		waitTime := acc.EndTime - time.Now().Unix()
 		if waitTime > vestingTxDelay {

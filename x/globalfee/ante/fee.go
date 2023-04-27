@@ -2,6 +2,7 @@ package ante
 
 import (
 	"errors"
+	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -67,6 +68,9 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	gas := feeTx.GetGas()
 	msgs := feeTx.GetMsgs()
 
+	ctx.Logger().Info(fmt.Sprintf("tx received: %#+v", msgs))
+	ctx.Logger().Info(fmt.Sprintf("gas: %v fee: %v", gas, feeCoins))
+
 	// Get the required fees according the Check or Deliver Tx mode
 	feeRequired, err := mfd.GetTxFeeRequired(ctx, feeTx)
 	if err != nil {
@@ -121,6 +125,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 		// if nonZeroCoinFeesReq=[], return false (this situation should not happen
 		// because when nonZeroCoinFeesReq empty, and DenomsSubsetOf check passed,
 		// the tx should already passed before)
+		ctx.Logger().Info(fmt.Sprintf("%#+v is GT than %#+v", feeCoinsNonZeroDenom.String(), nonZeroCoinFeesReq.String()))
 		if !feeCoinsNonZeroDenom.IsAnyGTE(nonZeroCoinFeesReq) {
 			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins, feeRequired)
 		}
@@ -183,7 +188,9 @@ func (mfd FeeDecorator) GetGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) (sdk.Coin
 	glDec := sdk.NewDec(int64(feeTx.GetGas()))
 	for i, gp := range globalMinGasPrices {
 		fee := gp.Amount.Mul(glDec)
+		ctx.Logger().Info(fmt.Sprintf("Computing Global Fee min x gas %v x %v", gp.Amount, glDec))
 		requiredGlobalFees[i] = sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt())
+		ctx.Logger().Info(fmt.Sprintf("Equal %v", requiredGlobalFees[i].String()))
 	}
 
 	return requiredGlobalFees.Sort(), nil

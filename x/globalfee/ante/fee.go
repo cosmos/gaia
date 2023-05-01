@@ -79,10 +79,10 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 
 	nonZeroCoinFeesReq, zeroCoinFeesDenomReq := getNonZeroFees(feeRequired)
 
-	// feeCoinsNonZeroDenom contains non-zero denominations from the feeRequirement
+	// feeCoinsNonZeroDenom contains non-zero denominations from the feeRequired
 	//
 	// feeCoinsNoZeroDenom is used to check if the fees meets the requirement imposed by nonZeroCoinFeesReq
-	// when feeCoins does not contain zero coins' denoms in feeRequirement
+	// when feeCoins does not contain zero coins' denoms in feeRequired
 	feeCoinsNonZeroDenom, feeCoinsZeroDenom := splitCoinsByDenoms(feeCoins, zeroCoinFeesDenomReq)
 
 	// Check that the fees are in expected denominations.
@@ -110,7 +110,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	// the expected amounts.
 
 	// only check feeCoinsNoZeroDenom has coins IsAnyGTE than nonZeroCoinFeesReq
-	// when feeCoins does not contain denoms of zero denoms in feeRequirement
+	// when feeCoins does not contain denoms of zero denoms in feeRequired
 	if !allowedToBypassMinFee && len(feeCoinsZeroDenom) == 0 {
 		// special case: when feeCoins=[] and there is zero coin in fee requirement
 		if len(feeCoins) == 0 && len(zeroCoinFeesDenomReq) != 0 {
@@ -152,7 +152,7 @@ func (mfd FeeDecorator) GetTxFeeRequired(ctx sdk.Context, tx sdk.FeeTx) (sdk.Coi
 	// Get local minimum-gas-prices
 	localFees := GetMinGasPrice(ctx, int64(tx.GetGas()))
 
-	// feeRequirement should never be empty since
+	// the combined fee requirement should never be empty since
 	// global fee is set to its default value, i.e. 0uatom, if empty
 	feeReq, err := CombinedFeeRequirement(globalFees, localFees)
 	if err != nil {
@@ -188,9 +188,7 @@ func (mfd FeeDecorator) GetGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) (sdk.Coin
 	glDec := sdk.NewDec(int64(feeTx.GetGas()))
 	for i, gp := range globalMinGasPrices {
 		fee := gp.Amount.Mul(glDec)
-		ctx.Logger().Info(fmt.Sprintf("Computing Global Fee min x gas %v x %v", gp.Amount, glDec))
 		requiredGlobalFees[i] = sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt())
-		ctx.Logger().Info(fmt.Sprintf("Equal %v", requiredGlobalFees[i].String()))
 	}
 
 	return requiredGlobalFees.Sort(), nil

@@ -767,7 +767,7 @@ func (s *IntegrationTestSuite) TestGetTxFeeRequired() {
 	// reset decorator staking subspace
 	feeDecorator.StakingSubspace = paramtypes.Subspace{}
 
-	// check an error is returned when staking subspace isn't set
+	// check that an error is returned when staking subspace isn't set
 	_, err := feeDecorator.GetTxFeeRequired(s.ctx, nil)
 	s.Require().Equal(err.Error(), "empty staking bond denomination")
 
@@ -792,15 +792,14 @@ func (s *IntegrationTestSuite) TestGetTxFeeRequired() {
 	tx, err := s.CreateTestTx(privs, accNums, accSeqs, s.ctx.ChainID())
 	s.Require().NoError(err)
 
-	// check that in CheckTx the combined fee is returned
-	// i.e. local min gas prices as it has higher amount of uatom than global fee
+	// check that the required fees returned in CheckTx mode are equal to
+	// local min gas prices since they're bigger than the default global fee values.
 	s.Require().True(s.ctx.IsCheckTx())
 	res, err := feeDecorator.GetTxFeeRequired(s.ctx, tx)
-
 	s.Require().True(res.IsEqual(localMinGasPrices))
 	s.Require().NoError(err)
 
-	// check that in DeliverTx the global fee is returned
+	// check that the global fee is returned n DeliverTx mode.
 	globalFee, err := feeDecorator.GetGlobalFee(s.ctx, tx)
 	s.Require().NoError(err)
 

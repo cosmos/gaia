@@ -758,7 +758,7 @@ func (s *IntegrationTestSuite) TestContainsOnlyBypassMinFeeMsgs() {
 }
 
 func (s *IntegrationTestSuite) TestGetTxFeeRequired() {
-	// set up default gloabal fee i.e. "0utaom"
+	// set up default gloabal fee i.e. "0uatom"
 	globalfeeParamsEmpty := &globfeetypes.Params{MinimumGasPrices: []sdk.DecCoin{}}
 
 	// setup decorator

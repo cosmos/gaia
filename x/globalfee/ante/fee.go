@@ -2,7 +2,6 @@ package ante
 
 import (
 	"errors"
-	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -122,7 +121,6 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 		// if nonZeroCoinFeesReq=[], return false (this situation should not happen
 		// because when nonZeroCoinFeesReq empty, and DenomsSubsetOf check passed,
 		// the tx should already passed before)
-		ctx.Logger().Info(fmt.Sprintf("%#+v is GT than %#+v", feeCoinsNonZeroDenom.String(), nonZeroCoinFeesReq.String()))
 		if !feeCoinsNonZeroDenom.IsAnyGTE(nonZeroCoinFeesReq) {
 			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins, feeRequired)
 		}
@@ -136,7 +134,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 // of local min gas prices and global fees. Otherwise, in DeliverTx, it returns the global fee.
 func (mfd FeeDecorator) GetTxFeeRequired(ctx sdk.Context, tx sdk.FeeTx) (sdk.Coins, error) {
 	// Get required global fee min gas prices
-	// Note that it should never be empty since its default value is set to {DefaultStakingDenom, 0}
+	// Note that it should never be empty since its default value is set to coin={"StakingBondDenom", 0}
 	globalFees, err := mfd.GetGlobalFee(ctx, tx)
 	if err != nil {
 		return sdk.Coins{}, err
@@ -189,6 +187,7 @@ func (mfd FeeDecorator) GetGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) (sdk.Coin
 	return requiredGlobalFees.Sort(), nil
 }
 
+// DefaultZeroGlobalFee returns a zero coin with the staking module bond denom
 func (mfd FeeDecorator) DefaultZeroGlobalFee(ctx sdk.Context) ([]sdk.DecCoin, error) {
 	bondDenom := mfd.getBondDenom(ctx)
 	if bondDenom == "" {
@@ -199,7 +198,8 @@ func (mfd FeeDecorator) DefaultZeroGlobalFee(ctx sdk.Context) ([]sdk.DecCoin, er
 }
 
 func (mfd FeeDecorator) getBondDenom(ctx sdk.Context) string {
-	// prevent panic if staking subspace isn't set
+	// prevent the getter above to panic
+	// when the staking subspace isn't set
 	if !mfd.StakingSubspace.HasKeyTable() {
 		return ""
 	}

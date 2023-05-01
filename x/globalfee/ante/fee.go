@@ -135,28 +135,26 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 // In case the FeeTx's mode is CheckTx, it returns the combined requirements
 // of local min gas prices and global fees. Otherwise, in DeliverTx, it returns the global fee.
 func (mfd FeeDecorator) GetTxFeeRequired(ctx sdk.Context, tx sdk.FeeTx) (sdk.Coins, error) {
-	// Get required Global Fee
+	// Get required global fee min gas prices
+	// Note that it should never be empty since its default value is set to {DefaultStakingDenom, 0}
 	globalFees, err := mfd.GetGlobalFee(ctx, tx)
 	if err != nil {
 		return sdk.Coins{}, err
 	}
 
+	// In DeliverTx, the global fee min gas prices are the only tx fee requirements.
 	if !ctx.IsCheckTx() {
 		return globalFees, nil
 	}
 
-	// In CheckTx get local min gas price and combined it with global fee.
+	// In CheckTx mode, the local and global fee min gas prices are combined
+	// to form the tx fee requirements
+
 	// Get local minimum-gas-prices
 	localFees := GetMinGasPrice(ctx, int64(tx.GetGas()))
 
-	// the combined fee requirement should never be empty since
-	// global fee is set to its default value, i.e. 0uatom, if empty
-	feeReq, err := CombinedFeeRequirement(globalFees, localFees)
-	if err != nil {
-		return sdk.Coins{}, err
-	}
-
-	return feeReq, nil
+	// Return combined fee requirements
+	return CombinedFeeRequirement(globalFees, localFees)
 }
 
 // GetGlobalFee returns the global fees for a given fee tx's gas

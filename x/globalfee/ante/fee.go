@@ -68,7 +68,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	gas := feeTx.GetGas()
 	msgs := feeTx.GetMsgs()
 
-	// Get the required fees according the CheckTx or DeliverTx modes
+	// Get the required fees according to the CheckTx or DeliverTx modes
 	feeRequired, err := mfd.GetTxFeeRequired(ctx, feeTx)
 	if err != nil {
 		return ctx, err

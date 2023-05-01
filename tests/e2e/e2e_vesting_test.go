@@ -2,7 +2,6 @@ package e2e
 
 import (
 	"encoding/json"
-	"fmt"
 	"math/rand"
 	"path/filepath"
 	"time"
@@ -128,10 +127,8 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api string) {
 
 		//	Check address balance
 		balance, err := getSpecificBalance(api, continuousVestingAcc.String(), uatomDenom)
-		fmt.Println(balance.String())
 		s.Require().NoError(err)
 		s.Require().Equal(vestingBalance.AmountOf(uatomDenom), balance.Amount)
-		fmt.Println(vestingBalance.AmountOf(uatomDenom))
 
 		// Delegate coins should succeed
 		s.executeDelegate(chain, valIdx, vestingDelegationAmount.String(),

@@ -68,10 +68,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	gas := feeTx.GetGas()
 	msgs := feeTx.GetMsgs()
 
-	ctx.Logger().Info(fmt.Sprintf("tx received: %#+v", msgs))
-	ctx.Logger().Info(fmt.Sprintf("gas: %v fee: %v", gas, feeCoins))
-
-	// Get the required fees according the Check or Deliver Tx mode
+	// Get the required fees according the CheckTx or DeliverTx modes
 	feeRequired, err := mfd.GetTxFeeRequired(ctx, feeTx)
 	if err != nil {
 		return ctx, err

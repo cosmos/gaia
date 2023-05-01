@@ -97,7 +97,6 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api string) {
 
 		//	Transfer coins should succeed
 		balance, err = getSpecificBalance(api, vestingDelayedAcc.String(), uatomDenom)
-		s.T().Log(balance.String())
 		s.Require().NoError(err)
 		s.execBankSend(
 			chain,

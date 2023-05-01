@@ -575,7 +575,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			txCheck:         true,
 			expErr:          true,
 		},
-		"disable checkTx: no fee check. min_gas_price is med, global fee is low, tx fee is low": {
+		"disable checkTx: min_gas_price is med, global fee is low, tx fee is low": {
 			minGasPrice:     minGasPrice,
 			globalFeeParams: globalfeeParamsLow,
 			gasPrice:        sdk.NewCoins(sdk.NewCoin("uatom", lowFeeAmt)),
@@ -584,7 +584,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			txCheck:         false,
 			expErr:          false,
 		},
-		"disable checkTx: no fee check. min_gas_price is med, global fee is low, tx is zero": {
+		"disable checkTx: min_gas_price is med, global fee is low, tx is zero": {
 			minGasPrice:     minGasPrice,
 			globalFeeParams: globalfeeParamsLow,
 			gasPrice:        sdk.NewCoins(sdk.NewCoin("uatom", sdk.ZeroInt())),

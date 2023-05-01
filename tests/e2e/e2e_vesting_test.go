@@ -39,7 +39,7 @@ var (
 	vestingAmount           = sdk.NewCoin(uatomDenom, sdk.NewInt(350000))
 	vestingBalance          = sdk.NewCoins(vestingAmountVested).Add(vestingAmount)
 	vestingDelegationAmount = sdk.NewCoin(uatomDenom, sdk.NewInt(500000000))
-	vestingDelegationFees   = sdk.NewCoin(uatomDenom, sdk.NewInt(1))
+	vestingDelegationFees   = sdk.NewCoin(uatomDenom, sdk.NewInt(10))
 )
 
 func (s *IntegrationTestSuite) testDelayedVestingAccount(api string) {
@@ -109,6 +109,7 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api string) {
 
 		//	Transfer coins should succeed
 		balance, err = getSpecificBalance(api, vestingDelayedAcc.String(), uatomDenom)
+		s.T().Log(balance.String())
 		s.Require().NoError(err)
 		s.execBankSend(
 			chain,

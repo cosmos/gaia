@@ -440,7 +440,7 @@ func (s *IntegrationTestSuite) executeDelegate(c *chain, valIdx int, amount, val
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
 		fmt.Sprintf("--%s=%s", flags.FlagGas, "auto"),
-		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, "300uatom"),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, delegateFees),
 		"--keyring-backend=test",
 		fmt.Sprintf("--%s=%s", flags.FlagGasAdjustment, "1.5"),
 		fmt.Sprintf("--%s=%s", flags.FlagHome, home),

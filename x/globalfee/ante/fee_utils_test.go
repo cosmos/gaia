@@ -81,7 +81,7 @@ func TestCombinedFeeRequirement(t *testing.T) {
 		c        sdk.Coins
 		combined sdk.Coins
 	}{
-		"global fee invalid, return combined fee empty and non nil error": {
+		"global fee invalid, return combined fee empty and non-nil error": {
 			cGlobal:  coinsEmpty,
 			c:        coinsEmpty,
 			combined: coinsEmpty,

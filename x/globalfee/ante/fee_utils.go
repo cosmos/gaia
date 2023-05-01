@@ -25,8 +25,8 @@ func ContainZeroCoins(coins sdk.Coins) bool {
 // does not validate them, so it may return 0denom.
 // if globalfee is empty, CombinedFeeRequirement return sdk.Coins{}
 func CombinedFeeRequirement(globalFees, minGasPrices sdk.Coins) (sdk.Coins, error) {
-	// global fees should never be since it has a zero default value
-	//  using the staking bond denom
+	// global fees should never be empty
+	// since it has a default value using the staking module's bond denom
 	if len(globalFees) == 0 {
 		return sdk.Coins{}, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "global fee cannot be empty")
 	}

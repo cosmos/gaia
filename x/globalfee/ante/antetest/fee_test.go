@@ -758,10 +758,10 @@ func (s *IntegrationTestSuite) TestContainsOnlyBypassMinFeeMsgs() {
 }
 
 func (s *IntegrationTestSuite) TestGetTxFeeRequired() {
-	// set up default gloabal fee i.e. "0uatom"
+	// create global fee params
 	globalfeeParamsEmpty := &globfeetypes.Params{MinimumGasPrices: []sdk.DecCoin{}}
 
-	// setup decorator
+	// setup tests with default global fee i.e. "0uatom" and empty local min gas prices
 	feeDecorator, _ := s.SetupTestGlobalFeeStoreAndMinGasPrice([]sdk.DecCoin{}, globalfeeParamsEmpty)
 
 	// reset decorator staking subspace
@@ -771,10 +771,10 @@ func (s *IntegrationTestSuite) TestGetTxFeeRequired() {
 	_, err := feeDecorator.GetTxFeeRequired(s.ctx, nil)
 	s.Require().Equal(err.Error(), "empty staking bond denomination")
 
-	// set non-zero local min gas price
+	// set non-zero local min gas prices
 	localMinGasPrices := sdk.NewCoins(sdk.NewCoin("uatom", sdk.NewInt(1)))
 
-	// setup decorator
+	// setup tests with non-empty local min gas prices
 	feeDecorator, _ = s.SetupTestGlobalFeeStoreAndMinGasPrice(
 		sdk.NewDecCoinsFromCoins(localMinGasPrices...),
 		globalfeeParamsEmpty,
@@ -793,13 +793,13 @@ func (s *IntegrationTestSuite) TestGetTxFeeRequired() {
 	s.Require().NoError(err)
 
 	// check that the required fees returned in CheckTx mode are equal to
-	// local min gas prices since they're bigger than the default global fee values.
+	// local min gas prices since they're greater than the default global fee values.
 	s.Require().True(s.ctx.IsCheckTx())
 	res, err := feeDecorator.GetTxFeeRequired(s.ctx, tx)
 	s.Require().True(res.IsEqual(localMinGasPrices))
 	s.Require().NoError(err)
 
-	// check that the global fee is returned n DeliverTx mode.
+	// check that the global fee is returned in DeliverTx mode.
 	globalFee, err := feeDecorator.GetGlobalFee(s.ctx, tx)
 	s.Require().NoError(err)
 

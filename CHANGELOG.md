@@ -35,12 +35,12 @@ Ref: https://keepachangelog.com/en/1.0.0/
 # Changelog
 
 ## [Unreleased]
-* (feat!) [#2424] Add `bypass-min-fee-msg-types` and `maxTotalBypassMinFeeMsgGagUsage` to globalfee params. Note that this change is both state breaking and API breaking.
 
 ### Improvements
 * (test) [#2440](https://github.com/cosmos/gaia/pull/2440) Add vulncheck to nightly builds
 
 ### State Machine Breaking
+* (feat!) [#2424] Add `bypass-min-fee-msg-types` and `maxTotalBypassMinFeeMsgGagUsage` to globalfee params. Note that this change is both state breaking and API breaking.
 * (gaia) Bump Golang prerequisite from 1.18 to 1.20 see (https://go.dev/blog/go1.20) for details.
 
 

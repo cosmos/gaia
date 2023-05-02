@@ -575,7 +575,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			txCheck:         true,
 			expErr:          true,
 		},
-		"disable checkTx: min_gas_price is med, global fee is low, tx fee is low": {
+		"disable checkTx: min_gas_price is medium, global fee is low, tx fee is low": {
 			minGasPrice:     minGasPrice,
 			globalFeeParams: globalfeeParamsLow,
 			gasPrice:        sdk.NewCoins(sdk.NewCoin("uatom", lowFeeAmt)),

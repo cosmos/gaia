@@ -7,7 +7,6 @@ import (
 )
 
 func (s *IntegrationTestSuite) testBypassMinFeeWithdrawReward() {
-
 	// submit gov prop to change bypass-msg param to MsgWithdrawDelegatorReward
 	submitterAddr := s.chainA.validators[0].keyInfo.GetAddress()
 	submitter := submitterAddr.String()

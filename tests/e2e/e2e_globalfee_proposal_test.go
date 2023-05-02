@@ -85,19 +85,19 @@ func (s *IntegrationTestSuite) govProposeNewBypassMsgs(newBypassMsgs []string, p
 	)
 }
 
-func (s *IntegrationTestSuite) govProposeNewMaxTotalBypassMinFeeMsgGasUsage(newGas uint64, proposalCounter int, submitter string) { //nolint:unparam
+func (s *IntegrationTestSuite) govProposeNewMaxTotalBypassMinFeeMsgGasUsage(newGas uint64, proposalCounter int, submitter string) {
 	s.writeGovParamChangeProposalMaxTotalBypass(s.chainA, newGas)
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	submitGovFlags := []string{"param-change", configFile(proposalMaxTotalBypassFilename)}
 	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
 	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes"}
 
-	// gov proposing new fees
+	// gov proposing new max gas usage for bypass msgs
 	s.T().Logf("Proposal number: %d", proposalCounter)
 	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change maxTotalBypassMinFeeMsgGasUsage to %d", newGas)
 	s.runGovProcess(chainAAPIEndpoint, submitter, proposalCounter, paramtypes.ProposalTypeChange, submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
 
-	// query the proposal status and new fee
+	// query the proposal status and max gas usage for bypass msgs
 	s.Require().Eventually(
 		func() bool {
 			proposal, err := queryGovProposal(chainAAPIEndpoint, proposalCounter)

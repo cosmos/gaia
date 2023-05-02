@@ -79,10 +79,6 @@ module.exports = {
           url: "https://twitter.com/cosmos"
         },
         {
-          service: "linkedin",
-          url: "https://www.linkedin.com/company/tendermint/"
-        },
-        {
           service: "github",
           url: "https://github.com/cosmos/gaia"
         },
@@ -100,7 +96,7 @@ module.exports = {
         }
       ],
       smallprint:
-        "This website is maintained by Tendermint Inc. The contents and opinions of this website are those of Tendermint Inc.",
+        "This website is maintained by Interchain Foundation/Informal Systems. The contents and opinions of this website are those of Interchain Foundation/Informal Systems.",
       links: [
         {
           title: "Documentation",
@@ -114,8 +110,8 @@ module.exports = {
               url: "https://hub.cosmos.network/"
             },
             {
-              title: "Tendermint Core",
-              url: "https://docs.tendermint.com/"
+              title: "Comet BFT",
+              url: "https://docs.cometbft.com/"
             }
           ]
         },

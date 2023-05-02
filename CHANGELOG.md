@@ -37,6 +37,9 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ## [Unreleased]
 * (gaia) Bump Golang prerequisite from 1.18 to 1.20 see (https://go.dev/blog/go1.20) for details.
 
+### Docs
+* (docs) [#2425](https://github.com/cosmos/gaia/pull/2425) Update docs to include references to CometBFT
+
 ## [v9.0.3] - 2023-04-19
 * (deps) [#2399](https://github.com/cosmos/gaia/pull/2399) Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.15-ics](https://github.com/cosmos/cosmos
 sdk/releases/tag/v0.45.15-ics) and migrate to [CometBFT](https://github.com/cometbft/cometbft).

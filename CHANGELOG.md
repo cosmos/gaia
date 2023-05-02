@@ -42,6 +42,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 ### State Machine Breaking
 * (feat!) [#2424] Add `bypass-min-fee-msg-types` and `maxTotalBypassMinFeeMsgGagUsage` to globalfee params. Note that this change is both state breaking and API breaking.
 * (gaia) Bump Golang prerequisite from 1.18 to 1.20 see (https://go.dev/blog/go1.20) for details.
+* (gaia) [#2442](https://github.com/cosmos/gaia/pull/2442) Bump [Interchain-Security](https://github.com/cosmos/interchain-security) to [v1.1.1](https://github.com/cosmos/interchain-security/tree/v1.1.1).
 
 
 ## [v9.0.3] - 2023-04-19

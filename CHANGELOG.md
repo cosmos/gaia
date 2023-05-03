@@ -35,6 +35,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 # Changelog
 
 ## [Unreleased]
+* (deps) [#2442](https://github.com/cosmos/gaia/pull/2442) Bump [Interchain-Security](https://github.com/cosmos/interchain-security) to [v1.1.1](https://github.com/cosmos/interchain-security/tree/v1.1.1).
+
 
 ## [v9.0.3] - 2023-04-19
 * (deps) [#2399](https://github.com/cosmos/gaia/pull/2399) Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.15-ics](https://github.com/cosmos/cosmos

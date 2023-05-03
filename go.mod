@@ -311,9 +311,6 @@ replace (
 	// Use cosmos keyring
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
-	// TODO: Simapp dependency, review removing when updating to SDK with backported update https://github.com/cosmos/cosmos-sdk/issues/13423
-	github.com/btcsuite/btcd => github.com/btcsuite/btcd v0.22.2 // indirect
-
 	// Cosmos SDK & IBC
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.15-ics
 	github.com/cosmos/ibc-go/v4 => github.com/cosmos/ibc-go/v4 v4.4.0
@@ -328,8 +325,8 @@ replace (
 
 	// Comet
 	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.27
-
 	// latest grpc doesn't work with with our modified proto compiler, so we need to enforce
 	// the following version across all dependencies.
 	google.golang.org/grpc => google.golang.org/grpc v1.33.2
+
 )

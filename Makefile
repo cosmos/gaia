@@ -264,6 +264,8 @@ test-docker-push: test-docker
 	docker-build-debug docker-build-hermes docker-build-all
 
 
+
+
 ###############################################################################
 ###                                Protobuf                                 ###
 ###############################################################################
@@ -280,6 +282,8 @@ proto-gen:
 	@echo "Generating Protobuf files"
 	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoGen}$$"; then docker start -a $(containerProtoGen); else docker run --name $(containerProtoGen) -v $(CURDIR):/workspace --workdir /workspace $(containerProtoImage) \
 		sh ./scripts/protocgen.sh; fi
+
+
 
 proto-format:
 	@echo "Formatting Protobuf files"

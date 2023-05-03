@@ -1,5 +1,5 @@
-version: v1
-name: buf.build/neutron-org/neutron
+version: v1beta1
+name: buf.build/cosmos/gaia
 deps:
   - buf.build/cosmos/gogo-proto
   - buf.build/googleapis/googleapis

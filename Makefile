@@ -263,12 +263,13 @@ test-docker-push: test-docker
 .PHONY: all build-linux install format lint go-mod-cache draw-deps clean build \
 	docker-build-debug docker-build-hermes docker-build-all
 
+
 ###############################################################################
 ###                                Protobuf                                 ###
 ###############################################################################
 
-containerProtoVer=0.9.0
-containerProtoImage=ghcr.io/cosmos/proto-builder:$(containerProtoVer)
+containerProtoVer=v0.2
+containerProtoImage=tendermintdev/sdk-proto-gen:$(containerProtoVer)
 containerProtoGen=cosmos-sdk-proto-gen-$(containerProtoVer)
 containerProtoGenSwagger=cosmos-sdk-proto-gen-swagger-$(containerProtoVer)
 containerProtoFmt=cosmos-sdk-proto-fmt-$(containerProtoVer)
@@ -278,7 +279,9 @@ proto-all: proto-format proto-lint proto-gen
 proto-gen:
 	@echo "Generating Protobuf files"
 	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoGen}$$"; then docker start -a $(containerProtoGen); else docker run --name $(containerProtoGen) -v $(CURDIR):/workspace --workdir /workspace $(containerProtoImage) \
-		sh ./proto/scripts/protocgen.sh; fi
+		sh ./scripts/protocgen.sh; fi
+
+
 
 proto-format:
 	@echo "Formatting Protobuf files"

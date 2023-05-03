@@ -5,13 +5,8 @@ go 1.18
 require (
 	github.com/cosmos/cosmos-sdk v0.45.15-ics
 	github.com/cosmos/go-bip39 v1.0.0
-<<<<<<< HEAD
 	github.com/cosmos/ibc-go/v4 v4.2.0
-	github.com/cosmos/interchain-security v1.1.0
-=======
-	github.com/cosmos/ibc-go/v4 v4.3.0
 	github.com/cosmos/interchain-security v1.1.1
->>>>>>> 060d37d (deps: bump ICS to v1.1.1 (#2442))
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
 	github.com/golangci/golangci-lint v1.50.1

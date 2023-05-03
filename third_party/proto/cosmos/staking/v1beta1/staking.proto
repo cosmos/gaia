@@ -9,6 +9,7 @@ import "google/protobuf/timestamp.proto";
 import "cosmos_proto/cosmos.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "tendermint/types/types.proto";
+import "tendermint/abci/types.proto";
 
 option go_package = "github.com/cosmos/cosmos-sdk/x/staking/types";
 
@@ -117,6 +118,12 @@ message Validator {
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable)   = false
   ];
+
+  // strictly positive if this validator's unbonding has been stopped by external modules
+  int64 unbonding_on_hold_ref_count = 12;
+
+  // list of unbonding ids, each uniquely identifing an unbonding of this validator
+  repeated uint64 unbonding_ids = 13;
 }
 
 // BondStatus is the status of a validator.
@@ -226,6 +233,12 @@ message UnbondingDelegationEntry {
   ];
   // balance defines the tokens to receive at completion.
   string balance = 4 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+
+  // Incrementing id that uniquely identifies this entry
+  uint64 unbonding_id = 5;
+
+  // Strictly positive if this entry's unbonding has been stopped by external modules
+  int64 unbonding_on_hold_ref_count = 6;
 }
 
 // RedelegationEntry defines a redelegation object with relevant metadata.
@@ -247,6 +260,12 @@ message RedelegationEntry {
   // shares_dst is the amount of destination-validator shares created by redelegation.
   string shares_dst = 4
       [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+
+  // Incrementing id that uniquely identifies this entry
+  uint64 unbonding_id = 5;
+
+  // Strictly positive if this entry's unbonding has been stopped by external modules
+  int64 unbonding_on_hold_ref_count = 6;
 }
 
 // Redelegation contains the list of a particular delegator's redelegating bonds
@@ -331,4 +350,21 @@ message Pool {
     (gogoproto.nullable)   = false,
     (gogoproto.moretags)   = "yaml:\"bonded_tokens\""
   ];
+}
+
+// InfractionType indicates the infraction type a validator commited.
+enum InfractionType {
+  option (gogoproto.goproto_enum_prefix) = false;
+
+  // UNSPECIFIED defines an empty infraction type.
+  INFRACTION_TYPE_UNSPECIFIED = 0 [(gogoproto.enumvalue_customname) = "InfractionEmpty"];
+  // DOUBLE_SIGN defines a validator that double-signs a block.
+  INFRACTION_TYPE_DOUBLE_SIGN = 1 [(gogoproto.enumvalue_customname) = "DoubleSign"];
+  // DOWNTIME defines a validator that missed signing too many blocks.
+  INFRACTION_TYPE_DOWNTIME = 2 [(gogoproto.enumvalue_customname) = "Downtime"];
+}
+
+// ValidatorUpdates defines an array of abci.ValidatorUpdate objects.
+message ValidatorUpdates {
+  repeated tendermint.abci.ValidatorUpdate updates = 1 [(gogoproto.nullable) = false];
 }

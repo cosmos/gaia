@@ -321,6 +321,8 @@ replace (
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.15-ics
 	github.com/cosmos/ibc-go/v4 => github.com/cosmos/ibc-go/v4 v4.2.0
 
+	github.com/cosmos/interchain-security => github.com/cosmos/interchain-security v0.0.0-20230504001607-7905464904a0
+
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
 	// TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409

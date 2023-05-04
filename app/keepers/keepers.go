@@ -61,7 +61,7 @@ import (
 	routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v4/router/keeper"
 	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
 
-	"github.com/cosmos/gaia/v10/x/globalfee"
+	"github.com/cosmos/gaia/v9/x/globalfee"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"

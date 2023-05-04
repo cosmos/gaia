@@ -13,7 +13,7 @@ import (
 	icatypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
 
-	"github.com/cosmos/gaia/v10/app/keepers"
+	"github.com/cosmos/gaia/v9/app/keepers"
 )
 
 func FixBankMetadata(ctx sdk.Context, keepers *keepers.AppKeepers) error {

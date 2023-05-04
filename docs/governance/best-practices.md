@@ -7,7 +7,7 @@ Once a proposal is on-chain, it cannot be changed to reflect feedback or new inf
 
 The process of passing a proposal starts long before it goes on-chain!
 
-There are currently severaltypes of proposals supported by the Cosmos Hub: 
+There are currently several types of proposals supported by the Cosmos Hub: 
 - **[Text](./proposal-types/text-prop.md)** - Proposal to agree to a certain strategy, plan, commitment, future upgrade or other statement. Text proposals do not directly cause any changes, but they can be used to take a record of the community's opinion or commitment to a future idea.
 - [**Community Pool Spend**](./proposal-types/community-pool-spend.md) - Proposal to spend funds from the community pool on a project.
 - [**Parameter Change**](./proposal-types/param-change.md) - Proposal to change a core on-chain parameter.

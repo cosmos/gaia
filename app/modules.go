@@ -53,8 +53,8 @@ import (
 	"github.com/strangelove-ventures/packet-forward-middleware/v4/router"
 	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
 
-	gaiaappparams "github.com/cosmos/gaia/v10/app/params"
-	"github.com/cosmos/gaia/v10/x/globalfee"
+	gaiaappparams "github.com/cosmos/gaia/v9/app/params"
+	"github.com/cosmos/gaia/v9/x/globalfee"
 )
 
 var maccPerms = map[string][]string{

@@ -13,7 +13,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmdb "github.com/tendermint/tm-db"
 
-	gaiaApp "github.com/cosmos/gaia/v10/app"
+	gaiaApp "github.com/cosmos/gaia/v9/app"
 )
 
 func TestCCVTestSuite(t *testing.T) {

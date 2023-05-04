@@ -9,8 +9,8 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	tmstrings "github.com/tendermint/tendermint/libs/strings"
 
-	"github.com/cosmos/gaia/v10/x/globalfee"
-	"github.com/cosmos/gaia/v10/x/globalfee/types"
+	"github.com/cosmos/gaia/v9/x/globalfee"
+	"github.com/cosmos/gaia/v9/x/globalfee/types"
 )
 
 // FeeWithBypassDecorator checks if the transaction's fee is at least as large

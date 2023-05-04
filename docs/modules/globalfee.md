@@ -186,7 +186,7 @@ Here are a few examples to clarify the relationship between global fees, minimum
 
 **Note:** Transactions can include zero-coin fees. However, these fees are removed from the transaction fees during the fee [parsing](https://github.com/cosmos/cosmos-sdk/blob/e716e4103e934344aa7be6dc9b5c453bdec5f225/client/tx/factory.go#L144) / [santitizing](https://github.com/cosmos/cosmos-sdk/blob/e716e4103e934344aa7be6dc9b5c453bdec5f225/types/dec_coin.go#L172) before reaching the fee AnteHandler. 
 This means `paidfee = "1uatom, 0stake"` and `paidfee = "1uatom"` are equivalent, and similarly, `paidfee = "0uatom"` is equivalent to `paidfee = ""`. 
-In the following examples, zero-coin fees are removed from the transaction fees.
+In the following examples, zero-coin fees are removed from the transaction fees, globalfee refers to MinimumGasPricesParam in global fee params, minimum-gas-prices refers to the local  minimum-gas-prices setup in `app.toml`.
 
 ### Case 1
 
@@ -258,22 +258,36 @@ Note that the required amount of `uatom` in globalfee is overwritten by the amou
   
 ### Case 7
 
-**Setting:** globalfee=[0.1uatom], minimum-gas-prices=[0.2uatom, 1stake], gas=200000, bypass-min-fee-msg-types = ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"]
+**Setting:** globalfee=[0.1uatom], minimum-gas-prices=[0.2uatom, 1stake], gas=600,000, max-total-bypass-min-fee-msg-gas-usage=1,000,000, bypass-min-fee-msg-types = [
+"/ibc.core.channel.v1.MsgRecvPacket",
+"/ibc.core.channel.v1.MsgAcknowledgement",
+"/ibc.core.client.v1.MsgUpdateClient",
+"/ibc.core.channel.v1.MsgTimeout",
+"/ibc.core.channel.v1.MsgTimeoutOnClose"
+]
 
 Note that the required amount of `uatom` in globalfee is overwritten by the amount in minimum-gas-prices. 
 Also, the `1stake` in minimum-gas-prices is ignored.
 
-  - msg withdraw-all-rewards with paidfee="", `pass`
-  - msg withdraw-all-rewards with paidfee="200000 * 0.05uatom", `pass`
-  - msg withdraw-all-rewards with paidfee="200000 * 1stake", `fail` (unexpected denom)
+  - msgs=["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.client.v1.MsgUpdateClient"] with paidfee="", `pass`
+  - msgs=["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.client.v1.MsgUpdateClient"] with with paidfee="400000 * 0.05uatom", `pass`
+  - msgs= ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"] with paidfee="", `fail`
+  - msgs=["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.client.v1.MsgUpdateClient", "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward] with paidfee="", `fail` (transaction contains non bypass messages types)
+  - msgs=["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.client.v1.MsgUpdateClient", "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward] with paidfee="600000 * 0.2uatom", `pass`
+  -  msgs=["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.client.v1.MsgUpdateClient"] with paidfee="600000 * 1stake", `fail` (unexpected denom)
 
 ### Case 8
 
-**Setting:** globalfee=[1uatom], minimum-gas-prices="", gas=300000, bypass-min-fee-msg-types = ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"]
-
-  - msg withdraw-all-rewards with paidfee="", `fail` (gas limit exceeded for bypass transactions)
-  - msg withdraw-all-rewards with paidfee="300000 * 0.5uatom", `fail` (gas limit exceeded for bypass transactions, insufficient funds)
-  - msg withdraw-all-rewards with paidfee="300000 * 1uatom", `pass` 
+**Setting:** globalfee=[1uatom], minimum-gas-prices="0uatom", gas=1,100,000, bypass-min-fee-msg-types = [
+"/ibc.core.channel.v1.MsgRecvPacket",
+"/ibc.core.channel.v1.MsgAcknowledgement",
+"/ibc.core.client.v1.MsgUpdateClient",
+"/ibc.core.channel.v1.MsgTimeout",
+"/ibc.core.channel.v1.MsgTimeoutOnClose"
+]
+  - msgs=["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.client.v1.MsgUpdateClient"] with paidfee="", `fail` (gas limit exceeded for bypass transactions)
+  -  msgs=["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.client.v1.MsgUpdateClient"] with paidfee="300000 * 0.5uatom", `fail` (gas limit exceeded for bypass transactions, insufficient funds)
+  -  msgs=["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.client.v1.MsgUpdateClient"] with paidfee="1,100,000 * 1uatom", `pass` 
 
 ## References
 

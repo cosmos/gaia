@@ -270,7 +270,7 @@ Note that the required amount of `uatom` in globalfee is overwritten by the amou
 Also, the `1stake` in minimum-gas-prices is ignored.
 
   - msgs=["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.client.v1.MsgUpdateClient"] with paidfee="", `pass`
-  - msgs=["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.client.v1.MsgUpdateClient"] with with paidfee="400000 * 0.05uatom", `pass`
+  - msgs=["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.client.v1.MsgUpdateClient"] with with paidfee="600000 * 0.05uatom", `pass`
   - msgs= ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"] with paidfee="", `fail`
   - msgs=["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.client.v1.MsgUpdateClient", "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward] with paidfee="", `fail` (transaction contains non bypass messages types)
   - msgs=["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.client.v1.MsgUpdateClient", "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward] with paidfee="600000 * 0.2uatom", `pass`
@@ -278,7 +278,7 @@ Also, the `1stake` in minimum-gas-prices is ignored.
 
 ### Case 8
 
-**Setting:** globalfee=[1uatom], minimum-gas-prices="0uatom", gas=1,100,000, bypass-min-fee-msg-types = [
+**Setting:** globalfee=[1uatom], minimum-gas-prices="0uatom", gas=1,100,000, max-total-bypass-min-fee-msg-gas-usage=1,000,000,bypass-min-fee-msg-types = [
 "/ibc.core.channel.v1.MsgRecvPacket",
 "/ibc.core.channel.v1.MsgAcknowledgement",
 "/ibc.core.client.v1.MsgUpdateClient",
@@ -286,7 +286,7 @@ Also, the `1stake` in minimum-gas-prices is ignored.
 "/ibc.core.channel.v1.MsgTimeoutOnClose"
 ]
   - msgs=["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.client.v1.MsgUpdateClient"] with paidfee="", `fail` (gas limit exceeded for bypass transactions)
-  -  msgs=["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.client.v1.MsgUpdateClient"] with paidfee="300000 * 0.5uatom", `fail` (gas limit exceeded for bypass transactions, insufficient funds)
+  -  msgs=["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.client.v1.MsgUpdateClient"] with paidfee="300000 * 1uatom", `fail` (insufficient funds)
   -  msgs=["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.client.v1.MsgUpdateClient"] with paidfee="1,100,000 * 1uatom", `pass` 
 
 ## References

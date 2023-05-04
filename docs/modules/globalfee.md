@@ -21,7 +21,6 @@ Global Fees module has three params that can be set by gov proposal `param-chang
 - `bypassMinFeeMsgTypes` 
 - `maxTotalBypassMinFeeMsgGasUsage`
 
-
 ### Global Fee Params: `MinimumGasPricesParam`
 
 Global fees consist of a list of [`sdk.DecCoins`](https://github.com/cosmos/cosmos-sdk/blob/82ce891aa67f635f3b324b7a52386d5405c5abd0/types/dec_coin.go#L158).
@@ -55,7 +54,7 @@ Starting from gaiad `v10.0.0`,  `bypassMinFeeMsgTypes` and `MaxTotalBypassMinFee
 "/ibc.core.channel.v1.MsgTimeoutOnClose"
 ]` and default `maxTotalBypassMinFeeMsgGasUsage=1,000,000`
 
-From Gaiad v10.0.0, nodes that have the `bypass-min-fee-msg-types` field in their `app.toml` configuration are **not utilized**. Therefore, node operators have the option to either leave the field in their configuration or remove it. Node inited by Gaiad v10.0.0 or later does not have `bypass-min-fee-msg-types` field in the `app.toml`.
+From Gaiad v10.0.0, nodes that have the `bypass-min-fee-msg-types` field in their `app.toml` configuration are **not utilized**. Therefore, node operators have the option to either leave the field in their configurations or remove it. Node inited by Gaiad v10.0.0 or later does not have `bypass-min-fee-msg-types` field in the `app.toml`.
 
 Before gaiad `v10.0.0`, `bypassMinFeeMsgTypes` can be set by each node in `app.toml`, and [the bypass messages gas usage on average should not exceed `maxBypassMinFeeMsgGasUsage`=200,000](https://github.com/cosmos/gaia/blob/682770f2410ab0d33ac7f0c7203519d7a99fa2b6/x/globalfee/ante/fee.go#L69).
 
@@ -116,7 +115,7 @@ gaiad q globalfee params
     "/ibc.core.channel.v1.MsgTimeout",
     "/ibc.core.channel.v1.MsgTimeoutOnClose"
   ],
-  "max_total_bypass_min_fee_msg_gas_usage": "1000000"
+  "max_total_bypass_min_fee_msg_gas_usage": "2000000"
 }
 ```
 
@@ -158,7 +157,7 @@ A `proposal.json` example to change the `bypassMinFeeMsgTypes` in global fee par
     {
       "subspace": "globalfee",
       "key": "bypassMinFeeMsgTypes",
-      "value": ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",  "/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.client.v1.MsgUpdateClient"]
+      "value": ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward", "/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.client.v1.MsgUpdateClient"]
     }
   ],
   "deposit": "1000000uatom"

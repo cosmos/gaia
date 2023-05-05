@@ -155,3 +155,6 @@ jobs:
         run: |
           ./contrib/scripts/test_upgrade.sh 20 5 16 localhost
         if: env.GIT_DIFF
+      - name: Check for successful migration
+        run: |
+          ./contrib/scripts/test_migration.sh localhost

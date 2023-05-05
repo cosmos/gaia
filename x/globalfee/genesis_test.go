@@ -35,19 +35,24 @@ func TestValidateGenesis(t *testing.T) {
 		expErr bool
 	}{
 		"all good": {
-			src: `{"params":{"minimum_gas_prices":[{"denom":"ALX", "amount":"1"}], "bypass_min_fee_msg_types":["/ibc.core.channel.v1.MsgRecvPacket"]}}`,
+			src:    `{"params":{"minimum_gas_prices":[{"denom":"ALX", "amount":"1"}], "bypass_min_fee_msg_types":["/ibc.core.channel.v1.MsgRecvPacket"]}}`,
+			expErr: false,
 		},
 		"empty minimum": {
-			src: `{"params":{"minimum_gas_prices":[], "bypass_min_fee_msg_types":[]}}`,
+			src:    `{"params":{"minimum_gas_prices":[], "bypass_min_fee_msg_types":[]}}`,
+			expErr: false,
 		},
 		"minimum and bypass not set": {
-			src: `{"params":{}}`,
+			src:    `{"params":{}}`,
+			expErr: false,
 		},
 		"minimum not set": {
-			src: `{"params":{"bypass_min_fee_msg_types":[]}}`,
+			src:    `{"params":{"bypass_min_fee_msg_types":[]}}`,
+			expErr: false,
 		},
 		"bypass not set": {
-			src: `{"params":{"minimum_gas_prices":[]}}`,
+			src:    `{"params":{"minimum_gas_prices":[]}}`,
+			expErr: false,
 		},
 		"zero amount allowed": {
 			src:    `{"params":{"minimum_gas_prices":[{"denom":"ALX", "amount":"0"}]}}`,

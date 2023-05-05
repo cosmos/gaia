@@ -17,7 +17,7 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	globalfee "github.com/cosmos/gaia/v9/x/globalfee/types"
+	"github.com/cosmos/gaia/v9/x/globalfee/types"
 )
 
 func queryGaiaTx(endpoint, txHash string) error {
@@ -74,46 +74,36 @@ func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) {
 	return balancesResp.Balances, nil
 }
 
-func queryGlobalFees(endpoint string) (sdk.DecCoins, error) {
+func queryGlobalFeeParams(endpoint string) (types.Params, error) {
 	body, err := httpGet(fmt.Sprintf("%s/gaia/globalfee/v1beta1/params", endpoint))
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
+		return types.Params{}, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
 
-	var fees globalfee.QueryParamsResponse
-	if err := cdc.UnmarshalJSON(body, &fees); err != nil {
-		return sdk.DecCoins{}, err
+	var params types.Params
+	if err := cdc.UnmarshalJSON(body, &params); err != nil {
+		return types.Params{}, err
 	}
 
-	return fees.MinimumGasPrices, nil
+	return params, nil
+}
+
+func queryGlobalFees(endpoint string) (sdk.DecCoins, error) {
+	p, err := queryGlobalFeeParams(endpoint)
+
+	return p.MinimumGasPrices, err
 }
 
 func queryBypassMsgs(endpoint string) ([]string, error) {
-	body, err := httpGet(fmt.Sprintf("%s/gaia/globalfee/v1beta1/params", endpoint))
-	if err != nil {
-		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
-	}
+	p, err := queryGlobalFeeParams(endpoint)
 
-	var params globalfee.QueryParamsResponse
-	if err := cdc.UnmarshalJSON(body, &params); err != nil {
-		return []string{}, err
-	}
-
-	return params.BypassMinFeeMsgTypes, nil
+	return p.BypassMinFeeMsgTypes, err
 }
 
-func queryMaxTotalBypass(endpoint string) (uint64, error) {
-	body, err := httpGet(fmt.Sprintf("%s/gaia/globalfee/v1beta1/params", endpoint))
-	if err != nil {
-		return 0, fmt.Errorf("failed to execute HTTP request: %w", err)
-	}
+func queryMaxTotalBypassMinFeeMsgGasUsage(endpoint string) (uint64, error) {
+	p, err := queryGlobalFeeParams(endpoint)
 
-	var params globalfee.QueryParamsResponse
-	if err := cdc.UnmarshalJSON(body, &params); err != nil {
-		return 0, err
-	}
-
-	return params.MaxTotalBypassMinFeeMsgGasUsage, nil
+	return p.MaxTotalBypassMinFeeMsgGasUsage, err
 }
 
 func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string) (stakingtypes.QueryDelegationResponse, error) {

@@ -110,7 +110,7 @@ func (s *IntegrationTestSuite) govProposeNewMaxTotalBypassMinFeeMsgGasUsage(newG
 
 	s.Require().Eventually(
 		func() bool {
-			gas, err := queryMaxTotalBypass(chainAAPIEndpoint)
+			gas, err := queryMaxTotalBypassMinFeeMsgGasUsage(chainAAPIEndpoint)
 			s.T().Logf("After gov new global fee proposal: %d", gas)
 			s.Require().NoError(err)
 

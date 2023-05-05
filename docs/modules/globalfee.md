@@ -9,8 +9,7 @@ Global fees are defined at the network level by setting `MinimumGasPricesParam` 
 This parameter is part of the node configuration, it can be set in the `config/app.toml` configuration file.
 
 3. `bypass-min-fee-msg-types` and `max_total_bypass_min_fee_msg_gas_usage`.\
- These two parameters are also part of global fee params which can be proposed to change via Gov Proposals.
-   `bypass-min-fee-msg-types` represents a list of message types that will be excluded from paying any fees for inclusion in a block, `max_total_bypass_min_fee_msg_gas_usage` is the limit of `bypass-min-fee-msg-types` gas usage.
+ These two parameters are also part of global fee params from gaiad v10.0.0 which can be proposed to change via Gov Proposals. `bypass-min-fee-msg-types` represents a list of message types that will be excluded from paying any fees for inclusion in a block, `max_total_bypass_min_fee_msg_gas_usage` is the limit of `bypass-min-fee-msg-types` gas usage.
 
 ## Concepts
 
@@ -18,8 +17,8 @@ This parameter is part of the node configuration, it can be set in the `config/a
 
 Global Fees module has three params that can be set by gov proposal `param-change`: 
 - `MinimumGasPricesParam`
-- `bypassMinFeeMsgTypes` 
-- `maxTotalBypassMinFeeMsgGasUsage`
+- `BypassMinFeeMsgTypes` 
+- `MaxTotalBypassMinFeeMsgGasUsage`
 
 ### Global Fee Params: `MinimumGasPricesParam`
 
@@ -38,15 +37,15 @@ There are **two exceptions** from the global fees rules that allow zero fee tran
 
 2. One of the entries in the global fees list has a zero amount, e.g., `0uatom`, and the corresponding denom, e.g., `uatom`, is not present in `minimum-gas-prices` in `app.toml`, or node operators may set additional `minimum-gas-prices` in `app.toml` also zero coins.
 
-### Global Fee Params: `bypassMinFeeMsgTypes` and `maxTotalBypassMinFeeMsgGasUsage`
+### Global Fee Params: `BypassMinFeeMsgTypes` and `MaxTotalBypassMinFeeMsgGasUsage`
 
-Bypass messages are messages that are exempt from paying fees. The above global fees and the below local `minimum-gas-prices` checks do not apply for transactions that satisfy the following conditions:
+Bypass minimum fee messages are messages that are exempt from paying fees. The above global fees and the below local `minimum-gas-prices` checks do not apply for transactions that satisfy the following conditions:
 
-- Contains only bypass message types defined in `bypassMinFeeMsgTypes`.
+- Contains only bypass message types defined in `BypassMinFeeMsgTypes`.
 - The total gas used is less than or equal to `MaxTotalBypassMinFeeMsgGasUsage`.
 - In case of non-zero transaction fees, the denom has to be a subset of denoms defined in the global fees list.
 
-Starting from gaiad `v10.0.0`,  `bypassMinFeeMsgTypes` and `MaxTotalBypassMinFeeMsgGasUsage` are part of global fee params and can be proposed at network level. The default `bypassMinFeeMsgTypes=[
+Starting from gaiad `v10.0.0`,  `BypassMinFeeMsgTypes` and `MaxTotalBypassMinFeeMsgGasUsage` are part of global fee params and can be proposed at network level. The default `bypass-min-fee-msg-types=[
 "/ibc.core.channel.v1.MsgRecvPacket",
 "/ibc.core.channel.v1.MsgAcknowledgement",
 "/ibc.core.client.v1.MsgUpdateClient",
@@ -54,14 +53,14 @@ Starting from gaiad `v10.0.0`,  `bypassMinFeeMsgTypes` and `MaxTotalBypassMinFee
 "/ibc.core.channel.v1.MsgTimeoutOnClose"
 ]` and default `maxTotalBypassMinFeeMsgGasUsage=1,000,000`
 
-From Gaiad v10.0.0, nodes that have the `bypass-min-fee-msg-types` field in their `app.toml` configuration are **not utilized**. Therefore, node operators have the option to either leave the field in their configurations or remove it. Node inited by Gaiad v10.0.0 or later does not have `bypass-min-fee-msg-types` field in the `app.toml`.
+From gaiad v10.0.0, nodes that have the `bypass-min-fee-msg-types` field in their `app.toml` configuration are **not utilized**. Therefore, node operators have the option to either leave the field in their configurations or remove it. Node inited by gaiad v10.0.0 or later does not have `bypass-min-fee-msg-types` field in the `app.toml`.
 
-Before gaiad `v10.0.0`, `bypassMinFeeMsgTypes` can be set by each node in `app.toml`, and [the bypass messages gas usage on average should not exceed `maxBypassMinFeeMsgGasUsage`=200,000](https://github.com/cosmos/gaia/blob/682770f2410ab0d33ac7f0c7203519d7a99fa2b6/x/globalfee/ante/fee.go#L69).
+Before gaiad `v10.0.0`, `bypass-min-fee-msg-types`can be set by each node in `app.toml`, and [the bypass messages gas usage on average should not exceed `maxBypassMinFeeMsgGasUsage`=200,000](https://github.com/cosmos/gaia/blob/682770f2410ab0d33ac7f0c7203519d7a99fa2b6/x/globalfee/ante/fee.go#L69).
 
-- Nodes created using Gaiad `v7.0.2` or `v9.0.x` use `["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement","/ibc.applications.transfer.v1.MsgTransfer"]` as defaults.
-- Nodes created using Gaiad `v10.0.x` or later use `["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement","/ibc.applications.transfer.v1.MsgTransfer", "/ibc.core.channel.v1.MsgTimeout", "/ibc.core.channel.v1.MsgTimeoutOnClose"]` as defaults.
+- Nodes created using gaiad `v7.0.2` or `v9.0.x` use `["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement","/ibc.applications.transfer.v1.MsgTransfer"]` as defaults.
+- Nodes created using gaiad `v10.0.x` or later use `["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement","/ibc.applications.transfer.v1.MsgTransfer", "/ibc.core.channel.v1.MsgTimeout", "/ibc.core.channel.v1.MsgTimeoutOnClose"]` as defaults.
 - Node Nodes with `bypass-min-fee-msg-types = []` or missing this field in `app.toml` also use default bypass message types.
-- Nodes created using Gaiad `v7.0.1` and `v7.0.0` do not have `bypass-min-fee-msg-types` configured in `config/app.toml` - they are also using same default values as in `v7.0.2`. The `bypass-min-fee-msg-types` config option can be added to `config/app.toml` before the `[telemetry]` field.
+- Nodes created using gaiad `v7.0.1` and `v7.0.0` do not have `bypass-min-fee-msg-types` configured in `config/app.toml` - they are also using same default values as in `v7.0.2`. The `bypass-min-fee-msg-types` config option can be added to `config/app.toml` before the `[telemetry]` field.
 
 An example of `bypass-min-fee-msg-types` in `app.toml`  **before** gaiad v10.0.0:
 
@@ -81,7 +80,7 @@ bypass-min-fee-msg-types = ["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.cha
 
 ### minimum-gas-prices (local fee requirement)
 
-The minimum-gas-prices configuration parameter enables node operators to set its minimum fee requirements, and it can be set in the `config/app.toml` file.  Please note: if `minimum-gas-prices` is set to include zero coins, the zero coins are sanitized when [`SetMinGasPrices`](https://github.com/cosmos/gaia/blob/76dea00bd6d11bfef043f6062f41e858225820ab/cmd/gaiad/cmd/root.go#L221).
+The `minimum-gas-prices` parameter enables node operators to set its minimum fee requirements, and it can be set in the `config/app.toml` file.  Please note: if `minimum-gas-prices` is set to include zero coins, the zero coins are sanitized when [`SetMinGasPrices`](https://github.com/cosmos/gaia/blob/76dea00bd6d11bfef043f6062f41e858225820ab/cmd/gaiad/cmd/root.go#L221).
 When setting `minimum-gas-prices`, it's important to keep the following rules in mind:
 
 - The denoms in `min-gas-prices` that are not present in the global fees list are ignored. 
@@ -156,7 +155,7 @@ A `proposal.json` example to change the `bypassMinFeeMsgTypes` in global fee par
   "changes": [
     {
       "subspace": "globalfee",
-      "key": "bypassMinFeeMsgTypes",
+      "key": "BypassMinFeeMsgTypes",
       "value": ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward", "/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.client.v1.MsgUpdateClient"]
     }
   ],
@@ -184,9 +183,9 @@ A `proposal.json` example to change the `maxTotalBypassMinFeeMsgGasUsage` in glo
 
 Here are a few examples to clarify the relationship between global fees, minimum-gas-prices and transaction fees.
 
-**Note:** Transactions can include zero-coin fees. However, these fees are removed from the transaction fees during the fee [parsing](https://github.com/cosmos/cosmos-sdk/blob/e716e4103e934344aa7be6dc9b5c453bdec5f225/client/tx/factory.go#L144) / [santitizing](https://github.com/cosmos/cosmos-sdk/blob/e716e4103e934344aa7be6dc9b5c453bdec5f225/types/dec_coin.go#L172) before reaching the fee AnteHandler. 
+**Note:** Transactions can include zero-coin fees. However, these fees are removed from the transaction fees during the fee [parsing](https://github.com/cosmos/cosmos-sdk/blob/e716e4103e934344aa7be6dc9b5c453bdec5f225/client/tx/factory.go#L144) / [sanitizing](https://github.com/cosmos/cosmos-sdk/blob/e716e4103e934344aa7be6dc9b5c453bdec5f225/types/dec_coin.go#L172) before reaching the fee AnteHandler. 
 This means `paidfee = "1uatom, 0stake"` and `paidfee = "1uatom"` are equivalent, and similarly, `paidfee = "0uatom"` is equivalent to `paidfee = ""`. 
-In the following examples, zero-coin fees are removed from the transaction fees, globalfee refers to MinimumGasPricesParam in global fee params, minimum-gas-prices refers to the local  minimum-gas-prices setup in `app.toml`.
+In the following examples, zero-coin fees are removed from the transaction fees, globalfee refers to `MinimumGasPricesParam` in global fee params, minimum-gas-prices refers to the local  `minimum-gas-prices` setup in `app.toml`.
 
 ### Case 1
 

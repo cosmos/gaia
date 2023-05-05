@@ -36,8 +36,17 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 * (gaia) Bump Golang prerequisite from 1.18 to 1.20 see (https://go.dev/blog/go1.20) for details.
-* (feat!) [#2352] Create v10 upgrade handler and migration scripts adding `bypass-min-fee-msg-types` and `MaxBypassMinFeeMsgGasUsage` to the global fee module params.
 
+
+### Improvements
+* (test) [#2440](https://github.com/cosmos/gaia/pull/2440) Add vulncheck to nightly builds
+* (gaia) [#2442](https://github.com/cosmos/gaia/pull/2442) Bump [Interchain-Security](https://github.com/cosmos/interchain-security) to [v1.1.1](https://github.com/cosmos/interchain-security/tree/v1.1.1).
+
+### State Machine Breaking
+* (gaia) Bump Golang prerequisite from 1.18 to 1.20 see (https://go.dev/blog/go1.20) for details.
+* (feat!) [#2352] Create the upgrade handler and migration scripts for the new Gloabal Fee module parameters introduced in #2424.
+Update the CI upgrade tests from v9 to the v10 and check that the parameters are successfully migrated.
+ 
 
 ## [v9.0.3] - 2023-04-19
 * (deps) [#2399](https://github.com/cosmos/gaia/pull/2399) Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.15-ics](https://github.com/cosmos/cosmos

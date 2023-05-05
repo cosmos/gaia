@@ -9,8 +9,6 @@ if [ -z "$1" ]; then
   exit 1
 fi
 
-# NODE_HOME=./build/.gaia
-pwd
 NODE_HOME=$(realpath ./build/.gaia)
 
 echo "NODE_HOME = ${NODE_HOME}"
@@ -39,7 +37,6 @@ if test -f "$BINARY"; then
     echo $USER_MNEMONIC | $BINARY --home $NODE_HOME keys add val --recover --keyring-backend=test
   fi
 
-  # $BINARY keys list --home $NODE_HOME
 
   echo "\n"
   echo "Submitting proposal... \n"

@@ -35,10 +35,10 @@ func (s *IntegrationTestSuite) testBypassMinFeeWithdrawReward() {
 	s.govProposeNewMaxTotalBypassMinFeeMsgGasUsage(1, proposalCounter, submitter)
 
 	// fail
-	s.T().Logf("bypass-msg has zero coin and maxTotalBypassMinFeeMsgGasUsage set to 1, fail")
+	s.T().Logf("bypass-msg with zero coin in the denom of global fee and maxTotalBypassMinFeeMsgGasUsage set to 1, fail")
 	s.execWithdrawAllRewards(s.chainA, 0, payee.String(), "0"+uatomDenom, true)
 
 	// pass
-	s.T().Logf("bypass-msg has non zero coin and maxTotalBypassMinFeeMsgGasUsage set to 1, pass")
+	s.T().Logf("bypass-msg with non zero coin in the denom of global fee and maxTotalBypassMinFeeMsgGasUsage set to 1, pass")
 	s.execWithdrawAllRewards(s.chainA, 0, payee.String(), paidFeeAmt+uatomDenom, false)
 }

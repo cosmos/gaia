@@ -57,7 +57,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must implement the sdk.FeeTx interface")
 	}
 
-	// Do not check minimum and global fees during simulations
+	// Do not check minimum-gas-prices and global fees during simulations
 	if simulate {
 		return next(ctx, tx, simulate)
 	}

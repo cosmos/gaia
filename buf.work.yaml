@@ -3,7 +3,7 @@
 #
 # This workspace file points to the roots found in your
 # previous "buf.yaml" configuration.
-version: v1
+version: v1beta1
 directories:
   - proto
   - third_party/proto

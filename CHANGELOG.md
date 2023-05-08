@@ -35,8 +35,32 @@ Ref: https://keepachangelog.com/en/1.0.0/
 # Changelog
 
 ## [Unreleased]
-* (deps) [#2442](https://github.com/cosmos/gaia/pull/2442) Bump [Interchain-Security](https://github.com/cosmos/interchain-security) to [v1.1.1](https://github.com/cosmos/interchain-security/tree/v1.1.1).
 
+## [v9.1.0] - 2023-05-08
+
+* (fix) [#2474](https://github.com/cosmos/gaia/pull/2474) Multisig and distribution fix in [Interchain-Security](https://github.com/cosmos/interchain-security). Bump Interchain-Security to [v1.1.0-multiden](https://github.com/cosmos/interchain-security/tree/v1.1.0-multiden).
+
+This release combines two fixes that we judged were urgent to get onto the Cosmos Hub before the launch of the first ICS consumer chain. _Please note that user funds were not at risk and these fixes pertain to the liveness of the Hub and consumer chains_.
+
+The first fix is to enable the use of multisigs and Ledger devices when assigning keys for consumer chains. The second is to prevent a possible DOS vector involving the reward distribution system.
+
+### Multisig fix
+
+On April 25th (a week and a half ago), we began receiving reports that validators using multisigs and Ledger devices were getting errors reading Error: unable to resolve type URL /interchain_security.ccv.provider.v1.MsgAssignConsumerKey: tx parse error when attempting to assign consensus keys for consumer chains. 
+
+This was surprising because we had never seen this error before, even though we have done many testnets. The reason for this is probably because people don’t bother to use high security key management techniques in testnets.
+
+We quickly narrowed the problem down to issues having to do with using the PubKey type directly in the MsgAssignConsumerKey transaction, and Amino (a deprecated serialization library still used in Ledger devices and multisigs) not being able to handle this. We attempted to fix this with the assistance of the Cosmos-SDK team, but after making no headway for a few days, we decided to simply use a JSON representation of the PubKey in the transaction. This is how it is usually represented anyway. We have verified that this fixes the problem.
+
+### Distribution fix
+
+The ICS distribution system works by allowing consumer chains to send rewards to a module address on the Hub called the FeePoolAddress. From here they are automatically distributed to all validators and delegators through the distribution system that already exists to distribute Atom staking rewards. The FeePoolAddress is usually blocked so that no tokens can be sent to it, but to enable ICS distribution we had to unblock it.
+
+We recently realized that unblocking the FeePoolAddress could enable an attacker to send a huge number of different denoms into the distribution system. The distribution system would then attempt to distribute them all, leading to out of memory errors. Fixing a similar attack vector that existed in the distribution system before ICS led us to this realization.
+
+To fix this problem, we have re-blocked the FeePoolAddress and created a new address called the ConsumerRewardsPool. Consumer chains now send rewards to this new address. There is also a new transaction type called RegisterConsumerRewardDenom. This transaction allows people to register denoms to be used as rewards from consumer chains. It costs 10 Atoms to run this transaction.The Atoms are transferred to the community pool. Only denoms registered with this command are then transferred to the FeePoolAddress and distributed out to delegators and validators.
+
+Note: The fee of 10 Atoms was originally intended to be a parameter that could be changed by governance (10 Atoms might cost too much in the future). However, we ran into some problems creating a new parameter as part of an emergency upgrade. After consulting with the Cosmos-SDK team, we learned that creating new parameters is only supported as part of a scheduled upgrade. So in the current code, the number of Atoms is hardcoded. It will turn into a parameter in the next scheduled upgrade.
 
 ## [v9.0.3] - 2023-04-19
 * (deps) [#2399](https://github.com/cosmos/gaia/pull/2399) Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.15-ics](https://github.com/cosmos/cosmos
@@ -68,7 +92,8 @@ sdk/releases/tag/v0.45.15-ics) and migrate to [CometBFT](https://github.com/come
 [CHANGELOG of previous versions](https://github.com/cosmos/gaia/blob/main/CHANGELOG.md)
 
 <!-- Release links -->
-[Unreleased]: https://github.com/cosmos/gaia/compare/v9.0.3...release/v9.0.x
+[Unreleased]: https://github.com/cosmos/gaia/compare/v9.1.0...release/v9.1.x
+[v9.1.0]: https://github.com/cosmos/gaia/releases/tag/v9.1.0
 [v9.0.3]: https://github.com/cosmos/gaia/releases/tag/v9.0.3
 [v9.0.2]: https://github.com/cosmos/gaia/releases/tag/v9.0.2
 [v9.0.1]: https://github.com/cosmos/gaia/releases/tag/v9.0.1

@@ -310,7 +310,7 @@ func (s *IntegrationTestSuite) execBankSendBatch(
 	return sucessBankSendCount
 }
 
-func (s *IntegrationTestSuite) execWithdrawAllRewards(c *chain, valIdx int, payee, fees string, expectErr bool) { //nolint:unparam
+func (s *IntegrationTestSuite) execWithdrawAllRewards(c *chain, valIdx int, payee, fees string, expectErr bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 

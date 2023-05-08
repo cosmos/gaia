@@ -55,7 +55,6 @@ These block explorers allow you to search, view and analyze Cosmos Hub data&mdas
 * [Big Dipper](https://cosmos.bigdipper.live)
 * [Cosmos Overview](https://genesislab.net)
 * [Cosmoscan](https://cosmoscan.net/)
-* [Cosmos Visualizer](https://nylira.net/3d)
 * [IOBScan](https://cosmoshub.iobscan.io/)
 * [LOOK Explorer](https://cosmos.ping.pub)
 * [Lunie](https://lunie.io)

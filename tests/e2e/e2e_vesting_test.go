@@ -38,7 +38,7 @@ var (
 	vestingAmount           = sdk.NewCoin(uatomDenom, sdk.NewInt(350000))
 	vestingBalance          = sdk.NewCoins(vestingAmountVested).Add(vestingAmount)
 	vestingDelegationAmount = sdk.NewCoin(uatomDenom, sdk.NewInt(500000000))
-	vestingDelegationFees   = sdk.NewCoin(uatomDenom, sdk.NewInt(10))
+	vestingDelegationFees   = sdk.NewCoin(uatomDenom, sdk.NewInt(1))
 )
 
 func (s *IntegrationTestSuite) testDelayedVestingAccount(api string) {

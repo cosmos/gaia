@@ -116,6 +116,21 @@ func queryDelegatorWithdrawalAddress(endpoint string, delegatorAddr string) (dis
 	return res, nil
 }
 
+func queryDelegatorTotalRewards(endpoint, delegatorAddr string) (disttypes.QueryDelegationTotalRewardsResponse, error) {
+	var res disttypes.QueryDelegationTotalRewardsResponse
+
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/distribution/v1beta1/delegators/%s/rewards", endpoint, delegatorAddr))
+	if err != nil {
+		return res, err
+	}
+
+	if err = cdc.UnmarshalJSON(body, &res); err != nil {
+		return res, err
+	}
+
+	return res, nil
+}
+
 func queryGovProposal(endpoint string, proposalID int) (govtypes.QueryProposalResponse, error) {
 	var govProposalResp govtypes.QueryProposalResponse
 

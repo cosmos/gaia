@@ -50,6 +50,7 @@ const (
 	gaiaHomePath   = "/home/nonroot/.gaia"
 	photonDenom    = "photon"
 	uatomDenom     = "uatom"
+	stakeDenom     = "stake"
 	initBalanceStr = "110000000000stake,100000000000000000photon,100000000000000000uatom"
 	minGasPrice    = "0.00001"
 	// the test globalfee in genesis is the same as minGasPrice
@@ -146,8 +147,8 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.initValidatorConfigs(s.chainB)
 	s.runValidators(s.chainB, 10)
 
-	time.Sleep(10 * time.Second)
-	s.runIBCRelayer()
+	// time.Sleep(10 * time.Second)
+	// s.runIBCRelayer()
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {

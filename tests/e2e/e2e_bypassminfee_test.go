@@ -1,6 +1,8 @@
 package e2e
 
 import (
+	"fmt"
+
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -42,26 +44,27 @@ func (s *IntegrationTestSuite) testByPassMinFeeWithdrawReward(endpoint string) {
 		rewards, err := queryDelegatorTotalRewards(endpoint, payee.String())
 		s.Require().NoError(err)
 
-		// get current delegator stake balance
-		oldBalance, err := getSpecificBalance(endpoint, payee.String(), stakeDenom)
+		// get delegator stake balance
+		stakeBalance, err := getSpecificBalance(endpoint, payee.String(), stakeDenom)
 		s.Require().NoError(err)
+		fmt.Println(stakeBalance)
 
 		// withdraw rewards
 		s.Run(tc.name, func() {
 			s.execWithdrawAllRewards(s.chainA, 0, payee.String(), tc.fee, tc.expErr)
 		})
 
-		if !tc.expErr {
-			// get updated balance
-			balance, err := getSpecificBalance(endpoint, payee.String(), stakeDenom)
-			s.Require().NoError(err)
+		// get updated balance
+		newStakeBalance, err := getSpecificBalance(endpoint, payee.String(), stakeDenom)
+		s.Require().NoError(err)
 
-			// compute sum of old balance and rewards
-			oldBalancePlusRewards := rewards.GetTotal().Add(sdk.NewDecCoinFromCoin(oldBalance))
-			s.Require().Equal(oldBalancePlusRewards[0].Denom, stakeDenom)
+		// check that the update balance was increased by at least the amount of stake tokens in the reward
+		total := rewards.GetTotal().Add(sdk.NewDecCoinFromCoin(stakeBalance)).Sort()
+		fmt.Println("total", total.String())
+		fmt.Println("rewards", rewards.String())
+		s.Require().Equal(total[0].Denom, stakeDenom)
 
-			// check that the updated balance is GTE than the sum of old balance and rewards
-			s.Require().True(sdk.NewDecCoinFromCoin(balance).IsGTE(oldBalancePlusRewards[0]))
-		}
+		fmt.Println(sdk.NewDecCoinFromCoin(newStakeBalance).String(), total[0].String())
+		s.Require().True(sdk.NewDecCoinFromCoin(newStakeBalance).IsGTE(total[0]))
 	}
 }

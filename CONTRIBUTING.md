@@ -1,7 +1,11 @@
 # Contributing
 
 - [Contributing](#contributing)
-  - [Team Organization](#team-organization)
+  - [Overview](#overview)
+    - [Stewarding team responsibility](#stewarding-team-responsibility)
+    - [Ease of reviewing](#ease-of-reviewing)
+    - [Workflow](#workflow)
+  - [Project Board](#project-board)
   - [Development Procedure](#development-procedure)
     - [Testing](#testing)
     - [Pull Requests](#pull-requests)
@@ -15,9 +19,57 @@
 
 Thank you for considering making contributions to Gaia! 🎉👍
 
+## Overview
+
 Contributing to this repo can mean many things such as participating in
-discussion or proposing code changes. To ensure a smooth workflow for all
-contributors, a general procedure for contributing has been established:
+discussion or proposing code changes. 
+Following the processes outlined in this document will lead to the best 
+chance of landing changes in a release.
+
+### Stewarding team responsibility
+
+Gaia has many stakeholders contributing and shaping the project. 
+The _Gaia stewarding team_ is composed of Informal Systems developers and 
+is responsible for stewarding this project over time.
+This means that the stewarding team needs to understand the nature of, 
+and agree to maintain, all of the changes that land on `main` or a backport branch. 
+It may cost a few days/weeks' worth of time to _submit_ a particular change, 
+but _maintaining_ that change over the years has a much higher cost that the stewarding team will bear.
+
+### Ease of reviewing
+
+ The fact that the stewarding team needs to be able to deeply understand the short-,
+ medium- and long-term consequences of incoming changes means that changes need
+ to be **easily reviewed**.
+
+ What makes a change easy to review, and more likely to land in an upcoming
+ release?
+
+ 1. **Each pull request must do _one thing_**. It must be very clear what that
+    one thing is when looking at the pull request title, description, and linked
+    issues. It must also be very clear what value it ultimately aims to deliver,
+    and to which user(s). A single pull request that does multiple things, or
+    without a clear articulation of the problem it attempts to solve, may be
+    rejected immediately.
+
+ 2. **Each pull request must be manageable in size**. 
+    Self-contained pull requests that are manageable in size may target `main` directly. 
+    Larger contributions though must be structured as a series of smaller pull requests 
+    each building upon the previous one, all ideally tracked in a tracking issue 
+    (i.e., [an EPIC](#project-board)). 
+    These pull requests must target a long-lived feature branch. 
+    For details, see the [development procedure guidelines](#development-procedure).
+    Poorly structured pull requests may be rejected immediately with a
+    request to restructure them.
+
+    **Note**: This does not necessarily apply to documentation-related changes or
+    automatically generated code (e.g. generated from Protobuf definitions). But
+    automatically generated code changes should occur within separate commits, so
+    they are easily distinguishable from manual code changes.
+
+### Workflow
+
+To ensure a smooth workflow for all contributors, a general procedure for contributing has been established.
 
 1. Start by browsing [existing issues](https://github.com/cosmos/gaia/issues) and [discussions](https://github.com/cosmos/gaia/discussions). If you are looking for something interesting or if you have something in your mind, there is a chance it had been discussed.
    * Looking for a good place to start contributing? How about checking out some [good first issues](https://github.com/cosmos/gaia/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) or [bugs](https://github.com/cosmos/gaia/issues?q=is%3Aopen+is%3Aissue+label%3Abug)?
@@ -32,40 +84,53 @@ contributors, a general procedure for contributing has been established:
       make sure to contact them to collaborate.
    3. If nobody has been assigned for the issue and you would like to work on it,
       make a comment on the issue to inform the community of your intentions
-      to begin work.
-5. To submit your work as a contribution to the repository, follow standard GitHub best practices. See [pull request guideline](#pull-requests) below.
+      to begin work and please wait for an acknowledgement from the stewarding team.
+5. To submit your work as a contribution to the repository, follow standard GitHub best practices. 
+   See [development procedure guidelines](#development-procedure) below.
 
-**Note:** For very small or blatantly obvious problems such as typos, you are
-not required to an open issue to submit a PR, but be aware that for more complex
-problems/features, if a PR is opened before an adequate design discussion has
-taken place in a GitHub issue, that PR runs a high likelihood of being rejected 
-without review.
+**Note:** For very small or trivial issues such as typos, you are not required to open an issue before submitting a PR. 
+For complex problems or features, please make sure to open an issue and provide context and problem description. 
+PRs opened before adequate design discussion has taken place in a GitHub issue have a high likelihood of being rejected without review.
 
-## Team Organization
+## Project Board
 
-Gaia has many stakeholders contributing and shaping the project. The Core Gaia team is composed of Informal Systems developers. Any long-term contributors and additional maintainers from other projects are welcome. We use self-organizing principles to coordinate and collaborate across organizations in structured "EPIC" that focus on specific problem domains or architectural components of Gaia. For details, see the [GitHub Project board](https://github.com/orgs/cosmos/projects/28/views/11). 
+We use self-organizing principles to coordinate and collaborate across organizations in structured "EPICs" that focus on specific problem domains or architectural components of Gaia. For details, see the [GitHub Project board](https://github.com/orgs/cosmos/projects/28/views/11). 
 
 The developers work in sprints, which are available in a [GitHub Project](https://github.com/orgs/cosmos/projects/28/views/2). 
 
 ## Development Procedure
 
-* The latest state of development is on `main`.
-* `main` must never fail `make lint run-tests`.
-* No `--force` onto `main` (except when reverting a broken commit, which should seldom happen).
-* Create a branch to start work:
-    * Fork the repo (core developers must create a branch directly in the Gaia repo),
-    branch from the HEAD of `main`, make some commits, and submit a PR to `main`.
-    * For core developers working within the `gaia` repo, follow branch name conventions to ensure clear
-    ownership of branches: `{moniker}/{issue#}-branch-name`.
-    * See [Branching Model](#branching-model-and-release) for more details.
-* Be sure to run `make format` before every commit. The easiest way
-  to do this is have your editor run it for you upon saving a file (most of the editors
-  will do it anyway using a pre-configured setup of the programming language mode).
-  A convenience git `pre-commit` hook that runs the formatters automatically
-  before each commit is available in the `contrib/githooks/` directory.
-* Follow the [CODING GUIDELINES](docs/guidelines/code-guidelines.md), which defines criteria for designing and coding a software.
+`main` must be stable, include only completed features and never fail `make lint`, `make run-tests`, or `make build/install`.
 
-Code is merged into main through pull request procedure.
+Depending on the scope of the work, we differentiate between self-contained pull requests and long-lived contributions (features).
+
+**Self-contained pull requests**:
+
+* Fork the repo (core developers must create a branch directly in the Gaia repo),
+branch from the HEAD of `main`, make some commits, and submit a PR to `main`.
+* For core developers working within the `gaia` repo, follow branch name conventions to ensure clear
+ownership of branches: `{moniker}/{issue#}-branch-name`.
+* See [Branching Model](#branching-model-and-release) for more details.
+
+**Large contributions**:
+
+* Make sure that a feature branch in created in the repo. 
+  This will be created by the stewarding team after design discussions. 
+  The name convention for the feature branch must be `feat/{issue#}-branch-name`.
+  Note that (similar to `main`) all feature branches have branch protection rules and they run the CI.
+  Unlike `main`, feature branch may intermittently fail `make lint`, `make run-tests`, or `make build/install`.
+* Fork the repo (core developers must create a branch directly in the Gaia repo),
+  branch from the HEAD of the feature branch, make some commits, and submit a PR to the feature branch.
+  All PRs targeting a feature branch should follow the same guidelines in this document.
+* Once the feature is completed, submit a PR from the feature branch targeting `main`. 
+  
+Be sure to run `make format` before every commit. The easiest way
+to do this is have your editor run it for you upon saving a file (most of the editors
+will do it anyway using a pre-configured setup of the programming language mode).
+A convenience git `pre-commit` hook that runs the formatters automatically
+before each commit is available in the `contrib/githooks/` directory.
+
+**Note:** Exceptions to the above guidelines are possible, but only after prior discussions with the stewarding team. 
 
 ### Testing
 
@@ -97,13 +162,15 @@ require.Equal(t, expectedTx[:32], calculatedTx[:32],
 
 Before submitting a pull request:
 
-* merge the latest main `git merge origin/main`,
-* run `make lint run-tests` to ensure that all checks and tests pass.
+* synchronize your branch with the latest base branch (i.e., `main` or feature branch) and resolve any arising conflicts, e.g.,
+  - either `git fetch origin/main && git merge origin/main`
+  - or `git fetch origin/main && git rebase -i origin/main`
+* run `make lint`, `make run-tests`, `make build/install` to ensure that all checks and tests pass.
 
 Then:
 
 1. If you have something to show, **start with a `Draft` PR**. It's good to have early validation of your work and we highly recommend this practice. A Draft PR also indicates to the community that the work is in progress.
-   Draft PRs also help the core team provide early feedback and ensure the work is in the right direction.
+   Draft PRs also help the stewarding team provide early feedback and ensure the work is in the right direction.
 2. When the code is complete, change your PR from `Draft` to `Ready for Review`.
 3. Go through the actions for each checkbox present in the PR template description. The PR actions are automatically provided for each new PR.
 4. Be sure to include a relevant changelog entry in the `Unreleased` section of `CHANGELOG.md` (see file for log format). The entry should be on top of all others changes in the section.
@@ -116,7 +183,7 @@ Additionally, **each PR should only address a single issue**.
 
 Pull requests are merged automatically using [`A:automerge` action](https://mergify.io/features/auto-merge).
 
-NOTE: when merging, GitHub will squash commits and rebase on top of the main.
+**Note:** When merging, GitHub will squash commits and rebase on top of the base branch.
 
 ### Pull Request Templates
 
@@ -190,9 +257,11 @@ Gaia follows [semantic versioning](https://semver.org), but with the following d
 
 ### PR Targeting
 
-Ensure that you base and target your PR on the `main` branch.
+Ensure that you base and target your PRs on either `main` or a feature branch.
 
-All feature additions and all bug fixes must be targeted against `main`. Exception is for bug fixes which are only related to a released version. In that case, the related bug fix PRs must target against the release branch.
+All complete features and all bug fixes must be targeted against `main`. 
+Exception is for bug fixes which are only related to a released version. 
+In that case, the related bug fix PRs must target against the release branch.
 
-If needed, we backport a commit from `main` to a release branch (excluding consensus breaking feature, API breaking and similar).
+If needed, we will backport a commit from `main` to a release branch with appropriate consideration of versioning.
 

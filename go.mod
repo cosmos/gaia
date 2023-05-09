@@ -1,6 +1,6 @@
 module github.com/cosmos/gaia/v9
 
-go 1.20
+go 1.19
 
 require (
 	cosmossdk.io/math v1.0.0

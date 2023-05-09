@@ -112,7 +112,8 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	//
 	// Otherwise, minimum fees and global fees are checked to prevent spam.
 	doesNotExceedMaxGasUsage := gas <= mfd.MaxTotalBypassMinFeeMsgGasUsage
-	allowedToBypassMinFee := mfd.ContainsOnlyBypassMinFeeMsgs(msgs) && doesNotExceedMaxGasUsage
+	allBypassMsgs := mfd.ContainsOnlyBypassMinFeeMsgs(msgs)
+	allowedToBypassMinFee := allBypassMsgs && doesNotExceedMaxGasUsage
 
 	// Either the transaction contains at least one message of a type
 	// that cannot bypass the minimum fee or the total gas limit exceeds
@@ -137,6 +138,10 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 		// because when nonZeroCoinFeesReq empty, and DenomsSubsetOf check passed,
 		// the tx should already passed before)
 		if !feeCoinsNonZeroDenom.IsAnyGTE(nonZeroCoinFeesReq) {
+			if allBypassMsgs && !doesNotExceedMaxGasUsage {
+				return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "Insufficient fee. Bypass-min-fee-messages with gas consumption %v exceed the maximum allowed gas value of %v.", gas, mfd.MaxTotalBypassMinFeeMsgGasUsage)
+			}
+
 			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins.String(), combinedFeeRequirement.String())
 		}
 	}

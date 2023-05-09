@@ -22,11 +22,11 @@ Thank you for considering making contributions to Gaia! 🎉👍
 ## Overview
 
 Contributing to this repo can mean many things such as participating in
-discussion or proposing code changes. 
-Following the processes outlined in this document will lead to the best 
-chance of landing changes in a release.
+discussion or proposing code changes.
+Following the processes outlined in this document will lead to the best
+chance of getting changes merged into the codebase.
 
-### Stewarding team responsibility
+### Responsibilities of the stewarding team
 
 Gaia has many stakeholders contributing and shaping the project. 
 The _Gaia stewarding team_ is composed of Informal Systems developers and 
@@ -40,7 +40,7 @@ but _maintaining_ that change over the years has a much higher cost that the ste
 
  The fact that the stewarding team needs to be able to deeply understand the short-,
  medium- and long-term consequences of incoming changes means that changes need
- to be **easily reviewed**.
+ to be **easy to review**.
 
  What makes a change easy to review, and more likely to land in an upcoming
  release?
@@ -48,7 +48,7 @@ but _maintaining_ that change over the years has a much higher cost that the ste
  1. **Each pull request must do _one thing_**. It must be very clear what that
     one thing is when looking at the pull request title, description, and linked
     issues. It must also be very clear what value it ultimately aims to deliver,
-    and to which user(s). A single pull request that does multiple things, or
+    and for which user(s). A single pull request that does multiple things, or
     without a clear articulation of the problem it attempts to solve, may be
     rejected immediately.
 
@@ -108,13 +108,13 @@ Depending on the scope of the work, we differentiate between self-contained pull
 
 * Fork the repo (core developers must create a branch directly in the Gaia repo),
 branch from the HEAD of `main`, make some commits, and submit a PR to `main`.
-* For core developers working within the `gaia` repo, follow branch name conventions to ensure clear
+* For developers who are core contributors and are working within the `gaia` repo, follow branch name conventions to ensure clear
 ownership of branches: `{moniker}/{issue#}-branch-name`.
 * See [Branching Model](#branching-model-and-release) for more details.
 
 **Large contributions**:
 
-* Make sure that a feature branch in created in the repo. 
+* Make sure that a feature branch is created in the repo.
   This will be created by the stewarding team after design discussions. 
   The name convention for the feature branch must be `feat/{issue#}-branch-name`.
   Note that (similar to `main`) all feature branches have branch protection rules and they run the CI.
@@ -259,7 +259,7 @@ Gaia follows [semantic versioning](https://semver.org), but with the following d
 
 Ensure that you base and target your PRs on either `main` or a feature branch.
 
-All complete features and all bug fixes must be targeted against `main`. 
+All complete features and bug fixes must be targeted against `main`. 
 Exception is for bug fixes which are only related to a released version. 
 In that case, the related bug fix PRs must target against the release branch.
 

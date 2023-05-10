@@ -221,7 +221,9 @@ func (mfd FeeDecorator) getBondDenom(ctx sdk.Context) string {
 	}
 
 	var bondDenom string
-	mfd.StakingSubspace.Get(ctx, stakingtypes.KeyBondDenom, &bondDenom)
+	if mfd.StakingSubspace.Has(ctx, stakingtypes.KeyBondDenom) {
+		mfd.StakingSubspace.Get(ctx, stakingtypes.KeyBondDenom, &bondDenom)
+	}
 
 	return bondDenom
 }

@@ -20,7 +20,7 @@ func (s *IntegrationTestSuite) testStaking() {
 
 	delegatorAddress := s.chainA.genesisAccounts[2].keyInfo.GetAddress().String()
 
-	fees := sdk.NewCoin(uatomDenom, sdk.NewInt(10))
+	fees := sdk.NewCoin(uatomDenom, sdk.NewInt(1))
 
 	delegationAmount := sdk.NewInt(500000000)
 	delegation := sdk.NewCoin(uatomDenom, delegationAmount) // 500 atom

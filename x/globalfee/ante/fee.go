@@ -84,15 +84,15 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	nonZeroCoinFeesReq, zeroCoinFeesDenomReq := getNonZeroFees(feeRequired)
 
 	// feeCoinsNonZeroDenom contains non-zero denominations from the feeRequired
-	// feeCoinsNoZeroDenom is used to check if the fees meets the requirement imposed by nonZeroCoinFeesReq
+	// feeCoinsNonZeroDenom is used to check if the fees meets the requirement imposed by nonZeroCoinFeesReq
 	// when feeCoins does not contain zero coins' denoms in feeRequired
 	feeCoinsNonZeroDenom, feeCoinsZeroDenom := splitCoinsByDenoms(feeCoins, zeroCoinFeesDenomReq)
 
 	// Check that the fees are in expected denominations.
 	// according to splitCoinsByDenoms(), feeCoinsZeroDenom must be in denom subset of zeroCoinFeesDenomReq.
 	// check if feeCoinsNonZeroDenom is a subset of nonZeroCoinFeesReq.
-	// special case: if feeCoinsNoZeroDenom=[], DenomsSubsetOf returns true
-	// special case: if feeCoinsNoZeroDenom is not empty, but nonZeroCoinFeesReq empty, return false
+	// special case: if feeCoinsNonZeroDenom=[], DenomsSubsetOf returns true
+	// special case: if feeCoinsNonZeroDenom is not empty, but nonZeroCoinFeesReq empty, return false
 	if !feeCoinsNonZeroDenom.DenomsSubsetOf(nonZeroCoinFeesReq) {
 		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fee is not a subset of required fees; got %s, required: %s", feeCoins.String(), feeRequired.String())
 	}

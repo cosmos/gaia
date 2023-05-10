@@ -162,16 +162,16 @@ func TestCombinedFeeRequirement(t *testing.T) {
 }
 
 func TestSplitCoinsByDenoms(t *testing.T) {
-	zeroGlobalFeesDenom0 := map[string]bool{}
-	zeroGlobalFeesDenom1 := map[string]bool{
-		"uatom":  true,
-		"photon": true,
+	zeroGlobalFeesDenom0 := map[string]struct{}{}
+	zeroGlobalFeesDenom1 := map[string]struct{}{
+		"uatom":  struct{}{},
+		"photon": struct{}{},
 	}
-	zeroGlobalFeesDenom2 := map[string]bool{
-		"uatom": true,
+	zeroGlobalFeesDenom2 := map[string]struct{}{
+		"uatom": struct{}{},
 	}
-	zeroGlobalFeesDenom3 := map[string]bool{
-		"stake": true,
+	zeroGlobalFeesDenom3 := map[string]struct{}{
+		"stake": struct{}{},
 	}
 
 	photon := sdk.NewCoin("photon", sdk.OneInt())
@@ -180,7 +180,7 @@ func TestSplitCoinsByDenoms(t *testing.T) {
 
 	tests := map[string]struct {
 		feeCoins             sdk.Coins
-		zeroGlobalFeesDenom  map[string]bool
+		zeroGlobalFeesDenom  map[string]struct{}
 		expectedNonZeroCoins sdk.Coins
 		expectedZeroCoins    sdk.Coins
 	}{
@@ -238,31 +238,31 @@ func TestSplitGlobalFees(t *testing.T) {
 
 	tests := map[string]struct {
 		globalfees          sdk.Coins
-		zeroGlobalFeesDenom map[string]bool
+		zeroGlobalFeesDenom map[string]struct{}
 		globalfeesNonZero   sdk.Coins
 	}{
 		"empty global fees": {
 			globalfees:          globalFeesEmpty,
-			zeroGlobalFeesDenom: map[string]bool{},
+			zeroGlobalFeesDenom: map[string]struct{}{},
 			globalfeesNonZero:   sdk.Coins{},
 		},
 		"nonzero coins global fees": {
 			globalfees:          globalFees,
-			zeroGlobalFeesDenom: map[string]bool{},
+			zeroGlobalFeesDenom: map[string]struct{}{},
 			globalfeesNonZero:   globalFees,
 		},
 		"zero coins global fees": {
 			globalfees: globalFeesZeroCoins,
-			zeroGlobalFeesDenom: map[string]bool{
-				"photon": true,
-				"uatom":  true,
+			zeroGlobalFeesDenom: map[string]struct{}{
+				"photon": struct{}{},
+				"uatom":  struct{}{},
 			},
 			globalfeesNonZero: sdk.Coins{},
 		},
 		"mix zero, nonzero coins global fees": {
 			globalfees: globalFeesMix,
-			zeroGlobalFeesDenom: map[string]bool{
-				"photon": true,
+			zeroGlobalFeesDenom: map[string]struct{}{
+				"photon": struct{}{},
 			},
 			globalfeesNonZero: sdk.NewCoins(uatom1),
 		},
@@ -277,7 +277,7 @@ func TestSplitGlobalFees(t *testing.T) {
 	}
 }
 
-func equalMap(a, b map[string]bool) bool {
+func equalMap(a, b map[string]struct{}) bool {
 	if len(a) != len(b) {
 		return false
 	}

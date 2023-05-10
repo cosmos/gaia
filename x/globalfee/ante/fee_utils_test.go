@@ -164,14 +164,14 @@ func TestCombinedFeeRequirement(t *testing.T) {
 func TestSplitCoinsByDenoms(t *testing.T) {
 	zeroGlobalFeesDenom0 := map[string]struct{}{}
 	zeroGlobalFeesDenom1 := map[string]struct{}{
-		"uatom":  struct{}{},
-		"photon": struct{}{},
+		"uatom":  {},
+		"photon": {},
 	}
 	zeroGlobalFeesDenom2 := map[string]struct{}{
-		"uatom": struct{}{},
+		"uatom": {},
 	}
 	zeroGlobalFeesDenom3 := map[string]struct{}{
-		"stake": struct{}{},
+		"stake": {},
 	}
 
 	photon := sdk.NewCoin("photon", sdk.OneInt())
@@ -254,15 +254,15 @@ func TestSplitGlobalFees(t *testing.T) {
 		"zero coins global fees": {
 			globalfees: globalFeesZeroCoins,
 			zeroGlobalFeesDenom: map[string]struct{}{
-				"photon": struct{}{},
-				"uatom":  struct{}{},
+				"photon": {},
+				"uatom":  {},
 			},
 			globalfeesNonZero: sdk.Coins{},
 		},
 		"mix zero, nonzero coins global fees": {
 			globalfees: globalFeesMix,
 			zeroGlobalFeesDenom: map[string]struct{}{
-				"photon": struct{}{},
+				"photon": {},
 			},
 			globalfeesNonZero: sdk.NewCoins(uatom1),
 		},

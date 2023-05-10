@@ -121,9 +121,8 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	if len(feeCoins) == 0 {
 		if len(zeroCoinFeesDenomReq) != 0 {
 			return next(ctx, tx, simulate)
-		} else {
-			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins.String(), feeRequired.String())
 		}
+		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins.String(), feeRequired.String())
 	}
 
 	// when feeCoins != []

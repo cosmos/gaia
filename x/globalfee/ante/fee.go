@@ -69,6 +69,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	}
 
 	// reject the transaction early if the feeCoins have more denoms than the fee requirement
+	// feeRequired cannot be be empty
 	if feeTx.GetFee().Len() > feeRequired.Len() {
 		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "fee is not a subset of required fees; got %s, required: %s", feeTx.GetFee().String(), feeRequired.String())
 	}
@@ -134,8 +135,8 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	// After all the checks, the tx is confirmed:
 	// feeCoins denoms subset off feeRequired
 	// Not bypass
-	// Not empty feeCoins
-	// Not cointain zeroCoinFeesDenomReq' denoms
+	// feeCoins != []
+	// Not contain zeroCoinFeesDenomReq's denoms
 	//
 	// check if the feeCoins's feeCoinsNonZeroDenom part has coins' amount higher/equal to nonZeroCoinFeesReq
 	if !feeCoinsNonZeroDenom.IsAnyGTE(nonZeroCoinFeesReq) {

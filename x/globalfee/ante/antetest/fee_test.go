@@ -766,7 +766,7 @@ func (s *IntegrationTestSuite) TestGetTxFeeRequired() {
 	// set a subspace that doesn't have the stakingtypes.KeyBondDenom key registred
 	feeDecorator.StakingSubspace = s.app.GetSubspace(globfeetypes.ModuleName)
 
-	// check that an error is returned when staking subspace isn't set
+	// check that an error is returned when staking bond denom is empty
 	_, err := feeDecorator.GetTxFeeRequired(s.ctx, nil)
 	s.Require().Equal(err.Error(), "empty staking bond denomination")
 

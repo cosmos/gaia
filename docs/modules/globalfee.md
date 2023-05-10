@@ -9,7 +9,7 @@ Global fees are defined at the network level by setting `MinimumGasPricesParam` 
 This parameter is part of the node configuration, it can be set in the `config/app.toml` configuration file.
 
 3. `bypass-min-fee-msg-types` and `max_total_bypass_min_fee_msg_gas_usage`.\
- These two parameters are also part of global fee params from gaiad v10.0.0 which can be proposed to change via Gov Proposals. `bypass-min-fee-msg-types` represents a list of message types that will be excluded from paying any fees for inclusion in a block, `max_total_bypass_min_fee_msg_gas_usage` is the limit of `bypass-min-fee-msg-types` gas usage.
+ These two parameters are also part of the global fee params from gaiad v10.0.0, and can be changed through Gov Proposals. `bypass-min-fee-msg-types` represents a list of message types that will be excluded from paying any fees for inclusion in a block, `max_total_bypass_min_fee_msg_gas_usage` is the limit of `bypass-min-fee-msg-types` gas usage.
 
 ## Concepts
 
@@ -33,7 +33,7 @@ A global fees list must meet the following properties:
 
 There are **two exceptions** from the global fees rules that allow zero fee transactions:
 
-1. Transactions that contain only message types that can bypass the minimum fee requirement and the total gas usage of these bypass messages does not exceed `maxTotalBypassMinFeeMsgGasUsage` may have zero fees. We refer to this as _bypass transactions_.
+1. Transactions that contain only message types that can bypass the minimum fee requirement and for which the total gas usage of these bypass messages does not exceed `maxTotalBypassMinFeeMsgGasUsage` may have zero fees. We refer to this as _bypass transactions_.
 
 2. One of the entries in the global fees list has a zero amount, e.g., `0uatom`, and the corresponding denom, e.g., `uatom`, is not present in `minimum-gas-prices` in `app.toml`, or node operators may set additional `minimum-gas-prices` in `app.toml` also zero coins.
 

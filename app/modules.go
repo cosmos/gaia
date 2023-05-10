@@ -38,8 +38,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	"github.com/cosmos/gaia/v9/x/liquidity"
-	liquiditytypes "github.com/cosmos/gaia/v9/x/liquidity/types"
 	ica "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts"
 	icatypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/types"
 	"github.com/cosmos/ibc-go/v4/modules/apps/transfer"
@@ -50,6 +48,8 @@ import (
 	ibcprovider "github.com/cosmos/interchain-security/x/ccv/provider"
 	ibcproviderclient "github.com/cosmos/interchain-security/x/ccv/provider/client"
 	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
+	"github.com/gravity-devs/liquidity/x/liquidity"
+	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
 	"github.com/strangelove-ventures/packet-forward-middleware/v4/router"
 	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
 

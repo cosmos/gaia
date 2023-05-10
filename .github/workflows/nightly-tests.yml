@@ -12,10 +12,11 @@ on:
     #        │  │ │ │ │
     #        │  │ │ │ │
     #        │  │ │ │ │
-    #        *  * * * *
+    #        *  * * * *  
     - cron: "0 0 * * *"
 
 jobs:
+
   run-tests:
     uses: cosmos/gaia/.github/workflows/test.yml@main
 
@@ -36,7 +37,7 @@ jobs:
 
   warn-if-failure:
     if: failure()
-    needs: [run-tests, run-vulncheck, run-simulations]
+    needs: [ run-tests, run-vulncheck, run-simulations]
     runs-on: ubuntu-latest
     steps:
       - name: Notify Slack on failure

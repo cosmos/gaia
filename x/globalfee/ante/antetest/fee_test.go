@@ -6,7 +6,6 @@ import (
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
@@ -764,8 +763,8 @@ func (s *IntegrationTestSuite) TestGetTxFeeRequired() {
 	// setup tests with default global fee i.e. "0uatom" and empty local min gas prices
 	feeDecorator, _ := s.SetupTestGlobalFeeStoreAndMinGasPrice([]sdk.DecCoin{}, globalfeeParamsEmpty)
 
-	// reset decorator staking subspace
-	feeDecorator.StakingSubspace = paramtypes.Subspace{}
+	// set a subspace that doesn't have the stakingtypes.KeyBondDenom key registred
+	feeDecorator.StakingSubspace = s.app.GetSubspace(globfeetypes.ModuleName)
 
 	// check that an error is returned when staking subspace isn't set
 	_, err := feeDecorator.GetTxFeeRequired(s.ctx, nil)

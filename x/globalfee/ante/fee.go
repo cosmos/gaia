@@ -62,11 +62,6 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 		return next(ctx, tx, simulate)
 	}
 
-	// Sort fee tx's coins, zero coins in feeCoins are already removed
-	feeCoins := feeTx.GetFee().Sort()
-	gas := feeTx.GetGas()
-	msgs := feeTx.GetMsgs()
-
 	// Get the required fees according to the CheckTx or DeliverTx modes
 	feeRequired, err := mfd.GetTxFeeRequired(ctx, feeTx)
 	if err != nil {
@@ -74,61 +69,77 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	}
 
 	// reject the transaction early if the feeCoins have more denoms than the fee requirement
-	if feeCoins.Len() > feeRequired.Len() {
-		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "fee is not a subset of required fees; got %s, required: %s", feeCoins.String(), feeRequired.String())
+	if feeTx.GetFee().Len() > feeRequired.Len() {
+		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "fee is not a subset of required fees; got %s, required: %s", feeTx.GetFee().String(), feeRequired.String())
 	}
 
+	// Sort fee tx's coins, zero coins in feeCoins are already removed
+	feeCoins := feeTx.GetFee().Sort()
+	gas := feeTx.GetGas()
+	msgs := feeTx.GetMsgs()
+
+	// split feeRequired into zero and non-zero coins(nonZeroCoinFeesReq, zeroCoinFeesDenomReq), split feeCoins according to
+	// nonZeroCoinFeesReq, zeroCoinFeesDenomReq,
+	// so that feeCoins can be checked separately against them.
 	nonZeroCoinFeesReq, zeroCoinFeesDenomReq := getNonZeroFees(feeRequired)
 
 	// feeCoinsNonZeroDenom contains non-zero denominations from the feeRequired
-	//
 	// feeCoinsNoZeroDenom is used to check if the fees meets the requirement imposed by nonZeroCoinFeesReq
 	// when feeCoins does not contain zero coins' denoms in feeRequired
 	feeCoinsNonZeroDenom, feeCoinsZeroDenom := splitCoinsByDenoms(feeCoins, zeroCoinFeesDenomReq)
 
 	// Check that the fees are in expected denominations.
-	// if feeCoinsNoZeroDenom=[], DenomsSubsetOf returns true
-	// if feeCoinsNoZeroDenom is not empty, but nonZeroCoinFeesReq empty, return false
+	// according to splitCoinsByDenoms(), feeCoinsZeroDenom must be in denom subset of zeroCoinFeesDenomReq.
+	// check if feeCoinsNonZeroDenom is a subset of nonZeroCoinFeesReq.
+	// special case: if feeCoinsNoZeroDenom=[], DenomsSubsetOf returns true
+	// special case: if feeCoinsNoZeroDenom is not empty, but nonZeroCoinFeesReq empty, return false
 	if !feeCoinsNonZeroDenom.DenomsSubsetOf(nonZeroCoinFeesReq) {
 		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fee is not a subset of required fees; got %s, required: %s", feeCoins.String(), feeRequired.String())
 	}
 
-	// Accept zero fee transactions only if both of the following statements are true:
+	// If the feeCoins pass the denoms check, check they are bypass-msg types.
 	//
+	// Bypass min fee requires:
 	// 	- the tx contains only message types that can bypass the minimum fee,
 	//	see BypassMinFeeMsgTypes;
 	//	- the total gas limit per message does not exceed MaxTotalBypassMinFeeMsgGasUsage,
 	//	i.e., totalGas <=  MaxTotalBypassMinFeeMsgGasUsage
-	//
 	// Otherwise, minimum fees and global fees are checked to prevent spam.
 	doesNotExceedMaxGasUsage := gas <= mfd.MaxTotalBypassMinFeeMsgGasUsage
 	allowedToBypassMinFee := mfd.ContainsOnlyBypassMinFeeMsgs(msgs) && doesNotExceedMaxGasUsage
+	if allowedToBypassMinFee {
+		return next(ctx, tx, simulate)
+	}
 
-	// Either the transaction contains at least one message of a type
-	// that cannot bypass the minimum fee or the total gas limit exceeds
-	// the imposed threshold. As a result, besides check the fees are in
-	// expected denominations, check the amounts are greater or equal than
-	// the expected amounts.
-
-	// only check feeCoinsNoZeroDenom has coins IsAnyGTE than nonZeroCoinFeesReq
-	// when feeCoins does not contain denoms of zero denoms in feeRequired
-	if !allowedToBypassMinFee && len(feeCoinsZeroDenom) == 0 {
-		// special case: when feeCoins=[] and there is zero coin in fee requirement
-		if len(feeCoins) == 0 && len(zeroCoinFeesDenomReq) != 0 {
+	// if the msg does not satisfy bypass condition and the feeCoins denoms are subset of feeRequired,
+	// check the feeCoins amount against feeRequired
+	//
+	// when feeCoins=[]
+	// special case: and there is zero coin in fee requirement, pass,
+	// otherwise, err
+	if len(feeCoins) == 0 {
+		if len(zeroCoinFeesDenomReq) != 0 {
 			return next(ctx, tx, simulate)
-		}
-
-		// Check that the amounts of the fees are greater or equal than
-		// the expected amounts, i.e., at least one feeCoin amount must
-		// be greater or equal to one of the combined required fees.
-
-		// if feeCoinsNoZeroDenom=[], return false
-		// if nonZeroCoinFeesReq=[], return false (this situation should not happen
-		// because when nonZeroCoinFeesReq empty, and DenomsSubsetOf check passed,
-		// the tx should already passed before)
-		if !feeCoinsNonZeroDenom.IsAnyGTE(nonZeroCoinFeesReq) {
+		} else {
 			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins.String(), feeRequired.String())
 		}
+	}
+
+	// when feeCoins != []
+	// special case: if TX has at least one of the zeroCoinFeesDenomReq, then it should pass
+	if len(feeCoinsZeroDenom) > 0 {
+		return next(ctx, tx, simulate)
+	}
+
+	// After all the checks, the tx is confirmed:
+	// feeCoins denoms subset off feeRequired
+	// Not bypass
+	// Not empty feeCoins
+	// Not cointain zeroCoinFeesDenomReq' denoms
+	//
+	// check if the feeCoins's feeCoinsNonZeroDenom part has coins' amount higher/equal to nonZeroCoinFeesReq
+	if !feeCoinsNonZeroDenom.IsAnyGTE(nonZeroCoinFeesReq) {
+		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins.String(), feeRequired.String())
 	}
 
 	return next(ctx, tx, simulate)

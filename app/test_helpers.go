@@ -16,7 +16,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
-	appparams "github.com/cosmos/gaia/v9/app/params"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
@@ -49,7 +48,7 @@ var DefaultConsensusParams = &abci.ConsensusParams{
 
 func setup(withGenesis bool, invCheckPeriod uint) (*GaiaApp, GenesisState) {
 	db := dbm.NewMemDB()
-	encCdc := appparams.MakeTestEncodingConfig()
+	encCdc := MakeTestEncodingConfig()
 	app := NewGaiaApp(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, invCheckPeriod, encCdc, EmptyAppOptions{})
 	if withGenesis {
 		return app, NewDefaultGenesisState()

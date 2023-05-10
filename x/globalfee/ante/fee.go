@@ -138,11 +138,11 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 		// because when nonZeroCoinFeesReq empty, and DenomsSubsetOf check passed,
 		// the tx should already passed before)
 		if !feeCoinsNonZeroDenom.IsAnyGTE(nonZeroCoinFeesReq) {
+			errMsg := fmt.Sprintf("Insufficient fees; got: %s required: %s", feeCoins.String(), combinedFeeRequirement.String())
 			if allBypassMsgs && !doesNotExceedMaxGasUsage {
-				return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "Insufficient fee. Bypass-min-fee-messages with gas consumption %v exceed the maximum allowed gas value of %v.", gas, mfd.MaxTotalBypassMinFeeMsgGasUsage)
+				errMsg = fmt.Sprintf("Insufficient fees; bypass-min-fee-msg-types with gas consumption %v exceeds the maximum allowed gas value of %v.", gas, mfd.MaxTotalBypassMinFeeMsgGasUsage)
 			}
-
-			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins.String(), combinedFeeRequirement.String())
+			return ctx, sdkerrors.Wrap(sdkerrors.ErrInsufficientFee, errMsg)
 		}
 	}
 

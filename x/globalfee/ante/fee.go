@@ -2,6 +2,7 @@ package ante
 
 import (
 	"errors"
+	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -69,7 +70,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	}
 
 	// reject the transaction early if the feeCoins have more denoms than the fee requirement
-	// feeRequired cannot be be empty
+	// feeRequired cannot be empty
 	if feeTx.GetFee().Len() > feeRequired.Len() {
 		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "fee is not a subset of required fees; got %s, required: %s", feeTx.GetFee().String(), feeRequired.String())
 	}
@@ -107,7 +108,8 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	//	i.e., totalGas <=  MaxTotalBypassMinFeeMsgGasUsage
 	// Otherwise, minimum fees and global fees are checked to prevent spam.
 	doesNotExceedMaxGasUsage := gas <= mfd.MaxTotalBypassMinFeeMsgGasUsage
-	allowedToBypassMinFee := mfd.ContainsOnlyBypassMinFeeMsgs(msgs) && doesNotExceedMaxGasUsage
+	allBypassMsgs := mfd.ContainsOnlyBypassMinFeeMsgs(msgs)
+	allowedToBypassMinFee := allBypassMsgs && doesNotExceedMaxGasUsage
 	if allowedToBypassMinFee {
 		return next(ctx, tx, simulate)
 	}
@@ -139,7 +141,12 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	//
 	// check if the feeCoins's feeCoinsNonZeroDenom part has coins' amount higher/equal to nonZeroCoinFeesReq
 	if !feeCoinsNonZeroDenom.IsAnyGTE(nonZeroCoinFeesReq) {
-		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins.String(), feeRequired.String())
+		errMsg := fmt.Sprintf("Insufficient fees; got: %s required: %s", feeCoins.String(), feeRequired.String())
+		if allBypassMsgs && !doesNotExceedMaxGasUsage {
+			errMsg = fmt.Sprintf("Insufficient fees; bypass-min-fee-msg-types with gas consumption %v exceeds the maximum allowed gas value of %v.", gas, mfd.MaxTotalBypassMinFeeMsgGasUsage)
+		}
+
+		return ctx, sdkerrors.Wrap(sdkerrors.ErrInsufficientFee, errMsg)
 	}
 
 	return next(ctx, tx, simulate)

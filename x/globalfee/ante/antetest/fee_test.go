@@ -570,23 +570,32 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			txCheck:     true,
 			expErr:      true,
 		},
-		"disable checkTx: no fee check. min_gas_price is low, global fee is low, tx fee is zero": {
+		"disable checkTx: min_gas_price is medium, global fee is low, tx fee is low": {
+			minGasPrice: minGasPrice,
+			globalFee:   globalfeeParamsLow,
+			gasPrice:    sdk.NewCoins(sdk.NewCoin("uatom", lowFeeAmt)),
+			gasLimit:    testGasLimit,
+			txMsg:       testdata.NewTestMsg(addr1),
+			txCheck:     false,
+			expErr:      false,
+		},
+		"disable checkTx: min_gas_price is medium, global fee is low, tx is zero": {
 			minGasPrice: minGasPrice,
 			globalFee:   globalfeeParamsLow,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("uatom", sdk.ZeroInt())),
 			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     false,
-			expErr:      false,
+			expErr:      true,
 		},
-		"disable checkTx: no fee check. min_gas_price is low, global fee is low, tx fee's denom is not in global fees denoms set": {
+		"disable checkTx: min_gas_price is low, global fee is low, tx fee's denom is not in global fees denoms set": {
 			minGasPrice: minGasPrice,
 			globalFee:   globalfeeParamsLow,
 			gasPrice:    sdk.NewCoins(sdk.NewCoin("quark", sdk.ZeroInt())),
 			gasLimit:    testGasLimit,
 			txMsg:       testdata.NewTestMsg(addr1),
 			txCheck:     false,
-			expErr:      false,
+			expErr:      true,
 		},
 	}
 
@@ -750,4 +759,56 @@ func (s *IntegrationTestSuite) TestContainsOnlyBypassMinFeeMsgs() {
 			s.Require().True(tc.expPass == res)
 		})
 	}
+}
+
+func (s *IntegrationTestSuite) TestGetTxFeeRequired() {
+	// create global fee params
+	globalfeeParamsEmpty := &globfeetypes.Params{MinimumGasPrices: []sdk.DecCoin{}}
+
+	// setup tests with default global fee i.e. "0uatom" and empty local min gas prices
+	feeDecorator, _ := s.SetupTestGlobalFeeStoreAndMinGasPrice([]sdk.DecCoin{}, globalfeeParamsEmpty)
+
+	// set a subspace that doesn't have the stakingtypes.KeyBondDenom key registred
+	feeDecorator.StakingSubspace = s.app.GetSubspace(globfeetypes.ModuleName)
+
+	// check that an error is returned when staking bond denom is empty
+	_, err := feeDecorator.GetTxFeeRequired(s.ctx, nil)
+	s.Require().Equal(err.Error(), "empty staking bond denomination")
+
+	// set non-zero local min gas prices
+	localMinGasPrices := sdk.NewCoins(sdk.NewCoin("uatom", sdk.NewInt(1)))
+
+	// setup tests with non-empty local min gas prices
+	feeDecorator, _ = s.SetupTestGlobalFeeStoreAndMinGasPrice(
+		sdk.NewDecCoinsFromCoins(localMinGasPrices...),
+		globalfeeParamsEmpty,
+	)
+
+	// mock tx data
+	s.txBuilder = s.clientCtx.TxConfig.NewTxBuilder()
+	priv1, _, addr1 := testdata.KeyTestPubAddr()
+	privs, accNums, accSeqs := []cryptotypes.PrivKey{priv1}, []uint64{0}, []uint64{0}
+
+	s.Require().NoError(s.txBuilder.SetMsgs(testdata.NewTestMsg(addr1)))
+	s.txBuilder.SetFeeAmount(sdk.NewCoins(sdk.NewCoin("uatom", sdk.ZeroInt())))
+
+	s.txBuilder.SetGasLimit(uint64(1))
+	tx, err := s.CreateTestTx(privs, accNums, accSeqs, s.ctx.ChainID())
+	s.Require().NoError(err)
+
+	// check that the required fees returned in CheckTx mode are equal to
+	// local min gas prices since they're greater than the default global fee values.
+	s.Require().True(s.ctx.IsCheckTx())
+	res, err := feeDecorator.GetTxFeeRequired(s.ctx, tx)
+	s.Require().True(res.IsEqual(localMinGasPrices))
+	s.Require().NoError(err)
+
+	// check that the global fee is returned in DeliverTx mode.
+	globalFee, err := feeDecorator.GetGlobalFee(s.ctx, tx)
+	s.Require().NoError(err)
+
+	ctx := s.ctx.WithIsCheckTx(false)
+	res, err = feeDecorator.GetTxFeeRequired(ctx, tx)
+	s.Require().NoError(err)
+	s.Require().True(res.IsEqual(globalFee))
 }

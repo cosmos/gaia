@@ -439,8 +439,7 @@ func (s *IntegrationTestSuite) executeDelegate(c *chain, valIdx int, amount, val
 		amount,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-		fmt.Sprintf("--%s=%s", flags.FlagGas, "auto"),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, delegateFees),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, delegateFees),
 		"--keyring-backend=test",
 		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
 		"--output=json",
@@ -469,8 +468,8 @@ func (s *IntegrationTestSuite) executeRedelegate(c *chain, valIdx int, amount, o
 		amount,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-		fmt.Sprintf("--%s=%s", flags.FlagGas, "auto"),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, delegateFees),
+		fmt.Sprintf("--%s=%s", flags.FlagGas, "300000"), // default 200000 isn't enough
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, delegateFees),
 		"--keyring-backend=test",
 		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
 		"--output=json",
@@ -538,7 +537,7 @@ func (s *IntegrationTestSuite) execSetWithdrawAddress(
 		"set-withdraw-addr",
 		newWithdrawalAddress,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddress),
-		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, fees),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
 		fmt.Sprintf("--%s=%s", flags.FlagHome, homePath),
 		"--keyring-backend=test",
@@ -610,6 +609,7 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 
 	stdOut := outBuf.Bytes()
 	stdErr := errBuf.Bytes()
+
 	if !validation(stdOut, stdErr) {
 		s.Require().FailNowf("Exec validation failed", "stdout: %s, stderr: %s",
 			string(stdOut), string(stdErr))

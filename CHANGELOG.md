@@ -35,6 +35,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 # Changelog
 
 ## [Unreleased]
+* (deps) [#2488](https://github.com/cosmos/gaia/pull/2488) Bump [Cosmos SDK](https://github.com/cosmos/cosmos-sdk) to [v0.45.16-ics](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.16-ics), containing [this fix](https://github.com/cosmos/cosmos-sdk/pull/16097).
 
 ### Improvements
 * (test) [#2440](https://github.com/cosmos/gaia/pull/2440) Add vulncheck to nightly builds

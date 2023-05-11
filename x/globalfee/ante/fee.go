@@ -135,7 +135,6 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 		return next(ctx, tx, simulate)
 	}
 
-
 	// After all the checks, the tx is confirmed:
 	// feeCoins denoms subset off feeRequired
 	// Not bypass

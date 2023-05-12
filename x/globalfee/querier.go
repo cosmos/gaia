@@ -43,8 +43,10 @@ func (g GrpcQuerier) Params(stdCtx context.Context, _ *types.QueryParamsRequest)
 	}
 
 	return &types.QueryParamsResponse{
-		MinimumGasPrices:                minGasPrices,
-		BypassMinFeeMsgTypes:            bypassMinFeeMsgTypes,
-		MaxTotalBypassMinFeeMsgGasUsage: maxTotalBypassMinFeeMsgGasUsage,
+		Params: types.Params{
+			MinimumGasPrices:                minGasPrices,
+			BypassMinFeeMsgTypes:            bypassMinFeeMsgTypes,
+			MaxTotalBypassMinFeeMsgGasUsage: maxTotalBypassMinFeeMsgGasUsage,
+		},
 	}, nil
 }

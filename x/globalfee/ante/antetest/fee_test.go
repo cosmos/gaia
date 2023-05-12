@@ -604,10 +604,6 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 		MaxTotalBypassMinFeeMsgGasUsage: globfeetypes.DefaultmaxTotalBypassMinFeeMsgGasUsage,
 	}
 
-	globalfeeParams := &globfeetypes.Params{
-		BypassMinFeeMsgTypes:            globfeetypes.DefaultBypassMinFeeMsgTypes,
-		MaxTotalBypassMinFeeMsgGasUsage: globfeetypes.DefaultmaxTotalBypassMinFeeMsgGasUsage,
-	}
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			// set globalfees and min gas price

@@ -272,6 +272,11 @@ func orderInitBlockers() []string {
 		slashingtypes.ModuleName,
 		minttypes.ModuleName,
 		crisistypes.ModuleName,
+		// globalfee module need to be inited before genutil
+		// when calling DeliverGenTxs, deliverTx is called
+		// globalfee module does checks in deliverTx so that
+		// it has to be inited earlier than genutil so that the params are set
+		globalfee.ModuleName,
 		genutiltypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		ibchost.ModuleName,
@@ -284,7 +289,6 @@ func orderInitBlockers() []string {
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
-		globalfee.ModuleName,
 		providertypes.ModuleName,
 	}
 }

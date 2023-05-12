@@ -79,11 +79,12 @@ type Params struct {
 	// values allowed. For more information see
 	// https://docs.cosmos.network/main/modules/auth#concepts
 	MinimumGasPrices github_com_cosmos_cosmos_sdk_types.DecCoins `protobuf:"bytes,1,rep,name=minimum_gas_prices,json=minimumGasPrices,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.DecCoins" json:"minimum_gas_prices,omitempty" yaml:"minimum_gas_prices"`
-	// bypass_min_fee_msg_types defines a list of IBC message type urls
-	// that are free of fee charge
+	// bypass_min_fee_msg_types defines a list of message type urls
+	// that are free of fee charge.
 	BypassMinFeeMsgTypes []string `protobuf:"bytes,2,rep,name=bypass_min_fee_msg_types,json=bypassMinFeeMsgTypes,proto3" json:"bypass_min_fee_msg_types,omitempty" yaml:"bypass_min_fee_msg_types"`
 	// max_total_bypass_min_fee_msg_gas_usage defines the total maximum gas usage
-	// allowed to bypass fee charge
+	// allowed for a transaction containing only messages of types in bypass_min_fee_msg_types
+	// to bypass fee charge.
 	MaxTotalBypassMinFeeMsgGasUsage uint64 `protobuf:"varint,3,opt,name=max_total_bypass_min_fee_msg_gas_usage,json=maxTotalBypassMinFeeMsgGasUsage,proto3" json:"max_total_bypass_min_fee_msg_gas_usage,omitempty"`
 }
 

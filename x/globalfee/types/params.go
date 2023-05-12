@@ -17,6 +17,8 @@ var (
 	ParamStoreKeyBypassMinFeeMsgTypes            = []byte("BypassMinFeeMsgTypes")
 	ParamStoreKeyMaxTotalBypassMinFeeMsgGasUsage = []byte("MaxTotalBypassMinFeeMsgGasUsage")
 
+	// DefaultMinGasPrices is set at runtime to the staking token with zero amount i.e. "0uatom"
+	// see DefaultZeroGlobalFee method in gaia/x/globalfee/ante/fee.go.
 	DefaultMinGasPrices         = sdk.DecCoins{}
 	DefaultBypassMinFeeMsgTypes = []string{
 		sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),

@@ -92,12 +92,12 @@ func (s *IntegrationTestSuite) govProposeNewMaxTotalBypassMinFeeMsgGasUsage(newG
 	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
 	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes"}
 
-	// gov proposing new fees
+	// gov proposing new max gas usage for bypass msgs
 	s.T().Logf("Proposal number: %d", proposalCounter)
 	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change maxTotalBypassMinFeeMsgGasUsage to %d", newGas)
 	s.runGovProcess(chainAAPIEndpoint, submitter, proposalCounter, paramtypes.ProposalTypeChange, submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
 
-	// query the proposal status and new fee
+	// query the proposal status and max gas usage for bypass msgs
 	s.Require().Eventually(
 		func() bool {
 			proposal, err := queryGovProposal(chainAAPIEndpoint, proposalCounter)
@@ -110,7 +110,7 @@ func (s *IntegrationTestSuite) govProposeNewMaxTotalBypassMinFeeMsgGasUsage(newG
 
 	s.Require().Eventually(
 		func() bool {
-			gas, err := queryMaxTotalBypass(chainAAPIEndpoint)
+			gas, err := queryMaxTotalBypassMinFeeMsgGasUsage(chainAAPIEndpoint)
 			s.T().Logf("After gov new global fee proposal: %d", gas)
 			s.Require().NoError(err)
 

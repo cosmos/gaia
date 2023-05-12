@@ -17,19 +17,17 @@ func GetQueryCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 	queryCmd.AddCommand(
-		GetCmdShowMinimumGasPrices(),
+		GetCmdShowGlobalFeeParams(),
 	)
 	return queryCmd
 }
 
-func GetCmdShowMinimumGasPrices() *cobra.Command {
+func GetCmdShowGlobalFeeParams() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "params",
 		Short: "Show globalfee params",
-		// todo check here
-		Long: "Show globalfee requirement: minimum_gas_prices, bypass_min_fee_msg_types, max_total_bypass_minFee_msg_gas_usage",
-		//	Aliases: []string{"min"},
-		Args: cobra.ExactArgs(0),
+		Long:  "Show globalfee requirement: minimum_gas_prices, bypass_min_fee_msg_types, max_total_bypass_minFee_msg_gas_usage",
+		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {

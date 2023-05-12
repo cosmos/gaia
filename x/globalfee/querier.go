@@ -31,6 +31,7 @@ func (g GrpcQuerier) Params(stdCtx context.Context, _ *types.QueryParamsRequest)
 	var maxTotalBypassMinFeeMsgGasUsage uint64
 	ctx := sdk.UnwrapSDKContext(stdCtx)
 
+	// todo: if return err if not exist?
 	if g.paramSource.Has(ctx, types.ParamStoreKeyMinGasPrices) {
 		g.paramSource.Get(ctx, types.ParamStoreKeyMinGasPrices, &minGasPrices)
 	}
@@ -42,10 +43,8 @@ func (g GrpcQuerier) Params(stdCtx context.Context, _ *types.QueryParamsRequest)
 	}
 
 	return &types.QueryParamsResponse{
-		Params: types.Params{
-			MinimumGasPrices:                minGasPrices,
-			BypassMinFeeMsgTypes:            bypassMinFeeMsgTypes,
-			MaxTotalBypassMinFeeMsgGasUsage: maxTotalBypassMinFeeMsgGasUsage,
-		},
+		MinimumGasPrices:                minGasPrices,
+		BypassMinFeeMsgTypes:            bypassMinFeeMsgTypes,
+		MaxTotalBypassMinFeeMsgGasUsage: maxTotalBypassMinFeeMsgGasUsage,
 	}, nil
 }

@@ -2,18 +2,47 @@ package types
 
 import (
 	"fmt"
+	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
 )
 
-// ParamStoreKeyMinGasPrices store key
-var ParamStoreKeyMinGasPrices = []byte("MinimumGasPricesParam")
+var (
+	// ParamStoreKeyMinGasPrices store key
+	ParamStoreKeyMinGasPrices                    = []byte("MinimumGasPricesParam")
+	ParamStoreKeyBypassMinFeeMsgTypes            = []byte("BypassMinFeeMsgTypes")
+	ParamStoreKeyMaxTotalBypassMinFeeMsgGasUsage = []byte("MaxTotalBypassMinFeeMsgGasUsage")
+
+	// DefaultMinGasPrices is set at runtime to the staking token with zero amount i.e. "0uatom"
+	// see DefaultZeroGlobalFee method in gaia/x/globalfee/ante/fee.go.
+	DefaultMinGasPrices         = sdk.DecCoins{}
+	DefaultBypassMinFeeMsgTypes = []string{
+		sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),
+		sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
+		sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
+		sdk.MsgTypeURL(&ibcchanneltypes.MsgTimeout{}),
+		sdk.MsgTypeURL(&ibcchanneltypes.MsgTimeoutOnClose{}),
+	}
+
+	// maxTotalBypassMinFeeMsgGasUsage is the allowed maximum gas usage
+	// for all the bypass msgs in a transactions.
+	// A transaction that contains only bypass message types and the gas usage does not
+	// exceed maxTotalBypassMinFeeMsgGasUsage can be accepted with a zero fee.
+	// For details, see gaiafeeante.NewFeeDecorator()
+	DefaultmaxTotalBypassMinFeeMsgGasUsage uint64 = 1_000_000
+)
 
 // DefaultParams returns default parameters
 func DefaultParams() Params {
-	return Params{MinimumGasPrices: sdk.DecCoins{}}
+	return Params{
+		MinimumGasPrices:                DefaultMinGasPrices,
+		BypassMinFeeMsgTypes:            DefaultBypassMinFeeMsgTypes,
+		MaxTotalBypassMinFeeMsgGasUsage: DefaultmaxTotalBypassMinFeeMsgGasUsage,
+	}
 }
 
 func ParamKeyTable() paramtypes.KeyTable {
@@ -22,7 +51,15 @@ func ParamKeyTable() paramtypes.KeyTable {
 
 // ValidateBasic performs basic validation.
 func (p Params) ValidateBasic() error {
-	return validateMinimumGasPrices(p.MinimumGasPrices)
+	if err := validateMinimumGasPrices(p.MinimumGasPrices); err != nil {
+		return err
+	}
+
+	if err := validateBypassMinFeeMsgTypes(p.BypassMinFeeMsgTypes); err != nil {
+		return err
+	}
+
+	return validateMaxTotalBypassMinFeeMsgGasUsage(p.MaxTotalBypassMinFeeMsgGasUsage)
 }
 
 // ParamSetPairs returns the parameter set pairs.
@@ -31,10 +68,15 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(
 			ParamStoreKeyMinGasPrices, &p.MinimumGasPrices, validateMinimumGasPrices,
 		),
+		paramtypes.NewParamSetPair(
+			ParamStoreKeyBypassMinFeeMsgTypes, &p.BypassMinFeeMsgTypes, validateBypassMinFeeMsgTypes,
+		),
+		paramtypes.NewParamSetPair(
+			ParamStoreKeyMaxTotalBypassMinFeeMsgGasUsage, &p.MaxTotalBypassMinFeeMsgGasUsage, validateMaxTotalBypassMinFeeMsgGasUsage,
+		),
 	}
 }
 
-// this requires the fee non-negative
 func validateMinimumGasPrices(i interface{}) error {
 	v, ok := i.(sdk.DecCoins)
 	if !ok {
@@ -43,6 +85,37 @@ func validateMinimumGasPrices(i interface{}) error {
 
 	dec := DecCoins(v)
 	return dec.Validate()
+}
+
+type BypassMinFeeMsgTypes []string
+
+// validateBypassMinFeeMsgTypes checks that bypass msg types aren't empty
+func validateBypassMinFeeMsgTypes(i interface{}) error {
+	bypassMinFeeMsgTypes, ok := i.([]string)
+	if !ok {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "type: %T, expected []sdk.Msg", i)
+	}
+
+	for _, msgType := range bypassMinFeeMsgTypes {
+		if msgType == "" {
+			return fmt.Errorf("invalid empty bypass msg type")
+		}
+
+		if !strings.HasPrefix(msgType, sdk.MsgTypeURL(nil)) {
+			return fmt.Errorf("invalid bypass msg type name %s", msgType)
+		}
+	}
+
+	return nil
+}
+
+func validateMaxTotalBypassMinFeeMsgGasUsage(i interface{}) error {
+	_, ok := i.(uint64)
+	if !ok {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "type: %T, expected uint64", i)
+	}
+
+	return nil
 }
 
 type DecCoins sdk.DecCoins

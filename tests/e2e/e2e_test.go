@@ -37,7 +37,8 @@ func (s *IntegrationTestSuite) TestByPassMinFee() {
 	if !runBypassMinFeeTest {
 		s.T().Skip()
 	}
-	s.testByPassMinFeeWithdrawReward()
+	chainAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	s.testBypassMinFeeWithdrawReward(chainAPI)
 }
 
 func (s *IntegrationTestSuite) TestEncode() {

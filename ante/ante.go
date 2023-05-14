@@ -14,13 +14,6 @@ import (
 	gaiafeeante "github.com/cosmos/gaia/v9/x/globalfee/ante"
 )
 
-// maxTotalBypassMinFeeMsgGasUsage is the allowed maximum gas usage
-// for all the bypass msgs in a transactions.
-// A transaction that contains only bypass message types and the gas usage does not
-// exceed maxTotalBypassMinFeeMsgGasUsage can be accepted with a zero fee.
-// For details, see gaiafeeante.NewFeeDecorator()
-var maxTotalBypassMinFeeMsgGasUsage uint64 = 1_000_000
-
 // HandlerOptions extend the SDK's AnteHandler options by requiring the IBC
 // channel keeper.
 type HandlerOptions struct {
@@ -69,7 +62,7 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewValidateMemoDecorator(opts.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
 		NewGovPreventSpamDecorator(opts.Codec, opts.GovKeeper),
-		gaiafeeante.NewFeeDecorator(opts.BypassMinFeeMsgTypes, opts.GlobalFeeSubspace, opts.StakingSubspace, maxTotalBypassMinFeeMsgGasUsage),
+		gaiafeeante.NewFeeDecorator(opts.GlobalFeeSubspace, opts.StakingSubspace),
 		ante.NewDeductFeeDecorator(opts.AccountKeeper, opts.BankKeeper, opts.FeegrantKeeper),
 		ante.NewSetPubKeyDecorator(opts.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewValidateSigCountDecorator(opts.AccountKeeper),

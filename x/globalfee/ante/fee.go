@@ -29,13 +29,11 @@ import (
 var _ sdk.AnteDecorator = FeeDecorator{}
 
 type FeeDecorator struct {
-	BypassMinFeeMsgTypes            []string
-	GlobalMinFee                    globalfee.ParamSource
-	StakingSubspace                 paramtypes.Subspace
-	MaxTotalBypassMinFeeMsgGasUsage uint64
+	GlobalMinFee    globalfee.ParamSource
+	StakingSubspace paramtypes.Subspace
 }
 
-func NewFeeDecorator(bypassMsgTypes []string, globalfeeSubspace, stakingSubspace paramtypes.Subspace, maxTotalBypassMinFeeMsgGasUsage uint64) FeeDecorator {
+func NewFeeDecorator(globalfeeSubspace, stakingSubspace paramtypes.Subspace) FeeDecorator {
 	if !globalfeeSubspace.HasKeyTable() {
 		panic("global fee paramspace was not set up via module")
 	}
@@ -45,10 +43,8 @@ func NewFeeDecorator(bypassMsgTypes []string, globalfeeSubspace, stakingSubspace
 	}
 
 	return FeeDecorator{
-		BypassMinFeeMsgTypes:            bypassMsgTypes,
-		GlobalMinFee:                    globalfeeSubspace,
-		StakingSubspace:                 stakingSubspace,
-		MaxTotalBypassMinFeeMsgGasUsage: maxTotalBypassMinFeeMsgGasUsage,
+		GlobalMinFee:    globalfeeSubspace,
+		StakingSubspace: stakingSubspace,
 	}
 }
 
@@ -109,9 +105,11 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	//	- the total gas limit per message does not exceed MaxTotalBypassMinFeeMsgGasUsage,
 	//	i.e., totalGas <=  MaxTotalBypassMinFeeMsgGasUsage
 	// Otherwise, minimum fees and global fees are checked to prevent spam.
-	doesNotExceedMaxGasUsage := gas <= mfd.MaxTotalBypassMinFeeMsgGasUsage
-	allBypassMsgs := mfd.ContainsOnlyBypassMinFeeMsgs(msgs)
+	maxTotalBypassMinFeeMsgGasUsage := mfd.GetMaxTotalBypassMinFeeMsgGasUsage(ctx)
+	doesNotExceedMaxGasUsage := gas <= maxTotalBypassMinFeeMsgGasUsage
+	allBypassMsgs := mfd.ContainsOnlyBypassMinFeeMsgs(ctx, msgs)
 	allowedToBypassMinFee := allBypassMsgs && doesNotExceedMaxGasUsage
+
 	if allowedToBypassMinFee {
 		return next(ctx, tx, simulate)
 	}
@@ -145,7 +143,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	if !feeCoinsNonZeroDenom.IsAnyGTE(nonZeroCoinFeesReq) {
 		errMsg := fmt.Sprintf("Insufficient fees; got: %s required: %s", feeCoins.String(), feeRequired.String())
 		if allBypassMsgs && !doesNotExceedMaxGasUsage {
-			errMsg = fmt.Sprintf("Insufficient fees; bypass-min-fee-msg-types with gas consumption %v exceeds the maximum allowed gas value of %v.", gas, mfd.MaxTotalBypassMinFeeMsgGasUsage)
+			errMsg = fmt.Sprintf("Insufficient fees; bypass-min-fee-msg-types with gas consumption %v exceeds the maximum allowed gas value of %v.", gas, maxTotalBypassMinFeeMsgGasUsage)
 		}
 
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrInsufficientFee, errMsg)
@@ -222,21 +220,18 @@ func (mfd FeeDecorator) DefaultZeroGlobalFee(ctx sdk.Context) ([]sdk.DecCoin, er
 	return []sdk.DecCoin{sdk.NewDecCoinFromDec(bondDenom, sdk.NewDec(0))}, nil
 }
 
-func (mfd FeeDecorator) getBondDenom(ctx sdk.Context) string {
-	var bondDenom string
-
+func (mfd FeeDecorator) getBondDenom(ctx sdk.Context) (bondDenom string) {
 	if mfd.StakingSubspace.Has(ctx, stakingtypes.KeyBondDenom) {
 		mfd.StakingSubspace.Get(ctx, stakingtypes.KeyBondDenom, &bondDenom)
 	}
 
-	return bondDenom
+	return
 }
 
-// ContainsOnlyBypassMinFeeMsgs returns true if all the given msgs type are listed
-// in the BypassMinFeeMsgTypes of the FeeDecorator.
-func (mfd FeeDecorator) ContainsOnlyBypassMinFeeMsgs(msgs []sdk.Msg) bool {
+func (mfd FeeDecorator) ContainsOnlyBypassMinFeeMsgs(ctx sdk.Context, msgs []sdk.Msg) bool {
+	bypassMsgTypes := mfd.GetBypassMsgTypes(ctx)
 	for _, msg := range msgs {
-		if tmstrings.StringInSlice(sdk.MsgTypeURL(msg), mfd.BypassMinFeeMsgTypes) {
+		if tmstrings.StringInSlice(sdk.MsgTypeURL(msg), bypassMsgTypes) {
 			continue
 		}
 		return false
@@ -245,7 +240,22 @@ func (mfd FeeDecorator) ContainsOnlyBypassMinFeeMsgs(msgs []sdk.Msg) bool {
 	return true
 }
 
-// GetMinGasPrice returns the validator's minimum gas prices
+func (mfd FeeDecorator) GetBypassMsgTypes(ctx sdk.Context) (res []string) {
+	if mfd.GlobalMinFee.Has(ctx, types.ParamStoreKeyBypassMinFeeMsgTypes) {
+		mfd.GlobalMinFee.Get(ctx, types.ParamStoreKeyBypassMinFeeMsgTypes, &res)
+	}
+	return
+}
+
+func (mfd FeeDecorator) GetMaxTotalBypassMinFeeMsgGasUsage(ctx sdk.Context) (res uint64) {
+	if mfd.GlobalMinFee.Has(ctx, types.ParamStoreKeyMaxTotalBypassMinFeeMsgGasUsage) {
+		mfd.GlobalMinFee.Get(ctx, types.ParamStoreKeyMaxTotalBypassMinFeeMsgGasUsage, &res)
+	}
+
+	return
+}
+
+// GetMinGasPrice returns a nodes's local minimum gas prices
 // fees given a gas limit
 func GetMinGasPrice(ctx sdk.Context, gasLimit int64) sdk.Coins {
 	minGasPrices := ctx.MinGasPrices()

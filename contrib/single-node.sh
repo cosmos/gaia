@@ -15,8 +15,6 @@ if [ -z "$2" ]; then
   exit 1
 fi
 
-rm -rf /Users/simon/.gaia
-
 # Build genesis file incl account for passed address
 coins="10000000000stake,100000000000samoleans"
 gaiad init --chain-id $CHAINID $CHAINID

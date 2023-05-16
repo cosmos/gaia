@@ -127,7 +127,7 @@ jobs:
           go-version: 1.18
       - name: Install GaiaV9
         run: |
-          git checkout v9.0.0
+          git checkout v9.1.0
           make build
           cp ./build/gaiad ./build/gaiad9
           go clean -modcache

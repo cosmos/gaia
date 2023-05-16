@@ -53,8 +53,8 @@ import (
 	"github.com/strangelove-ventures/packet-forward-middleware/v4/router"
 	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
 
-	gaiaappparams "github.com/cosmos/gaia/v9/app/params"
-	"github.com/cosmos/gaia/v9/x/globalfee"
+	gaiaappparams "github.com/cosmos/gaia/v10/app/params"
+	"github.com/cosmos/gaia/v10/x/globalfee"
 )
 
 var maccPerms = map[string][]string{
@@ -109,9 +109,9 @@ var ModuleBasics = module.NewBasicManager(
 )
 
 func appModules(
-	app *GaiaApp,
-	encodingConfig gaiaappparams.EncodingConfig,
-	skipGenesisInvariants bool,
+		app *GaiaApp,
+		encodingConfig gaiaappparams.EncodingConfig,
+		skipGenesisInvariants bool,
 ) []module.AppModule {
 	appCodec := encodingConfig.Codec
 
@@ -150,9 +150,9 @@ func appModules(
 // simulationModules returns modules for simulation manager
 // define the order of the modules for deterministic simulations
 func simulationModules(
-	app *GaiaApp,
-	encodingConfig gaiaappparams.EncodingConfig,
-	_ bool,
+		app *GaiaApp,
+		encodingConfig gaiaappparams.EncodingConfig,
+		_ bool,
 ) []module.AppModuleSimulation {
 	appCodec := encodingConfig.Codec
 

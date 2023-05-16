@@ -30,8 +30,8 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
 
-	gaia "github.com/cosmos/gaia/v9/app"
-	"github.com/cosmos/gaia/v9/app/params"
+	gaia "github.com/cosmos/gaia/v10/app"
+	"github.com/cosmos/gaia/v10/app/params"
 )
 
 // NewRootCmd creates a new root command for simd. It is called once in the
@@ -177,10 +177,10 @@ type appCreator struct {
 }
 
 func (ac appCreator) newApp(
-	logger log.Logger,
-	db dbm.DB,
-	traceStore io.Writer,
-	appOpts servertypes.AppOptions,
+		logger log.Logger,
+		db dbm.DB,
+		traceStore io.Writer,
+		appOpts servertypes.AppOptions,
 ) servertypes.Application {
 	var cache sdk.MultiStorePersistentCache
 
@@ -230,13 +230,13 @@ func (ac appCreator) newApp(
 }
 
 func (ac appCreator) appExport(
-	logger log.Logger,
-	db dbm.DB,
-	traceStore io.Writer,
-	height int64,
-	forZeroHeight bool,
-	jailAllowedAddrs []string,
-	appOpts servertypes.AppOptions,
+		logger log.Logger,
+		db dbm.DB,
+		traceStore io.Writer,
+		height int64,
+		forZeroHeight bool,
+		jailAllowedAddrs []string,
+		appOpts servertypes.AppOptions,
 ) (servertypes.ExportedApp, error) {
 	homePath, ok := appOpts.Get(flags.FlagHome).(string)
 	if !ok || homePath == "" {

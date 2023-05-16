@@ -3,8 +3,7 @@ package v2
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-
-	"github.com/cosmos/gaia/v9/x/globalfee/types"
+	"github.com/cosmos/gaia/v10/x/globalfee/types"
 )
 
 // MigrateStore performs in-place params migrations of
@@ -19,22 +18,20 @@ import (
 // "/ibc.core.channel.v1.MsgTimeoutOnClose"] as default and
 // add MaxTotalBypassMinFeeMsgGasUsage that is set 1_000_000 as default.
 func MigrateStore(ctx sdk.Context, globalfeeSubspace paramtypes.Subspace) error {
-	var globalMinGasPrices sdk.DecCoins
-	globalfeeSubspace.Get(ctx, types.ParamStoreKeyMinGasPrices, &globalMinGasPrices)
-
+	var oldGlobalMinGasPrices sdk.DecCoins
+	globalfeeSubspace.Get(ctx, types.ParamStoreKeyMinGasPrices, &oldGlobalMinGasPrices)
 	defaultParams := types.DefaultParams()
 	params := types.Params{
-		MinimumGasPrices:                globalMinGasPrices,
+		MinimumGasPrices:                oldGlobalMinGasPrices,
 		BypassMinFeeMsgTypes:            defaultParams.BypassMinFeeMsgTypes,
 		MaxTotalBypassMinFeeMsgGasUsage: defaultParams.MaxTotalBypassMinFeeMsgGasUsage,
 	}
 
-	if globalfeeSubspace.HasKeyTable() {
-		globalfeeSubspace.SetParamSet(ctx, &params)
-	} else {
+	if !globalfeeSubspace.HasKeyTable() {
 		globalfeeSubspace.WithKeyTable(types.ParamKeyTable())
-		globalfeeSubspace.SetParamSet(ctx, &params)
 	}
+
+	globalfeeSubspace.SetParamSet(ctx, &params)
 
 	return nil
 }

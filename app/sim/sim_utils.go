@@ -8,7 +8,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
 
-	gaia "github.com/cosmos/gaia/v9/app"
+	gaia "github.com/cosmos/gaia/v10/app"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
@@ -77,7 +77,7 @@ func SimulationOperations(app *gaia.GaiaApp, cdc codec.JSONCodec, config simtype
 // CheckExportSimulation exports the app state and simulation parameters to JSON
 // if the export paths are defined.
 func CheckExportSimulation(
-	app *gaia.GaiaApp, config simtypes.Config, params simtypes.Params,
+		app *gaia.GaiaApp, config simtypes.Config, params simtypes.Params,
 ) error {
 	if config.ExportStatePath != "" {
 		fmt.Println("exporting app state...")

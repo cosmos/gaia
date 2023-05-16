@@ -13,10 +13,10 @@ import (
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	"github.com/cosmos/gaia/v9/ante"
-	gaiahelpers "github.com/cosmos/gaia/v9/app/helpers"
+	"github.com/cosmos/gaia/v10/ante"
+	gaiahelpers "github.com/cosmos/gaia/v10/app/helpers"
 
-	gaiaapp "github.com/cosmos/gaia/v9/app"
+	gaiaapp "github.com/cosmos/gaia/v10/app"
 )
 
 var (

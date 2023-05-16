@@ -13,7 +13,7 @@ import (
 	icatypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
 
-	"github.com/cosmos/gaia/v9/app/keepers"
+	"github.com/cosmos/gaia/v10/app/keepers"
 )
 
 func FixBankMetadata(ctx sdk.Context, keepers *keepers.AppKeepers) error {
@@ -99,9 +99,9 @@ func closeChannel(keepers *keepers.AppKeepers, ctx sdk.Context, channelID string
 }
 
 func CreateUpgradeHandler(
-	mm *module.Manager,
-	configurator module.Configurator,
-	keepers *keepers.AppKeepers,
+		mm *module.Manager,
+		configurator module.Configurator,
+		keepers *keepers.AppKeepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("Running upgrade fixes...")

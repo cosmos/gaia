@@ -9,13 +9,13 @@ import (
 	icahosttypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/types"
 	icatypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/types"
 
-	"github.com/cosmos/gaia/v9/app/keepers"
+	"github.com/cosmos/gaia/v10/app/keepers"
 )
 
 func CreateUpgradeHandler(
-	mm *module.Manager,
-	configurator module.Configurator,
-	_ *keepers.AppKeepers,
+		mm *module.Manager,
+		configurator module.Configurator,
+		_ *keepers.AppKeepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		vm[icatypes.ModuleName] = mm.Modules[icatypes.ModuleName].ConsensusVersion()

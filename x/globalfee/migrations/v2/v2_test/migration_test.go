@@ -1,25 +1,19 @@
 package v2_test
 
 import (
-	"testing"
-
-	"github.com/cosmos/cosmos-sdk/store"
-	"github.com/tendermint/tendermint/libs/log"
-
 	"github.com/cosmos/cosmos-sdk/codec"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/store"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	"github.com/stretchr/testify/require"
-	tmdb "github.com/tendermint/tm-db"
-
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-
-	v2 "github.com/cosmos/gaia/v9/x/globalfee/migrations/v2"
-	globalfeetypes "github.com/cosmos/gaia/v9/x/globalfee/types"
+	v2 "github.com/cosmos/gaia/v10/x/globalfee/migrations/v2"
+	globalfeetypes "github.com/cosmos/gaia/v10/x/globalfee/types"
+	"github.com/stretchr/testify/require"
+	"github.com/tendermint/tendermint/libs/log"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmdb "github.com/tendermint/tm-db"
+	"testing"
 )
 
 func TestMigrateStore(t *testing.T) {
@@ -46,6 +40,7 @@ func TestMigrateStore(t *testing.T) {
 		memStoreKey,
 		paramtypes.ModuleName,
 	)
+	// register the subspace withthe v10 paramKeyTable
 	newSubspace.WithKeyTable(globalfeetypes.ParamKeyTable())
 
 	// check MinGasPrices isn't set

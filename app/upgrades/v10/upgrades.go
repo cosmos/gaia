@@ -5,13 +5,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	"github.com/cosmos/gaia/v9/app/keepers"
+	"github.com/cosmos/gaia/v10/app/keepers"
 )
 
 func CreateUpgradeHandler(
-	mm *module.Manager,
-	configurator module.Configurator,
-	keepers *keepers.AppKeepers,
+		mm *module.Manager,
+		configurator module.Configurator,
+		keepers *keepers.AppKeepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("Starting module migrations...")

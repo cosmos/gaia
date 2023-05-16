@@ -61,7 +61,7 @@ import (
 	routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v4/router/keeper"
 	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
 
-	"github.com/cosmos/gaia/v9/x/globalfee"
+	"github.com/cosmos/gaia/v10/x/globalfee"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
@@ -113,16 +113,16 @@ type AppKeepers struct {
 }
 
 func NewAppKeeper(
-	appCodec codec.Codec,
-	bApp *baseapp.BaseApp,
-	legacyAmino *codec.LegacyAmino,
-	maccPerms map[string][]string,
-	modAccAddrs map[string]bool,
-	blockedAddress map[string]bool,
-	skipUpgradeHeights map[int64]bool,
-	homePath string,
-	invCheckPeriod uint,
-	appOpts servertypes.AppOptions,
+		appCodec codec.Codec,
+		bApp *baseapp.BaseApp,
+		legacyAmino *codec.LegacyAmino,
+		maccPerms map[string][]string,
+		modAccAddrs map[string]bool,
+		blockedAddress map[string]bool,
+		skipUpgradeHeights map[int64]bool,
+		homePath string,
+		invCheckPeriod uint,
+		appOpts servertypes.AppOptions,
 ) AppKeepers {
 	appKeepers := AppKeepers{}
 

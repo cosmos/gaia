@@ -25,7 +25,7 @@ gaiad gentx validator 5000000000stake --keyring-backend="test" --chain-id $CHAIN
 gaiad collect-gentxs
 
 # Set proper defaults and change ports
-echo 1
+echo "Setting rpc listen address"
 sed -i '' 's#"tcp://127.0.0.1:26657"#"tcp://0.0.0.0:26657"#g' ~/.gaia/config/config.toml
 echo 2
 sed -i '' 's/timeout_commit = "5s"/timeout_commit = "1s"/g' ~/.gaia/config/config.toml

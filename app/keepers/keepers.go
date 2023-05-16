@@ -113,16 +113,16 @@ type AppKeepers struct {
 }
 
 func NewAppKeeper(
-		appCodec codec.Codec,
-		bApp *baseapp.BaseApp,
-		legacyAmino *codec.LegacyAmino,
-		maccPerms map[string][]string,
-		modAccAddrs map[string]bool,
-		blockedAddress map[string]bool,
-		skipUpgradeHeights map[int64]bool,
-		homePath string,
-		invCheckPeriod uint,
-		appOpts servertypes.AppOptions,
+	appCodec codec.Codec,
+	bApp *baseapp.BaseApp,
+	legacyAmino *codec.LegacyAmino,
+	maccPerms map[string][]string,
+	modAccAddrs map[string]bool,
+	blockedAddress map[string]bool,
+	skipUpgradeHeights map[int64]bool,
+	homePath string,
+	invCheckPeriod uint,
+	appOpts servertypes.AppOptions,
 ) AppKeepers {
 	appKeepers := AppKeepers{}
 

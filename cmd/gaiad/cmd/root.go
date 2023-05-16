@@ -177,10 +177,10 @@ type appCreator struct {
 }
 
 func (ac appCreator) newApp(
-		logger log.Logger,
-		db dbm.DB,
-		traceStore io.Writer,
-		appOpts servertypes.AppOptions,
+	logger log.Logger,
+	db dbm.DB,
+	traceStore io.Writer,
+	appOpts servertypes.AppOptions,
 ) servertypes.Application {
 	var cache sdk.MultiStorePersistentCache
 
@@ -230,13 +230,13 @@ func (ac appCreator) newApp(
 }
 
 func (ac appCreator) appExport(
-		logger log.Logger,
-		db dbm.DB,
-		traceStore io.Writer,
-		height int64,
-		forZeroHeight bool,
-		jailAllowedAddrs []string,
-		appOpts servertypes.AppOptions,
+	logger log.Logger,
+	db dbm.DB,
+	traceStore io.Writer,
+	height int64,
+	forZeroHeight bool,
+	jailAllowedAddrs []string,
+	appOpts servertypes.AppOptions,
 ) (servertypes.ExportedApp, error) {
 	homePath, ok := appOpts.Get(flags.FlagHome).(string)
 	if !ok || homePath == "" {

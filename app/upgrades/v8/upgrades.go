@@ -99,9 +99,9 @@ func closeChannel(keepers *keepers.AppKeepers, ctx sdk.Context, channelID string
 }
 
 func CreateUpgradeHandler(
-		mm *module.Manager,
-		configurator module.Configurator,
-		keepers *keepers.AppKeepers,
+	mm *module.Manager,
+	configurator module.Configurator,
+	keepers *keepers.AppKeepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("Running upgrade fixes...")

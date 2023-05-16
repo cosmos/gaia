@@ -77,7 +77,7 @@ func SimulationOperations(app *gaia.GaiaApp, cdc codec.JSONCodec, config simtype
 // CheckExportSimulation exports the app state and simulation parameters to JSON
 // if the export paths are defined.
 func CheckExportSimulation(
-		app *gaia.GaiaApp, config simtypes.Config, params simtypes.Params,
+	app *gaia.GaiaApp, config simtypes.Config, params simtypes.Params,
 ) error {
 	if config.ExportStatePath != "" {
 		fmt.Println("exporting app state...")

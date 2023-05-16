@@ -144,9 +144,9 @@ func setup() (*gaiaapp.GaiaApp, gaiaapp.GenesisState) {
 }
 
 func genesisStateWithValSet(t *testing.T,
-		app *gaiaapp.GaiaApp, genesisState gaiaapp.GenesisState,
-		valSet *tmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount,
-		balances ...banktypes.Balance,
+	app *gaiaapp.GaiaApp, genesisState gaiaapp.GenesisState,
+	valSet *tmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount,
+	balances ...banktypes.Balance,
 ) gaiaapp.GenesisState {
 	t.Helper()
 	// set genesis accounts

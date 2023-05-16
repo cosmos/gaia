@@ -140,8 +140,8 @@ func AppStateFn(cdc codec.JSONCodec, simManager *module.SimulationManager) simty
 // AppStateRandomizedFn creates calls each module's GenesisState generator function
 // and creates the simulation params
 func AppStateRandomizedFn(
-		simManager *module.SimulationManager, r *rand.Rand, cdc codec.JSONCodec,
-		accs []simtypes.Account, genesisTimestamp time.Time, appParams simtypes.AppParams,
+	simManager *module.SimulationManager, r *rand.Rand, cdc codec.JSONCodec,
+	accs []simtypes.Account, genesisTimestamp time.Time, appParams simtypes.AppParams,
 ) (json.RawMessage, []simtypes.Account) {
 	numAccs := int64(len(accs))
 	genesisState := gaia.NewDefaultGenesisState()

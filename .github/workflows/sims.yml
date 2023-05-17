@@ -107,15 +107,9 @@ jobs:
     steps:
       - uses: actions/setup-go@v3
         with:
-<<<<<<< HEAD
-          go-version: 1.18
-      - uses: actions/checkout@v3.1.0
-      - uses: actions/cache@v3.2.0
-=======
           go-version: 1.20.x
       - uses: actions/checkout@v3.5.2
       - uses: actions/cache@v3.3.1
->>>>>>> cb523c0 (build: bump Go to v1.20 (#2409))
         with:
           path: ~/go/bin
           key: ${{ runner.os }}-go-runsim-binary

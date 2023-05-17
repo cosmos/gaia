@@ -5,7 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
-	"github.com/cosmos/gaia/v9/x/globalfee/types"
+	"github.com/cosmos/gaia/v10/x/globalfee/types"
 )
 
 func GetQueryCmd() *cobra.Command {
@@ -39,7 +39,7 @@ func GetCmdShowGlobalFeeParams() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			return clientCtx.PrintProto(res)
+			return clientCtx.PrintProto(&res.Params)
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)

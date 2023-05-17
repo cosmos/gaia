@@ -10,19 +10,18 @@ import (
 	ibcante "github.com/cosmos/ibc-go/v4/modules/core/ante"
 	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
 
-	gaiafeeante "github.com/cosmos/gaia/v9/x/globalfee/ante"
+	gaiafeeante "github.com/cosmos/gaia/v10/x/globalfee/ante"
 )
 
 // HandlerOptions extend the SDK's AnteHandler options by requiring the IBC
 // channel keeper.
 type HandlerOptions struct {
 	ante.HandlerOptions
-	Codec                codec.BinaryCodec
-	GovKeeper            *govkeeper.Keeper
-	IBCkeeper            *ibckeeper.Keeper
-	BypassMinFeeMsgTypes []string
-	GlobalFeeSubspace    paramtypes.Subspace
-	StakingSubspace      paramtypes.Subspace
+	Codec             codec.BinaryCodec
+	GovKeeper         *govkeeper.Keeper
+	IBCkeeper         *ibckeeper.Keeper
+	GlobalFeeSubspace paramtypes.Subspace
+	StakingSubspace   paramtypes.Subspace
 }
 
 func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {

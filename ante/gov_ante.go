@@ -1,12 +1,13 @@
 package ante
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	gaiaerrors "github.com/cosmos/gaia/v9/types/errors"
 )
 
 // initial deposit must be greater than or equal to 10% of the minimum deposit
@@ -49,7 +50,7 @@ func (g GovPreventSpamDecorator) ValidateGovMsgs(ctx sdk.Context, msgs []sdk.Msg
 			depositParams := g.govKeeper.GetDepositParams(ctx)
 			minInitialDeposit := g.calcMinInitialDeposit(depositParams.MinDeposit)
 			if msg.InitialDeposit.IsAllLT(minInitialDeposit) {
-				return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, "insufficient initial deposit amount - required: %v", minInitialDeposit)
+				return errorsmod.Wrap(gaiaerrors.ErrInsufficientFunds, "insufficient initial deposit amount - required: %v", minInitialDeposit)
 			}
 		}
 
@@ -60,7 +61,7 @@ func (g GovPreventSpamDecorator) ValidateGovMsgs(ctx sdk.Context, msgs []sdk.Msg
 		for _, v := range execMsg.Msgs {
 			var innerMsg sdk.Msg
 			if err := g.cdc.UnpackAny(v, &innerMsg); err != nil {
-				return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "cannot unmarshal authz exec msgs")
+				return errorsmod.Wrap(gaiaerrors.ErrUnauthorized, "cannot unmarshal authz exec msgs")
 			}
 			if err := validMsg(innerMsg); err != nil {
 				return err

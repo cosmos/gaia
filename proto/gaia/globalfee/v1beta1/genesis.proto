@@ -28,6 +28,7 @@ message Params {
     (gogoproto.moretags) = "yaml:\"minimum_gas_prices\"",
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins"
   ];
+
   // bypass_min_fee_msg_types defines a list of message type urls
   // that are free of fee charge.
   repeated string bypass_min_fee_msg_types = 2 [

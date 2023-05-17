@@ -70,13 +70,8 @@ jobs:
     steps:
       - uses: actions/setup-go@v3.0.0
         with:
-<<<<<<< HEAD
-          go-version: 1.18
-      - uses: actions/checkout@v3.1.0
-=======
           go-version: 1.20.x
       - uses: actions/checkout@v3.5.2
->>>>>>> cb523c0 (build: bump Go to v1.20 (#2409))
       - uses: technote-space/get-diff-action@v6.0.1
         with:
           PATTERNS: |

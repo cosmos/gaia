@@ -1,8 +1,9 @@
 package ante
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	gaiaerrors "github.com/cosmos/gaia/v9/types/errors"
 )
 
 // ContainZeroCoins returns true if the given coins are empty or contain zero coins,
@@ -28,7 +29,7 @@ func CombinedFeeRequirement(globalFees, minGasPrices sdk.Coins) (sdk.Coins, erro
 	// global fees should never be empty
 	// since it has a default value using the staking module's bond denom
 	if len(globalFees) == 0 {
-		return sdk.Coins{}, sdkerrors.Wrapf(sdkerrors.ErrNotFound, "global fee cannot be empty")
+		return sdk.Coins{}, errorsmod.Wrapf(gaiaerrors.ErrNotFound, "global fee cannot be empty")
 	}
 
 	// empty min_gas_price

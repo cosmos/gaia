@@ -8,10 +8,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/cosmos/gaia/v9/app"
-
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	tmtypes "github.com/tendermint/tendermint/types"
+
+	gaia "github.com/cosmos/gaia/v10/app"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"

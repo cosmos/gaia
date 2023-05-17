@@ -3,6 +3,7 @@ package globalfee
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -16,8 +17,9 @@ import (
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/cosmos/gaia/v9/x/globalfee/client/cli"
-	"github.com/cosmos/gaia/v9/x/globalfee/types"
+	"github.com/cosmos/gaia/v10/x/globalfee/client/cli"
+	"github.com/cosmos/gaia/v10/x/globalfee/keeper"
+	"github.com/cosmos/gaia/v10/x/globalfee/types"
 )
 
 var (
@@ -93,6 +95,7 @@ func NewAppModule(paramSpace paramstypes.Subspace) *AppModule {
 func (a AppModule) InitGenesis(ctx sdk.Context, marshaler codec.JSONCodec, message json.RawMessage) []abci.ValidatorUpdate {
 	var genesisState types.GenesisState
 	marshaler.MustUnmarshalJSON(message, &genesisState)
+
 	a.paramSpace.SetParamSet(ctx, &genesisState.Params)
 	return nil
 }
@@ -120,6 +123,11 @@ func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier {
 
 func (a AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterQueryServer(cfg.QueryServer(), NewGrpcQuerier(a.paramSpace))
+
+	m := keeper.NewMigrator(a.paramSpace)
+	if err := cfg.RegisterMigration(types.ModuleName, 1, m.Migrate1to2); err != nil {
+		panic(fmt.Sprintf("failed to migrate x/globalfee from version 1 to 2: %v", err))
+	}
 }
 
 func (a AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {
@@ -134,5 +142,5 @@ func (a AppModule) EndBlock(_ sdk.Context, _ abci.RequestEndBlock) []abci.Valida
 // introduced by the module. To avoid wrong/empty versions, the initial version
 // should be set to 1.
 func (a AppModule) ConsensusVersion() uint64 {
-	return 1
+	return 2
 }

@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/cosmos/gaia/v9/x/globalfee/types"
+	"github.com/cosmos/gaia/v10/x/globalfee/types"
 )
 
 var _ types.QueryServer = &GrpcQuerier{}
@@ -30,6 +30,7 @@ func (g GrpcQuerier) Params(stdCtx context.Context, _ *types.QueryParamsRequest)
 	var bypassMinFeeMsgTypes []string
 	var maxTotalBypassMinFeeMsgGasUsage uint64
 	ctx := sdk.UnwrapSDKContext(stdCtx)
+
 	// todo: if return err if not exist?
 	if g.paramSource.Has(ctx, types.ParamStoreKeyMinGasPrices) {
 		g.paramSource.Get(ctx, types.ParamStoreKeyMinGasPrices, &minGasPrices)
@@ -42,8 +43,10 @@ func (g GrpcQuerier) Params(stdCtx context.Context, _ *types.QueryParamsRequest)
 	}
 
 	return &types.QueryParamsResponse{
-		MinimumGasPrices:                minGasPrices,
-		BypassMinFeeMsgTypes:            bypassMinFeeMsgTypes,
-		MaxTotalBypassMinFeeMsgGasUsage: maxTotalBypassMinFeeMsgGasUsage,
+		Params: types.Params{
+			MinimumGasPrices:                minGasPrices,
+			BypassMinFeeMsgTypes:            bypassMinFeeMsgTypes,
+			MaxTotalBypassMinFeeMsgGasUsage: maxTotalBypassMinFeeMsgGasUsage,
+		},
 	}, nil
 }

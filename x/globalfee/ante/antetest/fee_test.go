@@ -11,8 +11,8 @@ import (
 	ibcchanneltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
 	"github.com/stretchr/testify/suite"
 
-	gaiafeeante "github.com/cosmos/gaia/v9/x/globalfee/ante"
-	globfeetypes "github.com/cosmos/gaia/v9/x/globalfee/types"
+	gaiafeeante "github.com/cosmos/gaia/v10/x/globalfee/ante"
+	globfeetypes "github.com/cosmos/gaia/v10/x/globalfee/types"
 )
 
 var testGasLimit uint64 = 200_000
@@ -603,6 +603,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 		BypassMinFeeMsgTypes:            globfeetypes.DefaultBypassMinFeeMsgTypes,
 		MaxTotalBypassMinFeeMsgGasUsage: globfeetypes.DefaultmaxTotalBypassMinFeeMsgGasUsage,
 	}
+
 	for name, tc := range testCases {
 		s.Run(name, func() {
 			// set globalfees and min gas price

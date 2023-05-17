@@ -28,8 +28,8 @@ import (
 var _ sdk.AnteDecorator = FeeDecorator{}
 
 type FeeDecorator struct {
-	GlobalMinFee    globalfee.ParamSource
-	StakingSubspace paramtypes.Subspace
+	GlobalMinFeeSubspace globalfee.ParamSource
+	StakingSubspace      paramtypes.Subspace
 }
 
 func NewFeeDecorator(globalfeeSubspace, stakingSubspace paramtypes.Subspace) FeeDecorator {
@@ -42,8 +42,8 @@ func NewFeeDecorator(globalfeeSubspace, stakingSubspace paramtypes.Subspace) Fee
 	}
 
 	return FeeDecorator{
-		GlobalMinFee:    globalfeeSubspace,
-		StakingSubspace: stakingSubspace,
+		GlobalMinFeeSubspace: globalfeeSubspace,
+		StakingSubspace:      stakingSubspace,
 	}
 }
 
@@ -186,8 +186,8 @@ func (mfd FeeDecorator) GetGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) (sdk.Coin
 		err                error
 	)
 
-	if mfd.GlobalMinFee.Has(ctx, types.ParamStoreKeyMinGasPrices) {
-		mfd.GlobalMinFee.Get(ctx, types.ParamStoreKeyMinGasPrices, &globalMinGasPrices)
+	if mfd.GlobalMinFeeSubspace.Has(ctx, types.ParamStoreKeyMinGasPrices) {
+		mfd.GlobalMinFeeSubspace.Get(ctx, types.ParamStoreKeyMinGasPrices, &globalMinGasPrices)
 	}
 	// global fee is empty set, set global fee to 0uatom
 	if len(globalMinGasPrices) == 0 {
@@ -239,16 +239,16 @@ func (mfd FeeDecorator) ContainsOnlyBypassMinFeeMsgs(ctx sdk.Context, msgs []sdk
 }
 
 func (mfd FeeDecorator) GetBypassMsgTypes(ctx sdk.Context) (res []string) {
-	if mfd.GlobalMinFee.Has(ctx, types.ParamStoreKeyBypassMinFeeMsgTypes) {
-		mfd.GlobalMinFee.Get(ctx, types.ParamStoreKeyBypassMinFeeMsgTypes, &res)
+	if mfd.GlobalMinFeeSubspace.Has(ctx, types.ParamStoreKeyBypassMinFeeMsgTypes) {
+		mfd.GlobalMinFeeSubspace.Get(ctx, types.ParamStoreKeyBypassMinFeeMsgTypes, &res)
 	}
 
 	return
 }
 
 func (mfd FeeDecorator) GetMaxTotalBypassMinFeeMsgGasUsage(ctx sdk.Context) (res uint64) {
-	if mfd.GlobalMinFee.Has(ctx, types.ParamStoreKeyMaxTotalBypassMinFeeMsgGasUsage) {
-		mfd.GlobalMinFee.Get(ctx, types.ParamStoreKeyMaxTotalBypassMinFeeMsgGasUsage, &res)
+	if mfd.GlobalMinFeeSubspace.Has(ctx, types.ParamStoreKeyMaxTotalBypassMinFeeMsgGasUsage) {
+		mfd.GlobalMinFeeSubspace.Get(ctx, types.ParamStoreKeyMaxTotalBypassMinFeeMsgGasUsage, &res)
 	}
 
 	return

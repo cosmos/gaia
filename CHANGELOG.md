@@ -41,7 +41,6 @@ Ref: https://keepachangelog.com/en/1.0.0/
 * (gaia) [#2442](https://github.com/cosmos/gaia/pull/2442) Bump [Interchain-Security](https://github.com/cosmos/interchain-security) to [v1.1.1](https://github.com/cosmos/interchain-security/tree/v1.1.1).
 
 ### State Machine Breaking
-* (deps) update several things at once (sdk, cometbft, ibc-go, btcd), see [#2498](https://github.com/cosmos/gaia/pull/2498) for details.
 * (gaia) Bump Golang prerequisite from 1.18 to 1.20 see (https://go.dev/blog/go1.20) for details.
 * (feat!) [#2424](https://github.com/cosmos/gaia/pull/2424) Add `bypass-min-fee-msg-types` and `maxTotalBypassMinFeeMsgGagUsage` to globalfee params. Note that this change is both state breaking and API breaking. The previous API endpoint was "/gaia/globalfee/v1beta1/minimum_gas_prices," and the new API endpoint is "/gaia/globalfee/v1beta1/params."
 * (feat!) [#2352](https://github.com/cosmos/gaia/pull/2352) Create the upgrade handler and params migration for the new Gloabal Fee module parameters introduced in [#2424](https://github.com/cosmos/gaia/pull/2424).

@@ -9,7 +9,7 @@ import (
 	icahosttypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/types"
 	icatypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/types"
 
-	"github.com/cosmos/gaia/v9/app/keepers"
+	"github.com/cosmos/gaia/v10/app/keepers"
 )
 
 func CreateUpgradeHandler(

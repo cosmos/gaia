@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/cosmos/gaia/v9/app"
+	gaia "github.com/cosmos/gaia/v10/app"
 
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"

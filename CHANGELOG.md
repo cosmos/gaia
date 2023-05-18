@@ -40,6 +40,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 * (deps) update several things at once (sdk, cometbft, ibc-go, btcd), see [#2498](https://github.com/cosmos/gaia/pull/2498) for details.
 * (gaia) Bump Golang prerequisite from 1.18 to 1.20 see (https://go.dev/blog/go1.20) for details.
 
+## [v10.0.0-rc0] - 2023-05-18
+
+* (feat) v10 upgrade boilerplate [#2502](https://github.com/cosmos/gaia/pull/2502)
+
 ## [v9.1.0] - 2023-05-08
 
 * (fix) [#2474](https://github.com/cosmos/gaia/pull/2474) Multisig and distribution fix in [Interchain-Security](https://github.com/cosmos/interchain-security). Bump Interchain-Security to [v1.1.0-multiden](https://github.com/cosmos/interchain-security/tree/v1.1.0-multiden).

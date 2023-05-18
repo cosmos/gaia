@@ -3,10 +3,18 @@ module github.com/cosmos/gaia/v9
 go 1.20
 
 require (
+<<<<<<< HEAD
 	github.com/cosmos/cosmos-sdk v0.45.15-ics
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/ibc-go/v4 v4.2.0
 	github.com/cosmos/interchain-security v1.1.0
+=======
+	cosmossdk.io/math v1.0.0
+	github.com/cosmos/cosmos-sdk v0.45.16-ics
+	github.com/cosmos/go-bip39 v1.0.0
+	github.com/cosmos/ibc-go/v4 v4.4.0
+	github.com/cosmos/interchain-security v1.1.1
+>>>>>>> 4991414 (deps: update several things at once (sdk, ibc-go, btcd) (#2498))
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
 	github.com/golangci/golangci-lint v1.50.1
@@ -45,7 +53,7 @@ require (
 	github.com/Antonboom/nilnil v0.1.1 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
 	github.com/BurntSushi/toml v1.2.1 // indirect
-	github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d // indirect
+	github.com/ChainSafe/go-schnorrkel v1.0.0 // indirect
 	github.com/DataDog/zstd v1.5.0 // indirect
 	github.com/Djarvur/go-err113 v0.1.0 // indirect
 	github.com/GaijinEntertainment/go-exhaustruct/v2 v2.3.0 // indirect
@@ -127,6 +135,11 @@ require (
 	github.com/go-toolsmith/typep v1.0.2 // indirect
 	github.com/go-xmlfmt/xmlfmt v0.0.0-20191208150333-d5b6f63a941b // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
+<<<<<<< HEAD
+=======
+	github.com/gobwas/httphead v0.1.0 // indirect
+	github.com/gobwas/pool v0.2.1 // indirect
+>>>>>>> 4991414 (deps: update several things at once (sdk, ibc-go, btcd) (#2498))
 	github.com/godbus/dbus v0.0.0-20190726142602-4481cbc300e2 // indirect
 	github.com/gofrs/flock v0.8.1 // indirect
 	github.com/gogo/gateway v1.1.0 // indirect
@@ -212,6 +225,11 @@ require (
 	github.com/nbutton23/zxcvbn-go v0.0.0-20210217022336-fa2cb2858354 // indirect
 	github.com/nishanths/exhaustive v0.8.3 // indirect
 	github.com/nishanths/predeclared v0.2.2 // indirect
+<<<<<<< HEAD
+=======
+	github.com/nunnatsa/ginkgolinter v0.9.0 // indirect
+	github.com/nxadm/tail v1.4.8 // indirect
+>>>>>>> 4991414 (deps: update several things at once (sdk, ibc-go, btcd) (#2498))
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0-rc2 // indirect
@@ -308,6 +326,7 @@ replace (
 	// Use cosmos keyring
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
+<<<<<<< HEAD
 	// TODO: Simapp dependency, review removing when updating to SDK with backported update https://github.com/cosmos/cosmos-sdk/issues/13423
 	github.com/btcsuite/btcd => github.com/btcsuite/btcd v0.22.2 // indirect
 
@@ -321,6 +340,8 @@ replace (
 	// replace ICS with multisig and distribution fix
 	github.com/cosmos/interchain-security => github.com/cosmos/interchain-security v1.1.0-multiden
 
+=======
+>>>>>>> 4991414 (deps: update several things at once (sdk, ibc-go, btcd) (#2498))
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
 	// TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409
@@ -329,8 +350,13 @@ replace (
 	// use cosmos style protobufs
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
+<<<<<<< HEAD
 	// Tendermint
 	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.27
+=======
+	// Comet
+	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.28
+>>>>>>> 4991414 (deps: update several things at once (sdk, ibc-go, btcd) (#2498))
 
 	// latest grpc doesn't work with with our modified proto compiler, so we need to enforce
 	// the following version across all dependencies.

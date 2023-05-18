@@ -34,7 +34,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 # Changelog
 
-## [Unreleased]
+## [v10.0.0-rc0] 2023-05-17
+
+* (feat) v10 upgrade boilerplate [#2502](https://github.com/cosmos/gaia/pull/2502). Note this PR is merged directly into the v10 release branch, not main.
+* (deps) update several things at once (sdk, cometbft, ibc-go, btcd), see [#2498](https://github.com/cosmos/gaia/pull/2498) for details.
 * (gaia) Bump Golang prerequisite from 1.18 to 1.20 see (https://go.dev/blog/go1.20) for details.
 
 ## [v9.1.0] - 2023-05-08

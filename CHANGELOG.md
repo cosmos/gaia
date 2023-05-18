@@ -49,6 +49,7 @@ Update the CI upgrade tests from v9 to the v10 and check that the parameters are
 
 ## [v10.0.0-rc0] 2023-05-17
 
+* (feat) v10 upgrade boilerplate [#2502](https://github.com/cosmos/gaia/pull/2502). Note this PR is merged directly into the v10 release branch, not main.
 * (deps) update several things at once (sdk, cometbft, ibc-go, btcd), see [#2498](https://github.com/cosmos/gaia/pull/2498) for details.
 * (gaia) Bump Golang prerequisite from 1.18 to 1.20 see (https://go.dev/blog/go1.20) for details.
 

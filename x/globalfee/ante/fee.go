@@ -11,8 +11,8 @@ import (
 	gaiaerrors "github.com/cosmos/gaia/v9/types/errors"
 	tmstrings "github.com/tendermint/tendermint/libs/strings"
 
-	"github.com/cosmos/gaia/v9/x/globalfee"
-	"github.com/cosmos/gaia/v9/x/globalfee/types"
+	"github.com/cosmos/gaia/v10/x/globalfee"
+	"github.com/cosmos/gaia/v10/x/globalfee/types"
 )
 
 // FeeWithBypassDecorator checks if the transaction's fee is at least as large
@@ -243,6 +243,7 @@ func (mfd FeeDecorator) GetBypassMsgTypes(ctx sdk.Context) (res []string) {
 	if mfd.GlobalMinFee.Has(ctx, types.ParamStoreKeyBypassMinFeeMsgTypes) {
 		mfd.GlobalMinFee.Get(ctx, types.ParamStoreKeyBypassMinFeeMsgTypes, &res)
 	}
+
 	return
 }
 

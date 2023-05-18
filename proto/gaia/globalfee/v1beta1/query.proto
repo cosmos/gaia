@@ -3,7 +3,7 @@ package gaia.globalfee.v1beta1;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "cosmos/base/v1beta1/coin.proto";
+import "gaia/globalfee/v1beta1/genesis.proto";
 
 option go_package = "github.com/cosmos/gaia/x/globalfee/types";
 
@@ -23,13 +23,5 @@ message QueryParamsRequest {}
 // QueryMinimumGasPricesResponse is the response type for the
 // Query/MinimumGasPrices RPC method.
 message QueryParamsResponse {
-  repeated cosmos.base.v1beta1.DecCoin minimum_gas_prices = 1 [
-    (gogoproto.nullable) = false,
-    (gogoproto.jsontag) = "minimum_gas_prices,omitempty",
-    (gogoproto.moretags) = "yaml:\"minimum_gas_prices\"",
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins"
-  ];
-
-  repeated string bypass_min_fee_msg_types = 2 [(gogoproto.moretags) = "yaml:\"bypass_min_fee_msg_types\""];
-  uint64 max_total_bypass_min_fee_msg_gas_usage = 3;
+        Params params = 1 [(gogoproto.nullable) = false];
 }

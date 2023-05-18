@@ -52,7 +52,7 @@ func NewFeeDecorator(globalfeeSubspace, stakingSubspace paramtypes.Subspace) Fee
 func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
 	feeTx, ok := tx.(sdk.FeeTx)
 	if !ok {
-		return ctx, errorsmod.Wrapf(gaiaerrors.ErrTxDecode, "Tx must implement the sdk.FeeTx interface")
+		return ctx, errorsmod.Wrap(gaiaerrors.ErrTxDecode, "Tx must implement the sdk.FeeTx interface")
 	}
 
 	// Do not check minimum-gas-prices and global fees during simulations
@@ -145,7 +145,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 			errMsg = fmt.Sprintf("Insufficient fees; bypass-min-fee-msg-types with gas consumption %v exceeds the maximum allowed gas value of %v.", gas, maxTotalBypassMinFeeMsgGasUsage)
 		}
 
-		return ctx, errorsmod.Wrapf(gaiaerrors.ErrInsufficientFee, errMsg)
+		return ctx, errorsmod.Wrap(gaiaerrors.ErrInsufficientFee, errMsg)
 	}
 
 	return next(ctx, tx, simulate)

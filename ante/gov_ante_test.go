@@ -10,12 +10,12 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-	"github.com/cosmos/gaia/v9/ante"
-	gaiahelpers "github.com/cosmos/gaia/v9/app/helpers"
+	"github.com/cosmos/gaia/v10/ante"
+	gaiahelpers "github.com/cosmos/gaia/v10/app/helpers"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	gaiaapp "github.com/cosmos/gaia/v9/app"
+	gaiaapp "github.com/cosmos/gaia/v10/app"
 )
 
 var (

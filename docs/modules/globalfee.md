@@ -1,12 +1,12 @@
 # Gaia Fees and Fees Checks
 
 ## Fee Parameters
-The CosmosHub allows managing fees requirement using 4 parameters. At the network level, there are three parameters from globalfee modules (`MinimumGasPricesParam`, `BypassMinFeeMsgTypes`, and `MaxTotalBypassMinFeeMsgGasUsage`) that can be set by gov proposal. There's a fourth parameter that enables individual nodes to impose supplementary fee amount requirement.
+The CosmosHub allows managing fees requirement using 4 parameters. At the network level, there are three parameters from globalfee modules (`MinimumGasPricesParam`, `BypassMinFeeMsgTypes`, and `MaxTotalBypassMinFeeMsgGasUsage`) that can be set by gov proposal. Additionally, there's a fourth parameter that enables individual nodes to impose supplementary fee amount requirement.
 
 1. Global fees (`MinimumGasPricesParam`).\
-Global fees are defined at the network level by setting `MinimumGasPricesParam` in global fee params, via [Gov Proposals](https://hub.cosmos.network/main/governance/proposals/)
+Global fee `MinimumGasPricesParam` is established at the network level through global fee params setting via Governance Proposals, and it sets the fee requirements that the entire network must adhere to.
 2. `minimum-gas-prices` in `app.toml`\
-This parameter is part of the node configuration, it can be set in the `config/app.toml` configuration file.
+   By adjusting the minimum-gas-prices parameter in app.toml, nodes can enforce a fee that is higher than the globally defined MinimumGasPricesParam. However, it's important to note that this configuration solely determines whether transactions are eligible to enter this specific node's mempool.
 
 3. `bypass-min-fee-msg-types` and `max_total_bypass_min_fee_msg_gas_usage`.\
  These two parameters are also part of the global fee params from gaiad v10.0.0, and can be changed through Gov Proposals. `bypass-min-fee-msg-types` represents a list of message types that will be excluded from paying any fees for inclusion in a block, `max_total_bypass_min_fee_msg_gas_usage` is the limit of `bypass-min-fee-msg-types` gas usage.

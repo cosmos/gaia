@@ -34,10 +34,29 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 # Changelog
 
+<<<<<<< HEAD
 ## [v10.0.0-rc0] 2023-05-17
+=======
+## [Unreleased]
 
-* (feat) v10 upgrade boilerplate [#2502](https://github.com/cosmos/gaia/pull/2502). Note this PR is merged directly into the v10 release branch, not main.
-* (deps) update several things at once (sdk, cometbft, ibc-go, btcd), see [#2498](https://github.com/cosmos/gaia/pull/2498) for details.
+### Improvements
+* (test) [#2440](https://github.com/cosmos/gaia/pull/2440) Add vulncheck to nightly builds
+* (gaia) [#2442](https://github.com/cosmos/gaia/pull/2442) Bump [Interchain-Security](https://github.com/cosmos/interchain-security) to [v1.1.1](https://github.com/cosmos/interchain-security/tree/v1.1.1).
+
+### State Machine Breaking
+
+* (feat!) [#2424](https://github.com/cosmos/gaia/pull/2424) Add `bypass-min-fee-msg-types` and `maxTotalBypassMinFeeMsgGagUsage` to globalfee params. Note that this change is both state breaking and API breaking. The previous API endpoint was "/gaia/globalfee/v1beta1/minimum_gas_prices," and the new API endpoint is "/gaia/globalfee/v1beta1/params."
+* (feat!) [#2352](https://github.com/cosmos/gaia/pull/2352) Create the upgrade handler and params migration for the new Gloabal Fee module parameters introduced in [#2424](https://github.com/cosmos/gaia/pull/2424).
+Update the CI upgrade tests from v9 to the v10 and check that the parameters are successfully migrated.
+* (feat!) [#2447](https://github.com/cosmos/gaia/pull/2447) Update Global Fee's AnteHandler to check tx fees against the network min gas prices in DeliverTx mode.
+
+## [v10.0.0-rc0] 2023-05-19
+>>>>>>> 62b2394 (Update v10-rc0 changelog (#2507))
+
+* (chore) Update module version to v10 [#2502](https://github.com/cosmos/gaia/pull/2502).
+* (deps) Bump multiple dependencies (sdk, cometbft, ibc-go, btcd), see [#2498](https://github.com/cosmos/gaia/pull/2498) for details.
+  * (deps) Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.16-ics](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.16-ics). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/release/v0.45.x/CHANGELOG.md) for details.
+  * (deps) Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.4.0](https://github.com/cosmos/ibc-go/blob/release/v4.4.x/CHANGELOG.md). See [v4.2 Release Notes](https://github.com/cosmos/ibc-go/releases/tag/v4.4.0) for details.
 * (gaia) Bump Golang prerequisite from 1.18 to 1.20 see (https://go.dev/blog/go1.20) for details.
 
 ## [v10.0.0-rc0] - 2023-05-18

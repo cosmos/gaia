@@ -1,7 +1,7 @@
 # Gaia Fees and Fees Checks
 
 ## Fee Parameters
-The CosmosHub allows managing fees requirement using 4 parameters:
+The CosmosHub allows managing fees requirement using 4 parameters. At the network level, there are three parameters from globalfee modules (`MinimumGasPricesParam`, `BypassMinFeeMsgTypes`, and `MaxTotalBypassMinFeeMsgGasUsage`) that can be set by gov proposal. There's a fourth parameter that enables individual nodes to impose supplementary fee amount requirement.
 
 1. Global fees (`MinimumGasPricesParam`).\
 Global fees are defined at the network level by setting `MinimumGasPricesParam` in global fee params, via [Gov Proposals](https://hub.cosmos.network/main/governance/proposals/)

@@ -5,35 +5,31 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tendermint/tendermint/crypto"
+	"github.com/cosmos/cosmos-sdk/server"
+	"github.com/cosmos/cosmos-sdk/testutil/mock"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 
+	dbm "github.com/cometbft/cometbft-db"
+	abci "github.com/cometbft/cometbft/abci/types"
+	"github.com/cometbft/cometbft/libs/log"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	tmtypes "github.com/cometbft/cometbft/types"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
-	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmtypes "github.com/tendermint/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
 
 	gaiaapp "github.com/cosmos/gaia/v10/app"
 )
 
-// SimAppChainID hardcoded chainID for simulation
-const (
-	SimAppChainID = "gaia-app"
-)
-
 // DefaultConsensusParams defines the default Tendermint consensus params used
 // in GaiaApp testing.
-var DefaultConsensusParams = &abci.ConsensusParams{
-	Block: &abci.BlockParams{
+var DefaultConsensusParams = &tmproto.ConsensusParams{
+	Block: &tmproto.BlockParams{
 		MaxBytes: 200000,
 		MaxGas:   2000000,
 	},
@@ -53,15 +49,6 @@ type PV struct {
 	PrivKey cryptotypes.PrivKey
 }
 
-func NewPV() PV {
-	return PV{ed25519.GenPrivKey()}
-}
-
-// GetPubKey implements PrivValidator interface
-func (pv PV) GetPubKey() (crypto.PubKey, error) {
-	return cryptocodec.ToTmPubKeyInterface(pv.PrivKey.PubKey())
-}
-
 type EmptyAppOptions struct{}
 
 func (EmptyAppOptions) Get(_ string) interface{} { return nil }
@@ -69,7 +56,7 @@ func (EmptyAppOptions) Get(_ string) interface{} { return nil }
 func Setup(t *testing.T) *gaiaapp.GaiaApp {
 	t.Helper()
 
-	privVal := NewPV()
+	privVal := mock.NewPV()
 	pubKey, err := privVal.GetPubKey()
 	require.NoError(t, err)
 	// create validator set with single validator
@@ -77,7 +64,7 @@ func Setup(t *testing.T) *gaiaapp.GaiaApp {
 	valSet := tmtypes.NewValidatorSet([]*tmtypes.Validator{validator})
 
 	// generate genesis account
-	senderPrivKey := NewPV()
+	senderPrivKey := mock.NewPV()
 	senderPubKey := senderPrivKey.PrivKey.PubKey()
 
 	acc := authtypes.NewBaseAccount(senderPubKey.Address().Bytes(), senderPubKey, 0, 0)
@@ -127,8 +114,12 @@ func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs 
 
 func setup() (*gaiaapp.GaiaApp, gaiaapp.GenesisState) {
 	db := dbm.NewMemDB()
-	encCdc := gaiaapp.MakeTestEncodingConfig()
-	var invCheckPeriod uint = 5
+	appOptions := make(simtestutil.AppOptionsMap, 0)
+	appOptions[server.FlagInvCheckPeriod] = 5
+	appOptions[server.FlagMinGasPrices] = "0uatom"
+
+	encConfig := gaiaapp.RegisterEncodingConfig()
+
 	gaiaApp := gaiaapp.NewGaiaApp(
 		log.NewNopLogger(),
 		db,
@@ -136,11 +127,10 @@ func setup() (*gaiaapp.GaiaApp, gaiaapp.GenesisState) {
 		true,
 		map[int64]bool{},
 		gaiaapp.DefaultNodeHome,
-		invCheckPeriod,
-		encCdc,
-		EmptyAppOptions{},
+		encConfig,
+		appOptions,
 	)
-	return gaiaApp, gaiaapp.NewDefaultGenesisState()
+	return gaiaApp, gaiaapp.NewDefaultGenesisState(encConfig)
 }
 
 func genesisStateWithValSet(t *testing.T,
@@ -202,7 +192,7 @@ func genesisStateWithValSet(t *testing.T,
 	})
 
 	// update total supply
-	bankGenesis := banktypes.NewGenesisState(banktypes.DefaultGenesisState().Params, balances, totalSupply, []banktypes.Metadata{})
+	bankGenesis := banktypes.NewGenesisState(banktypes.DefaultGenesisState().Params, balances, totalSupply, []banktypes.Metadata{}, []banktypes.SendEnabled{})
 	genesisState[banktypes.ModuleName] = app.AppCodec().MustMarshalJSON(bankGenesis)
 
 	return genesisState

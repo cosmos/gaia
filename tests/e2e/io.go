@@ -7,7 +7,7 @@ import (
 )
 
 // copyFile copy file from src to dst
-func copyFile(src, dst string) (int64, error) { //nolint:unparam
+func copyFile(src, dst string) (int64, error) {
 	sourceFileStat, err := os.Stat(src)
 	if err != nil {
 		return 0, err

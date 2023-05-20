@@ -1,14 +1,13 @@
 package gaia
 
+// TODO: Enable with ICS
 import (
 	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
-	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
+	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 	ibcstakinginterface "github.com/cosmos/interchain-security/legacy_ibc_testing/core"
-	"github.com/cosmos/interchain-security/testutil/e2e"
+	ics "github.com/cosmos/interchain-security/testutil/integration"
 	ibcproviderkeeper "github.com/cosmos/interchain-security/x/ccv/provider/keeper"
 )
-
-// ProviderApp interface implementations for e2e tests
 
 // GetProviderKeeper implements the ProviderApp interface.
 func (app *GaiaApp) GetProviderKeeper() ibcproviderkeeper.Keeper { //nolint:nolintlint
@@ -31,21 +30,21 @@ func (app *GaiaApp) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper { //nolin
 }
 
 // GetE2eStakingKeeper implements the ProviderApp interface.
-func (app *GaiaApp) GetE2eStakingKeeper() e2e.E2eStakingKeeper { //nolint:nolintlint
+func (app *GaiaApp) GetTestStakingKeeper() ics.TestStakingKeeper { //nolint:nolintlint
 	return app.StakingKeeper
 }
 
 // GetE2eBankKeeper implements the ProviderApp interface.
-func (app *GaiaApp) GetE2eBankKeeper() e2e.E2eBankKeeper { //nolint:nolintlint
+func (app *GaiaApp) GetTestBankKeeper() ics.TestBankKeeper { //nolint:nolintlint
 	return app.BankKeeper
 }
 
 // GetE2eSlashingKeeper implements the ProviderApp interface.
-func (app *GaiaApp) GetE2eSlashingKeeper() e2e.E2eSlashingKeeper { //nolint:nolintlint
+func (app *GaiaApp) GetTestSlashingKeeper() ics.TestSlashingKeeper { //nolint:nolintlint
 	return app.SlashingKeeper
 }
 
 // GetE2eDistributionKeeper implements the ProviderApp interface.
-func (app *GaiaApp) GetE2eDistributionKeeper() e2e.E2eDistributionKeeper { //nolint:nolintlint
+func (app *GaiaApp) GetTestDistributionKeeper() ics.TestDistributionKeeper { //nolint:nolintlint
 	return app.DistrKeeper
 }

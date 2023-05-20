@@ -1,3 +1,5 @@
+//go:build upgrade_v8
+
 package v8
 
 import (

@@ -1,3 +1,5 @@
+//go:build upgrade_v7
+
 package v7
 
 import (

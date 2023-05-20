@@ -6,15 +6,16 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 )
 
-// MakeTestEncodingConfig creates an EncodingConfig for an amino based test configuration.
-func MakeTestEncodingConfig() EncodingConfig {
+// EncodingConfig specifies the concrete encoding types to use for a given app.
+// This is provided for compatibility between protobuf and amino implementations.
+func MakeEncodingConfig() EncodingConfig {
 	amino := codec.NewLegacyAmino()
 	interfaceRegistry := codectypes.NewInterfaceRegistry()
 	cdc := codec.NewProtoCodec(interfaceRegistry)
 	txCfg := tx.NewTxConfig(cdc, tx.DefaultSignModes)
 	return EncodingConfig{
 		InterfaceRegistry: interfaceRegistry,
-		Codec:             cdc,
+		Marshaler:         cdc,
 		TxConfig:          txCfg,
 		Amino:             amino,
 	}

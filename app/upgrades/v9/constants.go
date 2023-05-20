@@ -1,3 +1,5 @@
+//go:build upgrade_v9
+
 package v9
 
 import (

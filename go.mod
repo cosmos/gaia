@@ -3,7 +3,7 @@ module github.com/cosmos/gaia/v10
 go 1.20
 
 require (
-	cosmossdk.io/math v1.0.0
+	cosmossdk.io/math v1.0.1
 	github.com/cosmos/cosmos-sdk v0.45.16-ics
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/ibc-go/v4 v4.4.0

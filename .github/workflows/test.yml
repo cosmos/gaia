@@ -148,16 +148,16 @@ jobs:
       - name: Start GaiaV10
         run: |
           go env GOPATH
-          ./contrib/scripts/run-gaia-v10.sh
+          ./contrib/scripts/upgrade_test_scripts/v11/run_gaia_v10.sh
         if: env.GIT_DIFF
       - name: Submit Upgrade Commands
         run: |
-          ./contrib/scripts/run-upgrade-commands-v11.sh 15
+          ./contrib/scripts/upgrade_test_scripts/v11/run_upgrade_commands_v11.sh 15
         if: env.GIT_DIFF
       - name: Check for successful upgrade
         run: |
-          ./contrib/scripts/test_upgrade.sh 20 5 16 localhost
+          ./contrib/scripts/upgrade_test_scripts/test_upgrade.sh 20 5 16 localhost
         if: env.GIT_DIFF
       - name: Check for successful migration
         run: |
-          ./contrib/scripts/test_migration.sh localhost
+          ./contrib/scripts/upgrade_test_scripts/v11/test_migration_v11.sh localhost

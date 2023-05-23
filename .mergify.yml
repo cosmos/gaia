@@ -51,3 +51,13 @@ pull_request_rules:
       backport:
         branches:
           - release/v10.0.x
+
+  - name: Feature branch for SDK v0.47 & IBC v7 upgrade
+    conditions:
+      - "#approved-reviews-by>=1"
+      - base=main
+      - label=A:backport/sdk-47-ibc-7
+    actions:
+      backport:
+        branches:
+          - feat/sdk-47-ibc-7

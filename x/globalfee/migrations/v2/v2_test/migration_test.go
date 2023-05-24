@@ -41,8 +41,9 @@ func TestMigrateStore(t *testing.T) {
 		memStoreKey,
 		paramtypes.ModuleName,
 	)
+
 	// register the subspace with the v11 paramKeyTable
-	newSubspace.WithKeyTable(globalfeetypes.ParamKeyTable())
+	newSubspace = newSubspace.WithKeyTable(globalfeetypes.ParamKeyTable())
 
 	// check MinGasPrices isn't set
 	_, ok := getMinGasPrice(newSubspace, ctx)

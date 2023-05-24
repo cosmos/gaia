@@ -28,7 +28,7 @@ func MigrateStore(ctx sdk.Context, globalfeeSubspace paramtypes.Subspace) error 
 	}
 
 	if !globalfeeSubspace.HasKeyTable() {
-		globalfeeSubspace.WithKeyTable(types.ParamKeyTable())
+		globalfeeSubspace = globalfeeSubspace.WithKeyTable(types.ParamKeyTable())
 	}
 
 	globalfeeSubspace.SetParamSet(ctx, &params)

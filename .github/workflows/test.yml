@@ -127,14 +127,11 @@ jobs:
           go-version: 1.20.x
       - name: Install GaiaV10
         run: |
-          git checkout v10.0.0-rc0
+          git checkout v10.0.0
           make build
           cp ./build/gaiad ./build/gaiad10
           go clean -modcache
         if: env.GIT_DIFF
-      - uses: actions/setup-go@v4
-        with:
-          go-version: 1.20.x
       - name: Install GaiaV11
         run: |
           git checkout -

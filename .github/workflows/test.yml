@@ -158,3 +158,10 @@ jobs:
         run: |
           ./contrib/scripts/test_upgrade.sh 20 5 16 localhost
         if: env.GIT_DIFF
+<<<<<<< HEAD
+=======
+      - name: Check for successful migration
+        run: |
+          ./contrib/scripts/test_migration.sh localhost
+        if: env.GIT_DIFF
+>>>>>>> 8743072 (fix: debug upgrade tests in gh actions (#2531))

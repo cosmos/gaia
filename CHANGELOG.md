@@ -57,6 +57,10 @@ Update the CI upgrade tests from v9 to the v10 and check that the parameters are
   * Bump [CometBFT](https://github.com/cometbft/cometbft) to [v0.34.28](https://github.com/cometbft/cometbft/releases/tag/v0.34.28).
 * (gaia) Bump Golang prerequisite from 1.18 to 1.20. See (https://go.dev/blog/go1.20) for details.
 
+## [v9.1.1] - 2023-05-25
+
+* (deps) [#2542](https://github.com/cosmos/gaia/pull/2542) Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.2.1](https://github.com/cosmos/ibc-go/releases/tag/v4.2.1).
+
 ## [v9.1.0] - 2023-05-08
 
 * (fix) [#2474](https://github.com/cosmos/gaia/pull/2474) Multisig and distribution fix in [Interchain-Security](https://github.com/cosmos/interchain-security). Bump Interchain-Security to [v1.1.0-multiden](https://github.com/cosmos/interchain-security/tree/v1.1.0-multiden).
@@ -538,6 +542,7 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 <!-- Release links -->
 
 [v10.0.0]: https://github.com/cosmos/gaia/releases/tag/v10.0.0
+[v9.1.1]: https://github.com/cosmos/gaia/releases/tag/v9.1.1
 [v9.1.0]: https://github.com/cosmos/gaia/releases/tag/v9.1.0
 [v9.0.3]: https://github.com/cosmos/gaia/releases/tag/v9.0.3
 [v9.0.2]: https://github.com/cosmos/gaia/releases/tag/v9.0.2

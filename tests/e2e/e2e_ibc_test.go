@@ -5,18 +5,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
-	"os"
-	"path"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 )
 
@@ -32,102 +26,6 @@ type ForwardMetadata struct {
 
 type PacketMetadata struct {
 	Forward *ForwardMetadata `json:"forward"`
-}
-
-func (s *IntegrationTestSuite) runIBCRelayer() {
-	s.T().Log("starting Hermes relayer container...")
-
-	tmpDir, err := os.MkdirTemp("", "gaia-e2e-testnet-hermes-")
-	s.Require().NoError(err)
-	s.tmpDirs = append(s.tmpDirs, tmpDir)
-
-	gaiaAVal := s.chainA.validators[0]
-	gaiaBVal := s.chainB.validators[0]
-
-	gaiaARly := s.chainA.genesisAccounts[relayerAccountIndex]
-	gaiaBRly := s.chainB.genesisAccounts[relayerAccountIndex]
-
-	hermesCfgPath := path.Join(tmpDir, "hermes")
-
-	s.Require().NoError(os.MkdirAll(hermesCfgPath, 0o755))
-	_, err = copyFile(
-		filepath.Join("./scripts/", "hermes_bootstrap.sh"),
-		filepath.Join(hermesCfgPath, "hermes_bootstrap.sh"),
-	)
-	s.Require().NoError(err)
-
-	s.hermesResource, err = s.dkrPool.RunWithOptions(
-		&dockertest.RunOptions{
-			Name:       fmt.Sprintf("%s-%s-relayer", s.chainA.id, s.chainB.id),
-			Repository: "ghcr.io/cosmos/hermes-e2e",
-			Tag:        "1.0.0",
-			NetworkID:  s.dkrNet.Network.ID,
-			Mounts: []string{
-				fmt.Sprintf("%s/:/root/hermes", hermesCfgPath),
-			},
-			PortBindings: map[docker.Port][]docker.PortBinding{
-				"3031/tcp": {{HostIP: "", HostPort: "3031"}},
-			},
-			Env: []string{
-				fmt.Sprintf("GAIA_A_E2E_CHAIN_ID=%s", s.chainA.id),
-				fmt.Sprintf("GAIA_B_E2E_CHAIN_ID=%s", s.chainB.id),
-				fmt.Sprintf("GAIA_A_E2E_VAL_MNEMONIC=%s", gaiaAVal.mnemonic),
-				fmt.Sprintf("GAIA_B_E2E_VAL_MNEMONIC=%s", gaiaBVal.mnemonic),
-				fmt.Sprintf("GAIA_A_E2E_RLY_MNEMONIC=%s", gaiaARly.mnemonic),
-				fmt.Sprintf("GAIA_B_E2E_RLY_MNEMONIC=%s", gaiaBRly.mnemonic),
-				fmt.Sprintf("GAIA_A_E2E_VAL_HOST=%s", s.valResources[s.chainA.id][0].Container.Name[1:]),
-				fmt.Sprintf("GAIA_B_E2E_VAL_HOST=%s", s.valResources[s.chainB.id][0].Container.Name[1:]),
-			},
-			Entrypoint: []string{
-				"sh",
-				"-c",
-				"chmod +x /root/hermes/hermes_bootstrap.sh && /root/hermes/hermes_bootstrap.sh",
-			},
-		},
-		noRestart,
-	)
-	s.Require().NoError(err)
-
-	endpoint := fmt.Sprintf("http://%s/state", s.hermesResource.GetHostPort("3031/tcp"))
-	s.Require().Eventually(
-		func() bool {
-			resp, err := http.Get(endpoint) //nolint:gosec // this is a test
-			if err != nil {
-				return false
-			}
-
-			defer resp.Body.Close()
-
-			bz, err := io.ReadAll(resp.Body)
-			if err != nil {
-				return false
-			}
-
-			var respBody map[string]interface{}
-			if err := json.Unmarshal(bz, &respBody); err != nil {
-				return false
-			}
-
-			status := respBody["status"].(string)
-			result := respBody["result"].(map[string]interface{})
-
-			return status == "success" && len(result["chains"].([]interface{})) == 2
-		},
-		5*time.Minute,
-		time.Second,
-		"hermes relayer not healthy",
-	)
-
-	s.T().Logf("started Hermes relayer container: %s", s.hermesResource.Container.ID)
-
-	// XXX: Give time to both networks to start, otherwise we might see gRPC
-	// transport errors.
-	time.Sleep(10 * time.Second)
-
-	// create the client, connection and channel between the two Gaia chains
-	s.createConnection()
-	time.Sleep(10 * time.Second)
-	s.createChannel()
 }
 
 func (s *IntegrationTestSuite) sendIBC(c *chain, valIdx int, sender, recipient, token, fees, note string) {
@@ -158,6 +56,99 @@ func (s *IntegrationTestSuite) sendIBC(c *chain, valIdx int, sender, recipient, 
 	s.T().Log("successfully sent IBC tokens")
 }
 
+func (s *IntegrationTestSuite) hermesTransfer(configPath, srcChainID, dstChainID, srcChannelID, denom string, sendAmt, timeOutOffset, numMsg int) bool {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	hermesCmd := []string{
+		hermesBinary,
+		fmt.Sprintf("--config=%s", configPath),
+		"tx",
+		"ft-transfer",
+		fmt.Sprintf("--dst-chain=%s", dstChainID),
+		fmt.Sprintf("--src-chain=%s", srcChainID),
+		fmt.Sprintf("--src-channel=%s", srcChannelID),
+		fmt.Sprintf("--src-port=%s", "transfer"),
+		fmt.Sprintf("--amount=%v", sendAmt),
+		fmt.Sprintf("--denom=%s", denom),
+		fmt.Sprintf("--timeout-height-offset=%v", timeOutOffset),
+		fmt.Sprintf("--number-msgs=%v", numMsg),
+	}
+
+	stdout, stderr := s.executeHermesCommand(ctx, hermesCmd)
+	if strings.Contains(stdout, "ERROR") || strings.Contains(stderr, "ERROR") {
+		return false
+	}
+
+	return true
+}
+
+func (s *IntegrationTestSuite) hermesClearPacket(configPath, chainID, channelID string) bool {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	hermesCmd := []string{
+		hermesBinary,
+		fmt.Sprintf("--config=%s", configPath),
+		"clear",
+		"packets",
+		fmt.Sprintf("--chain=%s", chainID),
+		fmt.Sprintf("--channel=%s", channelID),
+		fmt.Sprintf("--port=%s", "transfer"),
+	}
+
+	stdout, stderr := s.executeHermesCommand(ctx, hermesCmd)
+	if strings.Contains(stdout, "ERROR") || strings.Contains(stderr, "ERROR") {
+		return false
+	}
+
+	return true
+}
+
+func (s *IntegrationTestSuite) hermesPendingPackets(configPath, chainID, channelID string) bool {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+	hermesCmd := []string{
+		hermesBinary,
+		fmt.Sprintf("--config=%s", configPath),
+		"query",
+		"packet",
+		"pending",
+		fmt.Sprintf("--chain=%s", chainID),
+		fmt.Sprintf("--channel=%s", channelID),
+		fmt.Sprintf("--port=%s", "transfer"),
+	}
+
+	stdout, stderr := s.executeHermesCommand(ctx, hermesCmd)
+	fmt.Println("stdout pending packets:", stdout)
+	fmt.Println("stderr pending packets:", stderr)
+
+	// "start: Sequence" is the pending packets sequence
+	if strings.Contains(stdout, "Sequence") {
+		return true
+	}
+
+	return false
+}
+
+func (s *IntegrationTestSuite) queryRelayerWalletsBalances() (sdk.Coin, sdk.Coin) {
+	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	scrRelayerBalance, err := getSpecificBalance(
+		chainAAPIEndpoint,
+		s.chainA.genesisAccounts[relayerAccountIndexHermes1].keyInfo.GetAddress().String(),
+		uatomDenom)
+	s.Require().NoError(err)
+
+	chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
+	dstRelayerBalance, err := getSpecificBalance(
+		chainBAPIEndpoint,
+		s.chainB.genesisAccounts[relayerAccountIndexHermes1].keyInfo.GetAddress().String(),
+		uatomDenom)
+	s.Require().NoError(err)
+
+	return scrRelayerBalance, dstRelayerBalance
+}
+
 func (s *IntegrationTestSuite) createConnection() {
 	s.T().Logf("connecting %s and %s chains via IBC", s.chainA.id, s.chainB.id)
 
@@ -168,7 +159,7 @@ func (s *IntegrationTestSuite) createConnection() {
 		Context:      ctx,
 		AttachStdout: true,
 		AttachStderr: true,
-		Container:    s.hermesResource.Container.ID,
+		Container:    s.hermesResource0.Container.ID,
 		User:         "root",
 		Cmd: []string{
 			"hermes",
@@ -211,7 +202,7 @@ func (s *IntegrationTestSuite) createChannel() {
 		Context:      ctx,
 		AttachStdout: true,
 		AttachStderr: true,
-		Container:    s.hermesResource.Container.ID,
+		Container:    s.hermesResource0.Container.ID,
 		User:         "root",
 		Cmd: []string{
 			"hermes",
@@ -249,7 +240,7 @@ func (s *IntegrationTestSuite) createChannel() {
 }
 
 func (s *IntegrationTestSuite) testIBCTokenTransfer() {
-	time.Sleep(30 * time.Second)
+	//	time.Sleep(30 * time.Second)
 	s.Run("send_uatom_to_chainB", func() {
 		// require the recipient account receives the IBC tokens (IBC packets ACKd)
 		var (

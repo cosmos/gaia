@@ -90,12 +90,12 @@ func (s *IntegrationTestSuite) TestIBC() {
 		s.T().Skip()
 	}
 	s.testIBCTokenTransfer()
-	//s.testMultihopIBCTokenTransfer()
-	//s.testFailedMultihopIBCTokenTransfer()
+	s.testMultihopIBCTokenTransfer()
+	s.testFailedMultihopIBCTokenTransfer()
 
 	// stop hermes0 to prevent hermes0 relaying transactions
 	s.Require().NoError(s.dkrPool.Purge(s.hermesResource0))
-
+	HermesResource0Purged = true
 	s.testIBCBypassMsg()
 }
 

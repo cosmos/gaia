@@ -80,14 +80,15 @@ const (
 )
 
 var (
-	gaiaConfigPath    = filepath.Join(gaiaHomePath, "config")
-	stakingAmount     = sdk.NewInt(100000000000)
-	stakingAmountCoin = sdk.NewCoin(uatomDenom, stakingAmount)
-	tokenAmount       = sdk.NewCoin(uatomDenom, sdk.NewInt(3300000000)) // 3,300uatom
-	standardFees      = sdk.NewCoin(uatomDenom, sdk.NewInt(330000))     // 0.33uatom
-	depositAmount     = sdk.NewCoin(uatomDenom, sdk.NewInt(330000000))  // 3,300uatom
-	distModuleAddress = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
-	proposalCounter   = 0
+	gaiaConfigPath        = filepath.Join(gaiaHomePath, "config")
+	stakingAmount         = sdk.NewInt(100000000000)
+	stakingAmountCoin     = sdk.NewCoin(uatomDenom, stakingAmount)
+	tokenAmount           = sdk.NewCoin(uatomDenom, sdk.NewInt(3300000000)) // 3,300uatom
+	standardFees          = sdk.NewCoin(uatomDenom, sdk.NewInt(330000))     // 0.33uatom
+	depositAmount         = sdk.NewCoin(uatomDenom, sdk.NewInt(330000000))  // 3,300uatom
+	distModuleAddress     = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
+	proposalCounter       = 0
+	HermesResource0Purged = false
 )
 
 type IntegrationTestSuite struct {
@@ -176,9 +177,12 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 
 	s.T().Log("tearing down e2e integration test suite...")
 
-	if runIBCTest {
-		// s.hermesResource0 already purged in TestIBC()
-		s.Require().NoError(s.dkrPool.Purge(s.hermesResource1))
+	s.Require().NoError(s.dkrPool.Purge(s.hermesResource1))
+	// if runIBCTest, s.hermesResource0 already purged in TestIBC()
+	// in GovSoftwareUpgrade test, s.TearDownSuite() then s.SetupSuite()
+	// if IBCTest runs before GovSoftwareUpgrade, s.hermesResource0 is already purged.
+	if !HermesResource0Purged {
+		s.Require().NoError(s.dkrPool.Purge(s.hermesResource0))
 	}
 
 	for _, vr := range s.valResources {

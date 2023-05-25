@@ -617,6 +617,35 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 	}
 }
 
+func (s *IntegrationTestSuite) executeHermesCommand(ctx context.Context, hermesCmd []string) (string, string) {
+	var (
+		outBuf bytes.Buffer
+		errBuf bytes.Buffer
+	)
+	exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
+		Context:      ctx,
+		AttachStdout: true,
+		AttachStderr: true,
+		Container:    s.hermesResource1.Container.ID,
+		User:         "root",
+		Cmd:          hermesCmd,
+	})
+	s.Require().NoError(err)
+
+	err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
+		Context:      ctx,
+		Detach:       false,
+		OutputStream: &outBuf,
+		ErrorStream:  &errBuf,
+	})
+	s.Require().NoError(err)
+
+	stdOut := outBuf.Bytes()
+	stdErr := errBuf.Bytes()
+
+	return string(stdOut), string(stdErr)
+}
+
 func (s *IntegrationTestSuite) expectErrExecValidation(chain *chain, valIdx int, expectErr bool) func([]byte, []byte) bool {
 	return func(stdOut []byte, stdErr []byte) bool {
 		var txResp sdk.TxResponse

@@ -36,7 +36,9 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
-* (deps) [#2542](https://github.com/cosmos/gaia/pull/2542 )Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.2.1](https://github.com/cosmos/ibc-go/releases/tag/v4.2.1).
+## [v9.1.1] - 2023-05-25
+
+* (deps) [#2542](https://github.com/cosmos/gaia/pull/2542) Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.2.1](https://github.com/cosmos/ibc-go/releases/tag/v4.2.1).
 
 ## [v9.1.0] - 2023-05-08
 
@@ -94,7 +96,8 @@ sdk/releases/tag/v0.45.15-ics) and migrate to [CometBFT](https://github.com/come
 [CHANGELOG of previous versions](https://github.com/cosmos/gaia/blob/main/CHANGELOG.md)
 
 <!-- Release links -->
-[Unreleased]: https://github.com/cosmos/gaia/compare/v9.1.0...release/v9.1.x
+[Unreleased]: https://github.com/cosmos/gaia/compare/v9.1.1...release/v9.1.x
+[v9.1.1]: https://github.com/cosmos/gaia/releases/tag/v9.1.1
 [v9.1.0]: https://github.com/cosmos/gaia/releases/tag/v9.1.0
 [v9.0.3]: https://github.com/cosmos/gaia/releases/tag/v9.0.3
 [v9.0.2]: https://github.com/cosmos/gaia/releases/tag/v9.0.2

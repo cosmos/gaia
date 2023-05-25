@@ -119,10 +119,7 @@ func (s *IntegrationTestSuite) hermesPendingPackets(configPath, chainID, channel
 		fmt.Sprintf("--port=%s", "transfer"),
 	}
 
-	stdout, stderr := s.executeHermesCommand(ctx, hermesCmd)
-	fmt.Println("stdout pending packets:", stdout)
-	fmt.Println("stderr pending packets:", stderr)
-
+	stdout, _ := s.executeHermesCommand(ctx, hermesCmd)
 	// "start: Sequence" is the pending packets sequence
 	if strings.Contains(stdout, "Sequence") {
 		return true

@@ -36,6 +36,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+* (deps) [#2542](https://github.com/cosmos/gaia/pull/2542 )Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.2.1](https://github.com/cosmos/ibc-go/releases/tag/v4.2.1).
+
 ## [v9.1.0] - 2023-05-08
 
 * (fix) [#2474](https://github.com/cosmos/gaia/pull/2474) Multisig and distribution fix in [Interchain-Security](https://github.com/cosmos/interchain-security). Bump Interchain-Security to [v1.1.0-multiden](https://github.com/cosmos/interchain-security/tree/v1.1.0-multiden).

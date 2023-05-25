@@ -36,6 +36,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+* (deps) [#2543](https://github.com/cosmos/gaia/pull/2543) Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.4.1](https://github.com/cosmos/ibc-go/releases/tag/v4.4.1).
+
 ### Improvements
 * (test) [#2440](https://github.com/cosmos/gaia/pull/2440) Add vulncheck to nightly builds
 * (gaia) [#2442](https://github.com/cosmos/gaia/pull/2442) Bump [Interchain-Security](https://github.com/cosmos/interchain-security) to [v1.1.1](https://github.com/cosmos/interchain-security/tree/v1.1.1).

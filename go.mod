@@ -6,7 +6,7 @@ require (
 	cosmossdk.io/math v1.0.1
 	github.com/cosmos/cosmos-sdk v0.45.16-ics
 	github.com/cosmos/go-bip39 v1.0.0
-	github.com/cosmos/ibc-go/v4 v4.4.0
+	github.com/cosmos/ibc-go/v4 v4.4.1
 	github.com/cosmos/interchain-security v1.1.1
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.3

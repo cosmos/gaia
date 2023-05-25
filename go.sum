@@ -637,6 +637,7 @@ github.com/cosmos/cosmos-sdk v0.47.2/go.mod h1:zYzgI8w8hhotXTSoGbbSOAKfpJTx4wOy4
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d/go.mod h1:tSxLoYXyBmiFeKpvmq4dzayMdCjCnu8uqmCysIGBT2Y=
 github.com/cosmos/go-bip39 v1.0.0 h1:pcomnQdrdH22njcAatO0yWojsUnCO3y2tNoV1cb6hHY=
 github.com/cosmos/go-bip39 v1.0.0/go.mod h1:RNJv0H/pOIVgxw6KS7QeX2a0Uo0aKUlfhZ4xuwvCdJw=
+<<<<<<< HEAD
 github.com/cosmos/gogogateway v1.2.0 h1:Ae/OivNhp8DqBi/sh2A8a1D0y638GpL3tkmLQAiKxTE=
 github.com/cosmos/gogogateway v1.2.0/go.mod h1:iQpLkGWxYcnCdz5iAdLcRBSw3h7NXeOkZ4GUkT+tbFI=
 github.com/cosmos/gogoproto v1.4.2/go.mod h1:cLxOsn1ljAHSV527CHOtaIP91kK6cCrZETRBrkzItWU=
@@ -650,6 +651,16 @@ github.com/cosmos/ics23/go v0.10.0 h1:iXqLLgp2Lp+EdpIuwXTYIQU+AiHj9mOC2X9ab++bZD
 github.com/cosmos/ics23/go v0.10.0/go.mod h1:ZfJSmng/TBNTBkFemHHHj5YY7VAU/MBU980F4VU1NG0=
 github.com/cosmos/interchain-security v1.0.1-0.20230522154154-1bb8d39e691a h1:3C4R9urEspX6rZGM5LDePJ8v3BsxQLAHteuqPxckRp8=
 github.com/cosmos/interchain-security v1.0.1-0.20230522154154-1bb8d39e691a/go.mod h1:U+0tyC7GQKg4s16Aj2KORdINXkCfm3b3h2ZO85r9bt0=
+=======
+github.com/cosmos/gorocksdb v1.2.0 h1:d0l3jJG8M4hBouIZq0mDUHZ+zjOx044J3nGRskwTb4Y=
+github.com/cosmos/gorocksdb v1.2.0/go.mod h1:aaKvKItm514hKfNJpUJXnnOWeBnk2GL4+Qw9NHizILw=
+github.com/cosmos/iavl v0.19.5 h1:rGA3hOrgNxgRM5wYcSCxgQBap7fW82WZgY78V9po/iY=
+github.com/cosmos/iavl v0.19.5/go.mod h1:X9PKD3J0iFxdmgNLa7b2LYWdsGd90ToV5cAONApkEPw=
+github.com/cosmos/ibc-go/v4 v4.4.1 h1:pHPLEpQStGuHZe5J17WvG7w0VGwTmfsoAHrs45+vPfw=
+github.com/cosmos/ibc-go/v4 v4.4.1/go.mod h1:UkKEQAPWckLuomhqG8XzeE5nWQPdiEYF8EIDWXBKSXA=
+github.com/cosmos/interchain-security v1.1.1 h1:UxtBxMVw0Lj/zye/kiM2Vm6rQiDE00tQ5CHPjbmx2b4=
+github.com/cosmos/interchain-security v1.1.1/go.mod h1:nXf1iZoUTU+huyOT0UyNoJ68/tS69bThdOarSDVMlJ8=
+>>>>>>> eb6980e04 (deps: bump IBC to v4.4.1 (#2543))
 github.com/cosmos/keyring v1.2.0 h1:8C1lBP9xhImmIabyXW4c3vFjjLiBdGCmfLUfeZlV1Yo=
 github.com/cosmos/keyring v1.2.0/go.mod h1:fc+wB5KTk9wQ9sDx0kFXB3A0MaeGHM9AwRStKOQ5vOA=
 github.com/cosmos/ledger-cosmos-go v0.12.2 h1:/XYaBlE2BJxtvpkHiBm97gFGSGmYGKunKyF3nNqAXZA=

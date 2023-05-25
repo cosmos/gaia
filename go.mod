@@ -4,16 +4,18 @@ go 1.20
 
 require (
 	cosmossdk.io/api v0.3.1
-	cosmossdk.io/math v1.0.0
 	cosmossdk.io/simapp v0.0.0-20230224204036-a6adb0821462
 	cosmossdk.io/tools/rosetta v0.2.1
 	github.com/cometbft/cometbft v0.37.1
 	github.com/cometbft/cometbft-db v0.8.0
 	github.com/cosmos/cosmos-sdk v0.47.2
-	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gogoproto v1.4.8
 	github.com/cosmos/ibc-go/v7 v7.0.0
 	github.com/cosmos/interchain-security v1.0.1-0.20230522154154-1bb8d39e691a
+	cosmossdk.io/math v1.0.1
+	github.com/cosmos/go-bip39 v1.0.0
+	github.com/cosmos/interchain-security v1.1.1
+	github.com/golang/protobuf v1.5.3
 	github.com/golangci/golangci-lint v1.52.2
 	github.com/gorilla/mux v1.8.0
 	github.com/rakyll/statik v0.1.7

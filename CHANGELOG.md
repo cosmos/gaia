@@ -36,6 +36,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+## [v10.0.0] 2023-05-25
+
+* (deps) [#2543](https://github.com/cosmos/gaia/pull/2543) Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.4.1](https://github.com/cosmos/ibc-go/releases/tag/v4.4.1).
+
 ## [v10.0.0] 2023-05-19
 
 * (deps) [#2498](https://github.com/cosmos/gaia/pull/2498) Bump multiple dependencies. 
@@ -49,5 +53,6 @@ Ref: https://keepachangelog.com/en/1.0.0/
 [CHANGELOG of previous versions](https://github.com/cosmos/gaia/blob/main/CHANGELOG.md)
 
 <!-- Release links -->
-[Unreleased]: https://github.com/cosmos/gaia/compare/v10.0.0...release/v10.0.x
+[Unreleased]: https://github.com/cosmos/gaia/compare/v10.0.1...release/v10.0.x
+[v10.0.1]: https://github.com/cosmos/gaia/releases/tag/v10.0.1
 [v10.0.0]: https://github.com/cosmos/gaia/releases/tag/v10.0.0

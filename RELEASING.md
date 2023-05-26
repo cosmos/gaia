@@ -6,6 +6,25 @@ We follow [Semver](https://semver.org/) in that any patch releases are non-break
 
 Each major release will have a release branch and patch releases will be tagged on this branch. No patched release has its own branch. (This branch strategy only applies to `v7` and later releases.)
 
+## Note:
+Always prefer creating tags using `git` from your local machine since all release tags should be signed and annotated.
+Using Github UI will create a `lightweight` tag, so it's possible that `gaiad version` returns a commit hash, instead of a tag.
+
+This is important because most operators build from source, and having incorrect information when you run `make install && gaiad version` raises confusion.
+
+**Example**
+Using `annotated` tag (created using `git tag -s v10.0.0 -m 'v10.0.0'`):
+```bash
+gaiad version
+# v10.0.0
+```
+
+Using `lightweight` tag (created using `git tag v10.0.0`) or Github UI:
+```bash
+gaiad version
+# HEAD-321d15a574def0f338ceacc5c060159ebba95edc
+```
+
 ## Long-Lived Version Branch Approach
 
 In the Gaia repo, there are two categories of long-lived branches:

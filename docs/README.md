@@ -25,7 +25,7 @@ Welcome to the documentation of the **Cosmos Hub application: `gaia`**.
 
 ## Setup Your Own `gaia` Testnet
 
-- [Setup your own `gaia` testnet](https://github.com/cosmos/testnets/tree/master/local/previous-local-testnets/theta)
+- [Setup your own `gaia` testnet](https://github.com/cosmos/testnets/tree/master/local/previous-local-testnets/v7-theta)
 
 ## Additional Resources
 

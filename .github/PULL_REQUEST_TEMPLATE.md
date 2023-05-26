@@ -2,7 +2,7 @@
 The default pull request template is for types feat, fix, or refactor.
 For other templates, add one of the following parameters to the url:
 - template=docs.md
-- template=other.md
+- template=others.md
 -->
 
 ## Description

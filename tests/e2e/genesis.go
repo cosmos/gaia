@@ -17,7 +17,7 @@ import (
 	icatypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 
-	globfeetypes "github.com/cosmos/gaia/v10/x/globalfee/types"
+	globfeetypes "github.com/cosmos/gaia/v11/x/globalfee/types"
 )
 
 func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {

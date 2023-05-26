@@ -9,8 +9,8 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	v2 "github.com/cosmos/gaia/v10/x/globalfee/migrations/v2"
-	globalfeetypes "github.com/cosmos/gaia/v10/x/globalfee/types"
+	v2 "github.com/cosmos/gaia/v11/x/globalfee/migrations/v2"
+	globalfeetypes "github.com/cosmos/gaia/v11/x/globalfee/types"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -41,7 +41,8 @@ func TestMigrateStore(t *testing.T) {
 		memStoreKey,
 		paramtypes.ModuleName,
 	)
-	// register the subspace with the v10 paramKeyTable
+
+	// register the subspace with the v11 paramKeyTable
 	newSubspace = newSubspace.WithKeyTable(globalfeetypes.ParamKeyTable())
 
 	// check MinGasPrices isn't set

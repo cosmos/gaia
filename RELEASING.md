@@ -29,6 +29,13 @@ Other feature/fix branches targeting at `main` contain commits preparing for the
 If the feature/fix branches are for a backport release, `main` branch already contains the commits for the next major release  `vn`, the feature/fix branch's PR should target at `Release/vn-1` rather than `main`.
 
 ## Release Procedure
+### Concept
+
+The release procedure always contains these steps:
+* prepare release branch and add `CHANGELOG.md` with relevant changes
+* create a tag (using git or Github UI)
+* wait for the automated release process to complete and upload artifacts
+* modify release notes if needed
 
 ### Checks and tests
 
@@ -45,128 +52,94 @@ For minor release. Merge or use mergify to merge the commits to `release/vn.0.x`
 
 Usually the first release on the `release/vn.0.x` is a release candidate.
 
+You can create releases using `git` CLI or using Github UI. When using Github UI, you will end up with 2 releases due to how release workflow is setup - simply delete the release that you do not need.
+
+
 #### example of releasing `v8.0.0-rc0`
 
 1. checkout `release/v8.0.x` off `main`
-1. get the `v8-prepare-branch` ready including CHANGELOG.md, create a PR to merge `v8-prepare-branch` to `main`, label this PR `A:backport/v8.0.x`.
-1. after merge  `v8-prepare-branch` to `main`, mergifybot will create a new PR of  `mergify/bp/release/v8.0.x` to `release/v8.0.x`. Check the PR, and merge this PR.
-1. checkout  `release/v8.0.x` and tag `v8.0.0-rc0`.
+2. create a PR against `main` with changes CHANGELOG.md if the CHANGELOG.md is not up-to-date on `release/v8.0.x`, label this PR `A:backport/v8.0.x`.
+3. mergifybot will create a new PR targeting `release/v8.0.x` with changes from 2. Check the PR, and merge it.
+4. checkout `release/v8.0.x` branch locally and tag it as `v8.0.0-rc0`.
 
 #### example of releasing `v8.0.0`
 
-1. get the `v800-prepare-branch` ready including CHANGELOG.md, create a PR to merge `v800-prepare-branch` to `main`, label this PR `A:backport/v8.0.x`.
-1. after merge  `v800-prepare-branch` to `main`, mergifybot will create a new PR of  `mergify/bp/release/v8.0.x` to `release/v8.0.x`. Check the PR, and merge this PR.
-1. checkout  `release/v8.0.x` and tag `v8.0.0`.
+1. create a PR against `main` with changes CHANGELOG.md if the CHANGELOG.md is not up-to-date on `release/v8.0.x`, label this PR `A:backport/v8.0.x`.
+2. mergifybot will create a new PR targeting `release/v8.0.x` with changes from 1. Check the PR, and merge it.
+3. checkout `release/v8.0.x` branch locally and tag it as `v8.0.0`.
 
 #### example of releasing `v8.0.1`
 
-1. get the `v801-prepare-branch`(off `main`) ready including CHANGELOG.md, create a PR to merge `v801-prepare-branch` to `main`, label this PR `A:backport/v8.0.x`.
-1. after merge  `v801-prepare-branch` to `main`, mergifybot will create a new PR of  `mergify/bp/release/v8.0.x` to `release/v8.0.x`. Check the PR, and merge this PR.
-1. checkout  `release/v8.0.x` and tag `v8.0.1`.
+1. create a PR against `main` with changes CHANGELOG.md if the CHANGELOG.md is not up-to-date on `release/v8.0.x`, label this PR `A:backport/v8.0.x`.
+2. mergifybot will create a new PR targeting `release/v8.0.x` with changes from 1. Check the PR, and merge it.
+3. checkout `release/v8.0.x` branch locally and tag it as `v8.0.0`.
 
 ### backport release
 
 For a backport release, checkout a new branch from the right release branch, for example, `release/vn-1.0.x`. Commits to this new branch and merge into `release/vn-1.0.x`, tag the backport version from `release/vn-1.0.x`.
-
-#### example of backport release `v7.0.5`
-
-assume main branch is at `v8`.
-
-1. checkout `v705-prepare-branch` off `release/v7.0.x`, get the backport changes ready including CHANGELOG.md on `v705-prepare-branch`.
-1. create a PR to merge `v705-prepare-branch` to `release/v7.0.x`, and merge.
-1. checkout `release/v7.0.x`  tag `v7.0.5`.
+Create the tag the same way as for regular releases.
 
 ### Test building artifacts
 
-Before tagging the version, please test the building releasing artifacts by
+Before tagging the version, please test the building releasing artifacts by running:
 
 ```bash
-make distclean build-reproducible
+TM_VERSION=$(go list -m github.com/tendermint/tendermint | sed 's:.* ::') goreleaser release --snapshot --clean --debug
 ```
 
-The above command will generate a directory
-`gaia/artifacts` with different os and architecture binaries. If the above command runs sucessfully, delete the directory `rm -r gaia/artifacts`.
+This step requires go-releaser. To install it follow [this link](https://goreleaser.com/install/).
 
 ### Tagging
 
-The following steps are the default for tagging a specific branch commit (usually on a branch labeled `release/vX.X.X`):
+The following steps are the default for tagging a specific branch commit using git on your local machine. Usually branches are labeled `release/vX.X.X`:
 
-1. Ensure you have checked out the commit you wish to tag
-1. `git pull --tags --dry-run`
-1. `git pull --tags`
-1. `git tag -s v3.0.1 -m 'Release v3.0.1'`
-   1. optional, add the `-s` tag to create a signed commit using your PGP key (which should be added to github beforehand)
-1. `git push --tags --dry-run`
-1. `git push --tags`
+Ensure you have checked out the commit you wish to tag and then do:
+```bash
+git pull --tags --dry-run
+git pull --tags
+# -s creates a signed commit using your PGP key (which should be added to github beforehand)
+git tag -s v3.0.1 -m 'Release v3.0.1'
+git push --tags --dry-run
+git push --tags
+```
 
 To re-create a tag:
+```bash
+git tag -d v4.0.0  # delete a tag locally
+git push --delete origin v4.0.0 # push the deletion to the remote
+```
 
-1. `git tag -d v4.0.0` to delete a tag locally
-1. `git push --delete origin v4.0.0`, to push the deletion to the remote
-1. Proceed with the above steps to create a tag
-
-To tag and build without a public release (e.g., as part of a timed security release):
-
-1. Follow the steps above for tagging locally, but do not push the tags to the repository.
-1. After adding the tag locally, you can build the binary, e.g., `make build-reproducible`.
-1. To finalize the release, push the local tags, create a release based off the newly pushed tag, and attach the binaries.
+Proceed with the above steps to create a tag
 
 ### Release notes
 
-Ensure you run the reproducible build in order to generate sha256 hashes and platform binaries;
-these artifacts should be included in the release.
+Release notes will be created using the `CHANGELOG.md` from the `release/v*` branch. Feel free to add any missing information the the release notes using Github UI.
 
-```bash
-make distclean build-reproducible
+With every release the `goreleaser` tool will create a file with all the build artifact checksums and upload it alongside the artifacts.
+The file is called `SHA256SUMS-{{.version}}.txt` and contains the following:
 ```
-
-This runs the docker image [tendermintdev/rbuilder](https://hub.docker.com/r/tendermintdev/rbuilder) with a copy of the [rbuilder](https://github.com/tendermint/images/tree/master/rbuilder) docker file.
-
-Then use the following release text template:
-
-```markdown
-# Gaia v4.0.0 Release Notes
-
-Note, that this specific release will be updated with a newer changelog, and the below hashes and binaries will also be updated.
-
-This release includes bug fixes for prop29, as well as additional support for IBC and Ledger signing.
-
-As there is a breaking change from Gaia v3, the Gaia module has been incremented to v4.
-
-See the [Cosmos SDK v0.41.0 Release](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.41.0) for details.
-
-```bash
-$ make distclean build-reproducible
-App: gaiad
-Version: 4.0.0
-Commit: 2bb04266266586468271c4ab322367acbf41188f
-Files:
- 2e801c7424ef67e6d9fc092c2b75c2d3  gaiad-4.0.0-darwin-amd64
- dc21eb861480e0f55af876f271b512fe  gaiad-4.0.0-linux-amd64
- bda165f91bc065afb8a445e72be9a868  gaiad-4.0.0-linux-arm64
- c7203d53bd596679b39b6a94d1dbe0dc  gaiad-4.0.0-windows-amd64.exe
- 81299b602e1760078e03c97813edda60  gaiad-4.0.0.tar.gz
-Checksums-Sha256:
- de764e52acc31dd98fa49d8d0eef851f3b7b53e4f1d4fbfda2c07b1a8b115b91  gaiad-4.0.0-darwin-amd64
- e5244ccd98a05479cc35753da1bb5b6bd873f6d8ebe6f8c5d112cf4d9e2761b4  gaiad-4.0.0-linux-amd64
- 7b7c4ea3e2de5f228436dcbb177455906239603b11eca1fb1015f33973d7b567  gaiad-4.0.0-linux-arm64
- b418c5f296ee6f946f44da8497af594c6ad0ece2b1da09a93a45d7d1b1457f27  gaiad-4.0.0-windows-amd64.exe
- 3895518436b74be8b042d7d0b868a60d03e1656e2556b12132be0f25bcb061ef  gaiad-4.0.0.tar.gz
+098b00ed78ca01456c388d7f1f22d09a93927d7a234429681071b45d94730a05  gaiad_0.0.4_windows_arm64.exe
+15b2b9146d99426a64c19d219234cd0fa725589c7dc84e9d4dc4d531ccc58bec  gaiad_0.0.4_darwin_amd64
+604912ee7800055b0a1ac36ed31021d2161d7404cea8db8776287eb512cd67a9  gaiad_0.0.4_darwin_arm64
+76e5ff7751d66807ee85bc5301484d0f0bcc5c90582d4ba1692acefc189392be  gaiad_0.0.4_linux_arm64
+bcbca82da2cb2387ad6d24c1f6401b229a9b4752156573327250d37e5cc9bb1c  gaiad_0.0.4_windows_amd64.exe
+f39552cbfcfb2b06f1bd66fd324af54ac9ee06625cfa652b71eba1869efe8670  gaiad_0.0.4_linux_amd64
 ```
 
 # Major Release Maintenance
 
-Major Release series continue to receive bug fixes (released as a Patch Release) until they reach End Of Life. Major Release series are maintained in compliance with the Stable Release Policy as described in this document. Note: not every Major Release is denoted as a stable release.
-
-Only the following major release series have a stable release status:
-
-v7 Theta is supported until v9 Lambda. A fairly strict **bugfix-only** rule applies to pull requests that are requested to be included into a stable point-release.
-
-v6 Vega is supported until v8 Rho. A fairly strict **bugfix-only** rule applies to pull requests that are requested to be included into a stable point-release.
-
-v5 Delta is supported until v7 Theta. A fairly strict **bugfix-only** rule applies to pull requests that are requested to be included into a stable point-release.
+Major Release series continue to receive bug fixes (released as a Patch Release) until they reach End Of Life.
+Major Release series are maintained in compliance with the Stable Release Policy as described in this document. Note: not every Major Release is denoted as a stable release.
 
 After two releases, a supported version will be transitioned to unsupported and will be deemed EOL with no further updates.
+
+### Example
+```
+v9 latest, stable
+v8 supported
+v7 EOL, not supported
+v6 EOL, not supported
+```
 
 # Stable Release Policy
 

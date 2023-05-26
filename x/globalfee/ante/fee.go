@@ -1,5 +1,21 @@
 package ante
 
+// import (
+// 	"errors"
+// 	"fmt"
+
+// 	sdk "github.com/cosmos/cosmos-sdk/types"
+// 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+// 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+// 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+// 	tmstrings "github.com/tendermint/tendermint/libs/strings"
+
+// 	"github.com/cosmos/gaia/v11/x/globalfee"
+// 	"github.com/cosmos/gaia/v11/x/globalfee/types"
+// )
+
+// FeeWithBypassDecorator checks if the transaction's fee is at least as large
+// as the local validator's minimum gasFee (defined in validator config) and global fee, and the fee denom should be in the global fees' denoms.
 //
 // import (
 //	"errors"

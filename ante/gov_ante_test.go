@@ -12,9 +12,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 
-	gaiahelpers "github.com/cosmos/gaia/v10/app/helpers"
+	// "github.com/cosmos/gaia/v11/ante"
+	gaiahelpers "github.com/cosmos/gaia/v11/app/helpers"
 
-	gaiaapp "github.com/cosmos/gaia/v10/app"
+	gaiaapp "github.com/cosmos/gaia/v11/app"
 )
 
 // var (

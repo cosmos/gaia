@@ -27,8 +27,8 @@ package ante
 //	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 //	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 //
-//	"github.com/cosmos/gaia/v10/x/globalfee"
-//	"github.com/cosmos/gaia/v10/x/globalfee/types"
+//	"github.com/cosmos/gaia/v11/x/globalfee"
+//	"github.com/cosmos/gaia/v11/x/globalfee/types"
 //)
 //
 //// FeeWithBypassDecorator checks if the transaction's fee is at least as large

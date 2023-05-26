@@ -8,12 +8,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
-	gaia "github.com/cosmos/gaia/v10/app"
 	"github.com/stretchr/testify/require"
+
+	gaia "github.com/cosmos/gaia/v11/app"
 
 	simulation2 "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	"github.com/cosmos/gaia/v10/app/sim"
+
+	"github.com/cosmos/gaia/v11/app/sim"
 )
 
 // Profile with:

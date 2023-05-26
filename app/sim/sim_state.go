@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/cosmos/gaia/v10/app/params"
+	"github.com/cosmos/gaia/v11/app/params"
 
 	"cosmossdk.io/math"
 

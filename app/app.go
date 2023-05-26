@@ -46,13 +46,12 @@ import (
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
 
-	gaiaante "github.com/cosmos/gaia/v10/ante"
-	"github.com/cosmos/gaia/v10/app/keepers"
-	"github.com/cosmos/gaia/v10/app/upgrades"
-	v10 "github.com/cosmos/gaia/v10/app/upgrades/v10"
+	gaiaante "github.com/cosmos/gaia/v11/ante"
+	"github.com/cosmos/gaia/v11/app/keepers"
+	"github.com/cosmos/gaia/v11/app/upgrades"
+	v11 "github.com/cosmos/gaia/v11/app/upgrades/v11"
 
-	// TODO: Enable with GlobalFee
-	// "github.com/cosmos/gaia/v10/x/globalfee"
+	// "github.com/cosmos/gaia/v11/x/globalfee"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
@@ -62,7 +61,7 @@ var (
 	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
 
-	Upgrades = []upgrades.Upgrade{v10.Upgrade}
+	Upgrades = []upgrades.Upgrade{v11.Upgrade}
 )
 
 var (

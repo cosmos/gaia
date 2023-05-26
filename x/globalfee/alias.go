@@ -1,9 +1,9 @@
 package globalfee
 
 // import (
-//	"github.com/cosmos/gaia/v10/x/globalfee/types"
-//)
-//
+// 	"github.com/cosmos/gaia/v11/x/globalfee/types"
+// )
+
 // const (
-//	ModuleName = types.ModuleName
-//)
+// 	ModuleName = types.ModuleName
+// )

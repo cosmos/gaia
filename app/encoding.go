@@ -2,7 +2,8 @@ package gaia
 
 import (
 	"github.com/cosmos/cosmos-sdk/std"
-	"github.com/cosmos/gaia/v10/app/params"
+
+	"github.com/cosmos/gaia/v11/app/params"
 )
 
 func RegisterEncodingConfig() params.EncodingConfig {

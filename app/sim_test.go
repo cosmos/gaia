@@ -20,8 +20,10 @@ import (
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 	"github.com/stretchr/testify/require"
 
-	gaia "github.com/cosmos/gaia/v10/app"
-	"github.com/cosmos/gaia/v10/app/sim"
+	gaia "github.com/cosmos/gaia/v11/app"
+	// "github.com/cosmos/gaia/v11/app/helpers"
+	// "github.com/cosmos/gaia/v11/app/params"
+	"github.com/cosmos/gaia/v11/app/sim"
 )
 
 // AppChainID hardcoded chainID for simulation

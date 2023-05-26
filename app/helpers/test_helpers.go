@@ -23,7 +23,7 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
 
-	gaiaapp "github.com/cosmos/gaia/v10/app"
+	gaiaapp "github.com/cosmos/gaia/v11/app"
 )
 
 // DefaultConsensusParams defines the default Tendermint consensus params used

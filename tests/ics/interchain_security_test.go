@@ -14,7 +14,7 @@ import (
 	"github.com/cometbft/cometbft/libs/log"
 	ibctesting "github.com/cosmos/interchain-security/legacy_ibc_testing/testing"
 
-	gaiaApp "github.com/cosmos/gaia/v10/app"
+	gaiaApp "github.com/cosmos/gaia/v11/app"
 )
 
 func TestCCVTestSuite(t *testing.T) {

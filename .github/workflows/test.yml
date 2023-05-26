@@ -158,3 +158,4 @@ jobs:
       - name: Check for successful migration
         run: |
           ./contrib/scripts/upgrade_test_scripts/v11/test_migration_v11.sh localhost
+        if: env.GIT_DIFF

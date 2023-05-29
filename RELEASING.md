@@ -6,24 +6,36 @@ We follow [Semver](https://semver.org/) in that any patch releases are non-break
 
 Each major release will have a release branch and patch releases will be tagged on this branch. No patched release has its own branch. (This branch strategy only applies to `v7` and later releases.)
 
+## Release notes
+Release notes are manually created and saved to `RELEASE_NOTES.md` for each release.
+
+You can obtain the changelog by running:
+```bash
+git log --oneline --decorate <previous_version>..<current_version>
+
+# example
+git log --oneline --decorate v9.0.0..v9.1.0
+```
+
 ## Note:
-Always prefer creating tags using `git` from your local machine since all release tags should be signed and annotated.
+Always prefer creating tags from your local machine since all release tags should be signed and annotated.
 Using Github UI will create a `lightweight` tag, so it's possible that `gaiad version` returns a commit hash, instead of a tag.
 
 This is important because most operators build from source, and having incorrect information when you run `make install && gaiad version` raises confusion.
 
 **Example**
-Using `annotated` tag (created using `git tag -s v10.0.0 -m 'v10.0.0'`):
+Create `annotated` tag (created using `make create-release TAG=v10.0.0`):
 ```bash
-gaiad version
-# v10.0.0
+# test tag creation and releasing using goreleaser
+make create-release-dry-run TAG=v10.0.0
+
+# after successful test push the tag
+make create-release TAG=v10.0.0
 ```
 
-Using `lightweight` tag (created using `git tag v10.0.0`) or Github UI:
-```bash
-gaiad version
-# HEAD-321d15a574def0f338ceacc5c060159ebba95edc
-```
+### Installing goreleaser
+Check the instructions for installing goreleaser locally for your platform
+* https://goreleaser.com/install/
 
 ## Long-Lived Version Branch Approach
 
@@ -114,18 +126,18 @@ The following steps are the default for tagging a specific branch commit using g
 
 Ensure you have checked out the commit you wish to tag and then do:
 ```bash
-git pull --tags --dry-run
 git pull --tags
-# -s creates a signed commit using your PGP key (which should be added to github beforehand)
-git tag -s v3.0.1 -m 'Release v3.0.1'
-git push --tags --dry-run
-git push --tags
+make create-release-dry-run TAG=v10.0.0
+make create-release TAG=v10.0.0
 ```
 
 To re-create a tag:
 ```bash
-git tag -d v4.0.0  # delete a tag locally
-git push --delete origin v4.0.0 # push the deletion to the remote
+git tag -d v10.0.0  # delete a tag locally
+git push --delete origin v10.0.0 # push the deletion to the remote
+# redo create-release
+make create-release-dry-run TAG=v10.0.0
+make create-release TAG=v10.0.0
 ```
 
 Proceed with the above steps to create a tag

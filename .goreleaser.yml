@@ -28,6 +28,7 @@ builds:
 archives:
   # disables archiving; to enable use commented lines below
   - format: binary
+    name_template: "{{ .Binary }}-v{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
 
   # - format: tar.gz
   #   wrap_in_directory: "true"

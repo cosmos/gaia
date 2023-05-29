@@ -117,9 +117,6 @@ vulncheck: $(BUILDDIR)/
 	GOBIN=$(BUILDDIR) go install golang.org/x/vuln/cmd/govulncheck@latest
 	$(BUILDDIR)/govulncheck ./...
 
-build-reproducible:
-	TM_VERSION=$(TM_VERSION) goreleaser release --snapshot --clean --debug
-
 build-linux: go.sum
 	LEDGER_ENABLED=false GOOS=linux GOARCH=amd64 $(MAKE) build
 
@@ -141,6 +138,39 @@ clean:
 
 distclean: clean
 	rm -rf vendor/
+
+###############################################################################
+###                                Release                                  ###
+###############################################################################
+
+# create tag and run goreleaser without publishing
+create-release-dry-run:
+ifneq ($(strip $(TAG)),)
+	@echo "--> Dry running release for tag: $(TAG)"
+	@echo "--> Create tag: $(TAG) dry run"
+	git tag -s $(TAG) -m $(TAG)
+	git push --tags --dry-run
+	@echo "--> Delete local tag: $(TAG)"
+	@git tag -d $(TAG)
+	@echo "--> Running goreleaser"
+	TM_VERSION=$(TM_VERSION) goreleaser release --snapshot --clean
+	@rm -rf dist/
+	@echo "--> Done create-release-dry-run for tag: $(TAG)"
+else
+	@echo "--> No tag specified, skipping tag release"
+endif
+
+# create tag and publish it
+create-release:
+ifneq ($(strip $(TAG)),)
+	@echo "--> Running release for tag: $(TAG)"
+	@echo "--> Create release tag: $(TAG)"
+	git tag -s $(TAG) -m $(TAG)
+	git push --tags
+	@echo "--> Done creating release tag: $(TAG)"
+else
+	@echo "--> No tag specified, skipping create-release"
+endif
 
 ###############################################################################
 ###                                 Devdoc                                  ###

@@ -36,7 +36,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
-* (deps) [#2543](https://github.com/cosmos/gaia/pull/2543) Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.4.1](https://github.com/cosmos/ibc-go/releases/tag/v4.4.1).
+* (deps) [#2554](https://github.com/cosmos/gaia/pull/2554) Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.4.2](https://github.com/cosmos/ibc-go/releases/tag/v4.4.2).
 
 ### Improvements
 * (test) [#2440](https://github.com/cosmos/gaia/pull/2440) Add vulncheck to nightly builds
@@ -48,6 +48,10 @@ Ref: https://keepachangelog.com/en/1.0.0/
 * (feat!) [#2352](https://github.com/cosmos/gaia/pull/2352) Create the upgrade handler and params migration for the new Gloabal Fee module parameters introduced in [#2424](https://github.com/cosmos/gaia/pull/2424).
 Update the CI upgrade tests from v9 to the v10 and check that the parameters are successfully migrated.
 * (feat!) [#2447](https://github.com/cosmos/gaia/pull/2447) Update Global Fee's AnteHandler to check tx fees against the network min gas prices in DeliverTx mode.
+
+## [v10.0.1] 2023-05-25
+
+* (deps) [#2543](https://github.com/cosmos/gaia/pull/2543) Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.4.1](https://github.com/cosmos/ibc-go/releases/tag/v4.4.1).
 
 ## [v10.0.0] 2023-05-19
 

@@ -52,9 +52,13 @@ module.exports = {
             {
               title: "REST API Spec",
               path: "https://cosmos.network/rpc/"
-            }
+            },
+            {
+              title: "REST API Spec ABC",
+              path: "https://cosmos.network/rpc/"
+            }            
           ]
-        }
+        }        
       ]
     },
     gutter: {
@@ -101,18 +105,7 @@ module.exports = {
         {
           title: "Documentation",
           children: [
-            {
-              title: "Cosmos SDK",
-              url: "https://docs.cosmos.network"
-            },
-            {
-              title: "Cosmos Hub",
-              url: "https://hub.cosmos.network/"
-            },
-            {
-              title: "Comet BFT",
-              url: "https://docs.cometbft.com/"
-            }
+
           ]
         },
         {

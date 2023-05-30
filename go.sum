@@ -1003,18 +1003,11 @@ github.com/cosmos/gorocksdb v1.2.0/go.mod h1:aaKvKItm514hKfNJpUJXnnOWeBnk2GL4+Qw
 github.com/cosmos/iavl v0.17.1/go.mod h1:7aisPZK8yCpQdy3PMvKeO+bhq1NwDjUwjzxwwROUxFk=
 github.com/cosmos/iavl v0.19.5 h1:rGA3hOrgNxgRM5wYcSCxgQBap7fW82WZgY78V9po/iY=
 github.com/cosmos/iavl v0.19.5/go.mod h1:X9PKD3J0iFxdmgNLa7b2LYWdsGd90ToV5cAONApkEPw=
-<<<<<<< HEAD
 github.com/cosmos/ibc-go v1.2.2/go.mod h1:XmYjsRFOs6Q9Cz+CSsX21icNoH27vQKb3squgnCOCbs=
-github.com/cosmos/ibc-go/v4 v4.4.1 h1:pHPLEpQStGuHZe5J17WvG7w0VGwTmfsoAHrs45+vPfw=
-github.com/cosmos/ibc-go/v4 v4.4.1/go.mod h1:UkKEQAPWckLuomhqG8XzeE5nWQPdiEYF8EIDWXBKSXA=
-github.com/cosmos/interchain-security v1.1.0-multiden h1:aNlGV0rog2WCuOH8xiAQrdWrh6pAtdC60yZMEdM0gSQ=
-github.com/cosmos/interchain-security v1.1.0-multiden/go.mod h1:J9SbXUJT1GSe+mZy+MDCxtuAfbhwCKBEJRYnfjXsE8Q=
-=======
 github.com/cosmos/ibc-go/v4 v4.4.2 h1:PG4Yy0/bw6Hvmha3RZbc53KYzaCwuB07Ot4GLyzcBvo=
 github.com/cosmos/ibc-go/v4 v4.4.2/go.mod h1:j/kD2JCIaV5ozvJvaEkWhLxM2zva7/KTM++EtKFYcB8=
-github.com/cosmos/interchain-security v1.1.1 h1:UxtBxMVw0Lj/zye/kiM2Vm6rQiDE00tQ5CHPjbmx2b4=
-github.com/cosmos/interchain-security v1.1.1/go.mod h1:nXf1iZoUTU+huyOT0UyNoJ68/tS69bThdOarSDVMlJ8=
->>>>>>> 6de5a88 (chore(deps): bump github.com/cosmos/ibc-go/v4 from 4.4.1 to 4.4.2 (#2554))
+github.com/cosmos/interchain-security v1.1.0-multiden h1:aNlGV0rog2WCuOH8xiAQrdWrh6pAtdC60yZMEdM0gSQ=
+github.com/cosmos/interchain-security v1.1.0-multiden/go.mod h1:J9SbXUJT1GSe+mZy+MDCxtuAfbhwCKBEJRYnfjXsE8Q=
 github.com/cosmos/keyring v1.2.0 h1:8C1lBP9xhImmIabyXW4c3vFjjLiBdGCmfLUfeZlV1Yo=
 github.com/cosmos/keyring v1.2.0/go.mod h1:fc+wB5KTk9wQ9sDx0kFXB3A0MaeGHM9AwRStKOQ5vOA=
 github.com/cosmos/ledger-cosmos-go v0.11.1/go.mod h1:J8//BsAGTo3OC/vDLjMRFLW6q0WAaXvHnVc7ZmE8iUY=

@@ -310,6 +310,8 @@ func NewAppKeeper(
 		appKeepers.SlashingKeeper,
 		appKeepers.AccountKeeper,
 		appKeepers.EvidenceKeeper,
+		appKeepers.DistrKeeper,
+		appKeepers.BankKeeper,
 		authtypes.FeeCollectorName,
 	)
 

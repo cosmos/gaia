@@ -60,6 +60,7 @@ import (
 )
 
 var maccPerms = map[string][]string{
+<<<<<<< HEAD
 	authtypes.FeeCollectorName:     nil,
 	distrtypes.ModuleName:          nil,
 	icatypes.ModuleName:            nil,
@@ -68,6 +69,18 @@ var maccPerms = map[string][]string{
 	stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 	govtypes.ModuleName:            {authtypes.Burner},
 	ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
+=======
+	authtypes.FeeCollectorName:        nil,
+	distrtypes.ModuleName:             nil,
+	icatypes.ModuleName:               nil,
+	minttypes.ModuleName:              {authtypes.Minter},
+	stakingtypes.BondedPoolName:       {authtypes.Burner, authtypes.Staking},
+	stakingtypes.NotBondedPoolName:    {authtypes.Burner, authtypes.Staking},
+	govtypes.ModuleName:               {authtypes.Burner},
+	liquiditytypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
+	ibctransfertypes.ModuleName:       {authtypes.Minter, authtypes.Burner},
+	providertypes.ConsumerRewardsPool: nil,
+>>>>>>> 82b71bb65 (fix!: revert to ICS v1.1.0-multiden (#2559))
 }
 
 // ModuleBasics defines the module BasicManager is in charge of setting up basic,

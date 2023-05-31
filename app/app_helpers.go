@@ -49,3 +49,7 @@ func (app *GaiaApp) GetE2eSlashingKeeper() e2e.E2eSlashingKeeper { //nolint:noli
 func (app *GaiaApp) GetE2eDistributionKeeper() e2e.E2eDistributionKeeper { //nolint:nolintlint
 	return app.DistrKeeper
 }
+
+func (app *GaiaApp) GetE2eAccountKeeper() e2e.E2eAccountKeeper { //nolint:nolintlint
+	return app.AccountKeeper
+}

@@ -29,6 +29,7 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	ibctesting "github.com/cosmos/interchain-security/legacy_ibc_testing/testing"
+	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
@@ -269,10 +270,8 @@ func (app *GaiaApp) BlockedModuleAccountAddrs(modAccAddrs map[string]bool) map[s
 	// remove module accounts that are ALLOWED to received funds
 	delete(modAccAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
-	// Remove the fee-pool from the group of blocked recipient addresses in bank
-	// this is required for the provider chain to be able to receive tokens from
-	// the consumer chain
-	delete(modAccAddrs, authtypes.NewModuleAddress(authtypes.FeeCollectorName).String())
+	// Remove the ConsumerRewardsPool from the group of blocked recipient addresses in bank
+	delete(modAccAddrs, authtypes.NewModuleAddress(providertypes.ConsumerRewardsPool).String())
 
 	return modAccAddrs
 }

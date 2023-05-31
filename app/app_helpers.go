@@ -48,3 +48,7 @@ func (app *GaiaApp) GetTestSlashingKeeper() ics.TestSlashingKeeper { //nolint:no
 func (app *GaiaApp) GetTestDistributionKeeper() ics.TestDistributionKeeper { //nolint:nolintlint
 	return app.DistrKeeper
 }
+
+func (app *GaiaApp) GetE2eAccountKeeper() e2e.E2eAccountKeeper { //nolint:nolintlint
+	return app.AccountKeeper
+}

@@ -56,7 +56,7 @@ func (s *IntegrationTestSuite) sendIBC(c *chain, valIdx int, sender, recipient, 
 	s.T().Log("successfully sent IBC tokens")
 }
 
-func (s *IntegrationTestSuite) hermesTransfer(configPath, srcChainID, dstChainID, srcChannelID, denom string, sendAmt, timeOutOffset, numMsg int) bool {
+func (s *IntegrationTestSuite) hermesTransfer(configPath, srcChainID, dstChainID, srcChannelID, denom string, sendAmt, timeOutOffset, numMsg int) (success bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -237,7 +237,6 @@ func (s *IntegrationTestSuite) createChannel() {
 }
 
 func (s *IntegrationTestSuite) testIBCTokenTransfer() {
-	//	time.Sleep(30 * time.Second)
 	s.Run("send_uatom_to_chainB", func() {
 		// require the recipient account receives the IBC tokens (IBC packets ACKd)
 		var (

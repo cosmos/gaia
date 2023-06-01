@@ -105,7 +105,7 @@ func (s *IntegrationTestSuite) hermesClearPacket(configPath, chainID, channelID 
 	return true
 }
 
-func (s *IntegrationTestSuite) hermesPendingPackets(configPath, chainID, channelID string) bool {
+func (s *IntegrationTestSuite) hermesPendingPackets(configPath, chainID, channelID string) (PendingPackets bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 	hermesCmd := []string{
@@ -121,11 +121,15 @@ func (s *IntegrationTestSuite) hermesPendingPackets(configPath, chainID, channel
 
 	stdout, _ := s.executeHermesCommand(ctx, hermesCmd)
 	// "start: Sequence" is the pending packets sequence
-	if strings.Contains(stdout, "Sequence") {
-		return true
+
+	unreceivedPackets, err := parsePendingPacketResult(stdout)
+	s.Require().NoError(err)
+
+	if len(unreceivedPackets) == 0 {
+		return false
 	}
 
-	return false
+	return true
 }
 
 func (s *IntegrationTestSuite) queryRelayerWalletsBalances() (sdk.Coin, sdk.Coin) {

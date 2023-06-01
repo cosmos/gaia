@@ -116,6 +116,23 @@ func (s *IntegrationTestSuite) testIBCBypassMsg() {
 	// use hermes1 to test default ibc bypass-msg
 	//
 	// test 1: transaction only contains bypass-msgs, pass
+	s.testTxContainsOnlyIBCBypassMsg()
+	// test 2: test transactions contains both bypass and non-bypass msgs (sdk.MsgTypeURL(&ibcchanneltypes.MsgTimeout{})
+	s.testTxContainsMixBypassNonBypassMsg()
+	// test 3: test bypass-msgs exceed the MaxBypassGasUsage
+	s.testBypassMsgsExceedMaxBypassGasLimit()
+
+	// set the default bypass-msg back
+	proposalCounter++
+	s.govProposeNewBypassMsgs([]string{
+		sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),
+		sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
+		sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
+		sdk.MsgTypeURL(&ibcchanneltypes.MsgTimeout{}),
+		sdk.MsgTypeURL(&ibcchanneltypes.MsgTimeoutOnClose{})}, proposalCounter, submitter, standardFees.String())
+}
+
+func (s *IntegrationTestSuite) testTxContainsOnlyIBCBypassMsg() {
 	s.T().Logf("testing transaction contains only ibc bypass messages")
 	ok := s.hermesTransfer(hermesConfigWithGasPrices, s.chainA.id, s.chainB.id, transferChannel, uatomDenom, 100, 1000, 1)
 	s.Require().True(ok)
@@ -131,42 +148,35 @@ func (s *IntegrationTestSuite) testIBCBypassMsg() {
 	scrRelayerBalanceAfter, dstRelayerBalanceAfter := s.queryRelayerWalletsBalances()
 	s.Require().Equal(scrRelayerBalanceBefore.String(), scrRelayerBalanceAfter.String())
 	s.Require().Equal(dstRelayerBalanceBefore.String(), dstRelayerBalanceAfter.String())
+}
 
-	// test 2: test transactions contains both bypass and non-bypass msgs (sdk.MsgTypeURL(&ibcchanneltypes.MsgTimeout{})
+func (s *IntegrationTestSuite) testTxContainsMixBypassNonBypassMsg() {
 	s.T().Logf("testing transaction contains both bypass and non-bypass messages")
 	// hermesTransfer wtih --timeout-height-offset=1
-	ok = s.hermesTransfer(hermesConfigWithGasPrices, s.chainA.id, s.chainB.id, transferChannel, uatomDenom, 100, 1, 1)
+	ok := s.hermesTransfer(hermesConfigWithGasPrices, s.chainA.id, s.chainB.id, transferChannel, uatomDenom, 100, 1, 1)
 	s.Require().True(ok)
 	// make sure that the transaction is timeout
 	time.Sleep(3)
-	pendingPacketsExist = s.hermesPendingPackets(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
+	pendingPacketsExist := s.hermesPendingPackets(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
 	s.Require().True(pendingPacketsExist)
 
-	pass = s.hermesClearPacket(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
+	pass := s.hermesClearPacket(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
 	s.Require().False(pass)
 	// clear packets with paying fee, to not influence the next transaction
 	pass = s.hermesClearPacket(hermesConfigWithGasPrices, s.chainA.id, transferChannel)
 	s.Require().True(pass)
+}
 
-	// test 3: test bypass-msgs exceed the MaxBypassGasUsage
+func (s *IntegrationTestSuite) testBypassMsgsExceedMaxBypassGasLimit() {
 	s.T().Logf("testing bypass messages exceed MaxBypassGasUsage")
-	ok = s.hermesTransfer(hermesConfigWithGasPrices, s.chainA.id, s.chainB.id, transferChannel, uatomDenom, 100, 1000, 12)
+	ok := s.hermesTransfer(hermesConfigWithGasPrices, s.chainA.id, s.chainB.id, transferChannel, uatomDenom, 100, 1000, 12)
 	s.Require().True(ok)
-	pass = s.hermesClearPacket(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
+	pass := s.hermesClearPacket(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
 	s.Require().False(pass)
 
-	pendingPacketsExist = s.hermesPendingPackets(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
+	pendingPacketsExist := s.hermesPendingPackets(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
 	s.Require().True(pendingPacketsExist)
 
 	pass = s.hermesClearPacket(hermesConfigWithGasPrices, s.chainA.id, transferChannel)
 	s.Require().True(pass)
-
-	// set the default bypass-msg back
-	proposalCounter++
-	s.govProposeNewBypassMsgs([]string{
-		sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),
-		sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
-		sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
-		sdk.MsgTypeURL(&ibcchanneltypes.MsgTimeout{}),
-		sdk.MsgTypeURL(&ibcchanneltypes.MsgTimeoutOnClose{})}, proposalCounter, submitter, standardFees.String())
 }

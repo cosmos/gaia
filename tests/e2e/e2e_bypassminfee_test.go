@@ -117,14 +117,14 @@ func (s *IntegrationTestSuite) testIBCBypassMsg() {
 	//
 	// test 1: transaction only contains bypass-msgs, pass
 	s.T().Logf("testing transaction contains only ibc bypass messages")
-	ok := s.hermesTransfer(hermesCofigWithGasPrices, s.chainA.id, s.chainB.id, transferChannel, uatomDenom, 100, 1000, 1)
+	ok := s.hermesTransfer(hermesConfigWithGasPrices, s.chainA.id, s.chainB.id, transferChannel, uatomDenom, 100, 1000, 1)
 	s.Require().True(ok)
 
 	scrRelayerBalanceBefore, dstRelayerBalanceBefore := s.queryRelayerWalletsBalances()
 
-	pass := s.hermesClearPacket(hermesCofigNoGasPrices, s.chainA.id, transferChannel)
+	pass := s.hermesClearPacket(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
 	s.Require().True(pass)
-	pendingPacketsExist := s.hermesPendingPackets(hermesCofigNoGasPrices, s.chainA.id, transferChannel)
+	pendingPacketsExist := s.hermesPendingPackets(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
 	s.Require().False(pendingPacketsExist)
 
 	// confirm relayer wallets do not pay fees
@@ -135,30 +135,30 @@ func (s *IntegrationTestSuite) testIBCBypassMsg() {
 	// test 2: test transactions contains both bypass and non-bypass msgs (sdk.MsgTypeURL(&ibcchanneltypes.MsgTimeout{})
 	s.T().Logf("testing transaction contains both bypass and non-bypass messages")
 	// hermesTransfer wtih --timeout-height-offset=1
-	ok = s.hermesTransfer(hermesCofigWithGasPrices, s.chainA.id, s.chainB.id, transferChannel, uatomDenom, 100, 1, 1)
+	ok = s.hermesTransfer(hermesConfigWithGasPrices, s.chainA.id, s.chainB.id, transferChannel, uatomDenom, 100, 1, 1)
 	s.Require().True(ok)
 	// make sure that the transaction is timeout
 	time.Sleep(3)
-	pendingPacketsExist = s.hermesPendingPackets(hermesCofigNoGasPrices, s.chainA.id, transferChannel)
+	pendingPacketsExist = s.hermesPendingPackets(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
 	s.Require().True(pendingPacketsExist)
 
-	pass = s.hermesClearPacket(hermesCofigNoGasPrices, s.chainA.id, transferChannel)
+	pass = s.hermesClearPacket(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
 	s.Require().False(pass)
 	// clear packets with paying fee, to not influence the next transaction
-	pass = s.hermesClearPacket(hermesCofigWithGasPrices, s.chainA.id, transferChannel)
+	pass = s.hermesClearPacket(hermesConfigWithGasPrices, s.chainA.id, transferChannel)
 	s.Require().True(pass)
 
 	// test 3: test bypass-msgs exceed the MaxBypassGasUsage
 	s.T().Logf("testing bypass messages exceed MaxBypassGasUsage")
-	ok = s.hermesTransfer(hermesCofigWithGasPrices, s.chainA.id, s.chainB.id, transferChannel, uatomDenom, 100, 1000, 12)
+	ok = s.hermesTransfer(hermesConfigWithGasPrices, s.chainA.id, s.chainB.id, transferChannel, uatomDenom, 100, 1000, 12)
 	s.Require().True(ok)
-	pass = s.hermesClearPacket(hermesCofigNoGasPrices, s.chainA.id, transferChannel)
+	pass = s.hermesClearPacket(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
 	s.Require().False(pass)
 
-	pendingPacketsExist = s.hermesPendingPackets(hermesCofigNoGasPrices, s.chainA.id, transferChannel)
+	pendingPacketsExist = s.hermesPendingPackets(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
 	s.Require().True(pendingPacketsExist)
 
-	pass = s.hermesClearPacket(hermesCofigWithGasPrices, s.chainA.id, transferChannel)
+	pass = s.hermesClearPacket(hermesConfigWithGasPrices, s.chainA.id, transferChannel)
 	s.Require().True(pass)
 
 	// set the default bypass-msg back

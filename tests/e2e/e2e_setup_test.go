@@ -73,10 +73,10 @@ const (
 	proposalAddConsumerChainFilename    = "proposal_add_consumer.json"
 	proposalRemoveConsumerChainFilename = "proposal_remove_consumer.json"
 
-	hermesBinary             = "hermes"
-	hermesCofigWithGasPrices = "/root/.hermes/config.toml"
-	hermesCofigNoGasPrices   = "/root/.hermes/config-zero.toml"
-	transferChannel          = "channel-0"
+	hermesBinary              = "hermes"
+	hermesConfigWithGasPrices = "/root/.hermes/config.toml"
+	hermesConfigNoGasPrices   = "/root/.hermes/config-zero.toml"
+	transferChannel           = "channel-0"
 )
 
 var (

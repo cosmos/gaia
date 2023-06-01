@@ -602,7 +602,7 @@ func noRestart(config *docker.HostConfig) {
 	}
 }
 
-// hermes0 is for ibc and packet-forward-middleware test
+// hermes0 is for ibc and packet-forward-middleware(PFM) test, hermes0 is keep running during the ibc and PFM test.
 func (s *IntegrationTestSuite) runIBCRelayer0() {
 	s.T().Log("starting Hermes relayer container 0...")
 
@@ -699,7 +699,9 @@ func (s *IntegrationTestSuite) runIBCRelayer0() {
 	s.createChannel()
 }
 
-// hermes1 is for bypass-msg test
+// hermes1 is for bypass-msg test. Hermes1 is to process asynchronous transactions,
+// Hermes1 has access to two Hermes configurations: one configuration allows paying fees, while the other does not.
+// With Hermes1, better control can be achieved regarding whether fees are paid when clearing transactions.
 func (s *IntegrationTestSuite) runIBCRelayer1() {
 	s.T().Log("starting Hermes relayer container 1...")
 

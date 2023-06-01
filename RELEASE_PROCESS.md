@@ -17,12 +17,15 @@ This document outlines the release process for Cosmos Hub (Gaia).
 Gaia follows [semantic versioning](https://semver.org), but with the following deviations to account for state-machine and API breaking changes: 
 
 - State-machine breaking changes will result in an increase of the major version X (X.y.z).
-- API breaking changes will result in an increase of the minor version Y (x.Y.z | x > 0).
+- Emergency releases & API breaking changes (changes in node interactions e.g. queries) will result in an increase of the minor version Y (x.Y.z | x > 0).
 - All other changes will result in an increase of the patch version Z (x.y.Z | x > 0).
 
 **State compatibility**: 
-It is critical for the patch and minor releases to be state-machine compatible with prior releases in the same major version. 
-For example, v9.2.1 must be compatible with v9.1.0 and v9.0.0. 
+It is critical for the patch releases to be state-machine compatible with prior releases in the same minor version. 
+For example, v9.2.1 must be compatible with v9.2.0.
+
+Minor releases will be handled on a case-by-case basis, but generally should only arise in case of safety or security issues that require a co-ordinated network upgrade without a governance process.
+
 This is to ensure determinism, i.e. that given the same input, the nodes will always produce the same output. 
 State-incompatibility is allowed for major upgrades because all nodes in the network perform it at the same time. 
 Therefore, after the upgrade, the nodes continue functioning in a deterministic way.

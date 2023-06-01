@@ -5,7 +5,7 @@ title: Introduction
 
 ::: warning
 ### **v9-Lambda Upgrade**
-Cosmos Hub upgraded at height: **14,470,501**
+The current release of the CosmosHub is [v9.1.1](https://github.com/cosmos/gaia/releases/tag/v9.1.1)
 
 To upgrade from v8-Rho check the [**upgrade guide**](../migration/cosmoshub-4-v9-Lambda-upgrade.md)
 :::

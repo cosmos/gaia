@@ -149,7 +149,7 @@ ifneq ($(strip $(TAG)),)
 	@echo "--> Dry running release for tag: $(TAG)"
 	@echo "--> Create tag: $(TAG) dry run"
 	git tag -s $(TAG) -m $(TAG)
-	git push --tags --dry-run
+	git push origin $(TAG) --dry-run
 	@echo "--> Delete local tag: $(TAG)"
 	@git tag -d $(TAG)
 	@echo "--> Running goreleaser"
@@ -166,7 +166,7 @@ ifneq ($(strip $(TAG)),)
 	@echo "--> Running release for tag: $(TAG)"
 	@echo "--> Create release tag: $(TAG)"
 	git tag -s $(TAG) -m $(TAG)
-	git push --tags
+	git push origin $(TAG)
 	@echo "--> Done creating release tag: $(TAG)"
 else
 	@echo "--> No tag specified, skipping create-release"

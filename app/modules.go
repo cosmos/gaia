@@ -53,20 +53,21 @@ import (
 	"github.com/strangelove-ventures/packet-forward-middleware/v4/router"
 	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
 
-	gaiaappparams "github.com/cosmos/gaia/v10/app/params"
-	"github.com/cosmos/gaia/v10/x/globalfee"
+	gaiaappparams "github.com/cosmos/gaia/v11/app/params"
+	"github.com/cosmos/gaia/v11/x/globalfee"
 )
 
 var maccPerms = map[string][]string{
-	authtypes.FeeCollectorName:     nil,
-	distrtypes.ModuleName:          nil,
-	icatypes.ModuleName:            nil,
-	minttypes.ModuleName:           {authtypes.Minter},
-	stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
-	stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
-	govtypes.ModuleName:            {authtypes.Burner},
-	liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
-	ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
+	authtypes.FeeCollectorName:        nil,
+	distrtypes.ModuleName:             nil,
+	icatypes.ModuleName:               nil,
+	minttypes.ModuleName:              {authtypes.Minter},
+	stakingtypes.BondedPoolName:       {authtypes.Burner, authtypes.Staking},
+	stakingtypes.NotBondedPoolName:    {authtypes.Burner, authtypes.Staking},
+	govtypes.ModuleName:               {authtypes.Burner},
+	liquiditytypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
+	ibctransfertypes.ModuleName:       {authtypes.Minter, authtypes.Burner},
+	providertypes.ConsumerRewardsPool: nil,
 }
 
 // ModuleBasics defines the module BasicManager is in charge of setting up basic,

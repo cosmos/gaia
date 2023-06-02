@@ -10,8 +10,8 @@ CHAINID=cosmoshub-4
 
 USER_MNEMONIC="abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art"
 
-if ! test -f "./build/gaiad9"; then
-  echo "gaiad v9 does not exist"
+if ! test -f "./build/gaiad10"; then
+  echo "gaiad v10 does not exist"
   exit
 fi
 
@@ -19,17 +19,17 @@ fi
 rm -rf ./build/.gaia
 
 mkdir -p "$NODE_HOME"/cosmovisor/genesis/bin
-cp ./build/gaiad9 "$NODE_HOME"/cosmovisor/genesis/bin/gaiad
+cp ./build/gaiad10 "$NODE_HOME"/cosmovisor/genesis/bin/gaiad
 $BINARY init upgrader --chain-id $CHAINID --home "$NODE_HOME"
 
 
-if ! test -f "./build/gaiad10"; then
-  echo "gaiad v10 does not exist"
+if ! test -f "./build/gaiad11"; then
+  echo "gaiad v11 does not exist"
   exit
 fi
 
-mkdir -p "$NODE_HOME"/cosmovisor/upgrades/v10/bin
-cp ./build/gaiad10 "$NODE_HOME"/cosmovisor/upgrades/v10/bin/gaiad
+mkdir -p "$NODE_HOME"/cosmovisor/upgrades/v11/bin
+cp ./build/gaiad11 "$NODE_HOME"/cosmovisor/upgrades/v11/bin/gaiad
 
 GOPATH=$(go env GOPATH)
 
@@ -70,5 +70,5 @@ enable = true/g' $NODE_HOME/config/app.toml
 pwd
 ls $NODE_HOME
 
-$COSMOVISOR run start --home $NODE_HOME --x-crisis-skip-assert-invariants > v9.out 2>&1 &
+$COSMOVISOR run start --home $NODE_HOME --x-crisis-skip-assert-invariants > v10.out 2>&1 &
 

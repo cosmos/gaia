@@ -1,23 +1,15 @@
-package v8
+package v11
 
 import (
-	store "github.com/cosmos/cosmos-sdk/store/types"
-
 	"github.com/cosmos/gaia/v11/app/upgrades"
-	"github.com/cosmos/gaia/v11/x/globalfee"
 )
 
 const (
 	// UpgradeName defines the on-chain upgrade name.
-	UpgradeName = "v8-Rho"
+	UpgradeName = "v11"
 )
 
 var Upgrade = upgrades.Upgrade{
 	UpgradeName:          UpgradeName,
 	CreateUpgradeHandler: CreateUpgradeHandler,
-	StoreUpgrades: store.StoreUpgrades{
-		Added: []string{
-			globalfee.ModuleName,
-		},
-	},
 }

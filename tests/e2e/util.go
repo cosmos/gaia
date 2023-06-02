@@ -84,7 +84,7 @@ func parsePendingPacketResult(output string) ([]Collated, error) {
 
 	err := json.Unmarshal([]byte(res), &summary)
 	if err != nil {
-		return []Collated{}, fmt.Errorf("Error parsing  query pending packet result:", err)
+		return []Collated{}, fmt.Errorf("Error parsing  query pending packet result %v\n:", err)
 	}
 
 	return summary.Src.UnreceivedPackets, nil

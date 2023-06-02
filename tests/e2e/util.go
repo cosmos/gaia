@@ -1,10 +1,7 @@
 package e2e
 
 import (
-	"encoding/json"
 	"fmt"
-	"strings"
-
 	"github.com/cosmos/cosmos-sdk/codec/unknownproto"
 	sdktx "github.com/cosmos/cosmos-sdk/types/tx"
 )
@@ -51,41 +48,4 @@ func concatFlags(originalCollection []string, commandFlags []string, generalFlag
 	originalCollection = append(originalCollection, generalFlags...)
 
 	return originalCollection
-}
-
-type Summary struct {
-	Src PendingPackets `json:"src"`
-	Dst PendingPackets `json:"dst"`
-}
-
-type PendingPackets struct {
-	UnreceivedPackets []Collated `json:"unreceived_packets"`
-	UnreceivedAcks    []Collated `json:"unreceived_acks"`
-}
-
-type Collated struct {
-	Start Sequence `json:"start"`
-	End   Sequence `json:"end"`
-}
-
-type Sequence struct {
-	Value int `json:"value"`
-}
-
-func parsePendingPacketResult(output string) ([]Collated, error) {
-	var summary Summary
-	var res string
-	index := strings.Index(output, "SUCCESS")
-	if index != -1 {
-		res = output[index:]
-	} else {
-		return []Collated{}, fmt.Errorf("unexpected query pending packet result")
-	}
-
-	err := json.Unmarshal([]byte(res), &summary)
-	if err != nil {
-		return []Collated{}, fmt.Errorf("Error parsing  query pending packet result %v\n:", err)
-	}
-
-	return summary.Src.UnreceivedPackets, nil
 }

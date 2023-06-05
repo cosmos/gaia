@@ -3,6 +3,7 @@ package antetest
 import (
 	"fmt"
 
+	gaiahelpers "github.com/althea-net/ibc-test-chain/v9/app/helpers"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
@@ -12,14 +13,13 @@ import (
 	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	"github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	gaiahelpers "github.com/cosmos/gaia/v9/app/helpers"
 	"github.com/stretchr/testify/suite"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	gaiaapp "github.com/cosmos/gaia/v9/app"
-	"github.com/cosmos/gaia/v9/x/globalfee"
-	globfeetypes "github.com/cosmos/gaia/v9/x/globalfee/types"
+	gaiaapp "github.com/althea-net/ibc-test-chain/v9/app"
+	"github.com/althea-net/ibc-test-chain/v9/x/globalfee"
+	globfeetypes "github.com/althea-net/ibc-test-chain/v9/x/globalfee/types"
 )
 
 type IntegrationTestSuite struct {

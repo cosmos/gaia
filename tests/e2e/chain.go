@@ -12,8 +12,8 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 
-	gaia "github.com/cosmos/gaia/v9/app"
-	"github.com/cosmos/gaia/v9/app/params"
+	gaia "github.com/althea-net/ibc-test-chain/v9/app"
+	"github.com/althea-net/ibc-test-chain/v9/app/params"
 )
 
 const (

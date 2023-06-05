@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/cosmos/gaia/v9/x/globalfee/types"
+	"github.com/althea-net/ibc-test-chain/v9/x/globalfee/types"
 )
 
 var _ types.QueryServer = &GrpcQuerier{}

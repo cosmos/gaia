@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/cosmos/gaia/v9/x/globalfee/types"
+	"github.com/althea-net/ibc-test-chain/v9/x/globalfee/types"
 )
 
 func TestQueryMinimumGasPrices(t *testing.T) {

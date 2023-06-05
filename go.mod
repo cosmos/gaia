@@ -1,6 +1,6 @@
-module github.com/cosmos/gaia/v9
+module github.com/althea-net/ibc-test-chain/v9
 
-go 1.18
+go 1.19
 
 require (
 	github.com/cosmos/cosmos-sdk v0.45.15-ics
@@ -29,7 +29,9 @@ require (
 
 require (
 	cosmossdk.io/math v1.0.0-beta.4
+	github.com/cosmos/gaia/v9 v9.1.1
 	github.com/ory/dockertest/v3 v3.9.1
+	github.com/regen-network/cosmos-proto v0.3.1
 )
 
 require (
@@ -232,7 +234,6 @@ require (
 	github.com/quasilyte/regex/syntax v0.0.0-20200407221936-30656e2c4a95 // indirect
 	github.com/quasilyte/stdinfo v0.0.0-20220114132959-f7386bf02567 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
-	github.com/regen-network/cosmos-proto v0.3.1 // indirect
 	github.com/rogpeppe/go-internal v1.9.0 // indirect
 	github.com/rs/cors v1.8.2 // indirect
 	github.com/rs/zerolog v1.27.0 // indirect

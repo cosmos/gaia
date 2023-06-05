@@ -1,0 +1,19 @@
+syntax = "proto3";
+package icaauth.v1;
+option go_package = "github.com/althea-net/ibc-test-chain/v9/x/icaauth/types";
+
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/any.proto";
+
+message EventRegisterInterchainAccount {
+    string owner = 1;
+    string connection_id = 2 [(gogoproto.moretags) = "yaml:\"connection_id\""];
+    string version = 3;
+}
+
+message EventSubmitTx {
+    string owner = 1;
+    string connection_id = 2 [(gogoproto.moretags) = "yaml:\"connection_id\""];
+    repeated google.protobuf.Any msgs = 3 [(cosmos_proto.accepts_interface) = "sdk.Msg"];
+}

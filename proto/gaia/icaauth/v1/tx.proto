@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package icaauth.v1;
+
+option go_package = "github.com/althea-net/ibc-test-chain/v9/x/icaauth/types";
+
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/any.proto";
+
+// Msg defines the icaauth Msg service.
+service Msg {
+  // Register defines a rpc handler for MsgRegisterAccount
+  rpc RegisterAccount(MsgRegisterAccount) returns (MsgRegisterAccountResponse);
+  // SubmitTx defines a rpc handler for MsgSubmitTx
+  rpc SubmitTx(MsgSubmitTx) returns (MsgSubmitTxResponse);
+}
+
+// MsgRegisterAccount defines the payload for Msg/RegisterAccount
+message MsgRegisterAccount {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string owner                      = 1;
+  string connection_id              = 2 [(gogoproto.moretags) = "yaml:\"connection_id\""];
+  string version                    = 3;
+}
+
+// MsgRegisterAccountResponse defines the response for Msg/RegisterAccount
+message MsgRegisterAccountResponse {}
+
+// MsgSubmitTx defines the payload for Msg/SubmitTx
+message MsgSubmitTx {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string owner                       = 1;
+  string connection_id = 2 [(gogoproto.moretags) = "yaml:\"connection_id\""];
+  // msgs represents the transactions to be submitted to the host chain
+  repeated google.protobuf.Any msgs = 3 [(cosmos_proto.accepts_interface) = "sdk.Msg"];
+}
+
+// MsgSubmitTxResponse defines the response for Msg/SubmitTx
+message MsgSubmitTxResponse {}

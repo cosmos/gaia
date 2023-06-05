@@ -7,9 +7,9 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/cosmos/gaia/v9/x/globalfee/types"
 
-	"github.com/cosmos/gaia/v9/x/globalfee"
+	"github.com/althea-net/ibc-test-chain/v9/x/globalfee"
+	"github.com/althea-net/ibc-test-chain/v9/x/globalfee/types"
 )
 
 // FeeWithBypassDecorator will check if the transaction's fee is at least as large

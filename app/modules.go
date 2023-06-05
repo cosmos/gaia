@@ -1,6 +1,7 @@
 package gaia
 
 import (
+	"github.com/althea-net/ibc-test-chain/v9/x/icaauth"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
@@ -53,8 +54,8 @@ import (
 	"github.com/strangelove-ventures/packet-forward-middleware/v4/router"
 	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
 
-	gaiaappparams "github.com/cosmos/gaia/v9/app/params"
-	"github.com/cosmos/gaia/v9/x/globalfee"
+	gaiaappparams "github.com/althea-net/ibc-test-chain/v9/app/params"
+	"github.com/althea-net/ibc-test-chain/v9/x/globalfee"
 )
 
 var maccPerms = map[string][]string{
@@ -105,6 +106,7 @@ var ModuleBasics = module.NewBasicManager(
 	liquidity.AppModuleBasic{},
 	router.AppModuleBasic{},
 	ica.AppModuleBasic{},
+	icaauth.AppModuleBasic{},
 	globalfee.AppModule{},
 	ibcprovider.AppModuleBasic{},
 )
@@ -143,6 +145,7 @@ func appModules(
 		globalfee.NewAppModule(app.GetSubspace(globalfee.ModuleName)),
 		app.TransferModule,
 		app.ICAModule,
+		app.ICAAuthModule,
 		app.RouterModule,
 		app.ProviderModule,
 	}
@@ -207,6 +210,7 @@ func orderBeginBlockers() []string {
 		ibctransfertypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
+		icaauth.ModuleName,
 		routertypes.ModuleName,
 		genutiltypes.ModuleName,
 		authz.ModuleName,
@@ -235,6 +239,7 @@ func orderEndBlockers() []string {
 		ibctransfertypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
+		icaauth.ModuleName,
 		routertypes.ModuleName,
 		capabilitytypes.ModuleName,
 		authtypes.ModuleName,
@@ -277,6 +282,7 @@ func orderInitBlockers() []string {
 		ibctransfertypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
+		icaauth.ModuleName,
 		evidencetypes.ModuleName,
 		liquiditytypes.ModuleName,
 		authz.ModuleName,

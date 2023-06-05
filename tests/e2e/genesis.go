@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	globfeetypes "github.com/althea-net/ibc-test-chain/v9/x/globalfee/types"
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -14,7 +15,6 @@ import (
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	globfeetypes "github.com/cosmos/gaia/v9/x/globalfee/types"
 	icatypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/types"
 	tmtypes "github.com/tendermint/tendermint/types"
 )

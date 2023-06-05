@@ -1,10 +1,10 @@
 package v9
 
 import (
+	"github.com/althea-net/ibc-test-chain/v9/app/keepers"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	"github.com/cosmos/gaia/v9/app/keepers"
 )
 
 func CreateUpgradeHandler(

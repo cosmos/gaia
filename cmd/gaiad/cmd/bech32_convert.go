@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	addressutil "github.com/cosmos/gaia/v9/pkg/address"
+	addressutil "github.com/althea-net/ibc-test-chain/v9/pkg/address"
 
 	"github.com/spf13/cobra"
 )

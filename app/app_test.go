@@ -3,10 +3,10 @@ package gaia_test
 import (
 	"testing"
 
+	gaia "github.com/althea-net/ibc-test-chain/v9/app"
+	gaiahelpers "github.com/althea-net/ibc-test-chain/v9/app/helpers"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	gaia "github.com/cosmos/gaia/v9/app"
-	gaiahelpers "github.com/cosmos/gaia/v9/app/helpers"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	db "github.com/tendermint/tm-db"

@@ -11,9 +11,9 @@ import (
 	ibcchanneltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
 	"github.com/stretchr/testify/suite"
 
-	gaiaapp "github.com/cosmos/gaia/v9/app"
-	gaiafeeante "github.com/cosmos/gaia/v9/x/globalfee/ante"
-	globfeetypes "github.com/cosmos/gaia/v9/x/globalfee/types"
+	gaiaapp "github.com/althea-net/ibc-test-chain/v9/app"
+	gaiafeeante "github.com/althea-net/ibc-test-chain/v9/x/globalfee/ante"
+	globfeetypes "github.com/althea-net/ibc-test-chain/v9/x/globalfee/types"
 )
 
 func TestIntegrationTestSuite(t *testing.T) {
@@ -402,7 +402,7 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 			txCheck:  true,
 			expErr:   false,
 		},
-		// cases from https://github.com/cosmos/gaia/pull/1570#issuecomment-1190524402
+		// cases from https://github.com/althea-net/ibc-test-chain/pull/1570#issuecomment-1190524402
 		// note: this is kind of a silly scenario but technically correct
 		// if there is a zero coin in the globalfee, the user could pay 0fees
 		// if the user includes any fee at all in the non-zero denom, it must be higher than that non-zero fee

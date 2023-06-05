@@ -10,7 +10,7 @@ import (
 	ibcante "github.com/cosmos/ibc-go/v4/modules/core/ante"
 	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
 
-	gaiafeeante "github.com/cosmos/gaia/v9/x/globalfee/ante"
+	gaiafeeante "github.com/althea-net/ibc-test-chain/v9/x/globalfee/ante"
 )
 
 // HandlerOptions extend the SDK's AnteHandler options by requiring the IBC

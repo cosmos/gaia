@@ -21,7 +21,7 @@ BUILDDIR ?= $(CURDIR)/build
 TEST_DOCKER_REPO=cosmos/contrib-gaiatest
 
 GO_SYSTEM_VERSION = $(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f1-2)
-REQUIRE_GO_VERSION = 1.18
+REQUIRE_GO_VERSION = 1.19
 
 export GO111MODULE = on
 
@@ -95,19 +95,14 @@ include contrib/devtools/Makefile
 ###                              Build                                      ###
 ###############################################################################
 
-check_version:
-ifneq ($(GO_SYSTEM_VERSION), $(REQUIRE_GO_VERSION))
-	@echo "ERROR: Go version 1.18 is required for $(VERSION) of Gaia."
-	exit 1
-endif
 
-all: install lint run-tests test-e2e vulncheck
+all: install run-tests test-e2e vulncheck
 
 BUILD_TARGETS := build install
 
 build: BUILD_ARGS=-o $(BUILDDIR)/
 
-$(BUILD_TARGETS): check_version go.sum $(BUILDDIR)/
+$(BUILD_TARGETS): go.sum $(BUILDDIR)/
 	go $@ -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./...
 
 $(BUILDDIR)/:

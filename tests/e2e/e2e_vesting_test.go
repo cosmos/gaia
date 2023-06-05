@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/althea-net/ibc-test-chain/v9/x/globalfee/ante"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/gaia/v9/x/globalfee/ante"
 )
 
 const (

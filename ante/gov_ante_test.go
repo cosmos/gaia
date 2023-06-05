@@ -8,14 +8,14 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/stretchr/testify/suite"
 
+	"github.com/althea-net/ibc-test-chain/v9/ante"
+	gaiahelpers "github.com/althea-net/ibc-test-chain/v9/app/helpers"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-	"github.com/cosmos/gaia/v9/ante"
-	gaiahelpers "github.com/cosmos/gaia/v9/app/helpers"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	gaiaapp "github.com/cosmos/gaia/v9/app"
+	gaiaapp "github.com/althea-net/ibc-test-chain/v9/app"
 )
 
 var (

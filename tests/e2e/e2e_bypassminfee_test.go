@@ -152,11 +152,11 @@ func (s *IntegrationTestSuite) testTxContainsOnlyIBCBypassMsg() {
 
 func (s *IntegrationTestSuite) testTxContainsMixBypassNonBypassMsg() {
 	s.T().Logf("testing transaction contains both bypass and non-bypass messages")
-	// hermesTransfer wtih --timeout-height-offset=1
+	// hermesTransfer with --timeout-height-offset=1
 	ok := s.hermesTransfer(hermesConfigWithGasPrices, s.chainA.id, s.chainB.id, transferChannel, uatomDenom, 100, 1, 1)
 	s.Require().True(ok)
 	// make sure that the transaction is timeout
-	time.Sleep(3)
+	time.Sleep(3 * time.Second)
 	pendingPacketsExist := s.hermesPendingPackets(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
 	s.Require().True(pendingPacketsExist)
 

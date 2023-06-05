@@ -50,6 +50,7 @@ import (
 	"github.com/cosmos/gaia/v10/app/keepers"
 	"github.com/cosmos/gaia/v10/app/upgrades"
 	v10 "github.com/cosmos/gaia/v10/app/upgrades/v10"
+
 	// TODO: Enable with GlobalFee
 	// "github.com/cosmos/gaia/v10/x/globalfee"
 
@@ -212,9 +213,6 @@ func NewGaiaApp(
 	app.MountTransientStores(app.GetTransientStoreKey())
 	app.MountMemoryStores(app.GetMemoryStoreKey())
 
-	app.SetInitChainer(app.InitChainer)
-	app.SetBeginBlocker(app.BeginBlocker)
-
 	anteHandler, err := gaiaante.NewAnteHandler(
 		gaiaante.HandlerOptions{
 			HandlerOptions: ante.HandlerOptions{
@@ -235,8 +233,10 @@ func NewGaiaApp(
 		panic(fmt.Errorf("failed to create AnteHandler: %s", err))
 	}
 
-	app.SetEndBlocker(app.EndBlocker)
 	app.SetAnteHandler(anteHandler)
+	app.SetInitChainer(app.InitChainer)
+	app.SetBeginBlocker(app.BeginBlocker)
+	app.SetEndBlocker(app.EndBlocker)
 
 	app.setupUpgradeHandlers()
 	app.setupUpgradeStoreLoaders()

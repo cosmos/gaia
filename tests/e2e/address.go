@@ -29,6 +29,6 @@ package e2e
 //}
 //
 //// Address returns a sample string account address
-//func Address() string {
+// func Address() string {
 //	return AccAddress().String()
 //}

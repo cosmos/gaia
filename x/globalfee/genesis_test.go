@@ -139,7 +139,7 @@ package globalfee
 //	}
 //}
 //
-//func setupTestStore(t *testing.T) (sdk.Context, simappparams.EncodingConfig, paramstypes.Subspace) {
+// func setupTestStore(t *testing.T) (sdk.Context, simappparams.EncodingConfig, paramstypes.Subspace) {
 //	t.Helper()
 //	db := dbm.NewMemDB()
 //	ms := store.NewCommitMultiStore(db)

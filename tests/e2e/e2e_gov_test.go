@@ -20,12 +20,12 @@ package e2e
 // GovSoftwareUpgrade tests passing a gov proposal to upgrade the chain at a given height.
 // Test Benchmarks:
 // 1. Submission, deposit and vote of message based proposal to upgrade the chain at a height (current height + buffer)
-//2. Validation that chain halted at upgrade height
-//3. Teardown & restart chains
-//4. Reset proposalCounter so subsequent tests have the correct last effective proposal id for chainA
+// 2. Validation that chain halted at upgrade height
+// 3. Teardown & restart chains
+// 4. Reset proposalCounter so subsequent tests have the correct last effective proposal id for chainA
 //TODO: Perform upgrade in place of chain restart
-//*/
-//func (s *IntegrationTestSuite) GovSoftwareUpgrade() {
+// */
+// func (s *IntegrationTestSuite) GovSoftwareUpgrade() {
 //	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 //	senderAddress := s.chainA.validators[0].keyInfo.GetAddress()
 //	sender := senderAddress.String()
@@ -59,13 +59,13 @@ package e2e
 //}
 //
 ///*
-//GovCancelSoftwareUpgrade tests passing a gov proposal that cancels a pending upgrade.
-//Test Benchmarks:
-//1. Submission, deposit and vote of message based proposal to upgrade the chain at a height (current height + buffer)
-//2. Submission, deposit and vote of message based proposal to cancel the pending upgrade
-//3. Validation that the chain produced blocks past the intended upgrade height
-//*/
-//func (s *IntegrationTestSuite) GovCancelSoftwareUpgrade() {
+// GovCancelSoftwareUpgrade tests passing a gov proposal that cancels a pending upgrade.
+// Test Benchmarks:
+// 1. Submission, deposit and vote of message based proposal to upgrade the chain at a height (current height + buffer)
+// 2. Submission, deposit and vote of message based proposal to cancel the pending upgrade
+// 3. Validation that the chain produced blocks past the intended upgrade height
+// */
+// func (s *IntegrationTestSuite) GovCancelSoftwareUpgrade() {
 //	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 //	senderAddress := s.chainA.validators[0].keyInfo.GetAddress()
 //
@@ -90,13 +90,13 @@ package e2e
 //}
 //
 ///*
-//GovCommunityPoolSpend tests passing a community spend proposal.
-//Test Benchmarks:
-//1. Fund Community Pool
-//2. Submission, deposit and vote of proposal to spend from the community pool to send atoms to a recipient
-//3. Validation that the recipient balance has increased by proposal amount
-//*/
-//func (s *IntegrationTestSuite) GovCommunityPoolSpend() {
+// GovCommunityPoolSpend tests passing a community spend proposal.
+// Test Benchmarks:
+// 1. Fund Community Pool
+// 2. Submission, deposit and vote of proposal to spend from the community pool to send atoms to a recipient
+// 3. Validation that the recipient balance has increased by proposal amount
+// */
+// func (s *IntegrationTestSuite) GovCommunityPoolSpend() {
 //	s.fundCommunityPool()
 //	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 //	senderAddress := s.chainA.validators[0].keyInfo.GetAddress()
@@ -129,14 +129,14 @@ package e2e
 //}
 //
 ///*
-//AddRemoveConsumerChain tests adding and subsequently removing a new consumer chain to Gaia.
-//Test Benchmarks:
-//1. Submit and pass proposal to add consumer chain
-//2. Validation that consumer chain was added
-//3. Submit and pass proposal to remove consumer chain
-//4. Validation that consumer chain was removed
-//*/
-//func (s *IntegrationTestSuite) AddRemoveConsumerChain() {
+// AddRemoveConsumerChain tests adding and subsequently removing a new consumer chain to Gaia.
+// Test Benchmarks:
+// 1. Submit and pass proposal to add consumer chain
+// 2. Validation that consumer chain was added
+// 3. Submit and pass proposal to remove consumer chain
+// 4. Validation that consumer chain was removed
+// */
+// func (s *IntegrationTestSuite) AddRemoveConsumerChain() {
 //	s.fundCommunityPool()
 //	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 //	proposerAddress := s.chainA.validators[0].keyInfo.GetAddress()
@@ -165,7 +165,7 @@ package e2e
 //	s.execQueryConsumerChains(s.chainA, 0, gaiaHomePath, validateConsumerRemoval, consumerChainID)
 //}
 //
-//func validateConsumerAddition(res ccvtypes.QueryConsumerChainsResponse, consumerChainID string) bool {
+// func validateConsumerAddition(res ccvtypes.QueryConsumerChainsResponse, consumerChainID string) bool {
 //	if res.Size() == 0 {
 //		return false
 //	}
@@ -175,7 +175,7 @@ package e2e
 //	return false
 //}
 //
-//func validateConsumerRemoval(res ccvtypes.QueryConsumerChainsResponse, consumerChainID string) bool {
+// func validateConsumerRemoval(res ccvtypes.QueryConsumerChainsResponse, consumerChainID string) bool {
 //	if res.Size() > 0 {
 //		for _, chain := range res.GetChains() {
 //			if strings.Compare(chain.ChainId, consumerChainID) == 0 {
@@ -186,7 +186,7 @@ package e2e
 //	return true
 //}
 //
-//func (s *IntegrationTestSuite) runGovProcess(chainAAPIEndpoint, sender string, proposalID int, proposalType string, submitFlags []string, depositFlags []string, voteFlags []string, voteCommand string, withDeposit bool) {
+// func (s *IntegrationTestSuite) runGovProcess(chainAAPIEndpoint, sender string, proposalID int, proposalType string, submitFlags []string, depositFlags []string, voteFlags []string, voteCommand string, withDeposit bool) {
 //	s.T().Logf("Submitting Gov Proposal: %s", proposalType)
 //	// min deposit of 1000uatom is required in e2e tests, otherwise the gov antehandler causes the proposal to be dropped
 //	sflags := submitFlags
@@ -200,7 +200,7 @@ package e2e
 //	s.submitGovCommand(chainAAPIEndpoint, sender, proposalID, voteCommand, voteFlags, govtypes.StatusPassed)
 //}
 //
-//func (s *IntegrationTestSuite) verifyChainHaltedAtUpgradeHeight(c *chain, valIdx, upgradeHeight int) {
+// func (s *IntegrationTestSuite) verifyChainHaltedAtUpgradeHeight(c *chain, valIdx, upgradeHeight int) {
 //	s.Require().Eventually(
 //		func() bool {
 //			currentHeight := s.getLatestBlockHeight(c, valIdx)
@@ -229,7 +229,7 @@ package e2e
 //	)
 //}
 //
-//func (s *IntegrationTestSuite) verifyChainPassesUpgradeHeight(c *chain, valIdx, upgradeHeight int) {
+// func (s *IntegrationTestSuite) verifyChainPassesUpgradeHeight(c *chain, valIdx, upgradeHeight int) {
 //	s.Require().Eventually(
 //		func() bool {
 //			currentHeight := s.getLatestBlockHeight(c, valIdx)
@@ -241,7 +241,7 @@ package e2e
 //	)
 //}
 //
-//func (s *IntegrationTestSuite) submitGovCommand(chainAAPIEndpoint, sender string, proposalID int, govCommand string, proposalFlags []string, expectedSuccessStatus govtypes.ProposalStatus) {
+// func (s *IntegrationTestSuite) submitGovCommand(chainAAPIEndpoint, sender string, proposalID int, govCommand string, proposalFlags []string, expectedSuccessStatus govtypes.ProposalStatus) {
 //	s.Run(fmt.Sprintf("Running tx gov %s", govCommand), func() {
 //		s.runGovExec(s.chainA, 0, sender, govCommand, proposalFlags, standardFees.String())
 //

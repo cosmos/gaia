@@ -94,18 +94,18 @@ package e2e
 //	valResources   map[string][]*dockertest.Resource
 //}
 //
-//type AddressResponse struct {
+// type AddressResponse struct {
 //	Name     string `json:"name"`
 //	Type     string `json:"type"`
 //	Address  string `json:"address"`
 //	Mnemonic string `json:"mnemonic"`
 //}
 //
-//func TestIntegrationTestSuite(t *testing.T) {
+// func TestIntegrationTestSuite(t *testing.T) {
 //	suite.Run(t, new(IntegrationTestSuite))
 //}
 //
-//func (s *IntegrationTestSuite) SetupSuite() {
+// func (s *IntegrationTestSuite) SetupSuite() {
 //	s.T().Log("setting up e2e integration test suite...")
 //
 //	var err error
@@ -152,7 +152,7 @@ package e2e
 //	s.runIBCRelayer()
 //}
 //
-//func (s *IntegrationTestSuite) TearDownSuite() {
+// func (s *IntegrationTestSuite) TearDownSuite() {
 //	if str := os.Getenv("GAIA_E2E_SKIP_CLEANUP"); len(str) > 0 {
 //		skipCleanup, err := strconv.ParseBool(str)
 //		s.Require().NoError(err)
@@ -184,7 +184,7 @@ package e2e
 //	}
 //}
 //
-//func (s *IntegrationTestSuite) initNodes(c *chain) {
+// func (s *IntegrationTestSuite) initNodes(c *chain) {
 //	s.Require().NoError(c.createAndInitValidators(2))
 //	/* Adding 4 accounts to val0 local directory
 //	c.genesisAccounts[0]: Relayer Wallet
@@ -220,13 +220,13 @@ package e2e
 //}
 //
 //// TODO find a better way to manipulate accounts to add genesis accounts
-//func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
+//  func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 //	c *chain,
 //	valConfigDir,
 //	vestingMnemonic,
 //	jailedValMnemonic string,
 //	appGenState map[string]json.RawMessage,
-//) map[string]json.RawMessage {
+// ) map[string]json.RawMessage {
 //	var (
 //		authGenState    = authtypes.GetGenesisStateFromAppState(cdc, appGenState)
 //		bankGenState    = banktypes.GetGenesisStateFromAppState(cdc, appGenState)
@@ -374,7 +374,7 @@ package e2e
 //	return appGenState
 //}
 //
-//func (s *IntegrationTestSuite) initGenesis(c *chain, vestingMnemonic, jailedValMnemonic string) {
+//  func (s *IntegrationTestSuite) initGenesis(c *chain, vestingMnemonic, jailedValMnemonic string) {
 //	var (
 //		serverCtx = server.NewDefaultContext()
 //		config    = serverCtx.Config
@@ -464,7 +464,7 @@ package e2e
 //}
 //
 //// initValidatorConfigs initializes the validator configs for the given chain.
-//func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
+//  func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 //	for i, val := range c.validators {
 //		tmCfgPath := filepath.Join(val.configDir(), "config", "config.toml")
 //
@@ -512,7 +512,7 @@ package e2e
 //}
 //
 //// runValidators runs the validators in the chain
-//func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
+//  func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 //	s.T().Logf("starting Gaia %s validator containers...", c.id)
 //
 //	s.valResources[c.id] = make([]*dockertest.Resource, len(c.validators))
@@ -577,14 +577,14 @@ package e2e
 //	)
 //}
 //
-//func noRestart(config *docker.HostConfig) {
+//  func noRestart(config *docker.HostConfig) {
 //	// in this case we don't want the nodes to restart on failure
 //	config.RestartPolicy = docker.RestartPolicy{
 //		Name: "no",
 //	}
 //}
 //
-//func (s *IntegrationTestSuite) writeGovParamChangeProposalGlobalFees(c *chain, coins sdk.DecCoins) {
+//  func (s *IntegrationTestSuite) writeGovParamChangeProposalGlobalFees(c *chain, coins sdk.DecCoins) {
 //	type ParamInfo struct {
 //		Subspace string       `json:"subspace"`
 //		Key      string       `json:"key"`
@@ -616,7 +616,7 @@ package e2e
 //	s.Require().NoError(err)
 //}
 //
-//func (s *IntegrationTestSuite) writeGovParamChangeProposalBypassMsgs(c *chain, msgs []string) {
+//  func (s *IntegrationTestSuite) writeGovParamChangeProposalBypassMsgs(c *chain, msgs []string) {
 //	type ParamInfo struct {
 //		Subspace string   `json:"subspace"`
 //		Key      string   `json:"key"`
@@ -647,7 +647,7 @@ package e2e
 //	s.Require().NoError(err)
 //}
 //
-//func (s *IntegrationTestSuite) writeGovParamChangeProposalMaxTotalBypass(c *chain, gas uint64) {
+//  func (s *IntegrationTestSuite) writeGovParamChangeProposalMaxTotalBypass(c *chain, gas uint64) {
 //	type ParamInfo struct {
 //		Subspace string `json:"subspace"`
 //		Key      string `json:"key"`
@@ -678,7 +678,7 @@ package e2e
 //	s.Require().NoError(err)
 //}
 //
-//func (s *IntegrationTestSuite) writeGovCommunitySpendProposal(c *chain, amount string, recipient string) {
+// func (s *IntegrationTestSuite) writeGovCommunitySpendProposal(c *chain, amount string, recipient string) {
 //	proposalCommSpend := &distrtypes.CommunityPoolSpendProposalWithDeposit{
 //		Title:       "Community Pool Spend",
 //		Description: "Fund Team!",
@@ -693,17 +693,17 @@ package e2e
 //	s.Require().NoError(err)
 //}
 //
-//type ConsumerAdditionProposalWithDeposit struct {
+// type ConsumerAdditionProposalWithDeposit struct {
 //	ccvprovider.ConsumerAdditionProposal
 //	Deposit string `json:"deposit"`
 //}
 //
-//type ConsumerRemovalProposalWithDeposit struct {
+// type ConsumerRemovalProposalWithDeposit struct {
 //	ccvprovider.ConsumerRemovalProposal
 //	Deposit string `json:"deposit"`
 //}
 //
-//func (s *IntegrationTestSuite) writeAddRemoveConsumerProposals(c *chain, consumerChainID string) {
+// func (s *IntegrationTestSuite) writeAddRemoveConsumerProposals(c *chain, consumerChainID string) {
 //	hash, _ := json.Marshal("Z2VuX2hhc2g=")
 //	addProp := &ccvprovider.ConsumerAdditionProposal{
 //		Title:       "Create consumer chain",
@@ -751,7 +751,7 @@ package e2e
 //	s.Require().NoError(err)
 //}
 //
-//func configFile(filename string) string {
+// func configFile(filename string) string {
 //	filepath := filepath.Join(gaiaConfigPath, filename)
 //	return filepath
 //}

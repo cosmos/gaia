@@ -226,7 +226,7 @@ package ante
 //	}
 //}
 //
-//func TestSplitGlobalFees(t *testing.T) {
+// func TestSplitGlobalFees(t *testing.T) {
 //	photon0 := sdk.NewCoin("photon", sdk.ZeroInt())
 //	uatom0 := sdk.NewCoin("uatom", sdk.ZeroInt())
 //	photon1 := sdk.NewCoin("photon", sdk.OneInt())
@@ -278,7 +278,7 @@ package ante
 //	}
 //}
 //
-//func equalMap(a, b map[string]struct{}) bool {
+// func equalMap(a, b map[string]struct{}) bool {
 //	if len(a) != len(b) {
 //		return false
 //	}

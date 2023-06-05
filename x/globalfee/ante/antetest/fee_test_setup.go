@@ -52,7 +52,7 @@ package antetest
 //	s.clientCtx = client.Context{}.WithTxConfig(encodingConfig.TxConfig)
 //}
 //
-//func (s *IntegrationTestSuite) SetupTestGlobalFeeStoreAndMinGasPrice(minGasPrice []sdk.DecCoin, globalFeeParams *globfeetypes.Params) (gaiafeeante.FeeDecorator, sdk.AnteHandler) {
+// func (s *IntegrationTestSuite) SetupTestGlobalFeeStoreAndMinGasPrice(minGasPrice []sdk.DecCoin, globalFeeParams *globfeetypes.Params) (gaiafeeante.FeeDecorator, sdk.AnteHandler) {
 //	subspace := s.app.GetSubspace(globalfee.ModuleName)
 //	subspace.SetParamSet(s.ctx, globalFeeParams)
 //	s.ctx = s.ctx.WithMinGasPrices(minGasPrice).WithIsCheckTx(true)
@@ -72,12 +72,12 @@ package antetest
 //}
 //
 //// SetupTestStakingSubspace sets uatom as bond denom for the fee tests.
-//func (s *IntegrationTestSuite) SetupTestStakingSubspace(params stakingtypes.Params) types.Subspace {
+// func (s *IntegrationTestSuite) SetupTestStakingSubspace(params stakingtypes.Params) types.Subspace {
 //	s.app.GetSubspace(stakingtypes.ModuleName).SetParamSet(s.ctx, &params)
 //	return s.app.GetSubspace(stakingtypes.ModuleName)
 //}
 //
-//func (s *IntegrationTestSuite) CreateTestTx(privs []cryptotypes.PrivKey, accNums []uint64, accSeqs []uint64, chainID string) (xauthsigning.Tx, error) {
+// func (s *IntegrationTestSuite) CreateTestTx(privs []cryptotypes.PrivKey, accNums []uint64, accSeqs []uint64, chainID string) (xauthsigning.Tx, error) {
 //	var sigsV2 []signing.SignatureV2
 //	for i, priv := range privs {
 //		sigV2 := signing.SignatureV2{

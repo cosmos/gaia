@@ -3,11 +3,12 @@ package sim
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/cosmos/gaia/v10/app/params"
 	"io"
 	"math/rand"
 	"os"
 	"time"
+
+	"github.com/cosmos/gaia/v10/app/params"
 
 	"cosmossdk.io/math"
 

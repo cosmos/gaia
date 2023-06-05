@@ -131,7 +131,7 @@ package e2e
 //	s.createChannel()
 //}
 //
-//func (s *IntegrationTestSuite) sendIBC(c *chain, valIdx int, sender, recipient, token, fees, note string) {
+// func (s *IntegrationTestSuite) sendIBC(c *chain, valIdx int, sender, recipient, token, fees, note string) {
 //	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 //	defer cancel()
 //
@@ -159,7 +159,7 @@ package e2e
 //	s.T().Log("successfully sent IBC tokens")
 //}
 //
-//func (s *IntegrationTestSuite) createConnection() {
+// func (s *IntegrationTestSuite) createConnection() {
 //	s.T().Logf("connecting %s and %s chains via IBC", s.chainA.id, s.chainB.id)
 //
 //	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
@@ -202,7 +202,7 @@ package e2e
 //	s.T().Logf("connected %s and %s chains via IBC", s.chainA.id, s.chainB.id)
 //}
 //
-//func (s *IntegrationTestSuite) createChannel() {
+// func (s *IntegrationTestSuite) createChannel() {
 //	s.T().Logf("connecting %s and %s chains via IBC", s.chainA.id, s.chainB.id)
 //
 //	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
@@ -249,7 +249,7 @@ package e2e
 //	s.T().Logf("connected %s and %s chains via IBC", s.chainA.id, s.chainB.id)
 //}
 //
-//func (s *IntegrationTestSuite) testIBCTokenTransfer() {
+// func (s *IntegrationTestSuite) testIBCTokenTransfer() {
 //	time.Sleep(30 * time.Second)
 //	s.Run("send_uatom_to_chainB", func() {
 //		// require the recipient account receives the IBC tokens (IBC packets ACKd)
@@ -309,18 +309,18 @@ package e2e
 //}
 //
 ///*
-//TestMultihopIBCTokenTransfer tests that sending an IBC transfer using the IBC Packet Forward Middleware accepts a port, channel and account address
+// TestMultihopIBCTokenTransfer tests that sending an IBC transfer using the IBC Packet Forward Middleware accepts a port, channel and account address
 //
 //Steps:
-//1. Check balance of Account 1 on Chain 1
-//2. Check balance of Account 2 on Chain 1
-//3. Account 1 on Chain 1 sends x tokens to Account 2 on Chain 1 via Account 1 on Chain 2
-//4. Check Balance of Account 1 on Chain 1, confirm it is original minus x tokens
-//5. Check Balance of Account 2 on Chain 1, confirm it is original plus x tokens
+// 1. Check balance of Account 1 on Chain 1
+// 2. Check balance of Account 2 on Chain 1
+// 3. Account 1 on Chain 1 sends x tokens to Account 2 on Chain 1 via Account 1 on Chain 2
+// 4. Check Balance of Account 1 on Chain 1, confirm it is original minus x tokens
+// 5. Check Balance of Account 2 on Chain 1, confirm it is original plus x tokens
 //
-//*/
+// */
 //// TODO: Add back only if packet forward middleware has a working version compatible with IBC v3.0.x
-//func (s *IntegrationTestSuite) testMultihopIBCTokenTransfer() {
+// func (s *IntegrationTestSuite) testMultihopIBCTokenTransfer() {
 //	time.Sleep(30 * time.Second)
 //
 //	s.Run("send_successful_multihop_uatom_to_chainA_from_chainA", func() {
@@ -399,10 +399,10 @@ package e2e
 //}
 //
 ///*
-//TestFailedMultihopIBCTokenTransfer tests that sending a failing IBC transfer using the IBC Packet Forward
-//Middleware will send the tokens back to the original account after failing.
-//*/
-//func (s *IntegrationTestSuite) testFailedMultihopIBCTokenTransfer() {
+// TestFailedMultihopIBCTokenTransfer tests that sending a failing IBC transfer using the IBC Packet Forward
+// Middleware will send the tokens back to the original account after failing.
+// */
+// func (s *IntegrationTestSuite) testFailedMultihopIBCTokenTransfer() {
 //	time.Sleep(30 * time.Second)
 //
 //	s.Run("send_failed_multihop_uatom_to_chainA_from_chainA", func() {

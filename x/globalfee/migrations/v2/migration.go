@@ -1,7 +1,7 @@
 package v2
 
 //
-//import (
+// import (
 //	sdk "github.com/cosmos/cosmos-sdk/types"
 //	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 //	"github.com/cosmos/gaia/v10/x/globalfee/types"
@@ -18,7 +18,7 @@ package v2
 //// "/ibc.core.channel.v1.MsgTimeout",
 //// "/ibc.core.channel.v1.MsgTimeoutOnClose"] as default and
 //// add MaxTotalBypassMinFeeMsgGasUsage that is set 1_000_000 as default.
-//func MigrateStore(ctx sdk.Context, globalfeeSubspace paramtypes.Subspace) error {
+// func MigrateStore(ctx sdk.Context, globalfeeSubspace paramtypes.Subspace) error {
 //	var oldGlobalMinGasPrices sdk.DecCoins
 //	globalfeeSubspace.Get(ctx, types.ParamStoreKeyMinGasPrices, &oldGlobalMinGasPrices)
 //	defaultParams := types.DefaultParams()

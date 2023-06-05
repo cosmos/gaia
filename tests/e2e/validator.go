@@ -52,16 +52,16 @@ package e2e
 //	return fmt.Sprintf("%s%d", v.moniker, v.index)
 //}
 //
-//func (v *validator) configDir() string {
+// func (v *validator) configDir() string {
 //	return fmt.Sprintf("%s/%s", v.chain.configDir(), v.instanceName())
 //}
 //
-//func (v *validator) createConfig() error {
+// func (v *validator) createConfig() error {
 //	p := path.Join(v.configDir(), "config")
 //	return os.MkdirAll(p, 0o755)
 //}
 //
-//func (v *validator) init() error {
+// func (v *validator) init() error {
 //	if err := v.createConfig(); err != nil {
 //		return err
 //	}
@@ -94,7 +94,7 @@ package e2e
 //	return nil
 //}
 //
-//func (v *validator) createNodeKey() error {
+// func (v *validator) createNodeKey() error {
 //	serverCtx := server.NewDefaultContext()
 //	config := serverCtx.Config
 //
@@ -110,7 +110,7 @@ package e2e
 //	return nil
 //}
 //
-//func (v *validator) createConsensusKey() error {
+//  func (v *validator) createConsensusKey() error {
 //	serverCtx := server.NewDefaultContext()
 //	config := serverCtx.Config
 //
@@ -133,7 +133,7 @@ package e2e
 //	return nil
 //}
 //
-//func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
+// func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
 //	dir := v.configDir()
 //	kb, err := keyring.New(keyringAppName, keyring.BackendTest, dir, nil)
 //	if err != nil {
@@ -168,7 +168,7 @@ package e2e
 //	return nil
 //}
 //
-//func (c *chain) addAccountFromMnemonic(counts int) error {
+// func (c *chain) addAccountFromMnemonic(counts int) error {
 //	val0ConfigDir := c.validators[0].configDir()
 //	kb, err := keyring.New(keyringAppName, keyring.BackendTest, val0ConfigDir, nil)
 //	if err != nil {
@@ -211,7 +211,7 @@ package e2e
 //	return nil
 //}
 //
-//func (v *validator) createKey(name string) error {
+// func (v *validator) createKey(name string) error {
 //	mnemonic, err := createMnemonic()
 //	if err != nil {
 //		return err
@@ -220,7 +220,7 @@ package e2e
 //	return v.createKeyFromMnemonic(name, mnemonic)
 //}
 //
-//func (v *validator) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
+// func (v *validator) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
 //	description := stakingtypes.NewDescription(v.moniker, "", "", "", "")
 //	commissionRates := stakingtypes.CommissionRates{
 //		Rate:          sdk.MustNewDecFromStr("0.1"),
@@ -246,7 +246,7 @@ package e2e
 //	)
 //}
 //
-//func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
+// func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 //	txBuilder := encodingConfig.TxConfig.NewTxBuilder()
 //
 //	if err := txBuilder.SetMsgs(msgs...); err != nil {

@@ -30,7 +30,7 @@ package e2e
 ///*
 // global fee e2e tests:
 // initial setup: initial globalfee = 0.00001uatom, min_gas_price = 0.00001uatom
-//(This initial value setup is to pass other e2e tests)
+// (This initial value setup is to pass other e2e tests)
 //
 //test1: gov proposal globalfee = [], min_gas_price=0.00001uatom, query globalfee still get empty
 //- tx with fee denom photon, fail
@@ -56,8 +56,8 @@ package e2e
 //- tx with fee 0photon, 0.00001uatom pass
 //test5: check balance correct: all the successful bank sent tokens are received
 //test6: gov propose change back to initial globalfee = 0.00001photon, This is for not influence other e2e tests.
-//*/
-//func (s *IntegrationTestSuite) testGlobalFees() {
+// */
+// func (s *IntegrationTestSuite) testGlobalFees() {
 //	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 //
 //	submitterAddr := s.chainA.validators[0].keyInfo.GetAddress()

@@ -46,7 +46,7 @@ package e2e
 //	}
 //}
 //
-//func applyOptions(chainID string, options []flagOption) map[string]interface{} {
+// func applyOptions(chainID string, options []flagOption) map[string]interface{} {
 //	opts := map[string]interface{}{
 //		flagKeyringBackend: "test",
 //		flagOutput:         "json",
@@ -64,11 +64,11 @@ package e2e
 //	return opts
 //}
 //
-//func (s *IntegrationTestSuite) execEncode(
+// func (s *IntegrationTestSuite) execEncode(
 //	c *chain,
 //	txPath string,
 //	opt ...flagOption,
-//) string {
+// ) string {
 //	opts := applyOptions(c.id, opt)
 //	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 //	defer cancel()
@@ -96,11 +96,11 @@ package e2e
 //	return encoded
 //}
 //
-//func (s *IntegrationTestSuite) execDecode(
+// func (s *IntegrationTestSuite) execDecode(
 //	c *chain,
 //	txPath string,
 //	opt ...flagOption,
-//) string {
+// ) string {
 //	opts := applyOptions(c.id, opt)
 //	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 //	defer cancel()
@@ -128,12 +128,12 @@ package e2e
 //	return decoded
 //}
 //
-//func (s *IntegrationTestSuite) execVestingTx(
+// func (s *IntegrationTestSuite) execVestingTx(
 //	c *chain,
 //	method string,
 //	args []string,
 //	opt ...flagOption,
-//) {
+// ) {
 //	opts := applyOptions(c.id, opt)
 //	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 //	defer cancel()
@@ -156,21 +156,21 @@ package e2e
 //	s.T().Logf("successfully %s with %v", method, args)
 //}
 //
-//func (s *IntegrationTestSuite) execCreatePeriodicVestingAccount(
+// func (s *IntegrationTestSuite) execCreatePeriodicVestingAccount(
 //	c *chain,
 //	address,
 //	jsonPath string,
 //	opt ...flagOption,
-//) {
+// ) {
 //	s.T().Logf("Executing gaiad create periodic vesting account %s", c.id)
 //	s.execVestingTx(c, "create-periodic-vesting-account", []string{address, jsonPath}, opt...)
 //	s.T().Logf("successfully created periodic vesting account %s with %s", address, jsonPath)
 //}
 //
-//func (s *IntegrationTestSuite) execUnjail(
+// func (s *IntegrationTestSuite) execUnjail(
 //	c *chain,
 //	opt ...flagOption,
-//) {
+// ) {
 //	opts := applyOptions(c.id, opt)
 //	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 //	defer cancel()
@@ -192,7 +192,7 @@ package e2e
 //	s.T().Logf("successfully unjail with options %v", opt)
 //}
 //
-//func (s *IntegrationTestSuite) execFeeGrant(c *chain, valIdx int, granter, grantee, spendLimit string, opt ...flagOption) {
+// func (s *IntegrationTestSuite) execFeeGrant(c *chain, valIdx int, granter, grantee, spendLimit string, opt ...flagOption) {
 //	opt = append(opt, withKeyValue(flagFrom, granter))
 //	opt = append(opt, withKeyValue(flagSpendLimit, spendLimit))
 //	opts := applyOptions(c.id, opt)
@@ -218,7 +218,7 @@ package e2e
 //	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
 //}
 //
-//func (s *IntegrationTestSuite) execFeeGrantRevoke(c *chain, valIdx int, granter, grantee string, opt ...flagOption) {
+// func (s *IntegrationTestSuite) execFeeGrantRevoke(c *chain, valIdx int, granter, grantee string, opt ...flagOption) {
 //	opt = append(opt, withKeyValue(flagFrom, granter))
 //	opts := applyOptions(c.id, opt)
 //
@@ -243,7 +243,7 @@ package e2e
 //	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
 //}
 //
-//func (s *IntegrationTestSuite) execBankSend(
+// func (s *IntegrationTestSuite) execBankSend(
 //	c *chain,
 //	valIdx int,
 //	from,
@@ -252,7 +252,7 @@ package e2e
 //	fees string,
 //	expectErr bool,
 //	opt ...flagOption,
-//) {
+// ) {
 //	// TODO remove the hardcode opt after refactor, all methods should accept custom flags
 //	opt = append(opt, withKeyValue(flagFees, fees))
 //	opt = append(opt, withKeyValue(flagFrom, from))
@@ -280,7 +280,7 @@ package e2e
 //	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.expectErrExecValidation(c, valIdx, expectErr))
 //}
 //
-//type txBankSend struct {
+// type txBankSend struct {
 //	from      string
 //	to        string
 //	amt       string
@@ -289,11 +289,11 @@ package e2e
 //	expectErr bool
 //}
 //
-//func (s *IntegrationTestSuite) execBankSendBatch(
+// func (s *IntegrationTestSuite) execBankSendBatch(
 //	c *chain,
 //	valIdx int, //nolint:unparam
 //	txs ...txBankSend,
-//) int {
+// ) int {
 //	sucessBankSendCount := 0
 //
 //	for i := range txs {
@@ -310,7 +310,7 @@ package e2e
 //	return sucessBankSendCount
 //}
 //
-//func (s *IntegrationTestSuite) execWithdrawAllRewards(c *chain, valIdx int, payee, fees string, expectErr bool) {
+// func (s *IntegrationTestSuite) execWithdrawAllRewards(c *chain, valIdx int, payee, fees string, expectErr bool) {
 //	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 //	defer cancel()
 //
@@ -330,7 +330,7 @@ package e2e
 //	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.expectErrExecValidation(c, valIdx, expectErr))
 //}
 //
-//func (s *IntegrationTestSuite) execDistributionFundCommunityPool(c *chain, valIdx int, from, amt, fees string) {
+// func (s *IntegrationTestSuite) execDistributionFundCommunityPool(c *chain, valIdx int, from, amt, fees string) {
 //	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 //	defer cancel()
 //
@@ -354,7 +354,7 @@ package e2e
 //	s.T().Logf("Successfully funded community pool")
 //}
 //
-//func (s *IntegrationTestSuite) runGovExec(c *chain, valIdx int, submitterAddr, govCommand string, proposalFlags []string, fees string) {
+// func (s *IntegrationTestSuite) runGovExec(c *chain, valIdx int, submitterAddr, govCommand string, proposalFlags []string, fees string) {
 //	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 //	defer cancel()
 //
@@ -382,7 +382,7 @@ package e2e
 //	s.T().Logf("Successfully executed %s", govCommand)
 //}
 //
-//func (s *IntegrationTestSuite) executeGKeysAddCommand(c *chain, valIdx int, name string, home string) string {
+// func (s *IntegrationTestSuite) executeGKeysAddCommand(c *chain, valIdx int, name string, home string) string {
 //	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 //	defer cancel()
 //
@@ -407,7 +407,7 @@ package e2e
 //	return addrRecord.Address
 //}
 //
-//func (s *IntegrationTestSuite) executeKeysList(c *chain, valIdx int, home string) {
+// func (s *IntegrationTestSuite) executeKeysList(c *chain, valIdx int, home string) {
 //	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 //	defer cancel()
 //
@@ -425,7 +425,7 @@ package e2e
 //	})
 //}
 //
-//func (s *IntegrationTestSuite) executeDelegate(c *chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) { //nolint:unparam
+// func (s *IntegrationTestSuite) executeDelegate(c *chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) { //nolint:unparam
 //	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 //	defer cancel()
 //
@@ -451,9 +451,9 @@ package e2e
 //	s.T().Logf("%s successfully delegated %s to %s", delegatorAddr, amount, valOperAddress)
 //}
 //
-//func (s *IntegrationTestSuite) executeRedelegate(c *chain, valIdx int, amount, originalValOperAddress,
+// func (s *IntegrationTestSuite) executeRedelegate(c *chain, valIdx int, amount, originalValOperAddress,
 //	newValOperAddress, delegatorAddr, home, delegateFees string,
-//) {
+// ) {
 //	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 //	defer cancel()
 //
@@ -481,7 +481,7 @@ package e2e
 //	s.T().Logf("%s successfully redelegated %s from %s to %s", delegatorAddr, amount, originalValOperAddress, newValOperAddress)
 //}
 //
-//func (s *IntegrationTestSuite) getLatestBlockHeight(c *chain, valIdx int) int {
+// func (s *IntegrationTestSuite) getLatestBlockHeight(c *chain, valIdx int) int {
 //	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 //	defer cancel()
 //
@@ -506,7 +506,7 @@ package e2e
 //	return currentHeight
 //}
 //
-//func (s *IntegrationTestSuite) verifyBalanceChange(endpoint string, expectedAmount sdk.Coin, recipientAddress string) {
+// func (s *IntegrationTestSuite) verifyBalanceChange(endpoint string, expectedAmount sdk.Coin, recipientAddress string) {
 //	s.Require().Eventually(
 //		func() bool {
 //			afterAtomBalance, err := getSpecificBalance(endpoint, recipientAddress, uatomDenom)
@@ -519,14 +519,14 @@ package e2e
 //	)
 //}
 //
-//func (s *IntegrationTestSuite) execSetWithdrawAddress(
+// func (s *IntegrationTestSuite) execSetWithdrawAddress(
 //	c *chain,
 //	valIdx int,
 //	fees,
 //	delegatorAddress,
 //	newWithdrawalAddress,
 //	homePath string,
-//) {
+// ) {
 //	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 //	defer cancel()
 //
@@ -550,13 +550,13 @@ package e2e
 //	s.T().Logf("Successfully set new distribution withdrawal address for %s to %s", delegatorAddress, newWithdrawalAddress)
 //}
 //
-//func (s *IntegrationTestSuite) execWithdrawReward(
+// func (s *IntegrationTestSuite) execWithdrawReward(
 //	c *chain,
 //	valIdx int,
 //	delegatorAddress,
 //	validatorAddress,
 //	homePath string,
-//) {
+// ) {
 //	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 //	defer cancel()
 //
@@ -582,7 +582,7 @@ package e2e
 //	s.T().Logf("Successfully withdrew distribution rewards for delegator %s from validator %s", delegatorAddress, validatorAddress)
 //}
 //
-//func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chain, gaiaCommand []string, valIdx int, validation func([]byte, []byte) bool) {
+// func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chain, gaiaCommand []string, valIdx int, validation func([]byte, []byte) bool) {
 //	if validation == nil {
 //		validation = s.defaultExecValidation(s.chainA, 0)
 //	}
@@ -617,7 +617,7 @@ package e2e
 //	}
 //}
 //
-//func (s *IntegrationTestSuite) expectErrExecValidation(chain *chain, valIdx int, expectErr bool) func([]byte, []byte) bool {
+// func (s *IntegrationTestSuite) expectErrExecValidation(chain *chain, valIdx int, expectErr bool) func([]byte, []byte) bool {
 //	return func(stdOut []byte, stdErr []byte) bool {
 //		var txResp sdk.TxResponse
 //		gotErr := cdc.UnmarshalJSON(stdOut, &txResp) != nil
@@ -641,7 +641,7 @@ package e2e
 //	}
 //}
 //
-//func (s *IntegrationTestSuite) defaultExecValidation(chain *chain, valIdx int) func([]byte, []byte) bool {
+// func (s *IntegrationTestSuite) defaultExecValidation(chain *chain, valIdx int) func([]byte, []byte) bool {
 //	return func(stdOut []byte, stdErr []byte) bool {
 //		var txResp sdk.TxResponse
 //		if err := cdc.UnmarshalJSON(stdOut, &txResp); err != nil {

@@ -12,12 +12,12 @@ package e2e
 // TestFeeGrant creates a test to ensure that Alice can grant the fees for bob.
 // Test Benchmarks:
 // 1. Execute fee grant CLI command for Alice to pay bob fees
-//2. Send a transaction from bob with Alice as a fee granter
-//3. Check the bob balances if the fee was not deducted
-//4. Try to send a transaction from bob with Alice as a fee granter again. Should fail
-//because all amount granted was expended
-//*/
-//func (s *IntegrationTestSuite) testFeeGrant() {
+// 2. Send a transaction from bob with Alice as a fee granter
+// 3. Check the bob balances if the fee was not deducted
+// 4. Try to send a transaction from bob with Alice as a fee granter again. Should fail
+// because all amount granted was expended
+//  */
+//  func (s *IntegrationTestSuite) testFeeGrant() {
 //	s.Run("test fee grant module", func() {
 //		var (
 //			valIdx = 0

@@ -37,7 +37,7 @@ package antetest
 //// Test global fees and min_gas_price with bypass msg types.
 //// Please note even globalfee=0, min_gas_price=0, we do not let fee=0random_denom pass.
 //// Paid fees are already sanitized by removing zero coins(through feeFlag parsing), so use sdk.NewCoins() to create it.
-//func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
+// func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 //	s.txBuilder = s.clientCtx.TxConfig.NewTxBuilder()
 //	priv1, _, addr1 := testdata.KeyTestPubAddr()
 //	privs, accNums, accSeqs := []cryptotypes.PrivKey{priv1}, []uint64{0}, []uint64{0}
@@ -635,7 +635,7 @@ package antetest
 //// Note that in a real Gaia deployment all zero coins can be removed from minGasPrice.
 //// This sanitizing happens when the minGasPrice is set into the context.
 //// (see baseapp.SetMinGasPrices in gaia/cmd/root.go line 221)
-//func (s *IntegrationTestSuite) TestGetMinGasPrice() {
+// func (s *IntegrationTestSuite) TestGetMinGasPrice() {
 //	expCoins := sdk.Coins{
 //		sdk.NewCoin("photon", sdk.NewInt(2000)),
 //		sdk.NewCoin("uatom", sdk.NewInt(3000)),
@@ -705,7 +705,7 @@ package antetest
 //	}
 //}
 //
-//func (s *IntegrationTestSuite) TestContainsOnlyBypassMinFeeMsgs() {
+// func (s *IntegrationTestSuite) TestContainsOnlyBypassMinFeeMsgs() {
 //	// set globalfees params and min gas price
 //	globalfeeParams := &globfeetypes.Params{
 //		BypassMinFeeMsgTypes:            globfeetypes.DefaultBypassMinFeeMsgTypes,
@@ -763,7 +763,7 @@ package antetest
 //	}
 //}
 //
-//func (s *IntegrationTestSuite) TestGetTxFeeRequired() {
+// func (s *IntegrationTestSuite) TestGetTxFeeRequired() {
 //	// create global fee params
 //	globalfeeParamsEmpty := &globfeetypes.Params{MinimumGasPrices: []sdk.DecCoin{}}
 //

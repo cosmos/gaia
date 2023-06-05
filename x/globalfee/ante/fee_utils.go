@@ -81,7 +81,7 @@ package ante
 //
 //// splitCoinsByDenoms returns the given coins split in two whether
 //// their demon is or isn't found in the given denom map.
-//func splitCoinsByDenoms(feeCoins sdk.Coins, denomMap map[string]struct{}) (sdk.Coins, sdk.Coins) {
+// func splitCoinsByDenoms(feeCoins sdk.Coins, denomMap map[string]struct{}) (sdk.Coins, sdk.Coins) {
 //	feeCoinsNonZeroDenom, feeCoinsZeroDenom := sdk.Coins{}, sdk.Coins{}
 //
 //	for _, fc := range feeCoins {
@@ -98,7 +98,7 @@ package ante
 //
 //// getNonZeroFees returns the given fees nonzero coins
 //// and a map storing the zero coins's denoms
-//func getNonZeroFees(fees sdk.Coins) (sdk.Coins, map[string]struct{}) {
+// func getNonZeroFees(fees sdk.Coins) (sdk.Coins, map[string]struct{}) {
 //	requiredFeesNonZero := sdk.Coins{}
 //	requiredFeesZeroDenom := map[string]struct{}{}
 //

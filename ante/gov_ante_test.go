@@ -17,12 +17,12 @@ import (
 	gaiaapp "github.com/cosmos/gaia/v10/app"
 )
 
-var (
-	insufficientCoins = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 100))
-	minCoins          = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000000))
-	moreThanMinCoins  = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 2500000))
-	testAddr          = sdk.AccAddress("test1")
-)
+// var (
+// 	insufficientCoins = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 100))
+// 	minCoins          = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000000))
+// 	moreThanMinCoins  = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 2500000))
+// 	testAddr          = sdk.AccAddress("test1")
+// )
 
 type GovAnteHandlerTestSuite struct {
 	suite.Suite

@@ -33,7 +33,7 @@ package e2e
 //	s.testBankTokenTransfer()
 //}
 //
-//func (s *IntegrationTestSuite) TestByPassMinFee() {
+// func (s *IntegrationTestSuite) TestByPassMinFee() {
 //	if !runBypassMinFeeTest {
 //		s.T().Skip()
 //	}
@@ -41,7 +41,7 @@ package e2e
 //	s.testBypassMinFeeWithdrawReward(chainAPI)
 //}
 //
-//func (s *IntegrationTestSuite) TestEncode() {
+// func (s *IntegrationTestSuite) TestEncode() {
 //	if !runEncodeTest {
 //		s.T().Skip()
 //	}
@@ -49,21 +49,21 @@ package e2e
 //	s.testDecode()
 //}
 //
-//func (s *IntegrationTestSuite) TestEvidence() {
+// func (s *IntegrationTestSuite) TestEvidence() {
 //	if !runEvidenceTest {
 //		s.T().Skip()
 //	}
 //	s.testEvidence()
 //}
 //
-//func (s *IntegrationTestSuite) TestFeeGrant() {
+// func (s *IntegrationTestSuite) TestFeeGrant() {
 //	if !runFeeGrantTest {
 //		s.T().Skip()
 //	}
 //	s.testFeeGrant()
 //}
 //
-//func (s *IntegrationTestSuite) TestGlobalFees() {
+// func (s *IntegrationTestSuite) TestGlobalFees() {
 //	if !runGlobalFeesTest {
 //		s.T().Skip()
 //	}
@@ -71,7 +71,7 @@ package e2e
 //	s.testQueryGlobalFeesInGenesis()
 //}
 //
-//func (s *IntegrationTestSuite) TestGov() {
+// func (s *IntegrationTestSuite) TestGov() {
 //	if !runGovTest {
 //		s.T().Skip()
 //	}
@@ -81,7 +81,7 @@ package e2e
 //	s.AddRemoveConsumerChain()
 //}
 //
-//func (s *IntegrationTestSuite) TestIBC() {
+// func (s *IntegrationTestSuite) TestIBC() {
 //	if !runIBCTest {
 //		s.T().Skip()
 //	}
@@ -90,7 +90,7 @@ package e2e
 //	s.testFailedMultihopIBCTokenTransfer()
 //}
 //
-//func (s *IntegrationTestSuite) TestSlashing() {
+// func (s *IntegrationTestSuite) TestSlashing() {
 //	if !runSlashingTest {
 //		s.T().Skip()
 //	}
@@ -99,7 +99,7 @@ package e2e
 //}
 //
 //// todo add fee test with wrong denom order
-//func (s *IntegrationTestSuite) TestStakingAndDistribution() {
+// func (s *IntegrationTestSuite) TestStakingAndDistribution() {
 //	if !runStakingAndDistributionTest {
 //		s.T().Skip()
 //	}
@@ -107,7 +107,7 @@ package e2e
 //	s.testDistribution()
 //}
 //
-//func (s *IntegrationTestSuite) TestVesting() {
+// func (s *IntegrationTestSuite) TestVesting() {
 //	if !runVestingTest {
 //		s.T().Skip()
 //	}

@@ -34,7 +34,7 @@ package e2e
 //
 //// buildRawTx build a dummy tx using the TxBuilder and
 //// return the JSON and encoded tx's
-//func buildRawTx() ([]byte, string, error) {
+// func buildRawTx() ([]byte, string, error) {
 //	builder := txConfig.NewTxBuilder()
 //	builder.SetGasLimit(gas)
 //	builder.SetFeeAmount(sdk.NewCoins(standardFees))

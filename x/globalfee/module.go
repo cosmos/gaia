@@ -36,13 +36,13 @@ package globalfee
 //	return types.ModuleName
 //}
 //
-//func (a AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
+// func (a AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 //	return cdc.MustMarshalJSON(&types.GenesisState{
 //		Params: types.DefaultParams(),
 //	})
 //}
 //
-//func (a AppModuleBasic) ValidateGenesis(marshaler codec.JSONCodec, _ client.TxEncodingConfig, message json.RawMessage) error {
+// func (a AppModuleBasic) ValidateGenesis(marshaler codec.JSONCodec, _ client.TxEncodingConfig, message json.RawMessage) error {
 //	var data types.GenesisState
 //	err := marshaler.UnmarshalJSON(message, &data)
 //	if err != nil {
@@ -54,13 +54,13 @@ package globalfee
 //	return nil
 //}
 //
-//func (a AppModuleBasic) RegisterInterfaces(_ codectypes.InterfaceRegistry) {
+// func (a AppModuleBasic) RegisterInterfaces(_ codectypes.InterfaceRegistry) {
 //}
 //
-//func (a AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {
+// func (a AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {
 //}
 //
-//func (a AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
+// func (a AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
 //	err := types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
 //	if err != nil {
 //		// same behavior as in cosmos-sdk
@@ -68,24 +68,24 @@ package globalfee
 //	}
 //}
 //
-//func (a AppModuleBasic) GetTxCmd() *cobra.Command {
+// func (a AppModuleBasic) GetTxCmd() *cobra.Command {
 //	return nil
 //}
 //
-//func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
+// func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
 //	return cli.GetQueryCmd()
 //}
 //
-//func (a AppModuleBasic) RegisterLegacyAminoCodec(_ *codec.LegacyAmino) {
+// func (a AppModuleBasic) RegisterLegacyAminoCodec(_ *codec.LegacyAmino) {
 //}
 //
-//type AppModule struct {
+// type AppModule struct {
 //	AppModuleBasic
 //	paramSpace paramstypes.Subspace
 //}
 //
 //// NewAppModule constructor
-//func NewAppModule(paramSpace paramstypes.Subspace) *AppModule {
+// func NewAppModule(paramSpace paramstypes.Subspace) *AppModule {
 //	if !paramSpace.HasKeyTable() {
 //		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
 //	}
@@ -93,7 +93,7 @@ package globalfee
 //	return &AppModule{paramSpace: paramSpace}
 //}
 //
-//func (a AppModule) InitGenesis(ctx sdk.Context, marshaler codec.JSONCodec, message json.RawMessage) []abci.ValidatorUpdate {
+// func (a AppModule) InitGenesis(ctx sdk.Context, marshaler codec.JSONCodec, message json.RawMessage) []abci.ValidatorUpdate {
 //	var genesisState types.GenesisState
 //	marshaler.MustUnmarshalJSON(message, &genesisState)
 //
@@ -101,28 +101,28 @@ package globalfee
 //	return nil
 //}
 //
-//func (a AppModule) ExportGenesis(ctx sdk.Context, marshaler codec.JSONCodec) json.RawMessage {
+// func (a AppModule) ExportGenesis(ctx sdk.Context, marshaler codec.JSONCodec) json.RawMessage {
 //	var genState types.GenesisState
 //	a.paramSpace.GetParamSet(ctx, &genState.Params)
 //	return marshaler.MustMarshalJSON(&genState)
 //}
 //
-//func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {
+// func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {
 //}
 //
-//func (a AppModule) Route() sdk.Route {
+// func (a AppModule) Route() sdk.Route {
 //	return sdk.Route{}
 //}
 //
-//func (a AppModule) QuerierRoute() string {
+// func (a AppModule) QuerierRoute() string {
 //	return types.QuerierRoute
 //}
 //
-//func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier {
+// func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier {
 //	return nil
 //}
 //
-//func (a AppModule) RegisterServices(cfg module.Configurator) {
+// func (a AppModule) RegisterServices(cfg module.Configurator) {
 //	types.RegisterQueryServer(cfg.QueryServer(), NewGrpcQuerier(a.paramSpace))
 //
 //	m := keeper.NewMigrator(a.paramSpace)
@@ -131,10 +131,10 @@ package globalfee
 //	}
 //}
 //
-//func (a AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {
+// func (a AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {
 //}
 //
-//func (a AppModule) EndBlock(_ sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
+// func (a AppModule) EndBlock(_ sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
 //	return nil
 //}
 //
@@ -142,6 +142,6 @@ package globalfee
 //// module. It should be incremented on each consensus-breaking change
 //// introduced by the module. To avoid wrong/empty versions, the initial version
 //// should be set to 1.
-//func (a AppModule) ConsensusVersion() uint64 {
+// func (a AppModule) ConsensusVersion() uint64 {
 //	return 2
 //}

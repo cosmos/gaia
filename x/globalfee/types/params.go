@@ -51,7 +51,7 @@ package types
 //}
 //
 //// ValidateBasic performs basic validation.
-//func (p Params) ValidateBasic() error {
+// func (p Params) ValidateBasic() error {
 //	if err := validateMinimumGasPrices(p.MinimumGasPrices); err != nil {
 //		return err
 //	}
@@ -64,7 +64,7 @@ package types
 //}
 //
 //// ParamSetPairs returns the parameter set pairs.
-//func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
+// func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 //	return paramtypes.ParamSetPairs{
 //		paramtypes.NewParamSetPair(
 //			ParamStoreKeyMinGasPrices, &p.MinimumGasPrices, validateMinimumGasPrices,
@@ -78,7 +78,7 @@ package types
 //	}
 //}
 //
-//func validateMinimumGasPrices(i interface{}) error {
+// func validateMinimumGasPrices(i interface{}) error {
 //	v, ok := i.(sdk.DecCoins)
 //	if !ok {
 //		return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "type: %T, expected sdk.DecCoins", i)
@@ -88,10 +88,10 @@ package types
 //	return dec.Validate()
 //}
 //
-//type BypassMinFeeMsgTypes []string
+// type BypassMinFeeMsgTypes []string
 //
 //// validateBypassMinFeeMsgTypes checks that bypass msg types aren't empty
-//func validateBypassMinFeeMsgTypes(i interface{}) error {
+// func validateBypassMinFeeMsgTypes(i interface{}) error {
 //	bypassMinFeeMsgTypes, ok := i.([]string)
 //	if !ok {
 //		return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "type: %T, expected []sdk.Msg", i)
@@ -110,7 +110,7 @@ package types
 //	return nil
 //}
 //
-//func validateMaxTotalBypassMinFeeMsgGasUsage(i interface{}) error {
+// func validateMaxTotalBypassMinFeeMsgGasUsage(i interface{}) error {
 //	_, ok := i.(uint64)
 //	if !ok {
 //		return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "type: %T, expected uint64", i)
@@ -119,11 +119,11 @@ package types
 //	return nil
 //}
 //
-//type DecCoins sdk.DecCoins
+// type DecCoins sdk.DecCoins
 //
 //// Validate checks that the DecCoins are sorted, have nonnegtive amount, with a valid and unique
 //// denomination (i.e no duplicates). Otherwise, it returns an error.
-//func (coins DecCoins) Validate() error {
+// func (coins DecCoins) Validate() error {
 //	if len(coins) == 0 {
 //		return nil
 //	}

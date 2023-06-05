@@ -21,12 +21,12 @@ package globalfee
 //	paramSource ParamSource
 //}
 //
-//func NewGrpcQuerier(paramSource ParamSource) GrpcQuerier {
+// func NewGrpcQuerier(paramSource ParamSource) GrpcQuerier {
 //	return GrpcQuerier{paramSource: paramSource}
 //}
 //
 //// MinimumGasPrices return minimum gas prices
-//func (g GrpcQuerier) Params(stdCtx context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+// func (g GrpcQuerier) Params(stdCtx context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 //	var minGasPrices sdk.DecCoins
 //	var bypassMinFeeMsgTypes []string
 //	var maxTotalBypassMinFeeMsgGasUsage uint64

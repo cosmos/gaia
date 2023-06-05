@@ -121,7 +121,7 @@ package types
 //	}
 //}
 //
-//func Test_validateMaxTotalBypassMinFeeMsgGasUsage(t *testing.T) {
+// func Test_validateMaxTotalBypassMinFeeMsgGasUsage(t *testing.T) {
 //	tests := map[string]struct {
 //		msgTypes  interface{}
 //		expectErr bool

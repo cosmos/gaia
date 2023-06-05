@@ -49,7 +49,7 @@ package ante
 //}
 //
 //// AnteHandle implements the AnteDecorator interface
-//func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
+// func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
 //	feeTx, ok := tx.(sdk.FeeTx)
 //	if !ok {
 //		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must implement the sdk.FeeTx interface")
@@ -154,7 +154,7 @@ package ante
 //// GetTxFeeRequired returns the required fees for the given FeeTx.
 //// In case the FeeTx's mode is CheckTx, it returns the combined requirements
 //// of local min gas prices and global fees. Otherwise, in DeliverTx, it returns the global fee.
-//func (mfd FeeDecorator) GetTxFeeRequired(ctx sdk.Context, tx sdk.FeeTx) (sdk.Coins, error) {
+// func (mfd FeeDecorator) GetTxFeeRequired(ctx sdk.Context, tx sdk.FeeTx) (sdk.Coins, error) {
 //	// Get required global fee min gas prices
 //	// Note that it should never be empty since its default value is set to coin={"StakingBondDenom", 0}
 //	globalFees, err := mfd.GetGlobalFee(ctx, tx)
@@ -181,7 +181,7 @@ package ante
 //// (might also return 0denom if globalMinGasPrice is 0)
 //// sorted in ascending order.
 //// Note that ParamStoreKeyMinGasPrices type requires coins sorted.
-//func (mfd FeeDecorator) GetGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) (sdk.Coins, error) {
+// func (mfd FeeDecorator) GetGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) (sdk.Coins, error) {
 //	var (
 //		globalMinGasPrices sdk.DecCoins
 //		err                error
@@ -210,7 +210,7 @@ package ante
 //}
 //
 //// DefaultZeroGlobalFee returns a zero coin with the staking module bond denom
-//func (mfd FeeDecorator) DefaultZeroGlobalFee(ctx sdk.Context) ([]sdk.DecCoin, error) {
+// func (mfd FeeDecorator) DefaultZeroGlobalFee(ctx sdk.Context) ([]sdk.DecCoin, error) {
 //	bondDenom := mfd.getBondDenom(ctx)
 //	if bondDenom == "" {
 //		return nil, errors.New("empty staking bond denomination")
@@ -219,7 +219,7 @@ package ante
 //	return []sdk.DecCoin{sdk.NewDecCoinFromDec(bondDenom, sdk.NewDec(0))}, nil
 //}
 //
-//func (mfd FeeDecorator) getBondDenom(ctx sdk.Context) (bondDenom string) {
+// func (mfd FeeDecorator) getBondDenom(ctx sdk.Context) (bondDenom string) {
 //	if mfd.StakingSubspace.Has(ctx, stakingtypes.KeyBondDenom) {
 //		mfd.StakingSubspace.Get(ctx, stakingtypes.KeyBondDenom, &bondDenom)
 //	}
@@ -227,7 +227,7 @@ package ante
 //	return
 //}
 //
-//func (mfd FeeDecorator) ContainsOnlyBypassMinFeeMsgs(ctx sdk.Context, msgs []sdk.Msg) bool {
+// func (mfd FeeDecorator) ContainsOnlyBypassMinFeeMsgs(ctx sdk.Context, msgs []sdk.Msg) bool {
 //	bypassMsgTypes := mfd.GetBypassMsgTypes(ctx)
 //	for _, msg := range msgs {
 //		if tmstrings.StringInSlice(sdk.MsgTypeURL(msg), bypassMsgTypes) {
@@ -239,25 +239,25 @@ package ante
 //	return true
 //}
 //
-//func (mfd FeeDecorator) GetBypassMsgTypes(ctx sdk.Context) (res []string) {
+// func (mfd FeeDecorator) GetBypassMsgTypes(ctx sdk.Context) (res []string) {
 //	if mfd.GlobalMinFee.Has(ctx, types.ParamStoreKeyBypassMinFeeMsgTypes) {
 //		mfd.GlobalMinFee.Get(ctx, types.ParamStoreKeyBypassMinFeeMsgTypes, &res)
 //	}
 //
 //	return
-//}
+// }
 //
-//func (mfd FeeDecorator) GetMaxTotalBypassMinFeeMsgGasUsage(ctx sdk.Context) (res uint64) {
+// func (mfd FeeDecorator) GetMaxTotalBypassMinFeeMsgGasUsage(ctx sdk.Context) (res uint64) {
 //	if mfd.GlobalMinFee.Has(ctx, types.ParamStoreKeyMaxTotalBypassMinFeeMsgGasUsage) {
 //		mfd.GlobalMinFee.Get(ctx, types.ParamStoreKeyMaxTotalBypassMinFeeMsgGasUsage, &res)
 //	}
 //
 //	return
-//}
+// }
 //
 //// GetMinGasPrice returns a nodes's local minimum gas prices
 //// fees given a gas limit
-//func GetMinGasPrice(ctx sdk.Context, gasLimit int64) sdk.Coins {
+// func GetMinGasPrice(ctx sdk.Context, gasLimit int64) sdk.Coins {
 //	minGasPrices := ctx.MinGasPrices()
 //	// special case: if minGasPrices=[], requiredFees=[]
 //	if minGasPrices.IsZero() {

@@ -10,24 +10,24 @@ package e2e
 // RestRegression tests the continuity of critical endpoints that node operators, block explorers, and ecosystem participants depend on.
 // Test Node REST Endpoints:
 // 1. http://host:1317/validatorsets/latest
-//2. http://host:1317/validatorsets/{height}
-//3. http://host:1317/blocks/latest
-//4. http://host:1317/blocks/{height}
-//5. http://host:1317/syncing
-//6. http://host:1317/node_info
-//7. http://host:1317/txs
-//Test Module REST Endpoints
-//1. Bank total
-//2. Auth params
-//3. Distribution for Community Pool
-//4. Evidence
-//5. Gov proposals
-//6. Mint params
-//7. Slashing params
-//8. Staking params
-//*/
+// 2. http://host:1317/validatorsets/{height}
+// 3. http://host:1317/blocks/latest
+// 4. http://host:1317/blocks/{height}
+// 5. http://host:1317/syncing
+// 6. http://host:1317/node_info
+// 7. http://host:1317/txs
+// Test Module REST Endpoints
+// 1. Bank total
+// 2. Auth params
+// 3. Distribution for Community Pool
+// 4. Evidence
+// 5. Gov proposals
+// 6. Mint params
+// 7. Slashing params
+// 8. Staking params
+// */
 //
-//const (
+// const (
 //	valSetLatestPath                    = "/validatorsets/latest"
 //	valSetHeightPath                    = "/validatorsets/1"
 //	blocksLatestPath                    = "/blocks/latest"
@@ -46,7 +46,7 @@ package e2e
 //	missingPath                         = "/missing_endpoint"
 //)
 //
-//func (s *IntegrationTestSuite) testRestInterfaces() {
+// func (s *IntegrationTestSuite) testRestInterfaces() {
 //	s.Run("test rest interfaces", func() {
 //		var (
 //			valIdx        = 0

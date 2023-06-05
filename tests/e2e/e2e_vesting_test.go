@@ -42,7 +42,7 @@ package e2e
 //	vestingDelegationFees   = sdk.NewCoin(uatomDenom, sdk.NewInt(1))
 //)
 //
-//func (s *IntegrationTestSuite) testDelayedVestingAccount(api string) {
+// func (s *IntegrationTestSuite) testDelayedVestingAccount(api string) {
 //	var (
 //		valIdx            = 0
 //		chain             = s.chainA
@@ -111,7 +111,7 @@ package e2e
 //	})
 //}
 //
-//func (s *IntegrationTestSuite) testContinuousVestingAccount(api string) {
+// func (s *IntegrationTestSuite) testContinuousVestingAccount(api string) {
 //	s.Run("test continuous vesting genesis account", func() {
 //		var (
 //			valIdx               = 0
@@ -198,7 +198,7 @@ package e2e
 //	})
 //}
 //
-//func (s *IntegrationTestSuite) testPeriodicVestingAccount(api string) { //nolint:unused
+// func (s *IntegrationTestSuite) testPeriodicVestingAccount(api string) { //nolint:unused
 //	s.Run("test periodic vesting genesis account", func() {
 //		var (
 //			valIdx              = 0
@@ -319,7 +319,7 @@ package e2e
 //}
 //
 //// generateVestingPeriod generate the vesting period file
-//func generateVestingPeriod() ([]byte, error) {
+// func generateVestingPeriod() ([]byte, error) {
 //	p := vestingPeriod{
 //		StartTime: time.Now().Add(time.Duration(rand.Intn(20)+95) * time.Second).Unix(),
 //		Periods: []period{

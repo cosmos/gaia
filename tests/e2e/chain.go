@@ -37,7 +37,7 @@ package e2e
 //	txConfig = encodingConfig.TxConfig
 //}
 //
-//type chain struct {
+// type chain struct {
 //	dataDir    string
 //	id         string
 //	validators []*validator
@@ -47,7 +47,7 @@ package e2e
 //	genesisVestingAccounts map[string]sdk.AccAddress
 //}
 //
-//func newChain() (*chain, error) {
+// func newChain() (*chain, error) {
 //	tmpDir, err := os.MkdirTemp("", "gaia-e2e-testnet-")
 //	if err != nil {
 //		return nil, err
@@ -59,11 +59,11 @@ package e2e
 //	}, nil
 //}
 //
-//func (c *chain) configDir() string {
+// func (c *chain) configDir() string {
 //	return fmt.Sprintf("%s/%s", c.dataDir, c.id)
 //}
 //
-//func (c *chain) createAndInitValidators(count int) error {
+// func (c *chain) createAndInitValidators(count int) error {
 //	for i := 0; i < count; i++ {
 //		node := c.createValidator(i)
 //
@@ -89,7 +89,7 @@ package e2e
 //	return nil
 //}
 //
-//func (c *chain) createAndInitValidatorsWithMnemonics(count int, mnemonics []string) error { //nolint:unused // this is called during e2e tests
+//  func (c *chain) createAndInitValidatorsWithMnemonics(count int, mnemonics []string) error { //nolint:unused // this is called during e2e tests
 //	for i := 0; i < count; i++ {
 //		// create node
 //		node := c.createValidator(i)
@@ -116,7 +116,7 @@ package e2e
 //	return nil
 //}
 //
-//func (c *chain) createValidator(index int) *validator {
+// func (c *chain) createValidator(index int) *validator {
 //	return &validator{
 //		chain:   c,
 //		index:   index,

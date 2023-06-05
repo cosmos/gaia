@@ -1,7 +1,7 @@
 package v2_test
 
 //
-//import (
+// import (
 //	"testing"
 //
 //	"github.com/cosmos/cosmos-sdk/codec"
@@ -18,7 +18,7 @@ package v2_test
 //	tmdb "github.com/tendermint/tm-db"
 //)
 //
-//func TestMigrateStore(t *testing.T) {
+// func TestMigrateStore(t *testing.T) {
 //	db := tmdb.NewMemDB()
 //	stateStore := store.NewCommitMultiStore(db)
 //
@@ -73,7 +73,7 @@ package v2_test
 //	require.Equal(t, minGasPrices, newMinGasPrices)
 //}
 //
-//func getBypassMsgTypes(globalfeeSubspace paramtypes.Subspace, ctx sdk.Context) ([]string, bool) {
+// func getBypassMsgTypes(globalfeeSubspace paramtypes.Subspace, ctx sdk.Context) ([]string, bool) {
 //	bypassMsgs := []string{}
 //	if globalfeeSubspace.Has(ctx, globalfeetypes.ParamStoreKeyBypassMinFeeMsgTypes) {
 //		globalfeeSubspace.Get(ctx, globalfeetypes.ParamStoreKeyBypassMinFeeMsgTypes, &bypassMsgs)
@@ -84,7 +84,7 @@ package v2_test
 //	return bypassMsgs, true
 //}
 //
-//func getMaxTotalBypassMinFeeMsgGasUsage(globalfeeSubspace paramtypes.Subspace, ctx sdk.Context) (uint64, bool) {
+// func getMaxTotalBypassMinFeeMsgGasUsage(globalfeeSubspace paramtypes.Subspace, ctx sdk.Context) (uint64, bool) {
 //	var maxTotalBypassMinFeeMsgGasUsage uint64
 //	if globalfeeSubspace.Has(ctx, globalfeetypes.ParamStoreKeyMaxTotalBypassMinFeeMsgGasUsage) {
 //		globalfeeSubspace.Get(ctx, globalfeetypes.ParamStoreKeyMaxTotalBypassMinFeeMsgGasUsage, &maxTotalBypassMinFeeMsgGasUsage)
@@ -95,7 +95,7 @@ package v2_test
 //	return maxTotalBypassMinFeeMsgGasUsage, true
 //}
 //
-//func getMinGasPrice(globalfeeSubspace paramtypes.Subspace, ctx sdk.Context) (sdk.DecCoins, bool) {
+// func getMinGasPrice(globalfeeSubspace paramtypes.Subspace, ctx sdk.Context) (sdk.DecCoins, bool) {
 //	var globalMinGasPrices sdk.DecCoins
 //	if globalfeeSubspace.Has(ctx, globalfeetypes.ParamStoreKeyMinGasPrices) {
 //		globalfeeSubspace.Get(ctx, globalfeetypes.ParamStoreKeyMinGasPrices, &globalMinGasPrices)

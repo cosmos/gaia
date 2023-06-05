@@ -160,8 +160,8 @@ func addModuleInitFlags(startCmd *cobra.Command) {
 func genesisCommand(encodingConfig params.EncodingConfig, cmds ...*cobra.Command) *cobra.Command {
 	cmd := genutilcli.GenesisCoreCommand(encodingConfig.TxConfig, gaia.ModuleBasics, gaia.DefaultNodeHome)
 
-	for _, sub_cmd := range cmds {
-		cmd.AddCommand(sub_cmd)
+	for _, subCmd := range cmds {
+		cmd.AddCommand(subCmd)
 	}
 	return cmd
 }

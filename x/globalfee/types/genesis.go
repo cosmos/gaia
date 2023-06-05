@@ -32,7 +32,7 @@ package types
 //	return &genesisState
 //}
 //
-//func ValidateGenesis(data GenesisState) error {
+// func ValidateGenesis(data GenesisState) error {
 //	if err := data.Params.ValidateBasic(); err != nil {
 //		return sdkerrors.Wrap(err, "globalfee params")
 //	}

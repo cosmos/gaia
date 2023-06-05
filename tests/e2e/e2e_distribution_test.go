@@ -57,11 +57,11 @@ package e2e
 ///*
 // fundCommunityPool tests the funding of the community pool on behalf of the distribution module.
 // Test Benchmarks:
-//1. Validation that balance of the distribution module account before funding
-//2. Execution funding the community pool
-//3. Verification that correct funds have been deposited to distribution module account
-//*/
-//func (s *IntegrationTestSuite) fundCommunityPool() {
+// 1. Validation that balance of the distribution module account before funding
+// 2. Execution funding the community pool
+// 3. Verification that correct funds have been deposited to distribution module account
+// */
+//  func (s *IntegrationTestSuite) fundCommunityPool() {
 //	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 //	sender := s.chainA.validators[0].keyInfo.GetAddress()
 //

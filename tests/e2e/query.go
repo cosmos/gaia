@@ -75,7 +75,7 @@ package e2e
 //	return balancesResp.Balances, nil
 //}
 //
-//func queryGlobalFeeParams(endpoint string) (types.QueryParamsResponse, error) {
+// func queryGlobalFeeParams(endpoint string) (types.QueryParamsResponse, error) {
 //	body, err := httpGet(fmt.Sprintf("%s/gaia/globalfee/v1beta1/params", endpoint))
 //	if err != nil {
 //		return types.QueryParamsResponse{}, fmt.Errorf("failed to execute HTTP request: %w", err)
@@ -89,25 +89,25 @@ package e2e
 //	return params, nil
 //}
 //
-//func queryGlobalFees(endpoint string) (sdk.DecCoins, error) {
+// func queryGlobalFees(endpoint string) (sdk.DecCoins, error) {
 //	p, err := queryGlobalFeeParams(endpoint)
 //
 //	return p.Params.MinimumGasPrices, err
 //}
 //
-//func queryBypassMsgs(endpoint string) ([]string, error) {
+// func queryBypassMsgs(endpoint string) ([]string, error) {
 //	p, err := queryGlobalFeeParams(endpoint)
 //
 //	return p.Params.BypassMinFeeMsgTypes, err
 //}
 //
-//func queryMaxTotalBypassMinFeeMsgGasUsage(endpoint string) (uint64, error) {
+// func queryMaxTotalBypassMinFeeMsgGasUsage(endpoint string) (uint64, error) {
 //	p, err := queryGlobalFeeParams(endpoint)
 //
 //	return p.Params.MaxTotalBypassMinFeeMsgGasUsage, err
 //}
 //
-//func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string) (stakingtypes.QueryDelegationResponse, error) {
+//  func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string) (stakingtypes.QueryDelegationResponse, error) {
 //	var res stakingtypes.QueryDelegationResponse
 //
 //	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators/%s/delegations/%s", endpoint, validatorAddr, delegatorAddr))
@@ -121,7 +121,7 @@ package e2e
 //	return res, nil
 //}
 //
-//func queryDelegatorWithdrawalAddress(endpoint string, delegatorAddr string) (disttypes.QueryDelegatorWithdrawAddressResponse, error) {
+// func queryDelegatorWithdrawalAddress(endpoint string, delegatorAddr string) (disttypes.QueryDelegatorWithdrawAddressResponse, error) {
 //	var res disttypes.QueryDelegatorWithdrawAddressResponse
 //
 //	body, err := httpGet(fmt.Sprintf("%s/cosmos/distribution/v1beta1/delegators/%s/withdraw_address", endpoint, delegatorAddr))
@@ -135,7 +135,7 @@ package e2e
 //	return res, nil
 //}
 //
-//func queryDelegatorTotalRewards(endpoint, delegatorAddr string) (disttypes.QueryDelegationTotalRewardsResponse, error) {
+// func queryDelegatorTotalRewards(endpoint, delegatorAddr string) (disttypes.QueryDelegationTotalRewardsResponse, error) {
 //	var res disttypes.QueryDelegationTotalRewardsResponse
 //
 //	body, err := httpGet(fmt.Sprintf("%s/cosmos/distribution/v1beta1/delegators/%s/rewards", endpoint, delegatorAddr))
@@ -150,7 +150,7 @@ package e2e
 //	return res, nil
 //}
 //
-//func queryGovProposal(endpoint string, proposalID int) (govtypes.QueryProposalResponse, error) {
+// func queryGovProposal(endpoint string, proposalID int) (govtypes.QueryProposalResponse, error) {
 //	var govProposalResp govtypes.QueryProposalResponse
 //
 //	path := fmt.Sprintf("%s/cosmos/gov/v1beta1/proposals/%d", endpoint, proposalID)
@@ -166,7 +166,7 @@ package e2e
 //	return govProposalResp, nil
 //}
 //
-//func queryAccount(endpoint, address string) (acc authtypes.AccountI, err error) {
+// func queryAccount(endpoint, address string) (acc authtypes.AccountI, err error) {
 //	var res authtypes.QueryAccountResponse
 //	resp, err := http.Get(fmt.Sprintf("%s/cosmos/auth/v1beta1/accounts/%s", endpoint, address))
 //	if err != nil {
@@ -184,7 +184,7 @@ package e2e
 //	return acc, cdc.UnpackAny(res.Account, &acc)
 //}
 //
-//func queryDelayedVestingAccount(endpoint, address string) (authvesting.DelayedVestingAccount, error) {
+// func queryDelayedVestingAccount(endpoint, address string) (authvesting.DelayedVestingAccount, error) {
 //	baseAcc, err := queryAccount(endpoint, address)
 //	if err != nil {
 //		return authvesting.DelayedVestingAccount{}, err
@@ -197,7 +197,7 @@ package e2e
 //	return *acc, nil
 //}
 //
-//func queryContinuousVestingAccount(endpoint, address string) (authvesting.ContinuousVestingAccount, error) {
+// func queryContinuousVestingAccount(endpoint, address string) (authvesting.ContinuousVestingAccount, error) {
 //	baseAcc, err := queryAccount(endpoint, address)
 //	if err != nil {
 //		return authvesting.ContinuousVestingAccount{}, err
@@ -210,7 +210,7 @@ package e2e
 //	return *acc, nil
 //}
 //
-//func queryPermanentLockedAccount(endpoint, address string) (authvesting.PermanentLockedAccount, error) { //nolint:unused // this is called during e2e tests
+// func queryPermanentLockedAccount(endpoint, address string) (authvesting.PermanentLockedAccount, error) { //nolint:unused // this is called during e2e tests
 //	baseAcc, err := queryAccount(endpoint, address)
 //	if err != nil {
 //		return authvesting.PermanentLockedAccount{}, err
@@ -223,7 +223,7 @@ package e2e
 //	return *acc, nil
 //}
 //
-//func queryPeriodicVestingAccount(endpoint, address string) (authvesting.PeriodicVestingAccount, error) { //nolint:unused // this is called during e2e tests
+// func queryPeriodicVestingAccount(endpoint, address string) (authvesting.PeriodicVestingAccount, error) { //nolint:unused // this is called during e2e tests
 //	baseAcc, err := queryAccount(endpoint, address)
 //	if err != nil {
 //		return authvesting.PeriodicVestingAccount{}, err
@@ -236,7 +236,7 @@ package e2e
 //	return *acc, nil
 //}
 //
-//func queryValidator(endpoint, address string) (stakingtypes.Validator, error) {
+// func queryValidator(endpoint, address string) (stakingtypes.Validator, error) {
 //	var res stakingtypes.QueryValidatorResponse
 //
 //	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators/%s", endpoint, address))
@@ -250,7 +250,7 @@ package e2e
 //	return res.Validator, nil
 //}
 //
-//func queryValidators(endpoint string) (stakingtypes.Validators, error) {
+// func queryValidators(endpoint string) (stakingtypes.Validators, error) {
 //	var res stakingtypes.QueryValidatorsResponse
 //	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators", endpoint))
 //	if err != nil {
@@ -263,7 +263,7 @@ package e2e
 //	return res.Validators, nil
 //}
 //
-//func queryEvidence(endpoint, hash string) (evidencetypes.QueryEvidenceResponse, error) { //nolint:unused // this is called during e2e tests
+// func queryEvidence(endpoint, hash string) (evidencetypes.QueryEvidenceResponse, error) { //nolint:unused // this is called during e2e tests
 //	var res evidencetypes.QueryEvidenceResponse
 //	body, err := httpGet(fmt.Sprintf("%s/cosmos/evidence/v1beta1/evidence/%s", endpoint, hash))
 //	if err != nil {
@@ -276,7 +276,7 @@ package e2e
 //	return res, nil
 //}
 //
-//func queryAllEvidence(endpoint string) (evidencetypes.QueryAllEvidenceResponse, error) {
+// func queryAllEvidence(endpoint string) (evidencetypes.QueryAllEvidenceResponse, error) {
 //	var res evidencetypes.QueryAllEvidenceResponse
 //	body, err := httpGet(fmt.Sprintf("%s/cosmos/evidence/v1beta1/evidence", endpoint))
 //	if err != nil {

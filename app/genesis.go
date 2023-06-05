@@ -2,6 +2,7 @@ package gaia
 
 import (
 	"encoding/json"
+
 	"github.com/cosmos/gaia/v10/app/params"
 )
 

@@ -83,7 +83,7 @@ func (s *IntegrationTestSuite) hermesTransfer(configPath, srcChainID, dstChainID
 	return true
 }
 
-func (s *IntegrationTestSuite) hermesClearPacket(configPath, chainID, channelID string) bool {
+func (s *IntegrationTestSuite) hermesClearPacket(configPath, chainID, channelID string) bool { //nolint:unparam
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 

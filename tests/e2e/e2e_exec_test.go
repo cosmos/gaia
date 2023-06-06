@@ -8,6 +8,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	"github.com/ory/dockertest/v3/docker"
 )
@@ -239,55 +240,54 @@ func (s *IntegrationTestSuite) execDecode(
 //
 //		s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
 //	}
-//
-// func (s *IntegrationTestSuite) execBankSend(
-//
-//	c *chain,
-//	valIdx int,
-//	from,
-//	to,
-//	amt,
-//	fees string,
-//	expectErr bool,
-//	opt ...flagOption,
-//
-//	) {
-//		// TODO remove the hardcode opt after refactor, all methods should accept custom flags
-//		opt = append(opt, withKeyValue(flagFees, fees))
-//		opt = append(opt, withKeyValue(flagFrom, from))
-//		opts := applyOptions(c.id, opt)
-//
-//		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-//		defer cancel()
-//
-//		s.T().Logf("sending %s tokens from %s to %s on chain %s", amt, from, to, c.id)
-//
-//		gaiaCommand := []string{
-//			gaiadBinary,
-//			txCommand,
-//			banktypes.ModuleName,
-//			"send",
-//			from,
-//			to,
-//			amt,
-//			"-y",
-//		}
-//		for flag, value := range opts {
-//			gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
-//		}
-//
-//		s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.expectErrExecValidation(c, valIdx, expectErr))
-//	}
-//
-//	type txBankSend struct {
-//		from      string
-//		to        string
-//		amt       string
-//		fees      string
-//		log       string
-//		expectErr bool
-//	}
-//
+func (s *IntegrationTestSuite) execBankSend(
+
+	c *chain,
+	valIdx int,
+	from,
+	to,
+	amt,
+	fees string,
+	expectErr bool,
+	opt ...flagOption,
+
+) {
+	// TODO remove the hardcode opt after refactor, all methods should accept custom flags
+	opt = append(opt, withKeyValue(flagFees, fees))
+	opt = append(opt, withKeyValue(flagFrom, from))
+	opts := applyOptions(c.id, opt)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("sending %s tokens from %s to %s on chain %s", amt, from, to, c.id)
+
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		banktypes.ModuleName,
+		"send",
+		from,
+		to,
+		amt,
+		"-y",
+	}
+	for flag, value := range opts {
+		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.expectErrExecValidation(c, valIdx, expectErr))
+}
+
+type txBankSend struct {
+	from      string
+	to        string
+	amt       string
+	fees      string
+	log       string
+	expectErr bool
+}
+
 // func (s *IntegrationTestSuite) execBankSendBatch(
 //
 //	c *chain,
@@ -624,29 +624,30 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 	}
 }
 
-//	func (s *IntegrationTestSuite) expectErrExecValidation(chain *chain, valIdx int, expectErr bool) func([]byte, []byte) bool {
-//		return func(stdOut []byte, stdErr []byte) bool {
-//			var txResp sdk.TxResponse
-//			gotErr := cdc.UnmarshalJSON(stdOut, &txResp) != nil
-//			if gotErr {
-//				s.Require().True(expectErr)
-//			}
-//
-//			endpoint := fmt.Sprintf("http://%s", s.valResources[chain.id][valIdx].GetHostPort("1317/tcp"))
-//			// wait for the tx to be committed on chain
-//			s.Require().Eventuallyf(
-//				func() bool {
-//					gotErr := queryGaiaTx(endpoint, txResp.TxHash) != nil
-//					return gotErr == expectErr
-//				},
-//				time.Minute,
-//				5*time.Second,
-//				"stdOut: %s, stdErr: %s",
-//				string(stdOut), string(stdErr),
-//			)
-//			return true
-//		}
-//	}
+func (s *IntegrationTestSuite) expectErrExecValidation(chain *chain, valIdx int, expectErr bool) func([]byte, []byte) bool {
+	return func(stdOut []byte, stdErr []byte) bool {
+		var txResp sdk.TxResponse
+		gotErr := cdc.UnmarshalJSON(stdOut, &txResp) != nil
+		if gotErr {
+			s.Require().True(expectErr)
+		}
+
+		endpoint := fmt.Sprintf("http://%s", s.valResources[chain.id][valIdx].GetHostPort("1317/tcp"))
+		// wait for the tx to be committed on chain
+		s.Require().Eventuallyf(
+			func() bool {
+				gotErr := queryGaiaTx(endpoint, txResp.TxHash) != nil
+				return gotErr == expectErr
+			},
+			time.Minute,
+			5*time.Second,
+			"stdOut: %s, stdErr: %s",
+			string(stdOut), string(stdErr),
+		)
+		return true
+	}
+}
+
 func (s *IntegrationTestSuite) defaultExecValidation(chain *chain, valIdx int) func([]byte, []byte) bool {
 	return func(stdOut []byte, stdErr []byte) bool {
 		var txResp sdk.TxResponse

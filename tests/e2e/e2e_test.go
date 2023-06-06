@@ -1,11 +1,13 @@
 package e2e
 
 // import (
-//	"fmt"
-//)
 //
-// var (
-//	runBankTest                   = true
+//	"fmt"
+//
+// )
+var (
+	runBankTest = true
+
 //	runBypassMinFeeTest           = true
 //	runEncodeTest                 = true
 //	runEvidenceTest               = true
@@ -16,26 +18,26 @@ package e2e
 //	runSlashingTest               = true
 //	runStakingAndDistributionTest = true
 //	runVestingTest                = true
-//	runRestInterfacesTest         = true
-//)
 //
+// runRestInterfacesTest         = true
+)
 
 func (s *IntegrationTestSuite) TestRestInterfaces() {
 }
 
-// func (s *IntegrationTestSuite) TestRestInterfaces() {
-//	if !runRestInterfacesTest {
-//		s.T().Skip()
+//	func (s *IntegrationTestSuite) TestRestInterfaces() {
+//		if !runRestInterfacesTest {
+//			s.T().Skip()
+//		}
+//		s.testRestInterfaces()
 //	}
-//	s.testRestInterfaces()
-//}
-//
-// func (s *IntegrationTestSuite) TestBank() {
-//	if !runBankTest {
-//		s.T().Skip()
-//	}
-//	s.testBankTokenTransfer()
-//}
+func (s *IntegrationTestSuite) TestBank() {
+	if !runBankTest {
+		s.T().Skip()
+	}
+	s.testBankTokenTransfer()
+}
+
 //
 // func (s *IntegrationTestSuite) TestByPassMinFee() {
 //	if !runBypassMinFeeTest {

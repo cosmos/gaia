@@ -14,7 +14,7 @@ require (
 	github.com/cosmos/interchain-security v1.0.1-0.20230522154154-1bb8d39e691a
 	cosmossdk.io/math v1.0.1
 	github.com/cosmos/go-bip39 v1.0.0
-	github.com/cosmos/interchain-security v1.1.1-multiden
+	github.com/cosmos/interchain-security v1.1.0-multiden
 	github.com/golang/protobuf v1.5.3
 	github.com/golangci/golangci-lint v1.52.2
 	github.com/gorilla/mux v1.8.0

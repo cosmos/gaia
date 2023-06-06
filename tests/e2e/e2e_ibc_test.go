@@ -83,6 +83,7 @@ func (s *IntegrationTestSuite) hermesTransfer(configPath, srcChainID, dstChainID
 	return true
 }
 
+// nolint: unparam
 func (s *IntegrationTestSuite) hermesClearPacket(configPath, chainID, channelID string) bool {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
@@ -105,7 +106,7 @@ func (s *IntegrationTestSuite) hermesClearPacket(configPath, chainID, channelID 
 	return true
 }
 
-func (s *IntegrationTestSuite) hermesPendingPackets(configPath, chainID, channelID string) (PendingPackets bool) {
+func (s *IntegrationTestSuite) hermesPendingPackets(configPath, chainID, channelID string) (pendingPackets bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 	hermesCmd := []string{
@@ -124,7 +125,7 @@ func (s *IntegrationTestSuite) hermesPendingPackets(configPath, chainID, channel
 	stdout = strings.ReplaceAll(stdout, "\n", "")
 
 	// Check if "unreceived_packets" exists in "src"
-	return !strings.Contains(stdout, "src:PendingPackets{unreceived_packets:[]")
+	return !strings.Contains(stdout, "src:pendingPackets{unreceived_packets:[]")
 }
 
 func (s *IntegrationTestSuite) queryRelayerWalletsBalances() (sdk.Coin, sdk.Coin) {

@@ -26,8 +26,6 @@ func queryGaiaTx(endpoint, txHash string) error {
 	if err != nil {
 		return fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
-	fmt.Println(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs/%s", endpoint, txHash))
-
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {

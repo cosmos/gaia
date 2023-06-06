@@ -4,8 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -58,7 +61,8 @@ const (
 	maxTotalBypassMinFeeMsgGasUsage       = "1"
 	gas                                   = 200000
 	govProposalBlockBuffer                = 35
-	relayerAccountIndex                   = 0
+	relayerAccountIndexHermes0            = 0
+	relayerAccountIndexHermes1            = 1
 	numberOfEvidences                     = 10
 	slashingShares                  int64 = 10000
 
@@ -68,29 +72,37 @@ const (
 	proposalCommunitySpendFilename      = "proposal_community_spend.json"
 	proposalAddConsumerChainFilename    = "proposal_add_consumer.json"
 	proposalRemoveConsumerChainFilename = "proposal_remove_consumer.json"
+
+	hermesBinary              = "hermes"
+	hermesConfigWithGasPrices = "/root/.hermes/config.toml"
+	hermesConfigNoGasPrices   = "/root/.hermes/config-zero.toml"
+	transferChannel           = "channel-0"
 )
 
 var (
-	gaiaConfigPath    = filepath.Join(gaiaHomePath, "config")
-	stakingAmount     = sdk.NewInt(100000000000)
-	stakingAmountCoin = sdk.NewCoin(uatomDenom, stakingAmount)
-	tokenAmount       = sdk.NewCoin(uatomDenom, sdk.NewInt(3300000000)) // 3,300uatom
-	standardFees      = sdk.NewCoin(uatomDenom, sdk.NewInt(330000))     // 0.33uatom
-	depositAmount     = sdk.NewCoin(uatomDenom, sdk.NewInt(330000000))  // 3,300uatom
-	distModuleAddress = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
-	proposalCounter   = 0
+	gaiaConfigPath        = filepath.Join(gaiaHomePath, "config")
+	stakingAmount         = sdk.NewInt(100000000000)
+	stakingAmountCoin     = sdk.NewCoin(uatomDenom, stakingAmount)
+	tokenAmount           = sdk.NewCoin(uatomDenom, sdk.NewInt(3300000000)) // 3,300uatom
+	standardFees          = sdk.NewCoin(uatomDenom, sdk.NewInt(330000))     // 0.33uatom
+	depositAmount         = sdk.NewCoin(uatomDenom, sdk.NewInt(330000000))  // 3,300uatom
+	distModuleAddress     = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
+	proposalCounter       = 0
+	HermesResource0Purged = false
 )
 
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	tmpDirs        []string
-	chainA         *chain
-	chainB         *chain
-	dkrPool        *dockertest.Pool
-	dkrNet         *dockertest.Network
-	hermesResource *dockertest.Resource
-	valResources   map[string][]*dockertest.Resource
+	tmpDirs         []string
+	chainA          *chain
+	chainB          *chain
+	dkrPool         *dockertest.Pool
+	dkrNet          *dockertest.Network
+	hermesResource0 *dockertest.Resource
+	hermesResource1 *dockertest.Resource
+
+	valResources map[string][]*dockertest.Resource
 }
 
 type AddressResponse struct {
@@ -148,7 +160,8 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.runValidators(s.chainB, 10)
 
 	time.Sleep(10 * time.Second)
-	s.runIBCRelayer()
+	s.runIBCRelayer0()
+	s.runIBCRelayer1()
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -163,8 +176,12 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 
 	s.T().Log("tearing down e2e integration test suite...")
 
-	if runIBCTest {
-		s.Require().NoError(s.dkrPool.Purge(s.hermesResource))
+	s.Require().NoError(s.dkrPool.Purge(s.hermesResource1))
+	// if runIBCTest, s.hermesResource0 already purged in TestIBC()
+	// in GovSoftwareUpgrade test, s.TearDownSuite() then s.SetupSuite()
+	// if IBCTest runs before GovSoftwareUpgrade, s.hermesResource0 is already purged.
+	if !HermesResource0Purged {
+		s.Require().NoError(s.dkrPool.Purge(s.hermesResource0))
 	}
 
 	for _, vr := range s.valResources {
@@ -186,12 +203,13 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 func (s *IntegrationTestSuite) initNodes(c *chain) {
 	s.Require().NoError(c.createAndInitValidators(2))
 	/* Adding 4 accounts to val0 local directory
-	c.genesisAccounts[0]: Relayer Wallet
+	c.genesisAccounts[0]: Relayer0 Wallet
 	c.genesisAccounts[1]: ICA Owner
 	c.genesisAccounts[2]: Test Account 1
 	c.genesisAccounts[3]: Test Account 2
+	c.genesisAccounts[4]: Relayer1 Wallet
 	*/
-	s.Require().NoError(c.addAccountFromMnemonic(4))
+	s.Require().NoError(c.addAccountFromMnemonic(5))
 	// Initialize a genesis file for the first validator
 	val0ConfigDir := c.validators[0].configDir()
 	var addrAll []sdk.AccAddress
@@ -581,6 +599,167 @@ func noRestart(config *docker.HostConfig) {
 	config.RestartPolicy = docker.RestartPolicy{
 		Name: "no",
 	}
+}
+
+// hermes0 is for ibc and packet-forward-middleware(PFM) test, hermes0 is keep running during the ibc and PFM test.
+func (s *IntegrationTestSuite) runIBCRelayer0() {
+	s.T().Log("starting Hermes relayer container 0...")
+
+	tmpDir, err := os.MkdirTemp("", "gaia-e2e-testnet-hermes-")
+	s.Require().NoError(err)
+	s.tmpDirs = append(s.tmpDirs, tmpDir)
+
+	gaiaAVal := s.chainA.validators[0]
+	gaiaBVal := s.chainB.validators[0]
+
+	gaiaARly := s.chainA.genesisAccounts[relayerAccountIndexHermes0]
+	gaiaBRly := s.chainB.genesisAccounts[relayerAccountIndexHermes0]
+
+	hermesCfgPath := path.Join(tmpDir, "hermes")
+
+	s.Require().NoError(os.MkdirAll(hermesCfgPath, 0o755))
+	_, err = copyFile(
+		filepath.Join("./scripts/", "hermes_bootstrap.sh"),
+		filepath.Join(hermesCfgPath, "hermes_bootstrap.sh"),
+	)
+	s.Require().NoError(err)
+
+	s.hermesResource0, err = s.dkrPool.RunWithOptions(
+		&dockertest.RunOptions{
+			Name:       fmt.Sprintf("%s-%s-relayer-0", s.chainA.id, s.chainB.id),
+			Repository: "ghcr.io/cosmos/hermes-e2e",
+			Tag:        "1.0.0",
+			NetworkID:  s.dkrNet.Network.ID,
+			Mounts: []string{
+				fmt.Sprintf("%s/:/root/hermes", hermesCfgPath),
+			},
+			PortBindings: map[docker.Port][]docker.PortBinding{
+				"3031/tcp": {{HostIP: "", HostPort: "3031"}},
+			},
+			Env: []string{
+				fmt.Sprintf("GAIA_A_E2E_CHAIN_ID=%s", s.chainA.id),
+				fmt.Sprintf("GAIA_B_E2E_CHAIN_ID=%s", s.chainB.id),
+				fmt.Sprintf("GAIA_A_E2E_VAL_MNEMONIC=%s", gaiaAVal.mnemonic),
+				fmt.Sprintf("GAIA_B_E2E_VAL_MNEMONIC=%s", gaiaBVal.mnemonic),
+				fmt.Sprintf("GAIA_A_E2E_RLY_MNEMONIC=%s", gaiaARly.mnemonic),
+				fmt.Sprintf("GAIA_B_E2E_RLY_MNEMONIC=%s", gaiaBRly.mnemonic),
+				fmt.Sprintf("GAIA_A_E2E_VAL_HOST=%s", s.valResources[s.chainA.id][0].Container.Name[1:]),
+				fmt.Sprintf("GAIA_B_E2E_VAL_HOST=%s", s.valResources[s.chainB.id][0].Container.Name[1:]),
+			},
+			Entrypoint: []string{
+				"sh",
+				"-c",
+				"chmod +x /root/hermes/hermes_bootstrap.sh && /root/hermes/hermes_bootstrap.sh",
+			},
+		},
+		noRestart,
+	)
+	s.Require().NoError(err)
+
+	endpoint := fmt.Sprintf("http://%s/state", s.hermesResource0.GetHostPort("3031/tcp"))
+	s.Require().Eventually(
+		func() bool {
+			resp, err := http.Get(endpoint) //nolint:gosec // this is a test
+			if err != nil {
+				return false
+			}
+
+			defer resp.Body.Close()
+
+			bz, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return false
+			}
+
+			var respBody map[string]interface{}
+			if err := json.Unmarshal(bz, &respBody); err != nil {
+				return false
+			}
+
+			status := respBody["status"].(string)
+			result := respBody["result"].(map[string]interface{})
+
+			return status == "success" && len(result["chains"].([]interface{})) == 2
+		},
+		5*time.Minute,
+		time.Second,
+		"hermes relayer not healthy",
+	)
+
+	s.T().Logf("started Hermes relayer 0 container: %s", s.hermesResource0.Container.ID)
+
+	// XXX: Give time to both networks to start, otherwise we might see gRPC
+	// transport errors.
+	time.Sleep(10 * time.Second)
+
+	// create the client, connection and channel between the two Gaia chains
+	s.createConnection()
+	time.Sleep(10 * time.Second)
+	s.createChannel()
+}
+
+// hermes1 is for bypass-msg test. Hermes1 is to process asynchronous transactions,
+// Hermes1 has access to two Hermes configurations: one configuration allows paying fees, while the other does not.
+// With Hermes1, better control can be achieved regarding whether fees are paid when clearing transactions.
+func (s *IntegrationTestSuite) runIBCRelayer1() {
+	s.T().Log("starting Hermes relayer container 1...")
+
+	tmpDir, err := os.MkdirTemp("", "gaia-e2e-testnet-hermes-")
+	s.Require().NoError(err)
+	s.tmpDirs = append(s.tmpDirs, tmpDir)
+
+	gaiaAVal := s.chainA.validators[0]
+	gaiaBVal := s.chainB.validators[0]
+
+	gaiaARly := s.chainA.genesisAccounts[relayerAccountIndexHermes1]
+	gaiaBRly := s.chainB.genesisAccounts[relayerAccountIndexHermes1]
+
+	hermesCfgPath := path.Join(tmpDir, "hermes")
+
+	s.Require().NoError(os.MkdirAll(hermesCfgPath, 0o755))
+	_, err = copyFile(
+		filepath.Join("./scripts/", "hermes1_bootstrap.sh"),
+		filepath.Join(hermesCfgPath, "hermes1_bootstrap.sh"),
+	)
+	s.Require().NoError(err)
+
+	s.hermesResource1, err = s.dkrPool.RunWithOptions(
+		&dockertest.RunOptions{
+			Name:       fmt.Sprintf("%s-%s-relayer-1", s.chainA.id, s.chainB.id),
+			Repository: "ghcr.io/cosmos/hermes-e2e",
+			Tag:        "1.0.0",
+			NetworkID:  s.dkrNet.Network.ID,
+			Mounts: []string{
+				fmt.Sprintf("%s/:/root/hermes", hermesCfgPath),
+			},
+			PortBindings: map[docker.Port][]docker.PortBinding{
+				"3032/tcp": {{HostIP: "", HostPort: "3032"}},
+			},
+			Env: []string{
+				fmt.Sprintf("GAIA_A_E2E_CHAIN_ID=%s", s.chainA.id),
+				fmt.Sprintf("GAIA_B_E2E_CHAIN_ID=%s", s.chainB.id),
+				fmt.Sprintf("GAIA_A_E2E_VAL_MNEMONIC=%s", gaiaAVal.mnemonic),
+				fmt.Sprintf("GAIA_B_E2E_VAL_MNEMONIC=%s", gaiaBVal.mnemonic),
+				fmt.Sprintf("GAIA_A_E2E_RLY_MNEMONIC=%s", gaiaARly.mnemonic),
+				fmt.Sprintf("GAIA_B_E2E_RLY_MNEMONIC=%s", gaiaBRly.mnemonic),
+				fmt.Sprintf("GAIA_A_E2E_VAL_HOST=%s", s.valResources[s.chainA.id][0].Container.Name[1:]),
+				fmt.Sprintf("GAIA_B_E2E_VAL_HOST=%s", s.valResources[s.chainB.id][0].Container.Name[1:]),
+			},
+			Entrypoint: []string{
+				"sh",
+				"-c",
+				"chmod +x /root/hermes/hermes1_bootstrap.sh && /root/hermes/hermes1_bootstrap.sh && tail -f /dev/null",
+			},
+		},
+		noRestart,
+	)
+	s.Require().NoError(err)
+
+	s.T().Logf("started Hermes relayer 1 container: %s", s.hermesResource1.Container.ID)
+
+	// XXX: Give time to both networks to start, otherwise we might see gRPC
+	// transport errors.
+	time.Sleep(10 * time.Second)
 }
 
 func (s *IntegrationTestSuite) writeGovParamChangeProposalGlobalFees(c *chain, coins sdk.DecCoins) {

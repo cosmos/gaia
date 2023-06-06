@@ -16,7 +16,7 @@ Several of the numbers involved in governance are parameters and can thus be cha
 
 ## 1. Deposit Period
 
-The deposit period lasts either 14 days or until the proposal deposit totals 64 ATOMs, whichever happens first. 
+The deposit period lasts either 14 days or until the proposal deposit totals 250 ATOMs, whichever happens first. 
 
 ### Deposits
 Prior to a governance proposal entering the voting period (i.e., for the proposal to be voted upon), there must be at least a minimum number of ATOMs deposited (64). Anyone may contribute to this deposit, though it is usually filled by the proposal maker. Deposits of passed and failed proposals are returned to the contributors.

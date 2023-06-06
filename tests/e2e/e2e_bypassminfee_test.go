@@ -1,12 +1,13 @@
 package e2e
 
 import (
+	"time"
+
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
-	"time"
 )
 
 func (s *IntegrationTestSuite) testBypassMinFeeWithdrawReward(endpoint string) {
@@ -100,7 +101,6 @@ func (s *IntegrationTestSuite) testBypassMinFeeWithdrawReward(endpoint string) {
 }
 
 func (s *IntegrationTestSuite) testIBCBypassMsg() {
-
 	// submit gov proposal to change bypass-msg param to
 	// ["/ibc.core.channel.v1.MsgRecvPacket",
 	//  "/ibc.core.channel.v1.MsgAcknowledgement",
@@ -111,7 +111,8 @@ func (s *IntegrationTestSuite) testIBCBypassMsg() {
 	s.govProposeNewBypassMsgs([]string{
 		sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),
 		sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
-		sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{})}, proposalCounter, submitter, standardFees.String())
+		sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
+	}, proposalCounter, submitter, standardFees.String())
 
 	// use hermes1 to test default ibc bypass-msg
 	//
@@ -129,7 +130,8 @@ func (s *IntegrationTestSuite) testIBCBypassMsg() {
 		sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
 		sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
 		sdk.MsgTypeURL(&ibcchanneltypes.MsgTimeout{}),
-		sdk.MsgTypeURL(&ibcchanneltypes.MsgTimeoutOnClose{})}, proposalCounter, submitter, standardFees.String())
+		sdk.MsgTypeURL(&ibcchanneltypes.MsgTimeoutOnClose{}),
+	}, proposalCounter, submitter, standardFees.String())
 }
 
 func (s *IntegrationTestSuite) testTxContainsOnlyIBCBypassMsg() {

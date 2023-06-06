@@ -162,7 +162,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	time.Sleep(10 * time.Second)
 	s.runIBCRelayer0()
 	s.runIBCRelayer1()
-
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {

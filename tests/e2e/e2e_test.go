@@ -19,6 +19,10 @@ package e2e
 //	runRestInterfacesTest         = true
 //)
 //
+
+func (s *IntegrationTestSuite) TestRestInterfaces() {
+}
+
 // func (s *IntegrationTestSuite) TestRestInterfaces() {
 //	if !runRestInterfacesTest {
 //		s.T().Skip()

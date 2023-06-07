@@ -37,7 +37,7 @@ You can begin by using the command `gaia q [module] -h` to get help about the su
 bond_denom: uatom
 historical_entries: 10000
 max_entries: 7
-max_validators: 175
+max_validators: 180
 unbonding_time: 1814400s
 ```
 
@@ -48,7 +48,7 @@ If a parameter-change proposal is successful, the change takes effect immediatel
 
 
 ## Why create a parameter change proposal?
-Parameters are what govern many aspects of the chain's behaviour. As circumstances and attitudes change, sometimes you might want to change a parameter to bring the chain's behaviour in line with community opinion. For example, the Cosmos Hub launched with 100 active validators and there have been 3 proposals to date that have increased the `MaxValidators` parameter. At the time of writing, the active set contains 175 validators.
+Parameters are what govern many aspects of the chain's behaviour. As circumstances and attitudes change, sometimes you might want to change a parameter to bring the chain's behaviour in line with community opinion. For example, the Cosmos Hub launched with 100 active validators and there have been 3 proposals to date that have increased the `MaxValidators` parameter. At the time of writing, the active set contains 180 validators.
 
 The Cosmos Hub has been viewed as a slow-moving, highly secure chain and that is reflected in some of its other parameters, such as a 21 day unbonding period and 14 day voting period. These are quite long compared to other chains in the Cosmos Ecosystem
 

@@ -6,7 +6,7 @@ order: 2
 
 ## Governance Parameters
 Several of the numbers involved in governance are parameters and can thus be changed by passing a parameter change proposal. 
-- Minimum deposit: 64 ATOM
+- Minimum deposit: 250 ATOM
 - Maximum deposit period: 14 days
 - Voting period: 14 days
 - Quorum: 40% of participating voting power
@@ -19,9 +19,9 @@ Several of the numbers involved in governance are parameters and can thus be cha
 The deposit period lasts either 14 days or until the proposal deposit totals 250 ATOMs, whichever happens first. 
 
 ### Deposits
-Prior to a governance proposal entering the voting period (i.e., for the proposal to be voted upon), there must be at least a minimum number of ATOMs deposited (64). Anyone may contribute to this deposit, though it is usually filled by the proposal maker. Deposits of passed and failed proposals are returned to the contributors.
+Prior to a governance proposal entering the voting period (i.e., for the proposal to be voted upon), there must be at least a minimum number of ATOMs deposited (250). Anyone may contribute to this deposit, though it is usually filled by the proposal maker. Deposits of passed and failed proposals are returned to the contributors.
 
-In the past, different people have considered contributions amounts differently. There is some consensus that this should be a personal choice. There is also some consensus that this can be an opportunity for supporters to signal their support by adding to the deposit amount, so a proposer may choose to leave contribution room (i.e., a deposit below 64 ATOMs) so that others may participate. It is important to remember that any contributed ATOMs are at risk of being burned.
+In the past, different people have considered contributions amounts differently. There is some consensus that this should be a personal choice. There is also some consensus that this can be an opportunity for supporters to signal their support by adding to the deposit amount, so a proposer may choose to leave contribution room (i.e., a deposit below 250 ATOMs) so that others may participate. It is important to remember that any contributed ATOMs are at risk of being burned.
 
 ### Burned deposits
 
@@ -46,7 +46,7 @@ Voting 'NoWithVeto' has no immediate additional financial cost to the voter - yo
 
 There are four criteria:
 
-1. Deposit is filled: A minimum deposit of 64 ATOM is required for the proposal to enter the voting period
+1. Deposit is filled: A minimum deposit of 250 ATOM is required for the proposal to enter the voting period
    - anyone may contribute to this deposit
    - the deposit must be reached within 14 days (this is the deposit period)
 2. Quorum is reached: A minimum of 40% of the network's total voting power (staked ATOM) is required to participate 

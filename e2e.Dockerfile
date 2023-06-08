@@ -13,7 +13,7 @@ RUN CGO_ENABLED=0 make install
 # Add to a distroless container
 FROM alpine:latest
 RUN adduser -D nonroot
-USER nonroot
+RUN apk add curl
 ARG IMG_TAG
 COPY --from=gaiad-builder /go/bin/gaiad /usr/local/bin/
 EXPOSE 26656 26657 1317 9090

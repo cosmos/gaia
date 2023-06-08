@@ -529,6 +529,7 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 
 		appConfig := srvconfig.DefaultConfig()
 		appConfig.API.Enable = true
+		appConfig.API.Address = "tcp://0.0.0.0:1317"
 		appConfig.MinGasPrices = fmt.Sprintf("%s%s", minGasPrice, uatomDenom)
 
 		srvconfig.SetConfigTemplate(srvconfig.DefaultConfigTemplate)

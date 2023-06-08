@@ -7,8 +7,15 @@ import (
 	"strings"
 	"time"
 
+	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+	"github.com/cosmos/cosmos-sdk/x/feegrant"
+
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"github.com/ory/dockertest/v3/docker"
 )
@@ -120,126 +127,127 @@ func (s *IntegrationTestSuite) execDecode(
 	return decoded
 }
 
-// func (s *IntegrationTestSuite) execVestingTx(
-//
-//	c *chain,
-//	method string,
-//	args []string,
-//	opt ...flagOption,
-//
-//	) {
-//		opts := applyOptions(c.id, opt)
-//		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-//		defer cancel()
-//
-//		s.T().Logf("%s - Executing gaiad %s with %v", c.id, method, args)
-//		gaiaCommand := []string{
-//			gaiadBinary,
-//			txCommand,
-//			vestingtypes.ModuleName,
-//			method,
-//			"-y",
-//		}
-//		gaiaCommand = append(gaiaCommand, args...)
-//
-//		for flag, value := range opts {
-//			gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
-//		}
-//
-//		s.executeGaiaTxCommand(ctx, c, gaiaCommand, 0, s.defaultExecValidation(c, 0))
-//		s.T().Logf("successfully %s with %v", method, args)
-//	}
-//
-// func (s *IntegrationTestSuite) execCreatePeriodicVestingAccount(
-//
-//	c *chain,
-//	address,
-//	jsonPath string,
-//	opt ...flagOption,
-//
-//	) {
-//		s.T().Logf("Executing gaiad create periodic vesting account %s", c.id)
-//		s.execVestingTx(c, "create-periodic-vesting-account", []string{address, jsonPath}, opt...)
-//		s.T().Logf("successfully created periodic vesting account %s with %s", address, jsonPath)
-//	}
-//
-// func (s *IntegrationTestSuite) execUnjail(
-//
-//	c *chain,
-//	opt ...flagOption,
-//
-//	) {
-//		opts := applyOptions(c.id, opt)
-//		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-//		defer cancel()
-//
-//		s.T().Logf("Executing gaiad slashing unjail %s with options: %v", c.id, opt)
-//		gaiaCommand := []string{
-//			gaiadBinary,
-//			txCommand,
-//			slashingtypes.ModuleName,
-//			"unjail",
-//			"-y",
-//		}
-//
-//		for flag, value := range opts {
-//			gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
-//		}
-//
-//		s.executeGaiaTxCommand(ctx, c, gaiaCommand, 0, s.defaultExecValidation(c, 0))
-//		s.T().Logf("successfully unjail with options %v", opt)
-//	}
-//
-//	func (s *IntegrationTestSuite) execFeeGrant(c *chain, valIdx int, granter, grantee, spendLimit string, opt ...flagOption) {
-//		opt = append(opt, withKeyValue(flagFrom, granter))
-//		opt = append(opt, withKeyValue(flagSpendLimit, spendLimit))
-//		opts := applyOptions(c.id, opt)
-//
-//		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-//		defer cancel()
-//
-//		s.T().Logf("granting %s fee from %s on chain %s", grantee, granter, c.id)
-//
-//		gaiaCommand := []string{
-//			gaiadBinary,
-//			txCommand,
-//			feegrant.ModuleName,
-//			"grant",
-//			granter,
-//			grantee,
-//			"-y",
-//		}
-//		for flag, value := range opts {
-//			gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
-//		}
-//
-//		s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
-//	}
-//
-//	func (s *IntegrationTestSuite) execFeeGrantRevoke(c *chain, valIdx int, granter, grantee string, opt ...flagOption) {
-//		opt = append(opt, withKeyValue(flagFrom, granter))
-//		opts := applyOptions(c.id, opt)
-//
-//		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-//		defer cancel()
-//
-//		s.T().Logf("revoking %s fee grant from %s on chain %s", grantee, granter, c.id)
-//
-//		gaiaCommand := []string{
-//			gaiadBinary,
-//			txCommand,
-//			feegrant.ModuleName,
-//			"revoke",
-//			granter,
-//			grantee,
-//			"-y",
-//		}
-//		for flag, value := range opts {
-//			gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
-//		}
-//
-//		s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
-//	}
+func (s *IntegrationTestSuite) execVestingTx(
+
+	c *chain,
+	method string,
+	args []string,
+	opt ...flagOption,
+
+) {
+	opts := applyOptions(c.id, opt)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("%s - Executing gaiad %s with %v", c.id, method, args)
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		vestingtypes.ModuleName,
+		method,
+		"-y",
+	}
+	gaiaCommand = append(gaiaCommand, args...)
+
+	for flag, value := range opts {
+		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, 0, s.defaultExecValidation(c, 0))
+	s.T().Logf("successfully %s with %v", method, args)
+}
+
+func (s *IntegrationTestSuite) execCreatePeriodicVestingAccount(
+
+	c *chain,
+	address,
+	jsonPath string,
+	opt ...flagOption,
+
+) {
+	s.T().Logf("Executing gaiad create periodic vesting account %s", c.id)
+	s.execVestingTx(c, "create-periodic-vesting-account", []string{address, jsonPath}, opt...)
+	s.T().Logf("successfully created periodic vesting account %s with %s", address, jsonPath)
+}
+
+func (s *IntegrationTestSuite) execUnjail(
+
+	c *chain,
+	opt ...flagOption,
+
+) {
+	opts := applyOptions(c.id, opt)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad slashing unjail %s with options: %v", c.id, opt)
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		slashingtypes.ModuleName,
+		"unjail",
+		"-y",
+	}
+
+	for flag, value := range opts {
+		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, 0, s.defaultExecValidation(c, 0))
+	s.T().Logf("successfully unjail with options %v", opt)
+}
+
+func (s *IntegrationTestSuite) execFeeGrant(c *chain, valIdx int, granter, grantee, spendLimit string, opt ...flagOption) {
+	opt = append(opt, withKeyValue(flagFrom, granter))
+	opt = append(opt, withKeyValue(flagSpendLimit, spendLimit))
+	opts := applyOptions(c.id, opt)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("granting %s fee from %s on chain %s", grantee, granter, c.id)
+
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		feegrant.ModuleName,
+		"grant",
+		granter,
+		grantee,
+		"-y",
+	}
+	for flag, value := range opts {
+		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
+}
+
+func (s *IntegrationTestSuite) execFeeGrantRevoke(c *chain, valIdx int, granter, grantee string, opt ...flagOption) {
+	opt = append(opt, withKeyValue(flagFrom, granter))
+	opts := applyOptions(c.id, opt)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("revoking %s fee grant from %s on chain %s", grantee, granter, c.id)
+
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		feegrant.ModuleName,
+		"revoke",
+		granter,
+		grantee,
+		"-y",
+	}
+	for flag, value := range opts {
+		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
+}
+
 func (s *IntegrationTestSuite) execBankSend(
 
 	c *chain,
@@ -425,66 +433,66 @@ type txBankSend struct {
 //			return true
 //		})
 //	}
-//
-// func (s *IntegrationTestSuite) executeDelegate(c *chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) { //nolint:unparam
-//
-//		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-//		defer cancel()
-//
-//		s.T().Logf("Executing gaiad tx staking delegate %s", c.id)
-//
-//		gaiaCommand := []string{
-//			gaiadBinary,
-//			txCommand,
-//			stakingtypes.ModuleName,
-//			"delegate",
-//			valOperAddress,
-//			amount,
-//			fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
-//			fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-//			fmt.Sprintf("--%s=%s", flags.FlagGasPrices, delegateFees),
-//			"--keyring-backend=test",
-//			fmt.Sprintf("--%s=%s", flags.FlagHome, home),
-//			"--output=json",
-//			"-y",
-//		}
-//
-//		s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
-//		s.T().Logf("%s successfully delegated %s to %s", delegatorAddr, amount, valOperAddress)
-//	}
-//
-// func (s *IntegrationTestSuite) executeRedelegate(c *chain, valIdx int, amount, originalValOperAddress,
-//
-//	newValOperAddress, delegatorAddr, home, delegateFees string,
-//
-//	) {
-//		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-//		defer cancel()
-//
-//		s.T().Logf("Executing gaiad tx staking redelegate %s", c.id)
-//
-//		gaiaCommand := []string{
-//			gaiadBinary,
-//			txCommand,
-//			stakingtypes.ModuleName,
-//			"redelegate",
-//			originalValOperAddress,
-//			newValOperAddress,
-//			amount,
-//			fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
-//			fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-//			fmt.Sprintf("--%s=%s", flags.FlagGas, "300000"), // default 200000 isn't enough
-//			fmt.Sprintf("--%s=%s", flags.FlagGasPrices, delegateFees),
-//			"--keyring-backend=test",
-//			fmt.Sprintf("--%s=%s", flags.FlagHome, home),
-//			"--output=json",
-//			"-y",
-//		}
-//
-//		s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
-//		s.T().Logf("%s successfully redelegated %s from %s to %s", delegatorAddr, amount, originalValOperAddress, newValOperAddress)
-//	}
-//
+
+func (s *IntegrationTestSuite) executeDelegate(c *chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) { //nolint:unparam
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx staking delegate %s", c.id)
+
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		stakingtypes.ModuleName,
+		"delegate",
+		valOperAddress,
+		amount,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, delegateFees),
+		"--keyring-backend=test",
+		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
+	s.T().Logf("%s successfully delegated %s to %s", delegatorAddr, amount, valOperAddress)
+}
+
+func (s *IntegrationTestSuite) executeRedelegate(c *chain, valIdx int, amount, originalValOperAddress,
+
+	newValOperAddress, delegatorAddr, home, delegateFees string,
+
+) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx staking redelegate %s", c.id)
+
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		stakingtypes.ModuleName,
+		"redelegate",
+		originalValOperAddress,
+		newValOperAddress,
+		amount,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--%s=%s", flags.FlagGas, "300000"), // default 200000 isn't enough
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, delegateFees),
+		"--keyring-backend=test",
+		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
+	s.T().Logf("%s successfully redelegated %s from %s to %s", delegatorAddr, amount, originalValOperAddress, newValOperAddress)
+}
+
 //	func (s *IntegrationTestSuite) getLatestBlockHeight(c *chain, valIdx int) int {
 //		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 //		defer cancel()
@@ -522,73 +530,73 @@ type txBankSend struct {
 //			5*time.Second,
 //		)
 //	}
-//
-// func (s *IntegrationTestSuite) execSetWithdrawAddress(
-//
-//	c *chain,
-//	valIdx int,
-//	fees,
-//	delegatorAddress,
-//	newWithdrawalAddress,
-//	homePath string,
-//
-//	) {
-//		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-//		defer cancel()
-//
-//		s.T().Logf("Setting distribution withdrawal address on chain %s for %s to %s", c.id, delegatorAddress, newWithdrawalAddress)
-//		gaiaCommand := []string{
-//			gaiadBinary,
-//			txCommand,
-//			distributiontypes.ModuleName,
-//			"set-withdraw-addr",
-//			newWithdrawalAddress,
-//			fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddress),
-//			fmt.Sprintf("--%s=%s", flags.FlagFees, fees),
-//			fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-//			fmt.Sprintf("--%s=%s", flags.FlagHome, homePath),
-//			"--keyring-backend=test",
-//			"--output=json",
-//			"-y",
-//		}
-//
-//		s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
-//		s.T().Logf("Successfully set new distribution withdrawal address for %s to %s", delegatorAddress, newWithdrawalAddress)
-//	}
-//
-// func (s *IntegrationTestSuite) execWithdrawReward(
-//
-//	c *chain,
-//	valIdx int,
-//	delegatorAddress,
-//	validatorAddress,
-//	homePath string,
-//
-//	) {
-//		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-//		defer cancel()
-//
-//		s.T().Logf("Withdrawing distribution rewards on chain %s for delegator %s from %s validator", c.id, delegatorAddress, validatorAddress)
-//		gaiaCommand := []string{
-//			gaiadBinary,
-//			txCommand,
-//			distributiontypes.ModuleName,
-//			"withdraw-rewards",
-//			validatorAddress,
-//			fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddress),
-//			fmt.Sprintf("--%s=%s", flags.FlagGasPrices, "300uatom"),
-//			fmt.Sprintf("--%s=%s", flags.FlagGas, "auto"),
-//			fmt.Sprintf("--%s=%s", flags.FlagGasAdjustment, "1.5"),
-//			fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-//			fmt.Sprintf("--%s=%s", flags.FlagHome, homePath),
-//			"--keyring-backend=test",
-//			"--output=json",
-//			"-y",
-//		}
-//
-//		s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
-//		s.T().Logf("Successfully withdrew distribution rewards for delegator %s from validator %s", delegatorAddress, validatorAddress)
-//	}
+func (s *IntegrationTestSuite) execSetWithdrawAddress(
+
+	c *chain,
+	valIdx int,
+	fees,
+	delegatorAddress,
+	newWithdrawalAddress,
+	homePath string,
+
+) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Setting distribution withdrawal address on chain %s for %s to %s", c.id, delegatorAddress, newWithdrawalAddress)
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		distributiontypes.ModuleName,
+		"set-withdraw-addr",
+		newWithdrawalAddress,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddress),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--%s=%s", flags.FlagHome, homePath),
+		"--keyring-backend=test",
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
+	s.T().Logf("Successfully set new distribution withdrawal address for %s to %s", delegatorAddress, newWithdrawalAddress)
+}
+
+func (s *IntegrationTestSuite) execWithdrawReward(
+
+	c *chain,
+	valIdx int,
+	delegatorAddress,
+	validatorAddress,
+	homePath string,
+
+) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Withdrawing distribution rewards on chain %s for delegator %s from %s validator", c.id, delegatorAddress, validatorAddress)
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		distributiontypes.ModuleName,
+		"withdraw-rewards",
+		validatorAddress,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddress),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, "300uatom"),
+		fmt.Sprintf("--%s=%s", flags.FlagGas, "auto"),
+		fmt.Sprintf("--%s=%s", flags.FlagGasAdjustment, "1.5"),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--%s=%s", flags.FlagHome, homePath),
+		"--keyring-backend=test",
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
+	s.T().Logf("Successfully withdrew distribution rewards for delegator %s from validator %s", delegatorAddress, validatorAddress)
+}
+
 func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chain, gaiaCommand []string, valIdx int, validation func([]byte, []byte) bool) {
 	if validation == nil {
 		validation = s.defaultExecValidation(s.chainA, 0)

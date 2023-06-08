@@ -8,29 +8,27 @@ package e2e
 var (
 	runBankTest = true
 
-//	runBypassMinFeeTest           = true
-//	runEncodeTest                 = true
-//	runEvidenceTest               = true
-//	runFeeGrantTest               = true
-//	runGlobalFeesTest             = true
-//	runGovTest                    = true
-//	runIBCTest                    = true
-//	runSlashingTest               = true
-//	runStakingAndDistributionTest = true
-//	runVestingTest                = true
-//
-// runRestInterfacesTest         = true
+	//	runBypassMinFeeTest           = true
+	runEncodeTest = true
+
+	// runEvidenceTest               = true
+	// runFeeGrantTest               = true
+	// runGlobalFeesTest             = true
+	// runGovTest                    = true
+	// runIBCTest                    = true
+	// runSlashingTest               = true
+	// runStakingAndDistributionTest = true
+	// runVestingTest                = true
+	runRestInterfacesTest = true
 )
 
 func (s *IntegrationTestSuite) TestRestInterfaces() {
+	if !runRestInterfacesTest {
+		s.T().Skip()
+	}
+	s.testRestInterfaces()
 }
 
-//	func (s *IntegrationTestSuite) TestRestInterfaces() {
-//		if !runRestInterfacesTest {
-//			s.T().Skip()
-//		}
-//		s.testRestInterfaces()
-//	}
 func (s *IntegrationTestSuite) TestBank() {
 	if !runBankTest {
 		s.T().Skip()
@@ -38,22 +36,21 @@ func (s *IntegrationTestSuite) TestBank() {
 	s.testBankTokenTransfer()
 }
 
-//
-// func (s *IntegrationTestSuite) TestByPassMinFee() {
-//	if !runBypassMinFeeTest {
-//		s.T().Skip()
+//	func (s *IntegrationTestSuite) TestByPassMinFee() {
+//		if !runBypassMinFeeTest {
+//			s.T().Skip()
+//		}
+//		chainAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+//		s.testBypassMinFeeWithdrawReward(chainAPI)
 //	}
-//	chainAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-//	s.testBypassMinFeeWithdrawReward(chainAPI)
-//}
-//
-// func (s *IntegrationTestSuite) TestEncode() {
-//	if !runEncodeTest {
-//		s.T().Skip()
-//	}
-//	s.testEncode()
-//	s.testDecode()
-//}
+func (s *IntegrationTestSuite) TestEncode() {
+	if !runEncodeTest {
+		s.T().Skip()
+	}
+	s.testEncode()
+	s.testDecode()
+}
+
 //
 // func (s *IntegrationTestSuite) TestEvidence() {
 //	if !runEvidenceTest {

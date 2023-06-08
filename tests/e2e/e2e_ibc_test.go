@@ -122,9 +122,10 @@ func (s *IntegrationTestSuite) hermesPendingPackets(configPath, chainID, channel
 	stdout, _ := s.executeHermesCommand(ctx, hermesCmd)
 	stdout = strings.ReplaceAll(stdout, " ", "")
 	stdout = strings.ReplaceAll(stdout, "\n", "")
+	stdout = strings.ToLower(stdout)
 
 	// Check if "unreceived_packets" exists in "src"
-	return !strings.Contains(stdout, "src:pendingPackets{unreceived_packets:[]")
+	return !strings.Contains(stdout, "src:pendingpackets{unreceived_packets:[]")
 }
 
 func (s *IntegrationTestSuite) queryRelayerWalletsBalances() (sdk.Coin, sdk.Coin) {

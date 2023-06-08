@@ -9,7 +9,7 @@ Global fee `MinimumGasPricesParam` is established at the network level through g
    By adjusting the minimum-gas-prices parameter in app.toml, nodes can enforce a fee that is higher than the globally defined MinimumGasPricesParam. However, it's important to note that this configuration solely determines whether transactions are eligible to enter this specific node's mempool.
 
 3. `bypass-min-fee-msg-types` and `max_total_bypass_min_fee_msg_gas_usage`.\
- These two parameters are also part of the global fee params from gaiad v10.0.0, and can be changed through Gov Proposals. `bypass-min-fee-msg-types` represents a list of message types that will be excluded from paying any fees for inclusion in a block, `max_total_bypass_min_fee_msg_gas_usage` is the limit of `bypass-min-fee-msg-types` gas usage.
+ These two parameters are also part of the global fee params from gaiad v11.0.0, and can be changed through Gov Proposals. `bypass-min-fee-msg-types` represents a list of message types that will be excluded from paying any fees for inclusion in a block, `max_total_bypass_min_fee_msg_gas_usage` is the limit of `bypass-min-fee-msg-types` gas usage.
 
 ## Concepts
 
@@ -45,7 +45,7 @@ Bypass minimum fee messages are messages that are exempt from paying fees. The a
 - The total gas used is less than or equal to `MaxTotalBypassMinFeeMsgGasUsage`.
 - In case of non-zero transaction fees, the denom has to be a subset of denoms defined in the global fees list.
 
-Starting from gaiad `v10.0.0`,  `BypassMinFeeMsgTypes` and `MaxTotalBypassMinFeeMsgGasUsage` are part of global fee params and can be proposed at network level. The default `bypass-min-fee-msg-types=[
+Starting from gaiad `v11.0.0`, `BypassMinFeeMsgTypes` and `MaxTotalBypassMinFeeMsgGasUsage` are part of global fee params and can be proposed at network level. The default `bypass-min-fee-msg-types=[
 "/ibc.core.channel.v1.MsgRecvPacket",
 "/ibc.core.channel.v1.MsgAcknowledgement",
 "/ibc.core.client.v1.MsgUpdateClient",
@@ -53,7 +53,7 @@ Starting from gaiad `v10.0.0`,  `BypassMinFeeMsgTypes` and `MaxTotalBypassMinFee
 "/ibc.core.channel.v1.MsgTimeoutOnClose"
 ]` and default `maxTotalBypassMinFeeMsgGasUsage=1,000,000`
 
-From gaiad v10.0.0, nodes that have the `bypass-min-fee-msg-types` field in their `app.toml` configuration are **not utilized**. Therefore, node operators have the option to either leave the field in their configurations or remove it. Node inited by gaiad v10.0.0 or later does not have `bypass-min-fee-msg-types` field in the `app.toml`.
+From gaiad v11.0.0, nodes that have the `bypass-min-fee-msg-types` field in their `app.toml` configuration are **not utilized**. Therefore, node operators have the option to either leave the field in their configurations or remove it. Node inited by gaiad v11.0.0 or later does not have `bypass-min-fee-msg-types` field in the `app.toml`.
 
 Before gaiad `v11.0.0`, `bypass-min-fee-msg-types` can be set by each node in `app.toml`, and [the bypass messages gas usage on average should not exceed `maxBypassMinFeeMsgGasUsage`=200,000](https://github.com/cosmos/gaia/blob/682770f2410ab0d33ac7f0c7203519d7a99fa2b6/x/globalfee/ante/fee.go#L69).
 
@@ -62,7 +62,7 @@ Before gaiad `v11.0.0`, `bypass-min-fee-msg-types` can be set by each node in `a
 - Node Nodes with `bypass-min-fee-msg-types = []` or missing this field in `app.toml` also use default bypass message types.
 - Nodes created using gaiad `v7.0.1` and `v7.0.0` do not have `bypass-min-fee-msg-types` configured in `config/app.toml` - they are also using same default values as in `v7.0.2`. The `bypass-min-fee-msg-types` config option can be added to `config/app.toml` before the `[telemetry]` field.
 
-An example of `bypass-min-fee-msg-types` in `app.toml`  **before** gaiad v10.0.0:
+An example of `bypass-min-fee-msg-types` in `app.toml`  **before** gaiad v11.0.0:
 
 ```
 

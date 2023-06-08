@@ -70,7 +70,7 @@ Please see the table below for libray versions and other dependencies.
 ### v9-Lambda Upgrade (expected Q1 2023)
 
 - Gaia v9.0.x
-- Cosmos SDK v0.45
+- Cosmos SDK v0.45-ics
 - IBC 4.2
 - Interchain Security - Replicated Security
   - The Cosmos solution to shared security that uses IBC Cross Chain Validation (CCV) to relay validator set composition from a Provider Chain (Cosmos Hub) to a Consumer Chain. This validator set is in charge of producing blocks on both networks using separate nodes. Misbehavior on the Consumer Chain results in slashing Provider Chain staking tokens (ATOM).  

@@ -17,13 +17,15 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/cosmos/gaia/v9/x/globalfee/types"
+	"github.com/cosmos/gaia/v11/x/globalfee/types"
 )
 
 func TestDefaultGenesis(t *testing.T) {
 	encCfg := simapp.MakeTestEncodingConfig()
 	gotJSON := AppModuleBasic{}.DefaultGenesis(encCfg.Marshaler)
-	assert.JSONEq(t, `{"params":{"minimum_gas_prices":[]}}`, string(gotJSON), string(gotJSON))
+	assert.JSONEq(t,
+		`{"params":{"minimum_gas_prices":[],"bypass_min_fee_msg_types":["/ibc.core.channel.v1.MsgRecvPacket","/ibc.core.channel.v1.MsgAcknowledgement","/ibc.core.client.v1.MsgUpdateClient","/ibc.core.channel.v1.MsgTimeout","/ibc.core.channel.v1.MsgTimeoutOnClose"], "max_total_bypass_min_fee_msg_gas_usage":"1000000"}}`,
+		string(gotJSON), string(gotJSON))
 }
 
 func TestValidateGenesis(t *testing.T) {
@@ -33,13 +35,24 @@ func TestValidateGenesis(t *testing.T) {
 		expErr bool
 	}{
 		"all good": {
-			src: `{"params":{"minimum_gas_prices":[{"denom":"ALX", "amount":"1"}]}}`,
+			src:    `{"params":{"minimum_gas_prices":[{"denom":"ALX", "amount":"1"}], "bypass_min_fee_msg_types":["/ibc.core.channel.v1.MsgRecvPacket"]}}`,
+			expErr: false,
 		},
 		"empty minimum": {
-			src: `{"params":{"minimum_gas_prices":[]}}`,
+			src:    `{"params":{"minimum_gas_prices":[], "bypass_min_fee_msg_types":[]}}`,
+			expErr: false,
+		},
+		"minimum and bypass not set": {
+			src:    `{"params":{}}`,
+			expErr: false,
 		},
 		"minimum not set": {
-			src: `{"params":{}}`,
+			src:    `{"params":{"bypass_min_fee_msg_types":[]}}`,
+			expErr: false,
+		},
+		"bypass not set": {
+			src:    `{"params":{"minimum_gas_prices":[]}}`,
+			expErr: false,
 		},
 		"zero amount allowed": {
 			src:    `{"params":{"minimum_gas_prices":[{"denom":"ALX", "amount":"0"}]}}`,
@@ -55,6 +68,10 @@ func TestValidateGenesis(t *testing.T) {
 		},
 		"denom must be sorted": {
 			src:    `{"params":{"minimum_gas_prices":[{"denom":"ZLX", "amount":"1"},{"denom":"ALX", "amount":"2"}]}}`,
+			expErr: true,
+		},
+		"empty bypass msg types not allowed": {
+			src:    `{"params":{"bypass_min_fee_msg_types":[""]}}`,
 			expErr: true,
 		},
 		"sorted denoms is allowed": {
@@ -80,17 +97,32 @@ func TestInitExportGenesis(t *testing.T) {
 		exp types.GenesisState
 	}{
 		"single fee": {
-			src: `{"params":{"minimum_gas_prices":[{"denom":"ALX", "amount":"1"}]}}`,
-			exp: types.GenesisState{Params: types.Params{MinimumGasPrices: sdk.NewDecCoins(sdk.NewDecCoin("ALX", sdk.NewInt(1)))}},
+			src: `{"params":{"minimum_gas_prices":[{"denom":"ALX", "amount":"1"}], "bypass_min_fee_msg_types":["/ibc.core.channel.v1.MsgRecvPacket"]}}`,
+			exp: types.GenesisState{
+				Params: types.Params{
+					MinimumGasPrices:     sdk.NewDecCoins(sdk.NewDecCoin("ALX", sdk.NewInt(1))),
+					BypassMinFeeMsgTypes: []string{"/ibc.core.channel.v1.MsgRecvPacket"},
+				},
+			},
 		},
 		"multiple fee options": {
-			src: `{"params":{"minimum_gas_prices":[{"denom":"ALX", "amount":"1"}, {"denom":"BLX", "amount":"0.001"}]}}`,
-			exp: types.GenesisState{Params: types.Params{MinimumGasPrices: sdk.NewDecCoins(sdk.NewDecCoin("ALX", sdk.NewInt(1)),
-				sdk.NewDecCoinFromDec("BLX", sdk.NewDecWithPrec(1, 3)))}},
+			src: `{"params":{"minimum_gas_prices":[{"denom":"ALX", "amount":"1"}, {"denom":"BLX", "amount":"0.001"}], "bypass_min_fee_msg_types":["/ibc.core.channel.v1.MsgRecvPacket","/ibc.core.channel.v1.MsgTimeoutOnClose"]}}`,
+			exp: types.GenesisState{
+				Params: types.Params{
+					MinimumGasPrices: sdk.NewDecCoins(sdk.NewDecCoin("ALX", sdk.NewInt(1)),
+						sdk.NewDecCoinFromDec("BLX", sdk.NewDecWithPrec(1, 3))),
+					BypassMinFeeMsgTypes: []string{"/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgTimeoutOnClose"},
+				},
+			},
 		},
 		"no fee set": {
 			src: `{"params":{}}`,
-			exp: types.GenesisState{Params: types.Params{MinimumGasPrices: sdk.DecCoins{}}},
+			exp: types.GenesisState{
+				Params: types.Params{
+					MinimumGasPrices:     sdk.DecCoins{},
+					BypassMinFeeMsgTypes: []string{},
+				},
+			},
 		},
 	}
 	for name, spec := range specs {

@@ -9,10 +9,11 @@ import (
 	icstestingutils "github.com/cosmos/interchain-security/testutil/ibc_testing"
 	"github.com/stretchr/testify/suite"
 
-	gaiaApp "github.com/cosmos/gaia/v9/app"
 	ibctesting "github.com/cosmos/interchain-security/legacy_ibc_testing/testing"
 	"github.com/tendermint/tendermint/libs/log"
 	tmdb "github.com/tendermint/tm-db"
+
+	gaiaApp "github.com/cosmos/gaia/v11/app"
 )
 
 func TestCCVTestSuite(t *testing.T) {

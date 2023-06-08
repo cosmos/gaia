@@ -1,5 +1,4 @@
 name: Test
-
 on:
   workflow_call:
   pull_request:
@@ -59,7 +58,7 @@ jobs:
             filename=$(echo "$filename" | sed 's/\//\\\//g')
             sed -i.bak "/""$filename""/d" coverage.txt
           done
-      - uses: codecov/codecov-action@v3.1.2
+      - uses: codecov/codecov-action@v3.1.4
         with:
           file: ./coverage.txt
           fail_ci_if_error: true
@@ -125,36 +124,38 @@ jobs:
             go.sum
       - uses: actions/setup-go@v4
         with:
-          go-version: 1.18
-      - name: Install GaiaV8
+          go-version: 1.20.x
+      - name: Install GaiaV10
         run: |
-          git checkout v8.0.0
+          git checkout v10.0.0
           make build
-          cp ./build/gaiad ./build/gaiad8
+          cp ./build/gaiad ./build/gaiad10
           go clean -modcache
         if: env.GIT_DIFF
-      - uses: actions/setup-go@v4
-        with:
-          go-version: 1.20.x
-      - name: Install GaiaV9
+      - name: Install GaiaV11
         run: |
           git checkout -
           make build
-          cp ./build/gaiad ./build/gaiad9
+          cp ./build/gaiad ./build/gaiad11
         if: env.GIT_DIFF
       - name: Install Cosmovisor
         run: |
           go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@latest
         if: env.GIT_DIFF
-      - name: Start GaiaV8
+      - name: Start GaiaV10
         run: |
-          ./contrib/scripts/run-gaia-v8.sh > v8.out 2>&1 &
+          go env GOPATH
+          ./contrib/scripts/upgrade_test_scripts/v11/run_gaia_v10.sh
         if: env.GIT_DIFF
       - name: Submit Upgrade Commands
         run: |
-          ./contrib/scripts/run-upgrade-commands.sh 15
+          ./contrib/scripts/upgrade_test_scripts/v11/run_upgrade_commands_v11.sh 15
         if: env.GIT_DIFF
       - name: Check for successful upgrade
         run: |
-          ./contrib/scripts/test_upgrade.sh 20 5 16 localhost
+          ./contrib/scripts/upgrade_test_scripts/test_upgrade.sh 20 5 16 localhost
+        if: env.GIT_DIFF
+      - name: Check for successful migration
+        run: |
+          ./contrib/scripts/upgrade_test_scripts/v11/test_migration_v11.sh localhost
         if: env.GIT_DIFF

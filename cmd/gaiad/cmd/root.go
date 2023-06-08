@@ -30,8 +30,8 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
 
-	gaia "github.com/cosmos/gaia/v9/app"
-	"github.com/cosmos/gaia/v9/app/params"
+	gaia "github.com/cosmos/gaia/v11/app"
+	"github.com/cosmos/gaia/v11/app/params"
 )
 
 // NewRootCmd creates a new root command for simd. It is called once in the
@@ -81,10 +81,7 @@ func initAppConfig() (string, interface{}) {
 	srvCfg.StateSync.SnapshotInterval = 1000
 	srvCfg.StateSync.SnapshotKeepRecent = 10
 
-	return params.CustomConfigTemplate(), params.CustomAppConfig{
-		Config:               *srvCfg,
-		BypassMinFeeMsgTypes: gaia.GetDefaultBypassFeeMessages(),
-	}
+	return serverconfig.DefaultConfigTemplate, *srvCfg
 }
 
 func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {

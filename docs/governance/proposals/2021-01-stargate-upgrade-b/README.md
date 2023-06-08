@@ -74,7 +74,7 @@ All previous Cosmos Hub upgrades reset the block height. Our interactions with e
 
 Documentation was a success for the Cosmos Stargate effort. The upgrades with the most breaking changes such as legacy Amino have a complete audit with documentation on exceptions for blockchain API interfaces.
 
-Most exchanges and wallets have taken self-certification on directly. Our team continues to provide real-time support on multiple partner slack channels and on the Cosmos [#stargate Discord](https://discord.gg/W8trcGV) channel.
+Most exchanges and wallets have taken self-certification on directly. Our team continues to provide real-time support on multiple partner slack channels and on the Cosmos [#stargate Discord](https://discord.com/invite/cosmosnetwork) channel.
 
 We have conducted numerous testnets with different partners. A particularly important testnet conducted with a significant fraction of the Hub validator set was a simulated upgrade of the cosmoshub on Nov 25th,2020. This tested the full upgrade flow including the prop29 implementation and height preserving upgrade functionality.
 

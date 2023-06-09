@@ -2,7 +2,7 @@
 
 - [Contributing](#contributing)
   - [Overview](#overview)
-    - [Stewarding team responsibility](#stewarding-team-responsibility)
+    - [Responsibilities of the stewarding team](#responsibilities-of-the-stewarding-team)
     - [Ease of reviewing](#ease-of-reviewing)
     - [Workflow](#workflow)
   - [Project Board](#project-board)
@@ -249,11 +249,7 @@ To generate the protobuf stubs, you can run `make proto-gen`.
 
 User-facing repos should adhere to the trunk based development branching model: https://trunkbaseddevelopment.com. User branches should start with a user name, example: `{moniker}/{issue#}-branch-name`.
 
-Gaia follows [semantic versioning](https://semver.org), but with the following deviations to account for state-machine and API breaking changes: 
-
-- State-machine breaking changes will result in an increase of the major version X (X.y.z).
-- API breaking changes will result in an increase of the minor version Y (x.Y.z | x > 0).
-- All other changes will result in an increase of the patch version Z (x.y.Z | x > 0).
+Gaia follows [semantic versioning](https://semver.org), but with the some deviations to account for state-machine and API breaking changes. See [RELEASE_PROCESS.md](./RELEASE_PROCESS.md) for details. 
 
 ### PR Targeting
 

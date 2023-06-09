@@ -76,14 +76,14 @@ func (s *IntegrationTestSuite) hermesTransfer(configPath, srcChainID, dstChainID
 	}
 
 	stdout, stderr := s.executeHermesCommand(ctx, hermesCmd)
-	if strings.Contains(stdout, "ERROR") || strings.Contains(stderr, "ERROR") {
+	if strings.Contains(string(stdout), "ERROR") || strings.Contains(string(stderr), "ERROR") {
 		return false
 	}
 
 	return true
 }
 
-func (s *IntegrationTestSuite) hermesClearPacket(configPath, chainID, channelID string) bool { //nolint:unparam
+func (s *IntegrationTestSuite) hermesClearPacket(configPath, chainID, channelID string) (success bool) { //nolint:unparam
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -98,11 +98,23 @@ func (s *IntegrationTestSuite) hermesClearPacket(configPath, chainID, channelID 
 	}
 
 	stdout, stderr := s.executeHermesCommand(ctx, hermesCmd)
-	if strings.Contains(stdout, "ERROR") || strings.Contains(stderr, "ERROR") {
+	if strings.Contains(string(stdout), "ERROR") || strings.Contains(string(stderr), "ERROR") {
 		return false
 	}
 
 	return true
+}
+
+type RelayerPacketsOutput struct {
+	Result struct {
+		Dst struct {
+			UnreceivedPackets []interface{} `json:"unreceived_packets"`
+		} `json:"dst"`
+		Src struct {
+			UnreceivedPackets []interface{} `json:"unreceived_packets"`
+		} `json:"src"`
+	} `json:"result"`
+	Status string `json:"status"`
 }
 
 func (s *IntegrationTestSuite) hermesPendingPackets(configPath, chainID, channelID string) (pendingPackets bool) {
@@ -110,6 +122,7 @@ func (s *IntegrationTestSuite) hermesPendingPackets(configPath, chainID, channel
 	defer cancel()
 	hermesCmd := []string{
 		hermesBinary,
+		"--json",
 		fmt.Sprintf("--config=%s", configPath),
 		"query",
 		"packet",
@@ -120,11 +133,13 @@ func (s *IntegrationTestSuite) hermesPendingPackets(configPath, chainID, channel
 	}
 
 	stdout, _ := s.executeHermesCommand(ctx, hermesCmd)
-	stdout = strings.ReplaceAll(stdout, " ", "")
-	stdout = strings.ReplaceAll(stdout, "\n", "")
+
+	var relayerPacketsOutput RelayerPacketsOutput
+	err := json.Unmarshal(stdout, &relayerPacketsOutput)
+	s.Require().NoError(err)
 
 	// Check if "unreceived_packets" exists in "src"
-	return !strings.Contains(stdout, "src:pendingPackets{unreceived_packets:[]")
+	return len(relayerPacketsOutput.Result.Src.UnreceivedPackets) != 0
 }
 
 func (s *IntegrationTestSuite) queryRelayerWalletsBalances() (sdk.Coin, sdk.Coin) {

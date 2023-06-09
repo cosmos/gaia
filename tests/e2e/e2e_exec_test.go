@@ -617,7 +617,7 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 	}
 }
 
-func (s *IntegrationTestSuite) executeHermesCommand(ctx context.Context, hermesCmd []string) (string, string) {
+func (s *IntegrationTestSuite) executeHermesCommand(ctx context.Context, hermesCmd []string) ([]byte, []byte) {
 	var (
 		outBuf bytes.Buffer
 		errBuf bytes.Buffer
@@ -643,7 +643,7 @@ func (s *IntegrationTestSuite) executeHermesCommand(ctx context.Context, hermesC
 	stdOut := outBuf.Bytes()
 	stdErr := errBuf.Bytes()
 
-	return string(stdOut), string(stdErr)
+	return stdOut, stdErr
 }
 
 func (s *IntegrationTestSuite) expectErrExecValidation(chain *chain, valIdx int, expectErr bool) func([]byte, []byte) bool {

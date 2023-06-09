@@ -6,50 +6,32 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"testing"
 	"time"
 
-	"github.com/cometbft/cometbft/crypto/ed25519"
-	"github.com/ory/dockertest/v3"
-	"github.com/stretchr/testify/suite"
-
-	// "context"
-	// "encoding/json"
-	// "fmt"
-	// "os"
-	"os/exec"
-	// "path/filepath"
-	// "strconv"
-	// "strings"
-	// "testing"
-	// "time"
 	tmconfig "github.com/cometbft/cometbft/config"
+	"github.com/cometbft/cometbft/crypto/ed25519"
 	tmjson "github.com/cometbft/cometbft/libs/json"
-
-	// "github.com/cometbft/cometbft/libs/rand"
 	rpchttp "github.com/cometbft/cometbft/rpc/client/http"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-
-	// "github.com/cosmos/cosmos-sdk/crypto/hd"
-	// "github.com/cosmos/cosmos-sdk/crypto/keyring"
-	// "github.com/cometbft/cometbft/crypto/ed25519"
-	// "github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/ory/dockertest/v3"
+	"github.com/stretchr/testify/suite"
 
 	// //	ibcclienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 	// "github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -78,9 +60,9 @@ const (
 	gas = 200000
 
 	// govProposalBlockBuffer                = 35
-	// relayerAccountIndex                   = 0
-	numberOfEvidences       = 10
-	slashingShares    int64 = 10000
+	relayerAccountIndex       = 0
+	numberOfEvidences         = 10
+	slashingShares      int64 = 10000
 
 // proposalGlobalFeeFilename           = "proposal_globalfee.json"
 // proposalBypassMsgFilename           = "proposal_bypass_msg.json"
@@ -103,13 +85,13 @@ var (
 
 type IntegrationTestSuite struct {
 	suite.Suite
-	tmpDirs []string
-	chainA  *chain
-	chainB  *chain
-	dkrPool *dockertest.Pool
-	dkrNet  *dockertest.Network
-	//		hermesResource *dockertest.Resource
-	valResources map[string][]*dockertest.Resource
+	tmpDirs        []string
+	chainA         *chain
+	chainB         *chain
+	dkrPool        *dockertest.Pool
+	dkrNet         *dockertest.Network
+	hermesResource *dockertest.Resource
+	valResources   map[string][]*dockertest.Resource
 }
 
 type AddressResponse struct {
@@ -160,14 +142,14 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.initValidatorConfigs(s.chainA)
 	s.runValidators(s.chainA, 0)
 
-	// s.T().Logf("starting e2e infrastructure for chain B; chain-id: %s; datadir: %s", s.chainB.id, s.chainB.dataDir)
-	// s.initNodes(s.chainB)
-	// s.initGenesis(s.chainB, vestingMnemonic, jailedValMnemonic)
-	// s.initValidatorConfigs(s.chainB)
-	// s.runValidators(s.chainB, 10)
+	s.T().Logf("starting e2e infrastructure for chain B; chain-id: %s; datadir: %s", s.chainB.id, s.chainB.dataDir)
+	s.initNodes(s.chainB)
+	s.initGenesis(s.chainB, vestingMnemonic, jailedValMnemonic)
+	s.initValidatorConfigs(s.chainB)
+	s.runValidators(s.chainB, 10)
 
-	// time.Sleep(10 * time.Second)
-	// s.runIBCRelayer()
+	time.Sleep(10 * time.Second)
+	s.runIBCRelayer()
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {

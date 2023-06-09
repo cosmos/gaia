@@ -51,7 +51,7 @@ func (s *IntegrationTestSuite) testFeeGrant() {
 			tokenAmount.String(),
 			standardFees.String(),
 			false,
-			withKeyValue(flagFeeAccount, alice.String()),
+			withKeyValue(flagFeeGranter, alice.String()),
 		)
 
 		// check if the bob balance was subtracted without the fees
@@ -69,7 +69,7 @@ func (s *IntegrationTestSuite) testFeeGrant() {
 			tokenAmount.String(),
 			standardFees.String(),
 			true,
-			withKeyValue(flagFeeAccount, alice.String()),
+			withKeyValue(flagFeeGranter, alice.String()),
 		)
 
 		// add fee grant from alice to charlie
@@ -99,7 +99,7 @@ func (s *IntegrationTestSuite) testFeeGrant() {
 			tokenAmount.String(),
 			standardFees.String(),
 			true,
-			withKeyValue(flagFeeAccount, alice.String()),
+			withKeyValue(flagFeeGranter, alice.String()),
 		)
 	})
 }

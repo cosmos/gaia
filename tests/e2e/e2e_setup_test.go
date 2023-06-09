@@ -162,26 +162,26 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 		}
 	}
 
-	// s.T().Log("tearing down e2e integration test suite...")
+	s.T().Log("tearing down e2e integration test suite...")
 
-	// // if runIBCTest {
-	// // 	s.Require().NoError(s.dkrPool.Purge(s.hermesResource))
-	// // }
+	if runIBCTest {
+		s.Require().NoError(s.dkrPool.Purge(s.hermesResource))
+	}
 
-	// for _, vr := range s.valResources {
-	// 	for _, r := range vr {
-	// 		s.Require().NoError(s.dkrPool.Purge(r))
-	// 	}
-	// }
+	for _, vr := range s.valResources {
+		for _, r := range vr {
+			s.Require().NoError(s.dkrPool.Purge(r))
+		}
+	}
 
-	// s.Require().NoError(s.dkrPool.RemoveNetwork(s.dkrNet))
+	s.Require().NoError(s.dkrPool.RemoveNetwork(s.dkrNet))
 
-	// os.RemoveAll(s.chainA.dataDir)
-	// os.RemoveAll(s.chainB.dataDir)
+	os.RemoveAll(s.chainA.dataDir)
+	os.RemoveAll(s.chainB.dataDir)
 
-	// for _, td := range s.tmpDirs {
-	// 	os.RemoveAll(td)
-	// }
+	for _, td := range s.tmpDirs {
+		os.RemoveAll(td)
+	}
 }
 
 func (s *IntegrationTestSuite) initNodes(c *chain) {
@@ -513,6 +513,7 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 		appConfig.API.Enable = true
 		appConfig.API.Address = "tcp://0.0.0.0:1317"
 		appConfig.MinGasPrices = fmt.Sprintf("%s%s", minGasPrice, uatomDenom)
+		appConfig.GRPC.Address = "0.0.0.0:9090"
 
 		srvconfig.SetConfigTemplate(srvconfig.DefaultConfigTemplate)
 		srvconfig.WriteConfigFile(appCfgPath, appConfig)

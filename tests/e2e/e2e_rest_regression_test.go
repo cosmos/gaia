@@ -5,13 +5,6 @@ import (
 	"net/http"
 )
 
-// import (
-//
-//	"fmt"
-//	"net/http"
-//
-// )
-//
 // /*
 // RestRegression tests the continuity of critical endpoints that node operators, block explorers, and ecosystem participants depend on.
 // Test Node REST Endpoints:

@@ -90,8 +90,8 @@ func (s *IntegrationTestSuite) TestIBC() {
 		s.T().Skip()
 	}
 	s.testIBCTokenTransfer()
-	// s.testMultihopIBCTokenTransfer()
-	// s.testFailedMultihopIBCTokenTransfer()
+	s.testMultihopIBCTokenTransfer()
+	s.testFailedMultihopIBCTokenTransfer()
 }
 
 func (s *IntegrationTestSuite) TestSlashing() {

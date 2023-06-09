@@ -105,7 +105,7 @@ func (s *IntegrationTestSuite) hermesClearPacket(configPath, chainID, channelID 
 	return true
 }
 
-type Response struct {
+type RelayerPacketsOutput struct {
 	Result struct {
 		Dst struct {
 			UnreceivedPackets []interface{} `json:"unreceived_packets"`
@@ -134,12 +134,12 @@ func (s *IntegrationTestSuite) hermesPendingPackets(configPath, chainID, channel
 
 	stdout, _ := s.executeHermesCommand(ctx, hermesCmd)
 
-	var response Response
-	err := json.Unmarshal(stdout, &response)
+	var relayerPacketsOutput RelayerPacketsOutput
+	err := json.Unmarshal(stdout, &relayerPacketsOutput)
 	s.Require().NoError(err)
 
 	// Check if "unreceived_packets" exists in "src"
-	return len(response.Result.Src.UnreceivedPackets) != 0
+	return len(relayerPacketsOutput.Result.Src.UnreceivedPackets) != 0
 }
 
 func (s *IntegrationTestSuite) queryRelayerWalletsBalances() (sdk.Coin, sdk.Coin) {

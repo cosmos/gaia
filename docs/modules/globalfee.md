@@ -1,35 +1,33 @@
 # Gaia Fees and Fees Checks
 
 ## Fee Parameters
-The CosmosHub allows managing fees requirement using 4 parameters. At the network level, there are three parameters from globalfee modules (`MinimumGasPricesParam`, `BypassMinFeeMsgTypes`, and `MaxTotalBypassMinFeeMsgGasUsage`) that can be set by gov proposal. Additionally, there's a fourth parameter that enables individual nodes to impose supplementary fee amount requirement.
+The CosmosHub allows managing fees using 4 parameters. At the network level, there are three parameters from globalfee modules (`MinimumGasPricesParam`, `BypassMinFeeMsgTypes`, and `MaxTotalBypassMinFeeMsgGasUsage`) that can be set by gov proposal. Additionally, a fourth parameter which enables individual nodes to impose supplementary fee amount.
 
 1. Global fees (`MinimumGasPricesParam`).\
-Global fee `MinimumGasPricesParam` is established at the network level through global fee params setting via Governance Proposals, and it sets the fee requirements that the entire network must adhere to.
+Global fee `MinimumGasPricesParam` is established at the network level through global fee params set via Governance Proposal, it sets a fee requirements that the entire network must adhere to.
 2. `minimum-gas-prices` in `app.toml`\
    By adjusting the minimum-gas-prices parameter in app.toml, nodes can enforce a fee that is higher than the globally defined MinimumGasPricesParam. However, it's important to note that this configuration solely determines whether transactions are eligible to enter this specific node's mempool.
 
-3. `bypass-min-fee-msg-types` and `max_total_bypass_min_fee_msg_gas_usage`.\
- These two parameters are also part of the global fee params from gaiad v11.0.0, and can be changed through Gov Proposals. `bypass-min-fee-msg-types` represents a list of message types that will be excluded from paying any fees for inclusion in a block, `max_total_bypass_min_fee_msg_gas_usage` is the limit of `bypass-min-fee-msg-types` gas usage.
+3. `BypassMinFeeMsgTypes` and `MaxTotalBypassMinFeeMsgGasUsage`.\
+ These two parameters are also part of the global fee params from gaiad v11.0.0. They can be changed through Gov Proposals. `BypassMinFeeMsgTypes` represents a list of message types that will be excluded from paying any fees for inclusion in a block, `MaxTotalBypassMinFeeMsgGasUsage` is the limit placed on gas usage for `BypassMinFeeMsgTypes`.
 
 ## Concepts
 
 ## Global Fees
 
-Global Fees module has three params that can be set by gov proposal `param-change`: 
+The Global Fees module has three params that can be set by gov proposal `param-change`: 
 - `MinimumGasPricesParam`
 - `BypassMinFeeMsgTypes` 
 - `MaxTotalBypassMinFeeMsgGasUsage`
 
 ### Global Fee Params: `MinimumGasPricesParam`
 
-Global fees consist of a list of [`sdk.DecCoins`](https://github.com/cosmos/cosmos-sdk/blob/82ce891aa67f635f3b324b7a52386d5405c5abd0/types/dec_coin.go#L158).
-Every transaction must pay per unit of gas **at least** one of the amounts stated in this list in the corresponding denomination (denom). By this notion, global fees allow a network to impose a minimum transaction fee.
+Network level, Global fees consist of a list of [`sdk.DecCoins`](https://github.com/cosmos/cosmos-sdk/blob/82ce891aa67f635f3b324b7a52386d5405c5abd0/types/dec_coin.go#L158).
+Every transaction must pay per unit of gas, **at least**, in one of the denominations (denoms) amounts in the list. This allows the Global Fee module to impose a minimum transaction fee for all transactions for a network.
 
-The paid fees must be paid in at least one denom from the global fees list and the corresponding amount per unit of gas must be greater than or equal to the corresponding amount in the global fees list.
-
-A global fees list must meet the following properties:
-- fees have to be alphabetically sorted by denom; 
-- fees must have non-negative amount, with a valid and unique denom (i.e. no duplicate denoms are allowed).
+Requirements for the fees include:
+- fees have to be alphabetically sorted by denom
+- fees must have non-negative amount, with a valid and unique denom (i.e. no duplicate denoms are allowed)
 
 There are **two exceptions** from the global fees rules that allow zero fee transactions:
 
@@ -41,11 +39,11 @@ There are **two exceptions** from the global fees rules that allow zero fee tran
 
 Bypass minimum fee messages are messages that are exempt from paying fees. The above global fees and the below local `minimum-gas-prices` checks do not apply for transactions that satisfy the following conditions:
 
-- Contains only bypass message types defined in `BypassMinFeeMsgTypes`.
+- Transaction contains only bypass message types defined in `BypassMinFeeMsgTypes`.
 - The total gas used is less than or equal to `MaxTotalBypassMinFeeMsgGasUsage`.
 - In case of non-zero transaction fees, the denom has to be a subset of denoms defined in the global fees list.
 
-Starting from gaiad `v11.0.0`, `BypassMinFeeMsgTypes` and `MaxTotalBypassMinFeeMsgGasUsage` are part of global fee params and can be proposed at network level. The default `bypass-min-fee-msg-types=[
+Starting from gaiad `v11.0.0`, `BypassMinFeeMsgTypes` and `MaxTotalBypassMinFeeMsgGasUsage` are part of global fee params and can be proposed at network level. The default values are: `bypass-min-fee-msg-types=[
 "/ibc.core.channel.v1.MsgRecvPacket",
 "/ibc.core.channel.v1.MsgAcknowledgement",
 "/ibc.core.client.v1.MsgUpdateClient",

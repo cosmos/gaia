@@ -1,13 +1,14 @@
 # ADR 001: Global Fee
 
 ## Changelog
-* {date}: {changelog}
+* 2023-06-12: Initial Draft
 
 ## Status
-Global fee is introduced into gaia from v8.0.0, and is refactored in v10.0.0.
+Global fee is introduced into gaia from v8.0.0, and is refactored in v11.0.0.
 
 ## Context
 
+Global fees are introduced to set the 
 > This section contains all the context one needs to understand the current state, and why there is a problem. It should be as succinct as possible and introduce the high level idea behind the solution.
 
 ## Decision

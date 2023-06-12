@@ -1,7 +1,7 @@
 ---
 name: Issue Template
 about: Basic template for issues (used by the team)
-
+labels: needs-triage
 ---
 
 <!-- < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < ☺ 

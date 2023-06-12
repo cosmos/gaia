@@ -1,29 +1,32 @@
-# Gaia Fees and Fees Checks
+# Gaia Fee and Fees Checks
 
 ## Fee Parameters
 The CosmosHub allows managing fees using 4 parameters. At the network level, there are three parameters from globalfee modules (`MinimumGasPricesParam`, `BypassMinFeeMsgTypes`, and `MaxTotalBypassMinFeeMsgGasUsage`) that can be set by gov proposal. Additionally, a fourth parameter which enables individual nodes to impose supplementary fee amount.
 
-1. Global fees (`MinimumGasPricesParam`).\
-Global fee `MinimumGasPricesParam` is established at the network level through global fee params set via Governance Proposal, it sets a fee requirements that the entire network must adhere to.
-2. `minimum-gas-prices` in `app.toml`\
+1. global fees (`MinimumGasPricesParam`).\
+global fees `MinimumGasPricesParam` is established at the network level through globalfee params set via Governance Proposal, it sets a fee requirements that the entire network must adhere to.
+
+*Please note: in this context, "globalfee" or "Globalfee" are used to refer to the globalfee module, while "global fees" is referring to the `MinimumGasPricesParam` in the globalfee module's params.*
+
+2.`minimum-gas-prices` in `app.toml`\
    By adjusting the minimum-gas-prices parameter in app.toml, nodes can enforce a fee that is higher than the globally defined MinimumGasPricesParam. However, it's important to note that this configuration solely determines whether transactions are eligible to enter this specific node's mempool.
 
 3. `BypassMinFeeMsgTypes` and `MaxTotalBypassMinFeeMsgGasUsage`.\
- These two parameters are also part of the global fee params from gaiad v11.0.0. They can be changed through Gov Proposals. `BypassMinFeeMsgTypes` represents a list of message types that will be excluded from paying any fees for inclusion in a block, `MaxTotalBypassMinFeeMsgGasUsage` is the limit placed on gas usage for `BypassMinFeeMsgTypes`.
+ These two parameters are also part of the globalfee params from gaiad v11.0.0. They can be changed through Gov Proposals. `BypassMinFeeMsgTypes` represents a list of message types that will be excluded from paying any fees for inclusion in a block, `MaxTotalBypassMinFeeMsgGasUsage` is the limit placed on gas usage for `BypassMinFeeMsgTypes`.
 
 ## Concepts
 
-## Global Fees
+## Global Fee module
 
-The Global Fees module has three params that can be set by gov proposal `param-change`: 
+The globalfee module has three params that can be set by gov proposal `param-change`: 
 - `MinimumGasPricesParam`
 - `BypassMinFeeMsgTypes` 
 - `MaxTotalBypassMinFeeMsgGasUsage`
 
-### Global Fee Params: `MinimumGasPricesParam`
+### Globalfee Params: `MinimumGasPricesParam`
 
-Network level, Global fees consist of a list of [`sdk.DecCoins`](https://github.com/cosmos/cosmos-sdk/blob/82ce891aa67f635f3b324b7a52386d5405c5abd0/types/dec_coin.go#L158).
-Every transaction must pay per unit of gas, **at least**, in one of the denominations (denoms) amounts in the list. This allows the Global Fee module to impose a minimum transaction fee for all transactions for a network.
+Network level, global fees consist of a list of [`sdk.DecCoins`](https://github.com/cosmos/cosmos-sdk/blob/82ce891aa67f635f3b324b7a52386d5405c5abd0/types/dec_coin.go#L158).
+Every transaction must pay per unit of gas, **at least**, in one of the denominations (denoms) amounts in the list. This allows the globalfee module to impose a minimum transaction fee for all transactions for a network.
 
 Requirements for the fees include:
 - fees have to be alphabetically sorted by denom
@@ -35,7 +38,7 @@ There are **two exceptions** from the global fees rules that allow zero fee tran
 
 2. One of the entries in the global fees list has a zero amount, e.g., `0uatom`, and the corresponding denom, e.g., `uatom`, is not present in `minimum-gas-prices` in `app.toml`, or node operators may set additional `minimum-gas-prices` in `app.toml` also zero coins.
 
-### Global Fee Params: `BypassMinFeeMsgTypes` and `MaxTotalBypassMinFeeMsgGasUsage`
+### Globalfee Params: `BypassMinFeeMsgTypes` and `MaxTotalBypassMinFeeMsgGasUsage`
 
 Bypass minimum fee messages are messages that are exempt from paying fees. The above global fees and the below local `minimum-gas-prices` checks do not apply for transactions that satisfy the following conditions:
 
@@ -82,7 +85,7 @@ The `minimum-gas-prices` parameter enables node operators to set its minimum fee
 When setting `minimum-gas-prices`, it's important to keep the following rules in mind:
 
 - The denoms in `min-gas-prices` that are not present in the global fees list are ignored. 
-- The amounts in `min-gas-prices` that are lower than global fee `MinimumGasPricesParam` are ignored.
+- The amounts in `min-gas-prices` that are lower than global fees `MinimumGasPricesParam` are ignored.
 - The amounts in `min-gas-prices` are considered as fee requirement only if they are greater than the amounts for the corresponding denoms in the global fees list.  
 
 ## Fee AnteHandler Behaviour
@@ -93,7 +96,7 @@ If the denoms of the transaction fees are a subset of the merged fees and at lea
 
 ## Queries
 
-CLI queries can be used to retrieve the global fee params:
+CLI queries can be used to retrieve the globalfee params:
 
 ```shell
 gaiad q globalfee params
@@ -116,9 +119,9 @@ gaiad q globalfee params
 }
 ```
 
-If the global fee `MinimumGasPricesParam` is not set, the query returns an empty global fees list: `minimum_gas_prices: []`. In this case the Cosmos Hub will use `0uatom` as global fee in this case (the default fee denom).
+If the global fees `MinimumGasPricesParam` is not set, the query returns an empty global fees list: `minimum_gas_prices: []`. In this case the Cosmos Hub will use `0uatom` as global fee in this case (the default fee denom).
 
-## Setting Up Global Fees via Gov Proposals
+## Setting Up Globalfee Params via Gov Proposals
 
 An example of setting up a global fee by a gov proposals is shown below.
   
@@ -126,12 +129,12 @@ An example of setting up a global fee by a gov proposals is shown below.
 gov submit-proposal param-change proposal.json
 ````
 
-A `proposal.json` example to change the `MinimumGasPricesParam` in global fee params:
+A `proposal.json` example to change the `MinimumGasPricesParam` in globalfee params:
 
 ```
 {
-  "title": "Global fees Param Change",
-  "description": "Update global fees",
+  "title": "Global fee Param Change",
+  "description": "Update global fee",
   "changes": [
     {
       "subspace": "globalfee",
@@ -144,15 +147,15 @@ A `proposal.json` example to change the `MinimumGasPricesParam` in global fee pa
 ```
 **Note:** in the above "value" field, coins must sorted alphabetically by denom.
 
-A `proposal.json` example to change the `bypassMinFeeMsgTypes` in global fee params:
+A `proposal.json` example to change the `bypassMinFeeMsgTypes` in globalfee params:
 
 ```
 {
-  "title": "Global fees Param Change",
-  "description": "Update global fees Params",
+  "title": "Globalfee Param Change",
+  "description": "Update globalfee Params",
   "changes": [
     {
-      "subspace": "globalfee",
+      "subspace": "Globalfee",
       "key": "BypassMinFeeMsgTypes",
       "value": ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward", "/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.client.v1.MsgUpdateClient"]
     }
@@ -160,11 +163,11 @@ A `proposal.json` example to change the `bypassMinFeeMsgTypes` in global fee par
   "deposit": "1000000uatom"
 }
 ```
-A `proposal.json` example to change the `maxTotalBypassMinFeeMsgGasUsage` in global fee params:
+A `proposal.json` example to change the `maxTotalBypassMinFeeMsgGasUsage` in globalfee params:
 ```
 {
-  "title": "Global fees Param Change",
-  "description": "Update global fees Params",
+  "title": "Globalfee Param Change",
+  "description": "Update globalfee Params",
   "changes": [
     {
       "subspace": "globalfee",
@@ -183,7 +186,7 @@ Here are a few examples to clarify the relationship between global fees, minimum
 
 **Note:** Transactions can include zero-coin fees. However, these fees are removed from the transaction fees during the fee [parsing](https://github.com/cosmos/cosmos-sdk/blob/e716e4103e934344aa7be6dc9b5c453bdec5f225/client/tx/factory.go#L144) / [sanitizing](https://github.com/cosmos/cosmos-sdk/blob/e716e4103e934344aa7be6dc9b5c453bdec5f225/types/dec_coin.go#L172) before reaching the fee AnteHandler. 
 This means `paidfee = "1uatom, 0stake"` and `paidfee = "1uatom"` are equivalent, and similarly, `paidfee = "0uatom"` is equivalent to `paidfee = ""`. 
-In the following examples, zero-coin fees are removed from the transaction fees, globalfee refers to `MinimumGasPricesParam` in global fee params, minimum-gas-prices refers to the local  `minimum-gas-prices` setup in `app.toml`.
+In the following examples, zero-coin fees are removed from the transaction fees, globalfee refers to `MinimumGasPricesParam` in globalfee params, minimum-gas-prices refers to the local  `minimum-gas-prices` setup in `app.toml`.
 
 ### Case 1
 

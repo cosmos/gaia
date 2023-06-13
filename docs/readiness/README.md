@@ -41,7 +41,7 @@ If recorded decisions turned out to be lacking, convene a discussion, record the
 2. Link the ADR in the related feature epic
 3. Create a draft Pull Request if you want to get early feedback.
 4. Make sure the context and a solution is clear and well documented.
-5. Add an entry to a list in the README file [Table of Contents](#ADR-Table-of-Contents).
+5. Add an entry to a list in the README file [Table of Contents](#adr-table-of-contents).
 6. Create a Pull Request to publish the ADR proposal.
 
 ### Life cycle

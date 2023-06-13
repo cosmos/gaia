@@ -176,8 +176,9 @@ Then:
 4. Be sure to include a relevant changelog entry in the `Unreleased` section of `CHANGELOG.md` (see file for log format). The entry should be on top of all others changes in the section.
 
 PRs must have a category prefix that is based on the type of changes being made (for example, `fix`, `feat`,
-`refactor`, `docs`, and so on). The *type* must be included in the PR title as a prefix (for example,
-`fix: <description>`). This convention ensures that all changes that are committed to the base branch follow the
+`refactor`, `docs`, and so on). The [type](https://github.com/commitizen/conventional-commit-types/blob/v3.0.0/index.json) 
+must be included in the PR title as a prefix (for example, `fix: <description>`). 
+This convention ensures that all changes that are committed to the base branch follow the
 [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification.
 Additionally, **each PR should only address a single issue**.
 

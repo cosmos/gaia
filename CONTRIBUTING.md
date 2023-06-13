@@ -2,7 +2,7 @@
 
 - [Contributing](#contributing)
   - [Overview](#overview)
-    - [Stewarding team responsibility](#stewarding-team-responsibility)
+    - [Responsibilities of the stewarding team](#responsibilities-of-the-stewarding-team)
     - [Ease of reviewing](#ease-of-reviewing)
     - [Workflow](#workflow)
   - [Project Board](#project-board)
@@ -187,10 +187,11 @@ Pull requests are merged automatically using [`A:automerge` action](https://merg
 
 ### Pull Request Templates
 
-There are three PR templates. The [default template](./.github/PULL_REQUEST_TEMPLATE.md) is for types `fix`, `feat`, and `refactor`. We also have a [docs template](./.github/PULL_REQUEST_TEMPLATE/docs.md) for documentation changes and an [other template](./.github/PULL_REQUEST_TEMPLATE/other.md) for changes that do not affect production code. When previewing a PR before it has been opened, you can change the template by adding one of the following parameters to the url:
+There are three PR templates. The [default template](./.github/PULL_REQUEST_TEMPLATE.md) contains links to the three templates. Please go the the `Preview` tab and select the appropriate sub-template:
 
-* `template=docs.md`
-* `template=other.md`
+- The [production template](./.github/PULL_REQUEST_TEMPLATE/production.md) is for types `fix`, `feat`, and `refactor`. 
+- The [docs template](./.github/PULL_REQUEST_TEMPLATE/docs.md) is for documentation changes.
+- The [other template](./.github/PULL_REQUEST_TEMPLATE/other.md) is for changes that do not affect production code. 
 
 ### Requesting Reviews
 
@@ -249,11 +250,7 @@ To generate the protobuf stubs, you can run `make proto-gen`.
 
 User-facing repos should adhere to the trunk based development branching model: https://trunkbaseddevelopment.com. User branches should start with a user name, example: `{moniker}/{issue#}-branch-name`.
 
-Gaia follows [semantic versioning](https://semver.org), but with the following deviations to account for state-machine and API breaking changes: 
-
-- State-machine breaking changes will result in an increase of the major version X (X.y.z).
-- API breaking changes will result in an increase of the minor version Y (x.Y.z | x > 0).
-- All other changes will result in an increase of the patch version Z (x.y.Z | x > 0).
+Gaia follows [semantic versioning](https://semver.org), but with the some deviations to account for state-machine and API breaking changes. See [RELEASE_PROCESS.md](./RELEASE_PROCESS.md) for details. 
 
 ### PR Targeting
 

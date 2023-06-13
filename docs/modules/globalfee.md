@@ -6,10 +6,14 @@ The CosmosHub allows managing fees using 4 parameters. At the network level, the
 1. global fees (`MinimumGasPricesParam`).\
 global fees `MinimumGasPricesParam` is established at the network level through globalfee params set via Governance Proposal, it sets a fee requirements that the entire network must adhere to.
 
-*Please note: in this context, "globalfee" or "Globalfee" are used to refer to the globalfee module, while "global fees" is referring to the `MinimumGasPricesParam` in the globalfee module's params.*
+   *Please note: in this context, "globalfee" or "Globalfee" are used to refer to the globalfee module, while "global fees" is referring to the `MinimumGasPricesParam` in the globalfee module's params.*
 
-2.`minimum-gas-prices` in `app.toml`\
-   By adjusting the minimum-gas-prices parameter in app.toml, nodes can enforce a fee that is higher than the globally defined MinimumGasPricesParam. However, it's important to note that this configuration solely determines whether transactions are eligible to enter this specific node's mempool.
+
+2. `minimum-gas-prices` in `app.toml`\
+   By adjusting the `minimum-gas-prices` parameter in `app.toml`, nodes can enforce a fee that is higher than the globally defined `MinimumGasPricesParam`. However, it's importantht to note that this configuration solely determines whether transactions are eligible to enter this specific node's mempool.
+
+    *Please note: in this context, `minimum-gas-prices` are used to refer to the local fee requirement that nodes can set in their `app.toml`, while `MinimumGasPricesParam` is a parameter in the globalfee module, which is the fee requirement at network level.*
+
 
 3. `BypassMinFeeMsgTypes` and `MaxTotalBypassMinFeeMsgGasUsage`.\
  These two parameters are also part of the globalfee params from gaiad v11.0.0. They can be changed through Gov Proposals. `BypassMinFeeMsgTypes` represents a list of message types that will be excluded from paying any fees for inclusion in a block, `MaxTotalBypassMinFeeMsgGasUsage` is the limit placed on gas usage for `BypassMinFeeMsgTypes`.
@@ -18,7 +22,7 @@ global fees `MinimumGasPricesParam` is established at the network level through 
 
 ## Global Fee module
 
-The globalfee module has three params that can be set by gov proposal `param-change`: 
+The globalfee module has three parameters that can be set by governance proposal type `param-change`:
 - `MinimumGasPricesParam`
 - `BypassMinFeeMsgTypes` 
 - `MaxTotalBypassMinFeeMsgGasUsage`

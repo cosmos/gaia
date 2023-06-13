@@ -16,8 +16,8 @@ var (
 	runEvidenceTest = false
 	runFeeGrantTest = false
 	// runGlobalFeesTest             = true
-	// runGovTest                    = true
-	runIBCTest                    = true
+	runGovTest                    = true
+	runIBCTest                    = false
 	runSlashingTest               = false
 	runStakingAndDistributionTest = false
 	runVestingTest                = false
@@ -76,15 +76,16 @@ func (s *IntegrationTestSuite) TestFeeGrant() {
 //		s.testQueryGlobalFeesInGenesis()
 //	}
 //
-//	func (s *IntegrationTestSuite) TestGov() {
-//		if !runGovTest {
-//			s.T().Skip()
-//		}
-//		s.GovSoftwareUpgrade()
-//		s.GovCancelSoftwareUpgrade()
-//		s.GovCommunityPoolSpend()
-//		s.AddRemoveConsumerChain()
-//	}
+
+func (s *IntegrationTestSuite) TestGov() {
+	if !runGovTest {
+		s.T().Skip()
+	}
+	// s.GovSoftwareUpgrade()
+	// s.GovCancelSoftwareUpgrade()
+	s.GovCommunityPoolSpend()
+	// s.AddRemoveConsumerChain()
+}
 func (s *IntegrationTestSuite) TestIBC() {
 	if !runIBCTest {
 		s.T().Skip()

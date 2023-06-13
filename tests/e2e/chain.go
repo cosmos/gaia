@@ -12,10 +12,12 @@ import (
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+	distribtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
-	govv1beta1types "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
-	govv1types "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	govv1types "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	govv1beta1types "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	gaiaparams "github.com/cosmos/gaia/v10/app/params"
 )
@@ -39,7 +41,17 @@ func init() {
 	evidencetypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	cryptocodec.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	govv1types.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	govv1types.RegisterLegacyAminoCodec(encodingConfig.Amino)
+
 	govv1beta1types.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	govv1beta1types.RegisterLegacyAminoCodec(encodingConfig.Amino)
+
+	upgradetypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	distribtypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	distribtypes.RegisterLegacyAminoCodec(encodingConfig.Amino)
+	sdk.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	sdk.RegisterLegacyAminoCodec(encodingConfig.Amino)
+
 	cdc = encodingConfig.Marshaler
 	txConfig = encodingConfig.TxConfig
 }

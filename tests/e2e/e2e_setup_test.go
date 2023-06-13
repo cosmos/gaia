@@ -13,6 +13,10 @@ import (
 	"testing"
 	"time"
 
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+
 	tmconfig "github.com/cometbft/cometbft/config"
 	"github.com/cometbft/cometbft/crypto/ed25519"
 	tmjson "github.com/cometbft/cometbft/libs/json"
@@ -59,15 +63,16 @@ const (
 	//	maxTotalBypassMinFeeMsgGasUsage       = "1"
 	gas = 200000
 
-	// govProposalBlockBuffer                = 35
-	relayerAccountIndex       = 0
-	numberOfEvidences         = 10
-	slashingShares      int64 = 10000
+	govProposalBlockBuffer       = 35
+	relayerAccountIndex          = 0
+	numberOfEvidences            = 10
+	slashingShares         int64 = 10000
 
-// proposalGlobalFeeFilename           = "proposal_globalfee.json"
-// proposalBypassMsgFilename           = "proposal_bypass_msg.json"
-// proposalMaxTotalBypassFilename      = "proposal_max_total_bypass.json"
-// proposalCommunitySpendFilename      = "proposal_community_spend.json"
+	// proposalGlobalFeeFilename           = "proposal_globalfee.json"
+	// proposalBypassMsgFilename           = "proposal_bypass_msg.json"
+	// proposalMaxTotalBypassFilename      = "proposal_max_total_bypass.json"
+	proposalCommunitySpendFilename = "proposal_community_spend.json"
+
 // proposalAddConsumerChainFilename    = "proposal_add_consumer.json"
 // proposalRemoveConsumerChainFilename = "proposal_remove_consumer.json"
 )
@@ -80,6 +85,7 @@ var (
 	standardFees      = sdk.NewCoin(uatomDenom, sdk.NewInt(330000))     // 0.33uatom
 	depositAmount     = sdk.NewCoin(uatomDenom, sdk.NewInt(330000000))  // 3,300uatom
 	distModuleAddress = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
+	govModuleAddress  = authtypes.NewModuleAddress(govtypes.ModuleName).String()
 	proposalCounter   = 0
 )
 
@@ -142,14 +148,14 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.initValidatorConfigs(s.chainA)
 	s.runValidators(s.chainA, 0)
 
-	s.T().Logf("starting e2e infrastructure for chain B; chain-id: %s; datadir: %s", s.chainB.id, s.chainB.dataDir)
-	s.initNodes(s.chainB)
-	s.initGenesis(s.chainB, vestingMnemonic, jailedValMnemonic)
-	s.initValidatorConfigs(s.chainB)
-	s.runValidators(s.chainB, 10)
+	// s.T().Logf("starting e2e infrastructure for chain B; chain-id: %s; datadir: %s", s.chainB.id, s.chainB.dataDir)
+	// s.initNodes(s.chainB)
+	// s.initGenesis(s.chainB, vestingMnemonic, jailedValMnemonic)
+	// s.initValidatorConfigs(s.chainB)
+	// s.runValidators(s.chainB, 10)
 
-	time.Sleep(10 * time.Second)
-	s.runIBCRelayer()
+	// time.Sleep(10 * time.Second)
+	// s.runIBCRelayer()
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -593,175 +599,214 @@ func noRestart(config *docker.HostConfig) {
 	}
 }
 
-//
-//  func (s *IntegrationTestSuite) writeGovParamChangeProposalGlobalFees(c *chain, coins sdk.DecCoins) {
-//	type ParamInfo struct {
-//		Subspace string       `json:"subspace"`
-//		Key      string       `json:"key"`
-//		Value    sdk.DecCoins `json:"value"`
+// func (s *IntegrationTestSuite) writeGovParamChangeProposalGlobalFees(c *chain, coins sdk.DecCoins) {
+// 	type ParamInfo struct {
+// 		Subspace string       `json:"subspace"`
+// 		Key      string       `json:"key"`
+// 		Value    sdk.DecCoins `json:"value"`
+// 	}
+
+// 	type ParamChangeMessage struct {
+// 		Title       string      `json:"title"`
+// 		Description string      `json:"description"`
+// 		Changes     []ParamInfo `json:"changes"`
+// 		Deposit     string      `json:"deposit"`
+// 	}
+
+// 	paramChangeProposalBody, err := json.MarshalIndent(ParamChangeMessage{
+// 		Title:       "global fee test",
+// 		Description: "global fee change",
+// 		Changes: []ParamInfo{
+// 			{
+// 				Subspace: "globalfee",
+// 				Key:      "MinimumGasPricesParam",
+// 				Value:    coins,
+// 			},
+// 		},
+// 		Deposit: "1000uatom",
+// 	}, "", " ")
+// 	s.Require().NoError(err)
+
+// 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalGlobalFeeFilename), paramChangeProposalBody)
+// 	s.Require().NoError(err)
+// }
+
+// func (s *IntegrationTestSuite) writeGovParamChangeProposalBypassMsgs(c *chain, msgs []string) {
+// 	type ParamInfo struct {
+// 		Subspace string   `json:"subspace"`
+// 		Key      string   `json:"key"`
+// 		Value    []string `json:"value"`
+// 	}
+
+// 	type ParamChangeMessage struct {
+// 		Title       string      `json:"title"`
+// 		Description string      `json:"description"`
+// 		Changes     []ParamInfo `json:"changes"`
+// 		Deposit     string      `json:"deposit"`
+// 	}
+// 	paramChangeProposalBody, err := json.MarshalIndent(ParamChangeMessage{
+// 		Title:       "ChangeProposalBypassMsgs",
+// 		Description: "global fee change",
+// 		Changes: []ParamInfo{
+// 			{
+// 				Subspace: "globalfee",
+// 				Key:      "BypassMinFeeMsgTypes",
+// 				Value:    msgs,
+// 			},
+// 		},
+// 		Deposit: "1000uatom",
+// 	}, "", " ")
+// 	s.Require().NoError(err)
+
+// 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalBypassMsgFilename), paramChangeProposalBody)
+// 	s.Require().NoError(err)
+// }
+
+// func (s *IntegrationTestSuite) writeGovParamChangeProposalMaxTotalBypass(c *chain, gas uint64) {
+// 	type ParamInfo struct {
+// 		Subspace string `json:"subspace"`
+// 		Key      string `json:"key"`
+// 		Value    string `json:"value"`
+// 	}
+
+// 	type ParamChangeMessage struct {
+// 		Title       string      `json:"title"`
+// 		Description string      `json:"description"`
+// 		Changes     []ParamInfo `json:"changes"`
+// 		Deposit     string      `json:"deposit"`
+// 	}
+// 	paramChangeProposalBody, err := json.MarshalIndent(ParamChangeMessage{
+// 		Title:       "ChangeProposalMaxTotalBypass",
+// 		Description: "global fee change",
+// 		Changes: []ParamInfo{
+// 			{
+// 				Subspace: "globalfee",
+// 				Key:      "MaxTotalBypassMinFeeMsgGasUsage",
+// 				Value:    strconv.FormatInt(int64(gas), 10),
+// 			},
+// 		},
+// 		Deposit: "1000uatom",
+// 	}, "", " ")
+// 	s.Require().NoError(err)
+
+//		err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalMaxTotalBypassFilename), paramChangeProposalBody)
+//		s.Require().NoError(err)
 //	}
-//
-//	type ParamChangeMessage struct {
-//		Title       string      `json:"title"`
-//		Description string      `json:"description"`
-//		Changes     []ParamInfo `json:"changes"`
-//		Deposit     string      `json:"deposit"`
-//	}
-//
-//	paramChangeProposalBody, err := json.MarshalIndent(ParamChangeMessage{
-//		Title:       "global fee test",
-//		Description: "global fee change",
-//		Changes: []ParamInfo{
-//			{
-//				Subspace: "globalfee",
-//				Key:      "MinimumGasPricesParam",
-//				Value:    coins,
-//			},
-//		},
-//		Deposit: "1000uatom",
-//	}, "", " ")
-//	s.Require().NoError(err)
-//
-//	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalGlobalFeeFilename), paramChangeProposalBody)
-//	s.Require().NoError(err)
-//}
-//
-//  func (s *IntegrationTestSuite) writeGovParamChangeProposalBypassMsgs(c *chain, msgs []string) {
-//	type ParamInfo struct {
-//		Subspace string   `json:"subspace"`
-//		Key      string   `json:"key"`
-//		Value    []string `json:"value"`
-//	}
-//
-//	type ParamChangeMessage struct {
-//		Title       string      `json:"title"`
-//		Description string      `json:"description"`
-//		Changes     []ParamInfo `json:"changes"`
-//		Deposit     string      `json:"deposit"`
-//	}
-//	paramChangeProposalBody, err := json.MarshalIndent(ParamChangeMessage{
-//		Title:       "ChangeProposalBypassMsgs",
-//		Description: "global fee change",
-//		Changes: []ParamInfo{
-//			{
-//				Subspace: "globalfee",
-//				Key:      "BypassMinFeeMsgTypes",
-//				Value:    msgs,
-//			},
-//		},
-//		Deposit: "1000uatom",
-//	}, "", " ")
-//	s.Require().NoError(err)
-//
-//	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalBypassMsgFilename), paramChangeProposalBody)
-//	s.Require().NoError(err)
-//}
-//
-//  func (s *IntegrationTestSuite) writeGovParamChangeProposalMaxTotalBypass(c *chain, gas uint64) {
-//	type ParamInfo struct {
-//		Subspace string `json:"subspace"`
-//		Key      string `json:"key"`
-//		Value    string `json:"value"`
-//	}
-//
-//	type ParamChangeMessage struct {
-//		Title       string      `json:"title"`
-//		Description string      `json:"description"`
-//		Changes     []ParamInfo `json:"changes"`
-//		Deposit     string      `json:"deposit"`
-//	}
-//	paramChangeProposalBody, err := json.MarshalIndent(ParamChangeMessage{
-//		Title:       "ChangeProposalMaxTotalBypass",
-//		Description: "global fee change",
-//		Changes: []ParamInfo{
-//			{
-//				Subspace: "globalfee",
-//				Key:      "MaxTotalBypassMinFeeMsgGasUsage",
-//				Value:    strconv.FormatInt(int64(gas), 10),
-//			},
-//		},
-//		Deposit: "1000uatom",
-//	}, "", " ")
-//	s.Require().NoError(err)
-//
-//	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalMaxTotalBypassFilename), paramChangeProposalBody)
-//	s.Require().NoError(err)
-//}
-//
+func (s *IntegrationTestSuite) writeGovCommunitySpendProposal(c *chain, amount sdk.Coin, recipient string) {
+
+	msg := &distrtypes.MsgCommunityPoolSpend{
+		Authority: govModuleAddress,
+		Recipient: recipient,
+		Amount:    sdk.Coins{amount},
+	}
+
+	proposalCommSpend, err := govv1.NewMsgSubmitProposal(
+		[]sdk.Msg{msg},
+		sdk.Coins{sdk.NewCoin(uatomDenom, sdk.NewInt(100))},
+		"JohnGalt",
+		"Community Pool Spend",
+		"Fund Team!",
+		"summary",
+	)
+	s.Require().NoError(err)
+
+	fmt.Println(proposalCommSpend)
+
+	res, err := cdc.MarshalInterfaceJSON(proposalCommSpend)
+	s.Require().NoError(err)
+
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalCommunitySpendFilename), res)
+	s.Require().NoError(err)
+}
+
+func (s *IntegrationTestSuite) writeGovLegProposal(c *chain, height int64, name string) {
+	prop := &upgradetypes.Plan{
+		Name:   name,
+		Height: height,
+		Info:   `{"binaries":{"os1/arch1":"url1","os2/arch2":"url2"}}`,
+	}
+
+	commSpendBody, err := json.MarshalIndent(prop, "", " ")
+	fmt.Println(string(commSpendBody))
+	s.Require().NoError(err)
+
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalCommunitySpendFilename), commSpendBody)
+	s.Require().NoError(err)
+}
+
 // func (s *IntegrationTestSuite) writeGovCommunitySpendProposal(c *chain, amount string, recipient string) {
-//	proposalCommSpend := &distrtypes.CommunityPoolSpendProposalWithDeposit{
-//		Title:       "Community Pool Spend",
-//		Description: "Fund Team!",
-//		Recipient:   recipient,
-//		Amount:      amount,
-//		Deposit:     "1000uatom",
-//	}
-//	commSpendBody, err := json.MarshalIndent(proposalCommSpend, "", " ")
-//	s.Require().NoError(err)
-//
-//	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalCommunitySpendFilename), commSpendBody)
-//	s.Require().NoError(err)
-//}
-//
-// type ConsumerAdditionProposalWithDeposit struct {
-//	ccvprovider.ConsumerAdditionProposal
-//	Deposit string `json:"deposit"`
-//}
-//
-// type ConsumerRemovalProposalWithDeposit struct {
-//	ccvprovider.ConsumerRemovalProposal
-//	Deposit string `json:"deposit"`
-//}
-//
-// func (s *IntegrationTestSuite) writeAddRemoveConsumerProposals(c *chain, consumerChainID string) {
-//	hash, _ := json.Marshal("Z2VuX2hhc2g=")
-//	addProp := &ccvprovider.ConsumerAdditionProposal{
-//		Title:       "Create consumer chain",
-//		Description: "First consumer chain",
-//		ChainId:     consumerChainID,
-//		InitialHeight: ibcclienttypes.Height{
-//			RevisionHeight: 1,
-//		},
-//		GenesisHash:                       hash,
-//		BinaryHash:                        hash,
-//		SpawnTime:                         time.Now(),
-//		UnbondingPeriod:                   time.Duration(100000000000),
-//		CcvTimeoutPeriod:                  time.Duration(100000000000),
-//		TransferTimeoutPeriod:             time.Duration(100000000000),
-//		ConsumerRedistributionFraction:    "0.75",
-//		BlocksPerDistributionTransmission: 10,
-//		HistoricalEntries:                 10000,
-//	}
-//	addPropWithDeposit := ConsumerAdditionProposalWithDeposit{
-//		ConsumerAdditionProposal: *addProp,
-//		Deposit:                  "1000uatom",
+// 	proposalCommSpend := &distrtypes.CommunityPoolSpendProposalWithDeposit{
+// 		Title:       "Community Pool Spend",
+// 		Description: "Fund Team!",
+// 		Recipient:   recipient,
+// 		Amount:      amount,
+// 		Deposit:     "1000uatom",
+// 	}
+// 	commSpendBody, err := json.MarshalIndent(proposalCommSpend, "", " ")
+// 	s.Require().NoError(err)
+
+// 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalCommunitySpendFilename), commSpendBody)
+// 	s.Require().NoError(err)
+// }
+
+//	type ConsumerAdditionProposalWithDeposit struct {
+//		ccvprovider.ConsumerAdditionProposal
+//		Deposit string `json:"deposit"`
 //	}
 //
-//	removeProp := &ccvprovider.ConsumerRemovalProposal{
-//		Title:       "Remove consumer chain",
-//		Description: "Removing consumer chain",
-//		ChainId:     consumerChainID,
-//		StopTime:    time.Now(),
+//	type ConsumerRemovalProposalWithDeposit struct {
+//		ccvprovider.ConsumerRemovalProposal
+//		Deposit string `json:"deposit"`
 //	}
 //
-//	removePropWithDeposit := ConsumerRemovalProposalWithDeposit{
-//		ConsumerRemovalProposal: *removeProp,
-//		Deposit:                 "1000uatom",
+//	func (s *IntegrationTestSuite) writeAddRemoveConsumerProposals(c *chain, consumerChainID string) {
+//		hash, _ := json.Marshal("Z2VuX2hhc2g=")
+//		addProp := &ccvprovider.ConsumerAdditionProposal{
+//			Title:       "Create consumer chain",
+//			Description: "First consumer chain",
+//			ChainId:     consumerChainID,
+//			InitialHeight: ibcclienttypes.Height{
+//				RevisionHeight: 1,
+//			},
+//			GenesisHash:                       hash,
+//			BinaryHash:                        hash,
+//			SpawnTime:                         time.Now(),
+//			UnbondingPeriod:                   time.Duration(100000000000),
+//			CcvTimeoutPeriod:                  time.Duration(100000000000),
+//			TransferTimeoutPeriod:             time.Duration(100000000000),
+//			ConsumerRedistributionFraction:    "0.75",
+//			BlocksPerDistributionTransmission: 10,
+//			HistoricalEntries:                 10000,
+//		}
+//		addPropWithDeposit := ConsumerAdditionProposalWithDeposit{
+//			ConsumerAdditionProposal: *addProp,
+//			Deposit:                  "1000uatom",
+//		}
+//
+//		removeProp := &ccvprovider.ConsumerRemovalProposal{
+//			Title:       "Remove consumer chain",
+//			Description: "Removing consumer chain",
+//			ChainId:     consumerChainID,
+//			StopTime:    time.Now(),
+//		}
+//
+//		removePropWithDeposit := ConsumerRemovalProposalWithDeposit{
+//			ConsumerRemovalProposal: *removeProp,
+//			Deposit:                 "1000uatom",
+//		}
+//
+//		consumerAddBody, err := json.MarshalIndent(addPropWithDeposit, "", " ")
+//		s.Require().NoError(err)
+//
+//		consumerRemoveBody, err := json.MarshalIndent(removePropWithDeposit, "", " ")
+//		s.Require().NoError(err)
+//
+//		err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalAddConsumerChainFilename), consumerAddBody)
+//		s.Require().NoError(err)
+//		err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalRemoveConsumerChainFilename), consumerRemoveBody)
+//		s.Require().NoError(err)
 //	}
-//
-//	consumerAddBody, err := json.MarshalIndent(addPropWithDeposit, "", " ")
-//	s.Require().NoError(err)
-//
-//	consumerRemoveBody, err := json.MarshalIndent(removePropWithDeposit, "", " ")
-//	s.Require().NoError(err)
-//
-//	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalAddConsumerChainFilename), consumerAddBody)
-//	s.Require().NoError(err)
-//	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalRemoveConsumerChainFilename), consumerRemoveBody)
-//	s.Require().NoError(err)
-//}
-//
-// func configFile(filename string) string {
-//	filepath := filepath.Join(gaiaConfigPath, filename)
-//	return filepath
-//}
+func configFile(filename string) string {
+	filepath := filepath.Join(gaiaConfigPath, filename)
+	return filepath
+}

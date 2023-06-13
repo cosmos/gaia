@@ -87,6 +87,7 @@ func (s *IntegrationTestSuite) runIBCRelayer() {
 	)
 	s.Require().NoError(err)
 
+	// TODO: debug relayer REST endpoint
 	// endpoint := fmt.Sprintf("http://%s/state", s.hermesResource.GetHostPort("3031/tcp"))
 	// s.Require().Eventually(
 	// 	func() bool {

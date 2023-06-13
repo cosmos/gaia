@@ -36,6 +36,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
+* (docs) [#2560](https://github.com/cosmos/gaia/pull/2560) Updates for v9.1.1 and re-arranging roadmap docs
 * (deps) [#2554](https://github.com/cosmos/gaia/pull/2554) Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.4.2](https://github.com/cosmos/ibc-go/releases/tag/v4.4.2).
 
 ### Improvements

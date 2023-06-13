@@ -130,13 +130,12 @@ func (s *IntegrationTestSuite) execDecode(
 	return decoded
 }
 
-func (s *IntegrationTestSuite) execVestingTx(
+func (s *IntegrationTestSuite) execVestingTx( //nolint:unused
 
 	c *chain,
 	method string,
 	args []string,
 	opt ...flagOption,
-
 ) {
 	opts := applyOptions(c.id, opt)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
@@ -160,13 +159,12 @@ func (s *IntegrationTestSuite) execVestingTx(
 	s.T().Logf("successfully %s with %v", method, args)
 }
 
-func (s *IntegrationTestSuite) execCreatePeriodicVestingAccount(
+func (s *IntegrationTestSuite) execCreatePeriodicVestingAccount( //nolint:unused
 
 	c *chain,
 	address,
 	jsonPath string,
 	opt ...flagOption,
-
 ) {
 	s.T().Logf("Executing gaiad create periodic vesting account %s", c.id)
 	s.execVestingTx(c, "create-periodic-vesting-account", []string{address, jsonPath}, opt...)
@@ -174,10 +172,8 @@ func (s *IntegrationTestSuite) execCreatePeriodicVestingAccount(
 }
 
 func (s *IntegrationTestSuite) execUnjail(
-
 	c *chain,
 	opt ...flagOption,
-
 ) {
 	opts := applyOptions(c.id, opt)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
@@ -252,7 +248,6 @@ func (s *IntegrationTestSuite) execFeeGrantRevoke(c *chain, valIdx int, granter,
 }
 
 func (s *IntegrationTestSuite) execBankSend(
-
 	c *chain,
 	valIdx int,
 	from,
@@ -261,7 +256,6 @@ func (s *IntegrationTestSuite) execBankSend(
 	fees string,
 	expectErr bool,
 	opt ...flagOption,
-
 ) {
 	// TODO remove the hardcode opt after refactor, all methods should accept custom flags
 	opt = append(opt, withKeyValue(flagFees, fees))
@@ -290,14 +284,14 @@ func (s *IntegrationTestSuite) execBankSend(
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.expectErrExecValidation(c, valIdx, expectErr))
 }
 
-type txBankSend struct {
-	from      string
-	to        string
-	amt       string
-	fees      string
-	log       string
-	expectErr bool
-}
+// type txBankSend struct {
+// 	from      string
+// 	to        string
+// 	amt       string
+// 	fees      string
+// 	log       string
+// 	expectErr bool
+// }
 
 // func (s *IntegrationTestSuite) execBankSendBatch(
 //
@@ -393,30 +387,30 @@ func (s *IntegrationTestSuite) runGovExec(c *chain, valIdx int, submitterAddr, g
 	s.T().Logf("Successfully executed %s", govCommand)
 }
 
-func (s *IntegrationTestSuite) executeGKeysAddCommand(c *chain, valIdx int, name string, home string) string {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
+// func (s *IntegrationTestSuite) executeGKeysAddCommand(c *chain, valIdx int, name string, home string) string {
+// 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+// 	defer cancel()
 
-	gaiaCommand := []string{
-		gaiadBinary,
-		keysCommand,
-		"add",
-		name,
-		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
-		"--keyring-backend=test",
-		"--output=json",
-	}
+// 	gaiaCommand := []string{
+// 		gaiadBinary,
+// 		keysCommand,
+// 		"add",
+// 		name,
+// 		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
+// 		"--keyring-backend=test",
+// 		"--output=json",
+// 	}
 
-	var addrRecord AddressResponse
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, func(stdOut []byte, stdErr []byte) bool {
-		// Gaiad keys add by default returns payload to stdErr
-		if err := json.Unmarshal(stdErr, &addrRecord); err != nil {
-			return false
-		}
-		return strings.Contains(addrRecord.Address, "cosmos")
-	})
-	return addrRecord.Address
-}
+// 	var addrRecord AddressResponse
+// 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, func(stdOut []byte, stdErr []byte) bool {
+// 		// Gaiad keys add by default returns payload to stdErr
+// 		if err := json.Unmarshal(stdErr, &addrRecord); err != nil {
+// 			return false
+// 		}
+// 		return strings.Contains(addrRecord.Address, "cosmos")
+// 	})
+// 	return addrRecord.Address
+// }
 
 // func (s *IntegrationTestSuite) executeKeysList(c *chain, valIdx int, home string) {
 // 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
@@ -466,7 +460,6 @@ func (s *IntegrationTestSuite) executeDelegate(c *chain, valIdx int, amount, val
 func (s *IntegrationTestSuite) executeRedelegate(c *chain, valIdx int, amount, originalValOperAddress,
 
 	newValOperAddress, delegatorAddr, home, delegateFees string,
-
 ) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
@@ -520,28 +513,26 @@ func (s *IntegrationTestSuite) getLatestBlockHeight(c *chain, valIdx int) int {
 	return currentHeight
 }
 
-func (s *IntegrationTestSuite) verifyBalanceChange(endpoint string, expectedAmount sdk.Coin, recipientAddress string) {
-	s.Require().Eventually(
-		func() bool {
-			afterAtomBalance, err := getSpecificBalance(endpoint, recipientAddress, uatomDenom)
-			s.Require().NoError(err)
+// func (s *IntegrationTestSuite) verifyBalanceChange(endpoint string, expectedAmount sdk.Coin, recipientAddress string) {
+// 	s.Require().Eventually(
+// 		func() bool {
+// 			afterAtomBalance, err := getSpecificBalance(endpoint, recipientAddress, uatomDenom)
+// 			s.Require().NoError(err)
 
-			return afterAtomBalance.IsEqual(expectedAmount)
-		},
-		20*time.Second,
-		5*time.Second,
-	)
-}
+// 			return afterAtomBalance.IsEqual(expectedAmount)
+// 		},
+// 		20*time.Second,
+// 		5*time.Second,
+// 	)
+// }
 
 func (s *IntegrationTestSuite) execSetWithdrawAddress(
-
 	c *chain,
 	valIdx int,
 	fees,
 	delegatorAddress,
 	newWithdrawalAddress,
 	homePath string,
-
 ) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
@@ -567,13 +558,11 @@ func (s *IntegrationTestSuite) execSetWithdrawAddress(
 }
 
 func (s *IntegrationTestSuite) execWithdrawReward(
-
 	c *chain,
 	valIdx int,
 	delegatorAddress,
 	validatorAddress,
 	homePath string,
-
 ) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
@@ -601,7 +590,6 @@ func (s *IntegrationTestSuite) execWithdrawReward(
 }
 
 func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chain, gaiaCommand []string, valIdx int, validation func([]byte, []byte) bool) {
-
 	if validation == nil {
 		validation = s.defaultExecValidation(s.chainA, 0)
 	}
@@ -619,7 +607,6 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 	})
 	s.Require().NoError(err)
 
-	fmt.Println(gaiaCommand)
 	err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
 		Context:      ctx,
 		Detach:       false,
@@ -630,9 +617,6 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 
 	stdOut := outBuf.Bytes()
 	stdErr := errBuf.Bytes()
-
-	fmt.Println("stdOut", string(outBuf.Bytes()))
-	fmt.Println("stdErr", string(errBuf.Bytes()))
 
 	if !validation(stdOut, stdErr) {
 		s.Require().FailNowf("Exec validation failed", "stdout: %s, stderr: %s",

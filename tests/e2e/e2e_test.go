@@ -8,20 +8,18 @@ import "fmt"
 //
 // )
 var (
-	runBankTest = false
-
+	runBankTest = true
 	//	runBypassMinFeeTest           = true
-	runEncodeTest = false
-
-	runEvidenceTest = false
-	runFeeGrantTest = false
+	runEncodeTest   = true
+	runEvidenceTest = true
+	runFeeGrantTest = true
 	// runGlobalFeesTest             = true
 	runGovTest                    = true
-	runIBCTest                    = false
-	runSlashingTest               = false
-	runStakingAndDistributionTest = false
-	runVestingTest                = false
-	runRestInterfacesTest         = false
+	runIBCTest                    = true
+	runSlashingTest               = true
+	runStakingAndDistributionTest = true
+	runVestingTest                = true
+	runRestInterfacesTest         = true
 )
 
 func (s *IntegrationTestSuite) TestRestInterfaces() {
@@ -81,11 +79,12 @@ func (s *IntegrationTestSuite) TestGov() {
 	if !runGovTest {
 		s.T().Skip()
 	}
-	// s.GovSoftwareUpgrade()
-	// s.GovCancelSoftwareUpgrade()
+	s.GovSoftwareUpgrade()
+	s.GovCancelSoftwareUpgrade()
 	s.GovCommunityPoolSpend()
 	// s.AddRemoveConsumerChain()
 }
+
 func (s *IntegrationTestSuite) TestIBC() {
 	if !runIBCTest {
 		s.T().Skip()

@@ -71,7 +71,8 @@ const (
 	// proposalGlobalFeeFilename           = "proposal_globalfee.json"
 	// proposalBypassMsgFilename           = "proposal_bypass_msg.json"
 	// proposalMaxTotalBypassFilename      = "proposal_max_total_bypass.json"
-	proposalCommunitySpendFilename = "proposal_community_spend.json"
+	proposalCommunitySpendFilename  = "proposal_community_spend.json"
+	proposalSoftwareUpgradeFilename = "proposal_software_upgrade.json"
 
 // proposalAddConsumerChainFilename    = "proposal_add_consumer.json"
 // proposalRemoveConsumerChainFilename = "proposal_remove_consumer.json"
@@ -148,14 +149,14 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.initValidatorConfigs(s.chainA)
 	s.runValidators(s.chainA, 0)
 
-	// s.T().Logf("starting e2e infrastructure for chain B; chain-id: %s; datadir: %s", s.chainB.id, s.chainB.dataDir)
-	// s.initNodes(s.chainB)
-	// s.initGenesis(s.chainB, vestingMnemonic, jailedValMnemonic)
-	// s.initValidatorConfigs(s.chainB)
-	// s.runValidators(s.chainB, 10)
+	s.T().Logf("starting e2e infrastructure for chain B; chain-id: %s; datadir: %s", s.chainB.id, s.chainB.dataDir)
+	s.initNodes(s.chainB)
+	s.initGenesis(s.chainB, vestingMnemonic, jailedValMnemonic)
+	s.initValidatorConfigs(s.chainB)
+	s.runValidators(s.chainB, 10)
 
-	// time.Sleep(10 * time.Second)
-	// s.runIBCRelayer()
+	time.Sleep(10 * time.Second)
+	s.runIBCRelayer()
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -693,7 +694,6 @@ func noRestart(config *docker.HostConfig) {
 //		s.Require().NoError(err)
 //	}
 func (s *IntegrationTestSuite) writeGovCommunitySpendProposal(c *chain, amount sdk.Coin, recipient string) {
-
 	msg := &distrtypes.MsgCommunityPoolSpend{
 		Authority: govModuleAddress,
 		Recipient: recipient,
@@ -710,27 +710,26 @@ func (s *IntegrationTestSuite) writeGovCommunitySpendProposal(c *chain, amount s
 	)
 	s.Require().NoError(err)
 
-	fmt.Println(proposalCommSpend)
-
-	res, err := cdc.MarshalInterfaceJSON(proposalCommSpend)
+	propBody, err := cdc.MarshalInterfaceJSON(proposalCommSpend)
 	s.Require().NoError(err)
 
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalCommunitySpendFilename), res)
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalCommunitySpendFilename), propBody)
 	s.Require().NoError(err)
 }
 
-func (s *IntegrationTestSuite) writeGovLegProposal(c *chain, height int64, name string) {
+// Note that this software upgrade proposal contains a plan with dumb binary URLs which can't be resolved.
+// Therefore this proposal is submitted using the `--no-validate` flag.
+func (s *IntegrationTestSuite) writeGovSoftwareUpgradeProposal(c *chain, height int64, name string) {
 	prop := &upgradetypes.Plan{
 		Name:   name,
 		Height: height,
 		Info:   `{"binaries":{"os1/arch1":"url1","os2/arch2":"url2"}}`,
 	}
 
-	commSpendBody, err := json.MarshalIndent(prop, "", " ")
-	fmt.Println(string(commSpendBody))
+	propBody, err := json.MarshalIndent(prop, "", " ")
 	s.Require().NoError(err)
 
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalCommunitySpendFilename), commSpendBody)
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalSoftwareUpgradeFilename), propBody)
 	s.Require().NoError(err)
 }
 

@@ -5,10 +5,8 @@ import (
 	"strconv"
 	"time"
 
-	//ccvtypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
-
+	// ccvtypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
@@ -31,7 +29,7 @@ func (s *IntegrationTestSuite) GovSoftwareUpgrade() {
 	// Gov tests may be run in arbitrary order, each test must increment proposalCounter to have the correct proposal id to submit and query
 	proposalCounter++
 
-	s.writeGovLegProposal(s.chainA, int64(height), "upgrade-v0")
+	s.writeGovSoftwareUpgradeProposal(s.chainA, int64(height), "upgrade-v0")
 
 	submitGovFlags := []string{
 		"software-upgrade",
@@ -45,7 +43,7 @@ func (s *IntegrationTestSuite) GovSoftwareUpgrade() {
 
 	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
 	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes=0.8,no=0.1,abstain=0.05,no_with_veto=0.05"}
-	s.runGovProcess(chainAAPIEndpoint, sender, proposalCounter, upgradetypes.ProposalTypeSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "weighted-vote", true)
+	s.runGovProcess(chainAAPIEndpoint, sender, proposalCounter, upgradetypes.ProposalTypeSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "weighted-vote", true, true)
 
 	s.verifyChainHaltedAtUpgradeHeight(s.chainA, 0, proposalHeight)
 	s.T().Logf("Successfully halted chain at  height %d", proposalHeight)
@@ -81,7 +79,7 @@ func (s *IntegrationTestSuite) GovCancelSoftwareUpgrade() {
 	sender := senderAddress.String()
 	height := s.getLatestBlockHeight(s.chainA, 0)
 	proposalHeight := height + 50
-	s.writeGovLegProposal(s.chainA, int64(height), "upgrade-v1")
+	s.writeGovSoftwareUpgradeProposal(s.chainA, int64(height), "upgrade-v1")
 
 	// Gov tests may be run in arbitrary order, each test must increment proposalCounter to have the correct proposal id to submit and query
 	proposalCounter++
@@ -97,13 +95,13 @@ func (s *IntegrationTestSuite) GovCancelSoftwareUpgrade() {
 
 	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
 	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes"}
-	s.runGovProcess(chainAAPIEndpoint, sender, proposalCounter, upgradetypes.ProposalTypeSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "vote", true)
+	s.runGovProcess(chainAAPIEndpoint, sender, proposalCounter, upgradetypes.ProposalTypeSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "vote", true, true)
 
 	proposalCounter++
 	submitGovFlags = []string{"cancel-software-upgrade", "--title='Upgrade V1'", "--description='Software Upgrade'"}
 	depositGovFlags = []string{strconv.Itoa(proposalCounter), depositAmount.String()}
 	voteGovFlags = []string{strconv.Itoa(proposalCounter), "yes"}
-	s.runGovProcess(chainAAPIEndpoint, sender, proposalCounter, upgradetypes.ProposalTypeCancelSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "vote", true)
+	s.runGovProcess(chainAAPIEndpoint, sender, proposalCounter, upgradetypes.ProposalTypeCancelSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "vote", true, true)
 
 	s.verifyChainPassesUpgradeHeight(s.chainA, 0, proposalHeight)
 	s.T().Logf("Successfully canceled upgrade at height %d", proposalHeight)
@@ -134,8 +132,9 @@ func (s *IntegrationTestSuite) GovCommunityPoolSpend() {
 	submitGovFlags := []string{configFile(proposalCommunitySpendFilename)}
 	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
 	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes"}
+
 	// TODO: replace proposal type by distrtypes.ProposalTypeCommunityPoolSpend equivalent in SDK v0.47
-	s.runGovProcessV1(chainAAPIEndpoint, sender, proposalCounter, "CommunityPoolSpend", submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
+	s.runGovProcess(chainAAPIEndpoint, sender, proposalCounter, "CommunityPoolSpend", submitGovFlags, depositGovFlags, voteGovFlags, "vote", false, false)
 
 	s.Require().Eventually(
 		func() bool {
@@ -207,28 +206,20 @@ Test Benchmarks:
 // 	return true
 // }
 
-func (s *IntegrationTestSuite) runGovProcess(chainAAPIEndpoint, sender string, proposalID int, proposalType string, submitFlags []string, depositFlags []string, voteFlags []string, voteCommand string, withDeposit bool) {
+func (s *IntegrationTestSuite) runGovProcess(chainAAPIEndpoint, sender string, proposalID int, proposalType string, submitFlags []string, depositFlags []string, voteFlags []string, voteCommand string, withDeposit, legacyProp bool) {
 	s.T().Logf("Submitting Gov Proposal: %s", proposalType)
 	// min deposit of 1000uatom is required in e2e tests, otherwise the gov antehandler causes the proposal to be dropped
 	sflags := submitFlags
 	if withDeposit {
 		sflags = append(sflags, "--deposit=1000uatom")
 	}
-	s.submitGovCommand(chainAAPIEndpoint, sender, proposalID, "submit-legacy-proposal", sflags, govtypesv1beta1.StatusDepositPeriod)
-	s.T().Logf("Depositing Gov Proposal: %s", proposalType)
-	s.submitGovCommand(chainAAPIEndpoint, sender, proposalID, "deposit", depositFlags, govtypesv1beta1.StatusVotingPeriod)
-	s.T().Logf("Voting Gov Proposal: %s", proposalType)
-	s.submitGovCommand(chainAAPIEndpoint, sender, proposalID, voteCommand, voteFlags, govtypesv1beta1.StatusPassed)
-}
 
-func (s *IntegrationTestSuite) runGovProcessV1(chainAAPIEndpoint, sender string, proposalID int, proposalType string, submitFlags []string, depositFlags []string, voteFlags []string, voteCommand string, withDeposit bool) {
-	s.T().Logf("Submitting Gov Proposal: %s", proposalType)
-	// min deposit of 1000uatom is required in e2e tests, otherwise the gov antehandler causes the proposal to be dropped
-	sflags := submitFlags
-	if withDeposit {
-		sflags = append(sflags, "--deposit=1000uatom")
+	submitPropCmd := "submit-proposal"
+	if legacyProp {
+		submitPropCmd = "submit-legacy-proposal"
 	}
-	s.submitGovCommand(chainAAPIEndpoint, sender, proposalID, "submit-proposal", sflags, govtypesv1beta1.StatusDepositPeriod)
+
+	s.submitGovCommand(chainAAPIEndpoint, sender, proposalID, submitPropCmd, sflags, govtypesv1beta1.StatusDepositPeriod)
 	s.T().Logf("Depositing Gov Proposal: %s", proposalType)
 	s.submitGovCommand(chainAAPIEndpoint, sender, proposalID, "deposit", depositFlags, govtypesv1beta1.StatusVotingPeriod)
 	s.T().Logf("Voting Gov Proposal: %s", proposalType)

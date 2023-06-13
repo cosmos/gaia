@@ -41,16 +41,10 @@ func init() {
 	evidencetypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	cryptocodec.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	govv1types.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-	govv1types.RegisterLegacyAminoCodec(encodingConfig.Amino)
-
 	govv1beta1types.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-	govv1beta1types.RegisterLegacyAminoCodec(encodingConfig.Amino)
 
 	upgradetypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	distribtypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-	distribtypes.RegisterLegacyAminoCodec(encodingConfig.Amino)
-	sdk.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-	sdk.RegisterLegacyAminoCodec(encodingConfig.Amino)
 
 	cdc = encodingConfig.Marshaler
 	txConfig = encodingConfig.TxConfig

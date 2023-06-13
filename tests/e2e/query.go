@@ -133,7 +133,7 @@ func queryDelegatorWithdrawalAddress(endpoint string, delegatorAddr string) (dis
 	return res, nil
 }
 
-func queryDelegatorTotalRewards(endpoint, delegatorAddr string) (disttypes.QueryDelegationTotalRewardsResponse, error) {
+func queryDelegatorTotalRewards(endpoint, delegatorAddr string) (disttypes.QueryDelegationTotalRewardsResponse, error) { //nolint:unused
 	var res disttypes.QueryDelegationTotalRewardsResponse
 
 	body, err := httpGet(fmt.Sprintf("%s/cosmos/distribution/v1beta1/delegators/%s/rewards", endpoint, delegatorAddr))

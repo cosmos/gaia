@@ -44,7 +44,7 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ### State Machine Breaking
 
-* (feat!) [#2424](https://github.com/cosmos/gaia/pull/2424) Add `bypass-min-fee-msg-types` and `maxTotalBypassMinFeeMsgGagUsage` to globalfee params. Note that this change is both state breaking and API breaking. The previous API endpoint was "/gaia/globalfee/v1beta1/minimum_gas_prices," and the new API endpoint is "/gaia/globalfee/v1beta1/params."
+* (feat!) [#2424](https://github.com/cosmos/gaia/pull/2424) Add `bypass-min-fee-msg-types` and `maxTotalBypassMinFeeMsgGagUsage` to globalfee params. Note that this change is both state breaking and API breaking. The previous API endpoint was "/gaia/globalfee/v1beta1/minimum_gas_prices," and the new API endpoint is "/gaia/globalfee/v1beta1/params." `bypass-min-fee-msg-types` in `config/app.toml` are deprecated, new nodes inited do not have `bypass-min-fee-msg-types` field in `config/app.toml`.
 * (feat!) [#2352](https://github.com/cosmos/gaia/pull/2352) Create the upgrade handler and params migration for the new Gloabal Fee module parameters introduced in [#2424](https://github.com/cosmos/gaia/pull/2424).
 Update the CI upgrade tests from v9 to the v10 and check that the parameters are successfully migrated.
 * (feat!) [#2447](https://github.com/cosmos/gaia/pull/2447) Update Global Fee's AnteHandler to check tx fees against the network min gas prices in DeliverTx mode.

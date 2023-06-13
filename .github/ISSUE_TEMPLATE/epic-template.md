@@ -4,20 +4,20 @@ about: Basic template for EPICs (used by the team)
 labels: epic, needs-triage
 ---
 
-# Problem
+## Problem
 
 <!-- Please write a concise 1-3 line problem. -->
 
-# Closing criteria
+## Closing criteria
 
 <!-- Please write a satisfiable criteria for closing this issue. -->
 
 
-# Problem details
+## Problem details
 
 <!-- Please describe the problem in all detail. -->
 
-# Task list
+## Task list
 
 ```[tasklist]
 ### Must have

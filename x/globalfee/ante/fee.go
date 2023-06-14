@@ -4,11 +4,12 @@ package ante
 // 	"errors"
 // 	"fmt"
 
-// 	sdk "github.com/cosmos/cosmos-sdk/types"
-// 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-// 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-// 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-// 	tmstrings "github.com/tendermint/tendermint/libs/strings"
+// errorsmod "cosmossdk.io/errors"
+// sdk "github.com/cosmos/cosmos-sdk/types"
+// sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+// paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+// stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+// tmstrings "github.com/tendermint/tendermint/libs/strings"
 
 // 	"github.com/cosmos/gaia/v11/x/globalfee"
 // 	"github.com/cosmos/gaia/v11/x/globalfee/types"
@@ -47,11 +48,11 @@ package ante
 // 	}
 // }
 
-// // AnteHandle implements the AnteDecorator interface
+// AnteHandle implements the AnteDecorator interface
 // func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
 // 	feeTx, ok := tx.(sdk.FeeTx)
 // 	if !ok {
-// 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must implement the sdk.FeeTx interface")
+// 		return ctx, errorsmod.Wrap(sdkerrors.ErrTxDecode, "Tx must implement the sdk.FeeTx interface")
 // 	}
 
 // 	// Do not check minimum-gas-prices and global fees during simulations
@@ -65,11 +66,12 @@ package ante
 // 		return ctx, err
 // 	}
 
-// 	// reject the transaction early if the feeCoins have more denoms than the fee requirement
-// 	// feeRequired cannot be empty
-// 	if feeTx.GetFee().Len() > feeRequired.Len() {
-// 		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInvalidCoins, "fee is not a subset of required fees; got %s, required: %s", feeTx.GetFee().String(), feeRequired.String())
-// 	}
+// reject the transaction early if the feeCoins have more denoms than the fee requirement
+
+// feeRequired cannot be empty
+// if feeTx.GetFee().Len() > feeRequired.Len() {
+// 	return ctx, errorsmod.Wrapf(sdkerrors.ErrInvalidCoins, "fee is not a subset of required fees; got %s, required: %s", feeTx.GetFee().String(), feeRequired.String())
+// }
 
 // 	// Sort fee tx's coins, zero coins in feeCoins are already removed
 // 	feeCoins := feeTx.GetFee().Sort()
@@ -112,18 +114,18 @@ package ante
 // 		return next(ctx, tx, simulate)
 // 	}
 
-// 	// if the msg does not satisfy bypass condition and the feeCoins denoms are subset of feeRequired,
-// 	// check the feeCoins amount against feeRequired
-// 	//
-// 	// when feeCoins=[]
-// 	// special case: and there is zero coin in fee requirement, pass,
-// 	// otherwise, err
-// 	if len(feeCoins) == 0 {
-// 		if len(zeroCoinFeesDenomReq) != 0 {
-// 			return next(ctx, tx, simulate)
-// 		}
-// 		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins.String(), feeRequired.String())
+// if the msg does not satisfy bypass condition and the feeCoins denoms are subset of feeRequired,
+// check the feeCoins amount against feeRequired
+//
+// when feeCoins=[]
+// special case: and there is zero coin in fee requirement, pass,
+// otherwise, err
+// if len(feeCoins) == 0 {
+// 	if len(zeroCoinFeesDenomReq) != 0 {
+// 		return next(ctx, tx, simulate)
 // 	}
+// 	return ctx, errorsmod.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins.String(), feeRequired.String())
+// }
 
 // 	// when feeCoins != []
 // 	// special case: if TX has at least one of the zeroCoinFeesDenomReq, then it should pass

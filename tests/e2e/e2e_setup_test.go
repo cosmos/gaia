@@ -15,7 +15,7 @@ import (
 	"testing"
 	"time"
 
-	ccvprovider "github.com/cosmos/interchain-security/x/ccv/provider/types"
+	ccvprovider "github.com/cosmos/interchain-security/v2/x/ccv/provider/types"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"

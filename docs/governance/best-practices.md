@@ -155,7 +155,7 @@ See the [submitting guide](./submitting.md) for more on submitting proposals.
 
 ### The Deposit Period
 
-The deposit period currently lasts 14 days. If you submitted your transaction with the minimum deposit (64 ATOM), your proposal will immediately enter the voting period. If you didn't submit the minimum deposit amount (currently 64 ATOM), then this may be an opportunity for others to show their support by contributing (and risking) their ATOMs as a bond for your proposal. You can request contributions openly and also contact stakeholders directly (particularly stakeholders who are enthusiastic about your proposal). Remember that each contributor is risking their funds, and you can [read more about the conditions for burning deposits here](./process.md#burned-deposits).
+The deposit period currently lasts 14 days. If you submitted your transaction with the minimum deposit (250 ATOM), your proposal will immediately enter the voting period. If you didn't submit the minimum deposit amount (currently 250 ATOM), then this may be an opportunity for others to show their support by contributing (and risking) their ATOMs as a bond for your proposal. You can request contributions openly and also contact stakeholders directly (particularly stakeholders who are enthusiastic about your proposal). Remember that each contributor is risking their funds, and you can [read more about the conditions for burning deposits here](./process.md#burned-deposits).
 
 This is a stage where proposals may begin to get broader attention. Some block explorers display proposals in the deposit period, while others don't show them until they hit voting period.
 

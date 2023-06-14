@@ -12,6 +12,7 @@ require (
 	github.com/cosmos/gogoproto v1.4.8
 	github.com/cosmos/ibc-go/v7 v7.0.0
 	github.com/cosmos/interchain-security v1.0.1-0.20230522154154-1bb8d39e691a
+	cosmossdk.io/errors v1.0.0-beta.7
 	cosmossdk.io/math v1.0.1
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/interchain-security/v2 v2.0.0-rc2

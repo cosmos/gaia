@@ -3,12 +3,12 @@ package gaia
 import (
 	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
 	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
-	ibcstakinginterface "github.com/cosmos/interchain-security/legacy_ibc_testing/core"
-	"github.com/cosmos/interchain-security/testutil/e2e"
-	ibcproviderkeeper "github.com/cosmos/interchain-security/x/ccv/provider/keeper"
+	ibcstakinginterface "github.com/cosmos/interchain-security/v2/legacy_ibc_testing/core"
+	icstest "github.com/cosmos/interchain-security/v2/testutil/integration"
+	ibcproviderkeeper "github.com/cosmos/interchain-security/v2/x/ccv/provider/keeper"
 )
 
-// ProviderApp interface implementations for e2e tests
+// ProviderApp interface implementations for icstest tests
 
 // GetProviderKeeper implements the ProviderApp interface.
 func (app *GaiaApp) GetProviderKeeper() ibcproviderkeeper.Keeper { //nolint:nolintlint
@@ -30,26 +30,26 @@ func (app *GaiaApp) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper { //nolin
 	return app.ScopedIBCKeeper
 }
 
-// GetE2eStakingKeeper implements the ProviderApp interface.
-func (app *GaiaApp) GetE2eStakingKeeper() e2e.E2eStakingKeeper { //nolint:nolintlint
+// GetTestStakingKeeper implements the ProviderApp interface.
+func (app *GaiaApp) GetTestStakingKeeper() icstest.TestStakingKeeper { //nolint:nolintlint
 	return app.StakingKeeper
 }
 
-// GetE2eBankKeeper implements the ProviderApp interface.
-func (app *GaiaApp) GetE2eBankKeeper() e2e.E2eBankKeeper { //nolint:nolintlint
+// GetTestBankKeeper implements the ProviderApp interface.
+func (app *GaiaApp) GetTestBankKeeper() icstest.TestBankKeeper { //nolint:nolintlint
 	return app.BankKeeper
 }
 
-// GetE2eSlashingKeeper implements the ProviderApp interface.
-func (app *GaiaApp) GetE2eSlashingKeeper() e2e.E2eSlashingKeeper { //nolint:nolintlint
+// GetTestSlashingKeeper implements the ProviderApp interface.
+func (app *GaiaApp) GetTestSlashingKeeper() icstest.TestSlashingKeeper { //nolint:nolintlint
 	return app.SlashingKeeper
 }
 
-// GetE2eDistributionKeeper implements the ProviderApp interface.
-func (app *GaiaApp) GetE2eDistributionKeeper() e2e.E2eDistributionKeeper { //nolint:nolintlint
+// GetTestDistributionKeeper implements the ProviderApp interface.
+func (app *GaiaApp) GetTestDistributionKeeper() icstest.TestDistributionKeeper { //nolint:nolintlint
 	return app.DistrKeeper
 }
 
-func (app *GaiaApp) GetE2eAccountKeeper() e2e.E2eAccountKeeper { //nolint:nolintlint
+func (app *GaiaApp) GetTestAccountKeeper() icstest.TestAccountKeeper { //nolint:nolintlint
 	return app.AccountKeeper
 }

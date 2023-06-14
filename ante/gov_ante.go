@@ -4,7 +4,7 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	gaiaerrors "github.com/cosmos/gaia/v9/types/errors"
+	gaiaerrors "github.com/cosmos/gaia/v10/types/errors"
 
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"

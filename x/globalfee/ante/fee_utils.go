@@ -3,7 +3,7 @@ package ante
 import (
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	gaiaerrors "github.com/cosmos/gaia/v9/types/errors"
+	gaiaerrors "github.com/cosmos/gaia/v10/types/errors"
 )
 
 // ContainZeroCoins returns true if the given coins are empty or contain zero coins,

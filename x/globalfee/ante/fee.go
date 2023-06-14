@@ -8,7 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	gaiaerrors "github.com/cosmos/gaia/v9/types/errors"
+	gaiaerrors "github.com/cosmos/gaia/v10/types/errors"
 	tmstrings "github.com/tendermint/tendermint/libs/strings"
 
 	"github.com/cosmos/gaia/v10/x/globalfee"

@@ -43,5 +43,9 @@ func (sga SimGenesisAccount) Validate() error {
 		}
 	}
 
+	if sga.BaseAccount == nil {
+		return errors.New("BaseAccount must not be nil")
+	}
+
 	return sga.BaseAccount.Validate()
 }

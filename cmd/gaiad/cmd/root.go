@@ -80,7 +80,7 @@ func initAppConfig() (string, interface{}) {
 	srvCfg := serverconfig.DefaultConfig()
 	srvCfg.StateSync.SnapshotInterval = 1000
 	srvCfg.StateSync.SnapshotKeepRecent = 10
-	srvCfg.BaseConfig.IAVLDisableFastNode = false // disable fastnode by default
+	srvCfg.BaseConfig.IAVLDisableFastNode = false
 
 	return serverconfig.DefaultConfigTemplate, *srvCfg
 }

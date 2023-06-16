@@ -6,9 +6,9 @@ package ante
 
 // errorsmod "cosmossdk.io/errors"
 // sdk "github.com/cosmos/cosmos-sdk/types"
-// sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 // paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 // stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+// gaiaerrors "github.com/cosmos/gaia/v11/types/errors"
 // tmstrings "github.com/tendermint/tendermint/libs/strings"
 
 // 	"github.com/cosmos/gaia/v11/x/globalfee"
@@ -52,7 +52,7 @@ package ante
 // func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
 // 	feeTx, ok := tx.(sdk.FeeTx)
 // 	if !ok {
-// 		return ctx, errorsmod.Wrap(sdkerrors.ErrTxDecode, "Tx must implement the sdk.FeeTx interface")
+// 		return ctx, errorsmod.Wrap(gaiaerrors.ErrTxDecode, "Tx must implement the sdk.FeeTx interface")
 // 	}
 
 // 	// Do not check minimum-gas-prices and global fees during simulations
@@ -70,7 +70,7 @@ package ante
 
 // feeRequired cannot be empty
 // if feeTx.GetFee().Len() > feeRequired.Len() {
-// 	return ctx, errorsmod.Wrapf(sdkerrors.ErrInvalidCoins, "fee is not a subset of required fees; got %s, required: %s", feeTx.GetFee().String(), feeRequired.String())
+// 	return ctx, errorsmod.Wrapf(gaiaerrors.ErrInvalidCoins, "fee is not a subset of required fees; got %s, required: %s", feeTx.GetFee().String(), feeRequired.String())
 // }
 
 // 	// Sort fee tx's coins, zero coins in feeCoins are already removed
@@ -88,14 +88,14 @@ package ante
 // 	// when feeCoins does not contain zero coins' denoms in feeRequired
 // 	feeCoinsNonZeroDenom, feeCoinsZeroDenom := splitCoinsByDenoms(feeCoins, zeroCoinFeesDenomReq)
 
-// 	// Check that the fees are in expected denominations.
-// 	// according to splitCoinsByDenoms(), feeCoinsZeroDenom must be in denom subset of zeroCoinFeesDenomReq.
-// 	// check if feeCoinsNonZeroDenom is a subset of nonZeroCoinFeesReq.
-// 	// special case: if feeCoinsNonZeroDenom=[], DenomsSubsetOf returns true
-// 	// special case: if feeCoinsNonZeroDenom is not empty, but nonZeroCoinFeesReq empty, return false
-// 	if !feeCoinsNonZeroDenom.DenomsSubsetOf(nonZeroCoinFeesReq) {
-// 		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "fee is not a subset of required fees; got %s, required: %s", feeCoins.String(), feeRequired.String())
-// 	}
+// Check that the fees are in expected denominations.
+// according to splitCoinsByDenoms(), feeCoinsZeroDenom must be in denom subset of zeroCoinFeesDenomReq.
+// check if feeCoinsNonZeroDenom is a subset of nonZeroCoinFeesReq.
+// special case: if feeCoinsNonZeroDenom=[], DenomsSubsetOf returns true
+// special case: if feeCoinsNonZeroDenom is not empty, but nonZeroCoinFeesReq empty, return false
+// if !feeCoinsNonZeroDenom.DenomsSubsetOf(nonZeroCoinFeesReq) {
+// 	return ctx, errorsmod.Wrapf(gaiaerrors.ErrInsufficientFee, "fee is not a subset of required fees; got %s, required: %s", feeCoins.String(), feeRequired.String())
+// }
 
 // 	// If the feeCoins pass the denoms check, check they are bypass-msg types.
 // 	//
@@ -124,7 +124,7 @@ package ante
 // 	if len(zeroCoinFeesDenomReq) != 0 {
 // 		return next(ctx, tx, simulate)
 // 	}
-// 	return ctx, errorsmod.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins.String(), feeRequired.String())
+// 	return ctx, errorsmod.Wrapf(gaiaerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins.String(), feeRequired.String())
 // }
 
 // 	// when feeCoins != []
@@ -146,8 +146,8 @@ package ante
 // 			errMsg = fmt.Sprintf("Insufficient fees; bypass-min-fee-msg-types with gas consumption %v exceeds the maximum allowed gas value of %v.", gas, maxTotalBypassMinFeeMsgGasUsage)
 // 		}
 
-// 		return ctx, sdkerrors.Wrap(sdkerrors.ErrInsufficientFee, errMsg)
-// 	}
+// 	return ctx, errorsmod.Wrap(gaiaerrors.ErrInsufficientFee, errMsg)
+// }
 
 // 	return next(ctx, tx, simulate)
 // }

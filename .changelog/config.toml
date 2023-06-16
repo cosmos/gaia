@@ -16,4 +16,5 @@ entry_indent = 2
     # the parent of the `.changelog` folder).
     [components.all]
     globalfee = { name = "GlobalFee", path = "x/globalfee" }
+    tests = { name = "Tests", path = "tests" }
     docs = { name = "Documentation", path = "docs" }

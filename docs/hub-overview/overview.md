@@ -4,10 +4,10 @@ title: Introduction
 ---
 
 ::: warning
-### **v10-Epsilon Upgrade**
+### **v10 Upgrade**
 Cosmos Hub will be upgraded to v10 at block height: **15,816,200**
 
-To upgrade from v9-Lambda check the [**upgrade guide**](../migration/cosmoshub-4-v10-Epsilon-upgrade.md)
+To upgrade from v9-Lambda check the [**upgrade guide**](../migration/cosmoshub-4-v10-upgrade.md)
 :::
 
 ![Welcome to the Cosmos Hub](../images/cosmos-hub-image.jpg)

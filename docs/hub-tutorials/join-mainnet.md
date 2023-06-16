@@ -11,8 +11,9 @@ The current Cosmos Hub mainnet, `cosmoshub-4`, has been performing in place stor
 - use `gaia v6.0.x` (Vega) between `8,695,000` and `10,085,397`
 - use `gaia v7.0.x` (Theta) between `10,085,397` and `14,099,412`
 - use `gaia v8.0.x` (Rho) between `14,099,412` and `14,470,501`
-- use `gaia v9.0.x` (Lambda) between `14470501` and `15816200`
-- use `gaia v10.0.x` (Epsilon) from `15816200`
+- use `gaia v9.0.x` (Lambda) between `14470501` and `15213800`
+- use `gaia v9.1.x` between `15213800` and `15816200`
+- use `gaia v10.0.x` from `15816200`
   
 (ie. queries of state between height `6,910,000` and `8,695,000` should use `gaia v5.0.x` (Delta), between `8,695,000` and `10,085,397` use `gaia v6.0.x` (Vega), between `10,085,397` and `14,099,412` use `gaia v7.0.x` (Theta),  between `14,099,412` and `14,470,501` use `gaia v8.0.x` (Rho),  after `14,470,501` use `gaia v9.0.x` (Lambda) to guarantee correctly encoded responses. The roadmap documentation contains a [history of upgrades](https://github.com/cosmos/gaia/tree/main/docs/roadmap).). Visit the [migration section](https://github.com/cosmos/gaia/tree/main/docs/migration) of the Hub's docs for more information on previous chain migrations.
 

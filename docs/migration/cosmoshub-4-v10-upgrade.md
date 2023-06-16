@@ -98,7 +98,7 @@ If you prefer to use Cosmovisor to upgrade, some preparation work is needed befo
 
 ### Method I: Manual Upgrade
 
-Make sure Gaia v10.0.0 is installed by either downloading a [compatable binary](https://github.com/cosmos/gaia/releases/tag/v10.0.0), or building from source. Building from source requires **Golang 1.20**.
+Make sure Gaia v10.0.0 is installed by either downloading a [compatible binary](https://github.com/cosmos/gaia/releases/tag/v10.0.0), or building from source. Building from source requires **Golang 1.20**.
 
 Run Gaia v9.1.1 till upgrade height, the node will panic:
 
@@ -260,7 +260,7 @@ This may take 7 minutes to a few hours, afterwards, the chain will continue to p
 _Please Note:_
 
 - In general, auto-download comes with the risk that the verification of correct download is done automatically. If users want to have the highest guarantee users should confirm the check-sum manually. We hope more node operators will use the auto-download for this release but please be aware this is a risk and users should take at your own discretion.
-- Users should use run node on v9.1.1 if they use the cosmovisor v1.3.0 with auto-download enabled for upgrade process.
+- Users should run their node on v9.1.1 if they use the cosmovisor v1.3.0 with auto-download enabled for upgrade process.
 
 ## Upgrade duration
 

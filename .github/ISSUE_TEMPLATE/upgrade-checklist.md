@@ -6,7 +6,7 @@ labels: epic, needs-triage
 
 ## Cosmos Hub Upgrade Epic
 
-# <Upgrade Name>
+### <Upgrade Name>
 
 **Create an issue for each item** and mark complete once it has been done.
 

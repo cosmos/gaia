@@ -19,7 +19,7 @@ import (
 	icahosttypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/types"
 	ibctransfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
 	ibchost "github.com/cosmos/ibc-go/v4/modules/core/24-host"
-	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
+	providertypes "github.com/cosmos/interchain-security/v2/x/ccv/provider/types"
 	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
 	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
 )

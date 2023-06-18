@@ -3,13 +3,15 @@ package antetest
 import (
 	"testing"
 
+	"github.com/stretchr/testify/suite"
+
+	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
+
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
-	ibcchanneltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
-	"github.com/stretchr/testify/suite"
 
 	gaiafeeante "github.com/cosmos/gaia/v11/x/globalfee/ante"
 	globfeetypes "github.com/cosmos/gaia/v11/x/globalfee/types"

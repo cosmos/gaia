@@ -9,9 +9,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ory/dockertest/v3/docker"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/ory/dockertest/v3/docker"
 )
 
 type ForwardMetadata struct {

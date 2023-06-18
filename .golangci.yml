@@ -59,6 +59,7 @@ issues:
 
 linters-settings:
   gci:
+    custom-order: true
     sections:
       - standard # Standard section: captures all standard packages.
       - default # Default section: contains all imports that could not be matched to another section type.

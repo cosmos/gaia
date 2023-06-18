@@ -16,6 +16,9 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
+	// unnamed import of statik for swagger UI support
+	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
+
 	ibctesting "github.com/cosmos/interchain-security/v2/legacy_ibc_testing/testing"
 	providertypes "github.com/cosmos/interchain-security/v2/x/ccv/provider/types"
 
@@ -47,9 +50,6 @@ import (
 	"github.com/cosmos/gaia/v11/app/upgrades"
 	v11 "github.com/cosmos/gaia/v11/app/upgrades/v11"
 	"github.com/cosmos/gaia/v11/x/globalfee"
-
-	// unnamed import of statik for swagger UI support
-	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
 )
 
 var (

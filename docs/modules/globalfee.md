@@ -18,8 +18,6 @@ global fees `MinimumGasPricesParam` is established at the network level through 
 3. `BypassMinFeeMsgTypes` and `MaxTotalBypassMinFeeMsgGasUsage`.\
  These two parameters are also part of the globalfee params from gaiad v11.0.0. They can be changed through Gov Proposals. `BypassMinFeeMsgTypes` represents a list of message types that will be excluded from paying any fees for inclusion in a block, `MaxTotalBypassMinFeeMsgGasUsage` is the limit placed on gas usage for `BypassMinFeeMsgTypes`.
 
-## Concepts
-
 ## Global Fee module
 
 The globalfee module has three parameters that can be set by governance proposal type `param-change`:
@@ -83,7 +81,7 @@ bypass-min-fee-msg-types = ["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.cha
 ```
 
 
-### minimum-gas-prices (local fee requirement)
+## minimum-gas-prices (local fee requirement)
 
 The `minimum-gas-prices` parameter enables node operators to set its minimum fee requirements, and it can be set in the `config/app.toml` file.  Please note: if `minimum-gas-prices` is set to include zero coins, the zero coins are sanitized when [`SetMinGasPrices`](https://github.com/cosmos/gaia/blob/76dea00bd6d11bfef043f6062f41e858225820ab/cmd/gaiad/cmd/root.go#L221).
 When setting `minimum-gas-prices`, it's important to keep the following rules in mind:

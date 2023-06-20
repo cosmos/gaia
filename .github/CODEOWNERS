@@ -1,8 +1,5 @@
 # CODEOWNERS: https://help.github.com/articles/about-codeowners/
 
 # Primary repo maintainers
-*       @cosmos/informal_gaia_maintain
-
-# Governance Process and Docs maintainers
-docs/governance/*       @jtremback @mmulji-ic @mpoke
+*       @alexanderbez @zmanian @crodriguezvega @jackzampolin @cosmos/informal_gaia_maintain
 

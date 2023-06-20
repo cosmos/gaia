@@ -11,7 +11,7 @@ The [Cosmos Hub](../README.md) is based on [CometBFT](https://docs.cometbft.com/
 
 Validator candidates can bond their own ATOM and have ATOM ["delegated"](../delegators/delegator-guide-cli.md), or staked, to them by token holders. The Cosmos Hub has [175 validators](https://www.mintscan.io/cosmos/proposals/66), but over time the number of validators can be increased with governance proposals. The validators are determined by the total number of ATOM tokens delegated to them — the top 175 validator candidates with the most voting power are the current Cosmos validators.
 
-Validators and their delegators earn ATOM as block provisions and tokens as transaction fees through execution of the CometBFT consensus protocol. Note that validators can set a commission percentage on the fees their delegators receive as additional incentive. You can find an overview of all current validators and their voting power on [Mintscan](https://www.mintscan.io/cosmos/validators).
+Validators and their delegators earn ATOM as block provisions and tokens as transaction fees through execution of the Tendermint consensus protocol. Note that validators can set a commission percentage on the fees their delegators receive as additional incentive. You can find an overview of all current validators and their voting power on [Mintscan](https://www.mintscan.io/cosmos/validators).
 
 If validators double sign or are offline for an [extended period](./validator-faq.md#what-are-the-slashing-conditions), their staked ATOM (including ATOM of users that delegated to them) can be slashed. The penalty depends on the severity of the violation.
 

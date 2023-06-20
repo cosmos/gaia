@@ -7,7 +7,7 @@ title: Overview
 
 ## Introduction
 
-The [Cosmos Hub](../README.md) is based on [Tendermint](https://github.com/tendermint/tendermint/tree/master/docs/introduction) that relies on a set of validators that are responsible for committing new blocks in the blockchain. These validators participate in the consensus protocol by broadcasting votes that contain cryptographic signatures signed by each validator's private key.
+The [Cosmos Hub](../README.md) is based on [CometBFT](https://docs.cometbft.com/v0.34/introduction/what-is-cometbft) that relies on a set of validators that are responsible for committing new blocks in the blockchain. These validators participate in the consensus protocol by broadcasting votes that contain cryptographic signatures signed by each validator's private key.
 
 Validator candidates can bond their own ATOM and have ATOM ["delegated"](../delegators/delegator-guide-cli.md), or staked, to them by token holders. The Cosmos Hub has [180 validators](https://www.mintscan.io/cosmos/proposals/66), but over time the number of validators can be increased with governance proposals. The validators are determined by the total number of ATOM tokens delegated to them — the top 180 validator candidates with the most voting power are the current Cosmos validators.
 

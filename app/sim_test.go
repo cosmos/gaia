@@ -16,10 +16,10 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
 
-	gaia "github.com/cosmos/gaia/v9/app"
-	"github.com/cosmos/gaia/v9/app/helpers"
-	"github.com/cosmos/gaia/v9/app/params"
-	"github.com/cosmos/gaia/v9/app/sim"
+	gaia "github.com/cosmos/gaia/v11/app"
+	"github.com/cosmos/gaia/v11/app/helpers"
+	"github.com/cosmos/gaia/v11/app/params"
+	"github.com/cosmos/gaia/v11/app/sim"
 )
 
 func init() {

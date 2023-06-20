@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	ccvtypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
+	ccvtypes "github.com/cosmos/interchain-security/v2/x/ccv/provider/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 

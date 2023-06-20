@@ -5,11 +5,12 @@ import (
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	gaia "github.com/cosmos/gaia/v9/app"
-	gaiahelpers "github.com/cosmos/gaia/v9/app/helpers"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	db "github.com/tendermint/tm-db"
+
+	gaia "github.com/cosmos/gaia/v11/app"
+	gaiahelpers "github.com/cosmos/gaia/v11/app/helpers"
 )
 
 type EmptyAppOptions struct{}

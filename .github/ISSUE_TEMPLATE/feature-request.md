@@ -1,7 +1,7 @@
 ---
 name: Feature Request
 about: Create a proposal to request a feature
-labels: enhancement, needs-triage
+labels: enhancement, epic, needs-triage
 ---
 
 <!-- < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < ☺ 
@@ -26,6 +26,19 @@ Are there any disadvantages of including this feature? -->
 
 <!-- Detailed description of requirements of implementation -->
 
+## Task list
+
+```[tasklist]
+### Must have
+- [ ] discuss proposal (if proposal rejected, close EPIC)
+- [ ] create ADR (if ADR rejected, close EPIC)
+- [ ] add sub-tasks needed to implement the proposed feature
+```
+
+```[tasklist]
+### Nice to have
+- [ ] add sub-tasks that are nice to have for the proposed feature
+```
 ____
 
 #### For Admin Use

@@ -57,7 +57,7 @@ Any participant in the network can signal that they want to become a validator b
 
 After a validator is created, ATOM holders can delegate ATOM to them, effectively adding stake to the validator's pool. The total stake of an address is the combination of ATOM bonded by delegators and ATOM self-bonded by the validator.
 
-From all validator candidates that signaled themselves, the 175 validators with the most total stake are the designated **validators**. If a validator's total stake falls below the top 175, then that validator loses its validator privileges. The validator cannot participate in consensus or generate rewards until the stake is high enough to be in the top 175. Over time, the maximum number of validators may be increased via on-chain governance proposal.
+From all validator candidates that signaled themselves, the 180 validators with the most total stake are the designated **validators**. If a validator's total stake falls below the top 180, then that validator loses its validator privileges. The validator cannot participate in consensus or generate rewards until the stake is high enough to be in the top 180. Over time, the maximum number of validators may be increased via on-chain governance proposal.
 
 ## Testnet
 

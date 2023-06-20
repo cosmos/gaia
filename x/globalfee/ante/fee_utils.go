@@ -1,7 +1,9 @@
 package ante
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	gaiaerrors "github.com/cosmos/gaia/v11/types/errors"
 )
 
 // ContainZeroCoins returns true if the given coins are empty or contain zero coins,
@@ -23,14 +25,16 @@ func ContainZeroCoins(coins sdk.Coins) bool {
 // Both globalFees and minGasPrices must be valid, but CombinedFeeRequirement
 // does not validate them, so it may return 0denom.
 // if globalfee is empty, CombinedFeeRequirement return sdk.Coins{}
-func CombinedFeeRequirement(globalFees, minGasPrices sdk.Coins) sdk.Coins {
+func CombinedFeeRequirement(globalFees, minGasPrices sdk.Coins) (sdk.Coins, error) {
+	// global fees should never be empty
+	// since it has a default value using the staking module's bond denom
+	if len(globalFees) == 0 {
+		return sdk.Coins{}, errorsmod.Wrapf(gaiaerrors.ErrNotFound, "global fee cannot be empty")
+	}
+
 	// empty min_gas_price
 	if len(minGasPrices) == 0 {
-		return globalFees
-	}
-	// empty global fee is not possible if we set default global fee
-	if len(globalFees) == 0 && len(minGasPrices) != 0 {
-		return sdk.Coins{}
+		return globalFees, nil
 	}
 
 	// if min_gas_price denom is in globalfee, and the amount is higher than globalfee, add min_gas_price to allFees
@@ -45,7 +49,7 @@ func CombinedFeeRequirement(globalFees, minGasPrices sdk.Coins) sdk.Coins {
 		}
 	}
 
-	return allFees.Sort()
+	return allFees.Sort(), nil
 }
 
 // Find replaces the functionality of Coins.Find from SDK v0.46.x
@@ -77,7 +81,7 @@ func Find(coins sdk.Coins, denom string) (bool, sdk.Coin) {
 
 // splitCoinsByDenoms returns the given coins split in two whether
 // their demon is or isn't found in the given denom map.
-func splitCoinsByDenoms(feeCoins sdk.Coins, denomMap map[string]bool) (sdk.Coins, sdk.Coins) {
+func splitCoinsByDenoms(feeCoins sdk.Coins, denomMap map[string]struct{}) (sdk.Coins, sdk.Coins) {
 	feeCoinsNonZeroDenom, feeCoinsZeroDenom := sdk.Coins{}, sdk.Coins{}
 
 	for _, fc := range feeCoins {
@@ -94,13 +98,13 @@ func splitCoinsByDenoms(feeCoins sdk.Coins, denomMap map[string]bool) (sdk.Coins
 
 // getNonZeroFees returns the given fees nonzero coins
 // and a map storing the zero coins's denoms
-func getNonZeroFees(fees sdk.Coins) (sdk.Coins, map[string]bool) {
+func getNonZeroFees(fees sdk.Coins) (sdk.Coins, map[string]struct{}) {
 	requiredFeesNonZero := sdk.Coins{}
-	requiredFeesZeroDenom := map[string]bool{}
+	requiredFeesZeroDenom := map[string]struct{}{}
 
 	for _, gf := range fees {
 		if gf.IsZero() {
-			requiredFeesZeroDenom[gf.Denom] = true
+			requiredFeesZeroDenom[gf.Denom] = struct{}{}
 		} else {
 			requiredFeesNonZero = append(requiredFeesNonZero, gf)
 		}

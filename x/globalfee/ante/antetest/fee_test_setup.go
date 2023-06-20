@@ -16,12 +16,12 @@ import (
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	gaiahelpers "github.com/cosmos/gaia/v9/app/helpers"
-	gaiafeeante "github.com/cosmos/gaia/v9/x/globalfee/ante"
+	gaiahelpers "github.com/cosmos/gaia/v11/app/helpers"
+	gaiafeeante "github.com/cosmos/gaia/v11/x/globalfee/ante"
 
-	gaiaapp "github.com/cosmos/gaia/v9/app"
-	"github.com/cosmos/gaia/v9/x/globalfee"
-	globfeetypes "github.com/cosmos/gaia/v9/x/globalfee/types"
+	gaiaapp "github.com/cosmos/gaia/v11/app"
+	"github.com/cosmos/gaia/v11/x/globalfee"
+	globfeetypes "github.com/cosmos/gaia/v11/x/globalfee/types"
 )
 
 type IntegrationTestSuite struct {
@@ -33,10 +33,7 @@ type IntegrationTestSuite struct {
 	txBuilder client.TxBuilder
 }
 
-var (
-	testBondDenom                              = "uatom"
-	testMaxTotalBypassMinFeeMsgGasUsage uint64 = 1_000_000
-)
+var testBondDenom = "uatom"
 
 func (s *IntegrationTestSuite) SetupTest() {
 	app := gaiahelpers.Setup(s.T())
@@ -65,7 +62,7 @@ func (s *IntegrationTestSuite) SetupTestGlobalFeeStoreAndMinGasPrice(minGasPrice
 	stakingSubspace := s.SetupTestStakingSubspace(stakingParam)
 
 	// build fee decorator
-	feeDecorator := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), subspace, stakingSubspace, uint64(1_000_000))
+	feeDecorator := gaiafeeante.NewFeeDecorator(subspace, stakingSubspace)
 
 	// chain fee decorator to antehandler
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)

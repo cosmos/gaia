@@ -37,7 +37,8 @@ func (s *IntegrationTestSuite) TestByPassMinFee() {
 	if !runBypassMinFeeTest {
 		s.T().Skip()
 	}
-	s.testByPassMinFeeWithdrawReward()
+	chainAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	s.testBypassMinFeeWithdrawReward(chainAPI)
 }
 
 func (s *IntegrationTestSuite) TestEncode() {
@@ -87,6 +88,11 @@ func (s *IntegrationTestSuite) TestIBC() {
 	s.testIBCTokenTransfer()
 	s.testMultihopIBCTokenTransfer()
 	s.testFailedMultihopIBCTokenTransfer()
+
+	// stop hermes0 to prevent hermes0 relaying transactions
+	s.Require().NoError(s.dkrPool.Purge(s.hermesResource0))
+	HermesResource0Purged = true
+	s.testIBCBypassMsg()
 }
 
 func (s *IntegrationTestSuite) TestSlashing() {

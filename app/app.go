@@ -28,9 +28,8 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
-	ibcchanneltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
-	ibctesting "github.com/cosmos/interchain-security/legacy_ibc_testing/testing"
+	ibctesting "github.com/cosmos/interchain-security/v2/legacy_ibc_testing/testing"
+	providertypes "github.com/cosmos/interchain-security/v2/x/ccv/provider/types"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
@@ -40,12 +39,12 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
-	gaiaante "github.com/cosmos/gaia/v9/ante"
-	"github.com/cosmos/gaia/v9/app/keepers"
-	gaiaappparams "github.com/cosmos/gaia/v9/app/params"
-	"github.com/cosmos/gaia/v9/app/upgrades"
-	v9 "github.com/cosmos/gaia/v9/app/upgrades/v9"
-	"github.com/cosmos/gaia/v9/x/globalfee"
+	gaiaante "github.com/cosmos/gaia/v11/ante"
+	"github.com/cosmos/gaia/v11/app/keepers"
+	gaiaappparams "github.com/cosmos/gaia/v11/app/params"
+	"github.com/cosmos/gaia/v11/app/upgrades"
+	v11 "github.com/cosmos/gaia/v11/app/upgrades/v11"
+	"github.com/cosmos/gaia/v11/x/globalfee"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
@@ -55,7 +54,7 @@ var (
 	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
 
-	Upgrades = []upgrades.Upgrade{v9.Upgrade}
+	Upgrades = []upgrades.Upgrade{v11.Upgrade}
 )
 
 var (
@@ -188,19 +187,6 @@ func NewGaiaApp(
 	app.MountTransientStores(app.GetTransientStoreKey())
 	app.MountMemoryStores(app.GetMemoryStoreKey())
 
-	var bypassMinFeeMsgTypes []string
-	bypassMinFeeMsgTypesOptions := appOpts.Get(gaiaappparams.BypassMinFeeMsgTypesKey)
-	if bypassMinFeeMsgTypesOptions == nil {
-		bypassMinFeeMsgTypes = GetDefaultBypassFeeMessages()
-	} else {
-		bypassMinFeeMsgTypes = cast.ToStringSlice(bypassMinFeeMsgTypesOptions)
-	}
-
-	if err := app.ValidateBypassFeeMsgTypes(bypassMinFeeMsgTypes); err != nil {
-		app.Logger().Error("invalid 'bypass-min-fee-msg-types' config option", "error", err)
-		panic(fmt.Sprintf("invalid 'bypass-min-fee-msg-types' config option: %s", err))
-	}
-
 	anteHandler, err := gaiaante.NewAnteHandler(
 		gaiaante.HandlerOptions{
 			HandlerOptions: ante.HandlerOptions{
@@ -210,12 +196,11 @@ func NewGaiaApp(
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
-			Codec:                appCodec,
-			IBCkeeper:            app.IBCKeeper,
-			GovKeeper:            &app.GovKeeper,
-			BypassMinFeeMsgTypes: bypassMinFeeMsgTypes,
-			GlobalFeeSubspace:    app.GetSubspace(globalfee.ModuleName),
-			StakingSubspace:      app.GetSubspace(stakingtypes.ModuleName),
+			Codec:             appCodec,
+			IBCkeeper:         app.IBCKeeper,
+			GovKeeper:         &app.GovKeeper,
+			GlobalFeeSubspace: app.GetSubspace(globalfee.ModuleName),
+			StakingSubspace:   app.GetSubspace(stakingtypes.ModuleName),
 		},
 	)
 	if err != nil {
@@ -237,27 +222,6 @@ func NewGaiaApp(
 	}
 
 	return app
-}
-
-func GetDefaultBypassFeeMessages() []string {
-	return []string{
-		sdk.MsgTypeURL(&ibcchanneltypes.MsgRecvPacket{}),
-		sdk.MsgTypeURL(&ibcchanneltypes.MsgAcknowledgement{}),
-		sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
-		sdk.MsgTypeURL(&ibcchanneltypes.MsgTimeout{}),
-		sdk.MsgTypeURL(&ibcchanneltypes.MsgTimeoutOnClose{}),
-	}
-}
-
-// ValidateBypassFeeMsgTypes checks that a proto message type exists for all MsgTypes in bypassMinFeeMsgTypes
-// An error is returned for the first msgType that cannot be resolved
-func (app *GaiaApp) ValidateBypassFeeMsgTypes(bypassMinFeeMsgTypes []string) error {
-	for _, msgType := range bypassMinFeeMsgTypes {
-		if _, err := app.interfaceRegistry.Resolve(msgType); err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 // Name returns the name of the App
@@ -306,10 +270,8 @@ func (app *GaiaApp) BlockedModuleAccountAddrs(modAccAddrs map[string]bool) map[s
 	// remove module accounts that are ALLOWED to received funds
 	delete(modAccAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
-	// Remove the fee-pool from the group of blocked recipient addresses in bank
-	// this is required for the provider chain to be able to receive tokens from
-	// the consumer chain
-	delete(modAccAddrs, authtypes.NewModuleAddress(authtypes.FeeCollectorName).String())
+	// Remove the ConsumerRewardsPool from the group of blocked recipient addresses in bank
+	delete(modAccAddrs, authtypes.NewModuleAddress(providertypes.ConsumerRewardsPool).String())
 
 	return modAccAddrs
 }

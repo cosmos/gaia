@@ -24,24 +24,14 @@ pull_request_rules:
           {{ title }} (#{{ number }})
           {{ body }}
 
-  - name: Backport patches to the release/v8.0.x branch
+  - name: Backport patches to the release/v9.1.x branch
     conditions:
       - base=main
-      - label=A:backport/v8.0.x
-      - "#commits-unverified>=0"
+      - label=A:backport/v9.1.x
     actions:
       backport:
         branches:
-          - release/v8.0.x
-
-  - name: Backport patches to the release/v9.0.x branch
-    conditions:
-      - base=main
-      - label=A:backport/v9.0.x
-    actions:
-      backport:
-        branches:
-          - release/v9.0.x
+          - release/v9.1.x
 
   - name: Backport patches to the release/v10.0.x branch
     conditions:

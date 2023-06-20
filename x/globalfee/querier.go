@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/cosmos/gaia/v9/x/globalfee/types"
+	"github.com/cosmos/gaia/v11/x/globalfee/types"
 )
 
 var _ types.QueryServer = &GrpcQuerier{}
@@ -25,13 +25,28 @@ func NewGrpcQuerier(paramSource ParamSource) GrpcQuerier {
 }
 
 // MinimumGasPrices return minimum gas prices
-func (g GrpcQuerier) MinimumGasPrices(stdCtx context.Context, _ *types.QueryMinimumGasPricesRequest) (*types.QueryMinimumGasPricesResponse, error) {
+func (g GrpcQuerier) Params(stdCtx context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 	var minGasPrices sdk.DecCoins
+	var bypassMinFeeMsgTypes []string
+	var maxTotalBypassMinFeeMsgGasUsage uint64
 	ctx := sdk.UnwrapSDKContext(stdCtx)
+
+	// todo: if return err if not exist?
 	if g.paramSource.Has(ctx, types.ParamStoreKeyMinGasPrices) {
 		g.paramSource.Get(ctx, types.ParamStoreKeyMinGasPrices, &minGasPrices)
 	}
-	return &types.QueryMinimumGasPricesResponse{
-		MinimumGasPrices: minGasPrices,
+	if g.paramSource.Has(ctx, types.ParamStoreKeyBypassMinFeeMsgTypes) {
+		g.paramSource.Get(ctx, types.ParamStoreKeyBypassMinFeeMsgTypes, &bypassMinFeeMsgTypes)
+	}
+	if g.paramSource.Has(ctx, types.ParamStoreKeyMaxTotalBypassMinFeeMsgGasUsage) {
+		g.paramSource.Get(ctx, types.ParamStoreKeyMaxTotalBypassMinFeeMsgGasUsage, &maxTotalBypassMinFeeMsgGasUsage)
+	}
+
+	return &types.QueryParamsResponse{
+		Params: types.Params{
+			MinimumGasPrices:                minGasPrices,
+			BypassMinFeeMsgTypes:            bypassMinFeeMsgTypes,
+			MaxTotalBypassMinFeeMsgGasUsage: maxTotalBypassMinFeeMsgGasUsage,
+		},
 	}, nil
 }

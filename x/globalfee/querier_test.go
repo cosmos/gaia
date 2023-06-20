@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/cosmos/gaia/v9/x/globalfee/types"
+	"github.com/cosmos/gaia/v11/x/globalfee/types"
 )
 
 func TestQueryMinimumGasPrices(t *testing.T) {
@@ -47,10 +47,10 @@ func TestQueryMinimumGasPrices(t *testing.T) {
 			ctx, _, subspace := setupTestStore(t)
 			spec.setupStore(ctx, subspace)
 			q := NewGrpcQuerier(subspace)
-			gotResp, gotErr := q.MinimumGasPrices(sdk.WrapSDKContext(ctx), nil)
+			gotResp, gotErr := q.Params(sdk.WrapSDKContext(ctx), nil)
 			require.NoError(t, gotErr)
 			require.NotNil(t, gotResp)
-			assert.Equal(t, spec.expMin, gotResp.MinimumGasPrices)
+			assert.Equal(t, spec.expMin, gotResp.Params.MinimumGasPrices)
 		})
 	}
 }

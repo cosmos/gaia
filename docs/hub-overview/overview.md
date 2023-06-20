@@ -4,10 +4,10 @@ title: Introduction
 ---
 
 ::: warning
-### **v9-Lambda Upgrade**
-Cosmos Hub upgraded at height: **14,470,501**
+### **v10 Upgrade**
+Cosmos Hub will be upgraded to [v10](https://github.com/cosmos/gaia/releases/tag/v10.0.0) at block height: **15,816,200**
 
-To upgrade from v8-Rho check the [**upgrade guide**](../migration/cosmoshub-4-v9-Lambda-upgrade.md)
+To upgrade from v9-Lambda check the [**upgrade guide**](../migration/cosmoshub-4-v10-upgrade.md)
 :::
 
 ![Welcome to the Cosmos Hub](../images/cosmos-hub-image.jpg)
@@ -55,7 +55,6 @@ These block explorers allow you to search, view and analyze Cosmos Hub data&mdas
 * [Big Dipper](https://cosmos.bigdipper.live)
 * [Cosmos Overview](https://genesislab.net)
 * [Cosmoscan](https://cosmoscan.net/)
-* [Cosmos Visualizer](https://nylira.net/3d)
 * [IOBScan](https://cosmoshub.iobscan.io/)
 * [LOOK Explorer](https://cosmos.ping.pub)
 * [Lunie](https://lunie.io)

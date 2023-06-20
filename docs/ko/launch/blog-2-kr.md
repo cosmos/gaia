@@ -31,7 +31,7 @@
 
 하지만 토큰 전송이 활성화된 뒤라면 블록체인 롤백을 정당화하는 것은 상당히 어렵게 됩니다.
 
-**개발자 참고 사항**: 코스모스 메인넷 런칭은 펀드레이저 참가자들이 협동하여 코스모스 허브 소프트웨어를 운영하는 첫 단계입니다. 생태계 내 대다수의 탈중앙화 애플리케이션 개발자는 [코스모스 SDK](https://cosmos.network/docs/) 또는 [텐더민트 코어](https://tendermint.com/docs/)를 사용하고 있는 것으로 예상됩니다. 각 코스모스 SDK/텐더민트 기반 애플리케이션의 개발 진행은 코스모스 허브와 별도로 진행되어도 무관합니다. 다만, [IBC](https://blog.cosmos.network/developer-deep-dive-cosmos-ibc-5855aaf183fe)(Inter-Blockchain Communication)을 사용하기 위해서는 메인넷 3단계까지 기다리거나 IBC 테스트넷에서 시범운영을 하실 수 있습니다.
+**개발자 참고 사항**: 코스모스 메인넷 런칭은 펀드레이저 참가자들이 협동하여 코스모스 허브 소프트웨어를 운영하는 첫 단계입니다. 생태계 내 대다수의 탈중앙화 애플리케이션 개발자는 [코스모스 SDK](https://cosmos.network/docs/) 또는 [Comet BFT](https://github.com/cometbft/cometbft/tree/main/docs)를 사용하고 있는 것으로 예상됩니다. 각 코스모스 SDK/Comet BFT 기반 애플리케이션의 개발 진행은 코스모스 허브와 별도로 진행되어도 무관합니다. 다만, [IBC](https://blog.cosmos.network/developer-deep-dive-cosmos-ibc-5855aaf183fe)(Inter-Blockchain Communication)을 사용하기 위해서는 메인넷 3단계까지 기다리거나 IBC 테스트넷에서 시범운영을 하실 수 있습니다.
 
 **유저 참고 사항**: 메인넷 최초 단계에서는 코스모스 아톰을 거래하지 **않는** 것을 강력하게 권고합니다 (예, 법적 계약을 통한 거래). 1단계에서는 제네시스 블록까지 긴급 롤백이 진행될 수 있으므로 트랜잭션이 번복될 수 있는 위험이 존재합니다.
 

@@ -83,7 +83,7 @@ Las etiquetas (_tags_) para la construcción indican opciones especiales que deb
 
 ## Workflow para el desarrollador
 
-Para probar cualquier cambio hecho en el SDK o Tendermint, se debe agregar una cláusula de `replace` en `go.mod` proporcionando la ruta de entrada correcta.
+Para probar cualquier cambio hecho en el SDK o CometBFT, se debe agregar una cláusula de `replace` en `go.mod` proporcionando la ruta de entrada correcta.
 
 - Realice los cambios apropiados
 - Añada `replace github.com/cosmos/cosmos-sdk => /ruta/a/clon/cosmos-sdk` en `go.mod`

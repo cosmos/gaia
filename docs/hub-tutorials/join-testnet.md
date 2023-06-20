@@ -46,8 +46,8 @@ We recommend running public testnet nodes on machines with at least 8 cores, 16G
 
 There are two ways to sync a testnet node, Fastsync and State Sync.
 
-* [Fast Sync](https://docs.tendermint.com/v0.34/tendermint-core/fast-sync.html) syncs the chain from genesis by downloading blocks in parallel and then verifying them.
-* [State Sync](https://docs.tendermint.com/v0.34/tendermint-core/state-sync.html) will look for snapshots from peers at a trusted height and then verifying a minimal set of snapshot chunks against the network.
+* [Fast Sync](https://docs.cometbft.com/v0.34/core/fast-sync) syncs the chain from genesis by downloading blocks in parallel and then verifying them.
+* [State Sync](https://docs.cometbft.com/v0.34/core/state-sync) will look for snapshots from peers at a trusted height and then verifying a minimal set of snapshot chunks against the network.
 
 State Sync is far faster and more efficient than Fast Sync, but Fast Sync offers higher data integrity and more robust history. For those who are concerned about storage and costs, State Sync can be the better option as it minimizes storage usage when rebuilding initial state.
 

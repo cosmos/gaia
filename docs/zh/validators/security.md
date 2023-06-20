@@ -48,7 +48,7 @@ private_peer_ids = "ipaddress of validator nodes"
 默认情况下，具有以下前缀的大写环境变量将替换小写命令行标志：
 
 + `GA`（对应Gaia的标识）
-+ `TM`（对应Tendermint, 现在 CometBFT, 的标识）
++ `TM`（对应Tendermint, 现在 CometBFT的标识）
 + `BC`（对应democli或basecli的标识）
 
 例如，环境变量`GA_CHAIN_ID`将映射到命令行标识`--chain-id`。注意，虽然显式命令行标识优先于环境变量，但环境变量优先于任何配置文件。因此，必须锁定环境，以便在CLI上将任何关键参数定义为标识或防止修改任何环境变量。

@@ -1,5 +1,5 @@
 <!--
-The production pull request template is for types feat, fix, or refactor.
+The production pull request template is for types feat, fix, deps, or refactor.
 -->
 
 ## Description
@@ -21,12 +21,12 @@ please add links to any relevant follow up issues.*
 I have...
 
 * [ ] Included the correct [type prefix](https://github.com/commitizen/conventional-commit-types/blob/v3.0.0/index.json) in the PR title
-* [ ] Added `!` to the type prefix if API or client breaking change
+* [ ] Added `!` to the type prefix if API, client, or state breaking change (i.e., requires minor or major version bump)
 * [ ] Targeted the correct branch (see [PR Targeting](https://github.com/cosmos/gaia/blob/main/CONTRIBUTING.md#pr-targeting))
 * [ ] Provided a link to the relevant issue or specification
 * [ ] Followed the guidelines for [building SDK modules](https://github.com/cosmos/cosmos-sdk/blob/main/docs/docs/building-modules)
 * [ ] Included the necessary unit and integration [tests](https://github.com/cosmos/gaia/blob/main/CONTRIBUTING.md#testing)
-* [ ] Added a changelog entry to `CHANGELOG.md`
+* [ ] Added a changelog entry in `.changelog` (for details, see [contributing guidelines](../../CONTRIBUTING.md#changelog))
 * [ ] Included comments for [documenting Go code](https://blog.golang.org/godoc)
 * [ ] Updated the relevant documentation or specification
 * [ ] Reviewed "Files changed" and left comments if necessary <!-- relevant if the changes are not obvious  -->

@@ -9,7 +9,7 @@
 
 **重要提示**：请务必按照下面的操作步骤谨慎操作，过程中发生任何错误都有可能导致您永远失去所拥有的通证。因此，请在开始操作之前先仔细阅读全文，如果有任何问题可以联系我们获得支持。
 
-另请注意，您即将要与Cosmos Hub进行交互，Cosmos Hub仍然是一个试验型的区块链技术软件。虽然Cosmos Hub区块链是应用现有最新技术开发并经过审核的，但我们仍然可能会在运行时遇到问题，需要不断更新和修复漏洞。此外，使用区块链技术仍然要求有很高的技术能力，并且有可能遇到我们无法预知和控制的风险。使用Cosmos Hub前，您需要充分了解与加密软件相关的潜在风险（请参考[Cosmos跨链贡献条款](https://github.com/cosmos/cosmos/blob/master/fundraiser/Interchain%20Cosmos%20Contribution%20Terms%20-%20FINAL.pdf)中关于风险的部分条款），并且我们跨链基金会和(或)Tendermint团队对于因为使用本产品而可能产生的损失不承担任何责任。使用Cosmos Hub需要遵守Apache 2.0开源软件授权条款，用户需要自己承担所有责任，所使用的软件按“现状”提供且不提供任何形式的保障或条件。
+另请注意，您即将要与Cosmos Hub进行交互，Cosmos Hub仍然是一个试验型的区块链技术软件。虽然Cosmos Hub区块链是应用现有最新技术开发并经过审核的，但我们仍然可能会在运行时遇到问题，需要不断更新和修复漏洞。此外，使用区块链技术仍然要求有很高的技术能力，并且有可能遇到我们无法预知和控制的风险。使用Cosmos Hub前，您需要充分了解与加密软件相关的潜在风险（请参考[Cosmos跨链贡献条款](https://github.com/cosmos/cosmos/blob/master/fundraiser/Interchain%20Cosmos%20Contribution%20Terms%20-%20FINAL.pdf)中关于风险的部分条款），并且我们跨链基金会和(或)Tendermint/CometBFT团队对于因为使用本产品而可能产生的损失不承担任何责任。使用Cosmos Hub需要遵守Apache 2.0开源软件授权条款，用户需要自己承担所有责任，所使用的软件按“现状”提供且不提供任何形式的保障或条件。
 :::
 
 请务必谨慎行事！

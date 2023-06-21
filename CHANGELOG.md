@@ -1,31 +1,5 @@
 # CHANGELOG
 
-## Unreleased
-
-### API BREAKING
-
-- [GlobalFee](x/globalfee)
-  - Add `bypass-min-fee-msg-types` and `maxTotalBypassMinFeeMsgGagUsage` to
-    globalfee params. `bypass-min-fee-msg-types` in `config/app.toml` is
-    deprecated ([\#2424](https://github.com/cosmos/gaia/pull/2424))
-
-### DEPENDENCIES
-
-- Bump [ibc-go](https://github.com/cosmos/ibc-go) to
-  [v4.4.2](https://github.com/cosmos/ibc-go/releases/tag/v4.4.2)
-  ([\#2554](https://github.com/cosmos/gaia/pull/2554))
-
-### STATE BREAKING
-
-- [GlobalFee](x/globalfee)
-  - Create the upgrade handler and params migration for the new Gloabal Fee module
-    parameters introduced in [#2424](https://github.com/cosmos/gaia/pull/2424)
-    ([\#2352](https://github.com/cosmos/gaia/pull/2352))
-  - Add `bypass-min-fee-msg-types` and `maxTotalBypassMinFeeMsgGagUsage` to
-    globalfee params ([\#2424](https://github.com/cosmos/gaia/pull/2424))
-  - Update Global Fee's AnteHandler to check tx fees against the network min gas
-    prices in DeliverTx mode ([\#2447](https://github.com/cosmos/gaia/pull/2447))
-
 ## [v10.0.1] 2023-05-25
 
 * (deps) [#2543](https://github.com/cosmos/gaia/pull/2543) Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.4.1](https://github.com/cosmos/ibc-go/releases/tag/v4.4.1).

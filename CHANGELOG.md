@@ -1,30 +1,5 @@
 # CHANGELOG
 
-## Unreleased
-
-### API BREAKING
-
-- [GlobalFee](x/globalfee)
-  - Add `bypass-min-fee-msg-types` and `maxTotalBypassMinFeeMsgGagUsage` to
-    globalfee params ([\#2424](https://github.com/cosmos/gaia/pull/2424))
-
-### DEPENDENCIES
-
-- Bump [ibc-go](https://github.com/cosmos/ibc-go) to
-  [v4.4.2](https://github.com/cosmos/ibc-go/releases/tag/v4.4.2)
-  ([\#2554](https://github.com/cosmos/gaia/pull/2554))
-
-### STATE BREAKING
-
-- [GlobalFee](x/globalfee)
-  - Create the upgrade handler and params migration for the new Gloabal Fee module
-    parameters introduced in [#2424](https://github.com/cosmos/gaia/pull/2424)
-    ([\#2352](https://github.com/cosmos/gaia/pull/2352))
-  - Add `bypass-min-fee-msg-types` and `maxTotalBypassMinFeeMsgGagUsage` to
-    globalfee params ([\#2424](https://github.com/cosmos/gaia/pull/2424))
-  - Update Global Fee's AnteHandler to check tx fees against the network min gas
-    prices in DeliverTx mode ([\#2447](https://github.com/cosmos/gaia/pull/2447))
-
 ## [v10.0.1] 2023-05-25
 
 * (deps) [#2543](https://github.com/cosmos/gaia/pull/2543) Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.4.1](https://github.com/cosmos/ibc-go/releases/tag/v4.4.1).
@@ -66,9 +41,6 @@ We recently realized that unblocking the FeePoolAddress could enable an attacker
 To fix this problem, we have re-blocked the FeePoolAddress and created a new address called the ConsumerRewardsPool. Consumer chains now send rewards to this new address. There is also a new transaction type called RegisterConsumerRewardDenom. This transaction allows people to register denoms to be used as rewards from consumer chains. It costs 10 Atoms to run this transaction.The Atoms are transferred to the community pool. Only denoms registered with this command are then transferred to the FeePoolAddress and distributed out to delegators and validators.
 
 Note: The fee of 10 Atoms was originally intended to be a parameter that could be changed by governance (10 Atoms might cost too much in the future). However, we ran into some problems creating a new parameter as part of an emergency upgrade. After consulting with the Cosmos-SDK team, we learned that creating new parameters is only supported as part of a scheduled upgrade. So in the current code, the number of Atoms is hardcoded. It will turn into a parameter in the next scheduled upgrade.
-
-### Docs
-* (docs) [#2425](https://github.com/cosmos/gaia/pull/2425) Update docs to include references to CometBFT
 
 ## [v9.0.3] - 2023-04-19
 * (deps) [#2399](https://github.com/cosmos/gaia/pull/2399) Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.15-ics](https://github.com/cosmos/cosmos

@@ -327,9 +327,6 @@ replace (
 	// Comet
 	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.29
 
-	// following versions might cause unexpected behavior
-	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
-
 	// latest grpc doesn't work with with our modified proto compiler, so we need to enforce
 	// the following version across all dependencies.
 	google.golang.org/grpc => google.golang.org/grpc v1.54.0

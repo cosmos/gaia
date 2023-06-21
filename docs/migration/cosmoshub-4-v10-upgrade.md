@@ -12,6 +12,8 @@ This document describes the steps for validators and full node operators, to upg
 - Upgrading IBC Go to [v4.4.0](https://github.com/cosmos/ibc-go/releases/tag/v4.4.0)
 - Upgrading Golang to [Golang 1.20.x](https://go.dev/blog/go1.20), making it mandatory to build Gaia with **Golang v1.20.x**
 
+❗The **preferred binary** for **Mainnet release** is [v10.0.1](https://github.com/cosmos/gaia/releases/tag/v10.0.1), as that version includes a fix for the [IBC Huckleberry fix](https://forum.cosmos.network/t/ibc-security-advisory-huckleberry/10731). v10.0.0 does **NOT** include this fix.
+
 ## Instructions
   
 - [On-chain governance proposal attains consensus](#on-chain-governance-proposal-attains-consensus)
@@ -22,7 +24,7 @@ This document describes the steps for validators and full node operators, to upg
     - [Backups](#backups)
     - [Testing](#testing)
     - [Current runtime, cosmoshub-4 (pre-v10 upgrade) is running Gaia v9.1.1](#current-runtime-cosmoshub-4-pre-v10-upgrade-is-running-gaia-v911)
-    - [Target runtime, cosmoshub-4 (post-v10 upgrade) will run Gaia v10.0.0](#target-runtime-cosmoshub-4-post-v10-upgrade-will-run-gaia-v1000)
+    - [Target runtime, cosmoshub-4 (post-v10 upgrade) will run Gaia v10.0.1](#target-runtime-cosmoshub-4-post-v10-upgrade-will-run-gaia-v1000)
 - [Upgrade steps](#upgrade-steps)
     - [Method I: Manual Upgrade](#method-i-manual-upgrade)
     - [Method II: Upgrade using Cosmovisor](#method-ii-upgrade-using-cosmovisor)
@@ -81,9 +83,9 @@ For those validator and full node operators that are interested in ensuring prep
 
 The Cosmos Hub mainnet network, `cosmoshub-4`, is currently running [Gaia v9.1.1](https://github.com/cosmos/gaia/releases/v9.1.1). We anticipate that operators who are running on v9.1.1, will be able to upgrade successfully. Validators are expected to ensure that their systems are up to date and capable of performing the upgrade. This includes running the correct binary, or if building from source, building with go `1.20`.
 
-### Target runtime, cosmoshub-4 (post-v10 upgrade) will run Gaia v10.0.0
+### Target runtime, cosmoshub-4 (post-v10 upgrade) will run Gaia v10.0.1
 
-The Cosmos Hub mainnet network, `cosmoshub-4`, will run [Gaia v10.0.0](https://github.com/cosmos/gaia/releases/tag/v10.0.0). Operators _MUST_ use this version post-upgrade to remain connected to the network.
+The Cosmos Hub mainnet network, `cosmoshub-4`, will run [Gaia v10.0.1](https://github.com/cosmos/gaia/releases/tag/v10.0.1). Operators _MUST_ use this version post-upgrade to remain connected to the network.
 
 ## Upgrade steps
 
@@ -98,7 +100,7 @@ If you prefer to use Cosmovisor to upgrade, some preparation work is needed befo
 
 ### Method I: Manual Upgrade
 
-Make sure Gaia v10.0.0 is installed by either downloading a [compatible binary](https://github.com/cosmos/gaia/releases/tag/v10.0.0), or building from source. Building from source requires **Golang 1.20**.
+Make sure Gaia v10.0.1 is installed by either downloading a [compatible binary](https://github.com/cosmos/gaia/releases/tag/v10.0.1), or building from source. Building from source requires **Golang 1.20**.
 
 Run Gaia v9.1.1 till upgrade height, the node will panic:
 
@@ -106,7 +108,7 @@ Run Gaia v9.1.1 till upgrade height, the node will panic:
 ERR UPGRADE "v10" NEEDED at height: 15816200: upgrade to v10 and applying upgrade "v10" at height:15816200
 ```
 
-Stop the node, and switch the binary to Gaia v10.0.0 and re-start by `gaiad start`.
+Stop the node, and switch the binary to Gaia v10.0.1 and re-start by `gaiad start`.
 
 It may take several minutes to a few hours until validators with a total sum voting power > 2/3 to complete their node upgrades. After that, the chain can continue to produce blocks.
 
@@ -153,7 +155,7 @@ mkdir -p $GAIA_HOME/cosmovisor/genesis/bin
 cp $(which gaiad) $GAIA_HOME/cosmovisor/genesis/bin
 ````
 
-build Gaia v10.0.0, and move gaiad v10.0.0 to `$GAIA_HOME/cosmovisor/upgrades/v10/bin`
+build Gaia v10.0.1, and move gaiad v10.0.1 to `$GAIA_HOME/cosmovisor/upgrades/v10/bin`
 
 ```shell
 mkdir -p  $GAIA_HOME/cosmovisor/upgrades/v10/bin
@@ -171,7 +173,7 @@ Then you should get the following structure:
 └── upgrades
     └── v10
         └── bin
-            └── gaiad  #v10.0.0
+            └── gaiad  #v10.0.1
 ```
 
 Export the environmental variables:
@@ -254,7 +256,7 @@ When the upgrade block height is reached, you can find the following information
 ERR UPGRADE "v10" NEEDED at height: 15816200: upgrade to v10 and applying upgrade "v10" at height:15816200
 ```
 
-Then the Cosmovisor will create `$GAIA_HOME/cosmovisor/upgrades/v10/bin` and download the Gaia v10.0.0 binary to this folder according to links in the `--info` field of the upgrade proposal.
+Then the Cosmovisor will create `$GAIA_HOME/cosmovisor/upgrades/v10/bin` and download the Gaia v10.0.1 binary to this folder according to links in the `--info` field of the upgrade proposal.
 This may take 7 minutes to a few hours, afterwards, the chain will continue to produce blocks once validators with a total sum voting power > 2/3 complete their nodes upgrades.
 
 _Please Note:_

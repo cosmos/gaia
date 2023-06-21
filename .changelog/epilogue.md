@@ -1,5 +1,3 @@
-# CHANGELOG
-
 ## [v9.1.1] - 2023-05-25
 
 * (deps) [#2542](https://github.com/cosmos/gaia/pull/2542) Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.2.1](https://github.com/cosmos/ibc-go/releases/tag/v4.2.1).
@@ -66,4 +64,3 @@ sdk/releases/tag/v0.45.15-ics) and migrate to [CometBFT](https://github.com/come
 [v9.0.2]: https://github.com/cosmos/gaia/releases/tag/v9.0.2
 [v9.0.1]: https://github.com/cosmos/gaia/releases/tag/v9.0.1
 [v9.0.0]: https://github.com/cosmos/gaia/releases/tag/v9.0.0
-

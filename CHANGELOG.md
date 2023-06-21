@@ -1,13 +1,5 @@
 # CHANGELOG
 
-## Unreleased
-
-### DEPENDENCIES
-
-- Bump [ibc-go](https://github.com/cosmos/ibc-go) to
-  [v4.4.2](https://github.com/cosmos/ibc-go/releases/tag/v4.4.2)
-  ([\#2554](https://github.com/cosmos/gaia/pull/2554))
-
 ## [v10.0.1] 2023-05-25
 
 * (deps) [#2543](https://github.com/cosmos/gaia/pull/2543) Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.4.1](https://github.com/cosmos/ibc-go/releases/tag/v4.4.1).

@@ -1,7 +1,7 @@
 <!-- markdown-link-check-disable -->
 # 키
 
-키 관리에 대해서는 [텐더민트 스펙](https://github.com/tendermint/tendermint/blob/master/docs/spec/blockchain/encoding.md#public-key-cryptography)을 확인하세요.
+키 관리에 대해서는 [CometBFT](https://docs.cometbft.com/v0.34/spec/core/encoding)을 확인하세요.
 
 `gaiad keys --help` 명령어를 통해 추가 정보를 얻으실 수 있습니다.
 

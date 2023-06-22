@@ -48,11 +48,11 @@ The split enable checking `feeCoinsNonZeroDenom` against `nonZeroCoinFeesReq`, a
 	}
 ```
 An example of coins split in fee antehandler:\
-**Assumption**: `globalfee=[1photon, 0uatom, 1stake]` and `local min-gas-prices=[0.5stake]`
+**assumption**: `globalfee=[1photon, 0uatom, 1stake]` and `local min-gas-prices=[0.5stake]`
 
-**Fee requirement**: `combinedFeeRequirement=[1photon, 0uatom, 1stake]`
+**fee requirement**: `combinedFeeRequirement=[1photon, 0uatom, 1stake]`
 
-**Split fee requirement**: the `combinedFeeRequirement` into `nonZeroCoinFeesReq=[0uatom]`, and `nonZeroCoinFeesReq=[1photon, 1stake]`
+**split fee requirement**: the `combinedFeeRequirement` into `nonZeroCoinFeesReq=[0uatom]`, and `nonZeroCoinFeesReq=[1photon, 1stake]`
 
 **split the paid fees**:
 if `paidFee=[1uatom, 0.5photon]`,

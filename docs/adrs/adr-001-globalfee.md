@@ -47,11 +47,14 @@ The split enable checking `feeCoinsNonZeroDenom` against `nonZeroCoinFeesReq`, a
 		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins.String(), feeRequired.String())
 	}
 ```
-An example of coins split in fee antehandler:
-`globalfee=[1photon, 0uatom, 1stake]`\
-`local min-gas-prices=[0.5stake]`
-get `combinedFeeRequirement=[1photon, 0uatom, 1stake]`,
-split the `combinedFeeRequirement` into `nonZeroCoinFeesReq=[0uatom]`, and `nonZeroCoinFeesReq=[1photon, 1stake]`
+An example of coins split in fee antehandler:\
+**Assumption**: `globalfee=[1photon, 0uatom, 1stake]` and `local min-gas-prices=[0.5stake]`
+
+**Fee requirement**: `combinedFeeRequirement=[1photon, 0uatom, 1stake]`
+
+**Split fee requirement**: the `combinedFeeRequirement` into `nonZeroCoinFeesReq=[0uatom]`, and `nonZeroCoinFeesReq=[1photon, 1stake]`
+
+**split the paid fees**:
 if `paidFee=[1uatom, 0.5photon]`,
 split the paidFee into `feeCoinsZeroDenom=[1uatom]` (the same denom as zero coins in `combinedFeeRequirement`), and `feeCoinsNonZeroDenom=[0.5stake]`
 then `feeCoinsZeroDenom=[1uatom]` is checked by `nonZeroCoinFeesReq=[1photon, 1stake]`.

@@ -73,7 +73,7 @@ flowchart TD
 	feeCoinsZeroDenom-.feeCheck-Zero.->zeroCoinFeesDenomReq;
 	feeCoinsNonZeroDenom-.feeCheck-NonZero.->nonzeroCoinFeesDenomReq;
 ```
-plese note, `feeCoins` does not contain zero coins, the feeCoins are split to according to the denoms in `zeroCoinFeesDenomReq` or in `nonZeroCoinFeesDenomReq`, if feeCoins contains coins not in both  `zeroCoinFeesDenomReq` and `nonZeroCoinFeesDenomReq`, the transaction should be rejected.
+Please note that `feeCoins` does not contain zero coins. The fee coins are split according to the denoms in `zeroCoinFeesDenomReq` or `nonZeroCoinFeesDenomReq`. If feeCoins contains coins not in both `zeroCoinFeesDenomReq` and `nonZeroCoinFeesDenomReq`, the transaction should be rejected.
 
 Workflows of the fee checks:
 ```mermaid
@@ -128,10 +128,9 @@ func (mfd FeeDecorator) GetTxFeeRequired(ctx sdk.Context, tx sdk.FeeTx) (sdk.Coi
 }
 ```
 
-- **Deterministic Bypass Parameters**: The decision whether a message can bypass minimum fee has to be deterministic as well. To ensure this, `BypassMinFeeMsgTypes` and `MaxTotalBypassMinFeeMsgGasUsage` parameters are moved to a persistent store.
+- **Deterministic Bypass Parameters**: The decision of whether a message can bypass the minimum fee has to be deterministic as well. To ensure this, `BypassMinFeeMsgTypes` and `MaxTotalBypassMinFeeMsgGasUsage` parameters are moved to a persistent store.
 
 - **Module Initialization Order**: The genutils module must be initialized before the globalfee module. This is due to the `DeliverGenTxs` in the genutils module, is called during `initGenesis`. This function executes `DeliverTx`, which subsequently calls the AnteHandle in FeeDecorator, triggering the fee check in `DeliverTx`.
-  To prevent the `DeliverGenTxs` go through a fee check, the initialization of the globalfee module should occur after the genutils module. This sequencing ensures that all necessary components are in place when the fee check occurs. See [Gaia Issue #2489](https://github.com/cosmos/gaia/issues/2489) for more context.
   To prevent the `DeliverGenTxs` go through a fee check, the initialization of the globalfee module should occur after the genutils module. This sequencing ensures that all necessary components are in place when the fee check occurs. See [Gaia Issue #2489](https://github.com/cosmos/gaia/issues/2489) for more context.
 
 

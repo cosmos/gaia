@@ -12,7 +12,7 @@ The globalfee module was created to manage a parameter called `MinimumGasPricesP
 
 - In the globalfee module, several SDK coins methods were redefined because of the allowance of zero-value coins in the `MinimumGasPricesParam`. The `MinimumGasPricesParam` is of `sdk.DecCoins` type. In the cosmos-sdk, `sdk.DecCoins` are [sanitized](https://github.com/cosmos/cosmos-sdk/blob/67f04e629623d4691c4b2e48806f7793a3aa211e/types/dec_coin.go#L160-L177) to remove zero-value coins. As a result, several methods from `sdk.Coins` were [redefined in the Gaia fee antehandler](https://github.com/cosmos/gaia/blob/890ab3aa2e5788537b0d2ebc9bafdc968340e0e5/x/globalfee/ante/fee_utils.go#L46-L104).
 
-- `BypassMinFeeMsgTypes` exists in `app.toml`, and each node can define it. It's not deterministic that whether a transaction containing bypass-messages will be exempt from fee charge from fee charge.
+- `BypassMinFeeMsgTypes` exists in `app.toml`, and each node can define it. It's not deterministic whether a transaction containing bypass-messages will be exempt from fee charge from fee charge.
 
 - The fee check logic from globalfee is only executed in `checkTx`. This could allow malicious validators to change the fee check code and let transactions that do not meet the fee requirement pass.
 

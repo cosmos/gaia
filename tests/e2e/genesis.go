@@ -1,14 +1,11 @@
 package e2e
 
-//
 import (
-	//	"encoding/json"
 	"encoding/json"
 	"fmt"
 	"os"
 	"time"
 
-	//
 	tmtypes "github.com/cometbft/cometbft/types"
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"

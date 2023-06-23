@@ -48,14 +48,15 @@ import (
 	ibcclientclient "github.com/cosmos/ibc-go/v7/modules/core/02-client/client"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibctm "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
-	ibcprovider "github.com/cosmos/interchain-security/x/ccv/provider"
-	ibcproviderclient "github.com/cosmos/interchain-security/x/ccv/provider/client"
-	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
+	ibcprovider "github.com/cosmos/interchain-security/v3/x/ccv/provider"
+	ibcproviderclient "github.com/cosmos/interchain-security/v3/x/ccv/provider/client"
+	providertypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
 
 	"github.com/strangelove-ventures/packet-forward-middleware/v7/router"
 	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v7/router/types"
 
-	gaiaparams "github.com/cosmos/gaia/v10/app/params"
+	gaiaparams "github.com/cosmos/gaia/v11/app/params"
+	// "github.com/cosmos/gaia/v11/x/globalfee"
 )
 
 var maccPerms = map[string][]string{
@@ -66,7 +67,9 @@ var maccPerms = map[string][]string{
 	stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 	stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 	govtypes.ModuleName:            {authtypes.Burner},
-	ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
+	// liquiditytypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
+	ibctransfertypes.ModuleName:       {authtypes.Minter, authtypes.Burner},
+	providertypes.ConsumerRewardsPool: nil,
 }
 
 // ModuleBasics defines the module BasicManager is in charge of setting up basic,
@@ -285,6 +288,14 @@ func orderInitBlockers() []string {
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
+		// The globalfee module should ideally be initialized before the genutil module in theory:
+		// The globalfee antehandler performs checks in DeliverTx, which is called by gentx.
+		// When the global fee > 0, gentx needs to pay the fee. However, this is not expected,
+		// (in our case, the global fee is initialized with an empty value, which might not be a problem
+		// if the globalfee in genesis is not changed.)
+		// To resolve this issue, we should initialize the globalfee module after genutil, ensuring that the global
+		// min fee is empty when gentx is called.
+		// For more details, please refer to the following link: https://github.com/cosmos/gaia/issues/2489
 		// globalfee.ModuleName,
 		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,

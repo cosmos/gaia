@@ -61,7 +61,7 @@ Venues involve community members to different degrees and individuals often perf
   - Venue primarily for ATOM holders to discuss ATOM and other ecosystem coins
   - Discussion topics mostly about investing in the ecosystem and include: [investment theses](https://www.reddit.com/r/cosmosnetwork/comments/o38psh/i_think_atom_is_undervalued/), where to buy tokens, wallets to use, how to stake, and more recently, how to get involved with DeFi in the ecosystem (e.g., with Osmosis) 
   - Community managers use it for announcements (e.g., catdotfish)
-- **[Cosmos Community Discord](https://discord.gg/W8trcGV)**
+- **[Cosmos Community Discord](https://discord.com/invite/cosmosnetwork)**
   - For ecosystem cross-pollination with an active developer presence. Older Riot chats have moved here. 
   - `#validator-verified` channel for example discussing proposals, upgrades etc.  
   - Major ecosystem chains all have a presence here, cross-validator convo, artefacts like: [Citadel.one Validator Constitution](https://drive.google.com/file/d/1wDTqro208y_1q3zF6rt39QjwYkcvVd7P/view) 

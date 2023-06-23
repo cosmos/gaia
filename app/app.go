@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/cosmos/gaia/v10/app/params"
+	"github.com/cosmos/gaia/v11/app/params"
 
 	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
 	reflectionv1 "cosmossdk.io/api/cosmos/reflection/v1"
@@ -41,18 +41,18 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ibctesting "github.com/cosmos/interchain-security/legacy_ibc_testing/testing"
+	ibctesting "github.com/cosmos/interchain-security/v3/legacy_ibc_testing/testing"
+	providertypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
 
-	gaiaante "github.com/cosmos/gaia/v10/ante"
-	"github.com/cosmos/gaia/v10/app/keepers"
-	"github.com/cosmos/gaia/v10/app/upgrades"
-	v10 "github.com/cosmos/gaia/v10/app/upgrades/v10"
+	gaiaante "github.com/cosmos/gaia/v11/ante"
+	"github.com/cosmos/gaia/v11/app/keepers"
+	"github.com/cosmos/gaia/v11/app/upgrades"
+	v11 "github.com/cosmos/gaia/v11/app/upgrades/v11"
 
-	// TODO: Enable with GlobalFee
-	// "github.com/cosmos/gaia/v10/x/globalfee"
+	// "github.com/cosmos/gaia/v11/x/globalfee"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
@@ -62,7 +62,7 @@ var (
 	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
 
-	Upgrades = []upgrades.Upgrade{v10.Upgrade}
+	Upgrades = []upgrades.Upgrade{v11.Upgrade}
 )
 
 var (
@@ -296,10 +296,8 @@ func (app *GaiaApp) BlockedModuleAccountAddrs(modAccAddrs map[string]bool) map[s
 	// remove module accounts that are ALLOWED to received funds
 	delete(modAccAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
-	// Remove the fee-pool from the group of blocked recipient addresses in bank
-	// this is required for the provider chain to be able to receive tokens from
-	// the consumer chain
-	delete(modAccAddrs, authtypes.NewModuleAddress(authtypes.FeeCollectorName).String())
+	// Remove the ConsumerRewardsPool from the group of blocked recipient addresses in bank
+	delete(modAccAddrs, authtypes.NewModuleAddress(providertypes.ConsumerRewardsPool).String())
 
 	return modAccAddrs
 }

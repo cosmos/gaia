@@ -4,10 +4,12 @@ package gaia
 import (
 	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
-	ibcstakinginterface "github.com/cosmos/interchain-security/legacy_ibc_testing/core"
-	ics "github.com/cosmos/interchain-security/testutil/integration"
-	ibcproviderkeeper "github.com/cosmos/interchain-security/x/ccv/provider/keeper"
+	ibcstakinginterface "github.com/cosmos/interchain-security/v3/legacy_ibc_testing/core"
+	icstest "github.com/cosmos/interchain-security/v3/testutil/integration"
+	ibcproviderkeeper "github.com/cosmos/interchain-security/v3/x/ccv/provider/keeper"
 )
+
+// ProviderApp interface implementations for icstest tests
 
 // GetProviderKeeper implements the ProviderApp interface.
 func (app *GaiaApp) GetProviderKeeper() ibcproviderkeeper.Keeper { //nolint:nolintlint
@@ -29,22 +31,26 @@ func (app *GaiaApp) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper { //nolin
 	return app.ScopedIBCKeeper
 }
 
-// GetE2eStakingKeeper implements the ProviderApp interface.
-func (app *GaiaApp) GetTestStakingKeeper() ics.TestStakingKeeper { //nolint:nolintlint
+// GetTestStakingKeeper implements the ProviderApp interface.
+func (app *GaiaApp) GetTestStakingKeeper() icstest.TestStakingKeeper { //nolint:nolintlint
 	return app.StakingKeeper
 }
 
-// GetE2eBankKeeper implements the ProviderApp interface.
-func (app *GaiaApp) GetTestBankKeeper() ics.TestBankKeeper { //nolint:nolintlint
+// GetTestBankKeeper implements the ProviderApp interface.
+func (app *GaiaApp) GetTestBankKeeper() icstest.TestBankKeeper { //nolint:nolintlint
 	return app.BankKeeper
 }
 
-// GetE2eSlashingKeeper implements the ProviderApp interface.
-func (app *GaiaApp) GetTestSlashingKeeper() ics.TestSlashingKeeper { //nolint:nolintlint
+// GetTestSlashingKeeper implements the ProviderApp interface.
+func (app *GaiaApp) GetTestSlashingKeeper() icstest.TestSlashingKeeper { //nolint:nolintlint
 	return app.SlashingKeeper
 }
 
-// GetE2eDistributionKeeper implements the ProviderApp interface.
-func (app *GaiaApp) GetTestDistributionKeeper() ics.TestDistributionKeeper { //nolint:nolintlint
+// GetTestDistributionKeeper implements the ProviderApp interface.
+func (app *GaiaApp) GetTestDistributionKeeper() icstest.TestDistributionKeeper { //nolint:nolintlint
 	return app.DistrKeeper
+}
+
+func (app *GaiaApp) GetTestAccountKeeper() icstest.TestAccountKeeper { //nolint:nolintlint
+	return app.AccountKeeper
 }

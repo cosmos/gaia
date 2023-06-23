@@ -8,14 +8,14 @@ import (
 	"os"
 	"time"
 
-	"github.com/cosmos/gaia/v10/app/params"
+	"github.com/cosmos/gaia/v11/app/params"
 
 	"cosmossdk.io/math"
 
 	tmjson "github.com/cometbft/cometbft/libs/json"
 	tmtypes "github.com/cometbft/cometbft/types"
 
-	gaia "github.com/cosmos/gaia/v10/app"
+	gaia "github.com/cosmos/gaia/v11/app"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"

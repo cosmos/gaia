@@ -9,8 +9,8 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/stretchr/testify/require"
 
-	gaia "github.com/cosmos/gaia/v10/app"
-	gaiahelpers "github.com/cosmos/gaia/v10/app/helpers"
+	gaia "github.com/cosmos/gaia/v11/app"
+	gaiahelpers "github.com/cosmos/gaia/v11/app/helpers"
 )
 
 type EmptyAppOptions struct{}

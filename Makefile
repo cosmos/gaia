@@ -15,6 +15,7 @@ endif
 PACKAGES_SIMTEST=$(shell go list ./... | grep '/simulation')
 LEDGER_ENABLED ?= true
 SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
+TM_VERSION := $(shell go list -m github.com/cometbft/cometbft | sed 's:.* ::') # grab everything after the space in "github.com/cometbft/cometbft v0.34.7"
 DOCKER := $(shell which docker)
 BUILDDIR ?= $(CURDIR)/build
 TEST_DOCKER_REPO=cosmos/contrib-gaiatest
@@ -68,6 +69,7 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=gaia \
 		  -X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
 		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
 		  -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)" \
+			-X github.com/cometbft/cometbft/version.TMCoreSemVer=$(TM_VERSION)
 
 ifeq (cleveldb,$(findstring cleveldb,$(GAIA_BUILD_OPTIONS)))
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=cleveldb
@@ -115,17 +117,6 @@ vulncheck: $(BUILDDIR)/
 	GOBIN=$(BUILDDIR) go install golang.org/x/vuln/cmd/govulncheck@latest
 	$(BUILDDIR)/govulncheck ./...
 
-build-reproducible: go.sum
-	$(DOCKER) rm latest-build || true
-	$(DOCKER) run --volume=$(CURDIR):/sources:ro \
-        --env TARGET_PLATFORMS='linux/amd64 darwin/amd64 linux/arm64 darwin/arm64 windows/amd64' \
-        --env APP=gaiad \
-        --env VERSION=$(VERSION) \
-        --env COMMIT=$(COMMIT) \
-        --env LEDGER_ENABLED=$(LEDGER_ENABLED) \
-        --name latest-build majita/rbuilder:latest
-	$(DOCKER) cp -a latest-build:/home/builder/artifacts/ $(CURDIR)/
-
 build-linux: go.sum
 	LEDGER_ENABLED=false GOOS=linux GOARCH=amd64 $(MAKE) build
 
@@ -147,6 +138,40 @@ clean:
 
 distclean: clean
 	rm -rf vendor/
+
+###############################################################################
+###                                Release                                  ###
+###############################################################################
+
+# create tag and run goreleaser without publishing
+create-release-dry-run:
+ifneq ($(strip $(TAG)),)
+	@echo "--> Dry running release for tag: $(TAG)"
+	@echo "--> Create tag: $(TAG) dry run"
+	git tag -s $(TAG) -m $(TAG)
+	git push origin $(TAG) --dry-run
+	@echo "--> Delete local tag: $(TAG)"
+	@git tag -d $(TAG)
+	@echo "--> Running goreleaser"
+	@go install github.com/goreleaser/goreleaser@latest
+	TM_VERSION=$(TM_VERSION) goreleaser release --snapshot --clean
+	@rm -rf dist/
+	@echo "--> Done create-release-dry-run for tag: $(TAG)"
+else
+	@echo "--> No tag specified, skipping tag release"
+endif
+
+# create tag and publish it
+create-release:
+ifneq ($(strip $(TAG)),)
+	@echo "--> Running release for tag: $(TAG)"
+	@echo "--> Create release tag: $(TAG)"
+	git tag -s $(TAG) -m $(TAG)
+	git push origin $(TAG)
+	@echo "--> Done creating release tag: $(TAG)"
+else
+	@echo "--> No tag specified, skipping create-release"
+endif
 
 ###############################################################################
 ###                                 Devdoc                                  ###

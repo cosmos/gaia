@@ -1,11 +1,6 @@
 package e2e
 
 import (
-	//	"encoding/json"
-	//	"math/rand"
-	//	"path/filepath"
-	//	"time"
-	//
 	"encoding/json"
 	"math/rand"
 	"path/filepath"

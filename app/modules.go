@@ -55,7 +55,7 @@ import (
 	"github.com/strangelove-ventures/packet-forward-middleware/v7/router"
 	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v7/router/types"
 
-	gaiaappparams "github.com/cosmos/gaia/v11/app/params"
+	gaiaparams "github.com/cosmos/gaia/v11/app/params"
 	// "github.com/cosmos/gaia/v11/x/globalfee"
 )
 

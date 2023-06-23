@@ -31,7 +31,7 @@ package e2e
 // 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 // 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 // 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-// 	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
+// 	ibcclienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 // 	"github.com/ory/dockertest/v3"
 // 	"github.com/ory/dockertest/v3/docker"
 // 	"github.com/spf13/viper"

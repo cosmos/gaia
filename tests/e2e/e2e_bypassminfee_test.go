@@ -6,8 +6,8 @@ package e2e
 // 	"cosmossdk.io/math"
 // 	sdk "github.com/cosmos/cosmos-sdk/types"
 // 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-// 	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
-// 	ibcchanneltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
+// 	ibcclienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
+// 	ibcchanneltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 // )
 
 // func (s *IntegrationTestSuite) testBypassMinFeeWithdrawReward(endpoint string) {

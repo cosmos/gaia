@@ -6,7 +6,7 @@ package e2e
 // 	"strings"
 // 	"time"
 
-// 	ccvtypes "github.com/cosmos/interchain-security/v2/x/ccv/provider/types"
+// 	ccvtypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
 
 // 	sdk "github.com/cosmos/cosmos-sdk/types"
 

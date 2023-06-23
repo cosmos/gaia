@@ -5,7 +5,7 @@ package e2e
 // 	"fmt"
 // 	"time"
 
-// 	ccvtypes "github.com/cosmos/interchain-security/v2/x/ccv/provider/types"
+// 	ccvtypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
 
 // 	"github.com/cosmos/cosmos-sdk/client/flags"
 // )

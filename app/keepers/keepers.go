@@ -3,7 +3,7 @@ package keepers
 import (
 	"os"
 
-	ibcproviderkeeper "github.com/cosmos/interchain-security/x/ccv/provider/keeper"
+	ibcproviderkeeper "github.com/cosmos/interchain-security/v3/x/ccv/provider/keeper"
 
 	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -33,7 +33,7 @@ import (
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 
-	providertypes "github.com/cosmos/interchain-security/v2/x/ccv/provider/typesv2/"
+	providertypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
 
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -62,8 +62,8 @@ import (
 	ibcclienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 	porttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
-	ibcprovider "github.com/cosmos/interchain-security/v2/x/ccv/provider"
-	ibcproviderkeeper "github.com/cosmos/interchain-security/v2/x/ccv/provider/keeper"
+	ibcprovider "github.com/cosmos/interchain-security/v3/x/ccv/provider"
+	ibcproviderkeeper "github.com/cosmos/interchain-security/v3/x/ccv/provider/keeper"
 	pfmrouter "github.com/strangelove-ventures/packet-forward-middleware/v7/router"
 	pfmrouterkeeper "github.com/strangelove-ventures/packet-forward-middleware/v7/router/keeper"
 	pfmroutertypes "github.com/strangelove-ventures/packet-forward-middleware/v7/router/types"

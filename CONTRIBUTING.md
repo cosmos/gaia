@@ -2,7 +2,7 @@
 
 - [Contributing](#contributing)
   - [Overview](#overview)
-    - [Stewarding team responsibility](#stewarding-team-responsibility)
+    - [Responsibilities of the stewarding team](#responsibilities-of-the-stewarding-team)
     - [Ease of reviewing](#ease-of-reviewing)
     - [Workflow](#workflow)
   - [Project Board](#project-board)
@@ -12,6 +12,7 @@
     - [Pull Request Templates](#pull-request-templates)
     - [Requesting Reviews](#requesting-reviews)
     - [Updating Documentation](#updating-documentation)
+    - [Changelog](#changelog)
   - [Dependencies](#dependencies)
   - [Protobuf](#protobuf)
   - [Branching Model and Release](#branching-model-and-release)
@@ -173,11 +174,11 @@ Then:
    Draft PRs also help the stewarding team provide early feedback and ensure the work is in the right direction.
 2. When the code is complete, change your PR from `Draft` to `Ready for Review`.
 3. Go through the actions for each checkbox present in the PR template description. The PR actions are automatically provided for each new PR.
-4. Be sure to include a relevant changelog entry in the `Unreleased` section of `CHANGELOG.md` (see file for log format). The entry should be on top of all others changes in the section.
 
 PRs must have a category prefix that is based on the type of changes being made (for example, `fix`, `feat`,
-`refactor`, `docs`, and so on). The *type* must be included in the PR title as a prefix (for example,
-`fix: <description>`). This convention ensures that all changes that are committed to the base branch follow the
+`refactor`, `docs`, and so on). The [type](https://github.com/commitizen/conventional-commit-types/blob/v3.0.0/index.json) 
+must be included in the PR title as a prefix (for example, `fix: <description>`). 
+This convention ensures that all changes that are committed to the base branch follow the
 [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification.
 Additionally, **each PR should only address a single issue**.
 
@@ -187,10 +188,11 @@ Pull requests are merged automatically using [`A:automerge` action](https://merg
 
 ### Pull Request Templates
 
-There are three PR templates. The [default template](./.github/PULL_REQUEST_TEMPLATE.md) is for types `fix`, `feat`, and `refactor`. We also have a [docs template](./.github/PULL_REQUEST_TEMPLATE/docs.md) for documentation changes and an [other template](./.github/PULL_REQUEST_TEMPLATE/other.md) for changes that do not affect production code. When previewing a PR before it has been opened, you can change the template by adding one of the following parameters to the url:
+There are three PR templates. The [default template](./.github/PULL_REQUEST_TEMPLATE.md) contains links to the three templates. Please go the the `Preview` tab and select the appropriate sub-template:
 
-* `template=docs.md`
-* `template=other.md`
+- The [production template](./.github/PULL_REQUEST_TEMPLATE/production.md) is for types `fix`, `feat`, `deps`, and `refactor`. 
+- The [docs template](./.github/PULL_REQUEST_TEMPLATE/docs.md) is for documentation changes.
+- The [other template](./.github/PULL_REQUEST_TEMPLATE/other.md) is for changes that do not affect production code. 
 
 ### Requesting Reviews
 
@@ -222,6 +224,58 @@ items. In addition, use the following review explanations:
 
 If you open a PR in Gaia, it is mandatory to update the relevant documentation in `/docs`.
 
+### Changelog
+
+To manage and generate our changelog, we currently use [unclog](https://github.com/informalsystems/unclog).
+
+Every PR with types `fix`, `feat`, `deps`, and `refactor` should include a file 
+`.changelog/unreleased/${section}/[${component}/]${pr-number}-${short-description}.md`,
+where:
+
+- `section` is one of 
+  `dependencies`, `improvements`, `features`, `bug-fixes`, `state-breaking`, `api-breaking`, 
+  and _**if multiple apply, create multiple files**_;
+- `pr-number` is the PR number;
+- `short-description` is a short (4 to 6 word), hyphen separated description of the change;
+- `component` is used for changes that affect one of the components defined in the [config](.changelog/config.toml), e.g., `tests`, `globalfee`.
+
+For examples, see the [.changelog](.changelog) folder.
+
+Use `unclog` to add a changelog entry in `.changelog` (check the [requirements](https://github.com/informalsystems/unclog#requirements) first): 
+```bash
+# add a general entry
+unclog add 
+   -i "${pr-number}-${short-description}" 
+   -p "${pr-number}" 
+   -s "${section}" 
+   -m "${description}"
+
+# add a entry to a component 
+unclog add 
+   -i "${pr-number}-${short-description}" 
+   -p "${pr-number}" 
+   -c "${component}"
+   -s "${section}" 
+   -m "${description}"
+```
+where `${description}` is a detailed description of the changelog entry.
+
+For example, 
+```bash
+# add an entry for bumping IBC to v4.4.2
+unclog add -i "2554-bump-ibc" -p 2554 -s "dependencies" -m "Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.4.2](https://github.com/cosmos/ibc-go/releases/tag/v4.4.2)" 
+
+# add an entry for changing the global fee module;
+# note that the entry is added to both state-breaking and api-breaking sections
+unclog add -i "2424-params" -p 2424 -c globalfee -s "state-breaking" -m "Add \`bypass-min-fee-msg-types\` and \`maxTotalBypassMinFeeMsgGagUsage\` to globalfee params" 
+unclog add -i "2424-params" -p 2424 -c globalfee -s "api-breaking" -m "Add \`bypass-min-fee-msg-types\` and \`maxTotalBypassMinFeeMsgGagUsage\` to globalfee params" 
+```
+
+**Note:** Changelog entries should answer the question: "what is important about this
+change for users to know?" or "what problem does this solve for users?". It
+should not simply be a reiteration of the title of the associated PR, unless the
+title of the PR _very_ clearly explains the benefit of a change to a user.
+
 ## Dependencies
 
 We use [Go Modules](https://github.com/golang/go/wiki/Modules) to manage
@@ -249,11 +303,7 @@ To generate the protobuf stubs, you can run `make proto-gen`.
 
 User-facing repos should adhere to the trunk based development branching model: https://trunkbaseddevelopment.com. User branches should start with a user name, example: `{moniker}/{issue#}-branch-name`.
 
-Gaia follows [semantic versioning](https://semver.org), but with the following deviations to account for state-machine and API breaking changes: 
-
-- State-machine breaking changes will result in an increase of the major version X (X.y.z).
-- API breaking changes will result in an increase of the minor version Y (x.Y.z | x > 0).
-- All other changes will result in an increase of the patch version Z (x.y.Z | x > 0).
+Gaia follows [semantic versioning](https://semver.org), but with the some deviations to account for state-machine and API breaking changes. See [RELEASE_PROCESS.md](./RELEASE_PROCESS.md) for details. 
 
 ### PR Targeting
 

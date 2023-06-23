@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 
+	errorsmod "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/gorilla/mux"
@@ -17,9 +17,9 @@ import (
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/cosmos/gaia/v10/x/globalfee/client/cli"
-	"github.com/cosmos/gaia/v10/x/globalfee/keeper"
-	"github.com/cosmos/gaia/v10/x/globalfee/types"
+	"github.com/cosmos/gaia/v11/x/globalfee/client/cli"
+	"github.com/cosmos/gaia/v11/x/globalfee/keeper"
+	"github.com/cosmos/gaia/v11/x/globalfee/types"
 )
 
 var (
@@ -48,7 +48,7 @@ func (a AppModuleBasic) ValidateGenesis(marshaler codec.JSONCodec, _ client.TxEn
 		return err
 	}
 	if err := data.Params.ValidateBasic(); err != nil {
-		return sdkerrors.Wrap(err, "params")
+		return errorsmod.Wrap(err, "params")
 	}
 	return nil
 }

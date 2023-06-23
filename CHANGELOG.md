@@ -1,59 +1,46 @@
-<!--
-Guiding Principles:
+# CHANGELOG
 
-Changelogs are for humans, not machines.
-There should be an entry for every single version.
-The same types of changes should be grouped.
-Versions and sections should be linkable.
-The latest version comes first.
-The release date of each version is displayed.
-Mention whether you follow Semantic Versioning.
+## [v10.0.1] 2023-05-25
 
-Usage:
+* (deps) [#2543](https://github.com/cosmos/gaia/pull/2543) Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.4.1](https://github.com/cosmos/ibc-go/releases/tag/v4.4.1).
 
-Change log entries are to be added to the Unreleased section under the
-appropriate stanza (see below). Each entry should ideally include a tag and
-the Github issue reference in the following format:
+## [v10.0.0] 2023-05-19
 
-* (<tag>) \#<issue-number> message
+* (deps) [#2498](https://github.com/cosmos/gaia/pull/2498) Bump multiple dependencies. 
+  * Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.16-ics](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.16-ics). See the [v0.45.16 release notes](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.16) for details. 
+  * Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.4.0](https://github.com/cosmos/ibc-go/releases/tag/v4.4.0).
+  * Bump [CometBFT](https://github.com/cometbft/cometbft) to [v0.34.28](https://github.com/cometbft/cometbft/releases/tag/v0.34.28).
+* (gaia) Bump Golang prerequisite from 1.18 to 1.20. See (https://go.dev/blog/go1.20) for details.
 
-The issue numbers will later be link-ified during the release process so you do
-not have to worry about including a link manually, but you can if you wish.
+## [v9.1.1] - 2023-05-25
 
-Types of changes (Stanzas):
+* (deps) [#2542](https://github.com/cosmos/gaia/pull/2542) Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.2.1](https://github.com/cosmos/ibc-go/releases/tag/v4.2.1).
 
-"Features" for new features.
-"Improvements" for changes in existing functionality.
-"Deprecated" for soon-to-be removed features.
-"Bug Fixes" for any bug fixes.
-"Client Breaking" for breaking CLI commands and REST routes.
-"State Machine Breaking" for breaking the AppState
+## [v9.1.0] - 2023-05-08
 
-Ref: https://keepachangelog.com/en/1.0.0/
--->
+* (fix) [#2474](https://github.com/cosmos/gaia/pull/2474) Multisig and distribution fix in [Interchain-Security](https://github.com/cosmos/interchain-security). Bump Interchain-Security to [v1.1.0-multiden](https://github.com/cosmos/interchain-security/tree/v1.1.0-multiden).
 
-# Changelog
+This release combines two fixes that we judged were urgent to get onto the Cosmos Hub before the launch of the first ICS consumer chain. _Please note that user funds were not at risk and these fixes pertain to the liveness of the Hub and consumer chains_.
 
-## [Unreleased]
+The first fix is to enable the use of multisigs and Ledger devices when assigning keys for consumer chains. The second is to prevent a possible DOS vector involving the reward distribution system.
 
-### Improvements
-* (test) [#2440](https://github.com/cosmos/gaia/pull/2440) Add vulncheck to nightly builds
-* (gaia) [#2442](https://github.com/cosmos/gaia/pull/2442) Bump [Interchain-Security](https://github.com/cosmos/interchain-security) to [v1.1.1](https://github.com/cosmos/interchain-security/tree/v1.1.1).
+### Multisig fix
 
-### State Machine Breaking
+On April 25th (a week and a half ago), we began receiving reports that validators using multisigs and Ledger devices were getting errors reading Error: unable to resolve type URL /interchain_security.ccv.provider.v1.MsgAssignConsumerKey: tx parse error when attempting to assign consensus keys for consumer chains. 
 
-* (feat!) [#2424](https://github.com/cosmos/gaia/pull/2424) Add `bypass-min-fee-msg-types` and `maxTotalBypassMinFeeMsgGagUsage` to globalfee params. Note that this change is both state breaking and API breaking. The previous API endpoint was "/gaia/globalfee/v1beta1/minimum_gas_prices," and the new API endpoint is "/gaia/globalfee/v1beta1/params."
-* (feat!) [#2352](https://github.com/cosmos/gaia/pull/2352) Create the upgrade handler and params migration for the new Gloabal Fee module parameters introduced in [#2424](https://github.com/cosmos/gaia/pull/2424).
-Update the CI upgrade tests from v9 to the v10 and check that the parameters are successfully migrated.
-* (feat!) [#2447](https://github.com/cosmos/gaia/pull/2447) Update Global Fee's AnteHandler to check tx fees against the network min gas prices in DeliverTx mode.
+This was surprising because we had never seen this error before, even though we have done many testnets. The reason for this is probably because people don’t bother to use high security key management techniques in testnets.
 
-## [v10.0.0-rc0] 2023-05-19
+We quickly narrowed the problem down to issues having to do with using the PubKey type directly in the MsgAssignConsumerKey transaction, and Amino (a deprecated serialization library still used in Ledger devices and multisigs) not being able to handle this. We attempted to fix this with the assistance of the Cosmos-SDK team, but after making no headway for a few days, we decided to simply use a JSON representation of the PubKey in the transaction. This is how it is usually represented anyway. We have verified that this fixes the problem.
 
-* (chore) Update module version to v10 [#2502](https://github.com/cosmos/gaia/pull/2502).
-* (deps) Bump multiple dependencies (sdk, cometbft, ibc-go, btcd), see [#2498](https://github.com/cosmos/gaia/pull/2498) for details.
-  * (deps) Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.16-ics](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.16-ics). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/release/v0.45.x/CHANGELOG.md) for details.
-  * (deps) Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.4.0](https://github.com/cosmos/ibc-go/blob/release/v4.4.x/CHANGELOG.md). See [v4.2 Release Notes](https://github.com/cosmos/ibc-go/releases/tag/v4.4.0) for details.
-* (gaia) Bump Golang prerequisite from 1.18 to 1.20 see (https://go.dev/blog/go1.20) for details.
+### Distribution fix
+
+The ICS distribution system works by allowing consumer chains to send rewards to a module address on the Hub called the FeePoolAddress. From here they are automatically distributed to all validators and delegators through the distribution system that already exists to distribute Atom staking rewards. The FeePoolAddress is usually blocked so that no tokens can be sent to it, but to enable ICS distribution we had to unblock it.
+
+We recently realized that unblocking the FeePoolAddress could enable an attacker to send a huge number of different denoms into the distribution system. The distribution system would then attempt to distribute them all, leading to out of memory errors. Fixing a similar attack vector that existed in the distribution system before ICS led us to this realization.
+
+To fix this problem, we have re-blocked the FeePoolAddress and created a new address called the ConsumerRewardsPool. Consumer chains now send rewards to this new address. There is also a new transaction type called RegisterConsumerRewardDenom. This transaction allows people to register denoms to be used as rewards from consumer chains. It costs 10 Atoms to run this transaction.The Atoms are transferred to the community pool. Only denoms registered with this command are then transferred to the FeePoolAddress and distributed out to delegators and validators.
+
+Note: The fee of 10 Atoms was originally intended to be a parameter that could be changed by governance (10 Atoms might cost too much in the future). However, we ran into some problems creating a new parameter as part of an emergency upgrade. After consulting with the Cosmos-SDK team, we learned that creating new parameters is only supported as part of a scheduled upgrade. So in the current code, the number of Atoms is hardcoded. It will turn into a parameter in the next scheduled upgrade.
 
 ## [v9.0.3] - 2023-04-19
 * (deps) [#2399](https://github.com/cosmos/gaia/pull/2399) Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.15-ics](https://github.com/cosmos/cosmos
@@ -509,6 +496,10 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
+[v10.0.1]: https://github.com/cosmos/gaia/releases/tag/v10.0.1
+[v10.0.0]: https://github.com/cosmos/gaia/releases/tag/v10.0.0
+[v9.1.1]: https://github.com/cosmos/gaia/releases/tag/v9.1.1
+[v9.1.0]: https://github.com/cosmos/gaia/releases/tag/v9.1.0
 [v9.0.3]: https://github.com/cosmos/gaia/releases/tag/v9.0.3
 [v9.0.2]: https://github.com/cosmos/gaia/releases/tag/v9.0.2
 [v9.0.1]: https://github.com/cosmos/gaia/releases/tag/v9.0.1

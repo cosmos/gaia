@@ -9,7 +9,7 @@
 
 ### 什么是验证人？
 
-[Cosmos Hub](../what-is-gaia.md)基于[Tendermint](https://tendermint.com/docs/introduction/what-is-tendermint.html)，它依靠一组验证人来保障网络的安全。验证人的作用是通过广播包含由验证人的私钥签名的加密签名的投票来运行全节点并参与共识。验证人在区块链中提交新的区块并获得收益作为报酬。他们还必须通过对提案进行投票来参与治理。验证人根据他们的总抵押股权来排位。
+[Cosmos Hub](../what-is-gaia.md)基于[CometBFT](https://docs.cometbft.com/v0.34/introduction/what-is-cometbft)，它依靠一组验证人来保障网络的安全。验证人的作用是通过广播包含由验证人的私钥签名的加密签名的投票来运行全节点并参与共识。验证人在区块链中提交新的区块并获得收益作为报酬。他们还必须通过对提案进行投票来参与治理。验证人根据他们的总抵押股权来排位。
 
 ### 什么是'抵押'?
 
@@ -78,7 +78,7 @@ Cosmos Hub是一个权益证明（PoS）区块链，意味着验证人的权重�
 
 简而言之有两种密钥：
 
-+ **Tendermint Key** ：这是用于对区块哈希进行签名的唯一密钥。它与一个公钥`cosmosvalconspub`相关联。
++ **CometBFT/Tendermint Key** ：这是用于对区块哈希进行签名的唯一密钥。它与一个公钥`cosmosvalconspub`相关联。
   + 使用`gaiad init`创建节点时生成。
   + 使用`gaiad tendermint show-validator`查看，如`cosmosvalconspub1zcjduc3qcyj09qc03elte23zwshdx92jm6ce88fgc90rtqhjx8v0608qh5ssp0w94c`。
 + **Application keys** ：这些密钥是由应用程序创建的，用于签名交易。作为验证人，你可能会使用一个密钥来签名与抵押相关的交易，另一个密钥用于签署与治理相关的交易。应用程序私钥和公钥`cosmospub`及地址`cosmos`相关联。两者都来自`gaiad keys add`生成的帐户私钥。
@@ -113,7 +113,7 @@ Cosmos Hub是一个权益证明（PoS）区块链，意味着验证人的权重�
 + **佣金比率**： 在把奖励分散给委托人之前抽成一部分佣金来奖励验证人。
 + **跟踪记录**：委托人很可能去查看他们计划去委托的验证人的行为记录。包括资历，过去对提议的投票，历史的平均运行时长和验证人节点掉线的频率。
 
-除去这些会展示在Cosmos Voyager上的评判标准，验证人还可能向公众展示一个网站来完善他们的简历。验证人需要通过多种方式去树立良好的声誉来吸引委托人。比如，验证人让第三方来审计他们的设置就是一个很好的实践。注意，Tendermint团队将不会批准和引导任何对自身的审计。有关尽职调查的更多信息，请参阅此[博客](https://medium.com/@interchain_io/3d0faf10ce6f)
+除去这些会展示在Cosmos Voyager上的评判标准，验证人还可能向公众展示一个网站来完善他们的简历。验证人需要通过多种方式去树立良好的声誉来吸引委托人。比如，验证人让第三方来审计他们的设置就是一个很好的实践。注意，CometBFT团队将不会批准和引导任何对自身的审计。有关尽职调查的更多信息，请参阅此[博客](https://medium.com/@interchain_io/3d0faf10ce6f)
 
 ## 责任
 
@@ -278,7 +278,7 @@ Cosmos Hub中的验证人员和委托人可以就改变运行参数（例如区�
 + Ledger BOLOS SGX enclave
 + Thales nShield support
 
-Tendermint团队不会推荐上面的其中之一。鼓励社区最好加强改进HSM和密钥管理的安全性。
+CometBFT团队不会推荐上面的其中之一。鼓励社区最好加强改进HSM和密钥管理的安全性。
 
 ### 在操作上我们期望验证人可以做到哪些?
 

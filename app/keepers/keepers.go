@@ -22,7 +22,7 @@ import (
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
-	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
+	providertypes "github.com/cosmos/interchain-security/v2/x/ccv/provider/types"
 	tmos "github.com/tendermint/tendermint/libs/os"
 
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
@@ -53,15 +53,15 @@ import (
 	porttypes "github.com/cosmos/ibc-go/v4/modules/core/05-port/types"
 	ibchost "github.com/cosmos/ibc-go/v4/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
-	ibcprovider "github.com/cosmos/interchain-security/x/ccv/provider"
-	ibcproviderkeeper "github.com/cosmos/interchain-security/x/ccv/provider/keeper"
+	ibcprovider "github.com/cosmos/interchain-security/v2/x/ccv/provider"
+	ibcproviderkeeper "github.com/cosmos/interchain-security/v2/x/ccv/provider/keeper"
 	liquiditykeeper "github.com/gravity-devs/liquidity/x/liquidity/keeper"
 	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
 	"github.com/strangelove-ventures/packet-forward-middleware/v4/router"
 	routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v4/router/keeper"
 	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
 
-	"github.com/cosmos/gaia/v10/x/globalfee"
+	"github.com/cosmos/gaia/v11/x/globalfee"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
@@ -285,10 +285,12 @@ func NewAppKeeper(
 		appKeepers.SlashingKeeper,
 		appKeepers.AccountKeeper,
 		appKeepers.EvidenceKeeper,
+		appKeepers.DistrKeeper,
+		appKeepers.BankKeeper,
 		authtypes.FeeCollectorName,
 	)
 
-	appKeepers.ProviderModule = ibcprovider.NewAppModule(&appKeepers.ProviderKeeper)
+	appKeepers.ProviderModule = ibcprovider.NewAppModule(&appKeepers.ProviderKeeper, appKeepers.GetSubspace(providertypes.ModuleName))
 
 	govRouter := govtypes.NewRouter()
 	govRouter.

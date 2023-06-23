@@ -11,12 +11,10 @@ require (
 	github.com/cosmos/cosmos-sdk v0.47.2
 	github.com/cosmos/gogoproto v1.4.8
 	github.com/cosmos/ibc-go/v7 v7.0.0
-	github.com/cosmos/interchain-security v1.0.1-0.20230522154154-1bb8d39e691a
 	cosmossdk.io/errors v1.0.0-beta.7
 	cosmossdk.io/math v1.0.1
 	github.com/cosmos/go-bip39 v1.0.0
-	github.com/cosmos/interchain-security/v2 v2.0.0-rc3
-	github.com/gogo/protobuf v1.3.3
+	github.com/cosmos/interchain-security/v3 v3.0.0-rc0
 	github.com/gorilla/mux v1.8.0
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/cast v1.5.1

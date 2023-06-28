@@ -1,8 +1,8 @@
 # ADR Creation Process
 
 1. Copy the `adr-template.md` file. Use the following filename pattern: `adr-next_number-title.md`
-2. Create a draft Pull Request if you want to get an early feedback.
-3. Make sure the context and a solution is clear and well documented.
+2. Create a draft Pull Request and solicit input from the stewarding team, if you want to get an early feedback.
+3. Make sure that the problem, the context and a recommended solution is clear and well documented. Be sure to document alternate solution spaces and give reasons why they have been discarded.
 4. Add an entry to a list in the README file [Table of Contents](./README.md#adr-table-of-contents).
 5. Create a Pull Request to propose a new ADR.
 
@@ -18,9 +18,9 @@ ADR creation is an **iterative** process. Instead of trying to solve all decisio
 
 4. If a _proposed_ ADR is merged, then it should clearly document outstanding issues either in ADR document notes or in a GitHub Issue.
 
-5. The PR SHOULD always be merged. In the case of a faulty ADR, we still prefer to  merge it with a _rejected_ status. The only time the ADR SHOULD NOT be merged is if the author abandons it.
+5. The PR SHOULD always be merged. In the case of a faulty ADR, we still prefer to merge it with a _rejected_ status. The only time the ADR SHOULD NOT be merged is if the author abandons it.
 
-6. Merged ADRs SHOULD NOT be pruned.
+6. Merged ADRs SHOULD NOT be deleted.
 
 ### ADR status
 

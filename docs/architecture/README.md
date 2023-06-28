@@ -58,3 +58,7 @@ They are to be interpreted as described in [RFC 2119](https://datatracker.ietf.o
 ### Draft
 
 - n/a
+
+### Rejected
+
+- [ADR 001: Interchain Accounts](./adr-001-interchain-accounts.md)

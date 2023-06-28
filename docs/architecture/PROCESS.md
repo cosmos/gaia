@@ -34,12 +34,13 @@ IMPLEMENTATION STATUS is either `Implemented` or `Not Implemented`.
 
 #### Consensus Status
 
-```text
-DRAFT -> PROPOSED -> LAST CALL yyyy-mm-dd -> ACCEPTED | REJECTED -> SUPERSEDED by ADR-xxx
-                  \        |
-                   \       |
-                    v      v
-                     ABANDONED
+```mermaid
+flowchart TD
+    A[DRAFT] --> B[PROPOSED]
+    B --> C[LAST CALL YYYY-MM-DD]
+    B --> D[ABANDONED]
+    C --> E[ACCEPTED or REJECTED]
+    E --> F[SUPERSEDED by ADR-xxx]
 ```
 
 * `DRAFT`: [optional] an ADR which is work in progress, not being ready for a general review. This is to present an early work and get an early feedback in a Draft Pull Request form.

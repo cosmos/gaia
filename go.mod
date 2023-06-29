@@ -8,11 +8,11 @@ require (
 	github.com/cosmos/cosmos-sdk v0.45.16-ics
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/ibc-go/v4 v4.4.2
-	github.com/cosmos/interchain-security/v2 v2.0.0-rc3
+	github.com/cosmos/interchain-security/v2 v2.0.0
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.3
 	github.com/gorilla/mux v1.8.0
-	github.com/gravity-devs/liquidity v1.5.3
+	github.com/gravity-devs/liquidity v1.6.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/ory/dockertest/v3 v3.10.0
 	github.com/rakyll/statik v0.1.7
@@ -184,6 +184,9 @@ replace (
 
 	// use cosmos style protobufs
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+
+	// Liquidity force withdrawal: https://www.mintscan.io/cosmos/proposals/801
+	github.com/gravity-devs/liquidity => github.com/gravity-devs/liquidity v1.6.0-forced-withdrawal-rc1
 
 	// Comet
 	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.29

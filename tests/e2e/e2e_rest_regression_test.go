@@ -73,6 +73,7 @@ func (s *IntegrationTestSuite) testRestInterfaces() {
 				{mintingParamsModuleQueryPath, 200},
 				{slashingParamsModuleQueryPath, 200},
 				{stakingParamsModuleQueryPath, 200},
+				{localMinGasPriceQueryPath, 200},
 				{missingPath, 501},
 			}
 		)

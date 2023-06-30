@@ -3,8 +3,6 @@ package keepers
 import (
 	"os"
 
-	ibcproviderkeeper "github.com/cosmos/interchain-security/v3/x/ccv/provider/keeper"
-
 	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"

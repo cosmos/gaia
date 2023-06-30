@@ -9,9 +9,9 @@ import (
 	icstestingutils "github.com/cosmos/interchain-security/v3/testutil/ibc_testing"
 	"github.com/stretchr/testify/suite"
 
+	cmdb "github.com/cometbft/cometbft-db"
+	"github.com/cometbft/cometbft/libs/log"
 	ibctesting "github.com/cosmos/interchain-security/v3/legacy_ibc_testing/testing"
-	"github.com/tendermint/tendermint/libs/log"
-	tmdb "github.com/tendermint/tm-db"
 
 	gaiaApp "github.com/cosmos/gaia/v11/app"
 )
@@ -33,7 +33,7 @@ func GaiaAppIniter() (ibctesting.TestingApp, map[string]json.RawMessage) {
 	encoding := gaiaApp.RegisterEncodingConfig()
 	app := gaiaApp.NewGaiaApp(
 		log.NewNopLogger(),
-		tmdb.NewMemDB(),
+		cmdb.NewMemDB(),
 		nil,
 		true,
 		map[int64]bool{},

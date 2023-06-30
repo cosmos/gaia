@@ -26,6 +26,11 @@ import (
 	gaiaapp "github.com/cosmos/gaia/v11/app"
 )
 
+// SimAppChainID hardcoded chainID for simulation
+const (
+	SimAppChainID = "gaia-app"
+)
+
 // DefaultConsensusParams defines the default Tendermint consensus params used
 // in GaiaApp testing.
 var DefaultConsensusParams = &tmproto.ConsensusParams{

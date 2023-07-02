@@ -98,7 +98,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 
 	a := appCreator{encodingConfig}
 	rootCmd.AddCommand(
-		genutilcli.InitCmd(gaia.ModuleBasics, gaia.DefaultNodeHome),
+		InitCmd(gaia.ModuleBasics, gaia.DefaultNodeHome),
 		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, gaia.DefaultNodeHome),
 		genutilcli.MigrateGenesisCmd(),
 		genutilcli.GenTxCmd(gaia.ModuleBasics, encodingConfig.TxConfig, banktypes.GenesisBalancesIterator{}, gaia.DefaultNodeHome),
@@ -106,7 +106,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 		AddGenesisAccountCmd(gaia.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
 		testnetCmd(gaia.ModuleBasics, banktypes.GenesisBalancesIterator{}),
-		debug.Cmd(),
+		addDebugCommands(debug.Cmd()),
 		config.Cmd(),
 		pruning.PruningCmd(a.newApp),
 	)

@@ -1,16 +1,20 @@
 # CHANGELOG
 
+## [Unreleased]
+
+* (gaia: ux) Add seed nodes to init.go
+
 ## [v10.0.1] 2023-05-25
 
 * (deps) [#2543](https://github.com/cosmos/gaia/pull/2543) Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.4.1](https://github.com/cosmos/ibc-go/releases/tag/v4.4.1).
 
 ## [v10.0.0] 2023-05-19
 
-* (deps) [#2498](https://github.com/cosmos/gaia/pull/2498) Bump multiple dependencies. 
-  * Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.16-ics](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.16-ics). See the [v0.45.16 release notes](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.16) for details. 
+* (deps) [#2498](https://github.com/cosmos/gaia/pull/2498) Bump multiple dependencies.
+  * Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.16-ics](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.16-ics). See the [v0.45.16 release notes](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.16) for details.
   * Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.4.0](https://github.com/cosmos/ibc-go/releases/tag/v4.4.0).
   * Bump [CometBFT](https://github.com/cometbft/cometbft) to [v0.34.28](https://github.com/cometbft/cometbft/releases/tag/v0.34.28).
-* (gaia) Bump Golang prerequisite from 1.18 to 1.20. See (https://go.dev/blog/go1.20) for details.
+* (gaia) Bump Golang prerequisite from 1.18 to 1.20. See (<https://go.dev/blog/go1.20>) for details.
 
 ## [v9.1.1] - 2023-05-25
 
@@ -26,7 +30,7 @@ The first fix is to enable the use of multisigs and Ledger devices when assignin
 
 ### Multisig fix
 
-On April 25th (a week and a half ago), we began receiving reports that validators using multisigs and Ledger devices were getting errors reading Error: unable to resolve type URL /interchain_security.ccv.provider.v1.MsgAssignConsumerKey: tx parse error when attempting to assign consensus keys for consumer chains. 
+On April 25th (a week and a half ago), we began receiving reports that validators using multisigs and Ledger devices were getting errors reading Error: unable to resolve type URL /interchain_security.ccv.provider.v1.MsgAssignConsumerKey: tx parse error when attempting to assign consensus keys for consumer chains.
 
 This was surprising because we had never seen this error before, even though we have done many testnets. The reason for this is probably because people don’t bother to use high security key management techniques in testnets.
 
@@ -43,10 +47,12 @@ To fix this problem, we have re-blocked the FeePoolAddress and created a new add
 Note: The fee of 10 Atoms was originally intended to be a parameter that could be changed by governance (10 Atoms might cost too much in the future). However, we ran into some problems creating a new parameter as part of an emergency upgrade. After consulting with the Cosmos-SDK team, we learned that creating new parameters is only supported as part of a scheduled upgrade. So in the current code, the number of Atoms is hardcoded. It will turn into a parameter in the next scheduled upgrade.
 
 ## [v9.0.3] - 2023-04-19
-* (deps) [#2399](https://github.com/cosmos/gaia/pull/2399) Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.15-ics](https://github.com/cosmos/cosmos
+
+* (deps) [#2399](https://github.com/cosmos/gaia/pull/2399) Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.15-ics](<https://github.com/cosmos/cosmos>
 sdk/releases/tag/v0.45.15-ics) and migrate to [CometBFT](https://github.com/cometbft/cometbft).
 
 ## [v9.0.2] - 2023-04-03
+
 * (feat) Bump [Interchain-Security](https://github.com/cosmos/interchain-security) [v1.1.0](https://github.com/cosmos/interchain-security/releases/tag/v1.1.0) provider module. See the [release notes](https://github.com/cosmos/interchain-security/releases/tag/v1.1.0) for details.
 * (feat) Add two more msg types `/ibc.core.channel.v1.MsgTimeout` and `/ibc.core.channel.v1.MsgTimeoutOnClose` to default `bypass-min-fee-msg-types`.
 * (feat) Change the bypassing gas usage criteria. Instead of requiring 200,000 gas per `bypass-min-fee-msg`, we will now allow a maximum total usage of 1,000,000 gas for all bypassed messages in a transaction. Note that all messages in the transaction must be the `bypass-min-fee-msg-types` for the bypass min fee to take effect, otherwise, fee payment will still apply.
@@ -94,14 +100,17 @@ sdk/releases/tag/v0.45.15-ics) and migrate to [CometBFT](https://github.com/come
 * (gaia) bump [tendermint](https://github.com/tendermint/tendermint) to [0.34.25](https://github.com/informalsystems/tendermint/releases/tag/v0.34.25) to patch p2p issue. See [CHANGELOG.md](https://github.com/informalsystems/tendermint/blob/v0.34.25/CHANGELOG.md#v03425) for details.
 
 ## [v7.1.0] - 2022-10-14
+
 * (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.9](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.9) to fix the security vulnerability! See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.9/CHANGELOG.md) for details.
 
 ## [v7.0.3] - 2022-08-03
+
 * (gaia) update go to 1.18.
 * (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.6](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.6). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.6/CHANGELOG.md) for details.
 * (gaia) bump [Liquidity](https://github.com/Gravity-Devs/liquidity) module to [v1.5.1](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.5.1).
 * (gaia) bump [cosmos ledger](https://github.com/cosmos/ledger-go) to [v0.9.3](https://github.com/cosmos/ledger-go/releases/tag/v0.9.3) to fix issue [#1573](https://github.com/cosmos/gaia/issues/1573) - Ledger Nano S Plus not detected by gaiad.
-* 
+*
+
 ## [v7.0.2] -2022-05-09
 
 * (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.4](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.4). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.4/CHANGELOG.md#v0454---2022-04-25) for details.
@@ -133,7 +142,7 @@ sdk/releases/tag/v0.45.15-ics) and migrate to [CometBFT](https://github.com/come
 * (gaia) [#1135](https://github.com/cosmos/gaia/pull/1135) Fix rocksdb build tag usage.
 * (gaia) [#1160](https://github.com/cosmos/gaia/pull/1160) Improvement: update state sync configs.
 * (gaia) [#1208](https://github.com/cosmos/gaia/pull/1208) Update statesync.bash.
-  * * (gaia) Bump [Cosmos-SDK](https://github.com/cosmos/cosmos-sdk) to [v0.44.6](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.6)
+    * * (gaia) Bump [Cosmos-SDK](https://github.com/cosmos/cosmos-sdk) to [v0.44.6](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.6)
 * (gaia) Bump [Versions](https://github.com/cosmos/gaia/pull/1100) of various smaller dependencies, remove the Cosmos SDK replace statement, update `initiClientCtx` params, ensure `stdout` and `stderr` are handled correctly in the CLI.
 
 ## [v6.0.3] - 2022-02-18
@@ -556,4 +565,3 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 [v2.0.1]: https://github.com/cosmos/gaia/releases/tag/v2.0.1
 [v2.0.0]: https://github.com/cosmos/gaia/releases/tag/v2.0.0
 [v1.0.0]: https://github.com/cosmos/gaia/releases/tag/v1.0.0
-

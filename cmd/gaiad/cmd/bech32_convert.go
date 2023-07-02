@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/cosmos/cosmos-sdk/client/debug"
 	addressutil "github.com/cosmos/gaia/v11/pkg/address"
 
 	"github.com/spf13/cobra"
@@ -49,5 +50,8 @@ Example:
 // addDebugCommands injects custom debug commands into another command as children.
 func addDebugCommands(cmd *cobra.Command) *cobra.Command {
 	cmd.AddCommand(AddBech32ConvertCommand())
+	cmd.AddCommand(debug.PubkeyCmd())
+	cmd.AddCommand(debug.RawBytesCmd())
+	cmd.AddCommand(debug.AddrCmd())
 	return cmd
 }

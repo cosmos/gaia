@@ -82,7 +82,8 @@ Si estas semillas no funcionan, puedes encontrar más _seeds_ y _peers_ persiste
 
 También puedes preguntar por _peers_ en el [canal de Validadores de Riot](https://riot.im/app/#/room/#cosmos-validators:matrix.org)
 
-Para más información acerca de seeds y peers, puede leer [este enlace](https://docs.tendermint.com/master/spec/p2p/peer.html)
+Para más información acerca de seeds y peers, puede leer [este enlace](https://github.com/cometbft/cometbft/blob/v0.34.x/spec/p2p/peer.md)
+
 
 ## Nota sobre el Fee y el Gas
 

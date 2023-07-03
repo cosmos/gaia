@@ -6,7 +6,16 @@ title: Joining Mainnet
 # Join the Cosmos Hub Mainnet
 
 
-The current Cosmos Hub mainnet, `cosmoshub-4`, has been performing in place store migration upgrades as of the [Delta Upgrade](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md) July 2021. The most recent upgrade was [Lambda](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-v9-Lambda-upgrade.md) March 2023. This type of upgrade preserves the same chain-id but state before the upgrade height is only accessible by corresponding versions of the binary (ie. queries of state between height `6,910,000` and `8,695,000` should use `gaia v5.0.x` (Delta), between `8,695,000` and `10,085,397` use `gaia v6.0.x` (Vega), between `10,085,397` and `14,099,412` use `gaia v7.0.x` (Theta),  between `14,099,412` and `14,470,501` use `gaia v8.0.x` (Rho),  after `14,470,501` use `gaia v9.0.x` (Lambda) to guarantee correctly encoded responses. The roadmap documentation contains a [history of upgrades](https://github.com/cosmos/gaia/tree/main/docs/roadmap).). Visit the [migration section](https://github.com/cosmos/gaia/tree/main/docs/migration) of the Hub's docs for more information on previous chain migrations.
+The current Cosmos Hub mainnet, `cosmoshub-4`, has been performing in place store migration upgrades as of the [Delta Upgrade](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md) July 2021. The most recent upgrade was [Lambda](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-v9-Lambda-upgrade.md) March 2023. This type of upgrade preserves the same chain-id but state before the upgrade height is only accessible by corresponding versions of the binary:
+- use `gaia v5.0.x` (Delta) for queries of state between height `6,910,000` and `8,695,000`
+- use `gaia v6.0.x` (Vega) between `8,695,000` and `10,085,397`
+- use `gaia v7.0.x` (Theta) between `10,085,397` and `14,099,412`
+- use `gaia v8.0.x` (Rho) between `14,099,412` and `14,470,501`
+- use `gaia v9.0.x` (Lambda) between `14470501` and `15213800`
+- use `gaia v9.1.x` between `15213800` and `15816200`
+- use `gaia v10.0.x` from `15816200`
+  
+(ie. queries of state between height `6,910,000` and `8,695,000` should use `gaia v5.0.x` (Delta), between `8,695,000` and `10,085,397` use `gaia v6.0.x` (Vega), between `10,085,397` and `14,099,412` use `gaia v7.0.x` (Theta),  between `14,099,412` and `14,470,501` use `gaia v8.0.x` (Rho),  after `14,470,501` use `gaia v9.0.x` (Lambda) to guarantee correctly encoded responses. The roadmap documentation contains a [history of upgrades](https://github.com/cosmos/gaia/tree/main/docs/roadmap).). Visit the [migration section](https://github.com/cosmos/gaia/tree/main/docs/migration) of the Hub's docs for more information on previous chain migrations.
 
 **This guide includes full instructions for joining the mainnet either as an archive/full node or a pruned node.**
 
@@ -249,7 +258,7 @@ Make sure to consult the [hardware](#Hardware) section for guidance on the best 
 
 ### Blocksync
 
-Blocksync is faster than traditional consensus and syncs the chain from genesis by downloading blocks and verifying against the merkle tree of validators. For more information see [Tendermint's Fastsync Docs](https://docs.tendermint.com/v0.34/tendermint-core/fast-sync.html)
+Blocksync is faster than traditional consensus and syncs the chain from genesis by downloading blocks and verifying against the merkle tree of validators. For more information see [CometBFT's Fastsync Docs](https://docs.cometbft.com/v0.34/core/fast-sync)
 
 When syncing via Blocksync, node operators will either need to manually upgrade the chain or set up [Cosmovisor](#Cosmovisor) to upgrade automatically.
 
@@ -280,7 +289,7 @@ The node will begin rebuilding state until it hits the first upgrade height at b
 
 ### State Sync
 
-State Sync is an efficient and fast way to bootstrap a new node, and it works by replaying larger chunks of application state directly rather than replaying individual blocks or consensus rounds. For more information, see [Tendermint's State Sync docs](https://github.com/tendermint/tendermint/blob/v0.34.x/spec/p2p/messages/state-sync.md).
+State Sync is an efficient and fast way to bootstrap a new node, and it works by replaying larger chunks of application state directly rather than replaying individual blocks or consensus rounds. For more information, see [CometBFT's State Sync docs](https://docs.cometbft.com/v0.34/core/state-sync).
 
 To enable state sync, visit an explorer to get a recent block height and corresponding hash. A node operator can choose any height/hash in the current bonding period, but as the recommended snapshot period is `1000` blocks, it is advised to choose something close to `current height - 1000`.
 

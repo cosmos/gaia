@@ -94,11 +94,6 @@ To build documentation as a static website run `npm run build`. You will find th
 
 We are using [Algolia](https://www.algolia.com) to power full-text search. This uses a public API search-only key in the `config.js` as well as a [cosmos_network.json](https://github.com/algolia/docsearch-configs/blob/master/configs/cosmos_network.json) configuration file that we can update with PRs.
 
-## Consistency
-
-Because the build processes are identical (as is the information contained herein), this file should be kept in sync as
-much as possible with its [counterpart in the Tendermint Core repo](https://github.com/tendermint/tendermint/blob/master/docs/DOCS_README.md).
-
 ### Update and Build the RPC docs
 
 1. Execute the following command at the root directory to install the swagger-ui generate tool.

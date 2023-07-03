@@ -111,7 +111,7 @@ gaiad start
 
 이 외에도 [밸리데이터 라이엇 채팅방](https://riot.im/app/#/room/#cosmos-validators:matrix.org)을 통해서 피어 요청을 할 수 있습니다.
 
-시드와 피어에 대한 더 많은 정보를 원하시면 [여기](https://github.com/tendermint/tendermint/blob/develop/docs/tendermint-core/using-tendermint.md#peers)를 확인하세요.
+시드와 피어에 대한 더 많은 정보를 원하시면 [여기](https://github.com/cometbft/cometbft/blob/main/docs/core/using-cometbft.md#peers)를 확인하세요.
 
 ## 풀노드 운영하기
 

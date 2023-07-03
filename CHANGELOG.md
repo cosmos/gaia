@@ -4,7 +4,7 @@
 
 *June 29, 2023*
 
-This release bumps several dependencies. 
+This release bumps several dependencies and enables extra queries. 
 
 ### DEPENDENCIES
 
@@ -14,6 +14,12 @@ This release bumps several dependencies.
 - Bump [CometBFT](https://github.com/cometbft/cometbft) to
   [v0.34.29](https://github.com/cometbft/cometbft/releases/tag/v0.34.29)
   ([\#2594](https://github.com/cosmos/gaia/pull/2594))
+
+### FEATURES
+
+- register NodeService to enable query /cosmos/base/node/v1beta1/config
+  gRPC query to disclose node operator's configured minimum-gas-price.
+  ([\#2629](https://github.com/cosmos/gaia/issues/2629))
 
 ## [v10.0.1] 2023-05-25
 

@@ -1,40 +1,40 @@
 package types
 
-import (
-	"encoding/json"
+// import (
+// 	"encoding/json"
 
-	errorsmod "cosmossdk.io/errors"
-	"github.com/cosmos/cosmos-sdk/codec"
-)
+// 	errorsmod "cosmossdk.io/errors"
+// 	"github.com/cosmos/cosmos-sdk/codec"
+// )
 
-// NewGenesisState - Create a new genesis state
-func NewGenesisState(params Params) *GenesisState {
-	return &GenesisState{
-		Params: params,
-	}
-}
+// // NewGenesisState - Create a new genesis state
+// func NewGenesisState(params Params) *GenesisState {
+// 	return &GenesisState{
+// 		Params: params,
+// 	}
+// }
 
-// DefaultGenesisState - Return a default genesis state
-func DefaultGenesisState() *GenesisState {
-	return NewGenesisState(DefaultParams())
-}
+// // DefaultGenesisState - Return a default genesis state
+// func DefaultGenesisState() *GenesisState {
+// 	return NewGenesisState(DefaultParams())
+// }
 
-// GetGenesisStateFromAppState returns x/auth GenesisState given raw application
-// genesis state.
-func GetGenesisStateFromAppState(cdc codec.Codec, appState map[string]json.RawMessage) *GenesisState {
-	var genesisState GenesisState
+// // GetGenesisStateFromAppState returns x/auth GenesisState given raw application
+// // genesis state.
+// func GetGenesisStateFromAppState(cdc codec.Codec, appState map[string]json.RawMessage) *GenesisState {
+// 	var genesisState GenesisState
 
-	if appState[ModuleName] != nil {
-		cdc.MustUnmarshalJSON(appState[ModuleName], &genesisState)
-	}
+// 	if appState[ModuleName] != nil {
+// 		cdc.MustUnmarshalJSON(appState[ModuleName], &genesisState)
+// 	}
 
-	return &genesisState
-}
+// 	return &genesisState
+// }
 
-func ValidateGenesis(data GenesisState) error {
-	if err := data.Params.ValidateBasic(); err != nil {
-		return errorsmod.Wrap(err, "globalfee params")
-	}
+// func ValidateGenesis(data GenesisState) error {
+// 	if err := data.Params.ValidateBasic(); err != nil {
+// 		return errorsmod.Wrap(err, "globalfee params")
+// 	}
 
-	return nil
-}
+// 	return nil
+// }

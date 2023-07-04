@@ -4,11 +4,12 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	gaiaerrors "github.com/cosmos/gaia/v11/types/errors"
 
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 )
 
 // initial deposit must be greater than or equal to 10% of the minimum deposit
@@ -46,10 +47,10 @@ func (g GovPreventSpamDecorator) AnteHandle(
 // validateGovMsgs checks if the InitialDeposit amounts are greater than the minimum initial deposit amount
 func (g GovPreventSpamDecorator) ValidateGovMsgs(ctx sdk.Context, msgs []sdk.Msg) error {
 	validMsg := func(m sdk.Msg) error {
-		if msg, ok := m.(*govtypes.MsgSubmitProposal); ok {
+		if msg, ok := m.(*govv1beta1.MsgSubmitProposal); ok {
 			// prevent messages with insufficient initial deposit amount
-			depositParams := g.govKeeper.GetDepositParams(ctx)
-			minInitialDeposit := g.calcMinInitialDeposit(depositParams.MinDeposit)
+			params := g.govKeeper.GetParams(ctx)
+			minInitialDeposit := g.calcMinInitialDeposit(params.MinDeposit)
 			if msg.InitialDeposit.IsAllLT(minInitialDeposit) {
 				return errorsmod.Wrapf(gaiaerrors.ErrInsufficientFunds, "insufficient initial deposit amount - required: %v", minInitialDeposit)
 			}

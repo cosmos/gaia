@@ -4,14 +4,14 @@ import (
 	"encoding/json"
 	"testing"
 
-	appConsumer "github.com/cosmos/interchain-security/v2/app/consumer"
-	"github.com/cosmos/interchain-security/v2/tests/integration"
-	icstestingutils "github.com/cosmos/interchain-security/v2/testutil/ibc_testing"
+	appConsumer "github.com/cosmos/interchain-security/v3/app/consumer"
+	"github.com/cosmos/interchain-security/v3/tests/integration"
+	icstestingutils "github.com/cosmos/interchain-security/v3/testutil/ibc_testing"
 	"github.com/stretchr/testify/suite"
 
-	ibctesting "github.com/cosmos/interchain-security/v2/legacy_ibc_testing/testing"
-	"github.com/tendermint/tendermint/libs/log"
-	tmdb "github.com/tendermint/tm-db"
+	cmdb "github.com/cometbft/cometbft-db"
+	"github.com/cometbft/cometbft/libs/log"
+	ibctesting "github.com/cosmos/interchain-security/v3/legacy_ibc_testing/testing"
 
 	gaiaApp "github.com/cosmos/gaia/v11/app"
 )
@@ -30,9 +30,17 @@ func TestCCVTestSuite(t *testing.T) {
 
 // GaiaAppIniter implements ibctesting.AppIniter for the gaia app
 func GaiaAppIniter() (ibctesting.TestingApp, map[string]json.RawMessage) {
-	encoding := gaiaApp.MakeTestEncodingConfig()
-	app := gaiaApp.NewGaiaApp(log.NewNopLogger(), tmdb.NewMemDB(), nil, true, map[int64]bool{},
-		gaiaApp.DefaultNodeHome, 5, encoding, gaiaApp.EmptyAppOptions{})
+	encoding := gaiaApp.RegisterEncodingConfig()
+	app := gaiaApp.NewGaiaApp(
+		log.NewNopLogger(),
+		cmdb.NewMemDB(),
+		nil,
+		true,
+		map[int64]bool{},
+		gaiaApp.DefaultNodeHome,
+		encoding,
+		gaiaApp.EmptyAppOptions{})
+
 	testApp := ibctesting.TestingApp(app)
-	return testApp, gaiaApp.NewDefaultGenesisState()
+	return testApp, gaiaApp.NewDefaultGenesisState(encoding)
 }

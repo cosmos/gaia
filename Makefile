@@ -271,9 +271,9 @@ start-localnet-ci: build
 	./build/gaiad config chain-id liveness --home ~/.gaiad-liveness
 	./build/gaiad config keyring-backend test --home ~/.gaiad-liveness
 	./build/gaiad keys add val --home ~/.gaiad-liveness
-	./build/gaiad add-genesis-account val 10000000000000000000000000stake --home ~/.gaiad-liveness --keyring-backend test
-	./build/gaiad gentx val 1000000000stake --home ~/.gaiad-liveness --chain-id liveness
-	./build/gaiad collect-gentxs --home ~/.gaiad-liveness
+	./build/gaiad genesis add-genesis-account val 10000000000000000000000000stake --home ~/.gaiad-liveness --keyring-backend test
+	./build/gaiad genesis gentx val 1000000000stake --home ~/.gaiad-liveness --chain-id liveness
+	./build/gaiad genesis collect-gentxs --home ~/.gaiad-liveness
 	sed -i.bak'' 's/minimum-gas-prices = ""/minimum-gas-prices = "0uatom"/' ~/.gaiad-liveness/config/app.toml
 	./build/gaiad start --home ~/.gaiad-liveness --x-crisis-skip-assert-invariants
 
@@ -300,16 +300,31 @@ test-docker-push: test-docker
 ###############################################################################
 ###                                Protobuf                                 ###
 ###############################################################################
+protoVer=0.13.0
+protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
+protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(protoImageName)
+
+proto-all: proto-format proto-lint proto-gen
+
 proto-gen:
 	@echo "Generating Protobuf files"
-	@sh ./proto/scripts/protocgen.sh
-
-proto-doc:
-	@echo "Generating Protoc docs"
-	@sh ./proto/scripts/protoc-doc-gen.sh
+	@$(protoImage) sh ./proto/scripts/protocgen.sh
 
 proto-swagger-gen:
 	@echo "Generating Protobuf Swagger"
-	@sh ./proto/scripts/protoc-swagger-gen.sh
+	@$(protoImage) sh ./proto/scripts/protoc-swagger-gen.sh
 
-.PHONY: proto-gen proto-doc proto-swagger-gen
+proto-format:
+	@$(protoImage) find ./ -name "*.proto" -exec clang-format -i {} \;
+
+proto-lint:
+	@$(protoImage) buf lint --error-format=json
+
+proto-check-breaking:
+	@$(protoImage) buf breaking --against $(HTTPS_GIT)#branch=main
+
+proto-update-deps:
+	@echo "Updating Protobuf dependencies"
+	$(DOCKER) run --rm -v $(CURDIR)/proto:/workspace --workdir /workspace $(protoImageName) buf mod update
+
+.PHONY: proto-all proto-gen proto-gen-any proto-swagger-gen proto-format proto-lint proto-check-breaking proto-update-deps

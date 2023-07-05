@@ -2,11 +2,6 @@ package e2e
 
 import "fmt"
 
-// import (
-//
-//	"fmt"
-//
-// )
 var (
 	runBankTest = true
 	//	runBypassMinFeeTest           = true
@@ -36,13 +31,13 @@ func (s *IntegrationTestSuite) TestBank() {
 	s.testBankTokenTransfer()
 }
 
-//	func (s *IntegrationTestSuite) TestByPassMinFee() {
-//		if !runBypassMinFeeTest {
-//			s.T().Skip()
-//		}
-//		chainAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-//		s.testBypassMinFeeWithdrawReward(chainAPI)
-//	}
+// func (s *IntegrationTestSuite) TestByPassMinFee() {
+// 	if !runBypassMinFeeTest {
+// 		s.T().Skip()
+// 	}
+// 	chainAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+// 	s.testBypassMinFeeWithdrawReward(chainAPI)
+// }
 
 func (s *IntegrationTestSuite) TestEncode() {
 	if !runEncodeTest {

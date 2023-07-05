@@ -22,6 +22,7 @@ type ForwardMetadata struct {
 	Receiver string `json:"receiver"`
 	Port     string `json:"port"`
 	Channel  string `json:"channel"`
+	// TODO: check if these fields are used somewhere
 	// Timeout        time.Duration `json:"timeout"`
 	// Retries        *uint8        `json:"retries,omitempty"`
 	// Next           *string       `json:"next,omitempty"`

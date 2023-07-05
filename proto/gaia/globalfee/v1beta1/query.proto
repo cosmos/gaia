@@ -1,13 +1,13 @@
-// syntax = "proto3";
+syntax = "proto3";
 // package gaia.globalfee.v1beta1;
-
+//
 // import "gogoproto/gogo.proto";
 // import "google/api/annotations.proto";
 // import "gaia/globalfee/v1beta1/genesis.proto";
-
+//
 // option go_package = "github.com/cosmos/gaia/x/globalfee/types";
-
-// // Query defines the gRPC querier service.
+//
+//// Query defines the gRPC querier service.
 // service Query {
 //   rpc Params(QueryParamsRequest)
 //       returns (QueryParamsResponse) {
@@ -15,13 +15,13 @@
 //         "/gaia/globalfee/v1beta1/params";
 //   }
 // }
-
-// // QueryMinimumGasPricesRequest is the request type for the
-// // Query/MinimumGasPrices RPC method.
+//
+//// QueryMinimumGasPricesRequest is the request type for the
+//// Query/MinimumGasPrices RPC method.
 // message QueryParamsRequest {}
-
-// // QueryMinimumGasPricesResponse is the response type for the
-// // Query/MinimumGasPrices RPC method.
+//
+//// QueryMinimumGasPricesResponse is the response type for the
+//// Query/MinimumGasPrices RPC method.
 // message QueryParamsResponse {
 //         Params params = 1 [(gogoproto.nullable) = false];
 // }

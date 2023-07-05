@@ -1,9 +1,9 @@
 package ante
 
-import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	// sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-)
+// import (
+// 	sdk "github.com/cosmos/cosmos-sdk/types"
+// 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+// )
 
 // // ContainZeroCoins returns true if the given coins are empty or contain zero coins,
 // // Note that the coins denoms must be validated, see sdk.ValidateDenom
@@ -54,31 +54,31 @@ import (
 //	}
 //
 // Find replaces the functionality of Coins.Find from SDK v0.46.x
-func Find(coins sdk.Coins, denom string) (bool, sdk.Coin) {
-	switch len(coins) {
-	case 0:
-		return false, sdk.Coin{}
+// func Find(coins sdk.Coins, denom string) (bool, sdk.Coin) {
+// 	switch len(coins) {
+// 	case 0:
+// 		return false, sdk.Coin{}
 
-	case 1:
-		coin := coins[0]
-		if coin.Denom == denom {
-			return true, coin
-		}
-		return false, sdk.Coin{}
+// 	case 1:
+// 		coin := coins[0]
+// 		if coin.Denom == denom {
+// 			return true, coin
+// 		}
+// 		return false, sdk.Coin{}
 
-	default:
-		midIdx := len(coins) / 2 // 2:1, 3:1, 4:2
-		coin := coins[midIdx]
-		switch {
-		case denom < coin.Denom:
-			return Find(coins[:midIdx], denom)
-		case denom == coin.Denom:
-			return true, coin
-		default:
-			return Find(coins[midIdx+1:], denom)
-		}
-	}
-}
+// 	default:
+// 		midIdx := len(coins) / 2 // 2:1, 3:1, 4:2
+// 		coin := coins[midIdx]
+// 		switch {
+// 		case denom < coin.Denom:
+// 			return Find(coins[:midIdx], denom)
+// 		case denom == coin.Denom:
+// 			return true, coin
+// 		default:
+// 			return Find(coins[midIdx+1:], denom)
+// 		}
+// 	}
+// }
 
 //
 //// splitCoinsByDenoms returns the given coins split in two whether

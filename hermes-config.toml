@@ -1,0 +1,63 @@
+[global]
+log_level = "debug"
+
+[mode]
+
+[mode.clients]
+enabled = true
+refresh = true
+misbehaviour = true
+
+[mode.connections]
+enabled = false
+
+[mode.channels]
+enabled = false
+
+[mode.packets]
+enabled = true
+
+[[chains]]
+id = "consu"
+ccv_consumer_chain = true
+account_prefix = "cosmos"
+clock_drift = "5s"
+gas_multiplier = 1.1
+grpc_addr = "tcp://7.7.8.253:9091"
+key_name = "alice"
+max_gas = 2000000
+rpc_addr = "http://7.7.8.253:26658"
+rpc_timeout = "10s"
+store_prefix = "ibc"
+trusting_period = "2days"
+websocket_addr = "ws://7.7.8.253:26658/websocket"
+
+[chains.gas_price]
+        denom = "stake"
+        price = 0.00
+
+[chains.trust_threshold]
+        denominator = "3"
+        numerator = "1"
+
+[[chains]]
+id = "provi"
+account_prefix = "cosmos"
+clock_drift = "5s"
+gas_multiplier = 1.1
+grpc_addr = "tcp://7.7.7.253:9091"
+key_name = "alice"
+max_gas = 2000000
+rpc_addr = "http://7.7.7.253:26658"
+rpc_timeout = "10s"
+store_prefix = "ibc"
+trusting_period = "2days"
+websocket_addr = "ws://7.7.7.253:26658/websocket"
+
+[chains.gas_price]
+        denom = "stake"
+        price = 0.00
+
+[chains.trust_threshold]
+        denominator = "3"
+        numerator = "1"

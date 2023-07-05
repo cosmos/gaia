@@ -37,7 +37,7 @@ import (
 	"github.com/ory/dockertest/v3"
 	"github.com/stretchr/testify/suite"
 
-	// //	ibcclienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
+	// "ibcclienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 	// "github.com/cosmos/cosmos-sdk/crypto/hd"
 	// "github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/ory/dockertest/v3/docker"
@@ -55,8 +55,8 @@ const (
 	stakeDenom     = "stake"
 	initBalanceStr = "110000000000stake,100000000000000000photon,100000000000000000uatom"
 	minGasPrice    = "0.00001"
-	//	// the test globalfee in genesis is the same as minGasPrice
-	//	// global fee lower/higher than min_gas_price
+	// the test globalfee in genesis is the same as minGasPrice
+	// global fee lower/higher than min_gas_price
 	initialGlobalFeeAmt = "0.00001"
 	//	lowGlobalFeesAmt                      = "0.000001"
 	//	highGlobalFeeAmt                      = "0.0001"
@@ -74,8 +74,8 @@ const (
 	proposalCommunitySpendFilename  = "proposal_community_spend.json"
 	proposalSoftwareUpgradeFilename = "proposal_software_upgrade.json"
 
-// proposalAddConsumerChainFilename    = "proposal_add_consumer.json"
-// proposalRemoveConsumerChainFilename = "proposal_remove_consumer.json"
+	// proposalAddConsumerChainFilename    = "proposal_add_consumer.json"
+	// proposalRemoveConsumerChainFilename = "proposal_remove_consumer.json"
 )
 
 var (
@@ -732,21 +732,6 @@ func (s *IntegrationTestSuite) writeGovSoftwareUpgradeProposal(c *chain, height 
 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalSoftwareUpgradeFilename), propBody)
 	s.Require().NoError(err)
 }
-
-// func (s *IntegrationTestSuite) writeGovCommunitySpendProposal(c *chain, amount string, recipient string) {
-// 	proposalCommSpend := &distrtypes.CommunityPoolSpendProposalWithDeposit{
-// 		Title:       "Community Pool Spend",
-// 		Description: "Fund Team!",
-// 		Recipient:   recipient,
-// 		Amount:      amount,
-// 		Deposit:     "1000uatom",
-// 	}
-// 	commSpendBody, err := json.MarshalIndent(proposalCommSpend, "", " ")
-// 	s.Require().NoError(err)
-
-// 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalCommunitySpendFilename), commSpendBody)
-// 	s.Require().NoError(err)
-// }
 
 //	type ConsumerAdditionProposalWithDeposit struct {
 //		ccvprovider.ConsumerAdditionProposal

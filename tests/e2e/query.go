@@ -60,11 +60,12 @@ func getSpecificBalance(endpoint, addr, denom string) (amt sdk.Coin, err error) 
 }
 
 func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) {
+	fmt.Println(fmt.Sprintf("%s/cosmos/bank/v1beta1/balances/%s", endpoint, addr))
 	body, err := httpGet(fmt.Sprintf("%s/cosmos/bank/v1beta1/balances/%s", endpoint, addr))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
-
+	fmt.Printf("#%v\n", body)
 	var balancesResp banktypes.QueryAllBalancesResponse
 	if err := cdc.UnmarshalJSON(body, &balancesResp); err != nil {
 		return nil, err
@@ -208,18 +209,18 @@ func queryContinuousVestingAccount(endpoint, address string) (authvesting.Contin
 	return *acc, nil
 }
 
-// func queryPermanentLockedAccount(endpoint, address string) (authvesting.PermanentLockedAccount, error) { //nolint:unused // this is called during e2e tests
-// 	baseAcc, err := queryAccount(endpoint, address)
-// 	if err != nil {
-// 		return authvesting.PermanentLockedAccount{}, err
-// 	}
-// 	acc, ok := baseAcc.(*authvesting.PermanentLockedAccount)
-// 	if !ok {
-// 		return authvesting.PermanentLockedAccount{},
-// 			fmt.Errorf("cannot cast %v to PermanentLockedAccount", baseAcc)
-// 	}
-// 	return *acc, nil
-// }
+func queryPermanentLockedAccount(endpoint, address string) (authvesting.PermanentLockedAccount, error) { //nolint:unused // this is called during e2e tests
+	baseAcc, err := queryAccount(endpoint, address)
+	if err != nil {
+		return authvesting.PermanentLockedAccount{}, err
+	}
+	acc, ok := baseAcc.(*authvesting.PermanentLockedAccount)
+	if !ok {
+		return authvesting.PermanentLockedAccount{},
+			fmt.Errorf("cannot cast %v to PermanentLockedAccount", baseAcc)
+	}
+	return *acc, nil
+}
 
 func queryPeriodicVestingAccount(endpoint, address string) (authvesting.PeriodicVestingAccount, error) { //nolint:unused // this is called during e2e tests
 	baseAcc, err := queryAccount(endpoint, address)

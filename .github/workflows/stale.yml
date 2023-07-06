@@ -10,9 +10,17 @@ jobs:
       - uses: actions/stale@v8.0.0
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+          # PR's
           stale-pr-message: "This pull request has been automatically marked as stale because it has not had recent activity. It will be closed if no further activity occurs. Thank you for your contributions."
           days-before-stale: -1
           days-before-close: -1
           days-before-pr-stale: 45
           days-before-pr-close: 6
+          close-pr-label	: "stale"
           exempt-pr-labels: "pinned, security, proposal, blocked, ADR"
+          # Issues
+          days-before-issue-stale: 14
+          days-before-issue-close: 6
+          close-issue-label	: "stale"
+          stale-issue-message: "This issue has been automatically marked as stale because it has not had recent activity. It will be closed if no further activity occurs. Thank you for your contributions."
+          exempt-issue-labels: "pinned, security, proposal, blocked, ADR"

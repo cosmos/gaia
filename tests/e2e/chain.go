@@ -1,124 +1,138 @@
 package e2e
 
-// import (
-// 	"fmt"
-// 	"os"
+import (
+	"fmt"
+	"os"
 
-// 	"github.com/cosmos/cosmos-sdk/client"
-// 	"github.com/cosmos/cosmos-sdk/codec"
-// 	sdk "github.com/cosmos/cosmos-sdk/types"
-// 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
-// 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
-// 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-// 	tmrand "github.com/tendermint/tendermint/libs/rand"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
-// 	gaia "github.com/cosmos/gaia/v11/app"
-// 	"github.com/cosmos/gaia/v11/app/params"
-// )
+	tmrand "github.com/cometbft/cometbft/libs/rand"
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/codec"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+	distribtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
+	govv1types "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	govv1beta1types "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-// const (
-// 	keyringPassphrase = "testpassphrase"
-// 	keyringAppName    = "testnet"
-// )
+	gaiaparams "github.com/cosmos/gaia/v11/app/params"
+)
 
-// var (
-// 	encodingConfig params.EncodingConfig
-// 	cdc            codec.Codec
-// 	txConfig       client.TxConfig
-// )
+const (
+	keyringPassphrase = "testpassphrase"
+	keyringAppName    = "testnet"
+)
 
-// func init() {
-// 	encodingConfig = gaia.MakeTestEncodingConfig()
-// 	authvesting.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-// 	stakingtypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-// 	evidencetypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-// 	cdc = encodingConfig.Codec
-// 	txConfig = encodingConfig.TxConfig
-// }
+var (
+	encodingConfig gaiaparams.EncodingConfig
+	cdc            codec.Codec
+	txConfig       client.TxConfig
+)
 
-// type chain struct {
-// 	dataDir    string
-// 	id         string
-// 	validators []*validator
-// 	accounts   []*account //nolint:unused
-// 	// initial accounts in genesis
-// 	genesisAccounts        []*account
-// 	genesisVestingAccounts map[string]sdk.AccAddress
-// }
+func init() {
+	encodingConfig = gaiaparams.MakeEncodingConfig()
+	authtypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	authvesting.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	stakingtypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	evidencetypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	cryptocodec.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	govv1types.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	govv1beta1types.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 
-// func newChain() (*chain, error) {
-// 	tmpDir, err := os.MkdirTemp("", "gaia-e2e-testnet-")
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	upgradetypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	distribtypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 
-// 	return &chain{
-// 		id:      "chain-" + tmrand.Str(6),
-// 		dataDir: tmpDir,
-// 	}, nil
-// }
+	cdc = encodingConfig.Marshaler
+	txConfig = encodingConfig.TxConfig
+}
 
-// func (c *chain) configDir() string {
-// 	return fmt.Sprintf("%s/%s", c.dataDir, c.id)
-// }
+type chain struct {
+	dataDir    string
+	id         string
+	validators []*validator
+	accounts   []*account //nolint:unused
+	// initial accounts in genesis
+	genesisAccounts        []*account
+	genesisVestingAccounts map[string]sdk.AccAddress
+}
 
-// func (c *chain) createAndInitValidators(count int) error {
-// 	for i := 0; i < count; i++ {
-// 		node := c.createValidator(i)
+func newChain() (*chain, error) {
+	tmpDir, err := os.MkdirTemp("", "gaia-e2e-testnet-")
+	if err != nil {
+		return nil, err
+	}
 
-// 		// generate genesis files
-// 		if err := node.init(); err != nil {
-// 			return err
-// 		}
+	return &chain{
+		id:      "chain-" + tmrand.Str(6),
+		dataDir: tmpDir,
+	}, nil
+}
 
-// 		c.validators = append(c.validators, node)
+func (c *chain) configDir() string {
+	return fmt.Sprintf("%s/%s", c.dataDir, c.id)
+}
 
-// 		// create keys
-// 		if err := node.createKey("val"); err != nil {
-// 			return err
-// 		}
-// 		if err := node.createNodeKey(); err != nil {
-// 			return err
-// 		}
-// 		if err := node.createConsensusKey(); err != nil {
-// 			return err
-// 		}
-// 	}
+func (c *chain) createAndInitValidators(count int) error {
+	for i := 0; i < count; i++ {
+		node := c.createValidator(i)
 
-// 	return nil
-// }
+		// generate genesis files
+		if err := node.init(); err != nil {
+			return err
+		}
 
-// func (c *chain) createAndInitValidatorsWithMnemonics(count int, mnemonics []string) error { //nolint:unused // this is called during e2e tests
-// 	for i := 0; i < count; i++ {
-// 		// create node
-// 		node := c.createValidator(i)
+		c.validators = append(c.validators, node)
 
-// 		// generate genesis files
-// 		if err := node.init(); err != nil {
-// 			return err
-// 		}
+		// create keys
+		if err := node.createKey("val"); err != nil {
+			return err
+		}
+		if err := node.createNodeKey(); err != nil {
+			return err
+		}
+		if err := node.createConsensusKey(); err != nil {
+			return err
+		}
+	}
 
-// 		c.validators = append(c.validators, node)
+	return nil
+}
 
-// 		// create keys
-// 		if err := node.createKeyFromMnemonic("val", mnemonics[i]); err != nil {
-// 			return err
-// 		}
-// 		if err := node.createNodeKey(); err != nil {
-// 			return err
-// 		}
-// 		if err := node.createConsensusKey(); err != nil {
-// 			return err
-// 		}
-// 	}
+func (c *chain) createAndInitValidatorsWithMnemonics(count int, mnemonics []string) error { //nolint:unused // this is called during e2e tests
+	for i := 0; i < count; i++ {
+		// create node
+		node := c.createValidator(i)
 
-// 	return nil
-// }
+		// generate genesis files
+		if err := node.init(); err != nil {
+			return err
+		}
 
-// func (c *chain) createValidator(index int) *validator {
-// 	return &validator{
-// 		chain:   c,
-// 		index:   index,
-// 		moniker: fmt.Sprintf("%s-gaia-%d", c.id, index),
-// 	}
-// }
+		c.validators = append(c.validators, node)
+
+		// create keys
+		if err := node.createKeyFromMnemonic("val", mnemonics[i]); err != nil {
+			return err
+		}
+		if err := node.createNodeKey(); err != nil {
+			return err
+		}
+		if err := node.createConsensusKey(); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (c *chain) createValidator(index int) *validator {
+	return &validator{
+		chain:   c,
+		index:   index,
+		moniker: fmt.Sprintf("%s-gaia-%d", c.id, index),
+	}
+}

@@ -23,4 +23,4 @@ jobs:
           days-before-issue-close: 6
           close-issue-label: "stale"
           stale-issue-message: "This issue has been automatically marked as stale because it has not had recent activity. It will be closed if no further activity occurs. Thank you for your contributions."
-          exempt-issue-labels: "pinned, security, proposal, blocked, ADR"
+          exempt-issue-labels: "pinned, security, proposal, blocked, ADR, epic, major-epic"

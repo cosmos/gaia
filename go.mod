@@ -174,7 +174,10 @@ require (
 replace (
 	// Use cosmos keyring
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
+
+	// NOTE: @MSalopek test ics-lsm implementations
 	github.com/cosmos/cosmos-sdk => github.com/iqlusioninc/cosmos-sdk v0.34.4-0.20230628024121-1b4d7e811a43
+	github.com/cosmos/interchain-security/v2 => github.com/cosmos/interchain-security/v2 v2.0.1-0.20230707094121-790feda27368
 
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2

@@ -93,10 +93,10 @@ gaiad keys list
 gaiad tendermint show-validator
 ```
 
-请注意，这是Tendermint的签名密钥，而不是你在委托交易中使用的操作员密钥。
+请注意，这是CometBFT的签名密钥，而不是你在委托交易中使用的操作员密钥。
 
 ::: danger Warning
-我们强烈建议不要对多个密钥使用相同的密码。Tendermint 团队和 Interchain Foundation 将不承担资金损失的责任。
+我们强烈建议不要对多个密钥使用相同的密码。CometBFT 团队和 Interchain Foundation 将不承担资金损失的责任。
 :::
 
 #### 生成多签公钥

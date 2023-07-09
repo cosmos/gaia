@@ -9,7 +9,7 @@
     "vue-tabs-component": "^1.5.0",
     "vue-template-compiler": "^2.6.11",
     "vuepress-plugin-tabs": "^0.3.0",
-    "vuepress-theme-cosmos": "^1.0.183"
+    "vuepress-theme-cosmos": "^1.0.184"
   },
   "scripts": {
     "serve": "trap 'exit 0' SIGINT; vuepress dev --no-cache",

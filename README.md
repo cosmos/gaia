@@ -5,7 +5,7 @@
 [![Project Status: Active -- The project has reached a stable, usable state and is being actively
 developed.](https://img.shields.io/badge/repo%20status-Active-green.svg)](https://www.repostatus.org/#active)
 [![License: Apache-2.0](https://img.shields.io/github/license/cosmos/gaia.svg)](https://github.com/cosmos/gaia/blob/main/LICENSE)
-[![Version](https://img.shields.io/github/tag/cosmos/gaia.svg)](https://github.com/cosmos/gaia/releases/latest)
+[![Version](https://img.shields.io/github/v/release/cosmos/gaia.svg)](https://github.com/cosmos/gaia/releases/latest)
 [![Go Report Card](https://goreportcard.com/badge/github.com/cosmos/gaia)](https://goreportcard.com/report/github.com/cosmos/gaia)
 [![GoDoc](https://img.shields.io/badge/godoc-reference-blue?logo=go)](https://pkg.go.dev/github.com/cosmos/gaia)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=cosmos_gaia&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=cosmos_gaia)

@@ -51,7 +51,7 @@ echo "trust_hash: $TRUST_HASH"
 # Export state sync variables.
 export GAIAD_STATESYNC_ENABLE=true
 export GAIAD_P2P_MAX_NUM_OUTBOUND_PEERS=200
-export GAIAD_STATESYNC_RPC_SERVERS="https://cached-rpc-cosmos.sg1.online/:443,https://cached-rpc-cosmos.sg1.online:443"
+export GAIAD_STATESYNC_RPC_SERVERS="https://cosmos-rpc.polkachu.com:443,https://rpc-cosmoshub-ia.cosmosia.notional.ventures:443"
 export GAIAD_STATESYNC_TRUST_HEIGHT=$BLOCK_HEIGHT
 export GAIAD_STATESYNC_TRUST_HASH=$TRUST_HASH
 

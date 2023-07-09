@@ -7,7 +7,7 @@ version: v1beta1
 deps:
   - buf.build/googleapis/googleapis
   - buf.build/cosmos/cosmos-proto
-  - buf.build/cosmos/gogo-proto
+  - buf.build/cosmos/gogo-proto:bee5511075b7499da6178d9e4aaa628b
 
 breaking:
   use:

@@ -11,9 +11,7 @@ RUN apk add --no-cache $PACKAGES
 RUN CGO_ENABLED=0 make install
 
 # Add to a distroless container
-FROM alpine:$IMG_TAG
-RUN adduser -D noroot
-USER noroot
+FROM cgr.dev/chainguard/static:$IMG_TAG
 ARG IMG_TAG
 COPY --from=gaiad-builder /go/bin/gaiad /usr/local/bin/
 EXPOSE 26656 26657 1317 9090

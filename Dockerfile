@@ -11,7 +11,7 @@ RUN apk add --no-cache $PACKAGES
 RUN CGO_ENABLED=0 make install
 
 # Add to a distroless container
-FROM alpine:latest
+FROM alpine:$IMG_TAG
 RUN adduser -D noroot
 USER noroot
 ARG IMG_TAG

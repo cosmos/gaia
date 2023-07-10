@@ -33,4 +33,4 @@ jobs:
           context: contrib/proto-builder
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/cosmos/proto-builder:latest
+          tags: ghcr.io/cosmos/gaia/proto-builder:latest

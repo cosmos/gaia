@@ -83,3 +83,4 @@ hermes keys add  --key-name rly01-gaia-a  --chain $GAIA_A_E2E_CHAIN_ID --mnemoni
 sleep 5
 # start Hermes relayer
 hermes start
+# hermes listen --chain $GAIA_B_E2E_CHAIN_ID

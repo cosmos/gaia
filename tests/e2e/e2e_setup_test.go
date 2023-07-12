@@ -693,7 +693,6 @@ func noRestart(config *docker.HostConfig) {
 //		s.Require().NoError(err)
 //	}
 func (s *IntegrationTestSuite) writeGovCommunitySpendProposal(c *chain, amount sdk.Coin, recipient string) {
-
 	msg := &distrtypes.MsgCommunityPoolSpend{
 		Authority: govModuleAddress,
 		Recipient: recipient,

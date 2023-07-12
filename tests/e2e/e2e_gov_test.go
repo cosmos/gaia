@@ -5,8 +5,6 @@ import (
 	"strconv"
 	"time"
 
-	//ccvtypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"

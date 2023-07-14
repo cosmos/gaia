@@ -82,16 +82,36 @@ func (s *IntegrationTestSuite) testLSM() {
 	shareDenom := fmt.Sprintf("%s/%s", strings.ToLower(validatorAddressA), strconv.Itoa(1))
 	s.Require().Eventually(
 		func() bool {
-			res, err := queryGaiaAllBalances(chainEndpoint, delegatorAddress)
+			res, err := getSpecificBalance(chainEndpoint, delegatorAddress, shareDenom)
 			s.Require().NoError(err)
-			shareAmount := res.AmountOf(shareDenom)
-			return shareAmount.Equal(tokenizeAmount)
+			return res.Amount.Equal(tokenizeAmount)
 		},
 		20*time.Second,
 		5*time.Second,
 	)
 
-	// TODO: Bank send LSM token
+	// Bank send LSM token
+	sendAmount := sdk.NewCoin(shareDenom, tokenizeAmount)
+	s.execBankSend(s.chainA, 0, delegatorAddress, validatorAAddr.String(), sendAmount.String(), standardFees.String(), false)
+
+	// Validate tokens are sent properly
+	s.Require().Eventually(
+		func() bool {
+			afterSenderShareDenomBalance, err := getSpecificBalance(chainEndpoint, delegatorAddress, shareDenom)
+			s.Require().NoError(err)
+
+			afterRecipientShareDenomBalance, err := getSpecificBalance(chainEndpoint, validatorAAddr.String(), shareDenom)
+			s.Require().NoError(err)
+
+			decremented := afterSenderShareDenomBalance.IsZero()
+			incremented := afterRecipientShareDenomBalance.IsEqual(sendAmount)
+
+			return decremented && incremented
+		},
+		time.Minute,
+		5*time.Second,
+	)
+
 	// TODO: TransferTokenizeShareRecord (transfer reward ownership)
 	// TODO: IBC transfer LSM token
 	// TODO: Redeem tokens for shares

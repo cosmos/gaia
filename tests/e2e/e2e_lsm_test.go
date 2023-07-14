@@ -42,7 +42,22 @@ func (s *IntegrationTestSuite) testLSM() {
 		5*time.Second,
 	)
 
-	// TODO: Validator bond
+	// Validator bond
+	s.executeValidatorBond(s.chainA, 0, validatorAddressA, validatorAAddr.String(), gaiaHomePath, fees.String())
+
+	// Validate validator bond successful
+	s.Require().Eventually(
+		func() bool {
+			res, err := queryDelegation(chainEndpoint, validatorAddressA, validatorAAddr.String())
+			isValidatorBond := res.GetDelegationResponse().GetDelegation().ValidatorBond
+			s.Require().NoError(err)
+
+			return isValidatorBond == true
+		},
+		20*time.Second,
+		5*time.Second,
+	)
+
 	// TODO: Delegates
 	// TODO: Tokenizes shares
 	// TODO: Bank send LSM token

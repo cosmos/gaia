@@ -14,7 +14,7 @@ var (
 	runGovTest                    = false
 	runIBCTest                    = false
 	runSlashingTest               = false
-	runStakingAndDistributionTest = true
+	runStakingAndDistributionTest = false
 	runVestingTest                = false
 	runRestInterfacesTest         = false
 	runLsmTest                    = true

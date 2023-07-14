@@ -692,3 +692,28 @@ func (s *IntegrationTestSuite) defaultExecValidation(chain *chain, valIdx int) f
 		return false
 	}
 }
+
+func (s *IntegrationTestSuite) executeValidatorBond(c *chain, valIdx int, valOperAddress, delegatorAddr, home, delegateFees string) { //nolint:unparam
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx staking validator-bond %s", c.id)
+
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		stakingtypes.ModuleName,
+		"validator-bond",
+		valOperAddress,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, delegateFees),
+		"--keyring-backend=test",
+		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
+	s.T().Logf("%s successfully executed validator bond tx to %s", delegatorAddr, valOperAddress)
+}

@@ -29,10 +29,13 @@ func (s *IntegrationTestSuite) testLSM() {
 	s.executeValidatorBond(s.chainA, 0, validatorAddressA, validatorAAddr.String(), gaiaHomePath, fees.String())
 
 	// Validate validator bond successful
+	selfBondedShares := sdk.ZeroDec()
 	s.Require().Eventually(
 		func() bool {
 			res, err := queryDelegation(chainEndpoint, validatorAddressA, validatorAAddr.String())
-			isValidatorBond := res.GetDelegationResponse().GetDelegation().ValidatorBond
+			delegation := res.GetDelegationResponse().GetDelegation()
+			selfBondedShares = delegation.Shares
+			isValidatorBond := delegation.ValidatorBond
 			s.Require().NoError(err)
 
 			return isValidatorBond == true
@@ -79,7 +82,8 @@ func (s *IntegrationTestSuite) testLSM() {
 	)
 
 	// Validate balance increased
-	shareDenom := fmt.Sprintf("%s/%s", strings.ToLower(validatorAddressA), strconv.Itoa(1))
+	recordId := int(1)
+	shareDenom := fmt.Sprintf("%s/%s", strings.ToLower(validatorAddressA), strconv.Itoa(recordId))
 	s.Require().Eventually(
 		func() bool {
 			res, err := getSpecificBalance(chainEndpoint, delegatorAddress, shareDenom)
@@ -112,7 +116,37 @@ func (s *IntegrationTestSuite) testLSM() {
 		5*time.Second,
 	)
 
-	// TODO: TransferTokenizeShareRecord (transfer reward ownership)
+	// transfer reward ownership
+	s.executeTransferTokenizeShareRecord(s.chainA, 0, strconv.Itoa(recordId), delegatorAddress, validatorAAddr.String(), gaiaHomePath, standardFees.String())
+
+	// Validate ownership transferred correctly
+	s.Require().Eventually(
+		func() bool {
+			record, err := queryTokenizeShareRecordById(chainEndpoint, recordId)
+			s.Require().NoError(err)
+			return record.Owner == validatorAAddr.String()
+		},
+		time.Minute,
+		5*time.Second,
+	)
+
 	// TODO: IBC transfer LSM token
-	// TODO: Redeem tokens for shares
+
+	// Redeem tokens for shares
+	s.executeRedeemShares(s.chainA, 0, sendAmount.String(), validatorAAddr.String(), gaiaHomePath, fees.String())
+
+	// check redeem success
+	s.Require().Eventually(
+		func() bool {
+			delegationRes, err := queryDelegation(chainEndpoint, validatorAddressA, validatorAAddr.String())
+			delegation := delegationRes.GetDelegationResponse().GetDelegation()
+			s.Require().NoError(err)
+
+			balanceRes, err := getSpecificBalance(chainEndpoint, delegatorAddress, shareDenom)
+			s.Require().NoError(err)
+			return balanceRes.Amount.IsZero() && delegation.Shares.GT(selfBondedShares)
+		},
+		20*time.Second,
+		5*time.Second,
+	)
 }

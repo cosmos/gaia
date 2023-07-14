@@ -287,3 +287,17 @@ func queryAllEvidence(endpoint string) (evidencetypes.QueryAllEvidenceResponse, 
 	}
 	return res, nil
 }
+
+func queryTokenizeShareRecordById(endpoint string, recordId int) (stakingtypes.TokenizeShareRecord, error) {
+	var res stakingtypes.QueryTokenizeShareRecordByIdResponse
+
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/tokenize-share-record-by-id/%d", endpoint, recordId))
+	if err != nil {
+		return stakingtypes.TokenizeShareRecord{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return stakingtypes.TokenizeShareRecord{}, err
+	}
+	return res.Record, nil
+}

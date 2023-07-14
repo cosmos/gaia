@@ -769,3 +769,29 @@ func (s *IntegrationTestSuite) executeRedeemShares(c *chain, valIdx int, amount,
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
 	s.T().Logf("%s successfully executed redeem share tx for %s", delegatorAddr, amount)
 }
+
+func (s *IntegrationTestSuite) executeTransferTokenizeShareRecord(c *chain, valIdx int, recordId, owner, newOwner, home, txFees string) { //nolint:unparam
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx staking transfer-tokenize-share-record %s", c.id)
+
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		stakingtypes.ModuleName,
+		"transfer-tokenize-share-record",
+		recordId,
+		newOwner,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, txFees),
+		"--keyring-backend=test",
+		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
+	s.T().Logf("%s successfully executed transfer tokenize share record for %s", owner, recordId)
+}

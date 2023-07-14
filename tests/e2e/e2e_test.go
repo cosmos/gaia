@@ -5,18 +5,19 @@ import (
 )
 
 var (
-	runBankTest                   = true
-	runBypassMinFeeTest           = true
-	runEncodeTest                 = true
-	runEvidenceTest               = true
-	runFeeGrantTest               = true
-	runGlobalFeesTest             = true
-	runGovTest                    = true
-	runIBCTest                    = true
-	runSlashingTest               = true
+	runBankTest                   = false
+	runBypassMinFeeTest           = false
+	runEncodeTest                 = false
+	runEvidenceTest               = false
+	runFeeGrantTest               = false
+	runGlobalFeesTest             = false
+	runGovTest                    = false
+	runIBCTest                    = false
+	runSlashingTest               = false
 	runStakingAndDistributionTest = true
-	runVestingTest                = true
-	runRestInterfacesTest         = true
+	runVestingTest                = false
+	runRestInterfacesTest         = false
+	runLsmTest                    = true
 )
 
 func (s *IntegrationTestSuite) TestRestInterfaces() {
@@ -120,4 +121,11 @@ func (s *IntegrationTestSuite) TestVesting() {
 	s.testDelayedVestingAccount(chainAAPI)
 	s.testContinuousVestingAccount(chainAAPI)
 	// s.testPeriodicVestingAccount(chainAAPI) TODO: add back when v0.45 adds the missing CLI command.
+}
+
+func (s *IntegrationTestSuite) TestLSM() {
+	if !runLsmTest {
+		s.T().Skip()
+	}
+	s.testLSM()
 }

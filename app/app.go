@@ -52,7 +52,7 @@ import (
 	"github.com/cosmos/gaia/v11/app/upgrades"
 	v11 "github.com/cosmos/gaia/v11/app/upgrades/v11"
 
-	// "github.com/cosmos/gaia/v11/x/globalfee"
+	"github.com/cosmos/gaia/v11/x/globalfee"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
@@ -222,11 +222,11 @@ func NewGaiaApp(
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
-			Codec:     appCodec,
-			IBCkeeper: app.IBCKeeper,
-			GovKeeper: &app.GovKeeper,
-			// GlobalFeeSubspace: app.GetSubspace(globalfee.ModuleName),
-			StakingSubspace: app.GetSubspace(stakingtypes.ModuleName),
+			Codec:             appCodec,
+			IBCkeeper:         app.IBCKeeper,
+			GovKeeper:         &app.GovKeeper,
+			GlobalFeeSubspace: app.GetSubspace(globalfee.ModuleName),
+			StakingSubspace:   app.GetSubspace(stakingtypes.ModuleName),
 		},
 	)
 	if err != nil {

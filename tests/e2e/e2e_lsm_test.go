@@ -15,12 +15,15 @@ func (s *IntegrationTestSuite) testLSM() {
 	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
 	validatorA := s.chainA.validators[0]
+	validatorB := s.chainB.validators[0]
 	validatorAAddr := validatorA.keyInfo.GetAddress()
+	validatorBAddr := validatorB.keyInfo.GetAddress()
 
 	validatorAddressA := sdk.ValAddress(validatorAAddr).String()
 
 	// Set parameters (global liquid staking cap, validator liquid staking cap, validator bond factor)
 	s.writeLiquidStakingParamsUpdateProposal(s.chainA)
+	proposalCounter++
 	submitGovFlags := []string{"param-change", configFile(proposalLSMParamUpdateFilename)}
 	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
 	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes"}
@@ -142,7 +145,7 @@ func (s *IntegrationTestSuite) testLSM() {
 			afterRecipientShareDenomBalance, err := getSpecificBalance(chainEndpoint, validatorAAddr.String(), shareDenom)
 			s.Require().NoError(err)
 
-			decremented := afterSenderShareDenomBalance.IsZero()
+			decremented := afterSenderShareDenomBalance.IsNil() || afterSenderShareDenomBalance.IsZero()
 			incremented := afterRecipientShareDenomBalance.IsEqual(sendAmount)
 
 			return decremented && incremented
@@ -165,10 +168,24 @@ func (s *IntegrationTestSuite) testLSM() {
 		5*time.Second,
 	)
 
-	// TODO: IBC transfer LSM token
+	// IBC transfer LSM token
+	ibcTransferAmount := sdk.NewCoin(shareDenom, sdk.NewInt(100000000))
+	s.sendIBC(s.chainA, 0, validatorAAddr.String(), validatorBAddr.String(), ibcTransferAmount.String(), standardFees.String(), "memo")
+
+	s.Require().Eventually(
+		func() bool {
+			afterSenderShareBalance, err := getSpecificBalance(chainEndpoint, validatorAAddr.String(), shareDenom)
+			s.Require().NoError(err)
+
+			decremented := afterSenderShareBalance.Add(ibcTransferAmount).IsEqual(sendAmount)
+			return decremented
+		},
+		1*time.Minute,
+		5*time.Second,
+	)
 
 	// Redeem tokens for shares
-	s.executeRedeemShares(s.chainA, 0, sendAmount.String(), validatorAAddr.String(), gaiaHomePath, fees.String())
+	s.executeRedeemShares(s.chainA, 0, sendAmount.Sub(ibcTransferAmount).String(), validatorAAddr.String(), gaiaHomePath, fees.String())
 
 	// check redeem success
 	s.Require().Eventually(
@@ -179,7 +196,7 @@ func (s *IntegrationTestSuite) testLSM() {
 
 			balanceRes, err := getSpecificBalance(chainEndpoint, delegatorAddress, shareDenom)
 			s.Require().NoError(err)
-			return balanceRes.Amount.IsZero() && delegation.Shares.GT(selfBondedShares)
+			return (balanceRes.Amount.IsNil() || balanceRes.Amount.IsZero()) && delegation.Shares.GT(selfBondedShares)
 		},
 		20*time.Second,
 		5*time.Second,

@@ -3,11 +3,12 @@ package gaia_test
 import (
 	"testing"
 
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	db "github.com/tendermint/tm-db"
+
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	gaia "github.com/cosmos/gaia/v11/app"
 	gaiahelpers "github.com/cosmos/gaia/v11/app/helpers"

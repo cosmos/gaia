@@ -15,6 +15,15 @@ This release contains the following changes to Gaia:
 - Removes all states of the Liquidity module with forced withdrawal for all pool 
   coins as a preparation to remove the module.
 
+## ❤️ Contributors
+
+* Dongsam ([@dongsam](https://github.com/dongsam))
+* Informal Systems ([@informalinc](https://twitter.com/informalinc))
+* Notional ([@notionaldao](https://twitter.com/notionaldao))
+
+This list is non-exhaustive and ordered alphabetically.  
+Thank you to everyone who contributed to this release!
+
 ## 🔨 Build from source
 
 ```bash

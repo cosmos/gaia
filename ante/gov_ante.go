@@ -50,7 +50,7 @@ func (g GovPreventSpamDecorator) ValidateGovMsgs(ctx sdk.Context, msgs []sdk.Msg
 			// prevent messages with insufficient initial deposit amount
 			depositParams := g.govKeeper.GetDepositParams(ctx)
 			minInitialDeposit := g.calcMinInitialDeposit(depositParams.MinDeposit)
-			if msg.InitialDeposit.IsAllLT(minInitialDeposit) {
+			if !msg.InitialDeposit.IsAllGTE(minInitialDeposit) {
 				return errorsmod.Wrapf(gaiaerrors.ErrInsufficientFunds, "insufficient initial deposit amount - required: %v", minInitialDeposit)
 			}
 		}

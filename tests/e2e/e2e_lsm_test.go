@@ -120,8 +120,8 @@ func (s *IntegrationTestSuite) testLSM() {
 	)
 
 	// Validate balance increased
-	recordId := int(1)
-	shareDenom := fmt.Sprintf("%s/%s", strings.ToLower(validatorAddressA), strconv.Itoa(recordId))
+	recordID := int(1)
+	shareDenom := fmt.Sprintf("%s/%s", strings.ToLower(validatorAddressA), strconv.Itoa(recordID))
 	s.Require().Eventually(
 		func() bool {
 			res, err := getSpecificBalance(chainEndpoint, delegatorAddress, shareDenom)
@@ -155,12 +155,12 @@ func (s *IntegrationTestSuite) testLSM() {
 	)
 
 	// transfer reward ownership
-	s.executeTransferTokenizeShareRecord(s.chainA, 0, strconv.Itoa(recordId), delegatorAddress, validatorAAddr.String(), gaiaHomePath, standardFees.String())
+	s.executeTransferTokenizeShareRecord(s.chainA, 0, strconv.Itoa(recordID), delegatorAddress, validatorAAddr.String(), gaiaHomePath, standardFees.String())
 
 	// Validate ownership transferred correctly
 	s.Require().Eventually(
 		func() bool {
-			record, err := queryTokenizeShareRecordById(chainEndpoint, recordId)
+			record, err := queryTokenizeShareRecordByID(chainEndpoint, recordID)
 			s.Require().NoError(err)
 			return record.Owner == validatorAAddr.String()
 		},

@@ -693,7 +693,7 @@ func (s *IntegrationTestSuite) defaultExecValidation(chain *chain, valIdx int) f
 	}
 }
 
-func (s *IntegrationTestSuite) executeValidatorBond(c *chain, valIdx int, valOperAddress, delegatorAddr, home, delegateFees string) { //nolint:unparam
+func (s *IntegrationTestSuite) executeValidatorBond(c *chain, valIdx int, valOperAddress, delegatorAddr, home, delegateFees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -718,7 +718,7 @@ func (s *IntegrationTestSuite) executeValidatorBond(c *chain, valIdx int, valOpe
 	s.T().Logf("%s successfully executed validator bond tx to %s", delegatorAddr, valOperAddress)
 }
 
-func (s *IntegrationTestSuite) executeTokenizeShares(c *chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) { //nolint:unparam
+func (s *IntegrationTestSuite) executeTokenizeShares(c *chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -746,7 +746,7 @@ func (s *IntegrationTestSuite) executeTokenizeShares(c *chain, valIdx int, amoun
 	s.T().Logf("%s successfully executed tokenize share tx from %s", delegatorAddr, valOperAddress)
 }
 
-func (s *IntegrationTestSuite) executeRedeemShares(c *chain, valIdx int, amount, delegatorAddr, home, delegateFees string) { //nolint:unparam
+func (s *IntegrationTestSuite) executeRedeemShares(c *chain, valIdx int, amount, delegatorAddr, home, delegateFees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -772,7 +772,7 @@ func (s *IntegrationTestSuite) executeRedeemShares(c *chain, valIdx int, amount,
 	s.T().Logf("%s successfully executed redeem share tx for %s", delegatorAddr, amount)
 }
 
-func (s *IntegrationTestSuite) executeTransferTokenizeShareRecord(c *chain, valIdx int, recordId, owner, newOwner, home, txFees string) { //nolint:unparam
+func (s *IntegrationTestSuite) executeTransferTokenizeShareRecord(c *chain, valIdx int, recordId, owner, newOwner, home, txFees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 

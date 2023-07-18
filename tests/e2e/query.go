@@ -302,10 +302,10 @@ func queryAllEvidence(endpoint string) (evidencetypes.QueryAllEvidenceResponse, 
 	return res, nil
 }
 
-func queryTokenizeShareRecordById(endpoint string, recordId int) (stakingtypes.TokenizeShareRecord, error) {
+func queryTokenizeShareRecordByID(endpoint string, recordID int) (stakingtypes.TokenizeShareRecord, error) {
 	var res stakingtypes.QueryTokenizeShareRecordByIdResponse
 
-	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/tokenize_share_record_by_id/%d", endpoint, recordId))
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/tokenize_share_record_by_id/%d", endpoint, recordID))
 	if err != nil {
 		return stakingtypes.TokenizeShareRecord{}, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}

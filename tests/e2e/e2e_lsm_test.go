@@ -7,20 +7,55 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	gov "github.com/cosmos/cosmos-sdk/x/gov/types"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 )
 
 func (s *IntegrationTestSuite) testLSM() {
-	// TODO: Set parameters (global liquid staking cap, validator liquid staking cap, validator bond factor)
 	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
 	validatorA := s.chainA.validators[0]
-	// validatorB := s.chainA.validators[1]
 	validatorAAddr := validatorA.keyInfo.GetAddress()
-	// validatorBAddr := validatorB.keyInfo.GetAddress()
 
 	validatorAddressA := sdk.ValAddress(validatorAAddr).String()
-	// validatorAddressB := sdk.ValAddress(validatorBAddr).String()
 
+	// Set parameters (global liquid staking cap, validator liquid staking cap, validator bond factor)
+	s.writeLiquidStakingParamsUpdateProposal(s.chainA)
+	submitGovFlags := []string{"param-change", configFile(proposalLSMParamUpdateFilename)}
+	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
+	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes"}
+
+	// gov proposing LSM parameters (global liquid staking cap, validator liquid staking cap, validator bond factor)
+	s.T().Logf("Proposal number: %d", proposalCounter)
+	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: Set parameters (global liquid staking cap, validator liquid staking cap, validator bond factor)")
+	s.runGovProcess(chainEndpoint, validatorAAddr.String(), proposalCounter, paramtypes.ProposalTypeChange, submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
+
+	// query the proposal status and new fee
+	s.Require().Eventually(
+		func() bool {
+			proposal, err := queryGovProposal(chainEndpoint, proposalCounter)
+			s.Require().NoError(err)
+			return proposal.GetProposal().Status == gov.StatusPassed
+		},
+		15*time.Second,
+		5*time.Second,
+	)
+
+	s.Require().Eventually(
+		func() bool {
+			stakingParams, err := queryStakingParams(chainEndpoint)
+			s.T().Logf("After LSM parameters update proposal")
+			s.Require().NoError(err)
+
+			s.Require().Equal(stakingParams.Params.GlobalLiquidStakingCap, sdk.NewDecWithPrec(30, 2))
+			s.Require().Equal(stakingParams.Params.ValidatorLiquidStakingCap, sdk.NewDecWithPrec(100, 2))
+			s.Require().Equal(stakingParams.Params.ValidatorBondFactor, sdk.NewDec(-1))
+
+			return true
+		},
+		15*time.Second,
+		5*time.Second,
+	)
 	delegatorAddress := s.chainA.genesisAccounts[2].keyInfo.GetAddress().String()
 
 	fees := sdk.NewCoin(uatomDenom, sdk.NewInt(1))

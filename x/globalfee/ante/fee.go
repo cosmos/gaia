@@ -8,7 +8,8 @@ import (
 	tmstrings "github.com/cometbft/cometbft/libs/strings"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
+	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 
 	gaiaerrors "github.com/cosmos/gaia/v11/types/errors"
 
@@ -28,21 +29,17 @@ var _ sdk.AnteDecorator = FeeDecorator{}
 
 type FeeDecorator struct {
 	GlobalMinFeeParamSource globalfee.ParamSource
-	StakingSubspace         paramtypes.Subspace
+	StakingKeeper           *stakingkeeper.Keeper
 }
 
-func NewFeeDecorator(globalfeeSubspace, stakingSubspace paramtypes.Subspace) FeeDecorator {
+func NewFeeDecorator(globalfeeSubspace paramtypes.Subspace, sk *stakingkeeper.Keeper) FeeDecorator {
 	if !globalfeeSubspace.HasKeyTable() {
 		panic("global fee paramspace was not set up via module")
 	}
 
-	if !stakingSubspace.HasKeyTable() {
-		panic("staking paramspace was not set up via module")
-	}
-
 	return FeeDecorator{
 		GlobalMinFeeParamSource: globalfeeSubspace,
-		StakingSubspace:         stakingSubspace,
+		StakingKeeper:           sk,
 	}
 }
 
@@ -63,6 +60,9 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	if err != nil {
 		return ctx, err
 	}
+
+	ctx.Logger().Info(fmt.Sprintf("FeeCoins: %v", feeTx.GetFee()))
+	ctx.Logger().Info(fmt.Sprintf("FeeRequired: %v", feeRequired))
 
 	// reject the transaction early if the feeCoins have more denoms than the fee requirement
 
@@ -107,8 +107,14 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	doesNotExceedMaxGasUsage := gas <= maxTotalBypassMinFeeMsgGasUsage
 	allBypassMsgs := mfd.ContainsOnlyBypassMinFeeMsgs(ctx, msgs)
 	allowedToBypassMinFee := allBypassMsgs && doesNotExceedMaxGasUsage
+	ctx.Logger().Info(fmt.Sprintf("gas: %v", gas))
+	ctx.Logger().Info(fmt.Sprintf("allBypassMsgs: %v", allBypassMsgs))
+	ctx.Logger().Info(fmt.Sprintf("maxTotalBypassMinFeeMsgGasUsage: %v", maxTotalBypassMinFeeMsgGasUsage))
+	ctx.Logger().Info(fmt.Sprintf("doesNotExceedMaxGasUsage: %v", doesNotExceedMaxGasUsage))
+	ctx.Logger().Info(fmt.Sprintf("allowedToBypassMinFee: %v", allowedToBypassMinFee))
 
 	if allowedToBypassMinFee {
+		ctx.Logger().Info("Pass allowedToBypassMinFee check")
 		return next(ctx, tx, simulate)
 	}
 
@@ -161,6 +167,8 @@ func (mfd FeeDecorator) GetTxFeeRequired(ctx sdk.Context, tx sdk.FeeTx) (sdk.Coi
 		return sdk.Coins{}, err
 	}
 
+	ctx.Logger().Info(fmt.Sprintf("GlobalFees: %v, IsCheckTx: %v", globalFees, ctx.IsCheckTx()))
+
 	// In DeliverTx, the global fee min gas prices are the only tx fee requirements.
 	if !ctx.IsCheckTx() {
 		return globalFees, nil
@@ -171,9 +179,13 @@ func (mfd FeeDecorator) GetTxFeeRequired(ctx sdk.Context, tx sdk.FeeTx) (sdk.Coi
 
 	// Get local minimum-gas-prices
 	localFees := GetMinGasPrice(ctx, int64(tx.GetGas()))
+	ctx.Logger().Info(fmt.Sprintf("localFees: %v, IsCheckTx: %v", localFees, ctx.IsCheckTx()))
+
+	c, err := CombinedFeeRequirement(globalFees, localFees)
+	ctx.Logger().Info(fmt.Sprintf("CombinedFeeRequirement: %v, IsCheckTx: %v", c, ctx.IsCheckTx()))
 
 	// Return combined fee requirements
-	return CombinedFeeRequirement(globalFees, localFees)
+	return c, err
 }
 
 // GetGlobalFee returns the global fees for a given fee tx's gas
@@ -210,7 +222,7 @@ func (mfd FeeDecorator) GetGlobalFee(ctx sdk.Context, feeTx sdk.FeeTx) (sdk.Coin
 
 // DefaultZeroGlobalFee returns a zero coin with the staking module bond denom
 func (mfd FeeDecorator) DefaultZeroGlobalFee(ctx sdk.Context) ([]sdk.DecCoin, error) {
-	bondDenom := mfd.getBondDenom(ctx)
+	bondDenom := mfd.StakingKeeper.BondDenom(ctx)
 	if bondDenom == "" {
 		return nil, errors.New("empty staking bond denomination")
 	}
@@ -218,17 +230,13 @@ func (mfd FeeDecorator) DefaultZeroGlobalFee(ctx sdk.Context) ([]sdk.DecCoin, er
 	return []sdk.DecCoin{sdk.NewDecCoinFromDec(bondDenom, sdk.NewDec(0))}, nil
 }
 
-func (mfd FeeDecorator) getBondDenom(ctx sdk.Context) (bondDenom string) {
-	if mfd.StakingSubspace.Has(ctx, stakingtypes.KeyBondDenom) {
-		mfd.StakingSubspace.Get(ctx, stakingtypes.KeyBondDenom, &bondDenom)
-	}
-
-	return
-}
-
 func (mfd FeeDecorator) ContainsOnlyBypassMinFeeMsgs(ctx sdk.Context, msgs []sdk.Msg) bool {
 	bypassMsgTypes := mfd.GetBypassMsgTypes(ctx)
+	ctx.Logger().Info(fmt.Sprintf("BypassMsgs: %v", bypassMsgTypes))
+
 	for _, msg := range msgs {
+		ctx.Logger().Info(fmt.Sprintf("TxBypassMsg: %v", sdk.MsgTypeURL(msg)))
+
 		if tmstrings.StringInSlice(sdk.MsgTypeURL(msg), bypassMsgTypes) {
 			continue
 		}

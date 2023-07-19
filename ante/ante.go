@@ -7,11 +7,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	ibcante "github.com/cosmos/ibc-go/v7/modules/core/ante"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 
 	gaiaerrors "github.com/cosmos/gaia/v11/types/errors"
-	// gaiafeeante "github.com/cosmos/gaia/v11/x/globalfee/ante"
+	gaiafeeante "github.com/cosmos/gaia/v11/x/globalfee/ante"
 )
 
 // HandlerOptions extend the SDK's AnteHandler options by requiring the IBC
@@ -22,7 +23,8 @@ type HandlerOptions struct {
 	GovKeeper         *govkeeper.Keeper
 	IBCkeeper         *ibckeeper.Keeper
 	GlobalFeeSubspace paramtypes.Subspace
-	StakingSubspace   paramtypes.Subspace
+	StakingKeeper     *stakingkeeper.Keeper
+	TxFeeChecker      ante.TxFeeChecker
 }
 
 func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
@@ -39,10 +41,11 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		return nil, errorsmod.Wrap(gaiaerrors.ErrLogic, "IBC keeper is required for AnteHandler")
 	}
 	// TODO: Enable with Globalfee
-	// if opts.GlobalFeeSubspace.Name() == "" {
-	// 	return nil, errorsmod.Wrap(gaiaerrors.ErrNotFound, "globalfee param store is required for AnteHandler")
-	// }
-	if opts.StakingSubspace.Name() == "" {
+	if opts.GlobalFeeSubspace.Name() == "" {
+		return nil, errorsmod.Wrap(gaiaerrors.ErrNotFound, "globalfee param store is required for AnteHandler")
+	}
+
+	if opts.StakingKeeper == nil {
 		return nil, errorsmod.Wrap(gaiaerrors.ErrNotFound, "staking param store is required for AnteHandler")
 	}
 	if opts.GovKeeper == nil {
@@ -62,8 +65,7 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewValidateMemoDecorator(opts.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
 		NewGovPreventSpamDecorator(opts.Codec, opts.GovKeeper),
-		// TODO: Enable with GlobalFee
-		// gaiafeeante.NewFeeDecorator(opts.GlobalFeeSubspace, opts.StakingSubspace),
+		gaiafeeante.NewFeeDecorator(opts.GlobalFeeSubspace, opts.StakingKeeper),
 		ante.NewDeductFeeDecorator(opts.AccountKeeper, opts.BankKeeper, opts.FeegrantKeeper, opts.TxFeeChecker),
 		ante.NewSetPubKeyDecorator(opts.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewValidateSigCountDecorator(opts.AccountKeeper),

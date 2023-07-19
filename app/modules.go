@@ -56,7 +56,7 @@ import (
 	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v7/router/types"
 
 	gaiaparams "github.com/cosmos/gaia/v11/app/params"
-	// "github.com/cosmos/gaia/v11/x/globalfee"
+	"github.com/cosmos/gaia/v11/x/globalfee"
 )
 
 var maccPerms = map[string][]string{
@@ -108,8 +108,7 @@ var ModuleBasics = module.NewBasicManager(
 	vesting.AppModuleBasic{},
 	router.AppModuleBasic{},
 	ica.AppModuleBasic{},
-	// TODO: Enable with Global Fee
-	// globalfee.AppModule{},
+	globalfee.AppModule{},
 	ibcprovider.AppModuleBasic{},
 	consensus.AppModuleBasic{},
 )
@@ -144,7 +143,7 @@ func appModules(
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		ibc.NewAppModule(app.IBCKeeper),
 		sdkparams.NewAppModule(app.ParamsKeeper),
-		// globalfee.NewAppModule(app.GetSubspace(globalfee.ModuleName)),
+		globalfee.NewAppModule(app.GetSubspace(globalfee.ModuleName)),
 		app.TransferModule,
 		app.ICAModule,
 		app.PFMRouterModule,
@@ -216,7 +215,7 @@ func orderBeginBlockers() []string {
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
-		// globalfee.ModuleName,
+		globalfee.ModuleName,
 		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 	}
@@ -252,7 +251,7 @@ func orderEndBlockers() []string {
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
-		// globalfee.ModuleName,
+		globalfee.ModuleName,
 		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 	}
@@ -296,7 +295,7 @@ func orderInitBlockers() []string {
 		// To resolve this issue, we should initialize the globalfee module after genutil, ensuring that the global
 		// min fee is empty when gentx is called.
 		// For more details, please refer to the following link: https://github.com/cosmos/gaia/issues/2489
-		// globalfee.ModuleName,
+		globalfee.ModuleName,
 		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 	}

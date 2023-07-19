@@ -12,18 +12,20 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 
-	// "github.com/cosmos/gaia/v11/ante"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+
+	"github.com/cosmos/gaia/v11/ante"
 	gaiahelpers "github.com/cosmos/gaia/v11/app/helpers"
 
 	gaiaapp "github.com/cosmos/gaia/v11/app"
 )
 
-// var (
-// 	insufficientCoins = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 100))
-// 	minCoins          = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000000))
-// 	moreThanMinCoins  = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 2500000))
-// 	testAddr          = sdk.AccAddress("test1")
-// )
+var (
+	insufficientCoins = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 100))
+	minCoins          = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000000))
+	moreThanMinCoins  = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 2500000))
+	testAddr          = sdk.AccAddress("test1")
+)
 
 type GovAnteHandlerTestSuite struct {
 	suite.Suite
@@ -53,41 +55,40 @@ func TestGovSpamPreventionSuite(t *testing.T) {
 	suite.Run(t, new(GovAnteHandlerTestSuite))
 }
 
-// TODO: Enable with Global Fee
-// func (s *GovAnteHandlerTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
-//	// setup test
-//	s.SetupTest()
-//	tests := []struct {
-//		title, description string
-//		proposalType       string
-//		proposerAddr       sdk.AccAddress
-//		initialDeposit     sdk.Coins
-//		expectPass         bool
-//	}{
-//		{"Passing proposal 1", "the purpose of this proposal is to pass", govv1beta1.ProposalTypeText, testAddr, minCoins, true},
-//		{"Passing proposal 2", "the purpose of this proposal is to pass with more coins than minimum", govv1beta1.ProposalTypeText, testAddr, moreThanMinCoins, true},
-//		{"Failing proposal", "the purpose of this proposal is to fail", govv1beta1.ProposalTypeText, testAddr, insufficientCoins, false},
-//	}
-//
-//	decorator := ante.NewGovPreventSpamDecorator(s.app.AppCodec(), &s.app.GovKeeper)
-//
-//	for _, tc := range tests {
-//		content, _ := govv1beta1.ContentFromProposalType(tc.title, tc.description, tc.proposalType)
-//		s.Require().NotNil(content)
-//
-//		msg, err := govv1beta1.NewMsgSubmitProposal(
-//			content,
-//			tc.initialDeposit,
-//			tc.proposerAddr,
-//		)
-//
-//		s.Require().NoError(err)
-//
-//		err = decorator.ValidateGovMsgs(s.ctx, []sdk.Msg{msg})
-//		if tc.expectPass {
-//			s.Require().NoError(err, "expected %v to pass", tc.title)
-//		} else {
-//			s.Require().Error(err, "expected %v to fail", tc.title)
-//		}
-//	}
-//}
+func (s *GovAnteHandlerTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
+	// setup test
+	s.SetupTest()
+	tests := []struct {
+		title, description string
+		proposalType       string
+		proposerAddr       sdk.AccAddress
+		initialDeposit     sdk.Coins
+		expectPass         bool
+	}{
+		{"Passing proposal 1", "the purpose of this proposal is to pass", govv1beta1.ProposalTypeText, testAddr, minCoins, true},
+		{"Passing proposal 2", "the purpose of this proposal is to pass with more coins than minimum", govv1beta1.ProposalTypeText, testAddr, moreThanMinCoins, true},
+		{"Failing proposal", "the purpose of this proposal is to fail", govv1beta1.ProposalTypeText, testAddr, insufficientCoins, false},
+	}
+
+	decorator := ante.NewGovPreventSpamDecorator(s.app.AppCodec(), &s.app.GovKeeper)
+
+	for _, tc := range tests {
+		content, _ := govv1beta1.ContentFromProposalType(tc.title, tc.description, tc.proposalType)
+		s.Require().NotNil(content)
+
+		msg, err := govv1beta1.NewMsgSubmitProposal(
+			content,
+			tc.initialDeposit,
+			tc.proposerAddr,
+		)
+
+		s.Require().NoError(err)
+
+		err = decorator.ValidateGovMsgs(s.ctx, []sdk.Msg{msg})
+		if tc.expectPass {
+			s.Require().NoError(err, "expected %v to pass", tc.title)
+		} else {
+			s.Require().Error(err, "expected %v to fail", tc.title)
+		}
+	}
+}

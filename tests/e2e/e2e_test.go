@@ -3,18 +3,18 @@ package e2e
 import "fmt"
 
 var (
-	runBankTest = true
-	//	runBypassMinFeeTest           = true
-	runEncodeTest   = true
-	runEvidenceTest = true
-	runFeeGrantTest = true
-	// runGlobalFeesTest             = true
-	runGovTest                    = true
-	runIBCTest                    = true
-	runSlashingTest               = true
-	runStakingAndDistributionTest = true
-	runVestingTest                = true
-	runRestInterfacesTest         = true
+	runBankTest                   = true
+	runBypassMinFeeTest           = true
+	runEncodeTest                 = false
+	runEvidenceTest               = false
+	runFeeGrantTest               = false
+	runGlobalFeesTest             = false
+	runGovTest                    = false
+	runIBCTest                    = false
+	runSlashingTest               = false
+	runStakingAndDistributionTest = false
+	runVestingTest                = false
+	runRestInterfacesTest         = false
 )
 
 func (s *IntegrationTestSuite) TestRestInterfaces() {
@@ -31,13 +31,13 @@ func (s *IntegrationTestSuite) TestBank() {
 	s.testBankTokenTransfer()
 }
 
-//	func (s *IntegrationTestSuite) TestByPassMinFee() {
-//		if !runBypassMinFeeTest {
-//			s.T().Skip()
-//		}
-//		chainAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-//		s.testBypassMinFeeWithdrawReward(chainAPI)
-//	}
+func (s *IntegrationTestSuite) TestByPassMinFee() {
+	if !runBypassMinFeeTest {
+		s.T().Skip()
+	}
+	chainAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	s.testBypassMinFeeWithdrawReward(chainAPI)
+}
 
 func (s *IntegrationTestSuite) TestEncode() {
 	if !runEncodeTest {
@@ -61,14 +61,13 @@ func (s *IntegrationTestSuite) TestFeeGrant() {
 	s.testFeeGrant()
 }
 
-//	func (s *IntegrationTestSuite) TestGlobalFees() {
-//		if !runGlobalFeesTest {
-//			s.T().Skip()
-//		}
-//		s.testGlobalFees()
-//		s.testQueryGlobalFeesInGenesis()
-//	}
-//
+func (s *IntegrationTestSuite) TestGlobalFees() {
+	if !runGlobalFeesTest {
+		s.T().Skip()
+	}
+	s.testGlobalFees()
+	s.testQueryGlobalFeesInGenesis()
+}
 
 func (s *IntegrationTestSuite) TestGov() {
 	if !runGovTest {

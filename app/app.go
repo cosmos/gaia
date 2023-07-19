@@ -39,7 +39,6 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	ibctesting "github.com/cosmos/interchain-security/v3/legacy_ibc_testing/testing"
 	providertypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
@@ -226,7 +225,8 @@ func NewGaiaApp(
 			IBCkeeper:         app.IBCKeeper,
 			GovKeeper:         &app.GovKeeper,
 			GlobalFeeSubspace: app.GetSubspace(globalfee.ModuleName),
-			StakingSubspace:   app.GetSubspace(stakingtypes.ModuleName),
+			StakingKeeper:     app.StakingKeeper,
+			TxFeeChecker:      gaiaante.NoOpTxFeeChecker,
 		},
 	)
 	if err != nil {

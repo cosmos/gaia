@@ -364,6 +364,7 @@ func (app *GaiaApp) RegisterTendermintService(clientCtx client.Context) {
 	)
 }
 
+// RegisterTxService allows query minimum-gas-prices in app.toml
 func (app *GaiaApp) RegisterNodeService(clientCtx client.Context) {
 	nodeservice.RegisterNodeService(clientCtx, app.GRPCQueryRouter())
 }

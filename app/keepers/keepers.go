@@ -349,6 +349,7 @@ func NewAppKeeper(
 	// Set legacy router for backwards compatibility with gov v1beta1
 	govKeeper.SetLegacyRouter(govRouter)
 
+	// appKeepers.GovKeeper = *govKeeper
 	appKeepers.GovKeeper = *govKeeper.SetHooks(
 		govtypes.NewMultiGovHooks(
 		// register the governance hooks

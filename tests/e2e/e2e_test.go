@@ -76,7 +76,7 @@ func (s *IntegrationTestSuite) TestGov() {
 	s.GovSoftwareUpgrade()
 	s.GovCancelSoftwareUpgrade()
 	s.GovCommunityPoolSpend()
-	// s.AddRemoveConsumerChain()
+	s.AddRemoveConsumerChain()
 }
 
 func (s *IntegrationTestSuite) TestIBC() {

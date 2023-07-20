@@ -48,8 +48,8 @@ import (
 	ibcclientclient "github.com/cosmos/ibc-go/v7/modules/core/02-client/client"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibctm "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
-	ibcprovider "github.com/cosmos/interchain-security/v3/x/ccv/provider"
-	ibcproviderclient "github.com/cosmos/interchain-security/v3/x/ccv/provider/client"
+	icsprovider "github.com/cosmos/interchain-security/v3/x/ccv/provider"
+	icsproviderclient "github.com/cosmos/interchain-security/v3/x/ccv/provider/client"
 	providertypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
 
 	"github.com/strangelove-ventures/packet-forward-middleware/v7/router"
@@ -90,9 +90,9 @@ var ModuleBasics = module.NewBasicManager(
 			upgradeclient.LegacyCancelProposalHandler,
 			ibcclientclient.UpdateClientProposalHandler,
 			ibcclientclient.UpgradeProposalHandler,
-			ibcproviderclient.ConsumerAdditionProposalHandler,
-			ibcproviderclient.ConsumerRemovalProposalHandler,
-			ibcproviderclient.EquivocationProposalHandler,
+			icsproviderclient.ConsumerAdditionProposalHandler,
+			icsproviderclient.ConsumerRemovalProposalHandler,
+			icsproviderclient.EquivocationProposalHandler,
 		},
 	),
 	sdkparams.AppModuleBasic{},
@@ -109,7 +109,7 @@ var ModuleBasics = module.NewBasicManager(
 	router.AppModuleBasic{},
 	ica.AppModuleBasic{},
 	globalfee.AppModule{},
-	ibcprovider.AppModuleBasic{},
+	icsprovider.AppModuleBasic{},
 	consensus.AppModuleBasic{},
 )
 

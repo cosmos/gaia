@@ -643,7 +643,7 @@ func (s *IntegrationTestSuite) runIBCRelayer0() {
 		&dockertest.RunOptions{
 			Name:       fmt.Sprintf("%s-%s-relayer-0", s.chainA.id, s.chainB.id),
 			Repository: "ghcr.io/cosmos/hermes-e2e",
-			Tag:        "1.4.0",
+			Tag:        "1.4.1",
 			NetworkID:  s.dkrNet.Network.ID,
 			Mounts: []string{
 				fmt.Sprintf("%s/:/root/hermes", hermesCfgPath),
@@ -743,7 +743,7 @@ func (s *IntegrationTestSuite) runIBCRelayer1() {
 		&dockertest.RunOptions{
 			Name:       fmt.Sprintf("%s-%s-relayer-1", s.chainA.id, s.chainB.id),
 			Repository: "ghcr.io/cosmos/hermes-e2e",
-			Tag:        "1.4.0",
+			Tag:        "1.4.1",
 			NetworkID:  s.dkrNet.Network.ID,
 			Mounts: []string{
 				fmt.Sprintf("%s/:/root/hermes", hermesCfgPath),

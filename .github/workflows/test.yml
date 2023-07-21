@@ -73,8 +73,10 @@ jobs:
             **/**.go
             go.mod
             go.sum
-      - name: Build Docker Image
+      - name: Build Gaia Docker Image
         run: make docker-build-debug
+      - name: Build Hermes Docker Image
+        run: make docker-build-hermes
       - name: Test E2E
         run: make test-e2e
 

@@ -1,4 +1,4 @@
-FROM informalsystems/hermes:1.4.1 AS hermes-builder
+FROM --platform=linux/amd64 informalsystems/hermes:1.4.1 AS hermes-builder
 
 FROM debian:buster-slim
 USER root

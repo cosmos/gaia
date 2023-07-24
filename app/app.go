@@ -42,15 +42,16 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	gaiaante "github.com/cosmos/gaia/v11/ante"
-	"github.com/cosmos/gaia/v11/app/keepers"
-	"github.com/cosmos/gaia/v11/app/upgrades"
-	v11 "github.com/cosmos/gaia/v11/app/upgrades/v11"
 	ibctesting "github.com/cosmos/interchain-security/v3/legacy_ibc_testing/testing"
 	providertypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
+
+	gaiaante "github.com/cosmos/gaia/v11/ante"
+	"github.com/cosmos/gaia/v11/app/keepers"
+	"github.com/cosmos/gaia/v11/app/upgrades"
+	v11 "github.com/cosmos/gaia/v11/app/upgrades/v11"
 
 	"github.com/cosmos/gaia/v11/x/globalfee"
 
@@ -227,7 +228,9 @@ func NewGaiaApp(
 			GovKeeper:         &app.GovKeeper,
 			GlobalFeeSubspace: app.GetSubspace(globalfee.ModuleName),
 			StakingKeeper:     app.StakingKeeper,
-			TxFeeChecker:      noOpTxFeeChecker,
+			// If TxFeeChecker is nil the default ante TxFeeChecker is used
+			// so we use this no-op to keep the global fee module behaviour unchanged
+			TxFeeChecker: noOpTxFeeChecker,
 		},
 	)
 	if err != nil {
@@ -438,7 +441,7 @@ func (ao EmptyAppOptions) Get(_ string) interface{} {
 	return nil
 }
 
-// noOpTxFeeChecker is a ante TxFeeChecker for the DeductFeeDecorator, see x/auth/ante/fee.go,
+// noOpTxFeeChecker is an ante TxFeeChecker for the DeductFeeDecorator, see x/auth/ante/fee.go,
 // it performs a no-op by not checking tx fees and always returns a zero tx priority
 func noOpTxFeeChecker(_ sdk.Context, tx sdk.Tx) (sdk.Coins, int64, error) {
 	feeTx, ok := tx.(sdk.FeeTx)

@@ -55,7 +55,8 @@ func (s *IntegrationTestSuite) SetupTestGlobalFeeStoreAndMinGasPrice(minGasPrice
 	subspace.SetParamSet(s.ctx, globalFeeParams)
 	s.ctx = s.ctx.WithMinGasPrices(minGasPrice).WithIsCheckTx(true)
 
-	// setup staking bond denom
+	// setup staking bond denom to "uatom"
+	// since it's "stake" per default
 	params := s.app.StakingKeeper.GetParams(s.ctx)
 	params.BondDenom = testBondDenom
 	err := s.app.StakingKeeper.SetParams(s.ctx, params)

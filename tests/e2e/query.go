@@ -38,7 +38,6 @@ func queryGaiaTx(endpoint, txHash string) error {
 	}
 
 	txResp := result["tx_response"].(map[string]interface{})
-	fmt.Printf("%#+v\n", txResp["raw_log"])
 
 	if v := txResp["code"]; v.(float64) != 0 {
 		return fmt.Errorf("tx %s failed with status code %v", txHash, v)
@@ -136,7 +135,7 @@ func queryDelegatorWithdrawalAddress(endpoint string, delegatorAddr string) (dis
 	return res, nil
 }
 
-func queryDelegatorTotalRewards(endpoint, delegatorAddr string) (disttypes.QueryDelegationTotalRewardsResponse, error) { //nolint:unused
+func queryDelegatorTotalRewards(endpoint, delegatorAddr string) (disttypes.QueryDelegationTotalRewardsResponse, error) {
 	var res disttypes.QueryDelegationTotalRewardsResponse
 
 	body, err := httpGet(fmt.Sprintf("%s/cosmos/distribution/v1beta1/delegators/%s/rewards", endpoint, delegatorAddr))

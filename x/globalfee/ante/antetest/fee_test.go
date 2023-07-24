@@ -94,12 +94,11 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 		"empty min_gas_price, nonempty global fee, fee higher/equal than global_fee": {
 			minGasPrice: minGasPriceEmpty,
 			globalFee:   globalfeeParamsHigh,
-			// sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String())
-			gasPrice: sdk.NewCoins(sdk.NewCoin("uatom", highFeeAmt)),
-			gasLimit: testGasLimit,
-			txMsg:    testdata.NewTestMsg(addr1),
-			txCheck:  true,
-			expErr:   false,
+			gasPrice:    sdk.NewCoins(sdk.NewCoin("uatom", highFeeAmt)),
+			gasLimit:    testGasLimit,
+			txMsg:       testdata.NewTestMsg(addr1),
+			txCheck:     true,
+			expErr:      false,
 		},
 		"empty min_gas_price, nonempty global fee, fee lower than global_fee": {
 			minGasPrice: minGasPriceEmpty,
@@ -757,16 +756,6 @@ func (s *IntegrationTestSuite) TestContainsOnlyBypassMinFeeMsgs() {
 func (s *IntegrationTestSuite) TestGetTxFeeRequired() {
 	// create global fee params
 	globalfeeParamsEmpty := &globfeetypes.Params{MinimumGasPrices: []sdk.DecCoin{}}
-
-	// setup tests with default global fee i.e. "0uatom" and empty local min gas prices
-	// feeDecorator, _ := s.SetupTestGlobalFeeStoreAndMinGasPrice([]sdk.DecCoin{}, globalfeeParamsEmpty)
-
-	// // set a subspace that doesn't have the stakingtypes.KeyBondDenom key registred
-	// feeDecorator.StakingSubspace = s.app.GetSubspace(globfeetypes.ModuleName)
-
-	// // check that an error is returned when staking bond denom is empty
-	// _, err := feeDecorator.GetTxFeeRequired(s.ctx, nil)
-	// s.Require().Equal(err.Error(), "empty staking bond denomination")
 
 	// set non-zero local min gas prices
 	localMinGasPrices := sdk.NewCoins(sdk.NewCoin("uatom", sdk.NewInt(1)))

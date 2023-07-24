@@ -13,7 +13,8 @@ labels: epic, needs-triage
 - [ ] Coordinate with Hypha to test release candidate
 - [ ] Create proposal text draft
 - [ ] Post proposal text draft on forum
-- [ ] Update public testnet (note: on Wednesdays)
+- [ ] Upgrade release and replicated security testnets (note: on Wednesdays)
+- [ ] Review post-upgrade status of affected features if necessary
 ```
 
 ```[tasklist]

@@ -31,6 +31,8 @@ import (
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 
+	"github.com/cosmos/gaia/v11/x/globalfee"
+
 	providertypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
 
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
@@ -435,7 +437,10 @@ func NewAppKeeper(
 
 // GetSubspace returns a param subspace for a given module name.
 func (appKeepers *AppKeepers) GetSubspace(moduleName string) paramstypes.Subspace {
-	subspace, _ := appKeepers.ParamsKeeper.GetSubspace(moduleName)
+	subspace, ok := appKeepers.ParamsKeeper.GetSubspace(moduleName)
+	if !ok {
+		panic("couldn't load subspace for module: " + moduleName)
+	}
 	return subspace
 }
 
@@ -457,8 +462,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 
 	paramsKeeper.Subspace(pfmroutertypes.ModuleName).WithKeyTable(pfmroutertypes.ParamKeyTable())
-	// TODO: Enable with Globalfee
-	// paramsKeeper.Subspace(globalfee.ModuleName)
+	paramsKeeper.Subspace(globalfee.ModuleName)
 	paramsKeeper.Subspace(providertypes.ModuleName)
 
 	return paramsKeeper

@@ -16,6 +16,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 
+	errorsmod "cosmossdk.io/errors"
 	dbm "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
 	tmjson "github.com/cometbft/cometbft/libs/json"
@@ -32,6 +33,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
@@ -39,7 +41,6 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	ibctesting "github.com/cosmos/interchain-security/v3/legacy_ibc_testing/testing"
 	providertypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
@@ -52,7 +53,7 @@ import (
 	"github.com/cosmos/gaia/v11/app/upgrades"
 	v11 "github.com/cosmos/gaia/v11/app/upgrades/v11"
 
-	// "github.com/cosmos/gaia/v11/x/globalfee"
+	"github.com/cosmos/gaia/v11/x/globalfee"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
@@ -222,11 +223,14 @@ func NewGaiaApp(
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
-			Codec:     appCodec,
-			IBCkeeper: app.IBCKeeper,
-			GovKeeper: &app.GovKeeper,
-			// GlobalFeeSubspace: app.GetSubspace(globalfee.ModuleName),
-			StakingSubspace: app.GetSubspace(stakingtypes.ModuleName),
+			Codec:             appCodec,
+			IBCkeeper:         app.IBCKeeper,
+			GovKeeper:         &app.GovKeeper,
+			GlobalFeeSubspace: app.GetSubspace(globalfee.ModuleName),
+			StakingKeeper:     app.StakingKeeper,
+			// If TxFeeChecker is nil the default ante TxFeeChecker is used
+			// so we use this no-op to keep the global fee module behaviour unchanged
+			TxFeeChecker: noOpTxFeeChecker,
 		},
 	)
 	if err != nil {
@@ -364,6 +368,7 @@ func (app *GaiaApp) RegisterTendermintService(clientCtx client.Context) {
 	)
 }
 
+// RegisterTxService allows query minimum-gas-prices in app.toml
 func (app *GaiaApp) RegisterNodeService(clientCtx client.Context) {
 	nodeservice.RegisterNodeService(clientCtx, app.GRPCQueryRouter())
 }
@@ -434,4 +439,15 @@ type EmptyAppOptions struct{}
 // Get implements AppOptions
 func (ao EmptyAppOptions) Get(_ string) interface{} {
 	return nil
+}
+
+// noOpTxFeeChecker is an ante TxFeeChecker for the DeductFeeDecorator, see x/auth/ante/fee.go,
+// it performs a no-op by not checking tx fees and always returns a zero tx priority
+func noOpTxFeeChecker(_ sdk.Context, tx sdk.Tx) (sdk.Coins, int64, error) {
+	feeTx, ok := tx.(sdk.FeeTx)
+	if !ok {
+		return nil, 0, errorsmod.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
+	}
+
+	return feeTx.GetFee(), 0, nil
 }

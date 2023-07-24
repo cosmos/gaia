@@ -5,6 +5,7 @@ import (
 	"os"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	tmrand "github.com/cometbft/cometbft/libs/rand"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -16,8 +17,8 @@ import (
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	govv1types "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govv1beta1types "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	paramsproptypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	gaiaparams "github.com/cosmos/gaia/v11/app/params"
 )
@@ -42,6 +43,8 @@ func init() {
 	cryptocodec.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	govv1types.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	govv1beta1types.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	paramsproptypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	paramsproptypes.RegisterLegacyAminoCodec(encodingConfig.Amino)
 
 	upgradetypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	distribtypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)

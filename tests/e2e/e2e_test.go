@@ -3,12 +3,12 @@ package e2e
 import "fmt"
 
 var (
-	runBankTest = true
-	//	runBypassMinFeeTest           = true
-	runEncodeTest   = true
-	runEvidenceTest = true
-	runFeeGrantTest = true
-	// runGlobalFeesTest             = true
+	runBankTest                   = true
+	runBypassMinFeeTest           = true
+	runEncodeTest                 = true
+	runEvidenceTest               = true
+	runFeeGrantTest               = true
+	runGlobalFeesTest             = true
 	runGovTest                    = true
 	runIBCTest                    = true
 	runSlashingTest               = true
@@ -31,13 +31,13 @@ func (s *IntegrationTestSuite) TestBank() {
 	s.testBankTokenTransfer()
 }
 
-//	func (s *IntegrationTestSuite) TestByPassMinFee() {
-//		if !runBypassMinFeeTest {
-//			s.T().Skip()
-//		}
-//		chainAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-//		s.testBypassMinFeeWithdrawReward(chainAPI)
-//	}
+func (s *IntegrationTestSuite) TestByPassMinFee() {
+	if !runBypassMinFeeTest {
+		s.T().Skip()
+	}
+	chainAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	s.testBypassMinFeeWithdrawReward(chainAPI)
+}
 
 func (s *IntegrationTestSuite) TestEncode() {
 	if !runEncodeTest {
@@ -61,14 +61,13 @@ func (s *IntegrationTestSuite) TestFeeGrant() {
 	s.testFeeGrant()
 }
 
-//	func (s *IntegrationTestSuite) TestGlobalFees() {
-//		if !runGlobalFeesTest {
-//			s.T().Skip()
-//		}
-//		s.testGlobalFees()
-//		s.testQueryGlobalFeesInGenesis()
-//	}
-//
+func (s *IntegrationTestSuite) TestGlobalFees() {
+	if !runGlobalFeesTest {
+		s.T().Skip()
+	}
+	s.testGlobalFees()
+	s.testQueryGlobalFeesInGenesis()
+}
 
 func (s *IntegrationTestSuite) TestGov() {
 	if !runGovTest {
@@ -87,6 +86,11 @@ func (s *IntegrationTestSuite) TestIBC() {
 	s.testIBCTokenTransfer()
 	s.testMultihopIBCTokenTransfer()
 	s.testFailedMultihopIBCTokenTransfer()
+
+	// stop hermes0 to prevent hermes0 relaying transactions
+	s.Require().NoError(s.dkrPool.Purge(s.hermesResource0))
+	HermesResource0Purged = true
+	s.testIBCBypassMsg()
 }
 
 func (s *IntegrationTestSuite) TestSlashing() {

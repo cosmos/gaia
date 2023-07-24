@@ -284,57 +284,56 @@ func (s *IntegrationTestSuite) execBankSend(
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.expectErrExecValidation(c, valIdx, expectErr))
 }
 
-// type txBankSend struct {
-// 	from      string
-// 	to        string
-// 	amt       string
-// 	fees      string
-// 	log       string
-// 	expectErr bool
-// }
+type txBankSend struct {
+	from      string
+	to        string
+	amt       string
+	fees      string
+	log       string
+	expectErr bool
+}
 
-// func (s *IntegrationTestSuite) execBankSendBatch(
-//
-//	c *chain,
-//	valIdx int, //nolint:unparam
-//	txs ...txBankSend,
-//
-//	) int {
-//		sucessBankSendCount := 0
-//
-//		for i := range txs {
-//			s.T().Logf(txs[i].log)
-//
-//			s.execBankSend(c, valIdx, txs[i].from, txs[i].to, txs[i].amt, txs[i].fees, txs[i].expectErr)
-//			if !txs[i].expectErr {
-//				if !txs[i].expectErr {
-//					sucessBankSendCount++
-//				}
-//			}
-//		}
-//
-//		return sucessBankSendCount
-//	}
-//
-//	func (s *IntegrationTestSuite) execWithdrawAllRewards(c *chain, valIdx int, payee, fees string, expectErr bool) {
-//		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-//		defer cancel()
-//
-//		gaiaCommand := []string{
-//			gaiadBinary,
-//			txCommand,
-//			distributiontypes.ModuleName,
-//			"withdraw-all-rewards",
-//			fmt.Sprintf("--%s=%s", flags.FlagFrom, payee),
-//			fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
-//			fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-//			"--keyring-backend=test",
-//			"--output=json",
-//			"-y",
-//		}
-//
-//		s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.expectErrExecValidation(c, valIdx, expectErr))
-//	}
+func (s *IntegrationTestSuite) execBankSendBatch(
+	c *chain,
+	valIdx int, //nolint:unparam
+	txs ...txBankSend,
+) int {
+	sucessBankSendCount := 0
+
+	for i := range txs {
+		s.T().Logf(txs[i].log)
+
+		s.execBankSend(c, valIdx, txs[i].from, txs[i].to, txs[i].amt, txs[i].fees, txs[i].expectErr)
+		if !txs[i].expectErr {
+			if !txs[i].expectErr {
+				sucessBankSendCount++
+			}
+		}
+	}
+
+	return sucessBankSendCount
+}
+
+func (s *IntegrationTestSuite) execWithdrawAllRewards(c *chain, valIdx int, payee, fees string, expectErr bool) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		distributiontypes.ModuleName,
+		"withdraw-all-rewards",
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, payee),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		"--keyring-backend=test",
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.expectErrExecValidation(c, valIdx, expectErr))
+}
+
 func (s *IntegrationTestSuite) execDistributionFundCommunityPool(c *chain, valIdx int, from, amt, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
@@ -622,6 +621,35 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 		s.Require().FailNowf("Exec validation failed", "stdout: %s, stderr: %s",
 			string(stdOut), string(stdErr))
 	}
+}
+
+func (s *IntegrationTestSuite) executeHermesCommand(ctx context.Context, hermesCmd []string) ([]byte, []byte) {
+	var (
+		outBuf bytes.Buffer
+		errBuf bytes.Buffer
+	)
+	exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
+		Context:      ctx,
+		AttachStdout: true,
+		AttachStderr: true,
+		Container:    s.hermesResource1.Container.ID,
+		User:         "root",
+		Cmd:          hermesCmd,
+	})
+	s.Require().NoError(err)
+
+	err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
+		Context:      ctx,
+		Detach:       false,
+		OutputStream: &outBuf,
+		ErrorStream:  &errBuf,
+	})
+	s.Require().NoError(err)
+
+	stdOut := outBuf.Bytes()
+	stdErr := errBuf.Bytes()
+
+	return stdOut, stdErr
 }
 
 func (s *IntegrationTestSuite) expectErrExecValidation(chain *chain, valIdx int, expectErr bool) func([]byte, []byte) bool {

@@ -42,6 +42,7 @@ const (
 	slashingParamsModuleQueryPath       = "/cosmos/slashing/v1beta1/params"
 	stakingParamsModuleQueryPath        = "/cosmos/staking/v1beta1/params"
 	missingPath                         = "/missing_endpoint"
+	localMinGasPriceQueryPath           = "/cosmos/base/node/v1beta1/config"
 )
 
 func (s *IntegrationTestSuite) testRestInterfaces() {
@@ -72,6 +73,7 @@ func (s *IntegrationTestSuite) testRestInterfaces() {
 				{slashingParamsModuleQueryPath, 200},
 				{stakingParamsModuleQueryPath, 200},
 				{missingPath, 501},
+				{localMinGasPriceQueryPath, 200},
 			}
 		)
 

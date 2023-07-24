@@ -14,6 +14,8 @@ import (
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
+	"github.com/cosmos/gaia/v11/x/globalfee/types"
+
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -24,7 +26,6 @@ func queryGaiaTx(endpoint, txHash string) error {
 	if err != nil {
 		return fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
-
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
@@ -37,6 +38,7 @@ func queryGaiaTx(endpoint, txHash string) error {
 	}
 
 	txResp := result["tx_response"].(map[string]interface{})
+
 	if v := txResp["code"]; v.(float64) != 0 {
 		return fmt.Errorf("tx %s failed with status code %v", txHash, v)
 	}
@@ -73,37 +75,37 @@ func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) {
 	return balancesResp.Balances, nil
 }
 
-// func queryGlobalFeeParams(endpoint string) (types.QueryParamsResponse, error) {
-// 	body, err := httpGet(fmt.Sprintf("%s/gaia/globalfee/v1beta1/params", endpoint))
-// 	if err != nil {
-// 		return types.QueryParamsResponse{}, fmt.Errorf("failed to execute HTTP request: %w", err)
-// 	}
+func queryGlobalFeeParams(endpoint string) (types.QueryParamsResponse, error) {
+	body, err := httpGet(fmt.Sprintf("%s/gaia/globalfee/v1beta1/params", endpoint))
+	if err != nil {
+		return types.QueryParamsResponse{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
 
-// 	var params types.QueryParamsResponse
-// 	if err := cdc.UnmarshalJSON(body, &params); err != nil {
-// 		return types.QueryParamsResponse{}, err
-// 	}
+	var params types.QueryParamsResponse
+	if err := cdc.UnmarshalJSON(body, &params); err != nil {
+		return types.QueryParamsResponse{}, err
+	}
 
-// 	return params, nil
-// }
+	return params, nil
+}
 
-// func queryGlobalFees(endpoint string) (sdk.DecCoins, error) {
-// 	p, err := queryGlobalFeeParams(endpoint)
+func queryGlobalFees(endpoint string) (sdk.DecCoins, error) {
+	p, err := queryGlobalFeeParams(endpoint)
 
-// 	return p.Params.MinimumGasPrices, err
-// }
+	return p.Params.MinimumGasPrices, err
+}
 
-// func queryBypassMsgs(endpoint string) ([]string, error) {
-// 	p, err := queryGlobalFeeParams(endpoint)
+func queryBypassMsgs(endpoint string) ([]string, error) {
+	p, err := queryGlobalFeeParams(endpoint)
 
-// 	return p.Params.BypassMinFeeMsgTypes, err
-// }
+	return p.Params.BypassMinFeeMsgTypes, err
+}
 
-// func queryMaxTotalBypassMinFeeMsgGasUsage(endpoint string) (uint64, error) {
-// 	p, err := queryGlobalFeeParams(endpoint)
+func queryMaxTotalBypassMinFeeMsgGasUsage(endpoint string) (uint64, error) {
+	p, err := queryGlobalFeeParams(endpoint)
 
-// 	return p.Params.MaxTotalBypassMinFeeMsgGasUsage, err
-// }
+	return p.Params.MaxTotalBypassMinFeeMsgGasUsage, err
+}
 
 func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string) (stakingtypes.QueryDelegationResponse, error) {
 	var res stakingtypes.QueryDelegationResponse
@@ -133,7 +135,7 @@ func queryDelegatorWithdrawalAddress(endpoint string, delegatorAddr string) (dis
 	return res, nil
 }
 
-func queryDelegatorTotalRewards(endpoint, delegatorAddr string) (disttypes.QueryDelegationTotalRewardsResponse, error) { //nolint:unused
+func queryDelegatorTotalRewards(endpoint, delegatorAddr string) (disttypes.QueryDelegationTotalRewardsResponse, error) {
 	var res disttypes.QueryDelegationTotalRewardsResponse
 
 	body, err := httpGet(fmt.Sprintf("%s/cosmos/distribution/v1beta1/delegators/%s/rewards", endpoint, delegatorAddr))

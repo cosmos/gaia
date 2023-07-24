@@ -11,6 +11,7 @@ deps:
   - buf.build/cosmos/ibc:fbb44f5ad3194450af479a615fa715d9
   - buf.build/googleapis/googleapis
   - buf.build/cosmos/ics23:b1abd8678aab07165efd453c96796a179eb3131f
+  - buf.build/cosmos/interchain-security:064c601231b85066bfaf734efec2751a672528a7
 
 breaking:
   use:

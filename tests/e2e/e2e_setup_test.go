@@ -38,7 +38,6 @@ import (
 	"github.com/ory/dockertest/v3"
 	"github.com/stretchr/testify/suite"
 
-	// //	ibcclienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 	// "github.com/cosmos/cosmos-sdk/crypto/hd"
 	// "github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/ory/dockertest/v3/docker"
@@ -600,7 +599,6 @@ func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 			if status.SyncInfo.CatchingUp || status.SyncInfo.LatestBlockHeight < 3 {
 				return false
 			}
-
 			return true
 		},
 		5*time.Minute,
@@ -910,63 +908,6 @@ func (s *IntegrationTestSuite) writeGovLegProposal(c *chain, height int64, name 
 	s.Require().NoError(err)
 }
 
-//	type ConsumerAdditionProposalWithDeposit struct {
-//		ccvprovider.ConsumerAdditionProposal
-//		Deposit string `json:"deposit"`
-//	}
-//
-//	type ConsumerRemovalProposalWithDeposit struct {
-//		ccvprovider.ConsumerRemovalProposal
-//		Deposit string `json:"deposit"`
-//	}
-//
-//	func (s *IntegrationTestSuite) writeAddRemoveConsumerProposals(c *chain, consumerChainID string) {
-//		hash, _ := json.Marshal("Z2VuX2hhc2g=")
-//		addProp := &ccvprovider.ConsumerAdditionProposal{
-//			Title:       "Create consumer chain",
-//			Description: "First consumer chain",
-//			ChainId:     consumerChainID,
-//			InitialHeight: ibcclienttypes.Height{
-//				RevisionHeight: 1,
-//			},
-//			GenesisHash:                       hash,
-//			BinaryHash:                        hash,
-//			SpawnTime:                         time.Now(),
-//			UnbondingPeriod:                   time.Duration(100000000000),
-//			CcvTimeoutPeriod:                  time.Duration(100000000000),
-//			TransferTimeoutPeriod:             time.Duration(100000000000),
-//			ConsumerRedistributionFraction:    "0.75",
-//			BlocksPerDistributionTransmission: 10,
-//			HistoricalEntries:                 10000,
-//		}
-//		addPropWithDeposit := ConsumerAdditionProposalWithDeposit{
-//			ConsumerAdditionProposal: *addProp,
-//			Deposit:                  "1000uatom",
-//		}
-//
-//		removeProp := &ccvprovider.ConsumerRemovalProposal{
-//			Title:       "Remove consumer chain",
-//			Description: "Removing consumer chain",
-//			ChainId:     consumerChainID,
-//			StopTime:    time.Now(),
-//		}
-//
-//		removePropWithDeposit := ConsumerRemovalProposalWithDeposit{
-//			ConsumerRemovalProposal: *removeProp,
-//			Deposit:                 "1000uatom",
-//		}
-//
-//		consumerAddBody, err := json.MarshalIndent(addPropWithDeposit, "", " ")
-//		s.Require().NoError(err)
-//
-//		consumerRemoveBody, err := json.MarshalIndent(removePropWithDeposit, "", " ")
-//		s.Require().NoError(err)
-//
-//		err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalAddConsumerChainFilename), consumerAddBody)
-//		s.Require().NoError(err)
-//		err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalRemoveConsumerChainFilename), consumerRemoveBody)
-//		s.Require().NoError(err)
-//	}
 func configFile(filename string) string {
 	filepath := filepath.Join(gaiaConfigPath, filename)
 	return filepath

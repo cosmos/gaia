@@ -380,7 +380,6 @@ func (s *IntegrationTestSuite) runGovExec(c *chain, valIdx int, submitterAddr, g
 	}
 
 	gaiaCommand = concatFlags(gaiaCommand, proposalFlags, generalFlags)
-
 	s.T().Logf("Executing gaiad tx gov %s on chain %s", govCommand, c.id)
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
 	s.T().Logf("Successfully executed %s", govCommand)

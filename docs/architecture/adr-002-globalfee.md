@@ -1,4 +1,4 @@
-# ADR 001: Globalfee Module
+# ADR 002: Globalfee Module
 
 ## Changelog
 * 2023-06-12: Initial Draft

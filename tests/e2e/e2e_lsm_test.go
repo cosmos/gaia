@@ -185,7 +185,8 @@ func (s *IntegrationTestSuite) testLSM() {
 	)
 
 	// Redeem tokens for shares
-	s.executeRedeemShares(s.chainA, 0, sendAmount.Sub(ibcTransferAmount).String(), validatorAAddr.String(), gaiaHomePath, fees.String())
+        redeemAmount := sendAmount.Sub(ibcTransferAmount)
+	s.executeRedeemShares(s.chainA, 0, redeemAmount.String(), validatorAAddr.String(), gaiaHomePath, fees.String())
 
 	// check redeem success
 	s.Require().Eventually(

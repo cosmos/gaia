@@ -6,6 +6,7 @@
     - [Ease of reviewing](#ease-of-reviewing)
     - [Workflow](#workflow)
   - [Project Board](#project-board)
+  - [Architecture Decision Records (ADR)](#architecture-decision-records-adr)
   - [Development Procedure](#development-procedure)
     - [Testing](#testing)
     - [Pull Requests](#pull-requests)
@@ -98,6 +99,14 @@ PRs opened before adequate design discussion has taken place in a GitHub issue h
 We use self-organizing principles to coordinate and collaborate across organizations in structured "EPICs" that focus on specific problem domains or architectural components of Gaia. For details, see the [GitHub Project board](https://github.com/orgs/cosmos/projects/28/views/11). 
 
 The developers work in sprints, which are available in a [GitHub Project](https://github.com/orgs/cosmos/projects/28/views/2). 
+
+## Architecture Decision Records (ADR)
+
+When proposing an architecture decision for Gaia, please start by opening an [issue](https://github.com/cosmos/gaia/issues/new/choose) or a [discussion](https://github.com/cosmos/gaia/discussions/new) with a summary of the proposal. Once the proposal has been discussed and there is rough alignment on a high-level approach to the design, you may either start development, or write an ADR.
+
+If your architecture decision is a simple change, you may contribute directly without writing an ADR. However, if you are proposing a significant change, please include a corresponding ADR.
+
+To create an ADR, follow the [template](./docs/architecture/adr-template.md) and [doc](./docs/architecture/README.md). If you would like to see examples of how these are written, please refer to the current [ADRs](https://github.com/cosmos/gaia/tree/main/docs/architecture).
 
 ## Development Procedure
 

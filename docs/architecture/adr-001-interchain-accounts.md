@@ -2,26 +2,19 @@
 order: 2
 -->
 
----
-
-ADR: 001
-Title: Interchain Accounts
-Status: Draft Implements
-Category: Feature
-Author: Sean King & Damian Nolan
-Created: 2022-01-19
-Mdified: 2022-01-19
-Requires: Cosmos-SDK, go-ibc
-Required-By: mauth
-Implements: Interchain Accounts
----
-
 # ADR 001: Interchain Accounts
 
 ## Changelog
 
 - 2022-02-04: added content
 - 2022-01-19: init
+- 2023-06-28: mark as rejected
+
+## Status
+
+REJECTED Not Implemented
+
+**Reason:** The IBC team decided to integrate this functionality directly into their codebase and maintain it, because multiple users require it. 
 
 ## Abstract
 

@@ -6,10 +6,10 @@ run:
 linters:
   disable-all: true
   enable:
-    - depguard
     - dogsled
     - errcheck
     - exportloopref
+    - gci
     - goconst
     - gocritic
     - gofumpt
@@ -31,25 +31,25 @@ linters:
 
 issues:
   exclude-rules:
-    - text: "Use of weak random number generator"
+    - text: 'Use of weak random number generator'
       linters:
         - gosec
-    - text: "comment on exported var"
+    - text: 'comment on exported var'
       linters:
         - golint
     - text: "don't use an underscore in package name"
       linters:
         - golint
-    - text: "ST1003:"
+    - text: 'ST1003:'
       linters:
         - stylecheck
     # FIXME: Disabled until golangci-lint updates stylecheck with this fix:
     # https://github.com/dominikh/go-tools/issues/389
-    - text: "ST1016:"
+    - text: 'ST1016:'
       linters:
         - stylecheck
-    - path: "migrations"
-      text: "SA1019:"
+    - path: 'migrations'
+      text: 'SA1019:'
       linters:
         - staticcheck
 
@@ -57,6 +57,18 @@ issues:
   max-same-issues: 10000
 
 linters-settings:
+  gci:
+    custom-order: true
+    sections:
+      - standard # Standard section: captures all standard packages.
+      - default # Default section: contains all imports that could not be matched to another section type.
+      - blank # blank imports
+      - dot # dot imports
+      - prefix(github.com/cometbft/cometbft) # comet
+      - prefix(github.com/cosmos) # cosmos org
+      - prefix(cosmossdk.io) # new modules
+      - prefix(github.com/cosmos/cosmos-sdk) # cosmos sdk
+      - prefix(github.com/cosmos/gaia) # Gaia
   dogsled:
     max-blank-identifiers: 3
   maligned:

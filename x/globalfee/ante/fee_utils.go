@@ -2,7 +2,9 @@ package ante
 
 import (
 	errorsmod "cosmossdk.io/errors"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	gaiaerrors "github.com/cosmos/gaia/v11/types/errors"
 )
 

@@ -4,13 +4,15 @@ import (
 	"errors"
 	"fmt"
 
+	tmstrings "github.com/tendermint/tendermint/libs/strings"
+
 	errorsmod "cosmossdk.io/errors"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	gaiaerrors "github.com/cosmos/gaia/v11/types/errors"
-	tmstrings "github.com/tendermint/tendermint/libs/strings"
 
+	gaiaerrors "github.com/cosmos/gaia/v11/types/errors"
 	"github.com/cosmos/gaia/v11/x/globalfee"
 	"github.com/cosmos/gaia/v11/x/globalfee/types"
 )

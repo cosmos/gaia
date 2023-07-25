@@ -10,6 +10,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ory/dockertest/v3/docker"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
@@ -19,7 +21,6 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/ory/dockertest/v3/docker"
 )
 
 const (
@@ -310,7 +311,7 @@ func (s *IntegrationTestSuite) execBankSendBatch(
 	return sucessBankSendCount
 }
 
-func (s *IntegrationTestSuite) execWithdrawAllRewards(c *chain, valIdx int, payee, fees string, expectErr bool) { //nolint:unparam
+func (s *IntegrationTestSuite) execWithdrawAllRewards(c *chain, valIdx int, payee, fees string, expectErr bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -367,6 +368,7 @@ func (s *IntegrationTestSuite) runGovExec(c *chain, valIdx int, submitterAddr, g
 
 	generalFlags := []string{
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, submitterAddr),
+		fmt.Sprintf("--%s=%s", flags.FlagGas, "300000"), // default 200000 isn't enough
 		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
 		"--keyring-backend=test",
@@ -614,6 +616,35 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 		s.Require().FailNowf("Exec validation failed", "stdout: %s, stderr: %s",
 			string(stdOut), string(stdErr))
 	}
+}
+
+func (s *IntegrationTestSuite) executeHermesCommand(ctx context.Context, hermesCmd []string) ([]byte, []byte) {
+	var (
+		outBuf bytes.Buffer
+		errBuf bytes.Buffer
+	)
+	exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
+		Context:      ctx,
+		AttachStdout: true,
+		AttachStderr: true,
+		Container:    s.hermesResource1.Container.ID,
+		User:         "root",
+		Cmd:          hermesCmd,
+	})
+	s.Require().NoError(err)
+
+	err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
+		Context:      ctx,
+		Detach:       false,
+		OutputStream: &outBuf,
+		ErrorStream:  &errBuf,
+	})
+	s.Require().NoError(err)
+
+	stdOut := outBuf.Bytes()
+	stdErr := errBuf.Bytes()
+
+	return stdOut, stdErr
 }
 
 func (s *IntegrationTestSuite) expectErrExecValidation(chain *chain, valIdx int, expectErr bool) func([]byte, []byte) bool {

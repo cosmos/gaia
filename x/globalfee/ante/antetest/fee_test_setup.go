@@ -3,6 +3,10 @@ package antetest
 import (
 	"fmt"
 
+	"github.com/stretchr/testify/suite"
+	tmrand "github.com/tendermint/tendermint/libs/rand"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
@@ -12,16 +16,12 @@ import (
 	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	"github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/stretchr/testify/suite"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	gaiahelpers "github.com/cosmos/gaia/v9/app/helpers"
-	gaiafeeante "github.com/cosmos/gaia/v9/x/globalfee/ante"
-
-	gaiaapp "github.com/cosmos/gaia/v9/app"
-	"github.com/cosmos/gaia/v9/x/globalfee"
-	globfeetypes "github.com/cosmos/gaia/v9/x/globalfee/types"
+	gaiaapp "github.com/cosmos/gaia/v11/app"
+	gaiahelpers "github.com/cosmos/gaia/v11/app/helpers"
+	"github.com/cosmos/gaia/v11/x/globalfee"
+	gaiafeeante "github.com/cosmos/gaia/v11/x/globalfee/ante"
+	globfeetypes "github.com/cosmos/gaia/v11/x/globalfee/types"
 )
 
 type IntegrationTestSuite struct {
@@ -33,10 +33,7 @@ type IntegrationTestSuite struct {
 	txBuilder client.TxBuilder
 }
 
-var (
-	testBondDenom                              = "uatom"
-	testMaxTotalBypassMinFeeMsgGasUsage uint64 = 1_000_000
-)
+var testBondDenom = "uatom"
 
 func (s *IntegrationTestSuite) SetupTest() {
 	app := gaiahelpers.Setup(s.T())
@@ -65,7 +62,7 @@ func (s *IntegrationTestSuite) SetupTestGlobalFeeStoreAndMinGasPrice(minGasPrice
 	stakingSubspace := s.SetupTestStakingSubspace(stakingParam)
 
 	// build fee decorator
-	feeDecorator := gaiafeeante.NewFeeDecorator(gaiaapp.GetDefaultBypassFeeMessages(), subspace, stakingSubspace, uint64(1_000_000))
+	feeDecorator := gaiafeeante.NewFeeDecorator(subspace, stakingSubspace)
 
 	// chain fee decorator to antehandler
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)

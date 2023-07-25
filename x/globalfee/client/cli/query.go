@@ -1,11 +1,12 @@
 package cli
 
 import (
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
-	"github.com/cosmos/gaia/v9/x/globalfee/types"
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+
+	"github.com/cosmos/gaia/v11/x/globalfee/types"
 )
 
 func GetQueryCmd() *cobra.Command {
@@ -17,18 +18,17 @@ func GetQueryCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 	queryCmd.AddCommand(
-		GetCmdShowMinimumGasPrices(),
+		GetCmdShowGlobalFeeParams(),
 	)
 	return queryCmd
 }
 
-func GetCmdShowMinimumGasPrices() *cobra.Command {
+func GetCmdShowGlobalFeeParams() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "minimum-gas-prices",
-		Short:   "Show minimum gas prices",
-		Long:    "Show all minimum gas prices",
-		Aliases: []string{"min"},
-		Args:    cobra.ExactArgs(0),
+		Use:   "params",
+		Short: "Show globalfee params",
+		Long:  "Show globalfee requirement: minimum_gas_prices, bypass_min_fee_msg_types, max_total_bypass_minFee_msg_gas_usage",
+		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
@@ -36,11 +36,11 @@ func GetCmdShowMinimumGasPrices() *cobra.Command {
 			}
 
 			queryClient := types.NewQueryClient(clientCtx)
-			res, err := queryClient.MinimumGasPrices(cmd.Context(), &types.QueryMinimumGasPricesRequest{})
+			res, err := queryClient.Params(cmd.Context(), &types.QueryParamsRequest{})
 			if err != nil {
 				return err
 			}
-			return clientCtx.PrintProto(res)
+			return clientCtx.PrintProto(&res.Params)
 		},
 	}
 	flags.AddQueryFlagsToCmd(cmd)

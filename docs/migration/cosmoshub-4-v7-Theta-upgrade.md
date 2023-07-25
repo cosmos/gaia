@@ -77,7 +77,7 @@ It is critically important for validator operators to back-up the `.gaia/data/pr
 
 ### Testing
 
-For those validator and full node operators that are interested in ensuring preparedness for the impending upgrade, you can join in our [v7-Theta public-testnet](https://github.com/cosmos/testnets/tree/master/v7-theta/public-testnet) or run a [v7-Theta local testnet](https://github.com/cosmos/testnets/tree/master/local/previous-local-testnets/theta).
+For those validator and full node operators that are interested in ensuring preparedness for the impending upgrade, you can join in our [v7-Theta public-testnet](https://github.com/cosmos/testnets/tree/master/v7-theta/public-testnet) or run a [v7-Theta local testnet](https://github.com/cosmos/testnets/tree/master/local/previous-local-testnets/v7-theta).
 
 ### Current runtime, cosmoshub-4 (pre-v7-Theta upgrade) is running Gaia v6.0.x
 

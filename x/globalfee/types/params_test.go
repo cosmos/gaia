@@ -3,18 +3,21 @@ package types
 import (
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func TestDefaultParams(t *testing.T) {
 	p := DefaultParams()
 	require.EqualValues(t, p.MinimumGasPrices, sdk.DecCoins{})
+	require.EqualValues(t, p.BypassMinFeeMsgTypes, DefaultBypassMinFeeMsgTypes)
+	require.EqualValues(t, p.MaxTotalBypassMinFeeMsgGasUsage, DefaultmaxTotalBypassMinFeeMsgGasUsage)
 }
 
-func Test_validateParams(t *testing.T) {
+func Test_validateMinGasPrices(t *testing.T) {
 	tests := map[string]struct {
-		coins     interface{} // not sdk.DeCoins, but Decoins defined in glboalfee
+		coins     interface{}
 		expectErr bool
 	}{
 		"DefaultParams, pass": {
@@ -63,6 +66,87 @@ func Test_validateParams(t *testing.T) {
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			err := validateMinimumGasPrices(test.coins)
+			if test.expectErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+		})
+	}
+}
+
+func Test_validateBypassMinFeeMsgTypes(t *testing.T) {
+	tests := map[string]struct {
+		msgTypes  interface{}
+		expectErr bool
+	}{
+		"DefaultParams, pass": {
+			DefaultParams().BypassMinFeeMsgTypes,
+			false,
+		},
+		"wrong msg type should make conversion fail, fail": {
+			[]int{0, 1, 2, 3},
+			true,
+		},
+		"empty msg types, pass": {
+			[]string{},
+			false,
+		},
+		"empty msg type, fail": {
+			[]string{""},
+			true,
+		},
+		"invalid msg type name, fail": {
+			[]string{"ibc.core.channel.v1.MsgRecvPacket"},
+			true,
+		},
+		"mixed valid and invalid msgs, fail": {
+			[]string{
+				"/ibc.core.channel.v1.MsgRecvPacket",
+				"",
+			},
+			true,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			err := validateBypassMinFeeMsgTypes(test.msgTypes)
+			if test.expectErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+		})
+	}
+}
+
+func Test_validateMaxTotalBypassMinFeeMsgGasUsage(t *testing.T) {
+	tests := map[string]struct {
+		msgTypes  interface{}
+		expectErr bool
+	}{
+		"DefaultParams, pass": {
+			DefaultParams().MaxTotalBypassMinFeeMsgGasUsage,
+			false,
+		},
+		"zero value, pass": {
+			uint64(0),
+			false,
+		},
+		"negative value, fail": {
+			-1,
+			true,
+		},
+		"invalid type, fail": {
+			"5",
+			true,
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			err := validateMaxTotalBypassMinFeeMsgGasUsage(test.msgTypes)
 			if test.expectErr {
 				require.Error(t, err)
 				return

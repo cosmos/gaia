@@ -951,17 +951,17 @@ func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain) 
 			{
 				Subspace: "staking",
 				Key:      "GlobalLiquidStakingCap",
-				Value:    sdk.NewDecWithPrec(30, 2), // 30%
+				Value:    sdk.NewDecWithPrec(25, 2), // 25%
 			},
 			{
 				Subspace: "staking",
 				Key:      "ValidatorLiquidStakingCap",
-				Value:    sdk.NewDecWithPrec(100, 2), // 100%
+				Value:    sdk.NewDecWithPrec(50, 2), // 50%
 			},
 			{
 				Subspace: "staking",
 				Key:      "ValidatorBondFactor",
-				Value:    sdk.NewDec(-1), // -1
+				Value:    sdk.NewDec(250), // -1
 			},
 		},
 		Deposit: "1000uatom",

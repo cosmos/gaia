@@ -51,7 +51,6 @@ flowchart TD
 
 The `CombinedFeeRequirement` is split into zero and non-zero coins, forming `nonZeroCoinFeesReq` and `zeroCoinFeesDenomReq`. Similarly, the paid fees (feeCoins) are split into `feeCoinsNonZeroDenom` and `feeCoinsZeroDenom`, based on the denominations of `nonZeroCoinFeesReq` and `zeroCoinFeesDenomReq` as shown in the following code snippet.
 
-The split of the `feeCoins`:
 ```go
 	nonZeroCoinFeesReq, zeroCoinFeesDenomReq := getNonZeroFees(feeRequired)
 
@@ -62,16 +61,6 @@ The split of the `feeCoins`:
 
 ```
 #### Fee Checks
-The split enable checking `feeCoinsNonZeroDenom` against `nonZeroCoinFeesReq`, and `feeCoinsZeroDenom` against
-`zeroCoinFeesDenomReq` (as shown in the following code snippet). In the check of `feeCoinsNonZeroDenom` against `nonZeroCoinFeesReq`, the Cosmos SDK coins' methods can be used since zero coins are removed from the `nonZeroCoinFeesReq`, while in the check `feeCoinsZeroDenom` against `zeroCoinFeesDenomReq`, only denoms need to be checked.
-
-Checking `feeCoinsNonZeroDenom` against `nonZeroCoinFeesReq`:
-```go 
-	if !feeCoinsNonZeroDenom.IsAnyGTE(nonZeroCoinFeesReq) {
-		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins.String(), feeRequired.String())
-	}
-```
-
 The Workflow of feeCheck is shown below:
 ```mermaid
 ---
@@ -95,6 +84,16 @@ feeCoinsZeroDenom_nonEmpty-->|no|IsAnyGTE_nonZeroCoinFeesDenomReq;
 
 IsAnyGTE_nonZeroCoinFeesDenomReq-->|yes|pass4[pass];
 IsAnyGTE_nonZeroCoinFeesDenomReq-->|no|reject2[reject];
+```
+
+The split enable checking `feeCoinsNonZeroDenom` against `nonZeroCoinFeesReq`, and `feeCoinsZeroDenom` against
+`zeroCoinFeesDenomReq` (as shown in the following code snippet). In the check of `feeCoinsNonZeroDenom` against `nonZeroCoinFeesReq`, the Cosmos SDK coins' methods can be used since zero coins are removed from the `nonZeroCoinFeesReq`, while in the check `feeCoinsZeroDenom` against `zeroCoinFeesDenomReq`, only denoms need to be checked.
+
+Checking `feeCoinsNonZeroDenom` against `nonZeroCoinFeesReq`:
+```go 
+	if !feeCoinsNonZeroDenom.IsAnyGTE(nonZeroCoinFeesReq) {
+		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins.String(), feeRequired.String())
+	}
 ```
 
 Here is an example of how the coins split and checked in fee antehandler:\

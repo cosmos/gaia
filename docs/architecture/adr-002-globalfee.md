@@ -4,7 +4,7 @@
 * 2023-06-12: Initial Draft
 
 ## Status
-Globalfee module is introduced into gaia from v8.0.0, and is refactored in v11.0.0.
+ACCEPTED Implemented
 
 ## Context
 
@@ -12,15 +12,15 @@ The globalfee module was created to manage a parameter called `MinimumGasPricesP
 
 - In the globalfee module, several SDK coins methods were redefined because of the allowance of zero-value coins in the `MinimumGasPricesParam`. The `MinimumGasPricesParam` is of `sdk.DecCoins` type. In the cosmos-sdk, `sdk.DecCoins` are [sanitized](https://github.com/cosmos/cosmos-sdk/blob/67f04e629623d4691c4b2e48806f7793a3aa211e/types/dec_coin.go#L160-L177) to remove zero-value coins. As a result, several methods from `sdk.Coins` were [redefined in the Gaia fee antehandler](https://github.com/cosmos/gaia/blob/890ab3aa2e5788537b0d2ebc9bafdc968340e0e5/x/globalfee/ante/fee_utils.go#L46-L104).
 
-- `BypassMinFeeMsgTypes` exists in `app.toml`, and each node can define it. It's not deterministic whether a transaction containing bypass-messages will be exempt from fee charge from fee charge.
+- `BypassMinFeeMsgTypes` exists in `app.toml`, which means each node can define its own value. Thus, it's not clear whether a transaction containing bypass-messages will be exempted from paying a fee.
 
-- The fee check logic from globalfee is only executed in `checkTx`. This could allow malicious validators to change the fee check code and let transactions that do not meet the fee requirement pass.
+- The fee check logic is only executed in `checkTx` (as `MinimumGasPricesParam` is a local param). This could enable malicious validators to change the fee check code and propose transactions that do not meet the fee requirement.
 
 ## Decision
-To fix these problems, the globalfee module is updated in Gaia v11:
+To fix these problems, the following changes are added to the globalfee module:
 - The fee check uses the SDK coins' methods instead of the redefined methods.
-- `BypassMinFeeMsgTypes` and `MaxTotalBypassMinFeeMsgGasUsage` have been moved to be part of the globalfee module, this makes the bypass-msgs are recognized at the network level.
-- The fee check is now executed in both `deliverTx` and `checkTx`. This is to prevent malicious validators from changing the fee check logic and allowing any transactions to pass fee check.
+- `BypassMinFeeMsgTypes` is a param of the globalfee module. As a result, the check whether a transaction can bypass the minimum fee is done on `deliverTx` (i.e., at the network level). In addition, to improve user experience, `MaxTotalBypassMinFeeMsgGasUsage` is introduced as a globalfee param. 
+- The fee check is now executed in both `deliverTx` and `checkTx`. This is to prevent malicious validators from changing the fee check logic and allowing any transactions to pass fee check. As a consequence, `MinimumGasPrices` is introduced as a globalfee param. 
 
 ## Consequences
 
@@ -146,4 +146,4 @@ The introduction of FeeDecorator has replaced the usage of `MempoolFeeDecorator`
 
 ## References
 
-* [global fee docs](../modules/globalfee.md)
+* [Documentation of the globalfee module](../modules/globalfee.md)

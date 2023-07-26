@@ -20,7 +20,7 @@ The globalfee module was created to manage a parameter called `MinimumGasPricesP
 To fix these problems, the following changes are added to the globalfee module:
 - The fee check uses the Cosmos SDK coins' methods instead of the redefined methods.
 - `BypassMinFeeMsgTypes` is a param of the globalfee module. As a result, the check whether a transaction can bypass the minimum fee is done on `deliverTx` (i.e., at the network level). In addition, to improve user experience, `MaxTotalBypassMinFeeMsgGasUsage` is introduced as a globalfee param. 
-- The fee check is now executed in both `deliverTx` and `checkTx`. This is to prevent malicious validators from changing the fee check logic and allowing any transactions to pass fee check. As a consequence, `MinimumGasPrices` is introduced as a globalfee param. 
+- The fee check is now executed in both `deliverTx` and `checkTx`. This is to prevent malicious validators from changing the fee check logic and allowing any transactions to pass fee check. As a consequence, `MinimumGasPricesParam` is introduced as a globalfee param. 
 
 ## Consequences
 

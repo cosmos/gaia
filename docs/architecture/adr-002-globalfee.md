@@ -14,7 +14,7 @@ The globalfee module was created to manage a parameter called `MinimumGasPricesP
 
 - `BypassMinFeeMsgTypes` exists in `app.toml`, which means each node can define its own value. Thus, it's not clear whether a transaction containing bypass-messages will be exempted from paying a fee.
 
-- The fee check logic is only executed in `CheckTx` (as `MinimumGasPricesParam` is a local param). This could enable malicious validators to change the fee check code and propose transactions that do not meet the fee requirement.
+- The fee check logic is only executed in `CheckTx`. This could enable malicious validators to change the fee check code and propose transactions that do not meet the fee requirement.
 
 ## Decision
 To fix these problems, the following changes are added to the globalfee module:

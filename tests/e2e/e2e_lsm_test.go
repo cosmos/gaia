@@ -207,12 +207,12 @@ func (s *IntegrationTestSuite) testLSM() {
 				return false
 			}
 
-			// // check tokenize share record module account balance
-			// balanceRes, err = getSpecificBalance(chainEndpoint, tokenizeShareRecord.ModuleAccount, uatomDenom)
-			// s.Require().NoError(err)
-			// if balanceRes.Amount.IsNil() || balanceRes.Amount.IsZero() {
-			// 	return false
-			// }
+			// check tokenize share record module account balance
+			balanceRes, err = getSpecificBalance(chainEndpoint, tokenizeShareRecord.GetModuleAddress().String(), uatomDenom)
+			s.Require().NoError(err)
+			if balanceRes.Amount.IsNil() || balanceRes.Amount.IsZero() {
+				return false
+			}
 			return true
 		},
 		20*time.Second,

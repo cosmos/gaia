@@ -10,7 +10,7 @@ ACCEPTED Implemented
 
 The globalfee module was created to manage a parameter called `MinimumGasPricesParam`, which sets a network-wide minimum fee. The intention was to stop random denominations from entering fee collections and to reduce the time validators take to check a long list of transaction fees. However, the initial version of the globalfee module had some issues:
 
-- In the globalfee module, several SDK coins methods were redefined because of the allowance of zero-value coins in the `MinimumGasPricesParam`. The `MinimumGasPricesParam` is of `sdk.DecCoins` type. In the cosmos-sdk, `sdk.DecCoins` are [sanitized](https://github.com/cosmos/cosmos-sdk/blob/67f04e629623d4691c4b2e48806f7793a3aa211e/types/dec_coin.go#L160-L177) to remove zero-value coins. As a result, several methods from `sdk.Coins` were [redefined in the Gaia fee antehandler](https://github.com/cosmos/gaia/blob/890ab3aa2e5788537b0d2ebc9bafdc968340e0e5/x/globalfee/ante/fee_utils.go#L46-L104).
+- In the globalfee module, several Cosmos SDK coins methods were redefined because of the allowance of zero-value coins in the `MinimumGasPricesParam`. The `MinimumGasPricesParam` is of `sdk.DecCoins` type. In the Cosmos SDK, `sdk.DecCoins` are [sanitized](https://github.com/cosmos/cosmos-sdk/blob/67f04e629623d4691c4b2e48806f7793a3aa211e/types/dec_coin.go#L160-L177) to remove zero-value coins. As a result, several methods from `sdk.Coins` were [redefined in the Gaia fee antehandler](https://github.com/cosmos/gaia/blob/890ab3aa2e5788537b0d2ebc9bafdc968340e0e5/x/globalfee/ante/fee_utils.go#L46-L104).
 
 - `BypassMinFeeMsgTypes` exists in `app.toml`, which means each node can define its own value. Thus, it's not clear whether a transaction containing bypass-messages will be exempted from paying a fee.
 
@@ -18,19 +18,19 @@ The globalfee module was created to manage a parameter called `MinimumGasPricesP
 
 ## Decision
 To fix these problems, the following changes are added to the globalfee module:
-- The fee check uses the SDK coins' methods instead of the redefined methods.
+- The fee check uses the Cosmos SDK coins' methods instead of the redefined methods.
 - `BypassMinFeeMsgTypes` is a param of the globalfee module. As a result, the check whether a transaction can bypass the minimum fee is done on `deliverTx` (i.e., at the network level). In addition, to improve user experience, `MaxTotalBypassMinFeeMsgGasUsage` is introduced as a globalfee param. 
 - The fee check is now executed in both `deliverTx` and `checkTx`. This is to prevent malicious validators from changing the fee check logic and allowing any transactions to pass fee check. As a consequence, `MinimumGasPrices` is introduced as a globalfee param. 
 
 ## Consequences
 
 ### ZeroCoins in `MinimumGasPricesParam`
-The allowance of zero coins in the `MinimumGasPricesParam` within the globalfee module implies that `CombinedFeeRequirement(globalFees, localFees)` also permits zero coins. Therefore, the `CombinedFeeRequirement` doesn't meet the requirements of certain sdk.Coins methods. For instance, the `DenomsSubsetOf` method requires coins that do not contain zero coins.
+The allowance of zero coins in the `MinimumGasPricesParam` within the globalfee module implies that `CombinedFeeRequirement(globalFees, localFees)` also permits zero coins. Therefore, the `CombinedFeeRequirement` doesn't meet the requirements of certain `sdk.Coins` methods. For instance, the `DenomsSubsetOf` method requires coins that do not contain zero coins.
 
 To address this, the `CombinedFeeRequirement` is split into zero and non-zero coins, forming `nonZeroCoinFeesReq` and `zeroCoinFeesDenomReq`. Similarly, the paid fees (feeCoins) are split into `feeCoinsNonZeroDenom` and `feeCoinsZeroDenom`, based on the denominations of `nonZeroCoinFeesReq` and `zeroCoinFeesDenomReq`.
 
 The split enable checking `feeCoinsNonZeroDenom` against `nonZeroCoinFeesReq`, and `feeCoinsZeroDenom` against
-`zeroCoinFeesDenomReq`. In the check of `feeCoinsNonZeroDenom` against `nonZeroCoinFeesReq`, the sdk coins' methods can be used since zero coins are removed from the `nonZeroCoinFeesReq`, while in the check `feeCoinsZeroDenom` against `zeroCoinFeesDenomReq`, only denoms need to be checked.
+`zeroCoinFeesDenomReq`. In the check of `feeCoinsNonZeroDenom` against `nonZeroCoinFeesReq`, the Cosmos SDK coins' methods can be used since zero coins are removed from the `nonZeroCoinFeesReq`, while in the check `feeCoinsZeroDenom` against `zeroCoinFeesDenomReq`, only denoms need to be checked.
 
 ```go
 	nonZeroCoinFeesReq, zeroCoinFeesDenomReq := getNonZeroFees(feeRequired)
@@ -140,7 +140,7 @@ func (mfd FeeDecorator) GetTxFeeRequired(ctx sdk.Context, tx sdk.FeeTx) (sdk.Coi
 ### Positive
 This refactor results in code that is easier to maintain. It prevents malicious validators from escaping fee checks and make the bypass messages work at network level.
 ### Negative
-The introduction of FeeDecorator has replaced the usage of `MempoolFeeDecorator` in the cosmos-sdk. Currently, if both FeeDecorator and MempoolFeeDecorator are added to the AnteDecorator chain, it will result in redundant checks. However, there's potential for FeeDecorator and MempoolFeeDecorator to become incompatible in the future, depending on updates to the cosmos-sdk.
+The introduction of FeeDecorator has replaced the usage of `MempoolFeeDecorator` in the Cosmos SDK. Currently, if both FeeDecorator and MempoolFeeDecorator are added to the AnteDecorator chain, it will result in redundant checks. However, there's potential for FeeDecorator and MempoolFeeDecorator to become incompatible in the future, depending on updates to the Cosmos SDK.
 
 ### Neutral
 

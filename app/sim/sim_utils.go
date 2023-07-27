@@ -15,7 +15,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
-	gaia "github.com/cosmos/gaia/v11/app"
+	gaia "github.com/cosmos/gaia/v12/app"
 )
 
 // SetupSimulation creates the config, db (levelDB), temporary directory and logger for

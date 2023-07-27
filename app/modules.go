@@ -55,8 +55,8 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	gaiaappparams "github.com/cosmos/gaia/v11/app/params"
-	"github.com/cosmos/gaia/v11/x/globalfee"
+	gaiaappparams "github.com/cosmos/gaia/v12/app/params"
+	"github.com/cosmos/gaia/v12/x/globalfee"
 )
 
 var maccPerms = map[string][]string{

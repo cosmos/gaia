@@ -10,8 +10,8 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
-	gaia "github.com/cosmos/gaia/v11/app"
-	gaiahelpers "github.com/cosmos/gaia/v11/app/helpers"
+	gaia "github.com/cosmos/gaia/v12/app"
+	gaiahelpers "github.com/cosmos/gaia/v12/app/helpers"
 )
 
 type EmptyAppOptions struct{}

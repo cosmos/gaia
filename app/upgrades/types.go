@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	"github.com/cosmos/gaia/v11/app/keepers"
+	"github.com/cosmos/gaia/v12/app/keepers"
 )
 
 // Upgrade defines a struct containing necessary fields that a SoftwareUpgradeProposal

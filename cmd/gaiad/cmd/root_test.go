@@ -7,8 +7,8 @@ import (
 
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 
-	app "github.com/cosmos/gaia/v11/app"
-	"github.com/cosmos/gaia/v11/cmd/gaiad/cmd"
+	app "github.com/cosmos/gaia/v12/app"
+	"github.com/cosmos/gaia/v12/cmd/gaiad/cmd"
 )
 
 func TestRootCmdConfig(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 
 	store "github.com/cosmos/cosmos-sdk/store/types"
 
-	"github.com/cosmos/gaia/v11/app/upgrades"
+	"github.com/cosmos/gaia/v12/app/upgrades"
 )
 
 const (

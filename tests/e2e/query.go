@@ -16,7 +16,7 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v11/x/globalfee/types"
+	"github.com/cosmos/gaia/v12/x/globalfee/types"
 )
 
 func queryGaiaTx(endpoint, txHash string) error {

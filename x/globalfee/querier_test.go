@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	"github.com/cosmos/gaia/v11/x/globalfee/types"
+	"github.com/cosmos/gaia/v12/x/globalfee/types"
 )
 
 func TestQueryMinimumGasPrices(t *testing.T) {

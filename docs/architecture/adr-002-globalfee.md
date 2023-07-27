@@ -97,15 +97,18 @@ Checking `feeCoinsNonZeroDenom` against `nonZeroCoinFeesReq`:
 ```
 
 Here is an example of how the coins split and checked in fee antehandler:\
-**assumption**: `globalfee=[1photon, 0uatom, 1stake]` and `local min-gas-prices=[0.5stake]`
+**assumption**:\
+`globalfee=[1photon, 0uatom, 1stake]` and `local min-gas-prices=[0.5stake]`
 
-**fee requirement**: `combinedFeeRequirement=[1photon, 0uatom, 1stake]`
+**fee requirement**:\
+`combinedFeeRequirement=[1photon, 0uatom, 1stake]`
 
-**split fee requirement**: the `combinedFeeRequirement` into `nonZeroCoinFeesReq=[0uatom]`, and `nonZeroCoinFeesReq=[1photon, 1stake]`
+**split fee requirement**:\
+the `combinedFeeRequirement` into `nonZeroCoinFeesReq=[0uatom]`, and `nonZeroCoinFeesReq=[1photon, 1stake]`
 
-**split the paid fees**:
+**split the paid fees**:\
 if `paidFee=[1uatom, 0.5photon]`,
-split the paidFee into `feeCoinsZeroDenom=[1uatom]` (the same denom as zero coins in `combinedFeeRequirement`), and `feeCoinsNonZeroDenom=[0.5stake]`
+the `splitCoinsByDenoms` splits the paidFee into `feeCoinsZeroDenom=[1uatom]` (the same denom as zero coins in `combinedFeeRequirement`), and `feeCoinsNonZeroDenom=[0.5stake]`
 then `feeCoinsZeroDenom=[1uatom]` is checked by `nonZeroCoinFeesReq=[1photon, 1stake]`.
 
 Please note that `feeCoins` does not contain zero coins. The fee coins are split according to the denoms in `zeroCoinFeesDenomReq` or `nonZeroCoinFeesDenomReq`. If feeCoins contains coins not in both `zeroCoinFeesDenomReq` and `nonZeroCoinFeesDenomReq`, the transaction should be rejected. On the contrary, if  feeCoins' denoms are in either `zeroCoinFeesDenomReq` or `nonZeroCoinFeesDenomReq`, and `len(zeroCoinFeesDenomReq)!=0`, the transaction can directly pass, otherwise, the fee amount need to be checked.

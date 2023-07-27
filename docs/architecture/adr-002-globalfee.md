@@ -20,9 +20,9 @@ The globalfee module was created to manage a parameter called `MinimumGasPricesP
 To fix these problems, the following changes are added to the globalfee module:
 - **ZeroCoins in `MinimumGasPricesParam`:**\
 Refactor the fee check logics, in order to use the Cosmos SDK coins' methods instead of the redefined methods.
-- **`BypassMinFeeMsgTypes`:**\
+- **Bypass Message Types:**\
 `BypassMinFeeMsgTypes` is refactored to be a param of the globalfee module, in order to make the bypass messages deterministic.
-- **Move Check fees to `DeliverTx`:**\
+- **Check Fees in `DeliverTx`:**\
 The fee check is factored to executed in both `DeliverTx` and `CheckTx`. This is to prevent malicious validators from changing the fee check logic and allowing any transactions to pass fee check. As a consequence, `MinimumGasPricesParam` is introduced as a globalfee param.
 
 ### ZeroCoins in `MinimumGasPricesParam`
@@ -111,10 +111,10 @@ then `feeCoinsZeroDenom=[1uatom]` is checked by `nonZeroCoinFeesReq=[1photon, 1s
 Please note that `feeCoins` does not contain zero coins. The fee coins are split according to the denoms in `zeroCoinFeesDenomReq` or `nonZeroCoinFeesDenomReq`. If feeCoins contains coins not in both `zeroCoinFeesDenomReq` and `nonZeroCoinFeesDenomReq`, the transaction should be rejected. On the contrary, if  feeCoins' denoms are in either `zeroCoinFeesDenomReq` or `nonZeroCoinFeesDenomReq`, and `len(zeroCoinFeesDenomReq)!=0`, the transaction can directly pass, otherwise, the fee amount need to be checked.
 
 
-### `BypassMinFeeMsgTypes`
+### Bymass Message Types
 `BypassMinFeeMsgTypes` was a setup in `config/app.toml` before the refactor. `BypassMinFeeMsgTypes` is refactored to be a param of the globalfee module to get a network level agreement. Correspondingly,`MaxTotalBypassMinFeeMsgGasUsage` is also introduced as a globalfee param.
 
-### Move Fee Checks to  `DeliverTx`
+### Fee Checks in  `DeliverTx`
 Implementing fee checks within the `DeliverTx` function introduces a few requirements:
 - **Deterministic Minimum Fee Requirement**: For the `DeliverTx` process, it is essential to have a deterministic minimum fee requirement. In `CheckTx`, fee is checked by the `CombinedFeeRequirement(globalFees, localFees)`, which considers both `minimum-gas-prices` from `config/app.toml` and `MinimumGasPricesParam` from the globalfee Params (For more details, see [globalfee.md](../modules/globalfee.md)). `CombinedFeeRequirement` contains non-deterministic part: `minimum-gas-prices` from `app.toml`. Therefore, `CombinedFeeRequirement` cannot be used in `DeliverTx`. In `DeliverTx`, only `MinimumGasPricesParam` in globalfee Params is used for fee verification. The code implementation is shown below. 
 

@@ -27,9 +27,10 @@ The fee check is factored to executed in both `DeliverTx` and `CheckTx`. This is
 
 ### ZeroCoins in `MinimumGasPricesParam`
 #### Coins Split
+`CombinedFeeRequirement` refers to the fee requirement that takes into account both `globalFees` (`MinimumGasPricesParam` in the globalfee module) and `localFees` (`minimum-gas-prices` in `app.toml`). This requirement is calculated as the maximum value between `globalFees` and `localFees` for denomination exists `globalFees`.
 The allowance of zero coins in the `MinimumGasPricesParam` within the globalfee module implies that `CombinedFeeRequirement(globalFees, localFees)` also permits zero coins. Therefore, the `CombinedFeeRequirement` doesn't meet the requirements of certain `sdk.Coins` methods. For instance, the `DenomsSubsetOf` method requires coins that do not contain zero coins.
 
-To address this issue,  the `CombinedFeeRequirement` and `feeCoins` are splitted as shown in the chart below.
+To address this issue,  the `CombinedFeeRequirement` and `feeCoins` are split as shown in the chart below.
 
 ```mermaid
 ---

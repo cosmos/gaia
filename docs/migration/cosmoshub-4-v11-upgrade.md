@@ -38,7 +38,7 @@ For more details on the release, please see the [release notes](https://github.c
 
 ## On-chain governance proposal attains consensus
 
-[Proposal ###](https://www.mintscan.io/cosmos/proposals/###) is the reference on-chain governance proposal for this upgrade, which is still in its voting period. Neither core developers nor core funding entities control the governance, and this governance proposal has passed in a _fully decentralized_ way.
+[Proposal 804](https://www.mintscan.io/cosmos/proposals/804) is the reference on-chain governance proposal for this upgrade, which is still in its voting period. Neither core developers nor core funding entities control the governance, and this governance proposal has passed in a _fully decentralized_ way.
 
 ## Upgrade date
 

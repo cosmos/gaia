@@ -1,6 +1,6 @@
 #!/bin/sh
-set -x
-# set -o errexit -o nounset
+
+set -o errexit -o nounset
 
 UPGRADE_HEIGHT=$1
 
@@ -29,8 +29,7 @@ sleep 10
 $BINARY config chain-id $CHAINID --home $NODE_HOME
 $BINARY config output json --home $NODE_HOME
 $BINARY config keyring-backend test --home $NODE_HOME
-# $BINARY config --home $NODE_HOME
-$BINARY config broadcast-mode block --home $NODE_HOME
+$BINARY config --home $NODE_HOME
 
 key=$($BINARY keys show val --home $NODE_HOME)
 if [ -z "$key" ]; then

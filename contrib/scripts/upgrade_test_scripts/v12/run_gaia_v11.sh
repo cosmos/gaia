@@ -1,10 +1,8 @@
 #!/bin/sh
 
 set -o errexit -o nounset
-set -x
 
 NODE_HOME=$(realpath ./build/.gaia)
-rm -r $NODE_HOME
 echo "NODE_HOME = ${NODE_HOME}"
 BINARY=$NODE_HOME/cosmovisor/genesis/bin/gaiad
 echo "BINARY = ${BINARY}"
@@ -72,4 +70,4 @@ enable = true/g' $NODE_HOME/config/app.toml
 pwd
 ls $NODE_HOME
 
-$COSMOVISOR run start --home $NODE_HOME --x-crisis-skip-assert-invariants
+$COSMOVISOR run start --home $NODE_HOME --x-crisis-skip-assert-invariants > v11.out 2>&1 &

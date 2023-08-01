@@ -1,10 +1,8 @@
 #!/bin/sh
 
 set -o errexit -o nounset
-set -x
 
 NODE_HOME=$(realpath ./build/.gaia)
-rm -r $NODE_HOME
 echo "NODE_HOME = ${NODE_HOME}"
 BINARY=$NODE_HOME/cosmovisor/genesis/bin/gaiad
 echo "BINARY = ${BINARY}"

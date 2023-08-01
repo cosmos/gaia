@@ -45,19 +45,19 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	gaiaante "github.com/cosmos/gaia/v11/ante"
-	"github.com/cosmos/gaia/v11/app/keepers"
-	gaiaappparams "github.com/cosmos/gaia/v11/app/params"
-	"github.com/cosmos/gaia/v11/app/upgrades"
-	v11 "github.com/cosmos/gaia/v11/app/upgrades/v11"
-	"github.com/cosmos/gaia/v11/x/globalfee"
+	gaiaante "github.com/cosmos/gaia/v12/ante"
+	"github.com/cosmos/gaia/v12/app/keepers"
+	gaiaappparams "github.com/cosmos/gaia/v12/app/params"
+	"github.com/cosmos/gaia/v12/app/upgrades"
+	v12 "github.com/cosmos/gaia/v12/app/upgrades/v12"
+	"github.com/cosmos/gaia/v12/x/globalfee"
 )
 
 var (
 	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
 
-	Upgrades = []upgrades.Upgrade{v11.Upgrade}
+	Upgrades = []upgrades.Upgrade{v12.Upgrade}
 )
 
 var (

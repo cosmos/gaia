@@ -46,7 +46,6 @@ gaiad tx staking create-validator \
   --commission-rate="0.10" \
   --commission-max-rate="0.20" \
   --commission-max-change-rate="0.01" \
-  --min-self-delegation="1000000" \
   --gas="auto" \
   --gas-prices="0.0025uatom" \
   --from=<key_name>
@@ -56,9 +55,6 @@ gaiad tx staking create-validator \
 When specifying commission parameters, the `commission-max-change-rate` is used to measure % _point_ change over the `commission-rate`. E.g. 1% to 2% is a 100% rate increase, but only 1 percentage point.
 :::
 
-::: tip
-`Min-self-delegation` is a stritly positive integer that represents the minimum amount of self-delegated voting power your validator must always have. A `min-self-delegation` of `1000000` means your validator will never have a self-delegation lower than `1atom`
-:::
 
 It's possible that you won't have enough ATOM to be part of the active set of validators in the beginning. Users are able to delegate to inactive validators (those outside of the active set) using the [Keplr web app](https://wallet.keplr.app/#/cosmoshub/stake?tab=inactive-validators). You can confirm that you are in the validator set by using a third party explorer like [Mintscan](https://www.mintscan.io/cosmos/validators).
 

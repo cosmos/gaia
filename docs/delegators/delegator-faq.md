@@ -25,7 +25,7 @@ In order to choose their validators, delegators have access to a range of inform
 - **Initial commission rate**: The commission rate on revenue charged to any delegator by the validator (see below for more detail).
 - **Commission max change rate:** The maximum daily increase of the validator's commission. This parameter cannot be changed by the validator operator.
 - **Maximum commission:** The maximum commission rate this validator candidate can charge. This parameter cannot be changed by the validator operator.
-- **Minimum self-bond amount**: Minimum amount of Atoms the validator candidate need to have bonded at all time. If the validator's self-bonded stake falls below this limit, their entire staking pool (i.e. all its delegators) will unbond. This parameter exists as a safeguard for delegators. Indeed, when a validator misbehaves, part of their total stake gets slashed. This included the validator's self-delegateds stake as well as their delegators' stake. Thus, a validator with a high amount of self-delegated Atoms has more skin-in-the-game than a validator with a low amount. The minimum self-bond amount parameter guarantees to delegators that a validator will never fall below a certain amount of self-bonded stake, thereby ensuring a minimum level of skin-in-the-game. This parameter can only be increased by the validator operator.
+- **Validator self-bond amount**: A validator with a high amount of self-delegated Atoms has more skin-in-the-game than a validator with a low amount.
 
 ## Directives of delegators
 
@@ -60,6 +60,20 @@ Our validator's staking pool represents 10% of the total stake, which means the 
 - Delegators' total revenue = `80% * 100` Atoms - Commission = 72 Atoms
 
 Then, each delegator in the staking pool can claim their portion of the delegators' total revenue.
+
+## Liquid Staking
+
+The Liquid Staking module enacts a safety framework and associated governance-controlled parameters to regulate the adoption of liquid staking.
+
+The LSM mitigates liquid staking risks by limiting the total amount of ATOM that can be liquid staked to a percentage of all staked ATOM. As an additional risk-mitigation feature, the LSM introduces a requirement that validators self-bond ATOM to be eligible for delegations from liquid staking providers or to be eligible to mint LSM tokens. This mechanism is called the “validator bond”, and is technically distinct from the current self-bond mechanism, but functions similarly.
+
+At the same time, the LSM introduces the ability for staked ATOM to be instantly liquid staked, without having to wait for the unbonding period.
+
+The LSM enables users to instantly liquid stake their staked ATOM, without having to wait the twenty-one day unbonding period. This is important, because a very large portion of the ATOM supply is currently staked. Liquid staking ATOM that is already staked incurs a switching cost in the form of three weeks’ forfeited staking rewards. The LSM eliminates this switching cost.
+
+A user would be able to visit any liquid staking provider that has integrated with the LSM and click a button to convert her staked ATOM to liquid staked ATOM. It would be as easy as liquid staking unstaked ATOM.
+
+Technically speaking, this is accomplished by using something called an “LSM share.” Using the liquid staking module, a user can tokenize their staked ATOM and turn it into LSM shares. LSM shares can be redeemed for underlying staked tokens and are transferable. After staked ATOM is tokenized it can be immediately transferred to a liquid staking provider in exchange for liquid staking tokens - without having to wait for the unbonding period.
 
 ## Risks
 

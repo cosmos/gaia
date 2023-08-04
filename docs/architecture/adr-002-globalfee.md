@@ -159,7 +159,6 @@ This refactor results in code that is easier to maintain. It prevents malicious 
 ### Negative
 The introduction of FeeDecorator has replaced the usage of `MempoolFeeDecorator` in the Cosmos SDK. Currently, if both FeeDecorator and MempoolFeeDecorator are added to the AnteDecorator chain, it will result in redundant checks. However, there's potential for FeeDecorator and MempoolFeeDecorator to become incompatible in the future, depending on updates to the Cosmos SDK.
 
-### Neutral
 
 ## References
 

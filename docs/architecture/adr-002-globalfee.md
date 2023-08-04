@@ -116,7 +116,7 @@ then `feeCoinsZeroDenom=[1uatom]` is checked by `nonZeroCoinFeesReq=[1photon, 1s
 Please note that `feeCoins` does not contain zero coins. The fee coins are split according to the denoms in `zeroCoinFeesDenomReq` or `nonZeroCoinFeesDenomReq`. If feeCoins contains coins not in both `zeroCoinFeesDenomReq` and `nonZeroCoinFeesDenomReq`, the transaction should be rejected. On the contrary, if  feeCoins' denoms are in either `zeroCoinFeesDenomReq` or `nonZeroCoinFeesDenomReq`, and `len(zeroCoinFeesDenomReq)!=0`, the transaction can directly pass, otherwise, the fee amount need to be checked.
 
 
-### Bymass Message Types
+### Bypass Message Types
 `BypassMinFeeMsgTypes` was a setup in `config/app.toml` before the refactor. `BypassMinFeeMsgTypes` is refactored to be a param of the globalfee module to get a network level agreement. Correspondingly,`MaxTotalBypassMinFeeMsgGasUsage` is also introduced as a globalfee param.
 
 ### Fee Checks in  `DeliverTx`

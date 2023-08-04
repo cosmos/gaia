@@ -75,6 +75,19 @@ A user would be able to visit any liquid staking provider that has integrated wi
 
 Technically speaking, this is accomplished by using something called an “LSM share.” Using the liquid staking module, a user can tokenize their staked ATOM and turn it into LSM shares. LSM shares can be redeemed for underlying staked tokens and are transferable. After staked ATOM is tokenized it can be immediately transferred to a liquid staking provider in exchange for liquid staking tokens - without having to wait for the unbonding period.
 
+### Toggling the ability to tokenize shares
+
+Currently the liquid staking module facilitates the immediate conversion of staked assets into liquid staked tokens. Despite the many benefits that come with this capability, it does inadvertently negate a protective measure available via traditional staking, where an account can stake their tokens to render them illiquid in the event that their wallet is compromised (the attacker would first need to unbond, then transfer out the tokens).
+
+Tokenization obviates this potential recovery measure, as an attacker could tokenize and immediately transfer staked tokens to another wallet. So, as an additional protective measure, the staking module permit accounts to selectively disable the tokenization of their stake with the `DisableTokenizeShares` message.
+
+The `DisableTokenizeShares` message is exposed by the staking module and can be executed as follows:
+```
+gaiad tx staking disable-tokenize-shares --from mykey  
+```
+
+When tokenization is disabled, a lock is placed on the account, effectively preventing the tokenization of any delegations. Re-enabling tokenization would initiate the removal of the lock, but the process is not immediate. The lock removal is queued, with the lock itself persisting throughout the unbonding period. Following the completion of the unbonding period, the lock would be completely removed, restoring the account's ablility to tokenize. For liquid staking protocols that enable the lock, this delay better positions the base layer to coordinate a recovery in the event of an exploit.
+
 ## Risks
 
 Staking Atoms is not free of risk. First, staked Atoms are locked up, and retrieving them requires a 3 week waiting period called unbonding period. Additionally, if a validator misbehaves, a portion of their total stake can be slashed (i.e. destroyed). This includes the stake of their delegators.

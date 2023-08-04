@@ -109,7 +109,6 @@ The minimum is 1 ATOM. But the network is currently secured by much higher value
 
 Delegators are free to choose validators according to their own subjective criteria. Selection criteria includes:
 
-- **Amount of self-delegated ATOM:** Number of ATOM a validator self-delegated to themselves. A validator with a higher amount of self-delegated ATOM indicates that the validator is sharing the risk and experienced consequences for their actions.
 - **Amount of validator-bonded ATOM:** Number of ATOM a validator validator-bonded to themselves. A validator with a higher amount of self-delegated ATOM indicates that the validator is sharing the risk and consequences for their actions, or has enough goodwill from the community so that others post validator bond on the validator's behalf.
 - **Amount of delegated ATOM:** Total number of ATOM delegated to a validator. A high voting power shows that the community trusts this validator. Larger validators also decrease the decentralization of the network, so delegators are suggested to consider delegating to smaller validators.
 - **Commission rate:** Commission applied on revenue by validators before the revenue is distributed to their delegators.
@@ -281,11 +280,11 @@ No, in the event of a slash, a validator bond is slashed at the same rate as a r
 ### Can I unbond my validator bond? 
 If all the liquid staking capacity made available by a validator’s validator bond is utilized, validator bond delegated to that validator cannot be unbonded. If new capacity becomes available (either by redemption of liquid staking tokens or addition or new validator bond), then existing validator bond can be undelegated.
 
-Example: Suppose the validator bond factor is 250 and Iqlusion validator bonds 2 ATOM, then liquid staking providers delegate 500 ATOM to Iqlusion. Now Iqlusion cannot remove any of their validator bond because the full liquid staking capacity made available by Iqlusion’s validator bond is consumed.
+Example: Suppose the validator bond factor is 250 and Validator V bonds 2 ATOM, then liquid staking providers delegate 500 ATOM to Validator V. Now Validator V cannot remove any of their validator bond because the full liquid staking capacity made available by Validator V’s validator bond is consumed.
 
-If liquid staking providers undelegate 250 ATOM from Iqlusion, Iqlusion can now remove 1 ATOM of validator bond.
+If liquid staking providers undelegate 250 ATOM from Validator V, Validator V can now remove 1 ATOM of validator bond.
 
-If, instead, the ICF or a community member validator bonds 1 additional ATOM to Iqlusion, Iqlusion can now remove 1 ATOM of validator bond.
+If, instead, the ICF or a community member validator bonds 1 additional ATOM to Validator V, Validator V can now remove 1 ATOM of validator bond.
 
 ### Can I validator bond some of my tokens and delegate the remaining portion normally? 
 The `ValidatorBond` message converts the full balance delegated to a validator into validator bond. To validator bond some tokens and delegate the remaining portion normally, use two addresses: the first will delegate + ValidatorBond, and the second will just delegate.

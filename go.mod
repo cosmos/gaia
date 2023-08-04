@@ -176,7 +176,8 @@ replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
 	// NOTE: @MSalopek test ics-lsm implementations
-	github.com/cosmos/cosmos-sdk => github.com/iqlusioninc/cosmos-sdk v0.45.17-0.20230720195127-73e72b9ef30f
+	// github.com/cosmos/cosmos-sdk => github.com/iqlusioninc/cosmos-sdk v0.45.17-0.20230720195127-73e72b9ef30f
+	github.com/cosmos/cosmos-sdk => github.com/iqlusioninc/cosmos-sdk v0.45.17-0.20230804153818-5ba311f01ebc
 	github.com/cosmos/interchain-security/v2 => github.com/cosmos/interchain-security/v2 v2.0.1-0.20230725101325-314cd35bbaea
 
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134

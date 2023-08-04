@@ -38,16 +38,17 @@ title: Fee Requirements and Fee Splits
 ---
 flowchart TD
 	subgraph feeReq
-    CombinedFeeRequirement-->zeroCoinFeesDenomReq;
-	CombinedFeeRequirement-->nonzeroCoinFeesDenomReq;
-	end
-	subgraph feeCoin
-	feeCoins-->feeCoinsZeroDenom;
-	feeCoins-->feeCoinsNonZeroDenom;
+    A[CombinedFeeRequirement]-->B[/Split zero/nonzero coins/]
+    B-->|zero coins| C[zeroCoinFeesDenomReq];
+	B-->|nonzero coins| D[nonzeroCoinFeesDenomReq];
+
 	end
 
-	feeCoinsZeroDenom-.feeCheck-Zero.->zeroCoinFeesDenomReq;
-	feeCoinsNonZeroDenom-.feeCheck-NonZero.->nonzeroCoinFeesDenomReq;
+	subgraph feeCoin
+	E[feeCoins]-->F[/Split by the denoms in zero/nonzero CoinFeesDenomReq/]
+    F-->|denoms in zeroCoinFeesDenomReq set| G[feeCoinsZeroDenom]
+    F-->|denoms in nonzeroCoinFeesDenomReq set| H[feeCoinsNonZeroDenom]
+	end
 ```
 
 The `CombinedFeeRequirement` is split into zero and non-zero coins, forming `nonZeroCoinFeesReq` and `zeroCoinFeesDenomReq`. Similarly, the paid fees (feeCoins) are split into `feeCoinsNonZeroDenom` and `feeCoinsZeroDenom`, based on the denominations of `nonZeroCoinFeesReq` and `zeroCoinFeesDenomReq` as shown in the following code snippet.
@@ -69,22 +70,22 @@ title: Fee Check
 ---
 flowchart TD
 
-feeCoinsNonZeroDenom-->DenomsSubsetOf_nonZeroCoinFeesReq;
-DenomsSubsetOf_nonZeroCoinFeesReq-->|yes|is_bypass_msg;
-DenomsSubsetOf_nonZeroCoinFeesReq-->|no|reject;
+A[feeCoinsNonZeroDenom]-->B[/DenomsSubsetOf_nonZeroCoinFeesReq/];
+B-->|yes|C[is_bypass_msg];
+B-->|no|D((reject));
 
-is_bypass_msg-->|yes|pass1[pass];
-is_bypass_msg-->|no|contain_zeroCoinFeesDenomReq_denom;
+C-->|yes|pass1((pass));
+C-->|no|D[/contain_zeroCoinFeesDenomReq_denom/];
 
-contain_zeroCoinFeesDenomReq_denom-->|yes|pass2[pass];
-contain_zeroCoinFeesDenomReq_denom-->|no|feeCoinsZeroDenom_nonEmpty;
+D-->|yes|pass2((pass));
+D-->|no|E[/feeCoinsZeroDenom_nonEmpty/];
 
 
-feeCoinsZeroDenom_nonEmpty-->|yes|pass3[pass];
-feeCoinsZeroDenom_nonEmpty-->|no|IsAnyGTE_nonZeroCoinFeesDenomReq;
+E-->|yes|pass3((pass));
+E-->|no|F[/IsAnyGTE_nonZeroCoinFeesDenomReq/];
 
-IsAnyGTE_nonZeroCoinFeesDenomReq-->|yes|pass4[pass];
-IsAnyGTE_nonZeroCoinFeesDenomReq-->|no|reject2[reject];
+F-->|yes|pass4((pass));
+F-->|no|reject2((reject));
 ```
 
 The split enable checking `feeCoinsNonZeroDenom` against `nonZeroCoinFeesReq`, and `feeCoinsZeroDenom` against

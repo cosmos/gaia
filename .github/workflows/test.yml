@@ -146,37 +146,33 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version: 1.20.x
-      - name: Install GaiaV10
+      - name: Install GaiaV11
         run: |
-          git checkout v10.0.0
+          git checkout v11.0.0
           make build
-          cp ./build/gaiad ./build/gaiad10
+          cp ./build/gaiad ./build/gaiad11
           go clean -modcache
         if: env.GIT_DIFF
-      - name: Install GaiaV11
+      - name: Install GaiaV12
         run: |
           git checkout -
           make build
-          cp ./build/gaiad ./build/gaiad11
+          cp ./build/gaiad ./build/gaiad12
         if: env.GIT_DIFF
       - name: Install Cosmovisor
         run: |
           go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@latest
         if: env.GIT_DIFF
-      - name: Start GaiaV10
+      - name: Start GaiaV11
         run: |
           go env GOPATH
-          ./contrib/scripts/upgrade_test_scripts/v11/run_gaia_v10.sh
+          ./contrib/scripts/upgrade_test_scripts/v12/run_gaia_v11.sh
         if: env.GIT_DIFF
       - name: Submit Upgrade Commands
         run: |
-          ./contrib/scripts/upgrade_test_scripts/v11/run_upgrade_commands_v11.sh 15
+          ./contrib/scripts/upgrade_test_scripts/v12/run_upgrade_commands_v12.sh 15
         if: env.GIT_DIFF
       - name: Check for successful upgrade
         run: |
           ./contrib/scripts/upgrade_test_scripts/test_upgrade.sh 20 5 16 localhost
-        if: env.GIT_DIFF
-      - name: Check for successful migration
-        run: |
-          ./contrib/scripts/upgrade_test_scripts/v11/test_migration_v11.sh localhost
         if: env.GIT_DIFF

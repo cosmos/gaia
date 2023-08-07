@@ -4,26 +4,31 @@ import (
 	"fmt"
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/stretchr/testify/suite"
-
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	"github.com/cosmos/gaia/v11/ante"
-	gaiahelpers "github.com/cosmos/gaia/v11/app/helpers"
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/testutil/testdata"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
-	gaiaapp "github.com/cosmos/gaia/v11/app"
+	"github.com/cosmos/gaia/v12/ante"
+	gaiaapp "github.com/cosmos/gaia/v12/app"
+	gaiahelpers "github.com/cosmos/gaia/v12/app/helpers"
 )
 
 var (
-	insufficientCoins = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 100))
-	minCoins          = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000000))
-	moreThanMinCoins  = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 2500000))
-	testAddr          = sdk.AccAddress("test1")
+	insufficientCoins           = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 100))
+	insufficientMultiDenomCoins = sdk.NewCoins(
+		sdk.NewInt64Coin(sdk.DefaultBondDenom, 100),
+		sdk.NewInt64Coin("ibc/example", 100))
+	minCoins                   = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000000))
+	moreThanMinCoins           = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 2500000))
+	moreThanMinMultiDenomCoins = sdk.NewCoins(
+		sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000000),
+		sdk.NewInt64Coin("ibc/example", 100))
+	testAddr = sdk.AccAddress("test1")
 )
 
 type GovAnteHandlerTestSuite struct {
@@ -66,7 +71,9 @@ func (s *GovAnteHandlerTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 	}{
 		{"Passing proposal 1", "the purpose of this proposal is to pass", govtypes.ProposalTypeText, testAddr, minCoins, true},
 		{"Passing proposal 2", "the purpose of this proposal is to pass with more coins than minimum", govtypes.ProposalTypeText, testAddr, moreThanMinCoins, true},
-		{"Failing proposal", "the purpose of this proposal is to fail", govtypes.ProposalTypeText, testAddr, insufficientCoins, false},
+		{"Passing proposal 3", "the purpose of this proposal is to pass with multi denom coins", govtypes.ProposalTypeText, testAddr, moreThanMinMultiDenomCoins, true},
+		{"Failing proposal 1", "the purpose of this proposal is to fail", govtypes.ProposalTypeText, testAddr, insufficientCoins, false},
+		{"Failing proposal 2", "the purpose of this proposal is to fail with multi denom coins", govtypes.ProposalTypeText, testAddr, insufficientMultiDenomCoins, false},
 	}
 
 	decorator := ante.NewGovPreventSpamDecorator(s.app.AppCodec(), &s.app.GovKeeper)

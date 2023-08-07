@@ -7,6 +7,21 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/gorilla/mux"
+	"github.com/rakyll/statik/fs"
+	"github.com/spf13/cast"
+	abci "github.com/tendermint/tendermint/abci/types"
+	tmjson "github.com/tendermint/tendermint/libs/json"
+	"github.com/tendermint/tendermint/libs/log"
+	tmos "github.com/tendermint/tendermint/libs/os"
+	dbm "github.com/tendermint/tm-db"
+
+	// unnamed import of statik for swagger UI support
+	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
+
+	ibctesting "github.com/cosmos/interchain-security/v2/legacy_ibc_testing/testing"
+	providertypes "github.com/cosmos/interchain-security/v2/x/ccv/provider/types"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	nodeservice "github.com/cosmos/cosmos-sdk/client/grpc/node"
@@ -29,33 +44,20 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ibctesting "github.com/cosmos/interchain-security/v2/legacy_ibc_testing/testing"
-	providertypes "github.com/cosmos/interchain-security/v2/x/ccv/provider/types"
-	"github.com/gorilla/mux"
-	"github.com/rakyll/statik/fs"
-	"github.com/spf13/cast"
-	abci "github.com/tendermint/tendermint/abci/types"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	"github.com/tendermint/tendermint/libs/log"
-	tmos "github.com/tendermint/tendermint/libs/os"
-	dbm "github.com/tendermint/tm-db"
 
-	gaiaante "github.com/cosmos/gaia/v11/ante"
-	"github.com/cosmos/gaia/v11/app/keepers"
-	gaiaappparams "github.com/cosmos/gaia/v11/app/params"
-	"github.com/cosmos/gaia/v11/app/upgrades"
-	v11 "github.com/cosmos/gaia/v11/app/upgrades/v11"
-	"github.com/cosmos/gaia/v11/x/globalfee"
-
-	// unnamed import of statik for swagger UI support
-	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
+	gaiaante "github.com/cosmos/gaia/v12/ante"
+	"github.com/cosmos/gaia/v12/app/keepers"
+	gaiaappparams "github.com/cosmos/gaia/v12/app/params"
+	"github.com/cosmos/gaia/v12/app/upgrades"
+	v12 "github.com/cosmos/gaia/v12/app/upgrades/v12"
+	"github.com/cosmos/gaia/v12/x/globalfee"
 )
 
 var (
 	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
 
-	Upgrades = []upgrades.Upgrade{v11.Upgrade}
+	Upgrades = []upgrades.Upgrade{v12.Upgrade}
 )
 
 var (

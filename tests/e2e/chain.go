@@ -4,16 +4,17 @@ import (
 	"fmt"
 	"os"
 
+	tmrand "github.com/tendermint/tendermint/libs/rand"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
 
-	gaia "github.com/cosmos/gaia/v11/app"
-	"github.com/cosmos/gaia/v11/app/params"
+	gaia "github.com/cosmos/gaia/v12/app"
+	"github.com/cosmos/gaia/v12/app/params"
 )
 
 const (

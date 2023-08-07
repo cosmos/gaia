@@ -1,6 +1,22 @@
 package gaia
 
 import (
+	"github.com/gravity-devs/liquidity/x/liquidity"
+	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
+	"github.com/strangelove-ventures/packet-forward-middleware/v4/router"
+	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
+
+	ica "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts"
+	icatypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/types"
+	"github.com/cosmos/ibc-go/v4/modules/apps/transfer"
+	ibctransfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
+	ibc "github.com/cosmos/ibc-go/v4/modules/core"
+	ibcclientclient "github.com/cosmos/ibc-go/v4/modules/core/02-client/client"
+	ibchost "github.com/cosmos/ibc-go/v4/modules/core/24-host"
+	ibcprovider "github.com/cosmos/interchain-security/v2/x/ccv/provider"
+	ibcproviderclient "github.com/cosmos/interchain-security/v2/x/ccv/provider/client"
+	providertypes "github.com/cosmos/interchain-security/v2/x/ccv/provider/types"
+
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
@@ -38,23 +54,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ica "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts"
-	icatypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/types"
-	"github.com/cosmos/ibc-go/v4/modules/apps/transfer"
-	ibctransfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
-	ibc "github.com/cosmos/ibc-go/v4/modules/core"
-	ibcclientclient "github.com/cosmos/ibc-go/v4/modules/core/02-client/client"
-	ibchost "github.com/cosmos/ibc-go/v4/modules/core/24-host"
-	ibcprovider "github.com/cosmos/interchain-security/v2/x/ccv/provider"
-	ibcproviderclient "github.com/cosmos/interchain-security/v2/x/ccv/provider/client"
-	providertypes "github.com/cosmos/interchain-security/v2/x/ccv/provider/types"
-	"github.com/gravity-devs/liquidity/x/liquidity"
-	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
-	"github.com/strangelove-ventures/packet-forward-middleware/v4/router"
-	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
 
-	gaiaappparams "github.com/cosmos/gaia/v11/app/params"
-	"github.com/cosmos/gaia/v11/x/globalfee"
+	gaiaappparams "github.com/cosmos/gaia/v12/app/params"
+	"github.com/cosmos/gaia/v12/x/globalfee"
 )
 
 var maccPerms = map[string][]string{

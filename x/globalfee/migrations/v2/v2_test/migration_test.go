@@ -3,18 +3,20 @@ package v2_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+	"github.com/tendermint/tendermint/libs/log"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	tmdb "github.com/tendermint/tm-db"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/store"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	v2 "github.com/cosmos/gaia/v11/x/globalfee/migrations/v2"
-	globalfeetypes "github.com/cosmos/gaia/v11/x/globalfee/types"
-	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmdb "github.com/tendermint/tm-db"
+
+	v2 "github.com/cosmos/gaia/v12/x/globalfee/migrations/v2"
+	globalfeetypes "github.com/cosmos/gaia/v12/x/globalfee/types"
 )
 
 func TestMigrateStore(t *testing.T) {

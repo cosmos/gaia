@@ -1,6 +1,32 @@
 package keepers
 
 import (
+	liquiditykeeper "github.com/gravity-devs/liquidity/x/liquidity/keeper"
+	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
+	"github.com/strangelove-ventures/packet-forward-middleware/v4/router"
+	routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v4/router/keeper"
+	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
+	tmos "github.com/tendermint/tendermint/libs/os"
+
+	// unnamed import of statik for swagger UI support
+	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
+
+	ica "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts"
+	icahost "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host"
+	icahostkeeper "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/keeper"
+	icahosttypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/types"
+	"github.com/cosmos/ibc-go/v4/modules/apps/transfer"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v4/modules/apps/transfer/keeper"
+	ibctransfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
+	ibcclient "github.com/cosmos/ibc-go/v4/modules/core/02-client"
+	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
+	porttypes "github.com/cosmos/ibc-go/v4/modules/core/05-port/types"
+	ibchost "github.com/cosmos/ibc-go/v4/modules/core/24-host"
+	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
+	ibcprovider "github.com/cosmos/interchain-security/v2/x/ccv/provider"
+	ibcproviderkeeper "github.com/cosmos/interchain-security/v2/x/ccv/provider/keeper"
+	providertypes "github.com/cosmos/interchain-security/v2/x/ccv/provider/types"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
@@ -22,12 +48,8 @@ import (
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
-	providertypes "github.com/cosmos/interchain-security/v2/x/ccv/provider/types"
-	tmos "github.com/tendermint/tendermint/libs/os"
-
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
@@ -41,30 +63,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ica "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts"
-	icahost "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host"
-	icahostkeeper "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/keeper"
-	icahosttypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/types"
-	"github.com/cosmos/ibc-go/v4/modules/apps/transfer"
-	ibctransferkeeper "github.com/cosmos/ibc-go/v4/modules/apps/transfer/keeper"
-	ibctransfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
-	ibcclient "github.com/cosmos/ibc-go/v4/modules/core/02-client"
-	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
-	porttypes "github.com/cosmos/ibc-go/v4/modules/core/05-port/types"
-	ibchost "github.com/cosmos/ibc-go/v4/modules/core/24-host"
-	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
-	ibcprovider "github.com/cosmos/interchain-security/v2/x/ccv/provider"
-	ibcproviderkeeper "github.com/cosmos/interchain-security/v2/x/ccv/provider/keeper"
-	liquiditykeeper "github.com/gravity-devs/liquidity/x/liquidity/keeper"
-	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
-	"github.com/strangelove-ventures/packet-forward-middleware/v4/router"
-	routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v4/router/keeper"
-	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
 
-	"github.com/cosmos/gaia/v11/x/globalfee"
-
-	// unnamed import of statik for swagger UI support
-	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
+	"github.com/cosmos/gaia/v12/x/globalfee"
 )
 
 type AppKeepers struct {

@@ -1,11 +1,11 @@
 package keepers
 
 import (
+	"github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/router"
+	routerkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/router/keeper"
+	routertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/router/types"
 	liquiditykeeper "github.com/gravity-devs/liquidity/x/liquidity/keeper"
 	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
-	"github.com/strangelove-ventures/packet-forward-middleware/v4/router"
-	routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v4/router/keeper"
-	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
 	tmos "github.com/tendermint/tendermint/libs/os"
 
 	// unnamed import of statik for swagger UI support

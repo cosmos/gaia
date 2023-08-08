@@ -7,6 +7,7 @@ require (
 	cosmossdk.io/math v1.0.1
 	github.com/cosmos/cosmos-sdk v0.45.16-ics
 	github.com/cosmos/go-bip39 v1.0.0
+	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4 v4.1.0
 	github.com/cosmos/ibc-go/v4 v4.4.2
 	github.com/cosmos/interchain-security/v2 v2.0.0
 	github.com/gogo/protobuf v1.3.3
@@ -19,7 +20,6 @@ require (
 	github.com/spf13/cast v1.5.1
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.16.0
-	github.com/strangelove-ventures/packet-forward-middleware/v4 v4.0.6
 	github.com/stretchr/testify v1.8.4
 	github.com/tendermint/tendermint v0.34.27
 	github.com/tendermint/tm-db v0.6.7

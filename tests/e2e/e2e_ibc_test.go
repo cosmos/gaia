@@ -29,6 +29,7 @@ type PacketMetadata struct {
 	Forward *ForwardMetadata `json:"forward"`
 }
 
+//nolint:unparam
 func (s *IntegrationTestSuite) sendIBC(c *chain, valIdx int, sender, recipient, token, fees, note string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()

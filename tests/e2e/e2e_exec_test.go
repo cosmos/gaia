@@ -773,7 +773,7 @@ func (s *IntegrationTestSuite) executeRedeemShares(c *chain, valIdx int, amount,
 	s.T().Logf("%s successfully executed redeem share tx for %s", delegatorAddr, amount)
 }
 
-func (s *IntegrationTestSuite) executeTransferTokenizeShareRecord(c *chain, valIdx int, recordId, owner, newOwner, home, txFees string) {
+func (s *IntegrationTestSuite) executeTransferTokenizeShareRecord(c *chain, valIdx int, recordID, owner, newOwner, home, txFees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -784,7 +784,7 @@ func (s *IntegrationTestSuite) executeTransferTokenizeShareRecord(c *chain, valI
 		txCommand,
 		stakingtypes.ModuleName,
 		"transfer-tokenize-share-record",
-		recordId,
+		recordID,
 		newOwner,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
@@ -796,5 +796,5 @@ func (s *IntegrationTestSuite) executeTransferTokenizeShareRecord(c *chain, valI
 	}
 
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
-	s.T().Logf("%s successfully executed transfer tokenize share record for %s", owner, recordId)
+	s.T().Logf("%s successfully executed transfer tokenize share record for %s", owner, recordID)
 }

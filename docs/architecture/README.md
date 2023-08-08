@@ -49,7 +49,7 @@ They are to be interpreted as described in [RFC 2119](https://datatracker.ietf.o
 
 ### Accepted
 
-- n/a
+- [ADR 002: Globalfee Module](./adr-002-globalfee.md)
 
 ### Proposed
 

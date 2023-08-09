@@ -22,6 +22,7 @@ The table below shows all past and upcoming versions of the public testnet.
 
 |   Release   | Upgrade Block Height |    Upgrade Date     |
 | :---------: | :------------------: | :-----------------: |
+| v12.0.0-rc0 |         TBA          |         TBA         |
 | v11.0.0-rc0 |      17,107,825      |     2023-07-26      |
 | v10.0.0-rc0 |      16,117,530      |     2023-05-24      |
 | v9.0.0-rc3  |      14,476,206      |     2023-02-08      |
@@ -72,7 +73,7 @@ export PATH=$PATH:/usr/local/go/bin
 
 ### Installation & Configuration
 
-You will need to install and configure the Gaia binary using the script below. The Cosmos Hub Public Testnet is running Gaia [`v11.0.0-rc0`](https://github.com/cosmos/gaia/releases/tag/v11.0.0-rc0).
+You will need to install and configure the Gaia binary using the script below. The Cosmos Hub Public Testnet is running Gaia [`v11.0.0`](https://github.com/cosmos/gaia/releases/tag/v11.0.0).
 
 * For up-to-date endpoints like seeds and state sync RPC servers, visit the [testnets repository](https://github.com/cosmos/testnets/tree/master/public).
 
@@ -82,7 +83,7 @@ cd $HOME
 git clone https://github.com/cosmos/gaia
 cd gaia
 # To sync from genesis, comment out the next line.
-git checkout v11.0.0-rc0
+git checkout v11.0.0
 # To sync from genesis, uncomment the next line and skip the State Sync Setup section.
 # git checkout v6.0.4
 make install

@@ -30,6 +30,6 @@ func TestFuzzGenesisAccountValidate(t *testing.T) {
 	for i = 0; i < 1e5; i++ {
 		acct = new(SimGenesisAccount)
 		f.Fuzz(acct)
-		acct.Validate()
+		acct.Validate() //nolint:errcheck
 	}
 }

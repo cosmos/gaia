@@ -6,12 +6,14 @@
     - [Ease of reviewing](#ease-of-reviewing)
     - [Workflow](#workflow)
   - [Project Board](#project-board)
+  - [Architecture Decision Records (ADR)](#architecture-decision-records-adr)
   - [Development Procedure](#development-procedure)
     - [Testing](#testing)
     - [Pull Requests](#pull-requests)
     - [Pull Request Templates](#pull-request-templates)
     - [Requesting Reviews](#requesting-reviews)
     - [Updating Documentation](#updating-documentation)
+    - [Changelog](#changelog)
   - [Dependencies](#dependencies)
   - [Protobuf](#protobuf)
   - [Branching Model and Release](#branching-model-and-release)
@@ -98,6 +100,14 @@ We use self-organizing principles to coordinate and collaborate across organizat
 
 The developers work in sprints, which are available in a [GitHub Project](https://github.com/orgs/cosmos/projects/28/views/2). 
 
+## Architecture Decision Records (ADR)
+
+When proposing an architecture decision for Gaia, please start by opening an [issue](https://github.com/cosmos/gaia/issues/new/choose) or a [discussion](https://github.com/cosmos/gaia/discussions/new) with a summary of the proposal. Once the proposal has been discussed and there is rough alignment on a high-level approach to the design, you may either start development, or write an ADR.
+
+If your architecture decision is a simple change, you may contribute directly without writing an ADR. However, if you are proposing a significant change, please include a corresponding ADR.
+
+To create an ADR, follow the [template](./docs/architecture/adr-template.md) and [doc](./docs/architecture/README.md). If you would like to see examples of how these are written, please refer to the current [ADRs](https://github.com/cosmos/gaia/tree/main/docs/architecture).
+
 ## Development Procedure
 
 `main` must be stable, include only completed features and never fail `make lint`, `make run-tests`, or `make build/install`.
@@ -173,7 +183,6 @@ Then:
    Draft PRs also help the stewarding team provide early feedback and ensure the work is in the right direction.
 2. When the code is complete, change your PR from `Draft` to `Ready for Review`.
 3. Go through the actions for each checkbox present in the PR template description. The PR actions are automatically provided for each new PR.
-4. Be sure to include a relevant changelog entry in the `Unreleased` section of `CHANGELOG.md` (see file for log format). The entry should be on top of all others changes in the section.
 
 PRs must have a category prefix that is based on the type of changes being made (for example, `fix`, `feat`,
 `refactor`, `docs`, and so on). The [type](https://github.com/commitizen/conventional-commit-types/blob/v3.0.0/index.json) 
@@ -190,7 +199,7 @@ Pull requests are merged automatically using [`A:automerge` action](https://merg
 
 There are three PR templates. The [default template](./.github/PULL_REQUEST_TEMPLATE.md) contains links to the three templates. Please go the the `Preview` tab and select the appropriate sub-template:
 
-- The [production template](./.github/PULL_REQUEST_TEMPLATE/production.md) is for types `fix`, `feat`, and `refactor`. 
+- The [production template](./.github/PULL_REQUEST_TEMPLATE/production.md) is for types `fix`, `feat`, `deps`, and `refactor`. 
 - The [docs template](./.github/PULL_REQUEST_TEMPLATE/docs.md) is for documentation changes.
 - The [other template](./.github/PULL_REQUEST_TEMPLATE/other.md) is for changes that do not affect production code. 
 
@@ -223,6 +232,58 @@ items. In addition, use the following review explanations:
 ### Updating Documentation
 
 If you open a PR in Gaia, it is mandatory to update the relevant documentation in `/docs`.
+
+### Changelog
+
+To manage and generate our changelog, we currently use [unclog](https://github.com/informalsystems/unclog).
+
+Every PR with types `fix`, `feat`, `deps`, and `refactor` should include a file 
+`.changelog/unreleased/${section}/[${component}/]${pr-number}-${short-description}.md`,
+where:
+
+- `section` is one of 
+  `dependencies`, `improvements`, `features`, `bug-fixes`, `state-breaking`, `api-breaking`, 
+  and _**if multiple apply, create multiple files**_;
+- `pr-number` is the PR number;
+- `short-description` is a short (4 to 6 word), hyphen separated description of the change;
+- `component` is used for changes that affect one of the components defined in the [config](.changelog/config.toml), e.g., `tests`, `globalfee`.
+
+For examples, see the [.changelog](.changelog) folder.
+
+Use `unclog` to add a changelog entry in `.changelog` (check the [requirements](https://github.com/informalsystems/unclog#requirements) first): 
+```bash
+# add a general entry
+unclog add 
+   -i "${pr-number}-${short-description}" 
+   -p "${pr-number}" 
+   -s "${section}" 
+   -m "${description}"
+
+# add a entry to a component 
+unclog add 
+   -i "${pr-number}-${short-description}" 
+   -p "${pr-number}" 
+   -c "${component}"
+   -s "${section}" 
+   -m "${description}"
+```
+where `${description}` is a detailed description of the changelog entry.
+
+For example, 
+```bash
+# add an entry for bumping IBC to v4.4.2
+unclog add -i "2554-bump-ibc" -p 2554 -s "dependencies" -m "Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.4.2](https://github.com/cosmos/ibc-go/releases/tag/v4.4.2)" 
+
+# add an entry for changing the global fee module;
+# note that the entry is added to both state-breaking and api-breaking sections
+unclog add -i "2424-params" -p 2424 -c globalfee -s "state-breaking" -m "Add \`bypass-min-fee-msg-types\` and \`maxTotalBypassMinFeeMsgGagUsage\` to globalfee params" 
+unclog add -i "2424-params" -p 2424 -c globalfee -s "api-breaking" -m "Add \`bypass-min-fee-msg-types\` and \`maxTotalBypassMinFeeMsgGagUsage\` to globalfee params" 
+```
+
+**Note:** Changelog entries should answer the question: "what is important about this
+change for users to know?" or "what problem does this solve for users?". It
+should not simply be a reiteration of the title of the associated PR, unless the
+title of the PR _very_ clearly explains the benefit of a change to a user.
 
 ## Dependencies
 

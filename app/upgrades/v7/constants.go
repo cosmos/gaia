@@ -1,10 +1,11 @@
 package v7
 
 import (
-	store "github.com/cosmos/cosmos-sdk/store/types"
 	icahosttypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/types"
 
-	"github.com/cosmos/gaia/v11/app/upgrades"
+	store "github.com/cosmos/cosmos-sdk/store/types"
+
+	"github.com/cosmos/gaia/v12/app/upgrades"
 )
 
 const (

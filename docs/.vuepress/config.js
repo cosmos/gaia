@@ -52,9 +52,13 @@ module.exports = {
             {
               title: "REST API Spec",
               path: "https://cosmos.network/rpc/"
-            }
+            },
+            {
+              title: "REST API Spec ABC",
+              path: "https://cosmos.network/rpc/"
+            }            
           ]
-        }
+        }        
       ]
     },
     gutter: {
@@ -79,10 +83,6 @@ module.exports = {
           url: "https://twitter.com/cosmos"
         },
         {
-          service: "linkedin",
-          url: "https://www.linkedin.com/company/tendermint/"
-        },
-        {
           service: "github",
           url: "https://github.com/cosmos/gaia"
         },
@@ -100,23 +100,12 @@ module.exports = {
         }
       ],
       smallprint:
-        "This website is maintained by Tendermint Inc. The contents and opinions of this website are those of Tendermint Inc.",
+        "This website is maintained by Interchain Foundation/Informal Systems. The contents and opinions of this website are those of Interchain Foundation/Informal Systems.",
       links: [
         {
           title: "Documentation",
           children: [
-            {
-              title: "Cosmos SDK",
-              url: "https://docs.cosmos.network"
-            },
-            {
-              title: "Cosmos Hub",
-              url: "https://hub.cosmos.network/"
-            },
-            {
-              title: "Tendermint Core",
-              url: "https://docs.tendermint.com/"
-            }
+
           ]
         },
         {

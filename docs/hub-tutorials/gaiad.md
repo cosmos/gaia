@@ -124,7 +124,7 @@ gaiad tendermint show-validator
 Note that this is the Tendermint signing key, _not_ the operator key you will use in delegation transactions.
 
 ::: danger Warning
-We strongly recommend _NOT_ using the same passphrase for multiple keys. The Tendermint team and the Interchain Foundation will not be responsible for the loss of funds.
+We strongly recommend _NOT_ using the same passphrase for multiple keys. The CometBFT team and the Interchain Foundation will not be responsible for the loss of funds.
 :::
 
 #### Generate Multisig Public Keys

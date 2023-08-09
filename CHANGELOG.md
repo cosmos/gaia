@@ -1,54 +1,75 @@
-<!--
-Guiding Principles:
+# CHANGELOG
 
-Changelogs are for humans, not machines.
-There should be an entry for every single version.
-The same types of changes should be grouped.
-Versions and sections should be linkable.
-The latest version comes first.
-The release date of each version is displayed.
-Mention whether you follow Semantic Versioning.
+## v11.0.0
 
-Usage:
+*July 18, 2023*
 
-Change log entries are to be added to the Unreleased section under the
-appropriate stanza (see below). Each entry should ideally include a tag and
-the Github issue reference in the following format:
+### API BREAKING
 
-* (<tag>) \#<issue-number> message
+- [GlobalFee](x/globalfee)
+  - Add `bypass-min-fee-msg-types` and `maxTotalBypassMinFeeMsgGagUsage` to
+    globalfee params. `bypass-min-fee-msg-types` in `config/app.toml` is
+    deprecated ([\#2424](https://github.com/cosmos/gaia/pull/2424))
 
-The issue numbers will later be link-ified during the release process so you do
-not have to worry about including a link manually, but you can if you wish.
+### BUG FIXES
 
-Types of changes (Stanzas):
+- Fix logic bug in `GovPreventSpamDecorator` that allows bypassing the 
+  `MinInitialDeposit` requirement 
+  ([a759409](https://github.com/cosmos/gaia/commit/a759409c9da2780663244308b430a7847b95139b))
 
-"Features" for new features.
-"Improvements" for changes in existing functionality.
-"Deprecated" for soon-to-be removed features.
-"Bug Fixes" for any bug fixes.
-"Client Breaking" for breaking CLI commands and REST routes.
-"State Machine Breaking" for breaking the AppState
+### DEPENDENCIES
 
-Ref: https://keepachangelog.com/en/1.0.0/
--->
+- Bump [PFM](https://github.com/strangelove-ventures/packet-forward-middleware) to 
+  [v4.0.5](https://github.com/strangelove-ventures/packet-forward-middleware/releases/tag/v4.0.5)
+  ([\#2185](https://github.com/cosmos/gaia/issues/2185))
+- Bump [Interchain-Security](https://github.com/cosmos/interchain-security) to
+  [v2.0.0](https://github.com/cosmos/interchain-security/releases/tag/v2.0.0)
+  ([\#2616](https://github.com/cosmos/gaia/pull/2616))
+- Bump [Liquidity](https://github.com/Gravity-Devs/liquidity) to 
+  [v1.6.0-forced-withdrawal](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.6.0-forced-withdrawal) 
+  ([\#2652](https://github.com/cosmos/gaia/pull/2652))
 
-# Changelog
+### STATE BREAKING
 
-## [Unreleased]
+- General
+  - Fix logic bug in `GovPreventSpamDecorator` that allows bypassing the
+    `MinInitialDeposit` requirement
+    ([a759409](https://github.com/cosmos/gaia/commit/a759409c9da2780663244308b430a7847b95139b))
+  - Bump [Interchain-Security](https://github.com/cosmos/interchain-security) to
+    [v2.0.0](https://github.com/cosmos/interchain-security/releases/tag/v2.0.0)
+    ([\#2616](https://github.com/cosmos/gaia/pull/2616))
+  - Bump [Liquidity](https://github.com/Gravity-Devs/liquidity) to
+    [v1.6.0-forced-withdrawal](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.6.0-forced-withdrawal)
+    ([\#2652](https://github.com/cosmos/gaia/pull/2652))
+- [GlobalFee](x/globalfee)
+  - Create the upgrade handler and params migration for the new Gloabal Fee module
+    parameters introduced in [#2424](https://github.com/cosmos/gaia/pull/2424)
+    ([\#2352](https://github.com/cosmos/gaia/pull/2352))
+  - Add `bypass-min-fee-msg-types` and `maxTotalBypassMinFeeMsgGagUsage` to
+    globalfee params ([\#2424](https://github.com/cosmos/gaia/pull/2424))
+  - Update Global Fee's AnteHandler to check tx fees against the network min gas
+    prices in DeliverTx mode ([\#2447](https://github.com/cosmos/gaia/pull/2447))
 
-* (docs) [#2560](https://github.com/cosmos/gaia/pull/2560) Updates for v9.1.1 and re-arranging roadmap docs
-* (deps) [#2554](https://github.com/cosmos/gaia/pull/2554) Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.4.2](https://github.com/cosmos/ibc-go/releases/tag/v4.4.2).
+## v10.0.2
 
-### Improvements
-* (test) [#2440](https://github.com/cosmos/gaia/pull/2440) Add vulncheck to nightly builds
-* (gaia) [#2442](https://github.com/cosmos/gaia/pull/2442) Bump [Interchain-Security](https://github.com/cosmos/interchain-security) to [v1.1.1](https://github.com/cosmos/interchain-security/tree/v1.1.1).
+*July 03, 2023*
 
-### State Machine Breaking
+This release bumps several dependencies and enables extra queries. 
 
-* (feat!) [#2424](https://github.com/cosmos/gaia/pull/2424) Add `bypass-min-fee-msg-types` and `maxTotalBypassMinFeeMsgGagUsage` to globalfee params. Note that this change is both state breaking and API breaking. The previous API endpoint was "/gaia/globalfee/v1beta1/minimum_gas_prices," and the new API endpoint is "/gaia/globalfee/v1beta1/params."
-* (feat!) [#2352](https://github.com/cosmos/gaia/pull/2352) Create the upgrade handler and params migration for the new Gloabal Fee module parameters introduced in [#2424](https://github.com/cosmos/gaia/pull/2424).
-Update the CI upgrade tests from v9 to the v10 and check that the parameters are successfully migrated.
-* (feat!) [#2447](https://github.com/cosmos/gaia/pull/2447) Update Global Fee's AnteHandler to check tx fees against the network min gas prices in DeliverTx mode.
+### DEPENDENCIES
+
+- Bump [ibc-go](https://github.com/cosmos/ibc-go) to
+  [v4.4.2](https://github.com/cosmos/ibc-go/releases/tag/v4.4.2)
+  ([\#2554](https://github.com/cosmos/gaia/pull/2554))
+- Bump [CometBFT](https://github.com/cometbft/cometbft) to
+  [v0.34.29](https://github.com/cometbft/cometbft/releases/tag/v0.34.29)
+  ([\#2594](https://github.com/cosmos/gaia/pull/2594))
+
+### FEATURES
+
+- Register NodeService to enable query `/cosmos/base/node/v1beta1/config`
+  gRPC query to disclose node operator's configured minimum-gas-price.
+  ([\#2629](https://github.com/cosmos/gaia/issues/2629))
 
 ## [v10.0.1] 2023-05-25
 
@@ -546,6 +567,7 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 
 <!-- Release links -->
 
+[v10.0.1]: https://github.com/cosmos/gaia/releases/tag/v10.0.1
 [v10.0.0]: https://github.com/cosmos/gaia/releases/tag/v10.0.0
 [v9.1.1]: https://github.com/cosmos/gaia/releases/tag/v9.1.1
 [v9.1.0]: https://github.com/cosmos/gaia/releases/tag/v9.1.0

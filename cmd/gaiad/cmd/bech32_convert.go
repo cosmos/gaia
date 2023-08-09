@@ -3,9 +3,9 @@ package cmd
 import (
 	"fmt"
 
-	addressutil "github.com/cosmos/gaia/v11/pkg/address"
-
 	"github.com/spf13/cobra"
+
+	addressutil "github.com/cosmos/gaia/v12/pkg/address"
 )
 
 var flagBech32Prefix = "prefix"

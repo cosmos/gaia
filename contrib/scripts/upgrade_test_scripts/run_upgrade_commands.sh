@@ -2,7 +2,7 @@
 
 set -o errexit -o nounset
 
-UPGRADES_DIR="../../../app/upgrades"
+UPGRADES_DIR="../app/upgrades"
 UPGRADE_VERSION=""
 UPGRADE_VERSION_NUMBER=0
 

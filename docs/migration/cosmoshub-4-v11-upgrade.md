@@ -114,7 +114,7 @@ It may take several minutes to a few hours until validators with a total sum vot
 
 ##### Preparation
 
-Install the latest version of Cosmovisor (`1.3.0`):
+Install the latest version of Cosmovisor (`1.5.0`):
 
 ```shell
 go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@latest
@@ -123,7 +123,7 @@ go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@latest
 **Verify Cosmovisor Version**
 ```shell
 cosmovisor version
-cosmovisor version: v1.3.0
+cosmovisor version: v1.5.0
 ```
 
 Create a cosmovisor folder:
@@ -187,7 +187,7 @@ After upgrade, the chain will continue to produce blocks when validators with a 
 
 #### Preparation
 
-Install the latest version of Cosmovisor (`1.3.0`):
+Install the latest version of Cosmovisor (`1.5.0`):
 
 ```shell
 go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@latest
@@ -242,7 +242,7 @@ This may take 7 minutes to a few hours, afterwards, the chain will continue to p
 _Please Note:_
 
 - In general, auto-download comes with the risk that the verification of correct download is done automatically. If users want to have the highest guarantee users should confirm the check-sum manually. We hope more node operators will use the auto-download for this release but please be aware this is a risk and users should take at your own discretion.
-- Users should run their node on v10.0.x if they use the cosmovisor v1.3.0 with auto-download enabled for upgrade process.
+- Users should run their node on v10.0.x if they use the cosmovisor v1.5.0 with auto-download enabled for upgrade process.
 
 ## Upgrade duration
 
@@ -252,7 +252,7 @@ The upgrade may take a few minutes to several hours to complete because cosmoshu
 
 During the network upgrade, core Cosmos teams will be keeping an ever vigilant eye and communicating with operators on the status of their upgrades. During this time, the core teams will listen to operator needs to determine if the upgrade is experiencing unintended challenges. In the event of unexpected challenges, the core teams, after conferring with operators and attaining social consensus, may choose to declare that the upgrade will be skipped.
 
-Steps to skip this upgrade proposal are simply to resume the cosmoshub-4 network with the (downgraded) v9.1.1 binary using the following command:
+Steps to skip this upgrade proposal are simply to resume the cosmoshub-4 network with the (downgraded) v10.0.2 binary using the following command:
 
 > gaiad start --unsafe-skip-upgrade 16596000
 

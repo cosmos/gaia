@@ -2,16 +2,14 @@
 
 set -o errexit -o nounset
 
-UPGRADES_DIR="./app/upgrades"
+UPGRADES_DIR="../../../app/upgrades"
 UPGRADE_VERSION=""
 UPGRADE_VERSION_NUMBER=0
 
 for dir in "$UPGRADES_DIR"/*; do
   if [ -d "$dir" ]; then
     DIR_NAME=$(basename "$dir")
-
     VERSION_NUMBER="${DIR_NAME#v}"
-
     if (($VERSION_NUMBER > $UPGRADE_VERSION_NUMBER)); then
       UPGRADE_VERSION_NUMBER=$VERSION_NUMBER
       UPGRADE_VERSION=$DIR_NAME

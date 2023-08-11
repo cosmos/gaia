@@ -158,13 +158,13 @@ jobs:
             make build
             cp ./build/gaiad ./build/gaiadold
             go clean -modcache
-          if: env.GIT_DIFF
+#          if: env.GIT_DIFF
       -   name: Install new Gaiad binary
           run: |
             git checkout -
             make build
             cp ./build/gaiad ./build/gaiadnew
-          if: env.GIT_DIFF
+#          if: env.GIT_DIFF
       -   name: Install Cosmovisor
           run: |
             go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@latest
@@ -181,4 +181,4 @@ jobs:
       -   name: Check for successful upgrade
           run: |
             ./contrib/scripts/upgrade_test_scripts/test_upgrade.sh 20 5 16 localhost
-          if: env.GIT_DIFF
+#          if: env.GIT_DIFF

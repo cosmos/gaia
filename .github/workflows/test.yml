@@ -168,16 +168,16 @@ jobs:
       -   name: Install Cosmovisor
           run: |
             go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@latest
-          if: env.GIT_DIFF
+#          if: env.GIT_DIFF
       -   name: Start Old Gaiad Binary
           run: |
             go env GOPATH
             ./contrib/scripts/upgrade_test_scripts/run_gaia.sh
-          if: env.GIT_DIFF
+#          if: env.GIT_DIFF
       -   name: Submit Upgrade Commands
           run: |
             ./contrib/scripts/upgrade_test_scripts/run_upgrade_commands.sh 15
-          if: env.GIT_DIFF
+#          if: env.GIT_DIFF
       -   name: Check for successful upgrade
           run: |
             ./contrib/scripts/upgrade_test_scripts/test_upgrade.sh 20 5 16 localhost

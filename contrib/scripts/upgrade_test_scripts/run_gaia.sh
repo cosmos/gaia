@@ -31,7 +31,7 @@ CHAINID=cosmoshub-4
 
 USER_MNEMONIC="abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art"
 
-if ! test -f "./build/gaiad11"; then
+if ! test -f "./build/gaiadold"; then
   echo "old gaiad binary does not exist"
   exit
 fi

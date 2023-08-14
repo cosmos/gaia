@@ -159,7 +159,7 @@ jobs:
                     PRERELEASE_TAG=$(curl -s "https://api.github.com/repos/${{ github.repository }}/releases" | jq -r '.[] | select(.prerelease) | .tag_name' | head -n 1)
                     echo "Pre-release tag: $PRERELEASE_TAG"
                     echo "::set-output name=pre_release_tag::$PRERELEASE_TAG"
-                    continue-on-error: true
+                continue-on-error: true
 
             -   name: Build old binary
                 run: |

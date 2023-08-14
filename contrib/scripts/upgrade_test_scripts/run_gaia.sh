@@ -1,7 +1,7 @@
 #!/bin/sh
 
 set -o errexit -o nounset
-
+set -x
 UPGRADES_DIR=$(realpath ./app/upgrades)
 UPGRADE_VERSION=""
 UPGRADE_VERSION_NUMBER=0

@@ -3,7 +3,6 @@
 set -o errexit -o nounset
 set -x
 UPGRADES_DIR=$(realpath ./app/upgrades)
-UPGRADE_VERSION=""
 UPGRADE_VERSION_NUMBER=0
 
 for dir in "$UPGRADES_DIR"/*; do
@@ -12,13 +11,12 @@ for dir in "$UPGRADES_DIR"/*; do
     VERSION_NUMBER="${DIR_NAME#v}"
     if (($VERSION_NUMBER > $UPGRADE_VERSION_NUMBER)); then
       UPGRADE_VERSION_NUMBER=$VERSION_NUMBER
-      UPGRADE_VERSION=$DIR_NAME
     fi
   fi
 done
 
-if [ -n "$UPGRADE_VERSION" ]; then
-  echo "Upgrade to version: $UPGRADE_VERSION"
+if [ -n "$UPGRADE_VERSION_NUMBER" ]; then
+  echo "Upgrade to version: $UPGRADE_VERSION_NUMBER"
 else
   echo "No upgrade version found in app/upgrades."
 fi
@@ -47,8 +45,8 @@ if ! test -f "./build/gaiadnew"; then
   exit
 fi
 
-mkdir -p "$NODE_HOME"/cosmovisor/upgrades/"$UPGRADE_VERSION"/bin
-cp ./build/gaiadnew "$NODE_HOME"/cosmovisor/upgrades/"$UPGRADE_VERSION"/bin/gaiad
+mkdir -p "$NODE_HOME"/cosmovisor/upgrades/"$UPGRADE_VERSION_NUMBE"/bin
+cp ./build/gaiadnew "$NODE_HOME"/cosmovisor/upgrades/"$UPGRADE_VERSION_NUMBE"/bin/gaiad
 
 GOPATH=$(go env GOPATH)
 

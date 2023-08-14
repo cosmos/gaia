@@ -176,6 +176,11 @@ jobs:
                     cp ./build/gaiad ./build/gaiadold
                     go clean -modcache
             #          if: env.GIT_DIFF
+            -   name: Checkout PR branch
+                uses: actions/checkout@v2
+                with:
+                    ref: ${{ github.event.pull_request.head.ref }}
+                    #          if: env.GIT_DIFF
             -   name: Install new Gaiad binary
                 run: |
                     git checkout -

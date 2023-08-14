@@ -3,6 +3,10 @@ package antetest
 import (
 	"fmt"
 
+	"github.com/stretchr/testify/suite"
+	tmrand "github.com/tendermint/tendermint/libs/rand"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
@@ -12,16 +16,12 @@ import (
 	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	"github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/stretchr/testify/suite"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	gaiahelpers "github.com/cosmos/gaia/v11/app/helpers"
-	gaiafeeante "github.com/cosmos/gaia/v11/x/globalfee/ante"
-
-	gaiaapp "github.com/cosmos/gaia/v11/app"
-	"github.com/cosmos/gaia/v11/x/globalfee"
-	globfeetypes "github.com/cosmos/gaia/v11/x/globalfee/types"
+	gaiaapp "github.com/cosmos/gaia/v12/app"
+	gaiahelpers "github.com/cosmos/gaia/v12/app/helpers"
+	"github.com/cosmos/gaia/v12/x/globalfee"
+	gaiafeeante "github.com/cosmos/gaia/v12/x/globalfee/ante"
+	globfeetypes "github.com/cosmos/gaia/v12/x/globalfee/types"
 )
 
 type IntegrationTestSuite struct {

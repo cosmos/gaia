@@ -161,17 +161,20 @@ jobs:
                     echo "::set-output name=pre_release_tag::$PRERELEASE_TAG"
                 continue-on-error: true
 
-            -   name: Build old binary
+            -   Name: Build old binary
                 run: |
-                    if [ -n "${{ steps.pre_release_tag.outputs.pre_release_tag }}" ]; then
-                      echo "Using pre-release tag: ${{ steps.pre_release_tag.outputs.pre_release_tag }}"
-                      RELEASE_TAG="${{ steps.pre_release_tag.outputs.pre_release_tag }}"
+                    LATEST_RELEASE_TAG="${{ steps.get_latest_release.outputs.latest_release_tag }}"
+                    PRERELEASE_TAG="${{ steps.get_pre_release.outputs.pre_release_tag }}"
+            
+                    if [ -n "$PRERELEASE_TAG" ]; then
+                      echo "Using pre-release tag: $PRERELEASE_TAG"
+                      RELEASE_TAG="$PRERELEASE_TAG"
                     else
-                      echo "No pre-release found, using latest release tag: ${{ steps.latest_release_tag.outputs.latest_release_tag }}"
-                      RELEASE_TAG="${{ steps.latest_release_tag.outputs.latest_release_tag }}"
+                      echo "No pre-release found, using latest release tag: $LATEST_RELEASE_TAG"
+                      RELEASE_TAG="$LATEST_RELEASE_TAG"
                     fi
                     
-                    git checkout $RELEASE_TAG
+                    git checkout "$RELEASE_TAG"
                     make build
                     cp ./build/gaiad ./build/gaiadold
                     go clean -modcache

@@ -9,7 +9,7 @@ for dir in "$UPGRADES_DIR"/*; do
   if [ -d "$dir" ]; then
     DIR_NAME=$(basename "$dir")
     VERSION_NUMBER="${DIR_NAME#v}"
-    if (($VERSION_NUMBER > $UPGRADE_VERSION_NUMBER)); then
+    if [ "$VERSION_NUMBER" -gt "$UPGRADE_VERSION_NUMBER" ]; then
       UPGRADE_VERSION_NUMBER=$VERSION_NUMBER
     fi
   fi

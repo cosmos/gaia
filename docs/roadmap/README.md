@@ -7,7 +7,7 @@ parent:
 
 # Previous Releases
 
-Please see the table below for libray versions and other dependencies.  
+Please see the table below for library versions and other dependencies.  
   
   
 ## Cosmos Hub Release Details
@@ -90,6 +90,7 @@ Please see the table below for libray versions and other dependencies.
 | Theta   v7          | 12/04/22    | 10085397 | `cosmoshub-4` | [v0.34.x](https://github.com/tendermint/tendermint/releases/tag/v0.34.14)         | [v0.45.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.1)      | [v7.0.x](https://github.com/cosmos/gaia/releases/tag/v7.0.0)                   | [v3.0.x](https://github.com/cosmos/ibc-go/releases/tag/v3.0.0)                   |
 | Rho     v8          | 16/02/23    | 14099412 | `cosmoshub-4` | [v0.34.x](https://github.com/informalsystems/tendermint/releases/tag/v0.34.24)    | [v0.45.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.12)     | [v8.0.x](https://github.com/cosmos/gaia/releases/tag/v8.0.0)                   | [v3.4.x](https://github.com/cosmos/ibc-go/releases/tag/v3.4.0)                   |
 | Lambda  v9          | 15/03/23    | 14470501 | `cosmoshub-4` | [v0.34.x](https://github.com/informalsystems/tendermint/releases/tag/v0.34.25)    | [v0.45.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.13-ics) | [v9.0.x](https://github.com/cosmos/gaia/releases/tag/v9.0.0)                   | [v4.2.x](https://github.com/cosmos/ibc-go/releases/tag/v4.2.0)                   |
-| Epsilon v10         | 21/06/23    | 15816200 | `cosmoshub-4` | [v0.34.x](https://github.com/cometbft/cometbft/releases/tag/v0.34.28)             | [v0.45.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.16-ics) | [v10.0.x](https://github.com/cosmos/gaia/releases/tag/v10.0.0)                 | [v4.4.x](https://github.com/cosmos/ibc-go/releases/tag/v4.4.0)                   |
+| v10                 | 21/06/23    | 15816200 | `cosmoshub-4` | [v0.34.x](https://github.com/cometbft/cometbft/releases/tag/v0.34.28)             | [v0.45.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.16-ics) | [v10.0.x](https://github.com/cosmos/gaia/releases/tag/v10.0.0)                 | [v4.4.x](https://github.com/cosmos/ibc-go/releases/tag/v4.4.0)                   |
+| v11                 | 16/08/23    | 16596000 | `cosmoshub-4` | [v0.34.x](https://github.com/cometbft/cometbft/releases/tag/v0.34.29)             | [v0.45.x](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.16-ics) | [v11.x](https://github.com/cosmos/gaia/releases/tag/v11.0.0)                 | [v4.4.x](https://github.com/cosmos/ibc-go/releases/tag/v4.4.2)                   |
 
 

@@ -4,10 +4,10 @@ title: Introduction
 ---
 
 ::: warning
-### **v10 Upgrade**
-Cosmos Hub will be upgraded to [v10](https://github.com/cosmos/gaia/releases/tag/v10.0.0) at block height: **15,816,200**
+### **v11 Upgrade**
+Cosmos Hub will be upgraded to [v11](https://github.com/cosmos/gaia/releases/tag/v11.0.0) at block height: **16,596,000**
 
-To upgrade from v9-Lambda check the [**upgrade guide**](../migration/cosmoshub-4-v10-upgrade.md)
+To upgrade from v10 check the [**upgrade guide**](../migration/cosmoshub-4-v11-upgrade.md)
 :::
 
 ![Welcome to the Cosmos Hub](../images/cosmos-hub-image.jpg)

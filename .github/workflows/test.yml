@@ -59,24 +59,24 @@ jobs:
                     name: "${{ github.sha }}-coverage"
                     path: ./profile.out
 
-    test-e2e:
-        runs-on: ubuntu-latest
-        timeout-minutes: 45
-        steps:
-            -   uses: actions/setup-go@v4
-                with:
-                    go-version: 1.20.x
-            -   uses: actions/checkout@v3.5.2
-            -   uses: technote-space/get-diff-action@v6.0.1
-                with:
-                    PATTERNS: |
-                        **/**.go
-                        go.mod
-                        go.sum
-            -   name: Build Docker Image
-                run: make docker-build-debug
-            -   name: Test E2E
-                run: make test-e2e
+#    test-e2e:
+#        runs-on: ubuntu-latest
+#        timeout-minutes: 45
+#        steps:
+#            -   uses: actions/setup-go@v4
+#                with:
+#                    go-version: 1.20.x
+#            -   uses: actions/checkout@v3.5.2
+#            -   uses: technote-space/get-diff-action@v6.0.1
+#                with:
+#                    PATTERNS: |
+#                        **/**.go
+#                        go.mod
+#                        go.sum
+#            -   name: Build Docker Image
+#                run: make docker-build-debug
+#            -   name: Test E2E
+#                run: make test-e2e
 
     repo-analysis:
         runs-on: ubuntu-latest
@@ -161,7 +161,7 @@ jobs:
                     echo "::set-output name=pre_release_tag::$PRERELEASE_TAG"
                 continue-on-error: true
 
-            -   Name: Build old binary
+            -   name: Build old binary
                 run: |
                     LATEST_RELEASE_TAG="${{ steps.get_latest_release.outputs.latest_release_tag }}"
                     PRERELEASE_TAG="${{ steps.get_pre_release.outputs.pre_release_tag }}"

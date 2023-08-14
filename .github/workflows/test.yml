@@ -1,184 +1,201 @@
 name: Test
 on:
-  workflow_call:
-  pull_request:
-    paths-ignore:
-      - "**/*.md"
-      - "docs/**"
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - "**/*.md"
-      - "docs/**"
+    workflow_call:
+    pull_request:
+        paths-ignore:
+            - "**/*.md"
+            - "docs/**"
+    push:
+        branches:
+            - main
+        paths-ignore:
+            - "**/*.md"
+            - "docs/**"
 
 permissions:
-  contents: read
+    contents: read
 
 concurrency:
-  group: ci-${{ github.ref }}-tests
-  cancel-in-progress: true
+    group: ci-${{ github.ref }}-tests
+    cancel-in-progress: true
 
 jobs:
-  tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3.5.2
-      - uses: actions/setup-go@v4
-        with:
-          go-version: "1.20"
-          check-latest: true
-          cache: true
-          cache-dependency-path: go.sum
-      - uses: technote-space/get-diff-action@v6.1.2
-        id: git_diff
-        with:
-          PATTERNS: |
-            **/*.go
-            go.mod
-            go.sum
-            **/go.mod
-            **/go.sum
-            **/Makefile
-            Makefile
-      - uses: actions/cache@v3.3.1
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.mod') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
-      - name: test & coverage report creation
-        if: env.GIT_DIFF
-        run: |
-          go test -v -coverprofile=profile.out -covermode=atomic -coverpkg=./... $(go list ./... | grep -v -e '/tests/e2e')
-      - uses: actions/upload-artifact@v3
-        if: env.GIT_DIFF
-        with:
-          name: "${{ github.sha }}-coverage"
-          path: ./profile.out
+    tests:
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v3.5.2
+            -   uses: actions/setup-go@v4
+                with:
+                    go-version: "1.20"
+                    check-latest: true
+                    cache: true
+                    cache-dependency-path: go.sum
+            -   uses: technote-space/get-diff-action@v6.1.2
+                id: git_diff
+                with:
+                    PATTERNS: |
+                        **/*.go
+                        go.mod
+                        go.sum
+                        **/go.mod
+                        **/go.sum
+                        **/Makefile
+                        Makefile
+            -   uses: actions/cache@v3.3.1
+                with:
+                    path: |
+                        ~/.cache/go-build
+                        ~/go/pkg/mod
+                    key: ${{ runner.os }}-go-${{ hashFiles('**/go.mod') }}
+                    restore-keys: |
+                        ${{ runner.os }}-go-
+            -   name: test & coverage report creation
+                if: env.GIT_DIFF
+                run: |
+                    go test -v -coverprofile=profile.out -covermode=atomic -coverpkg=./... $(go list ./... | grep -v -e '/tests/e2e')
+            -   uses: actions/upload-artifact@v3
+                if: env.GIT_DIFF
+                with:
+                    name: "${{ github.sha }}-coverage"
+                    path: ./profile.out
 
-  test-e2e:
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-    steps:
-      - uses: actions/setup-go@v4
-        with:
-          go-version: 1.20.x
-      - uses: actions/checkout@v3.5.2
-      - uses: technote-space/get-diff-action@v6.0.1
-        with:
-          PATTERNS: |
-            **/**.go
-            go.mod
-            go.sum
-      - name: Build Docker Image
-        run: make docker-build-debug
-      - name: Test E2E
-        run: make test-e2e
+    test-e2e:
+        runs-on: ubuntu-latest
+        timeout-minutes: 45
+        steps:
+            -   uses: actions/setup-go@v4
+                with:
+                    go-version: 1.20.x
+            -   uses: actions/checkout@v3.5.2
+            -   uses: technote-space/get-diff-action@v6.0.1
+                with:
+                    PATTERNS: |
+                        **/**.go
+                        go.mod
+                        go.sum
+            -   name: Build Docker Image
+                run: make docker-build-debug
+            -   name: Test E2E
+                run: make test-e2e
 
-  repo-analysis:
-    runs-on: ubuntu-latest
-    needs: [tests]
-    steps:
-      - uses: actions/checkout@v3
-      - uses: technote-space/get-diff-action@v6.1.2
-        id: git_diff
-        with:
-          PATTERNS: |
-            **/*.go
-            go.mod
-            go.sum
-            **/go.mod
-            **/go.sum
-      - uses: actions/download-artifact@v3
-        if: env.GIT_DIFF
-        with:
-          name: "${{ github.sha }}-coverage"
-      - name: sonarcloud
-        if: ${{ env.SONAR_TOKEN != null && env.GIT_DIFF && !github.event.pull_request.draft }}
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    repo-analysis:
+        runs-on: ubuntu-latest
+        needs: [ tests ]
+        steps:
+            -   uses: actions/checkout@v3
+            -   uses: technote-space/get-diff-action@v6.1.2
+                id: git_diff
+                with:
+                    PATTERNS: |
+                        **/*.go
+                        go.mod
+                        go.sum
+                        **/go.mod
+                        **/go.sum
+            -   uses: actions/download-artifact@v3
+                if: env.GIT_DIFF
+                with:
+                    name: "${{ github.sha }}-coverage"
+            -   name: sonarcloud
+                if: ${{ env.SONAR_TOKEN != null && env.GIT_DIFF && !github.event.pull_request.draft }}
+                uses: SonarSource/sonarcloud-github-action@master
+                env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  liveness-test:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v3.5.2
-      - uses: actions/setup-go@v4
-        with:
-          go-version: 1.20.x
-      - uses: technote-space/get-diff-action@v6.0.1
-        with:
-          PATTERNS: |
-            **/**.go
-            go.mod
-            go.sum
-      - name: Install Gaia
-        run: |
-          make build
-        if: env.GIT_DIFF
-      - name: Start Local Network
-        run: |
-          make start-localnet-ci > liveness.out 2>&1 &
-        if: env.GIT_DIFF
-      - name: Test Local Network Liveness
-        run: |
-          ./contrib/scripts/test_localnet_liveness.sh 100 5 50 localhost
-        if: env.GIT_DIFF
+    liveness-test:
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        steps:
+            -   uses: actions/checkout@v3.5.2
+            -   uses: actions/setup-go@v4
+                with:
+                    go-version: 1.20.x
+            -   uses: technote-space/get-diff-action@v6.0.1
+                with:
+                    PATTERNS: |
+                        **/**.go
+                        go.mod
+                        go.sum
+            -   name: Install Gaia
+                run: |
+                    make build
+                if: env.GIT_DIFF
+            -   name: Start Local Network
+                run: |
+                    make start-localnet-ci > liveness.out 2>&1 &
+                if: env.GIT_DIFF
+            -   name: Test Local Network Liveness
+                run: |
+                    ./contrib/scripts/test_localnet_liveness.sh 100 5 50 localhost
+                if: env.GIT_DIFF
 
-  upgrade-test:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      -   uses: actions/checkout@v3.5.2
-          with:
-            fetch-depth: 0
-      -   uses: technote-space/get-diff-action@v6.0.1
-          with:
-            PATTERNS: |
-              **/**.go
-              go.mod
-              go.sum
-      -   uses: actions/setup-go@v4
-          with:
-            go-version: 1.20.x
-      -   name: Get latest release tag
-          id: get_latest_release
-          run: |
-            RELEASE_TAG=$(curl -s "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq -r '.tag_name')
-            echo "Latest release tag: $RELEASE_TAG"
-            echo "::set-output name=release_tag::$RELEASE_TAG"
-      -   name: Install old Gaiad binary
-          run: |
-            git checkout ${{ steps.get_latest_release.outputs.release_tag }}
-            make build
-            cp ./build/gaiad ./build/gaiadold
-            go clean -modcache
-#          if: env.GIT_DIFF
-      -   name: Install new Gaiad binary
-          run: |
-            git checkout -
-            make build
-            cp ./build/gaiad ./build/gaiadnew
-#          if: env.GIT_DIFF
-      -   name: Install Cosmovisor
-          run: |
-            go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@latest
-#          if: env.GIT_DIFF
-      -   name: Start Old Gaiad Binary
-          run: |
-            go env GOPATH
-            ./contrib/scripts/upgrade_test_scripts/run_gaia.sh
-#          if: env.GIT_DIFF
-      -   name: Submit Upgrade Commands
-          run: |
-            ./contrib/scripts/upgrade_test_scripts/run_upgrade_commands.sh 15
-#          if: env.GIT_DIFF
-      -   name: Check for successful upgrade
-          run: |
-            ./contrib/scripts/upgrade_test_scripts/test_upgrade.sh 20 5 16 localhost
+    upgrade-test:
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+        steps:
+            -   uses: actions/checkout@v3.5.2
+                with:
+                    fetch-depth: 0
+            -   uses: technote-space/get-diff-action@v6.0.1
+                with:
+                    PATTERNS: |
+                        **/**.go
+                        go.mod
+                        go.sum
+            -   uses: actions/setup-go@v4
+                with:
+                    go-version: 1.20.x
+            -   name: Get latest release tag
+                id: get_latest_release
+                run: |
+                    LATEST_RELEASE_TAG=$(curl -s "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq -r '.tag_name')
+                    echo "Latest release tag: $LATEST_RELEASE_TAG"
+                    echo "::set-output name=latest_release_tag::$LATEST_RELEASE_TAG"
+
+            -   name: Get pre-release tag if available
+                id: get_pre_release
+                run: |
+                    PRERELEASE_TAG=$(curl -s "https://api.github.com/repos/${{ github.repository }}/releases" | jq -r '.[] | select(.prerelease) | .tag_name' | head -n 1)
+                    echo "Pre-release tag: $PRERELEASE_TAG"
+                    echo "::set-output name=pre_release_tag::$PRERELEASE_TAG"
+                    continue-on-error: true
+
+            -   name: Build old binary
+                run: |
+                    if [ -n "${{ steps.pre_release_tag.outputs.pre_release_tag }}" ]; then
+                      echo "Using pre-release tag: ${{ steps.pre_release_tag.outputs.pre_release_tag }}"
+                      RELEASE_TAG="${{ steps.pre_release_tag.outputs.pre_release_tag }}"
+                    else
+                      echo "No pre-release found, using latest release tag: ${{ steps.latest_release_tag.outputs.latest_release_tag }}"
+                      RELEASE_TAG="${{ steps.latest_release_tag.outputs.latest_release_tag }}"
+                    fi
+                    
+                    git checkout $RELEASE_TAG
+                    make build
+                    cp ./build/gaiad ./build/gaiadold
+                    go clean -modcache
+            #          if: env.GIT_DIFF
+            -   name: Install new Gaiad binary
+                run: |
+                    git checkout -
+                    make build
+                    cp ./build/gaiad ./build/gaiadnew
+            #          if: env.GIT_DIFF
+            -   name: Install Cosmovisor
+                run: |
+                    go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@latest
+            #          if: env.GIT_DIFF
+            -   name: Start Old Gaiad Binary
+                run: |
+                    go env GOPATH
+                    ./contrib/scripts/upgrade_test_scripts/run_gaia.sh
+            #          if: env.GIT_DIFF
+            -   name: Submit Upgrade Commands
+                run: |
+                    ./contrib/scripts/upgrade_test_scripts/run_upgrade_commands.sh 15
+            #          if: env.GIT_DIFF
+            -   name: Check for successful upgrade
+                run: |
+                    ./contrib/scripts/upgrade_test_scripts/test_upgrade.sh 20 5 16 localhost
 #          if: env.GIT_DIFF

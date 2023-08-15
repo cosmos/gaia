@@ -212,5 +212,5 @@ jobs:
             #          if: env.GIT_DIFF
             -   name: Check for successful upgrade
                 run: |
-                    ./contrib/scripts/upgrade_test_scripts/test_upgrade.sh 20 5 16 localhost
+                    ./contrib/scripts/upgrade_test_scripts/test_upgrade.sh 25 5 16 localhost
 #          if: env.GIT_DIFF

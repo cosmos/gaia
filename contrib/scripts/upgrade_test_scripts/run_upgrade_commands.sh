@@ -1,7 +1,7 @@
 #!/bin/sh
 
 set -o errexit -o nounset
-
+set -x
 UPGRADES_DIR=$(realpath ./app/upgrades)
 UPGRADE_VERSION_NUMBER=0
 
@@ -85,6 +85,10 @@ if test -f "$BINARY"; then
     --yes
 
   echo "Done \n"
+
+  $BINARY q gov proposals \
+  --home $NODE_HOME \
+  --node tcp://localhost:26657
 
 else
   echo "Please build old gaia binary and move to ./build/gaiadold"

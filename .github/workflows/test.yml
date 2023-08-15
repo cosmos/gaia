@@ -161,7 +161,7 @@ jobs:
                     echo "::set-output name=pre_release_tag::$PRERELEASE_TAG"
                 continue-on-error: true
 
-            -   name: Build old binary
+            -   name: Checkout old binary branch
                 run: |
                     LATEST_RELEASE_TAG="${{ steps.get_latest_release.outputs.latest_release_tag }}"
                     PRERELEASE_TAG="${{ steps.get_pre_release.outputs.pre_release_tag }}"
@@ -175,11 +175,11 @@ jobs:
                     fi
                     
                     git checkout "$RELEASE_TAG"
-                    make build
-                    cp ./build/gaiad $GITHUB_WORKSPACE/gaiadold
-                    go clean -modcache
-                    ls -l $GITHUB_WORKSPACE/gaiadold
-                    ls -l ./build/gaiad
+#                    make build
+#                    cp ./build/gaiad $GITHUB_WORKSPACE/gaiadold
+#                    go clean -modcache
+#                    ls -l $GITHUB_WORKSPACE/gaiadold
+#                    ls -l ./build/gaiad
             #          if: env.GIT_DIFF
             -   name: Checkout PR branch
                 uses: actions/checkout@v3
@@ -189,11 +189,13 @@ jobs:
                 run: |
                     make build
                     cp ./build/gaiad ./build/gaiadnew
-                    ls -l ./build
-                    ls -l $GITHUB_WORKSPACE
-                    ls -l $GITHUB_WORKSPACE/gaiadold
-                    cp $GITHUB_WORKSPACE/gaiadold  ./build/gaiadold
             #          if: env.GIT_DIFF
+            - name: Install old Gaiad binary
+              run: |
+                  git checkout -
+                  make build
+                  cp ./build/gaiad ./build/gaiadold
+                  ls -l ./build
             -   name: Install Cosmovisor
                 run: |
                     go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@latest

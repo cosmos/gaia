@@ -200,8 +200,9 @@ jobs:
                 run: |
                     go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@latest
             #          if: env.GIT_DIFF
-            -   name: Start Old Gaiad Binary
+            -   name: Checkout present PR branch and start Old Gaiad Binary
                 run: |
+                    git checkout -
                     go env GOPATH
                     ./contrib/scripts/upgrade_test_scripts/run_gaia.sh
             #          if: env.GIT_DIFF

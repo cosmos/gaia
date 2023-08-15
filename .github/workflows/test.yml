@@ -182,9 +182,13 @@ jobs:
                     ls -l ./build/gaiad
             #          if: env.GIT_DIFF
             -   name: Checkout PR branch
-                uses: actions/checkout@v2
+                uses: actions/checkout@v3
                 with:
                     ref: ${{ github.event.pull_request.head.ref }}
+                run: |
+                    ls -l ./build
+                    ls -l $GITHUB_WORKSPACE
+                    ls -l $GITHUB_WORKSPACE/gaiadold
                     #          if: env.GIT_DIFF
             -   name: Install new Gaiad binary
                 run: |

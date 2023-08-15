@@ -178,6 +178,8 @@ jobs:
                     make build
                     cp ./build/gaiad $GITHUB_WORKSPACE/gaiadold
                     go clean -modcache
+                    ls -l $GITHUB_WORKSPACE/gaiadold
+                    ls -l ./build/gaiad
             #          if: env.GIT_DIFF
             -   name: Checkout PR branch
                 uses: actions/checkout@v2
@@ -188,6 +190,9 @@ jobs:
                 run: |
                     make build
                     cp ./build/gaiad ./build/gaiadnew
+                    ls -l ./build
+                    ls -l $GITHUB_WORKSPACE
+                    ls -l $GITHUB_WORKSPACE/gaiadold
                     cp $GITHUB_WORKSPACE/gaiadold  ./build/gaiadold
             #          if: env.GIT_DIFF
             -   name: Install Cosmovisor

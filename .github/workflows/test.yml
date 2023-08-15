@@ -152,7 +152,6 @@ jobs:
                     LATEST_RELEASE_TAG=$(curl -s "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq -r '.tag_name')
                     echo "Latest release tag: $LATEST_RELEASE_TAG"
                     echo "::set-output name=latest_release_tag::$LATEST_RELEASE_TAG"
-
             -   name: Get pre-release tag if available
                 id: get_pre_release
                 run: |
@@ -160,7 +159,6 @@ jobs:
                     echo "Pre-release tag: $PRERELEASE_TAG"
                     echo "::set-output name=pre_release_tag::$PRERELEASE_TAG"
                 continue-on-error: true
-
             -   name: Checkout old binary branch
                 run: |
                     LATEST_RELEASE_TAG="${{ steps.get_latest_release.outputs.latest_release_tag }}"
@@ -175,11 +173,6 @@ jobs:
                     fi
                     
                     git checkout "$RELEASE_TAG"
-#                    make build
-#                    cp ./build/gaiad $GITHUB_WORKSPACE/gaiadold
-#                    go clean -modcache
-#                    ls -l $GITHUB_WORKSPACE/gaiadold
-#                    ls -l ./build/gaiad
             #          if: env.GIT_DIFF
             -   name: Checkout PR branch
                 uses: actions/checkout@v3
@@ -195,7 +188,6 @@ jobs:
                   git checkout -
                   make build
                   cp ./build/gaiad ./build/gaiadold
-                  ls -l ./build
             -   name: Install Cosmovisor
                 run: |
                     go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@latest
@@ -212,5 +204,5 @@ jobs:
             #          if: env.GIT_DIFF
             -   name: Check for successful upgrade
                 run: |
-                    ./contrib/scripts/upgrade_test_scripts/test_upgrade.sh 25 5 16 localhost
+                    ./contrib/scripts/upgrade_test_scripts/test_upgrade.sh 20 5 16 localhost
 #          if: env.GIT_DIFF

@@ -21,6 +21,7 @@ else
   echo "No upgrade version found in app/upgrades."
 fi
 
+UPGRADE_VERSION=v$UPGRADE_VERSION_NUMBER
 UPGRADE_HEIGHT=$1
 
 if [ -z "$1" ]; then
@@ -57,8 +58,8 @@ if test -f "$BINARY"; then
 
   echo "\n"
   echo "Submitting proposal... \n"
-  $BINARY tx gov submit-proposal software-upgrade $UPGRADE_VERSION_NUMBER \
-    --title $UPGRADE_VERSION_NUMBER \
+  $BINARY tx gov submit-proposal software-upgrade $UPGRADE_VERSION \
+    --title $UPGRADE_VERSION \
     --deposit 10000000uatom \
     --upgrade-height $UPGRADE_HEIGHT \
     --upgrade-info "upgrade" \

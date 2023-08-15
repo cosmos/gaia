@@ -21,6 +21,7 @@ else
   echo "No upgrade version found in app/upgrades."
 fi
 
+UPGRADE_VERSION=v$UPGRADE_VERSION_NUMBER
 NODE_HOME=$(realpath ./build/.gaia)
 echo "NODE_HOME = ${NODE_HOME}"
 BINARY=$NODE_HOME/cosmovisor/genesis/bin/gaiad
@@ -45,8 +46,8 @@ if ! test -f "./build/gaiadnew"; then
   exit
 fi
 
-mkdir -p "$NODE_HOME"/cosmovisor/upgrades/v$UPGRADE_VERSION_NUMBER/bin
-cp ./build/gaiadnew "$NODE_HOME"/cosmovisor/upgrades/v$UPGRADE_VERSION_NUMBER/bin/gaiad
+mkdir -p "$NODE_HOME"/cosmovisor/upgrades/$UPGRADE_VERSION/bin
+cp ./build/gaiadnew "$NODE_HOME"/cosmovisor/upgrades/$UPGRADE_VERSION/bin/gaiad
 
 GOPATH=$(go env GOPATH)
 

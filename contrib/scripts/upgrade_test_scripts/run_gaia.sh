@@ -45,8 +45,8 @@ if ! test -f "./build/gaiadnew"; then
   exit
 fi
 
-mkdir -p "$NODE_HOME"/cosmovisor/upgrades/"$UPGRADE_VERSION_NUMBER"/bin
-cp ./build/gaiadnew "$NODE_HOME"/cosmovisor/upgrades/"$UPGRADE_VERSION_NUMBER"/bin/gaiad
+mkdir -p "$NODE_HOME"/cosmovisor/upgrades/v$UPGRADE_VERSION_NUMBER/bin
+cp ./build/gaiadnew "$NODE_HOME"/cosmovisor/upgrades/v$UPGRADE_VERSION_NUMBER/bin/gaiad
 
 GOPATH=$(go env GOPATH)
 

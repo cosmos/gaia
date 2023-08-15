@@ -176,7 +176,7 @@ jobs:
                     
                     git checkout "$RELEASE_TAG"
                     make build
-                    cp ./build/gaiad ./build/gaiadold
+                    cp ./build/gaiad $GITHUB_WORKSPACE/gaiadold
                     go clean -modcache
             #          if: env.GIT_DIFF
             -   name: Checkout PR branch
@@ -188,6 +188,7 @@ jobs:
                 run: |
                     make build
                     cp ./build/gaiad ./build/gaiadnew
+                    cp $GITHUB_WORKSPACE/gaiadold  ./build/gaiadold
             #          if: env.GIT_DIFF
             -   name: Install Cosmovisor
                 run: |

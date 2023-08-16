@@ -23,112 +23,112 @@ jobs:
     tests:
         runs-on: ubuntu-latest
         steps:
-            -   uses: actions/checkout@v3.5.2
-            -   uses: actions/setup-go@v4
-                with:
-                    go-version: "1.20"
-                    check-latest: true
-                    cache: true
-                    cache-dependency-path: go.sum
-            -   uses: technote-space/get-diff-action@v6.1.2
-                id: git_diff
-                with:
-                    PATTERNS: |
-                        **/*.go
-                        go.mod
-                        go.sum
-                        **/go.mod
-                        **/go.sum
-                        **/Makefile
-                        Makefile
-            -   uses: actions/cache@v3.3.1
-                with:
-                    path: |
-                        ~/.cache/go-build
-                        ~/go/pkg/mod
-                    key: ${{ runner.os }}-go-${{ hashFiles('**/go.mod') }}
-                    restore-keys: |
-                        ${{ runner.os }}-go-
-            -   name: test & coverage report creation
-                if: env.GIT_DIFF
-                run: |
-                    go test -v -coverprofile=profile.out -covermode=atomic -coverpkg=./... $(go list ./... | grep -v -e '/tests/e2e')
-            -   uses: actions/upload-artifact@v3
-                if: env.GIT_DIFF
-                with:
-                    name: "${{ github.sha }}-coverage"
-                    path: ./profile.out
+            - uses: actions/checkout@v3.5.2
+            - uses: actions/setup-go@v4
+              with:
+                  go-version: "1.20"
+                  check-latest: true
+                  cache: true
+                  cache-dependency-path: go.sum
+            - uses: technote-space/get-diff-action@v6.1.2
+              id: git_diff
+              with:
+                  PATTERNS: |
+                      **/*.go
+                      go.mod
+                      go.sum
+                      **/go.mod
+                      **/go.sum
+                      **/Makefile
+                      Makefile
+            - uses: actions/cache@v3.3.1
+              with:
+                  path: |
+                      ~/.cache/go-build
+                      ~/go/pkg/mod
+                  key: ${{ runner.os }}-go-${{ hashFiles('**/go.mod') }}
+                  restore-keys: |
+                      ${{ runner.os }}-go-
+            - name: test & coverage report creation
+              if: env.GIT_DIFF
+              run: |
+                  go test -v -coverprofile=profile.out -covermode=atomic -coverpkg=./... $(go list ./... | grep -v -e '/tests/e2e')
+            - uses: actions/upload-artifact@v3
+              if: env.GIT_DIFF
+              with:
+                  name: "${{ github.sha }}-coverage"
+                  path: ./profile.out
 
-#    test-e2e:
-#        runs-on: ubuntu-latest
-#        timeout-minutes: 45
-#        steps:
-#            -   uses: actions/setup-go@v4
-#                with:
-#                    go-version: 1.20.x
-#            -   uses: actions/checkout@v3.5.2
-#            -   uses: technote-space/get-diff-action@v6.0.1
-#                with:
-#                    PATTERNS: |
-#                        **/**.go
-#                        go.mod
-#                        go.sum
-#            -   name: Build Docker Image
-#                run: make docker-build-debug
-#            -   name: Test E2E
-#                run: make test-e2e
+    test-e2e:
+        runs-on: ubuntu-latest
+        timeout-minutes: 45
+        steps:
+            - uses: actions/setup-go@v4
+              with:
+                  go-version: 1.20.x
+            - uses: actions/checkout@v3.5.2
+            - uses: technote-space/get-diff-action@v6.0.1
+              with:
+                  PATTERNS: |
+                      **/**.go
+                      go.mod
+                      go.sum
+            - name: Build Docker Image
+              run: make docker-build-debug
+            - name: Test E2E
+              run: make test-e2e
 
     repo-analysis:
         runs-on: ubuntu-latest
-        needs: [ tests ]
+        needs: [tests]
         steps:
-            -   uses: actions/checkout@v3
-            -   uses: technote-space/get-diff-action@v6.1.2
-                id: git_diff
-                with:
-                    PATTERNS: |
-                        **/*.go
-                        go.mod
-                        go.sum
-                        **/go.mod
-                        **/go.sum
-            -   uses: actions/download-artifact@v3
-                if: env.GIT_DIFF
-                with:
-                    name: "${{ github.sha }}-coverage"
-            -   name: sonarcloud
-                if: ${{ env.SONAR_TOKEN != null && env.GIT_DIFF && !github.event.pull_request.draft }}
-                uses: SonarSource/sonarcloud-github-action@master
-                env:
-                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+            - uses: actions/checkout@v3
+            - uses: technote-space/get-diff-action@v6.1.2
+              id: git_diff
+              with:
+                  PATTERNS: |
+                      **/*.go
+                      go.mod
+                      go.sum
+                      **/go.mod
+                      **/go.sum
+            - uses: actions/download-artifact@v3
+              if: env.GIT_DIFF
+              with:
+                  name: "${{ github.sha }}-coverage"
+            - name: sonarcloud
+              if: ${{ env.SONAR_TOKEN != null && env.GIT_DIFF && !github.event.pull_request.draft }}
+              uses: SonarSource/sonarcloud-github-action@master
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     liveness-test:
         runs-on: ubuntu-latest
         timeout-minutes: 10
         steps:
-            -   uses: actions/checkout@v3.5.2
-            -   uses: actions/setup-go@v4
-                with:
-                    go-version: 1.20.x
-            -   uses: technote-space/get-diff-action@v6.0.1
-                with:
-                    PATTERNS: |
-                        **/**.go
-                        go.mod
-                        go.sum
-            -   name: Install Gaia
-                run: |
-                    make build
-                if: env.GIT_DIFF
-            -   name: Start Local Network
-                run: |
-                    make start-localnet-ci > liveness.out 2>&1 &
-                if: env.GIT_DIFF
-            -   name: Test Local Network Liveness
-                run: |
-                    ./contrib/scripts/test_localnet_liveness.sh 100 5 50 localhost
-                if: env.GIT_DIFF
+            - uses: actions/checkout@v3.5.2
+            - uses: actions/setup-go@v4
+              with:
+                  go-version: 1.20.x
+            - uses: technote-space/get-diff-action@v6.0.1
+              with:
+                  PATTERNS: |
+                      **/**.go
+                      go.mod
+                      go.sum
+            - name: Install Gaia
+              run: |
+                  make build
+              if: env.GIT_DIFF
+            - name: Start Local Network
+              run: |
+                  make start-localnet-ci > liveness.out 2>&1 &
+              if: env.GIT_DIFF
+            - name: Test Local Network Liveness
+              run: |
+                  ./contrib/scripts/test_localnet_liveness.sh 100 5 50 localhost
+              if: env.GIT_DIFF
 
     upgrade-test:
         runs-on: ubuntu-latest
@@ -163,7 +163,7 @@ jobs:
                 run: |
                     LATEST_RELEASE_TAG="${{ steps.get_latest_release.outputs.latest_release_tag }}"
                     PRERELEASE_TAG="${{ steps.get_pre_release.outputs.pre_release_tag }}"
-            
+
                     if [ -n "$PRERELEASE_TAG" ]; then
                       echo "Using pre-release tag: $PRERELEASE_TAG"
                       RELEASE_TAG="$PRERELEASE_TAG"
@@ -171,7 +171,7 @@ jobs:
                       echo "No pre-release found, using latest release tag: $LATEST_RELEASE_TAG"
                       RELEASE_TAG="$LATEST_RELEASE_TAG"
                     fi
-                    
+
                     git checkout "$RELEASE_TAG"
             #          if: env.GIT_DIFF
             -   name: Checkout PR branch
@@ -183,11 +183,11 @@ jobs:
                     make build
                     cp ./build/gaiad ./build/gaiadnew
             #          if: env.GIT_DIFF
-            - name: Install old Gaiad binary
-              run: |
-                  git checkout -
-                  make build
-                  cp ./build/gaiad ./build/gaiadold
+            -   name: Install old Gaiad binary
+                run: |
+                    git checkout -
+                    make build
+                    cp ./build/gaiad ./build/gaiadold
             -   name: Install Cosmovisor
                 run: |
                     go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@latest
@@ -205,4 +205,4 @@ jobs:
             -   name: Check for successful upgrade
                 run: |
                     ./contrib/scripts/upgrade_test_scripts/test_upgrade.sh 20 5 16 localhost
-#          if: env.GIT_DIFF
+    #          if: env.GIT_DIFF

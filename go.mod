@@ -177,10 +177,10 @@ replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
 	// Use special SDK release with support for both ICS and LSM
-	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.16-ics-lsm-rc0
+	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.16-ics-lsm
 
 	// Use special ICS release with support for LSM
-	github.com/cosmos/interchain-security/v2 => github.com/cosmos/interchain-security/v2 v2.0.0-lsm-rc0
+	github.com/cosmos/interchain-security/v2 => github.com/cosmos/interchain-security/v2 v2.0.0-lsm
 
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2

@@ -146,63 +146,34 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version: 1.20.x
-      - name: Get latest release tag
-        id: get_latest_release
+      - name: Install Old Gaiad
         run: |
-            LATEST_RELEASE_TAG=$(curl -s "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq -r '.tag_name')
-            echo "Latest release tag: $LATEST_RELEASE_TAG"
-            echo "::set-output name=latest_release_tag::$LATEST_RELEASE_TAG"
-      - name: Get pre-release tag if available
-        id: get_pre_release
+          git checkout v11.0.0
+          make build
+          cp ./build/gaiad ./build/gaiadold
+          go clean -modcache
+      #              if: env.GIT_DIFF
+      - name: Install New Gaiad
         run: |
-            PRERELEASE_TAG=$(curl -s "https://api.github.com/repos/${{ github.repository }}/releases" | jq -r '.[] | select(.prerelease) | .tag_name' | head -n 1)
-            echo "Pre-release tag: $PRERELEASE_TAG"
-            echo "::set-output name=pre_release_tag::$PRERELEASE_TAG"
-        continue-on-error: true
-      - name: Checkout old binary branch
-        run: |
-            LATEST_RELEASE_TAG="${{ steps.get_latest_release.outputs.latest_release_tag }}"
-            PRERELEASE_TAG="${{ steps.get_pre_release.outputs.pre_release_tag }}"
-
-            if [ -n "$PRERELEASE_TAG" ]; then
-                echo "Using pre-release tag: $PRERELEASE_TAG"
-                RELEASE_TAG="$PRERELEASE_TAG"
-            else
-                echo "No pre-release found, using latest release tag: $LATEST_RELEASE_TAG"
-                RELEASE_TAG="$LATEST_RELEASE_TAG"
-            fi
-
-            git checkout "$RELEASE_TAG"
-            #          if: env.GIT_DIFF
-      - name: Checkout PR branch
-        uses: actions/checkout@v3
-        with:
-            ref: ${{ github.event.pull_request.head.ref }}
-      - name: Install new Gaiad binary
-        run: |
-            make build
-            cp ./build/gaiad ./build/gaiadnew
-            #          if: env.GIT_DIFF
-      - name: Install old Gaiad binary
-        run: |
-            git checkout -
-            make build
-            cp ./build/gaiad ./build/gaiadold
+          git checkout -
+          make build
+          cp ./build/gaiad ./build/gaiadnew
+          go clean -modcache
+      #                if: env.GIT_DIFF
       - name: Install Cosmovisor
         run: |
-            go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@latest
-            #          if: env.GIT_DIFF
-      - name: Checkout present PR branch and start Old Gaiad Binary
+          go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@latest
+          #          if: env.GIT_DIFF
+      - name: Start Old Gaiad Binary
         run: |
-            git checkout -
-            go env GOPATH
-            ./contrib/scripts/upgrade_test_scripts/run_gaia.sh
-            #          if: env.GIT_DIFF
+          go env GOPATH
+          ./contrib/scripts/upgrade_test_scripts/run_gaia.sh
+          #          if: env.GIT_DIFF
       - name: Submit Upgrade Commands
         run: |
-            ./contrib/scripts/upgrade_test_scripts/run_upgrade_commands.sh 15
-            #          if: env.GIT_DIFF
+          ./contrib/scripts/upgrade_test_scripts/run_upgrade_commands.sh 15
+          #          if: env.GIT_DIFF
       - name: Check for successful upgrade
         run: |
-            ./contrib/scripts/upgrade_test_scripts/test_upgrade.sh 20 5 16 localhost
+          ./contrib/scripts/upgrade_test_scripts/test_upgrade.sh 20 5 16 localhost
     #          if: env.GIT_DIFF

@@ -7,6 +7,7 @@ require (
 	cosmossdk.io/math v1.0.1
 	github.com/cosmos/cosmos-sdk v0.45.16-ics
 	github.com/cosmos/go-bip39 v1.0.0
+	github.com/cosmos/gogoproto v1.4.3
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4 v4.1.0
 	github.com/cosmos/ibc-go/v4 v4.4.2
 	github.com/cosmos/interchain-security/v2 v2.0.0

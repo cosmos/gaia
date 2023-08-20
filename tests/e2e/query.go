@@ -13,11 +13,10 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
-
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v11/x/globalfee/types"
+	"github.com/cosmos/gaia/v12/x/globalfee/types"
 )
 
 func queryGaiaTx(endpoint, txHash string) error {
@@ -72,6 +71,20 @@ func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) {
 	}
 
 	return balancesResp.Balances, nil
+}
+
+func queryStakingParams(endpoint string) (stakingtypes.QueryParamsResponse, error) {
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/params", endpoint))
+	if err != nil {
+		return stakingtypes.QueryParamsResponse{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	var params stakingtypes.QueryParamsResponse
+	if err := cdc.UnmarshalJSON(body, &params); err != nil {
+		return stakingtypes.QueryParamsResponse{}, err
+	}
+
+	return params, nil
 }
 
 func queryGlobalFeeParams(endpoint string) (types.QueryParamsResponse, error) {
@@ -286,4 +299,18 @@ func queryAllEvidence(endpoint string) (evidencetypes.QueryAllEvidenceResponse, 
 		return res, err
 	}
 	return res, nil
+}
+
+func queryTokenizeShareRecordByID(endpoint string, recordID int) (stakingtypes.TokenizeShareRecord, error) {
+	var res stakingtypes.QueryTokenizeShareRecordByIdResponse
+
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/tokenize_share_record_by_id/%d", endpoint, recordID))
+	if err != nil {
+		return stakingtypes.TokenizeShareRecord{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return stakingtypes.TokenizeShareRecord{}, err
+	}
+	return res.Record, nil
 }

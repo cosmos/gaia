@@ -3,11 +3,12 @@ package cmd_test
 import (
 	"testing"
 
-	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 	"github.com/stretchr/testify/require"
 
-	app "github.com/cosmos/gaia/v11/app"
-	"github.com/cosmos/gaia/v11/cmd/gaiad/cmd"
+	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
+
+	app "github.com/cosmos/gaia/v12/app"
+	"github.com/cosmos/gaia/v12/cmd/gaiad/cmd"
 )
 
 func TestRootCmdConfig(t *testing.T) {

@@ -17,6 +17,7 @@ var (
 	runStakingAndDistributionTest = true
 	runVestingTest                = true
 	runRestInterfacesTest         = true
+	runLsmTest                    = true
 )
 
 func (s *IntegrationTestSuite) TestRestInterfaces() {
@@ -120,4 +121,11 @@ func (s *IntegrationTestSuite) TestVesting() {
 	s.testDelayedVestingAccount(chainAAPI)
 	s.testContinuousVestingAccount(chainAAPI)
 	// s.testPeriodicVestingAccount(chainAAPI) TODO: add back when v0.45 adds the missing CLI command.
+}
+
+func (s *IntegrationTestSuite) TestLSM() {
+	if !runLsmTest {
+		s.T().Skip()
+	}
+	s.testLSM()
 }

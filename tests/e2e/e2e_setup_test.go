@@ -15,6 +15,16 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ory/dockertest/v3"
+	"github.com/ory/dockertest/v3/docker"
+	"github.com/spf13/viper"
+	"github.com/stretchr/testify/suite"
+	tmconfig "github.com/tendermint/tendermint/config"
+	tmjson "github.com/tendermint/tendermint/libs/json"
+	"github.com/tendermint/tendermint/libs/rand"
+	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
+
+	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
 	ccvprovider "github.com/cosmos/interchain-security/v2/x/ccv/provider/types"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -31,15 +41,6 @@ import (
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
-	"github.com/ory/dockertest/v3"
-	"github.com/ory/dockertest/v3/docker"
-	"github.com/spf13/viper"
-	"github.com/stretchr/testify/suite"
-	tmconfig "github.com/tendermint/tendermint/config"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	"github.com/tendermint/tendermint/libs/rand"
-	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 )
 
 const (
@@ -72,6 +73,7 @@ const (
 	proposalCommunitySpendFilename      = "proposal_community_spend.json"
 	proposalAddConsumerChainFilename    = "proposal_add_consumer.json"
 	proposalRemoveConsumerChainFilename = "proposal_remove_consumer.json"
+	proposalLSMParamUpdateFilename      = "proposal_lsm_param_update.json"
 
 	hermesBinary              = "hermes"
 	hermesConfigWithGasPrices = "/root/.hermes/config.toml"
@@ -926,6 +928,48 @@ func (s *IntegrationTestSuite) writeAddRemoveConsumerProposals(c *chain, consume
 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalAddConsumerChainFilename), consumerAddBody)
 	s.Require().NoError(err)
 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalRemoveConsumerChainFilename), consumerRemoveBody)
+	s.Require().NoError(err)
+}
+
+func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain) {
+	type ParamInfo struct {
+		Subspace string  `json:"subspace"`
+		Key      string  `json:"key"`
+		Value    sdk.Dec `json:"value"`
+	}
+
+	type ParamChangeMessage struct {
+		Title       string      `json:"title"`
+		Description string      `json:"description"`
+		Changes     []ParamInfo `json:"changes"`
+		Deposit     string      `json:"deposit"`
+	}
+
+	paramChangeProposalBody, err := json.MarshalIndent(ParamChangeMessage{
+		Title:       "liquid staking params update",
+		Description: "liquid staking params update",
+		Changes: []ParamInfo{
+			{
+				Subspace: "staking",
+				Key:      "GlobalLiquidStakingCap",
+				Value:    sdk.NewDecWithPrec(25, 2), // 25%
+			},
+			{
+				Subspace: "staking",
+				Key:      "ValidatorLiquidStakingCap",
+				Value:    sdk.NewDecWithPrec(50, 2), // 50%
+			},
+			{
+				Subspace: "staking",
+				Key:      "ValidatorBondFactor",
+				Value:    sdk.NewDec(250), // -1
+			},
+		},
+		Deposit: "1000uatom",
+	}, "", " ")
+	s.Require().NoError(err)
+
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalLSMParamUpdateFilename), paramChangeProposalBody)
 	s.Require().NoError(err)
 }
 

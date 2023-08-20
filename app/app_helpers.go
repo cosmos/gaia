@@ -1,11 +1,12 @@
 package gaia
 
 import (
-	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
 	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
 	ibcstakinginterface "github.com/cosmos/interchain-security/v2/legacy_ibc_testing/core"
 	icstest "github.com/cosmos/interchain-security/v2/testutil/integration"
 	ibcproviderkeeper "github.com/cosmos/interchain-security/v2/x/ccv/provider/keeper"
+
+	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
 )
 
 // ProviderApp interface implementations for icstest tests

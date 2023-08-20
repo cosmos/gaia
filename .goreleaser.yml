@@ -16,7 +16,7 @@ builds:
       - CGO_ENABLED=0
     ldflags:
       # .Env.TM_VERSION is provided in the workflow runner environment -> see .github/workflows/release.yml
-      - -s -w -X main.commit={{.Commit}} -X main.date={{ .CommitDate }} -X github.com/cosmos/cosmos-sdk/version.Name=gaia -X github.com/cosmos/cosmos-sdk/version.AppName=gaiad -X github.com/cosmos/cosmos-sdk/version.Version={{ .Version }} -X github.com/cosmos/cosmos-sdk/version.Commit={{ .Commit }} -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger -X github.com/tendermint/tendermint/version.TMCoreSemVer={{ .Env.TM_VERSION }}
+      - -s -w -X main.commit={{.Commit}} -X main.date={{ .CommitDate }} -X github.com/cosmos/cosmos-sdk/version.Name=gaia -X github.com/cosmos/cosmos-sdk/version.AppName=gaiad -X github.com/cosmos/cosmos-sdk/version.Version=v{{ .Version }} -X github.com/cosmos/cosmos-sdk/version.Commit={{ .Commit }} -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger -X github.com/tendermint/tendermint/version.TMCoreSemVer={{ .Env.TM_VERSION }}
     goos:
       - darwin
       - linux
@@ -54,3 +54,11 @@ snapshot:
 
 changelog:
   skip: false
+
+git:
+  # What should be used to sort tags when gathering the current and previous
+  # tags if there are more than one tag in the same commit.
+  #
+  # Default: '-version:refname'
+  # source: https://goreleaser.com/customization/git/
+  tag_sort: -version:creatordate

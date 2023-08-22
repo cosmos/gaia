@@ -55,6 +55,8 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
+	feeabsmodule "github.com/osmosis-labs/fee-abstraction/v4/x/feeabs"
+
 	gaiaappparams "github.com/cosmos/gaia/v12/app/params"
 	"github.com/cosmos/gaia/v12/x/globalfee"
 )
@@ -109,6 +111,7 @@ var ModuleBasics = module.NewBasicManager(
 	ica.AppModuleBasic{},
 	globalfee.AppModule{},
 	ibcprovider.AppModuleBasic{},
+	feeabsmodule.AppModuleBasic{},
 )
 
 func appModules(

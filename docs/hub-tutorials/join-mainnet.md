@@ -6,16 +6,19 @@ title: Joining Mainnet
 # Join the Cosmos Hub Mainnet
 
 
-The current Cosmos Hub mainnet, `cosmoshub-4`, has been performing in place store migration upgrades as of the [Delta Upgrade](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md) July 2021. The most recent upgrade was [Lambda](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-v9-Lambda-upgrade.md) March 2023. This type of upgrade preserves the same chain-id but state before the upgrade height is only accessible by corresponding versions of the binary:
+The current Cosmos Hub mainnet, `cosmoshub-4`, has been performing in place store migration upgrades as of the [Delta Upgrade](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md) July 2021. 
+The most recent upgrade was [Gaia v10](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-v10-upgrade.md) June 2023. 
+This type of upgrade preserves the same chain-id but state before the upgrade height is only accessible by corresponding versions of the binary:
 - use `gaia v5.0.x` (Delta) for queries of state between height `6,910,000` and `8,695,000`
 - use `gaia v6.0.x` (Vega) between `8,695,000` and `10,085,397`
 - use `gaia v7.0.x` (Theta) between `10,085,397` and `14,099,412`
 - use `gaia v8.0.x` (Rho) between `14,099,412` and `14,470,501`
-- use `gaia v9.0.x` (Lambda) between `14470501` and `15213800`
-- use `gaia v9.1.x` between `15213800` and `15816200`
-- use `gaia v10.0.x` from `15816200`
+- use `gaia v9.0.x` (Lambda) between `14,470,501` and `15,213,800`
+- use `gaia v9.1.x` between `15,213,800` and `15,816,200`
+- use `gaia v10.0.x` between `15,816,200` and `16,596,000`
+- use `gaia v11.x` from `16,596,000`
   
-(ie. queries of state between height `6,910,000` and `8,695,000` should use `gaia v5.0.x` (Delta), between `8,695,000` and `10,085,397` use `gaia v6.0.x` (Vega), between `10,085,397` and `14,099,412` use `gaia v7.0.x` (Theta),  between `14,099,412` and `14,470,501` use `gaia v8.0.x` (Rho),  after `14,470,501` use `gaia v9.0.x` (Lambda) to guarantee correctly encoded responses. The roadmap documentation contains a [history of upgrades](https://github.com/cosmos/gaia/tree/main/docs/roadmap).). Visit the [migration section](https://github.com/cosmos/gaia/tree/main/docs/migration) of the Hub's docs for more information on previous chain migrations.
+For more details, see the [history of upgrades](https://github.com/cosmos/gaia/tree/main/docs/roadmap) or visit the [migration section](https://github.com/cosmos/gaia/tree/main/docs/migration) of the Hub's docs.
 
 **This guide includes full instructions for joining the mainnet either as an archive/full node or a pruned node.**
 

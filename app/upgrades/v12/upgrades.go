@@ -21,6 +21,14 @@ func CreateUpgradeHandler(
 			return vm, err
 		}
 
+		// Set liquid staking module parameters
+		params := keepers.StakingKeeper.GetParams(ctx)
+		params.ValidatorBondFactor = ValidatorBondFactor
+		params.ValidatorLiquidStakingCap = ValidatorLiquidStakingCap
+		params.GlobalLiquidStakingCap = GlobalLiquidStakingCap
+
+		keepers.StakingKeeper.SetParams(ctx, params)
+
 		ctx.Logger().Info("Upgrade complete")
 		return vm, err
 	}

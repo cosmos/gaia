@@ -22,7 +22,7 @@ The table below shows all past and upcoming versions of the public testnet.
 
 |   Release   | Upgrade Block Height |    Upgrade Date     |
 | :---------: | :------------------: | :-----------------: |
-| v12.0.0-rc0 |         TBA          |         TBA         |
+| v12.0.0-rc0 |      17,550,150      |     2023-08-23      |
 | v11.0.0-rc0 |      17,107,825      |     2023-07-26      |
 | v10.0.0-rc0 |      16,117,530      |     2023-05-24      |
 | v9.0.0-rc3  |      14,476,206      |     2023-02-08      |
@@ -140,7 +140,7 @@ Cosmovisor requires the creation of the following directory structure:
 
 Install Cosmovisor and copy Gaia binary to genesis folder
 ```
-go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.3.0
+go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@v1.5.0
 mkdir -p ~/.gaia/cosmovisor/genesis/bin
 cp ~/go/bin/gaiad ~/.gaia/cosmovisor/genesis/bin/
 ```

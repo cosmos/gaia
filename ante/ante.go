@@ -12,8 +12,8 @@ import (
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	gaiaerrors "github.com/cosmos/gaia/v12/types/errors"
-	gaiafeeante "github.com/cosmos/gaia/v12/x/globalfee/ante"
+	gaiaerrors "github.com/cosmos/gaia/v13/types/errors"
+	gaiafeeante "github.com/cosmos/gaia/v13/x/globalfee/ante"
 )
 
 // HandlerOptions extend the SDK's AnteHandler options by requiring the IBC

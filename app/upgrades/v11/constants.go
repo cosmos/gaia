@@ -1,7 +1,7 @@
 package v11
 
 import (
-	"github.com/cosmos/gaia/v12/app/upgrades"
+	"github.com/cosmos/gaia/v13/app/upgrades"
 )
 
 const (

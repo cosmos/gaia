@@ -45,12 +45,12 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	gaiaante "github.com/cosmos/gaia/v12/ante"
-	"github.com/cosmos/gaia/v12/app/keepers"
-	gaiaappparams "github.com/cosmos/gaia/v12/app/params"
-	"github.com/cosmos/gaia/v12/app/upgrades"
-	v12 "github.com/cosmos/gaia/v12/app/upgrades/v12"
-	"github.com/cosmos/gaia/v12/x/globalfee"
+	gaiaante "github.com/cosmos/gaia/v13/ante"
+	"github.com/cosmos/gaia/v13/app/keepers"
+	gaiaappparams "github.com/cosmos/gaia/v13/app/params"
+	"github.com/cosmos/gaia/v13/app/upgrades"
+	v12 "github.com/cosmos/gaia/v13/app/upgrades/v12"
+	"github.com/cosmos/gaia/v13/x/globalfee"
 )
 
 var (

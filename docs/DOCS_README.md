@@ -9,10 +9,9 @@ If you want to open a PR on Gaia to update the documentation, please follow the 
 
 ## Internationalization
 
-- Translations for documentation live in a `docs/<locale>/` folder, where `<locale>` is the language code for a specific language. For example, `zh` for Chinese, `ko` for Korean, `es` for Spanish, etc.
-- Each `docs/<locale>/` folder must follow the same folder structure within `docs/`, but only content in the following folders needs to be translated and included in the respective `docs/<locale>/` folder
-- Each `docs/<locale>/` folder must also have a `README.md` that includes a translated version of both the layout and content within the root-level [`README.md`](https://github.com/cosmos/cosmos-sdk/tree/master/docs/README.md). The layout defined in the `README.md` is used to build the homepage.
-- For additional configuration options, please see [VuePress Internationalization](https://vuepress.vuejs.org/guide/i18n.html).
+- Translations for documentation live in a `docs/translations/<locale>/` folder, where `<locale>` is the language code for a specific language. For example, `zh` for Chinese, `ko` for Korean, `es` for Spanish, etc.
+- Each `docs/translations/<locale>/` folder must follow the same folder structure within `docs/`, but only content in the following folders needs to be translated and included in the respective `docs/translations/<locale>/` folder
+- Each `docs/translations/<locale>/` folder must also have a `README.md` that includes a translated version of both the layout and content within the root-level [`README.md`](https://github.com/cosmos/cosmos-sdk/tree/master/docs/README.md). The layout defined in the `README.md` is used to build the homepage.
 
 ## Docs Build Workflow
 
@@ -86,18 +85,13 @@ Serve the app
 npm run serve
 ```
 
-then navigate to `localhost:8080` in your browser.
+then navigate to `localhost:3000` in your browser.
 
-To build documentation as a static website run `npm run build`. You will find the website in `.vuepress/dist` directory.
+To build documentation as a static website run `npm run build`. You will find the website in `build` directory.
 
 ## Search
 
 We are using [Algolia](https://www.algolia.com) to power full-text search. This uses a public API search-only key in the `config.js` as well as a [cosmos_network.json](https://github.com/algolia/docsearch-configs/blob/master/configs/cosmos_network.json) configuration file that we can update with PRs.
-
-## Consistency
-
-Because the build processes are identical (as is the information contained herein), this file should be kept in sync as
-much as possible with its [counterpart in the Tendermint Core repo](https://github.com/tendermint/tendermint/blob/master/docs/DOCS_README.md).
 
 ### Update and Build the RPC docs
 

@@ -65,7 +65,7 @@ tmp=$(mktemp)
 jq --argjson foo "$(jq -c '.' contrib/denom.json)" '.app_state.bank.denom_metadata = $foo' $NODE_HOME/config/genesis.json >"$tmp" && mv "$tmp" $NODE_HOME/config/genesis.json
 
 # replace default stake token with uatom
-sed -i -e 's/stake/uatom/g' $NODE_HOME/config/genesis.json
+sed -i '' -E -e '/liquid_staked/! s/stake/uatom/g' "$NODE_HOME/config/genesis.json"
 # min deposition amount (this one isn't working)
 sed -i -e 's%"amount": "10000000",%"amount": "1",%g' $NODE_HOME/config/genesis.json
 #   min voting power that a proposal requires in order to be a valid proposal

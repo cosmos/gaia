@@ -56,6 +56,7 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	feeabsmodule "github.com/osmosis-labs/fee-abstraction/v4/x/feeabs"
+	feeabstypes "github.com/osmosis-labs/fee-abstraction/v4/x/feeabs/types"
 
 	gaiaappparams "github.com/cosmos/gaia/v12/app/params"
 	"github.com/cosmos/gaia/v12/x/globalfee"
@@ -72,6 +73,7 @@ var maccPerms = map[string][]string{
 	liquiditytypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
 	ibctransfertypes.ModuleName:       {authtypes.Minter, authtypes.Burner},
 	providertypes.ConsumerRewardsPool: nil,
+	feeabstypes.ModuleName:            nil,
 }
 
 // ModuleBasics defines the module BasicManager is in charge of setting up basic,
@@ -95,6 +97,9 @@ var ModuleBasics = module.NewBasicManager(
 		ibcproviderclient.ConsumerAdditionProposalHandler,
 		ibcproviderclient.ConsumerRemovalProposalHandler,
 		ibcproviderclient.EquivocationProposalHandler,
+		feeabsmodule.UpdateAddHostZoneClientProposalHandler,
+		feeabsmodule.UpdateDeleteHostZoneClientProposalHandler,
+		feeabsmodule.UpdateSetHostZoneClientProposalHandler,
 	),
 	params.AppModuleBasic{},
 	crisis.AppModuleBasic{},
@@ -149,6 +154,7 @@ func appModules(
 		app.TransferModule,
 		app.ICAModule,
 		app.RouterModule,
+		app.FeeAbsModule,
 		app.ProviderModule,
 	}
 }
@@ -219,6 +225,7 @@ func orderBeginBlockers() []string {
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
 		globalfee.ModuleName,
+		feeabstypes.ModuleName,
 		providertypes.ModuleName,
 	}
 }
@@ -255,6 +262,7 @@ func orderEndBlockers() []string {
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		globalfee.ModuleName,
+		feeabstypes.ModuleName,
 		providertypes.ModuleName,
 	}
 }
@@ -299,6 +307,7 @@ func orderInitBlockers() []string {
 		// min fee is empty when gentx is called.
 		// For more details, please refer to the following link: https://github.com/cosmos/gaia/issues/2489
 		globalfee.ModuleName,
+		feeabstypes.ModuleName,
 		providertypes.ModuleName,
 	}
 }

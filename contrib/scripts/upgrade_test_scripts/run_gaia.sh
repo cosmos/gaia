@@ -65,16 +65,16 @@ tmp=$(mktemp)
 jq --argjson foo "$(jq -c '.' contrib/denom.json)" '.app_state.bank.denom_metadata = $foo' $NODE_HOME/config/genesis.json >"$tmp" && mv "$tmp" $NODE_HOME/config/genesis.json
 
 # replace default stake token with uatom
-sed -i '' -E -e '/liquid_staked/! s/stake/uatom/g' $NODE_HOME/config/genesis.json
+sed -i -e '/total_liquid_staked_tokens/!s/stake/uatom/g' $NODE_HOME/config/genesis.json
 
 # min deposition amount (this one isn't working)
-sed -i -e 's%"amount": "10000000",%"amount": "1",%g' $NODE_HOME/config/genesis.json
+sed -i -e 's/"amount": "10000000",/"amount": "1",/g' $NODE_HOME/config/genesis.json
 #   min voting power that a proposal requires in order to be a valid proposal
-sed -i -e 's%"quorum": "0.334000000000000000",%"quorum": "0.000000000000000001",%g' $NODE_HOME/config/genesis.json
+sed -i -e 's/"quorum": "0.334000000000000000",/"quorum": "0.000000000000000001",/g' $NODE_HOME/config/genesis.json
 # the minimum proportion of "yes" votes requires for the proposal to pass
-sed -i -e 's%"threshold": "0.500000000000000000",%"threshold": "0.000000000000000001",%g' $NODE_HOME/config/genesis.json
+sed -i -e 's/"threshold": "0.500000000000000000",/"threshold": "0.000000000000000001",/g' $NODE_HOME/config/genesis.json
 # voting period to 30s
-sed -i -e 's%"voting_period": "172800s"%"voting_period": "30s"%g' $NODE_HOME/config/genesis.json
+sed -i -e 's/"voting_period": "172800s"/"voting_period": "30s"/g' $NODE_HOME/config/genesis.json
 
 echo $USER_MNEMONIC | $BINARY --home $NODE_HOME keys add val --recover --keyring-backend=test
 $BINARY add-genesis-account val 10000000000000000000000000uatom --home $NODE_HOME --keyring-backend test

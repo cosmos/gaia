@@ -1,7 +1,9 @@
 #!/bin/sh
 
 set -o errexit -o nounset
-set -x
+
+# find the highest upgrade version number($UPGRADE_VERSION_NUMBER) within the 'app/upgrades' dir.
+# the highest upgrade version is used to propose upgrade and create /cosmovisor/upgrades/$UPGRADE_VERSION/bin dir.
 UPGRADES_DIR=$(realpath ./app/upgrades)
 UPGRADE_VERSION_NUMBER=0
 

@@ -63,3 +63,4 @@ git:
   ##  source: https://goreleaser.com/customization/git/
   ## "tag_sort: -version:creatordate" from the docs is a typo, it should be "tag_sort: -creatordate"
   tag_sort: -creatordate
+  prerelease_suffix: "-rc"

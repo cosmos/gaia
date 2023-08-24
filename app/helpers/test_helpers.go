@@ -22,7 +22,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	gaiaapp "github.com/cosmos/gaia/v12/app"
+	gaiaapp "github.com/cosmos/gaia/v13/app"
 )
 
 // SimAppChainID hardcoded chainID for simulation

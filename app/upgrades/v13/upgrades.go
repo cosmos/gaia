@@ -1,4 +1,4 @@
-package v12
+package v13
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -20,14 +20,6 @@ func CreateUpgradeHandler(
 		if err != nil {
 			return vm, err
 		}
-
-		// Set liquid staking module parameters
-		params := keepers.StakingKeeper.GetParams(ctx)
-		params.ValidatorBondFactor = ValidatorBondFactor
-		params.ValidatorLiquidStakingCap = ValidatorLiquidStakingCap
-		params.GlobalLiquidStakingCap = GlobalLiquidStakingCap
-
-		keepers.StakingKeeper.SetParams(ctx, params)
 
 		ctx.Logger().Info("Upgrade complete")
 		return vm, err

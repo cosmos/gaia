@@ -2,14 +2,7 @@
 
 ## 📝 Changelog
 
-<<<<<<< HEAD
-Check out the [changelog](https://github.com/cosmos/gaia/blob/v12.0.0/CHANGELOG.md) for a list of relevant changes or [compare all changes](https://github.com/cosmos/cosmos-sdk/compare/v11.0.0...v12.0.0) from last release.
-=======
-Check out the [changelog](https://github.com/cosmos/gaia/blob/<v*.*.*>/CHANGELOG.md) for a list of relevant changes or [compare all changes](https://github.com/cosmos/gaia/compare/<v-last>...<v*.*.*>) from last release.
-
-<!-- Add the following line for major releases -->
-Refer to the [upgrading guide](https://github.com/cosmos/gaia/blob/release/<v*.x>/UPGRADING.md) when migrating from `<v-last.x>` to `<v*.x>`.
->>>>>>> 696ab38 (fix typos in release notes template (#2708))
+Check out the [changelog](https://github.com/cosmos/gaia/blob/v12.0.0/CHANGELOG.md) for a list of relevant changes or [compare all changes](https://github.com/cosmos/gaia/compare/v11.0.0...v12.0.0) from last release.
 
 ## 🚀 Highlights
 
@@ -21,6 +14,7 @@ Refer to the [upgrading guide](https://github.com/cosmos/gaia/blob/release/<v*.x
 
 * Binary Builders ([@binary_builders](https://twitter.com/binary_builders))
 * Informal Systems ([@informalinc](https://twitter.com/informalinc))
+* Iqlusion ([@iqlusioninc](https://twitter.com/iqlusioninc))
 * Stride ([@stride_zone](https://twitter.com/stride_zone))
 
 This list is non-exhaustive and ordered alphabetically.  

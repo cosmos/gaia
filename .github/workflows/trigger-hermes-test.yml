@@ -25,11 +25,11 @@ jobs:
                         }
                     }'
 
-            -   name: Wait for hermes repo workflow
+            -   name: Wait for hermes workflow response
                 run: |
                     sudo apt-get install jq
                     TOKEN="${{ secrets.INFORMAL_BOT_TOKEN }}" 
-                    WORKFLOW_NAME="tested_by_gaia.yml"
+                    WORKFLOW_NAME="test_for_gaia.yml"
                     
                     while : ; do
                       WORKFLOW_RUN=$(curl -s -H "Authorization: token $TOKEN" \
@@ -52,9 +52,3 @@ jobs:
                       echo "Other workflow failed with conclusion: $CONCLUSION"
                       exit 1
                     fi
-
-
-
-
-
-

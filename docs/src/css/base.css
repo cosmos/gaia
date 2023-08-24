@@ -18,8 +18,8 @@
             @apply font-intervar
         }
     }
-    
-    *, 
+
+    *,
     *::before,
     *::after {
         box-sizing: border-box;
@@ -27,6 +27,9 @@
     }
 
     svg { display: inline; }
-    
-    ::selection{}    
+
+    ::selection{
+      background-color: var(--ifm-color-primary);
+      color: white;
+    }
 }

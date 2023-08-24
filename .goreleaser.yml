@@ -59,6 +59,6 @@ git:
   # What should be used to sort tags when gathering the current and previous
   # tags if there are more than one tag in the same commit.
   #
-  ##  source: https://goreleaser.com/customization/git/
+  # source: https://goreleaser.com/customization/git/
   tag_sort: -version:refname
   prerelease_suffix: "-rc"

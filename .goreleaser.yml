@@ -60,5 +60,6 @@ git:
   # tags if there are more than one tag in the same commit.
   #
   # Default: '-version:refname'
-  # source: https://goreleaser.com/customization/git/
-  tag_sort: -version:creatordate
+  ##  source: https://goreleaser.com/customization/git/
+  ## "tag_sort: -version:creatordate" from the docs is a typo, it should be "tag_sort: -creatordate"
+  tag_sort: -creatordate

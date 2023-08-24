@@ -2,7 +2,7 @@
 
 ## 📝 Changelog
 
-Check out the [changelog](https://github.com/cosmos/gaia/blob/v12.0.0/CHANGELOG.md) for a list of relevant changes or [compare all changes](https://github.com/cosmos/cosmos-sdk/compare/v11.0.0...v12.0.0) from last release.
+Check out the [changelog](https://github.com/cosmos/gaia/blob/v12.0.0/CHANGELOG.md) for a list of relevant changes or [compare all changes](https://github.com/cosmos/gaia/compare/v11.0.0...v12.0.0) from last release.
 
 ## 🚀 Highlights
 
@@ -14,6 +14,7 @@ Check out the [changelog](https://github.com/cosmos/gaia/blob/v12.0.0/CHANGELOG.
 
 * Binary Builders ([@binary_builders](https://twitter.com/binary_builders))
 * Informal Systems ([@informalinc](https://twitter.com/informalinc))
+* Iqlusion ([@iqlusioninc](https://twitter.com/iqlusioninc))
 * Stride ([@stride_zone](https://twitter.com/stride_zone))
 
 This list is non-exhaustive and ordered alphabetically.  

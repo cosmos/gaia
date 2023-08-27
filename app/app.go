@@ -203,6 +203,7 @@ func NewGaiaApp(
 			Codec:             appCodec,
 			IBCkeeper:         app.IBCKeeper,
 			GovKeeper:         &app.GovKeeper,
+			FeeAbskeeper:      app.FeeabsKeeper,
 			GlobalFeeSubspace: app.GetSubspace(globalfee.ModuleName),
 			StakingSubspace:   app.GetSubspace(stakingtypes.ModuleName),
 		},

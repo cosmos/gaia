@@ -14,6 +14,9 @@ import (
 
 	gaiaerrors "github.com/cosmos/gaia/v12/types/errors"
 	gaiafeeante "github.com/cosmos/gaia/v12/x/globalfee/ante"
+
+	feeabsante "github.com/osmosis-labs/fee-abstraction/v4/x/feeabs/ante"
+	feeabskeeper "github.com/osmosis-labs/fee-abstraction/v4/x/feeabs/keeper"
 )
 
 // HandlerOptions extend the SDK's AnteHandler options by requiring the IBC
@@ -23,6 +26,7 @@ type HandlerOptions struct {
 	Codec             codec.BinaryCodec
 	GovKeeper         *govkeeper.Keeper
 	IBCkeeper         *ibckeeper.Keeper
+	FeeAbskeeper      feeabskeeper.Keeper
 	GlobalFeeSubspace paramtypes.Subspace
 	StakingSubspace   paramtypes.Subspace
 }
@@ -64,7 +68,8 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
 		NewGovPreventSpamDecorator(opts.Codec, opts.GovKeeper),
 		gaiafeeante.NewFeeDecorator(opts.GlobalFeeSubspace, opts.StakingSubspace),
-		ante.NewDeductFeeDecorator(opts.AccountKeeper, opts.BankKeeper, opts.FeegrantKeeper),
+		feeabsante.NewFeeAbstrationMempoolFeeDecorator(opts.FeeAbskeeper),
+		feeabsante.NewFeeAbstractionDeductFeeDecorate(opts.AccountKeeper, opts.BankKeeper, opts.FeeAbskeeper, opts.FeegrantKeeper),
 		ante.NewSetPubKeyDecorator(opts.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewValidateSigCountDecorator(opts.AccountKeeper),
 		ante.NewSigGasConsumeDecorator(opts.AccountKeeper, sigGasConsumer),

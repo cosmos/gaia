@@ -23,6 +23,37 @@ func ContainZeroCoins(coins sdk.Coins) bool {
 	return false
 }
 
+// CombinedMinGasPrices returns the globalfee's gas-prices and local min_gas_price combined and sorted.
+// Both globalfee's gas-prices and local min_gas_price must be valid, but CombinedMinGasPrices
+// does not validate them, so it may return 0denom.
+// if globalfee is empty, CombinedMinGasPrices return sdk.DecCoins{}
+func CombinedMinGasPrices(globalGasPrices, minGasPrices sdk.DecCoins) (sdk.DecCoins, error) {
+	// global fees should never be empty
+	// since it has a default value using the staking module's bond denom
+	if len(globalGasPrices) == 0 {
+		return sdk.DecCoins{}, errorsmod.Wrapf(gaiaerrors.ErrNotFound, "global fee cannot be empty")
+	}
+
+	// empty min_gas_price
+	if len(minGasPrices) == 0 {
+		return globalGasPrices, nil
+	}
+
+	// if min_gas_price denom is in globalfee, and the amount is higher than globalfee, add min_gas_price to allFees
+	var allFees sdk.DecCoins
+	for _, fee := range globalGasPrices {
+		// min_gas_price denom in global fee
+		ok, c := FindDecCoins(minGasPrices, fee.Denom)
+		if ok && c.Amount.GT(fee.Amount) {
+			allFees = append(allFees, c)
+		} else {
+			allFees = append(allFees, fee)
+		}
+	}
+
+	return allFees.Sort(), nil
+}
+
 // CombinedFeeRequirement returns the global fee and min_gas_price combined and sorted.
 // Both globalFees and minGasPrices must be valid, but CombinedFeeRequirement
 // does not validate them, so it may return 0denom.
@@ -77,6 +108,33 @@ func Find(coins sdk.Coins, denom string) (bool, sdk.Coin) {
 			return true, coin
 		default:
 			return Find(coins[midIdx+1:], denom)
+		}
+	}
+}
+
+// Clone from Find() func above for DecCoins
+func FindDecCoins(coins sdk.DecCoins, denom string) (bool, sdk.DecCoin) {
+	switch len(coins) {
+	case 0:
+		return false, sdk.DecCoin{}
+
+	case 1:
+		coin := coins[0]
+		if coin.Denom == denom {
+			return true, coin
+		}
+		return false, sdk.DecCoin{}
+
+	default:
+		midIdx := len(coins) / 2 // 2:1, 3:1, 4:2
+		coin := coins[midIdx]
+		switch {
+		case denom < coin.Denom:
+			return FindDecCoins(coins[:midIdx], denom)
+		case denom == coin.Denom:
+			return true, coin
+		default:
+			return FindDecCoins(coins[midIdx+1:], denom)
 		}
 	}
 }

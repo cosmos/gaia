@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 
 	"github.com/gorilla/mux"
-	feeabstypes "github.com/osmosis-labs/fee-abstraction/v4/x/feeabs/types"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
 	abci "github.com/tendermint/tendermint/abci/types"

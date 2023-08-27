@@ -844,12 +844,8 @@ github.com/openzipkin/zipkin-go v0.2.2/go.mod h1:NaW6tEwdmWMaCDZzg8sh+IBNOxHMPnh
 github.com/ory/dockertest v3.3.5+incompatible h1:iLLK6SQwIhcbrG783Dghaaa3WPzGc+4Emza6EbVUUGA=
 github.com/ory/dockertest/v3 v3.10.0 h1:4K3z2VMe8Woe++invjaTB7VRyQXQy5UY+loujO4aNE4=
 github.com/ory/dockertest/v3 v3.10.0/go.mod h1:nr57ZbRWMqfsdGdFNLHz5jjNdDb7VVFnzAeW1n5N1Lg=
-github.com/osmosis-labs/fee-abstraction/v4 v4.0.0-20230822154627-a071086187fb h1:8Ndii0MzaJ2j8etrNc79K1hazsodxKy/ptIIHhP014s=
-github.com/osmosis-labs/fee-abstraction/v4 v4.0.0-20230822154627-a071086187fb/go.mod h1:YG71unfArfUlg21blV+vPmRJ8nrgC+TCfkb7Wmp/88Y=
-github.com/osmosis-labs/fee-abstraction/v4 v4.0.0-20230822155526-08fc5a6d2cf4 h1:Nd6WQ9OXUtXYw3z234VB0WJxiavzFl1T8NeEfR0Naq4=
-github.com/osmosis-labs/fee-abstraction/v4 v4.0.0-20230822155526-08fc5a6d2cf4/go.mod h1:tib4FfJ3A59d2MAbhZU2k2PWntwv5C1CsHkWu1TrkUY=
-github.com/osmosis-labs/fee-abstraction/v4 v4.0.0-20230822170011-dbec14eb6241 h1:hCtwkqOWtSlP58dANuvzJvnv+HbR/Vs3t15P2pZBriQ=
-github.com/osmosis-labs/fee-abstraction/v4 v4.0.0-20230822170011-dbec14eb6241/go.mod h1:tib4FfJ3A59d2MAbhZU2k2PWntwv5C1CsHkWu1TrkUY=
+github.com/osmosis-labs/fee-abstraction/v4 v4.0.0-20230827140547-bdf2644b674e h1:SDGVyb1EIxlL8upzw2PMnoxYPAoloG4XJsG/NILBamo=
+github.com/osmosis-labs/fee-abstraction/v4 v4.0.0-20230827140547-bdf2644b674e/go.mod h1:tib4FfJ3A59d2MAbhZU2k2PWntwv5C1CsHkWu1TrkUY=
 github.com/otiai10/copy v1.6.0 h1:IinKAryFFuPONZ7cm6T6E2QX/vcJwSnlaA5lfoaXIiQ=
 github.com/oxyno-zeta/gomock-extra-matcher v1.1.0 h1:Yyk5ov0ZPKBXtVEeIWtc4J2XVrHuNoIK+0F2BUJgtsc=
 github.com/oxyno-zeta/gomock-extra-matcher v1.1.0/go.mod h1:UMGTHYEmJ1dRq8LDZ7VTAYO4nqM3GD1UGC3RJEUxEz0=

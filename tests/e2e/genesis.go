@@ -19,7 +19,7 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	globfeetypes "github.com/cosmos/gaia/v12/x/globalfee/types"
+	globfeetypes "github.com/cosmos/gaia/v13/x/globalfee/types"
 )
 
 func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {

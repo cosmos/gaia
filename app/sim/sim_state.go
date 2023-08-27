@@ -21,7 +21,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	gaia "github.com/cosmos/gaia/v12/app"
+	gaia "github.com/cosmos/gaia/v13/app"
 )
 
 // AppStateFn returns the initial application state using a genesis or the simulation parameters.

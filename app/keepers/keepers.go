@@ -67,7 +67,7 @@ import (
 	feeabskeeper "github.com/osmosis-labs/fee-abstraction/v4/x/feeabs/keeper"
 	feeabstypes "github.com/osmosis-labs/fee-abstraction/v4/x/feeabs/types"
 
-	"github.com/cosmos/gaia/v12/x/globalfee"
+	"github.com/cosmos/gaia/v13/x/globalfee"
 )
 
 type AppKeepers struct {

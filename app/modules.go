@@ -58,8 +58,8 @@ import (
 	feeabsmodule "github.com/osmosis-labs/fee-abstraction/v4/x/feeabs"
 	feeabstypes "github.com/osmosis-labs/fee-abstraction/v4/x/feeabs/types"
 
-	gaiaappparams "github.com/cosmos/gaia/v12/app/params"
-	"github.com/cosmos/gaia/v12/x/globalfee"
+	gaiaappparams "github.com/cosmos/gaia/v13/app/params"
+	"github.com/cosmos/gaia/v13/x/globalfee"
 )
 
 var maccPerms = map[string][]string{

@@ -12,9 +12,9 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	feeabstypes "github.com/osmosis-labs/fee-abstraction/v4/x/feeabs/types"
 
-	gaiaerrors "github.com/cosmos/gaia/v12/types/errors"
-	"github.com/cosmos/gaia/v12/x/globalfee"
-	"github.com/cosmos/gaia/v12/x/globalfee/types"
+	gaiaerrors "github.com/cosmos/gaia/v13/types/errors"
+	"github.com/cosmos/gaia/v13/x/globalfee"
+	"github.com/cosmos/gaia/v13/x/globalfee/types"
 )
 
 // FeeWithBypassDecorator checks if the transaction's fee is at least as large

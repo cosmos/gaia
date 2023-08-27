@@ -12,8 +12,8 @@ import (
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	gaiaerrors "github.com/cosmos/gaia/v12/types/errors"
-	gaiafeeante "github.com/cosmos/gaia/v12/x/globalfee/ante"
+	gaiaerrors "github.com/cosmos/gaia/v13/types/errors"
+	gaiafeeante "github.com/cosmos/gaia/v13/x/globalfee/ante"
 
 	feeabsante "github.com/osmosis-labs/fee-abstraction/v4/x/feeabs/ante"
 	feeabskeeper "github.com/osmosis-labs/fee-abstraction/v4/x/feeabs/keeper"

@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/gorilla/mux"
+	feeabstypes "github.com/osmosis-labs/fee-abstraction/v4/x/feeabs/types"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -44,6 +45,7 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	feeabstypes "github.com/osmosis-labs/fee-abstraction/v4/x/feeabs/types"
 
 	gaiaante "github.com/cosmos/gaia/v12/ante"
 	"github.com/cosmos/gaia/v12/app/keepers"
@@ -272,6 +274,7 @@ func (app *GaiaApp) ModuleAccountAddrs() map[string]bool {
 func (app *GaiaApp) BlockedModuleAccountAddrs(modAccAddrs map[string]bool) map[string]bool {
 	// remove module accounts that are ALLOWED to received funds
 	delete(modAccAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
+	delete(modAccAddrs, authtypes.NewModuleAddress(feeabstypes.ModuleName).String())
 
 	// Remove the ConsumerRewardsPool from the group of blocked recipient addresses in bank
 	delete(modAccAddrs, authtypes.NewModuleAddress(providertypes.ConsumerRewardsPool).String())

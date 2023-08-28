@@ -7,12 +7,12 @@ title: Joining Testnet
 
 This tutorial will provide all necessary instructions for joining the current public testnet. If you're interested in more advanced configuration and synchronization options, see [Join Mainnet](./join-mainnet.md) for a detailed walkthrough.
 
-* Current Version: v11
+* Current Version: v12
 * Chain ID: `theta-testnet-001`
 
 ## Background
 
-The Cosmos Hub Public Testnet is currently running Gaia v11. Visit the [testnet explorer](https://explorer.theta-testnet.polypore.xyz/) to view all on-chain activity.
+The Cosmos Hub Public Testnet is currently running Gaia v12. Visit the [testnet explorer](https://explorer.theta-testnet.polypore.xyz/) to view all on-chain activity.
 
 For those who just need instructions on performing the upgrade, see the [Upgrading Your Node](#upgrading-your-node) section.
 
@@ -22,6 +22,7 @@ The table below shows all past and upcoming versions of the public testnet.
 
 |   Release   | Upgrade Block Height |    Upgrade Date     |
 | :---------: | :------------------: | :-----------------: |
+| v13.0.0-rc0 |         TBA          |         TBA         |
 | v12.0.0-rc0 |      17,550,150      |     2023-08-23      |
 | v11.0.0-rc0 |      17,107,825      |     2023-07-26      |
 | v10.0.0-rc0 |      16,117,530      |     2023-05-24      |
@@ -73,7 +74,7 @@ export PATH=$PATH:/usr/local/go/bin
 
 ### Installation & Configuration
 
-You will need to install and configure the Gaia binary using the script below. The Cosmos Hub Public Testnet is running Gaia [`v11.0.0`](https://github.com/cosmos/gaia/releases/tag/v11.0.0).
+You will need to install and configure the Gaia binary using the script below. The Cosmos Hub Public Testnet is running Gaia [`v12.0.0`](https://github.com/cosmos/gaia/releases/tag/v12.0.0).
 
 * For up-to-date endpoints like seeds and state sync RPC servers, visit the [testnets repository](https://github.com/cosmos/testnets/tree/master/public).
 
@@ -83,7 +84,7 @@ cd $HOME
 git clone https://github.com/cosmos/gaia
 cd gaia
 # To sync from genesis, comment out the next line.
-git checkout v11.0.0
+git checkout v12.0.0
 # To sync from genesis, uncomment the next line and skip the State Sync Setup section.
 # git checkout v6.0.4
 make install
@@ -235,7 +236,7 @@ There are three ways you can update the binary:
 
 The instructions below are for option 2. For more information on auto-download with Cosmovisor, see the relevant [documentation](https://github.com/cosmos/cosmos-sdk/tree/main/tools/cosmovisor#auto-download) in the Cosmos SDK repo.
 
-If the environment variable `DAEMON_ALLOW_DOWNLOAD_BINARIES` is set to `false`, Cosmovisor will look for the new binary in a folder that matches the name of the upgrade specified in the software upgrade proposal. For the `v12` upgrade, the expected folder structure would look as follows:
+If the environment variable `DAEMON_ALLOW_DOWNLOAD_BINARIES` is set to `false`, Cosmovisor will look for the new binary in a folder that matches the name of the upgrade specified in the software upgrade proposal. For the `v13` upgrade, the expected folder structure would look as follows:
 
 ```shell
 .gaia
@@ -245,25 +246,25 @@ If the environment variable `DAEMON_ALLOW_DOWNLOAD_BINARIES` is set to `false`, 
     │   └── bin
     |       └── gaiad
     └── upgrades
-        └── v12
+        └── v13
             └── bin
                 └── gaiad
 ```
 
 Prepare the upgrade directory
 ```
-mkdir -p ~/.gaia/cosmovisor/upgrades/v12/bin
+mkdir -p ~/.gaia/cosmovisor/upgrades/v13/bin
 ```
 
 Download and install the new binary version.
 ```
 cd $HOME/gaia
 git pull
-git checkout v12.0.0-rc0
+git checkout v13.0.0-rc0
 make install
 
-# Copy the new binary to the v12 upgrade directory
-cp ~/go/bin/gaiad ~/.gaia/cosmovisor/upgrades/v12/bin/gaiad
+# Copy the new binary to the v13 upgrade directory
+cp ~/go/bin/gaiad ~/.gaia/cosmovisor/upgrades/v13/bin/gaiad
 ```
 
 When the upgrade height is reached, Cosmovisor will stop the gaiad binary, copy the new binary to the `current/bin` folder and restart. After a few minutes, the node should start syncing blocks using the new binary.

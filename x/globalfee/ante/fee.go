@@ -90,7 +90,7 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	}
 
 	if allBypassMsgs && !doesNotExceedMaxGasUsage {
-		return next(ctx.WithValue(feeabstypes.ByPassExceedMaxGasUsageKey{}, true), tx, simulate)
+		return next(ctx.WithMinGasPrices(minGasPrices).WithValue(feeabstypes.ByPassExceedMaxGasUsageKey{}, true), tx, simulate)
 	}
 
 	return next(ctx.WithMinGasPrices(minGasPrices), tx, simulate)

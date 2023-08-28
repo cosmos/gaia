@@ -844,8 +844,6 @@ github.com/openzipkin/zipkin-go v0.2.2/go.mod h1:NaW6tEwdmWMaCDZzg8sh+IBNOxHMPnh
 github.com/ory/dockertest v3.3.5+incompatible h1:iLLK6SQwIhcbrG783Dghaaa3WPzGc+4Emza6EbVUUGA=
 github.com/ory/dockertest/v3 v3.10.0 h1:4K3z2VMe8Woe++invjaTB7VRyQXQy5UY+loujO4aNE4=
 github.com/ory/dockertest/v3 v3.10.0/go.mod h1:nr57ZbRWMqfsdGdFNLHz5jjNdDb7VVFnzAeW1n5N1Lg=
-github.com/osmosis-labs/fee-abstraction/v4 v4.0.0-20230827140547-bdf2644b674e h1:SDGVyb1EIxlL8upzw2PMnoxYPAoloG4XJsG/NILBamo=
-github.com/osmosis-labs/fee-abstraction/v4 v4.0.0-20230827140547-bdf2644b674e/go.mod h1:tib4FfJ3A59d2MAbhZU2k2PWntwv5C1CsHkWu1TrkUY=
 github.com/osmosis-labs/fee-abstraction/v4 v4.0.0-20230827145831-e85e34285517 h1:iEZWoshdx6GPUtLjRtnhxmqCm8/DEYKeNWoIhVh5Gz4=
 github.com/osmosis-labs/fee-abstraction/v4 v4.0.0-20230827145831-e85e34285517/go.mod h1:tib4FfJ3A59d2MAbhZU2k2PWntwv5C1CsHkWu1TrkUY=
 github.com/otiai10/copy v1.6.0 h1:IinKAryFFuPONZ7cm6T6E2QX/vcJwSnlaA5lfoaXIiQ=

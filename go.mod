@@ -1,10 +1,10 @@
-module github.com/cosmos/gaia/v12
+module github.com/cosmos/gaia/v13
 
 go 1.20
 
 require (
 	cosmossdk.io/errors v1.0.0
-	cosmossdk.io/math v1.0.1
+	cosmossdk.io/math v1.1.2
 	github.com/cosmos/cosmos-sdk v0.45.16-ics
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/gogoproto v1.4.3

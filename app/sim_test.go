@@ -17,10 +17,10 @@ import (
 	simulation2 "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
-	gaia "github.com/cosmos/gaia/v12/app"
-	"github.com/cosmos/gaia/v12/app/helpers"
-	"github.com/cosmos/gaia/v12/app/params"
-	"github.com/cosmos/gaia/v12/app/sim"
+	gaia "github.com/cosmos/gaia/v13/app"
+	"github.com/cosmos/gaia/v13/app/helpers"
+	"github.com/cosmos/gaia/v13/app/params"
+	"github.com/cosmos/gaia/v13/app/sim"
 )
 
 func init() {

@@ -146,31 +146,33 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version: 1.20.x
-      - name: Install GaiaV11
+      # the old gaiad binary version is hardcoded, need to be updated each major release.
+      - name: Install Old Gaiad
         run: |
-          git checkout v11.0.0
+          git checkout v12.0.0
           make build
-          cp ./build/gaiad ./build/gaiad11
+          cp ./build/gaiad ./build/gaiadold
           go clean -modcache
         if: env.GIT_DIFF
-      - name: Install GaiaV12
+      - name: Install New Gaiad
         run: |
           git checkout -
           make build
-          cp ./build/gaiad ./build/gaiad12
+          cp ./build/gaiad ./build/gaiadnew
+          go clean -modcache
         if: env.GIT_DIFF
       - name: Install Cosmovisor
         run: |
           go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@latest
         if: env.GIT_DIFF
-      - name: Start GaiaV11
+      - name: Start Old Gaiad Binary
         run: |
           go env GOPATH
-          ./contrib/scripts/upgrade_test_scripts/v12/run_gaia_v11.sh
+          ./contrib/scripts/upgrade_test_scripts/run_gaia.sh
         if: env.GIT_DIFF
       - name: Submit Upgrade Commands
         run: |
-          ./contrib/scripts/upgrade_test_scripts/v12/run_upgrade_commands_v12.sh 15
+          ./contrib/scripts/upgrade_test_scripts/run_upgrade_commands.sh 15
         if: env.GIT_DIFF
       - name: Check for successful upgrade
         run: |

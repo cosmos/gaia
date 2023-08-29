@@ -3,7 +3,7 @@ package v12
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/cosmos/gaia/v12/app/upgrades"
+	"github.com/cosmos/gaia/v13/app/upgrades"
 )
 
 const (

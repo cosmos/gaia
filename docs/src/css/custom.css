@@ -38,7 +38,7 @@
   --aa-primary-color-rgb: 0, 0, 0;
 
   @media screen and (prefers-reduced-motion) {
-    transition: ;
+    transition: none;
   }
   --ifm-menu-color-background-active: none;
   --ifm-menu-color-background-hover: none;
@@ -390,8 +390,8 @@ html {
 
   /* FOOTER */
   .footer {
-    background-color: var(--ifm-background-color);
-    @apply border-t border-t-docusaurusColorBorder pt-10 mb-10;
+    background-color: var(--ifm-font-color-base);
+    @apply border-t border-t-docusaurusColorBorder pt-10;
     &__link-item {
       @apply hover:underline;
     }

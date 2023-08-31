@@ -17,15 +17,3 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
-
-      - name: Install and Build 🔧
-        run: |
-          apk add rsync
-          make build-docs LEDGER_ENABLED=false
-
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@v4.4.0
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: ~/output

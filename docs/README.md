@@ -1,40 +1,41 @@
-<!--
-parent:
-  order: false
-layout: home
--->
+# Website
 
-# Cosmos Hub Documentation
+This website is built using [Docusaurus 2](https://docusaurus.io/), a modern static website generator.
 
-Welcome to the documentation of the **Cosmos Hub application: `gaia`**.
+### Installation
 
-## What is Gaia?
+```
+$ yarn
+```
 
-- [Intro to the `gaia` software](./getting-started/what-is-gaia.md)
-- [Interacting with the `gaiad` binary](./hub-tutorials/gaiad.md)
+### Local Development
 
-## Join the Cosmos Hub Mainnet
+```
+$ yarn start
+```
 
-- [Install the `gaia` application](./getting-started/installation.md)
-- [Set up a full node and join the mainnet](./hub-tutorials/join-mainnet.md)
-- [Upgrade to a validator node](./validators/validator-setup.md)
+This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
 
-## Join the Cosmos Hub Public Testnet
+### Build
 
-- [Join the testnet](./hub-tutorials/join-testnet.md)
+```
+$ yarn build
+```
 
-## Setup Your Own `gaia` Testnet
+This command generates static content into the `build` directory and can be served using any static contents hosting service.
 
-- [Setup your own `gaia` testnet](https://github.com/cosmos/testnets/tree/master/local/previous-local-testnets/theta)
+### Deployment
 
-## Additional Resources
+Using SSH:
 
-- [Validator Resources](./validators/README.md): Contains documentation for `gaia` validators.
-- [Delegator Resources](./delegators/README.md): Contains documentation for delegators.
-- [Other Resources](./resources/README.md): Contains documentation on `gaiad`, genesis file, service providers, ledger wallets, ...
-- [Cosmos Hub Archives](./resources/archives.md): State archives of past iteration of the Cosmos Hub.
+```
+$ USE_SSH=true yarn deploy
+```
 
-# Contribute
+Not using SSH:
 
-See [this file](./DOCS_README.md) for details of the build process and
-considerations when making changes.
+```
+$ GIT_USER=<Your GitHub username> yarn deploy
+```
+
+If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.

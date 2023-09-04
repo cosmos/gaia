@@ -4,13 +4,21 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "0 0 * * *"
+  push:
+    branches: [ main, rc/v*, release/v* ]
 
 jobs:
-
-  run-tests:
-    uses: cosmos/gaia/.github/workflows/test.yml@main
-
-  run-simulations:
-    uses: cosmos/gaia/.github/workflows/sims.yml@main
+  matrix-tests:
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]       # We can add custom runners - https://github.com/actions/runner
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: run-tests
+        uses: cosmos/gaia/.github/workflows/test.yml@main
+      - name: run-simulations
+        uses: cosmos/gaia/.github/workflows/sims.yml@main
 
     

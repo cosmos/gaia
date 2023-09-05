@@ -5,7 +5,7 @@ const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 // const lastVersion = "v11.0.0";
-const googleTrackingId = "G-EB7MEE3TJ1";
+const googleTrackingId = 'G-EB7MEE3TJ1';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -47,8 +47,8 @@ const config = {
           // lastVersion: lastVersion,
           versions: {
             current: {
-              path: "main",
-              banner: "unreleased",
+              path: 'main',
+              banner: 'unreleased',
             },
           },
         },
@@ -59,7 +59,7 @@ const config = {
         gtag: {
           trackingID: googleTrackingId,
           anonymizeIP: true,
-        },        
+        },
       }),
     ],
   ],
@@ -81,8 +81,8 @@ const config = {
         logo: {
           alt: 'Cosmos Hub Logo',
           src: 'img/hub.svg',
-          href: "https://hub.cosmos.network",
-          target: "_self",
+          href: 'https://hub.cosmos.network',
+          target: '_self',
         },
         items: [
           {
@@ -116,16 +116,16 @@ const config = {
             position: 'right',
           },
           {
-            href: "https://discord.gg/cosmosnetwork",
+            href: 'https://discord.gg/cosmosnetwork',
             html: `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 800 800" xml:space="preserve">
             <g transform="matrix(3.125 0 0 3.125 400 400)" id="CDqljScowryMcjUf1D4XT"  >
             <path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(88,101,242); fill-rule: nonzero; opacity: 1;"  transform=" translate(-127.9999996983, -99.084465)" d="M 216.856339 16.5966031 C 200.285002 8.84328665 182.566144 3.2084988 164.041564 0 C 161.766523 4.11318106 159.108624 9.64549908 157.276099 14.0464379 C 137.583995 11.0849896 118.072967 11.0849896 98.7430163 14.0464379 C 96.9108417 9.64549908 94.1925838 4.11318106 91.8971895 0 C 73.3526068 3.2084988 55.6133949 8.86399117 39.0420583 16.6376612 C 5.61752293 67.146514 -3.4433191 116.400813 1.08711069 164.955721 C 23.2560196 181.510915 44.7403634 191.567697 65.8621325 198.148576 C 71.0772151 190.971126 75.7283628 183.341335 79.7352139 175.300261 C 72.104019 172.400575 64.7949724 168.822202 57.8887866 164.667963 C 59.7209612 163.310589 61.5131304 161.891452 63.2445898 160.431257 C 105.36741 180.133187 151.134928 180.133187 192.754523 160.431257 C 194.506336 161.891452 196.298154 163.310589 198.110326 164.667963 C 191.183787 168.842556 183.854737 172.420929 176.223542 175.320965 C 180.230393 183.341335 184.861538 190.991831 190.096624 198.16893 C 211.238746 191.588051 232.743023 181.531619 254.911949 164.955721 C 260.227747 108.668201 245.831087 59.8662432 216.856339 16.5966031 Z M 85.4738752 135.09489 C 72.8290281 135.09489 62.4592217 123.290155 62.4592217 108.914901 C 62.4592217 94.5396472 72.607595 82.7145587 85.4738752 82.7145587 C 98.3405064 82.7145587 108.709962 94.5189427 108.488529 108.914901 C 108.508531 123.290155 98.3405064 135.09489 85.4738752 135.09489 Z M 170.525237 135.09489 C 157.88039 135.09489 147.510584 123.290155 147.510584 108.914901 C 147.510584 94.5396472 157.658606 82.7145587 170.525237 82.7145587 C 183.391518 82.7145587 193.761324 94.5189427 193.539891 108.914901 C 193.539891 123.290155 183.391518 135.09489 170.525237 135.09489 Z" stroke-linecap="round" />
             </g>
             </svg>`,
-            position: "right",
+            position: 'right',
           },
           {
-            href: "https://forum.cosmos.network/",
+            href: 'https://forum.cosmos.network/',
             html: `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="24" height="24" viewBox="0 0 260 260" xml:space="preserve">
             <g transform="matrix(1 0 0 1 130 130)" id="FF-RWAdDVVQKW2xixfcQq" clip-path="url(#CLIPPATH_4)"  >
             <clipPath id="CLIPPATH_4" >
@@ -134,34 +134,34 @@ const config = {
             <path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(0,0,0); fill-rule: evenodd; opacity: 1;"  transform=" translate(-130, -129.8204885559)" d="M 161.69 76.4992 L 77.7047 160.372 C 76.6218 158.273 75.6441 156.087 74.7683 153.819 C 71.8353 146.198 70.3688 138.113 70.3688 129.573 C 70.3688 121.027 71.8353 112.945 74.7683 105.324 C 77.7047 97.7003 81.7716 91.0864 86.9723 85.4725 C 92.1729 79.8621 98.4226 75.4245 105.718 72.1566 C 113.016 68.892 121.024 67.258 129.745 67.258 C 138.47 67.258 146.522 68.9326 153.899 72.2854 C 156.642 73.5295 159.239 74.933 161.69 76.4992 Z M 154.279 187.488 C 146.98 190.756 138.972 192.387 130.251 192.387 C 121.527 192.387 113.475 190.712 106.094 187.363 C 103.355 186.115 100.758 184.712 98.3104 183.142 L 182.292 99.2765 C 183.375 101.372 184.353 103.555 185.228 105.826 C 188.161 113.447 189.628 121.532 189.628 130.075 C 189.628 138.618 188.161 146.699 185.228 154.324 C 182.292 161.944 178.225 168.558 173.024 174.169 C 167.824 179.779 161.577 184.22 154.279 187.488 Z M 166.985 213.493 C 178.225 208.635 187.954 202.062 196.173 193.767 C 204.391 185.478 210.763 175.803 215.292 164.748 C 219.824 153.693 222.088 141.967 222.088 129.573 C 222.088 117.176 219.824 105.45 215.292 94.3916 C 212.607 87.8353 209.3 81.7808 205.376 76.2245 L 260 21.6758 L 238.294 -0.0000228882 L 183.504 54.7149 C 178.585 51.3655 173.245 48.4705 167.488 46.0262 C 156.248 41.2531 143.837 38.8631 130.251 38.8631 C 116.662 38.8631 104.251 41.2938 93.0114 46.1517 C 81.7715 51.0096 72.0423 57.5828 63.8237 65.8748 C 55.6052 74.1668 49.2299 83.8419 44.7014 94.8967 C 40.1729 105.952 37.9086 117.678 37.9086 130.075 C 37.9086 142.469 40.1729 154.192 44.7014 165.25 C 47.39 171.809 50.6964 177.864 54.6207 183.424 L 0 237.966 L 21.7057 259.641 L 76.4928 204.93 C 81.4117 208.279 86.7515 211.174 92.509 213.619 C 103.749 218.392 116.16 220.778 129.745 220.778 C 143.334 220.778 155.745 218.348 166.985 213.493 L 166.985 213.493 Z" stroke-linecap="round" />
             </g>
             </svg>`,
-            position: "right",
+            position: 'right',
           },
           {
-            href: "https://github.com/cosmos/gaia",
+            href: 'https://github.com/cosmos/gaia',
             html: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="github-icon">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M12 0.300049C5.4 0.300049 0 5.70005 0 12.3001C0 17.6001 3.4 22.1001 8.2 23.7001C8.8 23.8001 9 23.4001 9 23.1001C9 22.8001 9 22.1001 9 21.1001C5.7 21.8001 5 19.5001 5 19.5001C4.5 18.1001 3.7 17.7001 3.7 17.7001C2.5 17.0001 3.7 17.0001 3.7 17.0001C4.9 17.1001 5.5 18.2001 5.5 18.2001C6.6 20.0001 8.3 19.5001 9 19.2001C9.1 18.4001 9.4 17.9001 9.8 17.6001C7.1 17.3001 4.3 16.3001 4.3 11.7001C4.3 10.4001 4.8 9.30005 5.5 8.50005C5.5 8.10005 5 6.90005 5.7 5.30005C5.7 5.30005 6.7 5.00005 9 6.50005C10 6.20005 11 6.10005 12 6.10005C13 6.10005 14 6.20005 15 6.50005C17.3 4.90005 18.3 5.30005 18.3 5.30005C19 7.00005 18.5 8.20005 18.4 8.50005C19.2 9.30005 19.6 10.4001 19.6 11.7001C19.6 16.3001 16.8 17.3001 14.1 17.6001C14.5 18.0001 14.9 18.7001 14.9 19.8001C14.9 21.4001 14.9 22.7001 14.9 23.1001C14.9 23.4001 15.1 23.8001 15.7 23.7001C20.5 22.1001 23.9 17.6001 23.9 12.3001C24 5.70005 18.6 0.300049 12 0.300049Z" fill="currentColor"/>
             </svg>
             `,
-            position: "right",
+            position: 'right',
           },
           {
-            type: "docsVersionDropdown",
-            position: "left",
+            type: 'docsVersionDropdown',
+            position: 'left',
             dropdownActiveClassDisabled: true,
             // versions not yet migrated to docusaurus
             dropdownItemsAfter: [
               {
-                href: "https://hub.cosmos.network/v11/",
-                label: "v11",
-                target: "_self",
+                href: 'https://hub.cosmos.network/v11/',
+                label: 'v11',
+                target: '_self',
               },
               {
-                href: "https://hub.cosmos.network/v10/",
-                label: "v10",
-                target: "_self",
+                href: 'https://hub.cosmos.network/v10/',
+                label: 'v10',
+                target: '_self',
               },
             ],
-          },          
+          },
         ],
       },
       footer: {
@@ -173,13 +173,13 @@ const config = {
                 html: `<a href="https://cosmos.network"><img src="/img/logo-bw-inverse.svg" alt="Cosmos Logo"></a>`,
               },
             ],
-          },          
+          },
           {
             title: 'Documentation',
             items: [
               {
                 label: 'Cosmos SDK',
-                href: 'https://docs.cosmos.network/'
+                href: 'https://docs.cosmos.network/',
               },
               {
                 label: 'CometBFT',
@@ -193,14 +193,14 @@ const config = {
                 label: 'IBC Go',
                 href: 'https://ibc.cosmos.network/',
               },
-            ]
+            ],
           },
           {
             title: 'Community',
             items: [
               {
                 label: 'Blog',
-                href: 'https://blog.cosmos.network/'
+                href: 'https://blog.cosmos.network/',
               },
               {
                 label: 'Forum',
@@ -234,7 +234,7 @@ const config = {
               {
                 label: 'Telegram',
                 href: 'https://t.me/cosmosproject',
-              },              
+              },
             ],
           },
         ],
@@ -243,39 +243,38 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
-        additionalLanguages: ["protobuf", "go-module"], // https://prismjs.com/#supported-languages
+        additionalLanguages: ['protobuf', 'go-module'], // https://prismjs.com/#supported-languages
       },
       algolia: {
-        appId: "QLS2QSP47E",
-        apiKey: "4d9feeb481e3cfef8f91bbc63e090042",
-        indexName: "cosmos_network",
+        appId: 'QLS2QSP47E',
+        apiKey: '4d9feeb481e3cfef8f91bbc63e090042',
+        indexName: 'cosmos_network',
         contextualSearch: false,
       },
     }),
-    themes: ["@you54f/theme-github-codeblock"],
-    plugins: [
-      async function myPlugin(context, options) {
-        return {
-          name: "docusaurus-tailwindcss",
-          configurePostCss(postcssOptions) {
-            postcssOptions.plugins.push(require("postcss-import"));
-            postcssOptions.plugins.push(require("tailwindcss/nesting"));
-            postcssOptions.plugins.push(require("tailwindcss"));
-            postcssOptions.plugins.push(require("autoprefixer"));
-            return postcssOptions;
-          },
-        };
-      },
-      [
-        "@docusaurus/plugin-client-redirects",
-        {
-          fromExtensions: ["html"],
-          toExtensions: ["html"],
-          redirects: [
-          ],
+  themes: ['@you54f/theme-github-codeblock'],
+  plugins: [
+    async function myPlugin(context, options) {
+      return {
+        name: 'docusaurus-tailwindcss',
+        configurePostCss(postcssOptions) {
+          postcssOptions.plugins.push(require('postcss-import'));
+          postcssOptions.plugins.push(require('tailwindcss/nesting'));
+          postcssOptions.plugins.push(require('tailwindcss'));
+          postcssOptions.plugins.push(require('autoprefixer'));
+          return postcssOptions;
         },
-      ],
-    ],    
+      };
+    },
+    [
+      '@docusaurus/plugin-client-redirects',
+      {
+        fromExtensions: ['html'],
+        toExtensions: ['html'],
+        redirects: [],
+      },
+    ],
+  ],
 };
 
 module.exports = config;

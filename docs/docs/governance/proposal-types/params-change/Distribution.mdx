@@ -6,7 +6,7 @@ import { currentParams } from '@site/docs/governance/current-parameters.js';
 
 The `distribution` module is responsible for distributing staking rewards between validators, delegators, and the Community Pool. It has the following parameters:
 
-<Table data={currentParams.distribution} />
+<KeyValueTable data={currentParams.distribution} />
 
 The `distribution` module enables a simple distribution mechanism that passively distributes rewards between validators and delegators. Collected rewards are pooled globally and divided out passively to validators and delegators. Each validator has the opportunity to charge commission to the delegators on the rewards collected on behalf of the delegators. Fees are collected directly into a global reward pool and validator proposer-reward pool.
 

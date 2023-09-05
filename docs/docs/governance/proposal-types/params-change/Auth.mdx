@@ -6,7 +6,7 @@ import { currentParams } from '@site/docs/governance/current-parameters.js';
 
 The `auth` module is responsible for authenticating accounts and transactions. It has the following parameters:
 
-<Table data={currentParams.auth} />
+<KeyValueTable data={currentParams.auth} />
 
 The `auth` module is responsible for specifying the base transaction and account types for an application, since the SDK itself is agnostic to these particulars. It contains the ante handler, where all basic transaction validity checks (signatures, nonces, auxiliary fields) are performed, and exposes the account keeper, which allows other modules to read, write, and modify accounts.
 

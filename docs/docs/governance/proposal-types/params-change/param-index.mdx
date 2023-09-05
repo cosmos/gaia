@@ -2,7 +2,7 @@
 order: 2
 ---
 
-import { Table } from '@site/src/js/Table';
+import { KeyValueTable } from '@site/src/js/KeyValueTable';
 import { Var } from '@site/src/js/Var';
 import { currentParams } from '@site/docs/governance/current-parameters.js';
 
@@ -21,21 +21,30 @@ For more information on specific modules, refer to the [Cosmos SDK documentation
 ## Current subspaces, keys, and values
 
 <div
-  children={Object.entries(currentParams).map(([key, value]) => (
-    <section
-      className="space-y-6"
-      id={key}
-      key={key}
-    >
-      <h2>
-        <Var children={key} /> subspace
-      </h2>
-      <Table data={value} />
-      <p>
-        Read more about the governance implications of the{' '}
-        <a href={`${key}.html`}>{key} subspace here.</a>
-      </p>
-    </section>
-  ))}
+  children={Object.entries(currentParams).map(
+    ([subspaceName, subspaceData]) => (
+      <section
+        className="space-y-6"
+        id={subspaceName}
+        key={subspaceName}
+      >
+        <h2>
+          <Var children={subspaceName} /> subspace
+        </h2>
+        <Table
+          data={subspaceData}
+          renderKey={(key) => (
+            <a href={`${subspaceName}.html#${key.toLowerCase()}`}>
+              <code>{key}</code>
+            </a>
+          )}
+        />
+        <p>
+          Read more about the governance implications of the{' '}
+          <a href={`${subspaceName}.html`}>{subspaceName} subspace here.</a>
+        </p>
+      </section>
+    )
+  )}
   className="flex flex-col gap-8"
 />

@@ -2,11 +2,11 @@
   A release notes template that should be adapted for every release
     - release: <v*.*.*>
     - release branch: <v*.x>
-    - the last release: <v-last> 
+    - the last release: <v-last>
     - the last release branch: <v-last.x>
 -->
 
-# Gaia <v*.*.*>  Release Notes 
+# Gaia <v*.*.*>  Release Notes
 
 ## 📝 Changelog
 

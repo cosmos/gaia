@@ -115,7 +115,7 @@ const config = {
               },
               {
                 href: 'https://forum.cosmos.network/',
-                html: '<i class="fa-fw fa-regular fa-comment-code"></i> Cosmos Forums',
+                html: '<i class="fa-fw fa-regular fa-comments"></i> Cosmos Forums',
               },
             ],
           },

@@ -14,7 +14,6 @@ require (
 	github.com/golang/protobuf v1.5.3
 	github.com/google/gofuzz v1.2.0
 	github.com/gorilla/mux v1.8.0
-	github.com/gravity-devs/liquidity v1.6.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/ory/dockertest/v3 v3.10.0
 	github.com/rakyll/statik v0.1.7
@@ -189,9 +188,6 @@ replace (
 
 	// use cosmos style protobufs
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-
-	// Liquidity force withdrawal: https://www.mintscan.io/cosmos/proposals/801
-	github.com/gravity-devs/liquidity => github.com/gravity-devs/liquidity v1.6.0-forced-withdrawal
 
 	// Comet
 	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.29

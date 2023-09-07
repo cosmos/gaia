@@ -3,13 +3,6 @@ order: 1
 title: Introduction
 ---
 
-::: warning
-### **v11 Upgrade**
-Cosmos Hub will be upgraded to [v11](https://github.com/cosmos/gaia/releases/tag/v11.0.0) at block height: **16,596,000**
-
-To upgrade from v10 check the [**upgrade guide**](../migration/cosmoshub-4-v11-upgrade.md)
-:::
-
 ![Welcome to the Cosmos Hub](../images/cosmos-hub-image.jpg)
 
 # Introduction

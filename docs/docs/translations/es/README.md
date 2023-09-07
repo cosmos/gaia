@@ -1,5 +1,8 @@
+---
+title: Documentación para el Hub de Cosmos
+---
+
 <!-- markdown-link-check-disable -->
-# Documentación para el Hub de Cosmos
 
 Bienvenido a la documentación de la **aplicación para el Hub de Cosmos: `gaia`**
 

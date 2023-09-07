@@ -1,9 +1,9 @@
-<!--
+---
+title: Únase a la red principal del Cosmos Hub
 order: 3
--->
-<!-- markdown-link-check-disable -->
+---
 
-# Únase a la red principal del Cosmos Hub
+<!-- markdown-link-check-disable -->
 
 ::: tip
 Vea el [repositorio para el lanzamiento](https://github.com/cosmos/launch) para la información de la red principal, incluyendo la versión correcta para el SDK de Cosmos que usar y detalles acerca del archivo génesis.

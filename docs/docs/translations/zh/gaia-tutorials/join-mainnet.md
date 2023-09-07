@@ -1,3 +1,8 @@
+---
+title: 加入主网
+order: 4
+---
+
 <!-- markdown-link-check-disable -->
 ## 加入主网
 

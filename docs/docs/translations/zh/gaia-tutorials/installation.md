@@ -1,3 +1,8 @@
+---
+title: 安装 Gaia
+order: 2
+---
+
 <!-- markdown-link-check-disable -->
 ## 安装 Gaia
 

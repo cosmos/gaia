@@ -1,3 +1,8 @@
+---
+title: 퍼블릭 테스트넷에서 밸리데이터 운영하기
+order: 2
+---
+
 <!-- markdown-link-check-disable -->
 # 퍼블릭 테스트넷에서 밸리데이터 운영하기
 

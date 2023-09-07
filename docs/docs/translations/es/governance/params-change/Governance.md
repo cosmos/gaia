@@ -1,5 +1,8 @@
+---
+title: Módulo `gov`
+---
+
 <!-- markdown-link-check-disable -->
-# Módulo `gov`
 
 El módulo `gov` es responsable de las propuestas de gobierno en cadena y la funcionalidad de la votación. Nótese que [este módulo requiere una forma única de cambiar sus parámetros](https://github.com/cosmos/cosmos-sdk/issues/5800). `gov` está activo en Cosmos Hub 3 y actualmente tiene tres parámetros con seis subkeys que pueden ser modificados por una propuesta de gobernanza:
 

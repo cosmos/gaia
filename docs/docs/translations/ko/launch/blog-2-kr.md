@@ -1,3 +1,8 @@
+---
+title: 코스모스 허브 메인넷의 세 가지 단계
+order: 1
+---
+
 <!-- markdown-link-check-disable -->
 # 코스모스 허브 메인넷의 세 가지 단계
 

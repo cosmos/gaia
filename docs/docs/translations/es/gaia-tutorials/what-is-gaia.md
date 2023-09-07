@@ -1,9 +1,12 @@
-<!--
+---
+title: ¿Qué es Gaia?
 order: 1
+---
+
+
+<!--
 markdown-link-check-disable
 -->
-
-# ¿Qué es Gaia?
 
 `gaia` es el nombre de la aplicación de Cosmos SDK para el Hub de Cosmos. Viene con 2 opciones principales de entrada:
 

@@ -1,9 +1,9 @@
-<!--
+---
+title: Instalación de Gaia
 order: 2
--->
-<!-- markdown-link-check-disable -->
+---
 
-# Instalación de Gaia
+<!-- markdown-link-check-disable -->
 
 Esta guía le explicará como instalar los puntos de entrada `gaiad` y `gaiad` en su sistema. Con esto instalado en su servidor, puede participar en la red principal como un [Full Node](./join-mainnet.md) o como un [Validador](../validators/validator-setup.md).
 

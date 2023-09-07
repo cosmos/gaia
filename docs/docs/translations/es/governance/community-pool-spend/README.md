@@ -1,5 +1,8 @@
+---
+title: Cosmos Hub 3 y la Community Pool
+---
+
 <!-- markdown-link-check-disable -->
-# Cosmos Hub 3 y la Community Pool
 
 La iniciativa Cosmos Hub 3 fue lanzada por parte de la comunidad el 11 de Diciembre de 2019, liberando así la posibilidad de que las personas con tokens puedan votar la aprobación de gastos desde la Community Pool.**Esta documentación es un desarrollo en curso, por favor, de momento no te bases en esta información** [Puedes debatir este desarrollo aquí](https://forum.cosmos.network/t/gwg-community-spend-best-practices/3240).
 

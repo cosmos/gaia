@@ -1,3 +1,8 @@
+---
+title: 코스모스 허브 메인넷의 시작
+order: 1
+---
+
 <!-- markdown-link-check-disable -->
 # 코스모스 허브 메인넷의 시작
 

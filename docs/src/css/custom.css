@@ -461,7 +461,7 @@ html {
       @apply text-[1rem];
     }
     code {
-      @apply border-0 px-3;
+      @apply border-0 px-3 align-baseline font-normal;
     }
     blockquote {
       @apply my-7;

@@ -846,6 +846,8 @@ github.com/ory/dockertest/v3 v3.10.0 h1:4K3z2VMe8Woe++invjaTB7VRyQXQy5UY+loujO4a
 github.com/ory/dockertest/v3 v3.10.0/go.mod h1:nr57ZbRWMqfsdGdFNLHz5jjNdDb7VVFnzAeW1n5N1Lg=
 github.com/osmosis-labs/fee-abstraction/v4 v4.0.0-20230827145831-e85e34285517 h1:iEZWoshdx6GPUtLjRtnhxmqCm8/DEYKeNWoIhVh5Gz4=
 github.com/osmosis-labs/fee-abstraction/v4 v4.0.0-20230827145831-e85e34285517/go.mod h1:tib4FfJ3A59d2MAbhZU2k2PWntwv5C1CsHkWu1TrkUY=
+github.com/osmosis-labs/fee-abstraction/v4 v4.0.0-20230908133936-72dc013241cf h1:LG3T4UTVFY3tq/4YQRAfXaNpxHqIjaQyMUKu77p46Xc=
+github.com/osmosis-labs/fee-abstraction/v4 v4.0.0-20230908133936-72dc013241cf/go.mod h1:tib4FfJ3A59d2MAbhZU2k2PWntwv5C1CsHkWu1TrkUY=
 github.com/otiai10/copy v1.6.0 h1:IinKAryFFuPONZ7cm6T6E2QX/vcJwSnlaA5lfoaXIiQ=
 github.com/oxyno-zeta/gomock-extra-matcher v1.1.0 h1:Yyk5ov0ZPKBXtVEeIWtc4J2XVrHuNoIK+0F2BUJgtsc=
 github.com/oxyno-zeta/gomock-extra-matcher v1.1.0/go.mod h1:UMGTHYEmJ1dRq8LDZ7VTAYO4nqM3GD1UGC3RJEUxEz0=

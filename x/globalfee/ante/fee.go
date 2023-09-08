@@ -86,14 +86,14 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 
 	// If bypass msg, add value to context so feeabs ante can check it
 	if allowedToBypassMinFee {
-		return next(ctx.WithValue(feeabstypes.ByPassMsgKey{}, true), tx, simulate)
+		return next(ctx.WithValue(feeabstypes.ByPassMsgKey{}, true).WithValue(feeabstypes.GlobalFeeKey{}, true), tx, simulate)
 	}
 
 	if allBypassMsgs && !doesNotExceedMaxGasUsage {
-		return next(ctx.WithMinGasPrices(minGasPrices).WithValue(feeabstypes.ByPassExceedMaxGasUsageKey{}, true), tx, simulate)
+		return next(ctx.WithMinGasPrices(minGasPrices).WithValue(feeabstypes.ByPassExceedMaxGasUsageKey{}, true).WithValue(feeabstypes.GlobalFeeKey{}, true), tx, simulate)
 	}
 
-	return next(ctx.WithMinGasPrices(minGasPrices), tx, simulate)
+	return next(ctx.WithMinGasPrices(minGasPrices).WithValue(feeabstypes.GlobalFeeKey{}, true), tx, simulate)
 }
 
 // GetTxGasPrices returns the min-gas-prices for the given FeeTx.

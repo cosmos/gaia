@@ -1,5 +1,9 @@
+---
+title: Cosmos Hub to Launch Mainnet 
+order: 1
+---
+
 <!-- markdown-link-check-disable -->
-# Cosmos Hub to Launch Mainnet
 
 ## Pre-launch Dependencies & How to Safely Claim Your Atoms
 

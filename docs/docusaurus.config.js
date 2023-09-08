@@ -213,7 +213,7 @@ const config = {
             ],
           },
         ],
-        copyright: `This website is maintained by Interchain Foundation/Informal Systems. The contents and opinions of this website are those of Interchain Foundation/Informal Systems.`,
+        copyright: `This website is maintained by Interchain Foundation & Informal Systems. The contents and opinions of this website are those of Interchain Foundation & Informal Systems.`,
       },
       prism: {
         theme: lightCodeTheme,

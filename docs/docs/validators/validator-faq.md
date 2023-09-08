@@ -5,7 +5,8 @@ title: Validator FAQ
 
 # Validator FAQ
 
-::: warning Disclaimer
+:::warning
+### Disclaimer
 This is work in progress. Mechanisms and values are susceptible to change.
 :::
 

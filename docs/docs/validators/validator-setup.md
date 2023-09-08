@@ -5,7 +5,7 @@ title: Running a Validator
 
 # Running a Validator
 
-::: tip
+:::tip
 We suggest you try out joining a public testnet first. Information on how to join the most recent testnet can be found [here](../hub-tutorials/join-testnet.md).
 :::
 
@@ -17,7 +17,7 @@ If you plan to use a KMS (key management system), you should go through these st
 
 [Validators](./overview.md) are responsible for committing new blocks to the blockchain through an automated voting process. A validator's stake is slashed if they become unavailable or sign blocks at the same height. Because there is a chance of slashing, we suggest you read about [Sentry Node Architecture](./validator-faq.md#how-can-validators-protect-themselves-from-denial-of-service-attacks) to protect your node from DDOS attacks and to ensure high-availability.
 
-::: danger Warning
+:::warning
 If you want to become a validator for the Hub's `mainnet`, you should learn more about [security](./security.md).
 :::
 
@@ -33,7 +33,7 @@ gaiad tendermint show-validator
 
 To create your validator, just use the following command:
 
-::: warning
+:::warning
 Don't use more `uatom` than you have!
 :::
 
@@ -51,10 +51,9 @@ gaiad tx staking create-validator \
   --from=<key_name>
 ```
 
-::: tip
+:::tip
 When specifying commission parameters, the `commission-max-change-rate` is used to measure % _point_ change over the `commission-rate`. E.g. 1% to 2% is a 100% rate increase, but only 1 percentage point.
 :::
-
 
 It's possible that you won't have enough ATOM to be part of the active set of validators in the beginning. Users are able to delegate to inactive validators (those outside of the active set) using the [Keplr web app](https://wallet.keplr.app/#/cosmoshub/stake?tab=inactive-validators). You can confirm that you are in the validator set by using a third party explorer like [Mintscan](https://www.mintscan.io/cosmos/validators).
 
@@ -79,7 +78,7 @@ gaiad tx staking edit-validator
   --commission-rate="0.10"
 ```
 
-::: danger Warning
+:::warning
 Please note that some parameters such as `commission-max-rate` and `commission-max-change-rate` cannot be changed once your validator is up and running.
 :::
 

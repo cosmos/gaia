@@ -1,8 +1,7 @@
 <!--
+title: KMS - Key Management System
 order: 5
 -->
-
-# KMS - Key Management System
 
 [Tendermint KMS](https://github.com/iqlusioninc/tmkms) is a key management service that allows separating key management from Tendermint nodes. In addition it provides other advantages such as:
 
@@ -16,9 +15,9 @@ It is recommended that the KMS service runs in a separate physical hosts.
 
 Detailed build instructions can be found [here](https://github.com/iqlusioninc/tmkms#installation).
 
-::: tip
+<div class="theme-doc-version-banner info margin-bottom--md" role="info">
 When compiling the KMS, ensure you have enabled the applicable features:
-:::
+</div>
 
 | Backend               | Recommended Command line              |
 |-----------------------|---------------------------------------|

@@ -1,3 +1,8 @@
+---
+title: 加入公共测试网
+order: 3
+---
+
 <!-- markdown-link-check-disable -->
 # 加入公共测试网
 

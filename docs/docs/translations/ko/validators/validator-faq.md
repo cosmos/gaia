@@ -1,3 +1,8 @@
+---
+title: 검증인 FAQ
+order: 4
+---
+
 <!-- markdown-link-check-disable -->
 # 검증인 FAQ
 

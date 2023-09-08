@@ -1,3 +1,8 @@
+---
+title: 委托人指南 (CLI)
+order: 1
+---
+
 <!-- markdown-link-check-disable -->
 # 委托人指南 (CLI)
 

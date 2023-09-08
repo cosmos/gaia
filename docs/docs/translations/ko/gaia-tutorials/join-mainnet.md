@@ -1,3 +1,8 @@
+---
+title: 최신 퍼블릭 테스트넷에 참가하기
+order: 4
+---
+
 <!-- markdown-link-check-disable -->
 # 최신 퍼블릭 테스트넷에 참가하기
 

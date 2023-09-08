@@ -1,3 +1,8 @@
+---
+title: Gaia 제네시스 상태
+order: 2
+---
+
 <!-- markdown-link-check-disable -->
 # Gaia 제네시스 상태
 

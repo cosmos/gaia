@@ -1,3 +1,8 @@
+---
+title: Gaia는 무엇인가요?
+order: 2
+---
+
 <!-- markdown-link-check-disable -->
 # Gaia는 무엇인가요?
 

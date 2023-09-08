@@ -1,3 +1,8 @@
+---
+title: Cosmos主网上线三部曲
+order: 2
+---
+
 <!-- markdown-link-check-disable -->
 # **Cosmos主网上线三部曲**
 

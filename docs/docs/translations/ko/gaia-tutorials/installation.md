@@ -1,3 +1,8 @@
+---
+title: Gaia 설치하기
+order: 1
+---
+
 <!-- markdown-link-check-disable -->
 ## Gaia 설치하기
 

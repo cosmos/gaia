@@ -1,3 +1,8 @@
+---
+title: 노드 업그레이드 하기
+order: 4
+---
+
 <!-- markdown-link-check-disable -->
 # 노드 업그레이드 하기
 

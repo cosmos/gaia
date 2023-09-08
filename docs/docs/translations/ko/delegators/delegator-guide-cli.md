@@ -1,3 +1,8 @@
+---
+title: 위임자 가이드라인 (CLI)
+order: 1
+---
+
 <!-- markdown-link-check-disable -->
 # 위임자 가이드라인 (CLI)
 

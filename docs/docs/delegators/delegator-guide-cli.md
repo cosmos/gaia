@@ -9,7 +9,7 @@ This document contains all the necessary information for delegators to interact 
 
 It also contains instructions on how to manage accounts, restore accounts from the fundraiser and use a ledger nano device.
 
-::: danger
+:::warning
 **Very Important**: Please assure that you follow the steps described hereinafter
 carefully, as negligence in this significant process could lead to an indefinite
 loss of your Atoms. Therefore, read through the following instructions in their
@@ -53,7 +53,7 @@ Please exercise extreme caution!
 
 `gaiad`: This is the command-line interface to interact with a `gaiad` full-node.
 
-::: warning
+:::warning
 **Please check that you download the latest stable release of `gaiad` that is available**
 :::
 
@@ -62,7 +62,7 @@ Not available yet.
 
 [**Install from source**](../getting-started/installation.md)
 
-::: tip
+:::tip
 `gaiad` is used from a terminal. To open the terminal, follow these steps:
 
 - **Windows**: `Start` > `All Programs` > `Accessories` > `Command Prompt`
@@ -109,7 +109,7 @@ At the core of every Cosmos account, there is a seed, which takes the form of a 
 
 The funds stored in an account are controlled by the private key. This private key is generated using a one-way function from the mnemonic. If you lose the private key, you can retrieve it using the mnemonic. However, if you lose the mnemonic, you will lose access to all the derived private keys. Likewise, if someone gains access to your mnemonic, they gain access to all the associated accounts.
 
-::: danger
+:::warning
 **Do not lose or share your 12 words with anyone. To prevent theft or loss of funds, it is best to ensure that you keep multiple copies of your mnemonic, and store it in a safe, secure place and that only you know how to access. If someone is able to gain access to your mnemonic, they will be able to gain access to your private keys and control the accounts associated with them.**
 :::
 
@@ -117,7 +117,7 @@ The address is a public string with a human-readable prefix (e.g. `cosmos10snjt8
 
 ### Restoring an Account from the Fundraiser
 
-::: tip
+:::tip
 *NOTE: This section only concerns fundraiser participants*
 :::
 
@@ -127,7 +127,7 @@ If you participated in the fundraiser, you should be in possession of a 12-words
 
 At the core of a ledger device, there is a mnemonic used to generate accounts on multiple blockchains (including the Cosmos Hub). Usually, you will create a new mnemonic when you initialize your ledger device. However, it is possible to tell the ledger device to use a mnemonic provided by the user instead. Let us go ahead and see how you can input the mnemonic you obtained during the fundraiser as the seed of your ledger device.
 
-::: warning
+:::warning
 *NOTE: To do this, **it is preferable to use a brand new ledger device.**. Indeed, there can be only one mnemonic per ledger device. If, however, you want to use a ledger that is already initialized with a seed, you can reset it by going in `Settings`>`Device`>`Reset All`. **Please note that this will wipe out the seed currently stored on the device. If you have not properly secured the associated mnemonic, you could lose your funds!!!***
 :::
 
@@ -146,7 +146,7 @@ Next, click [here](#using-a-ledger-device) to learn how to generate an account.
 
 #### On a Computer
 
-::: warning
+:::warning
 **NOTE: It is more secure to perform this action on an offline computer**
 :::
 
@@ -164,7 +164,7 @@ Each time you want to send a transaction, you will need to unlock your system's 
 If you lose access to your credentials storage, you can always recover the private key with the
 mnemonic.
 
-::: tip
+:::tip
 **You may not be prompted for password each time you send a transaction since most operating systems
 unlock user's credentials store upon login by default. If you want to change your credentials
 store security policies please refer to your operating system manual.**
@@ -176,7 +176,7 @@ To create an account, you just need to have `gaiad` installed. Before creating i
 
 #### Using a Ledger Device
 
-::: warning
+:::warning
 **Only use Ledger devices that you bought factory new or trust fully**
 :::
 
@@ -193,7 +193,7 @@ Then, to create an account, use the following command:
 gaiad keys add <yourAccountName> --ledger
 ```
 
-::: warning
+:::warning
 **This command will only work while the Ledger is plugged in and unlocked**
 :::
 
@@ -202,7 +202,7 @@ gaiad keys add <yourAccountName> --ledger
 
 #### Using a Computer
 
-::: warning
+:::warning
 **NOTE: It is more secure to perform this action on an offline computer**
 :::
 
@@ -218,17 +218,17 @@ Each time you want to send a transaction, you will need to unlock your system's 
 If you lose access to your credentials storage, you can always recover the private key with the
 mnemonic.
 
-::: tip
+:::tip
 **You may not be prompted for password each time you send a transaction since most operating systems
 unlock user's credentials store upon login by default. If you want to change your credentials
 store security policies please refer to your operating system manual.**
 :::
 
-::: danger
+:::warning
 **Do not lose or share your 12 words with anyone. To prevent theft or loss of funds, it is best to ensure that you keep multiple copies of your mnemonic, and store it in a safe, secure place and that only you know how to access. If someone is able to gain access to your mnemonic, they will be able to gain access to your private keys and control the accounts associated with them.**
 :::
 
-::: warning
+:::warning
 After you have secured your mnemonic (triple check!), you can delete bash history to ensure no one can retrieve it:
 
 ```bash
@@ -253,7 +253,7 @@ This command will prompt you to input a passphrase as well as your mnemonic. Cha
 
 In order to query the state and send transactions, you need a way to access the network. To do so, you can either run your own full-node, or connect to someone else's.
 
-::: danger
+:::warning
 **NOTE: Do not share your mnemonic (12 or 24 words) with anyone. The only person who should ever need to know it is you. This is especially important if you are ever approached via email or direct message by someone requesting that you share your mnemonic for any kind of blockchain services or support. No one from Cosmos, the Tendermint team or the Interchain Foundation will ever send an email that asks for you to share any kind of account credentials or your mnemonic."**.
 :::
 
@@ -271,11 +271,11 @@ In order to connect to the full-node, you will need an address of the following 
 
 ## Setting Up `gaiad`
 
-::: tip
+:::tip
 **Before setting up `gaiad`, make sure you have set up a way to [access the Cosmos Hub network](#accessing-the-cosmos-hub-network)**
 :::
 
-::: warning
+:::warning
 **Please check that you are always using the latest stable release of `gaiad`**
 :::
 
@@ -307,7 +307,7 @@ gaiad config chain-id cosmoshub-2
 
 ## Querying the State
 
-::: tip
+:::tip
 **Before you can bond atoms and withdraw rewards, you need to [set up `gaiad`](#setting-up-gaiad)**
 :::
 
@@ -352,7 +352,7 @@ For each command, you can use the `-h` or `--help` flag to get more information.
 
 ## Sending Transactions
 
-::: warning
+:::warning
 On Cosmos Hub mainnet, the accepted denom is `uatom`, where `1atom = 1,000,000uatom`
 :::
 
@@ -370,17 +370,17 @@ The `gasPrice` is the price of each unit of `gas`. Each validator sets a `min-ga
 
 The transaction `fees` are the product of `gas` and `gasPrice`. As a user, you have to input 2 out of 3. The higher the `gasPrice`/`fees`, the higher the chance that your transaction will get included in a block.
 
-::: tip
+:::tip
 For mainnet, the recommended `gas-prices` is `0.0025uatom`.
 :::
 
 ### Sending Tokens
 
-::: tip
+:::tip
 **Before you can bond atoms and withdraw rewards, you need to [set up `gaiad`](#setting-up-gaiad) and [create an account](#creating-an-account)**
 :::
 
-::: warning
+:::warning
 **Note: These commands need to be run on an online computer. It is more secure to perform them commands using a Ledger Nano S device. For the offline procedure, click [here](#signing-transactions-from-an-offline-computer).**
 :::
 
@@ -394,15 +394,15 @@ gaiad tx bank send [from_key_or_address] [to_address] [amount] [flags]
 
 ### Bonding Atoms and Withdrawing Rewards
 
-::: tip
+:::tip
 **Before you can bond atoms and withdraw rewards, you need to [set up `gaiad`](#setting-up-gaiad) and [create an account](#creating-an-account)**
 :::
 
-::: warning
+:::warning
 **Before bonding Atoms, please read the [delegator faq](https://cosmos.network/resources/delegators) to understand the risk and responsibilities involved with delegating**
 :::
 
-::: warning
+:::warning
 **Note: These commands need to be run on an online computer. It is more secure to perform them commands using a ledger device. For the offline procedure, click [here](#signing-transactions-from-an-offline-computer).**
 :::
 
@@ -434,7 +434,7 @@ gaiad tx distribution withdraw-all-rewards --from <delegatorKeyName> --gas auto 
 gaiad tx staking unbond <validatorAddress> <amountToUnbond> --from <delegatorKeyName> --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice>
 ```
 
-::: warning
+:::warning
 **If you use a connected Ledger, you will be asked to confirm the transaction on the device before it is signed and broadcast to the network. Note that the command will only work while the Ledger is plugged in and unlocked.**
 :::
 
@@ -473,11 +473,11 @@ At the end of the voting period, the proposal is accepted if there are more than
 
 #### In Practice
 
-::: tip
+:::tip
 **Before you can bond atoms and withdraw rewards, you need to [bond Atoms](#bonding-atoms-and-withdrawing-rewards)**
 :::
 
-::: warning
+:::warning
 **Note: These commands need to be run on an online computer. It is more secure to perform them commands using a ledger device. For the offline procedure, click [here](#signing-transactions-from-an-offline-computer).**
 :::
 

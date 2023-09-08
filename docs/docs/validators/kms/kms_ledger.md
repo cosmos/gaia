@@ -1,16 +1,15 @@
 <!--
+title: Setting up Tendermint KMS + Ledger
 order: 6
 -->
 
-# Setting up Tendermint KMS + Ledger
-
-::: danger Warning
+<div class="theme-doc-version-banner alert alert--warning margin-bottom--md" role="alert">
 The following instructions are a brief walkthrough and not a comprehensive guideline. You should consider and [research more about the security implications](../security.md) of activating an external KMS.
-:::
+</div>
 
-::: danger Warning
+<div class="theme-doc-version-banner alert alert--warning margin-bottom--md" role="alert">
 KMS and Ledger Tendermint app are currently work in progress. Details may vary. Use with care under your own risk.
-:::
+</div>
 
 ## Tendermint Validator app (for Ledger devices)
 
@@ -110,8 +109,8 @@ After that, you will see that the KMS will start forwarding all signature reques
 
 ![](ledger_2.jpg)
 
-::: danger Warning
+<div class="theme-doc-version-banner alert alert--warning margin-bottom--md" role="alert">
 The word TEST in the second picture, second line appears because they were taken on a pre-release version.
 
 Once the app as been released in Ledger's app store, this word should NOT appear.
-:::
+</div>

@@ -1,3 +1,8 @@
+---
+title: 在主网上运行一个验证人
+order: 2
+---
+
 <!-- markdown-link-check-disable -->
 # 在主网上运行一个验证人
 

@@ -254,11 +254,6 @@ For operators interested in bootstrapping a pruned node, either [Quicksync](#Qui
 
 Make sure to consult the [hardware](#Hardware) section for guidance on the best configuration for the type of node operating.
 
-<!-- #sync options -->
-::::::: tabs :options="{ useUrlFragment: false }"
-
-:::::: tab Blocksync
-
 ### Blocksync
 
 Blocksync is faster than traditional consensus and syncs the chain from genesis by downloading blocks and verifying against the merkle tree of validators. For more information see [CometBFT's Fastsync Docs](https://docs.cometbft.com/v0.34/core/fast-sync)
@@ -286,9 +281,6 @@ gaiad start --x-crisis-skip-assert-invariants
 ```
 
 The node will begin rebuilding state until it hits the first upgrade height at block `6910000`. If Cosmovisor is set up then there's nothing else to do besides wait, otherwise the node operator will need to perform the manual upgrade twice.
-::::::
-
-:::::: tab "State Sync"
 
 ### State Sync
 

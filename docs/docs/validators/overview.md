@@ -1,6 +1,6 @@
 ---
 order: 1
-title: Overview
+title: Validator Overview
 ---
 
 # Validators Overview

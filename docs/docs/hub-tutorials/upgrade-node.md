@@ -66,7 +66,7 @@ git fetch --all && git checkout <new_version>
 make install
 ```
 
-::: tip
+:::tip
 _NOTE_: If you have issues at this step, please check that you have the latest stable version of GO installed.
 :::
 
@@ -126,11 +126,11 @@ At this point, you might want to run a script to update the exported genesis int
 If the version <new_version> you are upgrading to is not breaking from the previous one, you should not reset the data. If it is not breaking, you can skip to [Restart](#restart)
 :::
 
-::: warning
+:::warning
 If you are running a **validator node** on the mainnet, always be careful when doing `gaiad unsafe-reset-all`. You should never use this command if you are not switching `chain-id`.
 :::
 
-::: danger IMPORTANT
+:::warning
 Make sure that every node has a unique `priv_validator.json`. Do not copy the `priv_validator.json` from an old node to multiple new nodes. Running two nodes with the same `priv_validator.json` will cause you to get slashed due to double sign !
 :::
 

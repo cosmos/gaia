@@ -1,3 +1,7 @@
+---
+title: Goto Market Interchain Security
+---
+
 **Introduction**
 
 IBC and Hub go-to-market is a complex organizational, developmental, and marketing undertaking that involves many entities, software projects, and services. IBC is also intimately bound up to the roadmap, development, and go-to-market of Gaia. Though it is possible to bring IBC to market without Gaia, Gaia should be the primary vehicle and product we are concerned with, since the value of Gaia stems from the utility it brings to the ecosystem of chains connected to and benefiting from its position as a Hub. Thus, this plan will consider go-to-market needs for IBC and Gaia simultaneously. The roadmap will be designed to ensure that IBC is valuable to the Hub and its users, including the many interconnected sovereign blockchains that derive utility from the Hub.

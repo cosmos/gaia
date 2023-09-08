@@ -1,3 +1,8 @@
+---
+title: Gaia 创世状态（Genesis State）
+order: 2
+---
+
 <!-- markdown-link-check-disable -->
 # Gaia 创世状态（Genesis State）
 

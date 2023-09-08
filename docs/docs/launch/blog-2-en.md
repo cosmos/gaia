@@ -1,5 +1,9 @@
+---
+title: The 3 Phases of the Cosmos Hub Mainnet
+order: 2
+---
+
 <!-- markdown-link-check-disable -->
-# The 3 Phases of the Cosmos Hub Mainnet
 
 ## Post-Mainnet Development Roadmap & Expectations for Users
 

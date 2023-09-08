@@ -22,6 +22,7 @@ import (
 	"github.com/cosmos/gaia/v13/x/globalfee"
 	gaiafeeante "github.com/cosmos/gaia/v13/x/globalfee/ante"
 	globfeetypes "github.com/cosmos/gaia/v13/x/globalfee/types"
+	feeabsante "github.com/osmosis-labs/fee-abstraction/v4/x/feeabs/ante"
 )
 
 type IntegrationTestSuite struct {
@@ -63,9 +64,11 @@ func (s *IntegrationTestSuite) SetupTestGlobalFeeStoreAndMinGasPrice(minGasPrice
 
 	// build fee decorator
 	feeDecorator := gaiafeeante.NewFeeDecorator(subspace, stakingSubspace)
+	// Add fee-abstraction decorator
+	feeabsMempoolDecorator := feeabsante.NewFeeAbstrationMempoolFeeDecorator(s.app.FeeabsKeeper)
 
 	// chain fee decorator to antehandler
-	antehandler := sdk.ChainAnteDecorators(feeDecorator)
+	antehandler := sdk.ChainAnteDecorators(feeDecorator, feeabsMempoolDecorator)
 
 	return feeDecorator, antehandler
 }

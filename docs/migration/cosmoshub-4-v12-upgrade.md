@@ -95,7 +95,7 @@ The Cosmos Hub mainnet network, `cosmoshub-4`, will run [Gaia v12.0.0](https://g
 There are 2 major ways to upgrade a node:
 
 - Manual upgrade
-- Upgrade using [Cosmovisor](https://github.com/cosmos/cosmos-sdk/tree/master/cosmovisor)
+- Upgrade using [Cosmovisor](https://pkg.go.dev/cosmossdk.io/tools/cosmovisor)
     - Either by manually preparing the new binary
     - Or by using the auto-download functionality (this is not yet recommended)
 
@@ -124,7 +124,7 @@ It may take several minutes to a few hours until validators with a total sum vot
 Install the latest version of Cosmovisor (`1.5.0`):
 
 ```shell
-go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@latest
+go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@latest
 ```
 
 **Verify Cosmovisor Version**
@@ -197,7 +197,7 @@ After upgrade, the chain will continue to produce blocks when validators with a 
 Install the latest version of Cosmovisor (`1.5.0`):
 
 ```shell
-go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@latest
+go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@latest
 ```
 
 Create a cosmovisor folder:

@@ -1,6 +1,6 @@
 ---
 title: Cosmos Hub 4, Lambda Upgrade
-order: 1
+order: 5
 ---
 <!-- markdown-link-check-disable -->
 # Cosmos Hub 4, v9-Lambda Upgrade, Instructions

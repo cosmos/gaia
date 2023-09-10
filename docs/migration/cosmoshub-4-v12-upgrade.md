@@ -1,52 +1,55 @@
 ---
-title: Cosmos Hub 4, v10 Upgrade
-order: 6
+title: Cosmos Hub 4, Gaia v12 Upgrade
+order: 8
 ---
 <!-- markdown-link-check-disable -->
-# Cosmos Hub 4, v10 Upgrade, Instructions
+# Cosmos Hub 4, Gaia v12 Upgrade, Instructions
 
-This document describes the steps for validators and full node operators, to upgrade successfully to the v10 release. The v10 upgrade is a mandatory maintenence release which updates the following core libraries:
-
-- Upgrading Comet BFT to [v0.34.28](https://github.com/cometbft/cometbft/releases/tag/v0.34.28)
-- Upgrading Cosmos SDK to [v0.45.16-ics](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.16-ics)
-- Upgrading IBC Go to [v4.4.0](https://github.com/cosmos/ibc-go/releases/tag/v4.4.0)
-- Upgrading Golang to [Golang 1.20.x](https://go.dev/blog/go1.20), making it mandatory to build Gaia with **Golang v1.20.x**
-
-❗The **preferred binary** for **Mainnet release** is [v10.0.1](https://github.com/cosmos/gaia/releases/tag/v10.0.1), as that version includes a fix for the [IBC Huckleberry fix](https://forum.cosmos.network/t/ibc-security-advisory-huckleberry/10731). v10.0.0 does **NOT** include this fix.
+This document describes the steps for validators and full node operators, to upgrade successfully to the Gaia v12 release.
+For more details on the release, please see the [release notes](https://github.com/cosmos/gaia/releases/tag/v12.0.0)
 
 ## Instructions
   
-- [On-chain governance proposal attains consensus](#on-chain-governance-proposal-attains-consensus)
-- [Upgrade date](#upgrade-date)
-- [Chain-id will remain the same](#chain-id-will-remain-the-same)
-- [Preparing for the upgrade](#preparing-for-the-upgrade)
+- [Cosmos Hub 4, Gaia v12 Upgrade, Instructions](#cosmos-hub-4-gaia-v12-upgrade-instructions)
+  - [Instructions](#instructions)
+  - [On-chain governance proposal attains consensus](#on-chain-governance-proposal-attains-consensus)
+  - [Liquid Staking](#liquid-staking)
+  - [Upgrade date](#upgrade-date)
+  - [Chain-id will remain the same](#chain-id-will-remain-the-same)
+  - [Preparing for the upgrade](#preparing-for-the-upgrade)
     - [System requirement](#system-requirement)
     - [Backups](#backups)
     - [Testing](#testing)
-    - [Current runtime, cosmoshub-4 (pre-v10 upgrade) is running Gaia v9.1.1](#current-runtime-cosmoshub-4-pre-v10-upgrade-is-running-gaia-v911)
-    - [Target runtime, cosmoshub-4 (post-v10 upgrade) will run Gaia v10.0.1](#target-runtime-cosmoshub-4-post-v10-upgrade-will-run-gaia-v1000)
-- [Upgrade steps](#upgrade-steps)
+    - [Current runtime](#current-runtime)
+    - [Target runtime](#target-runtime)
+  - [Upgrade steps](#upgrade-steps)
     - [Method I: Manual Upgrade](#method-i-manual-upgrade)
     - [Method II: Upgrade using Cosmovisor](#method-ii-upgrade-using-cosmovisor)
-        - [Manually preparing the binary](#manually-preparing-the-binary)
-            - [Preparation](#preparation)
-            - [Expected upgrade result](#expected-upgrade-result)
-        - [Auto-Downloading the Gaia binary](#auto-downloading-the-gaia-binary)
-            - [Preparation](#preparation-1)
-            - [Expected result](#expected-result)
-- [Upgrade duration](#upgrade-duration)
-- [Rollback plan](#rollback-plan)
-- [Communications](#communications)
-- [Risks](#risks)
-- [Reference](#reference)
+    - [Manually preparing the binary](#manually-preparing-the-binary)
+        - [Preparation](#preparation)
+      - [Expected upgrade result](#expected-upgrade-result)
+    - [Auto-Downloading the Gaia binary](#auto-downloading-the-gaia-binary)
+      - [Preparation](#preparation-1)
+      - [Expected result](#expected-result)
+  - [Upgrade duration](#upgrade-duration)
+  - [Rollback plan](#rollback-plan)
+  - [Communications](#communications)
+  - [Risks](#risks)
+  - [Reference](#reference)
 
 ## On-chain governance proposal attains consensus
 
-[Proposal #798](https://www.mintscan.io/cosmos/proposals/798) is the reference on-chain governance proposal for this upgrade, which is still in its voting period. Neither core developers nor core funding entities control the governance, and this governance proposal has passed in a _fully decentralized_ way.
+[Proposal 821](https://www.mintscan.io/cosmos/proposals/821) is the reference on-chain governance proposal for this upgrade, which is still in its voting period. Neither core developers nor core funding entities control the governance, and this governance proposal has passed in a _fully decentralized_ way.
+
+## Liquid Staking
+
+Validators please be aware that this release will include a new liquid staking module which has been included via the Cosmos SDK. Please see the [release notes](https://github.com/cosmos/gaia/releases/tag/v12.0.0) for v12 for more information about this module. 
+
+**IMPORTANT:** Inclusion of this module requires validators to set a validation-bond to be eligiable for Liquid Staked delegations. Please see the [Validator FAQ](../validators/validator-faq.html#liquid-staking-module) for more information.
 
 ## Upgrade date
 
-The upgrade will take place at a block height of `15816200`. The date/time of the upgrade is subject to change as blocks are not generated at a constant interval. You can stay up-to-date using this [live countdown](https://www.mintscan.io/cosmos/blocks/15816200) page.
+The upgrade will take place at a block height of `16985500`. The date/time of the upgrade is subject to change as blocks are not generated at a constant interval. You can stay up-to-date using this [live countdown](https://www.mintscan.io/cosmos/blocks/16985500) page.
 
 ## Chain-id will remain the same
 
@@ -71,28 +74,28 @@ sudo swapon /swapfile
 ### Backups
 
 Prior to the upgrade, validators are encouraged to take a full data snapshot. Snapshotting depends heavily on infrastructure, but generally this can be done by backing up the `.gaia` directory.
-If you use Cosmovisor to upgrade, by default, Cosmovisor will backup your data upon upgrade. See below [upgrade by cosmovisor](#method-ii-upgrade-using-cosmovisor-by-manually-preparing-the-gaia-v700-binary) section.
+If you use Cosmovisor to upgrade, by default, Cosmovisor will backup your data upon upgrade. See below [upgrade using cosmovisor](#method-ii-upgrade-using-cosmovisor) section.
 
 It is critically important for validator operators to back-up the `.gaia/data/priv_validator_state.json` file after stopping the gaiad process. This file is updated every block as your validator participates in consensus rounds. It is a critical file needed to prevent double-signing, in case the upgrade fails and the previous chain needs to be restarted.
 
 ### Testing
 
-For those validator and full node operators that are interested in ensuring preparedness for the impending upgrade, you can run a [v10 Local Testnet](https://github.com/cosmos/testnets/tree/master/local) or join in our [Cosmos Hub Public Testnet](https://github.com/cosmos/testnets/tree/master/public).
+For those validator and full node operators that are interested in ensuring preparedness for the impending upgrade, you can run a [v12 Local Testnet](https://github.com/cosmos/testnets/tree/master/local) or join in our [Cosmos Hub Public Testnet](https://github.com/cosmos/testnets/tree/master/public).
 
-### Current runtime, cosmoshub-4 (pre-v10 upgrade) is running Gaia v9.1.1
+### Current runtime
 
-The Cosmos Hub mainnet network, `cosmoshub-4`, is currently running [Gaia v9.1.1](https://github.com/cosmos/gaia/releases/v9.1.1). We anticipate that operators who are running on v9.1.1, will be able to upgrade successfully. Validators are expected to ensure that their systems are up to date and capable of performing the upgrade. This includes running the correct binary, or if building from source, building with go `1.20`.
+The Cosmos Hub mainnet network, `cosmoshub-4`, is currently running [Gaia v11.0.0](https://github.com/cosmos/gaia/releases/v11.0.0). We anticipate that operators who are running on v11.0.x, will be able to upgrade successfully. Validators are expected to ensure that their systems are up to date and capable of performing the upgrade. This includes running the correct binary, or if building from source, building with go `1.20`.
 
-### Target runtime, cosmoshub-4 (post-v10 upgrade) will run Gaia v10.0.1
+### Target runtime
 
-The Cosmos Hub mainnet network, `cosmoshub-4`, will run [Gaia v10.0.1](https://github.com/cosmos/gaia/releases/tag/v10.0.1). Operators _MUST_ use this version post-upgrade to remain connected to the network.
+The Cosmos Hub mainnet network, `cosmoshub-4`, will run [Gaia v12.0.0](https://github.com/cosmos/gaia/releases/tag/v12.0.0). Operators _**MUST**_ use this version post-upgrade to remain connected to the network.
 
 ## Upgrade steps
 
 There are 2 major ways to upgrade a node:
 
 - Manual upgrade
-- Upgrade using [Cosmovisor](https://github.com/cosmos/cosmos-sdk/tree/master/cosmovisor)
+- Upgrade using [Cosmovisor](https://pkg.go.dev/cosmossdk.io/tools/cosmovisor)
     - Either by manually preparing the new binary
     - Or by using the auto-download functionality (this is not yet recommended)
 
@@ -100,66 +103,50 @@ If you prefer to use Cosmovisor to upgrade, some preparation work is needed befo
 
 ### Method I: Manual Upgrade
 
-Make sure Gaia v10.0.1 is installed by either downloading a [compatible binary](https://github.com/cosmos/gaia/releases/tag/v10.0.1), or building from source. Building from source requires **Golang 1.20**.
+Make sure Gaia v12.0.0 is installed by either downloading a [compatible binary](https://github.com/cosmos/gaia/releases/tag/v12.0.0), or building from source. Building from source requires **Golang 1.20**.
 
-Run Gaia v9.1.1 till upgrade height, the node will panic:
+Run Gaia v11.0.0 till upgrade height, the node will panic:
 
 ```shell
-ERR UPGRADE "v10" NEEDED at height: 15816200: upgrade to v10 and applying upgrade "v10" at height:15816200
+ERR UPGRADE "v12" NEEDED at height: 16985500: upgrade to v12 and applying upgrade "v12" at height:16985500
 ```
 
-Stop the node, and switch the binary to Gaia v10.0.1 and re-start by `gaiad start`.
+Stop the node, and switch the binary to Gaia v12.0.0 and re-start by `gaiad start`.
 
 It may take several minutes to a few hours until validators with a total sum voting power > 2/3 to complete their node upgrades. After that, the chain can continue to produce blocks.
 
 ### Method II: Upgrade using Cosmovisor
 
-::: warning
-<span style="color:red">**Please Read Before Proceeding**</span><br>
-Using Cosmovisor 1.2.0 and higher requires a lowercase naming convention for upgrade version directory. For Cosmovisor 1.1.0 and earlier, the upgrade version is not lowercased.
-:::
-
-> **For Example:** <br>
-> **Cosmovisor =< `1.1.0`: `/upgrades/v9-Lambda/bin/gaiad`**<br>
-> **Cosmovisor >= `1.2.0`: `/upgrades/v9-lambda/bin/gaiad`**<br>
-
-| Cosmovisor Version | Binary Name in Path |
-|--------------------|---------------------|
-| 1.3                | v10                 |
-| 1.2                | v10                 |
-| 1.1                | v10                 |
-| 1.0                | v10                 |
-
 ### Manually preparing the binary
 
 ##### Preparation
 
-Install the latest version of Cosmovisor (`1.3.0`):
+Install the latest version of Cosmovisor (`1.5.0`):
 
 ```shell
-go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@latest
+go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@latest
 ```
 
 **Verify Cosmovisor Version**
 ```shell
 cosmovisor version
-cosmovisor version: v1.3.0
+cosmovisor version: v1.5.0
 ```
 
 Create a cosmovisor folder:
 
-create a Cosmovisor folder inside `$GAIA_HOME` and move Gaia v9.1.1 into `$GAIA_HOME/cosmovisor/genesis/bin`
+create a Cosmovisor folder inside `$GAIA_HOME` and move Gaia v11.0.0 into `$GAIA_HOME/cosmovisor/genesis/bin`
 
 ```shell
 mkdir -p $GAIA_HOME/cosmovisor/genesis/bin
 cp $(which gaiad) $GAIA_HOME/cosmovisor/genesis/bin
 ````
 
-build Gaia v10.0.1, and move gaiad v10.0.1 to `$GAIA_HOME/cosmovisor/upgrades/v10/bin`
+build Gaia v12.0.0, and move gaiad v12.0.0 to `$GAIA_HOME/cosmovisor/upgrades/v12/bin`
 
 ```shell
-mkdir -p  $GAIA_HOME/cosmovisor/upgrades/v10/bin
-cp $(which gaiad) $GAIA_HOME/cosmovisor/upgrades/v10/bin
+mkdir -p  $GAIA_HOME/cosmovisor/upgrades/v12/bin
+cp $(which gaiad) $GAIA_HOME/cosmovisor/upgrades/v12/bin
 ```
 
 Then you should get the following structure:
@@ -169,11 +156,11 @@ Then you should get the following structure:
 ├── current -> genesis or upgrades/<name>
 ├── genesis
 │   └── bin
-│       └── gaiad  #v9.1.1
+│       └── gaiad  #v11.0.x
 └── upgrades
-    └── v10
+    └── v12
         └── bin
-            └── gaiad  #v10.0.1
+            └── gaiad  #v12.0.0
 ```
 
 Export the environmental variables:
@@ -207,15 +194,15 @@ After upgrade, the chain will continue to produce blocks when validators with a 
 
 #### Preparation
 
-Install the latest version of Cosmovisor (`1.3.0`):
+Install the latest version of Cosmovisor (`1.5.0`):
 
 ```shell
-go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@latest
+go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@latest
 ```
 
 Create a cosmovisor folder:
 
-create a cosmovisor folder inside gaia home and move gaiad v9.1.1 into `$GAIA_HOME/cosmovisor/genesis/bin`
+create a cosmovisor folder inside gaia home and move gaiad v11.0.x into `$GAIA_HOME/cosmovisor/genesis/bin`
 
 ```shell
 mkdir -p $GAIA_HOME/cosmovisor/genesis/bin
@@ -227,7 +214,7 @@ cp $(which gaiad) $GAIA_HOME/cosmovisor/genesis/bin
 ├── current -> genesis or upgrades/<name>
 └── genesis
      └── bin
-        └── gaiad  #v9.1.1
+        └── gaiad  #v11.0.x
 ```
 
 Export the environmental variables:
@@ -253,16 +240,16 @@ Skipping the invariant checks can help decrease the upgrade time significantly.
 When the upgrade block height is reached, you can find the following information in the log:
 
 ```shell
-ERR UPGRADE "v10" NEEDED at height: 15816200: upgrade to v10 and applying upgrade "v10" at height:15816200
+ERR UPGRADE "v12" NEEDED at height: 16985500: upgrade to v12 and applying upgrade "v12" at height:16985500
 ```
 
-Then the Cosmovisor will create `$GAIA_HOME/cosmovisor/upgrades/v10/bin` and download the Gaia v10.0.1 binary to this folder according to links in the `--info` field of the upgrade proposal.
+Then the Cosmovisor will create `$GAIA_HOME/cosmovisor/upgrades/v12/bin` and download the Gaia v12.0.0 binary to this folder according to links in the `--info` field of the upgrade proposal.
 This may take 7 minutes to a few hours, afterwards, the chain will continue to produce blocks once validators with a total sum voting power > 2/3 complete their nodes upgrades.
 
 _Please Note:_
 
 - In general, auto-download comes with the risk that the verification of correct download is done automatically. If users want to have the highest guarantee users should confirm the check-sum manually. We hope more node operators will use the auto-download for this release but please be aware this is a risk and users should take at your own discretion.
-- Users should run their node on v9.1.1 if they use the cosmovisor v1.3.0 with auto-download enabled for upgrade process.
+- Users should run their node on v11.0.x if they use the cosmovisor v1.5.0 with auto-download enabled for upgrade process.
 
 ## Upgrade duration
 
@@ -272,9 +259,9 @@ The upgrade may take a few minutes to several hours to complete because cosmoshu
 
 During the network upgrade, core Cosmos teams will be keeping an ever vigilant eye and communicating with operators on the status of their upgrades. During this time, the core teams will listen to operator needs to determine if the upgrade is experiencing unintended challenges. In the event of unexpected challenges, the core teams, after conferring with operators and attaining social consensus, may choose to declare that the upgrade will be skipped.
 
-Steps to skip this upgrade proposal are simply to resume the cosmoshub-4 network with the (downgraded) v9.1.1 binary using the following command:
+Steps to skip this upgrade proposal are simply to resume the cosmoshub-4 network with the (downgraded) v11.0.0 binary using the following command:
 
-> gaiad start --unsafe-skip-upgrade 15816200
+> gaiad start --unsafe-skip-upgrade 16985500
 
 Note: There is no particular need to restore a state snapshot prior to the upgrade height, unless specifically directed by core Cosmos teams.
 

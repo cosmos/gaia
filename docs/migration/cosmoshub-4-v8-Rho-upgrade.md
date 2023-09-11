@@ -1,6 +1,6 @@
 ---
 title: Cosmos Hub 4, Rho Upgrade
-order: 2
+order: 4
 ---
 <!-- markdown-link-check-disable -->
 # Cosmos Hub 4, v8-Rho Upgrade, Instructions

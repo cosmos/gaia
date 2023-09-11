@@ -2,7 +2,7 @@
 
 If you want to contribute to a project and improve it, your help is welcome. We want to make Gaia as good as it can be. Contributing is also a great way to learn more about blockchain technology and improve it. Please read this document and follow our guidelines to make the process as smooth as possible. We are happy to review your code but please ensure that you have a reasonable and clean pull request.
 
-This documents idiomatic conventions in the Go code that we follow at Uber. A lot of these are general guidelines for Go, while others extend upon external resources:
+This documents idiomatic conventions in the Go code that we follow for gaia development. A lot of these are general guidelines for Go, while others extend upon external resources:
 
 1. [Effective Go](https://golang.org/doc/effective_go.html)
 2. [Go Common Mistakes](https://github.com/golang/go/wiki/CommonMistakes)

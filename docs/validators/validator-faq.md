@@ -261,7 +261,7 @@ For a detailed and technical description, please see ADR-061 in the Cosmos SDK o
 The validator themselves, but also any other address delegated to the validator.
 
 ### How can I validator bond?
-Once delegated to a validator, a delegator (or validator operator) can convert their delegation to a validator into Validator Bond by signing a ValidatorBond message. 
+Once delegated to a validator, a delegator (or validator operator) can convert their delegation to a validator into Validator Bond by signing a ValidatorBond message.
 
 The ValidatorBond message is exposed by the staking module and can be executed as follows:
 ```
@@ -272,7 +272,7 @@ There are no partial Validator Bonds: when a delegator or validator converts the
 To convert Validator Bond back into a standard delegation, simply unbond the shares.
 
 ### How does a delegator or validator mark their delegation as a validator bond? 
-Once delegated to a validator, sign a `ValidatorBond` message. 
+Once delegated to a validator, sign a `ValidatorBond` message.
 
 ### Are validator bonds subject to additional slashing conditions? 
 No, in the event of a slash, a validator bond is slashed at the same rate as a regular bond.

@@ -73,7 +73,7 @@ Make sure the following prerequisites are completed:
 
 - Choose the proper hardware/server configuration. See the [hardware guide](#hardware).
 - Ensure Gaia is properly installed. See the [installation guide](https://hub.cosmos.network/main/getting-started/installation.html) for a walk-through.
-- Follow the [configuration guide](#General-Configuration) to initialize and prepare the node to sync with the network.
+- Follow the [configuration guide](#general-configuration) to initialize and prepare the node to sync with the network.
 
 ## Hardware
 
@@ -248,11 +248,11 @@ There are two types of concerns when deciding which sync option is right. _Data 
 | Moderate Historical Data  | Quicksync - Default  |                       |
 | Full Historical Data      | Quicksync - Archive  | Blocksync             |
 
-If a node operator wishes to run a full node, it is possible to start from scratch but will take a significant amount of time to catch up. Node operators not concerned with rebuilding original state from the beginning of `cosmoshub-4` can also leverage [Quicksync](#Quicksync)'s available archive history.
+If a node operator wishes to run a full node, it is possible to start from scratch but will take a significant amount of time to catch up. Node operators not concerned with rebuilding original state from the beginning of `cosmoshub-4` can also leverage [Quicksync](#quicksync)'s available archive history.
 
-For operators interested in bootstrapping a pruned node, either [Quicksync](#Quicksync) or [State Sync](#State-Sync) would be sufficient.
+For operators interested in bootstrapping a pruned node, either [Quicksync](#quicksync) or [State Sync](#state-sync) would be sufficient.
 
-Make sure to consult the [hardware](#Hardware) section for guidance on the best configuration for the type of node operating.
+Make sure to consult the [hardware](#hardware) section for guidance on the best configuration for the type of node operating.
 
 <!-- #sync options -->
 ::::::: tabs :options="{ useUrlFragment: false }"
@@ -263,9 +263,9 @@ Make sure to consult the [hardware](#Hardware) section for guidance on the best 
 
 Blocksync is faster than traditional consensus and syncs the chain from genesis by downloading blocks and verifying against the merkle tree of validators. For more information see [CometBFT's Fastsync Docs](https://docs.cometbft.com/v0.34/core/fast-sync)
 
-When syncing via Blocksync, node operators will either need to manually upgrade the chain or set up [Cosmovisor](#Cosmovisor) to upgrade automatically.
+When syncing via Blocksync, node operators will either need to manually upgrade the chain or set up [Cosmovisor](#cosmovisor) to upgrade automatically.
 
-For more information on performing the manual upgrades, see [Releases & Upgrades](#Releases-amp=-Upgrades).
+For more information on performing the manual upgrades, see [Releases & Upgrades](#releases--upgrades).
 
 It is possible to sync from previous versions of the Cosmos Hub. See the matrix below for the correct `gaia` version. See the [mainnet archive](https://github.com/cosmos/mainnet) for historical genesis files.
 
@@ -278,7 +278,7 @@ It is possible to sync from previous versions of the Cosmos Hub. See the matrix 
 
 ##### Getting Started
 
-Start Gaia to begin syncing with the `skip-invariants` flag. For more information on this see [Verify Mainnet](#Verify-Mainnet).
+Start Gaia to begin syncing with the `skip-invariants` flag. For more information on this see [Verify Mainnet](#verify-mainnet).
 
 ```bash
 gaiad start --x-crisis-skip-assert-invariants

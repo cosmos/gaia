@@ -125,4 +125,4 @@ base_proposer_reward: "0.999000000000000000"
 bonus_proposer_reward: "0.040000000000000000"
 ```
 
-Though the system will not allow eg. `baseproposerreward` to be a value greater than 1.0, it will allow the [`communitytax`](#1-communitytax), [`baseproposerreward`](#2-baseproposerreward), and [`bonusproposerreward`](#3-bonusproposerreward) parameters values to total an amount greater than 1.00, which will apparently cause the chain to panic and halt. You can [read more about the reported issue here](https://github.com/cosmos/cosmos-sdk/issues/5808).
+Though the system will not allow eg. `baseproposerreward` to be a value greater than 1.0, it will allow the [`communitytax`](#communitytax), [`baseproposerreward`](#baseproposerreward), and [`bonusproposerreward`](#bonusproposerreward) parameters values to total an amount greater than 1.00, which will apparently cause the chain to panic and halt. You can [read more about the reported issue here](https://github.com/cosmos/cosmos-sdk/issues/5808).

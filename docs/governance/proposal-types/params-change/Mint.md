@@ -46,7 +46,7 @@ Changing the `MintDenom` will change the asset that the Cosmos Hub mints from th
 * `cosmoshub-3` default: `0.130000000000000000`
 
 Cosmos Hub's inflation rate can change faster or slower, depending on staking participation, and is limited to a minimum of 7% and maximum of 20%. The inflation rate cannot increase or decrease faster than 13% per year (`InflationRateChange`). The speed that the inflation rate changes depends upon two things:
-1. how far away the *current staking participation ratio* is from [`GoalBonded`](#5-GoalBonded) (67%)
+1. how far away the *current staking participation ratio* is from [`GoalBonded`](#goalbonded) (67%)
 2. the value of `InflationRateChange`, which is `{{ $themeConfig.currentParameters.mint.InflationRateChange }}`
 ```
 inflationRateChangePerYear = (1 - bondedRatio/params.GoalBonded) * params.InflationRateChange
@@ -56,10 +56,10 @@ inflationRateChangePerYear = (1 - bondedRatio/params.GoalBonded) * params.Inflat
 The inflation rate increases when under 67% of the token supply is staking, and it will take less time to reach the maximum of rate of 20% inflation if (for example) 30% of the token supply is staking than if 50% is staking. 
 
 #### Decreasing the value of `InflationRateChange`
-Decreasing the value of the `InflationRateChange` parameter will decrease both how fast the inflation rate changes and also the maximum speed that it can potentially change. It will then take longer for inflation to reach [`InflationMin`](#InflationMin) or [`InflationMax`](#InflationMax). This may lessen the response of staking behaviour to the incentive mechanism [described in the notes below](#notes).
+Decreasing the value of the `InflationRateChange` parameter will decrease both how fast the inflation rate changes and also the maximum speed that it can potentially change. It will then take longer for inflation to reach [`InflationMin`](#inflationmin) or [`InflationMax`](#inflationmax). This may lessen the response of staking behaviour to the incentive mechanism [described in the notes below](#notes).
 
 #### Increasing the value of `InflationRateChange`
-Increasing the value of the `InflationRateChange` parameter will increase both how fast the inflation rate changes and also the maximum speed that it can potentially change. It will then take less time for inflation to reach [`InflationMin`](#InflationMin) or [`InflationMax`](#InflationMax). This may quicken the response of staking behaviour to the incentive mechanism [described in the notes below](#notes).
+Increasing the value of the `InflationRateChange` parameter will increase both how fast the inflation rate changes and also the maximum speed that it can potentially change. It will then take less time for inflation to reach [`InflationMin`](#inflationmin) or [`InflationMax`](#inflationmax). This may quicken the response of staking behaviour to the incentive mechanism [described in the notes below](#notes).
 
 #### Notes
 **Example:** if the current staking participation ratio (aka "bond ratio") is 73%, then this is the calculation for speed that the inflation rate will change:
@@ -79,7 +79,7 @@ The Cosmos Hub's inflation rate is tied to its staking participation ratio in or
 * `cosmoshub-4` default: `0.200000000000000000`
 * `cosmoshub-3` default: `0.200000000000000000`
 
-The maximum rate that the Cosmos Hub can be set to mint new ATOMs is determined by `InflationMax`, which is 20% (`0.200000000000000000`) of the ATOM supply per year and based on the assumption that there are 4,855,015 blocks produced per year (see [`BlocksPerYear`](#BlocksPerYear)). If the Cosmos Hub's staking ratio (ie. the number of ATOMs staked vs total supply) remains below [`GoalBonded`](#GoalBonded)(67%) for long enough, its inflation setting will eventually reach this maximum.
+The maximum rate that the Cosmos Hub can be set to mint new ATOMs is determined by `InflationMax`, which is 20% (`0.200000000000000000`) of the ATOM supply per year and based on the assumption that there are 4,855,015 blocks produced per year (see [`BlocksPerYear`](#blocksperyear)). If the Cosmos Hub's staking ratio (ie. the number of ATOMs staked vs total supply) remains below [`GoalBonded`](#goalbonded)(67%) for long enough, its inflation setting will eventually reach this maximum.
 
 #### Decreasing the value of `InflationMax`
 Decreasing the value of the `InflationMax` parameter will lower the maximum rate that the Cosmos Hub produces new ATOMs and reduce the rate at which the ATOM supply expands. This will reduce the rate at which token-holders' assets are diluted and may reduce the incentive for staking participation. 
@@ -97,7 +97,7 @@ The effective rate of inflation tends to be different than the set rate of infla
 * `cosmoshub-4` default: `0.070000000000000000`
 * `cosmoshub-3` default: `0.070000000000000000`
 
-The minimum rate that the Cosmos Hub can be set to mint new ATOMs is determined by `InflationMin`, which is 7% (`0.070000000000000000`) of the ATOM supply per year and based on the assumption that there are 4,855,015 blocks produced per year (see [`BlocksPerYear`](#BlocksPerYear)). If the Cosmos Hub's staking ratio (ie. the number of ATOMs staked vs total supply) remains above [`GoalBonded`](#GoalBonded)(67%) for long enough, its inflation setting will eventually reach this minimum.
+The minimum rate that the Cosmos Hub can be set to mint new ATOMs is determined by `InflationMin`, which is 7% (`0.070000000000000000`) of the ATOM supply per year and based on the assumption that there are 4,855,015 blocks produced per year (see [`BlocksPerYear`](#blocksperyear)). If the Cosmos Hub's staking ratio (ie. the number of ATOMs staked vs total supply) remains above [`GoalBonded`](#goalbonded)(67%) for long enough, its inflation setting will eventually reach this minimum.
 
 #### Decreasing the value of `InflationMin`
 Decreasing the value of the `InflationMin` parameter will lower the minimum rate that the Cosmos Hub produces new ATOMs and reduce the rate at which the ATOM supply expands. This will reduce the rate at which token-holders' assets are diluted and may reduce the incentive for staking participation.
@@ -115,7 +115,7 @@ The effective rate of inflation tends to be different than the set rate of infla
 * `cosmoshub-4` default: `0.670000000000000000`
 * `cosmoshub-3` default: `0.670000000000000000`
 
-`GoalBonded` is the target proportion of staking participation, relative to the ATOM supply. Currently the goal of the system's design is to have 67% (`0.670000000000000000`) of the total ATOM supply bonded and participating in staking. When over 67% of the supply is staked, the inflation set rate begins decreasing at a maximum yearly rate of [`InflationRateChange`](#InflationRateChange) until it reaches and remains at the [`InflationMin`](#InflationMin) of 7%. When under 67% of the supply is staked, the inflation set rate begins increasing at a maximum yearly rate of [`InflationRateChange`](#InflationRateChange) until it reaches and remains at the [`InflationMax`](#InflationMax) of 20%.
+`GoalBonded` is the target proportion of staking participation, relative to the ATOM supply. Currently the goal of the system's design is to have 67% (`0.670000000000000000`) of the total ATOM supply bonded and participating in staking. When over 67% of the supply is staked, the inflation set rate begins decreasing at a maximum yearly rate of [`InflationRateChange`](#inflationratechange) until it reaches and remains at the [`InflationMin`](#inflationmin) of 7%. When under 67% of the supply is staked, the inflation set rate begins increasing at a maximum yearly rate of [`InflationRateChange`](#inflationratechange) until it reaches and remains at the [`InflationMax`](#inflationmax) of 20%.
 
 #### Decreasing the value of `GoalBonded`
 Decreasing the value of the `GoalBonded` parameter will cause the Cosmos Hub's inflation setting to begin decreasing at a lower participation rate, and this may reduce the incentive for staking participation.

@@ -6,7 +6,7 @@ parent:
 
 # Parameter Change
 
-This Cosmos Hub educational documentation aims to outline the [Hub's parameters](#params-wiki), describe their functions, and describe the potential implications of modifying each parameter. This documentation also aims to provide guidelines for creating and assessing parameter-change proposals.
+This Cosmos Hub educational documentation aims to outline the Hub's parameters, describe their functions, and describe the potential implications of modifying each parameter. This documentation also aims to provide guidelines for creating and assessing parameter-change proposals.
 
 
 

@@ -15,7 +15,7 @@ Do not lose or share your 24 words with anyone. To prevent theft or loss of fund
 
 ## Install the Cosmos Ledger application
 
-Installing the `Cosmos` application on your ledger device is required before you can use either [Keplr](#keplr-+-ledger-nano) or [`gaiad`](#gaia-cli-+-ledger-nano). To do so, you need to:
+Installing the `Cosmos` application on your ledger device is required before you can use either [Keplr](#keplr--ledger-nano) or [`gaiad`](#gaia-cli--ledger-nano). To do so, you need to:
 
 1. Install [Ledger Live](https://shop.ledger.com/pages/ledger-live) on your machine.
 <!-- markdown-link-check-disable -->

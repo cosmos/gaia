@@ -304,10 +304,6 @@ proto-gen:
 	@echo "Generating Protobuf files"
 	@sh ./proto/scripts/protocgen.sh
 
-proto-doc:
-	@echo "Generating Protoc docs"
-	@sh ./proto/scripts/protoc-doc-gen.sh
-
 proto-swagger-gen:
 	@echo "Generating Protobuf Swagger"
 	@sh ./proto/scripts/protoc-swagger-gen.sh

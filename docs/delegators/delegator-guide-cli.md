@@ -182,7 +182,7 @@ To create an account, you just need to have `gaiad` installed. Before creating i
 
 When you initialize your ledger, a 24-word mnemonic is generated and stored in the device. This mnemonic is compatible with Cosmos and Cosmos accounts can be derived from it. Therefore, all you have to do is make your ledger compatible with `gaiad`. To do so, you need to go through the following steps:
 
-1. Download the Ledger Live app [here](https://www.ledger.com/pages/ledger-live).
+1. Download the Ledger Live app [here](https://www.ledger.com/ledger-live).
 2. Connect your ledger via USB and update to the latest firmware
 3. Go to the ledger live app store, and download the "Cosmos" application (this can take a while). **Note: You may have to enable `Dev Mode` in the `Settings` of Ledger Live to be able to download the "Cosmos" application**.
 4. Navigate to the Cosmos app on your ledger device

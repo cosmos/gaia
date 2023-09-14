@@ -61,8 +61,8 @@ Prior to `cosmoshub-3`, the Cosmos Hub had a maximum set of 100 active validator
 It may be argued that after the Cosmos creators, the validator cohort may be the largest group of contributors to the Cosmos Hub community. Changes to the number of active validator participants may also affect the non-validator contributions to the Cosmos Hub.
 
 ### `KeyMaxEntries`
-* **The maximum number of unbondings between a delegator and validator within the [unbonding period](#UnbondingTime).**
-* **A delegator's maximum number of simultaneous redelegations from one validator to another validator within the [unbonding period](#1-UnbondingTime).**
+* **The maximum number of unbondings between a delegator and validator within the [unbonding period](#unbondingtime).**
+* **A delegator's maximum number of simultaneous redelegations from one validator to another validator within the [unbonding period](#unbondingtime).**
 
 * on-chain value: `{{ $themeConfig.currentParameters.staking.KeyMaxEntries }}`
 * `cosmoshub-4` default: `7`

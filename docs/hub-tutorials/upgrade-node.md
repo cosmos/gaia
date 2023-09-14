@@ -80,10 +80,6 @@ gaiad start
 
 ## Upgrade Genesis File
 
-:::warning
-If the new version you are upgrading to has breaking changes, you will have to restart your chain. If it is not breaking, you can skip to [Restart](#restart)
-:::
-
 To upgrade the genesis file, you can either fetch it from a trusted source or export it locally.
 
 ### Fetching from a Trusted Source
@@ -121,10 +117,6 @@ mv new_genesis.json genesis.json
 At this point, you might want to run a script to update the exported genesis into a genesis that is compatible with your new version. For example, the attributes of a the `Account` type changed, a script should query encoded account from the account store, unmarshall them, update their type, re-marshal and re-store them. You can find an example of such script [here](https://github.com/cosmos/cosmos-sdk/blob/02c6c9fafd58da88550ab4d7d494724a477c8a68/contrib/migrate/v0.33.x-to-v0.34.0.py).
 
 ## Reset Data
-
-:::warning
-If the version <new_version> you are upgrading to is not breaking from the previous one, you should not reset the data. If it is not breaking, you can skip to [Restart](#restart)
-:::
 
 ::: warning
 If you are running a **validator node** on the mainnet, always be careful when doing `gaiad unsafe-reset-all`. You should never use this command if you are not switching `chain-id`.

@@ -33,7 +33,7 @@ You can find more details about the requirements in the [Joining Mainnet Tutoria
 
 ### What is a delegator?
 
-Delegators are ATOM holders who cannot, or do not want to, run a validator themselves. ATOM holders can delegate ATOM to a validator and obtain a part of their revenue in exchange. For details on how revenue is distributed, see [What is the incentive to stake?](#what-is-the-incentive-to-stake?) and [What are validators commission?](#what-are-validators-commission?) in this document.
+Delegators are ATOM holders who cannot, or do not want to, run a validator themselves. ATOM holders can delegate ATOM to a validator and obtain a part of their revenue in exchange. For details on how revenue is distributed, see [What is the incentive to stake?](#what-is-the-incentive-to-stake) and [What is a validator commission?](#what-is-a-validator-commission) in this document.
 
 Because delegators share revenue with their validators, they also share risks. If a validator misbehaves, each of their delegators are partially slashed in proportion to their delegated stake. This penalty is one of the reasons why delegators must perform due diligence on validators before delegating. Spreading their stake over multiple validators is another layer of protection.
 

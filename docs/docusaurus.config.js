@@ -54,7 +54,7 @@ const config = {
           // lastVersion: lastVersion,
           versions: {
             current: {
-              path: 'main',
+              path: '/',
               banner: 'unreleased',
             },
           },
@@ -118,6 +118,25 @@ const config = {
                 html: '<i class="fa-fw fa-regular fa-comments"></i> Cosmos Forums',
               },
             ],
+          },
+          {
+            type: 'dropdown',
+            label: '🌐',
+            position: 'right',
+            items: [
+              {
+                href: '/translations/es',
+                html: 'Español',
+              },
+              {
+                href: '/translations/ko',
+                html: '한국인',
+              },
+              {
+                href: '/translations/zh',
+                html: '中文',
+              },
+           ],
           },
           {
             type: 'docsVersionDropdown',

@@ -1,10 +1,9 @@
 ---
 title: Gaia는 무엇인가요?
-order: 2
+order: 1
 ---
 
 <!-- markdown-link-check-disable -->
-# Gaia는 무엇인가요?
 
 가이아(`gaia`)는 코스모스 허브의 코스모스 SDK 애플리케이션의 이름입니다. 가이아는 두개의 엔트리 포인트로 구성돼있습니다:
 

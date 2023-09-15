@@ -1,9 +1,7 @@
 ---
+title: Formatting a Proposal
 order: 4
 ---
-
-# Formatting a Proposal
-
 
 <!-- markdown-link-check-disable -->
 Many proposals allow for long form text to be included, usually under the key `description`. These provide the opportunity to include [markdown](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax) if formatted correctly, as well as line breaks with `\n`. 

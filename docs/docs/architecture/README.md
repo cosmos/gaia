@@ -1,11 +1,7 @@
-<!--
+---
+title: Architecture Decision Records (ADR)
 order: 1
-parent:
-  title: Architecture Decision Records (ADR)
-  order: 10
--->
-
-# Architecture Decision Records (ADR)
+---
 
 This is a location to record all high-level architecture decisions for new feature and module proposals in the Cosmos Hub.
 
@@ -40,16 +36,16 @@ Read about the [PROCESS](./PROCESS.md).
 
 ### Use RFC 2119 Keywords
 
-When writing ADRs, follow the same best practices for writing RFCs. 
-When writing RFCs, key words are used to signify the requirements in the specification. 
-These words are often capitalized: "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL. 
+When writing ADRs, follow the same best practices for writing RFCs.
+When writing RFCs, key words are used to signify the requirements in the specification.
+These words are often capitalized: "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL.
 They are to be interpreted as described in [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119).
 
 ## ADR Table of Contents
 
 ### Accepted
 
-- [ADR 002: Globalfee Module](./adr-002-globalfee.md)
+- [ADR 002: Globalfee Module](./adr/adr-002-globalfee.md)
 
 ### Proposed
 
@@ -61,4 +57,4 @@ They are to be interpreted as described in [RFC 2119](https://datatracker.ietf.o
 
 ### Rejected
 
-- [ADR 001: Interchain Accounts](./adr-001-interchain-accounts.md)
+- [ADR 001: Interchain Accounts](./adr/adr-001-interchain-accounts.md)

@@ -1,4 +1,7 @@
-# Contributing
+---
+title: Contributing Guidelines
+order: 1
+---
 
 If you want to contribute to a project and improve it, your help is welcome. We want to make Gaia as good as it can be. Contributing is also a great way to learn more about blockchain technology and improve it. Please read this document and follow our guidelines to make the process as smooth as possible. We are happy to review your code but please ensure that you have a reasonable and clean pull request.
 
@@ -36,7 +39,7 @@ make docker-build-debug && \
 make test-e2e
 ```
 
-# Guidelines
+## Guidelines
 
 These guidelines are the conventions that govern our code. These conventions cover far more than just source file formatting. Can `gofmt` and `goimports` handle that for us.
 

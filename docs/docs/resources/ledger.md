@@ -1,15 +1,13 @@
 ---
-order: 4
-title: Ledger Support
+title: Ledger Nano Support
+order: 3
 ---
-
-# Ledger Nano Support
 
 Using a hardware wallet to store your keys greatly improves the security of your crypto assets. The Ledger device acts as an enclave of the seed and private keys, and the process of signing transaction takes place within it. No private information ever leaves the Ledger device. The following is a short tutorial on using the Cosmos Ledger app with the Gaia CLI or the [Keplr](https://www.keplr.app/) wallet extension.
 
 At the core of a Ledger device there is a mnemonic seed phrase that is used to generate private keys. This phrase is generated when you initialize your Ledger. The mnemonic is compatible with Cosmos and can be used to seed new accounts.
 
-::: danger
+:::danger
 Do not lose or share your 24 words with anyone. To prevent theft or loss of funds, it is best to keep multiple copies of your mnemonic stored in safe, secure places. If someone is able to gain access to your mnemonic, they will fully control the accounts associated with them.
 :::
 
@@ -28,7 +26,7 @@ Installing the `Cosmos` application on your ledger device is required before you
     ![search](../images/ledger-tuto-search.png)
 6. Install the Cosmos application by clicking on `Install`.
 
-::: tip
+:::tip
 To see the `Cosmos` application when you search for it, you might need to activate the `Developer Mode`, located in the Experimental features tab of the Ledger Live application.
 :::
 
@@ -41,7 +39,7 @@ To see the `Cosmos` application when you search for it, you might need to activa
 1. Connect your Ledger device to your computer, unlock it with the PIN and open the Cosmos app.
 2. Install the [Keplr browser extension](https://www.keplr.app/).
 3. Click on the Keplr extension icon and select `Import Ledger` and choose an account name and password.
-5. Make sure your Ledger device is unlocked and has the Cosmos app open and then follow the instructions on the Keplr pop-up.
+4. Make sure your Ledger device is unlocked and has the Cosmos app open and then follow the instructions on the Keplr pop-up.
 
 That's it! You can now use Keplr with your Ledger Nano S. You can use the [Keplr web app](https://wallet.keplr.app/#/dashboard) to get a more detailed overview of your Cosmos account.
 
@@ -91,7 +89,7 @@ go version go1.11.5 darwin/amd64
 - Open the Cosmos app on your Ledger.
 - Create an account in gaiad from your ledger key.
 
-::: tip
+:::tip
 Be sure to change the _keyName_ parameter to be a meaningful name. The `ledger` flag tells `gaiad` to use your Ledger to seed the account.
 :::
 
@@ -133,7 +131,7 @@ Test your connection with a query such as:
 gaiad query staking validators
 ```
 
-::: tip
+:::tip
 To run your own full node locally [read more here.](../hub-tutorials/join-mainnet.md).
 :::
 
@@ -145,7 +143,7 @@ You are now ready to start signing and sending transactions. Send a transaction 
 gaiad tx bank send --help # to see all available options.
 ```
 
-::: tip
+:::tip
 Be sure to unlock your device with the PIN and open the Cosmos app before trying to run these commands
 :::
 
@@ -176,7 +174,7 @@ gaiad keys list
 
 Not sure what `gaiad` can do? Simply run the command without arguments to output documentation for the commands in supports.
 
-::: tip
+:::tip
 The `gaiad` help commands are nested. So `$ gaiad` will output docs for the top level commands (status, config, query, and tx). You can access documentation for sub commands with further help commands.
 
 For example, to print the `query` commands:

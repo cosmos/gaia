@@ -4,13 +4,12 @@ order: 4
 ---
 
 <!-- markdown-link-check-disable -->
-## 加入主网
 
-::: 提示
+:::tip 提示
 请查看[launch repo](https://github.com/cosmos/launch)获取主网信息，包含了所使用的Cosmos-SDK的正确版本和genesis文件。
 :::
 
-::: 警告
+:::warning 警告
 **在更进一步之前你需要[安装gaia](./installation.md)**
 :::
 
@@ -24,7 +23,7 @@ order: 4
 gaiad init <your_custom_moniker>
 ```
 
-::: 注意
+:::tip 注意
 moniker只能包含ASCII字符。使用Unicode字符会使得你的节点不可访问
 :::
 
@@ -65,7 +64,7 @@ curl https://raw.githubusercontent.com/cosmos/launch/master/genesis.json > $HOME
 
 注意我们使用了[launch repo](https://github.com/cosmos/launch)中的`latest`文件夹，该文件夹包含了最新版本主网的详细信息。
 
-::: 提示
+:::tip 提示
 如果你想加入的是公共测试网，点击[这里](./join-testnet.md)
 :::
 
@@ -85,7 +84,7 @@ gaiad start
 
 你可以阅读[这里](https://github.com/cometbft/cometbft/blob/main/docs/core/using-cometbft.md#peers)了解更多伙伴节点和种子节点的信息。
 
-::: 警告
+:::warning 警告
 在Cosmos Hub主网中，可接受的币种是`uatom`,`1atom = 1.000.000uatom`
 :::
 
@@ -102,7 +101,7 @@ fees = gas * gasPrices
 
 交易的`fees`是`gas`与`gasPrice`的结果。作为一个用户，你必须输入三者中的两者。更高的`gasPrice`/`fees`，将提高你的交易被打包的机会。
 
-::: 提示
+:::tip 提示
 主网中推荐的`gas-prices`是`0.0025uatom`
 :::
 

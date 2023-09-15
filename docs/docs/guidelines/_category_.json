@@ -1,5 +1,5 @@
 {
     "label": "Guidelines",
     "position": 13,
-    "link": null
+    "link": { "type": "doc", "id": "guidelines/code-guidelines" }
 }

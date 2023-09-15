@@ -1,9 +1,7 @@
 ---
-order: 6
 title: Service Providers
+order: 4
 ---
-
-# Service Providers
 
 'Service Providers' are defined as entities that provide services for end-users that involve some form of interaction with the Cosmos Hub. More specifically, this document is focused on interactions with tokens.
 

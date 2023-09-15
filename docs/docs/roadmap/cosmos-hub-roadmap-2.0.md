@@ -1,4 +1,7 @@
-# The Cosmos Hub Roadmap
+---
+title: The Cosmos Hub Roadmap
+order: 1
+---
 
 This Cosmos Hub roadmap serves as a reference for the current planned features of upcoming releases. For past releases, please see the following [document](./README.md).
 

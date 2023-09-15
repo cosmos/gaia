@@ -4,7 +4,6 @@ order: 1
 ---
 
 <!-- markdown-link-check-disable -->
-# 코스모스 허브 메인넷의 시작
 
 #### 런칭 준비 체크리스트 & 안전하게 아톰 수령하기
 

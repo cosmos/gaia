@@ -1,6 +1,10 @@
-# Gaia Fee and Fees Checks
+---
+title: Gaia Fee and Fees Checks
+order: 2
+---
 
 ## Fee Parameters
+
 The CosmosHub allows managing fees using 4 parameters. At the network level, there are three parameters from globalfee modules (`MinimumGasPricesParam`, `BypassMinFeeMsgTypes`, and `MaxTotalBypassMinFeeMsgGasUsage`) that can be set by gov proposal. Additionally, a fourth parameter which enables individual nodes to impose supplementary fee amount.
 
 1. global fees (`MinimumGasPricesParam`).\
@@ -8,12 +12,10 @@ global fees `MinimumGasPricesParam` is established at the network level through 
 
    *Please note: in this context, "globalfee" or "Globalfee" are used to refer to the globalfee module, while "global fees" is referring to the `MinimumGasPricesParam` in the globalfee module's params.*
 
-
 2. `minimum-gas-prices` in `app.toml`\
    By adjusting the `minimum-gas-prices` parameter in `app.toml`, nodes can enforce a fee that is higher than the globally defined `MinimumGasPricesParam`. However, it's importantht to note that this configuration solely determines whether transactions are eligible to enter this specific node's mempool.
 
     *Please note: in this context, `minimum-gas-prices` are used to refer to the local fee requirement that nodes can set in their `app.toml`, while `MinimumGasPricesParam` is a parameter in the globalfee module, which is the fee requirement at network level.*
-
 
 3. `BypassMinFeeMsgTypes` and `MaxTotalBypassMinFeeMsgGasUsage`.\
  These two parameters are also part of the globalfee params from gaiad v11.0.0. They can be changed through Gov Proposals. `BypassMinFeeMsgTypes` represents a list of message types that will be excluded from paying any fees for inclusion in a block, `MaxTotalBypassMinFeeMsgGasUsage` is the limit placed on gas usage for `BypassMinFeeMsgTypes`.
@@ -22,7 +24,7 @@ global fees `MinimumGasPricesParam` is established at the network level through 
 
 The globalfee module has three parameters that can be set by governance proposal type `param-change`:
 - `MinimumGasPricesParam`
-- `BypassMinFeeMsgTypes` 
+- `BypassMinFeeMsgTypes`
 - `MaxTotalBypassMinFeeMsgGasUsage`
 
 ### Globalfee Params: `MinimumGasPricesParam`
@@ -67,7 +69,7 @@ Before gaiad `v11.0.0`, `bypass-min-fee-msg-types` can be set by each node in `a
 
 An example of `bypass-min-fee-msg-types` in `app.toml`  **before** gaiad v11.0.0:
 
-```
+```sh
 
 ###############################################################################
 ###                        Custom Gaia Configuration                        ###
@@ -79,7 +81,6 @@ An example of `bypass-min-fee-msg-types` in `app.toml`  **before** gaiad v11.0.0
 # ["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement", ...]
 bypass-min-fee-msg-types = ["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement","/ibc.applications.transfer.v1.MsgTransfer", "/ibc.core.channel.v1.MsgTimeout", "/ibc.core.channel.v1.MsgTimeoutOnClose"]
 ```
-
 
 ## `Minimum-gas-prices` (local fee requirement)
 
@@ -133,7 +134,7 @@ gov submit-proposal param-change proposal.json
 
 A `proposal.json` example to change the `MinimumGasPricesParam` in globalfee params:
 
-```
+```sh
 {
   "title": "Global fee Param Change",
   "description": "Update global fee",
@@ -147,11 +148,12 @@ A `proposal.json` example to change the `MinimumGasPricesParam` in globalfee par
   "deposit": "1000stake"
 }
 ```
+
 **Note:** in the above "value" field, coins must sorted alphabetically by denom.
 
 A `proposal.json` example to change the `bypassMinFeeMsgTypes` in globalfee params:
 
-```
+```sh
 {
   "title": "Globalfee Param Change",
   "description": "Update globalfee Params",
@@ -165,8 +167,10 @@ A `proposal.json` example to change the `bypassMinFeeMsgTypes` in globalfee para
   "deposit": "1000000uatom"
 }
 ```
+
 A `proposal.json` example to change the `maxTotalBypassMinFeeMsgGasUsage` in globalfee params:
-```
+
+```sh
 {
   "title": "Globalfee Param Change",
   "description": "Update globalfee Params",
@@ -180,7 +184,6 @@ A `proposal.json` example to change the `maxTotalBypassMinFeeMsgGasUsage` in glo
   "deposit": "1000000uatom"
 }
 ```
-
 
 ## Examples
 

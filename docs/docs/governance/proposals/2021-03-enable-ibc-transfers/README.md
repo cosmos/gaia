@@ -1,5 +1,8 @@
+---
+title: Enable IBC Transfers
+---
+
 <!-- markdown-link-check-disable -->
-# Enable IBC Transfers
 
 The Proposal enables transferring and receiving assets using the ICS20 standard on the Cosmos Hub. If this proposal passes, there will be IBC assets available in the Bank module of the Hub and ATOM will be available on Zones connected over IBC.
 Iqlusion believes that the IBC software is sufficiently stable for small amounts of value transfer. We expect there to be issues with stuck funds and UX confusion but overcoming these issues will only happen once IBC is live.

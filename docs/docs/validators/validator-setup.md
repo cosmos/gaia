@@ -1,9 +1,7 @@
 ---
-order: 2
 title: Running a Validator
+order: 2
 ---
-
-# Running a Validator
 
 :::tip
 We suggest you try out joining a public testnet first. Information on how to join the most recent testnet can be found [here](../hub-tutorials/join-testnet.md).

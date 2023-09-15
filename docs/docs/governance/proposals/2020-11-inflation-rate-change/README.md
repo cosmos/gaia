@@ -1,5 +1,8 @@
-﻿<!-- markdown-link-check-disable -->
-Cosmos Hub Inflation variable modification: Inflation Rate Change
+﻿---
+title: Cosmos Hub Inflation variable modification - Inflation Rate Change
+---
+
+<!-- markdown-link-check-disable -->
 
 **Quick Summary of issue**
 

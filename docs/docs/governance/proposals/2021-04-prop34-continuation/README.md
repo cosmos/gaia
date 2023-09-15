@@ -1,14 +1,16 @@
+---
+title: Proposal 46 - Extend Luna Mission to Fund ATOM Marketing
+---
+
 <!-- markdown-link-check-disable -->
-# Proposal 46: Extend Luna Mission to Fund ATOM Marketing
- 
 The Cosmos community approved Proposal 34 on 2021-01-20 allocating 129,208 ATOM to implement a comprehensive ATOM marketing plan executed in collaboration with key community stakeholders. Proposal 46 is requesting an extension of the time allowed to spend the approved budget and allocate existing funds for additional ATOM-focused priorities. Below are details of this request and an outline of the successful results of Proposal 34 marketing spend as of 2021-03-31.
- 
-## PROPOSAL 46 REQUEST:
+
+## PROPOSAL 46 REQUEST
 
 1. _*Prop 34 Time Extension:*_ The Prop 34 Implementation team seeks a three-month extension (until 2021-07-20) to fully spend the existing budget allocation under the terms approved in Proposal 34. The multisig team and AiB (Tendermint) invested significant time and energy properly researching, vetting and managing vendors, contractors, and opportunities requiring additional time to complete the Prop 34 expenditure of funds.  With the approval of Proposal 46, any unspent funds remaining from Proposal 34 efforts will be returned to the community pool on 2021-07-20.
 1. _*Additional Budget Priority - Project Execution Fund Pool:*_ Execution, oversight, and accountability for this significant marketing spend requires substantive operational support. In addition to the 5 multisig administrators, Zaki Manian, Jack Zampolin, Immasssi, Jhonnie and Joe Dirtay, extensive support is being provided by Adriana Mihai (Kalpatech), Garrette Furo (Regen Network), David Fortson (Regen Network/LOACOM), and others.  We request an allocation of 3000 ATOM (from the existing budget) to compensate the aforementioned contributors for previous and ongoing support of this expansive marketing campaign. Funds will be distributed through the multisig administration. 
 1. _*Additional Budget Priority - Gravity DEX:*_ This proposal seeks to allocate 10,000 - 20,000 ATOM (from approved Prop 34 budget) to identify and support robust marketing of the Gravity DEX testnet and DEX mainnet launch- an AMM exchange that will have a significant impact on ATOM valuation if successful. Gravity DEX is initially planned as an automated market maker (AMM) exchange that will allow users to trade IBC token pairs and provide liquidity for traders. These tokens would arrive on the Hub through IBC-enabled chains, IBC-wrapped ETH and ERC20 tokens, IBC-wrapped BTC tokens, and as well as future blockchain ecosystems that implement the IBC protocol.
-1. _*Community Created YouTube Videos:*_ After evaluating the existing meme campaign, the project management team is recommending ceasing the community meme campaign and reallocating remaining funds for community-created YouTube videos. This campaign would reward community members for creating select videos for prospective or new token holders focused on ‘How to’ and explainer videos on topics such as “How to set up your wallet,” “How to stake your $ATOM,” “How to delegate, redelegate and participate in governance,” and more.   
+1. _*Community Created YouTube Videos:*_ After evaluating the existing meme campaign, the project management team is recommending ceasing the community meme campaign and reallocating remaining funds for community-created YouTube videos. This campaign would reward community members for creating select videos for prospective or new token holders focused on ‘How to’ and explainer videos on topics such as “How to set up your wallet,” “How to stake your $ATOM,” “How to delegate, redelegate and participate in governance,” and more.
 
 ## SECTION I OVERVIEW
 

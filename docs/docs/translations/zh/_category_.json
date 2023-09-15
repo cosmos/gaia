@@ -1,5 +1,5 @@
 {
     "label": "中文",
     "position": 3,
-    "link": null
+    "link": { "type": "doc", "id": "translations/zh/README" }
 }

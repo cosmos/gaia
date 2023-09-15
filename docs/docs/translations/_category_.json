@@ -1,5 +1,5 @@
 {
     "label": "🌐 Translations",
     "position": 14,
-    "link": null
+    "link": { "type": "doc", "id": "translations/README" }
 }

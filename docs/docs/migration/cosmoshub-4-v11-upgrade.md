@@ -1,9 +1,8 @@
 ---
-title: Cosmos Hub 4, Gaia v11 Upgrade
-order: 1
+title: Cosmos Hub 4, Gaia v11 Upgrade Instructions
+order: 7
 ---
 <!-- markdown-link-check-disable -->
-# Cosmos Hub 4, Gaia v11 Upgrade, Instructions
 
 This document describes the steps for validators and full node operators, to upgrade successfully to the Gaia v11 release. 
 For more details on the release, please see the [release notes](https://github.com/cosmos/gaia/releases/tag/v11.0.0)

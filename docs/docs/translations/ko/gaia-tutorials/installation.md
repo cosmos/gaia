@@ -1,10 +1,9 @@
 ---
 title: Gaia 설치하기
-order: 1
+order: 
 ---
 
 <!-- markdown-link-check-disable -->
-## Gaia 설치하기
 
 이 가이드는 `gaiad`와 `gaiad`를 엔트리포인트를 시스템에 설치하는 방법을 설명합니다. `gaiad`와 `gaiad`가 설치된 서버를 통해 [풀노드](./gaia-tutorials/join-testnet.md#run-a-full-node) 또는 [밸리데이터로](./validators/validator-setup.md)써 최신 테스트넷에 참가하실 수 있습니다.
 
@@ -18,7 +17,7 @@ echo "export PATH=$PATH:$(go env GOPATH)/bin" >> ~/.bash_profile
 source ~/.bash_profile
 ```
 
-::: tip
+:::tip
 코스모스 SDK를 운영하기 위해서는 **Go 1.12+** 이상 버전이 필요합니다.
 :::
 

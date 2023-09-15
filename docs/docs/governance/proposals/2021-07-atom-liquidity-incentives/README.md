@@ -1,5 +1,8 @@
+---
+title: ATOM 🤝 Osmosis - Allocate Community Pool to ATOM Liquidity Incentives
+---
+
 <!-- markdown-link-check-disable -->
-# ATOM 🤝 Osmosis: Allocate Community Pool to ATOM Liquidity Incentives
 
 ATOMs should be the base money of Cosmos, just like ETH is the base money of the entire Ethereum DeFi ecosystem. ATOM is currently well positioned to play this role among Cosmos assets because it has the highest market cap, most liquidity, largest brand, and many integrations with fiat onramps. ATOM is the gateway to Cosmos.
 

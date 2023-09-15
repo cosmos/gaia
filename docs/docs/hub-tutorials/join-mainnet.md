@@ -1,14 +1,12 @@
 ---
-order: 2
 title: Joining Mainnet
+order: 2
 ---
 
-# Join the Cosmos Hub Mainnet
-
-
 The current Cosmos Hub mainnet, `cosmoshub-4`, has been performing in place store migration upgrades as of the [Delta Upgrade](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md) July 2021. 
-The most recent upgrade was [Gaia v10](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-v10-upgrade.md) June 2023. 
+The most recent upgrade was [Gaia v10](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-v10-upgrade.md) June 2023.
 This type of upgrade preserves the same chain-id but state before the upgrade height is only accessible by corresponding versions of the binary:
+
 - use `gaia v5.0.x` (Delta) for queries of state between height `6,910,000` and `8,695,000`
 - use `gaia v6.0.x` (Vega) between `8,695,000` and `10,085,397`
 - use `gaia v7.0.x` (Theta) between `10,085,397` and `14,099,412`
@@ -103,7 +101,7 @@ gaiad init <custom-moniker>
 
 The `moniker` can be edited in the `~/.gaia/config/config.toml` file:
 
-```
+```sh
 # A custom human readable name for this node
 moniker = "<custom_moniker>"
 ```
@@ -122,7 +120,7 @@ mv genesis.cosmoshub-4.json ~/.gaia/config/genesis.json
 
 Upon startup the node will need to connect to peers. If there are specific nodes a node operator is interested in setting as seeds or as persistent peers, this can be configured in `~/.gaia/config/config.toml`
 
-```
+```sh
 # Comma separated list of seed nodes to connect to
 seeds = "<seed node id 1>@<seed node address 1>:26656,<seed node id 2>@<seed node address 2>:26656"
 
@@ -248,11 +246,11 @@ There are two types of concerns when deciding which sync option is right. _Data 
 | Moderate Historical Data  | Quicksync - Default  |                       |
 | Full Historical Data      | Quicksync - Archive  | Blocksync             |
 
-If a node operator wishes to run a full node, it is possible to start from scratch but will take a significant amount of time to catch up. Node operators not concerned with rebuilding original state from the beginning of `cosmoshub-4` can also leverage [Quicksync](#Quicksync)'s available archive history.
+If a node operator wishes to run a full node, it is possible to start from scratch but will take a significant amount of time to catch up. Node operators not concerned with rebuilding original state from the beginning of `cosmoshub-4` can also leverage [Quicksync](#quicksync)'s available archive history.
 
-For operators interested in bootstrapping a pruned node, either [Quicksync](#Quicksync) or [State Sync](#State-Sync) would be sufficient.
+For operators interested in bootstrapping a pruned node, either [Quicksync](#quicksync) or [State Sync](#state-sync) would be sufficient.
 
-Make sure to consult the [hardware](#Hardware) section for guidance on the best configuration for the type of node operating.
+Make sure to consult the [hardware](#hardware) section for guidance on the best configuration for the type of node operating.
 
 ### Blocksync
 
@@ -292,7 +290,7 @@ With the block height and hash selected, update the configuration in `~/.gaia/co
 
 > **Note**: In the future, the RPC server requirement will be deprecated as state sync is [moved to the p2p layer in Tendermint 0.38](https://github.com/tendermint/tendermint/issues/6491).
 
-```
+```sh
 #######################################################
 ###         State Sync Configuration Options        ###
 #######################################################
@@ -332,16 +330,10 @@ $ gaiad start --x-crisis-skip-assert-invariants
 ```
 
 Once state sync successfully completes, the node will begin to process blocks normally. If state sync fails and the node operator encounters the following error:  `State sync failed err="state sync aborted"`, either try restarting `gaiad` or running `gaiad unsafe-reset-all` (make sure to backup any configuration and history before doing this).
-::::::
-
-:::::: tab Quicksync
 
 ### Quicksync
 
 Quicksync.io offers several  daily snapshots of the Cosmos Hub with varying levels of pruning (`archive` 1.4TB, `default` 540GB, and `pruned` 265GB). For downloads and installation instructions, visit the [Cosmos Quicksync guide](https://quicksync.io/networks/cosmos.html).
-::::::
-
-:::::::
 
 <!-- #end -->
 
@@ -377,7 +369,6 @@ snapshot-keep-recent = 10
 **See all [Gaia Releases](https://github.com/cosmos/gaia/releases)**
 
 The most up to date release of Gaia is [`V9.1.1`](https://github.com/cosmos/gaia/releases/tag/v9.1.1). For those that want to use state sync or quicksync to get their node up to speed, starting with the most recent version of Gaia is sufficient.
-
 
 To sync an archive or full node from scratch, it is important to note that you must start with [`V4.2.1`](https://github.com/cosmos/gaia/releases/tag/v4.2.1) and proceed through two different upgrades Delta at block height `6,910,000`, Vega at block height `8,695,000`, Theta at block height `10,085,397`, Rho at block height `14099412` and Lambda at block height `14,470,501`.
 
@@ -419,7 +410,6 @@ Again, make sure to backup `~/.gaia`
 
 Install Gaia [`V7.0.0`](https://github.com/cosmos/gaia/releases/tag/v7.0.0) and restart the daemon.
 
-
 **[Rho Instructions](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-v8-Rho-upgrade.md)**
 
 Once `V7` reaches the upgrade block height, the chain will halt and display the following message:
@@ -443,7 +433,6 @@ ERR UPGRADE "Lambda" NEEDED at height: 14470501
 Again, make sure to backup `~/.gaia`
 
 Install Gaia [`V9.0.0`](https://github.com/cosmos/gaia/releases/tag/v9.0.0) and restart the daemon.
-
 
 ## Cosmovisor
 

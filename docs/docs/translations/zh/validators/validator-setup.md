@@ -6,7 +6,7 @@ order: 2
 <!-- markdown-link-check-disable -->
 # 在主网上运行一个验证人
 
-::: 提示
+:::tip 提示
 加入主网所需的信息(`genesis.json`和种子节点)在[`lauch` repo](https://github.com/cosmos/launch/tree/master/latest)中可以找到。
 :::
 
@@ -16,7 +16,7 @@ order: 2
 
 [验证人](./overview.md)负责通过投票来向区块链提交新区块。如果验证人不可访问或者对多个相同高度的区块签名，将会遭受到削减处罚。如果变得不可用或者在同一高度上签名，则会被削减。请阅读有关Sentry节点架构的信息，以保护您的节点免受DDOS攻击并确保高可用性。请阅读哨兵节点网络架构来保护你的节点免于DDOS攻击并保证高的可访问性。
 
-::: 警告
+:::warning 警告
 如果你想要成为Cosmos Hub主网的验证人，你应该[安全研究](./security.md)。
 :::
 
@@ -32,7 +32,7 @@ gaiad tendermint show-validator
 
 使用下面的命令创建你的验证人：
 
-::: 注意
+:::tip 注意
 不要使用多于你所拥有的`uatom`!
 :::
 
@@ -51,11 +51,11 @@ gaiad tx staking create-validator \
   --from=<key_name>
 ```
 
-::: 提示
+:::tip 提示
 在指定commission参数时，`commission-max-change-rate`用于度量`commission-rate`的百分比点数的变化。比如，1%到2%增长了100%，但反映到`commission-rate`上只有1个百分点。
 :::
 
-::: 提示
+:::tip 提示
 如果没有指定，`consensus_pubkey`将默认为`gaiad tendermint show-validator`命令的输出。`key_name`是将用于对交易进行签名的私钥的名称。
 :::
 
@@ -63,7 +63,7 @@ gaiad tx staking create-validator \
 
 ## 以初始验证人的形式加入到genesis文件
 
-::: 警告
+:::warning 警告
 这一节内容只针对想要在Cosmos Hub主网启动前就作为初始验证人身份的节点。如果主网已经启动，请跳过这一节。
 :::
 
@@ -77,11 +77,11 @@ gaiad tendermint show-validator
 
 然后执行`gaiad gentx`命令:
 
-::: 提示
+:::tip 提示
 `gentx`是持有self-delegation的JSON文件。所有的创世交易会被`创世协调员`收集起来验证并初始化成一个`genesis.json`
 :::
 
-::: 注意
+:::tip 注意
 不要使用多于你所拥有的`uatom`!
 :::
 
@@ -95,7 +95,7 @@ gaiad gentx \
   --name <key_name>
 ```
 
-::: 提示
+:::tip 提示
 在指定佣金相关的参数时，`commission-max-change-rate`用于标识`commission-rate`每日变动的最大百分点数。比如从1%到2%按比率是增长了100%，但只增加了1个百分点。
 :::
 
@@ -164,7 +164,7 @@ gaiad query tendermint-validator-set | grep "$(gaiad tendermint show-validator)"
 
 你必须要在[区块浏览器](https://explorecosmos.network/validators)中看见你的验证人节点信息。你可以在`~/.gaia/config/priv_validator.json`文件中找到`bech32`编码格式的`address`。
 
-::: warning 注意
+:::warning 注意
 为了能进入验证人集合，你的权重必须超过第100名的验证人。
 :::
 

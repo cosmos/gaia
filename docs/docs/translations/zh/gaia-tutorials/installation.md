@@ -4,7 +4,6 @@ order: 2
 ---
 
 <!-- markdown-link-check-disable -->
-## 安装 Gaia
 
 本教程将详细说明如何在你的系统上安装`gaiad`和`gaiad`。安装后，你可以作为[全节点](./join-mainnet.md)或是[验证人节点](./validators/validator-setup.md)加入到主网。
 
@@ -18,7 +17,7 @@ echo "export PATH=$PATH:$(go env GOPATH)/bin" >> ~/.bash_profile
 source ~/.bash_profile
 ```
 
-::: tip
+:::tip
 Cosmos SDK 需要安装**Go 1.12+**
 :::
 
@@ -26,7 +25,7 @@ Cosmos SDK 需要安装**Go 1.12+**
 
 接下来，安装最新版本的 Gaia。需要确认您 `git checkout 了正确的[发布版本](https://github.com/cosmos/cosmos-sdk/releases)。
 
-::: warning
+:::warning
 对于主网，请确保你的版本大于或等于`v0.33.0`
 :::
 

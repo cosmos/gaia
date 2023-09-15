@@ -6,7 +6,7 @@ order: 4
 <!-- markdown-link-check-disable -->
 # 验证人相关问题
 
-::: 声明
+:::notice 声明
 这项工作正在进行中。机制和具体值都容易发生变化。
 :::
 

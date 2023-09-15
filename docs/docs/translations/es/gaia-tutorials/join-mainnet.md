@@ -5,11 +5,11 @@ order: 3
 
 <!-- markdown-link-check-disable -->
 
-::: tip
+:::tip
 Vea el [repositorio para el lanzamiento](https://github.com/cosmos/launch) para la información de la red principal, incluyendo la versión correcta para el SDK de Cosmos que usar y detalles acerca del archivo génesis.
 :::
 
-::: aviso
+:::tip
 **Necesitará [instalar gaia](./installation.md) antes de avanzar más**
 :::
 
@@ -23,7 +23,7 @@ Primero, inicie el nodo y cree los archivos de configuración necesarios:
 gaiad init <your_custom_moniker>
 ```
 
-:::Warning
+:::warning
 El moniker solo debe contener carácteres ASCII.  El uso de caracteres Unicode hará que tu nodo sea irreconocible.
 :::
 
@@ -64,7 +64,7 @@ curl https://raw.githubusercontent.com/cosmos/launch/master/genesis.json > $HOME
 
 Observe que usamos el directorio `latest` en el [repositorio de lanzamiento](https://github.com/cosmos/launch) que contiene detalles para la red principal como la última versión y el archivo de génesis.
 
-:::consejo
+:::tip
 Si en cambio quiere conectarse a la red de pruebas pública, haga clic [aquí](./join-testnet.md)
 :::
 
@@ -87,7 +87,7 @@ Para más información acerca de seeds y peers, puede leer [este enlace](https:/
 
 ## Nota sobre el Fee y el Gas
 
-::: Aviso
+:::tip
 En el Hub de Cosmos, la denominación aceptada es `uatom`, donde `1atom = 1.000.000uatom`
 :::
 
@@ -103,7 +103,7 @@ El `gasPrice` (i.e `precioPorGas`) es el precio de cada unidad de `gas`. Cada va
 
 Los `fees` de la transacción son el producto del `gas` y del `gasPrice`. Como usuario, tiene que introducir 2 de 3. Cuanto más alto sea el `gasPrice`/`fees`, mayor será la posibilidad de que su transacción se incluya en un bloque.
 
-::: consejo
+:::tip
 Para la red principal, el `gas-prices` recomendado es `0.0025uatom`.
 :::
 

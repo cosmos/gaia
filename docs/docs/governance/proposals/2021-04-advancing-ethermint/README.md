@@ -1,5 +1,8 @@
+---
+title: Advancing Ethermint - Governance Proposal - GTM and Engineering Plan for the Ethermint Chain
+---
+
 <!-- markdown-link-check-disable -->
-# Advancing Ethermint - Governance Proposal: GTM and Engineering Plan for the Ethermint Chain 
 
 > **NOTE**: this is a short version of the full proposal. To read the full document click [here](https://forum.cosmos.network/t/advancing-ethermint-governance-proposal-gtm-and-engineering-plan-for-the-ethermint-chain/4554).
 

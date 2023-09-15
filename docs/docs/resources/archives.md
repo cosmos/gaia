@@ -1,9 +1,7 @@
 ---
-order: 2
 title: Cosmos Hub Archives
+order: 2
 ---
-
-# Cosmos Hub Archives
 
 With each breaking upgrade of the Cosmos Hub, the network is restarted at height 0. During this process, an export of the last state of the previous network is made to produce the genesis state of the new one.
 

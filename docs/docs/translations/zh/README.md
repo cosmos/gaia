@@ -4,7 +4,6 @@ order: 1
 ---
 
 <!-- markdown-link-check-disable -->
-# gaia文档
 
 欢迎阅读`Gaia`文档。 `Gaia`是Cosmos Hub目前的应用程序名。
 

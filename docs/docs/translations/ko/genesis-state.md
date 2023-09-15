@@ -4,7 +4,6 @@ order: 2
 ---
 
 <!-- markdown-link-check-disable -->
-# Gaia 제네시스 상태
 
 Gaia genesis state, 또는 `GenesisState`는 다수의 계정, 모듈 상태 그리고 제네시스 트랜잭션 같은 메타데이터가 포함되어 있습니다. 각 모듈은 각자의 `GenesisState`를 지정할 수 있습니다. 또한, 각 모듈은 제네시스 상태 검증, 불러오기(import), 내보내기(export) 기능을 지정할 수 있습니다.
 

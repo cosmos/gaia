@@ -1,11 +1,7 @@
 ---
-order: false
-parent:
-  title: Delegators
-  order: 4
+title: Delegators
+order: 1
 ---
-
-# Delegators
 
 This folder contains documentation relevant to delegators of the Cosmos Hub and other `gaia` blockchains.
 

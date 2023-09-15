@@ -1,5 +1,8 @@
+---
+title: Proposal 34, Luna Mission - Funding $ATOM
+---
+
 <!-- markdown-link-check-disable -->
-# Proposal 34: Luna Mission - Funding $ATOM
 
 **ABSTRACT:**
 

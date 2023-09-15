@@ -1,9 +1,7 @@
 ---
-order: 3
 title: Joining Testnet
+order: 3
 ---
-
-# Join the Cosmos Hub Public Testnet
 
 This tutorial will provide all necessary instructions for joining the current public testnet. If you're interested in more advanced configuration and synchronization options, see [Join Mainnet](./join-mainnet.md) for a detailed walkthrough.
 

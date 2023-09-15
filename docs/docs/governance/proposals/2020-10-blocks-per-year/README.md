@@ -1,5 +1,8 @@
+---
+title: Cosmos Hub Inflation variable modification - Blocks Per Year
+---
+
 <!-- markdown-link-check-disable -->
-# Cosmos Hub Inflation variable modification: Blocks Per Year
 
 **Quick Summary of issue**
 

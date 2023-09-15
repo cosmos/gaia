@@ -1,6 +1,8 @@
-<!-- markdown-link-check-disable -->
-# Stargate Upgrade- Second time is a charm
+---
+title: Stargate Upgrade- Second time is a charm
+---
 
+<!-- markdown-link-check-disable -->
 ![Stargate Upgrade banner graphic](https://siasky.net/bADrO0dW2KJC0ZS1uie389nmV6MTroRqTNaeFPuTtR7qow)
 
 ## by Iqlusion

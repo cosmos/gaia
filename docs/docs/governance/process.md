@@ -1,10 +1,10 @@
 ---
+title: On-Chain Proposal Process
 order: 2
 ---
 
-# On-Chain Proposal Process
-
 ## Governance Parameters
+
 Several of the numbers involved in governance are parameters and can thus be changed by passing a parameter change proposal. 
 - Minimum deposit: 250 ATOM
 - Maximum deposit period: 14 days
@@ -13,12 +13,12 @@ Several of the numbers involved in governance are parameters and can thus be cha
 - Pass threshold: 50% of participating voting power
 - Veto threshold: 33.40% of participating voting power
 
-
 ## 1. Deposit Period
 
 The deposit period lasts either 14 days or until the proposal deposit totals 250 ATOMs, whichever happens first. 
 
 ### Deposits
+
 Prior to a governance proposal entering the voting period (i.e., for the proposal to be voted upon), there must be at least a minimum number of ATOMs deposited (250). Anyone may contribute to this deposit, though it is usually filled by the proposal maker. Deposits of passed and failed proposals are returned to the contributors.
 
 In the past, different people have considered contributions amounts differently. There is some consensus that this should be a personal choice. There is also some consensus that this can be an opportunity for supporters to signal their support by adding to the deposit amount, so a proposer may choose to leave contribution room (i.e., a deposit below 250 ATOMs) so that others may participate. It is important to remember that any contributed ATOMs are at risk of being burned.
@@ -67,4 +67,3 @@ Voting power, whether backing a vote of 'Yes', 'Abstain', 'No', or 'NoWithVeto',
 Validators not in the active set can cast a vote, but their voting power (including the backing of their delegators) will not count toward the vote if they are not in the active set **when the voting period ends**. That means that if ATOM is delegated to a validator that is jailed, tombstoned, or outside of the active set at the time that the voting period ends, that ATOM's stake-weight will not count in the vote.
 
 Though a simple majority 'Yes' vote (ie. 50% of participating voting power) is required for a governance proposal vote to pass, a 'NoWithVeto' vote of 33.4% of participating voting power or greater can override this outcome and cause the proposal to fail. This enables a minority group representing greater than 1/3 of participating voting power to fail a proposal that would otherwise pass.
-

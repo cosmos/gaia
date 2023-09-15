@@ -1,6 +1,6 @@
 ---
-order: 4
 title: Upgrading Your Node
+order: 4
 ---
 
 # Upgrade Your Node

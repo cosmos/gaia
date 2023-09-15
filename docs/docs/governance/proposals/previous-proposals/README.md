@@ -1,5 +1,7 @@
-<!-- markdown-link-check-disable -->
-# Previous proposals
+---
+title: Previous Proposals
+order: 1
+---
 
 This is a record of past proposals, including ones that weren't drafted in the governance repository. These proposals are present in the cosmoshub-4 genesis file.
 

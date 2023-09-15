@@ -4,7 +4,6 @@ order: 1
 ---
 
 <!-- markdown-link-check-disable -->
-# 검증인(밸리데이터) 개요
 
 ## 소개
 

@@ -1,4 +1,22 @@
 export const currentParams = {
+  lastRelease: {
+    releaseName: 'v11',
+    releaseDate: '',
+    blockHeight: '',
+    governanceProposalLink: '',
+  },
+  currentRelease: {
+    releaseName: 'v12',
+    releaseDate: '',
+    blockHeight: '',
+    governanceProposalLink: '',
+  },
+  nextRelease: {
+    releaseName: 'v12',
+    releaseDate: '',
+    blockHeight: '',
+    governanceProposalLink: '',
+  },
   auth: {
     MaxMemoCharacters: '512',
     SigVerifyCostED25519: '590',
@@ -41,7 +59,7 @@ export const currentParams = {
       max_deposit_period: '1209600000000000',
       min_deposit: [
         {
-          amount: '64000000',
+          amount: '250000000',
           denom: 'uatom',
         },
       ],
@@ -100,7 +118,7 @@ export const currentParams = {
     BondDenom: 'uatom',
     HistoricalEntries: 10000,
     MaxEntries: 7,
-    MaxValidators: 125,
+    MaxValidators: 180,
     UnbondingTime: '1814400000000000',
   },
   transfer: {

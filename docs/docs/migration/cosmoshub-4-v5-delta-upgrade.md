@@ -1,9 +1,8 @@
 ---
-title: Cosmos Hub 4, Delta Upgrade
-order: 4
+title: Cosmos Hub 4, v5-Delta Upgrade Instructions
+order: 1
 ---
 <!-- markdown-link-check-disable -->
-# Cosmos Hub 4, Delta Upgrade, Instructions
 
 This document describes the steps for validator and full node operators for the successful execution of the [Delta Upgrade](https://github.com/cosmos/gaia/blob/main/docs/roadmap/cosmos-hub-roadmap-2.0.md#Delta-Upgrade), which adds the __Gravity DEX__ to the Cosmos Hub.
 

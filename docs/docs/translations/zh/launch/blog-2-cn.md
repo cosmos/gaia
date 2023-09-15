@@ -4,7 +4,6 @@ order: 2
 ---
 
 <!-- markdown-link-check-disable -->
-# **Cosmos主网上线三部曲**
 
 Cosmos主网启动将分成3个阶段分布完成，下面我们将具体介绍每一阶段的预期目标。
 

@@ -1,8 +1,8 @@
 ---
-order: false
+title: Instrucciones de actualización del Cosmos Hub 3
+order: 2
 ---
 <!-- markdown-link-check-disable -->
-# Instrucciones de actualización del Cosmos Hub 3
 
 El siguiente documento describe los pasos necesarios que deben seguir los operadores de un full node para actualizar de `cosmoshub-3` a `cosmoshub-4`. El equipo de Tendermint publicará un archivo génesis oficial actualizado, pero se recomienda que los validadores ejecuten las siguientes instrucciones para verificar el archivo génesis resultante.
 

@@ -1,9 +1,7 @@
 ---
-order: 1
 title: Delegator Guide (CLI)
+order: 2
 ---
-
-# Delegator Guide (CLI)
 
 This document contains all the necessary information for delegators to interact with the Cosmos Hub through the Command-Line Interface (CLI).
 
@@ -74,7 +72,7 @@ Not available yet.
 
 At the core of every Cosmos account, there is a seed, which takes the form of a 12 or 24-words mnemonic. From this mnemonic, it is possible to create any number of Cosmos accounts, i.e. pairs of private key/public key. This is called an HD wallet (see [BIP32](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki) for more information on the HD wallet specification).
 
-```
+```txt
      Account 0                         Account 1                         Account 2
 
 +------------------+              +------------------+               +------------------+
@@ -360,7 +358,7 @@ On Cosmos Hub mainnet, the accepted denom is `uatom`, where `1atom = 1,000,000ua
 
 Transactions on the Cosmos Hub network need to include a transaction fee in order to be processed. This fee pays for the gas required to run the transaction. The formula is the following:
 
-```
+```js
 fees = ceil(gas * gasPrices)
 ```
 
@@ -457,7 +455,7 @@ Double check with a block explorer if you interact with the network through a tr
 
 ## Participating in Governance
 
-#### Primer on Governance
+### Primer on Governance
 
 The Cosmos Hub has a built-in governance system that lets bonded Atom holders vote on proposals. There are three types of proposal:
 
@@ -471,7 +469,7 @@ Once the `deposit` reaches `minDeposit`, the proposal enters the `voting_period`
 
 At the end of the voting period, the proposal is accepted if there are more than 50% `Yes` votes (excluding `Abstain` votes) and less than 33.33% of `NoWithVeto` votes (excluding `Abstain` votes).
 
-#### In Practice
+### In Practice
 
 :::tip
 **Before you can bond atoms and withdraw rewards, you need to [bond Atoms](#bonding-atoms-and-withdrawing-rewards)**

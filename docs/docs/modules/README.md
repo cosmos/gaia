@@ -1,8 +1,11 @@
-# Gaia Modules
+---
+title: Gaia Modules
+order: 1
+---
 
-Here you can find an overview of the modules included on the Cosmos Hub (gaia) blockchain with relevant info and
+Here you can find an overview of the modules included on the Cosmos Hub (Gaia) blockchain with relevant info and
 links for each one.
 
-## New Modules in Rho V8
+## Module List
 
-- [Global Fee](./globalfee.md)
+- [Global Fee](./globalfee.md) introduced in [v8 Rho](../migration/cosmoshub-4-v8-Rho-upgrade.md)

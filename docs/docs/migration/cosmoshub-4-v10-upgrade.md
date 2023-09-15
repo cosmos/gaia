@@ -1,9 +1,8 @@
 ---
-title: Cosmos Hub 4, v10 Upgrade
-order: 1
+title: Cosmos Hub 4, Gaia v10 Upgrade Instructions
+order: 6
 ---
 <!-- markdown-link-check-disable -->
-# Cosmos Hub 4, v10 Upgrade, Instructions
 
 This document describes the steps for validators and full node operators, to upgrade successfully to the v10 release. The v10 upgrade is a mandatory maintenence release which updates the following core libraries:
 
@@ -114,8 +113,8 @@ It may take several minutes to a few hours until validators with a total sum vot
 
 ### Method II: Upgrade using Cosmovisor
 
-::: warning
-<span style="color:red">**Please Read Before Proceeding**</span><br/>
+:::warning
+<span style={{color: 'red'}}>**Please Read Before Proceeding**</span><br/>
 Using Cosmovisor 1.2.0 and higher requires a lowercase naming convention for upgrade version directory. For Cosmovisor 1.1.0 and earlier, the upgrade version is not lowercased.
 :::
 

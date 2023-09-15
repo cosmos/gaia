@@ -3,6 +3,10 @@ title: Gaia 설치하기
 order: 
 ---
 
+import { Var, PlainVar, ConsoleOutput } from '@site/src/js/Var';
+
+import { currentParams } from '@site/docs/governance/current-parameters.js';
+
 <!-- markdown-link-check-disable -->
 
 이 가이드는 `gaiad`와 `gaiad`를 엔트리포인트를 시스템에 설치하는 방법을 설명합니다. `gaiad`와 `gaiad`가 설치된 서버를 통해 [풀노드](./gaia-tutorials/join-testnet.md#run-a-full-node) 또는 [밸리데이터로](./validators/validator-setup.md)써 최신 테스트넷에 참가하실 수 있습니다.
@@ -18,7 +22,7 @@ source ~/.bash_profile
 ```
 
 :::tip
-코스모스 SDK를 운영하기 위해서는 **Go 1.20.x** 이상 버전이 필요합니다.
+코스모스 SDK를 운영하기 위해서는 **<Var children={currentParams.currentRelease.golangVersion} />** 이상 버전이 필요합니다.
 :::
 
 ### 바이너리 설치하기
@@ -42,7 +46,7 @@ make: *** [install] Error 2
 
 해당 환경변수를 언세팅 하신 후 다시 시도해보세요.
 
-```
+```sh
 LDFLAGS="" make install
 ```
 
@@ -52,20 +56,13 @@ LDFLAGS="" make install
 
 ```bash
 gaiad version --long
-gaiad version --long
 ```
 
 `gaiad` 명령어는 다음과 비슷한 아웃풋을 내보냅니다:
 
-```bash
-name: gaia
-server_name: gaiad
-client_name: gaiad
-version: 1.0.0
-commit: 89e6316a27343304d332aadfe2869847bf52331c
-build_tags: netgo,ledger
-go: go version go1.12.5 darwin/amd64
-```
+
+<ConsoleOutput children={currentParams.currentRelease.gaidExecutionOutput} />
+
 
 ### 빌드 태그
 

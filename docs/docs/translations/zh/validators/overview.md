@@ -4,7 +4,6 @@ order: 1
 ---
 
 <!-- markdown-link-check-disable -->
-# 验证人概览
 
 ## 介绍
 

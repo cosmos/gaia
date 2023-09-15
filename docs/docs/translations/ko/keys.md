@@ -4,7 +4,6 @@ order: 3
 ---
 
 <!-- markdown-link-check-disable -->
-# 키
 
 키 관리에 대해서는 [CometBFT](https://docs.cometbft.com/v0.34/spec/core/encoding)을 확인하세요.
 

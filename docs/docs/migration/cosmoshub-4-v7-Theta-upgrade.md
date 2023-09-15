@@ -1,9 +1,8 @@
 ---
-title: Cosmos Hub 4, Theta Upgrade
-order: 2
+title: Cosmos Hub 4, v7-Theta Upgrade Instructions
+order: 3
 ---
 <!-- markdown-link-check-disable -->
-# Cosmos Hub 4, v7-Theta Upgrade, Instructions
 
 This document describes the steps for validator and full node operators for the successful execution of the [v7-Theta Upgrade](https://github.com/cosmos/gaia/blob/main/docs/roadmap/cosmos-hub-roadmap-2.0.md#v7-theta-upgrade-expected-q1-2022), which contains the following main new features/improvement:
 

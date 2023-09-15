@@ -1,4 +1,7 @@
-# ADR Creation Process
+---
+title: ADR Creation Process
+order: 2
+---
 
 1. Copy the `adr-template.md` file. Use the following filename pattern: `adr-next_number-title.md`
 2. Create a draft Pull Request and solicit input from the stewarding team, if you want to get an early feedback.

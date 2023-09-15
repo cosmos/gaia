@@ -1,5 +1,5 @@
 {
     "label": "Español",
     "position": 1,
-    "link": null
+    "link": { "type": "doc", "id": "translations/es/README" }
 }

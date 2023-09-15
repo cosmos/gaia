@@ -18,8 +18,8 @@ echo "export PATH=$PATH:$(go env GOPATH)/bin" >> ~/.bash_profile
 source ~/.bash_profile
 ```
 
-:::consejo
-**Go 1.14+** es necesario para el SDK de Cosmos.
+:::tip
+**Go 1.20+** es necesario para el SDK de Cosmos.
 :::
 
 ## Instalación de los binarios

@@ -4,13 +4,12 @@ order: 3
 ---
 
 <!-- markdown-link-check-disable -->
-# 최신 퍼블릭 테스트넷에 참가하기
 
-::: tip 최신 테스트넷
+:::tip 최신 테스트넷
 최신 테스트넷에 대한 정보는 다음의 [테스트넷 리포](https://github.com/cosmos/testnets)를 참고하세요. 어떤 코스모스 SDK 버전과 제네시스 파일에 대한 정보가 포합되어있습니다.
 :::
 
-::: warning
+:::warning
 **여기에서 더 진행하시기 전에 [gaia](./installation.md)가 꼭 설치되어있어야 합니다.**
 :::
 
@@ -26,7 +25,7 @@ order: 3
 gaiad init --moniker <your_custom_moniker>
 ```
 
-::: warning 참고
+:::warning 참고
 `--moniker`는 ASCII 캐릭터만을 지원합니다. Unicode 캐릭터를 이용하는 경우 노드 접근이 불가능할 수 있으니 참고하세요.
 :::
 
@@ -66,7 +65,7 @@ gaiad unsafe-reset-all
 
 이제 `priv_validator.json`과 `config.toml`을 제외하고 노드가 초기화 되었습니다. 만약 해당 노드에 연결된적이 있는 센트리노드나 풀노드가 같이 업그레이드 되지 않았다면 연결이 실패할 수 있습니다.
 
-::: danger 경고
+:::danger 경고
 각 노드가 **고유한** `priv_validator.json`을 보유하고 있는 것을 확인하세요. 오래된 노드의 `priv_validator.json`을 다수의 새로운 노드로 복사하지 마세요. 동일한 `priv_validator.json`을 보유한 두개 이상의 노드가 동시에 운영될 경우, **더블 사이닝**이 일어날 수 있습니다.
 :::
 
@@ -81,7 +80,7 @@ git fetch --all && git checkout master
 make install
 ```
 
-::: tip
+:::tip
 _참고_: 이 단계에서 문제가 있으시다면 최신 스테이블 GO 버전이 설치되어있는지 확인해주세요.
 :::
 

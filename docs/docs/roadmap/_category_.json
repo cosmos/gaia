@@ -1,5 +1,5 @@
 {
-    "label": "Previous Releases",
+    "label": "Roadmap & Releases",
     "position": 7,
-    "link": null
+    "link": { "type": "doc", "id": "roadmap/README" }
 }

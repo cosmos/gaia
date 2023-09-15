@@ -4,7 +4,6 @@ order: 1
 ---
 
 <!-- markdown-link-check-disable -->
-# Cosmos Hub主网上线计划
 
 * 2016年夏天，Cosmos首次发表了项目白皮书。
 * 2017年春天，Cosmos完成了首次募资。

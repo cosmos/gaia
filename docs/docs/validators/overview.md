@@ -1,9 +1,7 @@
 ---
-order: 1
 title: Validator Overview
+order: 1
 ---
-
-# Validators Overview
 
 ## Introduction
 

@@ -4,9 +4,8 @@ order: 4
 ---
 
 <!-- markdown-link-check-disable -->
-# 검증인 FAQ
 
-::: warning 경고
+:::warning 경고
 코스모스 프로젝트는 현재 진행형입니다. 메커니즘과 값은 추후 변경될 수 있다는 점을 확인하십시오.
 :::
 

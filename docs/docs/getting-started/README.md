@@ -1,11 +1,10 @@
 ---
-order: false
-parent:
-  order: 2
+title: Getting Started
+order: null
 ---
-
-# Getting Started
 
 This folder contains tutorials related to the `gaia` application.
 
+- [What is Gaia?](./what-is-gaia.md)
 - [Installing `gaiad`](./installation.md)
+- [Joining Mainnet](./quickstart.mdx)

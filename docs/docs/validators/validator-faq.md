@@ -1,9 +1,7 @@
 ---
-order: 3
 title: Validator FAQ
+order: 3
 ---
-
-# Validator FAQ
 
 :::warning
 ### Disclaimer

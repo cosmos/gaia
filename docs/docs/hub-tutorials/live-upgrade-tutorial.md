@@ -1,9 +1,7 @@
 ---
-order: 6
 title: Upgrading the Chain
+order: 6
 ---
-
-# Live Upgrade Tutorial
 
 This document demonstrates how a live upgrade can be performed on-chain through a
 governance process.

@@ -1,5 +1,5 @@
 {
     "label": "Gaia Tutorials",
     "position": 3,
-    "link": null
+    "link": { "type": "doc", "id": "hub-tutorials/README" }
 }

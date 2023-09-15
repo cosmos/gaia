@@ -1,4 +1,5 @@
 ---
+title: Proposals
 order: 1
 parent:
   order: 8

@@ -1,10 +1,9 @@
 ---
 title: Gaia客户端
-order: 3
+order: 1
 ---
 
 <!-- markdown-link-check-disable -->
-# Gaia客户端
 
 ## Gaia CLI
 
@@ -100,7 +99,7 @@ gaiad tendermint show-validator
 
 请注意，这是CometBFT的签名密钥，而不是你在委托交易中使用的操作员密钥。
 
-::: danger Warning
+:::danger Warning
 我们强烈建议不要对多个密钥使用相同的密码。CometBFT 团队和 Interchain Foundation 将不承担资金损失的责任。
 :::
 
@@ -169,7 +168,7 @@ gaiad tx bank send ... --gas-prices=0.0025uatom
 gaiad query account <account_cosmos>
 ```
 
-::: warning Note
+:::warning Note
 当你查询余额为零的帐户时，你将收到以下错误：`No account with address <account_cosmos> was found in the state.` 如果你在节点与区块链完全同步之前就查询，也会发生这种情况。这些都很正常。
 :::
 
@@ -181,11 +180,11 @@ gaiad query account <account_cosmos>
 gaiad tx bank send [from_key_or_address] [to_address] [amount] [flags]
 ```
 
-::: warning Note
+:::warning Note
 `--amount`标识接收格式：`--amount=<value|coin_name>`
 :::
 
-::: tip Note
+:::tip Note
 你可能希望通过`--gas`标识限制交易可以消耗的最大燃料。如果你通过`--gas=auto`，将在执行交易前自动估gas。gas估算可能是不准确的，因为状态变化可能发生在模拟结束和交易的实际执行之间，因此在原始估计之上应用调整以确保能够成功地广播交易。可以通过`--gas-adjustment`标识控制调整，其默认值为1.0。
 :::
 
@@ -227,7 +226,7 @@ gaiad tx sign \
   unsignedSendTx.json > signedSendTx.json
 ```
 
-::: tip Note
+:::tip Note
 标识 `--generate-only` 只能在访问本地 keybase 时使用。
 :::
 
@@ -269,7 +268,7 @@ gaiad query txs --events='message.sender=cosmos1...&message.action=withdraw_dele
 gaiad query txs --events='message.sender=cosmos1...' --page=1 --limit=20
 ```
 
-::: tip 注意
+:::tip 注意
 
 action标签始终等于相关message的`Type()`函数返回的消息类型。
 
@@ -554,7 +553,7 @@ gaiad tx gov submit-proposal param-change <path/to/proposal.json> \
 }
 ```
 
-::: danger Warning
+:::warning Warning
 
 Currently parameter changes are *evaluated* but not *validated*, so it is very important
 that any `value` change is valid (ie. correct type and within bounds) for its
@@ -570,7 +569,7 @@ regardless.
 
 :::
 
-::: tip Note
+:::tip Note
 
 目前不支持`SoftwareUpgrade`，因为它没有实现，目前与`Text`提议的语义没有区别。
 
@@ -820,7 +819,7 @@ gaiad completion --zsh > gaiad_completion
 gaiad completion --zsh > gaiacli_completion
 ```
 
-::: tip Note
+:::tip Note
 在大多数UNIX系统上，可以在`.bashrc`或`.bash_profile`中加载此类脚本以启用Bash自动完成：
 
 ```bash

@@ -4,7 +4,6 @@ order: 2
 ---
 
 <!-- markdown-link-check-disable -->
-# 创世（Genesis）文件
 
 本文档解释了 Cosmos Hub 主网的 genesis 文件是如何构建的。 它还解释了如何为自己的`gaia` testnet 创建一个 genesis 文件。
 

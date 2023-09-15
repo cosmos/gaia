@@ -1,5 +1,5 @@
 {
     "label": "Resources",
     "position": 8,
-    "link": null
+    "link": { "type": "doc", "id": "resources/README" }
 }

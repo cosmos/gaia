@@ -1,8 +1,9 @@
-<!--
-order: false
--->
+---
+title: ADR Template
+order: 1
+---
 
-# ADR {ADR-NUMBER}: {TITLE}
+ADR {ADR-NUMBER}: {TITLE}
 
 ## Changelog
 

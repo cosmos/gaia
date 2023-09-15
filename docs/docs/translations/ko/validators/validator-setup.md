@@ -4,9 +4,8 @@ order: 2
 ---
 
 <!-- markdown-link-check-disable -->
-# 퍼블릭 테스트넷에서 밸리데이터 운영하기
 
-::: tip
+:::tip
 현재 테스트넷을 참가하는 방법은 [`testnet` repo](https://github.com/cosmos/testnets/tree/master/latest)에 있습니다. 최신 테스트넷에 대한 정보를 확인하시려면 해당 링크를 확인해주세요.
 :::
 
@@ -18,7 +17,7 @@ __Note__: 이 문서는 __퍼블릭 테스트넷__ 검증인들을 위해서만 
 
 [밸리데이터](./overview.md)는 블록체인의 투표를 통해서 새로운 블록은 생성하는 역할을 합니다. 만약 특정 밸리데이터가 오프라인이 되거나, 같은 블록높이에서 중복 사이닝을 한 경우 해당 밸리데이터의 지분은 삭감(슬래싱, slashing) 됩니다. 노드를 DDOS 공격에서 보호하고 높은 접근성을 유지하기 위해서는 [센트리노드 아키텍쳐](./validator-faq.md#how-can-validators-protect-themselves-from-denial-of-service-attacks)에 대해서 읽어보세요.
 
-::: danger 경고
+:::danger 경고
 코스모스 허브의 검증인이 되는 것을 검토하신다면, [보안에 대한 분석](./security.md)을 사전에 하시기를 바랍니다.
 :::
 
@@ -34,7 +33,7 @@ gaiad tendermint show-validator
 
 다음은 `gaiad gentx` 명령을 입력하세요:
 
-::: warning 참고
+:::warning 참고
 보유하고 있는 `STAKE`이상을 이용하지 마십시오. 언제나 [Faucet](https://faucet.cosmos.network/)을 통해서 추가 `STAKE`를 받으실 수 있습니다.
 :::
 
@@ -74,7 +73,7 @@ gaiad gentx \
 
 __참고__: 이 명령어는 제네시스에서의 처리를 위해 `gentx`를 `~/.gaia/config/gentx`에 저장합니다.
 
-::: tip
+:::tip
 명령어 플래그에 대한 정보는 `gaiad gentx --help`를 사용에 확인하십시오.
 :::
 
@@ -168,7 +167,7 @@ gaiad query tendermint-validator-set | grep "$(gaiad tendermint show-validator)"
 
 코스모스 테스트넷의 경우 코스모스 [익스플로러](https://explorecosmos.network/validators)를 통해서 밸리데이터가 운영되고 있는지 확인하실 수 있습니다. `~/.gaia/config/priv_validator.json` 파일의 `bech32` 인코딩이된 `address` 항목을 참고하세요.
 
-::: warning 참고
+:::warning 참고
 검증인 세트에 포함되시기 원하신다면 125등 밸리데이터보다 보팅 파워(voting power)가 높아야 합니다.
 :::
 
@@ -190,7 +189,7 @@ gaiad start
 gaiad tx slashing unjail <cosmos> --chain-id=<chain_id> --from=<from>
 ```
 
-::: danger 경고
+:::danger 경고
 `gaiad`가 싱크되지 않은 상태에서 `unjail` 명령을 실행하실 경우, 검증인이 아직 '구속' 상태라는 메시지를 받게 됩니다.
 :::
 

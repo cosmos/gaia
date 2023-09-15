@@ -4,7 +4,6 @@ order: 2
 ---
 
 <!-- markdown-link-check-disable -->
-# Gaia 创世状态（Genesis State）
 
 Gaia 创世状态`GenesisState`由账户、各种模块状态和元数据组成，例如创世交易。 每个模块可以指定自己的`GenesisState`。 此外，每个模块可以指定自己的创世状态有效性验证、导入和导出功能。
 

@@ -4,7 +4,6 @@ order: 4
 ---
 
 <!-- markdown-link-check-disable -->
-# 노드 업그레이드 하기
 
 이 문서는 `gaiad` 풀노드를 새로운 버전으로 업그레이드하는 절차를 설명합니다.
 
@@ -18,7 +17,7 @@ git fetch --all && git checkout <new_version>
 make install
 ```
 
-::: tip
+:::tip
 _참고_: 이번 단계에서 문제가 발생하는 경우, 최신 스테이블 버전의 Go가 설치되어있는지 확인하세요.
 :::
 
@@ -28,7 +27,7 @@ _참고_: 이번 단계에서 문제가 발생하는 경우, 최신 스테이블
 
 ## 제네시스 파일 업그레이드하기
 
-::: warning
+:::warning
 만약 업그레이드를 진행하는 새로운 버전에 'breaking change'가 포함되어있는 경우, 블록체인을 재시작해야합니다. 만약 'breaking change'가 없는 경우, [리스타트](#restart)로 넘어가셔도 좋습니다.
 
 제네시스 파일을 업그레이드하기 위해서는 신뢰할 수 있는 소스에서 받으시거나 로컬 환경에서 내보내실 수 있습니다.
@@ -73,11 +72,11 @@ mv new_genesis.json genesis.json
 만약 업그레이드하는 <새로운\_버전(new_version)>에 'breaking change'가 포함되는 않은 경우, 데이터를 리셋할 필요가 없습니다. 만약 'breaking change'가 포함되지 않은 경우, 바로 [Restart](#restart) 항목으로 넘어가세요.
 :::
 
-::: warning
+:::warning
 메인넷에서 **검증인 노드**를 운영하시는 경우, `gaiad unsafe-reset-all` 명령어를 실행하실때 주의를 기울이세요. `chain-id`를 변경하지 않는 이상 이 명령어를 실행할 필요가 없습니다.
 :::
 
-::: danger 중요
+:::danger 중요
 각 노드가 고유한 `priv_validator.json` 파일을 가지고 있는 것을 확인하세요. 절대로 과거 노드에서 `priv_validator.json`을 복사하여 다수의 신규 노드에 붙혀넣지 마세요. 다수의 동일한 `priv_validator.json`을 가진 노드가 존재하는 경우 더블 사이닝으로 슬래싱될 수 있습니다.
 :::
 

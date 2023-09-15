@@ -1,5 +1,5 @@
 {
     "label": "Gaia Modules",
     "position": 11,
-    "link": null
+    "link": { "type": "doc", "id": "modules/README" }
 }

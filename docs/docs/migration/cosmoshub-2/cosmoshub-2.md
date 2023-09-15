@@ -1,9 +1,9 @@
 ---
 title: Cosmos Hub 2 Upgrade
-order: 6
+order: 1
 ---
+
 <!-- markdown-link-check-disable -->
-# Cosmos Hub 2 Upgrade Instructions
 
 The following document describes the necessary steps involved that full-node operators
 must take in order to upgrade from `cosmoshub-2` to `cosmoshub-3`. The Tendermint team

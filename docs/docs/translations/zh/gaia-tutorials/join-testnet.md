@@ -4,13 +4,12 @@ order: 3
 ---
 
 <!-- markdown-link-check-disable -->
-# 加入公共测试网
 
-::: 提示 当前测试网
+:::tip 提示 当前测试网
 请查看[testnet repo](https://github.com/cosmos/testnets)获取最新的公共测试网信息，包含了所使用的 Cosmos-SDK 的正确版本和 genesis 文件。
 :::
 
-::: 警告
+:::warning 警告
 你需要先完成[安装`gaia`](./installation.md)
 :::
 
@@ -41,7 +40,7 @@ gaiad unsafe-reset-all
 
 你的节点现在处于原始状态并保留了最初的`priv_validator.json`文件和`config.toml`文件。如果之前你还有其他的哨兵节点或者全节点，你的节点仍然会连接他们，但是会失败，因为他们还没有升级。
 
-::: 警告
+:::warning 警告
 确保每个节点有一个独一无二的`priv_validator.json`文件。不要从一个旧节点拷贝`priv_validator.json`到多个新的节点。运行两个有着相同`priv_validator.json`文件的节点会导致双签。
 :::
 
@@ -56,7 +55,7 @@ git fetch --all && git checkout master
 make install
 ```
 
-::: 提示
+:::tip
 _注意_：如果在这一步出现问题，请检查是否安装了最新稳定版本的 Go。
 :::
 

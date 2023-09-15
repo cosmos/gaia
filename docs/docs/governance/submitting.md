@@ -1,8 +1,7 @@
 ---
+title: Submitting a Proposal
 order: 5
 ---
-
-# Submitting a Proposal
 
 If you have a final draft of your proposal ready to submit, you may want to push your proposal live on the testnet first. These are the three primary steps to getting your proposal live on-chain.
 

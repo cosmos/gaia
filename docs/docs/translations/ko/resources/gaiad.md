@@ -4,7 +4,6 @@ order: 1
 ---
 
 <!-- markdown-link-check-disable -->
-# Gaia 클라이언트
 
 ## Gaia CLI
 
@@ -104,7 +103,7 @@ gaiad tendermint show-validator
 
 위 키는 텐더민트 사이닝 키이며, 위임 트랜잭션에서 이용되는 '오퍼레이터 키'가 아니라는 점을 참고하세요.
 
-::: danger 경고
+:::warning 경고
 다수의 키에 동일한 passphrase를 사용하는 것을 추천하지 않습니다. 텐더민트 팀과 인터체인 재단은 자산 손실에 대한 책임을 지지 않습니다.
 :::
 
@@ -173,7 +172,7 @@ gaiad tx bank send ... --gas-prices=0.0025uatom
 gaiad query account <코스모스_주소(account_cosmos)>
 ```
 
-::: warning 참고
+:::warning 참고
 계정의 토큰 잔고가 `0`인 계정을 조회하실 경우 다음과 같은 에러 메시지가 표시될 수 있습니다: `No account with address <account_cosmos> was found in the state.` 노드가 체인과 완벽하게 연동이 안된 상태에서 조회를 할 경우 동일한 에러가 발생할 수 있습니다.
 :::
 
@@ -186,11 +185,11 @@ gaiad tx bank send <보내는_사람_키_명칭_또는_주소(sender_key_name_or
   --chain-id=<체인_아이디(chain_id)> \
 ```
 
-::: warning 참고
+:::warning 참고
 `--amount` 플래그는 다음과 같은 포맷을 사용합니다 `--amount=<수량|코인 이름>`.
 :::
 
-::: tip 참고
+:::tip 참고
 해당 트랜잭션이 사용할 가스에 한도를 설정하기 원하시면 `--gas` 플래그를 이용하세요. 만약 `--gas=auto`를 이용하시는 경우, 트랜잭션이 실행되기 전에 가스 서플라이가 자동으로 예측됩니다. 예측된 가스 값과 실제 트랜잭션이 일어나는 사이에 블록체인 상태가 변경될 수 있으며, 기존 예측 수량에서 값이 변경이 될 수 있다는 점을 유의하십시오. 변경 값은 `--gas-adjustment` 플래그를 이용해 설정하실 수 있으며 기본 값은 1.0입니다.
 :::
 
@@ -223,7 +222,7 @@ gaiad tx bank send <보내는이_주소(sender_address)> <수신자_주소(desti
   --generate-only > unsignedSendTx.json
 ```
 
-::: tip 참고
+:::tip 참고
 `--generate-only` 명령어는 `gaiad`가 로컬 키베이스를 액세스하지 않습니다. `--generate-only` 플래그를 사용하시는 경우, `<보내는_사람_키_명칭_또는_주소(sender_key_name_or_address)>` 값은 키 명칭이 아닌 주소 값을 입력하세요.
 :::
 
@@ -275,7 +274,7 @@ gaiad query txs --events='message.sender=cosmos1...&message.action=withdraw_dele
 gaiad query txs --events='message.sender=cosmos1...' --page=1 --limit=20
 ```
 
-::: tip 참고
+:::tip 참고
 
 액션 태그는 관련 메시지의 `Type()` 명령이 응답하는 메시지 타입과 언제나 동일합니다.
 
@@ -576,7 +575,7 @@ gaiad tx gov submit-proposal param-change <프로포절/파일/경로/프로포�
 }
 ```
 
-::: danger 경고
+:::danger 경고
 
 현재 파라미터 변경 프로포절은 _검토_ 되지만, _검증_ 되지는 않기 때문에 모든 `값`은 유효하다는 것을 미리 확인해야 합니다(예, 올바른 타입과 한도 내). 예) `MaxValidator`(최대 검증인) 값은 소수점이 아닌 integer 값이어야 합니다.
 
@@ -584,7 +583,7 @@ gaiad tx gov submit-proposal param-change <프로포절/파일/경로/프로포�
 
 :::
 
-::: tip 참고
+:::tip 참고
 
 `SoftwareUpgrade` 프로포절은 현재 개발되지 않은 상황이므로 지원되지 않으며, 형태는 `Text` 프로포절과 동일합니다.
 
@@ -831,7 +830,7 @@ gaiad completion --zsh > gaiad_completion
 gaiad completion --zsh > gaiacli_completion
 ```
 
-::: tip 참고
+:::tip 참고
 대다수의 UNIX 시스템에서는 이런 스크립트를 `.bashrc` 또는 `.bash_profile`을 사용해 로딩할 수 있습니다:
 
 ```bash

@@ -1,9 +1,7 @@
 ---
-order: 3
 title: HD Wallets
+order: 2
 ---
-
-# HD Wallets
 
 Accounts in Cosmos are Hierarchical Deterministic (HD) Wallets. Originally specified in Bitcoin's [BIP32](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki), HD wallets are a special kind of wallet that let users derive any number of accounts from a single seed. To understand what that means, let us first define some terminology:
 
@@ -57,6 +55,6 @@ The process of derivating accounts from the seed is deterministic. This means th
 
 The funds stored in an account are controlled by the private key. This private key is generated using a one-way function from the mnemonic. If you lose the private key, you can retrieve it using the mnemonic. However, if you lose the mnemonic, you will lose access to all the derived private keys. Likewise, if someone gains access to your mnemonic, they gain access to all the associated accounts.
 
-::: danger
+:::danger
 **Do not lose or share your 24 words with anyone. To prevent theft or loss of funds, it is best to keep multiple copies of your mnemonic stored in safe, secure places. If someone is able to gain access to your mnemonic, they will fully control the accounts associated with them.**
 :::

@@ -1,5 +1,5 @@
 {
     "label": "Proto Docs",
     "position": 12,
-    "link": null
+    "link": { "type": "doc", "id": "proto/proto-docs" }
 }

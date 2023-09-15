@@ -5,4 +5,7 @@ module.exports = {
   optimization: {
     minimize: false,
   },
+  output: {
+    clean: true, // Clean the output directory before emit.
+  },  
 };

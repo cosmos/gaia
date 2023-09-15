@@ -1,9 +1,8 @@
 ---
-title: Cosmos Hub 4, Rho Upgrade
-order: 2
+title: Cosmos Hub 4, v8-Rho Upgrade Instructions
+order: 4
 ---
 <!-- markdown-link-check-disable -->
-# Cosmos Hub 4, v8-Rho Upgrade, Instructions
 
 This document describes the steps for validator and full node operators for the successful execution of the [v8-Rho Upgrade](https://github.com/cosmos/gaia/blob/main/docs/roadmap/cosmos-hub-roadmap-2.0.md#v8-rho-upgrade-expected-q1-2023), which contains the following main new features/improvement:
 
@@ -20,7 +19,6 @@ This document describes the steps for validator and full node operators for the 
 - [E2E tests](https://github.com/cosmos/gaia/tree/main/tests/e2e). The tests cover transactions/queries tests of different modules, including Bank, Distribution, Encode, Evidence, FeeGrant, Global Fee, Gov, IBC, packet forwarding middleware, Slashing, Staking, and Vesting module.
 - [#1941](https://github.com/cosmos/gaia/pull/1941) Fix packet forward configuration for e2e tests.
 - Use gaiad to swap out [Ignite](https://github.com/ignite/cli) in [liveness tests](https://github.com/cosmos/gaia/blob/main/.github/workflows/test.yml).
-
 
 TOC:
 
@@ -121,7 +119,7 @@ It may take several minutes to a few hours until validators with a total sum vot
 
 ### Method II: Upgrade using Cosmovisor
 
-> **Warning**  <span style="color:red">**Please Read Before Proceeding**</span><br/>
+> **Warning**  <span style={{color: 'red'}}>**Please Read Before Proceeding**</span><br/>
 > **Using Cosmovisor 1.2.0 and higher requires a lowercase naming convention for upgrade version directory. For Cosmovisor 1.1.0 and earlier, the upgrade version is not lowercased.**<br/>
 >
 > **For Example:** <br/>

@@ -10,7 +10,7 @@ order: 4
 
 모든 렛저 기기의 핵심에는 프라이빗 키를 생성하는데 사용되는 네모닉 시드 단어가 있습니다. 이 시드 단어는 처음 렛저 기기를 활성화할때 생성됩니다(또는 직접 입력됩니다). 이 네모닉 시드는 코스모스와 호환되며 이를 기반으로 코스모스 계정을 생성하실 수 있쓰빈다.
 
-::: danger
+:::danger
 12 단어 시드키를 분실하거나 그 누구와도 공유하지 마세요. 자금 탈취와 손실을 예방하기 위해서는 다수의 시드키 사본을 만드시고 금고 같이 본인만이 알 수 있는 안전한 곳에 보관하는 것을 추천합니다. 누군가 시드키를 가지게 된 경우, 관련 프라이빗 키와 모든 계정의 소유권을 가지게 됩니다.
 :::
 
@@ -43,7 +43,7 @@ go version go1.11.5 darwin/amd64
 - 렛저 기기에서 코스모스 앱을 실행하세요
 - 렛저키를 사용해 Gaiacli에서 새로운 계정을 생성하세요
 
-::: tip
+:::tip
 _키 명칭(keyName)_ 파라미터에 의미있는 값을 입력하세요. `ledger` 플래그는 `gaiad`가 렛저 기기의 시드를 사용해 계정을 생성할 것을 알립니다.
 :::
 
@@ -85,7 +85,7 @@ gaiad config chain_id cosmoshub-2
 gaiad query staking validators
 ```
 
-::: tip
+:::tip
 자체 풀노드를 로컬 환경에서 운영하기 위해서는 다음 [글](https://cosmos.network/docs/cosmos-hub/join-mainnet.html#setting-up-a-new-node)을 참고하세요.
 :::
 
@@ -97,7 +97,7 @@ gaiad query staking validators
 gaiad tx bank send --help # to see all available options.
 ```
 
-::: tip
+:::tip
 다음 명령어를 실행하기 전 렛저 기기에 비밀번호를 입력하시고 코스모스 앱을 실행하세요
 :::
 
@@ -128,7 +128,7 @@ gaiad keys list
 
 `gaiad`를 어떻게 사용해야되실지 모르시겠나요? 명령어 값을 비운 상태로 입력하여 각 명령어의 정보를 확인하실 수 있습니다.
 
-::: tip
+:::tip
 `gaiad` 명령어는 중첩된 형태로 존재합니다. `$ gaiad` 명령어는 최상위 명령어만을 표기합니다(status, config, query, tx). 하위 명령어에 대한 정보는 해당 명령어에 help 명령어를 추가하여 확인할 수 있습니다.
 
 예를 들어 `query` 명령어에 대한 정보를 확인하기 위해서는:

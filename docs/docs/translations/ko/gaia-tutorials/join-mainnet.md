@@ -6,11 +6,11 @@ order: 4
 <!-- markdown-link-check-disable -->
 # 최신 퍼블릭 테스트넷에 참가하기
 
-::: tip 최신 테스트넷
+:::tip 최신 테스트넷
 최신 테스트넷에 대한 정보는 다음의 [테스트넷 리포](https://github.com/cosmos/testnets)를 참고하세요. 어떤 코스모스 SDK 버전과 제네시스 파일에 대한 정보가 포합되어있습니다.
 :::
 
-::: warning
+:::warning
 **여기에서 더 진행하시기 전에 [gaia](./installation.md)가 꼭 설치되어있어야 합니다.**
 :::
 
@@ -24,7 +24,7 @@ order: 4
 gaiad init <your_custom_moniker>
 ```
 
-::: warning 참고
+:::warning 참고
 `--moniker`는 ASCII 캐릭터만을 지원합니다. Unicode 캐릭터를 이용하는 경우 노드 접근이 불가능할 수 있으니 참고하세요.
 :::
 
@@ -65,7 +65,7 @@ curl https://raw.githubusercontent.com/cosmos/launch/master/genesis.json > $HOME
 
 위 예시에서는 최신 테스트넷에 대한 정보가 포함되어있는 [launch repo](https://github.com/cosmos/launch)의 `latest` 디렉토리를 이용하는 것을 참고하세요.
 
-::: tip
+:::tip
 만약 다른 퍼블릭 테스트넷에 연결하신다면 [여기](./join-testnet.md)에 있는 정보를 확인하세요.
 :::
 
@@ -87,7 +87,7 @@ gaiad start
 
 ### 가스와 수수료에 대해서
 
-::: warning
+:::warning
 코스모스 메인넷에서는 `uatom` 단위가 표준 단위로 사용됩니다. `1atom = 1,000,000uatom`으로 환산됩니다.
 :::
 
@@ -103,7 +103,7 @@ gaiad start
 
 트랜잭션 피(`fees`)는 `gas` 수량과 `gasPrice`를 곱한 값입니다. 유저는 3개의 값 중 2개의 값을 입력하게 됩니다. `gasPrice`가 높을수록 트랜잭션이 블록에 포함될 확률이 높아집니다.
 
-::: tip
+:::tip
 메인넷 권장 `gas-prices`는 `0.0025uatom` 입니다.
 :::
 

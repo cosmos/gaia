@@ -1,9 +1,7 @@
 ---
-order: 2
 title: Delegator FAQ
+order: 4
 ---
-
-# Delegator FAQ
 
 ## What is a delegator?
 
@@ -82,7 +80,8 @@ Currently the liquid staking module facilitates the immediate conversion of stak
 Tokenization obviates this potential recovery measure, as an attacker could tokenize and immediately transfer staked tokens to another wallet. So, as an additional protective measure, the staking module permit accounts to selectively disable the tokenization of their stake with the `DisableTokenizeShares` message.
 
 The `DisableTokenizeShares` message is exposed by the staking module and can be executed as follows:
-```
+
+```sh
 gaiad tx staking disable-tokenize-shares --from mykey  
 ```
 

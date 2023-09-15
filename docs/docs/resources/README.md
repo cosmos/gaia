@@ -1,11 +1,7 @@
 ---
-order: false
-parent:
-  title: Resources
-  order: 8
+title: Resources
+order: 1
 ---
-
-# Resources
 
 This folder contains resources on the `gaia` software.
 

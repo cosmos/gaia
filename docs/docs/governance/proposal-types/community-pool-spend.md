@@ -10,7 +10,6 @@ Cosmos Hub launched with community-spend capabilities on December 11, 2019, effe
 
 🇪🇸 Esta página también está [disponible en español](https://github.com/raquetelio/CosmosCommunitySpend/blob/master/README%5BES_es%5D.md).
 
-
 ## Learn About the Community Pool
 
 ### How is the Community Pool funded?
@@ -40,6 +39,7 @@ Funds from the Cosmos Community Pool may be spent via successful governance prop
 We don't know 🤷
 
 The prevailing assumption is that funds should be spent in a way that brings value to the Cosmos Hub. However, there is debate about how to keep the fund sustainable. There is also some debate about who should receive funding. For example, part of the community believes that the funds should only be used for those who need funding most. Other topics of concern include:
+
 - retroactive grants
 - price negotiation
 - fund disbursal (eg. payments in stages; payments pegged to reduce volitiliy)
@@ -62,5 +62,3 @@ There are other funding options, most notably the Interchain Foundation's grant 
 **To build rapport.** Engaging publicly with the community is the opportunity to develop relationships with stakeholders and to educate them about the importance of your work. Unforeseen partnerships could arise, and overall the community may value your work more if they are involved as stakeholders.
 
 **To be more independent.** The Interchain Foundation (ICF) may not always be able to fund work. Having a more consistently funded source and having a report with its stakeholders means you can use your rapport to have confidence in your ability to secure funding without having to be dependent upon the ICF alone.
-
-

@@ -1,8 +1,8 @@
 ---
+title: Off-Chain Proposal Process
 order: 3
 ---
 
-# Off-Chain Proposal Process
 Once a proposal is on-chain, it cannot be changed to reflect feedback or new information. It's very important to give a proposal time off-chain to receive feedback, input, and edits before going on-chain and asking for votes. 
 
 The process of passing a proposal starts long before it goes on-chain!

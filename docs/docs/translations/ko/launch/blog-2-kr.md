@@ -4,7 +4,6 @@ order: 1
 ---
 
 <!-- markdown-link-check-disable -->
-# 코스모스 허브 메인넷의 세 가지 단계
 
 ## 메인넷 후 개발 로드맵과 유저들을 위한 필수 정보
 

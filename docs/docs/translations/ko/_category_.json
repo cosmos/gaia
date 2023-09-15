@@ -1,5 +1,5 @@
 {
     "label": "한국인",
     "position": 2,
-    "link": null
+    "link": { "type": "doc", "id": "translations/ko/README" }
 }

@@ -1,5 +1,5 @@
 {
     "label": "Delegators",
     "position": 4,
-    "link": null
+    "link": { "type": "doc", "id": "delegators/README" }
 }

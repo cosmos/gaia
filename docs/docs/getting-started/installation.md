@@ -1,9 +1,7 @@
 ---
-order: 2
 title: Installing Gaia
+order: 2
 ---
-
-# Installation
 
 This guide will explain how to install the `gaiad` binary and run the cli. With this binary installed on a server, you can participate on the mainnet as either a [Full Node](../hub-tutorials/join-mainnet.md) or a [Validator](../validators/validator-setup.md).
 
@@ -29,7 +27,7 @@ sudo apt-get install -y make gcc
 
 ## Install Go
 
-::: tip
+:::tip
 **Go 1.20+** is required.
 :::
 
@@ -69,7 +67,7 @@ cd gaia && make install
 
 If this command fails due to the following error message, you might have already set `LDFLAGS` prior to running this step.
 
-```
+```sh
 # github.com/cosmos/gaia/cmd/gaiad
 flag provided but not defined: -L
 usage: link [options] main.o
@@ -79,7 +77,7 @@ make: *** [install] Error 2
 
 Unset this environment variable and try again.
 
-```
+```sh
 LDFLAGS="" make install
 ```
 

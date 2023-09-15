@@ -1,9 +1,9 @@
 ---
 title: Cosmos Hub 3 Upgrade
-order: 5
+order: 1
 ---
+
 <!-- markdown-link-check-disable -->
-# Cosmos Hub 3 Upgrade Instructions
 
 The following document describes the necessary steps involved that validators and full node operators
 must take in order to upgrade from `cosmoshub-3` to `cosmoshub-4`. The Cosmos teams

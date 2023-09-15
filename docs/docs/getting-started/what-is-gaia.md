@@ -1,9 +1,7 @@
 ---
-order: 1
 title: What is Gaia?
+order: 1
 ---
-
-# What is Gaia?
 
 `gaia` is the name of the Cosmos SDK application for the Cosmos Hub. It comes with 2 main entrypoints:
 

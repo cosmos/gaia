@@ -1,9 +1,7 @@
 ---
-order: 1
 title: The Genesis File
+order: 1
 ---
-
-# Genesis File
 
 This document explains how the genesis file of the Cosmos Hub mainnet is structured. It also explains how you can build a genesis file for your own `gaia` testnet.
 

@@ -1,5 +1,8 @@
+---
+title: Cosmos Stargate Hub Upgrade Proposal 2 - Time to Upgrade
+---
+
 <!-- markdown-link-check-disable -->
-# Cosmos Stargate Hub Upgrade Proposal 2: Time to Upgrade
 
 ![Stargate Upgrade banner graphic](https://siasky.net/AADU5rg0GvapbrICLUk7SxZeMDrKo5Q8oLrpOwl71wXhnQ)
 

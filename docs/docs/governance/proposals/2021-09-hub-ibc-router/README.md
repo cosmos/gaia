@@ -1,9 +1,12 @@
+---
+title: Make the Cosmos Hub the IBC Router
+---
+
 <!-- markdown-link-check-disable -->
-# ⚛️ Make the Cosmos Hub the IBC Router ⚛️
 
 The following is a selection from the [Cosmos Whitepaper](https://v1.cosmos.network/resources/whitepaper):
 
-```
+```sh
 The Cosmos Hub connects to many other blockchains (or zones) via a novel inter-blockchain communication protocol. The Cosmos Hub tracks numerous token types and keeps record of the total number of tokens in each connected zone. Tokens can be transferred from one zone to another securely and quickly without the need for a liquid exchange between zones, because all inter-zone coin transfers go through the Cosmos Hub.
 
 ...

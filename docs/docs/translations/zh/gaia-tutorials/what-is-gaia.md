@@ -4,7 +4,6 @@ order: 1
 ---
 
 <!-- markdown-link-check-disable -->
-# Gaia是什么
 
 `gaia`是作为Cosmos SDK应用程序的Cosmos Hub的名称。它有两个主要的入口：
 

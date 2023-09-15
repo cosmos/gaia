@@ -1,9 +1,14 @@
-# ADR 002: Globalfee Module
+---
+title: ADR 002 - Globalfee Module
+order: 2
+---
 
 ## Changelog
+
 * 2023-06-12: Initial Draft
 
 ## Status
+
 ACCEPTED Implemented
 
 ## Context
@@ -12,21 +17,23 @@ The globalfee module was created to manage a parameter called `MinimumGasPricesP
 
 - In the globalfee module, several Cosmos SDK coins methods were redefined because of the allowance of zero-value coins in the `MinimumGasPricesParam`. The `MinimumGasPricesParam` is of `sdk.DecCoins` type. In the Cosmos SDK, `sdk.DecCoins` are [sanitized](https://github.com/cosmos/cosmos-sdk/blob/67f04e629623d4691c4b2e48806f7793a3aa211e/types/dec_coin.go#L160-L177) to remove zero-value coins. As a result, several methods from `sdk.Coins` were [redefined in the Gaia fee antehandler](https://github.com/cosmos/gaia/blob/890ab3aa2e5788537b0d2ebc9bafdc968340e0e5/x/globalfee/ante/fee_utils.go#L46-L104).
 
-- `BypassMinFeeMsgTypes` exists in `app.toml`, which means each node can define its own value. Thus, it's not clear whether a transaction containing bypass-messages will be exempted from paying a fee.
-
-- The fee check logic is only executed in `CheckTx`. This could enable malicious validators to change the fee check code and propose transactions that do not meet the fee requirement.
+* `BypassMinFeeMsgTypes` exists in `app.toml`, which means each node can define its own value. Thus, it's not clear whether a transaction containing bypass-messages will be exempted from paying a fee.
+* The fee check logic is only executed in `CheckTx`. This could enable malicious validators to change the fee check code and propose transactions that do not meet the fee requirement.
 
 ## Decision
+
 To fix these problems, the following changes are added to the globalfee module:
-- **ZeroCoins in `MinimumGasPricesParam`:**\
+* **ZeroCoins in `MinimumGasPricesParam`:**\
 Refactor the fee check logics, in order to use the Cosmos SDK coins' methods instead of the redefined methods.
-- **Bypass Message Types:**\
+* **Bypass Message Types:**\
 `BypassMinFeeMsgTypes` is refactored to be a param of the globalfee module, in order to make the bypass messages deterministic.
-- **Check Fees in `DeliverTx`:**\
+* **Check Fees in `DeliverTx`:**\
 The fee check is factored to executed in both `DeliverTx` and `CheckTx`. This is to prevent malicious validators from changing the fee check logic and allowing any transactions to pass fee check. As a consequence, `MinimumGasPricesParam` is introduced as a globalfee param.
 
 ### ZeroCoins in `MinimumGasPricesParam`
+
 #### Coins Split
+
 `CombinedFeeRequirement` refers to the fee requirement that takes into account both `globalFees` (`MinimumGasPricesParam` in the globalfee module) and `localFees` (`minimum-gas-prices` in `app.toml`). This requirement is calculated as the maximum value between `globalFees` and `localFees` for denomination exists `globalFees`.
 The allowance of zero coins in the `MinimumGasPricesParam` within the globalfee module implies that `CombinedFeeRequirement(globalFees, localFees)` also permits zero coins. Therefore, the `CombinedFeeRequirement` doesn't meet the requirements of certain `sdk.Coins` methods. For instance, the `DenomsSubsetOf` method requires coins that do not contain zero coins.
 
@@ -62,7 +69,9 @@ The `CombinedFeeRequirement` is split into zero and non-zero coins, forming `non
 	feeCoinsNonZeroDenom, feeCoinsZeroDenom := splitCoinsByDenoms(feeCoins, zeroCoinFeesDenomReq)
 
 ```
+
 #### Fee Checks
+
 The Workflow of feeCheck is shown below:
 ```mermaid
 ---
@@ -117,11 +126,14 @@ Please note that `feeCoins` does not contain zero coins. The fee coins are split
 
 
 ### Bypass Message Types
+
 `BypassMinFeeMsgTypes` was a setup in `config/app.toml` before the refactor. `BypassMinFeeMsgTypes` is refactored to be a param of the globalfee module to get a network level agreement. Correspondingly,`MaxTotalBypassMinFeeMsgGasUsage` is also introduced as a globalfee param.
 
 ### Fee Checks in  `DeliverTx`
+
 Implementing fee checks within the `DeliverTx` function introduces a few requirements:
-- **Deterministic Minimum Fee Requirement**: For the `DeliverTx` process, it is essential to have a deterministic minimum fee requirement. In `CheckTx`, fee is checked by the `CombinedFeeRequirement(globalFees, localFees)`, which considers both `minimum-gas-prices` from `config/app.toml` and `MinimumGasPricesParam` from the globalfee Params (For more details, see [globalfee.md](../modules/globalfee.md)). `CombinedFeeRequirement` contains non-deterministic part: `minimum-gas-prices` from `app.toml`. Therefore, `CombinedFeeRequirement` cannot be used in `DeliverTx`. In `DeliverTx`, only `MinimumGasPricesParam` in globalfee Params is used for fee verification. The code implementation is shown below. 
+
+* **Deterministic Minimum Fee Requirement**: For the `DeliverTx` process, it is essential to have a deterministic minimum fee requirement. In `CheckTx`, fee is checked by the `CombinedFeeRequirement(globalFees, localFees)`, which considers both `minimum-gas-prices` from `config/app.toml` and `MinimumGasPricesParam` from the globalfee Params (For more details, see [globalfee.md](../modules/globalfee.md)). `CombinedFeeRequirement` contains non-deterministic part: `minimum-gas-prices` from `app.toml`. Therefore, `CombinedFeeRequirement` cannot be used in `DeliverTx`. In `DeliverTx`, only `MinimumGasPricesParam` in globalfee Params is used for fee verification. The code implementation is shown below. 
 
 ```go
 func (mfd FeeDecorator) GetTxFeeRequired(ctx sdk.Context, tx sdk.FeeTx) (sdk.Coins, error) {
@@ -148,17 +160,19 @@ func (mfd FeeDecorator) GetTxFeeRequired(ctx sdk.Context, tx sdk.FeeTx) (sdk.Coi
 }
 ```
 
-- **Deterministic Bypass Parameters**: The decision of whether a message can bypass the minimum fee has to be deterministic as well. To ensure this, `BypassMinFeeMsgTypes` and `MaxTotalBypassMinFeeMsgGasUsage` parameters are moved to a persistent store.
+* **Deterministic Bypass Parameters**: The decision of whether a message can bypass the minimum fee has to be deterministic as well. To ensure this, `BypassMinFeeMsgTypes` and `MaxTotalBypassMinFeeMsgGasUsage` parameters are moved to a persistent store.
 
-- **Module Initialization Order**: The genutils module must be initialized before the globalfee module. This is due to the `DeliverGenTxs` in the genutils module, is called during `initGenesis`. This function executes `DeliverTx`, which subsequently calls the AnteHandle in FeeDecorator, triggering the fee check in `DeliverTx`.
+* **Module Initialization Order**: The genutils module must be initialized before the globalfee module. This is due to the `DeliverGenTxs` in the genutils module, is called during `initGenesis`. This function executes `DeliverTx`, which subsequently calls the AnteHandle in FeeDecorator, triggering the fee check in `DeliverTx`.
   To prevent the `DeliverGenTxs` go through a fee check, the initialization of the globalfee module should occur after the genutils module. This sequencing ensures that all necessary components are in place when the fee check occurs. See [Gaia Issue #2489](https://github.com/cosmos/gaia/issues/2489) for more context.
 
 ## Consequences
+
 ### Positive
+
 This refactor results in code that is easier to maintain. It prevents malicious validators from escaping fee checks and make the bypass messages work at network level.
 ### Negative
-The introduction of FeeDecorator has replaced the usage of `MempoolFeeDecorator` in the Cosmos SDK. Currently, if both FeeDecorator and MempoolFeeDecorator are added to the AnteDecorator chain, it will result in redundant checks. However, there's potential for FeeDecorator and MempoolFeeDecorator to become incompatible in the future, depending on updates to the Cosmos SDK.
 
+The introduction of FeeDecorator has replaced the usage of `MempoolFeeDecorator` in the Cosmos SDK. Currently, if both FeeDecorator and MempoolFeeDecorator are added to the AnteDecorator chain, it will result in redundant checks. However, there's potential for FeeDecorator and MempoolFeeDecorator to become incompatible in the future, depending on updates to the Cosmos SDK.
 
 ## References
 

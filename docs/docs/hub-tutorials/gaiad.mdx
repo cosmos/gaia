@@ -1,9 +1,7 @@
 ---
-order: 5
 title: Interacting with Gaiad (CLI)
+order: 5
 ---
-
-# Gaia Client
 
 ## Gaia Daemon
 
@@ -207,7 +205,7 @@ After receiving tokens to your address, you can view your account's balance by t
 gaiad query account account_cosmos
 ```
 
-::: warning Note
+:::warning Note
 When you query an account balance with zero tokens, you will get this error: `No account with address <account_cosmos> was found in the state.` This can also happen if you fund the account before your node has fully synced with the chain. These are both normal.
 
 :::

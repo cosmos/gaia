@@ -1,5 +1,8 @@
+---
+title: Signaling Proposal - Deployment of Gravity Bridge on the Cosmos Hub
+---
+
 <!-- markdown-link-check-disable -->
-# Signaling Proposal - Deployment of Gravity Bridge on the Cosmos Hub
 
 ![Gravity Bridge](https://raw.githubusercontent.com/althea-net/cosmos-gravity-bridge/main/gravity-bridge.svg)
 

@@ -17,6 +17,12 @@ export const currentParams = {
     blockHeight: '',
     governanceProposalLink: '',
   },
+  gaidExecutionOutput: {
+    text : ''
+  },
+  proposals : {
+    numberOfValidatorsProp: 'https://www.mintscan.io/cosmos/proposals/797',
+  },
   auth: {
     MaxMemoCharacters: '512',
     SigVerifyCostED25519: '590',

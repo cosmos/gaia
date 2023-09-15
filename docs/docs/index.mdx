@@ -4,13 +4,16 @@ order: 1
 sidebar_position: 1
 ---
 
+import { Var } from '@site/src/js/Var';
+import { currentParams } from '@site/docs/governance/current-parameters.js';
+
 ![Welcome to the Cosmos Hub](images/cosmos-hub-image.jpg)
 
 The Cosmos Hub is the first of [thousands of interconnected blockchains](https://cosmos.network) that will eventually comprise the **Cosmos Network**. The primary token of the Cosmos Hub is the **ATOM**, but the Hub will support many tokens in the future.
 
 ## The ATOM
 
-Do you have ATOM tokens? With ATOM, you have the superpower to contribute to the security and governance of the Cosmos Hub. Delegate your ATOM to one or more of the 125 validators on the Cosmos Hub blockchain to earn more ATOM through Proof-of-Stake. You can also vote with your ATOM to influence the future of the Cosmos Hub through on-chain governance proposals.
+Do you have ATOM tokens? With ATOM, you have the superpower to contribute to the security and governance of the Cosmos Hub. Delegate your ATOM to one or more of the <Var children={currentParams.staking.MaxValidators} /> validators on the Cosmos Hub blockchain to earn more ATOM through Proof-of-Stake. You can also vote with your ATOM to influence the future of the Cosmos Hub through on-chain governance proposals.
 
 Learn more about [being a delegator](../delegators/delegator-faq.md), learn about [the security risks](../delegators/delegator-security.md), and start participating with one of the following wallets.
 

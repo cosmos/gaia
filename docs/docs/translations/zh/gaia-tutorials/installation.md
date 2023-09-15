@@ -18,7 +18,7 @@ source ~/.bash_profile
 ```
 
 :::tip
-Cosmos SDK 需要安装**Go 1.12+**
+Cosmos SDK 需要安装**Go 1.20.x+**
 :::
 
 ### 安装二进制执行程序

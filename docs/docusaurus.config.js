@@ -6,6 +6,9 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 // const lastVersion = "v11.0.0";
 const googleTrackingId = 'G-EB7MEE3TJ1';
+const algoliaAppKey = '9AHLYCX3HA';
+const algoliaAPIKey = '976ab1e596812cf4fbe21a3d4d1c9830';
+const algoliaIndexName = 'cosmos_network';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -240,9 +243,9 @@ const config = {
         additionalLanguages: ['protobuf', 'go-module'], // https://prismjs.com/#supported-languages
       },
       algolia: {
-        appId: 'QLS2QSP47E',
-        apiKey: '4d9feeb481e3cfef8f91bbc63e090042',
-        indexName: 'cosmos_network',
+        appId: algoliaAppKey,
+        apiKey: algoliaAPIKey,
+        indexName: algoliaIndexName,
         contextualSearch: false,
       },
     }),

@@ -3,6 +3,10 @@ title: 安装 Gaia
 order: 2
 ---
 
+import { Var } from '@site/src/js/Var';
+import { currentParams } from '@site/docs/governance/current-parameters.js';
+
+
 <!-- markdown-link-check-disable -->
 
 本教程将详细说明如何在你的系统上安装`gaiad`和`gaiad`。安装后，你可以作为[全节点](./join-mainnet.md)或是[验证人节点](./validators/validator-setup.md)加入到主网。
@@ -18,7 +22,7 @@ source ~/.bash_profile
 ```
 
 :::tip
-Cosmos SDK 需要安装**Go 1.12+**
+Cosmos SDK 需要安装** <Var children={currentParams.currentRelease.golangVersion} /> **
 :::
 
 ### 安装二进制执行程序
@@ -39,7 +43,6 @@ cd gaia && make install
 等`gaiad`和`gaiad`可执行程序安装完之后，请检查:
 
 ```bash
-gaiad version --long
 gaiad version --long
 ```
 

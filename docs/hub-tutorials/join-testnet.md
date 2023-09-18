@@ -22,7 +22,7 @@ The table below shows all past and upcoming versions of the public testnet.
 
 |   Release   | Upgrade Block Height |    Upgrade Date     |
 | :---------: | :------------------: | :-----------------: |
-| v13.0.0-rc0 |         TBA          |         TBA         |
+| v13.0.0-rc0 |      17,996,550      |     2023-09-20      |
 | v12.0.0-rc0 |      17,550,150      |     2023-08-23      |
 | v11.0.0-rc0 |      17,107,825      |     2023-07-26      |
 | v10.0.0-rc0 |      16,117,530      |     2023-05-24      |

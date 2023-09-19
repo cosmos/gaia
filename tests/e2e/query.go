@@ -22,9 +22,6 @@ import (
 )
 
 func queryGaiaTx(endpoint, txHash string) error {
-
-	fmt.Println(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs/%s", endpoint, txHash))
-
 	resp, err := http.Get(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs/%s", endpoint, txHash))
 	if err != nil {
 		return fmt.Errorf("failed to execute HTTP request: %w", err)
@@ -129,8 +126,6 @@ func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string
 
 func queryUnbondingDelegation(endpoint string, validatorAddr string, delegatorAddr string) (stakingtypes.QueryUnbondingDelegationResponse, error) {
 	var res stakingtypes.QueryUnbondingDelegationResponse
-
-	fmt.Println(fmt.Sprintf(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators/%s/delegations/%s/unbonding_delegation", endpoint, validatorAddr, delegatorAddr)))
 	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators/%s/delegations/%s/unbonding_delegation", endpoint, validatorAddr, delegatorAddr))
 	if err != nil {
 		return res, err

@@ -44,7 +44,7 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 			5*time.Second,
 		)
 
-		// alice sends token to bob
+		// alice sends tokens to bob
 		s.execBankSend(s.chainA, 0, alice.String(), bob.String(), tokenAmount.String(), standardFees.String(), false)
 
 		s.Require().Eventually(
@@ -64,7 +64,7 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 			5*time.Second,
 		)
 
-		// save the current account balances of alice and bob
+		// save the updated account balances of alice and bob
 		beforeAliceUAtomBalance, beforeBobUAtomBalance = afterAliceUAtomBalance, afterBobUAtomBalance
 
 		// alice sends tokens to bob and charlie, at once

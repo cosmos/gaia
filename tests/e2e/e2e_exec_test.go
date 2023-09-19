@@ -466,6 +466,7 @@ func (s *IntegrationTestSuite) runGovExec(c *chain, valIdx int, submitterAddr, g
 // 	})
 // }
 
+// TODO rename to execDelegate for consistency
 func (s *IntegrationTestSuite) executeDelegate(c *chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) { //nolint:unparam
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
@@ -493,8 +494,7 @@ func (s *IntegrationTestSuite) executeDelegate(c *chain, valIdx int, amount, val
 	s.T().Logf("%s successfully delegated %s to %s", delegatorAddr, amount, valOperAddress)
 }
 
-func (s *IntegrationTestSuite) executeUnbondDelegation(c *chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) { //nolint:unparam
-
+func (s *IntegrationTestSuite) execUnbondDelegation(c *chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) { //nolint:unparam
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -548,8 +548,8 @@ func (s *IntegrationTestSuite) executeCancelUnbondingDelegation(c *chain, valIdx
 	s.T().Logf("%s successfully undelegated %s to %s", delegatorAddr, amount, valOperAddress)
 }
 
+// TODO rename to execDelegate for consistency
 func (s *IntegrationTestSuite) executeRedelegate(c *chain, valIdx int, amount, originalValOperAddress,
-
 	newValOperAddress, delegatorAddr, home, delegateFees string,
 ) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
@@ -698,8 +698,6 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 	})
 	s.Require().NoError(err)
 
-	fmt.Println(gaiaCommand)
-
 	err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
 		Context:      ctx,
 		Detach:       false,
@@ -710,9 +708,6 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 
 	stdOut := outBuf.Bytes()
 	stdErr := errBuf.Bytes()
-
-	fmt.Println("stdOut", string(stdOut))
-	fmt.Println("stdErr", string(stdErr))
 
 	if !validation(stdOut, stdErr) {
 		s.Require().FailNowf("Exec validation failed", "stdout: %s, stderr: %s",

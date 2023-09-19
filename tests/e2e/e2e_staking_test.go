@@ -85,7 +85,7 @@ func (s *IntegrationTestSuite) testStaking() {
 	)
 
 	// Alice unbonds all her uatom delegation from Validator A
-	s.executeUnbondDelegation(s.chainA, 0, currDelegation.String(), validatorAddressA, delegatorAddress.String(), gaiaHomePath, fees.String())
+	s.execUnbondDelegation(s.chainA, 0, currDelegation.String(), validatorAddressA, delegatorAddress.String(), gaiaHomePath, fees.String())
 
 	var (
 		ubdDelegationEntry types.UnbondingDelegationEntry

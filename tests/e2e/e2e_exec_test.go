@@ -493,6 +493,61 @@ func (s *IntegrationTestSuite) executeDelegate(c *chain, valIdx int, amount, val
 	s.T().Logf("%s successfully delegated %s to %s", delegatorAddr, amount, valOperAddress)
 }
 
+func (s *IntegrationTestSuite) executeUnbondDelegation(c *chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) { //nolint:unparam
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx staking unbond %s", c.id)
+
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		stakingtypes.ModuleName,
+		"unbond",
+		valOperAddress,
+		amount,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, delegateFees),
+		"--keyring-backend=test",
+		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
+	s.T().Logf("%s successfully undelegated %s to %s", delegatorAddr, amount, valOperAddress)
+}
+
+func (s *IntegrationTestSuite) executeCancelUnbondingDelegation(c *chain, valIdx int, amount, valOperAddress, creationHeight, delegatorAddr, home, delegateFees string) { //nolint:unparam
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx staking cancel-unbond %s", c.id)
+
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		stakingtypes.ModuleName,
+		"cancel-unbond",
+		valOperAddress,
+		amount,
+		creationHeight,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, delegateFees),
+		"--keyring-backend=test",
+		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
+	s.T().Logf("%s successfully undelegated %s to %s", delegatorAddr, amount, valOperAddress)
+}
+
 func (s *IntegrationTestSuite) executeRedelegate(c *chain, valIdx int, amount, originalValOperAddress,
 
 	newValOperAddress, delegatorAddr, home, delegateFees string,

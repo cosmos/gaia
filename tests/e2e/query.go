@@ -127,6 +127,21 @@ func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string
 	return res, nil
 }
 
+func queryUnbondingDelegation(endpoint string, validatorAddr string, delegatorAddr string) (stakingtypes.QueryUnbondingDelegationResponse, error) {
+	var res stakingtypes.QueryUnbondingDelegationResponse
+
+	fmt.Println(fmt.Sprintf(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators/%s/delegations/%s/unbonding_delegation", endpoint, validatorAddr, delegatorAddr)))
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators/%s/delegations/%s/unbonding_delegation", endpoint, validatorAddr, delegatorAddr))
+	if err != nil {
+		return res, err
+	}
+
+	if err = cdc.UnmarshalJSON(body, &res); err != nil {
+		return res, err
+	}
+	return res, nil
+}
+
 func queryDelegatorWithdrawalAddress(endpoint string, delegatorAddr string) (disttypes.QueryDelegatorWithdrawAddressResponse, error) {
 	var res disttypes.QueryDelegatorWithdrawAddressResponse
 

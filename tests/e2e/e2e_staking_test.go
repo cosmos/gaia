@@ -107,7 +107,7 @@ func (s *IntegrationTestSuite) testStaking() {
 	)
 
 	// cancel the full amount of unbonding delegations from Validator A
-	s.executeCancelUnbondingDelegation(
+	s.execCancelUnbondingDelegation(
 		s.chainA,
 		0,
 		currDelegation.String(),

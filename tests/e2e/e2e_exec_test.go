@@ -494,7 +494,7 @@ func (s *IntegrationTestSuite) executeDelegate(c *chain, valIdx int, amount, val
 	s.T().Logf("%s successfully delegated %s to %s", delegatorAddr, amount, valOperAddress)
 }
 
-func (s *IntegrationTestSuite) execUnbondDelegation(c *chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) { //nolint:unparam
+func (s *IntegrationTestSuite) execUnbondDelegation(c *chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -520,7 +520,7 @@ func (s *IntegrationTestSuite) execUnbondDelegation(c *chain, valIdx int, amount
 	s.T().Logf("%s successfully undelegated %s to %s", delegatorAddr, amount, valOperAddress)
 }
 
-func (s *IntegrationTestSuite) executeCancelUnbondingDelegation(c *chain, valIdx int, amount, valOperAddress, creationHeight, delegatorAddr, home, delegateFees string) { //nolint:unparam
+func (s *IntegrationTestSuite) execCancelUnbondingDelegation(c *chain, valIdx int, amount, valOperAddress, creationHeight, delegatorAddr, home, delegateFees string) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()

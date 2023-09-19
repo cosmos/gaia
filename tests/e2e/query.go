@@ -22,6 +22,9 @@ import (
 )
 
 func queryGaiaTx(endpoint, txHash string) error {
+
+	fmt.Println(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs/%s", endpoint, txHash))
+
 	resp, err := http.Get(fmt.Sprintf("%s/cosmos/tx/v1beta1/txs/%s", endpoint, txHash))
 	if err != nil {
 		return fmt.Errorf("failed to execute HTTP request: %w", err)
@@ -33,11 +36,14 @@ func queryGaiaTx(endpoint, txHash string) error {
 	}
 
 	var result map[string]interface{}
+
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return fmt.Errorf("failed to read response body: %w", err)
 	}
 
 	txResp := result["tx_response"].(map[string]interface{})
+
+	// fmt.Printf("%#+v\n", txResp)
 
 	if v := txResp["code"]; v.(float64) != 0 {
 		return fmt.Errorf("tx %s failed with status code %v", txHash, v)

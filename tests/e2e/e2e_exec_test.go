@@ -284,6 +284,44 @@ func (s *IntegrationTestSuite) execBankSend(
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.expectErrExecValidation(c, valIdx, expectErr))
 }
 
+func (s *IntegrationTestSuite) execBankMultiSend(
+	c *chain,
+	valIdx int,
+	from string,
+	to []string,
+	amt string,
+	fees string,
+	expectErr bool,
+	opt ...flagOption,
+) {
+	// TODO remove the hardcode opt after refactor, all methods should accept custom flags
+	opt = append(opt, withKeyValue(flagFees, fees))
+	opt = append(opt, withKeyValue(flagFrom, from))
+	opts := applyOptions(c.id, opt)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("sending %s tokens from %s to %s on chain %s", amt, from, to, c.id)
+
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		banktypes.ModuleName,
+		"multi-send",
+		from,
+	}
+
+	gaiaCommand = append(gaiaCommand, to...)
+	gaiaCommand = append(gaiaCommand, amt, "-y")
+
+	for flag, value := range opts {
+		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.expectErrExecValidation(c, valIdx, expectErr))
+}
+
 type txBankSend struct {
 	from      string
 	to        string
@@ -605,6 +643,8 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 	})
 	s.Require().NoError(err)
 
+	fmt.Println(gaiaCommand)
+
 	err = s.dkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
 		Context:      ctx,
 		Detach:       false,
@@ -615,6 +655,9 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 
 	stdOut := outBuf.Bytes()
 	stdErr := errBuf.Bytes()
+
+	fmt.Println("stdOut", string(stdOut))
+	fmt.Println("stdErr", string(stdErr))
 
 	if !validation(stdOut, stdErr) {
 		s.Require().FailNowf("Exec validation failed", "stdout: %s, stderr: %s",

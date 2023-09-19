@@ -11,9 +11,8 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 	s.Run("send_photon_between_accounts", func() {
 		var (
 			err           error
-			valIdx        = 0
 			c             = s.chainA
-			chainEndpoint = fmt.Sprintf("http://%s", s.valResources[c.id][valIdx].GetHostPort("1317/tcp"))
+			chainEndpoint = fmt.Sprintf("http://%s", s.valResources[c.id][0].GetHostPort("1317/tcp"))
 		)
 
 		// define one sender and two recipient accounts

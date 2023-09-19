@@ -11,8 +11,9 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 	s.Run("send_photon_between_accounts", func() {
 		var (
 			err           error
+			valIdx        = 0
 			c             = s.chainA
-			chainEndpoint = fmt.Sprintf("http://%s", s.valResources[c.id][0].GetHostPort("1317/tcp"))
+			chainEndpoint = fmt.Sprintf("http://%s", s.valResources[c.id][valIdx].GetHostPort("1317/tcp"))
 		)
 
 		// define one sender and two recipient accounts
@@ -45,7 +46,7 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 		)
 
 		// alice sends tokens to bob
-		s.execBankSend(s.chainA, 0, alice.String(), bob.String(), tokenAmount.String(), standardFees.String(), false)
+		s.execBankSend(s.chainA, valIdx, alice.String(), bob.String(), tokenAmount.String(), standardFees.String(), false)
 
 		s.Require().Eventually(
 			func() bool {
@@ -68,7 +69,7 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 		beforeAliceUAtomBalance, beforeBobUAtomBalance = afterAliceUAtomBalance, afterBobUAtomBalance
 
 		// alice sends tokens to bob and charlie, at once
-		s.execBankMultiSend(s.chainA, 0, alice.String(), []string{bob.String(), charlie.String()}, tokenAmount.String(), standardFees.String(), false)
+		s.execBankMultiSend(s.chainA, valIdx, alice.String(), []string{bob.String(), charlie.String()}, tokenAmount.String(), standardFees.String(), false)
 
 		s.Require().Eventually(
 			func() bool {

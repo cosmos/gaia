@@ -20,5 +20,5 @@ jobs:
         uses: cosmos/gaia/.github/workflows/test.yml@main
       - name: run-simulations
         uses: cosmos/gaia/.github/workflows/sims.yml@main
-
-    
+      - name: end-message
+        run: echo "Finished job"

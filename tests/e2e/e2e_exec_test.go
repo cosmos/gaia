@@ -520,7 +520,6 @@ func (s *IntegrationTestSuite) execUnbondDelegation(c *chain, valIdx int, amount
 }
 
 func (s *IntegrationTestSuite) execCancelUnbondingDelegation(c *chain, valIdx int, amount, valOperAddress, creationHeight, delegatorAddr, home, delegateFees string) {
-
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 

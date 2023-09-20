@@ -59,7 +59,7 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api string) {
 		s.Require().Equal(vestingBalance.AmountOf(uatomDenom), balance.Amount)
 
 		// Delegate coins should succeed
-		s.executeDelegate(chain, valIdx, vestingDelegationAmount.String(), valOpAddr,
+		s.execDelegate(chain, valIdx, vestingDelegationAmount.String(), valOpAddr,
 			vestingDelayedAcc.String(), gaiaHomePath, vestingDelegationFees.String())
 
 		// Validate delegation successful
@@ -128,7 +128,7 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api string) {
 		s.Require().Equal(vestingBalance.AmountOf(uatomDenom), balance.Amount)
 
 		// Delegate coins should succeed
-		s.executeDelegate(chain, valIdx, vestingDelegationAmount.String(),
+		s.execDelegate(chain, valIdx, vestingDelegationAmount.String(),
 			valOpAddr, continuousVestingAcc.String(), gaiaHomePath, vestingDelegationFees.String())
 
 		// Validate delegation successful
@@ -267,7 +267,7 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api string) { //nolint
 		}
 
 		// Delegate coins should succeed
-		s.executeDelegate(chain, valIdx, vestingDelegationAmount.String(), valOpAddr,
+		s.execDelegate(chain, valIdx, vestingDelegationAmount.String(), valOpAddr,
 			periodicVestingAddr, gaiaHomePath, vestingDelegationFees.String())
 
 		// Validate delegation successful

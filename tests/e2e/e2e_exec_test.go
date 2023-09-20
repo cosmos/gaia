@@ -466,8 +466,7 @@ func (s *IntegrationTestSuite) runGovExec(c *chain, valIdx int, submitterAddr, g
 // 	})
 // }
 
-// TODO rename to execDelegate for consistency
-func (s *IntegrationTestSuite) executeDelegate(c *chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) { //nolint:unparam
+func (s *IntegrationTestSuite) execDelegate(c *chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) { //nolint:unparam
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
@@ -545,11 +544,10 @@ func (s *IntegrationTestSuite) execCancelUnbondingDelegation(c *chain, valIdx in
 	}
 
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
-	s.T().Logf("%s successfully undelegated %s to %s", delegatorAddr, amount, valOperAddress)
+	s.T().Logf("%s successfully canceled unbonding %s to %s", delegatorAddr, amount, valOperAddress)
 }
 
-// TODO rename to execRedelegate for consistency
-func (s *IntegrationTestSuite) executeRedelegate(c *chain, valIdx int, amount, originalValOperAddress,
+func (s *IntegrationTestSuite) execRedelegate(c *chain, valIdx int, amount, originalValOperAddress,
 	newValOperAddress, delegatorAddr, home, delegateFees string,
 ) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)

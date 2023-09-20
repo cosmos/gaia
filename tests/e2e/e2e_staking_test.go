@@ -29,7 +29,7 @@ func (s *IntegrationTestSuite) testStaking() {
 	delegation := sdk.NewCoin(uatomDenom, delegationAmount) // 500 atom
 
 	// Alice delegate uatom to Validator A
-	s.executeDelegate(s.chainA, 0, delegation.String(), validatorAddressA, delegatorAddress.String(), gaiaHomePath, fees.String())
+	s.execDelegate(s.chainA, 0, delegation.String(), validatorAddressA, delegatorAddress.String(), gaiaHomePath, fees.String())
 
 	// Validate delegation successful
 	s.Require().Eventually(
@@ -48,7 +48,7 @@ func (s *IntegrationTestSuite) testStaking() {
 	redelegation := sdk.NewCoin(uatomDenom, redelegationAmount) // 250 atom
 
 	// Alice re-delegate half of her uatom delegation from Validator A to Validator B
-	s.executeRedelegate(s.chainA, 0, redelegation.String(), validatorAddressA, validatorAddressB, delegatorAddress.String(), gaiaHomePath, fees.String())
+	s.execRedelegate(s.chainA, 0, redelegation.String(), validatorAddressA, validatorAddressB, delegatorAddress.String(), gaiaHomePath, fees.String())
 
 	// Validate re-delegation successful
 	s.Require().Eventually(

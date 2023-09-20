@@ -548,7 +548,7 @@ func (s *IntegrationTestSuite) execCancelUnbondingDelegation(c *chain, valIdx in
 	s.T().Logf("%s successfully undelegated %s to %s", delegatorAddr, amount, valOperAddress)
 }
 
-// TODO rename to execDelegate for consistency
+// TODO rename to execRedelegate for consistency
 func (s *IntegrationTestSuite) executeRedelegate(c *chain, valIdx int, amount, originalValOperAddress,
 	newValOperAddress, delegatorAddr, home, delegateFees string,
 ) {

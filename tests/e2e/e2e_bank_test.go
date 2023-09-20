@@ -28,15 +28,16 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 			afterBobUAtomBalance,
 			afterCharlieUAtomBalance sdk.Coin
 
+		// get balances of sender and recipient accounts
 		s.Require().Eventually(
 			func() bool {
 				beforeAliceUAtomBalance, err = getSpecificBalance(chainEndpoint, alice.String(), uatomDenom)
 				s.Require().NoError(err)
 
-				beforeBobUAtomBalance, err = getSpecificBalance(chainEndpoint, alice.String(), uatomDenom)
+				beforeBobUAtomBalance, err = getSpecificBalance(chainEndpoint, bob.String(), uatomDenom)
 				s.Require().NoError(err)
 
-				beforeCharlieUAtomBalance, err = getSpecificBalance(chainEndpoint, alice.String(), uatomDenom)
+				beforeCharlieUAtomBalance, err = getSpecificBalance(chainEndpoint, charlie.String(), uatomDenom)
 				s.Require().NoError(err)
 
 				return beforeAliceUAtomBalance.IsValid() && beforeBobUAtomBalance.IsValid() && beforeCharlieUAtomBalance.IsValid()
@@ -48,6 +49,7 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 		// alice sends tokens to bob
 		s.execBankSend(s.chainA, valIdx, alice.String(), bob.String(), tokenAmount.String(), standardFees.String(), false)
 
+		// check that the transfer was successful
 		s.Require().Eventually(
 			func() bool {
 				afterAliceUAtomBalance, err = getSpecificBalance(chainEndpoint, alice.String(), uatomDenom)
@@ -61,7 +63,7 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 
 				return decremented && incremented
 			},
-			time.Minute,
+			10*time.Second,
 			5*time.Second,
 		)
 
@@ -89,7 +91,7 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 
 				return decremented && incremented
 			},
-			time.Minute,
+			10*time.Second,
 			5*time.Second,
 		)
 	})

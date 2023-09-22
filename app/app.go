@@ -49,7 +49,7 @@ import (
 	"github.com/cosmos/gaia/v14/app/keepers"
 	gaiaappparams "github.com/cosmos/gaia/v14/app/params"
 	"github.com/cosmos/gaia/v14/app/upgrades"
-	v13 "github.com/cosmos/gaia/v14/app/upgrades/v13"
+	v14 "github.com/cosmos/gaia/v14/app/upgrades/v14"
 	"github.com/cosmos/gaia/v14/x/globalfee"
 )
 
@@ -57,7 +57,7 @@ var (
 	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
 
-	Upgrades = []upgrades.Upgrade{v13.Upgrade}
+	Upgrades = []upgrades.Upgrade{v14.Upgrade}
 )
 
 var (

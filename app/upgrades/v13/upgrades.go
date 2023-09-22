@@ -5,7 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	"github.com/cosmos/gaia/v13/app/keepers"
+	"github.com/cosmos/gaia/v14/app/keepers"
 )
 
 func CreateUpgradeHandler(

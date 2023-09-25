@@ -66,7 +66,7 @@ An exception are PRs open via the Github mergify integration (i.e., backported P
 
 ### Changelog
 
-For PRs that are changing production code, please add a changelog entry in `.changelog` (for details, see [contributing guidelines](../../CONTRIBUTING.md#changelog)). 
+For PRs that are changing production code, please add a changelog entry in `.changelog` (for details, see [contributing guidelines](./CONTRIBUTING.md#changelog)). 
 
 To manage and generate the changelog on Gaia, we currently use [unclog](https://github.com/informalsystems/unclog).
 

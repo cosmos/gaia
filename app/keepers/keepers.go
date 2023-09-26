@@ -155,13 +155,6 @@ func NewAppKeeper(
 
 	appKeepers.CapabilityKeeper.Seal()
 
-	appKeepers.CrisisKeeper = crisiskeeper.NewKeeper(
-		appKeepers.GetSubspace(crisistypes.ModuleName),
-		invCheckPeriod,
-		appKeepers.BankKeeper,
-		authtypes.FeeCollectorName,
-	)
-
 	// Add normal keepers
 	appKeepers.AccountKeeper = authkeeper.NewAccountKeeper(
 		appCodec,
@@ -176,6 +169,13 @@ func NewAppKeeper(
 		appKeepers.AccountKeeper,
 		appKeepers.GetSubspace(banktypes.ModuleName),
 		blockedAddress,
+	)
+
+	appKeepers.CrisisKeeper = crisiskeeper.NewKeeper(
+		appKeepers.GetSubspace(crisistypes.ModuleName),
+		invCheckPeriod,
+		appKeepers.BankKeeper,
+		authtypes.FeeCollectorName,
 	)
 
 	appKeepers.AuthzKeeper = authzkeeper.NewKeeper(

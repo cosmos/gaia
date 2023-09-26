@@ -33,12 +33,12 @@ func queryGaiaTx(endpoint, txHash string) error {
 	}
 
 	var result map[string]interface{}
+
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return fmt.Errorf("failed to read response body: %w", err)
 	}
 
 	txResp := result["tx_response"].(map[string]interface{})
-
 	if v := txResp["code"]; v.(float64) != 0 {
 		return fmt.Errorf("tx %s failed with status code %v", txHash, v)
 	}
@@ -111,6 +111,19 @@ func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string
 	var res stakingtypes.QueryDelegationResponse
 
 	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators/%s/delegations/%s", endpoint, validatorAddr, delegatorAddr))
+	if err != nil {
+		return res, err
+	}
+
+	if err = cdc.UnmarshalJSON(body, &res); err != nil {
+		return res, err
+	}
+	return res, nil
+}
+
+func queryUnbondingDelegation(endpoint string, validatorAddr string, delegatorAddr string) (stakingtypes.QueryUnbondingDelegationResponse, error) {
+	var res stakingtypes.QueryUnbondingDelegationResponse
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators/%s/delegations/%s/unbonding_delegation", endpoint, validatorAddr, delegatorAddr))
 	if err != nil {
 		return res, err
 	}

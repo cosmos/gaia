@@ -13,7 +13,6 @@ import (
 	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	gaiaparams "github.com/cosmos/gaia/v11/app/params"
 	"github.com/cosmos/gaia/v11/x/globalfee/types"
@@ -156,11 +155,11 @@ func setupTestStore(t *testing.T) (sdk.Context, gaiaparams.EncodingConfig, param
 		Time:   time.Date(2020, time.April, 22, 12, 0, 0, 0, time.UTC),
 	}, false, log.NewNopLogger())
 
-	subspace := paramtypes.NewSubspace(encCfg.Marshaler,
+	subspace := paramstypes.NewSubspace(encCfg.Marshaler,
 		encCfg.Amino,
 		keyParams,
 		tkeyParams,
-		paramtypes.ModuleName,
+		paramstypes.ModuleName,
 	)
 	return ctx, encCfg, subspace
 }

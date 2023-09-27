@@ -13,9 +13,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
-	"github.com/cosmos/gaia/v13/ante"
-	gaiaapp "github.com/cosmos/gaia/v13/app"
-	gaiahelpers "github.com/cosmos/gaia/v13/app/helpers"
+	"github.com/cosmos/gaia/v14/ante"
+	gaiaapp "github.com/cosmos/gaia/v14/app"
+	gaiahelpers "github.com/cosmos/gaia/v14/app/helpers"
 )
 
 var (

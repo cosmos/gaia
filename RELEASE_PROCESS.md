@@ -3,6 +3,8 @@
 - [Release Process](#release-process)
   - [Major Release Procedure](#major-release-procedure)
     - [Changelog](#changelog)
+      - [Creating a new release branch](#creating-a-new-release-branch)
+      - [Cutting a new release](#cutting-a-new-release)
     - [Release Notes](#release-notes)
     - [Tagging Procedure](#tagging-procedure)
       - [Test building artifacts](#test-building-artifacts)
@@ -44,14 +46,10 @@ An exception are PRs open via the Github mergify integration (i.e., backported P
   * Update the [GitHub mergify integration](./.mergify.yml) by adding instructions for automatically backporting commits from `main` to the `release/vY` using the `A:backport/vY` label.
   * **PRs targeting directly a release branch can be merged _only_ when exceptional circumstances arise**.
 * In the release branch 
-  * Create a new version section in the `CHANGELOG.md`
-    * All links must point to their respective pull request.
-    * The `CHANGELOG.md` must contain only the changes of that specific released version. 
-      All other changelog entries must be deleted and linked to the `main` branch changelog ([example]([TBA](https://github.com/cosmos/gaia/blob/release/v9.0.x/CHANGELOG.md))).
-    * Note: `CHANGELOG.md` should not contain release candidate entries. 
+  * Create a new version section in the `CHANGELOG.md` (follow the procedure described [below](#changelog))
   * Create release notes, in `RELEASE_NOTES.md`, highlighting the new features and changes in the version. 
     This is needed so the bot knows which entries to add to the release page on GitHub.
-  * Additionally verify that the `UPGRADING.md` file is up to date and contains all the necessary information for upgrading to the new version.
+  * (To be added in the future) ~~Additionally verify that the `UPGRADING.md` file is up to date and contains all the necessary information for upgrading to the new version.~~
 * We freeze the release branch from receiving any new features and focus on releasing a release candidate.
   * Finish audits and reviews.
   * Add more tests.
@@ -62,20 +60,58 @@ An exception are PRs open via the Github mergify integration (i.e., backported P
   * When bugs are found, create a PR for `main`, and backport fixes to the release branch.
   * Create new release candidate tags after bugs are fixed.
 * After the team feels the release candidate is mainnet ready, create a full release:
-  * Update `CHANGELOG.md`.
-  * Run `make format` to format the code.
+  * **Note:** The final release MUST have the same commit hash as the latest corresponding release candidate.
   * Create a new annotated git tag in the release branch (follow the [Tagging Procedure](#tagging-procedure)). This will trigger the automated release process (which will also create the release artifacts).
   * Once the release process completes, modify release notes if needed.
 
 ### Changelog
 
-You can obtain the changelog by running:
-```bash
-git log --oneline --decorate <previous_version>..<current_version>
+For PRs that are changing production code, please add a changelog entry in `.changelog` (for details, see [contributing guidelines](./CONTRIBUTING.md#changelog)). 
 
-# example
-git log --oneline --decorate v9.0.0..v9.1.0
+To manage and generate the changelog on Gaia, we currently use [unclog](https://github.com/informalsystems/unclog).
+
+#### Creating a new release branch 
+
+Unreleased changes are collected on `main` in `.changelog/unreleased/`. 
+However, `.changelog/` on `main` contains also existing releases (e.g., `v10.0.0`).
+Thus, when creating a new release branch (e.g., `release/v11.x`), the following steps are necessary:
+
+- move to the release branch, e.g., `release/v11.x`
+- delete all the sub-folders in `.changelog/` except `unreleased/` 
+- replace the content of `.changelog/epilogue.md` with the following text
+```md
+## Previous Versions
+
+[CHANGELOG of previous versions](https://github.com/cosmos/gaia/blob/main/CHANGELOG.md)
 ```
+
+#### Cutting a new release
+
+Before cutting a _**release candidate**_ (e.g., `v11.0.0-rc0`), the following steps are necessary:
+
+- move to the release branch, e.g., `release/v11.x`
+- move all entries in ".changelog/unreleased" to the release version, e.g., `v11.0.0`, i.e.,
+```bash
+unclog release v11.0.0
+```
+- update the CHANGELOG.md, i.e.,
+```bash
+unclog build > CHANGELOG.md
+```
+
+❗Once the **final release** is cut, the new changelog section must be added to main:
+
+- checkout a new branch from the `main` branch, i.e.,
+- bring the new changelog section from the release branch into this branch, e.g.,
+```bash
+git checkout release/v11.x .changelog/v11.0.0
+```
+- remove duplicate entries that are both in `.changelog/unreleased/` and the new changelog section, e.g., `.changelog/v11.0.0`
+- update the CHANGELOG.md
+```bash
+unclog build > CHANGELOG.md
+```
+- open a PR (from this new created branch) against `main`
 
 ### Release Notes
 

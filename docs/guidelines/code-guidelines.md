@@ -12,9 +12,9 @@ This documents idiomatic conventions in the Go code that we follow for gaia deve
 
 From a maintainance, performance and security perspective, it is important to keep the footprint of the `gaiad` application as lean as possible.
 
-When adding any new feature, you must ensure that any libraries you wish to include are well maintained and have sufficient usage in the wider ecosystem. This is necessary to avoid having to rework the `gaiad` application at a later date, if a library is longer maintained or is abandoned by its core contributors.
+When adding any new feature, you must ensure that any libraries you wish to include are well maintained and have sufficient usage in the wider ecosystem. This is necessary to avoid having to rework the `gaiad` application at a later date, if a library is no longer maintained or is abandoned by its core contributors.
 
-In addition to the above, if any library is to be included, it is necessary to check that the version used does not have any known vunerabilities. As a developer working on feature, before making a pull request, ensure that you run, along with the testing targets, the vulnerability checking target in the root of the gaia repository directory:
+In addition to the above, if any library is to be included, it is necessary to check that the version used does not have any known vunerabilities. As a developer working on a feature, before making a pull request, ensure that you run, along with the testing targets, the vulnerability checking target in the root of the gaia repository directory:
 
 ```sh
 make govulncheck

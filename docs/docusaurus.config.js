@@ -123,25 +123,6 @@ const config = {
             ],
           },
           {
-            type: 'dropdown',
-            label: '🌐',
-            position: 'right',
-            items: [
-              {
-                href: '/translations/es',
-                html: 'Español',
-              },
-              {
-                href: '/translations/ko',
-                html: '한국인',
-              },
-              {
-                href: '/translations/zh',
-                html: '中文',
-              },
-           ],
-          },
-          {
             type: 'docsVersionDropdown',
             position: 'left',
             dropdownActiveClassDisabled: true,

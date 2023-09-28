@@ -178,7 +178,7 @@ Skipping the invariant checks is strongly encouraged since it decreases the upgr
 
 When the upgrade block height is reached, Gaia will panic and stop:
 
-This may take 7 minutes to a few hours.
+This may take a few minutes to a few hours.
 After upgrade, the chain will continue to produce blocks when validators with a total sum voting power > 2/3 complete their node upgrades.
 
 ### Auto-Downloading the Gaia binary

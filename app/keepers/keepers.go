@@ -62,7 +62,7 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	"github.com/cosmos/gaia/v13/x/globalfee"
+	"github.com/cosmos/gaia/v14/x/globalfee"
 )
 
 type AppKeepers struct {
@@ -155,13 +155,6 @@ func NewAppKeeper(
 
 	appKeepers.CapabilityKeeper.Seal()
 
-	appKeepers.CrisisKeeper = crisiskeeper.NewKeeper(
-		appKeepers.GetSubspace(crisistypes.ModuleName),
-		invCheckPeriod,
-		appKeepers.BankKeeper,
-		authtypes.FeeCollectorName,
-	)
-
 	// Add normal keepers
 	appKeepers.AccountKeeper = authkeeper.NewAccountKeeper(
 		appCodec,
@@ -176,6 +169,13 @@ func NewAppKeeper(
 		appKeepers.AccountKeeper,
 		appKeepers.GetSubspace(banktypes.ModuleName),
 		blockedAddress,
+	)
+
+	appKeepers.CrisisKeeper = crisiskeeper.NewKeeper(
+		appKeepers.GetSubspace(crisistypes.ModuleName),
+		invCheckPeriod,
+		appKeepers.BankKeeper,
+		authtypes.FeeCollectorName,
 	)
 
 	appKeepers.AuthzKeeper = authzkeeper.NewKeeper(

@@ -16,7 +16,9 @@ This type of upgrade preserves the same chain-id but state before the upgrade he
 - use `gaia v9.0.x` (Lambda) between `14,470,501` and `15,213,800`
 - use `gaia v9.1.x` between `15,213,800` and `15,816,200`
 - use `gaia v10.0.x` between `15,816,200` and `16,596,000`
-- use `gaia v11.x` from `16,596,000`
+- use `gaia v11.x` between `16,596,000` and `16,985,500`
+- use `gaia v12.x` between `16,985,500` and `17,380,000`
+- use `gaia v13.x` from `17,380,000`
   
 For more details, see the [history of upgrades](https://github.com/cosmos/gaia/tree/main/docs/roadmap) or visit the [migration section](https://github.com/cosmos/gaia/tree/main/docs/migration) of the Hub's docs.
 

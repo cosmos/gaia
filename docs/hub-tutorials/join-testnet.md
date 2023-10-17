@@ -236,7 +236,7 @@ There are three ways you can update the binary:
 
 The instructions below are for option 2. For more information on auto-download with Cosmovisor, see the relevant [documentation](https://github.com/cosmos/cosmos-sdk/tree/main/tools/cosmovisor#auto-download) in the Cosmos SDK repo.
 
-If the environment variable `DAEMON_ALLOW_DOWNLOAD_BINARIES` is set to `false`, Cosmovisor will look for the new binary in a folder that matches the name of the upgrade specified in the software upgrade proposal. For the `v13` upgrade, the expected folder structure would look as follows:
+If the environment variable `DAEMON_ALLOW_DOWNLOAD_BINARIES` is set to `false`, Cosmovisor will look for the new binary in a folder that matches the name of the upgrade specified in the software upgrade proposal. For the `v14` upgrade, the expected folder structure would look as follows:
 
 ```shell
 .gaia
@@ -246,25 +246,25 @@ If the environment variable `DAEMON_ALLOW_DOWNLOAD_BINARIES` is set to `false`, 
     │   └── bin
     |       └── gaiad
     └── upgrades
-        └── v13
+        └── v14
             └── bin
                 └── gaiad
 ```
 
 Prepare the upgrade directory
 ```
-mkdir -p ~/.gaia/cosmovisor/upgrades/v13/bin
+mkdir -p ~/.gaia/cosmovisor/upgrades/v14/bin
 ```
 
 Download and install the new binary version.
 ```
 cd $HOME/gaia
 git pull
-git checkout v13.0.0-rc0
+git checkout v14.0.0-rc0
 make install
 
-# Copy the new binary to the v13 upgrade directory
-cp ~/go/bin/gaiad ~/.gaia/cosmovisor/upgrades/v13/bin/gaiad
+# Copy the new binary to the v14 upgrade directory
+cp ~/go/bin/gaiad ~/.gaia/cosmovisor/upgrades/v14/bin/gaiad
 ```
 
 When the upgrade height is reached, Cosmovisor will stop the gaiad binary, copy the new binary to the `current/bin` folder and restart. After a few minutes, the node should start syncing blocks using the new binary.

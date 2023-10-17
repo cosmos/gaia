@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v14.0.0
+
+*October 17, 2023*
+
+
 ## v13.0.0
 
 *September 18, 2023*

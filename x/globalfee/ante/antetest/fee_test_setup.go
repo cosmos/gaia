@@ -17,11 +17,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	gaiaapp "github.com/cosmos/gaia/v13/app"
-	gaiahelpers "github.com/cosmos/gaia/v13/app/helpers"
-	"github.com/cosmos/gaia/v13/x/globalfee"
-	gaiafeeante "github.com/cosmos/gaia/v13/x/globalfee/ante"
-	globfeetypes "github.com/cosmos/gaia/v13/x/globalfee/types"
+	gaiaapp "github.com/cosmos/gaia/v14/app"
+	gaiahelpers "github.com/cosmos/gaia/v14/app/helpers"
+	"github.com/cosmos/gaia/v14/x/globalfee"
+	gaiafeeante "github.com/cosmos/gaia/v14/x/globalfee/ante"
+	globfeetypes "github.com/cosmos/gaia/v14/x/globalfee/types"
 )
 
 type IntegrationTestSuite struct {

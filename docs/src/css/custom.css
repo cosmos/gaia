@@ -389,6 +389,27 @@ html {
   }
 
   /* FOOTER */
+
+  &[data-theme="light"] {
+    .footer__title, .footer__link-item, .footer__copyright {
+      @apply text-mutedLight;
+    }
+
+    .pagination-nav__sublabel {
+      @apply text-mutedLight;
+    }
+  }
+
+  &[data-theme="dark"] {
+    .footer__title, .footer__link-item, .footer__copyright {
+      @apply text-gray-1000;
+    }
+
+    .pagination-nav__sublabel {
+      @apply text-gray-1000;
+    }
+  }
+
   .footer {
     background-color: var(--ifm-font-color-base);
     @apply border-t border-t-docusaurusColorBorder pt-10;

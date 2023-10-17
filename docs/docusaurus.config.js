@@ -14,7 +14,7 @@ const algoliaIndexName = 'cosmos_network';
 const config = {
   title: 'Cosmos Hub',
   tagline: '',
-  favicon: 'img/hub.svg',
+  favicon: '/gaia/img/hub.svg',
 
   // Set the production url of your site here
   url: 'https://hub.cosmos.network',
@@ -148,7 +148,7 @@ const config = {
           {
             items: [
               {
-                html: `<a href="https://cosmos.network"><img src="/img/logo-bw-inverse.svg" alt="Cosmos Logo"></a>`,
+                html: `<a href="https://cosmos.network"><img src="/gaia/img/logo-bw-inverse.svg" alt="Cosmos Logo"></a>`,
               },
             ],
           },

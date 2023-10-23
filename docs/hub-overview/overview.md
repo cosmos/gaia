@@ -40,26 +40,29 @@ These community-maintained web and mobile wallets allow you to store & transfer 
 * [imToken](https://token.im/) - Android, iOS
 * [Keplr](https://wallet.keplr.app) - Web
 * [Ledger](https://www.ledger.com/cosmos-wallet) - Hardware
-* [Lunie](https://lunie.io) - Web
 * [Math Wallet](https://www.mathwallet.org/en/) - Android, iOS, Web
 * [Rainbow Wallet](https://www.rainbow.one) - Android, iOS
 * [Trust Wallet](https://trustwallet.com/) Android, iOS
-* [Wetez](https://www.wetez.io/pc/homepage) - Android, iOS
+* [Komodo Wallet](https://atomicdex.io/en/)
+* [Leap Wallet](https://www.leapwallet.io/) - Android, iOS, Web
+
+## Metamask Snaps
+
+* [Leap Wallet](https://www.leapwallet.io/snaps)
+* [Mystic Lab](https://metamask.mysticlabs.xyz/)
 
 ## Cosmos Hub Explorers
 
 These block explorers allow you to search, view and analyze Cosmos Hub data&mdash;like blocks, transactions, validators, etc.
 
-* [Anthem](https://anthem.chorus.one)
 * [ATOMScan](https://atomscan.com)
 * [Big Dipper](https://cosmos.bigdipper.live)
-* [Cosmos Overview](https://genesislab.net)
-* [Cosmoscan](https://cosmoscan.net/)
 * [IOBScan](https://cosmoshub.iobscan.io/)
-* [LOOK Explorer](https://cosmos.ping.pub)
-* [Lunie](https://lunie.io)
 * [Mintscan](https://mintscan.io)
-* [Union Market](https://union.market/token/cosmos)
+* [Ping.Pub](https://ping.pub/cosmos)
+* [BronBro](https://monitor.bronbro.io/d/cosmos-stats/cosmos)
+* [Numia](https://www.datalenses.zone/chain/cosmos)
+* [SmartStake](https://cosmos.smartstake.io/stats)
 
 ## Cosmos Hub CLI
 

@@ -2,18 +2,21 @@
 
 ## 📝 Changelog
 
-Check out the [changelog](https://github.com/cosmos/gaia/blob/v13.0.0/CHANGELOG.md) for a list of relevant changes or [compare all changes](https://github.com/cosmos/gaia/compare/v12.0.0...v13.0.0) from last release.
+Check out the [changelog](https://github.com/cosmos/gaia/blob/v13.0.1/CHANGELOG.md) for a list of relevant changes or [compare all changes](https://github.com/cosmos/gaia/compare/v13.0.0...v13.0.1) from last release.
 
 ## 🚀 Highlights
 
 <!-- Add any highlights of this release -->
-This release remove the Liquidity module and bump Replicated Security to [v2.1.0-provider-lsm](https://github.com/cosmos/interchain-security/releases/tag/v2.1.0-provider-lsm). 
+This release contains a security bug fix for high-severity Packet Forwarding Middleware issue.
+Please consult this [security advisory](https://github.com/cosmos/ibc-apps/security/advisories/GHSA-w6rp-vxj2-fjhr) document for more information.
+
+The changes outlined in this release do not require a co-ordinated upgrade.
 
 ## 🔨 Build from source
 
 ```bash
 git clone https://github.com/cosmos/gaia
-cd gaia && git checkout v13.0.0
+cd gaia && git checkout v13.0.1
 make install
 ```
 

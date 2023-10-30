@@ -128,16 +128,16 @@ const config = {
             dropdownActiveClassDisabled: true,
             // versions not yet migrated to docusaurus
             dropdownItemsAfter: [
-              {
-                href: 'https://hub.cosmos.network/v11/',
-                label: 'v11',
-                target: '_self',
-              },
-              {
-                href: 'https://hub.cosmos.network/v10/',
-                label: 'v10',
-                target: '_self',
-              },
+              // {
+              //   href: 'https://hub.cosmos.network/v11/',
+              //   label: 'v11',
+              //   target: '_self',
+              // },
+              // {
+              //   href: 'https://hub.cosmos.network/v10/',
+              //   label: 'v10',
+              //   target: '_self',
+              // },
             ],
           },
         ],

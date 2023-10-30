@@ -30,7 +30,7 @@ The `gov` module is responsible for the on-chain governance system. In this syst
 - `cosmoshub-4` default: `512000000` `uatom`
 - `cosmoshub-3` default: `512000000` `uatom`
 
-Prior to a governance proposal entering the [voting period](#votingperiod) (ie. for the proposal to be voted upon), there must be at least a minimum number of ATOMs deposited. Anyone may contribute to this deposit. Deposits of passed and failed proposals are returned to the contributors. Deposits are burned when proposals 1) [expire](#maxdepositperiod), 2) fail to reach [quorum](#quorum), or 3) are [vetoed](#veto). This parameter subkey value represents the minimum deposit required for a proposal to enter the [voting period](#votingperiod) in micro-ATOMs, where `512000000uatom` is equivalent to 512 ATOM.
+Prior to a governance proposal entering the [voting period](#votingperiod) (ie. for the proposal to be voted upon), there must be at least a minimum number of ATOMs deposited. Anyone may contribute to this deposit. Deposits of passed and failed proposals are returned to the contributors. Deposits are burned when proposals 1) [expire](#max_deposit_period), 2) fail to reach [quorum](#quorum), or 3) are [vetoed](#veto_threshold). This parameter subkey value represents the minimum deposit required for a proposal to enter the [voting period](#votingperiod) in micro-ATOMs, where `512000000uatom` is equivalent to 512 ATOM.
 
 ##### Decreasing the value of `mindeposit`
 

@@ -1,58 +1,53 @@
 package ante
 
 import (
-	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/ante"
-	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	ibcante "github.com/cosmos/ibc-go/v4/modules/core/ante"
 	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
 
-	gaiafeeante "github.com/cosmos/gaia/v9/x/globalfee/ante"
-)
+	errorsmod "cosmossdk.io/errors"
 
-// maxTotalBypassMinFeeMsgGasUsage is the allowed maximum gas usage
-// for all the bypass msgs in a transactions.
-// A transaction that contains only bypass message types and the gas usage does not
-// exceed maxTotalBypassMinFeeMsgGasUsage can be accepted with a zero fee.
-// For details, see gaiafeeante.NewFeeDecorator()
-var maxTotalBypassMinFeeMsgGasUsage uint64 = 1_000_000
+	"github.com/cosmos/cosmos-sdk/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth/ante"
+	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+
+	gaiaerrors "github.com/cosmos/gaia/v14/types/errors"
+	gaiafeeante "github.com/cosmos/gaia/v14/x/globalfee/ante"
+)
 
 // HandlerOptions extend the SDK's AnteHandler options by requiring the IBC
 // channel keeper.
 type HandlerOptions struct {
 	ante.HandlerOptions
-	Codec                codec.BinaryCodec
-	GovKeeper            *govkeeper.Keeper
-	IBCkeeper            *ibckeeper.Keeper
-	BypassMinFeeMsgTypes []string
-	GlobalFeeSubspace    paramtypes.Subspace
-	StakingSubspace      paramtypes.Subspace
+	Codec             codec.BinaryCodec
+	GovKeeper         *govkeeper.Keeper
+	IBCkeeper         *ibckeeper.Keeper
+	GlobalFeeSubspace paramtypes.Subspace
+	StakingSubspace   paramtypes.Subspace
 }
 
 func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 	if opts.AccountKeeper == nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "account keeper is required for AnteHandler")
+		return nil, errorsmod.Wrap(gaiaerrors.ErrLogic, "account keeper is required for AnteHandler")
 	}
 	if opts.BankKeeper == nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "bank keeper is required for AnteHandler")
+		return nil, errorsmod.Wrap(gaiaerrors.ErrLogic, "bank keeper is required for AnteHandler")
 	}
 	if opts.SignModeHandler == nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "sign mode handler is required for AnteHandler")
+		return nil, errorsmod.Wrap(gaiaerrors.ErrLogic, "sign mode handler is required for AnteHandler")
 	}
 	if opts.IBCkeeper == nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "IBC keeper is required for AnteHandler")
+		return nil, errorsmod.Wrap(gaiaerrors.ErrLogic, "IBC keeper is required for AnteHandler")
 	}
 	if opts.GlobalFeeSubspace.Name() == "" {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrNotFound, "globalfee param store is required for AnteHandler")
+		return nil, errorsmod.Wrap(gaiaerrors.ErrNotFound, "globalfee param store is required for AnteHandler")
 	}
 	if opts.StakingSubspace.Name() == "" {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrNotFound, "staking param store is required for AnteHandler")
+		return nil, errorsmod.Wrap(gaiaerrors.ErrNotFound, "staking param store is required for AnteHandler")
 	}
 	if opts.GovKeeper == nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "gov keeper is required for AnteHandler")
+		return nil, errorsmod.Wrap(gaiaerrors.ErrLogic, "gov keeper is required for AnteHandler")
 	}
 
 	sigGasConsumer := opts.SigGasConsumer
@@ -68,7 +63,7 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewValidateMemoDecorator(opts.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
 		NewGovPreventSpamDecorator(opts.Codec, opts.GovKeeper),
-		gaiafeeante.NewFeeDecorator(opts.BypassMinFeeMsgTypes, opts.GlobalFeeSubspace, opts.StakingSubspace, maxTotalBypassMinFeeMsgGasUsage),
+		gaiafeeante.NewFeeDecorator(opts.GlobalFeeSubspace, opts.StakingSubspace),
 		ante.NewDeductFeeDecorator(opts.AccountKeeper, opts.BankKeeper, opts.FeegrantKeeper),
 		ante.NewSetPubKeyDecorator(opts.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewValidateSigCountDecorator(opts.AccountKeeper),

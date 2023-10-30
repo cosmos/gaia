@@ -13,11 +13,10 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
-
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	globalfee "github.com/cosmos/gaia/v9/x/globalfee/types"
+	"github.com/cosmos/gaia/v14/x/globalfee/types"
 )
 
 func queryGaiaTx(endpoint, txHash string) error {
@@ -74,18 +73,50 @@ func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) {
 	return balancesResp.Balances, nil
 }
 
-func queryGlobalFees(endpoint string) (amt sdk.DecCoins, err error) {
-	body, err := httpGet(fmt.Sprintf("%s/gaia/globalfee/v1beta1/minimum_gas_prices", endpoint))
+func queryStakingParams(endpoint string) (stakingtypes.QueryParamsResponse, error) {
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/params", endpoint))
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
+		return stakingtypes.QueryParamsResponse{}, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
 
-	var fees globalfee.QueryMinimumGasPricesResponse
-	if err := cdc.UnmarshalJSON(body, &fees); err != nil {
-		return sdk.DecCoins{}, err
+	var params stakingtypes.QueryParamsResponse
+	if err := cdc.UnmarshalJSON(body, &params); err != nil {
+		return stakingtypes.QueryParamsResponse{}, err
 	}
 
-	return fees.MinimumGasPrices, nil
+	return params, nil
+}
+
+func queryGlobalFeeParams(endpoint string) (types.QueryParamsResponse, error) {
+	body, err := httpGet(fmt.Sprintf("%s/gaia/globalfee/v1beta1/params", endpoint))
+	if err != nil {
+		return types.QueryParamsResponse{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	var params types.QueryParamsResponse
+	if err := cdc.UnmarshalJSON(body, &params); err != nil {
+		return types.QueryParamsResponse{}, err
+	}
+
+	return params, nil
+}
+
+func queryGlobalFees(endpoint string) (sdk.DecCoins, error) {
+	p, err := queryGlobalFeeParams(endpoint)
+
+	return p.Params.MinimumGasPrices, err
+}
+
+func queryBypassMsgs(endpoint string) ([]string, error) {
+	p, err := queryGlobalFeeParams(endpoint)
+
+	return p.Params.BypassMinFeeMsgTypes, err
+}
+
+func queryMaxTotalBypassMinFeeMsgGasUsage(endpoint string) (uint64, error) {
+	p, err := queryGlobalFeeParams(endpoint)
+
+	return p.Params.MaxTotalBypassMinFeeMsgGasUsage, err
 }
 
 func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string) (stakingtypes.QueryDelegationResponse, error) {
@@ -113,6 +144,21 @@ func queryDelegatorWithdrawalAddress(endpoint string, delegatorAddr string) (dis
 	if err = cdc.UnmarshalJSON(body, &res); err != nil {
 		return res, err
 	}
+	return res, nil
+}
+
+func queryDelegatorTotalRewards(endpoint, delegatorAddr string) (disttypes.QueryDelegationTotalRewardsResponse, error) {
+	var res disttypes.QueryDelegationTotalRewardsResponse
+
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/distribution/v1beta1/delegators/%s/rewards", endpoint, delegatorAddr))
+	if err != nil {
+		return res, err
+	}
+
+	if err = cdc.UnmarshalJSON(body, &res); err != nil {
+		return res, err
+	}
+
 	return res, nil
 }
 
@@ -253,4 +299,18 @@ func queryAllEvidence(endpoint string) (evidencetypes.QueryAllEvidenceResponse, 
 		return res, err
 	}
 	return res, nil
+}
+
+func queryTokenizeShareRecordByID(endpoint string, recordID int) (stakingtypes.TokenizeShareRecord, error) {
+	var res stakingtypes.QueryTokenizeShareRecordByIdResponse
+
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/tokenize_share_record_by_id/%d", endpoint, recordID))
+	if err != nil {
+		return stakingtypes.TokenizeShareRecord{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return stakingtypes.TokenizeShareRecord{}, err
+	}
+	return res.Record, nil
 }

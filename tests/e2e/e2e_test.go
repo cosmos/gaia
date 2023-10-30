@@ -17,6 +17,7 @@ var (
 	runStakingAndDistributionTest = true
 	runVestingTest                = true
 	runRestInterfacesTest         = true
+	runLsmTest                    = true
 )
 
 func (s *IntegrationTestSuite) TestRestInterfaces() {
@@ -37,7 +38,8 @@ func (s *IntegrationTestSuite) TestByPassMinFee() {
 	if !runBypassMinFeeTest {
 		s.T().Skip()
 	}
-	s.testByPassMinFeeWithdrawReward()
+	chainAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	s.testBypassMinFeeWithdrawReward(chainAPI)
 }
 
 func (s *IntegrationTestSuite) TestEncode() {
@@ -87,6 +89,11 @@ func (s *IntegrationTestSuite) TestIBC() {
 	s.testIBCTokenTransfer()
 	s.testMultihopIBCTokenTransfer()
 	s.testFailedMultihopIBCTokenTransfer()
+
+	// stop hermes0 to prevent hermes0 relaying transactions
+	s.Require().NoError(s.dkrPool.Purge(s.hermesResource0))
+	HermesResource0Purged = true
+	s.testIBCBypassMsg()
 }
 
 func (s *IntegrationTestSuite) TestSlashing() {
@@ -114,4 +121,11 @@ func (s *IntegrationTestSuite) TestVesting() {
 	s.testDelayedVestingAccount(chainAAPI)
 	s.testContinuousVestingAccount(chainAAPI)
 	// s.testPeriodicVestingAccount(chainAAPI) TODO: add back when v0.45 adds the missing CLI command.
+}
+
+func (s *IntegrationTestSuite) TestLSM() {
+	if !runLsmTest {
+		s.T().Skip()
+	}
+	s.testLSM()
 }

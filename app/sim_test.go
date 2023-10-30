@@ -7,19 +7,20 @@ import (
 	"os"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+	"github.com/tendermint/tendermint/libs/log"
+	dbm "github.com/tendermint/tm-db"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/store"
 	simulation2 "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/libs/log"
-	dbm "github.com/tendermint/tm-db"
 
-	gaia "github.com/cosmos/gaia/v9/app"
-	"github.com/cosmos/gaia/v9/app/helpers"
-	"github.com/cosmos/gaia/v9/app/params"
-	"github.com/cosmos/gaia/v9/app/sim"
+	gaia "github.com/cosmos/gaia/v14/app"
+	"github.com/cosmos/gaia/v14/app/helpers"
+	"github.com/cosmos/gaia/v14/app/params"
+	"github.com/cosmos/gaia/v14/app/sim"
 )
 
 func init() {

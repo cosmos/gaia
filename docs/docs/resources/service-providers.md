@@ -9,19 +9,20 @@ Service Providers are expected to act as trusted points of contact to the blockc
 
 This document describes:
 
-- [Connection Options](#connection-options)
-- [Running a Full Node](#running-a-full-node)
-  - [What is a Full Node?](#what-is-a-full-node)
-  - [Installation and Configuration](#installation-and-configuration)
-- [Command-Line Interface](#command-line-interface)
-  - [Available Commands](#available-commands)
-  - [Remote Access to gaiad](#remote-access-to-gaiad)
-  - [Create a Key pair](#create-a-key-pair)
-  - [Check your Account](#check-your-account)
-  - [Check your Balance](#check-your-balance)
-  - [Send coins using the CLI](#send-coins-using-the-cli)
-- [REST API](#rest-api)
-  - [Listen for incoming transactions](#listen-for-incoming-transaction)
+- [Service Providers](#service-providers)
+  - [Connection Options](#connection-options)
+  - [Running a Full Node](#running-a-full-node)
+    - [What is a Full Node?](#what-is-a-full-node)
+    - [Installation and Configuration](#installation-and-configuration)
+  - [Command-Line Interface](#command-line-interface)
+    - [Available Commands](#available-commands)
+    - [Remote Access to gaiad](#remote-access-to-gaiad)
+    - [Create a Key Pair](#create-a-key-pair)
+      - [Check your Account](#check-your-account)
+    - [Check your Balance](#check-your-balance)
+      - [Send Coins Using the CLI](#send-coins-using-the-cli)
+  - [REST API](#rest-api)
+    - [Listen for Incoming Transactions](#listen-for-incoming-transactions)
 
 ## Connection Options
 

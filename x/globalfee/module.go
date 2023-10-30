@@ -3,21 +3,25 @@ package globalfee
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/codec"
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/types/module"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/cosmos/gaia/v9/x/globalfee/client/cli"
-	"github.com/cosmos/gaia/v9/x/globalfee/types"
+	errorsmod "cosmossdk.io/errors"
+
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+
+	"github.com/cosmos/gaia/v14/x/globalfee/client/cli"
+	"github.com/cosmos/gaia/v14/x/globalfee/keeper"
+	"github.com/cosmos/gaia/v14/x/globalfee/types"
 )
 
 var (
@@ -39,22 +43,22 @@ func (a AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 	})
 }
 
-func (a AppModuleBasic) ValidateGenesis(marshaler codec.JSONCodec, config client.TxEncodingConfig, message json.RawMessage) error {
+func (a AppModuleBasic) ValidateGenesis(marshaler codec.JSONCodec, _ client.TxEncodingConfig, message json.RawMessage) error {
 	var data types.GenesisState
 	err := marshaler.UnmarshalJSON(message, &data)
 	if err != nil {
 		return err
 	}
 	if err := data.Params.ValidateBasic(); err != nil {
-		return sdkerrors.Wrap(err, "params")
+		return errorsmod.Wrap(err, "params")
 	}
 	return nil
 }
 
-func (a AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) {
+func (a AppModuleBasic) RegisterInterfaces(_ codectypes.InterfaceRegistry) {
 }
 
-func (a AppModuleBasic) RegisterRESTRoutes(context client.Context, router *mux.Router) {
+func (a AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {
 }
 
 func (a AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
@@ -73,7 +77,7 @@ func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
 	return cli.GetQueryCmd()
 }
 
-func (a AppModuleBasic) RegisterLegacyAminoCodec(amino *codec.LegacyAmino) {
+func (a AppModuleBasic) RegisterLegacyAminoCodec(_ *codec.LegacyAmino) {
 }
 
 type AppModule struct {
@@ -93,6 +97,7 @@ func NewAppModule(paramSpace paramstypes.Subspace) *AppModule {
 func (a AppModule) InitGenesis(ctx sdk.Context, marshaler codec.JSONCodec, message json.RawMessage) []abci.ValidatorUpdate {
 	var genesisState types.GenesisState
 	marshaler.MustUnmarshalJSON(message, &genesisState)
+
 	a.paramSpace.SetParamSet(ctx, &genesisState.Params)
 	return nil
 }
@@ -103,7 +108,7 @@ func (a AppModule) ExportGenesis(ctx sdk.Context, marshaler codec.JSONCodec) jso
 	return marshaler.MustMarshalJSON(&genState)
 }
 
-func (a AppModule) RegisterInvariants(registry sdk.InvariantRegistry) {
+func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {
 }
 
 func (a AppModule) Route() sdk.Route {
@@ -114,18 +119,23 @@ func (a AppModule) QuerierRoute() string {
 	return types.QuerierRoute
 }
 
-func (a AppModule) LegacyQuerierHandler(amino *codec.LegacyAmino) sdk.Querier {
+func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier {
 	return nil
 }
 
 func (a AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterQueryServer(cfg.QueryServer(), NewGrpcQuerier(a.paramSpace))
+
+	m := keeper.NewMigrator(a.paramSpace)
+	if err := cfg.RegisterMigration(types.ModuleName, 1, m.Migrate1to2); err != nil {
+		panic(fmt.Sprintf("failed to migrate x/globalfee from version 1 to 2: %v", err))
+	}
 }
 
-func (a AppModule) BeginBlock(context sdk.Context, block abci.RequestBeginBlock) {
+func (a AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {
 }
 
-func (a AppModule) EndBlock(context sdk.Context, block abci.RequestEndBlock) []abci.ValidatorUpdate {
+func (a AppModule) EndBlock(_ sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
 	return nil
 }
 
@@ -134,5 +144,5 @@ func (a AppModule) EndBlock(context sdk.Context, block abci.RequestEndBlock) []a
 // introduced by the module. To avoid wrong/empty versions, the initial version
 // should be set to 1.
 func (a AppModule) ConsensusVersion() uint64 {
-	return 1
+	return 2
 }

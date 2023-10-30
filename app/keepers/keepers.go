@@ -1,6 +1,30 @@
 package keepers
 
 import (
+	tmos "github.com/tendermint/tendermint/libs/os"
+
+	// unnamed import of statik for swagger UI support
+	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
+
+	"github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/router"
+	routerkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/router/keeper"
+	routertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/router/types"
+	ica "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts"
+	icahost "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host"
+	icahostkeeper "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/keeper"
+	icahosttypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/types"
+	"github.com/cosmos/ibc-go/v4/modules/apps/transfer"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v4/modules/apps/transfer/keeper"
+	ibctransfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
+	ibcclient "github.com/cosmos/ibc-go/v4/modules/core/02-client"
+	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
+	porttypes "github.com/cosmos/ibc-go/v4/modules/core/05-port/types"
+	ibchost "github.com/cosmos/ibc-go/v4/modules/core/24-host"
+	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
+	ibcprovider "github.com/cosmos/interchain-security/v2/x/ccv/provider"
+	ibcproviderkeeper "github.com/cosmos/interchain-security/v2/x/ccv/provider/keeper"
+	providertypes "github.com/cosmos/interchain-security/v2/x/ccv/provider/types"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
@@ -22,12 +46,8 @@ import (
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
-	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
-	tmos "github.com/tendermint/tendermint/libs/os"
-
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
@@ -41,29 +61,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	"github.com/cosmos/gaia/v9/x/globalfee"
-	ica "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts"
-	icahost "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host"
-	icahostkeeper "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/keeper"
-	icahosttypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/types"
-	"github.com/cosmos/ibc-go/v4/modules/apps/transfer"
-	ibctransferkeeper "github.com/cosmos/ibc-go/v4/modules/apps/transfer/keeper"
-	ibctransfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
-	ibcclient "github.com/cosmos/ibc-go/v4/modules/core/02-client"
-	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
-	porttypes "github.com/cosmos/ibc-go/v4/modules/core/05-port/types"
-	ibchost "github.com/cosmos/ibc-go/v4/modules/core/24-host"
-	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
-	ibcprovider "github.com/cosmos/interchain-security/x/ccv/provider"
-	ibcproviderkeeper "github.com/cosmos/interchain-security/x/ccv/provider/keeper"
-	liquiditykeeper "github.com/gravity-devs/liquidity/x/liquidity/keeper"
-	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
-	"github.com/strangelove-ventures/packet-forward-middleware/v4/router"
-	routerkeeper "github.com/strangelove-ventures/packet-forward-middleware/v4/router/keeper"
-	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
 
-	// unnamed import of statik for swagger UI support
-	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
+	"github.com/cosmos/gaia/v14/x/globalfee"
 )
 
 type AppKeepers struct {
@@ -85,13 +84,12 @@ type AppKeepers struct {
 	UpgradeKeeper    upgradekeeper.Keeper
 	ParamsKeeper     paramskeeper.Keeper
 	// IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
-	IBCKeeper       *ibckeeper.Keeper
-	ICAHostKeeper   icahostkeeper.Keeper
-	EvidenceKeeper  evidencekeeper.Keeper
-	TransferKeeper  ibctransferkeeper.Keeper
-	FeeGrantKeeper  feegrantkeeper.Keeper
-	AuthzKeeper     authzkeeper.Keeper
-	LiquidityKeeper liquiditykeeper.Keeper
+	IBCKeeper      *ibckeeper.Keeper
+	ICAHostKeeper  icahostkeeper.Keeper
+	EvidenceKeeper evidencekeeper.Keeper
+	TransferKeeper ibctransferkeeper.Keeper
+	FeeGrantKeeper feegrantkeeper.Keeper
+	AuthzKeeper    authzkeeper.Keeper
 
 	// ICS
 	ProviderKeeper ibcproviderkeeper.Keeper
@@ -157,13 +155,6 @@ func NewAppKeeper(
 
 	appKeepers.CapabilityKeeper.Seal()
 
-	appKeepers.CrisisKeeper = crisiskeeper.NewKeeper(
-		appKeepers.GetSubspace(crisistypes.ModuleName),
-		invCheckPeriod,
-		appKeepers.BankKeeper,
-		authtypes.FeeCollectorName,
-	)
-
 	// Add normal keepers
 	appKeepers.AccountKeeper = authkeeper.NewAccountKeeper(
 		appCodec,
@@ -178,6 +169,13 @@ func NewAppKeeper(
 		appKeepers.AccountKeeper,
 		appKeepers.GetSubspace(banktypes.ModuleName),
 		blockedAddress,
+	)
+
+	appKeepers.CrisisKeeper = crisiskeeper.NewKeeper(
+		appKeepers.GetSubspace(crisistypes.ModuleName),
+		invCheckPeriod,
+		appKeepers.BankKeeper,
+		authtypes.FeeCollectorName,
 	)
 
 	appKeepers.AuthzKeeper = authzkeeper.NewKeeper(
@@ -224,14 +222,6 @@ func NewAppKeeper(
 		appKeepers.keys[slashingtypes.StoreKey],
 		&stakingKeeper,
 		appKeepers.GetSubspace(slashingtypes.ModuleName),
-	)
-	appKeepers.LiquidityKeeper = liquiditykeeper.NewKeeper(
-		appCodec,
-		appKeepers.keys[liquiditytypes.StoreKey],
-		appKeepers.GetSubspace(liquiditytypes.ModuleName),
-		appKeepers.BankKeeper,
-		appKeepers.AccountKeeper,
-		appKeepers.DistrKeeper,
 	)
 
 	// register the staking hooks
@@ -284,10 +274,12 @@ func NewAppKeeper(
 		appKeepers.SlashingKeeper,
 		appKeepers.AccountKeeper,
 		appKeepers.EvidenceKeeper,
+		appKeepers.DistrKeeper,
+		appKeepers.BankKeeper,
 		authtypes.FeeCollectorName,
 	)
 
-	appKeepers.ProviderModule = ibcprovider.NewAppModule(&appKeepers.ProviderKeeper)
+	appKeepers.ProviderModule = ibcprovider.NewAppModule(&appKeepers.ProviderKeeper, appKeepers.GetSubspace(providertypes.ModuleName))
 
 	govRouter := govtypes.NewRouter()
 	govRouter.
@@ -395,7 +387,6 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(slashingtypes.ModuleName)
 	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govtypes.ParamKeyTable())
 	paramsKeeper.Subspace(crisistypes.ModuleName)
-	paramsKeeper.Subspace(liquiditytypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 

@@ -1,41 +1,40 @@
-# Website
+<!--
+parent:
+  order: false
+layout: home
+-->
 
-This website is built using [Docusaurus 2](https://docusaurus.io/), a modern static website generator.
+# Cosmos Hub Documentation
 
-### Installation
+Welcome to the documentation of the **Cosmos Hub application: `gaia`**.
 
-```
-$ yarn
-```
+## What is Gaia?
 
-### Local Development
+- [Intro to the `gaia` software](./getting-started/what-is-gaia.md)
+- [Interacting with the `gaiad` binary](./hub-tutorials/gaiad.md)
 
-```
-$ yarn start
-```
+## Join the Cosmos Hub Mainnet
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
+- [Install the `gaia` application](./getting-started/installation.md)
+- [Set up a full node and join the mainnet](./hub-tutorials/join-mainnet.md)
+- [Upgrade to a validator node](./validators/validator-setup.md)
 
-### Build
+## Join the Cosmos Hub Public Testnet
 
-```
-$ yarn build
-```
+- [Join the testnet](./hub-tutorials/join-testnet.md)
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
+## Setup Your Own `gaia` Testnet
 
-### Deployment
+- [Setup your own `gaia` testnet](https://github.com/cosmos/testnets/tree/master/local/previous-local-testnets/v7-theta)
 
-Using SSH:
+## Additional Resources
 
-```
-$ USE_SSH=true yarn deploy
-```
+- [Validator Resources](./validators/README.md): Contains documentation for `gaia` validators.
+- [Delegator Resources](./delegators/README.md): Contains documentation for delegators.
+- [Other Resources](./resources/README.md): Contains documentation on `gaiad`, genesis file, service providers, ledger wallets, ...
+- [Cosmos Hub Archives](./resources/archives.md): State archives of past iteration of the Cosmos Hub.
 
-Not using SSH:
+# Contribute
 
-```
-$ GIT_USER=<Your GitHub username> yarn deploy
-```
-
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+See [this file](./DOCS_README.md) for details of the build process and
+considerations when making changes.

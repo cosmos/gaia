@@ -1,6 +1,19 @@
 package gaia
 
 import (
+	"github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/router"
+	routertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/router/types"
+	ica "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts"
+	icatypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/types"
+	"github.com/cosmos/ibc-go/v4/modules/apps/transfer"
+	ibctransfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
+	ibc "github.com/cosmos/ibc-go/v4/modules/core"
+	ibcclientclient "github.com/cosmos/ibc-go/v4/modules/core/02-client/client"
+	ibchost "github.com/cosmos/ibc-go/v4/modules/core/24-host"
+	ibcprovider "github.com/cosmos/interchain-security/v2/x/ccv/provider"
+	ibcproviderclient "github.com/cosmos/interchain-security/v2/x/ccv/provider/client"
+	providertypes "github.com/cosmos/interchain-security/v2/x/ccv/provider/types"
+
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
@@ -38,35 +51,21 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ica "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts"
-	icatypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/types"
-	"github.com/cosmos/ibc-go/v4/modules/apps/transfer"
-	ibctransfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
-	ibc "github.com/cosmos/ibc-go/v4/modules/core"
-	ibcclientclient "github.com/cosmos/ibc-go/v4/modules/core/02-client/client"
-	ibchost "github.com/cosmos/ibc-go/v4/modules/core/24-host"
-	ibcprovider "github.com/cosmos/interchain-security/x/ccv/provider"
-	ibcproviderclient "github.com/cosmos/interchain-security/x/ccv/provider/client"
-	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
-	"github.com/gravity-devs/liquidity/x/liquidity"
-	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
-	"github.com/strangelove-ventures/packet-forward-middleware/v4/router"
-	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
 
-	gaiaappparams "github.com/cosmos/gaia/v9/app/params"
-	"github.com/cosmos/gaia/v9/x/globalfee"
+	gaiaappparams "github.com/cosmos/gaia/v14/app/params"
+	"github.com/cosmos/gaia/v14/x/globalfee"
 )
 
 var maccPerms = map[string][]string{
-	authtypes.FeeCollectorName:     nil,
-	distrtypes.ModuleName:          nil,
-	icatypes.ModuleName:            nil,
-	minttypes.ModuleName:           {authtypes.Minter},
-	stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
-	stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
-	govtypes.ModuleName:            {authtypes.Burner},
-	liquiditytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
-	ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
+	authtypes.FeeCollectorName:        nil,
+	distrtypes.ModuleName:             nil,
+	icatypes.ModuleName:               nil,
+	minttypes.ModuleName:              {authtypes.Minter},
+	stakingtypes.BondedPoolName:       {authtypes.Burner, authtypes.Staking},
+	stakingtypes.NotBondedPoolName:    {authtypes.Burner, authtypes.Staking},
+	govtypes.ModuleName:               {authtypes.Burner},
+	ibctransfertypes.ModuleName:       {authtypes.Minter, authtypes.Burner},
+	providertypes.ConsumerRewardsPool: nil,
 }
 
 // ModuleBasics defines the module BasicManager is in charge of setting up basic,
@@ -90,6 +89,7 @@ var ModuleBasics = module.NewBasicManager(
 		ibcproviderclient.ConsumerAdditionProposalHandler,
 		ibcproviderclient.ConsumerRemovalProposalHandler,
 		ibcproviderclient.EquivocationProposalHandler,
+		ibcproviderclient.ChangeRewardDenomsProposalHandler,
 	),
 	params.AppModuleBasic{},
 	crisis.AppModuleBasic{},
@@ -101,7 +101,6 @@ var ModuleBasics = module.NewBasicManager(
 	evidence.AppModuleBasic{},
 	transfer.AppModuleBasic{},
 	vesting.AppModuleBasic{},
-	liquidity.AppModuleBasic{},
 	router.AppModuleBasic{},
 	ica.AppModuleBasic{},
 	globalfee.AppModule{},
@@ -138,7 +137,6 @@ func appModules(
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
-		liquidity.NewAppModule(appCodec, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.DistrKeeper),
 		globalfee.NewAppModule(app.GetSubspace(globalfee.ModuleName)),
 		app.TransferModule,
 		app.ICAModule,
@@ -169,7 +167,6 @@ func simulationModules(
 		params.NewAppModule(app.ParamsKeeper),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
-		liquidity.NewAppModule(appCodec, app.LiquidityKeeper, app.AccountKeeper, app.BankKeeper, app.DistrKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		app.TransferModule,
 		app.ProviderModule,
@@ -202,7 +199,6 @@ func orderBeginBlockers() []string {
 		banktypes.ModuleName,
 		govtypes.ModuleName,
 		crisistypes.ModuleName,
-		liquiditytypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
@@ -230,7 +226,6 @@ func orderEndBlockers() []string {
 		crisistypes.ModuleName,
 		govtypes.ModuleName,
 		stakingtypes.ModuleName,
-		liquiditytypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
@@ -277,13 +272,20 @@ func orderInitBlockers() []string {
 		ibchost.ModuleName,
 		icatypes.ModuleName,
 		evidencetypes.ModuleName,
-		liquiditytypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
 		routertypes.ModuleName,
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
+		// The globalfee module should ideally be initialized before the genutil module in theory:
+		// The globalfee antehandler performs checks in DeliverTx, which is called by gentx.
+		// When the global fee > 0, gentx needs to pay the fee. However, this is not expected,
+		// (in our case, the global fee is initialized with an empty value, which might not be a problem
+		// if the globalfee in genesis is not changed.)
+		// To resolve this issue, we should initialize the globalfee module after genutil, ensuring that the global
+		// min fee is empty when gentx is called.
+		// For more details, please refer to the following link: https://github.com/cosmos/gaia/issues/2489
 		globalfee.ModuleName,
 		providertypes.ModuleName,
 	}

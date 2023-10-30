@@ -4,10 +4,6 @@ project_name: gaia
 env:
   - GO111MODULE=on
 
-before:
-  hooks:
-    - go mod tidy -compat=1.18
-
 builds:
   - main: ./cmd/gaiad
     id: "gaiad"
@@ -19,7 +15,8 @@ builds:
     env:
       - CGO_ENABLED=0
     ldflags:
-      - -s -w -X main.commit={{.Commit}} -X main.date={{ .CommitDate }} -X github.com/cosmos/cosmos-sdk/version.Name=gaia -X github.com/cosmos/cosmos-sdk/version.AppName=gaiad -X github.com/cosmos/cosmos-sdk/version.Version={{ .Version }} -X github.com/cosmos/cosmos-sdk/version.Commit={{ .Commit }} -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger -X github.com/tendermint/tendermint/version.TMCoreSemVer={{ .Env.TM_VERSION }}
+      # .Env.TM_VERSION is provided in the workflow runner environment -> see .github/workflows/release.yml
+      - -s -w -X main.commit={{.Commit}} -X main.date={{ .CommitDate }} -X github.com/cosmos/cosmos-sdk/version.Name=gaia -X github.com/cosmos/cosmos-sdk/version.AppName=gaiad -X github.com/cosmos/cosmos-sdk/version.Version=v{{ .Version }} -X github.com/cosmos/cosmos-sdk/version.Commit={{ .Commit }} -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger -X github.com/tendermint/tendermint/version.TMCoreSemVer={{ .Env.TM_VERSION }}
     goos:
       - darwin
       - linux
@@ -29,20 +26,23 @@ builds:
       - arm64
 
 archives:
-  - format: tar.gz
-    wrap_in_directory: "true"
-    format_overrides:
-      - goos: windows
-        format: zip
+  # disables archiving; to enable use commented lines below
+  - format: binary
     name_template: "{{ .Binary }}-v{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
-    files:
-      - LICENSE
-      - README.md
+
+  # - format: tar.gz
+  #   wrap_in_directory: "true"
+  #   format_overrides:
+  #     - goos: windows
+  #       format: zip
+  #   name_template: "{{ .Binary }}-v{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+  #   files:
+  #     - LICENSE
+  #     - README.md
+  #   rlcp: true
 
 release:
-  github:
-    owner: cosmos
-    name: gaia
+  prerelease: true
   name_template: "v{{.Version}}"
 
 checksum:
@@ -53,4 +53,12 @@ snapshot:
   name_template: SNAPSHOT-{{ .Commit }}
 
 changelog:
-  skip: true
+  skip: false
+
+git:
+  # What should be used to sort tags when gathering the current and previous
+  # tags if there are more than one tag in the same commit.
+  #
+  # source: https://goreleaser.com/customization/git/
+  tag_sort: -version:refname
+  prerelease_suffix: "-rc"

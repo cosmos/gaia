@@ -5,11 +5,25 @@ order: 1
 
 If you want to contribute to a project and improve it, your help is welcome. We want to make Gaia as good as it can be. Contributing is also a great way to learn more about blockchain technology and improve it. Please read this document and follow our guidelines to make the process as smooth as possible. We are happy to review your code but please ensure that you have a reasonable and clean pull request.
 
-This documents idiomatic conventions in the Go code that we follow at Uber. A lot of these are general guidelines for Go, while others extend upon external resources:
+This documents idiomatic conventions in the Go code that we follow for gaia development. A lot of these are general guidelines for Go, while others extend upon external resources:
 
 1. [Effective Go](https://golang.org/doc/effective_go.html)
 2. [Go Common Mistakes](https://github.com/golang/go/wiki/CommonMistakes)
 3. [Go Code Review Comments](https://github.com/golang/go/wiki/CodeReviewComments)
+
+## Maintainability
+
+From a maintainance, performance and security perspective, it is important to keep the footprint of the `gaiad` application as lean as possible.
+
+When adding any new feature, you must ensure that any libraries you wish to include are well maintained and have sufficient usage in the wider ecosystem. This is necessary to avoid having to rework the `gaiad` application at a later date, if a library is no longer maintained or is abandoned by its core contributors.
+
+In addition to the above, if any library is to be included, it is necessary to check that the version used does not have any known vunerabilities. As a developer working on a feature, before making a pull request, ensure that you run, along with the testing targets, the vulnerability checking target in the root of the gaia repository directory:
+
+```sh
+make govulncheck
+```
+
+The above command will run the vulnerability checker that will detail any known issues for the library version that your using. If any issues are raised, or you have any concerns, please reach out to the core-developers who will be able to advise further.
 
 ## Run tests
 
@@ -47,48 +61,59 @@ The goal of this guide is to manage this complexity by describing in detail the 
 
 Try to avoid extensive methods and always test your code. All PRs should have at least 95% of code coverage.
 
-- [Project organization](#project-organization)
-- [How to test this project locally](#how-to-test-this-project-locally)
+- [Contributing](#contributing)
+  - [Maintainability](#maintainability)
+  - [Run tests](#run-tests)
+- [Guidelines](#guidelines)
+  - [Project organization](#project-organization)
+  - [How to test this project locally](#how-to-test-this-project-locally)
     - [Unit Tests](#unit-tests)
     - [End-to-End Tests](#end-to-end-tests)
     - [Upgrade Test](#upgrade-test)
-- [Guidelines](#guidelines)
+      - [Build current version and move into ./build:](#build-current-version-and-move-into-build)
+      - [Build gaia v9.0.0 and move into ./build:](#build-gaia-v900-and-move-into-build)
+      - [Go back to your previous working branch](#go-back-to-your-previous-working-branch)
+      - [Install cosmovisor](#install-cosmovisor)
+      - [Run the Chain](#run-the-chain)
+      - [Run the upgrade](#run-the-upgrade)
+      - [Monitor for success](#monitor-for-success)
+  - [Guidelines](#guidelines-1)
     - [Line Length](#line-length)
     - [Doc Comments](#doc-comments)
-    - [Declaring Empty Slices](#declaring-smpty-slices)
+    - [Declaring Empty Slices](#declaring-empty-slices)
     - [Indent Error Flow](#indent-error-flow)
     - [Unnecessary Else](#unnecessary-else)
     - [Named Result Parameters](#named-result-parameters)
     - [Package Comments](#package-comments)
     - [Package Names](#package-names)
     - [Function Names](#function-names)
-    - [Pointers](#pointers)
+  - [Pointers](#pointers)
     - [Receiver Names](#receiver-names)
     - [Variable Names](#variable-names)
     - [Zero-value Mutexes](#zero-value-mutexes)
     - [Copy Slices and Maps at Boundaries](#copy-slices-and-maps-at-boundaries)
-    - [Receiving Slices and Maps](#receiving-slices-and-maps)
-    - [Returning Slices and Maps](#returning-slices-and-maps)
+      - [Receiving Slices and Maps](#receiving-slices-and-maps)
+      - [Returning Slices and Maps](#returning-slices-and-maps)
     - [Errors](#errors)
-        - [Error Types](#error-types)
-        - [Error Wrapping](#error-wrapping)
-        - [Error Naming](#error-naming)
+      - [Error Types](#error-types)
+      - [Error Wrapping](#error-wrapping)
+      - [Error Naming](#error-naming)
     - [Handle Type Assertion Failures](#handle-type-assertion-failures)
     - [Avoid Embedding Types in Public Structs](#avoid-embedding-types-in-public-structs)
     - [Avoid `init()`](#avoid-init)
-    - [Performance](#Performance)
-        - [Prefer strconv over fmt](#prefer-strconv-over-fmt)
-        - [Avoid string-to-byte conversion](#avoid-string-to-byte-conversion)
-        - [Prefer Specifying Container Capacity](#prefer-specifying-container-capacity)
-            - [Specifying Map Capacity Hints](#specifying-map-capacity-hints)
-            - [Specifying Slice Capacity](#specifying-slice-capacity)
+  - [Performance](#performance)
+      - [Prefer strconv over fmt](#prefer-strconv-over-fmt)
+      - [Avoid string-to-byte conversion](#avoid-string-to-byte-conversion)
+      - [Prefer Specifying Container Capacity](#prefer-specifying-container-capacity)
+        - [Specifying Map Capacity Hints](#specifying-map-capacity-hints)
+        - [Specifying Slice Capacity](#specifying-slice-capacity)
     - [Function Grouping and Ordering](#function-grouping-and-ordering)
     - [Reduce Nesting](#reduce-nesting)
     - [Writing Tests](#writing-tests)
       - [Use Subtests](#use-subtests)
     - [Avoid writing directly in the stdout](#avoid-writing-directly-in-the-stdout)
     - [Avoid panic](#avoid-panic)
-    - [Handle error on the top level](#handle-error-on-the-top-level)
+  - [Security](#security)
 
 ## Project organization
 
@@ -1327,5 +1352,4 @@ It's also easier to maintain. We don't need to find all prints and change the co
 ### Avoid panic
 
 Avoid panic in simple and small methods; all errors should be handled on the top level and application, and we can decide if we will panic or not.
-We can also create a proper panic recovery to close all states, open connection from the application, and graceful exit without breaking anything. 
-
+We can also create a proper panic recovery to close all states, open connection from the application, and graceful exit without breaking anything.

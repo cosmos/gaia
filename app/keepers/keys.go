@@ -1,6 +1,12 @@
 package keepers
 
 import (
+	routertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/router/types"
+	icahosttypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/types"
+	ibctransfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
+	ibchost "github.com/cosmos/ibc-go/v4/modules/core/24-host"
+	providertypes "github.com/cosmos/interchain-security/v2/x/ccv/provider/types"
+
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -16,12 +22,6 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	icahosttypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/types"
-	ibctransfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
-	ibchost "github.com/cosmos/ibc-go/v4/modules/core/24-host"
-	providertypes "github.com/cosmos/interchain-security/x/ccv/provider/types"
-	liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
-	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v4/router/types"
 )
 
 func (appKeepers *AppKeepers) GenerateKeys() {
@@ -31,7 +31,7 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 		authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey,
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
-		evidencetypes.StoreKey, liquiditytypes.StoreKey, ibctransfertypes.StoreKey,
+		evidencetypes.StoreKey, ibctransfertypes.StoreKey,
 		capabilitytypes.StoreKey, feegrant.StoreKey, authzkeeper.StoreKey, routertypes.StoreKey,
 		icahosttypes.StoreKey, providertypes.StoreKey,
 	)

@@ -6,8 +6,6 @@ package types
 import (
 	context "context"
 	fmt "fmt"
-	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
-	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
@@ -33,21 +31,21 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // QueryMinimumGasPricesRequest is the request type for the
 // Query/MinimumGasPrices RPC method.
-type QueryMinimumGasPricesRequest struct {
+type QueryParamsRequest struct {
 }
 
-func (m *QueryMinimumGasPricesRequest) Reset()         { *m = QueryMinimumGasPricesRequest{} }
-func (m *QueryMinimumGasPricesRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryMinimumGasPricesRequest) ProtoMessage()    {}
-func (*QueryMinimumGasPricesRequest) Descriptor() ([]byte, []int) {
+func (m *QueryParamsRequest) Reset()         { *m = QueryParamsRequest{} }
+func (m *QueryParamsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryParamsRequest) ProtoMessage()    {}
+func (*QueryParamsRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_12a736cede25d10a, []int{0}
 }
-func (m *QueryMinimumGasPricesRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryParamsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryMinimumGasPricesRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryParamsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryMinimumGasPricesRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryParamsRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -57,36 +55,36 @@ func (m *QueryMinimumGasPricesRequest) XXX_Marshal(b []byte, deterministic bool)
 		return b[:n], nil
 	}
 }
-func (m *QueryMinimumGasPricesRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryMinimumGasPricesRequest.Merge(m, src)
+func (m *QueryParamsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryParamsRequest.Merge(m, src)
 }
-func (m *QueryMinimumGasPricesRequest) XXX_Size() int {
+func (m *QueryParamsRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryMinimumGasPricesRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryMinimumGasPricesRequest.DiscardUnknown(m)
+func (m *QueryParamsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryParamsRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryMinimumGasPricesRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryParamsRequest proto.InternalMessageInfo
 
 // QueryMinimumGasPricesResponse is the response type for the
 // Query/MinimumGasPrices RPC method.
-type QueryMinimumGasPricesResponse struct {
-	MinimumGasPrices github_com_cosmos_cosmos_sdk_types.DecCoins `protobuf:"bytes,1,rep,name=minimum_gas_prices,json=minimumGasPrices,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.DecCoins" json:"minimum_gas_prices,omitempty" yaml:"minimum_gas_prices"`
+type QueryParamsResponse struct {
+	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
 }
 
-func (m *QueryMinimumGasPricesResponse) Reset()         { *m = QueryMinimumGasPricesResponse{} }
-func (m *QueryMinimumGasPricesResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryMinimumGasPricesResponse) ProtoMessage()    {}
-func (*QueryMinimumGasPricesResponse) Descriptor() ([]byte, []int) {
+func (m *QueryParamsResponse) Reset()         { *m = QueryParamsResponse{} }
+func (m *QueryParamsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryParamsResponse) ProtoMessage()    {}
+func (*QueryParamsResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_12a736cede25d10a, []int{1}
 }
-func (m *QueryMinimumGasPricesResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryParamsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryMinimumGasPricesResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryParamsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryMinimumGasPricesResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryParamsResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -96,28 +94,28 @@ func (m *QueryMinimumGasPricesResponse) XXX_Marshal(b []byte, deterministic bool
 		return b[:n], nil
 	}
 }
-func (m *QueryMinimumGasPricesResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryMinimumGasPricesResponse.Merge(m, src)
+func (m *QueryParamsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryParamsResponse.Merge(m, src)
 }
-func (m *QueryMinimumGasPricesResponse) XXX_Size() int {
+func (m *QueryParamsResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryMinimumGasPricesResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryMinimumGasPricesResponse.DiscardUnknown(m)
+func (m *QueryParamsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryParamsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryMinimumGasPricesResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryParamsResponse proto.InternalMessageInfo
 
-func (m *QueryMinimumGasPricesResponse) GetMinimumGasPrices() github_com_cosmos_cosmos_sdk_types.DecCoins {
+func (m *QueryParamsResponse) GetParams() Params {
 	if m != nil {
-		return m.MinimumGasPrices
+		return m.Params
 	}
-	return nil
+	return Params{}
 }
 
 func init() {
-	proto.RegisterType((*QueryMinimumGasPricesRequest)(nil), "gaia.globalfee.v1beta1.QueryMinimumGasPricesRequest")
-	proto.RegisterType((*QueryMinimumGasPricesResponse)(nil), "gaia.globalfee.v1beta1.QueryMinimumGasPricesResponse")
+	proto.RegisterType((*QueryParamsRequest)(nil), "gaia.globalfee.v1beta1.QueryParamsRequest")
+	proto.RegisterType((*QueryParamsResponse)(nil), "gaia.globalfee.v1beta1.QueryParamsResponse")
 }
 
 func init() {
@@ -125,31 +123,25 @@ func init() {
 }
 
 var fileDescriptor_12a736cede25d10a = []byte{
-	// 377 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x92, 0xb1, 0x4f, 0xdb, 0x40,
-	0x14, 0xc6, 0x7d, 0xad, 0xda, 0xc1, 0x5d, 0x22, 0xab, 0xaa, 0xda, 0xc8, 0x3d, 0x57, 0x9e, 0xa2,
-	0x36, 0xbd, 0x53, 0xd2, 0x76, 0xe9, 0x98, 0x56, 0x62, 0x42, 0x82, 0x8c, 0x2c, 0xd1, 0xd9, 0x1c,
-	0xc7, 0x09, 0x9f, 0x9f, 0x93, 0x3b, 0x23, 0xbc, 0xf2, 0x17, 0x20, 0xf1, 0x5f, 0xb0, 0xb2, 0xc2,
-	0x9e, 0x31, 0x12, 0x0b, 0x93, 0x41, 0x09, 0x13, 0x23, 0x7f, 0x01, 0xb2, 0x9d, 0x00, 0x8a, 0x09,
-	0x12, 0x93, 0x2d, 0x7d, 0xbf, 0xf7, 0x3e, 0x7d, 0xdf, 0x3d, 0xdb, 0x17, 0x4c, 0x32, 0x2a, 0x22,
-	0x08, 0x58, 0xb4, 0xc3, 0x39, 0xdd, 0xef, 0x04, 0xdc, 0xb0, 0x0e, 0x1d, 0xa6, 0x7c, 0x94, 0x91,
-	0x64, 0x04, 0x06, 0x9c, 0x4f, 0x05, 0x43, 0x1e, 0x18, 0x32, 0x67, 0x9a, 0x1f, 0x05, 0x08, 0x28,
-	0x11, 0x5a, 0xfc, 0x55, 0x74, 0xd3, 0x15, 0x00, 0x22, 0xe2, 0x94, 0x25, 0x92, 0xb2, 0x38, 0x06,
-	0xc3, 0x8c, 0x84, 0x58, 0xcf, 0x55, 0x1c, 0x82, 0x56, 0xa0, 0x69, 0xc0, 0xf4, 0xa3, 0x59, 0x08,
-	0x32, 0xae, 0x74, 0x1f, 0xdb, 0xee, 0x66, 0x61, 0xbd, 0x2e, 0x63, 0xa9, 0x52, 0xb5, 0xc6, 0xf4,
-	0xc6, 0x48, 0x86, 0x5c, 0xf7, 0xf9, 0x30, 0xe5, 0xda, 0xf8, 0x39, 0xb2, 0xbf, 0xae, 0x00, 0x74,
-	0x02, 0xb1, 0xe6, 0xce, 0x19, 0xb2, 0x1d, 0x55, 0x89, 0x03, 0xc1, 0xf4, 0x20, 0x29, 0xe5, 0xcf,
-	0xe8, 0xdb, 0xdb, 0xd6, 0x87, 0xae, 0x4b, 0x2a, 0x7f, 0x52, 0xf8, 0x2f, 0x82, 0x90, 0xff, 0x3c,
-	0xfc, 0x07, 0x32, 0xee, 0x25, 0xe3, 0xdc, 0xb3, 0x6e, 0x73, 0xcf, 0xad, 0xcf, 0xb7, 0x41, 0x49,
-	0xc3, 0x55, 0x62, 0xb2, 0xbb, 0xdc, 0xfb, 0x92, 0x31, 0x15, 0xfd, 0xf5, 0xeb, 0x94, 0x7f, 0x72,
-	0xe5, 0xfd, 0x10, 0xd2, 0xec, 0xa6, 0x01, 0x09, 0x41, 0xd1, 0x79, 0xd8, 0xea, 0xf3, 0x53, 0x6f,
-	0xef, 0x51, 0x93, 0x25, 0x5c, 0x2f, 0x0c, 0x75, 0xbf, 0xa1, 0x96, 0x62, 0x74, 0xcf, 0x91, 0xfd,
-	0xae, 0x0c, 0xe8, 0x9c, 0x22, 0xbb, 0xb1, 0x9c, 0xd2, 0xf9, 0x4d, 0x9e, 0x7f, 0x0c, 0xf2, 0x52,
-	0x6b, 0xcd, 0x3f, 0xaf, 0x9c, 0xaa, 0xaa, 0xf4, 0xbb, 0x87, 0x17, 0x37, 0xc7, 0x6f, 0xda, 0xce,
-	0x77, 0xba, 0xe2, 0x4a, 0xea, 0x0d, 0xf4, 0x7a, 0xe3, 0x29, 0x46, 0x93, 0x29, 0x46, 0xd7, 0x53,
-	0x8c, 0x8e, 0x66, 0xd8, 0x9a, 0xcc, 0xb0, 0x75, 0x39, 0xc3, 0xd6, 0x56, 0xab, 0x5e, 0x4c, 0xb9,
-	0xf6, 0xe0, 0xc9, 0xe2, 0xb2, 0x9e, 0xe0, 0x7d, 0x79, 0x0b, 0xbf, 0xee, 0x03, 0x00, 0x00, 0xff,
-	0xff, 0x73, 0x0d, 0xf8, 0x43, 0x9d, 0x02, 0x00, 0x00,
+	// 286 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x90, 0x31, 0x4b, 0xc3, 0x40,
+	0x14, 0xc7, 0x73, 0xa2, 0x1d, 0xce, 0xed, 0x2c, 0x22, 0x41, 0xce, 0x12, 0x44, 0x8a, 0xc2, 0x1d,
+	0xad, 0xab, 0x53, 0x3e, 0x81, 0xd6, 0xcd, 0xed, 0x52, 0x9e, 0x67, 0x20, 0xc9, 0x4b, 0x73, 0x17,
+	0xb1, 0xab, 0x9b, 0x9b, 0xd0, 0x2f, 0xd5, 0xb1, 0xe0, 0xe2, 0x24, 0x92, 0xf8, 0x41, 0x24, 0xb9,
+	0x20, 0x8a, 0x06, 0xdc, 0x8e, 0x77, 0xbf, 0xf7, 0x7f, 0x3f, 0xfe, 0x34, 0xd0, 0x2a, 0x56, 0x52,
+	0x27, 0x18, 0xa9, 0xe4, 0x16, 0x40, 0xde, 0x4f, 0x22, 0xb0, 0x6a, 0x22, 0x17, 0x25, 0x14, 0x4b,
+	0x91, 0x17, 0x68, 0x91, 0xed, 0x37, 0x8c, 0xf8, 0x62, 0x44, 0xc7, 0xf8, 0x43, 0x8d, 0x1a, 0x5b,
+	0x44, 0x36, 0x2f, 0x47, 0xfb, 0x87, 0x1a, 0x51, 0x27, 0x20, 0x55, 0x1e, 0x4b, 0x95, 0x65, 0x68,
+	0x95, 0x8d, 0x31, 0x33, 0xdd, 0xef, 0x71, 0xcf, 0x3d, 0x0d, 0x19, 0x98, 0xb8, 0xa3, 0x82, 0x21,
+	0x65, 0x57, 0x8d, 0xc0, 0xa5, 0x2a, 0x54, 0x6a, 0x66, 0xb0, 0x28, 0xc1, 0xd8, 0xe0, 0x9a, 0xee,
+	0xfd, 0x98, 0x9a, 0x1c, 0x33, 0x03, 0xec, 0x82, 0x0e, 0xf2, 0x76, 0x72, 0x40, 0x46, 0x64, 0xbc,
+	0x3b, 0xe5, 0xe2, 0x6f, 0x5f, 0xe1, 0xf6, 0xc2, 0xed, 0xf5, 0xdb, 0x91, 0x37, 0xeb, 0x76, 0xa6,
+	0x2b, 0x42, 0x77, 0xda, 0x54, 0xf6, 0x44, 0xe8, 0xc0, 0x21, 0xec, 0xb4, 0x2f, 0xe2, 0xb7, 0x95,
+	0x7f, 0xf6, 0x2f, 0xd6, 0xb9, 0x06, 0x27, 0x8f, 0x2f, 0x1f, 0xab, 0xad, 0x11, 0xe3, 0xb2, 0xa7,
+	0x07, 0x67, 0x15, 0x86, 0xeb, 0x8a, 0x93, 0x4d, 0xc5, 0xc9, 0x7b, 0xc5, 0xc9, 0x73, 0xcd, 0xbd,
+	0x4d, 0xcd, 0xbd, 0xd7, 0x9a, 0x7b, 0x37, 0x63, 0x1d, 0xdb, 0xbb, 0x32, 0x12, 0x73, 0x4c, 0xe5,
+	0x1c, 0x4d, 0x8a, 0xc6, 0x45, 0x3d, 0x7c, 0x0b, 0xb3, 0xcb, 0x1c, 0x4c, 0x34, 0x68, 0xbb, 0x3c,
+	0xff, 0x0c, 0x00, 0x00, 0xff, 0xff, 0x01, 0xc5, 0x11, 0x71, 0xe3, 0x01, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -164,7 +156,7 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
-	MinimumGasPrices(ctx context.Context, in *QueryMinimumGasPricesRequest, opts ...grpc.CallOption) (*QueryMinimumGasPricesResponse, error)
+	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 }
 
 type queryClient struct {
@@ -175,9 +167,9 @@ func NewQueryClient(cc grpc1.ClientConn) QueryClient {
 	return &queryClient{cc}
 }
 
-func (c *queryClient) MinimumGasPrices(ctx context.Context, in *QueryMinimumGasPricesRequest, opts ...grpc.CallOption) (*QueryMinimumGasPricesResponse, error) {
-	out := new(QueryMinimumGasPricesResponse)
-	err := c.cc.Invoke(ctx, "/gaia.globalfee.v1beta1.Query/MinimumGasPrices", in, out, opts...)
+func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error) {
+	out := new(QueryParamsResponse)
+	err := c.cc.Invoke(ctx, "/gaia.globalfee.v1beta1.Query/Params", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -186,35 +178,35 @@ func (c *queryClient) MinimumGasPrices(ctx context.Context, in *QueryMinimumGasP
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
-	MinimumGasPrices(context.Context, *QueryMinimumGasPricesRequest) (*QueryMinimumGasPricesResponse, error)
+	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
 type UnimplementedQueryServer struct {
 }
 
-func (*UnimplementedQueryServer) MinimumGasPrices(ctx context.Context, req *QueryMinimumGasPricesRequest) (*QueryMinimumGasPricesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method MinimumGasPrices not implemented")
+func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
 	s.RegisterService(&_Query_serviceDesc, srv)
 }
 
-func _Query_MinimumGasPrices_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryMinimumGasPricesRequest)
+func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryParamsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).MinimumGasPrices(ctx, in)
+		return srv.(QueryServer).Params(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/gaia.globalfee.v1beta1.Query/MinimumGasPrices",
+		FullMethod: "/gaia.globalfee.v1beta1.Query/Params",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).MinimumGasPrices(ctx, req.(*QueryMinimumGasPricesRequest))
+		return srv.(QueryServer).Params(ctx, req.(*QueryParamsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -224,15 +216,15 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "MinimumGasPrices",
-			Handler:    _Query_MinimumGasPrices_Handler,
+			MethodName: "Params",
+			Handler:    _Query_Params_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "gaia/globalfee/v1beta1/query.proto",
 }
 
-func (m *QueryMinimumGasPricesRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryParamsRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -242,12 +234,12 @@ func (m *QueryMinimumGasPricesRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryMinimumGasPricesRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryParamsRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryMinimumGasPricesRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryParamsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -255,7 +247,7 @@ func (m *QueryMinimumGasPricesRequest) MarshalToSizedBuffer(dAtA []byte) (int, e
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryMinimumGasPricesResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryParamsResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -265,30 +257,26 @@ func (m *QueryMinimumGasPricesResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryMinimumGasPricesResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryParamsResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryMinimumGasPricesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.MinimumGasPrices) > 0 {
-		for iNdEx := len(m.MinimumGasPrices) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.MinimumGasPrices[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintQuery(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0xa
+	{
+		size, err := m.Params.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
 		}
+		i -= size
+		i = encodeVarintQuery(dAtA, i, uint64(size))
 	}
+	i--
+	dAtA[i] = 0xa
 	return len(dAtA) - i, nil
 }
 
@@ -303,7 +291,7 @@ func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *QueryMinimumGasPricesRequest) Size() (n int) {
+func (m *QueryParamsRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -312,18 +300,14 @@ func (m *QueryMinimumGasPricesRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryMinimumGasPricesResponse) Size() (n int) {
+func (m *QueryParamsResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if len(m.MinimumGasPrices) > 0 {
-		for _, e := range m.MinimumGasPrices {
-			l = e.Size()
-			n += 1 + l + sovQuery(uint64(l))
-		}
-	}
+	l = m.Params.Size()
+	n += 1 + l + sovQuery(uint64(l))
 	return n
 }
 
@@ -333,7 +317,7 @@ func sovQuery(x uint64) (n int) {
 func sozQuery(x uint64) (n int) {
 	return sovQuery(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *QueryMinimumGasPricesRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryParamsRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -356,10 +340,10 @@ func (m *QueryMinimumGasPricesRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryMinimumGasPricesRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryParamsRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryMinimumGasPricesRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryParamsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -383,7 +367,7 @@ func (m *QueryMinimumGasPricesRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryMinimumGasPricesResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -406,15 +390,15 @@ func (m *QueryMinimumGasPricesResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryMinimumGasPricesResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryParamsResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryMinimumGasPricesResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryParamsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MinimumGasPrices", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Params", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -441,8 +425,7 @@ func (m *QueryMinimumGasPricesResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.MinimumGasPrices = append(m.MinimumGasPrices, types.DecCoin{})
-			if err := m.MinimumGasPrices[len(m.MinimumGasPrices)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.Params.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

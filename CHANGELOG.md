@@ -4,12 +4,35 @@
 
 *October 25, 2023*
 
-### DEPENDENCIES
+### BUG FIXES
 
-- Bump [packet-forward-middleware](https://github.com/cosmos/ibc-apps/tree/main/middleware/packet-forward-middleware) to [v4.1.1](https://github.com/cosmos/ibc-apps/security/advisories/GHSA-w6rp-vxj2-fjhr).
+- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware) 
+  to [v4.1.1](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv4.1.1)
   ([\#2771](https://github.com/cosmos/gaia/pull/2771))
 
+### DEPENDENCIES
+
+- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware) 
+  to [v4.1.1](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv4.1.1)
+  ([\#2771](https://github.com/cosmos/gaia/pull/2771))
+
+## v13.0.0
+
+*September 18, 2023*
+
+### DEPENDENCIES
+
+- Remove [Liquidity](https://github.com/Gravity-Devs/liquidity)
+  ([\#2716](https://github.com/cosmos/gaia/pull/2716))
+- Bump [interchain-security](https://github.com/cosmos/interchain-security) to
+  [v2.1.0-provider-lsm](https://github.com/cosmos/interchain-security/releases/tag/v2.1.0-provider-lsm)
+  ([\#2732](https://github.com/cosmos/gaia/pull/2732))
+
 ### STATE BREAKING
+
+- Bump [interchain-security](https://github.com/cosmos/interchain-security) to
+  [v2.1.0-provider-lsm](https://github.com/cosmos/interchain-security/releases/tag/v2.1.0-provider-lsm)
+  ([\#2732](https://github.com/cosmos/gaia/pull/2732))
 
 ## Previous Versions
 

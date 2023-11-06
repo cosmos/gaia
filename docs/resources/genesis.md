@@ -172,7 +172,7 @@ Let us break down the parameters:
 
 ### Mint
 
-The `mint` module governs the logic of inflating the supply of token. The `mint` section in the genesis file looks like the follwing:
+The `mint` module governs the logic of inflating the supply of token. The `mint` section in the genesis file looks like the following:
 
 ```json
 "mint": {
@@ -206,7 +206,7 @@ Let us break down the parameters:
 
 ### Distribution
 
-The `distribution` module handles the logic of distribution block provisions and fees to validators and delegators. The `distribution` section in the genesis file looks like the follwing:
+The `distribution` module handles the logic of distribution block provisions and fees to validators and delegators. The `distribution` section in the genesis file looks like the following:
 
 ```json
     "distribution": {

@@ -1,22 +1,20 @@
-# Gaia v13.0.0 Release Notes 
+# Gaia v13.0.2 Release Notes 
 
 ## 📝 Changelog
 
-Check out the [changelog](https://github.com/cosmos/gaia/blob/v13.0.1/CHANGELOG.md) for a list of relevant changes or [compare all changes](https://github.com/cosmos/gaia/compare/v13.0.0...v13.0.1) from last release.
+Check out the [changelog](https://github.com/cosmos/gaia/blob/v13.0.2/CHANGELOG.md) for a list of relevant changes or [compare all changes](https://github.com/cosmos/gaia/compare/v13.0.1...v13.0.2) from last release.
 
 ## 🚀 Highlights
 
 <!-- Add any highlights of this release -->
-This release contains a security bug fix for high-severity Packet Forwarding Middleware issue.
-Please consult this [security advisory](https://github.com/cosmos/ibc-apps/security/advisories/GHSA-w6rp-vxj2-fjhr) document for more information.
-
-The changes outlined in this release do not require a co-ordinated upgrade.
+This release contains a fix that enables users to sign with ledger through the binary on newest versions of macOS and Xcode. 
+Thanks to @jhernandezb for the fix. 
 
 ## 🔨 Build from source
 
 ```bash
 git clone https://github.com/cosmos/gaia
-cd gaia && git checkout v13.0.1
+cd gaia && git checkout v13.0.2
 make install
 ```
 

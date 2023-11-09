@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	v2 "github.com/cosmos/gaia/v14/x/globalfee/migrations/v2"
+	v2 "github.com/cosmos/gaia/v15/x/globalfee/migrations/v2"
 )
 
 // Migrator is a struct for handling in-place store migrations.

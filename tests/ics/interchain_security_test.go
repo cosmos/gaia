@@ -13,7 +13,7 @@ import (
 	"github.com/cosmos/interchain-security/v2/tests/integration"
 	icstestingutils "github.com/cosmos/interchain-security/v2/testutil/ibc_testing"
 
-	gaiaApp "github.com/cosmos/gaia/v14/app"
+	gaiaApp "github.com/cosmos/gaia/v15/app"
 )
 
 func TestCCVTestSuite(t *testing.T) {

@@ -41,7 +41,7 @@ gaiad config chain-id cosmoshub-2
 
 The keyring holds the private/public keypairs used to interact with a node. For instance, a validator key needs to be set up before running the blockchain node, so that blocks can be correctly signed. The private key can be stored in different locations, called "backends", such as a file or the operating system's own key storage.
 
-Headless environments are recommended to use either the `file` or `pass` backends. More information is available at the [SDK documentation page](https://docs.cosmos.network/main/run-node/keyring.html).
+Headless environments are recommended to use either the `file` or `pass` backends. More information is available at the [SDK documentation page](https://docs.cosmos.network/v0.45/run-node/keyring.html).
 
 #### Key Types
 

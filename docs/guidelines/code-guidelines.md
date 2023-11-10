@@ -61,7 +61,7 @@ Try to avoid extensive methods and always test your code. All PRs should have at
 - [Contributing](#contributing)
   - [Maintainability](#maintainability)
   - [Run tests](#run-tests)
-- [Guidelines](#guidelines)
+  - [Guidelines](#guidelines)
   - [Project organization](#project-organization)
   - [How to test this project locally](#how-to-test-this-project-locally)
     - [Unit Tests](#unit-tests)
@@ -110,7 +110,6 @@ Try to avoid extensive methods and always test your code. All PRs should have at
       - [Use Subtests](#use-subtests)
     - [Avoid writing directly in the stdout](#avoid-writing-directly-in-the-stdout)
     - [Avoid panic](#avoid-panic)
-  - [Security](#security)
 
 ## Project organization
 

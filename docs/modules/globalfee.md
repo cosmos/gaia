@@ -297,4 +297,4 @@ bypass-min-fee-msg-types = [\
 
 ## References
 
-- [Gas and Fees in Cosmos SDK](https://docs.cosmos.network/main/basics/gas-fees.html)
+- [Gas and Fees in Cosmos SDK](https://docs.cosmos.network/v0.45/basics/gas-fees.html)

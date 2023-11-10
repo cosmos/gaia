@@ -1,1 +1,0 @@
-- Fix a bug found in the misbehaviour handling of the cryptographic equivocation feature [ICS] ([\#2808](https://github.com/cosmos/gaia/pull/2808))

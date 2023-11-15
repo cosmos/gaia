@@ -62,6 +62,7 @@ These block explorers allow you to search, view and analyze Cosmos Hub data&mdas
 * [Ping.Pub](https://ping.pub/cosmos)
 * [BronBro](https://monitor.bronbro.io/d/cosmos-stats/cosmos)
 * [Numia](https://www.datalenses.zone/chain/cosmos)
+<!-- markdown-link-check-disable-next-line -->
 * [SmartStake](https://cosmos.smartstake.io/stats)
 
 ## Cosmos Hub CLI

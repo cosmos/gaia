@@ -252,8 +252,8 @@ github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4 v4.1.1 h1:Tei
 github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4 v4.1.1/go.mod h1:mFk2qfXAm7ndXQQuXUGm9tlC2OM9jxPQb5PRKEHNU5I=
 github.com/cosmos/ibc-go/v4 v4.4.2 h1:PG4Yy0/bw6Hvmha3RZbc53KYzaCwuB07Ot4GLyzcBvo=
 github.com/cosmos/ibc-go/v4 v4.4.2/go.mod h1:j/kD2JCIaV5ozvJvaEkWhLxM2zva7/KTM++EtKFYcB8=
-github.com/cosmos/interchain-security/v2 v2.2.0-provider-lsm h1:hKYsM+vv31oZ0f0VVpysVOrEMwXQ0c9ubOlDF89te90=
-github.com/cosmos/interchain-security/v2 v2.2.0-provider-lsm/go.mod h1:7W8hrBDV/ehMmUTFZzfSuJRRgSwrflxszbl8Jj1cuIw=
+github.com/cosmos/interchain-security/v2 v2.3.0-provider-lsm h1:CpcyvB2+PADT+QBIqmhEU4+GMDjjjEVLHt8PJOet2xc=
+github.com/cosmos/interchain-security/v2 v2.3.0-provider-lsm/go.mod h1:7W8hrBDV/ehMmUTFZzfSuJRRgSwrflxszbl8Jj1cuIw=
 github.com/cosmos/keyring v1.2.0 h1:8C1lBP9xhImmIabyXW4c3vFjjLiBdGCmfLUfeZlV1Yo=
 github.com/cosmos/keyring v1.2.0/go.mod h1:fc+wB5KTk9wQ9sDx0kFXB3A0MaeGHM9AwRStKOQ5vOA=
 github.com/cosmos/ledger-cosmos-go v0.12.4 h1:drvWt+GJP7Aiw550yeb3ON/zsrgW0jgh5saFCr7pDnw=

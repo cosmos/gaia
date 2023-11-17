@@ -21,6 +21,10 @@ func CreateUpgradeHandler(
 			return vm, err
 		}
 
+		// Set the equivocation evidence min height for the Neutron and Stride consumer chains
+		keepers.ProviderKeeper.SetEquivocationEvidenceMinHeight(ctx, NeutronChainID, EquivocationEvidenceMinHeight)
+		keepers.ProviderKeeper.SetEquivocationEvidenceMinHeight(ctx, NeutronChainID, EquivocationEvidenceMinHeight)
+
 		ctx.Logger().Info("Upgrade complete")
 		return vm, err
 	}

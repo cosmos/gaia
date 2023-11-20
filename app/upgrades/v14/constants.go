@@ -11,7 +11,7 @@ const (
 	NeutronChainID = "neutron-1"
 	StrideChainID  = "stride-1"
 	// Neutron and Stride consumer chains equivocation evidence min height
-	EquivocationEvidenceMinHeight = 30
+	EquivocationEvidenceMinHeight = 1909054
 )
 
 var Upgrade = upgrades.Upgrade{

@@ -9,7 +9,7 @@ require (
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4 v4.1.1
 	github.com/cosmos/ibc-go/v4 v4.4.2
-	github.com/cosmos/interchain-security/v2 v2.0.0
+	github.com/cosmos/interchain-security/v2 v2.2.0-provider-lsm-rc2.0.20231120165420-8ed672eb253d
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.3
 	github.com/google/gofuzz v1.2.0
@@ -184,7 +184,7 @@ replace (
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.16-ics-lsm
 
 	// Use special ICS release with support for LSM
-	github.com/cosmos/interchain-security/v2 => github.com/cosmos/interchain-security/v2 v2.3.0-provider-lsm
+	github.com/cosmos/interchain-security/v2 => github.com/cosmos/interchain-security/v2 v2.2.0-provider-lsm-rc2.0.20231120165420-8ed672eb253d
 
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2

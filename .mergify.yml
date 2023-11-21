@@ -42,11 +42,11 @@ pull_request_rules:
         branches:
           - release/v13.x
 
-  - name: Backport patches to the release/v14.x branch
+  - name: Backport patches to the release/v14.1.x branch
     conditions:
       - base=main
-      - label=A:backport/v14.x
+      - label=A:backport/v14.1.x
     actions:
       backport:
         branches:
-          - release/v14.x
+          - release/v14.1.x

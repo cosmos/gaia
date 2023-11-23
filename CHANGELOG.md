@@ -1,5 +1,28 @@
 # CHANGELOG
 
+## v14.1.0
+
+*November 21, 2023*
+
+### API BREAKING
+
+- Deprecate equivocation proposals of ICS provider module ([\#2825](https://github.com/cosmos/gaia/pull/2825))
+
+### DEPENDENCIES
+
+- Bump [ICS] to [v2.4.0-lsm](https://github.com/cosmos/interchain-security/releases/tag/v2.4.0-lsm) ([\#2825](https://github.com/cosmos/gaia/pull/2825))
+
+### FEATURES
+
+- Set in the v14 upgrade handler the min evidence height for `neutron-1` 
+  at `4552189` and for `stride-1` at `6375035`. 
+  ([\#2821](https://github.com/cosmos/gaia/pull/2821))
+- Introducing the cryptographic verification of equivocation feature to the ICS provider module ([\#2825](https://github.com/cosmos/gaia/pull/2825))
+
+### STATE BREAKING
+
+- Bump [ICS] to [v2.4.0-lsm](https://github.com/cosmos/interchain-security/releases/tag/v2.4.0-lsm) ([\#2825](https://github.com/cosmos/gaia/pull/2825))
+
 ## v14.0.0
 
 *November 15, 2023*

@@ -56,7 +56,7 @@ To avoid these problems, let's now examine how these hashes work.
 **Note:** The following explanation is simplified for clarity.
 
 An app hash is a hash of hashes of every store's Merkle root that is returned by ABCI's `Commit()` from Cosmos-SDK to CometBFT.
-Cosmos-SDK [takes an app hash of the application state](https://github.com/osmosis-labs/cosmos-sdk/blob/5c9a51c277d067e0ec5cf48df30a85fae95bcd14/store/rootmulti/store.go#L430), and propagates it to CometBFT which, in turn, compares it to the app hash of the rest of the network.
+Cosmos-SDK [takes an app hash of the application state](https://github.com/cosmos/cosmos-sdk/blob/v0.47.6/store/rootmulti/store.go#L468), and propagates it to CometBFT which, in turn, compares it to the app hash of the rest of the network.
 Then, CometBFT ensures that the app hash of the local node matches the app hash of the network. 
 
 ### LastResultsHash

@@ -243,7 +243,8 @@ where:
 
 - `section` is one of 
   `dependencies`, `improvements`, `features`, `bug-fixes`, `state-breaking`, `api-breaking`, 
-  and _**if multiple apply, create multiple files**_;
+  and _**if multiple apply, create multiple files**_, 
+  not necessarily with the same `short-description` or content;
 - `pr-number` is the PR number;
 - `short-description` is a short (4 to 6 word), hyphen separated description of the change;
 - `component` is used for changes that affect one of the components defined in the [config](.changelog/config.toml), e.g., `tests`, `globalfee`.
@@ -272,13 +273,17 @@ where `${description}` is a detailed description of the changelog entry.
 For example, 
 ```bash
 # add an entry for bumping IBC to v4.4.2
-unclog add -i "2554-bump-ibc" -p 2554 -s "dependencies" -m "Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.4.2](https://github.com/cosmos/ibc-go/releases/tag/v4.4.2)" 
+unclog add -i "2554-bump-ibc" -p 2554 -s dependencies -m "Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.4.2](https://github.com/cosmos/ibc-go/releases/tag/v4.4.2)" 
 
 # add an entry for changing the global fee module;
 # note that the entry is added to both state-breaking and api-breaking sections
-unclog add -i "2424-params" -p 2424 -c globalfee -s "state-breaking" -m "Add \`bypass-min-fee-msg-types\` and \`maxTotalBypassMinFeeMsgGagUsage\` to globalfee params" 
-unclog add -i "2424-params" -p 2424 -c globalfee -s "api-breaking" -m "Add \`bypass-min-fee-msg-types\` and \`maxTotalBypassMinFeeMsgGagUsage\` to globalfee params" 
+unclog add -i "2424-params" -p 2424 -c globalfee -s state-breaking -m "Add \`bypass-min-fee-msg-types\` and \`maxTotalBypassMinFeeMsgGagUsage\` to globalfee params" 
+unclog add -i "2424-params" -p 2424 -c globalfee -s api-breaking -m "Add \`bypass-min-fee-msg-types\` and \`maxTotalBypassMinFeeMsgGagUsage\` to globalfee params" 
 ```
+
+**Note:** `unclog add` requires an editor. This can be set either by configuring 
+an `$EDITOR` environment variable or by manually specify an editor binary path 
+via the `--editor` flag. 
 
 **Note:** Changelog entries should answer the question: "what is important about this
 change for users to know?" or "what problem does this solve for users?". It

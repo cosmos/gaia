@@ -46,7 +46,7 @@ The following are **NOT** in the state-machine scope:
 
 ## Validating State-Compatibility 
 
-CometBFT ensures state compatibility by validating a number of hashes that can be found [here](https://github.com/cometbft/cometbft/blob/9f76e8da150414ce73eed2c4f248947b657c7587/proto/tendermint/types/types.proto#L70-L77).
+CometBFT ensures state compatibility by validating a number of hashes that can be found [here](https://github.com/cometbft/cometbft/blob/v0.38.2/proto/tendermint/types/types.proto#L59-L66).
 
 `AppHash` and `LastResultsHash` are the common sources of problems stemming from our work.
 To avoid these problems, let's now examine how these hashes work.

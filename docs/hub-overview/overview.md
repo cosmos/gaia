@@ -4,10 +4,10 @@ title: Introduction
 ---
 
 ::: warning
-### **v13 Upgrade**
-Cosmos Hub will be upgraded to [v13](https://github.com/cosmos/gaia/releases/tag/v13.0.0) at block height: **[17,380,000](https://www.mintscan.io/cosmos/blocks/17380000)**
+### **v14 Upgrade**
+Cosmos Hub will be upgraded to [v14.1](https://github.com/cosmos/gaia/releases/tag/v14.1.0) at block height: **[18,262,000](https://www.mintscan.io/cosmos/blocks/18262000)**
 
-To upgrade from v12 check the [**upgrade guide**](../migration/cosmoshub-4-v13-upgrade.md)
+To upgrade from v13 check the [**upgrade guide**](../migration/cosmoshub-4-v14-upgrade.md)
 :::
 
 ![Welcome to the Cosmos Hub](../images/cosmos-hub-image.jpg)

@@ -4,7 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"math/rand"
+	"net/http"
 	"os"
 	"os/exec"
 	"path"
@@ -641,7 +643,7 @@ func (s *IntegrationTestSuite) runIBCRelayer0() {
 		&dockertest.RunOptions{
 			Name:       fmt.Sprintf("%s-%s-relayer-0", s.chainA.id, s.chainB.id),
 			Repository: "ghcr.io/cosmos/hermes-e2e",
-			Tag:        "1.4.1",
+			Tag:        "1.0.0",
 			NetworkID:  s.dkrNet.Network.ID,
 			Mounts: []string{
 				fmt.Sprintf("%s/:/root/hermes", hermesCfgPath),
@@ -670,35 +672,35 @@ func (s *IntegrationTestSuite) runIBCRelayer0() {
 	)
 	s.Require().NoError(err)
 	// TODO: fix Hermes container REST endpoint
-	// endpoint := fmt.Sprintf("http://%s/state", s.hermesResource0.GetHostPort("3031/tcp"))
-	// s.Require().Eventually(
-	// 	func() bool {
-	// 		resp, err := http.Get(endpoint) //nolint:gosec // this is a test
-	// 		if err != nil {
-	// 			return false
-	// 		}
+	endpoint := fmt.Sprintf("http://%s/state", s.hermesResource0.GetHostPort("3031/tcp"))
+	s.Require().Eventually(
+		func() bool {
+			resp, err := http.Get(endpoint) //nolint:gosec // this is a test
+			if err != nil {
+				return false
+			}
 
-	// 		defer resp.Body.Close()
+			defer resp.Body.Close()
 
-	// 		bz, err := io.ReadAll(resp.Body)
-	// 		if err != nil {
-	// 			return false
-	// 		}
+			bz, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return false
+			}
 
-	// 		var respBody map[string]interface{}
-	// 		if err := json.Unmarshal(bz, &respBody); err != nil {
-	// 			return false
-	// 		}
+			var respBody map[string]interface{}
+			if err := json.Unmarshal(bz, &respBody); err != nil {
+				return false
+			}
 
-	// 		status := respBody["status"].(string)
-	// 		result := respBody["result"].(map[string]interface{})
+			status := respBody["status"].(string)
+			result := respBody["result"].(map[string]interface{})
 
-	// 		return status == "success" && len(result["chains"].([]interface{})) == 2
-	// 	},
-	// 	5*time.Minute,
-	// 	time.Second,
-	// 	"hermes relayer not healthy",
-	// )
+			return status == "success" && len(result["chains"].([]interface{})) == 2
+		},
+		5*time.Minute,
+		time.Second,
+		"hermes relayer not healthy",
+	)
 
 	s.T().Logf("started Hermes relayer 0 container: %s", s.hermesResource0.Container.ID)
 
@@ -741,7 +743,7 @@ func (s *IntegrationTestSuite) runIBCRelayer1() {
 		&dockertest.RunOptions{
 			Name:       fmt.Sprintf("%s-%s-relayer-1", s.chainA.id, s.chainB.id),
 			Repository: "ghcr.io/cosmos/hermes-e2e",
-			Tag:        "1.4.1",
+			Tag:        "1.0.0",
 			NetworkID:  s.dkrNet.Network.ID,
 			Mounts: []string{
 				fmt.Sprintf("%s/:/root/hermes", hermesCfgPath),

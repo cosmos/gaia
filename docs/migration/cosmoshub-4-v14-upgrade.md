@@ -1,5 +1,5 @@
 ---
-title: Cosmos Hub 4, Gaia v13 Upgrade
+title: Cosmos Hub 4, Gaia v14 Upgrade
 order: 8
 ---
 <!-- markdown-link-check-disable -->

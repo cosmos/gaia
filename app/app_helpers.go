@@ -4,7 +4,7 @@ package gaia
 import (
 	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
-	ibcstakinginterface "github.com/cosmos/interchain-security/v3/legacy_ibc_testing/core"
+	ibctestingtypes "github.com/cosmos/ibc-go/v7/testing/types"
 	icstest "github.com/cosmos/interchain-security/v3/testutil/integration"
 	ibcproviderkeeper "github.com/cosmos/interchain-security/v3/x/ccv/provider/keeper"
 )
@@ -17,7 +17,7 @@ func (app *GaiaApp) GetProviderKeeper() ibcproviderkeeper.Keeper { //nolint:noli
 }
 
 // GetStakingKeeper implements the TestingApp interface. Needed for ICS.
-func (app *GaiaApp) GetStakingKeeper() ibcstakinginterface.StakingKeeper { //nolint:nolintlint
+func (app *GaiaApp) GetStakingKeeper() ibctestingtypes.StakingKeeper { //nolint:nolintlint
 	return app.StakingKeeper
 }
 

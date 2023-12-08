@@ -70,7 +70,7 @@ func (s *GovAnteHandlerTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 		{"Failing proposal", "the purpose of this proposal is to fail", govv1beta1.ProposalTypeText, testAddr, insufficientCoins, false},
 	}
 
-	decorator := ante.NewGovPreventSpamDecorator(s.app.AppCodec(), &s.app.GovKeeper)
+	decorator := ante.NewGovPreventSpamDecorator(s.app.AppCodec(), s.app.GovKeeper)
 
 	for _, tc := range tests {
 		content, _ := govv1beta1.ContentFromProposalType(tc.title, tc.description, tc.proposalType)

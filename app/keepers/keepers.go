@@ -68,9 +68,6 @@ import (
 	pfmrouterkeeper "github.com/strangelove-ventures/packet-forward-middleware/v7/router/keeper"
 	pfmroutertypes "github.com/strangelove-ventures/packet-forward-middleware/v7/router/types"
 
-	// liquiditykeeper "github.com/gravity-devs/liquidity/x/liquidity/keeper"
-	// liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
-
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
 )
@@ -89,7 +86,7 @@ type AppKeepers struct {
 	SlashingKeeper   slashingkeeper.Keeper
 	MintKeeper       mintkeeper.Keeper
 	DistrKeeper      distrkeeper.Keeper
-	GovKeeper        govkeeper.Keeper
+	GovKeeper        *govkeeper.Keeper
 	CrisisKeeper     *crisiskeeper.Keeper
 	UpgradeKeeper    *upgradekeeper.Keeper
 	ParamsKeeper     paramskeeper.Keeper
@@ -286,17 +283,19 @@ func NewAppKeeper(
 		appKeepers.ScopedIBCKeeper,
 	)
 
-	// EvidenceKeeper must be created before ProviderKeeper
-	evidenceKeeper := evidencekeeper.NewKeeper(
+	// provider depends on gov, so gov must be registered first
+	govConfig := govtypes.DefaultConfig()
+	appKeepers.GovKeeper = govkeeper.NewKeeper(
 		appCodec,
-		appKeepers.keys[evidencetypes.StoreKey],
+		appKeepers.keys[govtypes.StoreKey],
+		appKeepers.AccountKeeper,
+		appKeepers.BankKeeper,
 		appKeepers.StakingKeeper,
-		appKeepers.SlashingKeeper,
+		bApp.MsgServiceRouter(),
+		govConfig,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
-	// If evidence needs to be handled for the app, set routes in router here and seal
-	appKeepers.EvidenceKeeper = *evidenceKeeper
 
-	// TODO: Enable with ICS
 	appKeepers.ProviderKeeper = ibcproviderkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[providertypes.StoreKey],
@@ -309,9 +308,9 @@ func NewAppKeeper(
 		appKeepers.StakingKeeper,
 		appKeepers.SlashingKeeper,
 		appKeepers.AccountKeeper,
-		appKeepers.EvidenceKeeper,
 		appKeepers.DistrKeeper,
 		appKeepers.BankKeeper,
+		appKeepers.GovKeeper,
 		authtypes.FeeCollectorName,
 	)
 
@@ -329,32 +328,22 @@ func NewAppKeeper(
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(appKeepers.IBCKeeper.ClientKeeper)).
 		AddRoute(providertypes.RouterKey, ibcprovider.NewProviderProposalHandler(appKeepers.ProviderKeeper))
 
-	govConfig := govtypes.DefaultConfig()
-	/*
-		Example of setting gov params:
-		govConfig.MaxMetadataLen = 10000
-	*/
-
-	govKeeper := govkeeper.NewKeeper(
-		appCodec,
-		appKeepers.keys[govtypes.StoreKey],
-		appKeepers.AccountKeeper,
-		appKeepers.BankKeeper,
-		appKeepers.StakingKeeper,
-		bApp.MsgServiceRouter(),
-		govConfig,
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
-	)
-
 	// Set legacy router for backwards compatibility with gov v1beta1
-	govKeeper.SetLegacyRouter(govRouter)
+	appKeepers.GovKeeper.SetLegacyRouter(govRouter)
 
 	// appKeepers.GovKeeper = *govKeeper
-	appKeepers.GovKeeper = *govKeeper.SetHooks(
-		govtypes.NewMultiGovHooks(
-		// register the governance hooks
-		),
+	appKeepers.GovKeeper = appKeepers.GovKeeper.SetHooks(
+		appKeepers.ProviderKeeper.Hooks(),
 	)
+
+	evidenceKeeper := evidencekeeper.NewKeeper(
+		appCodec,
+		appKeepers.keys[evidencetypes.StoreKey],
+		appKeepers.StakingKeeper,
+		appKeepers.SlashingKeeper,
+	)
+	// If evidence needs to be handled for the app, set routes in router here and seal
+	appKeepers.EvidenceKeeper = *evidenceKeeper
 
 	// ICA Host keeper
 	appKeepers.ICAHostKeeper = icahostkeeper.NewKeeper(

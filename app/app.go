@@ -42,7 +42,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ibctesting "github.com/cosmos/interchain-security/v3/legacy_ibc_testing/testing"
+	ibctesting "github.com/cosmos/ibc-go/v7/testing"
 	providertypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
@@ -225,7 +225,7 @@ func NewGaiaApp(
 			},
 			Codec:             appCodec,
 			IBCkeeper:         app.IBCKeeper,
-			GovKeeper:         &app.GovKeeper,
+			GovKeeper:         app.GovKeeper,
 			GlobalFeeSubspace: app.GetSubspace(globalfee.ModuleName),
 			StakingKeeper:     app.StakingKeeper,
 			// If TxFeeChecker is nil the default ante TxFeeChecker is used

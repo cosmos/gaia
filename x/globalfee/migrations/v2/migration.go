@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	"github.com/cosmos/gaia/v14/x/globalfee/types"
+	"github.com/cosmos/gaia/v15/x/globalfee/types"
 )
 
 // MigrateStore performs in-place params migrations of

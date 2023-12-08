@@ -13,8 +13,8 @@ import (
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	gaia "github.com/cosmos/gaia/v14/app"
-	"github.com/cosmos/gaia/v14/app/params"
+	gaia "github.com/cosmos/gaia/v15/app"
+	"github.com/cosmos/gaia/v15/app/params"
 )
 
 const (

@@ -7,7 +7,7 @@ title: Joining Testnet
 
 This tutorial will provide all necessary instructions for joining the current public testnet. If you're interested in more advanced configuration and synchronization options, see [Join Mainnet](./join-mainnet.md) for a detailed walkthrough.
 
-* Current Version: v13
+* Current Version: v14
 * Chain ID: `theta-testnet-001`
 
 ## Background
@@ -59,12 +59,14 @@ State Sync is far faster and more efficient than Fast Sync, but Fast Sync offers
 ## Step-by-Step Setup
 
 The following set of instructions assumes you are logged in as root.
+
 * You can run the relevant commands from a sudoer account.
 * The `/root/` part in service file paths can be changed to `/home/<username>/`.
 
 ### Build Tools
 
 Install build tools and Go.
+
 ```shell
 sudo apt-get update
 sudo apt-get install -y make gcc
@@ -80,7 +82,8 @@ You will need to install and configure the Gaia binary using the script below. T
 * For up-to-date endpoints like seeds and state sync RPC servers, visit the [testnets repository](https://github.com/cosmos/testnets/tree/master/public).
 
 Build the gaiad binary and initialize the chain home folder.
-```
+
+```shell
 cd $HOME
 git clone https://github.com/cosmos/gaia
 cd gaia
@@ -94,7 +97,8 @@ gaiad init <custom_moniker>
 ```
 
 Prepare the genesis file.
-```
+
+```shell
 cd $HOME
 wget https://github.com/cosmos/testnets/raw/master/public/genesis.json.gz
 gzip -d genesis.json.gz
@@ -113,8 +117,7 @@ State sync requires you to configure a trust height and trust hash. These depend
 * Visit a [testnet explorer](https://explorer.theta-testnet.polypore.xyz/) to find the block and hash for the current height - 1000.
 * Set these parameters in the code snippet below: `<BLOCK_HEIGHT>` and `<BLOCK_HASH>`.
 
-
-```
+```shell
 cd $HOME/.gaia/config
 sed -i 's/enable = false/enable = true/' config.toml
 sed -i 's/trust_height = 0/trust_height = <BLOCK_HEIGHT>/' config.toml
@@ -126,7 +129,7 @@ sed -i 's/rpc_servers = ""/rpc_servers = "http:\/\/state-sync-01.theta-testnet.p
 
 ### Cosmovisor Setup (Optional)
 
-Cosmovisor is a process manager that monitors the governance module for incoming chain upgrade proposals. When a proposal is approved, Cosmovisor can automatically download the new binary, stop the chain binary when it hits the upgrade height, switch to the new binary, and restart the daemon. Cosmovisor can be used with either Fast Sync or State Sync. 
+Cosmovisor is a process manager that monitors the governance module for incoming chain upgrade proposals. When a proposal is approved, Cosmovisor can automatically download the new binary, stop the chain binary when it hits the upgrade height, switch to the new binary, and restart the daemon. Cosmovisor can be used with either Fast Sync or State Sync.
 
 The instructions below provide a simple way to sync via Cosmovisor. For more information on configuration, check out the Cosmos SDK's [Cosmovisor documentation](https://github.com/cosmos/cosmos-sdk/tree/main/tools/cosmovisor).
 
@@ -140,8 +143,9 @@ Cosmovisor requires the creation of the following directory structure:
             └── gaiad
 ```
 
-Install Cosmovisor and copy Gaia binary to genesis folder
-```
+Install Cosmovisor and copy Gaia binary to genesis folder:
+
+```shell
 go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@v1.5.0
 mkdir -p ~/.gaia/cosmovisor/genesis/bin
 cp ~/go/bin/gaiad ~/.gaia/cosmovisor/genesis/bin/
@@ -151,11 +155,11 @@ cp ~/go/bin/gaiad ~/.gaia/cosmovisor/genesis/bin/
 
 * Cosmos Hub recommends running `gaiad` or `cosmovisor` with the `--x-crisis-skip-assert-invariants` flag. If checking for invariants, operators are likely to see `rounding error withdrawing rewards from validator`. These are expected. For more information see [Verify Mainnet](./join-mainnet.md#verify-mainnet).
 
-
 Create one of the following service files.
 
 If you are not using Cosmovisor: `/etc/systemd/system/gaiad.service`
-```
+
+```toml
 [Unit]
 Description=Gaia service
 After=network-online.target
@@ -171,7 +175,8 @@ WantedBy=multi-user.target
 ```
 
 If you are using Cosmovisor: `/etc/systemd/system/cosmovisor.service`
-```
+
+```toml
 [Unit]
 Description=Cosmovisor service
 After=network-online.target
@@ -195,19 +200,22 @@ WantedBy=multi-user.target
 ### Start the Service
 
 Reload the systemd manager configuration.
-```
+
+```shell
 systemctl daemon-reload
 systemctl restart systemd-journald
 ```
 
 If you are not using Cosmovisor:
-```
+
+```shell
 systemctl enable gaiad.service
 systemctl start gaiad.service
 ```
 
 If you are using Cosmovisor:
-```
+
+```shell
 systemctl enable cosmovisor.service
 systemctl start cosmovisor.service
 ```
@@ -228,10 +236,11 @@ Follow these instructions if you have a node that is already synced and wish to 
 When the chain reaches the upgrade block height specified by a software upgrade proposal, the chain binary will halt and expect the new binary to be run (the system log will show `ERR UPGRADE "<Upgrade name>" NEEDED at height: XXXX` or something similar).
 
 There are three ways you can update the binary:
+
 1. Without Cosmovisor: You must build or download the new binary ahead of the upgrade. When the chain binary halts at the upgrade height:
-  * Stop the gaiad service with `systemctl stop gaiad.service`.
-  * Build or download the new binary, replacing the existing `~/go/bin` one.
-  * Start the gaiad service with `systemctl start gaiad.service`.
+* Stop the gaiad service with `systemctl stop gaiad.service`.
+* Build or download the new binary, replacing the existing `~/go/bin` one.
+* Start the gaiad service with `systemctl start gaiad.service`.
 2. With Cosmovisor: You must build or download the new binary and copy it to the appropriate folder ahead of the upgrade.
 3. With Cosmovisor: Using the auto-download feature, assuming the proposal includes the binaries for your system architecture.
 
@@ -253,12 +262,14 @@ If the environment variable `DAEMON_ALLOW_DOWNLOAD_BINARIES` is set to `false`, 
 ```
 
 Prepare the upgrade directory
-```
+
+```shell
 mkdir -p ~/.gaia/cosmovisor/upgrades/v14/bin
 ```
 
 Download and install the new binary version.
-```
+
+```shell
 cd $HOME/gaia
 git pull
 git checkout v14.0.0-rc0

@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 
+	tmstrings "github.com/tendermint/tendermint/libs/strings"
+
 	errorsmod "cosmossdk.io/errors"
 	tmstrings "github.com/cometbft/cometbft/libs/strings"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -11,10 +13,9 @@ import (
 
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 
-	gaiaerrors "github.com/cosmos/gaia/v11/types/errors"
-
-	"github.com/cosmos/gaia/v11/x/globalfee"
-	"github.com/cosmos/gaia/v11/x/globalfee/types"
+	gaiaerrors "github.com/cosmos/gaia/v15/types/errors"
+	"github.com/cosmos/gaia/v15/x/globalfee"
+	"github.com/cosmos/gaia/v15/x/globalfee/types"
 )
 
 // FeeWithBypassDecorator checks if the transaction's fee is at least as large

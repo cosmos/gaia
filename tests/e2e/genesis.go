@@ -21,8 +21,8 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	icagen "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/genesis/types"
 	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
-	//
-	// globfeetypes "github.com/cosmos/gaia/v11/x/globalfee/types"
+
+	globfeetypes "github.com/cosmos/gaia/v11/x/globalfee/types"
 )
 
 func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {
@@ -160,17 +160,17 @@ func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, gl
 	appState[icatypes.ModuleName] = icaGenesisStateBz
 
 	// setup global fee in genesis
-	// globfeeState := globfeetypes.GetGenesisStateFromAppState(cdc, appState)
-	// minGases, err := sdk.ParseDecCoins(globfees)
-	// if err != nil {
-	// 	return fmt.Errorf("failed to parse fee coins: %w", err)
-	// }
-	// globfeeState.Params.MinimumGasPrices = minGases
-	// globFeeStateBz, err := cdc.MarshalJSON(globfeeState)
-	// if err != nil {
-	// 	return fmt.Errorf("failed to marshal global fee genesis state: %w", err)
-	// }
-	// appState[globfeetypes.ModuleName] = globFeeStateBz
+	globfeeState := globfeetypes.GetGenesisStateFromAppState(cdc, appState)
+	minGases, err := sdk.ParseDecCoins(globfees)
+	if err != nil {
+		return fmt.Errorf("failed to parse fee coins: %w", err)
+	}
+	globfeeState.Params.MinimumGasPrices = minGases
+	globFeeStateBz, err := cdc.MarshalJSON(globfeeState)
+	if err != nil {
+		return fmt.Errorf("failed to marshal global fee genesis state: %w", err)
+	}
+	appState[globfeetypes.ModuleName] = globFeeStateBz
 
 	stakingGenState := stakingtypes.GetGenesisStateFromAppState(cdc, appState)
 	stakingGenState.Params.BondDenom = denom

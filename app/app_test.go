@@ -5,12 +5,13 @@ import (
 
 	db "github.com/cometbft/cometbft-db"
 	"github.com/cometbft/cometbft/libs/log"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/stretchr/testify/require"
 
-	gaia "github.com/cosmos/gaia/v11/app"
-	gaiahelpers "github.com/cosmos/gaia/v11/app/helpers"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+
+	gaia "github.com/cosmos/gaia/v15/app"
+	gaiahelpers "github.com/cosmos/gaia/v15/app/helpers"
 )
 
 type EmptyAppOptions struct{}

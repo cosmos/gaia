@@ -31,13 +31,12 @@ import (
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 
-	"github.com/cosmos/gaia/v11/x/globalfee"
+	"github.com/cosmos/gaia/v15/x/globalfee"
 
 	providertypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
 
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
@@ -202,6 +201,13 @@ func NewAppKeeper(
 		appKeepers.AccountKeeper,
 		blockedAddress,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+	)
+
+	appKeepers.CrisisKeeper = crisiskeeper.NewKeeper(
+		appKeepers.GetSubspace(crisistypes.ModuleName),
+		invCheckPeriod,
+		appKeepers.BankKeeper,
+		authtypes.FeeCollectorName,
 	)
 
 	appKeepers.AuthzKeeper = authzkeeper.NewKeeper(

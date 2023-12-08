@@ -1,6 +1,6 @@
 ---
 title: Cosmos Hub 4, Delta Upgrade
-order: 4
+order: 1
 ---
 <!-- markdown-link-check-disable -->
 # Cosmos Hub 4, Delta Upgrade, Instructions

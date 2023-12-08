@@ -22,14 +22,14 @@ The `slashing` module is responsible for enabling the Cosmos Hub to penalize any
 * `cosmoshub-4` default: `0.200000000000000000`
 * `cosmoshub-3` default: `0.200000000000000000`
 
-If a validator in the active set is offline for too long, the validator will be slashed by [`SlashFractionDowntime`](#SlashFractionDowntime) and temporarily removed from the active set for at least the [`DowntimeJailDuration`](#DowntimeJailDuration), which is 10 minutes.
+If a validator in the active set is offline for too long, the validator will be slashed by [`SlashFractionDowntime`](#slashfractiondowntime) and temporarily removed from the active set for at least the [`DowntimeJailDuration`](#downtimejailduration), which is 10 minutes.
 
-How long is being offline for too long? There are two components: `SignedBlocksWindow` and [`MinSignedPerWindow`](#MinSignedPerWindow). Since `MinSignedPerWindow` is 5% and `SignedBlocksWindow` is 10,000, a validator must have signed at least 5% of 10,000 blocks (500 out of 10,000) at any given time to comply with protocol rules. That means a validator that misses 9,500 consecutive blocks will be considered by the system to have committed a liveness violation. The time window for being offline without breaking system rules is proportional to this parameter.
+How long is being offline for too long? There are two components: `SignedBlocksWindow` and [`MinSignedPerWindow`](#minsignedperwindow). Since `MinSignedPerWindow` is 5% and `SignedBlocksWindow` is 10,000, a validator must have signed at least 5% of 10,000 blocks (500 out of 10,000) at any given time to comply with protocol rules. That means a validator that misses 9,500 consecutive blocks will be considered by the system to have committed a liveness violation. The time window for being offline without breaking system rules is proportional to this parameter.
 
 More about liveness [here](https://docs.cosmos.network/main/modules/slashing#signing-info-liveness).
 
 #### Decreasing the value of `SignedBlocksWindow`
-Decreasing the value of the `SignedBlocksWindow` parameter will decrease the window for complying with the system's liveness rules. This will make it more likely that offline validators will be slashed by [`SlashFractionDowntime`](#SlashFractionDowntime) and temporarily removed from the active set for at least [`DowntimeJailDuration`](#DowntimeJailDuration). While out of the active set, the votes of the validator and its delegators do not count toward governance proposals.
+Decreasing the value of the `SignedBlocksWindow` parameter will decrease the window for complying with the system's liveness rules. This will make it more likely that offline validators will be slashed by [`SlashFractionDowntime`](#slashfractiondowntime) and temporarily removed from the active set for at least [`DowntimeJailDuration`](#downtimejailduration). While out of the active set, the votes of the validator and its delegators do not count toward governance proposals.
 
 **Example:**
 
@@ -40,7 +40,7 @@ Validators must now sign at least 5% of 5,000 blocks, which is 250 blocks. That 
 That's ~9.25 hours instead of ~18.5 hours, assuming 7s block times.
 
 #### Increasing the value of `SignedBlocksWindow`
-Increasing the value of the `SignedBlocksWindow` parameter will increase the window for complying with the system's liveness rules. This will make it less likely that offline validators will be slashed by [`SlashFractionDowntime`](#SlashFractionDowntime) and temporarily removed from the active set for at least [`DowntimeJailDuration`](#DowntimeJailDuration).
+Increasing the value of the `SignedBlocksWindow` parameter will increase the window for complying with the system's liveness rules. This will make it less likely that offline validators will be slashed by [`SlashFractionDowntime`](#slashfractiondowntime) and temporarily removed from the active set for at least [`DowntimeJailDuration`](#downtimejailduration).
 
 **Example:**
 
@@ -57,15 +57,15 @@ That's ~37 hours instead of ~18.5 hours, assuming 7s block times.
 * `cosmoshub-4` default: `0.050000000000000000`
 * `cosmoshub-3` default: `0.050000000000000000`
 
-If a validator in the active set is offline for too long, the validator will be slashed by [`SlashFractionDowntime`](#SlashFractionDowntime) and temporarily removed from the active set for at least the [`DowntimeJailDuration`](#DowntimeJailDuration), which is 10 minutes.
+If a validator in the active set is offline for too long, the validator will be slashed by [`SlashFractionDowntime`](#slashfractiondowntime) and temporarily removed from the active set for at least the [`DowntimeJailDuration`](#downtimejailduration), which is 10 minutes.
 
-How long is being offline for too long? There are two components: [`SignedBlocksWindow`](#SignedBlocksWindow) and `MinSignedPerWindow`. Since `MinSignedPerWindow` is 5% and `SignedBlocksWindow` is 10,000, a validator must have signed at least 5% of 10,000 blocks (500 out of 10,000) at any given time to comply with protocol rules. That means a validator that misses 9,500 consecutive blocks will be considered by the system to have committed a liveness violation. The threshold-proportion of blocks is determined by this parameter, so the greater that `MinSignedPerWindow` is, the lower the tolerance for missed blocks by the system.
+How long is being offline for too long? There are two components: [`SignedBlocksWindow`](#signedblockswindow) and `MinSignedPerWindow`. Since `MinSignedPerWindow` is 5% and `SignedBlocksWindow` is 10,000, a validator must have signed at least 5% of 10,000 blocks (500 out of 10,000) at any given time to comply with protocol rules. That means a validator that misses 9,500 consecutive blocks will be considered by the system to have committed a liveness violation. The threshold-proportion of blocks is determined by this parameter, so the greater that `MinSignedPerWindow` is, the lower the tolerance for missed blocks by the system.
 
 
 More about liveness [here](https://docs.cosmos.network/main/modules/slashing#signing-info-liveness).
 
 #### Decreasing the value of `MinSignedPerWindow`
-Decreasing the value of the `MinSignedPerWindow` parameter will increase the threshold for complying with the system's liveness rules. This will make it less likely that offline validators will be slashed by [`SlashFractionDowntime`](#5-SlashFractionDowntime) and temporarily removed from the active set for at least [`DowntimeJailDuration`](#3-DowntimeJailDuration). While out of the active set, the votes of the validator and its delegators do not count toward governance proposals.
+Decreasing the value of the `MinSignedPerWindow` parameter will increase the threshold for complying with the system's liveness rules. This will make it less likely that offline validators will be slashed by [`SlashFractionDowntime`](#slashfractiondowntime) and temporarily removed from the active set for at least [`DowntimeJailDuration`](#downtimejailduration). While out of the active set, the votes of the validator and its delegators do not count toward governance proposals.
 
 **Example:**
 
@@ -76,7 +76,7 @@ Validators must now sign at least 2.5% of 10,000 blocks, which is 250 blocks. Th
 That's ~19 hours instead of ~18.5 hours, assuming 7s block times.
 
 #### Increasing the value of `MinSignedPerWindow`
-Increasing the value of the `MinSignedPerWindow` parameter will decrease the threshold for complying with the system's liveness rules. This will make it more likely that offline validators will be slashed by [`SlashFractionDowntime`](#SlashFractionDowntime) and temporarily removed from the active set for at least [`DowntimeJailDuration`](#DowntimeJailDuration). While out of the active set, the votes of the validator and its delegators do not count toward governance proposals.
+Increasing the value of the `MinSignedPerWindow` parameter will decrease the threshold for complying with the system's liveness rules. This will make it more likely that offline validators will be slashed by [`SlashFractionDowntime`](#slashfractiondowntime) and temporarily removed from the active set for at least [`DowntimeJailDuration`](#downtimejailduration). While out of the active set, the votes of the validator and its delegators do not count toward governance proposals.
 
 **Example:**
 
@@ -94,7 +94,7 @@ That's ~17.5 hours instead of ~18.5 hours, assuming 7s block times.
 * `cosmoshub-3` default: `600000000000`
 
 
-A validator in the active set that's offline for too long, besides being slashed, will be temporarily removed from the active set (aka "[jailed](https://docs.cosmos.network/main/modules/slashing#unjail)") for at least [`DowntimeJailDuration`](#DowntimeJailDuration), which is 10 minutes (`600000000000` nanoseconds). During this time, a validator is not able to sign blocks and its delegators will not earn staking rewards. After the `DowntimeJailDuration` period has passed, the validator operator may send an "[unjail](https://docs.cosmos.network/main/modules/slashing#unjail)" transaction to resume validator operations.
+A validator in the active set that's offline for too long, besides being slashed, will be temporarily removed from the active set (aka "[jailed](https://docs.cosmos.network/main/modules/slashing#unjail)") for at least [`DowntimeJailDuration`](#downtimejailduration), which is 10 minutes (`600000000000` nanoseconds). During this time, a validator is not able to sign blocks and its delegators will not earn staking rewards. After the `DowntimeJailDuration` period has passed, the validator operator may send an "[unjail](https://docs.cosmos.network/main/modules/slashing#unjail)" transaction to resume validator operations.
 
 More about liveness [here](https://docs.cosmos.network/main/modules/slashing#signing-info-liveness).
 

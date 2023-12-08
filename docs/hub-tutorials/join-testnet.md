@@ -7,12 +7,12 @@ title: Joining Testnet
 
 This tutorial will provide all necessary instructions for joining the current public testnet. If you're interested in more advanced configuration and synchronization options, see [Join Mainnet](./join-mainnet.md) for a detailed walkthrough.
 
-* Current Version: v9-Lambda
+* Current Version: v14
 * Chain ID: `theta-testnet-001`
 
 ## Background
 
-The Cosmos Hub Public Testnet is currently running Gaia v8. Visit the [testnet explorer](https://explorer.theta-testnet.polypore.xyz/) to view all on-chain activity.
+The Cosmos Hub Public Testnet is currently running Gaia v13. Visit the [testnet explorer](https://explorer.theta-testnet.polypore.xyz/) to view all on-chain activity.
 
 For those who just need instructions on performing the upgrade, see the [Upgrading Your Node](#upgrading-your-node) section.
 
@@ -20,12 +20,17 @@ For those who just need instructions on performing the upgrade, see the [Upgradi
 
 The table below shows all past and upcoming versions of the public testnet.
 
-|  Release   | Upgrade Block Height |    Upgrade Date     |
-|:----------:|:--------------------:|:-------------------:|
-| v9.0.0-rc3 |      14,476,206      |     2023-02-08      |
-| v8.0.0-rc3 |      14,175,595      |     2023-01-20      |
-| v7.0.0-rc0 |      9,283,650       |     2022-03-17      |
-|   v6.0.0   |       Genesis        | Launched 2022-03-10 |
+|   Release   | Upgrade Block Height |    Upgrade Date     |
+| :---------: | :------------------: | :-----------------: |
+| v14.0.0-rc0 |         TBA          |         TBA         |
+| v13.0.0-rc0 |      17,996,550      |     2023-09-20      |
+| v12.0.0-rc0 |      17,550,150      |     2023-08-23      |
+| v11.0.0-rc0 |      17,107,825      |     2023-07-26      |
+| v10.0.0-rc0 |      16,117,530      |     2023-05-24      |
+| v9.0.0-rc3  |      14,476,206      |     2023-02-08      |
+| v8.0.0-rc3  |      14,175,595      |     2023-01-20      |
+| v7.0.0-rc0  |      9,283,650       |     2022-03-17      |
+|   v6.0.0    |       Genesis        | Launched 2022-03-10 |
 
 See the [Gaia release page](https://github.com/cosmos/gaia/releases) for details on each release.
 
@@ -40,7 +45,7 @@ We offer three ways to set up a node in the testnet:
 * Step-by-step instructions
   * The rest of this document provides a step-by-step walkthrough for setting up a testnet node.
 
-We recommend running public testnet nodes on machines with at least 8 cores, 16GB of RAM, and 300GB of disk space.
+We recommend running public testnet nodes on machines with at least 8 cores, 32GB of RAM, and 300GB of disk space.
 
 ## Sync Options
 
@@ -54,33 +59,36 @@ State Sync is far faster and more efficient than Fast Sync, but Fast Sync offers
 ## Step-by-Step Setup
 
 The following set of instructions assumes you are logged in as root.
+
 * You can run the relevant commands from a sudoer account.
 * The `/root/` part in service file paths can be changed to `/home/<username>/`.
 
 ### Build Tools
 
 Install build tools and Go.
+
 ```shell
 sudo apt-get update
 sudo apt-get install -y make gcc
-wget https://go.dev/dl/go1.20.3.linux-amd64.tar.gz
-sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.20.3.linux-amd64.tar.gz
+wget https://go.dev/dl/go1.20.linux-amd64.tar.gz
+sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.20.linux-amd64.tar.gz
 export PATH=$PATH:/usr/local/go/bin
 ```
 
 ### Installation & Configuration
 
-You will need to install and configure the Gaia binary using the script below. The Cosmos Hub Public Testnet is running Gaia [`v9.0.0-rc6`](https://github.com/cosmos/gaia/releases/tag/v9.0.0-rc6).
+You will need to install and configure the Gaia binary using the script below. The Cosmos Hub Public Testnet is running Gaia [`v13.0.0-rc0`](https://github.com/cosmos/gaia/releases/tag/v13.0.0-rc0).
 
 * For up-to-date endpoints like seeds and state sync RPC servers, visit the [testnets repository](https://github.com/cosmos/testnets/tree/master/public).
 
 Build the gaiad binary and initialize the chain home folder.
-```
+
+```shell
 cd $HOME
 git clone https://github.com/cosmos/gaia
 cd gaia
 # To sync from genesis, comment out the next line.
-git checkout v9.0.0-rc6
+git checkout v13.0.0-rc0
 # To sync from genesis, uncomment the next line and skip the State Sync Setup section.
 # git checkout v6.0.4
 make install
@@ -89,7 +97,8 @@ gaiad init <custom_moniker>
 ```
 
 Prepare the genesis file.
-```
+
+```shell
 cd $HOME
 wget https://github.com/cosmos/testnets/raw/master/public/genesis.json.gz
 gzip -d genesis.json.gz
@@ -108,8 +117,7 @@ State sync requires you to configure a trust height and trust hash. These depend
 * Visit a [testnet explorer](https://explorer.theta-testnet.polypore.xyz/) to find the block and hash for the current height - 1000.
 * Set these parameters in the code snippet below: `<BLOCK_HEIGHT>` and `<BLOCK_HASH>`.
 
-
-```
+```shell
 cd $HOME/.gaia/config
 sed -i 's/enable = false/enable = true/' config.toml
 sed -i 's/trust_height = 0/trust_height = <BLOCK_HEIGHT>/' config.toml
@@ -121,7 +129,7 @@ sed -i 's/rpc_servers = ""/rpc_servers = "http:\/\/state-sync-01.theta-testnet.p
 
 ### Cosmovisor Setup (Optional)
 
-Cosmovisor is a process manager that monitors the governance module for incoming chain upgrade proposals. When a proposal is approved, Cosmovisor can automatically download the new binary, stop the chain binary when it hits the upgrade height, switch to the new binary, and restart the daemon. Cosmovisor can be used with either Fast Sync or State Sync. 
+Cosmovisor is a process manager that monitors the governance module for incoming chain upgrade proposals. When a proposal is approved, Cosmovisor can automatically download the new binary, stop the chain binary when it hits the upgrade height, switch to the new binary, and restart the daemon. Cosmovisor can be used with either Fast Sync or State Sync.
 
 The instructions below provide a simple way to sync via Cosmovisor. For more information on configuration, check out the Cosmos SDK's [Cosmovisor documentation](https://github.com/cosmos/cosmos-sdk/tree/main/tools/cosmovisor).
 
@@ -135,9 +143,10 @@ Cosmovisor requires the creation of the following directory structure:
             └── gaiad
 ```
 
-Install Cosmovisor and copy Gaia binary to genesis folder
-```
-go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.3.0
+Install Cosmovisor and copy Gaia binary to genesis folder:
+
+```shell
+go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@v1.5.0
 mkdir -p ~/.gaia/cosmovisor/genesis/bin
 cp ~/go/bin/gaiad ~/.gaia/cosmovisor/genesis/bin/
 ```
@@ -146,11 +155,11 @@ cp ~/go/bin/gaiad ~/.gaia/cosmovisor/genesis/bin/
 
 * Cosmos Hub recommends running `gaiad` or `cosmovisor` with the `--x-crisis-skip-assert-invariants` flag. If checking for invariants, operators are likely to see `rounding error withdrawing rewards from validator`. These are expected. For more information see [Verify Mainnet](./join-mainnet.md#verify-mainnet).
 
-
 Create one of the following service files.
 
 If you are not using Cosmovisor: `/etc/systemd/system/gaiad.service`
-```
+
+```toml
 [Unit]
 Description=Gaia service
 After=network-online.target
@@ -166,7 +175,8 @@ WantedBy=multi-user.target
 ```
 
 If you are using Cosmovisor: `/etc/systemd/system/cosmovisor.service`
-```
+
+```toml
 [Unit]
 Description=Cosmovisor service
 After=network-online.target
@@ -190,19 +200,22 @@ WantedBy=multi-user.target
 ### Start the Service
 
 Reload the systemd manager configuration.
-```
+
+```shell
 systemctl daemon-reload
 systemctl restart systemd-journald
 ```
 
 If you are not using Cosmovisor:
-```
+
+```shell
 systemctl enable gaiad.service
 systemctl start gaiad.service
 ```
 
 If you are using Cosmovisor:
-```
+
+```shell
 systemctl enable cosmovisor.service
 systemctl start cosmovisor.service
 ```
@@ -223,16 +236,17 @@ Follow these instructions if you have a node that is already synced and wish to 
 When the chain reaches the upgrade block height specified by a software upgrade proposal, the chain binary will halt and expect the new binary to be run (the system log will show `ERR UPGRADE "<Upgrade name>" NEEDED at height: XXXX` or something similar).
 
 There are three ways you can update the binary:
+
 1. Without Cosmovisor: You must build or download the new binary ahead of the upgrade. When the chain binary halts at the upgrade height:
-  * Stop the gaiad service with `systemctl stop gaiad.service`.
-  * Build or download the new binary, replacing the existing `~/go/bin` one.
-  * Start the gaiad service with `systemctl start gaiad.service`.
+* Stop the gaiad service with `systemctl stop gaiad.service`.
+* Build or download the new binary, replacing the existing `~/go/bin` one.
+* Start the gaiad service with `systemctl start gaiad.service`.
 2. With Cosmovisor: You must build or download the new binary and copy it to the appropriate folder ahead of the upgrade.
 3. With Cosmovisor: Using the auto-download feature, assuming the proposal includes the binaries for your system architecture.
 
 The instructions below are for option 2. For more information on auto-download with Cosmovisor, see the relevant [documentation](https://github.com/cosmos/cosmos-sdk/tree/main/tools/cosmovisor#auto-download) in the Cosmos SDK repo.
 
-If the environment variable `DAEMON_ALLOW_DOWNLOAD_BINARIES` is set to `false`, Cosmovisor will look for the new binary in a folder that matches the name of the upgrade specified in the software upgrade proposal. For the `v9-Lambda` upgrade, the expected folder structure would look as follows:
+If the environment variable `DAEMON_ALLOW_DOWNLOAD_BINARIES` is set to `false`, Cosmovisor will look for the new binary in a folder that matches the name of the upgrade specified in the software upgrade proposal. For the `v14` upgrade, the expected folder structure would look as follows:
 
 ```shell
 .gaia
@@ -242,27 +256,27 @@ If the environment variable `DAEMON_ALLOW_DOWNLOAD_BINARIES` is set to `false`, 
     │   └── bin
     |       └── gaiad
     └── upgrades
-        └── v9-lambda
+        └── v14
             └── bin
                 └── gaiad
 ```
 
-> Note: for Cosmovisor v1.0.0, the upgrade name folder is not lowercased (use `cosmovisor/upgrades/v9-Lambda/bin` instead)
-
 Prepare the upgrade directory
-```
-mkdir -p ~/.gaia/cosmovisor/upgrades/v8-rho/bin
+
+```shell
+mkdir -p ~/.gaia/cosmovisor/upgrades/v14/bin
 ```
 
 Download and install the new binary version.
-```
+
+```shell
 cd $HOME/gaia
 git pull
-git checkout v8.0.0
+git checkout v14.0.0-rc0
 make install
 
-# Copy the new binary to the v8-Rho upgrade directory
-cp ~/go/bin/gaiad ~/.gaia/cosmovisor/upgrades/v9-lambda/bin/gaiad
+# Copy the new binary to the v14 upgrade directory
+cp ~/go/bin/gaiad ~/.gaia/cosmovisor/upgrades/v14/bin/gaiad
 ```
 
 When the upgrade height is reached, Cosmovisor will stop the gaiad binary, copy the new binary to the `current/bin` folder and restart. After a few minutes, the node should start syncing blocks using the new binary.

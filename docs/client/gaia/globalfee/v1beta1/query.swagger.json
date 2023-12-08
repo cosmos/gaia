@@ -11,14 +11,14 @@
     "application/json"
   ],
   "paths": {
-    "/gaia/globalfee/v1beta1/minimum_gas_prices": {
+    "/gaia/globalfee/v1beta1/params": {
       "get": {
-        "operationId": "MinimumGasPrices",
+        "operationId": "Params",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/gaia.globalfee.v1beta1.QueryMinimumGasPricesResponse"
+              "$ref": "#/definitions/gaia.globalfee.v1beta1.QueryParamsResponse"
             }
           },
           "default": {
@@ -47,14 +47,36 @@
       },
       "description": "DecCoin defines a token with a denomination and a decimal amount.\n\nNOTE: The amount field is an Dec which implements the custom method\nsignatures required by gogoproto."
     },
-    "gaia.globalfee.v1beta1.QueryMinimumGasPricesResponse": {
+    "gaia.globalfee.v1beta1.Params": {
       "type": "object",
       "properties": {
         "minimum_gas_prices": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/cosmos.base.v1beta1.DecCoin"
-          }
+          },
+          "title": "minimum_gas_prices stores the minimum gas price(s) for all TX on the chain.\nWhen multiple coins are defined then they are accepted alternatively.\nThe list must be sorted by denoms asc. No duplicate denoms or zero amount\nvalues allowed. For more information see\nhttps://docs.cosmos.network/main/modules/auth#concepts"
+        },
+        "bypass_min_fee_msg_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "bypass_min_fee_msg_types defines a list of message type urls\nthat are free of fee charge."
+        },
+        "max_total_bypass_min_fee_msg_gas_usage": {
+          "type": "string",
+          "format": "uint64",
+          "description": "max_total_bypass_min_fee_msg_gas_usage defines the total maximum gas usage\nallowed for a transaction containing only messages of types in bypass_min_fee_msg_types\nto bypass fee charge."
+        }
+      },
+      "description": "Params defines the set of module parameters."
+    },
+    "gaia.globalfee.v1beta1.QueryParamsResponse": {
+      "type": "object",
+      "properties": {
+        "params": {
+          "$ref": "#/definitions/gaia.globalfee.v1beta1.Params"
         }
       },
       "description": "QueryMinimumGasPricesResponse is the response type for the\nQuery/MinimumGasPrices RPC method."

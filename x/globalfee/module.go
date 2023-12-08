@@ -5,6 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/gorilla/mux"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/spf13/cobra"
+	abci "github.com/tendermint/tendermint/abci/types"
+
 	errorsmod "cosmossdk.io/errors"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -17,9 +22,9 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
-	"github.com/cosmos/gaia/v11/x/globalfee/client/cli"
-	"github.com/cosmos/gaia/v11/x/globalfee/keeper"
-	"github.com/cosmos/gaia/v11/x/globalfee/types"
+	"github.com/cosmos/gaia/v15/x/globalfee/client/cli"
+	"github.com/cosmos/gaia/v15/x/globalfee/keeper"
+	"github.com/cosmos/gaia/v15/x/globalfee/types"
 )
 
 var (

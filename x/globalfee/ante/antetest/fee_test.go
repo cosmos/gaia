@@ -3,6 +3,8 @@ package antetest
 import (
 	"testing"
 
+	"github.com/stretchr/testify/suite"
+
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -11,8 +13,8 @@ import (
 	ibcchanneltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 	"github.com/stretchr/testify/suite"
 
-	gaiafeeante "github.com/cosmos/gaia/v11/x/globalfee/ante"
-	globfeetypes "github.com/cosmos/gaia/v11/x/globalfee/types"
+	gaiafeeante "github.com/cosmos/gaia/v15/x/globalfee/ante"
+	globfeetypes "github.com/cosmos/gaia/v15/x/globalfee/types"
 )
 
 var testGasLimit uint64 = 200_000

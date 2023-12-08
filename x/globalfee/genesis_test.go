@@ -14,8 +14,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	gaiaparams "github.com/cosmos/gaia/v11/app/params"
-	"github.com/cosmos/gaia/v11/x/globalfee/types"
+	gaiaparams "github.com/cosmos/gaia/v15/app/params"
+	"github.com/cosmos/gaia/v15/x/globalfee/types"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

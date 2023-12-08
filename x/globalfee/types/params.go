@@ -10,7 +10,7 @@ import (
 	ibcclienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 
-	gaiaerrors "github.com/cosmos/gaia/v11/types/errors"
+	gaiaerrors "github.com/cosmos/gaia/v15/types/errors"
 )
 
 var (

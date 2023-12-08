@@ -21,7 +21,8 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	providertypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
 
-	gaiaparams "github.com/cosmos/gaia/v11/app/params"
+	gaia "github.com/cosmos/gaia/v15/app"
+	"github.com/cosmos/gaia/v15/app/params"
 )
 
 const (

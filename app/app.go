@@ -48,12 +48,12 @@ import (
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
 
-	gaiaante "github.com/cosmos/gaia/v11/ante"
-	"github.com/cosmos/gaia/v11/app/keepers"
-	"github.com/cosmos/gaia/v11/app/upgrades"
-	v11 "github.com/cosmos/gaia/v11/app/upgrades/v11"
-
-	"github.com/cosmos/gaia/v11/x/globalfee"
+	gaiaante "github.com/cosmos/gaia/v15/ante"
+	"github.com/cosmos/gaia/v15/app/keepers"
+	gaiaappparams "github.com/cosmos/gaia/v15/app/params"
+	"github.com/cosmos/gaia/v15/app/upgrades"
+	v15 "github.com/cosmos/gaia/v15/app/upgrades/v15"
+	"github.com/cosmos/gaia/v15/x/globalfee"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
@@ -63,7 +63,7 @@ var (
 	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
 
-	Upgrades = []upgrades.Upgrade{v11.Upgrade}
+	Upgrades = []upgrades.Upgrade{v15.Upgrade}
 )
 
 var (
@@ -353,6 +353,11 @@ func (app *GaiaApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APICo
 	}
 }
 
+// RegisterTxService allows query minimum-gas-prices in app.toml
+func (app *GaiaApp) RegisterNodeService(clientCtx client.Context) {
+	nodeservice.RegisterNodeService(clientCtx, app.GRPCQueryRouter())
+}
+
 // RegisterTxService implements the Application.RegisterTxService method.
 func (app *GaiaApp) RegisterTxService(clientCtx client.Context) {
 	authtx.RegisterTxService(app.BaseApp.GRPCQueryRouter(), clientCtx, app.BaseApp.Simulate, app.interfaceRegistry)
@@ -385,8 +390,10 @@ func (app *GaiaApp) setupUpgradeStoreLoaders() {
 	}
 
 	for _, upgrade := range Upgrades {
+		upgrade := upgrade
 		if upgradeInfo.Name == upgrade.UpgradeName {
-			app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &upgrade.StoreUpgrades))
+			storeUpgrades := upgrade.StoreUpgrades
+			app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
 		}
 	}
 }

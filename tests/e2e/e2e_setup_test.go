@@ -75,6 +75,7 @@ const (
 	proposalBypassMsgFilename      = "proposal_bypass_msg.json"
 	proposalMaxTotalBypassFilename = "proposal_max_total_bypass.json"
 	proposalCommunitySpendFilename = "proposal_community_spend.json"
+	proposalLSMParamUpdateFilename = "proposal_lsm_param_update.json"
 
 	// proposalAddConsumerChainFilename    = "proposal_add_consumer.json"
 	// proposalRemoveConsumerChainFilename = "proposal_remove_consumer.json"

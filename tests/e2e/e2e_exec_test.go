@@ -423,6 +423,7 @@ func (s *IntegrationTestSuite) runGovExec(c *chain, valIdx int, submitterAddr, g
 	s.T().Logf("Successfully executed %s", govCommand)
 }
 
+// NOTE: Tx unused, left here for future reference
 // func (s *IntegrationTestSuite) executeGKeysAddCommand(c *chain, valIdx int, name string, home string) string {
 // 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 // 	defer cancel()
@@ -448,7 +449,8 @@ func (s *IntegrationTestSuite) runGovExec(c *chain, valIdx int, submitterAddr, g
 // 	return addrRecord.Address
 // }
 
-// func (s *IntegrationTestSuite) executeKeysList(c *chain, valIdx int, home string) {
+// NOTE: Tx unused, left here for future reference
+// func (s *IntegrationTestSuite) executeKeysList(c *chain, valIdx int, home string) { // nolint:U1000
 // 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 // 	defer cancel()
 
@@ -678,6 +680,7 @@ func (s *IntegrationTestSuite) execWithdrawReward(
 }
 
 func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chain, gaiaCommand []string, valIdx int, validation func([]byte, []byte) bool) {
+	fmt.Println("## RUNNING #XEC ###", gaiaCommand)
 	if validation == nil {
 		validation = s.defaultExecValidation(s.chainA, 0)
 	}
@@ -705,7 +708,8 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 
 	stdOut := outBuf.Bytes()
 	stdErr := errBuf.Bytes()
-
+	fmt.Println("## EXECUTED STDOUT ###", string(stdOut))
+	fmt.Println("## EXECUTED STDERR ###", string(stdErr))
 	if !validation(stdOut, stdErr) {
 		s.Require().FailNowf("Exec validation failed", "stdout: %s, stderr: %s",
 			string(stdOut), string(stdErr))

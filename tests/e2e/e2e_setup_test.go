@@ -910,45 +910,43 @@ func (s *IntegrationTestSuite) writeGovLegProposal(c *chain, height int64, name 
 	s.Require().NoError(err)
 }
 
-func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain) {
-	type ParamInfo struct {
-		Subspace string  `json:"subspace"`
-		Key      string  `json:"key"`
-		Value    sdk.Dec `json:"value"`
-	}
+func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain, oldParams stakingtypes.Params) {
+	template := `
+	{
+		"messages": [
+		 {
+		  "@type": "/cosmos.staking.v1beta1.MsgUpdateParams",
+		  "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+		  "params": {
+		   "unbonding_time": "%s",
+		   "max_validators": %d,
+		   "max_entries": %d,
+		   "historical_entries": %d,
+		   "bond_denom": "",
+		   "min_commission_rate": "%s",
+		   "validator_bond_factor":" %s,"
+		   "global_liquid_staking_cap": "%s",
+		   "validator_liquid_staking_cap": "%s"
+		  }
+		 }
+		],
+		"metadata": "ipfs://CID",
+		"deposit": "0uatom",
+		"title": "Update LSM Params",
+		"summary": "e2e-test updating LSM staking params"
+	   }`
+	propMsgBody := fmt.Sprintf(template,
+		oldParams.UnbondingTime,
+		oldParams.MaxValidators,
+		oldParams.MaxEntries,
+		oldParams.HistoricalEntries,
+		oldParams.MinCommissionRate,
+		sdk.NewDec(250),           // validator bond factor
+		sdk.NewDecWithPrec(25, 2), // 25 global_liquid_staking_cap
+		sdk.NewDecWithPrec(50, 2), // 50 validator_liquid_staking_cap
+	)
 
-	type ParamChangeMessage struct {
-		Title       string      `json:"title"`
-		Description string      `json:"description"`
-		Changes     []ParamInfo `json:"changes"`
-		Deposit     string      `json:"deposit"`
-	}
-
-	paramChangeProposalBody, err := json.MarshalIndent(ParamChangeMessage{
-		Title:       "liquid staking params update",
-		Description: "liquid staking params update",
-		Changes: []ParamInfo{
-			{
-				Subspace: "staking",
-				Key:      "GlobalLiquidStakingCap",
-				Value:    sdk.NewDecWithPrec(25, 2), // 25%
-			},
-			{
-				Subspace: "staking",
-				Key:      "ValidatorLiquidStakingCap",
-				Value:    sdk.NewDecWithPrec(50, 2), // 50%
-			},
-			{
-				Subspace: "staking",
-				Key:      "ValidatorBondFactor",
-				Value:    sdk.NewDec(250), // -1
-			},
-		},
-		Deposit: "1000uatom",
-	}, "", " ")
-	s.Require().NoError(err)
-
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalLSMParamUpdateFilename), paramChangeProposalBody)
+	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalLSMParamUpdateFilename), []byte(propMsgBody))
 	s.Require().NoError(err)
 }
 

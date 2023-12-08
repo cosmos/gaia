@@ -8,7 +8,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
@@ -20,17 +19,18 @@ func (s *IntegrationTestSuite) testLSM() {
 
 	validatorAddressA := sdk.ValAddress(validatorAAddr).String()
 
-	// Set parameters (global liquid staking cap, validator liquid staking cap, validator bond factor)
-	s.writeLiquidStakingParamsUpdateProposal(s.chainA)
+	oldStakingParams, err := queryStakingParams(chainEndpoint)
+	s.Require().NoError(err)
+	s.writeLiquidStakingParamsUpdateProposal(s.chainA, oldStakingParams.Params)
 	proposalCounter++
-	submitGovFlags := []string{"param-change", configFile(proposalLSMParamUpdateFilename)}
+	submitGovFlags := []string{configFile(proposalLSMParamUpdateFilename)}
 	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
 	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes"}
 
 	// gov proposing LSM parameters (global liquid staking cap, validator liquid staking cap, validator bond factor)
 	s.T().Logf("Proposal number: %d", proposalCounter)
 	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: Set parameters (global liquid staking cap, validator liquid staking cap, validator bond factor)")
-	s.runGovProcess(chainEndpoint, validatorAAddr.String(), proposalCounter, paramtypes.ProposalTypeChange, submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
+	s.runGovProcessV1(chainEndpoint, validatorAAddr.String(), proposalCounter, "stakingtypes.MsgUpdateProposal", submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
 
 	// query the proposal status and new fee
 	s.Require().Eventually(

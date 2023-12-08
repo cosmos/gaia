@@ -910,6 +910,48 @@ func (s *IntegrationTestSuite) writeGovLegProposal(c *chain, height int64, name 
 	s.Require().NoError(err)
 }
 
+func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain) {
+	type ParamInfo struct {
+		Subspace string  `json:"subspace"`
+		Key      string  `json:"key"`
+		Value    sdk.Dec `json:"value"`
+	}
+
+	type ParamChangeMessage struct {
+		Title       string      `json:"title"`
+		Description string      `json:"description"`
+		Changes     []ParamInfo `json:"changes"`
+		Deposit     string      `json:"deposit"`
+	}
+
+	paramChangeProposalBody, err := json.MarshalIndent(ParamChangeMessage{
+		Title:       "liquid staking params update",
+		Description: "liquid staking params update",
+		Changes: []ParamInfo{
+			{
+				Subspace: "staking",
+				Key:      "GlobalLiquidStakingCap",
+				Value:    sdk.NewDecWithPrec(25, 2), // 25%
+			},
+			{
+				Subspace: "staking",
+				Key:      "ValidatorLiquidStakingCap",
+				Value:    sdk.NewDecWithPrec(50, 2), // 50%
+			},
+			{
+				Subspace: "staking",
+				Key:      "ValidatorBondFactor",
+				Value:    sdk.NewDec(250), // -1
+			},
+		},
+		Deposit: "1000uatom",
+	}, "", " ")
+	s.Require().NoError(err)
+
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalLSMParamUpdateFilename), paramChangeProposalBody)
+	s.Require().NoError(err)
+}
+
 func configFile(filename string) string {
 	filepath := filepath.Join(gaiaConfigPath, filename)
 	return filepath

@@ -22,7 +22,7 @@ import (
 	icagen "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/genesis/types"
 	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
 
-	globfeetypes "github.com/cosmos/gaia/v11/x/globalfee/types"
+	globfeetypes "github.com/cosmos/gaia/v15/x/globalfee/types"
 )
 
 func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {

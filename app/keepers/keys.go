@@ -1,11 +1,7 @@
 package keepers
 
 import (
-	routertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/router/types"
-	icahosttypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/types"
-	ibctransfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
-	ibchost "github.com/cosmos/ibc-go/v4/modules/core/24-host"
-	providertypes "github.com/cosmos/interchain-security/v2/x/ccv/provider/types"
+	routertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward/types"
 
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -28,8 +24,6 @@ import (
 	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	providertypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
-	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v7/router/types"
-	// liquiditytypes "github.com/gravity-devs/liquidity/x/liquidity/types"
 )
 
 func (appKeepers *AppKeepers) GenerateKeys() {

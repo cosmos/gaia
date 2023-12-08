@@ -11,7 +11,6 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	ibcclienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 	ibcchanneltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
-	"github.com/stretchr/testify/suite"
 
 	gaiafeeante "github.com/cosmos/gaia/v15/x/globalfee/ante"
 	globfeetypes "github.com/cosmos/gaia/v15/x/globalfee/types"

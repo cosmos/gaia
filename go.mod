@@ -9,7 +9,7 @@ require (
 	cosmossdk.io/tools/rosetta v0.2.1
 	github.com/cometbft/cometbft v0.37.2
 	github.com/cometbft/cometbft-db v0.8.0
-	github.com/cosmos/cosmos-sdk v0.47.5
+	github.com/cosmos/cosmos-sdk v0.47.6
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/gogoproto v1.4.10
 	github.com/cosmos/ibc-go/v7 v7.3.1
@@ -20,12 +20,13 @@ require (
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.16.0
-	github.com/strangelove-ventures/packet-forward-middleware/v7 v7.0.0-20230412224111-136e94e98861
 	github.com/stretchr/testify v1.8.4
 )
 
 require (
 	cosmossdk.io/errors v1.0.0
+	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7 v7.1.2
+	github.com/google/gofuzz v1.2.0
 	github.com/ory/dockertest/v3 v3.10.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20231002182017-d307bd883b97
 )
@@ -214,10 +215,10 @@ replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
 	// Use special SDK release with support for both ICS and LSM
-	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.16-ics-lsm
+	github.com/cosmos/cosmos-sdk => github.com/informalsystems/cosmos-sdk v0.46.0-alpha2.0.20231206144452-5b8e28f3247b
 
 	// Use special ICS release with support for LSM
-	github.com/cosmos/interchain-security/v2 => github.com/cosmos/interchain-security/v2 v2.4.0-lsm
+	github.com/cosmos/interchain-security/v3 => github.com/cosmos/interchain-security/v3 v3.3.0-rc0.0.20231207121941-02bc47252590
 
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
@@ -231,7 +232,3 @@ replace (
 	// the following version across all dependencies.
 	google.golang.org/grpc => google.golang.org/grpc v1.54.0
 )
-
-replace github.com/cosmos/cosmos-sdk => github.com/informalsystems/cosmos-sdk v0.46.0-alpha2.0.20231206144452-5b8e28f3247b
-
-replace github.com/cosmos/interchain-security/v3 => github.com/cosmos/interchain-security/v3 v3.3.0-rc0.0.20231207121941-02bc47252590

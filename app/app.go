@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/cosmos/gaia/v11/app/params"
+	"github.com/cosmos/gaia/v15/app/params"
 
 	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
 	reflectionv1 "cosmossdk.io/api/cosmos/reflection/v1"
@@ -50,7 +50,6 @@ import (
 
 	gaiaante "github.com/cosmos/gaia/v15/ante"
 	"github.com/cosmos/gaia/v15/app/keepers"
-	gaiaappparams "github.com/cosmos/gaia/v15/app/params"
 	"github.com/cosmos/gaia/v15/app/upgrades"
 	v15 "github.com/cosmos/gaia/v15/app/upgrades/v15"
 	"github.com/cosmos/gaia/v15/x/globalfee"
@@ -371,11 +370,6 @@ func (app *GaiaApp) RegisterTendermintService(clientCtx client.Context) {
 		app.interfaceRegistry,
 		app.Query,
 	)
-}
-
-// RegisterTxService allows query minimum-gas-prices in app.toml
-func (app *GaiaApp) RegisterNodeService(clientCtx client.Context) {
-	nodeservice.RegisterNodeService(clientCtx, app.GRPCQueryRouter())
 }
 
 // configure store loader that checks if version == upgradeHeight and applies store upgrades

@@ -118,7 +118,7 @@ message QueryValidatorRequest {
 
 // QueryValidatorResponse is response type for the Query/Validator RPC method
 message QueryValidatorResponse {
-  // validator defines the the validator info.
+  // validator defines the validator info.
   Validator validator = 1 [(gogoproto.nullable) = false];
 }
 

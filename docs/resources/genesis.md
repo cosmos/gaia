@@ -19,7 +19,7 @@ The genesis file is stored in `~/.gaia/config/genesis.toml`.
 
 A genesis file is a JSON file which defines the initial state of your blockchain. It can be seen as height `0` of your blockchain. The first block, at height `1`, will reference the genesis file as its parent.
 
-The state defined in the genesis file contains all the necessary information, like initial token allocation, genesis time, default parameters, and more. Let us break down these information.
+The state defined in the genesis file contains all the necessary information, like initial token allocation, genesis time, default parameters, and more. Let us break down this information.
 
 ## Genesis Time and Chain_id
 
@@ -70,7 +70,7 @@ The application state defines the initial state of the state-machine.
 
 ### Genesis Accounts
 
-In this section, initial allocation of tokens is defined. It is possible to add accounts manually by directly editing the genesis file, but it is also possible to use the following command:
+In this section, the initial allocation of tokens is defined. It is possible to add accounts manually by directly editing the genesis file, but it is also possible to use the following command:
 
 ```bash
 // Example: gaiad add-genesis-account cosmos1qs8tnw2t8l6amtzvdemnnsq9dzk0ag0z37gh3h 10000000uatom

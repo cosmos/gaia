@@ -197,7 +197,7 @@ replace (
 	// Comet
 	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.29
 
-	// latest grpc doesn't work with with our modified proto compiler, so we need to enforce
+	// latest grpc doesn't work with our modified proto compiler, so we need to enforce
 	// the following version across all dependencies.
 	google.golang.org/grpc => google.golang.org/grpc v1.33.2
 )

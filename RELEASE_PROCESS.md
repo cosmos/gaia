@@ -142,7 +142,7 @@ Once the **final release** is cut, the new changelog section must be added to ma
 ### Release Notes
 
 Release notes will be created using the `RELEASE_NOTES.md` from the release branch. 
-Once the automated releases process is completed, please add any missing information the the release notes using Github UI.
+Once the automated releases process is completed, please add any missing information the release notes using Github UI.
 
 With every release, the `goreleaser` tool will create a file with all the build artifact checksums and upload it alongside the artifacts.
 The file is called `SHA256SUMS-{{.version}}.txt` and contains the following:

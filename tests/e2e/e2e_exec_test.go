@@ -680,7 +680,6 @@ func (s *IntegrationTestSuite) execWithdrawReward(
 }
 
 func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chain, gaiaCommand []string, valIdx int, validation func([]byte, []byte) bool) {
-	fmt.Println("## RUNNING #XEC ###", gaiaCommand)
 	if validation == nil {
 		validation = s.defaultExecValidation(s.chainA, 0)
 	}
@@ -708,8 +707,6 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 
 	stdOut := outBuf.Bytes()
 	stdErr := errBuf.Bytes()
-	fmt.Println("## EXECUTED STDOUT ###", string(stdOut))
-	fmt.Println("## EXECUTED STDERR ###", string(stdErr))
 	if !validation(stdOut, stdErr) {
 		s.Require().FailNowf("Exec validation failed", "stdout: %s, stderr: %s",
 			string(stdOut), string(stdErr))

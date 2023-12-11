@@ -922,9 +922,9 @@ func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain, 
 		   "max_validators": %d,
 		   "max_entries": %d,
 		   "historical_entries": %d,
-		   "bond_denom": "",
+		   "bond_denom": "%s",
 		   "min_commission_rate": "%s",
-		   "validator_bond_factor":" %s,"
+		   "validator_bond_factor": "%s",
 		   "global_liquid_staking_cap": "%s",
 		   "validator_liquid_staking_cap": "%s"
 		  }
@@ -940,6 +940,7 @@ func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain, 
 		oldParams.MaxValidators,
 		oldParams.MaxEntries,
 		oldParams.HistoricalEntries,
+		oldParams.BondDenom,
 		oldParams.MinCommissionRate,
 		sdk.NewDec(250),           // validator bond factor
 		sdk.NewDecWithPrec(25, 2), // 25 global_liquid_staking_cap

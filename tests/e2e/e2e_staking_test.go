@@ -25,6 +25,12 @@ func (s *IntegrationTestSuite) testStaking() {
 
 	fees := sdk.NewCoin(uatomDenom, sdk.NewInt(1))
 
+	existingDelegation := sdk.ZeroDec()
+	res, err := queryDelegation(chainEndpoint, validatorAddressA, delegatorAddress.String())
+	if err == nil {
+		existingDelegation = res.GetDelegationResponse().GetDelegation().GetShares()
+	}
+
 	delegationAmount := sdk.NewInt(500000000)
 	delegation := sdk.NewCoin(uatomDenom, delegationAmount) // 500 atom
 
@@ -38,7 +44,7 @@ func (s *IntegrationTestSuite) testStaking() {
 			amt := res.GetDelegationResponse().GetDelegation().GetShares()
 			s.Require().NoError(err)
 
-			return amt.Equal(sdk.NewDecFromInt(delegationAmount))
+			return amt.Equal(existingDelegation.Add(sdk.NewDecFromInt(delegationAmount)))
 		},
 		20*time.Second,
 		5*time.Second,

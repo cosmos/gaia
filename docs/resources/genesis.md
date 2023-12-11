@@ -19,11 +19,11 @@ The genesis file is stored in `~/.gaia/config/genesis.toml`.
 
 A genesis file is a JSON file which defines the initial state of your blockchain. It can be seen as height `0` of your blockchain. The first block, at height `1`, will reference the genesis file as its parent.
 
-The state defined in the genesis file contains all the necessary information, like initial token allocation, genesis time, default parameters, and more. Let us break down these information.
+The state defined in the genesis file contains all the necessary information, like initial token allocation, genesis time, default parameters, and more. Let us break down this information.
 
 ## Genesis Time and Chain_id
 
-The `genesis_time` is defined at the top of the genesis file. It is a `UTC` timestamps which specifies when the blockchain is due to start. At this time, genesis validators are supposed to come online and start participating in the consensus process. The blockchain starts when more than 2/3rd of the genesis validators (weighted by voting power) are online.
+The `genesis_time` is defined at the top of the genesis file. It is a `UTC` timestamp that specifies when the blockchain is due to start. At this time, genesis validators are supposed to come online and start participating in the consensus process. The blockchain starts when more than 2/3rd of the genesis validators (weighted by voting power) are online.
 
 ```json
 "genesis_time": "2019-03-13T17:00:00.000000000Z",
@@ -295,7 +295,7 @@ Let us break down the parameters:
 
 ### Slashing
 
-The `slashing` module handles the logic to slash delegators if their validator misbehave. The `slashing` section in genesis looks as follows:
+The `slashing` module handles the logic to slash delegators if their validator misbehaves. The `slashing` section in genesis looks as follows:
 
 ```json
 "slashing": {

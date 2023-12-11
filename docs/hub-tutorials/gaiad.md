@@ -464,7 +464,7 @@ Once you begin an unbonding-delegation, you can see it's information by using th
 gaiad query staking unbonding-delegation <delegator_addr> <validator_addr>
 ```
 
-Or if you want to check all your current unbonding-delegations with disctinct validators:
+Or if you want to check all your current unbonding-delegations with distinct validators:
 
 ```bash
 gaiad query staking unbonding-delegations <account_cosmos>

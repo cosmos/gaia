@@ -14,17 +14,22 @@ import (
 
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
-	"github.com/cosmos/gaia/v11/ante"
-	gaiahelpers "github.com/cosmos/gaia/v11/app/helpers"
-
-	gaiaapp "github.com/cosmos/gaia/v11/app"
+	"github.com/cosmos/gaia/v15/ante"
+	gaiaapp "github.com/cosmos/gaia/v15/app"
+	gaiahelpers "github.com/cosmos/gaia/v15/app/helpers"
 )
 
 var (
-	insufficientCoins = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 100))
-	minCoins          = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000000))
-	moreThanMinCoins  = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 2500000))
-	testAddr          = sdk.AccAddress("test1")
+	insufficientCoins           = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 100))
+	insufficientMultiDenomCoins = sdk.NewCoins(
+		sdk.NewInt64Coin(sdk.DefaultBondDenom, 100),
+		sdk.NewInt64Coin("ibc/example", 100))
+	minCoins                   = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000000))
+	moreThanMinCoins           = sdk.NewCoins(sdk.NewInt64Coin(sdk.DefaultBondDenom, 2500000))
+	moreThanMinMultiDenomCoins = sdk.NewCoins(
+		sdk.NewInt64Coin(sdk.DefaultBondDenom, 1000000),
+		sdk.NewInt64Coin("ibc/example", 100))
+	testAddr = sdk.AccAddress("test1")
 )
 
 type GovAnteHandlerTestSuite struct {
@@ -67,7 +72,9 @@ func (s *GovAnteHandlerTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 	}{
 		{"Passing proposal 1", "the purpose of this proposal is to pass", govv1beta1.ProposalTypeText, testAddr, minCoins, true},
 		{"Passing proposal 2", "the purpose of this proposal is to pass with more coins than minimum", govv1beta1.ProposalTypeText, testAddr, moreThanMinCoins, true},
-		{"Failing proposal", "the purpose of this proposal is to fail", govv1beta1.ProposalTypeText, testAddr, insufficientCoins, false},
+		{"Passing proposal 3", "the purpose of this proposal is to pass with multi denom coins", govv1beta1.ProposalTypeText, testAddr, moreThanMinMultiDenomCoins, true},
+		{"Failing proposal 1", "the purpose of this proposal is to fail", govv1beta1.ProposalTypeText, testAddr, insufficientCoins, false},
+		{"Failing proposal 2", "the purpose of this proposal is to fail with multi denom coins", govv1beta1.ProposalTypeText, testAddr, insufficientMultiDenomCoins, false},
 	}
 
 	decorator := ante.NewGovPreventSpamDecorator(s.app.AppCodec(), s.app.GovKeeper)

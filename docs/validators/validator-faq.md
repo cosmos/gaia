@@ -33,7 +33,7 @@ You can find more details about the requirements in the [Joining Mainnet Tutoria
 
 ### What is a delegator?
 
-Delegators are ATOM holders who cannot, or do not want to, run a validator themselves. ATOM holders can delegate ATOM to a validator and obtain a part of their revenue in exchange. For details on how revenue is distributed, see [What is the incentive to stake?](#what-is-the-incentive-to-stake?) and [What are validators commission?](#what-are-validators-commission?) in this document.
+Delegators are ATOM holders who cannot, or do not want to, run a validator themselves. ATOM holders can delegate ATOM to a validator and obtain a part of their revenue in exchange. For details on how revenue is distributed, see [What is the incentive to stake?](#what-is-the-incentive-to-stake) and [What is a validator commission?](#what-is-a-validator-commission) in this document.
 
 Because delegators share revenue with their validators, they also share risks. If a validator misbehaves, each of their delegators are partially slashed in proportion to their delegated stake. This penalty is one of the reasons why delegators must perform due diligence on validators before delegating. Spreading their stake over multiple validators is another layer of protection.
 
@@ -53,7 +53,6 @@ Any participant in the network can signal that they want to become a validator b
 - **Initial commission rate**: The commission rate on block rewards and fees charged to delegators.
 - **Maximum commission:** The maximum commission rate that this validator can charge. This parameter is fixed and cannot be changed after the `create-validator` transaction is processed.
 - **Commission max change rate:** The maximum daily increase of the validator commission. This parameter is fixed cannot be changed after the `create-validator` transaction is processed.
-- **Minimum self-delegation:** Minimum amount of ATOM the validator requires to have bonded at all time. If the validator's self-delegated stake falls below this limit, their validator gets jailed and kicked out of the active validator set.
 
 After a validator is created, ATOM holders can delegate ATOM to them, effectively adding stake to the validator's pool. The total stake of an address is the combination of ATOM bonded by delegators and ATOM self-bonded by the validator.
 
@@ -95,8 +94,12 @@ After a validator is created with a `create-validator` transaction, the validato
 - `unbonded`: Validator is not in the active set, and therefore not signing blocks. The validator cannot be slashed and does not earn any reward. It is still possible to delegate ATOM to an unbonded validator. Undelegating from an `unbonded` validator is immediate, meaning that the tokens are not subject to the unbonding period.
 
 ### What is self-delegation? How can I increase my self-delegation?
-
+ 
 Self-delegation is a delegation of ATOM from a validator to themselves. The delegated amount can be increased by sending a `delegate` transaction from your validator's `application` application key.
+
+### What is validator bond? How can I increase my validator bond?
+
+Validator bond is a delegation of ATOM from a delegator to a validator. Validator operators can validator bond to themselves. The validator bond amount can be increased by sending a `ValidatorBond` transaction from any account delegated to your validator. Validator bond is required before a validator can accept delegations from liquid staking providers. As such it forces validators to put “skin in the game” in order to be entrusted with delegations from liquid staking providers. This disincentivizes malicious behavior and enables the validator to negotiate its relationship with liquid staking providers.
 
 ### Is there a minimum amount of ATOM that must be delegated to be an active (bonded) validator?
 
@@ -106,7 +109,7 @@ The minimum is 1 ATOM. But the network is currently secured by much higher value
 
 Delegators are free to choose validators according to their own subjective criteria. Selection criteria includes:
 
-- **Amount of self-delegated ATOM:** Number of ATOM a validator self-delegated to themselves. A validator with a higher amount of self-delegated ATOM indicates that the validator is sharing the risk and experienced consequences for their actions.
+- **Amount of validator-bonded ATOM:** Number of ATOM a validator validator-bonded to themselves. A validator with a higher amount of self-delegated ATOM indicates that the validator is sharing the risk and consequences for their actions, or has enough goodwill from the community so that others post validator bond on the validator's behalf.
 - **Amount of delegated ATOM:** Total number of ATOM delegated to a validator. A high voting power shows that the community trusts this validator. Larger validators also decrease the decentralization of the network, so delegators are suggested to consider delegating to smaller validators.
 - **Commission rate:** Commission applied on revenue by validators before the revenue is distributed to their delegators.
 - **Track record:** Delegators review the track record of the validators they plan to delegate to. This track record includes past votes on proposals and historical average uptime.
@@ -158,7 +161,7 @@ This depends, currently no validators are required to validate other blockchains
 
 ### How can a validator safely quit validating on the Cosmos Hub?
 
-If a validator simply shuts down their node, this would result in the validator and their delegators getting slashed for being offline. The only way to safely exit a validator node running on the Cosmos Hub is by unbonding the validator's self-delegated stake so that it falls below its minimum self-delegation limit. As a result, the validator gets jailed and kicked out of the active set of validators, without getting slashed. They can then proceed to shut down their node without risking their tokens.
+If a validator simply shuts down their node, this would result in the validator and their delegators getting slashed for being offline. The only way to safely exit a validator node running on the Cosmos Hub is by unbonding the validator with the `UnbondValidator` message. As a result, the validator gets jailed and kicked out of the active set of validators, without getting slashed. They can then proceed to shut down their node without risking their tokens.
 
 It's highly advised to inform your delegators when doing this, as they will still be bonded to your validator after it got jailed. They will need to manually unbond and they might not have been made aware of this via their preferred wallet application.
 
@@ -233,15 +236,58 @@ If a validator misbehaves, their delegated stake is partially slashed. Two fault
 
 ### Are validators required to self-delegate ATOM?
 
-Yes, they do need to self-delegate at least `1 atom`. Even though there is no obligation for validators to self-delegate more than `1 atom`, delegators want their validator to have more self-delegated ATOM in their staking pool. In other words, validators share the risk.
-
-In order for delegators to have some guarantee about how much shared risk their validator has, the validator can signal a minimum amount of self-delegated ATOM. If a validator's self-delegation goes below the limit that it predefined, the validator gets jailed and kicked out of the active set of validators while its delegators remain bonded to it.
+No, they do not need to self-delegate. Even though there is no obligation for validators to self-delegate, delegators may want their validator to have self-delegated ATOM in their staking pool. In other words, validators share the risk.
 
 Note however that it's possible that some validators decide to self-delegate via a different address for security reasons.
 
 ### How to prevent concentration of stake in the hands of a few top validators?
 
 The community is expected to behave in a smart and self-preserving way. When a mining pool in Bitcoin gets too much mining power the community usually stops contributing to that pool. The Cosmos Hub relies on the same effect. Additionally, when delegaters switch to another validator, they are not subject to the unbonding period, which removes any barrier to quickly redelegating tokens in service of improving decentralization.
+
+## Liquid Staking Module
+
+### What is the liquid staking module?
+
+The Liquid Staking Module is a set of safety features that mitigate liquid staking risks by: 
+- limiting the total amount of tokens that can be liquid staked to X% of all staked tokens.
+- introducing a requirement that validators validator-bond tokens to be eligible for delegations from liquid staking providers.
+- limiting the portion of validators's shares that can be liquid staked to X% of their total shares.
+
+The Liquid Staking Module also improves liquid staking UX by making delegations transferable under limited scenarios, to allow delegators to convert their delegations into liquid staking positions without having to wait the unbonding period.
+
+For a detailed and technical description, please see ADR-061 in the Cosmos SDK or the Liquid Staking Module Cosmos Hub [forum post](https://forum.cosmos.network/t/signaling-proposal-draft-add-liquid-staking-module-to-the-cosmos-hub/10368).
+
+### Who can validator bond? 
+The validator themselves, but also any other address delegated to the validator.
+
+### How can I validator bond?
+Once delegated to a validator, a delegator (or validator operator) can convert their delegation to a validator into Validator Bond by signing a ValidatorBond message.
+
+The ValidatorBond message is exposed by the staking module and can be executed as follows:
+```
+gaiad tx staking validator-bond cosmosvaloper13h5xdxhsdaugwdrkusf8lkgu406h8t62jkqv3h <delegator> --from mykey  
+```
+There are no partial Validator Bonds: when a delegator or validator converts their shares to a particular validator into Validator Bond, their entire delegation to that validator is converted to Validator Bond. If a validator or delegator wishes to convert only some of their delegation to Validator Bond, they should transfer those funds to a separate address and Validator Bond from that address, or redelegate the funds that they do not wish to validator bond to another validator before converting their delegation to validator bond.
+
+To convert Validator Bond back into a standard delegation, simply unbond the shares.
+
+### How does a delegator or validator mark their delegation as a validator bond? 
+Once delegated to a validator, sign a `ValidatorBond` message.
+
+### Are validator bonds subject to additional slashing conditions? 
+No, in the event of a slash, a validator bond is slashed at the same rate as a regular bond.
+
+### Can I unbond my validator bond? 
+If all the liquid staking capacity made available by a validator’s validator bond is utilized, validator bond delegated to that validator cannot be unbonded. If new capacity becomes available (either by redemption of liquid staking tokens or addition or new validator bond), then existing validator bond can be undelegated.
+
+Example: Suppose the validator bond factor is 250 and Validator V bonds 2 ATOM, then liquid staking providers delegate 500 ATOM to Validator V. Now Validator V cannot remove any of their validator bond because the full liquid staking capacity made available by Validator V’s validator bond is consumed.
+
+If liquid staking providers undelegate 250 ATOM from Validator V, Validator V can now remove 1 ATOM of validator bond.
+
+If, instead, the ICF or a community member validator bonds 1 additional ATOM to Validator V, Validator V can now remove 1 ATOM of validator bond.
+
+### Can I validator bond some of my tokens and delegate the remaining portion normally? 
+The `ValidatorBond` message converts the full balance delegated to a validator into validator bond. To validator bond some tokens and delegate the remaining portion normally, use two addresses: the first will delegate + ValidatorBond, and the second will just delegate.
 
 ## Technical Requirements
 

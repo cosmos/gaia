@@ -13,7 +13,7 @@ import (
 	"github.com/cometbft/cometbft/libs/log"
 	ibctesting "github.com/cosmos/ibc-go/v7/testing"
 
-	gaiaApp "github.com/cosmos/gaia/v11/app"
+	gaiaApp "github.com/cosmos/gaia/v15/app"
 )
 
 func TestCCVTestSuite(t *testing.T) {

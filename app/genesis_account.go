@@ -28,16 +28,25 @@ type SimGenesisAccount struct {
 
 // Validate checks for errors on the vesting and module account parameters
 func (sga SimGenesisAccount) Validate() error {
+	if sga.OriginalVesting.IsAnyNil() {
+		return errors.New("OriginalVesting amount must not be nil")
+	}
+
 	if !sga.OriginalVesting.IsZero() {
 		if sga.StartTime >= sga.EndTime {
 			return errors.New("vesting start-time cannot be before end-time")
 		}
 	}
 
+	if sga.BaseAccount == nil {
+		return errors.New("BaseAccount must not be nil")
+	}
+
 	if sga.ModuleName != "" {
 		ma := authtypes.ModuleAccount{
 			BaseAccount: sga.BaseAccount, Name: sga.ModuleName, Permissions: sga.ModulePermissions,
 		}
+
 		if err := ma.Validate(); err != nil {
 			return err
 		}

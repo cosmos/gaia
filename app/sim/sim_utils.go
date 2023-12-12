@@ -9,11 +9,11 @@ import (
 
 	dbm "github.com/cometbft/cometbft-db"
 
-	gaia "github.com/cosmos/gaia/v11/app"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+
+	gaia "github.com/cosmos/gaia/v15/app"
 )
 
 // SimulationOperations retrieves the simulation params from the provided file path

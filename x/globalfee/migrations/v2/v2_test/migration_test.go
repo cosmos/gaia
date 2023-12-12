@@ -14,8 +14,8 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/stretchr/testify/require"
 
-	v2 "github.com/cosmos/gaia/v11/x/globalfee/migrations/v2"
-	globalfeetypes "github.com/cosmos/gaia/v11/x/globalfee/types"
+	v2 "github.com/cosmos/gaia/v15/x/globalfee/migrations/v2"
+	globalfeetypes "github.com/cosmos/gaia/v15/x/globalfee/types"
 )
 
 func TestMigrateStore(t *testing.T) {

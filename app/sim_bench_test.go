@@ -10,12 +10,12 @@ import (
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 	"github.com/stretchr/testify/require"
 
-	gaia "github.com/cosmos/gaia/v11/app"
+	gaia "github.com/cosmos/gaia/v15/app"
 
 	simulation2 "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
-	"github.com/cosmos/gaia/v11/app/sim"
+	"github.com/cosmos/gaia/v15/app/sim"
 )
 
 // Profile with:

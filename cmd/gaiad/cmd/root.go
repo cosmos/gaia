@@ -39,8 +39,8 @@ import (
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
-	gaia "github.com/cosmos/gaia/v11/app"
-	"github.com/cosmos/gaia/v11/app/params"
+	gaia "github.com/cosmos/gaia/v15/app"
+	"github.com/cosmos/gaia/v15/app/params"
 )
 
 // NewRootCmd creates a new root command for simd. It is called once in the

@@ -2,14 +2,14 @@ package ante
 
 import (
 	errorsmod "cosmossdk.io/errors"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	gaiaerrors "github.com/cosmos/gaia/v11/types/errors"
-
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+
+	gaiaerrors "github.com/cosmos/gaia/v15/types/errors"
 )
 
 // initial deposit must be greater than or equal to 10% of the minimum deposit

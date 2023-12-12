@@ -162,7 +162,7 @@ gaiad keys add <yourKeyName> --recover
 
 当您初始化钱包设备时，设备会产生一个24个词的助记词组。这个助记词组和Cosmos是兼容的，我们可以通过这个助记词组创建Cosmos账户。所以，您需要做的是确认您的钱包设备兼容`gaiad`，通过下面的步骤可以帮助您确认您的设备是否兼容：
 
-1. 下载[Ledger Live应用](https://www.ledger.com/pages/ledger-live).
+1. 下载[Ledger Live应用](https://www.ledger.com/ledger-live).
 2. 通过USB将钱包与计算机连接，并且将钱包固件升级到最新版本。
 3. 到Ledger Live钱包的应用商店下载”Cosmos“应用（这可能需要花些时间）。**下载”Cosmos“应用程序需要在Ledger Live钱包`Settings`选项中激活`Dev Mode`**
 4. 在你的钱包设备上操作Cosmos APP。

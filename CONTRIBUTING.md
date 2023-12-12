@@ -6,6 +6,7 @@
     - [Ease of reviewing](#ease-of-reviewing)
     - [Workflow](#workflow)
   - [Project Board](#project-board)
+  - [Architecture Decision Records (ADR)](#architecture-decision-records-adr)
   - [Development Procedure](#development-procedure)
     - [Testing](#testing)
     - [Pull Requests](#pull-requests)
@@ -98,6 +99,14 @@ PRs opened before adequate design discussion has taken place in a GitHub issue h
 We use self-organizing principles to coordinate and collaborate across organizations in structured "EPICs" that focus on specific problem domains or architectural components of Gaia. For details, see the [GitHub Project board](https://github.com/orgs/cosmos/projects/28/views/11). 
 
 The developers work in sprints, which are available in a [GitHub Project](https://github.com/orgs/cosmos/projects/28/views/2). 
+
+## Architecture Decision Records (ADR)
+
+When proposing an architecture decision for Gaia, please start by opening an [issue](https://github.com/cosmos/gaia/issues/new/choose) or a [discussion](https://github.com/cosmos/gaia/discussions/new) with a summary of the proposal. Once the proposal has been discussed and there is rough alignment on a high-level approach to the design, you may either start development, or write an ADR.
+
+If your architecture decision is a simple change, you may contribute directly without writing an ADR. However, if you are proposing a significant change, please include a corresponding ADR.
+
+To create an ADR, follow the [template](./docs/architecture/adr-template.md) and [doc](./docs/architecture/README.md). If you would like to see examples of how these are written, please refer to the current [ADRs](https://github.com/cosmos/gaia/tree/main/docs/architecture).
 
 ## Development Procedure
 
@@ -234,7 +243,8 @@ where:
 
 - `section` is one of 
   `dependencies`, `improvements`, `features`, `bug-fixes`, `state-breaking`, `api-breaking`, 
-  and _**if multiple apply, create multiple files**_;
+  and _**if multiple apply, create multiple files**_, 
+  not necessarily with the same `short-description` or content;
 - `pr-number` is the PR number;
 - `short-description` is a short (4 to 6 word), hyphen separated description of the change;
 - `component` is used for changes that affect one of the components defined in the [config](.changelog/config.toml), e.g., `tests`, `globalfee`.
@@ -263,13 +273,17 @@ where `${description}` is a detailed description of the changelog entry.
 For example, 
 ```bash
 # add an entry for bumping IBC to v4.4.2
-unclog add -i "2554-bump-ibc" -p 2554 -s "dependencies" -m "Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.4.2](https://github.com/cosmos/ibc-go/releases/tag/v4.4.2)" 
+unclog add -i "2554-bump-ibc" -p 2554 -s dependencies -m "Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.4.2](https://github.com/cosmos/ibc-go/releases/tag/v4.4.2)" 
 
 # add an entry for changing the global fee module;
 # note that the entry is added to both state-breaking and api-breaking sections
-unclog add -i "2424-params" -p 2424 -c globalfee -s "state-breaking" -m "Add \`bypass-min-fee-msg-types\` and \`maxTotalBypassMinFeeMsgGagUsage\` to globalfee params" 
-unclog add -i "2424-params" -p 2424 -c globalfee -s "api-breaking" -m "Add \`bypass-min-fee-msg-types\` and \`maxTotalBypassMinFeeMsgGagUsage\` to globalfee params" 
+unclog add -i "2424-params" -p 2424 -c globalfee -s state-breaking -m "Add \`bypass-min-fee-msg-types\` and \`maxTotalBypassMinFeeMsgGagUsage\` to globalfee params" 
+unclog add -i "2424-params" -p 2424 -c globalfee -s api-breaking -m "Add \`bypass-min-fee-msg-types\` and \`maxTotalBypassMinFeeMsgGagUsage\` to globalfee params" 
 ```
+
+**Note:** `unclog add` requires an editor. This can be set either by configuring 
+an `$EDITOR` environment variable or by manually specify an editor binary path 
+via the `--editor` flag. 
 
 **Note:** Changelog entries should answer the question: "what is important about this
 change for users to know?" or "what problem does this solve for users?". It

@@ -1,6 +1,9 @@
 package gaia
 
 import (
+	pfmrouter "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward"
+	pfmroutertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward/types"
+
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
@@ -52,11 +55,8 @@ import (
 	icsproviderclient "github.com/cosmos/interchain-security/v3/x/ccv/provider/client"
 	providertypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
 
-	"github.com/strangelove-ventures/packet-forward-middleware/v7/router"
-	routertypes "github.com/strangelove-ventures/packet-forward-middleware/v7/router/types"
-
-	gaiaparams "github.com/cosmos/gaia/v11/app/params"
-	"github.com/cosmos/gaia/v11/x/globalfee"
+	gaiaappparams "github.com/cosmos/gaia/v15/app/params"
+	"github.com/cosmos/gaia/v15/x/globalfee"
 )
 
 var maccPerms = map[string][]string{
@@ -92,6 +92,7 @@ var ModuleBasics = module.NewBasicManager(
 			ibcclientclient.UpgradeProposalHandler,
 			icsproviderclient.ConsumerAdditionProposalHandler,
 			icsproviderclient.ConsumerRemovalProposalHandler,
+			icsproviderclient.ChangeRewardDenomsProposalHandler,
 		},
 	),
 	sdkparams.AppModuleBasic{},
@@ -105,7 +106,7 @@ var ModuleBasics = module.NewBasicManager(
 	evidence.AppModuleBasic{},
 	transfer.AppModuleBasic{},
 	vesting.AppModuleBasic{},
-	router.AppModuleBasic{},
+	pfmrouter.AppModuleBasic{},
 	ica.AppModuleBasic{},
 	globalfee.AppModule{},
 	icsprovider.AppModuleBasic{},
@@ -114,7 +115,7 @@ var ModuleBasics = module.NewBasicManager(
 
 func appModules(
 	app *GaiaApp,
-	encodingConfig gaiaparams.EncodingConfig,
+	encodingConfig gaiaappparams.EncodingConfig,
 	skipGenesisInvariants bool,
 ) []module.AppModule {
 	appCodec := encodingConfig.Marshaler
@@ -154,7 +155,7 @@ func appModules(
 // define the order of the modules for deterministic simulations
 func simulationModules(
 	app *GaiaApp,
-	encodingConfig gaiaparams.EncodingConfig,
+	encodingConfig gaiaappparams.EncodingConfig,
 	_ bool,
 ) []module.AppModuleSimulation {
 	appCodec := encodingConfig.Marshaler
@@ -208,7 +209,7 @@ func orderBeginBlockers() []string {
 		ibcexported.ModuleName,
 		ibctransfertypes.ModuleName,
 		icatypes.ModuleName,
-		routertypes.ModuleName,
+		pfmroutertypes.ModuleName,
 		genutiltypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
@@ -236,7 +237,7 @@ func orderEndBlockers() []string {
 		ibcexported.ModuleName,
 		ibctransfertypes.ModuleName,
 		icatypes.ModuleName,
-		routertypes.ModuleName,
+		pfmroutertypes.ModuleName,
 		capabilitytypes.ModuleName,
 		authtypes.ModuleName,
 		banktypes.ModuleName,
@@ -282,7 +283,7 @@ func orderInitBlockers() []string {
 		evidencetypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
-		routertypes.ModuleName,
+		pfmroutertypes.ModuleName,
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,

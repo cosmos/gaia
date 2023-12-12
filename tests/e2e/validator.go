@@ -27,7 +27,7 @@ import (
 	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	gaia "github.com/cosmos/gaia/v11/app"
+	gaia "github.com/cosmos/gaia/v15/app"
 )
 
 //

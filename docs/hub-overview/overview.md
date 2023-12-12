@@ -4,10 +4,10 @@ title: Introduction
 ---
 
 ::: warning
-### **v10 Upgrade**
-Cosmos Hub will be upgraded to [v10](https://github.com/cosmos/gaia/releases/tag/v10.0.0) at block height: **15,816,200**
+### **v14 Upgrade**
+Cosmos Hub will be upgraded to [v14.1](https://github.com/cosmos/gaia/releases/tag/v14.1.0) at block height: **[18,262,000](https://www.mintscan.io/cosmos/blocks/18262000)**
 
-To upgrade from v9-Lambda check the [**upgrade guide**](../migration/cosmoshub-4-v10-upgrade.md)
+To upgrade from v13 check the [**upgrade guide**](../migration/cosmoshub-4-v14-upgrade.md)
 :::
 
 ![Welcome to the Cosmos Hub](../images/cosmos-hub-image.jpg)
@@ -18,7 +18,7 @@ The Cosmos Hub is the first of [thousands of interconnected blockchains](https:/
 
 ## The ATOM
 
-Do you have ATOM tokens? With ATOM, you have the superpower to contribute to the security and governance of the Cosmos Hub. Delegate your ATOM to one or more of the 125 validators on the Cosmos Hub blockchain to earn more ATOM through Proof-of-Stake. You can also vote with your ATOM to influence the future of the Cosmos Hub through on-chain governance proposals.
+Do you have ATOM tokens? With ATOM, you have the superpower to contribute to the security and governance of the Cosmos Hub. Delegate your ATOM to one or more of the 180 validators on the Cosmos Hub blockchain to earn more ATOM through Proof-of-Stake. You can also vote with your ATOM to influence the future of the Cosmos Hub through on-chain governance proposals.
 
 Learn more about [being a delegator](../delegators/delegator-faq.md), learn about [the security risks](../delegators/delegator-security.md), and start participating with one of the following wallets.
 
@@ -40,26 +40,30 @@ These community-maintained web and mobile wallets allow you to store & transfer 
 * [imToken](https://token.im/) - Android, iOS
 * [Keplr](https://wallet.keplr.app) - Web
 * [Ledger](https://www.ledger.com/cosmos-wallet) - Hardware
-* [Lunie](https://lunie.io) - Web
 * [Math Wallet](https://www.mathwallet.org/en/) - Android, iOS, Web
 * [Rainbow Wallet](https://www.rainbow.one) - Android, iOS
 * [Trust Wallet](https://trustwallet.com/) Android, iOS
-* [Wetez](https://www.wetez.io/pc/homepage) - Android, iOS
+* [Komodo Wallet](https://atomicdex.io/en/)
+* [Leap Wallet](https://www.leapwallet.io/) - Android, iOS, Web
+
+## Metamask Snaps
+
+* [Leap Wallet](https://www.leapwallet.io/snaps)
+* [Mystic Lab](https://metamask.mysticlabs.xyz/)
 
 ## Cosmos Hub Explorers
 
 These block explorers allow you to search, view and analyze Cosmos Hub data&mdash;like blocks, transactions, validators, etc.
 
-* [Anthem](https://anthem.chorus.one)
 * [ATOMScan](https://atomscan.com)
 * [Big Dipper](https://cosmos.bigdipper.live)
-* [Cosmos Overview](https://genesislab.net)
-* [Cosmoscan](https://cosmoscan.net/)
 * [IOBScan](https://cosmoshub.iobscan.io/)
-* [LOOK Explorer](https://cosmos.ping.pub)
-* [Lunie](https://lunie.io)
 * [Mintscan](https://mintscan.io)
-* [Union Market](https://union.market/token/cosmos)
+* [Ping.Pub](https://ping.pub/cosmos)
+* [BronBro](https://monitor.bronbro.io/d/cosmos-stats/cosmos)
+* [Numia](https://www.datalenses.zone/chain/cosmos)
+<!-- markdown-link-check-disable-next-line -->
+* [SmartStake](https://cosmos.smartstake.io/stats)
 
 ## Cosmos Hub CLI
 

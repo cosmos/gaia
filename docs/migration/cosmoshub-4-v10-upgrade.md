@@ -1,6 +1,6 @@
 ---
 title: Cosmos Hub 4, v10 Upgrade
-order: 1
+order: 6
 ---
 <!-- markdown-link-check-disable -->
 # Cosmos Hub 4, v10 Upgrade, Instructions

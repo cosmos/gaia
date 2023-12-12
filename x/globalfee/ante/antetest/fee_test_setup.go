@@ -14,13 +14,13 @@ import (
 	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	"github.com/stretchr/testify/suite"
 
-	gaiahelpers "github.com/cosmos/gaia/v11/app/helpers"
-	gaiaparams "github.com/cosmos/gaia/v11/app/params"
-	gaiafeeante "github.com/cosmos/gaia/v11/x/globalfee/ante"
+	gaiahelpers "github.com/cosmos/gaia/v15/app/helpers"
+	gaiaparams "github.com/cosmos/gaia/v15/app/params"
+	gaiafeeante "github.com/cosmos/gaia/v15/x/globalfee/ante"
 
-	gaiaapp "github.com/cosmos/gaia/v11/app"
-	"github.com/cosmos/gaia/v11/x/globalfee"
-	globfeetypes "github.com/cosmos/gaia/v11/x/globalfee/types"
+	gaiaapp "github.com/cosmos/gaia/v15/app"
+	"github.com/cosmos/gaia/v15/x/globalfee"
+	globfeetypes "github.com/cosmos/gaia/v15/x/globalfee/types"
 )
 
 type IntegrationTestSuite struct {

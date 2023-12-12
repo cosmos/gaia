@@ -289,51 +289,6 @@ If, instead, the ICF or a community member validator bonds 1 additional ATOM to 
 ### Can I validator bond some of my tokens and delegate the remaining portion normally? 
 The `ValidatorBond` message converts the full balance delegated to a validator into validator bond. To validator bond some tokens and delegate the remaining portion normally, use two addresses: the first will delegate + ValidatorBond, and the second will just delegate.
 
-## Liquid Staking Module
-
-### What is the liquid staking module?
-
-The Liquid Staking Module is a set of safety features that mitigate liquid staking risks by: 
-- limiting the total amount of tokens that can be liquid staked to X% of all staked tokens.
-- introducing a requirement that validators validator-bond tokens to be eligible for delegations from liquid staking providers.
-- limiting the portion of validators's shares that can be liquid staked to X% of their total shares.
-
-The Liquid Staking Module also improves liquid staking UX by making delegations transferable under limited scenarios, to allow delegators to convert their delegations into liquid staking positions without having to wait the unbonding period.
-
-For a detailed and technical description, please see ADR-061 in the Cosmos SDK or the Liquid Staking Module Cosmos Hub [forum post](https://forum.cosmos.network/t/signaling-proposal-draft-add-liquid-staking-module-to-the-cosmos-hub/10368).
-
-### Who can validator bond? 
-The validator themselves, but also any other address delegated to the validator.
-
-### How can I validator bond?
-Once delegated to a validator, a delegator (or validator operator) can convert their delegation to a validator into Validator Bond by signing a ValidatorBond message.
-
-The ValidatorBond message is exposed by the staking module and can be executed as follows:
-```
-gaiad tx staking validator-bond cosmosvaloper13h5xdxhsdaugwdrkusf8lkgu406h8t62jkqv3h <delegator> --from mykey  
-```
-There are no partial Validator Bonds: when a delegator or validator converts their shares to a particular validator into Validator Bond, their entire delegation to that validator is converted to Validator Bond. If a validator or delegator wishes to convert only some of their delegation to Validator Bond, they should transfer those funds to a separate address and Validator Bond from that address, or redelegate the funds that they do not wish to validator bond to another validator before converting their delegation to validator bond.
-
-To convert Validator Bond back into a standard delegation, simply unbond the shares.
-
-### How does a delegator or validator mark their delegation as a validator bond? 
-Once delegated to a validator, sign a `ValidatorBond` message.
-
-### Are validator bonds subject to additional slashing conditions? 
-No, in the event of a slash, a validator bond is slashed at the same rate as a regular bond.
-
-### Can I unbond my validator bond? 
-If all the liquid staking capacity made available by a validator’s validator bond is utilized, validator bond delegated to that validator cannot be unbonded. If new capacity becomes available (either by redemption of liquid staking tokens or addition or new validator bond), then existing validator bond can be undelegated.
-
-Example: Suppose the validator bond factor is 250 and Validator V bonds 2 ATOM, then liquid staking providers delegate 500 ATOM to Validator V. Now Validator V cannot remove any of their validator bond because the full liquid staking capacity made available by Validator V’s validator bond is consumed.
-
-If liquid staking providers undelegate 250 ATOM from Validator V, Validator V can now remove 1 ATOM of validator bond.
-
-If, instead, the ICF or a community member validator bonds 1 additional ATOM to Validator V, Validator V can now remove 1 ATOM of validator bond.
-
-### Can I validator bond some of my tokens and delegate the remaining portion normally? 
-The `ValidatorBond` message converts the full balance delegated to a validator into validator bond. To validator bond some tokens and delegate the remaining portion normally, use two addresses: the first will delegate + ValidatorBond, and the second will just delegate.
-
 ## Technical Requirements
 
 ### What are hardware requirements?

@@ -5,9 +5,11 @@ order: 8
 <!-- markdown-link-check-disable -->
 # Cosmos Hub 4, Gaia v14 Upgrade, Instructions
 
-This document describes the steps for validators and full node operators, to upgrade successfully to the Gaia v14 release.
+This document describes the steps for validators, full node operators and relayer operators, to upgrade successfully for the Gaia v14 release.
 
 For more details on the release, please see the [release notes](https://github.com/cosmos/gaia/releases/tag/v14.1.0)
+
+**Relayer Operators** for the Cosmos Hub and consumer chains, will also need to update to use [Hermes 1.7.3](https://github.com/informalsystems/hermes/releases/tag/v1.7.3) or higher, see [Relayer Operations](#relayer-operations) or more details.
 
 ## Release Binary
 
@@ -38,6 +40,7 @@ For more details on the release, please see the [release notes](https://github.c
   - [Rollback plan](#rollback-plan)
   - [Communications](#communications)
   - [Risks](#risks)
+  - [Relayer Operations](#relayer-operations)
   - [Reference](#reference)
 
 ## On-chain governance proposal attains consensus
@@ -202,6 +205,38 @@ Operators are encouraged to join the `#cosmos-hub-validators-verified` channel o
 As a validator performing the upgrade procedure on your consensus nodes carries a heightened risk of double-signing and being slashed. The most important piece of this procedure is verifying your software version and genesis file hash before starting your validator and signing.
 
 The riskiest thing a validator can do is discover that they made a mistake and repeat the upgrade procedure again during the network startup. If you discover a mistake in the process, the best thing to do is wait for the network to start before correcting it.
+
+## Relayer Operations
+
+The Gaia `v14.1.0` upgrade brings forth the cryptographic verification of equivocation feature from ICS `v2.4.0-lsm`. This important security enhancement empowers external agents to promptly submit evidence evidence of light client and double signing attacks observed on a consumer chain. Operators can seize the control of this feature using either the dedicated ICS CLI commands or unleash the power of the Hermes IBC relayer in “evidence” mode. 
+
+This feature is supported by an updated [Hermes v1.7.3](https://github.com/informalsystems/hermes/releases/tag/v1.7.3).
+
+### **1. Hermes “evidence” mode**
+
+Ensure you have a well-configured Hermes `v1.7.3+` relayer effectively relaying packets between a consumer and a provider chain. The following command demonstrates how to run a Hermes instance in “evidence” mode to detect misbehaviors on a consumer chain.
+
+```sh
+hermes evidence --chain <CONSUMER-CHAIN-ID>
+```
+
+**Tip**: this command takes a `--check-past-blocks` option giving the possibility to look for older evidences (default is `100`).
+
+### **2. ICS CLI**
+
+The ICS provider module offers two commands for submitting evidence of misbehavior originating from a consumer chain. Here are two examples illustrating the process:
+
+To submit evidence of a double-vote:
+
+```sh
+gaiad tx provider submit-consumer-double-voting [path/to/evidence.json] [path/to/infraction_header.json] --from node0 --home ../node0 --chain-id $CID
+```
+
+And for a light client attack:
+
+```sh
+gaiad tx provider submit-consumer-misbehaviour [path/to/misbehaviour.json] --from node0 --home ../node0 --chain-id $CID
+```
 
 ## Reference
 

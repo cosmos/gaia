@@ -11,6 +11,15 @@ package globalfee
 // 	"github.com/cosmos/gaia/v11/x/globalfee/types"
 // )
 
+// 	"github.com/stretchr/testify/assert"
+// 	"github.com/stretchr/testify/require"
+
+// 	sdk "github.com/cosmos/cosmos-sdk/types"
+// 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+
+// 	"github.com/cosmos/gaia/v15/x/globalfee/types"
+// )
+
 // func TestQueryMinimumGasPrices(t *testing.T) {
 // 	specs := map[string]struct {
 // 		setupStore func(ctx sdk.Context, s paramtypes.Subspace)

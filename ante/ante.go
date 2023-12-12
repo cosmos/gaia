@@ -1,6 +1,9 @@
 package ante
 
 import (
+	ibcante "github.com/cosmos/ibc-go/v7/modules/core/ante"
+	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
+
 	errorsmod "cosmossdk.io/errors"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -9,8 +12,6 @@ import (
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
-	ibcante "github.com/cosmos/ibc-go/v7/modules/core/ante"
-	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 
 	gaiaerrors "github.com/cosmos/gaia/v15/types/errors"
 	gaiafeeante "github.com/cosmos/gaia/v15/x/globalfee/ante"

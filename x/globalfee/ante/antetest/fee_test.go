@@ -5,12 +5,13 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
+	ibcclienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
+
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	ibcclienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
-	ibcchanneltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 
 	gaiafeeante "github.com/cosmos/gaia/v15/x/globalfee/ante"
 	globfeetypes "github.com/cosmos/gaia/v15/x/globalfee/types"

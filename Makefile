@@ -21,7 +21,7 @@ BUILDDIR ?= $(CURDIR)/build
 TEST_DOCKER_REPO=cosmos/contrib-gaiatest
 
 GO_SYSTEM_VERSION = $(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f1-2)
-REQUIRE_GO_VERSION = 1.21
+REQUIRE_MINIMUM_GO_VERSION = 1.20
 
 export GO111MODULE = on
 
@@ -95,9 +95,10 @@ include contrib/devtools/Makefile
 ###                              Build                                      ###
 ###############################################################################
 
+IS_VERSION_SUPPORTED = $(shell echo "$(GO_SYSTEM_VERSION) >= $(REQUIRE_MINIMUM_GO_VERSION)" | bc -l)
 check_version:
-ifneq ($(GO_SYSTEM_VERSION), $(REQUIRE_GO_VERSION))
-	@echo "ERROR: Go version 1.21 is required for $(VERSION) of Gaia."
+ifneq ($(IS_VERSION_SUPPORTED), 1)
+	@echo "ERROR: Minimal go version required for Gaia: $(VERSION) is $(REQUIRE_MINIMUM_GO_VERSION). You are using $(GO_SYSTEM_VERSION)."
 	exit 1
 endif
 

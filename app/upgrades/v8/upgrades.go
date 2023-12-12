@@ -93,10 +93,10 @@ func QuicksilverFix(ctx sdk.Context, keepers *keepers.AppKeepers) error {
 }
 
 func closeChannel(keepers *keepers.AppKeepers, ctx sdk.Context, channelID string) {
-	channel, found := keepers.IBCKeeper.ChannelKeeper.GetChannel(ctx, icatypes.PortID, channelID)
+	channel, found := keepers.IBCKeeper.ChannelKeeper.GetChannel(ctx, icatypes.HostPortID, channelID)
 	if found {
 		channel.State = ibcchanneltypes.CLOSED
-		keepers.IBCKeeper.ChannelKeeper.SetChannel(ctx, icatypes.PortID, channelID, channel)
+		keepers.IBCKeeper.ChannelKeeper.SetChannel(ctx, icatypes.HostPortID, channelID, channel)
 	}
 }
 

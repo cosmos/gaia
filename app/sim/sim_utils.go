@@ -5,11 +5,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/cosmos/cosmos-sdk/runtime"
-
 	dbm "github.com/cometbft/cometbft-db"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/runtime"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 

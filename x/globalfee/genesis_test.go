@@ -4,21 +4,20 @@ import (
 	"testing"
 	"time"
 
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	dbm "github.com/cometbft/cometbft-db"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-
 	"github.com/cometbft/cometbft/libs/log"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+
 	"github.com/cosmos/cosmos-sdk/store"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	gaiaparams "github.com/cosmos/gaia/v15/app/params"
 	"github.com/cosmos/gaia/v15/x/globalfee/types"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestDefaultGenesis(t *testing.T) {

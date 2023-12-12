@@ -7,31 +7,39 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/cosmos/gaia/v15/app/params"
+	"github.com/gorilla/mux"
+	"github.com/rakyll/statik/fs"
+	"github.com/spf13/cast"
 
-	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
-	reflectionv1 "cosmossdk.io/api/cosmos/reflection/v1"
+	// unnamed import of statik for swagger UI support
+	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
 
-	"github.com/cosmos/cosmos-sdk/runtime"
-	"github.com/cosmos/cosmos-sdk/server"
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-
-	errorsmod "cosmossdk.io/errors"
 	dbm "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
 	tmjson "github.com/cometbft/cometbft/libs/json"
 	"github.com/cometbft/cometbft/libs/log"
 	tmos "github.com/cometbft/cometbft/libs/os"
+
+	ibctesting "github.com/cosmos/ibc-go/v7/testing"
+	providertypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
+
+	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
+	reflectionv1 "cosmossdk.io/api/cosmos/reflection/v1"
+	errorsmod "cosmossdk.io/errors"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	nodeservice "github.com/cosmos/cosmos-sdk/client/grpc/node"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/runtime"
 	runtimeservices "github.com/cosmos/cosmos-sdk/runtime/services"
+	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/server/api"
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -42,20 +50,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ibctesting "github.com/cosmos/ibc-go/v7/testing"
-	providertypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
-	"github.com/gorilla/mux"
-	"github.com/rakyll/statik/fs"
-	"github.com/spf13/cast"
 
 	gaiaante "github.com/cosmos/gaia/v15/ante"
 	"github.com/cosmos/gaia/v15/app/keepers"
+	"github.com/cosmos/gaia/v15/app/params"
 	"github.com/cosmos/gaia/v15/app/upgrades"
 	v15 "github.com/cosmos/gaia/v15/app/upgrades/v15"
 	"github.com/cosmos/gaia/v15/x/globalfee"
-
-	// unnamed import of statik for swagger UI support
-	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
 )
 
 var (

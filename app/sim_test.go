@@ -7,18 +7,19 @@ import (
 	"os"
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/server"
-	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
+	"github.com/stretchr/testify/require"
 
 	dbm "github.com/cometbft/cometbft-db"
 	"github.com/cometbft/cometbft/libs/log"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/store"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	simulation2 "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
-	"github.com/stretchr/testify/require"
 
 	gaia "github.com/cosmos/gaia/v15/app"
 	// "github.com/cosmos/gaia/v11/app/helpers"

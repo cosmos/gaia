@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
 
 	tmrand "github.com/cometbft/cometbft/libs/rand"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
 	"github.com/cosmos/gaia/v15/ante"

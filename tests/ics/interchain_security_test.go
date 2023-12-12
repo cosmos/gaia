@@ -4,14 +4,15 @@ import (
 	"encoding/json"
 	"testing"
 
-	appConsumer "github.com/cosmos/interchain-security/v3/app/consumer"
-	"github.com/cosmos/interchain-security/v3/tests/integration"
-	icstestingutils "github.com/cosmos/interchain-security/v3/testutil/ibc_testing"
 	"github.com/stretchr/testify/suite"
 
 	tmdb "github.com/cometbft/cometbft-db"
 	"github.com/cometbft/cometbft/libs/log"
+
 	ibctesting "github.com/cosmos/ibc-go/v7/testing"
+	appConsumer "github.com/cosmos/interchain-security/v3/app/consumer"
+	"github.com/cosmos/interchain-security/v3/tests/integration"
+	icstestingutils "github.com/cosmos/interchain-security/v3/testutil/ibc_testing"
 
 	gaiaApp "github.com/cosmos/gaia/v15/app"
 )

@@ -8,12 +8,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/cosmos/gaia/v15/app/params"
-
-	"cosmossdk.io/math"
-
 	tmjson "github.com/cometbft/cometbft/libs/json"
 	tmtypes "github.com/cometbft/cometbft/types"
+
+	"cosmossdk.io/math"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
@@ -25,6 +23,7 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	gaia "github.com/cosmos/gaia/v15/app"
+	"github.com/cosmos/gaia/v15/app/params"
 )
 
 // Simulation parameter constants

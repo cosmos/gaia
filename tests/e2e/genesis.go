@@ -7,20 +7,21 @@ import (
 	"time"
 
 	tmtypes "github.com/cometbft/cometbft/types"
+
+	icagen "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/genesis/types"
+	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
+
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/genutil"
-
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	govmigrv3 "github.com/cosmos/cosmos-sdk/x/gov/migrations/v3"
 	govmigrv4 "github.com/cosmos/cosmos-sdk/x/gov/migrations/v4"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govlegacytypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	icagen "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/genesis/types"
-	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
 
 	globfeetypes "github.com/cosmos/gaia/v15/x/globalfee/types"
 )
@@ -49,7 +50,7 @@ func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {
 	return doc, nil
 }
 
-func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, globfees string, denom string) error { //nolint:unparam
+func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, globfees string, denom string) error {
 	serverCtx := server.NewDefaultContext()
 	config := serverCtx.Config
 	config.SetRoot(path)

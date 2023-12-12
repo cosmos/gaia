@@ -12,13 +12,11 @@ import (
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"github.com/cosmos/gaia/v15/x/globalfee/types"
-
-	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
-
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 func queryGaiaTx(endpoint, txHash string) error {

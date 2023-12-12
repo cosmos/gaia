@@ -4,17 +4,16 @@ import (
 	"os"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/server"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
-	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
-	"github.com/stretchr/testify/require"
-
-	gaia "github.com/cosmos/gaia/v15/app"
-
 	simulation2 "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 
+	gaia "github.com/cosmos/gaia/v15/app"
 	"github.com/cosmos/gaia/v15/app/sim"
 )
 

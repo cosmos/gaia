@@ -4,13 +4,12 @@ import (
 	"errors"
 	"fmt"
 
-	tmstrings "github.com/tendermint/tendermint/libs/strings"
+	tmstrings "github.com/cometbft/cometbft/libs/strings"
 
 	errorsmod "cosmossdk.io/errors"
-	tmstrings "github.com/cometbft/cometbft/libs/strings"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 
 	gaiaerrors "github.com/cosmos/gaia/v15/types/errors"

@@ -16,14 +16,18 @@ import (
 	"testing"
 	"time"
 
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	"github.com/ory/dockertest/v3"
+	// "github.com/cosmos/cosmos-sdk/crypto/hd"
+	// "github.com/cosmos/cosmos-sdk/crypto/keyring"
+	"github.com/ory/dockertest/v3/docker"
+	"github.com/spf13/viper"
+	"github.com/stretchr/testify/suite"
 
 	tmconfig "github.com/cometbft/cometbft/config"
 	"github.com/cometbft/cometbft/crypto/ed25519"
 	tmjson "github.com/cometbft/cometbft/libs/json"
 	rpchttp "github.com/cometbft/cometbft/rpc/client/http"
+
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
@@ -36,14 +40,10 @@ import (
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/ory/dockertest/v3"
-	"github.com/stretchr/testify/suite"
-
-	// "github.com/cosmos/cosmos-sdk/crypto/hd"
-	// "github.com/cosmos/cosmos-sdk/crypto/keyring"
-	"github.com/ory/dockertest/v3/docker"
-	"github.com/spf13/viper"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
 const (
@@ -948,48 +948,6 @@ func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain, 
 	)
 
 	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalLSMParamUpdateFilename), []byte(propMsgBody))
-	s.Require().NoError(err)
-}
-
-func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain) {
-	type ParamInfo struct {
-		Subspace string  `json:"subspace"`
-		Key      string  `json:"key"`
-		Value    sdk.Dec `json:"value"`
-	}
-
-	type ParamChangeMessage struct {
-		Title       string      `json:"title"`
-		Description string      `json:"description"`
-		Changes     []ParamInfo `json:"changes"`
-		Deposit     string      `json:"deposit"`
-	}
-
-	paramChangeProposalBody, err := json.MarshalIndent(ParamChangeMessage{
-		Title:       "liquid staking params update",
-		Description: "liquid staking params update",
-		Changes: []ParamInfo{
-			{
-				Subspace: "staking",
-				Key:      "GlobalLiquidStakingCap",
-				Value:    sdk.NewDecWithPrec(25, 2), // 25%
-			},
-			{
-				Subspace: "staking",
-				Key:      "ValidatorLiquidStakingCap",
-				Value:    sdk.NewDecWithPrec(50, 2), // 50%
-			},
-			{
-				Subspace: "staking",
-				Key:      "ValidatorBondFactor",
-				Value:    sdk.NewDec(250), // -1
-			},
-		},
-		Deposit: "1000uatom",
-	}, "", " ")
-	s.Require().NoError(err)
-
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalLSMParamUpdateFilename), paramChangeProposalBody)
 	s.Require().NoError(err)
 }
 

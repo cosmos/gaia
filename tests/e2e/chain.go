@@ -4,14 +4,15 @@ import (
 	"fmt"
 	"os"
 
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-
 	tmrand "github.com/cometbft/cometbft/libs/rand"
+
+	providertypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	distribtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
@@ -19,7 +20,7 @@ import (
 	govv1beta1types "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	paramsproptypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	providertypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	gaiaparams "github.com/cosmos/gaia/v15/app/params"
 )

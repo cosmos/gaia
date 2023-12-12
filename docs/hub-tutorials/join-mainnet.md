@@ -26,7 +26,7 @@ For more details, see the [history of upgrades](https://github.com/cosmos/gaia/t
 
 **This guide includes full instructions for joining the mainnet either as an archive/full node or a pruned node.**
 
-For instructions to boostrap a node via Quicksync or State Sync, see the [Quickstart Guide](https://hub.cosmos.network/main/getting-started/quickstart.html)
+For instructions to bootstrap a node via Quicksync or State Sync, see the [Quickstart Guide](https://hub.cosmos.network/main/getting-started/quickstart.html)
 
 For instructions to join as a validator, please also see the [Validator Guide](https://hub.cosmos.network/main/validators/overview.html#).
 

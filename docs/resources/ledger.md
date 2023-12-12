@@ -64,7 +64,7 @@ You can also have a look at the [Ledger support page](https://support.ledger.com
 
 ## Gaia CLI + Ledger Nano
 
-**Note: You need to [install the Cosmos app](#install-the-cosmos-ledger-application) on your Ledger Nano before using following this section**
+**Note: You need to [install the Cosmos app](#install-the-cosmos-ledger-application) on your Ledger Nano before following this section**
 
 The tool used to generate addresses and transactions on the Cosmos Hub network is `gaiad`. Here is how to get started. If using a CLI tool is unfamiliar to you, scroll down and follow instructions for using the Keplr wallet instead.
 

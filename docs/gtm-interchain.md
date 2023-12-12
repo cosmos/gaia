@@ -36,7 +36,7 @@ The user is paramount. For Gaia and IBC, we see the users being:
 - Nodes on hub and zones
 - Other service providers on hubs and zones (wallets, explorers, exchanges, etc.)
 
-We will also want to be tracking outreach to the relevant users per phase to ensure that Hub utility (and IBC where appropriate) are being validated. Spotlights on experiments will continue to validate the utility of the Hub and IBC (i.e. bridge to Ethereum, AMM, etc). We will also be conducting continous outbound outreach to look for partners that are aligned with the interchain mission.
+We will also want to be tracking outreach to the relevant users per phase to ensure that Hub utility (and IBC where appropriate) are being validated. Spotlights on experiments will continue to validate the utility of the Hub and IBC (i.e. bridge to Ethereum, AMM, etc). We will also be conducting continuous outbound outreach to look for partners that are aligned with the interchain mission.
 
 3. **Communications**
 

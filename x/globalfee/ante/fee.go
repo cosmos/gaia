@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 
+	tmstrings "github.com/tendermint/tendermint/libs/strings"
+
 	errorsmod "cosmossdk.io/errors"
 	tmstrings "github.com/cometbft/cometbft/libs/strings"
 	sdk "github.com/cosmos/cosmos-sdk/types"

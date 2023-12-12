@@ -7,7 +7,7 @@ parent:
 
 # Previous Releases
 
-The following table below, shows the the versions of the main dependencies.
+The following table below, shows the versions of the main dependencies.
 
 | Upgrade Name        | Date          | Height    | Chain Identifier | Tm      | Cosmos SDK | Gaia                     | IBC                      |
 |---------------------|---------------|-----------|---------------|------------|------------|--------------------------|--------------------------|

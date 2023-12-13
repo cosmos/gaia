@@ -2,7 +2,6 @@ package v15
 
 import (
 	store "github.com/cosmos/cosmos-sdk/store/types"
-
 	consensustypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 

@@ -615,8 +615,8 @@ github.com/cosmos/ibc-go/v7 v7.3.1 h1:bil1IjnHdyWDASFYKfwdRiNtFP6WK3osW7QFEAgU4I
 github.com/cosmos/ibc-go/v7 v7.3.1/go.mod h1:wvx4pPBofe5ZdMNV3OFRxSI4auEP5Qfqf8JXLLNV04g=
 github.com/cosmos/ics23/go v0.10.0 h1:iXqLLgp2Lp+EdpIuwXTYIQU+AiHj9mOC2X9ab++bZDM=
 github.com/cosmos/ics23/go v0.10.0/go.mod h1:ZfJSmng/TBNTBkFemHHHj5YY7VAU/MBU980F4VU1NG0=
-github.com/cosmos/interchain-security/v3 v3.3.0-rc0.0.20231207121941-02bc47252590 h1:acEi6tT5Dlnblu6e+2aUuKIsrgtp07lvOPkeZhscWSs=
-github.com/cosmos/interchain-security/v3 v3.3.0-rc0.0.20231207121941-02bc47252590/go.mod h1:IB5qv5+siEWIrSWEjtwhzLt3ZPSoZfaXVWWMGQteKp0=
+github.com/cosmos/interchain-security/v3 v3.3.0-rc0.0.20231213145932-9a4673505d2f h1:MmWN9ef5QOL8vLLkv0GvKw7e17aJLvmZTSQ5TbsNeno=
+github.com/cosmos/interchain-security/v3 v3.3.0-rc0.0.20231213145932-9a4673505d2f/go.mod h1:ZiKBmcg63OIHNPRGtzbX70GiaeRi4qwrT0bK3zzD4ko=
 github.com/cosmos/keyring v1.2.0 h1:8C1lBP9xhImmIabyXW4c3vFjjLiBdGCmfLUfeZlV1Yo=
 github.com/cosmos/keyring v1.2.0/go.mod h1:fc+wB5KTk9wQ9sDx0kFXB3A0MaeGHM9AwRStKOQ5vOA=
 github.com/cosmos/ledger-cosmos-go v0.12.4 h1:drvWt+GJP7Aiw550yeb3ON/zsrgW0jgh5saFCr7pDnw=
@@ -1022,8 +1022,8 @@ github.com/influxdata/promql/v2 v2.12.0/go.mod h1:fxOPu+DY0bqCTCECchSRtWfc+0X19y
 github.com/influxdata/roaring v0.4.13-0.20180809181101-fc520f41fab6/go.mod h1:bSgUQ7q5ZLSO+bKBGqJiCBGAl+9DxyW63zLTujjUlOE=
 github.com/influxdata/tdigest v0.0.0-20181121200506-bf2b5ad3c0a9/go.mod h1:Js0mqiSBE6Ffsg94weZZ2c+v/ciT8QRHFOap7EKDrR0=
 github.com/influxdata/usage-client v0.0.0-20160829180054-6d3895376368/go.mod h1:Wbbw6tYNvwa5dlB6304Sd+82Z3f7PmVZHVKU637d4po=
-github.com/informalsystems/cosmos-sdk v0.46.0-alpha2.0.20231206144452-5b8e28f3247b h1:30cT7RklLxEObRhrPNWfxmzpwA7L9wlOZtEQGqwUvkU=
-github.com/informalsystems/cosmos-sdk v0.46.0-alpha2.0.20231206144452-5b8e28f3247b/go.mod h1:5XeJ1MRNGiKgoCj/1nWQm0xadHcOP8wqpeCUihzead4=
+github.com/informalsystems/cosmos-sdk v0.46.0-alpha2.0.20231213145240-817c772e6b80 h1:oCxPruzvb+O3/Bz8Q2Ff6+aKsoK7OYCZVTfY4tMTI+o=
+github.com/informalsystems/cosmos-sdk v0.46.0-alpha2.0.20231213145240-817c772e6b80/go.mod h1:5XeJ1MRNGiKgoCj/1nWQm0xadHcOP8wqpeCUihzead4=
 github.com/jackpal/go-nat-pmp v1.0.2/go.mod h1:QPH045xvCAeXUZOxsnwmrtiCoxIr9eob+4orBN1SBKc=
 github.com/jedisct1/go-minisign v0.0.0-20190909160543-45766022959e/go.mod h1:G1CVv03EnqU1wYL2dFwXxW2An0az9JTl/ZsqXQeBlkU=
 github.com/jessevdk/go-flags v0.0.0-20141203071132-1679536dcc89/go.mod h1:4FA24M0QyGHXBuZZK/XkWh8h0e1EYbRYJSGM75WSRxI=

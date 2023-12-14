@@ -35,10 +35,5 @@ func copyFile(src, dst string) (int64, error) { //nolint:unparam
 
 // writeFile write a byte slice into a file path
 func writeFile(path string, body []byte) error {
-	_, err := os.Create(path)
-	if err != nil {
-		return err
-	}
-
 	return os.WriteFile(path, body, 0o600)
 }

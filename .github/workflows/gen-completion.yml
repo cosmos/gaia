@@ -1,13 +1,9 @@
 name: Generate ohmyzsh completion
 on:
-  pull_request:
-    paths:
-      - "**.go"
   push:
     branches:
       - main
       - release/v*
-      - "**.go"
 jobs:
   gen-completion-and-push:
     runs-on: ubuntu-latest

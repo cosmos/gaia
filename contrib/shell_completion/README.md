@@ -7,3 +7,5 @@ To use it, copy the contents of the folder into `$ZSH/custom/gaia` and add `gaia
 ```zsh
 plugins=(... gaiad)
 ```
+
+To regenerate the script please run `make gen-completion`

@@ -39,10 +39,14 @@ func V15UpgradeHandler(ctx sdk.Context, keepers *keepers.AppKeepers) {
 
 	for _, val := range keepers.StakingKeeper.GetAllValidators(ctx) {
 		val := val
-		// update validator commission rate if it is less than 5%
 		if val.Commission.CommissionRates.Rate.LT(sdk.NewDecWithPrec(5, 2)) {
-			val.Commission.UpdateTime = ctx.BlockHeader().Time
+			// set the commmision rate to 5%
 			val.Commission.CommissionRates.Rate = sdk.NewDecWithPrec(5, 2)
+			// set the max rate to 5% if it is less than 5%
+			if val.Commission.CommissionRates.MaxRate.LT(sdk.NewDecWithPrec(5, 2)) {
+				val.Commission.CommissionRates.MaxRate = sdk.NewDecWithPrec(5, 2)
+			}
+			val.Commission.UpdateTime = ctx.BlockHeader().Time
 			keepers.StakingKeeper.SetValidator(ctx, val)
 		}
 	}

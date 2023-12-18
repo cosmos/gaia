@@ -309,3 +309,12 @@ proto-swagger-gen:
 	@sh ./proto/scripts/protoc-swagger-gen.sh
 
 .PHONY: proto-gen proto-doc proto-swagger-gen
+
+###############################################################################
+###                          Shell Completion Plugin                        ###
+###############################################################################
+gen-completion: build
+	@echo "Generating completion plugin for ohmyzsh"
+	./build/gaiad completion > ./contrib/shell_completion/_gaiad
+
+.PHONY build

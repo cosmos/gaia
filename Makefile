@@ -317,4 +317,4 @@ gen-completion: build
 	@echo "Generating completion plugin for ohmyzsh"
 	./build/gaiad completion > ./contrib/shell_completion/_gaiad
 
-.PHONY build
+.PHONY: build

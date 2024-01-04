@@ -20,7 +20,7 @@ You'll first want to determine which kind of proposal you are making. Be sure to
 
 Engagement is likely to be critical to the success of a proposal. The degree to which you engage with the Cosmos Hub community should be relative to the potential impact that your proposal may have on the stakeholders. This guide does not cover all ways of engaging but here are some suggestions: 
  - Post your idea to the [Cosmos Hub Forum](https://forum.cosmos.network/)
- - Mention the idea in a community call (often hosted on [Twitter](https://twitter.com/CosmosHub))
+ - Mention the idea in a community call (often hosted on [Twitter](https://x.com/CosmosHub))
  - Host an AMA on [Reddit](https://www.reddit.com/r/cosmosnetwork) 
  
  We encourage you to experiment and use your strengths to introduce proposal ideas and gather feedback.
@@ -139,7 +139,7 @@ This Markdown-formatted post can eventually become the description text in a pro
 
 2. Directly engage key members of the community for feedback. These could be large contributors, those likely to be most impacted by the proposal, and entities with high stake-backing (eg. high-ranked validators; large stakers).
 
-3. Alert the entire community to the draft proposal on other platforms such as Twitter, tagging accounts such as the [Cosmos Hub account](https://twitter.com/cosmoshub), the [Cosmos Governance account](https://twitter.com/CosmosGov), and other governance-focused groups.
+3. Alert the entire community to the draft proposal on other platforms such as Twitter, tagging accounts such as the [Cosmos Hub account](https://x.com/cosmoshub), the [Cosmos Governance account](https://x.com/CosmosGov), and other governance-focused groups.
 
 ### Submit your proposal to the testnet
 
@@ -159,7 +159,7 @@ The deposit period currently lasts 14 days. If you submitted your transaction wi
 
 This is a stage where proposals may begin to get broader attention. Some block explorers display proposals in the deposit period, while others don't show them until they hit voting period.
 
-A large cross-section of the blockchain/cryptocurrency community exists on Twitter. Having your proposal in the deposit period is a good time to engage the so-called 'crypto Twitter' Cosmos community to prepare validators to vote (eg. tag [@cosmosvalidator](https://twitter.com/cosmosvalidator)) and ATOM-holders that are staking (eg. tag [@cosmoshub](https://twitter.com/cosmoshub), [@CosmosGov](https://twitter.com/CosmosGov)). 
+A large cross-section of the blockchain/cryptocurrency community exists on Twitter. Having your proposal in the deposit period is a good time to engage the so-called 'crypto Twitter' Cosmos community to prepare validators to vote (eg. tag [@cosmosvalidator](https://x.com/cosmosvalidator)) and ATOM-holders that are staking (eg. tag [@cosmoshub](https://x.com/cosmoshub), [@CosmosGov](https://x.com/CosmosGov)). 
 
 ### The Voting Period
 

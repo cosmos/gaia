@@ -20,6 +20,6 @@ Governance discussions happens in a number of places moderated by diverse commun
 
 - [Forum](http://forum.cosmos.network/)
 - [Discord](https://discord.com/invite/cosmosnetwork)
-- [Twitter](https://twitter.com/CosmosGov)
+- [Twitter](https://x.com/CosmosGov)
 - [Reddit](http://reddit.com/r/cosmosnetwork)
 - anywhere else you might interact with members of the Cosmos community!

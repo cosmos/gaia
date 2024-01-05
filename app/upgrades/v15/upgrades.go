@@ -3,6 +3,9 @@ package v15
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
+	"github.com/cosmos/cosmos-sdk/x/slashing/types"
+	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	"github.com/cosmos/gaia/v15/app/keepers"
@@ -32,6 +35,9 @@ func CreateUpgradeHandler(
 
 // V15UpgradeHandler sets the minimum commission rate staking parameter to 5%
 // and updates the commission rate for all validators that have a commission rate less than 5%
+//
+// TODO: rename func name
+// refactor in multiple function
 func V15UpgradeHandler(ctx sdk.Context, keepers *keepers.AppKeepers) {
 	params := keepers.StakingKeeper.GetParams(ctx)
 	params.MinCommissionRate = sdk.NewDecWithPrec(5, 2)
@@ -49,5 +55,32 @@ func V15UpgradeHandler(ctx sdk.Context, keepers *keepers.AppKeepers) {
 			val.Commission.UpdateTime = ctx.BlockHeader().Time
 			keepers.StakingKeeper.SetValidator(ctx, val)
 		}
+	}
+
+	// TODO: call ValidatorSigningInfosFix
+}
+
+// UpgradeValidatorSigningInfos upgrades the validators signing infos for which the consensus address
+// is missing using their store key, which contains the consensus address of the validator
+// TODO: add more context
+// , see https://github.com/cosmos/gaia/issues/1734.
+func ValidatorSigningInfosFix(ctx sdk.Context, sk slashingkeeper.Keeper) {
+	signingInfos := []slashingtypes.ValidatorSigningInfo{}
+
+	sk.IterateValidatorSigningInfos(ctx, func(address sdk.ConsAddress, info types.ValidatorSigningInfo) (stop bool) {
+		if info.Address == "" {
+			info.Address = address.String()
+			signingInfos = append(signingInfos, info)
+		}
+
+		return false
+	})
+
+	for _, si := range signingInfos {
+		addr, err := sdk.ConsAddressFromBech32(si.Address)
+		if err != nil {
+			panic(err)
+		}
+		sk.SetValidatorSigningInfo(ctx, addr, si)
 	}
 }

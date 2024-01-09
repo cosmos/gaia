@@ -4,13 +4,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/testutil/mock"
+	"github.com/stretchr/testify/require"
 
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+
+	"github.com/cosmos/cosmos-sdk/testutil/mock"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/slashing/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
-	"github.com/stretchr/testify/require"
 
 	"github.com/cosmos/gaia/v15/app/helpers"
 	v15 "github.com/cosmos/gaia/v15/app/upgrades/v15"
@@ -22,14 +22,15 @@ func (ao EmptyAppOptions) Get(_ string) interface{} {
 	return nil
 }
 
-func TestV15UpgradeHandler(t *testing.T) {
+func TestMigrateMinCommisionRate(t *testing.T) {
 	gaiaApp := helpers.Setup(t)
 	ctx := gaiaApp.NewUncachedContext(true, tmproto.Header{})
 
 	// set min commission rate to 0
 	stakingParams := gaiaApp.StakingKeeper.GetParams(ctx)
 	stakingParams.MinCommissionRate = sdk.ZeroDec()
-	gaiaApp.StakingKeeper.SetParams(ctx, stakingParams)
+	err := gaiaApp.StakingKeeper.SetParams(ctx, stakingParams)
+	require.NoError(t, err)
 
 	// confirm all commissions are 0
 	stakingKeeper := gaiaApp.StakingKeeper
@@ -42,7 +43,7 @@ func TestV15UpgradeHandler(t *testing.T) {
 	require.Equal(t, stakingKeeper.GetParams(ctx).MinCommissionRate, sdk.ZeroDec(), "non-zero previous min commission rate")
 
 	// run the test and confirm the values have been updated
-	v15.V15UpgradeHandler(ctx, &gaiaApp.AppKeepers)
+	v15.MigrateMinCommissionRate(ctx, *gaiaApp.AppKeepers.StakingKeeper)
 
 	newStakingParams := gaiaApp.StakingKeeper.GetParams(ctx)
 	require.NotEqual(t, newStakingParams.MinCommissionRate, sdk.ZeroDec(), "failed to update min commission rate")
@@ -58,7 +59,7 @@ func TestV15UpgradeHandler(t *testing.T) {
 	updateVal.Commission.CommissionRates.Rate = updateValCommission
 	stakingKeeper.SetValidator(ctx, updateVal)
 
-	v15.V15UpgradeHandler(ctx, &gaiaApp.AppKeepers)
+	v15.MigrateMinCommissionRate(ctx, *gaiaApp.AppKeepers.StakingKeeper)
 	for _, val := range stakingKeeper.GetAllValidators(ctx) {
 		if updateVal.OperatorAddress == val.OperatorAddress {
 			require.Equal(t, val.Commission.CommissionRates.Rate, updateValCommission, "should not update commission rate for validator %s", val.GetOperator())
@@ -68,7 +69,7 @@ func TestV15UpgradeHandler(t *testing.T) {
 	}
 }
 
-func TestValidatorSigningInfosFix(t *testing.T) {
+func TestMigrateValidatorsSigningInfos(t *testing.T) {
 	gaiaApp := helpers.Setup(t)
 	ctx := gaiaApp.NewUncachedContext(true, tmproto.Header{})
 	slashingKeeper := gaiaApp.SlashingKeeper
@@ -101,7 +102,7 @@ func TestValidatorSigningInfosFix(t *testing.T) {
 	}
 
 	// check signing info were correctly created
-	slashingKeeper.IterateValidatorSigningInfos(ctx, func(address sdk.ConsAddress, info types.ValidatorSigningInfo) (stop bool) {
+	slashingKeeper.IterateValidatorSigningInfos(ctx, func(address sdk.ConsAddress, info slashingtypes.ValidatorSigningInfo) (stop bool) {
 		if info.Address == "" {
 			emptyAddrCtr--
 		}
@@ -111,10 +112,10 @@ func TestValidatorSigningInfosFix(t *testing.T) {
 	require.Zero(t, emptyAddrCtr)
 
 	// upgrade signing infos
-	v15.UpgradeValidatorSigningInfos(ctx, slashingKeeper)
+	v15.MigrateSigningInfos(ctx, slashingKeeper)
 
 	// check that all signing info have the address field correctly updated
-	slashingKeeper.IterateValidatorSigningInfos(ctx, func(address sdk.ConsAddress, info types.ValidatorSigningInfo) (stop bool) {
+	slashingKeeper.IterateValidatorSigningInfos(ctx, func(address sdk.ConsAddress, info slashingtypes.ValidatorSigningInfo) (stop bool) {
 		require.NotEmpty(t, info.Address)
 		require.Equal(t, address.String(), info.Address)
 

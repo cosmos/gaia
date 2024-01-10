@@ -11,10 +11,10 @@ import (
 	"github.com/cosmos/gaia/v15/app/keepers"
 )
 
-// CreateUpgradeHandler returns the upgrade handler for Gaia v15
+// CreateUpgradeHandler returns a upgrade handler for Gaia v15
 // which executes the following migrations:
 // * set the MinCommissionRate param of the staking module to %5
-// * update SigningInfos records with missing consensus address in the slashing module states
+// * update the slashing module SigningInfos records with empty consensus address
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,

@@ -4,6 +4,7 @@ go 1.21
 
 require (
 	cosmossdk.io/api v0.3.1
+	cosmossdk.io/errors v1.0.0
 	cosmossdk.io/math v1.2.0
 	cosmossdk.io/simapp v0.0.0-20230602123434-616841b9704d
 	cosmossdk.io/tools/rosetta v0.2.1
@@ -12,22 +13,17 @@ require (
 	github.com/cosmos/cosmos-sdk v0.47.6
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/gogoproto v1.4.10
+	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7 v7.1.2
 	github.com/cosmos/ibc-go/v7 v7.3.1
 	github.com/cosmos/interchain-security/v3 v3.3.0
 	github.com/gorilla/mux v1.8.0
+	github.com/ory/dockertest/v3 v3.10.0
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/cast v1.5.1
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.16.0
 	github.com/stretchr/testify v1.8.4
-)
-
-require (
-	cosmossdk.io/errors v1.0.0
-	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7 v7.1.2
-	github.com/google/gofuzz v1.2.0
-	github.com/ory/dockertest/v3 v3.10.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20231002182017-d307bd883b97
 )
 

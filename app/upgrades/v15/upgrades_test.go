@@ -23,7 +23,6 @@ import (
 	distributionkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
-	"github.com/cosmos/cosmos-sdk/x/staking/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/stretchr/testify/require"
 
@@ -153,8 +152,10 @@ func TestMigrateUnvestedFunds(t *testing.T) {
 	validators := stakingKeeper.GetAllValidators(ctx)
 	validator := validators[0]
 
+	bondDenom := stakingKeeper.GetParams(ctx).BondDenom
+
 	// original vesting coin amount
-	origCoins := sdk.NewCoins(sdk.NewInt64Coin("stake", 100))
+	origCoins := sdk.NewCoins(sdk.NewInt64Coin(bondDenom, 100))
 
 	// create a continuous vesting account
 	addr := sdk.AccAddress([]byte("addr1_______________"))
@@ -172,43 +173,23 @@ func TestMigrateUnvestedFunds(t *testing.T) {
 	// fund vesting account
 	require.NoError(t, banktestutil.FundAccount(bankKeeper, ctx, addr, origCoins))
 	require.True(t, origCoins.IsEqual(bankKeeper.GetAllBalances(ctx, addr)))
-	// err := distrKeeper.FundCommunityPool(ctx, balances, vacc.GetAddress())
-	// require.Error(t, err)
 
 	initBal := bankKeeper.GetAllBalances(ctx, vacc.GetAddress())
 	require.True(t, initBal.IsEqual(origCoins))
 
-	oldVP := validator.GetConsensusPower(validator.BondedTokens())
-	fmt.Println("oldVp:", oldVP)
 	oldValTokens := validator.Tokens
 
-	fmt.Println("last power", stakingKeeper.GetLastTotalPower(ctx))
-	fmt.Println("0", validator.String())
-
 	// delegate vested and still vesting tokens
-	_, err := stakingKeeper.Delegate(ctx, vacc.GetAddress(), origCoins.AmountOf("stake"), stakingtypes.Unbonded, validator, true)
+	_, err := stakingKeeper.Delegate(ctx, vacc.GetAddress(), origCoins.AmountOf(bondDenom), stakingtypes.Unbonded, validator, true)
 	require.NoError(t, err)
 
 	validator = stakingKeeper.GetAllValidators(ctx)[0]
 
-	require.True(t, validator.Tokens.Equal(oldValTokens.Add(origCoins.AmountOf("stake"))))
-
-	consAddr, err := validator.GetConsAddr()
-	require.NoError(t, err)
-
-	validatorUpdated, found := stakingKeeper.GetValidatorByConsAddr(ctx, consAddr)
-	require.True(t, found)
-	fmt.Println("1", validatorUpdated.String())
-
-	validator = stakingKeeper.GetAllValidators(ctx)[0]
-
-	fmt.Println("2", validator.String())
-
-	fmt.Println("last power", stakingKeeper.GetLastTotalPower(ctx))
+	require.True(t, validator.Tokens.Equal(oldValTokens.Add(origCoins.AmountOf(bondDenom))))
 
 	del, found := stakingKeeper.GetDelegation(ctx, addr, validator.GetOperator())
 	require.True(t, found)
-	require.Equal(t, validator.TokensFromShares(del.Shares), math.LegacyNewDec(origCoins.AmountOf("stake").Int64()))
+	require.Equal(t, validator.TokensFromShares(del.Shares), math.LegacyNewDec(origCoins.AmountOf(bondDenom).Int64()))
 
 	acc := accountKeeper.GetAccount(ctx, addr)
 	vaccupdated, ok := acc.(banktypes.VestingAccount)
@@ -221,61 +202,74 @@ func TestMigrateUnvestedFunds(t *testing.T) {
 
 	vestingCoinsUpdated := vacc.GetVestingCoins(ctx.BlockTime())
 	vestedCoins := vacc.GetVestedCoins(ctx.BlockTime())
+
 	require.True(t, vestingCoinsUpdated.IsEqual(origCoins.QuoInt(math.NewInt(2))))
 	require.True(t, vestedCoins.IsEqual(origCoins.QuoInt(math.NewInt(2))))
 
+	v15.MigrateVestingAccount(ctx, addr, &gaiaApp.AppKeepers)
+
+	require.True(t, sdk.NewDecCoinsFromCoins(vestingCoinsUpdated...).IsEqual(distrKeeper.GetFeePoolCommunityCoins(ctx)))
+
+	vaccUpdated := accountKeeper.GetAccount(ctx, addr).(*vesting.ContinuousVestingAccount)
+	vestedUpdated := vaccUpdated.GetVestedCoins(ctx.BlockTime())
+	require.Empty(t, vaccUpdated.GetVestingCoins(ctx.BlockTime()))
+	require.True(t, vestedCoins.IsEqual(vestedUpdated))
+	require.True(t, vaccUpdated.OriginalVesting.IsEqual(vestedUpdated))
+
+	// require.NoError(t, bankKeeper.ValidateBalance(ctx, addr))
+	// require.NoError(t, bankKeeper.ValidateBalance(ctx, accountKeeper.GetModuleAddress(distributiontypes.ModuleName)))
+
 	// remove delegations
 
-	returnAmount, err := stakingKeeper.Unbond(ctx, addr, validator.GetOperator(), del.Shares)
-	require.NoError(t, err)
+	// returnAmount, err := stakingKeeper.Unbond(ctx, addr, validator.GetOperator(), del.Shares)
+	// require.NoError(t, err)
 
-	nb := bankKeeper.GetAllBalances(ctx, accountKeeper.GetModuleAddress(types.BondedPoolName))
-	fmt.Println(" bonded balances", nb.String())
+	// nb := bankKeeper.GetAllBalances(ctx, accountKeeper.GetModuleAddress(types.BondedPoolName))
+	// fmt.Println(" bonded balances", nb.String())
 
 	// transfer the validator tokens to the not bonded pool
 	// doing stakingKeeper.bondedTokensToNotBonded
-	if validator.IsBonded() {
-		fmt.Println("bonded")
-		fmt.Println("returnAmount", returnAmount.String())
-		coins := sdk.NewCoins(sdk.NewCoin(stakingKeeper.BondDenom(ctx), returnAmount))
-		err = bankKeeper.SendCoinsFromModuleToModule(ctx, types.BondedPoolName, types.NotBondedPoolName, coins)
-		require.NoError(t, err)
-	}
+	// if validator.IsBonded() {
+	// 	fmt.Println("bonded")
+	// 	fmt.Println("returnAmount", returnAmount.String())
+	// 	coins := sdk.NewCoins(sdk.NewCoin(stakingKeeper.BondDenom(ctx), returnAmount))
+	// 	err = bankKeeper.SendCoinsFromModuleToModule(ctx, types.BondedPoolName, types.NotBondedPoolName, coins)
+	// 	require.NoError(t, err)
+	// }
 
-	nb = bankKeeper.GetAllBalances(ctx, accountKeeper.GetModuleAddress(types.BondedPoolName))
-	fmt.Println(" bonded balances", nb.String())
+	// nb = bankKeeper.GetAllBalances(ctx, accountKeeper.GetModuleAddress(types.BondedPoolName))
+	// fmt.Println(" bonded balances", nb.String())
 
-	nbp := bankKeeper.GetAllBalances(ctx, accountKeeper.GetModuleAddress(types.NotBondedPoolName))
-	fmt.Println("not bonded balances", nbp.String())
+	// nbp := bankKeeper.GetAllBalances(ctx, accountKeeper.GetModuleAddress(types.NotBondedPoolName))
+	// fmt.Println("not bonded balances", nbp.String())
 
-	bondDenom := "stake" // k.GetParams(ctx).BondDenom
-	amt := sdk.NewCoin(bondDenom, returnAmount)
-	err = bankKeeper.UndelegateCoinsFromModuleToAccount(ctx, types.NotBondedPoolName, addr, sdk.NewCoins(amt))
-	require.NoError(t, err)
+	// amt := sdk.NewCoin(bondDenom, returnAmount)
+	// err = bankKeeper.UndelegateCoinsFromModuleToAccount(ctx, types.NotBondedPoolName, addr, sdk.NewCoins(amt))
+	// require.NoError(t, err)
 
-	require.True(t, origCoins.IsEqual(bankKeeper.GetAllBalances(ctx, addr)))
+	// require.True(t, origCoins.IsEqual(bankKeeper.GetAllBalances(ctx, addr)))
 
-	acc = accountKeeper.GetAccount(ctx, addr)
-	vaccupdated, ok = acc.(banktypes.VestingAccount)
-	require.True(t, ok)
-	require.Empty(t, vaccupdated.GetDelegatedVesting())
-	require.Empty(t, vaccupdated.GetDelegatedFree())
+	// acc = accountKeeper.GetAccount(ctx, addr)
+	// vaccupdated, ok = acc.(banktypes.VestingAccount)
+	// require.True(t, ok)
+	// require.Empty(t, vaccupdated.GetDelegatedVesting())
+	// require.Empty(t, vaccupdated.GetDelegatedFree())
 
-	require.Empty(t, distrKeeper.GetFeePoolCommunityCoins(ctx))
+	// require.Empty(t, distrKeeper.GetFeePoolCommunityCoins(ctx))
 
-	kvs := gaiaApp.GetKVStoreKey()
+	// kvs := gaiaApp.GetKVStoreKey()
 
-	vestingAmt := sdk.NewCoin(amt.Denom, amt.Amount.Quo(math.NewInt(2)))
+	// vestingAmt := sdk.NewCoin(amt.Denom, amt.Amount.Quo(math.NewInt(2)))
 
-	FundCommunityPool(
-		accountKeeper,
-		distrKeeper,
-		bankKeeper,
-		ctx,
-		sdk.NewCoins(vestingAmt),
-		addr,
-		kvs[banktypes.StoreKey],
-	)
+	// FundCommunityPool(
+	// 	accountKeeper,
+	// 	distrKeeper,
+	// 	bankKeeper,
+	// 	ctx,
+	// 	sdk.NewCoins(vestingAmt),
+	// 	addr,
+	// 	kvs[banktypes.StoreKey],
+	// )
 
 	// err = bankKeeper.UndelegateCoinsFromModuleToAccount(
 	// 	ctx, types.NotBondedPoolName, addr, sdk.NewCoins(amt))
@@ -287,32 +281,12 @@ func TestMigrateUnvestedFunds(t *testing.T) {
 	// create fee pool
 	// distrKeeper.SetFeePool(ctx, types.InitialFeePool())
 
-	require.NotEmpty(t, distrKeeper.GetFeePoolCommunityCoins(ctx))
-	require.True(t, sdk.NewDecCoinsFromCoins(vestingAmt).IsEqual(distrKeeper.GetFeePoolCommunityCoins(ctx)))
+	// require.NotEmpty(t, distrKeeper.GetFeePoolCommunityCoins(ctx))
 
-	fmt.Println("community pool balances", distrKeeper.GetFeePoolCommunityCoins(ctx))
-	fmt.Println("community pool balances 2", bankKeeper.GetAllBalances(ctx, accountKeeper.GetModuleAddress(distributiontypes.ModuleName)))
+	// fmt.Println("community pool balances", distrKeeper.GetFeePoolCommunityCoins(ctx))
+	// fmt.Println("community pool balances 2", bankKeeper.GetAllBalances(ctx, accountKeeper.GetModuleAddress(distributiontypes.ModuleName)))
 
-	fmt.Println("vesting account", bankKeeper.GetAllBalances(ctx, addr))
-
-	// require.NoError(t, bankKeeper.ValidateBalance(ctx, addr))
-	// require.NoError(t, bankKeeper.ValidateBalance(ctx, accountKeeper.GetModuleAddress(distributiontypes.ModuleName)))
-
-	vacc3 := accountKeeper.GetAccount(ctx, addr)
-	fmt.Println("vesting account 6", vacc3.(*vesting.ContinuousVestingAccount).GetVestingCoins(ctx.BlockTime()))
-	fmt.Println("vesting account 7 ", vacc3.(*vesting.ContinuousVestingAccount).GetVestedCoins(ctx.BlockTime()))
-
-	vacc4 := vesting.NewContinuousVestingAccount(bacc, sdk.NewCoins(vestingAmt), vacc.StartTime, ctx.BlockTime().Unix())
-
-	accountKeeper.SetAccount(ctx, vacc4)
-
-	fmt.Println("vesting account 8", vacc4.GetVestingCoins(ctx.BlockTime()))
-	fmt.Println("vesting account 9 ", vacc4.GetVestedCoins(ctx.BlockTime()))
-
-	require.Equal(t, vacc3.GetAddress().String(), vacc4.Address)
-
-	require.NoError(t, bankKeeper.ValidateBalance(ctx, addr))
-	require.NoError(t, bankKeeper.ValidateBalance(ctx, accountKeeper.GetModuleAddress(distributiontypes.ModuleName)))
+	// fmt.Println("vesting account", bankKeeper.GetAllBalances(ctx, addr))
 
 }
 

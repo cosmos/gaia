@@ -15,7 +15,7 @@ require (
 	github.com/cosmos/gogoproto v1.4.10
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7 v7.1.2
 	github.com/cosmos/ibc-go/v7 v7.3.1
-	github.com/cosmos/interchain-security/v3 v3.1.0
+	github.com/cosmos/interchain-security/v3 v3.3.0
 	github.com/google/gofuzz v1.2.0
 	github.com/gorilla/mux v1.8.0
 	github.com/ory/dockertest/v3 v3.10.0
@@ -213,9 +213,6 @@ replace (
 
 	// Use special SDK release with support for both ICS and LSM
 	github.com/cosmos/cosmos-sdk => github.com/informalsystems/cosmos-sdk v0.46.0-alpha2.0.20231213145240-817c772e6b80
-
-	// Use special ICS release with support for LSM
-	github.com/cosmos/interchain-security/v3 => github.com/cosmos/interchain-security/v3 v3.3.0-rc0.0.20231213145932-9a4673505d2f
 
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2

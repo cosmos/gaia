@@ -23,7 +23,7 @@ The process for these historical proposals was that an on-chain signal was used 
 ## Why make a signaling proposal?
 Signaling proposals are a great way to take an official, public poll of community sentiment before investing more resources into a project. The most common way for text proposals to be used is to confirm that the community is actually interested in what the proposer wants to develop, without asking for money to fund development that might not be concrete enough to have a budget yet. 
 
-Because the results of signaling proposals remain on-chain and are easily accessible to anyone, they are also a good way to formalize community opinions. Information contained in documentation or Github repo's can be hard to find for new community members but signaling proposals in a block explorer or wallet is very accessible. 
+Because the results of signaling proposals remain on-chain and are easily accessible to anyone, they are also a good way to formalize community opinions. Information contained in documentation or Github repos can be hard to find for new community members but signaling proposals in a block explorer or wallet is very accessible. 
 
 You might make a signaling proposal to gather opinions for work you want to do for the Hub, or because you think it's important to have a record of some perspective held by the community at large. 
 

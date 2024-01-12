@@ -53,7 +53,7 @@ jobs:
         if: env.GIT_DIFF
         run: |
           go test -v -coverprofile=profile.out -covermode=atomic -coverpkg=./... $(go list ./... | grep -v -e '/tests/e2e')
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: env.GIT_DIFF
         with:
           name: "${{ github.sha }}-coverage"
@@ -94,7 +94,7 @@ jobs:
             go.sum
             **/go.mod
             **/go.sum
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         if: env.GIT_DIFF
         with:
           name: "${{ github.sha }}-coverage"

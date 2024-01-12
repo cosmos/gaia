@@ -123,7 +123,7 @@ If you are running a **validator node** on the mainnet, always be careful when d
 :::
 
 ::: danger IMPORTANT
-Make sure that every node has a unique `priv_validator.json`. Do not copy the `priv_validator.json` from an old node to multiple new nodes. Running two nodes with the same `priv_validator.json` will cause you to get slashed due to double sign !
+Make sure that every node has a unique `priv_validator.json`. Do not copy the `priv_validator.json` from an old node to multiple new nodes. Running two nodes with the same `priv_validator.json` will cause you to get slashed due to double signing!
 :::
 
 First, remove the outdated files and reset the data. **If you are running a validator node, make sure you understand what you are doing before resetting**.

@@ -1,7 +1,8 @@
----
-title: ADR 001 - Interchain Accounts
-order: 1
----
+<!--
+order: 2
+-->
+
+# ADR 001: Interchain Accounts
 
 ## Changelog
 
@@ -13,7 +14,7 @@ order: 1
 
 REJECTED Not Implemented
 
-**Reason:** The IBC team decided to integrate this functionality directly into their codebase and maintain it, because multiple users require it.
+**Reason:** The IBC team decided to integrate this functionality directly into their codebase and maintain it, because multiple users require it. 
 
 ## Abstract
 
@@ -31,11 +32,11 @@ The hub can be used trustlessly as a host chain in the configuration of Intercha
 
 There has been preliminary work done to understand if this increases any security feature of the Cosmos Hub. One thought was that this capability is similar to contract to contract interactions which are possible on virtual machine blockchains like EVM chains. Those interactions introduced a new attack vector, called a re-entrancy bug, which was the culprit of "The DAO hack on Ethereum". We believe there is no risk of these kinds of attacks with Interchain Accounts because they require the interactions to be atomic and Interchain Accounts are asynchronous.
 
-### Backwards Compatibility
+#### Backwards Compatibility
 
 This is the first of its kind.
 
-### Forward Compatibility
+#### Forward Compatibility
 
 There are future releases of Interchain Accounts which are expected to be backwards compatible.
 

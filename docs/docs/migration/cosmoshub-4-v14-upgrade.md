@@ -1,6 +1,6 @@
 ---
 title: Cosmos Hub 4, Gaia v14 Upgrade
-order: 8
+order: 9
 ---
 <!-- markdown-link-check-disable -->
 # Cosmos Hub 4, Gaia v14 Upgrade, Instructions

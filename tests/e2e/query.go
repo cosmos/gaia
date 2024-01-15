@@ -235,19 +235,6 @@ func queryContinuousVestingAccount(endpoint, address string) (authvesting.Contin
 	return *acc, nil
 }
 
-// func queryPermanentLockedAccount(endpoint, address string) (authvesting.PermanentLockedAccount, error) { //nolint:unused // this is called during e2e tests
-// 	baseAcc, err := queryAccount(endpoint, address)
-// 	if err != nil {
-// 		return authvesting.PermanentLockedAccount{}, err
-// 	}
-// 	acc, ok := baseAcc.(*authvesting.PermanentLockedAccount)
-// 	if !ok {
-// 		return authvesting.PermanentLockedAccount{},
-// 			fmt.Errorf("cannot cast %v to PermanentLockedAccount", baseAcc)
-// 	}
-// 	return *acc, nil
-// }
-
 func queryPeriodicVestingAccount(endpoint, address string) (authvesting.PeriodicVestingAccount, error) { //nolint:unused // this is called during e2e tests
 	baseAcc, err := queryAccount(endpoint, address)
 	if err != nil {

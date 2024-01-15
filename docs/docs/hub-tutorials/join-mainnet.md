@@ -3,9 +3,12 @@ title: Joining Mainnet
 order: 2
 ---
 
-The current Cosmos Hub mainnet, `cosmoshub-4`, has been performing in place store migration upgrades as of the [Delta Upgrade](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md) July 2021. 
-The most recent upgrade was [Gaia v10](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-v10-upgrade.md) June 2023.
+# Join the Cosmos Hub Mainnet
+
+The current Cosmos Hub mainnet, `cosmoshub-4`, has been performing in place store migration upgrades as of the [Delta Upgrade](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md) July 2021. The most recent upgrade is [Gaia v14.1.x](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-v14-upgrade.md) Dec 2023.
 This type of upgrade preserves the same chain-id but state before the upgrade height is only accessible by corresponding versions of the binary:
+
+## Release History
 
 - use `gaia v5.0.x` (Delta) for queries of state between height `6,910,000` and `8,695,000`
 - use `gaia v6.0.x` (Vega) between `8,695,000` and `10,085,397`
@@ -14,19 +17,23 @@ This type of upgrade preserves the same chain-id but state before the upgrade he
 - use `gaia v9.0.x` (Lambda) between `14,470,501` and `15,213,800`
 - use `gaia v9.1.x` between `15,213,800` and `15,816,200`
 - use `gaia v10.0.x` between `15,816,200` and `16,596,000`
-- use `gaia v11.x` from `16,596,000`
-  
+- use `gaia v11.x` between `16,596,000` and `16,985,500`
+- use `gaia v12.x` between `16,985,500` and `17,380,000`
+- use `gaia v13.x` between `17,380,000` and `18,262,000`
+- use `gaia v14.1.x` from `18,262,000`
+
 For more details, see the [history of upgrades](https://github.com/cosmos/gaia/tree/main/docs/roadmap) or visit the [migration section](https://github.com/cosmos/gaia/tree/main/docs/migration) of the Hub's docs.
 
 **This guide includes full instructions for joining the mainnet either as an archive/full node or a pruned node.**
 
-For instructions to boostrap a node via Quicksync or State Sync, see the [Quickstart Guide](https://hub.cosmos.network/main/getting-started/quickstart.html)
+For instructions to bootstrap a node via Quicksync or State Sync, see the [Quickstart Guide](https://hub.cosmos.network/main/getting-started/quickstart.html)
 
 For instructions to join as a validator, please also see the [Validator Guide](https://hub.cosmos.network/main/validators/overview.html#).
 
 ### Overview
 <!-- DON'T FORGET TO KEEP INDEX UP TO DATE -->
 - [Join the Cosmos Hub Mainnet](#join-the-cosmos-hub-mainnet)
+    - [Release History](#release-history)
     - [Overview](#overview)
     - [Background](#background)
   - [Explorers](#explorers)
@@ -201,7 +208,7 @@ Passing a flag when starting `gaia` will always override settings in the `app.to
 
 By default, the REST API is disabled. To enable the REST API, edit the `~/.gaia/config/app.toml` file, and set `enable` to `true` in the `[api]` section.
 
-```
+```toml
 ###############################################################################
 ###                           API Configuration                             ###
 ###############################################################################
@@ -223,7 +230,7 @@ After restarting the application, access the REST API on `<NODE IP>:1317`.
 
 By default, gRPC is enabled on port `9090`. The `~/.gaia/config/app.toml` file is where changes can be made in the gRPC section. To disable the gRPC endpoint, set `enable` to `false`. To change the port, use the `address` parameter.
 
-```
+```toml
 ###############################################################################
 ###                           gRPC Configuration                            ###
 ###############################################################################
@@ -290,7 +297,7 @@ With the block height and hash selected, update the configuration in `~/.gaia/co
 
 > **Note**: In the future, the RPC server requirement will be deprecated as state sync is [moved to the p2p layer in Tendermint 0.38](https://github.com/tendermint/tendermint/issues/6491).
 
-```sh
+```toml
 #######################################################
 ###         State Sync Configuration Options        ###
 #######################################################
@@ -347,7 +354,7 @@ While not advised, if a node operator needs to customize this feature, it can be
 
 In `app.toml`
 
-```
+```toml
 ###############################################################################
 ###                        State Sync Configuration                         ###
 ###############################################################################
@@ -368,9 +375,9 @@ snapshot-keep-recent = 10
 
 **See all [Gaia Releases](https://github.com/cosmos/gaia/releases)**
 
-The most up to date release of Gaia is [`V9.1.1`](https://github.com/cosmos/gaia/releases/tag/v9.1.1). For those that want to use state sync or quicksync to get their node up to speed, starting with the most recent version of Gaia is sufficient.
+The most up to date release of Gaia is above. For those that want to use state sync or quicksync to get their node up to speed, starting with the most recent version of Gaia is sufficient.
 
-To sync an archive or full node from scratch, it is important to note that you must start with [`V4.2.1`](https://github.com/cosmos/gaia/releases/tag/v4.2.1) and proceed through two different upgrades Delta at block height `6,910,000`, Vega at block height `8,695,000`, Theta at block height `10,085,397`, Rho at block height `14099412` and Lambda at block height `14,470,501`.
+To sync an archive or full node from scratch, it is important to note that you must start with [`V4.2.1`](https://github.com/cosmos/gaia/releases/tag/v4.2.1) and proceed through two different upgrades Delta at block height `6,910,000`, Vega at block height `8,695,000`, Theta at block height `10,085,397`, Rho at block height `14099412` and Lambda at block height `14,470,501` and so on.
 
 The process is summarized below but make sure to follow the manual upgrade instructions for each release:
 
@@ -433,6 +440,8 @@ ERR UPGRADE "Lambda" NEEDED at height: 14470501
 Again, make sure to backup `~/.gaia`
 
 Install Gaia [`V9.0.0`](https://github.com/cosmos/gaia/releases/tag/v9.0.0) and restart the daemon.
+
+Repeat the process for newer versions of the Gaia application at the [stated block heights above](#release-history).
 
 ## Cosmovisor
 

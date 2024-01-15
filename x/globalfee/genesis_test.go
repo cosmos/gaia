@@ -18,7 +18,7 @@ import (
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	"github.com/cosmos/gaia/v14/x/globalfee/types"
+	"github.com/cosmos/gaia/v15/x/globalfee/types"
 )
 
 func TestDefaultGenesis(t *testing.T) {

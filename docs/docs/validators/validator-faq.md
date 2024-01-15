@@ -241,7 +241,7 @@ Note however that it's possible that some validators decide to self-delegate via
 
 ### How to prevent concentration of stake in the hands of a few top validators?
 
-The community is expected to behave in a smart and self-preserving way. When a mining pool in Bitcoin gets too much mining power the community usually stops contributing to that pool. The Cosmos Hub relies on the same effect. Additionally, when delegaters switch to another validator, they are not subject to the unbonding period, which removes any barrier to quickly redelegating tokens in service of improving decentralization.
+The community is expected to behave in a smart and self-preserving way. When a mining pool in Bitcoin gets too much mining power the community usually stops contributing to that pool. The Cosmos Hub relies on the same effect. Additionally, when delegators switch to another validator, they are not subject to the unbonding period, which removes any barrier to quickly redelegating tokens in service of improving decentralization.
 
 ## Liquid Staking Module
 

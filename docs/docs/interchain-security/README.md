@@ -1,9 +1,11 @@
 ---
-title: Interchain Security
+order: false
+parent:
+  order: 2
 ---
 
-This section contains links related to Interchain Security (Replicated Security):
+# Interchain Security
 
-- [General Information Site](https://interchainsecurity.dev/)
-- [Interchain Security Github](https://github.com/cosmos/interchain-security/)
-- [Goto market for Consumer Chains](./gtm-interchain.md)
+This folder contains an overview of Interchain Security, one of the core features of the Cosmos Hub.
+
+- [Interchain Security](./interchain-security.md)

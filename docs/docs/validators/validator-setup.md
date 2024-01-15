@@ -19,7 +19,7 @@ If you plan to use a KMS (key management system), you should go through these st
 If you want to become a validator for the Hub's `mainnet`, you should learn more about [security](./security.md).
 :::
 
-The following instructions assume you have already [set up a full-node](../hub-tutorials/join-mainnet.md) and are synchonised to the latest blockheight.
+The following instructions assume you have already [set up a full-node](../hub-tutorials/join-mainnet.md) and are synchronised to the latest blockheight.
 
 ## Create Your Validator
 

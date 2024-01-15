@@ -1,10 +1,12 @@
 # Release Process
 
 - [Release Process](#release-process)
+    - [Breaking Changes](#breaking-changes)
   - [Major Release Procedure](#major-release-procedure)
     - [Changelog](#changelog)
       - [Creating a new release branch](#creating-a-new-release-branch)
       - [Cutting a new release](#cutting-a-new-release)
+      - [Update the changelog on main](#update-the-changelog-on-main)
     - [Release Notes](#release-notes)
     - [Tagging Procedure](#tagging-procedure)
       - [Test building artifacts](#test-building-artifacts)
@@ -19,20 +21,19 @@ This document outlines the release process for Cosmos Hub (Gaia).
 Gaia follows [semantic versioning](https://semver.org), but with the following deviations to account for state-machine and API breaking changes: 
 
 - State-machine breaking changes will result in an increase of the major version X (X.y.z).
-- Emergency releases & API breaking changes (changes in node interactions e.g. queries) will result in an increase of the minor version Y (x.Y.z | x > 0).
+- Emergency releases & API breaking changes will result in an increase of the minor version Y (x.Y.z | x > 0).
 - All other changes will result in an increase of the patch version Z (x.y.Z | x > 0).
 
-**State compatibility**: 
-It is critical for the patch releases to be state-machine compatible with prior releases in the same minor version. 
-For example, v9.2.1 must be compatible with v9.2.0.
+**Note:** In case a major release is deprecated before ending up on the network (due to potential bugs), 
+it is replaced by a minor release (eg: `v14.0.0` → `v14.1.0`). 
+As a result, this minor release is considered state-machine breaking.
 
-Minor releases will be handled on a case-by-case basis, but generally should only arise in case of safety or security issues that require a co-ordinated network upgrade without a governance process.
+### Breaking Changes
 
-This is to ensure determinism, i.e. that given the same input, the nodes will always produce the same output. 
-State-incompatibility is allowed for major upgrades because all nodes in the network perform it at the same time. 
-Therefore, after the upgrade, the nodes continue functioning in a deterministic way.
+A change is considered to be ***state-machine breaking*** if it requires a coordinated upgrade for the network to preserve [state compatibility](./STATE-COMPATIBILITY.md). 
+Note that when bumping the dependencies of [Cosmos SDK](https://github.com/cosmos/cosmos-sdk), [IBC](https://github.com/cosmos/ibc-go), and [ICS](https://github.com/cosmos/interchain-security) we will only treat patch releases as non state-machine breaking.
 
-**Note**: State-machine breaking changes include changes that impact the amount of gas needed to execute a transaction as it results in a different `apphash` after the code is executed.
+A change is considered to be ***API breaking*** if it modifies the provided API. This includes events, queries, CLI interfaces. 
 
 ## Major Release Procedure
 
@@ -41,7 +42,7 @@ A _major release_ is an increment of the first number (eg: `v9.1.0` → `v10.0.0
 **Note**: Generally, PRs should target either `main` or a long-lived feature branch (see [CONTRIBUTING.md](./CONTRIBUTING.md#pull-requests)).
 An exception are PRs open via the Github mergify integration (i.e., backported PRs). 
 
-* Once the team feels that `main` is _**feature complete**_, we create a `release/vY` branch (going forward known a release branch), 
+* Once the team feels that `main` is _**feature complete**_, we create a `release/vY` branch (going forward known as release branch), 
   where `Y` is the version number, with the minor and patch part substituted to `x` (eg: 11.x). 
   * Update the [GitHub mergify integration](./.mergify.yml) by adding instructions for automatically backporting commits from `main` to the `release/vY` using the `A:backport/vY` label.
   * **PRs targeting directly a release branch can be merged _only_ when exceptional circumstances arise**.
@@ -76,47 +77,72 @@ Unreleased changes are collected on `main` in `.changelog/unreleased/`.
 However, `.changelog/` on `main` contains also existing releases (e.g., `v10.0.0`).
 Thus, when creating a new release branch (e.g., `release/v11.x`), the following steps are necessary:
 
-- move to the release branch, e.g., `release/v11.x`
+- create a new release branch, e.g., `release/v11.x`
+    ```bash 
+    git checkout main
+    git pull 
+    git checkout -b release/v11.x
+    ```
 - delete all the sub-folders in `.changelog/` except `unreleased/` 
+    ```bash
+    find ./.changelog -mindepth 1 -maxdepth 1 -type d -not -name unreleased | xargs rm -r
+    ```
 - replace the content of `.changelog/epilogue.md` with the following text
-```md
-## Previous Versions
+    ```md
+    ## Previous Versions
 
-[CHANGELOG of previous versions](https://github.com/cosmos/gaia/blob/main/CHANGELOG.md)
-```
+    [CHANGELOG of previous versions](https://github.com/cosmos/gaia/blob/main/CHANGELOG.md)
+    ```
+- push the release branch upstream 
+    ```bash 
+    git push
+    ```
 
 #### Cutting a new release
 
 Before cutting a _**release candidate**_ (e.g., `v11.0.0-rc0`), the following steps are necessary:
 
 - move to the release branch, e.g., `release/v11.x`
+    ```bash 
+    git checkout release/v11.x
+    ```
 - move all entries in ".changelog/unreleased" to the release version, e.g., `v11.0.0`, i.e.,
-```bash
-unclog release v11.0.0
-```
-- update the CHANGELOG.md, i.e.,
-```bash
-unclog build > CHANGELOG.md
-```
+    ```bash
+    unclog release v11.0.0
+    ```
+- update `CHANGELOG.md`, i.e.,
+    ```bash
+    unclog build > CHANGELOG.md
+    ```
+- open a PR (from this new created branch) against the release branch, e.g., `release/v11.x`
 
-❗Once the **final release** is cut, the new changelog section must be added to main:
+Now you can cut the release candidate, e.g., v11.0.0-rc0 (follow the [Tagging Procedure](#tagging-procedure)).
+
+#### Update the changelog on main
+
+Once the **final release** is cut, the new changelog section must be added to main:
 
 - checkout a new branch from the `main` branch, i.e.,
+    ```bash
+    git checkout main
+    git pull 
+    git checkout -b <username>/backport_changelog
+    ```
 - bring the new changelog section from the release branch into this branch, e.g.,
-```bash
-git checkout release/v11.x .changelog/v11.0.0
-```
+    ```bash
+    git checkout release/v11.x .changelog/v11.0.0
+    ```
 - remove duplicate entries that are both in `.changelog/unreleased/` and the new changelog section, e.g., `.changelog/v11.0.0`
-- update the CHANGELOG.md
-```bash
-unclog build > CHANGELOG.md
-```
+- update `CHANGELOG.md`, i.e.,
+    ```bash
+    unclog build > CHANGELOG.md
+    ```
 - open a PR (from this new created branch) against `main`
-
+  
 ### Release Notes
 
 Release notes will be created using the `RELEASE_NOTES.md` from the release branch. 
-Once the automated releases process is completed, please add any missing information the the release notes using Github UI.
+Once the automated releases process is completed, please add any missing information the release notes using Github UI.
 
 With every release, the `goreleaser` tool will create a file with all the build artifact checksums and upload it alongside the artifacts.
 The file is called `SHA256SUMS-{{.version}}.txt` and contains the following:

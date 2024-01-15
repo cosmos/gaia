@@ -3,7 +3,9 @@ title: Ledger Nano Support
 order: 3
 ---
 
-Using a hardware wallet to store your keys greatly improves the security of your crypto assets. The Ledger device acts as an enclave of the seed and private keys, and the process of signing transaction takes place within it. No private information ever leaves the Ledger device. The following is a short tutorial on using the Cosmos Ledger app with the Gaia CLI or the [Keplr](https://www.keplr.app/) wallet extension.
+# Ledger Nano Support
+
+Using a hardware wallet to store your keys greatly improves the security of your crypto assets. The Ledger device acts as an enclave of the seed and private keys, and the process of signing transactions takes place within it. No private information ever leaves the Ledger device. The following is a short tutorial on using the Cosmos Ledger app with the Gaia CLI or the [Keplr](https://www.keplr.app/) wallet extension.
 
 At the core of a Ledger device there is a mnemonic seed phrase that is used to generate private keys. This phrase is generated when you initialize your Ledger. The mnemonic is compatible with Cosmos and can be used to seed new accounts.
 
@@ -62,7 +64,7 @@ You can also have a look at the [Ledger support page](https://support.ledger.com
 
 ## Gaia CLI + Ledger Nano
 
-**Note: You need to [install the Cosmos app](#install-the-cosmos-ledger-application) on your Ledger Nano before using following this section**
+**Note: You need to [install the Cosmos app](#install-the-cosmos-ledger-application) on your Ledger Nano before following this section**
 
 The tool used to generate addresses and transactions on the Cosmos Hub network is `gaiad`. Here is how to get started. If using a CLI tool is unfamiliar to you, scroll down and follow instructions for using the Keplr wallet instead.
 

@@ -8,7 +8,7 @@ Many proposals allow for long form text to be included, usually under the key `d
 
 Beware, however, that if you are using the CLI to create a proposal, and setting `description` using a flag, the text will be [escaped](https://en.wikipedia.org/wiki/Escape_sequences_in_C) which may have undesired effects. 
 
-Formating a proposal can be a trial-and-error process, which is why first submitting to the [testnet](submitting.md#submitting-your-proposal-to-the-testnet) is recommended. 
+Formatting a proposal can be a trial-and-error process, which is why first submitting to the [testnet](submitting.md#submitting-your-proposal-to-the-testnet) is recommended. 
 <!-- markdown-link-check-enable -->
 
 The examples shown below are of the text in a `json` file packaged into a `submit-proposal` transaction sent on-chain. More details about how to submit a proposal are in the [Submitting a Governance Proposal](./submitting.md) section, but for now just be aware that the examples are the contents of a file separate from the transaction. As a general rule, any flags specific to a proposal (e.g., Title, description, deposit, parameters, recipient) can be placed in a `json` file, while flags general to a transaction of any kind (e.g., chain-id, node-id, gas, fees) can remain in the CLI.
@@ -46,7 +46,7 @@ There are five (5) components:
 4. **Amount** - the amount of funding that the recipient will receive in micro-ATOMs (uatom)
 5. **Deposit** - the amount that will be contributed to the deposit (in micro-ATOMs "uatom") from the account submitting the proposal
 
-If the description says that a certain address will receive a certain number of ATOMs, it should also be programmed to do that, but it's possible that that's not the case (accidentally or otherwise). Check that the description aligns with teh 'recipient' address.
+If the description says that a certain address will receive a certain number of ATOMs, it should also be programmed to do that, but it's possible that that's not the case (accidentally or otherwise). Check that the description aligns with the 'recipient' address.
 
 ### Real example
 The `amount` is `1000000000uatom`. 1,000,000 micro-ATOM is equal to 1 ATOM, so `recipient` address `cosmos1xf2qwf6g6xvuttpf37xwrgp08qq984244952ze` will receive 1000 ATOM if this proposal is passed.

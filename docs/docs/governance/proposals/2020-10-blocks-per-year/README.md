@@ -14,7 +14,7 @@ wiki](https://github.com/cosmos/governance/blob/master/params-change/Mint.md).
 In this proposal we will be looking at adjusting the blocks per year parameter.
 
 Currently the variable named “blocks per year” is set at 4,855,015. This works
-out to one block every 6.5 second roughly, which as many Atom holders know, is
+out to one block every 6.5 seconds roughly, which as many Atom holders know, is
 not a very good approximation. This leads to the stated inflation rate of the
 cosmos hub to not match reality.
 
@@ -48,7 +48,7 @@ per year**.
 I will split this up into two sections, doing nothing & doing the proposed
 changes.
 
-1a) Doing nothing Risks / Benefits: There are no structural risks per say doing
+1a) Doing nothing Risks / Benefits: There are no structural risks per se doing
 nothing, but the stated inflation rate of the hub will continue to not match
 reality. There are very little benefits of doing nothing; besides the fact its
 working just fine now as long as you don’t care how close stated inflation is vs

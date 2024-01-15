@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
           go-version: "1.20"
           check-latest: true
@@ -53,7 +53,7 @@ jobs:
         if: env.GIT_DIFF
         run: |
           go test -v -coverprofile=profile.out -covermode=atomic -coverpkg=./... $(go list ./... | grep -v -e '/tests/e2e')
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: env.GIT_DIFF
         with:
           name: "${{ github.sha }}-coverage"
@@ -63,7 +63,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
           go-version: 1.20.x
       - uses: actions/checkout@v4
@@ -92,7 +92,7 @@ jobs:
             go.sum
             **/go.mod
             **/go.sum
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         if: env.GIT_DIFF
         with:
           name: "${{ github.sha }}-coverage"
@@ -108,7 +108,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
           go-version: 1.20.x
       - uses: technote-space/get-diff-action@v6.0.1
@@ -143,13 +143,13 @@ jobs:
             **/**.go
             go.mod
             go.sum
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
           go-version: 1.20.x
       # the old gaiad binary version is hardcoded, need to be updated each major release.
       - name: Install Old Gaiad
         run: |
-          git checkout v13.0.0
+          git checkout v14.0.0
           make build
           cp ./build/gaiad ./build/gaiadold
           go clean -modcache

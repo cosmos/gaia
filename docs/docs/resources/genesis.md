@@ -17,11 +17,11 @@ The genesis file is stored in `~/.gaia/config/genesis.toml`.
 
 A genesis file is a JSON file which defines the initial state of your blockchain. It can be seen as height `0` of your blockchain. The first block, at height `1`, will reference the genesis file as its parent.
 
-The state defined in the genesis file contains all the necessary information, like initial token allocation, genesis time, default parameters, and more. Let us break down these information.
+The state defined in the genesis file contains all the necessary information, like initial token allocation, genesis time, default parameters, and more. Let us break down this information.
 
 ## Genesis Time and Chain_id
 
-The `genesis_time` is defined at the top of the genesis file. It is a `UTC` timestamps which specifies when the blockchain is due to start. At this time, genesis validators are supposed to come online and start participating in the consensus process. The blockchain starts when more than 2/3rd of the genesis validators (weighted by voting power) are online.
+The `genesis_time` is defined at the top of the genesis file. It is a `UTC` timestamp that specifies when the blockchain is due to start. At this time, genesis validators are supposed to come online and start participating in the consensus process. The blockchain starts when more than 2/3rd of the genesis validators (weighted by voting power) are online.
 
 ```json
 "genesis_time": "2019-03-13T17:00:00.000000000Z",
@@ -68,7 +68,7 @@ The application state defines the initial state of the state-machine.
 
 ### Genesis Accounts
 
-In this section, initial allocation of tokens is defined. It is possible to add accounts manually by directly editing the genesis file, but it is also possible to use the following command:
+In this section, the initial allocation of tokens is defined. It is possible to add accounts manually by directly editing the genesis file, but it is also possible to use the following command:
 
 ```bash
 // Example: gaiad add-genesis-account cosmos1qs8tnw2t8l6amtzvdemnnsq9dzk0ag0z37gh3h 10000000uatom
@@ -111,8 +111,8 @@ Let us break down the parameters:
 - `original_vesting`: Vesting is natively supported by `gaia`. You can define an amount of token owned by the account that needs to be vested for a period of time before they can be transferred. Vested tokens can be delegated. Default value is `null`.
 - `delegated_free`: Amount of delegated tokens that can be transferred after they've been vested. Most of the time, will be `null` in genesis.
 - `delegated_vesting`: Amount of delegated tokens that are still vesting. Most of the time, will be `null` in genesis.
-- `start_time`: Block at which the vesting period starts. `0` most of the time in genesis.
-- `end_time`: Block at which the vesting period ends. `0` if no vesting for this account.
+- `start_time`: Timestamp at which the vesting period starts. `0` most of the time in genesis.
+- `end_time`: Timestamp at which the vesting period ends. `0` if no vesting for this account.
 
 ### Bank
 
@@ -170,7 +170,7 @@ Let us break down the parameters:
 
 ### Mint
 
-The `mint` module governs the logic of inflating the supply of token. The `mint` section in the genesis file looks like the follwing:
+The `mint` module governs the logic of inflating the supply of token. The `mint` section in the genesis file looks like the following:
 
 ```json
 "mint": {
@@ -204,7 +204,7 @@ Let us break down the parameters:
 
 ### Distribution
 
-The `distribution` module handles the logic of distribution block provisions and fees to validators and delegators. The `distribution` section in the genesis file looks like the follwing:
+The `distribution` module handles the logic of distribution block provisions and fees to validators and delegators. The `distribution` section in the genesis file looks like the following:
 
 ```json
     "distribution": {
@@ -293,7 +293,7 @@ Let us break down the parameters:
 
 ### Slashing
 
-The `slashing` module handles the logic to slash delegators if their validator misbehave. The `slashing` section in genesis looks as follows:
+The `slashing` module handles the logic to slash delegators if their validator misbehaves. The `slashing` section in genesis looks as follows:
 
 ```json
 "slashing": {

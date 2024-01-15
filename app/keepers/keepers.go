@@ -62,7 +62,7 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	"github.com/cosmos/gaia/v14/x/globalfee"
+	"github.com/cosmos/gaia/v15/x/globalfee"
 )
 
 type AppKeepers struct {
@@ -273,7 +273,6 @@ func NewAppKeeper(
 		appKeepers.StakingKeeper,
 		appKeepers.SlashingKeeper,
 		appKeepers.AccountKeeper,
-		appKeepers.EvidenceKeeper,
 		appKeepers.DistrKeeper,
 		appKeepers.BankKeeper,
 		authtypes.FeeCollectorName,

@@ -13,7 +13,7 @@ global fees `MinimumGasPricesParam` is established at the network level through 
    *Please note: in this context, "globalfee" or "Globalfee" are used to refer to the globalfee module, while "global fees" is referring to the `MinimumGasPricesParam` in the globalfee module's params.*
 
 2. `minimum-gas-prices` in `app.toml`\
-   By adjusting the `minimum-gas-prices` parameter in `app.toml`, nodes can enforce a fee that is higher than the globally defined `MinimumGasPricesParam`. However, it's importantht to note that this configuration solely determines whether transactions are eligible to enter this specific node's mempool.
+   By adjusting the `minimum-gas-prices` parameter in `app.toml`, nodes can enforce a fee that is higher than the globally defined `MinimumGasPricesParam`. However, it's important to note that this configuration solely determines whether transactions are eligible to enter this specific node's mempool.
 
     *Please note: in this context, `minimum-gas-prices` are used to refer to the local fee requirement that nodes can set in their `app.toml`, while `MinimumGasPricesParam` is a parameter in the globalfee module, which is the fee requirement at network level.*
 
@@ -34,7 +34,7 @@ Every transaction must pay per unit of gas, **at least**, in one of the denomina
 
 Requirements for the fees include:
 - fees have to be alphabetically sorted by denom
-- fees must have non-negative amount, with a valid and unique denom (i.e. no duplicate denoms are allowed)
+- fees must have a non-negative amount, with a valid and unique denom (i.e. no duplicate denoms are allowed)
 
 There are **two exceptions** from the global fees rules that allow zero fee transactions:
 
@@ -64,7 +64,7 @@ Before gaiad `v11.0.0`, `bypass-min-fee-msg-types` can be set by each node in `a
 
 - Nodes created using Gaiad `v7.0.2` - `v10.0.x` use `["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement","/ibc.applications.transfer.v1.MsgTransfer"]` as defaults. 
 - Nodes created using Gaiad `v11.0.x` or later use `["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.channel.v1.MsgAcknowledgement","/ibc.applications.transfer.v1.MsgTransfer", "/ibc.core.channel.v1.MsgTimeout", "/ibc.core.channel.v1.MsgTimeoutOnClose"]` as defaults. 
-- Node Nodes with `bypass-min-fee-msg-types = []` or missing this field in `app.toml` also use default bypass message types.
+- Nodes with `bypass-min-fee-msg-types = []` or missing this field in `app.toml` also use default bypass message types.
 - Nodes created using gaiad `v7.0.1` and `v7.0.0` do not have `bypass-min-fee-msg-types` configured in `config/app.toml` - they are also using same default values as in `v7.0.2`. The `bypass-min-fee-msg-types` config option can be added to `config/app.toml` before the `[telemetry]` field.
 
 An example of `bypass-min-fee-msg-types` in `app.toml`  **before** gaiad v11.0.0:
@@ -277,7 +277,7 @@ Note that the required amount of `uatom` in globalfee is overwritten by the amou
 Also, the `1stake` in minimum-gas-prices is ignored.
 
   - msgs=["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.client.v1.MsgUpdateClient"] with paidfee="", `pass`
-  - msgs=["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.client.v1.MsgUpdateClient"] with with paidfee="600000 * 0.05uatom", `pass`
+  - msgs=["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.client.v1.MsgUpdateClient"] with paidfee="600000 * 0.05uatom", `pass`
   - msgs= ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"] with paidfee="", `fail`
   - msgs=["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.client.v1.MsgUpdateClient", "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward] with paidfee="", `fail` (transaction contains non-bypass messages)
   - msgs=["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.client.v1.MsgUpdateClient", "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward] with paidfee="600000 * 0.2uatom", `pass`
@@ -300,4 +300,4 @@ bypass-min-fee-msg-types = [\
 
 ## References
 
-- [Gas and Fees in Cosmos SDK](https://docs.cosmos.network/main/learn/beginner/gas-fees)
+- [Gas and Fees in Cosmos SDK](https://docs.cosmos.network/v0.45/basics/gas-fees.html)

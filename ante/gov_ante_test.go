@@ -5,13 +5,14 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+
+	tmrand "github.com/cometbft/cometbft/libs/rand"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
 	"github.com/cosmos/gaia/v15/ante"
 	gaiaapp "github.com/cosmos/gaia/v15/app"
@@ -46,13 +47,13 @@ func (s *GovAnteHandlerTestSuite) SetupTest() {
 		Height:  1,
 	})
 
-	encodingConfig := gaiaapp.MakeTestEncodingConfig()
-	encodingConfig.Amino.RegisterConcrete(&testdata.TestMsg{}, "testdata.TestMsg", nil)
-	testdata.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	legacyAmino := app.LegacyAmino()
+	legacyAmino.Amino.RegisterConcrete(&testdata.TestMsg{}, "testdata.TestMsg", nil)
+	testdata.RegisterInterfaces(app.InterfaceRegistry())
 
 	s.app = app
 	s.ctx = ctx
-	s.clientCtx = client.Context{}.WithTxConfig(encodingConfig.TxConfig)
+	s.clientCtx = client.Context{}.WithTxConfig(app.GetTxConfig())
 }
 
 func TestGovSpamPreventionSuite(t *testing.T) {
@@ -69,20 +70,20 @@ func (s *GovAnteHandlerTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 		initialDeposit     sdk.Coins
 		expectPass         bool
 	}{
-		{"Passing proposal 1", "the purpose of this proposal is to pass", govtypes.ProposalTypeText, testAddr, minCoins, true},
-		{"Passing proposal 2", "the purpose of this proposal is to pass with more coins than minimum", govtypes.ProposalTypeText, testAddr, moreThanMinCoins, true},
-		{"Passing proposal 3", "the purpose of this proposal is to pass with multi denom coins", govtypes.ProposalTypeText, testAddr, moreThanMinMultiDenomCoins, true},
-		{"Failing proposal 1", "the purpose of this proposal is to fail", govtypes.ProposalTypeText, testAddr, insufficientCoins, false},
-		{"Failing proposal 2", "the purpose of this proposal is to fail with multi denom coins", govtypes.ProposalTypeText, testAddr, insufficientMultiDenomCoins, false},
+		{"Passing proposal 1", "the purpose of this proposal is to pass", govv1beta1.ProposalTypeText, testAddr, minCoins, true},
+		{"Passing proposal 2", "the purpose of this proposal is to pass with more coins than minimum", govv1beta1.ProposalTypeText, testAddr, moreThanMinCoins, true},
+		{"Passing proposal 3", "the purpose of this proposal is to pass with multi denom coins", govv1beta1.ProposalTypeText, testAddr, moreThanMinMultiDenomCoins, true},
+		{"Failing proposal 1", "the purpose of this proposal is to fail", govv1beta1.ProposalTypeText, testAddr, insufficientCoins, false},
+		{"Failing proposal 2", "the purpose of this proposal is to fail with multi denom coins", govv1beta1.ProposalTypeText, testAddr, insufficientMultiDenomCoins, false},
 	}
 
-	decorator := ante.NewGovPreventSpamDecorator(s.app.AppCodec(), &s.app.GovKeeper)
+	decorator := ante.NewGovPreventSpamDecorator(s.app.AppCodec(), s.app.GovKeeper)
 
 	for _, tc := range tests {
-		content := govtypes.ContentFromProposalType(tc.title, tc.description, tc.proposalType)
+		content, _ := govv1beta1.ContentFromProposalType(tc.title, tc.description, tc.proposalType)
 		s.Require().NotNil(content)
 
-		msg, err := govtypes.NewMsgSubmitProposal(
+		msg, err := govv1beta1.NewMsgSubmitProposal(
 			content,
 			tc.initialDeposit,
 			tc.proposerAddr,

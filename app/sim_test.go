@@ -8,68 +8,30 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/libs/log"
-	dbm "github.com/tendermint/tm-db"
+
+	dbm "github.com/cometbft/cometbft-db"
+	"github.com/cometbft/cometbft/libs/log"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/simapp"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/store"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	simulation2 "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 
 	gaia "github.com/cosmos/gaia/v15/app"
-	"github.com/cosmos/gaia/v15/app/helpers"
-	"github.com/cosmos/gaia/v15/app/params"
+	// "github.com/cosmos/gaia/v11/app/helpers"
+	// "github.com/cosmos/gaia/v11/app/params"
 	"github.com/cosmos/gaia/v15/app/sim"
 )
 
+// AppChainID hardcoded chainID for simulation
+const AppChainID = "gaia-app"
+
 func init() {
 	sim.GetSimulatorFlags()
-}
-
-// Profile with:
-// /usr/local/go/bin/go test -benchmem -run=^$ github.com/cosmos/cosmos-sdk/GaiaApp -bench ^BenchmarkFullAppSimulation$ -Commit=true -cpuprofile cpu.out
-func BenchmarkFullAppSimulation(b *testing.B) {
-	config, db, dir, logger, _, err := sim.SetupSimulation("goleveldb-app-sim", "Simulation")
-	if err != nil {
-		b.Fatalf("simulation setup failed: %s", err.Error())
-	}
-
-	defer func() {
-		db.Close()
-		err = os.RemoveAll(dir)
-		if err != nil {
-			b.Fatal(err)
-		}
-	}()
-
-	app := gaia.NewGaiaApp(logger, db, nil, true, map[int64]bool{}, gaia.DefaultNodeHome, simapp.FlagPeriodValue, params.MakeTestEncodingConfig(), simapp.EmptyAppOptions{}, interBlockCacheOpt())
-
-	// Run randomized simulation:w
-	_, simParams, simErr := simulation.SimulateFromSeed(
-		b,
-		os.Stdout,
-		app.BaseApp,
-		sim.AppStateFn(app.AppCodec(), app.SimulationManager()),
-		simulation2.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
-		sim.SimulationOperations(app, app.AppCodec(), config),
-		app.ModuleAccountAddrs(),
-		config,
-		app.AppCodec(),
-	)
-
-	// export state and simParams before the simulation error is checked
-	if err = sim.CheckExportSimulation(app, config, simParams); err != nil {
-		b.Fatal(err)
-	}
-
-	if simErr != nil {
-		b.Fatal(simErr)
-	}
-
-	if config.Commit {
-		sim.PrintStats(db)
-	}
 }
 
 // interBlockCacheOpt returns a BaseApp option function that sets the persistent
@@ -90,14 +52,27 @@ func TestAppStateDeterminism(t *testing.T) {
 	config.ExportParamsPath = ""
 	config.OnOperation = false
 	config.AllInvariants = false
-	config.ChainID = helpers.SimAppChainID
+	config.ChainID = AppChainID
 
 	numSeeds := 3
 	numTimesToRunPerSeed := 5
+
+	// We will be overriding the random seed and just run a single simulation on the provided seed value
+	if config.Seed != simcli.DefaultSeedValue {
+		numSeeds = 1
+	}
+
 	appHashList := make([]json.RawMessage, numTimesToRunPerSeed)
+	appOptions := make(simtestutil.AppOptionsMap, 0)
+	appOptions[flags.FlagHome] = gaia.DefaultNodeHome
+	appOptions[server.FlagInvCheckPeriod] = sim.FlagPeriodValue
 
 	for i := 0; i < numSeeds; i++ {
-		config.Seed = rand.Int63()
+		if config.Seed == simcli.DefaultSeedValue {
+			config.Seed = rand.Int63()
+		}
+
+		fmt.Println("config.Seed: ", config.Seed)
 
 		for j := 0; j < numTimesToRunPerSeed; j++ {
 			var logger log.Logger
@@ -108,21 +83,35 @@ func TestAppStateDeterminism(t *testing.T) {
 			}
 
 			db := dbm.NewMemDB()
-			app := gaia.NewGaiaApp(logger, db, nil, true, map[int64]bool{}, gaia.DefaultNodeHome, simapp.FlagPeriodValue, gaia.MakeTestEncodingConfig(), EmptyAppOptions{}, interBlockCacheOpt())
+			encConfig := gaia.RegisterEncodingConfig()
+			app := gaia.NewGaiaApp(
+				logger,
+				db,
+				nil,
+				true,
+				map[int64]bool{},
+				gaia.DefaultNodeHome,
+				encConfig,
+				appOptions,
+				interBlockCacheOpt(),
+				baseapp.SetChainID(AppChainID),
+			)
 
 			fmt.Printf(
 				"running non-determinism simulation; seed %d: %d/%d, attempt: %d/%d\n",
 				config.Seed, i+1, numSeeds, j+1, numTimesToRunPerSeed,
 			)
 
+			blockedAddresses := app.BlockedModuleAccountAddrs(app.ModuleAccountAddrs())
+
 			_, _, err := simulation.SimulateFromSeed(
 				t,
 				os.Stdout,
 				app.BaseApp,
-				sim.AppStateFn(app.AppCodec(), app.SimulationManager()),
+				simtestutil.AppStateFn(app.AppCodec(), app.SimulationManager(), gaia.NewDefaultGenesisState(encConfig)),
 				simulation2.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
-				sim.SimulationOperations(app, app.AppCodec(), config),
-				app.ModuleAccountAddrs(),
+				simtestutil.SimulationOperations(app, app.AppCodec(), config),
+				blockedAddresses,
 				config,
 				app.AppCodec(),
 			)

@@ -3,8 +3,8 @@ package e2e
 import (
 	"time"
 
-	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
-	ibcchanneltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
+	ibcclienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 
 	"cosmossdk.io/math"
 
@@ -14,13 +14,13 @@ import (
 
 func (s *IntegrationTestSuite) testBypassMinFeeWithdrawReward(endpoint string) {
 	// submit gov prop to change bypass-msg param to MsgWithdrawDelegatorReward
-	submitterAddr := s.chainA.validators[0].keyInfo.GetAddress()
+	submitterAddr, _ := s.chainA.validators[0].keyInfo.GetAddress()
 	submitter := submitterAddr.String()
 	proposalCounter++
 	s.govProposeNewBypassMsgs([]string{sdk.MsgTypeURL(&distributiontypes.MsgWithdrawDelegatorReward{})}, proposalCounter, submitter, standardFees.String())
 
 	paidFeeAmt := math.LegacyMustNewDecFromStr(minGasPrice).Mul(math.LegacyNewDec(gas)).String()
-	payee := s.chainA.validators[0].keyInfo.GetAddress()
+	payee, _ := s.chainA.validators[0].keyInfo.GetAddress()
 
 	testCases := []struct {
 		name                    string
@@ -107,7 +107,7 @@ func (s *IntegrationTestSuite) testIBCBypassMsg() {
 	// ["/ibc.core.channel.v1.MsgRecvPacket",
 	//  "/ibc.core.channel.v1.MsgAcknowledgement",
 	//  "/ibc.core.client.v1.MsgUpdateClient"]
-	submitterAddr := s.chainA.validators[0].keyInfo.GetAddress()
+	submitterAddr, _ := s.chainA.validators[0].keyInfo.GetAddress()
 	submitter := submitterAddr.String()
 	proposalCounter++
 	s.govProposeNewBypassMsgs([]string{

@@ -7,15 +7,16 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 )
 
-/*
-TestFeeGrant creates a test to ensure that Alice can grant the fees for bob.
-Test Benchmarks:
-1. Execute fee grant CLI command for Alice to pay bob fees
-2. Send a transaction from bob with Alice as a fee granter
-3. Check the bob balances if the fee was not deducted
-4. Try to send a transaction from bob with Alice as a fee granter again. Should fail
-because all amount granted was expended
-*/
+// /*
+// TestFeeGrant creates a test to ensure that Alice can grant the fees for bob.
+// Test Benchmarks:
+// 1. Execute fee grant CLI command for Alice to pay bob fees
+// 2. Send a transaction from bob with Alice as a fee granter
+// 3. Check the bob balances if the fee was not deducted
+// 4. Try to send a transaction from bob with Alice as a fee granter again. Should fail
+// because all amount granted was expended
+//
+//	*/
 func (s *IntegrationTestSuite) testFeeGrant() {
 	s.Run("test fee grant module", func() {
 		var (
@@ -24,9 +25,9 @@ func (s *IntegrationTestSuite) testFeeGrant() {
 			api    = fmt.Sprintf("http://%s", s.valResources[c.id][valIdx].GetHostPort("1317/tcp"))
 		)
 
-		alice := c.genesisAccounts[1].keyInfo.GetAddress()
-		bob := c.genesisAccounts[2].keyInfo.GetAddress()
-		charlie := c.genesisAccounts[3].keyInfo.GetAddress()
+		alice, _ := c.genesisAccounts[1].keyInfo.GetAddress()
+		bob, _ := c.genesisAccounts[2].keyInfo.GetAddress()
+		charlie, _ := c.genesisAccounts[3].keyInfo.GetAddress()
 
 		// add fee grant from alice to bob
 		s.execFeeGrant(
@@ -50,7 +51,7 @@ func (s *IntegrationTestSuite) testFeeGrant() {
 			tokenAmount.String(),
 			standardFees.String(),
 			false,
-			withKeyValue(flagFeeAccount, alice.String()),
+			withKeyValue(flagFeeGranter, alice.String()),
 		)
 
 		// check if the bob balance was subtracted without the fees
@@ -68,7 +69,7 @@ func (s *IntegrationTestSuite) testFeeGrant() {
 			tokenAmount.String(),
 			standardFees.String(),
 			true,
-			withKeyValue(flagFeeAccount, alice.String()),
+			withKeyValue(flagFeeGranter, alice.String()),
 		)
 
 		// add fee grant from alice to charlie
@@ -98,7 +99,7 @@ func (s *IntegrationTestSuite) testFeeGrant() {
 			tokenAmount.String(),
 			standardFees.String(),
 			true,
-			withKeyValue(flagFeeAccount, alice.String()),
+			withKeyValue(flagFeeGranter, alice.String()),
 		)
 	})
 }

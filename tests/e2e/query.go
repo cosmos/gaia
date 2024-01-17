@@ -13,7 +13,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"github.com/cosmos/gaia/v15/x/globalfee/types"
@@ -24,7 +24,6 @@ func queryGaiaTx(endpoint, txHash string) error {
 	if err != nil {
 		return fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
-
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
@@ -32,6 +31,7 @@ func queryGaiaTx(endpoint, txHash string) error {
 	}
 
 	var result map[string]interface{}
+
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return fmt.Errorf("failed to read response body: %w", err)
 	}
@@ -133,6 +133,19 @@ func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string
 	return res, nil
 }
 
+func queryUnbondingDelegation(endpoint string, validatorAddr string, delegatorAddr string) (stakingtypes.QueryUnbondingDelegationResponse, error) {
+	var res stakingtypes.QueryUnbondingDelegationResponse
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators/%s/delegations/%s/unbonding_delegation", endpoint, validatorAddr, delegatorAddr))
+	if err != nil {
+		return res, err
+	}
+
+	if err = cdc.UnmarshalJSON(body, &res); err != nil {
+		return res, err
+	}
+	return res, nil
+}
+
 func queryDelegatorWithdrawalAddress(endpoint string, delegatorAddr string) (disttypes.QueryDelegatorWithdrawAddressResponse, error) {
 	var res disttypes.QueryDelegatorWithdrawAddressResponse
 
@@ -162,8 +175,8 @@ func queryDelegatorTotalRewards(endpoint, delegatorAddr string) (disttypes.Query
 	return res, nil
 }
 
-func queryGovProposal(endpoint string, proposalID int) (govtypes.QueryProposalResponse, error) {
-	var govProposalResp govtypes.QueryProposalResponse
+func queryGovProposal(endpoint string, proposalID int) (govtypesv1beta1.QueryProposalResponse, error) {
+	var govProposalResp govtypesv1beta1.QueryProposalResponse
 
 	path := fmt.Sprintf("%s/cosmos/gov/v1beta1/proposals/%d", endpoint, proposalID)
 
@@ -218,19 +231,6 @@ func queryContinuousVestingAccount(endpoint, address string) (authvesting.Contin
 	if !ok {
 		return authvesting.ContinuousVestingAccount{},
 			fmt.Errorf("cannot cast %v to ContinuousVestingAccount", baseAcc)
-	}
-	return *acc, nil
-}
-
-func queryPermanentLockedAccount(endpoint, address string) (authvesting.PermanentLockedAccount, error) { //nolint:unused // this is called during e2e tests
-	baseAcc, err := queryAccount(endpoint, address)
-	if err != nil {
-		return authvesting.PermanentLockedAccount{}, err
-	}
-	acc, ok := baseAcc.(*authvesting.PermanentLockedAccount)
-	if !ok {
-		return authvesting.PermanentLockedAccount{},
-			fmt.Errorf("cannot cast %v to PermanentLockedAccount", baseAcc)
 	}
 	return *acc, nil
 }

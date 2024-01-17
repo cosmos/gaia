@@ -23,22 +23,24 @@ func CreateUpgradeHandler(
 			return vm, err
 		}
 
-		V15UpgradeHandler(ctx, keepers)
+		UpgradeCommissionRate(ctx, keepers)
 
 		ctx.Logger().Info("Upgrade v15 complete")
 		return vm, err
 	}
 }
 
-// V15UpgradeHandler sets the minimum commission rate staking parameter to 5%
+// UpgradeCommissionRate sets the minimum commission rate staking parameter to 5%
 // and updates the commission rate for all validators that have a commission rate less than 5%
-func V15UpgradeHandler(ctx sdk.Context, keepers *keepers.AppKeepers) {
+func UpgradeCommissionRate(ctx sdk.Context, keepers *keepers.AppKeepers) {
 	params := keepers.StakingKeeper.GetParams(ctx)
 	params.MinCommissionRate = sdk.NewDecWithPrec(5, 2)
-	keepers.StakingKeeper.SetParams(ctx, params)
+	err := keepers.StakingKeeper.SetParams(ctx, params)
+	if err != nil {
+		panic(err)
+	}
 
 	for _, val := range keepers.StakingKeeper.GetAllValidators(ctx) {
-		val := val
 		if val.Commission.CommissionRates.Rate.LT(sdk.NewDecWithPrec(5, 2)) {
 			// set the commmision rate to 5%
 			val.Commission.CommissionRates.Rate = sdk.NewDecWithPrec(5, 2)

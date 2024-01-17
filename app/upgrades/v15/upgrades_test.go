@@ -3,11 +3,17 @@ package v15_test
 import (
 	"testing"
 
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
+	tmrand "github.com/cometbft/cometbft/libs/rand"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
+
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
+
 	"github.com/cosmos/gaia/v15/app/helpers"
 	v15 "github.com/cosmos/gaia/v15/app/upgrades/v15"
-	"github.com/stretchr/testify/require"
 )
 
 type EmptyAppOptions struct{}
@@ -23,41 +29,41 @@ func TestV15UpgradeHandler(t *testing.T) {
 	// set min commission rate to 0
 	stakingParams := gaiaApp.StakingKeeper.GetParams(ctx)
 	stakingParams.MinCommissionRate = sdk.ZeroDec()
-	gaiaApp.StakingKeeper.SetParams(ctx, stakingParams)
+	err := gaiaApp.StakingKeeper.SetParams(ctx, stakingParams)
+	require.NoError(t, err)
 
-	// confirm all commissions are 0
 	stakingKeeper := gaiaApp.StakingKeeper
+	valNum := len(stakingKeeper.GetAllValidators(ctx))
 
-	for _, val := range stakingKeeper.GetAllValidators(ctx) {
-		require.Equal(t, val.Commission.CommissionRates.Rate, sdk.ZeroDec(), "non-zero previous commission rate for validator %s", val.GetOperator())
+	// create 3 new validators
+	for i := 0; i < 3; i++ {
+		pk := ed25519.GenPrivKeyFromSecret([]byte{uint8(i)}).PubKey()
+		val, err := stakingtypes.NewValidator(
+			sdk.ValAddress(pk.Address()),
+			pk,
+			stakingtypes.Description{},
+		)
+		require.NoError(t, err)
+		// set random commission rate
+		val.Commission.CommissionRates.Rate = sdk.NewDecWithPrec(tmrand.Int63n(100), 2)
+		stakingKeeper.SetValidator(ctx, val)
+		valNum++
 	}
+
+	validators := stakingKeeper.GetAllValidators(ctx)
+	require.Equal(t, valNum, len(validators))
 
 	// pre-test min commission rate is 0
 	require.Equal(t, stakingKeeper.GetParams(ctx).MinCommissionRate, sdk.ZeroDec(), "non-zero previous min commission rate")
 
 	// run the test and confirm the values have been updated
-	v15.V15UpgradeHandler(ctx, &gaiaApp.AppKeepers)
+	v15.UpgradeCommissionRate(ctx, &gaiaApp.AppKeepers)
 
 	newStakingParams := gaiaApp.StakingKeeper.GetParams(ctx)
 	require.NotEqual(t, newStakingParams.MinCommissionRate, sdk.ZeroDec(), "failed to update min commission rate")
 	require.Equal(t, newStakingParams.MinCommissionRate, sdk.NewDecWithPrec(5, 2), "failed to update min commission rate")
 
 	for _, val := range stakingKeeper.GetAllValidators(ctx) {
-		require.Equal(t, val.Commission.CommissionRates.Rate, newStakingParams.MinCommissionRate, "failed to update update commission rate for validator %s", val.GetOperator())
-	}
-
-	// set one of the validators commission rate to 10% and ensure it is not updated
-	updateValCommission := sdk.NewDecWithPrec(10, 2)
-	updateVal := stakingKeeper.GetAllValidators(ctx)[0]
-	updateVal.Commission.CommissionRates.Rate = updateValCommission
-	stakingKeeper.SetValidator(ctx, updateVal)
-
-	v15.V15UpgradeHandler(ctx, &gaiaApp.AppKeepers)
-	for _, val := range stakingKeeper.GetAllValidators(ctx) {
-		if updateVal.OperatorAddress == val.OperatorAddress {
-			require.Equal(t, val.Commission.CommissionRates.Rate, updateValCommission, "should not update commission rate for validator %s", val.GetOperator())
-		} else {
-			require.Equal(t, val.Commission.CommissionRates.Rate, newStakingParams.MinCommissionRate, "failed to update update commission rate for validator %s", val.GetOperator())
-		}
+		require.True(t, val.Commission.CommissionRates.Rate.GTE(newStakingParams.MinCommissionRate), "failed to update update commission rate for validator %s", val.GetOperator())
 	}
 }

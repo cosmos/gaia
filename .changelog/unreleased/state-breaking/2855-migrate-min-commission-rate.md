@@ -1,0 +1,1 @@
+- Migrate min commission rate migration to %5 (prop 826) ([\#2855](https://github.com/cosmos/gaia/pull/2855))

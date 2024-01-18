@@ -388,12 +388,8 @@ func NewAppKeeper(
 	ibcRouter := porttypes.NewRouter()
 
 	// Middleware Stacks
-
-	// TODO: Move inline
 	appKeepers.TransferModule = transfer.NewAppModule(appKeepers.TransferKeeper)
-	// TODO: Move inline
 	appKeepers.ICAModule = ica.NewAppModule(nil, &appKeepers.ICAHostKeeper)
-	// TODO: Move inline
 	appKeepers.PFMRouterModule = pfmrouter.NewAppModule(appKeepers.PFMRouterKeeper, appKeepers.GetSubspace(pfmroutertypes.ModuleName))
 
 	// create IBC module from bottom to top of stack
@@ -449,7 +445,6 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibcexported.ModuleName)
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
-
 	paramsKeeper.Subspace(pfmroutertypes.ModuleName).WithKeyTable(pfmroutertypes.ParamKeyTable())
 	paramsKeeper.Subspace(globalfee.ModuleName)
 	paramsKeeper.Subspace(providertypes.ModuleName)

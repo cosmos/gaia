@@ -4,30 +4,27 @@ go 1.21
 
 require (
 	cosmossdk.io/api v0.3.1
+	cosmossdk.io/errors v1.0.0
 	cosmossdk.io/math v1.2.0
 	cosmossdk.io/simapp v0.0.0-20230602123434-616841b9704d
 	cosmossdk.io/tools/rosetta v0.2.1
-	github.com/cometbft/cometbft v0.37.2
+	github.com/cometbft/cometbft v0.37.4
 	github.com/cometbft/cometbft-db v0.8.0
 	github.com/cosmos/cosmos-sdk v0.47.6
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/gogoproto v1.4.10
+	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7 v7.1.2
 	github.com/cosmos/ibc-go/v7 v7.3.1
-	github.com/cosmos/interchain-security/v3 v3.1.0
+	github.com/cosmos/interchain-security/v3 v3.3.0
+	github.com/google/gofuzz v1.2.0
 	github.com/gorilla/mux v1.8.0
+	github.com/ory/dockertest/v3 v3.10.0
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/cast v1.5.1
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.16.0
 	github.com/stretchr/testify v1.8.4
-)
-
-require (
-	cosmossdk.io/errors v1.0.0
-	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7 v7.1.2
-	github.com/google/gofuzz v1.2.0
-	github.com/ory/dockertest/v3 v3.10.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20231002182017-d307bd883b97
 )
 
@@ -52,7 +49,7 @@ require (
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
 	github.com/99designs/keyring v1.2.1 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
-	github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d // indirect
+	github.com/ChainSafe/go-schnorrkel v1.0.0 // indirect
 	github.com/Microsoft/go-winio v0.6.0 // indirect
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect
 	github.com/armon/go-metrics v0.4.1 // indirect
@@ -193,6 +190,7 @@ require (
 	golang.org/x/mod v0.11.0 // indirect
 	golang.org/x/net v0.17.0 // indirect
 	golang.org/x/oauth2 v0.11.0 // indirect
+	golang.org/x/sync v0.3.0 // indirect
 	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/term v0.13.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
@@ -214,14 +212,12 @@ replace (
 	// Use cosmos keyring
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
-	// Use special SDK release with support for both ICS and LSM
-	github.com/cosmos/cosmos-sdk => github.com/informalsystems/cosmos-sdk v0.46.0-alpha2.0.20231213145240-817c772e6b80
-
-	// Use special ICS release with support for LSM
-	github.com/cosmos/interchain-security/v3 => github.com/cosmos/interchain-security/v3 v3.3.0-rc0.0.20231213145932-9a4673505d2f
+	// Use special SDK v0.47.x release with support for both ICS and LSM
+	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.47.7-0.20240117142932-85b42a599468
 
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
+
 	// TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409
 	github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.8.1
 

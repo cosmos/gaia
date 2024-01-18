@@ -95,7 +95,6 @@ include contrib/devtools/Makefile
 ###                              Build                                      ###
 ###############################################################################
 
-IS_VERSION_SUPPORTED = $(shell echo "$(GO_SYSTEM_VERSION) >= $(REQUIRE_MINIMUM_GO_VERSION)" | bc -l)
 check_version:
 ifneq ($(GO_SYSTEM_VERSION), $(REQUIRE_GO_VERSION))
 	@echo "ERROR: Go version 1.21 is required for $(VERSION) of Gaia."

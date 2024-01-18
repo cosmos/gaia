@@ -24,10 +24,13 @@ import (
 
 // CreateUpgradeHandler returns a upgrade handler for Gaia v15
 // which executes the following migrations:
-// * set the MinCommissionRate param of the staking module to %5
-// and update all validators accordingly (prop 826 https://www.mintscan.io/cosmos/proposals/826)
-// * update the slashing module SigningInfos for which the consensus address is empty
-// * send the vesting tokens of a specific account to the community pool
+//   - adhere to prop 826 which sets the minimum commission rate to 5% for all validators,
+//     see https://www.mintscan.io/cosmos/proposals/826
+//   - update the slashing module SigningInfos for which the consensus address is empty,
+//     see https://github.com/cosmos/gaia/issues/1734.
+//   - adhere to signal prop 860 which claws back vesting funds
+// 	   see https://www.mintscan.io/cosmos/proposals/860
+
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
@@ -43,7 +46,7 @@ func CreateUpgradeHandler(
 
 		UpgradeMinCommissionRate(ctx, *keepers.StakingKeeper)
 		UpgradeSigningInfos(ctx, keepers.SlashingKeeper)
-		UpgradeVestingAccount(ctx, sdk.MustAccAddressFromBech32("cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498"), keepers)
+		ClawbackVestingFunds(ctx, sdk.MustAccAddressFromBech32("cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498"), keepers)
 
 		ctx.Logger().Info("Upgrade v15 complete")
 		return vm, err
@@ -74,8 +77,8 @@ func UpgradeMinCommissionRate(ctx sdk.Context, sk stakingkeeper.Keeper) {
 	}
 }
 
-// UpgradeSigningInfos updates the signing infos of validators for which the consensus address
-// is missing, see https://github.com/cosmos/gaia/issues/1734.
+// UpgradeSigningInfos updates the signing infos of validators for which
+// the consensus address is missing
 func UpgradeSigningInfos(ctx sdk.Context, sk slashingkeeper.Keeper) {
 	signingInfos := []slashingtypes.ValidatorSigningInfo{}
 
@@ -99,7 +102,9 @@ func UpgradeSigningInfos(ctx sdk.Context, sk slashingkeeper.Keeper) {
 	}
 }
 
-func UpgradeVestingAccount(ctx sdk.Context, address sdk.AccAddress, keepers *keepers.AppKeepers) {
+// ClawbackVestingFunds transfers the unvested tokens from the given vesting account
+// to the community pool
+func ClawbackVestingFunds(ctx sdk.Context, address sdk.AccAddress, keepers *keepers.AppKeepers) {
 	ak := keepers.AccountKeeper
 	bk := keepers.BankKeeper
 	dk := keepers.DistrKeeper
@@ -150,7 +155,7 @@ func UpgradeVestingAccount(ctx sdk.Context, address sdk.AccAddress, keepers *kee
 	}
 }
 
-// forceUnbondAllDelegations unbonds all the delegations from the  given account address
+// forceUnbondAllDelegations unbonds all the delegations from the  given account address,
 // without unbonding period
 func forceUnbondAllDelegations(
 	sk stakingkeeper.Keeper,
@@ -197,7 +202,7 @@ func forceUnbondAllDelegations(
 
 // forceFundCommunityPool sends the given coin from the sender account to the community pool
 // even if the coin is locked.
-// Note that it mostly follows the logic of the FundCommunityPool method in
+// Note that it partially follows the logic of the FundCommunityPool method in
 // https://github.com/cosmos/cosmos-sdk/blob/release%2Fv0.47.x/x/distribution/keeper/keeper.go#L155
 func forceFundCommunityPool(
 	ak accountkeeper.AccountKeeper,
@@ -242,7 +247,7 @@ func forceFundCommunityPool(
 }
 
 // setBalance sets the coin balance for an account by address.
-// Note it follow the same logic of the sendBalance method in
+// Note it follows the same logic of the sendBalance method in
 // https://github.com/cosmos/cosmos-sdk/blob/release%2Fv0.47.x/x/bank/keeper/send.go#L337
 func setBalance(
 	ctx sdk.Context,

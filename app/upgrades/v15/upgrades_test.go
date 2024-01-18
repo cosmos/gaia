@@ -125,7 +125,7 @@ func TestUpgradeSigningInfos(t *testing.T) {
 	})
 }
 
-func TestUpgradeVestingAccount(t *testing.T) {
+func TestClawbackVestingFunds(t *testing.T) {
 	gaiaApp := helpers.Setup(t)
 
 	now := tmtime.Now()
@@ -206,7 +206,7 @@ func TestUpgradeVestingAccount(t *testing.T) {
 	require.True(t, currVestedCoins.IsEqual(origCoins.QuoInt(math.NewInt(2))))
 
 	// execute migration script
-	v15.UpgradeVestingAccount(ctx, addr, &gaiaApp.AppKeepers)
+	v15.ClawbackVestingFunds(ctx, addr, &gaiaApp.AppKeepers)
 
 	// check that the validator's delegation is removed and that
 	// the total tokens decreased

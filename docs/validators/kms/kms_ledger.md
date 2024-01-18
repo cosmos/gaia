@@ -42,7 +42,7 @@ chain_ids = ["gaia-11001"]
 
 - Edit `addr` to point to your `gaiad` instance.
 - Adjust `chain-id` to match your `.gaia/config/config.toml` settings.
-- `provider.ledgertm` has not additional parameters at the moment, however, it is important that you keep that header to enable the feature.
+- `provider.ledgertm` has no additional parameters at the moment, however, it is important that you keep that header to enable the feature.
 
 *Plug your Ledger device and open the Tendermint validator app.*
 

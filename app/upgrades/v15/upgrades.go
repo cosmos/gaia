@@ -13,8 +13,8 @@ import (
 
 // CreateUpgradeHandler returns a upgrade handler for Gaia v15
 // which executes the following migrations:
-// * set the MinCommissionRate param of the staking module to %5
-// * update the slashing module SigningInfos records with empty consensus address
+// * set the MinCommissionRate param of the staking module to %5 and update all validators accordingly
+// * update the slashing module SigningInfos for which the consensus address is empty
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
@@ -28,28 +28,27 @@ func CreateUpgradeHandler(
 			return vm, err
 		}
 
-		MigrateMinCommissionRate(ctx, *keepers.StakingKeeper)
-		MigrateSigningInfos(ctx, keepers.SlashingKeeper)
+		UpgradeCommissionRate(ctx, *keepers.StakingKeeper)
+		UpgradeSigningInfos(ctx, keepers.SlashingKeeper)
 
 		ctx.Logger().Info("Upgrade v15 complete")
 		return vm, err
 	}
 }
 
-// MigrateMinCommissionRate adheres to prop 826 https://www.mintscan.io/cosmos/proposals/826
-// by setting the minimum commission rate staking parameter to 5%
-// and updating the commission rate for all validators that have a commission rate less than 5%
-func MigrateMinCommissionRate(ctx sdk.Context, sk stakingkeeper.Keeper) {
+// UpgradeCommissionRate sets the minimum commission rate staking parameter to 5%
+// and updates the commission rate for all validators that have a commission rate less than 5%
+func UpgradeCommissionRate(ctx sdk.Context, sk stakingkeeper.Keeper) {
 	params := sk.GetParams(ctx)
 	params.MinCommissionRate = sdk.NewDecWithPrec(5, 2)
-	if err := sk.SetParams(ctx, params); err != nil {
+	err := sk.SetParams(ctx, params)
+	if err != nil {
 		panic(err)
 	}
 
 	for _, val := range sk.GetAllValidators(ctx) {
-		val := val
 		if val.Commission.CommissionRates.Rate.LT(sdk.NewDecWithPrec(5, 2)) {
-			// set the commmision rate to 5%
+			// set the commission rate to 5%
 			val.Commission.CommissionRates.Rate = sdk.NewDecWithPrec(5, 2)
 			// set the max rate to 5% if it is less than 5%
 			if val.Commission.CommissionRates.MaxRate.LT(sdk.NewDecWithPrec(5, 2)) {
@@ -61,12 +60,13 @@ func MigrateMinCommissionRate(ctx sdk.Context, sk stakingkeeper.Keeper) {
 	}
 }
 
-// MigrateSigningInfos updates validators signing infos for which the consensus address
-// is missing using their store key, which contains the consensus address of the validator,
-// see https://github.com/cosmos/gaia/issues/1734.
-func MigrateSigningInfos(ctx sdk.Context, sk slashingkeeper.Keeper) {
+// UpgradeSigningInfos updates the signing infos of validators for which the consensus address
+// is missing, see https://github.com/cosmos/gaia/issues/1734.
+func UpgradeSigningInfos(ctx sdk.Context, sk slashingkeeper.Keeper) {
 	signingInfos := []slashingtypes.ValidatorSigningInfo{}
 
+	// update consensus address in signing info
+	// using the store key of validators
 	sk.IterateValidatorSigningInfos(ctx, func(address sdk.ConsAddress, info slashingtypes.ValidatorSigningInfo) (stop bool) {
 		if info.Address == "" {
 			info.Address = address.String()

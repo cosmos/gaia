@@ -3,24 +3,18 @@ package v15_test
 import (
 	"testing"
 
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/stretchr/testify/require"
 
 	tmrand "github.com/cometbft/cometbft/libs/rand"
-	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
-
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/require"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"github.com/cosmos/gaia/v15/app/helpers"
 	v15 "github.com/cosmos/gaia/v15/app/upgrades/v15"
 )
-
-type EmptyAppOptions struct{}
-
-func (ao EmptyAppOptions) Get(_ string) interface{} {
-	return nil
-}
 
 func TestV15UpgradeHandler(t *testing.T) {
 	gaiaApp := helpers.Setup(t)

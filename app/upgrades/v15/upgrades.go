@@ -42,7 +42,7 @@ func UpgradeCommissionRate(ctx sdk.Context, keepers *keepers.AppKeepers) {
 
 	for _, val := range keepers.StakingKeeper.GetAllValidators(ctx) {
 		if val.Commission.CommissionRates.Rate.LT(sdk.NewDecWithPrec(5, 2)) {
-			// set the commmision rate to 5%
+			// set the commission rate to 5%
 			val.Commission.CommissionRates.Rate = sdk.NewDecWithPrec(5, 2)
 			// set the max rate to 5% if it is less than 5%
 			if val.Commission.CommissionRates.MaxRate.LT(sdk.NewDecWithPrec(5, 2)) {

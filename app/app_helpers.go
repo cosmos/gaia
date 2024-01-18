@@ -1,6 +1,5 @@
 package gaia
 
-// TODO: Enable with ICS
 import (
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 	ibctestingtypes "github.com/cosmos/ibc-go/v7/testing/types"

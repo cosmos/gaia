@@ -20,7 +20,7 @@ func (s *IntegrationTestSuite) govProposeNewGlobalfee(newGlobalfee sdk.DecCoins,
 	// gov proposing new fees
 	s.T().Logf("Proposal number: %d", proposalCounter)
 	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change global fee to %s", newGlobalfee.String())
-	s.runGovProcess(chainAAPIEndpoint, submitter, proposalCounter, paramtypes.ProposalTypeChange, submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
+	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, proposalCounter, paramtypes.ProposalTypeChange, submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
 
 	// query the proposal status and new fee
 	s.Require().Eventually(
@@ -57,7 +57,7 @@ func (s *IntegrationTestSuite) govProposeNewBypassMsgs(newBypassMsgs []string, p
 	// gov proposing new fees
 	s.T().Logf("Proposal number: %d", proposalCounter)
 	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change bypass min fee msg types to %s", newBypassMsgs)
-	s.runGovProcess(chainAAPIEndpoint, submitter, proposalCounter, paramtypes.ProposalTypeChange, submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
+	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, proposalCounter, paramtypes.ProposalTypeChange, submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
 
 	// query the proposal status and new fee
 	s.Require().Eventually(
@@ -95,7 +95,7 @@ func (s *IntegrationTestSuite) govProposeNewMaxTotalBypassMinFeeMsgGasUsage(newG
 	// gov proposing new max gas usage for bypass msgs
 	s.T().Logf("Proposal number: %d", proposalCounter)
 	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change maxTotalBypassMinFeeMsgGasUsage to %d", newGas)
-	s.runGovProcess(chainAAPIEndpoint, submitter, proposalCounter, paramtypes.ProposalTypeChange, submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
+	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, proposalCounter, paramtypes.ProposalTypeChange, submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
 
 	// query the proposal status and max gas usage for bypass msgs
 	s.Require().Eventually(

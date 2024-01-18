@@ -113,8 +113,8 @@ Let us break down the parameters:
 - `original_vesting`: Vesting is natively supported by `gaia`. You can define an amount of token owned by the account that needs to be vested for a period of time before they can be transferred. Vested tokens can be delegated. Default value is `null`.
 - `delegated_free`: Amount of delegated tokens that can be transferred after they've been vested. Most of the time, will be `null` in genesis.
 - `delegated_vesting`: Amount of delegated tokens that are still vesting. Most of the time, will be `null` in genesis.
-- `start_time`: Block at which the vesting period starts. `0` most of the time in genesis.
-- `end_time`: Block at which the vesting period ends. `0` if no vesting for this account.
+- `start_time`: Timestamp at which the vesting period starts. `0` most of the time in genesis.
+- `end_time`: Timestamp at which the vesting period ends. `0` if no vesting for this account.
 
 ### Bank
 

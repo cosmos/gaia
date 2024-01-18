@@ -102,7 +102,7 @@ func (s *IntegrationTestSuite) AddRemoveConsumerChain() {
 	submitGovFlags := []string{"consumer-addition", configFile(proposalAddConsumerChainFilename)}
 	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
 	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes"}
-	s.runGovProcess(chainAAPIEndpoint, sender, proposalCounter, providertypes.ProposalTypeConsumerAddition, submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
+	s.submitLegacyGovProposal(chainAAPIEndpoint, sender, proposalCounter, providertypes.ProposalTypeConsumerAddition, submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
 
 	// Query and assert consumer has been added
 	s.execQueryConsumerChains(s.chainA, 0, gaiaHomePath, validateConsumerAddition, consumerChainID)
@@ -112,7 +112,7 @@ func (s *IntegrationTestSuite) AddRemoveConsumerChain() {
 	submitGovFlags = []string{"consumer-removal", configFile(proposalRemoveConsumerChainFilename)}
 	depositGovFlags = []string{strconv.Itoa(proposalCounter), depositAmount.String()}
 	voteGovFlags = []string{strconv.Itoa(proposalCounter), "yes"}
-	s.runGovProcess(chainAAPIEndpoint, sender, proposalCounter, providertypes.ProposalTypeConsumerRemoval, submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
+	s.submitLegacyGovProposal(chainAAPIEndpoint, sender, proposalCounter, providertypes.ProposalTypeConsumerRemoval, submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
 	// Query and assert consumer has been removed
 	s.execQueryConsumerChains(s.chainA, 0, gaiaHomePath, validateConsumerRemoval, consumerChainID)
 }

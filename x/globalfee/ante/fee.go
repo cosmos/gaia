@@ -61,9 +61,6 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 		return ctx, err
 	}
 
-	ctx.Logger().Info(fmt.Sprintf("FeeCoins: %v", feeTx.GetFee()))
-	ctx.Logger().Info(fmt.Sprintf("FeeRequired: %v", feeRequired))
-
 	// reject the transaction early if the feeCoins have more denoms than the fee requirement
 
 	// feeRequired cannot be empty
@@ -107,11 +104,6 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	doesNotExceedMaxGasUsage := gas <= maxTotalBypassMinFeeMsgGasUsage
 	allBypassMsgs := mfd.ContainsOnlyBypassMinFeeMsgs(ctx, msgs)
 	allowedToBypassMinFee := allBypassMsgs && doesNotExceedMaxGasUsage
-	ctx.Logger().Info(fmt.Sprintf("gas: %v", gas))
-	ctx.Logger().Info(fmt.Sprintf("allBypassMsgs: %v", allBypassMsgs))
-	ctx.Logger().Info(fmt.Sprintf("maxTotalBypassMinFeeMsgGasUsage: %v", maxTotalBypassMinFeeMsgGasUsage))
-	ctx.Logger().Info(fmt.Sprintf("doesNotExceedMaxGasUsage: %v", doesNotExceedMaxGasUsage))
-	ctx.Logger().Info(fmt.Sprintf("allowedToBypassMinFee: %v", allowedToBypassMinFee))
 
 	if allowedToBypassMinFee {
 		ctx.Logger().Info("Pass allowedToBypassMinFee check")

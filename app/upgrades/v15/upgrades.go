@@ -16,7 +16,6 @@ import (
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
-	"github.com/cosmos/cosmos-sdk/x/staking/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
@@ -26,7 +25,8 @@ import (
 // CreateUpgradeHandler returns a upgrade handler for Gaia v15
 // which executes the following migrations:
 // * set the MinCommissionRate param of the staking module to %5
-// * update the slashing module SigningInfos records with empty consensus address
+// and update all validators accordingly (prop 826 https://www.mintscan.io/cosmos/proposals/826)
+// * update the slashing module SigningInfos for which the consensus address is empty
 // * send the vesting tokens of a specific account to the community pool
 func CreateUpgradeHandler(
 	mm *module.Manager,
@@ -41,29 +41,28 @@ func CreateUpgradeHandler(
 			return vm, err
 		}
 
-		MigrateMinCommissionRate(ctx, *keepers.StakingKeeper)
-		MigrateSigningInfos(ctx, keepers.SlashingKeeper)
-		MigrateVestingAccount(ctx, sdk.MustAccAddressFromBech32("cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498"), keepers)
+		UpgradeMinCommissionRate(ctx, *keepers.StakingKeeper)
+		UpgradeSigningInfos(ctx, keepers.SlashingKeeper)
+		UpgradeVestingAccount(ctx, sdk.MustAccAddressFromBech32("cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498"), keepers)
 
 		ctx.Logger().Info("Upgrade v15 complete")
 		return vm, err
 	}
 }
 
-// MigrateMinCommissionRate adheres to prop 826 https://www.mintscan.io/cosmos/proposals/826
-// by setting the minimum commission rate staking parameter to 5%
-// and updating the commission rate for all validators that have a commission rate less than 5%
-func MigrateMinCommissionRate(ctx sdk.Context, sk stakingkeeper.Keeper) {
+// UpgradeMinCommissionRate sets the minimum commission rate staking parameter to 5%
+// and updates the commission rate for all validators that have a commission rate less than 5%
+func UpgradeMinCommissionRate(ctx sdk.Context, sk stakingkeeper.Keeper) {
 	params := sk.GetParams(ctx)
 	params.MinCommissionRate = sdk.NewDecWithPrec(5, 2)
-	if err := sk.SetParams(ctx, params); err != nil {
+	err := sk.SetParams(ctx, params)
+	if err != nil {
 		panic(err)
 	}
 
 	for _, val := range sk.GetAllValidators(ctx) {
-		val := val
 		if val.Commission.CommissionRates.Rate.LT(sdk.NewDecWithPrec(5, 2)) {
-			// set the commmision rate to 5%
+			// set the commission rate to 5%
 			val.Commission.CommissionRates.Rate = sdk.NewDecWithPrec(5, 2)
 			// set the max rate to 5% if it is less than 5%
 			if val.Commission.CommissionRates.MaxRate.LT(sdk.NewDecWithPrec(5, 2)) {
@@ -75,12 +74,13 @@ func MigrateMinCommissionRate(ctx sdk.Context, sk stakingkeeper.Keeper) {
 	}
 }
 
-// MigrateSigningInfos updates validators signing infos for which the consensus address
-// is missing using their store key, which contains the consensus address of the validator,
-// see https://github.com/cosmos/gaia/issues/1734.
-func MigrateSigningInfos(ctx sdk.Context, sk slashingkeeper.Keeper) {
+// UpgradeSigningInfos updates the signing infos of validators for which the consensus address
+// is missing, see https://github.com/cosmos/gaia/issues/1734.
+func UpgradeSigningInfos(ctx sdk.Context, sk slashingkeeper.Keeper) {
 	signingInfos := []slashingtypes.ValidatorSigningInfo{}
 
+	// update consensus address in signing info
+	// using the store key of validators
 	sk.IterateValidatorSigningInfos(ctx, func(address sdk.ConsAddress, info slashingtypes.ValidatorSigningInfo) (stop bool) {
 		if info.Address == "" {
 			info.Address = address.String()
@@ -99,7 +99,7 @@ func MigrateSigningInfos(ctx sdk.Context, sk slashingkeeper.Keeper) {
 	}
 }
 
-func MigrateVestingAccount(ctx sdk.Context, address sdk.AccAddress, keepers *keepers.AppKeepers) {
+func UpgradeVestingAccount(ctx sdk.Context, address sdk.AccAddress, keepers *keepers.AppKeepers) {
 	ak := keepers.AccountKeeper
 	bk := keepers.BankKeeper
 	dk := keepers.DistrKeeper
@@ -177,7 +177,7 @@ func forceUnbondAllDelegations(
 		if validator.IsBonded() {
 			// doing stakingKeeper.bondedTokensToNotBonded
 			coins := sdk.NewCoins(sdk.NewCoin(sk.BondDenom(ctx), returnAmount))
-			err = bk.SendCoinsFromModuleToModule(ctx, types.BondedPoolName, types.NotBondedPoolName, coins)
+			err = bk.SendCoinsFromModuleToModule(ctx, stakingtypes.BondedPoolName, stakingtypes.NotBondedPoolName, coins)
 			if err != nil {
 				return err
 			}
@@ -186,7 +186,7 @@ func forceUnbondAllDelegations(
 		bondDenom := sk.GetParams(ctx).BondDenom
 		amt := sdk.NewCoin(bondDenom, returnAmount)
 
-		err = bk.UndelegateCoinsFromModuleToAccount(ctx, types.NotBondedPoolName, delegator, sdk.NewCoins(amt))
+		err = bk.UndelegateCoinsFromModuleToAccount(ctx, stakingtypes.NotBondedPoolName, delegator, sdk.NewCoins(amt))
 		if err != nil {
 			return err
 		}

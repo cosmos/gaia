@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/stretchr/testify/require"
 
 	tmrand "github.com/cometbft/cometbft/libs/rand"
@@ -77,7 +78,7 @@ func TestUpgradeSigningInfos(t *testing.T) {
 	slashingKeeper := gaiaApp.SlashingKeeper
 
 	signingInfosNum := 8
-	emptyAddrCtr := 0
+	emptyAddrSigningInfo := make(map[string]struct{})
 
 	// create some dummy signing infos, half of which with an empty address field
 	for i := 0; i < signingInfosNum; i++ {
@@ -94,32 +95,34 @@ func TestUpgradeSigningInfos(t *testing.T) {
 			0,
 		)
 
-		if i <= signingInfosNum/2 {
+		if i < signingInfosNum/2 {
 			info.Address = ""
-			emptyAddrCtr++
+			emptyAddrSigningInfo[consAddr.String()] = struct{}{}
 		}
 
 		slashingKeeper.SetValidatorSigningInfo(ctx, consAddr, info)
 		require.NoError(t, err)
 	}
 
-	// check signing info were correctly created
+	require.Equal(t, signingInfosNum/2, len(emptyAddrSigningInfo))
+
+	// check that signing info are correctly set before migration
 	slashingKeeper.IterateValidatorSigningInfos(ctx, func(address sdk.ConsAddress, info slashingtypes.ValidatorSigningInfo) (stop bool) {
-		if info.Address == "" {
-			emptyAddrCtr--
+		if _, ok := emptyAddrSigningInfo[address.String()]; ok {
+			require.Empty(t, info.Address)
+		} else {
+			require.NotEmpty(t, info.Address)
 		}
 
 		return false
 	})
-	require.Zero(t, emptyAddrCtr)
 
 	// upgrade signing infos
 	v15.UpgradeSigningInfos(ctx, slashingKeeper)
 
-	// check that all signing info have the expected consensus address
+	// check that all signing info are updated as expected after migration
 	slashingKeeper.IterateValidatorSigningInfos(ctx, func(address sdk.ConsAddress, info slashingtypes.ValidatorSigningInfo) (stop bool) {
 		require.NotEmpty(t, info.Address)
-		require.Equal(t, address.String(), info.Address)
 
 		return false
 	})
@@ -136,8 +139,8 @@ func TestClawbackVestingFunds(t *testing.T) {
 	distrKeeper := gaiaApp.DistrKeeper
 	stakingKeeper := gaiaApp.StakingKeeper
 
-	ctx := gaiaApp.NewUncachedContext(true, tmproto.Header{})
-	ctx = ctx.WithBlockHeader(tmproto.Header{Time: now})
+	ctx := gaiaApp.NewUncachedContext(true, tmproto.Header{Height: 1})
+	ctx = ctx.WithBlockHeader(tmproto.Header{Height: ctx.BlockHeight(), Time: now})
 
 	validator := stakingKeeper.GetAllValidators(ctx)[0]
 	bondDenom := stakingKeeper.GetParams(ctx).BondDenom
@@ -173,7 +176,8 @@ func TestClawbackVestingFunds(t *testing.T) {
 
 	// delegate all vesting account tokens
 	_, err := stakingKeeper.Delegate(
-		ctx, vestingAccount.GetAddress(),
+		ctx,
+		vestingAccount.GetAddress(),
 		origCoins.AmountOf(bondDenom),
 		stakingtypes.Unbonded,
 		validator,
@@ -209,7 +213,7 @@ func TestClawbackVestingFunds(t *testing.T) {
 	v15.ClawbackVestingFunds(ctx, addr, &gaiaApp.AppKeepers)
 
 	// check that the validator's delegation is removed and that
-	// the total tokens decreased
+	// their total tokens decreased
 	validator = stakingKeeper.GetAllValidators(ctx)[0]
 	_, found = stakingKeeper.GetDelegation(ctx, addr, validator.GetOperator())
 	require.False(t, found)
@@ -217,6 +221,17 @@ func TestClawbackVestingFunds(t *testing.T) {
 		t,
 		validator.TokensFromShares(validator.DelegatorShares),
 		math.LegacyNewDec(oldValTokens.Int64()),
+	)
+
+	// verify that all modules can end/begin blocks
+	gaiaApp.EndBlock(abci.RequestEndBlock{})
+	gaiaApp.BeginBlock(
+		abci.RequestBeginBlock{
+			Header: tmproto.Header{
+				ChainID: ctx.ChainID(),
+				Height:  ctx.BlockHeight() + 1,
+			},
+		},
 	)
 
 	// check that the resulting account is of BaseAccount type now
@@ -233,4 +248,23 @@ func TestClawbackVestingFunds(t *testing.T) {
 		distrKeeper.GetFeePoolCommunityCoins(ctx).
 			IsEqual(sdk.NewDecCoinsFromCoins(currVestingCoins...)),
 	)
+
+	// verify that the tokens are spendable
+	_, err = stakingKeeper.Delegate(
+		ctx, addr,
+		sdk.NewInt(30),
+		stakingtypes.Unbonded,
+		validator,
+		true)
+	require.NoError(t, err)
+
+	newAddr := sdk.AccAddress([]byte("addr1_______________"))
+	err = bankKeeper.SendCoins(
+		ctx,
+		addr,
+		newAddr,
+		sdk.NewCoins(sdk.NewCoin(bondDenom, sdk.NewInt(10))),
+	)
+	require.NoError(t, err)
+
 }

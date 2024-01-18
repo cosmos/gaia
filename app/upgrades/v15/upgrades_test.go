@@ -16,7 +16,7 @@ import (
 	v15 "github.com/cosmos/gaia/v15/app/upgrades/v15"
 )
 
-func TestUpgradeCommissionRate(t *testing.T) {
+func TestUpgradeMinCommissionRate(t *testing.T) {
 	gaiaApp := helpers.Setup(t)
 	ctx := gaiaApp.NewUncachedContext(true, tmproto.Header{})
 
@@ -51,9 +51,9 @@ func TestUpgradeCommissionRate(t *testing.T) {
 	require.Equal(t, stakingKeeper.GetParams(ctx).MinCommissionRate, sdk.ZeroDec(), "non-zero previous min commission rate")
 
 	// run the test and confirm the values have been updated
-	v15.UpgradeCommissionRate(ctx, &gaiaApp.AppKeepers)
+	v15.UpgradeMinCommissionRate(ctx, *stakingKeeper)
 
-	newStakingParams := gaiaApp.StakingKeeper.GetParams(ctx)
+	newStakingParams := stakingKeeper.GetParams(ctx)
 	require.NotEqual(t, newStakingParams.MinCommissionRate, sdk.ZeroDec(), "failed to update min commission rate")
 	require.Equal(t, newStakingParams.MinCommissionRate, sdk.NewDecWithPrec(5, 2), "failed to update min commission rate")
 

@@ -3,6 +3,7 @@ package v15
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	"github.com/cosmos/gaia/v15/app/keepers"
@@ -23,24 +24,24 @@ func CreateUpgradeHandler(
 			return vm, err
 		}
 
-		UpgradeCommissionRate(ctx, keepers)
+		UpgradeMinCommissionRate(ctx, *keepers.StakingKeeper)
 
 		ctx.Logger().Info("Upgrade v15 complete")
 		return vm, err
 	}
 }
 
-// UpgradeCommissionRate sets the minimum commission rate staking parameter to 5%
+// UpgradeMinCommissionRate sets the minimum commission rate staking parameter to 5%
 // and updates the commission rate for all validators that have a commission rate less than 5%
-func UpgradeCommissionRate(ctx sdk.Context, keepers *keepers.AppKeepers) {
-	params := keepers.StakingKeeper.GetParams(ctx)
+func UpgradeMinCommissionRate(ctx sdk.Context, sk stakingkeeper.Keeper) {
+	params := sk.GetParams(ctx)
 	params.MinCommissionRate = sdk.NewDecWithPrec(5, 2)
-	err := keepers.StakingKeeper.SetParams(ctx, params)
+	err := sk.SetParams(ctx, params)
 	if err != nil {
 		panic(err)
 	}
 
-	for _, val := range keepers.StakingKeeper.GetAllValidators(ctx) {
+	for _, val := range sk.GetAllValidators(ctx) {
 		if val.Commission.CommissionRates.Rate.LT(sdk.NewDecWithPrec(5, 2)) {
 			// set the commission rate to 5%
 			val.Commission.CommissionRates.Rate = sdk.NewDecWithPrec(5, 2)
@@ -49,7 +50,7 @@ func UpgradeCommissionRate(ctx sdk.Context, keepers *keepers.AppKeepers) {
 				val.Commission.CommissionRates.MaxRate = sdk.NewDecWithPrec(5, 2)
 			}
 			val.Commission.UpdateTime = ctx.BlockHeader().Time
-			keepers.StakingKeeper.SetValidator(ctx, val)
+			sk.SetValidator(ctx, val)
 		}
 	}
 }

@@ -16,7 +16,7 @@ import (
 	v15 "github.com/cosmos/gaia/v15/app/upgrades/v15"
 )
 
-func TestV15UpgradeHandler(t *testing.T) {
+func TestUpgradeCommissionRate(t *testing.T) {
 	gaiaApp := helpers.Setup(t)
 	ctx := gaiaApp.NewUncachedContext(true, tmproto.Header{})
 

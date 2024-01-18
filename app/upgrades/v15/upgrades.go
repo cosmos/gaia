@@ -13,8 +13,10 @@ import (
 
 // CreateUpgradeHandler returns a upgrade handler for Gaia v15
 // which executes the following migrations:
-// * set the MinCommissionRate param of the staking module to %5 and update all validators accordingly
-// * update the slashing module SigningInfos for which the consensus address is empty
+//   - adhere to prop 826 which sets the minimum commission rate to 5% for all validators,
+//     see https://www.mintscan.io/cosmos/proposals/826
+//   - update the slashing module SigningInfos for which the consensus address is empty,
+//     see https://github.com/cosmos/gaia/issues/1734.
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
@@ -60,8 +62,8 @@ func UpgradeMinCommissionRate(ctx sdk.Context, sk stakingkeeper.Keeper) {
 	}
 }
 
-// UpgradeSigningInfos updates the signing infos of validators for which the consensus address
-// is missing, see https://github.com/cosmos/gaia/issues/1734.
+// UpgradeSigningInfos updates the signing infos of validators for which
+// the consensus address is missing
 func UpgradeSigningInfos(ctx sdk.Context, sk slashingkeeper.Keeper) {
 	signingInfos := []slashingtypes.ValidatorSigningInfo{}
 

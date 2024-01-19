@@ -37,6 +37,8 @@ func CreateUpgradeHandler(
 // UpgradeSigningInfos updates the signing infos of validators for which
 // the consensus address is missing
 func UpgradeSigningInfos(ctx sdk.Context, sk slashingkeeper.Keeper) {
+	ctx.Logger().Info("Migrating signing infos...")
+
 	signingInfos := []slashingtypes.ValidatorSigningInfo{}
 
 	// update consensus address in signing info
@@ -57,4 +59,6 @@ func UpgradeSigningInfos(ctx sdk.Context, sk slashingkeeper.Keeper) {
 		}
 		sk.SetValidatorSigningInfo(ctx, addr, si)
 	}
+
+	ctx.Logger().Info("Finished migrating signing infos")
 }

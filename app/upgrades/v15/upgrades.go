@@ -55,7 +55,8 @@ func UpgradeSigningInfos(ctx sdk.Context, sk slashingkeeper.Keeper) {
 	for _, si := range signingInfos {
 		addr, err := sdk.ConsAddressFromBech32(si.Address)
 		if err != nil {
-			panic(err)
+			ctx.Logger().Error("incorrect consensus address in signing info %s: %s", si.Address, err)
+			continue
 		}
 		sk.SetValidatorSigningInfo(ctx, addr, si)
 	}

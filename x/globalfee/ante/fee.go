@@ -106,7 +106,6 @@ func (mfd FeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, ne
 	allowedToBypassMinFee := allBypassMsgs && doesNotExceedMaxGasUsage
 
 	if allowedToBypassMinFee {
-		ctx.Logger().Info("Pass allowedToBypassMinFee check")
 		return next(ctx, tx, simulate)
 	}
 
@@ -159,8 +158,6 @@ func (mfd FeeDecorator) GetTxFeeRequired(ctx sdk.Context, tx sdk.FeeTx) (sdk.Coi
 		return sdk.Coins{}, err
 	}
 
-	ctx.Logger().Info(fmt.Sprintf("GlobalFees: %v, IsCheckTx: %v", globalFees, ctx.IsCheckTx()))
-
 	// In DeliverTx, the global fee min gas prices are the only tx fee requirements.
 	if !ctx.IsCheckTx() {
 		return globalFees, nil
@@ -171,10 +168,7 @@ func (mfd FeeDecorator) GetTxFeeRequired(ctx sdk.Context, tx sdk.FeeTx) (sdk.Coi
 
 	// Get local minimum-gas-prices
 	localFees := GetMinGasPrice(ctx, int64(tx.GetGas()))
-	ctx.Logger().Info(fmt.Sprintf("localFees: %v, IsCheckTx: %v", localFees, ctx.IsCheckTx()))
-
 	c, err := CombinedFeeRequirement(globalFees, localFees)
-	ctx.Logger().Info(fmt.Sprintf("CombinedFeeRequirement: %v, IsCheckTx: %v", c, ctx.IsCheckTx()))
 
 	// Return combined fee requirements
 	return c, err
@@ -224,11 +218,8 @@ func (mfd FeeDecorator) DefaultZeroGlobalFee(ctx sdk.Context) ([]sdk.DecCoin, er
 
 func (mfd FeeDecorator) ContainsOnlyBypassMinFeeMsgs(ctx sdk.Context, msgs []sdk.Msg) bool {
 	bypassMsgTypes := mfd.GetBypassMsgTypes(ctx)
-	ctx.Logger().Info(fmt.Sprintf("BypassMsgs: %v", bypassMsgTypes))
 
 	for _, msg := range msgs {
-		ctx.Logger().Info(fmt.Sprintf("TxBypassMsg: %v", sdk.MsgTypeURL(msg)))
-
 		if tmstrings.StringInSlice(sdk.MsgTypeURL(msg), bypassMsgTypes) {
 			continue
 		}

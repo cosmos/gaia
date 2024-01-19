@@ -1,6 +1,6 @@
 FROM --platform=linux/amd64 informalsystems/hermes:v1.7.3 AS hermes-builder
 
-FROM --platform=linux/amd64 debian:buster-slim
+FROM --platform=linux/arm64 debian:buster-slim
 USER root
 
 COPY --from=hermes-builder /usr/bin/hermes /usr/local/bin/

@@ -9,8 +9,6 @@ import (
 	"github.com/cosmos/gaia/v15/app/keepers"
 )
 
-// adhere to prop 826 which sets the minimum commission rate to 5% for all validators
-// https://www.mintscan.io/cosmos/proposals/826
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
@@ -33,7 +31,11 @@ func CreateUpgradeHandler(
 
 // UpgradeMinCommissionRate sets the minimum commission rate staking parameter to 5%
 // and updates the commission rate for all validators that have a commission rate less than 5%
+// adhere to prop 826 which sets the minimum commission rate to 5% for all validators
+// https://www.mintscan.io/cosmos/proposals/826
 func UpgradeMinCommissionRate(ctx sdk.Context, sk stakingkeeper.Keeper) {
+	ctx.Logger().Info("Migrating min commission rate...")
+
 	params := sk.GetParams(ctx)
 	params.MinCommissionRate = sdk.NewDecWithPrec(5, 2)
 	err := sk.SetParams(ctx, params)
@@ -53,4 +55,5 @@ func UpgradeMinCommissionRate(ctx sdk.Context, sk stakingkeeper.Keeper) {
 			sk.SetValidator(ctx, val)
 		}
 	}
+	ctx.Logger().Info("Finished migrating min commission rate")
 }

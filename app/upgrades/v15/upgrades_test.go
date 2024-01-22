@@ -72,7 +72,7 @@ func TestUpgradeSigningInfos(t *testing.T) {
 	})
 
 	// upgrade signing infos
-	v15.UpgradeSigningInfos(ctx, slashingKeeper)
+	require.NoError(t, v15.UpgradeSigningInfos(ctx, slashingKeeper))
 
 	// check that all signing info are updated as expected after migration
 	slashingKeeper.IterateValidatorSigningInfos(ctx, func(address sdk.ConsAddress, info slashingtypes.ValidatorSigningInfo) (stop bool) {
@@ -117,7 +117,7 @@ func TestUpgradeMinCommissionRate(t *testing.T) {
 	require.Equal(t, stakingKeeper.GetParams(ctx).MinCommissionRate, sdk.ZeroDec(), "non-zero previous min commission rate")
 
 	// run the test and confirm the values have been updated
-	v15.UpgradeMinCommissionRate(ctx, *stakingKeeper)
+	require.NoError(t, v15.UpgradeMinCommissionRate(ctx, *stakingKeeper))
 
 	newStakingParams := stakingKeeper.GetParams(ctx)
 	require.NotEqual(t, newStakingParams.MinCommissionRate, sdk.ZeroDec(), "failed to update min commission rate")
@@ -200,6 +200,9 @@ func TestClawbackVestingFunds(t *testing.T) {
 	require.Equal(t, vestingAccount.GetDelegatedVesting(), origCoins)
 	require.Empty(t, vestingAccount.GetDelegatedFree())
 
+	// check that migration succeeds when all coins are alreay vested
+	require.NoError(t, v15.ClawbackVestingFunds(ctx.WithBlockTime(endTime), addr, &gaiaApp.AppKeepers))
+
 	// vest half of the tokens
 	ctx = ctx.WithBlockTime(now.Add(12 * time.Hour))
 
@@ -210,7 +213,7 @@ func TestClawbackVestingFunds(t *testing.T) {
 	require.True(t, currVestedCoins.IsEqual(origCoins.QuoInt(math.NewInt(2))))
 
 	// execute migration script
-	v15.ClawbackVestingFunds(ctx, addr, &gaiaApp.AppKeepers)
+	require.NoError(t, v15.ClawbackVestingFunds(ctx, addr, &gaiaApp.AppKeepers))
 
 	// check that the validator's delegation is removed and that
 	// their total tokens decreased

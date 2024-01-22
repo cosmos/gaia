@@ -45,9 +45,18 @@ func CreateUpgradeHandler(
 			return vm, err
 		}
 
-		UpgradeMinCommissionRate(ctx, *keepers.StakingKeeper)
-		UpgradeSigningInfos(ctx, keepers.SlashingKeeper)
-		ClawbackVestingFunds(ctx, sdk.MustAccAddressFromBech32("cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498"), keepers)
+		if err := UpgradeMinCommissionRate(ctx, *keepers.StakingKeeper); err != nil {
+			return nil, fmt.Errorf("failed migrating min commission rates: %s", err)
+		}
+		if err := UpgradeSigningInfos(ctx, keepers.SlashingKeeper); err != nil {
+			return nil, fmt.Errorf("failed migrating signing infos: %s", err)
+		}
+		if err := ClawbackVestingFunds(
+			ctx,
+			sdk.MustAccAddressFromBech32("cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498"),
+			keepers); err != nil {
+			return nil, fmt.Errorf("failed migrating vesting funds: %s", err)
+		}
 
 		ctx.Logger().Info("Upgrade v15 complete")
 		return vm, err
@@ -58,14 +67,13 @@ func CreateUpgradeHandler(
 // and updates the commission rate for all validators that have a commission rate less than 5%
 // adhere to prop 826 which sets the minimum commission rate to 5% for all validators
 // https://www.mintscan.io/cosmos/proposals/826
-func UpgradeMinCommissionRate(ctx sdk.Context, sk stakingkeeper.Keeper) {
+func UpgradeMinCommissionRate(ctx sdk.Context, sk stakingkeeper.Keeper) error {
 	ctx.Logger().Info("Migrating min commission rate...")
 
 	params := sk.GetParams(ctx)
 	params.MinCommissionRate = sdk.NewDecWithPrec(5, 2)
-	err := sk.SetParams(ctx, params)
-	if err != nil {
-		panic(err)
+	if err := sk.SetParams(ctx, params); err != nil {
+		return err
 	}
 
 	for _, val := range sk.GetAllValidators(ctx) {
@@ -82,11 +90,12 @@ func UpgradeMinCommissionRate(ctx sdk.Context, sk stakingkeeper.Keeper) {
 	}
 
 	ctx.Logger().Info("Finished migrating min commission rate")
+	return nil
 }
 
 // UpgradeSigningInfos updates the signing infos of validators for which
 // the consensus address is missing
-func UpgradeSigningInfos(ctx sdk.Context, sk slashingkeeper.Keeper) {
+func UpgradeSigningInfos(ctx sdk.Context, sk slashingkeeper.Keeper) error {
 	ctx.Logger().Info("Migrating signing infos...")
 
 	signingInfos := []slashingtypes.ValidatorSigningInfo{}
@@ -112,11 +121,12 @@ func UpgradeSigningInfos(ctx sdk.Context, sk slashingkeeper.Keeper) {
 	}
 
 	ctx.Logger().Info("Finished migrating signing infos")
+	return nil
 }
 
 // ClawbackVestingFunds transfers the vesting tokens from the given vesting account
 // to the community pool
-func ClawbackVestingFunds(ctx sdk.Context, address sdk.AccAddress, keepers *keepers.AppKeepers) {
+func ClawbackVestingFunds(ctx sdk.Context, address sdk.AccAddress, keepers *keepers.AppKeepers) error {
 	ctx.Logger().Info("Migrating vesting funds...")
 
 	ak := keepers.AccountKeeper
@@ -130,23 +140,34 @@ func ClawbackVestingFunds(ctx sdk.Context, address sdk.AccAddress, keepers *keep
 	// verify that it's a vesting account type
 	vestAccount, ok := account.(*vesting.ContinuousVestingAccount)
 	if !ok {
-		panic(
-			fmt.Errorf("%s:%s",
-				sdkerrors.ErrInvalidType,
-				"account with address %s isn't a vesting account",
-			),
+		ctx.Logger().Error(
+			"failed migrating vesting funds: %s: %s",
+			"provided account address isn't a vesting account: ",
+			address.String(),
 		)
+
+		return nil
+	}
+
+	// returns if no coins are vesting
+	_, vestingCoins := vestAccount.GetVestingCoins(ctx.BlockTime()).Find(sk.BondDenom(ctx))
+	if vestingCoins.IsNil() {
+		ctx.Logger().Info(
+			"%s: %s",
+			"no vesting coins to migrate",
+			"Finished migrating vesting funds",
+		)
+
+		return nil
 	}
 
 	// unbond all delegations from vesting account
-	err := forceUnbondAllDelegations(sk, bk, ctx, address)
-	if err != nil {
-		panic(err)
+	if err := forceUnbondAllDelegations(sk, bk, ctx, address); err != nil {
+		return err
 	}
 
 	// transfers still vesting tokens of BondDenom to community pool
-	_, vestingCoins := vestAccount.GetVestingCoins(ctx.BlockTime()).Find(sk.BondDenom(ctx))
-	err = forceFundCommunityPool(
+	if err := forceFundCommunityPool(
 		ak,
 		dk,
 		bk,
@@ -154,21 +175,20 @@ func ClawbackVestingFunds(ctx sdk.Context, address sdk.AccAddress, keepers *keep
 		vestingCoins,
 		address,
 		keepers.GetKey(banktypes.StoreKey),
-	)
-	if err != nil {
-		panic(err)
+	); err != nil {
+		return err
 	}
 
 	// overwrite vesting account using its embedded base account
 	ak.SetAccount(ctx, vestAccount.BaseAccount)
 
 	// validate account balance
-	err = bk.ValidateBalance(ctx, address)
-	if err != nil {
-		panic(err)
+	if err := bk.ValidateBalance(ctx, address); err != nil {
+		return err
 	}
 
 	ctx.Logger().Info("Finished migrating vesting funds")
+	return nil
 }
 
 // forceUnbondAllDelegations unbonds all the delegations from the  given account address,
@@ -194,20 +214,18 @@ func forceUnbondAllDelegations(
 			return err
 		}
 
+		coins := sdk.NewCoins(sdk.NewCoin(sk.BondDenom(ctx), returnAmount))
+
 		// transfer the validator tokens to the not bonded pool
 		if validator.IsBonded() {
 			// doing stakingKeeper.bondedTokensToNotBonded
-			coins := sdk.NewCoins(sdk.NewCoin(sk.BondDenom(ctx), returnAmount))
 			err = bk.SendCoinsFromModuleToModule(ctx, stakingtypes.BondedPoolName, stakingtypes.NotBondedPoolName, coins)
 			if err != nil {
 				return err
 			}
 		}
 
-		bondDenom := sk.GetParams(ctx).BondDenom
-		amt := sdk.NewCoin(bondDenom, returnAmount)
-
-		err = bk.UndelegateCoinsFromModuleToAccount(ctx, stakingtypes.NotBondedPoolName, delegator, sdk.NewCoins(amt))
+		err = bk.UndelegateCoinsFromModuleToAccount(ctx, stakingtypes.NotBondedPoolName, delegator, coins)
 		if err != nil {
 			return err
 		}

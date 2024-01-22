@@ -144,7 +144,7 @@ func TestClawbackVestingFunds(t *testing.T) {
 
 	// create continuous vesting account
 	origCoins := sdk.NewCoins(sdk.NewInt64Coin(bondDenom, 100))
-	addr := sdk.AccAddress([]byte("addr1_______________"))
+	addr := sdk.AccAddress([]byte("cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498"))
 
 	vestingAccount := vesting.NewContinuousVestingAccount(
 		authtypes.NewBaseAccountWithAddress(addr),
@@ -255,7 +255,7 @@ func TestClawbackVestingFunds(t *testing.T) {
 		true)
 	require.NoError(t, err)
 
-	newAddr := sdk.AccAddress([]byte("addr2_______________"))
+	newAddr := sdk.AccAddress([]byte("cosmos1qqp9myctmh8mh2y7gynlsnw4y2wz3s3089dak6"))
 	err = bankKeeper.SendCoins(
 		ctx,
 		addr,

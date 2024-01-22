@@ -29,8 +29,7 @@ import (
 //   - update the slashing module SigningInfos for which the consensus address is empty,
 //     see https://github.com/cosmos/gaia/issues/1734.
 //   - adhere to signal prop 860 which claws back vesting funds
-// 	   see https://www.mintscan.io/cosmos/proposals/860
-
+//     see https://www.mintscan.io/cosmos/proposals/860
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
@@ -55,7 +54,11 @@ func CreateUpgradeHandler(
 
 // UpgradeMinCommissionRate sets the minimum commission rate staking parameter to 5%
 // and updates the commission rate for all validators that have a commission rate less than 5%
+// adhere to prop 826 which sets the minimum commission rate to 5% for all validators
+// https://www.mintscan.io/cosmos/proposals/826
 func UpgradeMinCommissionRate(ctx sdk.Context, sk stakingkeeper.Keeper) {
+	ctx.Logger().Info("Migrating min commission rate...")
+
 	params := sk.GetParams(ctx)
 	params.MinCommissionRate = sdk.NewDecWithPrec(5, 2)
 	err := sk.SetParams(ctx, params)
@@ -75,11 +78,15 @@ func UpgradeMinCommissionRate(ctx sdk.Context, sk stakingkeeper.Keeper) {
 			sk.SetValidator(ctx, val)
 		}
 	}
+
+	ctx.Logger().Info("Finished migrating min commission rate")
 }
 
 // UpgradeSigningInfos updates the signing infos of validators for which
 // the consensus address is missing
 func UpgradeSigningInfos(ctx sdk.Context, sk slashingkeeper.Keeper) {
+	ctx.Logger().Info("Migrating signing infos...")
+
 	signingInfos := []slashingtypes.ValidatorSigningInfo{}
 
 	// update consensus address in signing info
@@ -96,15 +103,20 @@ func UpgradeSigningInfos(ctx sdk.Context, sk slashingkeeper.Keeper) {
 	for _, si := range signingInfos {
 		addr, err := sdk.ConsAddressFromBech32(si.Address)
 		if err != nil {
-			panic(err)
+			ctx.Logger().Error("incorrect consensus address in signing info %s: %s", si.Address, err)
+			continue
 		}
 		sk.SetValidatorSigningInfo(ctx, addr, si)
 	}
+
+	ctx.Logger().Info("Finished migrating signing infos")
 }
 
-// ClawbackVestingFunds transfers the unvested tokens from the given vesting account
+// ClawbackVestingFunds transfers the vesting tokens from the given vesting account
 // to the community pool
 func ClawbackVestingFunds(ctx sdk.Context, address sdk.AccAddress, keepers *keepers.AppKeepers) {
+	ctx.Logger().Info("Migrating vesting funds...")
+
 	ak := keepers.AccountKeeper
 	bk := keepers.BankKeeper
 	dk := keepers.DistrKeeper
@@ -153,10 +165,12 @@ func ClawbackVestingFunds(ctx sdk.Context, address sdk.AccAddress, keepers *keep
 	if err != nil {
 		panic(err)
 	}
+
+	ctx.Logger().Info("Finished migrating vesting funds")
 }
 
 // forceUnbondAllDelegations unbonds all the delegations from the  given account address,
-// without unbonding period
+// without waiting for an unbonding period
 func forceUnbondAllDelegations(
 	sk stakingkeeper.Keeper,
 	bk bankkeeper.Keeper,
@@ -247,7 +261,7 @@ func forceFundCommunityPool(
 }
 
 // setBalance sets the coin balance for an account by address.
-// Note it follows the same logic of the sendBalance method in
+// Note that it follows the same logic of the sendBalance method in
 // https://github.com/cosmos/cosmos-sdk/blob/release%2Fv0.47.x/x/bank/keeper/send.go#L337
 func setBalance(
 	ctx sdk.Context,

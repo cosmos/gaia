@@ -1,6 +1,8 @@
 package v15
 
 import (
+	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -129,7 +131,7 @@ func ClawbackVestingFunds(ctx sdk.Context, address sdk.AccAddress, keepers *keep
 	vestAccount, ok := account.(*vesting.ContinuousVestingAccount)
 	if !ok {
 		panic(
-			sdkerrors.Wrap(
+			fmt.Errorf("%s:%s",
 				sdkerrors.ErrInvalidType,
 				"account with address %s isn't a vesting account",
 			),
@@ -229,15 +231,16 @@ func forceFundCommunityPool(
 ) error {
 	recipientAcc := ak.GetModuleAccount(ctx, distributiontypes.ModuleName)
 	if recipientAcc == nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress, distributiontypes.ModuleName)
+		return fmt.Errorf("%s:%s", sdkerrors.ErrUnknownAddress, distributiontypes.ModuleName)
 	}
 
 	senderBal := bk.GetBalance(ctx, sender, amount.Denom)
 	if _, hasNeg := sdk.NewCoins(senderBal).SafeSub(amount); hasNeg {
-		return sdkerrors.Wrapf(
+		return fmt.Errorf(
+			"%s: spendable balance %s is smaller than %s",
 			sdkerrors.ErrInsufficientFunds,
-			"spendable balance %s is smaller than %s",
-			senderBal, amount,
+			senderBal,
+			amount,
 		)
 	}
 	if err := setBalance(ctx, sender, senderBal.Sub(amount), bs); err != nil {
@@ -270,7 +273,7 @@ func setBalance(
 	bs storetypes.StoreKey,
 ) error {
 	if !balance.IsValid() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, balance.String())
+		return fmt.Errorf("%s:%s", sdkerrors.ErrInvalidCoins, balance.String())
 	}
 
 	store := ctx.KVStore(bs)

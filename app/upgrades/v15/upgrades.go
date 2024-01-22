@@ -282,7 +282,7 @@ func forceFundCommunityPool(
 }
 
 // setBalance sets the coin balance for an account by address.
-// Note that it follows the same logic of the sendBalance method in
+// Note that it follows the same logic of the setBalance method in
 // https://github.com/cosmos/cosmos-sdk/blob/v0.47.7/x/bank/keeper/send.go#L337
 func setBalance(
 	ctx sdk.Context,

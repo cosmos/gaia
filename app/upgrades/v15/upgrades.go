@@ -149,9 +149,13 @@ func ClawbackVestingFunds(ctx sdk.Context, address sdk.AccAddress, keepers *keep
 		return nil
 	}
 
-	// returns if no coins are vesting
-	_, vestingCoins := vestAccount.GetVestingCoins(ctx.BlockTime()).Find(sk.BondDenom(ctx))
-	if vestingCoins.IsNil() {
+	// returns if the account has no vesting coins of the bond denom
+	vestingCoinToClawback := sdk.Coin{}
+	if vc := vestAccount.GetVestingCoins(ctx.BlockTime()); !vc.Empty() {
+		_, vestingCoinToClawback = vc.Find(sk.BondDenom(ctx))
+	}
+
+	if vestingCoinToClawback.IsNil() {
 		ctx.Logger().Info(
 			"%s: %s",
 			"no vesting coins to migrate",
@@ -172,7 +176,7 @@ func ClawbackVestingFunds(ctx sdk.Context, address sdk.AccAddress, keepers *keep
 		dk,
 		bk,
 		ctx,
-		vestingCoins,
+		vestingCoinToClawback,
 		address,
 		keepers.GetKey(banktypes.StoreKey),
 	); err != nil {

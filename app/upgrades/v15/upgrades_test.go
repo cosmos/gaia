@@ -200,7 +200,7 @@ func TestClawbackVestingFunds(t *testing.T) {
 	require.Equal(t, vestingAccount.GetDelegatedVesting(), origCoins)
 	require.Empty(t, vestingAccount.GetDelegatedFree())
 
-	// check that migration succeeds when all coins are alreay vested
+	// check that migration succeeds when all coins are already vested
 	require.NoError(t, v15.ClawbackVestingFunds(ctx.WithBlockTime(endTime), addr, &gaiaApp.AppKeepers))
 
 	// vest half of the tokens

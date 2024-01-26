@@ -1,18 +1,19 @@
+//go:build upgrade_v8
+
 package v8
 
 import (
 	"errors"
 	"fmt"
 
-	icahosttypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/types"
-	icatypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/types"
-	ibcchanneltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
-
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
+	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 
 	"github.com/cosmos/gaia/v15/app/keepers"
 )
@@ -92,10 +93,10 @@ func QuicksilverFix(ctx sdk.Context, keepers *keepers.AppKeepers) error {
 }
 
 func closeChannel(keepers *keepers.AppKeepers, ctx sdk.Context, channelID string) {
-	channel, found := keepers.IBCKeeper.ChannelKeeper.GetChannel(ctx, icatypes.PortID, channelID)
+	channel, found := keepers.IBCKeeper.ChannelKeeper.GetChannel(ctx, icatypes.HostPortID, channelID)
 	if found {
 		channel.State = ibcchanneltypes.CLOSED
-		keepers.IBCKeeper.ChannelKeeper.SetChannel(ctx, icatypes.PortID, channelID, channel)
+		keepers.IBCKeeper.ChannelKeeper.SetChannel(ctx, icatypes.HostPortID, channelID, channel)
 	}
 }
 

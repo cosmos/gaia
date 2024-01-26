@@ -1,8 +1,6 @@
 package e2e
 
-import (
-	"fmt"
-)
+import "fmt"
 
 var (
 	runBankTest                   = true

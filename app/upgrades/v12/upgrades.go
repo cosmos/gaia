@@ -27,9 +27,12 @@ func CreateUpgradeHandler(
 		params.ValidatorLiquidStakingCap = ValidatorLiquidStakingCap
 		params.GlobalLiquidStakingCap = GlobalLiquidStakingCap
 
-		keepers.StakingKeeper.SetParams(ctx, params)
+		err = keepers.StakingKeeper.SetParams(ctx, params)
+		if err != nil {
+			return vm, err
+		}
 
 		ctx.Logger().Info("Upgrade complete")
-		return vm, err
+		return vm, nil
 	}
 }

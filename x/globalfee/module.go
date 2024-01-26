@@ -8,7 +8,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
-	abci "github.com/tendermint/tendermint/abci/types"
+
+	abci "github.com/cometbft/cometbft/abci/types"
 
 	errorsmod "cosmossdk.io/errors"
 
@@ -109,18 +110,6 @@ func (a AppModule) ExportGenesis(ctx sdk.Context, marshaler codec.JSONCodec) jso
 }
 
 func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {
-}
-
-func (a AppModule) Route() sdk.Route {
-	return sdk.Route{}
-}
-
-func (a AppModule) QuerierRoute() string {
-	return types.QuerierRoute
-}
-
-func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier {
-	return nil
 }
 
 func (a AppModule) RegisterServices(cfg module.Configurator) {

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math/rand"
 	"net/http"
 	"os"
 	"os/exec"
@@ -16,21 +17,20 @@ import (
 	"time"
 
 	"github.com/ory/dockertest/v3"
+	// "github.com/cosmos/cosmos-sdk/crypto/hd"
+	// "github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/suite"
-	tmconfig "github.com/tendermint/tendermint/config"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	"github.com/tendermint/tendermint/libs/rand"
-	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 
-	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
-	ccvprovider "github.com/cosmos/interchain-security/v2/x/ccv/provider/types"
+	tmconfig "github.com/cometbft/cometbft/config"
+	"github.com/cometbft/cometbft/crypto/ed25519"
+	tmjson "github.com/cometbft/cometbft/libs/json"
+	rpchttp "github.com/cometbft/cometbft/rpc/client/http"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
-	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -40,7 +40,10 @@ import (
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
 const (
@@ -54,26 +57,28 @@ const (
 	stakeDenom     = "stake"
 	initBalanceStr = "110000000000stake,100000000000000000photon,100000000000000000uatom"
 	minGasPrice    = "0.00001"
-	// the test globalfee in genesis is the same as minGasPrice
-	// global fee lower/higher than min_gas_price
-	initialGlobalFeeAmt                   = "0.00001"
-	lowGlobalFeesAmt                      = "0.000001"
-	highGlobalFeeAmt                      = "0.0001"
-	maxTotalBypassMinFeeMsgGasUsage       = "1"
-	gas                                   = 200000
-	govProposalBlockBuffer                = 35
-	relayerAccountIndexHermes0            = 0
-	relayerAccountIndexHermes1            = 1
-	numberOfEvidences                     = 10
-	slashingShares                  int64 = 10000
+	//	// the test globalfee in genesis is the same as minGasPrice
+	//	// global fee lower/higher than min_gas_price
+	initialGlobalFeeAmt             = "0.00001"
+	lowGlobalFeesAmt                = "0.000001"
+	highGlobalFeeAmt                = "0.0001"
+	maxTotalBypassMinFeeMsgGasUsage = "1"
+	gas                             = 200000
 
-	proposalGlobalFeeFilename           = "proposal_globalfee.json"
-	proposalBypassMsgFilename           = "proposal_bypass_msg.json"
-	proposalMaxTotalBypassFilename      = "proposal_max_total_bypass.json"
-	proposalCommunitySpendFilename      = "proposal_community_spend.json"
-	proposalAddConsumerChainFilename    = "proposal_add_consumer.json"
-	proposalRemoveConsumerChainFilename = "proposal_remove_consumer.json"
-	proposalLSMParamUpdateFilename      = "proposal_lsm_param_update.json"
+	govProposalBlockBuffer           = 35
+	relayerAccountIndexHermes0       = 0
+	relayerAccountIndexHermes1       = 1
+	numberOfEvidences                = 10
+	slashingShares             int64 = 10000
+
+	proposalGlobalFeeFilename      = "proposal_globalfee.json"
+	proposalBypassMsgFilename      = "proposal_bypass_msg.json"
+	proposalMaxTotalBypassFilename = "proposal_max_total_bypass.json"
+	proposalCommunitySpendFilename = "proposal_community_spend.json"
+	proposalLSMParamUpdateFilename = "proposal_lsm_param_update.json"
+
+	// proposalAddConsumerChainFilename    = "proposal_add_consumer.json"
+	// proposalRemoveConsumerChainFilename = "proposal_remove_consumer.json"
 
 	hermesBinary              = "hermes"
 	hermesConfigWithGasPrices = "/root/.hermes/config.toml"
@@ -89,6 +94,7 @@ var (
 	standardFees          = sdk.NewCoin(uatomDenom, sdk.NewInt(330000))     // 0.33uatom
 	depositAmount         = sdk.NewCoin(uatomDenom, sdk.NewInt(330000000))  // 3,300uatom
 	distModuleAddress     = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
+	govModuleAddress      = authtypes.NewModuleAddress(govtypes.ModuleName).String()
 	proposalCounter       = 0
 	HermesResource0Purged = false
 )
@@ -216,12 +222,14 @@ func (s *IntegrationTestSuite) initNodes(c *chain) {
 	val0ConfigDir := c.validators[0].configDir()
 	var addrAll []sdk.AccAddress
 	for _, val := range c.validators {
-		address := val.keyInfo.GetAddress()
-		addrAll = append(addrAll, address)
+		addr, err := val.keyInfo.GetAddress()
+		s.Require().NoError(err)
+		addrAll = append(addrAll, addr)
 	}
 
 	for _, addr := range c.genesisAccounts {
-		acctAddr := addr.keyInfo.GetAddress()
+		acctAddr, err := addr.keyInfo.GetAddress()
+		s.Require().NoError(err)
 		addrAll = append(addrAll, acctAddr)
 	}
 
@@ -253,7 +261,7 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 	)
 
 	// create genesis vesting accounts keys
-	kb, err := keyring.New(keyringAppName, keyring.BackendTest, valConfigDir, nil)
+	kb, err := keyring.New(keyringAppName, keyring.BackendTest, valConfigDir, nil, cdc)
 	s.Require().NoError(err)
 
 	keyringAlgos, _ := kb.SupportedAlgorithms()
@@ -270,7 +278,8 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 		// Use the first wallet from the same mnemonic by HD path
 		acc, err := kb.NewAccount(key, vestingMnemonic, "", HDPath(i), algo)
 		s.Require().NoError(err)
-		c.genesisVestingAccounts[key] = acc.GetAddress()
+		c.genesisVestingAccounts[key], err = acc.GetAddress()
+		s.Require().NoError(err)
 		s.T().Logf("created %s genesis account %s\n", key, c.genesisVestingAccounts[key].String())
 	}
 	var (
@@ -279,8 +288,12 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 	)
 
 	// add jailed validator to staking store
-	pubKey := jailedValKey.GetPubKey()
-	jailedValAcc := jailedValKey.GetAddress()
+	pubKey, err := jailedValKey.GetPubKey()
+	s.Require().NoError(err)
+
+	jailedValAcc, err := jailedValKey.GetAddress()
+	s.Require().NoError(err)
+
 	jailedValAddr := sdk.ValAddress(jailedValAcc)
 	val, err := stakingtypes.NewValidator(
 		jailedValAddr,
@@ -523,7 +536,9 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 
 		appConfig := srvconfig.DefaultConfig()
 		appConfig.API.Enable = true
+		appConfig.API.Address = "tcp://0.0.0.0:1317"
 		appConfig.MinGasPrices = fmt.Sprintf("%s%s", minGasPrice, uatomDenom)
+		appConfig.GRPC.Address = "0.0.0.0:9090"
 
 		srvconfig.SetConfigTemplate(srvconfig.DefaultConfigTemplate)
 		srvconfig.WriteConfigFile(appCfgPath, appConfig)
@@ -587,7 +602,6 @@ func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 			if status.SyncInfo.CatchingUp || status.SyncInfo.LatestBlockHeight < 3 {
 				return false
 			}
-
 			return true
 		},
 		5*time.Minute,
@@ -648,6 +662,7 @@ func (s *IntegrationTestSuite) runIBCRelayer0() {
 				fmt.Sprintf("GAIA_A_E2E_VAL_HOST=%s", s.valResources[s.chainA.id][0].Container.Name[1:]),
 				fmt.Sprintf("GAIA_B_E2E_VAL_HOST=%s", s.valResources[s.chainB.id][0].Container.Name[1:]),
 			},
+			User: "root",
 			Entrypoint: []string{
 				"sh",
 				"-c",
@@ -657,7 +672,6 @@ func (s *IntegrationTestSuite) runIBCRelayer0() {
 		noRestart,
 	)
 	s.Require().NoError(err)
-
 	endpoint := fmt.Sprintf("http://%s/state", s.hermesResource0.GetHostPort("3031/tcp"))
 	s.Require().Eventually(
 		func() bool {
@@ -747,6 +761,7 @@ func (s *IntegrationTestSuite) runIBCRelayer1() {
 				fmt.Sprintf("GAIA_A_E2E_VAL_HOST=%s", s.valResources[s.chainA.id][0].Container.Name[1:]),
 				fmt.Sprintf("GAIA_B_E2E_VAL_HOST=%s", s.valResources[s.chainB.id][0].Container.Name[1:]),
 			},
+			User: "root",
 			Entrypoint: []string{
 				"sh",
 				"-c",
@@ -858,118 +873,81 @@ func (s *IntegrationTestSuite) writeGovParamChangeProposalMaxTotalBypass(c *chai
 	s.Require().NoError(err)
 }
 
-func (s *IntegrationTestSuite) writeGovCommunitySpendProposal(c *chain, amount string, recipient string) {
-	proposalCommSpend := &distrtypes.CommunityPoolSpendProposalWithDeposit{
-		Title:       "Community Pool Spend",
-		Description: "Fund Team!",
-		Recipient:   recipient,
-		Amount:      amount,
-		Deposit:     "1000uatom",
+func (s *IntegrationTestSuite) writeGovCommunitySpendProposal(c *chain, amount sdk.Coin, recipient string) {
+	msg := &distrtypes.MsgCommunityPoolSpend{
+		Authority: govModuleAddress,
+		Recipient: recipient,
+		Amount:    sdk.Coins{amount},
 	}
-	commSpendBody, err := json.MarshalIndent(proposalCommSpend, "", " ")
+
+	proposalCommSpend, err := govv1.NewMsgSubmitProposal(
+		[]sdk.Msg{msg},
+		sdk.Coins{sdk.NewCoin(uatomDenom, sdk.NewInt(100))},
+		"JohnGalt",
+		"Community Pool Spend",
+		"Fund Team!",
+		"summary",
+	)
+	s.Require().NoError(err)
+	res, err := cdc.MarshalInterfaceJSON(proposalCommSpend)
+	s.Require().NoError(err)
+
+	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalCommunitySpendFilename), res)
+	s.Require().NoError(err)
+}
+
+func (s *IntegrationTestSuite) writeGovLegProposal(c *chain, height int64, name string) {
+	prop := &upgradetypes.Plan{
+		Name:   name,
+		Height: height,
+		Info:   `{"binaries":{"os1/arch1":"url1","os2/arch2":"url2"}}`,
+	}
+
+	commSpendBody, err := json.MarshalIndent(prop, "", " ")
 	s.Require().NoError(err)
 
 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalCommunitySpendFilename), commSpendBody)
 	s.Require().NoError(err)
 }
 
-type ConsumerAdditionProposalWithDeposit struct {
-	ccvprovider.ConsumerAdditionProposal
-	Deposit string `json:"deposit"`
-}
+func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain, oldParams stakingtypes.Params) {
+	template := `
+	{
+		"messages": [
+		 {
+		  "@type": "/cosmos.staking.v1beta1.MsgUpdateParams",
+		  "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+		  "params": {
+		   "unbonding_time": "%s",
+		   "max_validators": %d,
+		   "max_entries": %d,
+		   "historical_entries": %d,
+		   "bond_denom": "%s",
+		   "min_commission_rate": "%s",
+		   "validator_bond_factor": "%s",
+		   "global_liquid_staking_cap": "%s",
+		   "validator_liquid_staking_cap": "%s"
+		  }
+		 }
+		],
+		"metadata": "ipfs://CID",
+		"deposit": "0uatom",
+		"title": "Update LSM Params",
+		"summary": "e2e-test updating LSM staking params"
+	   }`
+	propMsgBody := fmt.Sprintf(template,
+		oldParams.UnbondingTime,
+		oldParams.MaxValidators,
+		oldParams.MaxEntries,
+		oldParams.HistoricalEntries,
+		oldParams.BondDenom,
+		oldParams.MinCommissionRate,
+		sdk.NewDec(250),           // validator bond factor
+		sdk.NewDecWithPrec(25, 2), // 25 global_liquid_staking_cap
+		sdk.NewDecWithPrec(50, 2), // 50 validator_liquid_staking_cap
+	)
 
-type ConsumerRemovalProposalWithDeposit struct {
-	ccvprovider.ConsumerRemovalProposal
-	Deposit string `json:"deposit"`
-}
-
-func (s *IntegrationTestSuite) writeAddRemoveConsumerProposals(c *chain, consumerChainID string) {
-	hash, _ := json.Marshal("Z2VuX2hhc2g=")
-	addProp := &ccvprovider.ConsumerAdditionProposal{
-		Title:       "Create consumer chain",
-		Description: "First consumer chain",
-		ChainId:     consumerChainID,
-		InitialHeight: ibcclienttypes.Height{
-			RevisionHeight: 1,
-		},
-		GenesisHash:                       hash,
-		BinaryHash:                        hash,
-		SpawnTime:                         time.Now(),
-		UnbondingPeriod:                   time.Duration(100000000000),
-		CcvTimeoutPeriod:                  time.Duration(100000000000),
-		TransferTimeoutPeriod:             time.Duration(100000000000),
-		ConsumerRedistributionFraction:    "0.75",
-		BlocksPerDistributionTransmission: 10,
-		HistoricalEntries:                 10000,
-	}
-	addPropWithDeposit := ConsumerAdditionProposalWithDeposit{
-		ConsumerAdditionProposal: *addProp,
-		Deposit:                  "1000uatom",
-	}
-
-	removeProp := &ccvprovider.ConsumerRemovalProposal{
-		Title:       "Remove consumer chain",
-		Description: "Removing consumer chain",
-		ChainId:     consumerChainID,
-		StopTime:    time.Now(),
-	}
-
-	removePropWithDeposit := ConsumerRemovalProposalWithDeposit{
-		ConsumerRemovalProposal: *removeProp,
-		Deposit:                 "1000uatom",
-	}
-
-	consumerAddBody, err := json.MarshalIndent(addPropWithDeposit, "", " ")
-	s.Require().NoError(err)
-
-	consumerRemoveBody, err := json.MarshalIndent(removePropWithDeposit, "", " ")
-	s.Require().NoError(err)
-
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalAddConsumerChainFilename), consumerAddBody)
-	s.Require().NoError(err)
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalRemoveConsumerChainFilename), consumerRemoveBody)
-	s.Require().NoError(err)
-}
-
-func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain) {
-	type ParamInfo struct {
-		Subspace string  `json:"subspace"`
-		Key      string  `json:"key"`
-		Value    sdk.Dec `json:"value"`
-	}
-
-	type ParamChangeMessage struct {
-		Title       string      `json:"title"`
-		Description string      `json:"description"`
-		Changes     []ParamInfo `json:"changes"`
-		Deposit     string      `json:"deposit"`
-	}
-
-	paramChangeProposalBody, err := json.MarshalIndent(ParamChangeMessage{
-		Title:       "liquid staking params update",
-		Description: "liquid staking params update",
-		Changes: []ParamInfo{
-			{
-				Subspace: "staking",
-				Key:      "GlobalLiquidStakingCap",
-				Value:    sdk.NewDecWithPrec(25, 2), // 25%
-			},
-			{
-				Subspace: "staking",
-				Key:      "ValidatorLiquidStakingCap",
-				Value:    sdk.NewDecWithPrec(50, 2), // 50%
-			},
-			{
-				Subspace: "staking",
-				Key:      "ValidatorBondFactor",
-				Value:    sdk.NewDec(250), // -1
-			},
-		},
-		Deposit: "1000uatom",
-	}, "", " ")
-	s.Require().NoError(err)
-
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalLSMParamUpdateFilename), paramChangeProposalBody)
+	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalLSMParamUpdateFilename), []byte(propMsgBody))
 	s.Require().NoError(err)
 }
 

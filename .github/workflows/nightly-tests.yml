@@ -3,16 +3,13 @@ on:
   workflow_call:
   workflow_dispatch:
   schedule:
-    - cron: "0 0 * * *"
+    # run every day at 03:00 UTC
+    - cron: "0 3 * * *"
 
 jobs:
-  matrix-tests:
+
+  run-tests:
     uses: cosmos/gaia/.github/workflows/test.yml@main
-    strategy:
-      fail-fast: false
-      max-parallel: 1
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]       # We can add custom runners - https://github.com/actions/runner
 
   run-simulations:
     uses: cosmos/gaia/.github/workflows/sims.yml@main

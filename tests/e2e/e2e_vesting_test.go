@@ -7,8 +7,6 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	"github.com/cosmos/gaia/v15/x/globalfee/ante"
 )
 
 const (
@@ -48,7 +46,7 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api string) {
 		val               = chain.validators[valIdx]
 		vestingDelayedAcc = chain.genesisVestingAccounts[delayedVestingKey]
 	)
-	sender := val.keyInfo.GetAddress()
+	sender, _ := val.keyInfo.GetAddress()
 	valOpAddr := sdk.ValAddress(sender).String()
 
 	s.Run("test delayed vesting genesis account", func() {
@@ -61,7 +59,7 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api string) {
 		s.Require().Equal(vestingBalance.AmountOf(uatomDenom), balance.Amount)
 
 		// Delegate coins should succeed
-		s.executeDelegate(chain, valIdx, vestingDelegationAmount.String(), valOpAddr,
+		s.execDelegate(chain, valIdx, vestingDelegationAmount.String(), valOpAddr,
 			vestingDelayedAcc.String(), gaiaHomePath, vestingDelegationFees.String())
 
 		// Validate delegation successful
@@ -118,7 +116,7 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api string) {
 			val                  = chain.validators[valIdx]
 			continuousVestingAcc = chain.genesisVestingAccounts[continuousVestingKey]
 		)
-		sender := val.keyInfo.GetAddress()
+		sender, _ := val.keyInfo.GetAddress()
 		valOpAddr := sdk.ValAddress(sender).String()
 
 		acc, err := queryContinuousVestingAccount(api, continuousVestingAcc.String())
@@ -130,7 +128,7 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api string) {
 		s.Require().Equal(vestingBalance.AmountOf(uatomDenom), balance.Amount)
 
 		// Delegate coins should succeed
-		s.executeDelegate(chain, valIdx, vestingDelegationAmount.String(),
+		s.execDelegate(chain, valIdx, vestingDelegationAmount.String(),
 			valOpAddr, continuousVestingAcc.String(), gaiaHomePath, vestingDelegationFees.String())
 
 		// Validate delegation successful
@@ -198,6 +196,7 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api string) {
 }
 
 func (s *IntegrationTestSuite) testPeriodicVestingAccount(api string) { //nolint:unused
+
 	s.Run("test periodic vesting genesis account", func() {
 		var (
 			valIdx              = 0
@@ -205,7 +204,7 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api string) { //nolint
 			val                 = chain.validators[valIdx]
 			periodicVestingAddr = chain.genesisVestingAccounts[periodicVestingKey].String()
 		)
-		sender := val.keyInfo.GetAddress()
+		sender, _ := val.keyInfo.GetAddress()
 		valOpAddr := sdk.ValAddress(sender).String()
 
 		s.execCreatePeriodicVestingAccount(
@@ -224,7 +223,8 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api string) { //nolint
 
 		expectedBalance := sdk.NewCoin(uatomDenom, sdk.NewInt(0))
 		for _, period := range acc.VestingPeriods {
-			_, coin := ante.Find(period.Amount, uatomDenom)
+			// _, coin := ante.Find(period.Amount, uatomDenom)
+			_, coin := period.Amount.Find(uatomDenom)
 			expectedBalance = expectedBalance.Add(coin)
 		}
 		s.Require().Equal(expectedBalance, balance)
@@ -267,7 +267,7 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api string) { //nolint
 		}
 
 		// Delegate coins should succeed
-		s.executeDelegate(chain, valIdx, vestingDelegationAmount.String(), valOpAddr,
+		s.execDelegate(chain, valIdx, vestingDelegationAmount.String(), valOpAddr,
 			periodicVestingAddr, gaiaHomePath, vestingDelegationFees.String())
 
 		// Validate delegation successful

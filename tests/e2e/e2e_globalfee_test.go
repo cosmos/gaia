@@ -60,9 +60,9 @@ test6: gov propose change back to initial globalfee = 0.00001photon, This is for
 func (s *IntegrationTestSuite) testGlobalFees() {
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
-	submitterAddr := s.chainA.validators[0].keyInfo.GetAddress()
+	submitterAddr, _ := s.chainA.validators[0].keyInfo.GetAddress()
 	submitter := submitterAddr.String()
-	recipientAddress := s.chainA.validators[1].keyInfo.GetAddress()
+	recipientAddress, _ := s.chainA.validators[1].keyInfo.GetAddress()
 	recipient := recipientAddress.String()
 
 	var beforeRecipientPhotonBalance sdk.Coin

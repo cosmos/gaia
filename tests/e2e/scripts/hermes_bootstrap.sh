@@ -47,7 +47,7 @@ port = 3001
 id = '$GAIA_A_E2E_CHAIN_ID'
 rpc_addr = 'http://$GAIA_A_E2E_VAL_HOST:26657'
 grpc_addr = 'http://$GAIA_A_E2E_VAL_HOST:9090'
-websocket_addr = 'ws://$GAIA_A_E2E_VAL_HOST:26657/websocket'
+event_source = { mode = "push", url = "ws://$GAIA_A_E2E_VAL_HOST:26657/websocket", batch_delay = "50ms" }
 rpc_timeout = '10s'
 account_prefix = 'cosmos'
 key_name = 'rly01-gaia-a'
@@ -63,7 +63,7 @@ trust_threshold = { numerator = '1', denominator = '3' }
 id = '$GAIA_B_E2E_CHAIN_ID'
 rpc_addr = 'http://$GAIA_B_E2E_VAL_HOST:26657'
 grpc_addr = 'http://$GAIA_B_E2E_VAL_HOST:9090'
-websocket_addr = 'ws://$GAIA_B_E2E_VAL_HOST:26657/websocket'
+event_source = { mode = "push", url = "ws://$GAIA_B_E2E_VAL_HOST:26657/websocket", batch_delay = "50ms" }
 rpc_timeout = '10s'
 account_prefix = 'cosmos'
 key_name = 'rly01-gaia-b'
@@ -83,3 +83,4 @@ hermes keys add  --key-name rly01-gaia-a  --chain $GAIA_A_E2E_CHAIN_ID --mnemoni
 sleep 5
 # start Hermes relayer
 hermes start
+# hermes listen --chain $GAIA_B_E2E_CHAIN_ID

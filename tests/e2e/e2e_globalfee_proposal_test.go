@@ -6,7 +6,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	gov "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 )
 
@@ -20,14 +20,14 @@ func (s *IntegrationTestSuite) govProposeNewGlobalfee(newGlobalfee sdk.DecCoins,
 	// gov proposing new fees
 	s.T().Logf("Proposal number: %d", proposalCounter)
 	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change global fee to %s", newGlobalfee.String())
-	s.runGovProcess(chainAAPIEndpoint, submitter, proposalCounter, paramtypes.ProposalTypeChange, submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
+	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, proposalCounter, paramtypes.ProposalTypeChange, submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
 
 	// query the proposal status and new fee
 	s.Require().Eventually(
 		func() bool {
 			proposal, err := queryGovProposal(chainAAPIEndpoint, proposalCounter)
 			s.Require().NoError(err)
-			return proposal.GetProposal().Status == gov.StatusPassed
+			return proposal.GetProposal().Status == govv1beta1.StatusPassed
 		},
 		15*time.Second,
 		5*time.Second,
@@ -57,14 +57,14 @@ func (s *IntegrationTestSuite) govProposeNewBypassMsgs(newBypassMsgs []string, p
 	// gov proposing new fees
 	s.T().Logf("Proposal number: %d", proposalCounter)
 	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change bypass min fee msg types to %s", newBypassMsgs)
-	s.runGovProcess(chainAAPIEndpoint, submitter, proposalCounter, paramtypes.ProposalTypeChange, submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
+	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, proposalCounter, paramtypes.ProposalTypeChange, submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
 
 	// query the proposal status and new fee
 	s.Require().Eventually(
 		func() bool {
 			proposal, err := queryGovProposal(chainAAPIEndpoint, proposalCounter)
 			s.Require().NoError(err)
-			return proposal.GetProposal().Status == gov.StatusPassed
+			return proposal.GetProposal().Status == govv1beta1.StatusPassed
 		},
 		15*time.Second,
 		5*time.Second,
@@ -95,14 +95,14 @@ func (s *IntegrationTestSuite) govProposeNewMaxTotalBypassMinFeeMsgGasUsage(newG
 	// gov proposing new max gas usage for bypass msgs
 	s.T().Logf("Proposal number: %d", proposalCounter)
 	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: change maxTotalBypassMinFeeMsgGasUsage to %d", newGas)
-	s.runGovProcess(chainAAPIEndpoint, submitter, proposalCounter, paramtypes.ProposalTypeChange, submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
+	s.submitLegacyGovProposal(chainAAPIEndpoint, submitter, proposalCounter, paramtypes.ProposalTypeChange, submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
 
 	// query the proposal status and max gas usage for bypass msgs
 	s.Require().Eventually(
 		func() bool {
 			proposal, err := queryGovProposal(chainAAPIEndpoint, proposalCounter)
 			s.Require().NoError(err)
-			return proposal.GetProposal().Status == gov.StatusPassed
+			return proposal.GetProposal().Status == govv1beta1.StatusPassed
 		},
 		15*time.Second,
 		5*time.Second,

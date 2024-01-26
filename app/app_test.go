@@ -4,8 +4,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/libs/log"
-	db "github.com/tendermint/tm-db"
+
+	db "github.com/cometbft/cometbft-db"
+	"github.com/cometbft/cometbft/libs/log"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -21,6 +22,7 @@ func (ao EmptyAppOptions) Get(_ string) interface{} {
 }
 
 func TestGaiaApp_BlockedModuleAccountAddrs(t *testing.T) {
+	encConfig := gaia.RegisterEncodingConfig()
 	app := gaia.NewGaiaApp(
 		log.NewNopLogger(),
 		db.NewMemDB(),
@@ -28,10 +30,10 @@ func TestGaiaApp_BlockedModuleAccountAddrs(t *testing.T) {
 		true,
 		map[int64]bool{},
 		gaia.DefaultNodeHome,
-		0,
-		gaia.MakeTestEncodingConfig(),
+		encConfig,
 		EmptyAppOptions{},
 	)
+
 	moduleAccountAddresses := app.ModuleAccountAddrs()
 	blockedAddrs := app.BlockedModuleAccountAddrs(moduleAccountAddresses)
 
@@ -40,6 +42,6 @@ func TestGaiaApp_BlockedModuleAccountAddrs(t *testing.T) {
 
 func TestGaiaApp_Export(t *testing.T) {
 	app := gaiahelpers.Setup(t)
-	_, err := app.ExportAppStateAndValidators(true, []string{})
+	_, err := app.ExportAppStateAndValidators(true, []string{}, []string{})
 	require.NoError(t, err, "ExportAppStateAndValidators should not have an error")
 }

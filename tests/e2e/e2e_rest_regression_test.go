@@ -5,43 +5,42 @@ import (
 	"net/http"
 )
 
-/*
-RestRegression tests the continuity of critical endpoints that node operators, block explorers, and ecosystem participants depend on.
-Test Node REST Endpoints:
-1. http://host:1317/validatorsets/latest
-2. http://host:1317/validatorsets/{height}
-3. http://host:1317/blocks/latest
-4. http://host:1317/blocks/{height}
-5. http://host:1317/syncing
-6. http://host:1317/node_info
-7. http://host:1317/txs
-Test Module REST Endpoints
-1. Bank total
-2. Auth params
-3. Distribution for Community Pool
-4. Evidence
-5. Gov proposals
-6. Mint params
-7. Slashing params
-8. Staking params
-*/
-
+// /*
+// RestRegression tests the continuity of critical endpoints that node operators, block explorers, and ecosystem participants depend on.
+// Test Node REST Endpoints:
+// 1. http://host:1317/validatorsets/latest
+// 2. http://host:1317/validatorsets/{height}
+// 3. http://host:1317/blocks/latest
+// 4. http://host:1317/blocks/{height}
+// 5. http://host:1317/syncing
+// 6. http://host:1317/node_info
+// 7. http://host:1317/txs
+// Test Module REST Endpoints
+// 1. Bank total
+// 2. Auth params
+// 3. Distribution for Community Pool
+// 4. Evidence
+// 5. Gov proposals
+// 6. Mint params
+// 7. Slashing params
+// 8. Staking params
+// */
 const (
-	valSetLatestPath                    = "/validatorsets/latest"
-	valSetHeightPath                    = "/validatorsets/1"
-	blocksLatestPath                    = "/blocks/latest"
-	blocksHeightPath                    = "/blocks/1"
-	syncingPath                         = "/syncing"
-	nodeInfoPath                        = "/node_info"
-	transactionsPath                    = "/txs"
-	bankTotalModuleQueryPath            = "/bank/total"
-	authParamsModuleQueryPath           = "/auth/params"
-	distributionCommPoolModuleQueryPath = "/distribution/community_pool"
-	evidenceModuleQueryPath             = "/evidence"
-	govPropsModuleQueryPath             = "/gov/proposals"
-	mintingParamsModuleQueryPath        = "/minting/parameters"
-	slashingParamsModuleQueryPath       = "/slashing/parameters"
-	stakingParamsModuleQueryPath        = "/staking/parameters"
+	valSetLatestPath                    = "/cosmos/base/tendermint/v1beta1/validatorsets/latest"
+	valSetHeightPath                    = "/cosmos/base/tendermint/v1beta1/validatorsets/1"
+	blocksLatestPath                    = "/cosmos/base/tendermint/v1beta1/blocks/latest"
+	blocksHeightPath                    = "/cosmos/base/tendermint/v1beta1/blocks/1"
+	syncingPath                         = "/cosmos/base/tendermint/v1beta1/syncing"
+	nodeInfoPath                        = "/cosmos/base/tendermint/v1beta1/node_info"
+	transactionsPath                    = "/cosmos/tx/v1beta1/txs?events=tx.height=9999999999"
+	bankTotalModuleQueryPath            = "/cosmos/bank/v1beta1/supply"
+	authParamsModuleQueryPath           = "/cosmos/auth/v1beta1/params"
+	distributionCommPoolModuleQueryPath = "/cosmos/distribution/v1beta1/community_pool"
+	evidenceModuleQueryPath             = "/cosmos/evidence/v1beta1/evidence"
+	govPropsModuleQueryPath             = "/cosmos/gov/v1beta1/proposals"
+	mintParamsModuleQueryPath           = "/cosmos/mint/v1beta1/params"
+	slashingParamsModuleQueryPath       = "/cosmos/slashing/v1beta1/params"
+	stakingParamsModuleQueryPath        = "/cosmos/staking/v1beta1/params"
 	missingPath                         = "/missing_endpoint"
 	localMinGasPriceQueryPath           = "/cosmos/base/node/v1beta1/config"
 )
@@ -70,11 +69,10 @@ func (s *IntegrationTestSuite) testRestInterfaces() {
 				{distributionCommPoolModuleQueryPath, 200},
 				{evidenceModuleQueryPath, 200},
 				{govPropsModuleQueryPath, 200},
-				{mintingParamsModuleQueryPath, 200},
+				{mintParamsModuleQueryPath, 200},
 				{slashingParamsModuleQueryPath, 200},
 				{stakingParamsModuleQueryPath, 200},
 				{missingPath, 501},
-				// node config Endpoint
 				{localMinGasPriceQueryPath, 200},
 			}
 		)
@@ -86,7 +84,7 @@ func (s *IntegrationTestSuite) testRestInterfaces() {
 			_, err = readJSON(resp)
 			s.NoError(err, fmt.Sprintf("failed to read body of endpoint: %s%s", endpointURL, endpoint.Path))
 
-			s.EqualValues(resp.StatusCode, endpoint.ExpectedStatus)
+			s.EqualValues(resp.StatusCode, endpoint.ExpectedStatus, fmt.Sprintf("invalid status from endpoint: : %s%s", endpointURL, endpoint.Path))
 		}
 	})
 }

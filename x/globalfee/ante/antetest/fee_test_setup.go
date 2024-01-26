@@ -4,8 +4,9 @@ import (
 	"fmt"
 
 	"github.com/stretchr/testify/suite"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+
+	tmrand "github.com/cometbft/cometbft/libs/rand"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -14,11 +15,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
-	"github.com/cosmos/cosmos-sdk/x/params/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	gaiaapp "github.com/cosmos/gaia/v15/app"
 	gaiahelpers "github.com/cosmos/gaia/v15/app/helpers"
+	gaiaparams "github.com/cosmos/gaia/v15/app/params"
 	"github.com/cosmos/gaia/v15/x/globalfee"
 	gaiafeeante "github.com/cosmos/gaia/v15/x/globalfee/ante"
 	globfeetypes "github.com/cosmos/gaia/v15/x/globalfee/types"
@@ -42,7 +42,7 @@ func (s *IntegrationTestSuite) SetupTest() {
 		Height:  1,
 	})
 
-	encodingConfig := gaiaapp.MakeTestEncodingConfig()
+	encodingConfig := gaiaparams.MakeEncodingConfig()
 	encodingConfig.Amino.RegisterConcrete(&testdata.TestMsg{}, "testdata.TestMsg", nil)
 	testdata.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 
@@ -56,24 +56,20 @@ func (s *IntegrationTestSuite) SetupTestGlobalFeeStoreAndMinGasPrice(minGasPrice
 	subspace.SetParamSet(s.ctx, globalFeeParams)
 	s.ctx = s.ctx.WithMinGasPrices(minGasPrice).WithIsCheckTx(true)
 
-	// set staking params
-	stakingParam := stakingtypes.DefaultParams()
-	stakingParam.BondDenom = testBondDenom
-	stakingSubspace := s.SetupTestStakingSubspace(stakingParam)
+	// setup staking bond denom to "uatom"
+	// since it's "stake" per default
+	params := s.app.StakingKeeper.GetParams(s.ctx)
+	params.BondDenom = testBondDenom
+	err := s.app.StakingKeeper.SetParams(s.ctx, params)
+	s.Require().NoError(err)
 
 	// build fee decorator
-	feeDecorator := gaiafeeante.NewFeeDecorator(subspace, stakingSubspace)
+	feeDecorator := gaiafeeante.NewFeeDecorator(subspace, s.app.StakingKeeper)
 
 	// chain fee decorator to antehandler
 	antehandler := sdk.ChainAnteDecorators(feeDecorator)
 
 	return feeDecorator, antehandler
-}
-
-// SetupTestStakingSubspace sets uatom as bond denom for the fee tests.
-func (s *IntegrationTestSuite) SetupTestStakingSubspace(params stakingtypes.Params) types.Subspace {
-	s.app.GetSubspace(stakingtypes.ModuleName).SetParamSet(s.ctx, &params)
-	return s.app.GetSubspace(stakingtypes.ModuleName)
 }
 
 func (s *IntegrationTestSuite) CreateTestTx(privs []cryptotypes.PrivKey, accNums []uint64, accSeqs []uint64, chainID string) (xauthsigning.Tx, error) {

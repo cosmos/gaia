@@ -1,6 +1,7 @@
 package e2e
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -100,6 +101,7 @@ func (s *IntegrationTestSuite) hermesClearPacket(configPath, chainID, channelID 
 	}
 
 	stdout, stderr := s.executeHermesCommand(ctx, hermesCmd)
+
 	if strings.Contains(string(stdout), "ERROR") || strings.Contains(string(stderr), "ERROR") {
 		return false
 	}
@@ -110,10 +112,10 @@ func (s *IntegrationTestSuite) hermesClearPacket(configPath, chainID, channelID 
 type RelayerPacketsOutput struct {
 	Result struct {
 		Dst struct {
-			UnreceivedPackets []interface{} `json:"unreceived_packets"`
+			UnreceivedPackets []uint64 `json:"unreceived_packets"`
 		} `json:"dst"`
 		Src struct {
-			UnreceivedPackets []interface{} `json:"unreceived_packets"`
+			UnreceivedPackets []uint64 `json:"unreceived_packets"`
 		} `json:"src"`
 	} `json:"result"`
 	Status string `json:"status"`
@@ -135,10 +137,17 @@ func (s *IntegrationTestSuite) hermesPendingPackets(configPath, chainID, channel
 	}
 
 	stdout, _ := s.executeHermesCommand(ctx, hermesCmd)
+	reader := bytes.NewReader(stdout)
+	sc := bufio.NewScanner(reader)
 
 	var relayerPacketsOutput RelayerPacketsOutput
-	err := json.Unmarshal(stdout, &relayerPacketsOutput)
-	s.Require().NoError(err)
+
+	//  TODO: check why no error is never returned
+	// works atm because the last line of stdout is always the query output
+	for sc.Scan() {
+		sc.Bytes()
+		_ = json.Unmarshal(sc.Bytes(), &relayerPacketsOutput)
+	}
 
 	// Check if "unreceived_packets" exists in "src"
 	return len(relayerPacketsOutput.Result.Src.UnreceivedPackets) != 0
@@ -146,16 +155,18 @@ func (s *IntegrationTestSuite) hermesPendingPackets(configPath, chainID, channel
 
 func (s *IntegrationTestSuite) queryRelayerWalletsBalances() (sdk.Coin, sdk.Coin) {
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	acctAddrChainA, _ := s.chainA.genesisAccounts[relayerAccountIndexHermes1].keyInfo.GetAddress()
 	scrRelayerBalance, err := getSpecificBalance(
 		chainAAPIEndpoint,
-		s.chainA.genesisAccounts[relayerAccountIndexHermes1].keyInfo.GetAddress().String(),
+		acctAddrChainA.String(),
 		uatomDenom)
 	s.Require().NoError(err)
 
 	chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
+	acctAddrChainB, _ := s.chainB.genesisAccounts[relayerAccountIndexHermes1].keyInfo.GetAddress()
 	dstRelayerBalance, err := getSpecificBalance(
 		chainBAPIEndpoint,
-		s.chainB.genesisAccounts[relayerAccountIndexHermes1].keyInfo.GetAddress().String(),
+		acctAddrChainB.String(),
 		uatomDenom)
 	s.Require().NoError(err)
 
@@ -231,6 +242,7 @@ func (s *IntegrationTestSuite) createChannel() {
 			"--dst-port=transfer",
 		},
 	})
+
 	s.Require().NoError(err)
 
 	var (
@@ -244,6 +256,7 @@ func (s *IntegrationTestSuite) createChannel() {
 		OutputStream: &outBuf,
 		ErrorStream:  &errBuf,
 	})
+
 	s.Require().NoErrorf(
 		err,
 		"failed connect chains; stdout: %s, stderr: %s", outBuf.String(), errBuf.String(),
@@ -262,10 +275,10 @@ func (s *IntegrationTestSuite) testIBCTokenTransfer() {
 			ibcStakeDenom string
 		)
 
-		address := s.chainA.validators[0].keyInfo.GetAddress()
+		address, _ := s.chainA.validators[0].keyInfo.GetAddress()
 		sender := address.String()
 
-		address = s.chainB.validators[0].keyInfo.GetAddress()
+		address, _ = s.chainB.validators[0].keyInfo.GetAddress()
 		recipient := address.String()
 
 		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
@@ -331,13 +344,13 @@ func (s *IntegrationTestSuite) testMultihopIBCTokenTransfer() {
 			err error
 		)
 
-		address := s.chainA.validators[0].keyInfo.GetAddress()
+		address, _ := s.chainA.validators[0].keyInfo.GetAddress()
 		sender := address.String()
 
-		address = s.chainB.validators[0].keyInfo.GetAddress()
+		address, _ = s.chainB.validators[0].keyInfo.GetAddress()
 		middlehop := address.String()
 
-		address = s.chainA.validators[1].keyInfo.GetAddress()
+		address, _ = s.chainA.validators[1].keyInfo.GetAddress()
 		recipient := address.String()
 
 		forwardPort := "transfer"
@@ -356,11 +369,9 @@ func (s *IntegrationTestSuite) testMultihopIBCTokenTransfer() {
 			func() bool {
 				beforeSenderUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
 				s.Require().NoError(err)
-				fmt.Println("beforeSenderUAtomBalance", beforeSenderUAtomBalance)
 
 				beforeRecipientUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, recipient, uatomDenom)
 				s.Require().NoError(err)
-				fmt.Print("beforeRecipientUAtomBalance", beforeRecipientUAtomBalance)
 
 				return beforeSenderUAtomBalance.IsValid() && beforeRecipientUAtomBalance.IsValid()
 			},
@@ -408,13 +419,13 @@ func (s *IntegrationTestSuite) testFailedMultihopIBCTokenTransfer() {
 	time.Sleep(30 * time.Second)
 
 	s.Run("send_failed_multihop_uatom_to_chainA_from_chainA", func() {
-		address := s.chainA.validators[0].keyInfo.GetAddress()
+		address, _ := s.chainA.validators[0].keyInfo.GetAddress()
 		sender := address.String()
 
-		address = s.chainB.validators[0].keyInfo.GetAddress()
+		address, _ = s.chainB.validators[0].keyInfo.GetAddress()
 		middlehop := address.String()
 
-		address = s.chainA.validators[1].keyInfo.GetAddress()
+		address, _ = s.chainA.validators[1].keyInfo.GetAddress()
 		recipient := strings.Replace(address.String(), "cosmos", "foobar", 1) // this should be an invalid recipient to force the tx to fail
 
 		forwardPort := "transfer"

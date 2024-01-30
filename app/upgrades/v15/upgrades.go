@@ -58,7 +58,7 @@ func CreateUpgradeHandler(
 			keepers); err != nil {
 			return nil, fmt.Errorf("failed migrating vesting funds: %s", err)
 		}
-		if err := setMinInitialDepositRatio(ctx, *keepers.GovKeeper); err != nil {
+		if err := SetMinInitialDepositRatio(ctx, *keepers.GovKeeper); err != nil {
 			return nil, fmt.Errorf("failed initializing the min initial deposit ratio: %s", err)
 		}
 
@@ -331,7 +331,7 @@ func setBalance(
 // SetMinInitialDepositRatio sets the MinInitialDepositRatio param of the gov
 // module to 10% - this is the proportion of the deposit value that must be paid
 // at proposal submission.
-func setMinInitialDepositRatio(ctx sdk.Context, gk govkeeper.Keeper) error {
+func SetMinInitialDepositRatio(ctx sdk.Context, gk govkeeper.Keeper) error {
 	ctx.Logger().Info("Initializing MinInitialDepositRatio...")
 
 	params := gk.GetParams(ctx)

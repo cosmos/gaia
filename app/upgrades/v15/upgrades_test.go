@@ -270,3 +270,15 @@ func TestClawbackVestingFunds(t *testing.T) {
 	)
 	require.NoError(t, err)
 }
+
+func TestSetMinInitialDepositRatio(t *testing.T) {
+	gaiaApp := helpers.Setup(t)
+	ctx := gaiaApp.NewUncachedContext(true, tmproto.Header{})
+
+	v15.SetMinInitialDepositRatio(ctx, *gaiaApp.GovKeeper)
+
+	minInitialDepositRatioStr := gaiaApp.GovKeeper.GetParams(ctx).MinInitialDepositRatio
+	minInitialDepositRatio, err := math.LegacyNewDecFromStr(minInitialDepositRatioStr)
+	require.NoError(t, err)
+	require.True(t, minInitialDepositRatio.Equal(sdk.NewDecWithPrec(1, 1)))
+}

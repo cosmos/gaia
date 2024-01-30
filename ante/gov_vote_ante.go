@@ -74,10 +74,8 @@ func (g GovVoteDecorator) ValidateVoteMsgs(ctx sdk.Context, msgs []sdk.Msg) erro
 					}
 				}
 				delegationCount++
-				if delegationCount >= maxDelegationsChecked {
-					return true // break the iteration
-				}
-				return false // continue iterating
+				// break the iteration if maxDelegationsChecked were already checked
+				return delegationCount >= maxDelegationsChecked
 			})
 			if !enoughStake {
 				return errorsmod.Wrapf(gaiaerrors.ErrInsufficientStake, "insufficient stake for voting - min required %v", minStakedTokens)

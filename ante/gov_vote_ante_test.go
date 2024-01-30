@@ -3,15 +3,19 @@ package ante_test
 import (
 	"testing"
 
-	"cosmossdk.io/math"
+	"github.com/stretchr/testify/require"
+
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+
+	"cosmossdk.io/math"
+
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
 	"github.com/cosmos/gaia/v15/ante"
 	"github.com/cosmos/gaia/v15/app/helpers"
-	"github.com/stretchr/testify/require"
 )
 
 func TestVoteSpamDecorator(t *testing.T) {
@@ -88,7 +92,8 @@ func TestVoteSpamDecorator(t *testing.T) {
 		// Unbond all tokens for this delegator
 		delegations := stakingKeeper.GetAllDelegatorDelegations(ctx, delegator)
 		for _, del := range delegations {
-			stakingKeeper.Undelegate(ctx, delegator, del.GetValidatorAddr(), del.GetShares())
+			_, err := stakingKeeper.Undelegate(ctx, delegator, del.GetValidatorAddr(), del.GetShares())
+			require.NoError(t, err)
 		}
 
 		// Delegate tokens

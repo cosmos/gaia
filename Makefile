@@ -119,13 +119,12 @@ vulncheck: $(BUILDDIR)/
 build-linux: go.sum
 	LEDGER_ENABLED=false GOOS=linux GOARCH=amd64 $(MAKE) build
 
-go-mod-cache: go.sum
-	@echo "--> Download go modules to local cache"
-	@go mod download
-
 go.sum: go.mod
 	@echo "--> Ensure dependencies have not been modified"
-	@go mod verify
+	go mod verify
+	go mod tidy
+	@echo "--> Download go modules to local cache"
+	go mod download
 
 draw-deps:
 	@# requires brew install graphviz or apt-get install graphviz
@@ -292,7 +291,7 @@ test-docker-push: test-docker
 	@docker push ${TEST_DOCKER_REPO}:$(shell git rev-parse --abbrev-ref HEAD | sed 's#/#_#g')
 	@docker push ${TEST_DOCKER_REPO}:latest
 
-.PHONY: all build-linux install format lint go-mod-cache draw-deps clean build \
+.PHONY: all build-linux install format lint draw-deps clean build \
 	docker-build-debug docker-build-hermes docker-build-all
 
 

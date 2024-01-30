@@ -14,21 +14,18 @@ var (
 	ErrUnauthorized = errorsmod.Register(codespace, 2, "unauthorized")
 
 	// ErrInsufficientFunds is used when the account cannot pay requested amount.
-	ErrInsufficientFunds = errorsmod.Register(codespace, 3, "insufficient funds")
-
-	// ErrInsufficientFunds is used when the account cannot pay requested amount.
-	ErrInsufficientFee = errorsmod.Register(codespace, 4, "insufficient fee")
+	ErrInsufficientFee = errorsmod.Register(codespace, 3, "insufficient fee")
 
 	// ErrInvalidCoins is used when sdk.Coins are invalid.
-	ErrInvalidCoins = errorsmod.Register(codespace, 5, "invalid coins")
+	ErrInvalidCoins = errorsmod.Register(codespace, 4, "invalid coins")
 
 	// ErrInvalidType defines an error an invalid type.
-	ErrInvalidType = errorsmod.Register(codespace, 6, "invalid type")
+	ErrInvalidType = errorsmod.Register(codespace, 5, "invalid type")
 
 	// ErrLogic defines an internal logic error, e.g. an invariant or assertion
 	// that is violated. It is a programmer error, not a user-facing error.
-	ErrLogic = errorsmod.Register(codespace, 7, "internal logic error")
+	ErrLogic = errorsmod.Register(codespace, 6, "internal logic error")
 
 	// ErrNotFound defines an error when requested entity doesn't exist in the state.
-	ErrNotFound = errorsmod.Register(codespace, 8, "not found")
+	ErrNotFound = errorsmod.Register(codespace, 7, "not found")
 )

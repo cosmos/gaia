@@ -275,7 +275,8 @@ func TestSetMinInitialDepositRatio(t *testing.T) {
 	gaiaApp := helpers.Setup(t)
 	ctx := gaiaApp.NewUncachedContext(true, tmproto.Header{})
 
-	v15.SetMinInitialDepositRatio(ctx, *gaiaApp.GovKeeper)
+	err := v15.SetMinInitialDepositRatio(ctx, *gaiaApp.GovKeeper)
+	require.NoError(t, err)
 
 	minInitialDepositRatioStr := gaiaApp.GovKeeper.GetParams(ctx).MinInitialDepositRatio
 	minInitialDepositRatio, err := math.LegacyNewDecFromStr(minInitialDepositRatioStr)

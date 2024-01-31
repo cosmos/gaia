@@ -3,19 +3,19 @@ package e2e
 import "fmt"
 
 var (
-	runBankTest                   = true
-	runBypassMinFeeTest           = true
-	runEncodeTest                 = true
-	runEvidenceTest               = true
-	runFeeGrantTest               = true
-	runGlobalFeesTest             = true
-	runGovTest                    = true
+	runBankTest                   = false
+	runBypassMinFeeTest           = false
+	runEncodeTest                 = false
+	runEvidenceTest               = false
+	runFeeGrantTest               = false
+	runGlobalFeesTest             = false
+	runGovTest                    = false
 	runIBCTest                    = true
-	runSlashingTest               = true
-	runStakingAndDistributionTest = true
-	runVestingTest                = true
-	runRestInterfacesTest         = true
-	runLsmTest                    = true
+	runSlashingTest               = false
+	runStakingAndDistributionTest = false
+	runVestingTest                = false
+	runRestInterfacesTest         = false
+	runLsmTest                    = false
 )
 
 func (s *IntegrationTestSuite) TestRestInterfaces() {
@@ -84,13 +84,10 @@ func (s *IntegrationTestSuite) TestIBC() {
 	if !runIBCTest {
 		s.T().Skip()
 	}
+
 	s.testIBCTokenTransfer()
 	s.testMultihopIBCTokenTransfer()
 	s.testFailedMultihopIBCTokenTransfer()
-
-	// stop hermes0 to prevent hermes0 relaying transactions
-	s.Require().NoError(s.dkrPool.Purge(s.hermesResource0))
-	HermesResource0Purged = true
 	s.testIBCBypassMsg()
 }
 

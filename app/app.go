@@ -225,7 +225,6 @@ func NewGaiaApp(
 			},
 			Codec:             appCodec,
 			IBCkeeper:         app.IBCKeeper,
-			GovKeeper:         app.GovKeeper,
 			GlobalFeeSubspace: app.GetSubspace(globalfee.ModuleName),
 			StakingKeeper:     app.StakingKeeper,
 			// If TxFeeChecker is nil the default ante TxFeeChecker is used

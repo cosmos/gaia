@@ -9,7 +9,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
-	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 
@@ -22,7 +21,6 @@ import (
 type HandlerOptions struct {
 	ante.HandlerOptions
 	Codec             codec.BinaryCodec
-	GovKeeper         *govkeeper.Keeper
 	IBCkeeper         *ibckeeper.Keeper
 	GlobalFeeSubspace paramtypes.Subspace
 	StakingKeeper     *stakingkeeper.Keeper
@@ -50,9 +48,6 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 	if opts.StakingKeeper == nil {
 		return nil, errorsmod.Wrap(gaiaerrors.ErrNotFound, "staking param store is required for AnteHandler")
 	}
-	if opts.GovKeeper == nil {
-		return nil, errorsmod.Wrap(gaiaerrors.ErrLogic, "gov keeper is required for AnteHandler")
-	}
 
 	sigGasConsumer := opts.SigGasConsumer
 	if sigGasConsumer == nil {
@@ -66,7 +61,7 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(opts.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
-		NewGovPreventSpamDecorator(opts.Codec, opts.GovKeeper),
+		NewGovVoteDecorator(opts.Codec, opts.StakingKeeper),
 		gaiafeeante.NewFeeDecorator(opts.GlobalFeeSubspace, opts.StakingKeeper),
 		ante.NewDeductFeeDecorator(opts.AccountKeeper, opts.BankKeeper, opts.FeegrantKeeper, opts.TxFeeChecker),
 		ante.NewSetPubKeyDecorator(opts.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators

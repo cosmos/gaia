@@ -31,4 +31,7 @@ var (
 
 	// ErrNotFound defines an error when requested entity doesn't exist in the state.
 	ErrNotFound = errorsmod.Register(codespace, 8, "not found")
+
+	// ErrInsufficientStake is used when the account has insufficient staked tokens.
+	ErrInsufficientStake = errorsmod.Register(codespace, 9, "insufficient stake")
 )

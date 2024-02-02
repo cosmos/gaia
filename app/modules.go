@@ -144,6 +144,7 @@ func appModules(
 		ibc.NewAppModule(app.IBCKeeper),
 		sdkparams.NewAppModule(app.ParamsKeeper),
 		globalfee.NewAppModule(app.GetSubspace(globalfee.ModuleName)),
+		consensus.NewAppModule(appCodec, app.ConsensusParamsKeeper),
 		app.TransferModule,
 		app.ICAModule,
 		app.PFMRouterModule,

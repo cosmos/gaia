@@ -331,7 +331,9 @@ func NewAppKeeper(
 	appKeepers.GovKeeper.SetLegacyRouter(govRouter)
 
 	appKeepers.GovKeeper = appKeepers.GovKeeper.SetHooks(
-		appKeepers.ProviderKeeper.Hooks(),
+		govtypes.NewMultiGovHooks(
+			appKeepers.ProviderKeeper.Hooks(),
+		),
 	)
 
 	evidenceKeeper := evidencekeeper.NewKeeper(

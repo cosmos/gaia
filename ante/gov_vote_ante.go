@@ -76,6 +76,10 @@ func (g GovVoteDecorator) ValidateVoteMsgs(ctx sdk.Context, msgs []sdk.Msg) erro
 			return nil
 		}
 
+		if minStakedTokens.IsZero() {
+			return nil
+		}
+
 		enoughStake := false
 		delegationCount := 0
 		stakedTokens := sdk.NewDec(0)

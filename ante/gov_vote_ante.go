@@ -19,6 +19,12 @@ var (
 	maxDelegationsChecked = 100                 // number of delegation to check for the minStakedTokens
 )
 
+// SetMinStakedTokens sets the minimum amount of staked tokens required to vote
+// Should only be used in testing
+func SetMinStakedTokens(tokens sdk.Dec) {
+	minStakedTokens = tokens
+}
+
 type GovVoteDecorator struct {
 	stakingKeeper *stakingkeeper.Keeper
 	cdc           codec.BinaryCodec

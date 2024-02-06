@@ -12,6 +12,8 @@ import (
 	dbm "github.com/cometbft/cometbft-db"
 	"github.com/cometbft/cometbft/libs/log"
 
+	"cosmossdk.io/math"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server"
@@ -21,6 +23,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 
+	"github.com/cosmos/gaia/v15/ante"
 	gaia "github.com/cosmos/gaia/v15/app"
 	// "github.com/cosmos/gaia/v11/app/helpers"
 	// "github.com/cosmos/gaia/v11/app/params"
@@ -96,6 +99,10 @@ func TestAppStateDeterminism(t *testing.T) {
 				interBlockCacheOpt(),
 				baseapp.SetChainID(AppChainID),
 			)
+
+			// NOTE: setting to zero to avoid failing the simulation
+			// due to the minimum staked tokens required to submit a vote
+			ante.SetMinStakedTokens(math.LegacyZeroDec())
 
 			fmt.Printf(
 				"running non-determinism simulation; seed %d: %d/%d, attempt: %d/%d\n",

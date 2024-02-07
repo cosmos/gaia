@@ -6,6 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
+	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -17,6 +18,12 @@ var (
 	minStakedTokens       = sdk.NewDec(1000000) // 1_000_000 uatom (or 1 atom)
 	maxDelegationsChecked = 100                 // number of delegation to check for the minStakedTokens
 )
+
+// SetMinStakedTokens sets the minimum amount of staked tokens required to vote
+// Should only be used in testing
+func SetMinStakedTokens(tokens sdk.Dec) {
+	minStakedTokens = tokens
+}
 
 type GovVoteDecorator struct {
 	stakingKeeper *stakingkeeper.Keeper
@@ -50,36 +57,54 @@ func (g GovVoteDecorator) AnteHandle(
 // ValidateVoteMsgs checks if a voter has enough stake to vote
 func (g GovVoteDecorator) ValidateVoteMsgs(ctx sdk.Context, msgs []sdk.Msg) error {
 	validMsg := func(m sdk.Msg) error {
-		if msg, ok := m.(*govv1beta1.MsgVote); ok {
-			accAddr, err := sdk.AccAddressFromBech32(msg.Voter)
+		var accAddr sdk.AccAddress
+		var err error
+
+		switch msg := m.(type) {
+		case *govv1beta1.MsgVote:
+			accAddr, err = sdk.AccAddressFromBech32(msg.Voter)
 			if err != nil {
 				return err
 			}
-			enoughStake := false
-			delegationCount := 0
-			stakedTokens := sdk.NewDec(0)
-			g.stakingKeeper.IterateDelegatorDelegations(ctx, accAddr, func(delegation stakingtypes.Delegation) bool {
-				validatorAddr, err := sdk.ValAddressFromBech32(delegation.ValidatorAddress)
-				if err != nil {
-					panic(err) // shouldn't happen
-				}
-				validator, found := g.stakingKeeper.GetValidator(ctx, validatorAddr)
-				if found {
-					shares := delegation.Shares
-					tokens := validator.TokensFromSharesTruncated(shares)
-					stakedTokens = stakedTokens.Add(tokens)
-					if stakedTokens.GTE(minStakedTokens) {
-						enoughStake = true
-						return true // break the iteration
-					}
-				}
-				delegationCount++
-				// break the iteration if maxDelegationsChecked were already checked
-				return delegationCount >= maxDelegationsChecked
-			})
-			if !enoughStake {
-				return errorsmod.Wrapf(gaiaerrors.ErrInsufficientStake, "insufficient stake for voting - min required %v", minStakedTokens)
+		case *govv1.MsgVote:
+			accAddr, err = sdk.AccAddressFromBech32(msg.Voter)
+			if err != nil {
+				return err
 			}
+		default:
+			// not a vote message - nothing to validate
+			return nil
+		}
+
+		if minStakedTokens.IsZero() {
+			return nil
+		}
+
+		enoughStake := false
+		delegationCount := 0
+		stakedTokens := sdk.NewDec(0)
+		g.stakingKeeper.IterateDelegatorDelegations(ctx, accAddr, func(delegation stakingtypes.Delegation) bool {
+			validatorAddr, err := sdk.ValAddressFromBech32(delegation.ValidatorAddress)
+			if err != nil {
+				panic(err) // shouldn't happen
+			}
+			validator, found := g.stakingKeeper.GetValidator(ctx, validatorAddr)
+			if found {
+				shares := delegation.Shares
+				tokens := validator.TokensFromSharesTruncated(shares)
+				stakedTokens = stakedTokens.Add(tokens)
+				if stakedTokens.GTE(minStakedTokens) {
+					enoughStake = true
+					return true // break the iteration
+				}
+			}
+			delegationCount++
+			// break the iteration if maxDelegationsChecked were already checked
+			return delegationCount >= maxDelegationsChecked
+		})
+
+		if !enoughStake {
+			return errorsmod.Wrapf(gaiaerrors.ErrInsufficientStake, "insufficient stake for voting - min required %v", minStakedTokens)
 		}
 
 		return nil

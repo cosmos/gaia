@@ -331,7 +331,9 @@ func NewAppKeeper(
 	appKeepers.GovKeeper.SetLegacyRouter(govRouter)
 
 	appKeepers.GovKeeper = appKeepers.GovKeeper.SetHooks(
-		appKeepers.ProviderKeeper.Hooks(),
+		govtypes.NewMultiGovHooks(
+			appKeepers.ProviderKeeper.Hooks(),
+		),
 	)
 
 	evidenceKeeper := evidencekeeper.NewKeeper(
@@ -348,8 +350,7 @@ func NewAppKeeper(
 		appCodec,
 		appKeepers.keys[icahosttypes.StoreKey],
 		appKeepers.GetSubspace(icahosttypes.SubModuleName),
-		// TODO: Pass FeeKeeper as ics4Wrapper if enabled
-		nil,
+		appKeepers.IBCKeeper.ChannelKeeper, // ICS4Wrapper
 		appKeepers.IBCKeeper.ChannelKeeper,
 		&appKeepers.IBCKeeper.PortKeeper,
 		appKeepers.AccountKeeper,
@@ -384,12 +385,9 @@ func NewAppKeeper(
 	// Must be called on PFMRouter AFTER TransferKeeper initialized
 	appKeepers.PFMRouterKeeper.SetTransferKeeper(appKeepers.TransferKeeper)
 
-	// Create IBC Router
-	ibcRouter := porttypes.NewRouter()
-
 	// Middleware Stacks
-	appKeepers.TransferModule = transfer.NewAppModule(appKeepers.TransferKeeper)
 	appKeepers.ICAModule = ica.NewAppModule(nil, &appKeepers.ICAHostKeeper)
+	appKeepers.TransferModule = transfer.NewAppModule(appKeepers.TransferKeeper)
 	appKeepers.PFMRouterModule = pfmrouter.NewAppModule(appKeepers.PFMRouterKeeper, appKeepers.GetSubspace(pfmroutertypes.ModuleName))
 
 	// create IBC module from bottom to top of stack
@@ -404,17 +402,16 @@ func NewAppKeeper(
 	)
 
 	// Add transfer stack to IBC Router
-	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferStack)
 
 	// Create Interchain Accounts Stack
 	var icaHostStack porttypes.IBCModule = icahost.NewIBCModule(appKeepers.ICAHostKeeper)
 
-	// create static IBC router, add transfer route, then set and seal it
-	ibcRouter.
+	// Create IBC Router & seal
+	ibcRouter := porttypes.NewRouter().
 		AddRoute(icahosttypes.SubModuleName, icaHostStack).
+		AddRoute(ibctransfertypes.ModuleName, transferStack).
 		AddRoute(providertypes.ModuleName, appKeepers.ProviderModule)
 
-	// Seal the IBC Router
 	appKeepers.IBCKeeper.SetRouter(ibcRouter)
 
 	return appKeepers

@@ -39,7 +39,6 @@ import (
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
@@ -766,25 +765,28 @@ func (s *IntegrationTestSuite) writeGovParamChangeProposalMaxTotalBypass(c *chai
 }
 
 func (s *IntegrationTestSuite) writeGovCommunitySpendProposal(c *chain, amount sdk.Coin, recipient string) {
-	msg := &distrtypes.MsgCommunityPoolSpend{
-		Authority: govModuleAddress,
-		Recipient: recipient,
-		Amount:    sdk.Coins{amount},
+	template := `
+	{
+		"messages":[
+		  {
+			"@type": "/cosmos.distribution.v1beta1.MsgCommunityPoolSpend",
+			"authority": "%s",
+			"recipient": "%s",
+			"amount": [{
+				"denom": "%s",
+				"amount": "%s"
+			}]
+		  }
+		],
+		"deposit": "100uatom",
+		"proposer": "Proposing validator address",
+		"metadata": "Community Pool Spend",
+		"title": "Fund Team!",
+		"summary": "summary"
 	}
-
-	proposalCommSpend, err := govv1.NewMsgSubmitProposal(
-		[]sdk.Msg{msg},
-		sdk.Coins{sdk.NewCoin(uatomDenom, sdk.NewInt(100))},
-		"JohnGalt",
-		"Community Pool Spend",
-		"Fund Team!",
-		"summary",
-	)
-	s.Require().NoError(err)
-	res, err := cdc.MarshalInterfaceJSON(proposalCommSpend)
-	s.Require().NoError(err)
-
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalCommunitySpendFilename), res)
+	`
+	propMsgBody := fmt.Sprintf(template, govModuleAddress, recipient, amount.Denom, amount.Amount.String())
+	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalCommunitySpendFilename), []byte(propMsgBody))
 	s.Require().NoError(err)
 }
 
@@ -823,7 +825,7 @@ func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain, 
 		 }
 		],
 		"metadata": "ipfs://CID",
-		"deposit": "0uatom",
+		"deposit": "100uatom",
 		"title": "Update LSM Params",
 		"summary": "e2e-test updating LSM staking params"
 	   }`

@@ -4,7 +4,6 @@
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
-// const lastVersion = "v11.0.0";
 const googleTrackingId = 'G-EB7MEE3TJ1';
 const algoliaAppKey = '9AHLYCX3HA';
 const algoliaAPIKey = '976ab1e596812cf4fbe21a3d4d1c9830';
@@ -27,8 +26,8 @@ const config = {
   organizationName: 'Cosmos', // Usually your GitHub org/user name.
   projectName: 'Gaia', // Usually your repo name.
 
-  onBrokenLinks: 'warn',
-  onBrokenMarkdownLinks: 'warn',
+  onBrokenLinks: 'throw',
+  onBrokenMarkdownLinks: 'throw',
   trailingSlash: false,
 
   // Even if you don't use internalization, you can use this field to set useful

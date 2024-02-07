@@ -13,14 +13,14 @@ The complete parameters of the Cosmos Hub are split up into different modules, e
 
 There are currently 8 modules active in the Cosmos Hub with parameters that may be altered via governance proposal. New modules may be introduced in the future.
 
-1. [auth](./params-change/Auth.md) - Authentication of accounts and transactions
-2. [bank](./params-change/Bank.md) - Token transfer functionalities
-3. [gov](./params-change/Governance.md) - On-chain governance proposals and voting
-4. [staking](./params-change/Staking.md) - Proof-of-stake layer
-5. [slashing](./params-change/Slashing.md) - Validator punishment mechanisms
-6. [distribution](./params-change/Distribution.md) - Fee distribution and staking token provision distribution
-7. [crisis](./params-change/Crisis.md) - Halting the blockchain under certain circumstances (ie. if an invariant is broken)
-8. [mint](./params-change/Mint.md) - Creation of new units of staking token
+1. [auth](/governance/proposal-types/params-change/Auth.mdx) - Authentication of accounts and transactions
+2. [bank](/governance/proposal-types/params-change/Bank.mdx) - Token transfer functionalities
+3. [gov](/governance/proposal-types/params-change/Governance.mdx) - On-chain governance proposals and voting
+4. [staking](/governance/proposal-types/params-change/Staking.mdx) - Proof-of-stake layer
+5. [slashing](/governance/proposal-types/params-change/Slashing.mdx) - Validator punishment mechanisms
+6. [distribution](/governance/proposal-types/params-change/Distribution.mdx) - Fee distribution and staking token provision distribution
+7. [crisis](/governance/proposal-types/params-change/Crisis.mdx) - Halting the blockchain under certain circumstances (ie. if an invariant is broken)
+8. [mint](/governance/proposal-types/params-change/Mint.mdx) - Creation of new units of staking token
 <!-- markdown-link-check-disable -->
 
 ## What are the current parameter values?

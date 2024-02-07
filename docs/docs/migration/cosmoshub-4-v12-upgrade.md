@@ -3,7 +3,6 @@ title: Cosmos Hub 4, Gaia v12 Upgrade
 order: 8
 ---
 <!-- markdown-link-check-disable -->
-# Cosmos Hub 4, Gaia v12 Upgrade, Instructions
 
 This document describes the steps for validators and full node operators, to upgrade successfully to the Gaia v12 release.
 For more details on the release, please see the [release notes](https://github.com/cosmos/gaia/releases/tag/v12.0.0)
@@ -45,7 +44,7 @@ For more details on the release, please see the [release notes](https://github.c
 
 Validators please be aware that this release will include a new liquid staking module which has been included via the Cosmos SDK. Please see the [release notes](https://github.com/cosmos/gaia/releases/tag/v12.0.0) for v12 for more information about this module. 
 
-**IMPORTANT:** Inclusion of this module requires validators to set a validation-bond to be eligiable for Liquid Staked delegations. Please see the [Validator FAQ](../validators/validator-faq.html#liquid-staking-module) for more information.
+**IMPORTANT:** Inclusion of this module requires validators to set a validation-bond to be eligiable for Liquid Staked delegations. Please see the [Validator FAQ](/validators/validator-faq.html#liquid-staking-module) for more information.
 
 ## Upgrade date
 
@@ -96,8 +95,8 @@ There are 2 major ways to upgrade a node:
 
 - Manual upgrade
 - Upgrade using [Cosmovisor](https://pkg.go.dev/cosmossdk.io/tools/cosmovisor)
-    - Either by manually preparing the new binary
-    - Or by using the auto-download functionality (this is not yet recommended)
+  - Either by manually preparing the new binary
+  - Or by using the auto-download functionality (this is not yet recommended)
 
 If you prefer to use Cosmovisor to upgrade, some preparation work is needed before upgrade.
 

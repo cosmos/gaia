@@ -9,7 +9,7 @@ order: 2
 
 The launch of the Cosmos Hub mainnet is expected to happen in phases. Here we outline what to expect in each phase.
 
-# 🚨Phase I: Network Gains Stability 🚨
+## 🚨Phase I: Network Gains Stability 🚨
 
 In the first phase, the network is likely to be unstable; it may experience halts or other forms of failure requiring intervention and coordination among Cosmos Hub validators and full node operators to deploy a fix. This type of failure is not unexpected while the network gains stability.
 
@@ -34,11 +34,11 @@ Once transfers are enabled, state rollbacks will be much more difficult to justi
 
 You can, however, safely delegate Atoms to validators in this phase by following the CLI guideline and video tutorial linked below. Of course, in the event of a state reversion, any earned fees and inflation may be lost. Note that only `gaiad` should be used for making transactions. Voyager, the GUI for interacting with the Cosmos Hub, is currently in alpha and undergoing development. A separate announcement will be made once Voyager is safer for use.
 
-[CLI Guide](../delegators/delegator-guide-cli.md) 🔗
+[CLI Guide](/delegators/delegator-guide-cli.md) 🔗
 
 **Watch CLI delegation tutorial:** [Cosmos YouTube](https://www.youtube.com/watch?v=ydZw6o6Mzy0)
 
-# Phase II: Transfers Enabled
+## Phase II: Transfers Enabled
 
 **Summary:** Once mainnet is deemed sufficiently stable, bonded Atom holders will vote to decide whether or not Atom transfers should be enabled. This procedure will happen through on-chain governance.
 
@@ -46,7 +46,7 @@ The best way to check on the status of governance proposals is to view them thro
 
 **What this means for users:** If the proposal is accepted and transfers are enabled, then it becomes possible to transfer Atoms.
 
-# Phase III: IBC Enabled
+## Phase III: IBC Enabled
 
 **Summary:** In Phase III, the [IBC protocol][ibc] is released and Atom holders vote via on-chain governance on whether or not to enable it as part of the core module library within the Cosmos-SDK.
 
@@ -55,13 +55,13 @@ The best way to check on the status of governance proposals is to view them thro
 **What this means for users:** You will be able to transfer various tokens and NFTs directly from one IBC-connected chain to another IBC-connected chain without going through a centralized
 third-party platform.
 
-# Housekeeping for Validators: Submitting a `gentx` for mainnet
+## Housekeeping for Validators: Submitting a `gentx` for mainnet
 
 1. You should have generated and secured the validator consensus key you are going to be validating under during mainnet.
 2. Be prepared to sign a transaction under an address in the genesis file either from the fundraiser or Game of Stakes depending on where you received your ATOM allocation.
 3. We will begin collecting Gentxs for mainnet once the recommended genesis allocations are published.
 
-# In Closing
+## In Closing
 
 The Cosmos mission is to build bridges to connect all blockchains—to build an Internet of Blockchains. Clearly, we have a long road of development ahead of us. And after mainnet, the real work to a world of deeply integrated token economies is still ahead of us. But as John Fitzgerald Kennedy once said in the face of adversity:
 

@@ -56,14 +56,12 @@ These chapters contain all the migration guides to update your app and modules t
 If you’re running a block explorer, wallet, exchange, validator, or any other service (eg. custody provider) that depends upon the Cosmos Hub or Cosmos ecosystem, you’ll want to pay attention, because this upgrade will involve substantial changes.
 
 1. [App and Modules Migration](https://github.com/cosmos/cosmos-sdk/blob/master/docs/migrations/app_and_modules.md)
-1. [Chain Upgrade Guide to v0.40](https://github.com/cosmos/cosmos-sdk/blob/master/docs/migrations/chain-upgrade-guide-040.md)
-1. [REST Endpoints Migration](https://github.com/cosmos/cosmos-sdk/blob/master/docs/migrations/rest.md)
-1. [Collection of breaking changes from changelogs](breaking_changes.md)
-1. [Inter-Blockchain Communication (IBC)– cross-chain transactions](https://figment.io/resources/cosmos-stargate-upgrade-overview/#ibc)
-1. [Protobuf Migration – blockchain performance & dev acceleration](https://figment.io/resources/cosmos-stargate-upgrade-overview/#proto)
-1. [State Sync – minutes to sync new nodes](https://figment.io/resources/cosmos-stargate-upgrade-overview/#sync)
-1. [Full-Featured Light Clients](https://figment.io/resources/cosmos-stargate-upgrade-overview/#light)
-1. [Chain Upgrade Module – upgrade automation](https://figment.io/resources/cosmos-stargate-upgrade-overview/#upgrade)
+2. [REST Endpoints Migration](https://github.com/cosmos/cosmos-sdk/blob/master/docs/migrations/rest.md)
+3. [Inter-Blockchain Communication (IBC)– cross-chain transactions](https://figment.io/resources/cosmos-stargate-upgrade-overview/#ibc)
+4. [Protobuf Migration – blockchain performance & dev acceleration](https://figment.io/resources/cosmos-stargate-upgrade-overview/#proto)
+5. [State Sync – minutes to sync new nodes](https://figment.io/resources/cosmos-stargate-upgrade-overview/#sync)
+6. [Full-Featured Light Clients](https://figment.io/resources/cosmos-stargate-upgrade-overview/#light)
+7. [Chain Upgrade Module – upgrade automation](https://figment.io/resources/cosmos-stargate-upgrade-overview/#upgrade)
 
 If you want to test the procedure before the update happens on 18th of February, please see this post accordingly:
 

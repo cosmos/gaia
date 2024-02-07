@@ -3,7 +3,6 @@ title: Cosmos Hub 4, Gaia v14 Upgrade
 order: 9
 ---
 <!-- markdown-link-check-disable -->
-# Cosmos Hub 4, Gaia v14 Upgrade, Instructions
 
 This document describes the steps for validators, full node operators and relayer operators, to upgrade successfully for the Gaia v14 release.
 

@@ -3,7 +3,6 @@ title: Cosmos Hub 4, Gaia v13 Upgrade
 order: 8
 ---
 <!-- markdown-link-check-disable -->
-# Cosmos Hub 4, Gaia v13 Upgrade, Instructions
 
 This document describes the steps for validators and full node operators, to upgrade successfully to the Gaia v13 release.
 For more details on the release, please see the [release notes](https://github.com/cosmos/gaia/releases/tag/v13.0.0)

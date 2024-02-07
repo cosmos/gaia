@@ -116,7 +116,7 @@ type RelayerPacketsOutput struct {
 	Status string `json:"status"`
 }
 
-func (s *IntegrationTestSuite) hermesPendingPackets(chainID, channelID string) (pendingPackets bool) {
+func (s *IntegrationTestSuite) hermesPendingPackets(chainID, channelID string) (pendingPackets bool) { //nolint:unparam
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 	hermesCmd := []string{

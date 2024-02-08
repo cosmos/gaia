@@ -121,7 +121,10 @@ build-linux: go.sum
 
 go.sum: go.mod
 	@echo "--> Ensure dependencies have not been modified"
+	@echo "--> Ensure dependencies have not been modified unless suppressed by SKIP_MOD_VERIFY"
+ifndef SKIP_MOD_VERIFY
 	go mod verify
+endif
 	go mod tidy
 	@echo "--> Download go modules to local cache"
 	go mod download

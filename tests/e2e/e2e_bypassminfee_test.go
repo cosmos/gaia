@@ -116,8 +116,6 @@ func (s *IntegrationTestSuite) testIBCBypassMsg() {
 		sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
 	}, proposalCounter, submitter, standardFees.String())
 
-	// use hermes1 to test default ibc bypass-msg
-	//
 	// test 1: transaction only contains bypass-msgs, pass
 	s.testTxContainsOnlyIBCBypassMsg()
 	// test 2: test transactions contains both bypass and non-bypass msgs (sdk.MsgTypeURL(&ibcchanneltypes.MsgTimeout{})
@@ -145,7 +143,7 @@ func (s *IntegrationTestSuite) testTxContainsOnlyIBCBypassMsg() {
 
 	pass := s.hermesClearPacket(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
 	s.Require().True(pass)
-	pendingPacketsExist := s.hermesPendingPackets(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
+	pendingPacketsExist := s.hermesPendingPackets(s.chainA.id, transferChannel)
 	s.Require().False(pendingPacketsExist)
 
 	// confirm relayer wallets do not pay fees
@@ -161,12 +159,18 @@ func (s *IntegrationTestSuite) testTxContainsMixBypassNonBypassMsg() {
 	s.Require().True(ok)
 	// make sure that the transaction is timeout
 	time.Sleep(3 * time.Second)
-	pendingPacketsExist := s.hermesPendingPackets(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
+	pendingPacketsExist := s.hermesPendingPackets(s.chainA.id, transferChannel)
 	s.Require().True(pendingPacketsExist)
 
+	// attempt to relay packets without paying fees
 	pass := s.hermesClearPacket(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
 	s.Require().False(pass)
-	// clear packets with paying fee, to not influence the next transaction
+
+	// assert that packets were not relayed
+	pendingPacketsExist = s.hermesPendingPackets(s.chainA.id, transferChannel)
+	s.Require().True(pendingPacketsExist)
+
+	// clear packets with paying fees
 	pass = s.hermesClearPacket(hermesConfigWithGasPrices, s.chainA.id, transferChannel)
 	s.Require().True(pass)
 }
@@ -178,7 +182,7 @@ func (s *IntegrationTestSuite) testBypassMsgsExceedMaxBypassGasLimit() {
 	pass := s.hermesClearPacket(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
 	s.Require().False(pass)
 
-	pendingPacketsExist := s.hermesPendingPackets(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
+	pendingPacketsExist := s.hermesPendingPackets(s.chainA.id, transferChannel)
 	s.Require().True(pendingPacketsExist)
 
 	pass = s.hermesClearPacket(hermesConfigWithGasPrices, s.chainA.id, transferChannel)

@@ -30,10 +30,6 @@ export const currentParams = {
     tx_size_cost_per_byte: "10",
     sig_verify_cost_secp256k1: "1000",
   },
-  bank: {
-    DefaultSendEnabled: true,
-    SendEnabled: [],
-  },
   baseapp: {
     BlockParams: {
       max_bytes: "200000",
@@ -55,10 +51,10 @@ export const currentParams = {
     },
   },
   distribution: {
-    baseproposerreward: "0.010000000000000000",
-    bonusproposerreward: "0.040000000000000000",
-    communitytax: "0.020000000000000000",
-    withdrawaddrenabled: true,
+    base_proposer_reward: "0.010000000000000000",
+    bonus_proposer_reward: "0.040000000000000000",
+    community_tax: "0.020000000000000000",
+    withdraw_addr_enabled: true,
   },
   gov: {
     depositparams: {

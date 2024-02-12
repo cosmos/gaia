@@ -235,4 +235,4 @@ replace (
 	google.golang.org/grpc => google.golang.org/grpc v1.54.0
 )
 
-replace github.com/cosmos/interchain-security/v3 => github.com/cosmos/interchain-security/v3 v3.3.1-0.20240201164551-bde0df5adfef
+replace github.com/cosmos/interchain-security/v3 => github.com/cosmos/interchain-security/v3 v3.3.1-lsm

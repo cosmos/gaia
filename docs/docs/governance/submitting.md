@@ -48,61 +48,161 @@ Once on-chain, most people will rely upon block explorers to interpret this info
 
 ## Sending the transaction that submits your governance proposal
 
-For information on how to use gaiad (the command line interface) to submit an on-chain proposal through the governance module, please refer to the [gaiad resource](/hub-tutorials/gaiad.mdx) for the Cosmos Hub documentation.
+For information on how to use gaiad (the command line interface) to submit an on-chain proposal through the governance module, please refer to the [gaiad CLI tutorials](../hub-tutorials/gaiad.mdx) for the Cosmos Hub documentation.
 
-### Walkthrough example
+### Proposal types
 
-This is the generic command format for using gaiad (the command-line interface) to submit your proposal on-chain:
+There are 2 proposal types that can be submitted to the CosmosHub governance module.
+
+#### Legacy proposals (cosmos-sdk < v0.47)
+These proposals can be submitted using `gaiad tx gov submit-legacy-proposal`.
+Notable proposals that can be submitted using this Tx are: text proposal, consumer addition, consumer removal and ibc upgrade.
+You can read more about submitting a legacy proposal in the [cosmos-sdk docs](https://docs.cosmos.network/v0.47/build/modules/gov#submit-legacy-proposal)
+
+#### Proposals (cosmos-sdk >= v0.47)
+These proposals can are submitted using `gaiad tx gov submit-proposal`.
+
+Using `gaiad tx gov draft-proposal` can help prepare a proposal. The tool will create a file containing the specified proposal message and it also helps with populating all the required proposal fields.
+You can always edit the file after you create it using `draft-proposal`
+
+Most cosmos-sdk modules allow changing their governance gated parameters using a `MsgUpdateParams` which is a new way of updating governance parameters. It is important to note that `MsgUpdateParams` requires **all paramaters to be specified** in the proposal message.
+
+You can read more about submitting a proposal in the [cosmos-sdk docs](https://docs.cosmos.network/v0.47/build/modules/gov#submit-proposal)
+
+#### Minimal Deposit amount
+:::tip
+Please note that cosmoshub-4 uses a minimum initial deposit amount.
+:::
+
+Proposals cannot be submitted successfully without providing a minimum initial deposit. In practice, this means that the `deposit` field in your proposal has to meet the `min_initial_deposit` governance paramter.
+The minimum deposit is equal to `min_deposit * min_initial_deposit_ratio`. Only `uatom` is supported as deposit denom.
+```shell
+// checking the min_initial_deposit
+gaiad q gov params -o json
+{
+   ...
+   "params": {
+      ...
+      "min_deposit": [
+         {
+               "denom": "stake",
+               "amount": "10000000"
+         }
+      ],
+      "min_initial_deposit_ratio": "0.000000000000000000"
+}
+```
+
+
+### Walkthrough example (changing x/staking params)
+
+Let's illustrate how to change the `x/staking` parameters.
+
+The module has the following parameters (values don't reflect actual on-chain values):
+```shell
+gaiad q staking params -o json
+{
+    "unbonding_time": "86400s",
+    "max_validators": 100,
+    "max_entries": 7,
+    "historical_entries": 10000,
+    "bond_denom": "stake",
+    "min_commission_rate": "0.000000000000000000",
+    "validator_bond_factor": "-1.000000000000000000",
+    "global_liquid_staking_cap": "1.000000000000000000",
+    "validator_liquid_staking_cap": "1.000000000000000000"
+}
+```
+
+We will use `draft-proposal` to help us create a proposal file that we will later submit.
+```shell
+gaiad tx gov draft-proposal
+// running the command will start a terminal applet allowing you to choose the proposal type
+
+// 1st screen
+Use the arrow keys to navigate: ↓ ↑ → ←
+? Select proposal type:
+    text
+    community-pool-spend
+    software-upgrade
+    cancel-software-upgrade
+  ▸ other // choose this
+
+// 2nd screen
+✔ other
+Use the arrow keys to navigate: ↓ ↑ → ←
+? Select proposal message type::
+↑   /cosmos.staking.v1beta1.MsgUndelegate
+  ▸ /cosmos.staking.v1beta1.MsgUpdateParams // choose this option
+    /cosmos.staking.v1beta1.MsgValidatorBond
+    /cosmos.upgrade.v1beta1.MsgCancelUpgrade
+↓   /cosmos.upgrade.v1beta1.MsgSoftwareUpgrade
+```
+
+After choosing the `/cosmos.staking.v1beta1.MsgUpdateParams` message, the applet will allow you to set the message fields and some other proposal details.
+Upon completion, the proposal will be available in the directory where you called the `gaiad` command inside the `draft_proposal.json` file.
+
+Here is an example of the `draft_proposal.json` file:
+```JSON
+{
+ "messages": [
+  {
+   "@type": "/cosmos.staking.v1beta1.MsgUpdateParams",
+   "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+   "params": {
+    "unbonding_time": "86400s",
+    "max_validators": 100,
+    "max_entries": 7,
+    "historical_entries": 10000,
+    "bond_denom": "uatom",
+    "min_commission_rate": "0.050000000000000000",  // we are changing this from 0.000000000000000000
+    "validator_bond_factor": "-1.000000000000000000",
+    "global_liquid_staking_cap": "1.000000000000000000",
+    "validator_liquid_staking_cap": "1.000000000000000000"
+   }
+  }
+ ],
+ "metadata": "ipfs://CID",
+ "deposit": "1000000uatom",
+ "title": "Updating the staking params (min_comission_rate)",
+ "summary": "This proposal will attempt to update the min_commission_rate staking parameter. During proposal creation and submission **all** proposal fields must be specified. Pay attention that you don't unintentionally specify different values for fields that you did not intend to change."
+}
+```
+
+
+Finally, we submit the proposal:
 
 ```sh
-gaiad tx gov submit-proposal <proposal type>\
-   -- <json file> \
+gaiad tx gov submit-proposal <path_to_proposal.json>
    --from <submitter address> \
-   --deposit <deposit in uatom> \
-   --chain-id <chain id> \
+   --chain-id cosmoshub-4 \
    --gas <max gas allocated> \
    --fees <fees allocated> \
    --node <node address> \
-
 ```
 
-A specific example is given here:
+Use `gaiad tx gov --help` to get more info about the CLI options, we will explain some options below:
 
-```sh
-gaiad tx gov submit-proposal community-pool-spend\
-   --~/community_spend_proposal.json \
-   --from hypha-dev-wallet \
-   --deposit 1000000uatom \
-   --chain-id cosmoshub-4 \
-   --gas 500000 \
-   --fees 7500uatom \
-   --node https://rpc.cosmos.network:443 \
-
-```
-
-If `<proposal type>` is left blank, the type will be a Text proposal. Otherwise, it can be set to `param-change` or `community-pool-spend`. Use `--help` to get more info from the tool.
-
-1. `gaiad` is the command-line interface client that is used to send transactions and query the Cosmos Hub.
-2. `tx gov submit-proposal community-pool-spend` indicates that the transaction is submitting a community pool spend proposal.
-3. `--~/community_spend_proposal.json` indicates the file containing the proposal details.
-4. `--from hypha-dev-wallet` is the account key that pays the transaction fee and deposit amount. This account key must be already saved in the keyring on your device and it must be an address you control.
-5. `--gas 500000` is the maximum amount of gas permitted to be used to process the transaction.
+1. `--from` is the account key that pays the transaction fee and deposit amount. This account key must be already saved in the keyring on your device and it must be an address you control (e.g. `--from hypha-dev-wallet`).
+5. `--gas` is the maximum amount of gas permitted to be used to process the transaction (e.g. `--gas 500000`).
    - The more content there is in the description of your proposal, the more gas your transaction will consume
    - If this number isn't high enough and there isn't enough gas to process your transaction, the transaction will fail.
    - The transaction will only use the amount of gas needed to process the transaction.
 6. `--fees` is a flat-rate incentive for a validator to process your transaction.
-   - The network still accepts zero fees, but many nodes will not transmit your transaction to the network without a minimum fee.
-   - Many nodes (including the Figment node) use a minimum fee to disincentivize transaction spamming.
+   - Many nodes use a minimum fee to disincentivize transaction spamming.
    - 7500uatom is equal to 0.0075 ATOM.
-7. `--chain-id cosmoshub-4` is Cosmos Hub 4. For current and past chain-id's, please look at the [cosmos/mainnet resource](https://github.com/cosmos/mainnet).
-   - The testnet chain ID is `theta-testnet-001`. For current and past testnet information, please look at the [testnet repository](https://github.com/cosmos/testnets).
-8. `--node https://rpc.cosmos.network:443` is using an established node to send the transaction to the Cosmos Hub 4 network. For available nodes, please look at the [Chain Registry](https://github.com/cosmos/chain-registry/blob/master/cosmoshub/chain.json).
+8. `--node` is using an established node to send the transaction to the Cosmos Hub 4 network. For available nodes, please look at the [Chain Registry](https://github.com/cosmos/chain-registry/blob/master/cosmoshub/chain.json) (e.g. https://rpc.cosmos.network:443).
 
 **Note**: be careful what you use for `--fees`. A mistake here could result in spending hundreds or thousands of ATOMs accidentally, which cannot be recovered.
 
 ### Verifying your transaction
 
-After posting your transaction, your command line interface (gaiad) will provide you with the transaction's hash, which you can either query using gaiad or by searching the transaction hash using [Mintscan](https://www.mintscan.io/cosmos/txs/0506447AE8C7495DE970736474451CF23536DF8EA837FAF1CF6286565589AB57). The hash should look something like this: `0506447AE8C7495DE970736474451CF23536DF8EA837FAF1CF6286565589AB57`
+After posting your transaction, your command line interface (gaiad) will provide you with the transaction's hash, which you can either query using gaiad or by searching the transaction hash using [Mintscan](https://www.mintscan.io/cosmos/txs/0506447AE8C7495DE970736474451CF23536DF8EA837FAF1CF6286565589AB57). The hash should look something like this: `0506447AE8C7495DE970736474451CF23536DF8EA837FAF1CF6286565589AB57`.
+
+Alternatively, you can check your Tx status and information using:
+```shell
+gaiad q tx <hash>
+```
 
 ### Troubleshooting a failed transaction
 
@@ -129,11 +229,12 @@ gaiad q gov proposals --depositor cosmos1hxv7mpztvln45eghez6evw2ypcw4vjmsmr8cdx
 Once you have the proposal ID, this is the command to deposit extra tokens:
 
 ```sh
-gaiad tx gov deposit <proposal-id> <deposit> --from <name>
+gaiad tx gov deposit <proposal-id> <deposit_amount> --from <name>
 ```
 
-In our case above, the `<proposal-id>` would be 59 as queried earlier.
-The `<deposit>` is written as `500000uatom`, just like the example above.
+The amount per deposit is equal to `min_deposit * min_deposit_ratio`. Only `uatom` is supported as deposit denom. Transactions where `deposit_amount < (min_deposit * min_deposit_ratio)` will be rejected.
+
+
 
 ### Submitting your proposal to the testnet
 Submitting to the testnet is identical to mainnet submissions aside from a few changes:

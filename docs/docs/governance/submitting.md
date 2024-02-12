@@ -56,7 +56,17 @@ There are 2 proposal types that can be submitted to the CosmosHub governance mod
 
 #### Legacy proposals (cosmos-sdk < v0.47)
 These proposals can be submitted using `gaiad tx gov submit-legacy-proposal`.
-Notable proposals that can be submitted using this Tx are: text proposal, consumer addition, consumer removal and ibc upgrade.
+
+Available proposals that can be submitted using this Tx are:
+  * cancel-software-upgrade
+  * change-reward-denoms
+  * consumer-addition
+  * consumer-removal
+  * ibc-upgrade
+  * param-change (does not work for standard cosmos-sdk modules, works on IBC and ICS modules)
+  * software-upgrade
+  * update-client
+
 You can read more about submitting a legacy proposal in the [cosmos-sdk docs](https://docs.cosmos.network/v0.47/build/modules/gov#submit-legacy-proposal)
 
 #### Proposals (cosmos-sdk >= v0.47)

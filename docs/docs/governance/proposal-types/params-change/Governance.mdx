@@ -1,6 +1,10 @@
 ---
-title: gov subspace
+title: x/gov
 ---
+
+```shell
+gaiad q gov params
+```
 
 import { KeyValueTable } from '@site/src/js/KeyValueTable';
 import { Var } from '@site/src/js/Var';
@@ -19,32 +23,32 @@ The `gov` module is responsible for the on-chain governance system. In this syst
 
 ## Governance notes on parameters
 
-### `depositparams`
+### `deposit_params`
 
 #### `min_deposit`
 
 **The minimum deposit required for a proposal to enter the [voting period](#votingperiod), in micro-ATOMs.**
 
-- on-chain value: <Var children={currentParams.gov.depositparams.min_deposit} />
+- on-chain value: <Var children={currentParams.gov.deposit_params.min_deposit} />
 - [Proposal 47](https://www.mintscan.io/cosmos/proposals/47) change: `64000000` `uatom`
 - `cosmoshub-4` default: `512000000` `uatom`
 - `cosmoshub-3` default: `512000000` `uatom`
 
 Prior to a governance proposal entering the [voting period](#votingperiod) (ie. for the proposal to be voted upon), there must be at least a minimum number of ATOMs deposited. Anyone may contribute to this deposit. Deposits of passed and failed proposals are returned to the contributors. Deposits are burned when proposals 1) [expire](#max_deposit_period), 2) fail to reach [quorum](#quorum), or 3) are [vetoed](#veto_threshold). This parameter subkey value represents the minimum deposit required for a proposal to enter the [voting period](#votingperiod) in micro-ATOMs, where `512000000uatom` is equivalent to 512 ATOM.
 
-##### Decreasing the value of `mindeposit`
+##### Decreasing the value of `min_deposit`
 
-Decreasing the value of the `mindeposit` subkey will enable governance proposals to enter the [voting period](#votingperiod) with fewer ATOMs at risk. This will likely increase the volume of new governance proposals.
+Decreasing the value of the `min_deposit` subkey will enable governance proposals to enter the [voting period](#votingperiod) with fewer ATOMs at risk. This will likely increase the volume of new governance proposals.
 
-##### Increasing the value of `mindeposit`
+##### Increasing the value of `min_deposit`
 
-Increasing the value of the `mindeposit` subkey will require risking a greater number of ATOMs before governance proposals may enter the [voting period](#votingperiod). This will likely decrease the volume of new governance proposals.
+Increasing the value of the `min_deposit` subkey will require risking a greater number of ATOMs before governance proposals may enter the [voting period](#votingperiod). This will likely decrease the volume of new governance proposals.
 
 #### `max_deposit_period`
 
 **The maximum amount of time that a proposal can accept deposit contributions before expiring, in nanoseconds.**
 
-- on-chain value: <Var children={currentParams.gov.depositparams.max_deposit_period} />
+- on-chain value: <Var children={currentParams.gov.deposit_params.max_deposit_period} />
 - `cosmoshub-4` default: `1209600000000000`
 - `cosmoshub-3` default: `1209600000000000`
 
@@ -62,13 +66,13 @@ Increasing the value of the `maxdepositperiod` subkey will extend the time for d
 
 Currently most network explorers (eg. Hubble, Big Dipper, Mintscan) give the same visibility to proposals in the deposit period as those in the [voting period](#votingperiod). This means that a proposal with a small deposit (eg. 0.001 ATOM) will have the same visibility as those with a full 512 ATOM deposit in the voting period.
 
-### `votingparams`
+### `voting_params`
 
 #### `votingperiod`
 
 **The maximum amount of time that a proposal can accept votes before the voting period concludes, in nanoseconds.**
 
-- on-chain value: <Var children={currentParams.gov.votingparams.voting_period} />
+- on-chain value: <Var children={currentParams.gov.voting_params.voting_period} />
 - `cosmoshub-4` default: `1209600000000000`
 - `cosmoshub-3` default: `1209600000000000`
 
@@ -92,13 +96,13 @@ Increasing the value of the `votingperiod` subkey will increase the time for vot
 
 Historically, off-chain discussions and engagement appears to be have been greater occurred during the voting period of a governance proposal than when the proposal is posted off-chain as a draft. A non-trivial amount of the voting power has voted in the second week of the voting period. Proposals 23, 19, and 13 each had approximately 80% network participation or more.
 
-### `tallyparams`
+### `tally_params`
 
 #### `quorum`
 
 **The minimum proportion of network voting power required for a governance proposal's outcome to be considered valid.**
 
-- on-chain value: <Var children={currentParams.gov.tallyparams.quorum} />
+- on-chain value: <Var children={currentParams.gov.tally_params.quorum} />
 - `cosmoshub-4` default: `0.400000000000000000`
 - `cosmoshub-3` default: `0.400000000000000000`
 
@@ -116,7 +120,7 @@ Increasing the value of the `quorum` subkey will require a larger proportion of 
 
 **The minimum proportion of participating voting power required for a governance proposal to pass.**
 
-- on-chain value: <Var children={currentParams.gov.tallyparams.threshold} />
+- on-chain value: <Var children={currentParams.gov.tally_params.threshold} />
 - `cosmoshub-4` default: `0.500000000000000000`
 - `cosmoshub-3` default: `0.500000000000000000`
 
@@ -145,7 +149,7 @@ Increasing the value of the `threshold` subkey will increase the proportion of v
 
 **The minimum proportion of participating voting power to veto (ie. fail) a governance proposal.**
 
-- on-chain value: <Var children={currentParams.gov.tallyparams.veto_threshold} />
+- on-chain value: <Var children={currentParams.gov.tally_params.veto_threshold} />
 - `cosmoshub-4` default: `0.334000000000000000`
 - `cosmoshub-3` default: `0.334000000000000000`
 

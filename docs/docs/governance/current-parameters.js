@@ -57,7 +57,7 @@ export const currentParams = {
     withdraw_addr_enabled: true,
   },
   gov: {
-    depositparams: {
+    deposit_params: {
       max_deposit_period: "1209600000000000",
       min_deposit: [
         {
@@ -66,13 +66,31 @@ export const currentParams = {
         },
       ],
     },
-    tallyparams: {
+    tally_params: {
       quorum: "0.400000000000000000",
       threshold: "0.500000000000000000",
       veto_threshold: "0.334000000000000000",
     },
-    votingparams: {
+    voting_params: {
       voting_period: "1209600000000000",
+    },
+    params: {
+      min_deposit: [
+        {
+          denom: "stake",
+          amount: "10000000",
+        },
+      ],
+      max_deposit_period: "172800s",
+      voting_period: "60s",
+      quorum: "0.334000000000000000",
+      threshold: "0.500000000000000000",
+      veto_threshold: "0.334000000000000000",
+      min_initial_deposit_ratio: "0.000000000000000000",
+      burn_vote_quorum: false,
+      burn_proposal_deposit_prevote: false,
+      burn_vote_veto: true,
+      min_deposit_ratio: "0.010000000000000000",
     },
   },
   liquidity: {
@@ -102,12 +120,12 @@ export const currentParams = {
     WithdrawFeeRate: "0.000000000000000000",
   },
   mint: {
-    BlocksPerYear: "4360000",
-    GoalBonded: "0.670000000000000000",
-    InflationMax: "0.200000000000000000",
-    InflationMin: "0.070000000000000000",
-    InflationRateChange: "1.000000000000000000",
-    MintDenom: "uatom",
+    blocks_per_year: "4360000",
+    goal_bonded: "0.670000000000000000",
+    inflation_max: "0.200000000000000000",
+    inflation_min: "0.070000000000000000",
+    inflation_rate_change: "1.000000000000000000",
+    mint_denom: "uatom",
   },
   slashing: {
     DowntimeJailDuration: "600000000000",

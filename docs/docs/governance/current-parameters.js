@@ -93,32 +93,6 @@ export const currentParams = {
       min_deposit_ratio: "0.010000000000000000",
     },
   },
-  liquidity: {
-    CircuitBreakerEnabled: false,
-    InitPoolCoinMintAmount: "1000000",
-    MaxOrderAmountRatio: "0.100000000000000000",
-    MaxReserveCoinAmount: "0",
-    MinInitDepositAmount: "1000000",
-    PoolCreationFee: [
-      {
-        amount: "40000000",
-        denom: "uatom",
-      },
-    ],
-    PoolTypes: [
-      {
-        description:
-          "Standard liquidity pool with pool price function X/Y, ESPM constraint, and two kinds of reserve coins",
-        id: 1,
-        max_reserve_coin_num: 2,
-        min_reserve_coin_num: 2,
-        name: "StandardLiquidityPool",
-      },
-    ],
-    SwapFeeRate: "0.003000000000000000",
-    UnitBatchHeight: 1,
-    WithdrawFeeRate: "0.000000000000000000",
-  },
   mint: {
     blocks_per_year: "4360000",
     goal_bonded: "0.670000000000000000",
@@ -135,11 +109,15 @@ export const currentParams = {
     slash_fraction_downtime: "0.000100000000000000",
   },
   staking: {
-    BondDenom: "uatom",
-    HistoricalEntries: 10000,
-    MaxEntries: 7,
-    MaxValidators: 180,
-    UnbondingTime: "1814400000000000",
+    unbonding_time: "86400s",
+    max_validators: 100,
+    max_entries: 7,
+    historical_entries: 10000,
+    bond_denom: "stake",
+    min_commission_rate: "0.000000000000000000",
+    validator_bond_factor: "-1.000000000000000000",
+    global_liquid_staking_cap: "1.000000000000000000",
+    validator_liquid_staking_cap: "1.000000000000000000",
   },
   transfer: {
     ReceiveEnabled: true,

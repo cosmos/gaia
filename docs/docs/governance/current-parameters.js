@@ -128,11 +128,11 @@ export const currentParams = {
     mint_denom: "uatom",
   },
   slashing: {
-    DowntimeJailDuration: "600000000000",
-    MinSignedPerWindow: "0.050000000000000000",
-    SignedBlocksWindow: "10000",
-    SlashFractionDoubleSign: "0.050000000000000000",
-    SlashFractionDowntime: "0.000100000000000000",
+    downtime_jail_duration: "600000000000",
+    min_signed_per_window: "0.050000000000000000",
+    signed_blocks_window: "10000",
+    slash_fraction_double_sign: "0.050000000000000000",
+    slash_fraction_downtime: "0.000100000000000000",
   },
   staking: {
     BondDenom: "uatom",

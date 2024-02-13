@@ -99,7 +99,7 @@ It may take several minutes to a few hours until validators with a total sum vot
 
 ### Method II: Upgrade using Cosmovisor
 
-### Manually preparing the binary
+#### Manually preparing the binary
 
 ##### Preparation
 

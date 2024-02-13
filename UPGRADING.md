@@ -1,6 +1,6 @@
 # Upgrading Gaia
 
-This guide provides instructions for upgrading Gaia from v14.1.0 to v15.
+This guide provides instructions for upgrading Gaia from v14.1.x to v15.x.
 
 <!-- markdown-link-check-disable -->
 

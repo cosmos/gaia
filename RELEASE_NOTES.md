@@ -15,6 +15,8 @@ This release upgrades Cosmos SDK to v0.47 -- it uses [v0.47.8-ics-lsm](https://g
 
 ## 🔨 Build from source
 
+You must use Golang `v1.21` if building from source.
+
 ```bash
 git clone https://github.com/cosmos/gaia
 cd gaia && git checkout v15.0.0

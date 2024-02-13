@@ -22,7 +22,7 @@ Please use the correct release binary: `v15.0.0`.
   - [On-chain governance proposal attains consensus](#on-chain-governance-proposal-attains-consensus)
   - [Upgrade date](#upgrade-date)
   - [Preparing for the upgrade](#preparing-for-the-upgrade)
-    - [System requirement](#system-requirement)
+    - [System requirements](#system-requirements)
     - [Backups](#backups)
     - [Testing](#testing)
     - [Current runtime](#current-runtime)
@@ -43,7 +43,9 @@ Please use the correct release binary: `v15.0.0`.
 
 ## On-chain governance proposal attains consensus
 
-If and when the on-chain governance proposal for this upgrade reaches consensus the upgrade height will be used to halt the "old" chain binaries. You can check the proposal on one of the block explorers or using the `gaiad` CLI tool. Neither core developers nor core funding entities control the governance, and this governance proposal has passed in a _fully decentralized_ way.
+Once a software upgrade governance proposal is submitted to the Cosmos Hub, a reference is added to the [release notes](https://github.com/cosmos/gaia/releases/tag/v15.0.0).
+If and when this proposal reaches consensus, the upgrade height will be used to halt the "old" chain binaries. You can check the proposal on one of the block explorers or using the `gaiad` CLI tool.
+Neither core developers nor core funding entities control the governance.
 
 ## Upgrade date
 
@@ -51,7 +53,23 @@ The date/time of the upgrade is subject to change as blocks are not generated at
 
 ## Preparing for the upgrade
 
-System requirements for validator nodes can be found [here](../getting-started/system-requirements.md).
+### System requirements
+
+#### An Important Note for Node Operators
+
+We recomment that validators to temporarily upgrade their hardware before attempting the upgrade to offset any risk associated with migrating from cosmos-sdk v45 to v47.
+
+These are the recommended revised hardware requirements for the upgrade:
+
+- Minimum: 64GB RAM + 32GB swap
+- Recommended: 128GB RAM
+- **Bare minimum** 32GB RAM + 64GB swap
+
+Optimal CPU performance:  2.50GHz, 8 cores (eg Intel Xeon Gold 6248 or equivalent consumer grade processor).
+
+It is paramount that the operators set enough SWAP to cover all cases. SWAP partitions can be used to supplement the RAM requirement but they will increase the upgrade time.
+
+After the upgrade you can revert your hardware setting to the recommended system requirements for normal [day-to-day operations](../getting-started/system-requirements.md).
 
 ### Backups
 
@@ -163,14 +181,14 @@ cosmovisor run start --x-crisis-skip-assert-invariants --home $DAEMON_HOME
 
 Skipping the invariant checks is strongly encouraged since it decreases the upgrade time significantly and since there are some other improvements coming to the crisis module in the next release of the Cosmos SDK.
 
-#### Expected upgrade result
+##### Expected upgrade result
 
 When the upgrade block height is reached, Gaia will panic and stop:
 
 This may take a few minutes to a few hours.
 After upgrade, the chain will continue to produce blocks when validators with a total sum voting power > 2/3 complete their node upgrades.
 
-### Auto-Downloading the Gaia binary
+#### Auto-Downloading the Gaia binary
 
 **This method is not recommended!**
 

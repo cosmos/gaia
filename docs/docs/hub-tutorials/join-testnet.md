@@ -5,7 +5,7 @@ order: 3
 
 This tutorial will provide all necessary instructions for joining the current public testnet. If you're interested in more advanced configuration and synchronization options, see [Join Mainnet](./join-mainnet.md) for a detailed walkthrough.
 
-* Current Version: v14
+* Current Version: v15
 * Chain ID: `theta-testnet-001`
 
 ## Background
@@ -20,10 +20,13 @@ The table below shows all past and upcoming versions of the public testnet.
 
 |   Release   | Upgrade Block Height |    Upgrade Date     |
 | :---------: | :------------------: | :-----------------: |
-| v15.0.0-rc0 |         TBA          |         TBA         |
-| v14.0.0-rc0 |         TBA          |         TBA         |
-| v13.0.0-rc0 |         TBA          |         TBA         |
-| v12.0.0-rc0 |         TBA          |         TBA         |
+| v16.0.0-rc0 |         TBA          |         TBA         |
+| v15.0.0-rc0 |      20,269,900      |     2024-02-13      |
+| v14.1.0-rc0 |      18,986,400      |     2023-11-22      |
+| v14.0.0-rc1 |      18,876,500      |     2023-11-15      |
+| v14.0.0-rc0 |      18,766,800      |     2023-11-08      |
+| v13.0.0-rc0 |      17,996,550      |     2023-09-20      |
+| v12.0.0-rc0 |      17,550,150      |     2023-08-23      |
 | v11.0.0-rc0 |      17,107,825      |     2023-07-26      |
 | v10.0.0-rc0 |      16,117,530      |     2023-05-24      |
 | v9.0.0-rc3  |      14,476,206      |     2023-02-08      |
@@ -87,7 +90,7 @@ cd $HOME
 git clone https://github.com/cosmos/gaia
 cd gaia
 # To sync from genesis, comment out the next line.
-git checkout v13.0.0
+git checkout v15.0.0-rc0
 # To sync from genesis, uncomment the next line and skip the State Sync Setup section.
 # git checkout v6.0.4
 make install
@@ -105,7 +108,7 @@ mv genesis.json $HOME/.gaia/config/genesis.json
 
 # Set minimum gas price & peers
 cd $HOME/.gaia/config
-sed -i 's/minimum-gas-prices = ""/minimum-gas-prices = "0.0025uatom"/' app.toml
+sed -i 's/minimum-gas-prices = ""/minimum-gas-prices = "0.005uatom"/' app.toml
 sed -i 's/seeds = ""/seeds = "639d50339d7045436c756a042906b9a69970913f@seed-01.theta-testnet.polypore.xyz:26656,3e506472683ceb7ed75c1578d092c79785c27857@seed-02.theta-testnet.polypore.xyz:26656"/' config.toml
 ```
 
@@ -245,7 +248,7 @@ There are three ways you can update the binary:
 
 The instructions below are for option 2. For more information on auto-download with Cosmovisor, see the relevant [documentation](https://github.com/cosmos/cosmos-sdk/tree/main/tools/cosmovisor#auto-download) in the Cosmos SDK repo.
 
-If the environment variable `DAEMON_ALLOW_DOWNLOAD_BINARIES` is set to `false`, Cosmovisor will look for the new binary in a folder that matches the name of the upgrade specified in the software upgrade proposal. For the `v13` upgrade, the expected folder structure would look as follows:
+If the environment variable `DAEMON_ALLOW_DOWNLOAD_BINARIES` is set to `false`, Cosmovisor will look for the new binary in a folder that matches the name of the upgrade specified in the software upgrade proposal. For the `v16` upgrade, the expected folder structure would look as follows:
 
 ```shell
 .gaia
@@ -255,7 +258,7 @@ If the environment variable `DAEMON_ALLOW_DOWNLOAD_BINARIES` is set to `false`, 
     │   └── bin
     |       └── gaiad
     └── upgrades
-        └── v13
+        └── v16
             └── bin
                 └── gaiad
 ```
@@ -263,7 +266,7 @@ If the environment variable `DAEMON_ALLOW_DOWNLOAD_BINARIES` is set to `false`, 
 Prepare the upgrade directory
 
 ```shell
-mkdir -p ~/.gaia/cosmovisor/upgrades/v14/bin
+mkdir -p ~/.gaia/cosmovisor/upgrades/v16/bin
 ```
 
 Download and install the new binary version.
@@ -271,11 +274,11 @@ Download and install the new binary version.
 ```shell
 cd $HOME/gaia
 git pull
-git checkout v13.0.0-rc0
+git checkout v16.0.0-rc0
 make install
 
-# Copy the new binary to the v13 upgrade directory
-cp ~/go/bin/gaiad ~/.gaia/cosmovisor/upgrades/v13/bin/gaiad
+# Copy the new binary to the v16 upgrade directory
+cp ~/go/bin/gaiad ~/.gaia/cosmovisor/upgrades/v16/bin/gaiad
 ```
 
 When the upgrade height is reached, Cosmovisor will stop the gaiad binary, copy the new binary to the `current/bin` folder and restart. After a few minutes, the node should start syncing blocks using the new binary.

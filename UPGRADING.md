@@ -6,7 +6,7 @@ This guide provides instructions for upgrading Gaia from v14.1.x to v15.x.
 
 This document describes the steps for validators, full node operators and relayer operators, to upgrade successfully for the Gaia v15 release.
 
-For more details on the release, please see the [release notes](https://github.com/cosmos/gaia/releases/tag/v15)
+For more details on the release, please see the [release notes](https://github.com/cosmos/gaia/releases/tag/v15.0.0)
 
 **Relayer Operators** for the Cosmos Hub and consumer chains, will also need to update to use [Hermes v1.8.0](https://github.com/informalsystems/hermes/releases/tag/v1.8.0) or higher, see [Relayer Operations](#relayer-operations) or more details. You may need to restart your relayer software after a major chain upgrade.
 

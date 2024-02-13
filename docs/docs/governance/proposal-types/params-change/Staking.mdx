@@ -1,6 +1,10 @@
 ---
-title: staking subspace
+title: x/staking
 ---
+
+```shell
+gaiad q staking params
+```
 
 import { KeyValueTable } from '@site/src/js/KeyValueTable';
 import { Var } from '@site/src/js/Var';
@@ -14,27 +18,27 @@ The `staking` module is responsible for supporting an advanced Proof of Stake (P
 
 ## Governance notes on parameters
 
-### `UnbondingTime`
+### `unbonding_time`
 
 **The time duration required for bonded ATOMs to unbond and become transferrable, in nanoseconds.**
 
-- on-chain value: <Var children={currentParams.staking.UnbondingTime} />
+- on-chain value: <Var children={currentParams.staking.unbonding_time} />
 - `cosmoshub-4` default: `1814400000000000`
 - `cosmoshub-3` default: `1814400000000000`
 
-In order to participate as a Cosmos Hub validator or delegator, ATOMs must be bonded (also known as staking). Once bonded, ATOMs are locked by the protocol and are no longer transferrable. When ATOM unbonding is initiated, the `UnbondingTime` of 1814400000000000 nanoseconds (21 days) duration must pass before the ATOMs will be unlocked and transferrable.
+In order to participate as a Cosmos Hub validator or delegator, ATOMs must be bonded (also known as staking). Once bonded, ATOMs are locked by the protocol and are no longer transferrable. When ATOM unbonding is initiated, the `unbonding_time` of 1814400000000000 nanoseconds (21 days) duration must pass before the ATOMs will be unlocked and transferrable.
 
 ATOMs are used as a bond when staking. A bond may be slashed (ie. partially destroyed) when a validator has been proven to have broken protocol rules. Why? Primarily as a solution to the "[nothing-at-stake](https://medium.com/coinmonks/understanding-proof-of-stake-the-nothing-at-stake-theory-1f0d71bc027)" problem. In the scenario of an accidental or malicious attempt to rewrite history and reverse a transaction, a new chain ("fork") may be created in parallel with the primary chain. Without the risk of losing this bond, the optimal strategy for any validator is to validate blocks on both chains so that the validator gets their reward no matter which fork wins. A bond makes it more likely that the optimal strategy for validators will be to only validate blocks for the true ("canonical") chain.
 
-Why is `UnbondingTime` so long? It can take time to discover that a validator has committed equivocation ie. signed two blocks at the same block height. If a validator commits equivocation and then unbonds before being caught, the protocol can no longer slash (ie. partially destroy) the validator's bond.
+Why is `unbonding_time` so long? It can take time to discover that a validator has committed equivocation ie. signed two blocks at the same block height. If a validator commits equivocation and then unbonds before being caught, the protocol can no longer slash (ie. partially destroy) the validator's bond.
 
-#### Decreasing the value of `UnbondingTime`
+#### Decreasing the value of `unbonding_time`
 
-Decreasing the value of the `UnbondingTime` parameter will reduce the time it takes to unbond ATOMs. This will make it less likely for a validator's bond to be slashed after committing equivocation (aka double-signing).
+Decreasing the value of the `unbonding_time` parameter will reduce the time it takes to unbond ATOMs. This will make it less likely for a validator's bond to be slashed after committing equivocation (aka double-signing).
 
-#### Increasing the value of `UnbondingTime`
+#### Increasing the value of `unbonding_time`
 
-Increasing the value of the `UnbondingTime` parameter will increase the time it takes to unbond ATOMs. This will make it more likely for a validator's bond to be slashed after committing equivocation (aka double-signing).
+Increasing the value of the `unbonding_time` parameter will increase the time it takes to unbond ATOMs. This will make it more likely for a validator's bond to be slashed after committing equivocation (aka double-signing).
 
 #### Notes
 
@@ -42,23 +46,23 @@ The ability to punish a validator for committing equivocation is associated with
 
 1 second is equal to 1,000,000,000 nanoseconds.
 
-## `MaxValidators`
+## `max_validators`
 
 **The maximum number of validators that may participate in validating blocks, earning rewards, and governance voting.**
 
-- on-chain value: <Var children={currentParams.staking.MaxValidators} />
+- on-chain value: <Var children={currentParams.staking.max_validators} />
 - `cosmoshub-4` default: `125`
 - `cosmoshub-3` default: `125`
 
-Validators are ranked by stake-backing based upon the sum of their delegations, and only the top 125 are designated to be active (aka "the active set"). The active set may change any time delegation amounts change. Only active validators may participate in validating blocks, earning rewards, and governance voting. ATOM-holders may participate in staking by delegating their bonded ATOMs to one or more validators in the active set. Delegators may only earn rewards and have their governance votes count if they are delegating to an active validator, the set of which is capped by `MaxValidators`.
+Validators are ranked by stake-backing based upon the sum of their delegations, and only the top 125 are designated to be active (aka "the active set"). The active set may change any time delegation amounts change. Only active validators may participate in validating blocks, earning rewards, and governance voting. ATOM-holders may participate in staking by delegating their bonded ATOMs to one or more validators in the active set. Delegators may only earn rewards and have their governance votes count if they are delegating to an active validator, the set of which is capped by `max_validators`.
 
-#### Decreasing the value of `MaxValidators`
+#### Decreasing the value of `max_validators`
 
-Decreasing the value of the `MaxValidators` parameter will likely reduce the number of validators actively participating in validating blocks, earning rewards, and governance voting for the Cosmos Hub. This may decrease the time it takes to produce each new Cosmos Hub block.
+Decreasing the value of the `max_validators` parameter will likely reduce the number of validators actively participating in validating blocks, earning rewards, and governance voting for the Cosmos Hub. This may decrease the time it takes to produce each new Cosmos Hub block.
 
-#### Increasing the value of `MaxValidators`
+#### Increasing the value of `max_validators`
 
-Increasing the value of the `MaxValidators` parameter will likely increase the number of validators actively participating in validating blocks, earning rewards, and governance voting for the Cosmos Hub. This may increase the time it takes to produce each new Cosmos Hub block.
+Increasing the value of the `max_validators` parameter will likely increase the number of validators actively participating in validating blocks, earning rewards, and governance voting for the Cosmos Hub. This may increase the time it takes to produce each new Cosmos Hub block.
 
 #### Notes
 
@@ -68,8 +72,8 @@ It may be argued that after the Cosmos creators, the validator cohort may be the
 
 ### `KeyMaxEntries`
 
-- **The maximum number of unbondings between a delegator and validator within the [unbonding period](#UnbondingTime).**
-- **A delegator's maximum number of simultaneous redelegations from one validator to another validator within the [unbonding period](#1-UnbondingTime).**
+- **The maximum number of unbondings between a delegator and validator within the [unbonding period](#unbonding_time).**
+- **A delegator's maximum number of simultaneous redelegations from one validator to another validator within the [unbonding period](#1-unbonding_time).**
 
 - on-chain value: <Var children={currentParams.staking.KeyMaxEntries} />
 - `cosmoshub-4` default: `7`
@@ -89,25 +93,25 @@ Increasing the value of the `KeyMaxEntries` parameter will, within the unbonding
 
 Aleksandr (All in Bits; Fission Labs) wrote more about `KeyMaxEntries` [here in this article](https://blog.cosmos.network/re-delegations-in-the-cosmos-hub-7d2f5ea59f56).
 
-### `BondDenom`
+### `bond_denom`
 
 **The unit and denomination for the asset bonded in the system.**
 
-- on-chain value: <Var children={currentParams.staking.BondDenom} />
+- on-chain value: <Var children={currentParams.staking.bond_denom} />
 - `cosmoshub-4` default: `uatom`
 - `cosmoshub-3` default: `uatom`
 
 When using an asset as a bond on the Cosmos Hub, the unit and denomination of the asset is denoted as the `uatom`, or micro-ATOM, where 1 ATOM is considered 1000000uatom. The protocol doesn't use ATOM for bonds, only uatom.
 
-#### Changing the value of `BondDenom`
+#### Changing the value of `bond_denom`
 
-Changing the `BondDenom` parameter will make any bond transactions with `uatom` fail and will require the new `BondDenom` parameter string in order for bond transactions to be successful. Changing this parameter is likely to have breaking changes for applications that offer staking and delegation functionality.
+Changing the `bond_denom` parameter will make any bond transactions with `uatom` fail and will require the new `bond_denom` parameter string in order for bond transactions to be successful. Changing this parameter is likely to have breaking changes for applications that offer staking and delegation functionality.
 
-### `HistoricalEntries`
+### `historical_entries`
 
-**The number of HistoricalEntries to keep.**
+**The number of historical_entries to keep.**
 
-- on-chain value: <Var children={currentParams.staking.HistoricalEntries} />
+- on-chain value: <Var children={currentParams.staking.historical_entries} />
 - `cosmoshub-4` default: `10000`
 - Did not exist in `cosmoshub-3` genesis
 

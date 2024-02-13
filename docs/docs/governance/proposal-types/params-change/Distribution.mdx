@@ -1,6 +1,10 @@
 ---
-title: distribution subspace
+title: x/distribution
 ---
+
+```shell
+gaiad q distribution params
+```
 
 import { KeyValueTable } from '@site/src/js/KeyValueTable';
 import { Var } from '@site/src/js/Var';
@@ -16,67 +20,67 @@ The `distribution` module enables a simple distribution mechanism that passively
 
 ## Governance notes on parameters
 
-### `communitytax`
+### `community_tax`
 
 **The proportion of staking rewards diverted to the community pool.**
 
-Staking on the Cosmos Hub entitles participants to inflationary (aka "block") rewards and transaction fees. A portion of these staking rewards is diverted to the community pool, which can be spent with a successful community-spend governance proposal. `communitytax` is the parameter that determines the proportion of staking rewards diverted to the community pool, which is currently `0.020000000000000000` (2%) of all staking rewards.
+Staking on the Cosmos Hub entitles participants to inflationary (aka "block") rewards and transaction fees. A portion of these staking rewards is diverted to the community pool, which can be spent with a successful community-spend governance proposal. `community_tax` is the parameter that determines the proportion of staking rewards diverted to the community pool, which is currently `0.020000000000000000` (2%) of all staking rewards.
 
-- on-chain value: <Var children={currentParams.distribution.communitytax} />
+- on-chain value: <Var children={currentParams.distribution.community_tax} />
 - `cosmoshub-4` default: `0.020000000000000000`
 - `cosmoshub-3` default: `0.020000000000000000`
 
-#### Decreasing the value of `communitytax`
+#### Decreasing the value of `community_tax`
 
-Decreasing the value of the `communitytax` parameter will decrease the rate that the community pool is funded and will increase the staking rewards captured by staking participants. This will make it more likely for the community pool to be exhausted and could potentially increase the motivation for participants to stake.
+Decreasing the value of the `community_tax` parameter will decrease the rate that the community pool is funded and will increase the staking rewards captured by staking participants. This will make it more likely for the community pool to be exhausted and could potentially increase the motivation for participants to stake.
 
-#### Increasing the value of `communitytax`
+#### Increasing the value of `community_tax`
 
-Increasing the value of the `communitytax` parameter will increase the rate that the community pool is funded and will decrease the staking rewards captured by staking participants. This will make it more less for the community pool to be exhausted and could potentially decrease the motivation for participants to stake.
+Increasing the value of the `community_tax` parameter will increase the rate that the community pool is funded and will decrease the staking rewards captured by staking participants. This will make it more less for the community pool to be exhausted and could potentially decrease the motivation for participants to stake.
 
-### `baseproposerreward`
+### `base_proposer_reward`
 
 **The fixed base reward bonus for the validator proposing a block, as a proportion of transaction fees.**
 
-All validators in the active set share the rewards for producing a block equally, except for the proposer of a valid block: that validator receives a bonus of `0.010000000000000000` (1%) more in transaction fees. The proposer must include a minimum of 2/3 of precommit signatures from the other validators in the active set in order for the block to be valid and to receive the `baseproposerreward` bonus. All in Bits has published more in-depth information [here](https://hub.cosmos.network/main/validators/validator-faq.html#how-are-fees-distributed).
+All validators in the active set share the rewards for producing a block equally, except for the proposer of a valid block: that validator receives a bonus of `0.010000000000000000` (1%) more in transaction fees. The proposer must include a minimum of 2/3 of precommit signatures from the other validators in the active set in order for the block to be valid and to receive the `base_proposer_reward` bonus. All in Bits has published more in-depth information [here](https://hub.cosmos.network/main/validators/validator-faq.html#how-are-fees-distributed).
 
-- on-chain value: <Var children={currentParams.distribution.baseproposerreward} />
+- on-chain value: <Var children={currentParams.distribution.base_proposer_reward} />
 - `cosmoshub-4` default: `0.010000000000000000`
 - `cosmoshub-3` default: `0.010000000000000000`
 
-#### Decreasing the value of `baseproposerreward`
+#### Decreasing the value of `base_proposer_reward`
 
-Decreasing the value of the `baseproposerreward` parameter will decrease the advantage that the proposer has over other validators. This may decrease an operator's motivation to ensure that its validator is reliably online and includes at least 2/3 precommit signatures of the other validators in its proposed block.
+Decreasing the value of the `base_proposer_reward` parameter will decrease the advantage that the proposer has over other validators. This may decrease an operator's motivation to ensure that its validator is reliably online and includes at least 2/3 precommit signatures of the other validators in its proposed block.
 
-#### Increasing the value of `baseproposerreward`
+#### Increasing the value of `base_proposer_reward`
 
-Increasing the value of the `baseproposerreward` parameter will increase the advantage that the proposer has over other validators. This may increase an operator's motivation to ensure that its validator is reliably online and includes at least 2/3 precommit signatures of the other validators in its proposed block.
+Increasing the value of the `base_proposer_reward` parameter will increase the advantage that the proposer has over other validators. This may increase an operator's motivation to ensure that its validator is reliably online and includes at least 2/3 precommit signatures of the other validators in its proposed block.
 
 #### Notes
 
-The Cosmos Hub transaction fee volume is proportionally very low in value compared to the inflationary block rewards, and until that changes, this parameter will likely have very little impact on validator behaviours. As fee volumes increase, the `baseproposerreward` bonus may incentivize delegations to the validator(s) with the greatest stake-backing. There are some detailed discussions about the proposer bonus [here](https://github.com/cosmos/cosmos-sdk/issues/3529).
+The Cosmos Hub transaction fee volume is proportionally very low in value compared to the inflationary block rewards, and until that changes, this parameter will likely have very little impact on validator behaviours. As fee volumes increase, the `base_proposer_reward` bonus may incentivize delegations to the validator(s) with the greatest stake-backing. There are some detailed discussions about the proposer bonus [here](https://github.com/cosmos/cosmos-sdk/issues/3529).
 
-### `bonusproposerreward`
+### `bonus_proposer_reward`
 
 **The maximum additional reward bonus for the validator proposing a block, as a proportion of transaction fees.**
 
-All validators in the active set share the rewards for producing a block equally, except for the proposer of a valid block. If that validator includes more than a minimum of 2/3 of precommit signatures from the other validators in the active set, they are eligible to receive the `bonusproposerreward` of up to 4% (`0.040000000000000000`), beyond the 1% `baseproposerreward`. The bonus proposer reward amount that a validator receives depends upon how many precommit signatures are included in the proposed block (additional to the requisite 2/3). All in Bits has published more in-depth information [here](https://hub.cosmos.network/main/validators/validator-faq.html#how-are-fees-distributed).
+All validators in the active set share the rewards for producing a block equally, except for the proposer of a valid block. If that validator includes more than a minimum of 2/3 of precommit signatures from the other validators in the active set, they are eligible to receive the `bonus_proposer_reward` of up to 4% (`0.040000000000000000`), beyond the 1% `base_proposer_reward`. The bonus proposer reward amount that a validator receives depends upon how many precommit signatures are included in the proposed block (additional to the requisite 2/3). All in Bits has published more in-depth information [here](https://hub.cosmos.network/main/validators/validator-faq.html#how-are-fees-distributed).
 
-- on-chain value: <Var children={currentParams.distribution.bonusproposerreward} />
+- on-chain value: <Var children={currentParams.distribution.bonus_proposer_reward} />
 - `cosmoshub-4` default: `0.040000000000000000`
 - `cosmoshub-3` default: `0.040000000000000000`
 
-#### Decreasing the value of `bonusproposerreward`
+#### Decreasing the value of `bonus_proposer_reward`
 
-Decreasing the value of the `bonusproposerreward` parameter will decrease the advantage that the proposer has over other validators. This may decrease an operator's motivation to ensure that its validator is reliably online and includes more than 2/3 precommit signatures from the other validators in its proposed block.
+Decreasing the value of the `bonus_proposer_reward` parameter will decrease the advantage that the proposer has over other validators. This may decrease an operator's motivation to ensure that its validator is reliably online and includes more than 2/3 precommit signatures from the other validators in its proposed block.
 
-#### Increasing the value of `bonusproposerreward`
+#### Increasing the value of `bonus_proposer_reward`
 
-Increasing the value of the `bonusproposerreward` parameter will increase the advantage that the proposer has over other validators. This may increase an operator's motivation to ensure that its validator is reliably online and includes more than 2/3 precommit signatures from the other validators in its proposed block.
+Increasing the value of the `bonus_proposer_reward` parameter will increase the advantage that the proposer has over other validators. This may increase an operator's motivation to ensure that its validator is reliably online and includes more than 2/3 precommit signatures from the other validators in its proposed block.
 
 #### Notes
 
-The Cosmos Hub transaction fee volume is proportionally very low in value compared to the inflationary block rewards, and until that changes, this parameter will likely have very little impact on validator behaviours. As fee volumes increase, the `bonusproposerreward` bonus may incentivize delegations to the validator(s) with the greatest stake-backing. There are some detailed discussions about the proposer bonus [here](https://github.com/cosmos/cosmos-sdk/issues/3529).
+The Cosmos Hub transaction fee volume is proportionally very low in value compared to the inflationary block rewards, and until that changes, this parameter will likely have very little impact on validator behaviours. As fee volumes increase, the `bonus_proposer_reward` bonus may incentivize delegations to the validator(s) with the greatest stake-backing. There are some detailed discussions about the proposer bonus [here](https://github.com/cosmos/cosmos-sdk/issues/3529).
 
 #### Example
 
@@ -127,7 +131,7 @@ Changing the `withdrawaddrenabled` to false will prevent delegators from changin
 
 #### Notes
 
-This parameter was set to `false` before transfers were enabled in order to prevent stakers from diverting their rewards to other addresses ie. to avoid a loophole that would enable ATOM transfer via diverting staking rewards to a designated address. This parameter likely is only useful if [`sendenabled`](./Bank.mdx#1-sendenabled) is set to `false`.
+This parameter was set to `false` before transfers were enabled in order to prevent stakers from diverting their rewards to other addresses ie. to avoid a loophole that would enable ATOM transfer via diverting staking rewards to a designated address.
 
 ## Known Bug
 
@@ -139,4 +143,4 @@ base_proposer_reward: "0.999000000000000000"
 bonus_proposer_reward: "0.040000000000000000"
 ```
 
-Though the system will not allow eg. `baseproposerreward` to be a value greater than 1.0, it will allow the [`communitytax`](#communitytax), [`baseproposerreward`](#baseproposerreward), and [`bonusproposerreward`](#bonusproposerreward) parameters values to total an amount greater than 1.00, which will apparently cause the chain to panic and halt. You can [read more about the reported issue here](https://github.com/cosmos/cosmos-sdk/issues/5808).
+Though the system will not allow eg. `base_proposer_reward` to be a value greater than 1.0, it will allow the [`community_tax`](#community_tax), [`base_proposer_reward`](#base_proposer_reward), and [`bonus_proposer_reward`](#bonus_proposer_reward) parameters values to total an amount greater than 1.00, which will apparently cause the chain to panic and halt. You can [read more about the reported issue here](https://github.com/cosmos/cosmos-sdk/issues/5808).

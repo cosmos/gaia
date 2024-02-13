@@ -12,7 +12,7 @@ For more details on the release, please see the [release notes](https://github.c
 
 ## Release Binary
 
-> Please note to use the correct release binary: `v15.0.0`.
+Please use the correct release binary: `v15.0.0`.
 
 ## Instructions
 

@@ -1,13 +1,13 @@
 ---
-title: Index of Governable Parameters
+title: Legacy subspace parameters
 order: 2
 ---
 
-import { KeyValueTable } from '@site/src/js/KeyValueTable';
-import { Var } from '@site/src/js/Var';
-import { currentParams } from '@site/docs/governance/current-parameters.js';
+import { KeyValueTable } from "@site/src/js/KeyValueTable";
+import { Var } from "@site/src/js/Var";
+import { currentParams } from "@site/docs/governance/current-parameters.js";
 
-## Querying on-chain parameters
+## Querying legacy on-chain parameters
 
 Given a subspace and an associated key, you can query on chain parameters using the CLI.
 
@@ -16,34 +16,3 @@ gaiad query params subspace <subspace_name> <key> --node <node_address> --chain-
 ```
 
 For more information on specific modules, refer to the [Cosmos SDK documentation on modules](https://docs.cosmos.network/main/modules).
-
-## Current subspaces, keys, and values
-
-{/* <div
-  children={Object.entries(currentParams).map(
-    ([subspaceName, subspaceData]) => (
-      <section
-        className="space-y-6"
-        id={subspaceName}
-        key={subspaceName}
-      >
-        <h2>
-          <Var children={subspaceName} /> subspace
-        </h2>
-        <KeyValueTable
-          data={subspaceData}
-          renderKey={(key) => (
-            <a href={`${subspaceName}.html#${key.toLowerCase()}`}>
-              <code>{key}</code>
-            </a>
-          )}
-        />
-        <p>
-          Read more about the governance implications of the{' '}
-          <a href={`${subspaceName}.html`}>{subspaceName} subspace here.</a>
-        </p>
-      </section>
-    )
-  )}
-  className="flex flex-col gap-8"
-/> */}

@@ -300,7 +300,7 @@ If you run your own full-node, just use `tcp://localhost:26657` as the address.
 Finally, let us set the `chain-id` of the blockchain we want to interact with:
 
 ```bash
-gaiad config chain-id cosmoshub-2
+gaiad config chain-id cosmoshub-4
 ```
 
 ## Querying the State
@@ -484,7 +484,8 @@ At the end of the voting period, the proposal is accepted if there are more than
 // <type>=text/parameter_change/software_upgrade
 // ex value for flag: <gasPrice>=0.0025uatom
 
-gaiad tx gov submit-proposal --title "Test Proposal" --description "My awesome proposal" --type <type> --deposit=10000000uatom --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice> --from <delegatorKeyName>
+// the proposal must meet the minimum deposit amount - please check the current chain params
+gaiad tx gov submit-legacy-proposal --title "Test Text Proposal" --description "My awesome proposal" --type "text" --deposit=10000000uatom --gas auto --gas-adjustment 1.5 --gas-prices <gasPrice> --from <delegatorKeyName>
 
 // Increase deposit of a proposal
 // Retrieve proposalID from $gaiad query gov proposals --status deposit_period
@@ -512,10 +513,10 @@ gaiad tx staking delegate <validatorAddress> <amountToBond> --from <delegatorAdd
 
 In order to sign, you will also need the `chain-id`, `account-number` and `sequence`. The `chain-id` is a unique identifier for the blockchain on which you are submitting the transaction. The `account-number` is an identifier generated when your account first receives funds. The `sequence` number is used to keep track of the number of transactions you have sent and prevent replay attacks.
 
-Get the chain-id from the genesis file (`cosmoshub-2`), and the two other fields using the account query:
+Get the chain-id from the genesis file (`4`), and the two other fields using the account query:
 
 ```bash
-gaiad query account <yourAddress> --chain-id cosmoshub-2
+gaiad query account <yourAddress> --chain-id cosmoshub-4
 ```
 
 Then, copy `unsignedTx.json` and transfer it (e.g. via USB) to the offline computer. If it is not done already, [create an account on the offline computer](#using-a-computer). For additional security, you can double check the parameters of your transaction before signing it using the following command:
@@ -527,7 +528,7 @@ cat unsignedTx.json
 Now, sign the transaction using the following command. You will need the `chain-id`, `sequence` and `account-number` obtained earlier:
 
 ```bash
-gaiad tx sign unsignedTx.json --from <delegatorKeyName> --offline --chain-id cosmoshub-2 --sequence <sequence> --account-number <account-number> > signedTx.json
+gaiad tx sign unsignedTx.json --from <delegatorKeyName> --offline --chain-id cosmoshub-4 --sequence <sequence> --account-number <account-number> > signedTx.json
 ```
 
 Copy `signedTx.json` and transfer it back to the online computer. Finally, use the following command to broadcast the transaction:

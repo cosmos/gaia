@@ -219,11 +219,7 @@ replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
 	// Use special SDK v0.47.x release with support for both ICS and LSM
-<<<<<<< HEAD
-	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.47.8-ics-lsm-rc0
-=======
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.47.8-ics-lsm
->>>>>>> 86382aa (feat!: bump SDK to v0.47.8-ics-lsm (#2919))
 
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2

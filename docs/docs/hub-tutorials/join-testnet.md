@@ -72,14 +72,14 @@ Install build tools and Go.
 ```shell
 sudo apt-get update
 sudo apt-get install -y make gcc
-wget https://go.dev/dl/go1.20.3.linux-amd64.tar.gz
-sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.20.3.linux-amd64.tar.gz
+wget https://go.dev/dl/go1.21.6.linux-amd64.tar.gz
+sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.21.6.linux-amd64.tar.gz
 export PATH=$PATH:/usr/local/go/bin
 ```
 
 ### Installation & Configuration
 
-You will need to install and configure the Gaia binary using the script below. The Cosmos Hub Public Testnet is running Gaia [`v13.0.0`](https://github.com/cosmos/gaia/releases/tag/v13.0.0).
+You will need to install and configure the Gaia binary using the script below. The Cosmos Hub Public Testnet is running Gaia [`v15.0.0-rc0`](https://github.com/cosmos/gaia/releases/tag/v15.0.0-rc0).
 
 * For up-to-date endpoints like seeds and state sync RPC servers, visit the [testnets repository](https://github.com/cosmos/testnets/tree/master/public).
 
@@ -225,7 +225,7 @@ systemctl start cosmovisor.service
 To follow the service log, run `journalctl -fu gaiad` or `journalctl -fu cosmovisor`.
 
 * If you are using State Sync, the chain will start syncing once a snapshot is found and verified. Syncing to the current block height should take less than half an hour.
-* If you are using Fast Sync, the chain will start syncing once the first block after genesis is found among the peers. **Syncing to the current block height will take several days**.
+* If you are using Block Sync, the chain will start syncing once the first block after genesis is found among the peers. **Syncing to the current block height will take several days**.
 
 ## Create a Validator (Optional)
 

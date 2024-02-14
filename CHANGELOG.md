@@ -68,17 +68,17 @@
 - Bump [CometBFT](https://github.com/cometbft/cometbft)
   to [v0.37.4](https://github.com/cometbft/cometbft/releases/tag/v0.37.4)
   ([\#2852](https://github.com/cosmos/gaia/pull/2852))
-Migrate min commission rate migration rate staking parameter to 5%
+- Set min commission rate staking parameter to `5%`
  ([prop 826](https://www.mintscan.io/cosmos/proposals/826))
- and updates the commission rate for all validators that have a commission
- rate less than 5% ([\#2855](https://github.com/cosmos/gaia/pull/2855))
-Migrate the signing infos of validators for which the consensus address is missing. 
+ and update the commission rate for all validators that have a commission
+ rate less than `5%`. ([\#2855](https://github.com/cosmos/gaia/pull/2855))
+- Migrate the signing infos of validators for which the consensus address is missing. 
 ([\#2866](https://github.com/cosmos/gaia/pull/2866))
 - Bump [ICS](https://github.com/cosmos/interchain-security) to 
   [v3.3.1-lsm](https://github.com/cosmos/interchain-security/releases/tag/v3.3.1-lsm) 
   ([\#2919](https://github.com/cosmos/gaia/pull/2919))
-Migrate vesting funds from "cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498"
- to community pool according to signal prop [860](https://www.mintscan.io/cosmos/proposals/860)
+- Migrate vesting funds from "cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498"
+ to community pool according to signal prop [860](https://www.mintscan.io/cosmos/proposals/860).
  ([\#2891](https://github.com/cosmos/gaia/pull/2891))
 - Add ante handler that only allows `MsgVote` messages from accounts with at least
   1 atom staked. ([\#2912](https://github.com/cosmos/gaia/pull/2912))

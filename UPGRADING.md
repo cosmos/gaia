@@ -6,7 +6,7 @@ This guide provides instructions for upgrading Gaia from {{ .previousRelease }} 
 
 This document describes the steps for validators, full node operators and relayer operators, to upgrade successfully for the Gaia {{ .version }} release.
 
-For more details on the release, please see the [release notes](https://github.com/cosmos/gaia/releases/tag/{{ .version }})
+For more details on the release, please see the [release notes](https://github.com/cosmos/gaia/releases/tag/{{ .release }})
 
 **Relayer Operators** for the Cosmos Hub and consumer chains, will also need to update to use [Hermes {{ .hermesVersion }}](https://github.com/informalsystems/hermes/releases/tag/{{ .hermesVersion }}) or higher, see [Relayer Operations](#relayer-operations) or more details. You may need to restart your relayer software after a major chain upgrade.
 
@@ -43,11 +43,14 @@ For more details on the release, please see the [release notes](https://github.c
 
 ## On-chain governance proposal attains consensus
 
-If and when the on-chain governance proposal for this upgrade reaches consensus the upgrade height will be used to halt the "old" chain binaries. You can check the proposal on one of the block explorers or using the `gaiad` CLI tool. Neither core developers nor core funding entities control the governance, and this governance proposal has passed in a _fully decentralized_ way.
+Once a software upgrade governance proposal is submitted to the Cosmos Hub, both a reference to this proposal and an `UPGRADE_HEIGHT` are added to the [release notes](https://github.com/cosmos/gaia/releases/tag/{{ .release }}).
+If and when this proposal reaches consensus, the upgrade height will be used to halt the "old" chain binaries. You can check the proposal on one of the block explorers or using the `gaiad` CLI tool.
+Neither core developers nor core funding entities control the governance.
+
 
 ## Upgrade date
 
-The date/time of the upgrade is subject to change as blocks are not generated at a constant interval. You can stay up-to-date by checking the estimated estimated time until the block is produced one of the block explorers (e.g. https://www.mintscan.io/cosmos/blocks/<upgrade_height>).
+The date/time of the upgrade is subject to change as blocks are not generated at a constant interval. You can stay up-to-date by checking the estimated estimated time until the block is produced one of the block explorers (e.g. https://www.mintscan.io/cosmos/blocks/`UPGRADE_HEIGHT`).
 
 ## Preparing for the upgrade
 
@@ -184,7 +187,7 @@ During the network upgrade, core Cosmos teams will be keeping an ever vigilant e
 
 Steps to skip this upgrade proposal are simply to resume the cosmoshub-4 network with the (downgraded) {{ .previousRelease }} binary using the following command:
 
-> gaiad start --unsafe-skip-upgrade <UPGRADE_HEIGHT>
+> gaiad start --unsafe-skip-upgrade `UPGRADE_HEIGHT`
 
 Note: There is no particular need to restore a state snapshot prior to the upgrade height, unless specifically directed by core Cosmos teams.
 
@@ -199,10 +202,6 @@ Operators are encouraged to join the `#cosmos-hub-validators-verified` channel o
 As a validator performing the upgrade procedure on your consensus nodes carries a heightened risk of double-signing and being slashed. The most important piece of this procedure is verifying your software version and genesis file hash before starting your validator and signing.
 
 The riskiest thing a validator can do is discover that they made a mistake and repeat the upgrade procedure again during the network startup. If you discover a mistake in the process, the best thing to do is wait for the network to start before correcting it.
-
-## Relayer Operations
-
-**Relayer Operators** for the Cosmos Hub and consumer chains, will also need to update to use [Hermes {{ .hermesVersion }}](https://github.com/informalsystems/hermes/releases/tag/{{ .hermesVersion }}) or higher, see [Relayer Operations](#relayer-operations) or more details.
 
 ## Reference
 

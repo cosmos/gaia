@@ -1,45 +1,53 @@
+<!--
+Template for Gaia upgrading instructions:
+- {{ .previousVersion }} -- previous version (e.g., v14.1)
+- {{ .version }} -- new version (e.g., v15)
+- {{ .previousRelease }} -- previous release (e.g., v14.1.0)
+- {{ .release }} -- new release (e.g., v15.0.0)
+- {{ .hermesVersion }} -- Hermes version (e.g., v1.8.0)
+- {{ .goVersion }} -- golang version (e.g., v1.21)
+- {{ .cosmovisorVersion }} -- Cosmovisor version (e.g., v1.5.0)
+-->
+
+<!-- omit in toc -->
 # Upgrading Gaia
 
-This guide provides instructions for upgrading Gaia from {{ .previousRelease }} to {{ .version }}.
+This guide provides instructions for upgrading Gaia from `{{ .previousVersion }}.x` to `{{ .version }}.x`. 
+It describes the steps for validators, full node operators and relayer operators, to upgrade successfully to Gaia {{ .version }}.
 
 <!-- markdown-link-check-disable -->
 
-This document describes the steps for validators, full node operators and relayer operators, to upgrade successfully for the Gaia {{ .version }} release.
+For more details on the release, please see the [release notes](https://github.com/cosmos/gaia/releases/tag/{{ .release }}).
 
-For more details on the release, please see the [release notes](https://github.com/cosmos/gaia/releases/tag/{{ .release }})
+**Relayer Operators** for the Cosmos Hub and consumer chains, will also need to update to use [Hermes {{ .hermesVersion }}](https://github.com/informalsystems/hermes/releases/tag/{{ .hermesVersion }}) or higher. You may need to restart your relayer software after a major chain upgrade.
 
-**Relayer Operators** for the Cosmos Hub and consumer chains, will also need to update to use [Hermes {{ .hermesVersion }}](https://github.com/informalsystems/hermes/releases/tag/{{ .hermesVersion }}) or higher, see [Relayer Operations](#relayer-operations) or more details. You may need to restart your relayer software after a major chain upgrade.
-
+<!-- omit in toc -->
 ## Release Binary
 
-> Please note to use the correct release binary: `{{ .release }}`.
+Please use the correct release binary: `{{ .release }}`.
 
+<!-- omit in toc -->
 ## Instructions
-  
-- [Cosmos Hub 4, Gaia {{ .version }} Upgrade, Instructions](#cosmos-hub-4-gaia-{{ .version }}-upgrade-instructions)
-  - [Release Binary](#release-binary)
-  - [Instructions](#instructions)
-  - [On-chain governance proposal attains consensus](#on-chain-governance-proposal-attains-consensus)
-  - [Upgrade date](#upgrade-date)
-  - [Preparing for the upgrade](#preparing-for-the-upgrade)
-    - [System requirement](#system-requirement)
-    - [Backups](#backups)
-    - [Testing](#testing)
-    - [Current runtime](#current-runtime)
-    - [Target runtime](#target-runtime)
-  - [Upgrade steps](#upgrade-steps)
-    - [Method I: Manual Upgrade](#method-i-manual-upgrade)
-    - [Method II: Upgrade using Cosmovisor](#method-ii-upgrade-using-cosmovisor)
+
+- [On-chain governance proposal attains consensus](#on-chain-governance-proposal-attains-consensus)
+- [Upgrade date](#upgrade-date)
+- [Preparing for the upgrade](#preparing-for-the-upgrade)
+  - [Backups](#backups)
+  - [Testing](#testing)
+  - [Current runtime](#current-runtime)
+  - [Target runtime](#target-runtime)
+- [Upgrade steps](#upgrade-steps)
+  - [Method I: Manual Upgrade](#method-i-manual-upgrade)
+  - [Method II: Upgrade using Cosmovisor](#method-ii-upgrade-using-cosmovisor)
     - [Manually preparing the binary](#manually-preparing-the-binary)
-        - [Preparation](#preparation)
+      - [Preparation](#preparation)
       - [Expected upgrade result](#expected-upgrade-result)
     - [Auto-Downloading the Gaia binary](#auto-downloading-the-gaia-binary)
-  - [Upgrade duration](#upgrade-duration)
-  - [Rollback plan](#rollback-plan)
-  - [Communications](#communications)
-  - [Risks](#risks)
-  - [Relayer Operations](#relayer-operations)
-  - [Reference](#reference)
+- [Upgrade duration](#upgrade-duration)
+- [Rollback plan](#rollback-plan)
+- [Communications](#communications)
+- [Risks](#risks)
+- [Reference](#reference)
 
 ## On-chain governance proposal attains consensus
 
@@ -73,7 +81,7 @@ The Cosmos Hub mainnet network, `cosmoshub-4`, is currently running [Gaia {{ .pr
 
 ### Target runtime
 
-The Cosmos Hub mainnet network, `cosmoshub-4`, will run **[Gaia {{ .release }}](https://github.com/cosmos/gaia/releases/tag/{{ .release }})**. Operators _**MUST**_ use this version post-upgrade to remain connected to the network. The new version requires `go v1.21` to build successfully.
+The Cosmos Hub mainnet network, `cosmoshub-4`, will run [Gaia {{ .release }}](https://github.com/cosmos/gaia/releases/tag/{{ .release }}). Operators _**MUST**_ use this version post-upgrade to remain connected to the network. The new version requires `go {{ .goVersion }}` to build successfully.
 
 ## Upgrade steps
 
@@ -88,53 +96,47 @@ If you prefer to use Cosmovisor to upgrade, some preparation work is needed befo
 
 ### Method I: Manual Upgrade
 
-Make sure **Gaia {{ .previousRelease }}** is installed by either downloading a [compatible binary](https://github.com/cosmos/gaia/releases/tag/{{ .previousRelease }}), or building from source. Check the required version to build this binary in the `Makefile`.
+Make sure Gaia `{{ .previousRelease }}` is installed by either downloading a [compatible binary](https://github.com/cosmos/gaia/releases/tag/{{ .previousRelease }}), or building from source. Check the required version to build this binary in the `Makefile`.
 
-Run Gaia {{ .previousRelease }} till upgrade height, the node will panic:
+Run Gaia `{{ .previousRelease }}` till upgrade height, the node will panic:
 
 ```shell
 ERR UPGRADE "{{ .version }}" NEEDED at height: <UPGRADE_HEIGHT>: upgrade to {{ .version }} and applying upgrade "{{ .version }}" at height:<UPGRADE_HEIGHT>
 ```
 
-Stop the node, and switch the binary to **Gaia {{ .release }}** and re-start by `gaiad start`.
+Stop the node, and switch the binary to Gaia `{{ .release }}` and re-start by `gaiad start`.
 
 It may take several minutes to a few hours until validators with a total sum voting power > 2/3 to complete their node upgrades. After that, the chain can continue to produce blocks.
 
 ### Method II: Upgrade using Cosmovisor
 
-### Manually preparing the binary
+#### Manually preparing the binary
 
 ##### Preparation
 
-Install the latest version of Cosmovisor (`1.5.0`):
+- Install the latest version of Cosmovisor (`{{ .cosmovisorVersion }}`):
 
 ```shell
 go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@latest
-```
-
-**Verify Cosmovisor Version**
-```shell
 cosmovisor version
-cosmovisor version: v1.5.0
+# cosmovisor version: {{ .cosmovisorVersion }}
 ```
 
-Create a cosmovisor folder:
-
-create a Cosmovisor folder inside `$GAIA_HOME` and move Gaia {{ .previousRelease }} into `$GAIA_HOME/cosmovisor/genesis/bin`
+- Create a `cosmovisor` folder inside `$GAIA_HOME` and move Gaia `{{ .previousRelease }}` into `$GAIA_HOME/cosmovisor/genesis/bin`:
 
 ```shell
 mkdir -p $GAIA_HOME/cosmovisor/genesis/bin
 cp $(which gaiad) $GAIA_HOME/cosmovisor/genesis/bin
-````
+```
 
-Build Gaia **{{ .release }}**, and move gaiad **{{ .release }}** to `$GAIA_HOME/cosmovisor/upgrades/{{ .version }}/bin`
+- Build Gaia `{{ .release }}`, and move gaiad `{{ .release }}` to `$GAIA_HOME/cosmovisor/upgrades/{{ .version }}/bin`
 
 ```shell
 mkdir -p  $GAIA_HOME/cosmovisor/upgrades/{{ .version }}/bin
 cp $(which gaiad) $GAIA_HOME/cosmovisor/upgrades/{{ .version }}/bin
 ```
 
-Then you should get the following structure:
+At this moment, you should have the following structure:
 
 ```shell
 .
@@ -148,7 +150,7 @@ Then you should get the following structure:
             └── gaiad  # new: {{ .release }}
 ```
 
-Export the environmental variables:
+- Export the environmental variables:
 
 ```shell
 export DAEMON_NAME=gaiad
@@ -158,7 +160,7 @@ export DAEMON_HOME=$GAIA_HOME
 export DAEMON_RESTART_AFTER_UPGRADE=true
 ```
 
-Start the node:
+- Start the node:
 
 ```shell
 cosmovisor run start --x-crisis-skip-assert-invariants --home $DAEMON_HOME
@@ -166,14 +168,14 @@ cosmovisor run start --x-crisis-skip-assert-invariants --home $DAEMON_HOME
 
 Skipping the invariant checks is strongly encouraged since it decreases the upgrade time significantly and since there are some other improvements coming to the crisis module in the next release of the Cosmos SDK.
 
-#### Expected upgrade result
+##### Expected upgrade result
 
 When the upgrade block height is reached, Gaia will panic and stop:
 
 This may take a few minutes to a few hours.
 After upgrade, the chain will continue to produce blocks when validators with a total sum voting power > 2/3 complete their node upgrades.
 
-### Auto-Downloading the Gaia binary
+#### Auto-Downloading the Gaia binary
 
 **This method is not recommended!**
 
@@ -187,7 +189,9 @@ During the network upgrade, core Cosmos teams will be keeping an ever vigilant e
 
 Steps to skip this upgrade proposal are simply to resume the cosmoshub-4 network with the (downgraded) {{ .previousRelease }} binary using the following command:
 
-> gaiad start --unsafe-skip-upgrade `UPGRADE_HEIGHT`
+```shell
+gaiad start --unsafe-skip-upgrade <UPGRADE_HEIGHT>
+```
 
 Note: There is no particular need to restore a state snapshot prior to the upgrade height, unless specifically directed by core Cosmos teams.
 

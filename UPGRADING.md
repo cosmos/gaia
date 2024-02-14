@@ -121,35 +121,29 @@ It may take several minutes to a few hours until validators with a total sum vot
 
 ##### Preparation
 
-Install the latest version of Cosmovisor (`1.5.0`):
+- Install the latest version of Cosmovisor (`1.5.0`):
 
 ```shell
 go install cosmossdk.io/tools/cosmovisor/cmd/cosmovisor@latest
-```
-
-**Verify Cosmovisor Version**
-```shell
 cosmovisor version
-cosmovisor version: v1.5.0
+# cosmovisor version: v1.5.0
 ```
 
-Create a cosmovisor folder:
-
-create a Cosmovisor folder inside `$GAIA_HOME` and move Gaia v14.1.0 into `$GAIA_HOME/cosmovisor/genesis/bin`
+- Create a `cosmovisor` folder inside `$GAIA_HOME` and move Gaia `v14.1.0` into `$GAIA_HOME/cosmovisor/genesis/bin`:
 
 ```shell
 mkdir -p $GAIA_HOME/cosmovisor/genesis/bin
 cp $(which gaiad) $GAIA_HOME/cosmovisor/genesis/bin
-````
+```
 
-Build Gaia **v15.0.0**, and move gaiad **v15.0.0** to `$GAIA_HOME/cosmovisor/upgrades/v15/bin`
+- Build Gaia `v15.0.0`, and move gaiad `v15.0.0` to `$GAIA_HOME/cosmovisor/upgrades/v15/bin`
 
 ```shell
 mkdir -p  $GAIA_HOME/cosmovisor/upgrades/v15/bin
 cp $(which gaiad) $GAIA_HOME/cosmovisor/upgrades/v15/bin
 ```
 
-Then you should get the following structure:
+At this moment, you should have the following structure:
 
 ```shell
 .
@@ -163,7 +157,7 @@ Then you should get the following structure:
             └── gaiad  # new: v15.0.0
 ```
 
-Export the environmental variables:
+- Export the environmental variables:
 
 ```shell
 export DAEMON_NAME=gaiad
@@ -173,7 +167,7 @@ export DAEMON_HOME=$GAIA_HOME
 export DAEMON_RESTART_AFTER_UPGRADE=true
 ```
 
-Start the node:
+- Start the node:
 
 ```shell
 cosmovisor run start --x-crisis-skip-assert-invariants --home $DAEMON_HOME
@@ -203,7 +197,7 @@ During the network upgrade, core Cosmos teams will be keeping an ever vigilant e
 Steps to skip this upgrade proposal are simply to resume the cosmoshub-4 network with the (downgraded) v14.1.0 binary using the following command:
 
 ```shell
-> gaiad start --unsafe-skip-upgrade <UPGRADE_HEIGHT>
+gaiad start --unsafe-skip-upgrade <UPGRADE_HEIGHT>
 ```
 
 Note: There is no particular need to restore a state snapshot prior to the upgrade height, unless specifically directed by core Cosmos teams.

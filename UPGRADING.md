@@ -8,7 +8,7 @@ This document describes the steps for validators, full node operators and relaye
 
 For more details on the release, please see the [release notes](https://github.com/cosmos/gaia/releases/tag/v15.0.0)
 
-**Relayer Operators** for the Cosmos Hub and consumer chains, will also need to update to use [Hermes v1.8.0](https://github.com/informalsystems/hermes/releases/tag/v1.8.0) or higher, see [Relayer Operations](#relayer-operations) or more details. You may need to restart your relayer software after a major chain upgrade.
+**Relayer Operators** for the Cosmos Hub and consumer chains, will also need to update to use [Hermes v1.8.0](https://github.com/informalsystems/hermes/releases/tag/v1.8.0) or higher. You may need to restart your relayer software after a major chain upgrade.
 
 ## Release Binary
 
@@ -16,13 +16,14 @@ Please use the correct release binary: `v15.0.0`.
 
 ## Instructions
 
-- [Cosmos Hub 4, Gaia v15 Upgrade, Instructions](#cosmos-hub-4-gaia-v14-upgrade-instructions)
+- [Upgrading Gaia](#upgrading-gaia)
   - [Release Binary](#release-binary)
   - [Instructions](#instructions)
   - [On-chain governance proposal attains consensus](#on-chain-governance-proposal-attains-consensus)
   - [Upgrade date](#upgrade-date)
   - [Preparing for the upgrade](#preparing-for-the-upgrade)
     - [System requirements](#system-requirements)
+      - [An Important Note for Node Operators](#an-important-note-for-node-operators)
     - [Backups](#backups)
     - [Testing](#testing)
     - [Current runtime](#current-runtime)
@@ -30,26 +31,25 @@ Please use the correct release binary: `v15.0.0`.
   - [Upgrade steps](#upgrade-steps)
     - [Method I: Manual Upgrade](#method-i-manual-upgrade)
     - [Method II: Upgrade using Cosmovisor](#method-ii-upgrade-using-cosmovisor)
-    - [Manually preparing the binary](#manually-preparing-the-binary)
+      - [Manually preparing the binary](#manually-preparing-the-binary)
         - [Preparation](#preparation)
-      - [Expected upgrade result](#expected-upgrade-result)
-    - [Auto-Downloading the Gaia binary](#auto-downloading-the-gaia-binary)
+        - [Expected upgrade result](#expected-upgrade-result)
+      - [Auto-Downloading the Gaia binary](#auto-downloading-the-gaia-binary)
   - [Upgrade duration](#upgrade-duration)
   - [Rollback plan](#rollback-plan)
   - [Communications](#communications)
   - [Risks](#risks)
-  - [Relayer Operations](#relayer-operations)
   - [Reference](#reference)
 
 ## On-chain governance proposal attains consensus
 
-Once a software upgrade governance proposal is submitted to the Cosmos Hub, a reference is added to the [release notes](https://github.com/cosmos/gaia/releases/tag/v15.0.0).
+Once a software upgrade governance proposal is submitted to the Cosmos Hub, both a reference to this proposal and an `UPGRADE_HEIGHT` are added to the [release notes](https://github.com/cosmos/gaia/releases/tag/v15.0.0).
 If and when this proposal reaches consensus, the upgrade height will be used to halt the "old" chain binaries. You can check the proposal on one of the block explorers or using the `gaiad` CLI tool.
 Neither core developers nor core funding entities control the governance.
 
 ## Upgrade date
 
-The date/time of the upgrade is subject to change as blocks are not generated at a constant interval. You can stay up-to-date by checking the estimated estimated time until the block is produced one of the block explorers (e.g. https://www.mintscan.io/cosmos/blocks/<UPGRADE_HEIGHT>).
+The date/time of the upgrade is subject to change as blocks are not generated at a constant interval. You can stay up-to-date by checking the estimated estimated time until the block is produced one of the block explorers (e.g. https://www.mintscan.io/cosmos/blocks/`UPGRADE_HEIGHT`).
 
 ## Preparing for the upgrade
 
@@ -57,7 +57,7 @@ The date/time of the upgrade is subject to change as blocks are not generated at
 
 #### An Important Note for Node Operators
 
-We recomment that validators to temporarily upgrade their hardware before attempting the upgrade to offset any risk associated with migrating from cosmos-sdk v45 to v47.
+We recommend validators to temporarily upgrade their hardware before attempting the upgrade to offset any risk associated with migrating from cosmos-sdk v45 to v47.
 
 These are the recommended revised hardware requirements for the upgrade:
 
@@ -202,7 +202,9 @@ During the network upgrade, core Cosmos teams will be keeping an ever vigilant e
 
 Steps to skip this upgrade proposal are simply to resume the cosmoshub-4 network with the (downgraded) v14.1.0 binary using the following command:
 
+```shell
 > gaiad start --unsafe-skip-upgrade <UPGRADE_HEIGHT>
+```
 
 Note: There is no particular need to restore a state snapshot prior to the upgrade height, unless specifically directed by core Cosmos teams.
 
@@ -217,10 +219,6 @@ Operators are encouraged to join the `#cosmos-hub-validators-verified` channel o
 As a validator performing the upgrade procedure on your consensus nodes carries a heightened risk of double-signing and being slashed. The most important piece of this procedure is verifying your software version and genesis file hash before starting your validator and signing.
 
 The riskiest thing a validator can do is discover that they made a mistake and repeat the upgrade procedure again during the network startup. If you discover a mistake in the process, the best thing to do is wait for the network to start before correcting it.
-
-## Relayer Operations
-
-**Relayer Operators** for the Cosmos Hub and consumer chains, will also need to update to use [Hermes v1.8.0](https://github.com/informalsystems/hermes/releases/tag/v1.8.0) or higher, see [Relayer Operations](#relayer-operations) or more details.
 
 ## Reference
 

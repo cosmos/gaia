@@ -406,7 +406,7 @@ html {
     }
 
     .pagination-nav__sublabel {
-      @apply text-gray-1000;
+      @apply text-gray-0;
     }
   }
 

@@ -50,7 +50,7 @@ An exception are PRs open via the Github mergify integration (i.e., backported P
   * Create a new version section in the `CHANGELOG.md` (follow the procedure described [below](#changelog))
   * Create release notes, in `RELEASE_NOTES.md`, highlighting the new features and changes in the version. 
     This is needed so the bot knows which entries to add to the release page on GitHub.
-  * (To be added in the future) ~~Additionally verify that the `UPGRADING.md` file is up to date and contains all the necessary information for upgrading to the new version.~~
+  * Verify that the `UPGRADING.md` file is up to date and contains all the necessary information for upgrading to the new version.
 * We freeze the release branch from receiving any new features and focus on releasing a release candidate.
   * Finish audits and reviews.
   * Add more tests.

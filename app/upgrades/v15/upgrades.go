@@ -24,7 +24,7 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	"github.com/cosmos/gaia/v15/app/keepers"
+	"github.com/cosmos/gaia/v16/app/keepers"
 )
 
 // CreateUpgradeHandler returns a upgrade handler for Gaia v15

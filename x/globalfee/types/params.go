@@ -12,7 +12,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	gaiaerrors "github.com/cosmos/gaia/v15/types/errors"
+	gaiaerrors "github.com/cosmos/gaia/v16/types/errors"
 )
 
 var (

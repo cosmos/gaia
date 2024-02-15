@@ -91,9 +91,11 @@ IMPORTANT: The flag `--x-crisis-skip-assert-invariants` is optional and can be u
 5. Wait until 2/3+ of voting power has upgraded for the network to start producing blocks
 6. You can use the following commands to check peering status and state:
 
-> curl -s <http://127.0.0.1:26657/net_info> | grep n_peers
+```sh
+> curl -s http://127.0.0.1:26657/net_info | grep n_peers
 >
 > curl -s localhost:26657/consensus_state | jq -r .result.round_state.height_vote_set[].prevotes_bit_array
+```
 
 ## Upgrade duration
 

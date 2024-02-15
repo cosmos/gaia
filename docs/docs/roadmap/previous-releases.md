@@ -1,11 +1,10 @@
 <!--
 order: false
+title: Previous Releases
 parent:
   title: Previous Releases
   order: 7
 -->
-
-# Previous Releases
 
 The following table below, shows the versions of the main dependencies.
 

@@ -1,8 +1,7 @@
 <!--
 order: 2
+title: ADR 001: Interchain Accounts
 -->
-
-# ADR 001: Interchain Accounts
 
 ## Changelog
 

@@ -34,7 +34,7 @@ The following is a short summary of the upgrade steps:
     1. Resetting state to clear the local Cosmoshub-3 state
     1. Copying the cosmoshub-4 genesis file to the Gaia config folder (either after migrating an existing cosmoshub-3 genesis export, or downloading the cosmoshub-4 genesis from the mainnet github)
     1. Installing the Gaia v4.0.x release
-    1. Starting the Gaia v4.0.x instance to resume the Cosmos hub chain at a height of <cosmoshub3 height> + 1.
+    1. Starting the Gaia v4.0.x instance to resume the Cosmos hub chain at a height of **cosmoshub3 height + 1**.
 
 Specific instructions for validators are available in [Upgrade Procedure](#upgrade-procedure),
 and specific instructions for full node operators are available in [Guidance for Full Node Operators](#guidance-for-full-node-operators).
@@ -65,7 +65,7 @@ If you’re running a block explorer, wallet, exchange, validator, or any other 
 
 If you want to test the procedure before the update happens on 18th of February, please see this post accordingly:
 
-<https://github.com/cosmos/gaia/issues/569#issuecomment-767910963>
+{'<https://github.com/cosmos/gaia/issues/569#issuecomment-767910963>'}
 
 ## Preliminary
 

@@ -94,10 +94,13 @@ You should see something similar to the following:
 ```bash
 name: gaia
 server_name: gaiad
-version: v9.0.0
-commit: 682770f2410ab0d33ac7f0c7203519d7a99fa2b6
+version: v14.1.0
+commit: 0d9408e9169488707f1ad423e87d0df84a30431f
 build_tags: netgo,ledger
-go: go version go1.20.3 linux/amd64
+go: go version go1.20.10 darwin/arm64
+build_deps:
+- cosmossdk.io/api@v0.2.6
+- cosmossdk.io/core@v0.5.1
 ```
 
 ### Build Tags

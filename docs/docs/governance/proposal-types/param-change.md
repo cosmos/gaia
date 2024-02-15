@@ -25,7 +25,7 @@ There are currently 8 modules active in the Cosmos Hub with parameters that may 
 
 ## What are the current parameter values?
 <!-- markdown-link-check-enable -->
-There are ways to query the current settings for each module's parameter(s). Some can be queried with the command line program [`gaiad`](../../getting-started/installation.md).
+There are ways to query the current settings for each module's parameter(s). Some can be queried with the command line program [`gaiad`](../../getting-started/installation.mdx).
 
 You can begin by using the command `gaia q [module] -h` to get help about the subcommands for the module you want to query. For example, `gaiad q staking params --chain-id <chain-id> --node <node-id>` returns the settings of relevant parameters:
 

@@ -17,7 +17,7 @@ Reviewing existing governance documentation and discussion, a few key themes sur
 
 ### Emphasis on Self-governance and Sovereignty
 
-On-chain governance standardizes forms of coordination but leaves many governance decisions to each application-specific blockchain or zone. Sunny Aggarwal [uses the analogy](https://blog.cosmos.network/deep-dive-how-will-ibc-create-value-for-the-cosmos-hub-eedefb83c7a0) that IBC as a form of standardization allows for "economic integration without political integration." Sunny also [talks about](https://www.youtube.com/watch?v=LApEkXJR_0M) how governance controlled by a community that shares culture and trust can "achieve greater security than economic incentives alone." For example, the Regen Network has a [governance model](https://medium.com/regen-network/community-stake-governance-model-b949bcb1eca3) that identifies multiple constituencies that require representation in governance. This allows diverse chains to exchange value while retaining the ability to self-govern. 
+On-chain governance standardizes forms of coordination but leaves many governance decisions to each application-specific blockchain or zone. Sunny Aggarwal [uses the analogy](https://blog.cosmos.network/deep-dive-how-will-ibc-create-value-for-the-cosmos-hub-eedefb83c7a0) that IBC as a form of standardization allows for "economic integration without political integration." Sunny also [talks about](https://www.youtube.com/watch?v=LApEkXJR_0M) how governance controlled by a community that shares culture and trust can "achieve greater security than economic incentives alone." For example, the Regen Network has a [governance model](https://medium.com/regen-network/community-stake-governance-model-b949bcb1eca3) that identifies multiple constituencies that require representation in governance. This allows diverse chains to exchange value while retaining the ability to self-govern.
 
 ### Flexibility through On-chain Parameters
 
@@ -27,7 +27,6 @@ Each blockchain in the Cosmos ecosystem can be tailored to a specific applicatio
 
 The existing [governance module](https://docs.cosmos.network/main/modules/gov/)  is described as a minimum viable product for the governance module, with [ideas for future improvement](https://docs.cosmos.network/main/modules/gov/05_future_improvements.html) . For example an active product team is currently aligning [groups and governance functionality](https://docs.google.com/document/d/1w-fwa8i8kkgirbn9DOFklHwcu9xO_IdbMN910ASr2oQ/edit#)  will change current governance practices and open up new avenues to explore and support through on- and off- chain processes
 
-
 ## On- and off-chain Governance Structure
 
 ### Communication
@@ -35,7 +34,7 @@ The existing [governance module](https://docs.cosmos.network/main/modules/gov/) 
 Governance practices and decisions are communicated through different types of documents and design artefacts:
 
 - On-chain governance [proposals](https://cosmoscan.net/governance-stats)
-- Decision records 
+- Decision records
   - Cosmos Improvement Proposals ([CIPs](https://cips.cosmos.network/))
   - Cosmos SDK's [ADRs](https://docs.cosmos.network/main/architecture/)
   - Tendermint's [ADRs](https://github.com/tendermint/tendermint/tree/master/docs/architecture)
@@ -203,7 +202,6 @@ Participants in the process include:
 - 37 proposals that have been voted on so far. The latest proposal as of July 2nd, 2021 is proposal ID #51 (proposals that don't meet minimum deposit don't count towards the 37)
 - [Cosmoscan's governance charts](https://cosmoscan.net/governance-charts) provide insight on turnout and voter activity. [Mintscan](https://www.mintscan.io/cosmos/proposals) can be used to fill in any gaps.
 
-
 ## Cosmos Improvement Proposals (CIPs)
 
 CIPs serve as the process for describing major changes or providing info about the protocol and APIs or processes of the Cosmos ecosystem.
@@ -211,14 +209,13 @@ CIPs serve as the process for describing major changes or providing info about t
 "The CIP process draws heavily from Ethereum's EIP process and Rust's RFC process. It pertains primarily to the protocol and APIs of the Cosmos Hub blockchain (Cosmos, for short), including Tendermint, Cosmos-SDK, IBC, and other modules. A CIP is a design document providing information to the Cosmos community, or describing a new feature or major change for Cosmos or its processes or environment."
 
 "This CIP process aims to subsume, but not necessarily to replace" the RFC and ADR processes.
-🔗 <https://github.com/cosmos/cips/blob/main/CIPS/cip-1.md>
+[🔗 Link](https://github.com/cosmos/cips/blob/main/CIPS/cip-1.md)
 
-### User Story: Governing Technical Direction 
+### User Story: Governing Technical Direction
 
 Alice, a member of one core development team, submits a PR to the Cosmos cips repo after a recurring issue is identified in the standing GAIA / ATOM call. There has been a recurring discussion about how to formalize emerging agreement on a distinctive Cosmos interpretation of a technical feature common to blockchains. There are existing prior specifications in the bitcoin ecosystem that were the direct inspiration for Cosmos development, but over time the core development teams have developed a contrasting understanding of how their implementation provides a pathway to future specification development. At the end of last call, Alice decides this was important enough to step forward and take a first pass at drafting the spec based on the current roadmap.
 
 Alice follows the template from the repo to draft an early CIP and updates the frontmatter of the file to indicate the status is "draft." Once the PR is submitted, Alice pings a few developers who mentioned they would provide feedback in Discord and Slack bridge channels. The developers review the PR and leave inline comments and suggestions. Alice incorporates this feedback and requests the CIP be discussed at the next GAIA / ATOM call. In the meantime, Alice solicits community feedback on the PR, sharing it to the Cosmos Hub Discord and a relevant Slack connect channel. Once again Alice is asked to make minor changes, which are completed before the PR is finalized, the cip status is updated to "living" and it is merged by the cips repo owner.
-
 
 ### Process overview
 
@@ -230,8 +227,6 @@ Alice follows the template from the repo to draft an early CIP and updates the f
 - Not all CIPS are taken through an on-chain vote
 - A situation where CIPs interact with Cosmos Governance is while coordinating a software upgrade among validators. [CIP-5](https://github.com/cosmos/cips/blob/17a9ffc1cc40933ea3cf4460849ae713e6c244e3/CIPS/cip-5.md) [PR not merged], which offers guidelines for new modules to be integrated into Cosmos Hub ensuring safety and robustness, states "motivated by decentralization and the Cosmos community's decisions, a module's code is activated by submitting a parameter change proposal."
   
-
-
 ### Process owners
 
 CIP editor: Ethan Buchman ([@ebuchman](https://github.com/ebuchman))
@@ -240,14 +235,13 @@ CIP editor: Ethan Buchman ([@ebuchman](https://github.com/ebuchman))
 
 - There are 12 CIPs proposed to date, none are living, have been finalized, or taken through the on-chain governance process to be widely adopted.
 
-
 ## Cosmos SDK Architecture Decision Records (ADR)
 
 ADRs serve as the main way to propose new feature designs, new processes, and to document design decisions for the Cosmos SDK.
 
 "An Architectural Decision (AD) is a software design choice that addresses a functional or non-functional requirement that is architecturally significant. An Architecturally Significant Requirement (ASR) is a requirement that has a measurable effect on a software system's architecture and quality. An Architectural Decision Record (ADR) captures a single AD, such as often done when writing personal notes or meeting minutes; the collection of ADRs created and maintained in a project constitute its decision log."
 
-🔗 <https://docs.cosmos.network/main/architecture/>
+[🔗 Link](https://docs.cosmos.network/main/architecture/)
 
 ### Process overview
 
@@ -259,8 +253,9 @@ ADRs serve as the main way to propose new feature designs, new processes, and to
   1.  Add an entry to a list in the [README](https://docs.cosmos.network/main/architecture/) file.
   1.  Create a Pull Request to propose a new ADR.
   `<https://docs.cosmos.network/main/architecture/PROCESS.html>`
-- ADRs go through a lifecycle: <https://docs.cosmos.network/main/architecture/PROCESS.html#adr-life-cycle>
-```
+- ADRs go through a lifecycle: see [link](https://docs.cosmos.network/main/architecture/PROCESS.html#adr-life-cycle).
+
+```text
 DRAFT -> PROPOSED -> LAST CALL yyyy-mm-dd -> ACCEPTED | REJECTED -> SUPERSEEDED by ADR-xxx
 
                   \        |
@@ -278,18 +273,17 @@ DRAFT -> PROPOSED -> LAST CALL yyyy-mm-dd -> ACCEPTED | REJECTED -> SUPERSEEDED 
 
 ### Process maturity
 
-- A bunch have passed, many are proposed: <https://github.com/cosmos/cosmos-sdk/tree/master/docs/architecture>
-
+- A bunch have passed, many are proposed: [see link](https://github.com/cosmos/cosmos-sdk/tree/master/docs/architecture)
 
 ## Tendermint Request for Comments (RFC)
 
 RFCs are ways to both investigate and develop an idea prior to formalizing for inclusion in the Tendermint Spec, they also describe proposals to change the spec.
 
 "RFC stands for Request for Comments. It is a social device use to float and polish an idea prior to the inclusion into an existing or new spec/paper/research topic. RFC stands for Request for Comments. It is a social device use to float and polish an idea prior to the inclusion into an existing or new spec/paper/research topic."
-🔗 <https://github.com/tendermint/spec/blob/master/rfc/README.md>
+[🔗 Link](https://github.com/tendermint/spec/blob/master/rfc/README.md)
 
 "As part of our 1.0 push, we'll determine if gRPC is the right framework for our RPC layer; and if so, we'll implement it. This work will begin with an RFC, and we'll seek further input from community members and users. If this RFC is accepted, we'll write a transition plan for the RPC layer and execute it."
-🔗 <https://medium.com/tendermint/towards-tendermint-core-1-0-3a71b6ce73a3>
+[🔗 Link](https://medium.com/tendermint/towards-tendermint-core-1-0-3a71b6ce73a3)
 
 ### Process overview
 
@@ -303,16 +297,15 @@ RFCs are ways to both investigate and develop an idea prior to formalizing for i
 
 - 5 RFCs have been merged to the repo with an active pull request for adding one more
 
-
-## Interchain Standards (ICS) 
+## Interchain Standards (ICS)
 
 ICSs are standards that document a particular protocol, standard, or feature of use to the Cosmos Ecosystem.
 
 "Interchain Standards (ICS) for the Cosmos network & interchain ecosystem."
-🔗 <https://github.com/cosmos/ibc>
+[🔗 Link](https://github.com/cosmos/ibc)
 
 "An inter-chain standard (ICS) is a design document describing a particular protocol, standard, or feature expected to be of use to the Cosmos ecosystem. An ICS should list the desired properties of the standard, explain the design rationale, and provide a concise but comprehensive technical specification. The primary ICS author is responsible for pushing the proposal through the standardisation process, soliciting input and support from the community, and communicating with relevant stakeholders to ensure (social) consensus."
-🔗 <https://github.com/cosmos/ibc/blob/master/spec/ics-001-ics-standard/README.md>
+[🔗 Link](https://github.com/cosmos/ibc/blob/master/spec/ics-001-ics-standard/README.md)
 
 ### Process overview
 
@@ -332,8 +325,7 @@ ICSs are standards that document a particular protocol, standard, or feature of 
 
 ### Process maturity
 
-- 16 have been merged into the repo with at least one more under active discussion: <https://github.com/cosmos/ibc>
-
+- 16 have been merged into the repo with at least one more under active discussion: [https://github.com/cosmos/ibc](https://github.com/cosmos/ibc)
 
 ---
 
@@ -353,7 +345,7 @@ This report provides a descriptive account of the existing governance documentat
 
 - More clarity is needed on when the CIPs should be used. It could be seen as the canonical home for high level decisions where alignment is required across the ecosystem but needs to be presented as such and the process needs refinement
 - Some CIPS clearly impact all Cosmos ecosystem and blockchains and need ecosystem-wide buy-in, for example [CIP-11: Cosmos Hierarchical Deterministic key derivation](https://github.com/cosmos/cips/pull/11).
-- ["RFC Interchain Staking Light Paper"](https://github.com/cosmos/gaia/issues/659) an example of a potential CIP that was PRd to the Gaia repo. The ambiguity makes sense: it fits criteria of informational CIP about the Cosmos environment (Light Paper), but also a shorter and higher level document is needed to function as more of a summary in order to get early user feedback and market ideas that isn't a CIP <https://github.com/cosmos/gaia/issues/659>
+- ["RFC Interchain Staking Light Paper"](https://github.com/cosmos/gaia/issues/659) an example of a potential CIP that was PRd to the Gaia repo. The ambiguity makes sense: it fits criteria of informational CIP about the Cosmos environment (Light Paper), but also a shorter and higher level document is needed to function as more of a summary in order to get early user feedback and market ideas that isn't a CIP {'<https://github.com/cosmos/gaia/issues/659>'}
 - The terms "Cosmos" and "Cosmos Hub" are used interchangeably in the CIPs repository, so the intended audience could be made more clear. The [module readiness process and checklist](https://github.com/cosmos/cips/pull/6/files), which proposes a process for modules to be adopted by the Gaia team, suggests that the process is intended for teams involved in development related to the Cosmos Hub.
 - Tendermint has an [ADR process](https://github.com/tendermint/tendermint/tree/master/docs/architecture) as well. Documentation around the relationship between the Tendermint ADR and the RFC processes would be valuable.
 

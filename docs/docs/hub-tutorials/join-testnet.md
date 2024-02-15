@@ -16,22 +16,7 @@ For those who just need instructions on performing the upgrade, see the [Upgradi
 
 ### Version History
 
-The table below shows all past and upcoming versions of the public testnet.
-
-|   Release   | Upgrade Block Height |    Upgrade Date     |
-| :---------: | :------------------: | :-----------------: |
-| v15.0.0-rc0 |         TBA          |         TBA         |
-| v14.0.0-rc0 |         TBA          |         TBA         |
-| v13.0.0-rc0 |         TBA          |         TBA         |
-| v12.0.0-rc0 |         TBA          |         TBA         |
-| v11.0.0-rc0 |      17,107,825      |     2023-07-26      |
-| v10.0.0-rc0 |      16,117,530      |     2023-05-24      |
-| v9.0.0-rc3  |      14,476,206      |     2023-02-08      |
-| v8.0.0-rc3  |      14,175,595      |     2023-01-20      |
-| v7.0.0-rc0  |      9,283,650       |     2022-03-17      |
-|   v6.0.0    |       Genesis        | Launched 2022-03-10 |
-
-See the [Gaia release page](https://github.com/cosmos/gaia/releases) for details on each release.
+A list of all past and upcoming versions of the public testnet can be found in the [testnets repository](https://github.com/cosmos/testnets/blob/master/public/UPGRADES.md). For release binaries and operational instructions, see the [Gaia release page](https://github.com/cosmos/gaia/releases).
 
 ## How to Join
 

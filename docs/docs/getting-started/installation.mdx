@@ -94,10 +94,30 @@ You should see something similar to the following:
 ```bash
 name: gaia
 server_name: gaiad
-version: v9.0.0
-commit: 682770f2410ab0d33ac7f0c7203519d7a99fa2b6
+version: v14.1.0
+commit: 0d9408e9169488707f1ad423e87d0df84a30431f
 build_tags: netgo,ledger
-go: go version go1.20.3 linux/amd64
+go: go version go1.20.10 darwin/arm64
+build_deps:
+- cosmossdk.io/api@v0.2.6
+- cosmossdk.io/core@v0.5.1
+```
+
+**Note** : Depending on your Operating System, the golang toolchain might produce a binary with an extension. Please bear this in mind when looking at the above examples.
+
+## Building with Docker
+
+If you have a different version of the golang toolchain than the one required, you can either install and manage the different versions locally or you can use docker to run all the build commands. Below is an example of using Golang 1.21 Docker container.
+
+```bash
+# `pwd` is the current Gaia software directory, which is mounted on `/gaia-directory`.
+
+docker run -it -v `pwd`:/gaia-directory golang:1.21 bash
+root@5e9f5183ffe7:/go# cd /gaia-directory/
+root@5e9f5183ffe7:/gaia-directory# ls
+CHANGELOG.md	 README.md		 UPGRADING.md	client		go.mod		 sims.mk
+
+# Run the commands / tooling that you want from here.
 ```
 
 ### Build Tags

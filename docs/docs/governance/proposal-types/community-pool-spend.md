@@ -1,10 +1,7 @@
 ---
-order: 3
-parent:
-  order: 1
+title: Community Pool Spend Proposals
+order: 2
 ---
-
-# Community Pool Spend
 
 Cosmos Hub launched with community-spend capabilities on December 11, 2019, effectively unlocking the potential for token-holders to vote to approve spending from the Community Pool.
 

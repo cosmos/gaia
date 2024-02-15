@@ -1,7 +1,5 @@
 ---
 order: 1
-parent:
-  order: 6
 ---
 
 # Proposal Types
@@ -9,8 +7,8 @@ parent:
 - [**Text**](../proposal-types/text-prop.md)
 - [**Community Pool Spend**](../proposal-types/community-pool-spend.md)
 - [**Parameter Change**](../proposal-types/param-change.md)
-- **Software Upgrade**
-- **IBC Client Update**
+- [**Software Upgrade**](../proposal-types/software-upgrade.md)
+- [**IBC Client Update**](https://ibc.cosmos.network/v7/ibc/proposals)
 
 ## Drafting a Proposal
 

@@ -1,11 +1,11 @@
 ---
-title: Parameter Change
-order: 4
+title: Parameter Change Proposals
+order: 3
 ---
 
 This Cosmos Hub educational documentation aims to outline the Hub's parameters, describe their functions, and describe the potential implications of modifying each parameter. This documentation also aims to provide guidelines for creating and assessing parameter-change proposals.
 
-Drafting and submitting a parameter-change governance proposal involves two kinds of risk: losing proposal deposit amounts and the potential to alter the function of the Cosmos Hub network in an undesirable way. 
+Drafting and submitting a parameter-change governance proposal involves two kinds of risk: losing proposal deposit amounts and the potential to alter the function of the Cosmos Hub network in an undesirable way.
 
 ## What parameters can be changed?
 
@@ -25,7 +25,7 @@ There are currently 8 modules active in the Cosmos Hub with parameters that may 
 
 ## What are the current parameter values?
 <!-- markdown-link-check-enable -->
-There are ways to query the current settings for each module's parameter(s). Some can be queried with the command line program [`gaiad`](../../getting-started/installation.md).
+There are ways to query the current settings for each module's parameter(s). Some can be queried with the command line program [`gaiad`](../../getting-started/installation.mdx).
 
 You can begin by using the command `gaia q [module] -h` to get help about the subcommands for the module you want to query. For example, `gaiad q staking params --chain-id <chain-id> --node <node-id>` returns the settings of relevant parameters:
 

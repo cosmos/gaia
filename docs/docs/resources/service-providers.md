@@ -43,7 +43,7 @@ A Full Node is a network node that syncs up with the state of the blockchain. It
 
 This section describes the steps to run and interact with a full node for the Cosmos Hub.
 
-First, you need to [install the software](../getting-started/installation.md).
+First, you need to [install the software](../getting-started/installation.mdx).
 
 Consider running your own [Cosmos Hub Full Node](../hub-tutorials/join-mainnet.md).
 

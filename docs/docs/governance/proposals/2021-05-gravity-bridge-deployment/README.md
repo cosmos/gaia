@@ -10,7 +10,7 @@ title: Signaling Proposal - Deployment of Gravity Bridge on the Cosmos Hub
 
 This proposal is a Request For Comment from the ATOM community regarding the activation of the Gravity Bridge module onto the Cosmos Hub.
 
-By voting YES to this proposal, you will signal that you approve of having the Gravity Ethereum <-> Cosmos bridge deployed onto the Cosmos Hub.
+By voting YES to this proposal, you will signal that you approve of having the Gravity Ethereum {'<->'} Cosmos bridge deployed onto the Cosmos Hub.
 
 ## Vision
 

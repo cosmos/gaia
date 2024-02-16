@@ -3,6 +3,7 @@ package v15
 import (
 	"fmt"
 
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -15,6 +16,8 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distributionkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
@@ -39,6 +42,9 @@ func CreateUpgradeHandler(
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("Starting module migrations...")
+		baseAppLegacySS := keepers.ParamsKeeper.Subspace(baseapp.Paramspace).
+			WithKeyTable(paramstypes.ConsensusParamsKeyTable())
+		baseapp.MigrateParams(ctx, baseAppLegacySS, &keepers.ConsensusParamsKeeper)
 
 		vm, err := mm.RunMigrations(ctx, configurator, vm)
 		if err != nil {
@@ -56,6 +62,9 @@ func CreateUpgradeHandler(
 			sdk.MustAccAddressFromBech32("cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498"),
 			keepers); err != nil {
 			return nil, fmt.Errorf("failed migrating vesting funds: %s", err)
+		}
+		if err := SetMinInitialDepositRatio(ctx, *keepers.GovKeeper); err != nil {
+			return nil, fmt.Errorf("failed initializing the min initial deposit ratio: %s", err)
 		}
 
 		ctx.Logger().Info("Upgrade v15 complete")
@@ -320,6 +329,24 @@ func setBalance(
 			denomPrefixStore.Set(denomAddrKey, []byte{0})
 		}
 	}
+
+	return nil
+}
+
+// SetMinInitialDepositRatio sets the MinInitialDepositRatio param of the gov
+// module to 10% - this is the proportion of the deposit value that must be paid
+// at proposal submission.
+func SetMinInitialDepositRatio(ctx sdk.Context, gk govkeeper.Keeper) error {
+	ctx.Logger().Info("Initializing MinInitialDepositRatio...")
+
+	params := gk.GetParams(ctx)
+	params.MinInitialDepositRatio = sdk.NewDecWithPrec(1, 1).String() // 0.1 (10%)
+	err := gk.SetParams(ctx, params)
+	if err != nil {
+		return err
+	}
+
+	ctx.Logger().Info("Finished initializing MinInitialDepositRatio...")
 
 	return nil
 }

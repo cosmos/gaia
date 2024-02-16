@@ -119,13 +119,15 @@ vulncheck: $(BUILDDIR)/
 build-linux: go.sum
 	LEDGER_ENABLED=false GOOS=linux GOARCH=amd64 $(MAKE) build
 
-go-mod-cache: go.sum
-	@echo "--> Download go modules to local cache"
-	@go mod download
-
 go.sum: go.mod
 	@echo "--> Ensure dependencies have not been modified"
-	@go mod verify
+	@echo "--> Ensure dependencies have not been modified unless suppressed by SKIP_MOD_VERIFY"
+ifndef SKIP_MOD_VERIFY
+	go mod verify
+endif
+	go mod tidy
+	@echo "--> Download go modules to local cache"
+	go mod download
 
 draw-deps:
 	@# requires brew install graphviz or apt-get install graphviz
@@ -173,26 +175,13 @@ else
 endif
 
 ###############################################################################
-###                                 Devdoc                                  ###
+###                              Documentation                              ###
 ###############################################################################
 
 build-docs:
-	@cd docs && \
-	while read p; do \
-		(git checkout $${p} && npm install && VUEPRESS_BASE="/$${p}/" npm run build) ; \
-		mkdir -p ~/output/$${p} ; \
-		cp -r .vuepress/dist/* ~/output/$${p}/ ; \
-		cp ~/output/$${p}/index.html ~/output ; \
-	done < versions ;
-.PHONY: build-docs
+	@cd docs && ./build.sh
 
-sync-docs:
-	cd ~/output && \
-	echo "role_arn = ${DEPLOYMENT_ROLE_ARN}" >> /root/.aws/config ; \
-	echo "CI job = ${CIRCLE_BUILD_URL}" >> version.html ; \
-	aws s3 sync . s3://${WEBSITE_BUCKET} --profile terraform --delete ; \
-	aws cloudfront create-invalidation --distribution-id ${CF_DISTRIBUTION_ID} --profile terraform --path "/*" ;
-.PHONY: sync-docs
+.PHONY: build-docs
 
 
 ###############################################################################
@@ -292,7 +281,7 @@ test-docker-push: test-docker
 	@docker push ${TEST_DOCKER_REPO}:$(shell git rev-parse --abbrev-ref HEAD | sed 's#/#_#g')
 	@docker push ${TEST_DOCKER_REPO}:latest
 
-.PHONY: all build-linux install format lint go-mod-cache draw-deps clean build \
+.PHONY: all build-linux install format lint draw-deps clean build \
 	docker-build-debug docker-build-hermes docker-build-all
 
 

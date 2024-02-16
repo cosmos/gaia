@@ -10,7 +10,7 @@ mkdir -p ./t6/data/snapshots/metadata.db
 
 gaiad keys add validator --keyring-backend test --home ./t6
 
-gaiad add-genesis-account $(gaiad keys show validator -a --keyring-backend test --home ./t6) 100000000stake --keyring-backend test --home ./t6
+gaiad genesis add-genesis-account $(gaiad keys show validator -a --keyring-backend test --home ./t6) 100000000stake --keyring-backend test --home ./t6
 
 gaiad gentx validator 100000000stake --keyring-backend test --home ./t6 --chain-id t6
 

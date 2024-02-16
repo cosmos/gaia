@@ -44,10 +44,10 @@ sleep 1
 
 
 # Stake 1/1000 user's coins
-gaiad gentx $PROV_KEY $STAKE --chain-id provider --home ${PROV_NODE_DIR} --keyring-backend test --moniker $MONIKER
+gaiad genesis gentx $PROV_KEY $STAKE --chain-id provider --home ${PROV_NODE_DIR} --keyring-backend test --moniker $MONIKER
 sleep 1
 
-gaiad collect-gentxs --home ${PROV_NODE_DIR} --gentx-dir ${PROV_NODE_DIR}/config/gentx/
+gaiad genesis collect-gentxs --home ${PROV_NODE_DIR} --gentx-dir ${PROV_NODE_DIR}/config/gentx/
 sleep 1
 
 sed -i -r "/node =/ s/= .*/= \"tcp:\/\/${NODE_IP}:26658\"/" ${PROV_NODE_DIR}/config/client.toml

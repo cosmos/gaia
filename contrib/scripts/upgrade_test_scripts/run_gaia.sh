@@ -78,8 +78,8 @@ sed -i -e 's/"voting_period": "172800s"/"voting_period": "30s"/g' $NODE_HOME/con
 
 echo $USER_MNEMONIC | $BINARY --home $NODE_HOME keys add val --recover --keyring-backend=test
 $BINARY genesis add-genesis-account val 10000000000000000000000000uatom --home $NODE_HOME --keyring-backend test
-$BINARY gentx val 1000000000uatom --home $NODE_HOME --chain-id $CHAINID
-$BINARY collect-gentxs --home $NODE_HOME
+$BINARY genesis gentx val 1000000000uatom --home $NODE_HOME --chain-id $CHAINID
+$BINARY genesis collect-gentxs --home $NODE_HOME
 
 sed -i.bak'' 's/minimum-gas-prices = ""/minimum-gas-prices = "0uatom"/' $NODE_HOME/config/app.toml
 

@@ -2,8 +2,6 @@
 
 This guide provides instructions for upgrading Gaia from v14.1.x to v15.x.
 
-<!-- markdown-link-check-disable -->
-
 This document describes the steps for validators, full node operators and relayer operators, to upgrade successfully for the Gaia v15 release.
 
 For more details on the release, please see the [release notes](https://github.com/cosmos/gaia/releases/tag/v15.0.0)
@@ -69,7 +67,7 @@ Optimal CPU performance:  2.50GHz, 8 cores (eg Intel Xeon Gold 6248 or equivale
 
 It is paramount that the operators set enough SWAP to cover all cases. SWAP partitions can be used to supplement the RAM requirement but they will increase the upgrade time.
 
-After the upgrade you can revert your hardware setting to the recommended system requirements for normal [day-to-day operations](../getting-started/system-requirements.md).
+After the upgrade you can revert your hardware setting to the recommended system requirements for normal [day-to-day operations](./docs/docs/getting-started/system-requirements.md).
 
 ### Backups
 
@@ -218,4 +216,3 @@ The riskiest thing a validator can do is discover that they made a mistake and r
 
 [Join Cosmos Hub Mainnet](https://github.com/cosmos/mainnet)
 
-<!-- markdown-link-check-enable -->

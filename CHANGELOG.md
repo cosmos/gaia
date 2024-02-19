@@ -73,7 +73,7 @@
  and update the commission rate for all validators that have a commission
  rate less than `5%`. ([\#2855](https://github.com/cosmos/gaia/pull/2855))
 - Migrate the signing infos of validators for which the consensus address is missing. 
-([\#2866](https://github.com/cosmos/gaia/pull/2866))
+([\#2886](https://github.com/cosmos/gaia/pull/2886))
 - Bump [ICS](https://github.com/cosmos/interchain-security) to 
   [v3.3.1-lsm](https://github.com/cosmos/interchain-security/releases/tag/v3.3.1-lsm) 
   ([\#2919](https://github.com/cosmos/gaia/pull/2919))

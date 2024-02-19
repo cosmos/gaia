@@ -64,6 +64,7 @@ if test -f "$BINARY"; then
     --upgrade-height $UPGRADE_HEIGHT \
     --upgrade-info "upgrade" \
     --description "upgrade" \
+    --no-validate \
     --fees 400uatom \
     --from val \
     --keyring-backend test \

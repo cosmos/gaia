@@ -11,11 +11,11 @@ Refer to the [upgrading guide](https://github.com/cosmos/gaia/blob/release/v15.x
 
 <!-- Add any highlights of this release --> 
 
-The focus of this release is the upgrade of Cosmos SDK to v0.47 -- this release uses [v0.47.8-ics-lsm](https://github.com/cosmos/cosmos-sdk/tree/v0.47.8-ics-lsm), a special Cosmos SDK branch with support for both ICS and LSM. Consequently, it also upgrades the following dependencies:
+The focus of this release is the upgrade of Cosmos SDK to v0.47 -- this release uses [v0.47.9-ics-lsm](https://github.com/cosmos/cosmos-sdk/tree/v0.47.9-ics-lsm), a special Cosmos SDK branch with support for both ICS and LSM. Consequently, it also upgrades the following dependencies:
 
 - IBC to [v7.3.1](https://github.com/cosmos/ibc-go/releases/tag/v7.3.1)
 - CometBFT to [v0.37.4](https://github.com/cometbft/cometbft/releases/tag/v0.37.4)
-- Interchain Security to [v3.3.1-lsm](https://github.com/cosmos/interchain-security/releases/tag/v3.3.1-lsm)
+- Interchain Security to [v3.3.2-lsm](https://github.com/cosmos/interchain-security/releases/tag/v3.3.2-lsm)
 - Packet Forward Middleware to [v7.1.2](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv7.1.2)
 
 In addition, this release migrates the following state:

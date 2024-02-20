@@ -219,7 +219,7 @@ replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
 	// Use special SDK v0.47.x release with support for both ICS and LSM
-	github.com/cosmos/cosmos-sdk => github.com/informalsystems/cosmos-sdk v0.46.0-alpha2.0.20240220114804-33f757ca2954
+	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.47.9-ics-lsm
 
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
@@ -235,4 +235,4 @@ replace (
 	google.golang.org/grpc => google.golang.org/grpc v1.54.0
 )
 
-replace github.com/cosmos/interchain-security/v3 => github.com/cosmos/interchain-security/v3 v3.3.1-lsm.0.20240220120650-99116fb9c3c7
+replace github.com/cosmos/interchain-security/v3 => github.com/cosmos/interchain-security/v3 v3.3.2-lsm

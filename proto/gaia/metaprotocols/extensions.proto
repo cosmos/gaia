@@ -1,0 +1,10 @@
+syntax = "proto3";
+package gaia.metaprotocols;
+
+option go_package = "github.com/cosmos/gaia/x/metaprotocols/types";
+
+message ExtensionData {
+    string protocol_id = 1;
+    string protocol_version = 2;
+    bytes data = 3;
+}

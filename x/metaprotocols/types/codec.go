@@ -11,5 +11,4 @@ func RegisterInterfaces(registry types.InterfaceRegistry) {
 		(*tx.TxExtensionOptionI)(nil),
 		&ExtensionData{},
 	)
-
 }

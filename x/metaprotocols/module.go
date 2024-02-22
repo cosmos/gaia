@@ -14,9 +14,7 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-
-	"github.com/cosmos/gaia/v15/x/globalfee/client/cli"
-	"github.com/cosmos/gaia/v15/x/globalfee/types"
+	"github.com/cosmos/gaia/v15/x/metaprotocols/types"
 )
 
 const consensusVersion uint64 = 1
@@ -52,7 +50,8 @@ func (a AppModule) InitGenesis(ctx sdk.Context, marshaler codec.JSONCodec, messa
 
 func (AppModule) ConsensusVersion() uint64 { return consensusVersion }
 
-func (a AppModuleBasic) RegisterInterfaces(_ codectypes.InterfaceRegistry) {
+func (a AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) {
+	types.RegisterInterfaces(registry)
 }
 
 func (a AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {
@@ -66,7 +65,7 @@ func (a AppModuleBasic) GetTxCmd() *cobra.Command {
 }
 
 func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
-	return cli.GetQueryCmd()
+	return nil
 }
 
 func (a AppModuleBasic) RegisterLegacyAminoCodec(_ *codec.LegacyAmino) {

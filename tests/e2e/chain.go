@@ -23,6 +23,7 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	gaiaparams "github.com/cosmos/gaia/v15/app/params"
+	metaprotocoltypes "github.com/cosmos/gaia/v15/x/metaprotocols/types"
 )
 
 const (
@@ -51,6 +52,7 @@ func init() {
 	upgradetypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	distribtypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	providertypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	metaprotocoltypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 
 	cdc = encodingConfig.Marshaler
 	txConfig = encodingConfig.TxConfig

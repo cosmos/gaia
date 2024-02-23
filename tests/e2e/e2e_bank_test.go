@@ -9,6 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authTx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+
 	extensiontypes "github.com/cosmos/gaia/v15/x/metaprotocols/types"
 )
 
@@ -127,7 +128,7 @@ func (s *IntegrationTestSuite) bankSendWithNonCriticalExtensionOptions() {
 
 		txBuilder := encodingConfig.TxConfig.NewTxBuilder()
 
-		txBuilder.SetMsgs(sendMsg)
+		s.Require().NoError(txBuilder.SetMsgs(sendMsg))
 
 		txBuilder.SetMemo("non-critical-ext-message-test")
 		txBuilder.SetFeeAmount(sdk.NewCoins(standardFees))
@@ -151,20 +152,22 @@ func (s *IntegrationTestSuite) bankSendWithNonCriticalExtensionOptions() {
 		s.Require().NoError(err)
 		s.Require().NotNil(rawTx)
 
-		unsignedJSONFile := filepath.Join(c.validators[0].configDir(), "unsigned_non_critical_extension_option_tx.json")
+		unsignedFname := "unsigned_non_critical_extension_option_tx.json"
+		unsignedJSONFile := filepath.Join(c.validators[0].configDir(), unsignedFname)
 		err = writeFile(unsignedJSONFile, rawTx)
 		s.Require().NoError(err)
 
-		signedTx, err := s.signTxFileOnline(c, 0, submitterAddress.String(), unsignedJSONFile)
+		signedTx, err := s.signTxFileOnline(c, 0, submitterAddress.String(), unsignedFname)
 		s.Require().NoError(err)
 		s.Require().NotNil(signedTx)
 
-		signedJSONFile := filepath.Join(c.validators[0].configDir(), "signed_non_critical_extension_option_tx.json")
+		signedFname := "signed_non_critical_extension_option_tx.json"
+		signedJSONFile := filepath.Join(c.validators[0].configDir(), signedFname)
 		err = writeFile(signedJSONFile, signedTx)
 		s.Require().NoError(err)
 
 		// if there's no errors the non_critical_extension_options field was properly encoded and decoded
-		out, err := s.broadcastTxFile(c, 0, submitterAddress.String(), signedJSONFile)
+		out, err := s.broadcastTxFile(c, 0, submitterAddress.String(), signedFname)
 		s.Require().NoError(err)
 		s.Require().NotNil(out)
 	})
@@ -190,7 +193,7 @@ func (s *IntegrationTestSuite) failedBankSendWithNonCriticalExtensionOptions() {
 
 		txBuilder := encodingConfig.TxConfig.NewTxBuilder()
 
-		txBuilder.SetMsgs(sendMsg)
+		s.Require().NoError(txBuilder.SetMsgs(sendMsg))
 
 		txBuilder.SetMemo("fail-non-critical-ext-message")
 		txBuilder.SetFeeAmount(sdk.NewCoins(standardFees))

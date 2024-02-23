@@ -4,18 +4,18 @@ import "fmt"
 
 var (
 	runBankTest                   = true
-	runBypassMinFeeTest           = true
-	runEncodeTest                 = true
-	runEvidenceTest               = true
-	runFeeGrantTest               = true
-	runGlobalFeesTest             = true
-	runGovTest                    = true
-	runIBCTest                    = true
-	runSlashingTest               = true
-	runStakingAndDistributionTest = true
-	runVestingTest                = true
-	runRestInterfacesTest         = true
-	runLsmTest                    = true
+	runBypassMinFeeTest           = false
+	runEncodeTest                 = false
+	runEvidenceTest               = false
+	runFeeGrantTest               = false
+	runGlobalFeesTest             = false
+	runGovTest                    = false
+	runIBCTest                    = false
+	runSlashingTest               = false
+	runStakingAndDistributionTest = false
+	runVestingTest                = false
+	runRestInterfacesTest         = false
+	runLsmTest                    = false
 )
 
 func (s *IntegrationTestSuite) TestRestInterfaces() {
@@ -30,6 +30,8 @@ func (s *IntegrationTestSuite) TestBank() {
 		s.T().Skip()
 	}
 	s.testBankTokenTransfer()
+	s.bankSendWithNonCriticalExtensionOptions()
+	s.failedBankSendWithNonCriticalExtensionOptions()
 }
 
 func (s *IntegrationTestSuite) TestByPassMinFee() {

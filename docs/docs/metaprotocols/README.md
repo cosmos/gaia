@@ -1,10 +1,19 @@
-# x/metaprotocols module
+---
+title: Metaprotocol Support
+order: false
+parent:
+  order: 2
+---
 
 The `x/metaprotocol` module adds support for encoding and decoding additional fields attached to transactions.
 
 `extension_options` and `non_critical_extension_options` are optional fields that can be used to attach data to valid transactions. The fields are validated by the blockchain, but they are not used in any way. The fields pass validation if they are provided as empty lists (`[ ]`) or they use a list of `ExtensionData` types.
 
 The application does use the attached data but it does ensure that the correct type is provided and that it can be successfully unmarshalled. The attached data will be part of a block.
+
+:::tip
+Txs where `extension_options` or `non_critical_extension_options` are populated with a type other than `/gaia.metaprotocols.ExtensionData` are considered invalid and will be rejected.
+:::
 
 Here is an example of a correctly formed `non_critical_extension_options` field:
 

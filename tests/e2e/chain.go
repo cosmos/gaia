@@ -14,6 +14,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distribtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	govv1types "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
@@ -39,6 +40,7 @@ var (
 
 func init() {
 	encodingConfig = gaiaparams.MakeEncodingConfig()
+	banktypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	authtypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	authvesting.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	stakingtypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)

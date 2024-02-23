@@ -22,10 +22,17 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// ExtensionData is a data structure that can be used in transaction extensions.
 type ExtensionData struct {
-	ProtocolId      string `protobuf:"bytes,1,opt,name=protocol_id,json=protocolId,proto3" json:"protocol_id,omitempty"`
+	// protocol_id is the identifier of the protocol
+	// the field is not used internally but it is validated for correctness
+	ProtocolId string `protobuf:"bytes,1,opt,name=protocol_id,json=protocolId,proto3" json:"protocol_id,omitempty"`
+	// protocol_version is the identifier of the protocol version
+	// the field is not used internally but it is validated for correctness
 	ProtocolVersion string `protobuf:"bytes,2,opt,name=protocol_version,json=protocolVersion,proto3" json:"protocol_version,omitempty"`
-	Data            []byte `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
+	// arbitrary bytes data that can be used to store any data
+	// the field is not used internally but it is validated and must be provided
+	Data []byte `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
 }
 
 func (m *ExtensionData) Reset()         { *m = ExtensionData{} }

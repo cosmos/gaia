@@ -104,7 +104,7 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 }
 
 // tests the bank send command with populated non_critical_extension_options field
-// the Tx should succeed it the data can be properly encoded and decoded
+// the Tx should succeed if the data can be properly encoded and decoded
 // the tx is signed and broadcast using gaiad tx sign and broadcast commands
 func (s *IntegrationTestSuite) bankSendWithNonCriticalExtensionOptions() {
 	s.Run("transfer_with_non_critical_extension_options", func() {

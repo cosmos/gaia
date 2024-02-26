@@ -1,6 +1,6 @@
 # x/metaprotocols module
 
-The `x/metaprotocol` module adds support for encoding and decoding additional fields attached to transactions.
+The `x/metaprotocols` module adds support for encoding and decoding additional fields attached to transactions.
 
 `extension_options` and `non_critical_extension_options` are optional fields that can be used to attach data to valid transactions. The fields are validated by the blockchain, but they are not used in any way. The fields pass validation if they are provided as empty lists (`[ ]`) or they use a list of `ExtensionData` types.
 

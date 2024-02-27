@@ -221,6 +221,9 @@ replace (
 	// Use special SDK v0.47.x release with support for both ICS and LSM
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.47.9-ics-lsm
 
+	// Use special ICS v3.3.x release with support for LSM
+	github.com/cosmos/interchain-security/v3 => github.com/cosmos/interchain-security/v3 v3.3.2-lsm
+
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
 
@@ -229,10 +232,4 @@ replace (
 
 	// following versions might cause unexpected behavior
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
-
-	// latest grpc doesn't work with our modified proto compiler, so we need to enforce
-	// the following version across all dependencies.
-	google.golang.org/grpc => google.golang.org/grpc v1.54.0
 )
-
-replace github.com/cosmos/interchain-security/v3 => github.com/cosmos/interchain-security/v3 v3.3.2-lsm

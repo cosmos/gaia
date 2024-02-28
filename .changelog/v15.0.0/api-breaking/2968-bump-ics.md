@@ -1,4 +1,4 @@
 - The consumer CCV genesis state obtained from the provider chain needs to be 
   transformed to be compatible with older versions of consumer chains 
   (see [ICS docs](https://cosmos.github.io/interchain-security/consumer-development/consumer-genesis-transformation)).
-  ([\#2955](https://github.com/cosmos/gaia/pull/2955))
+  ([\#2968](https://github.com/cosmos/gaia/pull/2968))

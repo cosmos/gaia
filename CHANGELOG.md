@@ -59,7 +59,8 @@
 
 ### FEATURES
 
-Add support for metaprotocols using Tx extension options ([\#2960](https://github.com/cosmos/gaia/pull/2960))
+- Add support for metaprotocols using Tx extension options. 
+  ([\#2960](https://github.com/cosmos/gaia/pull/2960))
 
 ### STATE BREAKING
 
@@ -86,7 +87,8 @@ Add support for metaprotocols using Tx extension options ([\#2960](https://githu
 - Remove `GovPreventSpamDecorator` and initialize the `MinInitialDepositRatio` gov
   param to `10%`. 
   ([\#2913](https://github.com/cosmos/gaia/pull/2913))
-Add support for metaprotocols using Tx extension options ([\#2960](https://github.com/cosmos/gaia/pull/2960))
+- Add support for metaprotocols using Tx extension options. 
+  ([\#2960](https://github.com/cosmos/gaia/pull/2960))
 - Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to
   [v0.47.10-ics-lsm](https://github.com/cosmos/cosmos-sdk/tree/v0.47.10-ics-lsm).
   This is a special cosmos-sdk branch with support for both ICS and LSM.

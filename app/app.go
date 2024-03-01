@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
+	memiavlstore "github.com/crypto-org-chain/cronos/store"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
@@ -122,6 +123,8 @@ func NewGaiaApp(
 	// App Opts
 	skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
 	invCheckPeriod := cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod))
+
+	baseAppOptions = memiavlstore.SetupMemIAVL(logger, homePath, appOpts, false, false, baseAppOptions)
 
 	bApp := baseapp.NewBaseApp(
 		appName,

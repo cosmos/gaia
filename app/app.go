@@ -124,7 +124,10 @@ func NewGaiaApp(
 	skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
 	invCheckPeriod := cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod))
 
-	baseAppOptions = memiavlstore.SetupMemIAVL(logger, homePath, appOpts, false, false, baseAppOptions)
+	// SetupMemIAVL only overrides rootmulti store if app.toml has memiavl.enable = true
+	memiavlSdk46Compact := false                    // false: root hash is not compatible with cosmos-sdk 0.46 and before
+	memiavlSupportExportNonSnapshotVersion := false // false: only state-sync snapshots supported on matching memiavl snapshot heights
+	baseAppOptions = memiavlstore.SetupMemIAVL(logger, homePath, appOpts, memiavlSdk46Compact, memiavlSupportExportNonSnapshotVersion, baseAppOptions)
 
 	bApp := baseapp.NewBaseApp(
 		appName,

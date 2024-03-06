@@ -1,10 +1,10 @@
 # Upgrade Gaia from v14.1.0 to v14.2.0
 
-## This is a security upgrade. IT IS CONSENSUS BREAKING, so please apply the fix only on height <height>.
+## This is a security upgrade. IT IS CONSENSUS BREAKING, so please apply the fix only on height 19460500.
 
 ### Release Details
 * https://github.com/cosmos/gaia/releases/tag/v14.2.0
-* Chain upgrade height : `<height>`. Exact upgrade time can be checked [here](https://www.mintscan.io/cosmos/block/<height>).
+* Chain upgrade height : `19460500`. Exact upgrade time can be checked [here](https://www.mintscan.io/cosmos/block/19460500).
 * Go version has been frozen at `1.20`. If you are going to build `gaiad` binary from source, make sure you are using the right GO version!
 
 # Performing the co-ordinated upgrade
@@ -29,7 +29,7 @@ There are two mutually exclusive options for this stage:
 
 ```toml
 # Note: Commitment of state will be attempted on the corresponding block.
-halt-height = <height>
+halt-height = 19460500
 ```
 * restart gaiad process
 
@@ -41,7 +41,7 @@ halt-height = <height>
 
 * Do not modify `app.toml`. Restart the `gaiad` process with the flag `--halt-height`:
 ```shell
-gaiad start --halt-height <height>
+gaiad start --halt-height 19460500
 ```
 
 * Wait for the upgrade height and confirm that the node has halted

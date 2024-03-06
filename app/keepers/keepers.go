@@ -6,9 +6,9 @@ import (
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
 
-	"github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/router"
-	routerkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/router/keeper"
-	routertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/router/types"
+	"github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/packetforward"
+	packetforwardkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/packetforward/keeper"
+	packetforwardtypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/packetforward/types"
 	ica "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts"
 	icahost "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host"
 	icahostkeeper "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/keeper"
@@ -94,12 +94,12 @@ type AppKeepers struct {
 	// ICS
 	ProviderKeeper ibcproviderkeeper.Keeper
 
-	RouterKeeper *routerkeeper.Keeper
+	RouterKeeper *packetforwardkeeper.Keeper
 
 	// Modules
 	ICAModule      ica.AppModule
 	TransferModule transfer.AppModule
-	RouterModule   router.AppModule
+	RouterModule   packetforward.AppModule
 	ProviderModule ibcprovider.AppModule
 
 	// make scoped keepers public for test purposes
@@ -305,10 +305,10 @@ func NewAppKeeper(
 	)
 
 	// RouterKeeper must be created before TransferKeeper
-	appKeepers.RouterKeeper = routerkeeper.NewKeeper(
+	appKeepers.RouterKeeper = packetforwardkeeper.NewKeeper(
 		appCodec,
-		appKeepers.keys[routertypes.StoreKey],
-		appKeepers.GetSubspace(routertypes.ModuleName),
+		appKeepers.keys[packetforwardtypes.StoreKey],
+		appKeepers.GetSubspace(packetforwardtypes.ModuleName),
 		appKeepers.TransferKeeper,
 		appKeepers.IBCKeeper.ChannelKeeper,
 		appKeepers.DistrKeeper,
@@ -345,16 +345,16 @@ func NewAppKeeper(
 	appKeepers.ICAModule = ica.NewAppModule(nil, &appKeepers.ICAHostKeeper)
 	icaHostIBCModule := icahost.NewIBCModule(appKeepers.ICAHostKeeper)
 
-	appKeepers.RouterModule = router.NewAppModule(appKeepers.RouterKeeper)
+	appKeepers.RouterModule = packetforward.NewAppModule(appKeepers.RouterKeeper)
 
 	var ibcStack porttypes.IBCModule
 	ibcStack = transfer.NewIBCModule(appKeepers.TransferKeeper)
-	ibcStack = router.NewIBCMiddleware(
+	ibcStack = packetforward.NewIBCMiddleware(
 		ibcStack,
 		appKeepers.RouterKeeper,
 		0,
-		routerkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
-		routerkeeper.DefaultRefundTransferPacketTimeoutTimestamp,
+		packetforwardkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
+		packetforwardkeeper.DefaultRefundTransferPacketTimeoutTimestamp,
 	)
 
 	// create static IBC router, add transfer route, then set and seal it
@@ -389,7 +389,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 
-	paramsKeeper.Subspace(routertypes.ModuleName).WithKeyTable(routertypes.ParamKeyTable())
+	paramsKeeper.Subspace(packetforwardtypes.ModuleName).WithKeyTable(packetforwardtypes.ParamKeyTable())
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.Subspace(globalfee.ModuleName)
 	paramsKeeper.Subspace(providertypes.ModuleName)

@@ -1,8 +1,8 @@
 package gaia
 
 import (
-	"github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/router"
-	routertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/router/types"
+	"github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/packetforward"
+	packetforwardtypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/packetforward/types"
 	ica "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts"
 	icatypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/types"
 	"github.com/cosmos/ibc-go/v4/modules/apps/transfer"
@@ -100,7 +100,7 @@ var ModuleBasics = module.NewBasicManager(
 	evidence.AppModuleBasic{},
 	transfer.AppModuleBasic{},
 	vesting.AppModuleBasic{},
-	router.AppModuleBasic{},
+	packetforward.AppModuleBasic{},
 	ica.AppModuleBasic{},
 	globalfee.AppModule{},
 	ibcprovider.AppModuleBasic{},
@@ -201,7 +201,7 @@ func orderBeginBlockers() []string {
 		ibctransfertypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
-		routertypes.ModuleName,
+		packetforwardtypes.ModuleName,
 		genutiltypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
@@ -228,7 +228,7 @@ func orderEndBlockers() []string {
 		ibctransfertypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
-		routertypes.ModuleName,
+		packetforwardtypes.ModuleName,
 		capabilitytypes.ModuleName,
 		authtypes.ModuleName,
 		banktypes.ModuleName,
@@ -273,7 +273,7 @@ func orderInitBlockers() []string {
 		evidencetypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
-		routertypes.ModuleName,
+		packetforwardtypes.ModuleName,
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,

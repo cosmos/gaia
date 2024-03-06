@@ -1,6 +1,6 @@
 # Gaia v14.2.0  Release Notes 
 
-***This is an emergency release and should be applied only at height TBA.***
+***This is an emergency release and should be applied only at height 19460500.***
 
 Upgrade notes: https://github.com/cosmos/gaia/blob/v14.2.0/UPGRADING.md
 

@@ -6,9 +6,9 @@ import (
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
 
-	"github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/router"
-	routerkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/router/keeper"
-	routertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/router/types"
+	"github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/packetforward"
+	routerkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/packetforward/keeper"
+	routertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/packetforward/types"
 	ica "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts"
 	icahost "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host"
 	icahostkeeper "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/keeper"
@@ -99,7 +99,7 @@ type AppKeepers struct {
 	// Modules
 	ICAModule      ica.AppModule
 	TransferModule transfer.AppModule
-	RouterModule   router.AppModule
+	RouterModule   packetforward.AppModule
 	ProviderModule ibcprovider.AppModule
 
 	// make scoped keepers public for test purposes
@@ -345,11 +345,11 @@ func NewAppKeeper(
 	appKeepers.ICAModule = ica.NewAppModule(nil, &appKeepers.ICAHostKeeper)
 	icaHostIBCModule := icahost.NewIBCModule(appKeepers.ICAHostKeeper)
 
-	appKeepers.RouterModule = router.NewAppModule(appKeepers.RouterKeeper)
+	appKeepers.RouterModule = packetforward.NewAppModule(appKeepers.RouterKeeper)
 
 	var ibcStack porttypes.IBCModule
 	ibcStack = transfer.NewIBCModule(appKeepers.TransferKeeper)
-	ibcStack = router.NewIBCMiddleware(
+	ibcStack = packetforward.NewIBCMiddleware(
 		ibcStack,
 		appKeepers.RouterKeeper,
 		0,

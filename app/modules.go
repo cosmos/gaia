@@ -2,7 +2,7 @@ package gaia
 
 import (
 	"github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/packetforward"
-	routertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/packetforward/types"
+	packetforwardtypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v4/packetforward/types"
 	ica "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts"
 	icatypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/types"
 	"github.com/cosmos/ibc-go/v4/modules/apps/transfer"
@@ -201,7 +201,7 @@ func orderBeginBlockers() []string {
 		ibctransfertypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
-		routertypes.ModuleName,
+		packetforwardtypes.ModuleName,
 		genutiltypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
@@ -228,7 +228,7 @@ func orderEndBlockers() []string {
 		ibctransfertypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
-		routertypes.ModuleName,
+		packetforwardtypes.ModuleName,
 		capabilitytypes.ModuleName,
 		authtypes.ModuleName,
 		banktypes.ModuleName,
@@ -273,7 +273,7 @@ func orderInitBlockers() []string {
 		evidencetypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
-		routertypes.ModuleName,
+		packetforwardtypes.ModuleName,
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,

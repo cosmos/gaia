@@ -9,20 +9,19 @@ Service Providers are expected to act as trusted points of contact to the blockc
 
 This document describes:
 
-- [Service Providers](#service-providers)
-  - [Connection Options](#connection-options)
-  - [Running a Full Node](#running-a-full-node)
-    - [What is a Full Node?](#what-is-a-full-node)
-    - [Installation and Configuration](#installation-and-configuration)
-  - [Command-Line Interface](#command-line-interface)
-    - [Available Commands](#available-commands)
-    - [Remote Access to gaiad](#remote-access-to-gaiad)
-    - [Create a Key Pair](#create-a-key-pair)
-      - [Check your Account](#check-your-account)
-    - [Check your Balance](#check-your-balance)
-      - [Send Coins Using the CLI](#send-coins-using-the-cli)
-  - [REST API](#rest-api)
-    - [Listen for Incoming Transactions](#listen-for-incoming-transactions)
+- [Connection Options](#connection-options)
+- [Running a Full Node](#running-a-full-node)
+  - [What is a Full Node?](#what-is-a-full-node)
+  - [Installation and Configuration](#installation-and-configuration)
+- [Command-Line Interface](#command-line-interface)
+  - [Available Commands](#available-commands)
+  - [Remote Access to gaiad](#remote-access-to-gaiad)
+  - [Create a Key Pair](#create-a-key-pair)
+    - [Check your Account](#check-your-account)
+  - [Check your Balance](#check-your-balance)
+    - [Send Coins Using the CLI](#send-coins-using-the-cli)
+- [REST API](#rest-api)
+  - [Listen for Incoming Transactions](#listen-for-incoming-transactions)
 
 ## Connection Options
 
@@ -43,9 +42,9 @@ A Full Node is a network node that syncs up with the state of the blockchain. It
 
 This section describes the steps to run and interact with a full node for the Cosmos Hub.
 
-First, you need to [install the software](../getting-started/installation.md).
+First, you need to [install the software](../getting-started/installation).
 
-Consider running your own [Cosmos Hub Full Node](../hub-tutorials/join-mainnet.md).
+Consider running your own [Cosmos Hub Full Node](../hub-tutorials/join-mainnet).
 
 ## Command-Line Interface
 
@@ -277,11 +276,11 @@ Flags:
 
 ## REST API
 
-The [REST API documents](https://v1.cosmos.network/rpc/v0.44.5) list all the available endpoints that you can use to interact
+The REST API documents list all the available endpoints that you can use to interact
 with your full node. Learn [how to enable the REST API](../hub-tutorials/join-mainnet.md#enable-the-rest-api) on your full node.
 
 ### Listen for Incoming Transactions
 
 The recommended way to listen for incoming transactions is to periodically query the blockchain by using the following HTTP endpoint:
 
-[`/cosmos/bank/v1beta1/balances/{address}`](https://cosmos.network/rpc/)
+`/cosmos/bank/v1beta1/balances/{address}`

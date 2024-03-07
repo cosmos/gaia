@@ -4,22 +4,22 @@ order: 2
 ---
 
 :::tip
-We suggest you try out joining a public testnet first. Information on how to join the most recent testnet can be found [here](/hub-tutorials/join-testnet.md).
+We suggest you try out joining a public testnet first. Information on how to join the most recent testnet can be found [here](/hub-tutorials/join-testnet).
 :::
 
-Before setting up a validator node, make sure to have completed the [Joining Mainnet](/hub-tutorials/join-mainnet.md) guide.
+Before setting up a validator node, make sure to have completed the [Joining Mainnet](/hub-tutorials/join-mainnet) guide.
 
-If you plan to use a KMS (key management system), you should go through these steps first: [Using a KMS](/validators/kms/kms.md).
+If you plan to use a KMS (key management system), you should go through these steps first: [Using a KMS](/validators/kms/kms).
 
 ## What is a Validator?
 
-[Validators](/validators/overview.mdx) are responsible for committing new blocks to the blockchain through an automated voting process. A validator's stake is slashed if they become unavailable or sign blocks at the same height. Because there is a chance of slashing, we suggest you read about [Sentry Node Architecture](/validators/validator-faq.md#how-can-validators-protect-themselves-from-denial-of-service-attacks) to protect your node from DDOS attacks and to ensure high-availability.
+[Validators](/validators/overview) are responsible for committing new blocks to the blockchain through an automated voting process. A validator's stake is slashed if they become unavailable or sign blocks at the same height. Because there is a chance of slashing, we suggest you read about [Sentry Node Architecture](/validators/validator-faq#how-can-validators-protect-themselves-from-denial-of-service-attacks) to protect your node from DDOS attacks and to ensure high-availability.
 
 :::warning
-If you want to become a validator for the Hub's `mainnet`, you should learn more about [security](/validators/security.md).
+If you want to become a validator for the Hub's `mainnet`, you should learn more about [security](/validators/security).
 :::
 
-The following instructions assume you have already [set up a full-node](/hub-tutorials/join-mainnet.md) and are synchronised to the latest blockheight.
+The following instructions assume you have already [set up a full-node](/hub-tutorials/join-mainnet) and are synchronised to the latest blockheight.
 
 ## Create Your Validator
 

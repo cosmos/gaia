@@ -5,7 +5,7 @@ order: 2
 
 # Join the Cosmos Hub Mainnet
 
-The current Cosmos Hub mainnet, `cosmoshub-4`, has been performing in place store migration upgrades as of the [Delta Upgrade](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md) July 2021. The most recent upgrade is [Gaia v14.1.x](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-v14-upgrade.md) Dec 2023.
+The current Cosmos Hub mainnet, `cosmoshub-4`, has been performing in place store migration upgrades as of the [Delta Upgrade](https://github.com/cosmos/gaia/tree/main/docs/docs/migration/cosmoshub-4-delta-upgrade.md) July 2021. The most recent upgrade is [Gaia v14.1.x](https://github.com/cosmos/gaia/tree/main/docs/docs/migration/cosmoshub-4-v14-upgrade.md) Dec 2023.
 This type of upgrade preserves the same chain-id but state before the upgrade height is only accessible by corresponding versions of the binary:
 
 ## Release History
@@ -22,13 +22,13 @@ This type of upgrade preserves the same chain-id but state before the upgrade he
 - use `gaia v13.x` between `17,380,000` and `18,262,000`
 - use `gaia v14.1.x` from `18,262,000`
 
-For more details, see the [history of upgrades](https://github.com/cosmos/gaia/tree/main/docs/roadmap) or visit the [migration section](https://github.com/cosmos/gaia/tree/main/docs/migration) of the Hub's docs.
+For more details, see the [history of upgrades](https://github.com/cosmos/gaia/tree/main/docs/docs/roadmap) or visit the [migration section](https://github.com/cosmos/gaia/tree/main/docs/docs/migration) of the Hub's docs.
 
 **This guide includes full instructions for joining the mainnet either as an archive/full node or a pruned node.**
 
-For instructions to bootstrap a node via Quicksync or State Sync, see the [Quickstart Guide](https://hub.cosmos.network/main/getting-started/quickstart.html)
+For instructions to bootstrap a node via Quicksync or State Sync, see the [Quickstart Guide](https://hub.cosmos.network/getting-started/quickstart)
 
-For instructions to join as a validator, please also see the [Validator Guide](https://hub.cosmos.network/main/validators/overview.html#).
+For instructions to join as a validator, please also see the [Validator Guide](https://hub.cosmos.network/validators/overview).
 
 ### Overview
 <!-- DON'T FORGET TO KEEP INDEX UP TO DATE -->
@@ -61,7 +61,7 @@ For instructions to join as a validator, please also see the [Validator Guide](h
 
 ### Background
 
-The current Cosmos Hub mainnet `cosmoshub-4`. Visit the [migration section](https://github.com/cosmos/gaia/tree/main/docs/migration) of the Hub's docs for more information on previous chain migrations.
+The current Cosmos Hub mainnet `cosmoshub-4`. Visit the [migration section](https://github.com/cosmos/gaia/tree/main/docs/docs/migration) of the Hub's docs for more information on previous chain migrations.
 
 ## Explorers
 
@@ -77,8 +77,8 @@ There are many explorers for the Cosmos Hub. For reference while setting up a no
 Make sure the following prerequisites are completed:
 
 - Choose the proper hardware/server configuration. See the [hardware guide](#hardware).
-- Ensure Gaia is properly installed. See the [installation guide](https://hub.cosmos.network/main/getting-started/installation.html) for a walk-through.
-- Follow the [configuration guide](#General-Configuration) to initialize and prepare the node to sync with the network.
+- Ensure Gaia is properly installed. See the [installation guide](/getting-started/installation) for a walk-through.
+- Follow the [configuration guide](/hub-tutorials/join-mainnet#general-configuration) to initialize and prepare the node to sync with the network.
 
 ## Hardware
 
@@ -243,7 +243,7 @@ address = "0.0.0.0:9090"
 
 ## Sync Options
 
-There are three main ways to sync a node on the Cosmos Hub; Blocksync, State Sync, and Quicksync. See the matrix below for the Hub's recommended setup configuration. This guide will focus on syncing two types of common nodes; full and pruned. For further information on syncing to run a validator node, see the section on [Validators](https://hub.cosmos.network/main/validators/overview.html).
+There are three main ways to sync a node on the Cosmos Hub; Blocksync, State Sync, and Quicksync. See the matrix below for the Hub's recommended setup configuration. This guide will focus on syncing two types of common nodes; full and pruned. For further information on syncing to run a validator node, see the section on [Validators](https://hub.cosmos.network/validators/overview).
 
 There are two types of concerns when deciding which sync option is right. _Data integrity_ refers to how reliable the data provided by a subset of network participants is. _Historical data_ refers to how robust and inclusive the chain’s history is.
 
@@ -263,9 +263,9 @@ Make sure to consult the [hardware](#hardware) section for guidance on the best 
 
 Blocksync is faster than traditional consensus and syncs the chain from genesis by downloading blocks and verifying against the merkle tree of validators. For more information see [CometBFT's Fastsync Docs](https://docs.cometbft.com/v0.34/core/fast-sync)
 
-When syncing via Blocksync, node operators will either need to manually upgrade the chain or set up [Cosmovisor](#Cosmovisor) to upgrade automatically.
+When syncing via Blocksync, node operators will either need to manually upgrade the chain or set up [Cosmovisor](/hub-tutorials/join-mainnet#cosmovisor) to upgrade automatically.
 
-For more information on performing the manual upgrades, see [Releases & Upgrades](#Releases-amp=-Upgrades).
+For more information on performing the manual upgrades, see [Releases & Upgrades](/hub-tutorials/join-mainnet#Releases-amp=-Upgrades).
 
 It is possible to sync from previous versions of the Cosmos Hub. See the matrix below for the correct `gaia` version. See the [mainnet archive](https://github.com/cosmos/mainnet) for historical genesis files.
 
@@ -278,7 +278,7 @@ It is possible to sync from previous versions of the Cosmos Hub. See the matrix 
 
 ##### Getting Started
 
-Start Gaia to begin syncing with the `skip-invariants` flag. For more information on this see [Verify Mainnet](#Verify-Mainnet).
+Start Gaia to begin syncing with the `skip-invariants` flag. For more information on this see [Verify Mainnet](/hub-tutorials/join-mainnet#verify-mainnet).
 
 ```bash
 gaiad start --x-crisis-skip-assert-invariants
@@ -315,7 +315,7 @@ enable = true
 #
 # For Cosmos SDK-based chains, trust_period should usually be about 2/3 of the unbonding time (~2
 # weeks) during which they can be financially punished (slashed) for misbehavior.
-rpc_servers = "https://cosmos-rpc.polkachu.com:443,https://rpc-cosmoshub-ia.cosmosia.notional.ventures:443,https://rpc.cosmos.network:443"
+rpc_servers = "https://cosmos-rpc.polkachu.com:443,https://rpc-cosmoshub-ia.cosmosia.notional.ventures:443"
 trust_height = 8959784
 trust_hash = "3D8F12EA302AEDA66E80939F7FC785206692F8B6EE6F727F1655F1AFB6A873A5"
 trust_period = "168h0m0s"
@@ -381,7 +381,7 @@ To sync an archive or full node from scratch, it is important to note that you m
 
 The process is summarized below but make sure to follow the manual upgrade instructions for each release:
 
-**[Delta Instructions](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md#Upgrade-will-take-place-July-12,-2021)**
+**[Delta Instructions](https://github.com/cosmos/gaia/tree/main/docs/docs/migration#Upgrade-will-take-place-July-12,-2021)**
 
 Once `V4` reaches the upgrade block height, expect the chain to halt and to see the following message:
 
@@ -393,7 +393,7 @@ Make sure to save a backup of `~/.gaia` in case rolling back is necessary.
 
 Install Gaia [`V5.0.0`](https://github.com/cosmos/gaia/releases/tag/v5.0.0) and restart the daemon.
 
-**[Vega Instructions](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-vega-upgrade.md)**
+**[Vega Instructions](https://github.com/cosmos/gaia/blob/main/docs/docs/migration/cosmoshub-4-v6-vega-upgrade.md)**
 
 Once `V5` reaches the upgrade block height, the chain will halt and display the following message:
 
@@ -405,7 +405,7 @@ Again, make sure to backup `~/.gaia`
 
 Install Gaia [`V6.0.0`](https://github.com/cosmos/gaia/releases/tag/v6.0.0) and restart the daemon.
 
-**[Theta Instructions](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-v7-Theta-upgrade.md)**
+**[Theta Instructions](https://github.com/cosmos/gaia/blob/main/docs/docs/migration/cosmoshub-4-v7-Theta-upgrade.md)**
 
 Once `V6` reaches the upgrade block height, the chain will halt and display the following message:
 
@@ -417,7 +417,7 @@ Again, make sure to backup `~/.gaia`
 
 Install Gaia [`V7.0.0`](https://github.com/cosmos/gaia/releases/tag/v7.0.0) and restart the daemon.
 
-**[Rho Instructions](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-v8-Rho-upgrade.md)**
+**[Rho Instructions](https://github.com/cosmos/gaia/blob/main/docs/docs/migration/cosmoshub-4-v8-Rho-upgrade.md)**
 
 Once `V7` reaches the upgrade block height, the chain will halt and display the following message:
 
@@ -429,7 +429,7 @@ Again, make sure to backup `~/.gaia`
 
 Install Gaia [`V8.0.0`](https://github.com/cosmos/gaia/releases/tag/v8.0.0) and restart the daemon.
 
-**[Lambda Instructions](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-v9-Lambda-upgrade.md)**
+**[Lambda Instructions](https://github.com/cosmos/gaia/blob/main/docs/docs/migration/cosmoshub-4-v9-Lambda-upgrade.md)**
 
 Once `V8` reaches the upgrade block height, the chain will halt and display the following message:
 

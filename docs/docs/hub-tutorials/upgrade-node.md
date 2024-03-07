@@ -81,7 +81,7 @@ gaiad start
 ## Upgrade Genesis File
 
 :::warning
-If the new version you are upgrading to has breaking changes, you will have to restart your chain. If it is not breaking, you can skip to [Restart](#restart)
+If the new version you are upgrading to has breaking changes, you will have to restart your chain. If it is not breaking, you can skip to [Restart](/hub-tutorials/upgrade-node#restart)
 :::
 
 To upgrade the genesis file, you can either fetch it from a trusted source or export it locally.
@@ -123,7 +123,7 @@ At this point, you might want to run a script to update the exported genesis int
 ## Reset Data
 
 :::warning
-If the version <new_version> you are upgrading to is not breaking from the previous one, you should not reset the data. If it is not breaking, you can skip to [Restart](#restart)
+If the version <new_version> you are upgrading to is not breaking from the previous one, you should not reset the data. If it is not breaking, you can skip to [Restart](/hub-tutorials/upgrade-node#restart)
 :::
 
 :::warning
@@ -141,3 +141,11 @@ gaiad unsafe-reset-all
 ```
 
 Your node is now in a pristine state while keeping the original `priv_validator.json` and `config.toml`. If you had any sentry nodes or full nodes setup before, your node will still try to connect to them, but may fail if they haven't also been upgraded.
+
+## Restart
+
+If there are no breaking changes then you can simply restart the node by running:
+
+```bash
+gaiad start
+```

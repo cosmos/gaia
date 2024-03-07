@@ -210,8 +210,8 @@ accounts to communicate important news directly to the Cosmos community.*
 [phishing]: https://ssd.eff.org/en/module/how-avoid-phishing-attacks
 [spearphishing]: https://en.wikipedia.org/wiki/Phishing#Spear_phishing
 [inbox]: https://www.umass.edu/it/security/phishing-fraudulent-emails-text-messages-phone-calls
-[opportunities]: https://jia.sipa.columbia.edu/weaponization-social-media-spear-phishing-and-cyberattacks-democracy
-[cli]: https://hub.cosmos.network/main/delegators/delegator-guide-cli.html
+[opportunities]: https://lucris.lub.lu.se/ws/portalfiles/portal/85420559/The_Weaponization_of_Social_Media_Bossetta_2018_.pdf
+[cli]: https://hub.cosmos.network/delegators/delegator-guide-cli
 [webinar]: https://register.gotowebinar.com/register/5028753165739687691
 [terms]: https://github.com/cosmos/cosmos/blob/master/fundraiser/Interchain%20Cosmos%20Contribution%20Terms%20-%20FINAL.pdf
 [apache]: https://www.apache.org/licenses/LICENSE-2.0

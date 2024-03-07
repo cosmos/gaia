@@ -71,7 +71,7 @@ The tool used to generate addresses and transactions on the Cosmos Hub network i
 ### Before you Begin
 
 - [Install Golang](https://golang.org/doc/install)
-- [Install Gaia](../getting-started/installation.md)
+- [Install Gaia](../getting-started/installation)
 
 Verify that gaiad is installed correctly with the following command
 

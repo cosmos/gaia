@@ -162,4 +162,4 @@ The introduction of FeeDecorator has replaced the usage of `MempoolFeeDecorator`
 
 ## References
 
-* [Documentation of the globalfee module](/modules/globalfee.md)
+* [Documentation of the globalfee module](/modules/globalfee#globalfee-module)

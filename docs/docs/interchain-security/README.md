@@ -5,7 +5,7 @@ parent:
   order: 2
 ---
 
-The [Interchain Security](https://interchainsecurity.dev/) feature, brings to the Cosmos Hub a shared security model, where the Cosmos Hub validators, also validate on consumer chains. This is valuable for consumer chains, as consumer chains can focus on product-market fit, rather than business and operational agreements in bringing together a validator set. As part of this agreement, consumer chains pay for the security by distributing a portion of the consumer chain revenue to Hub token holders.
+The [Interchain Security](https://cosmos.github.io/interchain-security/) feature, brings to the Cosmos Hub a shared security model, where the Cosmos Hub validators, also validate on consumer chains. This is valuable for consumer chains, as consumer chains can focus on product-market fit, rather than business and operational agreements in bringing together a validator set. As part of this agreement, consumer chains pay for the security by distributing a portion of the consumer chain revenue to Hub token holders.
 
 All potential chains are onboarded as consumer chains, via Hub Governance, with the feedback from the Hub community.
 

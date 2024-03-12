@@ -13,7 +13,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.47.10
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/gogoproto v1.4.10
-	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7 v7.1.2
+	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7 v7.1.3-0.20240228213828-cce7f56d000b
 	github.com/cosmos/ibc-go/v7 v7.3.2
 	github.com/cosmos/interchain-security/v3 v3.3.0
 	github.com/google/gofuzz v1.2.0

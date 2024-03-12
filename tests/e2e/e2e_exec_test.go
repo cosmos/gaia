@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -907,4 +908,74 @@ func (s *IntegrationTestSuite) executeTransferTokenizeShareRecord(c *chain, valI
 
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
 	s.T().Logf("%s successfully executed transfer tokenize share record for %s", owner, recordID)
+}
+
+// signTxFileOnline signs a transaction file using the gaiacli tx sign command
+// the from flag is used to specify the keyring account to sign the transaction
+// the from account must be registered in the keyring and exist on chain (have a balance or be a genesis account)
+func (s *IntegrationTestSuite) signTxFileOnline(chain *chain, valIdx int, from string, txFilePath string) ([]byte, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		"sign",
+		filepath.Join(gaiaHomePath, txFilePath),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, chain.id),
+		fmt.Sprintf("--%s=%s", flags.FlagHome, gaiaHomePath),
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, from),
+		"--keyring-backend=test",
+		"--output=json",
+		"-y",
+	}
+
+	var output []byte
+	var erroutput []byte
+	captureOutput := func(stdout []byte, stderr []byte) bool {
+		output = stdout
+		erroutput = stderr
+		return true
+	}
+
+	s.executeGaiaTxCommand(ctx, chain, gaiaCommand, valIdx, captureOutput)
+	if len(erroutput) > 0 {
+		return nil, fmt.Errorf("failed to sign tx: %s", string(erroutput))
+	}
+	return output, nil
+}
+
+// broadcastTxFile broadcasts a signed transaction file using the gaiacli tx broadcast command
+// the from flag is used to specify the keyring account to sign the transaction
+// the from account must be registered in the keyring and exist on chain (have a balance or be a genesis account)
+func (s *IntegrationTestSuite) broadcastTxFile(chain *chain, valIdx int, from string, txFilePath string) ([]byte, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	broadcastTxCmd := []string{
+		gaiadBinary,
+		txCommand,
+		"broadcast",
+		filepath.Join(gaiaHomePath, txFilePath),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, chain.id),
+		fmt.Sprintf("--%s=%s", flags.FlagHome, gaiaHomePath),
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, from),
+		"--keyring-backend=test",
+		"--output=json",
+		"-y",
+	}
+
+	var output []byte
+	var erroutput []byte
+	captureOutput := func(stdout []byte, stderr []byte) bool {
+		output = stdout
+		erroutput = stderr
+		return true
+	}
+
+	s.executeGaiaTxCommand(ctx, chain, broadcastTxCmd, valIdx, captureOutput)
+	if len(erroutput) > 0 {
+		return nil, fmt.Errorf("failed to sign tx: %s", string(erroutput))
+	}
+	return output, nil
 }

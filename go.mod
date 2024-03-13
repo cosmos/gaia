@@ -8,6 +8,7 @@ require (
 	cosmossdk.io/math v1.3.0
 	cosmossdk.io/simapp v0.0.0-20230602123434-616841b9704d
 	cosmossdk.io/tools/rosetta v0.2.1
+	github.com/Stride-Labs/ibc-rate-limiting v1.0.1
 	github.com/cometbft/cometbft v0.37.4
 	github.com/cometbft/cometbft-db v0.10.0
 	github.com/cosmos/cosmos-sdk v0.47.10
@@ -107,7 +108,7 @@ require (
 	github.com/golang/glog v1.2.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/mock v1.6.0 // indirect
-	github.com/golang/snappy v0.0.4 // indirect
+	github.com/golang/snappy v0.0.5-0.20220116011046-fa5810519dcb // indirect
 	github.com/google/btree v1.1.2 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/orderedcode v0.0.1 // indirect

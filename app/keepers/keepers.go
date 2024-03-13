@@ -8,6 +8,9 @@ import (
 
 	"github.com/cometbft/cometbft/libs/log"
 
+	ratelimit "github.com/Stride-Labs/ibc-rate-limiting/ratelimit"
+	ratelimitkeeper "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/keeper"
+	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
 	pfmrouter "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward"
 	pfmrouterkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward/keeper"
 	pfmroutertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward/types"
@@ -102,11 +105,13 @@ type AppKeepers struct {
 	ProviderKeeper ibcproviderkeeper.Keeper
 
 	PFMRouterKeeper *pfmrouterkeeper.Keeper
+	RatelimitKeeper ratelimitkeeper.Keeper
 
 	// Modules
 	ICAModule       ica.AppModule
 	TransferModule  transfer.AppModule
 	PFMRouterModule pfmrouter.AppModule
+	RateLimitModule ratelimit.AppModule
 	ProviderModule  ibcprovider.AppModule
 
 	// make scoped keepers public for test purposes
@@ -358,8 +363,20 @@ func NewAppKeeper(
 		bApp.MsgServiceRouter(),
 	)
 
+	govAuthority := authtypes.NewModuleAddress(govtypes.ModuleName).String()
+
+	// Create RateLimit keeper
+	appKeepers.RatelimitKeeper = *ratelimitkeeper.NewKeeper(
+		appCodec,                                 // BinaryCodec
+		appKeepers.keys[ratelimittypes.StoreKey], // StoreKey
+		appKeepers.GetSubspace(ratelimittypes.ModuleName), // param Subspace
+		govAuthority, // authority
+		appKeepers.BankKeeper,
+		appKeepers.IBCKeeper.ChannelKeeper, // ChannelKeeper
+		appKeepers.IBCKeeper.ChannelKeeper, // ICS4Wrapper
+	)
+
 	// PFMRouterKeeper must be created before TransferKeeper
-	authority := authtypes.NewModuleAddress(govtypes.ModuleName).String()
 	appKeepers.PFMRouterKeeper = pfmrouterkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[pfmroutertypes.StoreKey],
@@ -367,8 +384,8 @@ func NewAppKeeper(
 		appKeepers.IBCKeeper.ChannelKeeper,
 		appKeepers.DistrKeeper,
 		appKeepers.BankKeeper,
-		appKeepers.IBCKeeper.ChannelKeeper,
-		authority,
+		appKeepers.RatelimitKeeper, // ICS4Wrapper
+		govAuthority,
 	)
 
 	appKeepers.TransferKeeper = ibctransferkeeper.NewKeeper(
@@ -389,27 +406,31 @@ func NewAppKeeper(
 	appKeepers.ICAModule = ica.NewAppModule(nil, &appKeepers.ICAHostKeeper)
 	appKeepers.TransferModule = transfer.NewAppModule(appKeepers.TransferKeeper)
 	appKeepers.PFMRouterModule = pfmrouter.NewAppModule(appKeepers.PFMRouterKeeper, appKeepers.GetSubspace(pfmroutertypes.ModuleName))
+	appKeepers.RateLimitModule = ratelimit.NewAppModule(appCodec, appKeepers.RatelimitKeeper)
 
-	// create IBC module from bottom to top of stack
+	// Create Transfer Stack (from bottom to top of stack)
+	// - core IBC
+	// - ratelimit
+	// - pfm
+	// - transfer
 	var transferStack porttypes.IBCModule
 	transferStack = transfer.NewIBCModule(appKeepers.TransferKeeper)
 	transferStack = pfmrouter.NewIBCMiddleware(
 		transferStack,
 		appKeepers.PFMRouterKeeper,
-		0,
+		0, // retries on timeout
 		pfmrouterkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
 		pfmrouterkeeper.DefaultRefundTransferPacketTimeoutTimestamp,
 	)
+	transferStack = ratelimit.NewIBCMiddleware(appKeepers.RatelimitKeeper, transferStack)
 
-	// Add transfer stack to IBC Router
-
-	// Create Interchain Accounts Stack
+	// Create ICAHost Stack
 	var icaHostStack porttypes.IBCModule = icahost.NewIBCModule(appKeepers.ICAHostKeeper)
 
 	// Create IBC Router & seal
 	ibcRouter := porttypes.NewRouter().
-		AddRoute(icahosttypes.SubModuleName, icaHostStack).
-		AddRoute(ibctransfertypes.ModuleName, transferStack).
+		AddRoute(icahosttypes.SubModuleName, icaHostStack).   // add ICA stack to IBC Router
+		AddRoute(ibctransfertypes.ModuleName, transferStack). // add transfer stack to IBC Router
 		AddRoute(providertypes.ModuleName, appKeepers.ProviderModule)
 
 	appKeepers.IBCKeeper.SetRouter(ibcRouter)
@@ -443,6 +464,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibcexported.ModuleName)
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.Subspace(pfmroutertypes.ModuleName).WithKeyTable(pfmroutertypes.ParamKeyTable())
+	paramsKeeper.Subspace(ratelimittypes.ModuleName)
 	paramsKeeper.Subspace(globalfee.ModuleName)
 	paramsKeeper.Subspace(providertypes.ModuleName)
 

@@ -3,6 +3,9 @@ package v15
 import (
 	"fmt"
 
+	ibctransferkeeper "github.com/cosmos/ibc-go/v7/modules/apps/transfer/keeper"
+	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -35,6 +38,8 @@ import (
 //     see https://github.com/cosmos/gaia/issues/1734.
 //   - adhere to signal prop 860 which claws back vesting funds
 //     see https://www.mintscan.io/cosmos/proposals/860
+//   - update the transfer module's escrow accounts for which there is a discrepancy
+//     with the counterparty chain supply.
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
@@ -54,9 +59,9 @@ func CreateUpgradeHandler(
 		if err := UpgradeMinCommissionRate(ctx, *keepers.StakingKeeper); err != nil {
 			return nil, fmt.Errorf("failed migrating min commission rates: %s", err)
 		}
-		if err := UpgradeSigningInfos(ctx, keepers.SlashingKeeper); err != nil {
-			return nil, fmt.Errorf("failed migrating signing infos: %s", err)
-		}
+
+		UpgradeSigningInfos(ctx, keepers.SlashingKeeper)
+
 		if err := ClawbackVestingFunds(
 			ctx,
 			sdk.MustAccAddressFromBech32("cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498"),
@@ -66,6 +71,8 @@ func CreateUpgradeHandler(
 		if err := SetMinInitialDepositRatio(ctx, *keepers.GovKeeper); err != nil {
 			return nil, fmt.Errorf("failed initializing the min initial deposit ratio: %s", err)
 		}
+
+		UpgradeEscrowAccounts(ctx, keepers.BankKeeper, keepers.TransferKeeper)
 
 		ctx.Logger().Info("Upgrade v15 complete")
 		return vm, err
@@ -104,7 +111,7 @@ func UpgradeMinCommissionRate(ctx sdk.Context, sk stakingkeeper.Keeper) error {
 
 // UpgradeSigningInfos updates the signing infos of validators for which
 // the consensus address is missing
-func UpgradeSigningInfos(ctx sdk.Context, sk slashingkeeper.Keeper) error {
+func UpgradeSigningInfos(ctx sdk.Context, sk slashingkeeper.Keeper) {
 	ctx.Logger().Info("Migrating signing infos...")
 
 	signingInfos := []slashingtypes.ValidatorSigningInfo{}
@@ -130,7 +137,6 @@ func UpgradeSigningInfos(ctx sdk.Context, sk slashingkeeper.Keeper) error {
 	}
 
 	ctx.Logger().Info("Finished migrating signing infos")
-	return nil
 }
 
 // ClawbackVestingFunds transfers the vesting tokens from the given vesting account
@@ -349,4 +355,97 @@ func SetMinInitialDepositRatio(ctx sdk.Context, gk govkeeper.Keeper) error {
 	ctx.Logger().Info("Finished initializing MinInitialDepositRatio...")
 
 	return nil
+}
+
+/*
+The following is a list of the discrepancies that were found in the IBC transfer escrow accounts.
+Please note that discrepancies #1 and #3 are for the same escrow account address, but for coins of
+a different denomination.
+
+Discrepancy #1:
+- Counterparty Chain ID: osmosis-1
+- Escrow Account Address: cosmos1x54ltnyg88k0ejmk8ytwrhd3ltm84xehrnlslf
+- Asset Base Denom: FX
+- Asset IBC Denom: ibc/4925E6ABA571A44D2BE0286D2D29AF42A294D0FF2BB16490149A1B26EAD33729
+- Escrow Balance: 8859960534331100342
+- Counterparty Total Supply: 8899960534331100342ibc/EBBE6553941A1F0111A9163F885F7665417467FB630D68F5D4F15425C1E64FDE
+- Missing amount in Escrow Account: 40000000000000000
+
+Discrepancy #2:
+- Counterparty Chain ID: juno-1
+- Escrow Account Address: cosmos1ju6tlfclulxumtt2kglvnxduj5d93a64r5czge
+- Asset Base Denom: uosmo
+- Asset IBC Denom: ibc/14F9BC3E44B8A9C1BE1FB08980FAB87034C9905EF17CF2F5008FC085218811CC
+- Escrow Balance: 6247328
+- Counterparty Total Supply: 6249328ibc/A065D610A42C3943FAB23979A4F969291A2CF9FE76966B8960AC34B52EFA9F62
+- Missing amount in Escrow Account: 2000
+
+Discrepancy #3:
+- Counterparty Chain ID: osmosis-1
+- Escrow Account Address: cosmos1x54ltnyg88k0ejmk8ytwrhd3ltm84xehrnlslf
+- Asset Base Denom: rowan
+- Asset IBC Denom: ibc/F5ED5F3DC6F0EF73FA455337C027FE91ABCB375116BF51A228E44C493E020A09
+- Escrow Balance: 122394170815718341733868
+- Counterparty Total Supply: 126782170815718341733868ibc/92E49910206805D48FC035A947F38ABFD5F0372F254846D9873442F3036E20AF
+- Missing amount in Escrow Account: 4388000000000000000000
+*/
+
+// UpgradeEscrowAccounts mints the necessary assets to reach parity between the escrow account
+// and the counterparty total supply, and then, send them from the transfer module to the escrow account.
+func UpgradeEscrowAccounts(ctx sdk.Context, bankKeeper bankkeeper.Keeper, transferKeeper ibctransferkeeper.Keeper) {
+	for addr, assets := range GetEscrowUpdates(ctx) {
+		escrowAddress := sdk.MustAccAddressFromBech32(addr)
+		for _, coin := range assets {
+			coins := sdk.NewCoins(coin)
+
+			if err := bankKeeper.MintCoins(ctx, ibctransfertypes.ModuleName, coins); err != nil {
+				ctx.Logger().Error("fail to upgrade escrow account: %s", err)
+			}
+
+			if err := bankKeeper.SendCoinsFromModuleToAccount(ctx, ibctransfertypes.ModuleName, escrowAddress, coins); err != nil {
+				ctx.Logger().Error("fail to upgrade escrow account: %s", err)
+			}
+
+			// update the transfer module's store for the total escrow amounts
+			currentTotalEscrow := transferKeeper.GetTotalEscrowForDenom(ctx, coin.GetDenom())
+			newTotalEscrow := currentTotalEscrow.Add(coin)
+			transferKeeper.SetTotalEscrowForDenom(ctx, newTotalEscrow)
+		}
+	}
+}
+
+func GetEscrowUpdates(ctx sdk.Context) map[string]sdk.Coins {
+	escrowUpdates := map[string]sdk.Coins{
+		// discrepancy #1
+		"cosmos1x54ltnyg88k0ejmk8ytwrhd3ltm84xehrnlslf": {
+			{
+				Denom:  "ibc/4925E6ABA571A44D2BE0286D2D29AF42A294D0FF2BB16490149A1B26EAD33729",
+				Amount: sdk.NewInt(40000000000000000),
+			},
+		},
+		// discrepancy #2
+		"cosmos1ju6tlfclulxumtt2kglvnxduj5d93a64r5czge": {
+			{
+				Denom:  "ibc/14F9BC3E44B8A9C1BE1FB08980FAB87034C9905EF17CF2F5008FC085218811CC",
+				Amount: sdk.NewInt(2000),
+			},
+		},
+	}
+
+	// For discrepancy #3, the missing amount in the escrow account is too large
+	// to be represented using an 64-bit integer. Therefore, it's added to the
+	// escrow updates list under the condition that the amount is successfully
+	// converted to the sdk.Int type.
+	if amt, ok := sdk.NewIntFromString("4388000000000000000000"); !ok {
+		ctx.Logger().Error("can't upgrade missing amount in escrow account: '4388000000000000000000'")
+	} else {
+		coins := escrowUpdates["cosmos1x54ltnyg88k0ejmk8ytwrhd3ltm84xehrnlslf"]
+		coins = coins.Add(sdk.NewCoins(sdk.NewCoin(
+			"ibc/F5ED5F3DC6F0EF73FA455337C027FE91ABCB375116BF51A228E44C493E020A09",
+			amt,
+		))...)
+		escrowUpdates["cosmos1x54ltnyg88k0ejmk8ytwrhd3ltm84xehrnlslf"] = coins
+	}
+
+	return escrowUpdates
 }

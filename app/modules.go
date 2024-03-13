@@ -186,7 +186,6 @@ func simulationModules(
 		ibc.NewAppModule(app.IBCKeeper),
 		app.TransferModule,
 		app.ICAModule,
-		app.ProviderModule,
 	}
 }
 

@@ -98,6 +98,24 @@
   [v3.3.3-lsm](https://github.com/cosmos/interchain-security/releases/tag/v3.3.3-lsm) 
   ([\#2967](https://github.com/cosmos/gaia/pull/2967))
 
+## v14.2.0
+
+*March 6, 2024*
+
+**This is an emergency release.**
+
+### DEPENDENCIES
+
+- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware) to `v4.1.2-0.20240228222021-455757bb5771`.
+  ([\#2980](https://github.com/cosmos/gaia/pull/2980))
+
+### STATE BREAKING
+
+- Emergency patch for [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware).
+  ([\#2980](https://github.com/cosmos/gaia/pull/2980))
+- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware) to `v7.1.3-0.20240228213828-cce7f56d000b`.
+  ([\#2982](https://github.com/cosmos/gaia/pull/2982))
+
 ## v14.1.0
 
 *November 21, 2023*

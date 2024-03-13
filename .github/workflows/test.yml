@@ -41,7 +41,7 @@ jobs:
             **/go.sum
             **/Makefile
             Makefile
-      - uses: actions/cache@v4.0.0
+      - uses: actions/cache@v4.0.1
         with:
           path: |
             ~/.cache/go-build

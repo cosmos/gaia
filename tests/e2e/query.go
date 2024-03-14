@@ -74,6 +74,20 @@ func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) {
 	return balancesResp.Balances, nil
 }
 
+func querySupplyOf(endpoint, denom string) (sdk.Coin, error) {
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/bank/v1beta1/supply/by_denom?denom=%s", endpoint, denom))
+	if err != nil {
+		return sdk.Coin{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	var supplyOfResp banktypes.QuerySupplyOfResponse
+	if err := cdc.UnmarshalJSON(body, &supplyOfResp); err != nil {
+		return sdk.Coin{}, err
+	}
+
+	return supplyOfResp.Amount, nil
+}
+
 func queryStakingParams(endpoint string) (stakingtypes.QueryParamsResponse, error) {
 	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/params", endpoint))
 	if err != nil {

@@ -26,7 +26,7 @@ I have...
 * [ ] Provided a link to the relevant issue or specification
 * [ ] Followed the guidelines for [building SDK modules](https://github.com/cosmos/cosmos-sdk/blob/main/docs/docs/building-modules)
 * [ ] Included the necessary unit and integration [tests](https://github.com/cosmos/gaia/blob/main/CONTRIBUTING.md#testing)
-* [ ] Added a changelog entry in `.changelog` (for details, see [contributing guidelines](../../CONTRIBUTING.md#changelog))
+* [ ] Added a changelog entry in `.changelog` (for details, see [contributing guidelines](https://github.com/cosmos/gaia/blob/main/CONTRIBUTING.md#changelog))
 * [ ] Included comments for [documenting Go code](https://blog.golang.org/godoc)
 * [ ] Updated the relevant documentation or specification
 * [ ] Reviewed "Files changed" and left comments if necessary <!-- relevant if the changes are not obvious  -->

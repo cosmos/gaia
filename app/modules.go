@@ -57,6 +57,8 @@ import (
 
 	gaiaappparams "github.com/cosmos/gaia/v15/app/params"
 	"github.com/cosmos/gaia/v15/x/globalfee"
+	"github.com/cosmos/gaia/v15/x/metaprotocols"
+	metaprotocolstypes "github.com/cosmos/gaia/v15/x/metaprotocols/types"
 )
 
 var maccPerms = map[string][]string{
@@ -111,6 +113,7 @@ var ModuleBasics = module.NewBasicManager(
 	globalfee.AppModule{},
 	icsprovider.AppModuleBasic{},
 	consensus.AppModuleBasic{},
+	metaprotocols.AppModuleBasic{},
 )
 
 func appModules(
@@ -149,6 +152,7 @@ func appModules(
 		app.ICAModule,
 		app.PFMRouterModule,
 		app.ProviderModule,
+		metaprotocols.NewAppModule(),
 	}
 }
 
@@ -219,6 +223,7 @@ func orderBeginBlockers() []string {
 		globalfee.ModuleName,
 		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
+		metaprotocolstypes.ModuleName,
 	}
 }
 
@@ -255,6 +260,7 @@ func orderEndBlockers() []string {
 		globalfee.ModuleName,
 		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
+		metaprotocolstypes.ModuleName,
 	}
 }
 
@@ -299,5 +305,6 @@ func orderInitBlockers() []string {
 		globalfee.ModuleName,
 		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
+		metaprotocolstypes.ModuleName,
 	}
 }

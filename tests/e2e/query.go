@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
@@ -344,10 +345,10 @@ func queryAllRateLimits(endpoint string) ([]ratelimittypes.RateLimit, error) {
 	return res.RateLimits, nil
 }
 
-func queryRateLimit(endpoint, channelId, denom string) (ratelimittypes.QueryRateLimitResponse, error) {
+func queryRateLimit(endpoint, channelID, denom string) (ratelimittypes.QueryRateLimitResponse, error) {
 	var res ratelimittypes.QueryRateLimitResponse
 
-	body, err := httpGet(fmt.Sprintf("%s/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimit/%s/by_denom?denom=%s", endpoint, channelId, denom))
+	body, err := httpGet(fmt.Sprintf("%s/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimit/%s/by_denom?denom=%s", endpoint, channelID, denom))
 	if err != nil {
 		return ratelimittypes.QueryRateLimitResponse{}, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
@@ -358,10 +359,10 @@ func queryRateLimit(endpoint, channelId, denom string) (ratelimittypes.QueryRate
 	return res, nil
 }
 
-func queryRateLimitsByChainId(endpoint, chainId string) ([]ratelimittypes.RateLimit, error) {
+func queryRateLimitsByChainID(endpoint, channelID string) ([]ratelimittypes.RateLimit, error) {
 	var res ratelimittypes.QueryRateLimitsByChainIdResponse
 
-	body, err := httpGet(fmt.Sprintf("%s/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits/%s", endpoint, chainId))
+	body, err := httpGet(fmt.Sprintf("%s/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits/%s", endpoint, channelID))
 	if err != nil {
 		return []ratelimittypes.RateLimit{}, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}

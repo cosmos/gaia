@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"os"
 
+	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
+
 	tmrand "github.com/cometbft/cometbft/libs/rand"
 
 	providertypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
 
-	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"

@@ -2,10 +2,9 @@ package e2e
 
 import (
 	"fmt"
+	"path/filepath"
 	"strconv"
 	"time"
-
-	"path/filepath"
 
 	sdkmath "cosmossdk.io/math"
 )
@@ -196,11 +195,11 @@ func (s *IntegrationTestSuite) testAddRateLimits() {
 			s.Require().Equal(*rateLimits[0].Path, *res.RateLimit.Path)
 			s.Require().Equal(*rateLimits[0].Quota, *res.RateLimit.Quota)
 
-			rateLimitsByChainId, err := queryRateLimitsByChainId(chainEndpoint, s.chainB.id)
+			rateLimitsByChainID, err := queryRateLimitsByChainID(chainEndpoint, s.chainB.id)
 			s.Require().NoError(err)
 			s.Require().Len(rateLimits, 1)
-			s.Require().Equal(*rateLimits[0].Path, *rateLimitsByChainId[0].Path)
-			s.Require().Equal(*rateLimits[0].Quota, *rateLimitsByChainId[0].Quota)
+			s.Require().Equal(*rateLimits[0].Path, *rateLimitsByChainID[0].Path)
+			s.Require().Equal(*rateLimits[0].Quota, *rateLimitsByChainID[0].Quota)
 
 			return true
 		},

@@ -3,14 +3,15 @@ package keepers
 import (
 	"os"
 
+	ratelimit "github.com/Stride-Labs/ibc-rate-limiting/ratelimit"
+	ratelimitkeeper "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/keeper"
+	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
+
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
 
 	"github.com/cometbft/cometbft/libs/log"
 
-	ratelimit "github.com/Stride-Labs/ibc-rate-limiting/ratelimit"
-	ratelimitkeeper "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/keeper"
-	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
 	pfmrouter "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward"
 	pfmrouterkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward/keeper"
 	pfmroutertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward/types"

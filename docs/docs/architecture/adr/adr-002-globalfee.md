@@ -121,7 +121,7 @@ Please note that `feeCoins` does not contain zero coins. The fee coins are split
 
 ### Fee Checks in  `DeliverTx`
 Implementing fee checks within the `DeliverTx` function introduces a few requirements:
-- **Deterministic Minimum Fee Requirement**: For the `DeliverTx` process, it is essential to have a deterministic minimum fee requirement. In `CheckTx`, fee is checked by the `CombinedFeeRequirement(globalFees, localFees)`, which considers both `minimum-gas-prices` from `config/app.toml` and `MinimumGasPricesParam` from the globalfee Params (For more details, see [globalfee.md](/modules/globalfee.md)). `CombinedFeeRequirement` contains non-deterministic part: `minimum-gas-prices` from `app.toml`. Therefore, `CombinedFeeRequirement` cannot be used in `DeliverTx`. In `DeliverTx`, only `MinimumGasPricesParam` in globalfee Params is used for fee verification. The code implementation is shown below. 
+- **Deterministic Minimum Fee Requirement**: For the `DeliverTx` process, it is essential to have a deterministic minimum fee requirement. In `CheckTx`, fee is checked by the `CombinedFeeRequirement(globalFees, localFees)`, which considers both `minimum-gas-prices` from `config/app.toml` and `MinimumGasPricesParam` from the globalfee Params (For more details, see [globalfee](/modules/globalfee)). `CombinedFeeRequirement` contains non-deterministic part: `minimum-gas-prices` from `app.toml`. Therefore, `CombinedFeeRequirement` cannot be used in `DeliverTx`. In `DeliverTx`, only `MinimumGasPricesParam` in globalfee Params is used for fee verification. The code implementation is shown below. 
 
 ```go
 func (mfd FeeDecorator) GetTxFeeRequired(ctx sdk.Context, tx sdk.FeeTx) (sdk.Coins, error) {

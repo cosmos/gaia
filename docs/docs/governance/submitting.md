@@ -48,7 +48,7 @@ Once on-chain, most people will rely upon block explorers to interpret this info
 
 ## Sending the transaction that submits your governance proposal
 
-For information on how to use gaiad (the command line interface) to submit an on-chain proposal through the governance module, please refer to the [gaiad CLI tutorials](../hub-tutorials/gaiad) for the Cosmos Hub documentation.
+For information on how to use gaiad (the command line interface) to submit an on-chain proposal through the governance module, please refer to the [gaiad CLI tutorials](/hub-tutorials/gaiad) for the Cosmos Hub documentation.
 
 ### Proposal types
 

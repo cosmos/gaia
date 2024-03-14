@@ -5,7 +5,7 @@ order: 2
 
 # Join the Cosmos Hub Mainnet
 
-The current Cosmos Hub mainnet, `cosmoshub-4`, has been performing in place store migration upgrades as of the [Delta Upgrade](https://github.com/cosmos/gaia/tree/main/docs/docs/migration/cosmoshub-4-delta-upgrade.md) July 2021. The most recent upgrade is [Gaia v14.1.x](https://github.com/cosmos/gaia/tree/main/docs/docs/migration/cosmoshub-4-v14-upgrade.md) Dec 2023.
+The current Cosmos Hub mainnet, `cosmoshub-4`, has been performing in place store migration upgrades as of the [Delta Upgrade](https://github.com/cosmos/gaia/blob/main/docs/docs/migration/cosmoshub-4-v5-delta-upgrade.md) July 2021. The most recent upgrade is [Gaia v14.1.x](https://github.com/cosmos/gaia/tree/main/docs/docs/migration/cosmoshub-4-v14-upgrade.md) Dec 2023.
 This type of upgrade preserves the same chain-id but state before the upgrade height is only accessible by corresponding versions of the binary:
 
 ## Release History
@@ -265,7 +265,7 @@ Blocksync is faster than traditional consensus and syncs the chain from genesis 
 
 When syncing via Blocksync, node operators will either need to manually upgrade the chain or set up [Cosmovisor](/hub-tutorials/join-mainnet#cosmovisor) to upgrade automatically.
 
-For more information on performing the manual upgrades, see [Releases & Upgrades](/hub-tutorials/join-mainnet#Releases-amp=-Upgrades).
+For more information on performing the manual upgrades, see [Releases & Upgrades](/hub-tutorials/join-mainnet#releases--upgrades).
 
 It is possible to sync from previous versions of the Cosmos Hub. See the matrix below for the correct `gaia` version. See the [mainnet archive](https://github.com/cosmos/mainnet) for historical genesis files.
 

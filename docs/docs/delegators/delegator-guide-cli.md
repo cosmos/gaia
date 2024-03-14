@@ -58,7 +58,7 @@ Please exercise extreme caution!
 [**Download the binaries**]
 Not available yet.
 
-[**Install from source**](../getting-started/installation)
+[**Install from source**](/getting-started/installation)
 
 :::tip
 `gaiad` is used from a terminal. To open the terminal, follow these steps:
@@ -259,7 +259,7 @@ In order to query the state and send transactions, you need a way to access the 
 
 This is the most secure option, but comes with relatively high resource requirements. In order to run your own full-node, you need good bandwidth and at least 1TB of disk space.
 
-You will find the tutorial on how to install `gaiad` [here](../getting-started/installation), and the guide to run a full-node [here](../hub-tutorials/join-mainnet).
+You will find the tutorial on how to install `gaiad` [here](/getting-started/installation), and the guide to run a full-node [here](/hub-tutorials/join-mainnet).
 
 ### Connecting to a Remote Full-Node
 

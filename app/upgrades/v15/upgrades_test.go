@@ -72,7 +72,7 @@ func TestUpgradeSigningInfos(t *testing.T) {
 	})
 
 	// upgrade signing infos
-	require.NoError(t, v15.UpgradeSigningInfos(ctx, slashingKeeper))
+	v15.UpgradeSigningInfos(ctx, slashingKeeper)
 
 	// check that all signing info are updated as expected after migration
 	slashingKeeper.IterateValidatorSigningInfos(ctx, func(address sdk.ConsAddress, info slashingtypes.ValidatorSigningInfo) (stop bool) {
@@ -282,4 +282,39 @@ func TestSetMinInitialDepositRatio(t *testing.T) {
 	minInitialDepositRatio, err := math.LegacyNewDecFromStr(minInitialDepositRatioStr)
 	require.NoError(t, err)
 	require.True(t, minInitialDepositRatio.Equal(sdk.NewDecWithPrec(1, 1)))
+}
+
+func TestUpgradeEscrowAccounts(t *testing.T) {
+	gaiaApp := helpers.Setup(t)
+	ctx := gaiaApp.NewUncachedContext(true, tmproto.Header{})
+
+	bankKeeper := gaiaApp.BankKeeper
+	transferKeeper := gaiaApp.TransferKeeper
+
+	escrowUpdates := v15.GetEscrowUpdates(ctx)
+
+	// check escrow accounts are empty
+	for addr, coins := range escrowUpdates {
+		require.Empty(t, bankKeeper.GetAllBalances(ctx, sdk.MustAccAddressFromBech32(addr)))
+		for _, coin := range coins {
+			require.Equal(t, sdk.ZeroInt(), transferKeeper.GetTotalEscrowForDenom(ctx, coin.Denom).Amount)
+		}
+	}
+
+	// execute the upgrade
+	v15.UpgradeEscrowAccounts(ctx, bankKeeper, transferKeeper)
+
+	// check that new assets are minted and transferred to the escrow accounts
+	numUpdate := 0
+	for addr, coins := range escrowUpdates {
+		for _, coin := range coins {
+			require.Equal(t, coin, bankKeeper.GetBalance(ctx, sdk.MustAccAddressFromBech32(addr), coin.Denom))
+			// check that the total escrow amount for the denom is updated
+			require.Equal(t, coin, transferKeeper.GetTotalEscrowForDenom(ctx, coin.Denom))
+			numUpdate++
+		}
+	}
+
+	// verify that all tree discrepancies are covered in the update
+	require.Equal(t, 3, numUpdate)
 }

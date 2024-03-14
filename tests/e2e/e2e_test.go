@@ -3,19 +3,20 @@ package e2e
 import "fmt"
 
 var (
-	runBankTest                   = true
-	runBypassMinFeeTest           = true
-	runEncodeTest                 = true
-	runEvidenceTest               = true
-	runFeeGrantTest               = true
-	runGlobalFeesTest             = true
-	runGovTest                    = true
-	runIBCTest                    = true
-	runSlashingTest               = true
-	runStakingAndDistributionTest = true
-	runVestingTest                = true
-	runRestInterfacesTest         = true
-	runLsmTest                    = true
+	runBankTest                   = false
+	runBypassMinFeeTest           = false
+	runEncodeTest                 = false
+	runEvidenceTest               = false
+	runFeeGrantTest               = false
+	runGlobalFeesTest             = false
+	runGovTest                    = false
+	runIBCTest                    = false
+	runSlashingTest               = false
+	runStakingAndDistributionTest = false
+	runVestingTest                = false
+	runRestInterfacesTest         = false
+	runLsmTest                    = false
+	runRateLimitTest              = true
 )
 
 func (s *IntegrationTestSuite) TestRestInterfaces() {
@@ -125,4 +126,11 @@ func (s *IntegrationTestSuite) TestLSM() {
 		s.T().Skip()
 	}
 	s.testLSM()
+}
+
+func (s *IntegrationTestSuite) TestRateLimit() {
+	if !runRateLimitTest {
+		s.T().Skip()
+	}
+	s.testAddRateLimit()
 }

@@ -8,6 +8,7 @@ import (
 
 	providertypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
 
+	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
@@ -23,9 +24,8 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
-	gaiaparams "github.com/cosmos/gaia/v15/app/params"
-	metaprotocoltypes "github.com/cosmos/gaia/v15/x/metaprotocols/types"
+	gaiaparams "github.com/cosmos/gaia/v16/app/params"
+	metaprotocoltypes "github.com/cosmos/gaia/v16/x/metaprotocols/types"
 )
 
 const (

@@ -6,7 +6,7 @@ import (
 	store "github.com/cosmos/cosmos-sdk/store/types"
 	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
 
-	"github.com/cosmos/gaia/v15/app/upgrades"
+	"github.com/cosmos/gaia/v16/app/upgrades"
 )
 
 const (

@@ -1,4 +1,4 @@
-package v13
+package v16
 
 import (
 	"github.com/cosmos/gaia/v16/app/upgrades"
@@ -6,7 +6,7 @@ import (
 
 const (
 	// UpgradeName defines the on-chain upgrade name.
-	UpgradeName = "v13"
+	UpgradeName = "v16"
 )
 
 var Upgrade = upgrades.Upgrade{

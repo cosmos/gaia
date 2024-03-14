@@ -73,7 +73,7 @@ In this section, the initial allocation of tokens is defined. It is possible to 
 ```bash
 // Example: gaiad add-genesis-account cosmos1qs8tnw2t8l6amtzvdemnnsq9dzk0ag0z37gh3h 10000000uatom
 
-gaiad add-genesis-account <account-address> <amount><denom>
+gaiad genesis add-genesis-account <account-address> <amount><denom>
 ```
 
 This command creates an item in the `accounts` list, under the `app_state` section.

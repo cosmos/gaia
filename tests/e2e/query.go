@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 
+	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
@@ -313,4 +314,46 @@ func queryTokenizeShareRecordByID(endpoint string, recordID int) (stakingtypes.T
 		return stakingtypes.TokenizeShareRecord{}, err
 	}
 	return res.Record, nil
+}
+
+func queryAllRateLimits(endpoint string) ([]ratelimittypes.RateLimit, error) {
+	var res ratelimittypes.QueryAllRateLimitsResponse
+
+	body, err := httpGet(fmt.Sprintf("%s/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits", endpoint))
+	if err != nil {
+		return []ratelimittypes.RateLimit{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return []ratelimittypes.RateLimit{}, err
+	}
+	return res.RateLimits, nil
+}
+
+func queryRateLimit(endpoint, channelId, denom string) (ratelimittypes.QueryRateLimitResponse, error) {
+	var res ratelimittypes.QueryRateLimitResponse
+
+	body, err := httpGet(fmt.Sprintf("%s/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimit/%s/by_denom?denom=%s", endpoint, channelId, denom))
+	if err != nil {
+		return ratelimittypes.QueryRateLimitResponse{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return ratelimittypes.QueryRateLimitResponse{}, err
+	}
+	return res, nil
+}
+
+func queryRateLimitsByChainId(endpoint, chainId string) ([]ratelimittypes.RateLimit, error) {
+	var res ratelimittypes.QueryRateLimitsByChainIdResponse
+
+	body, err := httpGet(fmt.Sprintf("%s/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits/%s", endpoint, chainId))
+	if err != nil {
+		return []ratelimittypes.RateLimit{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return []ratelimittypes.RateLimit{}, err
+	}
+	return res.RateLimits, nil
 }

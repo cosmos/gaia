@@ -132,5 +132,5 @@ func (s *IntegrationTestSuite) TestRateLimit() {
 	if !runRateLimitTest {
 		s.T().Skip()
 	}
-	s.testAddRateLimit()
+	s.testAddRateLimits()
 }

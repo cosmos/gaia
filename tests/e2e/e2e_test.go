@@ -91,6 +91,7 @@ func (s *IntegrationTestSuite) TestIBC() {
 	s.testMultihopIBCTokenTransfer()
 	s.testFailedMultihopIBCTokenTransfer()
 	s.testIBCBypassMsg()
+	s.testICARegisterAccountAndSendTx()
 }
 
 func (s *IntegrationTestSuite) TestSlashing() {

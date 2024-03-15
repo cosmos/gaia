@@ -72,8 +72,7 @@ func CreateUpgradeHandler(
 			return nil, fmt.Errorf("failed initializing the min initial deposit ratio: %s", err)
 		}
 
-		UpgradeEscrowAccounts(ctx, keepers.BankKeeper, keepers.TransferKeeper)
-
+		// UpgradeEscrowAccounts(ctx, keepers.BankKeeper, keepers.TransferKeeper)
 		ctx.Logger().Info("Upgrade v15 complete")
 		return vm, err
 	}

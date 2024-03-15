@@ -445,12 +445,12 @@ func GetEscrowUpdates(ctx sdk.Context) []UpdateCoins {
 	if amt, ok := sdk.NewIntFromString("4388000000000000000000"); !ok {
 		ctx.Logger().Error("can't upgrade missing amount in escrow account: '4388000000000000000000'")
 	} else {
-		coins := escrowUpdates[1].Coins
+		coins := escrowUpdates[0].Coins
 		coins = coins.Add(sdk.NewCoins(sdk.NewCoin(
 			"ibc/F5ED5F3DC6F0EF73FA455337C027FE91ABCB375116BF51A228E44C493E020A09",
 			amt,
 		))...)
-		escrowUpdates[1].Coins = coins
+		escrowUpdates[0].Coins = coins
 	}
 
 	return escrowUpdates

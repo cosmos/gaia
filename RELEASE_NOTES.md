@@ -1,6 +1,6 @@
 # Gaia v15.1.0  Release Notes 
 
-***This release contain the changes introduced by the v14.2.0 emergency release and should be used for the v15 upgrade (instead of ~~v15.0.0~~).***
+***This release contains the changes introduced by the v14.2.0 emergency release and should be used for the v15 upgrade (instead of ~~v15.0.0~~).***
 
 ## 📝 Changelog
 

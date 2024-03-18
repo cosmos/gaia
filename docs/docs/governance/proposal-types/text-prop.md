@@ -35,11 +35,53 @@ Technically, nothing happens on-chain. No code executes, and this 'unenforceable
 * The community might be more informed about a topic than they previously were.
 * The community might feel confident that we are aligned on a particular definition or social norm. 
 
+## Submitting a text proposal
 
+Follow the instructions below to create a text proposal and submit it to the blockchain.
 
+```sh
+➜ gaiad tx gov draft-proposal
 
+Use the arrow keys to navigate: ↓ ↑ → ←
+? Select proposal type:
+  ▸ text  # choose this
+    community-pool-spend
+    software-upgrade
+    cancel-software-upgrade
+    other
+```
 
+Choose `text` from the `draft-proposal` menu and populate all the available fields.
+```sh
+✔ text
+Enter proposal title: Title
+Enter proposal authors: Author
+Enter proposal summary: Proposal summary
+Enter proposal details: Details, all the details
+Enter proposal proposal forum url: /
+Enter proposal vote option context: Vote yes if <...>
+Enter proposal deposit: 100001uatom
+```
 
+Check `draft_proposal.json`, your result should be similar to this:
+```json
+{
+ "metadata": "ipfs://CID",
+ "deposit": "100001uatom",
+ "title": "Title",
+ "summary": "Proposal summary"
+}
+```
 
+Upload your `draft_metadata.json` to a distribution platform of your choice. `draft_proposal.json` is used to submit a governance proposal using `submit-proposal`.
 
+```sh
+gaiad tx gov submit-proposal <path_to_proposal.json>
+   --from <submitter address> \
+   --chain-id cosmoshub-4 \
+   --gas <max gas allocated> \
+   --fees <fees allocated> \
+   --node <node address> \
+```
 
+Additional instructions with debugging information is available on the [submitting](../submitting.md) page.

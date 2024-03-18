@@ -5,7 +5,7 @@ import (
 	consensustypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 
-	"github.com/cosmos/gaia/v15/app/upgrades"
+	"github.com/cosmos/gaia/v16/app/upgrades"
 )
 
 const (

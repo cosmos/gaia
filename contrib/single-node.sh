@@ -19,10 +19,10 @@ fi
 coins="10000000000stake,100000000000samoleans"
 gaiad init --chain-id $CHAINID $CHAINID
 gaiad keys add validator --keyring-backend="test"
-gaiad add-genesis-account $(gaiad keys show validator -a --keyring-backend="test") $coins
-gaiad add-genesis-account $GENACCT $coins
-gaiad gentx validator 5000000000stake --keyring-backend="test" --chain-id $CHAINID
-gaiad collect-gentxs
+gaiad genesis add-genesis-account $(gaiad keys show validator -a --keyring-backend="test") $coins
+gaiad genesis add-genesis-account $GENACCT $coins
+gaiad genesis gentx validator 5000000000stake --keyring-backend="test" --chain-id $CHAINID
+gaiad genesis collect-gentxs
 
 # Set proper defaults and change ports
 echo "Setting rpc listen address"

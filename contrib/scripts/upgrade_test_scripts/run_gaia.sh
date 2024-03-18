@@ -77,9 +77,9 @@ sed -i -e 's/"threshold": "0.500000000000000000",/"threshold": "0.00000000000000
 sed -i -e 's/"voting_period": "172800s"/"voting_period": "30s"/g' $NODE_HOME/config/genesis.json
 
 echo $USER_MNEMONIC | $BINARY --home $NODE_HOME keys add val --recover --keyring-backend=test
-$BINARY add-genesis-account val 10000000000000000000000000uatom --home $NODE_HOME --keyring-backend test
-$BINARY gentx val 1000000000uatom --home $NODE_HOME --chain-id $CHAINID
-$BINARY collect-gentxs --home $NODE_HOME
+$BINARY genesis add-genesis-account val 10000000000000000000000000uatom --home $NODE_HOME --keyring-backend test
+$BINARY genesis gentx val 1000000000uatom --home $NODE_HOME --chain-id $CHAINID
+$BINARY genesis collect-gentxs --home $NODE_HOME
 
 sed -i.bak'' 's/minimum-gas-prices = ""/minimum-gas-prices = "0uatom"/' $NODE_HOME/config/app.toml
 

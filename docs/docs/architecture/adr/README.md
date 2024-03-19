@@ -53,7 +53,7 @@ They are to be interpreted as described in [RFC 2119](https://datatracker.ietf.o
 
 ### Proposed
 
-- n/a
+- [ADR 003: Interchain Accounts Controller Module](./adr-003-ica-controller.md)
 
 ### Draft
 

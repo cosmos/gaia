@@ -53,7 +53,7 @@ Neither core developers nor core funding entities control the governance.
 
 ## Upgrade date
 
-The date/time of the upgrade is subject to change as blocks are not generated at a constant interval. You can stay up-to-date by checking the estimated estimated time until the block is produced one of the block explorers (e.g. https://www.mintscan.io/cosmos/blocks/`UPGRADE_HEIGHT`).
+The date/time of the upgrade is subject to change as blocks are not generated at a constant interval. You can stay up-to-date by checking the estimated time until the block is produced at one of the block explorers (e.g. https://www.mintscan.io/cosmos/blocks/`UPGRADE_HEIGHT`).
 
 ## Preparing for the upgrade
 

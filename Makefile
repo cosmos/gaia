@@ -98,6 +98,7 @@ include contrib/devtools/Makefile
 check_version:
 ifneq ($(GO_SYSTEM_VERSION), $(REQUIRE_GO_VERSION))
 	@echo "ERROR: Go version 1.21 is required for $(VERSION) of Gaia."
+	exit 1
 endif
 
 all: install lint run-tests test-e2e vulncheck

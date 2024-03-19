@@ -26,7 +26,7 @@ Use the arrow keys to navigate: ↓ ↑ → ←
 
 # populate all steps (displaying all for demonstration purposes)
 Enter proposal title: Upgrade v15
-Enter proposal authors: Stewrads
+Enter proposal authors: Stewards
 Enter proposal summary: Upgrade to v15
 Enter proposal details: <v15 upgrade changelog details>
 Enter proposal proposal forum url: /

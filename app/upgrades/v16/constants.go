@@ -2,6 +2,9 @@ package v16
 
 import (
 	"github.com/cosmos/gaia/v16/app/upgrades"
+
+	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
+	store "github.com/cosmos/cosmos-sdk/store/types"
 )
 
 const (
@@ -12,4 +15,9 @@ const (
 var Upgrade = upgrades.Upgrade{
 	UpgradeName:          UpgradeName,
 	CreateUpgradeHandler: CreateUpgradeHandler,
+	StoreUpgrades: store.StoreUpgrades{
+		Added: []string{
+			ratelimittypes.ModuleName,
+		},
+	},
 }

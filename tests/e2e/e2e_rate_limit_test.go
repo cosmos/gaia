@@ -23,7 +23,7 @@ func (s *IntegrationTestSuite) writeAddRateLimitAtomProposal(c *chain) {
 		"messages": [
 		 {
 		  "@type": "/ratelimit.v1.MsgAddRateLimit",
-		  "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+		  "authority": "%s",
 		  "denom": "%s",
 		  "channel_id": "%s",
 		  "max_percent_send": "%s",
@@ -37,6 +37,7 @@ func (s *IntegrationTestSuite) writeAddRateLimitAtomProposal(c *chain) {
 		"summary": "e2e-test adding an IBC rate limit"
 	   }`
 	propMsgBody := fmt.Sprintf(template,
+		govAuthority,
 		uatomDenom,                 // denom: uatom
 		transferChannel,            // channel_id: channel-0
 		sdkmath.NewInt(1).String(), // max_percent_send: 1%
@@ -54,7 +55,7 @@ func (s *IntegrationTestSuite) writeAddRateLimitStakeProposal(c *chain) {
 		"messages": [
 		 {
 		  "@type": "/ratelimit.v1.MsgAddRateLimit",
-		  "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+		  "authority": "%s",
 		  "denom": "%s",
 		  "channel_id": "%s",
 		  "max_percent_send": "%s",
@@ -68,6 +69,7 @@ func (s *IntegrationTestSuite) writeAddRateLimitStakeProposal(c *chain) {
 		"summary": "e2e-test adding an IBC rate limit"
 	   }`
 	propMsgBody := fmt.Sprintf(template,
+		govAuthority,
 		stakeDenom,                  // denom: stake
 		transferChannel,             // channel_id: channel-0
 		sdkmath.NewInt(10).String(), // max_percent_send: 10%
@@ -85,7 +87,7 @@ func (s *IntegrationTestSuite) writeUpdateRateLimitAtomProposal(c *chain) {
 		"messages": [
 		 {
 		  "@type": "/ratelimit.v1.MsgUpdateRateLimit",
-		  "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+		  "authority": "%s",
 		  "denom": "%s",
 		  "channel_id": "%s",
 		  "max_percent_send": "%s",
@@ -99,6 +101,7 @@ func (s *IntegrationTestSuite) writeUpdateRateLimitAtomProposal(c *chain) {
 		"summary": "e2e-test updating an IBC rate limit"
 	   }`
 	propMsgBody := fmt.Sprintf(template,
+		govAuthority,
 		uatomDenom,                 // denom: uatom
 		transferChannel,            // channel_id: channel-0
 		sdkmath.NewInt(2).String(), // max_percent_send: 2%
@@ -116,7 +119,7 @@ func (s *IntegrationTestSuite) writeResetRateLimitAtomProposal(c *chain) {
 		"messages": [
 		 {
 		  "@type": "/ratelimit.v1.MsgResetRateLimit",
-		  "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+		  "authority": "%s",
 		  "denom": "%s",
 		  "channel_id": "%s"
 		 }
@@ -127,6 +130,7 @@ func (s *IntegrationTestSuite) writeResetRateLimitAtomProposal(c *chain) {
 		"summary": "e2e-test resetting an IBC rate limit"
 	   }`
 	propMsgBody := fmt.Sprintf(template,
+		govAuthority,
 		uatomDenom,      // denom: uatom
 		transferChannel, // channel_id: channel-0
 	)
@@ -141,7 +145,7 @@ func (s *IntegrationTestSuite) writeRemoveRateLimitAtomProposal(c *chain) {
 		"messages": [
 		 {
 		  "@type": "/ratelimit.v1.MsgRemoveRateLimit",
-		  "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+		  "authority": "%s",
 		  "denom": "%s",
 		  "channel_id": "%s"
 		 }
@@ -152,6 +156,7 @@ func (s *IntegrationTestSuite) writeRemoveRateLimitAtomProposal(c *chain) {
 		"summary": "e2e-test removing an IBC rate limit"
 	   }`
 	propMsgBody := fmt.Sprintf(template,
+		govAuthority,
 		uatomDenom,      // denom: uatom
 		transferChannel, // channel_id: channel-0
 	)

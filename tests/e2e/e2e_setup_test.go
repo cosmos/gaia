@@ -79,6 +79,8 @@ const (
 	hermesConfigWithGasPrices = "/root/.hermes/config.toml"
 	hermesConfigNoGasPrices   = "/root/.hermes/config-zero.toml"
 	transferChannel           = "channel-0"
+
+	govAuthority = "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn"
 )
 
 var (
@@ -810,7 +812,7 @@ func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain, 
 		"messages": [
 		 {
 		  "@type": "/cosmos.staking.v1beta1.MsgUpdateParams",
-		  "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+		  "authority": "%s",
 		  "params": {
 		   "unbonding_time": "%s",
 		   "max_validators": %d,
@@ -830,6 +832,7 @@ func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain, 
 		"summary": "e2e-test updating LSM staking params"
 	   }`
 	propMsgBody := fmt.Sprintf(template,
+		govAuthority,
 		oldParams.UnbondingTime,
 		oldParams.MaxValidators,
 		oldParams.MaxEntries,

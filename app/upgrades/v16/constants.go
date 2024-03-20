@@ -1,10 +1,11 @@
 package v16
 
 import (
-	"github.com/cosmos/gaia/v16/app/upgrades"
-
 	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
+
 	store "github.com/cosmos/cosmos-sdk/store/types"
+
+	"github.com/cosmos/gaia/v16/app/upgrades"
 )
 
 const (

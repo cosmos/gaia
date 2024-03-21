@@ -56,7 +56,6 @@ import (
 	"github.com/cosmos/gaia/v18/app/params"
 	"github.com/cosmos/gaia/v18/app/upgrades"
 	v18 "github.com/cosmos/gaia/v18/app/upgrades/v18"
-	"github.com/cosmos/gaia/v18/x/globalfee"
 
 	blocksdkabci "github.com/skip-mev/block-sdk/abci"
 	blocksdk "github.com/skip-mev/block-sdk/block"
@@ -243,10 +242,9 @@ func NewGaiaApp(
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
-			Codec:             appCodec,
-			IBCkeeper:         app.IBCKeeper,
-			GlobalFeeSubspace: app.GetSubspace(globalfee.ModuleName),
-			StakingKeeper:     app.StakingKeeper,
+			Codec:         appCodec,
+			IBCkeeper:     app.IBCKeeper,
+			StakingKeeper: app.StakingKeeper,
 			// If TxFeeChecker is nil the default ante TxFeeChecker is used
 			// so we use this no-op to keep the global fee module behaviour unchanged
 			TxFeeChecker:    noOpTxFeeChecker,

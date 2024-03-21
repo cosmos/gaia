@@ -9,6 +9,7 @@ import (
 	store "github.com/cosmos/cosmos-sdk/store/types"
 
 	"github.com/cosmos/gaia/v18/app/upgrades"
+	"github.com/cosmos/gaia/v18/x/globalfee"
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 )
 
@@ -29,6 +30,9 @@ var Upgrade = upgrades.Upgrade{
 			icacontrollertypes.SubModuleName,
 			ibcfeetypes.ModuleName,
 			feemarkettypes.ModuleName,
+		},
+		Deleted: []string{
+			globalfee.ModuleName,
 		},
 	},
 }

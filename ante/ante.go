@@ -9,25 +9,22 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	feemarketante "github.com/skip-mev/feemarket/x/feemarket/ante"
 	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
 
 	gaiaerrors "github.com/cosmos/gaia/v18/types/errors"
-	gaiafeeante "github.com/cosmos/gaia/v18/x/globalfee/ante"
 )
 
 // HandlerOptions extend the SDK's AnteHandler options by requiring the IBC
 // channel keeper.
 type HandlerOptions struct {
 	ante.HandlerOptions
-	Codec             codec.BinaryCodec
-	IBCkeeper         *ibckeeper.Keeper
-	GlobalFeeSubspace paramtypes.Subspace
-	StakingKeeper     *stakingkeeper.Keeper
-	TxFeeChecker      ante.TxFeeChecker
-	FeeMarketKeeper   *feemarketkeeper.Keeper
+	Codec           codec.BinaryCodec
+	IBCkeeper       *ibckeeper.Keeper
+	StakingKeeper   *stakingkeeper.Keeper
+	TxFeeChecker    ante.TxFeeChecker
+	FeeMarketKeeper *feemarketkeeper.Keeper
 }
 
 func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
@@ -43,9 +40,8 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 	if opts.IBCkeeper == nil {
 		return nil, errorsmod.Wrap(gaiaerrors.ErrLogic, "IBC keeper is required for AnteHandler")
 	}
-
-	if opts.GlobalFeeSubspace.Name() == "" {
-		return nil, errorsmod.Wrap(gaiaerrors.ErrNotFound, "globalfee param store is required for AnteHandler")
+	if opts.FeeMarketKeeper == nil {
+		return nil, errorsmod.Wrap(gaiaerrors.ErrLogic, "FeeMarket keeper is required for AnteHandler")
 	}
 
 	if opts.StakingKeeper == nil {
@@ -65,7 +61,6 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewValidateMemoDecorator(opts.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
 		NewGovVoteDecorator(opts.Codec, opts.StakingKeeper),
-		gaiafeeante.NewFeeDecorator(opts.GlobalFeeSubspace, opts.StakingKeeper),
 		ante.NewDeductFeeDecorator(opts.AccountKeeper, opts.BankKeeper, opts.FeegrantKeeper, opts.TxFeeChecker),
 		ante.NewSetPubKeyDecorator(opts.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewValidateSigCountDecorator(opts.AccountKeeper),

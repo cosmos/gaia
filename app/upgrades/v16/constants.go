@@ -9,6 +9,7 @@ import (
 	store "github.com/cosmos/cosmos-sdk/store/types"
 
 	"github.com/cosmos/gaia/v18/app/upgrades"
+	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 )
 
 const (
@@ -27,6 +28,7 @@ var Upgrade = upgrades.Upgrade{
 			ratelimittypes.ModuleName,
 			icacontrollertypes.SubModuleName,
 			ibcfeetypes.ModuleName,
+			feemarkettypes.ModuleName,
 		},
 	},
 }

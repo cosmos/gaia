@@ -11,6 +11,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
+	feemarketante "github.com/skip-mev/feemarket/x/feemarket/ante"
+	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
 
 	gaiaerrors "github.com/cosmos/gaia/v18/types/errors"
 	gaiafeeante "github.com/cosmos/gaia/v18/x/globalfee/ante"
@@ -25,6 +27,7 @@ type HandlerOptions struct {
 	GlobalFeeSubspace paramtypes.Subspace
 	StakingKeeper     *stakingkeeper.Keeper
 	TxFeeChecker      ante.TxFeeChecker
+	FeeMarketKeeper   *feemarketkeeper.Keeper
 }
 
 func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
@@ -70,6 +73,7 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewSigVerificationDecorator(opts.AccountKeeper, opts.SignModeHandler),
 		ante.NewIncrementSequenceDecorator(opts.AccountKeeper),
 		ibcante.NewRedundantRelayDecorator(opts.IBCkeeper),
+		feemarketante.NewFeeMarketCheckDecorator(opts.FeeMarketKeeper),
 	}
 
 	return sdk.ChainAnteDecorators(anteDecorators...), nil

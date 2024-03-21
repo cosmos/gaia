@@ -59,6 +59,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	feemarket "github.com/skip-mev/feemarket/x/feemarket"
+	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
 	gaiaappparams "github.com/cosmos/gaia/v18/app/params"
 	"github.com/cosmos/gaia/v18/x/globalfee"
@@ -78,6 +80,7 @@ var maccPerms = map[string][]string{
 	ibctransfertypes.ModuleName:       {authtypes.Minter, authtypes.Burner},
 	ibcfeetypes.ModuleName:            nil,
 	providertypes.ConsumerRewardsPool: nil,
+	feemarkettypes.ModuleName:         nil,
 }
 
 // ModuleBasics defines the module BasicManager is in charge of setting up basic,
@@ -122,6 +125,7 @@ var ModuleBasics = module.NewBasicManager(
 	icsprovider.AppModuleBasic{},
 	consensus.AppModuleBasic{},
 	metaprotocols.AppModuleBasic{},
+	feemarket.AppModuleBasic{},
 )
 
 func appModules(
@@ -164,6 +168,7 @@ func appModules(
 
 		app.ProviderModule,
 		metaprotocols.NewAppModule(),
+		feemarket.NewAppModule(appCodec, *app.FeeMarketKeeper),
 	}
 }
 
@@ -233,6 +238,7 @@ func orderBeginBlockers() []string {
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
 		globalfee.ModuleName,
+		feemarkettypes.ModuleName,
 		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
@@ -272,6 +278,7 @@ func orderEndBlockers() []string {
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		globalfee.ModuleName,
+		feemarkettypes.ModuleName,
 		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
@@ -319,6 +326,7 @@ func orderInitBlockers() []string {
 		// min fee is empty when gentx is called.
 		// For more details, please refer to the following link: https://github.com/cosmos/gaia/issues/2489
 		globalfee.ModuleName,
+		feemarkettypes.ModuleName,
 		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,

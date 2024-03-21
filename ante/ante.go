@@ -1,6 +1,9 @@
 package ante
 
 import (
+	feemarketante "github.com/skip-mev/feemarket/x/feemarket/ante"
+	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
+
 	ibcante "github.com/cosmos/ibc-go/v7/modules/core/ante"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 
@@ -10,8 +13,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
-	feemarketante "github.com/skip-mev/feemarket/x/feemarket/ante"
-	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
 
 	gaiaerrors "github.com/cosmos/gaia/v18/types/errors"
 )

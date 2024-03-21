@@ -6,10 +6,13 @@ import (
 	ratelimit "github.com/Stride-Labs/ibc-rate-limiting/ratelimit"
 	ratelimitkeeper "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/keeper"
 	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
+	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
+	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
 	// unnamed import of statik for swagger UI support
-	"github.com/cometbft/cometbft/libs/log"
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
+
+	"github.com/cometbft/cometbft/libs/log"
 
 	pfmrouter "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward"
 	pfmrouterkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward/keeper"
@@ -76,8 +79,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
-	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 )
 
 type AppKeepers struct {

@@ -1,11 +1,11 @@
 package gaia
 
 import (
-	"cosmossdk.io/math"
-
 	signerextraction "github.com/skip-mev/block-sdk/adapters/signer_extraction_adapter"
 	"github.com/skip-mev/block-sdk/block/base"
 	defaultlane "github.com/skip-mev/block-sdk/lanes/base"
+
+	"cosmossdk.io/math"
 )
 
 // Creating the lanes for the block sdk.

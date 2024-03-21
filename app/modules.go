@@ -3,6 +3,8 @@ package gaia
 import (
 	ratelimit "github.com/Stride-Labs/ibc-rate-limiting/ratelimit"
 	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
+	feemarket "github.com/skip-mev/feemarket/x/feemarket"
+	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
 	pfmrouter "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward"
 	pfmroutertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward/types"
@@ -59,8 +61,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	feemarket "github.com/skip-mev/feemarket/x/feemarket"
-	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
 	gaiaappparams "github.com/cosmos/gaia/v18/app/params"
 	"github.com/cosmos/gaia/v18/x/metaprotocols"

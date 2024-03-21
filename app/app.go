@@ -9,6 +9,9 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
+	blocksdkabci "github.com/skip-mev/block-sdk/abci"
+	blocksdk "github.com/skip-mev/block-sdk/block"
+	blocksdkbase "github.com/skip-mev/block-sdk/block/base"
 	"github.com/spf13/cast"
 
 	// unnamed import of statik for swagger UI support
@@ -56,10 +59,6 @@ import (
 	"github.com/cosmos/gaia/v18/app/params"
 	"github.com/cosmos/gaia/v18/app/upgrades"
 	v18 "github.com/cosmos/gaia/v18/app/upgrades/v18"
-
-	blocksdkabci "github.com/skip-mev/block-sdk/abci"
-	blocksdk "github.com/skip-mev/block-sdk/block"
-	blocksdkbase "github.com/skip-mev/block-sdk/block/base"
 )
 
 var (
@@ -256,12 +255,24 @@ func NewGaiaApp(
 	}
 
 	app.SetAnteHandler(anteHandler)
+
 	opt := []blocksdkbase.LaneOption{
 		blocksdkbase.WithAnteHandler(anteHandler),
 	}
-	defaultLane.WithOptions(
-		opt...,
+
+	defaultLane.WithOptions(opt...)
+
+	// Create the proposal handler, so that the application
+	// will build and verify proposals using the Block SDK
+	proposalHandler := blocksdkabci.NewProposalHandler(
+		app.Logger(),
+		app.GetTxConfig().TxDecoder(),
+		app.GetTxConfig().TxEncoder(),
+		mempool,
 	)
+	app.SetPrepareProposal(proposalHandler.PrepareProposalHandler())
+	app.SetProcessProposal(proposalHandler.ProcessProposalHandler())
+
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
@@ -274,17 +285,6 @@ func NewGaiaApp(
 			tmos.Exit(fmt.Sprintf("failed to load latest version: %s", err))
 		}
 	}
-
-	// Create the proposal handler, so that the application
-	// will build and verify proposals using the Block SDK
-	proposalHandler := blocksdkabci.NewProposalHandler(
-		app.Logger(),
-		app.GetTxConfig().TxDecoder(),
-		app.GetTxConfig().TxEncoder(),
-		mempool,
-	)
-	app.SetPrepareProposal(proposalHandler.PrepareProposalHandler())
-	app.SetProcessProposal(proposalHandler.ProcessProposalHandler())
 
 	return app
 }

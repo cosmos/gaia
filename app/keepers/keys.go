@@ -2,6 +2,7 @@ package keepers
 
 import (
 	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
+	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
 	routertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward/types"
 	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
@@ -28,7 +29,6 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 )
 
 func (appKeepers *AppKeepers) GenerateKeys() {

@@ -21,6 +21,7 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/ory/dockertest/v3 v3.10.0
 	github.com/rakyll/statik v0.1.7
+	github.com/skip-mev/block-sdk v1.4.0
 	github.com/skip-mev/feemarket v0.0.1-alpha.2
 	github.com/spf13/cast v1.6.0
 	github.com/spf13/cobra v1.8.0

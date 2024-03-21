@@ -57,6 +57,10 @@ import (
 	"github.com/cosmos/gaia/v18/app/upgrades"
 	v18 "github.com/cosmos/gaia/v18/app/upgrades/v18"
 	"github.com/cosmos/gaia/v18/x/globalfee"
+
+	blocksdkabci "github.com/skip-mev/block-sdk/abci"
+	blocksdk "github.com/skip-mev/block-sdk/block"
+	blocksdkbase "github.com/skip-mev/block-sdk/block/base"
 )
 
 var (
@@ -161,6 +165,22 @@ func NewGaiaApp(
 		appOpts,
 	)
 
+	// Setup blocksdk
+	// Create the Block SDK lanes.
+	defaultLane := CreateLanes(app)
+
+	// Construct a mempool based off the lanes.
+	mempool, err := blocksdk.NewLanedMempool(
+		app.Logger(),
+		[]blocksdk.Lane{defaultLane},
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	// Set the mempool on the app.
+	app.SetMempool(mempool)
+
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
 	app.mm = module.NewManager(appModules(app, encodingConfig, skipGenesisInvariants)...)
@@ -238,6 +258,12 @@ func NewGaiaApp(
 	}
 
 	app.SetAnteHandler(anteHandler)
+	opt := []blocksdkbase.LaneOption{
+		blocksdkbase.WithAnteHandler(anteHandler),
+	}
+	defaultLane.WithOptions(
+		opt...,
+	)
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
@@ -250,6 +276,17 @@ func NewGaiaApp(
 			tmos.Exit(fmt.Sprintf("failed to load latest version: %s", err))
 		}
 	}
+
+	// Create the proposal handler, so that the application
+	// will build and verify proposals using the Block SDK
+	proposalHandler := blocksdkabci.NewProposalHandler(
+		app.Logger(),
+		app.GetTxConfig().TxDecoder(),
+		app.GetTxConfig().TxEncoder(),
+		mempool,
+	)
+	app.SetPrepareProposal(proposalHandler.PrepareProposalHandler())
+	app.SetProcessProposal(proposalHandler.ProcessProposalHandler())
 
 	return app
 }

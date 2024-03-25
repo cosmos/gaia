@@ -9,7 +9,7 @@ parent:
 - [**Text**](../proposal-types/text-prop.md)
 - [**Community Pool Spend**](../proposal-types/community-pool-spend.md)
 - [**Parameter Change**](../proposal-types/param-change.md)
-- **Software Upgrade**
+- [**Software Upgrade**](../proposal-types/software-upgrade.md)
 - **IBC Client Update**
 
 ## Drafting a Proposal

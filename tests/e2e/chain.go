@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
+
 	tmrand "github.com/cometbft/cometbft/libs/rand"
 
 	providertypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
@@ -55,6 +57,7 @@ func init() {
 	distribtypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	providertypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	metaprotocoltypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	ratelimittypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 
 	cdc = encodingConfig.Marshaler
 	txConfig = encodingConfig.TxConfig

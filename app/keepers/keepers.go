@@ -3,6 +3,10 @@ package keepers
 import (
 	"os"
 
+	ratelimit "github.com/Stride-Labs/ibc-rate-limiting/ratelimit"
+	ratelimitkeeper "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/keeper"
+	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
+
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
 
@@ -106,11 +110,13 @@ type AppKeepers struct {
 	ProviderKeeper ibcproviderkeeper.Keeper
 
 	PFMRouterKeeper *pfmrouterkeeper.Keeper
+	RatelimitKeeper ratelimitkeeper.Keeper
 
 	// Modules
 	ICAModule       ica.AppModule
 	TransferModule  transfer.AppModule
 	PFMRouterModule pfmrouter.AppModule
+	RateLimitModule ratelimit.AppModule
 	ProviderModule  ibcprovider.AppModule
 
 	// make scoped keepers public for test purposes
@@ -364,6 +370,19 @@ func NewAppKeeper(
 		bApp.MsgServiceRouter(),
 	)
 
+	govAuthority := authtypes.NewModuleAddress(govtypes.ModuleName).String()
+
+	// Create RateLimit keeper
+	appKeepers.RatelimitKeeper = *ratelimitkeeper.NewKeeper(
+		appCodec,                                 // BinaryCodec
+		appKeepers.keys[ratelimittypes.StoreKey], // StoreKey
+		appKeepers.GetSubspace(ratelimittypes.ModuleName), // param Subspace
+		govAuthority, // authority
+		appKeepers.BankKeeper,
+		appKeepers.IBCKeeper.ChannelKeeper, // ChannelKeeper
+		appKeepers.IBCKeeper.ChannelKeeper, // ICS4Wrapper
+	)
+
 	// ICA Controller keeper
 	appKeepers.ICAControllerKeeper = icacontrollerkeeper.NewKeeper(
 		appCodec,
@@ -377,7 +396,6 @@ func NewAppKeeper(
 	)
 
 	// PFMRouterKeeper must be created before TransferKeeper
-	authority := authtypes.NewModuleAddress(govtypes.ModuleName).String()
 	appKeepers.PFMRouterKeeper = pfmrouterkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[pfmroutertypes.StoreKey],
@@ -385,8 +403,8 @@ func NewAppKeeper(
 		appKeepers.IBCKeeper.ChannelKeeper,
 		appKeepers.DistrKeeper,
 		appKeepers.BankKeeper,
-		appKeepers.IBCKeeper.ChannelKeeper,
-		authority,
+		appKeepers.RatelimitKeeper, // ICS4Wrapper
+		govAuthority,
 	)
 
 	appKeepers.TransferKeeper = ibctransferkeeper.NewKeeper(
@@ -407,21 +425,25 @@ func NewAppKeeper(
 	appKeepers.ICAModule = ica.NewAppModule(&appKeepers.ICAControllerKeeper, &appKeepers.ICAHostKeeper)
 	appKeepers.TransferModule = transfer.NewAppModule(appKeepers.TransferKeeper)
 	appKeepers.PFMRouterModule = pfmrouter.NewAppModule(appKeepers.PFMRouterKeeper, appKeepers.GetSubspace(pfmroutertypes.ModuleName))
+	appKeepers.RateLimitModule = ratelimit.NewAppModule(appCodec, appKeepers.RatelimitKeeper)
 
-	// create IBC module from bottom to top of stack
+	// Create Transfer Stack (from bottom to top of stack)
+	// - core IBC
+	// - ratelimit
+	// - pfm
+	// - transfer
 	var transferStack porttypes.IBCModule
 	transferStack = transfer.NewIBCModule(appKeepers.TransferKeeper)
 	transferStack = pfmrouter.NewIBCMiddleware(
 		transferStack,
 		appKeepers.PFMRouterKeeper,
-		0,
+		0, // retries on timeout
 		pfmrouterkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
 		pfmrouterkeeper.DefaultRefundTransferPacketTimeoutTimestamp,
 	)
+	transferStack = ratelimit.NewIBCMiddleware(appKeepers.RatelimitKeeper, transferStack)
 
-	// Add transfer stack to IBC Router
-
-	// Create Interchain Accounts Host Stack
+	// Create ICAHost Stack
 	var icaHostStack porttypes.IBCModule = icahost.NewIBCModule(appKeepers.ICAHostKeeper)
 
 	// Create Interchain Accounts Controller Stack
@@ -466,6 +488,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.Subspace(icacontrollertypes.SubModuleName)
 	paramsKeeper.Subspace(pfmroutertypes.ModuleName).WithKeyTable(pfmroutertypes.ParamKeyTable())
+	paramsKeeper.Subspace(ratelimittypes.ModuleName)
 	paramsKeeper.Subspace(globalfee.ModuleName)
 	paramsKeeper.Subspace(providertypes.ModuleName)
 

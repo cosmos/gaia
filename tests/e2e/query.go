@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"strings"
 
+	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
+
 	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -73,6 +75,20 @@ func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) {
 	}
 
 	return balancesResp.Balances, nil
+}
+
+func querySupplyOf(endpoint, denom string) (sdk.Coin, error) {
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/bank/v1beta1/supply/by_denom?denom=%s", endpoint, denom))
+	if err != nil {
+		return sdk.Coin{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	var supplyOfResp banktypes.QuerySupplyOfResponse
+	if err := cdc.UnmarshalJSON(body, &supplyOfResp); err != nil {
+		return sdk.Coin{}, err
+	}
+
+	return supplyOfResp.Amount, nil
 }
 
 func queryStakingParams(endpoint string) (stakingtypes.QueryParamsResponse, error) {
@@ -315,6 +331,49 @@ func queryTokenizeShareRecordByID(endpoint string, recordID int) (stakingtypes.T
 		return stakingtypes.TokenizeShareRecord{}, err
 	}
 	return res.Record, nil
+}
+
+func queryAllRateLimits(endpoint string) ([]ratelimittypes.RateLimit, error) {
+	var res ratelimittypes.QueryAllRateLimitsResponse
+
+	body, err := httpGet(fmt.Sprintf("%s/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits", endpoint))
+	if err != nil {
+		return []ratelimittypes.RateLimit{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return []ratelimittypes.RateLimit{}, err
+	}
+	return res.RateLimits, nil
+}
+
+//nolint:unparam
+func queryRateLimit(endpoint, channelID, denom string) (ratelimittypes.QueryRateLimitResponse, error) {
+	var res ratelimittypes.QueryRateLimitResponse
+
+	body, err := httpGet(fmt.Sprintf("%s/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimit/%s/by_denom?denom=%s", endpoint, channelID, denom))
+	if err != nil {
+		return ratelimittypes.QueryRateLimitResponse{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return ratelimittypes.QueryRateLimitResponse{}, err
+	}
+	return res, nil
+}
+
+func queryRateLimitsByChainID(endpoint, channelID string) ([]ratelimittypes.RateLimit, error) {
+	var res ratelimittypes.QueryRateLimitsByChainIdResponse
+
+	body, err := httpGet(fmt.Sprintf("%s/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits/%s", endpoint, channelID))
+	if err != nil {
+		return []ratelimittypes.RateLimit{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return []ratelimittypes.RateLimit{}, err
+	}
+	return res.RateLimits, nil
 }
 
 func queryICAAccountAddress(endpoint, owner, connectionID string) (string, error) {

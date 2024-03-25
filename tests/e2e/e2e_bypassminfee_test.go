@@ -141,7 +141,7 @@ func (s *IntegrationTestSuite) testTxContainsOnlyIBCBypassMsg() {
 
 	scrRelayerBalanceBefore, dstRelayerBalanceBefore := s.queryRelayerWalletsBalances()
 
-	pass := s.hermesClearPacket(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
+	pass := s.hermesClearPacket(hermesConfigNoGasPrices, s.chainA.id, transferPort, transferChannel)
 	s.Require().True(pass)
 	pendingPacketsExist := s.hermesPendingPackets(s.chainA.id, transferChannel)
 	s.Require().False(pendingPacketsExist)
@@ -163,7 +163,7 @@ func (s *IntegrationTestSuite) testTxContainsMixBypassNonBypassMsg() {
 	s.Require().True(pendingPacketsExist)
 
 	// attempt to relay packets without paying fees
-	pass := s.hermesClearPacket(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
+	pass := s.hermesClearPacket(hermesConfigNoGasPrices, s.chainA.id, transferPort, transferChannel)
 	s.Require().False(pass)
 
 	// assert that packets were not relayed
@@ -171,7 +171,7 @@ func (s *IntegrationTestSuite) testTxContainsMixBypassNonBypassMsg() {
 	s.Require().True(pendingPacketsExist)
 
 	// clear packets with paying fees
-	pass = s.hermesClearPacket(hermesConfigWithGasPrices, s.chainA.id, transferChannel)
+	pass = s.hermesClearPacket(hermesConfigWithGasPrices, s.chainA.id, transferPort, transferChannel)
 	s.Require().True(pass)
 }
 
@@ -179,12 +179,12 @@ func (s *IntegrationTestSuite) testBypassMsgsExceedMaxBypassGasLimit() {
 	s.T().Logf("testing bypass messages exceed MaxBypassGasUsage")
 	ok := s.hermesTransfer(hermesConfigWithGasPrices, s.chainA.id, s.chainB.id, transferChannel, uatomDenom, 100, 1000, 12)
 	s.Require().True(ok)
-	pass := s.hermesClearPacket(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
+	pass := s.hermesClearPacket(hermesConfigNoGasPrices, s.chainA.id, transferPort, transferChannel)
 	s.Require().False(pass)
 
 	pendingPacketsExist := s.hermesPendingPackets(s.chainA.id, transferChannel)
 	s.Require().True(pendingPacketsExist)
 
-	pass = s.hermesClearPacket(hermesConfigWithGasPrices, s.chainA.id, transferChannel)
+	pass = s.hermesClearPacket(hermesConfigWithGasPrices, s.chainA.id, transferPort, transferChannel)
 	s.Require().True(pass)
 }

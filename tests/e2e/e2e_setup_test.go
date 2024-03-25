@@ -78,6 +78,7 @@ const (
 	hermesBinary              = "hermes"
 	hermesConfigWithGasPrices = "/root/.hermes/config.toml"
 	hermesConfigNoGasPrices   = "/root/.hermes/config-zero.toml"
+	transferPort              = "transfer"
 	transferChannel           = "channel-0"
 
 	govAuthority = "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn"

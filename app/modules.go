@@ -11,9 +11,9 @@ import (
 	ibcclientclient "github.com/cosmos/ibc-go/v7/modules/core/02-client/client"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibctm "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
-	icsprovider "github.com/cosmos/interchain-security/v3/x/ccv/provider"
-	icsproviderclient "github.com/cosmos/interchain-security/v3/x/ccv/provider/client"
-	providertypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
+	icsprovider "github.com/cosmos/interchain-security/v4/x/ccv/provider"
+	icsproviderclient "github.com/cosmos/interchain-security/v4/x/ccv/provider/client"
+	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
 
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"

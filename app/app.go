@@ -21,7 +21,7 @@ import (
 	tmos "github.com/cometbft/cometbft/libs/os"
 
 	ibctesting "github.com/cosmos/ibc-go/v7/testing"
-	providertypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
+	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
 
 	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
 	reflectionv1 "cosmossdk.io/api/cosmos/reflection/v1"

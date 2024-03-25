@@ -1,0 +1,19 @@
+syntax = "proto3";
+package gaia.metaprotocols;
+
+option go_package = "github.com/cosmos/gaia/x/metaprotocols/types";
+
+// ExtensionData is a data structure that can be used in transaction extensions.
+message ExtensionData {
+    // protocol_id is the identifier of the protocol
+    // the field is not used internally but it is validated for correctness
+    string protocol_id = 1;
+
+    // protocol_version is the identifier of the protocol version
+    // the field is not used internally but it is validated for correctness
+    string protocol_version = 2;
+
+    // arbitrary bytes data that can be used to store any data
+    // the field is not used internally but it is validated and must be provided
+    bytes data = 3;
+}

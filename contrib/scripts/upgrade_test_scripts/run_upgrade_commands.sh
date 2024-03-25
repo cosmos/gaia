@@ -58,12 +58,13 @@ if test -f "$BINARY"; then
 
   echo "\n"
   echo "Submitting proposal... \n"
-  $BINARY tx gov submit-proposal software-upgrade $UPGRADE_VERSION \
+  $BINARY tx gov submit-legacy-proposal software-upgrade $UPGRADE_VERSION \
     --title $UPGRADE_VERSION \
     --deposit 10000000uatom \
     --upgrade-height $UPGRADE_HEIGHT \
     --upgrade-info "upgrade" \
     --description "upgrade" \
+    --no-validate \
     --fees 400uatom \
     --from val \
     --keyring-backend test \

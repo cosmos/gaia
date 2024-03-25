@@ -12,6 +12,9 @@ import (
 	pfmrouterkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward/keeper"
 	pfmroutertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward/types"
 	ica "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts"
+	icacontroller "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller"
+	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
+	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
 	icahost "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host"
 	icahostkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/keeper"
 	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
@@ -68,7 +71,7 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	"github.com/cosmos/gaia/v15/x/globalfee"
+	"github.com/cosmos/gaia/v16/x/globalfee"
 )
 
 type AppKeepers struct {
@@ -92,6 +95,7 @@ type AppKeepers struct {
 	// IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	IBCKeeper             *ibckeeper.Keeper
 	ICAHostKeeper         icahostkeeper.Keeper
+	ICAControllerKeeper   icacontrollerkeeper.Keeper
 	EvidenceKeeper        evidencekeeper.Keeper
 	TransferKeeper        ibctransferkeeper.Keeper
 	FeeGrantKeeper        feegrantkeeper.Keeper
@@ -110,10 +114,11 @@ type AppKeepers struct {
 	ProviderModule  ibcprovider.AppModule
 
 	// make scoped keepers public for test purposes
-	ScopedIBCKeeper         capabilitykeeper.ScopedKeeper
-	ScopedTransferKeeper    capabilitykeeper.ScopedKeeper
-	ScopedICAHostKeeper     capabilitykeeper.ScopedKeeper
-	ScopedIBCProviderKeeper capabilitykeeper.ScopedKeeper
+	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
+	ScopedTransferKeeper      capabilitykeeper.ScopedKeeper
+	ScopedICAHostKeeper       capabilitykeeper.ScopedKeeper
+	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
+	ScopedIBCProviderKeeper   capabilitykeeper.ScopedKeeper
 }
 
 func NewAppKeeper(
@@ -169,6 +174,7 @@ func NewAppKeeper(
 
 	appKeepers.ScopedIBCKeeper = appKeepers.CapabilityKeeper.ScopeToModule(ibcexported.ModuleName)
 	appKeepers.ScopedICAHostKeeper = appKeepers.CapabilityKeeper.ScopeToModule(icahosttypes.SubModuleName)
+	appKeepers.ScopedICAControllerKeeper = appKeepers.CapabilityKeeper.ScopeToModule(icacontrollertypes.SubModuleName)
 	appKeepers.ScopedTransferKeeper = appKeepers.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 	appKeepers.ScopedIBCProviderKeeper = appKeepers.CapabilityKeeper.ScopeToModule(providertypes.ModuleName)
 
@@ -358,6 +364,18 @@ func NewAppKeeper(
 		bApp.MsgServiceRouter(),
 	)
 
+	// ICA Controller keeper
+	appKeepers.ICAControllerKeeper = icacontrollerkeeper.NewKeeper(
+		appCodec,
+		appKeepers.keys[icacontrollertypes.StoreKey],
+		appKeepers.GetSubspace(icacontrollertypes.SubModuleName),
+		appKeepers.IBCKeeper.ChannelKeeper, // ICS4Wrapper
+		appKeepers.IBCKeeper.ChannelKeeper,
+		&appKeepers.IBCKeeper.PortKeeper,
+		appKeepers.ScopedICAControllerKeeper,
+		bApp.MsgServiceRouter(),
+	)
+
 	// PFMRouterKeeper must be created before TransferKeeper
 	authority := authtypes.NewModuleAddress(govtypes.ModuleName).String()
 	appKeepers.PFMRouterKeeper = pfmrouterkeeper.NewKeeper(
@@ -386,7 +404,7 @@ func NewAppKeeper(
 	appKeepers.PFMRouterKeeper.SetTransferKeeper(appKeepers.TransferKeeper)
 
 	// Middleware Stacks
-	appKeepers.ICAModule = ica.NewAppModule(nil, &appKeepers.ICAHostKeeper)
+	appKeepers.ICAModule = ica.NewAppModule(&appKeepers.ICAControllerKeeper, &appKeepers.ICAHostKeeper)
 	appKeepers.TransferModule = transfer.NewAppModule(appKeepers.TransferKeeper)
 	appKeepers.PFMRouterModule = pfmrouter.NewAppModule(appKeepers.PFMRouterKeeper, appKeepers.GetSubspace(pfmroutertypes.ModuleName))
 
@@ -403,12 +421,16 @@ func NewAppKeeper(
 
 	// Add transfer stack to IBC Router
 
-	// Create Interchain Accounts Stack
+	// Create Interchain Accounts Host Stack
 	var icaHostStack porttypes.IBCModule = icahost.NewIBCModule(appKeepers.ICAHostKeeper)
+
+	// Create Interchain Accounts Controller Stack
+	var icaControllerStack porttypes.IBCModule = icacontroller.NewIBCMiddleware(nil, appKeepers.ICAControllerKeeper)
 
 	// Create IBC Router & seal
 	ibcRouter := porttypes.NewRouter().
 		AddRoute(icahosttypes.SubModuleName, icaHostStack).
+		AddRoute(icacontrollertypes.SubModuleName, icaControllerStack).
 		AddRoute(ibctransfertypes.ModuleName, transferStack).
 		AddRoute(providertypes.ModuleName, appKeepers.ProviderModule)
 
@@ -442,6 +464,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibcexported.ModuleName)
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
+	paramsKeeper.Subspace(icacontrollertypes.SubModuleName)
 	paramsKeeper.Subspace(pfmroutertypes.ModuleName).WithKeyTable(pfmroutertypes.ParamKeyTable())
 	paramsKeeper.Subspace(globalfee.ModuleName)
 	paramsKeeper.Subspace(providertypes.ModuleName)

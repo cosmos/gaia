@@ -41,7 +41,7 @@ jobs:
             **/go.sum
             **/Makefile
             Makefile
-      - uses: actions/cache@v4.0.0
+      - uses: actions/cache@v4.0.1
         with:
           path: |
             ~/.cache/go-build
@@ -147,11 +147,11 @@ jobs:
             go.sum
       - uses: actions/setup-go@v5
         with:
-          go-version: 1.20.x
+          go-version: 1.21.x
       # the old gaiad binary version is hardcoded, need to be updated each major release.
       - name: Install Old Gaiad
         run: |
-          git checkout v14.0.0
+          git checkout v15.0.0-rc1
           make build
           cp ./build/gaiad ./build/gaiadold
           go clean -modcache

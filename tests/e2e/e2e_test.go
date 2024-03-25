@@ -30,6 +30,8 @@ func (s *IntegrationTestSuite) TestBank() {
 		s.T().Skip()
 	}
 	s.testBankTokenTransfer()
+	s.bankSendWithNonCriticalExtensionOptions()
+	s.failedBankSendWithNonCriticalExtensionOptions()
 }
 
 func (s *IntegrationTestSuite) TestByPassMinFee() {
@@ -89,6 +91,7 @@ func (s *IntegrationTestSuite) TestIBC() {
 	s.testMultihopIBCTokenTransfer()
 	s.testFailedMultihopIBCTokenTransfer()
 	s.testIBCBypassMsg()
+	s.testICARegisterAccountAndSendTx()
 }
 
 func (s *IntegrationTestSuite) TestSlashing() {

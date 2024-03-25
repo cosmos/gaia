@@ -26,6 +26,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/pruning"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
+	"github.com/cosmos/cosmos-sdk/client/snapshot"
 	"github.com/cosmos/cosmos-sdk/server"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
@@ -39,8 +40,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 
-	gaia "github.com/cosmos/gaia/v15/app"
-	"github.com/cosmos/gaia/v15/app/params"
+	gaia "github.com/cosmos/gaia/v16/app"
+	"github.com/cosmos/gaia/v16/app/params"
 )
 
 // NewRootCmd creates a new root command for simd. It is called once in the
@@ -135,6 +136,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 		addDebugCommands(debug.Cmd()),
 		config.Cmd(),
 		pruning.PruningCmd(ac.newApp),
+		snapshot.Cmd(ac.newApp),
 	)
 
 	server.AddCommands(rootCmd, gaia.DefaultNodeHome, ac.newApp, ac.appExport, addModuleInitFlags)

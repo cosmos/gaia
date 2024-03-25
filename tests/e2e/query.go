@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"strings"
 
+	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
@@ -313,4 +315,18 @@ func queryTokenizeShareRecordByID(endpoint string, recordID int) (stakingtypes.T
 		return stakingtypes.TokenizeShareRecord{}, err
 	}
 	return res.Record, nil
+}
+
+func queryICAAccountAddress(endpoint, owner, connectionID string) (string, error) {
+	body, err := httpGet(fmt.Sprintf("%s/ibc/apps/interchain_accounts/controller/v1/owners/%s/connections/%s", endpoint, owner, connectionID))
+	if err != nil {
+		return "", fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	var icaAccountResp icacontrollertypes.QueryInterchainAccountResponse
+	if err := cdc.UnmarshalJSON(body, &icaAccountResp); err != nil {
+		return "", err
+	}
+
+	return icaAccountResp.Address, nil
 }

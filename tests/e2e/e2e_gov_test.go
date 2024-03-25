@@ -163,6 +163,8 @@ func (s *IntegrationTestSuite) submitLegacyGovProposal(chainAAPIEndpoint, sender
 // Instead, the depoist is added to the "deposit" field of the proposal JSON (usually stored as a file)
 // you can use `gaiad tx gov draft-proposal` to create a proposal file that you can use
 // min initial deposit of 100uatom is required in e2e tests, otherwise the proposal would be dropped
+//
+//nolint:unparam
 func (s *IntegrationTestSuite) submitGovProposal(chainAAPIEndpoint, sender string, proposalID int, proposalType string, submitFlags []string, depositFlags []string, voteFlags []string, voteCommand string) {
 	s.T().Logf("Submitting Gov Proposal: %s", proposalType)
 	sflags := submitFlags

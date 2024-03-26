@@ -237,9 +237,6 @@ replace (
 	// Use special SDK v0.47.x release with support for both ICS and LSM
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.47.10-ics-lsm.0.20240308085944-614fc7f217c8
 
-	// RPC node historical version height support with memiavl
-	github.com/cosmos/cosmos-sdk/versiondb => github.com/crypto-org-chain/cronos/versiondb v0.0.5-0.20240301012710-e9bb006c8d14
-
 	// Use special ICS v3.3.x release with support for LSM
 	github.com/cosmos/interchain-security/v3 => github.com/cosmos/interchain-security/v3 v3.3.3-lsm
 

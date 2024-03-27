@@ -1,5 +1,26 @@
 # CHANGELOG
 
+## v15.1.0
+
+*March 15, 2024*
+
+### DEPENDENCIES
+
+- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware) to `v7.1.3-0.20240228213828-cce7f56d000b`.
+  ([\#2982](https://github.com/cosmos/gaia/pull/2982))
+
+### FEATURES
+
+- Add gaiad snapshots command set ([\#2974](https://github.com/cosmos/gaia/pull/2974))
+
+### STATE BREAKING
+
+- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware) to `v7.1.3-0.20240228213828-cce7f56d000b`.
+  ([\#2982](https://github.com/cosmos/gaia/pull/2982))
+- Mint and transfer missing assets in escrow accounts
+ to reach parity with counterparty chain supply.
+ ([\#2993](https://github.com/cosmos/gaia/pull/2993))
+
 ## v15.0.0
 
 *February 20, 2024*
@@ -113,8 +134,6 @@
 
 - Emergency patch for [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware).
   ([\#2980](https://github.com/cosmos/gaia/pull/2980))
-- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware) to `v7.1.3-0.20240228213828-cce7f56d000b`.
-  ([\#2982](https://github.com/cosmos/gaia/pull/2982))
 
 ## v14.1.0
 

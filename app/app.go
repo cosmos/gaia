@@ -254,13 +254,26 @@ func NewGaiaApp(
 		panic(fmt.Errorf("failed to create AnteHandler: %s", err))
 	}
 
-	app.SetAnteHandler(anteHandler)
-
 	opt := []blocksdkbase.LaneOption{
 		blocksdkbase.WithAnteHandler(anteHandler),
 	}
 
 	defaultLane.WithOptions(opt...)
+
+	postHandlerOptions := PostHandlerOptions{
+		AccountKeeper:   app.AccountKeeper,
+		BankKeeper:      app.BankKeeper,
+		FeeGrantKeeper:  app.FeeGrantKeeper,
+		FeeMarketKeeper: app.FeeMarketKeeper,
+	}
+	postHandler, err := NewPostHandler(postHandlerOptions)
+	if err != nil {
+		panic(err)
+	}
+
+	// set ante and post handlers
+	app.SetAnteHandler(anteHandler)
+	app.SetPostHandler(postHandler)
 
 	// Create the proposal handler, so that the application
 	// will build and verify proposals using the Block SDK

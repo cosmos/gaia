@@ -26,7 +26,7 @@ func CreateLanes(app *GaiaApp) *base.BaseLane {
 		TxDecoder:       app.txConfig.TxDecoder(),
 		MaxBlockSpace:   math.LegacyOneDec(),
 		SignerExtractor: signerAdapter,
-		MaxTxs:          1000,
+		MaxTxs:          5000,
 	}
 
 	// Create the match handlers for each lane. These match handlers determine whether or not

@@ -94,6 +94,11 @@ func CreateUpgradeHandler(
 			return vm, errorsmod.Wrapf(err, "failed initializing ICS epochs")
 		}
 
+		err = SetFeeMarketParams(ctx, keepers)
+		if err != nil {
+			return vm, err
+		}
+
 		ctx.Logger().Info("Upgrade complete")
 		return vm, err
 	}
@@ -185,5 +190,22 @@ func InitICSEpochs(ctx sdk.Context, pk providerkeeper.Keeper, sk stakingkeeper.K
 	// }
 
 	ctx.Logger().Info("Finished initializing ICS epochs")
+
+	return nil
+}
+
+func SetFeeMarketParams(ctx sdk.Context, keepers *keepers.AppKeepers) error {
+	params, err := keepers.FeeMarketKeeper.GetParams(ctx)
+	if err != nil {
+		return err
+	}
+
+	params.Enabled = true
+	params.FeeDenom = "uatom"
+	params.MinBaseFee = sdk.NewInt(1)
+	// TODO:
+	// params.TargetBlockUtilization =
+	// params.MaxBlockUtilization =
+
 	return nil
 }

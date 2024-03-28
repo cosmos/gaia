@@ -8,7 +8,7 @@ import (
 
 	tmrand "github.com/cometbft/cometbft/libs/rand"
 
-	providertypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
+	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"

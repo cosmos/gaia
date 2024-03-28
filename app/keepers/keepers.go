@@ -30,9 +30,9 @@ import (
 	porttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
-	ibcprovider "github.com/cosmos/interchain-security/v3/x/ccv/provider"
-	ibcproviderkeeper "github.com/cosmos/interchain-security/v3/x/ccv/provider/keeper"
-	providertypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
+	ibcprovider "github.com/cosmos/interchain-security/v4/x/ccv/provider"
+	ibcproviderkeeper "github.com/cosmos/interchain-security/v4/x/ccv/provider/keeper"
+	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"

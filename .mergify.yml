@@ -33,15 +33,6 @@ pull_request_rules:
         branches:
           - release/v14.2.x
 
-  - name: Backport patches to the release/v15.1.x branch
-    conditions:
-      - base=main
-      - label=A:backport/v15.1.x
-    actions:
-      backport:
-        branches:
-          - release/v15.1.x
-
   - name: Backport patches to the release/v15.2.x branch
     conditions:
       - base=main

@@ -1,0 +1,1 @@
+- Fix parsing of historic Txs with TxExtensionOptions ([\#3032](https://github.com/cosmos/gaia/pull/3032))

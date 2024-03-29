@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## v15.2.0
+
+*March 29, 2024*
+
+### BUG FIXES
+
+- Increase x/gov metadata fields legth to 10200 ([\#3025](https://github.com/cosmos/gaia/pull/3025))
+- Fix parsing of historic Txs with TxExtensionOptions ([\#3032](https://github.com/cosmos/gaia/pull/3032))
+
+### STATE BREAKING
+
+- Increase x/gov metadata fields legth to 10200 ([\#3025](https://github.com/cosmos/gaia/pull/3025))
+- Fix parsing of historic Txs with TxExtensionOptions ([\#3032](https://github.com/cosmos/gaia/pull/3032))
+
 ## v15.1.0
 
 *March 15, 2024*

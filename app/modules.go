@@ -8,6 +8,8 @@ import (
 	pfmroutertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward/types"
 	ica "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts"
 	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
+	ibcfee "github.com/cosmos/ibc-go/v7/modules/apps/29-fee"
+	ibcfeetypes "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/types"
 	"github.com/cosmos/ibc-go/v7/modules/apps/transfer"
 	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	ibc "github.com/cosmos/ibc-go/v7/modules/core"
@@ -74,6 +76,7 @@ var maccPerms = map[string][]string{
 	govtypes.ModuleName:            {authtypes.Burner},
 	// liquiditytypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
 	ibctransfertypes.ModuleName:       {authtypes.Minter, authtypes.Burner},
+	ibcfeetypes.ModuleName:            nil,
 	providertypes.ConsumerRewardsPool: nil,
 }
 
@@ -107,6 +110,7 @@ var ModuleBasics = module.NewBasicManager(
 	authzmodule.AppModuleBasic{},
 	ibc.AppModuleBasic{},
 	ibctm.AppModuleBasic{},
+	ibcfee.AppModuleBasic{},
 	upgrade.AppModuleBasic{},
 	evidence.AppModuleBasic{},
 	transfer.AppModuleBasic{},
@@ -152,6 +156,7 @@ func appModules(
 		sdkparams.NewAppModule(app.ParamsKeeper),
 		globalfee.NewAppModule(app.GetSubspace(globalfee.ModuleName)),
 		consensus.NewAppModule(appCodec, app.ConsensusParamsKeeper),
+		ibcfee.NewAppModule(app.IBCFeeKeeper),
 		app.TransferModule,
 		app.ICAModule,
 		app.PFMRouterModule,
@@ -221,6 +226,7 @@ func orderBeginBlockers() []string {
 		icatypes.ModuleName,
 		pfmroutertypes.ModuleName,
 		ratelimittypes.ModuleName,
+		ibcfeetypes.ModuleName,
 		genutiltypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
@@ -252,6 +258,7 @@ func orderEndBlockers() []string {
 		pfmroutertypes.ModuleName,
 		ratelimittypes.ModuleName,
 		capabilitytypes.ModuleName,
+		ibcfeetypes.ModuleName,
 		authtypes.ModuleName,
 		banktypes.ModuleName,
 		distrtypes.ModuleName,
@@ -294,6 +301,7 @@ func orderInitBlockers() []string {
 		ibctransfertypes.ModuleName,
 		ibcexported.ModuleName,
 		icatypes.ModuleName,
+		ibcfeetypes.ModuleName,
 		evidencetypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,

@@ -3,8 +3,8 @@ package gaia
 import (
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 	ibctestingtypes "github.com/cosmos/ibc-go/v7/testing/types"
-	icstest "github.com/cosmos/interchain-security/v3/testutil/integration"
-	ibcproviderkeeper "github.com/cosmos/interchain-security/v3/x/ccv/provider/keeper"
+	icstest "github.com/cosmos/interchain-security/v4/testutil/integration"
+	ibcproviderkeeper "github.com/cosmos/interchain-security/v4/x/ccv/provider/keeper"
 
 	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
 )

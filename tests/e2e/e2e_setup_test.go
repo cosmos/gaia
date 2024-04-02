@@ -54,17 +54,14 @@ const (
 	stakeDenom     = "stake"
 	initBalanceStr = "110000000000stake,100000000000000000photon,100000000000000000uatom"
 	minGasPrice    = "0.00001"
-	// the test globalfee in genesis is the same as minGasPrice
+	// the test basefee in genesis is the same as minGasPrice
 	// global fee lower/higher than min_gas_price
-	initialGlobalFeeAmt                   = "0.00001"
-	lowGlobalFeesAmt                      = "0.000001"
-	highGlobalFeeAmt                      = "0.0001"
-	maxTotalBypassMinFeeMsgGasUsage       = "1"
-	gas                                   = 200000
-	govProposalBlockBuffer                = 35
-	relayerAccountIndexHermes             = 0
-	numberOfEvidences                     = 10
-	slashingShares                  int64 = 10000
+	initialBaseFeeAmt               = 1
+	gas                             = 200000
+	govProposalBlockBuffer          = 35
+	relayerAccountIndexHermes       = 0
+	numberOfEvidences               = 10
+	slashingShares            int64 = 10000
 
 	proposalGlobalFeeFilename      = "proposal_globalfee.json"
 	proposalBypassMsgFilename      = "proposal_bypass_msg.json"
@@ -223,7 +220,7 @@ func (s *IntegrationTestSuite) initNodes(c *chain) {
 	}
 
 	s.Require().NoError(
-		modifyGenesis(val0ConfigDir, "", initBalanceStr, addrAll, initialGlobalFeeAmt+uatomDenom, uatomDenom),
+		modifyGenesis(val0ConfigDir, "", initBalanceStr, addrAll, initialBaseFeeAmt, uatomDenom),
 	)
 	// copy the genesis file to the remaining validators
 	for _, val := range c.validators[1:] {

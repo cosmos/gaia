@@ -1,4 +1,4 @@
-package ics
+package integration
 
 import (
 	"math/rand"
@@ -58,6 +58,7 @@ func (suite *FeeMarketTestSuite) SetupTest() {
 func (suite *FeeMarketTestSuite) TestBaseFeeAdjustment() {
 	// BaseFee is initially set to DefaultMinBaseFee
 	ctx := suite.chain.GetContext()
+
 	baseFee, err := suite.app.FeeMarketKeeper.GetBaseFee(ctx)
 	suite.Require().NoError(err)
 	suite.Require().Equal(feemarkettypes.DefaultMinBaseFee, baseFee)

@@ -35,14 +35,6 @@ func (s *IntegrationTestSuite) TestBank() {
 	s.failedBankSendWithNonCriticalExtensionOptions()
 }
 
-func (s *IntegrationTestSuite) TestByPassMinFee() {
-	if !runBypassMinFeeTest {
-		s.T().Skip()
-	}
-	chainAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-	s.testBypassMinFeeWithdrawReward(chainAPI)
-}
-
 func (s *IntegrationTestSuite) TestEncode() {
 	if !runEncodeTest {
 		s.T().Skip()
@@ -63,14 +55,6 @@ func (s *IntegrationTestSuite) TestFeeGrant() {
 		s.T().Skip()
 	}
 	s.testFeeGrant()
-}
-
-func (s *IntegrationTestSuite) TestGlobalFees() {
-	if !runGlobalFeesTest {
-		s.T().Skip()
-	}
-	s.testGlobalFees()
-	s.testQueryGlobalFeesInGenesis()
 }
 
 func (s *IntegrationTestSuite) TestGov() {

@@ -20,6 +20,7 @@ import (
 var testGasLimit uint64 = 200_000
 
 func TestIntegrationTestSuite(t *testing.T) {
+	t.Skip()
 	suite.Run(t, new(IntegrationTestSuite))
 }
 

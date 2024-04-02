@@ -23,7 +23,7 @@ import (
 	govlegacytypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	globfeetypes "github.com/cosmos/gaia/v18/x/globalfee/types"
+	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 )
 
 func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {
@@ -50,7 +50,7 @@ func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {
 	return doc, nil
 }
 
-func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, globfees string, denom string) error {
+func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, basefee int64, denom string) error {
 	serverCtx := server.NewDefaultContext()
 	config := serverCtx.Config
 	config.SetRoot(path)
@@ -160,18 +160,15 @@ func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, gl
 	}
 	appState[icatypes.ModuleName] = icaGenesisStateBz
 
-	// setup global fee in genesis
-	globfeeState := globfeetypes.GetGenesisStateFromAppState(cdc, appState)
-	minGases, err := sdk.ParseDecCoins(globfees)
+	feemarketState := feemarkettypes.GetGenesisStateFromAppState(cdc, appState)
+	feemarketState.Params.MinBaseFee = sdk.NewInt(basefee)
+	feemarketState.Params.FeeDenom = denom
+	feemarketState.State.BaseFee = sdk.NewInt(basefee)
+	feemarketStateBz, err := cdc.MarshalJSON(&feemarketState)
 	if err != nil {
-		return fmt.Errorf("failed to parse fee coins: %w", err)
+		return fmt.Errorf("failed to marshal feemarket genesis state: %w", err)
 	}
-	globfeeState.Params.MinimumGasPrices = minGases
-	globFeeStateBz, err := cdc.MarshalJSON(globfeeState)
-	if err != nil {
-		return fmt.Errorf("failed to marshal global fee genesis state: %w", err)
-	}
-	appState[globfeetypes.ModuleName] = globFeeStateBz
+	appState[feemarkettypes.ModuleName] = feemarketStateBz
 
 	stakingGenState := stakingtypes.GetGenesisStateFromAppState(cdc, appState)
 	stakingGenState.Params.BondDenom = denom

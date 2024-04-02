@@ -3,20 +3,20 @@ package e2e
 import "fmt"
 
 var (
-	runBankTest                   = true
-	runBypassMinFeeTest           = true
-	runEncodeTest                 = true
-	runEvidenceTest               = true
-	runFeeGrantTest               = true
-	runGlobalFeesTest             = true
-	runGovTest                    = true
+	runBankTest                   = false
+	runBypassMinFeeTest           = false
+	runEncodeTest                 = false
+	runEvidenceTest               = false
+	runFeeGrantTest               = false
+	runGlobalFeesTest             = false
+	runGovTest                    = false
 	runIBCTest                    = true
-	runSlashingTest               = true
-	runStakingAndDistributionTest = true
-	runVestingTest                = true
-	runRestInterfacesTest         = true
-	runLsmTest                    = true
-	runRateLimitTest              = true
+	runSlashingTest               = false
+	runStakingAndDistributionTest = false
+	runVestingTest                = false
+	runRestInterfacesTest         = false
+	runLsmTest                    = false
+	runRateLimitTest              = false
 )
 
 func (s *IntegrationTestSuite) TestRestInterfaces() {

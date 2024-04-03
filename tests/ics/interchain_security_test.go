@@ -4,19 +4,21 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/suite"
+
 	tmdb "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/log"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/stretchr/testify/require"
-	"github.com/stretchr/testify/suite"
 
 	ibctesting "github.com/cosmos/ibc-go/v7/testing"
 	appConsumer "github.com/cosmos/interchain-security/v4/app/consumer"
 	"github.com/cosmos/interchain-security/v4/tests/integration"
 	icstestingutils "github.com/cosmos/interchain-security/v4/testutil/ibc_testing"
 	"github.com/cosmos/interchain-security/v4/x/ccv/types"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	gaiaApp "github.com/cosmos/gaia/v16/app"
 )

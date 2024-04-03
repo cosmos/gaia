@@ -59,8 +59,8 @@ func GaiaAppIniter() (ibctesting.TestingApp, map[string]json.RawMessage) {
 }
 
 func TestICSEpochs(t *testing.T) {
-	// a bit hacky but cannot be called from SetupTest()
-	// since it requires `t`
+	// a bit hacky but cannot be called
+	//  in SetupTest() since it requires `t`
 	ccvSuite.SetT(t)
 	ccvSuite.SetupTest()
 

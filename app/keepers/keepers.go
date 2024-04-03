@@ -296,6 +296,8 @@ func NewAppKeeper(
 
 	// provider depends on gov, so gov must be registered first
 	govConfig := govtypes.DefaultConfig()
+	// set the MaxMetadataLen for proposals to the same value as it was pre-sdk v0.47.x
+	govConfig.MaxMetadataLen = 10200
 	appKeepers.GovKeeper = govkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[govtypes.StoreKey],
@@ -306,7 +308,6 @@ func NewAppKeeper(
 		govConfig,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
-
 	appKeepers.ProviderKeeper = ibcproviderkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[providertypes.StoreKey],

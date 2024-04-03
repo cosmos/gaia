@@ -9,11 +9,12 @@ import (
 	tmdb "github.com/cometbft/cometbft-db"
 	"github.com/cometbft/cometbft/libs/log"
 
-	gaiaApp "github.com/cosmos/gaia/v16/app"
 	ibctesting "github.com/cosmos/ibc-go/v7/testing"
 	appConsumer "github.com/cosmos/interchain-security/v4/app/consumer"
 	"github.com/cosmos/interchain-security/v4/tests/integration"
 	icstestingutils "github.com/cosmos/interchain-security/v4/testutil/ibc_testing"
+
+	gaiaApp "github.com/cosmos/gaia/v16/app"
 )
 
 func TestCCVTestSuite(t *testing.T) {

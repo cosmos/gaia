@@ -3,21 +3,20 @@ package integration
 import (
 	"testing"
 
-	"github.com/cosmos/gogoproto/proto"
 	"github.com/stretchr/testify/suite"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-
+	"github.com/cosmos/gogoproto/proto"
 	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
 	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
-	"github.com/cosmos/ibc-go/v7/modules/apps/29-fee/types"
 	ibcfeetypes "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/types"
 	transfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 	ibctesting "github.com/cosmos/ibc-go/v7/testing"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	gaiaApp "github.com/cosmos/gaia/v16/app"
 )
@@ -32,7 +31,6 @@ var (
 	defaultRecvFee    = sdk.Coins{sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: sdk.NewInt(100)}}
 	defaultAckFee     = sdk.Coins{sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: sdk.NewInt(200)}}
 	defaultTimeoutFee = sdk.Coins{sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: sdk.NewInt(300)}}
-	smallAmount       = sdk.Coins{sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: sdk.NewInt(50)}}
 
 	// ICA + IBC fee test variables
 	defaultOwnerAddress = "cosmos17dtl0mjt3t77kpuhg2edqzjpszulwhgzuj9ljs"                                               // defaultOwnerAddress defines a reusable bech32 address for testing purposes
@@ -105,7 +103,7 @@ func (suite *IBCFeeTestSuite) TestFeeTransfer() {
 
 	// set up coin & ics20 packet
 	coin := ibctesting.TestCoin
-	fee := types.Fee{
+	fee := ibcfeetypes.Fee{
 		RecvFee:    defaultRecvFee,
 		AckFee:     defaultAckFee,
 		TimeoutFee: defaultTimeoutFee,
@@ -129,7 +127,7 @@ func (suite *IBCFeeTestSuite) TestFeeTransfer() {
 	// to differentiate from the chainA.SenderAccount for checking successful relay payouts
 	relayerAddress := suite.chainB.SenderAccount.GetAddress()
 
-	msgRegister := types.NewMsgRegisterCounterpartyPayee(path.EndpointB.ChannelConfig.PortID, path.EndpointB.ChannelID, suite.chainB.SenderAccount.GetAddress().String(), relayerAddress.String())
+	msgRegister := ibcfeetypes.NewMsgRegisterCounterpartyPayee(path.EndpointB.ChannelConfig.PortID, path.EndpointB.ChannelID, suite.chainB.SenderAccount.GetAddress().String(), relayerAddress.String())
 	_, err = suite.chainB.SendMsgs(msgRegister)
 	suite.Require().NoError(err) // message committed
 
@@ -169,8 +167,8 @@ func (suite *IBCFeeTestSuite) TestFeeInterchainAccounts() {
 	getApp(suite.chainB).IBCFeeKeeper.SetCounterpartyPayeeAddress(suite.chainB.GetContext(), suite.chainB.SenderAccount.GetAddress().String(), suite.chainA.SenderAccounts[1].SenderAccount.GetAddress().String(), path.EndpointB.ChannelID)
 
 	// escrow a packet fee for the next send sequence
-	expectedFee := types.NewFee(defaultRecvFee, defaultAckFee, defaultTimeoutFee)
-	msgPayPacketFee := types.NewMsgPayPacketFee(expectedFee, path.EndpointA.ChannelConfig.PortID, path.EndpointA.ChannelID, suite.chainA.SenderAccount.GetAddress().String(), nil)
+	expectedFee := ibcfeetypes.NewFee(defaultRecvFee, defaultAckFee, defaultTimeoutFee)
+	msgPayPacketFee := ibcfeetypes.NewMsgPayPacketFee(expectedFee, path.EndpointA.ChannelConfig.PortID, path.EndpointA.ChannelID, suite.chainA.SenderAccount.GetAddress().String(), nil)
 
 	// fetch the account balance before fees are escrowed and assert the difference below
 	preEscrowBalance := getApp(suite.chainA).BankKeeper.GetBalance(suite.chainA.GetContext(), suite.chainA.SenderAccount.GetAddress(), sdk.DefaultBondDenom)
@@ -264,12 +262,12 @@ func buildInterchainAccountsPacket(path *ibctesting.Path, data []byte) channelty
 func NewIncentivizedICAPath(chainA, chainB *ibctesting.TestChain) *ibctesting.Path {
 	path := ibctesting.NewPath(chainA, chainB)
 
-	feeMetadata := types.Metadata{
-		FeeVersion: types.Version,
+	feeMetadata := ibcfeetypes.Metadata{
+		FeeVersion: ibcfeetypes.Version,
 		AppVersion: defaultICAVersion,
 	}
 
-	feeICAVersion := string(types.ModuleCdc.MustMarshalJSON(&feeMetadata))
+	feeICAVersion := string(ibcfeetypes.ModuleCdc.MustMarshalJSON(&feeMetadata))
 
 	path.SetChannelOrdered()
 	path.EndpointA.ChannelConfig.Version = feeICAVersion
@@ -294,11 +292,7 @@ func SetupPath(path *ibctesting.Path, owner string) error {
 		return err
 	}
 
-	if err := path.EndpointB.ChanOpenConfirm(); err != nil {
-		return err
-	}
-
-	return nil
+	return path.EndpointB.ChanOpenConfirm()
 }
 
 // RegisterInterchainAccount invokes the the InterchainAccounts entrypoint, routes a new MsgChannelOpenInit to the appropriate handler,

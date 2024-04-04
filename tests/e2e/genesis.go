@@ -6,6 +6,8 @@ import (
 	"os"
 	"time"
 
+	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
+
 	tmtypes "github.com/cometbft/cometbft/types"
 
 	icagen "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/genesis/types"
@@ -22,8 +24,6 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govlegacytypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-
-	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 )
 
 func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {
@@ -50,7 +50,7 @@ func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {
 	return doc, nil
 }
 
-func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, basefee int64, denom string) error {
+func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, basefee string, denom string) error {
 	serverCtx := server.NewDefaultContext()
 	config := serverCtx.Config
 	config.SetRoot(path)
@@ -161,9 +161,9 @@ func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, ba
 	appState[icatypes.ModuleName] = icaGenesisStateBz
 
 	feemarketState := feemarkettypes.GetGenesisStateFromAppState(cdc, appState)
-	feemarketState.Params.MinBaseFee = sdk.NewInt(basefee)
+	feemarketState.Params.MinBaseFee = sdk.MustNewDecFromStr(basefee)
 	feemarketState.Params.FeeDenom = denom
-	feemarketState.State.BaseFee = sdk.NewInt(basefee)
+	feemarketState.State.BaseFee = sdk.MustNewDecFromStr(basefee)
 	feemarketStateBz, err := cdc.MarshalJSON(&feemarketState)
 	if err != nil {
 		return fmt.Errorf("failed to marshal feemarket genesis state: %w", err)

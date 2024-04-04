@@ -4,11 +4,9 @@ import "fmt"
 
 var (
 	runBankTest                   = true
-	runBypassMinFeeTest           = true
 	runEncodeTest                 = true
 	runEvidenceTest               = true
 	runFeeGrantTest               = true
-	runGlobalFeesTest             = true
 	runGovTest                    = true
 	runIBCTest                    = true
 	runSlashingTest               = true

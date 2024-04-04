@@ -89,7 +89,7 @@ func (suite *FeeMarketTestSuite) TestBaseFeeAdjustment() {
 	ctx = suite.chain.GetContext()
 	baseFee, err = suite.app.FeeMarketKeeper.GetBaseFee(ctx)
 	suite.Require().NoError(err)
-	suite.Require().Greater(baseFee.Uint64(), feemarkettypes.DefaultMinBaseFee.Uint64())
+	suite.Require().True(baseFee.GT(feemarkettypes.DefaultMinBaseFee))
 
 	// BaseFee should drop to DefaultMinBaseFee after N empty blocks
 	suite.coordinator.CommitNBlocks(suite.chain, 10)

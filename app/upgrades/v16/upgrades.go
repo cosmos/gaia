@@ -202,8 +202,8 @@ func ConfigureFeeMarketModule(ctx sdk.Context, keepers *keepers.AppKeepers) erro
 
 	params.Enabled = true
 	params.FeeDenom = "uatom"
-	params.MinBaseFee = sdk.NewInt(1)
-	// TODO:
+	// TODO check and set param values:
+	params.MinBaseFee = sdk.MustNewDecFromStr("0.00001")
 	// params.TargetBlockUtilization =
 	// params.MaxBlockUtilization =
 	if err := keepers.FeeMarketKeeper.SetParams(ctx, params); err != nil {
@@ -215,11 +215,7 @@ func ConfigureFeeMarketModule(ctx sdk.Context, keepers *keepers.AppKeepers) erro
 		return err
 	}
 
-	state.BaseFee = sdk.NewInt(1)
+	state.BaseFee = sdk.MustNewDecFromStr("0.00001")
 
-	if err := keepers.FeeMarketKeeper.SetState(ctx, state); err != nil {
-		return err
-	}
-
-	return nil
+	return keepers.FeeMarketKeeper.SetState(ctx, state)
 }

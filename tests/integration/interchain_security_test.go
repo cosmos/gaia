@@ -1,4 +1,4 @@
-package ics
+package integration
 
 import (
 	"encoding/json"

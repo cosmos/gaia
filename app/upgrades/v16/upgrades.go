@@ -82,6 +82,8 @@ func CreateUpgradeHandler(
 
 // Add rate limits as per https://www.mintscan.io/cosmos/proposals/890
 func AddRateLimits(ctx sdk.Context, k ratelimitkeeper.Keeper) error {
+	ctx.Logger().Info("Adding rate limits...")
+
 	// Osmosis
 	msg := RateLimits["Osmosis"]
 	msg.DurationHours = RateLimitDurationHours
@@ -138,5 +140,6 @@ func AddRateLimits(ctx sdk.Context, k ratelimitkeeper.Keeper) error {
 		return errorsmod.Wrapf(err, "unable to add rate limit on %s to Secret", msg.ChannelId)
 	}
 
+	ctx.Logger().Info("Finished adding rate limits")
 	return nil
 }

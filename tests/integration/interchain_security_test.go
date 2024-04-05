@@ -90,7 +90,7 @@ func TestICSEpochs(t *testing.T) {
 		return providerKeeper.GetPendingVSCPackets(provCtx, ccvSuite.GetCCVPath().EndpointA.Chain.ChainID)
 	}
 
-	nextEpochs := func(ctx sdk.Context) sdk.Context {
+	nextEpoch := func(ctx sdk.Context) sdk.Context {
 		blockPerEpochs := providerKeeper.GetBlocksPerEpoch(ctx)
 		for {
 			if ctx.BlockHeight()%blockPerEpochs == 0 {
@@ -100,7 +100,6 @@ func TestICSEpochs(t *testing.T) {
 			ctx = ccvSuite.GetProviderChain().GetContext()
 		}
 	}
-	fmt.Println(app.StakingKeeper.GetLastTotalPower(provCtx))
 
 	// Bond some tokens on provider to change validator powers
 	delegateFn(provCtx)
@@ -108,7 +107,7 @@ func TestICSEpochs(t *testing.T) {
 
 	// VSCPacket should only be created at the end of the current epoch
 	require.Empty(t, getVSCPacketsFn())
-	provCtx = nextEpochs(provCtx)
+	provCtx = nextEpoch(provCtx)
 	// Expect to create a VSC packet
 	// without sending it since CCV channel isn't established
 	app.EndBlocker(provCtx, abci.RequestEndBlock{})
@@ -128,9 +127,8 @@ func TestICSEpochs(t *testing.T) {
 	delegateFn(provCtx)
 	// Second VSCPacket should only be created at the end of the current epoch
 	require.Empty(t, getVSCPacketsFn())
-	require.Empty(t, getVSCPacketsFn())
 
-	provCtx = nextEpochs(provCtx)
+	provCtx = nextEpoch(provCtx)
 	app.EndBlocker(provCtx, abci.RequestEndBlock{})
 	// Expect second VSC Packet to be committed
 	require.Len(t, ccvSuite.GetProviderChain().App.GetIBCKeeper().ChannelKeeper.GetAllPacketCommitmentsAtChannel(

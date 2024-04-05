@@ -4,17 +4,29 @@ import (
 	"fmt"
 	"os"
 
-	tmrand "github.com/tendermint/tendermint/libs/rand"
+	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
+
+	tmrand "github.com/cometbft/cometbft/libs/rand"
+
+	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	distribtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
+	govv1types "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	govv1beta1types "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	paramsproptypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	gaia "github.com/cosmos/gaia/v15/app"
-	"github.com/cosmos/gaia/v15/app/params"
+	gaiaparams "github.com/cosmos/gaia/v16/app/params"
+	metaprotocoltypes "github.com/cosmos/gaia/v16/x/metaprotocols/types"
 )
 
 const (
@@ -23,17 +35,31 @@ const (
 )
 
 var (
-	encodingConfig params.EncodingConfig
+	encodingConfig gaiaparams.EncodingConfig
 	cdc            codec.Codec
 	txConfig       client.TxConfig
 )
 
 func init() {
-	encodingConfig = gaia.MakeTestEncodingConfig()
+	encodingConfig = gaiaparams.MakeEncodingConfig()
+	banktypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	authtypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	authvesting.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	stakingtypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	evidencetypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-	cdc = encodingConfig.Codec
+	cryptocodec.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	govv1types.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	govv1beta1types.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	paramsproptypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	paramsproptypes.RegisterLegacyAminoCodec(encodingConfig.Amino)
+
+	upgradetypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	distribtypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	providertypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	metaprotocoltypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	ratelimittypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+
+	cdc = encodingConfig.Marshaler
 	txConfig = encodingConfig.TxConfig
 }
 

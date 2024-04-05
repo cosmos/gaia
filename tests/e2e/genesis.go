@@ -6,9 +6,10 @@ import (
 	"os"
 	"time"
 
-	tmtypes "github.com/tendermint/tendermint/types"
+	tmtypes "github.com/cometbft/cometbft/types"
 
-	icatypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/types"
+	icagen "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/genesis/types"
+	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
 
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -16,10 +17,13 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	govmigrv3 "github.com/cosmos/cosmos-sdk/x/gov/migrations/v3"
+	govmigrv4 "github.com/cosmos/cosmos-sdk/x/gov/migrations/v4"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govlegacytypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	globfeetypes "github.com/cosmos/gaia/v15/x/globalfee/types"
+	globfeetypes "github.com/cosmos/gaia/v16/x/globalfee/types"
 )
 
 func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {
@@ -115,7 +119,7 @@ func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, gl
 	appState[banktypes.ModuleName] = bankGenStateBz
 
 	// add ica host allowed msg types
-	var icaGenesisState icatypes.GenesisState
+	var icaGenesisState icagen.GenesisState
 
 	if appState[icatypes.ModuleName] != nil {
 		cdc.MustUnmarshalJSON(appState[icatypes.ModuleName], &icaGenesisState)
@@ -182,13 +186,26 @@ func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, gl
 	quorum, _ := sdk.NewDecFromStr("0.000000000000000001")
 	threshold, _ := sdk.NewDecFromStr("0.000000000000000001")
 
-	govState := govtypes.NewGenesisState(1,
-		govtypes.NewDepositParams(sdk.NewCoins(sdk.NewCoin(denom, amnt)), 10*time.Minute),
-		govtypes.NewVotingParams(15*time.Second),
-		govtypes.NewTallyParams(quorum, threshold, govtypes.DefaultVetoThreshold),
+	maxDepositPeriod := 10 * time.Minute
+	votingPeriod := 15 * time.Second
+
+	govStateLegacy := govlegacytypes.NewGenesisState(1,
+		govlegacytypes.NewDepositParams(sdk.NewCoins(sdk.NewCoin(denom, amnt)), maxDepositPeriod),
+		govlegacytypes.NewVotingParams(votingPeriod),
+		govlegacytypes.NewTallyParams(quorum, threshold, govlegacytypes.DefaultVetoThreshold),
 	)
 
-	govGenStateBz, err := cdc.MarshalJSON(govState)
+	govStateV3, err := govmigrv3.MigrateJSON(govStateLegacy)
+	if err != nil {
+		return fmt.Errorf("failed to migrate v1beta1 gov genesis state to v3: %w", err)
+	}
+
+	govStateV4, err := govmigrv4.MigrateJSON(govStateV3)
+	if err != nil {
+		return fmt.Errorf("failed to migrate v1beta1 gov genesis state to v4: %w", err)
+	}
+
+	govGenStateBz, err := cdc.MarshalJSON(govStateV4)
 	if err != nil {
 		return fmt.Errorf("failed to marshal gov genesis state: %w", err)
 	}

@@ -6,23 +6,22 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
 
-	"github.com/cosmos/cosmos-sdk/simapp"
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
+	dbm "github.com/cometbft/cometbft-db"
+	"github.com/cometbft/cometbft/libs/log"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+
 	"github.com/cosmos/cosmos-sdk/store"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	"github.com/cosmos/gaia/v15/x/globalfee/types"
+	gaiaparams "github.com/cosmos/gaia/v16/app/params"
+	"github.com/cosmos/gaia/v16/x/globalfee/types"
 )
 
 func TestDefaultGenesis(t *testing.T) {
-	encCfg := simapp.MakeTestEncodingConfig()
+	encCfg := gaiaparams.MakeEncodingConfig()
 	gotJSON := AppModuleBasic{}.DefaultGenesis(encCfg.Marshaler)
 	assert.JSONEq(t,
 		`{"params":{"minimum_gas_prices":[],"bypass_min_fee_msg_types":["/ibc.core.channel.v1.MsgRecvPacket","/ibc.core.channel.v1.MsgAcknowledgement","/ibc.core.client.v1.MsgUpdateClient","/ibc.core.channel.v1.MsgTimeout","/ibc.core.channel.v1.MsgTimeoutOnClose"], "max_total_bypass_min_fee_msg_gas_usage":"1000000"}}`,
@@ -30,7 +29,7 @@ func TestDefaultGenesis(t *testing.T) {
 }
 
 func TestValidateGenesis(t *testing.T) {
-	encCfg := simapp.MakeTestEncodingConfig()
+	encCfg := gaiaparams.MakeEncodingConfig()
 	specs := map[string]struct {
 		src    string
 		expErr bool
@@ -139,24 +138,27 @@ func TestInitExportGenesis(t *testing.T) {
 	}
 }
 
-func setupTestStore(t *testing.T) (sdk.Context, simappparams.EncodingConfig, paramstypes.Subspace) {
+func setupTestStore(t *testing.T) (sdk.Context, gaiaparams.EncodingConfig, paramstypes.Subspace) {
 	t.Helper()
 	db := dbm.NewMemDB()
 	ms := store.NewCommitMultiStore(db)
-	encCfg := simapp.MakeTestEncodingConfig()
+	encCfg := gaiaparams.MakeEncodingConfig()
 	keyParams := sdk.NewKVStoreKey(paramstypes.StoreKey)
 	tkeyParams := sdk.NewTransientStoreKey(paramstypes.TStoreKey)
 	ms.MountStoreWithDB(keyParams, storetypes.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(tkeyParams, storetypes.StoreTypeTransient, db)
 	require.NoError(t, ms.LoadLatestVersion())
 
-	paramsKeeper := paramskeeper.NewKeeper(encCfg.Marshaler, encCfg.Amino, keyParams, tkeyParams)
-
 	ctx := sdk.NewContext(ms, tmproto.Header{
 		Height: 1234567,
 		Time:   time.Date(2020, time.April, 22, 12, 0, 0, 0, time.UTC),
 	}, false, log.NewNopLogger())
 
-	subspace := paramsKeeper.Subspace(ModuleName).WithKeyTable(types.ParamKeyTable())
+	subspace := paramstypes.NewSubspace(encCfg.Marshaler,
+		encCfg.Amino,
+		keyParams,
+		tkeyParams,
+		paramstypes.ModuleName,
+	)
 	return ctx, encCfg, subspace
 }

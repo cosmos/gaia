@@ -7,8 +7,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	gov "github.com/cosmos/cosmos-sdk/x/gov/types"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
@@ -16,28 +15,29 @@ func (s *IntegrationTestSuite) testLSM() {
 	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
 	validatorA := s.chainA.validators[0]
-	validatorAAddr := validatorA.keyInfo.GetAddress()
+	validatorAAddr, _ := validatorA.keyInfo.GetAddress()
 
 	validatorAddressA := sdk.ValAddress(validatorAAddr).String()
 
-	// Set parameters (global liquid staking cap, validator liquid staking cap, validator bond factor)
-	s.writeLiquidStakingParamsUpdateProposal(s.chainA)
+	oldStakingParams, err := queryStakingParams(chainEndpoint)
+	s.Require().NoError(err)
+	s.writeLiquidStakingParamsUpdateProposal(s.chainA, oldStakingParams.Params)
 	proposalCounter++
-	submitGovFlags := []string{"param-change", configFile(proposalLSMParamUpdateFilename)}
+	submitGovFlags := []string{configFile(proposalLSMParamUpdateFilename)}
 	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
 	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes"}
 
 	// gov proposing LSM parameters (global liquid staking cap, validator liquid staking cap, validator bond factor)
 	s.T().Logf("Proposal number: %d", proposalCounter)
 	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: Set parameters (global liquid staking cap, validator liquid staking cap, validator bond factor)")
-	s.runGovProcess(chainEndpoint, validatorAAddr.String(), proposalCounter, paramtypes.ProposalTypeChange, submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
+	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), proposalCounter, "stakingtypes.MsgUpdateProposal", submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 
 	// query the proposal status and new fee
 	s.Require().Eventually(
 		func() bool {
 			proposal, err := queryGovProposal(chainEndpoint, proposalCounter)
 			s.Require().NoError(err)
-			return proposal.GetProposal().Status == gov.StatusPassed
+			return proposal.GetProposal().Status == govv1beta1.StatusPassed
 		},
 		15*time.Second,
 		5*time.Second,
@@ -58,7 +58,7 @@ func (s *IntegrationTestSuite) testLSM() {
 		15*time.Second,
 		5*time.Second,
 	)
-	delegatorAddress := s.chainA.genesisAccounts[2].keyInfo.GetAddress().String()
+	delegatorAddress, _ := s.chainA.genesisAccounts[2].keyInfo.GetAddress()
 
 	fees := sdk.NewCoin(uatomDenom, sdk.NewInt(1))
 
@@ -85,12 +85,12 @@ func (s *IntegrationTestSuite) testLSM() {
 	delegation := sdk.NewCoin(uatomDenom, delegationAmount) // 500 atom
 
 	// Alice delegate uatom to Validator A
-	s.executeDelegate(s.chainA, 0, delegation.String(), validatorAddressA, delegatorAddress, gaiaHomePath, fees.String())
+	s.execDelegate(s.chainA, 0, delegation.String(), validatorAddressA, delegatorAddress.String(), gaiaHomePath, fees.String())
 
 	// Validate delegation successful
 	s.Require().Eventually(
 		func() bool {
-			res, err := queryDelegation(chainEndpoint, validatorAddressA, delegatorAddress)
+			res, err := queryDelegation(chainEndpoint, validatorAddressA, delegatorAddress.String())
 			amt := res.GetDelegationResponse().GetDelegation().GetShares()
 			s.Require().NoError(err)
 
@@ -103,12 +103,12 @@ func (s *IntegrationTestSuite) testLSM() {
 	// Tokenize shares
 	tokenizeAmount := sdk.NewInt(200000000)
 	tokenize := sdk.NewCoin(uatomDenom, tokenizeAmount) // 200 atom
-	s.executeTokenizeShares(s.chainA, 0, tokenize.String(), validatorAddressA, delegatorAddress, gaiaHomePath, fees.String())
+	s.executeTokenizeShares(s.chainA, 0, tokenize.String(), validatorAddressA, delegatorAddress.String(), gaiaHomePath, fees.String())
 
 	// Validate delegation reduced
 	s.Require().Eventually(
 		func() bool {
-			res, err := queryDelegation(chainEndpoint, validatorAddressA, delegatorAddress)
+			res, err := queryDelegation(chainEndpoint, validatorAddressA, delegatorAddress.String())
 			amt := res.GetDelegationResponse().GetDelegation().GetShares()
 			s.Require().NoError(err)
 
@@ -123,7 +123,7 @@ func (s *IntegrationTestSuite) testLSM() {
 	shareDenom := fmt.Sprintf("%s/%s", strings.ToLower(validatorAddressA), strconv.Itoa(recordID))
 	s.Require().Eventually(
 		func() bool {
-			res, err := getSpecificBalance(chainEndpoint, delegatorAddress, shareDenom)
+			res, err := getSpecificBalance(chainEndpoint, delegatorAddress.String(), shareDenom)
 			s.Require().NoError(err)
 			return res.Amount.Equal(tokenizeAmount)
 		},
@@ -133,12 +133,12 @@ func (s *IntegrationTestSuite) testLSM() {
 
 	// Bank send LSM token
 	sendAmount := sdk.NewCoin(shareDenom, tokenizeAmount)
-	s.execBankSend(s.chainA, 0, delegatorAddress, validatorAAddr.String(), sendAmount.String(), standardFees.String(), false)
+	s.execBankSend(s.chainA, 0, delegatorAddress.String(), validatorAAddr.String(), sendAmount.String(), standardFees.String(), false)
 
 	// Validate tokens are sent properly
 	s.Require().Eventually(
 		func() bool {
-			afterSenderShareDenomBalance, err := getSpecificBalance(chainEndpoint, delegatorAddress, shareDenom)
+			afterSenderShareDenomBalance, err := getSpecificBalance(chainEndpoint, delegatorAddress.String(), shareDenom)
 			s.Require().NoError(err)
 
 			afterRecipientShareDenomBalance, err := getSpecificBalance(chainEndpoint, validatorAAddr.String(), shareDenom)
@@ -154,7 +154,7 @@ func (s *IntegrationTestSuite) testLSM() {
 	)
 
 	// transfer reward ownership
-	s.executeTransferTokenizeShareRecord(s.chainA, 0, strconv.Itoa(recordID), delegatorAddress, validatorAAddr.String(), gaiaHomePath, standardFees.String())
+	s.executeTransferTokenizeShareRecord(s.chainA, 0, strconv.Itoa(recordID), delegatorAddress.String(), validatorAAddr.String(), gaiaHomePath, standardFees.String())
 	tokenizeShareRecord := stakingtypes.TokenizeShareRecord{}
 	// Validate ownership transferred correctly
 	s.Require().Eventually(
@@ -171,8 +171,8 @@ func (s *IntegrationTestSuite) testLSM() {
 
 	// IBC transfer LSM token
 	ibcTransferAmount := sdk.NewCoin(shareDenom, sdk.NewInt(100000000))
-	sendRecipientAddr := s.chainB.validators[0].keyInfo.GetAddress()
-	s.sendIBC(s.chainA, 0, validatorAAddr.String(), sendRecipientAddr.String(), ibcTransferAmount.String(), standardFees.String(), "memo")
+	sendRecipientAddr, _ := s.chainB.validators[0].keyInfo.GetAddress()
+	s.sendIBC(s.chainA, 0, validatorAAddr.String(), sendRecipientAddr.String(), ibcTransferAmount.String(), standardFees.String(), "memo", false)
 
 	s.Require().Eventually(
 		func() bool {

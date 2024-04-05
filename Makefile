@@ -21,7 +21,7 @@ BUILDDIR ?= $(CURDIR)/build
 TEST_DOCKER_REPO=cosmos/contrib-gaiatest
 
 GO_SYSTEM_VERSION = $(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f1-2)
-REQUIRE_GO_VERSION = 1.20
+REQUIRE_GO_VERSION = 1.21
 
 export GO111MODULE = on
 
@@ -97,7 +97,7 @@ include contrib/devtools/Makefile
 
 check_version:
 ifneq ($(GO_SYSTEM_VERSION), $(REQUIRE_GO_VERSION))
-	@echo "ERROR: Go version 1.20 is required for $(VERSION) of Gaia."
+	@echo "ERROR: Go version 1.21 is required for $(VERSION) of Gaia."
 	exit 1
 endif
 
@@ -120,13 +120,15 @@ vulncheck: $(BUILDDIR)/
 build-linux: go.sum
 	LEDGER_ENABLED=false GOOS=linux GOARCH=amd64 $(MAKE) build
 
-go-mod-cache: go.sum
-	@echo "--> Download go modules to local cache"
-	@go mod download
-
 go.sum: go.mod
 	@echo "--> Ensure dependencies have not been modified"
-	@go mod verify
+	@echo "--> Ensure dependencies have not been modified unless suppressed by SKIP_MOD_VERIFY"
+ifndef SKIP_MOD_VERIFY
+	go mod verify
+endif
+	go mod tidy
+	@echo "--> Download go modules to local cache"
+	go mod download
 
 draw-deps:
 	@# requires brew install graphviz or apt-get install graphviz
@@ -174,26 +176,13 @@ else
 endif
 
 ###############################################################################
-###                                 Devdoc                                  ###
+###                              Documentation                              ###
 ###############################################################################
 
 build-docs:
-	@cd docs && \
-	while read p; do \
-		(git checkout $${p} && npm install && VUEPRESS_BASE="/$${p}/" npm run build) ; \
-		mkdir -p ~/output/$${p} ; \
-		cp -r .vuepress/dist/* ~/output/$${p}/ ; \
-		cp ~/output/$${p}/index.html ~/output ; \
-	done < versions ;
-.PHONY: build-docs
+	@cd docs && ./build.sh
 
-sync-docs:
-	cd ~/output && \
-	echo "role_arn = ${DEPLOYMENT_ROLE_ARN}" >> /root/.aws/config ; \
-	echo "CI job = ${CIRCLE_BUILD_URL}" >> version.html ; \
-	aws s3 sync . s3://${WEBSITE_BUCKET} --profile terraform --delete ; \
-	aws cloudfront create-invalidation --distribution-id ${CF_DISTRIBUTION_ID} --profile terraform --path "/*" ;
-.PHONY: sync-docs
+.PHONY: build-docs
 
 
 ###############################################################################
@@ -213,7 +202,7 @@ test-unit-cover: ARGS=-timeout=5m -tags='norace' -coverprofile=coverage.txt -cov
 test-unit-cover: TEST_PACKAGES=$(PACKAGES_UNIT)
 test-race: ARGS=-timeout=5m -race
 test-race: TEST_PACKAGES=$(PACKAGES_UNIT)
-test-e2e: ARGS=-timeout=25m -v
+test-e2e: ARGS=-timeout=35m -v
 test-e2e: TEST_PACKAGES=$(PACKAGES_E2E)
 $(TEST_TARGETS): run-tests
 
@@ -234,7 +223,7 @@ docker-build-debug:
 # TODO: Push this to the Cosmos Dockerhub so we don't have to keep building it
 # in CI.
 docker-build-hermes:
-	@cd tests/e2e/docker; docker build -t cosmos/hermes-e2e:latest -f hermes.Dockerfile .
+	@cd tests/e2e/docker; docker build -t ghcr.io/cosmos/hermes-e2e:1.0.0 -f hermes.Dockerfile .
 
 docker-build-all: docker-build-debug docker-build-hermes
 
@@ -271,9 +260,9 @@ start-localnet-ci: build
 	./build/gaiad config chain-id liveness --home ~/.gaiad-liveness
 	./build/gaiad config keyring-backend test --home ~/.gaiad-liveness
 	./build/gaiad keys add val --home ~/.gaiad-liveness
-	./build/gaiad add-genesis-account val 10000000000000000000000000stake --home ~/.gaiad-liveness --keyring-backend test
-	./build/gaiad gentx val 1000000000stake --home ~/.gaiad-liveness --chain-id liveness
-	./build/gaiad collect-gentxs --home ~/.gaiad-liveness
+	./build/gaiad genesis add-genesis-account val 10000000000000000000000000stake --home ~/.gaiad-liveness --keyring-backend test
+	./build/gaiad genesis gentx val 1000000000stake --home ~/.gaiad-liveness --chain-id liveness
+	./build/gaiad genesis collect-gentxs --home ~/.gaiad-liveness
 	sed -i.bak'' 's/minimum-gas-prices = ""/minimum-gas-prices = "0uatom"/' ~/.gaiad-liveness/config/app.toml
 	./build/gaiad start --home ~/.gaiad-liveness --x-crisis-skip-assert-invariants
 
@@ -293,19 +282,38 @@ test-docker-push: test-docker
 	@docker push ${TEST_DOCKER_REPO}:$(shell git rev-parse --abbrev-ref HEAD | sed 's#/#_#g')
 	@docker push ${TEST_DOCKER_REPO}:latest
 
-.PHONY: all build-linux install format lint go-mod-cache draw-deps clean build \
+.PHONY: all build-linux install format lint draw-deps clean build \
 	docker-build-debug docker-build-hermes docker-build-all
 
 
 ###############################################################################
 ###                                Protobuf                                 ###
 ###############################################################################
+protoVer=0.13.0
+protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
+protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(protoImageName)
+
+proto-all: proto-format proto-lint proto-gen
+
 proto-gen:
 	@echo "Generating Protobuf files"
-	@sh ./proto/scripts/protocgen.sh
+	@$(protoImage) sh ./proto/scripts/protocgen.sh
 
 proto-swagger-gen:
 	@echo "Generating Protobuf Swagger"
-	@sh ./proto/scripts/protoc-swagger-gen.sh
+	@$(protoImage) sh ./proto/scripts/protoc-swagger-gen.sh
 
-.PHONY: proto-gen proto-doc proto-swagger-gen
+proto-format:
+	@$(protoImage) find ./ -name "*.proto" -exec clang-format -i {} \;
+
+proto-lint:
+	@$(protoImage) buf lint --error-format=json
+
+proto-check-breaking:
+	@$(protoImage) buf breaking --against $(HTTPS_GIT)#branch=main
+
+proto-update-deps:
+	@echo "Updating Protobuf dependencies"
+	$(DOCKER) run --rm -v $(CURDIR)/proto:/workspace --workdir /workspace $(protoImageName) buf mod update
+
+.PHONY: proto-all proto-gen proto-swagger-gen proto-format proto-lint proto-check-breaking proto-update-deps

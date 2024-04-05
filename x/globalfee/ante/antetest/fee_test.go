@@ -5,16 +5,16 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
-	ibcchanneltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
+	ibcclienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	gaiafeeante "github.com/cosmos/gaia/v15/x/globalfee/ante"
-	globfeetypes "github.com/cosmos/gaia/v15/x/globalfee/types"
+	gaiafeeante "github.com/cosmos/gaia/v16/x/globalfee/ante"
+	globfeetypes "github.com/cosmos/gaia/v16/x/globalfee/types"
 )
 
 var testGasLimit uint64 = 200_000
@@ -96,12 +96,11 @@ func (s *IntegrationTestSuite) TestGlobalFeeMinimumGasFeeAnteHandler() {
 		"empty min_gas_price, nonempty global fee, fee higher/equal than global_fee": {
 			minGasPrice: minGasPriceEmpty,
 			globalFee:   globalfeeParamsHigh,
-			// sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String())
-			gasPrice: sdk.NewCoins(sdk.NewCoin("uatom", highFeeAmt)),
-			gasLimit: testGasLimit,
-			txMsg:    testdata.NewTestMsg(addr1),
-			txCheck:  true,
-			expErr:   false,
+			gasPrice:    sdk.NewCoins(sdk.NewCoin("uatom", highFeeAmt)),
+			gasLimit:    testGasLimit,
+			txMsg:       testdata.NewTestMsg(addr1),
+			txCheck:     true,
+			expErr:      false,
 		},
 		"empty min_gas_price, nonempty global fee, fee lower than global_fee": {
 			minGasPrice: minGasPriceEmpty,
@@ -732,15 +731,7 @@ func (s *IntegrationTestSuite) TestContainsOnlyBypassMinFeeMsgs() {
 			true,
 		},
 		{
-			"expect default bypass msgs to pass",
-			[]sdk.Msg{
-				ibcchanneltypes.NewMsgRecvPacket(ibcchanneltypes.Packet{}, nil, ibcclienttypes.Height{}, ""),
-				ibcchanneltypes.NewMsgAcknowledgement(ibcchanneltypes.Packet{}, []byte{1}, []byte{1}, ibcclienttypes.Height{}, ""),
-			},
-			true,
-		},
-		{
-			"msgs contain non-bypass msg - should not pass",
+			"msgs contain not only bypass msg - should not pass",
 			[]sdk.Msg{
 				ibcchanneltypes.NewMsgRecvPacket(ibcchanneltypes.Packet{}, nil, ibcclienttypes.Height{}, ""),
 				stakingtypes.NewMsgDelegate(sdk.AccAddress{}, sdk.ValAddress{}, sdk.Coin{}),
@@ -768,21 +759,11 @@ func (s *IntegrationTestSuite) TestGetTxFeeRequired() {
 	// create global fee params
 	globalfeeParamsEmpty := &globfeetypes.Params{MinimumGasPrices: []sdk.DecCoin{}}
 
-	// setup tests with default global fee i.e. "0uatom" and empty local min gas prices
-	feeDecorator, _ := s.SetupTestGlobalFeeStoreAndMinGasPrice([]sdk.DecCoin{}, globalfeeParamsEmpty)
-
-	// set a subspace that doesn't have the stakingtypes.KeyBondDenom key registred
-	feeDecorator.StakingSubspace = s.app.GetSubspace(globfeetypes.ModuleName)
-
-	// check that an error is returned when staking bond denom is empty
-	_, err := feeDecorator.GetTxFeeRequired(s.ctx, nil)
-	s.Require().Equal(err.Error(), "empty staking bond denomination")
-
 	// set non-zero local min gas prices
 	localMinGasPrices := sdk.NewCoins(sdk.NewCoin("uatom", sdk.NewInt(1)))
 
 	// setup tests with non-empty local min gas prices
-	feeDecorator, _ = s.SetupTestGlobalFeeStoreAndMinGasPrice(
+	feeDecorator, _ := s.SetupTestGlobalFeeStoreAndMinGasPrice(
 		sdk.NewDecCoinsFromCoins(localMinGasPrices...),
 		globalfeeParamsEmpty,
 	)

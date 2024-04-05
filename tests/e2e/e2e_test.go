@@ -1,8 +1,6 @@
 package e2e
 
-import (
-	"fmt"
-)
+import "fmt"
 
 var (
 	runBankTest                   = true
@@ -18,6 +16,7 @@ var (
 	runVestingTest                = true
 	runRestInterfacesTest         = true
 	runLsmTest                    = true
+	runRateLimitTest              = true
 )
 
 func (s *IntegrationTestSuite) TestRestInterfaces() {
@@ -32,6 +31,8 @@ func (s *IntegrationTestSuite) TestBank() {
 		s.T().Skip()
 	}
 	s.testBankTokenTransfer()
+	s.bankSendWithNonCriticalExtensionOptions()
+	s.failedBankSendWithNonCriticalExtensionOptions()
 }
 
 func (s *IntegrationTestSuite) TestByPassMinFee() {
@@ -86,14 +87,12 @@ func (s *IntegrationTestSuite) TestIBC() {
 	if !runIBCTest {
 		s.T().Skip()
 	}
+
 	s.testIBCTokenTransfer()
 	s.testMultihopIBCTokenTransfer()
 	s.testFailedMultihopIBCTokenTransfer()
-
-	// stop hermes0 to prevent hermes0 relaying transactions
-	s.Require().NoError(s.dkrPool.Purge(s.hermesResource0))
-	HermesResource0Purged = true
 	s.testIBCBypassMsg()
+	s.testICARegisterAccountAndSendTx()
 }
 
 func (s *IntegrationTestSuite) TestSlashing() {
@@ -128,4 +127,16 @@ func (s *IntegrationTestSuite) TestLSM() {
 		s.T().Skip()
 	}
 	s.testLSM()
+}
+
+func (s *IntegrationTestSuite) TestRateLimit() {
+	if !runRateLimitTest {
+		s.T().Skip()
+	}
+	s.testAddRateLimits()
+	s.testIBCTransfer(true)
+	s.testUpdateRateLimit()
+	s.testIBCTransfer(false)
+	s.testResetRateLimit()
+	s.testRemoveRateLimit()
 }

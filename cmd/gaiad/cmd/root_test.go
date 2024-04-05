@@ -7,8 +7,8 @@ import (
 
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 
-	app "github.com/cosmos/gaia/v15/app"
-	"github.com/cosmos/gaia/v15/cmd/gaiad/cmd"
+	app "github.com/cosmos/gaia/v16/app"
+	"github.com/cosmos/gaia/v16/cmd/gaiad/cmd"
 )
 
 func TestRootCmdConfig(t *testing.T) {
@@ -19,5 +19,5 @@ func TestRootCmdConfig(t *testing.T) {
 		"test",            // value
 	})
 
-	require.NoError(t, svrcmd.Execute(rootCmd, app.DefaultNodeHome))
+	require.NoError(t, svrcmd.Execute(rootCmd, "", app.DefaultNodeHome))
 }

@@ -4,8 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
+	"math/rand"
 	"os"
 	"os/exec"
 	"path"
@@ -16,21 +15,20 @@ import (
 	"time"
 
 	"github.com/ory/dockertest/v3"
+	// "github.com/cosmos/cosmos-sdk/crypto/hd"
+	// "github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/suite"
-	tmconfig "github.com/tendermint/tendermint/config"
-	tmjson "github.com/tendermint/tendermint/libs/json"
-	"github.com/tendermint/tendermint/libs/rand"
-	rpchttp "github.com/tendermint/tendermint/rpc/client/http"
 
-	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
-	ccvprovider "github.com/cosmos/interchain-security/v2/x/ccv/provider/types"
+	tmconfig "github.com/cometbft/cometbft/config"
+	"github.com/cometbft/cometbft/crypto/ed25519"
+	tmjson "github.com/cometbft/cometbft/libs/json"
+	rpchttp "github.com/cometbft/cometbft/rpc/client/http"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
-	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -40,7 +38,9 @@ import (
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
 const (
@@ -62,47 +62,49 @@ const (
 	maxTotalBypassMinFeeMsgGasUsage       = "1"
 	gas                                   = 200000
 	govProposalBlockBuffer                = 35
-	relayerAccountIndexHermes0            = 0
-	relayerAccountIndexHermes1            = 1
+	relayerAccountIndexHermes             = 0
 	numberOfEvidences                     = 10
 	slashingShares                  int64 = 10000
 
-	proposalGlobalFeeFilename           = "proposal_globalfee.json"
-	proposalBypassMsgFilename           = "proposal_bypass_msg.json"
-	proposalMaxTotalBypassFilename      = "proposal_max_total_bypass.json"
-	proposalCommunitySpendFilename      = "proposal_community_spend.json"
-	proposalAddConsumerChainFilename    = "proposal_add_consumer.json"
-	proposalRemoveConsumerChainFilename = "proposal_remove_consumer.json"
-	proposalLSMParamUpdateFilename      = "proposal_lsm_param_update.json"
+	proposalGlobalFeeFilename      = "proposal_globalfee.json"
+	proposalBypassMsgFilename      = "proposal_bypass_msg.json"
+	proposalMaxTotalBypassFilename = "proposal_max_total_bypass.json"
+	proposalCommunitySpendFilename = "proposal_community_spend.json"
+	proposalLSMParamUpdateFilename = "proposal_lsm_param_update.json"
+
+	// proposalAddConsumerChainFilename    = "proposal_add_consumer.json"
+	// proposalRemoveConsumerChainFilename = "proposal_remove_consumer.json"
 
 	hermesBinary              = "hermes"
 	hermesConfigWithGasPrices = "/root/.hermes/config.toml"
 	hermesConfigNoGasPrices   = "/root/.hermes/config-zero.toml"
+	transferPort              = "transfer"
 	transferChannel           = "channel-0"
+
+	govAuthority = "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn"
 )
 
 var (
-	gaiaConfigPath        = filepath.Join(gaiaHomePath, "config")
-	stakingAmount         = sdk.NewInt(100000000000)
-	stakingAmountCoin     = sdk.NewCoin(uatomDenom, stakingAmount)
-	tokenAmount           = sdk.NewCoin(uatomDenom, sdk.NewInt(3300000000)) // 3,300uatom
-	standardFees          = sdk.NewCoin(uatomDenom, sdk.NewInt(330000))     // 0.33uatom
-	depositAmount         = sdk.NewCoin(uatomDenom, sdk.NewInt(330000000))  // 3,300uatom
-	distModuleAddress     = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
-	proposalCounter       = 0
-	HermesResource0Purged = false
+	gaiaConfigPath    = filepath.Join(gaiaHomePath, "config")
+	stakingAmount     = sdk.NewInt(100000000000)
+	stakingAmountCoin = sdk.NewCoin(uatomDenom, stakingAmount)
+	tokenAmount       = sdk.NewCoin(uatomDenom, sdk.NewInt(3300000000)) // 3,300uatom
+	standardFees      = sdk.NewCoin(uatomDenom, sdk.NewInt(330000))     // 0.33uatom
+	depositAmount     = sdk.NewCoin(uatomDenom, sdk.NewInt(330000000))  // 3,300uatom
+	distModuleAddress = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
+	govModuleAddress  = authtypes.NewModuleAddress(govtypes.ModuleName).String()
+	proposalCounter   = 0
 )
 
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	tmpDirs         []string
-	chainA          *chain
-	chainB          *chain
-	dkrPool         *dockertest.Pool
-	dkrNet          *dockertest.Network
-	hermesResource0 *dockertest.Resource
-	hermesResource1 *dockertest.Resource
+	tmpDirs        []string
+	chainA         *chain
+	chainB         *chain
+	dkrPool        *dockertest.Pool
+	dkrNet         *dockertest.Network
+	hermesResource *dockertest.Resource
 
 	valResources map[string][]*dockertest.Resource
 }
@@ -162,8 +164,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.runValidators(s.chainB, 10)
 
 	time.Sleep(10 * time.Second)
-	s.runIBCRelayer0()
-	s.runIBCRelayer1()
+	s.runIBCRelayer()
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -178,13 +179,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 
 	s.T().Log("tearing down e2e integration test suite...")
 
-	s.Require().NoError(s.dkrPool.Purge(s.hermesResource1))
-	// if runIBCTest, s.hermesResource0 already purged in TestIBC()
-	// in GovSoftwareUpgrade test, s.TearDownSuite() then s.SetupSuite()
-	// if IBCTest runs before GovSoftwareUpgrade, s.hermesResource0 is already purged.
-	if !HermesResource0Purged {
-		s.Require().NoError(s.dkrPool.Purge(s.hermesResource0))
-	}
+	s.Require().NoError(s.dkrPool.Purge(s.hermesResource))
 
 	for _, vr := range s.valResources {
 		for _, r := range vr {
@@ -205,23 +200,24 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 func (s *IntegrationTestSuite) initNodes(c *chain) {
 	s.Require().NoError(c.createAndInitValidators(2))
 	/* Adding 4 accounts to val0 local directory
-	c.genesisAccounts[0]: Relayer0 Wallet
+	c.genesisAccounts[0]: Relayer Account
 	c.genesisAccounts[1]: ICA Owner
 	c.genesisAccounts[2]: Test Account 1
 	c.genesisAccounts[3]: Test Account 2
-	c.genesisAccounts[4]: Relayer1 Wallet
 	*/
 	s.Require().NoError(c.addAccountFromMnemonic(5))
 	// Initialize a genesis file for the first validator
 	val0ConfigDir := c.validators[0].configDir()
 	var addrAll []sdk.AccAddress
 	for _, val := range c.validators {
-		address := val.keyInfo.GetAddress()
-		addrAll = append(addrAll, address)
+		addr, err := val.keyInfo.GetAddress()
+		s.Require().NoError(err)
+		addrAll = append(addrAll, addr)
 	}
 
 	for _, addr := range c.genesisAccounts {
-		acctAddr := addr.keyInfo.GetAddress()
+		acctAddr, err := addr.keyInfo.GetAddress()
+		s.Require().NoError(err)
 		addrAll = append(addrAll, acctAddr)
 	}
 
@@ -253,7 +249,7 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 	)
 
 	// create genesis vesting accounts keys
-	kb, err := keyring.New(keyringAppName, keyring.BackendTest, valConfigDir, nil)
+	kb, err := keyring.New(keyringAppName, keyring.BackendTest, valConfigDir, nil, cdc)
 	s.Require().NoError(err)
 
 	keyringAlgos, _ := kb.SupportedAlgorithms()
@@ -270,7 +266,8 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 		// Use the first wallet from the same mnemonic by HD path
 		acc, err := kb.NewAccount(key, vestingMnemonic, "", HDPath(i), algo)
 		s.Require().NoError(err)
-		c.genesisVestingAccounts[key] = acc.GetAddress()
+		c.genesisVestingAccounts[key], err = acc.GetAddress()
+		s.Require().NoError(err)
 		s.T().Logf("created %s genesis account %s\n", key, c.genesisVestingAccounts[key].String())
 	}
 	var (
@@ -279,8 +276,12 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 	)
 
 	// add jailed validator to staking store
-	pubKey := jailedValKey.GetPubKey()
-	jailedValAcc := jailedValKey.GetAddress()
+	pubKey, err := jailedValKey.GetPubKey()
+	s.Require().NoError(err)
+
+	jailedValAcc, err := jailedValKey.GetAddress()
+	s.Require().NoError(err)
+
 	jailedValAddr := sdk.ValAddress(jailedValAcc)
 	val, err := stakingtypes.NewValidator(
 		jailedValAddr,
@@ -523,7 +524,9 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 
 		appConfig := srvconfig.DefaultConfig()
 		appConfig.API.Enable = true
+		appConfig.API.Address = "tcp://0.0.0.0:1317"
 		appConfig.MinGasPrices = fmt.Sprintf("%s%s", minGasPrice, uatomDenom)
+		appConfig.GRPC.Address = "0.0.0.0:9090"
 
 		srvconfig.SetConfigTemplate(srvconfig.DefaultConfigTemplate)
 		srvconfig.WriteConfigFile(appCfgPath, appConfig)
@@ -587,7 +590,6 @@ func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 			if status.SyncInfo.CatchingUp || status.SyncInfo.LatestBlockHeight < 3 {
 				return false
 			}
-
 			return true
 		},
 		5*time.Minute,
@@ -603,9 +605,10 @@ func noRestart(config *docker.HostConfig) {
 	}
 }
 
-// hermes0 is for ibc and packet-forward-middleware(PFM) test, hermes0 is keep running during the ibc and PFM test.
-func (s *IntegrationTestSuite) runIBCRelayer0() {
-	s.T().Log("starting Hermes relayer container 0...")
+// runIBCRelayer bootstraps an IBC Hermes relayer by creating an IBC connection and
+// a transfer channel between chainA and chainB.
+func (s *IntegrationTestSuite) runIBCRelayer() {
+	s.T().Log("starting Hermes relayer container")
 
 	tmpDir, err := os.MkdirTemp("", "gaia-e2e-testnet-hermes-")
 	s.Require().NoError(err)
@@ -614,8 +617,8 @@ func (s *IntegrationTestSuite) runIBCRelayer0() {
 	gaiaAVal := s.chainA.validators[0]
 	gaiaBVal := s.chainB.validators[0]
 
-	gaiaARly := s.chainA.genesisAccounts[relayerAccountIndexHermes0]
-	gaiaBRly := s.chainB.genesisAccounts[relayerAccountIndexHermes0]
+	gaiaARly := s.chainA.genesisAccounts[relayerAccountIndexHermes]
+	gaiaBRly := s.chainB.genesisAccounts[relayerAccountIndexHermes]
 
 	hermesCfgPath := path.Join(tmpDir, "hermes")
 
@@ -626,9 +629,9 @@ func (s *IntegrationTestSuite) runIBCRelayer0() {
 	)
 	s.Require().NoError(err)
 
-	s.hermesResource0, err = s.dkrPool.RunWithOptions(
+	s.hermesResource, err = s.dkrPool.RunWithOptions(
 		&dockertest.RunOptions{
-			Name:       fmt.Sprintf("%s-%s-relayer-0", s.chainA.id, s.chainB.id),
+			Name:       fmt.Sprintf("%s-%s-relayer", s.chainA.id, s.chainB.id),
 			Repository: "ghcr.io/cosmos/hermes-e2e",
 			Tag:        "1.0.0",
 			NetworkID:  s.dkrNet.Network.ID,
@@ -648,47 +651,18 @@ func (s *IntegrationTestSuite) runIBCRelayer0() {
 				fmt.Sprintf("GAIA_A_E2E_VAL_HOST=%s", s.valResources[s.chainA.id][0].Container.Name[1:]),
 				fmt.Sprintf("GAIA_B_E2E_VAL_HOST=%s", s.valResources[s.chainB.id][0].Container.Name[1:]),
 			},
+			User: "root",
 			Entrypoint: []string{
 				"sh",
 				"-c",
-				"chmod +x /root/hermes/hermes_bootstrap.sh && /root/hermes/hermes_bootstrap.sh",
+				"chmod +x /root/hermes/hermes_bootstrap.sh && /root/hermes/hermes_bootstrap.sh && tail -f /dev/null",
 			},
 		},
 		noRestart,
 	)
 	s.Require().NoError(err)
 
-	endpoint := fmt.Sprintf("http://%s/state", s.hermesResource0.GetHostPort("3031/tcp"))
-	s.Require().Eventually(
-		func() bool {
-			resp, err := http.Get(endpoint) //nolint:gosec // this is a test
-			if err != nil {
-				return false
-			}
-
-			defer resp.Body.Close()
-
-			bz, err := io.ReadAll(resp.Body)
-			if err != nil {
-				return false
-			}
-
-			var respBody map[string]interface{}
-			if err := json.Unmarshal(bz, &respBody); err != nil {
-				return false
-			}
-
-			status := respBody["status"].(string)
-			result := respBody["result"].(map[string]interface{})
-
-			return status == "success" && len(result["chains"].([]interface{})) == 2
-		},
-		5*time.Minute,
-		time.Second,
-		"hermes relayer not healthy",
-	)
-
-	s.T().Logf("started Hermes relayer 0 container: %s", s.hermesResource0.Container.ID)
+	s.T().Logf("started Hermes relayer container: %s", s.hermesResource.Container.ID)
 
 	// XXX: Give time to both networks to start, otherwise we might see gRPC
 	// transport errors.
@@ -696,72 +670,7 @@ func (s *IntegrationTestSuite) runIBCRelayer0() {
 
 	// create the client, connection and channel between the two Gaia chains
 	s.createConnection()
-	time.Sleep(10 * time.Second)
 	s.createChannel()
-}
-
-// hermes1 is for bypass-msg test. Hermes1 is to process asynchronous transactions,
-// Hermes1 has access to two Hermes configurations: one configuration allows paying fees, while the other does not.
-// With Hermes1, better control can be achieved regarding whether fees are paid when clearing transactions.
-func (s *IntegrationTestSuite) runIBCRelayer1() {
-	s.T().Log("starting Hermes relayer container 1...")
-
-	tmpDir, err := os.MkdirTemp("", "gaia-e2e-testnet-hermes-")
-	s.Require().NoError(err)
-	s.tmpDirs = append(s.tmpDirs, tmpDir)
-
-	gaiaAVal := s.chainA.validators[0]
-	gaiaBVal := s.chainB.validators[0]
-
-	gaiaARly := s.chainA.genesisAccounts[relayerAccountIndexHermes1]
-	gaiaBRly := s.chainB.genesisAccounts[relayerAccountIndexHermes1]
-
-	hermesCfgPath := path.Join(tmpDir, "hermes")
-
-	s.Require().NoError(os.MkdirAll(hermesCfgPath, 0o755))
-	_, err = copyFile(
-		filepath.Join("./scripts/", "hermes1_bootstrap.sh"),
-		filepath.Join(hermesCfgPath, "hermes1_bootstrap.sh"),
-	)
-	s.Require().NoError(err)
-
-	s.hermesResource1, err = s.dkrPool.RunWithOptions(
-		&dockertest.RunOptions{
-			Name:       fmt.Sprintf("%s-%s-relayer-1", s.chainA.id, s.chainB.id),
-			Repository: "ghcr.io/cosmos/hermes-e2e",
-			Tag:        "1.0.0",
-			NetworkID:  s.dkrNet.Network.ID,
-			Mounts: []string{
-				fmt.Sprintf("%s/:/root/hermes", hermesCfgPath),
-			},
-			PortBindings: map[docker.Port][]docker.PortBinding{
-				"3032/tcp": {{HostIP: "", HostPort: "3032"}},
-			},
-			Env: []string{
-				fmt.Sprintf("GAIA_A_E2E_CHAIN_ID=%s", s.chainA.id),
-				fmt.Sprintf("GAIA_B_E2E_CHAIN_ID=%s", s.chainB.id),
-				fmt.Sprintf("GAIA_A_E2E_VAL_MNEMONIC=%s", gaiaAVal.mnemonic),
-				fmt.Sprintf("GAIA_B_E2E_VAL_MNEMONIC=%s", gaiaBVal.mnemonic),
-				fmt.Sprintf("GAIA_A_E2E_RLY_MNEMONIC=%s", gaiaARly.mnemonic),
-				fmt.Sprintf("GAIA_B_E2E_RLY_MNEMONIC=%s", gaiaBRly.mnemonic),
-				fmt.Sprintf("GAIA_A_E2E_VAL_HOST=%s", s.valResources[s.chainA.id][0].Container.Name[1:]),
-				fmt.Sprintf("GAIA_B_E2E_VAL_HOST=%s", s.valResources[s.chainB.id][0].Container.Name[1:]),
-			},
-			Entrypoint: []string{
-				"sh",
-				"-c",
-				"chmod +x /root/hermes/hermes1_bootstrap.sh && /root/hermes/hermes1_bootstrap.sh && tail -f /dev/null",
-			},
-		},
-		noRestart,
-	)
-	s.Require().NoError(err)
-
-	s.T().Logf("started Hermes relayer 1 container: %s", s.hermesResource1.Container.ID)
-
-	// XXX: Give time to both networks to start, otherwise we might see gRPC
-	// transport errors.
-	time.Sleep(10 * time.Second)
 }
 
 func (s *IntegrationTestSuite) writeGovParamChangeProposalGlobalFees(c *chain, coins sdk.DecCoins) {
@@ -858,118 +767,85 @@ func (s *IntegrationTestSuite) writeGovParamChangeProposalMaxTotalBypass(c *chai
 	s.Require().NoError(err)
 }
 
-func (s *IntegrationTestSuite) writeGovCommunitySpendProposal(c *chain, amount string, recipient string) {
-	proposalCommSpend := &distrtypes.CommunityPoolSpendProposalWithDeposit{
-		Title:       "Community Pool Spend",
-		Description: "Fund Team!",
-		Recipient:   recipient,
-		Amount:      amount,
-		Deposit:     "1000uatom",
+func (s *IntegrationTestSuite) writeGovCommunitySpendProposal(c *chain, amount sdk.Coin, recipient string) {
+	template := `
+	{
+		"messages":[
+		  {
+			"@type": "/cosmos.distribution.v1beta1.MsgCommunityPoolSpend",
+			"authority": "%s",
+			"recipient": "%s",
+			"amount": [{
+				"denom": "%s",
+				"amount": "%s"
+			}]
+		  }
+		],
+		"deposit": "100uatom",
+		"proposer": "Proposing validator address",
+		"metadata": "Community Pool Spend",
+		"title": "Fund Team!",
+		"summary": "summary"
 	}
-	commSpendBody, err := json.MarshalIndent(proposalCommSpend, "", " ")
+	`
+	propMsgBody := fmt.Sprintf(template, govModuleAddress, recipient, amount.Denom, amount.Amount.String())
+	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalCommunitySpendFilename), []byte(propMsgBody))
+	s.Require().NoError(err)
+}
+
+func (s *IntegrationTestSuite) writeGovLegProposal(c *chain, height int64, name string) {
+	prop := &upgradetypes.Plan{
+		Name:   name,
+		Height: height,
+		Info:   `{"binaries":{"os1/arch1":"url1","os2/arch2":"url2"}}`,
+	}
+
+	commSpendBody, err := json.MarshalIndent(prop, "", " ")
 	s.Require().NoError(err)
 
 	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalCommunitySpendFilename), commSpendBody)
 	s.Require().NoError(err)
 }
 
-type ConsumerAdditionProposalWithDeposit struct {
-	ccvprovider.ConsumerAdditionProposal
-	Deposit string `json:"deposit"`
-}
+func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain, oldParams stakingtypes.Params) {
+	template := `
+	{
+		"messages": [
+		 {
+		  "@type": "/cosmos.staking.v1beta1.MsgUpdateParams",
+		  "authority": "%s",
+		  "params": {
+		   "unbonding_time": "%s",
+		   "max_validators": %d,
+		   "max_entries": %d,
+		   "historical_entries": %d,
+		   "bond_denom": "%s",
+		   "min_commission_rate": "%s",
+		   "validator_bond_factor": "%s",
+		   "global_liquid_staking_cap": "%s",
+		   "validator_liquid_staking_cap": "%s"
+		  }
+		 }
+		],
+		"metadata": "ipfs://CID",
+		"deposit": "100uatom",
+		"title": "Update LSM Params",
+		"summary": "e2e-test updating LSM staking params"
+	   }`
+	propMsgBody := fmt.Sprintf(template,
+		govAuthority,
+		oldParams.UnbondingTime,
+		oldParams.MaxValidators,
+		oldParams.MaxEntries,
+		oldParams.HistoricalEntries,
+		oldParams.BondDenom,
+		oldParams.MinCommissionRate,
+		sdk.NewDec(250),           // validator bond factor
+		sdk.NewDecWithPrec(25, 2), // 25 global_liquid_staking_cap
+		sdk.NewDecWithPrec(50, 2), // 50 validator_liquid_staking_cap
+	)
 
-type ConsumerRemovalProposalWithDeposit struct {
-	ccvprovider.ConsumerRemovalProposal
-	Deposit string `json:"deposit"`
-}
-
-func (s *IntegrationTestSuite) writeAddRemoveConsumerProposals(c *chain, consumerChainID string) {
-	hash, _ := json.Marshal("Z2VuX2hhc2g=")
-	addProp := &ccvprovider.ConsumerAdditionProposal{
-		Title:       "Create consumer chain",
-		Description: "First consumer chain",
-		ChainId:     consumerChainID,
-		InitialHeight: ibcclienttypes.Height{
-			RevisionHeight: 1,
-		},
-		GenesisHash:                       hash,
-		BinaryHash:                        hash,
-		SpawnTime:                         time.Now(),
-		UnbondingPeriod:                   time.Duration(100000000000),
-		CcvTimeoutPeriod:                  time.Duration(100000000000),
-		TransferTimeoutPeriod:             time.Duration(100000000000),
-		ConsumerRedistributionFraction:    "0.75",
-		BlocksPerDistributionTransmission: 10,
-		HistoricalEntries:                 10000,
-	}
-	addPropWithDeposit := ConsumerAdditionProposalWithDeposit{
-		ConsumerAdditionProposal: *addProp,
-		Deposit:                  "1000uatom",
-	}
-
-	removeProp := &ccvprovider.ConsumerRemovalProposal{
-		Title:       "Remove consumer chain",
-		Description: "Removing consumer chain",
-		ChainId:     consumerChainID,
-		StopTime:    time.Now(),
-	}
-
-	removePropWithDeposit := ConsumerRemovalProposalWithDeposit{
-		ConsumerRemovalProposal: *removeProp,
-		Deposit:                 "1000uatom",
-	}
-
-	consumerAddBody, err := json.MarshalIndent(addPropWithDeposit, "", " ")
-	s.Require().NoError(err)
-
-	consumerRemoveBody, err := json.MarshalIndent(removePropWithDeposit, "", " ")
-	s.Require().NoError(err)
-
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalAddConsumerChainFilename), consumerAddBody)
-	s.Require().NoError(err)
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalRemoveConsumerChainFilename), consumerRemoveBody)
-	s.Require().NoError(err)
-}
-
-func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain) {
-	type ParamInfo struct {
-		Subspace string  `json:"subspace"`
-		Key      string  `json:"key"`
-		Value    sdk.Dec `json:"value"`
-	}
-
-	type ParamChangeMessage struct {
-		Title       string      `json:"title"`
-		Description string      `json:"description"`
-		Changes     []ParamInfo `json:"changes"`
-		Deposit     string      `json:"deposit"`
-	}
-
-	paramChangeProposalBody, err := json.MarshalIndent(ParamChangeMessage{
-		Title:       "liquid staking params update",
-		Description: "liquid staking params update",
-		Changes: []ParamInfo{
-			{
-				Subspace: "staking",
-				Key:      "GlobalLiquidStakingCap",
-				Value:    sdk.NewDecWithPrec(25, 2), // 25%
-			},
-			{
-				Subspace: "staking",
-				Key:      "ValidatorLiquidStakingCap",
-				Value:    sdk.NewDecWithPrec(50, 2), // 50%
-			},
-			{
-				Subspace: "staking",
-				Key:      "ValidatorBondFactor",
-				Value:    sdk.NewDec(250), // -1
-			},
-		},
-		Deposit: "1000uatom",
-	}, "", " ")
-	s.Require().NoError(err)
-
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalLSMParamUpdateFilename), paramChangeProposalBody)
+	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalLSMParamUpdateFilename), []byte(propMsgBody))
 	s.Require().NoError(err)
 }
 

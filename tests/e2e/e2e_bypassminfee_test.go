@@ -3,8 +3,8 @@ package e2e
 import (
 	"time"
 
-	ibcclienttypes "github.com/cosmos/ibc-go/v4/modules/core/02-client/types"
-	ibcchanneltypes "github.com/cosmos/ibc-go/v4/modules/core/04-channel/types"
+	ibcclienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 
 	"cosmossdk.io/math"
 
@@ -14,13 +14,13 @@ import (
 
 func (s *IntegrationTestSuite) testBypassMinFeeWithdrawReward(endpoint string) {
 	// submit gov prop to change bypass-msg param to MsgWithdrawDelegatorReward
-	submitterAddr := s.chainA.validators[0].keyInfo.GetAddress()
+	submitterAddr, _ := s.chainA.validators[0].keyInfo.GetAddress()
 	submitter := submitterAddr.String()
 	proposalCounter++
 	s.govProposeNewBypassMsgs([]string{sdk.MsgTypeURL(&distributiontypes.MsgWithdrawDelegatorReward{})}, proposalCounter, submitter, standardFees.String())
 
 	paidFeeAmt := math.LegacyMustNewDecFromStr(minGasPrice).Mul(math.LegacyNewDec(gas)).String()
-	payee := s.chainA.validators[0].keyInfo.GetAddress()
+	payee, _ := s.chainA.validators[0].keyInfo.GetAddress()
 
 	testCases := []struct {
 		name                    string
@@ -107,7 +107,7 @@ func (s *IntegrationTestSuite) testIBCBypassMsg() {
 	// ["/ibc.core.channel.v1.MsgRecvPacket",
 	//  "/ibc.core.channel.v1.MsgAcknowledgement",
 	//  "/ibc.core.client.v1.MsgUpdateClient"]
-	submitterAddr := s.chainA.validators[0].keyInfo.GetAddress()
+	submitterAddr, _ := s.chainA.validators[0].keyInfo.GetAddress()
 	submitter := submitterAddr.String()
 	proposalCounter++
 	s.govProposeNewBypassMsgs([]string{
@@ -116,8 +116,6 @@ func (s *IntegrationTestSuite) testIBCBypassMsg() {
 		sdk.MsgTypeURL(&ibcclienttypes.MsgUpdateClient{}),
 	}, proposalCounter, submitter, standardFees.String())
 
-	// use hermes1 to test default ibc bypass-msg
-	//
 	// test 1: transaction only contains bypass-msgs, pass
 	s.testTxContainsOnlyIBCBypassMsg()
 	// test 2: test transactions contains both bypass and non-bypass msgs (sdk.MsgTypeURL(&ibcchanneltypes.MsgTimeout{})
@@ -143,9 +141,9 @@ func (s *IntegrationTestSuite) testTxContainsOnlyIBCBypassMsg() {
 
 	scrRelayerBalanceBefore, dstRelayerBalanceBefore := s.queryRelayerWalletsBalances()
 
-	pass := s.hermesClearPacket(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
+	pass := s.hermesClearPacket(hermesConfigNoGasPrices, s.chainA.id, transferPort, transferChannel)
 	s.Require().True(pass)
-	pendingPacketsExist := s.hermesPendingPackets(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
+	pendingPacketsExist := s.hermesPendingPackets(s.chainA.id, transferChannel)
 	s.Require().False(pendingPacketsExist)
 
 	// confirm relayer wallets do not pay fees
@@ -161,13 +159,19 @@ func (s *IntegrationTestSuite) testTxContainsMixBypassNonBypassMsg() {
 	s.Require().True(ok)
 	// make sure that the transaction is timeout
 	time.Sleep(3 * time.Second)
-	pendingPacketsExist := s.hermesPendingPackets(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
+	pendingPacketsExist := s.hermesPendingPackets(s.chainA.id, transferChannel)
 	s.Require().True(pendingPacketsExist)
 
-	pass := s.hermesClearPacket(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
+	// attempt to relay packets without paying fees
+	pass := s.hermesClearPacket(hermesConfigNoGasPrices, s.chainA.id, transferPort, transferChannel)
 	s.Require().False(pass)
-	// clear packets with paying fee, to not influence the next transaction
-	pass = s.hermesClearPacket(hermesConfigWithGasPrices, s.chainA.id, transferChannel)
+
+	// assert that packets were not relayed
+	pendingPacketsExist = s.hermesPendingPackets(s.chainA.id, transferChannel)
+	s.Require().True(pendingPacketsExist)
+
+	// clear packets with paying fees
+	pass = s.hermesClearPacket(hermesConfigWithGasPrices, s.chainA.id, transferPort, transferChannel)
 	s.Require().True(pass)
 }
 
@@ -175,12 +179,12 @@ func (s *IntegrationTestSuite) testBypassMsgsExceedMaxBypassGasLimit() {
 	s.T().Logf("testing bypass messages exceed MaxBypassGasUsage")
 	ok := s.hermesTransfer(hermesConfigWithGasPrices, s.chainA.id, s.chainB.id, transferChannel, uatomDenom, 100, 1000, 12)
 	s.Require().True(ok)
-	pass := s.hermesClearPacket(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
+	pass := s.hermesClearPacket(hermesConfigNoGasPrices, s.chainA.id, transferPort, transferChannel)
 	s.Require().False(pass)
 
-	pendingPacketsExist := s.hermesPendingPackets(hermesConfigNoGasPrices, s.chainA.id, transferChannel)
+	pendingPacketsExist := s.hermesPendingPackets(s.chainA.id, transferChannel)
 	s.Require().True(pendingPacketsExist)
 
-	pass = s.hermesClearPacket(hermesConfigWithGasPrices, s.chainA.id, transferChannel)
+	pass = s.hermesClearPacket(hermesConfigWithGasPrices, s.chainA.id, transferPort, transferChannel)
 	s.Require().True(pass)
 }

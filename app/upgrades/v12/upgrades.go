@@ -5,7 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	"github.com/cosmos/gaia/v15/app/keepers"
+	"github.com/cosmos/gaia/v16/app/keepers"
 )
 
 func CreateUpgradeHandler(
@@ -27,9 +27,12 @@ func CreateUpgradeHandler(
 		params.ValidatorLiquidStakingCap = ValidatorLiquidStakingCap
 		params.GlobalLiquidStakingCap = GlobalLiquidStakingCap
 
-		keepers.StakingKeeper.SetParams(ctx, params)
+		err = keepers.StakingKeeper.SetParams(ctx, params)
+		if err != nil {
+			return vm, err
+		}
 
 		ctx.Logger().Info("Upgrade complete")
-		return vm, err
+		return vm, nil
 	}
 }

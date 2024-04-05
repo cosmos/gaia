@@ -4,24 +4,24 @@ import (
 	"strings"
 	"testing"
 
-	sdkmath "cosmossdk.io/math"
+	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
 	"github.com/stretchr/testify/require"
 
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
-	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	transfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
+
+	sdkmath "cosmossdk.io/math"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 
 	"github.com/cosmos/gaia/v16/app/helpers"
 	v16 "github.com/cosmos/gaia/v16/app/upgrades/v16"
 )
 
-var (
-	AtomSupply = sdkmath.NewInt(1000)
-)
+var AtomSupply = sdkmath.NewInt(1000)
 
 func TestAddRateLimits(t *testing.T) {
 	gaiaApp := helpers.Setup(t)

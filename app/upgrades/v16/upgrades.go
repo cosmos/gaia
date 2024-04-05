@@ -1,12 +1,14 @@
 package v16
 
 import (
+	ratelimitkeeper "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/keeper"
+	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
+
 	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
 
 	errorsmod "cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
-	ratelimitkeeper "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/keeper"
-	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
@@ -14,45 +16,43 @@ import (
 	"github.com/cosmos/gaia/v16/app/keepers"
 )
 
-var (
-	RateLimits = map[string]ratelimittypes.MsgAddRateLimit{
-		"osmosis-1": {
-			MaxPercentSend: sdkmath.NewInt(5),
-			MaxPercentRecv: sdkmath.NewInt(5),
-			ChannelId:      "channel-141",
-		},
-		"neutron-1": {
-			MaxPercentSend: sdkmath.NewInt(1),
-			MaxPercentRecv: sdkmath.NewInt(1),
-			ChannelId:      "channel-569",
-		},
-		"stride-1": {
-			MaxPercentSend: sdkmath.NewInt(1),
-			MaxPercentRecv: sdkmath.NewInt(1),
-			ChannelId:      "channel-391",
-		},
-		"kaiyo-1": { // Kujira
-			MaxPercentSend: sdkmath.NewInt(1),
-			MaxPercentRecv: sdkmath.NewInt(1),
-			ChannelId:      "channel-343",
-		},
-		"injective-1": {
-			MaxPercentSend: sdkmath.NewInt(1),
-			MaxPercentRecv: sdkmath.NewInt(1),
-			ChannelId:      "channel-220",
-		},
-		"core-1": { // Persistence
-			MaxPercentSend: sdkmath.NewInt(1),
-			MaxPercentRecv: sdkmath.NewInt(1),
-			ChannelId:      "channel-190",
-		},
-		"secret-4": {
-			MaxPercentSend: sdkmath.NewInt(1),
-			MaxPercentRecv: sdkmath.NewInt(1),
-			ChannelId:      "channel-235",
-		},
-	}
-)
+var RateLimits = map[string]ratelimittypes.MsgAddRateLimit{
+	"osmosis-1": {
+		MaxPercentSend: sdkmath.NewInt(5),
+		MaxPercentRecv: sdkmath.NewInt(5),
+		ChannelId:      "channel-141",
+	},
+	"neutron-1": {
+		MaxPercentSend: sdkmath.NewInt(1),
+		MaxPercentRecv: sdkmath.NewInt(1),
+		ChannelId:      "channel-569",
+	},
+	"stride-1": {
+		MaxPercentSend: sdkmath.NewInt(1),
+		MaxPercentRecv: sdkmath.NewInt(1),
+		ChannelId:      "channel-391",
+	},
+	"kaiyo-1": { // Kujira
+		MaxPercentSend: sdkmath.NewInt(1),
+		MaxPercentRecv: sdkmath.NewInt(1),
+		ChannelId:      "channel-343",
+	},
+	"injective-1": {
+		MaxPercentSend: sdkmath.NewInt(1),
+		MaxPercentRecv: sdkmath.NewInt(1),
+		ChannelId:      "channel-220",
+	},
+	"core-1": { // Persistence
+		MaxPercentSend: sdkmath.NewInt(1),
+		MaxPercentRecv: sdkmath.NewInt(1),
+		ChannelId:      "channel-190",
+	},
+	"secret-4": {
+		MaxPercentSend: sdkmath.NewInt(1),
+		MaxPercentRecv: sdkmath.NewInt(1),
+		ChannelId:      "channel-235",
+	},
+}
 
 func CreateUpgradeHandler(
 	mm *module.Manager,

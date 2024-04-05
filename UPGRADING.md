@@ -118,6 +118,12 @@ There is no need to restart the node yet; these changes will get applied during 
 
 ### Or check checksum of the binary if you decided to download it
 
+Checksums can be found on the official release page:
+* https://github.com/cosmos/gaia/releases/tag/v15.2.0
+
+The checksums file is located in the `Assets` section:
+* e.g. [SHA256SUMS-v15.2.0.txt](https://github.com/cosmos/gaia/releases/download/v15.2.0/SHA256SUMS-v15.2.0.txt)
+
 ```shell
 $ shasum -a 256 gaiad-v15.2.0-linux-amd64
 <checksum>  gaiad-v15.2.0-linux-amd64

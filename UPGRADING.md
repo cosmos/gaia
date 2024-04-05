@@ -113,7 +113,7 @@ There is no need to restart the node yet; these changes will get applied during 
    $ gaiad version --long
    name: gaiad
    server_name: gaiad
-   version: 14.2.0
+   version: 15.2.0
    commit: <commit-hash>
    ...
 ```

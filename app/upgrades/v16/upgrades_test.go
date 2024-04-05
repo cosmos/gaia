@@ -35,13 +35,13 @@ func TestAddRateLimits(t *testing.T) {
 	require.NoError(t, err)
 
 	// mock IBC channels
-	gaiaApp.IBCKeeper.ChannelKeeper.SetChannel(ctx, transfertypes.PortID, v16.RateLimits["Osmosis"].ChannelId, channeltypes.Channel{})
-	gaiaApp.IBCKeeper.ChannelKeeper.SetChannel(ctx, transfertypes.PortID, v16.RateLimits["Neutron"].ChannelId, channeltypes.Channel{})
-	gaiaApp.IBCKeeper.ChannelKeeper.SetChannel(ctx, transfertypes.PortID, v16.RateLimits["Stride"].ChannelId, channeltypes.Channel{})
-	gaiaApp.IBCKeeper.ChannelKeeper.SetChannel(ctx, transfertypes.PortID, v16.RateLimits["Kujira"].ChannelId, channeltypes.Channel{})
-	gaiaApp.IBCKeeper.ChannelKeeper.SetChannel(ctx, transfertypes.PortID, v16.RateLimits["Injective"].ChannelId, channeltypes.Channel{})
-	gaiaApp.IBCKeeper.ChannelKeeper.SetChannel(ctx, transfertypes.PortID, v16.RateLimits["Persistence"].ChannelId, channeltypes.Channel{})
-	gaiaApp.IBCKeeper.ChannelKeeper.SetChannel(ctx, transfertypes.PortID, v16.RateLimits["Secret"].ChannelId, channeltypes.Channel{})
+	gaiaApp.IBCKeeper.ChannelKeeper.SetChannel(ctx, transfertypes.PortID, v16.RateLimits["osmosis-1"].ChannelId, channeltypes.Channel{})
+	gaiaApp.IBCKeeper.ChannelKeeper.SetChannel(ctx, transfertypes.PortID, v16.RateLimits["neutron-1"].ChannelId, channeltypes.Channel{})
+	gaiaApp.IBCKeeper.ChannelKeeper.SetChannel(ctx, transfertypes.PortID, v16.RateLimits["stride-1"].ChannelId, channeltypes.Channel{})
+	gaiaApp.IBCKeeper.ChannelKeeper.SetChannel(ctx, transfertypes.PortID, v16.RateLimits["kaiyo-1"].ChannelId, channeltypes.Channel{})
+	gaiaApp.IBCKeeper.ChannelKeeper.SetChannel(ctx, transfertypes.PortID, v16.RateLimits["injective-1"].ChannelId, channeltypes.Channel{})
+	gaiaApp.IBCKeeper.ChannelKeeper.SetChannel(ctx, transfertypes.PortID, v16.RateLimits["core-1"].ChannelId, channeltypes.Channel{})
+	gaiaApp.IBCKeeper.ChannelKeeper.SetChannel(ctx, transfertypes.PortID, v16.RateLimits["secret-4"].ChannelId, channeltypes.Channel{})
 
 	err = v16.AddRateLimits(ctx, ratelimitkeeper)
 	require.NoError(t, err)
@@ -61,7 +61,7 @@ func TestAddRateLimits(t *testing.T) {
 				DurationHours: v16.RateLimitDurationHours,
 			},
 		}
-		if strings.Compare("Osmosis", chain) == 0 {
+		if strings.Compare("osmosis-1", chain) == 0 {
 			expectedRateLimit.Quota.MaxPercentSend = sdkmath.NewInt(5)
 			expectedRateLimit.Quota.MaxPercentRecv = sdkmath.NewInt(5)
 		} else {

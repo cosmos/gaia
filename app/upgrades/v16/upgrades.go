@@ -16,37 +16,37 @@ import (
 
 var (
 	RateLimits = map[string]ratelimittypes.MsgAddRateLimit{
-		"Osmosis": {
+		"osmosis-1": {
 			MaxPercentSend: sdkmath.NewInt(5),
 			MaxPercentRecv: sdkmath.NewInt(5),
 			ChannelId:      "channel-141",
 		},
-		"Neutron": {
+		"neutron-1": {
 			MaxPercentSend: sdkmath.NewInt(1),
 			MaxPercentRecv: sdkmath.NewInt(1),
 			ChannelId:      "channel-569",
 		},
-		"Stride": {
+		"stride-1": {
 			MaxPercentSend: sdkmath.NewInt(1),
 			MaxPercentRecv: sdkmath.NewInt(1),
 			ChannelId:      "channel-391",
 		},
-		"Kujira": {
+		"kaiyo-1": { // Kujira
 			MaxPercentSend: sdkmath.NewInt(1),
 			MaxPercentRecv: sdkmath.NewInt(1),
 			ChannelId:      "channel-343",
 		},
-		"Injective": {
+		"injective-1": {
 			MaxPercentSend: sdkmath.NewInt(1),
 			MaxPercentRecv: sdkmath.NewInt(1),
 			ChannelId:      "channel-220",
 		},
-		"Persistence": {
+		"core-1": { // Persistence
 			MaxPercentSend: sdkmath.NewInt(1),
 			MaxPercentRecv: sdkmath.NewInt(1),
 			ChannelId:      "channel-190",
 		},
-		"Secret": {
+		"secret-4": {
 			MaxPercentSend: sdkmath.NewInt(1),
 			MaxPercentRecv: sdkmath.NewInt(1),
 			ChannelId:      "channel-235",
@@ -85,59 +85,59 @@ func AddRateLimits(ctx sdk.Context, k ratelimitkeeper.Keeper) error {
 	ctx.Logger().Info("Adding rate limits...")
 
 	// Osmosis
-	msg := RateLimits["Osmosis"]
+	msg := RateLimits["osmosis-1"]
 	msg.DurationHours = RateLimitDurationHours
 	msg.Denom = RateLimitDenom
 	if err := k.AddRateLimit(ctx, &msg); err != nil {
-		return errorsmod.Wrapf(err, "unable to add rate limit on %s to Osmosis", msg.ChannelId)
+		return errorsmod.Wrapf(err, "unable to add rate limit on %s to osmosis-1", msg.ChannelId)
 	}
 
 	// Neutron
-	msg = RateLimits["Neutron"]
+	msg = RateLimits["neutron-1"]
 	msg.DurationHours = RateLimitDurationHours
 	msg.Denom = RateLimitDenom
 	if err := k.AddRateLimit(ctx, &msg); err != nil {
-		return errorsmod.Wrapf(err, "unable to add rate limit on %s to Neutron", msg.ChannelId)
+		return errorsmod.Wrapf(err, "unable to add rate limit on %s to neutron-1", msg.ChannelId)
 	}
 
 	// Stride
-	msg = RateLimits["Stride"]
+	msg = RateLimits["stride-1"]
 	msg.DurationHours = RateLimitDurationHours
 	msg.Denom = RateLimitDenom
 	if err := k.AddRateLimit(ctx, &msg); err != nil {
-		return errorsmod.Wrapf(err, "unable to add rate limit on %s to Stride", msg.ChannelId)
+		return errorsmod.Wrapf(err, "unable to add rate limit on %s to stride-1", msg.ChannelId)
 	}
 
 	// Kujira
-	msg = RateLimits["Kujira"]
+	msg = RateLimits["kaiyo-1"]
 	msg.DurationHours = RateLimitDurationHours
 	msg.Denom = RateLimitDenom
 	if err := k.AddRateLimit(ctx, &msg); err != nil {
-		return errorsmod.Wrapf(err, "unable to add rate limit on %s to Kujira", msg.ChannelId)
+		return errorsmod.Wrapf(err, "unable to add rate limit on %s to kaiyo-1", msg.ChannelId)
 	}
 
 	// Injective
-	msg = RateLimits["Injective"]
+	msg = RateLimits["injective-1"]
 	msg.DurationHours = RateLimitDurationHours
 	msg.Denom = RateLimitDenom
 	if err := k.AddRateLimit(ctx, &msg); err != nil {
-		return errorsmod.Wrapf(err, "unable to add rate limit on %s to Injective", msg.ChannelId)
+		return errorsmod.Wrapf(err, "unable to add rate limit on %s to injective-1", msg.ChannelId)
 	}
 
 	// Persistence
-	msg = RateLimits["Persistence"]
+	msg = RateLimits["core-1"]
 	msg.DurationHours = RateLimitDurationHours
 	msg.Denom = RateLimitDenom
 	if err := k.AddRateLimit(ctx, &msg); err != nil {
-		return errorsmod.Wrapf(err, "unable to add rate limit on %s to Persistence", msg.ChannelId)
+		return errorsmod.Wrapf(err, "unable to add rate limit on %s to core-1", msg.ChannelId)
 	}
 
 	// Secret
-	msg = RateLimits["Secret"]
+	msg = RateLimits["secret-4"]
 	msg.DurationHours = RateLimitDurationHours
 	msg.Denom = RateLimitDenom
 	if err := k.AddRateLimit(ctx, &msg); err != nil {
-		return errorsmod.Wrapf(err, "unable to add rate limit on %s to Secret", msg.ChannelId)
+		return errorsmod.Wrapf(err, "unable to add rate limit on %s to secret-4", msg.ChannelId)
 	}
 
 	ctx.Logger().Info("Finished adding rate limits")

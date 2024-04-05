@@ -52,7 +52,7 @@ Depending on your setup, you may need to set `halt-height = 0` in your `app.toml
    git clone https://github.com/cosmos/gaia.git
 ```
 
-### Step 2: Build and start the v15.2.0 binary
+## Step 2: Build and start the v15.2.0 binary
 
 We recommend you perform a backup of your data directory before switching to `v15.2.0`.
 
@@ -74,7 +74,7 @@ gaiad start # starts the v15.2.0 node
 
 # Cosmovisor steps
 
-### Prerequisite: Alter systemd service configuration
+## Prerequisite: Alter systemd service configuration
 
 Disable automatic restart of the node service. To do so please alter your `gaiad.service` file configuration and set appropriate lines to following values.
 
@@ -89,16 +89,16 @@ After that you will need to run `sudo systemctl daemon-reload` to apply changes 
 
 There is no need to restart the node yet; these changes will get applied during the node restart in the next step.
 
-# Setup Cosmovisor
-## Create the updated gaiad binary of v15.2.0
+## Setup Cosmovisor
+### Create the updated gaiad binary of v15.2.0
 
-### Go to gaiad directory if present else clone the repository
+#### Go to gaiad directory if present else clone the repository
 
 ```shell
    git clone https://github.com/cosmos/gaia.git
 ```
 
-### Follow these steps if gaiad repo already present
+#### Follow these steps if gaiad repo already present
 
 ```shell
    cd $HOME/.gaia
@@ -108,7 +108,7 @@ There is no need to restart the node yet; these changes will get applied during 
    make install
 ```
 
-### Check the new gaiad version, verify the latest commit hash
+#### Check the new gaiad version, verify the latest commit hash
 ```shell
    $ gaiad version --long
    name: gaiad
@@ -118,7 +118,7 @@ There is no need to restart the node yet; these changes will get applied during 
    ...
 ```
 
-### Or check checksum of the binary if you decided to download it
+#### Or check checksum of the binary if you decided to download it
 
 Checksums can be found on the official release page:
 * https://github.com/cosmos/gaia/releases/tag/v15.2.0
@@ -131,12 +131,12 @@ $ shasum -a 256 gaiad-v15.2.0-linux-amd64
 <checksum>  gaiad-v15.2.0-linux-amd64
 ```
 
-## Copy the new gaiad (v15.2.0) binary to cosmovisor current directory
+### Copy the new gaiad (v15.2.0) binary to cosmovisor current directory
 ```shell
    cp $GOPATH/bin/gaiad ~/.gaiad/cosmovisor/current/bin
 ```
 
-## Restore service file settings
+### Restore service file settings
 
 If you are using a service file, restore the previous `Restart` settings in your service file: 
 ```

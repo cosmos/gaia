@@ -52,7 +52,9 @@ Depending on your setup, you may need to set `halt-height = 0` in your `app.toml
    git clone https://github.com/cosmos/gaia.git
 ```
 
-### Build and start the binary
+### Step 2: Build and start the v15.2.0 binary
+
+We recommend you perform a backup of your data directory before switching to `v15.2.0`.
 
 ```shell
 cd $HOME/gaia

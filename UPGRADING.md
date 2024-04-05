@@ -15,7 +15,7 @@ The exact sequence of steps depends on your configuration. Please take care to m
 
 # Manual steps
 
-## Step 1: Configure `halt-height` and restart the node.
+## Step 1: Configure `halt-height` using v15.1.0 and restart the node.
 
 This upgrade requires `gaiad` halting execution at a pre-selected `halt-height`. Failing to stop at `halt-height` may cause a consensus failure during chain execution at a later time.
 

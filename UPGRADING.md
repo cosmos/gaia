@@ -5,7 +5,7 @@
 ### Release Details
 * https://github.com/cosmos/gaia/releases/tag/v15.2.0
 * Chain upgrade height : `{{upgrade-height}}`. Exact upgrade time can be checked [here](https://www.mintscan.io/cosmos/block/{{upgrade-height}}).
-* Go version has been frozen at `1.20`. If you are going to build `gaiad` binary from source, make sure you are using the right GO version!
+* Go version has been frozen at `1.21`. If you are going to build `gaiad` binary from source, make sure you are using the right GO version!
 
 # Performing the co-ordinated upgrade
 

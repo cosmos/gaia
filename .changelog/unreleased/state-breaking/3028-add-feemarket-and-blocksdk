@@ -1,0 +1,5 @@
+- Add feemarket module
+- Add blocksdk support
+- Remove globalfee module from the app
+- Remove auth module 'DeductFeeDecorator'
+ ([\#3028](https://github.com/cosmos/gaia/pull/3028))

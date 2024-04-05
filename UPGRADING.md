@@ -72,7 +72,7 @@ gaiad version
 gaiad start # starts the v15.2.0 node
 ```
 
-## Cosmovisor steps
+# Cosmovisor steps
 
 ### Prerequisite: Alter systemd service configuration
 

@@ -54,6 +54,10 @@ Depending on your setup, you may need to set `halt-height = 0` in your `app.toml
 
 ## Step 2: Build and start the v15.2.0 binary
 
+### Remember to revert `gaiad` configurations
+* Reset `halt-height = 0` option in the `app.toml` or
+* Remove it from start parameters of the gaiad binary before restarting the node
+
 We recommend you perform a backup of your data directory before switching to `v15.2.0`.
 
 ```shell
@@ -91,6 +95,10 @@ There is no need to restart the node yet; these changes will get applied during 
 
 ## Setup Cosmovisor
 ### Create the updated gaiad binary of v15.2.0
+
+### Remember to revert `gaiad` configurations
+* Reset `halt-height = 0` option in the `app.toml` or
+* Remove it from start parameters of the gaiad binary before starting the node
 
 #### Go to gaiad directory if present else clone the repository
 

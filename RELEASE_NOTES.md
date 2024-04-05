@@ -1,21 +1,24 @@
-# Gaia v15.1.0  Release Notes 
+# Gaia v15.2.0  Release Notes 
 
-***This release contains the changes introduced by the v14.2.0 emergency release and should be used for the v15 upgrade (instead of ~~v15.0.0~~).***
+***This is a special point release in the v15 release series.***
 
 ## 📝 Changelog
 
-Check out the [changelog](https://github.com/cosmos/gaia/blob/v15.1.0/CHANGELOG.md) for a list of relevant changes or [compare all changes](https://github.com/cosmos/gaia/compare/v14.2.0...v15.1.0) from last release.
+Check out the [changelog](https://github.com/cosmos/gaia/blob/v15.2.0/CHANGELOG.md) for a list of relevant changes or [compare all changes](https://github.com/cosmos/gaia/compare/v15.1.0...v15.2.0) from last release.
 
-<!-- Add the following line for major releases -->
-Refer to the [upgrading guide](https://github.com/cosmos/gaia/blob/release/v15.x/UPGRADING.md) when migrating from `v14.2.x` to `v15.1.x`.
+<!-- Add the following line for releases that require a coordinated upgrade -->
+Refer to the [upgrading guide](https://github.com/cosmos/gaia/blob/release/v15.2.x/UPGRADING.md) when migrating from `v15.1.x` to `v15.2.x`.
 
 ## 🚀 Highlights
 
 <!-- Add any highlights of this release --> 
 
-As this release replaces the [v15.0.0](https://github.com/cosmos/gaia/releases/tag/v15.0.0) release, please check out the release notes for all the highlights. 
+This release fixes two issues identified after the v15 upgrade:
 
-In addition, this release bumps Packet Forward Middleware to `v7.1.3-0.20240228213828-cce7f56d000b`, which contains the same fix as the one introduced by the [v14.2.0](https://github.com/cosmos/gaia/releases/tag/v14.2.0) emergency release. It also fixes a series of escrow accounts by minting and transfering the missing assets to reach parity with counterparty chain supply. 
+- Increases x/gov metadata fields length to 10200.
+- Fixes parsing of historic Txs with TxExtensionOptions.
+
+As both fixes are state breaking, a coordinated upgrade is necessary. 
 
 ## 🔨 Build from source
 
@@ -23,7 +26,7 @@ You must use Golang `v1.21` if building from source.
 
 ```bash
 git clone https://github.com/cosmos/gaia
-cd gaia && git checkout v15.1.0
+cd gaia && git checkout v15.2.0
 make install
 ```
 

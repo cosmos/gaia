@@ -22,7 +22,7 @@ The Cosmos Hub is the first of an exploding number of interconnected blockchains
 
 ___
 
-The Cosmos Hub is built using the [Cosmos SDK](https://github.com/cosmos/cosmos-sdk) and compiled to a binary called `gaiad` (Gaia Daemon). The Cosmos Hub and other fully sovereign Cosmos SDK blockchains interact with one another using a protocol called [IBC](https://github.com/cosmos/ibc) that enables Inter-Blockchain Communication. In order to understand what the Cosmos Hub is you can read this [introductory explanation](https://hub.cosmos.network/main/hub-overview/overview.html).
+The Cosmos Hub is built using the [Cosmos SDK](https://github.com/cosmos/cosmos-sdk) and compiled to a binary called `gaiad` (Gaia Daemon). The Cosmos Hub and other fully sovereign Cosmos SDK blockchains interact with one another using a protocol called [IBC](https://github.com/cosmos/ibc) that enables Inter-Blockchain Communication. In order to understand what the Cosmos Hub is you can read this [introductory explanation](https://hub.cosmos.network).
 
 <br/>
 
@@ -30,7 +30,7 @@ The Cosmos Hub is built using the [Cosmos SDK](https://github.com/cosmos/cosmos-
 
 ___
 
-Cosmos Hub is a blockchain network that operates on Proof-of-Stake consensus. You can find an introduction to the Cosmos Hub and how to use the `gaiad` binary as a delegator, validator or node operator as well as how governance on the Cosmos Hub works in the [documentation](https://hub.cosmos.network/main/hub-overview/overview.html).
+Cosmos Hub is a blockchain network that operates on Proof-of-Stake consensus. You can find an introduction to the Cosmos Hub and how to use the `gaiad` binary as a delegator, validator or node operator as well as how governance on the Cosmos Hub works in the [documentation](https://hub.cosmos.network).
 
 Alternatively, whether you're new to blockchain technology or interested in getting involved, the Cosmos Network [Course](https://tutorials.cosmos.network/academy/0-welcome/) will guide you through everything. The course walks you through the basics of blockchain technology, to staking, setting up your own node, and beyond.
 
@@ -39,7 +39,7 @@ Alternatively, whether you're new to blockchain technology or interested in gett
 ## 👤 — Node Operators
 
 ___
-If you're interested in running a node on the current Cosmos Hub, check out the docs to [Join the Cosmos Hub Mainnet](https://github.com/cosmos/gaia/blob/main/docs/hub-tutorials/join-mainnet.md).
+If you're interested in running a node on the current Cosmos Hub, check out the docs to [Join the Cosmos Hub Mainnet](https://github.com/cosmos/gaia/blob/main/docs/docs/hub-tutorials/join-mainnet.md).
 
 <br/>
 
@@ -47,7 +47,7 @@ If you're interested in running a node on the current Cosmos Hub, check out the 
 
 ___
 
-If you want to participate and help secure Cosmos Hub, check out becoming a validator. Information on what a validator is and how to participate as one can be found at the [Validator FAQ](https://hub.cosmos.network/main/validators/validator-faq.html#). If you're running a validator node on the Cosmos Hub, reach out to a Janitor on the [Cosmos Developers Discord](https://discord.gg/cosmosnetwork) to join the `#cosmos-hub-validators-verified` channel.
+If you want to participate and help secure Cosmos Hub, check out becoming a validator. Information on what a validator is and how to participate as one can be found at the [Validator FAQ](https://hub.cosmos.network/validators/validator-faq.html#). If you're running a validator node on the Cosmos Hub, reach out to a Janitor on the [Cosmos Developers Discord](https://discord.gg/cosmosnetwork) to join the `#cosmos-hub-validators-verified` channel.
 
 <br/>
 
@@ -55,7 +55,7 @@ If you want to participate and help secure Cosmos Hub, check out becoming a vali
 
 ___
 
-If you still want to participate on the Cosmos Hub, check out becoming a delegator. Information on what a delegator is and how to participate as one can be found at the [Delegator FAQ](https://hub.cosmos.network/main/delegators/delegator-faq.html).
+If you still want to participate on the Cosmos Hub, check out becoming a delegator. Information on what a delegator is and how to participate as one can be found at the [Delegator FAQ](https://hub.cosmos.network/delegators/delegator-faq.html).
 
 <br/>
 
@@ -63,7 +63,7 @@ If you still want to participate on the Cosmos Hub, check out becoming a delegat
 
 ___
 
-To participate in or utilize the current Cosmos Hub testnet, take a look at the [cosmos/testnets](https://github.com/cosmos/testnets) repository. This testnet is for the Theta Upgrade expected in Q1 2022. For future upgrades of the Cosmos Hub take a look at the [roadmap](https://github.com/cosmos/gaia/blob/main/docs/roadmap/cosmos-hub-roadmap-2.0.md).
+To participate in or utilize the current Cosmos Hub testnet, take a look at the [cosmos/testnets](https://github.com/cosmos/testnets) repository. This testnet is for the Theta Upgrade expected in Q1 2022. For future upgrades of the Cosmos Hub take a look at the [roadmap](https://github.com/cosmos/gaia/blob/main/docs/docs/roadmap/cosmos-hub-roadmap-2.0.md).
 
 <br/>
 
@@ -71,7 +71,7 @@ To participate in or utilize the current Cosmos Hub testnet, take a look at the 
 
 ___
 
-For an overview of upcoming changes to the Cosmos Hub take a look at the [Roadmap](https://github.com/cosmos/gaia/blob/main/docs/roadmap/cosmos-hub-roadmap-2.0.md).
+For an overview of upcoming changes to the Cosmos Hub take a look at the [Roadmap](https://github.com/cosmos/gaia/blob/main/docs/docs/roadmap/README.md).
 
 <br/>
 

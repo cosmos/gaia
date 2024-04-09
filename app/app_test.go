@@ -3,7 +3,6 @@ package gaia_test
 import (
 	"testing"
 
-	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	"github.com/stretchr/testify/require"
 
 	db "github.com/cometbft/cometbft-db"
@@ -11,6 +10,8 @@ import (
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 
 	gaia "github.com/cosmos/gaia/v16/app"
 	gaiahelpers "github.com/cosmos/gaia/v16/app/helpers"

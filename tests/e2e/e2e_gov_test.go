@@ -2,13 +2,14 @@ package e2e
 
 import (
 	"fmt"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
-	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
 	"strconv"
 	"time"
 
+	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 

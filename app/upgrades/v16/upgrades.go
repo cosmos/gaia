@@ -6,6 +6,7 @@ import (
 	ratelimitkeeper "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/keeper"
 	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
 
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
 	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
 
@@ -87,6 +88,13 @@ func CreateUpgradeHandler(
 		} else if addErr != nil {
 			return vm, errorsmod.Wrapf(addErr, "unable to add rate limits")
 		}
+
+		// Set CosmWasm params
+		wasmParams := wasmtypes.DefaultParams()
+		wasmParams.CodeUploadAccess = wasmtypes.AllowNobody
+		// TODO(reece): only allow specific addresses to instantiate contracts or anyone with AccessTypeEverybody?
+		wasmParams.InstantiateDefaultPermission = wasmtypes.AccessTypeAnyOfAddresses
+
 		ctx.Logger().Info("Upgrade complete")
 		return vm, err
 	}

@@ -3,6 +3,7 @@ package v16
 import (
 	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
 
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
 
 	store "github.com/cosmos/cosmos-sdk/store/types"
@@ -25,6 +26,7 @@ var Upgrade = upgrades.Upgrade{
 		Added: []string{
 			ratelimittypes.ModuleName,
 			icacontrollertypes.SubModuleName,
+			wasmtypes.ModuleName,
 		},
 	},
 }

@@ -4,7 +4,13 @@ ARG IMG_TAG=latest
 FROM golang:1.21-alpine AS gaiad-builder
 WORKDIR /src/app/
 COPY go.mod go.sum* ./
-RUN go mod download
+RUN set -eux; \
+    export ARCH=$(uname -m); \
+    WASM_VERSION=$(go list -m all | grep github.com/CosmWasm/wasmvm | awk '{print $2}'); \
+    if [ ! -z "${WASM_VERSION}" ]; then \
+      wget -O /lib/libwasmvm_muslc.a https://github.com/CosmWasm/wasmvm/releases/download/${WASM_VERSION}/libwasmvm_muslc.${ARCH}.a; \
+    fi; \
+    go mod download;
 COPY . .
 ENV PACKAGES curl make git libc-dev bash gcc linux-headers eudev-dev python3
 RUN apk add --no-cache $PACKAGES

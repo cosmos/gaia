@@ -2,6 +2,8 @@ package e2e
 
 import (
 	"fmt"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
+	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
 	"strconv"
 	"time"
 
@@ -230,4 +232,52 @@ func (s *IntegrationTestSuite) submitGovCommand(chainAAPIEndpoint, sender string
 			5*time.Second,
 		)
 	})
+}
+
+// testSetBlocksPerEpoch tests that we can change `BlocksPerEpoch` through a governance proposal
+func (s *IntegrationTestSuite) testSetBlocksPerEpoch() {
+	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+
+	defaultBlocksPerEpoch := providertypes.DefaultParams().BlocksPerEpoch
+
+	// assert that initially, the actual blocks per epoch are the default blocks per epoch
+	s.Require().Eventually(
+		func() bool {
+			blocksPerEpoch, err := queryBlocksPerEpoch(chainEndpoint)
+			s.T().Logf("After gov new global fee proposal: %d", gas)
+			s.Require().NoError(err)
+
+			s.Require().Equal(blocksPerEpoch, defaultBlocksPerEpoch)
+			return true
+		},
+		15*time.Second,
+		5*time.Second,
+	)
+
+	// create a governance proposal to change blocks per epoch to the default blocks per epoch plus one
+	expectedBlocksPerEpoch := defaultBlocksPerEpoch + 1
+	s.writeGovParamChangeProposalBlocksPerEpoch(s.chainA, expectedBlocksPerEpoch)
+
+	validatorAAddr, _ := s.chainA.validators[0].keyInfo.GetAddress()
+	proposalCounter++
+	submitGovFlags := []string{configFile(proposalBlocksPerEpochFilename)}
+	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
+	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes"}
+
+	s.T().Logf("Proposal number: %d", proposalCounter)
+	s.T().Logf("Submitting, deposit and vote Gov Proposal: Change BlocksPerEpoch parameter")
+	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), proposalCounter, paramtypes.ProposalTypeChange, submitGovFlags, depositGovFlags, voteGovFlags, "vote")
+
+	s.Require().Eventually(
+		func() bool {
+			blocksPerEpoch, err := queryBlocksPerEpoch(chainEndpoint)
+			s.Require().NoError(err)
+
+			s.T().Logf("Newly set blocks per epoch: %d", blocksPerEpoch)
+			s.Require().Equal(expectedBlocksPerEpoch, blocksPerEpoch)
+			return true
+		},
+		15*time.Second,
+		5*time.Second,
+	)
 }

@@ -3,6 +3,8 @@ package e2e
 import (
 	"encoding/json"
 	"fmt"
+	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
 	"io"
 	"net/http"
 	"strings"
@@ -17,7 +19,6 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
-	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"github.com/cosmos/gaia/v16/x/globalfee/types"
@@ -388,4 +389,18 @@ func queryICAAccountAddress(endpoint, owner, connectionID string) (string, error
 	}
 
 	return icaAccountResp.Address, nil
+}
+
+func queryBlocksPerEpoch(endpoint string) (int64, error) {
+	body, err := httpGet(fmt.Sprintf("%s/interchain_security/ccv/provider/params", endpoint))
+	if err != nil {
+		return 0, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	var response providertypes.QueryParamsResponse
+	if err = cdc.UnmarshalJSON(body, &response); err != nil {
+		return 0, err
+	}
+
+	return response.Params.BlocksPerEpoch, nil
 }

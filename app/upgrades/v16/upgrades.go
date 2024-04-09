@@ -1,6 +1,8 @@
 package v16
 
 import (
+	"errors"
+
 	ratelimitkeeper "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/keeper"
 	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
 
@@ -71,16 +73,20 @@ func CreateUpgradeHandler(
 		// Enable ICA controller
 		keepers.ICAControllerKeeper.SetParams(ctx, icacontrollertypes.DefaultParams())
 
-		// Add initial rate limits
-		if err := AddRateLimits(ctx, keepers.RatelimitKeeper); err != nil {
-			return vm, err
-		}
-
 		// Set default blocks per epoch
 		providerParams := keepers.ProviderKeeper.GetParams(ctx)
 		providerParams.BlocksPerEpoch = providertypes.DefaultBlocksPerEpoch
 		keepers.ProviderKeeper.SetParams(ctx, providerParams)
 
+		// Add initial rate limits
+		// This operation is permitted to fail and will not halt the upgrade
+		// In case of failure, rate limits must be added manually
+		addErr := AddRateLimits(ctx, keepers.RatelimitKeeper)
+		if addErr != nil && errors.Is(ratelimittypes.ErrChannelNotFound, addErr) {
+			ctx.Logger().Error("Unable to add rate limits - all rate limits must be added manually after upgrade")
+		} else if addErr != nil {
+			return vm, errorsmod.Wrapf(addErr, "unable to add rate limits")
+		}
 		ctx.Logger().Info("Upgrade complete")
 		return vm, err
 	}

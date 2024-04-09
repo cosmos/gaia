@@ -95,6 +95,9 @@ func CreateUpgradeHandler(
 		wasmParams.CodeUploadAccess = wasmtypes.AllowNobody
 		// TODO(reece): only allow specific addresses to instantiate contracts or anyone with AccessTypeEverybody?
 		wasmParams.InstantiateDefaultPermission = wasmtypes.AccessTypeAnyOfAddresses
+		if err := keepers.WasmKeeper.SetParams(ctx, wasmParams); err != nil {
+			return vm, errorsmod.Wrapf(err, "unable to set CosmWasm params")
+		}
 
 		ctx.Logger().Info("Upgrade complete")
 		return vm, err

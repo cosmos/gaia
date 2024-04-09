@@ -1,6 +1,7 @@
 package keepers
 
 import (
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
 
 	routertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward/types"
@@ -55,6 +56,7 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 		ratelimittypes.StoreKey,
 		providertypes.StoreKey,
 		consensusparamtypes.StoreKey,
+		wasmtypes.StoreKey,
 	)
 
 	// Define transient store keys

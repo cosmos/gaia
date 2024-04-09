@@ -25,6 +25,7 @@ import (
 
 	"github.com/cosmos/gaia/v16/ante"
 	gaia "github.com/cosmos/gaia/v16/app"
+
 	// "github.com/cosmos/gaia/v11/app/helpers"
 	// "github.com/cosmos/gaia/v11/app/params"
 	"github.com/cosmos/gaia/v16/app/sim"
@@ -96,6 +97,7 @@ func TestAppStateDeterminism(t *testing.T) {
 				gaia.DefaultNodeHome,
 				encConfig,
 				appOptions,
+				emptyWasmOption,
 				interBlockCacheOpt(),
 				baseapp.SetChainID(AppChainID),
 			)

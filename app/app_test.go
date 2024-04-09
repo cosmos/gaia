@@ -3,6 +3,7 @@ package gaia_test
 import (
 	"testing"
 
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	"github.com/stretchr/testify/require"
 
 	db "github.com/cometbft/cometbft-db"
@@ -16,6 +17,8 @@ import (
 )
 
 type EmptyAppOptions struct{}
+
+var emptyWasmOption []wasmkeeper.Option
 
 func (ao EmptyAppOptions) Get(_ string) interface{} {
 	return nil
@@ -32,6 +35,7 @@ func TestGaiaApp_BlockedModuleAccountAddrs(t *testing.T) {
 		gaia.DefaultNodeHome,
 		encConfig,
 		EmptyAppOptions{},
+		emptyWasmOption,
 	)
 
 	moduleAccountAddresses := app.ModuleAccountAddrs()

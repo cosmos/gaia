@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -39,6 +40,10 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
+
+	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	gaia "github.com/cosmos/gaia/v16/app"
 	"github.com/cosmos/gaia/v16/app/params"
@@ -107,6 +112,8 @@ func initAppConfig() (string, interface{}) {
 	// Embed additional configurations
 	type CustomAppConfig struct {
 		serverconfig.Config
+
+		Wasm wasmtypes.WasmConfig `mapstructure:"wasm"`
 	}
 
 	// Can optionally overwrite the SDK's default server config.
@@ -116,9 +123,10 @@ func initAppConfig() (string, interface{}) {
 
 	customAppConfig := CustomAppConfig{
 		Config: *srvCfg,
+		Wasm:   wasmtypes.DefaultWasmConfig(),
 	}
 
-	defaultAppTemplate := serverconfig.DefaultConfigTemplate
+	defaultAppTemplate := serverconfig.DefaultConfigTemplate + wasmtypes.DefaultConfigTemplate()
 
 	return defaultAppTemplate, customAppConfig
 }
@@ -156,6 +164,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 
 func addModuleInitFlags(startCmd *cobra.Command) {
 	crisis.AddModuleInitFlags(startCmd)
+	wasm.AddModuleInitFlags(startCmd)
 }
 
 // genesisCommand builds genesis-related `simd genesis` command. Users may provide application specific commands as a parameter
@@ -236,6 +245,11 @@ func (a appCreator) newApp(
 		cache = store.NewCommitKVStoreCacheManager()
 	}
 
+	var wasmOpts []wasmkeeper.Option
+	if cast.ToBool(appOpts.Get("telemetry.enabled")) {
+		wasmOpts = append(wasmOpts, wasmkeeper.WithVMCacheMetrics(prometheus.DefaultRegisterer))
+	}
+
 	pruningOpts, err := server.GetPruningOptionsFromFlags(appOpts)
 	if err != nil {
 		panic(err)
@@ -297,6 +311,7 @@ func (a appCreator) newApp(
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		a.encCfg,
 		appOpts,
+		wasmOpts,
 		baseappOptions...,
 	)
 }
@@ -332,6 +347,7 @@ func (a appCreator) appExport(
 		loadLatest = true
 	}
 
+	var emptyWasmOpts []wasmkeeper.Option
 	gaiaApp = gaia.NewGaiaApp(
 		logger,
 		db,
@@ -341,6 +357,7 @@ func (a appCreator) appExport(
 		homePath,
 		a.encCfg,
 		appOpts,
+		emptyWasmOpts,
 	)
 
 	if height != -1 {

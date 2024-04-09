@@ -24,6 +24,8 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+
 	gaiaapp "github.com/cosmos/gaia/v16/app"
 )
 
@@ -121,6 +123,7 @@ func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs 
 func setup() (*gaiaapp.GaiaApp, gaiaapp.GenesisState) {
 	db := dbm.NewMemDB()
 	appOptions := make(simtestutil.AppOptionsMap, 0)
+	emptyWasmOpts := []wasmkeeper.Option{}
 	appOptions[server.FlagInvCheckPeriod] = 5
 	appOptions[server.FlagMinGasPrices] = "0uatom"
 
@@ -135,6 +138,7 @@ func setup() (*gaiaapp.GaiaApp, gaiaapp.GenesisState) {
 		gaiaapp.DefaultNodeHome,
 		encConfig,
 		appOptions,
+		emptyWasmOpts,
 	)
 	return gaiaApp, gaiaapp.NewDefaultGenesisState(encConfig)
 }

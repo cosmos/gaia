@@ -12,6 +12,10 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+
 	gaiaerrors "github.com/cosmos/gaia/v16/types/errors"
 	gaiafeeante "github.com/cosmos/gaia/v16/x/globalfee/ante"
 )
@@ -25,6 +29,10 @@ type HandlerOptions struct {
 	GlobalFeeSubspace paramtypes.Subspace
 	StakingKeeper     *stakingkeeper.Keeper
 	TxFeeChecker      ante.TxFeeChecker
+
+	TxCounterStoreKey storetypes.StoreKey
+	WasmConfig        *wasmtypes.WasmConfig
+	WasmKeeper        wasmkeeper.Keeper
 }
 
 func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
@@ -55,7 +63,9 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 	}
 
 	anteDecorators := []sdk.AnteDecorator{
-		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
+		ante.NewSetUpContextDecorator(),                                               // outermost AnteDecorator. SetUpContext must be called first
+		wasmkeeper.NewLimitSimulationGasDecorator(opts.WasmConfig.SimulationGasLimit), // after setup context to enforce limits early
+		wasmkeeper.NewCountTXDecorator(opts.TxCounterStoreKey),
 		ante.NewExtensionOptionsDecorator(opts.ExtensionOptionChecker),
 		ante.NewValidateBasicDecorator(),
 		ante.NewTxTimeoutHeightDecorator(),

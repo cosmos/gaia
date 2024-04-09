@@ -5,6 +5,7 @@ import (
 	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
 
 	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
+	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
 
 	errorsmod "cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
@@ -74,6 +75,11 @@ func CreateUpgradeHandler(
 		if err := AddRateLimits(ctx, keepers.RatelimitKeeper); err != nil {
 			return vm, err
 		}
+
+		// Set default blocks per epoch
+		providerParams := keepers.ProviderKeeper.GetParams(ctx)
+		providerParams.BlocksPerEpoch = providertypes.DefaultBlocksPerEpoch
+		keepers.ProviderKeeper.SetParams(ctx, providerParams)
 
 		ctx.Logger().Info("Upgrade complete")
 		return vm, err

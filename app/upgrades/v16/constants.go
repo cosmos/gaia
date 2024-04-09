@@ -13,6 +13,9 @@ import (
 const (
 	// UpgradeName defines the on-chain upgrade name.
 	UpgradeName = "v16"
+
+	RateLimitDenom         = "uatom"
+	RateLimitDurationHours = 24
 )
 
 var Upgrade = upgrades.Upgrade{

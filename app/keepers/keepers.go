@@ -76,6 +76,7 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
+	wasmapp "github.com/CosmWasm/wasmd/app"
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
@@ -436,16 +437,6 @@ func NewAppKeeper(
 		panic("error while reading wasm config: " + err.Error())
 	}
 
-	wasmCapabilities := []string{
-		"iterator",
-		"staking",
-		"stargate",
-		"cosmwasm_1_1",
-		"cosmwasm_1_2",
-		"cosmwasm_1_3",
-		"cosmwasm_1_4",
-	}
-
 	appKeepers.WasmKeeper = wasmkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[wasmtypes.StoreKey],
@@ -462,7 +453,7 @@ func NewAppKeeper(
 		bApp.GRPCQueryRouter(),
 		homePath,
 		wasmConfig,
-		strings.Join(wasmCapabilities, ","),
+		strings.Join(wasmapp.AllCapabilities(), ","),
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 

@@ -22,6 +22,7 @@ builds:
       - linux
     goarch:
       - amd64
+      - arm64
 
 archives:
   # disables archiving; to enable use commented lines below

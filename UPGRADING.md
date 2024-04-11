@@ -109,7 +109,7 @@ There is no need to restart the node yet; these changes will get applied during 
 #### Follow these steps if gaiad repo already present
 
 ```shell
-   cd $HOME/.gaia
+   cd $HOME/gaia
    git pull
    git fetch --tags
    git checkout v15.2.0

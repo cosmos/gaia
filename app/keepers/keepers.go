@@ -3,6 +3,10 @@ package keepers
 import (
 	"os"
 
+	ratelimit "github.com/Stride-Labs/ibc-rate-limiting/ratelimit"
+	ratelimitkeeper "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/keeper"
+	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
+
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
 
@@ -12,6 +16,9 @@ import (
 	pfmrouterkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward/keeper"
 	pfmroutertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward/types"
 	ica "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts"
+	icacontroller "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller"
+	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
+	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
 	icahost "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host"
 	icahostkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/keeper"
 	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
@@ -23,9 +30,9 @@ import (
 	porttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
-	ibcprovider "github.com/cosmos/interchain-security/v3/x/ccv/provider"
-	ibcproviderkeeper "github.com/cosmos/interchain-security/v3/x/ccv/provider/keeper"
-	providertypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
+	ibcprovider "github.com/cosmos/interchain-security/v4/x/ccv/provider"
+	ibcproviderkeeper "github.com/cosmos/interchain-security/v4/x/ccv/provider/keeper"
+	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -68,7 +75,7 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	"github.com/cosmos/gaia/v15/x/globalfee"
+	"github.com/cosmos/gaia/v16/x/globalfee"
 )
 
 type AppKeepers struct {
@@ -92,6 +99,7 @@ type AppKeepers struct {
 	// IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	IBCKeeper             *ibckeeper.Keeper
 	ICAHostKeeper         icahostkeeper.Keeper
+	ICAControllerKeeper   icacontrollerkeeper.Keeper
 	EvidenceKeeper        evidencekeeper.Keeper
 	TransferKeeper        ibctransferkeeper.Keeper
 	FeeGrantKeeper        feegrantkeeper.Keeper
@@ -102,18 +110,21 @@ type AppKeepers struct {
 	ProviderKeeper ibcproviderkeeper.Keeper
 
 	PFMRouterKeeper *pfmrouterkeeper.Keeper
+	RatelimitKeeper ratelimitkeeper.Keeper
 
 	// Modules
 	ICAModule       ica.AppModule
 	TransferModule  transfer.AppModule
 	PFMRouterModule pfmrouter.AppModule
+	RateLimitModule ratelimit.AppModule
 	ProviderModule  ibcprovider.AppModule
 
 	// make scoped keepers public for test purposes
-	ScopedIBCKeeper         capabilitykeeper.ScopedKeeper
-	ScopedTransferKeeper    capabilitykeeper.ScopedKeeper
-	ScopedICAHostKeeper     capabilitykeeper.ScopedKeeper
-	ScopedIBCProviderKeeper capabilitykeeper.ScopedKeeper
+	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
+	ScopedTransferKeeper      capabilitykeeper.ScopedKeeper
+	ScopedICAHostKeeper       capabilitykeeper.ScopedKeeper
+	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
+	ScopedIBCProviderKeeper   capabilitykeeper.ScopedKeeper
 }
 
 func NewAppKeeper(
@@ -169,6 +180,7 @@ func NewAppKeeper(
 
 	appKeepers.ScopedIBCKeeper = appKeepers.CapabilityKeeper.ScopeToModule(ibcexported.ModuleName)
 	appKeepers.ScopedICAHostKeeper = appKeepers.CapabilityKeeper.ScopeToModule(icahosttypes.SubModuleName)
+	appKeepers.ScopedICAControllerKeeper = appKeepers.CapabilityKeeper.ScopeToModule(icacontrollertypes.SubModuleName)
 	appKeepers.ScopedTransferKeeper = appKeepers.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 	appKeepers.ScopedIBCProviderKeeper = appKeepers.CapabilityKeeper.ScopeToModule(providertypes.ModuleName)
 
@@ -284,6 +296,8 @@ func NewAppKeeper(
 
 	// provider depends on gov, so gov must be registered first
 	govConfig := govtypes.DefaultConfig()
+	// set the MaxMetadataLen for proposals to the same value as it was pre-sdk v0.47.x
+	govConfig.MaxMetadataLen = 10200
 	appKeepers.GovKeeper = govkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[govtypes.StoreKey],
@@ -294,7 +308,6 @@ func NewAppKeeper(
 		govConfig,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
-
 	appKeepers.ProviderKeeper = ibcproviderkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[providertypes.StoreKey],
@@ -358,8 +371,32 @@ func NewAppKeeper(
 		bApp.MsgServiceRouter(),
 	)
 
+	govAuthority := authtypes.NewModuleAddress(govtypes.ModuleName).String()
+
+	// Create RateLimit keeper
+	appKeepers.RatelimitKeeper = *ratelimitkeeper.NewKeeper(
+		appCodec,                                 // BinaryCodec
+		appKeepers.keys[ratelimittypes.StoreKey], // StoreKey
+		appKeepers.GetSubspace(ratelimittypes.ModuleName), // param Subspace
+		govAuthority, // authority
+		appKeepers.BankKeeper,
+		appKeepers.IBCKeeper.ChannelKeeper, // ChannelKeeper
+		appKeepers.IBCKeeper.ChannelKeeper, // ICS4Wrapper
+	)
+
+	// ICA Controller keeper
+	appKeepers.ICAControllerKeeper = icacontrollerkeeper.NewKeeper(
+		appCodec,
+		appKeepers.keys[icacontrollertypes.StoreKey],
+		appKeepers.GetSubspace(icacontrollertypes.SubModuleName),
+		appKeepers.IBCKeeper.ChannelKeeper, // ICS4Wrapper
+		appKeepers.IBCKeeper.ChannelKeeper,
+		&appKeepers.IBCKeeper.PortKeeper,
+		appKeepers.ScopedICAControllerKeeper,
+		bApp.MsgServiceRouter(),
+	)
+
 	// PFMRouterKeeper must be created before TransferKeeper
-	authority := authtypes.NewModuleAddress(govtypes.ModuleName).String()
 	appKeepers.PFMRouterKeeper = pfmrouterkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[pfmroutertypes.StoreKey],
@@ -367,8 +404,8 @@ func NewAppKeeper(
 		appKeepers.IBCKeeper.ChannelKeeper,
 		appKeepers.DistrKeeper,
 		appKeepers.BankKeeper,
-		appKeepers.IBCKeeper.ChannelKeeper,
-		authority,
+		appKeepers.RatelimitKeeper, // ICS4Wrapper
+		govAuthority,
 	)
 
 	appKeepers.TransferKeeper = ibctransferkeeper.NewKeeper(
@@ -386,29 +423,37 @@ func NewAppKeeper(
 	appKeepers.PFMRouterKeeper.SetTransferKeeper(appKeepers.TransferKeeper)
 
 	// Middleware Stacks
-	appKeepers.ICAModule = ica.NewAppModule(nil, &appKeepers.ICAHostKeeper)
+	appKeepers.ICAModule = ica.NewAppModule(&appKeepers.ICAControllerKeeper, &appKeepers.ICAHostKeeper)
 	appKeepers.TransferModule = transfer.NewAppModule(appKeepers.TransferKeeper)
 	appKeepers.PFMRouterModule = pfmrouter.NewAppModule(appKeepers.PFMRouterKeeper, appKeepers.GetSubspace(pfmroutertypes.ModuleName))
+	appKeepers.RateLimitModule = ratelimit.NewAppModule(appCodec, appKeepers.RatelimitKeeper)
 
-	// create IBC module from bottom to top of stack
+	// Create Transfer Stack (from bottom to top of stack)
+	// - core IBC
+	// - ratelimit
+	// - pfm
+	// - transfer
 	var transferStack porttypes.IBCModule
 	transferStack = transfer.NewIBCModule(appKeepers.TransferKeeper)
 	transferStack = pfmrouter.NewIBCMiddleware(
 		transferStack,
 		appKeepers.PFMRouterKeeper,
-		0,
+		0, // retries on timeout
 		pfmrouterkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
 		pfmrouterkeeper.DefaultRefundTransferPacketTimeoutTimestamp,
 	)
+	transferStack = ratelimit.NewIBCMiddleware(appKeepers.RatelimitKeeper, transferStack)
 
-	// Add transfer stack to IBC Router
-
-	// Create Interchain Accounts Stack
+	// Create ICAHost Stack
 	var icaHostStack porttypes.IBCModule = icahost.NewIBCModule(appKeepers.ICAHostKeeper)
+
+	// Create Interchain Accounts Controller Stack
+	var icaControllerStack porttypes.IBCModule = icacontroller.NewIBCMiddleware(nil, appKeepers.ICAControllerKeeper)
 
 	// Create IBC Router & seal
 	ibcRouter := porttypes.NewRouter().
 		AddRoute(icahosttypes.SubModuleName, icaHostStack).
+		AddRoute(icacontrollertypes.SubModuleName, icaControllerStack).
 		AddRoute(ibctransfertypes.ModuleName, transferStack).
 		AddRoute(providertypes.ModuleName, appKeepers.ProviderModule)
 
@@ -442,7 +487,9 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibcexported.ModuleName)
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
+	paramsKeeper.Subspace(icacontrollertypes.SubModuleName)
 	paramsKeeper.Subspace(pfmroutertypes.ModuleName).WithKeyTable(pfmroutertypes.ParamKeyTable())
+	paramsKeeper.Subspace(ratelimittypes.ModuleName)
 	paramsKeeper.Subspace(globalfee.ModuleName)
 	paramsKeeper.Subspace(providertypes.ModuleName)
 

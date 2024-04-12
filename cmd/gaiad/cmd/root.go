@@ -40,8 +40,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 
-	gaia "github.com/cosmos/gaia/v15/app"
-	"github.com/cosmos/gaia/v15/app/params"
+	gaia "github.com/cosmos/gaia/v16/app"
+	"github.com/cosmos/gaia/v16/app/params"
 )
 
 // NewRootCmd creates a new root command for simd. It is called once in the
@@ -249,8 +249,9 @@ func (a appCreator) newApp(
 	homeDir := cast.ToString(appOpts.Get(flags.FlagHome))
 	chainID := cast.ToString(appOpts.Get(flags.FlagChainID))
 	if chainID == "" {
-		// fallback to genesis chain-ida.
-		appGenesis, err := tmtypes.GenesisDocFromFile(filepath.Join(homeDir, "config", "genesis.json"))
+		// fallback to genesis chain-id
+		genDocFile := filepath.Join(homeDir, cast.ToString(appOpts.Get("genesis_file")))
+		appGenesis, err := tmtypes.GenesisDocFromFile(genDocFile)
 		if err != nil {
 			panic(err)
 		}
@@ -258,7 +259,7 @@ func (a appCreator) newApp(
 		chainID = appGenesis.ChainID
 	}
 
-	snapshotDir := filepath.Join(cast.ToString(appOpts.Get(flags.FlagHome)), "data", "snapshots")
+	snapshotDir := filepath.Join(homeDir, "data", "snapshots")
 	snapshotDB, err := dbm.NewDB("metadata", server.GetAppDBBackend(appOpts), snapshotDir)
 	if err != nil {
 		panic(err)

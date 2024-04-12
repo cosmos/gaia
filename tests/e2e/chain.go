@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"os"
 
+	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
+
 	tmrand "github.com/cometbft/cometbft/libs/rand"
 
-	providertypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
+	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -23,8 +25,8 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	gaiaparams "github.com/cosmos/gaia/v15/app/params"
-	metaprotocoltypes "github.com/cosmos/gaia/v15/x/metaprotocols/types"
+	gaiaparams "github.com/cosmos/gaia/v16/app/params"
+	metaprotocoltypes "github.com/cosmos/gaia/v16/x/metaprotocols/types"
 )
 
 const (
@@ -55,6 +57,7 @@ func init() {
 	distribtypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	providertypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	metaprotocoltypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	ratelimittypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 
 	cdc = encodingConfig.Marshaler
 	txConfig = encodingConfig.TxConfig

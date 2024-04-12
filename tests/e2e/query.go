@@ -7,6 +7,11 @@ import (
 	"net/http"
 	"strings"
 
+	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
+
+	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
+	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
@@ -16,7 +21,7 @@ import (
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v15/x/globalfee/types"
+	"github.com/cosmos/gaia/v16/x/globalfee/types"
 )
 
 func queryGaiaTx(endpoint, txHash string) error {
@@ -71,6 +76,20 @@ func queryGaiaAllBalances(endpoint, addr string) (sdk.Coins, error) {
 	}
 
 	return balancesResp.Balances, nil
+}
+
+func querySupplyOf(endpoint, denom string) (sdk.Coin, error) {
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/bank/v1beta1/supply/by_denom?denom=%s", endpoint, denom))
+	if err != nil {
+		return sdk.Coin{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	var supplyOfResp banktypes.QuerySupplyOfResponse
+	if err := cdc.UnmarshalJSON(body, &supplyOfResp); err != nil {
+		return sdk.Coin{}, err
+	}
+
+	return supplyOfResp.Amount, nil
 }
 
 func queryStakingParams(endpoint string) (stakingtypes.QueryParamsResponse, error) {
@@ -313,4 +332,75 @@ func queryTokenizeShareRecordByID(endpoint string, recordID int) (stakingtypes.T
 		return stakingtypes.TokenizeShareRecord{}, err
 	}
 	return res.Record, nil
+}
+
+func queryAllRateLimits(endpoint string) ([]ratelimittypes.RateLimit, error) {
+	var res ratelimittypes.QueryAllRateLimitsResponse
+
+	body, err := httpGet(fmt.Sprintf("%s/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits", endpoint))
+	if err != nil {
+		return []ratelimittypes.RateLimit{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return []ratelimittypes.RateLimit{}, err
+	}
+	return res.RateLimits, nil
+}
+
+//nolint:unparam
+func queryRateLimit(endpoint, channelID, denom string) (ratelimittypes.QueryRateLimitResponse, error) {
+	var res ratelimittypes.QueryRateLimitResponse
+
+	body, err := httpGet(fmt.Sprintf("%s/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimit/%s/by_denom?denom=%s", endpoint, channelID, denom))
+	if err != nil {
+		return ratelimittypes.QueryRateLimitResponse{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return ratelimittypes.QueryRateLimitResponse{}, err
+	}
+	return res, nil
+}
+
+func queryRateLimitsByChainID(endpoint, channelID string) ([]ratelimittypes.RateLimit, error) {
+	var res ratelimittypes.QueryRateLimitsByChainIdResponse
+
+	body, err := httpGet(fmt.Sprintf("%s/Stride-Labs/ibc-rate-limiting/ratelimit/ratelimits/%s", endpoint, channelID))
+	if err != nil {
+		return []ratelimittypes.RateLimit{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return []ratelimittypes.RateLimit{}, err
+	}
+	return res.RateLimits, nil
+}
+
+func queryICAAccountAddress(endpoint, owner, connectionID string) (string, error) {
+	body, err := httpGet(fmt.Sprintf("%s/ibc/apps/interchain_accounts/controller/v1/owners/%s/connections/%s", endpoint, owner, connectionID))
+	if err != nil {
+		return "", fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	var icaAccountResp icacontrollertypes.QueryInterchainAccountResponse
+	if err := cdc.UnmarshalJSON(body, &icaAccountResp); err != nil {
+		return "", err
+	}
+
+	return icaAccountResp.Address, nil
+}
+
+func queryBlocksPerEpoch(endpoint string) (int64, error) {
+	body, err := httpGet(fmt.Sprintf("%s/interchain_security/ccv/provider/params", endpoint))
+	if err != nil {
+		return 0, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	var response providertypes.QueryParamsResponse
+	if err = cdc.UnmarshalJSON(body, &response); err != nil {
+		return 0, err
+	}
+
+	return response.Params.BlocksPerEpoch, nil
 }

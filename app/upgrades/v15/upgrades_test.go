@@ -22,8 +22,8 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v15/app/helpers"
-	v15 "github.com/cosmos/gaia/v15/app/upgrades/v15"
+	"github.com/cosmos/gaia/v16/app/helpers"
+	v15 "github.com/cosmos/gaia/v16/app/upgrades/v15"
 )
 
 func TestUpgradeSigningInfos(t *testing.T) {
@@ -294,9 +294,9 @@ func TestUpgradeEscrowAccounts(t *testing.T) {
 	escrowUpdates := v15.GetEscrowUpdates(ctx)
 
 	// check escrow accounts are empty
-	for addr, coins := range escrowUpdates {
-		require.Empty(t, bankKeeper.GetAllBalances(ctx, sdk.MustAccAddressFromBech32(addr)))
-		for _, coin := range coins {
+	for _, update := range escrowUpdates {
+		require.Empty(t, bankKeeper.GetAllBalances(ctx, sdk.MustAccAddressFromBech32(update.Address)))
+		for _, coin := range update.Coins {
 			require.Equal(t, sdk.ZeroInt(), transferKeeper.GetTotalEscrowForDenom(ctx, coin.Denom).Amount)
 		}
 	}
@@ -306,9 +306,9 @@ func TestUpgradeEscrowAccounts(t *testing.T) {
 
 	// check that new assets are minted and transferred to the escrow accounts
 	numUpdate := 0
-	for addr, coins := range escrowUpdates {
-		for _, coin := range coins {
-			require.Equal(t, coin, bankKeeper.GetBalance(ctx, sdk.MustAccAddressFromBech32(addr), coin.Denom))
+	for _, update := range escrowUpdates {
+		for _, coin := range update.Coins {
+			require.Equal(t, coin, bankKeeper.GetBalance(ctx, sdk.MustAccAddressFromBech32(update.Address), coin.Denom))
 			// check that the total escrow amount for the denom is updated
 			require.Equal(t, coin, transferKeeper.GetTotalEscrowForDenom(ctx, coin.Denom))
 			numUpdate++

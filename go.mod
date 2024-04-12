@@ -1,6 +1,6 @@
-module github.com/cosmos/gaia/v15
+module github.com/cosmos/gaia/v16
 
-go 1.21
+go 1.21.1
 
 require (
 	cosmossdk.io/api v0.3.1
@@ -8,14 +8,15 @@ require (
 	cosmossdk.io/math v1.3.0
 	cosmossdk.io/simapp v0.0.0-20230602123434-616841b9704d
 	cosmossdk.io/tools/rosetta v0.2.1
+	github.com/Stride-Labs/ibc-rate-limiting v1.0.1
 	github.com/cometbft/cometbft v0.37.4
-	github.com/cometbft/cometbft-db v0.10.0
-	github.com/cosmos/cosmos-sdk v0.47.10
+	github.com/cometbft/cometbft-db v0.11.0
+	github.com/cosmos/cosmos-sdk v0.47.11-ics-lsm
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/gogoproto v1.4.10
-	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7 v7.1.3-0.20240228213828-cce7f56d000b
-	github.com/cosmos/ibc-go/v7 v7.3.2
-	github.com/cosmos/interchain-security/v3 v3.3.0
+	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7 v7.1.3
+	github.com/cosmos/ibc-go/v7 v7.4.0
+	github.com/cosmos/interchain-security/v4 v4.1.0
 	github.com/google/gofuzz v1.2.0
 	github.com/gorilla/mux v1.8.1
 	github.com/ory/dockertest/v3 v3.10.0
@@ -64,10 +65,11 @@ require (
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/chzyer/readline v1.5.1 // indirect
 	github.com/cockroachdb/apd/v2 v2.0.2 // indirect
-	github.com/cockroachdb/errors v1.10.0 // indirect
+	github.com/cockroachdb/errors v1.11.1 // indirect
 	github.com/cockroachdb/logtags v0.0.0-20230118201751-21c54148d20b // indirect
-	github.com/cockroachdb/pebble v1.0.0 // indirect
+	github.com/cockroachdb/pebble v1.1.0 // indirect
 	github.com/cockroachdb/redact v1.1.5 // indirect
+	github.com/cockroachdb/tokenbucket v0.0.0-20230807174530-cc333fc44b06 // indirect
 	github.com/coinbase/rosetta-sdk-go v0.7.9 // indirect
 	github.com/confio/ics23/go v0.9.0 // indirect
 	github.com/containerd/continuity v0.3.0 // indirect
@@ -87,7 +89,7 @@ require (
 	github.com/dgraph-io/ristretto v0.1.1 // indirect
 	github.com/dgryski/go-farm v0.0.0-20200201041132-a6ae2369ad13 // indirect
 	github.com/docker/cli v20.10.17+incompatible // indirect
-	github.com/docker/docker v20.10.27+incompatible // indirect
+	github.com/docker/docker v24.0.9+incompatible // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
@@ -107,7 +109,7 @@ require (
 	github.com/golang/glog v1.2.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/mock v1.6.0 // indirect
-	github.com/golang/snappy v0.0.4 // indirect
+	github.com/golang/snappy v0.0.5-0.20220116011046-fa5810519dcb // indirect
 	github.com/google/btree v1.1.2 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/orderedcode v0.0.1 // indirect
@@ -142,7 +144,7 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/lib/pq v1.10.7 // indirect
 	github.com/libp2p/go-buffer-pool v0.1.0 // indirect
-	github.com/linxGnu/grocksdb v1.8.11 // indirect
+	github.com/linxGnu/grocksdb v1.8.12 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/manifoldco/promptui v0.9.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
@@ -196,7 +198,7 @@ require (
 	go.uber.org/mock v0.2.0 // indirect
 	golang.org/x/crypto v0.20.0 // indirect
 	golang.org/x/exp v0.0.0-20230711153332-06a737ee72cb // indirect
-	golang.org/x/mod v0.11.0 // indirect
+	golang.org/x/mod v0.16.0 // indirect
 	golang.org/x/net v0.21.0 // indirect
 	golang.org/x/oauth2 v0.16.0 // indirect
 	golang.org/x/sync v0.6.0 // indirect
@@ -204,7 +206,7 @@ require (
 	golang.org/x/term v0.17.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	golang.org/x/tools v0.7.0 // indirect
+	golang.org/x/tools v0.13.0 // indirect
 	google.golang.org/api v0.155.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240123012728-ef4313101c80 // indirect
@@ -222,10 +224,10 @@ replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
 	// Use special SDK v0.47.x release with support for both ICS and LSM
-	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.47.10-ics-lsm
+	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.47.11-ics-lsm
 
-	// Use special ICS v3.3.x release with support for LSM
-	github.com/cosmos/interchain-security/v3 => github.com/cosmos/interchain-security/v3 v3.3.3-lsm
+	// Use special ICS v4.1.0-ics-lsm release with support for LSM
+	github.com/cosmos/interchain-security/v4 => github.com/cosmos/interchain-security/v4 v4.1.0-lsm-rc2
 
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2

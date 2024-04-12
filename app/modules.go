@@ -1,6 +1,9 @@
 package gaia
 
 import (
+	ratelimit "github.com/Stride-Labs/ibc-rate-limiting/ratelimit"
+	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
+
 	pfmrouter "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward"
 	pfmroutertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward/types"
 	ica "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts"
@@ -11,9 +14,9 @@ import (
 	ibcclientclient "github.com/cosmos/ibc-go/v7/modules/core/02-client/client"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibctm "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
-	icsprovider "github.com/cosmos/interchain-security/v3/x/ccv/provider"
-	icsproviderclient "github.com/cosmos/interchain-security/v3/x/ccv/provider/client"
-	providertypes "github.com/cosmos/interchain-security/v3/x/ccv/provider/types"
+	icsprovider "github.com/cosmos/interchain-security/v4/x/ccv/provider"
+	icsproviderclient "github.com/cosmos/interchain-security/v4/x/ccv/provider/client"
+	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
 
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -55,10 +58,10 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	gaiaappparams "github.com/cosmos/gaia/v15/app/params"
-	"github.com/cosmos/gaia/v15/x/globalfee"
-	"github.com/cosmos/gaia/v15/x/metaprotocols"
-	metaprotocolstypes "github.com/cosmos/gaia/v15/x/metaprotocols/types"
+	gaiaappparams "github.com/cosmos/gaia/v16/app/params"
+	"github.com/cosmos/gaia/v16/x/globalfee"
+	"github.com/cosmos/gaia/v16/x/metaprotocols"
+	metaprotocolstypes "github.com/cosmos/gaia/v16/x/metaprotocols/types"
 )
 
 var maccPerms = map[string][]string{
@@ -109,6 +112,7 @@ var ModuleBasics = module.NewBasicManager(
 	transfer.AppModuleBasic{},
 	vesting.AppModuleBasic{},
 	pfmrouter.AppModuleBasic{},
+	ratelimit.AppModuleBasic{},
 	ica.AppModuleBasic{},
 	globalfee.AppModule{},
 	icsprovider.AppModuleBasic{},
@@ -151,6 +155,8 @@ func appModules(
 		app.TransferModule,
 		app.ICAModule,
 		app.PFMRouterModule,
+		app.RateLimitModule,
+
 		app.ProviderModule,
 		metaprotocols.NewAppModule(),
 	}
@@ -181,7 +187,6 @@ func simulationModules(
 		ibc.NewAppModule(app.IBCKeeper),
 		app.TransferModule,
 		app.ICAModule,
-		app.ProviderModule,
 	}
 }
 
@@ -215,6 +220,7 @@ func orderBeginBlockers() []string {
 		ibctransfertypes.ModuleName,
 		icatypes.ModuleName,
 		pfmroutertypes.ModuleName,
+		ratelimittypes.ModuleName,
 		genutiltypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
@@ -244,6 +250,7 @@ func orderEndBlockers() []string {
 		ibctransfertypes.ModuleName,
 		icatypes.ModuleName,
 		pfmroutertypes.ModuleName,
+		ratelimittypes.ModuleName,
 		capabilitytypes.ModuleName,
 		authtypes.ModuleName,
 		banktypes.ModuleName,
@@ -291,6 +298,7 @@ func orderInitBlockers() []string {
 		authz.ModuleName,
 		feegrant.ModuleName,
 		pfmroutertypes.ModuleName,
+		ratelimittypes.ModuleName,
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,

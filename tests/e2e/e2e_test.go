@@ -16,6 +16,7 @@ var (
 	runVestingTest                = true
 	runRestInterfacesTest         = true
 	runLsmTest                    = true
+	runRateLimitTest              = true
 )
 
 func (s *IntegrationTestSuite) TestRestInterfaces() {
@@ -80,6 +81,8 @@ func (s *IntegrationTestSuite) TestGov() {
 	s.GovCancelSoftwareUpgrade()
 	s.GovCommunityPoolSpend()
 	s.AddRemoveConsumerChain()
+
+	s.testSetBlocksPerEpoch()
 }
 
 func (s *IntegrationTestSuite) TestIBC() {
@@ -91,6 +94,7 @@ func (s *IntegrationTestSuite) TestIBC() {
 	s.testMultihopIBCTokenTransfer()
 	s.testFailedMultihopIBCTokenTransfer()
 	s.testIBCBypassMsg()
+	s.testICARegisterAccountAndSendTx()
 }
 
 func (s *IntegrationTestSuite) TestSlashing() {
@@ -125,4 +129,16 @@ func (s *IntegrationTestSuite) TestLSM() {
 		s.T().Skip()
 	}
 	s.testLSM()
+}
+
+func (s *IntegrationTestSuite) TestRateLimit() {
+	if !runRateLimitTest {
+		s.T().Skip()
+	}
+	s.testAddRateLimits()
+	s.testIBCTransfer(true)
+	s.testUpdateRateLimit()
+	s.testIBCTransfer(false)
+	s.testResetRateLimit()
+	s.testRemoveRateLimit()
 }

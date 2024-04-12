@@ -1,7 +1,7 @@
 ---
 name: Feature Request
 about: Create a proposal to request a feature
-labels: enhancement, epic, needs-triage
+labels: "type: feature-request", "admin: epic", "status: waiting-triage"
 ---
 
 <!-- < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < < ☺ 

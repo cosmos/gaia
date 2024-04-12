@@ -449,7 +449,7 @@ func NewAppKeeper(
 	//
 	// This is how transfer stack will work in the end:
 	// * RecvPacket -> IBC core -> Fee -> RateLimit -> PFM -> Transfer (AddRoute)
-	// * SentPacket -> Transfer -> PFM -> RateLimit -> Fee -> IBC core (ICS4Wrapper)
+	// * SendPacket -> Transfer -> PFM -> RateLimit -> Fee -> IBC core (ICS4Wrapper)
 	var transferStack porttypes.IBCModule
 	transferStack = transfer.NewIBCModule(appKeepers.TransferKeeper)
 	transferStack = pfmrouter.NewIBCMiddleware(

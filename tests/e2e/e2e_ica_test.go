@@ -147,6 +147,7 @@ func (s *IntegrationTestSuite) registerICAAccount(c *chain, valIdx int, sender, 
 		fmt.Sprintf("--from=%s", sender),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, fees),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		"--gas=250000", // default 200_000 is not enough; gas fees increased after adding IBC fee middleware
 		"--keyring-backend=test",
 		"--broadcast-mode=sync",
 		"--output=json",

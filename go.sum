@@ -568,11 +568,16 @@ github.com/DataDog/zstd v1.5.0/go.mod h1:g4AWEaM3yOg3HYfnJ3YIawPnVdXJh9QME85blwS
 github.com/JohnCGriffin/overflow v0.0.0-20211019200055-46fa312c352c/go.mod h1:X0CRv0ky0k6m906ixxpzmDRLvX58TFUKS2eePweuyxk=
 github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible/go.mod h1:r7JcOSlj0wfOMncg0iLm8Leh48TZaKVeNIfJntJ2wa0=
 <<<<<<< HEAD
+<<<<<<< HEAD
 github.com/Microsoft/go-winio v0.6.1 h1:9/kr64B9VUZrLm5YYwbGtUJnMgqWVOdUAXu6Migciow=
 github.com/Microsoft/go-winio v0.6.1/go.mod h1:LRdKpFKfdobln8UmuiYcKPot9D2v6svN5+sAH+4kjUM=
 =======
 github.com/MSalopek/feemarket v0.0.0-20240402122625-ab432d7d2a1c h1:nVPchtfDBHPMstzPCJS7X1FzR0dBzEIt/uTRUrAVztk=
 github.com/MSalopek/feemarket v0.0.0-20240402122625-ab432d7d2a1c/go.mod h1:ifgafO5QK66HEgXiAwEsiuIwEgwlDbL1ZzRgyqVHw30=
+=======
+github.com/MSalopek/feemarket v0.0.0-20240417155021-ed1712a09325 h1:SSUeJGduoG5t63nGs4TY/X0TURCbzI7qYChxMA7P9W8=
+github.com/MSalopek/feemarket v0.0.0-20240417155021-ed1712a09325/go.mod h1:ifgafO5QK66HEgXiAwEsiuIwEgwlDbL1ZzRgyqVHw30=
+>>>>>>> update x/feemarket dependency
 github.com/Microsoft/go-winio v0.6.0 h1:slsWYD/zyx7lCXoZVlvQrj0hPTM1HI4+v1sIda2yDvg=
 github.com/Microsoft/go-winio v0.6.0/go.mod h1:cTAf44im0RAYeL23bpB+fzCyDH2MJiz2BO69KH/soAE=
 >>>>>>> test fix part 2

@@ -5,18 +5,12 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	"github.com/cosmos/gogoproto/proto"
-	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
-	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
 	ibcfeetypes "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/types"
 	transfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
-	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 	ibctesting "github.com/cosmos/ibc-go/v7/testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	gaiaApp "github.com/cosmos/gaia/v16/app"
 )
@@ -31,11 +25,6 @@ var (
 	defaultRecvFee    = sdk.Coins{sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: sdk.NewInt(100)}}
 	defaultAckFee     = sdk.Coins{sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: sdk.NewInt(200)}}
 	defaultTimeoutFee = sdk.Coins{sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: sdk.NewInt(300)}}
-
-	// ICA + IBC fee test variables
-	defaultOwnerAddress = "cosmos17dtl0mjt3t77kpuhg2edqzjpszulwhgzuj9ljs"                                               // defaultOwnerAddress defines a reusable bech32 address for testing purposes
-	defaultPortID, _    = icatypes.NewControllerPortID(defaultOwnerAddress)                                             // defaultPortID defines a reusable port identifier for testing purposes
-	defaultICAVersion   = icatypes.NewDefaultMetadataString(ibctesting.FirstConnectionID, ibctesting.FirstConnectionID) // defaultICAVersion defines a reusable interchainaccounts version string for testing purposes
 )
 
 type IBCFeeTestSuite struct {
@@ -148,175 +137,6 @@ func (suite *IBCFeeTestSuite) TestFeeTransfer() {
 	suite.Require().Equal(
 		fee.AckFee.Add(fee.TimeoutFee...), // ack fee paid, timeout fee refunded
 		sdk.NewCoins(getApp(suite.chainA).BankKeeper.GetBalance(suite.chainA.GetContext(), suite.chainA.SenderAccount.GetAddress(), ibctesting.TestCoin.Denom)).Sub(originalChainASenderAccountBalance[0]))
-}
-
-// TestFeeInterchainAccounts Integration test to ensure ics29 works with ics27
-// Source: https://github.com/cosmos/ibc-go/blob/v7.3.2/modules/apps/29-fee/ica_test.go#L94
-func (suite *IBCFeeTestSuite) TestFeeInterchainAccounts() {
-	path := NewIncentivizedICAPath(suite.chainA, suite.chainB)
-	suite.coordinator.SetupConnections(path)
-
-	err := SetupPath(path, defaultOwnerAddress)
-	suite.Require().NoError(err)
-
-	// assert the newly established channel is fee enabled on both ends
-	suite.Require().True(getApp(suite.chainA).IBCFeeKeeper.IsFeeEnabled(suite.chainA.GetContext(), path.EndpointA.ChannelConfig.PortID, path.EndpointA.ChannelID))
-	suite.Require().True(getApp(suite.chainB).IBCFeeKeeper.IsFeeEnabled(suite.chainB.GetContext(), path.EndpointB.ChannelConfig.PortID, path.EndpointB.ChannelID))
-
-	// register counterparty address on destination chainB as chainA.SenderAccounts[1] for recv fee distribution
-	getApp(suite.chainB).IBCFeeKeeper.SetCounterpartyPayeeAddress(suite.chainB.GetContext(), suite.chainB.SenderAccount.GetAddress().String(), suite.chainA.SenderAccounts[1].SenderAccount.GetAddress().String(), path.EndpointB.ChannelID)
-
-	// escrow a packet fee for the next send sequence
-	expectedFee := ibcfeetypes.NewFee(defaultRecvFee, defaultAckFee, defaultTimeoutFee)
-	msgPayPacketFee := ibcfeetypes.NewMsgPayPacketFee(expectedFee, path.EndpointA.ChannelConfig.PortID, path.EndpointA.ChannelID, suite.chainA.SenderAccount.GetAddress().String(), nil)
-
-	// fetch the account balance before fees are escrowed and assert the difference below
-	preEscrowBalance := getApp(suite.chainA).BankKeeper.GetBalance(suite.chainA.GetContext(), suite.chainA.SenderAccount.GetAddress(), sdk.DefaultBondDenom)
-
-	res, err := suite.chainA.SendMsgs(msgPayPacketFee)
-	suite.Require().NotNil(res)
-	suite.Require().NoError(err)
-
-	postEscrowBalance := getApp(suite.chainA).BankKeeper.GetBalance(suite.chainA.GetContext(), suite.chainA.SenderAccount.GetAddress(), sdk.DefaultBondDenom)
-	suite.Require().Equal(postEscrowBalance.AddAmount(expectedFee.Total().AmountOf(sdk.DefaultBondDenom)), preEscrowBalance)
-
-	packetID := channeltypes.NewPacketID(path.EndpointA.ChannelConfig.PortID, path.EndpointA.ChannelID, 1)
-	packetFees, found := getApp(suite.chainA).IBCFeeKeeper.GetFeesInEscrow(suite.chainA.GetContext(), packetID)
-	suite.Require().True(found)
-	suite.Require().Equal(expectedFee, packetFees.PacketFees[0].Fee)
-
-	interchainAccountAddr, found := getApp(suite.chainB).ICAHostKeeper.GetInterchainAccountAddress(suite.chainB.GetContext(), ibctesting.FirstConnectionID, path.EndpointA.ChannelConfig.PortID)
-	suite.Require().True(found)
-
-	// fund the interchain account on chainB
-	coins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100000)))
-	msgBankSend := &banktypes.MsgSend{
-		FromAddress: suite.chainB.SenderAccount.GetAddress().String(),
-		ToAddress:   interchainAccountAddr,
-		Amount:      coins,
-	}
-
-	res, err = suite.chainB.SendMsgs(msgBankSend)
-	suite.Require().NotEmpty(res)
-	suite.Require().NoError(err)
-
-	// prepare a simple stakingtypes.MsgDelegate to be used as the interchain account msg executed on chainB
-	validatorAddr := (sdk.ValAddress)(suite.chainB.Vals.Validators[0].Address)
-	msgDelegate := &stakingtypes.MsgDelegate{
-		DelegatorAddress: interchainAccountAddr,
-		ValidatorAddress: validatorAddr.String(),
-		Amount:           sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(5000)),
-	}
-
-	data, err := icatypes.SerializeCosmosTx(getApp(suite.chainA).AppCodec(), []proto.Message{msgDelegate})
-	suite.Require().NoError(err)
-
-	icaPacketData := icatypes.InterchainAccountPacketData{
-		Type: icatypes.EXECUTE_TX,
-		Data: data,
-	}
-
-	// ensure chainB is allowed to execute stakingtypes.MsgDelegate
-	params := icahosttypes.NewParams(true, []string{sdk.MsgTypeURL(msgDelegate)})
-	getApp(suite.chainB).ICAHostKeeper.SetParams(suite.chainB.GetContext(), params)
-
-	// build the interchain accounts packet
-	packet := buildInterchainAccountsPacket(path, icaPacketData.GetBytes())
-
-	// write packet commitment to state on chainA and commit state
-	commitment := channeltypes.CommitPacket(getApp(suite.chainA).AppCodec(), packet)
-	getApp(suite.chainA).IBCKeeper.ChannelKeeper.SetPacketCommitment(suite.chainA.GetContext(), path.EndpointA.ChannelConfig.PortID, path.EndpointA.ChannelID, 1, commitment)
-	suite.chainA.NextBlock()
-
-	err = path.RelayPacket(packet)
-	suite.Require().NoError(err)
-
-	// ensure escrowed fees are cleaned up
-	packetFees, found = getApp(suite.chainA).IBCFeeKeeper.GetFeesInEscrow(suite.chainA.GetContext(), packetID)
-	suite.Require().False(found)
-	suite.Require().Empty(packetFees)
-
-	// assert the value of the account balance after fee distribution
-	// NOTE: the balance after fee distribution should be equal to the pre-escrow balance minus the recv fee
-	// as chainA.SenderAccount is used as the msg signer and refund address for msgPayPacketFee above as well as the relyer account for acknowledgements in path.RelayPacket()
-	postDistBalance := getApp(suite.chainA).BankKeeper.GetBalance(suite.chainA.GetContext(), suite.chainA.SenderAccount.GetAddress(), sdk.DefaultBondDenom)
-	suite.Require().Equal(preEscrowBalance.SubAmount(defaultRecvFee.AmountOf(sdk.DefaultBondDenom)), postDistBalance)
-}
-
-func buildInterchainAccountsPacket(path *ibctesting.Path, data []byte) channeltypes.Packet {
-	packet := channeltypes.NewPacket(
-		data,
-		1,
-		path.EndpointA.ChannelConfig.PortID,
-		path.EndpointA.ChannelID,
-		path.EndpointB.ChannelConfig.PortID,
-		path.EndpointB.ChannelID,
-		clienttypes.NewHeight(1, 100),
-		0,
-	)
-
-	return packet
-}
-
-// NewIncentivizedICAPath creates and returns a new ibctesting path configured for a fee enabled interchain accounts channel
-func NewIncentivizedICAPath(chainA, chainB *ibctesting.TestChain) *ibctesting.Path {
-	path := ibctesting.NewPath(chainA, chainB)
-
-	feeMetadata := ibcfeetypes.Metadata{
-		FeeVersion: ibcfeetypes.Version,
-		AppVersion: defaultICAVersion,
-	}
-
-	feeICAVersion := string(ibcfeetypes.ModuleCdc.MustMarshalJSON(&feeMetadata))
-
-	path.SetChannelOrdered()
-	path.EndpointA.ChannelConfig.Version = feeICAVersion
-	path.EndpointB.ChannelConfig.Version = feeICAVersion
-	path.EndpointA.ChannelConfig.PortID = defaultPortID
-	path.EndpointB.ChannelConfig.PortID = icatypes.HostPortID
-
-	return path
-}
-
-// SetupPath performs the InterchainAccounts channel creation handshake using an ibctesting path
-func SetupPath(path *ibctesting.Path, owner string) error {
-	if err := RegisterInterchainAccount(path.EndpointA, owner); err != nil {
-		return err
-	}
-
-	if err := path.EndpointB.ChanOpenTry(); err != nil {
-		return err
-	}
-
-	if err := path.EndpointA.ChanOpenAck(); err != nil {
-		return err
-	}
-
-	return path.EndpointB.ChanOpenConfirm()
-}
-
-// RegisterInterchainAccount invokes the the InterchainAccounts entrypoint, routes a new MsgChannelOpenInit to the appropriate handler,
-// commits state changes and updates the testing endpoint accordingly
-func RegisterInterchainAccount(endpoint *ibctesting.Endpoint, owner string) error {
-	portID, err := icatypes.NewControllerPortID(owner)
-	if err != nil {
-		return err
-	}
-
-	channelSequence := endpoint.Chain.App.GetIBCKeeper().ChannelKeeper.GetNextChannelSequence(endpoint.Chain.GetContext())
-
-	if err := getApp(endpoint.Chain).ICAControllerKeeper.RegisterInterchainAccount(endpoint.Chain.GetContext(), endpoint.ConnectionID, owner, endpoint.ChannelConfig.Version); err != nil {
-		return err
-	}
-
-	// commit state changes for proof verification
-	endpoint.Chain.NextBlock()
-
-	// update port/channel ids
-	endpoint.ChannelID = channeltypes.FormatChannelIdentifier(channelSequence)
-	endpoint.ChannelConfig.PortID = portID
-
-	return nil
 }
 
 func getApp(chain *ibctesting.TestChain) *gaiaApp.GaiaApp {

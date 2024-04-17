@@ -374,7 +374,7 @@ func NewAppKeeper(
 		appCodec,
 		appKeepers.keys[icahosttypes.StoreKey],
 		appKeepers.GetSubspace(icahosttypes.SubModuleName),
-		appKeepers.IBCFeeKeeper, // ICS4Wrapper
+		appKeepers.IBCKeeper.ChannelKeeper, // ICS4Wrapper
 		appKeepers.IBCKeeper.ChannelKeeper,
 		&appKeepers.IBCKeeper.PortKeeper,
 		appKeepers.AccountKeeper,
@@ -400,7 +400,7 @@ func NewAppKeeper(
 		appCodec,
 		appKeepers.keys[icacontrollertypes.StoreKey],
 		appKeepers.GetSubspace(icacontrollertypes.SubModuleName),
-		appKeepers.IBCFeeKeeper, // ICS4Wrapper
+		appKeepers.IBCKeeper.ChannelKeeper, // ICS4Wrapper
 		appKeepers.IBCKeeper.ChannelKeeper,
 		&appKeepers.IBCKeeper.PortKeeper,
 		appKeepers.ScopedICAControllerKeeper,
@@ -464,11 +464,9 @@ func NewAppKeeper(
 
 	// Create ICAHost Stack
 	var icaHostStack porttypes.IBCModule = icahost.NewIBCModule(appKeepers.ICAHostKeeper)
-	icaHostStack = ibcfee.NewIBCMiddleware(icaHostStack, appKeepers.IBCFeeKeeper)
 
 	// Create Interchain Accounts Controller Stack
 	var icaControllerStack porttypes.IBCModule = icacontroller.NewIBCMiddleware(nil, appKeepers.ICAControllerKeeper)
-	icaControllerStack = ibcfee.NewIBCMiddleware(icaControllerStack, appKeepers.IBCFeeKeeper)
 
 	// Create IBC Router & seal
 	ibcRouter := porttypes.NewRouter().

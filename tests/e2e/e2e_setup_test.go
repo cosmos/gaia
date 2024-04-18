@@ -71,6 +71,7 @@ const (
 	proposalMaxTotalBypassFilename = "proposal_max_total_bypass.json"
 	proposalCommunitySpendFilename = "proposal_community_spend.json"
 	proposalLSMParamUpdateFilename = "proposal_lsm_param_update.json"
+	proposalBlocksPerEpochFilename = "proposal_blocks_per_epoch.json"
 
 	// proposalAddConsumerChainFilename    = "proposal_add_consumer.json"
 	// proposalRemoveConsumerChainFilename = "proposal_remove_consumer.json"
@@ -846,6 +847,43 @@ func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain, 
 	)
 
 	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalLSMParamUpdateFilename), []byte(propMsgBody))
+	s.Require().NoError(err)
+}
+
+// writeGovParamChangeProposalBlocksPerEpoch writes a governance proposal JSON file to change the `BlocksPerEpoch`
+// parameter to the provided `blocksPerEpoch`
+func (s *IntegrationTestSuite) writeGovParamChangeProposalBlocksPerEpoch(c *chain, blocksPerEpoch int64) {
+	template := `
+	{
+		"messages":[
+		  {
+			"@type": "/cosmos.gov.v1.MsgExecLegacyContent",
+			"authority": "%s",
+			"content": {
+				"@type": "/cosmos.params.v1beta1.ParameterChangeProposal",
+				"title": "BlocksPerEpoch",
+				"description": "change blocks per epoch",
+				"changes": [{
+				  "subspace": "provider",
+				  "key": "BlocksPerEpoch",
+				  "value": "\"%d\""
+				}]
+			}
+		  }
+		],
+		"deposit": "100uatom",
+		"proposer": "sample proposer",
+		"metadata": "sample metadata",
+		"title": "blocks per epoch title",
+		"summary": "blocks per epoch summary"
+	}`
+
+	propMsgBody := fmt.Sprintf(template,
+		govAuthority,
+		blocksPerEpoch,
+	)
+
+	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalBlocksPerEpochFilename), []byte(propMsgBody))
 	s.Require().NoError(err)
 }
 

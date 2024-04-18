@@ -18,9 +18,20 @@ Refer to the [upgrading guide](https://github.com/cosmos/gaia/blob/release/v16.x
 ## 🚀 Highlights
 
 - IBC rate limit
+
+  IBC rate limit prevents massive inflows or outflows of IBC tokens in a short time frame to add an extra layer of protection on IBC transfers
+
 - ICA controller
+
+  With ICA controller the Cosmos Hub expands its functionality to become a controller chain allowing controlling the accounts on another host chain
+
 - IBC fee middleware
+
+  Allows transfer packet relaying incentives
+
 - ICS epochs
+
+  Reduces the amount of Interchain Security protocol IBC packets to reduce relaying costs
 
 <!-- Add any highlights of this release -->
 

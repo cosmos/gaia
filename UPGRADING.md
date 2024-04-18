@@ -108,7 +108,7 @@ cosmovisor version
 # cosmovisor version: v1.5.0
 ```
 
-- Create a `cosmovisor` folder inside `$GAIA_HOME` and move Gaia `v14.2.0` into `$GAIA_HOME/cosmovisor/genesis/bin`:
+- Create a `cosmovisor` folder inside `$GAIA_HOME` and move Gaia `v15.2.0` into `$GAIA_HOME/cosmovisor/genesis/bin`:
 
 ```shell
 mkdir -p $GAIA_HOME/cosmovisor/genesis/bin

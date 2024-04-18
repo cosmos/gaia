@@ -35,6 +35,8 @@ Thank you to everyone who contributed to this release!
 
 ## 🔨 Build from source
 
+You must use Golang v1.21 if building from source.
+
 ```bash
 git clone https://github.com/cosmos/gaia
 cd gaia && git checkout v16.0.0

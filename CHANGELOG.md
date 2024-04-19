@@ -6,19 +6,9 @@
 
 ### DEPENDENCIES
 
-- Add the [IBC Rate Limit module](https://github.com/Stride-Labs/ibc-rate-limiting) 
-  [v1.0.1](https://github.com/Stride-Labs/ibc-rate-limiting/releases/tag/v1.0.1).
-  ([\#3002](https://github.com/cosmos/gaia/pull/3002))
 - Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware)
   to [v7.1.3](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv7.1.3).
   ([\#3021](https://github.com/cosmos/gaia/pull/3021))
-- Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to
-  [v0.47.11-ics-lsm](https://github.com/cosmos/cosmos-sdk/tree/v0.47.11-ics-lsm).
-  This is a special cosmos-sdk branch with support for both ICS and LSM.
-  ([\#3026](https://github.com/cosmos/gaia/pull/3026))
-- Add the [IBC Fee Module](https://ibc.cosmos.network/v7/middleware/ics29-fee/overview) 
-  [v7.3.2](https://github.com/cosmos/ibc-go/releases/tag/v7.3.2).
-  ([\#3038](https://github.com/cosmos/gaia/pull/3038))
 - Bump [ibc-go](https://github.com/cosmos/ibc-go) to
   [v7.4.0](https://github.com/cosmos/ibc-go/releases/tag/v7.4.0)
   ([\#3039](https://github.com/cosmos/gaia/pull/3039))
@@ -32,29 +22,23 @@
 
 ### FEATURES
 
-- Added ICA Controller sub-module
+- Add ICA Controller sub-module
   ([\#3001](https://github.com/cosmos/gaia/pull/3001))
 - Add the [IBC Rate Limit module](https://github.com/Stride-Labs/ibc-rate-limiting).
   ([\#3002](https://github.com/cosmos/gaia/pull/3002))
-- Add the [IBC Fee Module](https://ibc.cosmos.network/v7/middleware/ics29-fee/overview) 
-  [v7.3.2](https://github.com/cosmos/ibc-go/releases/tag/v7.3.2).
+- Add the [IBC Fee Module](https://ibc.cosmos.network/v7/middleware/ics29-fee/overview).
   ([\#3038](https://github.com/cosmos/gaia/pull/3038))
-- Adding rate limits to IBC transfer channels cf.
+- Add rate limits to IBC transfer channels cf.
   https://www.mintscan.io/cosmos/proposals/890.
   ([\#3042](https://github.com/cosmos/gaia/pull/3042))
 
 ### STATE BREAKING
 
-- Added ICA Controller sub-module
+- Add ICA Controller sub-module
   ([\#3001](https://github.com/cosmos/gaia/pull/3001))
 - Add the [IBC Rate Limit module](https://github.com/Stride-Labs/ibc-rate-limiting).
   ([\#3002](https://github.com/cosmos/gaia/pull/3002))
-- Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to
-  [v0.47.11-ics-lsm](https://github.com/cosmos/cosmos-sdk/tree/v0.47.11-ics-lsm).
-  This is a special cosmos-sdk branch with support for both ICS and LSM.
-  ([\#3026](https://github.com/cosmos/gaia/pull/3026))
-- Add the [IBC Fee Module](https://ibc.cosmos.network/v7/middleware/ics29-fee/overview) 
-  [v7.3.2](https://github.com/cosmos/ibc-go/releases/tag/v7.3.2).
+- Add the [IBC Fee Module](https://ibc.cosmos.network/v7/middleware/ics29-fee/overview).
   ([\#3038](https://github.com/cosmos/gaia/pull/3038))
 - Bump [ibc-go](https://github.com/cosmos/ibc-go) to
   [v7.4.0](https://github.com/cosmos/ibc-go/releases/tag/v7.4.0)

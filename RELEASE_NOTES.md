@@ -17,21 +17,13 @@ Refer to the [upgrading guide](https://github.com/cosmos/gaia/blob/release/v16.x
 
 ## 🚀 Highlights
 
-- IBC rate limit
+This releases adds several features made possible by the upgrade to Cosmos SDK v0.47:
 
-  IBC rate limit prevents massive inflows or outflows of IBC tokens in a short time frame to add an extra layer of protection on IBC transfers
+- The [IBC rate limit module](https://github.com/Stride-Labs/ibc-rate-limiting) prevents massive inflows or outflows of IBC tokens in a short time frame to add an extra layer of protection on IBC transfers.
+- The [ICA controller sub-module](https://ibc.cosmos.network/v7/apps/interchain-accounts/overview) enables Hub users to perform actions on other chains using their Hub accounts. 
+- The [IBC fee middleware](https://ibc.cosmos.network/v7/middleware/ics29-fee/overview) enables creating IBC channels with in-protocol incentivization for relayers. 
 
-- ICA controller
-
-  With ICA controller the Cosmos Hub expands its functionality to become a controller chain allowing controlling the accounts on another host chain
-
-- IBC fee middleware
-
-  Allows transfer packet relaying incentives
-
-- ICS epochs
-
-  Reduces the amount of Interchain Security protocol IBC packets to reduce relaying costs
+This release also bumps ICS to [v4.1.0-lsm](https://github.com/cosmos/interchain-security/releases/tag/v4.1.0-lsm), which introduces [ICS epochs](https://cosmos.github.io/interchain-security/adrs/adr-014-epochs) to reduce the relaying cost for ICS. 
 
 <!-- Add any highlights of this release -->
 

@@ -106,6 +106,4 @@ func TestInitICSEpochs(t *testing.T) {
 		require.Equal(t, expConsAddr.Bytes(), val.ProviderConsAddr)
 		require.Equal(t, expConsumerPublicKey, *val.ConsumerPublicKey)
 	}
-
-	require.True(t, false)
 }

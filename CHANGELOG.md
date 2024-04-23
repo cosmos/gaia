@@ -12,16 +12,19 @@
 - Bump [ibc-go](https://github.com/cosmos/ibc-go) to
   [v7.4.0](https://github.com/cosmos/ibc-go/releases/tag/v7.4.0)
   ([\#3039](https://github.com/cosmos/gaia/pull/3039))
-- Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to
-  [v0.47.12-ics-lsm](https://github.com/cosmos/cosmos-sdk/tree/v0.47.12-ics-lsm).
-  This is a special cosmos-sdk branch with support for both ICS and LSM.
-  ([\#3062](https://github.com/cosmos/gaia/pull/3062))
 - Bump [ICS](https://github.com/cosmos/interchain-security) to
   [v4.1.0-lsm](https://github.com/cosmos/interchain-security/releases/tag/v4.1.0-lsm)
   ([\#3062](https://github.com/cosmos/gaia/pull/3062))
 - Bump [ICS](https://github.com/cosmos/interchain-security) to
   [v4.1.1-lsm](https://github.com/cosmos/interchain-security/releases/tag/v4.1.1-lsm)
   ([\#3071](https://github.com/cosmos/gaia/pull/3071))
+- Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to
+  [v0.47.13-ics-lsm](https://github.com/cosmos/cosmos-sdk/tree/v0.47.13-ics-lsm).
+  This is a special cosmos-sdk branch with support for both ICS and LSM.
+  ([\#3078](https://github.com/cosmos/gaia/pull/3078))
+- Bump [CometBFT](https://github.com/cometbft/cometbft)
+  to [v0.37.5](https://github.com/cometbft/cometbft/releases/tag/v0.37.5)
+  ([\#3078](https://github.com/cosmos/gaia/pull/3078))
 
 ### FEATURES
 
@@ -48,13 +51,16 @@
 - Bump [ibc-go](https://github.com/cosmos/ibc-go) to
   [v7.4.0](https://github.com/cosmos/ibc-go/releases/tag/v7.4.0)
   ([\#3039](https://github.com/cosmos/gaia/pull/3039))
-- Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to
-  [v0.47.12-ics-lsm](https://github.com/cosmos/cosmos-sdk/tree/v0.47.12-ics-lsm).
-  This is a special cosmos-sdk branch with support for both ICS and LSM.
-  ([\#3062](https://github.com/cosmos/gaia/pull/3062))
 - Bump [ICS](https://github.com/cosmos/interchain-security) to
   [v4.1.0-lsm](https://github.com/cosmos/interchain-security/releases/tag/v4.1.0-lsm)
   ([\#3062](https://github.com/cosmos/gaia/pull/3062))
+- Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to
+  [v0.47.13-ics-lsm](https://github.com/cosmos/cosmos-sdk/tree/v0.47.13-ics-lsm).
+  This is a special cosmos-sdk branch with support for both ICS and LSM.
+  ([\#3078](https://github.com/cosmos/gaia/pull/3078))
+- Bump [CometBFT](https://github.com/cometbft/cometbft)
+  to [v0.37.5](https://github.com/cometbft/cometbft/releases/tag/v0.37.5)
+  ([\#3078](https://github.com/cosmos/gaia/pull/3078))
 - Initialize ICS epochs by adding a consumer validator set for every existing consumer chain.
   ([\#3079](https://github.com/cosmos/gaia/pull/3079))
 

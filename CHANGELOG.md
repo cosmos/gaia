@@ -2,7 +2,7 @@
 
 ## v16.0.0
 
-*17th April, 2024*
+*23rd April, 2024*
 
 ### DEPENDENCIES
 
@@ -34,6 +34,8 @@
 - Add rate limits to IBC transfer channels cf.
   https://www.mintscan.io/cosmos/proposals/890.
   ([\#3042](https://github.com/cosmos/gaia/pull/3042))
+- Initialize ICS epochs by adding a consumer validator set for every existing consumer chain.
+  ([\#3079](https://github.com/cosmos/gaia/pull/3079))
 
 ### STATE BREAKING
 
@@ -53,6 +55,8 @@
 - Bump [ICS](https://github.com/cosmos/interchain-security) to
   [v4.1.0-lsm](https://github.com/cosmos/interchain-security/releases/tag/v4.1.0-lsm)
   ([\#3062](https://github.com/cosmos/gaia/pull/3062))
+- Initialize ICS epochs by adding a consumer validator set for every existing consumer chain.
+  ([\#3079](https://github.com/cosmos/gaia/pull/3079))
 
 ## Previous Versions
 

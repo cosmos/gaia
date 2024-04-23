@@ -1,6 +1,8 @@
 package gaia
 
 import (
+	"encoding/base64"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -16,9 +18,17 @@ import (
 
 	dbm "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
+	tmcfg "github.com/cometbft/cometbft/config"
+	tmd25519 "github.com/cometbft/cometbft/crypto/ed25519"
+	"github.com/cometbft/cometbft/libs/bytes"
 	tmjson "github.com/cometbft/cometbft/libs/json"
 	"github.com/cometbft/cometbft/libs/log"
 	tmos "github.com/cometbft/cometbft/libs/os"
+	tmnode "github.com/cometbft/cometbft/node"
+	cmtstate "github.com/cometbft/cometbft/proto/tendermint/state"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	sm "github.com/cometbft/cometbft/state"
+	tmtypes "github.com/cometbft/cometbft/types"
 
 	ibctesting "github.com/cosmos/ibc-go/v7/testing"
 	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
@@ -41,6 +51,7 @@ import (
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/bech32"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -49,6 +60,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	gaiaante "github.com/cosmos/gaia/v16/ante"
@@ -57,6 +69,11 @@ import (
 	"github.com/cosmos/gaia/v16/app/upgrades"
 	v16 "github.com/cosmos/gaia/v16/app/upgrades/v16"
 	"github.com/cosmos/gaia/v16/x/globalfee"
+
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
+	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 var (
@@ -250,7 +267,234 @@ func NewGaiaApp(
 		}
 	}
 
+	// TESTNET MODS BEGIN
+
+	newValAddrStr := "D6E0B0F975791D654B6E2F315F1DC1FC9422F078"
+	newValAddr, err := sdk.ConsAddressFromHex(newValAddrStr)
+	newValHexBytes := bytes.HexBytes(newValAddr)
+	if err != nil {
+		tmos.Exit(err.Error())
+	}
+	newValPubKeyStr := "SLpHEfzQHuuNO9J1BB/hXyiH6c1NmpoIVQ2pMWmyctE="
+	decPubKey, err := base64.StdEncoding.DecodeString(newValPubKeyStr)
+	if err != nil {
+		tmos.Exit(err.Error())
+	}
+	pk_byte := []byte(decPubKey)
+	pubkey := &ed25519.PubKey{Key: pk_byte}
+	pubkeyAny, err := types.NewAnyWithValue(pubkey)
+	if err != nil {
+		tmos.Exit(err.Error())
+	}
+	fmt.Printf("newValAddr: %v\n", newValAddr)
+	fmt.Printf("newValHexBytes: %v\n", newValHexBytes)
+	fmt.Printf("newValPubKeyStr: %v\n", newValPubKeyStr)
+	fmt.Printf("pubkey: %v\n", pubkey.String())
+	fmt.Printf("pubkeyAny: %v\n", pubkeyAny)
+
+	ctx := app.BaseApp.NewUncachedContext(true, tmproto.Header{})
+
+	// Staking
+	// Create Validator struct for our new validator.
+	_, bz, err := bech32.DecodeAndConvert("cosmosvaloper17fjdcqy7g80pn0seexcch5pg0dtvs45p57t97r")
+	if err != nil {
+		tmos.Exit(err.Error())
+	}
+	bech32Addr, err := bech32.ConvertAndEncode("cosmosvaloper", bz)
+	if err != nil {
+		tmos.Exit(err.Error())
+	}
+	fmt.Printf("bech32Addr: %v\n", bech32Addr)
+	newVal := stakingtypes.Validator{
+		OperatorAddress: bech32Addr,
+		ConsensusPubkey: pubkeyAny,
+		Jailed:          false,
+		Status:          stakingtypes.Bonded,
+		Tokens:          sdk.NewInt(900000000000000),
+		DelegatorShares: sdk.MustNewDecFromStr("10000000"),
+		Description: stakingtypes.Description{
+			Moniker: "Testnet Validator",
+		},
+		Commission: stakingtypes.Commission{
+			CommissionRates: stakingtypes.CommissionRates{
+				Rate:          sdk.MustNewDecFromStr("0.05"),
+				MaxRate:       sdk.MustNewDecFromStr("0.1"),
+				MaxChangeRate: sdk.MustNewDecFromStr("0.05"),
+			},
+		},
+		MinSelfDelegation: sdk.OneInt(),
+	}
+	fmt.Printf("newVal: %v\n", newVal)
+
+	for _, v := range app.StakingKeeper.GetAllValidators(ctx) {
+		valConsAddr, err := v.GetConsAddr()
+		if err != nil {
+			panic(err)
+		}
+
+		// delete the old validator record
+		store := ctx.KVStore(app.GetKey(stakingtypes.ModuleName))
+		store.Delete(stakingtypes.GetValidatorKey(v.GetOperator()))
+		store.Delete(stakingtypes.GetValidatorByConsAddrKey(valConsAddr))
+		store.Delete(stakingtypes.GetValidatorsByPowerIndexKey(v, app.StakingKeeper.PowerReduction(ctx)))
+		store.Delete(stakingtypes.GetLastValidatorPowerKey(v.GetOperator()))
+	}
+
+	// Add our validator to power and last validators store
+	app.StakingKeeper.SetValidator(ctx, newVal)
+	err = app.StakingKeeper.SetValidatorByConsAddr(ctx, newVal)
+	if err != nil {
+		panic(err)
+	}
+	app.StakingKeeper.SetValidatorByPowerIndex(ctx, newVal)
+	app.StakingKeeper.SetLastValidatorPower(ctx, newVal.GetOperator(), 0)
+	if err := app.StakingKeeper.Hooks().AfterValidatorCreated(ctx, newVal.GetOperator()); err != nil {
+		panic(err)
+	}
+
+	// DISTRIBUTION
+	// Initialize records for this validator across all distribution stores
+	app.DistrKeeper.SetValidatorHistoricalRewards(ctx, newVal.GetOperator(), 0, distrtypes.NewValidatorHistoricalRewards(sdk.DecCoins{}, 1))
+	app.DistrKeeper.SetValidatorCurrentRewards(ctx, newVal.GetOperator(), distrtypes.NewValidatorCurrentRewards(sdk.DecCoins{}, 1))
+	app.DistrKeeper.SetValidatorAccumulatedCommission(ctx, newVal.GetOperator(), distrtypes.InitialValidatorAccumulatedCommission())
+	app.DistrKeeper.SetValidatorOutstandingRewards(ctx, newVal.GetOperator(), distrtypes.ValidatorOutstandingRewards{Rewards: sdk.DecCoins{}})
+	fmt.Printf("Initialized validator records across all distribution stores\n")
+
+	// SLASHING
+	// Set validator signing info for our new validator.
+	newConsAddr := sdk.ConsAddress(pubkey.Address().Bytes())
+	fmt.Printf("newConsAddr: %v\n", newConsAddr)
+	newValidatorSigningInfo := slashingtypes.ValidatorSigningInfo{
+		Address:     newConsAddr.String(),
+		StartHeight: app.LastBlockHeight() - 1,
+		Tombstoned:  false,
+	}
+
+	app.SlashingKeeper.SetValidatorSigningInfo(ctx, newConsAddr, newValidatorSigningInfo)
+	fmt.Printf("Set validator signing info: %v\n", newValidatorSigningInfo)
+
+	// BANK
+	defaultCoins := sdk.NewCoins(sdk.NewInt64Coin("stake", 1000000000000))
+	fmt.Printf("Created default coins\n")
+
+	localTestnetAccounts := []sdk.AccAddress{
+		sdk.AccAddress("cosmos12smx2wdlyttvyzvzg54y2vnqwq2qjateuf7thj"),
+		sdk.AccAddress("cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl")}
+	fmt.Printf("Created testnet accounts\n")
+	// Fund testnet accounts
+	for _, account := range localTestnetAccounts {
+		err := app.BankKeeper.MintCoins(ctx, minttypes.ModuleName, defaultCoins)
+		if err != nil {
+			tmos.Exit(err.Error())
+		}
+		err = app.BankKeeper.SendCoinsFromModuleToAccount(ctx, minttypes.ModuleName, account, defaultCoins)
+		if err != nil {
+			tmos.Exit(err.Error())
+		}
+	}
+
+	fmt.Printf("Funded testnet accounts\n")
+
+	newTmVal := tmtypes.NewValidator(tmd25519.PubKey(pk_byte), 900000000000000)
+	err = updateConsensusState([]*tmtypes.Validator{newTmVal}, app.Logger())
+	if err != nil {
+		panic(err)
+	}
+
+	// TESTNET MODS END
+
 	return app
+}
+
+func updateConsensusState(vals []*tmtypes.Validator, logger log.Logger) error {
+	// load stateDB
+	config := tmcfg.DefaultConfig()
+	config.SetRoot(DefaultNodeHome)
+	stateDB, err := tmnode.DefaultDBProvider(&tmnode.DBContext{ID: "state", Config: config})
+	if err != nil {
+		return err
+	}
+
+	stateStore := sm.NewBootstrapStore(stateDB, sm.StoreOptions{
+		DiscardABCIResponses: false,
+	})
+
+	// load state in order to change validators of the last commited block and next validators
+	// we are replacing this with the new validator set
+	state, err := stateStore.Load()
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if derr := stateStore.Close(); derr != nil {
+			logger.Error("Failed to close statestore", "err", derr)
+			// Set the return value
+			err = derr
+		}
+	}()
+
+	state.Validators = tmtypes.NewValidatorSet(vals)
+	state.NextValidators = tmtypes.NewValidatorSet(vals)
+
+	// save state store
+	if err = stateStore.Save(state); err != nil {
+		return err
+	}
+
+	// save last voting data, distribution module will allocate tokens based on the last saved votes
+	// and validators must be found in new validator set
+	valInfo, err := loadValidatorsInfo(stateDB, state.LastBlockHeight)
+	if err != nil {
+		return err
+	}
+
+	pv, err := tmtypes.NewValidatorSet(vals).ToProto()
+	if err != nil {
+		return err
+	}
+	valInfo.ValidatorSet = pv
+	valInfo.LastHeightChanged = state.LastBlockHeight
+
+	saveValidatorsInfo(stateDB, state.LastBlockHeight, valInfo)
+	// when the storeState is saved in consensus it is done for the nextBlock+1, that is why we need to update 2 future blocks
+	saveValidatorsInfo(stateDB, state.LastBlockHeight+1, valInfo)
+	saveValidatorsInfo(stateDB, state.LastBlockHeight+2, valInfo)
+
+	return nil
+}
+
+func loadValidatorsInfo(db dbm.DB, height int64) (*cmtstate.ValidatorsInfo, error) {
+	buf, err := db.Get(calcValidatorsKey(height))
+	if err != nil {
+		return nil, err
+	}
+
+	if len(buf) == 0 {
+		return nil, errors.New("value retrieved from db is empty")
+	}
+
+	v := new(cmtstate.ValidatorsInfo)
+	err = v.Unmarshal(buf)
+
+	return v, err
+}
+
+func saveValidatorsInfo(db dbm.DB, height int64, valInfo *cmtstate.ValidatorsInfo) error {
+	bz, err := valInfo.Marshal()
+	if err != nil {
+		return err
+	}
+
+	err = db.Set(calcValidatorsKey(height), bz)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func calcValidatorsKey(height int64) []byte {
+	return []byte(fmt.Sprintf("validatorsKey:%v", height))
 }
 
 // Name returns the name of the App

@@ -27,6 +27,7 @@ import (
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
+	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -49,7 +50,10 @@ var (
 	flagRPCAddress        = "rpc.address"
 	flagAPIAddress        = "api.address"
 	flagPrintMnemonic     = "print-mnemonic"
+	unsafeSetValidatorFn  UnsafeSetValidatorCmdCreator
 )
+
+type UnsafeSetValidatorCmdCreator func(servertypes.AppCreator) *cobra.Command
 
 type initArgs struct {
 	algo              string
@@ -93,9 +97,11 @@ func addTestnetFlagsToCmd(cmd *cobra.Command) {
 	})
 }
 
-// NewTestnetCmd creates a root testnet command with subcommands to run an in-process testnet or initialize
-// validator configuration files for running a multi-validator testnet in a separate process
-func NewTestnetCmd(mbm module.BasicManager, genBalIterator banktypes.GenesisBalancesIterator) *cobra.Command {
+// NewTestnetCmd creates a root testnet command with subcommands to:
+// 1. run an in-process testnet or
+// 2. initialize validator configuration files for running a multi-validator testnet in a separate process or
+// 3. update existing application and consensus state with the local validator that will be used for running the testnet
+func NewTestnetCmd(mbm module.BasicManager, genBalIterator banktypes.GenesisBalancesIterator, appCreator servertypes.AppCreator) *cobra.Command {
 	testnetCmd := &cobra.Command{
 		Use:                        "testnet",
 		Short:                      "subcommands for starting or configuring local testnets",
@@ -106,6 +112,9 @@ func NewTestnetCmd(mbm module.BasicManager, genBalIterator banktypes.GenesisBala
 
 	testnetCmd.AddCommand(testnetStartCmd())
 	testnetCmd.AddCommand(testnetInitFilesCmd(mbm, genBalIterator))
+	if unsafeSetValidatorFn != nil {
+		testnetCmd.AddCommand(unsafeSetValidatorFn(appCreator))
+	}
 
 	return testnetCmd
 }

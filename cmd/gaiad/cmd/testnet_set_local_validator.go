@@ -1,5 +1,5 @@
-//go:build unsafe_start_local_validator
-// +build unsafe_start_local_validator
+//go:build unsafe_set_local_validator
+// +build unsafe_set_local_validator
 
 package cmd
 
@@ -7,28 +7,21 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"io"
 	"path/filepath"
-	"strings"
 
-	dbm "github.com/cometbft/cometbft-db"
-	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/server"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	gaia "github.com/cosmos/gaia/v16/app"
-	"github.com/spf13/cast"
+	"github.com/cosmos/cosmos-sdk/types/bech32"
+	gaia "github.com/cosmos/gaia/v15/app"
 	"github.com/spf13/cobra"
 
-	"github.com/cometbft/cometbft/crypto"
 	tmd25519 "github.com/cometbft/cometbft/crypto/ed25519"
-	"github.com/cometbft/cometbft/libs/log"
 	cmtstate "github.com/cometbft/cometbft/proto/tendermint/state"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sm "github.com/cometbft/cometbft/state"
-	"github.com/cometbft/cometbft/store"
 	tmtypes "github.com/cometbft/cometbft/types"
-	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/store/rootmulti"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
@@ -39,149 +32,149 @@ import (
 var (
 	flagValidatorOperatorAddress = "validator-operator"
 	flagValidatorPubKey          = "validator-pukey"
-	flagValidatorPrivKey         = "validator-privkey"
 	flagAccountsToFund           = "accounts-to-fund"
 )
 
 type valArgs struct {
-	validatorOperatorAddress string           // valoper address
-	validatorConsPubKeyByte  []byte           // validator's consensus public key
-	validatorConsPrivKey     crypto.PrivKey   // validator's consensus private key
-	accountsToFund           []sdk.AccAddress // list of accounts to fund and use for testing later on
-	homeDir                  string
+	validatorOperatorAddress string
+	validatorPubKey          string
+	accountsToFund           []sdk.AccAddress
 }
 
 func init() {
-	unsafeStartValidatorFn = testnetUnsafeStartLocalValidatorCmd
+	unsafeSetValidatorFn = testnetUnsafeSetLocalValidatorCmd
 }
 
-func testnetUnsafeStartLocalValidatorCmd(ac appCreator) *cobra.Command {
-
-	cmd := server.StartCmd(ac.newTestingApp, gaia.DefaultNodeHome)
-	cmd.Use = "unsafe-start-local-validator"
-	cmd.Short = "Updates chain's application and consensus state with provided validator info and starts the node"
-	cmd.Long = `The unsafe-start-local-validator command modifies both application and consensus stores within a local mainnet node and starts the node,
-with the aim of facilitating testing procedures. This command replaces existing validator data with updated information,
-thereby removing the old validator set and introducing a new set suitable for local testing purposes. By altering the state extracted from the mainnet node,
-it enables developers to configure their local environments to reflect mainnet conditions more accurately.
+func testnetUnsafeSetLocalValidatorCmd(appCreator servertypes.AppCreator) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "unsafe-set-local-validator",
+		Short: "Updates chain's application and consensus state with provided validator(s)",
+		Long: `unsafe-set-local-validator should be able to make changes to the local mainnet node and make it suitable for local testing by replacing validators. 
+The changes include injecting a new validator set, removing the old validator set and injecting addresses that can be used in testing (while not affecting existing addresses).
 
 Example:
-	simd testnet unsafe-start-local-validator --validator-operator="cosmosvaloper17fjdcqy7g80pn0seexcch5pg0dtvs45p57t97r" --validator-pukey="SLpHEfzQHuuNO9J1BB/hXyiH6c1NmpoIVQ2pMWmyctE=" --validator-privkey="AiayvI2px5CZVl/uOGmacfFjcIBoyk3Oa2JPBO6zEcdIukcR/NAe64070nUEH+FfKIfpzU2amghVDakxabJy0Q==" --accounts-to-fund="cosmos1ju6tlfclulxumtt2kglvnxduj5d93a64r5czge,cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl" [other_server_start_flags]
-	`
-	cmd.Flags().String(flagValidatorOperatorAddress, "", "Validator operator address e.g. cosmosvaloper17fjdcqy7g80pn0seexcch5pg0dtvs45p57t97r")
-	cmd.Flags().String(flagValidatorPubKey, "", "Validator tendermint/PubKeyEd25519 consensus public key from the priv_validato_key.json file")
-	cmd.Flags().String(flagValidatorPrivKey, "", "Validator tendermint/PrivKeyEd25519 consensus private key from the priv_validato_key.json file")
-	cmd.Flags().String(flagAccountsToFund, "", "Comma-separated list of account addresses that will be funded for testing purposes")
+	simd unsafe-set-local-validator --validator-operator="cosmosvaloper17fjdcqy7g80pn0seexcch5pg0dtvs45p57t97r" --validator-pukey="SLpHEfzQHuuNO9J1BB/hXyiH6c1NmpoIVQ2pMWmyctE=" --accounts-to-fund="cosmos12smx2wdlyttvyzvzg54y2vnqwq2qjateuf7thj,cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl"
+	`,
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			args, err := getArgs(cmd)
+			if err != nil {
+				return err
+			}
+			return setLocalValSet(cmd, appCreator, args)
+		},
+	}
+
+	cmd.Flags().String(flagValidatorOperatorAddress, "", "Validator operator address")
+	cmd.Flags().String(flagValidatorPubKey, "", "Validator tendermint/PubKeyEd25519 public key")
+	cmd.Flags().String(flagAccountsToFund, "", "Comma-separated list of accounts to fund")
 
 	return cmd
 }
 
-// parse the input flags and returns valArgs
-func getCommandArgs(appOpts servertypes.AppOptions) (valArgs, error) {
+func getArgs(cmd *cobra.Command) (valArgs, error) {
 	args := valArgs{}
-	// validate and set validator operator address
-	valoperAddress := cast.ToString(appOpts.Get(flagValidatorOperatorAddress))
-	if valoperAddress == "" {
-		return args, fmt.Errorf("invalid validator operator address string")
+	validatorOperatorAddress, err := cmd.Flags().GetString(flagValidatorOperatorAddress)
+	if err != nil || validatorOperatorAddress == "" {
+		return args, fmt.Errorf("invalid validator operator address %w", err)
 	}
-	_, err := sdk.ValAddressFromBech32(valoperAddress)
-	if err != nil {
-		return args, fmt.Errorf("invalid validator operator address format %w", err)
-	}
-	args.validatorOperatorAddress = valoperAddress
+	args.validatorOperatorAddress = validatorOperatorAddress
 
-	// validate and set validator pubkey
-	validatorPubKey := cast.ToString(appOpts.Get(flagValidatorPubKey))
-	if validatorPubKey == "" {
-		return args, fmt.Errorf("invalid validator pubkey string")
+	validatorPubKey, err := cmd.Flags().GetString(flagValidatorPubKey)
+	if err != nil || validatorPubKey == "" {
+		return args, fmt.Errorf("invalid validator pubkey %w", err)
 	}
-	decPubKey, err := base64.StdEncoding.DecodeString(validatorPubKey)
-	if err != nil {
-		return args, fmt.Errorf("cannot decode validator pubkey %w", err)
-	}
-	args.validatorConsPubKeyByte = []byte(decPubKey)
+	args.validatorPubKey = validatorPubKey
 
-	// validate  and set validator privkey
-	validatorPrivKey := cast.ToString(appOpts.Get(flagValidatorPrivKey))
-	if validatorPrivKey == "" {
-		return args, fmt.Errorf("invalid validator private key %w", err)
-	}
-	decPrivKey, err := base64.StdEncoding.DecodeString(validatorPrivKey)
+	accountsString, err := cmd.Flags().GetString(flagAccountsToFund)
 	if err != nil {
-		return args, fmt.Errorf("cannot decode validator private key %w", err)
+		return args, fmt.Errorf("invalid validator pubkey %w", err)
 	}
-	args.validatorConsPrivKey = tmd25519.PrivKey([]byte(decPrivKey))
-
-	// validate  and set accounts to fund
-	accountsString := cast.ToString(appOpts.Get(flagAccountsToFund))
 
 	for _, account := range strings.Split(accountsString, ",") {
-		if account != "" {
-			addr, err := sdk.AccAddressFromBech32(account)
-			if err != nil {
-				return args, fmt.Errorf("invalid bech32 address format %w", err)
-			}
-			args.accountsToFund = append(args.accountsToFund, addr)
-		}
+		args.accountsToFund = append(args.accountsToFund, sdk.AccAddress(account))
 	}
-
-	// home dir
-	homeDir := cast.ToString(appOpts.Get(flags.FlagHome))
-	if homeDir == "" {
-		return args, fmt.Errorf("invalid home dir")
-	}
-	args.homeDir = homeDir
 
 	return args, nil
 }
 
-// returns gaia app with modified application and consensus states by replacing validator related data
-func (a appCreator) newTestingApp(
-	logger log.Logger,
-	db dbm.DB,
-	traceStore io.Writer,
-	appOpts servertypes.AppOptions,
-) servertypes.Application {
-	app := a.newApp(logger, db, traceStore, appOpts)
+func setLocalValSet(cmd *cobra.Command, appCreator servertypes.AppCreator, args valArgs) error {
+	//UPDATE APP STATE
+	ctx := server.GetServerContextFromCmd(cmd)
+	home := ctx.Config.RootDir
+
+	db, err := openDB(home, "application", server.GetAppDBBackend(ctx.Viper))
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if derr := db.Close(); derr != nil {
+			ctx.Logger.Error("Failed to close application db", "err", derr)
+			err = derr
+		}
+	}()
+
+	app := appCreator(ctx.Logger, db, nil, ctx.Viper)
 	gaiaApp, ok := app.(*gaia.GaiaApp)
 	if !ok {
-		panic(errors.New("invalid gaia application"))
+		return errors.New("invalid gaia application")
 	}
 
-	// Get command args
-	args, err := getCommandArgs(appOpts)
+	// we need to rollback to previous version because app.CommitMultiStore().Commit() increments the version and
+	// if we dont rollback we will have mismatch with core and app versions
+	latestHeight := rootmulti.GetLatestVersion(db)
+	app.CommitMultiStore().RollbackToVersion(latestHeight - 1)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	// Update app state
-	err = updateApplicationState(gaiaApp, args)
+	decPubKey, err := base64.StdEncoding.DecodeString(args.validatorPubKey)
 	if err != nil {
-		panic(err)
+		return err
 	}
+	pk_byte := []byte(decPubKey)
 
-	//Update consensus state
-	err = updateConsensusState(logger, appOpts, args)
+	err = updateApplicationState(gaiaApp, args, pk_byte)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	return gaiaApp
+	//save changes to the app store, this will update the version too
+	app.CommitMultiStore().Commit()
+
+	//UPDATE CONSENSUS STATE
+	appHash := app.CommitMultiStore().LastCommitID().Hash
+	err = updateConsensusState(ctx, pk_byte, appHash)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
-	pubkey := &ed25519.PubKey{Key: args.validatorConsPubKeyByte}
+func updateApplicationState(app *gaia.GaiaApp, args valArgs, pk_byte []byte) error {
+	pubkey := &ed25519.PubKey{Key: pk_byte}
 	pubkeyAny, err := types.NewAnyWithValue(pubkey)
 	if err != nil {
 		return err
 	}
 
-	appCtx := app.BaseApp.NewUncachedContext(true, tmproto.Header{})
+	ctx := app.BaseApp.NewUncachedContext(true, tmproto.Header{})
 
 	// STAKING
 	// Create Validator struct for our new validator.
+	_, bz, err := bech32.DecodeAndConvert(args.validatorOperatorAddress)
+	if err != nil {
+		return err
+	}
+
+	//TODO change hardcoded cosmosvaloper
+	bech32Addr, err := bech32.ConvertAndEncode("cosmosvaloper", bz)
+	if err != nil {
+		return err
+	}
+
 	newVal := stakingtypes.Validator{
-		OperatorAddress: args.validatorOperatorAddress,
+		OperatorAddress: bech32Addr,
 		ConsensusPubkey: pubkeyAny,
 		Jailed:          false,
 		Status:          stakingtypes.Bonded,
@@ -200,41 +193,38 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 		MinSelfDelegation: sdk.OneInt(),
 	}
 
-	store := appCtx.KVStore(app.GetKey(stakingtypes.ModuleName))
-	for _, v := range app.StakingKeeper.GetAllValidators(appCtx) {
+	for _, v := range app.StakingKeeper.GetAllValidators(ctx) {
 		valConsAddr, err := v.GetConsAddr()
 		if err != nil {
 			return err
 		}
 
 		// delete the old validator record
+		store := ctx.KVStore(app.GetKey(stakingtypes.ModuleName))
 		store.Delete(stakingtypes.GetValidatorKey(v.GetOperator()))
 		store.Delete(stakingtypes.GetValidatorByConsAddrKey(valConsAddr))
-		store.Delete(stakingtypes.GetValidatorsByPowerIndexKey(v, app.StakingKeeper.PowerReduction(appCtx)))
+		store.Delete(stakingtypes.GetValidatorsByPowerIndexKey(v, app.StakingKeeper.PowerReduction(ctx)))
 		store.Delete(stakingtypes.GetLastValidatorPowerKey(v.GetOperator()))
-		if v.IsUnbonding() {
-			app.StakingKeeper.DeleteValidatorQueueTimeSlice(appCtx, v.UnbondingTime, v.UnbondingHeight)
-		}
 	}
 
 	// Add our validator to power and last validators store
-	app.StakingKeeper.SetValidator(appCtx, newVal)
-	err = app.StakingKeeper.SetValidatorByConsAddr(appCtx, newVal)
+	app.StakingKeeper.SetValidator(ctx, newVal)
+	err = app.StakingKeeper.SetValidatorByConsAddr(ctx, newVal)
 	if err != nil {
 		return err
 	}
-	app.StakingKeeper.SetValidatorByPowerIndex(appCtx, newVal)
-	app.StakingKeeper.SetLastValidatorPower(appCtx, newVal.GetOperator(), 0)
-	if err := app.StakingKeeper.Hooks().AfterValidatorCreated(appCtx, newVal.GetOperator()); err != nil {
+	app.StakingKeeper.SetValidatorByPowerIndex(ctx, newVal)
+	app.StakingKeeper.SetLastValidatorPower(ctx, newVal.GetOperator(), 0)
+	if err := app.StakingKeeper.Hooks().AfterValidatorCreated(ctx, newVal.GetOperator()); err != nil {
 		return err
 	}
 
 	// DISTRIBUTION
 	// Initialize records for this validator across all distribution stores
-	app.DistrKeeper.SetValidatorHistoricalRewards(appCtx, newVal.GetOperator(), 0, distrtypes.NewValidatorHistoricalRewards(sdk.DecCoins{}, 1))
-	app.DistrKeeper.SetValidatorCurrentRewards(appCtx, newVal.GetOperator(), distrtypes.NewValidatorCurrentRewards(sdk.DecCoins{}, 1))
-	app.DistrKeeper.SetValidatorAccumulatedCommission(appCtx, newVal.GetOperator(), distrtypes.InitialValidatorAccumulatedCommission())
-	app.DistrKeeper.SetValidatorOutstandingRewards(appCtx, newVal.GetOperator(), distrtypes.ValidatorOutstandingRewards{Rewards: sdk.DecCoins{}})
+	app.DistrKeeper.SetValidatorHistoricalRewards(ctx, newVal.GetOperator(), 0, distrtypes.NewValidatorHistoricalRewards(sdk.DecCoins{}, 1))
+	app.DistrKeeper.SetValidatorCurrentRewards(ctx, newVal.GetOperator(), distrtypes.NewValidatorCurrentRewards(sdk.DecCoins{}, 1))
+	app.DistrKeeper.SetValidatorAccumulatedCommission(ctx, newVal.GetOperator(), distrtypes.InitialValidatorAccumulatedCommission())
+	app.DistrKeeper.SetValidatorOutstandingRewards(ctx, newVal.GetOperator(), distrtypes.ValidatorOutstandingRewards{Rewards: sdk.DecCoins{}})
 
 	// SLASHING
 	// Set validator signing info for our new validator.
@@ -245,18 +235,18 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 		Tombstoned:  false,
 	}
 
-	app.SlashingKeeper.SetValidatorSigningInfo(appCtx, newConsAddr, newValidatorSigningInfo)
+	app.SlashingKeeper.SetValidatorSigningInfo(ctx, newConsAddr, newValidatorSigningInfo)
 
 	// BANK
-	defaultCoins := sdk.NewCoins(sdk.NewInt64Coin(app.StakingKeeper.BondDenom(appCtx), 1000000000000))
+	defaultCoins := sdk.NewCoins(sdk.NewInt64Coin(app.StakingKeeper.BondDenom(ctx), 1000000000000))
 
 	// Fund testnet accounts
 	for _, account := range args.accountsToFund {
-		err := app.BankKeeper.MintCoins(appCtx, minttypes.ModuleName, defaultCoins)
+		err := app.BankKeeper.MintCoins(ctx, minttypes.ModuleName, defaultCoins)
 		if err != nil {
 			return err
 		}
-		err = app.BankKeeper.SendCoinsFromModuleToAccount(appCtx, minttypes.ModuleName, account, defaultCoins)
+		err = app.BankKeeper.SendCoinsFromModuleToAccount(ctx, minttypes.ModuleName, account, defaultCoins)
 		if err != nil {
 			return err
 		}
@@ -265,14 +255,14 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 	return nil
 }
 
-func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, args valArgs) error {
+func updateConsensusState(ctx *server.Context, pk_byte, appHash []byte) error {
 	// create validator set from the local validator
-	newTmVal := tmtypes.NewValidator(tmd25519.PubKey(args.validatorConsPubKeyByte), 900000000000000)
+	newTmVal := tmtypes.NewValidator(tmd25519.PubKey(pk_byte), 900000000000000)
 	vals := []*tmtypes.Validator{newTmVal}
 	validatorSet := tmtypes.NewValidatorSet(vals)
 
-	// CHANGE STATE CONSENSUS STORE
-	stateDB, err := openDB(args.homeDir, "state", server.GetAppDBBackend(appOpts))
+	// load stateDB
+	stateDB, err := openDB(ctx.Config.RootDir, "state", server.GetAppDBBackend(ctx.Viper))
 	if err != nil {
 		return err
 	}
@@ -281,38 +271,40 @@ func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, arg
 		DiscardABCIResponses: false,
 	})
 
-	// load state in order to change validator set info
+	// load state in order to change validators of the last commited block and next validators
+	// we are replacing this with the new validator set
 	state, err := stateStore.Load()
 	if err != nil {
 		return err
 	}
 	defer func() {
 		if derr := stateStore.Close(); derr != nil {
-			logger.Error("Failed to close consensus state db", "err", derr)
+			ctx.Logger.Error("Failed to close statestore", "err", derr)
+			// Set the return value
 			err = derr
 		}
 	}()
 
-	state.LastValidators = validatorSet
 	state.Validators = validatorSet
 	state.NextValidators = validatorSet
+	state.AppHash = appHash
 	// save state store
 	if err = stateStore.Save(state); err != nil {
 		return err
 	}
 
-	// last voting data must be updated because the distribution module will allocate tokens based on the last saved votes,
-	// and the voting validator address has to be present in the staking module, which is not the case for old validator
+	// save last voting data, distribution module will allocate tokens based on the last saved votes
+	// and validators must be found in new validator set
 	valInfo, err := loadValidatorsInfo(stateDB, state.LastBlockHeight)
 	if err != nil {
 		return err
 	}
 
-	protoValSet, err := validatorSet.ToProto()
+	pv, err := validatorSet.ToProto()
 	if err != nil {
 		return err
 	}
-	valInfo.ValidatorSet = protoValSet
+	valInfo.ValidatorSet = pv
 	valInfo.LastHeightChanged = state.LastBlockHeight
 
 	// when the storeState is saved in consensus it is done for the nextBlock+1,
@@ -321,49 +313,7 @@ func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, arg
 	saveValidatorsInfo(stateDB, state.LastBlockHeight+1, valInfo)
 	saveValidatorsInfo(stateDB, state.LastBlockHeight+2, valInfo)
 
-	// CHANGE BLOCK CONSENSUS STORE
-	// we need to change the last commit data by updating the signature's info. Consensus will match the validator's set length
-	// and size of the lastCommit signatures when building the last commit info and they have to match
-	blockStoreDB, err := openDB(args.homeDir, "blockstore", server.GetAppDBBackend(appOpts))
-	if err != nil {
-		return err
-	}
-	defer func() {
-		if derr := blockStoreDB.Close(); derr != nil {
-			logger.Error("Failed to close consensus blockstore db", "err", derr)
-			err = derr
-		}
-	}()
-
-	blockStore := store.NewBlockStore(blockStoreDB)
-	lastCommit := blockStore.LoadSeenCommit(state.LastBlockHeight)
-
-	var vote *tmtypes.Vote
-	for idx, commitSig := range lastCommit.Signatures {
-		if commitSig.Absent() {
-			continue
-		}
-		vote = lastCommit.GetVote(int32(idx))
-		break
-	}
-	if vote == nil {
-		return errors.New("cannot get the vote from the last commit")
-	}
-
-	voteSignBytes := tmtypes.VoteSignBytes(state.ChainID, vote.ToProto())
-	signatureBytes, err := args.validatorConsPrivKey.Sign(voteSignBytes)
-	if err != nil {
-		return err
-	}
-
-	lastCommit.Signatures = []tmtypes.CommitSig{{
-		BlockIDFlag:      tmtypes.BlockIDFlagCommit,
-		ValidatorAddress: newTmVal.Address,
-		Timestamp:        vote.Timestamp,
-		Signature:        []byte(signatureBytes),
-	}}
-
-	return blockStore.SaveSeenCommit(state.LastBlockHeight, lastCommit)
+	return nil
 }
 
 func loadValidatorsInfo(db dbm.DB, height int64) (*cmtstate.ValidatorsInfo, error) {

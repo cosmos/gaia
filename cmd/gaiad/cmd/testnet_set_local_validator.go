@@ -11,20 +11,22 @@ import (
 	"strings"
 
 	dbm "github.com/cometbft/cometbft-db"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/server"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	"github.com/cosmos/cosmos-sdk/types/bech32"
+	"github.com/cosmos/cosmos-sdk/store/rootmulti"
 	gaia "github.com/cosmos/gaia/v16/app"
 	"github.com/spf13/cobra"
 
+	"github.com/cometbft/cometbft/crypto"
 	tmd25519 "github.com/cometbft/cometbft/crypto/ed25519"
 	cmtstate "github.com/cometbft/cometbft/proto/tendermint/state"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sm "github.com/cometbft/cometbft/state"
+	"github.com/cometbft/cometbft/store"
 	tmtypes "github.com/cometbft/cometbft/types"
-	"github.com/cosmos/cosmos-sdk/store/rootmulti"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
@@ -35,12 +37,14 @@ import (
 var (
 	flagValidatorOperatorAddress = "validator-operator"
 	flagValidatorPubKey          = "validator-pukey"
+	flagValidatorPrivKey         = "validator-privkey"
 	flagAccountsToFund           = "accounts-to-fund"
 )
 
 type valArgs struct {
 	validatorOperatorAddress string
-	validatorPubKey          string
+	validatorPubKeyByte      []byte
+	validatorPrivKey         crypto.PrivKey
 	accountsToFund           []sdk.AccAddress
 }
 
@@ -56,45 +60,75 @@ func testnetUnsafeSetLocalValidatorCmd(appCreator servertypes.AppCreator) *cobra
 The changes include injecting a new validator set, removing the old validator set and injecting addresses that can be used in testing (while not affecting existing addresses).
 
 Example:
-	simd unsafe-set-local-validator --validator-operator="cosmosvaloper17fjdcqy7g80pn0seexcch5pg0dtvs45p57t97r" --validator-pukey="SLpHEfzQHuuNO9J1BB/hXyiH6c1NmpoIVQ2pMWmyctE=" --accounts-to-fund="cosmos12smx2wdlyttvyzvzg54y2vnqwq2qjateuf7thj,cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl"
+	simd testnet unsafe-set-local-validator --validator-operator="cosmosvaloper17fjdcqy7g80pn0seexcch5pg0dtvs45p57t97r" --validator-pukey="SLpHEfzQHuuNO9J1BB/hXyiH6c1NmpoIVQ2pMWmyctE=" --validator-privkey="AiayvI2px5CZVl/uOGmacfFjcIBoyk3Oa2JPBO6zEcdIukcR/NAe64070nUEH+FfKIfpzU2amghVDakxabJy0Q==" --accounts-to-fund="cosmos1ju6tlfclulxumtt2kglvnxduj5d93a64r5czge,cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl"
 	`,
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			args, err := getArgs(cmd)
+			args, err := validateAndGetArgs(cmd)
 			if err != nil {
 				return err
 			}
+
 			return setLocalValSet(cmd, appCreator, args)
 		},
 	}
 
 	cmd.Flags().String(flagValidatorOperatorAddress, "", "Validator operator address")
 	cmd.Flags().String(flagValidatorPubKey, "", "Validator tendermint/PubKeyEd25519 public key")
+	cmd.Flags().String(flagValidatorPrivKey, "", "Validator tendermint/PrivKeyEd25519 private key")
 	cmd.Flags().String(flagAccountsToFund, "", "Comma-separated list of accounts to fund")
 
 	return cmd
 }
 
-func getArgs(cmd *cobra.Command) (valArgs, error) {
+func validateAndGetArgs(cmd *cobra.Command) (valArgs, error) {
 	args := valArgs{}
+	// validate validator operator address
 	validatorOperatorAddress, err := cmd.Flags().GetString(flagValidatorOperatorAddress)
 	if err != nil || validatorOperatorAddress == "" {
 		return args, fmt.Errorf("invalid validator operator address %w", err)
 	}
+	_, err = sdk.ValAddressFromBech32(validatorOperatorAddress)
+	if err != nil {
+		return args, fmt.Errorf("invalid validator operator address format %w", err)
+	}
 	args.validatorOperatorAddress = validatorOperatorAddress
 
+	// validate validator pubkey
 	validatorPubKey, err := cmd.Flags().GetString(flagValidatorPubKey)
 	if err != nil || validatorPubKey == "" {
 		return args, fmt.Errorf("invalid validator pubkey %w", err)
 	}
-	args.validatorPubKey = validatorPubKey
+	decPubKey, err := base64.StdEncoding.DecodeString(validatorPubKey)
+	if err != nil {
+		return args, fmt.Errorf("cannot decode validator pubkey %w", err)
+	}
+	args.validatorPubKeyByte = []byte(decPubKey)
 
+	// validate validator privkey
+	validatorPrivKey, err := cmd.Flags().GetString(flagValidatorPrivKey)
+	if err != nil || validatorPrivKey == "" {
+		return args, fmt.Errorf("invalid validator private key %w", err)
+	}
+	decPrivKey, err := base64.StdEncoding.DecodeString(validatorPrivKey)
+	if err != nil {
+		return args, fmt.Errorf("cannot decode validator private key %w", err)
+	}
+	args.validatorPrivKey = tmd25519.PrivKey([]byte(decPrivKey))
+
+	// validate accounts to fund
 	accountsString, err := cmd.Flags().GetString(flagAccountsToFund)
 	if err != nil {
-		return args, fmt.Errorf("invalid validator pubkey %w", err)
+		return args, fmt.Errorf("invalid addresses to fund %w", err)
 	}
 
 	for _, account := range strings.Split(accountsString, ",") {
-		args.accountsToFund = append(args.accountsToFund, sdk.AccAddress(account))
+		if account != "" {
+			addr, err := sdk.AccAddressFromBech32(account)
+			if err != nil {
+				return args, fmt.Errorf("invalid address to fund account address %w", err)
+			}
+			args.accountsToFund = append(args.accountsToFund, addr)
+		}
 	}
 
 	return args, nil
@@ -102,21 +136,22 @@ func getArgs(cmd *cobra.Command) (valArgs, error) {
 
 func setLocalValSet(cmd *cobra.Command, appCreator servertypes.AppCreator, args valArgs) error {
 	//UPDATE APP STATE
-	ctx := server.GetServerContextFromCmd(cmd)
-	home := ctx.Config.RootDir
+	serverCtx := server.GetServerContextFromCmd(cmd)
+	homeDir, _ := cmd.Flags().GetString(flags.FlagHome)
+	serverCtx.Config.SetRoot(homeDir)
 
-	db, err := openDB(home, "application", server.GetAppDBBackend(ctx.Viper))
+	db, err := openDB(serverCtx.Config.RootDir, "application", server.GetAppDBBackend(serverCtx.Viper))
 	if err != nil {
 		return err
 	}
 	defer func() {
 		if derr := db.Close(); derr != nil {
-			ctx.Logger.Error("Failed to close application db", "err", derr)
+			serverCtx.Logger.Error("Failed to close application db", "err", derr)
 			err = derr
 		}
 	}()
 
-	app := appCreator(ctx.Logger, db, nil, ctx.Viper)
+	app := appCreator(serverCtx.Logger, db, nil, serverCtx.Viper)
 	gaiaApp, ok := app.(*gaia.GaiaApp)
 	if !ok {
 		return errors.New("invalid gaia application")
@@ -130,13 +165,7 @@ func setLocalValSet(cmd *cobra.Command, appCreator servertypes.AppCreator, args 
 		return err
 	}
 
-	decPubKey, err := base64.StdEncoding.DecodeString(args.validatorPubKey)
-	if err != nil {
-		return err
-	}
-	pk_byte := []byte(decPubKey)
-
-	err = updateApplicationState(gaiaApp, args, pk_byte)
+	err = updateApplicationState(gaiaApp, args)
 	if err != nil {
 		return err
 	}
@@ -146,7 +175,7 @@ func setLocalValSet(cmd *cobra.Command, appCreator servertypes.AppCreator, args 
 
 	//UPDATE CONSENSUS STATE
 	appHash := app.CommitMultiStore().LastCommitID().Hash
-	err = updateConsensusState(ctx, pk_byte, appHash)
+	err = updateConsensusState(serverCtx, args, appHash)
 	if err != nil {
 		return err
 	}
@@ -154,8 +183,8 @@ func setLocalValSet(cmd *cobra.Command, appCreator servertypes.AppCreator, args 
 	return nil
 }
 
-func updateApplicationState(app *gaia.GaiaApp, args valArgs, pk_byte []byte) error {
-	pubkey := &ed25519.PubKey{Key: pk_byte}
+func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
+	pubkey := &ed25519.PubKey{Key: args.validatorPubKeyByte}
 	pubkeyAny, err := types.NewAnyWithValue(pubkey)
 	if err != nil {
 		return err
@@ -165,19 +194,8 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs, pk_byte []byte) err
 
 	// STAKING
 	// Create Validator struct for our new validator.
-	_, bz, err := bech32.DecodeAndConvert(args.validatorOperatorAddress)
-	if err != nil {
-		return err
-	}
-
-	//TODO change hardcoded cosmosvaloper
-	bech32Addr, err := bech32.ConvertAndEncode("cosmosvaloper", bz)
-	if err != nil {
-		return err
-	}
-
 	newVal := stakingtypes.Validator{
-		OperatorAddress: bech32Addr,
+		OperatorAddress: args.validatorOperatorAddress,
 		ConsensusPubkey: pubkeyAny,
 		Jailed:          false,
 		Status:          stakingtypes.Bonded,
@@ -196,6 +214,7 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs, pk_byte []byte) err
 		MinSelfDelegation: sdk.OneInt(),
 	}
 
+	store := ctx.KVStore(app.GetKey(stakingtypes.ModuleName))
 	for _, v := range app.StakingKeeper.GetAllValidators(ctx) {
 		valConsAddr, err := v.GetConsAddr()
 		if err != nil {
@@ -203,11 +222,13 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs, pk_byte []byte) err
 		}
 
 		// delete the old validator record
-		store := ctx.KVStore(app.GetKey(stakingtypes.ModuleName))
 		store.Delete(stakingtypes.GetValidatorKey(v.GetOperator()))
 		store.Delete(stakingtypes.GetValidatorByConsAddrKey(valConsAddr))
 		store.Delete(stakingtypes.GetValidatorsByPowerIndexKey(v, app.StakingKeeper.PowerReduction(ctx)))
 		store.Delete(stakingtypes.GetLastValidatorPowerKey(v.GetOperator()))
+		if v.IsUnbonding() {
+			app.StakingKeeper.DeleteValidatorQueueTimeSlice(ctx, v.UnbondingTime, v.UnbondingHeight)
+		}
 	}
 
 	// Add our validator to power and last validators store
@@ -258,14 +279,14 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs, pk_byte []byte) err
 	return nil
 }
 
-func updateConsensusState(ctx *server.Context, pk_byte, appHash []byte) error {
+func updateConsensusState(serverCtx *server.Context, args valArgs, appHash []byte) error {
 	// create validator set from the local validator
-	newTmVal := tmtypes.NewValidator(tmd25519.PubKey(pk_byte), 900000000000000)
+	newTmVal := tmtypes.NewValidator(tmd25519.PubKey(args.validatorPubKeyByte), 900000000000000)
 	vals := []*tmtypes.Validator{newTmVal}
 	validatorSet := tmtypes.NewValidatorSet(vals)
 
-	// load stateDB
-	stateDB, err := openDB(ctx.Config.RootDir, "state", server.GetAppDBBackend(ctx.Viper))
+	// CHANGE STATE CONSENSUS STORE
+	stateDB, err := openDB(serverCtx.Config.RootDir, "state", server.GetAppDBBackend(serverCtx.Viper))
 	if err != nil {
 		return err
 	}
@@ -282,7 +303,7 @@ func updateConsensusState(ctx *server.Context, pk_byte, appHash []byte) error {
 	}
 	defer func() {
 		if derr := stateStore.Close(); derr != nil {
-			ctx.Logger.Error("Failed to close statestore", "err", derr)
+			serverCtx.Logger.Error("Failed to close statestore", "err", derr)
 			// Set the return value
 			err = derr
 		}
@@ -290,6 +311,7 @@ func updateConsensusState(ctx *server.Context, pk_byte, appHash []byte) error {
 
 	state.Validators = validatorSet
 	state.NextValidators = validatorSet
+	state.LastValidators = validatorSet
 	state.AppHash = appHash
 	// save state store
 	if err = stateStore.Save(state); err != nil {
@@ -316,7 +338,42 @@ func updateConsensusState(ctx *server.Context, pk_byte, appHash []byte) error {
 	saveValidatorsInfo(stateDB, state.LastBlockHeight+1, valInfo)
 	saveValidatorsInfo(stateDB, state.LastBlockHeight+2, valInfo)
 
-	return nil
+	// CHANGE BLOCK CONSENSUS STORE
+	blockStoreDB, err := openDB(serverCtx.Config.RootDir, "blockstore", server.GetAppDBBackend(serverCtx.Viper))
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if derr := blockStoreDB.Close(); derr != nil {
+			serverCtx.Logger.Error("Failed to close blockstore", "err", derr)
+			// Set the return value
+			err = derr
+		}
+	}()
+
+	blockStore := store.NewBlockStore(blockStoreDB)
+
+	lastCommit := blockStore.LoadSeenCommit(state.LastBlockHeight)
+
+	vote := lastCommit.GetVote(0)
+	if vote == nil {
+		return errors.New("cannot get the vote from last commit")
+	}
+
+	voteSignBytes := tmtypes.VoteSignBytes(state.ChainID, vote.ToProto())
+	signatureBytes, err := args.validatorPrivKey.Sign(voteSignBytes)
+	if err != nil {
+		return err
+	}
+
+	lastCommit.Signatures = []tmtypes.CommitSig{{
+		BlockIDFlag:      lastCommit.Signatures[0].BlockIDFlag,
+		ValidatorAddress: newTmVal.Address,
+		Timestamp:        lastCommit.Signatures[0].Timestamp,
+		Signature:        []byte(signatureBytes),
+	}}
+
+	return blockStore.SaveSeenCommit(state.LastBlockHeight, lastCommit)
 }
 
 func loadValidatorsInfo(db dbm.DB, height int64) (*cmtstate.ValidatorsInfo, error) {

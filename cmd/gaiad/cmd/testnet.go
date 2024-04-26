@@ -100,7 +100,7 @@ func addTestnetFlagsToCmd(cmd *cobra.Command) {
 // NewTestnetCmd creates a root testnet command with subcommands to:
 // 1. run an in-process testnet or
 // 2. initialize validator configuration files for running a multi-validator testnet in a separate process or
-// 3. update existing application and consensus state with the local validator that will be used for running the testnet
+// 3. update application and consensus state with the local validator info
 func NewTestnetCmd(mbm module.BasicManager, genBalIterator banktypes.GenesisBalancesIterator, appCreator servertypes.AppCreator) *cobra.Command {
 	testnetCmd := &cobra.Command{
 		Use:                        "testnet",
@@ -112,6 +112,8 @@ func NewTestnetCmd(mbm module.BasicManager, genBalIterator banktypes.GenesisBala
 
 	testnetCmd.AddCommand(testnetStartCmd())
 	testnetCmd.AddCommand(testnetInitFilesCmd(mbm, genBalIterator))
+	// if the binary is built with the unsafe_set_local_validator tag, unsafeSetValidatorFn will be set
+	// and the subcommand will be added
 	if unsafeSetValidatorFn != nil {
 		testnetCmd.AddCommand(unsafeSetValidatorFn(appCreator))
 	}

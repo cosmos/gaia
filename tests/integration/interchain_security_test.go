@@ -1,8 +1,7 @@
-package ics
+package integration
 
 import (
 	"encoding/json"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -103,7 +102,6 @@ func TestICSEpochs(t *testing.T) {
 
 	// Bond some tokens on provider to change validator powers
 	delegateFn(provCtx)
-	fmt.Println(app.StakingKeeper.GetLastTotalPower(provCtx))
 
 	// VSCPacket should only be created at the end of the current epoch
 	require.Empty(t, getVSCPacketsFn())

@@ -22,6 +22,9 @@ import (
 	icahost "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host"
 	icahostkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/keeper"
 	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
+	ibcfee "github.com/cosmos/ibc-go/v7/modules/apps/29-fee"
+	ibcfeekeeper "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/keeper"
+	ibcfeetypes "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/types"
 	"github.com/cosmos/ibc-go/v7/modules/apps/transfer"
 	ibctransferkeeper "github.com/cosmos/ibc-go/v7/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
@@ -114,6 +117,7 @@ type AppKeepers struct {
 
 	// Modules
 	ICAModule       ica.AppModule
+	IBCFeeKeeper    ibcfeekeeper.Keeper
 	TransferModule  transfer.AppModule
 	PFMRouterModule pfmrouter.AppModule
 	RateLimitModule ratelimit.AppModule
@@ -358,6 +362,13 @@ func NewAppKeeper(
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	appKeepers.EvidenceKeeper = *evidenceKeeper
 
+	appKeepers.IBCFeeKeeper = ibcfeekeeper.NewKeeper(
+		appCodec, appKeepers.keys[ibcfeetypes.StoreKey],
+		appKeepers.IBCKeeper.ChannelKeeper, // may be replaced with IBC middleware
+		appKeepers.IBCKeeper.ChannelKeeper,
+		&appKeepers.IBCKeeper.PortKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper,
+	)
+
 	// ICA Host keeper
 	appKeepers.ICAHostKeeper = icahostkeeper.NewKeeper(
 		appCodec,
@@ -381,7 +392,7 @@ func NewAppKeeper(
 		govAuthority, // authority
 		appKeepers.BankKeeper,
 		appKeepers.IBCKeeper.ChannelKeeper, // ChannelKeeper
-		appKeepers.IBCKeeper.ChannelKeeper, // ICS4Wrapper
+		appKeepers.IBCFeeKeeper,            // ICS4Wrapper
 	)
 
 	// ICA Controller keeper
@@ -419,6 +430,7 @@ func NewAppKeeper(
 		appKeepers.BankKeeper,
 		appKeepers.ScopedTransferKeeper,
 	)
+
 	// Must be called on PFMRouter AFTER TransferKeeper initialized
 	appKeepers.PFMRouterKeeper.SetTransferKeeper(appKeepers.TransferKeeper)
 
@@ -430,9 +442,14 @@ func NewAppKeeper(
 
 	// Create Transfer Stack (from bottom to top of stack)
 	// - core IBC
+	// - ibcfee
 	// - ratelimit
 	// - pfm
 	// - transfer
+	//
+	// This is how transfer stack will work in the end:
+	// * RecvPacket -> IBC core -> Fee -> RateLimit -> PFM -> Transfer (AddRoute)
+	// * SendPacket -> Transfer -> PFM -> RateLimit -> Fee -> IBC core (ICS4Wrapper)
 	var transferStack porttypes.IBCModule
 	transferStack = transfer.NewIBCModule(appKeepers.TransferKeeper)
 	transferStack = pfmrouter.NewIBCMiddleware(
@@ -443,6 +460,7 @@ func NewAppKeeper(
 		pfmrouterkeeper.DefaultRefundTransferPacketTimeoutTimestamp,
 	)
 	transferStack = ratelimit.NewIBCMiddleware(appKeepers.RatelimitKeeper, transferStack)
+	transferStack = ibcfee.NewIBCMiddleware(transferStack, appKeepers.IBCFeeKeeper)
 
 	// Create ICAHost Stack
 	var icaHostStack porttypes.IBCModule = icahost.NewIBCModule(appKeepers.ICAHostKeeper)

@@ -25,8 +25,8 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	gaiaparams "github.com/cosmos/gaia/v16/app/params"
-	metaprotocoltypes "github.com/cosmos/gaia/v16/x/metaprotocols/types"
+	gaiaparams "github.com/cosmos/gaia/v17/app/params"
+	metaprotocoltypes "github.com/cosmos/gaia/v17/x/metaprotocols/types"
 )
 
 const (

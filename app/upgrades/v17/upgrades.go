@@ -1,4 +1,4 @@
-package v10
+package v17
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -21,7 +21,7 @@ func CreateUpgradeHandler(
 			return vm, err
 		}
 
-		ctx.Logger().Info("Upgrade complete")
-		return vm, err
+		ctx.Logger().Info("Upgrade v17 complete")
+		return vm, nil
 	}
 }

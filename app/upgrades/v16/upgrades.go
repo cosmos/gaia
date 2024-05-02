@@ -18,7 +18,7 @@ import (
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	"github.com/cosmos/gaia/v16/app/keepers"
+	"github.com/cosmos/gaia/v17/app/keepers"
 )
 
 var RateLimits = map[string]ratelimittypes.MsgAddRateLimit{

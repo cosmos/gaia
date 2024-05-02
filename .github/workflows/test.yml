@@ -151,7 +151,7 @@ jobs:
       # the old gaiad binary version is hardcoded, need to be updated each major release.
       - name: Install Old Gaiad
         run: |
-          git checkout v15.1.0
+          git checkout v16.0.0
           make build
           cp ./build/gaiad ./build/gaiadold
           go clean -modcache

@@ -25,7 +25,6 @@ import (
 
 	"github.com/cosmos/gaia/v17/ante"
 	gaia "github.com/cosmos/gaia/v17/app"
-
 	// "github.com/cosmos/gaia/v11/app/helpers"
 	// "github.com/cosmos/gaia/v11/app/params"
 	"github.com/cosmos/gaia/v17/app/sim"

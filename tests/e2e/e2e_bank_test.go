@@ -10,7 +10,7 @@ import (
 	authTx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	extensiontypes "github.com/cosmos/gaia/v16/x/metaprotocols/types"
+	extensiontypes "github.com/cosmos/gaia/v17/x/metaprotocols/types"
 )
 
 func (s *IntegrationTestSuite) testBankTokenTransfer() {

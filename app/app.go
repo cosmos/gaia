@@ -51,12 +51,12 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	gaiaante "github.com/cosmos/gaia/v16/ante"
-	"github.com/cosmos/gaia/v16/app/keepers"
-	"github.com/cosmos/gaia/v16/app/params"
-	"github.com/cosmos/gaia/v16/app/upgrades"
-	v16 "github.com/cosmos/gaia/v16/app/upgrades/v16"
-	"github.com/cosmos/gaia/v16/x/globalfee"
+	gaiaante "github.com/cosmos/gaia/v17/ante"
+	"github.com/cosmos/gaia/v17/app/keepers"
+	"github.com/cosmos/gaia/v17/app/params"
+	"github.com/cosmos/gaia/v17/app/upgrades"
+	v16 "github.com/cosmos/gaia/v17/app/upgrades/v16"
+	"github.com/cosmos/gaia/v17/x/globalfee"
 )
 
 var (

@@ -1,0 +1,4 @@
+{
+    "title":"Cosmos Stargate Hub Upgrade Proposal 2: Time to Upgrade.",
+    "description":"Proposal to complete the Stargate upgrade, halt `cosmoshub-3` at 06:00 UTC on Jan 28th, export the state and start `cosmoshub-4` based on gaia 3.0.\n\n Gaia Commit hash: \n d974b27a8caf8cad3b06fbe4678871e4b0b69a51  Proposal details can be found on \n github: https://github.com/cosmos/governance/pull/5 \n ipfs: https://cloudflare-ipfs.com/ipfs/QmPww2PSmkmuLLu12GGwRdu5ur1Etf9u3Nt3Z6NqB7BQP1 \n sia: https://siasky.net/EAALGMzFCafvbKkQjnAieo2cA1mpxk-JLpKsiC4XxuM6eQ \n  "
+}

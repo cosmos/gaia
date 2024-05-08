@@ -1,0 +1,21 @@
+{
+  "name": "gaia-docs",
+  "version": "1.0.0",
+  "description": "Gaia Documentation",
+  "main": "index.js",
+  "dependencies": {
+    "vuepress-theme-cosmos": "^1.0.182"
+  },
+  "scripts": {
+    "serve": "trap 'exit 0' SIGINT; vuepress dev --no-cache",
+    "build": "trap 'exit 0' SIGINT; vuepress build --no-cache"
+  },
+  "author": "",
+  "license": "ISC",
+  "keywords": [
+    "cosmos",
+    "gaia",
+    "cosmos hub",
+    "atom"
+  ]
+}

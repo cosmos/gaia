@@ -1,0 +1,63 @@
+name: "Nightly E2E run"
+on:
+  workflow_call:
+  workflow_dispatch:
+  schedule:
+    # run every day at 03:00 UTC
+    - cron: "0 3 * * *"
+
+jobs:
+
+  run-tests:
+    uses: cosmos/gaia/.github/workflows/test.yml@main
+
+  run-simulations:
+    uses: cosmos/gaia/.github/workflows/sims.yml@main
+
+  run-vulncheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.21"
+          check-latest: true
+      - name: run-vulncheck
+        id: vulncheck
+        run: make vulncheck
+
+  warn-if-failure:
+    if: failure()
+    needs: [ run-tests, run-vulncheck, run-simulations]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Slack on failure
+        uses: slackapi/slack-github-action@v1.26.0
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.NIGHTLY_E2E_SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+          BRANCH: ${{ github.ref_name }}
+          RUN_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          COMMITS_URL: "${{ github.server_url }}/${{ github.repository }}/commits/${{ github.ref_name }}"
+        with:
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "❗Nightly tests failed",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "See the <${{ env.RUN_URL }}|run details>"
+                  }
+                }
+              ]
+            }

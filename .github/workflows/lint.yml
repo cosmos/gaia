@@ -1,0 +1,33 @@
+name: Lint
+on:
+  push:
+    branches:
+      - main
+      - release/**
+      - feat/**
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  golangci:
+    name: golangci-lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.21"
+          check-latest: true
+      - uses: technote-space/get-diff-action@v6.1.2
+        id: git_diff
+        with:
+          PATTERNS: |
+            **/*.go
+            go.mod
+            go.sum
+            **/go.mod
+            **/go.sum
+      - name: run linting
+        if: env.GIT_DIFF
+        run: |
+          make lint

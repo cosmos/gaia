@@ -1,0 +1,49 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    labels:
+      - "A:automerge"
+
+  - package-ecosystem: gomod
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    labels:
+      - "A:automerge"
+      - dependencies
+
+  - package-ecosystem: gomod
+    directory: "/"
+    schedule:
+      interval: daily
+    target-branch: "release/v15.2.x"
+    # Only allow automated security-related dependency updates on release branches.
+    open-pull-requests-limit: 0
+    labels:
+      - dependencies
+
+  - package-ecosystem: gomod
+    directory: "/"
+    schedule:
+      interval: daily
+    target-branch: "release/v16.x"
+    # Only allow automated security-related dependency updates on release branches.
+    open-pull-requests-limit: 0
+    labels:
+      - dependencies
+
+
+  - package-ecosystem: gomod
+    directory: "/"
+    schedule:
+      interval: daily
+    target-branch: "release/v17.x"
+    # Only allow automated security-related dependency updates on release branches.
+    open-pull-requests-limit: 0
+    labels:
+      - dependencies

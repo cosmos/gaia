@@ -1,0 +1,33 @@
+coverage:
+  precision: 2
+  round: down
+  range: 70...100
+  status:
+    project:
+      default:
+        threshold: 1% # allow this much decrease on project
+      app:
+        target: 80%
+        paths:   # this must be a list type
+          - "app/"
+    changes: false
+
+comment:
+  layout: "reach, diff, files"
+  behavior: default # update if exists else create new
+  require_changes: true
+
+ignore:
+  - "*.pb.go"
+  - "*.pb.gw.go"
+  - "*.md"
+  - "*.rst"
+  - "cmd"
+  - "client"
+  - "contrib"
+  - "docs"
+  - "proto"
+  - "tests/e2e"
+  - "app/app_helpers.go"
+  - "app/sim"
+  - "app/upgrades"

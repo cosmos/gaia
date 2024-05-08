@@ -1,0 +1,69 @@
+.tabs-component
+  margin 2em 0
+
+.tabs-component li.tabs-component-tab
+  margin-bottom 0 !important
+
+.tabs-component-tabs
+  border solid 1px #ddd
+  border-radius 6px
+  margin-bottom 5px
+  padding-left 0
+
+ul.tabs-component-tabs
+  margin-bottom -1px !important
+
+.tabs-component-tab
+  color #999
+  font-size 14px
+  font-weight 600
+  margin-right 0
+  list-style none
+  &:hover
+    color: #666
+  &.is-active
+    color $accentColor
+  &.is-disabled *
+    color #cdcdcd
+    cursor not-allowed !important
+
+.tabs-component-tab-a
+  align-items center
+  color inherit
+  display flex
+  padding .25em .5em
+  text-decoration none
+
+.tabs-component-panels
+  padding 1em 0
+
+@media (min-width: 700px)
+  .tabs-component-tabs
+    border 0
+    align-items stretch
+    display flex
+    justify-content flex-start
+    margin-bottom -1px
+
+  .tabs-component-tab
+    background-color #fff
+    border solid 1px #ddd
+    border-radius 3px 3px 0 0
+    margin-right .25em
+    transition transform .3s ease
+  &.is-active
+    border-bottom solid 1px #fff
+    z-index 2
+    transform translateY(0)
+
+  .tabs-component-panels
+    border-top-left-radius 0
+    background-color #fff
+    border solid 1px #ddd
+    border-radius 0 6px 6px 6px
+    box-shadow 0 0 10px rgba(0, 0, 0, .05)
+    padding 1em 1em
+
+:root
+  --color-link #9214B1
+  --color-primary #BA3FD9

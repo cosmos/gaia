@@ -72,12 +72,12 @@ func MigrateRedelegations(ctx sdk.Context, sk stakingkeeper.Keeper) error {
 			// add first validator destionation address for the current delegator
 			delegatorsToValAddr[red.DelegatorAddress] = append(delegatorsToValAddr[red.DelegatorAddress], valDstAddr.String())
 		} else {
-			delegatorReds[valDstAddr.String()] = append(delegatorReds[valDstAddr.String()], red)
-
 			// check if some redelegation for the destination validator already exists
 			if _, ok := delegatorReds[valDstAddr.String()]; !ok {
 				delegatorsToValAddr[red.DelegatorAddress] = append(delegatorsToValAddr[red.DelegatorAddress], valDstAddr.String())
 			}
+
+			delegatorReds[valDstAddr.String()] = append(delegatorReds[valDstAddr.String()], red)
 		}
 
 		return false

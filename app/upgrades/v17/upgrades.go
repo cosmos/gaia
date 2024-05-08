@@ -252,7 +252,6 @@ func RemoveRedelegationsByAmount(
 	}
 
 	redEntries := []redEntry{}
-
 	for redIdx, red := range reds {
 		for entryIdx, entry := range red.Entries {
 			redEntries = append(redEntries, redEntry{redIdx: redIdx, entryIdx: entryIdx, entry: entry})
@@ -265,11 +264,13 @@ func RemoveRedelegationsByAmount(
 	})
 
 	sharesDeleted := sdk.ZeroDec()
+	lastRedIdx := len(reds) - 1
 	for _, re := range redEntries {
 		sharesDeleted = sharesDeleted.Add(re.entry.SharesDst)
 		if sharesDeleted.GT(amount) {
 			// update entry shares to shares deleted - amount
 			reds[re.redIdx].Entries[re.entryIdx].SharesDst = sharesDeleted.Sub(amount)
+			lastRedIdx = re.redIdx
 			break
 		}
 		// remove entry shares to zero
@@ -279,13 +280,16 @@ func RemoveRedelegationsByAmount(
 	}
 
 	// TODO: check if it can be optimized without too much complexity
-	for _, red := range reds {
+	for idx, red := range reds {
 		if len(red.Entries) == 0 {
 			sk.RemoveRedelegation(ctx, red)
-			continue
+		} else {
+			sk.SetRedelegation(ctx, red)
 		}
-		sk.SetRedelegation(ctx, red)
 
+		if idx == lastRedIdx {
+			break
+		}
 	}
 
 	return nil

@@ -262,9 +262,12 @@ func TestUpgradeRelegations(t *testing.T) {
 	err := v17.MigrateRedelegations(ctx, *stakingKeeper)
 	require.NoError(t, err)
 
-	// redelegations to valDst4 should have been deleted
+	// delegator 1 redelegations to valDst4 should have been deleted
 	_, found := stakingKeeper.GetRedelegation(ctx, delAddr1, valSrcAddr4, valDstAddr4)
 	require.False(t, found)
+
+	del1Reds = stakingKeeper.GetRedelegations(ctx, delAddr1, uint16(10000))
+	require.Len(t, del1Reds, 3)
 
 	// check remaining redelegations shares after unbonding delegations
 	resDel1Ubd, found := stakingKeeper.GetUnbondingDelegation(ctx, delAddr1, valDstAddr3)
@@ -275,12 +278,56 @@ func TestUpgradeRelegations(t *testing.T) {
 		delAddr1.String(),
 		valDstAddr3,
 		resDel1Ubd,
-		stakingKeeper.GetRedelegations(ctx, delAddr1, uint16(10000)),
+		del1Reds,
 	)
 	require.NoError(t, err)
 	require.Equal(t, sdk.NewDec(5), resDel1Reds)
 
+	resDel2Ubd, found := stakingKeeper.GetUnbondingDelegation(ctx, delAddr2, valDstAddr1)
+	require.True(t, found)
+	del2RedValDst1, found := stakingKeeper.GetRedelegation(ctx, delAddr2, valSrcAddr1, valDstAddr1)
+	require.True(t, found)
+
+	resDel2Reds, err := v17.ComputeRemainingRedelegatedSharesAfterUnbondings(
+		*stakingKeeper,
+		ctx,
+		delAddr2.String(),
+		valDstAddr1,
+		resDel2Ubd,
+		[]stakingtypes.Redelegation{del2RedValDst1},
+	)
 	require.NoError(t, err)
+	require.Equal(t, sdk.ZeroDec(), resDel2Reds)
+
+	resDel2Ubd2, found := stakingKeeper.GetUnbondingDelegation(ctx, delAddr2, valDstAddr2)
+	require.True(t, found)
+	del2RedValDst2, found := stakingKeeper.GetRedelegation(ctx, delAddr2, valSrcAddr2, valDstAddr2)
+	require.True(t, found)
+
+	resDel2Reds, err = v17.ComputeRemainingRedelegatedSharesAfterUnbondings(
+		*stakingKeeper,
+		ctx,
+		delAddr2.String(),
+		valDstAddr2,
+		resDel2Ubd2,
+		[]stakingtypes.Redelegation{del2RedValDst2},
+	)
+	require.NoError(t, err)
+	require.Equal(t, sdk.NewDec(50), resDel2Reds)
+
+	del2RedValDst3, found := stakingKeeper.GetRedelegation(ctx, delAddr2, valSrcAddr3, valDstAddr3)
+	require.True(t, found)
+
+	resDel2Reds, err = v17.ComputeRemainingRedelegatedSharesAfterUnbondings(
+		*stakingKeeper,
+		ctx,
+		delAddr2.String(),
+		valDstAddr3,
+		stakingtypes.UnbondingDelegation{},
+		[]stakingtypes.Redelegation{del2RedValDst3},
+	)
+	require.NoError(t, err)
+	require.Equal(t, sdk.NewDec(22), resDel2Reds)
 }
 
 func TestComputeRemainingRedelegatedSharesAfterUnbondings(t *testing.T) {

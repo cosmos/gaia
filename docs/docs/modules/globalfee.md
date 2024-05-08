@@ -1,6 +1,6 @@
 ---
-title: Gaia Fee and Fees Checks
-order: 2
+title: Globalfee
+order: 1
 ---
 
 ## Fee Parameters

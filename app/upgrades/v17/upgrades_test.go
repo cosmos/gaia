@@ -1,7 +1,6 @@
 package v17_test
 
 import (
-	"fmt"
 	"strconv"
 	"testing"
 	"time"
@@ -257,18 +256,17 @@ func TestUpgradeRelegations(t *testing.T) {
 
 	*/
 
-	red4, found := stakingKeeper.GetRedelegation(ctx, delAddr1, valSrcAddr4, valDstAddr4)
-	require.True(t, found)
+	// TODO: assert all redelegations are persisted
 
 	// case 1 de exists so all redelegations should be deleted
 	err := v17.MigrateRedelegations(ctx, *stakingKeeper)
 	require.NoError(t, err)
 
-	fmt.Println("3", stakingKeeper.GetRedelegations(ctx, delAddr1, uint16(10000)))
-	red4, found = stakingKeeper.GetRedelegation(ctx, delAddr1, valSrcAddr4, valDstAddr4)
-	require.True(t, found)
-	fmt.Println("4", red4)
+	// redelegations to valDst4 should have been deleted
+	_, found := stakingKeeper.GetRedelegation(ctx, delAddr1, valSrcAddr4, valDstAddr4)
+	require.False(t, found)
 
+	// check remaining redelegations shares after unbonding delegations
 	resDel1Ubd, found := stakingKeeper.GetUnbondingDelegation(ctx, delAddr1, valDstAddr3)
 	require.True(t, found)
 	resDel1Reds, err := v17.ComputeRemainingRedelegatedSharesAfterUnbondings(

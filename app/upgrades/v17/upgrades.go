@@ -10,6 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+
 	"github.com/cosmos/gaia/v17/app/keepers"
 )
 
@@ -228,36 +229,6 @@ func ComputeRemainingRedelegatedSharesAfterUnbondings(
 	return remainingShares, nil
 }
 
-func RemoveRemainingRedelegationsByAmount(
-	sk stakingkeeper.Keeper,
-	ctx sdk.Context,
-	delegationEntries 
-	amount sdk.Dec,
-	reds []stakingtypes.Redelegation,
-) error {
-	sharesDeleted := sdk.ZeroDec()
-	for _, red := range reds {
-		idx := 0
-		for _, entry := range red.Entries {
-			sharesDeleted := sharesDeleted.Add(entry.SharesDst)
-			if sharesDeleted.GT(amount) {
-				red.Entries[idx].SharesDst = sharesDeleted.Sub(amount)
-				break
-			}
-			idx++
-		}
-		if idx == len(red.Entries)-1 {
-			sk.RemoveRedelegation(ctx, red)
-		} else {
-			red.Entries = red.Entries[idx:]
-			sk.SetRedelegation(ctx, red)
-			break
-		}
-	}
-	return nil
-}
-
-
 func SumRedelegationsShares(reds []stakingtypes.Redelegation) sdk.Dec {
 	redsShares := sdk.ZeroDec()
 	for _, red := range reds {
@@ -266,4 +237,56 @@ func SumRedelegationsShares(reds []stakingtypes.Redelegation) sdk.Dec {
 		}
 	}
 	return redsShares
+}
+
+func RemoveRedelegationsByAmount(
+	sk stakingkeeper.Keeper,
+	ctx sdk.Context,
+	amount sdk.Dec,
+	reds []stakingtypes.Redelegation,
+) error {
+	type redEntry struct {
+		redIdx   int
+		entryIdx int
+		entry    stakingtypes.RedelegationEntry
+	}
+
+	redEntries := []redEntry{}
+
+	for redIdx, red := range reds {
+		for entryIdx, entry := range red.Entries {
+			redEntries = append(redEntries, redEntry{redIdx: redIdx, entryIdx: entryIdx, entry: entry})
+		}
+	}
+
+	// sort delegation entries by completion time in descending order
+	sort.Slice(redEntries, func(i, j int) bool {
+		return redEntries[i].entry.CompletionTime.After(redEntries[j].entry.CompletionTime)
+	})
+
+	sharesDeleted := sdk.ZeroDec()
+	for _, re := range redEntries {
+		sharesDeleted = sharesDeleted.Add(re.entry.SharesDst)
+		if sharesDeleted.GT(amount) {
+			// update entry shares to shares deleted - amount
+			reds[re.redIdx].Entries[re.entryIdx].SharesDst = sharesDeleted.Sub(amount)
+			break
+		}
+		// remove entry shares to zero
+		// note that since they are ordered its necessary the last entry
+		// and therefore doesn't break the entries index
+		reds[re.redIdx].RemoveEntry(int64(re.entryIdx))
+	}
+
+	// TODO: check if it can be optimized without too much complexity
+	for _, red := range reds {
+		if len(red.Entries) == 0 {
+			sk.RemoveRedelegation(ctx, red)
+			continue
+		}
+		sk.SetRedelegation(ctx, red)
+
+	}
+
+	return nil
 }

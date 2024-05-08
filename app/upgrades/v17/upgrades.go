@@ -10,7 +10,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-
 	"github.com/cosmos/gaia/v17/app/keepers"
 )
 
@@ -229,19 +228,10 @@ func ComputeRemainingRedelegatedSharesAfterUnbondings(
 	return remainingShares, nil
 }
 
-func SumRedelegationsShares(reds []stakingtypes.Redelegation) sdk.Dec {
-	redsShares := sdk.ZeroDec()
-	for _, red := range reds {
-		for _, entry := range red.Entries {
-			redsShares = redsShares.Add(entry.SharesDst)
-		}
-	}
-	return redsShares
-}
-
-func RemoveRedelegationsByAmount(
+func RemoveRemainingRedelegationsByAmount(
 	sk stakingkeeper.Keeper,
 	ctx sdk.Context,
+	delegationEntries 
 	amount sdk.Dec,
 	reds []stakingtypes.Redelegation,
 ) error {
@@ -249,12 +239,12 @@ func RemoveRedelegationsByAmount(
 	for _, red := range reds {
 		idx := 0
 		for _, entry := range red.Entries {
-			if sharesDeleted.Add(entry.SharesDst).GT(amount) {
-				red.Entries[idx].SharesDst = amount.Sub(sharesDeleted)
+			sharesDeleted := sharesDeleted.Add(entry.SharesDst)
+			if sharesDeleted.GT(amount) {
+				red.Entries[idx].SharesDst = sharesDeleted.Sub(amount)
 				break
 			}
 			idx++
-			sharesDeleted = sharesDeleted.Add(entry.SharesDst)
 		}
 		if idx == len(red.Entries)-1 {
 			sk.RemoveRedelegation(ctx, red)
@@ -265,4 +255,15 @@ func RemoveRedelegationsByAmount(
 		}
 	}
 	return nil
+}
+
+
+func SumRedelegationsShares(reds []stakingtypes.Redelegation) sdk.Dec {
+	redsShares := sdk.ZeroDec()
+	for _, red := range reds {
+		for _, entry := range red.Entries {
+			redsShares = redsShares.Add(entry.SharesDst)
+		}
+	}
+	return redsShares
 }

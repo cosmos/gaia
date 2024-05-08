@@ -1,6 +1,7 @@
 package v17_test
 
 import (
+	"fmt"
 	"strconv"
 	"testing"
 	"time"
@@ -241,31 +242,45 @@ func TestUpgradeRelegations(t *testing.T) {
 
 		 									val1 	val2 	val3 	val4
 			del1 redelegation remaining		 0       0       7      20
-			del2 redelegation remaining		 0 		  85	 22 	  0
+			del2 redelegation remaining		 0 		 85	     22 	  0
 
 											val1 	val2 	val3 	val4
 			del1 delegation shares			 0		  0 	  5       0
 			del2 delegation shares			 0		  50	  40      0
 
-			expected redelegations after migrations:
+		expected remaining redelegations after migrations
+		after unbonding delegation completions:
 
 											val1 	val2 	val3 	val4
-			del1 delegation shares			 0		  0 	  2       0
-			del2 delegation shares			 0		  50	  22      0
+			del1 redelegation remaining		 0		  0 	  5       0
+			del2 redelegation remaining		 0		  50	  22      0
 
 	*/
 
+	red4, found := stakingKeeper.GetRedelegation(ctx, delAddr1, valSrcAddr4, valDstAddr4)
+	require.True(t, found)
+
 	// case 1 de exists so all redelegations should be deleted
 	err := v17.MigrateRedelegations(ctx, *stakingKeeper)
+	require.NoError(t, err)
 
-	resDel1Reds := stakingKeeper.GetRedelegations(ctx, delAddr1, uint16(10000))
-	require.Len(t, resDel1Reds, 1)
-	require.Len(t, resDel1Reds[0].Entries, 1)
-	require.Equal(t, del1Reds[0].ValidatorDstAddress, resDel1Reds[0].ValidatorDstAddress)
-	require.Equal(t, sdk.NewDec(5), del1Reds[0].ValidatorDstAddress, resDel1Reds[0].Entries[0].SharesDst)
+	fmt.Println("3", stakingKeeper.GetRedelegations(ctx, delAddr1, uint16(10000)))
+	red4, found = stakingKeeper.GetRedelegation(ctx, delAddr1, valSrcAddr4, valDstAddr4)
+	require.True(t, found)
+	fmt.Println("4", red4)
 
-	require.Equal(t, sdk.NewDec(5), stakingKeeper.GetRedelegations(ctx, delAddr1, uint16(10000)))
-	require.Empty(t, stakingKeeper.GetRedelegations(ctx, delAddr2, uint16(10000)))
+	resDel1Ubd, found := stakingKeeper.GetUnbondingDelegation(ctx, delAddr1, valDstAddr3)
+	require.True(t, found)
+	resDel1Reds, err := v17.ComputeRemainingRedelegatedSharesAfterUnbondings(
+		*stakingKeeper,
+		ctx,
+		delAddr1.String(),
+		valDstAddr3,
+		resDel1Ubd,
+		stakingKeeper.GetRedelegations(ctx, delAddr1, uint16(10000)),
+	)
+	require.NoError(t, err)
+	require.Equal(t, sdk.NewDec(5), resDel1Reds)
 
 	require.NoError(t, err)
 }

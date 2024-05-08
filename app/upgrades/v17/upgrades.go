@@ -239,7 +239,8 @@ func SumRedelegationsShares(reds []stakingtypes.Redelegation) sdk.Dec {
 	return redsShares
 }
 
-func RemoveRedelegationsByAmount(
+// TODO: document and add UT
+func RemoveRemainingRedelegationsByAmount(
 	sk stakingkeeper.Keeper,
 	ctx sdk.Context,
 	amount sdk.Dec,

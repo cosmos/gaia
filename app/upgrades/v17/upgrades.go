@@ -27,6 +27,11 @@ func CreateUpgradeHandler(
 			return vm, err
 		}
 
+		if err := MigrateRedelegations(ctx, *keepers.StakingKeeper); err != nil {
+			//TODO: decide what to do with error
+			ctx.Logger().Error("fail to migrate redelegations - tokenization of shares might me compromised after upgrade ")
+		}
+
 		ctx.Logger().Info("Upgrade v17 complete")
 		return vm, nil
 	}
@@ -35,6 +40,9 @@ func CreateUpgradeHandler(
 func MigrateRedelegations(ctx sdk.Context, sk stakingkeeper.Keeper) error {
 	delegatorAddrs := []string{}
 	delegatorsToValReds := map[string]map[string][]types.Redelegation{}
+
+	// require to ensure that redelegations are always iterated in the same order
+	delegatorsToValAddr := map[string][]string{}
 
 	// create special id for delegator validator pair
 	// each new redelegations either find or create one new id
@@ -49,7 +57,7 @@ func MigrateRedelegations(ctx sdk.Context, sk stakingkeeper.Keeper) error {
 		}
 		val := sk.Validator(ctx, valDstAddr).(stakingtypes.Validator)
 
-		// maybe that doesn't hold since it might just be the case now
+		// TODO: check if that's correct since it might just be the case now
 		if val.LiquidShares.IsZero() {
 			return false
 		}
@@ -57,10 +65,19 @@ func MigrateRedelegations(ctx sdk.Context, sk stakingkeeper.Keeper) error {
 		// if new delegator address creates one
 		delegatorReds, ok := delegatorsToValReds[red.DelegatorAddress]
 		if !ok { // avoid duplicates
+			// append first redelgation for the current delegator
 			delegatorAddrs = append(delegatorAddrs, red.DelegatorAddress)
 			delegatorsToValReds[red.DelegatorAddress] = map[string][]types.Redelegation{valDstAddr.String(): {red}}
+
+			// add first validator destionation address for the current delegator
+			delegatorsToValAddr[red.DelegatorAddress] = append(delegatorsToValAddr[red.DelegatorAddress], valDstAddr.String())
 		} else {
 			delegatorReds[valDstAddr.String()] = append(delegatorReds[valDstAddr.String()], red)
+
+			// check if some redelegation for the destination validator already exists
+			if _, ok := delegatorReds[valDstAddr.String()]; !ok {
+				delegatorsToValAddr[red.DelegatorAddress] = append(delegatorsToValAddr[red.DelegatorAddress], valDstAddr.String())
+			}
 		}
 
 		return false
@@ -70,7 +87,8 @@ func MigrateRedelegations(ctx sdk.Context, sk stakingkeeper.Keeper) error {
 
 	// iterate over the delegators address
 	for _, delAddr := range delegatorAddrs {
-		for valAddr, reds := range delegatorsToValReds[delAddr] {
+		for _, valAddr := range delegatorsToValAddr[delAddr] {
+			reds := delegatorsToValReds[delAddr][valAddr]
 			// iterate over the delegators' redelegations
 			// get the delegator's shares
 			valAddr, err := sdk.ValAddressFromBech32(valAddr)
@@ -96,13 +114,9 @@ func MigrateRedelegations(ctx sdk.Context, sk stakingkeeper.Keeper) error {
 					continue
 				}
 			// case 2: del shares > 0, ubd shares == 0
-			//  => compute del shares minus redelegated shares
-			//  if res >= 0:
-			//		do nothing since shares can be slashed
-			// 	if res < 0:
-			//		delete del shares minus redelegated shares
 			case delOk && !ubdOk:
 				redsSharesToDelete = SumRedelegationsShares(reds).Sub(del.Shares)
+			// case 4: del shares == 0, ubd shares > 0
 			case !delOk && ubdOk:
 				redsSharesToDelete, err = ComputeRemainingRedelegatedSharesAfterUnbondings(
 					sk,
@@ -115,7 +129,7 @@ func MigrateRedelegations(ctx sdk.Context, sk stakingkeeper.Keeper) error {
 				if err != nil {
 					continue
 				}
-			// case 3: ubd shares >= 0 and del shares >= 0
+			// case 3:  del shares > 0, ubd shares > 0 and
 			default:
 				redsSharesRemaining, err := ComputeRemainingRedelegatedSharesAfterUnbondings(
 					sk,
@@ -131,8 +145,10 @@ func MigrateRedelegations(ctx sdk.Context, sk stakingkeeper.Keeper) error {
 				redsSharesToDelete = redsSharesRemaining.Sub(del.Shares)
 			}
 
+			// if redelegations shares is positive, it means that some redelegations
+			// aren't linked to any delegation shares and must be deleted
 			if redsSharesToDelete.IsPositive() {
-				err = RemoveRedelegationsByAmount(
+				err = RemoveRemainingRedelegationsByAmount(
 					sk,
 					ctx,
 					redsSharesToDelete,

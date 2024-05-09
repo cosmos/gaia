@@ -1,5 +1,5 @@
-//go:build unsafe_set_local_validator
-// +build unsafe_set_local_validator
+//go:build unsafe_start_local_validator
+// +build unsafe_start_local_validator
 
 package cmd
 
@@ -7,26 +7,28 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"io"
 	"path/filepath"
 	"strings"
 
 	dbm "github.com/cometbft/cometbft-db"
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/server"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	"github.com/cosmos/cosmos-sdk/store/rootmulti"
 	gaia "github.com/cosmos/gaia/v15/app"
+	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
 	"github.com/cometbft/cometbft/crypto"
 	tmd25519 "github.com/cometbft/cometbft/crypto/ed25519"
+	"github.com/cometbft/cometbft/libs/log"
 	cmtstate "github.com/cometbft/cometbft/proto/tendermint/state"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sm "github.com/cometbft/cometbft/state"
 	"github.com/cometbft/cometbft/store"
 	tmtypes "github.com/cometbft/cometbft/types"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
@@ -46,34 +48,26 @@ type valArgs struct {
 	validatorConsPubKeyByte  []byte           // validator's consensus public key
 	validatorConsPrivKey     crypto.PrivKey   // validator's consensus private key
 	accountsToFund           []sdk.AccAddress // list of accounts to fund and use for testing later on
+	homeDir                  string
 }
 
 func init() {
-	unsafeSetValidatorFn = testnetUnsafeSetLocalValidatorCmd
+	unsafeStartValidatorFn = testnetUnsafeStartLocalValidatorCmd
 }
 
-func testnetUnsafeSetLocalValidatorCmd(appCreator servertypes.AppCreator) *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "unsafe-set-local-validator",
-		Short: "Updates chain's application and consensus state with provided validator info",
-		Long: `The unsafe-set-local-validator command modifies both application and consensus stores within a local mainnet node,
+func testnetUnsafeStartLocalValidatorCmd(ac appCreator) *cobra.Command {
+
+	cmd := server.StartCmd(ac.newTestingApp, gaia.DefaultNodeHome)
+	cmd.Use = "unsafe-start-local-validator"
+	cmd.Short = "Updates chain's application and consensus state with provided validator info and starts the node"
+	cmd.Long = `The unsafe-start-local-validator command modifies both application and consensus stores within a local mainnet node and starts the node,
 with the aim of facilitating testing procedures. This command replaces existing validator data with updated information,
 thereby removing the old validator set and introducing a new set suitable for local testing purposes. By altering the state extracted from the mainnet node,
 it enables developers to configure their local environments to reflect mainnet conditions more accurately.
 
 Example:
-	simd testnet unsafe-set-local-validator --validator-operator="cosmosvaloper17fjdcqy7g80pn0seexcch5pg0dtvs45p57t97r" --validator-pukey="SLpHEfzQHuuNO9J1BB/hXyiH6c1NmpoIVQ2pMWmyctE=" --validator-privkey="AiayvI2px5CZVl/uOGmacfFjcIBoyk3Oa2JPBO6zEcdIukcR/NAe64070nUEH+FfKIfpzU2amghVDakxabJy0Q==" --accounts-to-fund="cosmos1ju6tlfclulxumtt2kglvnxduj5d93a64r5czge,cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl"
-	`,
-		RunE: func(cmd *cobra.Command, _ []string) error {
-			args, err := getCommandArgs(cmd)
-			if err != nil {
-				return err
-			}
-
-			return modifyValidatorInfo(cmd, appCreator, args)
-		},
-	}
-
+	simd testnet unsafe-start-local-validator --validator-operator="cosmosvaloper17fjdcqy7g80pn0seexcch5pg0dtvs45p57t97r" --validator-pukey="SLpHEfzQHuuNO9J1BB/hXyiH6c1NmpoIVQ2pMWmyctE=" --validator-privkey="AiayvI2px5CZVl/uOGmacfFjcIBoyk3Oa2JPBO6zEcdIukcR/NAe64070nUEH+FfKIfpzU2amghVDakxabJy0Q==" --accounts-to-fund="cosmos1ju6tlfclulxumtt2kglvnxduj5d93a64r5czge,cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl" [other_server_start_flags]
+	`
 	cmd.Flags().String(flagValidatorOperatorAddress, "", "Validator operator address e.g. cosmosvaloper17fjdcqy7g80pn0seexcch5pg0dtvs45p57t97r")
 	cmd.Flags().String(flagValidatorPubKey, "", "Validator tendermint/PubKeyEd25519 consensus public key from the priv_validato_key.json file")
 	cmd.Flags().String(flagValidatorPrivKey, "", "Validator tendermint/PrivKeyEd25519 consensus private key from the priv_validato_key.json file")
@@ -83,23 +77,23 @@ Example:
 }
 
 // parse the input flags and returns valArgs
-func getCommandArgs(cmd *cobra.Command) (valArgs, error) {
+func getCommandArgs(appOpts servertypes.AppOptions) (valArgs, error) {
 	args := valArgs{}
 	// validate and set validator operator address
-	valoperAddress, err := cmd.Flags().GetString(flagValidatorOperatorAddress)
-	if err != nil || valoperAddress == "" {
-		return args, fmt.Errorf("invalid validator operator address string %w", err)
+	valoperAddress := cast.ToString(appOpts.Get(flagValidatorOperatorAddress))
+	if valoperAddress == "" {
+		return args, fmt.Errorf("invalid validator operator address string")
 	}
-	_, err = sdk.ValAddressFromBech32(valoperAddress)
+	_, err := sdk.ValAddressFromBech32(valoperAddress)
 	if err != nil {
 		return args, fmt.Errorf("invalid validator operator address format %w", err)
 	}
 	args.validatorOperatorAddress = valoperAddress
 
 	// validate and set validator pubkey
-	validatorPubKey, err := cmd.Flags().GetString(flagValidatorPubKey)
-	if err != nil || validatorPubKey == "" {
-		return args, fmt.Errorf("invalid validator pubkey string %w", err)
+	validatorPubKey := cast.ToString(appOpts.Get(flagValidatorPubKey))
+	if validatorPubKey == "" {
+		return args, fmt.Errorf("invalid validator pubkey string")
 	}
 	decPubKey, err := base64.StdEncoding.DecodeString(validatorPubKey)
 	if err != nil {
@@ -108,8 +102,8 @@ func getCommandArgs(cmd *cobra.Command) (valArgs, error) {
 	args.validatorConsPubKeyByte = []byte(decPubKey)
 
 	// validate  and set validator privkey
-	validatorPrivKey, err := cmd.Flags().GetString(flagValidatorPrivKey)
-	if err != nil || validatorPrivKey == "" {
+	validatorPrivKey := cast.ToString(appOpts.Get(flagValidatorPrivKey))
+	if validatorPrivKey == "" {
 		return args, fmt.Errorf("invalid validator private key %w", err)
 	}
 	decPrivKey, err := base64.StdEncoding.DecodeString(validatorPrivKey)
@@ -119,10 +113,7 @@ func getCommandArgs(cmd *cobra.Command) (valArgs, error) {
 	args.validatorConsPrivKey = tmd25519.PrivKey([]byte(decPrivKey))
 
 	// validate  and set accounts to fund
-	accountsString, err := cmd.Flags().GetString(flagAccountsToFund)
-	if err != nil {
-		return args, fmt.Errorf("invalid addresses to fund %w", err)
-	}
+	accountsString := cast.ToString(appOpts.Get(flagAccountsToFund))
 
 	for _, account := range strings.Split(accountsString, ",") {
 		if account != "" {
@@ -134,60 +125,48 @@ func getCommandArgs(cmd *cobra.Command) (valArgs, error) {
 		}
 	}
 
+	// home dir
+	homeDir := cast.ToString(appOpts.Get(flags.FlagHome))
+	if homeDir == "" {
+		return args, fmt.Errorf("invalid home dir")
+	}
+	args.homeDir = homeDir
+
 	return args, nil
 }
 
-// modifies application and consensus states by replacing validator related data
-func modifyValidatorInfo(cmd *cobra.Command, appCreator servertypes.AppCreator, args valArgs) error {
-	serverCtx := server.GetServerContextFromCmd(cmd)
-	homeDir, err := cmd.Flags().GetString(flags.FlagHome)
-	if err != nil {
-		return err
-	}
-	serverCtx.Config.SetRoot(homeDir)
-
-	//UPDATE APP STATE
-	db, err := openDB(serverCtx.Config.RootDir, "application", server.GetAppDBBackend(serverCtx.Viper))
-	if err != nil {
-		return err
-	}
-	defer func() {
-		if derr := db.Close(); derr != nil {
-			serverCtx.Logger.Error("Failed to close application db", "err", derr)
-			err = derr
-		}
-	}()
-
-	app := appCreator(serverCtx.Logger, db, nil, serverCtx.Viper)
+// returns gaia app with modified application and consensus states by replacing validator related data
+func (a appCreator) newTestingApp(
+	logger log.Logger,
+	db dbm.DB,
+	traceStore io.Writer,
+	appOpts servertypes.AppOptions,
+) servertypes.Application {
+	app := a.newApp(logger, db, traceStore, appOpts)
 	gaiaApp, ok := app.(*gaia.GaiaApp)
 	if !ok {
-		return errors.New("invalid gaia application")
+		panic(errors.New("invalid gaia application"))
 	}
 
-	// we need to rollback to the previous version because app.CommitMultiStore().Commit() increments the version and
-	// if we do not rollback, we will have a mismatch with the core and app versions(heights)
-	latestHeight := rootmulti.GetLatestVersion(db)
-	app.CommitMultiStore().RollbackToVersion(latestHeight - 1)
+	// Get command args
+	args, err := getCommandArgs(appOpts)
 	if err != nil {
-		return err
+		panic(err)
 	}
 
+	// Update app state
 	err = updateApplicationState(gaiaApp, args)
 	if err != nil {
-		return err
+		panic(err)
 	}
 
-	// save changes to the app store, this will also increment the version
-	app.CommitMultiStore().Commit()
-
-	//UPDATE CONSENSUS STATE
-	appHash := app.CommitMultiStore().LastCommitID().Hash
-	err = updateConsensusState(serverCtx, args, appHash)
+	//Update consensus state
+	err = updateConsensusState(logger, appOpts, args)
 	if err != nil {
-		return err
+		panic(err)
 	}
 
-	return nil
+	return gaiaApp
 }
 
 func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
@@ -286,14 +265,14 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 	return nil
 }
 
-func updateConsensusState(serverCtx *server.Context, args valArgs, appHash []byte) error {
+func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, args valArgs) error {
 	// create validator set from the local validator
 	newTmVal := tmtypes.NewValidator(tmd25519.PubKey(args.validatorConsPubKeyByte), 900000000000000)
 	vals := []*tmtypes.Validator{newTmVal}
 	validatorSet := tmtypes.NewValidatorSet(vals)
 
 	// CHANGE STATE CONSENSUS STORE
-	stateDB, err := openDB(serverCtx.Config.RootDir, "state", server.GetAppDBBackend(serverCtx.Viper))
+	stateDB, err := openDB(args.homeDir, "state", server.GetAppDBBackend(appOpts))
 	if err != nil {
 		return err
 	}
@@ -309,7 +288,7 @@ func updateConsensusState(serverCtx *server.Context, args valArgs, appHash []byt
 	}
 	defer func() {
 		if derr := stateStore.Close(); derr != nil {
-			serverCtx.Logger.Error("Failed to close consensus state db", "err", derr)
+			logger.Error("Failed to close consensus state db", "err", derr)
 			err = derr
 		}
 	}()
@@ -317,7 +296,6 @@ func updateConsensusState(serverCtx *server.Context, args valArgs, appHash []byt
 	state.LastValidators = validatorSet
 	state.Validators = validatorSet
 	state.NextValidators = validatorSet
-	state.AppHash = appHash // needs to be updated since it is changed earlier in updateApplicationState
 	// save state store
 	if err = stateStore.Save(state); err != nil {
 		return err
@@ -346,13 +324,13 @@ func updateConsensusState(serverCtx *server.Context, args valArgs, appHash []byt
 	// CHANGE BLOCK CONSENSUS STORE
 	// we need to change the last commit data by updating the signature's info. Consensus will match the validator's set length
 	// and size of the lastCommit signatures when building the last commit info and they have to match
-	blockStoreDB, err := openDB(serverCtx.Config.RootDir, "blockstore", server.GetAppDBBackend(serverCtx.Viper))
+	blockStoreDB, err := openDB(args.homeDir, "blockstore", server.GetAppDBBackend(appOpts))
 	if err != nil {
 		return err
 	}
 	defer func() {
 		if derr := blockStoreDB.Close(); derr != nil {
-			serverCtx.Logger.Error("Failed to close consensus blockstore db", "err", derr)
+			logger.Error("Failed to close consensus blockstore db", "err", derr)
 			err = derr
 		}
 	}()
@@ -360,7 +338,14 @@ func updateConsensusState(serverCtx *server.Context, args valArgs, appHash []byt
 	blockStore := store.NewBlockStore(blockStoreDB)
 	lastCommit := blockStore.LoadSeenCommit(state.LastBlockHeight)
 
-	vote := lastCommit.GetVote(0)
+	var vote *tmtypes.Vote
+	for idx, commitSig := range lastCommit.Signatures {
+		if commitSig.Absent() {
+			continue
+		}
+		vote = lastCommit.GetVote(int32(idx))
+		break
+	}
 	if vote == nil {
 		return errors.New("cannot get the vote from the last commit")
 	}
@@ -372,9 +357,9 @@ func updateConsensusState(serverCtx *server.Context, args valArgs, appHash []byt
 	}
 
 	lastCommit.Signatures = []tmtypes.CommitSig{{
-		BlockIDFlag:      lastCommit.Signatures[0].BlockIDFlag,
+		BlockIDFlag:      tmtypes.BlockIDFlagCommit,
 		ValidatorAddress: newTmVal.Address,
-		Timestamp:        lastCommit.Signatures[0].Timestamp,
+		Timestamp:        vote.Timestamp,
 		Signature:        []byte(signatureBytes),
 	}}
 

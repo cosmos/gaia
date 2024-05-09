@@ -132,7 +132,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 	rootCmd.AddCommand(
 		genutilcli.InitCmd(gaia.ModuleBasics, gaia.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
-		NewTestnetCmd(gaia.ModuleBasics, banktypes.GenesisBalancesIterator{}, ac.newApp),
+		NewTestnetCmd(gaia.ModuleBasics, banktypes.GenesisBalancesIterator{}, ac),
 		addDebugCommands(debug.Cmd()),
 		config.Cmd(),
 		pruning.PruningCmd(ac.newApp),

@@ -79,6 +79,7 @@ Pull the versions referenced in `versions.json` and `docusaurus.config.js`:
 cd ../ # back to project root
 make build-docs
 git checkout <your_working_branch>
+cd docs
 ```
 
 Serve the app

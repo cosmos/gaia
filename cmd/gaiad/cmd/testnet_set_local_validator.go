@@ -161,7 +161,7 @@ func (a appCreator) newTestingApp(
 	}
 
 	//Update consensus state
-	err = updateConsensusState(logger, appOpts, args)
+	err = updateConsensusState(logger, appOpts, gaiaApp.CommitMultiStore().LatestVersion(), args)
 	if err != nil {
 		panic(err)
 	}
@@ -265,7 +265,7 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 	return nil
 }
 
-func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, args valArgs) error {
+func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, appHeight int64, args valArgs) error {
 	// create validator set from the local validator
 	newTmVal := tmtypes.NewValidator(tmd25519.PubKey(args.validatorConsPubKeyByte), 900000000000000)
 	vals := []*tmtypes.Validator{newTmVal}
@@ -362,6 +362,18 @@ func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, arg
 		Timestamp:        vote.Timestamp,
 		Signature:        []byte(signatureBytes),
 	}}
+
+	// if store height is greater than app height and state height, we will remove the last block from the store to avoid
+	// replaying this block to the app. If only the state height is lower, we do not delete the block from the store because
+	// block would not be replayed to the app (the mock app will be used by consensus instead) and only consensus state
+	// will be updated when the node is run. If all three versions are equal, everything is ok. The only scenario from
+	// which we cannot recover is the one when app height is lower that the version written in the app's iavl stores, because
+	// the hash of the next block would not be the same as the written hash and we do not have an exported function to delete
+	// that greater version from the app iavl store
+	blockStoreState := store.LoadBlockStoreState(blockStoreDB)
+	if blockStoreState.Height > state.LastBlockHeight && blockStoreState.Height > appHeight {
+		blockStore.DeleteLatestBlock()
+	}
 
 	return blockStore.SaveSeenCommit(state.LastBlockHeight, lastCommit)
 }

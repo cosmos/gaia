@@ -38,7 +38,7 @@ import (
 
 var (
 	flagValidatorOperatorAddress = "validator-operator"
-	flagValidatorPubKey          = "validator-pukey"
+	flagValidatorPubKey          = "validator-pubkey"
 	flagValidatorPrivKey         = "validator-privkey"
 	flagAccountsToFund           = "accounts-to-fund"
 )

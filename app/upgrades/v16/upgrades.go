@@ -18,7 +18,7 @@ import (
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	"github.com/cosmos/gaia/v16/app/keepers"
+	"github.com/cosmos/gaia/v17/app/keepers"
 )
 
 var RateLimits = map[string]ratelimittypes.MsgAddRateLimit{
@@ -163,23 +163,26 @@ func AddRateLimits(ctx sdk.Context, k ratelimitkeeper.Keeper) error {
 	return nil
 }
 
+// NOTE: This is commented out because the valset is already initialized and the function has no effect
+// ComputeNextEpochConsumerValSet was removed and build was broken
+// code is kept here for reference
 func InitICSEpochs(ctx sdk.Context, pk providerkeeper.Keeper, sk stakingkeeper.Keeper) error {
 	ctx.Logger().Info("Initializing ICS epochs...")
 
 	// get the bonded validators from the staking module
-	bondedValidators := sk.GetLastValidators(ctx)
+	// _ = sk.GetLastValidators(ctx)
 
-	for _, chain := range pk.GetAllConsumerChains(ctx) {
-		chainID := chain.ChainId
-		valset := pk.GetConsumerValSet(ctx, chainID)
-		if len(valset) > 0 {
-			ctx.Logger().Info("consumer chain `%s` already has the valset initialized", chainID)
-		} else {
-			// init valset for consumer with chainID
-			nextValidators := pk.ComputeNextEpochConsumerValSet(ctx, chainID, bondedValidators)
-			pk.SetConsumerValSet(ctx, chainID, nextValidators)
-		}
-	}
+	// for _, chain := range pk.GetAllConsumerChains(ctx) {
+	// 	chainID := chain.ChainId
+	// 	valset := pk.GetConsumerValSet(ctx, chainID)
+	// 	if len(valset) > 0 {
+	// 		ctx.Logger().Info("consumer chain `%s` already has the valset initialized", chainID)
+	// 	} else {
+	// 		// init valset for consumer with chainID
+	// 		nextValidators := pk.ComputeNextEpochConsumerValSet(ctx, chainID, bondedValidators)
+	// 		pk.SetConsumerValSet(ctx, chainID, nextValidators)
+	// 	}
+	// }
 
 	ctx.Logger().Info("Finished initializing ICS epochs")
 	return nil

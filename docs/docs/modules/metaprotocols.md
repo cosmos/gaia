@@ -1,8 +1,6 @@
 ---
-title: Metaprotocol Support
-order: false
-parent:
-  order: 2
+title: Metaprotocol
+order: 2
 ---
 
 The `x/metaprotocol` module adds support for encoding and decoding additional fields attached to transactions.

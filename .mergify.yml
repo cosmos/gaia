@@ -41,3 +41,12 @@ pull_request_rules:
       backport:
         branches:
           - release/v16.x
+
+  - name: Backport patches to the release/v17.x branch
+    conditions:
+      - base=main
+      - label=A:backport/v17.x
+    actions:
+      backport:
+        branches:
+          - release/v17.x

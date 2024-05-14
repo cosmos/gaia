@@ -20,7 +20,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	gaiaApp "github.com/cosmos/gaia/v16/app"
+	gaiaApp "github.com/cosmos/gaia/v17/app"
 )
 
 var (

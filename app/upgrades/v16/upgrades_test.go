@@ -17,8 +17,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 
-	"github.com/cosmos/gaia/v16/app/helpers"
-	v16 "github.com/cosmos/gaia/v16/app/upgrades/v16"
+	"github.com/cosmos/gaia/v17/app/helpers"
+	v16 "github.com/cosmos/gaia/v17/app/upgrades/v16"
 )
 
 var AtomSupply = sdkmath.NewInt(1000)
@@ -71,39 +71,5 @@ func TestAddRateLimits(t *testing.T) {
 		rateLimit, found := ratelimitkeeper.GetRateLimit(ctx, v16.RateLimitDenom, msg.ChannelId)
 		require.True(t, found)
 		require.Equal(t, expectedRateLimit, rateLimit)
-	}
-}
-
-func TestInitICSEpochs(t *testing.T) {
-	gaiaApp := helpers.Setup(t)
-	ctx := gaiaApp.NewUncachedContext(true, tmproto.Header{})
-
-	providerKeeper := gaiaApp.ProviderKeeper
-	stakingKeeper := gaiaApp.StakingKeeper
-
-	// the setup has only one validator that is bonded
-	expBondedVals := stakingKeeper.GetAllValidators(ctx)
-	require.Equal(t, 1, len(expBondedVals))
-	expVal := expBondedVals[0]
-	expPower := expVal.ConsensusPower(stakingKeeper.PowerReduction(ctx))
-	expConsAddr, err := expVal.GetConsAddr()
-	require.NoError(t, err)
-	expConsumerPublicKey, err := expVal.TmConsPublicKey()
-	require.NoError(t, err)
-
-	providerKeeper.SetConsumerClientId(ctx, "chainID-0", "clientID-0")
-	providerKeeper.SetConsumerClientId(ctx, "chainID-1", "clientID-1")
-
-	err = v16.InitICSEpochs(ctx, providerKeeper, *stakingKeeper)
-	require.NoError(t, err)
-
-	for _, chain := range providerKeeper.GetAllConsumerChains(ctx) {
-		chainID := chain.ChainId
-		valset := providerKeeper.GetConsumerValSet(ctx, chainID)
-		require.Equal(t, 1, len(valset))
-		val := valset[0]
-		require.Equal(t, expPower, val.Power)
-		require.Equal(t, expConsAddr.Bytes(), val.ProviderConsAddr)
-		require.Equal(t, expConsumerPublicKey, *val.ConsumerPublicKey)
 	}
 }

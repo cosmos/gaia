@@ -12,7 +12,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	gaiaApp "github.com/cosmos/gaia/v16/app"
+	gaiaApp "github.com/cosmos/gaia/v17/app"
 )
 
 // These integration tests were modified to work with the GaiaApp

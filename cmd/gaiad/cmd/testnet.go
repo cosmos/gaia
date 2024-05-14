@@ -39,17 +39,20 @@ import (
 )
 
 var (
-	flagNodeDirPrefix     = "node-dir-prefix"
-	flagNumValidators     = "v"
-	flagOutputDir         = "output-dir"
-	flagNodeDaemonHome    = "node-daemon-home"
-	flagStartingIPAddress = "starting-ip-address"
-	flagEnableLogging     = "enable-logging"
-	flagGRPCAddress       = "grpc.address"
-	flagRPCAddress        = "rpc.address"
-	flagAPIAddress        = "api.address"
-	flagPrintMnemonic     = "print-mnemonic"
+	flagNodeDirPrefix      = "node-dir-prefix"
+	flagNumValidators      = "v"
+	flagOutputDir          = "output-dir"
+	flagNodeDaemonHome     = "node-daemon-home"
+	flagStartingIPAddress  = "starting-ip-address"
+	flagEnableLogging      = "enable-logging"
+	flagGRPCAddress        = "grpc.address"
+	flagRPCAddress         = "rpc.address"
+	flagAPIAddress         = "api.address"
+	flagPrintMnemonic      = "print-mnemonic"
+	unsafeStartValidatorFn UnsafeStartValidatorCmdCreator
 )
+
+type UnsafeStartValidatorCmdCreator func(ac appCreator) *cobra.Command
 
 type initArgs struct {
 	algo              string
@@ -93,9 +96,11 @@ func addTestnetFlagsToCmd(cmd *cobra.Command) {
 	})
 }
 
-// NewTestnetCmd creates a root testnet command with subcommands to run an in-process testnet or initialize
-// validator configuration files for running a multi-validator testnet in a separate process
-func NewTestnetCmd(mbm module.BasicManager, genBalIterator banktypes.GenesisBalancesIterator) *cobra.Command {
+// NewTestnetCmd creates a root testnet command with subcommands to:
+// 1. run an in-process testnet or
+// 2. initialize validator configuration files for running a multi-validator testnet in a separate process or
+// 3. update application and consensus state with the local validator info
+func NewTestnetCmd(mbm module.BasicManager, genBalIterator banktypes.GenesisBalancesIterator, appCreator appCreator) *cobra.Command {
 	testnetCmd := &cobra.Command{
 		Use:                        "testnet",
 		Short:                      "subcommands for starting or configuring local testnets",
@@ -106,6 +111,11 @@ func NewTestnetCmd(mbm module.BasicManager, genBalIterator banktypes.GenesisBala
 
 	testnetCmd.AddCommand(testnetStartCmd())
 	testnetCmd.AddCommand(testnetInitFilesCmd(mbm, genBalIterator))
+	// if the binary is built with the unsafe_start_local_validator tag, unsafeStartValidatorFn will be set
+	// and the subcommand will be added
+	if unsafeStartValidatorFn != nil {
+		testnetCmd.AddCommand(unsafeStartValidatorFn(appCreator))
+	}
 
 	return testnetCmd
 }

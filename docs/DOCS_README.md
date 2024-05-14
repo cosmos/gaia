@@ -7,12 +7,6 @@ parent:
 
 If you want to open a PR on Gaia to update the documentation, please follow the guidelines in the [`CONTRIBUTING.md`](https://github.com/cosmos/gaia/tree/main/CONTRIBUTING.md)
 
-## Internationalization
-
-- Translations for documentation live in a `docs/translations/<locale>/` folder, where `<locale>` is the language code for a specific language. For example, `zh` for Chinese, `ko` for Korean, `es` for Spanish, etc.
-- Each `docs/translations/<locale>/` folder must follow the same folder structure within `docs/`, but only content in the following folders needs to be translated and included in the respective `docs/translations/<locale>/` folder
-- Each `docs/translations/<locale>/` folder must also have a `README.md` that includes a translated version of both the layout and content within the root-level [`README.md`](https://github.com/cosmos/cosmos-sdk/tree/master/docs/README.md). The layout defined in the `README.md` is used to build the homepage.
-
 ## Docs Build Workflow
 
 The documentation for Gaia is hosted at:
@@ -77,6 +71,15 @@ Install project dependencies
 
 ```bash
 npm install
+```
+
+Pull the versions referenced in `versions.json` and `docusaurus.config.js`:
+
+```shell
+cd ../ # back to project root
+make build-docs
+git checkout <your_working_branch>
+cd docs
 ```
 
 Serve the app

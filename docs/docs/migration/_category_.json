@@ -1,5 +1,5 @@
 {
-    "label": "Migration Instructions",
+    "label": "Upgrade Instructions",
     "position": 9,
     "link": { "type": "doc", "id": "migration/README" }
 }

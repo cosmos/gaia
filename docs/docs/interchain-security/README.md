@@ -1,8 +1,6 @@
 ---
 title: Interchain Security
-order: false
-parent:
-  order: 2
+order: 3
 ---
 
 The Interchain Security feature, brings to the Cosmos Hub a shared security model, where the Cosmos Hub validators, also validate on consumer chains. This is valuable for consumer chains, as consumer chains can focus on product-market fit, rather than business and operational agreements in bringing together a validator set. As part of this agreement, consumer chains pay for the security by distributing a portion of the consumer chain revenue to Hub token holders.

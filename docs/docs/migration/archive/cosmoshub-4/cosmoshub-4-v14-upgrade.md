@@ -56,7 +56,7 @@ The chain-id of the network will remain the same, `cosmoshub-4`. This is because
 
 ## Preparing for the upgrade
 
-System requirements for validator nodes can be found [here](../getting-started/system-requirements.md).
+System requirements for validator nodes can be found [here](../../../getting-started/system-requirements.md).
 
 ### Backups
 

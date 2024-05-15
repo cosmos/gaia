@@ -1,32 +1,36 @@
 ---
-title: Parameter Change
+title: Parameter Changes
 order: 4
 ---
 
-This Cosmos Hub educational documentation aims to outline the Hub's parameters, describe their functions, and describe the potential implications of modifying each parameter. This documentation also aims to provide guidelines for creating and assessing parameter-change proposals.
+This documentation also aims to provide guidelines for creating and assessing parameter-change proposals.
 
 Drafting and submitting a parameter-change governance proposal involves two kinds of risk: losing proposal deposit amounts and the potential to alter the function of the Cosmos Hub network in an undesirable way. 
 
 ## What parameters can be changed?
 
-The complete parameters of the Cosmos Hub are split up into different modules, each of which has its own set of parameters. Any of them can be updated with a Param Change Proposal. If you are technically inclined, this is the full [list of modules](https://github.com/cosmos/cosmos-sdk/tree/master/x) in the Cosmos SDK. The Cosmos Hub is built using the Cosmos SDK, but not all available modules are in use on the Hub.
+The complete parameters of the Cosmos Hub are split up into different modules, each of which has its own set of parameters. Most module's parameters can be updated by submitting a governance proposal.
 
-There are currently 8 modules active in the Cosmos Hub with parameters that may be altered via governance proposal. New modules may be introduced in the future.
+List of modules whose parameters can be changed via governance:
+* x/auth
+* x/bank
+* x/distribution
+* x/evidence
+* x/feegrant
+* x/gov
+* x/mint
+* x/slashing
+* x/staking
+* ibc-go/transfer
+* interchain-security/provider
 
-1. [auth](/governance/proposal-types/params-change/Auth) - Authentication of accounts and transactions
-2. [gov](/governance/proposal-types/params-change/Governance) - On-chain governance proposals and voting
-3. [staking](/governance/proposal-types/params-change/Staking) - Proof-of-stake layer
-4. [slashing](/governance/proposal-types/params-change/Slashing) - Validator punishment mechanisms
-5. [distribution](/governance/proposal-types/params-change/Distribution) - Fee distribution and staking token provision distribution
-6. [crisis](/governance/proposal-types/params-change/Crisis) - Halting the blockchain under certain circumstances (ie. if an invariant is broken)
-7. [mint](/governance/proposal-types/params-change/Mint) - Creation of new units of staking token
-<!-- markdown-link-check-disable -->
+Each cosmos-sdk module uses `MsgUpdateParams` for providing parameter changes. You can learn more about it in the cosmos-sdk documentation of each module (e.g. https://docs.cosmos.network/v0.47/build/modules/staking#msgupdateparams)
 
 ## What are the current parameter values?
 <!-- markdown-link-check-enable -->
 There are ways to query the current settings for each module's parameter(s). Some can be queried with the command line program [`gaiad`](../../getting-started/installation).
 
-You can begin by using the command `gaia q [module] -h` to get help about the subcommands for the module you want to query. For example, `gaiad q staking params --chain-id <chain-id> --node <node-id>` returns the settings of relevant parameters:
+You can begin by using the command `gaiad q [module] -h` to get help about the subcommands for the module you want to query. For example, `gaiad q staking params` returns the settings of relevant parameters:
 
 ```sh
 bond_denom: uatom
@@ -60,8 +64,8 @@ This documentation was originally created by Gavin Birch ([Figment Networks](htt
 
 **Special thanks** to the following for providing credible information:
 - Aleks (All in Bits; Fission Labs) for answering countless questions about these parameters
-- Alessio (All in Bits) for explaining how [`SigVerifyCostED25519`](https://hub.cosmos.network/governance/proposal-types/params-change/Auth#sig_verify_cost_ed25519) & [`SigVerifyCostSecp256k1`](https://hub.cosmos.network/governance/proposal-types/params-change/Auth#sig_verify_cost_secp256k1) work, and detailed answers to my many questions
-- Vidor for volunteering to explain [`ConstantFee`](https://hub.cosmos.network/governance/proposal-types/params-change/Crisis#constantfee) and answering my many questions in detail
-- Hyung (B-Harvest) for volunteering how [`InflationRateChange`](https://hub.cosmos.network/governance/proposal-types/params-change/Mint.html#inflation_rate_change) works
+- Alessio (All in Bits) for explaining how [`SigVerifyCostED25519`](./changes-archive/Auth.mdx#sig_verify_cost_ed25519) & [`SigVerifyCostSecp256k1`](./changes-archive/Auth.mdx#sig_verify_cost_secp256k1) work, and detailed answers to my many questions
+- Vidor for volunteering to explain [`ConstantFee`](./changes-archive//Crisis.mdx#constantfee) and answering my many questions in detail
+- Hyung (B-Harvest) for volunteering how [`InflationRateChange`](./changes-archive/Mint.mdx#inflation_rate_change) works
 - Joe (Chorus One) for explaining the security details involved with using full nodes for transactions
-- Sunny (All in Bits; Sikka) for volunteering an explanation of the purpose of [`withdrawaddrenabled`](https://hub.cosmos.network/governance/proposal-types/params-change/Distribution.html#withdrawaddrenabled)
+- Sunny (All in Bits; Sikka) for volunteering an explanation of the purpose of [`withdrawaddrenabled`](./changes-archive/Distribution.mdx#withdrawaddrenabled)

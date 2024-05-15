@@ -6,7 +6,7 @@ order: 5
 If you have a final draft of your proposal ready to submit, you may want to push your proposal live on the testnet first. These are the three primary steps to getting your proposal live on-chain.
 
 Interacting with the Cosmos Hub via the command line in order to run queries or submit proposals has several prerequisites:
-- You will need to compile [`gaiad`](https://hub.cosmos.network/getting-started/installation) from source into a binary file executable by your operating system eg. MacOS, Windows, Linux
+- You will need to compile [`gaiad`](../getting-started/installation) from source into a binary file executable by your operating system eg. MacOS, Windows, Linux
 - You will need to indicate which chain you are querying, and currently this is `--chain-id cosmoshub-4`
 - You will need to connect to a full node. You can find a list of available Cosmos Hub endpoints under the [API section](https://github.com/cosmos/chain-registry/blob/master/cosmoshub/chain.json) in the [Chain Registry](https://github.com/cosmos/chain-registry).
 - More info is in the Walkthrough Example section.
@@ -48,7 +48,7 @@ Once on-chain, most people will rely upon block explorers to interpret this info
 
 ## Sending the transaction that submits your governance proposal
 
-For information on how to use gaiad (the command line interface) to submit an on-chain proposal through the governance module, please refer to the [gaiad CLI tutorials](/hub-tutorials/gaiad) for the Cosmos Hub documentation.
+For information on how to use gaiad (the command line interface) to submit an on-chain proposal through the governance module, please refer to the [gaiad CLI tutorials](../hub-tutorials/gaiad) for the Cosmos Hub documentation.
 
 ### Proposal types
 

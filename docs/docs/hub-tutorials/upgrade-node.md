@@ -9,7 +9,7 @@ This document describes the upgrade procedure of a `gaiad` full-node to a new ve
 
 ## Cosmovisor
 
-The Cosmos SDK provides a convenient process manager that wraps around the `gaiad` binary and can automatically swap in new binaries upon a successful governance upgrade proposal. Cosmovisor is entirely optional but recommended. More information can be found in [cosmos.network docs](https://docs.cosmos.network/v0.45/run-node/cosmovisor.html) and [cosmos-sdk/cosmovisor/readme](https://github.com/cosmos/cosmos-sdk/blob/v0.45.0/cosmovisor/README.md).
+The Cosmos SDK provides a convenient process manager that wraps around the `gaiad` binary and can automatically swap in new binaries upon a successful governance upgrade proposal. Cosmovisor is entirely optional but recommended. More information can be found in [cosmos.network docs](https://docs.cosmos.network/v0.45/run-node/cosmovisor.html) and [cosmos-sdk/cosmovisor/readme](https://github.com/cosmos/cosmos-sdk/blob/v0.47.11/tools/cosmovisor/README.md).
 
 ### Setup
 
@@ -123,7 +123,7 @@ At this point, you might want to run a script to update the exported genesis int
 ## Reset Data
 
 :::warning
-If the version <new_version> you are upgrading to is not breaking from the previous one, you should not reset the data. If it is not breaking, you can skip to [Restart](/hub-tutorials/upgrade-node#restart)
+If the version <new_version> you are upgrading to is not breaking from the previous one, you should not reset the data. If it is not breaking, you can skip to [Restart](#restart)
 :::
 
 :::warning

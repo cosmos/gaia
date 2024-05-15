@@ -9,7 +9,7 @@ order: 2
 
 The launch of the Cosmos Hub mainnet is expected to happen in phases. Here we outline what to expect in each phase.
 
-## 🚨Phase I: Network Gains Stability 🚨
+## Phase I: Network Gains Stability
 
 In the first phase, the network is likely to be unstable; it may experience halts or other forms of failure requiring intervention and coordination among Cosmos Hub validators and full node operators to deploy a fix. This type of failure is not unexpected while the network gains stability.
 
@@ -69,6 +69,6 @@ The Cosmos mission is to build bridges to connect all blockchains—to build an 
 
 To the Moon 🚀
 
-[blog post]: [https://blog.cosmos.network/developer-deep-dive-cosmos-ibc-5855aaf183fe]
-[ibc]: [https://docs.cosmos.network/main/ibc/overview.html]
+blog post: [https://blog.cosmos.network/developer-deep-dive-cosmos-ibc-5855aaf183fe]
+ibc: [https://ibc.cosmos.network]
 <!-- markdown-link-check-enable -->

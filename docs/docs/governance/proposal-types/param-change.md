@@ -3,13 +3,13 @@ title: Parameter Changes
 order: 4
 ---
 
-This documentation also aims to provide guidelines for creating and assessing parameter-change proposals.
+This documentation aims to provide guidelines for creating and assessing parameter-change proposals.
 
 Drafting and submitting a parameter-change governance proposal involves two kinds of risk: losing proposal deposit amounts and the potential to alter the function of the Cosmos Hub network in an undesirable way. 
 
 ## What parameters can be changed?
 
-The complete parameters of the Cosmos Hub are split up into different modules, each of which has its own set of parameters. Most module's parameters can be updated by submitting a governance proposal.
+The complete parameters of the Cosmos Hub are split up into different modules, each of which has its own set of parameters. Most parameters can be updated by submitting a governance proposal.
 
 List of modules whose parameters can be changed via governance:
 * x/auth

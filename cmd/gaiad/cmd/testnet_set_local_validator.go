@@ -10,13 +10,14 @@ import (
 	"io"
 	"path/filepath"
 	"strings"
+	"time"
 
 	dbm "github.com/cometbft/cometbft-db"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/server"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	gaia "github.com/cosmos/gaia/v16/app"
+	gaia "github.com/cosmos/gaia/v17/app"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
@@ -246,6 +247,12 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 	}
 
 	app.SlashingKeeper.SetValidatorSigningInfo(appCtx, newConsAddr, newValidatorSigningInfo)
+
+	shortVotingPeriod := time.Second * 20
+	params := app.GovKeeper.GetParams(appCtx)
+	params.VotingPeriod = &shortVotingPeriod
+	app.GovKeeper.SetParams(appCtx, params)
+	appCtx.Logger().Info("Updated governance voting period", "voting_period", shortVotingPeriod)
 
 	// BANK
 	defaultCoins := sdk.NewCoins(sdk.NewInt64Coin(app.StakingKeeper.BondDenom(appCtx), 1000000000000))

@@ -6,20 +6,20 @@
 
 ### DEPENDENCIES
 
-- Enable Partial Set Security - Bump [ICS](https://github.com/cosmos/interchain-security) to
+- Bump [ICS](https://github.com/cosmos/interchain-security) to
   [v4.2.0-lsm](https://github.com/cosmos/interchain-security/releases/tag/v4.2.0-lsm)
   ([\#3089](https://github.com/cosmos/gaia/pull/3089))
 
 ### FEATURES
 
-- Enable Partial Set Security - Bump [ICS](https://github.com/cosmos/interchain-security) to
-  [v4.2.0-lsm](https://github.com/cosmos/interchain-security/releases/tag/v4.2.0-lsm)
+- Enable the Partial Set Security feature of Interchain Security that allows 
+  validators to opt-in to validate consumer chains.
   ([\#3089](https://github.com/cosmos/gaia/pull/3089))
 
 ### STATE BREAKING
 
-- Enable Partial Set Security - Bump [ICS](https://github.com/cosmos/interchain-security) to
-  [v4.2.0-lsm](https://github.com/cosmos/interchain-security/releases/tag/v4.2.0-lsm)
+- Enable the Partial Set Security feature of Interchain Security that allows 
+  validators to opt-in to validate consumer chains. For more details, see 
   ([\#3089](https://github.com/cosmos/gaia/pull/3089))
 
 ## v16.0.0

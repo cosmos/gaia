@@ -1,1 +1,0 @@
-- Add gaiad snapshots command set ([\#2974](https://github.com/cosmos/gaia/pull/2974))

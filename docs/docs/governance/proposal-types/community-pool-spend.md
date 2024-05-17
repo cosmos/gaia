@@ -26,7 +26,7 @@ The current paramater `Community Tax` parameter of 2% may be modified with a gov
 
 You may directly query the Cosmos Hub 4 for the balance of the Community Pool:
 
-```gaiad q distribution community-pool --chain-id cosmoshub-4 --node https://rpc.cosmos.network:443```
+```gaiad q distribution community-pool --chain-id cosmoshub-4 --node <rpc-node-address> ```
 
 Alternatively, popular Cosmos explorers such as [Big Dipper](https://cosmos.bigdipper.live) and [Mintscan](https://www.mintscan.io/cosmos) display the ongoing Community Pool balance.
 

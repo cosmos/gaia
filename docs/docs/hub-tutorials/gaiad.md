@@ -5,7 +5,7 @@ order: 5
 
 ## Gaia Daemon
 
-`gaiad` is the tool that enables you to interact with the node that runs on the Cosmos Hub network, whether you run it yourself or not. Let us set it up properly. In order to install it, follow the [installation procedure](../getting-started/installation.md).
+`gaiad` is the tool that enables you to interact with the node that runs on the Cosmos Hub network, whether you run it yourself or not. Let us set it up properly. In order to install it, follow the [installation procedure](../getting-started/installation).
 
 ### Setting up gaiad
 
@@ -39,7 +39,7 @@ gaiad config chain-id cosmoshub-2
 
 The keyring holds the private/public keypairs used to interact with a node. For instance, a validator key needs to be set up before running the blockchain node, so that blocks can be correctly signed. The private key can be stored in different locations, called "backends", such as a file or the operating system's own key storage.
 
-Headless environments are recommended to use either the `file` or `pass` backends. More information is available at the [SDK documentation page](https://docs.cosmos.network/v0.45/run-node/keyring.html).
+Headless environments are recommended to use either the `file` or `pass` backends. More information is available at the [SDK documentation page](https://docs.cosmos.network/v0.47/user/run-node/keyring).
 
 #### Key Types
 

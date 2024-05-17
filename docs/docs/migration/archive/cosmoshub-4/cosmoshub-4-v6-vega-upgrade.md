@@ -266,6 +266,6 @@ The riskiest thing a validator can do is discover that they made a mistake and r
 
 [cosmos/vega-test](https://github.com/cosmos/vega-test)
 
-[Delta upgrade instruction](https://github.com/cosmos/gaia/blob/main/docs/migration/cosmoshub-4-delta-upgrade.md)
+[Delta upgrade instruction](https://github.com/cosmos/gaia/tree/main/docs/docs/migration/cosmoshub-4-delta-upgrade.md)
 
 <!-- markdown-link-check-enable -->

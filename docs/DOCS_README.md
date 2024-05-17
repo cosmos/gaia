@@ -17,7 +17,7 @@ built from the files in this (`/docs`) directory for [main](https://github.com/c
 
 ### How It Works
 
-There is a [Github Action](https://github.com/cosmos/gaia/blob/main/.github/workflows/docs.yml)
+There is a [Github Action](https://github.com/cosmos/gaia/blob/main/.github/workflows/deploy-docs.yml)
 listening for changes in the `/docs` directory, on the `main` branch.
 Any updates to files in this directory on that branch will automatically
 trigger a website deployment. Under the hood, `make build-docs` is run from the

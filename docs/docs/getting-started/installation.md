@@ -1,6 +1,6 @@
 ---
 title: Installing Gaia
-order: 2
+sidebar_position: 2
 ---
 
 This guide will explain how to install the `gaiad` binary and run the cli. With this binary installed on a server, you can participate on the mainnet as either a [Full Node](../hub-tutorials/join-mainnet.md) or a [Validator](../validators/validator-setup.md).
@@ -121,4 +121,4 @@ The `replace` clause you add to `go.mod` must provide the correct import path:
 
 ## Next
 
-Now you can [join the mainnet](../hub-tutorials/join-mainnet.md), [the public testnet](../hub-tutorials/join-testnet.md).
+Now you can [join the mainnet](../hub-tutorials/join-mainnet), [the public testnet](../hub-tutorials/join-testnet).

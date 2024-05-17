@@ -12,7 +12,7 @@ This is work in progress. Mechanisms and values are susceptible to change.
 
 ### What is a Cosmos validator?
 
-The [Cosmos Hub](../getting-started/what-is-gaia.md) is based on [CometBFT](https://docs.cometbft.com/v0.34/introduction/what-is-cometbft) that relies on a set of validators to secure the network. The role of validators is to run a full node and participate in consensus by broadcasting votes that contain cryptographic signatures signed by the validator's private key. Validators commit new blocks in the blockchain and receive revenue in exchange for their work. Validators must also participate in governance by voting on proposals. Validators are weighted according to their total stake.
+The [Cosmos Hub](/getting-started/what-is-gaia) is based on [CometBFT](https://docs.cometbft.com/v0.34/introduction/what-is-cometbft) that relies on a set of validators to secure the network. The role of validators is to run a full node and participate in consensus by broadcasting votes that contain cryptographic signatures signed by the validator's private key. Validators commit new blocks in the blockchain and receive revenue in exchange for their work. Validators must also participate in governance by voting on proposals. Validators are weighted according to their total stake.
 
 ### What is staking?
 
@@ -32,11 +32,11 @@ You can find more details about the requirements in the [Joining Mainnet Tutoria
 
 ### What is a delegator?
 
-Delegators are ATOM holders who cannot, or do not want to, run a validator themselves. ATOM holders can delegate ATOM to a validator and obtain a part of their revenue in exchange. For details on how revenue is distributed, see [What is the incentive to stake?](#what-is-the-incentive-to-stake?) and [What are validators commission?](#what-are-validators-commission?) in this document.
+Delegators are ATOM holders who cannot, or do not want to, run a validator themselves. ATOM holders can delegate ATOM to a validator and obtain a part of their revenue in exchange. For details on how revenue is distributed, see [What is the incentive to stake?](/validators/validator-faq#what-is-the-incentive-to-stake) and [What are validators commission?](/validators/validator-faq#what-is-a-validator-commission) in this document.
 
 Because delegators share revenue with their validators, they also share risks. If a validator misbehaves, each of their delegators are partially slashed in proportion to their delegated stake. This penalty is one of the reasons why delegators must perform due diligence on validators before delegating. Spreading their stake over multiple validators is another layer of protection.
 
-Delegators play a critical role in the system, as they are responsible for choosing validators. Being a delegator is not a passive role. Delegators must actively monitor the actions of their validators and participate in governance. For details on being a delegator, read the [Delegator FAQ](https://hub.cosmos.network/main/delegators/delegator-faq.html).
+Delegators play a critical role in the system, as they are responsible for choosing validators. Being a delegator is not a passive role. Delegators must actively monitor the actions of their validators and participate in governance. For details on being a delegator, read the [Delegator FAQ](https://hub.cosmos.network/delegators/delegator-faq).
 
 ## Becoming a Validator
 

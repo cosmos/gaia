@@ -10,9 +10,7 @@ Refer to the [upgrading guide](https://github.com/cosmos/gaia/blob/release/v17.x
 ## 🚀 Highlights
 
 <!-- Add any highlights of this release -->
-This release adds ICS 2.0 to Gaia. 
-ICS 2.0 -- also known as Partial Set Security (PSS) -- allows each consumer chain to leverage only a subset of the Hub validator set.
-As a result, validators can opt-in to validate the consumer chains they want. For more details, check out the [ICS docs]().   
+This release adds ICS 2.0 to Gaia. ICS 2.0 -- also known as Partial Set Security (PSS) -- allows each consumer chain to leverage only a subset of the Hub validator set and enables validators to opt-in to validate the consumer chains they want. For more details, check out the [ICS docs](https://cosmos.github.io/interchain-security/features/partial-set-security).   
 
 ## 🔨 Build from source
 

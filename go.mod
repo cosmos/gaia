@@ -9,7 +9,7 @@ require (
 	cosmossdk.io/simapp v0.0.0-20230602123434-616841b9704d
 	cosmossdk.io/tools/rosetta v0.2.1
 	github.com/Stride-Labs/ibc-rate-limiting v1.0.1
-	github.com/cometbft/cometbft v0.37.5
+	github.com/cometbft/cometbft v0.37.6
 	github.com/cometbft/cometbft-db v0.11.0
 	github.com/cosmos/cosmos-sdk v0.47.13-ics-lsm
 	github.com/cosmos/go-bip39 v1.0.0
@@ -231,7 +231,7 @@ replace (
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.47.13-ics-lsm
 
 	// Use special ICS v4.1.0-ics-lsm release with support for LSM
-	github.com/cosmos/interchain-security/v4 => github.com/cosmos/interchain-security/v4 v4.2.0-lsm-rc0
+	github.com/cosmos/interchain-security/v4 => github.com/cosmos/interchain-security/v4 v4.2.0-lsm
 
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2

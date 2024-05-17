@@ -47,6 +47,7 @@ func (s *IntegrationTestSuite) writeAddRemoveConsumerProposals(c *chain, consume
 		ConsumerRedistributionFraction:    "0.75",
 		BlocksPerDistributionTransmission: 10,
 		HistoricalEntries:                 10000,
+		Top_N:                             95,
 	}
 	addPropWithDeposit := ConsumerAdditionProposalWithDeposit{
 		ConsumerAdditionProposal: *addProp,

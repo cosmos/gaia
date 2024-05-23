@@ -12,8 +12,8 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 
-	gaiaerrors "github.com/cosmos/gaia/v17/types/errors"
-	gaiafeeante "github.com/cosmos/gaia/v17/x/globalfee/ante"
+	gaiaerrors "github.com/cosmos/gaia/v18/types/errors"
+	gaiafeeante "github.com/cosmos/gaia/v18/x/globalfee/ante"
 )
 
 // HandlerOptions extend the SDK's AnteHandler options by requiring the IBC

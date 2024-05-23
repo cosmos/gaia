@@ -13,8 +13,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	gaiafeeante "github.com/cosmos/gaia/v17/x/globalfee/ante"
-	globfeetypes "github.com/cosmos/gaia/v17/x/globalfee/types"
+	gaiafeeante "github.com/cosmos/gaia/v18/x/globalfee/ante"
+	globfeetypes "github.com/cosmos/gaia/v18/x/globalfee/types"
 )
 
 var testGasLimit uint64 = 200_000

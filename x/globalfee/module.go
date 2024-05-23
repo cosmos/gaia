@@ -20,9 +20,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	"github.com/cosmos/gaia/v17/x/globalfee/client/cli"
-	"github.com/cosmos/gaia/v17/x/globalfee/keeper"
-	"github.com/cosmos/gaia/v17/x/globalfee/types"
+	"github.com/cosmos/gaia/v18/x/globalfee/client/cli"
+	"github.com/cosmos/gaia/v18/x/globalfee/keeper"
+	"github.com/cosmos/gaia/v18/x/globalfee/types"
 )
 
 var (

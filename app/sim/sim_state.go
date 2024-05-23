@@ -22,8 +22,8 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	gaia "github.com/cosmos/gaia/v17/app"
-	"github.com/cosmos/gaia/v17/app/params"
+	gaia "github.com/cosmos/gaia/v18/app"
+	"github.com/cosmos/gaia/v18/app/params"
 )
 
 // Simulation parameter constants

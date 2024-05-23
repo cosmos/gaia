@@ -78,7 +78,7 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	"github.com/cosmos/gaia/v17/x/globalfee"
+	"github.com/cosmos/gaia/v18/x/globalfee"
 )
 
 type AppKeepers struct {

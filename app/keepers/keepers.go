@@ -382,6 +382,9 @@ func NewAppKeeper(
 		bApp.MsgServiceRouter(),
 	)
 
+	// required since ibc-go v7.5.0
+	appKeepers.ICAHostKeeper.WithQueryRouter(bApp.GRPCQueryRouter())
+
 	govAuthority := authtypes.NewModuleAddress(govtypes.ModuleName).String()
 
 	// Create RateLimit keeper

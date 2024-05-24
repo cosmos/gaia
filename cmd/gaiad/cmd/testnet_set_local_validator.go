@@ -37,6 +37,10 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
+const (
+	valVotingPower int64 = 900000000000000
+)
+
 var (
 	flagValidatorOperatorAddress = "validator-operator"
 	flagValidatorPubKey          = "validator-pubkey"
@@ -186,7 +190,7 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 		ConsensusPubkey: pubkeyAny,
 		Jailed:          false,
 		Status:          stakingtypes.Bonded,
-		Tokens:          sdk.NewInt(900000000000000),
+		Tokens:          sdk.NewInt(valVotingPower),
 		DelegatorShares: sdk.MustNewDecFromStr("10000000"),
 		Description: stakingtypes.Description{
 			Moniker: "Testnet Validator",
@@ -225,7 +229,7 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 		return err
 	}
 	app.StakingKeeper.SetValidatorByPowerIndex(appCtx, newVal)
-	app.StakingKeeper.SetLastValidatorPower(appCtx, newVal.GetOperator(), 900000000000000)
+	app.StakingKeeper.SetLastValidatorPower(appCtx, newVal.GetOperator(), valVotingPower)
 	if err := app.StakingKeeper.Hooks().AfterValidatorCreated(appCtx, newVal.GetOperator()); err != nil {
 		return err
 	}
@@ -274,7 +278,7 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 
 func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, appHeight int64, args valArgs) error {
 	// create validator set from the local validator
-	newTmVal := tmtypes.NewValidator(tmd25519.PubKey(args.validatorConsPubKeyByte), 900000000000000)
+	newTmVal := tmtypes.NewValidator(tmd25519.PubKey(args.validatorConsPubKeyByte), valVotingPower)
 	vals := []*tmtypes.Validator{newTmVal}
 	validatorSet := tmtypes.NewValidatorSet(vals)
 

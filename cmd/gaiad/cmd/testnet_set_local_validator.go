@@ -225,7 +225,7 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 		return err
 	}
 	app.StakingKeeper.SetValidatorByPowerIndex(appCtx, newVal)
-	app.StakingKeeper.SetLastValidatorPower(appCtx, newVal.GetOperator(), 0)
+	app.StakingKeeper.SetLastValidatorPower(appCtx, newVal.GetOperator(), 900000000000000)
 	if err := app.StakingKeeper.Hooks().AfterValidatorCreated(appCtx, newVal.GetOperator()); err != nil {
 		return err
 	}

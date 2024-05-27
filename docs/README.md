@@ -1,27 +1,21 @@
-<!--
-parent:
-  order: false
-layout: home
--->
-
 # Cosmos Hub Documentation
 
 Welcome to the documentation of the **Cosmos Hub application: `gaia`**.
 
 ## What is Gaia?
 
-- [Intro to the `gaia` software](./getting-started/what-is-gaia.md)
-- [Interacting with the `gaiad` binary](./hub-tutorials/gaiad.md)
+- [Intro to the `gaia` software](./docs/getting-started/what-is-gaia.md)
+- [Interacting with the `gaiad` binary](./docs/hub-tutorials/gaiad.md)
 
 ## Join the Cosmos Hub Mainnet
 
-- [Install the `gaia` application](./getting-started/installation.md)
-- [Set up a full node and join the mainnet](./hub-tutorials/join-mainnet.md)
-- [Upgrade to a validator node](./validators/validator-setup.md)
+- [Install the `gaia` application](./docs/getting-started/installation.md)
+- [Set up a full node and join the mainnet](./docs/hub-tutorials/join-mainnet.md)
+- [Upgrade to a validator node](./docs/validators/validator-setup.md)
 
 ## Join the Cosmos Hub Public Testnet
 
-- [Join the testnet](./hub-tutorials/join-testnet.md)
+- [Join the testnet](./docs/hub-tutorials/join-testnet.md)
 
 ## Setup Your Own `gaia` Testnet
 
@@ -29,10 +23,10 @@ Welcome to the documentation of the **Cosmos Hub application: `gaia`**.
 
 ## Additional Resources
 
-- [Validator Resources](./validators/README.md): Contains documentation for `gaia` validators.
-- [Delegator Resources](./delegators/README.md): Contains documentation for delegators.
-- [Other Resources](./resources/README.md): Contains documentation on `gaiad`, genesis file, service providers, ledger wallets, ...
-- [Cosmos Hub Archives](./resources/archives.md): State archives of past iteration of the Cosmos Hub.
+- [Validator Resources](./docs/validators/README.md): Contains documentation for `gaia` validators.
+- [Delegator Resources](./docs/delegators/README.md): Contains documentation for delegators.
+- [Other Resources](./docs/resources/README.md): Contains documentation on `gaiad`, genesis file, service providers, ledger wallets, ...
+- [Cosmos Hub Archives](./docs/resources/archives.md): State archives of past iteration of the Cosmos Hub.
 
 # Contribute
 

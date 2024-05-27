@@ -16,8 +16,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	v2 "github.com/cosmos/gaia/v16/x/globalfee/migrations/v2"
-	globalfeetypes "github.com/cosmos/gaia/v16/x/globalfee/types"
+	v2 "github.com/cosmos/gaia/v18/x/globalfee/migrations/v2"
+	globalfeetypes "github.com/cosmos/gaia/v18/x/globalfee/types"
 )
 
 func TestMigrateStore(t *testing.T) {

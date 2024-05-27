@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	gaiaerrors "github.com/cosmos/gaia/v16/types/errors"
+	gaiaerrors "github.com/cosmos/gaia/v18/types/errors"
 )
 
 // ContainZeroCoins returns true if the given coins are empty or contain zero coins,

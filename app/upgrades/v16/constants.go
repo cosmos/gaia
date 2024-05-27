@@ -4,12 +4,11 @@ import (
 	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
 
 	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
+	ibcfeetypes "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/types"
 
 	store "github.com/cosmos/cosmos-sdk/store/types"
 
-	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-
-	"github.com/cosmos/gaia/v16/app/upgrades"
+	"github.com/cosmos/gaia/v18/app/upgrades"
 )
 
 const (
@@ -27,7 +26,7 @@ var Upgrade = upgrades.Upgrade{
 		Added: []string{
 			ratelimittypes.ModuleName,
 			icacontrollertypes.SubModuleName,
-			wasmtypes.ModuleName,
+			ibcfeetypes.ModuleName,
 		},
 	},
 }

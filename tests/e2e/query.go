@@ -10,6 +10,7 @@ import (
 	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
 
 	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
+	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -20,7 +21,7 @@ import (
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v16/x/globalfee/types"
+	"github.com/cosmos/gaia/v18/x/globalfee/types"
 )
 
 func queryGaiaTx(endpoint, txHash string) error {
@@ -388,4 +389,18 @@ func queryICAAccountAddress(endpoint, owner, connectionID string) (string, error
 	}
 
 	return icaAccountResp.Address, nil
+}
+
+func queryBlocksPerEpoch(endpoint string) (int64, error) {
+	body, err := httpGet(fmt.Sprintf("%s/interchain_security/ccv/provider/params", endpoint))
+	if err != nil {
+		return 0, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	var response providertypes.QueryParamsResponse
+	if err = cdc.UnmarshalJSON(body, &response); err != nil {
+		return 0, err
+	}
+
+	return response.Params.BlocksPerEpoch, nil
 }

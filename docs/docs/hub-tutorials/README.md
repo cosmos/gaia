@@ -5,7 +5,7 @@ order: 1
 
 This folder contains tutorials related to the `gaiad` application.
 
-- [Interacting with the `gaiad` binary](/hub-tutorials/gaiad.mdx)
+- [Interacting with the `gaiad` binary](./gaiad.md)
 - [Running a full-node for the Cosmos Hub Mainnet](./join-mainnet.md)
 - [Running a full-node for a `gaia` testnet](./join-testnet.md)
 - [Upgrading a node from a previous version](./upgrade-node.md)

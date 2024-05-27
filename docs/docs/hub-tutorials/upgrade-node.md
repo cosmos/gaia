@@ -9,7 +9,7 @@ This document describes the upgrade procedure of a `gaiad` full-node to a new ve
 
 ## Cosmovisor
 
-The Cosmos SDK provides a convenient process manager that wraps around the `gaiad` binary and can automatically swap in new binaries upon a successful governance upgrade proposal. Cosmovisor is entirely optional but recommended. More information can be found in [cosmos.network docs](https://docs.cosmos.network/v0.45/run-node/cosmovisor.html) and [cosmos-sdk/cosmovisor/readme](https://github.com/cosmos/cosmos-sdk/blob/v0.45.0/cosmovisor/README.md).
+The Cosmos SDK provides a convenient process manager that wraps around the `gaiad` binary and can automatically swap in new binaries upon a successful governance upgrade proposal. Cosmovisor is entirely optional but recommended. More information can be found in [cosmos.network docs](https://docs.cosmos.network/v0.45/run-node/cosmovisor.html) and [cosmos-sdk/cosmovisor/readme](https://github.com/cosmos/cosmos-sdk/blob/v0.47.11/tools/cosmovisor/README.md).
 
 ### Setup
 
@@ -81,7 +81,7 @@ gaiad start
 ## Upgrade Genesis File
 
 :::warning
-If the new version you are upgrading to has breaking changes, you will have to restart your chain. If it is not breaking, you can skip to [Restart](#restart)
+If the new version you are upgrading to has breaking changes, you will have to restart your chain. If it is not breaking, you can skip to [Restart](/hub-tutorials/upgrade-node#restart)
 :::
 
 To upgrade the genesis file, you can either fetch it from a trusted source or export it locally.
@@ -141,3 +141,11 @@ gaiad unsafe-reset-all
 ```
 
 Your node is now in a pristine state while keeping the original `priv_validator.json` and `config.toml`. If you had any sentry nodes or full nodes setup before, your node will still try to connect to them, but may fail if they haven't also been upgraded.
+
+## Restart
+
+If there are no breaking changes then you can simply restart the node by running:
+
+```bash
+gaiad start
+```

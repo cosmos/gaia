@@ -1,3 +1,8 @@
+---
+title: System requirements
+sidebar_position: 4
+---
+
 
 # System requirements
 

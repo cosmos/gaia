@@ -5,8 +5,8 @@ package v8
 import (
 	store "github.com/cosmos/cosmos-sdk/store/types"
 
-	"github.com/cosmos/gaia/v16/app/upgrades"
-	"github.com/cosmos/gaia/v16/x/globalfee"
+	"github.com/cosmos/gaia/v18/app/upgrades"
+	"github.com/cosmos/gaia/v18/x/globalfee"
 )
 
 const (

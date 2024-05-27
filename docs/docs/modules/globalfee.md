@@ -1,6 +1,6 @@
 ---
-title: Gaia Fee and Fees Checks
-order: 2
+title: Globalfee
+order: 1
 ---
 
 ## Fee Parameters
@@ -87,13 +87,13 @@ bypass-min-fee-msg-types = ["/ibc.core.channel.v1.MsgRecvPacket", "/ibc.core.cha
 The `minimum-gas-prices` parameter enables node operators to set its minimum fee requirements, and it can be set in the `config/app.toml` file.  Please note: if `minimum-gas-prices` is set to include zero coins, the zero coins are sanitized when [`SetMinGasPrices`](https://github.com/cosmos/gaia/blob/76dea00bd6d11bfef043f6062f41e858225820ab/cmd/gaiad/cmd/root.go#L221).
 When setting `minimum-gas-prices`, it's important to keep the following rules in mind:
 
-- The denoms in `min-gas-prices` that are not present in the global fees list are ignored. 
+- The denoms in `min-gas-prices` that are not present in the global fees list are ignored.
 - The amounts in `min-gas-prices` that are lower than global fees `MinimumGasPricesParam` are ignored.
 - The amounts in `min-gas-prices` are considered as fee requirement only if they are greater than the amounts for the corresponding denoms in the global fees list.  
 
 ## Fee AnteHandler Behaviour
 
-The denoms in the global fees list and the `minimum-gas-prices` param are merged and de-duplicated while keeping the higher amounts. Denoms that are only in the `minimum-gas-prices` param are discarded. 
+The denoms in the global fees list and the `minimum-gas-prices` param are merged and de-duplicated while keeping the higher amounts. Denoms that are only in the `minimum-gas-prices` param are discarded.
 
 If the denoms of the transaction fees are a subset of the merged fees and at least one of the amounts of the transaction fees is greater than or equal to the corresponding required fees amount, the transaction can pass the fee check, otherwise an error will occur.
 
@@ -190,7 +190,7 @@ A `proposal.json` example to change the `maxTotalBypassMinFeeMsgGasUsage` in glo
 Here are a few examples to clarify the relationship between global fees, minimum-gas-prices and transaction fees.
 
 **Note:** Transactions can include zero-coin fees. However, these fees are removed from the transaction fees during the fee [parsing](https://github.com/cosmos/cosmos-sdk/blob/e716e4103e934344aa7be6dc9b5c453bdec5f225/client/tx/factory.go#L144) / [sanitizing](https://github.com/cosmos/cosmos-sdk/blob/e716e4103e934344aa7be6dc9b5c453bdec5f225/types/dec_coin.go#L172) before reaching the fee AnteHandler. 
-This means `paidfee = "1uatom, 0stake"` and `paidfee = "1uatom"` are equivalent, and similarly, `paidfee = "0uatom"` is equivalent to `paidfee = ""`. 
+This means `paidfee = "1uatom, 0stake"` and `paidfee = "1uatom"` are equivalent, and similarly, `paidfee = "0uatom"` is equivalent to `paidfee = ""`.
 In the following examples, zero-coin fees are removed from the transaction fees, globalfee refers to `MinimumGasPricesParam` in globalfee params, minimum-gas-prices refers to the local  `minimum-gas-prices` setup in `app.toml`.
 
 ### Case 1

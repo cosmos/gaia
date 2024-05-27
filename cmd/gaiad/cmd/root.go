@@ -45,8 +45,8 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	gaia "github.com/cosmos/gaia/v16/app"
-	"github.com/cosmos/gaia/v16/app/params"
+	gaia "github.com/cosmos/gaia/v18/app"
+	"github.com/cosmos/gaia/v18/app/params"
 )
 
 // NewRootCmd creates a new root command for simd. It is called once in the
@@ -140,7 +140,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 	rootCmd.AddCommand(
 		genutilcli.InitCmd(gaia.ModuleBasics, gaia.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
-		NewTestnetCmd(gaia.ModuleBasics, banktypes.GenesisBalancesIterator{}),
+		NewTestnetCmd(gaia.ModuleBasics, banktypes.GenesisBalancesIterator{}, ac),
 		addDebugCommands(debug.Cmd()),
 		config.Cmd(),
 		pruning.PruningCmd(ac.newApp),

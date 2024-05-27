@@ -5,7 +5,7 @@ order: 3
 
 This tutorial will provide all necessary instructions for joining the current public testnet. If you're interested in more advanced configuration and synchronization options, see [Join Mainnet](./join-mainnet.md) for a detailed walkthrough.
 
-* Current Version: v15
+* Current Version: v17
 * Chain ID: `theta-testnet-001`
 
 ## Background
@@ -53,8 +53,8 @@ We recommend running public testnet nodes on machines with at least 8 cores, 32G
 
 There are two ways to sync a testnet node, Fastsync and State Sync.
 
-* [Fast Sync](https://docs.cometbft.com/v0.34/core/fast-sync) syncs the chain from genesis by downloading blocks in parallel and then verifying them.
-* [State Sync](https://docs.cometbft.com/v0.34/core/state-sync) will look for snapshots from peers at a trusted height and then verifying a minimal set of snapshot chunks against the network.
+* [Fast Sync](https://docs.cometbft.com/v0.37/core/block-sync) syncs the chain from genesis by downloading blocks in parallel and then verifying them.
+* [State Sync](https://docs.cometbft.com/v0.37/core/state-sync) will look for snapshots from peers at a trusted height and then verifying a minimal set of snapshot chunks against the network.
 
 State Sync is far faster and more efficient than Fast Sync, but Fast Sync offers higher data integrity and more robust history. For those who are concerned about storage and costs, State Sync can be the better option as it minimizes storage usage when rebuilding initial state.
 
@@ -79,7 +79,7 @@ export PATH=$PATH:/usr/local/go/bin
 
 ### Installation & Configuration
 
-You will need to install and configure the Gaia binary using the script below. The Cosmos Hub Public Testnet is running Gaia [`v15.0.0-rc0`](https://github.com/cosmos/gaia/releases/tag/v15.0.0-rc0).
+You will need to install and configure the Gaia binary using the script below. The Cosmos Hub Public Testnet is running Gaia [`v17.0.0-rc0`](https://github.com/cosmos/gaia/releases/tag/v17.0.0-rc0).
 
 * For up-to-date endpoints like seeds and state sync RPC servers, visit the [testnets repository](https://github.com/cosmos/testnets/tree/master/public).
 
@@ -90,7 +90,7 @@ cd $HOME
 git clone https://github.com/cosmos/gaia
 cd gaia
 # To sync from genesis, comment out the next line.
-git checkout v15.0.0-rc0
+git checkout v17.0.0-rc0
 # To sync from genesis, uncomment the next line and skip the State Sync Setup section.
 # git checkout v6.0.4
 make install
@@ -248,7 +248,7 @@ There are three ways you can update the binary:
 
 The instructions below are for option 2. For more information on auto-download with Cosmovisor, see the relevant [documentation](https://github.com/cosmos/cosmos-sdk/tree/main/tools/cosmovisor#auto-download) in the Cosmos SDK repo.
 
-If the environment variable `DAEMON_ALLOW_DOWNLOAD_BINARIES` is set to `false`, Cosmovisor will look for the new binary in a folder that matches the name of the upgrade specified in the software upgrade proposal. For the `v16` upgrade, the expected folder structure would look as follows:
+If the environment variable `DAEMON_ALLOW_DOWNLOAD_BINARIES` is set to `false`, Cosmovisor will look for the new binary in a folder that matches the name of the upgrade specified in the software upgrade proposal. For the `v17` upgrade, the expected folder structure would look as follows:
 
 ```shell
 .gaia
@@ -258,7 +258,7 @@ If the environment variable `DAEMON_ALLOW_DOWNLOAD_BINARIES` is set to `false`, 
     │   └── bin
     |       └── gaiad
     └── upgrades
-        └── v16
+        └── v17
             └── bin
                 └── gaiad
 ```
@@ -266,7 +266,7 @@ If the environment variable `DAEMON_ALLOW_DOWNLOAD_BINARIES` is set to `false`, 
 Prepare the upgrade directory
 
 ```shell
-mkdir -p ~/.gaia/cosmovisor/upgrades/v16/bin
+mkdir -p ~/.gaia/cosmovisor/upgrades/v17/bin
 ```
 
 Download and install the new binary version.
@@ -274,11 +274,11 @@ Download and install the new binary version.
 ```shell
 cd $HOME/gaia
 git pull
-git checkout v16.0.0-rc0
+git checkout v17.0.0-rc0
 make install
 
 # Copy the new binary to the v16 upgrade directory
-cp ~/go/bin/gaiad ~/.gaia/cosmovisor/upgrades/v16/bin/gaiad
+cp ~/go/bin/gaiad ~/.gaia/cosmovisor/upgrades/v17/bin/gaiad
 ```
 
 When the upgrade height is reached, Cosmovisor will stop the gaiad binary, copy the new binary to the `current/bin` folder and restart. After a few minutes, the node should start syncing blocks using the new binary.

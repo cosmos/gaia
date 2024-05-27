@@ -58,7 +58,7 @@ Please exercise extreme caution!
 [**Download the binaries**]
 Not available yet.
 
-[**Install from source**](../getting-started/installation.md)
+[**Install from source**](../getting-started/installation)
 
 :::tip
 `gaiad` is used from a terminal. To open the terminal, follow these steps:
@@ -259,7 +259,7 @@ In order to query the state and send transactions, you need a way to access the 
 
 This is the most secure option, but comes with relatively high resource requirements. In order to run your own full-node, you need good bandwidth and at least 1TB of disk space.
 
-You will find the tutorial on how to install `gaiad` [here](../getting-started/installation.md), and the guide to run a full-node [here](../hub-tutorials/join-mainnet.md).
+You will find the tutorial on how to install `gaiad` [here](../getting-started/installation), and the guide to run a full-node [here](../hub-tutorials/join-mainnet).
 
 ### Connecting to a Remote Full-Node
 
@@ -397,7 +397,7 @@ gaiad tx bank send [from_key_or_address] [to_address] [amount] [flags]
 :::
 
 :::warning
-**Before bonding Atoms, please read the [delegator faq](https://cosmos.network/resources/delegators) to understand the risk and responsibilities involved with delegating**
+**Before bonding Atoms, please read the [delegator faq](https://hub.cosmos.network/delegators/delegator-faq) to understand the risk and responsibilities involved with delegating**
 :::
 
 :::warning

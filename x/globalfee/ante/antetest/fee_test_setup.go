@@ -16,12 +16,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 
-	gaiaapp "github.com/cosmos/gaia/v16/app"
-	gaiahelpers "github.com/cosmos/gaia/v16/app/helpers"
-	gaiaparams "github.com/cosmos/gaia/v16/app/params"
-	"github.com/cosmos/gaia/v16/x/globalfee"
-	gaiafeeante "github.com/cosmos/gaia/v16/x/globalfee/ante"
-	globfeetypes "github.com/cosmos/gaia/v16/x/globalfee/types"
+	gaiaapp "github.com/cosmos/gaia/v18/app"
+	gaiahelpers "github.com/cosmos/gaia/v18/app/helpers"
+	gaiaparams "github.com/cosmos/gaia/v18/app/params"
+	"github.com/cosmos/gaia/v18/x/globalfee"
+	gaiafeeante "github.com/cosmos/gaia/v18/x/globalfee/ante"
+	globfeetypes "github.com/cosmos/gaia/v18/x/globalfee/types"
 )
 
 type IntegrationTestSuite struct {

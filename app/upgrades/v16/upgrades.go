@@ -7,6 +7,7 @@ import (
 	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
 
 	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
+	providerkeeper "github.com/cosmos/interchain-security/v4/x/ccv/provider/keeper"
 	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
 
 	errorsmod "cosmossdk.io/errors"
@@ -14,11 +15,10 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-
-	"github.com/cosmos/gaia/v16/app/keepers"
+	"github.com/cosmos/gaia/v18/app/keepers"
 )
 
 var RateLimits = map[string]ratelimittypes.MsgAddRateLimit{
@@ -90,13 +90,8 @@ func CreateUpgradeHandler(
 			return vm, errorsmod.Wrapf(addErr, "unable to add rate limits")
 		}
 
-		// Set CosmWasm params
-		wasmParams := wasmtypes.DefaultParams()
-		wasmParams.CodeUploadAccess = wasmtypes.AllowNobody
-		// TODO(reece): only allow specific addresses to instantiate contracts or anyone with AccessTypeEverybody?
-		wasmParams.InstantiateDefaultPermission = wasmtypes.AccessTypeAnyOfAddresses
-		if err := keepers.WasmKeeper.SetParams(ctx, wasmParams); err != nil {
-			return vm, errorsmod.Wrapf(err, "unable to set CosmWasm params")
+		if err := InitICSEpochs(ctx, keepers.ProviderKeeper, *keepers.StakingKeeper); err != nil {
+			return vm, errorsmod.Wrapf(err, "failed initializing ICS epochs")
 		}
 
 		ctx.Logger().Info("Upgrade complete")
@@ -165,5 +160,30 @@ func AddRateLimits(ctx sdk.Context, k ratelimitkeeper.Keeper) error {
 	}
 
 	ctx.Logger().Info("Finished adding rate limits")
+	return nil
+}
+
+// NOTE: This is commented out because the valset is already initialized and the function has no effect
+// ComputeNextEpochConsumerValSet was removed and build was broken
+// code is kept here for reference
+func InitICSEpochs(ctx sdk.Context, pk providerkeeper.Keeper, sk stakingkeeper.Keeper) error {
+	ctx.Logger().Info("Initializing ICS epochs...")
+
+	// get the bonded validators from the staking module
+	// _ = sk.GetLastValidators(ctx)
+
+	// for _, chain := range pk.GetAllConsumerChains(ctx) {
+	// 	chainID := chain.ChainId
+	// 	valset := pk.GetConsumerValSet(ctx, chainID)
+	// 	if len(valset) > 0 {
+	// 		ctx.Logger().Info("consumer chain `%s` already has the valset initialized", chainID)
+	// 	} else {
+	// 		// init valset for consumer with chainID
+	// 		nextValidators := pk.ComputeNextEpochConsumerValSet(ctx, chainID, bondedValidators)
+	// 		pk.SetConsumerValSet(ctx, chainID, nextValidators)
+	// 	}
+	// }
+
+	ctx.Logger().Info("Finished initializing ICS epochs")
 	return nil
 }

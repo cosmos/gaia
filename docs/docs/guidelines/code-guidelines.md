@@ -61,7 +61,7 @@ The goal of this guide is to manage this complexity by describing in detail the 
 
 Try to avoid extensive methods and always test your code. All PRs should have at least 95% of code coverage.
 
-- [Contributing](#contributing)
+- Contributing
   - [Maintainability](#maintainability)
   - [Run tests](#run-tests)
   - [Guidelines](#guidelines)

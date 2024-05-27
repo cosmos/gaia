@@ -1,8 +1,7 @@
-package ics
+package integration
 
 import (
 	"encoding/json"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -21,7 +20,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	gaiaApp "github.com/cosmos/gaia/v16/app"
+	gaiaApp "github.com/cosmos/gaia/v18/app"
 )
 
 var (
@@ -105,7 +104,6 @@ func TestICSEpochs(t *testing.T) {
 
 	// Bond some tokens on provider to change validator powers
 	delegateFn(provCtx)
-	fmt.Println(app.StakingKeeper.GetLastTotalPower(provCtx))
 
 	// VSCPacket should only be created at the end of the current epoch
 	require.Empty(t, getVSCPacketsFn())

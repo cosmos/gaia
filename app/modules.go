@@ -8,6 +8,8 @@ import (
 	pfmroutertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward/types"
 	ica "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts"
 	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
+	ibcfee "github.com/cosmos/ibc-go/v7/modules/apps/29-fee"
+	ibcfeetypes "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/types"
 	"github.com/cosmos/ibc-go/v7/modules/apps/transfer"
 	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	ibc "github.com/cosmos/ibc-go/v7/modules/core"
@@ -61,10 +63,10 @@ import (
 	wasm "github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	gaiaappparams "github.com/cosmos/gaia/v16/app/params"
-	"github.com/cosmos/gaia/v16/x/globalfee"
-	"github.com/cosmos/gaia/v16/x/metaprotocols"
-	metaprotocolstypes "github.com/cosmos/gaia/v16/x/metaprotocols/types"
+	gaiaappparams "github.com/cosmos/gaia/v18/app/params"
+	"github.com/cosmos/gaia/v18/x/globalfee"
+	"github.com/cosmos/gaia/v18/x/metaprotocols"
+	metaprotocolstypes "github.com/cosmos/gaia/v18/x/metaprotocols/types"
 )
 
 var maccPerms = map[string][]string{
@@ -77,6 +79,7 @@ var maccPerms = map[string][]string{
 	govtypes.ModuleName:            {authtypes.Burner},
 	// liquiditytypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
 	ibctransfertypes.ModuleName:       {authtypes.Minter, authtypes.Burner},
+	ibcfeetypes.ModuleName:            nil,
 	providertypes.ConsumerRewardsPool: nil,
 }
 
@@ -110,6 +113,7 @@ var ModuleBasics = module.NewBasicManager(
 	authzmodule.AppModuleBasic{},
 	ibc.AppModuleBasic{},
 	ibctm.AppModuleBasic{},
+	ibcfee.AppModuleBasic{},
 	upgrade.AppModuleBasic{},
 	evidence.AppModuleBasic{},
 	transfer.AppModuleBasic{},
@@ -157,6 +161,7 @@ func appModules(
 		globalfee.NewAppModule(app.GetSubspace(globalfee.ModuleName)),
 		consensus.NewAppModule(appCodec, app.ConsensusParamsKeeper),
 		wasm.NewAppModule(appCodec, &app.AppKeepers.WasmKeeper, app.AppKeepers.StakingKeeper, app.AppKeepers.AccountKeeper, app.AppKeepers.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
+		ibcfee.NewAppModule(app.IBCFeeKeeper),
 		app.TransferModule,
 		app.ICAModule,
 		app.PFMRouterModule,
@@ -227,6 +232,7 @@ func orderBeginBlockers() []string {
 		icatypes.ModuleName,
 		pfmroutertypes.ModuleName,
 		ratelimittypes.ModuleName,
+		ibcfeetypes.ModuleName,
 		genutiltypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
@@ -259,6 +265,7 @@ func orderEndBlockers() []string {
 		pfmroutertypes.ModuleName,
 		ratelimittypes.ModuleName,
 		capabilitytypes.ModuleName,
+		ibcfeetypes.ModuleName,
 		authtypes.ModuleName,
 		banktypes.ModuleName,
 		distrtypes.ModuleName,
@@ -302,6 +309,7 @@ func orderInitBlockers() []string {
 		ibctransfertypes.ModuleName,
 		ibcexported.ModuleName,
 		icatypes.ModuleName,
+		ibcfeetypes.ModuleName,
 		evidencetypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,

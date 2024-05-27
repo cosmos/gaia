@@ -1,5 +1,107 @@
 # CHANGELOG
 
+## v17.0.0
+
+*May 17, 2024*
+
+### DEPENDENCIES
+
+- Bump [CometBFT](https://github.com/cometbft/cometbft)
+  to [v0.37.6](https://github.com/cometbft/cometbft/releases/tag/v0.37.6)
+  ([\#3103](https://github.com/cosmos/gaia/pull/3103))
+- Bump [ICS](https://github.com/cosmos/interchain-security) to
+  [v4.2.0-lsm](https://github.com/cosmos/interchain-security/releases/tag/v4.2.0-lsm)
+  ([\#3103](https://github.com/cosmos/gaia/pull/3103))
+
+### FEATURES
+
+- Add ICS 2.0 aka Partial Set Security (PSS). 
+  See the [PSS docs](https://cosmos.github.io/interchain-security/features/partial-set-security) for more details.
+  ([\#3103](https://github.com/cosmos/gaia/pull/3103))
+
+### STATE BREAKING
+
+- Add ICS 2.0 aka Partial Set Security (PSS)
+  ([\#3103](https://github.com/cosmos/gaia/pull/3103))
+
+## v16.0.0
+
+*23rd April, 2024*
+
+### DEPENDENCIES
+
+- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware)
+  to [v7.1.3](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv7.1.3).
+  ([\#3021](https://github.com/cosmos/gaia/pull/3021))
+- Bump [ibc-go](https://github.com/cosmos/ibc-go) to
+  [v7.4.0](https://github.com/cosmos/ibc-go/releases/tag/v7.4.0)
+  ([\#3039](https://github.com/cosmos/gaia/pull/3039))
+- Bump [ICS](https://github.com/cosmos/interchain-security) to
+  [v4.1.0-lsm](https://github.com/cosmos/interchain-security/releases/tag/v4.1.0-lsm)
+  ([\#3062](https://github.com/cosmos/gaia/pull/3062))
+- Bump [ICS](https://github.com/cosmos/interchain-security) to
+  [v4.1.1-lsm](https://github.com/cosmos/interchain-security/releases/tag/v4.1.1-lsm)
+  ([\#3071](https://github.com/cosmos/gaia/pull/3071))
+- Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to
+  [v0.47.13-ics-lsm](https://github.com/cosmos/cosmos-sdk/tree/v0.47.13-ics-lsm).
+  This is a special cosmos-sdk branch with support for both ICS and LSM.
+  ([\#3078](https://github.com/cosmos/gaia/pull/3078))
+- Bump [CometBFT](https://github.com/cometbft/cometbft)
+  to [v0.37.5](https://github.com/cometbft/cometbft/releases/tag/v0.37.5)
+  ([\#3078](https://github.com/cosmos/gaia/pull/3078))
+
+### FEATURES
+
+- Add ICA Controller sub-module
+  ([\#3001](https://github.com/cosmos/gaia/pull/3001))
+- Add the [IBC Rate Limit module](https://github.com/Stride-Labs/ibc-rate-limiting).
+  ([\#3002](https://github.com/cosmos/gaia/pull/3002))
+- Add the [IBC Fee Module](https://ibc.cosmos.network/v7/middleware/ics29-fee/overview).
+  ([\#3038](https://github.com/cosmos/gaia/pull/3038))
+- Add rate limits to IBC transfer channels cf.
+  https://www.mintscan.io/cosmos/proposals/890.
+  ([\#3042](https://github.com/cosmos/gaia/pull/3042))
+- Initialize ICS epochs by adding a consumer validator set for every existing consumer chain.
+  ([\#3079](https://github.com/cosmos/gaia/pull/3079))
+
+### STATE BREAKING
+
+- Add ICA Controller sub-module
+  ([\#3001](https://github.com/cosmos/gaia/pull/3001))
+- Add the [IBC Rate Limit module](https://github.com/Stride-Labs/ibc-rate-limiting).
+  ([\#3002](https://github.com/cosmos/gaia/pull/3002))
+- Add the [IBC Fee Module](https://ibc.cosmos.network/v7/middleware/ics29-fee/overview).
+  ([\#3038](https://github.com/cosmos/gaia/pull/3038))
+- Bump [ibc-go](https://github.com/cosmos/ibc-go) to
+  [v7.4.0](https://github.com/cosmos/ibc-go/releases/tag/v7.4.0)
+  ([\#3039](https://github.com/cosmos/gaia/pull/3039))
+- Bump [ICS](https://github.com/cosmos/interchain-security) to
+  [v4.1.0-lsm](https://github.com/cosmos/interchain-security/releases/tag/v4.1.0-lsm)
+  ([\#3062](https://github.com/cosmos/gaia/pull/3062))
+- Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to
+  [v0.47.13-ics-lsm](https://github.com/cosmos/cosmos-sdk/tree/v0.47.13-ics-lsm).
+  This is a special cosmos-sdk branch with support for both ICS and LSM.
+  ([\#3078](https://github.com/cosmos/gaia/pull/3078))
+- Bump [CometBFT](https://github.com/cometbft/cometbft)
+  to [v0.37.5](https://github.com/cometbft/cometbft/releases/tag/v0.37.5)
+  ([\#3078](https://github.com/cosmos/gaia/pull/3078))
+- Initialize ICS epochs by adding a consumer validator set for every existing consumer chain.
+  ([\#3079](https://github.com/cosmos/gaia/pull/3079))
+
+## v15.2.0
+
+*March 29, 2024*
+
+### BUG FIXES
+
+- Increase x/gov metadata fields legth to 10200 ([\#3025](https://github.com/cosmos/gaia/pull/3025))
+- Fix parsing of historic Txs with TxExtensionOptions ([\#3032](https://github.com/cosmos/gaia/pull/3032))
+
+### STATE BREAKING
+
+- Increase x/gov metadata fields legth to 10200 ([\#3025](https://github.com/cosmos/gaia/pull/3025))
+- Fix parsing of historic Txs with TxExtensionOptions ([\#3032](https://github.com/cosmos/gaia/pull/3032))
+
 ## v15.1.0
 
 *March 15, 2024*

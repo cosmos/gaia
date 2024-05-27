@@ -22,8 +22,8 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v16/app/helpers"
-	v15 "github.com/cosmos/gaia/v16/app/upgrades/v15"
+	"github.com/cosmos/gaia/v18/app/helpers"
+	v15 "github.com/cosmos/gaia/v18/app/upgrades/v15"
 )
 
 func TestUpgradeSigningInfos(t *testing.T) {

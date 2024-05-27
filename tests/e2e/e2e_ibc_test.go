@@ -60,34 +60,7 @@ func (s *IntegrationTestSuite) sendIBC(c *chain, valIdx int, sender, recipient, 
 	}
 }
 
-func (s *IntegrationTestSuite) hermesTransfer(configPath, srcChainID, dstChainID, srcChannelID, denom string, sendAmt, timeOutOffset, numMsg int) (success bool) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-
-	hermesCmd := []string{
-		hermesBinary,
-		"--json",
-		fmt.Sprintf("--config=%s", configPath),
-		"tx",
-		"ft-transfer",
-		fmt.Sprintf("--dst-chain=%s", dstChainID),
-		fmt.Sprintf("--src-chain=%s", srcChainID),
-		fmt.Sprintf("--src-channel=%s", srcChannelID),
-		fmt.Sprintf("--src-port=%s", "transfer"),
-		fmt.Sprintf("--amount=%v", sendAmt),
-		fmt.Sprintf("--denom=%s", denom),
-		fmt.Sprintf("--timeout-height-offset=%v", timeOutOffset),
-		fmt.Sprintf("--number-msgs=%v", numMsg),
-	}
-
-	if _, err := s.executeHermesCommand(ctx, hermesCmd); err != nil {
-		return false
-	}
-
-	return true
-}
-
-func (s *IntegrationTestSuite) hermesClearPacket(configPath, chainID, portID, channelID string) (success bool) {
+func (s *IntegrationTestSuite) hermesClearPacket(configPath, chainID, portID, channelID string) (success bool) { //nolint:unparam
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -119,51 +92,6 @@ type RelayerPacketsOutput struct {
 		} `json:"src"`
 	} `json:"result"`
 	Status string `json:"status"`
-}
-
-func (s *IntegrationTestSuite) hermesPendingPackets(chainID, channelID string) (pendingPackets bool) { //nolint:unparam
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-	hermesCmd := []string{
-		hermesBinary,
-		"--json",
-		"query",
-		"packet",
-		"pending",
-		fmt.Sprintf("--chain=%s", chainID),
-		fmt.Sprintf("--channel=%s", channelID),
-		fmt.Sprintf("--port=%s", "transfer"),
-	}
-
-	stdout, err := s.executeHermesCommand(ctx, hermesCmd)
-	s.Require().NoError(err)
-
-	var relayerPacketsOutput RelayerPacketsOutput
-	err = json.Unmarshal(stdout, &relayerPacketsOutput)
-	s.Require().NoError(err)
-
-	// Check if "unreceived_packets" exists in "src"
-	return len(relayerPacketsOutput.Result.Src.UnreceivedPackets) != 0
-}
-
-func (s *IntegrationTestSuite) queryRelayerWalletsBalances() (sdk.Coin, sdk.Coin) {
-	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-	acctAddrChainA, _ := s.chainA.genesisAccounts[relayerAccountIndexHermes].keyInfo.GetAddress()
-	scrRelayerBalance, err := getSpecificBalance(
-		chainAAPIEndpoint,
-		acctAddrChainA.String(),
-		uatomDenom)
-	s.Require().NoError(err)
-
-	chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
-	acctAddrChainB, _ := s.chainB.genesisAccounts[relayerAccountIndexHermes].keyInfo.GetAddress()
-	dstRelayerBalance, err := getSpecificBalance(
-		chainBAPIEndpoint,
-		acctAddrChainB.String(),
-		uatomDenom)
-	s.Require().NoError(err)
-
-	return scrRelayerBalance, dstRelayerBalance
 }
 
 func (s *IntegrationTestSuite) createConnection() {

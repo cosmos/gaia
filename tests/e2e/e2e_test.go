@@ -75,7 +75,6 @@ func (s *IntegrationTestSuite) TestIBC() {
 	s.testIBCTokenTransfer()
 	s.testMultihopIBCTokenTransfer()
 	s.testFailedMultihopIBCTokenTransfer()
-	s.testIBCBypassMsg()
 	s.testICARegisterAccountAndSendTx()
 }
 

@@ -2,7 +2,6 @@ package v16
 
 import (
 	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
-	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
 	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
 	ibcfeetypes "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/types"
@@ -29,7 +28,6 @@ var Upgrade = upgrades.Upgrade{
 			ratelimittypes.ModuleName,
 			icacontrollertypes.SubModuleName,
 			ibcfeetypes.ModuleName,
-			feemarkettypes.ModuleName,
 		},
 		Deleted: []string{
 			globalfee.ModuleName,

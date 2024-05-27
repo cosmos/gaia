@@ -17,6 +17,9 @@ import (
 	gaiaerrors "github.com/cosmos/gaia/v18/types/errors"
 )
 
+// UseFeeMarketDecorator to make the integration testing easier: we can switch off its ante and post decorators with this flag
+var UseFeeMarketDecorator = true
+
 // HandlerOptions extend the SDK's AnteHandler options by requiring the IBC
 // channel keeper.
 type HandlerOptions struct {
@@ -68,7 +71,10 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewSigVerificationDecorator(opts.AccountKeeper, opts.SignModeHandler),
 		ante.NewIncrementSequenceDecorator(opts.AccountKeeper),
 		ibcante.NewRedundantRelayDecorator(opts.IBCkeeper),
-		feemarketante.NewFeeMarketCheckDecorator(opts.FeeMarketKeeper),
+	}
+
+	if UseFeeMarketDecorator {
+		anteDecorators = append(anteDecorators, feemarketante.NewFeeMarketCheckDecorator(opts.FeeMarketKeeper))
 	}
 
 	return sdk.ChainAnteDecorators(anteDecorators...), nil

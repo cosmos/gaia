@@ -6,6 +6,7 @@ import (
 	store "github.com/cosmos/cosmos-sdk/store/types"
 
 	"github.com/cosmos/gaia/v18/app/upgrades"
+	"github.com/cosmos/gaia/v18/x/globalfee"
 )
 
 const (
@@ -19,6 +20,9 @@ var Upgrade = upgrades.Upgrade{
 	StoreUpgrades: store.StoreUpgrades{
 		Added: []string{
 			feemarkettypes.ModuleName,
+		},
+		Deleted: []string{
+			globalfee.ModuleName,
 		},
 	},
 }

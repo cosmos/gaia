@@ -1556,10 +1556,8 @@ github.com/sirupsen/logrus v1.6.0/go.mod h1:7uNnSEd1DgxDLC74fIahvMZmmYsHGZGEOFrf
 github.com/sirupsen/logrus v1.7.0/go.mod h1:yWOB1SBYBC5VeMP7gHvWumXLIWorT60ONWic61uBYv0=
 github.com/sirupsen/logrus v1.9.3 h1:dueUQJ1C2q9oE3F7wvmSGAaVtTmUizReu6fjN8uqzbQ=
 github.com/sirupsen/logrus v1.9.3/go.mod h1:naHLuLoDiP4jHNo9R0sCBMtWGeIprob74mVsIT4qYEQ=
-github.com/skip-mev/block-sdk v1.4.0 h1:j2wEooUDA74ed+FjCDI3I/aPArdYxKLG5asb6C+so2M=
-github.com/skip-mev/block-sdk v1.4.0/go.mod h1:Yv+gQqRh41bCbWC0Bpau8DBE7UwxxPfGmNVbtVrgWAo=
-github.com/skip-mev/chaintestutil v0.0.0-20231221140417-3ef0d790573c h1:NxxX37ieA9iNF+O4EAAKAFfrwZePT57cFQKbFo1riEQ=
-github.com/skip-mev/chaintestutil v0.0.0-20231221140417-3ef0d790573c/go.mod h1:pTUDPmA+ffDx+G/Yh2+fIJ/Y/3kL1IXjjhWm6YZPdco=
+github.com/skip-mev/chaintestutil v0.0.0-20231207155412-975710cc9051 h1:ZTD4dFUTv+h+BgGTv4PtXnSxgMTUrCvGX+NQjNo/hqA=
+github.com/skip-mev/chaintestutil v0.0.0-20231207155412-975710cc9051/go.mod h1:P7icBoBSf+Ci1b2moqSXQZTThtBs33eJ8dPajce2ViQ=
 github.com/skip-mev/feemarket v0.0.0-20240417180439-812daf6c1577 h1:kbR4Jqo2snw5jBzeg5A0g/9XqjPk0zwy3lDdeS1kFIA=
 github.com/skip-mev/feemarket v0.0.0-20240417180439-812daf6c1577/go.mod h1:ifgafO5QK66HEgXiAwEsiuIwEgwlDbL1ZzRgyqVHw30=
 github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d/go.mod h1:OnSkiWE9lh6wB0YB77sQom3nweQdgAjqCqsofrRNTgc=

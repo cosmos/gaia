@@ -9,9 +9,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
-	blocksdkabci "github.com/skip-mev/block-sdk/abci"
-	blocksdk "github.com/skip-mev/block-sdk/block"
-	blocksdkbase "github.com/skip-mev/block-sdk/block/base"
 	"github.com/spf13/cast"
 
 	// unnamed import of statik for swagger UI support
@@ -163,22 +160,6 @@ func NewGaiaApp(
 		appOpts,
 	)
 
-	// Setup blocksdk
-	// Create the Block SDK lanes.
-	defaultLane := CreateLanes(app)
-
-	// Construct a mempool based off the lanes.
-	mempool, err := blocksdk.NewLanedMempool(
-		app.Logger(),
-		[]blocksdk.Lane{defaultLane},
-	)
-	if err != nil {
-		panic(err)
-	}
-
-	// Set the mempool on the app.
-	app.SetMempool(mempool)
-
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
 	app.mm = module.NewManager(appModules(app, encodingConfig, skipGenesisInvariants)...)
@@ -254,12 +235,6 @@ func NewGaiaApp(
 		panic(fmt.Errorf("failed to create AnteHandler: %s", err))
 	}
 
-	opt := []blocksdkbase.LaneOption{
-		blocksdkbase.WithAnteHandler(anteHandler),
-	}
-
-	defaultLane.WithOptions(opt...)
-
 	postHandlerOptions := PostHandlerOptions{
 		AccountKeeper:   app.AccountKeeper,
 		BankKeeper:      app.BankKeeper,
@@ -274,17 +249,6 @@ func NewGaiaApp(
 	// set ante and post handlers
 	app.SetAnteHandler(anteHandler)
 	app.SetPostHandler(postHandler)
-
-	// Create the proposal handler, so that the application
-	// will build and verify proposals using the Block SDK
-	proposalHandler := blocksdkabci.NewProposalHandler(
-		app.Logger(),
-		app.GetTxConfig().TxDecoder(),
-		app.GetTxConfig().TxEncoder(),
-		mempool,
-	)
-	app.SetPrepareProposal(proposalHandler.PrepareProposalHandler())
-	app.SetProcessProposal(proposalHandler.ProcessProposalHandler())
 
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)

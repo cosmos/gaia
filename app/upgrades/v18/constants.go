@@ -1,8 +1,9 @@
 package v18
 
 import (
-	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	store "github.com/cosmos/cosmos-sdk/store/types"
+
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	"github.com/cosmos/gaia/v18/app/upgrades"
 )

@@ -153,6 +153,8 @@ jobs:
       - name: Install New Gaiad
         run: |
           git checkout -
+          go env -w CGO_ENABLED=1
+          go env
           make build
           cp ./build/gaiad ./build/gaiadnew
           go clean -modcache

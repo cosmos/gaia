@@ -157,7 +157,7 @@ jobs:
           curl -O https://github.com/CosmWasm/wasmvm/releases/download/v1.5.0/libwasmvm.x86_64.so
           curl -O https://github.com/CosmWasm/wasmvm/releases/download/v1.5.0/libwasmvm.aarch64.so
           uname -m
-          sudo cp "./libwasmvm.$(uname -m).a" /usr/lib/
+          sudo cp "./libwasmvm.$(uname -m).so" /usr/lib/
           make build
           cp ./build/gaiad ./build/gaiadnew
           go clean -modcache

@@ -67,4 +67,5 @@ while [ ${CNT} -lt $ITER ]; do
 done
 
 echo "Failed: timeout reached"
+tail -n 500 log.out
 exit 1

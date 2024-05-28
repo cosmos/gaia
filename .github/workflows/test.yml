@@ -161,7 +161,7 @@ jobs:
         if: env.GIT_DIFF
       - name: Install Cosmovisor
         run: |
-          go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.4.0
+          go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@latest
         if: env.GIT_DIFF
       - name: Start Old Gaiad Binary
         run: |

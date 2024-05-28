@@ -154,8 +154,13 @@ jobs:
         run: |
           git checkout -
           go env -w CGO_ENABLED=1
-          go env
-          make build
+          WASMVM_VERSION=v1.5.0
+          curl -o /lib/libwasmvm_muslc.aarch64.a https://github.com/CosmWasm/wasmvm/releases/download/${WASMVM_VERSION}/libwasmvm_muslc.aarch64.a
+          curl -o /lib/libwasmvm_muslc.x86_64.a https://github.com/CosmWasm/wasmvm/releases/download/${WASMVM_VERSION}/libwasmvm_muslc.x86_64.a
+          sha256sum /lib/libwasmvm_muslc.aarch64.a | grep 2687afbdae1bc6c7c8b05ae20dfb8ffc7ddc5b4e056697d0f37853dfe294e913
+          sha256sum /lib/libwasmvm_muslc.x86_64.a | grep 465e3a088e96fd009a11bfd234c69fb8a0556967677e54511c084f815cf9ce63
+          cp "/lib/libwasmvm_muslc.$(uname -m).a" /lib/libwasmvm_muslc.a
+          LEDGER_ENABLED=false LINK_STATICALLY=true BUILD_TAGS=muslc make build
           cp ./build/gaiad ./build/gaiadnew
           go clean -modcache
         if: env.GIT_DIFF
@@ -175,5 +180,4 @@ jobs:
       - name: Check for successful upgrade
         run: |
           ./contrib/scripts/upgrade_test_scripts/test_upgrade.sh 20 5 16 localhost
-          tail -n 400 log.out
         if: env.GIT_DIFF

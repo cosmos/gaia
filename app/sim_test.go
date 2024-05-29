@@ -25,6 +25,7 @@ import (
 
 	"github.com/cosmos/gaia/v18/ante"
 	gaia "github.com/cosmos/gaia/v18/app"
+
 	// "github.com/cosmos/gaia/v11/app/helpers"
 	// "github.com/cosmos/gaia/v11/app/params"
 	"github.com/cosmos/gaia/v18/app/sim"
@@ -49,6 +50,9 @@ func TestAppStateDeterminism(t *testing.T) {
 	if !sim.FlagEnabledValue {
 		t.Skip("skipping application simulation")
 	}
+
+	// since we can't provide tx fees to SimulateFromSeed(), we must switch off the feemarket
+	ante.UseFeeMarketDecorator = false
 
 	config := sim.NewConfigFromFlags()
 	config.InitialBlockHeight = 1

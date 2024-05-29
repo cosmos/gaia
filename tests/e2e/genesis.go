@@ -163,6 +163,7 @@ func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, ba
 	feemarketState := feemarkettypes.GetGenesisStateFromAppState(cdc, appState)
 	feemarketState.Params.MinBaseFee = sdk.MustNewDecFromStr(basefee)
 	feemarketState.Params.FeeDenom = denom
+	feemarketState.Params.DistributeFees = true
 	feemarketState.State.BaseFee = sdk.MustNewDecFromStr(basefee)
 	feemarketStateBz, err := cdc.MarshalJSON(&feemarketState)
 	if err != nil {

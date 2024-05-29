@@ -353,7 +353,9 @@ func (s *IntegrationTestSuite) testMultihopIBCTokenTransfer() {
 				afterRecipientUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, recipient, uatomDenom)
 				s.Require().NoError(err)
 
-				decremented := beforeSenderUAtomBalance.Sub(tokenAmount).Sub(standardFees).IsEqual(afterSenderUAtomBalance)
+				feeRoundingTolerance := sdk.NewCoin(uatomDenom, sdk.NewInt(1))
+				expectedAfterUAtomBalance := beforeSenderUAtomBalance.Sub(tokenAmount).Sub(standardFees)
+				decremented := afterSenderUAtomBalance.Sub(expectedAfterUAtomBalance).IsLTE(feeRoundingTolerance)
 				incremented := beforeRecipientUAtomBalance.Add(tokenAmount).IsEqual(afterRecipientUAtomBalance)
 
 				return decremented && incremented

@@ -72,15 +72,14 @@ func (s *IntegrationTestSuite) fundCommunityPool() {
 
 	s.execDistributionFundCommunityPool(s.chainA, 0, sender.String(), tokenAmount.String(), standardFees.String())
 
-	// there are still tokens being added to the community pool through block production rewards but they should be less than 500 tokens
-	marginOfErrorForBlockReward := sdk.NewInt64Coin(uatomDenom, 500)
-
 	s.Require().Eventually(
 		func() bool {
-			afterDistPhotonBalance, err := getSpecificBalance(chainAAPIEndpoint, distModuleAddress, tokenAmount.Denom)
-			s.Require().NoErrorf(err, "Error getting balance: %s", afterDistPhotonBalance)
+			afterDistUatomBalance, err := getSpecificBalance(chainAAPIEndpoint, distModuleAddress, tokenAmount.Denom)
+			s.Require().NoErrorf(err, "Error getting balance: %s", afterDistUatomBalance)
 
-			return afterDistPhotonBalance.Sub(beforeDistUatomBalance.Add(tokenAmount.Add(standardFees))).IsLT(marginOfErrorForBlockReward)
+			// check if the balance is increased by the tokenAmount and at least some portion of
+			// the fees (some amount of the fees will be given to the proposer)
+			return beforeDistUatomBalance.Add(tokenAmount).IsLT(afterDistUatomBalance)
 		},
 		15*time.Second,
 		5*time.Second,

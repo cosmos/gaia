@@ -16,10 +16,11 @@ import (
 func (s *IntegrationTestSuite) testBankTokenTransfer() {
 	s.Run("send_tokens_between_accounts", func() {
 		var (
-			err           error
-			valIdx        = 0
-			c             = s.chainA
-			chainEndpoint = fmt.Sprintf("http://%s", s.valResources[c.id][valIdx].GetHostPort("1317/tcp"))
+			err                  error
+			valIdx               = 0
+			c                    = s.chainA
+			chainEndpoint        = fmt.Sprintf("http://%s", s.valResources[c.id][valIdx].GetHostPort("1317/tcp"))
+			feeRoundingTolerance = sdk.NewCoin(uatomDenom, sdk.NewInt(1))
 		)
 
 		// define one sender and two recipient accounts
@@ -64,7 +65,9 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 				afterBobUAtomBalance, err = getSpecificBalance(chainEndpoint, bob.String(), uatomDenom)
 				s.Require().NoError(err)
 
-				decremented := beforeAliceUAtomBalance.Sub(tokenAmount).Sub(standardFees).IsEqual(afterAliceUAtomBalance)
+				expectedAfterAliceUAtomBalance := beforeAliceUAtomBalance.Sub(tokenAmount).Sub(standardFees)
+				decremented := afterAliceUAtomBalance.Sub(expectedAfterAliceUAtomBalance).IsLTE(feeRoundingTolerance)
+
 				incremented := beforeBobUAtomBalance.Add(tokenAmount).IsEqual(afterBobUAtomBalance)
 
 				return decremented && incremented
@@ -91,7 +94,9 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 				s.Require().NoError(err)
 
 				// assert alice's account gets decremented the amount of tokens twice
-				decremented := beforeAliceUAtomBalance.Sub(tokenAmount).Sub(tokenAmount).Sub(standardFees).IsEqual(afterAliceUAtomBalance)
+				expectedAfterAliceUAtomBalance := beforeAliceUAtomBalance.Sub(tokenAmount).Sub(tokenAmount).Sub(standardFees)
+				decremented := afterAliceUAtomBalance.Sub(expectedAfterAliceUAtomBalance).IsLTE(feeRoundingTolerance)
+
 				incremented := beforeBobUAtomBalance.Add(tokenAmount).IsEqual(afterBobUAtomBalance) &&
 					beforeCharlieUAtomBalance.Add(tokenAmount).IsEqual(afterCharlieUAtomBalance)
 

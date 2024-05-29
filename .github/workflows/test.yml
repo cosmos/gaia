@@ -153,7 +153,6 @@ jobs:
       - name: Install New Gaiad
         run: |
           git checkout -
-          go env -w CGO_ENABLED=1
           curl -O https://github.com/CosmWasm/wasmvm/releases/download/v1.5.0/libwasmvm.x86_64.so
           curl -O https://github.com/CosmWasm/wasmvm/releases/download/v1.5.0/libwasmvm.aarch64.so
           uname -m

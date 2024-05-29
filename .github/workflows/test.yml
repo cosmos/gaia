@@ -177,5 +177,4 @@ jobs:
       - name: Check for successful upgrade
         run: |
           ./contrib/scripts/upgrade_test_scripts/test_upgrade.sh 20 5 16 localhost
-          tail -n 400 log.out
         if: env.GIT_DIFF

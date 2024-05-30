@@ -56,7 +56,7 @@ const (
 	minGasPrice    = "0.00001"
 	// the test basefee in genesis is the same as minGasPrice
 	// global fee lower/higher than min_gas_price
-	initialBaseFeeAmt               = "0.00001"
+	initialBaseFeeAmt               = "0.005"
 	gas                             = 200000
 	govProposalBlockBuffer          = 35
 	relayerAccountIndexHermes       = 0

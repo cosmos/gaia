@@ -185,6 +185,5 @@ func InitICSEpochs(ctx sdk.Context, pk providerkeeper.Keeper, sk stakingkeeper.K
 	// }
 
 	ctx.Logger().Info("Finished initializing ICS epochs")
-
 	return nil
 }

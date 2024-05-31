@@ -53,7 +53,7 @@ const (
 	uatomDenom     = "uatom"
 	stakeDenom     = "stake"
 	initBalanceStr = "110000000000stake,100000000000000000photon,100000000000000000uatom"
-	minGasPrice    = "0.00001"
+	minGasPrice    = "0.005"
 	// the test basefee in genesis is the same as minGasPrice
 	// global fee lower/higher than min_gas_price
 	initialBaseFeeAmt               = "0.005"

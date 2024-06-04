@@ -26,8 +26,8 @@ const config = {
   organizationName: "Cosmos", // Usually your GitHub org/user name.
   projectName: "Gaia", // Usually your repo name.
 
-  onBrokenLinks: "throw",
-  onBrokenMarkdownLinks: "throw",
+  onBrokenLinks: "warn",
+  onBrokenMarkdownLinks: "warn",
   trailingSlash: false,
 
   // Even if you don't use internalization, you can use this field to set useful

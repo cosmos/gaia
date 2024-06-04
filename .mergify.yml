@@ -24,15 +24,6 @@ pull_request_rules:
           {{ title }} (#{{ number }})
           {{ body }}
 
-  - name: Backport patches to the release/v15.2.x branch
-    conditions:
-      - base=main
-      - label=A:backport/v15.2.x
-    actions:
-      backport:
-        branches:
-          - release/v15.2.x
-
   - name: Backport patches to the release/v16.x branch
     conditions:
       - base=main
@@ -42,11 +33,11 @@ pull_request_rules:
         branches:
           - release/v16.x
 
-  - name: Backport patches to the release/v17.x branch
+  - name: Backport patches to the release/v17.1.x branch
     conditions:
       - base=main
-      - label=A:backport/v17.x
+      - label=A:backport/v17.1.x
     actions:
       backport:
         branches:
-          - release/v17.x
+          - release/v17.1.x

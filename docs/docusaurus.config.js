@@ -56,13 +56,13 @@ const config = {
           lastVersion: "v17.1.0",
           versions: {
             current: {
-              path: "/",
+              path: "main",
               label: "Unreleased (main)",
               banner: "unreleased",
             },
             "v17.1.0": {
-              path: "/v17.1.0/",
-              label: "On Chain",
+              path: "v17.1.0",
+              label: "On chain (v17.1.0)",
               banner: "none",
             },
           },
@@ -102,7 +102,7 @@ const config = {
         logo: {
           alt: "Cosmos Hub Logo",
           src: "img/hub.svg",
-          href: "https://hub.cosmos.network",
+          href: "/",
           target: "_self",
         },
         items: [
@@ -254,7 +254,12 @@ const config = {
       {
         fromExtensions: ["html"],
         toExtensions: ["html"],
-        redirects: [],
+        redirects: [
+          {
+            from: ["/"],
+            to: "/main",
+          },
+        ],
       },
     ],
   ],

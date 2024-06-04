@@ -13,7 +13,7 @@ const algoliaIndexName = "cosmos_network";
 const config = {
   title: "Cosmos Hub",
   tagline: "",
-  favicon: "/gaia/img/hub.svg",
+  favicon: "/img/hub.svg",
 
   // Set the production url of your site here
   url: "https://hub.cosmos.network",
@@ -59,6 +59,16 @@ const config = {
               path: "/",
               label: "main",
               banner: "unreleased",
+            },
+            "v17.0.0": {
+              path: "/v17.0.0/",
+              label: "v17.0.0",
+              banner: "none",
+            },
+            "v16.0.0": {
+              path: "/v16.0.0/",
+              label: "v16.0.0",
+              banner: "unmaintained",
             },
           },
         },
@@ -131,7 +141,7 @@ const config = {
           {
             type: "docsVersionDropdown",
             position: "left",
-            dropdownActiveClassDisabled: true,
+            dropdownActiveClassDisabled: false,
             // versions not yet migrated to docusaurus
             dropdownItemsAfter: [
               // {
@@ -159,7 +169,7 @@ const config = {
           {
             items: [
               {
-                html: `<a href="https://cosmos.network"><img src="/gaia/img/logo-bw-inverse.svg" alt="Cosmos Logo"></a>`,
+                html: `<a href="https://cosmos.network"><img src="/img/logo-bw-inverse.svg" alt="Cosmos Logo"></a>`,
               },
             ],
           },

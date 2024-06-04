@@ -3,6 +3,7 @@ package ante
 import (
 	ibcante "github.com/cosmos/ibc-go/v7/modules/core/ante"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
+	feeabskeeper "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/keeper"
 
 	errorsmod "cosmossdk.io/errors"
 
@@ -14,6 +15,8 @@ import (
 
 	gaiaerrors "github.com/cosmos/gaia/v18/types/errors"
 	gaiafeeante "github.com/cosmos/gaia/v18/x/globalfee/ante"
+
+	feeabsante "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/ante"
 )
 
 // HandlerOptions extend the SDK's AnteHandler options by requiring the IBC
@@ -25,6 +28,7 @@ type HandlerOptions struct {
 	GlobalFeeSubspace paramtypes.Subspace
 	StakingKeeper     *stakingkeeper.Keeper
 	TxFeeChecker      ante.TxFeeChecker
+	FeeAbskeeper      feeabskeeper.Keeper
 }
 
 func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
@@ -63,7 +67,8 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
 		NewGovVoteDecorator(opts.Codec, opts.StakingKeeper),
 		gaiafeeante.NewFeeDecorator(opts.GlobalFeeSubspace, opts.StakingKeeper),
-		ante.NewDeductFeeDecorator(opts.AccountKeeper, opts.BankKeeper, opts.FeegrantKeeper, opts.TxFeeChecker),
+		feeabsante.NewFeeAbstrationMempoolFeeDecorator(opts.FeeAbskeeper),
+		feeabsante.NewFeeAbstractionDeductFeeDecorate(opts.AccountKeeper, opts.BankKeeper, opts.FeeAbskeeper, opts.FeegrantKeeper),
 		ante.NewSetPubKeyDecorator(opts.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewValidateSigCountDecorator(opts.AccountKeeper),
 		ante.NewSigGasConsumeDecorator(opts.AccountKeeper, sigGasConsumer),

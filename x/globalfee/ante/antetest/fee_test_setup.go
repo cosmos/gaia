@@ -2,6 +2,7 @@ package antetest
 
 import (
 	"fmt"
+	feeabsante "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/ante"
 
 	"github.com/stretchr/testify/suite"
 
@@ -65,9 +66,11 @@ func (s *IntegrationTestSuite) SetupTestGlobalFeeStoreAndMinGasPrice(minGasPrice
 
 	// build fee decorator
 	feeDecorator := gaiafeeante.NewFeeDecorator(subspace, s.app.StakingKeeper)
+	// Add fee-abstraction decorator
+	feeabsMempoolDecorator := feeabsante.NewFeeAbstrationMempoolFeeDecorator(s.app.FeeabsKeeper)
 
 	// chain fee decorator to antehandler
-	antehandler := sdk.ChainAnteDecorators(feeDecorator)
+	antehandler := sdk.ChainAnteDecorators(feeDecorator, feeabsMempoolDecorator)
 
 	return feeDecorator, antehandler
 }

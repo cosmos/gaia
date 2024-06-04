@@ -2,6 +2,7 @@ package gaia
 
 import (
 	"fmt"
+	feeabstypes "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/types"
 	"io"
 	"net/http"
 	"os"
@@ -227,6 +228,7 @@ func NewGaiaApp(
 			IBCkeeper:         app.IBCKeeper,
 			GlobalFeeSubspace: app.GetSubspace(globalfee.ModuleName),
 			StakingKeeper:     app.StakingKeeper,
+			FeeAbskeeper:      app.FeeabsKeeper,
 			// If TxFeeChecker is nil the default ante TxFeeChecker is used
 			// so we use this no-op to keep the global fee module behaviour unchanged
 			TxFeeChecker: noOpTxFeeChecker,
@@ -302,6 +304,8 @@ func (app *GaiaApp) BlockedModuleAccountAddrs(modAccAddrs map[string]bool) map[s
 	// Remove the ConsumerRewardsPool from the group of blocked recipient addresses in bank
 	delete(modAccAddrs, authtypes.NewModuleAddress(providertypes.ConsumerRewardsPool).String())
 
+	// allow feeabs module to receive tokens
+	delete(modAccAddrs, authtypes.NewModuleAddress(feeabstypes.ModuleName).String())
 	return modAccAddrs
 }
 

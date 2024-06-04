@@ -2,6 +2,7 @@ package keepers
 
 import (
 	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
+	feeabstypes "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/types"
 
 	routertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward/types"
 	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
@@ -57,6 +58,7 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 		ratelimittypes.StoreKey,
 		providertypes.StoreKey,
 		consensusparamtypes.StoreKey,
+		feeabstypes.StoreKey,
 	)
 
 	// Define transient store keys

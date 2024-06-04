@@ -1,6 +1,10 @@
 package keepers
 
 import (
+	"github.com/osmosis-labs/fee-abstraction/v7/x/feeabs"
+	feeabsmodule "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs"
+	feeabskeeper "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/keeper"
+
 	"os"
 
 	ratelimit "github.com/Stride-Labs/ibc-rate-limiting/ratelimit"
@@ -36,6 +40,7 @@ import (
 	icsprovider "github.com/cosmos/interchain-security/v4/x/ccv/provider"
 	icsproviderkeeper "github.com/cosmos/interchain-security/v4/x/ccv/provider/keeper"
 	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
+	feeabstypes "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -110,6 +115,7 @@ type AppKeepers struct {
 	ConsensusParamsKeeper consensusparamkeeper.Keeper
 
 	// ICS
+	FeeabsKeeper   feeabskeeper.Keeper
 	ProviderKeeper icsproviderkeeper.Keeper
 
 	PFMRouterKeeper *pfmrouterkeeper.Keeper
@@ -121,6 +127,7 @@ type AppKeepers struct {
 	TransferModule  transfer.AppModule
 	PFMRouterModule pfmrouter.AppModule
 	RateLimitModule ratelimit.AppModule
+	FeeAbsModule    feeabs.AppModule
 	ProviderModule  icsprovider.AppModule
 
 	// make scoped keepers public for test purposes
@@ -129,6 +136,7 @@ type AppKeepers struct {
 	ScopedICAHostKeeper       capabilitykeeper.ScopedKeeper
 	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
 	ScopedICSproviderkeeper   capabilitykeeper.ScopedKeeper
+	ScopedFeeabsKeeper        capabilitykeeper.ScopedKeeper
 }
 
 func NewAppKeeper(
@@ -187,6 +195,7 @@ func NewAppKeeper(
 	appKeepers.ScopedICAControllerKeeper = appKeepers.CapabilityKeeper.ScopeToModule(icacontrollertypes.SubModuleName)
 	appKeepers.ScopedTransferKeeper = appKeepers.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 	appKeepers.ScopedICSproviderkeeper = appKeepers.CapabilityKeeper.ScopeToModule(providertypes.ModuleName)
+	appKeepers.ScopedFeeabsKeeper = appKeepers.CapabilityKeeper.ScopeToModule(feeabstypes.ModuleName)
 
 	// Applications that wish to enforce statically created ScopedKeepers should call `Seal` after creating
 	// their scoped modules in `NewApp` with `ScopeToModule`
@@ -342,7 +351,8 @@ func NewAppKeeper(
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(appKeepers.ParamsKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(appKeepers.UpgradeKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(appKeepers.IBCKeeper.ClientKeeper)).
-		AddRoute(providertypes.RouterKey, icsprovider.NewProviderProposalHandler(appKeepers.ProviderKeeper))
+		AddRoute(providertypes.RouterKey, icsprovider.NewProviderProposalHandler(appKeepers.ProviderKeeper)).
+		AddRoute(feeabstypes.RouterKey, feeabsmodule.NewHostZoneProposal(appKeepers.FeeabsKeeper))
 
 	// Set legacy router for backwards compatibility with gov v1beta1
 	appKeepers.GovKeeper.SetLegacyRouter(govRouter)
@@ -433,9 +443,23 @@ func NewAppKeeper(
 		appKeepers.BankKeeper,
 		appKeepers.ScopedTransferKeeper,
 	)
-
 	// Must be called on PFMRouter AFTER TransferKeeper initialized
 	appKeepers.PFMRouterKeeper.SetTransferKeeper(appKeepers.TransferKeeper)
+
+	appKeepers.FeeabsKeeper = feeabskeeper.NewKeeper(
+		appCodec,
+		appKeepers.keys[feeabstypes.StoreKey],
+		appKeepers.GetSubspace(feeabstypes.ModuleName),
+		appKeepers.StakingKeeper,
+		appKeepers.AccountKeeper,
+		appKeepers.BankKeeper,
+		appKeepers.TransferKeeper,
+		appKeepers.IBCKeeper.ChannelKeeper,
+		&appKeepers.IBCKeeper.PortKeeper,
+		appKeepers.ScopedFeeabsKeeper,
+	)
+	appKeepers.FeeAbsModule = feeabs.NewAppModule(appCodec, appKeepers.FeeabsKeeper)
+	feeabsIBCModule := feeabs.NewIBCModule(appCodec, appKeepers.FeeabsKeeper)
 
 	// Middleware Stacks
 	appKeepers.ICAModule = ica.NewAppModule(&appKeepers.ICAControllerKeeper, &appKeepers.ICAHostKeeper)
@@ -479,7 +503,8 @@ func NewAppKeeper(
 		AddRoute(icahosttypes.SubModuleName, icaHostStack).
 		AddRoute(icacontrollertypes.SubModuleName, icaControllerStack).
 		AddRoute(ibctransfertypes.ModuleName, transferStack).
-		AddRoute(providertypes.ModuleName, appKeepers.ProviderModule)
+		AddRoute(providertypes.ModuleName, appKeepers.ProviderModule).
+		AddRoute(feeabstypes.ModuleName, feeabsIBCModule)
 
 	appKeepers.IBCKeeper.SetRouter(ibcRouter)
 
@@ -516,6 +541,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ratelimittypes.ModuleName)
 	paramsKeeper.Subspace(globalfee.ModuleName)
 	paramsKeeper.Subspace(providertypes.ModuleName)
+	paramsKeeper.Subspace(feeabstypes.ModuleName)
 
 	return paramsKeeper
 }

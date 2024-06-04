@@ -53,22 +53,16 @@ const config = {
         docs: {
           routeBasePath: "/",
           sidebarPath: require.resolve("./sidebars.js"),
-          // lastVersion: "v15.2.0",
           versions: {
             current: {
               path: "/",
               label: "main",
               banner: "unreleased",
             },
-            "v17.0.0": {
+            "v17.1.0": {
               path: "/v17.0.0/",
-              label: "v17.0.0",
+              label: "latest",
               banner: "none",
-            },
-            "v16.0.0": {
-              path: "/v16.0.0/",
-              label: "v16.0.0",
-              banner: "unmaintained",
             },
           },
         },
@@ -141,19 +135,8 @@ const config = {
           {
             type: "docsVersionDropdown",
             position: "left",
-            dropdownActiveClassDisabled: false,
             // versions not yet migrated to docusaurus
             dropdownItemsAfter: [
-              // {
-              //   href: 'https://hub.cosmos.network/v11/',
-              //   label: 'v11',
-              //   target: '_self',
-              // },
-              // {
-              //   href: 'https://hub.cosmos.network/v10/',
-              //   label: 'v10',
-              //   target: '_self',
-              // },
               {
                 href: "https://github.com/cosmos/gaia/tree/legacy-docs",
                 label: "Archive",

@@ -5,10 +5,10 @@ order: 1
 
 This folder contains documentation relevant to validators of the Cosmos Hub and other `gaia` blockchains.
 
-- [Validator Overview](/validators/overview)
-- [Setting Up a Validator for Cosmos Hub Mainnet](/validators/validator-setup)
-- [Validator FAQ](/validators/validator-faq)
-- [Validator Security Notice](/validators/security)
+- [Validator Overview](./overview.mdx)
+- [Setting Up a Validator for Cosmos Hub Mainnet](./validator-setup.md)
+- [Validator FAQ](./validator-faq.md)
+- [Validator Security Notice](./security.md)
 - Key Management Systems
-  - [Intro to KMS](/validators/kms)
-  - [KMS + Ledger](/validators/kms/kms_ledger)
+  - [Intro to KMS](./kms/kms.md)
+  - [KMS + Ledger](./kms/kms_ledger.md)

@@ -10,6 +10,9 @@ The upgrade height is [20740970](https://www.mintscan.io/cosmos/block/20740970).
 
 Check out the [changelog](https://github.com/cosmos/gaia/blob/v17.2.0/CHANGELOG.md) for a list of relevant changes or [compare all changes](https://github.com/cosmos/gaia/compare/v17.1.0...v17.2.0) from last release.
 
+<!-- Add the following line for major releases -->
+Refer to the [upgrading guide](https://github.com/cosmos/gaia/blob/release/v17.2.x/UPGRADING.md) when migrating from `v17.1.x` to `v17.2.x`.
+
 ## 🚀 Highlights
 
 <!-- Add any highlights of this release -->

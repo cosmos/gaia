@@ -1,10 +1,10 @@
 # Upgrade Gaia from v17.1.0 to v17.2.0
 
-## This is a coordinated upgrade. IT IS CONSENSUS BREAKING, so please apply the fix only on height 20739800.
+## This is a coordinated upgrade. IT IS CONSENSUS BREAKING, so please apply the fix only on height 20740970.
 
 ### Release Details
 * https://github.com/cosmos/gaia/releases/tag/v17.2.0
-* Chain upgrade height : `20739800`. Exact upgrade time can be checked [here](https://www.mintscan.io/cosmos/block/20739800).
+* Chain upgrade height : `20740970`. Exact upgrade time can be checked [here](https://www.mintscan.io/cosmos/block/20740970).
 * Go version has been frozen at `1.21`. If you are going to build `gaiad` binary from source, make sure you are using the right GO version!
 
 # Performing the co-ordinated upgrade
@@ -29,7 +29,7 @@ There are two mutually exclusive options for this stage:
 
 ```toml
 # Note: Commitment of state will be attempted on the corresponding block.
-halt-height = 20739800
+halt-height = 20740970
 ```
 * restart gaiad process
 
@@ -41,7 +41,7 @@ halt-height = 20739800
 
 * Do not modify `app.toml`. Restart the `gaiad` process with the flag `--halt-height`:
 ```shell
-gaiad start --halt-height 20739800
+gaiad start --halt-height 20740970
 ```
 
 * Wait for the upgrade height and confirm that the node has halted

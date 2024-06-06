@@ -2,7 +2,7 @@
 // testing functionality.
 //
 // The file e2e_suite_test.go defines the testing suite and contains the core
-// bootrapping logic that creates a testing environment via Docker containers.
+// bootstrapping logic that creates a testing environment via Docker containers.
 // A testing network is created dynamically and contains multiple Docker
 // containers:
 //

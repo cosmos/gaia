@@ -24,7 +24,8 @@ The chain-id of Cosmos Hub mainnet is `cosmoshub-4`.
 - use `gaia v14.1.x` between `18,262,000` and `19,639,600`
 - use `gaia v15.1.x` between `19,639,600`  and `19,939,000`
 - use `gaia v15.2.x` between `19,939,000` and `20,440,500` 
-- use `gaia v16.x` from `20,440,500`
+- use `gaia v16.x` from `20,440,500` and `20,739,800`
+- use `gaia v17.1.x` from `20,739,800`
 
 **This guide includes full instructions for joining the mainnet either as an archive/full node or a pruned node.**
 

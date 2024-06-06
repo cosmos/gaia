@@ -8,7 +8,7 @@ The command is added as a sub-command of the `gaiad testnet` command.
 
 ## Building a local testnet binary
 
-The gaia binary will cointain the testnet extensions only if the `unsafe_start_local_validator` build tags is used.
+The gaia binary will contain the testnet extensions only if the `unsafe_start_local_validator` build tags is used.
 
 ```shell
 make build BUILD_TAGS="-tag unsafe_start_local_validator"

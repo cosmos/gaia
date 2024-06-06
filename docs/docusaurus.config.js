@@ -13,7 +13,7 @@ const algoliaIndexName = "cosmos_network";
 const config = {
   title: "Cosmos Hub",
   tagline: "",
-  favicon: "/gaia/img/hub.svg",
+  favicon: "/img/hub.svg",
 
   // Set the production url of your site here
   url: "https://hub.cosmos.network",
@@ -26,8 +26,8 @@ const config = {
   organizationName: "Cosmos", // Usually your GitHub org/user name.
   projectName: "Gaia", // Usually your repo name.
 
-  onBrokenLinks: "throw",
-  onBrokenMarkdownLinks: "throw",
+  onBrokenLinks: "warn",
+  onBrokenMarkdownLinks: "warn",
   trailingSlash: false,
 
   // Even if you don't use internalization, you can use this field to set useful
@@ -53,12 +53,17 @@ const config = {
         docs: {
           routeBasePath: "/",
           sidebarPath: require.resolve("./sidebars.js"),
-          // lastVersion: "v15.2.0",
+          lastVersion: "v17.1.0",
           versions: {
             current: {
-              path: "/",
-              label: "main",
+              path: "main",
+              label: "Unreleased (main)",
               banner: "unreleased",
+            },
+            "v17.1.0": {
+              path: "v17.1.0",
+              label: "On chain (v17.1.0)",
+              banner: "none",
             },
           },
         },
@@ -97,7 +102,7 @@ const config = {
         logo: {
           alt: "Cosmos Hub Logo",
           src: "img/hub.svg",
-          href: "https://hub.cosmos.network",
+          href: "/",
           target: "_self",
         },
         items: [
@@ -131,19 +136,8 @@ const config = {
           {
             type: "docsVersionDropdown",
             position: "left",
-            dropdownActiveClassDisabled: true,
             // versions not yet migrated to docusaurus
             dropdownItemsAfter: [
-              // {
-              //   href: 'https://hub.cosmos.network/v11/',
-              //   label: 'v11',
-              //   target: '_self',
-              // },
-              // {
-              //   href: 'https://hub.cosmos.network/v10/',
-              //   label: 'v10',
-              //   target: '_self',
-              // },
               {
                 href: "https://github.com/cosmos/gaia/tree/legacy-docs",
                 label: "Archive",
@@ -159,7 +153,7 @@ const config = {
           {
             items: [
               {
-                html: `<a href="https://cosmos.network"><img src="/gaia/img/logo-bw-inverse.svg" alt="Cosmos Logo"></a>`,
+                html: `<a href="https://cosmos.network"><img src="/img/logo-bw-inverse.svg" alt="Cosmos Logo"></a>`,
               },
             ],
           },
@@ -260,7 +254,12 @@ const config = {
       {
         fromExtensions: ["html"],
         toExtensions: ["html"],
-        redirects: [],
+        redirects: [
+          {
+            from: ["/"],
+            to: "/main",
+          },
+        ],
       },
     ],
   ],

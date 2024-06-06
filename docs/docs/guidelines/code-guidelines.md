@@ -370,7 +370,7 @@ When naming packages, choose a name that is:
 - Short and succinct. Remember that the name is identified in full at every call site.
 - Not plural. For example, `net/url`, not `net/urls`.
 - Not `common`, `util`, `shared`, or `lib`. These are bad, uninformative names.
-- To distinguish SDK and Gaia with the same package name, add SDK or Gaia or the module name as the prefix. E.g.: `sdk/types`, `gaia/types` and `gaia/x/globalfee/types`, can use `sdktype`, `gaiatype`, `globalfeetype`.
+- To distinguish SDK and Gaia with the same package name, add SDK or Gaia or the module name as the prefix. E.g.: `sdk/types` and `gaia/types`, can use `sdktype` and `gaiatype`.
 
 See also [Package Names] and [Style guideline for Go packages].
 

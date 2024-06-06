@@ -6,12 +6,12 @@ import (
 	store "github.com/cosmos/cosmos-sdk/store/types"
 
 	"github.com/cosmos/gaia/v18/app/upgrades"
-	"github.com/cosmos/gaia/v18/x/globalfee"
 )
 
 const (
 	// UpgradeName defines the on-chain upgrade name.
-	UpgradeName = "v18"
+	UpgradeName         = "v18"
+	GlobalFeeModuleName = "globalfee"
 )
 
 var Upgrade = upgrades.Upgrade{
@@ -22,7 +22,7 @@ var Upgrade = upgrades.Upgrade{
 			feemarkettypes.ModuleName,
 		},
 		Deleted: []string{
-			globalfee.ModuleName,
+			GlobalFeeModuleName,
 		},
 	},
 }

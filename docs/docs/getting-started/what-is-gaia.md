@@ -49,8 +49,9 @@ The `gaia` blockchain uses the following cosmos-sdk, ibc-go and interchain-secur
 * [ibc-rate-limiting](https://github.com/Stride-Labs/ibc-rate-limiting)
 
 ## gaia specific modules
-* [x/globalfee](https://github.com/cosmos/gaia/tree/main/x/globalfee)
 * [x/metaprotocols](https://github.com/cosmos/gaia/tree/main/x/metaprotocols)
 
+## other modules
+* [fee market](https://github.com/skip-mev/feemarket)
 
 Next, learn how to [install Gaia](./installation.md).

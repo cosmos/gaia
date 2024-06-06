@@ -63,8 +63,6 @@ const (
 	numberOfEvidences               = 10
 	slashingShares            int64 = 10000
 
-	proposalGlobalFeeFilename      = "proposal_globalfee.json"
-	proposalBypassMsgFilename      = "proposal_bypass_msg.json"
 	proposalMaxTotalBypassFilename = "proposal_max_total_bypass.json"
 	proposalCommunitySpendFilename = "proposal_community_spend.json"
 	proposalLSMParamUpdateFilename = "proposal_lsm_param_update.json"

@@ -21,16 +21,6 @@ updates:
     directory: "/"
     schedule:
       interval: daily
-    target-branch: "release/v15.2.x"
-    # Only allow automated security-related dependency updates on release branches.
-    open-pull-requests-limit: 0
-    labels:
-      - dependencies
-
-  - package-ecosystem: gomod
-    directory: "/"
-    schedule:
-      interval: daily
     target-branch: "release/v16.x"
     # Only allow automated security-related dependency updates on release branches.
     open-pull-requests-limit: 0
@@ -42,7 +32,7 @@ updates:
     directory: "/"
     schedule:
       interval: daily
-    target-branch: "release/v17.x"
+    target-branch: "release/v17.2.x"
     # Only allow automated security-related dependency updates on release branches.
     open-pull-requests-limit: 0
     labels:

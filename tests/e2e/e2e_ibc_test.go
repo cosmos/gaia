@@ -355,8 +355,8 @@ func (s *IntegrationTestSuite) testMultihopIBCTokenTransfer() {
 
 				// check that the senders balance was reduced by tokenAmount plus at least some amount of standardFees,
 				// since we can't know in advance how much fees will be charged by the feemarket
-				expectedAfterUAtomBalance := beforeSenderUAtomBalance.Sub(tokenAmount).Sub(standardFees)
-				decremented := afterSenderUAtomBalance.Sub(expectedAfterUAtomBalance).IsLT(standardFees)
+				decremented := beforeSenderUAtomBalance.Sub(tokenAmount).Sub(afterSenderUAtomBalance).IsLT(standardFees)
+
 				incremented := beforeRecipientUAtomBalance.Add(tokenAmount).IsEqual(afterRecipientUAtomBalance)
 
 				return decremented && incremented
@@ -428,8 +428,7 @@ func (s *IntegrationTestSuite) testFailedMultihopIBCTokenTransfer() {
 
 				// check that the senders balance was reduced by tokenAmount plus at least some amount of standardFees,
 				// since we can't know in advance how much fees will be charged by the feemarket
-				expectedAfterUAtomBalance := beforeSenderUAtomBalance.Sub(tokenAmount).Sub(standardFees)
-				returned := afterSenderUAtomBalance.Sub(expectedAfterUAtomBalance).IsLT(standardFees)
+				returned := beforeSenderUAtomBalance.Sub(tokenAmount).Sub(afterSenderUAtomBalance).IsLT(standardFees)
 
 				beforeSenderUAtomBalance = afterSenderUAtomBalance
 

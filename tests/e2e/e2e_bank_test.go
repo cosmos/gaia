@@ -66,8 +66,7 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 
 				// check that Alice's balance was reduced by tokenAmount plus at least some amount of standardFees,
 				// since we can't know in advance how much fees will be charged by the feemarket
-				expectedAfterAliceUAtomBalance := beforeAliceUAtomBalance.Sub(tokenAmount).Sub(standardFees)
-				decremented := afterAliceUAtomBalance.Sub(expectedAfterAliceUAtomBalance).IsLT(standardFees)
+				decremented := beforeAliceUAtomBalance.Sub(tokenAmount).Sub(afterAliceUAtomBalance).IsLT(standardFees)
 
 				incremented := beforeBobUAtomBalance.Add(tokenAmount).IsEqual(afterBobUAtomBalance)
 
@@ -96,8 +95,7 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 
 				// check that Alice's balance was reduced by 2*tokenAmount plus at least some amount of standardFees,
 				// since we can't know in advance how much fees will be charged by the feemarket
-				expectedAfterAliceUAtomBalance := beforeAliceUAtomBalance.Sub(tokenAmount).Sub(tokenAmount).Sub(standardFees)
-				decremented := afterAliceUAtomBalance.Sub(expectedAfterAliceUAtomBalance).IsLT(standardFees)
+				decremented := beforeAliceUAtomBalance.Sub(tokenAmount).Sub(tokenAmount).Sub(afterAliceUAtomBalance).IsLT(standardFees)
 
 				incremented := beforeBobUAtomBalance.Add(tokenAmount).IsEqual(afterBobUAtomBalance) &&
 					beforeCharlieUAtomBalance.Add(tokenAmount).IsEqual(afterCharlieUAtomBalance)

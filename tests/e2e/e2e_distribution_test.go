@@ -79,7 +79,8 @@ func (s *IntegrationTestSuite) fundCommunityPool() {
 
 			// check if the balance is increased by the tokenAmount and at least some portion of
 			// the fees (some amount of the fees will be given to the proposer)
-			return beforeDistUatomBalance.Add(tokenAmount).IsLT(afterDistUatomBalance)
+			return beforeDistUatomBalance.Add(tokenAmount).IsLT(afterDistUatomBalance) &&
+				afterDistUatomBalance.IsLT(beforeDistUatomBalance.Add(tokenAmount).Add(standardFees))
 		},
 		15*time.Second,
 		5*time.Second,

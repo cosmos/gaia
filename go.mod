@@ -228,7 +228,7 @@ replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
 	// Use special SDK v0.47.x release with support for both ICS and LSM
-	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.47.14-ics-lsm
+	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.47.15-ics-lsm
 
 	github.com/cosmos/gogoproto => github.com/cosmos/gogoproto v1.4.10
 

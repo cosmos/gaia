@@ -353,10 +353,7 @@ func (s *IntegrationTestSuite) testMultihopIBCTokenTransfer() {
 				afterRecipientUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, recipient, uatomDenom)
 				s.Require().NoError(err)
 
-				// check that the senders balance was reduced by tokenAmount plus at least some amount of standardFees,
-				// since we can't know in advance how much fees will be charged by the feemarket
-				decremented := beforeSenderUAtomBalance.Sub(tokenAmount).Sub(afterSenderUAtomBalance).IsLT(standardFees)
-
+				decremented := beforeSenderUAtomBalance.Sub(tokenAmount).Sub(standardFees).IsEqual(afterSenderUAtomBalance)
 				incremented := beforeRecipientUAtomBalance.Add(tokenAmount).IsEqual(afterRecipientUAtomBalance)
 
 				return decremented && incremented
@@ -426,11 +423,7 @@ func (s *IntegrationTestSuite) testFailedMultihopIBCTokenTransfer() {
 				afterSenderUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
 				s.Require().NoError(err)
 
-				// check that the senders balance was reduced by tokenAmount plus at least some amount of standardFees,
-				// since we can't know in advance how much fees will be charged by the feemarket
-				returned := beforeSenderUAtomBalance.Sub(tokenAmount).Sub(afterSenderUAtomBalance).IsLT(standardFees)
-
-				beforeSenderUAtomBalance = afterSenderUAtomBalance
+				returned := beforeSenderUAtomBalance.Sub(tokenAmount).Sub(standardFees).IsEqual(afterSenderUAtomBalance)
 
 				return returned
 			},
@@ -447,7 +440,7 @@ func (s *IntegrationTestSuite) testFailedMultihopIBCTokenTransfer() {
 				afterSenderUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
 				s.Require().NoError(err)
 
-				returned := afterSenderUAtomBalance.Equal(beforeSenderUAtomBalance.Add(tokenAmount))
+				returned := beforeSenderUAtomBalance.Sub(standardFees).IsEqual(afterSenderUAtomBalance)
 
 				return returned
 			},

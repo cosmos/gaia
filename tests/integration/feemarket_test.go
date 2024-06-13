@@ -43,6 +43,7 @@ func (suite *FeeMarketTestSuite) SetupTest() {
 	chain, ok := suite.coordinator.Chains[ibctesting.GetChainID(1)]
 	suite.Require().True(ok, "chain not found")
 	suite.chain = chain
+	suite.chain.CurrentHeader.ProposerAddress = sdk.ConsAddress(suite.chain.Vals.Validators[0].Address)
 
 	app, ok := chain.App.(*gaiaApp.GaiaApp)
 	suite.Require().True(ok, "expected App to be GaiaApp")
@@ -50,20 +51,20 @@ func (suite *FeeMarketTestSuite) SetupTest() {
 }
 
 func (suite *FeeMarketTestSuite) TestBaseFeeAdjustment() {
-	// BaseFee is initially set to DefaultMinBaseFee
+	// BaseFee is initially set to DefaultMinBaseGasPrice
 	ctx := suite.chain.GetContext()
 
-	baseFee, err := suite.app.FeeMarketKeeper.GetBaseFee(ctx)
+	baseFee, err := suite.app.FeeMarketKeeper.GetBaseGasPrice(ctx)
 	suite.Require().NoError(err)
-	suite.Require().Equal(feemarkettypes.DefaultMinBaseFee, baseFee)
+	suite.Require().Equal(feemarkettypes.DefaultMinBaseGasPrice, baseFee)
 
-	// BaseFee can not be lower than DefaultMinBaseFee, even after N empty blocks
+	// BaseFee can not be lower than DefaultMinBaseGasPrice, even after N empty blocks
 	suite.coordinator.CommitNBlocks(suite.chain, 10)
 
 	ctx = suite.chain.GetContext()
-	baseFee, err = suite.app.FeeMarketKeeper.GetBaseFee(ctx)
+	baseFee, err = suite.app.FeeMarketKeeper.GetBaseGasPrice(ctx)
 	suite.Require().NoError(err)
-	suite.Require().Equal(feemarkettypes.DefaultMinBaseFee, baseFee)
+	suite.Require().Equal(feemarkettypes.DefaultMinBaseGasPrice, baseFee)
 
 	// Send a large transaction to consume a lot of gas
 	sender := suite.chain.SenderAccounts[0].SenderAccount.GetAddress()
@@ -81,15 +82,15 @@ func (suite *FeeMarketTestSuite) TestBaseFeeAdjustment() {
 
 	// Check that BaseFee has increased due to the large gas usage
 	ctx = suite.chain.GetContext()
-	baseFee, err = suite.app.FeeMarketKeeper.GetBaseFee(ctx)
+	baseFee, err = suite.app.FeeMarketKeeper.GetBaseGasPrice(ctx)
 	suite.Require().NoError(err)
-	suite.Require().True(baseFee.GT(feemarkettypes.DefaultMinBaseFee))
+	suite.Require().True(baseFee.GT(feemarkettypes.DefaultMinBaseGasPrice))
 
-	// BaseFee should drop to DefaultMinBaseFee after N empty blocks
+	// BaseFee should drop to DefaultMinBaseGasPrice after N empty blocks
 	suite.coordinator.CommitNBlocks(suite.chain, 10)
 
 	ctx = suite.chain.GetContext()
-	baseFee, err = suite.app.FeeMarketKeeper.GetBaseFee(ctx)
+	baseFee, err = suite.app.FeeMarketKeeper.GetBaseGasPrice(ctx)
 	suite.Require().NoError(err)
-	suite.Require().Equal(feemarkettypes.DefaultMinBaseFee, baseFee)
+	suite.Require().Equal(feemarkettypes.DefaultMinBaseGasPrice, baseFee)
 }

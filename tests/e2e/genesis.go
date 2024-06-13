@@ -161,10 +161,10 @@ func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, ba
 	appState[icatypes.ModuleName] = icaGenesisStateBz
 
 	feemarketState := feemarkettypes.GetGenesisStateFromAppState(cdc, appState)
-	feemarketState.Params.MinBaseFee = sdk.MustNewDecFromStr(basefee)
+	feemarketState.Params.MinBaseGasPrice = sdk.MustNewDecFromStr(basefee)
 	feemarketState.Params.FeeDenom = denom
 	feemarketState.Params.DistributeFees = true
-	feemarketState.State.BaseFee = sdk.MustNewDecFromStr(basefee)
+	feemarketState.State.BaseGasPrice = sdk.MustNewDecFromStr(basefee)
 	feemarketStateBz, err := cdc.MarshalJSON(&feemarketState)
 	if err != nil {
 		return fmt.Errorf("failed to marshal feemarket genesis state: %w", err)

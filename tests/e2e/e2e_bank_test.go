@@ -64,10 +64,7 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 				afterBobUAtomBalance, err = getSpecificBalance(chainEndpoint, bob.String(), uatomDenom)
 				s.Require().NoError(err)
 
-				// check that Alice's balance was reduced by tokenAmount plus at least some amount of standardFees,
-				// since we can't know in advance how much fees will be charged by the feemarket
-				decremented := beforeAliceUAtomBalance.Sub(tokenAmount).Sub(afterAliceUAtomBalance).IsLT(standardFees)
-
+				decremented := beforeAliceUAtomBalance.Sub(tokenAmount).Sub(standardFees).IsEqual(afterAliceUAtomBalance)
 				incremented := beforeBobUAtomBalance.Add(tokenAmount).IsEqual(afterBobUAtomBalance)
 
 				return decremented && incremented
@@ -93,10 +90,7 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 				afterCharlieUAtomBalance, err = getSpecificBalance(chainEndpoint, charlie.String(), uatomDenom)
 				s.Require().NoError(err)
 
-				// check that Alice's balance was reduced by 2*tokenAmount plus at least some amount of standardFees,
-				// since we can't know in advance how much fees will be charged by the feemarket
-				decremented := beforeAliceUAtomBalance.Sub(tokenAmount).Sub(tokenAmount).Sub(afterAliceUAtomBalance).IsLT(standardFees)
-
+				decremented := beforeAliceUAtomBalance.Sub(tokenAmount).Sub(tokenAmount).Sub(standardFees).IsEqual(afterAliceUAtomBalance)
 				incremented := beforeBobUAtomBalance.Add(tokenAmount).IsEqual(afterBobUAtomBalance) &&
 					beforeCharlieUAtomBalance.Add(tokenAmount).IsEqual(afterCharlieUAtomBalance)
 

@@ -1,6 +1,7 @@
 package keepers
 
 import (
+	"fmt"
 	"os"
 
 	ratelimit "github.com/Stride-Labs/ibc-rate-limiting/ratelimit"
@@ -283,6 +284,7 @@ func NewAppKeeper(
 		appCodec,
 		appKeepers.keys[feemarkettypes.StoreKey],
 		appKeepers.AccountKeeper,
+		&DefaultFeemarketDenomResolver{},
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
@@ -525,4 +527,18 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(providertypes.ModuleName)
 
 	return paramsKeeper
+}
+
+type DefaultFeemarketDenomResolver struct{}
+
+func (r *DefaultFeemarketDenomResolver) ConvertToDenom(_ sdk.Context, coin sdk.DecCoin, denom string) (sdk.DecCoin, error) {
+	if coin.Denom == denom {
+		return coin, nil
+	}
+
+	return sdk.DecCoin{}, fmt.Errorf("error resolving denom")
+}
+
+func (r *DefaultFeemarketDenomResolver) ExtraDenoms(_ sdk.Context) ([]string, error) {
+	return []string{}, nil
 }

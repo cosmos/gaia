@@ -27,8 +27,8 @@ type HandlerOptions struct {
 	Codec           codec.BinaryCodec
 	IBCkeeper       *ibckeeper.Keeper
 	StakingKeeper   *stakingkeeper.Keeper
-	TxFeeChecker    ante.TxFeeChecker
 	FeeMarketKeeper *feemarketkeeper.Keeper
+	TxFeeChecker    ante.TxFeeChecker
 }
 
 func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
@@ -74,7 +74,14 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 	}
 
 	if UseFeeMarketDecorator {
-		anteDecorators = append(anteDecorators, feemarketante.NewFeeMarketCheckDecorator(opts.FeeMarketKeeper))
+		anteDecorators = append(anteDecorators,
+			feemarketante.NewFeeMarketCheckDecorator(
+				opts.FeeMarketKeeper,
+				ante.NewDeductFeeDecorator(
+					opts.AccountKeeper,
+					opts.BankKeeper,
+					opts.FeegrantKeeper,
+					opts.TxFeeChecker)))
 	}
 
 	return sdk.ChainAnteDecorators(anteDecorators...), nil

@@ -54,7 +54,7 @@ key_name = 'rly01-gaia-a'
 store_prefix = 'ibc'
 max_gas = 6000000
 gas_price = { price = 0.005, denom = 'uatom' }
-gas_multiplier = 1.2
+gas_multiplier = 2
 clock_drift = '1m' # to accomdate docker containers
 trusting_period = '14days'
 trust_threshold = { numerator = '1', denominator = '3' }
@@ -70,7 +70,7 @@ key_name = 'rly01-gaia-b'
 store_prefix = 'ibc'
 max_gas =  6000000
 gas_price = { price = 0.005, denom = 'uatom' }
-gas_multiplier = 1.2
+gas_multiplier = 2
 clock_drift = '1m' # to accomdate docker containers
 trusting_period = '14days'
 trust_threshold = { numerator = '1', denominator = '3' }
@@ -121,7 +121,7 @@ key_name = 'rly01-gaia-a'
 store_prefix = 'ibc'
 max_gas = 6000000
 gas_price = { price = 0, denom = 'uatom' }
-gas_multiplier = 1.2
+gas_multiplier = 2
 clock_drift = '1m' # to accommodate docker containers
 trusting_period = '14days'
 trust_threshold = { numerator = '1', denominator = '3' }
@@ -137,7 +137,7 @@ key_name = 'rly01-gaia-b'
 store_prefix = 'ibc'
 max_gas =  6000000
 gas_price = { price = 0, denom = 'uatom' }
-gas_multiplier = 1.2
+gas_multiplier = 2
 clock_drift = '1m' # to accommodate docker containers
 trusting_period = '14days'
 trust_threshold = { numerator = '1', denominator = '3' }

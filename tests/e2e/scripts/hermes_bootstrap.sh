@@ -125,6 +125,8 @@ gas_multiplier = 2
 clock_drift = '1m' # to accommodate docker containers
 trusting_period = '14days'
 trust_threshold = { numerator = '1', denominator = '3' }
+dynamic_gas_price = { enabled = true, multiplier = 1.3, max = 0.05 }
+
 
 [[chains]]
 id = '$GAIA_B_E2E_CHAIN_ID'
@@ -141,6 +143,7 @@ gas_multiplier = 2
 clock_drift = '1m' # to accommodate docker containers
 trusting_period = '14days'
 trust_threshold = { numerator = '1', denominator = '3' }
+dynamic_gas_price = { enabled = true, multiplier = 1.3, max = 0.05 }
 EOF
 
 

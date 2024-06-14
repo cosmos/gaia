@@ -15,6 +15,7 @@ var (
 	runRestInterfacesTest         = true
 	runLsmTest                    = true
 	runRateLimitTest              = true
+	runTxExtensionsTest           = true
 )
 
 func (s *IntegrationTestSuite) TestRestInterfaces() {
@@ -29,8 +30,6 @@ func (s *IntegrationTestSuite) TestBank() {
 		s.T().Skip()
 	}
 	s.testBankTokenTransfer()
-	s.bankSendWithNonCriticalExtensionOptions()
-	s.failedBankSendWithNonCriticalExtensionOptions()
 }
 
 func (s *IntegrationTestSuite) TestEncode() {
@@ -59,7 +58,10 @@ func (s *IntegrationTestSuite) TestGov() {
 	if !runGovTest {
 		s.T().Skip()
 	}
+	// stops the chain after halt height
+	// resets the testing environment
 	s.GovSoftwareUpgrade()
+
 	s.GovCancelSoftwareUpgrade()
 	s.GovCommunityPoolSpend()
 	s.AddRemoveConsumerChain()
@@ -122,4 +124,12 @@ func (s *IntegrationTestSuite) TestRateLimit() {
 	s.testIBCTransfer(false)
 	s.testResetRateLimit()
 	s.testRemoveRateLimit()
+}
+
+func (s *IntegrationTestSuite) TestTxExtensions() {
+	if !runTxExtensionsTest {
+		s.T().Skip()
+	}
+	s.bankSendWithNonCriticalExtensionOptions()
+	s.failedBankSendWithNonCriticalExtensionOptions()
 }

@@ -214,11 +214,16 @@ func (s *IntegrationTestSuite) execFeeGrant(c *chain, valIdx int, granter, grant
 		"grant",
 		granter,
 		grantee,
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--%s=%s", flags.FlagGas, "300000"), // default 200000 isn't enough
+		"--keyring-backend=test",
+		"--output=json",
 		"-y",
 	}
 	for flag, value := range opts {
-		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
+		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%s", flag, value))
 	}
+	s.T().Logf("running feegrant on chain: %s - Tx %v", c.id, gaiaCommand)
 
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
 }
@@ -436,6 +441,7 @@ func (s *IntegrationTestSuite) execDelegate(c *chain, valIdx int, amount, valOpe
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
 		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, delegateFees),
+		fmt.Sprintf("--%s=%s", flags.FlagGas, "250000"), // default 200_000 is not enough
 		"--keyring-backend=test",
 		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
 		"--output=json",

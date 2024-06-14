@@ -107,7 +107,7 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 // the tx is signed and broadcast using gaiad tx sign and broadcast commands
 func (s *IntegrationTestSuite) bankSendWithNonCriticalExtensionOptions() {
 	s.Run("transfer_with_non_critical_extension_options", func() {
-		c := s.chainA
+		c := s.chainB
 
 		submitterAccount := c.genesisAccounts[1]
 		submitterAddress, err := submitterAccount.keyInfo.GetAddress()
@@ -176,7 +176,7 @@ func (s *IntegrationTestSuite) bankSendWithNonCriticalExtensionOptions() {
 // the tx should always fail to decode the extension options since no concrete type is registered for the provided extension field
 func (s *IntegrationTestSuite) failedBankSendWithNonCriticalExtensionOptions() {
 	s.Run("fail_encoding_invalid_non_critical_extension_options", func() {
-		c := s.chainA
+		c := s.chainB
 
 		submitterAccount := c.genesisAccounts[1]
 		submitterAddress, err := submitterAccount.keyInfo.GetAddress()

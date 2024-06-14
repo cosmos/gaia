@@ -79,8 +79,7 @@ ator-setup).
 
 Have questions, comments, or new ideas? Participate in the Cosmos community through one of the following channels.
 
-* [Cosmos Community Discord](https://discord.gg/cosmosnetwork)
-* [Cosmos Community Telegram](https://t.me/cosmosproject)
+* [Discord](https://discord.gg/interchain)
 * [Cosmos Forum](https://forum.cosmos.network)
 * [Cosmos on Reddit](https://reddit.com/r/cosmosnetwork)
 

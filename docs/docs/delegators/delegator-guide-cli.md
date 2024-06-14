@@ -7,35 +7,19 @@ This document contains all the necessary information for delegators to interact 
 
 It also contains instructions on how to manage accounts, restore accounts from the fundraiser and use a ledger nano device.
 
-:::warning
-**Very Important**: Please assure that you follow the steps described hereinafter
-carefully, as negligence in this significant process could lead to an indefinite
-loss of your Atoms. Therefore, read through the following instructions in their
-entirety prior to proceeding and reach out to us in case you need support.
-
-Please also note that you are about to interact with the Cosmos Hub, a
-blockchain technology containing highly experimental software. While the
-blockchain has been developed in accordance to the state of the art and audited
-with utmost care, we can nevertheless expect to have issues, updates and bugs.
-Furthermore, interaction with blockchain technology requires
-advanced technical skills and always entails risks that are outside our control.
-By using the software, you confirm that you understand the inherent risks
-associated with cryptographic software (see also risk section of the
-[Interchain Cosmos Contribution terms](https://github.com/cosmos/cosmos/blob/master/fundraiser/Interchain%20Cosmos%20Contribution%20Terms%20-%20FINAL.pdf)) and that the Interchain Foundation and/or
-the Tendermint Team may not be held liable for potential damages arising out of the use of the
-software. Any use of this open source software released under the Apache 2.0 license is
-done at your own risk and on a "AS IS" basis, without warranties or conditions
-of any kind.
-:::
-
 Please exercise extreme caution!
 
 ## Table of Contents
 
+- [Table of Contents](#table-of-contents)
 - [Installing `gaiad`](#installing-gaiad)
 - [Cosmos Accounts](#cosmos-accounts)
   - [Restoring an Account from the Fundraiser](#restoring-an-account-from-the-fundraiser)
+    - [On a Ledger Device](#on-a-ledger-device)
+    - [On a Computer](#on-a-computer)
   - [Creating an Account](#creating-an-account)
+    - [Using a Ledger Device](#using-a-ledger-device)
+    - [Using a Computer](#using-a-computer)
 - [Accessing the Cosmos Hub Network](#accessing-the-cosmos-hub-network)
   - [Running Your Own Full-Node](#running-your-own-full-node)
   - [Connecting to a Remote Full-Node](#connecting-to-a-remote-full-node)
@@ -43,9 +27,12 @@ Please exercise extreme caution!
 - [Querying the State](#querying-the-state)
 - [Sending Transactions](#sending-transactions)
   - [A Note on Gas and Fees](#a-note-on-gas-and-fees)
+  - [Sending Tokens](#sending-tokens)
   - [Bonding Atoms and Withdrawing Rewards](#bonding-atoms-and-withdrawing-rewards)
-  - [Participating in Governance](#participating-in-governance)
-  - [Signing Transactions from an Offline Computer](#signing-transactions-from-an-offline-computer)
+- [Participating in Governance](#participating-in-governance)
+  - [Primer on Governance](#primer-on-governance)
+  - [In Practice](#in-practice)
+  - [Signing Transactions From an Offline Computer](#signing-transactions-from-an-offline-computer)
 
 ## Installing `gaiad`
 

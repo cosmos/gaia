@@ -76,6 +76,7 @@ func (s *IntegrationTestSuite) hermesClearPacket(configPath, chainID, portID, ch
 	}
 
 	if _, err := s.executeHermesCommand(ctx, hermesCmd); err != nil {
+		s.T().Logf("failed to clear packets: %s", err)
 		return false
 	}
 
@@ -428,24 +429,22 @@ func (s *IntegrationTestSuite) testFailedMultihopIBCTokenTransfer() {
 				return returned
 			},
 			1*time.Minute,
-			1*time.Second,
+			5*time.Second,
 		)
-
-		pass := s.hermesClearPacket(hermesConfigWithGasPrices, s.chainA.id, transferPort, transferChannel)
-		s.Require().True(pass)
 
 		// since the forward receiving account is invalid, it should be refunded to the original sender (minus the original fee)
 		s.Require().Eventually(
 			func() bool {
+				pass := s.hermesClearPacket(hermesConfigWithGasPrices, s.chainA.id, transferPort, transferChannel)
+				s.Require().True(pass)
+
 				afterSenderUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
 				s.Require().NoError(err)
-
 				returned := beforeSenderUAtomBalance.Sub(standardFees).IsEqual(afterSenderUAtomBalance)
-
 				return returned
 			},
 			5*time.Minute,
-			5*time.Second,
+			10*time.Second,
 		)
 	})
 }

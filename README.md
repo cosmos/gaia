@@ -31,9 +31,9 @@ For an overview of the Interchain Stack (the Cosmos SDK, IBC, etc.), as well as 
 
 **For node operators:** If you're interested in running a node on the current Cosmos Hub, check out the docs to [Join the Cosmos Hub Mainnet](https://hub.cosmos.network/main/hub-tutorials/join-mainnet).
 
-**For validators:** If you want to participate and help secure the Cosmos Hub and its [consumer chains](https://hub.cosmos.network/main/interchain-security), check out becoming a validator. Information on what a validator is and how to participate as one can be found at the [Validator FAQ](https://hub.cosmos.network/main/validators/validator-faq). If you're running a validator node on the Cosmos Hub, reach out to a Janitor on the [Cosmos Developers Discord](https://discord.gg/interchain) to join the `#cosmos-hub-validators-verified` channel.
+**For validators:** If you want to participate and help secure the Cosmos Hub and its [consumer chains](https://hub.cosmos.network/main/interchain-security), consider becoming a validator. Information on what a validator is and how to participate as one can be found at the [Validator FAQ](https://hub.cosmos.network/main/validators/validator-faq). If you're running a validator node on the Cosmos Hub, reach out to a Janitor on the [Cosmos Developers Discord](https://discord.gg/interchain) to join the `#cosmos-hub-validators-verified` channel.
 
-**For delegators:** If you still want to participate on the Cosmos Hub, check out becoming a delegator. Information on what a delegator is and how to participate as one can be found at the [Delegator FAQ](https://hub.cosmos.network/main/delegators/delegator-faq).
+**For delegators:** If you want to secure the Cosmos Hub without running a validator, you can consider becoming a delegator. Information on what a delegator is and how to participate as one can be found at the [Delegator FAQ](https://hub.cosmos.network/main/delegators/delegator-faq).
 
 ## Testnet
 
@@ -52,6 +52,6 @@ Check out [CONTRIBUTING.md](CONTRIBUTING.md) for our guidelines & policies for h
 
 ## Talk to us
 
-Follow the Cosmos Hub team's activities on the [Cosmos Hub Twitter](https://twitter.com/cosmoshub) account. 
+Follow the Cosmos Hub team's activities on the [Cosmos Hub Twitter](https://x.com/cosmoshub) account. 
 
 Join the conversation on the [Cosmos Hub Forum](https://forum.cosmos.network) and on [Discord](https://discord.gg/interchain).

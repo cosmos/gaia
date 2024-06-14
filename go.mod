@@ -21,6 +21,7 @@ require (
 	github.com/google/gofuzz v1.2.0
 	github.com/gorilla/mux v1.8.1
 	github.com/ory/dockertest/v3 v3.10.0
+	github.com/prometheus/client_golang v1.16.0
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/cast v1.6.0
 	github.com/spf13/cobra v1.8.0
@@ -169,7 +170,6 @@ require (
 	github.com/petermattis/goid v0.0.0-20230317030725-371a4b8eda08 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	github.com/prometheus/client_golang v1.16.0 // indirect
 	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/common v0.42.0 // indirect
 	github.com/prometheus/procfs v0.10.1 // indirect

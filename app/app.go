@@ -244,7 +244,6 @@ func NewGaiaApp(
 			TxFeeChecker:      noOpTxFeeChecker,
 			TxCounterStoreKey: app.AppKeepers.GetKey(wasmtypes.StoreKey),
 			WasmConfig:        &wasmConfig,
-			WasmKeeper:        app.WasmKeeper,
 		},
 	)
 	if err != nil {

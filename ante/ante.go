@@ -32,7 +32,6 @@ type HandlerOptions struct {
 
 	TxCounterStoreKey storetypes.StoreKey
 	WasmConfig        *wasmtypes.WasmConfig
-	WasmKeeper        wasmkeeper.Keeper
 }
 
 func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {

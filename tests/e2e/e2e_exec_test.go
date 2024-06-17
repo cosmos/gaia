@@ -814,10 +814,9 @@ func (s *IntegrationTestSuite) expectTxSubmitError(expectErrString string) func(
 	return func(stdOut []byte, stdErr []byte) bool {
 		var txResp sdk.TxResponse
 		if err := cdc.UnmarshalJSON(stdOut, &txResp); err != nil {
-			fmt.Println("## have ERR", err)
 			return false
 		}
-		if strings.Contains(txResp.String(), expectErrString) || txResp.Code == 0 {
+		if strings.Contains(txResp.String(), expectErrString) {
 			return true
 		}
 		return false

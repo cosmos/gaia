@@ -320,7 +320,7 @@ trust_hash = "3D8F12EA302AEDA66E80939F7FC785206692F8B6EE6F727F1655F1AFB6A873A5"
 trust_period = "168h0m0s"
 ```
 
-Start Gaia to begin state sync. It may take take some time for the node to acquire a snapshot, but the command and output should look similar to the following:
+Start Gaia to begin state sync. It may take some time for the node to acquire a snapshot, but the command and output should look similar to the following:
 
 ```bash
 $ gaiad start --x-crisis-skip-assert-invariants

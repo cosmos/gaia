@@ -145,7 +145,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	jailedValMnemonic, err := createMnemonic()
 	s.Require().NoError(err)
 
-	// The boostrapping phase is as follows:
+	// The bootstrapping phase is as follows:
 	//
 	// 1. Initialize Gaia validator nodes.
 	// 2. Create and initialize Gaia validator genesis files (both chains)

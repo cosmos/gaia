@@ -61,17 +61,25 @@ jobs:
         with:
           go-version: 1.21.x
       - uses: actions/checkout@v4
-      - uses: technote-space/get-diff-action@v6.0.1
+      - uses: technote-space/get-diff-action@v6.1.2
+        id: git_diff
         with:
           PATTERNS: |
-            **/**.go
+            **/*.go
             go.mod
             go.sum
+            **/go.mod
+            **/go.sum
+            **/Makefile
+            Makefile
       - name: Build Gaia Docker Image
+        if: env.GIT_DIFF
         run: make docker-build-debug
       - name: Build Hermes Docker Image
+        if: env.GIT_DIFF
         run: make docker-build-hermes
       - name: Test E2E
+        if: env.GIT_DIFF
         run: make test-e2e
 
   repo-analysis:
@@ -107,12 +115,17 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: 1.21.x
-      - uses: technote-space/get-diff-action@v6.0.1
+      - uses: technote-space/get-diff-action@v6.1.2
+        id: git_diff
         with:
           PATTERNS: |
-            **/**.go
+            **/*.go
             go.mod
             go.sum
+            **/go.mod
+            **/go.sum
+            **/Makefile
+            Makefile
       - name: Install Gaia
         run: |
           make build
@@ -133,12 +146,17 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: technote-space/get-diff-action@v6.0.1
+      - uses: technote-space/get-diff-action@v6.1.2
+        id: git_diff
         with:
           PATTERNS: |
-            **/**.go
+            **/*.go
             go.mod
             go.sum
+            **/go.mod
+            **/go.sum
+            **/Makefile
+            Makefile
       - uses: actions/setup-go@v5
         with:
           go-version: 1.21.x

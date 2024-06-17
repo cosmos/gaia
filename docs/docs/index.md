@@ -3,14 +3,12 @@ title: Introduction
 order: 1
 sidebar_position: 1
 ---
-import { currentParams } from '@site/docs/governance/current-parameters.js'; 
-import { PlainVar } from '@site/src/js/Var';
 
 :::tip
-### **v16 Upgrade**
-Cosmos Hub will be upgraded to [v16](https://github.com/cosmos/gaia/releases/tag/v16.0.0) at block height: **[20,440,500](https://www.mintscan.io/cosmos/blocks/20440500)**
+### **v17 Upgrade**
+Cosmos Hub will be upgraded to [v17.1.0](https://github.com/cosmos/gaia/releases/tag/v17.1.0) at block height: **[20,739,800](https://www.mintscan.io/cosmos/blocks/20739800)**
 
-To upgrade from v15.2.0 check the [**upgrade guide**](./migration/latest.md)
+To upgrade from v16.0.0 check the [**upgrade guide**](https://github.com/cosmos/gaia/blob/release/v17.1.x/UPGRADING.md)
 :::
 
 ![Welcome to the Cosmos Hub](images/cosmos-hub-image.jpg)
@@ -21,14 +19,14 @@ The Cosmos Hub is the first of [thousands of interconnected blockchains](https:/
 
 ## The ATOM
 
-Do you have ATOM tokens? With ATOM, you have the superpower to contribute to the security and governance of the Cosmos Hub. Delegate your ATOM to one or more of the <PlainVar children={currentParams.staking.MaxValidators} /> validators on the Cosmos Hub blockchain to earn more ATOM through Proof-of-Stake. You can also vote with your ATOM to influence the future of the Cosmos Hub through on-chain governance proposals.
+Do you have ATOM tokens? With ATOM, you have the superpower to contribute to the security and governance of the Cosmos Hub. Delegate your ATOM to one or more of the validators on the Cosmos Hub blockchain to earn more ATOM through Proof-of-Stake. You can also vote with your ATOM to influence the future of the Cosmos Hub through on-chain governance proposals.
 
 Learn more about [being a delegator](./delegators/delegator-faq.md), learn about [the security risks](./delegators/delegator-security.md), and start participating with one of the following wallets.
 
 ## Cosmos Hub Wallets
 
 :::warning
-Do your own research and take precautions in regards to wallet security. Neither Tendermint Inc nor the Interchain Foundation is liable if you lose your funds using these third party wallets.
+Do your own research and take precautions in regards to wallet security. Maintaining proper security practices is solely your responsibility when using third party wallets.
 :::
 
 These community-maintained web and mobile wallets allow you to store & transfer ATOM, delegate ATOM to validators, and vote on on-chain governance proposals. Note that we do not endorse any of the wallets, they are listed for your convenience.
@@ -74,14 +72,14 @@ These block explorers allow you to search, view and analyze Cosmos Hub data&mdas
 ## Running a full-node on the Cosmos Hub Mainnet
 
 In order to run a full-node for the Cosmos Hub mainnet, you must first [install `gaiad`](./getting-started/installation). Then, follow [the guide](./hub-tutorials/join-mainnet).
-If you are looking to run a validator node, follow the [validator setup guide](./validators/validator-setup).
+If you are looking to run a validator node, follow the [validator setup guide](./validators/valid
+ator-setup).
 
 ## Join the Community
 
 Have questions, comments, or new ideas? Participate in the Cosmos community through one of the following channels.
 
-* [Cosmos Community Discord](https://discord.gg/cosmosnetwork)
-* [Cosmos Community Telegram](https://t.me/cosmosproject)
+* [Discord](https://discord.gg/interchain)
 * [Cosmos Forum](https://forum.cosmos.network)
 * [Cosmos on Reddit](https://reddit.com/r/cosmosnetwork)
 

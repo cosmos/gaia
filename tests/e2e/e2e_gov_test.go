@@ -235,6 +235,22 @@ func (s *IntegrationTestSuite) submitGovCommand(chainAAPIEndpoint, sender string
 	})
 }
 
+func (s *IntegrationTestSuite) submitGovCommandExpectingFailure(chainAAPIEndpoint, sender string, proposalID int, govCommand string, proposalFlags []string) {
+	s.Run(fmt.Sprintf("Running tx gov %s", govCommand), func() {
+		s.runGovExec(s.chainA, 0, sender, govCommand, proposalFlags, standardFees.String())
+
+		s.Require().Eventually(
+			func() bool {
+				_, err := queryGovProposal(chainAAPIEndpoint, proposalID)
+				s.Require().Error(err)
+				return err != nil
+			},
+			15*time.Second,
+			5*time.Second,
+		)
+	})
+}
+
 // testSetBlocksPerEpoch tests that we can change `BlocksPerEpoch` through a governance proposal
 func (s *IntegrationTestSuite) testSetBlocksPerEpoch() {
 	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
@@ -281,4 +297,37 @@ func (s *IntegrationTestSuite) testSetBlocksPerEpoch() {
 		15*time.Second,
 		5*time.Second,
 	)
+}
+
+// testFailExpediteProposal tests that expediting a ParamChange proposal fails.
+func (s *IntegrationTestSuite) testFailExpediteProposal() {
+	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+
+	defaultBlocksPerEpoch := providertypes.DefaultParams().BlocksPerEpoch
+
+	// assert that initially, the actual blocks per epoch are the default blocks per epoch
+	s.Require().Eventually(
+		func() bool {
+			blocksPerEpoch, err := queryBlocksPerEpoch(chainEndpoint)
+			s.T().Logf("After gov new global fee proposal: %d", gas)
+			s.Require().NoError(err)
+
+			s.Require().Equal(blocksPerEpoch, defaultBlocksPerEpoch)
+			return true
+		},
+		15*time.Second,
+		5*time.Second,
+	)
+
+	// attempt to change but nothing should happen -> proposal fails at ante handler
+	expectedBlocksPerEpoch := defaultBlocksPerEpoch + 1
+	s.writeFailingExpeditedProposal(s.chainA, expectedBlocksPerEpoch)
+
+	validatorAAddr, _ := s.chainA.validators[0].keyInfo.GetAddress()
+	proposalCounter++
+	submitGovFlags := []string{configFile(proposalBlocksPerEpochFilename)}
+
+	s.T().Logf("Proposal number: %d", proposalCounter)
+	s.T().Logf("Submitting, deposit and vote Gov Proposal: Change BlocksPerEpoch parameter [ EXPEDITED - MUST FAIL ]")
+	s.submitGovCommandExpectingFailure(chainEndpoint, validatorAAddr.String(), proposalCounter, paramtypes.ProposalTypeChange, submitGovFlags)
 }

@@ -72,6 +72,7 @@ const (
 	proposalCommunitySpendFilename = "proposal_community_spend.json"
 	proposalLSMParamUpdateFilename = "proposal_lsm_param_update.json"
 	proposalBlocksPerEpochFilename = "proposal_blocks_per_epoch.json"
+	proposalFailExpedited          = "proposal_fail_expedited.json"
 
 	// proposalAddConsumerChainFilename    = "proposal_add_consumer.json"
 	// proposalRemoveConsumerChainFilename = "proposal_remove_consumer.json"
@@ -786,7 +787,8 @@ func (s *IntegrationTestSuite) writeGovCommunitySpendProposal(c *chain, amount s
 		"proposer": "Proposing validator address",
 		"metadata": "Community Pool Spend",
 		"title": "Fund Team!",
-		"summary": "summary"
+		"summary": "summary",
+		"expedited": false
 	}
 	`
 	propMsgBody := fmt.Sprintf(template, govModuleAddress, recipient, amount.Denom, amount.Amount.String())
@@ -831,7 +833,8 @@ func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain, 
 		"metadata": "ipfs://CID",
 		"deposit": "100uatom",
 		"title": "Update LSM Params",
-		"summary": "e2e-test updating LSM staking params"
+		"summary": "e2e-test updating LSM staking params",
+		"expedited": false
 	   }`
 	propMsgBody := fmt.Sprintf(template,
 		govAuthority,
@@ -875,7 +878,46 @@ func (s *IntegrationTestSuite) writeGovParamChangeProposalBlocksPerEpoch(c *chai
 		"proposer": "sample proposer",
 		"metadata": "sample metadata",
 		"title": "blocks per epoch title",
-		"summary": "blocks per epoch summary"
+		"summary": "blocks per epoch summary",
+		"expedited": false
+	}`
+
+	propMsgBody := fmt.Sprintf(template,
+		govAuthority,
+		blocksPerEpoch,
+	)
+
+	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalBlocksPerEpochFilename), []byte(propMsgBody))
+	s.Require().NoError(err)
+}
+
+// writeFailingExpeditedProposal writes a governance proposal JSON file.
+// The proposal fails because only SoftwareUpgrade and CancelSoftwareUpgrade can be expedited.
+func (s *IntegrationTestSuite) writeFailingExpeditedProposal(c *chain, blocksPerEpoch int64) {
+	template := `
+	{
+		"messages":[
+		  {
+			"@type": "/cosmos.gov.v1.MsgExecLegacyContent",
+			"authority": "%s",
+			"content": {
+				"@type": "/cosmos.params.v1beta1.ParameterChangeProposal",
+				"title": "BlocksPerEpoch",
+				"description": "change blocks per epoch",
+				"changes": [{
+				  "subspace": "provider",
+				  "key": "BlocksPerEpoch",
+				  "value": "\"%d\""
+				}]
+			}
+		  }
+		],
+		"deposit": "100uatom",
+		"proposer": "sample proposer",
+		"metadata": "sample metadata",
+		"title": "blocks per epoch title",
+		"summary": "blocks per epoch summary",
+		"expedited": true
 	}`
 
 	propMsgBody := fmt.Sprintf(template,

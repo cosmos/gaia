@@ -1,8 +1,11 @@
 package v18
 
 import (
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	"github.com/cosmos/gaia/v18/app/keepers"
@@ -20,6 +23,13 @@ func CreateUpgradeHandler(
 		if err != nil {
 			return vm, err
 		}
+
+		govParams := keepers.GovKeeper.GetParams(ctx)
+
+		expeditedPeriod := 24 * 7 * time.Hour // 7 days
+		govParams.ExpeditedVotingPeriod = &expeditedPeriod
+		govParams.ExpeditedThreshold = govv1.DefaultExpeditedThreshold.String() // 66.7%
+		govParams.ExpeditedMinDeposit = govParams.MinDeposit                    // full deposit amount is required
 
 		ctx.Logger().Info("Upgrade v18 complete")
 		return vm, nil

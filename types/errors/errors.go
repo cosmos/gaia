@@ -34,4 +34,7 @@ var (
 
 	// ErrInsufficientStake is used when the account has insufficient staked tokens.
 	ErrInsufficientStake = errorsmod.Register(codespace, 9, "insufficient stake")
+
+	// ErrInvalidExpeditedProposal is used when an expedite proposal is submitted for an unsupported proposal type.
+	ErrInvalidExpeditedProposal = errorsmod.Register(codespace, 10, "unsupported expedited proposal type")
 )

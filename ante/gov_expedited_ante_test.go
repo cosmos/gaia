@@ -3,18 +3,17 @@ package ante_test
 import (
 	"testing"
 
-	"github.com/cosmos/gaia/v18/app/helpers"
 	"github.com/stretchr/testify/require"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
-	v1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	"github.com/cosmos/gaia/v18/ante"
+	"github.com/cosmos/gaia/v18/app/helpers"
 )
 
 func TestGovExpeditedProposalsDecorator(t *testing.T) {
@@ -37,7 +36,8 @@ func TestGovExpeditedProposalsDecorator(t *testing.T) {
 						Name:   "upgrade plan-plan",
 						Info:   "some text here",
 						Height: 123456789,
-					}}}, true),
+					},
+				}}, true),
 			},
 			expectErr: false,
 		},
@@ -216,7 +216,7 @@ func TestGovExpeditedProposalsDecorator(t *testing.T) {
 
 func newLegacyTextProp(expedite bool) *govv1.MsgSubmitProposal {
 	testProposal := govv1beta1.NewTextProposal("Proposal", "Test as normal proposal")
-	msgContent, err := v1.NewLegacyContent(testProposal, "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn")
+	msgContent, err := govv1.NewLegacyContent(testProposal, "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn")
 	if err != nil {
 		return nil
 	}
@@ -229,7 +229,7 @@ func newLegacyUpgradeProp(expedite bool) *govv1.MsgSubmitProposal {
 		Info:   "some text here",
 		Height: 123456789,
 	})
-	msgContent, err := v1.NewLegacyContent(prop, "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn")
+	msgContent, err := govv1.NewLegacyContent(prop, "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn")
 	if err != nil {
 		return nil
 	}
@@ -256,7 +256,7 @@ func newGovV1BETA1LegacyCancelUpgradeProp() *govv1beta1.MsgSubmitProposal {
 
 func newLegacyCancelProp(expedite bool) *govv1.MsgSubmitProposal {
 	prop := upgradetypes.NewCancelSoftwareUpgradeProposal("test legacy upgrade", "test legacy upgrade")
-	msgContent, err := v1.NewLegacyContent(prop, "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn")
+	msgContent, err := govv1.NewLegacyContent(prop, "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn")
 	if err != nil {
 		return nil
 	}

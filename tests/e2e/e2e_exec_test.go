@@ -397,9 +397,13 @@ func (s *IntegrationTestSuite) execDistributionFundCommunityPool(c *chain, valId
 	s.T().Logf("Successfully funded community pool")
 }
 
-func (s *IntegrationTestSuite) runGovExec(c *chain, valIdx int, submitterAddr, govCommand string, proposalFlags []string, fees string) {
+func (s *IntegrationTestSuite) runGovExec(c *chain, valIdx int, submitterAddr, govCommand string, proposalFlags []string, fees string, validationFunc func([]byte, []byte) bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
+	validateResponse := s.defaultExecValidation(c, valIdx)
+	if validationFunc != nil {
+		validateResponse = validationFunc
+	}
 
 	gaiaCommand := []string{
 		gaiadBinary,
@@ -420,7 +424,7 @@ func (s *IntegrationTestSuite) runGovExec(c *chain, valIdx int, submitterAddr, g
 
 	gaiaCommand = concatFlags(gaiaCommand, proposalFlags, generalFlags)
 	s.T().Logf("Executing gaiad tx gov %s on chain %s", govCommand, c.id)
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, validateResponse)
 	s.T().Logf("Successfully executed %s", govCommand)
 }
 
@@ -800,6 +804,20 @@ func (s *IntegrationTestSuite) defaultExecValidation(chain *chain, valIdx int) f
 				"stdOut: %s, stdErr: %s",
 				string(stdOut), string(stdErr),
 			)
+			return true
+		}
+		return false
+	}
+}
+
+func (s *IntegrationTestSuite) expectTxSubmitError(expectErrString string) func([]byte, []byte) bool {
+	return func(stdOut []byte, stdErr []byte) bool {
+		var txResp sdk.TxResponse
+		if err := cdc.UnmarshalJSON(stdOut, &txResp); err != nil {
+			fmt.Println("## have ERR", err)
+			return false
+		}
+		if strings.Contains(txResp.String(), expectErrString) || txResp.Code == 0 {
 			return true
 		}
 		return false

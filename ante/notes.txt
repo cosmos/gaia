@@ -1,0 +1,44 @@
+gaiad tx gov submit-legacy-proposal software-upgrade v15 \
+--title v15 \
+--deposit 10000000uatom \
+--upgrade-height 200 \
+--upgrade-info "waitfor upgrade" \
+--description upgrade \
+--fees 400uatom \
+--from val \
+--keyring-backend test \
+--chain-id cosmoshub-4 \
+--home ~/provider-coordinator \
+--node tcp://localhost:26657 \
+--generate-only \
+--no-validate
+
+gaiad tx gov submit-legacy-proposal cancel-software-upgrade v15 \
+--title v15 \
+--deposit 10000000uatom \
+--description upgrade \
+--fees 400uatom \
+--from val \
+--keyring-backend test \
+--chain-id cosmoshub-4 \
+--home ~/provider-coordinator \
+--node tcp://localhost:26657 \
+--generate-only 
+
+gaiad tx gov submit-legacy-proposal cancel-software-upgrade \
+--title v15 \
+--deposit 10000000uatom \
+--description upgrade \
+--fees 400uatom \
+--from val \
+--keyring-backend test \
+--chain-id cosmoshub-4 \
+--home ~/provider-coordinator \
+--generate-only 
+
+gaiad tx gov submit-proposal ./draft_proposal.json \
+--generate-only \
+--from val \
+--keyring-backend test \
+--chain-id cosmoshub-4 \
+--home ~/provider-coordinator

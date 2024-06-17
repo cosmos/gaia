@@ -66,13 +66,14 @@ const (
 	numberOfEvidences                     = 10
 	slashingShares                  int64 = 10000
 
-	proposalGlobalFeeFilename      = "proposal_globalfee.json"
-	proposalBypassMsgFilename      = "proposal_bypass_msg.json"
-	proposalMaxTotalBypassFilename = "proposal_max_total_bypass.json"
-	proposalCommunitySpendFilename = "proposal_community_spend.json"
-	proposalLSMParamUpdateFilename = "proposal_lsm_param_update.json"
-	proposalBlocksPerEpochFilename = "proposal_blocks_per_epoch.json"
-	proposalFailExpedited          = "proposal_fail_expedited.json"
+	proposalGlobalFeeFilename        = "proposal_globalfee.json"
+	proposalBypassMsgFilename        = "proposal_bypass_msg.json"
+	proposalMaxTotalBypassFilename   = "proposal_max_total_bypass.json"
+	proposalCommunitySpendFilename   = "proposal_community_spend.json"
+	proposalLSMParamUpdateFilename   = "proposal_lsm_param_update.json"
+	proposalBlocksPerEpochFilename   = "proposal_blocks_per_epoch.json"
+	proposalFailExpedited            = "proposal_fail_expedited.json"
+	proposalExpeditedSoftwareUpgrade = "proposal_expedited_software_upgrade.json"
 
 	// proposalAddConsumerChainFilename    = "proposal_add_consumer.json"
 	// proposalRemoveConsumerChainFilename = "proposal_remove_consumer.json"
@@ -925,7 +926,34 @@ func (s *IntegrationTestSuite) writeFailingExpeditedProposal(c *chain, blocksPer
 		blocksPerEpoch,
 	)
 
-	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalBlocksPerEpochFilename), []byte(propMsgBody))
+	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalFailExpedited), []byte(propMsgBody))
+	s.Require().NoError(err)
+}
+
+// MsgSoftwareUpgrade can be expedited but it can only be submitted using "tx gov submit-proposal" command.
+// Messages submitted using "tx gov submit-legacy-proposal" command cannot be expedited.
+func (s *IntegrationTestSuite) writeExpeditedSoftwareUpgradeProp(c *chain) {
+	body := `{
+ "messages": [
+  {
+   "@type": "/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade",
+   "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+   "plan": {
+    "name": "test-expedited-upgrade",
+    "height": "123456789",
+    "info": "test",
+    "upgraded_client_state": null
+   }
+  }
+ ],
+ "metadata": "ipfs://CID",
+ "deposit": "100uatom",
+ "title": "title",
+ "summary": "test",
+ "expedited": true
+}`
+
+	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalExpeditedSoftwareUpgrade), []byte(body))
 	s.Require().NoError(err)
 }
 

@@ -57,15 +57,3 @@ Because parameters dictate some of the ways in which the chain operates, changin
 For example, reducing the unbonding period might seem like the only effect is in how quickly delegators can liquidate their assets. It might also have a much greater impact on the overall security of the network that would be hard to realize at first glance.
 
 This is one of the reasons that having a thorough discussion before going on-chain is so important - talking through the impacts of a proposal is a great way to avoid unintended effects.
-
-## Credits
-
-This documentation was originally created by Gavin Birch ([Figment Networks](https://figment.io)). Its development was supported by funding approved on January 29, 2020 by the Cosmos Hub via Community Spend [Proposal 23](https://cosmoshub-3.bigdipper.live/proposals/23) ([full Proposal PDF here](https://ipfs.io/ipfs/QmSMGEoY2dfxADPfgoAsJxjjC6hwpSNx1dXAqePiCEMCbY)). In late 2021 and early 2022 significant updates were made by [Hypha Worker Co-op](https://hypha.coop/), especially @dcwalk and @lexaMichaelides.  🙏
-
-**Special thanks** to the following for providing credible information:
-- Aleks (All in Bits; Fission Labs) for answering countless questions about these parameters
-- Alessio (All in Bits) for explaining how [`SigVerifyCostED25519`](./changes-archive/Auth.mdx#sig_verify_cost_ed25519) & [`SigVerifyCostSecp256k1`](./changes-archive/Auth.mdx#sig_verify_cost_secp256k1) work, and detailed answers to my many questions
-- Vidor for volunteering to explain [`ConstantFee`](./changes-archive//Crisis.mdx#constantfee) and answering my many questions in detail
-- Hyung (B-Harvest) for volunteering how [`InflationRateChange`](./changes-archive/Mint.mdx#inflation_rate_change) works
-- Joe (Chorus One) for explaining the security details involved with using full nodes for transactions
-- Sunny (All in Bits; Sikka) for volunteering an explanation of the purpose of [`withdrawaddrenabled`](./changes-archive/Distribution.mdx#withdrawaddrenabled)

@@ -814,14 +814,11 @@ func (s *IntegrationTestSuite) expectTxSubmitError(expectErrString string) func(
 	return func(stdOut []byte, stdErr []byte) bool {
 		var txResp sdk.TxResponse
 		if err := cdc.UnmarshalJSON(stdOut, &txResp); err != nil {
-			fmt.Println("---- invalid tx response ----", err)
 			return false
 		}
-		fmt.Println("---- have tx response ----", txResp.String(), txResp.RawLog)
 		if strings.Contains(txResp.RawLog, expectErrString) {
 			return true
 		}
-		fmt.Println("---- invalid tx response ----", "error not found in tx response", txResp.String())
 		return false
 	}
 }

@@ -3,6 +3,8 @@ package v18
 import (
 	"time"
 
+	errorsmod "cosmossdk.io/errors"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
@@ -29,7 +31,10 @@ func CreateUpgradeHandler(
 		govParams.ExpeditedVotingPeriod = &expeditedPeriod
 		govParams.ExpeditedThreshold = govv1.DefaultExpeditedThreshold.String() // 66.7%
 		govParams.ExpeditedMinDeposit = govParams.MinDeposit                    // full deposit amount is required
-		keepers.GovKeeper.SetParams(ctx, govParams)
+		err = keepers.GovKeeper.SetParams(ctx, govParams)
+		if err != nil {
+			return vm, errorsmod.Wrapf(err, "unable to set gov params")
+		}
 
 		ctx.Logger().Info("Upgrade v18 complete")
 		return vm, nil

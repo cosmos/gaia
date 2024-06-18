@@ -4,11 +4,9 @@ import "fmt"
 
 var (
 	runBankTest                   = true
-	runBypassMinFeeTest           = true
 	runEncodeTest                 = true
 	runEvidenceTest               = true
 	runFeeGrantTest               = true
-	runGlobalFeesTest             = true
 	runGovTest                    = true
 	runIBCTest                    = true
 	runSlashingTest               = true
@@ -17,6 +15,7 @@ var (
 	runRestInterfacesTest         = true
 	runLsmTest                    = true
 	runRateLimitTest              = true
+	runTxExtensionsTest           = true
 )
 
 func (s *IntegrationTestSuite) TestRestInterfaces() {
@@ -31,16 +30,6 @@ func (s *IntegrationTestSuite) TestBank() {
 		s.T().Skip()
 	}
 	s.testBankTokenTransfer()
-	s.bankSendWithNonCriticalExtensionOptions()
-	s.failedBankSendWithNonCriticalExtensionOptions()
-}
-
-func (s *IntegrationTestSuite) TestByPassMinFee() {
-	if !runBypassMinFeeTest {
-		s.T().Skip()
-	}
-	chainAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-	s.testBypassMinFeeWithdrawReward(chainAPI)
 }
 
 func (s *IntegrationTestSuite) TestEncode() {
@@ -65,19 +54,14 @@ func (s *IntegrationTestSuite) TestFeeGrant() {
 	s.testFeeGrant()
 }
 
-func (s *IntegrationTestSuite) TestGlobalFees() {
-	if !runGlobalFeesTest {
-		s.T().Skip()
-	}
-	s.testGlobalFees()
-	s.testQueryGlobalFeesInGenesis()
-}
-
 func (s *IntegrationTestSuite) TestGov() {
 	if !runGovTest {
 		s.T().Skip()
 	}
+	// stops the chain after halt height
+	// resets the testing environment
 	s.GovSoftwareUpgrade()
+
 	s.GovCancelSoftwareUpgrade()
 	s.GovCommunityPoolSpend()
 	s.AddRemoveConsumerChain()
@@ -93,7 +77,6 @@ func (s *IntegrationTestSuite) TestIBC() {
 	s.testIBCTokenTransfer()
 	s.testMultihopIBCTokenTransfer()
 	s.testFailedMultihopIBCTokenTransfer()
-	s.testIBCBypassMsg()
 	s.testICARegisterAccountAndSendTx()
 }
 
@@ -141,4 +124,12 @@ func (s *IntegrationTestSuite) TestRateLimit() {
 	s.testIBCTransfer(false)
 	s.testResetRateLimit()
 	s.testRemoveRateLimit()
+}
+
+func (s *IntegrationTestSuite) TestTxExtensions() {
+	if !runTxExtensionsTest {
+		s.T().Skip()
+	}
+	s.bankSendWithNonCriticalExtensionOptions()
+	s.failedBankSendWithNonCriticalExtensionOptions()
 }

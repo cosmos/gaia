@@ -6,13 +6,6 @@
    "version": "1.0.0"
  },
  "apis": [
-   {
-     "url": "./tmp-swagger-gen/gaia/globalfee/v1beta1/query.swagger.json",
-     "operationIds": {
-       "rename": {
-         "Params": "GlobalfeeParams"
-       }
-     }
-   }
+  
  ]
 }

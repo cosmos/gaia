@@ -9,6 +9,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
+	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
 	"github.com/spf13/cast"
 
 	// unnamed import of statik for swagger UI support
@@ -61,7 +62,6 @@ import (
 	"github.com/cosmos/gaia/v18/app/params"
 	"github.com/cosmos/gaia/v18/app/upgrades"
 	v18 "github.com/cosmos/gaia/v18/app/upgrades/v18"
-	"github.com/cosmos/gaia/v18/x/globalfee"
 )
 
 var (
@@ -237,20 +237,34 @@ func NewGaiaApp(
 			},
 			Codec:             appCodec,
 			IBCkeeper:         app.IBCKeeper,
-			GlobalFeeSubspace: app.GetSubspace(globalfee.ModuleName),
 			StakingKeeper:     app.StakingKeeper,
-			// If TxFeeChecker is nil the default ante TxFeeChecker is used
-			// so we use this no-op to keep the global fee module behaviour unchanged
-			TxFeeChecker:      noOpTxFeeChecker,
-			TxCounterStoreKey: app.AppKeepers.GetKey(wasmtypes.StoreKey),
+			FeeMarketKeeper:   app.FeeMarketKeeper,
 			WasmConfig:        &wasmConfig,
+			TxCounterStoreKey: app.AppKeepers.GetKey(wasmtypes.StoreKey),
+			TxFeeChecker: func(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64, error) {
+				return minTxFeesChecker(ctx, tx, *app.FeeMarketKeeper)
+			},
 		},
 	)
 	if err != nil {
 		panic(fmt.Errorf("failed to create AnteHandler: %s", err))
 	}
 
+	postHandlerOptions := PostHandlerOptions{
+		AccountKeeper:   app.AccountKeeper,
+		BankKeeper:      app.BankKeeper,
+		FeeGrantKeeper:  app.FeeGrantKeeper,
+		FeeMarketKeeper: app.FeeMarketKeeper,
+	}
+	postHandler, err := NewPostHandler(postHandlerOptions)
+	if err != nil {
+		panic(err)
+	}
+
+	// set ante and post handlers
 	app.SetAnteHandler(anteHandler)
+	app.SetPostHandler(postHandler)
+
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
@@ -472,12 +486,40 @@ func (ao EmptyAppOptions) Get(_ string) interface{} {
 	return nil
 }
 
-// noOpTxFeeChecker is an ante TxFeeChecker for the DeductFeeDecorator, see x/auth/ante/fee.go,
-// it performs a no-op by not checking tx fees and always returns a zero tx priority
-func noOpTxFeeChecker(_ sdk.Context, tx sdk.Tx) (sdk.Coins, int64, error) {
+// minTxFeesChecker will be executed only if the feemarket module is disabled.
+// In this case, the auth module's DeductFeeDecorator is executed, and
+// we use the minTxFeesChecker to enforce the minimum transaction fees.
+// Min tx fees are calculated as gas_limit * feemarket_min_base_gas_price
+func minTxFeesChecker(ctx sdk.Context, tx sdk.Tx, feemarketKp feemarketkeeper.Keeper) (sdk.Coins, int64, error) {
 	feeTx, ok := tx.(sdk.FeeTx)
 	if !ok {
 		return nil, 0, errorsmod.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
+	}
+
+	// To keep the gentxs with zero fees, we need to skip the validation in the first block
+	if ctx.BlockHeight() == 0 {
+		return feeTx.GetFee(), 0, nil
+	}
+
+	feeMarketParams, err := feemarketKp.GetParams(ctx)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	feeRequired := sdk.NewCoins(
+		sdk.NewCoin(
+			feeMarketParams.FeeDenom,
+			feeMarketParams.MinBaseGasPrice.MulInt(sdk.NewIntFromUint64(feeTx.GetGas())).Ceil().RoundInt()))
+
+	feeCoins := feeTx.GetFee()
+	if len(feeCoins) != 1 {
+		return nil, 0, fmt.Errorf(
+			"expected exactly one fee coin; got %s, required: %s", feeCoins.String(), feeRequired.String())
+	}
+
+	if !feeCoins.IsAnyGTE(feeRequired) {
+		return nil, 0, fmt.Errorf(
+			"not enough fees provided; got %s, required: %s", feeCoins.String(), feeRequired.String())
 	}
 
 	return feeTx.GetFee(), 0, nil

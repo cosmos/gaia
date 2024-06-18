@@ -35,7 +35,8 @@ func GaiaAppIniter() (ibctesting.TestingApp, map[string]json.RawMessage) {
 		map[int64]bool{},
 		gaiaApp.DefaultNodeHome,
 		encoding,
-		gaiaApp.EmptyAppOptions{})
+		gaiaApp.EmptyAppOptions{},
+		gaiaApp.EmptyWasmOptions)
 
 	testApp := ibctesting.TestingApp(app)
 

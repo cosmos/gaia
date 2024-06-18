@@ -5,6 +5,8 @@ import (
 
 	store "github.com/cosmos/cosmos-sdk/store/types"
 
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+
 	"github.com/cosmos/gaia/v18/app/upgrades"
 )
 
@@ -20,6 +22,7 @@ var Upgrade = upgrades.Upgrade{
 	StoreUpgrades: store.StoreUpgrades{
 		Added: []string{
 			feemarkettypes.ModuleName,
+			wasmtypes.ModuleName,
 		},
 		Deleted: []string{
 			GlobalFeeModuleName,

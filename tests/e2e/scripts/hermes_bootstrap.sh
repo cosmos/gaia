@@ -54,7 +54,7 @@ key_name = 'rly01-gaia-a'
 store_prefix = 'ibc'
 max_gas = 6000000
 gas_price = { price = 0.005, denom = 'uatom' }
-gas_multiplier = 2
+gas_multiplier = 1.5
 clock_drift = '1m' # to accomdate docker containers
 trusting_period = '14days'
 trust_threshold = { numerator = '1', denominator = '3' }
@@ -72,7 +72,7 @@ key_name = 'rly01-gaia-b'
 store_prefix = 'ibc'
 max_gas =  6000000
 gas_price = { price = 0.005, denom = 'uatom' }
-gas_multiplier = 2
+gas_multiplier = 1.5
 clock_drift = '1m' # to accomdate docker containers
 trusting_period = '14days'
 trust_threshold = { numerator = '1', denominator = '3' }
@@ -124,7 +124,7 @@ key_name = 'rly01-gaia-a'
 store_prefix = 'ibc'
 max_gas = 6000000
 gas_price = { price = 0, denom = 'uatom' }
-gas_multiplier = 2
+gas_multiplier = 1.5
 clock_drift = '1m' # to accommodate docker containers
 trusting_period = '14days'
 trust_threshold = { numerator = '1', denominator = '3' }
@@ -142,7 +142,7 @@ key_name = 'rly01-gaia-b'
 store_prefix = 'ibc'
 max_gas =  6000000
 gas_price = { price = 0, denom = 'uatom' }
-gas_multiplier = 2
+gas_multiplier = 1.5
 clock_drift = '1m' # to accommodate docker containers
 trusting_period = '14days'
 trust_threshold = { numerator = '1', denominator = '3' }
@@ -154,5 +154,3 @@ EOF
 hermes keys add  --key-name rly01-gaia-b  --chain $GAIA_B_E2E_CHAIN_ID --mnemonic-file /root/.hermes/GAIA_B_E2E_RLY_MNEMONIC.txt
 sleep 5
 hermes keys add  --key-name rly01-gaia-a  --chain $GAIA_A_E2E_CHAIN_ID --mnemonic-file /root/.hermes/GAIA_A_E2E_RLY_MNEMONIC.txt
-
-

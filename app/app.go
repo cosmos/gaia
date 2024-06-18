@@ -20,6 +20,7 @@ import (
 	tmjson "github.com/cometbft/cometbft/libs/json"
 	"github.com/cometbft/cometbft/libs/log"
 	tmos "github.com/cometbft/cometbft/libs/os"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	ibctesting "github.com/cosmos/ibc-go/v7/testing"
 	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
@@ -51,6 +52,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+
+	wasm "github.com/CosmWasm/wasmd/x/wasm"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	gaiaante "github.com/cosmos/gaia/v18/ante"
 	"github.com/cosmos/gaia/v18/app/keepers"
@@ -112,6 +117,7 @@ func NewGaiaApp(
 	homePath string,
 	encodingConfig params.EncodingConfig,
 	appOpts servertypes.AppOptions,
+	wasmOpts []wasmkeeper.Option,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *GaiaApp {
 	appCodec := encodingConfig.Marshaler
@@ -159,6 +165,7 @@ func NewGaiaApp(
 		invCheckPeriod,
 		logger,
 		appOpts,
+		wasmOpts,
 	)
 
 	// NOTE: Any module instantiated in the module manager that is later modified
@@ -214,6 +221,11 @@ func NewGaiaApp(
 	app.MountTransientStores(app.GetTransientStoreKey())
 	app.MountMemoryStores(app.GetMemoryStoreKey())
 
+	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
+	if err != nil {
+		panic("error while reading wasm config: " + err.Error())
+	}
+
 	anteHandler, err := gaiaante.NewAnteHandler(
 		gaiaante.HandlerOptions{
 			HandlerOptions: ante.HandlerOptions{
@@ -223,10 +235,12 @@ func NewGaiaApp(
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
-			Codec:           appCodec,
-			IBCkeeper:       app.IBCKeeper,
-			StakingKeeper:   app.StakingKeeper,
-			FeeMarketKeeper: app.FeeMarketKeeper,
+			Codec:             appCodec,
+			IBCkeeper:         app.IBCKeeper,
+			StakingKeeper:     app.StakingKeeper,
+			FeeMarketKeeper:   app.FeeMarketKeeper,
+			WasmConfig:        &wasmConfig,
+			TxCounterStoreKey: app.AppKeepers.GetKey(wasmtypes.StoreKey),
 			TxFeeChecker: func(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64, error) {
 				return minTxFeesChecker(ctx, tx, *app.FeeMarketKeeper)
 			},
@@ -255,12 +269,25 @@ func NewGaiaApp(
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
 
+	if manager := app.SnapshotManager(); manager != nil {
+		err = manager.RegisterExtensions(wasmkeeper.NewWasmSnapshotter(app.CommitMultiStore(), &app.AppKeepers.WasmKeeper))
+		if err != nil {
+			panic("failed to register snapshot extension: " + err.Error())
+		}
+	}
+
 	app.setupUpgradeHandlers()
 	app.setupUpgradeStoreLoaders()
 
 	if loadLatest {
 		if err := app.LoadLatestVersion(); err != nil {
 			tmos.Exit(fmt.Sprintf("failed to load latest version: %s", err))
+		}
+
+		ctx := app.BaseApp.NewUncachedContext(true, tmproto.Header{})
+
+		if err := app.AppKeepers.WasmKeeper.InitializePinnedCodes(ctx); err != nil {
+			tmos.Exit(fmt.Sprintf("WasmKeeper failed initialize pinned codes %s", err))
 		}
 	}
 
@@ -450,6 +477,9 @@ func (app *GaiaApp) GetTxConfig() client.TxConfig {
 
 // EmptyAppOptions is a stub implementing AppOptions
 type EmptyAppOptions struct{}
+
+// EmptyWasmOptions is a stub implementing Wasmkeeper Option
+var EmptyWasmOptions []wasmkeeper.Option
 
 // Get implements AppOptions
 func (ao EmptyAppOptions) Get(_ string) interface{} {

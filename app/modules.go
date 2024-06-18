@@ -62,6 +62,9 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
+	wasm "github.com/CosmWasm/wasmd/x/wasm"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+
 	gaiaappparams "github.com/cosmos/gaia/v18/app/params"
 	"github.com/cosmos/gaia/v18/x/metaprotocols"
 	metaprotocolstypes "github.com/cosmos/gaia/v18/x/metaprotocols/types"
@@ -79,6 +82,7 @@ var maccPerms = map[string][]string{
 	ibctransfertypes.ModuleName:       {authtypes.Minter, authtypes.Burner},
 	ibcfeetypes.ModuleName:            nil,
 	providertypes.ConsumerRewardsPool: nil,
+	wasmtypes.ModuleName:              {authtypes.Burner},
 	feemarkettypes.ModuleName:         nil,
 	feemarkettypes.FeeCollectorName:   nil,
 }
@@ -124,6 +128,7 @@ var ModuleBasics = module.NewBasicManager(
 	icsprovider.AppModuleBasic{},
 	consensus.AppModuleBasic{},
 	metaprotocols.AppModuleBasic{},
+	wasm.AppModuleBasic{},
 	feemarket.AppModuleBasic{},
 )
 
@@ -158,6 +163,7 @@ func appModules(
 		ibc.NewAppModule(app.IBCKeeper),
 		sdkparams.NewAppModule(app.ParamsKeeper),
 		consensus.NewAppModule(appCodec, app.ConsensusParamsKeeper),
+		wasm.NewAppModule(appCodec, &app.AppKeepers.WasmKeeper, app.AppKeepers.StakingKeeper, app.AppKeepers.AccountKeeper, app.AppKeepers.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
 		ibcfee.NewAppModule(app.IBCFeeKeeper),
 		app.TransferModule,
 		app.ICAModule,
@@ -192,6 +198,7 @@ func simulationModules(
 		sdkparams.NewAppModule(app.ParamsKeeper),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
+		wasm.NewAppModule(appCodec, &app.AppKeepers.WasmKeeper, app.AppKeepers.StakingKeeper, app.AppKeepers.AccountKeeper, app.AppKeepers.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
 		ibc.NewAppModule(app.IBCKeeper),
 		app.TransferModule,
 		app.ICAModule,
@@ -239,6 +246,7 @@ func orderBeginBlockers() []string {
 		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
+		wasmtypes.ModuleName,
 	}
 }
 
@@ -278,6 +286,7 @@ func orderEndBlockers() []string {
 		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
+		wasmtypes.ModuleName,
 	}
 }
 
@@ -324,5 +333,6 @@ func orderInitBlockers() []string {
 		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
+		wasmtypes.ModuleName,
 	}
 }

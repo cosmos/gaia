@@ -10,9 +10,13 @@ import (
 	errorsmod "cosmossdk.io/errors"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
+
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	gaiaerrors "github.com/cosmos/gaia/v18/types/errors"
 )
@@ -24,11 +28,13 @@ var UseFeeMarketDecorator = true
 // channel keeper.
 type HandlerOptions struct {
 	ante.HandlerOptions
-	Codec           codec.BinaryCodec
-	IBCkeeper       *ibckeeper.Keeper
-	StakingKeeper   *stakingkeeper.Keeper
-	FeeMarketKeeper *feemarketkeeper.Keeper
-	TxFeeChecker    ante.TxFeeChecker
+	Codec             codec.BinaryCodec
+	IBCkeeper         *ibckeeper.Keeper
+	StakingKeeper     *stakingkeeper.Keeper
+	FeeMarketKeeper   *feemarketkeeper.Keeper
+	TxFeeChecker      ante.TxFeeChecker
+	TxCounterStoreKey storetypes.StoreKey
+	WasmConfig        *wasmtypes.WasmConfig
 }
 
 func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
@@ -58,7 +64,9 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 	}
 
 	anteDecorators := []sdk.AnteDecorator{
-		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
+		ante.NewSetUpContextDecorator(),                                               // outermost AnteDecorator. SetUpContext must be called first
+		wasmkeeper.NewLimitSimulationGasDecorator(opts.WasmConfig.SimulationGasLimit), // after setup context to enforce limits early
+		wasmkeeper.NewCountTXDecorator(opts.TxCounterStoreKey),
 		ante.NewExtensionOptionsDecorator(opts.ExtensionOptionChecker),
 		ante.NewValidateBasicDecorator(),
 		ante.NewTxTimeoutHeightDecorator(),

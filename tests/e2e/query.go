@@ -21,8 +21,6 @@ import (
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-
-	"github.com/cosmos/gaia/v18/x/globalfee/types"
 )
 
 func queryGaiaTx(endpoint, txHash string) error {
@@ -107,38 +105,6 @@ func queryStakingParams(endpoint string) (stakingtypes.QueryParamsResponse, erro
 	return params, nil
 }
 
-func queryGlobalFeeParams(endpoint string) (types.QueryParamsResponse, error) {
-	body, err := httpGet(fmt.Sprintf("%s/gaia/globalfee/v1beta1/params", endpoint))
-	if err != nil {
-		return types.QueryParamsResponse{}, fmt.Errorf("failed to execute HTTP request: %w", err)
-	}
-
-	var params types.QueryParamsResponse
-	if err := cdc.UnmarshalJSON(body, &params); err != nil {
-		return types.QueryParamsResponse{}, err
-	}
-
-	return params, nil
-}
-
-func queryGlobalFees(endpoint string) (sdk.DecCoins, error) {
-	p, err := queryGlobalFeeParams(endpoint)
-
-	return p.Params.MinimumGasPrices, err
-}
-
-func queryBypassMsgs(endpoint string) ([]string, error) {
-	p, err := queryGlobalFeeParams(endpoint)
-
-	return p.Params.BypassMinFeeMsgTypes, err
-}
-
-func queryMaxTotalBypassMinFeeMsgGasUsage(endpoint string) (uint64, error) {
-	p, err := queryGlobalFeeParams(endpoint)
-
-	return p.Params.MaxTotalBypassMinFeeMsgGasUsage, err
-}
-
 func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string) (stakingtypes.QueryDelegationResponse, error) {
 	var res stakingtypes.QueryDelegationResponse
 
@@ -177,21 +143,6 @@ func queryDelegatorWithdrawalAddress(endpoint string, delegatorAddr string) (dis
 	if err = cdc.UnmarshalJSON(body, &res); err != nil {
 		return res, err
 	}
-	return res, nil
-}
-
-func queryDelegatorTotalRewards(endpoint, delegatorAddr string) (disttypes.QueryDelegationTotalRewardsResponse, error) {
-	var res disttypes.QueryDelegationTotalRewardsResponse
-
-	body, err := httpGet(fmt.Sprintf("%s/cosmos/distribution/v1beta1/delegators/%s/rewards", endpoint, delegatorAddr))
-	if err != nil {
-		return res, err
-	}
-
-	if err = cdc.UnmarshalJSON(body, &res); err != nil {
-		return res, err
-	}
-
 	return res, nil
 }
 

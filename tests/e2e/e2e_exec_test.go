@@ -214,11 +214,16 @@ func (s *IntegrationTestSuite) execFeeGrant(c *chain, valIdx int, granter, grant
 		"grant",
 		granter,
 		grantee,
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--%s=%s", flags.FlagGas, "300000"), // default 200000 isn't enough
+		"--keyring-backend=test",
+		"--output=json",
 		"-y",
 	}
 	for flag, value := range opts {
-		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
+		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%s", flag, value))
 	}
+	s.T().Logf("running feegrant on chain: %s - Tx %v", c.id, gaiaCommand)
 
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
 }
@@ -323,56 +328,6 @@ func (s *IntegrationTestSuite) execBankMultiSend(
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.expectErrExecValidation(c, valIdx, expectErr))
 }
 
-type txBankSend struct {
-	from      string
-	to        string
-	amt       string
-	fees      string
-	log       string
-	expectErr bool
-}
-
-func (s *IntegrationTestSuite) execBankSendBatch(
-	c *chain,
-	valIdx int, //nolint:unparam
-	txs ...txBankSend,
-) int {
-	sucessBankSendCount := 0
-
-	for i := range txs {
-		s.T().Logf(txs[i].log)
-
-		s.execBankSend(c, valIdx, txs[i].from, txs[i].to, txs[i].amt, txs[i].fees, txs[i].expectErr)
-		if !txs[i].expectErr {
-			if !txs[i].expectErr {
-				sucessBankSendCount++
-			}
-		}
-	}
-
-	return sucessBankSendCount
-}
-
-func (s *IntegrationTestSuite) execWithdrawAllRewards(c *chain, valIdx int, payee, fees string, expectErr bool) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-
-	gaiaCommand := []string{
-		gaiadBinary,
-		txCommand,
-		distributiontypes.ModuleName,
-		"withdraw-all-rewards",
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, payee),
-		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-		"--keyring-backend=test",
-		"--output=json",
-		"-y",
-	}
-
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.expectErrExecValidation(c, valIdx, expectErr))
-}
-
 func (s *IntegrationTestSuite) execDistributionFundCommunityPool(c *chain, valIdx int, from, amt, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
@@ -414,7 +369,7 @@ func (s *IntegrationTestSuite) runGovExec(c *chain, valIdx int, submitterAddr, g
 
 	generalFlags := []string{
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, submitterAddr),
-		fmt.Sprintf("--%s=%s", flags.FlagGas, "300000"), // default 200000 isn't enough
+		fmt.Sprintf("--%s=%s", flags.FlagGas, "350000"), // default 200000 isn't enough
 		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
 		"--keyring-backend=test",
@@ -490,6 +445,7 @@ func (s *IntegrationTestSuite) execDelegate(c *chain, valIdx int, amount, valOpe
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
 		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, delegateFees),
+		fmt.Sprintf("--%s=%s", flags.FlagGas, "250000"), // default 200_000 is not enough
 		"--keyring-backend=test",
 		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
 		"--output=json",
@@ -572,7 +528,7 @@ func (s *IntegrationTestSuite) execRedelegate(c *chain, valIdx int, amount, orig
 		amount,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-		fmt.Sprintf("--%s=%s", flags.FlagGas, "300000"), // default 200000 isn't enough
+		fmt.Sprintf("--%s=%s", flags.FlagGas, "350000"), // default 200000 isn't enough
 		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, delegateFees),
 		"--keyring-backend=test",
 		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
@@ -719,7 +675,7 @@ func (s *IntegrationTestSuite) executeGaiaTxCommand(ctx context.Context, c *chai
 	}
 }
 
-func (s *IntegrationTestSuite) executeHermesCommand(ctx context.Context, hermesCmd []string) ([]byte, error) {
+func (s *IntegrationTestSuite) executeHermesCommand(ctx context.Context, hermesCmd []string) ([]byte, error) { //nolint:unparam
 	var outBuf bytes.Buffer
 	exec, err := s.dkrPool.Client.CreateExec(docker.CreateExecOptions{
 		Context:      ctx,

@@ -68,6 +68,7 @@ linters-settings:
       - prefix(github.com/cosmos) # cosmos org
       - prefix(cosmossdk.io) # new modules
       - prefix(github.com/cosmos/cosmos-sdk) # cosmos sdk
+      - prefix(github.com/CosmWasm/wasmd) # cosmwasm
       - prefix(github.com/cosmos/gaia) # Gaia
   dogsled:
     max-blank-identifiers: 3

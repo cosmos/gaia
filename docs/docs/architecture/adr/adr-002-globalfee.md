@@ -2,9 +2,10 @@
 
 ## Changelog
 * 2023-06-12: Initial Draft
+* 2024-06-06: Change status to deprecated
 
 ## Status
-ACCEPTED Implemented
+Deprecated
 
 ## Context
 

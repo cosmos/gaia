@@ -253,7 +253,7 @@ func (s *IntegrationTestSuite) testSetBlocksPerEpoch() {
 	s.Require().Eventually(
 		func() bool {
 			blocksPerEpoch, err := queryBlocksPerEpoch(chainEndpoint)
-			s.T().Logf("After BlocksPerEpoch proposal: %d", gas)
+			s.T().Logf("Initial BlocksPerEpoch param: %v", blocksPerEpoch)
 			s.Require().NoError(err)
 
 			s.Require().Equal(blocksPerEpoch, defaultBlocksPerEpoch)

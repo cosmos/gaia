@@ -8,5 +8,4 @@ links for each one.
 
 ## Module List
 
-- [Global Fee](./globalfee.md)
 - [Metaprotocols](./metaprotocols.md)

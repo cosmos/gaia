@@ -1,7 +1,7 @@
 #!/bin/bash
-set -eux 
+set -eux
 
-# User balance of stake tokens 
+# User balance of stake tokens
 USER_COINS="100000000000stake"
 # Amount of stake tokens staked
 STAKE="100000000stake"
@@ -9,7 +9,7 @@ STAKE="100000000stake"
 NODE_IP="127.0.0.1"
 
 # Home directory
-HOME_DIR="/Users/msalopek"
+HOME_DIR="$HOME"
 
 # Validator moniker
 MONIKER="coordinator"
@@ -53,6 +53,7 @@ sleep 1
 sed -i -r "/node =/ s/= .*/= \"tcp:\/\/${NODE_IP}:26658\"/" ${PROV_NODE_DIR}/config/client.toml
 sed -i -r 's/timeout_commit = "5s"/timeout_commit = "3s"/g' ${PROV_NODE_DIR}/config/config.toml
 sed -i -r 's/timeout_propose = "3s"/timeout_propose = "1s"/g' ${PROV_NODE_DIR}/config/config.toml
+sed -i -r 's/minimum-gas-prices = ""/minimum-gas-prices = "0stake"/g' ${PROV_NODE_DIR}/config/app.toml
 
 
 # Start gaia

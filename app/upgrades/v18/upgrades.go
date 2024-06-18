@@ -24,12 +24,12 @@ func CreateUpgradeHandler(
 			return vm, err
 		}
 
-		govParams := keepers.GovKeeper.GetParams(ctx)
-
 		expeditedPeriod := 24 * 7 * time.Hour // 7 days
+		govParams := keepers.GovKeeper.GetParams(ctx)
 		govParams.ExpeditedVotingPeriod = &expeditedPeriod
 		govParams.ExpeditedThreshold = govv1.DefaultExpeditedThreshold.String() // 66.7%
 		govParams.ExpeditedMinDeposit = govParams.MinDeposit                    // full deposit amount is required
+		keepers.GovKeeper.SetParams(ctx, govParams)
 
 		ctx.Logger().Info("Upgrade v18 complete")
 		return vm, nil

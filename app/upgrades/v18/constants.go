@@ -1,11 +1,11 @@
 package v18
 
 import (
+	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
+
 	store "github.com/cosmos/cosmos-sdk/store/types"
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-
-	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
 	"github.com/cosmos/gaia/v18/app/upgrades"
 )

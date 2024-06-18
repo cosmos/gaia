@@ -1,17 +1,13 @@
 package integration
 
 import (
-	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
-	tmdb "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
-	"github.com/cometbft/cometbft/libs/log"
 
-	ibctesting "github.com/cosmos/ibc-go/v7/testing"
 	appConsumer "github.com/cosmos/interchain-security/v4/app/consumer"
 	"github.com/cosmos/interchain-security/v4/tests/integration"
 	icstestingutils "github.com/cosmos/interchain-security/v4/testutil/ibc_testing"
@@ -20,13 +16,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
+	"github.com/cosmos/gaia/v18/ante"
 	gaiaApp "github.com/cosmos/gaia/v18/app"
 )
 
-var (
-	app      *gaiaApp.GaiaApp
-	ccvSuite *integration.CCVTestSuite
-)
+var ccvSuite *integration.CCVTestSuite
 
 func init() {
 	// Pass in concrete app types that implement the interfaces defined in https://github.com/cosmos/interchain-security/testutil/integration/interfaces.go
@@ -35,29 +29,13 @@ func init() {
 	ccvSuite = integration.NewCCVTestSuite[*gaiaApp.GaiaApp, *appConsumer.App](
 		// Pass in ibctesting.AppIniters for gaia (provider) and consumer.
 		GaiaAppIniter, icstestingutils.ConsumerAppIniter, []string{})
+
+	ante.UseFeeMarketDecorator = false
 }
 
 func TestCCVTestSuite(t *testing.T) {
 	// Run tests
 	suite.Run(t, ccvSuite)
-}
-
-// GaiaAppIniter implements ibctesting.AppIniter for the gaia app
-func GaiaAppIniter() (ibctesting.TestingApp, map[string]json.RawMessage) {
-	encoding := gaiaApp.RegisterEncodingConfig()
-	app = gaiaApp.NewGaiaApp(
-		log.NewNopLogger(),
-		tmdb.NewMemDB(),
-		nil,
-		true,
-		map[int64]bool{},
-		gaiaApp.DefaultNodeHome,
-		encoding,
-		gaiaApp.EmptyAppOptions{})
-
-	testApp := ibctesting.TestingApp(app)
-
-	return testApp, gaiaApp.NewDefaultGenesisState(encoding)
 }
 
 func TestICSEpochs(t *testing.T) {

@@ -3,6 +3,8 @@ package gaia
 import (
 	ratelimit "github.com/Stride-Labs/ibc-rate-limiting/ratelimit"
 	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
+	feemarket "github.com/skip-mev/feemarket/x/feemarket"
+	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
 	pfmrouter "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward"
 	pfmroutertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward/types"
@@ -61,7 +63,6 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	gaiaappparams "github.com/cosmos/gaia/v18/app/params"
-	"github.com/cosmos/gaia/v18/x/globalfee"
 	"github.com/cosmos/gaia/v18/x/metaprotocols"
 	metaprotocolstypes "github.com/cosmos/gaia/v18/x/metaprotocols/types"
 )
@@ -78,6 +79,8 @@ var maccPerms = map[string][]string{
 	ibctransfertypes.ModuleName:       {authtypes.Minter, authtypes.Burner},
 	ibcfeetypes.ModuleName:            nil,
 	providertypes.ConsumerRewardsPool: nil,
+	feemarkettypes.ModuleName:         nil,
+	feemarkettypes.FeeCollectorName:   nil,
 }
 
 // ModuleBasics defines the module BasicManager is in charge of setting up basic,
@@ -118,10 +121,10 @@ var ModuleBasics = module.NewBasicManager(
 	pfmrouter.AppModuleBasic{},
 	ratelimit.AppModuleBasic{},
 	ica.AppModuleBasic{},
-	globalfee.AppModule{},
 	icsprovider.AppModuleBasic{},
 	consensus.AppModuleBasic{},
 	metaprotocols.AppModuleBasic{},
+	feemarket.AppModuleBasic{},
 )
 
 func appModules(
@@ -154,7 +157,6 @@ func appModules(
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		ibc.NewAppModule(app.IBCKeeper),
 		sdkparams.NewAppModule(app.ParamsKeeper),
-		globalfee.NewAppModule(app.GetSubspace(globalfee.ModuleName)),
 		consensus.NewAppModule(appCodec, app.ConsensusParamsKeeper),
 		ibcfee.NewAppModule(app.IBCFeeKeeper),
 		app.TransferModule,
@@ -164,6 +166,7 @@ func appModules(
 
 		app.ProviderModule,
 		metaprotocols.NewAppModule(),
+		feemarket.NewAppModule(appCodec, *app.FeeMarketKeeper),
 	}
 }
 
@@ -232,7 +235,7 @@ func orderBeginBlockers() []string {
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
-		globalfee.ModuleName,
+		feemarkettypes.ModuleName,
 		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
@@ -271,7 +274,7 @@ func orderEndBlockers() []string {
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
-		globalfee.ModuleName,
+		feemarkettypes.ModuleName,
 		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
@@ -310,15 +313,14 @@ func orderInitBlockers() []string {
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
-		// The globalfee module should ideally be initialized before the genutil module in theory:
-		// The globalfee antehandler performs checks in DeliverTx, which is called by gentx.
-		// When the global fee > 0, gentx needs to pay the fee. However, this is not expected,
-		// (in our case, the global fee is initialized with an empty value, which might not be a problem
-		// if the globalfee in genesis is not changed.)
-		// To resolve this issue, we should initialize the globalfee module after genutil, ensuring that the global
+		// The feemarket module should ideally be initialized before the genutil module in theory:
+		// The feemarket antehandler performs checks in DeliverTx, which is called by gentx.
+		// When the fee > 0, gentx needs to pay the fee. However, this is not expected.
+		// To resolve this issue, we should initialize the feemarket module after genutil, ensuring that the
 		// min fee is empty when gentx is called.
+		// A similar issue existed for the 'globalfee' module, which was previously used instead of 'feemarket'.
 		// For more details, please refer to the following link: https://github.com/cosmos/gaia/issues/2489
-		globalfee.ModuleName,
+		feemarkettypes.ModuleName,
 		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,

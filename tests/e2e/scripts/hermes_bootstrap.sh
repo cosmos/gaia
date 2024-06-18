@@ -53,11 +53,13 @@ account_prefix = 'cosmos'
 key_name = 'rly01-gaia-a'
 store_prefix = 'ibc'
 max_gas = 6000000
-gas_price = { price = 0.00001, denom = 'uatom' }
-gas_multiplier = 1.2
+gas_price = { price = 0.005, denom = 'uatom' }
+gas_multiplier = 2
 clock_drift = '1m' # to accomdate docker containers
 trusting_period = '14days'
 trust_threshold = { numerator = '1', denominator = '3' }
+dynamic_gas_price = { enabled = true, multiplier = 1.3, max = 0.05 }
+
 
 [[chains]]
 id = '$GAIA_B_E2E_CHAIN_ID'
@@ -69,11 +71,12 @@ account_prefix = 'cosmos'
 key_name = 'rly01-gaia-b'
 store_prefix = 'ibc'
 max_gas =  6000000
-gas_price = { price = 0.00001, denom = 'uatom' }
-gas_multiplier = 1.2
+gas_price = { price = 0.005, denom = 'uatom' }
+gas_multiplier = 2
 clock_drift = '1m' # to accomdate docker containers
 trusting_period = '14days'
 trust_threshold = { numerator = '1', denominator = '3' }
+dynamic_gas_price = { enabled = true, multiplier = 1.3, max = 0.05 }
 EOF
 
 # setup Hermes relayer configuration with zero gas_price
@@ -121,10 +124,12 @@ key_name = 'rly01-gaia-a'
 store_prefix = 'ibc'
 max_gas = 6000000
 gas_price = { price = 0, denom = 'uatom' }
-gas_multiplier = 1.2
+gas_multiplier = 2
 clock_drift = '1m' # to accommodate docker containers
 trusting_period = '14days'
 trust_threshold = { numerator = '1', denominator = '3' }
+dynamic_gas_price = { enabled = true, multiplier = 1.3, max = 0.05 }
+
 
 [[chains]]
 id = '$GAIA_B_E2E_CHAIN_ID'
@@ -137,10 +142,11 @@ key_name = 'rly01-gaia-b'
 store_prefix = 'ibc'
 max_gas =  6000000
 gas_price = { price = 0, denom = 'uatom' }
-gas_multiplier = 1.2
+gas_multiplier = 2
 clock_drift = '1m' # to accommodate docker containers
 trusting_period = '14days'
 trust_threshold = { numerator = '1', denominator = '3' }
+dynamic_gas_price = { enabled = true, multiplier = 1.3, max = 0.05 }
 EOF
 
 

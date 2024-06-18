@@ -6,6 +6,7 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	"github.com/cosmos/gaia/v18/app/keepers"
+	"github.com/cosmos/gaia/v18/types"
 )
 
 func CreateUpgradeHandler(
@@ -21,7 +22,37 @@ func CreateUpgradeHandler(
 			return vm, err
 		}
 
+		err = ConfigureFeeMarketModule(ctx, keepers)
+		if err != nil {
+			return vm, err
+		}
+
 		ctx.Logger().Info("Upgrade v18 complete")
 		return vm, nil
 	}
+}
+
+func ConfigureFeeMarketModule(ctx sdk.Context, keepers *keepers.AppKeepers) error {
+	params, err := keepers.FeeMarketKeeper.GetParams(ctx)
+	if err != nil {
+		return err
+	}
+
+	params.Enabled = true
+	params.FeeDenom = types.UAtomDenom
+	params.DistributeFees = true
+	params.MinBaseGasPrice = sdk.MustNewDecFromStr("0.005")
+	params.MaxBlockUtilization = 100000000
+	if err := keepers.FeeMarketKeeper.SetParams(ctx, params); err != nil {
+		return err
+	}
+
+	state, err := keepers.FeeMarketKeeper.GetState(ctx)
+	if err != nil {
+		return err
+	}
+
+	state.BaseGasPrice = sdk.MustNewDecFromStr("0.005")
+
+	return keepers.FeeMarketKeeper.SetState(ctx, state)
 }

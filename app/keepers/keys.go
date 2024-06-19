@@ -1,18 +1,8 @@
 package keepers
 
 import (
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
-	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
-	feeabstypes "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/types"
-
-	routertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward/types"
-	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
-	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
-	ibcfeetypes "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/types"
-	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
-	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
-	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
-
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -30,8 +20,15 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-
-	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	routertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward/types"
+	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
+	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
+	ibcfeetypes "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/types"
+	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
+	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
+	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
+	feeabstypes "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/types"
+	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 )
 
 func (appKeepers *AppKeepers) GenerateKeys() {

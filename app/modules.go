@@ -1,12 +1,12 @@
 package gaia
 
 import (
-	ratelimit "github.com/Stride-Labs/ibc-rate-limiting/ratelimit"
+	"github.com/Stride-Labs/ibc-rate-limiting/ratelimit"
 	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
-	feemarket "github.com/skip-mev/feemarket/x/feemarket"
-	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 	feeabsmodule "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs"
 	feeabstypes "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/types"
+	"github.com/skip-mev/feemarket/x/feemarket"
+	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
 	pfmrouter "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward"
 	pfmroutertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward/types"

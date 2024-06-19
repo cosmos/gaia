@@ -1,27 +1,22 @@
 package ante
 
 import (
-	feemarketante "github.com/skip-mev/feemarket/x/feemarket/ante"
-	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
-
-	ibcante "github.com/cosmos/ibc-go/v7/modules/core/ante"
-	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
-	feeabskeeper "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/keeper"
+	"github.com/cosmos/cosmos-sdk/codec"
 
 	errorsmod "cosmossdk.io/errors"
-
-	"github.com/cosmos/cosmos-sdk/codec"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
-
-	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-
 	gaiaerrors "github.com/cosmos/gaia/v18/types/errors"
-
+	ibcante "github.com/cosmos/ibc-go/v7/modules/core/ante"
+	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 	feeabsante "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/ante"
+	feeabskeeper "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/keeper"
+	feemarketante "github.com/skip-mev/feemarket/x/feemarket/ante"
+	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
 )
 
 // UseFeeMarketDecorator to make the integration testing easier: we can switch off its ante and post decorators with this flag

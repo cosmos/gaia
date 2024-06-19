@@ -2,10 +2,6 @@ package keepers
 
 import (
 	"fmt"
-	"github.com/osmosis-labs/fee-abstraction/v7/x/feeabs"
-	feeabsmodule "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs"
-	feeabskeeper "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/keeper"
-
 	"os"
 	"strings"
 
@@ -44,6 +40,10 @@ import (
 	icsprovider "github.com/cosmos/interchain-security/v4/x/ccv/provider"
 	icsproviderkeeper "github.com/cosmos/interchain-security/v4/x/ccv/provider/keeper"
 	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
+
+	"github.com/osmosis-labs/fee-abstraction/v7/x/feeabs"
+	feeabsmodule "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs"
+	feeabskeeper "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/keeper"
 	feeabstypes "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"

@@ -2,7 +2,6 @@ package gaia
 
 import (
 	"fmt"
-	feeabstypes "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/types"
 	"io"
 	"net/http"
 	"os"
@@ -53,6 +52,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	feeabstypes "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/types"
 
 	wasm "github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
@@ -245,7 +245,7 @@ func NewGaiaApp(
 			TxFeeChecker: func(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64, error) {
 				return minTxFeesChecker(ctx, tx, *app.FeeMarketKeeper)
 			},
-			FeeAbskeeper:      app.FeeabsKeeper,
+			FeeAbskeeper: app.FeeabsKeeper,
 		},
 	)
 	if err != nil {

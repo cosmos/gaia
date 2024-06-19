@@ -255,3 +255,5 @@ replace (
 	// x/exp had a breaking change in further commits
 	golang.org/x/exp => golang.org/x/exp v0.0.0-20230711153332-06a737ee72cb
 )
+
+replace github.com/CosmWasm/wasmd => github.com/msalopek/wasmd v0.0.0-20240619055316-fdb5c3097b05

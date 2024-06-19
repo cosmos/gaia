@@ -11,11 +11,15 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+
 	gaia "github.com/cosmos/gaia/v18/app"
 	gaiahelpers "github.com/cosmos/gaia/v18/app/helpers"
 )
 
 type EmptyAppOptions struct{}
+
+var emptyWasmOption []wasmkeeper.Option
 
 func (ao EmptyAppOptions) Get(_ string) interface{} {
 	return nil
@@ -32,6 +36,7 @@ func TestGaiaApp_BlockedModuleAccountAddrs(t *testing.T) {
 		gaia.DefaultNodeHome,
 		encConfig,
 		EmptyAppOptions{},
+		emptyWasmOption,
 	)
 
 	moduleAccountAddresses := app.ModuleAccountAddrs()

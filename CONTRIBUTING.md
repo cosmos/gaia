@@ -247,7 +247,7 @@ where:
   not necessarily with the same `short-description` or content;
 - `pr-number` is the PR number;
 - `short-description` is a short (4 to 6 word), hyphen separated description of the change;
-- `component` is used for changes that affect one of the components defined in the [config](.changelog/config.toml), e.g., `tests`, `globalfee`.
+- `component` is used for changes that affect one of the components defined in the [config](.changelog/config.toml), e.g., `tests`, `docs`.
 
 For examples, see the [.changelog](.changelog) folder.
 

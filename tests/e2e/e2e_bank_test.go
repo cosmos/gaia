@@ -90,7 +90,6 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 				afterCharlieUAtomBalance, err = getSpecificBalance(chainEndpoint, charlie.String(), uatomDenom)
 				s.Require().NoError(err)
 
-				// assert alice's account gets decremented the amount of tokens twice
 				decremented := beforeAliceUAtomBalance.Sub(tokenAmount).Sub(tokenAmount).Sub(standardFees).IsEqual(afterAliceUAtomBalance)
 				incremented := beforeBobUAtomBalance.Add(tokenAmount).IsEqual(afterBobUAtomBalance) &&
 					beforeCharlieUAtomBalance.Add(tokenAmount).IsEqual(afterCharlieUAtomBalance)
@@ -108,7 +107,7 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 // the tx is signed and broadcast using gaiad tx sign and broadcast commands
 func (s *IntegrationTestSuite) bankSendWithNonCriticalExtensionOptions() {
 	s.Run("transfer_with_non_critical_extension_options", func() {
-		c := s.chainA
+		c := s.chainB
 
 		submitterAccount := c.genesisAccounts[1]
 		submitterAddress, err := submitterAccount.keyInfo.GetAddress()
@@ -177,7 +176,7 @@ func (s *IntegrationTestSuite) bankSendWithNonCriticalExtensionOptions() {
 // the tx should always fail to decode the extension options since no concrete type is registered for the provided extension field
 func (s *IntegrationTestSuite) failedBankSendWithNonCriticalExtensionOptions() {
 	s.Run("fail_encoding_invalid_non_critical_extension_options", func() {
-		c := s.chainA
+		c := s.chainB
 
 		submitterAccount := c.genesisAccounts[1]
 		submitterAddress, err := submitterAccount.keyInfo.GetAddress()

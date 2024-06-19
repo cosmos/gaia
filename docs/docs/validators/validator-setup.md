@@ -131,7 +131,7 @@ the block.
 
 ## Advanced configuration
 
-You can find more advanced information about running a node or a validator on the [CometBFT Core documentation](https://docs.cometbft.com/v0.34/core/validators).
+You can find more advanced information about running a node or a validator on the [CometBFT Core documentation](https://docs.cometbft.com/v0.37/core/validators).
 
 ## Common Problems
 

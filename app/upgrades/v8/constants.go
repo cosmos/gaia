@@ -6,12 +6,12 @@ import (
 	store "github.com/cosmos/cosmos-sdk/store/types"
 
 	"github.com/cosmos/gaia/v18/app/upgrades"
-	"github.com/cosmos/gaia/v18/x/globalfee"
 )
 
 const (
 	// UpgradeName defines the on-chain upgrade name.
-	UpgradeName = "v8-Rho"
+	UpgradeName         = "v8-Rho"
+	GlobalFeeModuleName = "globalfee"
 )
 
 var Upgrade = upgrades.Upgrade{
@@ -19,7 +19,7 @@ var Upgrade = upgrades.Upgrade{
 	CreateUpgradeHandler: CreateUpgradeHandler,
 	StoreUpgrades: store.StoreUpgrades{
 		Added: []string{
-			globalfee.ModuleName,
+			GlobalFeeModuleName,
 		},
 	},
 }

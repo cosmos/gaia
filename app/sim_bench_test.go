@@ -53,6 +53,7 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 		gaia.DefaultNodeHome,
 		encConfig,
 		appOptions,
+		emptyWasmOption,
 		interBlockCacheOpt(),
 		baseapp.SetChainID(AppChainID),
 	)

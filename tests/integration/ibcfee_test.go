@@ -12,6 +12,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/cosmos/gaia/v18/ante"
 	gaiaApp "github.com/cosmos/gaia/v18/app"
 )
 
@@ -39,12 +40,13 @@ type IBCFeeTestSuite struct {
 	pathAToC *ibctesting.Path
 }
 
-func TestFeeMarketTestSuite(t *testing.T) {
+func TestIBCFeeTestSuite(t *testing.T) {
 	ibcfeeSuite := &IBCFeeTestSuite{}
 	suite.Run(t, ibcfeeSuite)
 }
 
 func (suite *IBCFeeTestSuite) SetupTest() {
+	ante.UseFeeMarketDecorator = false
 	ibctesting.DefaultTestingAppInit = GaiaAppIniter
 	suite.coordinator = ibctesting.NewCoordinator(suite.T(), 3)
 	suite.chainA = suite.coordinator.GetChain(ibctesting.GetChainID(1))

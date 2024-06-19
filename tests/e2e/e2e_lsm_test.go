@@ -207,7 +207,7 @@ func (s *IntegrationTestSuite) testLSM() {
 				return false
 			}
 
-			// check tokenize share record module account balance
+			// check that tokenize share record module account received some rewards, since it unbonded during redeem tx execution
 			balanceRes, err = getSpecificBalance(chainEndpoint, tokenizeShareRecord.GetModuleAddress().String(), uatomDenom)
 			s.Require().NoError(err)
 			if balanceRes.Amount.IsNil() || balanceRes.Amount.IsZero() {

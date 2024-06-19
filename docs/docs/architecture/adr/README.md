@@ -49,7 +49,7 @@ They are to be interpreted as described in [RFC 2119](https://datatracker.ietf.o
 
 ### Accepted
 
-- [ADR 002: Globalfee Module](./adr-002-globalfee.md)
+- n/a
 
 ### Proposed
 
@@ -62,3 +62,7 @@ They are to be interpreted as described in [RFC 2119](https://datatracker.ietf.o
 ### Rejected
 
 - [ADR 001: Interchain Accounts](./adr-001-interchain-accounts.md)
+
+### Deprecated
+
+- [ADR 002: Globalfee Module](./adr-002-globalfee.md)

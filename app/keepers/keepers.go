@@ -1,15 +1,19 @@
 package keepers
 
 import (
+	"fmt"
 	"github.com/osmosis-labs/fee-abstraction/v7/x/feeabs"
 	feeabsmodule "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs"
 	feeabskeeper "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/keeper"
 
 	"os"
+	"strings"
 
 	ratelimit "github.com/Stride-Labs/ibc-rate-limiting/ratelimit"
 	ratelimitkeeper "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/keeper"
 	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
+	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
+	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
@@ -83,7 +87,10 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	"github.com/cosmos/gaia/v18/x/globalfee"
+	wasmapp "github.com/CosmWasm/wasmd/app"
+	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 )
 
 type AppKeepers struct {
@@ -104,6 +111,7 @@ type AppKeepers struct {
 	CrisisKeeper     *crisiskeeper.Keeper
 	UpgradeKeeper    *upgradekeeper.Keeper
 	ParamsKeeper     paramskeeper.Keeper
+	WasmKeeper       wasmkeeper.Keeper
 	// IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	IBCKeeper             *ibckeeper.Keeper
 	ICAHostKeeper         icahostkeeper.Keeper
@@ -113,6 +121,7 @@ type AppKeepers struct {
 	FeeGrantKeeper        feegrantkeeper.Keeper
 	AuthzKeeper           authzkeeper.Keeper
 	ConsensusParamsKeeper consensusparamkeeper.Keeper
+	FeeMarketKeeper       *feemarketkeeper.Keeper
 
 	// ICS
 	FeeabsKeeper   feeabskeeper.Keeper
@@ -136,6 +145,7 @@ type AppKeepers struct {
 	ScopedICAHostKeeper       capabilitykeeper.ScopedKeeper
 	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
 	ScopedICSproviderkeeper   capabilitykeeper.ScopedKeeper
+	scopedWasmKeeper          capabilitykeeper.ScopedKeeper
 	ScopedFeeabsKeeper        capabilitykeeper.ScopedKeeper
 }
 
@@ -151,6 +161,7 @@ func NewAppKeeper(
 	invCheckPeriod uint,
 	logger log.Logger,
 	appOpts servertypes.AppOptions,
+	wasmOpts []wasmkeeper.Option,
 ) AppKeepers {
 	appKeepers := AppKeepers{}
 
@@ -195,6 +206,7 @@ func NewAppKeeper(
 	appKeepers.ScopedICAControllerKeeper = appKeepers.CapabilityKeeper.ScopeToModule(icacontrollertypes.SubModuleName)
 	appKeepers.ScopedTransferKeeper = appKeepers.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 	appKeepers.ScopedICSproviderkeeper = appKeepers.CapabilityKeeper.ScopeToModule(providertypes.ModuleName)
+	appKeepers.scopedWasmKeeper = appKeepers.CapabilityKeeper.ScopeToModule(wasmtypes.ModuleName)
 	appKeepers.ScopedFeeabsKeeper = appKeepers.CapabilityKeeper.ScopeToModule(feeabstypes.ModuleName)
 
 	// Applications that wish to enforce statically created ScopedKeepers should call `Seal` after creating
@@ -285,6 +297,14 @@ func NewAppKeeper(
 			appKeepers.SlashingKeeper.Hooks(),
 			appKeepers.ProviderKeeper.Hooks(),
 		),
+	)
+
+	appKeepers.FeeMarketKeeper = feemarketkeeper.NewKeeper(
+		appCodec,
+		appKeepers.keys[feemarkettypes.StoreKey],
+		appKeepers.AccountKeeper,
+		&DefaultFeemarketDenomResolver{},
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	// UpgradeKeeper must be created before IBCKeeper
@@ -443,8 +463,34 @@ func NewAppKeeper(
 		appKeepers.BankKeeper,
 		appKeepers.ScopedTransferKeeper,
 	)
+
 	// Must be called on PFMRouter AFTER TransferKeeper initialized
 	appKeepers.PFMRouterKeeper.SetTransferKeeper(appKeepers.TransferKeeper)
+
+	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
+	if err != nil {
+		panic("error while reading wasm config: " + err.Error())
+	}
+
+	appKeepers.WasmKeeper = wasmkeeper.NewKeeper(
+		appCodec,
+		appKeepers.keys[wasmtypes.StoreKey],
+		appKeepers.AccountKeeper,
+		appKeepers.BankKeeper,
+		appKeepers.StakingKeeper,
+		distrkeeper.NewQuerier(appKeepers.DistrKeeper),
+		appKeepers.IBCKeeper.ChannelKeeper,
+		appKeepers.IBCKeeper.ChannelKeeper,
+		&appKeepers.IBCKeeper.PortKeeper,
+		appKeepers.scopedWasmKeeper,
+		appKeepers.TransferKeeper,
+		bApp.MsgServiceRouter(),
+		bApp.GRPCQueryRouter(),
+		homePath,
+		wasmConfig,
+		strings.Join(wasmapp.AllCapabilities(), ","),
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+	)
 
 	appKeepers.FeeabsKeeper = feeabskeeper.NewKeeper(
 		appCodec,
@@ -498,12 +544,17 @@ func NewAppKeeper(
 	// Create Interchain Accounts Controller Stack
 	var icaControllerStack porttypes.IBCModule = icacontroller.NewIBCMiddleware(nil, appKeepers.ICAControllerKeeper)
 
+	var wasmStack porttypes.IBCModule
+	wasmStack = wasm.NewIBCHandler(appKeepers.WasmKeeper, appKeepers.IBCKeeper.ChannelKeeper, appKeepers.IBCFeeKeeper)
+	wasmStack = ibcfee.NewIBCMiddleware(wasmStack, appKeepers.IBCFeeKeeper)
+
 	// Create IBC Router & seal
 	ibcRouter := porttypes.NewRouter().
 		AddRoute(icahosttypes.SubModuleName, icaHostStack).
 		AddRoute(icacontrollertypes.SubModuleName, icaControllerStack).
 		AddRoute(ibctransfertypes.ModuleName, transferStack).
 		AddRoute(providertypes.ModuleName, appKeepers.ProviderModule).
+		AddRoute(wasmtypes.ModuleName, wasmStack).
 		AddRoute(feeabstypes.ModuleName, feeabsIBCModule)
 
 	appKeepers.IBCKeeper.SetRouter(ibcRouter)
@@ -524,8 +575,7 @@ func (appKeepers *AppKeepers) GetSubspace(moduleName string) paramstypes.Subspac
 func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino, key, tkey storetypes.StoreKey) paramskeeper.Keeper {
 	paramsKeeper := paramskeeper.NewKeeper(appCodec, legacyAmino, key, tkey)
 
-	//nolint: staticcheck // SA1019: moduletypes.ParamKeyTable is deprecated
-	paramsKeeper.Subspace(authtypes.ModuleName).WithKeyTable(authtypes.ParamKeyTable())
+	paramsKeeper.Subspace(authtypes.ModuleName).WithKeyTable(authtypes.ParamKeyTable()) //nolint: staticcheck // SA1019
 	paramsKeeper.Subspace(stakingtypes.ModuleName).WithKeyTable(stakingtypes.ParamKeyTable())
 	paramsKeeper.Subspace(banktypes.ModuleName).WithKeyTable(banktypes.ParamKeyTable())         //nolint: staticcheck // SA1019
 	paramsKeeper.Subspace(minttypes.ModuleName).WithKeyTable(minttypes.ParamKeyTable())         //nolint: staticcheck // SA1019
@@ -539,9 +589,23 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(icacontrollertypes.SubModuleName)
 	paramsKeeper.Subspace(pfmroutertypes.ModuleName).WithKeyTable(pfmroutertypes.ParamKeyTable())
 	paramsKeeper.Subspace(ratelimittypes.ModuleName)
-	paramsKeeper.Subspace(globalfee.ModuleName)
 	paramsKeeper.Subspace(providertypes.ModuleName)
+	paramsKeeper.Subspace(wasmtypes.ModuleName)
 	paramsKeeper.Subspace(feeabstypes.ModuleName)
 
 	return paramsKeeper
+}
+
+type DefaultFeemarketDenomResolver struct{}
+
+func (r *DefaultFeemarketDenomResolver) ConvertToDenom(_ sdk.Context, coin sdk.DecCoin, denom string) (sdk.DecCoin, error) {
+	if coin.Denom == denom {
+		return coin, nil
+	}
+
+	return sdk.DecCoin{}, fmt.Errorf("error resolving denom")
+}
+
+func (r *DefaultFeemarketDenomResolver) ExtraDenoms(_ sdk.Context) ([]string, error) {
+	return []string{}, nil
 }

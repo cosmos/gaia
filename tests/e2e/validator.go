@@ -262,7 +262,7 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 	signerData := authsigning.SignerData{
 		ChainID:       v.chain.id,
 		AccountNumber: 0,
-		Sequence:      0,
+		Sequence:      1,
 	}
 
 	// For SIGN_MODE_DIRECT, calling SetSignatures calls setSignerInfos on

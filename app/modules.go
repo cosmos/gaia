@@ -3,6 +3,8 @@ package gaia
 import (
 	ratelimit "github.com/Stride-Labs/ibc-rate-limiting/ratelimit"
 	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
+	feemarket "github.com/skip-mev/feemarket/x/feemarket"
+	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 	feeabsmodule "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs"
 	feeabstypes "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/types"
 
@@ -62,8 +64,10 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
+	wasm "github.com/CosmWasm/wasmd/x/wasm"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+
 	gaiaappparams "github.com/cosmos/gaia/v18/app/params"
-	"github.com/cosmos/gaia/v18/x/globalfee"
 	"github.com/cosmos/gaia/v18/x/metaprotocols"
 	metaprotocolstypes "github.com/cosmos/gaia/v18/x/metaprotocols/types"
 )
@@ -80,6 +84,9 @@ var maccPerms = map[string][]string{
 	ibctransfertypes.ModuleName:       {authtypes.Minter, authtypes.Burner},
 	ibcfeetypes.ModuleName:            nil,
 	providertypes.ConsumerRewardsPool: nil,
+	wasmtypes.ModuleName:              {authtypes.Burner},
+	feemarkettypes.ModuleName:         nil,
+	feemarkettypes.FeeCollectorName:   nil,
 	feeabstypes.ModuleName:            nil,
 }
 
@@ -124,10 +131,11 @@ var ModuleBasics = module.NewBasicManager(
 	pfmrouter.AppModuleBasic{},
 	ratelimit.AppModuleBasic{},
 	ica.AppModuleBasic{},
-	globalfee.AppModule{},
 	icsprovider.AppModuleBasic{},
 	consensus.AppModuleBasic{},
 	metaprotocols.AppModuleBasic{},
+	wasm.AppModuleBasic{},
+	feemarket.AppModuleBasic{},
 	feeabsmodule.AppModuleBasic{},
 )
 
@@ -161,10 +169,9 @@ func appModules(
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		ibc.NewAppModule(app.IBCKeeper),
 		sdkparams.NewAppModule(app.ParamsKeeper),
-		globalfee.NewAppModule(app.GetSubspace(globalfee.ModuleName)),
 		consensus.NewAppModule(appCodec, app.ConsensusParamsKeeper),
+		wasm.NewAppModule(appCodec, &app.AppKeepers.WasmKeeper, app.AppKeepers.StakingKeeper, app.AppKeepers.AccountKeeper, app.AppKeepers.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
 		ibcfee.NewAppModule(app.IBCFeeKeeper),
-		feeabsmodule.NewAppModule(appCodec, app.FeeabsKeeper),
 		app.TransferModule,
 		app.ICAModule,
 		app.PFMRouterModule,
@@ -172,6 +179,8 @@ func appModules(
 
 		app.ProviderModule,
 		metaprotocols.NewAppModule(),
+		feemarket.NewAppModule(appCodec, *app.FeeMarketKeeper),
+		feeabsmodule.NewAppModule(appCodec, app.FeeabsKeeper),
 	}
 }
 
@@ -197,6 +206,7 @@ func simulationModules(
 		sdkparams.NewAppModule(app.ParamsKeeper),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
+		wasm.NewAppModule(appCodec, &app.AppKeepers.WasmKeeper, app.AppKeepers.StakingKeeper, app.AppKeepers.AccountKeeper, app.AppKeepers.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
 		ibc.NewAppModule(app.IBCKeeper),
 		app.TransferModule,
 		app.ICAModule,
@@ -241,10 +251,11 @@ func orderBeginBlockers() []string {
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
-		globalfee.ModuleName,
+		feemarkettypes.ModuleName,
 		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
+		wasmtypes.ModuleName,
 	}
 }
 
@@ -281,10 +292,11 @@ func orderEndBlockers() []string {
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
-		globalfee.ModuleName,
+		feemarkettypes.ModuleName,
 		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
+		wasmtypes.ModuleName,
 	}
 }
 
@@ -321,17 +333,17 @@ func orderInitBlockers() []string {
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
-		// The globalfee module should ideally be initialized before the genutil module in theory:
-		// The globalfee antehandler performs checks in DeliverTx, which is called by gentx.
-		// When the global fee > 0, gentx needs to pay the fee. However, this is not expected,
-		// (in our case, the global fee is initialized with an empty value, which might not be a problem
-		// if the globalfee in genesis is not changed.)
-		// To resolve this issue, we should initialize the globalfee module after genutil, ensuring that the global
+		// The feemarket module should ideally be initialized before the genutil module in theory:
+		// The feemarket antehandler performs checks in DeliverTx, which is called by gentx.
+		// When the fee > 0, gentx needs to pay the fee. However, this is not expected.
+		// To resolve this issue, we should initialize the feemarket module after genutil, ensuring that the
 		// min fee is empty when gentx is called.
+		// A similar issue existed for the 'globalfee' module, which was previously used instead of 'feemarket'.
 		// For more details, please refer to the following link: https://github.com/cosmos/gaia/issues/2489
-		globalfee.ModuleName,
+		feemarkettypes.ModuleName,
 		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
+		wasmtypes.ModuleName,
 	}
 }

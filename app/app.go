@@ -10,6 +10,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
+	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
 	"github.com/spf13/cast"
 
 	// unnamed import of statik for swagger UI support
@@ -20,6 +21,7 @@ import (
 	tmjson "github.com/cometbft/cometbft/libs/json"
 	"github.com/cometbft/cometbft/libs/log"
 	tmos "github.com/cometbft/cometbft/libs/os"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	ibctesting "github.com/cosmos/ibc-go/v7/testing"
 	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
@@ -52,12 +54,15 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
+	wasm "github.com/CosmWasm/wasmd/x/wasm"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+
 	gaiaante "github.com/cosmos/gaia/v18/ante"
 	"github.com/cosmos/gaia/v18/app/keepers"
 	"github.com/cosmos/gaia/v18/app/params"
 	"github.com/cosmos/gaia/v18/app/upgrades"
 	v18 "github.com/cosmos/gaia/v18/app/upgrades/v18"
-	"github.com/cosmos/gaia/v18/x/globalfee"
 )
 
 var (
@@ -113,6 +118,7 @@ func NewGaiaApp(
 	homePath string,
 	encodingConfig params.EncodingConfig,
 	appOpts servertypes.AppOptions,
+	wasmOpts []wasmkeeper.Option,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *GaiaApp {
 	appCodec := encodingConfig.Marshaler
@@ -160,6 +166,7 @@ func NewGaiaApp(
 		invCheckPeriod,
 		logger,
 		appOpts,
+		wasmOpts,
 	)
 
 	// NOTE: Any module instantiated in the module manager that is later modified
@@ -215,6 +222,11 @@ func NewGaiaApp(
 	app.MountTransientStores(app.GetTransientStoreKey())
 	app.MountMemoryStores(app.GetMemoryStoreKey())
 
+	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
+	if err != nil {
+		panic("error while reading wasm config: " + err.Error())
+	}
+
 	anteHandler, err := gaiaante.NewAnteHandler(
 		gaiaante.HandlerOptions{
 			HandlerOptions: ante.HandlerOptions{
@@ -226,22 +238,45 @@ func NewGaiaApp(
 			},
 			Codec:             appCodec,
 			IBCkeeper:         app.IBCKeeper,
-			GlobalFeeSubspace: app.GetSubspace(globalfee.ModuleName),
 			StakingKeeper:     app.StakingKeeper,
+			FeeMarketKeeper:   app.FeeMarketKeeper,
+			WasmConfig:        &wasmConfig,
+			TxCounterStoreKey: app.AppKeepers.GetKey(wasmtypes.StoreKey),
+			TxFeeChecker: func(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64, error) {
+				return minTxFeesChecker(ctx, tx, *app.FeeMarketKeeper)
+			},
 			FeeAbskeeper:      app.FeeabsKeeper,
-			// If TxFeeChecker is nil the default ante TxFeeChecker is used
-			// so we use this no-op to keep the global fee module behaviour unchanged
-			TxFeeChecker: noOpTxFeeChecker,
 		},
 	)
 	if err != nil {
 		panic(fmt.Errorf("failed to create AnteHandler: %s", err))
 	}
 
+	postHandlerOptions := PostHandlerOptions{
+		AccountKeeper:   app.AccountKeeper,
+		BankKeeper:      app.BankKeeper,
+		FeeGrantKeeper:  app.FeeGrantKeeper,
+		FeeMarketKeeper: app.FeeMarketKeeper,
+	}
+	postHandler, err := NewPostHandler(postHandlerOptions)
+	if err != nil {
+		panic(err)
+	}
+
+	// set ante and post handlers
 	app.SetAnteHandler(anteHandler)
+	app.SetPostHandler(postHandler)
+
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
+
+	if manager := app.SnapshotManager(); manager != nil {
+		err = manager.RegisterExtensions(wasmkeeper.NewWasmSnapshotter(app.CommitMultiStore(), &app.AppKeepers.WasmKeeper))
+		if err != nil {
+			panic("failed to register snapshot extension: " + err.Error())
+		}
+	}
 
 	app.setupUpgradeHandlers()
 	app.setupUpgradeStoreLoaders()
@@ -249,6 +284,12 @@ func NewGaiaApp(
 	if loadLatest {
 		if err := app.LoadLatestVersion(); err != nil {
 			tmos.Exit(fmt.Sprintf("failed to load latest version: %s", err))
+		}
+
+		ctx := app.BaseApp.NewUncachedContext(true, tmproto.Header{})
+
+		if err := app.AppKeepers.WasmKeeper.InitializePinnedCodes(ctx); err != nil {
+			tmos.Exit(fmt.Sprintf("WasmKeeper failed initialize pinned codes %s", err))
 		}
 	}
 
@@ -441,17 +482,48 @@ func (app *GaiaApp) GetTxConfig() client.TxConfig {
 // EmptyAppOptions is a stub implementing AppOptions
 type EmptyAppOptions struct{}
 
+// EmptyWasmOptions is a stub implementing Wasmkeeper Option
+var EmptyWasmOptions []wasmkeeper.Option
+
 // Get implements AppOptions
 func (ao EmptyAppOptions) Get(_ string) interface{} {
 	return nil
 }
 
-// noOpTxFeeChecker is an ante TxFeeChecker for the DeductFeeDecorator, see x/auth/ante/fee.go,
-// it performs a no-op by not checking tx fees and always returns a zero tx priority
-func noOpTxFeeChecker(_ sdk.Context, tx sdk.Tx) (sdk.Coins, int64, error) {
+// minTxFeesChecker will be executed only if the feemarket module is disabled.
+// In this case, the auth module's DeductFeeDecorator is executed, and
+// we use the minTxFeesChecker to enforce the minimum transaction fees.
+// Min tx fees are calculated as gas_limit * feemarket_min_base_gas_price
+func minTxFeesChecker(ctx sdk.Context, tx sdk.Tx, feemarketKp feemarketkeeper.Keeper) (sdk.Coins, int64, error) {
 	feeTx, ok := tx.(sdk.FeeTx)
 	if !ok {
 		return nil, 0, errorsmod.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
+	}
+
+	// To keep the gentxs with zero fees, we need to skip the validation in the first block
+	if ctx.BlockHeight() == 0 {
+		return feeTx.GetFee(), 0, nil
+	}
+
+	feeMarketParams, err := feemarketKp.GetParams(ctx)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	feeRequired := sdk.NewCoins(
+		sdk.NewCoin(
+			feeMarketParams.FeeDenom,
+			feeMarketParams.MinBaseGasPrice.MulInt(sdk.NewIntFromUint64(feeTx.GetGas())).Ceil().RoundInt()))
+
+	feeCoins := feeTx.GetFee()
+	if len(feeCoins) != 1 {
+		return nil, 0, fmt.Errorf(
+			"expected exactly one fee coin; got %s, required: %s", feeCoins.String(), feeRequired.String())
+	}
+
+	if !feeCoins.IsAnyGTE(feeRequired) {
+		return nil, 0, fmt.Errorf(
+			"not enough fees provided; got %s, required: %s", feeCoins.String(), feeRequired.String())
 	}
 
 	return feeTx.GetFee(), 0, nil

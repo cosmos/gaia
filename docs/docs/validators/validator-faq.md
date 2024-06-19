@@ -12,7 +12,7 @@ This is work in progress. Mechanisms and values are susceptible to change.
 
 ### What is a Cosmos validator?
 
-The [Cosmos Hub](/getting-started/what-is-gaia) is based on [CometBFT](https://docs.cometbft.com/v0.34/introduction/what-is-cometbft) that relies on a set of validators to secure the network. The role of validators is to run a full node and participate in consensus by broadcasting votes that contain cryptographic signatures signed by the validator's private key. Validators commit new blocks in the blockchain and receive revenue in exchange for their work. Validators must also participate in governance by voting on proposals. Validators are weighted according to their total stake.
+The Cosmos Hub is based on [CometBFT](https://docs.cometbft.com/v0.37/introduction/what-is-cometbft) that relies on a set of validators to secure the network. The role of validators is to run a full node and participate in consensus by broadcasting votes that contain cryptographic signatures signed by the validator's private key. Validators commit new blocks in the blockchain and receive revenue in exchange for their work. Validators must also participate in governance by voting on proposals. Validators are weighted according to their total stake.
 
 ### What is staking?
 
@@ -294,7 +294,7 @@ The `ValidatorBond` message converts the full balance delegated to a validator i
 
 A modest level of hardware specifications is initially required and rises as network use increases. Participating in the testnet is the best way to learn more. You can find the current hardware recommendations in the [Joining Mainnet documentation](../hub-tutorials/join-mainnet.md).
 
-Validators are recommended to set up [sentry nodes](https://docs.cometbft.com/v0.34/core/validators) to protect your validator node from DDoS attacks.
+Validators are recommended to set up [sentry nodes](https://docs.cometbft.com/v0.37/core/validators) to protect your validator node from DDoS attacks.
 
 ### What are software requirements?
 
@@ -327,7 +327,7 @@ Running an effective operation is key to avoiding unexpected unbonding or slashi
 
 Validators are expected to perform regular software updates to accommodate chain upgrades and bug fixes. It is suggested to consider using [Cosmovisor](https://docs.cosmos.network/v0.45/run-node/cosmovisor.html) to partially automate this process.
 
-During an chain upgrade, progress is discussed in a private channel in the [Cosmos Developer Discord](https://discord.gg/cosmosnetwork). If your validator is in the active set we encourage you to request access to that channel by contacting a moderator.
+During an chain upgrade, progress is discussed in a private channel in the [Interchain Discord](https://discord.gg/cosmosnetwork). If your validator is in the active set we encourage you to request access to that channel by contacting a moderator.
 
 ### How can validators protect themselves from denial-of-service attacks?
 
@@ -341,4 +341,4 @@ Validator nodes are expected to connect only to full nodes they trust because th
 
 Sentry nodes can be quickly spun up or change their IP addresses. Because the links to the sentry nodes are in private IP space, an internet-based attack cannot disturb them directly. This strategy ensures that validator block proposals and votes have a much higher chance to make it to the rest of the network.
 
-For more sentry node details, see the [CometBFT Documentation](https://docs.cometbft.com/v0.34/core/validators) or the [Sentry Node Architecture Overview](https://forum.cosmos.network/t/sentry-node-architecture-overview/454) on the forum.
+For more sentry node details, see the [CometBFT Documentation](https://docs.cometbft.com/v0.37/core/validators) or the [Sentry Node Architecture Overview](https://forum.cosmos.network/t/sentry-node-architecture-overview/454) on the forum.

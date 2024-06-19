@@ -14,8 +14,6 @@ Cosmos governance is driven by the Cosmos community, and much of the documentati
 Governance discussions happens in a number of places moderated by diverse community members, including:
 
 - [Forum](http://forum.cosmos.network/)
-- [Discord](https://discord.com/invite/cosmosnetwork)
-<!-- markdown-link-check-disable-next-line -->
-- [Twitter](https://twitter.com/CosmosGov)
+- [Discord](https://discord.gg/interchain)
 - [Reddit](http://reddit.com/r/cosmosnetwork)
 - anywhere else you might interact with members of the Cosmos community!

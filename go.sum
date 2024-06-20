@@ -1211,6 +1211,8 @@ github.com/influxdata/tdigest v0.0.0-20181121200506-bf2b5ad3c0a9/go.mod h1:Js0mq
 github.com/influxdata/usage-client v0.0.0-20160829180054-6d3895376368/go.mod h1:Wbbw6tYNvwa5dlB6304Sd+82Z3f7PmVZHVKU637d4po=
 github.com/informalsystems/cosmos-sdk v0.46.0-alpha2.0.20240614081903-f1b9aac8d413 h1:Vkk5RywGiqQsR68T9FwxTw5JQ2JstfpRlMiOP0j2+Tk=
 github.com/informalsystems/cosmos-sdk v0.46.0-alpha2.0.20240614081903-f1b9aac8d413/go.mod h1:9sL4HXReNswcuwsPO33TACJmc+xkxYwHnmcL7rZgu1c=
+github.com/informalsystems/wasmd v0.45.1-0.20240620130222-a7ea203e1625 h1:S1zJmfpXC/VGOBYdXO1KAN9tfPQCRfx1KH7n/b89DGI=
+github.com/informalsystems/wasmd v0.45.1-0.20240620130222-a7ea203e1625/go.mod h1:m0eKqxW2caVw1CJKEcEDaCiLXuo7+BflIlUOwiQU55c=
 github.com/jackpal/go-nat-pmp v1.0.2/go.mod h1:QPH045xvCAeXUZOxsnwmrtiCoxIr9eob+4orBN1SBKc=
 github.com/jedisct1/go-minisign v0.0.0-20190909160543-45766022959e/go.mod h1:G1CVv03EnqU1wYL2dFwXxW2An0az9JTl/ZsqXQeBlkU=
 github.com/jessevdk/go-flags v0.0.0-20141203071132-1679536dcc89/go.mod h1:4FA24M0QyGHXBuZZK/XkWh8h0e1EYbRYJSGM75WSRxI=
@@ -1365,8 +1367,6 @@ github.com/modern-go/reflect2 v1.0.1/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3Rllmb
 github.com/modern-go/reflect2 v1.0.2 h1:xBagoLtFs94CBntxluKeaWgTMpvLxC4ur3nMaC9Gz0M=
 github.com/modern-go/reflect2 v1.0.2/go.mod h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjYzDa0/r8luk=
 github.com/modocache/gover v0.0.0-20171022184752-b58185e213c5/go.mod h1:caMODM3PzxT8aQXRPkAt8xlV/e7d7w8GM5g0fa5F0D8=
-github.com/msalopek/wasmd v0.0.0-20240619055316-fdb5c3097b05 h1:bp6wQnTGGWyWaJJkJoZBpjH7+EqvBe6fEo/NrPEF1rE=
-github.com/msalopek/wasmd v0.0.0-20240619055316-fdb5c3097b05/go.mod h1:m0eKqxW2caVw1CJKEcEDaCiLXuo7+BflIlUOwiQU55c=
 github.com/mschoch/smat v0.0.0-20160514031455-90eadee771ae/go.mod h1:qAyveg+e4CE+eKJXWVjKXM4ck2QobLqTDytGJbLLhJg=
 github.com/mtibben/percent v0.2.1 h1:5gssi8Nqo8QU/r2pynCm+hBQHpkB/uNK7BJCFogWdzs=
 github.com/mtibben/percent v0.2.1/go.mod h1:KG9uO+SZkUp+VkRHsCdYQV3XSZrrSpR3O9ibNBTZrns=

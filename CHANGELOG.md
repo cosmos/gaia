@@ -35,6 +35,8 @@
   ([\#3028](https://github.com/cosmos/gaia/pull/3028))
 - Add the wasmd module.
   ([\#3051](https://github.com/cosmos/gaia/pull/3051))
+- Enable both `MsgSoftwareUpgrade` and `MsgCancelUpgrade` to be expedited. 
+  ([\#3149](https://github.com/cosmos/gaia/pull/3149))
 
 ### STATE BREAKING
 
@@ -46,6 +48,8 @@
   ([\#3051](https://github.com/cosmos/gaia/pull/3051))
 - Bump [interchain-security](https://github.com/cosmos/interchain-security) to
   [v4.3.0-lsm](https://github.com/cosmos/interchain-security/releases/tag/v4.3.0-lsm).
+  ([\#3149](https://github.com/cosmos/gaia/pull/3149))
+- Enable both `MsgSoftwareUpgrade` and `MsgCancelUpgrade` to be expedited. 
   ([\#3149](https://github.com/cosmos/gaia/pull/3149))
 - Bump [ibc-go](https://github.com/cosmos/ibc-go) to
   [v7.6.0](https://github.com/cosmos/ibc-go/releases/tag/v7.6.0)

@@ -751,6 +751,8 @@ github.com/cosmos/btcutil v1.0.5 h1:t+ZFcX77LpKtDBhjucvnOH8C2l2ioGsBNEQ3jef8xFk=
 github.com/cosmos/btcutil v1.0.5/go.mod h1:IyB7iuqZMJlthe2tkIFL33xPyzbFYP0XVdS8P5lUPis=
 github.com/cosmos/cosmos-proto v1.0.0-beta.5 h1:eNcayDLpip+zVLRLYafhzLvQlSmyab+RC5W7ZfmxJLA=
 github.com/cosmos/cosmos-proto v1.0.0-beta.5/go.mod h1:hQGLpiIUloJBMdQMMWb/4wRApmI9hjHH05nefC0Ojec=
+github.com/cosmos/cosmos-sdk v0.47.16-ics-lsm h1:+mlfnZ4Cs8HMw9xy7Epjv56avptYSTsX3TVlUDX3Qcs=
+github.com/cosmos/cosmos-sdk v0.47.16-ics-lsm/go.mod h1:uzvMwHXmuRDSOaF8ec9HickjLHJcItWBREdkaDHcPiE=
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d/go.mod h1:tSxLoYXyBmiFeKpvmq4dzayMdCjCnu8uqmCysIGBT2Y=
 github.com/cosmos/go-bip39 v1.0.0 h1:pcomnQdrdH22njcAatO0yWojsUnCO3y2tNoV1cb6hHY=
 github.com/cosmos/go-bip39 v1.0.0/go.mod h1:RNJv0H/pOIVgxw6KS7QeX2a0Uo0aKUlfhZ4xuwvCdJw=
@@ -1209,8 +1211,6 @@ github.com/influxdata/promql/v2 v2.12.0/go.mod h1:fxOPu+DY0bqCTCECchSRtWfc+0X19y
 github.com/influxdata/roaring v0.4.13-0.20180809181101-fc520f41fab6/go.mod h1:bSgUQ7q5ZLSO+bKBGqJiCBGAl+9DxyW63zLTujjUlOE=
 github.com/influxdata/tdigest v0.0.0-20181121200506-bf2b5ad3c0a9/go.mod h1:Js0mqiSBE6Ffsg94weZZ2c+v/ciT8QRHFOap7EKDrR0=
 github.com/influxdata/usage-client v0.0.0-20160829180054-6d3895376368/go.mod h1:Wbbw6tYNvwa5dlB6304Sd+82Z3f7PmVZHVKU637d4po=
-github.com/informalsystems/cosmos-sdk v0.46.0-alpha2.0.20240614081903-f1b9aac8d413 h1:Vkk5RywGiqQsR68T9FwxTw5JQ2JstfpRlMiOP0j2+Tk=
-github.com/informalsystems/cosmos-sdk v0.46.0-alpha2.0.20240614081903-f1b9aac8d413/go.mod h1:9sL4HXReNswcuwsPO33TACJmc+xkxYwHnmcL7rZgu1c=
 github.com/informalsystems/wasmd v0.45.0-lsm h1:sRldfkkUjZRIOV9+nNw34dS+wrTX6ShhQZd9WqcI+IQ=
 github.com/informalsystems/wasmd v0.45.0-lsm/go.mod h1:m0eKqxW2caVw1CJKEcEDaCiLXuo7+BflIlUOwiQU55c=
 github.com/jackpal/go-nat-pmp v1.0.2/go.mod h1:QPH045xvCAeXUZOxsnwmrtiCoxIr9eob+4orBN1SBKc=

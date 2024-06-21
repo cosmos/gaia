@@ -32,8 +32,8 @@ func CreateUpgradeHandler(
 		expeditedPeriod := 24 * 7 * time.Hour // 7 days
 		govParams := keepers.GovKeeper.GetParams(ctx)
 		govParams.ExpeditedVotingPeriod = &expeditedPeriod
-		govParams.ExpeditedThreshold = govv1.DefaultExpeditedThreshold.String() // 66.7%
-		govParams.ExpeditedMinDeposit = govParams.MinDeposit                    // full deposit amount is required
+		govParams.ExpeditedThreshold = govv1.DefaultExpeditedThreshold.String()                              // 66.7%
+		govParams.ExpeditedMinDeposit = sdk.NewCoins(sdk.NewCoin(types.UAtomDenom, sdk.NewInt(500_000_000))) // 500 ATOM
 		err = keepers.GovKeeper.SetParams(ctx, govParams)
 		if err != nil {
 			return vm, errorsmod.Wrapf(err, "unable to set gov params")

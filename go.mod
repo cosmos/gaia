@@ -12,12 +12,12 @@ require (
 	github.com/Stride-Labs/ibc-rate-limiting v1.0.1
 	github.com/cometbft/cometbft v0.37.6
 	github.com/cometbft/cometbft-db v0.11.0
-	github.com/cosmos/cosmos-sdk v0.47.12
+	github.com/cosmos/cosmos-sdk v0.47.16-ics-lsm
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/gogoproto v1.5.0
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7 v7.1.3
-	github.com/cosmos/ibc-go/v7 v7.5.1
-	github.com/cosmos/interchain-security/v4 v4.2.0
+	github.com/cosmos/ibc-go/v7 v7.6.0
+	github.com/cosmos/interchain-security/v4 v4.3.0-rc0
 	github.com/google/gofuzz v1.2.0
 	github.com/gorilla/mux v1.8.1
 	github.com/ory/dockertest/v3 v3.10.0
@@ -238,7 +238,7 @@ replace (
 	github.com/cosmos/iavl => github.com/cosmos/iavl v0.20.1
 
 	// Use special ICS v4.1.0-ics-lsm release with support for LSM
-	github.com/cosmos/interchain-security/v4 => github.com/cosmos/interchain-security/v4 v4.2.0-lsm
+	github.com/cosmos/interchain-security/v4 => github.com/cosmos/interchain-security/v4 v4.3.0-lsm-rc0
 
 	github.com/cosmos/ledger-cosmos-go => github.com/cosmos/ledger-cosmos-go v0.12.4
 

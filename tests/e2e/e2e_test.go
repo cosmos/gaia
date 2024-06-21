@@ -67,6 +67,8 @@ func (s *IntegrationTestSuite) TestGov() {
 	s.AddRemoveConsumerChain()
 
 	s.testSetBlocksPerEpoch()
+	s.ExpeditedProposalRejected()
+	s.GovSoftwareUpgradeExpedited()
 }
 
 func (s *IntegrationTestSuite) TestIBC() {

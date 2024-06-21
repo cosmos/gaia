@@ -18,6 +18,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
+	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
@@ -149,6 +150,22 @@ func queryGovProposal(endpoint string, proposalID int) (govtypesv1beta1.QueryPro
 	var govProposalResp govtypesv1beta1.QueryProposalResponse
 
 	path := fmt.Sprintf("%s/cosmos/gov/v1beta1/proposals/%d", endpoint, proposalID)
+
+	body, err := httpGet(path)
+	if err != nil {
+		return govProposalResp, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+	if err := cdc.UnmarshalJSON(body, &govProposalResp); err != nil {
+		return govProposalResp, err
+	}
+
+	return govProposalResp, nil
+}
+
+func queryGovProposalV1(endpoint string, proposalID int) (govtypesv1.QueryProposalResponse, error) {
+	var govProposalResp govtypesv1.QueryProposalResponse
+
+	path := fmt.Sprintf("%s/cosmos/gov/v1/proposals/%d", endpoint, proposalID)
 
 	body, err := httpGet(path)
 	if err != nil {

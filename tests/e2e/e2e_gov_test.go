@@ -8,6 +8,7 @@ import (
 	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
@@ -221,7 +222,7 @@ func (s *IntegrationTestSuite) verifyChainPassesUpgradeHeight(c *chain, valIdx, 
 
 func (s *IntegrationTestSuite) submitGovCommand(chainAAPIEndpoint, sender string, proposalID int, govCommand string, proposalFlags []string, expectedSuccessStatus govtypesv1beta1.ProposalStatus) {
 	s.Run(fmt.Sprintf("Running tx gov %s", govCommand), func() {
-		s.runGovExec(s.chainA, 0, sender, govCommand, proposalFlags, standardFees.String())
+		s.runGovExec(s.chainA, 0, sender, govCommand, proposalFlags, standardFees.String(), nil)
 
 		s.Require().Eventually(
 			func() bool {
@@ -232,6 +233,13 @@ func (s *IntegrationTestSuite) submitGovCommand(chainAAPIEndpoint, sender string
 			15*time.Second,
 			5*time.Second,
 		)
+	})
+}
+
+func (s *IntegrationTestSuite) submitGovCommandExpectingFailure(sender string, govCommand string, proposalFlags []string) {
+	s.Run(fmt.Sprintf("Running failing expedited tx gov %s -- expecting error", govCommand), func() {
+		// should return an error -- the Tx fails at the ante handler
+		s.runGovExec(s.chainA, 0, sender, govCommand, proposalFlags, standardFees.String(), s.expectTxSubmitError("unsupported expedited proposal type"))
 	})
 }
 
@@ -281,4 +289,61 @@ func (s *IntegrationTestSuite) testSetBlocksPerEpoch() {
 		15*time.Second,
 		5*time.Second,
 	)
+}
+
+// ExpeditedProposalRejected tests that expediting a ParamChange proposal fails.
+func (s *IntegrationTestSuite) ExpeditedProposalRejected() {
+	defaultBlocksPerEpoch := providertypes.DefaultParams().BlocksPerEpoch
+
+	// attempt to change but nothing should happen -> proposal fails at ante handler
+	expectedBlocksPerEpoch := defaultBlocksPerEpoch + 100
+	s.writeFailingExpeditedProposal(s.chainA, expectedBlocksPerEpoch)
+
+	validatorAAddr, _ := s.chainA.validators[0].keyInfo.GetAddress()
+	submitGovFlags := []string{configFile(proposalFailExpedited)}
+
+	s.T().Logf("Submitting, deposit and vote Gov Proposal: Change BlocksPerEpoch parameter - expecting to fail")
+	s.submitGovCommandExpectingFailure(validatorAAddr.String(), "submit-proposal", submitGovFlags)
+}
+
+// MsgSoftwareUpgrade can be expedited but it can only be submitted using "tx gov submit-proposal" command.
+// Messages submitted using "tx gov submit-legacy-proposal" command cannot be expedited.// submit but vote no so that the proposal is not passed
+func (s *IntegrationTestSuite) GovSoftwareUpgradeExpedited() {
+	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	senderAddress, _ := s.chainA.validators[0].keyInfo.GetAddress()
+	sender := senderAddress.String()
+
+	proposalCounter++
+	s.writeExpeditedSoftwareUpgradeProp(s.chainA)
+	submitGovFlags := []string{configFile(proposalExpeditedSoftwareUpgrade)}
+
+	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
+	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes=0.1,no=0.8,abstain=0.05,no_with_veto=0.05"}
+
+	s.Run(fmt.Sprintf("Running expedited tx gov %s", "submit-proposal"), func() {
+		s.submitGovCommand(chainAAPIEndpoint, sender, proposalCounter, "submit-proposal", submitGovFlags, govtypesv1beta1.StatusDepositPeriod)
+
+		s.Require().Eventually(
+			func() bool {
+				proposal, err := queryGovProposalV1(chainAAPIEndpoint, proposalCounter)
+				s.Require().NoError(err)
+				return proposal.Proposal.Expedited && proposal.GetProposal().Status == govtypesv1.ProposalStatus_PROPOSAL_STATUS_DEPOSIT_PERIOD
+			},
+			15*time.Second,
+			5*time.Second,
+		)
+		s.submitGovCommand(chainAAPIEndpoint, sender, proposalCounter, "deposit", depositGovFlags, govtypesv1beta1.StatusVotingPeriod)
+		s.submitGovCommand(chainAAPIEndpoint, sender, proposalCounter, "weighted-vote", voteGovFlags, govtypesv1beta1.StatusRejected) // voting no on prop
+
+		// confirm that the proposal was moved from expedited
+		s.Require().Eventually(
+			func() bool {
+				proposal, err := queryGovProposalV1(chainAAPIEndpoint, proposalCounter)
+				s.Require().NoError(err)
+				return proposal.Proposal.Expedited == false
+			},
+			15*time.Second,
+			5*time.Second,
+		)
+	})
 }

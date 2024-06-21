@@ -108,6 +108,10 @@ func TestAppStateDeterminism(t *testing.T) {
 			// due to the minimum staked tokens required to submit a vote
 			ante.SetMinStakedTokens(math.LegacyZeroDec())
 
+			// NOTE: setting to zero to avoid failing the simulation
+			// gaia ante allows only certain proposals to be expedited - the simulation doesn't know about this
+			ante.SetExpeditedProposalsEnabled(false)
+
 			fmt.Printf(
 				"running non-determinism simulation; seed %d: %d/%d, attempt: %d/%d\n",
 				config.Seed, i+1, numSeeds, j+1, numTimesToRunPerSeed,

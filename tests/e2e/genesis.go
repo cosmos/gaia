@@ -186,6 +186,7 @@ func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, ba
 
 	maxDepositPeriod := 10 * time.Minute
 	votingPeriod := 15 * time.Second
+	expeditedVoting := 13 * time.Second
 
 	govStateLegacy := govlegacytypes.NewGenesisState(1,
 		govlegacytypes.NewDepositParams(sdk.NewCoins(sdk.NewCoin(denom, amnt)), maxDepositPeriod),
@@ -202,6 +203,9 @@ func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, ba
 	if err != nil {
 		return fmt.Errorf("failed to migrate v1beta1 gov genesis state to v4: %w", err)
 	}
+
+	govStateV4.Params.ExpeditedVotingPeriod = &expeditedVoting
+	govStateV4.Params.ExpeditedMinDeposit = sdk.NewCoins(sdk.NewCoin(denom, amnt)) // same as normal for testing
 
 	govGenStateBz, err := cdc.MarshalJSON(govStateV4)
 	if err != nil {

@@ -4,13 +4,6 @@ order: 1
 sidebar_position: 1
 ---
 
-:::tip
-### **v17 Upgrade**
-Cosmos Hub will be upgraded to [v17.1.0](https://github.com/cosmos/gaia/releases/tag/v17.1.0) at block height: **[20,739,800](https://www.mintscan.io/cosmos/blocks/20739800)**
-
-To upgrade from v16.0.0 check the [**upgrade guide**](https://github.com/cosmos/gaia/blob/release/v17.1.x/UPGRADING.md)
-:::
-
 ![Welcome to the Cosmos Hub](images/cosmos-hub-image.jpg)
 
 # Introduction

@@ -166,6 +166,24 @@ else
 	@echo "--> No tag specified, skipping tag release"
 endif
 
+GO_VERSION := $(shell cat go.mod | grep -E 'go [0-9].[0-9]+' | cut -d ' ' -f 2)
+GORELEASER_IMAGE := ghcr.io/goreleaser/goreleaser-cross:v$(GO_VERSION)
+COSMWASM_VERSION := $(shell go list -m github.com/CosmWasm/wasmvm | sed 's/.* //')
+
+test-release-local:
+	docker run \
+		--rm \
+		-e TM_VERSION=$(TM_VERSION) \
+		-e CGO_ENABLED=1 \
+		-e COSMWASM_VERSION=$(COSMWASM_VERSION) \
+		-v /var/run/docker.sock:/var/run/docker.sock \
+		-v `pwd`:/go/src/gaiad \
+		-w /go/src/gaiad \
+		$(GORELEASER_IMAGE) \
+		release \
+		--snapshot \
+		--skip=publish
+
 # create tag and publish it
 create-release:
 ifneq ($(strip $(TAG)),)

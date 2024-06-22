@@ -24,7 +24,7 @@ jobs:
           go-version: "1.21"
 
       - name: Set Env
-        run: echo "TM_VERSION=$(go list -m github.com/tendermint/tendermint | sed 's:.* ::')" >> $GITHUB_ENV
+        run: echo "TM_VERSION=$(go list -m github.com/cometbft/cometbft | sed 's:.* ::')" >> $GITHUB_ENV
 
       - name: Release
         uses: goreleaser/goreleaser-action@v5

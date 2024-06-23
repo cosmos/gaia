@@ -171,7 +171,7 @@ GORELEASER_IMAGE := ghcr.io/goreleaser/goreleaser-cross:v$(GO_VERSION)
 COSMWASM_VERSION := $(shell go list -m github.com/CosmWasm/wasmvm | sed 's/.* //')
 
 # uses goreleaser to create static binaries for linux an darwin on local machine
-# platform is set because not setting it results in broken builds for linux/amd when building on darwin
+# platform is set because not setting it results in broken builds for linux-amd64
 goreleaser-build-local:
 	docker run \
 		--rm \
@@ -202,6 +202,7 @@ ci-release:
 		-v /var/run/docker.sock:/var/run/docker.sock \
 		-v `pwd`:/go/src/gaiad \
 		-w /go/src/gaiad \
+		--platform=linux/amd64 \
 		$(GORELEASER_IMAGE) \
 		release \
 		--release-notes ./RELEASE_NOTES.md \

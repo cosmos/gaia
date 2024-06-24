@@ -20,29 +20,33 @@ Install `make` and `gcc`.
 **Ubuntu:**
 
 ```bash
-sudo apt-get update
+sudo apt update
 
-sudo apt-get install -y make gcc
+sudo apt install -y make gcc build-essential
 ```
 
 ## Install Go
 
 :::tip
-**Go 1.21+** is required.
+**Go 1.22+** is required.
 :::
 
 We suggest the following two ways to install Go. Check out the [official docs](https://golang.org/doc/install) and Go installer for the correct download for your operating system. Alternatively, you can install Go yourself from the command line. Detailed below are standard default installation locations, but feel free to customize.
+
+Since the introduction of CosmWasm it is recommended to build the binaries with `CGO` enabled - simply set `CGO_ENABLED=1` in your terminal befre building the binary.
+
+Building the `gaiad` binary on Windows is not supported due to [dependency issues](https://github.com/CosmWasm/wasmvm).
 
 **[Go Binary Downloads](https://go.dev/dl/)**
 
 **Ubuntu:**
 
-At the time of this writing, the latest release is `1.21.7`. We're going to download the tarball, extract it to `/usr/local`, and export `GOROOT` to our `$PATH`
+At the time of this writing, the latest release is `1.22.3`. We're going to download the tarball, extract it to `/usr/local`, and export `GOROOT` to our `$PATH`
 
 ```bash
-curl -OL https://go.dev/dl/go1.21.7.darwin-amd64.tar.gz
+curl -OL https://go.dev/dl/go1.22.3.darwin-amd64.tar.gz
 
-sudo tar -C /usr/local -xvf https://go.dev/dl/go1.21.7.darwin-amd64.tar.gz
+sudo tar -C /usr/local -xvf https://go.dev/dl/go1.22.3.darwin-amd64.tar.gz
 
 
 export PATH=$PATH:/usr/local/go/bin
@@ -94,31 +98,56 @@ You should see something similar to the following:
 ```bash
 name: gaia
 server_name: gaiad
-version: v15.0.0
+version: v18.0.0
 commit: 682770f2410ab0d33ac7f0c7203519d7a99fa2b6
-build_tags: netgo,ledger
-go: go version go1.21.7 linux/amd64
+build_tags: netgo,ledger,muslc
+go: go version go1.22.3 linux/amd64
 ```
+
+## Docker
+
+`Dockerfile` is available in the gaia repo.
+
+Building:
+
+```shell
+git clone -b <latest-release-tag> https://github.com/cosmos/gaia.git
+cd gaia
+docker build -t cosmos-ics:local -f Dockerfile ./
+```
+
+## Static linking
+
+In case you need to build a binary with all dependencies statically linked please check our [Dockerfile](https://github.com/cosmos/gaia/blob/main/Dockerfile).
+
+You must have `libwasmvm` available on your machine.
+Choose the build that matches your platform and OS:
+* https://github.com/CosmWasm/wasmvm?tab=readme-ov-file#builds-of-libwasmvm
+
+For more information, please check `wasmvm` [documentation](https://github.com/CosmWasm/wasmvm).
+
 
 ### Build Tags
 
 Build tags indicate special features that have been enabled in the binary.
 
-| Build Tag | Description                                     |
-| --------- | ----------------------------------------------- |
-| netgo     | Name resolution will use pure Go code           |
-| ledger    | Ledger devices are supported (hardware wallets) |
+| Build Tag         | Description                                     |
+|-------------------|-------------------------------------------------|
+| netgo             | Name resolution will use pure Go code           |
+| ledger            | Ledger devices are supported (hardware wallets) |
+| static_wasm/muslc | Used for statically linked wasmd dependencies   |
+
 
 ## Work with a Cosmos SDK Clone
 
 To work with your own modifications of the Cosmos SDK, make a fork of this repo, and add a `replace` clause to the `go.mod` file.
-The `replace` clause you add to `go.mod` must provide the correct import path:
+The `replace` clause you add to `go.mod` must provide the correct import path.
 
-- Make appropriate changes
-- Add `replace github.com/cosmos/cosmos-sdk => /path/to/clone/cosmos-sdk` to `go.mod`
-- Run `make clean install` or `make clean build`
-- Test changes
-
+```shell
+go mod edit -replace github.com/cosmos/cosmos-sdk=../cosmos-sdk
+go mod tidy
+make install # or make build
+```
 ## Next
 
 Now you can [join the mainnet](../hub-tutorials/join-mainnet), [the public testnet](../hub-tutorials/join-testnet).

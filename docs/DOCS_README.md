@@ -82,21 +82,19 @@ git checkout <your_working_branch>
 cd docs
 ```
 
-Serve the app
+Start the app
 
 ```bash
-npm run serve
+npm run start
 ```
 
 then navigate to `localhost:3000` in your browser.
 
 To build documentation as a static website run `npm run build`. You will find the website in `build` directory.
+After building the docs website you can start it with `npm run serve`.
 
-## Search
 
-We are using [Algolia](https://www.algolia.com) to power full-text search. This uses a public API search-only key in the `config.js` as well as a [cosmos_network.json](https://github.com/algolia/docsearch-configs/blob/master/configs/cosmos_network.json) configuration file that we can update with PRs.
-
-### Update and Build the RPC docs
+## Update and Build the RPC docs
 
 1. Execute the following command at the root directory to install the swagger-ui generate tool.
 

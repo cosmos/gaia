@@ -166,6 +166,52 @@ else
 	@echo "--> No tag specified, skipping tag release"
 endif
 
+GO_VERSION := $(shell cat go.mod | grep -E 'go [0-9].[0-9]+' | cut -d ' ' -f 2)
+GORELEASER_IMAGE := ghcr.io/goreleaser/goreleaser-cross:v$(GO_VERSION)
+COSMWASM_VERSION := $(shell go list -m github.com/CosmWasm/wasmvm | sed 's/.* //')
+
+# uses goreleaser to create static binaries for linux an darwin on local machine
+# platform is set because not setting it results in broken builds for linux-amd64
+goreleaser-build-local:
+	docker run \
+		--rm \
+		-e CGO_ENABLED=1 \
+		-e TM_VERSION=$(TM_VERSION) \
+		-e COSMWASM_VERSION=$(COSMWASM_VERSION) \
+		-v /var/run/docker.sock:/var/run/docker.sock \
+		-v `pwd`:/go/src/gaiad \
+		-w /go/src/gaiad \
+		--platform=linux/amd64 \
+		$(GORELEASER_IMAGE) \
+		release \
+		--snapshot \
+		--skip=publish \
+		--release-notes ./RELEASE_NOTES.md \
+		--debug
+
+# uses goreleaser to create static binaries for linux an darwin
+# requires access to GITHUB_TOKEN which has to be available in the CI environment
+ifdef GITHUB_TOKEN
+ci-release:
+	docker run \
+		--rm \
+		-e CGO_ENABLED=1 \
+		-e GITHUB_TOKEN=$(GITHUB_TOKEN) \
+		-e TM_VERSION=$(TM_VERSION) \
+		-e COSMWASM_VERSION=$(COSMWASM_VERSION) \
+		-v /var/run/docker.sock:/var/run/docker.sock \
+		-v `pwd`:/go/src/gaiad \
+		-w /go/src/gaiad \
+		--platform=linux/amd64 \
+		$(GORELEASER_IMAGE) \
+		release \
+		--release-notes ./RELEASE_NOTES.md \
+		--clean
+else
+ci-release:
+	@echo "Error: GITHUB_TOKEN is not defined. Please define it before running 'make release'."
+endif
+
 # create tag and publish it
 create-release:
 ifneq ($(strip $(TAG)),)

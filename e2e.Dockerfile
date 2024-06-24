@@ -16,6 +16,7 @@ RUN cp "/lib/libwasmvm_muslc.$(uname -m).a" /lib/libwasmvm_muslc.a
 
 COPY go.mod go.sum* ./
 RUN go mod download
+
 COPY . .
 RUN LEDGER_ENABLED=false LINK_STATICALLY=true BUILD_TAGS=muslc make build
 RUN echo "Ensuring binary is statically linked ..."  \

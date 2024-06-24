@@ -393,7 +393,7 @@ func (app *GaiaApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APICo
 	}
 }
 
-// RegisterTxService allows query minimum-gas-prices in app.toml
+// RegisterNodeService allows query minimum-gas-prices in app.toml
 func (app *GaiaApp) RegisterNodeService(clientCtx client.Context) {
 	nodeservice.RegisterNodeService(clientCtx, app.GRPCQueryRouter())
 }

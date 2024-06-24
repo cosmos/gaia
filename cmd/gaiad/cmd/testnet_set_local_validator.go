@@ -253,10 +253,12 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 	app.SlashingKeeper.SetValidatorSigningInfo(appCtx, newConsAddr, newValidatorSigningInfo)
 
 	shortVotingPeriod := time.Second * 20
+	expeditedVotingPeriod := time.Second * 10
 	params := app.GovKeeper.GetParams(appCtx)
 	params.VotingPeriod = &shortVotingPeriod
+	params.ExpeditedVotingPeriod = &expeditedVotingPeriod
 	app.GovKeeper.SetParams(appCtx, params)
-	appCtx.Logger().Info("Updated governance voting period", "voting_period", shortVotingPeriod)
+	appCtx.Logger().Info("Updated governance voting period", "voting_period", shortVotingPeriod, "expedited_voting_period", expeditedVotingPeriod)
 
 	// BANK
 	defaultCoins := sdk.NewCoins(sdk.NewInt64Coin(app.StakingKeeper.BondDenom(appCtx), 1000000000000))

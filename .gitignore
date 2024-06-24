@@ -20,6 +20,8 @@ docs/tutorial
 dist
 tools-stamp
 docs/node_modules
+docs/versioned_docs
+docs/versioned_sidebars
 
 # Data - ideally these don't exist
 baseapp/data/*

@@ -1,10 +1,13 @@
 package v18
 
 import (
+	"time"
+
 	errorsmod "cosmossdk.io/errors"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
@@ -24,6 +27,16 @@ func CreateUpgradeHandler(
 		vm, err := mm.RunMigrations(ctx, configurator, vm)
 		if err != nil {
 			return vm, err
+		}
+
+		expeditedPeriod := 24 * 7 * time.Hour // 7 days
+		govParams := keepers.GovKeeper.GetParams(ctx)
+		govParams.ExpeditedVotingPeriod = &expeditedPeriod
+		govParams.ExpeditedThreshold = govv1.DefaultExpeditedThreshold.String()                              // 66.7%
+		govParams.ExpeditedMinDeposit = sdk.NewCoins(sdk.NewCoin(types.UAtomDenom, sdk.NewInt(500_000_000))) // 500 ATOM
+		err = keepers.GovKeeper.SetParams(ctx, govParams)
+		if err != nil {
+			return vm, errorsmod.Wrapf(err, "unable to set gov params")
 		}
 
 		err = ConfigureFeeMarketModule(ctx, keepers)

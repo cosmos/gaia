@@ -188,8 +188,22 @@ or
 gaiad tx bank send ... --gas-prices=0.0025uatom
 ```
 
-To find out the current minimal gas price,
-check out how to query the [feemarket](https://github.com/skip-mev/feemarket/blob/main/docs/SPEC.md#gas-price),
+To find out more about the current minimal gas price, you can query the feemarket module:
+```bash
+gaiad q feemarket gas-prices
+```
+or
+```bash
+gaiad q feemarket gas-prices uatom
+```
+which will output the current gas price similar to this:
+```bash
+price:  
+  amount: "0.005"  
+  denom: uatom  
+```
+
+For more information, check out how to query the [feemarket](https://github.com/skip-mev/feemarket/blob/main/docs/SPEC.md#gas-price),
 or check out the [feemarket integration guide](https://github.com/skip-mev/feemarket/blob/main/docs/INTEGRATIONS.md).
 
 ### Account

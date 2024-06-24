@@ -11,6 +11,7 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
 	"github.com/cosmos/gaia/v18/app/keepers"
 	"github.com/cosmos/gaia/v18/types"
@@ -66,9 +67,9 @@ func ConfigureFeeMarketModule(ctx sdk.Context, keepers *keepers.AppKeepers) erro
 
 	params.Enabled = true
 	params.FeeDenom = types.UAtomDenom
-	params.DistributeFees = true
+	params.DistributeFees = false // burn fees
 	params.MinBaseGasPrice = sdk.MustNewDecFromStr("0.005")
-	params.MaxBlockUtilization = 100000000
+	params.MaxBlockUtilization = feemarkettypes.DefaultMaxBlockUtilization
 	if err := keepers.FeeMarketKeeper.SetParams(ctx, params); err != nil {
 		return err
 	}

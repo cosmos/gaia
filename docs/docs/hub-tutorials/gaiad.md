@@ -171,25 +171,25 @@ is included in a block.
 
 ### Fees & Gas
 
-Each transaction may either supply fees or gas prices, but not both.
+The Cosmos Hub uses the `x/feemarket` module to
+dynamically vary the gas price based on demand.
 
-Validator's have a minimum gas price (multi-denom) configuration and they use
-this value when determining if they should include the transaction in a block during `CheckTx`, where `gasPrices >= minGasPrices`. Note, your transaction must supply fees that are greater than or equal to **any** of the denominations the validator requires.
-
-**Note**: With such a mechanism in place, validators may start to prioritize
-txs by `gasPrice` in the mempool, so providing higher fees or gas prices may yield higher tx priority.
-
+You need to specify a sufficient gas price or total fees
+to ensure that your transaction is included in a block,
 e.g.
 
-```bash
+```
 gaiad tx bank send ... --fees=50000uatom
 ```
 
 or
 
-```bash
+```
 gaiad tx bank send ... --gas-prices=0.0025uatom
 ```
+
+To find out the current minimal gas price,
+check out how to query the [feemarket](https://github.com/skip-mev/feemarket/blob/main/docs/SPEC.md#gas-price).
 
 ### Account
 

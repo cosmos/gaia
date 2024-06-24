@@ -8,6 +8,9 @@ import (
 	ratelimit "github.com/Stride-Labs/ibc-rate-limiting/ratelimit"
 	ratelimitkeeper "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/keeper"
 	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
+	feeabsmodule "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs"
+	feeabskeeper "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/keeper"
+	feeabstypes "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/types"
 	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
@@ -40,11 +43,6 @@ import (
 	icsprovider "github.com/cosmos/interchain-security/v4/x/ccv/provider"
 	icsproviderkeeper "github.com/cosmos/interchain-security/v4/x/ccv/provider/keeper"
 	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
-
-	"github.com/osmosis-labs/fee-abstraction/v7/x/feeabs"
-	feeabsmodule "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs"
-	feeabskeeper "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/keeper"
-	feeabstypes "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -136,7 +134,7 @@ type AppKeepers struct {
 	TransferModule  transfer.AppModule
 	PFMRouterModule pfmrouter.AppModule
 	RateLimitModule ratelimit.AppModule
-	FeeAbsModule    feeabs.AppModule
+	FeeAbsModule    feeabsmodule.AppModule
 	ProviderModule  icsprovider.AppModule
 
 	// make scoped keepers public for test purposes
@@ -504,8 +502,8 @@ func NewAppKeeper(
 		&appKeepers.IBCKeeper.PortKeeper,
 		appKeepers.ScopedFeeabsKeeper,
 	)
-	appKeepers.FeeAbsModule = feeabs.NewAppModule(appCodec, appKeepers.FeeabsKeeper)
-	feeabsIBCModule := feeabs.NewIBCModule(appCodec, appKeepers.FeeabsKeeper)
+	appKeepers.FeeAbsModule = feeabsmodule.NewAppModule(appCodec, appKeepers.FeeabsKeeper)
+	feeabsIBCModule := feeabsmodule.NewIBCModule(appCodec, appKeepers.FeeabsKeeper)
 
 	// Middleware Stacks
 	appKeepers.ICAModule = ica.NewAppModule(&appKeepers.ICAControllerKeeper, &appKeepers.ICAHostKeeper)

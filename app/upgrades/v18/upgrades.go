@@ -3,6 +3,8 @@ package v18
 import (
 	"time"
 
+	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
+
 	errorsmod "cosmossdk.io/errors"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -11,7 +13,6 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
 	"github.com/cosmos/gaia/v18/app/keepers"
 	"github.com/cosmos/gaia/v18/types"

@@ -22,11 +22,12 @@ RUN LEDGER_ENABLED=false LINK_STATICALLY=true BUILD_TAGS=muslc make build
 RUN echo "Ensuring binary is statically linked ..."  \
     && file /src/app/build/gaiad | grep "statically linked"
 
-# Add to a distroless container
-FROM cgr.dev/chainguard/static:$IMG_TAG
+FROM alpine:$IMG_TAG
+RUN apk add --no-cache build-base
+RUN adduser -D nonroot
 ARG IMG_TAG
-COPY --from=gaiad-builder /src/app/build/gaiad /usr/local/bin/
+COPY --from=gaiad-builder  /src/app/build/gaiad /usr/local/bin/
 EXPOSE 26656 26657 1317 9090
-USER 0
+USER nonroot
 
 ENTRYPOINT ["gaiad", "start"]

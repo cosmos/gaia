@@ -178,13 +178,13 @@ You need to specify a sufficient gas price or total fees
 to ensure that your transaction is included in a block,
 e.g.
 
-```
+```bash
 gaiad tx bank send ... --fees=50000uatom
 ```
 
 or
 
-```
+```bash
 gaiad tx bank send ... --gas-prices=0.0025uatom
 ```
 

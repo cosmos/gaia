@@ -31,8 +31,14 @@
 
 ### FEATURES
 
-- Add the feemarket module.
-  ([\#3028](https://github.com/cosmos/gaia/pull/3028))
+- Add the [feemarket module](https://github.com/skip-mev/feemarket) and set the initial params to the following values. ([\#3028](https://github.com/cosmos/gaia/pull/3028) and [\#3164](https://github.com/cosmos/gaia/pull/3164))
+  ```
+  FeeDenom = "uatom"
+  DistributeFees = false // burn base fees
+  MinBaseGasPrice = 0.005 // same as previously enforced by `x/globalfee`
+  MaxBlockUtilization = 30_000_000 // the default value 
+  ```
+  
 - Add the wasmd module.
   ([\#3051](https://github.com/cosmos/gaia/pull/3051))
 - Enable both `MsgSoftwareUpgrade` and `MsgCancelUpgrade` to be expedited. 
@@ -42,7 +48,7 @@
 
 - Remove both the globalfee module and the auth module 'DeductFeeDecorator'.
   ([\#3028](https://github.com/cosmos/gaia/pull/3028))
-- Add the feemarket module.
+- Add the [feemarket module](https://github.com/skip-mev/feemarket).
   ([\#3028](https://github.com/cosmos/gaia/pull/3028))
 - Add the wasmd module.
   ([\#3051](https://github.com/cosmos/gaia/pull/3051))

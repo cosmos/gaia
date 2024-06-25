@@ -153,6 +153,8 @@ GORELEASER_IMAGE := ghcr.io/goreleaser/goreleaser-cross:v$(GO_VERSION)
 COSMWASM_VERSION := $(shell go list -m github.com/CosmWasm/wasmvm | sed 's/.* //')
 
 # create tag and run goreleaser without publishing
+# errors are possible while running goreleaser - the process can run for >30 min
+# if the build is failing due to timeouts use goreleaser-build-local instead
 create-release-dry-run:
 ifneq ($(strip $(TAG)),)
 	@echo "--> Dry running release for tag: $(TAG)"
@@ -171,7 +173,6 @@ ifneq ($(strip $(TAG)),)
 		-v /var/run/docker.sock:/var/run/docker.sock \
 		-v `pwd`:/go/src/gaiad \
 		-w /go/src/gaiad \
-		--platform=linux/amd64 \
 		$(GORELEASER_IMAGE) \
 		release \
 		--snapshot \

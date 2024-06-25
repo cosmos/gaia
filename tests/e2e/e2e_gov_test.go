@@ -5,13 +5,14 @@ import (
 	"strconv"
 	"time"
 
-	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
+	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
 
+	"cosmossdk.io/math"
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
 /*
@@ -124,7 +125,7 @@ func (s *IntegrationTestSuite) GovCommunityPoolSpend() {
 	sender := senderAddress.String()
 	recipientAddress, _ := s.chainA.validators[1].keyInfo.GetAddress()
 	recipient := recipientAddress.String()
-	sendAmount := sdk.NewCoin(uatomDenom, sdk.NewInt(10000000)) // 10uatom
+	sendAmount := sdk.NewCoin(uatomDenom, math.NewInt(10000000)) // 10uatom
 	s.writeGovCommunitySpendProposal(s.chainA, sendAmount, recipient)
 
 	beforeRecipientBalance, err := getSpecificBalance(chainAAPIEndpoint, recipient, uatomDenom)

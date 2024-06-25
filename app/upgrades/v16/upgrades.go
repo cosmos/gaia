@@ -1,22 +1,23 @@
 package v16
 
 import (
+	"context"
 	"errors"
 
 	ratelimitkeeper "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/keeper"
 	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
 
-	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
-	providerkeeper "github.com/cosmos/interchain-security/v4/x/ccv/provider/keeper"
-	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
+	icacontrollertypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/types"
+	providerkeeper "github.com/cosmos/interchain-security/v5/x/ccv/provider/keeper"
+	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
 
 	errorsmod "cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
 
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	"github.com/cosmos/gaia/v18/app/keepers"
 )
@@ -64,7 +65,8 @@ func CreateUpgradeHandler(
 	configurator module.Configurator,
 	keepers *keepers.AppKeepers,
 ) upgradetypes.UpgradeHandler {
-	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+	return func(c context.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+		ctx := sdk.UnwrapSDKContext(c)
 		ctx.Logger().Info("Starting module migrations...")
 
 		vm, err := mm.RunMigrations(ctx, configurator, vm)

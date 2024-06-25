@@ -5,12 +5,13 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"cosmossdk.io/math"
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	"github.com/cosmos/gaia/v18/ante"
 	"github.com/cosmos/gaia/v18/app/helpers"
@@ -98,7 +99,7 @@ func TestGovExpeditedProposalsDecorator(t *testing.T) {
 				newGovProp([]sdk.Msg{&distrtypes.MsgCommunityPoolSpend{
 					Authority: "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
 					Recipient: sdk.AccAddress{}.String(),
-					Amount:    sdk.NewCoins(sdk.NewCoin("stake", sdk.NewInt(100))),
+					Amount:    sdk.NewCoins(sdk.NewCoin("stake", math.NewInt(100))),
 				}}, false), // normal
 			},
 			expectErr: false,
@@ -110,7 +111,7 @@ func TestGovExpeditedProposalsDecorator(t *testing.T) {
 				newGovProp([]sdk.Msg{&banktypes.MsgSend{
 					FromAddress: "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
 					ToAddress:   "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
-					Amount:      sdk.NewCoins(sdk.NewCoin("stake", sdk.NewInt(100))),
+					Amount:      sdk.NewCoins(sdk.NewCoin("stake", math.NewInt(100))),
 				}}, false), // normal
 			},
 			expectErr: false,
@@ -164,7 +165,7 @@ func TestGovExpeditedProposalsDecorator(t *testing.T) {
 				newGovProp([]sdk.Msg{&distrtypes.MsgCommunityPoolSpend{
 					Authority: "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
 					Recipient: sdk.AccAddress{}.String(),
-					Amount:    sdk.NewCoins(sdk.NewCoin("stake", sdk.NewInt(100))),
+					Amount:    sdk.NewCoins(sdk.NewCoin("stake", math.NewInt(100))),
 				}}, true),
 			},
 			expectErr: true,
@@ -176,7 +177,7 @@ func TestGovExpeditedProposalsDecorator(t *testing.T) {
 				newGovProp([]sdk.Msg{&banktypes.MsgSend{
 					FromAddress: "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
 					ToAddress:   "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
-					Amount:      sdk.NewCoins(sdk.NewCoin("stake", sdk.NewInt(100))),
+					Amount:      sdk.NewCoins(sdk.NewCoin("stake", math.NewInt(100))),
 				}}, true),
 			},
 			expectErr: true,

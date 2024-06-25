@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"cosmossdk.io/math"
 	dbm "github.com/cometbft/cometbft-db"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
@@ -190,16 +191,16 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 		ConsensusPubkey: pubkeyAny,
 		Jailed:          false,
 		Status:          stakingtypes.Bonded,
-		Tokens:          sdk.NewInt(valVotingPower),
-		DelegatorShares: sdk.MustNewDecFromStr("10000000"),
+		Tokens:          math.NewInt(valVotingPower),
+		DelegatorShares: math.LegacyMustNewDecFromStr("10000000"),
 		Description: stakingtypes.Description{
 			Moniker: "Testnet Validator",
 		},
 		Commission: stakingtypes.Commission{
 			CommissionRates: stakingtypes.CommissionRates{
-				Rate:          sdk.MustNewDecFromStr("0.05"),
-				MaxRate:       sdk.MustNewDecFromStr("0.1"),
-				MaxChangeRate: sdk.MustNewDecFromStr("0.05"),
+				Rate:          math.LegacyMustNewDecFromStr("0.05"),
+				MaxRate:       math.LegacyMustNewDecFromStr("0.1"),
+				MaxChangeRate: math.LegacyMustNewDecFromStr("0.05"),
 			},
 		},
 		MinSelfDelegation: sdk.OneInt(),

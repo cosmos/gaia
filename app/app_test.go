@@ -5,8 +5,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	db "github.com/cometbft/cometbft-db"
-	"github.com/cometbft/cometbft/libs/log"
+	"cosmossdk.io/log"
+	db "github.com/cosmos/cosmos-db"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"

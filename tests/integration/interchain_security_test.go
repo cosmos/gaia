@@ -6,16 +6,15 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
-	abci "github.com/cometbft/cometbft/abci/types"
-
-	appConsumer "github.com/cosmos/interchain-security/v4/app/consumer"
-	"github.com/cosmos/interchain-security/v4/tests/integration"
-	icstestingutils "github.com/cosmos/interchain-security/v4/testutil/ibc_testing"
-	"github.com/cosmos/interchain-security/v4/x/ccv/types"
+	appConsumer "github.com/cosmos/interchain-security/v5/app/consumer"
+	"github.com/cosmos/interchain-security/v5/tests/integration"
+	icstestingutils "github.com/cosmos/interchain-security/v5/testutil/ibc_testing"
+	"github.com/cosmos/interchain-security/v5/x/ccv/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
+	"cosmossdk.io/math"
 	"github.com/cosmos/gaia/v18/ante"
 	gaiaApp "github.com/cosmos/gaia/v18/app"
 )
@@ -51,11 +50,12 @@ func TestICSEpochs(t *testing.T) {
 	delegateFn := func(ctx sdk.Context) {
 		delAddr := ccvSuite.GetProviderChain().SenderAccount.GetAddress()
 		consAddr := sdk.ConsAddress(ccvSuite.GetProviderChain().Vals.Validators[0].Address)
-		validator := stakingKeeper.ValidatorByConsAddr(ctx, consAddr)
-		_, err := stakingKeeper.Delegate(
+		validator, err := stakingKeeper.ValidatorByConsAddr(ctx, consAddr)
+		require.NoError(t, err)
+		_, err = stakingKeeper.Delegate(
 			ctx,
 			delAddr,
-			sdk.NewInt(1000000),
+			math.NewInt(1000000),
 			stakingtypes.Unbonded,
 			validator.(stakingtypes.Validator),
 			true,
@@ -86,7 +86,7 @@ func TestICSEpochs(t *testing.T) {
 	provCtx = nextEpoch(provCtx)
 	// Expect to create a VSC packet
 	// without sending it since CCV channel isn't established
-	app.EndBlocker(provCtx, abci.RequestEndBlock{})
+	app.EndBlocker(provCtx)
 	require.NotEmpty(t, getVSCPacketsFn())
 
 	// Expect the VSC packet to send after setting up the CCV channel
@@ -105,7 +105,7 @@ func TestICSEpochs(t *testing.T) {
 	require.Empty(t, getVSCPacketsFn())
 
 	provCtx = nextEpoch(provCtx)
-	app.EndBlocker(provCtx, abci.RequestEndBlock{})
+	app.EndBlocker(provCtx)
 	// Expect second VSC Packet to be committed
 	require.Len(t, ccvSuite.GetProviderChain().App.GetIBCKeeper().ChannelKeeper.GetAllPacketCommitmentsAtChannel(
 		provCtx,

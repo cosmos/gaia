@@ -3,17 +3,19 @@
 package v8
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
-	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"cosmossdk.io/math"
+	"cosmossdk.io/store/prefix"
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
-	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
-	ibcchanneltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
+	icahosttypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/types"
+	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
+	ibcchanneltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
 
 	"github.com/cosmos/gaia/v18/app/keepers"
 )
@@ -72,8 +74,8 @@ func QuicksilverFix(ctx sdk.Context, keepers *keepers.AppKeepers) error {
 
 	// Get balance from stuck address and subtract 1 uatom sent by bad actor
 	sourceBalance := keepers.BankKeeper.GetBalance(ctx, sourceAddress, "uatom")
-	if sourceBalance.IsGTE(sdk.NewCoin("uatom", sdk.NewInt(1))) {
-		refundBalance := sourceBalance.SubAmount(sdk.NewInt(1))
+	if sourceBalance.IsGTE(sdk.NewCoin("uatom", math.NewInt(1))) {
+		refundBalance := sourceBalance.SubAmount(math.NewInt(1))
 		err = keepers.BankKeeper.SendCoins(ctx, sourceAddress, destinationAddress, sdk.NewCoins(refundBalance))
 		if err != nil {
 			return errors.New("unable to refund coins")
@@ -105,7 +107,8 @@ func CreateUpgradeHandler(
 	configurator module.Configurator,
 	keepers *keepers.AppKeepers,
 ) upgradetypes.UpgradeHandler {
-	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+	return func(c context.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+		ctx := sdk.UnwrapSDKContext(c)
 		ctx.Logger().Info("Running upgrade fixes...")
 
 		err := FixBankMetadata(ctx, keepers)

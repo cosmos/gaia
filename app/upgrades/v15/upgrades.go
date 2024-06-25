@@ -3,12 +3,13 @@ package v15
 import (
 	"fmt"
 
-	ibctransferkeeper "github.com/cosmos/ibc-go/v7/modules/apps/transfer/keeper"
-	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v8/modules/apps/transfer/keeper"
+	ibctransfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 
+	"cosmossdk.io/store/prefix"
+	storetypes "cosmossdk.io/store/types"
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/store/prefix"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -25,7 +26,10 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+
+	"context"
+
+	"cosmossdk.io/math"
 
 	"github.com/cosmos/gaia/v18/app/keepers"
 )
@@ -45,11 +49,12 @@ func CreateUpgradeHandler(
 	configurator module.Configurator,
 	keepers *keepers.AppKeepers,
 ) upgradetypes.UpgradeHandler {
-	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+	return func(c context.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+		ctx := sdk.UnwrapSDKContext(c)
 		ctx.Logger().Info("Starting module migrations...")
 		baseAppLegacySS := keepers.ParamsKeeper.Subspace(baseapp.Paramspace).
 			WithKeyTable(paramstypes.ConsensusParamsKeyTable())
-		baseapp.MigrateParams(ctx, baseAppLegacySS, &keepers.ConsensusParamsKeeper)
+		baseapp.MigrateParams(ctx, baseAppLegacySS, &keepers.ConsensusParamsKeeper.ParamsStore)
 
 		vm, err := mm.RunMigrations(ctx, configurator, vm)
 		if err != nil {
@@ -86,19 +91,27 @@ func CreateUpgradeHandler(
 func UpgradeMinCommissionRate(ctx sdk.Context, sk stakingkeeper.Keeper) error {
 	ctx.Logger().Info("Migrating min commission rate...")
 
-	params := sk.GetParams(ctx)
-	params.MinCommissionRate = sdk.NewDecWithPrec(5, 2)
+	params, err := sk.GetParams(ctx)
+	if err != nil {
+		return err
+	}
+	params.MinCommissionRate = math.LegacyNewDecWithPrec(5, 2)
 	if err := sk.SetParams(ctx, params); err != nil {
 		return err
 	}
 
-	for _, val := range sk.GetAllValidators(ctx) {
-		if val.Commission.CommissionRates.Rate.LT(sdk.NewDecWithPrec(5, 2)) {
+	validators, err := sk.GetAllValidators(ctx)
+	if err != nil {
+		return err
+	}
+
+	for _, val := range validators {
+		if val.Commission.CommissionRates.Rate.LT(math.LegacyNewDecWithPrec(5, 2)) {
 			// set the commission rate to 5%
-			val.Commission.CommissionRates.Rate = sdk.NewDecWithPrec(5, 2)
+			val.Commission.CommissionRates.Rate = math.LegacyNewDecWithPrec(5, 2)
 			// set the max rate to 5% if it is less than 5%
-			if val.Commission.CommissionRates.MaxRate.LT(sdk.NewDecWithPrec(5, 2)) {
-				val.Commission.CommissionRates.MaxRate = sdk.NewDecWithPrec(5, 2)
+			if val.Commission.CommissionRates.MaxRate.LT(math.LegacyNewDecWithPrec(5, 2)) {
+				val.Commission.CommissionRates.MaxRate = math.LegacyNewDecWithPrec(5, 2)
 			}
 			val.Commission.UpdateTime = ctx.BlockHeader().Time
 			sk.SetValidator(ctx, val)
@@ -167,7 +180,11 @@ func ClawbackVestingFunds(ctx sdk.Context, address sdk.AccAddress, keepers *keep
 	// returns if the account has no vesting coins of the bond denom
 	vestingCoinToClawback := sdk.Coin{}
 	if vc := vestAccount.GetVestingCoins(ctx.BlockTime()); !vc.Empty() {
-		_, vestingCoinToClawback = vc.Find(sk.BondDenom(ctx))
+		bondDenom, err := sk.BondDenom(ctx)
+		if err != nil {
+			return err
+		}
+		_, vestingCoinToClawback = vc.Find(bondDenom)
 	}
 
 	if vestingCoinToClawback.IsNil() {
@@ -218,22 +235,29 @@ func forceUnbondAllDelegations(
 	ctx sdk.Context,
 	delegator sdk.AccAddress,
 ) error {
-	dels := sk.GetDelegatorDelegations(ctx, delegator, 100)
+	dels, err := sk.GetDelegatorDelegations(ctx, delegator, 100)
+	if err != nil {
+		return err
+	}
 
 	for _, del := range dels {
 		valAddr := del.GetValidatorAddr()
 
-		validator, found := sk.GetValidator(ctx, valAddr)
-		if !found {
+		validator, err := sk.GetValidator(ctx, sdk.ValAddress(valAddr))
+		if err != nil {
 			return stakingtypes.ErrNoValidatorFound
 		}
 
-		returnAmount, err := sk.Unbond(ctx, delegator, valAddr, del.GetShares())
+		returnAmount, err := sk.Unbond(ctx, delegator, sdk.ValAddress(valAddr), del.GetShares())
 		if err != nil {
 			return err
 		}
 
-		coins := sdk.NewCoins(sdk.NewCoin(sk.BondDenom(ctx), returnAmount))
+		bondDenom, err := sk.BondDenom(ctx)
+		if err != nil {
+			return err
+		}
+		coins := sdk.NewCoins(sdk.NewCoin(bondDenom, returnAmount))
 
 		// transfer the validator tokens to the not bonded pool
 		if validator.IsBonded() {
@@ -293,9 +317,12 @@ func forceFundCommunityPool(
 		ak.SetAccount(ctx, ak.NewAccountWithAddress(ctx, recipientAcc.GetAddress()))
 	}
 
-	feePool := dk.GetFeePool(ctx)
+	feePool, err := dk.FeePool.Get(ctx)
+	if err != nil {
+		return err
+	}
 	feePool.CommunityPool = feePool.CommunityPool.Add(sdk.NewDecCoinsFromCoins(amount)...)
-	dk.SetFeePool(ctx, feePool)
+	dk.FeePool.Set(ctx, feePool)
 
 	return nil
 }
@@ -314,8 +341,8 @@ func setBalance(
 	}
 
 	store := ctx.KVStore(bs)
-	accountStore := prefix.NewStore(store, banktypes.CreateAccountBalancesPrefix(addr))
-	denomPrefixStore := prefix.NewStore(store, banktypes.CreateDenomAddressPrefix(balance.Denom))
+	accountStore := prefix.NewStore(store, CreateAccountBalancesPrefix(addr))
+	denomPrefixStore := prefix.NewStore(store, CreateDenomAddressPrefix(balance.Denom))
 
 	if balance.IsZero() {
 		accountStore.Delete([]byte(balance.Denom))
@@ -345,9 +372,12 @@ func setBalance(
 func SetMinInitialDepositRatio(ctx sdk.Context, gk govkeeper.Keeper) error {
 	ctx.Logger().Info("Initializing MinInitialDepositRatio...")
 
-	params := gk.GetParams(ctx)
-	params.MinInitialDepositRatio = sdk.NewDecWithPrec(1, 1).String() // 0.1 (10%)
-	err := gk.SetParams(ctx, params)
+	params, err := gk.Params.Get(ctx)
+	if err != nil {
+		return err
+	}
+	params.MinInitialDepositRatio = math.LegacyNewDecWithPrec(1, 1).String() // 0.1 (10%)
+	err = gk.Params.Set(ctx, params)
 	if err != nil {
 		return err
 	}
@@ -426,7 +456,7 @@ func GetEscrowUpdates(ctx sdk.Context) []UpdateCoins {
 			Address: "cosmos1x54ltnyg88k0ejmk8ytwrhd3ltm84xehrnlslf",
 			Coins: sdk.Coins{{
 				Denom:  "ibc/4925E6ABA571A44D2BE0286D2D29AF42A294D0FF2BB16490149A1B26EAD33729",
-				Amount: sdk.NewInt(40000000000000000),
+				Amount: math.NewInt(40000000000000000),
 			}},
 		},
 		{
@@ -434,7 +464,7 @@ func GetEscrowUpdates(ctx sdk.Context) []UpdateCoins {
 			Address: "cosmos1ju6tlfclulxumtt2kglvnxduj5d93a64r5czge",
 			Coins: sdk.Coins{{
 				Denom:  "ibc/14F9BC3E44B8A9C1BE1FB08980FAB87034C9905EF17CF2F5008FC085218811CC",
-				Amount: sdk.NewInt(2000),
+				Amount: math.NewInt(2000),
 			}},
 		},
 	}
@@ -443,7 +473,7 @@ func GetEscrowUpdates(ctx sdk.Context) []UpdateCoins {
 	// to be represented using an 64-bit integer. Therefore, it's added to the
 	// escrow updates list under the condition that the amount is successfully
 	// converted to the sdk.Int type.
-	if amt, ok := sdk.NewIntFromString("4388000000000000000000"); !ok {
+	if amt, ok := math.NewIntFromString("4388000000000000000000"); !ok {
 		ctx.Logger().Error("can't upgrade missing amount in escrow account: '4388000000000000000000'")
 	} else {
 		coins := escrowUpdates[0].Coins
@@ -455,4 +485,22 @@ func GetEscrowUpdates(ctx sdk.Context) []UpdateCoins {
 	}
 
 	return escrowUpdates
+}
+
+var DenomAddressPrefix = []byte{0x03}
+
+// CreateDenomAddressPrefix creates a prefix for a reverse index of denomination
+// to account balance for that denomination.
+func CreateDenomAddressPrefix(denom string) []byte {
+	// we add a "zero" byte at the end - null byte terminator, to allow prefix denom prefix
+	// scan. Setting it is not needed (key[last] = 0) - because this is the default.
+	key := make([]byte, len(DenomAddressPrefix)+len(denom)+1)
+	copy(key, DenomAddressPrefix)
+	copy(key[len(DenomAddressPrefix):], denom)
+	return key
+}
+
+// CreateAccountBalancesPrefix creates the prefix for an account's balances.
+func CreateAccountBalancesPrefix(addr []byte) []byte {
+	return append(banktypes.BalancesPrefix.Bytes(), address.MustLengthPrefix(addr)...)
 }

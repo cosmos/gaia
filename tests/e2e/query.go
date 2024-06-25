@@ -9,15 +9,15 @@ import (
 
 	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
 
-	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
-	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
+	icacontrollertypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/types"
+	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
 
+	evidencetypes "cosmossdk.io/x/evidence/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	disttypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -253,13 +253,14 @@ func queryValidators(endpoint string) (stakingtypes.Validators, error) {
 	var res stakingtypes.QueryValidatorsResponse
 	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/validators", endpoint))
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
+		return stakingtypes.Validators{}, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
 
 	if err := cdc.UnmarshalJSON(body, &res); err != nil {
-		return nil, err
+		return stakingtypes.Validators{}, err
 	}
-	return res.Validators, nil
+
+	return stakingtypes.Validators{Validators: res.Validators}, nil
 }
 
 func queryEvidence(endpoint, hash string) (evidencetypes.QueryEvidenceResponse, error) { //nolint:unused // this is called during e2e tests

@@ -1,7 +1,7 @@
 ARG IMG_TAG=latest
 
 # Compile the gaiad binary
-FROM golang:1.21-alpine3.18 AS gaiad-builder
+FROM golang:1.22-alpine AS gaiad-builder
 WORKDIR /src/app/
 ENV PACKAGES="curl make git libc-dev bash file gcc linux-headers eudev-dev python3"
 RUN apk add --no-cache $PACKAGES
@@ -18,15 +18,16 @@ COPY go.mod go.sum* ./
 RUN go mod download
 
 COPY . .
-RUN LEDGER_ENABLED=false LINK_STATICALLY=true BUILD_TAGS=muslc make build
+RUN LEDGER_ENABLED=true LINK_STATICALLY=true BUILD_TAGS=muslc make build
 RUN echo "Ensuring binary is statically linked ..."  \
     && file /src/app/build/gaiad | grep "statically linked"
 
-# Add to a distroless container
-FROM cgr.dev/chainguard/static:$IMG_TAG
+FROM alpine:$IMG_TAG
+RUN apk add --no-cache build-base
+RUN adduser -D nonroot
 ARG IMG_TAG
-COPY --from=gaiad-builder /src/app/build/gaiad /usr/local/bin/
+COPY --from=gaiad-builder  /src/app/build/gaiad /usr/local/bin/
 EXPOSE 26656 26657 1317 9090
-USER 0
+USER nonroot
 
 ENTRYPOINT ["gaiad", "start"]

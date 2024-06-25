@@ -7,11 +7,14 @@ import (
 
 	errorsmod "cosmossdk.io/errors"
 
+	"context"
+
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
+	"cosmossdk.io/math"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	"github.com/cosmos/gaia/v18/app/keepers"
@@ -23,7 +26,8 @@ func CreateUpgradeHandler(
 	configurator module.Configurator,
 	keepers *keepers.AppKeepers,
 ) upgradetypes.UpgradeHandler {
-	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+	return func(c context.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+		ctx := sdk.UnwrapSDKContext(c)
 		ctx.Logger().Info("Starting module migrations...")
 
 		vm, err := mm.RunMigrations(ctx, configurator, vm)
@@ -32,11 +36,14 @@ func CreateUpgradeHandler(
 		}
 
 		expeditedPeriod := 24 * 7 * time.Hour // 7 days
-		govParams := keepers.GovKeeper.GetParams(ctx)
+		govParams, err := keepers.GovKeeper.Params.Get(ctx)
+		if err != nil {
+			return vm, err
+		}
 		govParams.ExpeditedVotingPeriod = &expeditedPeriod
-		govParams.ExpeditedThreshold = govv1.DefaultExpeditedThreshold.String()                              // 66.7%
-		govParams.ExpeditedMinDeposit = sdk.NewCoins(sdk.NewCoin(types.UAtomDenom, sdk.NewInt(500_000_000))) // 500 ATOM
-		err = keepers.GovKeeper.SetParams(ctx, govParams)
+		govParams.ExpeditedThreshold = govv1.DefaultExpeditedThreshold.String()                               // 66.7%
+		govParams.ExpeditedMinDeposit = sdk.NewCoins(sdk.NewCoin(types.UAtomDenom, math.NewInt(500_000_000))) // 500 ATOM
+		err = keepers.GovKeeper.Params.Set(ctx, govParams)
 		if err != nil {
 			return vm, errorsmod.Wrapf(err, "unable to set gov params")
 		}
@@ -69,7 +76,7 @@ func ConfigureFeeMarketModule(ctx sdk.Context, keepers *keepers.AppKeepers) erro
 	params.Enabled = true
 	params.FeeDenom = types.UAtomDenom
 	params.DistributeFees = false // burn fees
-	params.MinBaseGasPrice = sdk.MustNewDecFromStr("0.005")
+	params.MinBaseGasPrice = math.LegacyMustNewDecFromStr("0.005")
 	params.MaxBlockUtilization = feemarkettypes.DefaultMaxBlockUtilization
 	if err := keepers.FeeMarketKeeper.SetParams(ctx, params); err != nil {
 		return err
@@ -80,7 +87,7 @@ func ConfigureFeeMarketModule(ctx sdk.Context, keepers *keepers.AppKeepers) erro
 		return err
 	}
 
-	state.BaseGasPrice = sdk.MustNewDecFromStr("0.005")
+	state.BaseGasPrice = math.LegacyMustNewDecFromStr("0.005")
 
 	return keepers.FeeMarketKeeper.SetState(ctx, state)
 }

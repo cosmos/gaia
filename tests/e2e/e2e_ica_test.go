@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/cosmos/gogoproto/proto"
-	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
+	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
 
 	"cosmossdk.io/math"
 
@@ -183,8 +183,8 @@ func (s *IntegrationTestSuite) sendICATransaction(c *chain, valIdx int, sender, 
 	s.T().Log("successfully sent ICA transaction")
 }
 
-func (s *IntegrationTestSuite) buildICASendTransactionFile(cdc codec.BinaryCodec, msgs []proto.Message, outputBaseDir string) {
-	data, err := icatypes.SerializeCosmosTxWithEncoding(cdc, msgs, icatypes.EncodingProtobuf)
+func (s *IntegrationTestSuite) buildICASendTransactionFile(cdc codec.Codec, msgs []proto.Message, outputBaseDir string) {
+	data, err := icatypes.SerializeCosmosTx(cdc, msgs, icatypes.EncodingProtobuf)
 	s.Require().NoError(err)
 
 	sendICATransaction := icatypes.InterchainAccountPacketData{

@@ -12,16 +12,18 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	gaiaerrors "github.com/cosmos/gaia/v18/types/errors"
+
+	"cosmossdk.io/math"
 )
 
 var (
-	minStakedTokens       = sdk.NewDec(1000000) // 1_000_000 uatom (or 1 atom)
-	maxDelegationsChecked = 100                 // number of delegation to check for the minStakedTokens
+	minStakedTokens       = math.LegacyNewDec(1000000) // 1_000_000 uatom (or 1 atom)
+	maxDelegationsChecked = 100                        // number of delegation to check for the minStakedTokens
 )
 
 // SetMinStakedTokens sets the minimum amount of staked tokens required to vote
 // Should only be used in testing
-func SetMinStakedTokens(tokens sdk.Dec) {
+func SetMinStakedTokens(tokens math.LegacyDec) {
 	minStakedTokens = tokens
 }
 
@@ -82,14 +84,14 @@ func (g GovVoteDecorator) ValidateVoteMsgs(ctx sdk.Context, msgs []sdk.Msg) erro
 
 		enoughStake := false
 		delegationCount := 0
-		stakedTokens := sdk.NewDec(0)
+		stakedTokens := math.LegacyNewDec(0)
 		g.stakingKeeper.IterateDelegatorDelegations(ctx, accAddr, func(delegation stakingtypes.Delegation) bool {
 			validatorAddr, err := sdk.ValAddressFromBech32(delegation.ValidatorAddress)
 			if err != nil {
 				panic(err) // shouldn't happen
 			}
-			validator, found := g.stakingKeeper.GetValidator(ctx, validatorAddr)
-			if found {
+			validator, err := g.stakingKeeper.GetValidator(ctx, validatorAddr)
+			if err != nil {
 				shares := delegation.Shares
 				tokens := validator.TokensFromSharesTruncated(shares)
 				stakedTokens = stakedTokens.Add(tokens)

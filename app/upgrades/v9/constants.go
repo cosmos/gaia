@@ -3,12 +3,9 @@
 package v9
 
 import (
-	store "github.com/cosmos/cosmos-sdk/store/types"
-	ccvprovider "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
-
-	store "github.com/cosmos/cosmos-sdk/store/types"
-
+	store "cosmossdk.io/store/types"
 	"github.com/cosmos/gaia/v18/app/upgrades"
+	ccvprovider "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
 )
 
 const (

@@ -26,6 +26,9 @@ import (
 	tmjson "github.com/cometbft/cometbft/libs/json"
 	rpchttp "github.com/cometbft/cometbft/rpc/client/http"
 
+	"cosmossdk.io/math"
+	evidencetypes "cosmossdk.io/x/evidence/types"
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
@@ -36,11 +39,9 @@ import (
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	"github.com/cosmos/gaia/v18/types"
 )
@@ -86,11 +87,11 @@ const (
 
 var (
 	gaiaConfigPath    = filepath.Join(gaiaHomePath, "config")
-	stakingAmount     = sdk.NewInt(100000000000)
+	stakingAmount     = math.NewInt(100000000000)
 	stakingAmountCoin = sdk.NewCoin(uatomDenom, stakingAmount)
-	tokenAmount       = sdk.NewCoin(uatomDenom, sdk.NewInt(3300000000)) // 3,300uatom
-	standardFees      = sdk.NewCoin(uatomDenom, sdk.NewInt(330000))     // 0.33uatom
-	depositAmount     = sdk.NewCoin(uatomDenom, sdk.NewInt(330000000))  // 3,300uatom
+	tokenAmount       = sdk.NewCoin(uatomDenom, math.NewInt(3300000000)) // 3,300uatom
+	standardFees      = sdk.NewCoin(uatomDenom, math.NewInt(330000))     // 0.33uatom
+	depositAmount     = sdk.NewCoin(uatomDenom, math.NewInt(330000000))  // 3,300uatom
 	distModuleAddress = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
 	govModuleAddress  = authtypes.NewModuleAddress(govtypes.ModuleName).String()
 	proposalCounter   = 0
@@ -284,21 +285,21 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 
 	jailedValAddr := sdk.ValAddress(jailedValAcc)
 	val, err := stakingtypes.NewValidator(
-		jailedValAddr,
+		jailedValAddr.String(),
 		pubKey,
 		stakingtypes.NewDescription("jailed", "", "", "", ""),
 	)
 	s.Require().NoError(err)
 	val.Jailed = true
-	val.Tokens = sdk.NewInt(slashingShares)
-	val.DelegatorShares = sdk.NewDec(slashingShares)
+	val.Tokens = math.NewInt(slashingShares)
+	val.DelegatorShares = math.LegacyNewDec(slashingShares)
 	stakingGenState.Validators = append(stakingGenState.Validators, val)
 
 	// add jailed validator delegations
 	stakingGenState.Delegations = append(stakingGenState.Delegations, stakingtypes.Delegation{
 		DelegatorAddress: jailedValAcc.String(),
 		ValidatorAddress: jailedValAddr.String(),
-		Shares:           sdk.NewDec(slashingShares),
+		Shares:           math.LegacyNewDec(slashingShares),
 	})
 
 	appGenState[stakingtypes.ModuleName], err = cdc.MarshalJSON(stakingGenState)
@@ -311,12 +312,14 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 	// add continuous vesting account to the genesis
 	baseVestingContinuousAccount := authtypes.NewBaseAccount(
 		continuousVestingAcc, nil, 0, 0)
+	baseVestingAcc, err := authvesting.NewBaseVestingAccount(
+		baseVestingContinuousAccount,
+		sdk.NewCoins(vestingAmountVested),
+		time.Now().Add(time.Duration(rand.Intn(80)+150)*time.Second).Unix(),
+	)
+	s.Require().NoError(err)
 	vestingContinuousGenAccount := authvesting.NewContinuousVestingAccountRaw(
-		authvesting.NewBaseVestingAccount(
-			baseVestingContinuousAccount,
-			sdk.NewCoins(vestingAmountVested),
-			time.Now().Add(time.Duration(rand.Intn(80)+150)*time.Second).Unix(),
-		),
+		baseVestingAcc,
 		time.Now().Add(time.Duration(rand.Intn(40)+90)*time.Second).Unix(),
 	)
 	s.Require().NoError(vestingContinuousGenAccount.Validate())
@@ -324,13 +327,13 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 	// add delayed vesting account to the genesis
 	baseVestingDelayedAccount := authtypes.NewBaseAccount(
 		delayedVestingAcc, nil, 0, 0)
-	vestingDelayedGenAccount := authvesting.NewDelayedVestingAccountRaw(
-		authvesting.NewBaseVestingAccount(
-			baseVestingDelayedAccount,
-			sdk.NewCoins(vestingAmountVested),
-			time.Now().Add(time.Duration(rand.Intn(40)+90)*time.Second).Unix(),
-		),
+	baseVestingAcc, err = authvesting.NewBaseVestingAccount(
+		baseVestingDelayedAccount,
+		sdk.NewCoins(vestingAmountVested),
+		time.Now().Add(time.Duration(rand.Intn(40)+90)*time.Second).Unix(),
 	)
+	s.Require().NoError(err)
+	vestingDelayedGenAccount := authvesting.NewDelayedVestingAccountRaw(baseVestingAcc)
 	s.Require().NoError(vestingDelayedGenAccount.Validate())
 
 	// unpack and append accounts
@@ -361,7 +364,7 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 	}
 	stakingModuleBalances := banktypes.Balance{
 		Address: authtypes.NewModuleAddress(stakingtypes.NotBondedPoolName).String(),
-		Coins:   sdk.NewCoins(sdk.NewCoin(uatomDenom, sdk.NewInt(slashingShares))),
+		Coins:   sdk.NewCoins(sdk.NewCoin(uatomDenom, math.NewInt(slashingShares))),
 	}
 	bankGenState.Balances = append(
 		bankGenState.Balances,
@@ -748,9 +751,9 @@ func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain, 
 		oldParams.HistoricalEntries,
 		oldParams.BondDenom,
 		oldParams.MinCommissionRate,
-		sdk.NewDec(250),           // validator bond factor
-		sdk.NewDecWithPrec(25, 2), // 25 global_liquid_staking_cap
-		sdk.NewDecWithPrec(50, 2), // 50 validator_liquid_staking_cap
+		math.LegacyNewDec(250),           // validator bond factor
+		math.LegacyNewDecWithPrec(25, 2), // 25 global_liquid_staking_cap
+		math.LegacyNewDecWithPrec(50, 2), // 50 validator_liquid_staking_cap
 	)
 
 	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalLSMParamUpdateFilename), []byte(propMsgBody))

@@ -148,7 +148,13 @@ distclean: clean
 ###                                Release                                  ###
 ###############################################################################
 
+GO_VERSION := $(shell cat go.mod | grep -E 'go [0-9].[0-9]+' | cut -d ' ' -f 2)
+GORELEASER_IMAGE := ghcr.io/goreleaser/goreleaser-cross:v$(GO_VERSION)
+COSMWASM_VERSION := $(shell go list -m github.com/CosmWasm/wasmvm | sed 's/.* //')
+
 # create tag and run goreleaser without publishing
+# errors are possible while running goreleaser - the process can run for >30 min
+# if the build is failing due to timeouts use goreleaser-build-local instead
 create-release-dry-run:
 ifneq ($(strip $(TAG)),)
 	@echo "--> Dry running release for tag: $(TAG)"
@@ -159,16 +165,26 @@ ifneq ($(strip $(TAG)),)
 	@git tag -d $(TAG)
 	@echo "--> Running goreleaser"
 	@go install github.com/goreleaser/goreleaser@latest
-	TM_VERSION=$(TM_VERSION) goreleaser release --snapshot --clean
+	@docker run \
+		--rm \
+		-e CGO_ENABLED=1 \
+		-e TM_VERSION=$(TM_VERSION) \
+		-e COSMWASM_VERSION=$(COSMWASM_VERSION) \
+		-v /var/run/docker.sock:/var/run/docker.sock \
+		-v `pwd`:/go/src/gaiad \
+		-w /go/src/gaiad \
+		$(GORELEASER_IMAGE) \
+		release \
+		--snapshot \
+		--skip=publish \
+		--debug \
+		--clean
 	@rm -rf dist/
 	@echo "--> Done create-release-dry-run for tag: $(TAG)"
 else
 	@echo "--> No tag specified, skipping tag release"
 endif
 
-GO_VERSION := $(shell cat go.mod | grep -E 'go [0-9].[0-9]+' | cut -d ' ' -f 2)
-GORELEASER_IMAGE := ghcr.io/goreleaser/goreleaser-cross:v$(GO_VERSION)
-COSMWASM_VERSION := $(shell go list -m github.com/CosmWasm/wasmvm | sed 's/.* //')
 
 # uses goreleaser to create static binaries for linux an darwin on local machine
 # platform is set because not setting it results in broken builds for linux-amd64

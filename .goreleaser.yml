@@ -101,7 +101,7 @@ builds:
       - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,muslc,osusergo
       - -w -s
       - -linkmode=external
-      - -extldflags '-Wl,-z,muldefs -static'
+      - -extldflags '-Wl,-z,muldefs -static -lm'
     tags:
       - netgo
       - ledger

@@ -203,6 +203,7 @@ goreleaser-build-local:
 		--snapshot \
 		--skip=publish \
 		--release-notes ./RELEASE_NOTES.md \
+		--timeout 90m \
 		--debug
 
 # uses goreleaser to create static binaries for linux an darwin
@@ -222,6 +223,7 @@ ci-release:
 		$(GORELEASER_IMAGE) \
 		release \
 		--release-notes ./RELEASE_NOTES.md \
+		--timeout=90m \
 		--clean
 else
 ci-release:

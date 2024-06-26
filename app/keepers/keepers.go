@@ -250,8 +250,8 @@ func NewAppKeeper(
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
-		authcodec.NewBech32Codec(sdk.Bech32PrefixValAddr),
-		authcodec.NewBech32Codec(sdk.Bech32PrefixConsAddr),
+		authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ValidatorAddrPrefix()),
+		authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ConsensusAddrPrefix()),
 	)
 
 	appKeepers.MintKeeper = mintkeeper.NewKeeper(

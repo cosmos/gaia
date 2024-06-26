@@ -12,6 +12,8 @@ import (
 	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
 	"github.com/spf13/cast"
 
+	"cosmossdk.io/client/v2/autocli"
+	"cosmossdk.io/core/appmodule"
 	"cosmossdk.io/log"
 	abci "github.com/cometbft/cometbft/abci/types"
 	tmjson "github.com/cometbft/cometbft/libs/json"
@@ -45,6 +47,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
+	authcodec "github.com/cosmos/cosmos-sdk/x/auth/codec"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
@@ -60,14 +63,14 @@ import (
 	"github.com/cosmos/gaia/v18/app/keepers"
 	"github.com/cosmos/gaia/v18/app/params"
 	"github.com/cosmos/gaia/v18/app/upgrades"
-	v18 "github.com/cosmos/gaia/v18/app/upgrades/v18"
+	v19 "github.com/cosmos/gaia/v18/app/upgrades/v19"
 )
 
 var (
 	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
 
-	Upgrades = []upgrades.Upgrade{v18.Upgrade}
+	Upgrades = []upgrades.Upgrade{v19.Upgrade}
 )
 
 var (
@@ -464,6 +467,26 @@ func (app *GaiaApp) OnTxSucceeded(_ sdk.Context, _, _ string, _ []byte, _ []byte
 }
 
 func (app *GaiaApp) OnTxFailed(_ sdk.Context, _, _ string, _ []byte, _ []byte) {
+}
+
+// AutoCliOpts returns the autocli options for the app.
+func (app *GaiaApp) AutoCliOpts() autocli.AppOptions {
+	modules := make(map[string]appmodule.AppModule, 0)
+	for _, m := range app.mm.Modules {
+		if moduleWithName, ok := m.(module.HasName); ok {
+			moduleName := moduleWithName.Name()
+			if appModule, ok := moduleWithName.(appmodule.AppModule); ok {
+				modules[moduleName] = appModule
+			}
+		}
+	}
+
+	return autocli.AppOptions{
+		Modules:               modules,
+		AddressCodec:          authcodec.NewBech32Codec(sdk.GetConfig().GetBech32AccountAddrPrefix()),
+		ValidatorAddressCodec: authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ValidatorAddrPrefix()),
+		ConsensusAddressCodec: authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ConsensusAddrPrefix()),
+	}
 }
 
 // TestingApp functions

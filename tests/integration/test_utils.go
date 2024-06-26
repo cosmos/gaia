@@ -86,6 +86,9 @@ func SendMsgsOverride(chain *ibctesting.TestChain, feeAmount sdk.Coin, gasLimit 
 	}
 
 	_, err = chain.App.Commit()
+	if err != nil {
+		return nil, err
+	}
 
 	require.Len(chain.TB, resp.TxResults, 1)
 	txResult := resp.TxResults[0]

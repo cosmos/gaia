@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	"cosmossdk.io/client/v2/autocli"
 	"cosmossdk.io/log"
 	tmcfg "github.com/cometbft/cometbft/config"
 	tmcli "github.com/cometbft/cometbft/libs/cli"
@@ -32,11 +33,17 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/pruning"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/client/snapshot"
+	"github.com/cosmos/cosmos-sdk/codec"
+	addresscodec "github.com/cosmos/cosmos-sdk/codec/address"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/server"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
+	"github.com/cosmos/cosmos-sdk/x/auth/tx"
+	txmodule "github.com/cosmos/cosmos-sdk/x/auth/tx/config"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
@@ -55,6 +62,28 @@ import (
 // main function.
 func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	encodingConfig := gaia.RegisterEncodingConfig()
+
+	// we "pre"-instantiate the application for getting the injected/configured encoding configuration
+	initAppOptions := viper.New()
+	tempDir := tempDir()
+	initAppOptions.Set(flags.FlagHome, tempDir)
+	tempApplication := gaia.NewGaiaApp(
+		log.NewNopLogger(),
+		dbm.NewMemDB(),
+		nil,
+		true,
+		map[int64]bool{},
+		tempDir,
+		encodingConfig,
+		initAppOptions,
+		gaia.EmptyWasmOptions,
+	)
+	defer func() {
+		if err := tempApplication.Close(); err != nil {
+			panic(err)
+		}
+	}()
+
 	initClientCtx := client.Context{}.
 		WithCodec(encodingConfig.Marshaler).
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
@@ -66,12 +95,14 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		WithViper("")
 
 	rootCmd := &cobra.Command{
-		Use:   "gaiad",
-		Short: "Stargate Cosmos Hub App",
+		Use:           "gaiad",
+		Short:         "Stargate Cosmos Hub App",
+		SilenceErrors: true,
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 			cmd.SetOut(cmd.OutOrStdout())
 			cmd.SetErr(cmd.ErrOrStderr())
 
+			initClientCtx = initClientCtx.WithCmdContext(cmd.Context())
 			initClientCtx, err := client.ReadPersistentCommandFlags(initClientCtx, cmd.Flags())
 			if err != nil {
 				return err
@@ -82,25 +113,72 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 				return err
 			}
 
+			// This needs to go after ReadFromClientConfig, as that function
+			// sets the RPC client needed for SIGN_MODE_TEXTUAL. This sign mode
+			// is only available if the client is online.
+			if !initClientCtx.Offline {
+				txConfigOpts := tx.ConfigOptions{
+					EnabledSignModes:           append(tx.DefaultSignModes, signing.SignMode_SIGN_MODE_TEXTUAL),
+					TextualCoinMetadataQueryFn: txmodule.NewGRPCCoinMetadataQueryFn(initClientCtx),
+				}
+				txConfigWithTextual, err := tx.NewTxConfigWithOptions(
+					codec.NewProtoCodec(encodingConfig.InterfaceRegistry),
+					txConfigOpts,
+				)
+				if err != nil {
+					return err
+				}
+				initClientCtx = initClientCtx.WithTxConfig(txConfigWithTextual)
+			}
+
 			if err = client.SetCmdClientContextHandler(initClientCtx, cmd); err != nil {
 				return err
 			}
 
 			customAppTemplate, customAppConfig := initAppConfig()
-			customTMConfig := initTendermintConfig()
+			customCometConfig := initCometConfig()
 
-			return server.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, customTMConfig)
+			return server.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, customCometConfig)
 		},
 	}
 
 	initRootCmd(rootCmd, encodingConfig)
 
+	autoCliOpts, err := enrichAutoCliOpts(tempApplication.AutoCliOpts(), initClientCtx)
+	if err != nil {
+		panic(err)
+	}
+
+	if err := autoCliOpts.EnhanceRootCommand(rootCmd); err != nil {
+		panic(err)
+	}
+
 	return rootCmd, encodingConfig
 }
 
-// initTendermintConfig helps to override default Tendermint Config values.
+func enrichAutoCliOpts(autoCliOpts autocli.AppOptions, clientCtx client.Context) (autocli.AppOptions, error) {
+	autoCliOpts.AddressCodec = addresscodec.NewBech32Codec(sdk.GetConfig().GetBech32AccountAddrPrefix())
+	autoCliOpts.ValidatorAddressCodec = addresscodec.NewBech32Codec(sdk.GetConfig().GetBech32ValidatorAddrPrefix())
+	autoCliOpts.ConsensusAddressCodec = addresscodec.NewBech32Codec(sdk.GetConfig().GetBech32ConsensusAddrPrefix())
+
+	var err error
+	clientCtx, err = config.ReadFromClientConfig(clientCtx)
+	if err != nil {
+		return autocli.AppOptions{}, err
+	}
+
+	autoCliOpts.ClientCtx = clientCtx
+	autoCliOpts.Keyring, err = keyring.NewAutoCLIKeyring(clientCtx.Keyring)
+	if err != nil {
+		return autocli.AppOptions{}, err
+	}
+
+	return autoCliOpts, nil
+}
+
+// initCometConfig helps to override default CometBFT Config values.
 // return tmcfg.DefaultConfig if no custom configuration is required for the application.
-func initTendermintConfig() *tmcfg.Config {
+func initCometConfig() *tmcfg.Config {
 	cfg := tmcfg.DefaultConfig()
 
 	// these values put a higher strain on node memory
@@ -366,4 +444,14 @@ func (a appCreator) appExport(
 	}
 
 	return gaiaApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs, modulesToExport)
+}
+
+var tempDir = func() string {
+	dir, err := os.MkdirTemp("", ".gaia")
+	if err != nil {
+		dir = gaia.DefaultNodeHome
+	}
+	defer os.RemoveAll(dir)
+
+	return dir
 }

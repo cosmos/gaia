@@ -4,6 +4,7 @@ go 1.22.3
 
 require (
 	cosmossdk.io/api v0.7.5
+	cosmossdk.io/client/v2 v2.0.0-beta.1.0.20240118205803-02b5997c5192
 	cosmossdk.io/core v0.11.0
 	cosmossdk.io/errors v1.0.1
 	cosmossdk.io/log v1.3.1
@@ -56,7 +57,6 @@ require (
 require (
 	cloud.google.com/go/auth v0.5.1 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.2 // indirect
-	cosmossdk.io/client/v2 v2.0.0-beta.1.0.20240118205803-02b5997c5192 // indirect
 	cosmossdk.io/collections v0.4.0 // indirect
 	cosmossdk.io/depinject v1.0.0-alpha.4 // indirect
 	cosmossdk.io/x/circuit v0.1.1 // indirect

@@ -14,7 +14,6 @@ import (
 	"cosmossdk.io/log"
 	tmcfg "github.com/cometbft/cometbft/config"
 	tmcli "github.com/cometbft/cometbft/libs/cli"
-	tmtypes "github.com/cometbft/cometbft/types"
 	dbm "github.com/cosmos/cosmos-db"
 
 	rosettaCmd "cosmossdk.io/tools/rosetta/cmd"
@@ -42,6 +41,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
+	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
@@ -197,7 +197,6 @@ func queryCommand() *cobra.Command {
 		authcmd.QueryTxCmd(),
 	)
 
-	gaia.ModuleBasics.AddQueryCommands(cmd)
 	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
 
 	return cmd
@@ -224,7 +223,6 @@ func txCommand() *cobra.Command {
 		authcmd.GetDecodeCommand(),
 	)
 
-	gaia.ModuleBasics.AddTxCommands(cmd)
 	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
 
 	return cmd
@@ -266,7 +264,7 @@ func (a appCreator) newApp(
 	if chainID == "" {
 		// fallback to genesis chain-id
 		genDocFile := filepath.Join(homeDir, cast.ToString(appOpts.Get("genesis_file")))
-		appGenesis, err := tmtypes.GenesisDocFromFile(genDocFile)
+		appGenesis, err := genutiltypes.AppGenesisFromFile(genDocFile)
 		if err != nil {
 			panic(err)
 		}

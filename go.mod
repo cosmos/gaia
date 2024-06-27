@@ -233,3 +233,5 @@ replace (
 	// following versions might cause unexpected behavior
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 )
+
+replace github.com/cosmos/interchain-security/v4 => github.com/cosmos/interchain-security/v3 v3.3.3-lsm.0.20240627131040-20f9ce0e6322

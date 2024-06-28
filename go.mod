@@ -21,6 +21,7 @@ require (
 	github.com/google/gofuzz v1.2.0
 	github.com/gorilla/mux v1.8.1
 	github.com/ory/dockertest/v3 v3.10.0
+	github.com/osmosis-labs/fee-abstraction/v7 v7.0.2
 	github.com/prometheus/client_golang v1.17.0
 	github.com/rakyll/statik v0.1.7
 	github.com/skip-mev/feemarket v1.0.3-sdk47

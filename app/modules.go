@@ -212,8 +212,6 @@ NOTE: capability module's beginblocker must come before any modules using capabi
 
 func orderBeginBlockers() []string {
 	return []string{
-		// upgrades should be run first
-		upgradetypes.ModuleName,
 		capabilitytypes.ModuleName,
 		minttypes.ModuleName,
 		distrtypes.ModuleName,

@@ -101,6 +101,7 @@ var ModuleBasics = module.NewBasicManager(
 			paramsclient.ProposalHandler,
 			icsproviderclient.ConsumerAdditionProposalHandler,
 			icsproviderclient.ConsumerRemovalProposalHandler,
+			icsproviderclient.ConsumerModificationProposalHandler,
 			icsproviderclient.ChangeRewardDenomsProposalHandler,
 		},
 	),

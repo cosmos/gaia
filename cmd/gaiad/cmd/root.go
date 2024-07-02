@@ -300,6 +300,10 @@ func txCommand() *cobra.Command {
 		authcmd.GetDecodeCommand(),
 	)
 
+	// NOTE: this must be registered for now so that submit-legacy-proposal
+	// message (e.g. consumer-addition proposal) can be routed to the its handler and processed correctly.
+	gaia.ModuleBasics.AddTxCommands(cmd)
+
 	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
 
 	return cmd

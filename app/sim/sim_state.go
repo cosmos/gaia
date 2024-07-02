@@ -35,7 +35,7 @@ const (
 // AppStateFn returns the initial application state using a genesis or the simulation parameters.
 // It panics if the user provides files for both of them.
 // If a file is not given for the genesis or the sim params, it creates a randomized one.
-func AppStateFn(encConfig params.EncodingConfig, simManager *module.SimulationManager) simtypes.AppStateFn {
+func AppStateFn(encConfig params.EncodingConfig, simManager *module.SimulationManager, genesisState map[string]json.RawMessage) simtypes.AppStateFn {
 	return func(r *rand.Rand, accs []simtypes.Account, config simtypes.Config,
 	) (appState json.RawMessage, simAccs []simtypes.Account, chainID string, genesisTimestamp time.Time) {
 		cdc := encConfig.Marshaler
@@ -78,11 +78,11 @@ func AppStateFn(encConfig params.EncodingConfig, simManager *module.SimulationMa
 			if err != nil {
 				panic(err)
 			}
-			appState, simAccs = AppStateRandomizedFn(simManager, r, encConfig, accs, genesisTimestamp, appParams)
+			appState, simAccs = AppStateRandomizedFn(simManager, r, encConfig, accs, genesisTimestamp, appParams, genesisState)
 
 		default:
 			appParams := make(simtypes.AppParams)
-			appState, simAccs = AppStateRandomizedFn(simManager, r, encConfig, accs, genesisTimestamp, appParams)
+			appState, simAccs = AppStateRandomizedFn(simManager, r, encConfig, accs, genesisTimestamp, appParams, genesisState)
 		}
 
 		rawState := make(map[string]json.RawMessage)
@@ -155,10 +155,10 @@ func AppStateFn(encConfig params.EncodingConfig, simManager *module.SimulationMa
 func AppStateRandomizedFn(
 	simManager *module.SimulationManager, r *rand.Rand, encConfig params.EncodingConfig,
 	accs []simtypes.Account, genesisTimestamp time.Time, appParams simtypes.AppParams,
+	genesisState map[string]json.RawMessage,
 ) (json.RawMessage, []simtypes.Account) {
 	numAccs := int64(len(accs))
 	cdc := encConfig.Marshaler
-	genesisState := gaia.NewDefaultGenesisState(encConfig)
 
 	// generate a random amount of initial stake coins and a random initial
 	// number of bonded accounts

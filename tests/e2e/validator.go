@@ -8,11 +8,13 @@ import (
 	"path"
 	"path/filepath"
 
+	"cosmossdk.io/log"
 	"cosmossdk.io/math"
 	tmcfg "github.com/cometbft/cometbft/config"
 	tmos "github.com/cometbft/cometbft/libs/os"
 	"github.com/cometbft/cometbft/p2p"
 	"github.com/cometbft/cometbft/privval"
+	dbm "github.com/cosmos/cosmos-db"
 
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdkcrypto "github.com/cosmos/cosmos-sdk/crypto"
@@ -77,7 +79,25 @@ func (v *validator) init() error {
 	config.SetRoot(v.configDir())
 	config.Moniker = v.moniker
 
-	appState, err := json.MarshalIndent(gaia.ModuleBasics.DefaultGenesis(cdc), "", " ")
+	tempApplication := gaia.NewGaiaApp(
+		log.NewNopLogger(),
+		dbm.NewMemDB(),
+		nil,
+		true,
+		map[int64]bool{},
+		gaia.DefaultNodeHome,
+		encodingConfig,
+		gaia.EmptyAppOptions{},
+		gaia.EmptyWasmOptions)
+	defer func() {
+		if err := tempApplication.Close(); err != nil {
+			panic(err)
+		}
+	}()
+
+	genesisState := tempApplication.ModuleBasics.DefaultGenesis(encodingConfig.Marshaler)
+
+	appState, err := json.MarshalIndent(genesisState, "", " ")
 	if err != nil {
 		return fmt.Errorf("failed to JSON encode app genesis state: %w", err)
 	}

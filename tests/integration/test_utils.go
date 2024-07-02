@@ -22,13 +22,14 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	gaiaApp "github.com/cosmos/gaia/v18/app"
+	"github.com/cosmos/gaia/v18/app/params"
 )
 
 var app *gaiaApp.GaiaApp
 
 // GaiaAppIniter implements ibctesting.AppIniter for the gaia app
 func GaiaAppIniter() (ibctesting.TestingApp, map[string]json.RawMessage) {
-	encoding := gaiaApp.RegisterEncodingConfig()
+	encoding := params.MakeEncodingConfig()
 	app = gaiaApp.NewGaiaApp(
 		log.NewNopLogger(),
 		dbm.NewMemDB(),
@@ -42,7 +43,7 @@ func GaiaAppIniter() (ibctesting.TestingApp, map[string]json.RawMessage) {
 
 	testApp := ibctesting.TestingApp(app)
 
-	return testApp, gaiaApp.NewDefaultGenesisState(encoding)
+	return testApp, app.ModuleBasics.DefaultGenesis(encoding.Marshaler)
 }
 
 // SendMsgs() behavior must be changed since the default one uses zero fees

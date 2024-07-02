@@ -28,6 +28,7 @@ import (
 
 	"cosmossdk.io/math"
 	gaiaapp "github.com/cosmos/gaia/v18/app"
+	"github.com/cosmos/gaia/v18/app/params"
 )
 
 // SimAppChainID hardcoded chainID for simulation
@@ -123,7 +124,7 @@ func setup() (*gaiaapp.GaiaApp, gaiaapp.GenesisState) {
 	appOptions[server.FlagInvCheckPeriod] = 5
 	appOptions[server.FlagMinGasPrices] = "0uatom"
 
-	encConfig := gaiaapp.RegisterEncodingConfig()
+	encConfig := params.MakeEncodingConfig()
 
 	gaiaApp := gaiaapp.NewGaiaApp(
 		log.NewNopLogger(),
@@ -136,7 +137,7 @@ func setup() (*gaiaapp.GaiaApp, gaiaapp.GenesisState) {
 		appOptions,
 		emptyWasmOpts,
 	)
-	return gaiaApp, gaiaapp.NewDefaultGenesisState(encConfig)
+	return gaiaApp, gaiaApp.ModuleBasics.DefaultGenesis(encConfig.Marshaler)
 }
 
 func genesisStateWithValSet(t *testing.T,

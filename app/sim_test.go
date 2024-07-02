@@ -28,6 +28,7 @@ import (
 
 	// "github.com/cosmos/gaia/v11/app/helpers"
 	// "github.com/cosmos/gaia/v11/app/params"
+	"github.com/cosmos/gaia/v18/app/params"
 	"github.com/cosmos/gaia/v18/app/sim"
 )
 
@@ -90,7 +91,7 @@ func TestAppStateDeterminism(t *testing.T) {
 			}
 
 			db := dbm.NewMemDB()
-			encConfig := gaia.RegisterEncodingConfig()
+			encConfig := params.MakeEncodingConfig()
 			app := gaia.NewGaiaApp(
 				logger,
 				db,
@@ -124,7 +125,7 @@ func TestAppStateDeterminism(t *testing.T) {
 				t,
 				os.Stdout,
 				app.BaseApp,
-				simtestutil.AppStateFn(app.AppCodec(), app.SimulationManager(), gaia.NewDefaultGenesisState(encConfig)),
+				simtestutil.AppStateFn(app.AppCodec(), app.SimulationManager(), app.ModuleBasics.DefaultGenesis(encConfig.Marshaler)),
 				simulation2.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
 				simtestutil.SimulationOperations(app, app.AppCodec(), config),
 				blockedAddresses,

@@ -28,7 +28,6 @@ import (
 
 	"cosmossdk.io/math"
 	evidencetypes "cosmossdk.io/x/evidence/types"
-	upgradetypes "cosmossdk.io/x/upgrade/types"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
@@ -72,6 +71,8 @@ const (
 	proposalBlocksPerEpochFilename   = "proposal_blocks_per_epoch.json"
 	proposalFailExpedited            = "proposal_fail_expedited.json"
 	proposalExpeditedSoftwareUpgrade = "proposal_expedited_software_upgrade.json"
+	proposalSoftwareUpgrade          = "proposal_software_upgrade.json"
+	proposalCancelSoftwareUpgrade    = "proposal_cancel_software_upgrade.json"
 
 	// proposalAddConsumerChainFilename    = "proposal_add_consumer.json"
 	// proposalRemoveConsumerChainFilename = "proposal_remove_consumer.json"
@@ -703,17 +704,47 @@ func (s *IntegrationTestSuite) writeGovCommunitySpendProposal(c *chain, amount s
 	s.Require().NoError(err)
 }
 
-func (s *IntegrationTestSuite) writeGovLegProposal(c *chain, height int64, name string) {
-	prop := &upgradetypes.Plan{
-		Name:   name,
-		Height: height,
-		Info:   `{"binaries":{"os1/arch1":"url1","os2/arch2":"url2"}}`,
-	}
+func (s *IntegrationTestSuite) writeSoftwareUpgradeProposal(c *chain, height int64, name string) {
+	body := `{
+		"messages": [
+		 {
+		  "@type": "/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade",
+		  "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+		  "plan": {
+		   "name": "%s",
+		   "height": "%d",
+		   "info": "test",
+		   "upgraded_client_state": null
+		  }
+		 }
+		],
+		"metadata": "ipfs://CID",
+		"deposit": "100uatom",
+		"title": "title",
+		"summary": "test"
+	   }`
 
-	commSpendBody, err := json.MarshalIndent(prop, "", " ")
+	propMsgBody := fmt.Sprintf(body, name, height)
+
+	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalSoftwareUpgrade), []byte(propMsgBody))
 	s.Require().NoError(err)
+}
 
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalCommunitySpendFilename), commSpendBody)
+func (s *IntegrationTestSuite) writeCancelSoftwareUpgradeProposal(c *chain) {
+	template := `{
+		"messages": [
+		 {
+		  "@type": "/cosmos.upgrade.v1beta1.MsgCancelUpgrade",
+		  "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn"
+		 }
+		],
+		"metadata": "ipfs://CID",
+		"deposit": "100uatom",
+		"title": "title",
+		"summary": "test"
+	   }`
+
+	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalCancelSoftwareUpgrade), []byte(template))
 	s.Require().NoError(err)
 }
 
@@ -836,8 +867,7 @@ func (s *IntegrationTestSuite) writeFailingExpeditedProposal(c *chain, blocksPer
 	s.Require().NoError(err)
 }
 
-// MsgSoftwareUpgrade can be expedited but it can only be submitted using "tx gov submit-proposal" command.
-// Messages submitted using "tx gov submit-legacy-proposal" command cannot be expedited.
+// MsgSoftwareUpgrade can be expedited and it can only be submitted using "tx gov submit-proposal" command.
 func (s *IntegrationTestSuite) writeExpeditedSoftwareUpgradeProp(c *chain) {
 	body := `{
  "messages": [

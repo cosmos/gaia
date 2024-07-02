@@ -33,21 +33,13 @@ func (s *IntegrationTestSuite) GovSoftwareUpgrade() {
 	// Gov tests may be run in arbitrary order, each test must increment proposalCounter to have the correct proposal id to submit and query
 	proposalCounter++
 
-	s.writeGovLegProposal(s.chainA, int64(height), "upgrade-v0")
+	s.writeSoftwareUpgradeProposal(s.chainA, int64(proposalHeight), "upgrade-v0")
 
-	submitGovFlags := []string{
-		"software-upgrade",
-		"Upgrade-0",
-		"--title='Upgrade V0'",
-		"--description='Software Upgrade'",
-		"--no-validate",
-		fmt.Sprintf("--upgrade-height=%d", proposalHeight),
-		fmt.Sprintf("--upgrade-info=%s", configFile(proposalCommunitySpendFilename)),
-	}
+	submitGovFlags := []string{configFile(proposalSoftwareUpgrade)}
 
 	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
 	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes=0.8,no=0.1,abstain=0.05,no_with_veto=0.05"}
-	s.submitLegacyGovProposal(chainAAPIEndpoint, sender, proposalCounter, upgradetypes.ProposalTypeSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "weighted-vote", true)
+	s.submitGovProposal(chainAAPIEndpoint, sender, proposalCounter, upgradetypes.ProposalTypeSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "weighted-vote")
 
 	s.verifyChainHaltedAtUpgradeHeight(s.chainA, 0, proposalHeight)
 	s.T().Logf("Successfully halted chain at  height %d", proposalHeight)
@@ -83,29 +75,22 @@ func (s *IntegrationTestSuite) GovCancelSoftwareUpgrade() {
 	sender := senderAddress.String()
 	height := s.getLatestBlockHeight(s.chainA, 0)
 	proposalHeight := height + 50
-	s.writeGovLegProposal(s.chainA, int64(height), "upgrade-v1")
+	s.writeSoftwareUpgradeProposal(s.chainA, int64(proposalHeight), "upgrade-v1")
 
 	// Gov tests may be run in arbitrary order, each test must increment proposalCounter to have the correct proposal id to submit and query
 	proposalCounter++
-	submitGovFlags := []string{
-		"software-upgrade",
-		"Upgrade-1",
-		"--title='Upgrade V1'",
-		"--description='Software Upgrade'",
-		"--no-validate",
-		fmt.Sprintf("--upgrade-height=%d", proposalHeight),
-		fmt.Sprintf("--upgrade-info=%s", configFile(proposalCommunitySpendFilename)),
-	}
+	submitGovFlags := []string{configFile(proposalSoftwareUpgrade)}
 
 	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
 	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes"}
-	s.submitLegacyGovProposal(chainAAPIEndpoint, sender, proposalCounter, upgradetypes.ProposalTypeSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "vote", true)
+	s.submitGovProposal(chainAAPIEndpoint, sender, proposalCounter, upgradetypes.ProposalTypeSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 
 	proposalCounter++
-	submitGovFlags = []string{"cancel-software-upgrade", "--title='Upgrade V1'", "--description='Software Upgrade'"}
+	s.writeCancelSoftwareUpgradeProposal(s.chainA)
+	submitGovFlags = []string{configFile(proposalCancelSoftwareUpgrade)}
 	depositGovFlags = []string{strconv.Itoa(proposalCounter), depositAmount.String()}
 	voteGovFlags = []string{strconv.Itoa(proposalCounter), "yes"}
-	s.submitLegacyGovProposal(chainAAPIEndpoint, sender, proposalCounter, upgradetypes.ProposalTypeCancelSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "vote", true)
+	s.submitGovProposal(chainAAPIEndpoint, sender, proposalCounter, upgradetypes.ProposalTypeCancelSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 
 	s.verifyChainPassesUpgradeHeight(s.chainA, 0, proposalHeight)
 	s.T().Logf("Successfully canceled upgrade at height %d", proposalHeight)

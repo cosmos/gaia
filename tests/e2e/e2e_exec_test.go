@@ -547,7 +547,7 @@ func (s *IntegrationTestSuite) getLatestBlockHeight(c *chain, valIdx int) int {
 	type syncInfo struct {
 		SyncInfo struct {
 			LatestHeight string `json:"latest_block_height"`
-		} `json:"SyncInfo"`
+		} `json:"sync_info"`
 	}
 
 	var currentHeight int

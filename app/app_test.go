@@ -15,7 +15,6 @@ import (
 
 	gaia "github.com/cosmos/gaia/v18/app"
 	gaiahelpers "github.com/cosmos/gaia/v18/app/helpers"
-	"github.com/cosmos/gaia/v18/app/params"
 )
 
 type EmptyAppOptions struct{}
@@ -27,7 +26,7 @@ func (ao EmptyAppOptions) Get(_ string) interface{} {
 }
 
 func TestGaiaApp_BlockedModuleAccountAddrs(t *testing.T) {
-	encConfig := params.MakeEncodingConfig()
+	encConfig := gaia.RegisterEncodingConfig()
 	app := gaia.NewGaiaApp(
 		log.NewNopLogger(),
 		db.NewMemDB(),

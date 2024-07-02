@@ -14,7 +14,6 @@ import (
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 
 	gaia "github.com/cosmos/gaia/v18/app"
-	"github.com/cosmos/gaia/v18/app/params"
 	"github.com/cosmos/gaia/v18/app/sim"
 )
 
@@ -43,7 +42,7 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 	appOptions := make(simtestutil.AppOptionsMap, 0)
 	appOptions[server.FlagInvCheckPeriod] = simcli.FlagPeriodValue
 
-	encConfig := params.MakeEncodingConfig()
+	encConfig := gaia.RegisterEncodingConfig()
 
 	app := gaia.NewGaiaApp(
 		logger,
@@ -59,14 +58,12 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 		baseapp.SetChainID(AppChainID),
 	)
 
-	defaultGenesisState := app.ModuleBasics.DefaultGenesis(encConfig.Marshaler)
-
 	// Run randomized simulation:w
 	_, simParams, simErr := simulation.SimulateFromSeed(
 		b,
 		os.Stdout,
 		app.BaseApp,
-		sim.AppStateFn(encConfig, app.SimulationManager(), defaultGenesisState),
+		sim.AppStateFn(encConfig, app.SimulationManager()),
 		simulation2.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
 		sim.SimulationOperations(app, app.AppCodec(), config),
 		app.ModuleAccountAddrs(),

@@ -40,7 +40,6 @@ import (
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
@@ -62,7 +61,7 @@ import (
 // NewRootCmd creates a new root command for simd. It is called once in the
 // main function.
 func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
-	encodingConfig := params.MakeEncodingConfig()
+	encodingConfig := gaia.RegisterEncodingConfig()
 
 	// we "pre"-instantiate the application for getting the injected/configured encoding configuration
 	initAppOptions := viper.New()
@@ -142,7 +141,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		},
 	}
 
-	initRootCmd(rootCmd, encodingConfig, tempApplication.ModuleBasics)
+	initRootCmd(rootCmd, encodingConfig)
 
 	autoCliOpts, err := enrichAutoCliOpts(tempApplication.AutoCliOpts(), initClientCtx)
 	if err != nil {
@@ -211,16 +210,16 @@ func initAppConfig() (string, interface{}) {
 	return defaultAppTemplate, customAppConfig
 }
 
-func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig, basicManager module.BasicManager) {
+func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 	cfg := sdk.GetConfig()
 	cfg.Seal()
 
 	ac := appCreator{encodingConfig}
 
 	rootCmd.AddCommand(
-		genutilcli.InitCmd(basicManager, gaia.DefaultNodeHome),
+		genutilcli.InitCmd(gaia.ModuleBasics, gaia.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
-		NewTestnetCmd(basicManager, banktypes.GenesisBalancesIterator{}, ac),
+		NewTestnetCmd(gaia.ModuleBasics, banktypes.GenesisBalancesIterator{}, ac),
 		addDebugCommands(debug.Cmd()),
 		confixcmd.ConfigCommand(),
 		pruning.Cmd(ac.newApp, gaia.DefaultNodeHome),
@@ -232,9 +231,9 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig, b
 	// add keybase, auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(
 		server.StatusCommand(),
-		genesisCommand(encodingConfig, basicManager),
+		genesisCommand(encodingConfig),
 		queryCommand(),
-		txCommand(basicManager),
+		txCommand(),
 		keys.Commands(),
 	)
 
@@ -248,8 +247,8 @@ func addModuleInitFlags(startCmd *cobra.Command) {
 }
 
 // genesisCommand builds genesis-related `simd genesis` command. Users may provide application specific commands as a parameter
-func genesisCommand(encodingConfig params.EncodingConfig, basicManager module.BasicManager, cmds ...*cobra.Command) *cobra.Command {
-	cmd := genutilcli.GenesisCoreCommand(encodingConfig.TxConfig, basicManager, gaia.DefaultNodeHome)
+func genesisCommand(encodingConfig params.EncodingConfig, cmds ...*cobra.Command) *cobra.Command {
+	cmd := genutilcli.GenesisCoreCommand(encodingConfig.TxConfig, gaia.ModuleBasics, gaia.DefaultNodeHome)
 
 	for _, subCmd := range cmds {
 		cmd.AddCommand(subCmd)
@@ -280,7 +279,7 @@ func queryCommand() *cobra.Command {
 	return cmd
 }
 
-func txCommand(basicManager module.BasicManager) *cobra.Command {
+func txCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        "tx",
 		Short:                      "Transactions subcommands",
@@ -303,7 +302,7 @@ func txCommand(basicManager module.BasicManager) *cobra.Command {
 
 	// NOTE: this must be registered for now so that submit-legacy-proposal
 	// message (e.g. consumer-addition proposal) can be routed to the its handler and processed correctly.
-	basicManager.AddTxCommands(cmd)
+	gaia.ModuleBasics.AddTxCommands(cmd)
 
 	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
 

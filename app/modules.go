@@ -1,17 +1,23 @@
 package gaia
 
 import (
+	ratelimit "github.com/Stride-Labs/ibc-rate-limiting/ratelimit"
 	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
 	feemarket "github.com/skip-mev/feemarket/x/feemarket"
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
+	pfmrouter "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward"
 	pfmroutertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward/types"
+	ica "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts"
 	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
 	ibcfee "github.com/cosmos/ibc-go/v8/modules/apps/29-fee"
 	ibcfeetypes "github.com/cosmos/ibc-go/v8/modules/apps/29-fee/types"
+	"github.com/cosmos/ibc-go/v8/modules/apps/transfer"
 	ibctransfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 	ibc "github.com/cosmos/ibc-go/v8/modules/core"
 	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
+	ibctm "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
+	icsprovider "github.com/cosmos/interchain-security/v5/x/ccv/provider"
 	icsproviderclient "github.com/cosmos/interchain-security/v5/x/ccv/provider/client"
 	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
 
@@ -79,29 +85,47 @@ var maccPerms = map[string][]string{
 	feemarkettypes.FeeCollectorName:   nil,
 }
 
-// ModuleBasics defines the module BasicManager that is in charge of setting up basic,
+// ModuleBasics defines the module BasicManager is in charge of setting up basic,
 // non-dependant module elements, such as codec registration
 // and genesis verification.
-func newBasicManager(app *GaiaApp) module.BasicManager {
-	basicManager := module.NewBasicManagerFromManager(
-		app.mm,
-		map[string]module.AppModuleBasic{
-			genutiltypes.ModuleName: genutil.NewAppModuleBasic(genutiltypes.DefaultMessageValidator),
-			govtypes.ModuleName: gov.NewAppModuleBasic(
-				[]govclient.ProposalHandler{
-					paramsclient.ProposalHandler,
-					icsproviderclient.ConsumerAdditionProposalHandler,
-					icsproviderclient.ConsumerRemovalProposalHandler,
-					icsproviderclient.ConsumerModificationProposalHandler,
-					icsproviderclient.ChangeRewardDenomsProposalHandler,
-				},
-			),
-		})
-	basicManager.RegisterLegacyAminoCodec(app.legacyAmino)
-	basicManager.RegisterInterfaces(app.interfaceRegistry)
-
-	return basicManager
-}
+var ModuleBasics = module.NewBasicManager(
+	auth.AppModuleBasic{},
+	genutil.NewAppModuleBasic(genutiltypes.DefaultMessageValidator),
+	bank.AppModuleBasic{},
+	capability.AppModuleBasic{},
+	staking.AppModuleBasic{},
+	mint.AppModuleBasic{},
+	distr.AppModuleBasic{},
+	gov.NewAppModuleBasic(
+		[]govclient.ProposalHandler{
+			paramsclient.ProposalHandler,
+			icsproviderclient.ConsumerAdditionProposalHandler,
+			icsproviderclient.ConsumerRemovalProposalHandler,
+			icsproviderclient.ConsumerModificationProposalHandler,
+			icsproviderclient.ChangeRewardDenomsProposalHandler,
+		},
+	),
+	sdkparams.AppModuleBasic{},
+	crisis.AppModuleBasic{},
+	slashing.AppModuleBasic{},
+	feegrantmodule.AppModuleBasic{},
+	authzmodule.AppModuleBasic{},
+	ibc.AppModuleBasic{},
+	ibctm.AppModuleBasic{},
+	ibcfee.AppModuleBasic{},
+	upgrade.AppModuleBasic{},
+	evidence.AppModuleBasic{},
+	transfer.AppModuleBasic{},
+	vesting.AppModuleBasic{},
+	pfmrouter.AppModuleBasic{},
+	ratelimit.AppModuleBasic{},
+	ica.AppModuleBasic{},
+	icsprovider.AppModuleBasic{},
+	consensus.AppModuleBasic{},
+	metaprotocols.AppModuleBasic{},
+	wasm.AppModuleBasic{},
+	feemarket.AppModuleBasic{},
+)
 
 func appModules(
 	app *GaiaApp,
@@ -144,6 +168,25 @@ func appModules(
 		metaprotocols.NewAppModule(),
 		feemarket.NewAppModule(appCodec, *app.FeeMarketKeeper),
 	}
+}
+
+func newBasicManagerFromManager(app *GaiaApp) module.BasicManager {
+	basicManager := module.NewBasicManagerFromManager(
+		app.mm,
+		map[string]module.AppModuleBasic{
+			genutiltypes.ModuleName: genutil.NewAppModuleBasic(genutiltypes.DefaultMessageValidator),
+			govtypes.ModuleName: gov.NewAppModuleBasic(
+				[]govclient.ProposalHandler{
+					paramsclient.ProposalHandler,
+					icsproviderclient.ConsumerAdditionProposalHandler,
+					icsproviderclient.ConsumerRemovalProposalHandler,
+					icsproviderclient.ConsumerModificationProposalHandler,
+					icsproviderclient.ChangeRewardDenomsProposalHandler,
+				},
+			),
+		})
+
+	return basicManager
 }
 
 // simulationModules returns modules for simulation manager

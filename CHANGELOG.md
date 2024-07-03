@@ -2,7 +2,7 @@
 
 ## v17.3.0
 
-*July 4, 2024*
+*July 3, 2024*
 
 ### DEPENDENCIES
 

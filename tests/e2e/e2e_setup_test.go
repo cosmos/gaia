@@ -798,17 +798,10 @@ func (s *IntegrationTestSuite) writeGovParamChangeProposalBlocksPerEpoch(c *chai
 	{
 		"messages":[
 		  {
-			"@type": "/cosmos.gov.v1.MsgExecLegacyContent",
-			"authority": "%s",
-			"content": {
-				"@type": "/cosmos.params.v1beta1.ParameterChangeProposal",
-				"title": "BlocksPerEpoch",
-				"description": "change blocks per epoch",
-				"changes": [{
-				  "subspace": "provider",
-				  "key": "BlocksPerEpoch",
-				  "value": "\"%d\""
-				}]
+			"@type": "/interchain_security.ccv.provider.v1.MsgUpdateParams",
+   			"authority": "%s",
+			"params": {
+				"blocks_per_epoch": "%d"
 			}
 		  }
 		],

@@ -137,6 +137,14 @@ func (s *IntegrationTestSuite) registerICAAccount(c *chain, valIdx int, sender, 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
+	version := string(icatypes.ModuleCdc.MustMarshalJSON(&icatypes.Metadata{
+		Version:                icatypes.Version,
+		ControllerConnectionId: connectionID,
+		HostConnectionId:       connectionID,
+		Encoding:               icatypes.EncodingProtobuf,
+		TxType:                 icatypes.TxTypeSDKMultiMsg,
+	}))
+
 	icaCmd := []string{
 		gaiadBinary,
 		txCommand,
@@ -144,6 +152,7 @@ func (s *IntegrationTestSuite) registerICAAccount(c *chain, valIdx int, sender, 
 		"controller",
 		"register",
 		connectionID,
+		fmt.Sprintf("--version=%s", version),
 		fmt.Sprintf("--from=%s", sender),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, fees),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),

@@ -231,7 +231,7 @@ replace (
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.47.15-ics-lsm
 
 	// Use special ICS v4.1.0-ics-lsm release with support for LSM
-	github.com/cosmos/interchain-security/v4 => github.com/cosmos/interchain-security/v4 v4.2.0-lsm
+	github.com/cosmos/interchain-security/v4 => github.com/cosmos/interchain-security/v4 v4.2.1-lsm
 
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2

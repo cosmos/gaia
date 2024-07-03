@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## v17.3.0
+
+*July 3, 2024*
+
+### DEPENDENCIES
+
+- Bump [ICS](https://github.com/cosmos/interchain-security) to
+  [v4.2.1-lsm](https://github.com/cosmos/interchain-security/releases/tag/v4.2.1-lsm)
+  ([\#3185](https://github.com/cosmos/gaia/pull/3185))
+
+### STATE BREAKING
+
+- Bump [ICS](https://github.com/cosmos/interchain-security) to
+  [v4.2.1-lsm](https://github.com/cosmos/interchain-security/releases/tag/v4.2.1-lsm)
+  ([\#3185](https://github.com/cosmos/gaia/pull/3185))
+
 ## v17.2.0
 
 *June 5, 2024*

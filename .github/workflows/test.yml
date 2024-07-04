@@ -54,7 +54,7 @@ jobs:
           path: ./profile.out
 
   test-e2e:
-    runs-on: ubuntu-latest
+    runs-on: Gaia-Runner-medium
     timeout-minutes: 45
     steps:
       - uses: actions/setup-go@v5
@@ -108,7 +108,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   liveness-test:
-    runs-on: ubuntu-latest
+    runs-on: Gaia-Runner-medium
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4

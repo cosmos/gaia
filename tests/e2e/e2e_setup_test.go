@@ -801,7 +801,8 @@ func (s *IntegrationTestSuite) writeGovParamChangeProposalBlocksPerEpoch(c *chai
 			"@type": "/interchain_security.ccv.provider.v1.MsgUpdateParams",
    			"authority": "%s",
 			"params": {
-				"blocks_per_epoch": "%d"
+				"blocks_per_epoch": "%d",
+				"slash_meter_replenish_fraction":"0.06"
 			}
 		  }
 		],

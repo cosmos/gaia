@@ -11,10 +11,11 @@ import (
 	icstestingutils "github.com/cosmos/interchain-security/v5/testutil/ibc_testing"
 	"github.com/cosmos/interchain-security/v5/x/ccv/types"
 
+	"cosmossdk.io/math"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"cosmossdk.io/math"
 	"github.com/cosmos/gaia/v18/ante"
 	gaiaApp "github.com/cosmos/gaia/v18/app"
 )
@@ -86,7 +87,8 @@ func TestICSEpochs(t *testing.T) {
 	provCtx = nextEpoch(provCtx)
 	// Expect to create a VSC packet
 	// without sending it since CCV channel isn't established
-	app.EndBlocker(provCtx)
+	_, err := app.EndBlocker(provCtx)
+	require.NoError(t, err)
 	require.NotEmpty(t, getVSCPacketsFn())
 
 	// Expect the VSC packet to send after setting up the CCV channel
@@ -105,7 +107,8 @@ func TestICSEpochs(t *testing.T) {
 	require.Empty(t, getVSCPacketsFn())
 
 	provCtx = nextEpoch(provCtx)
-	app.EndBlocker(provCtx)
+	_, err = app.EndBlocker(provCtx)
+	require.NoError(t, err)
 	// Expect second VSC Packet to be committed
 	require.Len(t, ccvSuite.GetProviderChain().App.GetIBCKeeper().ChannelKeeper.GetAllPacketCommitmentsAtChannel(
 		provCtx,

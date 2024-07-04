@@ -13,6 +13,7 @@ import (
 	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
 
 	evidencetypes "cosmossdk.io/x/evidence/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"

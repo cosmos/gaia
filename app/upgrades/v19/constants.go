@@ -2,6 +2,7 @@ package v19
 
 import (
 	store "cosmossdk.io/store/types"
+
 	"github.com/cosmos/gaia/v18/app/upgrades"
 )
 

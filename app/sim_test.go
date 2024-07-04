@@ -9,12 +9,12 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"cosmossdk.io/log"
 	dbm "github.com/cosmos/cosmos-db"
 
+	"cosmossdk.io/log"
 	"cosmossdk.io/math"
-
 	"cosmossdk.io/store"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server"
@@ -25,7 +25,6 @@ import (
 
 	"github.com/cosmos/gaia/v18/ante"
 	gaia "github.com/cosmos/gaia/v18/app"
-
 	// "github.com/cosmos/gaia/v11/app/helpers"
 	// "github.com/cosmos/gaia/v11/app/params"
 	"github.com/cosmos/gaia/v18/app/sim"

@@ -43,10 +43,12 @@ func TestVoteSpamDecoratorGovV1Beta1(t *testing.T) {
 	require.NoError(t, err)
 	// Make sure the validator is bonded so it's not removed on Undelegate
 	validator2.Status = stakingtypes.Bonded
-	stakingKeeper.SetValidator(ctx, validator2)
+	err = stakingKeeper.SetValidator(ctx, validator2)
+	require.NoError(t, err)
 	err = stakingKeeper.SetValidatorByConsAddr(ctx, validator2)
 	require.NoError(t, err)
-	stakingKeeper.SetNewValidatorByPowerIndex(ctx, validator2)
+	err = stakingKeeper.SetNewValidatorByPowerIndex(ctx, validator2)
+	require.NoError(t, err)
 	err = stakingKeeper.Hooks().AfterValidatorCreated(ctx, sdk.ValAddress(validator2.GetOperator()))
 	require.NoError(t, err)
 
@@ -161,10 +163,12 @@ func TestVoteSpamDecoratorGovV1(t *testing.T) {
 	require.NoError(t, err)
 	// Make sure the validator is bonded so it's not removed on Undelegate
 	validator2.Status = stakingtypes.Bonded
-	stakingKeeper.SetValidator(ctx, validator2)
+	err = stakingKeeper.SetValidator(ctx, validator2)
+	require.NoError(t, err)
 	err = stakingKeeper.SetValidatorByConsAddr(ctx, validator2)
 	require.NoError(t, err)
-	stakingKeeper.SetNewValidatorByPowerIndex(ctx, validator2)
+	err = stakingKeeper.SetNewValidatorByPowerIndex(ctx, validator2)
+	require.NoError(t, err)
 	err = stakingKeeper.Hooks().AfterValidatorCreated(ctx, sdk.ValAddress(validator2.GetOperator()))
 	require.NoError(t, err)
 

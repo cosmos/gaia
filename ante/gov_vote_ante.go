@@ -2,6 +2,7 @@ package ante
 
 import (
 	errorsmod "cosmossdk.io/errors"
+	"cosmossdk.io/math"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -12,8 +13,6 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	gaiaerrors "github.com/cosmos/gaia/v18/types/errors"
-
-	"cosmossdk.io/math"
 )
 
 var (
@@ -85,7 +84,7 @@ func (g GovVoteDecorator) ValidateVoteMsgs(ctx sdk.Context, msgs []sdk.Msg) erro
 		enoughStake := false
 		delegationCount := 0
 		stakedTokens := math.LegacyNewDec(0)
-		g.stakingKeeper.IterateDelegatorDelegations(ctx, accAddr, func(delegation stakingtypes.Delegation) bool {
+		err = g.stakingKeeper.IterateDelegatorDelegations(ctx, accAddr, func(delegation stakingtypes.Delegation) bool {
 			validatorAddr, err := sdk.ValAddressFromBech32(delegation.ValidatorAddress)
 			if err != nil {
 				panic(err) // shouldn't happen
@@ -104,6 +103,10 @@ func (g GovVoteDecorator) ValidateVoteMsgs(ctx sdk.Context, msgs []sdk.Msg) erro
 			// break the iteration if maxDelegationsChecked were already checked
 			return delegationCount >= maxDelegationsChecked
 		})
+
+		if err != nil {
+			return err
+		}
 
 		if !enoughStake {
 			return errorsmod.Wrapf(gaiaerrors.ErrInsufficientStake, "insufficient stake for voting - min required %v", minStakedTokens)

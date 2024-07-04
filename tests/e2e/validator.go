@@ -8,11 +8,12 @@ import (
 	"path"
 	"path/filepath"
 
-	"cosmossdk.io/math"
 	tmcfg "github.com/cometbft/cometbft/config"
 	tmos "github.com/cometbft/cometbft/libs/os"
 	"github.com/cometbft/cometbft/p2p"
 	"github.com/cometbft/cometbft/privval"
+
+	"cosmossdk.io/math"
 
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdkcrypto "github.com/cosmos/cosmos-sdk/crypto"

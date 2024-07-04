@@ -9,11 +9,12 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"cosmossdk.io/log"
 	abci "github.com/cometbft/cometbft/abci/types"
-	dbm "github.com/cosmos/cosmos-db"
 
+	dbm "github.com/cosmos/cosmos-db"
 	ibctesting "github.com/cosmos/ibc-go/v8/testing"
+
+	"cosmossdk.io/log"
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"

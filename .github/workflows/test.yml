@@ -54,7 +54,7 @@ jobs:
           path: ./profile.out
 
   test-e2e:
-    runs-on: large-sdk-runner
+    runs-on: Gaia-Runner-medium
     timeout-minutes: 45
     steps:
       - uses: actions/setup-go@v5

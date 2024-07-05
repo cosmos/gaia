@@ -60,8 +60,8 @@ const config = {
               label: "Unreleased (main)",
               banner: "unreleased",
             },
-            "v17.3.0": {
-              path: "v17.3.0",
+            "v17.3.0-docs": {
+              path: "v17.3.0-docs",
               label: "On chain (v17.3.0)",
               banner: "none",
             },

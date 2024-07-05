@@ -28,7 +28,7 @@ require (
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 v8.0.2
 	github.com/cosmos/ibc-go/modules/capability v1.0.0
 	github.com/cosmos/ibc-go/v8 v8.3.1
-	github.com/cosmos/interchain-security/v5 v5.0.0
+	github.com/cosmos/interchain-security/v5 v5.0.0-20240702132056-9ee031266fe5
 	github.com/google/gofuzz v1.2.0
 	github.com/gorilla/mux v1.8.1
 	github.com/ory/dockertest/v3 v3.10.0
@@ -250,9 +250,6 @@ replace (
 
 	// Use special SDK v0.50.x release with support for both ICS and LSM
 	github.com/cosmos/cosmos-sdk => github.com/informalsystems/cosmos-sdk v0.0.0-20240618092823-ab3600ee8a5a
-
-	// Use special ICS v5.0.0-ics-lsm release with support for LSM
-	github.com/cosmos/interchain-security/v5 => github.com/cosmos/interchain-security/v5 v5.0.0-20240625071132-3e63d54cd5a1
 
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2

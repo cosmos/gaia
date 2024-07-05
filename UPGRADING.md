@@ -1,16 +1,16 @@
 # Upgrading Gaia
 
-This guide provides instructions for upgrading Gaia from v17.2.x to v18.x.
+This guide provides instructions for upgrading Gaia from v17.3.x to v18.1.x.
 
 This document describes the steps for validators, full node operators and relayer operators, to upgrade successfully for the Gaia v18 release.
 
-For more details on the release, please see the [release notes](https://github.com/cosmos/gaia/releases/tag/v18.0.0)
+For more details on the release, please see the [release notes](https://github.com/cosmos/gaia/releases/tag/v18.1.0)
 
 **Relayer Operators** for the Cosmos Hub and consumer chains, will also need to update to use [Hermes v1.8.0](https://github.com/informalsystems/hermes/releases/tag/v1.8.0) or higher. You may need to restart your relayer software after a major chain upgrade.
 
 ## Release Binary
 
-Please use the correct release binary: `v18.0.0`.
+Please use the correct release binary: `v18.1.0`.
 
 ## Instructions
 
@@ -39,7 +39,7 @@ Please use the correct release binary: `v18.0.0`.
 
 ## On-chain governance proposal attains consensus
 
-Once a software upgrade governance proposal is submitted to the Cosmos Hub, both a reference to this proposal and an `UPGRADE_HEIGHT` are added to the [release notes](https://github.com/cosmos/gaia/releases/tag/v18.0.0).
+Once a software upgrade governance proposal is submitted to the Cosmos Hub, both a reference to this proposal and an `UPGRADE_HEIGHT` are added to the [release notes](https://github.com/cosmos/gaia/releases/tag/v18.1.0).
 If and when this proposal reaches consensus, the upgrade height will be used to halt the "old" chain binaries. You can check the proposal on one of the block explorers or using the `gaiad` CLI tool.
 
 ## Upgrade date
@@ -61,11 +61,11 @@ For those validator and full node operators that are interested in ensuring prep
 
 ### Current runtime
 
-The Cosmos Hub mainnet network, `cosmoshub-4`, is currently running [Gaia v17.2.0](https://github.com/cosmos/gaia/releases/v17.2.0). We anticipate that operators who are running on v17.2.0, will be able to upgrade successfully. Validators are expected to ensure that their systems are up to date and capable of performing the upgrade. This includes running the correct binary and if building from source, building with the appropriate `go` version.
+The Cosmos Hub mainnet network, `cosmoshub-4`, is currently running [Gaia v17.3.0](https://github.com/cosmos/gaia/releases/v17.3.0). We anticipate that operators who are running on v17.3.0, will be able to upgrade successfully. Validators are expected to ensure that their systems are up to date and capable of performing the upgrade. This includes running the correct binary and if building from source, building with the appropriate `go` version.
 
 ### Target runtime
 
-The Cosmos Hub mainnet network, `cosmoshub-4`, will run **[Gaia v18.0.0](https://github.com/cosmos/gaia/releases/tag/v18.0.0)**. Operators _**MUST**_ use this version post-upgrade to remain connected to the network. The new version requires `go v1.22` to build successfully.
+The Cosmos Hub mainnet network, `cosmoshub-4`, will run **[Gaia v18.1.0](https://github.com/cosmos/gaia/releases/tag/v18.1.0)**. Operators _**MUST**_ use this version post-upgrade to remain connected to the network. The new version requires `go v1.22` to build successfully.
 
 ## Upgrade steps
 
@@ -80,15 +80,15 @@ If you prefer to use Cosmovisor to upgrade, some preparation work is needed befo
 
 ### Method I: Manual Upgrade
 
-Make sure **Gaia v17.2.0** is installed by either downloading a [compatible binary](https://github.com/cosmos/gaia/releases/tag/v17.2.0), or building from source. Check the required version to build this binary in the `Makefile`.
+Make sure **Gaia v17.3.0** is installed by either downloading a [compatible binary](https://github.com/cosmos/gaia/releases/tag/v17.3.0), or building from source. Check the required version to build this binary in the `Makefile`.
 
-Run Gaia v17.2.0 till upgrade height, the node will panic:
+Run Gaia v17.3.0 till upgrade height, the node will panic:
 
 ```shell
 ERR UPGRADE "v18" NEEDED at height: <UPGRADE_HEIGHT>: upgrade to v18 and applying upgrade "v18" at height:<UPGRADE_HEIGHT>
 ```
 
-Stop the node, and switch the binary to **Gaia v18.0.0** and re-start by `gaiad start`.
+Stop the node, and switch the binary to **Gaia v18.1.0** and re-start by `gaiad start`.
 
 It may take several minutes to a few hours until validators with a total sum voting power > 2/3 to complete their node upgrades. After that, the chain can continue to produce blocks.
 
@@ -106,14 +106,14 @@ cosmovisor version
 # cosmovisor version: v1.5.0
 ```
 
-- Create a `cosmovisor` folder inside `$GAIA_HOME` and move Gaia `v17.2.0` into `$GAIA_HOME/cosmovisor/genesis/bin`:
+- Create a `cosmovisor` folder inside `$GAIA_HOME` and move Gaia `v17.3.0` into `$GAIA_HOME/cosmovisor/genesis/bin`:
 
 ```shell
 mkdir -p $GAIA_HOME/cosmovisor/genesis/bin
 cp $(which gaiad) $GAIA_HOME/cosmovisor/genesis/bin
 ```
 
-- Build Gaia `v18.0.0`, and move gaiad `v18.0.0` to `$GAIA_HOME/cosmovisor/upgrades/v18/bin`
+- Build Gaia `v18.1.0`, and move gaiad `v18.1.0` to `$GAIA_HOME/cosmovisor/upgrades/v18/bin`
 
 ```shell
 mkdir -p  $GAIA_HOME/cosmovisor/upgrades/v18/bin
@@ -127,11 +127,11 @@ At this moment, you should have the following structure:
 ├── current -> genesis or upgrades/<name>
 ├── genesis
 │   └── bin
-│       └── gaiad  # old: v17.2.0
+│       └── gaiad  # old: v17.3.0
 └── upgrades
     └── v18
         └── bin
-            └── gaiad  # new: v18.0.0
+            └── gaiad  # new: v18.1.0
 ```
 
 - Export the environmental variables:
@@ -169,7 +169,7 @@ The upgrade may take a few minutes to complete because cosmoshub-4 participants 
 
 During the network upgrade, core Cosmos teams will be keeping an ever vigilant eye and communicating with operators on the status of their upgrades. During this time, the core teams will listen to operator needs to determine if the upgrade is experiencing unintended challenges. In the event of unexpected challenges, the core teams, after conferring with operators and attaining social consensus, may choose to declare that the upgrade will be skipped.
 
-Steps to skip this upgrade proposal are simply to resume the cosmoshub-4 network with the (downgraded) v17.2.0 binary using the following command:
+Steps to skip this upgrade proposal are simply to resume the cosmoshub-4 network with the (downgraded) v17.3.0 binary using the following command:
 
 ```shell
 gaiad start --unsafe-skip-upgrade <UPGRADE_HEIGHT>

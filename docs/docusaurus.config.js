@@ -51,6 +51,7 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
+<<<<<<< HEAD
           routeBasePath: '/',
           sidebarPath: require.resolve('./sidebars.js'),
           // lastVersion: lastVersion,
@@ -58,6 +59,26 @@ const config = {
             current: {
               path: '/',
               banner: 'unreleased',
+=======
+          routeBasePath: "/",
+          sidebarPath: require.resolve("./sidebars.js"),
+          lastVersion: "v17.3.0-docs",
+          versions: {
+            current: {
+              path: "main",
+              label: "Unreleased (main)",
+              banner: "unreleased",
+            },
+            "v17.3.0-docs": {
+              path: "v17.3.0-docs",
+              label: "On chain (v17.3.0)",
+              banner: "none",
+            },
+            "v18.0.0-docs": {
+              path: "v18.0.0-docs",
+              label: "Pre-release (v18.0.0)",
+              banner: "none",
+>>>>>>> 08dcb4c (docs: update displayed doc pages (#3188))
             },
           },
         },

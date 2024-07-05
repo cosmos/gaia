@@ -66,7 +66,7 @@ const config = {
               banner: "none",
             },
             "v18.0.0-docs": {
-              path: "v18.0.0",
+              path: "v18.0.0-rocs",
               label: "Pre-release (v18.0.0)",
               banner: "none",
             },

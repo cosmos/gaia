@@ -2,19 +2,19 @@
 
 ## v18.1.0
 
-*July 5, 2024*
+*July 8, 2024*
 
 ### DEPENDENCIES
 
 - Bump [ICS](https://github.com/cosmos/interchain-security) to
-  [v4.3.1-lsm](https://github.com/cosmos/interchain-security/releases/tag/v4.3.1-lsm)
-  ([\#3187](https://github.com/cosmos/gaia/pull/3187))
+    [v4.3.1-lsm](https://github.com/cosmos/interchain-security/releases/tag/v4.3.1-
+  lsm) ([\#3193](https://github.com/cosmos/gaia/pull/3193))
 
 ### STATE BREAKING
 
 - Bump [ICS](https://github.com/cosmos/interchain-security) to
-  [v4.3.1-lsm](https://github.com/cosmos/interchain-security/releases/tag/v4.3.1-lsm)
-  ([\#3187](https://github.com/cosmos/gaia/pull/3187))
+    [v4.3.1-lsm](https://github.com/cosmos/interchain-security/releases/tag/v4.3.1-
+  lsm) ([\#3193](https://github.com/cosmos/gaia/pull/3193))
 
 ## v18.0.0
 

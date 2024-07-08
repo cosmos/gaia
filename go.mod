@@ -235,7 +235,7 @@ replace (
 	github.com/cosmos/iavl => github.com/cosmos/iavl v0.20.1
 
 	// Use special ICS v4.1.0-ics-lsm release with support for LSM
-	github.com/cosmos/interchain-security/v4 => github.com/cosmos/interchain-security/v4 v4.3.0-lsm
+	github.com/cosmos/interchain-security/v4 => github.com/cosmos/interchain-security/v4 v4.3.1-lsm
 
 	github.com/cosmos/ledger-cosmos-go => github.com/cosmos/ledger-cosmos-go v0.12.4
 

@@ -179,7 +179,7 @@ func queryGovProposalV1(endpoint string, proposalID int) (govtypesv1.QueryPropos
 	return govProposalResp, nil
 }
 
-func queryAccount(endpoint, address string) (acc authtypes.AccountI, err error) {
+func queryAccount(endpoint, address string) (acc sdk.AccountI, err error) {
 	var res authtypes.QueryAccountResponse
 	resp, err := http.Get(fmt.Sprintf("%s/cosmos/auth/v1beta1/accounts/%s", endpoint, address))
 	if err != nil {

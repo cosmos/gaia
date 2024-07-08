@@ -263,6 +263,12 @@ func NewGaiaApp(
 		panic(err)
 	}
 
+	// set denom resolver to test variant.
+	app.FeeMarketKeeper.SetDenomResolver(&gaiaante.DenomResolverImpl{
+		FeeabsKeeper:  app.FeeabsKeeper,
+		StakingKeeper: app.StakingKeeper,
+	})
+
 	// set ante and post handlers
 	app.SetAnteHandler(anteHandler)
 	app.SetPostHandler(postHandler)

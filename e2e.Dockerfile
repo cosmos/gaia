@@ -24,7 +24,8 @@ RUN echo "Ensuring binary is statically linked ..."  \
 
 FROM alpine:$IMG_TAG
 RUN apk add --no-cache build-base
-RUN adduser -D nonroot
+RUN addgroup -g 1025 nonroot
+RUN adduser -D nonroot -u 1025 -G nonroot
 ARG IMG_TAG
 COPY --from=gaiad-builder  /src/app/build/gaiad /usr/local/bin/
 EXPOSE 26656 26657 1317 9090

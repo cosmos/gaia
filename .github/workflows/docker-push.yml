@@ -3,7 +3,10 @@ name: Create and publish a Docker image
 
 on:
   push:
-    branches: ['release']
+    branches: ['main']
+  release:
+    types: [published]
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
@@ -33,19 +36,11 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - name: Build and push Docker image
+      - name: Build and push docker image
         uses: docker/build-push-action@v6.1.0
         with:
           context: .
+          file: e2e.Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-
-      - name: Build and push e2e docker image
-        uses: docker/build-push-action@v6.1.0
-        with:
-          context: .
-          file: Dockerfile.e2e
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}-e2e
           labels: ${{ steps.meta.outputs.labels }}

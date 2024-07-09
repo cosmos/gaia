@@ -40,7 +40,7 @@ require (
 	// github.com/gravity-devs/liquidity v1.6.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	google.golang.org/genproto v0.0.0-20240401170217-c3f982113cda // indirect
-	google.golang.org/grpc v1.64.0 // indirect
+	google.golang.org/grpc v1.64.1 // indirect
 )
 
 require (

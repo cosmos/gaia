@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	tmjson "github.com/cometbft/cometbft/libs/json"
+	cmtjson "github.com/cometbft/cometbft/libs/json"
 	tmtypes "github.com/cometbft/cometbft/types"
 
 	"cosmossdk.io/math"
@@ -219,8 +219,8 @@ func AppStateFromGenesisFileFn(r io.Reader, cdc codec.JSONCodec, genesisFile str
 	}
 
 	var genesis tmtypes.GenesisDoc
-	// NOTE: Tendermint uses a custom JSON decoder for GenesisDoc
-	err = tmjson.Unmarshal(bytes, &genesis)
+	// NOTE: Comet uses a custom JSON decoder for GenesisDoc
+	err = cmtjson.Unmarshal(bytes, &genesis)
 	if err != nil {
 		panic(err)
 	}

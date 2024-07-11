@@ -1,10 +1,11 @@
 package ante
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	feeabskeeper "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/keeper"
 	feeabstypes "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/types"
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // DenomResolverImpl is Eve's implementation of x/feemarket's DenomResolver

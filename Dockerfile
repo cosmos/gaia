@@ -1,9 +1,10 @@
+# Info on how to use this docker image can be found in DOCKER_README.md
 ARG IMG_TAG=latest
 
 # Compile the gaiad binary
 FROM golang:1.22-alpine AS gaiad-builder
 WORKDIR /src/app/
-ENV PACKAGES="curl make git libc-dev bash file gcc linux-headers eudev-dev python3"
+ENV PACKAGES="curl make git libc-dev bash file gcc linux-headers eudev-dev"
 RUN apk add --no-cache $PACKAGES
 
 # See https://github.com/CosmWasm/wasmvm/releases
@@ -18,13 +19,14 @@ COPY go.mod go.sum* ./
 RUN go mod download
 
 COPY . .
-RUN LEDGER_ENABLED=true LINK_STATICALLY=true BUILD_TAGS=muslc make build
+RUN LEDGER_ENABLED=false LINK_STATICALLY=true BUILD_TAGS=muslc make build
 RUN echo "Ensuring binary is statically linked ..."  \
     && file /src/app/build/gaiad | grep "statically linked"
 
 FROM alpine:$IMG_TAG
 RUN apk add --no-cache build-base
-RUN adduser -D nonroot
+RUN addgroup -g 1025 nonroot
+RUN adduser -D nonroot -u 1025 -G nonroot
 ARG IMG_TAG
 COPY --from=gaiad-builder  /src/app/build/gaiad /usr/local/bin/
 EXPOSE 26656 26657 1317 9090

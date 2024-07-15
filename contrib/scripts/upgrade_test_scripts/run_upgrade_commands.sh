@@ -74,7 +74,9 @@ if test -f "$BINARY"; then
     --yes
   echo "Done \n"
 
-  sleep 6
+  sleep 3
+  $BINARY q gov proposals  --home $NODE_HOME --node tcp://localhost:26657 --chain-id $CHAINID
+
   echo "Casting vote... \n"
 
   $BINARY tx gov vote 1 yes \

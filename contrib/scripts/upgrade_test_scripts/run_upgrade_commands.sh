@@ -82,7 +82,7 @@ if test -f "$BINARY"; then
     --keyring-backend test \
     --chain-id $CHAINID \
     --home $NODE_HOME \
-    --fees 400uatom \
+    --fees 330000uatom \
     --node tcp://localhost:26657 \
     --yes
 

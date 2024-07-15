@@ -8,7 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// DenomResolverImpl is Eve's implementation of x/feemarket's DenomResolver
+// DenomResolverImpl is Gaia's implementation of x/feemarket's DenomResolver
 type DenomResolverImpl struct {
 	FeeabsKeeper  feeabskeeper.Keeper
 	StakingKeeper feeabstypes.StakingKeeper

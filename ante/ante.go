@@ -1,6 +1,7 @@
 package ante
 
 import (
+	feeabskeeper "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/keeper"
 	feemarketante "github.com/skip-mev/feemarket/x/feemarket/ante"
 	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
 
@@ -35,6 +36,7 @@ type HandlerOptions struct {
 	TxFeeChecker      ante.TxFeeChecker
 	TxCounterStoreKey storetypes.StoreKey
 	WasmConfig        *wasmtypes.WasmConfig
+	FeeAbskeeper      feeabskeeper.Keeper
 }
 
 func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {

@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/gorilla/mux"
+	feeabstypes "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/types"
 	"github.com/rakyll/statik/fs"
 	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
 	"github.com/spf13/cast"
@@ -244,6 +245,7 @@ func NewGaiaApp(
 			TxFeeChecker: func(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64, error) {
 				return minTxFeesChecker(ctx, tx, *app.FeeMarketKeeper)
 			},
+			FeeAbskeeper: app.FeeabsKeeper,
 		},
 	)
 	if err != nil {
@@ -260,6 +262,12 @@ func NewGaiaApp(
 	if err != nil {
 		panic(err)
 	}
+
+	// set denom resolver to test variant.
+	app.FeeMarketKeeper.SetDenomResolver(&gaiaante.DenomResolverImpl{
+		FeeabsKeeper:  app.FeeabsKeeper,
+		StakingKeeper: app.StakingKeeper,
+	})
 
 	// set ante and post handlers
 	app.SetAnteHandler(anteHandler)
@@ -343,6 +351,8 @@ func (app *GaiaApp) BlockedModuleAccountAddrs(modAccAddrs map[string]bool) map[s
 	// Remove the ConsumerRewardsPool from the group of blocked recipient addresses in bank
 	delete(modAccAddrs, authtypes.NewModuleAddress(providertypes.ConsumerRewardsPool).String())
 
+	// allow feeabs module to receive tokens
+	delete(modAccAddrs, authtypes.NewModuleAddress(feeabstypes.ModuleName).String())
 	return modAccAddrs
 }
 

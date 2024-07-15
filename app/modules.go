@@ -1,9 +1,11 @@
 package gaia
 
 import (
-	ratelimit "github.com/Stride-Labs/ibc-rate-limiting/ratelimit"
+	"github.com/Stride-Labs/ibc-rate-limiting/ratelimit"
 	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
-	feemarket "github.com/skip-mev/feemarket/x/feemarket"
+	feeabsmodule "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs"
+	feeabstypes "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/types"
+	"github.com/skip-mev/feemarket/x/feemarket"
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
 	pfmrouter "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7/packetforward"
@@ -85,6 +87,7 @@ var maccPerms = map[string][]string{
 	wasmtypes.ModuleName:              {authtypes.Burner},
 	feemarkettypes.ModuleName:         nil,
 	feemarkettypes.FeeCollectorName:   nil,
+	feeabstypes.ModuleName:            nil,
 }
 
 // ModuleBasics defines the module BasicManager is in charge of setting up basic,
@@ -109,6 +112,9 @@ var ModuleBasics = module.NewBasicManager(
 			icsproviderclient.ConsumerRemovalProposalHandler,
 			icsproviderclient.ConsumerModificationProposalHandler,
 			icsproviderclient.ChangeRewardDenomsProposalHandler,
+			feeabsmodule.UpdateAddHostZoneClientProposalHandler,
+			feeabsmodule.UpdateDeleteHostZoneClientProposalHandler,
+			feeabsmodule.UpdateSetHostZoneClientProposalHandler,
 		},
 	),
 	sdkparams.AppModuleBasic{},
@@ -131,6 +137,7 @@ var ModuleBasics = module.NewBasicManager(
 	metaprotocols.AppModuleBasic{},
 	wasm.AppModuleBasic{},
 	feemarket.AppModuleBasic{},
+	feeabsmodule.AppModuleBasic{},
 )
 
 func appModules(
@@ -174,6 +181,7 @@ func appModules(
 		app.ProviderModule,
 		metaprotocols.NewAppModule(),
 		feemarket.NewAppModule(appCodec, *app.FeeMarketKeeper),
+		feeabsmodule.NewAppModule(appCodec, app.FeeabsKeeper),
 	}
 }
 
@@ -234,6 +242,7 @@ func orderBeginBlockers() []string {
 		crisistypes.ModuleName,
 		ibcexported.ModuleName,
 		ibctransfertypes.ModuleName,
+		feeabstypes.ModuleName,
 		icatypes.ModuleName,
 		pfmroutertypes.ModuleName,
 		ratelimittypes.ModuleName,
@@ -271,6 +280,7 @@ func orderEndBlockers() []string {
 		ratelimittypes.ModuleName,
 		capabilitytypes.ModuleName,
 		ibcfeetypes.ModuleName,
+		feeabstypes.ModuleName,
 		authtypes.ModuleName,
 		banktypes.ModuleName,
 		distrtypes.ModuleName,
@@ -315,6 +325,7 @@ func orderInitBlockers() []string {
 		ibcexported.ModuleName,
 		icatypes.ModuleName,
 		ibcfeetypes.ModuleName,
+		feeabstypes.ModuleName,
 		evidencetypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,

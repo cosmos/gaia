@@ -23,18 +23,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - uses: technote-space/get-diff-action@v6.1.2
-        id: git_diff
-        with:
-          PATTERNS: |
-            **/*.go
-            go.mod
-            go.sum
-            **/go.mod
-            **/go.sum
-            **/Makefile
-            Makefile
-            Dockerfile
+      - name: Get new commits for nightly build
+        run: echo "NEW_COMMIT_COUNT=$(git log --oneline --since '24 hours ago' | wc -l)" >> $GITHUB_ENV
+        if: "${{ env.GITHUB_EVENT_NAME == 'schedule' }}"
+
+      - name: Set new commits for other builds
+        run: echo "NEW_COMMIT_COUNT=1" >> $GITHUB_ENV
+        if: "${{ env.GITHUB_EVENT_NAME != 'schedule' }}"
 
       - name: Log in to the Container registry
         uses: docker/login-action@v3.2.0
@@ -58,4 +53,4 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-        if: env.GIT_DIFF
+        if: ${{ env.NEW_COMMIT_COUNT > 0 }}

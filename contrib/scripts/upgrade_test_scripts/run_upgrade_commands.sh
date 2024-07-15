@@ -65,7 +65,7 @@ if test -f "$BINARY"; then
     --upgrade-info "upgrade" \
     --description "upgrade" \
     --no-validate \
-    --fees 33000uatom \
+    --fees 330000uatom \
     --from val \
     --keyring-backend test \
     --chain-id $CHAINID \

@@ -15,8 +15,8 @@ import (
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v18/ante"
-	"github.com/cosmos/gaia/v18/app/helpers"
+	"github.com/cosmos/gaia/v19/ante"
+	"github.com/cosmos/gaia/v19/app/helpers"
 )
 
 // Test that the GovVoteDecorator rejects v1beta1 vote messages from accounts with less than 1 atom staked

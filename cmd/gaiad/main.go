@@ -6,8 +6,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 
-	app "github.com/cosmos/gaia/v18/app"
-	"github.com/cosmos/gaia/v18/cmd/gaiad/cmd"
+	app "github.com/cosmos/gaia/v19/app"
+	"github.com/cosmos/gaia/v19/cmd/gaiad/cmd"
 )
 
 func main() {

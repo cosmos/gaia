@@ -7,7 +7,7 @@ import (
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	"github.com/cosmos/gaia/v18/app/upgrades"
+	"github.com/cosmos/gaia/v19/app/upgrades"
 )
 
 const (

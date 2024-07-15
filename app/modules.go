@@ -65,9 +65,9 @@ import (
 	wasm "github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	gaiaappparams "github.com/cosmos/gaia/v18/app/params"
-	"github.com/cosmos/gaia/v18/x/metaprotocols"
-	metaprotocolstypes "github.com/cosmos/gaia/v18/x/metaprotocols/types"
+	gaiaappparams "github.com/cosmos/gaia/v19/app/params"
+	"github.com/cosmos/gaia/v19/x/metaprotocols"
+	metaprotocolstypes "github.com/cosmos/gaia/v19/x/metaprotocols/types"
 )
 
 var maccPerms = map[string][]string{

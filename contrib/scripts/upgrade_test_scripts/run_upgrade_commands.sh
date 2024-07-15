@@ -65,6 +65,8 @@ if test -f "$BINARY"; then
     --upgrade-info "upgrade" \
     --description "upgrade" \
     --no-validate \
+    --gas auto \
+    --gas-adjustment 1.3 \
     --fees 330000uatom \
     --from val \
     --keyring-backend test \
@@ -74,8 +76,7 @@ if test -f "$BINARY"; then
     --yes
   echo "Done \n"
 
-  sleep 3
-  $BINARY q gov proposals  --home $NODE_HOME --node tcp://localhost:26657 --chain-id $CHAINID
+  sleep 6
 
   echo "Casting vote... \n"
 

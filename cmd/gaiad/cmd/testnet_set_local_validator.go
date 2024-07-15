@@ -17,7 +17,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/server"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	gaia "github.com/cosmos/gaia/v18/app"
+	gaia "github.com/cosmos/gaia/v19/app"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 

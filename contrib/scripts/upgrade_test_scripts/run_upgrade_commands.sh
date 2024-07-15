@@ -65,7 +65,9 @@ if test -f "$BINARY"; then
     --upgrade-info "upgrade" \
     --description "upgrade" \
     --no-validate \
-    --fees 400uatom \
+    --gas auto \
+    --gas-adjustment 1.3 \
+    --fees 330000uatom \
     --from val \
     --keyring-backend test \
     --chain-id $CHAINID \
@@ -75,6 +77,7 @@ if test -f "$BINARY"; then
   echo "Done \n"
 
   sleep 6
+
   echo "Casting vote... \n"
 
   $BINARY tx gov vote 1 yes \
@@ -82,7 +85,7 @@ if test -f "$BINARY"; then
     --keyring-backend test \
     --chain-id $CHAINID \
     --home $NODE_HOME \
-    --fees 400uatom \
+    --fees 330000uatom \
     --node tcp://localhost:26657 \
     --yes
 

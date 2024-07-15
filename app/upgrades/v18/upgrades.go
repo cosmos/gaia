@@ -14,8 +14,8 @@ import (
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	"github.com/cosmos/gaia/v18/app/keepers"
-	"github.com/cosmos/gaia/v18/types"
+	"github.com/cosmos/gaia/v19/app/keepers"
+	"github.com/cosmos/gaia/v19/types"
 )
 
 func CreateUpgradeHandler(

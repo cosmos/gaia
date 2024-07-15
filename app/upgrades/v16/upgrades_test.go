@@ -17,8 +17,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 
-	"github.com/cosmos/gaia/v18/app/helpers"
-	v16 "github.com/cosmos/gaia/v18/app/upgrades/v16"
+	"github.com/cosmos/gaia/v19/app/helpers"
+	v16 "github.com/cosmos/gaia/v19/app/upgrades/v16"
 )
 
 var AtomSupply = sdkmath.NewInt(1000)

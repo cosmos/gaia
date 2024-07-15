@@ -12,8 +12,8 @@ import (
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	"github.com/cosmos/gaia/v18/ante"
-	"github.com/cosmos/gaia/v18/app/helpers"
+	"github.com/cosmos/gaia/v19/ante"
+	"github.com/cosmos/gaia/v19/app/helpers"
 )
 
 func TestGovExpeditedProposalsDecorator(t *testing.T) {

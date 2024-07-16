@@ -31,6 +31,7 @@ func TestVoteSpamDecoratorGovV1Beta1(t *testing.T) {
 	validators, err := stakingKeeper.GetAllValidators(ctx)
 	require.NoError(t, err)
 	valAddr1, err := stakingKeeper.ValidatorAddressCodec().StringToBytes(validators[0].GetOperator())
+	require.NoError(t, err)
 	valAddr1 = sdk.ValAddress(valAddr1)
 
 	// Create one more validator
@@ -40,6 +41,7 @@ func TestVoteSpamDecoratorGovV1Beta1(t *testing.T) {
 		pk,
 		stakingtypes.Description{},
 	)
+	require.NoError(t, err)
 	valAddr2, err := stakingKeeper.ValidatorAddressCodec().StringToBytes(validator2.GetOperator())
 	valAddr2 = sdk.ValAddress(valAddr2)
 	require.NoError(t, err)
@@ -155,6 +157,7 @@ func TestVoteSpamDecoratorGovV1(t *testing.T) {
 	validators, err := stakingKeeper.GetAllValidators(ctx)
 	require.NoError(t, err)
 	valAddr1, err := stakingKeeper.ValidatorAddressCodec().StringToBytes(validators[0].GetOperator())
+	require.NoError(t, err)
 	valAddr1 = sdk.ValAddress(valAddr1)
 
 	// Create one more validator
@@ -164,6 +167,7 @@ func TestVoteSpamDecoratorGovV1(t *testing.T) {
 		pk,
 		stakingtypes.Description{},
 	)
+	require.NoError(t, err)
 	valAddr2, err := stakingKeeper.ValidatorAddressCodec().StringToBytes(validator2.GetOperator())
 	require.NoError(t, err)
 	valAddr2 = sdk.ValAddress(valAddr2)

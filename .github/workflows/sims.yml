@@ -9,7 +9,7 @@ on:
       
 jobs:
   cleanup-runs:
-    runs-on: ubuntu-latest
+    runs-on: Gaia-Runner-medium
     steps:
       - uses: rokroskar/workflow-run-cleanup-action@master
         env:
@@ -17,11 +17,11 @@ jobs:
     if: "!startsWith(github.ref, 'refs/tags/') && github.ref != 'refs/heads/main'"
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: Gaia-Runner-medium
     steps:
       - uses: actions/setup-go@v5
         with:
-          go-version: 1.21.x
+          go-version: 1.22.x
       - name: Install runsim
         run: go install github.com/cosmos/tools/cmd/runsim@v1.0.0
       - uses: actions/cache@v4.0.2
@@ -30,13 +30,13 @@ jobs:
           key: ${{ runner.os }}-go-runsim-binary
 
   test-sim-nondeterminism:
-    runs-on: ubuntu-latest
+    runs-on: Gaia-Runner-medium
     needs: newbuild
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: 1.21.x
+          go-version: 1.22.x
       - uses: technote-space/get-diff-action@v6.0.1
         with:
           PATTERNS: |
@@ -54,13 +54,13 @@ jobs:
         if: "env.GIT_DIFF != ''"
 
   test-sim-multi-seed-short:
-    runs-on: ubuntu-latest
+    runs-on: Gaia-Runner-medium
     needs: build
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: 1.21.x
+          go-version: 1.22.x
       - uses: technote-space/get-diff-action@v6
         with:
           PATTERNS: |
@@ -78,11 +78,11 @@ jobs:
         if: "env.GIT_DIFF != ''"
 
   newbuild:
-      runs-on: ubuntu-latest
+      runs-on: Gaia-Runner-medium
       steps:
         - uses: actions/setup-go@v5
           with:
-            go-version: 1.21.x
+            go-version: 1.22.x
         - name: Install runsim
           run: go install github.com/cosmos/tools/cmd/runsim@v1.0.0
         - uses: actions/cache@v4.0.2
@@ -91,7 +91,7 @@ jobs:
             key: ${{ runner.os }}-go-runsim-binary
 
   install-runsim:
-    runs-on: ubuntu-latest
+    runs-on: Gaia-Runner-medium
     needs: build
     steps:
       - name: install runsim
@@ -102,12 +102,12 @@ jobs:
           key: ${{ runner.os }}-go-runsim-binary
 
   test-sim-multi-seed-long:
-    runs-on: ubuntu-latest
+    runs-on: Gaia-Runner-medium
     needs: [build, install-runsim]
     steps:
       - uses: actions/setup-go@v5
         with:
-          go-version: 1.21.x
+          go-version: 1.22.x
       - uses: actions/checkout@v4
       - uses: actions/cache@v4.0.2
         with:
@@ -116,3 +116,5 @@ jobs:
       - name: test-sim-multi-seed-long
         run: |
           make test-sim-multi-seed-long
+        if: "env.GIT_DIFF != ''"
+

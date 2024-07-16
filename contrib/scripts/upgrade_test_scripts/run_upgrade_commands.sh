@@ -81,7 +81,9 @@ EOF
   )
   echo "$json_content" > "$NODE_HOME/sw_upgrade_proposal.json"
   $BINARY tx gov submit-proposal "$NODE_HOME/sw_upgrade_proposal.json" \
-    --fees 400uatom \
+    --gas auto \
+    --gas-adjustment 1.3 \
+    --fees 330000uatom \
     --from val \
     --keyring-backend test \
     --chain-id $CHAINID \
@@ -91,6 +93,7 @@ EOF
   echo "Done \n"
 
   sleep 6
+
   echo "Casting vote... \n"
 
   $BINARY tx gov vote 1 yes \
@@ -98,7 +101,7 @@ EOF
     --keyring-backend test \
     --chain-id $CHAINID \
     --home $NODE_HOME \
-    --fees 400uatom \
+    --fees 330000uatom \
     --node tcp://localhost:26657 \
     --yes
 

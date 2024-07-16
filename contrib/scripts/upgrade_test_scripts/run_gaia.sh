@@ -63,6 +63,8 @@ tmp=$(mktemp)
 
 # add bank part of genesis
 jq --argjson foo "$(jq -c '.' contrib/denom.json)" '.app_state.bank.denom_metadata = $foo' $NODE_HOME/config/genesis.json >"$tmp" && mv "$tmp" $NODE_HOME/config/genesis.json
+jq ".app_state.gov.params.expedited_voting_period = \"10s\"" "$NODE_HOME/config/genesis.json" > "$tmp" && mv "$tmp" $NODE_HOME/config/genesis.json
+
 
 # replace default stake token with uatom
 sed -i -e '/total_liquid_staked_tokens/!s/stake/uatom/g' $NODE_HOME/config/genesis.json

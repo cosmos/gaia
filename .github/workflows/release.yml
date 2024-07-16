@@ -11,7 +11,7 @@ on:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: Gaia-Runner-medium
     steps:
       - name: Checkout
         uses: actions/checkout@v4

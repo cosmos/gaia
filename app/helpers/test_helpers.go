@@ -112,7 +112,12 @@ func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs 
 	)
 	require.NoError(t, err)
 
-	_, err = gaiaApp.Commit()
+	require.NoError(t, err)
+	_, err = gaiaApp.FinalizeBlock(&abci.RequestFinalizeBlock{
+		Height:             gaiaApp.LastBlockHeight() + 1,
+		Hash:               gaiaApp.LastCommitID().Hash,
+		NextValidatorsHash: valSet.Hash(),
+	})
 	require.NoError(t, err)
 
 	return gaiaApp
@@ -174,7 +179,7 @@ func genesisStateWithValSet(t *testing.T,
 			Commission:      stakingtypes.NewCommission(math.LegacyZeroDec(), math.LegacyZeroDec(), math.LegacyZeroDec()),
 		}
 		validators = append(validators, validator)
-		delegations = append(delegations, stakingtypes.NewDelegation(genAccs[0].GetAddress().String(), string(val.Address.Bytes()), math.LegacyOneDec()))
+		delegations = append(delegations, stakingtypes.NewDelegation(genAccs[0].GetAddress().String(), sdk.ValAddress(val.Address).String(), math.LegacyOneDec()))
 
 	}
 	// set validators and delegations

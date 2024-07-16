@@ -30,7 +30,8 @@ func TestVoteSpamDecoratorGovV1Beta1(t *testing.T) {
 	// Get validator
 	validators, err := stakingKeeper.GetAllValidators(ctx)
 	require.NoError(t, err)
-	valAddr1 := sdk.ValAddress(validators[0].GetOperator())
+	valAddr1, err := stakingKeeper.ValidatorAddressCodec().StringToBytes(validators[0].GetOperator())
+	valAddr1 = sdk.ValAddress(valAddr1)
 
 	// Create one more validator
 	pk := ed25519.GenPrivKeyFromSecret([]byte{uint8(13)}).PubKey()
@@ -39,7 +40,8 @@ func TestVoteSpamDecoratorGovV1Beta1(t *testing.T) {
 		pk,
 		stakingtypes.Description{},
 	)
-	valAddr2 := sdk.ValAddress(validator2.GetOperator())
+	valAddr2, err := stakingKeeper.ValidatorAddressCodec().StringToBytes(validator2.GetOperator())
+	valAddr2 = sdk.ValAddress(valAddr2)
 	require.NoError(t, err)
 	// Make sure the validator is bonded so it's not removed on Undelegate
 	validator2.Status = stakingtypes.Bonded
@@ -49,7 +51,7 @@ func TestVoteSpamDecoratorGovV1Beta1(t *testing.T) {
 	require.NoError(t, err)
 	err = stakingKeeper.SetNewValidatorByPowerIndex(ctx, validator2)
 	require.NoError(t, err)
-	err = stakingKeeper.Hooks().AfterValidatorCreated(ctx, sdk.ValAddress(validator2.GetOperator()))
+	err = stakingKeeper.Hooks().AfterValidatorCreated(ctx, valAddr2)
 	require.NoError(t, err)
 
 	// Get delegator (this account was created during setup)
@@ -107,7 +109,9 @@ func TestVoteSpamDecoratorGovV1Beta1(t *testing.T) {
 		delegations, err := stakingKeeper.GetAllDelegatorDelegations(ctx, delegator)
 		require.NoError(t, err)
 		for _, del := range delegations {
-			_, _, err := stakingKeeper.Undelegate(ctx, delegator, sdk.ValAddress(del.GetValidatorAddr()), del.GetShares())
+			valAddr, err := sdk.ValAddressFromBech32(del.GetValidatorAddr())
+			require.NoError(t, err)
+			_, _, err = stakingKeeper.Undelegate(ctx, delegator, valAddr, del.GetShares())
 			require.NoError(t, err)
 		}
 
@@ -150,7 +154,8 @@ func TestVoteSpamDecoratorGovV1(t *testing.T) {
 	// Get validator
 	validators, err := stakingKeeper.GetAllValidators(ctx)
 	require.NoError(t, err)
-	valAddr1 := sdk.ValAddress(validators[0].GetOperator())
+	valAddr1, err := stakingKeeper.ValidatorAddressCodec().StringToBytes(validators[0].GetOperator())
+	valAddr1 = sdk.ValAddress(valAddr1)
 
 	// Create one more validator
 	pk := ed25519.GenPrivKeyFromSecret([]byte{uint8(13)}).PubKey()
@@ -159,8 +164,9 @@ func TestVoteSpamDecoratorGovV1(t *testing.T) {
 		pk,
 		stakingtypes.Description{},
 	)
-	valAddr2 := sdk.ValAddress(validator2.GetOperator())
+	valAddr2, err := stakingKeeper.ValidatorAddressCodec().StringToBytes(validator2.GetOperator())
 	require.NoError(t, err)
+	valAddr2 = sdk.ValAddress(valAddr2)
 	// Make sure the validator is bonded so it's not removed on Undelegate
 	validator2.Status = stakingtypes.Bonded
 	err = stakingKeeper.SetValidator(ctx, validator2)
@@ -169,7 +175,7 @@ func TestVoteSpamDecoratorGovV1(t *testing.T) {
 	require.NoError(t, err)
 	err = stakingKeeper.SetNewValidatorByPowerIndex(ctx, validator2)
 	require.NoError(t, err)
-	err = stakingKeeper.Hooks().AfterValidatorCreated(ctx, sdk.ValAddress(validator2.GetOperator()))
+	err = stakingKeeper.Hooks().AfterValidatorCreated(ctx, valAddr2)
 	require.NoError(t, err)
 
 	// Get delegator (this account was created during setup)
@@ -227,7 +233,9 @@ func TestVoteSpamDecoratorGovV1(t *testing.T) {
 		delegations, err := stakingKeeper.GetAllDelegatorDelegations(ctx, delegator)
 		require.NoError(t, err)
 		for _, del := range delegations {
-			_, _, err := stakingKeeper.Undelegate(ctx, delegator, sdk.ValAddress(del.GetValidatorAddr()), del.GetShares())
+			valAddr, err := sdk.ValAddressFromBech32(del.GetValidatorAddr())
+			require.NoError(t, err)
+			_, _, err = stakingKeeper.Undelegate(ctx, delegator, valAddr, del.GetShares())
 			require.NoError(t, err)
 		}
 

@@ -44,44 +44,12 @@ func TestGovExpeditedProposalsDecorator(t *testing.T) {
 			expectErr: false,
 		},
 		{
-			name: "expedited - govv1.MsgSubmitProposal - LegacySoftwareUpgrade",
-			ctx:  sdk.Context{},
-			msgs: []sdk.Msg{
-				newLegacyUpgradeProp(true), // expedite
-			},
-			expectErr: false,
-		},
-		{
 			name: "expedited - govv1.MsgSubmitProposal - MsgCancelUpgrade",
 			ctx:  sdk.Context{},
 			msgs: []sdk.Msg{
 				newGovProp([]sdk.Msg{&upgradetypes.MsgCancelUpgrade{
 					Authority: "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
 				}}, true),
-			},
-			expectErr: false,
-		},
-		{
-			name: "expedited - govv1.MsgSubmitProposal - LegacyCancelUpgrade",
-			ctx:  sdk.Context{},
-			msgs: []sdk.Msg{
-				newLegacyCancelProp(true), // expedite
-			},
-			expectErr: false,
-		},
-		{
-			name: "normal - govv1.MsgSubmitProposal - LegacySoftwareUpgrade",
-			ctx:  sdk.Context{},
-			msgs: []sdk.Msg{
-				newLegacyUpgradeProp(false), // normal
-			},
-			expectErr: false,
-		},
-		{
-			name: "normal - govv1.MsgSubmitProposal - LegacyCancelUpgrade",
-			ctx:  sdk.Context{},
-			msgs: []sdk.Msg{
-				newLegacyCancelProp(false), // normal
 			},
 			expectErr: false,
 		},
@@ -225,19 +193,6 @@ func newLegacyTextProp(expedite bool) *govv1.MsgSubmitProposal {
 	return newGovProp([]sdk.Msg{msgContent}, expedite)
 }
 
-func newLegacyUpgradeProp(expedite bool) *govv1.MsgSubmitProposal {
-	prop := upgradetypes.NewSoftwareUpgradeProposal("test legacy upgrade", "test legacy upgrade", upgradetypes.Plan{
-		Name:   "upgrade plan-plan",
-		Info:   "some text here",
-		Height: 123456789,
-	})
-	msgContent, err := govv1.NewLegacyContent(prop, "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn")
-	if err != nil {
-		return nil
-	}
-	return newGovProp([]sdk.Msg{msgContent}, expedite)
-}
-
 func newGovV1BETA1LegacyUpgradeProp() *govv1beta1.MsgSubmitProposal {
 	legacyContent := upgradetypes.NewSoftwareUpgradeProposal("test legacy upgrade", "test legacy upgrade", upgradetypes.Plan{
 		Name:   "upgrade plan-plan",
@@ -254,15 +209,6 @@ func newGovV1BETA1LegacyCancelUpgradeProp() *govv1beta1.MsgSubmitProposal {
 
 	msg, _ := govv1beta1.NewMsgSubmitProposal(legacyContent, sdk.NewCoins(), sdk.AccAddress{})
 	return msg
-}
-
-func newLegacyCancelProp(expedite bool) *govv1.MsgSubmitProposal {
-	prop := upgradetypes.NewCancelSoftwareUpgradeProposal("test legacy upgrade", "test legacy upgrade")
-	msgContent, err := govv1.NewLegacyContent(prop, "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn")
-	if err != nil {
-		return nil
-	}
-	return newGovProp([]sdk.Msg{msgContent}, expedite)
 }
 
 func newGovProp(msgs []sdk.Msg, expedite bool) *govv1.MsgSubmitProposal {

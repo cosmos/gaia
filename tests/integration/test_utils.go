@@ -79,14 +79,10 @@ func SendMsgsOverride(chain *ibctesting.TestChain, feeAmount sdk.Coin, gasLimit 
 		true,
 		chain.CurrentHeader.GetTime(),
 		chain.NextVals.Hash(),
+		feeAmount,
 		gasLimit,
 		chain.SenderPrivKey,
 	)
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = chain.App.Commit()
 	if err != nil {
 		return nil, err
 	}
@@ -105,14 +101,14 @@ func SendMsgsOverride(chain *ibctesting.TestChain, feeAmount sdk.Coin, gasLimit 
 
 func SignAndDeliver(
 	tb testing.TB, txCfg client.TxConfig, app *bam.BaseApp, msgs []sdk.Msg,
-	chainID string, accNums, accSeqs []uint64, expPass bool, blockTime time.Time, nextValHash []byte, gasLimit uint64, priv ...cryptotypes.PrivKey,
+	chainID string, accNums, accSeqs []uint64, expPass bool, blockTime time.Time, nextValHash []byte, feeAmount sdk.Coin, gasLimit uint64, priv ...cryptotypes.PrivKey,
 ) (*abci.ResponseFinalizeBlock, error) {
 	tb.Helper()
 	tx, err := simtestutil.GenSignedMockTx(
 		rand.New(rand.NewSource(time.Now().UnixNano())),
 		txCfg,
 		msgs,
-		sdk.Coins{sdk.NewInt64Coin(sdk.DefaultBondDenom, 0)},
+		sdk.Coins{feeAmount},
 		gasLimit,
 		chainID,
 		accNums,

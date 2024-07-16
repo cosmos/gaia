@@ -21,7 +21,7 @@ import (
 const (
 	LargeMsgNumber = 1000
 	LargeFeeAmount = 1000000000
-	LargeGasLimit  = simtestutil.DefaultGenTxGas * 100
+	LargeGasLimit  = simtestutil.DefaultGenTxGas * 10
 )
 
 type FeeMarketTestSuite struct {

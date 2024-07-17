@@ -324,11 +324,11 @@ format:
 start-localnet-ci: build
 	rm -rf ~/.gaiad-liveness
 	./build/gaiad init liveness --chain-id liveness --home ~/.gaiad-liveness
-	./build/gaiad config chain-id liveness --home ~/.gaiad-liveness
-	./build/gaiad config keyring-backend test --home ~/.gaiad-liveness
-	./build/gaiad keys add val --home ~/.gaiad-liveness
+	./build/gaiad config set client chain-id liveness --home ~/.gaiad-liveness
+	./build/gaiad config set client keyring-backend test --home ~/.gaiad-liveness
+	./build/gaiad keys add val --home ~/.gaiad-liveness --keyring-backend test
 	./build/gaiad genesis add-genesis-account val 10000000000000000000000000stake --home ~/.gaiad-liveness --keyring-backend test
-	./build/gaiad genesis gentx val 1000000000stake --home ~/.gaiad-liveness --chain-id liveness
+	./build/gaiad genesis gentx val 1000000000stake --home ~/.gaiad-liveness --chain-id liveness --keyring-backend test
 	./build/gaiad genesis collect-gentxs --home ~/.gaiad-liveness
 	sed -i.bak'' 's/minimum-gas-prices = ""/minimum-gas-prices = "0uatom"/' ~/.gaiad-liveness/config/app.toml
 	./build/gaiad start --home ~/.gaiad-liveness --x-crisis-skip-assert-invariants

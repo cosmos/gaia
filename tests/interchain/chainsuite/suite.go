@@ -2,8 +2,6 @@ package chainsuite
 
 import (
 	"context"
-	"os"
-	"path"
 
 	"github.com/stretchr/testify/suite"
 	"golang.org/x/mod/semver"
@@ -11,10 +9,11 @@ import (
 
 type Suite struct {
 	suite.Suite
-	Config SuiteConfig
-	Env    Environment
-	Chain  *Chain
-	ctx    context.Context
+	Config  SuiteConfig
+	Env     Environment
+	Chain   *Chain
+	Relayer *Relayer
+	ctx     context.Context
 }
 
 func NewSuite(config SuiteConfig) *Suite {
@@ -25,16 +24,17 @@ func NewSuite(config SuiteConfig) *Suite {
 }
 
 func (s *Suite) SetupSuite() {
-	cwd, err := os.Getwd()
-	s.Require().NoError(err)
-	err = os.Setenv("IBCTEST_CONFIGURED_CHAINS", path.Join(cwd, "configuredChains.yaml"))
-	s.Require().NoError(err)
-
 	ctx, err := NewSuiteContext(&s.Suite)
 	s.Require().NoError(err)
 	s.ctx = ctx
 	s.Chain, err = CreateChain(s.GetContext(), s.T(), s.Config.ChainSpec)
 	s.Require().NoError(err)
+	if s.Config.CreateRelayer {
+		s.Relayer, err = NewRelayer(s.GetContext(), s.T())
+		s.Require().NoError(err)
+		err = s.Relayer.SetupChainKeys(s.GetContext(), s.Chain)
+		s.Require().NoError(err)
+	}
 	if s.Config.UpgradeOnSetup {
 		s.UpgradeChain()
 	}
@@ -52,5 +52,9 @@ func (s *Suite) UpgradeChain() {
 		s.Require().NoError(s.Chain.ReplaceImagesAndRestart(s.GetContext(), s.Env.NewGaiaImageVersion))
 	} else {
 		s.Require().NoError(s.Chain.Upgrade(s.GetContext(), s.Env.UpgradeName, s.Env.NewGaiaImageVersion))
+	}
+	if s.Relayer != nil {
+		s.Require().NoError(s.Relayer.StopRelayer(s.GetContext(), GetRelayerExecReporter(s.GetContext())))
+		s.Require().NoError(s.Relayer.StartRelayer(s.GetContext(), GetRelayerExecReporter(s.GetContext())))
 	}
 }

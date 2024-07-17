@@ -29,6 +29,8 @@ import (
 	"github.com/cosmos/ibc-go/v8/modules/apps/transfer"
 	ibctransferkeeper "github.com/cosmos/ibc-go/v8/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
+	ibcclienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
+	ibcconnectiontypes "github.com/cosmos/ibc-go/v8/modules/core/03-connection/types"
 	porttypes "github.com/cosmos/ibc-go/v8/modules/core/05-port/types"
 	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
@@ -560,6 +562,9 @@ func (appKeepers *AppKeepers) GetSubspace(moduleName string) paramstypes.Subspac
 func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino, key, tkey storetypes.StoreKey) paramskeeper.Keeper {
 	paramsKeeper := paramskeeper.NewKeeper(appCodec, legacyAmino, key, tkey)
 
+	// register the key tables for legacy param subspaces
+	keyTable := ibcclienttypes.ParamKeyTable()
+	keyTable.RegisterParamSet(&ibcconnectiontypes.Params{})
 	paramsKeeper.Subspace(authtypes.ModuleName).WithKeyTable(authtypes.ParamKeyTable())         //nolint: staticcheck // SA1019
 	paramsKeeper.Subspace(stakingtypes.ModuleName).WithKeyTable(stakingtypes.ParamKeyTable())   //nolint: staticcheck // SA1019
 	paramsKeeper.Subspace(banktypes.ModuleName).WithKeyTable(banktypes.ParamKeyTable())         //nolint: staticcheck // SA1019
@@ -568,13 +573,13 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(slashingtypes.ModuleName).WithKeyTable(slashingtypes.ParamKeyTable()) //nolint: staticcheck // SA1019
 	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govv1.ParamKeyTable())              //nolint: staticcheck // SA1019
 	paramsKeeper.Subspace(crisistypes.ModuleName).WithKeyTable(crisistypes.ParamKeyTable())     //nolint: staticcheck // SA1019
-	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
-	paramsKeeper.Subspace(ibcexported.ModuleName)
-	paramsKeeper.Subspace(icahosttypes.SubModuleName)
-	paramsKeeper.Subspace(icacontrollertypes.SubModuleName)
+	paramsKeeper.Subspace(ibcexported.ModuleName).WithKeyTable(keyTable)
+	paramsKeeper.Subspace(ibctransfertypes.ModuleName).WithKeyTable(ibctransfertypes.ParamKeyTable())
+	paramsKeeper.Subspace(icacontrollertypes.SubModuleName).WithKeyTable(icacontrollertypes.ParamKeyTable())
+	paramsKeeper.Subspace(icahosttypes.SubModuleName).WithKeyTable(icahosttypes.ParamKeyTable())
 	paramsKeeper.Subspace(pfmroutertypes.ModuleName).WithKeyTable(pfmroutertypes.ParamKeyTable())
-	paramsKeeper.Subspace(ratelimittypes.ModuleName)
-	paramsKeeper.Subspace(providertypes.ModuleName)
+	paramsKeeper.Subspace(ratelimittypes.ModuleName).WithKeyTable(ratelimittypes.ParamKeyTable())
+	paramsKeeper.Subspace(providertypes.ModuleName).WithKeyTable(providertypes.ParamKeyTable())
 	paramsKeeper.Subspace(wasmtypes.ModuleName)
 
 	return paramsKeeper

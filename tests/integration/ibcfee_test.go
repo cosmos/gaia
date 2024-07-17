@@ -112,7 +112,7 @@ func (suite *IBCFeeTestSuite) TestFeeTransfer() {
 	// after incentivizing the packets
 	originalChainASenderAccountBalance := sdk.NewCoins(getApp(suite.chainA).BankKeeper.GetBalance(suite.chainA.GetContext(), suite.chainA.SenderAccount.GetAddress(), ibctesting.TestCoin.Denom))
 
-	packet, err := ibctesting.ParsePacketFromEvents(res.GetEvents())
+	packet, err := ibctesting.ParsePacketFromEvents(res.Events)
 	suite.Require().NoError(err)
 
 	// register counterparty address on chainB
@@ -139,7 +139,7 @@ func (suite *IBCFeeTestSuite) TestFeeTransfer() {
 	)
 
 	suite.Require().Equal(
-		fee.AckFee.Add(fee.TimeoutFee...), // ack fee paid, timeout fee refunded
+		fee.AckFee, // ack fee paid, no refund needed since timeout_fee = recv_fee + ack_fee
 		sdk.NewCoins(getApp(suite.chainA).BankKeeper.GetBalance(suite.chainA.GetContext(), suite.chainA.SenderAccount.GetAddress(), ibctesting.TestCoin.Denom)).Sub(originalChainASenderAccountBalance[0]))
 }
 

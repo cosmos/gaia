@@ -2,18 +2,21 @@ package integration
 
 import (
 	"encoding/json"
+	"fmt"
 	"math/rand"
+	"testing"
 	"time"
 
 	"github.com/stretchr/testify/require"
 
-	tmdb "github.com/cometbft/cometbft-db"
-	"github.com/cometbft/cometbft/libs/log"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	abci "github.com/cometbft/cometbft/abci/types"
 
-	ibctesting "github.com/cosmos/ibc-go/v7/testing"
+	dbm "github.com/cosmos/cosmos-db"
+	ibctesting "github.com/cosmos/ibc-go/v8/testing"
 
-	"github.com/cosmos/cosmos-sdk/baseapp"
+	"cosmossdk.io/log"
+
+	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
@@ -29,7 +32,7 @@ func GaiaAppIniter() (ibctesting.TestingApp, map[string]json.RawMessage) {
 	encoding := gaiaApp.RegisterEncodingConfig()
 	app = gaiaApp.NewGaiaApp(
 		log.NewNopLogger(),
-		tmdb.NewMemDB(),
+		dbm.NewMemDB(),
 		nil,
 		true,
 		map[int64]bool{},
@@ -47,51 +50,60 @@ func GaiaAppIniter() (ibctesting.TestingApp, map[string]json.RawMessage) {
 func OverrideSendMsgs(chains map[string]*ibctesting.TestChain, feeAmount sdk.Coin, gasLimit uint64) {
 	for _, chain := range chains {
 		chain := chain
-		chain.SendMsgsOverride = func(msgs ...sdk.Msg) (*sdk.Result, error) {
+		chain.SendMsgsOverride = func(msgs ...sdk.Msg) (*abci.ExecTxResult, error) {
 			return SendMsgsOverride(chain, feeAmount, gasLimit, msgs...)
 		}
 	}
 }
 
-func SendMsgsOverride(chain *ibctesting.TestChain, feeAmount sdk.Coin, gasLimit uint64, msgs ...sdk.Msg) (*sdk.Result, error) {
+func SendMsgsOverride(chain *ibctesting.TestChain, feeAmount sdk.Coin, gasLimit uint64, msgs ...sdk.Msg) (*abci.ExecTxResult, error) {
 	// ensure the chain has the latest time
 	chain.Coordinator.UpdateTimeForChain(chain)
 
-	_, r, err := SignAndDeliver(
-		chain,
+	// increment acc sequence regardless of success or failure tx execution
+	defer func() {
+		err := chain.SenderAccount.SetSequence(chain.SenderAccount.GetSequence() + 1)
+		if err != nil {
+			panic(err)
+		}
+	}()
+
+	resp, err := SignAndDeliver(
+		chain.TB,
 		chain.TxConfig,
 		chain.App.GetBaseApp(),
-		chain.GetContext().BlockHeader(),
 		msgs,
 		chain.ChainID,
 		[]uint64{chain.SenderAccount.GetAccountNumber()},
 		[]uint64{chain.SenderAccount.GetSequence()},
-		true, true,
-		feeAmount, gasLimit,
+		true,
+		chain.CurrentHeader.GetTime(),
+		chain.NextVals.Hash(),
+		feeAmount,
+		gasLimit,
 		chain.SenderPrivKey,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	// NextBlock calls app.Commit()
-	chain.NextBlock()
+	require.Len(chain.TB, resp.TxResults, 1)
+	txResult := resp.TxResults[0]
 
-	// increment sequence for successful transaction execution
-	err = chain.SenderAccount.SetSequence(chain.SenderAccount.GetSequence() + 1)
-	if err != nil {
-		return nil, err
+	if txResult.Code != 0 {
+		return txResult, fmt.Errorf("%s/%d: %q", txResult.Codespace, txResult.Code, txResult.Log)
 	}
 
 	chain.Coordinator.IncrementTime()
 
-	return r, nil
+	return txResult, nil
 }
 
 func SignAndDeliver(
-	chain *ibctesting.TestChain, txCfg client.TxConfig, app *baseapp.BaseApp, header tmproto.Header, msgs []sdk.Msg,
-	chainID string, accNums, accSeqs []uint64, expSimPass, expPass bool, feeAmount sdk.Coin, gasLimit uint64, priv ...cryptotypes.PrivKey,
-) (sdk.GasInfo, *sdk.Result, error) {
+	tb testing.TB, txCfg client.TxConfig, app *bam.BaseApp, msgs []sdk.Msg,
+	chainID string, accNums, accSeqs []uint64, expPass bool, blockTime time.Time, nextValHash []byte, feeAmount sdk.Coin, gasLimit uint64, priv ...cryptotypes.PrivKey,
+) (*abci.ResponseFinalizeBlock, error) {
+	tb.Helper()
 	tx, err := simtestutil.GenSignedMockTx(
 		rand.New(rand.NewSource(time.Now().UnixNano())),
 		txCfg,
@@ -103,18 +115,15 @@ func SignAndDeliver(
 		accSeqs,
 		priv...,
 	)
-	require.NoError(chain.T, err)
+	require.NoError(tb, err)
 
-	// Simulate a sending a transaction
-	gInfo, res, err := app.SimDeliver(txCfg.TxEncoder(), tx)
+	txBytes, err := txCfg.TxEncoder()(tx)
+	require.NoError(tb, err)
 
-	if expPass {
-		require.NoError(chain.T, err)
-		require.NotNil(chain.T, res)
-	} else {
-		require.Error(chain.T, err)
-		require.Nil(chain.T, res)
-	}
-
-	return gInfo, res, err
+	return app.FinalizeBlock(&abci.RequestFinalizeBlock{
+		Height:             app.LastBlockHeight() + 1,
+		Time:               blockTime,
+		NextValidatorsHash: nextValHash,
+		Txs:                [][]byte{txBytes},
+	})
 }

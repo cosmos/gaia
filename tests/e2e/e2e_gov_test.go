@@ -5,13 +5,15 @@ import (
 	"strconv"
 	"time"
 
-	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
+	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
+
+	"cosmossdk.io/math"
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
 /*
@@ -32,21 +34,13 @@ func (s *IntegrationTestSuite) GovSoftwareUpgrade() {
 	// Gov tests may be run in arbitrary order, each test must increment proposalCounter to have the correct proposal id to submit and query
 	proposalCounter++
 
-	s.writeGovLegProposal(s.chainA, int64(height), "upgrade-v0")
+	s.writeSoftwareUpgradeProposal(s.chainA, int64(proposalHeight), "upgrade-v0")
 
-	submitGovFlags := []string{
-		"software-upgrade",
-		"Upgrade-0",
-		"--title='Upgrade V0'",
-		"--description='Software Upgrade'",
-		"--no-validate",
-		fmt.Sprintf("--upgrade-height=%d", proposalHeight),
-		fmt.Sprintf("--upgrade-info=%s", configFile(proposalCommunitySpendFilename)),
-	}
+	submitGovFlags := []string{configFile(proposalSoftwareUpgrade)}
 
 	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
 	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes=0.8,no=0.1,abstain=0.05,no_with_veto=0.05"}
-	s.submitLegacyGovProposal(chainAAPIEndpoint, sender, proposalCounter, upgradetypes.ProposalTypeSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "weighted-vote", true)
+	s.submitGovProposal(chainAAPIEndpoint, sender, proposalCounter, upgradetypes.ProposalTypeSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "weighted-vote")
 
 	s.verifyChainHaltedAtUpgradeHeight(s.chainA, 0, proposalHeight)
 	s.T().Logf("Successfully halted chain at  height %d", proposalHeight)
@@ -82,29 +76,22 @@ func (s *IntegrationTestSuite) GovCancelSoftwareUpgrade() {
 	sender := senderAddress.String()
 	height := s.getLatestBlockHeight(s.chainA, 0)
 	proposalHeight := height + 50
-	s.writeGovLegProposal(s.chainA, int64(height), "upgrade-v1")
+	s.writeSoftwareUpgradeProposal(s.chainA, int64(proposalHeight), "upgrade-v1")
 
 	// Gov tests may be run in arbitrary order, each test must increment proposalCounter to have the correct proposal id to submit and query
 	proposalCounter++
-	submitGovFlags := []string{
-		"software-upgrade",
-		"Upgrade-1",
-		"--title='Upgrade V1'",
-		"--description='Software Upgrade'",
-		"--no-validate",
-		fmt.Sprintf("--upgrade-height=%d", proposalHeight),
-		fmt.Sprintf("--upgrade-info=%s", configFile(proposalCommunitySpendFilename)),
-	}
+	submitGovFlags := []string{configFile(proposalSoftwareUpgrade)}
 
 	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
 	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes"}
-	s.submitLegacyGovProposal(chainAAPIEndpoint, sender, proposalCounter, upgradetypes.ProposalTypeSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "vote", true)
+	s.submitGovProposal(chainAAPIEndpoint, sender, proposalCounter, upgradetypes.ProposalTypeSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 
 	proposalCounter++
-	submitGovFlags = []string{"cancel-software-upgrade", "--title='Upgrade V1'", "--description='Software Upgrade'"}
+	s.writeCancelSoftwareUpgradeProposal(s.chainA)
+	submitGovFlags = []string{configFile(proposalCancelSoftwareUpgrade)}
 	depositGovFlags = []string{strconv.Itoa(proposalCounter), depositAmount.String()}
 	voteGovFlags = []string{strconv.Itoa(proposalCounter), "yes"}
-	s.submitLegacyGovProposal(chainAAPIEndpoint, sender, proposalCounter, upgradetypes.ProposalTypeCancelSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "vote", true)
+	s.submitGovProposal(chainAAPIEndpoint, sender, proposalCounter, upgradetypes.ProposalTypeCancelSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 
 	s.verifyChainPassesUpgradeHeight(s.chainA, 0, proposalHeight)
 	s.T().Logf("Successfully canceled upgrade at height %d", proposalHeight)
@@ -124,7 +111,7 @@ func (s *IntegrationTestSuite) GovCommunityPoolSpend() {
 	sender := senderAddress.String()
 	recipientAddress, _ := s.chainA.validators[1].keyInfo.GetAddress()
 	recipient := recipientAddress.String()
-	sendAmount := sdk.NewCoin(uatomDenom, sdk.NewInt(10000000)) // 10uatom
+	sendAmount := sdk.NewCoin(uatomDenom, math.NewInt(10000000)) // 10uatom
 	s.writeGovCommunitySpendProposal(s.chainA, sendAmount, recipient)
 
 	beforeRecipientBalance, err := getSpecificBalance(chainAAPIEndpoint, recipient, uatomDenom)
@@ -167,8 +154,6 @@ func (s *IntegrationTestSuite) submitLegacyGovProposal(chainAAPIEndpoint, sender
 // Instead, the depoist is added to the "deposit" field of the proposal JSON (usually stored as a file)
 // you can use `gaiad tx gov draft-proposal` to create a proposal file that you can use
 // min initial deposit of 100uatom is required in e2e tests, otherwise the proposal would be dropped
-//
-//nolint:unparam
 func (s *IntegrationTestSuite) submitGovProposal(chainAAPIEndpoint, sender string, proposalID int, proposalType string, submitFlags []string, depositFlags []string, voteFlags []string, voteCommand string) {
 	s.T().Logf("Submitting Gov Proposal: %s", proposalType)
 	sflags := submitFlags
@@ -247,7 +232,7 @@ func (s *IntegrationTestSuite) submitGovCommandExpectingFailure(sender string, g
 func (s *IntegrationTestSuite) testSetBlocksPerEpoch() {
 	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
-	defaultBlocksPerEpoch := providertypes.DefaultParams().BlocksPerEpoch
+	providerParams := providertypes.DefaultParams()
 
 	// assert that initially, the actual blocks per epoch are the default blocks per epoch
 	s.Require().Eventually(
@@ -256,7 +241,7 @@ func (s *IntegrationTestSuite) testSetBlocksPerEpoch() {
 			s.T().Logf("Initial BlocksPerEpoch param: %v", blocksPerEpoch)
 			s.Require().NoError(err)
 
-			s.Require().Equal(blocksPerEpoch, defaultBlocksPerEpoch)
+			s.Require().Equal(blocksPerEpoch, providerParams.BlocksPerEpoch)
 			return true
 		},
 		15*time.Second,
@@ -264,8 +249,10 @@ func (s *IntegrationTestSuite) testSetBlocksPerEpoch() {
 	)
 
 	// create a governance proposal to change blocks per epoch to the default blocks per epoch plus one
-	expectedBlocksPerEpoch := defaultBlocksPerEpoch + 1
-	s.writeGovParamChangeProposalBlocksPerEpoch(s.chainA, expectedBlocksPerEpoch)
+	expectedBlocksPerEpoch := providerParams.BlocksPerEpoch + 1
+	providerParams.BlocksPerEpoch = expectedBlocksPerEpoch
+	paramsJSON := cdc.MustMarshalJSON(&providerParams)
+	s.writeGovParamChangeProposalBlocksPerEpoch(s.chainA, string(paramsJSON))
 
 	validatorAAddr, _ := s.chainA.validators[0].keyInfo.GetAddress()
 	proposalCounter++

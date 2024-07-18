@@ -21,9 +21,6 @@ func SetExpeditedProposalsEnabled(val bool) {
 var expeditedPropsWhitelist = map[string]struct{}{
 	"/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade": {},
 	"/cosmos.upgrade.v1beta1.MsgCancelUpgrade":   {},
-	// legacy proposals can still be submitted using govv1.MsgSubmitProposal
-	"/cosmos.upgrade.v1beta1.SoftwareUpgradeProposal":       {},
-	"/cosmos.upgrade.v1beta1.CancelSoftwareUpgradeProposal": {},
 }
 
 // Check if the proposal is whitelisted for expedited voting.

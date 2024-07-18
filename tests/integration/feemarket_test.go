@@ -6,7 +6,9 @@ import (
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 	"github.com/stretchr/testify/suite"
 
-	ibctesting "github.com/cosmos/ibc-go/v7/testing"
+	ibctesting "github.com/cosmos/ibc-go/v8/testing"
+
+	"cosmossdk.io/math"
 
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -19,7 +21,7 @@ import (
 const (
 	LargeMsgNumber = 1000
 	LargeFeeAmount = 1000000000
-	LargeGasLimit  = simtestutil.DefaultGenTxGas * 100
+	LargeGasLimit  = simtestutil.DefaultGenTxGas * 10
 )
 
 type FeeMarketTestSuite struct {
@@ -69,7 +71,7 @@ func (suite *FeeMarketTestSuite) TestBaseFeeAdjustment() {
 	// Send a large transaction to consume a lot of gas
 	sender := suite.chain.SenderAccounts[0].SenderAccount.GetAddress()
 	receiver := suite.chain.SenderAccounts[1].SenderAccount.GetAddress()
-	amount := sdk.NewCoins(sdk.NewCoin("stake", sdk.NewInt(10)))
+	amount := sdk.NewCoins(sdk.NewCoin("stake", math.NewInt(10)))
 
 	msgs := make([]sdk.Msg, LargeMsgNumber)
 	for i := 0; i < LargeMsgNumber; i++ {

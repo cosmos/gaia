@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 	"time"
 
+	"cosmossdk.io/math"
+
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authTx "github.com/cosmos/cosmos-sdk/x/auth/tx"
@@ -112,7 +114,7 @@ func (s *IntegrationTestSuite) bankSendWithNonCriticalExtensionOptions() {
 		submitterAccount := c.genesisAccounts[1]
 		submitterAddress, err := submitterAccount.keyInfo.GetAddress()
 		s.Require().NoError(err)
-		sendMsg := banktypes.NewMsgSend(submitterAddress, submitterAddress, sdk.NewCoins(sdk.NewCoin(uatomDenom, sdk.NewInt(100))))
+		sendMsg := banktypes.NewMsgSend(submitterAddress, submitterAddress, sdk.NewCoins(sdk.NewCoin(uatomDenom, math.NewInt(100))))
 
 		// valid non-critical extension options
 		ext := &extensiontypes.ExtensionData{
@@ -181,7 +183,7 @@ func (s *IntegrationTestSuite) failedBankSendWithNonCriticalExtensionOptions() {
 		submitterAccount := c.genesisAccounts[1]
 		submitterAddress, err := submitterAccount.keyInfo.GetAddress()
 		s.Require().NoError(err)
-		sendMsg := banktypes.NewMsgSend(submitterAddress, submitterAddress, sdk.NewCoins(sdk.NewCoin(uatomDenom, sdk.NewInt(100))))
+		sendMsg := banktypes.NewMsgSend(submitterAddress, submitterAddress, sdk.NewCoins(sdk.NewCoin(uatomDenom, math.NewInt(100))))
 
 		// the message does not matter, as long as it is in the interface registry
 		ext := &banktypes.MsgMultiSend{}

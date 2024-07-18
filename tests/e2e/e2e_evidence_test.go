@@ -2,11 +2,13 @@ package e2e
 
 import (
 	"context"
+	"encoding/hex"
 	"fmt"
+	"strings"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/x/evidence/exported"
-	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
+	"cosmossdk.io/x/evidence/exported"
+	evidencetypes "cosmossdk.io/x/evidence/types"
 )
 
 func (s *IntegrationTestSuite) testEvidence() {
@@ -25,7 +27,7 @@ func (s *IntegrationTestSuite) testEvidence() {
 			s.Require().NoError(err)
 			eq, ok := exportedEvidence.(*evidencetypes.Equivocation)
 			s.Require().True(ok)
-			s.execQueryEvidence(chain, valIdx, eq.Hash().String())
+			s.execQueryEvidence(chain, valIdx, strings.ToUpper(hex.EncodeToString(eq.Hash())))
 		}
 	})
 }

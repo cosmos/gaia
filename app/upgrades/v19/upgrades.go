@@ -1,9 +1,12 @@
 package v19
 
 import (
+	"context"
+
+	upgradetypes "cosmossdk.io/x/upgrade/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	"github.com/cosmos/gaia/v19/app/keepers"
 )
@@ -13,7 +16,8 @@ func CreateUpgradeHandler(
 	configurator module.Configurator,
 	keepers *keepers.AppKeepers,
 ) upgradetypes.UpgradeHandler {
-	return func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+	return func(c context.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+		ctx := sdk.UnwrapSDKContext(c)
 		ctx.Logger().Info("Starting module migrations...")
 
 		vm, err := mm.RunMigrations(ctx, configurator, vm)

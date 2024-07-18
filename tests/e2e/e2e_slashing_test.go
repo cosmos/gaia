@@ -7,7 +7,7 @@ func (s *IntegrationTestSuite) testSlashing(chainEndpoint string) {
 		validators, err := queryValidators(chainEndpoint)
 		s.Require().NoError(err)
 
-		for _, val := range validators {
+		for _, val := range validators.Validators {
 			if val.Jailed {
 				s.execUnjail(
 					s.chainA,

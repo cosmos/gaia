@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	tmjson "github.com/cometbft/cometbft/libs/json"
+	cmtjson "github.com/cometbft/cometbft/libs/json"
 	tmtypes "github.com/cometbft/cometbft/types"
 
 	"cosmossdk.io/math"
@@ -102,7 +102,7 @@ func AppStateFn(encConfig params.EncodingConfig, simManager *module.SimulationMa
 			panic(err)
 		}
 		// compute not bonded balance
-		notBondedTokens := sdk.ZeroInt()
+		notBondedTokens := math.ZeroInt()
 		for _, val := range stakingState.Validators {
 			if val.Status != stakingtypes.Unbonded {
 				continue
@@ -168,11 +168,11 @@ func AppStateRandomizedFn(
 	)
 
 	appParams.GetOrGenerate(
-		cdc, StakePerAccount, &initialStake, r,
+		StakePerAccount, &initialStake, r,
 		func(r *rand.Rand) { initialStake = math.NewInt(r.Int63n(1e12)) },
 	)
 	appParams.GetOrGenerate(
-		cdc, InitiallyBondedValidators, &numInitiallyBonded, r,
+		InitiallyBondedValidators, &numInitiallyBonded, r,
 		func(r *rand.Rand) { numInitiallyBonded = int64(r.Intn(300)) },
 	)
 
@@ -219,8 +219,8 @@ func AppStateFromGenesisFileFn(r io.Reader, cdc codec.JSONCodec, genesisFile str
 	}
 
 	var genesis tmtypes.GenesisDoc
-	// NOTE: Tendermint uses a custom JSON decoder for GenesisDoc
-	err = tmjson.Unmarshal(bytes, &genesis)
+	// NOTE: Comet uses a custom JSON decoder for GenesisDoc
+	err = cmtjson.Unmarshal(bytes, &genesis)
 	if err != nil {
 		panic(err)
 	}
@@ -248,7 +248,7 @@ func AppStateFromGenesisFileFn(r io.Reader, cdc codec.JSONCodec, genesisFile str
 
 		privKey := secp256k1.GenPrivKeyFromSecret(privkeySeed)
 
-		a, ok := acc.GetCachedValue().(authtypes.AccountI)
+		a, ok := acc.GetCachedValue().(sdk.AccountI)
 		if !ok {
 			return genesis, nil, fmt.Errorf("expected account")
 		}

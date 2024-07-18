@@ -4,13 +4,13 @@ import (
 	feemarketante "github.com/skip-mev/feemarket/x/feemarket/ante"
 	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
 
-	ibcante "github.com/cosmos/ibc-go/v7/modules/core/ante"
-	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
+	ibcante "github.com/cosmos/ibc-go/v8/modules/core/ante"
+	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
 
+	corestoretypes "cosmossdk.io/core/store"
 	errorsmod "cosmossdk.io/errors"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
@@ -28,13 +28,13 @@ var UseFeeMarketDecorator = true
 // channel keeper.
 type HandlerOptions struct {
 	ante.HandlerOptions
-	Codec             codec.BinaryCodec
-	IBCkeeper         *ibckeeper.Keeper
-	StakingKeeper     *stakingkeeper.Keeper
-	FeeMarketKeeper   *feemarketkeeper.Keeper
-	TxFeeChecker      ante.TxFeeChecker
-	TxCounterStoreKey storetypes.StoreKey
-	WasmConfig        *wasmtypes.WasmConfig
+	Codec                 codec.BinaryCodec
+	IBCkeeper             *ibckeeper.Keeper
+	StakingKeeper         *stakingkeeper.Keeper
+	FeeMarketKeeper       *feemarketkeeper.Keeper
+	TxFeeChecker          ante.TxFeeChecker
+	TXCounterStoreService corestoretypes.KVStoreService
+	WasmConfig            *wasmtypes.WasmConfig
 }
 
 func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
@@ -66,7 +66,7 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 	anteDecorators := []sdk.AnteDecorator{
 		ante.NewSetUpContextDecorator(),                                               // outermost AnteDecorator. SetUpContext must be called first
 		wasmkeeper.NewLimitSimulationGasDecorator(opts.WasmConfig.SimulationGasLimit), // after setup context to enforce limits early
-		wasmkeeper.NewCountTXDecorator(opts.TxCounterStoreKey),
+		wasmkeeper.NewCountTXDecorator(opts.TXCounterStoreService),
 		ante.NewExtensionOptionsDecorator(opts.ExtensionOptionChecker),
 		ante.NewValidateBasicDecorator(),
 		ante.NewTxTimeoutHeightDecorator(),

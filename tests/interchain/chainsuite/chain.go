@@ -7,16 +7,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/strangelove-ventures/interchaintest/v7"
-	"github.com/strangelove-ventures/interchaintest/v7/chain/cosmos"
-	"github.com/strangelove-ventures/interchaintest/v7/ibc"
-	"github.com/strangelove-ventures/interchaintest/v7/testutil"
+	"github.com/strangelove-ventures/interchaintest/v8"
+	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
+	"github.com/strangelove-ventures/interchaintest/v8/ibc"
+	"github.com/strangelove-ventures/interchaintest/v8/testutil"
 	"github.com/tidwall/gjson"
 	"golang.org/x/sync/errgroup"
 
 	sdkmath "cosmossdk.io/math"
-
-	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 )
 
 // This moniker is hardcoded into interchaintest
@@ -99,7 +98,7 @@ func (c *Chain) GenerateTx(ctx context.Context, valIdx int, command ...string) (
 	return string(stdout), nil
 }
 
-func (c *Chain) WaitForProposalStatus(ctx context.Context, proposalID string, status govv1beta1.ProposalStatus) error {
+func (c *Chain) WaitForProposalStatus(ctx context.Context, proposalID string, status govv1.ProposalStatus) error {
 	propID, err := strconv.ParseInt(proposalID, 10, 64)
 	if err != nil {
 		return err
@@ -109,7 +108,7 @@ func (c *Chain) WaitForProposalStatus(ctx context.Context, proposalID string, st
 		return err
 	}
 	maxHeight := chainHeight + UpgradeDelta
-	_, err = cosmos.PollForProposalStatus(ctx, c.CosmosChain, chainHeight, maxHeight, propID, status)
+	_, err = cosmos.PollForProposalStatusV1(ctx, c.CosmosChain, chainHeight, maxHeight, uint64(propID), status)
 	return err
 }
 
@@ -118,11 +117,11 @@ func (c *Chain) PassProposal(ctx context.Context, proposalID string) error {
 	if err != nil {
 		return err
 	}
-	err = c.VoteOnProposalAllValidators(ctx, propID, cosmos.ProposalVoteYes)
+	err = c.VoteOnProposalAllValidators(ctx, uint64(propID), cosmos.ProposalVoteYes)
 	if err != nil {
 		return err
 	}
-	return c.WaitForProposalStatus(ctx, proposalID, govv1beta1.StatusPassed)
+	return c.WaitForProposalStatus(ctx, proposalID, govv1.StatusPassed)
 }
 
 func (c *Chain) ReplaceImagesAndRestart(ctx context.Context, version string) error {

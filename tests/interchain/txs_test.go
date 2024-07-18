@@ -2,21 +2,18 @@ package interchain_test
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"path"
 	"testing"
 	"time"
 
-	"github.com/strangelove-ventures/interchaintest/v7"
-	"github.com/strangelove-ventures/interchaintest/v7/ibc"
-	"github.com/strangelove-ventures/interchaintest/v7/testutil"
+	"github.com/strangelove-ventures/interchaintest/v8"
+	"github.com/strangelove-ventures/interchaintest/v8/ibc"
+	"github.com/strangelove-ventures/interchaintest/v8/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 
 	sdkmath "cosmossdk.io/math"
-
-	"github.com/cosmos/cosmos-sdk/x/params/client/utils"
 
 	"github.com/cosmos/gaia/v19/tests/interchain/chainsuite"
 )
@@ -237,20 +234,11 @@ func (s TxSuite) TestAuthz() {
 		)
 		s.Require().NoError(err)
 
-		prop, err := s.Chain.ParamChangeProposal(s.GetContext(), s.Chain.ValidatorWallets[0].Moniker, &utils.ParamChangeProposalJSON{
-			Title:       "Test Proposal",
-			Description: "Test Proposal",
-			Changes: utils.ParamChangesJSON{
-				{
-					Subspace: "staking",
-					Key:      "MaxValidators",
-					Value:    json.RawMessage(`100`),
-				},
-			},
-			Deposit: chainsuite.GovDepositAmount,
-		})
+		prop, err := s.Chain.BuildProposal(nil, "Test Proposal", "Test Proposal", "ipfs://CID", chainsuite.GovDepositAmount, s.Chain.ValidatorWallets[0].ValoperAddress, false)
 		s.Require().NoError(err)
-		s.Require().NoError(s.authzGenExec(s.GetContext(), s.Chain.ValidatorWallets[1], "gov", "vote", prop.ProposalID, "yes", "--from", s.Chain.ValidatorWallets[0].Address))
+		result, err := s.Chain.SubmitProposal(s.GetContext(), s.Chain.ValidatorWallets[0].Moniker, prop)
+		s.Require().NoError(err)
+		s.Require().NoError(s.authzGenExec(s.GetContext(), s.Chain.ValidatorWallets[1], "gov", "vote", result.ProposalID, "yes", "--from", s.Chain.ValidatorWallets[0].Address))
 	})
 }
 

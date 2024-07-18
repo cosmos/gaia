@@ -6,20 +6,20 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/strangelove-ventures/interchaintest/v7"
-	"github.com/strangelove-ventures/interchaintest/v7/chain/cosmos"
-	"github.com/strangelove-ventures/interchaintest/v7/ibc"
-	"github.com/strangelove-ventures/interchaintest/v7/testutil"
+	"github.com/strangelove-ventures/interchaintest/v8"
+	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
+	"github.com/strangelove-ventures/interchaintest/v8/ibc"
+	"github.com/strangelove-ventures/interchaintest/v8/testutil"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
 	"golang.org/x/mod/semver"
 
-	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
-	ccvclient "github.com/cosmos/interchain-security/v4/x/ccv/provider/client"
+	clienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
+	ccvclient "github.com/cosmos/interchain-security/v5/x/ccv/provider/client"
 
 	sdkmath "cosmossdk.io/math"
 
-	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 )
 
 type ConsumerBootstrapCb func(ctx context.Context, consumer *cosmos.CosmosChain)
@@ -106,9 +106,7 @@ func (p *Chain) AddConsumerChain(ctx context.Context, relayer *Relayer, config C
 	if config.spec == nil {
 		config.spec = p.DefaultConsumerChainSpec(ctx, chainID, config, spawnTime, proposalWaiter)
 	}
-	if semver.Compare(p.GetNode().ICSVersion(ctx), "v4.1.0") > 0 &&
-		semver.Major(p.GetNode().ICSVersion(ctx)) == "v4" &&
-		config.spec.InterchainSecurityConfig.ProviderVerOverride == "" {
+	if semver.Compare(p.GetNode().ICSVersion(ctx), "v4.1.0") > 0 && config.spec.InterchainSecurityConfig.ProviderVerOverride == "" {
 		config.spec.InterchainSecurityConfig.ProviderVerOverride = "v4.1.0"
 	}
 	cf := interchaintest.NewBuiltinChainFactory(
@@ -422,7 +420,7 @@ func (p *Chain) consumerAdditionProposal(ctx context.Context, chainID string, co
 	errCh := make(chan error)
 	go func() {
 		defer close(errCh)
-		if err := p.WaitForProposalStatus(ctx, propTx.ProposalID, govv1beta1.StatusDepositPeriod); err != nil {
+		if err := p.WaitForProposalStatus(ctx, propTx.ProposalID, govv1.StatusDepositPeriod); err != nil {
 			errCh <- err
 			return
 		}
@@ -433,7 +431,7 @@ func (p *Chain) consumerAdditionProposal(ctx context.Context, chainID string, co
 			return
 		}
 
-		if err := p.WaitForProposalStatus(ctx, propTx.ProposalID, govv1beta1.StatusVotingPeriod); err != nil {
+		if err := p.WaitForProposalStatus(ctx, propTx.ProposalID, govv1.StatusVotingPeriod); err != nil {
 			errCh <- err
 			return
 		}

@@ -794,17 +794,14 @@ func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain, 
 
 // writeGovParamChangeProposalBlocksPerEpoch writes a governance proposal JSON file to change the `BlocksPerEpoch`
 // parameter to the provided `blocksPerEpoch`
-func (s *IntegrationTestSuite) writeGovParamChangeProposalBlocksPerEpoch(c *chain, blocksPerEpoch int64) {
+func (s *IntegrationTestSuite) writeGovParamChangeProposalBlocksPerEpoch(c *chain, paramsJSON string) {
 	template := `
 	{
 		"messages":[
 		  {
 			"@type": "/interchain_security.ccv.provider.v1.MsgUpdateParams",
    			"authority": "%s",
-			"params": {
-				"blocks_per_epoch": "%d",
-				"slash_meter_replenish_fraction":"0.06"
-			}
+			"params": %s
 		  }
 		],
 		"deposit": "100uatom",
@@ -817,7 +814,7 @@ func (s *IntegrationTestSuite) writeGovParamChangeProposalBlocksPerEpoch(c *chai
 
 	propMsgBody := fmt.Sprintf(template,
 		govAuthority,
-		blocksPerEpoch,
+		paramsJSON,
 	)
 
 	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalBlocksPerEpochFilename), []byte(propMsgBody))

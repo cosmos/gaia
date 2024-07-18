@@ -232,7 +232,7 @@ func (s *IntegrationTestSuite) submitGovCommandExpectingFailure(sender string, g
 func (s *IntegrationTestSuite) testSetBlocksPerEpoch() {
 	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
-	defaultBlocksPerEpoch := providertypes.DefaultParams().BlocksPerEpoch
+	providerParams := providertypes.DefaultParams()
 
 	// assert that initially, the actual blocks per epoch are the default blocks per epoch
 	s.Require().Eventually(
@@ -241,7 +241,7 @@ func (s *IntegrationTestSuite) testSetBlocksPerEpoch() {
 			s.T().Logf("Initial BlocksPerEpoch param: %v", blocksPerEpoch)
 			s.Require().NoError(err)
 
-			s.Require().Equal(blocksPerEpoch, defaultBlocksPerEpoch)
+			s.Require().Equal(blocksPerEpoch, providerParams.BlocksPerEpoch)
 			return true
 		},
 		15*time.Second,
@@ -249,8 +249,10 @@ func (s *IntegrationTestSuite) testSetBlocksPerEpoch() {
 	)
 
 	// create a governance proposal to change blocks per epoch to the default blocks per epoch plus one
-	expectedBlocksPerEpoch := defaultBlocksPerEpoch + 1
-	s.writeGovParamChangeProposalBlocksPerEpoch(s.chainA, expectedBlocksPerEpoch)
+	expectedBlocksPerEpoch := providerParams.BlocksPerEpoch + 1
+	providerParams.BlocksPerEpoch = expectedBlocksPerEpoch
+	paramsJSON := cdc.MustMarshalJSON(&providerParams)
+	s.writeGovParamChangeProposalBlocksPerEpoch(s.chainA, string(paramsJSON))
 
 	validatorAAddr, _ := s.chainA.validators[0].keyInfo.GetAddress()
 	proposalCounter++

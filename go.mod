@@ -22,12 +22,12 @@ require (
 	github.com/cometbft/cometbft v0.38.9
 	github.com/cometbft/cometbft-db v0.12.0
 	github.com/cosmos/cosmos-db v1.0.2
-	github.com/cosmos/cosmos-sdk v0.50.7
+	github.com/cosmos/cosmos-sdk v0.50.8
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/gogoproto v1.5.0
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 v8.0.2
 	github.com/cosmos/ibc-go/modules/capability v1.0.0
-	github.com/cosmos/ibc-go/v8 v8.3.1
+	github.com/cosmos/ibc-go/v8 v8.3.2
 	github.com/cosmos/interchain-security/v5 v5.0.0-20240702132056-9ee031266fe5
 	github.com/google/gofuzz v1.2.0
 	github.com/gorilla/mux v1.8.1
@@ -250,7 +250,7 @@ replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
 	// Use special SDK v0.50.x release with support for both ICS and LSM
-	github.com/cosmos/cosmos-sdk => github.com/informalsystems/cosmos-sdk v0.0.0-20240618092823-ab3600ee8a5a
+	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.50.9-0.20240718090640-62baa29ab9e3
 
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
@@ -261,3 +261,5 @@ replace (
 	// following versions might cause unexpected behavior
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 )
+
+replace github.com/cosmos/interchain-security/v5 => github.com/cosmos/interchain-security/v5 v5.0.1-0.20240718110115-76496d08f129

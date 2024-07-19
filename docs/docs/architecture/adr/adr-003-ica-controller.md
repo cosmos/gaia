@@ -18,7 +18,7 @@ Enabling the ICA Controller module on the Hub would support various use cases. O
 
 ## Decision
 
-The ICA Controller module will be included in the application, so the Hub will have both ICA Host and Controller modules. The implementation will use the Controller module's built-in authentication mechanism, since we don't have a need for custom authentication logic. According to this, users will directly use `MsgRegisterInterchainAccount` and `MsgSendTx` messages defined by the Controller module. The possibility provided by the Controller module to define underlaying application to have custom processing of IBC messages exchanged by the Controller module (e.g. `OnChanOpenInit`, `OnAcknowledgementPacket`, etc.) will not be used, since there is currently no need for this.
+The ICA Controller module will be included in the application, so the Hub will have both ICA Host and Controller modules. The implementation will use the Controller module's built-in authentication mechanism, since we don't have a need for custom authentication logic. According to this, users will directly use `MsgRegisterInterchainAccount` and `MsgSendTx` messages defined by the Controller module. The possibility provided by the Controller module to define underlying application to have custom processing of IBC messages exchanged by the Controller module (e.g. `OnChanOpenInit`, `OnAcknowledgementPacket`, etc.) will not be used, since there is currently no need for this.
 
 ```go
 // ICA Controller keeper

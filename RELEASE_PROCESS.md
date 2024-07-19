@@ -242,7 +242,7 @@ The intention of the Stable Release Policy is to ensure that all major release s
 are maintained with the following categories of fixes:
 
 - Tooling improvements (including code formatting, linting, static analysis and updates to testing frameworks)
-- Performance enhancements for running archival and synching nodes
+- Performance enhancements for running archival and syncing nodes
 - Test and benchmarking suites, ensuring that fixes are sound and there are no performance regressions
 - Library updates including point releases for core libraries such as IBC-Go, Cosmos SDK, Tendermint and other dependencies
 - General maintenance improvements, that are deemed necessary by the stewarding team, that help align different releases and reduce the workload on the stewarding team

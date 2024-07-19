@@ -93,7 +93,7 @@ You can update these CosmosHub modules using `submit-legacy-proposal`:
 * provider
 :::
 
-**Note:** The chages outlined here must be submitted using `submit-legacy-proposal`.
+**Note:** The changes outlined here must be submitted using `submit-legacy-proposal`.
 
 For `param-change` proposals, there are arguably seven (7) components, though three are nested beneath 'Changes':
 

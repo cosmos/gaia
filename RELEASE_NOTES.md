@@ -9,7 +9,7 @@ Refer to the [upgrading guide](https://github.com/cosmos/gaia/blob/v19.0.0/UPGRA
 
 ## 🚀 Highlights
 
-This release brings cosmos-sdk v0.50.x, ibc-go v8.x, interchain-security v5.1.0, and cometbft v0.38.9 to the Cosmos Hub.
+This release uses go1.22 and brings cosmos-sdk v0.50.x, ibc-go v8.x, interchain-security v5.1.0, and cometbft v0.38.9 to the Cosmos Hub.
 
 Aside from the security and performance upgrades, this release will allow [channel upgrades](https://ibc.cosmos.network/main/ibc/channel-upgrades/) and help relayer incentivization through ibc fees on existing channels.
 

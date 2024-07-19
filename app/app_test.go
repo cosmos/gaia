@@ -27,7 +27,6 @@ func (ao EmptyAppOptions) Get(_ string) interface{} {
 }
 
 func TestGaiaApp_BlockedModuleAccountAddrs(t *testing.T) {
-	encConfig := gaia.RegisterEncodingConfig()
 	app := gaia.NewGaiaApp(
 		log.NewNopLogger(),
 		db.NewMemDB(),
@@ -35,7 +34,6 @@ func TestGaiaApp_BlockedModuleAccountAddrs(t *testing.T) {
 		true,
 		map[int64]bool{},
 		gaia.DefaultNodeHome,
-		encConfig,
 		EmptyAppOptions{},
 		emptyWasmOption,
 	)

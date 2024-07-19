@@ -130,8 +130,6 @@ func setup() (*gaiaapp.GaiaApp, gaiaapp.GenesisState) {
 	appOptions[server.FlagInvCheckPeriod] = 5
 	appOptions[server.FlagMinGasPrices] = "0uatom"
 
-	encConfig := gaiaapp.RegisterEncodingConfig()
-
 	gaiaApp := gaiaapp.NewGaiaApp(
 		log.NewNopLogger(),
 		db,
@@ -139,11 +137,10 @@ func setup() (*gaiaapp.GaiaApp, gaiaapp.GenesisState) {
 		true,
 		map[int64]bool{},
 		gaiaapp.DefaultNodeHome,
-		encConfig,
 		appOptions,
 		emptyWasmOpts,
 	)
-	return gaiaApp, gaiaapp.NewDefaultGenesisState(encConfig)
+	return gaiaApp, gaiaApp.ModuleBasics.DefaultGenesis(gaiaApp.AppCodec())
 }
 
 func genesisStateWithValSet(t *testing.T,

@@ -8,8 +8,10 @@ import (
 
 	tmrand "github.com/cometbft/cometbft/libs/rand"
 
+	dbm "github.com/cosmos/cosmos-db"
 	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
 
+	"cosmossdk.io/log"
 	evidencetypes "cosmossdk.io/x/evidence/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
@@ -26,6 +28,7 @@ import (
 	paramsproptypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
+	gaia "github.com/cosmos/gaia/v19/app"
 	gaiaparams "github.com/cosmos/gaia/v19/app/params"
 	metaprotocoltypes "github.com/cosmos/gaia/v19/x/metaprotocols/types"
 )
@@ -91,11 +94,29 @@ func (c *chain) configDir() string {
 }
 
 func (c *chain) createAndInitValidators(count int) error {
+	tempApplication := gaia.NewGaiaApp(
+		log.NewNopLogger(),
+		dbm.NewMemDB(),
+		nil,
+		true,
+		map[int64]bool{},
+		gaia.DefaultNodeHome,
+		gaia.EmptyAppOptions{},
+		gaia.EmptyWasmOptions,
+	)
+	defer func() {
+		if err := tempApplication.Close(); err != nil {
+			panic(err)
+		}
+	}()
+
+	genesisState := tempApplication.ModuleBasics.DefaultGenesis(encodingConfig.Marshaler)
+
 	for i := 0; i < count; i++ {
 		node := c.createValidator(i)
 
 		// generate genesis files
-		if err := node.init(); err != nil {
+		if err := node.init(genesisState); err != nil {
 			return err
 		}
 
@@ -117,12 +138,30 @@ func (c *chain) createAndInitValidators(count int) error {
 }
 
 func (c *chain) createAndInitValidatorsWithMnemonics(count int, mnemonics []string) error { //nolint:unused // this is called during e2e tests
+	tempApplication := gaia.NewGaiaApp(
+		log.NewNopLogger(),
+		dbm.NewMemDB(),
+		nil,
+		true,
+		map[int64]bool{},
+		gaia.DefaultNodeHome,
+		gaia.EmptyAppOptions{},
+		gaia.EmptyWasmOptions,
+	)
+	defer func() {
+		if err := tempApplication.Close(); err != nil {
+			panic(err)
+		}
+	}()
+
+	genesisState := tempApplication.ModuleBasics.DefaultGenesis(encodingConfig.Marshaler)
+
 	for i := 0; i < count; i++ {
 		// create node
 		node := c.createValidator(i)
 
 		// generate genesis files
-		if err := node.init(); err != nil {
+		if err := node.init(genesisState); err != nil {
 			return err
 		}
 

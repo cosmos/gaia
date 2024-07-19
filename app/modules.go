@@ -1,25 +1,20 @@
 package gaia
 
 import (
-	ratelimit "github.com/Stride-Labs/ibc-rate-limiting/ratelimit"
 	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
 	feemarket "github.com/skip-mev/feemarket/x/feemarket"
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
-	pfmrouter "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward"
 	pfmroutertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward/types"
 	"github.com/cosmos/ibc-go/modules/capability"
 	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
-	ica "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts"
 	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
 	ibcfee "github.com/cosmos/ibc-go/v8/modules/apps/29-fee"
 	ibcfeetypes "github.com/cosmos/ibc-go/v8/modules/apps/29-fee/types"
-	"github.com/cosmos/ibc-go/v8/modules/apps/transfer"
 	ibctransfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 	ibc "github.com/cosmos/ibc-go/v8/modules/core"
 	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 	ibctm "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
-	icsprovider "github.com/cosmos/interchain-security/v5/x/ccv/provider"
 	icsproviderclient "github.com/cosmos/interchain-security/v5/x/ccv/provider/client"
 	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
 
@@ -30,6 +25,8 @@ import (
 	"cosmossdk.io/x/upgrade"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
@@ -64,7 +61,6 @@ import (
 	wasm "github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	gaiaappparams "github.com/cosmos/gaia/v19/app/params"
 	"github.com/cosmos/gaia/v19/x/metaprotocols"
 	metaprotocolstypes "github.com/cosmos/gaia/v19/x/metaprotocols/types"
 )
@@ -86,61 +82,18 @@ var maccPerms = map[string][]string{
 	feemarkettypes.FeeCollectorName:   nil,
 }
 
-// ModuleBasics defines the module BasicManager is in charge of setting up basic,
-// non-dependant module elements, such as codec registration
-// and genesis verification.
-var ModuleBasics = module.NewBasicManager(
-	auth.AppModuleBasic{},
-	genutil.NewAppModuleBasic(genutiltypes.DefaultMessageValidator),
-	bank.AppModuleBasic{},
-	capability.AppModuleBasic{},
-	staking.AppModuleBasic{},
-	mint.AppModuleBasic{},
-	distr.AppModuleBasic{},
-	gov.NewAppModuleBasic(
-		[]govclient.ProposalHandler{
-			paramsclient.ProposalHandler,
-			icsproviderclient.ConsumerAdditionProposalHandler,
-			icsproviderclient.ConsumerRemovalProposalHandler,
-			icsproviderclient.ConsumerModificationProposalHandler,
-			icsproviderclient.ChangeRewardDenomsProposalHandler,
-		},
-	),
-	sdkparams.AppModuleBasic{},
-	crisis.AppModuleBasic{},
-	slashing.AppModuleBasic{},
-	feegrantmodule.AppModuleBasic{},
-	authzmodule.AppModuleBasic{},
-	ibc.AppModuleBasic{},
-	ibctm.AppModuleBasic{},
-	ibcfee.AppModuleBasic{},
-	upgrade.AppModuleBasic{},
-	evidence.AppModuleBasic{},
-	transfer.AppModuleBasic{},
-	vesting.AppModuleBasic{},
-	pfmrouter.AppModuleBasic{},
-	ratelimit.AppModuleBasic{},
-	ica.AppModuleBasic{},
-	icsprovider.AppModuleBasic{},
-	consensus.AppModuleBasic{},
-	metaprotocols.AppModuleBasic{},
-	wasm.AppModuleBasic{},
-	feemarket.AppModuleBasic{},
-)
-
 func appModules(
 	app *GaiaApp,
-	encodingConfig gaiaappparams.EncodingConfig,
+	appCodec codec.Codec,
+	txConfig client.TxEncodingConfig,
 	skipGenesisInvariants bool,
 ) []module.AppModule {
-	appCodec := encodingConfig.Marshaler
-
 	return []module.AppModule{
 		genutil.NewAppModule(
 			app.AccountKeeper,
 			app.StakingKeeper,
 			app,
-			encodingConfig.TxConfig,
+			txConfig,
 		),
 		auth.NewAppModule(appCodec, app.AccountKeeper, nil, app.GetSubspace(authtypes.ModuleName)),
 		vesting.NewAppModule(app.AccountKeeper, app.BankKeeper),
@@ -172,6 +125,9 @@ func appModules(
 	}
 }
 
+// ModuleBasics defines the module BasicManager that is in charge of setting up basic,
+// non-dependant module elements, such as codec registration
+// and genesis verification.
 func newBasicManagerFromManager(app *GaiaApp) module.BasicManager {
 	basicManager := module.NewBasicManagerFromManager(
 		app.mm,
@@ -187,7 +143,8 @@ func newBasicManagerFromManager(app *GaiaApp) module.BasicManager {
 				},
 			),
 		})
-
+	basicManager.RegisterLegacyAminoCodec(app.legacyAmino)
+	basicManager.RegisterInterfaces(app.interfaceRegistry)
 	return basicManager
 }
 
@@ -195,11 +152,9 @@ func newBasicManagerFromManager(app *GaiaApp) module.BasicManager {
 // define the order of the modules for deterministic simulations
 func simulationModules(
 	app *GaiaApp,
-	encodingConfig gaiaappparams.EncodingConfig,
+	appCodec codec.Codec,
 	_ bool,
 ) []module.AppModuleSimulation {
-	appCodec := encodingConfig.Marshaler
-
 	return []module.AppModuleSimulation{
 		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts, app.GetSubspace(authtypes.ModuleName)),
 		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper, app.GetSubspace(banktypes.ModuleName)),

@@ -89,7 +89,6 @@ func TestAppStateDeterminism(t *testing.T) {
 			}
 
 			db := dbm.NewMemDB()
-			encConfig := gaia.RegisterEncodingConfig()
 			app := gaia.NewGaiaApp(
 				logger,
 				db,
@@ -97,7 +96,6 @@ func TestAppStateDeterminism(t *testing.T) {
 				true,
 				map[int64]bool{},
 				gaia.DefaultNodeHome,
-				encConfig,
 				appOptions,
 				emptyWasmOption,
 				interBlockCacheOpt(),
@@ -123,7 +121,7 @@ func TestAppStateDeterminism(t *testing.T) {
 				t,
 				os.Stdout,
 				app.BaseApp,
-				simtestutil.AppStateFn(app.AppCodec(), app.SimulationManager(), gaia.NewDefaultGenesisState(encConfig)),
+				simtestutil.AppStateFn(app.AppCodec(), app.SimulationManager(), app.ModuleBasics.DefaultGenesis(app.AppCodec())),
 				simulation2.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
 				simtestutil.SimulationOperations(app, app.AppCodec(), config),
 				blockedAddresses,

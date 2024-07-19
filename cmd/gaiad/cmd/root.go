@@ -36,11 +36,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/snapshot"
 	"github.com/cosmos/cosmos-sdk/codec"
 	addresscodec "github.com/cosmos/cosmos-sdk/codec/address"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/server"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
@@ -56,14 +58,11 @@ import (
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	gaia "github.com/cosmos/gaia/v19/app"
-	"github.com/cosmos/gaia/v19/app/params"
 )
 
 // NewRootCmd creates a new root command for simd. It is called once in the
 // main function.
-func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
-	encodingConfig := gaia.RegisterEncodingConfig()
-
+func NewRootCmd() *cobra.Command {
 	// we "pre"-instantiate the application for getting the injected/configured encoding configuration
 	initAppOptions := viper.New()
 	tempDir := tempDir()
@@ -75,7 +74,6 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		true,
 		map[int64]bool{},
 		tempDir,
-		encodingConfig,
 		initAppOptions,
 		gaia.EmptyWasmOptions,
 	)
@@ -86,10 +84,10 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	}()
 
 	initClientCtx := client.Context{}.
-		WithCodec(encodingConfig.Marshaler).
-		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
-		WithTxConfig(encodingConfig.TxConfig).
-		WithLegacyAmino(encodingConfig.Amino).
+		WithCodec(tempApplication.AppCodec()).
+		WithInterfaceRegistry(tempApplication.InterfaceRegistry()).
+		WithTxConfig(tempApplication.GetTxConfig()).
+		WithLegacyAmino(tempApplication.LegacyAmino()).
 		WithInput(os.Stdin).
 		WithAccountRetriever(types.AccountRetriever{}).
 		WithHomeDir(gaia.DefaultNodeHome).
@@ -122,7 +120,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 					TextualCoinMetadataQueryFn: txmodule.NewGRPCCoinMetadataQueryFn(initClientCtx),
 				}
 				txConfigWithTextual, err := tx.NewTxConfigWithOptions(
-					codec.NewProtoCodec(encodingConfig.InterfaceRegistry),
+					codec.NewProtoCodec(tempApplication.InterfaceRegistry()),
 					txConfigOpts,
 				)
 				if err != nil {
@@ -142,7 +140,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		},
 	}
 
-	initRootCmd(rootCmd, encodingConfig)
+	initRootCmd(rootCmd, tempApplication.ModuleBasics, tempApplication.AppCodec(), tempApplication.InterfaceRegistry(), tempApplication.GetTxConfig())
 
 	autoCliOpts, err := enrichAutoCliOpts(tempApplication.AutoCliOpts(), initClientCtx)
 	if err != nil {
@@ -153,7 +151,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		panic(err)
 	}
 
-	return rootCmd, encodingConfig
+	return rootCmd
 }
 
 func enrichAutoCliOpts(autoCliOpts autocli.AppOptions, clientCtx client.Context) (autocli.AppOptions, error) {
@@ -211,16 +209,21 @@ func initAppConfig() (string, interface{}) {
 	return defaultAppTemplate, customAppConfig
 }
 
-func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
+func initRootCmd(rootCmd *cobra.Command,
+	basicManager module.BasicManager,
+	cdc codec.Codec,
+	interfaceRegistry codectypes.InterfaceRegistry,
+	txConfig client.TxConfig,
+) {
 	cfg := sdk.GetConfig()
 	cfg.Seal()
 
-	ac := appCreator{encodingConfig}
+	ac := appCreator{}
 
 	rootCmd.AddCommand(
-		genutilcli.InitCmd(gaia.ModuleBasics, gaia.DefaultNodeHome),
+		genutilcli.InitCmd(basicManager, gaia.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
-		NewTestnetCmd(gaia.ModuleBasics, banktypes.GenesisBalancesIterator{}, ac),
+		NewTestnetCmd(basicManager, banktypes.GenesisBalancesIterator{}, ac),
 		addDebugCommands(debug.Cmd()),
 		confixcmd.ConfigCommand(),
 		pruning.Cmd(ac.newApp, gaia.DefaultNodeHome),
@@ -232,14 +235,14 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 	// add keybase, auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(
 		server.StatusCommand(),
-		genesisCommand(encodingConfig),
+		genesisCommand(txConfig, basicManager),
 		queryCommand(),
-		txCommand(),
+		txCommand(basicManager),
 		keys.Commands(),
 	)
 
 	// add rosetta
-	rootCmd.AddCommand(rosettaCmd.RosettaCommand(encodingConfig.InterfaceRegistry, encodingConfig.Marshaler))
+	rootCmd.AddCommand(rosettaCmd.RosettaCommand(interfaceRegistry, cdc))
 }
 
 func addModuleInitFlags(startCmd *cobra.Command) {
@@ -248,8 +251,8 @@ func addModuleInitFlags(startCmd *cobra.Command) {
 }
 
 // genesisCommand builds genesis-related `simd genesis` command. Users may provide application specific commands as a parameter
-func genesisCommand(encodingConfig params.EncodingConfig, cmds ...*cobra.Command) *cobra.Command {
-	cmd := genutilcli.GenesisCoreCommand(encodingConfig.TxConfig, gaia.ModuleBasics, gaia.DefaultNodeHome)
+func genesisCommand(txConfig client.TxConfig, basicManager module.BasicManager, cmds ...*cobra.Command) *cobra.Command {
+	cmd := genutilcli.GenesisCoreCommand(txConfig, basicManager, gaia.DefaultNodeHome)
 
 	for _, subCmd := range cmds {
 		cmd.AddCommand(subCmd)
@@ -281,7 +284,7 @@ func queryCommand() *cobra.Command {
 	return cmd
 }
 
-func txCommand() *cobra.Command {
+func txCommand(basicManager module.BasicManager) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        "tx",
 		Short:                      "Transactions subcommands",
@@ -304,16 +307,14 @@ func txCommand() *cobra.Command {
 
 	// NOTE: this must be registered for now so that submit-legacy-proposal
 	// message (e.g. consumer-addition proposal) can be routed to the its handler and processed correctly.
-	gaia.ModuleBasics.AddTxCommands(cmd)
+	basicManager.AddTxCommands(cmd)
 
 	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
 
 	return cmd
 }
 
-type appCreator struct {
-	encCfg params.EncodingConfig
-}
+type appCreator struct{}
 
 func (a appCreator) newApp(
 	logger log.Logger,
@@ -391,7 +392,6 @@ func (a appCreator) newApp(
 		true,
 		skipUpgradeHeights,
 		cast.ToString(appOpts.Get(flags.FlagHome)),
-		a.encCfg,
 		appOpts,
 		wasmOpts,
 		baseappOptions...,
@@ -437,7 +437,6 @@ func (a appCreator) appExport(
 		loadLatest,
 		map[int64]bool{},
 		homePath,
-		a.encCfg,
 		appOpts,
 		emptyWasmOpts,
 	)

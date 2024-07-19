@@ -29,7 +29,6 @@ var app *gaiaApp.GaiaApp
 
 // GaiaAppIniter implements ibctesting.AppIniter for the gaia app
 func GaiaAppIniter() (ibctesting.TestingApp, map[string]json.RawMessage) {
-	encoding := gaiaApp.RegisterEncodingConfig()
 	app = gaiaApp.NewGaiaApp(
 		log.NewNopLogger(),
 		dbm.NewMemDB(),
@@ -37,13 +36,12 @@ func GaiaAppIniter() (ibctesting.TestingApp, map[string]json.RawMessage) {
 		true,
 		map[int64]bool{},
 		gaiaApp.DefaultNodeHome,
-		encoding,
 		gaiaApp.EmptyAppOptions{},
 		gaiaApp.EmptyWasmOptions)
 
 	testApp := ibctesting.TestingApp(app)
 
-	return testApp, gaiaApp.NewDefaultGenesisState(encoding)
+	return testApp, app.ModuleBasics.DefaultGenesis(app.AppCodec())
 }
 
 // SendMsgs() behavior must be changed since the default one uses zero fees

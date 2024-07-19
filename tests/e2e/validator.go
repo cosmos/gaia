@@ -29,8 +29,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-
-	gaia "github.com/cosmos/gaia/v19/app"
 )
 
 //
@@ -67,7 +65,7 @@ func (v *validator) createConfig() error {
 	return os.MkdirAll(p, 0o755)
 }
 
-func (v *validator) init() error {
+func (v *validator) init(genesisState map[string]json.RawMessage) error {
 	if err := v.createConfig(); err != nil {
 		return err
 	}
@@ -78,7 +76,7 @@ func (v *validator) init() error {
 	config.SetRoot(v.configDir())
 	config.Moniker = v.moniker
 
-	appState, err := json.MarshalIndent(gaia.ModuleBasics.DefaultGenesis(cdc), "", " ")
+	appState, err := json.MarshalIndent(genesisState, "", " ")
 	if err != nil {
 		return fmt.Errorf("failed to JSON encode app genesis state: %w", err)
 	}

@@ -1,1 +1,0 @@
-- Bump [ICS] to [v2.4.0-lsm](https://github.com/cosmos/interchain-security/releases/tag/v2.4.0-lsm) ([\#2825](https://github.com/cosmos/gaia/pull/2825))

@@ -5,9 +5,9 @@ import (
 	"os"
 	"strings"
 
-	ratelimit "github.com/Stride-Labs/ibc-rate-limiting/ratelimit"
-	ratelimitkeeper "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/keeper"
-	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
+	ratelimit "github.com/cosmos/ibc-apps/modules/rate-limiting/v8"
+	ratelimitkeeper "github.com/cosmos/ibc-apps/modules/rate-limiting/v8/keeper"
+	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v8/types"
 	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
@@ -419,9 +419,9 @@ func NewAppKeeper(
 
 	// Create RateLimit keeper
 	appKeepers.RatelimitKeeper = *ratelimitkeeper.NewKeeper(
-		appCodec,                                 // BinaryCodec
-		appKeepers.keys[ratelimittypes.StoreKey], // StoreKey
-		appKeepers.GetSubspace(ratelimittypes.ModuleName), // param Subspace
+		appCodec, // BinaryCodec
+		runtime.NewKVStoreService(appKeepers.keys[ratelimittypes.StoreKey]), // StoreKey
+		appKeepers.GetSubspace(ratelimittypes.ModuleName),                   // param Subspace
 		govAuthority, // authority
 		appKeepers.BankKeeper,
 		appKeepers.IBCKeeper.ChannelKeeper, // ChannelKeeper

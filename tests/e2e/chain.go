@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	ratelimittypes "github.com/Stride-Labs/ibc-rate-limiting/ratelimit/types"
+	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v8/types"
 
 	tmrand "github.com/cometbft/cometbft/libs/rand"
 

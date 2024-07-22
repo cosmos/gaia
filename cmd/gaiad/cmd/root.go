@@ -37,7 +37,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	addresscodec "github.com/cosmos/cosmos-sdk/codec/address"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/server"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
@@ -46,7 +45,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
-	txmodule "github.com/cosmos/cosmos-sdk/x/auth/tx/config"
+	authtxconfig "github.com/cosmos/cosmos-sdk/x/auth/tx/config"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
@@ -86,7 +85,6 @@ func NewRootCmd() *cobra.Command {
 	initClientCtx := client.Context{}.
 		WithCodec(tempApplication.AppCodec()).
 		WithInterfaceRegistry(tempApplication.InterfaceRegistry()).
-		WithTxConfig(tempApplication.GetTxConfig()).
 		WithLegacyAmino(tempApplication.LegacyAmino()).
 		WithInput(os.Stdin).
 		WithAccountRetriever(types.AccountRetriever{}).
@@ -117,10 +115,10 @@ func NewRootCmd() *cobra.Command {
 			if !initClientCtx.Offline {
 				txConfigOpts := tx.ConfigOptions{
 					EnabledSignModes:           append(tx.DefaultSignModes, signing.SignMode_SIGN_MODE_TEXTUAL),
-					TextualCoinMetadataQueryFn: txmodule.NewGRPCCoinMetadataQueryFn(initClientCtx),
+					TextualCoinMetadataQueryFn: authtxconfig.NewGRPCCoinMetadataQueryFn(initClientCtx),
 				}
 				txConfigWithTextual, err := tx.NewTxConfigWithOptions(
-					codec.NewProtoCodec(tempApplication.InterfaceRegistry()),
+					initClientCtx.Codec,
 					txConfigOpts,
 				)
 				if err != nil {
@@ -142,11 +140,7 @@ func NewRootCmd() *cobra.Command {
 
 	initRootCmd(rootCmd, tempApplication.ModuleBasics, tempApplication.AppCodec(), tempApplication.InterfaceRegistry(), tempApplication.GetTxConfig())
 
-	autoCliOpts, err := enrichAutoCliOpts(tempApplication.AutoCliOpts(), initClientCtx)
-	if err != nil {
-		panic(err)
-	}
-
+	autoCliOpts := enrichAutoCliOpts(tempApplication.AutoCliOpts(), initClientCtx)
 	if err := autoCliOpts.EnhanceRootCommand(rootCmd); err != nil {
 		panic(err)
 	}
@@ -154,24 +148,14 @@ func NewRootCmd() *cobra.Command {
 	return rootCmd
 }
 
-func enrichAutoCliOpts(autoCliOpts autocli.AppOptions, clientCtx client.Context) (autocli.AppOptions, error) {
+func enrichAutoCliOpts(autoCliOpts autocli.AppOptions, clientCtx client.Context) autocli.AppOptions {
 	autoCliOpts.AddressCodec = addresscodec.NewBech32Codec(sdk.GetConfig().GetBech32AccountAddrPrefix())
 	autoCliOpts.ValidatorAddressCodec = addresscodec.NewBech32Codec(sdk.GetConfig().GetBech32ValidatorAddrPrefix())
 	autoCliOpts.ConsensusAddressCodec = addresscodec.NewBech32Codec(sdk.GetConfig().GetBech32ConsensusAddrPrefix())
 
-	var err error
-	clientCtx, err = config.ReadFromClientConfig(clientCtx)
-	if err != nil {
-		return autocli.AppOptions{}, err
-	}
-
 	autoCliOpts.ClientCtx = clientCtx
-	autoCliOpts.Keyring, err = keyring.NewAutoCLIKeyring(clientCtx.Keyring)
-	if err != nil {
-		return autocli.AppOptions{}, err
-	}
 
-	return autoCliOpts, nil
+	return autoCliOpts
 }
 
 // initCometConfig helps to override default CometBFT Config values.

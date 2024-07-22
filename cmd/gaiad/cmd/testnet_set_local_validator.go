@@ -63,7 +63,6 @@ func init() {
 }
 
 func testnetUnsafeStartLocalValidatorCmd(ac appCreator) *cobra.Command {
-
 	cmd := server.StartCmd(ac.newTestingApp, gaia.DefaultNodeHome)
 	cmd.Use = "unsafe-start-local-validator"
 	cmd.Short = "Updates chain's application and consensus state with provided validator info and starts the node"
@@ -167,7 +166,7 @@ func (a appCreator) newTestingApp(
 		panic(err)
 	}
 
-	//Update consensus state
+	// Update consensus state
 	err = updateConsensusState(logger, appOpts, gaiaApp.CommitMultiStore().LatestVersion(), args)
 	if err != nil {
 		panic(err)

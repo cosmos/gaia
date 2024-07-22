@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"os"
 
-	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v8/types"
-
 	tmrand "github.com/cometbft/cometbft/libs/rand"
 
 	dbm "github.com/cosmos/cosmos-db"
+	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v8/types"
 	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
 
 	"cosmossdk.io/log"

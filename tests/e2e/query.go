@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v8/types"
-
 	icacontrollertypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/types"
 	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
 

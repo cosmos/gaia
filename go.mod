@@ -16,7 +16,7 @@ require (
 	cosmossdk.io/x/evidence v0.1.1
 	cosmossdk.io/x/feegrant v0.1.1
 	cosmossdk.io/x/tx v0.13.3
-	cosmossdk.io/x/upgrade v0.1.3
+	cosmossdk.io/x/upgrade v0.1.4
 	github.com/CosmWasm/wasmd v0.50.0
 	github.com/Stride-Labs/ibc-rate-limiting v0.0.0-20240402205850-be547630b007
 	github.com/cometbft/cometbft v0.38.9

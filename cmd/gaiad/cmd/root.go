@@ -85,7 +85,6 @@ func NewRootCmd() *cobra.Command {
 	initClientCtx := client.Context{}.
 		WithCodec(tempApplication.AppCodec()).
 		WithInterfaceRegistry(tempApplication.InterfaceRegistry()).
-		// WithTxConfig(tempApplication.GetTxConfig()).
 		WithLegacyAmino(tempApplication.LegacyAmino()).
 		WithInput(os.Stdin).
 		WithAccountRetriever(types.AccountRetriever{}).

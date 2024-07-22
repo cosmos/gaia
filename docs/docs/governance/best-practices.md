@@ -77,7 +77,7 @@ It will be important to balance two things: being detailed and being concise. Yo
 
 Each major proposal type has a rough template available on the forum: [Text](https://forum.cosmos.network/t/about-the-signaling-text-category/5947), [community pool spend](https://forum.cosmos.network/t/about-the-community-spend-category/5949), [parameter change](https://forum.cosmos.network/t/about-the-parameter-change-category/5950), [software upgrade](https://forum.cosmos.network/t/about-the-software-upgrade-category/5951).
 
-Each proposal should contain a summmary with key details about what the proposal hopes to change. If you were viewing only the summary with no other context, it should be a good start to being able to make a decision.
+Each proposal should contain a summary with key details about what the proposal hopes to change. If you were viewing only the summary with no other context, it should be a good start to being able to make a decision.
 
 Assume that many people will stop reading at this point. However it is important to provide in-depth information. The on-chain proposal text should also include a link to an un-editable version of the text, such as an IPFS pin, and a link to where discussion about the idea is happening.
 

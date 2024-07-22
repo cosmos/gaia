@@ -47,7 +47,7 @@ There are future releases of Interchain Accounts which are expected to be backwa
 ## Development
 
 - Integration requirements
-  - Development has occured in [IBC-go](https://github.com/cosmos/ibc-go) and progress tracked on the project board there.
+  - Development has occurred in [IBC-go](https://github.com/cosmos/ibc-go) and progress tracked on the project board there.
 - Testing (Simulations, Core Team Testing, Partner Testing)
   - Simulations and Core Team tested this module
 - Audits (Internal Dev review, Third-party review, Bug Bounty)

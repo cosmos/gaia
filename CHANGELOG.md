@@ -2,15 +2,12 @@
 
 ## v19.0.0
 
-*July 22nd, 2024*
+*July 23nd, 2024*
 
 ### DEPENDENCIES
 
 - Bump [cometbft](https://github.com/cometbft/cometbft) to
     [v0.38.9](https://github.com/cometbft/cometbft/releases/tag/v0.38.9)
-    ([\#3171](https://github.com/cosmos/gaia/pull/3171))
-- Bump [ibc-rate-limiting](https://github.com/Stride-Labs/ibc-rate-limiting) to
-    [feat/sdk-v50](https://github.com/Stride-Labs/ibc-rate-limiting/tree/feat/sdk-v50)
     ([\#3171](https://github.com/cosmos/gaia/pull/3171))
 - Bump [ibc-go](https://github.com/cosmos/ibc-go) to
     [v8.3.2](https://github.com/cosmos/ibc-go/releases/tag/v8.3.2)
@@ -24,6 +21,9 @@
 - Bump [feemarket](https://github.com/skip-mev/feemarket) to
     [v1.0.4](https://github.com/skip-mev/feemarket/releases/tag/v1.0.4)
     ([\#3221](https://github.com/cosmos/gaia/pull/3221))
+- Bump [ibc-rate-limiting](https://github.com/cosmos/ibc-apps/blob/main/modules/rate-limiting) to
+    [v8](https://github.com/cosmos/ibc-apps/releases/tag/modules/rate-limiting/v8.0.0)
+    ([\#3227](https://github.com/cosmos/gaia/pull/3227))
 
 ### IMPROVEMENTS
 
@@ -35,9 +35,6 @@
 - Bump [cometbft](https://github.com/cometbft/cometbft) to
     [v0.38.9](https://github.com/cometbft/cometbft/releases/tag/v0.38.9)
     ([\#3171](https://github.com/cosmos/gaia/pull/3171))
-- Bump [ibc-rate-limiting](https://github.com/Stride-Labs/ibc-rate-limiting) to
-    [feat/sdk-v50](https://github.com/Stride-Labs/ibc-rate-limiting/tree/feat/sdk-v50)
-    ([\#3171](https://github.com/cosmos/gaia/pull/3171))
 - Bump [ibc-go](https://github.com/cosmos/ibc-go) to
     [v8.3.2](https://github.com/cosmos/ibc-go/releases/tag/v8.3.2)
     ([\#3171](https://github.com/cosmos/gaia/pull/3171))
@@ -50,6 +47,9 @@
 - Bump [feemarket](https://github.com/skip-mev/feemarket) to
     [v1.0.4](https://github.com/skip-mev/feemarket/releases/tag/v1.0.4)
     ([\#3221](https://github.com/cosmos/gaia/pull/3221))
+- Bump [ibc-rate-limiting](https://github.com/cosmos/ibc-apps/blob/main/modules/rate-limiting) to
+    [v8](https://github.com/cosmos/ibc-apps/releases/tag/modules/rate-limiting/v8.0.0)
+    ([\#3227](https://github.com/cosmos/gaia/pull/3227))
 
 ## Previous Versions
 

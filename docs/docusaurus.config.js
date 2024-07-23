@@ -65,7 +65,7 @@ const config = {
               label: "On chain (v18.1.0)",
               banner: "none",
             },
-            "v19.0.0": {
+            "v19.0.0-rc0": {
               path: "v19.0.0-rc0",
               label: "Pre-release (v19.0.0)",
               banner: "none",

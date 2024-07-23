@@ -6,9 +6,9 @@ sidebar_position: 1
 
 :::tip
 ### **Gaia v18 Upgrade**
-Cosmos Hub will be upgraded to [v18.0.0](https://github.com/cosmos/gaia/releases/tag/v18.0.0) at block height: [21,330,500](https://www.mintscan.io/cosmos/block/21330500).
+Cosmos Hub will be upgraded to [v18.1.0](https://github.com/cosmos/gaia/releases/tag/v18.1.0) at block height: [21,330,500](https://www.mintscan.io/cosmos/block/21330500).
 
-To upgrade from v17.3.0 check the [upgrade guide](https://github.com/cosmos/gaia/blob/v18.0.0/UPGRADING.md).
+To upgrade from v17.3.0 check the [upgrade guide](https://github.com/cosmos/gaia/blob/v18.1.0/UPGRADING.md).
 :::
 
 ![Welcome to the Cosmos Hub](images/cosmos-hub-image.jpg)

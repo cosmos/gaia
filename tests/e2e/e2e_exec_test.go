@@ -707,7 +707,7 @@ func (s *IntegrationTestSuite) executeHermesCommand(ctx context.Context, hermesC
 		if err != nil {
 			return nil, fmt.Errorf("hermes relayer command returned failed with error: %s", err)
 		}
-		// errors are catched by observing the logs level in the stderr output
+		// errors are caught by observing the logs level in the stderr output
 		if lvl := out["level"]; lvl != nil && strings.ToLower(lvl.(string)) == "error" {
 			errMsg := out["fields"].(map[string]interface{})["message"]
 			return nil, fmt.Errorf("hermes relayer command failed: %s", errMsg)

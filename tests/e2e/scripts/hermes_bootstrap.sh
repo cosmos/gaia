@@ -55,7 +55,7 @@ store_prefix = 'ibc'
 max_gas = 6000000
 gas_price = { price = 0.005, denom = 'uatom' }
 gas_multiplier = 1.5
-clock_drift = '1m' # to accomdate docker containers
+clock_drift = '1m' # to accommodate docker containers
 trusting_period = '14days'
 trust_threshold = { numerator = '1', denominator = '3' }
 dynamic_gas_price = { enabled = true, multiplier = 1.3, max = 0.05 }
@@ -73,7 +73,7 @@ store_prefix = 'ibc'
 max_gas =  6000000
 gas_price = { price = 0.005, denom = 'uatom' }
 gas_multiplier = 1.5
-clock_drift = '1m' # to accomdate docker containers
+clock_drift = '1m' # to accommodate docker containers
 trusting_period = '14days'
 trust_threshold = { numerator = '1', denominator = '3' }
 dynamic_gas_price = { enabled = true, multiplier = 1.3, max = 0.05 }

@@ -103,7 +103,6 @@ func (g GovVoteDecorator) ValidateVoteMsgs(ctx sdk.Context, msgs []sdk.Msg) erro
 			// break the iteration if maxDelegationsChecked were already checked
 			return delegationCount >= maxDelegationsChecked
 		})
-
 		if err != nil {
 			return err
 		}

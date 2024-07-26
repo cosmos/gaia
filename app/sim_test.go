@@ -25,6 +25,7 @@ import (
 
 	"github.com/cosmos/gaia/v19/ante"
 	gaia "github.com/cosmos/gaia/v19/app"
+
 	// "github.com/cosmos/gaia/v11/app/helpers"
 	// "github.com/cosmos/gaia/v11/app/params"
 	"github.com/cosmos/gaia/v19/app/sim"
@@ -70,7 +71,9 @@ func TestAppStateDeterminism(t *testing.T) {
 
 	appHashList := make([]json.RawMessage, numTimesToRunPerSeed)
 	appOptions := make(simtestutil.AppOptionsMap, 0)
-	appOptions[flags.FlagHome] = gaia.DefaultNodeHome
+	dir, err := os.MkdirTemp("", "gaia-simulation")
+	require.NoError(t, err)
+	appOptions[flags.FlagHome] = dir
 	appOptions[server.FlagInvCheckPeriod] = sim.FlagPeriodValue
 
 	for i := 0; i < numSeeds; i++ {

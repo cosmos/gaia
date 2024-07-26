@@ -170,7 +170,6 @@ jobs:
         if: env.GIT_DIFF
       - name: Install New Gaiad
         run: |
-          git checkout -
           curl -LO https://github.com/CosmWasm/wasmvm/releases/download/v2.0.0/libwasmvm.x86_64.so
           curl -LO https://github.com/CosmWasm/wasmvm/releases/download/v2.0.0/libwasmvm.aarch64.so
           uname -m

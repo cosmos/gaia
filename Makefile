@@ -100,7 +100,7 @@ include contrib/devtools/Makefile
 
 check_version:
 ifneq ($(GO_SYSTEM_VERSION), $(REQUIRE_GO_VERSION))
-	@echo "ERROR: Go version 1.21 is required for $(VERSION) of Gaia."
+	@echo "ERROR: Go version 1.22 is required for $(VERSION) of Gaia."
 	exit 1
 endif
 
@@ -150,7 +150,7 @@ distclean: clean
 
 GO_VERSION := $(shell cat go.mod | grep -E 'go [0-9].[0-9]+' | cut -d ' ' -f 2)
 GORELEASER_IMAGE := ghcr.io/goreleaser/goreleaser-cross:v$(GO_VERSION)
-COSMWASM_VERSION := $(shell go list -m github.com/CosmWasm/wasmvm | sed 's/.* //')
+COSMWASM_VERSION := $(shell go list -m github.com/CosmWasm/wasmvm/v2 | sed 's/.* //')
 
 # create tag and run goreleaser without publishing
 # errors are possible while running goreleaser - the process can run for >30 min

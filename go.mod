@@ -1,6 +1,6 @@
 module github.com/cosmos/gaia/v19
 
-go 1.22.3
+go 1.22.4
 
 require (
 	cosmossdk.io/api v0.7.5
@@ -48,7 +48,6 @@ require (
 	cloud.google.com/go/iam v1.1.8 // indirect
 	cloud.google.com/go/storage v1.41.0 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
-	// github.com/gravity-devs/liquidity v1.6.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	google.golang.org/genproto v0.0.0-20240401170217-c3f982113cda // indirect
 	google.golang.org/grpc v1.64.0 // indirect

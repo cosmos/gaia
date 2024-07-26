@@ -8,7 +8,7 @@ ENV PACKAGES="curl make git libc-dev bash file gcc linux-headers eudev-dev"
 RUN apk add --no-cache $PACKAGES
 
 # See https://github.com/CosmWasm/wasmvm/releases
-ARG WASMVM_VERSION=v1.5.0
+ARG WASMVM_VERSION=v2.0.0
 ADD https://github.com/CosmWasm/wasmvm/releases/download/${WASMVM_VERSION}/libwasmvm_muslc.aarch64.a /lib/libwasmvm_muslc.aarch64.a
 ADD https://github.com/CosmWasm/wasmvm/releases/download/${WASMVM_VERSION}/libwasmvm_muslc.x86_64.a /lib/libwasmvm_muslc.x86_64.a
 RUN sha256sum /lib/libwasmvm_muslc.aarch64.a | grep 2687afbdae1bc6c7c8b05ae20dfb8ffc7ddc5b4e056697d0f37853dfe294e913

@@ -166,7 +166,7 @@ jobs:
           curl -LO https://github.com/cosmos/gaia/releases/download/v18.1.0/gaiad-v18.1.0-linux-amd64
           chmod a+x gaiad-v18.1.0-linux-amd64
           mkdir build
-          cp ./gaiad-v18.1.0-linux-amd64 ./build/gaiadold
+          mv ./gaiad-v18.1.0-linux-amd64 ./build/gaiadold
         if: env.GIT_DIFF
       - name: Install New Gaiad
         run: |

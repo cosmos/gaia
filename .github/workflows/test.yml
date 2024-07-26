@@ -171,8 +171,8 @@ jobs:
       - name: Install New Gaiad
         run: |
           git checkout -
-          curl -LO https://github.com/CosmWasm/wasmvm/releases/download/v1.5.0/libwasmvm.x86_64.so
-          curl -LO https://github.com/CosmWasm/wasmvm/releases/download/v1.5.0/libwasmvm.aarch64.so
+          curl -LO https://github.com/CosmWasm/wasmvm/releases/download/v2.0.0/libwasmvm.x86_64.so
+          curl -LO https://github.com/CosmWasm/wasmvm/releases/download/v2.0.0/libwasmvm.aarch64.so
           uname -m
           sudo cp "./libwasmvm.$(uname -m).so" /usr/lib/
           make build

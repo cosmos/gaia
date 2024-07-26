@@ -49,7 +49,7 @@ func TestIBCFeeTestSuite(t *testing.T) {
 
 func (suite *IBCFeeTestSuite) SetupTest() {
 	ante.UseFeeMarketDecorator = false
-	ibctesting.DefaultTestingAppInit = GaiaAppIniter
+	ibctesting.DefaultTestingAppInit = GaiaAppIniterRandomDir
 	suite.coordinator = ibctesting.NewCoordinator(suite.T(), 3)
 	suite.chainA = suite.coordinator.GetChain(ibctesting.GetChainID(1))
 	suite.chainB = suite.coordinator.GetChain(ibctesting.GetChainID(2))

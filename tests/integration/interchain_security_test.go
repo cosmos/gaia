@@ -28,7 +28,7 @@ func init() {
 	// concrete app types returned by the relevant app initers.
 	ccvSuite = integration.NewCCVTestSuite[*gaiaApp.GaiaApp, *appConsumer.App](
 		// Pass in ibctesting.AppIniters for gaia (provider) and consumer.
-		GaiaAppIniter, icstestingutils.ConsumerAppIniter, []string{})
+		GaiaAppIniterRandomDir, icstestingutils.ConsumerAppIniter, []string{})
 
 	ante.UseFeeMarketDecorator = false
 }

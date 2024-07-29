@@ -9,9 +9,6 @@
 - Bump [cometbft](https://github.com/cometbft/cometbft) to
     [v0.38.9](https://github.com/cometbft/cometbft/releases/tag/v0.38.9)
     ([\#3171](https://github.com/cosmos/gaia/pull/3171))
-- Bump [ibc-go](https://github.com/cosmos/ibc-go) to
-    [v8.3.2](https://github.com/cosmos/ibc-go/releases/tag/v8.3.2)
-    ([\#3171](https://github.com/cosmos/gaia/pull/3171))
 - Bump [ICS](https://github.com/cosmos/interchain-security) to
     [v5.1.0](https://github.com/cosmos/interchain-security/releases/tag/v5.1.0)
     ([\#3207](https://github.com/cosmos/gaia/pull/3207))
@@ -24,6 +21,9 @@
 - Bump [ibc-rate-limiting](https://github.com/cosmos/ibc-apps/blob/main/modules/rate-limiting) to
     [v8](https://github.com/cosmos/ibc-apps/releases/tag/modules/rate-limiting/v8.0.0)
     ([\#3227](https://github.com/cosmos/gaia/pull/3227))
+- Bump [ibc-go](https://github.com/cosmos/ibc-go) to
+    [v8.4.0](https://github.com/cosmos/ibc-go/releases/tag/v8.4.0)
+    ([\#3233](https://github.com/cosmos/gaia/pull/3233))
 
 ### IMPROVEMENTS
 
@@ -35,9 +35,6 @@
 - Bump [cometbft](https://github.com/cometbft/cometbft) to
     [v0.38.9](https://github.com/cometbft/cometbft/releases/tag/v0.38.9)
     ([\#3171](https://github.com/cosmos/gaia/pull/3171))
-- Bump [ibc-go](https://github.com/cosmos/ibc-go) to
-    [v8.3.2](https://github.com/cosmos/ibc-go/releases/tag/v8.3.2)
-    ([\#3171](https://github.com/cosmos/gaia/pull/3171))
 - Bump [ICS](https://github.com/cosmos/interchain-security) to
     [v5.1.0](https://github.com/cosmos/interchain-security/releases/tag/v5.1.0)
     ([\#3207](https://github.com/cosmos/gaia/pull/3207))
@@ -50,6 +47,9 @@
 - Bump [ibc-rate-limiting](https://github.com/cosmos/ibc-apps/blob/main/modules/rate-limiting) to
     [v8](https://github.com/cosmos/ibc-apps/releases/tag/modules/rate-limiting/v8.0.0)
     ([\#3227](https://github.com/cosmos/gaia/pull/3227))
+- Bump [ibc-go](https://github.com/cosmos/ibc-go) to
+    [v8.4.0](https://github.com/cosmos/ibc-go/releases/tag/v8.4.0)
+    ([\#3233](https://github.com/cosmos/gaia/pull/3233))
 
 ## Previous Versions
 

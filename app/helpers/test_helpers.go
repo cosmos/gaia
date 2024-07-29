@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"encoding/json"
+	"os"
 	"testing"
 	"time"
 
@@ -125,6 +126,11 @@ func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs 
 
 func setup() (*gaiaapp.GaiaApp, gaiaapp.GenesisState) {
 	db := dbm.NewMemDB()
+	dir, err := os.MkdirTemp("", "gaia-test-app")
+	if err != nil {
+		panic(err)
+	}
+
 	appOptions := make(simtestutil.AppOptionsMap, 0)
 	emptyWasmOpts := []wasmkeeper.Option{}
 	appOptions[server.FlagInvCheckPeriod] = 5
@@ -136,7 +142,7 @@ func setup() (*gaiaapp.GaiaApp, gaiaapp.GenesisState) {
 		nil,
 		true,
 		map[int64]bool{},
-		gaiaapp.DefaultNodeHome,
+		dir,
 		appOptions,
 		emptyWasmOpts,
 	)

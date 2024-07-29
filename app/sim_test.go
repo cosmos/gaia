@@ -70,7 +70,6 @@ func TestAppStateDeterminism(t *testing.T) {
 
 	appHashList := make([]json.RawMessage, numTimesToRunPerSeed)
 	appOptions := make(simtestutil.AppOptionsMap, 0)
-	appOptions[flags.FlagHome] = gaia.DefaultNodeHome
 	appOptions[server.FlagInvCheckPeriod] = sim.FlagPeriodValue
 
 	for i := 0; i < numSeeds; i++ {
@@ -89,13 +88,16 @@ func TestAppStateDeterminism(t *testing.T) {
 			}
 
 			db := dbm.NewMemDB()
+			dir, err := os.MkdirTemp("", "gaia-simulation")
+			require.NoError(t, err)
+			appOptions[flags.FlagHome] = dir
 			app := gaia.NewGaiaApp(
 				logger,
 				db,
 				nil,
 				true,
 				map[int64]bool{},
-				gaia.DefaultNodeHome,
+				dir,
 				appOptions,
 				emptyWasmOption,
 				interBlockCacheOpt(),
@@ -117,7 +119,7 @@ func TestAppStateDeterminism(t *testing.T) {
 
 			blockedAddresses := app.BlockedModuleAccountAddrs(app.ModuleAccountAddrs())
 
-			_, _, err := simulation.SimulateFromSeed(
+			_, _, err = simulation.SimulateFromSeed(
 				t,
 				os.Stdout,
 				app.BaseApp,

@@ -1,0 +1,55 @@
+gaia:
+  name: gaia
+  type: cosmos
+  bin: gaiad
+  bech32-prefix: cosmos
+  denom: uatom
+  gas-prices: 0.005uatom
+  gas-adjustment: 2.0
+  trusting-period: 504h
+  images:
+    - repository: ghcr.io/hyphacoop/gaia
+      uid-gid: 1025:1025
+  no-host-mount: false
+
+stride:
+  name: stride
+  type: cosmos
+  bin: strided
+  bech32-prefix: stride
+  denom: ustrd
+  gas-prices: 0.005ustrd
+  gas-adjustment: 2.0
+  trusting-period: "336h"
+  images:
+    - repository: ghcr.io/strangelove-ventures/heighliner/stride
+      uid-gid: 1025:1025
+  no-host-mount: false
+
+neutron:
+  name: neutron
+  type: cosmos
+  bin: neutrond
+  bech32-prefix: neutron
+  denom: untrn
+  gas-prices: 0.005untrn
+  gas-adjustment: 2.0
+  trusting-period: "336h"
+  images:
+    - repository: ghcr.io/strangelove-ventures/heighliner/neutron
+      uid-gid: 1025:1025
+  no-host-mount: false
+
+ics-consumer:
+  name: ics-consumer
+  type: cosmos
+  bin: interchain-security-cd
+  bech32-prefix: cosmos
+  denom: stake
+  gas-prices: 0.0stake
+  gas-adjustment: 2.0
+  trusting-period: 96h
+  images:
+    - repository: ghcr.io/hyphacoop/ics
+      uid-gid: 1025:1025
+  no-host-mount: false

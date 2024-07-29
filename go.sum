@@ -441,6 +441,8 @@ github.com/cosmos/ics23/go v0.10.0 h1:iXqLLgp2Lp+EdpIuwXTYIQU+AiHj9mOC2X9ab++bZD
 github.com/cosmos/ics23/go v0.10.0/go.mod h1:ZfJSmng/TBNTBkFemHHHj5YY7VAU/MBU980F4VU1NG0=
 github.com/cosmos/interchain-security/v5 v5.1.0 h1:87y+7q0udGoLto3U3y5q6YTQ5ezDD/PlgJbNW7ba/Sc=
 github.com/cosmos/interchain-security/v5 v5.1.0/go.mod h1:vmeTcTxFCl1eV0o6xpl/IRT7Basz0szVVGzbppnInMg=
+github.com/cosmos/interchain-security/v5 v5.1.1 h1:xmRRMeE4xoc+JAZUh0XzXFYWaGBtzFFj5SETuOgnEnY=
+github.com/cosmos/interchain-security/v5 v5.1.1/go.mod h1:vmeTcTxFCl1eV0o6xpl/IRT7Basz0szVVGzbppnInMg=
 github.com/cosmos/keyring v1.2.0 h1:8C1lBP9xhImmIabyXW4c3vFjjLiBdGCmfLUfeZlV1Yo=
 github.com/cosmos/keyring v1.2.0/go.mod h1:fc+wB5KTk9wQ9sDx0kFXB3A0MaeGHM9AwRStKOQ5vOA=
 github.com/cosmos/ledger-cosmos-go v0.13.3 h1:7ehuBGuyIytsXbd4MP43mLeoN2LTOEnk5nvue4rK+yM=

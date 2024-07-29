@@ -523,3 +523,47 @@ func (p *Chain) CheckCCV(ctx context.Context, consumer *Chain, relayer *Relayer,
 func relayerICSPathFor(chainA, chainB *Chain) string {
 	return fmt.Sprintf("ics-%s-%s", chainA.Config().ChainID, chainB.Config().ChainID)
 }
+
+func (p *Chain) IsValoperJailed(ctx context.Context, valoper string) (bool, error) {
+	out, _, err := p.Validators[0].ExecQuery(ctx, "staking", "validator", valoper)
+	if err != nil {
+		return false, err
+	}
+	if gjson.GetBytes(out, "jailed").Exists() {
+		return gjson.GetBytes(out, "jailed").Bool(), nil
+	}
+	return gjson.GetBytes(out, "validator.jailed").Bool(), nil
+}
+
+func (p *Chain) IsValidatorJailedForConsumerDowntime(ctx context.Context, relayer Relayer, consumer *Chain, validatorIdx int) (jailed bool, err error) {
+	if err = consumer.Validators[validatorIdx].StopContainer(ctx); err != nil {
+		return
+	}
+	defer func() {
+		err = consumer.Validators[validatorIdx].StartContainer(ctx)
+	}()
+	channel, err := relayer.GetChannelWithPort(ctx, consumer, p, "consumer")
+	if err != nil {
+		return
+	}
+	if err = testutil.WaitForBlocks(ctx, SlashingWindowConsumer+1, consumer); err != nil {
+		return
+	}
+	rs := relayer.Exec(ctx, GetRelayerExecReporter(ctx), []string{
+		"hermes", "clear", "packets", "--port", "consumer", "--channel", channel.ChannelID,
+		"--chain", consumer.Config().ChainID,
+	}, nil)
+	if rs.Err != nil {
+		return false, rs.Err
+	}
+	tCtx, tCancel := context.WithTimeout(ctx, 30*CommitTimeout)
+	defer tCancel()
+	for tCtx.Err() == nil {
+		jailed, err = p.IsValoperJailed(ctx, p.ValidatorWallets[validatorIdx].ValoperAddress)
+		if err != nil || jailed {
+			return
+		}
+		time.Sleep(CommitTimeout)
+	}
+	return false, nil
+}

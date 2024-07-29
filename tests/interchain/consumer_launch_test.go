@@ -33,7 +33,7 @@ func (s *ConsumerLaunchSuite) TestChainLaunch() {
 		Version:               s.OtherChainVersion,
 		ShouldCopyProviderKey: s.ShouldCopyProviderKey,
 		Denom:                 chainsuite.Ucon,
-		TopN:                  95,
+		TopN:                  94,
 	}
 	consumer, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, cfg)
 	s.Require().NoError(err)
@@ -44,10 +44,27 @@ func (s *ConsumerLaunchSuite) TestChainLaunch() {
 
 	err = s.Chain.CheckCCV(s.GetContext(), consumer, s.Relayer, 1_000_000, 0, 1)
 	s.Require().NoError(err)
+	s.Require().NoError(chainsuite.SendSimpleIBCTx(s.GetContext(), s.Chain, consumer, s.Relayer))
+
+	jailed, err := s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), *s.Relayer, consumer, 1)
+	s.Require().NoError(err)
+	s.Require().True(jailed, "validator 1 should be jailed for downtime")
+	jailed, err = s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), *s.Relayer, consumer, 5)
+	s.Require().NoError(err)
+	s.Require().False(jailed, "validator 5 should not be jailed for downtime")
+
 	consumer2, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, cfg)
 	s.Require().NoError(err)
 	err = s.Chain.CheckCCV(s.GetContext(), consumer2, s.Relayer, 1_000_000, 0, 1)
 	s.Require().NoError(err)
+	s.Require().NoError(chainsuite.SendSimpleIBCTx(s.GetContext(), s.Chain, consumer2, s.Relayer))
+
+	jailed, err = s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), *s.Relayer, consumer2, 1)
+	s.Require().NoError(err)
+	s.Require().True(jailed, "validator 1 should be jailed for downtime")
+	jailed, err = s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), *s.Relayer, consumer2, 5)
+	s.Require().NoError(err)
+	s.Require().False(jailed, "validator 5 should not be jailed for downtime")
 }
 
 func TestICS40ChainLaunch(t *testing.T) {
@@ -122,6 +139,8 @@ func (s *MainnetConsumerChainsSuite) TestMainnetConsumerChainsAfterUpgrade() {
 
 	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), neutron, s.Relayer, 1_000_000, 0, 1))
 	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), stride, s.Relayer, 1_000_000, 0, 1))
+	s.Require().NoError(chainsuite.SendSimpleIBCTx(s.GetContext(), s.Chain, neutron, s.Relayer))
+	s.Require().NoError(chainsuite.SendSimpleIBCTx(s.GetContext(), s.Chain, stride, s.Relayer))
 }
 
 func TestMainnetConsumerChainsAfterUpgrade(t *testing.T) {

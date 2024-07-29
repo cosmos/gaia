@@ -6,7 +6,7 @@ import (
 	"path"
 	"testing"
 
-	"github.com/cosmos/gaia/v19/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v20/tests/interchain/chainsuite"
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/stretchr/testify/suite"
 )

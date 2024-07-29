@@ -46,7 +46,11 @@ jobs:
           flavor: "latest=false"
 
       - name: Build and push docker image
+<<<<<<< HEAD
         uses: docker/build-push-action@v6.3.0
+=======
+        uses: docker/build-push-action@v6.5.0
+>>>>>>> 01920a1 (chore(deps): Bump docker/build-push-action from 6.4.1 to 6.5.0 (#3232))
         with:
           context: .
           file: Dockerfile

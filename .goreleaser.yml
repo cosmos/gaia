@@ -1,4 +1,5 @@
 ---
+version: 2
 project_name: gaia
 
 env:
@@ -185,7 +186,7 @@ snapshot:
   name_template: SNAPSHOT-{{ .Commit }}
 
 changelog:
-  skip: false
+  disable: false
 
 git:
   # What should be used to sort tags when gathering the current and previous

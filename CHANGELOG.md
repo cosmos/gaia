@@ -21,6 +21,9 @@
 - Bump [ibc-rate-limiting](https://github.com/cosmos/ibc-apps/blob/main/modules/rate-limiting) to
     [v8](https://github.com/cosmos/ibc-apps/releases/tag/modules/rate-limiting/v8.0.0)
     ([\#3227](https://github.com/cosmos/gaia/pull/3227))
+- Bump [wasmd](https://github.com/CosmWasm/wasmd) to
+    [v0.51.0](https://github.com/CosmWasm/wasmd/releases/tag/v0.51.0)
+    ([\#3230](https://github.com/cosmos/gaia/pull/3230))
 - Bump [ibc-go](https://github.com/cosmos/ibc-go) to
     [v8.4.0](https://github.com/cosmos/ibc-go/releases/tag/v8.4.0)
     ([\#3233](https://github.com/cosmos/gaia/pull/3233))
@@ -47,6 +50,9 @@
 - Bump [ibc-rate-limiting](https://github.com/cosmos/ibc-apps/blob/main/modules/rate-limiting) to
     [v8](https://github.com/cosmos/ibc-apps/releases/tag/modules/rate-limiting/v8.0.0)
     ([\#3227](https://github.com/cosmos/gaia/pull/3227))
+- Bump [wasmd](https://github.com/CosmWasm/wasmd) to
+    [v0.51.0](https://github.com/CosmWasm/wasmd/releases/tag/v0.51.0)
+    ([\#3230](https://github.com/cosmos/gaia/pull/3230))
 - Bump [ibc-go](https://github.com/cosmos/ibc-go) to
     [v8.4.0](https://github.com/cosmos/ibc-go/releases/tag/v8.4.0)
     ([\#3233](https://github.com/cosmos/gaia/pull/3233))

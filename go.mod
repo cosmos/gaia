@@ -27,7 +27,7 @@ require (
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 v8.0.2
 	github.com/cosmos/ibc-apps/modules/rate-limiting/v8 v8.0.0
 	github.com/cosmos/ibc-go/modules/capability v1.0.0
-	github.com/cosmos/ibc-go/v8 v8.3.2
+	github.com/cosmos/ibc-go/v8 v8.4.0
 	github.com/cosmos/interchain-security/v5 v5.1.0
 	github.com/google/gofuzz v1.2.0
 	github.com/gorilla/mux v1.8.1

@@ -28,9 +28,9 @@ import (
 
 var app *gaiaApp.GaiaApp
 
-// Some tests require a random directory to be created when runnin IBC testing suite with gaia.
+// Some tests require a random directory to be created when running IBC testing suite with gaia.
 // This is due to how CosmWasmVM initializes the VM - all IBC testing apps must have different dirs so they don't conflict.
-func GaiaAppIniterRandomDir() (ibctesting.TestingApp, map[string]json.RawMessage) {
+func GaiaAppIniterTempDir() (ibctesting.TestingApp, map[string]json.RawMessage) {
 	tmpDir, err := os.MkdirTemp("", "")
 	if err != nil {
 		panic(err)

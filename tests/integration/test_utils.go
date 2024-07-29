@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/rand"
+	"os"
 	"testing"
 	"time"
 
@@ -26,6 +27,28 @@ import (
 )
 
 var app *gaiaApp.GaiaApp
+
+// Some tests require a random directory to be created when running IBC testing suite with gaia.
+// This is due to how CosmWasmVM initializes the VM - all IBC testing apps must have different dirs so they don't conflict.
+func GaiaAppIniterTempDir() (ibctesting.TestingApp, map[string]json.RawMessage) {
+	tmpDir, err := os.MkdirTemp("", "")
+	if err != nil {
+		panic(err)
+	}
+	app = gaiaApp.NewGaiaApp(
+		log.NewNopLogger(),
+		dbm.NewMemDB(),
+		nil,
+		true,
+		map[int64]bool{},
+		tmpDir,
+		gaiaApp.EmptyAppOptions{},
+		gaiaApp.EmptyWasmOptions)
+
+	testApp := ibctesting.TestingApp(app)
+
+	return testApp, app.ModuleBasics.DefaultGenesis(app.AppCodec())
+}
 
 // GaiaAppIniter implements ibctesting.AppIniter for the gaia app
 func GaiaAppIniter() (ibctesting.TestingApp, map[string]json.RawMessage) {

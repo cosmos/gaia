@@ -2,16 +2,13 @@
 
 ## v19.0.0
 
-*July 23nd, 2024*
+*July 29th, 2024*
 
 ### DEPENDENCIES
 
 - Bump [cometbft](https://github.com/cometbft/cometbft) to
     [v0.38.9](https://github.com/cometbft/cometbft/releases/tag/v0.38.9)
     ([\#3171](https://github.com/cosmos/gaia/pull/3171))
-- Bump [ICS](https://github.com/cosmos/interchain-security) to
-    [v5.1.0](https://github.com/cosmos/interchain-security/releases/tag/v5.1.0)
-    ([\#3207](https://github.com/cosmos/gaia/pull/3207))
 - Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to
     [v0.50.8-lsm](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.50.8-lsm)
     ([\#3207](https://github.com/cosmos/gaia/pull/3207))
@@ -27,6 +24,9 @@
 - Bump [ibc-go](https://github.com/cosmos/ibc-go) to
     [v8.4.0](https://github.com/cosmos/ibc-go/releases/tag/v8.4.0)
     ([\#3233](https://github.com/cosmos/gaia/pull/3233))
+- Bump [ICS](https://github.com/cosmos/interchain-security) to
+    [v5.1.1](https://github.com/cosmos/interchain-security/releases/tag/v5.1.1)
+    ([\#3237](https://github.com/cosmos/gaia/pull/3237))
 
 ### IMPROVEMENTS
 
@@ -38,9 +38,6 @@
 - Bump [cometbft](https://github.com/cometbft/cometbft) to
     [v0.38.9](https://github.com/cometbft/cometbft/releases/tag/v0.38.9)
     ([\#3171](https://github.com/cosmos/gaia/pull/3171))
-- Bump [ICS](https://github.com/cosmos/interchain-security) to
-    [v5.1.0](https://github.com/cosmos/interchain-security/releases/tag/v5.1.0)
-    ([\#3207](https://github.com/cosmos/gaia/pull/3207))
 - Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to
     [v0.50.8-lsm](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.50.8-lsm)
     ([\#3207](https://github.com/cosmos/gaia/pull/3207))
@@ -56,6 +53,9 @@
 - Bump [ibc-go](https://github.com/cosmos/ibc-go) to
     [v8.4.0](https://github.com/cosmos/ibc-go/releases/tag/v8.4.0)
     ([\#3233](https://github.com/cosmos/gaia/pull/3233))
+- Bump [ICS](https://github.com/cosmos/interchain-security) to
+    [v5.1.1](https://github.com/cosmos/interchain-security/releases/tag/v5.1.1)
+    ([\#3237](https://github.com/cosmos/gaia/pull/3237))
 
 ## Previous Versions
 

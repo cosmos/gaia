@@ -24,7 +24,7 @@ RUN echo "Ensuring binary is statically linked ..."  \
     && file /src/app/build/gaiad | grep "statically linked"
 
 FROM alpine:$IMG_TAG
-RUN apk add --no-cache build-base
+RUN apk add --no-cache build-base jq
 RUN addgroup -g 1025 nonroot
 RUN adduser -D nonroot -u 1025 -G nonroot
 ARG IMG_TAG

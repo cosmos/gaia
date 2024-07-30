@@ -9,4 +9,4 @@
 
 # CODEOWNERS for interchain tests
 
-/tests/interchain @dasanchez @LexaMichaelides @fastfadingviolets
+/tests/interchain @dasanchez @LexaMichaelides @fastfadingviolets @cosmos/informal_gaia_maintain

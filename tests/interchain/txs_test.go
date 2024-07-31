@@ -16,6 +16,8 @@ import (
 	sdkmath "cosmossdk.io/math"
 
 	"github.com/cosmos/gaia/v19/tests/interchain/chainsuite"
+
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 const txAmount = 1_000_000_000
@@ -314,6 +316,29 @@ func (s TxSuite) TestFeegrant() {
 			s.Require().Error(err)
 		})
 	}
+}
+
+func (s *TxSuite) TestUnbondValidator() {
+	_, err := s.Chain.Validators[5].ExecTx(
+		s.GetContext(),
+		s.Chain.ValidatorWallets[5].Moniker,
+		"staking", "unbond-validator",
+	)
+	s.Require().NoError(err)
+	validator, err := s.Chain.StakingQueryValidator(s.GetContext(), s.Chain.ValidatorWallets[5].ValoperAddress)
+	s.Require().NoError(err)
+	s.Require().Equal(stakingtypes.Unbonding, validator.Status)
+
+	_, err = s.Chain.Validators[5].ExecTx(
+		s.GetContext(),
+		s.Chain.ValidatorWallets[5].Moniker,
+		"slashing", "unjail",
+	)
+	s.Require().NoError(err)
+
+	validator, err = s.Chain.StakingQueryValidator(s.GetContext(), s.Chain.ValidatorWallets[5].ValoperAddress)
+	s.Require().NoError(err)
+	s.Require().Equal(stakingtypes.Bonded, validator.Status)
 }
 
 func (s *TxSuite) TestMultisig() {

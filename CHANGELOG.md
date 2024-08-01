@@ -2,16 +2,13 @@
 
 ## v19.0.0
 
-*July 29th, 2024*
+*August 1st, 2024*
 
 ### DEPENDENCIES
 
 - Bump [cometbft](https://github.com/cometbft/cometbft) to
     [v0.38.9](https://github.com/cometbft/cometbft/releases/tag/v0.38.9)
     ([\#3171](https://github.com/cosmos/gaia/pull/3171))
-- Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to
-    [v0.50.8-lsm](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.50.8-lsm)
-    ([\#3207](https://github.com/cosmos/gaia/pull/3207))
 - Bump [feemarket](https://github.com/skip-mev/feemarket) to
     [v1.0.4](https://github.com/skip-mev/feemarket/releases/tag/v1.0.4)
     ([\#3221](https://github.com/cosmos/gaia/pull/3221))
@@ -27,6 +24,9 @@
 - Bump [ICS](https://github.com/cosmos/interchain-security) to
     [v5.1.1](https://github.com/cosmos/interchain-security/releases/tag/v5.1.1)
     ([\#3237](https://github.com/cosmos/gaia/pull/3237))
+- Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to
+    [v0.50.9-lsm](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.50.9-lsm)
+    ([\#3249](https://github.com/cosmos/gaia/pull/3249))
 
 ### IMPROVEMENTS
 
@@ -38,9 +38,6 @@
 - Bump [cometbft](https://github.com/cometbft/cometbft) to
     [v0.38.9](https://github.com/cometbft/cometbft/releases/tag/v0.38.9)
     ([\#3171](https://github.com/cosmos/gaia/pull/3171))
-- Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to
-    [v0.50.8-lsm](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.50.8-lsm)
-    ([\#3207](https://github.com/cosmos/gaia/pull/3207))
 - Bump [feemarket](https://github.com/skip-mev/feemarket) to
     [v1.0.4](https://github.com/skip-mev/feemarket/releases/tag/v1.0.4)
     ([\#3221](https://github.com/cosmos/gaia/pull/3221))
@@ -56,6 +53,9 @@
 - Bump [ICS](https://github.com/cosmos/interchain-security) to
     [v5.1.1](https://github.com/cosmos/interchain-security/releases/tag/v5.1.1)
     ([\#3237](https://github.com/cosmos/gaia/pull/3237))
+- Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to
+    [v0.50.9-lsm](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.50.9-lsm)
+    ([\#3249](https://github.com/cosmos/gaia/pull/3249))
 
 ## Previous Versions
 

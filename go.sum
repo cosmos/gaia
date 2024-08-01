@@ -418,8 +418,8 @@ github.com/cosmos/cosmos-db v1.0.2 h1:hwMjozuY1OlJs/uh6vddqnk9j7VamLv+0DBlbEXbAK
 github.com/cosmos/cosmos-db v1.0.2/go.mod h1:Z8IXcFJ9PqKK6BIsVOB3QXtkKoqUOp1vRvPT39kOXEA=
 github.com/cosmos/cosmos-proto v1.0.0-beta.5 h1:eNcayDLpip+zVLRLYafhzLvQlSmyab+RC5W7ZfmxJLA=
 github.com/cosmos/cosmos-proto v1.0.0-beta.5/go.mod h1:hQGLpiIUloJBMdQMMWb/4wRApmI9hjHH05nefC0Ojec=
-github.com/cosmos/cosmos-sdk v0.50.8-lsm h1:Io2y/9wbW9mjXh5FgDXQtGwIF8dtb0GzpczjKsM1U58=
-github.com/cosmos/cosmos-sdk v0.50.8-lsm/go.mod h1:efdTFdUndXfLpSMkE1Kv/ra8pux9l1glcojMIhNreiA=
+github.com/cosmos/cosmos-sdk v0.50.9-0.20240801090102-853dbbf3e849 h1:4ZwWkoF7GrJe+EpiRq8YvXt51/VsK8Z+nOmvx5RIUmE=
+github.com/cosmos/cosmos-sdk v0.50.9-0.20240801090102-853dbbf3e849/go.mod h1:efdTFdUndXfLpSMkE1Kv/ra8pux9l1glcojMIhNreiA=
 github.com/cosmos/go-bip39 v1.0.0 h1:pcomnQdrdH22njcAatO0yWojsUnCO3y2tNoV1cb6hHY=
 github.com/cosmos/go-bip39 v1.0.0/go.mod h1:RNJv0H/pOIVgxw6KS7QeX2a0Uo0aKUlfhZ4xuwvCdJw=
 github.com/cosmos/gogogateway v1.2.0 h1:Ae/OivNhp8DqBi/sh2A8a1D0y638GpL3tkmLQAiKxTE=
@@ -439,8 +439,6 @@ github.com/cosmos/ibc-go/v8 v8.4.0 h1:K2PfX0AZ+1XKZytHGEMuSjQXG/MZshPb83RSTQt2+c
 github.com/cosmos/ibc-go/v8 v8.4.0/go.mod h1:zh6x1osR0hNvEcFrC/lhGD08sMfQmr9wHVvZ/mRWMCs=
 github.com/cosmos/ics23/go v0.10.0 h1:iXqLLgp2Lp+EdpIuwXTYIQU+AiHj9mOC2X9ab++bZDM=
 github.com/cosmos/ics23/go v0.10.0/go.mod h1:ZfJSmng/TBNTBkFemHHHj5YY7VAU/MBU980F4VU1NG0=
-github.com/cosmos/interchain-security/v5 v5.1.0 h1:87y+7q0udGoLto3U3y5q6YTQ5ezDD/PlgJbNW7ba/Sc=
-github.com/cosmos/interchain-security/v5 v5.1.0/go.mod h1:vmeTcTxFCl1eV0o6xpl/IRT7Basz0szVVGzbppnInMg=
 github.com/cosmos/interchain-security/v5 v5.1.1 h1:xmRRMeE4xoc+JAZUh0XzXFYWaGBtzFFj5SETuOgnEnY=
 github.com/cosmos/interchain-security/v5 v5.1.1/go.mod h1:vmeTcTxFCl1eV0o6xpl/IRT7Basz0szVVGzbppnInMg=
 github.com/cosmos/keyring v1.2.0 h1:8C1lBP9xhImmIabyXW4c3vFjjLiBdGCmfLUfeZlV1Yo=

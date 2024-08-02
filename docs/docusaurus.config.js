@@ -130,7 +130,7 @@ const config = {
               },
               {
                 href: "https://forum.cosmos.network/",
-                html: '<i class="fa-fw fa-regular fa-comments"></i> Cosmos Forum',
+                html: '<i class="fa-fw fa-regular fa-comments"></i> Forum',
               },
               {
                 href: "https://reddit.com/r/cosmosnetwork",
@@ -178,11 +178,7 @@ const config = {
                 href: "https://docs.cometbft.com/",
               },
               {
-                label: "IBC Specs",
-                href: "https://github.com/cosmos/ibc",
-              },
-              {
-                label: "IBC Go",
+                label: "IBC-Go",
                 href: "https://ibc.cosmos.network/",
               },
               {

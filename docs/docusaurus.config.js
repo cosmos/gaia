@@ -121,20 +121,24 @@ const config = {
                 html: '<i class="fa-fw fa-brands fa-github"></i> Github',
               },
               {
+                href: "https://twitter.com/cosmoshub",
+                html: '<i class="fa-fw fa-brands fa-twitter"></i> Twitter',
+              },
+              {
+                href: "https://discord.gg/interchain",
+                html: '<i class="fa-fw fa-brands fa-discord"></i> Discord',
+              },
+              {
+                href: "https://forum.cosmos.network/",
+                html: '<i class="fa-fw fa-regular fa-comments"></i> Cosmos Forum',
+              },
+              {
                 href: "https://reddit.com/r/cosmosnetwork",
                 html: '<i class="fa-fw fa-brands fa-reddit"></i> Reddit',
               },
               {
                 href: "https://www.youtube.com/c/CosmosProject",
                 html: '<i class="fa-fw fa-brands fa-youtube"></i> YouTube',
-              },
-              {
-                href: "https://discord.gg/cosmosnetwork",
-                html: '<i class="fa-fw fa-brands fa-discord"></i> Discord',
-              },
-              {
-                href: "https://forum.cosmos.network/",
-                html: '<i class="fa-fw fa-regular fa-comments"></i> Cosmos Forums',
               },
             ],
           },
@@ -181,36 +185,36 @@ const config = {
                 label: "IBC Go",
                 href: "https://ibc.cosmos.network/",
               },
+              {
+                label: "Interchain Security",
+                href: "https://cosmos.github.io/interchain-security/",
+              },
             ],
           },
           {
             title: "Community",
             items: [
               {
-                label: "Blog",
-                href: "https://blog.cosmos.network/",
-              },
-              {
                 label: "Forum",
                 href: "https://forum.cosmos.network/",
               },
               {
                 label: "Discord",
-                href: "https://discord.gg/cosmosnetwork",
+                href: "https://discord.gg/interchain",
               },
               {
                 label: "Reddit",
                 href: "https://reddit.com/r/cosmosnetwork",
+              },
+              {
+                label: "Blog",
+                href: "https://blog.cosmos.network/",
               },
             ],
           },
           {
             title: "Social",
             items: [
-              {
-                label: "Discord",
-                href: "https://discord.gg/cosmosnetwork",
-              },
               {
                 label: "Twitter",
                 href: "https://twitter.com/cosmoshub",

@@ -42,8 +42,6 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 	appOptions := make(simtestutil.AppOptionsMap, 0)
 	appOptions[server.FlagInvCheckPeriod] = simcli.FlagPeriodValue
 
-	encConfig := gaia.RegisterEncodingConfig()
-
 	app := gaia.NewGaiaApp(
 		logger,
 		db,
@@ -51,19 +49,20 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 		true,
 		map[int64]bool{},
 		gaia.DefaultNodeHome,
-		encConfig,
 		appOptions,
 		emptyWasmOption,
 		interBlockCacheOpt(),
 		baseapp.SetChainID(AppChainID),
 	)
 
+	defaultGenesisState := app.ModuleBasics.DefaultGenesis(app.AppCodec())
+
 	// Run randomized simulation:w
 	_, simParams, simErr := simulation.SimulateFromSeed(
 		b,
 		os.Stdout,
 		app.BaseApp,
-		sim.AppStateFn(encConfig, app.SimulationManager()),
+		sim.AppStateFn(app.AppCodec(), app.SimulationManager(), defaultGenesisState),
 		simulation2.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
 		sim.SimulationOperations(app, app.AppCodec(), config),
 		app.ModuleAccountAddrs(),

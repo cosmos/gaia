@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	tmjson "github.com/cometbft/cometbft/libs/json"
+	cmtjson "github.com/cometbft/cometbft/libs/json"
 	tmtypes "github.com/cometbft/cometbft/types"
 
 	"cosmossdk.io/math"
@@ -23,7 +23,6 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	gaia "github.com/cosmos/gaia/v19/app"
-	"github.com/cosmos/gaia/v19/app/params"
 )
 
 // Simulation parameter constants
@@ -35,11 +34,9 @@ const (
 // AppStateFn returns the initial application state using a genesis or the simulation parameters.
 // It panics if the user provides files for both of them.
 // If a file is not given for the genesis or the sim params, it creates a randomized one.
-func AppStateFn(encConfig params.EncodingConfig, simManager *module.SimulationManager) simtypes.AppStateFn {
+func AppStateFn(cdc codec.Codec, simManager *module.SimulationManager, genesisState map[string]json.RawMessage) simtypes.AppStateFn {
 	return func(r *rand.Rand, accs []simtypes.Account, config simtypes.Config,
 	) (appState json.RawMessage, simAccs []simtypes.Account, chainID string, genesisTimestamp time.Time) {
-		cdc := encConfig.Marshaler
-
 		if FlagGenesisTimeValue == 0 {
 			genesisTimestamp = simtypes.RandTimestamp(r)
 		} else {
@@ -78,11 +75,11 @@ func AppStateFn(encConfig params.EncodingConfig, simManager *module.SimulationMa
 			if err != nil {
 				panic(err)
 			}
-			appState, simAccs = AppStateRandomizedFn(simManager, r, encConfig, accs, genesisTimestamp, appParams)
+			appState, simAccs = AppStateRandomizedFn(simManager, r, cdc, accs, genesisTimestamp, appParams, genesisState)
 
 		default:
 			appParams := make(simtypes.AppParams)
-			appState, simAccs = AppStateRandomizedFn(simManager, r, encConfig, accs, genesisTimestamp, appParams)
+			appState, simAccs = AppStateRandomizedFn(simManager, r, cdc, accs, genesisTimestamp, appParams, genesisState)
 		}
 
 		rawState := make(map[string]json.RawMessage)
@@ -102,7 +99,7 @@ func AppStateFn(encConfig params.EncodingConfig, simManager *module.SimulationMa
 			panic(err)
 		}
 		// compute not bonded balance
-		notBondedTokens := sdk.ZeroInt()
+		notBondedTokens := math.ZeroInt()
 		for _, val := range stakingState.Validators {
 			if val.Status != stakingtypes.Unbonded {
 				continue
@@ -153,13 +150,11 @@ func AppStateFn(encConfig params.EncodingConfig, simManager *module.SimulationMa
 // AppStateRandomizedFn creates calls each module's GenesisState generator function
 // and creates the simulation params
 func AppStateRandomizedFn(
-	simManager *module.SimulationManager, r *rand.Rand, encConfig params.EncodingConfig,
+	simManager *module.SimulationManager, r *rand.Rand, cdc codec.Codec,
 	accs []simtypes.Account, genesisTimestamp time.Time, appParams simtypes.AppParams,
+	genesisState map[string]json.RawMessage,
 ) (json.RawMessage, []simtypes.Account) {
 	numAccs := int64(len(accs))
-	cdc := encConfig.Marshaler
-	genesisState := gaia.NewDefaultGenesisState(encConfig)
-
 	// generate a random amount of initial stake coins and a random initial
 	// number of bonded accounts
 	var (
@@ -168,11 +163,11 @@ func AppStateRandomizedFn(
 	)
 
 	appParams.GetOrGenerate(
-		cdc, StakePerAccount, &initialStake, r,
+		StakePerAccount, &initialStake, r,
 		func(r *rand.Rand) { initialStake = math.NewInt(r.Int63n(1e12)) },
 	)
 	appParams.GetOrGenerate(
-		cdc, InitiallyBondedValidators, &numInitiallyBonded, r,
+		InitiallyBondedValidators, &numInitiallyBonded, r,
 		func(r *rand.Rand) { numInitiallyBonded = int64(r.Intn(300)) },
 	)
 
@@ -219,8 +214,8 @@ func AppStateFromGenesisFileFn(r io.Reader, cdc codec.JSONCodec, genesisFile str
 	}
 
 	var genesis tmtypes.GenesisDoc
-	// NOTE: Tendermint uses a custom JSON decoder for GenesisDoc
-	err = tmjson.Unmarshal(bytes, &genesis)
+	// NOTE: Comet uses a custom JSON decoder for GenesisDoc
+	err = cmtjson.Unmarshal(bytes, &genesis)
 	if err != nil {
 		panic(err)
 	}
@@ -248,7 +243,7 @@ func AppStateFromGenesisFileFn(r io.Reader, cdc codec.JSONCodec, genesisFile str
 
 		privKey := secp256k1.GenPrivKeyFromSecret(privkeySeed)
 
-		a, ok := acc.GetCachedValue().(authtypes.AccountI)
+		a, ok := acc.GetCachedValue().(sdk.AccountI)
 		if !ok {
 			return genesis, nil, fmt.Errorf("expected account")
 		}

@@ -12,7 +12,9 @@ import (
 	"strings"
 	"time"
 
-	dbm "github.com/cometbft/cometbft-db"
+	"cosmossdk.io/math"
+	cometdbm "github.com/cometbft/cometbft-db"
+	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/server"
@@ -21,9 +23,9 @@ import (
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
+	"cosmossdk.io/log"
 	"github.com/cometbft/cometbft/crypto"
 	tmd25519 "github.com/cometbft/cometbft/crypto/ed25519"
-	"github.com/cometbft/cometbft/libs/log"
 	cmtstate "github.com/cometbft/cometbft/proto/tendermint/state"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sm "github.com/cometbft/cometbft/state"
@@ -61,7 +63,6 @@ func init() {
 }
 
 func testnetUnsafeStartLocalValidatorCmd(ac appCreator) *cobra.Command {
-
 	cmd := server.StartCmd(ac.newTestingApp, gaia.DefaultNodeHome)
 	cmd.Use = "unsafe-start-local-validator"
 	cmd.Short = "Updates chain's application and consensus state with provided validator info and starts the node"
@@ -165,7 +166,7 @@ func (a appCreator) newTestingApp(
 		panic(err)
 	}
 
-	//Update consensus state
+	// Update consensus state
 	err = updateConsensusState(logger, appOpts, gaiaApp.CommitMultiStore().LatestVersion(), args)
 	if err != nil {
 		panic(err)
@@ -190,33 +191,46 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 		ConsensusPubkey: pubkeyAny,
 		Jailed:          false,
 		Status:          stakingtypes.Bonded,
-		Tokens:          sdk.NewInt(valVotingPower),
-		DelegatorShares: sdk.MustNewDecFromStr("10000000"),
+		Tokens:          math.NewInt(valVotingPower),
+		DelegatorShares: math.LegacyMustNewDecFromStr("10000000"),
 		Description: stakingtypes.Description{
 			Moniker: "Testnet Validator",
 		},
 		Commission: stakingtypes.Commission{
 			CommissionRates: stakingtypes.CommissionRates{
-				Rate:          sdk.MustNewDecFromStr("0.05"),
-				MaxRate:       sdk.MustNewDecFromStr("0.1"),
-				MaxChangeRate: sdk.MustNewDecFromStr("0.05"),
+				Rate:          math.LegacyMustNewDecFromStr("0.05"),
+				MaxRate:       math.LegacyMustNewDecFromStr("0.1"),
+				MaxChangeRate: math.LegacyMustNewDecFromStr("0.05"),
 			},
 		},
-		MinSelfDelegation: sdk.OneInt(),
+		MinSelfDelegation: math.OneInt(),
+	}
+
+	newValAddr, err := app.StakingKeeper.ValidatorAddressCodec().StringToBytes(newVal.GetOperator())
+	if err != nil {
+		return err
 	}
 
 	store := appCtx.KVStore(app.GetKey(stakingtypes.ModuleName))
-	for _, v := range app.StakingKeeper.GetAllValidators(appCtx) {
+	validators, err := app.StakingKeeper.GetAllValidators(appCtx)
+	if err != nil {
+		return err
+	}
+	for _, v := range validators {
 		valConsAddr, err := v.GetConsAddr()
 		if err != nil {
 			return err
 		}
 
 		// delete the old validator record
-		store.Delete(stakingtypes.GetValidatorKey(v.GetOperator()))
+		valAddr, err := app.StakingKeeper.ValidatorAddressCodec().StringToBytes(v.GetOperator())
+		if err != nil {
+			return err
+		}
+		store.Delete(stakingtypes.GetValidatorKey(valAddr))
 		store.Delete(stakingtypes.GetValidatorByConsAddrKey(valConsAddr))
-		store.Delete(stakingtypes.GetValidatorsByPowerIndexKey(v, app.StakingKeeper.PowerReduction(appCtx)))
-		store.Delete(stakingtypes.GetLastValidatorPowerKey(v.GetOperator()))
+		store.Delete(stakingtypes.GetValidatorsByPowerIndexKey(v, app.StakingKeeper.PowerReduction(appCtx), app.StakingKeeper.ValidatorAddressCodec()))
+		store.Delete(stakingtypes.GetLastValidatorPowerKey(valAddr))
 		if v.IsUnbonding() {
 			app.StakingKeeper.DeleteValidatorQueueTimeSlice(appCtx, v.UnbondingTime, v.UnbondingHeight)
 		}
@@ -229,17 +243,17 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 		return err
 	}
 	app.StakingKeeper.SetValidatorByPowerIndex(appCtx, newVal)
-	app.StakingKeeper.SetLastValidatorPower(appCtx, newVal.GetOperator(), valVotingPower)
-	if err := app.StakingKeeper.Hooks().AfterValidatorCreated(appCtx, newVal.GetOperator()); err != nil {
+	app.StakingKeeper.SetLastValidatorPower(appCtx, newValAddr, valVotingPower)
+	if err := app.StakingKeeper.Hooks().AfterValidatorCreated(appCtx, newValAddr); err != nil {
 		return err
 	}
 
 	// DISTRIBUTION
 	// Initialize records for this validator across all distribution stores
-	app.DistrKeeper.SetValidatorHistoricalRewards(appCtx, newVal.GetOperator(), 0, distrtypes.NewValidatorHistoricalRewards(sdk.DecCoins{}, 1))
-	app.DistrKeeper.SetValidatorCurrentRewards(appCtx, newVal.GetOperator(), distrtypes.NewValidatorCurrentRewards(sdk.DecCoins{}, 1))
-	app.DistrKeeper.SetValidatorAccumulatedCommission(appCtx, newVal.GetOperator(), distrtypes.InitialValidatorAccumulatedCommission())
-	app.DistrKeeper.SetValidatorOutstandingRewards(appCtx, newVal.GetOperator(), distrtypes.ValidatorOutstandingRewards{Rewards: sdk.DecCoins{}})
+	app.DistrKeeper.SetValidatorHistoricalRewards(appCtx, newValAddr, 0, distrtypes.NewValidatorHistoricalRewards(sdk.DecCoins{}, 1))
+	app.DistrKeeper.SetValidatorCurrentRewards(appCtx, newValAddr, distrtypes.NewValidatorCurrentRewards(sdk.DecCoins{}, 1))
+	app.DistrKeeper.SetValidatorAccumulatedCommission(appCtx, newValAddr, distrtypes.InitialValidatorAccumulatedCommission())
+	app.DistrKeeper.SetValidatorOutstandingRewards(appCtx, newValAddr, distrtypes.ValidatorOutstandingRewards{Rewards: sdk.DecCoins{}})
 
 	// SLASHING
 	// Set validator signing info for our new validator.
@@ -254,14 +268,24 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 
 	shortVotingPeriod := time.Second * 20
 	expeditedVotingPeriod := time.Second * 10
-	params := app.GovKeeper.GetParams(appCtx)
+	params, err := app.GovKeeper.Params.Get(appCtx)
+	if err != nil {
+		return err
+	}
 	params.VotingPeriod = &shortVotingPeriod
 	params.ExpeditedVotingPeriod = &expeditedVotingPeriod
-	app.GovKeeper.SetParams(appCtx, params)
+	err = app.GovKeeper.Params.Set(appCtx, params)
+	if err != nil {
+		return err
+	}
 	appCtx.Logger().Info("Updated governance voting period", "voting_period", shortVotingPeriod, "expedited_voting_period", expeditedVotingPeriod)
 
 	// BANK
-	defaultCoins := sdk.NewCoins(sdk.NewInt64Coin(app.StakingKeeper.BondDenom(appCtx), 1000000000000))
+	bondDenom, err := app.StakingKeeper.BondDenom(appCtx)
+	if err != nil {
+		return err
+	}
+	defaultCoins := sdk.NewCoins(sdk.NewInt64Coin(bondDenom, 1000000000000))
 
 	// Fund testnet accounts
 	for _, account := range args.accountsToFund {
@@ -285,12 +309,12 @@ func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, app
 	validatorSet := tmtypes.NewValidatorSet(vals)
 
 	// CHANGE STATE CONSENSUS STORE
-	stateDB, err := openDB(args.homeDir, "state", server.GetAppDBBackend(appOpts))
+	stateDB, err := openDB(args.homeDir, "state", cometdbm.BackendType(server.GetAppDBBackend(appOpts)))
 	if err != nil {
 		return err
 	}
 
-	stateStore := sm.NewBootstrapStore(stateDB, sm.StoreOptions{
+	stateStore := sm.NewStore(stateDB, sm.StoreOptions{
 		DiscardABCIResponses: false,
 	})
 
@@ -337,7 +361,7 @@ func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, app
 	// CHANGE BLOCK CONSENSUS STORE
 	// we need to change the last commit data by updating the signature's info. Consensus will match the validator's set length
 	// and size of the lastCommit signatures when building the last commit info and they have to match
-	blockStoreDB, err := openDB(args.homeDir, "blockstore", server.GetAppDBBackend(appOpts))
+	blockStoreDB, err := openDB(args.homeDir, "blockstore", cometdbm.BackendType(server.GetAppDBBackend(appOpts)))
 	if err != nil {
 		return err
 	}
@@ -353,7 +377,7 @@ func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, app
 
 	var vote *tmtypes.Vote
 	for idx, commitSig := range lastCommit.Signatures {
-		if commitSig.Absent() {
+		if commitSig.BlockIDFlag == tmtypes.BlockIDFlagAbsent {
 			continue
 		}
 		vote = lastCommit.GetVote(int32(idx))
@@ -391,7 +415,7 @@ func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, app
 	return blockStore.SaveSeenCommit(state.LastBlockHeight, lastCommit)
 }
 
-func loadValidatorsInfo(db dbm.DB, height int64) (*cmtstate.ValidatorsInfo, error) {
+func loadValidatorsInfo(db cometdbm.DB, height int64) (*cmtstate.ValidatorsInfo, error) {
 	buf, err := db.Get(calcValidatorsKey(height))
 	if err != nil {
 		return nil, err
@@ -407,7 +431,7 @@ func loadValidatorsInfo(db dbm.DB, height int64) (*cmtstate.ValidatorsInfo, erro
 	return v, err
 }
 
-func saveValidatorsInfo(db dbm.DB, height int64, valInfo *cmtstate.ValidatorsInfo) error {
+func saveValidatorsInfo(db cometdbm.DB, height int64, valInfo *cmtstate.ValidatorsInfo) error {
 	bz, err := valInfo.Marshal()
 	if err != nil {
 		return err
@@ -425,7 +449,7 @@ func calcValidatorsKey(height int64) []byte {
 	return []byte(fmt.Sprintf("validatorsKey:%v", height))
 }
 
-func openDB(rootDir, dbName string, backendType dbm.BackendType) (dbm.DB, error) {
+func openDB(rootDir, dbName string, backendType cometdbm.BackendType) (cometdbm.DB, error) {
 	dataDir := filepath.Join(rootDir, "data")
-	return dbm.NewDB(dbName, backendType, dataDir)
+	return cometdbm.NewDB(dbName, backendType, dataDir)
 }

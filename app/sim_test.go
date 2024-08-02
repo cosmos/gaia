@@ -9,15 +9,15 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	dbm "github.com/cometbft/cometbft-db"
-	"github.com/cometbft/cometbft/libs/log"
+	dbm "github.com/cosmos/cosmos-db"
 
+	"cosmossdk.io/log"
 	"cosmossdk.io/math"
+	"cosmossdk.io/store"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server"
-	"github.com/cosmos/cosmos-sdk/store"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	simulation2 "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -70,7 +70,6 @@ func TestAppStateDeterminism(t *testing.T) {
 
 	appHashList := make([]json.RawMessage, numTimesToRunPerSeed)
 	appOptions := make(simtestutil.AppOptionsMap, 0)
-	appOptions[flags.FlagHome] = gaia.DefaultNodeHome
 	appOptions[server.FlagInvCheckPeriod] = sim.FlagPeriodValue
 
 	for i := 0; i < numSeeds; i++ {
@@ -83,21 +82,22 @@ func TestAppStateDeterminism(t *testing.T) {
 		for j := 0; j < numTimesToRunPerSeed; j++ {
 			var logger log.Logger
 			if sim.FlagVerboseValue {
-				logger = log.TestingLogger()
+				logger = log.NewTestLogger(t)
 			} else {
 				logger = log.NewNopLogger()
 			}
 
 			db := dbm.NewMemDB()
-			encConfig := gaia.RegisterEncodingConfig()
+			dir, err := os.MkdirTemp("", "gaia-simulation")
+			require.NoError(t, err)
+			appOptions[flags.FlagHome] = dir
 			app := gaia.NewGaiaApp(
 				logger,
 				db,
 				nil,
 				true,
 				map[int64]bool{},
-				gaia.DefaultNodeHome,
-				encConfig,
+				dir,
 				appOptions,
 				emptyWasmOption,
 				interBlockCacheOpt(),
@@ -119,11 +119,11 @@ func TestAppStateDeterminism(t *testing.T) {
 
 			blockedAddresses := app.BlockedModuleAccountAddrs(app.ModuleAccountAddrs())
 
-			_, _, err := simulation.SimulateFromSeed(
+			_, _, err = simulation.SimulateFromSeed(
 				t,
 				os.Stdout,
 				app.BaseApp,
-				simtestutil.AppStateFn(app.AppCodec(), app.SimulationManager(), gaia.NewDefaultGenesisState(encConfig)),
+				simtestutil.AppStateFn(app.AppCodec(), app.SimulationManager(), app.ModuleBasics.DefaultGenesis(app.AppCodec())),
 				simulation2.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
 				simtestutil.SimulationOperations(app, app.AppCodec(), config),
 				blockedAddresses,

@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"cosmossdk.io/math"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -49,9 +51,9 @@ func (s *IntegrationTestSuite) testLSM() {
 			s.T().Logf("After LSM parameters update proposal")
 			s.Require().NoError(err)
 
-			s.Require().Equal(stakingParams.Params.GlobalLiquidStakingCap, sdk.NewDecWithPrec(25, 2))
-			s.Require().Equal(stakingParams.Params.ValidatorLiquidStakingCap, sdk.NewDecWithPrec(50, 2))
-			s.Require().Equal(stakingParams.Params.ValidatorBondFactor, sdk.NewDec(250))
+			s.Require().Equal(stakingParams.Params.GlobalLiquidStakingCap, math.LegacyNewDecWithPrec(25, 2))
+			s.Require().Equal(stakingParams.Params.ValidatorLiquidStakingCap, math.LegacyNewDecWithPrec(50, 2))
+			s.Require().Equal(stakingParams.Params.ValidatorBondFactor, math.LegacyNewDec(250))
 
 			return true
 		},
@@ -60,13 +62,13 @@ func (s *IntegrationTestSuite) testLSM() {
 	)
 	delegatorAddress, _ := s.chainA.genesisAccounts[2].keyInfo.GetAddress()
 
-	fees := sdk.NewCoin(uatomDenom, sdk.NewInt(1))
+	fees := sdk.NewCoin(uatomDenom, math.NewInt(1))
 
 	// Validator bond
 	s.executeValidatorBond(s.chainA, 0, validatorAddressA, validatorAAddr.String(), gaiaHomePath, fees.String())
 
 	// Validate validator bond successful
-	selfBondedShares := sdk.ZeroDec()
+	selfBondedShares := math.LegacyZeroDec()
 	s.Require().Eventually(
 		func() bool {
 			res, err := queryDelegation(chainEndpoint, validatorAddressA, validatorAAddr.String())
@@ -81,7 +83,7 @@ func (s *IntegrationTestSuite) testLSM() {
 		5*time.Second,
 	)
 
-	delegationAmount := sdk.NewInt(500000000)
+	delegationAmount := math.NewInt(500000000)
 	delegation := sdk.NewCoin(uatomDenom, delegationAmount) // 500 atom
 
 	// Alice delegate uatom to Validator A
@@ -94,14 +96,14 @@ func (s *IntegrationTestSuite) testLSM() {
 			amt := res.GetDelegationResponse().GetDelegation().GetShares()
 			s.Require().NoError(err)
 
-			return amt.Equal(sdk.NewDecFromInt(delegationAmount))
+			return amt.Equal(math.LegacyNewDecFromInt(delegationAmount))
 		},
 		20*time.Second,
 		5*time.Second,
 	)
 
 	// Tokenize shares
-	tokenizeAmount := sdk.NewInt(200000000)
+	tokenizeAmount := math.NewInt(200000000)
 	tokenize := sdk.NewCoin(uatomDenom, tokenizeAmount) // 200 atom
 	s.executeTokenizeShares(s.chainA, 0, tokenize.String(), validatorAddressA, delegatorAddress.String(), gaiaHomePath, fees.String())
 
@@ -112,7 +114,7 @@ func (s *IntegrationTestSuite) testLSM() {
 			amt := res.GetDelegationResponse().GetDelegation().GetShares()
 			s.Require().NoError(err)
 
-			return amt.Equal(sdk.NewDecFromInt(delegationAmount.Sub(tokenizeAmount)))
+			return amt.Equal(math.LegacyNewDecFromInt(delegationAmount.Sub(tokenizeAmount)))
 		},
 		20*time.Second,
 		5*time.Second,
@@ -170,7 +172,7 @@ func (s *IntegrationTestSuite) testLSM() {
 	_ = tokenizeShareRecord
 
 	// IBC transfer LSM token
-	ibcTransferAmount := sdk.NewCoin(shareDenom, sdk.NewInt(100000000))
+	ibcTransferAmount := sdk.NewCoin(shareDenom, math.NewInt(100000000))
 	sendRecipientAddr, _ := s.chainB.validators[0].keyInfo.GetAddress()
 	s.sendIBC(s.chainA, 0, validatorAAddr.String(), sendRecipientAddr.String(), ibcTransferAmount.String(), standardFees.String(), "memo", false)
 
@@ -203,7 +205,7 @@ func (s *IntegrationTestSuite) testLSM() {
 			delegation := delegationRes.GetDelegationResponse().GetDelegation()
 			s.Require().NoError(err)
 
-			if !delegation.Shares.Equal(selfBondedShares.Add(sdk.NewDecFromInt(redeemAmount.Amount))) {
+			if !delegation.Shares.Equal(selfBondedShares.Add(math.LegacyNewDecFromInt(redeemAmount.Amount))) {
 				return false
 			}
 

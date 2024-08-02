@@ -32,7 +32,7 @@ const (
 	blocksHeightPath                    = "/cosmos/base/tendermint/v1beta1/blocks/1"
 	syncingPath                         = "/cosmos/base/tendermint/v1beta1/syncing"
 	nodeInfoPath                        = "/cosmos/base/tendermint/v1beta1/node_info"
-	transactionsPath                    = "/cosmos/tx/v1beta1/txs?events=tx.height=9999999999"
+	transactionsPath                    = "/cosmos/tx/v1beta1/txs?query=tx.height=9999999999"
 	bankTotalModuleQueryPath            = "/cosmos/bank/v1beta1/supply"
 	authParamsModuleQueryPath           = "/cosmos/auth/v1beta1/params"
 	distributionCommPoolModuleQueryPath = "/cosmos/distribution/v1beta1/community_pool"

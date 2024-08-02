@@ -2,16 +2,20 @@ package helpers
 
 import (
 	"encoding/json"
+	"os"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/require"
 
-	dbm "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
-	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	tmtypes "github.com/cometbft/cometbft/types"
+
+	dbm "github.com/cosmos/cosmos-db"
+
+	"cosmossdk.io/log"
+	"cosmossdk.io/math"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
@@ -78,7 +82,7 @@ func Setup(t *testing.T) *gaiaapp.GaiaApp {
 	acc := authtypes.NewBaseAccount(senderPubKey.Address().Bytes(), senderPubKey, 0, 0)
 	balance := banktypes.Balance{
 		Address: acc.GetAddress().String(),
-		Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100000000000000))),
+		Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(100000000000000))),
 	}
 	genesisAccounts := []authtypes.GenesisAccount{acc}
 	app := SetupWithGenesisValSet(t, valSet, genesisAccounts, balance)
@@ -100,34 +104,37 @@ func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs 
 	require.NoError(t, err)
 
 	// init chain will set the validator set and initialize the genesis accounts
-	gaiaApp.InitChain(
-		abci.RequestInitChain{
+	_, err = gaiaApp.InitChain(
+		&abci.RequestInitChain{
 			Validators:      []abci.ValidatorUpdate{},
 			ConsensusParams: DefaultConsensusParams,
 			AppStateBytes:   stateBytes,
 		},
 	)
+	require.NoError(t, err)
 
-	// commit genesis changes
-	gaiaApp.Commit()
-	gaiaApp.BeginBlock(abci.RequestBeginBlock{Header: tmproto.Header{
+	require.NoError(t, err)
+	_, err = gaiaApp.FinalizeBlock(&abci.RequestFinalizeBlock{
 		Height:             gaiaApp.LastBlockHeight() + 1,
-		AppHash:            gaiaApp.LastCommitID().Hash,
-		ValidatorsHash:     valSet.Hash(),
+		Hash:               gaiaApp.LastCommitID().Hash,
 		NextValidatorsHash: valSet.Hash(),
-	}})
+	})
+	require.NoError(t, err)
 
 	return gaiaApp
 }
 
 func setup() (*gaiaapp.GaiaApp, gaiaapp.GenesisState) {
 	db := dbm.NewMemDB()
+	dir, err := os.MkdirTemp("", "gaia-test-app")
+	if err != nil {
+		panic(err)
+	}
+
 	appOptions := make(simtestutil.AppOptionsMap, 0)
 	emptyWasmOpts := []wasmkeeper.Option{}
 	appOptions[server.FlagInvCheckPeriod] = 5
 	appOptions[server.FlagMinGasPrices] = "0uatom"
-
-	encConfig := gaiaapp.RegisterEncodingConfig()
 
 	gaiaApp := gaiaapp.NewGaiaApp(
 		log.NewNopLogger(),
@@ -135,12 +142,11 @@ func setup() (*gaiaapp.GaiaApp, gaiaapp.GenesisState) {
 		nil,
 		true,
 		map[int64]bool{},
-		gaiaapp.DefaultNodeHome,
-		encConfig,
+		dir,
 		appOptions,
 		emptyWasmOpts,
 	)
-	return gaiaApp, gaiaapp.NewDefaultGenesisState(encConfig)
+	return gaiaApp, gaiaApp.ModuleBasics.DefaultGenesis(gaiaApp.AppCodec())
 }
 
 func genesisStateWithValSet(t *testing.T,
@@ -159,7 +165,7 @@ func genesisStateWithValSet(t *testing.T,
 	bondAmt := sdk.DefaultPowerReduction
 
 	for _, val := range valSet.Validators {
-		pk, err := cryptocodec.FromTmPubKeyInterface(val.PubKey)
+		pk, err := cryptocodec.FromCmtPubKeyInterface(val.PubKey)
 		require.NoError(t, err)
 		pkAny, err := codectypes.NewAnyWithValue(pk)
 		require.NoError(t, err)
@@ -169,14 +175,14 @@ func genesisStateWithValSet(t *testing.T,
 			Jailed:          false,
 			Status:          stakingtypes.Bonded,
 			Tokens:          bondAmt,
-			DelegatorShares: sdk.OneDec(),
+			DelegatorShares: math.LegacyOneDec(),
 			Description:     stakingtypes.Description{},
 			UnbondingHeight: int64(0),
 			UnbondingTime:   time.Unix(0, 0).UTC(),
-			Commission:      stakingtypes.NewCommission(sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec()),
+			Commission:      stakingtypes.NewCommission(math.LegacyZeroDec(), math.LegacyZeroDec(), math.LegacyZeroDec()),
 		}
 		validators = append(validators, validator)
-		delegations = append(delegations, stakingtypes.NewDelegation(genAccs[0].GetAddress(), val.Address.Bytes(), sdk.OneDec()))
+		delegations = append(delegations, stakingtypes.NewDelegation(genAccs[0].GetAddress().String(), sdk.ValAddress(val.Address).String(), math.LegacyOneDec()))
 
 	}
 	// set validators and delegations

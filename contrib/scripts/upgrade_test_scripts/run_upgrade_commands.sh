@@ -58,13 +58,29 @@ if test -f "$BINARY"; then
 
   echo "\n"
   echo "Submitting proposal... \n"
-  $BINARY tx gov submit-legacy-proposal software-upgrade $UPGRADE_VERSION \
-    --title $UPGRADE_VERSION \
-    --deposit 10000000uatom \
-    --upgrade-height $UPGRADE_HEIGHT \
-    --upgrade-info "upgrade" \
-    --description "upgrade" \
-    --no-validate \
+  json_content=$(cat <<EOF
+  {
+    "messages": [
+     {
+        "@type": "/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade",
+        "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+        "plan": {
+          "name": "$UPGRADE_VERSION",
+          "height": "$UPGRADE_HEIGHT",
+          "info": "upgrade",
+          "upgraded_client_state": null
+        }
+      }
+    ],
+    "metadata": "",
+    "deposit": "10000000uatom",
+    "title": "$UPGRADE_VERSION",
+    "summary": "upgrade"
+  }
+EOF
+  )
+  echo "$json_content" > "$NODE_HOME/sw_upgrade_proposal.json"
+  $BINARY tx gov submit-proposal "$NODE_HOME/sw_upgrade_proposal.json" \
     --gas auto \
     --gas-adjustment 1.3 \
     --fees 330000uatom \

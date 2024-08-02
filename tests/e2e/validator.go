@@ -1,6 +1,7 @@
 package e2e
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -12,6 +13,9 @@ import (
 	"github.com/cometbft/cometbft/p2p"
 	"github.com/cometbft/cometbft/privval"
 
+	"cosmossdk.io/math"
+
+	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdkcrypto "github.com/cosmos/cosmos-sdk/crypto"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -23,9 +27,8 @@ import (
 	txsigning "github.com/cosmos/cosmos-sdk/types/tx/signing"
 	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
+	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-
-	gaia "github.com/cosmos/gaia/v19/app"
 )
 
 //
@@ -62,7 +65,7 @@ func (v *validator) createConfig() error {
 	return os.MkdirAll(p, 0o755)
 }
 
-func (v *validator) init() error {
+func (v *validator) init(genesisState map[string]json.RawMessage) error {
 	if err := v.createConfig(); err != nil {
 		return err
 	}
@@ -73,21 +76,20 @@ func (v *validator) init() error {
 	config.SetRoot(v.configDir())
 	config.Moniker = v.moniker
 
-	genDoc, err := getGenDoc(v.configDir())
-	if err != nil {
-		return err
-	}
-
-	appState, err := json.MarshalIndent(gaia.ModuleBasics.DefaultGenesis(cdc), "", " ")
+	appState, err := json.MarshalIndent(genesisState, "", " ")
 	if err != nil {
 		return fmt.Errorf("failed to JSON encode app genesis state: %w", err)
 	}
 
-	genDoc.ChainID = v.chain.id
-	genDoc.Validators = nil
-	genDoc.AppState = appState
+	appGenesis := genutiltypes.AppGenesis{
+		ChainID:  v.chain.id,
+		AppState: appState,
+		Consensus: &genutiltypes.ConsensusGenesis{
+			Validators: nil,
+		},
+	}
 
-	if err = genutil.ExportGenesisFile(genDoc, config.GenesisFile()); err != nil {
+	if err = genutil.ExportGenesisFile(&appGenesis, serverCtx.Config.GenesisFile()); err != nil {
 		return fmt.Errorf("failed to export app genesis state: %w", err)
 	}
 
@@ -224,12 +226,12 @@ func (v *validator) createKey(name string) error {
 func (v *validator) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
 	description := stakingtypes.NewDescription(v.moniker, "", "", "", "")
 	commissionRates := stakingtypes.CommissionRates{
-		Rate:          sdk.MustNewDecFromStr("0.1"),
-		MaxRate:       sdk.MustNewDecFromStr("0.2"),
-		MaxChangeRate: sdk.MustNewDecFromStr("0.01"),
+		Rate:          math.LegacyMustNewDecFromStr("0.1"),
+		MaxRate:       math.LegacyMustNewDecFromStr("0.2"),
+		MaxChangeRate: math.LegacyMustNewDecFromStr("0.01"),
 	}
 
-	valPubKey, err := cryptocodec.FromTmPubKeyInterface(v.consensusKey.PubKey)
+	valPubKey, err := cryptocodec.FromCmtPubKeyInterface(v.consensusKey.PubKey)
 	if err != nil {
 		return nil, err
 	}
@@ -240,7 +242,7 @@ func (v *validator) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
 	}
 
 	return stakingtypes.NewMsgCreateValidator(
-		sdk.ValAddress(addr),
+		sdk.ValAddress(addr).String(),
 		valPubKey,
 		amount,
 		description,
@@ -258,12 +260,6 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 	txBuilder.SetMemo(fmt.Sprintf("%s@%s:26656", v.nodeKey.ID(), v.instanceName()))
 	txBuilder.SetFeeAmount(sdk.NewCoins())
 	txBuilder.SetGasLimit(200000)
-
-	signerData := authsigning.SignerData{
-		ChainID:       v.chain.id,
-		AccountNumber: 0,
-		Sequence:      1,
-	}
 
 	// For SIGN_MODE_DIRECT, calling SetSignatures calls setSignerInfos on
 	// TxBuilder under the hood, and SignerInfos is needed to generate the sign
@@ -291,33 +287,25 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 		return nil, err
 	}
 
-	bytesToSign, err := encodingConfig.TxConfig.SignModeHandler().GetSignBytes(
-		txsigning.SignMode_SIGN_MODE_DIRECT,
-		signerData,
-		txBuilder.GetTx(),
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	sigBytes, err := v.privateKey.Sign(bytesToSign)
-	if err != nil {
-		return nil, err
-	}
-
 	pk, err = v.keyInfo.GetPubKey()
 	if err != nil {
 		return nil, err
 	}
 
-	sig = txsigning.SignatureV2{
-		PubKey: pk,
-		Data: &txsigning.SingleSignatureData{
-			SignMode:  txsigning.SignMode_SIGN_MODE_DIRECT,
-			Signature: sigBytes,
-		},
-		Sequence: 0,
+	signerData := authsigning.SignerData{
+		Address:       sdk.AccAddress(pk.Bytes()).String(),
+		ChainID:       v.chain.id,
+		AccountNumber: 0,
+		Sequence:      0,
+		PubKey:        pk,
 	}
+	sig, err = tx.SignWithPrivKey(
+		context.TODO(), txsigning.SignMode_SIGN_MODE_DIRECT, signerData,
+		txBuilder, v.privateKey, txConfig, 0)
+	if err != nil {
+		return nil, err
+	}
+
 	if err := txBuilder.SetSignatures(sig); err != nil {
 		return nil, err
 	}

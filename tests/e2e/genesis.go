@@ -3,15 +3,14 @@ package e2e
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"time"
 
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
-	tmtypes "github.com/cometbft/cometbft/types"
+	icagen "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/genesis/types"
+	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
 
-	icagen "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/genesis/types"
-	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
+	"cosmossdk.io/math"
 
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -25,30 +24,6 @@ import (
 	govlegacytypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
-
-func getGenDoc(path string) (*tmtypes.GenesisDoc, error) {
-	serverCtx := server.NewDefaultContext()
-	config := serverCtx.Config
-	config.SetRoot(path)
-
-	genFile := config.GenesisFile()
-	doc := &tmtypes.GenesisDoc{}
-
-	if _, err := os.Stat(genFile); err != nil {
-		if !os.IsNotExist(err) {
-			return nil, err
-		}
-	} else {
-		var err error
-
-		doc, err = tmtypes.GenesisDocFromFile(genFile)
-		if err != nil {
-			return nil, fmt.Errorf("failed to read genesis doc from file: %w", err)
-		}
-	}
-
-	return doc, nil
-}
 
 func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, basefee string, denom string) error {
 	serverCtx := server.NewDefaultContext()
@@ -161,10 +136,10 @@ func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, ba
 	appState[icatypes.ModuleName] = icaGenesisStateBz
 
 	feemarketState := feemarkettypes.GetGenesisStateFromAppState(cdc, appState)
-	feemarketState.Params.MinBaseGasPrice = sdk.MustNewDecFromStr(basefee)
+	feemarketState.Params.MinBaseGasPrice = math.LegacyMustNewDecFromStr(basefee)
 	feemarketState.Params.FeeDenom = denom
 	feemarketState.Params.DistributeFees = true
-	feemarketState.State.BaseGasPrice = sdk.MustNewDecFromStr(basefee)
+	feemarketState.State.BaseGasPrice = math.LegacyMustNewDecFromStr(basefee)
 	feemarketStateBz, err := cdc.MarshalJSON(&feemarketState)
 	if err != nil {
 		return fmt.Errorf("failed to marshal feemarket genesis state: %w", err)
@@ -180,9 +155,9 @@ func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, ba
 	appState[stakingtypes.ModuleName] = stakingGenStateBz
 
 	// Refactor to separate method
-	amnt := sdk.NewInt(10000)
-	quorum, _ := sdk.NewDecFromStr("0.000000000000000001")
-	threshold, _ := sdk.NewDecFromStr("0.000000000000000001")
+	amnt := math.NewInt(10000)
+	quorum, _ := math.LegacyNewDecFromStr("0.000000000000000001")
+	threshold, _ := math.LegacyNewDecFromStr("0.000000000000000001")
 
 	maxDepositPeriod := 10 * time.Minute
 	votingPeriod := 15 * time.Second

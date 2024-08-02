@@ -86,9 +86,13 @@ func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {
 func (a AppModule) RegisterServices(_ module.Configurator) {
 }
 
-func (a AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {
+func (a AppModule) BeginBlock(_ sdk.Context) {
 }
 
-func (a AppModule) EndBlock(_ sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
+func (a AppModule) EndBlock(_ sdk.Context) []abci.ValidatorUpdate {
 	return nil
 }
+
+func (AppModule) IsOnePerModuleType() {}
+
+func (AppModule) IsAppModule() {}

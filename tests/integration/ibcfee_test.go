@@ -5,10 +5,12 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	ibcfeetypes "github.com/cosmos/ibc-go/v7/modules/apps/29-fee/types"
-	transfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
-	clienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
-	ibctesting "github.com/cosmos/ibc-go/v7/testing"
+	ibcfeetypes "github.com/cosmos/ibc-go/v8/modules/apps/29-fee/types"
+	transfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
+	clienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
+	ibctesting "github.com/cosmos/ibc-go/v8/testing"
+
+	"cosmossdk.io/math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -23,9 +25,9 @@ import (
 var (
 
 	// transfer + IBC fee test variables
-	defaultRecvFee    = sdk.Coins{sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: sdk.NewInt(100)}}
-	defaultAckFee     = sdk.Coins{sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: sdk.NewInt(200)}}
-	defaultTimeoutFee = sdk.Coins{sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: sdk.NewInt(300)}}
+	defaultRecvFee    = sdk.Coins{sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: math.NewInt(100)}}
+	defaultAckFee     = sdk.Coins{sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: math.NewInt(200)}}
+	defaultTimeoutFee = sdk.Coins{sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: math.NewInt(300)}}
 )
 
 type IBCFeeTestSuite struct {
@@ -47,7 +49,7 @@ func TestIBCFeeTestSuite(t *testing.T) {
 
 func (suite *IBCFeeTestSuite) SetupTest() {
 	ante.UseFeeMarketDecorator = false
-	ibctesting.DefaultTestingAppInit = GaiaAppIniter
+	ibctesting.DefaultTestingAppInit = GaiaAppIniterTempDir
 	suite.coordinator = ibctesting.NewCoordinator(suite.T(), 3)
 	suite.chainA = suite.coordinator.GetChain(ibctesting.GetChainID(1))
 	suite.chainB = suite.coordinator.GetChain(ibctesting.GetChainID(2))
@@ -110,7 +112,7 @@ func (suite *IBCFeeTestSuite) TestFeeTransfer() {
 	// after incentivizing the packets
 	originalChainASenderAccountBalance := sdk.NewCoins(getApp(suite.chainA).BankKeeper.GetBalance(suite.chainA.GetContext(), suite.chainA.SenderAccount.GetAddress(), ibctesting.TestCoin.Denom))
 
-	packet, err := ibctesting.ParsePacketFromEvents(res.GetEvents())
+	packet, err := ibctesting.ParsePacketFromEvents(res.Events)
 	suite.Require().NoError(err)
 
 	// register counterparty address on chainB
@@ -137,7 +139,7 @@ func (suite *IBCFeeTestSuite) TestFeeTransfer() {
 	)
 
 	suite.Require().Equal(
-		fee.AckFee.Add(fee.TimeoutFee...), // ack fee paid, timeout fee refunded
+		fee.AckFee, // ack fee paid, no refund needed since timeout_fee = recv_fee + ack_fee
 		sdk.NewCoins(getApp(suite.chainA).BankKeeper.GetBalance(suite.chainA.GetContext(), suite.chainA.SenderAccount.GetAddress(), ibctesting.TestCoin.Denom)).Sub(originalChainASenderAccountBalance[0]))
 }
 

@@ -26,6 +26,9 @@ import (
 	tmjson "github.com/cometbft/cometbft/libs/json"
 	rpchttp "github.com/cometbft/cometbft/rpc/client/http"
 
+	"cosmossdk.io/math"
+	evidencetypes "cosmossdk.io/x/evidence/types"
+
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
@@ -36,11 +39,9 @@ import (
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	"github.com/cosmos/gaia/v19/types"
 )
@@ -71,6 +72,8 @@ const (
 	proposalBlocksPerEpochFilename   = "proposal_blocks_per_epoch.json"
 	proposalFailExpedited            = "proposal_fail_expedited.json"
 	proposalExpeditedSoftwareUpgrade = "proposal_expedited_software_upgrade.json"
+	proposalSoftwareUpgrade          = "proposal_software_upgrade.json"
+	proposalCancelSoftwareUpgrade    = "proposal_cancel_software_upgrade.json"
 
 	// proposalAddConsumerChainFilename    = "proposal_add_consumer.json"
 	// proposalRemoveConsumerChainFilename = "proposal_remove_consumer.json"
@@ -86,11 +89,11 @@ const (
 
 var (
 	gaiaConfigPath    = filepath.Join(gaiaHomePath, "config")
-	stakingAmount     = sdk.NewInt(100000000000)
+	stakingAmount     = math.NewInt(100000000000)
 	stakingAmountCoin = sdk.NewCoin(uatomDenom, stakingAmount)
-	tokenAmount       = sdk.NewCoin(uatomDenom, sdk.NewInt(3300000000)) // 3,300uatom
-	standardFees      = sdk.NewCoin(uatomDenom, sdk.NewInt(330000))     // 0.33uatom
-	depositAmount     = sdk.NewCoin(uatomDenom, sdk.NewInt(330000000))  // 3,300uatom
+	tokenAmount       = sdk.NewCoin(uatomDenom, math.NewInt(3300000000)) // 3,300uatom
+	standardFees      = sdk.NewCoin(uatomDenom, math.NewInt(330000))     // 0.33uatom
+	depositAmount     = sdk.NewCoin(uatomDenom, math.NewInt(330000000))  // 3,300uatom
 	distModuleAddress = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
 	govModuleAddress  = authtypes.NewModuleAddress(govtypes.ModuleName).String()
 	proposalCounter   = 0
@@ -284,21 +287,21 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 
 	jailedValAddr := sdk.ValAddress(jailedValAcc)
 	val, err := stakingtypes.NewValidator(
-		jailedValAddr,
+		jailedValAddr.String(),
 		pubKey,
 		stakingtypes.NewDescription("jailed", "", "", "", ""),
 	)
 	s.Require().NoError(err)
 	val.Jailed = true
-	val.Tokens = sdk.NewInt(slashingShares)
-	val.DelegatorShares = sdk.NewDec(slashingShares)
+	val.Tokens = math.NewInt(slashingShares)
+	val.DelegatorShares = math.LegacyNewDec(slashingShares)
 	stakingGenState.Validators = append(stakingGenState.Validators, val)
 
 	// add jailed validator delegations
 	stakingGenState.Delegations = append(stakingGenState.Delegations, stakingtypes.Delegation{
 		DelegatorAddress: jailedValAcc.String(),
 		ValidatorAddress: jailedValAddr.String(),
-		Shares:           sdk.NewDec(slashingShares),
+		Shares:           math.LegacyNewDec(slashingShares),
 	})
 
 	appGenState[stakingtypes.ModuleName], err = cdc.MarshalJSON(stakingGenState)
@@ -311,12 +314,14 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 	// add continuous vesting account to the genesis
 	baseVestingContinuousAccount := authtypes.NewBaseAccount(
 		continuousVestingAcc, nil, 0, 0)
+	baseVestingAcc, err := authvesting.NewBaseVestingAccount(
+		baseVestingContinuousAccount,
+		sdk.NewCoins(vestingAmountVested),
+		time.Now().Add(time.Duration(rand.Intn(80)+150)*time.Second).Unix(),
+	)
+	s.Require().NoError(err)
 	vestingContinuousGenAccount := authvesting.NewContinuousVestingAccountRaw(
-		authvesting.NewBaseVestingAccount(
-			baseVestingContinuousAccount,
-			sdk.NewCoins(vestingAmountVested),
-			time.Now().Add(time.Duration(rand.Intn(80)+150)*time.Second).Unix(),
-		),
+		baseVestingAcc,
 		time.Now().Add(time.Duration(rand.Intn(40)+90)*time.Second).Unix(),
 	)
 	s.Require().NoError(vestingContinuousGenAccount.Validate())
@@ -324,13 +329,13 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 	// add delayed vesting account to the genesis
 	baseVestingDelayedAccount := authtypes.NewBaseAccount(
 		delayedVestingAcc, nil, 0, 0)
-	vestingDelayedGenAccount := authvesting.NewDelayedVestingAccountRaw(
-		authvesting.NewBaseVestingAccount(
-			baseVestingDelayedAccount,
-			sdk.NewCoins(vestingAmountVested),
-			time.Now().Add(time.Duration(rand.Intn(40)+90)*time.Second).Unix(),
-		),
+	baseVestingAcc, err = authvesting.NewBaseVestingAccount(
+		baseVestingDelayedAccount,
+		sdk.NewCoins(vestingAmountVested),
+		time.Now().Add(time.Duration(rand.Intn(40)+90)*time.Second).Unix(),
 	)
+	s.Require().NoError(err)
+	vestingDelayedGenAccount := authvesting.NewDelayedVestingAccountRaw(baseVestingAcc)
 	s.Require().NoError(vestingDelayedGenAccount.Validate())
 
 	// unpack and append accounts
@@ -361,7 +366,7 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 	}
 	stakingModuleBalances := banktypes.Balance{
 		Address: authtypes.NewModuleAddress(stakingtypes.NotBondedPoolName).String(),
-		Coins:   sdk.NewCoins(sdk.NewCoin(uatomDenom, sdk.NewInt(slashingShares))),
+		Coins:   sdk.NewCoins(sdk.NewCoin(uatomDenom, math.NewInt(slashingShares))),
 	}
 	bankGenState.Balances = append(
 		bankGenState.Balances,
@@ -700,17 +705,47 @@ func (s *IntegrationTestSuite) writeGovCommunitySpendProposal(c *chain, amount s
 	s.Require().NoError(err)
 }
 
-func (s *IntegrationTestSuite) writeGovLegProposal(c *chain, height int64, name string) {
-	prop := &upgradetypes.Plan{
-		Name:   name,
-		Height: height,
-		Info:   `{"binaries":{"os1/arch1":"url1","os2/arch2":"url2"}}`,
-	}
+func (s *IntegrationTestSuite) writeSoftwareUpgradeProposal(c *chain, height int64, name string) {
+	body := `{
+		"messages": [
+		 {
+		  "@type": "/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade",
+		  "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+		  "plan": {
+		   "name": "%s",
+		   "height": "%d",
+		   "info": "test",
+		   "upgraded_client_state": null
+		  }
+		 }
+		],
+		"metadata": "ipfs://CID",
+		"deposit": "100uatom",
+		"title": "title",
+		"summary": "test"
+	   }`
 
-	commSpendBody, err := json.MarshalIndent(prop, "", " ")
+	propMsgBody := fmt.Sprintf(body, name, height)
+
+	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalSoftwareUpgrade), []byte(propMsgBody))
 	s.Require().NoError(err)
+}
 
-	err = writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalCommunitySpendFilename), commSpendBody)
+func (s *IntegrationTestSuite) writeCancelSoftwareUpgradeProposal(c *chain) {
+	template := `{
+		"messages": [
+		 {
+		  "@type": "/cosmos.upgrade.v1beta1.MsgCancelUpgrade",
+		  "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn"
+		 }
+		],
+		"metadata": "ipfs://CID",
+		"deposit": "100uatom",
+		"title": "title",
+		"summary": "test"
+	   }`
+
+	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalCancelSoftwareUpgrade), []byte(template))
 	s.Require().NoError(err)
 }
 
@@ -748,9 +783,9 @@ func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain, 
 		oldParams.HistoricalEntries,
 		oldParams.BondDenom,
 		oldParams.MinCommissionRate,
-		sdk.NewDec(250),           // validator bond factor
-		sdk.NewDecWithPrec(25, 2), // 25 global_liquid_staking_cap
-		sdk.NewDecWithPrec(50, 2), // 50 validator_liquid_staking_cap
+		math.LegacyNewDec(250),           // validator bond factor
+		math.LegacyNewDecWithPrec(25, 2), // 25 global_liquid_staking_cap
+		math.LegacyNewDecWithPrec(50, 2), // 50 validator_liquid_staking_cap
 	)
 
 	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalLSMParamUpdateFilename), []byte(propMsgBody))
@@ -759,23 +794,14 @@ func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain, 
 
 // writeGovParamChangeProposalBlocksPerEpoch writes a governance proposal JSON file to change the `BlocksPerEpoch`
 // parameter to the provided `blocksPerEpoch`
-func (s *IntegrationTestSuite) writeGovParamChangeProposalBlocksPerEpoch(c *chain, blocksPerEpoch int64) {
+func (s *IntegrationTestSuite) writeGovParamChangeProposalBlocksPerEpoch(c *chain, paramsJSON string) {
 	template := `
 	{
 		"messages":[
 		  {
-			"@type": "/cosmos.gov.v1.MsgExecLegacyContent",
-			"authority": "%s",
-			"content": {
-				"@type": "/cosmos.params.v1beta1.ParameterChangeProposal",
-				"title": "BlocksPerEpoch",
-				"description": "change blocks per epoch",
-				"changes": [{
-				  "subspace": "provider",
-				  "key": "BlocksPerEpoch",
-				  "value": "\"%d\""
-				}]
-			}
+			"@type": "/interchain_security.ccv.provider.v1.MsgUpdateParams",
+   			"authority": "%s",
+			"params": %s
 		  }
 		],
 		"deposit": "100uatom",
@@ -788,7 +814,7 @@ func (s *IntegrationTestSuite) writeGovParamChangeProposalBlocksPerEpoch(c *chai
 
 	propMsgBody := fmt.Sprintf(template,
 		govAuthority,
-		blocksPerEpoch,
+		paramsJSON,
 	)
 
 	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalBlocksPerEpochFilename), []byte(propMsgBody))
@@ -833,8 +859,7 @@ func (s *IntegrationTestSuite) writeFailingExpeditedProposal(c *chain, blocksPer
 	s.Require().NoError(err)
 }
 
-// MsgSoftwareUpgrade can be expedited but it can only be submitted using "tx gov submit-proposal" command.
-// Messages submitted using "tx gov submit-legacy-proposal" command cannot be expedited.
+// MsgSoftwareUpgrade can be expedited and it can only be submitted using "tx gov submit-proposal" command.
 func (s *IntegrationTestSuite) writeExpeditedSoftwareUpgradeProp(c *chain) {
 	body := `{
  "messages": [

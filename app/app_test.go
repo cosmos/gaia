@@ -5,8 +5,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	db "github.com/cometbft/cometbft-db"
-	"github.com/cometbft/cometbft/libs/log"
+	db "github.com/cosmos/cosmos-db"
+
+	"cosmossdk.io/log"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -26,7 +27,6 @@ func (ao EmptyAppOptions) Get(_ string) interface{} {
 }
 
 func TestGaiaApp_BlockedModuleAccountAddrs(t *testing.T) {
-	encConfig := gaia.RegisterEncodingConfig()
 	app := gaia.NewGaiaApp(
 		log.NewNopLogger(),
 		db.NewMemDB(),
@@ -34,7 +34,6 @@ func TestGaiaApp_BlockedModuleAccountAddrs(t *testing.T) {
 		true,
 		map[int64]bool{},
 		gaia.DefaultNodeHome,
-		encConfig,
 		EmptyAppOptions{},
 		emptyWasmOption,
 	)

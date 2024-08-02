@@ -100,7 +100,7 @@ include contrib/devtools/Makefile
 
 check_version:
 ifneq ($(GO_SYSTEM_VERSION), $(REQUIRE_GO_VERSION))
-	@echo "ERROR: Go version 1.21 is required for $(VERSION) of Gaia."
+	@echo "ERROR: Go version 1.22 is required for $(VERSION) of Gaia."
 	exit 1
 endif
 
@@ -150,7 +150,7 @@ distclean: clean
 
 GO_VERSION := $(shell cat go.mod | grep -E 'go [0-9].[0-9]+' | cut -d ' ' -f 2)
 GORELEASER_IMAGE := ghcr.io/goreleaser/goreleaser-cross:v$(GO_VERSION)
-COSMWASM_VERSION := $(shell go list -m github.com/CosmWasm/wasmvm | sed 's/.* //')
+COSMWASM_VERSION := $(shell go list -m github.com/CosmWasm/wasmvm/v2 | sed 's/.* //')
 
 # create tag and run goreleaser without publishing
 # errors are possible while running goreleaser - the process can run for >30 min
@@ -170,14 +170,13 @@ ifneq ($(strip $(TAG)),)
 		-e CGO_ENABLED=1 \
 		-e TM_VERSION=$(TM_VERSION) \
 		-e COSMWASM_VERSION=$(COSMWASM_VERSION) \
-		-v /var/run/docker.sock:/var/run/docker.sock \
 		-v `pwd`:/go/src/gaiad \
 		-w /go/src/gaiad \
 		$(GORELEASER_IMAGE) \
 		release \
 		--snapshot \
 		--skip=publish \
-		--debug \
+		--verbose \
 		--clean
 	@rm -rf dist/
 	@echo "--> Done create-release-dry-run for tag: $(TAG)"
@@ -194,7 +193,6 @@ goreleaser-build-local:
 		-e CGO_ENABLED=1 \
 		-e TM_VERSION=$(TM_VERSION) \
 		-e COSMWASM_VERSION=$(COSMWASM_VERSION) \
-		-v /var/run/docker.sock:/var/run/docker.sock \
 		-v `pwd`:/go/src/gaiad \
 		-w /go/src/gaiad \
 		--platform=linux/amd64 \
@@ -204,7 +202,7 @@ goreleaser-build-local:
 		--skip=publish \
 		--release-notes ./RELEASE_NOTES.md \
 		--timeout 90m \
-		--debug
+		--verbose
 
 # uses goreleaser to create static binaries for linux an darwin
 # requires access to GITHUB_TOKEN which has to be available in the CI environment
@@ -216,7 +214,6 @@ ci-release:
 		-e GITHUB_TOKEN=$(GITHUB_TOKEN) \
 		-e TM_VERSION=$(TM_VERSION) \
 		-e COSMWASM_VERSION=$(COSMWASM_VERSION) \
-		-v /var/run/docker.sock:/var/run/docker.sock \
 		-v `pwd`:/go/src/gaiad \
 		-w /go/src/gaiad \
 		--platform=linux/amd64 \
@@ -324,11 +321,11 @@ format:
 start-localnet-ci: build
 	rm -rf ~/.gaiad-liveness
 	./build/gaiad init liveness --chain-id liveness --home ~/.gaiad-liveness
-	./build/gaiad config chain-id liveness --home ~/.gaiad-liveness
-	./build/gaiad config keyring-backend test --home ~/.gaiad-liveness
-	./build/gaiad keys add val --home ~/.gaiad-liveness
+	./build/gaiad config set client chain-id liveness --home ~/.gaiad-liveness
+	./build/gaiad config set client keyring-backend test --home ~/.gaiad-liveness
+	./build/gaiad keys add val --home ~/.gaiad-liveness --keyring-backend test
 	./build/gaiad genesis add-genesis-account val 10000000000000000000000000stake --home ~/.gaiad-liveness --keyring-backend test
-	./build/gaiad genesis gentx val 1000000000stake --home ~/.gaiad-liveness --chain-id liveness
+	./build/gaiad genesis gentx val 1000000000stake --home ~/.gaiad-liveness --chain-id liveness --keyring-backend test
 	./build/gaiad genesis collect-gentxs --home ~/.gaiad-liveness
 	sed -i.bak'' 's/minimum-gas-prices = ""/minimum-gas-prices = "0uatom"/' ~/.gaiad-liveness/config/app.toml
 	./build/gaiad start --home ~/.gaiad-liveness --x-crisis-skip-assert-invariants

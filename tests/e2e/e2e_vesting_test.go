@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"time"
 
+	"cosmossdk.io/math"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -32,11 +34,11 @@ type (
 
 var (
 	genesisVestingKeys      = []string{continuousVestingKey, delayedVestingKey, lockedVestingKey, periodicVestingKey}
-	vestingAmountVested     = sdk.NewCoin(uatomDenom, sdk.NewInt(99900000000))
-	vestingAmount           = sdk.NewCoin(uatomDenom, sdk.NewInt(350000))
+	vestingAmountVested     = sdk.NewCoin(uatomDenom, math.NewInt(99900000000))
+	vestingAmount           = sdk.NewCoin(uatomDenom, math.NewInt(350000))
 	vestingBalance          = sdk.NewCoins(vestingAmountVested).Add(vestingAmount)
-	vestingDelegationAmount = sdk.NewCoin(uatomDenom, sdk.NewInt(500000000))
-	vestingDelegationFees   = sdk.NewCoin(uatomDenom, sdk.NewInt(1))
+	vestingDelegationAmount = sdk.NewCoin(uatomDenom, math.NewInt(500000000))
+	vestingDelegationFees   = sdk.NewCoin(uatomDenom, math.NewInt(1))
 )
 
 func (s *IntegrationTestSuite) testDelayedVestingAccount(api string) {
@@ -69,7 +71,7 @@ func (s *IntegrationTestSuite) testDelayedVestingAccount(api string) {
 				amt := res.GetDelegationResponse().GetDelegation().GetShares()
 				s.Require().NoError(err)
 
-				return amt.Equal(sdk.NewDecFromInt(vestingDelegationAmount.Amount))
+				return amt.Equal(math.LegacyNewDecFromInt(vestingDelegationAmount.Amount))
 			},
 			20*time.Second,
 			5*time.Second,
@@ -138,7 +140,7 @@ func (s *IntegrationTestSuite) testContinuousVestingAccount(api string) {
 				amt := res.GetDelegationResponse().GetDelegation().GetShares()
 				s.Require().NoError(err)
 
-				return amt.Equal(sdk.NewDecFromInt(vestingDelegationAmount.Amount))
+				return amt.Equal(math.LegacyNewDecFromInt(vestingDelegationAmount.Amount))
 			},
 			20*time.Second,
 			5*time.Second,
@@ -221,7 +223,7 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api string) { //nolint
 		balance, err := getSpecificBalance(api, periodicVestingAddr, uatomDenom)
 		s.Require().NoError(err)
 
-		expectedBalance := sdk.NewCoin(uatomDenom, sdk.NewInt(0))
+		expectedBalance := sdk.NewCoin(uatomDenom, math.NewInt(0))
 		for _, period := range acc.VestingPeriods {
 			// _, coin := ante.Find(period.Amount, uatomDenom)
 			_, coin := period.Amount.Find(uatomDenom)
@@ -277,7 +279,7 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api string) { //nolint
 				amt := res.GetDelegationResponse().GetDelegation().GetShares()
 				s.Require().NoError(err)
 
-				return amt.Equal(sdk.NewDecFromInt(vestingDelegationAmount.Amount))
+				return amt.Equal(math.LegacyNewDecFromInt(vestingDelegationAmount.Amount))
 			},
 			20*time.Second,
 			5*time.Second,

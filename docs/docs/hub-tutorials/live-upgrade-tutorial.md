@@ -16,9 +16,28 @@ governance process.
    $ gaiad config chain-id testing
 
    # create an upgrade governance proposal
-   $ gaiad tx gov submit-proposal software-upgrade <plan-name> \
-   --title <proposal-title> --description <proposal-description> \
-   --from <name-or-key> --upgrade-height <desired-upgrade-height> --deposit 10000000stake
+   $ gaiad tx gov submit-proposal  <path-to-proposal-json> --from <name-or-key>
+   
+   Where proposal json file contains MsgSoftwareUpgrade e.g.
+   `{
+		"messages": [
+		 {
+		  "@type": "/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade",
+		  "authority":"cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn" ,
+		  "plan": {
+		   "name": "plan name",
+		   "height": "1000" ,
+		   "info": "proposal info" ,
+		   "upgraded_client_state": null
+		  }
+		 }
+		],
+		"metadata": "ipfs://CID",
+		"deposit": "10000000stake",
+		"title": "proposal title",
+		"summary": "proposal summary"
+	}`
+   
 
    # once the proposal passes you can query the pending plan
    $ gaiad query upgrade plan

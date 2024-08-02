@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	ibcclienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
-	providertypes "github.com/cosmos/interchain-security/v4/x/ccv/provider/types"
+	ibcclienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
+	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
 )
 
 const (

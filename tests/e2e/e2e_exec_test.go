@@ -13,12 +13,13 @@ import (
 
 	"github.com/ory/dockertest/v3/docker"
 
+	"cosmossdk.io/x/feegrant"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -547,7 +548,7 @@ func (s *IntegrationTestSuite) getLatestBlockHeight(c *chain, valIdx int) int {
 	type syncInfo struct {
 		SyncInfo struct {
 			LatestHeight string `json:"latest_block_height"`
-		} `json:"SyncInfo"`
+		} `json:"sync_info"`
 	}
 
 	var currentHeight int
@@ -706,7 +707,7 @@ func (s *IntegrationTestSuite) executeHermesCommand(ctx context.Context, hermesC
 		if err != nil {
 			return nil, fmt.Errorf("hermes relayer command returned failed with error: %s", err)
 		}
-		// errors are catched by observing the logs level in the stderr output
+		// errors are caught by observing the logs level in the stderr output
 		if lvl := out["level"]; lvl != nil && strings.ToLower(lvl.(string)) == "error" {
 			errMsg := out["fields"].(map[string]interface{})["message"]
 			return nil, fmt.Errorf("hermes relayer command failed: %s", errMsg)

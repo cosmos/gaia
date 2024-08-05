@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/"
+                       xmlns:moz="http://www.mozilla.org/2006/browser/search/">
+  <ShortName>Cosmos Hub</ShortName>
+  <Description>Search Cosmos Hub</Description>
+  <InputEncoding>UTF-8</InputEncoding>
+  <Image width="16" height="16" type="image/x-icon">https://hub.cosmos.network/img/hub.svg</Image>
+  <Url type="text/html" method="get" template="https://hub.cosmos.network/search?q={searchTerms}"/>
+  <Url type="application/opensearchdescription+xml" rel="self" template="https://hub.cosmos.network/opensearch.xml" />
+  <moz:SearchForm>https://hub.cosmos.network/</moz:SearchForm>
+</OpenSearchDescription>

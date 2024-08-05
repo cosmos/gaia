@@ -327,7 +327,7 @@ Running an effective operation is key to avoiding unexpected unbonding or slashi
 
 Validators are expected to perform regular software updates to accommodate chain upgrades and bug fixes. It is suggested to consider using [Cosmovisor](https://docs.cosmos.network/v0.45/run-node/cosmovisor.html) to partially automate this process.
 
-During an chain upgrade, progress is discussed in a private channel in the [Interchain Discord](https://discord.gg/cosmosnetwork). If your validator is in the active set we encourage you to request access to that channel by contacting a moderator.
+During an chain upgrade, progress is discussed in a private channel in the [Interchain Discord](https://discord.gg/interchain). If your validator is in the active set we encourage you to request access to that channel by contacting a moderator.
 
 ### How can validators protect themselves from denial-of-service attacks?
 

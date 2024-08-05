@@ -21,7 +21,7 @@ jobs:
                   echo "tag_name=${{ github.ref_name }}" | tee -a $GITHUB_OUTPUT
                 fi
             - name: Check out repository code
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
               with:
                 ref: ${{ steps.get-metadata.outputs.ref_name }}
             - name: Setup go
@@ -45,7 +45,7 @@ jobs:
             max-parallel: 10
         steps:
             - name: Check out repository code
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
               with:
                 ref: ${{ needs.prepare-matrix.outputs.ref_name }}
             - name: Setup go

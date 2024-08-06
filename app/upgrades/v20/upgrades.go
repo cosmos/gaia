@@ -3,15 +3,15 @@ package v20
 import (
 	"context"
 
+	providerkeeper "github.com/cosmos/interchain-security/v5/x/ccv/provider/keeper"
+
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 
 	"github.com/cosmos/gaia/v20/app/keepers"
-
-	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
-	providerkeeper "github.com/cosmos/interchain-security/v5/x/ccv/provider/keeper"
 )
 
 // CreateUpgradeHandler returns an upgrade handler for Gaia v20.

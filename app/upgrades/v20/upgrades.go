@@ -47,8 +47,15 @@ func CreateUpgradeHandler(
 		}
 
 		InitializeMaxProviderConsensusParam(ctx, keepers.ProviderKeeper)
-		SetMaxValidators(ctx, *keepers.StakingKeeper)
-		InitializeLastProviderConsensusValidatorSet(ctx, keepers.ProviderKeeper, *keepers.StakingKeeper)
+
+		err = SetMaxValidators(ctx, *keepers.StakingKeeper)
+		if err != nil {
+			return vm, err
+		}
+		err = InitializeLastProviderConsensusValidatorSet(ctx, keepers.ProviderKeeper, *keepers.StakingKeeper)
+		if err != nil {
+			return vm, err
+		}
 
 		ctx.Logger().Info("Upgrade v20 complete")
 		return vm, nil
@@ -71,26 +78,29 @@ func InitializeMaxProviderConsensusParam(ctx sdk.Context, providerKeeper provide
 // in Interchain Security, after which the number of validators
 // participating in consensus on the Cosmos Hub will be governed by the
 // MaxProviderConsensusValidators parameter in the provider module.
-func SetMaxValidators(ctx sdk.Context, stakingKeeper stakingkeeper.Keeper) {
+func SetMaxValidators(ctx sdk.Context, stakingKeeper stakingkeeper.Keeper) error {
 	params, err := stakingKeeper.GetParams(ctx)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	params.MaxValidators = NewMaxValidators
 
 	err = stakingKeeper.SetParams(ctx, params)
 	if err != nil {
-		panic(err)
+		return err
 	}
+	return nil
 }
 
 // InitializeLastProviderConsensusValidatorSet initializes the last provider consensus validator set
 // by setting it to the first 180 validators from the current validator set of the staking module.
-func InitializeLastProviderConsensusValidatorSet(ctx sdk.Context, providerKeeper providerkeeper.Keeper, stakingKeeper stakingkeeper.Keeper) {
+func InitializeLastProviderConsensusValidatorSet(
+	ctx sdk.Context, providerKeeper providerkeeper.Keeper, stakingKeeper stakingkeeper.Keeper,
+) error {
 	vals, err := stakingKeeper.GetBondedValidatorsByPower(ctx)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	// cut the validator set to the first 180 validators
@@ -103,11 +113,12 @@ func InitializeLastProviderConsensusValidatorSet(ctx sdk.Context, providerKeeper
 	for _, val := range vals {
 		consensusVal, err := providerKeeper.CreateProviderConsensusValidator(ctx, val)
 		if err != nil {
-			panic(err)
+			return err
 		}
 
 		lastValidators = append(lastValidators, consensusVal)
 	}
 
 	providerKeeper.SetLastProviderConsensusValSet(ctx, lastValidators)
+	return nil
 }

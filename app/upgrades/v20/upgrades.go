@@ -4,6 +4,7 @@ import (
 	"context"
 
 	providerkeeper "github.com/cosmos/interchain-security/v5/x/ccv/provider/keeper"
+	"github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
 
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
@@ -12,6 +13,18 @@ import (
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 
 	"github.com/cosmos/gaia/v20/app/keepers"
+)
+
+// Constants for the new parameters in the v20 upgrade.
+const (
+	// MaxValidators will be set to 200 (up from 180),
+	// to allow the first 20 inactive validators
+	// to participate on consumer chains.
+	NEW_MAX_VALIDATORS = 200
+	// MaxProviderConsensusValidators will be set to 180,
+	// to preserve the behaviour of only the first 180
+	// validators participating in consensus on the Cosmos Hub.
+	NEW_MAX_PROVIDER_CONSENSUS_VALIDATORS = 180
 )
 
 // CreateUpgradeHandler returns an upgrade handler for Gaia v20.
@@ -34,21 +47,21 @@ func CreateUpgradeHandler(
 		}
 
 		InitializeMaxProviderConsensusParam(ctx, keepers.ProviderKeeper)
-		InitializeMaxValidatorsForExistingConsumers(ctx, keepers.ProviderKeeper)
-		SetMaxValidatorsTo200(ctx, *keepers.StakingKeeper)
+		InitializeMissingValidatorSetCaps(ctx, keepers.ProviderKeeper)
+		SetMaxValidators(ctx, *keepers.StakingKeeper)
+		InitializeLastProviderConsensusValidatorSet(ctx, keepers.ProviderKeeper, *keepers.StakingKeeper)
 
 		ctx.Logger().Info("Upgrade v20 complete")
 		return vm, nil
 	}
 }
 
-// InitializeMaxValidatorsForExistingConsumers initializes the max validators
+// InitializeMissingValidatorSetCaps initializes the max validators
 // parameter for existing consumers to the MaxProviderConsensusValidators parameter.
 // This is necessary to avoid those consumer chains having an excessive amount of validators.
-func InitializeMaxValidatorsForExistingConsumers(ctx sdk.Context, providerKeeper providerkeeper.Keeper) {
-	maxVals := providerKeeper.GetParams(ctx).MaxProviderConsensusValidators
+func InitializeMissingValidatorSetCaps(ctx sdk.Context, providerKeeper providerkeeper.Keeper) {
 	for _, chainID := range providerKeeper.GetAllRegisteredConsumerChainIDs(ctx) {
-		providerKeeper.SetValidatorSetCap(ctx, chainID, uint32(maxVals))
+		providerKeeper.SetValidatorSetCap(ctx, chainID, NEW_MAX_PROVIDER_CONSENSUS_VALIDATORS)
 	}
 }
 
@@ -59,27 +72,54 @@ func InitializeMaxValidatorsForExistingConsumers(ctx sdk.Context, providerKeeper
 func InitializeMaxProviderConsensusParam(ctx sdk.Context, providerKeeper providerkeeper.Keeper) {
 	params := providerKeeper.GetParams(ctx)
 	if params.MaxProviderConsensusValidators == 0 {
-		params.MaxProviderConsensusValidators = 180
+		params.MaxProviderConsensusValidators = NEW_MAX_PROVIDER_CONSENSUS_VALIDATORS
 		providerKeeper.SetParams(ctx, params)
 	}
 }
 
-// SetMaxValidatorsTo200 sets the MaxValidators parameter in the staking module to 200,
+// SetMaxValidators sets the MaxValidators parameter in the staking module to 200,
 // which is the current number of 180 plus 20.
 // This is done in concert with the introduction of the inactive-validators feature
 // in Interchain Security, after which the number of validators
 // participating in consensus on the Cosmos Hub will be governed by the
 // MaxProviderConsensusValidators parameter in the provider module.
-func SetMaxValidatorsTo200(ctx sdk.Context, stakingKeeper stakingkeeper.Keeper) {
+func SetMaxValidators(ctx sdk.Context, stakingKeeper stakingkeeper.Keeper) {
 	params, err := stakingKeeper.GetParams(ctx)
 	if err != nil {
 		panic(err)
 	}
 
-	params.MaxValidators = 200
+	params.MaxValidators = NEW_MAX_VALIDATORS
 
 	err = stakingKeeper.SetParams(ctx, params)
 	if err != nil {
 		panic(err)
 	}
+}
+
+// InitializeLastProviderConsensusValidatorSet initializes the last provider consensus validator set
+// by setting it to the first 180 validators from the current validator set of the staking module.
+func InitializeLastProviderConsensusValidatorSet(ctx sdk.Context, providerKeeper providerkeeper.Keeper, stakingKeeper stakingkeeper.Keeper) {
+	vals, err := stakingKeeper.GetBondedValidatorsByPower(ctx)
+	if err != nil {
+		panic(err)
+	}
+
+	// cut the validator set to the first 180 validators
+	if len(vals) > NEW_MAX_PROVIDER_CONSENSUS_VALIDATORS {
+		vals = vals[:NEW_MAX_PROVIDER_CONSENSUS_VALIDATORS]
+	}
+
+	// create consensus validators for the staking validators
+	lastValidators := []types.ConsensusValidator{}
+	for _, val := range vals {
+		consensusVal, err := providerKeeper.CreateProviderConsensusValidator(ctx, val)
+		if err != nil {
+			panic(err)
+		}
+
+		lastValidators = append(lastValidators, consensusVal)
+	}
+
+	providerKeeper.SetLastProviderConsensusValSet(ctx, lastValidators)
 }

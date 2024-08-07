@@ -13,6 +13,8 @@ import (
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 
 	"github.com/cosmos/gaia/v20/app/keepers"
+
+	errorsmod "cosmossdk.io/errors"
 )
 
 // Constants for the new parameters in the v20 upgrade.
@@ -43,18 +45,22 @@ func CreateUpgradeHandler(
 
 		vm, err := mm.RunMigrations(ctx, configurator, vm)
 		if err != nil {
-			return vm, err
+			return vm, errorsmod.Wrapf(err, "running module migrations")
 		}
 
+		ctx.Logger().Info("Initializing MaxProviderConsensusValidators parameter...")
 		InitializeMaxProviderConsensusParam(ctx, keepers.ProviderKeeper)
 
+		ctx.Logger().Info("Setting MaxValidators parameter...")
 		err = SetMaxValidators(ctx, *keepers.StakingKeeper)
 		if err != nil {
-			return vm, err
+			return vm, errorsmod.Wrapf(err, "setting MaxValidators during migration")
 		}
+
+		ctx.Logger().Info("Initializing LastProviderConsensusValidatorSet...")
 		err = InitializeLastProviderConsensusValidatorSet(ctx, keepers.ProviderKeeper, *keepers.StakingKeeper)
 		if err != nil {
-			return vm, err
+			return vm, errorsmod.Wrapf(err, "initializing LastProviderConsensusValSet during migration")
 		}
 
 		ctx.Logger().Info("Upgrade v20 complete")

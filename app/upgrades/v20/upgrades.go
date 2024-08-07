@@ -30,7 +30,6 @@ const (
 // CreateUpgradeHandler returns an upgrade handler for Gaia v20.
 // It performs module migrations, as well as the following tasks:
 // - Initializes the MaxProviderConsensusValidators parameter in the provider module to 180.
-// - Sets the ValidatorSetCap parameter in the provider module to 180 for all presently registered consumer chains.
 // - Increases the MaxValidators parameter in the staking module to 200.
 func CreateUpgradeHandler(
 	mm *module.Manager,
@@ -47,21 +46,11 @@ func CreateUpgradeHandler(
 		}
 
 		InitializeMaxProviderConsensusParam(ctx, keepers.ProviderKeeper)
-		InitializeMissingValidatorSetCaps(ctx, keepers.ProviderKeeper)
 		SetMaxValidators(ctx, *keepers.StakingKeeper)
 		InitializeLastProviderConsensusValidatorSet(ctx, keepers.ProviderKeeper, *keepers.StakingKeeper)
 
 		ctx.Logger().Info("Upgrade v20 complete")
 		return vm, nil
-	}
-}
-
-// InitializeMissingValidatorSetCaps initializes the max validators
-// parameter for existing consumers to the MaxProviderConsensusValidators parameter.
-// This is necessary to avoid those consumer chains having an excessive amount of validators.
-func InitializeMissingValidatorSetCaps(ctx sdk.Context, providerKeeper providerkeeper.Keeper) {
-	for _, chainID := range providerKeeper.GetAllRegisteredConsumerChainIDs(ctx) {
-		providerKeeper.SetValidatorSetCap(ctx, chainID, NewMaxProviderConsensusValidators)
 	}
 }
 
@@ -71,10 +60,8 @@ func InitializeMissingValidatorSetCaps(ctx sdk.Context, providerKeeper providerk
 // and takes over this role from the MaxValidators parameter in the staking module.
 func InitializeMaxProviderConsensusParam(ctx sdk.Context, providerKeeper providerkeeper.Keeper) {
 	params := providerKeeper.GetParams(ctx)
-	if params.MaxProviderConsensusValidators == 0 {
-		params.MaxProviderConsensusValidators = NewMaxProviderConsensusValidators
-		providerKeeper.SetParams(ctx, params)
-	}
+	params.MaxProviderConsensusValidators = NewMaxProviderConsensusValidators
+	providerKeeper.SetParams(ctx, params)
 }
 
 // SetMaxValidators sets the MaxValidators parameter in the staking module to 200,

@@ -29,16 +29,15 @@ The chain-id of Cosmos Hub mainnet is `cosmoshub-4`.
 
 **This guide includes full instructions for joining the mainnet either as an archive/full node or a pruned node.**
 
-For instructions to bootstrap a node via Quicksync or State Sync, see the [Quickstart Guide](../getting-started/quickstart.mdx)
+For instructions to bootstrap a node via Quicksync or State Sync, see the [Quickstart Guide](../getting-started/quickstart.md)
 
-For instructions to join as a validator, please also see the [Validator Guide](../validators/overview.mdx).
+For instructions to join as a validator, please also see the [Validator Guide](../validators/overview.md).
 
 ### Overview
 <!-- DON'T FORGET TO KEEP INDEX UP TO DATE -->
 - [Join the Cosmos Hub Mainnet](#join-the-cosmos-hub-mainnet)
-    - [Release History](#release-history)
+  - [Release History](#release-history)
     - [Overview](#overview)
-    - [Background](#background)
   - [Explorers](#explorers)
   - [Getting Started](#getting-started)
   - [Hardware](#hardware)
@@ -56,7 +55,6 @@ For instructions to join as a validator, please also see the [Validator Guide](.
     - [State Sync](#state-sync)
     - [Quicksync](#quicksync)
   - [Snapshots](#snapshots)
-  - [Releases \& Upgrades](#releases--upgrades)
   - [Cosmovisor](#cosmovisor)
   - [Running via Background Process](#running-via-background-process)
   - [Exporting State](#exporting-state)
@@ -242,7 +240,7 @@ address = "0.0.0.0:9090"
 
 ## Sync Options
 
-There are three main ways to sync a node on the Cosmos Hub; Blocksync, State Sync, and Quicksync. See the matrix below for the Hub's recommended setup configuration. This guide will focus on syncing two types of common nodes; full and pruned. For further information on syncing to run a validator node, see the section on [Validators](../validators/overview.mdx).
+There are three main ways to sync a node on the Cosmos Hub; Blocksync, State Sync, and Quicksync. See the matrix below for the Hub's recommended setup configuration. This guide will focus on syncing two types of common nodes; full and pruned. For further information on syncing to run a validator node, see the section on [Validators](../validators/overview.md).
 
 There are two types of concerns when deciding which sync option is right. _Data integrity_ refers to how reliable the data provided by a subset of network participants is. _Historical data_ refers to how robust and inclusive the chain’s history is.
 

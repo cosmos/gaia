@@ -170,14 +170,13 @@ ifneq ($(strip $(TAG)),)
 		-e CGO_ENABLED=1 \
 		-e TM_VERSION=$(TM_VERSION) \
 		-e COSMWASM_VERSION=$(COSMWASM_VERSION) \
-		-v /var/run/docker.sock:/var/run/docker.sock \
 		-v `pwd`:/go/src/gaiad \
 		-w /go/src/gaiad \
 		$(GORELEASER_IMAGE) \
 		release \
 		--snapshot \
 		--skip=publish \
-		--debug \
+		--verbose \
 		--clean
 	@rm -rf dist/
 	@echo "--> Done create-release-dry-run for tag: $(TAG)"
@@ -194,7 +193,6 @@ goreleaser-build-local:
 		-e CGO_ENABLED=1 \
 		-e TM_VERSION=$(TM_VERSION) \
 		-e COSMWASM_VERSION=$(COSMWASM_VERSION) \
-		-v /var/run/docker.sock:/var/run/docker.sock \
 		-v `pwd`:/go/src/gaiad \
 		-w /go/src/gaiad \
 		--platform=linux/amd64 \
@@ -204,7 +202,7 @@ goreleaser-build-local:
 		--skip=publish \
 		--release-notes ./RELEASE_NOTES.md \
 		--timeout 90m \
-		--debug
+		--verbose
 
 # uses goreleaser to create static binaries for linux an darwin
 # requires access to GITHUB_TOKEN which has to be available in the CI environment
@@ -216,7 +214,6 @@ ci-release:
 		-e GITHUB_TOKEN=$(GITHUB_TOKEN) \
 		-e TM_VERSION=$(TM_VERSION) \
 		-e COSMWASM_VERSION=$(COSMWASM_VERSION) \
-		-v /var/run/docker.sock:/var/run/docker.sock \
 		-v `pwd`:/go/src/gaiad \
 		-w /go/src/gaiad \
 		--platform=linux/amd64 \

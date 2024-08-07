@@ -20,7 +20,9 @@ jq ".app_state.gov.params.voting_period = \"20s\" | .app_state.gov.params.expedi
    "${HOME_DIR}/edited_genesis.json" && mv "${HOME_DIR}/edited_genesis.json" "${HOME_DIR}/.gaia/config/genesis.json"
 
 $GAIAD keys add validator --keyring-backend="test"
+$GAIAD keys add user --keyring-backend="test"
 $GAIAD genesis add-genesis-account $("${GAIAD}" keys show validator -a --keyring-backend="test") $USER_COINS
+$GAIAD genesis add-genesis-account $("${GAIAD}" keys show user -a --keyring-backend="test") $USER_COINS
 $GAIAD genesis gentx validator $STAKE --keyring-backend="test" --chain-id $CHAINID
 $GAIAD genesis collect-gentxs
 

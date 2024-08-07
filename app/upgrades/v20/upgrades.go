@@ -20,11 +20,11 @@ const (
 	// MaxValidators will be set to 200 (up from 180),
 	// to allow the first 20 inactive validators
 	// to participate on consumer chains.
-	NEW_MAX_VALIDATORS = 200
+	NewMaxValidators = 200
 	// MaxProviderConsensusValidators will be set to 180,
 	// to preserve the behaviour of only the first 180
 	// validators participating in consensus on the Cosmos Hub.
-	NEW_MAX_PROVIDER_CONSENSUS_VALIDATORS = 180
+	NewMaxProviderConsensusValidators = 180
 )
 
 // CreateUpgradeHandler returns an upgrade handler for Gaia v20.
@@ -61,7 +61,7 @@ func CreateUpgradeHandler(
 // This is necessary to avoid those consumer chains having an excessive amount of validators.
 func InitializeMissingValidatorSetCaps(ctx sdk.Context, providerKeeper providerkeeper.Keeper) {
 	for _, chainID := range providerKeeper.GetAllRegisteredConsumerChainIDs(ctx) {
-		providerKeeper.SetValidatorSetCap(ctx, chainID, NEW_MAX_PROVIDER_CONSENSUS_VALIDATORS)
+		providerKeeper.SetValidatorSetCap(ctx, chainID, NewMaxProviderConsensusValidators)
 	}
 }
 
@@ -72,7 +72,7 @@ func InitializeMissingValidatorSetCaps(ctx sdk.Context, providerKeeper providerk
 func InitializeMaxProviderConsensusParam(ctx sdk.Context, providerKeeper providerkeeper.Keeper) {
 	params := providerKeeper.GetParams(ctx)
 	if params.MaxProviderConsensusValidators == 0 {
-		params.MaxProviderConsensusValidators = NEW_MAX_PROVIDER_CONSENSUS_VALIDATORS
+		params.MaxProviderConsensusValidators = NewMaxProviderConsensusValidators
 		providerKeeper.SetParams(ctx, params)
 	}
 }
@@ -89,7 +89,7 @@ func SetMaxValidators(ctx sdk.Context, stakingKeeper stakingkeeper.Keeper) {
 		panic(err)
 	}
 
-	params.MaxValidators = NEW_MAX_VALIDATORS
+	params.MaxValidators = NewMaxValidators
 
 	err = stakingKeeper.SetParams(ctx, params)
 	if err != nil {
@@ -106,8 +106,8 @@ func InitializeLastProviderConsensusValidatorSet(ctx sdk.Context, providerKeeper
 	}
 
 	// cut the validator set to the first 180 validators
-	if len(vals) > NEW_MAX_PROVIDER_CONSENSUS_VALIDATORS {
-		vals = vals[:NEW_MAX_PROVIDER_CONSENSUS_VALIDATORS]
+	if len(vals) > NewMaxProviderConsensusValidators {
+		vals = vals[:NewMaxProviderConsensusValidators]
 	}
 
 	// create consensus validators for the staking validators

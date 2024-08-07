@@ -31,6 +31,7 @@ const (
 // It performs module migrations, as well as the following tasks:
 // - Initializes the MaxProviderConsensusValidators parameter in the provider module to 180.
 // - Increases the MaxValidators parameter in the staking module to 200.
+// - Initializes the last provider consensus validator set in the provider module
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,

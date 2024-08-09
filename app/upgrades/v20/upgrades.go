@@ -6,6 +6,7 @@ import (
 	providerkeeper "github.com/cosmos/interchain-security/v5/x/ccv/provider/keeper"
 	"github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
 
+	errorsmod "cosmossdk.io/errors"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -13,8 +14,6 @@ import (
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 
 	"github.com/cosmos/gaia/v20/app/keepers"
-
-	errorsmod "cosmossdk.io/errors"
 )
 
 // Constants for the new parameters in the v20 upgrade.

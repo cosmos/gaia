@@ -30,7 +30,7 @@ import (
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 
-	gaiaapp "github.com/cosmos/gaia/v19/app"
+	gaiaapp "github.com/cosmos/gaia/v20/app"
 )
 
 // SimAppChainID hardcoded chainID for simulation

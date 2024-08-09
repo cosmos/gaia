@@ -12,7 +12,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
-	gaia "github.com/cosmos/gaia/v19/app"
+	gaia "github.com/cosmos/gaia/v20/app"
 )
 
 // SimulationOperations retrieves the simulation params from the provided file path

@@ -14,8 +14,8 @@ import (
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 
-	gaia "github.com/cosmos/gaia/v19/app"
-	gaiahelpers "github.com/cosmos/gaia/v19/app/helpers"
+	gaia "github.com/cosmos/gaia/v20/app"
+	gaiahelpers "github.com/cosmos/gaia/v20/app/helpers"
 )
 
 type EmptyAppOptions struct{}

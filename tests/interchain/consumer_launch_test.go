@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	"github.com/cosmos/gaia/v19/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v20/tests/interchain/chainsuite"
 )
 
 type ConsumerLaunchSuite struct {

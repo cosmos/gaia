@@ -15,6 +15,8 @@ import (
 	ibc "github.com/cosmos/ibc-go/v8/modules/core"
 	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 	ibctm "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
+	no_valupdates_genutil "github.com/cosmos/interchain-security/v5/x/ccv/no_valupdates_genutil"
+	no_valupdates_staking "github.com/cosmos/interchain-security/v5/x/ccv/no_valupdates_staking"
 	icsproviderclient "github.com/cosmos/interchain-security/v5/x/ccv/provider/client"
 	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
 
@@ -89,7 +91,7 @@ func appModules(
 	skipGenesisInvariants bool,
 ) []module.AppModule {
 	return []module.AppModule{
-		genutil.NewAppModule(
+		no_valupdates_genutil.NewAppModule(
 			app.AccountKeeper,
 			app.StakingKeeper,
 			app,
@@ -104,7 +106,7 @@ func appModules(
 		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, nil, app.GetSubspace(minttypes.ModuleName)),
 		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(slashingtypes.ModuleName), app.interfaceRegistry),
 		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName)),
-		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName)),
+		no_valupdates_staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName)),
 		upgrade.NewAppModule(app.UpgradeKeeper, app.AccountKeeper.AddressCodec()),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
@@ -276,7 +278,6 @@ func orderInitBlockers() []string {
 		stakingtypes.ModuleName,
 		slashingtypes.ModuleName,
 		minttypes.ModuleName,
-		crisistypes.ModuleName,
 		genutiltypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		ibcexported.ModuleName,
@@ -302,5 +303,8 @@ func orderInitBlockers() []string {
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
 		wasmtypes.ModuleName,
+		// crisis needs to be last so that the genesis state is consistent
+		// when it checks invariants
+		crisistypes.ModuleName,
 	}
 }

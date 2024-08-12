@@ -254,6 +254,16 @@ func NewAppKeeper(
 		authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ConsensusAddrPrefix()),
 	)
 
+	appKeepers.MintKeeper = mintkeeper.NewKeeper(
+		appCodec,
+		runtime.NewKVStoreService(appKeepers.keys[minttypes.StoreKey]),
+		appKeepers.StakingKeeper,
+		appKeepers.AccountKeeper,
+		appKeepers.BankKeeper,
+		authtypes.FeeCollectorName,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+	)
+
 	appKeepers.DistrKeeper = distrkeeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(appKeepers.keys[distrtypes.StoreKey]),
@@ -311,6 +321,21 @@ func NewAppKeeper(
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
+	// provider depends on gov, so gov must be registered first
+	govConfig := govtypes.DefaultConfig()
+	// set the MaxMetadataLen for proposals to the same value as it was pre-sdk v0.47.x
+	govConfig.MaxMetadataLen = 10200
+	appKeepers.GovKeeper = govkeeper.NewKeeper(
+		appCodec,
+		runtime.NewKVStoreService(appKeepers.keys[govtypes.StoreKey]),
+		appKeepers.AccountKeeper,
+		appKeepers.BankKeeper,
+		appKeepers.StakingKeeper,
+		appKeepers.DistrKeeper,
+		bApp.MsgServiceRouter(),
+		govConfig,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+	)
 	appKeepers.ProviderKeeper = icsproviderkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[providertypes.StoreKey],
@@ -325,49 +350,14 @@ func NewAppKeeper(
 		appKeepers.AccountKeeper,
 		appKeepers.DistrKeeper,
 		appKeepers.BankKeeper,
-		govkeeper.Keeper{}, // cyclic dependency between provider and governance, will be set later
+		*appKeepers.GovKeeper,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 		authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ValidatorAddrPrefix()),
 		authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ConsensusAddrPrefix()),
 		authtypes.FeeCollectorName,
 	)
 
-	// gov depends on provider, so needs to be set after
-	govConfig := govtypes.DefaultConfig()
-	// set the MaxMetadataLen for proposals to the same value as it was pre-sdk v0.47.x
-	govConfig.MaxMetadataLen = 10200
-	appKeepers.GovKeeper = govkeeper.NewKeeper(
-		appCodec,
-		runtime.NewKVStoreService(appKeepers.keys[govtypes.StoreKey]),
-		appKeepers.AccountKeeper,
-		appKeepers.BankKeeper,
-		// use the ProviderKeeper as StakingKeeper for gov
-		// because governance should be based on the consensus-active validators
-		appKeepers.ProviderKeeper,
-		appKeepers.DistrKeeper,
-		bApp.MsgServiceRouter(),
-		govConfig,
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
-	)
-
-	// mint keeper must be created after provider keeper
-	appKeepers.MintKeeper = mintkeeper.NewKeeper(
-		appCodec,
-		runtime.NewKVStoreService(appKeepers.keys[minttypes.StoreKey]),
-		appKeepers.ProviderKeeper,
-		appKeepers.AccountKeeper,
-		appKeepers.BankKeeper,
-		authtypes.FeeCollectorName,
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
-	)
-
-	appKeepers.ProviderKeeper.SetGovKeeper(*appKeepers.GovKeeper)
-
-	appKeepers.ProviderModule = icsprovider.NewAppModule(
-		&appKeepers.ProviderKeeper,
-		appKeepers.GetSubspace(providertypes.ModuleName),
-		appKeepers.keys[providertypes.StoreKey],
-	)
+	appKeepers.ProviderModule = icsprovider.NewAppModule(&appKeepers.ProviderKeeper, appKeepers.GetSubspace(providertypes.ModuleName))
 
 	// Register the proposal types
 	// Deprecated: Avoid adding new handlers, instead use the new proposal flow

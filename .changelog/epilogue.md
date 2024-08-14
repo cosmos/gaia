@@ -1,3 +1,223 @@
+## v14.2.0
+
+*March 6, 2024*
+
+**This is an emergency release.**
+
+### DEPENDENCIES
+
+- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware) to `v4.1.2-0.20240228222021-455757bb5771`.
+  ([\#2980](https://github.com/cosmos/gaia/pull/2980))
+
+### STATE BREAKING
+
+- Emergency patch for [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware).
+  ([\#2980](https://github.com/cosmos/gaia/pull/2980))
+
+## v14.1.0
+
+*November 21, 2023*
+
+### API BREAKING
+
+- Deprecate equivocation proposals of ICS provider module ([\#2825](https://github.com/cosmos/gaia/pull/2825))
+
+### DEPENDENCIES
+
+- Bump [ICS] to [v2.4.0-lsm](https://github.com/cosmos/interchain-security/releases/tag/v2.4.0-lsm) ([\#2825](https://github.com/cosmos/gaia/pull/2825))
+
+### FEATURES
+
+- Set in the v14 upgrade handler the min evidence height for `neutron-1` 
+  at `4552189` and for `stride-1` at `6375035`. 
+  ([\#2821](https://github.com/cosmos/gaia/pull/2821))
+- Introducing the cryptographic verification of equivocation feature to the ICS provider module ([\#2825](https://github.com/cosmos/gaia/pull/2825))
+
+### STATE BREAKING
+
+- Bump [ICS] to [v2.4.0-lsm](https://github.com/cosmos/interchain-security/releases/tag/v2.4.0-lsm) ([\#2825](https://github.com/cosmos/gaia/pull/2825))
+
+## v14.0.0
+
+*November 15, 2023*
+
+❗***This release is deprecated and should not be used in production. Use v14.1.0 instead.***
+
+### API BREAKING
+
+- Deprecate equivocation proposals of ICS provider module ([\#2814](https://github.com/cosmos/gaia/pull/2814))
+
+### DEPENDENCIES
+
+- Bump [ICS] to [v2.3.0-provider-lsm](https://github.com/cosmos/interchain-security/releases/tag/v2.3.0-provider-lsm) ([\#2814](https://github.com/cosmos/gaia/pull/2814))
+
+### FEATURES
+
+- Introducing the cryptographic verification of equivocation feature to the ICS provider module ([\#2814](https://github.com/cosmos/gaia/pull/2814))
+
+### STATE BREAKING
+
+- Bump [ICS] to [v2.3.0-provider-lsm](https://github.com/cosmos/interchain-security/releases/tag/v2.3.0-provider-lsm) ([\#2814](https://github.com/cosmos/gaia/pull/2814))
+
+## v13.0.2
+
+*November 7, 2023*
+
+### BUG FIXES
+
+- Bump [cosmos/ledger-cosmos-go](https://github.com/cosmos/ledger-cosmos-go) to
+  [v0.12.4](https://github.com/cosmos/ledger-cosmos-go/releases/tag/v0.12.4) 
+  to fix signing with ledger through the binary on newest versions of macOS and Xcode
+  ([\#2763](https://github.com/cosmos/gaia/pull/2763))
+
+## v13.0.1
+
+*October 25, 2023*
+
+### BUG FIXES
+
+- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware) 
+  to [v4.1.1](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv4.1.1)
+  ([\#2771](https://github.com/cosmos/gaia/pull/2771))
+
+### DEPENDENCIES
+
+- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware) 
+  to [v4.1.1](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv4.1.1)
+  ([\#2771](https://github.com/cosmos/gaia/pull/2771))
+
+## v13.0.0
+
+*September 18, 2023*
+
+### DEPENDENCIES
+
+- Remove [Liquidity](https://github.com/Gravity-Devs/liquidity)
+  ([\#2716](https://github.com/cosmos/gaia/pull/2716))
+- Bump [interchain-security](https://github.com/cosmos/interchain-security) to
+  [v2.1.0-provider-lsm](https://github.com/cosmos/interchain-security/releases/tag/v2.1.0-provider-lsm)
+  ([\#2732](https://github.com/cosmos/gaia/pull/2732))
+
+### STATE BREAKING
+
+- Bump [interchain-security](https://github.com/cosmos/interchain-security) to
+  [v2.1.0-provider-lsm](https://github.com/cosmos/interchain-security/releases/tag/v2.1.0-provider-lsm)
+  ([\#2732](https://github.com/cosmos/gaia/pull/2732))
+
+## v12.0.0
+
+*August 18, 2023*
+
+### API BREAKING
+
+- Add Liquid Staking Module (LSM) and initialize the LSM params: 
+  ValidatorBondFactor, ValidatorLiquidStakingCap, GlobalLiquidStakingCap
+  ([\#2643](https://github.com/cosmos/gaia/pull/2643))
+
+### BUG FIXES
+
+- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware) 
+  to [v4.1.0](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv4.1.0)
+  ([\#2677](https://github.com/cosmos/gaia/pull/2677))
+
+### DEPENDENCIES
+
+- Bump [interchain-security](https://github.com/cosmos/interchain-security) to
+  [v2.0.0-lsm](https://github.com/cosmos/interchain-security/releases/tag/v2.0.0-lsm)
+  ([\#2643](https://github.com/cosmos/gaia/pull/2643))
+- Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to
+  [v0.45.16-ics-lsm](https://github.com/cosmos/cosmos-sdk/tree/v0.45.16-ics-lsm)
+  ([\#2643](https://github.com/cosmos/gaia/pull/2643))
+- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware) 
+  to [v4.1.0](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv4.1.0)
+  ([\#2677](https://github.com/cosmos/gaia/pull/2677))
+
+### FEATURES
+
+- Add Liquid Staking Module (LSM) and initialize the LSM params: 
+  ValidatorBondFactor, ValidatorLiquidStakingCap, GlobalLiquidStakingCap
+  ([\#2643](https://github.com/cosmos/gaia/pull/2643))
+
+### STATE BREAKING
+
+- Add Liquid Staking Module (LSM) and initialize the LSM params: 
+  ValidatorBondFactor, ValidatorLiquidStakingCap, GlobalLiquidStakingCap
+  ([\#2643](https://github.com/cosmos/gaia/pull/2643))
+- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware) 
+  to [v4.1.0](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv4.1.0)
+  ([\#2677](https://github.com/cosmos/gaia/pull/2677))
+
+## v11.0.0
+
+*July 18, 2023*
+
+### API BREAKING
+
+- [GlobalFee](x/globalfee)
+  - Add `bypass-min-fee-msg-types` and `maxTotalBypassMinFeeMsgGagUsage` to
+    globalfee params. `bypass-min-fee-msg-types` in `config/app.toml` is
+    deprecated ([\#2424](https://github.com/cosmos/gaia/pull/2424))
+
+### BUG FIXES
+
+- Fix logic bug in `GovPreventSpamDecorator` that allows bypassing the 
+  `MinInitialDeposit` requirement 
+  ([a759409](https://github.com/cosmos/gaia/commit/a759409c9da2780663244308b430a7847b95139b))
+
+### DEPENDENCIES
+
+- Bump [PFM](https://github.com/strangelove-ventures/packet-forward-middleware) to 
+  [v4.0.5](https://github.com/strangelove-ventures/packet-forward-middleware/releases/tag/v4.0.5)
+  ([\#2185](https://github.com/cosmos/gaia/issues/2185))
+- Bump [Interchain-Security](https://github.com/cosmos/interchain-security) to
+  [v2.0.0](https://github.com/cosmos/interchain-security/releases/tag/v2.0.0)
+  ([\#2616](https://github.com/cosmos/gaia/pull/2616))
+- Bump [Liquidity](https://github.com/Gravity-Devs/liquidity) to 
+  [v1.6.0-forced-withdrawal](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.6.0-forced-withdrawal) 
+  ([\#2652](https://github.com/cosmos/gaia/pull/2652))
+
+### STATE BREAKING
+
+- General
+  - Fix logic bug in `GovPreventSpamDecorator` that allows bypassing the
+    `MinInitialDeposit` requirement
+    ([a759409](https://github.com/cosmos/gaia/commit/a759409c9da2780663244308b430a7847b95139b))
+  - Bump [Interchain-Security](https://github.com/cosmos/interchain-security) to
+    [v2.0.0](https://github.com/cosmos/interchain-security/releases/tag/v2.0.0)
+    ([\#2616](https://github.com/cosmos/gaia/pull/2616))
+  - Bump [Liquidity](https://github.com/Gravity-Devs/liquidity) to
+    [v1.6.0-forced-withdrawal](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.6.0-forced-withdrawal)
+    ([\#2652](https://github.com/cosmos/gaia/pull/2652))
+- [GlobalFee](x/globalfee)
+  - Create the upgrade handler and params migration for the new Gloabal Fee module
+    parameters introduced in [#2424](https://github.com/cosmos/gaia/pull/2424)
+    ([\#2352](https://github.com/cosmos/gaia/pull/2352))
+  - Add `bypass-min-fee-msg-types` and `maxTotalBypassMinFeeMsgGagUsage` to
+    globalfee params ([\#2424](https://github.com/cosmos/gaia/pull/2424))
+  - Update Global Fee's AnteHandler to check tx fees against the network min gas
+    prices in DeliverTx mode ([\#2447](https://github.com/cosmos/gaia/pull/2447))
+
+## v10.0.2
+
+*July 03, 2023*
+
+This release bumps several dependencies and enables extra queries. 
+
+### DEPENDENCIES
+
+- Bump [ibc-go](https://github.com/cosmos/ibc-go) to
+  [v4.4.2](https://github.com/cosmos/ibc-go/releases/tag/v4.4.2)
+  ([\#2554](https://github.com/cosmos/gaia/pull/2554))
+- Bump [CometBFT](https://github.com/cometbft/cometbft) to
+  [v0.34.29](https://github.com/cometbft/cometbft/releases/tag/v0.34.29)
+  ([\#2594](https://github.com/cosmos/gaia/pull/2594))
+
+### FEATURES
+
+- Register NodeService to enable query `/cosmos/base/node/v1beta1/config`
+  gRPC query to disclose node operator's configured minimum-gas-price.
+  ([\#2629](https://github.com/cosmos/gaia/issues/2629))
+
 ## [v10.0.1] 2023-05-25
 
 * (deps) [#2543](https://github.com/cosmos/gaia/pull/2543) Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.4.1](https://github.com/cosmos/ibc-go/releases/tag/v4.4.1).

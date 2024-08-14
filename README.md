@@ -52,6 +52,6 @@ Check out [CONTRIBUTING.md](CONTRIBUTING.md) for our guidelines & policies for h
 
 ## Talk to us
 
-Follow the Cosmos Hub team's activities on the [Cosmos Hub Twitter](https://x.com/cosmoshub) account. 
+Follow the Cosmos Hub team's activities on the [Cosmos Hub X](https://x.com/cosmoshub) account. 
 
 Join the conversation on the [Cosmos Hub Forum](https://forum.cosmos.network) and on [Discord](https://discord.gg/interchain).

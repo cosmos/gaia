@@ -1,4 +1,4 @@
-package v19
+package v20
 
 import (
 	"context"
@@ -25,7 +25,7 @@ func CreateUpgradeHandler(
 			return vm, err
 		}
 
-		ctx.Logger().Info("Upgrade v19 complete")
+		ctx.Logger().Info("Upgrade v20 complete")
 		return vm, nil
 	}
 }

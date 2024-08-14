@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 
-	gaiaerrors "github.com/cosmos/gaia/v19/types/errors"
+	gaiaerrors "github.com/cosmos/gaia/v20/types/errors"
 )
 
 var expeditedPropDecoratorEnabled = true

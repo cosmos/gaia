@@ -1,1 +1,0 @@
-- Deprecate equivocation proposals of ICS provider module ([\#2814](https://github.com/cosmos/gaia/pull/2814))

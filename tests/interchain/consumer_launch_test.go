@@ -46,10 +46,10 @@ func (s *ConsumerLaunchSuite) TestChainLaunch() {
 	s.Require().NoError(err)
 	s.Require().NoError(chainsuite.SendSimpleIBCTx(s.GetContext(), s.Chain, consumer, s.Relayer))
 
-	jailed, err := s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), *s.Relayer, consumer, 1)
+	jailed, err := s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), s.Relayer, consumer, 1)
 	s.Require().NoError(err)
 	s.Require().True(jailed, "validator 1 should be jailed for downtime")
-	jailed, err = s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), *s.Relayer, consumer, 5)
+	jailed, err = s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), s.Relayer, consumer, 5)
 	s.Require().NoError(err)
 	s.Require().False(jailed, "validator 5 should not be jailed for downtime")
 
@@ -59,10 +59,10 @@ func (s *ConsumerLaunchSuite) TestChainLaunch() {
 	s.Require().NoError(err)
 	s.Require().NoError(chainsuite.SendSimpleIBCTx(s.GetContext(), s.Chain, consumer2, s.Relayer))
 
-	jailed, err = s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), *s.Relayer, consumer2, 1)
+	jailed, err = s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), s.Relayer, consumer2, 1)
 	s.Require().NoError(err)
 	s.Require().True(jailed, "validator 1 should be jailed for downtime")
-	jailed, err = s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), *s.Relayer, consumer2, 5)
+	jailed, err = s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), s.Relayer, consumer2, 5)
 	s.Require().NoError(err)
 	s.Require().False(jailed, "validator 5 should not be jailed for downtime")
 }

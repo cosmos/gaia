@@ -20,7 +20,7 @@ func NewRelayer(ctx context.Context, testName interchaintest.TestName) (*Relayer
 	rly := interchaintest.NewBuiltinRelayerFactory(
 		ibc.Hermes,
 		GetLogger(ctx),
-		relayer.CustomDockerImage("ghcr.io/informalsystems/hermes", "v1.8.0", "1000:1000"),
+		relayer.CustomDockerImage("ghcr.io/informalsystems/hermes", "1.10.1", "2000:2000"),
 	).Build(testName, dockerClient, dockerNetwork)
 	return &Relayer{Relayer: rly}, nil
 }
@@ -83,4 +83,20 @@ func (r *Relayer) GetChannelWithPort(ctx context.Context, chain, counterparty *C
 		}
 	}
 	return nil, fmt.Errorf("no channel found for port %s", portID)
+}
+
+func (r *Relayer) ClearCCVChannel(ctx context.Context, provider, consumer *Chain) error {
+	var channel *ibc.ChannelOutput
+	channel, err := r.GetChannelWithPort(ctx, consumer, provider, "consumer")
+	if err != nil {
+		return err
+	}
+	rs := r.Exec(ctx, GetRelayerExecReporter(ctx), []string{
+		"hermes", "clear", "packets", "--port", "consumer", "--channel", channel.ChannelID,
+		"--chain", consumer.Config().ChainID,
+	}, nil)
+	if rs.Err != nil {
+		return fmt.Errorf("error clearing packets: %w", rs.Err)
+	}
+	return nil
 }

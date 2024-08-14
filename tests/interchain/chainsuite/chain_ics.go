@@ -12,6 +12,7 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v8/testutil"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
+	"go.uber.org/multierr"
 	"golang.org/x/mod/semver"
 
 	clienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
@@ -32,6 +33,8 @@ type ConsumerConfig struct {
 	TopN                  int
 	ValidatorSetCap       int
 	ValidatorPowerCap     int
+	AllowInactiveVals     bool
+	MinStake              uint64
 	spec                  *interchaintest.ChainSpec
 
 	DuringDepositPeriod ConsumerBootstrapCb
@@ -219,7 +222,6 @@ func (p *Chain) DefaultConsumerChainSpec(ctx context.Context, chainID string, co
 	}
 	genesisOverrides := []cosmos.GenesisKV{
 		cosmos.NewGenesisKV("app_state.slashing.params.signed_blocks_window", strconv.Itoa(SlashingWindowConsumer)),
-		cosmos.NewGenesisKV("consensus_params.block.max_gas", "50000000"),
 	}
 	if config.TopN >= 0 {
 		genesisOverrides = append(genesisOverrides, cosmos.NewGenesisKV("app_state.ccvconsumer.params.soft_opt_out_threshold", "0.0"))
@@ -235,22 +237,30 @@ func (p *Chain) DefaultConsumerChainSpec(ctx context.Context, chainID string, co
 		)
 	}
 
-	modifyGenesis := cosmos.ModifyGenesis(genesisOverrides)
 	if chainType == strideChain {
 		genesisOverrides = append(genesisOverrides,
 			cosmos.NewGenesisKV("app_state.gov.params.voting_period", GovVotingPeriod.String()),
 		)
-		modifyGenesis = func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
-			b, err := cosmos.ModifyGenesis(genesisOverrides)(cc, b)
-			if err != nil {
-				return nil, err
-			}
+	}
+	modifyGenesis := func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
+		b, err := cosmos.ModifyGenesis(genesisOverrides)(cc, b)
+		if err != nil {
+			return nil, err
+		}
+		if chainType == strideChain {
 			b, err = sjson.SetBytes(b, "app_state.epochs.epochs.#(identifier==\"day\").duration", "120s")
 			if err != nil {
 				return nil, err
 			}
-			return sjson.SetBytes(b, "app_state.epochs.epochs.#(identifier==\"stride_epoch\").duration", "30s")
+			b, err = sjson.SetBytes(b, "app_state.epochs.epochs.#(identifier==\"stride_epoch\").duration", "30s")
+			if err != nil {
+				return nil, err
+			}
 		}
+		if gjson.GetBytes(b, "consensus").Exists() {
+			return sjson.SetBytes(b, "consensus.block.max_gas", "50000000")
+		}
+		return sjson.SetBytes(b, "consensus_params.block.max_gas", "50000000")
 	}
 
 	return &interchaintest.ChainSpec{
@@ -413,11 +423,17 @@ func (p *Chain) SubmitConsumerAdditionProposal(ctx context.Context, chainID stri
 	if config.ValidatorPowerCap > 0 {
 		prop.ValidatorsPowerCap = uint32(config.ValidatorPowerCap)
 	}
+	if config.AllowInactiveVals {
+		prop.AllowInactiveVals = true
+	}
+	if config.MinStake > 0 {
+		prop.MinStake = config.MinStake
+	}
 	propTx, err := p.ConsumerAdditionProposal(ctx, interchaintest.FaucetAccountKeyName, prop)
 	if err != nil {
 		return nil, nil, err
 	}
-	errCh := make(chan error)
+	errCh := make(chan error, 1)
 	go func() {
 		defer close(errCh)
 		if err := p.WaitForProposalStatus(ctx, propTx.ProposalID, govv1.StatusDepositPeriod); err != nil {
@@ -466,11 +482,7 @@ func (p *Chain) CheckCCV(ctx context.Context, consumer *Chain, relayer *Relayer,
 		return err
 	}
 
-	_, err = p.Validators[valIdx].ExecTx(ctx, providerAddress.Moniker,
-		"staking", "delegate",
-		providerAddress.ValoperAddress, fmt.Sprintf("%d%s", amount, p.Config().Denom),
-	)
-	if err != nil {
+	if err := p.Validators[valIdx].StakingDelegate(ctx, providerAddress.Moniker, providerAddress.ValoperAddress, fmt.Sprintf("%d%s", amount, p.Config().Denom)); err != nil {
 		return err
 	}
 
@@ -535,26 +547,42 @@ func (p *Chain) IsValoperJailed(ctx context.Context, valoper string) (bool, erro
 	return gjson.GetBytes(out, "validator.jailed").Bool(), nil
 }
 
-func (p *Chain) IsValidatorJailedForConsumerDowntime(ctx context.Context, relayer Relayer, consumer *Chain, validatorIdx int) (jailed bool, err error) {
-	if err = consumer.Validators[validatorIdx].StopContainer(ctx); err != nil {
+func (p *Chain) IsValidatorJailedForConsumerDowntime(ctx context.Context, relayer *Relayer, consumer *Chain, validatorIdx int) (jailed bool, err error) {
+	if err = consumer.Validators[validatorIdx].PauseContainer(ctx); err != nil {
 		return
 	}
 	defer func() {
-		err = consumer.Validators[validatorIdx].StartContainer(ctx)
+		sErr := consumer.Validators[validatorIdx].UnpauseContainer(ctx)
+		if sErr != nil {
+			err = multierr.Append(err, sErr)
+			return
+		}
+		time.Sleep(10 * CommitTimeout)
+		if jailed && err == nil {
+			if _, err = p.Validators[validatorIdx].ExecTx(ctx, p.ValidatorWallets[validatorIdx].Moniker, "slashing", "unjail"); err != nil {
+				return
+			}
+			var stillJailed bool
+			if stillJailed, err = p.IsValoperJailed(ctx, p.ValidatorWallets[validatorIdx].ValoperAddress); stillJailed {
+				err = fmt.Errorf("validator %d is still jailed after unjailing", validatorIdx)
+			}
+		}
 	}()
-	channel, err := relayer.GetChannelWithPort(ctx, consumer, p, "consumer")
-	if err != nil {
-		return
-	}
-	if err = testutil.WaitForBlocks(ctx, SlashingWindowConsumer+1, consumer); err != nil {
-		return
-	}
-	rs := relayer.Exec(ctx, GetRelayerExecReporter(ctx), []string{
-		"hermes", "clear", "packets", "--port", "consumer", "--channel", channel.ChannelID,
-		"--chain", consumer.Config().ChainID,
-	}, nil)
-	if rs.Err != nil {
-		return false, rs.Err
+	if p.Config().ChainID != consumer.Config().ChainID {
+		if err := relayer.ClearCCVChannel(ctx, p, consumer); err != nil {
+			return false, err
+		}
+		tCtx, tCancel := context.WithTimeout(ctx, SlashingWindowConsumer*2*CommitTimeout)
+		defer tCancel()
+		if err = testutil.WaitForBlocks(tCtx, SlashingWindowConsumer+1, consumer); err != nil {
+			if tCtx.Err() != nil {
+				err = fmt.Errorf("chain %s is stopped: %w", consumer.Config().ChainID, err)
+			}
+			return
+		}
+		if err := relayer.ClearCCVChannel(ctx, p, consumer); err != nil {
+			return false, err
+		}
 	}
 	tCtx, tCancel := context.WithTimeout(ctx, 30*CommitTimeout)
 	defer tCancel()

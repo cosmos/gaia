@@ -91,11 +91,7 @@ func SetMaxValidators(ctx sdk.Context, stakingKeeper stakingkeeper.Keeper) error
 
 	params.MaxValidators = NewMaxValidators
 
-	err = stakingKeeper.SetParams(ctx, params)
-	if err != nil {
-		return err
-	}
-	return nil
+	return stakingKeeper.SetParams(ctx, params)
 }
 
 // InitializeLastProviderConsensusValidatorSet initializes the last provider consensus validator set

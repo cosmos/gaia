@@ -57,8 +57,8 @@ export DAEMON_NAME=gaiad
 export DAEMON_HOME=$NODE_HOME
 COSMOVISOR=$GOPATH/bin/cosmovisor
 
-$BINARY config chain-id $CHAINID --home $NODE_HOME
-$BINARY config keyring-backend test --home $NODE_HOME
+$BINARY config set client chain-id $CHAINID --home $NODE_HOME
+$BINARY config set client keyring-backend test --home $NODE_HOME
 tmp=$(mktemp)
 
 # add bank part of genesis

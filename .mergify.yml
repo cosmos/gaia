@@ -33,11 +33,11 @@ pull_request_rules:
         branches:
           - release/v18.1.x
 
-  - name: Backport patches to the release/v19.x branch
+  - name: Backport patches to the release/v19.1.x branch
     conditions:
       - base=main
-      - label=A:backport/v19.x
+      - label=A:backport/v19.1.x
     actions:
       backport:
         branches:
-          - release/v19.x
+          - release/v19.1.x

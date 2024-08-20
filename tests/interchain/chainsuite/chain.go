@@ -2,6 +2,7 @@ package chainsuite
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"sync"
@@ -15,6 +16,7 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	sdkmath "cosmossdk.io/math"
+	abcitypes "github.com/cometbft/cometbft/abci/types"
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 )
 
@@ -76,9 +78,6 @@ func CreateChain(ctx context.Context, testName interchaintest.TestName, spec *in
 	}); err != nil {
 		return nil, err
 	}
-	// t.Cleanup(func() {
-	// 	_ = ic.Close()
-	// })
 
 	chain, err := chainFromCosmosChain(cosmosChain, relayerWallet)
 	if err != nil {
@@ -265,4 +264,40 @@ func getValidatorWallets(ctx context.Context, chain *Chain) ([]ValidatorWallet, 
 		return nil, err
 	}
 	return wallets, nil
+}
+
+func (c *Chain) QueryJSON(ctx context.Context, jsonPath string, query ...string) (gjson.Result, error) {
+	stdout, _, err := c.GetNode().ExecQuery(ctx, query...)
+	if err != nil {
+		return gjson.Result{}, err
+	}
+	retval := gjson.GetBytes(stdout, jsonPath)
+	if !retval.Exists() {
+		return gjson.Result{}, fmt.Errorf("json path %s not found in query result %s", jsonPath, stdout)
+	}
+	return retval, nil
+}
+
+// GetProposalID parses the proposal ID from the tx; necessary when the proposal type isn't accessible to interchaintest yet
+func (c *Chain) GetProposalID(ctx context.Context, txhash string) (string, error) {
+	stdout, _, err := c.GetNode().ExecQuery(ctx, "tx", txhash)
+	if err != nil {
+		return "", err
+	}
+	result := struct {
+		Events []abcitypes.Event `json:"events"`
+	}{}
+	if err := json.Unmarshal(stdout, &result); err != nil {
+		return "", err
+	}
+	for _, event := range result.Events {
+		if event.Type == "submit_proposal" {
+			for _, attr := range event.Attributes {
+				if string(attr.Key) == "proposal_id" {
+					return string(attr.Value), nil
+				}
+			}
+		}
+	}
+	return "", fmt.Errorf("proposal ID not found in tx %s", txhash)
 }

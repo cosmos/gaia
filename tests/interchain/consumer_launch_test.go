@@ -28,39 +28,48 @@ func someProviderKeysCopied() [chainsuite.ValidatorCount]bool {
 }
 
 func (s *ConsumerLaunchSuite) TestChainLaunch() {
-	relayer, err := chainsuite.NewRelayer(s.GetContext(), s.T())
-	s.Require().NoError(err)
-	err = relayer.SetupChainKeys(s.GetContext(), s.Chain)
-	s.Require().NoError(err)
-
 	cfg := chainsuite.ConsumerConfig{
 		ChainName:             s.OtherChain,
 		Version:               s.OtherChainVersion,
 		ShouldCopyProviderKey: s.ShouldCopyProviderKey,
 		Denom:                 chainsuite.Ucon,
-		TopN:                  95,
+		TopN:                  94,
 	}
-	consumer, err := s.Chain.AddConsumerChain(s.GetContext(), relayer, cfg)
+	consumer, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, cfg)
 	s.Require().NoError(err)
-	err = s.Chain.CheckCCV(s.GetContext(), consumer, relayer, 1_000_000, 0, 1)
+	err = s.Chain.CheckCCV(s.GetContext(), consumer, s.Relayer, 1_000_000, 0, 1)
 	s.Require().NoError(err)
 
 	s.UpgradeChain()
 
-	s.Require().NoError(relayer.StopRelayer(s.GetContext(), chainsuite.GetRelayerExecReporter(s.GetContext())))
-	s.Require().NoError(relayer.StartRelayer(s.GetContext(), chainsuite.GetRelayerExecReporter(s.GetContext())))
+	err = s.Chain.CheckCCV(s.GetContext(), consumer, s.Relayer, 1_000_000, 0, 1)
+	s.Require().NoError(err)
+	s.Require().NoError(chainsuite.SendSimpleIBCTx(s.GetContext(), s.Chain, consumer, s.Relayer))
 
-	err = s.Chain.CheckCCV(s.GetContext(), consumer, relayer, 1_000_000, 0, 1)
+	jailed, err := s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), *s.Relayer, consumer, 1)
 	s.Require().NoError(err)
-	consumer2, err := s.Chain.AddConsumerChain(s.GetContext(), relayer, cfg)
+	s.Require().True(jailed, "validator 1 should be jailed for downtime")
+	jailed, err = s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), *s.Relayer, consumer, 5)
 	s.Require().NoError(err)
-	err = s.Chain.CheckCCV(s.GetContext(), consumer2, relayer, 1_000_000, 0, 1)
+	s.Require().False(jailed, "validator 5 should not be jailed for downtime")
+
+	consumer2, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, cfg)
 	s.Require().NoError(err)
+	err = s.Chain.CheckCCV(s.GetContext(), consumer2, s.Relayer, 1_000_000, 0, 1)
+	s.Require().NoError(err)
+	s.Require().NoError(chainsuite.SendSimpleIBCTx(s.GetContext(), s.Chain, consumer2, s.Relayer))
+
+	jailed, err = s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), *s.Relayer, consumer2, 1)
+	s.Require().NoError(err)
+	s.Require().True(jailed, "validator 1 should be jailed for downtime")
+	jailed, err = s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), *s.Relayer, consumer2, 5)
+	s.Require().NoError(err)
+	s.Require().False(jailed, "validator 5 should not be jailed for downtime")
 }
 
 func TestICS40ChainLaunch(t *testing.T) {
 	s := &ConsumerLaunchSuite{
-		Suite:                 chainsuite.NewSuite(chainsuite.SuiteConfig{}),
+		Suite:                 chainsuite.NewSuite(chainsuite.SuiteConfig{CreateRelayer: true}),
 		OtherChain:            "ics-consumer",
 		OtherChainVersion:     "v4.0.0",
 		ShouldCopyProviderKey: noProviderKeysCopied(),
@@ -70,7 +79,7 @@ func TestICS40ChainLaunch(t *testing.T) {
 
 func TestICS33ConsumerAllKeysChainLaunch(t *testing.T) {
 	s := &ConsumerLaunchSuite{
-		Suite:                 chainsuite.NewSuite(chainsuite.SuiteConfig{}),
+		Suite:                 chainsuite.NewSuite(chainsuite.SuiteConfig{CreateRelayer: true}),
 		OtherChain:            "ics-consumer",
 		OtherChainVersion:     "v3.3.0",
 		ShouldCopyProviderKey: allProviderKeysCopied(),
@@ -80,7 +89,7 @@ func TestICS33ConsumerAllKeysChainLaunch(t *testing.T) {
 
 func TestICS33ConsumerSomeKeysChainLaunch(t *testing.T) {
 	s := &ConsumerLaunchSuite{
-		Suite:                 chainsuite.NewSuite(chainsuite.SuiteConfig{}),
+		Suite:                 chainsuite.NewSuite(chainsuite.SuiteConfig{CreateRelayer: true}),
 		OtherChain:            "ics-consumer",
 		OtherChainVersion:     "v3.3.0",
 		ShouldCopyProviderKey: someProviderKeysCopied(),
@@ -90,7 +99,7 @@ func TestICS33ConsumerSomeKeysChainLaunch(t *testing.T) {
 
 func TestICS33ConsumerNoKeysChainLaunch(t *testing.T) {
 	s := &ConsumerLaunchSuite{
-		Suite:                 chainsuite.NewSuite(chainsuite.SuiteConfig{}),
+		Suite:                 chainsuite.NewSuite(chainsuite.SuiteConfig{CreateRelayer: true}),
 		OtherChain:            "ics-consumer",
 		OtherChainVersion:     "v3.3.0",
 		ShouldCopyProviderKey: noProviderKeysCopied(),
@@ -106,12 +115,7 @@ func (s *MainnetConsumerChainsSuite) TestMainnetConsumerChainsAfterUpgrade() {
 	const neutronVersion = "v3.0.2"
 	const strideVersion = "v22.0.0"
 
-	relayer, err := chainsuite.NewRelayer(s.GetContext(), s.T())
-	s.Require().NoError(err)
-	err = relayer.SetupChainKeys(s.GetContext(), s.Chain)
-	s.Require().NoError(err)
-
-	neutron, err := s.Chain.AddConsumerChain(s.GetContext(), relayer, chainsuite.ConsumerConfig{
+	neutron, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, chainsuite.ConsumerConfig{
 		ChainName:             "neutron",
 		Version:               neutronVersion,
 		ShouldCopyProviderKey: allProviderKeysCopied(),
@@ -119,7 +123,7 @@ func (s *MainnetConsumerChainsSuite) TestMainnetConsumerChainsAfterUpgrade() {
 		TopN:                  95,
 	})
 	s.Require().NoError(err)
-	stride, err := s.Chain.AddConsumerChain(s.GetContext(), relayer, chainsuite.ConsumerConfig{
+	stride, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, chainsuite.ConsumerConfig{
 		ChainName:             "stride",
 		Version:               strideVersion,
 		ShouldCopyProviderKey: allProviderKeysCopied(),
@@ -128,21 +132,20 @@ func (s *MainnetConsumerChainsSuite) TestMainnetConsumerChainsAfterUpgrade() {
 	})
 	s.Require().NoError(err)
 
-	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), neutron, relayer, 1_000_000, 0, 1))
-	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), stride, relayer, 1_000_000, 0, 1))
+	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), neutron, s.Relayer, 1_000_000, 0, 1))
+	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), stride, s.Relayer, 1_000_000, 0, 1))
 
 	s.UpgradeChain()
 
-	s.Require().NoError(relayer.StopRelayer(s.GetContext(), chainsuite.GetRelayerExecReporter(s.GetContext())))
-	s.Require().NoError(relayer.StartRelayer(s.GetContext(), chainsuite.GetRelayerExecReporter(s.GetContext())))
-
-	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), neutron, relayer, 1_000_000, 0, 1))
-	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), stride, relayer, 1_000_000, 0, 1))
+	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), neutron, s.Relayer, 1_000_000, 0, 1))
+	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), stride, s.Relayer, 1_000_000, 0, 1))
+	s.Require().NoError(chainsuite.SendSimpleIBCTx(s.GetContext(), s.Chain, neutron, s.Relayer))
+	s.Require().NoError(chainsuite.SendSimpleIBCTx(s.GetContext(), s.Chain, stride, s.Relayer))
 }
 
 func TestMainnetConsumerChainsAfterUpgrade(t *testing.T) {
 	s := &MainnetConsumerChainsSuite{
-		Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{}),
+		Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{CreateRelayer: true}),
 	}
 	suite.Run(t, s)
 }

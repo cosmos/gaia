@@ -473,7 +473,7 @@ func (s *IntegrationTestSuite) execUnbondDelegation(c *chain, valIdx int, amount
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
 		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, delegateFees),
-		"--gas=250000", // default 200_000 is not enough; gas fees are higher when unbonding is done after LSM operations
+		"--gas=300000", // default 200_000 is not enough; gas fees are higher when unbonding is done after LSM operations
 		"--keyring-backend=test",
 		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
 		"--output=json",

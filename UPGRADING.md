@@ -1,16 +1,16 @@
 # Upgrading Gaia
 
-This guide provides instructions for upgrading Gaia from v18.1.x. v19.0.0.
+This guide provides instructions for upgrading Gaia from v18.1.x. to v19.1.x.
 
 This document describes the steps for validators, full node operators and relayer operators, to upgrade successfully for the Gaia v18 release.
 
-For more details on the release, please see the [release notes](https://github.com/cosmos/gaia/releases/tag/v19.0.0)
+For more details on the release, please see the [release notes](https://github.com/cosmos/gaia/releases/tag/v19.1.0)
 
 **Relayer Operators** for the Cosmos Hub and consumer chains, will also need to update to use [Hermes v1.10.0](https://github.com/informalsystems/hermes/releases/tag/v1.10.0) or higher. You may need to restart your relayer software after a major chain upgrade.
 
 ## Release Binary
 
-Please use the correct release binary: `v19.0.0`.
+Please use the correct release binary: `v19.1.0`.
 
 ## Instructions
 
@@ -39,7 +39,7 @@ Please use the correct release binary: `v19.0.0`.
 
 ## On-chain governance proposal attains consensus
 
-Once a software upgrade governance proposal is submitted to the Cosmos Hub, both a reference to this proposal and an `UPGRADE_HEIGHT` are added to the [release notes](https://github.com/cosmos/gaia/releases/tag/v19.0.0).
+Once a software upgrade governance proposal is submitted to the Cosmos Hub, both a reference to this proposal and an `UPGRADE_HEIGHT` are added to the [release notes](https://github.com/cosmos/gaia/releases/tag/v19.1.0).
 If and when this proposal reaches consensus, the upgrade height will be used to halt the "old" chain binaries. You can check the proposal on one of the block explorers or using the `gaiad` CLI tool.
 
 ## Upgrade date
@@ -65,7 +65,7 @@ The Cosmos Hub mainnet network, `cosmoshub-4`, is currently running [Gaia v18.1.
 
 ### Target runtime
 
-The Cosmos Hub mainnet network, `cosmoshub-4`, will run **[Gaia v19.0.0](https://github.com/cosmos/gaia/releases/tag/v19.0.0)**. Operators _**MUST**_ use this version post-upgrade to remain connected to the network. The new version requires `go v1.22` to build successfully.
+The Cosmos Hub mainnet network, `cosmoshub-4`, will run **[Gaia v19.1.0](https://github.com/cosmos/gaia/releases/tag/v19.1.0)**. Operators _**MUST**_ use this version post-upgrade to remain connected to the network. The new version requires `go v1.22` to build successfully.
 
 ## Upgrade steps
 
@@ -88,7 +88,7 @@ Run Gaia v18.1.0 till upgrade height, the node will panic:
 ERR UPGRADE "v19" NEEDED at height: <UPGRADE_HEIGHT>: upgrade to v19 and applying upgrade "v19" at height:<UPGRADE_HEIGHT>
 ```
 
-Stop the node, and switch the binary to **Gaia v19.0.0** and re-start by `gaiad start`.
+Stop the node, and switch the binary to **Gaia v19.1.0** and re-start by `gaiad start`.
 
 It may take several minutes to a few hours until validators with a total sum voting power > 2/3 to complete their node upgrades. After that, the chain can continue to produce blocks.
 
@@ -113,11 +113,11 @@ mkdir -p $GAIA_HOME/cosmovisor/genesis/bin
 cp $(which gaiad) $GAIA_HOME/cosmovisor/genesis/bin
 ```
 
-- Build Gaia `v19.0.0`, and move gaiad `v19.0.0` to `$GAIA_HOME/cosmovisor/upgrades/v18/bin`
+- Build Gaia `v19.1.0`, and move gaiad `v19.1.0` to `$GAIA_HOME/cosmovisor/upgrades/v19/bin`
 
 ```shell
-mkdir -p  $GAIA_HOME/cosmovisor/upgrades/v18/bin
-cp $(which gaiad) $GAIA_HOME/cosmovisor/upgrades/v18/bin
+mkdir -p  $GAIA_HOME/cosmovisor/upgrades/v19/bin
+cp $(which gaiad) $GAIA_HOME/cosmovisor/upgrades/v19/bin
 ```
 
 At this moment, you should have the following structure:
@@ -129,9 +129,9 @@ At this moment, you should have the following structure:
 │   └── bin
 │       └── gaiad  # old: v18.1.0
 └── upgrades
-    └── v18
+    └── v19
         └── bin
-            └── gaiad  # new: v19.0.0
+            └── gaiad  # new: v19.1.0
 ```
 
 - Export the environmental variables:

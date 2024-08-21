@@ -10,8 +10,8 @@ import (
 	corestoretypes "cosmossdk.io/core/store"
 	errorsmod "cosmossdk.io/errors"
 	storetypes "cosmossdk.io/store/types"
-
 	txsigning "cosmossdk.io/x/tx/signing"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"

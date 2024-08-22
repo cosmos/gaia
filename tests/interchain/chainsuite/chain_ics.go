@@ -51,14 +51,6 @@ func (pw *proposalWaiter) waitForDepositAllowed() {
 	<-pw.canDeposit
 }
 
-func (pw *proposalWaiter) allowDeposit() {
-	close(pw.canDeposit)
-}
-
-func (pw *proposalWaiter) waitForVotingPeriod() {
-	<-pw.isInVoting
-}
-
 func (pw *proposalWaiter) startVotingPeriod() {
 	close(pw.isInVoting)
 }
@@ -67,16 +59,24 @@ func (pw *proposalWaiter) waitForVoteAllowed() {
 	<-pw.canVote
 }
 
-func (pw *proposalWaiter) allowVote() {
+func (pw *proposalWaiter) pass() {
+	close(pw.isPassed)
+}
+
+func (pw *proposalWaiter) AllowVote() {
 	close(pw.canVote)
 }
 
-func (pw *proposalWaiter) waitForPassed() {
+func (pw *proposalWaiter) WaitForPassed() {
 	<-pw.isPassed
 }
 
-func (pw *proposalWaiter) pass() {
-	close(pw.isPassed)
+func (pw *proposalWaiter) AllowDeposit() {
+	close(pw.canDeposit)
+}
+
+func (pw *proposalWaiter) WaitForVotingPeriod() {
+	<-pw.isInVoting
 }
 
 func newProposalWaiter() *proposalWaiter {
@@ -98,7 +98,7 @@ func (p *Chain) AddConsumerChain(ctx context.Context, relayer *Relayer, config C
 	spawnTime := time.Now().Add(ChainSpawnWait)
 	chainID := fmt.Sprintf("%s-%d", config.ChainName, len(p.Consumers)+1)
 
-	proposalWaiter, errCh, err := p.consumerAdditionProposal(ctx, chainID, config, spawnTime)
+	proposalWaiter, errCh, err := p.SubmitConsumerAdditionProposal(ctx, chainID, config, spawnTime)
 	if err != nil {
 		return nil, err
 	}
@@ -271,13 +271,13 @@ func (p *Chain) DefaultConsumerChainSpec(ctx context.Context, chainID string, co
 				if config.DuringDepositPeriod != nil {
 					config.DuringDepositPeriod(ctx, consumer.(*cosmos.CosmosChain))
 				}
-				proposalWaiter.allowDeposit()
-				proposalWaiter.waitForVotingPeriod()
+				proposalWaiter.AllowDeposit()
+				proposalWaiter.WaitForVotingPeriod()
 				if config.DuringVotingPeriod != nil {
 					config.DuringVotingPeriod(ctx, consumer.(*cosmos.CosmosChain))
 				}
-				proposalWaiter.allowVote()
-				proposalWaiter.waitForPassed()
+				proposalWaiter.AllowVote()
+				proposalWaiter.WaitForPassed()
 				tCtx, tCancel := context.WithDeadline(ctx, spawnTime)
 				defer tCancel()
 				if config.BeforeSpawnTime != nil {
@@ -385,7 +385,7 @@ func connectProviderConsumer(ctx context.Context, provider *Chain, consumer *Cha
 	return err
 }
 
-func (p *Chain) consumerAdditionProposal(ctx context.Context, chainID string, config ConsumerConfig, spawnTime time.Time) (*proposalWaiter, chan error, error) {
+func (p *Chain) SubmitConsumerAdditionProposal(ctx context.Context, chainID string, config ConsumerConfig, spawnTime time.Time) (*proposalWaiter, chan error, error) {
 	propWaiter := newProposalWaiter()
 	prop := ccvclient.ConsumerAdditionProposalJSON{
 		Title:         fmt.Sprintf("Addition of %s consumer chain", chainID),

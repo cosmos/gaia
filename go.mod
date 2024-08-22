@@ -11,7 +11,7 @@ require (
 	cosmossdk.io/math v1.3.0
 	cosmossdk.io/simapp v0.0.0-20240118210941-3897926e722e
 	cosmossdk.io/store v1.1.0
-	cosmossdk.io/tools/confix v0.1.1
+	cosmossdk.io/tools/confix v0.1.2
 	cosmossdk.io/tools/rosetta v0.2.1-0.20230613133644-0a778132a60f
 	cosmossdk.io/x/evidence v0.1.1
 	cosmossdk.io/x/feegrant v0.1.1
@@ -222,7 +222,7 @@ require (
 	golang.org/x/net v0.26.0 // indirect
 	golang.org/x/oauth2 v0.20.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
-	golang.org/x/sys v0.22.0 // indirect
+	golang.org/x/sys v0.23.0 // indirect
 	golang.org/x/term v0.21.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	golang.org/x/time v0.5.0 // indirect

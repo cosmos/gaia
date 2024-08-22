@@ -9,10 +9,14 @@ import (
 
 	corestoretypes "cosmossdk.io/core/store"
 	errorsmod "cosmossdk.io/errors"
+	storetypes "cosmossdk.io/store/types"
+	txsigning "cosmossdk.io/x/tx/signing"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
@@ -27,7 +31,13 @@ var UseFeeMarketDecorator = true
 // HandlerOptions extend the SDK's AnteHandler options by requiring the IBC
 // channel keeper.
 type HandlerOptions struct {
-	ante.HandlerOptions
+	ExtensionOptionChecker ante.ExtensionOptionChecker
+	FeegrantKeeper         ante.FeegrantKeeper
+	SignModeHandler        *txsigning.HandlerMap
+	SigGasConsumer         func(meter storetypes.GasMeter, sig signing.SignatureV2, params authtypes.Params) error
+
+	AccountKeeper         feemarketante.AccountKeeper
+	BankKeeper            feemarketante.BankKeeper
 	Codec                 codec.BinaryCodec
 	IBCkeeper             *ibckeeper.Keeper
 	StakingKeeper         *stakingkeeper.Keeper
@@ -85,6 +95,9 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 	if UseFeeMarketDecorator {
 		anteDecorators = append(anteDecorators,
 			feemarketante.NewFeeMarketCheckDecorator(
+				opts.AccountKeeper,
+				opts.BankKeeper,
+				opts.FeegrantKeeper,
 				opts.FeeMarketKeeper,
 				ante.NewDeductFeeDecorator(
 					opts.AccountKeeper,

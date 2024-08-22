@@ -7,11 +7,11 @@ require (
 	cosmossdk.io/client/v2 v2.0.0-beta.3
 	cosmossdk.io/core v0.11.1
 	cosmossdk.io/errors v1.0.1
-	cosmossdk.io/log v1.4.0
+	cosmossdk.io/log v1.4.1
 	cosmossdk.io/math v1.3.0
 	cosmossdk.io/simapp v0.0.0-20240118210941-3897926e722e
 	cosmossdk.io/store v1.1.0
-	cosmossdk.io/tools/confix v0.1.1
+	cosmossdk.io/tools/confix v0.1.2
 	cosmossdk.io/tools/rosetta v0.2.1-0.20230613133644-0a778132a60f
 	cosmossdk.io/x/evidence v0.1.1
 	cosmossdk.io/x/feegrant v0.1.1
@@ -23,7 +23,7 @@ require (
 	github.com/cosmos/cosmos-db v1.0.2
 	github.com/cosmos/cosmos-sdk v0.50.9
 	github.com/cosmos/go-bip39 v1.0.0
-	github.com/cosmos/gogoproto v1.6.0
+	github.com/cosmos/gogoproto v1.7.0
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8 v8.0.2
 	github.com/cosmos/ibc-apps/modules/rate-limiting/v8 v8.0.0
 	github.com/cosmos/ibc-go/modules/capability v1.0.0
@@ -32,7 +32,7 @@ require (
 	github.com/google/gofuzz v1.2.0
 	github.com/gorilla/mux v1.8.1
 	github.com/ory/dockertest/v3 v3.11.0
-	github.com/prometheus/client_golang v1.19.0
+	github.com/prometheus/client_golang v1.20.0
 	github.com/rakyll/statik v0.1.7
 	github.com/skip-mev/feemarket v1.1.0
 	github.com/spf13/cast v1.7.0
@@ -159,7 +159,7 @@ require (
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jmhodges/levigo v1.0.0 // indirect
-	github.com/klauspost/compress v1.17.7 // indirect
+	github.com/klauspost/compress v1.17.9 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/lib/pq v1.10.9 // indirect
@@ -175,6 +175,7 @@ require (
 	github.com/moby/docker-image-spec v1.3.1 // indirect
 	github.com/moby/term v0.5.0 // indirect
 	github.com/mtibben/percent v0.2.1 // indirect
+	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/oasisprotocol/curve25519-voi v0.0.0-20230904125328-1f23a7beb09a // indirect
 	github.com/oklog/run v1.1.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
@@ -186,8 +187,8 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
-	github.com/prometheus/common v0.52.2 // indirect
-	github.com/prometheus/procfs v0.13.0 // indirect
+	github.com/prometheus/common v0.55.0 // indirect
+	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/rs/cors v1.8.3 // indirect
@@ -220,7 +221,7 @@ require (
 	golang.org/x/crypto v0.26.0 // indirect
 	golang.org/x/exp v0.0.0-20240404231335-c0f41cb1a7a0 // indirect
 	golang.org/x/net v0.28.0 // indirect
-	golang.org/x/oauth2 v0.20.0 // indirect
+	golang.org/x/oauth2 v0.21.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/sys v0.23.0 // indirect
 	golang.org/x/term v0.23.0 // indirect

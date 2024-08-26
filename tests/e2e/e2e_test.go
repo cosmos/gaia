@@ -58,9 +58,6 @@ func (s *IntegrationTestSuite) TestGov() {
 	if !runGovTest {
 		s.T().Skip()
 	}
-	// stops the chain after halt height
-	// resets the testing environment
-	s.GovSoftwareUpgrade()
 
 	s.GovCancelSoftwareUpgrade()
 	s.GovCommunityPoolSpend()

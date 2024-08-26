@@ -31,10 +31,8 @@ type ConsumerRemovalProposalWithDeposit struct {
 
 func (s *IntegrationTestSuite) writeAddRemoveConsumerProposals(c *chain, consumerChainID string) {
 	hash, _ := json.Marshal("Z2VuX2hhc2g=")
-	addProp := &providertypes.ConsumerAdditionProposal{
-		Title:       "Create consumer chain",
-		Description: "First consumer chain",
-		ChainId:     consumerChainID,
+	addMsg := &providertypes.MsgConsumerAddition{
+		ChainId: consumerChainID,
 		InitialHeight: ibcclienttypes.Height{
 			RevisionHeight: 1,
 		},
@@ -49,6 +47,7 @@ func (s *IntegrationTestSuite) writeAddRemoveConsumerProposals(c *chain, consume
 		HistoricalEntries:                 10000,
 		Top_N:                             95,
 	}
+
 	addPropWithDeposit := ConsumerAdditionProposalWithDeposit{
 		ConsumerAdditionProposal: *addProp,
 		Deposit:                  "1000uatom",
@@ -103,7 +102,7 @@ func (s *IntegrationTestSuite) AddRemoveConsumerChain() {
 	submitGovFlags := []string{"consumer-addition", configFile(proposalAddConsumerChainFilename)}
 	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
 	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes"}
-	s.submitLegacyGovProposal(chainAAPIEndpoint, sender, proposalCounter, providertypes.ProposalTypeConsumerAddition, submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
+	s.submitGovProposal(chainAAPIEndpoint, sender, proposalCounter, providertypes.ProposalTypeConsumerAddition, submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 
 	// Query and assert consumer has been added
 	s.execQueryConsumerChains(s.chainA, 0, gaiaHomePath, validateConsumerAddition, consumerChainID)
@@ -113,7 +112,7 @@ func (s *IntegrationTestSuite) AddRemoveConsumerChain() {
 	submitGovFlags = []string{"consumer-removal", configFile(proposalRemoveConsumerChainFilename)}
 	depositGovFlags = []string{strconv.Itoa(proposalCounter), depositAmount.String()}
 	voteGovFlags = []string{strconv.Itoa(proposalCounter), "yes"}
-	s.submitLegacyGovProposal(chainAAPIEndpoint, sender, proposalCounter, providertypes.ProposalTypeConsumerRemoval, submitGovFlags, depositGovFlags, voteGovFlags, "vote", false)
+	s.submitGovProposal(chainAAPIEndpoint, sender, proposalCounter, providertypes.ProposalTypeConsumerRemoval, submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 	// Query and assert consumer has been removed
 	s.execQueryConsumerChains(s.chainA, 0, gaiaHomePath, validateConsumerRemoval, consumerChainID)
 }

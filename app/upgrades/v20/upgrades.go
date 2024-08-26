@@ -3,16 +3,20 @@ package v20
 import (
 	"context"
 
+	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	providerkeeper "github.com/cosmos/interchain-security/v5/x/ccv/provider/keeper"
-	"github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
+	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
 
 	errorsmod "cosmossdk.io/errors"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
+
+	codec "github.com/cosmos/cosmos-sdk/codec/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/gaia/v20/app/keepers"
 )
 
@@ -62,6 +66,16 @@ func CreateUpgradeHandler(
 			return vm, errorsmod.Wrapf(err, "initializing LastProviderConsensusValSet during migration")
 		}
 
+		// Migrate proposals
+		govKeeper := keepers.GovKeeper
+		govKeeper.Proposals.Walk(ctx, nil, func(key uint64, proposal govtypes.Proposal) (stop bool, err error) {
+			err = MigrateProposal(ctx, *govKeeper, proposal)
+			if err != nil {
+				return true, errorsmod.Wrapf(err, "migrating proposal %d", key)
+			}
+			return false, nil
+		})
+
 		ctx.Logger().Info("Upgrade v20 complete")
 		return vm, nil
 	}
@@ -110,7 +124,7 @@ func InitializeLastProviderConsensusValidatorSet(
 	}
 
 	// create consensus validators for the staking validators
-	lastValidators := []types.ConsensusValidator{}
+	lastValidators := []providertypes.ConsensusValidator{}
 	for _, val := range vals {
 		consensusVal, err := providerKeeper.CreateProviderConsensusValidator(ctx, val)
 		if err != nil {
@@ -122,4 +136,125 @@ func InitializeLastProviderConsensusValidatorSet(
 
 	providerKeeper.SetLastProviderConsensusValSet(ctx, lastValidators)
 	return nil
+}
+
+// MigrateLegacyConsumerAddition converts a ConsumerAdditionProposal to a MsgConsumerAdditionProposal
+// and returns it as `Any` suitable to replace the legacy message.
+// `authority` contains the signer address
+func MigrateLegacyConsumerAddition(msg providertypes.ConsumerAdditionProposal, authority string) (*codec.Any, error) {
+	sdkMsg := providertypes.MsgConsumerAddition{
+		ChainId:                           msg.ChainId,
+		InitialHeight:                     msg.InitialHeight,
+		GenesisHash:                       msg.GenesisHash,
+		BinaryHash:                        msg.BinaryHash,
+		SpawnTime:                         msg.SpawnTime,
+		UnbondingPeriod:                   msg.UnbondingPeriod,
+		CcvTimeoutPeriod:                  msg.CcvTimeoutPeriod,
+		TransferTimeoutPeriod:             msg.TransferTimeoutPeriod,
+		ConsumerRedistributionFraction:    msg.ConsumerRedistributionFraction,
+		BlocksPerDistributionTransmission: msg.BlocksPerDistributionTransmission,
+		HistoricalEntries:                 msg.HistoricalEntries,
+		DistributionTransmissionChannel:   msg.DistributionTransmissionChannel,
+		Top_N:                             msg.Top_N,
+		ValidatorsPowerCap:                msg.ValidatorsPowerCap,
+		ValidatorSetCap:                   msg.ValidatorSetCap,
+		Allowlist:                         msg.Allowlist,
+		Denylist:                          msg.Denylist,
+		Authority:                         authority,
+		MinStake:                          msg.MinStake,
+		AllowInactiveVals:                 msg.AllowInactiveVals,
+	}
+	return codec.NewAnyWithValue(&sdkMsg)
+}
+
+// MigrateLegacyConsumerRemoval converts a ConsumerRemovalProposal to a MsgConsumerRemovalProposal
+// and returns it as `Any` suitable to replace the legacy message.
+// `authority` contains the signer address
+func MigrateLegacyConsumerRemoval(msg providertypes.ConsumerRemovalProposal, authority string) (*codec.Any, error) {
+	sdkMsg := providertypes.MsgConsumerRemoval{
+		ChainId:   msg.ChainId,
+		StopTime:  msg.StopTime,
+		Authority: authority,
+	}
+	return codec.NewAnyWithValue(&sdkMsg)
+}
+
+// MigrateConsumerModificationProposal converts a ConsumerModificationProposal to a MsgConsumerModificationProposal
+// and returns it as `Any` suitable to replace the legacy message.
+// `authority` contains the signer address
+func MigrateConsumerModificationProposal(msg providertypes.ConsumerModificationProposal, authority string) (*codec.Any, error) {
+	sdkMsg := providertypes.MsgConsumerModification{
+		ChainId:   msg.ChainId,
+		Allowlist: msg.Allowlist,
+		Denylist:  msg.Denylist,
+		Authority: authority,
+	}
+	return codec.NewAnyWithValue(&sdkMsg)
+}
+
+// MigrateChangeRewardDenomsProposal converts a ChangeRewardDenomsProposal to a MigrateChangeRewardDenomsProposal
+// and returns it as `Any` suitable to replace the legacy message.
+// `authority` contains the signer address
+func MigrateChangeRewardDenomsProposal(msg providertypes.ChangeRewardDenomsProposal, authority string) (*codec.Any, error) {
+	sdkMsg := providertypes.MsgChangeRewardDenoms{
+		DenomsToAdd:    msg.GetDenomsToAdd(),
+		DenomsToRemove: msg.GetDenomsToRemove(),
+		Authority:      authority,
+	}
+	return codec.NewAnyWithValue(&sdkMsg)
+}
+
+// MigrateProposal migrates a proposal by converting legacy messages to new messages.
+func MigrateProposal(ctx sdk.Context, govKeeper govkeeper.Keeper, proposal govtypes.Proposal) error {
+	for idx, msg := range proposal.GetMessages() {
+		sdkLegacyMsg, isLegacyProposal := msg.GetCachedValue().(*govtypes.MsgExecLegacyContent)
+		if !isLegacyProposal {
+			continue
+		}
+		content, err := govtypes.LegacyContentFromMessage(sdkLegacyMsg)
+		if err != nil {
+			continue
+		}
+
+		msgAdd, ok := content.(*providertypes.ConsumerAdditionProposal)
+		if ok {
+			anyMsg, err := MigrateLegacyConsumerAddition(*msgAdd, govKeeper.GetAuthority())
+			if err != nil {
+				return err
+			}
+			proposal.Messages[idx] = anyMsg
+			continue // skip the rest of the loop
+		}
+
+		msgRemove, ok := content.(*providertypes.ConsumerRemovalProposal)
+		if ok {
+			anyMsg, err := MigrateLegacyConsumerRemoval(*msgRemove, govKeeper.GetAuthority())
+			if err != nil {
+				return err
+			}
+			proposal.Messages[idx] = anyMsg
+			continue // skip the rest of the loop
+		}
+
+		msgMod, ok := content.(*providertypes.ConsumerModificationProposal)
+		if ok {
+			anyMsg, err := MigrateConsumerModificationProposal(*msgMod, govKeeper.GetAuthority())
+			if err != nil {
+				return err
+			}
+			proposal.Messages[idx] = anyMsg
+			continue // skip the rest of the loop
+		}
+
+		msgChangeRewardDenoms, ok := content.(*providertypes.ChangeRewardDenomsProposal)
+		if ok {
+			anyMsg, err := MigrateChangeRewardDenomsProposal(*msgChangeRewardDenoms, govKeeper.GetAuthority())
+			if err != nil {
+				return err
+			}
+			proposal.Messages[idx] = anyMsg
+			continue // skip the rest of the loop
+		}
+	}
+	return govKeeper.SetProposal(ctx, proposal)
 }

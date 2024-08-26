@@ -28,7 +28,7 @@ require (
 	github.com/cosmos/ibc-apps/modules/rate-limiting/v8 v8.0.0
 	github.com/cosmos/ibc-go/modules/capability v1.0.0
 	github.com/cosmos/ibc-go/v8 v8.4.0
-	github.com/cosmos/interchain-security/v5 v5.0.0-20240806104629-29327696b8e6
+	github.com/cosmos/interchain-security/v5 v5.0.0-20240823135732-3a0c55f65769
 	github.com/google/gofuzz v1.2.0
 	github.com/gorilla/mux v1.8.1
 	github.com/ory/dockertest/v3 v3.11.0

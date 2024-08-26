@@ -17,7 +17,6 @@ import (
 	ibctm "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
 	no_valupdates_genutil "github.com/cosmos/interchain-security/v5/x/ccv/no_valupdates_genutil"
 	no_valupdates_staking "github.com/cosmos/interchain-security/v5/x/ccv/no_valupdates_staking"
-	icsproviderclient "github.com/cosmos/interchain-security/v5/x/ccv/provider/client"
 	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
 
 	"cosmossdk.io/x/evidence"
@@ -138,10 +137,6 @@ func newBasicManagerFromManager(app *GaiaApp) module.BasicManager {
 			govtypes.ModuleName: gov.NewAppModuleBasic(
 				[]govclient.ProposalHandler{
 					paramsclient.ProposalHandler,
-					icsproviderclient.ConsumerAdditionProposalHandler,
-					icsproviderclient.ConsumerRemovalProposalHandler,
-					icsproviderclient.ConsumerModificationProposalHandler,
-					icsproviderclient.ChangeRewardDenomsProposalHandler,
 				},
 			),
 		})

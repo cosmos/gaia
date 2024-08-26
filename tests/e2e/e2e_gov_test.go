@@ -136,20 +136,6 @@ func (s *IntegrationTestSuite) GovCommunityPoolSpend() {
 	)
 }
 
-func (s *IntegrationTestSuite) submitLegacyGovProposal(chainAAPIEndpoint, sender string, proposalID int, proposalType string, submitFlags []string, depositFlags []string, voteFlags []string, voteCommand string, withDeposit bool) {
-	s.T().Logf("Submitting Gov Proposal: %s", proposalType)
-	// min deposit of 1000uatom is required in e2e tests, otherwise the gov antehandler causes the proposal to be dropped
-	sflags := submitFlags
-	if withDeposit {
-		sflags = append(sflags, "--deposit=1000uatom")
-	}
-	s.submitGovCommand(chainAAPIEndpoint, sender, proposalID, "submit-legacy-proposal", sflags, govtypesv1beta1.StatusDepositPeriod)
-	s.T().Logf("Depositing Gov Proposal: %s", proposalType)
-	s.submitGovCommand(chainAAPIEndpoint, sender, proposalID, "deposit", depositFlags, govtypesv1beta1.StatusVotingPeriod)
-	s.T().Logf("Voting Gov Proposal: %s", proposalType)
-	s.submitGovCommand(chainAAPIEndpoint, sender, proposalID, voteCommand, voteFlags, govtypesv1beta1.StatusPassed)
-}
-
 // NOTE: in SDK >= v0.47 the submit-proposal does not have a --deposit flag
 // Instead, the depoist is added to the "deposit" field of the proposal JSON (usually stored as a file)
 // you can use `gaiad tx gov draft-proposal` to create a proposal file that you can use

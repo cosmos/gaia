@@ -67,7 +67,7 @@ func CreateUpgradeHandler(
 		}
 
 		ctx.Logger().Info("Migrating ICS legacy proposals...")
-		msgServer := providerkeeper.NewMsgServerImpl(&providerKeeper)
+		msgServer := providerkeeper.NewMsgServerImpl(&keepers.ProviderKeeper)
 		err = MigrateICSLegacyProposals(ctx, msgServer, keepers.ProviderKeeper, *keepers.GovKeeper)
 		if err != nil {
 			return vm, errorsmod.Wrapf(err, "migrating ICS legacy proposals during migration")
@@ -146,7 +146,7 @@ func MigrateICSLegacyProposals(ctx sdk.Context, msgServer providertypes.MsgServe
 	})
 }
 
-// MigrateProposal migrates a proposal by converting legacy messages to new messages.
+// MigrateProposal migrates an ICS proposal
 func MigrateProposal(
 	ctx sdk.Context,
 	msgServer providertypes.MsgServer,
@@ -181,161 +181,191 @@ func MigrateProposal(
 
 	switch msg := content.(type) {
 	case *providertypes.ConsumerAdditionProposal:
-		if proposal.Status == govtypes.StatusPassed {
-			// ConsumerAdditionProposal that passed -- they were added to the
-			// list of pending consumer addition proposals, which was deleted during
-			// the migration of the provider module
-			if msg.SpawnTime.Before(ctx.BlockTime()) {
-				// ignore proposals that already resulted in launched chains
-				return nil
-			}
-			// create a new consumer chain with all the parameters
-			metadata := metadataFromCAP(msg)
-			initParams := initParamsFromCAP(msg)
-			powerSharpingParams := powerShapingParamsFromCAP(msg)
-			msgCreateConsumer := providertypes.MsgCreateConsumer{
-				Signer:                   govKeeper.GetAuthority(),
-				ChainId:                  msg.ChainId,
-				Metadata:                 metadata,
-				InitializationParameters: &initParams,
-				PowerShapingParameters:   &powerSharpingParams,
-			}
-			resp, err := msgServer.CreateConsumer(ctx, &msgCreateConsumer)
-			if err != nil {
-				return err
-			}
-			ctx.Logger().Info(
-				fmt.Sprintf(
-					"Created consumer with ID(%s), chainID(%d), and spawnTime(%s) from proposal with ID(%d)",
-					resp.ConsumerId, msg.ChainId, initParams.SpawnTime.String(), proposal.Id,
-				),
-			)
-		} else {
-			// ConsumerAdditionProposal that was submitted, but not yet passed
-
-			// first, create a new consumer chain to get a consumer ID
-			metadata := metadataFromCAP(msg)
-			msgCreateConsumer := providertypes.MsgCreateConsumer{
-				Signer:                   govKeeper.GetAuthority(),
-				ChainId:                  msg.ChainId,
-				Metadata:                 metadata,
-				InitializationParameters: nil, // to be added to MsgUpdateConsumer
-				PowerShapingParameters:   nil, // to be added to MsgUpdateConsumer
-			}
-			resp, err := msgServer.CreateConsumer(ctx, &msgCreateConsumer)
-			if err != nil {
-				return err
-			}
-			ctx.Logger().Info(
-				fmt.Sprintf(
-					"Created consumer with ID(%s), chainID(%d), and no spawnTime from proposal with ID(%d)",
-					resp.ConsumerId, msg.ChainId, proposal.Id,
-				),
-			)
-
-			// second, replace the message in the proposal with a MsgUpdateConsumer
-			initParams := initParamsFromCAP(msg)
-			powerSharpingParams := powerShapingParamsFromCAP(msg)
-			msgUpdateConsumer := providertypes.MsgUpdateConsumer{
-				Signer:                   govKeeper.GetAuthority(),
-				ConsumerId:               resp.ConsumerId,
-				Metadata:                 nil,
-				InitializationParameters: &initParams,
-				PowerShapingParameters:   &powerSharpingParams,
-			}
-			anyMsg, err := codec.NewAnyWithValue(&msgUpdateConsumer)
-			if err != nil {
-				return err
-			}
-			proposal.Messages[0] = anyMsg
-			govKeeper.SetProposal(ctx, proposal) // TODO: check if we can do this
-			ctx.Logger().Info(
-				fmt.Sprintf(
-					"Replaced proposal with ID(%d) with MsgUpdateConsumer - ID(%s), chainID(%d), spawnTime(%s)",
-					proposal.Id, resp.ConsumerId, msg.ChainId, initParams.SpawnTime.String(),
-				),
-			)
-		}
+		return MigrateConsumerAdditionProposal(
+			ctx,
+			msgServer,
+			providerKeeper,
+			govKeeper,
+			proposal,
+			msg,
+		)
 
 	case *providertypes.ConsumerRemovalProposal:
-		anyMsg, err := MigrateLegacyConsumerRemoval(*msg, govKeeper.GetAuthority())
-		if err != nil {
-			return err
-		}
-		proposal.Messages[idx] = anyMsg
+		return MigrateConsumerRemovalProposal(
+			ctx,
+			msgServer,
+			providerKeeper,
+			govKeeper,
+			proposal,
+			msg,
+		)
 
 	case *providertypes.ConsumerModificationProposal:
-		anyMsg, err := MigrateConsumerModificationProposal(*msg, govKeeper.GetAuthority())
-		if err != nil {
-			return err
-		}
-		proposal.Messages[idx] = anyMsg
+		return MigrateConsumerModificationProposal(
+			ctx,
+			msgServer,
+			providerKeeper,
+			govKeeper,
+			proposal,
+			msg,
+		)
 
 	case *providertypes.ChangeRewardDenomsProposal:
-		anyMsg, err := MigrateChangeRewardDenomsProposal(*msg, govKeeper.GetAuthority())
+		return MigrateChangeRewardDenomsProposal(
+			ctx,
+			msgServer,
+			providerKeeper,
+			govKeeper,
+			proposal,
+			msg,
+		)
+	}
+
+	return nil
+}
+
+// MigrateConsumerAdditionProposal migrates a ConsumerAdditionProposal
+func MigrateConsumerAdditionProposal(
+	ctx sdk.Context,
+	msgServer providertypes.MsgServer,
+	providerKeeper providerkeeper.Keeper,
+	govKeeper govkeeper.Keeper,
+	proposal govtypes.Proposal,
+	msg *providertypes.ConsumerAdditionProposal,
+) error {
+	if proposal.Status == govtypes.StatusPassed {
+		// ConsumerAdditionProposal that passed -- it was added to the
+		// list of pending consumer addition proposals, which was deleted during
+		// the migration of the provider module
+		for _, consumerId := range providerKeeper.GetAllActiveConsumerIds(ctx) {
+			chainId, err := providerKeeper.GetConsumerChainId(ctx, consumerId)
+			if err != nil {
+				return err // this means is something wrong with the provider state
+			}
+			if chainId == msg.ChainId {
+				// this proposal was already handled in a previous block
+				ctx.Logger().Info(
+					fmt.Sprintf(
+						"Proposal with ID(%d) was skipped as it was already handled - consumerID(%s), chainID(%s), spawnTime(%s)",
+						proposal.Id, consumerId, msg.ChainId, msg.SpawnTime.String(),
+					),
+				)
+				return nil
+			}
+		}
+		// create a new consumer chain with all the parameters
+		metadata, err := metadataFromCAP(msg)
 		if err != nil {
 			return err
 		}
-		proposal.Messages[idx] = anyMsg
-	}
+		initParams, err := initParamsFromCAP(msg)
+		if err != nil {
+			return err
+		}
+		powerSharpingParams, err := powerShapingParamsFromCAP(msg)
+		if err != nil {
+			return err
+		}
+		msgCreateConsumer := providertypes.MsgCreateConsumer{
+			Signer:                   govKeeper.GetAuthority(),
+			ChainId:                  msg.ChainId,
+			Metadata:                 metadata,
+			InitializationParameters: &initParams,
+			PowerShapingParameters:   &powerSharpingParams,
+		}
+		resp, err := msgServer.CreateConsumer(ctx, &msgCreateConsumer)
+		if err != nil {
+			return err
+		}
+		ctx.Logger().Info(
+			fmt.Sprintf(
+				"Created consumer with ID(%s), chainID(%s), and spawnTime(%s) from proposal with ID(%d)",
+				resp.ConsumerId, msg.ChainId, initParams.SpawnTime.String(), proposal.Id,
+			),
+		)
+	} else {
+		// ConsumerAdditionProposal that was submitted, but not yet passed
 
-	return govKeeper.SetProposal(ctx, proposal)
-}
+		// first, create a new consumer chain to get a consumer ID
+		metadata, err := metadataFromCAP(msg)
+		if err != nil {
+			return err
+		}
+		msgCreateConsumer := providertypes.MsgCreateConsumer{
+			Signer:                   govKeeper.GetAuthority(),
+			ChainId:                  msg.ChainId,
+			Metadata:                 metadata,
+			InitializationParameters: nil, // to be added to MsgUpdateConsumer
+			PowerShapingParameters:   nil, // to be added to MsgUpdateConsumer
+		}
+		resp, err := msgServer.CreateConsumer(ctx, &msgCreateConsumer)
+		if err != nil {
+			return err
+		}
+		ctx.Logger().Info(
+			fmt.Sprintf(
+				"Created consumer with ID(%s), chainID(%s), and no spawnTime from proposal with ID(%d)",
+				resp.ConsumerId, msg.ChainId, proposal.Id,
+			),
+		)
 
-// MigrateLegacyConsumerRemoval converts a ConsumerRemovalProposal to a MsgConsumerRemovalProposal
-// and returns it as `Any` suitable to replace the legacy message.
-// `authority` contains the signer address
-func MigrateLegacyConsumerRemoval(msg providertypes.ConsumerRemovalProposal, authority string) (*codec.Any, error) {
-	sdkMsg := providertypes.MsgConsumerRemoval{
-		ChainId:   msg.ChainId,
-		StopTime:  msg.StopTime,
-		Authority: authority,
+		// second, replace the message in the proposal with a MsgUpdateConsumer
+		initParams, err := initParamsFromCAP(msg)
+		if err != nil {
+			return err
+		}
+		powerSharpingParams, err := powerShapingParamsFromCAP(msg)
+		if err != nil {
+			return err
+		}
+		msgUpdateConsumer := providertypes.MsgUpdateConsumer{
+			Signer:                   govKeeper.GetAuthority(),
+			ConsumerId:               resp.ConsumerId,
+			Metadata:                 nil,
+			InitializationParameters: &initParams,
+			PowerShapingParameters:   &powerSharpingParams,
+		}
+		anyMsg, err := codec.NewAnyWithValue(&msgUpdateConsumer)
+		if err != nil {
+			return err
+		}
+		proposal.Messages[0] = anyMsg
+		// TODO: check if we can call SetProposal within govKeeper.Proposals.Walk
+		if err := govKeeper.SetProposal(ctx, proposal); err != nil {
+			return err
+		}
+		ctx.Logger().Info(
+			fmt.Sprintf(
+				"Replaced proposal with ID(%d) with MsgUpdateConsumer - consumerID(%s), chainID(%s), spawnTime(%s)",
+				proposal.Id, resp.ConsumerId, msg.ChainId, initParams.SpawnTime.String(),
+			),
+		)
 	}
-	return codec.NewAnyWithValue(&sdkMsg)
-}
-
-// MigrateConsumerModificationProposal converts a ConsumerModificationProposal to a MsgConsumerModificationProposal
-// and returns it as `Any` suitable to replace the legacy message.
-// `authority` contains the signer address
-func MigrateConsumerModificationProposal(msg providertypes.ConsumerModificationProposal, authority string) (*codec.Any, error) {
-	sdkMsg := providertypes.MsgConsumerModification{
-		ChainId:   msg.ChainId,
-		Allowlist: msg.Allowlist,
-		Denylist:  msg.Denylist,
-		Authority: authority,
-	}
-	return codec.NewAnyWithValue(&sdkMsg)
-}
-
-// MigrateChangeRewardDenomsProposal converts a ChangeRewardDenomsProposal to a MigrateChangeRewardDenomsProposal
-// and returns it as `Any` suitable to replace the legacy message.
-// `authority` contains the signer address
-func MigrateChangeRewardDenomsProposal(msg providertypes.ChangeRewardDenomsProposal, authority string) (*codec.Any, error) {
-	sdkMsg := providertypes.MsgChangeRewardDenoms{
-		DenomsToAdd:    msg.GetDenomsToAdd(),
-		DenomsToRemove: msg.GetDenomsToRemove(),
-		Authority:      authority,
-	}
-	return codec.NewAnyWithValue(&sdkMsg)
+	return nil
 }
 
 // metadataFromCAP returns ConsumerMetadata from a ConsumerAdditionProposal
 func metadataFromCAP(
 	prop *providertypes.ConsumerAdditionProposal,
-) providertypes.ConsumerMetadata {
-	return providertypes.ConsumerMetadata{
+) (providertypes.ConsumerMetadata, error) {
+	metadata := providertypes.ConsumerMetadata{
 		Name:        prop.Title,
 		Description: prop.Description,
 		Metadata:    "",
 	}
+	err := providertypes.ValidateConsumerMetadata(metadata)
+	// TODO: avoid returning an error here;
+	// for this, we need to make sure the validation works always
+	// (e.g., truncate the fields)
+	return metadata, err
 }
 
 // initParamsFromCAP returns ConsumerInitializationParameters from
 // a ConsumerAdditionProposal
 func initParamsFromCAP(
 	prop *providertypes.ConsumerAdditionProposal,
-) providertypes.ConsumerInitializationParameters {
-	return providertypes.ConsumerInitializationParameters{
+) (providertypes.ConsumerInitializationParameters, error) {
+	initParams := providertypes.ConsumerInitializationParameters{
 		InitialHeight:                     prop.InitialHeight,
 		GenesisHash:                       prop.GenesisHash,
 		BinaryHash:                        prop.BinaryHash,
@@ -348,13 +378,17 @@ func initParamsFromCAP(
 		HistoricalEntries:                 prop.HistoricalEntries,
 		DistributionTransmissionChannel:   prop.DistributionTransmissionChannel,
 	}
+	err := providertypes.ValidateInitializationParameters(initParams)
+	// TODO: avoid returning an error here;
+	// for this, we need to make sure the validation works always
+	return initParams, err
 }
 
-// initParamsFromCAP returns PowerShapingParameters from a ConsumerAdditionProposal
+// powerShapingParamsFromCAP returns PowerShapingParameters from a ConsumerAdditionProposal
 func powerShapingParamsFromCAP(
 	prop *providertypes.ConsumerAdditionProposal,
-) providertypes.PowerShapingParameters {
-	return providertypes.PowerShapingParameters{
+) (providertypes.PowerShapingParameters, error) {
+	powerShapingParams := providertypes.PowerShapingParameters{
 		Top_N:              prop.Top_N,
 		ValidatorsPowerCap: prop.ValidatorsPowerCap,
 		ValidatorSetCap:    prop.ValidatorSetCap,
@@ -363,4 +397,251 @@ func powerShapingParamsFromCAP(
 		MinStake:           prop.MinStake,
 		AllowInactiveVals:  prop.AllowInactiveVals,
 	}
+	err := providertypes.ValidatePowerShapingParameters(powerShapingParams)
+	// TODO: avoid returning an error here;
+	// for this, we need to make sure the validation works always
+	return powerShapingParams, err
+}
+
+// MigrateConsumerRemovalProposal migrates a ConsumerRemovalProposal
+func MigrateConsumerRemovalProposal(
+	ctx sdk.Context,
+	msgServer providertypes.MsgServer,
+	providerKeeper providerkeeper.Keeper,
+	govKeeper govkeeper.Keeper,
+	proposal govtypes.Proposal,
+	msg *providertypes.ConsumerRemovalProposal,
+) error {
+	// identify the consumer chain
+	rmConsumerId := ""
+	for _, consumerId := range providerKeeper.GetAllActiveConsumerIds(ctx) {
+		chainId, err := providerKeeper.GetConsumerChainId(ctx, consumerId)
+		if err != nil {
+			return err // this means is something wrong with the provider state
+		}
+		if chainId == msg.ChainId {
+			rmConsumerId = consumerId
+			break
+		}
+	}
+	if rmConsumerId == "" {
+		// ignore proposal as there is no consumer with that chain ID
+		ctx.Logger().Info(
+			fmt.Sprintf(
+				"Proposal with ID(%d) was skipped as there is no consumer with chainID(%s)",
+				proposal.Id, msg.ChainId,
+			),
+		)
+		if proposal.Status != govtypes.StatusPassed {
+			// if the proposal didn't pass yet, then just remove it
+			if err := govKeeper.DeleteProposal(ctx, proposal.Id); err != nil {
+				return err
+			}
+			ctx.Logger().Info(
+				fmt.Sprintf(
+					"Proposal with ID(%d) was deleted -- chainID(%s)",
+					proposal.Id, msg.ChainId,
+				),
+			)
+		}
+		return nil
+	}
+
+	msgRemoveConsumer := providertypes.MsgRemoveConsumer{
+		ConsumerId: rmConsumerId,
+		StopTime:   msg.StopTime,
+		Authority:  govKeeper.GetAuthority(),
+	}
+
+	if proposal.Status == govtypes.StatusPassed {
+		// ConsumerRemovalProposal that passed -- it was added to the
+		// list of pending consumer removal proposals, which was deleted during
+		// the migration of the provider module
+		_, err := msgServer.RemoveConsumer(ctx, &msgRemoveConsumer)
+		if err != nil {
+			ctx.Logger().Error(
+				fmt.Sprintf(
+					"Could not remove consumer with ID(%s), chainID(%s), and stopTime(%s) as per proposal with ID(%d)",
+					rmConsumerId, msg.ChainId, msg.StopTime.String(), proposal.Id,
+				),
+			)
+			return nil // do not stop the migration because of this
+		}
+		ctx.Logger().Info(
+			fmt.Sprintf(
+				"Consumer with ID(%s), chainID(%s) will stop at stopTime(%s) as per proposal with ID(%d)",
+				rmConsumerId, msg.ChainId, msg.StopTime.String(), proposal.Id,
+			),
+		)
+	} else {
+		// ConsumerRemovalProposal that was submitted, but not yet passed
+
+		// replace the message in the proposal with a MsgRemoveConsumer
+		anyMsg, err := codec.NewAnyWithValue(&msgRemoveConsumer)
+		if err != nil {
+			return err
+		}
+		proposal.Messages[0] = anyMsg
+		// TODO: check if we can call SetProposal within govKeeper.Proposals.Walk
+		if err := govKeeper.SetProposal(ctx, proposal); err != nil {
+			return err
+		}
+		ctx.Logger().Info(
+			fmt.Sprintf(
+				"Replaced proposal with ID(%d) with MsgRemoveConsumer - consumerID(%s), chainID(%s), spawnTime(%s)",
+				proposal.Id, rmConsumerId, msg.ChainId, msg.StopTime.String(),
+			),
+		)
+	}
+	return nil
+}
+
+// MigrateConsumerModificationProposal migrates a ConsumerModificationProposal
+func MigrateConsumerModificationProposal(
+	ctx sdk.Context,
+	msgServer providertypes.MsgServer,
+	providerKeeper providerkeeper.Keeper,
+	govKeeper govkeeper.Keeper,
+	proposal govtypes.Proposal,
+	msg *providertypes.ConsumerModificationProposal,
+) error {
+	if proposal.Status == govtypes.StatusPassed {
+		// ConsumerModificationProposal that passed -- it was already handled in
+		// a previous block since these proposals are handled immediately
+		ctx.Logger().Info(
+			fmt.Sprintf(
+				"Proposal with ID(%d) was skipped as it was already handled - chainID(%s)",
+				proposal.Id, msg.ChainId,
+			),
+		)
+		return nil
+	} else {
+		// ConsumerModificationProposal that was submitted, but not yet passed
+		modifyConsumerId := ""
+		for _, consumerId := range providerKeeper.GetAllActiveConsumerIds(ctx) {
+			chainId, err := providerKeeper.GetConsumerChainId(ctx, consumerId)
+			if err != nil {
+				return err // this means is something wrong with the provider state
+			}
+			if chainId == msg.ChainId {
+				modifyConsumerId = consumerId
+				break
+			}
+		}
+		if modifyConsumerId == "" {
+			// delete proposal as there is no consumer with that chain ID
+			if err := govKeeper.DeleteProposal(ctx, proposal.Id); err != nil {
+				return err
+			}
+			ctx.Logger().Info(
+				fmt.Sprintf(
+					"Proposal with ID(%d) was deleted - chainID(%s)",
+					proposal.Id, msg.ChainId,
+				),
+			)
+			return nil
+		}
+
+		// replace the message in the proposal with a MsgUpdateConsumer
+		powerSharpingParams, err := powerShapingParamsFromCMP(msg)
+		if err != nil {
+			return err
+		}
+		msgUpdateConsumer := providertypes.MsgUpdateConsumer{
+			Signer:                   govKeeper.GetAuthority(),
+			ConsumerId:               modifyConsumerId,
+			Metadata:                 nil,
+			InitializationParameters: nil,
+			PowerShapingParameters:   &powerSharpingParams,
+		}
+		anyMsg, err := codec.NewAnyWithValue(&msgUpdateConsumer)
+		if err != nil {
+			return err
+		}
+		proposal.Messages[0] = anyMsg
+		// TODO: check if we can call SetProposal within govKeeper.Proposals.Walk
+		if err := govKeeper.SetProposal(ctx, proposal); err != nil {
+			return err
+		}
+		ctx.Logger().Info(
+			fmt.Sprintf(
+				"Replaced proposal with ID(%d) with MsgUpdateConsumer - consumerID(%s), chainID(%s)",
+				proposal.Id, modifyConsumerId, msg.ChainId,
+			),
+		)
+	}
+	return nil
+}
+
+// powerShapingParamsFromCMP returns PowerShapingParameters from a ConsumerModificationProposal
+func powerShapingParamsFromCMP(
+	prop *providertypes.ConsumerModificationProposal,
+) (providertypes.PowerShapingParameters, error) {
+	powerShapingParams := providertypes.PowerShapingParameters{
+		Top_N:              prop.Top_N,
+		ValidatorsPowerCap: prop.ValidatorsPowerCap,
+		ValidatorSetCap:    prop.ValidatorSetCap,
+		Allowlist:          prop.Allowlist,
+		Denylist:           prop.Denylist,
+		MinStake:           prop.MinStake,
+		AllowInactiveVals:  prop.AllowInactiveVals,
+	}
+	err := providertypes.ValidatePowerShapingParameters(powerShapingParams)
+	// TODO: avoid returning an error here;
+	// for this, we need to make sure the validation works always
+	return powerShapingParams, err
+}
+
+// MigrateChangeRewardDenomsProposal migrates a ChangeRewardDenomsProposal
+func MigrateChangeRewardDenomsProposal(
+	ctx sdk.Context,
+	msgServer providertypes.MsgServer,
+	providerKeeper providerkeeper.Keeper,
+	govKeeper govkeeper.Keeper,
+	proposal govtypes.Proposal,
+	msg *providertypes.ChangeRewardDenomsProposal,
+) error {
+	if proposal.Status == govtypes.StatusPassed {
+		// ChangeRewardDenomsProposal that passed -- it was already handled in
+		// a previous block since these proposals are handled immediately
+		ctx.Logger().Info(
+			fmt.Sprintf("Proposal with ID(%d) was skipped as it was already handled", proposal.Id),
+		)
+	} else {
+		// ChangeRewardDenomsProposal that was submitted, but not yet passed
+
+		// replace the message in the proposal with a MsgChangeRewardDenoms
+		msgChangeRewardDenoms := providertypes.MsgChangeRewardDenoms{
+			Authority:      govKeeper.GetAuthority(),
+			DenomsToAdd:    msg.DenomsToAdd,
+			DenomsToRemove: msg.DenomsToRemove,
+		}
+		if err := msgChangeRewardDenoms.ValidateBasic(); err != nil {
+			// this should not happen if the original ChangeRewardDenomsProposal
+			// was well formed
+			if err := govKeeper.DeleteProposal(ctx, proposal.Id); err != nil {
+				return err
+			}
+			ctx.Logger().Error(
+				fmt.Sprintf(
+					"Proposal with ID(%d) was deleted as it failed validation: %s",
+					proposal.Id, err.Error(),
+				),
+			)
+			return nil
+		}
+		anyMsg, err := codec.NewAnyWithValue(&msgChangeRewardDenoms)
+		if err != nil {
+			return err
+		}
+		proposal.Messages[0] = anyMsg
+		// TODO: check if we can call SetProposal within govKeeper.Proposals.Walk
+		if err := govKeeper.SetProposal(ctx, proposal); err != nil {
+			return err
+		}
+		ctx.Logger().Info(
+			fmt.Sprintf("Replaced proposal with ID(%d) with MsgChangeRewardDenoms", proposal.Id),
+		)
+	}
+	return nil
 }

@@ -240,7 +240,7 @@ func MigrateConsumerAdditionProposal(
 		for _, consumerID := range providerKeeper.GetAllActiveConsumerIds(ctx) {
 			chainID, err := providerKeeper.GetConsumerChainId(ctx, consumerID)
 			if err != nil {
-				return err // this means is something wrong with the provider state
+				return err // this means something is wrong with the provider state
 			}
 			if chainID == msg.ChainId {
 				// this proposal was already handled in a previous block

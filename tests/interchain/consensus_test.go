@@ -138,6 +138,9 @@ func (s *ConsensusSuite) TestConsumerJailing() {
 		s.Require().NoError(err)
 		s.Assert().True(jailed, "validator %d should be jailed", i)
 	}
+	// Validator 4 will have been opted in automatically when the other ones went down
+	_, err := s.Chain.Validators[maxProviderConsensusValidators].ExecTx(s.GetContext(), s.Chain.ValidatorWallets[maxProviderConsensusValidators].Moniker, "provider", "opt-out", s.getConsumerID())
+	s.Require().NoError(err)
 	for i := maxProviderConsensusValidators; i < chainsuite.ValidatorCount; i++ {
 		jailed, err := s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), s.Relayer, s.Consumer, i)
 		s.Require().NoError(err)
@@ -146,10 +149,15 @@ func (s *ConsensusSuite) TestConsumerJailing() {
 }
 
 func (s *ConsensusSuite) TestOptInInactive() {
-	_, err := s.Chain.Validators[4].ExecTx(s.GetContext(), s.Chain.ValidatorWallets[4].Moniker, "provider", "opt-in", s.Consumer.Config().ChainID)
+	consumerID := s.getConsumerID()
+	// Validator 4 will have been opted in automatically when the other ones went down
+	_, err := s.Chain.Validators[maxProviderConsensusValidators].ExecTx(s.GetContext(), s.Chain.ValidatorWallets[maxProviderConsensusValidators].Moniker, "provider", "opt-out", s.getConsumerID())
+	s.Require().NoError(err)
+
+	_, err = s.Chain.Validators[4].ExecTx(s.GetContext(), s.Chain.ValidatorWallets[4].Moniker, "provider", "opt-in", consumerID)
 	s.Require().NoError(err)
 	defer func() {
-		_, err := s.Chain.Validators[4].ExecTx(s.GetContext(), s.Chain.ValidatorWallets[4].Moniker, "provider", "opt-out", s.Consumer.Config().ChainID)
+		_, err := s.Chain.Validators[4].ExecTx(s.GetContext(), s.Chain.ValidatorWallets[4].Moniker, "provider", "opt-out", consumerID)
 		s.Require().NoError(err)
 		s.Relayer.ClearCCVChannel(s.GetContext(), s.Chain, s.Consumer)
 		s.Require().EventuallyWithT(func(c *assert.CollectT) {
@@ -171,7 +179,7 @@ func (s *ConsensusSuite) TestOptInInactive() {
 	s.Require().NoError(err)
 	s.Assert().True(jailed, "validator 4 should be jailed")
 
-	_, err = s.Chain.Validators[5].ExecTx(s.GetContext(), s.Chain.ValidatorWallets[5].Moniker, "provider", "opt-in", s.Consumer.Config().ChainID)
+	_, err = s.Chain.Validators[5].ExecTx(s.GetContext(), s.Chain.ValidatorWallets[5].Moniker, "provider", "opt-in", consumerID)
 	s.Require().NoError(err)
 	s.Require().NoError(s.Relayer.ClearCCVChannel(s.GetContext(), s.Chain, s.Consumer))
 	vals, err := s.Consumer.QueryJSON(s.GetContext(), "validators", "comet-validator-set")
@@ -180,6 +188,13 @@ func (s *ConsensusSuite) TestOptInInactive() {
 	jailed, err = s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), s.Relayer, s.Consumer, 5)
 	s.Require().NoError(err)
 	s.Assert().False(jailed, "validator 5 should not be jailed")
+}
+
+func (s *ConsensusSuite) getConsumerID() string {
+	consumerIDJSON, err := s.Chain.QueryJSON(s.GetContext(), fmt.Sprintf("chains.#(chain_id=%q).consumer_id", s.Consumer.Config().ChainID), "provider", "list-consumer-chains")
+	s.Require().NoError(err)
+	consumerID := consumerIDJSON.String()
+	return consumerID
 }
 
 func TestConsensus(t *testing.T) {

@@ -16,10 +16,18 @@ import (
 	"github.com/cosmos/cosmos-sdk/types"
 )
 
+type ChainScope int
+
+const (
+	ChainScopeSuite ChainScope = iota
+	ChainScopeTest  ChainScope = iota
+)
+
 type SuiteConfig struct {
 	ChainSpec      *interchaintest.ChainSpec
 	UpgradeOnSetup bool
 	CreateRelayer  bool
+	Scope          ChainScope
 }
 
 const (
@@ -68,6 +76,7 @@ func (c SuiteConfig) Merge(other SuiteConfig) SuiteConfig {
 	}
 	c.UpgradeOnSetup = other.UpgradeOnSetup
 	c.CreateRelayer = other.CreateRelayer
+	c.Scope = other.Scope
 	return c
 }
 

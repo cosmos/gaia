@@ -84,7 +84,7 @@ func (s *UnbondingSuite) TestCanLaunchAfterInitTimeout() {
 		Version:               "v5.0.0",
 		ShouldCopyProviderKey: allProviderKeysCopied(),
 		Denom:                 chainsuite.Ucon,
-		TopN:                  100,
+		TopN:                  0,
 		BeforeSpawnTime: func(_ context.Context, _ *cosmos.CosmosChain) {
 			time.Sleep(initTimeoutPeriod)
 			s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 2, s.Chain))
@@ -92,13 +92,8 @@ func (s *UnbondingSuite) TestCanLaunchAfterInitTimeout() {
 	}
 	chainID := cfg.ChainName + "-timeout"
 	spawnTime := time.Now().Add(2 * time.Minute)
-	propWaiter, errCh, err := s.Chain.SubmitConsumerAdditionProposal(s.GetContext(), chainID, cfg, spawnTime)
+	err := s.Chain.CreateConsumerPermissionless(s.GetContext(), chainID, cfg, spawnTime)
 	s.Require().NoError(err)
-	propWaiter.AllowDeposit()
-	propWaiter.WaitForVotingPeriod()
-	propWaiter.AllowVote()
-	propWaiter.WaitForPassed()
-	s.Require().NoError(<-errCh)
 
 	time.Sleep(time.Until(spawnTime))
 	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 2, s.Chain))

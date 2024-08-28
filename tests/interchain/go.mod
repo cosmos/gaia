@@ -11,7 +11,7 @@ replace (
 	github.com/btcsuite/btcd/btcec/v2 => github.com/btcsuite/btcd/btcec/v2 v2.3.2 // 2.3.4 breaks api
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.50.9-lsm
 	github.com/cosmos/iavl => github.com/cosmos/iavl v1.1.2
-	github.com/cosmos/interchain-security/v5 => github.com/cosmos/interchain-security/v5 v5.0.0-20240806104629-29327696b8e6
+	github.com/cosmos/interchain-security/v5 => github.com/cosmos/interchain-security/v5 v5.0.0-20240905162918-300530f18130
 	github.com/docker/distribution => github.com/docker/distribution v2.8.2+incompatible
 	github.com/docker/docker => github.com/docker/docker v24.0.9+incompatible
 	github.com/ethereum/go-ethereum => github.com/ethereum/go-ethereum v1.14.5 // indirect
@@ -23,7 +23,7 @@ require (
 	cosmossdk.io/math v1.3.0
 	github.com/cometbft/cometbft v0.38.11
 	github.com/cosmos/cosmos-sdk v0.50.9
-	github.com/cosmos/ibc-go/v8 v8.4.0
+	github.com/cosmos/ibc-go/v8 v8.5.0
 	github.com/cosmos/interchain-security/v5 v5.1.1
 	github.com/docker/docker v27.1.2+incompatible
 	github.com/google/go-github/v62 v62.0.0
@@ -98,7 +98,7 @@ require (
 	github.com/cosmos/gogoproto v1.7.0 // indirect
 	github.com/cosmos/iavl v1.3.0 // indirect
 	github.com/cosmos/ibc-go/modules/capability v1.0.1 // indirect
-	github.com/cosmos/ics23/go v0.10.0 // indirect
+	github.com/cosmos/ics23/go v0.11.0 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.13.3 // indirect
 	github.com/crate-crypto/go-kzg-4844 v1.0.0 // indirect
 	github.com/danieljoos/wincred v1.2.2 // indirect
@@ -292,4 +292,4 @@ require (
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 
-replace github.com/strangelove-ventures/interchaintest/v8 => github.com/hyphacoop/interchaintest/v8 v8.2.1-0.20240827183230-b4c212b9721e
+replace github.com/strangelove-ventures/interchaintest/v8 => github.com/hyphacoop/interchaintest/v8 v8.2.1-0.20240904201357-3a54d751e08d

@@ -2,7 +2,9 @@ package chainsuite
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"path"
 	"strconv"
 	"time"
 
@@ -21,6 +23,7 @@ import (
 	sdkmath "cosmossdk.io/math"
 
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
 )
 
 type ConsumerBootstrapCb func(ctx context.Context, consumer *cosmos.CosmosChain)
@@ -101,9 +104,21 @@ func (p *Chain) AddConsumerChain(ctx context.Context, relayer *Relayer, config C
 	spawnTime := time.Now().Add(ChainSpawnWait)
 	chainID := fmt.Sprintf("%s-%d", config.ChainName, len(p.Consumers)+1)
 
-	proposalWaiter, errCh, err := p.SubmitConsumerAdditionProposal(ctx, chainID, config, spawnTime)
-	if err != nil {
-		return nil, err
+	var proposalWaiter *proposalWaiter
+	var errCh chan error
+	if p.GetNode().HasCommand(ctx, "tx", "provider", "create-consumer") {
+		errCh = make(chan error, 1)
+		close(errCh)
+		err := p.CreateConsumerPermissionless(ctx, chainID, config, spawnTime)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		var err error
+		proposalWaiter, errCh, err = p.SubmitConsumerAdditionProposal(ctx, chainID, config, spawnTime)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if config.spec == nil {
@@ -191,6 +206,113 @@ func (p *Chain) AddConsumerChain(ctx context.Context, relayer *Relayer, config C
 	}
 
 	return consumer, nil
+}
+
+func (p *Chain) CreateConsumerPermissionless(ctx context.Context, chainID string, config ConsumerConfig, spawnTime time.Time) error {
+	initParams := &providertypes.ConsumerInitializationParameters{
+		InitialHeight:                     clienttypes.Height{RevisionNumber: clienttypes.ParseChainID(chainID), RevisionHeight: 1},
+		SpawnTime:                         spawnTime,
+		BlocksPerDistributionTransmission: 1000,
+		CcvTimeoutPeriod:                  2419200000000000,
+		TransferTimeoutPeriod:             3600000000000,
+		ConsumerRedistributionFraction:    "0.75",
+		HistoricalEntries:                 10000,
+		UnbondingPeriod:                   1728000000000000,
+		GenesisHash:                       []byte("Z2VuX2hhc2g="),
+		BinaryHash:                        []byte("YmluX2hhc2g="),
+	}
+	powerShapingParams := &providertypes.PowerShapingParameters{
+		Top_N:              0,
+		ValidatorSetCap:    uint32(config.ValidatorSetCap),
+		ValidatorsPowerCap: uint32(config.ValidatorPowerCap),
+		AllowInactiveVals:  config.AllowInactiveVals,
+		MinStake:           config.MinStake,
+	}
+	params := providertypes.MsgCreateConsumer{
+		ChainId: chainID,
+		Metadata: providertypes.ConsumerMetadata{
+			Name:        config.ChainName,
+			Description: "Consumer chain",
+			Metadata:    "ipfs://",
+		},
+		InitializationParameters: initParams,
+		PowerShapingParameters:   powerShapingParams,
+	}
+
+	paramsBz, err := json.Marshal(params)
+	if err != nil {
+		return err
+	}
+	err = p.GetNode().WriteFile(ctx, paramsBz, "consumer-addition.json")
+	if err != nil {
+		return err
+	}
+	_, err = p.GetNode().ExecTx(ctx, interchaintest.FaucetAccountKeyName, "provider", "create-consumer", path.Join(p.GetNode().HomeDir(), "consumer-addition.json"))
+	if err != nil {
+		return err
+	}
+	if config.TopN >= 0 {
+		govAddress, err := p.GetGovernanceAddress(ctx)
+		if err != nil {
+			return err
+		}
+		consumerID, err := p.QueryJSON(ctx, fmt.Sprintf("chains.#(chain_id=%q).consumer_id", chainID), "provider", "list-consumer-chains")
+		if err != nil {
+			return err
+		}
+		update := &providertypes.MsgUpdateConsumer{
+			ConsumerId:      consumerID.String(),
+			NewOwnerAddress: govAddress,
+			Metadata: &providertypes.ConsumerMetadata{
+				Name:        config.ChainName,
+				Description: "Consumer chain",
+				Metadata:    "ipfs://",
+			},
+			InitializationParameters: initParams,
+			PowerShapingParameters:   powerShapingParams,
+		}
+		updateBz, err := json.Marshal(update)
+		if err != nil {
+			return err
+		}
+		err = p.GetNode().WriteFile(ctx, updateBz, "consumer-update.json")
+		if err != nil {
+			return err
+		}
+		_, err = p.GetNode().ExecTx(ctx, interchaintest.FaucetAccountKeyName, "provider", "update-consumer", path.Join(p.GetNode().HomeDir(), "consumer-update.json"))
+		if err != nil {
+			return err
+		}
+		powerShapingParams.Top_N = uint32(config.TopN)
+		update = &providertypes.MsgUpdateConsumer{
+			Owner:      govAddress,
+			ConsumerId: consumerID.String(),
+			Metadata: &providertypes.ConsumerMetadata{
+				Name:        config.ChainName,
+				Description: "Consumer chain",
+				Metadata:    "ipfs://",
+			},
+			InitializationParameters: initParams,
+			PowerShapingParameters:   powerShapingParams,
+		}
+		prop, err := p.BuildProposal([]cosmos.ProtoMessage{update}, "update consumer", "update consumer", "", GovDepositAmount, "", false)
+		if err != nil {
+			return err
+		}
+		txhash, err := p.GetNode().SubmitProposal(ctx, p.ValidatorWallets[0].Moniker, prop)
+		if err != nil {
+			return err
+		}
+		propID, err := p.GetProposalID(ctx, txhash)
+		if err != nil {
+			return err
+		}
+		if err := p.PassProposal(ctx, propID); err != nil {
+			return err
+		}
+
+	}
+	return nil
 }
 
 func (p *Chain) DefaultConsumerChainSpec(ctx context.Context, chainID string, config ConsumerConfig, spawnTime time.Time, proposalWaiter *proposalWaiter) *interchaintest.ChainSpec {
@@ -281,13 +403,17 @@ func (p *Chain) DefaultConsumerChainSpec(ctx context.Context, chainID string, co
 				if config.DuringDepositPeriod != nil {
 					config.DuringDepositPeriod(ctx, consumer.(*cosmos.CosmosChain))
 				}
-				proposalWaiter.AllowDeposit()
-				proposalWaiter.WaitForVotingPeriod()
+				if proposalWaiter != nil {
+					proposalWaiter.AllowDeposit()
+					proposalWaiter.WaitForVotingPeriod()
+				}
 				if config.DuringVotingPeriod != nil {
 					config.DuringVotingPeriod(ctx, consumer.(*cosmos.CosmosChain))
 				}
-				proposalWaiter.AllowVote()
-				proposalWaiter.WaitForPassed()
+				if proposalWaiter != nil {
+					proposalWaiter.AllowVote()
+					proposalWaiter.WaitForPassed()
+				}
 				tCtx, tCancel := context.WithDeadline(ctx, spawnTime)
 				defer tCancel()
 				if config.BeforeSpawnTime != nil {
@@ -397,6 +523,42 @@ func connectProviderConsumer(ctx context.Context, provider *Chain, consumer *Cha
 
 func (p *Chain) SubmitConsumerAdditionProposal(ctx context.Context, chainID string, config ConsumerConfig, spawnTime time.Time) (*proposalWaiter, chan error, error) {
 	propWaiter := newProposalWaiter()
+	prop := p.buildConsumerAdditionJSON(chainID, config, spawnTime)
+	propTx, err := p.ConsumerAdditionProposal(ctx, interchaintest.FaucetAccountKeyName, prop)
+	if err != nil {
+		return nil, nil, err
+	}
+	errCh := make(chan error, 1)
+	go func() {
+		defer close(errCh)
+		if err := p.WaitForProposalStatus(ctx, propTx.ProposalID, govv1.StatusDepositPeriod); err != nil {
+			errCh <- err
+			panic(err)
+		}
+		propWaiter.waitForDepositAllowed()
+
+		if _, err := p.GetNode().ExecTx(ctx, interchaintest.FaucetAccountKeyName, "gov", "deposit", propTx.ProposalID, prop.Deposit); err != nil {
+			errCh <- err
+			panic(err)
+		}
+
+		if err := p.WaitForProposalStatus(ctx, propTx.ProposalID, govv1.StatusVotingPeriod); err != nil {
+			errCh <- err
+			panic(err)
+		}
+		propWaiter.startVotingPeriod()
+		propWaiter.waitForVoteAllowed()
+
+		if err := p.PassProposal(ctx, propTx.ProposalID); err != nil {
+			errCh <- err
+			panic(err)
+		}
+		propWaiter.pass()
+	}()
+	return propWaiter, errCh, nil
+}
+
+func (p *Chain) buildConsumerAdditionJSON(chainID string, config ConsumerConfig, spawnTime time.Time) ccvclient.ConsumerAdditionProposalJSON {
 	prop := ccvclient.ConsumerAdditionProposalJSON{
 		Title:         fmt.Sprintf("Addition of %s consumer chain", chainID),
 		Summary:       "Proposal to add new consumer chain",
@@ -429,38 +591,7 @@ func (p *Chain) SubmitConsumerAdditionProposal(ctx context.Context, chainID stri
 	if config.MinStake > 0 {
 		prop.MinStake = config.MinStake
 	}
-	propTx, err := p.ConsumerAdditionProposal(ctx, interchaintest.FaucetAccountKeyName, prop)
-	if err != nil {
-		return nil, nil, err
-	}
-	errCh := make(chan error, 1)
-	go func() {
-		defer close(errCh)
-		if err := p.WaitForProposalStatus(ctx, propTx.ProposalID, govv1.StatusDepositPeriod); err != nil {
-			errCh <- err
-			return
-		}
-		propWaiter.waitForDepositAllowed()
-
-		if _, err := p.GetNode().ExecTx(ctx, interchaintest.FaucetAccountKeyName, "gov", "deposit", propTx.ProposalID, prop.Deposit); err != nil {
-			errCh <- err
-			return
-		}
-
-		if err := p.WaitForProposalStatus(ctx, propTx.ProposalID, govv1.StatusVotingPeriod); err != nil {
-			errCh <- err
-			return
-		}
-		propWaiter.startVotingPeriod()
-		propWaiter.waitForVoteAllowed()
-
-		if err := p.PassProposal(ctx, propTx.ProposalID); err != nil {
-			errCh <- err
-			return
-		}
-		propWaiter.pass()
-	}()
-	return propWaiter, errCh, nil
+	return prop
 }
 
 func (p *Chain) CheckCCV(ctx context.Context, consumer *Chain, relayer *Relayer, amount, valIdx, blocksPerEpoch int) error {

@@ -450,7 +450,7 @@ func MigrateConsumerRemovalProposal(
 	msgRemoveConsumer := providertypes.MsgRemoveConsumer{
 		ConsumerId: rmConsumerID,
 		StopTime:   msg.StopTime,
-		Authority:  govKeeper.GetAuthority(),
+		Signer:     govKeeper.GetAuthority(),
 	}
 
 	if proposal.Status == govtypes.StatusPassed {

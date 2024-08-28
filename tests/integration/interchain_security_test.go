@@ -65,7 +65,8 @@ func TestICSEpochs(t *testing.T) {
 	}
 
 	getVSCPacketsFn := func() []types.ValidatorSetChangePacketData {
-		return providerKeeper.GetPendingVSCPackets(provCtx, ccvSuite.GetCCVPath().EndpointA.Chain.ChainID)
+		consumerID := icstestingutils.FirstConsumerID
+		return providerKeeper.GetPendingVSCPackets(provCtx, consumerID)
 	}
 
 	nextEpoch := func(ctx sdk.Context) sdk.Context {

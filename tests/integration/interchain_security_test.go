@@ -69,9 +69,8 @@ func TestICSEpochs(t *testing.T) {
 	}
 
 	nextEpoch := func(ctx sdk.Context) sdk.Context {
-		blockPerEpochs := providerKeeper.GetBlocksPerEpoch(ctx)
 		for {
-			if ctx.BlockHeight()%blockPerEpochs == 0 {
+			if providerKeeper.BlocksUntilNextEpoch(ctx) == 0 {
 				return ctx
 			}
 			ccvSuite.GetProviderChain().NextBlock()

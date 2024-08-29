@@ -441,8 +441,12 @@ github.com/cosmos/ibc-go/v8 v8.4.0 h1:K2PfX0AZ+1XKZytHGEMuSjQXG/MZshPb83RSTQt2+c
 github.com/cosmos/ibc-go/v8 v8.4.0/go.mod h1:zh6x1osR0hNvEcFrC/lhGD08sMfQmr9wHVvZ/mRWMCs=
 github.com/cosmos/ics23/go v0.10.0 h1:iXqLLgp2Lp+EdpIuwXTYIQU+AiHj9mOC2X9ab++bZDM=
 github.com/cosmos/ics23/go v0.10.0/go.mod h1:ZfJSmng/TBNTBkFemHHHj5YY7VAU/MBU980F4VU1NG0=
-github.com/cosmos/interchain-security/v5 v5.0.0-20240806104629-29327696b8e6 h1:aFwnbEdeMUaQg9ZU+Pm8fE3CzZM2gG5jSeAvYOd+hoU=
-github.com/cosmos/interchain-security/v5 v5.0.0-20240806104629-29327696b8e6/go.mod h1:sT6a/OIwwkXuH9fBzt5IBa4lrlWO8etgQ+b59pIE8k4=
+github.com/cosmos/interchain-security/v5 v5.0.0-20240829084649-7aa6db910325 h1:ueWHkJmLAKaHmhuWknABjvbT7Fsb0O6IVoQocUPqJ84=
+github.com/cosmos/interchain-security/v5 v5.0.0-20240829084649-7aa6db910325/go.mod h1:y3LdR1GPxF8SMFRb/V38OWGZNwEriJDFlka/hoH1GEk=
+github.com/cosmos/interchain-security/v5 v5.0.0-20240829085830-43ecf100aa0e h1:ag161bPs24kepjQ3M2OgCGEx1OSVh5q0uSqikwdXWRs=
+github.com/cosmos/interchain-security/v5 v5.0.0-20240829085830-43ecf100aa0e/go.mod h1:y3LdR1GPxF8SMFRb/V38OWGZNwEriJDFlka/hoH1GEk=
+github.com/cosmos/interchain-security/v5 v5.0.0-20240829091139-29b1bf4d6940 h1:EtZZjzahQTW14hk2MLkpoTefGDcb3sgpgRQ7sxy0mIQ=
+github.com/cosmos/interchain-security/v5 v5.0.0-20240829091139-29b1bf4d6940/go.mod h1:y3LdR1GPxF8SMFRb/V38OWGZNwEriJDFlka/hoH1GEk=
 github.com/cosmos/keyring v1.2.0 h1:8C1lBP9xhImmIabyXW4c3vFjjLiBdGCmfLUfeZlV1Yo=
 github.com/cosmos/keyring v1.2.0/go.mod h1:fc+wB5KTk9wQ9sDx0kFXB3A0MaeGHM9AwRStKOQ5vOA=
 github.com/cosmos/ledger-cosmos-go v0.13.3 h1:7ehuBGuyIytsXbd4MP43mLeoN2LTOEnk5nvue4rK+yM=
@@ -1120,8 +1124,8 @@ github.com/prometheus/client_golang v1.0.0/go.mod h1:db9x61etRT2tGnBNRi70OPL5Fsn
 github.com/prometheus/client_golang v1.3.0/go.mod h1:hJaj2vgQTGQmVCsAACORcieXFeDPbaTKGT+JTgUa3og=
 github.com/prometheus/client_golang v1.4.0/go.mod h1:e9GMxYsXl05ICDXkRhurwBS4Q3OK1iX/F2sw+iXX5zU=
 github.com/prometheus/client_golang v1.7.1/go.mod h1:PY5Wy2awLA44sXw4AOSfFBetzPP4j5+D6mVACh+pe2M=
-github.com/prometheus/client_golang v1.20.0 h1:jBzTZ7B099Rg24tny+qngoynol8LtVYlA2bqx3vEloI=
-github.com/prometheus/client_golang v1.20.0/go.mod h1:PIEt8X02hGcP8JWbeHyeZ53Y/jReSnHgO035n//V5WE=
+github.com/prometheus/client_golang v1.20.2 h1:5ctymQzZlyOON1666svgwn3s6IKWgfbjsejTMiXIyjg=
+github.com/prometheus/client_golang v1.20.2/go.mod h1:PIEt8X02hGcP8JWbeHyeZ53Y/jReSnHgO035n//V5WE=
 github.com/prometheus/client_model v0.0.0-20180712105110-5c3871d89910/go.mod h1:MbSGuTsp3dbXC40dX6PRTWyKYBIrTGTE9sqQNg2J8bo=
 github.com/prometheus/client_model v0.0.0-20190115171406-56726106282f/go.mod h1:MbSGuTsp3dbXC40dX6PRTWyKYBIrTGTE9sqQNg2J8bo=
 github.com/prometheus/client_model v0.0.0-20190129233127-fd36f4220a90/go.mod h1:xMI15A0UPsDsEKsMN9yxemIoYk6Tm2C1GtYGdfGttqA=

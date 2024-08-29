@@ -28,11 +28,11 @@ require (
 	github.com/cosmos/ibc-apps/modules/rate-limiting/v8 v8.0.0
 	github.com/cosmos/ibc-go/modules/capability v1.0.0
 	github.com/cosmos/ibc-go/v8 v8.4.0
-	github.com/cosmos/interchain-security/v5 v5.0.0-20240806104629-29327696b8e6
+	github.com/cosmos/interchain-security/v5 v5.0.0-20240829091139-29b1bf4d6940
 	github.com/google/gofuzz v1.2.0
 	github.com/gorilla/mux v1.8.1
 	github.com/ory/dockertest/v3 v3.11.0
-	github.com/prometheus/client_golang v1.20.0
+	github.com/prometheus/client_golang v1.20.2
 	github.com/rakyll/statik v0.1.7
 	github.com/skip-mev/feemarket v1.1.0
 	github.com/spf13/cast v1.7.0

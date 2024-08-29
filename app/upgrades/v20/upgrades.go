@@ -262,7 +262,7 @@ func MigrateConsumerAdditionProposal(
 		if err != nil {
 			return err
 		}
-		powerSharpingParams, err := powerShapingParamsFromCAP(msg)
+		powerShapingParams, err := powerShapingParamsFromCAP(msg)
 		if err != nil {
 			return err
 		}
@@ -271,7 +271,7 @@ func MigrateConsumerAdditionProposal(
 			ChainId:                  msg.ChainId,
 			Metadata:                 metadata,
 			InitializationParameters: &initParams,
-			PowerShapingParameters:   &powerSharpingParams,
+			PowerShapingParameters:   &powerShapingParams,
 		}
 		resp, err := msgServer.CreateConsumer(ctx, &msgCreateConsumer)
 		if err != nil {
@@ -314,7 +314,7 @@ func MigrateConsumerAdditionProposal(
 		if err != nil {
 			return err
 		}
-		powerSharpingParams, err := powerShapingParamsFromCAP(msg)
+		powerShapingParams, err := powerShapingParamsFromCAP(msg)
 		if err != nil {
 			return err
 		}
@@ -323,7 +323,7 @@ func MigrateConsumerAdditionProposal(
 			ConsumerId:               resp.ConsumerId,
 			Metadata:                 nil,
 			InitializationParameters: &initParams,
-			PowerShapingParameters:   &powerSharpingParams,
+			PowerShapingParameters:   &powerShapingParams,
 		}
 		anyMsg, err := codec.NewAnyWithValue(&msgUpdateConsumer)
 		if err != nil {
@@ -544,7 +544,7 @@ func MigrateConsumerModificationProposal(
 	}
 
 	// replace the message in the proposal with a MsgUpdateConsumer
-	powerSharpingParams, err := powerShapingParamsFromCMP(msg)
+	powerShapingParams, err := powerShapingParamsFromCMP(msg)
 	if err != nil {
 		return err
 	}
@@ -553,7 +553,7 @@ func MigrateConsumerModificationProposal(
 		ConsumerId:               modifyConsumerID,
 		Metadata:                 nil,
 		InitializationParameters: nil,
-		PowerShapingParameters:   &powerSharpingParams,
+		PowerShapingParameters:   &powerShapingParams,
 	}
 	anyMsg, err := codec.NewAnyWithValue(&msgUpdateConsumer)
 	if err != nil {

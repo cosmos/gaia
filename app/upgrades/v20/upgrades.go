@@ -351,7 +351,7 @@ func metadataFromCAP(
 	metadata := providertypes.ConsumerMetadata{
 		Name:        prop.Title,
 		Description: prop.Description,
-		Metadata:    "",
+		Metadata:    "TBA",
 	}
 	err := providertypes.ValidateConsumerMetadata(metadata)
 	// TODO: avoid returning an error here;

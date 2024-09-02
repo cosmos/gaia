@@ -99,8 +99,8 @@ include contrib/devtools/Makefile
 ###############################################################################
 
 check_version:
-ifneq ($(GO_SYSTEM_VERSION), $(REQUIRE_GO_VERSION))
-	@echo "ERROR: Go version 1.22 is required for $(VERSION) of Gaia."
+ifneq ($(shell [ "$(GO_SYSTEM_VERSION)" \< "$(REQUIRE_GO_VERSION)" ] && echo true),)
+	@echo "ERROR: Minimum Go version $(REQUIRE_GO_VERSION) is required for $(VERSION) of Gaia."
 	exit 1
 endif
 

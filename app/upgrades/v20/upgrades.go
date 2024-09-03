@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	providerkeeper "github.com/cosmos/interchain-security/v5/x/ccv/provider/keeper"
-	"github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
 	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
 
 	errorsmod "cosmossdk.io/errors"
@@ -702,7 +701,7 @@ func MigrateChangeRewardDenomsProposal(
 func SetICSConsumerMetadata(ctx sdk.Context, providerKeeper providerkeeper.Keeper) error {
 	for _, consumerId := range providerKeeper.GetAllActiveConsumerIds(ctx) {
 		phase := providerKeeper.GetConsumerPhase(ctx, consumerId)
-		if phase != types.ConsumerPhase_CONSUMER_PHASE_LAUNCHED {
+		if phase != providertypes.ConsumerPhase_CONSUMER_PHASE_LAUNCHED {
 			continue
 		}
 		chainId, err := providerKeeper.GetConsumerChainId(ctx, consumerId)
@@ -715,9 +714,15 @@ func SetICSConsumerMetadata(ctx sdk.Context, providerKeeper providerkeeper.Keepe
 
 		if chainId == "stride-1" {
 			metadata := providertypes.ConsumerMetadata{
-				Name:        "Stride",
-				Description: "",
-				Metadata:    "https://github.com/Stride-Labs/stride",
+				Name: "Stride",
+				Description: "The Stride blockchain has a single purpose: to provide the best liquid staking service for chains in the Cosmos ecosystem. " +
+					"Stride protocol currently provides liquid staking for seven Cosmos chains, and has over 80%% of Cosmos ecosystem liquid staking market share.\n" +
+					"With Stride's stTokens integrated into major DeFi apps across the Cosmos, a rapidly growing TVL, and more IBC traffic than almost any other Cosmos chain - the Stride blockchain has clearly achieved product market fit.\n" +
+					"Stride's top priority is security; it always has been and always will be. " +
+					"Like the Cosmos Hub, Stride is a highly secure minimalist blockchain, with no smart contracts and no other apps beside the core liquid staking protocol. " +
+					"The Stride codebase has been fully audited by numerous security firms, and receives continuous auditing from Informal Systems. " +
+					"And the Stride blockchain is protected by IBC rate-limiting.",
+				Metadata: "https://github.com/Stride-Labs/stride",
 			}
 			err = providerKeeper.SetConsumerMetadata(ctx, consumerId, metadata)
 			if err != nil {
@@ -728,9 +733,16 @@ func SetICSConsumerMetadata(ctx sdk.Context, providerKeeper providerkeeper.Keepe
 			}
 		} else if chainId == "neutron-1" {
 			metadata := providertypes.ConsumerMetadata{
-				Name:        "Neutron",
-				Description: "",
-				Metadata:    "https://github.com/neutron-org/neutron",
+				Name: "Neutron",
+				Description: "Neutron is the only blockchain network specifically designed to support Integrated Applications. " +
+					"By granting contracts the power of an appchain, Neutron minimises development overhead, facilitates improved mechanism design, lowers risk and enhances the scalability of decentralised applications.\n" +
+					"Unlike typical smart contracts, Integrated Applications have access to components of the blockchain that exist outside of their virtual machine: " +
+					"begin and end block automation, mempools, transaction fee mechanisms, consensus votes, interchain transactions and queries, and more.\n" +
+					"Integrated Applications can customise their network's blockspace to provide gasless onboarding to newly acquired users and do away with network selectors to onboard deposits from any connected blockchain in a single click. " +
+					"They can deploy and manage capital and integrations across multiple chains, maximising network effects and the ubiquity of their denominations.\n" +
+					"These features allow Integrated Applications to establish stronger moats around their technology and business model, while providing a competitive edge that standard applications lack. " +
+					"This makes them inherently more attractive and competitive, as they operate on an enhanced platform offering higher performance and broader reach compared to traditional applications.",
+				Metadata: "https://github.com/neutron-org/neutron",
 			}
 			err = providerKeeper.SetConsumerMetadata(ctx, consumerId, metadata)
 			if err != nil {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	providerkeeper "github.com/cosmos/interchain-security/v5/x/ccv/provider/keeper"
+	"github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
 	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
 
 	errorsmod "cosmossdk.io/errors"
@@ -71,6 +72,12 @@ func CreateUpgradeHandler(
 		err = MigrateICSLegacyProposals(ctx, msgServer, keepers.ProviderKeeper, *keepers.GovKeeper)
 		if err != nil {
 			return vm, errorsmod.Wrapf(err, "migrating ICS legacy proposals during migration")
+		}
+
+		ctx.Logger().Info("Setting ICS consumers metadata...")
+		err = SetICSConsumerMetadata(ctx, keepers.ProviderKeeper)
+		if err != nil {
+			return vm, errorsmod.Wrapf(err, "setting ICS consumers metadata during migration")
 		}
 
 		ctx.Logger().Info("Upgrade v20 complete")
@@ -687,6 +694,52 @@ func MigrateChangeRewardDenomsProposal(
 		ctx.Logger().Info(
 			fmt.Sprintf("Replaced proposal with ID(%d) with MsgChangeRewardDenoms", proposal.Id),
 		)
+	}
+	return nil
+}
+
+// SetICSConsumerMetadata sets the metadata for launched consumer chains
+func SetICSConsumerMetadata(ctx sdk.Context, providerKeeper providerkeeper.Keeper) error {
+	for _, consumerId := range providerKeeper.GetAllActiveConsumerIds(ctx) {
+		phase := providerKeeper.GetConsumerPhase(ctx, consumerId)
+		if phase != types.ConsumerPhase_CONSUMER_PHASE_LAUNCHED {
+			continue
+		}
+		chainId, err := providerKeeper.GetConsumerChainId(ctx, consumerId)
+		if err != nil {
+			ctx.Logger().Error(
+				fmt.Sprintf("cannot get chain ID for consumer chain, consumerId(%s)", consumerId),
+			)
+			continue
+		}
+
+		if chainId == "stride-1" {
+			metadata := providertypes.ConsumerMetadata{
+				Name:        "Stride",
+				Description: "",
+				Metadata:    "https://github.com/Stride-Labs/stride",
+			}
+			err = providerKeeper.SetConsumerMetadata(ctx, consumerId, metadata)
+			if err != nil {
+				ctx.Logger().Error(
+					fmt.Sprintf("cannot set consumer metadata, consumerId(%s), chainId(%s): %s", consumerId, chainId, err.Error()),
+				)
+				continue
+			}
+		} else if chainId == "neutron-1" {
+			metadata := providertypes.ConsumerMetadata{
+				Name:        "Neutron",
+				Description: "",
+				Metadata:    "https://github.com/neutron-org/neutron",
+			}
+			err = providerKeeper.SetConsumerMetadata(ctx, consumerId, metadata)
+			if err != nil {
+				ctx.Logger().Error(
+					fmt.Sprintf("cannot set consumer metadata, consumerId(%s), chainId(%s): %s", consumerId, chainId, err.Error()),
+				)
+				continue
+			}
+		}
 	}
 	return nil
 }

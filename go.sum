@@ -443,10 +443,10 @@ github.com/cosmos/ibc-go/v8 v8.5.0 h1:OjaSXz480JT8ZuMrASxGgS7XzloZ2NuuJPwZB/fKDg
 github.com/cosmos/ibc-go/v8 v8.5.0/go.mod h1:P5hkAvq0Qbg0h18uLxDVA9q1kOJ0l36htMsskiNwXbo=
 github.com/cosmos/ics23/go v0.11.0 h1:jk5skjT0TqX5e5QJbEnwXIS2yI2vnmLOgpQPeM5RtnU=
 github.com/cosmos/ics23/go v0.11.0/go.mod h1:A8OjxPE67hHST4Icw94hOxxFEJMBG031xIGF/JHNIY0=
-github.com/cosmos/interchain-security/v5 v5.0.0-20240830143040-6262e42539b0 h1:eUVYAtMBOjZIByoY+TVpGx85tjeLAGJGvxSXx6TxumA=
-github.com/cosmos/interchain-security/v5 v5.0.0-20240830143040-6262e42539b0/go.mod h1:y3LdR1GPxF8SMFRb/V38OWGZNwEriJDFlka/hoH1GEk=
 github.com/cosmos/interchain-security/v5 v5.0.0-20240903101737-5f1a27cf0307 h1:9wk1rNi8ZWCn7EXuhVGd5EJYZaWiNpzHi6y+NaiSpZ8=
 github.com/cosmos/interchain-security/v5 v5.0.0-20240903101737-5f1a27cf0307/go.mod h1:y3LdR1GPxF8SMFRb/V38OWGZNwEriJDFlka/hoH1GEk=
+github.com/cosmos/interchain-security/v5 v5.0.0-20240903195423-6b148c74e014 h1:kV9hr0QCuDAhrqzsjO4UsXLPXEFTpEzOc+JgT/dM/Lc=
+github.com/cosmos/interchain-security/v5 v5.0.0-20240903195423-6b148c74e014/go.mod h1:y3LdR1GPxF8SMFRb/V38OWGZNwEriJDFlka/hoH1GEk=
 github.com/cosmos/keyring v1.2.0 h1:8C1lBP9xhImmIabyXW4c3vFjjLiBdGCmfLUfeZlV1Yo=
 github.com/cosmos/keyring v1.2.0/go.mod h1:fc+wB5KTk9wQ9sDx0kFXB3A0MaeGHM9AwRStKOQ5vOA=
 github.com/cosmos/ledger-cosmos-go v0.13.3 h1:7ehuBGuyIytsXbd4MP43mLeoN2LTOEnk5nvue4rK+yM=

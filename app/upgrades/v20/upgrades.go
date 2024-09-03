@@ -137,13 +137,21 @@ func InitializeLastProviderConsensusValidatorSet(
 
 // MigrateICSLegacyProposals migrates ICS legacy proposals
 func MigrateICSLegacyProposals(ctx sdk.Context, msgServer providertypes.MsgServer, providerKeeper providerkeeper.Keeper, govKeeper govkeeper.Keeper) error {
-	return govKeeper.Proposals.Walk(ctx, nil, func(key uint64, proposal govtypes.Proposal) (stop bool, err error) {
-		err = MigrateProposal(ctx, msgServer, providerKeeper, govKeeper, proposal)
-		if err != nil {
-			return true, errorsmod.Wrapf(err, "migrating proposal %d", key)
-		}
-		return false, nil
+	proposals := []govtypes.Proposal{}
+	err := govKeeper.Proposals.Walk(ctx, nil, func(key uint64, proposal govtypes.Proposal) (stop bool, err error) {
+		proposals = append(proposals, proposal)
+		return false, nil // go through the entire collection
 	})
+	if err != nil {
+		return errorsmod.Wrapf(err, "iterating through proposals")
+	}
+	for _, proposal := range proposals {
+		err := MigrateProposal(ctx, msgServer, providerKeeper, govKeeper, proposal)
+		if err != nil {
+			return errorsmod.Wrapf(err, "migrating proposal %d", proposal.Id)
+		}
+	}
+	return nil
 }
 
 // MigrateProposal migrates an ICS proposal
@@ -253,18 +261,35 @@ func MigrateConsumerAdditionProposal(
 				return nil
 			}
 		}
+
+		// This proposal would have been handled in a future block.
+		// If the proposal is invalid, just ignore it.
+		// Otherwise, call CreateConsumer, which will schedule the consumer
+		// chain to be launched at msg.SpawnTime.
+
 		// create a new consumer chain with all the parameters
-		metadata, err := metadataFromCAP(msg)
-		if err != nil {
-			return err
-		}
+		metadata := metadataFromCAP(msg)
 		initParams, err := initParamsFromCAP(msg)
 		if err != nil {
-			return err
+			// invalid init params -- ignore proposal
+			ctx.Logger().Error(
+				fmt.Sprintf(
+					"Proposal with ID(%d) was skipped as the init params are invalid, chainID(%s), spawnTime(%s): %s",
+					proposal.Id, msg.ChainId, msg.SpawnTime.String(), err.Error(),
+				),
+			)
+			return nil
 		}
 		powerShapingParams, err := powerShapingParamsFromCAP(msg)
 		if err != nil {
-			return err
+			// invalid power shaping params -- ignore proposal
+			ctx.Logger().Error(
+				fmt.Sprintf(
+					"Proposal with ID(%d) was skipped as the power shaping params are invalid, chainID(%s), spawnTime(%s): %s",
+					proposal.Id, msg.ChainId, msg.SpawnTime.String(), err.Error(),
+				),
+			)
+			return nil
 		}
 		msgCreateConsumer := providertypes.MsgCreateConsumer{
 			Signer:                   govKeeper.GetAuthority(),
@@ -284,13 +309,42 @@ func MigrateConsumerAdditionProposal(
 			),
 		)
 	} else {
-		// ConsumerAdditionProposal that was submitted, but not yet passed
+		// ConsumerAdditionProposal that was submitted, but not yet passed.
+		// If the proposal is invalid, remove it.
+		// Otherwise, create a new consumer chain (MsgCreateConsumer), and
+		// replace the proposal's content with a MsgUpdateConsumer
+
+		metadata := metadataFromCAP(msg)
+		initParams, err := initParamsFromCAP(msg)
+		if err != nil {
+			// invalid init params -- delete proposal
+			if err := govKeeper.DeleteProposal(ctx, proposal.Id); err != nil {
+				return err
+			}
+			ctx.Logger().Error(
+				fmt.Sprintf(
+					"Proposal with ID(%d) was deleted as the init params are invalid, chainID(%s), spawnTime(%s): %s",
+					proposal.Id, msg.ChainId, msg.SpawnTime.String(), err.Error(),
+				),
+			)
+			return nil
+		}
+		powerShapingParams, err := powerShapingParamsFromCAP(msg)
+		if err != nil {
+			// invalid power shaping params -- delete proposal
+			if err := govKeeper.DeleteProposal(ctx, proposal.Id); err != nil {
+				return err
+			}
+			ctx.Logger().Error(
+				fmt.Sprintf(
+					"Proposal with ID(%d) was deleted as the power shaping params are invalid, chainID(%s), spawnTime(%s): %s",
+					proposal.Id, msg.ChainId, msg.SpawnTime.String(), err.Error(),
+				),
+			)
+			return nil
+		}
 
 		// first, create a new consumer chain to get a consumer ID
-		metadata, err := metadataFromCAP(msg)
-		if err != nil {
-			return err
-		}
 		msgCreateConsumer := providertypes.MsgCreateConsumer{
 			Signer:                   govKeeper.GetAuthority(),
 			ChainId:                  msg.ChainId,
@@ -310,14 +364,6 @@ func MigrateConsumerAdditionProposal(
 		)
 
 		// second, replace the message in the proposal with a MsgUpdateConsumer
-		initParams, err := initParamsFromCAP(msg)
-		if err != nil {
-			return err
-		}
-		powerShapingParams, err := powerShapingParamsFromCAP(msg)
-		if err != nil {
-			return err
-		}
 		msgUpdateConsumer := providertypes.MsgUpdateConsumer{
 			Signer:                   govKeeper.GetAuthority(),
 			ConsumerId:               resp.ConsumerId,
@@ -330,7 +376,6 @@ func MigrateConsumerAdditionProposal(
 			return err
 		}
 		proposal.Messages[0] = anyMsg
-		// TODO: check if we can call SetProposal within govKeeper.Proposals.Walk
 		if err := govKeeper.SetProposal(ctx, proposal); err != nil {
 			return err
 		}
@@ -345,19 +390,18 @@ func MigrateConsumerAdditionProposal(
 }
 
 // metadataFromCAP returns ConsumerMetadata from a ConsumerAdditionProposal
-func metadataFromCAP(
-	prop *providertypes.ConsumerAdditionProposal,
-) (providertypes.ConsumerMetadata, error) {
+func metadataFromCAP(prop *providertypes.ConsumerAdditionProposal) providertypes.ConsumerMetadata {
 	metadata := providertypes.ConsumerMetadata{
 		Name:        prop.Title,
 		Description: prop.Description,
 		Metadata:    "TBA",
 	}
 	err := providertypes.ValidateConsumerMetadata(metadata)
-	// TODO: avoid returning an error here;
-	// for this, we need to make sure the validation works always
-	// (e.g., truncate the fields)
-	return metadata, err
+	if err != nil {
+		metadata.Name = providertypes.TruncateString(metadata.Name, providertypes.MaxNameLength)
+		metadata.Description = providertypes.TruncateString(metadata.Description, providertypes.MaxDescriptionLength)
+	}
+	return metadata
 }
 
 // initParamsFromCAP returns ConsumerInitializationParameters from
@@ -379,8 +423,6 @@ func initParamsFromCAP(
 		DistributionTransmissionChannel:   prop.DistributionTransmissionChannel,
 	}
 	err := providertypes.ValidateInitializationParameters(initParams)
-	// TODO: avoid returning an error here;
-	// for this, we need to make sure the validation works always
 	return initParams, err
 }
 
@@ -398,8 +440,6 @@ func powerShapingParamsFromCAP(
 		AllowInactiveVals:  prop.AllowInactiveVals,
 	}
 	err := providertypes.ValidatePowerShapingParameters(powerShapingParams)
-	// TODO: avoid returning an error here;
-	// for this, we need to make sure the validation works always
 	return powerShapingParams, err
 }
 
@@ -482,7 +522,6 @@ func MigrateConsumerRemovalProposal(
 			return err
 		}
 		proposal.Messages[0] = anyMsg
-		// TODO: check if we can call SetProposal within govKeeper.Proposals.Walk
 		if err := govKeeper.SetProposal(ctx, proposal); err != nil {
 			return err
 		}
@@ -546,7 +585,17 @@ func MigrateConsumerModificationProposal(
 	// replace the message in the proposal with a MsgUpdateConsumer
 	powerShapingParams, err := powerShapingParamsFromCMP(msg)
 	if err != nil {
-		return err
+		// invalid power shaping params -- delete proposal
+		if err := govKeeper.DeleteProposal(ctx, proposal.Id); err != nil {
+			return err
+		}
+		ctx.Logger().Error(
+			fmt.Sprintf(
+				"Proposal with ID(%d) was deleted as the power shaping params are invalid, consumerID(%s), chainID(%s): %s",
+				proposal.Id, modifyConsumerID, msg.ChainId, err.Error(),
+			),
+		)
+		return nil
 	}
 	msgUpdateConsumer := providertypes.MsgUpdateConsumer{
 		Signer:                   govKeeper.GetAuthority(),
@@ -560,7 +609,6 @@ func MigrateConsumerModificationProposal(
 		return err
 	}
 	proposal.Messages[0] = anyMsg
-	// TODO: check if we can call SetProposal within govKeeper.Proposals.Walk
 	if err := govKeeper.SetProposal(ctx, proposal); err != nil {
 		return err
 	}
@@ -587,8 +635,6 @@ func powerShapingParamsFromCMP(
 		AllowInactiveVals:  prop.AllowInactiveVals,
 	}
 	err := providertypes.ValidatePowerShapingParameters(powerShapingParams)
-	// TODO: avoid returning an error here;
-	// for this, we need to make sure the validation works always
 	return powerShapingParams, err
 }
 
@@ -635,7 +681,6 @@ func MigrateChangeRewardDenomsProposal(
 			return err
 		}
 		proposal.Messages[0] = anyMsg
-		// TODO: check if we can call SetProposal within govKeeper.Proposals.Walk
 		if err := govKeeper.SetProposal(ctx, proposal); err != nil {
 			return err
 		}

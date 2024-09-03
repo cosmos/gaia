@@ -699,20 +699,20 @@ func MigrateChangeRewardDenomsProposal(
 
 // SetICSConsumerMetadata sets the metadata for launched consumer chains
 func SetICSConsumerMetadata(ctx sdk.Context, providerKeeper providerkeeper.Keeper) error {
-	for _, consumerId := range providerKeeper.GetAllActiveConsumerIds(ctx) {
-		phase := providerKeeper.GetConsumerPhase(ctx, consumerId)
+	for _, consumerID := range providerKeeper.GetAllActiveConsumerIds(ctx) {
+		phase := providerKeeper.GetConsumerPhase(ctx, consumerID)
 		if phase != providertypes.ConsumerPhase_CONSUMER_PHASE_LAUNCHED {
 			continue
 		}
-		chainId, err := providerKeeper.GetConsumerChainId(ctx, consumerId)
+		chainID, err := providerKeeper.GetConsumerChainId(ctx, consumerID)
 		if err != nil {
 			ctx.Logger().Error(
-				fmt.Sprintf("cannot get chain ID for consumer chain, consumerId(%s)", consumerId),
+				fmt.Sprintf("cannot get chain ID for consumer chain, consumerID(%s)", consumerID),
 			)
 			continue
 		}
 
-		if chainId == "stride-1" {
+		if chainID == "stride-1" {
 			metadata := providertypes.ConsumerMetadata{
 				Name: "Stride",
 				Description: "The Stride blockchain has a single purpose: to provide the best liquid staking service for chains in the Cosmos ecosystem. " +
@@ -724,14 +724,14 @@ func SetICSConsumerMetadata(ctx sdk.Context, providerKeeper providerkeeper.Keepe
 					"And the Stride blockchain is protected by IBC rate-limiting.",
 				Metadata: "https://github.com/Stride-Labs/stride",
 			}
-			err = providerKeeper.SetConsumerMetadata(ctx, consumerId, metadata)
+			err = providerKeeper.SetConsumerMetadata(ctx, consumerID, metadata)
 			if err != nil {
 				ctx.Logger().Error(
-					fmt.Sprintf("cannot set consumer metadata, consumerId(%s), chainId(%s): %s", consumerId, chainId, err.Error()),
+					fmt.Sprintf("cannot set consumer metadata, consumerID(%s), chainID(%s): %s", consumerID, chainID, err.Error()),
 				)
 				continue
 			}
-		} else if chainId == "neutron-1" {
+		} else if chainID == "neutron-1" {
 			metadata := providertypes.ConsumerMetadata{
 				Name: "Neutron",
 				Description: "Neutron is the only blockchain network specifically designed to support Integrated Applications. " +
@@ -744,10 +744,10 @@ func SetICSConsumerMetadata(ctx sdk.Context, providerKeeper providerkeeper.Keepe
 					"This makes them inherently more attractive and competitive, as they operate on an enhanced platform offering higher performance and broader reach compared to traditional applications.",
 				Metadata: "https://github.com/neutron-org/neutron",
 			}
-			err = providerKeeper.SetConsumerMetadata(ctx, consumerId, metadata)
+			err = providerKeeper.SetConsumerMetadata(ctx, consumerID, metadata)
 			if err != nil {
 				ctx.Logger().Error(
-					fmt.Sprintf("cannot set consumer metadata, consumerId(%s), chainId(%s): %s", consumerId, chainId, err.Error()),
+					fmt.Sprintf("cannot set consumer metadata, consumerID(%s), chainID(%s): %s", consumerID, chainID, err.Error()),
 				)
 				continue
 			}

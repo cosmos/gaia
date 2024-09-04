@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## v19.2.0
+
+*September 04, 2024*
+
+### DEPENDENCIES
+
+- Bump [ICS](https://github.com/cosmos/interchain-security) to
+    [v5.2.0](https://github.com/cosmos/interchain-security/releases/tag/v5.2.0)
+    ([\#3310](https://github.com/cosmos/gaia/pull/3310))
+
+### STATE BREAKING
+
+- Bump [ICS](https://github.com/cosmos/interchain-security) to
+    [v5.2.0](https://github.com/cosmos/interchain-security/releases/tag/v5.2.0)
+    ([\#3310](https://github.com/cosmos/gaia/pull/3310))
+
 ## v19.1.0
 
 *August 21, 2024*

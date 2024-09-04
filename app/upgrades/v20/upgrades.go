@@ -297,14 +297,27 @@ func MigrateConsumerAdditionProposal(
 			)
 			return nil
 		}
+		// first, create an Opt-In consumer chain
 		msgCreateConsumer := providertypes.MsgCreateConsumer{
 			Signer:                   govKeeper.GetAuthority(),
 			ChainId:                  msg.ChainId,
 			Metadata:                 metadata,
+			InitializationParameters: nil,
+			PowerShapingParameters:   nil,
+		}
+		resp, err := msgServer.CreateConsumer(ctx, &msgCreateConsumer)
+		if err != nil {
+			return err
+		}
+		// second, update the consumer chain to be TopN
+		msgUpdateConsumer := providertypes.MsgUpdateConsumer{
+			Signer:                   govKeeper.GetAuthority(),
+			ConsumerId:               resp.ConsumerId,
+			Metadata:                 nil,
 			InitializationParameters: &initParams,
 			PowerShapingParameters:   &powerShapingParams,
 		}
-		resp, err := msgServer.CreateConsumer(ctx, &msgCreateConsumer)
+		_, err = msgServer.UpdateConsumer(ctx, &msgUpdateConsumer)
 		if err != nil {
 			return err
 		}

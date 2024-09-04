@@ -73,6 +73,12 @@ func CreateUpgradeHandler(
 			return vm, errorsmod.Wrapf(err, "migrating ICS legacy proposals during migration")
 		}
 
+		ctx.Logger().Info("Setting ICS consumers metadata...")
+		err = SetICSConsumerMetadata(ctx, keepers.ProviderKeeper)
+		if err != nil {
+			return vm, errorsmod.Wrapf(err, "setting ICS consumers metadata during migration")
+		}
+
 		ctx.Logger().Info("Upgrade v20 complete")
 		return vm, nil
 	}
@@ -137,13 +143,21 @@ func InitializeLastProviderConsensusValidatorSet(
 
 // MigrateICSLegacyProposals migrates ICS legacy proposals
 func MigrateICSLegacyProposals(ctx sdk.Context, msgServer providertypes.MsgServer, providerKeeper providerkeeper.Keeper, govKeeper govkeeper.Keeper) error {
-	return govKeeper.Proposals.Walk(ctx, nil, func(key uint64, proposal govtypes.Proposal) (stop bool, err error) {
-		err = MigrateProposal(ctx, msgServer, providerKeeper, govKeeper, proposal)
-		if err != nil {
-			return true, errorsmod.Wrapf(err, "migrating proposal %d", key)
-		}
-		return false, nil
+	proposals := []govtypes.Proposal{}
+	err := govKeeper.Proposals.Walk(ctx, nil, func(key uint64, proposal govtypes.Proposal) (stop bool, err error) {
+		proposals = append(proposals, proposal)
+		return false, nil // go through the entire collection
 	})
+	if err != nil {
+		return errorsmod.Wrapf(err, "iterating through proposals")
+	}
+	for _, proposal := range proposals {
+		err := MigrateProposal(ctx, msgServer, providerKeeper, govKeeper, proposal)
+		if err != nil {
+			return errorsmod.Wrapf(err, "migrating proposal %d", proposal.Id)
+		}
+	}
+	return nil
 }
 
 // MigrateProposal migrates an ICS proposal
@@ -253,27 +267,57 @@ func MigrateConsumerAdditionProposal(
 				return nil
 			}
 		}
+
+		// This proposal would have been handled in a future block.
+		// If the proposal is invalid, just ignore it.
+		// Otherwise, call CreateConsumer, which will schedule the consumer
+		// chain to be launched at msg.SpawnTime.
+
 		// create a new consumer chain with all the parameters
-		metadata, err := metadataFromCAP(msg)
-		if err != nil {
-			return err
-		}
+		metadata := metadataFromCAP(msg)
 		initParams, err := initParamsFromCAP(msg)
 		if err != nil {
-			return err
+			// invalid init params -- ignore proposal
+			ctx.Logger().Error(
+				fmt.Sprintf(
+					"Proposal with ID(%d) was skipped as the init params are invalid, chainID(%s), spawnTime(%s): %s",
+					proposal.Id, msg.ChainId, msg.SpawnTime.String(), err.Error(),
+				),
+			)
+			return nil
 		}
 		powerShapingParams, err := powerShapingParamsFromCAP(msg)
 		if err != nil {
-			return err
+			// invalid power shaping params -- ignore proposal
+			ctx.Logger().Error(
+				fmt.Sprintf(
+					"Proposal with ID(%d) was skipped as the power shaping params are invalid, chainID(%s), spawnTime(%s): %s",
+					proposal.Id, msg.ChainId, msg.SpawnTime.String(), err.Error(),
+				),
+			)
+			return nil
 		}
+		// first, create an Opt-In consumer chain
 		msgCreateConsumer := providertypes.MsgCreateConsumer{
 			Signer:                   govKeeper.GetAuthority(),
 			ChainId:                  msg.ChainId,
 			Metadata:                 metadata,
+			InitializationParameters: nil,
+			PowerShapingParameters:   nil,
+		}
+		resp, err := msgServer.CreateConsumer(ctx, &msgCreateConsumer)
+		if err != nil {
+			return err
+		}
+		// second, update the consumer chain to be TopN
+		msgUpdateConsumer := providertypes.MsgUpdateConsumer{
+			Signer:                   govKeeper.GetAuthority(),
+			ConsumerId:               resp.ConsumerId,
+			Metadata:                 nil,
 			InitializationParameters: &initParams,
 			PowerShapingParameters:   &powerShapingParams,
 		}
-		resp, err := msgServer.CreateConsumer(ctx, &msgCreateConsumer)
+		_, err = msgServer.UpdateConsumer(ctx, &msgUpdateConsumer)
 		if err != nil {
 			return err
 		}
@@ -284,13 +328,42 @@ func MigrateConsumerAdditionProposal(
 			),
 		)
 	} else {
-		// ConsumerAdditionProposal that was submitted, but not yet passed
+		// ConsumerAdditionProposal that was submitted, but not yet passed.
+		// If the proposal is invalid, remove it.
+		// Otherwise, create a new consumer chain (MsgCreateConsumer), and
+		// replace the proposal's content with a MsgUpdateConsumer
+
+		metadata := metadataFromCAP(msg)
+		initParams, err := initParamsFromCAP(msg)
+		if err != nil {
+			// invalid init params -- delete proposal
+			if err := govKeeper.DeleteProposal(ctx, proposal.Id); err != nil {
+				return err
+			}
+			ctx.Logger().Error(
+				fmt.Sprintf(
+					"Proposal with ID(%d) was deleted as the init params are invalid, chainID(%s), spawnTime(%s): %s",
+					proposal.Id, msg.ChainId, msg.SpawnTime.String(), err.Error(),
+				),
+			)
+			return nil
+		}
+		powerShapingParams, err := powerShapingParamsFromCAP(msg)
+		if err != nil {
+			// invalid power shaping params -- delete proposal
+			if err := govKeeper.DeleteProposal(ctx, proposal.Id); err != nil {
+				return err
+			}
+			ctx.Logger().Error(
+				fmt.Sprintf(
+					"Proposal with ID(%d) was deleted as the power shaping params are invalid, chainID(%s), spawnTime(%s): %s",
+					proposal.Id, msg.ChainId, msg.SpawnTime.String(), err.Error(),
+				),
+			)
+			return nil
+		}
 
 		// first, create a new consumer chain to get a consumer ID
-		metadata, err := metadataFromCAP(msg)
-		if err != nil {
-			return err
-		}
 		msgCreateConsumer := providertypes.MsgCreateConsumer{
 			Signer:                   govKeeper.GetAuthority(),
 			ChainId:                  msg.ChainId,
@@ -310,14 +383,6 @@ func MigrateConsumerAdditionProposal(
 		)
 
 		// second, replace the message in the proposal with a MsgUpdateConsumer
-		initParams, err := initParamsFromCAP(msg)
-		if err != nil {
-			return err
-		}
-		powerShapingParams, err := powerShapingParamsFromCAP(msg)
-		if err != nil {
-			return err
-		}
 		msgUpdateConsumer := providertypes.MsgUpdateConsumer{
 			Signer:                   govKeeper.GetAuthority(),
 			ConsumerId:               resp.ConsumerId,
@@ -330,7 +395,6 @@ func MigrateConsumerAdditionProposal(
 			return err
 		}
 		proposal.Messages[0] = anyMsg
-		// TODO: check if we can call SetProposal within govKeeper.Proposals.Walk
 		if err := govKeeper.SetProposal(ctx, proposal); err != nil {
 			return err
 		}
@@ -345,19 +409,18 @@ func MigrateConsumerAdditionProposal(
 }
 
 // metadataFromCAP returns ConsumerMetadata from a ConsumerAdditionProposal
-func metadataFromCAP(
-	prop *providertypes.ConsumerAdditionProposal,
-) (providertypes.ConsumerMetadata, error) {
+func metadataFromCAP(prop *providertypes.ConsumerAdditionProposal) providertypes.ConsumerMetadata {
 	metadata := providertypes.ConsumerMetadata{
 		Name:        prop.Title,
 		Description: prop.Description,
 		Metadata:    "TBA",
 	}
 	err := providertypes.ValidateConsumerMetadata(metadata)
-	// TODO: avoid returning an error here;
-	// for this, we need to make sure the validation works always
-	// (e.g., truncate the fields)
-	return metadata, err
+	if err != nil {
+		metadata.Name = providertypes.TruncateString(metadata.Name, providertypes.MaxNameLength)
+		metadata.Description = providertypes.TruncateString(metadata.Description, providertypes.MaxDescriptionLength)
+	}
+	return metadata
 }
 
 // initParamsFromCAP returns ConsumerInitializationParameters from
@@ -379,8 +442,6 @@ func initParamsFromCAP(
 		DistributionTransmissionChannel:   prop.DistributionTransmissionChannel,
 	}
 	err := providertypes.ValidateInitializationParameters(initParams)
-	// TODO: avoid returning an error here;
-	// for this, we need to make sure the validation works always
 	return initParams, err
 }
 
@@ -398,8 +459,6 @@ func powerShapingParamsFromCAP(
 		AllowInactiveVals:  prop.AllowInactiveVals,
 	}
 	err := providertypes.ValidatePowerShapingParameters(powerShapingParams)
-	// TODO: avoid returning an error here;
-	// for this, we need to make sure the validation works always
 	return powerShapingParams, err
 }
 
@@ -482,7 +541,6 @@ func MigrateConsumerRemovalProposal(
 			return err
 		}
 		proposal.Messages[0] = anyMsg
-		// TODO: check if we can call SetProposal within govKeeper.Proposals.Walk
 		if err := govKeeper.SetProposal(ctx, proposal); err != nil {
 			return err
 		}
@@ -546,7 +604,17 @@ func MigrateConsumerModificationProposal(
 	// replace the message in the proposal with a MsgUpdateConsumer
 	powerShapingParams, err := powerShapingParamsFromCMP(msg)
 	if err != nil {
-		return err
+		// invalid power shaping params -- delete proposal
+		if err := govKeeper.DeleteProposal(ctx, proposal.Id); err != nil {
+			return err
+		}
+		ctx.Logger().Error(
+			fmt.Sprintf(
+				"Proposal with ID(%d) was deleted as the power shaping params are invalid, consumerID(%s), chainID(%s): %s",
+				proposal.Id, modifyConsumerID, msg.ChainId, err.Error(),
+			),
+		)
+		return nil
 	}
 	msgUpdateConsumer := providertypes.MsgUpdateConsumer{
 		Signer:                   govKeeper.GetAuthority(),
@@ -560,7 +628,6 @@ func MigrateConsumerModificationProposal(
 		return err
 	}
 	proposal.Messages[0] = anyMsg
-	// TODO: check if we can call SetProposal within govKeeper.Proposals.Walk
 	if err := govKeeper.SetProposal(ctx, proposal); err != nil {
 		return err
 	}
@@ -587,8 +654,6 @@ func powerShapingParamsFromCMP(
 		AllowInactiveVals:  prop.AllowInactiveVals,
 	}
 	err := providertypes.ValidatePowerShapingParameters(powerShapingParams)
-	// TODO: avoid returning an error here;
-	// for this, we need to make sure the validation works always
 	return powerShapingParams, err
 }
 
@@ -635,13 +700,71 @@ func MigrateChangeRewardDenomsProposal(
 			return err
 		}
 		proposal.Messages[0] = anyMsg
-		// TODO: check if we can call SetProposal within govKeeper.Proposals.Walk
 		if err := govKeeper.SetProposal(ctx, proposal); err != nil {
 			return err
 		}
 		ctx.Logger().Info(
 			fmt.Sprintf("Replaced proposal with ID(%d) with MsgChangeRewardDenoms", proposal.Id),
 		)
+	}
+	return nil
+}
+
+// SetICSConsumerMetadata sets the metadata for launched consumer chains
+func SetICSConsumerMetadata(ctx sdk.Context, providerKeeper providerkeeper.Keeper) error {
+	for _, consumerID := range providerKeeper.GetAllActiveConsumerIds(ctx) {
+		phase := providerKeeper.GetConsumerPhase(ctx, consumerID)
+		if phase != providertypes.ConsumerPhase_CONSUMER_PHASE_LAUNCHED {
+			continue
+		}
+		chainID, err := providerKeeper.GetConsumerChainId(ctx, consumerID)
+		if err != nil {
+			ctx.Logger().Error(
+				fmt.Sprintf("cannot get chain ID for consumer chain, consumerID(%s)", consumerID),
+			)
+			continue
+		}
+
+		if chainID == "stride-1" {
+			metadata := providertypes.ConsumerMetadata{
+				Name: "Stride",
+				Description: "The Stride blockchain has a single purpose: to provide the best liquid staking service for chains in the Cosmos ecosystem. " +
+					"Stride protocol currently provides liquid staking for seven Cosmos chains, and has over 80%% of Cosmos ecosystem liquid staking market share.\n" +
+					"With Stride's stTokens integrated into major DeFi apps across the Cosmos, a rapidly growing TVL, and more IBC traffic than almost any other Cosmos chain - the Stride blockchain has clearly achieved product market fit.\n" +
+					"Stride's top priority is security; it always has been and always will be. " +
+					"Like the Cosmos Hub, Stride is a highly secure minimalist blockchain, with no smart contracts and no other apps beside the core liquid staking protocol. " +
+					"The Stride codebase has been fully audited by numerous security firms, and receives continuous auditing from Informal Systems. " +
+					"And the Stride blockchain is protected by IBC rate-limiting.",
+				Metadata: "https://github.com/Stride-Labs/stride",
+			}
+			err = providerKeeper.SetConsumerMetadata(ctx, consumerID, metadata)
+			if err != nil {
+				ctx.Logger().Error(
+					fmt.Sprintf("cannot set consumer metadata, consumerID(%s), chainID(%s): %s", consumerID, chainID, err.Error()),
+				)
+				continue
+			}
+		} else if chainID == "neutron-1" {
+			metadata := providertypes.ConsumerMetadata{
+				Name: "Neutron",
+				Description: "Neutron is the only blockchain network specifically designed to support Integrated Applications. " +
+					"By granting contracts the power of an appchain, Neutron minimises development overhead, facilitates improved mechanism design, lowers risk and enhances the scalability of decentralised applications.\n" +
+					"Unlike typical smart contracts, Integrated Applications have access to components of the blockchain that exist outside of their virtual machine: " +
+					"begin and end block automation, mempools, transaction fee mechanisms, consensus votes, interchain transactions and queries, and more.\n" +
+					"Integrated Applications can customise their network's blockspace to provide gasless onboarding to newly acquired users and do away with network selectors to onboard deposits from any connected blockchain in a single click. " +
+					"They can deploy and manage capital and integrations across multiple chains, maximising network effects and the ubiquity of their denominations.\n" +
+					"These features allow Integrated Applications to establish stronger moats around their technology and business model, while providing a competitive edge that standard applications lack. " +
+					"This makes them inherently more attractive and competitive, as they operate on an enhanced platform offering higher performance and broader reach compared to traditional applications.",
+				Metadata: "https://github.com/neutron-org/neutron",
+			}
+			err = providerKeeper.SetConsumerMetadata(ctx, consumerID, metadata)
+			if err != nil {
+				ctx.Logger().Error(
+					fmt.Sprintf("cannot set consumer metadata, consumerID(%s), chainID(%s): %s", consumerID, chainID, err.Error()),
+				)
+				continue
+			}
+		}
 	}
 	return nil
 }

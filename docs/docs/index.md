@@ -40,7 +40,7 @@ These community-maintained web and mobile wallets allow you to store & transfer 
 * [Cobo](https://cobo.com/) - Android, iOS
 * [Crypto.com](https://crypto.com/) - Android, iOS
 * [Huobi Wallet](https://www.huobiwallet.com/) - Android, iOS
-* [ShapeShift Wallet](https://app.shapeshift.com/) - Android, iOS
+* [ShapeShift](https://app.shapeshift.com/) - Android, iOS, Web
 * [imToken](https://token.im/) - Android, iOS
 * [Math Wallet](https://www.mathwallet.org/en/) - Android, iOS, Web
 * [Rainbow Wallet](https://www.rainbow.one) - Android, iOS

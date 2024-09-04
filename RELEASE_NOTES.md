@@ -1,23 +1,18 @@
-# Gaia v19.1.0  Release Notes 
+# Gaia v19.2.0  Release Notes 
 
-⚠️ ***This is a special point release in the v19 release series and should be used for the v19 upgrade. This release replaces the now deprecated [v19.0.0](https://github.com/cosmos/gaia/tree/v19.0.0) release.***
+⚠️ ***This is a special point release in the v19 release series. This release fixes a bug in Interchain Security.***
 
 ## 🕐  Timeline
 **This is a mandatory upgrade for all validators and full node operators.**
-The upgrade height is [21835200](https://www.mintscan.io/cosmos/block/21835200), which is approx. August 21st 2024, 14:00 UTC.
+The upgrade height is [22051400](https://www.mintscan.io/cosmos/block/22051400), which is approx. September 5th 2024, 15:00 UTC.
 
 ## 📝 Changelog
 
-Check out the [changelog](https://github.com/cosmos/gaia/blob/v19.1.0/CHANGELOG.md) for a list of relevant changes or [compare all changes](https://github.com/cosmos/gaia/compare/v19.0.0...v19.1.0) from last release.
-
-<!-- Add the following line for major releases -->
-Refer to the [upgrading guide](https://github.com/cosmos/gaia/blob/v19.1.0/UPGRADING.md) when migrating from `v18.1.0` to `v19.1.0`.
+Check out the [changelog](https://github.com/cosmos/gaia/blob/v19.2.0/CHANGELOG.md) for a list of relevant changes or [compare all changes](https://github.com/cosmos/gaia/compare/v19.1.0...v19.2.0) from last release.
 
 ## 🚀 Highlights
 
-Bug fixes and performance enhancements. 
-
-As this release replaces [v19.0.0](https://github.com/cosmos/gaia/releases/tag/v19.0.0), please refer to the v19 release notes for all the highlights from that version.
+This release bumps Interchain Security to [v5.2.0](https://github.com/cosmos/interchain-security/releases/tag/v5.2.0).
 
 ## 🔨 Build from source
 
@@ -25,7 +20,7 @@ As this release replaces [v19.0.0](https://github.com/cosmos/gaia/releases/tag/v
 
 ```bash
 git clone https://github.com/cosmos/gaia
-cd gaia && git checkout v19.1.0
+cd gaia && git checkout v19.2.0
 make install
 ```
 

@@ -679,7 +679,7 @@ func MigrateMsgConsumerRemoval(
 			),
 		)
 	} else {
-		// MsgConsumerRemoval that was submitted, but not yet passed
+		// proposal that was submitted, but not yet passed
 
 		// replace the message in the proposal with a MsgRemoveConsumer
 		anyMsg, err := codec.NewAnyWithValue(&msgRemoveConsumer)

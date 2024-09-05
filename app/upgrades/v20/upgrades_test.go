@@ -3,20 +3,25 @@ package v20_test
 import (
 	"encoding/base64"
 	"fmt"
+	"testing"
+	"time"
+
+	"github.com/stretchr/testify/require"
+
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	v1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
-	"github.com/cosmos/gaia/v20/app/helpers"
-	v20 "github.com/cosmos/gaia/v20/app/upgrades/v20"
+
 	clienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
 	providerkeeper "github.com/cosmos/interchain-security/v5/x/ccv/provider/keeper"
 	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
 	"github.com/cosmos/interchain-security/v5/x/ccv/types"
-	"github.com/stretchr/testify/require"
-	"testing"
-	"time"
+
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	v1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+
+	"github.com/cosmos/gaia/v20/app/helpers"
+	v20 "github.com/cosmos/gaia/v20/app/upgrades/v20"
 )
 
 func GetTestMsgConsumerAddition() providertypes.MsgConsumerAddition {
@@ -77,9 +82,9 @@ func TestMigrateMsgConsumerAdditionWithNotPassedProposalAndInvalidParams(t *test
 	require.ErrorContains(t, err, "not found")
 
 	// (indirectly) verify that `CreateConsumer` was not called by checking that consumer id was not updated
-	consumerId, found := providerKeeper.GetConsumerId(ctx)
+	consumerID, found := providerKeeper.GetConsumerId(ctx)
 	require.False(t, found)
-	require.Equal(t, uint64(0), consumerId)
+	require.Equal(t, uint64(0), consumerID)
 }
 
 func TestMigrateMsgConsumerAdditionWithNotPassedProposalAndValidParams(t *testing.T) {
@@ -109,9 +114,9 @@ func TestMigrateMsgConsumerAdditionWithNotPassedProposalAndValidParams(t *testin
 	require.NoError(t, err)
 
 	// (indirectly) verify that `CreateConsumer` was called by checking that consumer id was updated
-	consumerId, found := providerKeeper.GetConsumerId(ctx)
+	consumerID, found := providerKeeper.GetConsumerId(ctx)
 	require.True(t, found)
-	require.Equal(t, uint64(1), consumerId)
+	require.Equal(t, uint64(1), consumerID)
 	consumerMetadata, err := providerKeeper.GetConsumerMetadata(ctx, "0")
 	require.NoError(t, err)
 	fmt.Println(consumerMetadata)
@@ -170,9 +175,9 @@ func TestMigrateMsgConsumerAdditionWithPassedProposal(t *testing.T) {
 	require.NoError(t, err)
 
 	// (indirectly) verify that `CreateConsumer` was called by checking that consumer id was updated
-	consumerId, found := providerKeeper.GetConsumerId(ctx)
+	consumerID, found := providerKeeper.GetConsumerId(ctx)
 	require.True(t, found)
-	require.Equal(t, uint64(1), consumerId)
+	require.Equal(t, uint64(1), consumerID)
 	consumerMetadata, err := providerKeeper.GetConsumerMetadata(ctx, "0")
 	require.NoError(t, err)
 	require.Equal(t, msgConsumerAddition.ChainId, consumerMetadata.Name)

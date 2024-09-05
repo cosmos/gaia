@@ -3,7 +3,7 @@ package v20
 import (
 	"context"
 	"fmt"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+
 	providerkeeper "github.com/cosmos/interchain-security/v5/x/ccv/provider/keeper"
 	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
 
@@ -13,6 +13,7 @@ import (
 	codec "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
@@ -228,7 +229,8 @@ func MigrateICSProposal(
 	msgServer providertypes.MsgServer,
 	providerKeeper providerkeeper.Keeper,
 	govKeeper govkeeper.Keeper,
-	proposal govtypesv1.Proposal) error {
+	proposal govtypesv1.Proposal,
+) error {
 	// ignore proposals that were rejected or failed
 	if proposal.Status != govtypesv1.StatusDepositPeriod &&
 		proposal.Status != govtypesv1.StatusVotingPeriod &&
@@ -364,27 +366,27 @@ func MigrateMsgConsumerAddition(
 	msgServer providertypes.MsgServer,
 	providerKeeper providerkeeper.Keeper,
 	govKeeper govkeeper.Keeper,
-	proposalId uint64,
+	proposalID uint64,
 	msg providertypes.MsgConsumerAddition,
 	indexOfMessageInProposal int,
 ) error {
-	proposal, err := govKeeper.Proposals.Get(ctx, proposalId)
+	proposal, err := govKeeper.Proposals.Get(ctx, proposalID)
 	if err != nil {
 		return err
 	}
 	if proposal.Status == govtypesv1.StatusPassed {
 		// MsgConsumerAddition that passed
-		for _, consumerId := range providerKeeper.GetAllActiveConsumerIds(ctx) {
-			chainId, err := providerKeeper.GetConsumerChainId(ctx, consumerId)
+		for _, consumerID := range providerKeeper.GetAllActiveConsumerIds(ctx) {
+			chainID, err := providerKeeper.GetConsumerChainId(ctx, consumerID)
 			if err != nil {
 				return err // this means something is wrong with the provider state
 			}
-			if chainId == msg.ChainId {
+			if chainID == msg.ChainId {
 				// this proposal was already handled in a previous block
 				ctx.Logger().Info(
 					fmt.Sprintf(
-						"Proposal with ID(%d) was skipped as it was already handled - consumerId(%s), chainId(%s), spawnTime(%s)",
-						proposal.Id, consumerId, msg.ChainId, msg.SpawnTime.String(),
+						"Proposal with ID(%d) was skipped as it was already handled - consumerID(%s), chainID(%s), spawnTime(%s)",
+						proposal.Id, consumerID, msg.ChainId, msg.SpawnTime.String(),
 					),
 				)
 				return nil
@@ -585,11 +587,11 @@ func MigrateMsgConsumerRemoval(
 	msgServer providertypes.MsgServer,
 	providerKeeper providerkeeper.Keeper,
 	govKeeper govkeeper.Keeper,
-	proposalId uint64,
+	proposalID uint64,
 	msg providertypes.MsgConsumerRemoval,
 	indexOfMessageInProposal int,
 ) error {
-	proposal, err := govKeeper.Proposals.Get(ctx, proposalId)
+	proposal, err := govKeeper.Proposals.Get(ctx, proposalID)
 	if err != nil {
 		return err
 	}
@@ -680,11 +682,11 @@ func MigrateMsgConsumerModification(
 	ctx sdk.Context,
 	providerKeeper providerkeeper.Keeper,
 	govKeeper govkeeper.Keeper,
-	proposalId uint64,
+	proposalID uint64,
 	msg providertypes.MsgConsumerModification,
 	indexOfMessageInProposal int,
 ) error {
-	proposal, err := govKeeper.Proposals.Get(ctx, proposalId)
+	proposal, err := govKeeper.Proposals.Get(ctx, proposalID)
 	if err != nil {
 		return err
 	}
@@ -769,11 +771,11 @@ func MigrateMsgConsumerModification(
 func MigrateMsgChangeRewardDenoms(
 	ctx sdk.Context,
 	govKeeper govkeeper.Keeper,
-	proposalId uint64,
+	proposalID uint64,
 	msg providertypes.MsgChangeRewardDenoms,
 	indexOfMessageInProposal int,
 ) error {
-	proposal, err := govKeeper.Proposals.Get(ctx, proposalId)
+	proposal, err := govKeeper.Proposals.Get(ctx, proposalID)
 	if err != nil {
 		return err
 	}

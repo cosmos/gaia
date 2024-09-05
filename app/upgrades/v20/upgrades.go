@@ -508,7 +508,6 @@ func MigrateConsumerRemovalProposal(
 
 	msgRemoveConsumer := providertypes.MsgRemoveConsumer{
 		ConsumerId: rmConsumerID,
-		StopTime:   msg.StopTime,
 		Signer:     govKeeper.GetAuthority(),
 	}
 
@@ -520,16 +519,16 @@ func MigrateConsumerRemovalProposal(
 		if err != nil {
 			ctx.Logger().Error(
 				fmt.Sprintf(
-					"Could not remove consumer with ID(%s), chainID(%s), and stopTime(%s) as per proposal with ID(%d)",
-					rmConsumerID, msg.ChainId, msg.StopTime.String(), proposal.Id,
+					"Could not remove consumer with ID(%s), chainID(%s), as per proposal with ID(%d)",
+					rmConsumerID, msg.ChainId, proposal.Id,
 				),
 			)
 			return nil // do not stop the migration because of this
 		}
 		ctx.Logger().Info(
 			fmt.Sprintf(
-				"Consumer with ID(%s), chainID(%s) will stop at stopTime(%s) as per proposal with ID(%d)",
-				rmConsumerID, msg.ChainId, msg.StopTime.String(), proposal.Id,
+				"Consumer with ID(%s), chainID(%s) will stop as per proposal with ID(%d)",
+				rmConsumerID, msg.ChainId, proposal.Id,
 			),
 		)
 	} else {
@@ -546,8 +545,8 @@ func MigrateConsumerRemovalProposal(
 		}
 		ctx.Logger().Info(
 			fmt.Sprintf(
-				"Replaced proposal with ID(%d) with MsgRemoveConsumer - consumerID(%s), chainID(%s), spawnTime(%s)",
-				proposal.Id, rmConsumerID, msg.ChainId, msg.StopTime.String(),
+				"Replaced proposal with ID(%d) with MsgRemoveConsumer - consumerID(%s), chainID(%s)",
+				proposal.Id, rmConsumerID, msg.ChainId,
 			),
 		)
 	}

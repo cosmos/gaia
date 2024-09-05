@@ -803,7 +803,7 @@ func MigrateMsgChangeRewardDenoms(
 		return err
 	}
 	if proposal.Status == govtypes.StatusPassed {
-		// ChangeRewardDenomsProposal that passed -- it was already handled in
+		// proposal that passed -- it was already handled in
 		// a previous block since these proposals are handled immediately
 		ctx.Logger().Info(
 			fmt.Sprintf("Proposal with ID(%d) was skipped as it was already handled", proposal.Id),

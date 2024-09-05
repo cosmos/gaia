@@ -3,9 +3,7 @@ package v20
 import (
 	"context"
 	"fmt"
-	"github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
-	"time"
-
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	providerkeeper "github.com/cosmos/interchain-security/v5/x/ccv/provider/keeper"
 	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
 
@@ -16,7 +14,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 
 	"github.com/cosmos/gaia/v20/app/keepers"
@@ -145,8 +144,8 @@ func InitializeLastProviderConsensusValidatorSet(
 
 // MigrateICSProposals migrates ICS legacy proposals
 func MigrateICSProposals(ctx sdk.Context, msgServer providertypes.MsgServer, providerKeeper providerkeeper.Keeper, govKeeper govkeeper.Keeper) error {
-	proposals := []govtypes.Proposal{}
-	err := govKeeper.Proposals.Walk(ctx, nil, func(key uint64, proposal govtypes.Proposal) (stop bool, err error) {
+	proposals := []govtypesv1.Proposal{}
+	err := govKeeper.Proposals.Walk(ctx, nil, func(key uint64, proposal govtypesv1.Proposal) (stop bool, err error) {
 		proposals = append(proposals, proposal)
 		return false, nil // go through the entire collection
 	})
@@ -167,7 +166,7 @@ func MigrateICSProposals(ctx sdk.Context, msgServer providertypes.MsgServer, pro
 	return nil
 }
 
-func ConsumerAdditionProposalToMsgConsumerAddition(proposal providertypes.ConsumerAdditionProposal, authority string) providertypes.MsgConsumerAddition {
+func ConsumerAdditionProposalToMsgConsumerAddition(proposal providertypes.ConsumerAdditionProposal) providertypes.MsgConsumerAddition {
 	return providertypes.MsgConsumerAddition{
 		ChainId:                           proposal.ChainId,
 		InitialHeight:                     proposal.InitialHeight,
@@ -186,21 +185,21 @@ func ConsumerAdditionProposalToMsgConsumerAddition(proposal providertypes.Consum
 		ValidatorSetCap:                   proposal.ValidatorSetCap,
 		Allowlist:                         proposal.Allowlist,
 		Denylist:                          proposal.Denylist,
-		Authority:                         authority,
+		Authority:                         authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 		MinStake:                          proposal.MinStake,
 		AllowInactiveVals:                 proposal.AllowInactiveVals,
 	}
 }
 
-func ConsumerRemovalProposalToMsgConsumerRemoval(proposal providertypes.ConsumerRemovalProposal, authority string) providertypes.MsgConsumerRemoval {
+func ConsumerRemovalProposalToMsgConsumerRemoval(proposal providertypes.ConsumerRemovalProposal) providertypes.MsgConsumerRemoval {
 	return providertypes.MsgConsumerRemoval{
 		ChainId:   proposal.ChainId,
 		StopTime:  proposal.StopTime,
-		Authority: authority,
+		Authority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	}
 }
 
-func ConsumerModificationProposalToMsgConsumerModification(proposal providertypes.ConsumerModificationProposal, authority string) providertypes.MsgConsumerModification {
+func ConsumerModificationProposalToMsgConsumerModification(proposal providertypes.ConsumerModificationProposal) providertypes.MsgConsumerModification {
 	return providertypes.MsgConsumerModification{
 		Title:              proposal.Title,
 		Description:        proposal.Description,
@@ -210,7 +209,7 @@ func ConsumerModificationProposalToMsgConsumerModification(proposal providertype
 		ValidatorSetCap:    proposal.ValidatorSetCap,
 		Allowlist:          proposal.Allowlist,
 		Denylist:           proposal.Denylist,
-		Authority:          authority,
+		Authority:          authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 		MinStake:           proposal.MinStake,
 		AllowInactiveVals:  proposal.AllowInactiveVals,
 	}
@@ -229,11 +228,11 @@ func MigrateICSProposal(
 	msgServer providertypes.MsgServer,
 	providerKeeper providerkeeper.Keeper,
 	govKeeper govkeeper.Keeper,
-	proposal govtypes.Proposal) error {
+	proposal govtypesv1.Proposal) error {
 	// ignore proposals that were rejected or failed
-	if proposal.Status != govtypes.StatusDepositPeriod &&
-		proposal.Status != govtypes.StatusVotingPeriod &&
-		proposal.Status != govtypes.StatusPassed {
+	if proposal.Status != govtypesv1.StatusDepositPeriod &&
+		proposal.Status != govtypesv1.StatusVotingPeriod &&
+		proposal.Status != govtypesv1.StatusPassed {
 		return nil
 	}
 
@@ -278,17 +277,6 @@ func MigrateICSProposal(
 			if err != nil {
 				return err
 			}
-		case *providertypes.MsgChangeRewardDenoms:
-			err := MigrateMsgChangeRewardDenoms(
-				ctx,
-				govKeeper,
-				proposal.Id,
-				*msg,
-				index,
-			)
-			if err != nil {
-				return err
-			}
 		}
 	}
 
@@ -300,12 +288,12 @@ func MigrateICSLegacyProposal(
 	msgServer providertypes.MsgServer,
 	providerKeeper providerkeeper.Keeper,
 	govKeeper govkeeper.Keeper,
-	proposal govtypes.Proposal,
+	proposal govtypesv1.Proposal,
 ) error {
 	// ignore proposals that were rejected or failed
-	if proposal.Status != govtypes.StatusDepositPeriod &&
-		proposal.Status != govtypes.StatusVotingPeriod &&
-		proposal.Status != govtypes.StatusPassed {
+	if proposal.Status != govtypesv1.StatusDepositPeriod &&
+		proposal.Status != govtypesv1.StatusVotingPeriod &&
+		proposal.Status != govtypesv1.StatusPassed {
 		return nil
 	}
 
@@ -318,11 +306,11 @@ func MigrateICSLegacyProposal(
 	msg := messages[0]
 
 	// ignore non-legacy proposals
-	sdkLegacyMsg, isLegacyProposal := msg.GetCachedValue().(*govtypes.MsgExecLegacyContent)
+	sdkLegacyMsg, isLegacyProposal := msg.GetCachedValue().(*govtypesv1.MsgExecLegacyContent)
 	if !isLegacyProposal {
 		return nil
 	}
-	content, err := govtypes.LegacyContentFromMessage(sdkLegacyMsg)
+	content, err := govtypesv1.LegacyContentFromMessage(sdkLegacyMsg)
 	if err != nil {
 		return err
 	}
@@ -334,7 +322,7 @@ func MigrateICSLegacyProposal(
 			providerKeeper,
 			govKeeper,
 			proposal.Id,
-			ConsumerAdditionProposalToMsgConsumerAddition(*msg, "authority"),
+			ConsumerAdditionProposalToMsgConsumerAddition(*msg),
 			0)
 
 	case *providertypes.ConsumerRemovalProposal:
@@ -344,7 +332,7 @@ func MigrateICSLegacyProposal(
 			providerKeeper,
 			govKeeper,
 			proposal.Id,
-			ConsumerRemovalProposalToMsgConsumerRemoval(*msg, "authority"),
+			ConsumerRemovalProposalToMsgConsumerRemoval(*msg),
 			0,
 		)
 
@@ -354,7 +342,7 @@ func MigrateICSLegacyProposal(
 			providerKeeper,
 			govKeeper,
 			proposal.Id,
-			ConsumerModificationProposalToMsgConsumerModification(*msg, "authority"),
+			ConsumerModificationProposalToMsgConsumerModification(*msg),
 			0,
 		)
 
@@ -384,8 +372,8 @@ func MigrateMsgConsumerAddition(
 	if err != nil {
 		return err
 	}
-	if proposal.Status == govtypes.StatusPassed {
-		// proposal that passed
+	if proposal.Status == govtypesv1.StatusPassed {
+		// MsgConsumerAddition that passed
 		for _, consumerId := range providerKeeper.GetAllActiveConsumerIds(ctx) {
 			chainId, err := providerKeeper.GetConsumerChainId(ctx, consumerId)
 			if err != nil {
@@ -409,11 +397,13 @@ func MigrateMsgConsumerAddition(
 		// chain to be launched at msg.SpawnTime.
 
 		// create a new consumer chain with all the parameters
-		metadata := CreateConsumerMetadata(fmt.Sprintf("Chain with chain id %s", msg.ChainId), "TBA")
+		metadata := providertypes.ConsumerMetadata{
+			Name:        msg.ChainId,
+			Description: "TBA",
+			Metadata:    "TBA",
+		}
 
-		initParams, err := CreateConsumerInitializationParameters(msg.InitialHeight, msg.GenesisHash, msg.BinaryHash,
-			msg.SpawnTime, msg.UnbondingPeriod, msg.CcvTimeoutPeriod, msg.TransferTimeoutPeriod, msg.ConsumerRedistributionFraction,
-			msg.BlocksPerDistributionTransmission, msg.HistoricalEntries, msg.DistributionTransmissionChannel)
+		initParams, err := CreateConsumerInitializationParameters(msg)
 		if err != nil {
 			// invalid init params -- ignore proposal
 			ctx.Logger().Error(
@@ -473,11 +463,13 @@ func MigrateMsgConsumerAddition(
 		// Otherwise, create a new consumer chain (MsgCreateConsumer), and
 		// replace the proposal's content with a MsgUpdateConsumer
 
-		metadata := CreateConsumerMetadata(fmt.Sprintf("Chain with chain id %s", msg.ChainId), "TBA")
+		metadata := providertypes.ConsumerMetadata{
+			Name:        msg.ChainId,
+			Description: "TBA",
+			Metadata:    "TBA",
+		}
 
-		initParams, err := CreateConsumerInitializationParameters(msg.InitialHeight, msg.GenesisHash, msg.BinaryHash,
-			msg.SpawnTime, msg.UnbondingPeriod, msg.CcvTimeoutPeriod, msg.TransferTimeoutPeriod, msg.ConsumerRedistributionFraction,
-			msg.BlocksPerDistributionTransmission, msg.HistoricalEntries, msg.DistributionTransmissionChannel)
+		initParams, err := CreateConsumerInitializationParameters(msg)
 		if err != nil {
 			// invalid init params -- delete proposal
 			if err := govKeeper.DeleteProposal(ctx, proposal.Id); err != nil {
@@ -553,36 +545,19 @@ func MigrateMsgConsumerAddition(
 	return nil
 }
 
-func CreateConsumerMetadata(title string, description string) providertypes.ConsumerMetadata {
-	metadata := providertypes.ConsumerMetadata{
-		Name:        title,
-		Description: description,
-		Metadata:    "TBA",
-	}
-	err := providertypes.ValidateConsumerMetadata(metadata)
-	if err != nil {
-		metadata.Name = providertypes.TruncateString(metadata.Name, providertypes.MaxNameLength)
-		metadata.Description = providertypes.TruncateString(metadata.Description, providertypes.MaxDescriptionLength)
-	}
-	return metadata
-}
-
-func CreateConsumerInitializationParameters(
-	initialHeight types.Height, genesisHash []byte, binaryHash []byte, spawnTime time.Time, unbondingPeriod time.Duration,
-	ccvTimeoutPeriod time.Duration, transferTimeoutPeriod time.Duration, consumerRedistributionFraction string,
-	blocksPerDistributionTransmission int64, historicalEntries int64, distributionTransmissionChannel string) (providertypes.ConsumerInitializationParameters, error) {
+func CreateConsumerInitializationParameters(msgConsumerAddition providertypes.MsgConsumerAddition) (providertypes.ConsumerInitializationParameters, error) {
 	initParams := providertypes.ConsumerInitializationParameters{
-		InitialHeight:                     initialHeight,
-		GenesisHash:                       genesisHash,
-		BinaryHash:                        binaryHash,
-		SpawnTime:                         spawnTime,
-		UnbondingPeriod:                   unbondingPeriod,
-		CcvTimeoutPeriod:                  ccvTimeoutPeriod,
-		TransferTimeoutPeriod:             transferTimeoutPeriod,
-		ConsumerRedistributionFraction:    consumerRedistributionFraction,
-		BlocksPerDistributionTransmission: blocksPerDistributionTransmission,
-		HistoricalEntries:                 historicalEntries,
-		DistributionTransmissionChannel:   distributionTransmissionChannel,
+		InitialHeight:                     msgConsumerAddition.InitialHeight,
+		GenesisHash:                       msgConsumerAddition.GenesisHash,
+		BinaryHash:                        msgConsumerAddition.BinaryHash,
+		SpawnTime:                         msgConsumerAddition.SpawnTime,
+		UnbondingPeriod:                   msgConsumerAddition.UnbondingPeriod,
+		CcvTimeoutPeriod:                  msgConsumerAddition.CcvTimeoutPeriod,
+		TransferTimeoutPeriod:             msgConsumerAddition.TransferTimeoutPeriod,
+		ConsumerRedistributionFraction:    msgConsumerAddition.ConsumerRedistributionFraction,
+		BlocksPerDistributionTransmission: msgConsumerAddition.BlocksPerDistributionTransmission,
+		HistoricalEntries:                 msgConsumerAddition.HistoricalEntries,
+		DistributionTransmissionChannel:   msgConsumerAddition.DistributionTransmissionChannel,
 	}
 	err := providertypes.ValidateInitializationParameters(initParams)
 	return initParams, err
@@ -638,7 +613,7 @@ func MigrateMsgConsumerRemoval(
 				proposal.Id, msg.ChainId,
 			),
 		)
-		if proposal.Status != govtypes.StatusPassed {
+		if proposal.Status != govtypesv1.StatusPassed {
 			// if the proposal didn't pass yet, then just remove it
 			if err := govKeeper.DeleteProposal(ctx, proposal.Id); err != nil {
 				return err
@@ -658,7 +633,7 @@ func MigrateMsgConsumerRemoval(
 		Signer:     govKeeper.GetAuthority(),
 	}
 
-	if proposal.Status == govtypes.StatusPassed {
+	if proposal.Status == govtypesv1.StatusPassed {
 		// ConsumerRemovalProposal that passed -- it was added to the
 		// list of pending consumer removal proposals, which was deleted during
 		// the migration of the provider module
@@ -713,7 +688,7 @@ func MigrateMsgConsumerModification(
 	if err != nil {
 		return err
 	}
-	if proposal.Status == govtypes.StatusPassed {
+	if proposal.Status == govtypesv1.StatusPassed {
 		// proposal that passed -- it was already handled in
 		// a previous block since these proposals are handled immediately
 		ctx.Logger().Info(
@@ -802,7 +777,7 @@ func MigrateMsgChangeRewardDenoms(
 	if err != nil {
 		return err
 	}
-	if proposal.Status == govtypes.StatusPassed {
+	if proposal.Status == govtypesv1.StatusPassed {
 		// proposal that passed -- it was already handled in
 		// a previous block since these proposals are handled immediately
 		ctx.Logger().Info(

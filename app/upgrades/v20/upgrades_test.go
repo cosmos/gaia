@@ -2,6 +2,7 @@ package v20_test
 
 import (
 	"encoding/base64"
+	"fmt"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -113,7 +114,8 @@ func TestMigrateMsgConsumerAdditionWithNotPassedProposalAndValidParams(t *testin
 	require.Equal(t, uint64(1), consumerId)
 	consumerMetadata, err := providerKeeper.GetConsumerMetadata(ctx, "0")
 	require.NoError(t, err)
-	require.Contains(t, "Chain with chain id a ChainId", consumerMetadata.Name)
+	fmt.Println(consumerMetadata)
+	require.Equal(t, msgConsumerAddition.ChainId, consumerMetadata.Name)
 
 	proposal, err = govKeeper.Proposals.Get(ctx, 0)
 	require.NoError(t, err)
@@ -122,11 +124,7 @@ func TestMigrateMsgConsumerAdditionWithNotPassedProposalAndValidParams(t *testin
 	require.Equal(t, messages[0].Value, proposal.Messages[0].Value)
 
 	// verify that the proposal's second message now contains a `MsgUpdateConsumer` message
-	initParams, err := v20.CreateConsumerInitializationParameters(
-		msgConsumerAddition.InitialHeight, msgConsumerAddition.GenesisHash, msgConsumerAddition.BinaryHash,
-		msgConsumerAddition.SpawnTime, msgConsumerAddition.UnbondingPeriod, msgConsumerAddition.CcvTimeoutPeriod, msgConsumerAddition.TransferTimeoutPeriod,
-		msgConsumerAddition.ConsumerRedistributionFraction, msgConsumerAddition.BlocksPerDistributionTransmission, msgConsumerAddition.HistoricalEntries,
-		msgConsumerAddition.DistributionTransmissionChannel)
+	initParams, err := v20.CreateConsumerInitializationParameters(msgConsumerAddition)
 	require.NoError(t, err)
 
 	powerShapingParams, err := v20.CreatePowerShapingParameters(msgConsumerAddition.Top_N, msgConsumerAddition.ValidatorsPowerCap,
@@ -177,7 +175,7 @@ func TestMigrateMsgConsumerAdditionWithPassedProposal(t *testing.T) {
 	require.Equal(t, uint64(1), consumerId)
 	consumerMetadata, err := providerKeeper.GetConsumerMetadata(ctx, "0")
 	require.NoError(t, err)
-	require.Contains(t, "Chain with chain id a ChainId", consumerMetadata.Name)
+	require.Equal(t, msgConsumerAddition.ChainId, consumerMetadata.Name)
 
 	proposal, err = govKeeper.Proposals.Get(ctx, 0)
 	require.NoError(t, err)
@@ -186,11 +184,7 @@ func TestMigrateMsgConsumerAdditionWithPassedProposal(t *testing.T) {
 	require.Equal(t, messages[0].Value, proposal.Messages[0].Value)
 
 	// verify that the proposal's second message now contains a `MsgUpdateConsumer` message
-	initParams, err := v20.CreateConsumerInitializationParameters(
-		msgConsumerAddition.InitialHeight, msgConsumerAddition.GenesisHash, msgConsumerAddition.BinaryHash,
-		msgConsumerAddition.SpawnTime, msgConsumerAddition.UnbondingPeriod, msgConsumerAddition.CcvTimeoutPeriod, msgConsumerAddition.TransferTimeoutPeriod,
-		msgConsumerAddition.ConsumerRedistributionFraction, msgConsumerAddition.BlocksPerDistributionTransmission, msgConsumerAddition.HistoricalEntries,
-		msgConsumerAddition.DistributionTransmissionChannel)
+	initParams, err := v20.CreateConsumerInitializationParameters(msgConsumerAddition)
 	require.NoError(t, err)
 
 	powerShapingParams, err := v20.CreatePowerShapingParameters(msgConsumerAddition.Top_N, msgConsumerAddition.ValidatorsPowerCap,

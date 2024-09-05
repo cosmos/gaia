@@ -468,7 +468,7 @@ func MigrateMsgConsumerAddition(
 			),
 		)
 	} else {
-		// MsgConsumerAddition that was submitted, but not yet passed.
+		// proposal that was submitted, but not yet passed.
 		// If the proposal is invalid, remove it.
 		// Otherwise, create a new consumer chain (MsgCreateConsumer), and
 		// replace the proposal's content with a MsgUpdateConsumer

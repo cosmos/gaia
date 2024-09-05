@@ -299,7 +299,7 @@ func MigrateConsumerAdditionProposal(
 		}
 		// first, create an Opt-In consumer chain
 		msgCreateConsumer := providertypes.MsgCreateConsumer{
-			Signer:                   govKeeper.GetAuthority(),
+			Submitter:                govKeeper.GetAuthority(),
 			ChainId:                  msg.ChainId,
 			Metadata:                 metadata,
 			InitializationParameters: nil,
@@ -311,7 +311,7 @@ func MigrateConsumerAdditionProposal(
 		}
 		// second, update the consumer chain to be TopN
 		msgUpdateConsumer := providertypes.MsgUpdateConsumer{
-			Signer:                   govKeeper.GetAuthority(),
+			Owner:                    govKeeper.GetAuthority(),
 			ConsumerId:               resp.ConsumerId,
 			Metadata:                 nil,
 			InitializationParameters: &initParams,
@@ -365,7 +365,7 @@ func MigrateConsumerAdditionProposal(
 
 		// first, create a new consumer chain to get a consumer ID
 		msgCreateConsumer := providertypes.MsgCreateConsumer{
-			Signer:                   govKeeper.GetAuthority(),
+			Submitter:                govKeeper.GetAuthority(),
 			ChainId:                  msg.ChainId,
 			Metadata:                 metadata,
 			InitializationParameters: nil, // to be added to MsgUpdateConsumer
@@ -384,7 +384,7 @@ func MigrateConsumerAdditionProposal(
 
 		// second, replace the message in the proposal with a MsgUpdateConsumer
 		msgUpdateConsumer := providertypes.MsgUpdateConsumer{
-			Signer:                   govKeeper.GetAuthority(),
+			Owner:                    govKeeper.GetAuthority(),
 			ConsumerId:               resp.ConsumerId,
 			Metadata:                 nil,
 			InitializationParameters: &initParams,
@@ -508,7 +508,7 @@ func MigrateConsumerRemovalProposal(
 
 	msgRemoveConsumer := providertypes.MsgRemoveConsumer{
 		ConsumerId: rmConsumerID,
-		Signer:     govKeeper.GetAuthority(),
+		Owner:      govKeeper.GetAuthority(),
 	}
 
 	if proposal.Status == govtypes.StatusPassed {
@@ -616,7 +616,7 @@ func MigrateConsumerModificationProposal(
 		return nil
 	}
 	msgUpdateConsumer := providertypes.MsgUpdateConsumer{
-		Signer:                   govKeeper.GetAuthority(),
+		Owner:                    govKeeper.GetAuthority(),
 		ConsumerId:               modifyConsumerID,
 		Metadata:                 nil,
 		InitializationParameters: nil,
@@ -713,7 +713,7 @@ func MigrateChangeRewardDenomsProposal(
 func SetICSConsumerMetadata(ctx sdk.Context, providerKeeper providerkeeper.Keeper) error {
 	for _, consumerID := range providerKeeper.GetAllActiveConsumerIds(ctx) {
 		phase := providerKeeper.GetConsumerPhase(ctx, consumerID)
-		if phase != providertypes.ConsumerPhase_CONSUMER_PHASE_LAUNCHED {
+		if phase != providertypes.CONSUMER_PHASE_LAUNCHED {
 			continue
 		}
 		chainID, err := providerKeeper.GetConsumerChainId(ctx, consumerID)

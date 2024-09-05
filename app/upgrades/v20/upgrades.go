@@ -385,7 +385,7 @@ func MigrateMsgConsumerAddition(
 		return err
 	}
 	if proposal.Status == govtypes.StatusPassed {
-		// MsgConsumerAddition that passed
+		// proposal that passed
 		for _, consumerId := range providerKeeper.GetAllActiveConsumerIds(ctx) {
 			chainId, err := providerKeeper.GetConsumerChainId(ctx, consumerId)
 			if err != nil {

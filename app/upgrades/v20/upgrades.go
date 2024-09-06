@@ -348,7 +348,7 @@ func MigrateICSLegacyProposal(
 			0,
 		)
 
-	case *providertypes.ChangeRewardDenomsProposal: 
+	case *providertypes.ChangeRewardDenomsProposal:
 		return MigrateMsgChangeRewardDenoms(
 			ctx,
 			govKeeper,

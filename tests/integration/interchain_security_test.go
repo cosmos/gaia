@@ -6,10 +6,10 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
-	appConsumer "github.com/cosmos/interchain-security/v5/app/consumer"
-	"github.com/cosmos/interchain-security/v5/tests/integration"
-	icstestingutils "github.com/cosmos/interchain-security/v5/testutil/ibc_testing"
-	"github.com/cosmos/interchain-security/v5/x/ccv/types"
+	appConsumer "github.com/cosmos/interchain-security/v6/app/consumer"
+	"github.com/cosmos/interchain-security/v6/tests/integration"
+	icstestingutils "github.com/cosmos/interchain-security/v6/testutil/ibc_testing"
+	"github.com/cosmos/interchain-security/v6/x/ccv/types"
 
 	"cosmossdk.io/math"
 

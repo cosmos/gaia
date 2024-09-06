@@ -8,7 +8,7 @@ import (
 
 	dbm "github.com/cosmos/cosmos-db"
 	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v8/types"
-	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
+	providertypes "github.com/cosmos/interchain-security/v6/x/ccv/provider/types"
 
 	"cosmossdk.io/log"
 	evidencetypes "cosmossdk.io/x/evidence/types"

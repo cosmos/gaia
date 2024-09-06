@@ -2,6 +2,7 @@ package v20_test
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"testing"
 	"time"
@@ -11,9 +12,9 @@ import (
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	clienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
-	providerkeeper "github.com/cosmos/interchain-security/v5/x/ccv/provider/keeper"
-	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
-	"github.com/cosmos/interchain-security/v5/x/ccv/types"
+	providerkeeper "github.com/cosmos/interchain-security/v6/x/ccv/provider/keeper"
+	providertypes "github.com/cosmos/interchain-security/v6/x/ccv/provider/types"
+	"github.com/cosmos/interchain-security/v6/x/ccv/types"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -138,7 +139,7 @@ func TestMigrateMsgConsumerAdditionWithNotPassedProposalAndValidParams(t *testin
 	require.NoError(t, err)
 
 	expectedMsgUpdateConsumer := providertypes.MsgUpdateConsumer{
-		Signer:                   govKeeper.GetAuthority(),
+		Owner:                    govKeeper.GetAuthority(),
 		ConsumerId:               "0",
 		Metadata:                 nil,
 		InitializationParameters: &initParams,
@@ -223,7 +224,7 @@ func TestMigrateMsgConsumerAdditionWithPassedProposalOfAnAlreadyHandleChain(t *t
 
 	// the chain is already handled and launched
 	providerKeeper.FetchAndIncrementConsumerId(ctx)
-	providerKeeper.SetConsumerPhase(ctx, "0", providertypes.ConsumerPhase_CONSUMER_PHASE_LAUNCHED)
+	providerKeeper.SetConsumerPhase(ctx, "0", providertypes.CONSUMER_PHASE_LAUNCHED)
 	providerKeeper.SetConsumerChainId(ctx, "0", msgConsumerAddition.ChainId)
 
 	msgServer := providerkeeper.NewMsgServerImpl(&providerKeeper)

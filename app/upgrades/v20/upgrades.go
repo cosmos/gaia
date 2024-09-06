@@ -2,6 +2,7 @@ package v20
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	providerkeeper "github.com/cosmos/interchain-security/v5/x/ccv/provider/keeper"
@@ -431,7 +432,7 @@ func MigrateMsgConsumerAddition(
 		}
 		// first, create an Opt-In consumer chain
 		msgCreateConsumer := providertypes.MsgCreateConsumer{
-			Signer:                   govKeeper.GetAuthority(),
+			Submitter:                govKeeper.GetAuthority(),
 			ChainId:                  msg.ChainId,
 			Metadata:                 metadata,
 			InitializationParameters: nil,
@@ -443,7 +444,7 @@ func MigrateMsgConsumerAddition(
 		}
 		// second, update the consumer chain to be TopN
 		msgUpdateConsumer := providertypes.MsgUpdateConsumer{
-			Signer:                   govKeeper.GetAuthority(),
+			Owner:                    govKeeper.GetAuthority(),
 			ConsumerId:               resp.ConsumerId,
 			Metadata:                 nil,
 			InitializationParameters: &initParams,
@@ -504,7 +505,7 @@ func MigrateMsgConsumerAddition(
 
 		// first, create a new consumer chain to get a consumer ID
 		msgCreateConsumer := providertypes.MsgCreateConsumer{
-			Signer:                   govKeeper.GetAuthority(),
+			Submitter:                govKeeper.GetAuthority(),
 			ChainId:                  msg.ChainId,
 			Metadata:                 metadata,
 			InitializationParameters: nil, // to be added to MsgUpdateConsumer
@@ -523,7 +524,7 @@ func MigrateMsgConsumerAddition(
 
 		// second, replace the message in the proposal with a MsgUpdateConsumer
 		msgUpdateConsumer := providertypes.MsgUpdateConsumer{
-			Signer:                   govKeeper.GetAuthority(),
+			Owner:                    govKeeper.GetAuthority(),
 			ConsumerId:               resp.ConsumerId,
 			Metadata:                 nil,
 			InitializationParameters: &initParams,
@@ -632,7 +633,7 @@ func MigrateMsgConsumerRemoval(
 
 	msgRemoveConsumer := providertypes.MsgRemoveConsumer{
 		ConsumerId: rmConsumerID,
-		Signer:     govKeeper.GetAuthority(),
+		Owner:      govKeeper.GetAuthority(),
 	}
 
 	if proposal.Status == govtypesv1.StatusPassed {
@@ -643,16 +644,16 @@ func MigrateMsgConsumerRemoval(
 		if err != nil {
 			ctx.Logger().Error(
 				fmt.Sprintf(
-					"Could not remove consumer with ID(%s), chainID(%s), and stopTime(%s) as per proposal with ID(%d)",
-					rmConsumerID, msg.ChainId, msg.StopTime.String(), proposal.Id,
+					"Could not remove consumer with ID(%s), chainID(%s), as per proposal with ID(%d)",
+					rmConsumerID, msg.ChainId, proposal.Id,
 				),
 			)
 			return nil // do not stop the migration because of this
 		}
 		ctx.Logger().Info(
 			fmt.Sprintf(
-				"Consumer with ID(%s), chainID(%s) will stop at stopTime(%s) as per proposal with ID(%d)",
-				rmConsumerID, msg.ChainId, msg.StopTime.String(), proposal.Id,
+				"Consumer with ID(%s), chainID(%s) will stop as per proposal with ID(%d)",
+				rmConsumerID, msg.ChainId, proposal.Id,
 			),
 		)
 	} else {
@@ -670,8 +671,8 @@ func MigrateMsgConsumerRemoval(
 		}
 		ctx.Logger().Info(
 			fmt.Sprintf(
-				"Replaced proposal with ID(%d) with MsgRemoveConsumer - consumerID(%s), chainID(%s), spawnTime(%s)",
-				proposal.Id, rmConsumerID, msg.ChainId, msg.StopTime.String(),
+				"Replaced proposal with ID(%d) with MsgRemoveConsumer - consumerID(%s), chainID(%s)",
+				proposal.Id, rmConsumerID, msg.ChainId,
 			),
 		)
 	}
@@ -745,7 +746,7 @@ func MigrateMsgConsumerModification(
 		return nil
 	}
 	msgUpdateConsumer := providertypes.MsgUpdateConsumer{
-		Signer:                   govKeeper.GetAuthority(),
+		Owner:                    govKeeper.GetAuthority(),
 		ConsumerId:               modifyConsumerID,
 		Metadata:                 nil,
 		InitializationParameters: nil,
@@ -827,7 +828,7 @@ func MigrateMsgChangeRewardDenoms(
 func SetICSConsumerMetadata(ctx sdk.Context, providerKeeper providerkeeper.Keeper) error {
 	for _, consumerID := range providerKeeper.GetAllActiveConsumerIds(ctx) {
 		phase := providerKeeper.GetConsumerPhase(ctx, consumerID)
-		if phase != providertypes.ConsumerPhase_CONSUMER_PHASE_LAUNCHED {
+		if phase != providertypes.CONSUMER_PHASE_LAUNCHED {
 			continue
 		}
 		chainID, err := providerKeeper.GetConsumerChainId(ctx, consumerID)
@@ -839,6 +840,18 @@ func SetICSConsumerMetadata(ctx sdk.Context, providerKeeper providerkeeper.Keepe
 		}
 
 		if chainID == "stride-1" {
+			var metatadaField string
+			if u, err := json.Marshal(map[string]string{
+				"phase":          "mainnet",
+				"forge_json_url": "https://raw.githubusercontent.com/Stride-Labs/stride/main/forge.json",
+			}); err != nil {
+				ctx.Logger().Error(
+					fmt.Sprintf("cannot marshal metadata, consumerID(%s), chainID(%s): %s", consumerID, chainID, err.Error()),
+				)
+				metatadaField = ""
+			} else {
+				metatadaField = string(u)
+			}
 			metadata := providertypes.ConsumerMetadata{
 				Name: "Stride",
 				Description: "The Stride blockchain has a single purpose: to provide the best liquid staking service for chains in the Cosmos ecosystem. " +
@@ -848,7 +861,7 @@ func SetICSConsumerMetadata(ctx sdk.Context, providerKeeper providerkeeper.Keepe
 					"Like the Cosmos Hub, Stride is a highly secure minimalist blockchain, with no smart contracts and no other apps beside the core liquid staking protocol. " +
 					"The Stride codebase has been fully audited by numerous security firms, and receives continuous auditing from Informal Systems. " +
 					"And the Stride blockchain is protected by IBC rate-limiting.",
-				Metadata: "https://github.com/Stride-Labs/stride",
+				Metadata: metatadaField,
 			}
 			err = providerKeeper.SetConsumerMetadata(ctx, consumerID, metadata)
 			if err != nil {
@@ -858,6 +871,18 @@ func SetICSConsumerMetadata(ctx sdk.Context, providerKeeper providerkeeper.Keepe
 				continue
 			}
 		} else if chainID == "neutron-1" {
+			var metatadaField string
+			if u, err := json.Marshal(map[string]string{
+				"phase":          "mainnet",
+				"forge_json_url": "https://raw.githubusercontent.com/neutron-org/neutron/main/forge.json",
+			}); err != nil {
+				ctx.Logger().Error(
+					fmt.Sprintf("cannot marshal metadata, consumerID(%s), chainID(%s): %s", consumerID, chainID, err.Error()),
+				)
+				metatadaField = ""
+			} else {
+				metatadaField = string(u)
+			}
 			metadata := providertypes.ConsumerMetadata{
 				Name: "Neutron",
 				Description: "Neutron is the only blockchain network specifically designed to support Integrated Applications. " +
@@ -868,7 +893,7 @@ func SetICSConsumerMetadata(ctx sdk.Context, providerKeeper providerkeeper.Keepe
 					"They can deploy and manage capital and integrations across multiple chains, maximising network effects and the ubiquity of their denominations.\n" +
 					"These features allow Integrated Applications to establish stronger moats around their technology and business model, while providing a competitive edge that standard applications lack. " +
 					"This makes them inherently more attractive and competitive, as they operate on an enhanced platform offering higher performance and broader reach compared to traditional applications.",
-				Metadata: "https://github.com/neutron-org/neutron",
+				Metadata: metatadaField,
 			}
 			err = providerKeeper.SetConsumerMetadata(ctx, consumerID, metadata)
 			if err != nil {

@@ -2,6 +2,7 @@ package v20
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	providerkeeper "github.com/cosmos/interchain-security/v5/x/ccv/provider/keeper"
@@ -725,6 +726,18 @@ func SetICSConsumerMetadata(ctx sdk.Context, providerKeeper providerkeeper.Keepe
 		}
 
 		if chainID == "stride-1" {
+			var metatadaField string
+			if u, err := json.Marshal(map[string]string{
+				"phase":          "mainnet",
+				"forge_json_url": "https://raw.githubusercontent.com/Stride-Labs/stride/main/forge.json",
+			}); err != nil {
+				ctx.Logger().Error(
+					fmt.Sprintf("cannot marshal metadata, consumerID(%s), chainID(%s): %s", consumerID, chainID, err.Error()),
+				)
+				metatadaField = ""
+			} else {
+				metatadaField = string(u)
+			}
 			metadata := providertypes.ConsumerMetadata{
 				Name: "Stride",
 				Description: "The Stride blockchain has a single purpose: to provide the best liquid staking service for chains in the Cosmos ecosystem. " +
@@ -734,7 +747,7 @@ func SetICSConsumerMetadata(ctx sdk.Context, providerKeeper providerkeeper.Keepe
 					"Like the Cosmos Hub, Stride is a highly secure minimalist blockchain, with no smart contracts and no other apps beside the core liquid staking protocol. " +
 					"The Stride codebase has been fully audited by numerous security firms, and receives continuous auditing from Informal Systems. " +
 					"And the Stride blockchain is protected by IBC rate-limiting.",
-				Metadata: "https://github.com/Stride-Labs/stride",
+				Metadata: metatadaField,
 			}
 			err = providerKeeper.SetConsumerMetadata(ctx, consumerID, metadata)
 			if err != nil {
@@ -744,6 +757,18 @@ func SetICSConsumerMetadata(ctx sdk.Context, providerKeeper providerkeeper.Keepe
 				continue
 			}
 		} else if chainID == "neutron-1" {
+			var metatadaField string
+			if u, err := json.Marshal(map[string]string{
+				"phase":          "mainnet",
+				"forge_json_url": "https://raw.githubusercontent.com/neutron-org/neutron/main/forge.json",
+			}); err != nil {
+				ctx.Logger().Error(
+					fmt.Sprintf("cannot marshal metadata, consumerID(%s), chainID(%s): %s", consumerID, chainID, err.Error()),
+				)
+				metatadaField = ""
+			} else {
+				metatadaField = string(u)
+			}
 			metadata := providertypes.ConsumerMetadata{
 				Name: "Neutron",
 				Description: "Neutron is the only blockchain network specifically designed to support Integrated Applications. " +
@@ -754,7 +779,7 @@ func SetICSConsumerMetadata(ctx sdk.Context, providerKeeper providerkeeper.Keepe
 					"They can deploy and manage capital and integrations across multiple chains, maximising network effects and the ubiquity of their denominations.\n" +
 					"These features allow Integrated Applications to establish stronger moats around their technology and business model, while providing a competitive edge that standard applications lack. " +
 					"This makes them inherently more attractive and competitive, as they operate on an enhanced platform offering higher performance and broader reach compared to traditional applications.",
-				Metadata: "https://github.com/neutron-org/neutron",
+				Metadata: metatadaField,
 			}
 			err = providerKeeper.SetConsumerMetadata(ctx, consumerID, metadata)
 			if err != nil {

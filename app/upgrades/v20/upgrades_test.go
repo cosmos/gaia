@@ -25,8 +25,8 @@ import (
 	v20 "github.com/cosmos/gaia/v20/app/upgrades/v20"
 )
 
-func GetTestMsgConsumerAddition() providertypes.MsgConsumerAddition {
-	return providertypes.MsgConsumerAddition{
+func GetTestMsgConsumerAddition() providertypes.MsgConsumerAddition { //nolint:staticcheck
+	return providertypes.MsgConsumerAddition{ //nolint:staticcheck
 		ChainId:                           "a ChainId",
 		InitialHeight:                     clienttypes.NewHeight(4, 5),
 		GenesisHash:                       []byte(base64.StdEncoding.EncodeToString([]byte("gen_hash"))),

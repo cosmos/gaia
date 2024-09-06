@@ -140,8 +140,7 @@ func InitializeLastProviderConsensusValidatorSet(
 		lastValidators = append(lastValidators, consensusVal)
 	}
 
-	providerKeeper.SetLastProviderConsensusValSet(ctx, lastValidators)
-	return nil
+	return providerKeeper.SetLastProviderConsensusValSet(ctx, lastValidators)
 }
 
 // MigrateICSProposals migrates ICS legacy proposals
@@ -168,8 +167,8 @@ func MigrateICSProposals(ctx sdk.Context, msgServer providertypes.MsgServer, pro
 	return nil
 }
 
-func ConsumerAdditionProposalToMsgConsumerAddition(proposal providertypes.ConsumerAdditionProposal) providertypes.MsgConsumerAddition {
-	return providertypes.MsgConsumerAddition{
+func ConsumerAdditionProposalToMsgConsumerAddition(proposal providertypes.ConsumerAdditionProposal) providertypes.MsgConsumerAddition { //nolint:staticcheck
+	return providertypes.MsgConsumerAddition{ //nolint:staticcheck
 		ChainId:                           proposal.ChainId,
 		InitialHeight:                     proposal.InitialHeight,
 		GenesisHash:                       proposal.GenesisHash,
@@ -193,16 +192,16 @@ func ConsumerAdditionProposalToMsgConsumerAddition(proposal providertypes.Consum
 	}
 }
 
-func ConsumerRemovalProposalToMsgConsumerRemoval(proposal providertypes.ConsumerRemovalProposal) providertypes.MsgConsumerRemoval {
-	return providertypes.MsgConsumerRemoval{
+func ConsumerRemovalProposalToMsgConsumerRemoval(proposal providertypes.ConsumerRemovalProposal) providertypes.MsgConsumerRemoval { //nolint:staticcheck
+	return providertypes.MsgConsumerRemoval{ //nolint:staticcheck
 		ChainId:   proposal.ChainId,
 		StopTime:  proposal.StopTime,
 		Authority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	}
 }
 
-func ConsumerModificationProposalToMsgConsumerModification(proposal providertypes.ConsumerModificationProposal) providertypes.MsgConsumerModification {
-	return providertypes.MsgConsumerModification{
+func ConsumerModificationProposalToMsgConsumerModification(proposal providertypes.ConsumerModificationProposal) providertypes.MsgConsumerModification { //nolint:staticcheck
+	return providertypes.MsgConsumerModification{ //nolint:staticcheck
 		Title:              proposal.Title,
 		Description:        proposal.Description,
 		ChainId:            proposal.ChainId,
@@ -242,7 +241,7 @@ func MigrateICSProposal(
 	proposalMessages := proposal.GetMessages()
 	for index, proposalMsg := range proposalMessages {
 		switch msg := proposalMsg.GetCachedValue().(type) {
-		case *providertypes.MsgConsumerAddition:
+		case *providertypes.MsgConsumerAddition: //nolint:staticcheck
 			err := MigrateMsgConsumerAddition(
 				ctx,
 				msgServer,
@@ -255,7 +254,7 @@ func MigrateICSProposal(
 			if err != nil {
 				return err
 			}
-		case *providertypes.MsgConsumerRemoval:
+		case *providertypes.MsgConsumerRemoval: //nolint:staticcheck
 			err := MigrateMsgConsumerRemoval(
 				ctx,
 				msgServer,
@@ -268,7 +267,7 @@ func MigrateICSProposal(
 			if err != nil {
 				return err
 			}
-		case *providertypes.MsgConsumerModification:
+		case *providertypes.MsgConsumerModification: //nolint:staticcheck
 			err := MigrateMsgConsumerModification(
 				ctx,
 				providerKeeper,
@@ -319,7 +318,7 @@ func MigrateICSLegacyProposal(
 	}
 
 	switch msg := content.(type) {
-	case *providertypes.ConsumerAdditionProposal:
+	case *providertypes.ConsumerAdditionProposal: //nolint:staticcheck
 		return MigrateMsgConsumerAddition(ctx,
 			msgServer,
 			providerKeeper,
@@ -328,7 +327,7 @@ func MigrateICSLegacyProposal(
 			ConsumerAdditionProposalToMsgConsumerAddition(*msg),
 			0)
 
-	case *providertypes.ConsumerRemovalProposal:
+	case *providertypes.ConsumerRemovalProposal: //nolint:staticcheck
 		return MigrateMsgConsumerRemoval(
 			ctx,
 			msgServer,
@@ -339,7 +338,7 @@ func MigrateICSLegacyProposal(
 			0,
 		)
 
-	case *providertypes.ConsumerModificationProposal:
+	case *providertypes.ConsumerModificationProposal: //nolint:staticcheck
 		return MigrateMsgConsumerModification(
 			ctx,
 			providerKeeper,
@@ -349,7 +348,7 @@ func MigrateICSLegacyProposal(
 			0,
 		)
 
-	case *providertypes.ChangeRewardDenomsProposal:
+	case *providertypes.ChangeRewardDenomsProposal: 
 		return MigrateMsgChangeRewardDenoms(
 			ctx,
 			govKeeper,
@@ -368,7 +367,7 @@ func MigrateMsgConsumerAddition(
 	providerKeeper providerkeeper.Keeper,
 	govKeeper govkeeper.Keeper,
 	proposalID uint64,
-	msg providertypes.MsgConsumerAddition,
+	msg providertypes.MsgConsumerAddition, //nolint:staticcheck
 	indexOfMessageInProposal int,
 ) error {
 	proposal, err := govKeeper.Proposals.Get(ctx, proposalID)
@@ -548,7 +547,7 @@ func MigrateMsgConsumerAddition(
 	return nil
 }
 
-func CreateConsumerInitializationParameters(msgConsumerAddition providertypes.MsgConsumerAddition) (providertypes.ConsumerInitializationParameters, error) {
+func CreateConsumerInitializationParameters(msgConsumerAddition providertypes.MsgConsumerAddition) (providertypes.ConsumerInitializationParameters, error) { //nolint:staticcheck
 	initParams := providertypes.ConsumerInitializationParameters{
 		InitialHeight:                     msgConsumerAddition.InitialHeight,
 		GenesisHash:                       msgConsumerAddition.GenesisHash,
@@ -589,7 +588,7 @@ func MigrateMsgConsumerRemoval(
 	providerKeeper providerkeeper.Keeper,
 	govKeeper govkeeper.Keeper,
 	proposalID uint64,
-	msg providertypes.MsgConsumerRemoval,
+	msg providertypes.MsgConsumerRemoval, //nolint:staticcheck
 	indexOfMessageInProposal int,
 ) error {
 	proposal, err := govKeeper.Proposals.Get(ctx, proposalID)
@@ -684,7 +683,7 @@ func MigrateMsgConsumerModification(
 	providerKeeper providerkeeper.Keeper,
 	govKeeper govkeeper.Keeper,
 	proposalID uint64,
-	msg providertypes.MsgConsumerModification,
+	msg providertypes.MsgConsumerModification, //nolint:staticcheck
 	indexOfMessageInProposal int,
 ) error {
 	proposal, err := govKeeper.Proposals.Get(ctx, proposalID)

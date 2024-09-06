@@ -39,7 +39,8 @@ func TestSetICSConsumerMetadata(t *testing.T) {
 		"forge_json_url": "https://raw.githubusercontent.com/neutron-org/neutron/main/forge.json",
 	}
 	metadataField := map[string]string{}
-	json.Unmarshal([]byte(metadata.Metadata), &metadataField)
+	err = json.Unmarshal([]byte(metadata.Metadata), &metadataField)
+	require.NoError(t, err)
 	require.Equal(t, expectedMetadataField, metadataField)
 
 	metadata, err = pk.GetConsumerMetadata(ctx, strideConsumerId)
@@ -50,6 +51,7 @@ func TestSetICSConsumerMetadata(t *testing.T) {
 		"forge_json_url": "https://raw.githubusercontent.com/Stride-Labs/stride/main/forge.json",
 	}
 	metadataField = map[string]string{}
-	json.Unmarshal([]byte(metadata.Metadata), &metadataField)
+	err = json.Unmarshal([]byte(metadata.Metadata), &metadataField)
+	require.NoError(t, err)
 	require.Equal(t, expectedMetadataField, metadataField)
 }

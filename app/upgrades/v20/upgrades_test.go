@@ -21,17 +21,17 @@ func TestSetICSConsumerMetadata(t *testing.T) {
 	pk := gaiaApp.ProviderKeeper
 
 	// Add consumer chains
-	neutronConsumerId := pk.FetchAndIncrementConsumerId(ctx)
-	pk.SetConsumerChainId(ctx, neutronConsumerId, "neutron-1")
-	pk.SetConsumerPhase(ctx, neutronConsumerId, providertypes.CONSUMER_PHASE_LAUNCHED)
-	strideConsumerId := pk.FetchAndIncrementConsumerId(ctx)
-	pk.SetConsumerChainId(ctx, strideConsumerId, "stride-1")
-	pk.SetConsumerPhase(ctx, strideConsumerId, providertypes.CONSUMER_PHASE_LAUNCHED)
+	neutronConsumerID := pk.FetchAndIncrementConsumerId(ctx)
+	pk.SetConsumerChainId(ctx, neutronConsumerID, "neutron-1")
+	pk.SetConsumerPhase(ctx, neutronConsumerID, providertypes.CONSUMER_PHASE_LAUNCHED)
+	strideConsumerID := pk.FetchAndIncrementConsumerId(ctx)
+	pk.SetConsumerChainId(ctx, strideConsumerID, "stride-1")
+	pk.SetConsumerPhase(ctx, strideConsumerID, providertypes.CONSUMER_PHASE_LAUNCHED)
 
 	err := v20.SetICSConsumerMetadata(ctx, pk)
 	require.NoError(t, err)
 
-	metadata, err := pk.GetConsumerMetadata(ctx, neutronConsumerId)
+	metadata, err := pk.GetConsumerMetadata(ctx, neutronConsumerID)
 	require.NoError(t, err)
 	require.Equal(t, "Neutron", metadata.Name)
 	expectedMetadataField := map[string]string{
@@ -43,7 +43,7 @@ func TestSetICSConsumerMetadata(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, expectedMetadataField, metadataField)
 
-	metadata, err = pk.GetConsumerMetadata(ctx, strideConsumerId)
+	metadata, err = pk.GetConsumerMetadata(ctx, strideConsumerID)
 	require.NoError(t, err)
 	require.Equal(t, "Stride", metadata.Name)
 	expectedMetadataField = map[string]string{

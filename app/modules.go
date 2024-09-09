@@ -15,9 +15,9 @@ import (
 	ibc "github.com/cosmos/ibc-go/v8/modules/core"
 	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 	ibctm "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
-	no_valupdates_genutil "github.com/cosmos/interchain-security/v5/x/ccv/no_valupdates_genutil"
-	no_valupdates_staking "github.com/cosmos/interchain-security/v5/x/ccv/no_valupdates_staking"
-	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
+	no_valupdates_genutil "github.com/cosmos/interchain-security/v6/x/ccv/no_valupdates_genutil"
+	no_valupdates_staking "github.com/cosmos/interchain-security/v6/x/ccv/no_valupdates_staking"
+	providertypes "github.com/cosmos/interchain-security/v6/x/ccv/provider/types"
 
 	"cosmossdk.io/x/evidence"
 	evidencetypes "cosmossdk.io/x/evidence/types"

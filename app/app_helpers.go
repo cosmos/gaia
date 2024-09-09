@@ -4,8 +4,8 @@ import (
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
 	ibctestingtypes "github.com/cosmos/ibc-go/v8/testing/types"
-	icstest "github.com/cosmos/interchain-security/v5/testutil/integration"
-	ibcproviderkeeper "github.com/cosmos/interchain-security/v5/x/ccv/provider/keeper"
+	icstest "github.com/cosmos/interchain-security/v6/testutil/integration"
+	ibcproviderkeeper "github.com/cosmos/interchain-security/v6/x/ccv/provider/keeper"
 )
 
 // ProviderApp interface implementations for icstest tests

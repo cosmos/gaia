@@ -9,4 +9,5 @@ This folder contains resources on the `gaia` software.
 - [HD Wallets for `gaia`](./hd-wallets.md)
 - [Ledger Integration for `gaia`](./ledger.md)
 - [Service Providers Documentation](./service-providers.md)
+  - [accessing gaia with free RPC](./service-providers.md#rpc)
 - [Reproducible Builds](./reproducible-builds.md)

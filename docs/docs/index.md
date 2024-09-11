@@ -5,7 +5,9 @@ sidebar_position: 1
 ---
 
 :::tip
+
 ### **Gaia v19 Upgrade**
+
 Cosmos Hub upgraded to [v19.1.0](https://github.com/cosmos/gaia/releases/tag/v19.1.0) at block height: [21,835,200](https://www.mintscan.io/cosmos/block/21835200).
 
 To upgrade from v18.1.0 check the [upgrade guide](https://github.com/cosmos/gaia/blob/v19.1.0/UPGRADING.md).
@@ -47,7 +49,6 @@ These community-maintained web and mobile wallets allow you to store & transfer 
 * [Trust Wallet](https://trustwallet.com/) Android, iOS
 * [Komodo Wallet](https://atomicdex.io/en/)
 
-
 ## Metamask Snaps
 
 * [Leap Wallet](https://www.leapwallet.io/snaps)
@@ -84,3 +85,29 @@ Have questions, comments, or new ideas? Participate in the Cosmos community thro
 * [Cosmos on Reddit](https://reddit.com/r/cosmosnetwork)
 
 To learn more about the Cosmos Hub and how it fits within the Cosmos Network, visit [cosmos.network](https://cosmos.network).
+
+## CosmosHub RPC powered by Lava
+
+Access free public RPC for CosmosHub on Lava, can be used with gaiad:
+
+```bash
+gaiad <command> --node https://cosmoshub.tendermintrpc.lava.build:443
+```
+
+### Mainnet 🌐
+
+| Service 🔌                    | URL 🔗                                                |
+|-------------------------------|-------------------------------------------------------|
+| 🟢 tendermint-rpc             | <https://cosmoshub.tendermintrpc.lava.build>           |
+| 🟢 tendermint-rpc / websocket | <wss://cosmoshub.tendermintrpc.lava.build/websocket> |
+| 🟢 rest                       | <https://cosmoshub.lava.build>                    |
+| 🟢 grpc                       | cosmoshub.grpc.lava.build                            |
+
+### Testnet 🧪
+
+| Service 🔌                    | URL 🔗                                                |
+|-------------------------------|-------------------------------------------------------|
+| 🟢 tendermint-rpc             | <https://cosmoshubt.tendermintrpc.lava.build>           |
+| 🟢 tendermint-rpc / websocket | <wss://cosmoshubt.tendermintrpc.lava.build/websocket> |
+| 🟢 rest                       | <https://cosmoshubt.lava.build>                    |
+| 🟢 grpc                       | cosmoshubt.grpc.lava.build                            |

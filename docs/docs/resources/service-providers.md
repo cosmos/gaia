@@ -52,6 +52,7 @@ The command-line interface (CLI) is the most powerful tool to access the Cosmos 
 To use the CLI, you must install the latest version of `gaia` on your machine.
 
 Compare your version with the [latest release version](https://github.com/cosmos/gaia/releases)
+the CLI requires access to a gaia node or RPC. RPC is powered for free by CosmosHub on Lava [Access Cosmos Hub With RPC](#rpc)
 
 ```bash
 gaiad version --long
@@ -168,6 +169,8 @@ gaiad config node <host>:<port
 
 If you run your own full node locally, use `tcp://localhost:26657` as the address.
 
+You may choose to run using [CosmosHub RPC](#rpc)
+
 Finally, set the `chain-id` of the blockchain you want to interact with:
 
 ```bash
@@ -273,14 +276,48 @@ Flags:
 
 - `--chain-id`: This flag allows you to specify the id of the chain. There are different ids for different testnet chains and mainnet chains.
 - `--gas-prices`: This flag allows you to specify the gas prices you pay for the transaction. The format is used as `0.0025uatom`
+- `--node https://cosmoshub.tendermintrpc.lava.build:443`: this flag allows you to access the cosmos hub chain through RPC without running a node.
+
+## RPC
+
+it is possible to run data queries (like gaiad commands) to a Cosmos Hub node using several api interfaces.
+
+- tendermint/jsonrpc-uri - an api interface to fetch state data and send transactions. used by cosmjs and gaiad with `--node`
+- lcd/rest - an api interface to run queries to the application and the cosmos modules i.e bank, gov etc, useful for browsers
+- grpc - offers the same apis as lcd/rest over a higher throughput protocol, useful for backend code
+- websocket - an api interface to subscribe to blockchain events such as blocks and txs, same data as tendermint api
+- grpc-web - an identical api interface to grpc except it uses http1 so possible to use from browsers
+
+CosmosHub powers an rpc endpoint over the Lava Network for users and developers to use for free
+RPC queries are routed to a sea of CosmosHub nodes
+
+### Mainnet 🌐
+
+| Service 🔌                    | URL 🔗                                                |
+|-------------------------------|-------------------------------------------------------|
+| 🟢 tendermint-rpc             | <https://cosmoshub.tendermintrpc.lava.build>           |
+| 🟢 tendermint-rpc / websocket | <wss://cosmoshub.tendermintrpc.lava.build/websocket> |
+| 🟢 rest                       | <https://cosmoshub.lava.build>                    |
+| 🟢 grpc                       | cosmoshub.grpc.lava.build                            |
+
+### Testnet 🧪
+
+| Service 🔌                    | URL 🔗                                                |
+|-------------------------------|-------------------------------------------------------|
+| 🟢 tendermint-rpc             | <https://cosmoshubt.tendermintrpc.lava.build>           |
+| 🟢 tendermint-rpc / websocket | <wss://cosmoshubt.tendermintrpc.lava.build/websocket> |
+| 🟢 rest                       | <https://cosmoshubt.lava.build>                    |
+| 🟢 grpc                       | cosmoshubt.grpc.lava.build                            |
 
 ## REST API
 
-The REST API documents list all the available endpoints that you can use to interact
+The REST API documentation lists all the available endpoints that you can use to interact
 with your full node. Learn [how to enable the REST API](../hub-tutorials/join-mainnet.md#enable-the-rest-api) on your full node.
+
+it is also possible to interact with RPC and see the queries on a [swagger](https://cosmoshub.lava.build) page
 
 ### Listen for Incoming Transactions
 
-The recommended way to listen for incoming transactions is to periodically query the blockchain by using the following HTTP endpoint:
-
-`/cosmos/bank/v1beta1/balances/{address}`
+The recommended way to listen for incoming transactions is to periodically query the blockchain
+parsed txs are accessible using rest
+`https://cosmoshub.lava.build/cosmos/tx/v1beta1/txs/block/{block_number}`

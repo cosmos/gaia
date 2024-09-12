@@ -1,8 +1,10 @@
 package interchain_test
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"path"
 	"path/filepath"
 	"strconv"
 	"testing"
@@ -19,6 +21,7 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v8/testutil"
 	"github.com/stretchr/testify/suite"
 	"github.com/tidwall/sjson"
+	"golang.org/x/sync/errgroup"
 )
 
 const (
@@ -33,8 +36,7 @@ type ConsumerPropMigrationSuite struct {
 func (s *ConsumerPropMigrationSuite) addConsumer() *chainsuite.Chain {
 	consumer, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, s.consumerCfg)
 	s.Require().NoError(err)
-	err = s.Chain.CheckCCV(s.GetContext(), consumer, s.Relayer, 1_000_000, 0, 1)
-	s.Require().NoError(err)
+	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), consumer, s.Relayer, 1_000_000, 0, 1))
 	return consumer
 }
 
@@ -219,6 +221,122 @@ func (s *ConsumerPropMigrationSuite) TestPassedProposalsDontChange() {
 	s.Require().NoError(err)
 	s.Require().True(chain.Exists())
 	s.Require().Equal("CONSUMER_PHASE_STOPPED", chain.Get("phase").String())
+}
+
+func (s *ConsumerPropMigrationSuite) TestChangeOwner() {
+	s.UpgradeChain()
+
+	cfg := s.consumerCfg
+	cfg.TopN = 0
+	cfg.BeforeSpawnTime = func(ctx context.Context, consumer *cosmos.CosmosChain) {
+		consumerID, err := s.Chain.GetConsumerID(s.GetContext(), consumer.Config().ChainID)
+		s.Require().NoError(err)
+		eg := errgroup.Group{}
+		for i := 0; i < 3; i++ {
+			i := i
+			eg.Go(func() error {
+				_, err := s.Chain.Validators[i].ExecTx(s.GetContext(), s.Chain.ValidatorWallets[i].Moniker, "provider", "opt-in", consumerID)
+				return err
+			})
+		}
+		s.Require().NoError(eg.Wait())
+	}
+	consumer, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, cfg)
+	s.Require().NoError(err)
+	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), consumer, s.Relayer, 1_000_000, 0, 1))
+
+	govAddress, err := s.Chain.GetGovernanceAddress(s.GetContext())
+	s.Require().NoError(err)
+	consumerID, err := s.Chain.GetConsumerID(s.GetContext(), consumer.Config().ChainID)
+	s.Require().NoError(err)
+	update := &providertypes.MsgUpdateConsumer{
+		ConsumerId:      consumerID,
+		NewOwnerAddress: govAddress,
+		Metadata: &providertypes.ConsumerMetadata{
+			Name:        consumer.Config().Name,
+			Description: "Consumer chain",
+			Metadata:    "ipfs://",
+		},
+	}
+	updateBz, err := json.Marshal(update)
+	s.Require().NoError(err)
+	err = s.Chain.GetNode().WriteFile(s.GetContext(), updateBz, "consumer-update.json")
+	s.Require().NoError(err)
+	_, err = s.Chain.GetNode().ExecTx(s.GetContext(), interchaintest.FaucetAccountKeyName,
+		"provider", "update-consumer", path.Join(s.Chain.GetNode().HomeDir(), "consumer-update.json"))
+	s.Require().NoError(err)
+
+	update.Owner = govAddress
+	update.NewOwnerAddress = s.Chain.ValidatorWallets[0].Address
+	prop, err := s.Chain.BuildProposal([]cosmos.ProtoMessage{update},
+		"update consumer", "update consumer", "",
+		chainsuite.GovDepositAmount, "", false)
+	s.Require().NoError(err)
+	txhash, err := s.Chain.GetNode().SubmitProposal(s.GetContext(), s.Chain.ValidatorWallets[0].Moniker, prop)
+	s.Require().NoError(err)
+	propID, err := s.Chain.GetProposalID(s.GetContext(), txhash)
+	s.Require().NoError(err)
+	s.Require().NoError(s.Chain.PassProposal(s.GetContext(), propID))
+}
+
+func (s *ConsumerPropMigrationSuite) TestChangePowerShaping() {
+	s.UpgradeChain()
+
+	cfg := s.consumerCfg
+	cfg.TopN = 0
+	const (
+		oldValidatorCount = 4
+		newValidatorCount = 3
+	)
+	cfg.BeforeSpawnTime = func(ctx context.Context, consumer *cosmos.CosmosChain) {
+		consumerID, err := s.Chain.GetConsumerID(s.GetContext(), consumer.Config().ChainID)
+		s.Require().NoError(err)
+		eg := errgroup.Group{}
+		for i := 0; i < oldValidatorCount; i++ {
+			i := i
+			eg.Go(func() error {
+				_, err := s.Chain.Validators[i].ExecTx(s.GetContext(), s.Chain.ValidatorWallets[i].Moniker, "provider", "opt-in", consumerID)
+				return err
+			})
+		}
+		s.Require().NoError(eg.Wait())
+	}
+	consumer, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, cfg)
+	s.Require().NoError(err)
+	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), consumer, s.Relayer, 1_000_000, 0, 1))
+
+	consumerID, err := s.Chain.GetConsumerID(s.GetContext(), consumer.Config().ChainID)
+	s.Require().NoError(err)
+	update := &providertypes.MsgUpdateConsumer{
+		ConsumerId: consumerID,
+		Metadata: &providertypes.ConsumerMetadata{
+			Name:        consumer.Config().Name,
+			Description: "Consumer chain",
+			Metadata:    "ipfs://",
+		},
+		PowerShapingParameters: &providertypes.PowerShapingParameters{
+			ValidatorSetCap: newValidatorCount,
+		},
+	}
+	updateBz, err := json.Marshal(update)
+	s.Require().NoError(err)
+	err = s.Chain.GetNode().WriteFile(s.GetContext(), updateBz, "consumer-update.json")
+	s.Require().NoError(err)
+	_, err = s.Chain.GetNode().ExecTx(s.GetContext(), interchaintest.FaucetAccountKeyName,
+		"provider", "update-consumer", path.Join(s.Chain.GetNode().HomeDir(), "consumer-update.json"))
+	s.Require().NoError(err)
+
+	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), consumer, s.Relayer, 1_000_000, 0, 1))
+
+	vals, err := consumer.QueryJSON(s.GetContext(), "validators", "comet-validator-set")
+	s.Require().NoError(err)
+	s.Require().Equal(newValidatorCount, len(vals.Array()), vals)
+	for i := 0; i < newValidatorCount; i++ {
+		valCons := vals.Array()[i].Get("address").String()
+		s.Require().NoError(err)
+		s.Require().Equal(consumer.ValidatorWallets[i].ValConsAddress, valCons)
+	}
+
 }
 
 func TestConsumerPropMigration(t *testing.T) {

@@ -251,7 +251,7 @@ func (p *Chain) CreateConsumerPermissionless(ctx context.Context, chainID string
 	if err != nil {
 		return err
 	}
-	if config.TopN >= 0 {
+	if config.TopN > 0 {
 		govAddress, err := p.GetGovernanceAddress(ctx)
 		if err != nil {
 			return err
@@ -725,4 +725,12 @@ func (p *Chain) IsValidatorJailedForConsumerDowntime(ctx context.Context, relaye
 		time.Sleep(CommitTimeout)
 	}
 	return false, nil
+}
+
+func (c *Chain) GetConsumerID(ctx context.Context, consumerID string) (string, error) {
+	consumerIDJSON, err := c.QueryJSON(ctx, fmt.Sprintf("chains.#(chain_id=%q).consumer_id", consumerID), "provider", "list-consumer-chains")
+	if err != nil {
+		return "", err
+	}
+	return consumerIDJSON.String(), nil
 }

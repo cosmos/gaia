@@ -100,7 +100,7 @@ func CreateUpgradeHandler(
 // Some fields were set to nil values instead of zero values, which causes a panic during Txs to modify the params.
 // Context:
 // - https://github.com/cosmos/cosmos-sdk/issues/21483
-// - https://github.com/cosmos/cosmos-sdk/pull/21484/
+// - https://github.com/cosmos/cosmos-sdk/pull/21484
 func InitializeConsensusParamVersion(ctx sdk.Context, consensusKeeper consensusparamkeeper.Keeper) error {
 	params, err := consensusKeeper.ParamsStore.Get(ctx)
 	if err != nil {

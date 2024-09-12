@@ -193,8 +193,8 @@ build-static-linux-amd64: go.sum $(BUILDDIR)/
 		--build-arg BUILD_TAGS=$(build_tags_comma_sep),muslc \
 		--platform linux/amd64 \
 		-t gaiad-static-amd64 \
-		--load \
-		-f Dockerfile.local .
+		-f Dockerfile . \
+		--load
 	$(DOCKER) rm -f gaiabinary || true
 	$(DOCKER) create -ti --name gaiabinary gaiad-static-amd64
 	$(DOCKER) cp gaiabinary:/usr/local/bin/ $(BUILDDIR)/gaiad-linux-amd64

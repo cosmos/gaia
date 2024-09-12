@@ -120,8 +120,23 @@ vulncheck: $(BUILDDIR)/
 	GOBIN=$(BUILDDIR) go install golang.org/x/vuln/cmd/govulncheck@latest
 	$(BUILDDIR)/govulncheck ./...
 
-build-linux: go.sum
-	LEDGER_ENABLED=false GOOS=linux GOARCH=amd64 $(MAKE) build
+# Pulled from neutron-org/neutron: https://github.com/neutron-org/neutron/blob/v4.2.2/Makefile#L107
+build-static-linux-amd64: go.sum $(BUILDDIR)/
+	$(DOCKER) buildx create --name gaiabuilder || true
+	$(DOCKER) buildx use gaiabuilder
+	$(DOCKER) buildx build \
+		--build-arg GO_VERSION=$(GO_VERSION) \
+		--build-arg GIT_VERSION=$(VERSION) \
+		--build-arg GIT_COMMIT=$(COMMIT) \
+		--build-arg BUILD_TAGS=$(build_tags_comma_sep),muslc \
+		--platform linux/amd64 \
+		-t gaiad-static-amd64 \
+		--load \
+		-f Dockerfile.local .
+	$(DOCKER) rm -f gaiabinary || true
+	$(DOCKER) create -ti --name gaiabinary gaiad-static-amd64
+	$(DOCKER) cp gaiabinary:/usr/local/bin/ $(BUILDDIR)/gaiad-linux-amd64
+	$(DOCKER) rm -f gaiabinary
 
 go.sum: go.mod
 	@echo "--> Ensure dependencies have not been modified"

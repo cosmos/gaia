@@ -120,24 +120,6 @@ vulncheck: $(BUILDDIR)/
 	GOBIN=$(BUILDDIR) go install golang.org/x/vuln/cmd/govulncheck@latest
 	$(BUILDDIR)/govulncheck ./...
 
-# Pulled from neutron-org/neutron: https://github.com/neutron-org/neutron/blob/v4.2.2/Makefile#L107
-build-static-linux-amd64: go.sum $(BUILDDIR)/
-	$(DOCKER) buildx create --name gaiabuilder || true
-	$(DOCKER) buildx use gaiabuilder
-	$(DOCKER) buildx build \
-		--build-arg GO_VERSION=$(GO_VERSION) \
-		--build-arg GIT_VERSION=$(VERSION) \
-		--build-arg GIT_COMMIT=$(COMMIT) \
-		--build-arg BUILD_TAGS=$(build_tags_comma_sep),muslc \
-		--platform linux/amd64 \
-		-t gaiad-static-amd64 \
-		--load \
-		-f Dockerfile.local .
-	$(DOCKER) rm -f gaiabinary || true
-	$(DOCKER) create -ti --name gaiabinary gaiad-static-amd64
-	$(DOCKER) cp gaiabinary:/usr/local/bin/ $(BUILDDIR)/gaiad-linux-amd64
-	$(DOCKER) rm -f gaiabinary
-
 go.sum: go.mod
 	@echo "--> Ensure dependencies have not been modified"
 	@echo "--> Ensure dependencies have not been modified unless suppressed by SKIP_MOD_VERIFY"
@@ -199,9 +181,27 @@ else
 	@echo "--> No tag specified, skipping tag release"
 endif
 
+# Build static binaries for linux/amd64 using docker buildx
+# Pulled from neutron-org/neutron: https://github.com/neutron-org/neutron/blob/v4.2.2/Makefile#L107
+build-static-linux-amd64: go.sum $(BUILDDIR)/
+	$(DOCKER) buildx create --name gaiabuilder || true
+	$(DOCKER) buildx use gaiabuilder
+	$(DOCKER) buildx build \
+		--build-arg GO_VERSION=$(GO_VERSION) \
+		--build-arg GIT_VERSION=$(VERSION) \
+		--build-arg GIT_COMMIT=$(COMMIT) \
+		--build-arg BUILD_TAGS=$(build_tags_comma_sep),muslc \
+		--platform linux/amd64 \
+		-t gaiad-static-amd64 \
+		--load \
+		-f Dockerfile.local .
+	$(DOCKER) rm -f gaiabinary || true
+	$(DOCKER) create -ti --name gaiabinary gaiad-static-amd64
+	$(DOCKER) cp gaiabinary:/usr/local/bin/ $(BUILDDIR)/gaiad-linux-amd64
+	$(DOCKER) rm -f gaiabinary
 
-# uses goreleaser to create static binaries for linux an darwin on local machine
-# platform is set because not setting it results in broken builds for linux-amd64
+
+# uses goreleaser to create static binaries for darwin on local machine
 goreleaser-build-local:
 	docker run \
 		--rm \
@@ -210,7 +210,6 @@ goreleaser-build-local:
 		-e COSMWASM_VERSION=$(COSMWASM_VERSION) \
 		-v `pwd`:/go/src/gaiad \
 		-w /go/src/gaiad \
-		--platform=linux/amd64 \
 		$(GORELEASER_IMAGE) \
 		release \
 		--snapshot \
@@ -231,7 +230,6 @@ ci-release:
 		-e COSMWASM_VERSION=$(COSMWASM_VERSION) \
 		-v `pwd`:/go/src/gaiad \
 		-w /go/src/gaiad \
-		--platform=linux/amd64 \
 		$(GORELEASER_IMAGE) \
 		release \
 		--release-notes ./RELEASE_NOTES.md \

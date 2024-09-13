@@ -5,13 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 
+	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
+
 	providerkeeper "github.com/cosmos/interchain-security/v6/x/ccv/provider/keeper"
 	providertypes "github.com/cosmos/interchain-security/v6/x/ccv/provider/types"
 
 	errorsmod "cosmossdk.io/errors"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
-	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	codec "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -57,14 +58,14 @@ func CreateUpgradeHandler(
 		}
 
 		ctx.Logger().Info("Initializing ConsensusParam Version...")
-		err = InitializeConsensusParamVersion(ctx, *&keepers.ConsensusParamsKeeper)
-
-		ctx.Logger().Info("Initializing MaxProviderConsensusValidators parameter...")
-		InitializeMaxProviderConsensusParam(ctx, keepers.ProviderKeeper)
+		err = InitializeConsensusParamVersion(ctx, keepers.ConsensusParamsKeeper)
 		if err != nil {
 			// don't hard fail here, as this is not critical for the upgrade to succeed
 			ctx.Logger().Error("Error initializing ConsensusParam Version:", "message", err.Error())
 		}
+
+		ctx.Logger().Info("Initializing MaxProviderConsensusValidators parameter...")
+		InitializeMaxProviderConsensusParam(ctx, keepers.ProviderKeeper)
 
 		ctx.Logger().Info("Setting MaxValidators parameter...")
 		err = SetMaxValidators(ctx, *keepers.StakingKeeper)
@@ -107,8 +108,7 @@ func InitializeConsensusParamVersion(ctx sdk.Context, consensusKeeper consensusp
 		return err
 	}
 	params.Version = &cmtproto.VersionParams{}
-	consensusKeeper.ParamsStore.Set(ctx, params)
-	return nil
+	return consensusKeeper.ParamsStore.Set(ctx, params)
 }
 
 // InitializeMaxProviderConsensusParam initializes the MaxProviderConsensusValidators parameter.

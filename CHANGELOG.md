@@ -19,6 +19,9 @@
 
 ### DEPENDENCIES
 
+- Bump [wasmd](https://github.com/CosmWasm/wasmd) to
+  [v0.53.0](https://github.com/CosmWasm/wasmd/releases/tag/v0.53.0)
+  ([\#3304](https://github.com/cosmos/gaia/pull/3304))
 - Bump [feemarket](https://github.com/skip-mev/feemarket) to
   [v1.1.1](https://github.com/skip-mev/feemarket/releases/tag/v1.1.1)
   ([3306](https://github.com/cosmos/gaia/pull/3306))
@@ -63,6 +66,9 @@
   which entails that the number of validators participating in consensus will be governed by the 
   `MaxProviderConsensusValidators` parameter in the provider module.
   ([\#3263](https://github.com/cosmos/gaia/pull/3263))
+- Bump [wasmd](https://github.com/CosmWasm/wasmd) to
+  [v0.53.0](https://github.com/CosmWasm/wasmd/releases/tag/v0.53.0)
+  ([\#3304](https://github.com/cosmos/gaia/pull/3304))
 - Bump [ibc-go](https://github.com/cosmos/ibc-go) to
     [v8.5.0](https://github.com/cosmos/ibc-go/releases/tag/v8.5.0)
     ([\#3305](https://github.com/cosmos/gaia/pull/3305))

@@ -6,7 +6,7 @@ This document describes the steps for validators, full node operators and relaye
 
 For more details on the release, please see the [release notes](https://github.com/cosmos/gaia/releases/tag/v20.0.0)
 
-**Relayer Operators** for the Cosmos Hub and consumer chains, will also need to update to use [Hermes v1.10.0](https://github.com/informalsystems/hermes/releases/tag/v1.10.0) or higher. You may need to restart your relayer software after a major chain upgrade.
+**Relayer Operators** for the Cosmos Hub and consumer chains, will also need to update to use [Hermes v1.10.2](https://github.com/informalsystems/hermes/releases/tag/v1.10.2) or higher. You may need to restart your relayer software after a major chain upgrade.
 
 ## Release Binary
 

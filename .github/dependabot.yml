@@ -21,7 +21,7 @@ updates:
     directory: "/"
     schedule:
       interval: daily
-    target-branch: "release/v18.1.x"
+    target-branch: "release/v19.2.x"
     # Only allow automated security-related dependency updates on release branches.
     open-pull-requests-limit: 0
     labels:
@@ -31,7 +31,7 @@ updates:
     directory: "/"
     schedule:
       interval: daily
-    target-branch: "release/v19.1.x"
+    target-branch: "release/v20.x"
     # Only allow automated security-related dependency updates on release branches.
     open-pull-requests-limit: 0
     labels:

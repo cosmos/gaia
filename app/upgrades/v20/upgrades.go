@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
+
 	providerkeeper "github.com/cosmos/interchain-security/v6/x/ccv/provider/keeper"
 	providertypes "github.com/cosmos/interchain-security/v6/x/ccv/provider/types"
 
@@ -15,6 +17,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
@@ -54,6 +57,13 @@ func CreateUpgradeHandler(
 			return vm, errorsmod.Wrapf(err, "running module migrations")
 		}
 
+		ctx.Logger().Info("Initializing ConsensusParam Version...")
+		err = InitializeConsensusParamVersion(ctx, keepers.ConsensusParamsKeeper)
+		if err != nil {
+			// don't hard fail here, as this is not critical for the upgrade to succeed
+			ctx.Logger().Error("Error initializing ConsensusParam Version:", "message", err.Error())
+		}
+
 		ctx.Logger().Info("Initializing MaxProviderConsensusValidators parameter...")
 		InitializeMaxProviderConsensusParam(ctx, keepers.ProviderKeeper)
 
@@ -85,6 +95,20 @@ func CreateUpgradeHandler(
 		ctx.Logger().Info("Upgrade v20 complete")
 		return vm, nil
 	}
+}
+
+// InitializeConsensusParamVersion initializes the consumer params that were missed in a consensus keeper migration.
+// Some fields were set to nil values instead of zero values, which causes a panic during Txs to modify the params.
+// Context:
+// - https://github.com/cosmos/cosmos-sdk/issues/21483
+// - https://github.com/cosmos/cosmos-sdk/pull/21484
+func InitializeConsensusParamVersion(ctx sdk.Context, consensusKeeper consensusparamkeeper.Keeper) error {
+	params, err := consensusKeeper.ParamsStore.Get(ctx)
+	if err != nil {
+		return err
+	}
+	params.Version = &cmtproto.VersionParams{}
+	return consensusKeeper.ParamsStore.Set(ctx, params)
 }
 
 // InitializeMaxProviderConsensusParam initializes the MaxProviderConsensusValidators parameter.

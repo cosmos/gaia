@@ -23,7 +23,7 @@ func NewSuite(config SuiteConfig) *Suite {
 	return &Suite{Config: newCfg, Env: env}
 }
 
-func (s *Suite) SetupSuite() {
+func (s *Suite) createChain() {
 	ctx, err := NewSuiteContext(&s.Suite)
 	s.Require().NoError(err)
 	s.ctx = ctx
@@ -37,6 +37,18 @@ func (s *Suite) SetupSuite() {
 	}
 	if s.Config.UpgradeOnSetup {
 		s.UpgradeChain()
+	}
+}
+
+func (s *Suite) SetupTest() {
+	if s.Config.Scope == ChainScopeTest {
+		s.createChain()
+	}
+}
+
+func (s *Suite) SetupSuite() {
+	if s.Config.Scope == ChainScopeSuite {
+		s.createChain()
 	}
 }
 

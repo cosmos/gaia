@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -33,6 +34,7 @@ type ValidatorWallet struct {
 	Moniker        string
 	Address        string
 	ValoperAddress string
+	ValConsAddress string
 }
 
 func chainFromCosmosChain(cosmos *cosmos.CosmosChain, relayerWallet ibc.Wallet) (*Chain, error) {
@@ -106,7 +108,8 @@ func (c *Chain) WaitForProposalStatus(ctx context.Context, proposalID string, st
 	if err != nil {
 		return err
 	}
-	maxHeight := chainHeight + UpgradeDelta
+	// At 4s per block, 75 blocks is about 5 minutes.
+	maxHeight := chainHeight + 75
 	_, err = cosmos.PollForProposalStatusV1(ctx, c.CosmosChain, chainHeight, maxHeight, uint64(propID), status)
 	return err
 }
@@ -250,12 +253,17 @@ func getValidatorWallets(ctx context.Context, chain *Chain) ([]ValidatorWallet, 
 			if err != nil {
 				return err
 			}
+			valCons, _, err := chain.Validators[i].ExecBin(ctx, "comet", "show-address")
+			if err != nil {
+				return err
+			}
 			lock.Lock()
 			defer lock.Unlock()
 			wallets[i] = ValidatorWallet{
 				Moniker:        moniker,
 				Address:        address,
 				ValoperAddress: valoperAddress,
+				ValConsAddress: strings.TrimSpace(string(valCons)),
 			}
 			return nil
 		})

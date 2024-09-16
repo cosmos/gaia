@@ -2,7 +2,9 @@ package chainsuite
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"path"
 	"strconv"
 	"time"
 
@@ -12,6 +14,7 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v8/testutil"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
+	"go.uber.org/multierr"
 	"golang.org/x/mod/semver"
 
 	clienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
@@ -20,6 +23,7 @@ import (
 	sdkmath "cosmossdk.io/math"
 
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
 )
 
 type ConsumerBootstrapCb func(ctx context.Context, consumer *cosmos.CosmosChain)
@@ -32,6 +36,8 @@ type ConsumerConfig struct {
 	TopN                  int
 	ValidatorSetCap       int
 	ValidatorPowerCap     int
+	AllowInactiveVals     bool
+	MinStake              uint64
 	spec                  *interchaintest.ChainSpec
 
 	DuringDepositPeriod ConsumerBootstrapCb
@@ -51,14 +57,6 @@ func (pw *proposalWaiter) waitForDepositAllowed() {
 	<-pw.canDeposit
 }
 
-func (pw *proposalWaiter) allowDeposit() {
-	close(pw.canDeposit)
-}
-
-func (pw *proposalWaiter) waitForVotingPeriod() {
-	<-pw.isInVoting
-}
-
 func (pw *proposalWaiter) startVotingPeriod() {
 	close(pw.isInVoting)
 }
@@ -67,16 +65,24 @@ func (pw *proposalWaiter) waitForVoteAllowed() {
 	<-pw.canVote
 }
 
-func (pw *proposalWaiter) allowVote() {
+func (pw *proposalWaiter) pass() {
+	close(pw.isPassed)
+}
+
+func (pw *proposalWaiter) AllowVote() {
 	close(pw.canVote)
 }
 
-func (pw *proposalWaiter) waitForPassed() {
+func (pw *proposalWaiter) WaitForPassed() {
 	<-pw.isPassed
 }
 
-func (pw *proposalWaiter) pass() {
-	close(pw.isPassed)
+func (pw *proposalWaiter) AllowDeposit() {
+	close(pw.canDeposit)
+}
+
+func (pw *proposalWaiter) WaitForVotingPeriod() {
+	<-pw.isInVoting
 }
 
 func newProposalWaiter() *proposalWaiter {
@@ -98,9 +104,21 @@ func (p *Chain) AddConsumerChain(ctx context.Context, relayer *Relayer, config C
 	spawnTime := time.Now().Add(ChainSpawnWait)
 	chainID := fmt.Sprintf("%s-%d", config.ChainName, len(p.Consumers)+1)
 
-	proposalWaiter, errCh, err := p.consumerAdditionProposal(ctx, chainID, config, spawnTime)
-	if err != nil {
-		return nil, err
+	var proposalWaiter *proposalWaiter
+	var errCh chan error
+	if p.GetNode().HasCommand(ctx, "tx", "provider", "create-consumer") {
+		errCh = make(chan error, 1)
+		close(errCh)
+		err := p.CreateConsumerPermissionless(ctx, chainID, config, spawnTime)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		var err error
+		proposalWaiter, errCh, err = p.SubmitConsumerAdditionProposal(ctx, chainID, config, spawnTime)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if config.spec == nil {
@@ -190,6 +208,113 @@ func (p *Chain) AddConsumerChain(ctx context.Context, relayer *Relayer, config C
 	return consumer, nil
 }
 
+func (p *Chain) CreateConsumerPermissionless(ctx context.Context, chainID string, config ConsumerConfig, spawnTime time.Time) error {
+	initParams := &providertypes.ConsumerInitializationParameters{
+		InitialHeight:                     clienttypes.Height{RevisionNumber: clienttypes.ParseChainID(chainID), RevisionHeight: 1},
+		SpawnTime:                         spawnTime,
+		BlocksPerDistributionTransmission: 1000,
+		CcvTimeoutPeriod:                  2419200000000000,
+		TransferTimeoutPeriod:             3600000000000,
+		ConsumerRedistributionFraction:    "0.75",
+		HistoricalEntries:                 10000,
+		UnbondingPeriod:                   1728000000000000,
+		GenesisHash:                       []byte("Z2VuX2hhc2g="),
+		BinaryHash:                        []byte("YmluX2hhc2g="),
+	}
+	powerShapingParams := &providertypes.PowerShapingParameters{
+		Top_N:              0,
+		ValidatorSetCap:    uint32(config.ValidatorSetCap),
+		ValidatorsPowerCap: uint32(config.ValidatorPowerCap),
+		AllowInactiveVals:  config.AllowInactiveVals,
+		MinStake:           config.MinStake,
+	}
+	params := providertypes.MsgCreateConsumer{
+		ChainId: chainID,
+		Metadata: providertypes.ConsumerMetadata{
+			Name:        config.ChainName,
+			Description: "Consumer chain",
+			Metadata:    "ipfs://",
+		},
+		InitializationParameters: initParams,
+		PowerShapingParameters:   powerShapingParams,
+	}
+
+	paramsBz, err := json.Marshal(params)
+	if err != nil {
+		return err
+	}
+	err = p.GetNode().WriteFile(ctx, paramsBz, "consumer-addition.json")
+	if err != nil {
+		return err
+	}
+	_, err = p.GetNode().ExecTx(ctx, interchaintest.FaucetAccountKeyName, "provider", "create-consumer", path.Join(p.GetNode().HomeDir(), "consumer-addition.json"))
+	if err != nil {
+		return err
+	}
+	if config.TopN > 0 {
+		govAddress, err := p.GetGovernanceAddress(ctx)
+		if err != nil {
+			return err
+		}
+		consumerID, err := p.QueryJSON(ctx, fmt.Sprintf("chains.#(chain_id=%q).consumer_id", chainID), "provider", "list-consumer-chains")
+		if err != nil {
+			return err
+		}
+		update := &providertypes.MsgUpdateConsumer{
+			ConsumerId:      consumerID.String(),
+			NewOwnerAddress: govAddress,
+			Metadata: &providertypes.ConsumerMetadata{
+				Name:        config.ChainName,
+				Description: "Consumer chain",
+				Metadata:    "ipfs://",
+			},
+			InitializationParameters: initParams,
+			PowerShapingParameters:   powerShapingParams,
+		}
+		updateBz, err := json.Marshal(update)
+		if err != nil {
+			return err
+		}
+		err = p.GetNode().WriteFile(ctx, updateBz, "consumer-update.json")
+		if err != nil {
+			return err
+		}
+		_, err = p.GetNode().ExecTx(ctx, interchaintest.FaucetAccountKeyName, "provider", "update-consumer", path.Join(p.GetNode().HomeDir(), "consumer-update.json"))
+		if err != nil {
+			return err
+		}
+		powerShapingParams.Top_N = uint32(config.TopN)
+		update = &providertypes.MsgUpdateConsumer{
+			Owner:      govAddress,
+			ConsumerId: consumerID.String(),
+			Metadata: &providertypes.ConsumerMetadata{
+				Name:        config.ChainName,
+				Description: "Consumer chain",
+				Metadata:    "ipfs://",
+			},
+			InitializationParameters: initParams,
+			PowerShapingParameters:   powerShapingParams,
+		}
+		prop, err := p.BuildProposal([]cosmos.ProtoMessage{update}, "update consumer", "update consumer", "", GovDepositAmount, "", false)
+		if err != nil {
+			return err
+		}
+		txhash, err := p.GetNode().SubmitProposal(ctx, p.ValidatorWallets[0].Moniker, prop)
+		if err != nil {
+			return err
+		}
+		propID, err := p.GetProposalID(ctx, txhash)
+		if err != nil {
+			return err
+		}
+		if err := p.PassProposal(ctx, propID); err != nil {
+			return err
+		}
+
+	}
+	return nil
+}
+
 func (p *Chain) DefaultConsumerChainSpec(ctx context.Context, chainID string, config ConsumerConfig, spawnTime time.Time, proposalWaiter *proposalWaiter) *interchaintest.ChainSpec {
 	const (
 		strideChain  = "stride"
@@ -219,7 +344,6 @@ func (p *Chain) DefaultConsumerChainSpec(ctx context.Context, chainID string, co
 	}
 	genesisOverrides := []cosmos.GenesisKV{
 		cosmos.NewGenesisKV("app_state.slashing.params.signed_blocks_window", strconv.Itoa(SlashingWindowConsumer)),
-		cosmos.NewGenesisKV("consensus_params.block.max_gas", "50000000"),
 	}
 	if config.TopN >= 0 {
 		genesisOverrides = append(genesisOverrides, cosmos.NewGenesisKV("app_state.ccvconsumer.params.soft_opt_out_threshold", "0.0"))
@@ -235,22 +359,30 @@ func (p *Chain) DefaultConsumerChainSpec(ctx context.Context, chainID string, co
 		)
 	}
 
-	modifyGenesis := cosmos.ModifyGenesis(genesisOverrides)
 	if chainType == strideChain {
 		genesisOverrides = append(genesisOverrides,
 			cosmos.NewGenesisKV("app_state.gov.params.voting_period", GovVotingPeriod.String()),
 		)
-		modifyGenesis = func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
-			b, err := cosmos.ModifyGenesis(genesisOverrides)(cc, b)
-			if err != nil {
-				return nil, err
-			}
+	}
+	modifyGenesis := func(cc ibc.ChainConfig, b []byte) ([]byte, error) {
+		b, err := cosmos.ModifyGenesis(genesisOverrides)(cc, b)
+		if err != nil {
+			return nil, err
+		}
+		if chainType == strideChain {
 			b, err = sjson.SetBytes(b, "app_state.epochs.epochs.#(identifier==\"day\").duration", "120s")
 			if err != nil {
 				return nil, err
 			}
-			return sjson.SetBytes(b, "app_state.epochs.epochs.#(identifier==\"stride_epoch\").duration", "30s")
+			b, err = sjson.SetBytes(b, "app_state.epochs.epochs.#(identifier==\"stride_epoch\").duration", "30s")
+			if err != nil {
+				return nil, err
+			}
 		}
+		if gjson.GetBytes(b, "consensus").Exists() {
+			return sjson.SetBytes(b, "consensus.block.max_gas", "50000000")
+		}
+		return sjson.SetBytes(b, "consensus_params.block.max_gas", "50000000")
 	}
 
 	return &interchaintest.ChainSpec{
@@ -271,13 +403,17 @@ func (p *Chain) DefaultConsumerChainSpec(ctx context.Context, chainID string, co
 				if config.DuringDepositPeriod != nil {
 					config.DuringDepositPeriod(ctx, consumer.(*cosmos.CosmosChain))
 				}
-				proposalWaiter.allowDeposit()
-				proposalWaiter.waitForVotingPeriod()
+				if proposalWaiter != nil {
+					proposalWaiter.AllowDeposit()
+					proposalWaiter.WaitForVotingPeriod()
+				}
 				if config.DuringVotingPeriod != nil {
 					config.DuringVotingPeriod(ctx, consumer.(*cosmos.CosmosChain))
 				}
-				proposalWaiter.allowVote()
-				proposalWaiter.waitForPassed()
+				if proposalWaiter != nil {
+					proposalWaiter.AllowVote()
+					proposalWaiter.WaitForPassed()
+				}
 				tCtx, tCancel := context.WithDeadline(ctx, spawnTime)
 				defer tCancel()
 				if config.BeforeSpawnTime != nil {
@@ -385,8 +521,44 @@ func connectProviderConsumer(ctx context.Context, provider *Chain, consumer *Cha
 	return err
 }
 
-func (p *Chain) consumerAdditionProposal(ctx context.Context, chainID string, config ConsumerConfig, spawnTime time.Time) (*proposalWaiter, chan error, error) {
+func (p *Chain) SubmitConsumerAdditionProposal(ctx context.Context, chainID string, config ConsumerConfig, spawnTime time.Time) (*proposalWaiter, chan error, error) {
 	propWaiter := newProposalWaiter()
+	prop := p.buildConsumerAdditionJSON(chainID, config, spawnTime)
+	propTx, err := p.ConsumerAdditionProposal(ctx, interchaintest.FaucetAccountKeyName, prop)
+	if err != nil {
+		return nil, nil, err
+	}
+	errCh := make(chan error, 1)
+	go func() {
+		defer close(errCh)
+		if err := p.WaitForProposalStatus(ctx, propTx.ProposalID, govv1.StatusDepositPeriod); err != nil {
+			errCh <- err
+			panic(err)
+		}
+		propWaiter.waitForDepositAllowed()
+
+		if _, err := p.GetNode().ExecTx(ctx, interchaintest.FaucetAccountKeyName, "gov", "deposit", propTx.ProposalID, prop.Deposit); err != nil {
+			errCh <- err
+			panic(err)
+		}
+
+		if err := p.WaitForProposalStatus(ctx, propTx.ProposalID, govv1.StatusVotingPeriod); err != nil {
+			errCh <- err
+			panic(err)
+		}
+		propWaiter.startVotingPeriod()
+		propWaiter.waitForVoteAllowed()
+
+		if err := p.PassProposal(ctx, propTx.ProposalID); err != nil {
+			errCh <- err
+			panic(err)
+		}
+		propWaiter.pass()
+	}()
+	return propWaiter, errCh, nil
+}
+
+func (p *Chain) buildConsumerAdditionJSON(chainID string, config ConsumerConfig, spawnTime time.Time) ccvclient.ConsumerAdditionProposalJSON {
 	prop := ccvclient.ConsumerAdditionProposalJSON{
 		Title:         fmt.Sprintf("Addition of %s consumer chain", chainID),
 		Summary:       "Proposal to add new consumer chain",
@@ -413,38 +585,13 @@ func (p *Chain) consumerAdditionProposal(ctx context.Context, chainID string, co
 	if config.ValidatorPowerCap > 0 {
 		prop.ValidatorsPowerCap = uint32(config.ValidatorPowerCap)
 	}
-	propTx, err := p.ConsumerAdditionProposal(ctx, interchaintest.FaucetAccountKeyName, prop)
-	if err != nil {
-		return nil, nil, err
+	if config.AllowInactiveVals {
+		prop.AllowInactiveVals = true
 	}
-	errCh := make(chan error)
-	go func() {
-		defer close(errCh)
-		if err := p.WaitForProposalStatus(ctx, propTx.ProposalID, govv1.StatusDepositPeriod); err != nil {
-			errCh <- err
-			return
-		}
-		propWaiter.waitForDepositAllowed()
-
-		if _, err := p.GetNode().ExecTx(ctx, interchaintest.FaucetAccountKeyName, "gov", "deposit", propTx.ProposalID, prop.Deposit); err != nil {
-			errCh <- err
-			return
-		}
-
-		if err := p.WaitForProposalStatus(ctx, propTx.ProposalID, govv1.StatusVotingPeriod); err != nil {
-			errCh <- err
-			return
-		}
-		propWaiter.startVotingPeriod()
-		propWaiter.waitForVoteAllowed()
-
-		if err := p.PassProposal(ctx, propTx.ProposalID); err != nil {
-			errCh <- err
-			return
-		}
-		propWaiter.pass()
-	}()
-	return propWaiter, errCh, nil
+	if config.MinStake > 0 {
+		prop.MinStake = config.MinStake
+	}
+	return prop
 }
 
 func (p *Chain) CheckCCV(ctx context.Context, consumer *Chain, relayer *Relayer, amount, valIdx, blocksPerEpoch int) error {
@@ -466,11 +613,7 @@ func (p *Chain) CheckCCV(ctx context.Context, consumer *Chain, relayer *Relayer,
 		return err
 	}
 
-	_, err = p.Validators[valIdx].ExecTx(ctx, providerAddress.Moniker,
-		"staking", "delegate",
-		providerAddress.ValoperAddress, fmt.Sprintf("%d%s", amount, p.Config().Denom),
-	)
-	if err != nil {
+	if err := p.Validators[valIdx].StakingDelegate(ctx, providerAddress.Moniker, providerAddress.ValoperAddress, fmt.Sprintf("%d%s", amount, p.Config().Denom)); err != nil {
 		return err
 	}
 
@@ -535,26 +678,42 @@ func (p *Chain) IsValoperJailed(ctx context.Context, valoper string) (bool, erro
 	return gjson.GetBytes(out, "validator.jailed").Bool(), nil
 }
 
-func (p *Chain) IsValidatorJailedForConsumerDowntime(ctx context.Context, relayer Relayer, consumer *Chain, validatorIdx int) (jailed bool, err error) {
-	if err = consumer.Validators[validatorIdx].StopContainer(ctx); err != nil {
+func (p *Chain) IsValidatorJailedForConsumerDowntime(ctx context.Context, relayer *Relayer, consumer *Chain, validatorIdx int) (jailed bool, err error) {
+	if err = consumer.Validators[validatorIdx].PauseContainer(ctx); err != nil {
 		return
 	}
 	defer func() {
-		err = consumer.Validators[validatorIdx].StartContainer(ctx)
+		sErr := consumer.Validators[validatorIdx].UnpauseContainer(ctx)
+		if sErr != nil {
+			err = multierr.Append(err, sErr)
+			return
+		}
+		time.Sleep(10 * CommitTimeout)
+		if jailed && err == nil {
+			if _, err = p.Validators[validatorIdx].ExecTx(ctx, p.ValidatorWallets[validatorIdx].Moniker, "slashing", "unjail"); err != nil {
+				return
+			}
+			var stillJailed bool
+			if stillJailed, err = p.IsValoperJailed(ctx, p.ValidatorWallets[validatorIdx].ValoperAddress); stillJailed {
+				err = fmt.Errorf("validator %d is still jailed after unjailing", validatorIdx)
+			}
+		}
 	}()
-	channel, err := relayer.GetChannelWithPort(ctx, consumer, p, "consumer")
-	if err != nil {
-		return
-	}
-	if err = testutil.WaitForBlocks(ctx, SlashingWindowConsumer+1, consumer); err != nil {
-		return
-	}
-	rs := relayer.Exec(ctx, GetRelayerExecReporter(ctx), []string{
-		"hermes", "clear", "packets", "--port", "consumer", "--channel", channel.ChannelID,
-		"--chain", consumer.Config().ChainID,
-	}, nil)
-	if rs.Err != nil {
-		return false, rs.Err
+	if p.Config().ChainID != consumer.Config().ChainID {
+		if err := relayer.ClearCCVChannel(ctx, p, consumer); err != nil {
+			return false, err
+		}
+		tCtx, tCancel := context.WithTimeout(ctx, SlashingWindowConsumer*2*CommitTimeout)
+		defer tCancel()
+		if err = testutil.WaitForBlocks(tCtx, SlashingWindowConsumer+1, consumer); err != nil {
+			if tCtx.Err() != nil {
+				err = fmt.Errorf("chain %s is stopped: %w", consumer.Config().ChainID, err)
+			}
+			return
+		}
+		if err := relayer.ClearCCVChannel(ctx, p, consumer); err != nil {
+			return false, err
+		}
 	}
 	tCtx, tCancel := context.WithTimeout(ctx, 30*CommitTimeout)
 	defer tCancel()
@@ -566,4 +725,12 @@ func (p *Chain) IsValidatorJailedForConsumerDowntime(ctx context.Context, relaye
 		time.Sleep(CommitTimeout)
 	}
 	return false, nil
+}
+
+func (c *Chain) GetConsumerID(ctx context.Context, consumerID string) (string, error) {
+	consumerIDJSON, err := c.QueryJSON(ctx, fmt.Sprintf("chains.#(chain_id=%q).consumer_id", consumerID), "provider", "list-consumer-chains")
+	if err != nil {
+		return "", err
+	}
+	return consumerIDJSON.String(), nil
 }

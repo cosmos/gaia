@@ -201,16 +201,6 @@ func NewAppKeeper(
 	// their scoped modules in `NewApp` with `ScopeToModule`
 	appKeepers.CapabilityKeeper.Seal()
 
-	appKeepers.CrisisKeeper = crisiskeeper.NewKeeper(
-		appCodec,
-		runtime.NewKVStoreService(appKeepers.keys[crisistypes.StoreKey]),
-		invCheckPeriod,
-		appKeepers.BankKeeper,
-		authtypes.FeeCollectorName,
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
-		appKeepers.AccountKeeper.AddressCodec(),
-	)
-
 	// Add normal keepers
 	appKeepers.AccountKeeper = authkeeper.NewAccountKeeper(
 		appCodec,
@@ -229,6 +219,16 @@ func NewAppKeeper(
 		blockedAddress,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 		logger,
+	)
+
+	appKeepers.CrisisKeeper = crisiskeeper.NewKeeper(
+		appCodec,
+		runtime.NewKVStoreService(appKeepers.keys[crisistypes.StoreKey]),
+		invCheckPeriod,
+		appKeepers.BankKeeper,
+		authtypes.FeeCollectorName,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		appKeepers.AccountKeeper.AddressCodec(),
 	)
 
 	appKeepers.AuthzKeeper = authzkeeper.NewKeeper(

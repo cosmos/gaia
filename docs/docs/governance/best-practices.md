@@ -35,13 +35,13 @@ In the first stage of this strategy, you should engage people (ideally experts) 
 - Are there critical flaws? 
 - How will this affect other projects or properties of the Hub? 
 
-You should be enagaging with key stakeholders (e.g., a large validator operator) with a few short sentences to measure their support. Here's an example:
+You should be engaging with key stakeholders (e.g., a large validator operator) with a few short sentences to measure their support. Here's an example:
 
 "We are considering a proposal for funding to work on `project`. We think it will help the Hub to `outcome`. Timeline is `x`, and we're asking for `y` amount. Do you think that this is a proposal that `large validator` may support?"
 
 **Why a large validator?** They tend to be the de facto decision-makers on the Cosmos Hub, since their delegators also delegate their voting power. If you can establish a base layer of off-chain support, you can be more confident that it's worth proceeding to the next stage.
 
-**Note:** Many validators will likely hesitate to commit support, and that's okay. It will be important to reassure these stakeholders that this isn't a binding a commitment. You're just canvasing the community to get a feel for whether it's worthwhile to proceed. It's also an opportunity to connect with new people and to answer their questions about what it is you're working on. It will be important for them to clearly understand why you think what you're proposing will be valuable to the Cosmos Hub, and if possible, why it will be valuable to them as long-term stakeholders.
+**Note:** Many validators will likely hesitate to commit support, and that's okay. It will be important to reassure these stakeholders that this isn't a binding commitment. You're just canvasing the community to get a feel for whether it's worthwhile to proceed. It's also an opportunity to connect with new people and to answer their questions about what it is you're working on. It will be important for them to clearly understand why you think what you're proposing will be valuable to the Cosmos Hub, and if possible, why it will be valuable to them as long-term stakeholders.
 
 If you're already confident about your idea, [skip to Stage 2](#stage-2-your-draft-proposal).
 
@@ -110,7 +110,7 @@ An example of a successful community spend proposal is [Proposal #63](https://fo
 1. Funding - amount and denomination proposed eg. 5000 ATOM.
    - The entity controlling the account receiving the funding.
    - Consider an itemized breakdown of funding per major deliverable.
-   - Note that the 'budget' of a spend proposal is generally the easiest thing to criticize. If your budget is vague, consider explaining the reasons you're unable to give a detailed breakdown and be clear about what happens if you do not meet you budget.
+   - Note that the 'budget' of a spend proposal is generally the easiest thing to criticize. If your budget is vague, consider explaining the reasons you're unable to give a detailed breakdown and be clear about what happens if you do not meet your budget.
 1. Deliverables and timeline - the specifics of what you're delivering and how, and what to expect.
    - What are the specific deliverables? (be detailed).
    - When will each of these be delivered?

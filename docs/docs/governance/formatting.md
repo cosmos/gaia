@@ -19,7 +19,7 @@ Text proposals are used by delegators to agree to a certain strategy, plan, comm
 
 There are four components:
 
-1. **Title** - the distinguishing name of the proposal, typically the way the that explorers list proposals
+1. **Title** - the distinguishing name of the proposal, typically the way that explorers list proposals
 2. **Summary** - the body of the proposal that further describes what is being proposed and details surrounding the proposal
 3. **Deposit** - the amount that will be contributed to the deposit (in micro-ATOMs "uatom") from the account submitting the proposal
 4. **Metadata** - usually a link to an off-chain resource
@@ -46,8 +46,8 @@ You must submit the proposal using `gaiad tx gov submit-proposal <path_to_text_p
 
 There are five (5) components:
 
-1. **Title** - the distinguishing name of the proposal, typically the way the that explorers list proposals
-2. **Sumamary** - the body of the proposal that further describes what is being proposed and details surrounding the proposal
+1. **Title** - the distinguishing name of the proposal, typically the way that explorers list proposals
+2. **Summary** - the body of the proposal that further describes what is being proposed and details surrounding the proposal
 3. **Recipient** - the Cosmos Hub (bech32-based) address that will receive funding from the Community Pool
 4. **Amount** - the amount of funding that the recipient will receive in micro-ATOMs (uatom)
 5. **Deposit** - the amount that will be contributed to the deposit (in micro-ATOMs "uatom") from the account submitting the proposal
@@ -97,7 +97,7 @@ You can update these CosmosHub modules using `submit-legacy-proposal`:
 
 For `param-change` proposals, there are arguably seven (7) components, though three are nested beneath 'Changes':
 
-1. **Title** - the distinguishing name of the proposal, typically the way the that explorers list proposals
+1. **Title** - the distinguishing name of the proposal, typically the way that explorers list proposals
 2. **Description** - the body of the proposal that further describes what is being proposed and details surrounding the proposal
 3. **Changes** - a component containing 
   1. **Subspace** - the Cosmos Hub module with the parameter that is being changed

@@ -33,7 +33,7 @@ sudo apt install -y make gcc build-essential
 
 We suggest the following two ways to install Go. Check out the [official docs](https://golang.org/doc/install) and Go installer for the correct download for your operating system. Alternatively, you can install Go yourself from the command line. Detailed below are standard default installation locations, but feel free to customize.
 
-Since the introduction of CosmWasm in Gaia v18 it is recommended to build the binaries with `CGO` enabled - simply set `CGO_ENABLED=1` in your terminal befre building the binary.
+Since the introduction of CosmWasm in Gaia v18 it is recommended to build the binaries with `CGO` enabled - simply set `CGO_ENABLED=1` in your terminal before building the binary.
 
 Building the `gaiad` binary on Windows is not supported due to [dependency issues](https://github.com/CosmWasm/wasmvm).
 

@@ -20,7 +20,7 @@ Cosmos Hub launched with community-spend capabilities on December 11, 2019, effe
 
 Though the rate of funding is currently fixed at 2% of staking rewards, the effective rate is dependent upon the Cosmos Hub's staking rewards, which can change with inflation and block times.
 
-The current paramater `Community Tax` parameter of 2% may be modified with a governance proposal and enacted immediately after the proposal passes.
+The current parameter `Community Tax` parameter of 2% may be modified with a governance proposal and enacted immediately after the proposal passes.
 
 ### How much money is in the Community Pool?
 
@@ -42,7 +42,7 @@ The prevailing assumption is that funds should be spent in a way that brings val
 
 - retroactive grants
 - price negotiation
-- fund disbursal (eg. payments in stages; payments pegged to reduce volitiliy)
+- fund disbursal (eg. payments in stages; payments pegged to reduce volatility)
 - radical overhaul of how the community-spend mechanism functions
 
 We can expect this to take shape as proposals are discussed, accepted, and rejected by the Cosmos Hub community.

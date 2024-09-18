@@ -11,7 +11,7 @@ This repository provides background information on these different kinds of prop
 
 Cosmos governance is driven by the Cosmos community, and much of the documentation in this repo was funded by the community fund itself in
 [Proposal 23](https://www.mintscan.io/cosmos/proposals/23) and [Proposal 63](https://www.mintscan.io/cosmos/proposals/63).
-Governance discussions happens in a number of places moderated by diverse community members, including:
+Governance discussions happen in a number of places moderated by diverse community members, including:
 
 - [Forum](http://forum.cosmos.network/)
 - [Discord](https://discord.gg/interchain)

@@ -70,12 +70,12 @@ Available proposals that can be submitted using this Tx are:
 You can read more about submitting a legacy proposal in the [cosmos-sdk docs](https://docs.cosmos.network/v0.47/build/modules/gov#submit-legacy-proposal)
 
 #### Proposals (cosmos-sdk >= v0.47)
-These proposals can are submitted using `gaiad tx gov submit-proposal`.
+These proposals can be submitted using `gaiad tx gov submit-proposal`.
 
 Using `gaiad tx gov draft-proposal` can help prepare a proposal. The tool will create a file containing the specified proposal message and it also helps with populating all the required proposal fields.
 You can always edit the file after you create it using `draft-proposal`
 
-Most cosmos-sdk modules allow changing their governance gated parameters using a `MsgUpdateParams` which is a new way of updating governance parameters. It is important to note that `MsgUpdateParams` requires **all paramaters to be specified** in the proposal message.
+Most cosmos-sdk modules allow changing their governance gated parameters using a `MsgUpdateParams` which is a new way of updating governance parameters. It is important to note that `MsgUpdateParams` requires **all parameters to be specified** in the proposal message.
 
 You can read more about submitting a proposal in the [cosmos-sdk docs](https://docs.cosmos.network/v0.47/build/modules/gov#submit-proposal)
 
@@ -84,7 +84,7 @@ You can read more about submitting a proposal in the [cosmos-sdk docs](https://d
 Please note that cosmoshub-4 uses a minimum initial deposit amount.
 :::
 
-Proposals cannot be submitted successfully without providing a minimum initial deposit. In practice, this means that the `deposit` field in your proposal has to meet the `min_initial_deposit` governance paramter.
+Proposals cannot be submitted successfully without providing a minimum initial deposit. In practice, this means that the `deposit` field in your proposal has to meet the `min_initial_deposit` governance parameter.
 The minimum deposit is equal to `min_deposit * min_initial_deposit_ratio`. Only `uatom` is supported as deposit denom.
 ```shell
 // checking the min_initial_deposit

@@ -17,7 +17,7 @@ Validators inside the top-N percent of voting power are required to validate the
 e.g. `top-95` means that the 95% of the validators (by voting power) are required to run the consumer chain binary
 
 ### Opt-in consumer chains
-Only validators that opt to running a consumer chains are required to run the chain binary and become eiligible for consumer chain rewards distribution.
+Only validators that opt to running a consumer chains are required to run the chain binary and become eligible for consumer chain rewards distribution.
 
 ### New consumer chain parameters
 

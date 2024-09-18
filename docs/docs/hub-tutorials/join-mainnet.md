@@ -449,10 +449,10 @@ gaiad export --height [height] --for-zero-height > [filename].json
 ## Verify Mainnet
 
 Help to prevent a catastrophe by running invariants on each block on your full
-node. In essence, by running invariants the node operator ensures that the state of mainnet is the correct expected state. One vital invariant check is that no atoms are being created or destroyed outside of expected protocol, however there are many other invariant checks each unique to their respective module. Because invariant checks are computationally expensive, they are not enabled by default. To run a node with these checks start your node with the --x-crisis-skip-assert-invariants flag:
+node. In essence, by running invariants the node operator ensures that the state of mainnet is the correct expected state. One vital invariant check is that no atoms are being created or destroyed outside of expected protocol, however there are many other invariant checks each unique to their respective module. Because invariant checks are computationally expensive, they are not enabled by default. To run a node with these checks start your node without the `--x-crisis-skip-assert-invariants` flag:
 
 ```bash
-gaiad start --x-crisis-skip-assert-invariants
+gaiad start
 ```
 
 If an invariant is broken on the node, it will panic and prompt the operator to send a transaction which will halt mainnet. For example the provided message may look like:

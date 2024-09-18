@@ -39,9 +39,12 @@ func TestCCVTestSuite(t *testing.T) {
 	suite.Run(t, ccvSuite)
 }
 
+// TestVerifyInvariant checks the integration of the crisis module by
+// sending a message to verify an invariant
 func TestVerifyInvariant(t *testing.T) {
 	ccvSuite.SetT(t)
 	ccvSuite.SetupTest()
+
 	delAddr := ccvSuite.GetProviderChain().SenderAccount.GetAddress()
 	msg := crysistypes.MsgVerifyInvariant{
 		Sender:              delAddr.String(),
@@ -54,7 +57,6 @@ func TestVerifyInvariant(t *testing.T) {
 	provCtx := ccvSuite.GetProviderChain().GetContext()
 	require.NotPanics(t, func() {
 		resp, err = app.CrisisKeeper.VerifyInvariant(provCtx, &msg)
-
 	})
 	require.NoError(t, err, "verify invariant returned an error")
 	require.NotNil(t, resp, "verify invariant returned an invalid response")

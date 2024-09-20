@@ -2,7 +2,7 @@
 
 ## 📝 Changelog
 
-Check out the [changelog](https://github.com/cosmos/gaia/blob/v20.0.0/CHANGELOG.md) for a list of relevant changes or [compare all changes](https://github.com/cosmos/gaia/compare/<v-last>...v20.0.0) from last release.
+Check out the [changelog](https://github.com/cosmos/gaia/blob/v20.0.0/CHANGELOG.md) for a list of relevant changes or [compare all changes](https://github.com/cosmos/gaia/compare/v19.2.0...v20.0.0) from last release.
 
 <!-- Add the following line for major releases -->
 Refer to the [upgrading guide](https://github.com/cosmos/gaia/blob/release/v20.x/UPGRADING.md) when migrating from `v19.2.x` to `v20.x`.
@@ -11,7 +11,7 @@ Refer to the [upgrading guide](https://github.com/cosmos/gaia/blob/release/v20.x
 
 <!-- Add any highlights of this release -->
 
-This release bumps Interchain Security (ICS) to [v6.0.0](https://github.com/cosmos/interchain-security/releases/tag/v6.0.0) which brings the following major features:
+This release bumps Interchain Security (ICS) to [v6.1.0](https://github.com/cosmos/interchain-security/releases/tag/v6.1.0) which brings the following major features:
 
 - ICS with Inactive Validators (as per [prop 930](https://www.mintscan.io/cosmos/proposals/930)) enables validators from outside the Hub’s active set to validate on Consumer Chains.
 - Permissionless ICS (as per [prop 945](https://www.mintscan.io/cosmos/proposals/945)) enables users to permissionlessly launch opt-in Consumer Chains on the Cosmos Hub.

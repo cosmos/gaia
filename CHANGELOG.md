@@ -7,10 +7,10 @@
 ### API BREAKING
 
 - Bump [ICS](https://github.com/cosmos/interchain-security) to
-  [v6.0.0](https://github.com/cosmos/interchain-security/releases/tag/v6.0.0).
+  [v6.1.0](https://github.com/cosmos/interchain-security/releases/tag/v6.1.0).
   This release of ICS introduces several API breaking changes. 
-  See the [ICS changelog](https://github.com/cosmos/interchain-security/blob/v6.0.0/CHANGELOG.md#api-breaking) for details.
-  ([\#3335](https://github.com/cosmos/gaia/pull/3335))
+  See the [ICS changelog](https://github.com/cosmos/interchain-security/blob/v6.1.0/CHANGELOG.md#api-breaking) for details.
+  ([\#3350](https://github.com/cosmos/gaia/pull/3350))
 
 ### BUG FIXES
 
@@ -25,12 +25,12 @@
 - Bump [feemarket](https://github.com/skip-mev/feemarket) to
   [v1.1.1](https://github.com/skip-mev/feemarket/releases/tag/v1.1.1)
   ([3306](https://github.com/cosmos/gaia/pull/3306))
-- Bump [ICS](https://github.com/cosmos/interchain-security) to
-  [v6.0.0](https://github.com/cosmos/interchain-security/releases/tag/v6.0.0).
-  ([\#3335](https://github.com/cosmos/gaia/pull/3335))
 - Bump [ibc-go](https://github.com/cosmos/ibc-go) to
     [v8.5.1](https://github.com/cosmos/ibc-go/releases/tag/v8.5.1)
     ([\#3338](https://github.com/cosmos/gaia/pull/3338))
+- Bump [ICS](https://github.com/cosmos/interchain-security) to
+  [v6.1.0](https://github.com/cosmos/interchain-security/releases/tag/v6.1.0).
+  ([\#3350](https://github.com/cosmos/gaia/pull/3350))
 
 ### FEATURES
 
@@ -49,11 +49,11 @@
   introduced by the permissionless ICS feature.
   ([\#3316](https://github.com/cosmos/gaia/pull/3316))
 - Bump [ICS](https://github.com/cosmos/interchain-security) to
-  [v6.0.0](https://github.com/cosmos/interchain-security/releases/tag/v6.0.0).
+  [v6.1.0](https://github.com/cosmos/interchain-security/releases/tag/v6.1.0).
   This release of ICS enables the permissionless creation of consumer chains 
   and allows validators outside the active validator set to opt in to validate 
   on consumer chains.
-  ([\#3335](https://github.com/cosmos/gaia/pull/3335))
+  ([\#3350](https://github.com/cosmos/gaia/pull/3350))
 
 ### STATE BREAKING
 
@@ -78,8 +78,8 @@
   introduced by the permissionless ICS feature.
   ([\#3316](https://github.com/cosmos/gaia/pull/3316))
 - Bump [ICS](https://github.com/cosmos/interchain-security) to
-  [v6.0.0](https://github.com/cosmos/interchain-security/releases/tag/v6.0.0).
-  ([\#3335](https://github.com/cosmos/gaia/pull/3335))
+  [v6.1.0](https://github.com/cosmos/interchain-security/releases/tag/v6.1.0).
+  ([\#3350](https://github.com/cosmos/gaia/pull/3350))
 
 ## Previous Versions
 

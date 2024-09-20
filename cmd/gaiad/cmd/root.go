@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -79,6 +80,9 @@ func NewRootCmd() *cobra.Command {
 	defer func() {
 		if err := tempApplication.Close(); err != nil {
 			panic(err)
+		}
+		if tempDir != gaia.DefaultNodeHome {
+			os.RemoveAll(tempDir)
 		}
 	}()
 
@@ -437,7 +441,7 @@ func (a appCreator) appExport(
 var tempDir = func() string {
 	dir, err := os.MkdirTemp("", ".gaia")
 	if err != nil {
-		dir = gaia.DefaultNodeHome
+		panic(fmt.Sprintf("failed creating temp directory: %s", err.Error()))
 	}
 	defer os.RemoveAll(dir)
 

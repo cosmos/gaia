@@ -4,13 +4,6 @@ order: 1
 sidebar_position: 1
 ---
 
-:::tip
-### **Gaia v19 Upgrade**
-Cosmos Hub upgraded to [v19.1.0](https://github.com/cosmos/gaia/releases/tag/v19.1.0) at block height: [21,835,200](https://www.mintscan.io/cosmos/block/21835200).
-
-To upgrade from v18.1.0 check the [upgrade guide](https://github.com/cosmos/gaia/blob/v19.1.0/UPGRADING.md).
-:::
-
 ![Welcome to the Cosmos Hub](images/cosmos-hub-image.jpg)
 
 # Introduction

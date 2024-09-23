@@ -1,6 +1,6 @@
 ---
 title: LSM Staking
-order: 2
+order: 1
 ---
 
 The `x/staking` module used by the Hub includes extensions that enable liquid staking

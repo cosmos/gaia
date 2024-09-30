@@ -113,7 +113,6 @@ type MainnetConsumerChainsSuite struct {
 
 func (s *MainnetConsumerChainsSuite) TestMainnetConsumerChainsAfterUpgrade() {
 	const neutronVersion = "v3.0.2"
-	const strideVersion = "v22.0.0"
 
 	neutron, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, chainsuite.ConsumerConfig{
 		ChainName:             "neutron",
@@ -125,7 +124,7 @@ func (s *MainnetConsumerChainsSuite) TestMainnetConsumerChainsAfterUpgrade() {
 	s.Require().NoError(err)
 	stride, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, chainsuite.ConsumerConfig{
 		ChainName:             "stride",
-		Version:               strideVersion,
+		Version:               chainsuite.StrideVersion,
 		ShouldCopyProviderKey: allProviderKeysCopied(),
 		Denom:                 chainsuite.StrideDenom,
 		TopN:                  95,

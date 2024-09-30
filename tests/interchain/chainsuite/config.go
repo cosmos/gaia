@@ -49,6 +49,7 @@ const (
 	ChainSpawnWait         = 155 * time.Second
 	SlashingWindowConsumer = 20
 	BlocksPerDistribution  = 10
+	StrideVersion          = "v22.0.0"
 )
 
 func (c SuiteConfig) Merge(other SuiteConfig) SuiteConfig {

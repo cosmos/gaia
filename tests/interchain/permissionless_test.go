@@ -448,7 +448,10 @@ func (s *PermissionlessConsumersSuite) TestConsumerCommissionRate() {
 	})
 	s.Require().NoError(eg.Wait())
 
-	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), chainsuite.BlocksPerDistribution+3, s.Chain, consumer1, consumer2))
+	s.Require().NoError(s.Relayer.ClearCCVChannel(s.GetContext(), s.Chain, consumer1))
+	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), chainsuite.BlocksPerDistribution+2, s.Chain, consumer1, consumer2))
+	s.Require().NoError(s.Relayer.ClearCCVChannel(s.GetContext(), s.Chain, consumer1))
+	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 2, s.Chain, consumer1, consumer2))
 
 	rewardStr, err := s.Chain.QueryJSON(s.GetContext(), fmt.Sprintf("total.#(%%\"*%s\")", denom1), "distribution", "rewards", s.Chain.ValidatorWallets[0].Address)
 	s.Require().NoError(err)
@@ -491,7 +494,10 @@ func (s *PermissionlessConsumersSuite) TestConsumerCommissionRate() {
 	})
 	s.Require().NoError(eg.Wait())
 
-	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), chainsuite.BlocksPerDistribution+3, s.Chain, consumer1, consumer2))
+	s.Require().NoError(s.Relayer.ClearCCVChannel(s.GetContext(), s.Chain, consumer1))
+	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), chainsuite.BlocksPerDistribution+2, s.Chain, consumer1, consumer2))
+	s.Require().NoError(s.Relayer.ClearCCVChannel(s.GetContext(), s.Chain, consumer1))
+	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 2, s.Chain, consumer1, consumer2))
 
 	rewardStr, err = s.Chain.QueryJSON(s.GetContext(), fmt.Sprintf("total.#(%%\"*%s\")", denom1), "distribution", "rewards", s.Chain.ValidatorWallets[0].Address)
 	s.Require().NoError(err)

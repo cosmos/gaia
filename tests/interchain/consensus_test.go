@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
+	"golang.org/x/mod/semver"
 )
 
 const (
@@ -49,15 +50,21 @@ func (s *ConsensusSuite) SetupSuite() {
 	result, err := s.Chain.SubmitProposal(s.GetContext(), s.Chain.ValidatorWallets[0].Moniker, prop)
 	s.Require().NoError(err)
 	s.Require().NoError(s.Chain.PassProposal(s.GetContext(), result.ProposalID))
+
 	s.UpgradeChain()
 
 	stakingParams, _, err := s.Chain.GetNode().ExecQuery(s.GetContext(), "staking", "params")
 	s.Require().NoError(err)
-	s.Require().Equal(uint64(200), gjson.GetBytes(stakingParams, "params.max_validators").Uint(), string(stakingParams))
 
 	providerParams, _, err := s.Chain.GetNode().ExecQuery(s.GetContext(), "provider", "params")
 	s.Require().NoError(err)
-	s.Require().Equal(uint64(180), gjson.GetBytes(providerParams, "max_provider_consensus_validators").Uint(), string(providerParams))
+
+	if semver.Compare(s.Env.OldGaiaImageVersion, "v20.0.0") < 0 {
+		// These are set by the v20 upgrade handler
+		s.Require().Equal(uint64(200), gjson.GetBytes(stakingParams, "params.max_validators").Uint(), string(stakingParams))
+		s.Require().Equal(uint64(180), gjson.GetBytes(providerParams, "max_provider_consensus_validators").Uint(), string(providerParams))
+	}
+
 	providerParams, err = sjson.SetBytes(providerParams, "max_provider_consensus_validators", maxProviderConsensusValidators)
 	s.Require().NoError(err)
 	providerProposal, err := sjson.SetRaw(fmt.Sprintf(`{

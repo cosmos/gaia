@@ -309,3 +309,87 @@ func (c *Chain) GetProposalID(ctx context.Context, txhash string) (string, error
 	}
 	return "", fmt.Errorf("proposal ID not found in tx %s", txhash)
 }
+
+func (c *Chain) hasOrderingFlag(ctx context.Context) (bool, error) {
+	cmd := c.GetNode().BinCommand("tx", "interchain-accounts", "controller", "register", "--help")
+	stdout, _, err := c.GetNode().Exec(ctx, cmd, nil)
+	if err != nil {
+		return false, err
+	}
+	return strings.Contains(string(stdout), "ordering"), nil
+}
+
+func (c *Chain) GetICAAddress(ctx context.Context, srcAddress string, srcConnection string) string {
+	var icaAddress string
+
+	// it takes a moment for it to be created
+	timeoutCtx, timeoutCancel := context.WithTimeout(ctx, 90*time.Second)
+	defer timeoutCancel()
+	for timeoutCtx.Err() == nil {
+		time.Sleep(5 * time.Second)
+		stdout, _, err := c.GetNode().ExecQuery(timeoutCtx,
+			"interchain-accounts", "controller", "interchain-account",
+			srcAddress, srcConnection,
+		)
+		if err != nil {
+			GetLogger(ctx).Sugar().Warnf("error querying interchain account: %s", err)
+			continue
+		}
+		result := map[string]interface{}{}
+		err = json.Unmarshal(stdout, &result)
+		if err != nil {
+			GetLogger(ctx).Sugar().Warnf("error unmarshalling interchain account: %s", err)
+			continue
+		}
+		icaAddress = result["address"].(string)
+		if icaAddress != "" {
+			break
+		}
+	}
+	return icaAddress
+}
+
+func (c *Chain) SetupICAAccount(ctx context.Context, host *Chain, relayer *Relayer, srcAddress string, valIdx int, initialFunds int64) (string, error) {
+	srcChannel, err := relayer.GetTransferChannel(ctx, c, host)
+	if err != nil {
+		return "", err
+	}
+	srcConnection := srcChannel.ConnectionHops[0]
+
+	hasOrdering, err := c.hasOrderingFlag(ctx)
+	if err != nil {
+		return "", err
+	}
+
+	if hasOrdering {
+		_, err = c.Validators[valIdx].ExecTx(ctx, srcAddress,
+			"interchain-accounts", "controller", "register",
+			"--ordering", "ORDER_ORDERED", "--version", "",
+			srcConnection,
+		)
+	} else {
+		_, err = c.Validators[valIdx].ExecTx(ctx, srcAddress,
+			"interchain-accounts", "controller", "register",
+			srcConnection,
+		)
+	}
+	if err != nil {
+		return "", err
+	}
+
+	icaAddress := c.GetICAAddress(ctx, srcAddress, srcConnection)
+	if icaAddress == "" {
+		return "", fmt.Errorf("ICA address not found")
+	}
+
+	err = host.SendFunds(ctx, interchaintest.FaucetAccountKeyName, ibc.WalletAmount{
+		Denom:   host.Config().Denom,
+		Amount:  sdkmath.NewInt(initialFunds),
+		Address: icaAddress,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	return icaAddress, nil
+}

@@ -104,7 +104,8 @@ func (p *Chain) AddConsumerChain(ctx context.Context, relayer *Relayer, config C
 	}
 
 	spawnTime := time.Now().Add(ChainSpawnWait)
-	chainID := fmt.Sprintf("%s-%d", config.ChainName, len(p.Consumers)+1)
+	// We need -test- in there because certain consumer IDs are hardcoded into the binary and we can't re-launch them
+	chainID := fmt.Sprintf("%s-test-%d", config.ChainName, len(p.Consumers)+1)
 
 	var proposalWaiter *proposalWaiter
 	var errCh chan error
@@ -402,6 +403,7 @@ func (p *Chain) DefaultConsumerChainSpec(ctx context.Context, chainID string, co
 			Denom:         denom,
 			GasPrices:     "0.005" + denom,
 			GasAdjustment: 2.0,
+			Gas:           "auto",
 			ChainID:       chainID,
 			ConfigFileOverrides: map[string]any{
 				"config/config.toml": DefaultConfigToml(),

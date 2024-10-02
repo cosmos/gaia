@@ -393,3 +393,65 @@ func (c *Chain) SetupICAAccount(ctx context.Context, host *Chain, relayer *Relay
 
 	return icaAddress, nil
 }
+
+func (c *Chain) AddLinkedChain(ctx context.Context, testName interchaintest.TestName, relayer *Relayer, spec *interchaintest.ChainSpec) (*Chain, error) {
+	dockerClient, dockerNetwork := GetDockerContext(ctx)
+
+	cf := interchaintest.NewBuiltinChainFactory(
+		GetLogger(ctx),
+		[]*interchaintest.ChainSpec{spec},
+	)
+
+	chains, err := cf.Chains(testName.Name())
+	if err != nil {
+		return nil, err
+	}
+	cosmosChainB := chains[0].(*cosmos.CosmosChain)
+	relayerWallet, err := cosmosChainB.BuildRelayerWallet(ctx, "relayer-"+cosmosChainB.Config().ChainID)
+	if err != nil {
+		return nil, err
+	}
+
+	ic := interchaintest.NewInterchain().AddChain(cosmosChainB, ibc.WalletAmount{
+		Address: relayerWallet.FormattedAddress(),
+		Denom:   cosmosChainB.Config().Denom,
+		Amount:  sdkmath.NewInt(ValidatorFunds),
+	})
+
+	if err := ic.Build(ctx, GetRelayerExecReporter(ctx), interchaintest.InterchainBuildOptions{
+		Client:    dockerClient,
+		NetworkID: dockerNetwork,
+		TestName:  testName.Name(),
+	}); err != nil {
+		return nil, err
+	}
+
+	chainB, err := chainFromCosmosChain(cosmosChainB, relayerWallet)
+	if err != nil {
+		return nil, err
+	}
+	rep := GetRelayerExecReporter(ctx)
+	if err := relayer.SetupChainKeys(ctx, chainB); err != nil {
+		return nil, err
+	}
+	if err := relayer.StopRelayer(ctx, rep); err != nil {
+		return nil, err
+	}
+	if err := relayer.StartRelayer(ctx, rep); err != nil {
+		return nil, err
+	}
+
+	if err := relayer.GeneratePath(ctx, rep, c.Config().ChainID, chainB.Config().ChainID, relayerTransferPathFor(c, chainB)); err != nil {
+		return nil, err
+	}
+
+	if err := relayer.LinkPath(ctx, rep, relayerTransferPathFor(c, chainB), ibc.CreateChannelOptions{
+		DestPortName:   TransferPortID,
+		SourcePortName: TransferPortID,
+		Order:          ibc.Unordered,
+	}, ibc.DefaultClientOpts()); err != nil {
+		return nil, err
+	}
+
+	return chainB, nil
+}

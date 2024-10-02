@@ -11,8 +11,8 @@ import (
 	"time"
 
 	sdkmath "cosmossdk.io/math"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
-	"github.com/cosmos/gaia/v20/tests/interchain/chainsuite"
+	govtypes "github.cogaia/v21/cosmos-sdk/x/gov/types/v1"
+	"github.com/cosmos/gaia/v21/tests/interchain/chainsuite"
 	transfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 	ccvclient "github.com/cosmos/interchain-security/v5/x/ccv/provider/client"
 	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"

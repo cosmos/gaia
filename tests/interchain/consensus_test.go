@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/cosmos/gaia/v20/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v21/tests/interchain/chainsuite"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"github.com/tidwall/gjson"

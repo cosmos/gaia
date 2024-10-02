@@ -15,7 +15,7 @@ import (
 
 	sdkmath "cosmossdk.io/math"
 
-	"github.com/cosmos/gaia/v20/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v21/tests/interchain/chainsuite"
 
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )

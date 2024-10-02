@@ -24,39 +24,38 @@ Do your own research and take precautions in regards to wallet security. Maintai
 
 These community-maintained web and mobile wallets allow you to store & transfer ATOM, delegate ATOM to validators, and vote on on-chain governance proposals. Note that we do not endorse any of the wallets, they are listed for your convenience.
 
-* [Keplr](https://wallet.keplr.app) - Web
-* [Ledger](https://www.ledger.com/cosmos-wallet) - Hardware
-* [Cosmostation](https://www.cosmostation.io/) - Android, iOS
-* [Leap Wallet](https://www.leapwallet.io/) - Android, iOS, Web
-* [Atomic Wallet](https://atomicwallet.io/) - Android, Linux, macOS, Windows
-* [Citadel.One](https://citadel.one/#mobile) - Android, iOS
-* [Cobo](https://cobo.com/) - Android, iOS
-* [Crypto.com](https://crypto.com/) - Android, iOS
-* [Huobi Wallet](https://www.huobiwallet.com/) - Android, iOS
-* [ShapeShift](https://app.shapeshift.com/) - Android, iOS, Web
-* [imToken](https://token.im/) - Android, iOS
-* [Math Wallet](https://www.mathwallet.org/en/) - Android, iOS, Web
-* [Rainbow Wallet](https://www.rainbow.one) - Android, iOS
-* [Trust Wallet](https://trustwallet.com/) Android, iOS
-* [Komodo Wallet](https://atomicdex.io/en/)
-
+- [Keplr](https://wallet.keplr.app) - Web
+- [Ledger](https://www.ledger.com/cosmos-wallet) - Hardware
+- [Cosmostation](https://www.cosmostation.io/) - Android, iOS
+- [Leap Wallet](https://www.leapwallet.io/) - Android, iOS, Web
+- [Atomic Wallet](https://atomicwallet.io/) - Android, Linux, macOS, Windows
+- [Citadel.One](https://citadel.one/#mobile) - Android, iOS
+- [Cobo](https://cobo.com/) - Android, iOS
+- [Crypto.com](https://crypto.com/) - Android, iOS
+- [Huobi Wallet](https://www.huobiwallet.com/) - Android, iOS
+- [ShapeShift](https://app.shapeshift.com/) - Android, iOS, Web
+- [imToken](https://token.im/) - Android, iOS
+- [Math Wallet](https://www.mathwallet.org/en/) - Android, iOS, Web
+- [Rainbow Wallet](https://www.rainbow.one) - Android, iOS
+- [Trust Wallet](https://trustwallet.com/) Android, iOS
+- [Komodo Wallet](https://atomicdex.io/en/)
 
 ## Metamask Snaps
 
-* [Leap Wallet](https://www.leapwallet.io/snaps)
-* [Mystic Lab](https://metamask.mysticlabs.xyz/)
+- [Leap Wallet](https://www.leapwallet.io/snaps)
+- [Mystic Lab](https://metamask.mysticlabs.xyz/)
 
 ## Cosmos Hub Explorers
 
 These block explorers allow you to search, view and analyze Cosmos Hub data&mdash;like blocks, transactions, validators, etc.
 
-* [Mintscan](https://mintscan.io)
-* [Numia](https://www.datalenses.zone/chain/cosmos)
-* [ATOMScan](https://atomscan.com)
-* [IOBScan](https://cosmoshub.iobscan.io/)
-* [Ping.Pub](https://ping.pub/cosmos)
-* [BronBro](https://monitor.bronbro.io/d/cosmos-stats/cosmos)
-* [SmartStake](https://cosmos.smartstake.io/stats)
+- [Mintscan](https://mintscan.io)
+- [Numia](https://www.datalenses.zone/chain/cosmos)
+- [ATOMScan](https://atomscan.com)
+- [IOBScan](https://cosmoshub.iobscan.io/)
+- [Ping.Pub](https://ping.pub/cosmos)
+- [BronBro](https://monitor.bronbro.io/d/cosmos-stats/cosmos)
+- [SmartStake](https://cosmos.smartstake.io/stats)
 
 ## Cosmos Hub CLI
 
@@ -72,8 +71,8 @@ ator-setup).
 
 Have questions, comments, or new ideas? Participate in the Cosmos community through one of the following channels.
 
-* [Discord](https://discord.gg/interchain)
-* [Cosmos Forum](https://forum.cosmos.network)
-* [Cosmos on Reddit](https://reddit.com/r/cosmosnetwork)
+- [Discord](https://discord.gg/interchain)
+- [Cosmos Forum](https://forum.cosmos.network)
+- [Cosmos on Reddit](https://reddit.com/r/cosmosnetwork)
 
 To learn more about the Cosmos Hub and how it fits within the Cosmos Network, visit [cosmos.network](https://cosmos.network).

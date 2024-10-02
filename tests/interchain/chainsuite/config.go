@@ -48,6 +48,7 @@ const (
 	ValidatorFunds         = 11_000_000_000
 	ChainSpawnWait         = 155 * time.Second
 	SlashingWindowConsumer = 20
+	BlocksPerDistribution  = 10
 )
 
 func (c SuiteConfig) Merge(other SuiteConfig) SuiteConfig {

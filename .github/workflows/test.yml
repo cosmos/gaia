@@ -163,15 +163,15 @@ jobs:
       # the old gaiad binary version is hardcoded, need to be updated each major release.
       - name: Install Old Gaiad
         run: |
-          curl -LO https://github.com/cosmos/gaia/releases/download/v19.1.0/gaiad-v19.1.0-linux-amd64
-          chmod a+x gaiad-v19.1.0-linux-amd64
+          curl -LO https://github.com/cosmos/gaia/releases/download/v20.0.0/gaiad-v20.0.0-linux-amd64
+          chmod a+x gaiad-v20.0.0-linux-amd64
           mkdir build
-          mv ./gaiad-v19.1.0-linux-amd64 ./build/gaiadold
+          mv ./gaiad-v20.0.0-linux-amd64 ./build/gaiadold
         if: env.GIT_DIFF
       - name: Install New Gaiad
         run: |
-          curl -LO https://github.com/CosmWasm/wasmvm/releases/download/v2.1.2/libwasmvm.x86_64.so
-          curl -LO https://github.com/CosmWasm/wasmvm/releases/download/v2.1.2/libwasmvm.aarch64.so
+          curl -LO https://github.com/CosmWasm/wasmvm/releases/download/v2.1.3/libwasmvm.x86_64.so
+          curl -LO https://github.com/CosmWasm/wasmvm/releases/download/v2.1.3/libwasmvm.aarch64.so
           uname -m
           sudo cp "./libwasmvm.$(uname -m).so" /usr/lib/
           make build

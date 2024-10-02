@@ -14,8 +14,8 @@ import (
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
-	"github.com/cosmos/gaia/v20/ante"
-	"github.com/cosmos/gaia/v20/app/helpers"
+	"github.com/cosmos/gaia/v21/ante"
+	"github.com/cosmos/gaia/v21/app/helpers"
 )
 
 func TestGovExpeditedProposalsDecorator(t *testing.T) {

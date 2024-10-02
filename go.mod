@@ -1,6 +1,9 @@
 module github.com/cosmos/gaia/v20
 
-go 1.22.6
+go 1.23.1
+
+toolchain go1.23.2
+
 require (
 	cosmossdk.io/api v0.7.5
 	cosmossdk.io/client/v2 v2.0.0-beta.3

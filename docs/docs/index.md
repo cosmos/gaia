@@ -18,7 +18,7 @@ Learn more about [being a delegator](./delegators/delegator-faq.md), learn about
 
 ## Cosmos Hub Wallets
 
-:::warning
+:::tip
 Do your own research and take precautions in regards to wallet security. Maintaining proper security practices is solely your responsibility when using third party wallets.
 :::
 

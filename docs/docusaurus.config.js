@@ -56,8 +56,8 @@ const config = {
           versions: {
             current: {
               path: "main",
-              label: "Unreleased (main)",
-              banner: "unreleased",
+              label: "Latest",
+              banner: "none",
             },
           },
         },

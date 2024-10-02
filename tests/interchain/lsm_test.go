@@ -405,7 +405,6 @@ func (s *LSMSuite) TestTokenizeVested() {
 
 	// wait for half the vesting period
 	time.Sleep(vestingPeriod / 2)
-	testutil.WaitForBlocks(s.GetContext(), 2, s.Chain)
 
 	// try to tokenize full amount. Should fail.
 	_, err = s.Chain.GetNode().ExecTx(s.GetContext(), vestingAccount.FormattedAddress(),

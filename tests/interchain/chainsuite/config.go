@@ -50,6 +50,7 @@ const (
 	SlashingWindowConsumer = 20
 	BlocksPerDistribution  = 10
 	StrideVersion          = "v22.0.0"
+	TransferPortID         = "transfer"
 )
 
 func (c SuiteConfig) Merge(other SuiteConfig) SuiteConfig {
@@ -101,7 +102,7 @@ func DefaultGenesisAmounts(denom string) func(i int) (types.Coin, types.Coin) {
 	}
 }
 
-func DefaultSuiteConfig(env Environment) SuiteConfig {
+func DefaultChainSpec(env Environment) *interchaintest.ChainSpec {
 	fullNodes := 0
 	validators := ValidatorCount
 	var repository string
@@ -110,27 +111,31 @@ func DefaultSuiteConfig(env Environment) SuiteConfig {
 	} else {
 		repository = fmt.Sprintf("%s/%s", env.DockerRegistry, env.GaiaImageName)
 	}
-	return SuiteConfig{
-		ChainSpec: &interchaintest.ChainSpec{
-			Name:          "gaia",
-			NumFullNodes:  &fullNodes,
-			NumValidators: &validators,
-			Version:       env.OldGaiaImageVersion,
-			ChainConfig: ibc.ChainConfig{
-				Denom:         Uatom,
-				GasPrices:     GasPrices,
-				GasAdjustment: 2.0,
-				ConfigFileOverrides: map[string]any{
-					"config/config.toml": DefaultConfigToml(),
-				},
-				Images: []ibc.DockerImage{{
-					Repository: repository,
-					UidGid:     "1025:1025", // this is the user in heighliner docker images
-				}},
-				ModifyGenesis:        cosmos.ModifyGenesis(DefaultGenesis()),
-				ModifyGenesisAmounts: DefaultGenesisAmounts(Uatom),
+	return &interchaintest.ChainSpec{
+		Name:          "gaia",
+		NumFullNodes:  &fullNodes,
+		NumValidators: &validators,
+		Version:       env.OldGaiaImageVersion,
+		ChainConfig: ibc.ChainConfig{
+			Denom:         Uatom,
+			GasPrices:     GasPrices,
+			GasAdjustment: 2.0,
+			ConfigFileOverrides: map[string]any{
+				"config/config.toml": DefaultConfigToml(),
 			},
+			Images: []ibc.DockerImage{{
+				Repository: repository,
+				UidGid:     "1025:1025", // this is the user in heighliner docker images
+			}},
+			ModifyGenesis:        cosmos.ModifyGenesis(DefaultGenesis()),
+			ModifyGenesisAmounts: DefaultGenesisAmounts(Uatom),
 		},
+	}
+}
+
+func DefaultSuiteConfig(env Environment) SuiteConfig {
+	return SuiteConfig{
+		ChainSpec: DefaultChainSpec(env),
 	}
 }
 

@@ -41,7 +41,7 @@ func (r *Relayer) SetupChainKeys(ctx context.Context, chain *Chain) error {
 }
 
 func (r *Relayer) GetTransferChannel(ctx context.Context, chain, counterparty *Chain) (*ibc.ChannelOutput, error) {
-	return r.GetChannelWithPort(ctx, chain, counterparty, "transfer")
+	return r.GetChannelWithPort(ctx, chain, counterparty, TransferPortID)
 }
 
 func (r *Relayer) GetChannelWithPort(ctx context.Context, chain, counterparty *Chain, portID string) (*ibc.ChannelOutput, error) {
@@ -99,4 +99,12 @@ func (r *Relayer) ClearCCVChannel(ctx context.Context, provider, consumer *Chain
 		return fmt.Errorf("error clearing packets: %w", rs.Err)
 	}
 	return nil
+}
+
+func relayerICSPathFor(chainA, chainB *Chain) string {
+	return fmt.Sprintf("ics-%s-%s", chainA.Config().ChainID, chainB.Config().ChainID)
+}
+
+func relayerTransferPathFor(chainA, chainB *Chain) string {
+	return fmt.Sprintf("transfer-%s-%s", chainA.Config().ChainID, chainB.Config().ChainID)
 }

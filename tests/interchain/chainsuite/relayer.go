@@ -101,6 +101,21 @@ func (r *Relayer) ClearCCVChannel(ctx context.Context, provider, consumer *Chain
 	return nil
 }
 
+func (r *Relayer) ClearTransferChannel(ctx context.Context, chainA, chainB *Chain) error {
+	channel, err := r.GetTransferChannel(ctx, chainA, chainB)
+	if err != nil {
+		return err
+	}
+	rs := r.Exec(ctx, GetRelayerExecReporter(ctx), []string{
+		"hermes", "clear", "packets", "--port", channel.PortID, "--channel", channel.ChannelID,
+		"--chain", chainA.Config().ChainID,
+	}, nil)
+	if rs.Err != nil {
+		return fmt.Errorf("error clearing packets: %w", rs.Err)
+	}
+	return nil
+}
+
 func relayerICSPathFor(chainA, chainB *Chain) string {
 	return fmt.Sprintf("ics-%s-%s", chainA.Config().ChainID, chainB.Config().ChainID)
 }

@@ -672,10 +672,6 @@ func (p *Chain) CheckCCV(ctx context.Context, consumer *Chain, relayer *Relayer,
 	return retErr
 }
 
-func relayerICSPathFor(chainA, chainB *Chain) string {
-	return fmt.Sprintf("ics-%s-%s", chainA.Config().ChainID, chainB.Config().ChainID)
-}
-
 func (p *Chain) IsValoperJailed(ctx context.Context, valoper string) (bool, error) {
 	out, _, err := p.Validators[0].ExecQuery(ctx, "staking", "validator", valoper)
 	if err != nil {

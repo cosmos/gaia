@@ -10,8 +10,9 @@ import (
 	"testing"
 	"time"
 
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
-	"github.com/cosmos/gaia/v20/tests/interchain/chainsuite"
+	sdkmath "cosmossdk.io/math"
+	govtypes "github.cogaia/v21/cosmos-sdk/x/gov/types/v1"
+	"github.com/cosmos/gaia/v21/tests/interchain/chainsuite"
 	transfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 	ccvclient "github.com/cosmos/interchain-security/v5/x/ccv/provider/client"
 	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
@@ -21,6 +22,7 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v8/testutil"
 	"github.com/stretchr/testify/suite"
 	"github.com/tidwall/sjson"
+	"golang.org/x/mod/semver"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -28,19 +30,26 @@ const (
 	permissionlessDepositPeriod = 7 * time.Minute
 )
 
-type ConsumerPropMigrationSuite struct {
+type PermissionlessConsumersSuite struct {
 	*chainsuite.Suite
 	consumerCfg chainsuite.ConsumerConfig
 }
 
-func (s *ConsumerPropMigrationSuite) addConsumer() *chainsuite.Chain {
+func (s *PermissionlessConsumersSuite) addConsumer() *chainsuite.Chain {
 	consumer, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, s.consumerCfg)
 	s.Require().NoError(err)
 	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), consumer, s.Relayer, 1_000_000, 0, 1))
 	return consumer
 }
 
-func (s *ConsumerPropMigrationSuite) TestConsumerAddition() {
+func (s *PermissionlessConsumersSuite) isOverV19() bool {
+	return semver.Compare(s.Env.OldGaiaImageVersion, "v19.0.0") > 0
+}
+
+func (s *PermissionlessConsumersSuite) TestConsumerAdditionMigration() {
+	if s.isOverV19() {
+		s.T().Skip("Migration test for v19 -> v20")
+	}
 	consumer := s.addConsumer()
 	json, _, err := s.Chain.GetNode().ExecQuery(s.GetContext(), "gov", "proposals")
 	s.Require().NoError(err)
@@ -93,7 +102,11 @@ func (s *ConsumerPropMigrationSuite) TestConsumerAddition() {
 	s.Require().Equal(uint64(100), chain2.Get("top_N").Uint())
 }
 
-func (s *ConsumerPropMigrationSuite) TestConsumerRemoval() {
+func (s *PermissionlessConsumersSuite) TestConsumerRemovalMigration() {
+	if s.isOverV19() {
+		s.T().Skip("Migration test for v19 -> v20")
+	}
+
 	consumer := s.addConsumer()
 
 	stopTime := time.Now().Add(permissionlessDepositPeriod + 2*time.Minute)
@@ -124,7 +137,11 @@ func (s *ConsumerPropMigrationSuite) TestConsumerRemoval() {
 	s.Require().Equal("CONSUMER_PHASE_STOPPED", chain.Get("phase").String())
 }
 
-func (s *ConsumerPropMigrationSuite) TestConsumerModification() {
+func (s *PermissionlessConsumersSuite) TestConsumerModificationMigration() {
+	if s.isOverV19() {
+		s.T().Skip("Migration test for v19 -> v20")
+	}
+
 	consumer := s.addConsumer()
 
 	propID := s.submitConsumerModification(consumer)
@@ -145,7 +162,11 @@ func (s *ConsumerPropMigrationSuite) TestConsumerModification() {
 	s.Require().Equal(uint64(80), chain.Get("top_N").Uint())
 }
 
-func (s *ConsumerPropMigrationSuite) TestChangeRewardDenom() {
+func (s *PermissionlessConsumersSuite) TestChangeRewardDenomMigration() {
+	if s.isOverV19() {
+		s.T().Skip("Migration test for v19 -> v20")
+	}
+
 	consumer := s.addConsumer()
 
 	denom, propID := s.submitChangeRewardDenoms(consumer)
@@ -165,14 +186,17 @@ func (s *ConsumerPropMigrationSuite) TestChangeRewardDenom() {
 	s.Require().Contains(denoms.String(), denom)
 }
 
-func (s *ConsumerPropMigrationSuite) depositAndPass(propID string) {
+func (s *PermissionlessConsumersSuite) depositAndPass(propID string) {
 	_, err := s.Chain.GetNode().ExecTx(s.GetContext(), s.Chain.ValidatorWallets[0].Moniker, "gov", "deposit", propID, chainsuite.GovDepositAmount)
 	s.Require().NoError(err)
 	s.Require().NoError(s.Chain.PassProposal(s.GetContext(), propID))
 	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 2, s.Chain))
 }
 
-func (s *ConsumerPropMigrationSuite) TestPassedProposalsDontChange() {
+func (s *PermissionlessConsumersSuite) TestPassedProposalsDontChange() {
+	if s.isOverV19() {
+		s.T().Skip("Migration test for v19 -> v20")
+	}
 	consumer := s.addConsumer()
 
 	_, denomPropID := s.submitChangeRewardDenoms(consumer)
@@ -223,7 +247,7 @@ func (s *ConsumerPropMigrationSuite) TestPassedProposalsDontChange() {
 	s.Require().Equal("CONSUMER_PHASE_STOPPED", chain.Get("phase").String())
 }
 
-func (s *ConsumerPropMigrationSuite) TestChangeOwner() {
+func (s *PermissionlessConsumersSuite) TestChangeOwner() {
 	s.UpgradeChain()
 
 	cfg := s.consumerCfg
@@ -279,7 +303,7 @@ func (s *ConsumerPropMigrationSuite) TestChangeOwner() {
 	s.Require().NoError(s.Chain.PassProposal(s.GetContext(), propID))
 }
 
-func (s *ConsumerPropMigrationSuite) TestChangePowerShaping() {
+func (s *PermissionlessConsumersSuite) TestChangePowerShaping() {
 	s.UpgradeChain()
 
 	cfg := s.consumerCfg
@@ -338,13 +362,220 @@ func (s *ConsumerPropMigrationSuite) TestChangePowerShaping() {
 	}
 
 }
+func (s *PermissionlessConsumersSuite) TestConsumerCommissionRate() {
+	s.UpgradeChain()
+	cfg := s.consumerCfg
 
-func TestConsumerPropMigration(t *testing.T) {
+	cfg.TopN = 0
+	cfg.BeforeSpawnTime = func(ctx context.Context, consumer *cosmos.CosmosChain) {
+		consumerID, err := s.Chain.GetConsumerID(s.GetContext(), consumer.Config().ChainID)
+		s.Require().NoError(err)
+		_, err = s.Chain.Validators[0].ExecTx(s.GetContext(), s.Chain.ValidatorWallets[0].Moniker, "provider", "opt-in", consumerID)
+		s.Require().NoError(err)
+	}
+	consumer1, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, cfg)
+	s.Require().NoError(err)
+	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), consumer1, s.Relayer, 1_000_000, 0, 1))
+
+	consumer2, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, cfg)
+	s.Require().NoError(err)
+	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), consumer2, s.Relayer, 1_000_000, 0, 1))
+
+	for i := 1; i < chainsuite.ValidatorCount; i++ {
+		s.Require().NoError(consumer1.Validators[i].StopContainer(s.GetContext()))
+		s.Require().NoError(consumer2.Validators[i].StopContainer(s.GetContext()))
+	}
+
+	consumer1Ch, err := s.Relayer.GetTransferChannel(s.GetContext(), s.Chain, consumer1)
+	s.Require().NoError(err)
+	consumer2Ch, err := s.Relayer.GetTransferChannel(s.GetContext(), s.Chain, consumer2)
+	s.Require().NoError(err)
+	denom1 := transfertypes.ParseDenomTrace(transfertypes.GetPrefixedDenom("transfer", consumer1Ch.ChannelID, consumer1.Config().Denom)).IBCDenom()
+	denom2 := transfertypes.ParseDenomTrace(transfertypes.GetPrefixedDenom("transfer", consumer2Ch.ChannelID, consumer2.Config().Denom)).IBCDenom()
+
+	s.Require().NotEqual(denom1, denom2, "denom1: %s, denom2: %s; channel1: %s, channel2: %s", denom1, denom2, consumer1Ch.Counterparty.ChannelID, consumer2Ch.Counterparty.ChannelID)
+
+	govAuthority, err := s.Chain.GetGovernanceAddress(s.GetContext())
+	s.Require().NoError(err)
+	rewardDenomsProp := providertypes.MsgChangeRewardDenoms{
+		DenomsToAdd: []string{denom1, denom2},
+		Authority:   govAuthority,
+	}
+	prop, err := s.Chain.BuildProposal([]cosmos.ProtoMessage{&rewardDenomsProp},
+		"add denoms to list of registered reward denoms",
+		"add denoms to list of registered reward denoms",
+		"", chainsuite.GovDepositAmount, "", false)
+	s.Require().NoError(err)
+	propResult, err := s.Chain.SubmitProposal(s.GetContext(), s.Chain.ValidatorWallets[0].Moniker, prop)
+	s.Require().NoError(err)
+	s.Require().NoError(s.Chain.PassProposal(s.GetContext(), propResult.ProposalID))
+
+	eg := errgroup.Group{}
+
+	_, err = s.Chain.Validators[0].ExecTx(s.GetContext(), s.Chain.ValidatorWallets[0].Moniker, "distribution", "withdraw-all-rewards")
+	s.Require().NoError(err)
+
+	_, err = s.Chain.GetNode().ExecTx(s.GetContext(), s.Chain.ValidatorWallets[0].Moniker, "distribution", "withdraw-rewards", s.Chain.ValidatorWallets[0].ValoperAddress, "--commission")
+	s.Require().NoError(err)
+
+	consumerID1, err := s.Chain.GetConsumerID(s.GetContext(), consumer1.Config().ChainID)
+	s.Require().NoError(err)
+	consumerID2, err := s.Chain.GetConsumerID(s.GetContext(), consumer2.Config().ChainID)
+	s.Require().NoError(err)
+
+	eg.Go(func() error {
+		_, err := s.Chain.GetNode().ExecTx(s.GetContext(), s.Chain.ValidatorWallets[0].Moniker, "provider", "set-consumer-commission-rate", consumerID1, "0.5")
+		return err
+	})
+	eg.Go(func() error {
+		_, err := s.Chain.GetNode().ExecTx(s.GetContext(), s.Chain.ValidatorWallets[0].Moniker, "provider", "set-consumer-commission-rate", consumerID2, "0.5")
+		return err
+	})
+	s.Require().NoError(eg.Wait())
+
+	_, err = s.Chain.Validators[0].ExecTx(s.GetContext(), s.Chain.ValidatorWallets[0].Moniker, "distribution", "withdraw-rewards", s.Chain.ValidatorWallets[0].ValoperAddress, "--commission")
+	s.Require().NoError(err)
+
+	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 1, consumer1, consumer2))
+
+	eg.Go(func() error {
+		_, err := consumer1.Validators[0].ExecTx(s.GetContext(), consumer1.ValidatorWallets[0].Moniker, "bank", "send", consumer1.ValidatorWallets[0].Address, consumer1.ValidatorWallets[1].Address, "1"+consumer1.Config().Denom, "--fees", "100000000"+consumer1.Config().Denom)
+		return err
+	})
+	eg.Go(func() error {
+		_, err := consumer2.Validators[0].ExecTx(s.GetContext(), consumer2.ValidatorWallets[0].Moniker, "bank", "send", consumer2.ValidatorWallets[0].Address, consumer2.ValidatorWallets[1].Address, "1"+consumer2.Config().Denom, "--fees", "100000000"+consumer2.Config().Denom)
+		return err
+	})
+	s.Require().NoError(eg.Wait())
+
+	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), chainsuite.BlocksPerDistribution+3, s.Chain, consumer1, consumer2))
+
+	rewardStr, err := s.Chain.QueryJSON(s.GetContext(), fmt.Sprintf("total.#(%%\"*%s\")", denom1), "distribution", "rewards", s.Chain.ValidatorWallets[0].Address)
+	s.Require().NoError(err)
+	rewardsDenom1, err := chainsuite.StrToSDKInt(rewardStr.String())
+	s.Require().NoError(err)
+	rewardStr, err = s.Chain.QueryJSON(s.GetContext(), fmt.Sprintf("total.#(%%\"*%s\")", denom2), "distribution", "rewards", s.Chain.ValidatorWallets[0].Address)
+	s.Require().NoError(err)
+	rewardsDenom2, err := chainsuite.StrToSDKInt(rewardStr.String())
+	s.Require().NoError(err)
+
+	s.Require().NotEmpty(rewardsDenom1)
+	s.Require().NotEmpty(rewardsDenom2)
+	s.Require().True(rewardsDenom1.Sub(rewardsDenom2).Abs().LT(sdkmath.NewInt(1000)), "rewards1Int: %s, rewards2Int: %s", rewardsDenom1.String(), rewardsDenom2.String())
+
+	_, err = s.Chain.Validators[0].ExecTx(s.GetContext(), s.Chain.ValidatorWallets[0].Moniker, "distribution", "withdraw-rewards", s.Chain.ValidatorWallets[0].ValoperAddress, "--commission")
+	s.Require().NoError(err)
+
+	eg.Go(func() error {
+		_, err := s.Chain.GetNode().ExecTx(s.GetContext(), s.Chain.ValidatorWallets[0].Moniker, "provider", "set-consumer-commission-rate", consumerID1, "0.25")
+		return err
+	})
+	eg.Go(func() error {
+		_, err := s.Chain.GetNode().ExecTx(s.GetContext(), s.Chain.ValidatorWallets[0].Moniker, "provider", "set-consumer-commission-rate", consumerID2, "0.5")
+		return err
+	})
+	s.Require().NoError(eg.Wait())
+
+	_, err = s.Chain.GetNode().ExecTx(s.GetContext(), s.Chain.ValidatorWallets[0].Moniker, "distribution", "withdraw-rewards", s.Chain.ValidatorWallets[0].ValoperAddress, "--commission")
+	s.Require().NoError(err)
+
+	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 1, consumer1, consumer2))
+
+	eg.Go(func() error {
+		_, err := consumer1.Validators[0].ExecTx(s.GetContext(), consumer1.ValidatorWallets[0].Moniker, "bank", "send", consumer1.ValidatorWallets[0].Address, consumer1.ValidatorWallets[1].Address, "1"+consumer1.Config().Denom, "--fees", "100000000"+consumer1.Config().Denom)
+		return err
+	})
+	eg.Go(func() error {
+		_, err := consumer2.Validators[0].ExecTx(s.GetContext(), consumer2.ValidatorWallets[0].Moniker, "bank", "send", consumer2.ValidatorWallets[0].Address, consumer2.ValidatorWallets[1].Address, "1"+consumer2.Config().Denom, "--fees", "100000000"+consumer2.Config().Denom)
+		return err
+	})
+	s.Require().NoError(eg.Wait())
+
+	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), chainsuite.BlocksPerDistribution+3, s.Chain, consumer1, consumer2))
+
+	rewardStr, err = s.Chain.QueryJSON(s.GetContext(), fmt.Sprintf("total.#(%%\"*%s\")", denom1), "distribution", "rewards", s.Chain.ValidatorWallets[0].Address)
+	s.Require().NoError(err)
+	rewardsDenom1, err = chainsuite.StrToSDKInt(rewardStr.String())
+	s.Require().NoError(err)
+	rewardStr, err = s.Chain.QueryJSON(s.GetContext(), fmt.Sprintf("total.#(%%\"*%s\")", denom2), "distribution", "rewards", s.Chain.ValidatorWallets[0].Address)
+	s.Require().NoError(err)
+	rewardsDenom2, err = chainsuite.StrToSDKInt(rewardStr.String())
+	s.Require().NoError(err)
+
+	s.Require().True(rewardsDenom1.GT(rewardsDenom2), "rewards1Int: %s, rewards2Int: %s", rewardsDenom1.String(), rewardsDenom2.String())
+	s.Require().False(rewardsDenom1.Sub(rewardsDenom2).Abs().LT(sdkmath.NewInt(1000)), "rewards1Int: %s, rewards2Int: %s", rewardsDenom1.String(), rewardsDenom2.String())
+}
+
+func (s *PermissionlessConsumersSuite) TestLaunchWithAllowListThenModify() {
+	s.UpgradeChain()
+
+	consumerConfig := s.consumerCfg
+	consumerConfig.Allowlist = []string{
+		s.Chain.ValidatorWallets[0].ValConsAddress,
+		s.Chain.ValidatorWallets[1].ValConsAddress,
+		s.Chain.ValidatorWallets[2].ValConsAddress,
+	}
+	consumerConfig.TopN = 0
+	consumerConfig.BeforeSpawnTime = func(ctx context.Context, consumer *cosmos.CosmosChain) {
+		consumerID, err := s.Chain.GetConsumerID(s.GetContext(), consumer.Config().ChainID)
+		s.Require().NoError(err)
+		eg := errgroup.Group{}
+		for i := 0; i < 3; i++ {
+			i := i
+			eg.Go(func() error {
+				_, err := s.Chain.Validators[i].ExecTx(s.GetContext(), s.Chain.ValidatorWallets[i].Moniker, "provider", "opt-in", consumerID)
+				return err
+			})
+		}
+		s.Require().NoError(eg.Wait())
+	}
+
+	consumer, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, consumerConfig)
+	s.Require().NoError(err)
+
+	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), consumer, s.Relayer, 1_000_000, 0, 1))
+
+	consumerID, err := s.Chain.GetConsumerID(s.GetContext(), consumer.Config().ChainID)
+	s.Require().NoError(err)
+
+	// ensure we can't opt in a non-allowlisted validator
+	_, err = s.Chain.Validators[3].ExecTx(s.GetContext(), s.Chain.ValidatorWallets[3].Moniker,
+		"provider", "opt-in", consumerID)
+	s.Require().NoError(err)
+
+	validators, err := consumer.QueryJSON(s.GetContext(), "validators", "tendermint-validator-set")
+	s.Require().NoError(err)
+	s.Require().Equal(3, len(validators.Array()))
+
+	update := &providertypes.MsgUpdateConsumer{
+		ConsumerId: consumerID,
+		PowerShapingParameters: &providertypes.PowerShapingParameters{
+			Allowlist: []string{},
+		},
+	}
+	updateBz, err := json.Marshal(update)
+	s.Require().NoError(err)
+	err = s.Chain.GetNode().WriteFile(s.GetContext(), updateBz, "consumer-update.json")
+	s.Require().NoError(err)
+	_, err = s.Chain.GetNode().ExecTx(s.GetContext(), interchaintest.FaucetAccountKeyName,
+		"provider", "update-consumer", path.Join(s.Chain.GetNode().HomeDir(), "consumer-update.json"))
+	s.Require().NoError(err)
+
+	// // ensure we can opt in a non-allowlisted validator after the modification
+	_, err = s.Chain.Validators[3].ExecTx(s.GetContext(), s.Chain.ValidatorWallets[3].Moniker,
+		"provider", "opt-in", consumerID)
+	s.Require().NoError(err)
+	validators, err = consumer.QueryJSON(s.GetContext(), "validators", "tendermint-validator-set")
+	s.Require().NoError(err)
+	s.Require().Equal(4, len(validators.Array()))
+}
+
+func TestPermissionlessConsumers(t *testing.T) {
 	genesis := chainsuite.DefaultGenesis()
 	genesis = append(genesis,
 		cosmos.NewGenesisKV("app_state.gov.params.max_deposit_period", permissionlessDepositPeriod.String()),
 	)
-	s := &ConsumerPropMigrationSuite{
+	s := &PermissionlessConsumersSuite{
 		Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
 			CreateRelayer: true,
 			Scope:         chainsuite.ChainScopeTest,
@@ -367,7 +598,7 @@ func TestConsumerPropMigration(t *testing.T) {
 	suite.Run(t, s)
 }
 
-func (s *ConsumerPropMigrationSuite) submitChangeRewardDenoms(consumer *chainsuite.Chain) (string, string) {
+func (s *PermissionlessConsumersSuite) submitChangeRewardDenoms(consumer *chainsuite.Chain) (string, string) {
 	consumerCh, err := s.Relayer.GetTransferChannel(s.GetContext(), s.Chain, consumer)
 	s.Require().NoError(err)
 	denom := transfertypes.ParseDenomTrace(transfertypes.GetPrefixedDenom("transfer", consumerCh.ChannelID, consumer.Config().Denom)).IBCDenom()
@@ -402,7 +633,7 @@ func (s *ConsumerPropMigrationSuite) submitChangeRewardDenoms(consumer *chainsui
 	return denom, propID
 }
 
-func (s *ConsumerPropMigrationSuite) submitConsumerModification(consumer *chainsuite.Chain) string {
+func (s *PermissionlessConsumersSuite) submitConsumerModification(consumer *chainsuite.Chain) string {
 	modifyProp := &ccvclient.ConsumerModificationProposalJSON{
 		Title:   "modify consumer",
 		Summary: "modify consumer",
@@ -436,7 +667,7 @@ func (s *ConsumerPropMigrationSuite) submitConsumerModification(consumer *chains
 	return propID
 }
 
-func (s *ConsumerPropMigrationSuite) submitConsumerRemoval(consumer *chainsuite.Chain, stopTime time.Time) string {
+func (s *PermissionlessConsumersSuite) submitConsumerRemoval(consumer *chainsuite.Chain, stopTime time.Time) string {
 	removalProp := &ccvclient.ConsumerRemovalProposalJSON{
 		Title:    "remove consumer",
 		Summary:  "remove consumer",

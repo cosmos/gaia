@@ -38,6 +38,8 @@ type ConsumerConfig struct {
 	ValidatorPowerCap     int
 	AllowInactiveVals     bool
 	MinStake              uint64
+	Allowlist             []string
+	Denylist              []string
 	spec                  *interchaintest.ChainSpec
 
 	DuringDepositPeriod ConsumerBootstrapCb
@@ -227,6 +229,8 @@ func (p *Chain) CreateConsumerPermissionless(ctx context.Context, chainID string
 		ValidatorsPowerCap: uint32(config.ValidatorPowerCap),
 		AllowInactiveVals:  config.AllowInactiveVals,
 		MinStake:           config.MinStake,
+		Allowlist:          config.Allowlist,
+		Denylist:           config.Denylist,
 	}
 	params := providertypes.MsgCreateConsumer{
 		ChainId: chainID,
@@ -344,6 +348,9 @@ func (p *Chain) DefaultConsumerChainSpec(ctx context.Context, chainID string, co
 	}
 	genesisOverrides := []cosmos.GenesisKV{
 		cosmos.NewGenesisKV("app_state.slashing.params.signed_blocks_window", strconv.Itoa(SlashingWindowConsumer)),
+		cosmos.NewGenesisKV("app_state.ccvconsumer.params.reward_denoms", []string{denom}),
+		cosmos.NewGenesisKV("app_state.ccvconsumer.params.provider_reward_denoms", []string{p.Config().Denom}),
+		cosmos.NewGenesisKV("app_state.ccvconsumer.params.blocks_per_distribution_transmission", BlocksPerDistribution),
 	}
 	if config.TopN >= 0 {
 		genesisOverrides = append(genesisOverrides, cosmos.NewGenesisKV("app_state.ccvconsumer.params.soft_opt_out_threshold", "0.0"))

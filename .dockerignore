@@ -2,3 +2,5 @@ node_modules
 build
 .github
 .vscode
+docs
+.changelog

@@ -2,15 +2,16 @@ package v21
 
 import (
 	"context"
+	"fmt"
+
 	errorsmod "cosmossdk.io/errors"
 	"cosmossdk.io/math"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
-	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	"github.com/cosmos/gaia/v20/app/keepers"
+	"github.com/cosmos/gaia/v21/app/keepers"
 	providerkeeper "github.com/cosmos/interchain-security/v6/x/ccv/provider/keeper"
 	types2 "github.com/cosmos/interchain-security/v6/x/ccv/provider/types"
 )

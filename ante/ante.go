@@ -22,7 +22,7 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	gaiaerrors "github.com/cosmos/gaia/v20/types/errors"
+	gaiaerrors "github.com/cosmos/gaia/v21/types/errors"
 )
 
 // UseFeeMarketDecorator to make the integration testing easier: we can switch off its ante and post decorators with this flag

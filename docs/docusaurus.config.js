@@ -53,17 +53,11 @@ const config = {
         docs: {
           routeBasePath: "/",
           sidebarPath: require.resolve("./sidebars.js"),
-          lastVersion: "v19.2.0",
           versions: {
             current: {
               path: "main",
               label: "Unreleased (main)",
               banner: "unreleased",
-            },
-            "v19.2.0": {
-              path: "v19.2.0",
-              label: "On chain (v19.2.0)",
-              banner: "none",
             },
           },
         },

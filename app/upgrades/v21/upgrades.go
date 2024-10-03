@@ -8,6 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
+	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	"github.com/cosmos/gaia/v21/app/keepers"
 )
 
@@ -28,4 +29,11 @@ func CreateUpgradeHandler(
 		ctx.Logger().Info("Upgrade v21 complete")
 		return vm, nil
 	}
+}
+
+// setting the default constitution for the chain
+// this is in line with cosmos-sdk v5 gov migration: https://github.com/cosmos/cosmos-sdk/blob/v0.50.10/x/gov/migrations/v5/store.go#L57
+func InitializeConstitutionCollection(ctx sdk.Context, govKeeper govkeeper.Keeper) error {
+	govKeeper.Constitution.Set(ctx, "This chain has no constitution.")
+	return nil
 }

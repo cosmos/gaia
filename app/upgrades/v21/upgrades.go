@@ -3,6 +3,7 @@ package v21
 import (
 	"context"
 	"fmt"
+	providertypes "github.com/cosmos/interchain-security/v6/x/ccv/provider/types"
 
 	errorsmod "cosmossdk.io/errors"
 	"cosmossdk.io/math"
@@ -13,7 +14,6 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"github.com/cosmos/gaia/v21/app/keepers"
 	providerkeeper "github.com/cosmos/interchain-security/v6/x/ccv/provider/keeper"
-	providertypes "github.com/cosmos/interchain-security/v6/x/ccv/provider/types"
 )
 
 // Neutron and Stride denoms that were not whitelisted but the consumer rewards pool contains amounts of those denoms.
@@ -32,8 +32,6 @@ const (
 )
 
 // CreateUpgradeHandler returns an upgrade handler for Gaia v21.
-// It performs module migrations, as well as the following tasks:
-// - Initializes the MaxProviderConsensusValidators parameter in the provider module to 180.
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
@@ -48,10 +46,10 @@ func CreateUpgradeHandler(
 			return vm, errorsmod.Wrapf(err, "running module migrations")
 		}
 
-		ctx.Logger().Info("distributing rewards of Neutron and Stride unaccounted denoms")
-		err = DistributeNeutronAndStrideUnaccountedDenoms(ctx, keepers.ProviderKeeper, keepers.BankKeeper, keepers.AccountKeeper)
+		ctx.Logger().Info("allocating rewards of Neutron and Stride unaccounted denoms")
+		err = AllocateNeutronAndStrideUnaccountedDenoms(ctx, keepers.ProviderKeeper, keepers.BankKeeper, keepers.AccountKeeper)
 		if err != nil {
-			return vm, errorsmod.Wrapf(err, "could not distribute rewards of Neutron and Stride unaccounted denoms")
+			return vm, errorsmod.Wrapf(err, "could not allocate rewards of Neutron and Stride unaccounted denoms")
 		}
 
 		ctx.Logger().Info("Upgrade v21 complete")
@@ -59,35 +57,22 @@ func CreateUpgradeHandler(
 	}
 }
 
-// DistributeDenoms distributes all the `denoms` that reside in the  `address` and are meant for the chain with `consumerId`
-func DistributeDenoms(ctx sdk.Context, providerKeeper providerkeeper.Keeper, bankKeeper bankkeeper.Keeper, address sdk.AccAddress, consumerId string, denoms []string) error {
+// AllocateRewards allocates all the `denoms` that reside in the  `address` and are meant for the chain with `consumerId`
+func AllocateRewards(ctx sdk.Context, providerKeeper providerkeeper.Keeper, bankKeeper bankkeeper.Keeper, address sdk.AccAddress, consumerId string, denoms []string) error {
 	for _, denom := range denoms {
 		coinRewards := bankKeeper.GetBalance(ctx, address, denom)
 		decCoinRewards := sdk.DecCoins{sdk.DecCoin{Denom: coinRewards.Denom, Amount: math.LegacyNewDecFromInt(coinRewards.Amount)}}
-		consumerRewardsAllocation := types2.ConsumerRewardsAllocation{Rewards: decCoinRewards}
-
-		isDenomAllowlisted := providerKeeper.ConsumerRewardDenomExists(ctx, denom)
-
-		// allowlist the denom that distribution can take place
-		providerKeeper.SetConsumerRewardDenom(ctx, denom)
+		consumerRewardsAllocation := providertypes.ConsumerRewardsAllocation{Rewards: decCoinRewards}
 
 		err := providerKeeper.SetConsumerRewardsAllocationByDenom(ctx, consumerId, denom, consumerRewardsAllocation)
 		if err != nil {
 			return err
 		}
-
-		// call `BeginBlockRD` to actually perform the distribution
-		providerKeeper.BeginBlockRD(ctx)
-
-		// if you were not allowlisted before, revert to initial state
-		if !isDenomAllowlisted {
-			providerKeeper.DeleteConsumerRewardDenom(ctx, denom)
-		}
 	}
 	return nil
 }
 
-// HasExpectedChainIdSanityCheck return true if the chain with the provided `consumerId` is of a chain with the `expectedChainId`
+// HasExpectedChainIdSanityCheck returns true if the chain with the provided `consumerId` is of a chain with the `expectedChainId`
 func HasExpectedChainIdSanityCheck(ctx sdk.Context, providerKeeper providerkeeper.Keeper, consumerId string, expectedChainId string) bool {
 	actualChainId, err := providerKeeper.GetConsumerChainId(ctx, consumerId)
 	if err != nil {
@@ -99,9 +84,9 @@ func HasExpectedChainIdSanityCheck(ctx sdk.Context, providerKeeper providerkeepe
 	return true
 }
 
-// DistributeNeutronAndStrideUnaccountedDenoms distributed previously unaccounted denoms to the Stride and Neutron consumer chains
-func DistributeNeutronAndStrideUnaccountedDenoms(ctx sdk.Context, providerKeeper providerkeeper.Keeper, bankKeeper bankkeeper.Keeper, accountKeeper authkeeper.AccountKeeper) error {
-	consumerRewardsPoolAddress := accountKeeper.GetModuleAccount(ctx, types2.ConsumerRewardsPool).GetAddress()
+// AllocateNeutronAndStrideUnaccountedDenoms allocates previously unaccounted denoms to the Stride and Neutron consumer chains
+func AllocateNeutronAndStrideUnaccountedDenoms(ctx sdk.Context, providerKeeper providerkeeper.Keeper, bankKeeper bankkeeper.Keeper, accountKeeper authkeeper.AccountKeeper) error {
+	consumerRewardsPoolAddress := accountKeeper.GetModuleAccount(ctx, providertypes.ConsumerRewardsPool).GetAddress()
 
 	const NeutronConsumerId = "0"
 	const NeutronChainId = "neutron-1"
@@ -111,9 +96,9 @@ func DistributeNeutronAndStrideUnaccountedDenoms(ctx sdk.Context, providerKeeper
 	}
 
 	neutronUnaccountedDenoms := []string{NeutronUusdc, NeutronUtia}
-	err := DistributeDenoms(ctx, providerKeeper, bankKeeper, consumerRewardsPoolAddress, NeutronConsumerId, neutronUnaccountedDenoms)
+	err := AllocateRewards(ctx, providerKeeper, bankKeeper, consumerRewardsPoolAddress, NeutronConsumerId, neutronUnaccountedDenoms)
 	if err != nil {
-		return fmt.Errorf("cannot distribute rewards for consumer id (%s): %w", NeutronConsumerId, err)
+		return fmt.Errorf("cannot allocate rewards for consumer id (%s): %w", NeutronConsumerId, err)
 	}
 
 	const StrideConsumerId = "1"
@@ -124,9 +109,9 @@ func DistributeNeutronAndStrideUnaccountedDenoms(ctx sdk.Context, providerKeeper
 	}
 
 	strideUnaccountedDenoms := []string{StrideStutia, StrideStadym, StrideStaISLM, StrideStuband, StrideStadydx, StrideStusaga}
-	err = DistributeDenoms(ctx, providerKeeper, bankKeeper, consumerRewardsPoolAddress, StrideConsumerId, strideUnaccountedDenoms)
+	err = AllocateRewards(ctx, providerKeeper, bankKeeper, consumerRewardsPoolAddress, StrideConsumerId, strideUnaccountedDenoms)
 	if err != nil {
-		return fmt.Errorf("cannot distribute rewards for consumer id (%s): %w", StrideConsumerId, err)
+		return fmt.Errorf("cannot allocate rewards for consumer id (%s): %w", StrideConsumerId, err)
 	}
 
 	return nil

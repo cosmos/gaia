@@ -80,7 +80,6 @@ func (s *CosmWasmSuite) TestCantInstantiateWithoutProp() {
 }
 
 func (s *CosmWasmSuite) TestCreateNewContract() {
-
 	_, contractAddr := s.storeInstantiateProposal(initState)
 
 	count := s.getContractCount(contractAddr)

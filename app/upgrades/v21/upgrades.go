@@ -3,6 +3,7 @@ package v21
 import (
 	"context"
 	"fmt"
+
 	providertypes "github.com/cosmos/interchain-security/v6/x/ccv/provider/types"
 
 	errorsmod "cosmossdk.io/errors"

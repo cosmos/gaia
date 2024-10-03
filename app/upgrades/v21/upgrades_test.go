@@ -3,11 +3,12 @@ package v21_test
 import (
 	"testing"
 
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
-	"github.com/cosmos/gaia/v21/app/helpers"
-
-	v21 "github.com/cosmos/gaia/v21/app/upgrades/v21"
 	"github.com/stretchr/testify/require"
+
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+
+	"github.com/cosmos/gaia/v21/app/helpers"
+	v21 "github.com/cosmos/gaia/v21/app/upgrades/v21"
 )
 
 func TestHasExpectedChainIdSanityCheck(t *testing.T) {

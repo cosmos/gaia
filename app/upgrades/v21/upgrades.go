@@ -4,17 +4,19 @@ import (
 	"context"
 	"fmt"
 
+	providerkeeper "github.com/cosmos/interchain-security/v6/x/ccv/provider/keeper"
 	providertypes "github.com/cosmos/interchain-security/v6/x/ccv/provider/types"
 
 	errorsmod "cosmossdk.io/errors"
 	"cosmossdk.io/math"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+
 	"github.com/cosmos/gaia/v21/app/keepers"
-	providerkeeper "github.com/cosmos/interchain-security/v6/x/ccv/provider/keeper"
 )
 
 // Neutron and Stride denoms that were not whitelisted but the consumer rewards pool contains amounts of those denoms.

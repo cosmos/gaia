@@ -266,6 +266,10 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 
 	app.SlashingKeeper.SetValidatorSigningInfo(appCtx, newConsAddr, newValidatorSigningInfo)
 
+	// PROVIDER
+	app.ProviderKeeper.DeleteLastProviderConsensusValSet(appCtx)
+
+        // GOVERNANCE
 	shortVotingPeriod := time.Second * 20
 	expeditedVotingPeriod := time.Second * 10
 	params, err := app.GovKeeper.Params.Get(appCtx)

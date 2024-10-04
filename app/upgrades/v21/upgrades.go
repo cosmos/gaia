@@ -53,7 +53,9 @@ func CreateUpgradeHandler(
 		ctx.Logger().Info("allocating rewards of Neutron and Stride unaccounted denoms")
 		err = AllocateNeutronAndStrideUnaccountedDenoms(ctx, keepers.ProviderKeeper, keepers.BankKeeper, keepers.AccountKeeper)
 		if err != nil {
-			return vm, errorsmod.Wrapf(err, "could not allocate rewards of Neutron and Stride unaccounted denoms")
+			// migration can only work on cosmoshub-4
+			// all testchains except for mainnet export fork will fail this
+			ctx.Logger().Error("Error allocating rewards of Neutron and Stride unaccounted denoms:", "message", err.Error())
 		}
 
 		err = InitializeConstitutionCollection(ctx, *keepers.GovKeeper)

@@ -360,8 +360,8 @@ func (s *PermissionlessConsumersSuite) TestChangePowerShaping() {
 		s.Require().NoError(err)
 		s.Require().Equal(consumer.ValidatorWallets[i].ValConsAddress, valCons)
 	}
-
 }
+
 func (s *PermissionlessConsumersSuite) TestConsumerCommissionRate() {
 	s.UpgradeChain()
 	cfg := s.consumerCfg

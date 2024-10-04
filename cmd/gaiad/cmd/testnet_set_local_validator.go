@@ -19,9 +19,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/server"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	gaia "github.com/cosmos/gaia/v21/app"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
+
+	gaia "github.com/cosmos/gaia/v21/app"
 
 	"cosmossdk.io/log"
 	"github.com/cometbft/cometbft/crypto"
@@ -269,7 +270,7 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 	// PROVIDER
 	app.ProviderKeeper.DeleteLastProviderConsensusValSet(appCtx)
 
-        // GOVERNANCE
+	// GOVERNANCE
 	shortVotingPeriod := time.Second * 20
 	expeditedVotingPeriod := time.Second * 10
 	params, err := app.GovKeeper.Params.Get(appCtx)

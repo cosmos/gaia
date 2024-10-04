@@ -60,14 +60,14 @@ func CreateUpgradeHandler(
 	}
 }
 
-// AllocateRewards allocates all the `denoms` that reside in the  `address` and are meant for the chain with `consumerId`
-func AllocateRewards(ctx sdk.Context, providerKeeper providerkeeper.Keeper, bankKeeper bankkeeper.Keeper, address sdk.AccAddress, consumerId string, denoms []string) error {
+// AllocateRewards allocates all the `denoms` that reside in the  `address` and are meant for the chain with `consumerID`
+func AllocateRewards(ctx sdk.Context, providerKeeper providerkeeper.Keeper, bankKeeper bankkeeper.Keeper, address sdk.AccAddress, consumerID string, denoms []string) error {
 	for _, denom := range denoms {
 		coinRewards := bankKeeper.GetBalance(ctx, address, denom)
 		decCoinRewards := sdk.DecCoins{sdk.DecCoin{Denom: coinRewards.Denom, Amount: math.LegacyNewDecFromInt(coinRewards.Amount)}}
 		consumerRewardsAllocation := providertypes.ConsumerRewardsAllocation{Rewards: decCoinRewards}
 
-		err := providerKeeper.SetConsumerRewardsAllocationByDenom(ctx, consumerId, denom, consumerRewardsAllocation)
+		err := providerKeeper.SetConsumerRewardsAllocationByDenom(ctx, consumerID, denom, consumerRewardsAllocation)
 		if err != nil {
 			return err
 		}
@@ -75,13 +75,13 @@ func AllocateRewards(ctx sdk.Context, providerKeeper providerkeeper.Keeper, bank
 	return nil
 }
 
-// HasExpectedChainIdSanityCheck returns true if the chain with the provided `consumerId` is of a chain with the `expectedChainId`
-func HasExpectedChainIdSanityCheck(ctx sdk.Context, providerKeeper providerkeeper.Keeper, consumerId string, expectedChainId string) bool {
-	actualChainId, err := providerKeeper.GetConsumerChainId(ctx, consumerId)
+// HasexpectedChainIDSanityCheck returns true if the chain with the provided `consumerID` is of a chain with the `expectedChainID`
+func HasExpectedChainIDSanityCheck(ctx sdk.Context, providerKeeper providerkeeper.Keeper, consumerID string, expectedChainID string) bool {
+	actualChainID, err := providerKeeper.GetConsumerChainId(ctx, consumerID)
 	if err != nil {
 		return false
 	}
-	if expectedChainId != actualChainId {
+	if expectedChainID != actualChainID {
 		return false
 	}
 	return true
@@ -91,30 +91,30 @@ func HasExpectedChainIdSanityCheck(ctx sdk.Context, providerKeeper providerkeepe
 func AllocateNeutronAndStrideUnaccountedDenoms(ctx sdk.Context, providerKeeper providerkeeper.Keeper, bankKeeper bankkeeper.Keeper, accountKeeper authkeeper.AccountKeeper) error {
 	consumerRewardsPoolAddress := accountKeeper.GetModuleAccount(ctx, providertypes.ConsumerRewardsPool).GetAddress()
 
-	const NeutronConsumerId = "0"
-	const NeutronChainId = "neutron-1"
+	const NeutronconsumerID = "0"
+	const NeutronChainID = "neutron-1"
 
-	if !HasExpectedChainIdSanityCheck(ctx, providerKeeper, NeutronConsumerId, NeutronChainId) {
-		return fmt.Errorf("failed sanity check: consumer id (%s) does not correspond to chain id (%s)", NeutronConsumerId, NeutronChainId)
+	if !HasExpectedChainIDSanityCheck(ctx, providerKeeper, NeutronconsumerID, NeutronChainID) {
+		return fmt.Errorf("failed sanity check: consumer id (%s) does not correspond to chain id (%s)", NeutronconsumerID, NeutronChainID)
 	}
 
 	neutronUnaccountedDenoms := []string{NeutronUusdc, NeutronUtia}
-	err := AllocateRewards(ctx, providerKeeper, bankKeeper, consumerRewardsPoolAddress, NeutronConsumerId, neutronUnaccountedDenoms)
+	err := AllocateRewards(ctx, providerKeeper, bankKeeper, consumerRewardsPoolAddress, NeutronconsumerID, neutronUnaccountedDenoms)
 	if err != nil {
-		return fmt.Errorf("cannot allocate rewards for consumer id (%s): %w", NeutronConsumerId, err)
+		return fmt.Errorf("cannot allocate rewards for consumer id (%s): %w", NeutronconsumerID, err)
 	}
 
-	const StrideConsumerId = "1"
-	const StrideChainId = "stride-1"
+	const StrideconsumerID = "1"
+	const StrideChainID = "stride-1"
 
-	if !HasExpectedChainIdSanityCheck(ctx, providerKeeper, StrideConsumerId, StrideChainId) {
-		return fmt.Errorf("failed sanity check: consumer id (%s) does not correspond to chain id (%s)", StrideConsumerId, StrideChainId)
+	if !HasExpectedChainIDSanityCheck(ctx, providerKeeper, StrideconsumerID, StrideChainID) {
+		return fmt.Errorf("failed sanity check: consumer id (%s) does not correspond to chain id (%s)", StrideconsumerID, StrideChainID)
 	}
 
 	strideUnaccountedDenoms := []string{StrideStutia, StrideStadym, StrideStaISLM, StrideStuband, StrideStadydx, StrideStusaga}
-	err = AllocateRewards(ctx, providerKeeper, bankKeeper, consumerRewardsPoolAddress, StrideConsumerId, strideUnaccountedDenoms)
+	err = AllocateRewards(ctx, providerKeeper, bankKeeper, consumerRewardsPoolAddress, StrideconsumerID, strideUnaccountedDenoms)
 	if err != nil {
-		return fmt.Errorf("cannot allocate rewards for consumer id (%s): %w", StrideConsumerId, err)
+		return fmt.Errorf("cannot allocate rewards for consumer id (%s): %w", StrideconsumerID, err)
 	}
 
 	return nil

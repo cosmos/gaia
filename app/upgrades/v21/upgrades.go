@@ -15,6 +15,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 
 	"github.com/cosmos/gaia/v21/app/keepers"
 )
@@ -53,6 +54,11 @@ func CreateUpgradeHandler(
 		err = AllocateNeutronAndStrideUnaccountedDenoms(ctx, keepers.ProviderKeeper, keepers.BankKeeper, keepers.AccountKeeper)
 		if err != nil {
 			return vm, errorsmod.Wrapf(err, "could not allocate rewards of Neutron and Stride unaccounted denoms")
+		}
+
+		err = InitializeConstitutionCollection(ctx, *keepers.GovKeeper)
+		if err != nil {
+			ctx.Logger().Error("Error initializing Constitution Collection:", "message", err.Error())
 		}
 
 		ctx.Logger().Info("Upgrade v21 complete")
@@ -118,4 +124,10 @@ func AllocateNeutronAndStrideUnaccountedDenoms(ctx sdk.Context, providerKeeper p
 	}
 
 	return nil
+}
+
+// setting the default constitution for the chain
+// this is in line with cosmos-sdk v5 gov migration: https://github.com/cosmos/cosmos-sdk/blob/v0.50.10/x/gov/migrations/v5/store.go#L57
+func InitializeConstitutionCollection(ctx sdk.Context, govKeeper govkeeper.Keeper) error {
+	return govKeeper.Constitution.Set(ctx, "This chain has no constitution.")
 }

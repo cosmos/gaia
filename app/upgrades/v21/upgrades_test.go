@@ -28,3 +28,19 @@ func TestHasExpectedChainIDSanityCheck(t *testing.T) {
 	pk.SetConsumerChainId(ctx, consumerID, "chain-1")
 	require.True(t, v21.HasExpectedChainIDSanityCheck(ctx, pk, consumerID, "chain-1"))
 }
+
+func TestInitializeConstitutionCollection(t *testing.T) {
+	gaiaApp := helpers.Setup(t)
+	ctx := gaiaApp.NewUncachedContext(true, tmproto.Header{})
+
+	govKeeper := gaiaApp.GovKeeper
+
+	pre, err := govKeeper.Constitution.Get(ctx)
+	require.NoError(t, err)
+	require.Equal(t, "", pre)
+	err = v21.InitializeConstitutionCollection(ctx, *govKeeper)
+	require.NoError(t, err)
+	post, err := govKeeper.Constitution.Get(ctx)
+	require.NoError(t, err)
+	require.Equal(t, "This chain has no constitution.", post)
+}

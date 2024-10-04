@@ -11,19 +11,18 @@ The command is added as a sub-command of the `gaiad testnet` command.
 The gaia binary will contain the testnet extensions only if the `unsafe_start_local_validator` build tags is used.
 
 ```shell
-make build BUILD_TAGS="-tag unsafe_start_local_validator"
+make build BUILD_TAGS="unsafe_start_local_validator"
 ```
 
 ## CLI usage
 Example of running the command:
 
 ```shell
-./gaiad testnet unsafe-start-local-validator  
---validator-operator="cosmosvaloper17fjdcqy7g80pn0seexcch5pg0dtvs45p57t97r"  
---validator-pubkey="SLpHEfzQHuuNO9J1BB/hXyiH6c1NmpoIVQ2pMWmyctE=" 
---validator-privkey="AiayvI2px5CZVl/uOGmacfFjcIBoyk3Oa2JPBO6zEcdIukcR/NAe64070nUEH+FfKIfpzU2amghVDakxabJy0Q=="  
+./gaiad testnet unsafe-start-local-validator \
+--validator-operator="cosmosvaloper17fjdcqy7g80pn0seexcch5pg0dtvs45p57t97r" \
+--validator-pubkey="SLpHEfzQHuuNO9J1BB/hXyiH6c1NmpoIVQ2pMWmyctE=" \
+--validator-privkey="AiayvI2px5CZVl/uOGmacfFjcIBoyk3Oa2JPBO6zEcdIukcR/NAe64070nUEH+FfKIfpzU2amghVDakxabJy0Q==" \
 --accounts-to-fund="cosmos1ju6tlfclulxumtt2kglvnxduj5d93a64r5czge,cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl"  
-[other gaiad start flags]
 ```
 
 ## Local setup
@@ -45,7 +44,7 @@ gaiad keys parse $(gaiad keys parse $VAL_ACC_ADDR --output=json | jq .bytes -r) 
 }
 
 # --validator-pubkey and --validator-privkey are in`$HOME/.gaia/config/priv_validator.json
-cat $HOME/.gaia/config/priv_validator.json
+cat $HOME/.gaia/config/priv_validator_key.json
 {
   "address": "067CC9545EC0CD744C44D611E3E8857D69E9CAD4",
   "pub_key": {
@@ -59,6 +58,8 @@ cat $HOME/.gaia/config/priv_validator.json
 }
 ```
 
+You will also need to change your chain-id in `genesis.json` to match the chain-id of the network you are using in testing (e.g. `cosmoshub-4`).
+This is because `gaiad init` creates a `genesis.json` with a testing chain id.
 
 ## Example usecase
 

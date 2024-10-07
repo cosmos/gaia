@@ -1,1 +1,0 @@
-- Increase x/gov metadata fields legth to 10200 ([\#3025](https://github.com/cosmos/gaia/pull/3025))

@@ -237,10 +237,10 @@ func (c *Chain) GetValidatorHex(ctx context.Context, val int) (string, error) {
 }
 
 func getValidatorWallets(ctx context.Context, chain *Chain) ([]ValidatorWallet, error) {
-	wallets := make([]ValidatorWallet, ValidatorCount)
+	wallets := make([]ValidatorWallet, len(chain.Validators))
 	lock := new(sync.Mutex)
 	eg := new(errgroup.Group)
-	for i := 0; i < ValidatorCount; i++ {
+	for i := range chain.Validators {
 		i := i
 		eg.Go(func() error {
 			// This moniker is hardcoded into the chain's genesis process.

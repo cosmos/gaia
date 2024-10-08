@@ -15,7 +15,6 @@ import (
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
 	"go.uber.org/multierr"
-	"golang.org/x/mod/semver"
 
 	clienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
 	ccvclient "github.com/cosmos/interchain-security/v5/x/ccv/provider/client"
@@ -29,18 +28,20 @@ import (
 type ConsumerBootstrapCb func(ctx context.Context, consumer *cosmos.CosmosChain)
 
 type ConsumerConfig struct {
-	ChainName             string
-	Version               string
-	Denom                 string
-	ShouldCopyProviderKey [ValidatorCount]bool
-	TopN                  int
-	ValidatorSetCap       int
-	ValidatorPowerCap     int
-	AllowInactiveVals     bool
-	MinStake              uint64
-	Allowlist             []string
-	Denylist              []string
-	spec                  *interchaintest.ChainSpec
+	ChainName                       string
+	Version                         string
+	Denom                           string
+	ShouldCopyProviderKey           [ValidatorCount]bool
+	TopN                            int
+	ValidatorSetCap                 int
+	ValidatorPowerCap               int
+	AllowInactiveVals               bool
+	MinStake                        uint64
+	Allowlist                       []string
+	Denylist                        []string
+	InitialHeight                   uint64
+	DistributionTransmissionChannel string
+	Spec                            *interchaintest.ChainSpec
 
 	DuringDepositPeriod ConsumerBootstrapCb
 	DuringVotingPeriod  ConsumerBootstrapCb
@@ -124,15 +125,16 @@ func (p *Chain) AddConsumerChain(ctx context.Context, relayer *Relayer, config C
 		}
 	}
 
-	if config.spec == nil {
-		config.spec = p.DefaultConsumerChainSpec(ctx, chainID, config, spawnTime, proposalWaiter)
-	}
-	if semver.Compare(p.GetNode().ICSVersion(ctx), "v4.1.0") > 0 && config.spec.InterchainSecurityConfig.ProviderVerOverride == "" {
-		config.spec.InterchainSecurityConfig.ProviderVerOverride = "v4.1.0"
+	defaultSpec := p.DefaultConsumerChainSpec(ctx, chainID, config, spawnTime, proposalWaiter)
+	config.Spec = MergeChainSpecs(defaultSpec, config.Spec)
+	providerICS := p.GetNode().ICSVersion(ctx)
+	if config.Spec.InterchainSecurityConfig.ConsumerVerOverride == "" {
+		// This will disable the genesis transform
+		config.Spec.InterchainSecurityConfig.ConsumerVerOverride = providerICS
 	}
 	cf := interchaintest.NewBuiltinChainFactory(
 		GetLogger(ctx),
-		[]*interchaintest.ChainSpec{config.spec},
+		[]*interchaintest.ChainSpec{config.Spec},
 	)
 	chains, err := cf.Chains(p.GetNode().TestName)
 	if err != nil {
@@ -203,7 +205,7 @@ func (p *Chain) AddConsumerChain(ctx context.Context, relayer *Relayer, config C
 	if err := relayer.StartRelayer(ctx, rep); err != nil {
 		return nil, err
 	}
-	err = connectProviderConsumer(ctx, p, consumer, relayer)
+	err = relayer.ConnectProviderConsumer(ctx, p, consumer)
 	if err != nil {
 		return nil, err
 	}
@@ -212,10 +214,14 @@ func (p *Chain) AddConsumerChain(ctx context.Context, relayer *Relayer, config C
 }
 
 func (p *Chain) CreateConsumerPermissionless(ctx context.Context, chainID string, config ConsumerConfig, spawnTime time.Time) error {
+	revisionHeight := config.InitialHeight
+	if revisionHeight == 0 {
+		revisionHeight = 1
+	}
 	initParams := &providertypes.ConsumerInitializationParameters{
-		InitialHeight:                     clienttypes.Height{RevisionNumber: clienttypes.ParseChainID(chainID), RevisionHeight: 1},
+		InitialHeight:                     clienttypes.Height{RevisionNumber: clienttypes.ParseChainID(chainID), RevisionHeight: revisionHeight},
 		SpawnTime:                         spawnTime,
-		BlocksPerDistributionTransmission: 1000,
+		BlocksPerDistributionTransmission: BlocksPerDistribution,
 		CcvTimeoutPeriod:                  2419200000000000,
 		TransferTimeoutPeriod:             3600000000000,
 		ConsumerRedistributionFraction:    "0.75",
@@ -223,6 +229,7 @@ func (p *Chain) CreateConsumerPermissionless(ctx context.Context, chainID string
 		UnbondingPeriod:                   1728000000000000,
 		GenesisHash:                       []byte("Z2VuX2hhc2g="),
 		BinaryHash:                        []byte("YmluX2hhc2g="),
+		DistributionTransmissionChannel:   config.DistributionTransmissionChannel,
 	}
 	powerShapingParams := &providertypes.PowerShapingParameters{
 		Top_N:              0,
@@ -453,83 +460,6 @@ func (p *Chain) DefaultConsumerChainSpec(ctx context.Context, chainID string, co
 	}
 }
 
-func connectProviderConsumer(ctx context.Context, provider *Chain, consumer *Chain, relayer *Relayer) error {
-	icsPath := relayerICSPathFor(provider, consumer)
-	rep := GetRelayerExecReporter(ctx)
-	if err := relayer.GeneratePath(ctx, rep, consumer.Config().ChainID, provider.Config().ChainID, icsPath); err != nil {
-		return err
-	}
-
-	consumerClients, err := relayer.GetClients(ctx, rep, consumer.Config().ChainID)
-	if err != nil {
-		return err
-	}
-
-	var consumerClient *ibc.ClientOutput
-	for _, client := range consumerClients {
-		if client.ClientState.ChainID == provider.Config().ChainID {
-			consumerClient = client
-			break
-		}
-	}
-	if consumerClient == nil {
-		return fmt.Errorf("consumer chain %s does not have a client tracking the provider chain %s", consumer.Config().ChainID, provider.Config().ChainID)
-	}
-	consumerClientID := consumerClient.ClientID
-
-	providerClients, err := relayer.GetClients(ctx, rep, provider.Config().ChainID)
-	if err != nil {
-		return err
-	}
-
-	var providerClient *ibc.ClientOutput
-	for _, client := range providerClients {
-		if client.ClientState.ChainID == consumer.Config().ChainID {
-			providerClient = client
-			break
-		}
-	}
-	if providerClient == nil {
-		return fmt.Errorf("provider chain %s does not have a client tracking the consumer chain %s for path %s on relayer %s",
-			provider.Config().ChainID, consumer.Config().ChainID, icsPath, relayer)
-	}
-	providerClientID := providerClient.ClientID
-
-	if err := relayer.UpdatePath(ctx, rep, icsPath, ibc.PathUpdateOptions{
-		SrcClientID: &consumerClientID,
-		DstClientID: &providerClientID,
-	}); err != nil {
-		return err
-	}
-
-	if err := relayer.CreateConnections(ctx, rep, icsPath); err != nil {
-		return err
-	}
-
-	if err := relayer.CreateChannel(ctx, rep, icsPath, ibc.CreateChannelOptions{
-		SourcePortName: "consumer",
-		DestPortName:   "provider",
-		Order:          ibc.Ordered,
-		Version:        "1",
-	}); err != nil {
-		return err
-	}
-
-	tCtx, tCancel := context.WithTimeout(ctx, 30*CommitTimeout)
-	defer tCancel()
-	for tCtx.Err() == nil {
-		var ch *ibc.ChannelOutput
-		ch, err = relayer.GetTransferChannel(ctx, provider, consumer)
-		if err == nil && ch != nil {
-			break
-		} else if err == nil {
-			err = fmt.Errorf("channel not found")
-		}
-		time.Sleep(CommitTimeout)
-	}
-	return err
-}
-
 func (p *Chain) SubmitConsumerAdditionProposal(ctx context.Context, chainID string, config ConsumerConfig, spawnTime time.Time) (*proposalWaiter, chan error, error) {
 	propWaiter := newProposalWaiter()
 	prop := p.buildConsumerAdditionJSON(chainID, config, spawnTime)
@@ -577,7 +507,7 @@ func (p *Chain) buildConsumerAdditionJSON(chainID string, config ConsumerConfig,
 		BinaryHash:    []byte("bin_hash"),
 		SpawnTime:     spawnTime,
 
-		BlocksPerDistributionTransmission: 1000,
+		BlocksPerDistributionTransmission: BlocksPerDistribution,
 		CcvTimeoutPeriod:                  2419200000000000,
 		TransferTimeoutPeriod:             3600000000000,
 		ConsumerRedistributionFraction:    "0.75",
@@ -644,6 +574,13 @@ func (p *Chain) CheckCCV(ctx context.Context, consumer *Chain, relayer *Relayer,
 		if err := testutil.WaitForBlocks(ctx, blocksPerEpoch, p); err != nil {
 			return err
 		}
+	}
+
+	if err := relayer.ClearCCVChannel(ctx, p, consumer); err != nil {
+		return err
+	}
+	if err := testutil.WaitForBlocks(ctx, 2, p, consumer); err != nil {
+		return err
 	}
 
 	tCtx, tCancel := context.WithTimeout(ctx, 15*time.Minute)

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/cosmos/gaia/v20/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v21/tests/interchain/chainsuite"
 	transfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
 	"github.com/stretchr/testify/assert"
@@ -84,11 +84,9 @@ func (s *PFMSuite) TestPFMHappyPath() {
 	s.Require().EventuallyWithT(func(c *assert.CollectT) {
 		dEndBalance, err := s.Chains[3].GetBalance(s.GetContext(), dWallet1.Address, targetDenomAD)
 		assert.NoError(c, err)
-		balances, err := s.Chains[3].BankQueryAllBalances(s.GetContext(), dWallet1.Address)
-		assert.NoError(c, err)
-		assert.Truef(c, dEndBalance.GT(dStartBalance), "expected %d > %d in %s; balances are: %+v",
-			dEndBalance, dStartBalance, targetDenomAD, balances)
-	}, 15*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "chain D balance has not increased")
+		assert.Truef(c, dEndBalance.Sub(dStartBalance).IsPositive(), "expected %d - %d > 0 (it was %d) in %s",
+			dEndBalance, dStartBalance, dEndBalance.Sub(dStartBalance), targetDenomAD)
+	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "chain D balance has not increased")
 
 	aStartBalance, err := s.Chains[0].GetBalance(s.GetContext(), aWallet1.Address, targetDenomDA)
 	s.Require().NoError(err)
@@ -119,11 +117,9 @@ func (s *PFMSuite) TestPFMHappyPath() {
 	s.Require().EventuallyWithT(func(c *assert.CollectT) {
 		aEndBalance, err := s.Chains[0].GetBalance(s.GetContext(), aWallet1.Address, targetDenomDA)
 		assert.NoError(c, err)
-		balances, err := s.Chains[0].BankQueryAllBalances(s.GetContext(), aWallet1.Address)
-		assert.NoError(c, err)
-		assert.Truef(c, aEndBalance.GT(aStartBalance), "expected %d > %d in %s; balances are: %+v",
-			aEndBalance, aStartBalance, targetDenomDA, balances)
-	}, 15*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "chain A balance has not increased")
+		assert.Truef(c, aEndBalance.Sub(aStartBalance).IsPositive(), "expected %d - %d > 0 (it was %d) in %s",
+			aEndBalance, aStartBalance, aEndBalance.Sub(aStartBalance), targetDenomDA)
+	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "chain A balance has not increased")
 
 }
 

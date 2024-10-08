@@ -67,3 +67,6 @@ This is because `gaiad init` creates a `genesis.json` with a testing chain id.
 2. replace all validator key files (keyring data, `priv_validator_key.json`, values in `priv_validator_state.json` are reset to 0...)
 3. run `gaiad testnet unsafe-start-local-validator` -> switches the validator set and starts the node
 
+## Optional Cleanup for Log Readability
+
+It's recommended to delete the contents of the data/cs.wal folder (from the mainnet node snapshot) before running the unsafe-start-local-validator command. This folder stores messages used for replaying, which are no longer needed since a new block will be created with the new validator setup. If not deleted, the logs may contain misleading errors related to the old state. While this deletion is not mandatory, it can help improve log readability and reduce confusion during testing.

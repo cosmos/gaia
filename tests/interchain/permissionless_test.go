@@ -376,10 +376,30 @@ func (s *PermissionlessConsumersSuite) TestConsumerCommissionRate() {
 		_, err = s.Chain.Validators[0].ExecTx(s.GetContext(), s.Chain.ValidatorWallets[0].Moniker, "provider", "opt-in", consumerID)
 		s.Require().NoError(err)
 	}
+
+	images := []ibc.DockerImage{
+		{
+			Repository: "ghcr.io/hyphacoop/ics",
+			Version:    "v4.5.0",
+			UidGid:     "1025:1025",
+		},
+	}
+	chainID := fmt.Sprintf("%s-test-%d", cfg.ChainName, len(s.Chain.Consumers)+1)
+	spawnTime := time.Now().Add(chainsuite.ChainSpawnWait)
+	cfg.Spec = s.Chain.DefaultConsumerChainSpec(s.GetContext(), chainID, cfg, spawnTime, nil)
+	cfg.Spec.Version = "v4.5.0"
+	cfg.Spec.Images = images
+	cfg.Spec.InterchainSecurityConfig.ConsumerVerOverride = "v4.1.0"
 	consumer1, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, cfg)
 	s.Require().NoError(err)
 	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), consumer1, s.Relayer, 1_000_000, 0, 1))
 
+	chainID = fmt.Sprintf("%s-test-%d", cfg.ChainName, len(s.Chain.Consumers)+1)
+	spawnTime = time.Now().Add(chainsuite.ChainSpawnWait)
+	cfg.Spec = s.Chain.DefaultConsumerChainSpec(s.GetContext(), chainID, cfg, spawnTime, nil)
+	cfg.Spec.Version = "v4.5.0"
+	cfg.Spec.Images = images
+	cfg.Spec.InterchainSecurityConfig.ConsumerVerOverride = "v4.1.0"
 	consumer2, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, cfg)
 	s.Require().NoError(err)
 	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), consumer2, s.Relayer, 1_000_000, 0, 1))
@@ -589,7 +609,7 @@ func (s *PermissionlessConsumersSuite) TestRewardsWhitelisting() {
 	spec := &interchaintest.ChainSpec{
 		Name:          "ics-consumer",
 		ChainName:     "ics-consumer",
-		Version:       "v6.2.0-rc0",
+		Version:       "v6.2.0-rc1",
 		NumValidators: &validators,
 		NumFullNodes:  &fullNodes,
 		ChainConfig: ibc.ChainConfig{
@@ -605,8 +625,8 @@ func (s *PermissionlessConsumersSuite) TestRewardsWhitelisting() {
 			Bin:                  "interchain-security-sd",
 			Images: []ibc.DockerImage{
 				{
-					Repository: "ics",
-					Version:    "v6.2.0-rc0",
+					Repository: "ghcr.io/hyphacoop/ics",
+					Version:    "v6.2.0-rc1",
 					UidGid:     "1025:1025",
 				},
 			},

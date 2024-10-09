@@ -42,7 +42,7 @@ type ConsumerConfig struct {
 	Denylist                        []string
 	InitialHeight                   uint64
 	DistributionTransmissionChannel string
-	spec                            *interchaintest.ChainSpec
+	Spec                            *interchaintest.ChainSpec
 
 	DuringDepositPeriod ConsumerBootstrapCb
 	DuringVotingPeriod  ConsumerBootstrapCb
@@ -126,15 +126,15 @@ func (p *Chain) AddConsumerChain(ctx context.Context, relayer *Relayer, config C
 		}
 	}
 
-	if config.spec == nil {
-		config.spec = p.DefaultConsumerChainSpec(ctx, chainID, config, spawnTime, proposalWaiter)
+	if config.Spec == nil {
+		config.Spec = p.DefaultConsumerChainSpec(ctx, chainID, config, spawnTime, proposalWaiter)
 	}
-	if semver.Compare(p.GetNode().ICSVersion(ctx), "v4.1.0") > 0 && config.spec.InterchainSecurityConfig.ProviderVerOverride == "" {
-		config.spec.InterchainSecurityConfig.ProviderVerOverride = "v4.1.0"
+	if semver.Compare(p.GetNode().ICSVersion(ctx), "v4.1.0") > 0 && config.Spec.InterchainSecurityConfig.ProviderVerOverride == "" {
+		config.Spec.InterchainSecurityConfig.ProviderVerOverride = "v4.1.0"
 	}
 	cf := interchaintest.NewBuiltinChainFactory(
 		GetLogger(ctx),
-		[]*interchaintest.ChainSpec{config.spec},
+		[]*interchaintest.ChainSpec{config.Spec},
 	)
 	chains, err := cf.Chains(p.GetNode().TestName)
 	if err != nil {

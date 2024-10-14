@@ -1,6 +1,6 @@
 # Upgrading Gaia
 
-This guide provides instructions for upgrading Gaia from v20.0.x. to v21.x.
+This guide provides instructions for upgrading Gaia from v20.x to v21.x.
 
 This document describes the steps for validators, full node operators and relayer operators, to upgrade successfully to the Gaia v20 release.
 

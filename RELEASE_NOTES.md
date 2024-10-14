@@ -13,8 +13,7 @@ Refer to the [upgrading guide](https://github.com/cosmos/gaia/blob/release/v21.x
 
 This release bumps Interchain Security (ICS) to [v6.2.0](https://github.com/cosmos/interchain-security/releases/tag/v6.2.0) which brings the following improvements:
 
-- Populate the memo on the IBC transfer packets used to send ICS rewards
-with the required consumer chain Id to identify the consumer to the provider, see [#2290](https://github.com/cosmos/interchain-security/pull/2290).
+- Enable consumer chains to use the memo field of the IBC transfer packets to tag ICS rewards with the consumer ID. As a result, consumer chains can send ICS rewards in any denomination and on any IBC channel. For example, a consumer chain could send USDC as ICS rewards. 
 
 - Enable permissionless allowlisting of reward denoms (at most 3) per consumer chain, see [#2309](https://github.com/cosmos/interchain-security/pull/2309) for more details.
 

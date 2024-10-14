@@ -1,10 +1,12 @@
 # ADR 002: Globalfee Module [DEPRECATED]
 
 ## Changelog
-* 2023-06-12: Initial Draft
-* 2024-06-06: Change status to deprecated
+
+- 2023-06-12: Initial Draft
+- 2024-06-06: Change status to deprecated
 
 ## Status
+
 Deprecated
 
 ## Context
@@ -18,20 +20,24 @@ The globalfee module was created to manage a parameter called `MinimumGasPricesP
 - The fee check logic is only executed in `CheckTx`. This could enable malicious validators to change the fee check code and propose transactions that do not meet the fee requirement.
 
 ## Decision
+
 To fix these problems, the following changes are added to the globalfee module:
+
 - **ZeroCoins in `MinimumGasPricesParam`:**\
-Refactor the fee check logics, in order to use the Cosmos SDK coins' methods instead of the redefined methods.
+  Refactor the fee check logics, in order to use the Cosmos SDK coins' methods instead of the redefined methods.
 - **Bypass Message Types:**\
-`BypassMinFeeMsgTypes` is refactored to be a param of the globalfee module, in order to make the bypass messages deterministic.
+  `BypassMinFeeMsgTypes` is refactored to be a param of the globalfee module, in order to make the bypass messages deterministic.
 - **Check Fees in `DeliverTx`:**\
-The fee check is factored to executed in both `DeliverTx` and `CheckTx`. This is to prevent malicious validators from changing the fee check logic and allowing any transactions to pass fee check. As a consequence, `MinimumGasPricesParam` is introduced as a globalfee param.
+  The fee check is factored to executed in both `DeliverTx` and `CheckTx`. This is to prevent malicious validators from changing the fee check logic and allowing any transactions to pass fee check. As a consequence, `MinimumGasPricesParam` is introduced as a globalfee param.
 
 ### ZeroCoins in `MinimumGasPricesParam`
+
 #### Coins Split
+
 `CombinedFeeRequirement` refers to the fee requirement that takes into account both `globalFees` (`MinimumGasPricesParam` in the globalfee module) and `localFees` (`minimum-gas-prices` in `app.toml`). This requirement is calculated as the maximum value between `globalFees` and `localFees` for denomination exists `globalFees`.
 The allowance of zero coins in the `MinimumGasPricesParam` within the globalfee module implies that `CombinedFeeRequirement(globalFees, localFees)` also permits zero coins. Therefore, the `CombinedFeeRequirement` doesn't meet the requirements of certain `sdk.Coins` methods. For instance, the `DenomsSubsetOf` method requires coins that do not contain zero coins.
 
-To address this issue,  the `CombinedFeeRequirement` and `feeCoins` are split as shown in the chart below.
+To address this issue, the `CombinedFeeRequirement` and `feeCoins` are split as shown in the chart below.
 
 ```mermaid
 ---
@@ -63,8 +69,11 @@ The `CombinedFeeRequirement` is split into zero and non-zero coins, forming `non
 	feeCoinsNonZeroDenom, feeCoinsZeroDenom := splitCoinsByDenoms(feeCoins, zeroCoinFeesDenomReq)
 
 ```
+
 #### Fee Checks
+
 The Workflow of feeCheck is shown below:
+
 ```mermaid
 ---
 title: Fee Check
@@ -93,7 +102,8 @@ The split enable checking `feeCoinsNonZeroDenom` against `nonZeroCoinFeesReq`, a
 `zeroCoinFeesDenomReq` (as shown in the following code snippet). In the check of `feeCoinsNonZeroDenom` against `nonZeroCoinFeesReq`, the Cosmos SDK coins' methods can be used since zero coins are removed from the `nonZeroCoinFeesReq`, while in the check `feeCoinsZeroDenom` against `zeroCoinFeesDenomReq`, only denoms need to be checked.
 
 Checking `feeCoinsNonZeroDenom` against `nonZeroCoinFeesReq`:
-```go 
+
+```go
 	if !feeCoinsNonZeroDenom.IsAnyGTE(nonZeroCoinFeesReq) {
 		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins.String(), feeRequired.String())
 	}
@@ -119,15 +129,17 @@ if `paidFee=[1uatom, 0.5photon]`,
 the `splitCoinsByDenoms` splits the paidFee into `feeCoinsZeroDenom=[1uatom]` (the same denom as zero coins in `combinedFeeRequirement`), and `feeCoinsNonZeroDenom=[0.5stake]`
 then `feeCoinsZeroDenom=[1uatom]` is checked by `nonZeroCoinFeesReq=[1photon, 1stake]`.
 
-Please note that `feeCoins` does not contain zero coins. The fee coins are split according to the denoms in `zeroCoinFeesDenomReq` or `nonZeroCoinFeesDenomReq`. If feeCoins contains coins not in both `zeroCoinFeesDenomReq` and `nonZeroCoinFeesDenomReq`, the transaction should be rejected. On the contrary, if  feeCoins' denoms are in either `zeroCoinFeesDenomReq` or `nonZeroCoinFeesDenomReq`, and `len(zeroCoinFeesDenomReq)!=0`, the transaction can directly pass, otherwise, the fee amount need to be checked.
-
+Please note that `feeCoins` does not contain zero coins. The fee coins are split according to the denoms in `zeroCoinFeesDenomReq` or `nonZeroCoinFeesDenomReq`. If feeCoins contains coins not in both `zeroCoinFeesDenomReq` and `nonZeroCoinFeesDenomReq`, the transaction should be rejected. On the contrary, if feeCoins' denoms are in either `zeroCoinFeesDenomReq` or `nonZeroCoinFeesDenomReq`, and `len(zeroCoinFeesDenomReq)!=0`, the transaction can directly pass, otherwise, the fee amount need to be checked.
 
 ### Bypass Message Types
+
 `BypassMinFeeMsgTypes` was a setup in `config/app.toml` before the refactor. `BypassMinFeeMsgTypes` is refactored to be a param of the globalfee module to get a network level agreement. Correspondingly,`MaxTotalBypassMinFeeMsgGasUsage` is also introduced as a globalfee param.
 
-### Fee Checks in  `DeliverTx`
+### Fee Checks in `DeliverTx`
+
 Implementing fee checks within the `DeliverTx` function introduces a few requirements:
-- **Deterministic Minimum Fee Requirement**: For the `DeliverTx` process, it is essential to have a deterministic minimum fee requirement. In `CheckTx`, fee is checked by the `CombinedFeeRequirement(globalFees, localFees)`, which considers both `minimum-gas-prices` from `config/app.toml` and `MinimumGasPricesParam` from the globalfee Params (For more details, see [globalfee](https://github.com/cosmos/gaia/blob/v16.0.0/docs/docs/modules/globalfee.md)). `CombinedFeeRequirement` contains non-deterministic part: `minimum-gas-prices` from `app.toml`. Therefore, `CombinedFeeRequirement` cannot be used in `DeliverTx`. In `DeliverTx`, only `MinimumGasPricesParam` in globalfee Params is used for fee verification. The code implementation is shown below. 
+
+- **Deterministic Minimum Fee Requirement**: For the `DeliverTx` process, it is essential to have a deterministic minimum fee requirement. In `CheckTx`, fee is checked by the `CombinedFeeRequirement(globalFees, localFees)`, which considers both `minimum-gas-prices` from `config/app.toml` and `MinimumGasPricesParam` from the globalfee Params (For more details, see [globalfee](https://github.com/cosmos/gaia/blob/v16.0.0/docs/docs/modules/globalfee.md)). `CombinedFeeRequirement` contains non-deterministic part: `minimum-gas-prices` from `app.toml`. Therefore, `CombinedFeeRequirement` cannot be used in `DeliverTx`. In `DeliverTx`, only `MinimumGasPricesParam` in globalfee Params is used for fee verification. The code implementation is shown below.
 
 ```go
 func (mfd FeeDecorator) GetTxFeeRequired(ctx sdk.Context, tx sdk.FeeTx) (sdk.Coins, error) {
@@ -160,12 +172,11 @@ func (mfd FeeDecorator) GetTxFeeRequired(ctx sdk.Context, tx sdk.FeeTx) (sdk.Coi
   To prevent the `DeliverGenTxs` go through a fee check, the initialization of the globalfee module should occur after the genutils module. This sequencing ensures that all necessary components are in place when the fee check occurs. See [Gaia Issue #2489](https://github.com/cosmos/gaia/issues/2489) for more context.
 
 ## Consequences
+
 ### Positive
+
 This refactor results in code that is easier to maintain. It prevents malicious validators from escaping fee checks and make the bypass messages work at network level.
+
 ### Negative
+
 The introduction of FeeDecorator has replaced the usage of `MempoolFeeDecorator` in the Cosmos SDK. Currently, if both FeeDecorator and MempoolFeeDecorator are added to the AnteDecorator chain, it will result in redundant checks. However, there's potential for FeeDecorator and MempoolFeeDecorator to become incompatible in the future, depending on updates to the Cosmos SDK.
-
-
-## References
-
-* [Documentation of the globalfee module](../../modules/globalfee)

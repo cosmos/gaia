@@ -2,7 +2,7 @@
 
 ## 📝 Changelog
 
-Check out the [changelog](https://github.com/cosmos/gaia/blob/v21.0.0/CHANGELOG.md) for a list of relevant changes or [compare all changes](https://github.com/cosmos/gaia/compare/v20.0.1....v21.0.0) from last release.
+Check out the [changelog](https://github.com/cosmos/gaia/blob/v21.0.0/CHANGELOG.md) for a list of relevant changes or [compare all changes](https://github.com/cosmos/gaia/compare/v20.0.0....v21.0.0) from last release.
 
 <!-- Add the following line for major releases -->
 Refer to the [upgrading guide](https://github.com/cosmos/gaia/blob/release/v21.x/UPGRADING.md) when migrating from `v20.0.x` to `v21.x`.

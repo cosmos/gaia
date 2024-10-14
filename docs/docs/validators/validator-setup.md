@@ -4,22 +4,22 @@ order: 2
 ---
 
 :::tip
-We suggest you try out joining a public testnet first. Information on how to join the most recent testnet can be found [here](/hub-tutorials/join-testnet).
+We suggest you try out joining a public testnet first. Information on how to join the most recent testnet can be found [here](../hub-tutorials/join-testnet).
 :::
 
-Before setting up a validator node, make sure to have completed the [Joining Mainnet](/hub-tutorials/join-mainnet) guide.
+Before setting up a validator node, make sure to have completed the [Joining Mainnet](../hub-tutorials/join-mainnet.md) guide.
 
-If you plan to use a KMS (key management system), you should go through these steps first: [Using a KMS](/validators/kms/kms).
+If you plan to use a KMS (key management system), you should go through these steps first: [Using a KMS](../validators/kms/kms.md).
 
 ## What is a Validator?
 
-[Validators](/validators/overview) are responsible for committing new blocks to the blockchain through an automated voting process. A validator's stake is slashed if they become unavailable or sign blocks at the same height. Because there is a chance of slashing, we suggest you read about [Sentry Node Architecture](/validators/validator-faq#how-can-validators-protect-themselves-from-denial-of-service-attacks) to protect your node from DDOS attacks and to ensure high-availability.
+[Validators](./overview) are responsible for committing new blocks to the blockchain through an automated voting process. A validator's stake is slashed if they become unavailable or sign blocks at the same height. Because there is a chance of slashing, we suggest you read about [Sentry Node Architecture](./validator-faq#how-can-validators-protect-themselves-from-denial-of-service-attacks) to protect your node from DDOS attacks and to ensure high-availability.
 
 :::warning
-If you want to become a validator for the Hub's `mainnet`, you should learn more about [security](/validators/security).
+If you want to become a validator for the Hub's `mainnet`, you should learn more about [security](./security).
 :::
 
-The following instructions assume you have already [set up a full-node](/hub-tutorials/join-mainnet) and are synchronised to the latest blockheight.
+The following instructions assume you have already [set up a full-node](../hub-tutorials/join-mainnet.md) and are synchronised to the latest blockheight.
 
 ## Create Your Validator
 
@@ -131,7 +131,7 @@ the block.
 
 ## Advanced configuration
 
-You can find more advanced information about running a node or a validator on the [CometBFT Core documentation](https://docs.cometbft.com/v0.37/core/validators).
+You can find more advanced information about running a node or a validator on the [CometBFT Core documentation](https://docs.cometbft.com/v0.38/core/validators).
 
 ## Common Problems
 
@@ -139,7 +139,7 @@ You can find more advanced information about running a node or a validator on th
 
 Your validator has become jailed. Validators get jailed, i.e. get removed from the active validator set, if they do not vote on at least `500` of the last `10,000` blocks, or if they double sign.
 
-If you got jailed for downtime, you can get your voting power back to your validator. First, if you're not using [Cosmovisor](https://docs.cosmos.network/v0.45/run-node/cosmovisor.html) and `gaiad` is not running, start it up again:
+If you got jailed for downtime, you can get your voting power back to your validator. First, if you're not using [Cosmovisor](https://docs.cosmos.network/v0.50/build/tooling/cosmovisor#installation) and `gaiad` is not running, start it up again:
 
 ```bash
 gaiad start
@@ -157,7 +157,7 @@ You may notice that your voting power is less than it used to be. That's because
 
 ### Problem #2: My `gaiad` crashes because of `too many open files`
 
-The default number of files Linux can open (per-process) is `1024`. `gaiad` is known to open more than `1024` files. This causes the process to crash. A quick fix is to run `ulimit -n 4096` (increase the number of open files allowed) and then restarting the process with `gaiad start`. If you are using `systemd` or another process manager to launch `gaiad` (such as [Cosmovisor](https://docs.cosmos.network/v0.45/run-node/cosmovisor.html)) this may require some configuration at that level. A sample `systemd` file to fix this issue is below:
+The default number of files Linux can open (per-process) is `1024`. `gaiad` is known to open more than `1024` files. This causes the process to crash. A quick fix is to run `ulimit -n 4096` (increase the number of open files allowed) and then restarting the process with `gaiad start`. If you are using `systemd` or another process manager to launch `gaiad` (such as [Cosmovisor](https://docs.cosmos.network/v0.50/build/tooling/cosmovisor#installation)) this may require some configuration at that level. A sample `systemd` file to fix this issue is below:
 
 ```toml
 # /etc/systemd/system/gaiad.service

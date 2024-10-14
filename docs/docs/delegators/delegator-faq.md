@@ -15,7 +15,7 @@ For a practical guide on how to become a delegator, click [here](./delegator-gui
 
 ## Choosing a validator
 <!-- markdown-link-check-disable-next-line -->
-In order to choose their validators, delegators have access to a range of information directly in [Lunie](https://lunie.io) or other Cosmos block explorers.
+In order to choose their validators, delegators have access to a range of information directly in [Mintscan](https://mintscan.io/cosmos/validators) or other Cosmos block explorers.
 
 - **Validator's moniker**: Name of the validator candidate.
 - **Validator's description**: Description provided by the validator operator.

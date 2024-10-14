@@ -32,11 +32,11 @@ You can find more details about the requirements in the [Joining Mainnet Tutoria
 
 ### What is a delegator?
 
-Delegators are ATOM holders who cannot, or do not want to, run a validator themselves. ATOM holders can delegate ATOM to a validator and obtain a part of their revenue in exchange. For details on how revenue is distributed, see [What is the incentive to stake?](/validators/validator-faq#what-is-the-incentive-to-stake) and [What are validators commission?](/validators/validator-faq#what-is-a-validator-commission) in this document.
+Delegators are ATOM holders who cannot, or do not want to, run a validator themselves. ATOM holders can delegate ATOM to a validator and obtain a part of their revenue in exchange. For details on how revenue is distributed, see [What is the incentive to stake?](./validator-faq#what-is-the-incentive-to-stake) and [What are validators commission?](./validator-faq#what-is-a-validator-commission) in this document.
 
 Because delegators share revenue with their validators, they also share risks. If a validator misbehaves, each of their delegators are partially slashed in proportion to their delegated stake. This penalty is one of the reasons why delegators must perform due diligence on validators before delegating. Spreading their stake over multiple validators is another layer of protection.
 
-Delegators play a critical role in the system, as they are responsible for choosing validators. Being a delegator is not a passive role. Delegators must actively monitor the actions of their validators and participate in governance. For details on being a delegator, read the [Delegator FAQ](https://hub.cosmos.network/delegators/delegator-faq).
+Delegators play a critical role in the system, as they are responsible for choosing validators. Being a delegator is not a passive role. Delegators must actively monitor the actions of their validators and participate in governance. For details on being a delegator, read the [Delegator FAQ](../delegators/delegator-faq.md).
 
 ## Becoming a Validator
 

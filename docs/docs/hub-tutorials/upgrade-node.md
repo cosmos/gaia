@@ -81,7 +81,7 @@ gaiad start
 ## Upgrade Genesis File
 
 :::warning
-If the new version you are upgrading to has breaking changes, you will have to restart your chain. If it is not breaking, you can skip to [Restart](/hub-tutorials/upgrade-node#restart)
+If the new version you are upgrading to has breaking changes, you will have to restart your chain. If it is not breaking, you can skip to [Restart](./upgrade-node#restart)
 :::
 
 To upgrade the genesis file, you can either fetch it from a trusted source or export it locally.

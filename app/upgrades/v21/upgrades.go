@@ -16,6 +16,7 @@ import (
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
+	govparams "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 
 	"github.com/cosmos/gaia/v21/app/keepers"
 )
@@ -61,6 +62,11 @@ func CreateUpgradeHandler(
 		err = InitializeConstitutionCollection(ctx, *keepers.GovKeeper)
 		if err != nil {
 			ctx.Logger().Error("Error initializing Constitution Collection:", "message", err.Error())
+		}
+
+		err = InitializeGovParams(ctx, *keepers.GovKeeper)
+		if err != nil {
+			ctx.Logger().Error("Error initializing Gov Params:", "message", err.Error())
 		}
 
 		ctx.Logger().Info("Upgrade v21 complete")
@@ -132,4 +138,16 @@ func AllocateNeutronAndStrideUnaccountedDenoms(ctx sdk.Context, providerKeeper p
 // this is in line with cosmos-sdk v5 gov migration: https://github.com/cosmos/cosmos-sdk/blob/v0.50.10/x/gov/migrations/v5/store.go#L57
 func InitializeConstitutionCollection(ctx sdk.Context, govKeeper govkeeper.Keeper) error {
 	return govKeeper.Constitution.Set(ctx, "This chain has no constitution.")
+}
+
+func InitializeGovParams(ctx sdk.Context, govKeeper govkeeper.Keeper) error {
+	params, err := govKeeper.Params.Get(ctx)
+	if err != nil {
+		return err
+	}
+
+	params.ProposalCancelRatio = govparams.DefaultProposalCancelRatio.String()
+	params.ProposalCancelDest = govparams.DefaultProposalCancelDestAddress
+
+	return govKeeper.Params.Set(ctx, params)
 }

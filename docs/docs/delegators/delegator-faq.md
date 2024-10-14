@@ -5,7 +5,7 @@ order: 4
 
 ## What is a delegator?
 
-People that cannot or do not want to operate [validator nodes](../validators/overview.md) can still participate in the staking process as delegators. Indeed, validators are not chosen based on their self-delegated stake but based on their total stake, which is the sum of their self-delegated stake and of the stake that is delegated to them. This is an important property, as it makes delegators a safeguard against validators that exhibit bad behavior. If a validator misbehaves, their delegators will move their Atoms away from them, thereby reducing their stake. Eventually, if a validator's stake falls under the top 180 addresses with highest stake, they will exit the validator set.
+People who cannot or do not want to operate [validator nodes](../validators/overview.md) can still participate in the staking process as delegators. Indeed, validators are not chosen based on their self-delegated stake but based on their total stake, which is the sum of their self-delegated stake and of the stake that is delegated to them. This is an important property, as it makes delegators a safeguard against validators that exhibit bad behavior. If a validator misbehaves, their delegators will move their Atoms away from them, thereby reducing their stake. Eventually, if a validator's stake falls under the top 180 addresses with highest stake, they will exit the validator set.
 
 **Delegators share the revenue of their validators, but they also share the risks.** In terms of revenue, validators and delegators differ in that validators can apply a commission on the revenue that goes to their delegator before it is distributed. This commission is known to delegators beforehand and can only change according to predefined constraints (see [section](#choosing-a-validator) below). In terms of risk, delegators' Atoms can be slashed if their validator misbehaves. For more, see [Risks](#risks) section.
 
@@ -85,7 +85,7 @@ The `DisableTokenizeShares` message is exposed by the staking module and can be 
 gaiad tx staking disable-tokenize-shares --from mykey  
 ```
 
-When tokenization is disabled, a lock is placed on the account, effectively preventing the tokenization of any delegations. Re-enabling tokenization would initiate the removal of the lock, but the process is not immediate. The lock removal is queued, with the lock itself persisting throughout the unbonding period. Following the completion of the unbonding period, the lock would be completely removed, restoring the account's ablility to tokenize. For liquid staking protocols that enable the lock, this delay better positions the base layer to coordinate a recovery in the event of an exploit.
+When tokenization is disabled, a lock is placed on the account, effectively preventing the tokenization of any delegations. Re-enabling tokenization would initiate the removal of the lock, but the process is not immediate. The lock removal is queued, with the lock itself persisting throughout the unbonding period. Following the completion of the unbonding period, the lock would be completely removed, restoring the account's ability to tokenize. For liquid staking protocols that enable the lock, this delay better positions the base layer to coordinate a recovery in the event of an exploit.
 
 ## Risks
 

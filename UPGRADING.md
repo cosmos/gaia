@@ -61,7 +61,7 @@ For those validator and full node operators that are interested in ensuring prep
 
 ### Current runtime
 
-The Cosmos Hub mainnet network, `cosmoshub-4`, is currently running [Gaia v20.0.1](https://github.com/cosmos/gaia/releases/v20.0.1). We anticipate that operators who are running on v20.0.1, will be able to upgrade successfully. Validators are expected to ensure that their systems are up to date and capable of performing the upgrade. This includes running the correct binary and if building from source, building with the appropriate `go` version.
+The Cosmos Hub mainnet network, `cosmoshub-4`, is currently running [Gaia v20.0.0](https://github.com/cosmos/gaia/releases/v20.0.0). We anticipate that operators who are running on v20.0.0, will be able to upgrade successfully. Validators are expected to ensure that their systems are up to date and capable of performing the upgrade. This includes running the correct binary and if building from source, building with the appropriate `go` version.
 
 ### Target runtime
 
@@ -80,9 +80,9 @@ If you prefer to use Cosmovisor to upgrade, some preparation work is needed befo
 
 ### Method I: Manual Upgrade
 
-Make sure **Gaia v20.0.1** is installed by either downloading a [compatible binary](https://github.com/cosmos/gaia/releases/tag/v20.0.1), or building from source. Check the required version to build this binary in the `Makefile`.
+Make sure **Gaia v20.0.0** is installed by either downloading a [compatible binary](https://github.com/cosmos/gaia/releases/tag/v20.0.0), or building from source. Check the required version to build this binary in the `Makefile`.
 
-Run Gaia v20.0.1 till upgrade height, the node will panic:
+Run Gaia v20.0.0 till upgrade height, the node will panic:
 
 ```shell
 ERR UPGRADE "v21" NEEDED at height: <UPGRADE_HEIGHT>: upgrade to v21 and applying upgrade "v21" at height:<UPGRADE_HEIGHT>
@@ -106,7 +106,7 @@ cosmovisor version
 # cosmovisor version: v1.6.0
 ```
 
-- Create a `cosmovisor` folder inside `$GAIA_HOME` and move Gaia `v20.0.1` into `$GAIA_HOME/cosmovisor/genesis/bin`:
+- Create a `cosmovisor` folder inside `$GAIA_HOME` and move Gaia `v20.0.0` into `$GAIA_HOME/cosmovisor/genesis/bin`:
 
 ```shell
 mkdir -p $GAIA_HOME/cosmovisor/genesis/bin
@@ -127,7 +127,7 @@ At this moment, you should have the following structure:
 ├── current -> genesis or upgrades/<name>
 ├── genesis
 │   └── bin
-│       └── gaiad  # old: v20.0.1
+│       └── gaiad  # old: v20.0.0
 └── upgrades
     └── v21
         └── bin
@@ -169,7 +169,7 @@ The upgrade may take a few minutes to complete because cosmoshub-4 participants 
 
 During the network upgrade, core Cosmos teams will be keeping an ever vigilant eye and communicating with operators on the status of their upgrades. During this time, the core teams will listen to operator needs to determine if the upgrade is experiencing unintended challenges. In the event of unexpected challenges, the core teams, after conferring with operators and attaining social consensus, may choose to declare that the upgrade will be skipped.
 
-Steps to skip this upgrade proposal are simply to resume the cosmoshub-4 network with the (downgraded) v20.0.1 binary using the following command:
+Steps to skip this upgrade proposal are simply to resume the cosmoshub-4 network with the (downgraded) v20.0.0 binary using the following command:
 
 ```shell
 gaiad start --unsafe-skip-upgrade <UPGRADE_HEIGHT>

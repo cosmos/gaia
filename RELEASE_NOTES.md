@@ -17,12 +17,7 @@ This release bumps Interchain Security (ICS) to [v6.2.0](https://github.com/cosm
 
 - Enable permissionless allowlisting of reward denoms (at most 3) per consumer chain, see [#2309](https://github.com/cosmos/interchain-security/pull/2309) for more details.
 
-It also bumps CosmWasm/wasmvm to [v2.1.3](https://github.com/CosmWasm/wasmvm/releases/tag/v2.1.3)
-
-Two minor bugs in the invariant submission and the creation of multiple temporary directories have also been fixed in this release.
-
-The release also distributes all the unaccounted known denoms from  the
- consumer rewards pool via migration.
+The release also distributes all the unaccounted known denoms from  the consumer rewards pool via migration.
 
 ## 🔨 Build from source
 

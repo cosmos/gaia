@@ -199,6 +199,25 @@ TM_VERSION=$(go list -m github.com/tendermint/tendermint | sed 's:.* ::') gorele
 Check the instructions for installing goreleaser locally for your platform
 * https://goreleaser.com/install/
 
+#### Building linux-amd64
+
+Since linux-amd64 builds with goreleaser are broken after cosmwasm introduction, the corresponding linux-amd64 binary needs to be built on a local machine and uploaded to the release page on every release.
+
+First, build the linux-amd64 binary:
+```shell
+make build-static-linux-amd64
+```
+
+The binary will reside in `./build/gaiad-linux-amd64`.
+Rename that binary to match: `gaiad-v<RELEASE>-linux-amd64` (e.g. gaiad-v21.0.0-rc0-linux-amd64).
+
+Then, run a checksum of the binary and update the SHASUMS file of the release (you need to download the file, enter the new SHASUM and reupload manually using the Github UI).
+```shell
+# example
+sha256sum ./gaiad-v21.0.0-rc0-linux-amd64
+
+726f23e3e36f810374fb949d603db20c316de8a62b69d1eea7abd3e4e93e90d3  ./gaiad-v21.0.0-rc0-linux-amd64
+```
 
 ## Non-major Release Procedure
 

@@ -8,7 +8,7 @@ sidebar_position: 1
 
 # Introduction
 
-The Cosmos Hub is the first of many [interconnected blockchain](https://cosmos.network) powered by the interchain stack: [CometBFT](https://cometbft.com), [CosmosSDK](https://docs.cosmos.network) and [IBC](https://ibc.cosmos.network) The primary token of the Cosmos Hub is the **ATOM**.
+The Cosmos Hub is the first of many [interconnected blockchains](https://cosmos.network) powered by the interchain stack: [CometBFT](https://cometbft.com), [CosmosSDK](https://docs.cosmos.network) and [IBC](https://ibc.cosmos.network). The primary token of the Cosmos Hub is the **ATOM**.
 
 ## The ATOM
 

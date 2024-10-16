@@ -32,10 +32,21 @@ func (s *UnbondingSuite) SetupSuite() {
 	s.Suite.SetupSuite()
 	cfg := chainsuite.ConsumerConfig{
 		ChainName:             "ics-consumer",
-		Version:               "v5.0.0",
+		Version:               selectConsumerVersion("v6.0.0", "v6.2.1"),
 		ShouldCopyProviderKey: allProviderKeysCopied(),
 		Denom:                 chainsuite.Ucon,
 		TopN:                  100,
+		Spec: &interchaintest.ChainSpec{
+			ChainConfig: ibc.ChainConfig{
+				Images: []ibc.DockerImage{
+					{
+						Repository: chainsuite.HyphaICSRepo,
+						Version:    selectConsumerVersion("v6.0.0", "v6.2.1"),
+						UidGid:     chainsuite.ICSUidGuid,
+					},
+				},
+			},
+		},
 	}
 	consumer, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, cfg)
 	s.Require().NoError(err)

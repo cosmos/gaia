@@ -14,6 +14,7 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v8/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
+	"golang.org/x/mod/semver"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -455,6 +456,11 @@ func (s *LSMSuite) setupLSMWallets() {
 
 func (s *LSMSuite) SetupSuite() {
 	s.Suite.SetupSuite()
+	// This is slightly broken while stride is still in the process of being upgraded, so skip if
+	// going from v21 -> v21
+	if semver.Major(s.Env.OldGaiaImageVersion) == s.Env.UpgradeName && s.Env.UpgradeName == "v21" {
+		s.T().Skip("Skipping LSM when going from v21 -> v21")
+	}
 	stride, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, chainsuite.ConsumerConfig{
 		ChainName: "stride",
 		Version:   chainsuite.StrideVersion,

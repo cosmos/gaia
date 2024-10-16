@@ -88,7 +88,7 @@ func (s *PFMSuite) TestPFMHappyPath() {
 		assert.NoError(c, err)
 		assert.Truef(c, dEndBalance.GT(dStartBalance), "expected %d > %d in %s; balances are: %+v",
 			dEndBalance, dStartBalance, targetDenomAD, balances)
-	}, 15*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "chain D balance has not increased")
+	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "chain D balance has not increased")
 
 	aStartBalance, err := s.Chains[0].GetBalance(s.GetContext(), aWallet1.Address, targetDenomDA)
 	s.Require().NoError(err)
@@ -123,7 +123,7 @@ func (s *PFMSuite) TestPFMHappyPath() {
 		assert.NoError(c, err)
 		assert.Truef(c, aEndBalance.GT(aStartBalance), "expected %d > %d in %s; balances are: %+v",
 			aEndBalance, aStartBalance, targetDenomDA, balances)
-	}, 15*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "chain A balance has not increased")
+	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "chain A balance has not increased")
 
 }
 

@@ -355,7 +355,7 @@ func (s *PermissionlessConsumersSuite) TestChangePowerShaping() {
 
 	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), consumer, s.Relayer, 1_000_000, 0, 1))
 
-	vals, err := consumer.QueryJSON(s.GetContext(), "validators", "comet-validator-set")
+	vals, err := consumer.QueryJSON(s.GetContext(), "validators", "tendermint-validator-set")
 	s.Require().NoError(err)
 	s.Require().Equal(newValidatorCount, len(vals.Array()), vals)
 	for i := 0; i < newValidatorCount; i++ {
@@ -389,7 +389,6 @@ func (s *PermissionlessConsumersSuite) TestConsumerCommissionRate() {
 	cfg.Spec = s.Chain.DefaultConsumerChainSpec(s.GetContext(), chainID, cfg, spawnTime, nil)
 	cfg.Spec.Version = "v4.5.0"
 	cfg.Spec.Images = images
-	cfg.Spec.InterchainSecurityConfig.ConsumerVerOverride = "v4.1.0"
 	consumer1, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, cfg)
 	s.Require().NoError(err)
 	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), consumer1, s.Relayer, 1_000_000, 0, 1))
@@ -399,7 +398,6 @@ func (s *PermissionlessConsumersSuite) TestConsumerCommissionRate() {
 	cfg.Spec = s.Chain.DefaultConsumerChainSpec(s.GetContext(), chainID, cfg, spawnTime, nil)
 	cfg.Spec.Version = "v4.5.0"
 	cfg.Spec.Images = images
-	cfg.Spec.InterchainSecurityConfig.ConsumerVerOverride = "v4.1.0"
 	consumer2, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, cfg)
 	s.Require().NoError(err)
 	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), consumer2, s.Relayer, 1_000_000, 0, 1))
@@ -607,8 +605,10 @@ func (s *PermissionlessConsumersSuite) TestRewardsWithChangeover() {
 		cosmos.NewGenesisKV("app_state.gov.params.min_deposit.0.amount", strconv.Itoa(chainsuite.GovMinDepositAmount)),
 	}
 	spec := &interchaintest.ChainSpec{
-		Name:          "ics-consumer",
-		ChainName:     "ics-consumer",
+		Name:      "ics-consumer",
+		ChainName: "ics-consumer",
+		// Unfortunately, this rc is a bit of a bespoke version; it corresponds to an rc
+		// in hypha's fork that has a fix for sovereign -> consumer changeovers
 		Version:       "v6.2.0-rc1",
 		NumValidators: &validators,
 		NumFullNodes:  &fullNodes,
@@ -625,9 +625,9 @@ func (s *PermissionlessConsumersSuite) TestRewardsWithChangeover() {
 			Bin:                  "interchain-security-sd",
 			Images: []ibc.DockerImage{
 				{
-					Repository: "ghcr.io/hyphacoop/ics",
+					Repository: chainsuite.HyphaICSRepo,
 					Version:    "v6.2.0-rc1",
-					UidGid:     "1025:1025",
+					UidGid:     chainsuite.ICSUidGuid,
 				},
 			},
 			Bech32Prefix: "consumer",
@@ -674,6 +674,45 @@ func (s *PermissionlessConsumersSuite) TestRewardsWithChangeover() {
 	rewards, err := chainsuite.StrToSDKInt(rewardStr.String())
 	s.Require().NoError(err)
 	s.Require().True(rewards.GT(sdkmath.NewInt(0)), "rewards: %s", rewards.String())
+}
+
+func TestPermissionlessConsumers(t *testing.T) {
+	genesis := chainsuite.DefaultGenesis()
+	genesis = append(genesis,
+		cosmos.NewGenesisKV("app_state.gov.params.max_deposit_period", permissionlessDepositPeriod.String()),
+	)
+	s := &PermissionlessConsumersSuite{
+		Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
+			CreateRelayer: true,
+			Scope:         chainsuite.ChainScopeTest,
+			ChainSpec: &interchaintest.ChainSpec{
+				ChainConfig: ibc.ChainConfig{
+					ModifyGenesis: cosmos.ModifyGenesis(genesis),
+				},
+			},
+		}),
+		consumerCfg: chainsuite.ConsumerConfig{
+			ChainName:             "ics-consumer",
+			Version:               "v4.5.0",
+			ShouldCopyProviderKey: allProviderKeysCopied(),
+			Denom:                 chainsuite.Ucon,
+			TopN:                  100,
+			AllowInactiveVals:     true,
+			MinStake:              1_000_000,
+			Spec: &interchaintest.ChainSpec{
+				ChainConfig: ibc.ChainConfig{
+					Images: []ibc.DockerImage{
+						{
+							Repository: chainsuite.HyphaICSRepo,
+							Version:    "v4.5.0",
+							UidGid:     chainsuite.ICSUidGuid,
+						},
+					},
+				},
+			},
+		},
+	}
+	suite.Run(t, s)
 }
 
 func (s *PermissionlessConsumersSuite) changeSovereignToConsumer(consumer *chainsuite.Chain, transferCh *ibc.ChannelOutput) {
@@ -769,34 +808,6 @@ func (s *PermissionlessConsumersSuite) changeSovereignToConsumer(consumer *chain
 	s.Require().NoError(s.Relayer.StopRelayer(s.GetContext(), chainsuite.GetRelayerExecReporter(s.GetContext())))
 	s.Require().NoError(s.Relayer.StartRelayer(s.GetContext(), chainsuite.GetRelayerExecReporter(s.GetContext())))
 	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), consumer, s.Relayer, 1_000_000, 0, 1))
-}
-
-func TestPermissionlessConsumers(t *testing.T) {
-	genesis := chainsuite.DefaultGenesis()
-	genesis = append(genesis,
-		cosmos.NewGenesisKV("app_state.gov.params.max_deposit_period", permissionlessDepositPeriod.String()),
-	)
-	s := &PermissionlessConsumersSuite{
-		Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
-			CreateRelayer: true,
-			Scope:         chainsuite.ChainScopeTest,
-			ChainSpec: &interchaintest.ChainSpec{
-				ChainConfig: ibc.ChainConfig{
-					ModifyGenesis: cosmos.ModifyGenesis(genesis),
-				},
-			},
-		}),
-		consumerCfg: chainsuite.ConsumerConfig{
-			ChainName:             "ics-consumer",
-			Version:               "v5.0.0",
-			ShouldCopyProviderKey: allProviderKeysCopied(),
-			Denom:                 chainsuite.Ucon,
-			TopN:                  100,
-			AllowInactiveVals:     true,
-			MinStake:              1_000_000,
-		},
-	}
-	suite.Run(t, s)
 }
 
 func (s *PermissionlessConsumersSuite) submitChangeRewardDenoms(consumer *chainsuite.Chain) (string, string) {

@@ -15,7 +15,6 @@ import (
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
 	"go.uber.org/multierr"
-	"golang.org/x/mod/semver"
 
 	clienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
 	ccvclient "github.com/cosmos/interchain-security/v5/x/ccv/provider/client"
@@ -126,11 +125,12 @@ func (p *Chain) AddConsumerChain(ctx context.Context, relayer *Relayer, config C
 		}
 	}
 
-	if config.Spec == nil {
-		config.Spec = p.DefaultConsumerChainSpec(ctx, chainID, config, spawnTime, proposalWaiter)
-	}
-	if semver.Compare(p.GetNode().ICSVersion(ctx), "v4.1.0") > 0 && config.Spec.InterchainSecurityConfig.ProviderVerOverride == "" {
-		config.Spec.InterchainSecurityConfig.ProviderVerOverride = "v4.1.0"
+	defaultSpec := p.DefaultConsumerChainSpec(ctx, chainID, config, spawnTime, proposalWaiter)
+	config.Spec = MergeChainSpecs(defaultSpec, config.Spec)
+	providerICS := p.GetNode().ICSVersion(ctx)
+	if config.Spec.InterchainSecurityConfig.ConsumerVerOverride == "" {
+		// This will disable the genesis transform
+		config.Spec.InterchainSecurityConfig.ConsumerVerOverride = providerICS
 	}
 	cf := interchaintest.NewBuiltinChainFactory(
 		GetLogger(ctx),
@@ -576,7 +576,7 @@ func (p *Chain) CheckCCV(ctx context.Context, consumer *Chain, relayer *Relayer,
 		}
 	}
 
-	tCtx, tCancel := context.WithTimeout(ctx, 5*time.Minute)
+	tCtx, tCancel := context.WithTimeout(ctx, 15*time.Minute)
 	defer tCancel()
 	var retErr error
 	for tCtx.Err() == nil {

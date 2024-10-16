@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"github.com/cosmos/gaia/v21/tests/interchain/chainsuite"
+	"github.com/strangelove-ventures/interchaintest/v8"
+	"github.com/strangelove-ventures/interchaintest/v8/ibc"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"github.com/tidwall/gjson"
@@ -91,12 +93,23 @@ func (s *ConsensusSuite) SetupSuite() {
 
 	cfg := chainsuite.ConsumerConfig{
 		ChainName:             "ics-consumer",
-		Version:               "v5.0.0",
+		Version:               "v6.2.1",
 		ShouldCopyProviderKey: allProviderKeysCopied(),
 		Denom:                 chainsuite.Ucon,
 		TopN:                  100,
 		AllowInactiveVals:     true,
 		MinStake:              1_000_000,
+		Spec: &interchaintest.ChainSpec{
+			ChainConfig: ibc.ChainConfig{
+				Images: []ibc.DockerImage{
+					{
+						Repository: chainsuite.HyphaICSRepo,
+						Version:    "v6.2.1",
+						UidGid:     chainsuite.ICSUidGuid,
+					},
+				},
+			},
+		},
 	}
 	consumer, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, cfg)
 	s.Require().NoError(err)
@@ -116,7 +129,7 @@ func (s *ConsensusSuite) Test0ValidatorSets() {
 		s.Require().Equal(s.Chain.ValidatorWallets[i].ValConsAddress, valCons)
 	}
 
-	vals, err = s.Consumer.QueryJSON(s.GetContext(), "validators", "comet-validator-set")
+	vals, err = s.Consumer.QueryJSON(s.GetContext(), "validators", "tendermint-validator-set")
 	s.Require().NoError(err)
 	s.Require().Equal(maxProviderConsensusValidators, len(vals.Array()), vals)
 	for i := 0; i < maxProviderConsensusValidators; i++ {
@@ -168,7 +181,7 @@ func (s *ConsensusSuite) TestOptInInactive() {
 		s.Require().NoError(err)
 		s.Relayer.ClearCCVChannel(s.GetContext(), s.Chain, s.Consumer)
 		s.Require().EventuallyWithT(func(c *assert.CollectT) {
-			vals, err := s.Consumer.QueryJSON(s.GetContext(), "validators", "comet-validator-set")
+			vals, err := s.Consumer.QueryJSON(s.GetContext(), "validators", "tendermint-validator-set")
 			assert.NoError(c, err)
 			assert.Equal(c, maxProviderConsensusValidators, len(vals.Array()), vals)
 		}, 10*chainsuite.CommitTimeout, chainsuite.CommitTimeout)
@@ -178,7 +191,7 @@ func (s *ConsensusSuite) TestOptInInactive() {
 	}()
 	s.Require().NoError(s.Relayer.ClearCCVChannel(s.GetContext(), s.Chain, s.Consumer))
 	s.Require().EventuallyWithT(func(c *assert.CollectT) {
-		vals, err := s.Consumer.QueryJSON(s.GetContext(), "validators", "comet-validator-set")
+		vals, err := s.Consumer.QueryJSON(s.GetContext(), "validators", "tendermint-validator-set")
 		assert.NoError(c, err)
 		assert.Equal(c, maxProviderConsensusValidators+1, len(vals.Array()), vals)
 	}, 10*chainsuite.CommitTimeout, chainsuite.CommitTimeout)
@@ -189,7 +202,7 @@ func (s *ConsensusSuite) TestOptInInactive() {
 	_, err = s.Chain.Validators[5].ExecTx(s.GetContext(), s.Chain.ValidatorWallets[5].Moniker, "provider", "opt-in", consumerID)
 	s.Require().NoError(err)
 	s.Require().NoError(s.Relayer.ClearCCVChannel(s.GetContext(), s.Chain, s.Consumer))
-	vals, err := s.Consumer.QueryJSON(s.GetContext(), "validators", "comet-validator-set")
+	vals, err := s.Consumer.QueryJSON(s.GetContext(), "validators", "tendermint-validator-set")
 	s.Require().NoError(err)
 	s.Require().Equal(maxProviderConsensusValidators+1, len(vals.Array()), vals)
 	jailed, err = s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), s.Relayer, s.Consumer, 5)

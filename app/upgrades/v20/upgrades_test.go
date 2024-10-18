@@ -27,8 +27,8 @@ import (
 
 func GetTestMsgConsumerAddition() providertypes.MsgConsumerAddition { //nolint:staticcheck
 	return providertypes.MsgConsumerAddition{ //nolint:staticcheck
-		ChainId:                           "a ChainId",
-		InitialHeight:                     clienttypes.NewHeight(4, 5),
+		ChainId:                           "chainid-1",
+		InitialHeight:                     clienttypes.NewHeight(1, 1),
 		GenesisHash:                       []byte(base64.StdEncoding.EncodeToString([]byte("gen_hash"))),
 		BinaryHash:                        []byte(base64.StdEncoding.EncodeToString([]byte("bin_hash"))),
 		SpawnTime:                         time.Now().UTC(),

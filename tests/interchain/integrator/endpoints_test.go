@@ -1,4 +1,4 @@
-package interchain_test
+package integrator_test
 
 import (
 	"encoding/json"

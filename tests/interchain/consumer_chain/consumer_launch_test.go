@@ -1,4 +1,4 @@
-package interchain_test
+package consumer_chain_test
 
 import (
 	"testing"
@@ -16,19 +16,19 @@ type ConsumerLaunchSuite struct {
 	OtherChain                   string
 	OtherChainVersionPreUpgrade  string
 	OtherChainVersionPostUpgrade string
-	ShouldCopyProviderKey        [chainsuite.ValidatorCount]bool
+	ShouldCopyProviderKey        []bool
 }
 
-func noProviderKeysCopied() [chainsuite.ValidatorCount]bool {
-	return [chainsuite.ValidatorCount]bool{false, false, false, false, false, false}
+func noProviderKeysCopied() []bool {
+	return []bool{false, false, false, false, false, false}
 }
 
-func allProviderKeysCopied() [chainsuite.ValidatorCount]bool {
-	return [chainsuite.ValidatorCount]bool{true, true, true, true, true, true}
+func allProviderKeysCopied() []bool {
+	return []bool{true, true, true, true, true, true}
 }
 
-func someProviderKeysCopied() [chainsuite.ValidatorCount]bool {
-	return [chainsuite.ValidatorCount]bool{true, false, true, false, true, false}
+func someProviderKeysCopied() []bool {
+	return []bool{true, false, true, false, true, false}
 }
 
 func (s *ConsumerLaunchSuite) TestChainLaunch() {
@@ -93,7 +93,12 @@ func selectConsumerVersion(preV21, postV21 string) string {
 
 func TestICS4ChainLaunch(t *testing.T) {
 	s := &ConsumerLaunchSuite{
-		Suite:                        chainsuite.NewSuite(chainsuite.SuiteConfig{CreateRelayer: true}),
+		Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
+			CreateRelayer: true,
+			ChainSpec: &interchaintest.ChainSpec{
+				NumValidators: &chainsuite.SixValidators,
+			},
+		}),
 		OtherChain:                   "ics-consumer",
 		OtherChainVersionPreUpgrade:  selectConsumerVersion("v4.4.1", "v4.5.0"),
 		OtherChainVersionPostUpgrade: "v4.5.0",
@@ -104,7 +109,12 @@ func TestICS4ChainLaunch(t *testing.T) {
 
 func TestICS6ConsumerAllKeysChainLaunch(t *testing.T) {
 	s := &ConsumerLaunchSuite{
-		Suite:                        chainsuite.NewSuite(chainsuite.SuiteConfig{CreateRelayer: true}),
+		Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
+			CreateRelayer: true,
+			ChainSpec: &interchaintest.ChainSpec{
+				NumValidators: &chainsuite.SixValidators,
+			},
+		}),
 		OtherChain:                   "ics-consumer",
 		OtherChainVersionPreUpgrade:  selectConsumerVersion("v6.0.0", "v6.2.1"),
 		OtherChainVersionPostUpgrade: "v6.2.1",
@@ -115,7 +125,12 @@ func TestICS6ConsumerAllKeysChainLaunch(t *testing.T) {
 
 func TestICS6ConsumerSomeKeysChainLaunch(t *testing.T) {
 	s := &ConsumerLaunchSuite{
-		Suite:                        chainsuite.NewSuite(chainsuite.SuiteConfig{CreateRelayer: true}),
+		Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
+			CreateRelayer: true,
+			ChainSpec: &interchaintest.ChainSpec{
+				NumValidators: &chainsuite.SixValidators,
+			},
+		}),
 		OtherChain:                   "ics-consumer",
 		OtherChainVersionPreUpgrade:  selectConsumerVersion("v6.0.0", "v6.2.1"),
 		OtherChainVersionPostUpgrade: "v6.2.1",
@@ -126,7 +141,12 @@ func TestICS6ConsumerSomeKeysChainLaunch(t *testing.T) {
 
 func TestICS6ConsumerNoKeysChainLaunch(t *testing.T) {
 	s := &ConsumerLaunchSuite{
-		Suite:                        chainsuite.NewSuite(chainsuite.SuiteConfig{CreateRelayer: true}),
+		Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
+			CreateRelayer: true,
+			ChainSpec: &interchaintest.ChainSpec{
+				NumValidators: &chainsuite.SixValidators,
+			},
+		}),
 		OtherChain:                   "ics-consumer",
 		OtherChainVersionPreUpgrade:  selectConsumerVersion("v6.0.0", "v6.2.1"),
 		OtherChainVersionPostUpgrade: "v6.2.1",
@@ -174,7 +194,12 @@ func (s *MainnetConsumerChainsSuite) TestMainnetConsumerChainsAfterUpgrade() {
 
 func TestMainnetConsumerChainsAfterUpgrade(t *testing.T) {
 	s := &MainnetConsumerChainsSuite{
-		Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{CreateRelayer: true}),
+		Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
+			CreateRelayer: true,
+			ChainSpec: &interchaintest.ChainSpec{
+				NumValidators: &chainsuite.SixValidators,
+			},
+		}),
 	}
 	suite.Run(t, s)
 }

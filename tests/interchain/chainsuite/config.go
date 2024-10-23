@@ -43,7 +43,7 @@ const (
 	DowntimeJailDuration   = 10 * time.Second
 	ProviderSlashingWindow = 10
 	GasPrices              = "0.005" + Uatom
-	ValidatorCount         = 6
+	// ValidatorCount         = 1
 	UpgradeDelta           = 30
 	ValidatorFunds         = 11_000_000_000
 	ChainSpawnWait         = 155 * time.Second
@@ -55,6 +55,12 @@ const (
 	// This is needed because not every ics image is in the default heighliner registry
 	HyphaICSRepo = "ghcr.io/hyphacoop/ics"
 	ICSUidGuid   = "1025:1025"
+)
+
+// These have to be vars so we can take their address
+var (
+	OneValidator  int = 1
+	SixValidators int = 6
 )
 
 func MergeChainSpecs(spec, other *interchaintest.ChainSpec) *interchaintest.ChainSpec {
@@ -96,12 +102,15 @@ func (c SuiteConfig) Merge(other SuiteConfig) SuiteConfig {
 
 func DefaultGenesisAmounts(denom string) func(i int) (types.Coin, types.Coin) {
 	return func(i int) (types.Coin, types.Coin) {
+		if i >= SixValidators {
+			panic("your chain has too many validators")
+		}
 		return types.Coin{
 				Denom:  denom,
 				Amount: sdkmath.NewInt(ValidatorFunds),
 			}, types.Coin{
 				Denom: denom,
-				Amount: sdkmath.NewInt([ValidatorCount]int64{
+				Amount: sdkmath.NewInt([]int64{
 					30_000_000,
 					29_000_000,
 					20_000_000,
@@ -115,7 +124,6 @@ func DefaultGenesisAmounts(denom string) func(i int) (types.Coin, types.Coin) {
 
 func DefaultChainSpec(env Environment) *interchaintest.ChainSpec {
 	fullNodes := 0
-	validators := ValidatorCount
 	var repository string
 	if env.DockerRegistry == "" {
 		repository = env.GaiaImageName
@@ -125,7 +133,7 @@ func DefaultChainSpec(env Environment) *interchaintest.ChainSpec {
 	return &interchaintest.ChainSpec{
 		Name:          "gaia",
 		NumFullNodes:  &fullNodes,
-		NumValidators: &validators,
+		NumValidators: &OneValidator,
 		Version:       env.OldGaiaImageVersion,
 		ChainConfig: ibc.ChainConfig{
 			Denom:         Uatom,

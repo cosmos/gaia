@@ -1,4 +1,4 @@
-package interchain_test
+package consumer_chain_test
 
 import (
 	"encoding/json"
@@ -145,7 +145,7 @@ func (s *ConsensusSuite) TestProviderJailing() {
 		s.Require().NoError(err)
 		s.Assert().True(jailed, "validator %d should be jailed", i)
 	}
-	for i := maxProviderConsensusValidators; i < chainsuite.ValidatorCount; i++ {
+	for i := maxProviderConsensusValidators; i < len(s.Chain.Validators); i++ {
 		jailed, err := s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), s.Relayer, s.Chain, i)
 		s.Require().NoError(err)
 		s.Assert().False(jailed, "validator %d should not be jailed", i)
@@ -161,7 +161,7 @@ func (s *ConsensusSuite) TestConsumerJailing() {
 	// Validator 4 will have been opted in automatically when the other ones went down
 	_, err := s.Chain.Validators[maxProviderConsensusValidators].ExecTx(s.GetContext(), s.Chain.ValidatorWallets[maxProviderConsensusValidators].Moniker, "provider", "opt-out", s.getConsumerID())
 	s.Require().NoError(err)
-	for i := maxProviderConsensusValidators; i < chainsuite.ValidatorCount; i++ {
+	for i := maxProviderConsensusValidators; i < len(s.Chain.Validators); i++ {
 		jailed, err := s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), s.Relayer, s.Consumer, i)
 		s.Require().NoError(err)
 		s.Assert().False(jailed, "validator %d should not be jailed", i)
@@ -219,7 +219,12 @@ func (s *ConsensusSuite) getConsumerID() string {
 
 func TestConsensus(t *testing.T) {
 	s := &ConsensusSuite{
-		Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{CreateRelayer: true}),
+		Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
+			CreateRelayer: true,
+			ChainSpec: &interchaintest.ChainSpec{
+				NumValidators: &chainsuite.SixValidators,
+			},
+		}),
 	}
 	suite.Run(t, s)
 }

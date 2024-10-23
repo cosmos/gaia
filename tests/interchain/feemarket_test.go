@@ -215,6 +215,9 @@ func TestFeemarket(t *testing.T) {
 	s := &FeemarketSuite{
 		Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
 			UpgradeOnSetup: true,
+			ChainSpec: &interchaintest.ChainSpec{
+				NumValidators: &chainsuite.SixValidators,
+			},
 		}),
 	}
 	suite.Run(t, s)

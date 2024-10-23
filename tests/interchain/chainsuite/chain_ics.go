@@ -31,7 +31,7 @@ type ConsumerConfig struct {
 	ChainName                       string
 	Version                         string
 	Denom                           string
-	ShouldCopyProviderKey           [ValidatorCount]bool
+	ShouldCopyProviderKey           []bool
 	TopN                            int
 	ValidatorSetCap                 int
 	ValidatorPowerCap               int
@@ -100,8 +100,8 @@ func newProposalWaiter() *proposalWaiter {
 func (p *Chain) AddConsumerChain(ctx context.Context, relayer *Relayer, config ConsumerConfig) (*Chain, error) {
 	dockerClient, dockerNetwork := GetDockerContext(ctx)
 
-	if len(config.ShouldCopyProviderKey) != ValidatorCount {
-		return nil, fmt.Errorf("shouldCopyProviderKey must be the same length as the number of validators")
+	if len(config.ShouldCopyProviderKey) < len(p.Validators) {
+		return nil, fmt.Errorf("shouldCopyProviderKey should have at least %d elements", len(p.Validators))
 	}
 
 	spawnTime := time.Now().Add(ChainSpawnWait)

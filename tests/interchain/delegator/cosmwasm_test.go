@@ -1,4 +1,4 @@
-package interchain_test
+package delegator_test
 
 import (
 	"fmt"
@@ -7,12 +7,12 @@ import (
 	"testing"
 
 	"github.com/cosmos/gaia/v21/tests/interchain/chainsuite"
-	"github.com/strangelove-ventures/interchaintest/v8"
+	"github.com/cosmos/gaia/v21/tests/interchain/delegator"
 	"github.com/stretchr/testify/suite"
 )
 
 type CosmWasmSuite struct {
-	*chainsuite.Suite
+	*delegator.Suite
 	ContractWasm           []byte
 	ContractPath           string
 	PreUpgradeContractCode string
@@ -61,7 +61,7 @@ func (s *CosmWasmSuite) TestCantStoreWithoutProp() {
 	s.Require().NoError(err)
 	codeCountBefore := len(infos.Array())
 
-	_, err = s.Chain.GetNode().ExecTx(s.GetContext(), interchaintest.FaucetAccountKeyName,
+	_, err = s.Chain.GetNode().ExecTx(s.GetContext(), s.DelegatorWallet.FormattedAddress(),
 		"wasm", "store", s.ContractPath,
 	)
 	s.Require().Error(err)
@@ -73,7 +73,7 @@ func (s *CosmWasmSuite) TestCantStoreWithoutProp() {
 }
 
 func (s *CosmWasmSuite) TestCantInstantiateWithoutProp() {
-	_, err := s.Chain.GetNode().ExecTx(s.GetContext(), interchaintest.FaucetAccountKeyName,
+	_, err := s.Chain.GetNode().ExecTx(s.GetContext(), s.DelegatorWallet.FormattedAddress(),
 		"wasm", "instantiate", s.PreUpgradeContractCode, initState, "--label", "my-contract", "--no-admin",
 	)
 	s.Require().Error(err)
@@ -97,14 +97,14 @@ func (s *CosmWasmSuite) TestCreateNewContract() {
 }
 
 func (s *CosmWasmSuite) executeContractByTx(contractAddr string) {
-	_, err := s.Chain.GetNode().ExecTx(s.GetContext(), interchaintest.FaucetAccountKeyName,
+	_, err := s.Chain.GetNode().ExecTx(s.GetContext(), s.DelegatorWallet.FormattedAddress(),
 		"wasm", "execute", contractAddr, increment,
 	)
 	s.Require().NoError(err)
 }
 
 func (s *CosmWasmSuite) executeContractByProposal(contractAddr string) {
-	txhash, err := s.Chain.GetNode().ExecTx(s.GetContext(), interchaintest.FaucetAccountKeyName,
+	txhash, err := s.Chain.GetNode().ExecTx(s.GetContext(), s.DelegatorWallet.FormattedAddress(),
 		"wasm", "submit-proposal", "execute-contract",
 		contractAddr, increment,
 		"--title", "Increment count",
@@ -131,7 +131,7 @@ func (s *CosmWasmSuite) storeInstantiateProposal(initState string) (string, stri
 	govAddr, err := s.Chain.GetGovernanceAddress(s.GetContext())
 	s.Require().NoError(err)
 
-	txhash, err := s.Chain.GetNode().ExecTx(s.GetContext(), interchaintest.FaucetAccountKeyName,
+	txhash, err := s.Chain.GetNode().ExecTx(s.GetContext(), s.DelegatorWallet.FormattedAddress(),
 		"wasm", "submit-proposal", "store-instantiate",
 		s.ContractPath,
 		initState, "--label", "my-contract",
@@ -160,7 +160,7 @@ func (s *CosmWasmSuite) storeInstantiateProposal(initState string) (string, stri
 
 func TestCosmWasm(t *testing.T) {
 	s := &CosmWasmSuite{
-		Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{UpgradeOnSetup: false}),
+		Suite: &delegator.Suite{Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{UpgradeOnSetup: false})},
 	}
 	suite.Run(t, s)
 }

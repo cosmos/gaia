@@ -1,4 +1,4 @@
-package interchain_test
+package consumer_chain_test
 
 import (
 	"context"
@@ -402,7 +402,7 @@ func (s *PermissionlessConsumersSuite) TestConsumerCommissionRate() {
 	s.Require().NoError(err)
 	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), consumer2, s.Relayer, 1_000_000, 0, 1))
 
-	for i := 1; i < chainsuite.ValidatorCount; i++ {
+	for i := 1; i < len(consumer1.Validators); i++ {
 		s.Require().NoError(consumer1.Validators[i].StopContainer(s.GetContext()))
 		s.Require().NoError(consumer2.Validators[i].StopContainer(s.GetContext()))
 	}
@@ -686,6 +686,7 @@ func TestPermissionlessConsumers(t *testing.T) {
 			CreateRelayer: true,
 			Scope:         chainsuite.ChainScopeTest,
 			ChainSpec: &interchaintest.ChainSpec{
+				NumValidators: &chainsuite.SixValidators,
 				ChainConfig: ibc.ChainConfig{
 					ModifyGenesis: cosmos.ModifyGenesis(genesis),
 				},
@@ -700,6 +701,7 @@ func TestPermissionlessConsumers(t *testing.T) {
 			AllowInactiveVals:     true,
 			MinStake:              1_000_000,
 			Spec: &interchaintest.ChainSpec{
+				NumValidators: &chainsuite.SixValidators,
 				ChainConfig: ibc.ChainConfig{
 					Images: []ibc.DockerImage{
 						{

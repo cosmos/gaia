@@ -1,4 +1,4 @@
-package interchain_test
+package delegator_test
 
 import (
 	"encoding/json"
@@ -267,7 +267,7 @@ func (s *LSMSuite) TestICADelegate() {
 	})
 	s.Require().NoError(err)
 
-	providerWallet := s.Chain.ValidatorWallets[1]
+	providerWallet := s.Chain.ValidatorWallets[0]
 
 	strideWallet := s.Stride.ValidatorWallets[0]
 

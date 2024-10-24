@@ -3,16 +3,20 @@ package interchain_test
 import (
 	"testing"
 
+	"github.com/strangelove-ventures/interchaintest/v8"
+	"github.com/strangelove-ventures/interchaintest/v8/ibc"
 	"github.com/stretchr/testify/suite"
+	"golang.org/x/mod/semver"
 
 	"github.com/cosmos/gaia/v21/tests/interchain/chainsuite"
 )
 
 type ConsumerLaunchSuite struct {
 	*chainsuite.Suite
-	OtherChain            string
-	OtherChainVersion     string
-	ShouldCopyProviderKey [chainsuite.ValidatorCount]bool
+	OtherChain                   string
+	OtherChainVersionPreUpgrade  string
+	OtherChainVersionPostUpgrade string
+	ShouldCopyProviderKey        [chainsuite.ValidatorCount]bool
 }
 
 func noProviderKeysCopied() [chainsuite.ValidatorCount]bool {
@@ -30,10 +34,21 @@ func someProviderKeysCopied() [chainsuite.ValidatorCount]bool {
 func (s *ConsumerLaunchSuite) TestChainLaunch() {
 	cfg := chainsuite.ConsumerConfig{
 		ChainName:             s.OtherChain,
-		Version:               s.OtherChainVersion,
+		Version:               s.OtherChainVersionPreUpgrade,
 		ShouldCopyProviderKey: s.ShouldCopyProviderKey,
 		Denom:                 chainsuite.Ucon,
 		TopN:                  94,
+		Spec: &interchaintest.ChainSpec{
+			ChainConfig: ibc.ChainConfig{
+				Images: []ibc.DockerImage{
+					{
+						Repository: chainsuite.HyphaICSRepo,
+						Version:    s.OtherChainVersionPreUpgrade,
+						UidGid:     chainsuite.ICSUidGuid,
+					},
+				},
+			},
+		},
 	}
 	consumer, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, cfg)
 	s.Require().NoError(err)
@@ -53,6 +68,8 @@ func (s *ConsumerLaunchSuite) TestChainLaunch() {
 	s.Require().NoError(err)
 	s.Require().False(jailed, "validator 5 should not be jailed for downtime")
 
+	cfg.Version = s.OtherChainVersionPostUpgrade
+	cfg.Spec.ChainConfig.Images[0].Version = s.OtherChainVersionPostUpgrade
 	consumer2, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, cfg)
 	s.Require().NoError(err)
 	err = s.Chain.CheckCCV(s.GetContext(), consumer2, s.Relayer, 1_000_000, 0, 1)
@@ -67,42 +84,53 @@ func (s *ConsumerLaunchSuite) TestChainLaunch() {
 	s.Require().False(jailed, "validator 5 should not be jailed for downtime")
 }
 
-func TestICS40ChainLaunch(t *testing.T) {
+func selectConsumerVersion(preV21, postV21 string) string {
+	if semver.Compare(semver.Major(chainsuite.GetEnvironment().OldGaiaImageVersion), "v21") >= 0 {
+		return postV21
+	}
+	return preV21
+}
+
+func TestICS4ChainLaunch(t *testing.T) {
 	s := &ConsumerLaunchSuite{
-		Suite:                 chainsuite.NewSuite(chainsuite.SuiteConfig{CreateRelayer: true}),
-		OtherChain:            "ics-consumer",
-		OtherChainVersion:     "v4.0.0",
-		ShouldCopyProviderKey: noProviderKeysCopied(),
+		Suite:                        chainsuite.NewSuite(chainsuite.SuiteConfig{CreateRelayer: true}),
+		OtherChain:                   "ics-consumer",
+		OtherChainVersionPreUpgrade:  selectConsumerVersion("v4.4.1", "v4.5.0"),
+		OtherChainVersionPostUpgrade: "v4.5.0",
+		ShouldCopyProviderKey:        noProviderKeysCopied(),
 	}
 	suite.Run(t, s)
 }
 
-func TestICS33ConsumerAllKeysChainLaunch(t *testing.T) {
+func TestICS6ConsumerAllKeysChainLaunch(t *testing.T) {
 	s := &ConsumerLaunchSuite{
-		Suite:                 chainsuite.NewSuite(chainsuite.SuiteConfig{CreateRelayer: true}),
-		OtherChain:            "ics-consumer",
-		OtherChainVersion:     "v3.3.0",
-		ShouldCopyProviderKey: allProviderKeysCopied(),
+		Suite:                        chainsuite.NewSuite(chainsuite.SuiteConfig{CreateRelayer: true}),
+		OtherChain:                   "ics-consumer",
+		OtherChainVersionPreUpgrade:  selectConsumerVersion("v6.0.0", "v6.2.1"),
+		OtherChainVersionPostUpgrade: "v6.2.1",
+		ShouldCopyProviderKey:        allProviderKeysCopied(),
 	}
 	suite.Run(t, s)
 }
 
-func TestICS33ConsumerSomeKeysChainLaunch(t *testing.T) {
+func TestICS6ConsumerSomeKeysChainLaunch(t *testing.T) {
 	s := &ConsumerLaunchSuite{
-		Suite:                 chainsuite.NewSuite(chainsuite.SuiteConfig{CreateRelayer: true}),
-		OtherChain:            "ics-consumer",
-		OtherChainVersion:     "v3.3.0",
-		ShouldCopyProviderKey: someProviderKeysCopied(),
+		Suite:                        chainsuite.NewSuite(chainsuite.SuiteConfig{CreateRelayer: true}),
+		OtherChain:                   "ics-consumer",
+		OtherChainVersionPreUpgrade:  selectConsumerVersion("v6.0.0", "v6.2.1"),
+		OtherChainVersionPostUpgrade: "v6.2.1",
+		ShouldCopyProviderKey:        someProviderKeysCopied(),
 	}
 	suite.Run(t, s)
 }
 
-func TestICS33ConsumerNoKeysChainLaunch(t *testing.T) {
+func TestICS6ConsumerNoKeysChainLaunch(t *testing.T) {
 	s := &ConsumerLaunchSuite{
-		Suite:                 chainsuite.NewSuite(chainsuite.SuiteConfig{CreateRelayer: true}),
-		OtherChain:            "ics-consumer",
-		OtherChainVersion:     "v3.3.0",
-		ShouldCopyProviderKey: noProviderKeysCopied(),
+		Suite:                        chainsuite.NewSuite(chainsuite.SuiteConfig{CreateRelayer: true}),
+		OtherChain:                   "ics-consumer",
+		OtherChainVersionPreUpgrade:  selectConsumerVersion("v6.0.0", "v6.2.1"),
+		OtherChainVersionPostUpgrade: "v6.2.1",
+		ShouldCopyProviderKey:        noProviderKeysCopied(),
 	}
 	suite.Run(t, s)
 }
@@ -112,12 +140,13 @@ type MainnetConsumerChainsSuite struct {
 }
 
 func (s *MainnetConsumerChainsSuite) TestMainnetConsumerChainsAfterUpgrade() {
-	const neutronVersion = "v3.0.2"
-	const strideVersion = "v22.0.0"
-
+	// We can't do these consumer launches yet because the chains aren't compatible with launching on v21 yet
+	if semver.Major(s.Env.OldGaiaImageVersion) == s.Env.UpgradeName && s.Env.UpgradeName == "v21" {
+		s.T().Skip("Skipping Consumer Launch tests when going from v21 -> v21")
+	}
 	neutron, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, chainsuite.ConsumerConfig{
 		ChainName:             "neutron",
-		Version:               neutronVersion,
+		Version:               chainsuite.NeutronVersion,
 		ShouldCopyProviderKey: allProviderKeysCopied(),
 		Denom:                 chainsuite.NeutronDenom,
 		TopN:                  95,
@@ -125,7 +154,7 @@ func (s *MainnetConsumerChainsSuite) TestMainnetConsumerChainsAfterUpgrade() {
 	s.Require().NoError(err)
 	stride, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, chainsuite.ConsumerConfig{
 		ChainName:             "stride",
-		Version:               strideVersion,
+		Version:               chainsuite.StrideVersion,
 		ShouldCopyProviderKey: allProviderKeysCopied(),
 		Denom:                 chainsuite.StrideDenom,
 		TopN:                  95,

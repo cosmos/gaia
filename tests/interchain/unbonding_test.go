@@ -12,6 +12,7 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
 	"github.com/strangelove-ventures/interchaintest/v8/testutil"
 	"github.com/stretchr/testify/suite"
+	"golang.org/x/mod/semver"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -31,10 +32,21 @@ func (s *UnbondingSuite) SetupSuite() {
 	s.Suite.SetupSuite()
 	cfg := chainsuite.ConsumerConfig{
 		ChainName:             "ics-consumer",
-		Version:               "v5.0.0",
+		Version:               selectConsumerVersion("v6.0.0", "v6.2.1"),
 		ShouldCopyProviderKey: allProviderKeysCopied(),
 		Denom:                 chainsuite.Ucon,
 		TopN:                  100,
+		Spec: &interchaintest.ChainSpec{
+			ChainConfig: ibc.ChainConfig{
+				Images: []ibc.DockerImage{
+					{
+						Repository: chainsuite.HyphaICSRepo,
+						Version:    selectConsumerVersion("v6.0.0", "v6.2.1"),
+						UidGid:     chainsuite.ICSUidGuid,
+					},
+				},
+			},
+		},
 	}
 	consumer, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, cfg)
 	s.Require().NoError(err)
@@ -107,9 +119,14 @@ func (s *UnbondingSuite) TestCanLaunchAfterInitTimeout() {
 
 func TestUnbonding(t *testing.T) {
 	genesis := chainsuite.DefaultGenesis()
+	env := chainsuite.GetEnvironment()
+	if semver.Compare(env.OldGaiaImageVersion, "v20.0.0") < 0 {
+		genesis = append(genesis,
+			cosmos.NewGenesisKV("app_state.provider.params.vsc_timeout_period", vscTimeoutPeriod.String()),
+			cosmos.NewGenesisKV("app_state.provider.params.init_timeout_period", initTimeoutPeriod.String()),
+		)
+	}
 	genesis = append(genesis,
-		cosmos.NewGenesisKV("app_state.provider.params.vsc_timeout_period", vscTimeoutPeriod.String()),
-		cosmos.NewGenesisKV("app_state.provider.params.init_timeout_period", initTimeoutPeriod.String()),
 		cosmos.NewGenesisKV("app_state.staking.params.unbonding_time", unbondingTime.String()),
 	)
 	s := &UnbondingSuite{

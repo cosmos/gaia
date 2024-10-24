@@ -7,11 +7,13 @@ import (
 	"path"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"testing"
 	"time"
 
 	sdkmath "cosmossdk.io/math"
-	govtypes "github.cogaia/v21/cosmos-sdk/x/gov/types/v1"
+	"github.com/cosmos/cosmos-sdk/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/gaia/v21/tests/interchain/chainsuite"
 	transfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 	ccvclient "github.com/cosmos/interchain-security/v5/x/ccv/provider/client"
@@ -21,6 +23,7 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
 	"github.com/strangelove-ventures/interchaintest/v8/testutil"
 	"github.com/stretchr/testify/suite"
+	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
 	"golang.org/x/mod/semver"
 	"golang.org/x/sync/errgroup"
@@ -352,7 +355,7 @@ func (s *PermissionlessConsumersSuite) TestChangePowerShaping() {
 
 	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), consumer, s.Relayer, 1_000_000, 0, 1))
 
-	vals, err := consumer.QueryJSON(s.GetContext(), "validators", "comet-validator-set")
+	vals, err := consumer.QueryJSON(s.GetContext(), "validators", "tendermint-validator-set")
 	s.Require().NoError(err)
 	s.Require().Equal(newValidatorCount, len(vals.Array()), vals)
 	for i := 0; i < newValidatorCount; i++ {
@@ -373,10 +376,28 @@ func (s *PermissionlessConsumersSuite) TestConsumerCommissionRate() {
 		_, err = s.Chain.Validators[0].ExecTx(s.GetContext(), s.Chain.ValidatorWallets[0].Moniker, "provider", "opt-in", consumerID)
 		s.Require().NoError(err)
 	}
+
+	images := []ibc.DockerImage{
+		{
+			Repository: "ghcr.io/hyphacoop/ics",
+			Version:    "v4.5.0",
+			UidGid:     "1025:1025",
+		},
+	}
+	chainID := fmt.Sprintf("%s-test-%d", cfg.ChainName, len(s.Chain.Consumers)+1)
+	spawnTime := time.Now().Add(chainsuite.ChainSpawnWait)
+	cfg.Spec = s.Chain.DefaultConsumerChainSpec(s.GetContext(), chainID, cfg, spawnTime, nil)
+	cfg.Spec.Version = "v4.5.0"
+	cfg.Spec.Images = images
 	consumer1, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, cfg)
 	s.Require().NoError(err)
 	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), consumer1, s.Relayer, 1_000_000, 0, 1))
 
+	chainID = fmt.Sprintf("%s-test-%d", cfg.ChainName, len(s.Chain.Consumers)+1)
+	spawnTime = time.Now().Add(chainsuite.ChainSpawnWait)
+	cfg.Spec = s.Chain.DefaultConsumerChainSpec(s.GetContext(), chainID, cfg, spawnTime, nil)
+	cfg.Spec.Version = "v4.5.0"
+	cfg.Spec.Images = images
 	consumer2, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, cfg)
 	s.Require().NoError(err)
 	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), consumer2, s.Relayer, 1_000_000, 0, 1))
@@ -448,7 +469,9 @@ func (s *PermissionlessConsumersSuite) TestConsumerCommissionRate() {
 	})
 	s.Require().NoError(eg.Wait())
 
-	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), chainsuite.BlocksPerDistribution+3, s.Chain, consumer1, consumer2))
+	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), chainsuite.BlocksPerDistribution+2, s.Chain, consumer1, consumer2))
+	s.Require().NoError(s.Relayer.ClearTransferChannel(s.GetContext(), s.Chain, consumer1))
+	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 2, s.Chain, consumer1, consumer2))
 
 	rewardStr, err := s.Chain.QueryJSON(s.GetContext(), fmt.Sprintf("total.#(%%\"*%s\")", denom1), "distribution", "rewards", s.Chain.ValidatorWallets[0].Address)
 	s.Require().NoError(err)
@@ -491,7 +514,9 @@ func (s *PermissionlessConsumersSuite) TestConsumerCommissionRate() {
 	})
 	s.Require().NoError(eg.Wait())
 
-	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), chainsuite.BlocksPerDistribution+3, s.Chain, consumer1, consumer2))
+	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), chainsuite.BlocksPerDistribution+2, s.Chain, consumer1, consumer2))
+	s.Require().NoError(s.Relayer.ClearTransferChannel(s.GetContext(), s.Chain, consumer1))
+	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 2, s.Chain, consumer1, consumer2))
 
 	rewardStr, err = s.Chain.QueryJSON(s.GetContext(), fmt.Sprintf("total.#(%%\"*%s\")", denom1), "distribution", "rewards", s.Chain.ValidatorWallets[0].Address)
 	s.Require().NoError(err)
@@ -570,6 +595,87 @@ func (s *PermissionlessConsumersSuite) TestLaunchWithAllowListThenModify() {
 	s.Require().Equal(4, len(validators.Array()))
 }
 
+func (s *PermissionlessConsumersSuite) TestRewardsWithChangeover() {
+	validators := 1
+	fullNodes := 0
+	genesisChanges := []cosmos.GenesisKV{
+		cosmos.NewGenesisKV("app_state.gov.params.voting_period", chainsuite.GovVotingPeriod.String()),
+		cosmos.NewGenesisKV("app_state.gov.params.max_deposit_period", chainsuite.GovDepositPeriod.String()),
+		cosmos.NewGenesisKV("app_state.gov.params.min_deposit.0.denom", chainsuite.Ucon),
+		cosmos.NewGenesisKV("app_state.gov.params.min_deposit.0.amount", strconv.Itoa(chainsuite.GovMinDepositAmount)),
+	}
+	spec := &interchaintest.ChainSpec{
+		Name:      "ics-consumer",
+		ChainName: "ics-consumer",
+		// Unfortunately, this rc is a bit of a bespoke version; it corresponds to an rc
+		// in hypha's fork that has a fix for sovereign -> consumer changeovers
+		Version:       "v6.2.0-rc1",
+		NumValidators: &validators,
+		NumFullNodes:  &fullNodes,
+		ChainConfig: ibc.ChainConfig{
+			Denom:         chainsuite.Ucon,
+			GasPrices:     "0.025" + chainsuite.Ucon,
+			GasAdjustment: 2.0,
+			Gas:           "auto",
+			ConfigFileOverrides: map[string]any{
+				"config/config.toml": chainsuite.DefaultConfigToml(),
+			},
+			ModifyGenesisAmounts: chainsuite.DefaultGenesisAmounts(chainsuite.Ucon),
+			ModifyGenesis:        cosmos.ModifyGenesis(genesisChanges),
+			Bin:                  "interchain-security-sd",
+			Images: []ibc.DockerImage{
+				{
+					Repository: chainsuite.HyphaICSRepo,
+					Version:    "v6.2.0-rc1",
+					UidGid:     chainsuite.ICSUidGuid,
+				},
+			},
+			Bech32Prefix: "consumer",
+		},
+	}
+	consumer, err := s.Chain.AddLinkedChain(s.GetContext(), s.T(), s.Relayer, spec)
+	s.Require().NoError(err)
+
+	transferCh, err := s.Relayer.GetTransferChannel(s.GetContext(), s.Chain, consumer)
+	s.Require().NoError(err)
+	rewardDenom := transfertypes.ParseDenomTrace(transfertypes.GetPrefixedDenom("transfer", transferCh.ChannelID, consumer.Config().Denom)).IBCDenom()
+
+	s.UpgradeChain()
+
+	s.changeSovereignToConsumer(consumer, transferCh)
+
+	govAuthority, err := s.Chain.GetGovernanceAddress(s.GetContext())
+	s.Require().NoError(err)
+	rewardDenomsProp := providertypes.MsgChangeRewardDenoms{
+		DenomsToAdd: []string{rewardDenom},
+		Authority:   govAuthority,
+	}
+	prop, err := s.Chain.BuildProposal([]cosmos.ProtoMessage{&rewardDenomsProp},
+		"add denoms to list of registered reward denoms",
+		"add denoms to list of registered reward denoms",
+		"", chainsuite.GovDepositAmount, "", false)
+	s.Require().NoError(err)
+	propResult, err := s.Chain.SubmitProposal(s.GetContext(), s.Chain.ValidatorWallets[0].Moniker, prop)
+	s.Require().NoError(err)
+	s.Require().NoError(s.Chain.PassProposal(s.GetContext(), propResult.ProposalID))
+
+	faucetAddrBts, err := consumer.GetAddress(s.GetContext(), interchaintest.FaucetAccountKeyName)
+	s.Require().NoError(err)
+	faucetAddr := types.MustBech32ifyAddressBytes(consumer.Config().Bech32Prefix, faucetAddrBts)
+	_, err = consumer.Validators[0].ExecTx(s.GetContext(), interchaintest.FaucetAccountKeyName, "bank", "send", string(faucetAddr), consumer.ValidatorWallets[0].Address, "1"+consumer.Config().Denom, "--fees", "100000000"+consumer.Config().Denom)
+	s.Require().NoError(err)
+
+	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), chainsuite.BlocksPerDistribution+2, s.Chain, consumer))
+	s.Require().NoError(s.Relayer.ClearTransferChannel(s.GetContext(), s.Chain, consumer))
+	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 2, s.Chain, consumer))
+
+	rewardStr, err := s.Chain.QueryJSON(s.GetContext(), fmt.Sprintf("total.#(%%\"*%s\")", rewardDenom), "distribution", "rewards", s.Chain.ValidatorWallets[0].Address)
+	s.Require().NoError(err)
+	rewards, err := chainsuite.StrToSDKInt(rewardStr.String())
+	s.Require().NoError(err)
+	s.Require().True(rewards.GT(sdkmath.NewInt(0)), "rewards: %s", rewards.String())
+}
+
 func TestPermissionlessConsumers(t *testing.T) {
 	genesis := chainsuite.DefaultGenesis()
 	genesis = append(genesis,
@@ -587,15 +693,121 @@ func TestPermissionlessConsumers(t *testing.T) {
 		}),
 		consumerCfg: chainsuite.ConsumerConfig{
 			ChainName:             "ics-consumer",
-			Version:               "v5.0.0",
+			Version:               "v4.5.0",
 			ShouldCopyProviderKey: allProviderKeysCopied(),
 			Denom:                 chainsuite.Ucon,
 			TopN:                  100,
 			AllowInactiveVals:     true,
 			MinStake:              1_000_000,
+			Spec: &interchaintest.ChainSpec{
+				ChainConfig: ibc.ChainConfig{
+					Images: []ibc.DockerImage{
+						{
+							Repository: chainsuite.HyphaICSRepo,
+							Version:    "v4.5.0",
+							UidGid:     chainsuite.ICSUidGuid,
+						},
+					},
+				},
+			},
 		},
 	}
 	suite.Run(t, s)
+}
+
+func (s *PermissionlessConsumersSuite) changeSovereignToConsumer(consumer *chainsuite.Chain, transferCh *ibc.ChannelOutput) {
+	cfg := s.consumerCfg
+	cfg.TopN = 0
+	currentHeight, err := consumer.Height(s.GetContext())
+	s.Require().NoError(err)
+	initialHeight := uint64(currentHeight) + 60
+	cfg.InitialHeight = initialHeight
+	spawnTime := time.Now().Add(60 * time.Second)
+	cfg.DistributionTransmissionChannel = transferCh.ChannelID
+
+	err = s.Chain.CreateConsumerPermissionless(s.GetContext(), consumer.Config().ChainID, cfg, spawnTime)
+	s.Require().NoError(err)
+
+	consumerChains, _, err := s.Chain.GetNode().ExecQuery(s.GetContext(), "provider", "list-consumer-chains")
+	s.Require().NoError(err)
+	consumerChain := gjson.GetBytes(consumerChains, fmt.Sprintf("chains.#(chain_id=%q)", consumer.Config().ChainID))
+	consumerID := consumerChain.Get("consumer_id").String()
+
+	eg := errgroup.Group{}
+	for i := range consumer.Validators {
+		i := i
+		eg.Go(func() error {
+			key, _, err := consumer.Validators[i].ExecBin(s.GetContext(), "tendermint", "show-validator")
+			if err != nil {
+				return err
+			}
+			keyStr := strings.TrimSpace(string(key))
+			_, err = s.Chain.Validators[i].ExecTx(s.GetContext(), s.Chain.ValidatorWallets[i].Moniker, "provider", "opt-in", consumerID, keyStr)
+			return err
+		})
+	}
+	s.Require().NoError(eg.Wait())
+
+	s.Require().NoError(err)
+	time.Sleep(time.Until(spawnTime))
+	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 2, s.Chain))
+
+	proposal := cosmos.SoftwareUpgradeProposal{
+		Deposit:     "5000000" + chainsuite.Ucon,
+		Title:       "Changeover",
+		Name:        "sovereign-changeover",
+		Description: "Changeover",
+		Height:      int64(initialHeight) - 3,
+	}
+	upgradeTx, err := consumer.UpgradeProposal(s.GetContext(), interchaintest.FaucetAccountKeyName, proposal)
+	s.Require().NoError(err)
+	err = consumer.PassProposal(s.GetContext(), upgradeTx.ProposalID)
+	s.Require().NoError(err)
+
+	currentHeight, err = consumer.Height(s.GetContext())
+	s.Require().NoError(err)
+
+	timeoutCtx, timeoutCtxCancel := context.WithTimeout(s.GetContext(), (time.Duration(int64(initialHeight)-currentHeight)+10)*chainsuite.CommitTimeout)
+	defer timeoutCtxCancel()
+	err = testutil.WaitForBlocks(timeoutCtx, int(int64(initialHeight)-currentHeight)+3, consumer)
+	s.Require().Error(err)
+
+	s.Require().NoError(consumer.StopAllNodes(s.GetContext()))
+
+	genesis, err := consumer.GetNode().GenesisFileContent(s.GetContext())
+	s.Require().NoError(err)
+
+	ccvState, _, err := s.Chain.GetNode().ExecQuery(s.GetContext(), "provider", "consumer-genesis", consumerID)
+	s.Require().NoError(err)
+	genesis, err = sjson.SetRawBytes(genesis, "app_state.ccvconsumer", ccvState)
+	s.Require().NoError(err)
+
+	genesis, err = sjson.SetBytes(genesis, "app_state.slashing.params.signed_blocks_window", strconv.Itoa(chainsuite.SlashingWindowConsumer))
+	s.Require().NoError(err)
+	genesis, err = sjson.SetBytes(genesis, "app_state.ccvconsumer.params.reward_denoms", []string{chainsuite.Ucon})
+	s.Require().NoError(err)
+	genesis, err = sjson.SetBytes(genesis, "app_state.ccvconsumer.params.provider_reward_denoms", []string{s.Chain.Config().Denom})
+	s.Require().NoError(err)
+	genesis, err = sjson.SetBytes(genesis, "app_state.ccvconsumer.params.blocks_per_distribution_transmission", chainsuite.BlocksPerDistribution)
+	s.Require().NoError(err)
+
+	for _, val := range consumer.Validators {
+		val := val
+		eg.Go(func() error {
+			if err := val.OverwriteGenesisFile(s.GetContext(), []byte(genesis)); err != nil {
+				return err
+			}
+			return val.WriteFile(s.GetContext(), []byte(genesis), ".sovereign/config/genesis.json")
+		})
+	}
+	s.Require().NoError(eg.Wait())
+
+	consumer.ChangeBinary(s.GetContext(), "interchain-security-cdd")
+	s.Require().NoError(consumer.StartAllNodes(s.GetContext()))
+	s.Require().NoError(s.Relayer.ConnectProviderConsumer(s.GetContext(), s.Chain, consumer))
+	s.Require().NoError(s.Relayer.StopRelayer(s.GetContext(), chainsuite.GetRelayerExecReporter(s.GetContext())))
+	s.Require().NoError(s.Relayer.StartRelayer(s.GetContext(), chainsuite.GetRelayerExecReporter(s.GetContext())))
+	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), consumer, s.Relayer, 1_000_000, 0, 1))
 }
 
 func (s *PermissionlessConsumersSuite) submitChangeRewardDenoms(consumer *chainsuite.Chain) (string, string) {

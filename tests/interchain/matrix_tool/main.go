@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math/rand/v2"
 	"os"
 	"os/exec"
 	"path"
@@ -105,6 +106,9 @@ func GetTestList() ([]string, error) {
 			retval = append(retval, line)
 		}
 	}
+	rand.Shuffle(len(retval), func(i, j int) {
+		retval[i], retval[j] = retval[j], retval[i]
+	})
 	return retval, nil
 }
 

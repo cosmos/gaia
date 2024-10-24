@@ -237,10 +237,10 @@ func (c *Chain) GetValidatorHex(ctx context.Context, val int) (string, error) {
 }
 
 func getValidatorWallets(ctx context.Context, chain *Chain) ([]ValidatorWallet, error) {
-	wallets := make([]ValidatorWallet, ValidatorCount)
+	wallets := make([]ValidatorWallet, len(chain.Validators))
 	lock := new(sync.Mutex)
 	eg := new(errgroup.Group)
-	for i := 0; i < ValidatorCount; i++ {
+	for i := range chain.Validators {
 		i := i
 		eg.Go(func() error {
 			// This moniker is hardcoded into the chain's genesis process.
@@ -308,4 +308,150 @@ func (c *Chain) GetProposalID(ctx context.Context, txhash string) (string, error
 		}
 	}
 	return "", fmt.Errorf("proposal ID not found in tx %s", txhash)
+}
+
+func (c *Chain) hasOrderingFlag(ctx context.Context) (bool, error) {
+	cmd := c.GetNode().BinCommand("tx", "interchain-accounts", "controller", "register", "--help")
+	stdout, _, err := c.GetNode().Exec(ctx, cmd, nil)
+	if err != nil {
+		return false, err
+	}
+	return strings.Contains(string(stdout), "ordering"), nil
+}
+
+func (c *Chain) GetICAAddress(ctx context.Context, srcAddress string, srcConnection string) string {
+	var icaAddress string
+
+	// it takes a moment for it to be created
+	timeoutCtx, timeoutCancel := context.WithTimeout(ctx, 90*time.Second)
+	defer timeoutCancel()
+	for timeoutCtx.Err() == nil {
+		time.Sleep(5 * time.Second)
+		stdout, _, err := c.GetNode().ExecQuery(timeoutCtx,
+			"interchain-accounts", "controller", "interchain-account",
+			srcAddress, srcConnection,
+		)
+		if err != nil {
+			GetLogger(ctx).Sugar().Warnf("error querying interchain account: %s", err)
+			continue
+		}
+		result := map[string]interface{}{}
+		err = json.Unmarshal(stdout, &result)
+		if err != nil {
+			GetLogger(ctx).Sugar().Warnf("error unmarshalling interchain account: %s", err)
+			continue
+		}
+		icaAddress = result["address"].(string)
+		if icaAddress != "" {
+			break
+		}
+	}
+	return icaAddress
+}
+
+func (c *Chain) SetupICAAccount(ctx context.Context, host *Chain, relayer *Relayer, srcAddress string, valIdx int, initialFunds int64) (string, error) {
+	srcChannel, err := relayer.GetTransferChannel(ctx, c, host)
+	if err != nil {
+		return "", err
+	}
+	srcConnection := srcChannel.ConnectionHops[0]
+
+	hasOrdering, err := c.hasOrderingFlag(ctx)
+	if err != nil {
+		return "", err
+	}
+
+	if hasOrdering {
+		_, err = c.Validators[valIdx].ExecTx(ctx, srcAddress,
+			"interchain-accounts", "controller", "register",
+			"--ordering", "ORDER_ORDERED", "--version", "",
+			srcConnection,
+		)
+	} else {
+		_, err = c.Validators[valIdx].ExecTx(ctx, srcAddress,
+			"interchain-accounts", "controller", "register",
+			srcConnection,
+		)
+	}
+	if err != nil {
+		return "", err
+	}
+
+	icaAddress := c.GetICAAddress(ctx, srcAddress, srcConnection)
+	if icaAddress == "" {
+		return "", fmt.Errorf("ICA address not found")
+	}
+
+	err = host.SendFunds(ctx, interchaintest.FaucetAccountKeyName, ibc.WalletAmount{
+		Denom:   host.Config().Denom,
+		Amount:  sdkmath.NewInt(initialFunds),
+		Address: icaAddress,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	return icaAddress, nil
+}
+
+func (c *Chain) AddLinkedChain(ctx context.Context, testName interchaintest.TestName, relayer *Relayer, spec *interchaintest.ChainSpec) (*Chain, error) {
+	dockerClient, dockerNetwork := GetDockerContext(ctx)
+
+	cf := interchaintest.NewBuiltinChainFactory(
+		GetLogger(ctx),
+		[]*interchaintest.ChainSpec{spec},
+	)
+
+	chains, err := cf.Chains(testName.Name())
+	if err != nil {
+		return nil, err
+	}
+	cosmosChainB := chains[0].(*cosmos.CosmosChain)
+	relayerWallet, err := cosmosChainB.BuildRelayerWallet(ctx, "relayer-"+cosmosChainB.Config().ChainID)
+	if err != nil {
+		return nil, err
+	}
+
+	ic := interchaintest.NewInterchain().AddChain(cosmosChainB, ibc.WalletAmount{
+		Address: relayerWallet.FormattedAddress(),
+		Denom:   cosmosChainB.Config().Denom,
+		Amount:  sdkmath.NewInt(ValidatorFunds),
+	})
+
+	if err := ic.Build(ctx, GetRelayerExecReporter(ctx), interchaintest.InterchainBuildOptions{
+		Client:    dockerClient,
+		NetworkID: dockerNetwork,
+		TestName:  testName.Name(),
+	}); err != nil {
+		return nil, err
+	}
+
+	chainB, err := chainFromCosmosChain(cosmosChainB, relayerWallet)
+	if err != nil {
+		return nil, err
+	}
+	rep := GetRelayerExecReporter(ctx)
+	if err := relayer.SetupChainKeys(ctx, chainB); err != nil {
+		return nil, err
+	}
+	if err := relayer.StopRelayer(ctx, rep); err != nil {
+		return nil, err
+	}
+	if err := relayer.StartRelayer(ctx, rep); err != nil {
+		return nil, err
+	}
+
+	if err := relayer.GeneratePath(ctx, rep, c.Config().ChainID, chainB.Config().ChainID, relayerTransferPathFor(c, chainB)); err != nil {
+		return nil, err
+	}
+
+	if err := relayer.LinkPath(ctx, rep, relayerTransferPathFor(c, chainB), ibc.CreateChannelOptions{
+		DestPortName:   TransferPortID,
+		SourcePortName: TransferPortID,
+		Order:          ibc.Unordered,
+	}, ibc.DefaultClientOpts()); err != nil {
+		return nil, err
+	}
+
+	return chainB, nil
 }

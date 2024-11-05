@@ -42,7 +42,7 @@ jobs:
             matrix:
                 ${{fromJson(needs.prepare-matrix.outputs.matrix)}}
             fail-fast: false
-            max-parallel: 3
+            max-parallel: 10
         steps:
             - name: Check out repository code
               uses: actions/checkout@v4

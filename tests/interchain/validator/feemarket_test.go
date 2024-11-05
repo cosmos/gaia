@@ -1,4 +1,4 @@
-package interchain_test
+package validator_test
 
 import (
 	"encoding/json"
@@ -186,29 +186,11 @@ done
 }
 
 func (s *FeemarketSuite) setCommitTimeout(timeout time.Duration) {
-	eg := errgroup.Group{}
-	for _, val := range s.Chain.Validators {
-		val := val
-		eg.Go(func() error {
-			configToml := make(testutil.Toml)
-			consensusToml := make(testutil.Toml)
-			consensusToml["timeout_commit"] = timeout.String()
-			configToml["consensus"] = consensusToml
-			if err := testutil.ModifyTomlConfigFile(
-				s.GetContext(), chainsuite.GetLogger(s.GetContext()),
-				val.DockerClient, s.T().Name(), val.VolumeName,
-				"config/config.toml", configToml,
-			); err != nil {
-				return err
-			}
-			if err := val.StopContainer(s.GetContext()); err != nil {
-				return err
-			}
-			return val.StartContainer(s.GetContext())
-		})
-	}
-	s.Require().NoError(eg.Wait())
-	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 1, s.Chain))
+	configToml := make(testutil.Toml)
+	consensusToml := make(testutil.Toml)
+	consensusToml["timeout_commit"] = timeout.String()
+	configToml["consensus"] = consensusToml
+	s.Chain.ModifyConfig(s.GetContext(), s.T(), map[string]testutil.Toml{"config/config.toml": configToml})
 }
 
 func TestFeemarket(t *testing.T) {

@@ -1,19 +1,24 @@
-package interchain_test
+package delegator_test
 
 import (
 	"encoding/json"
 	"testing"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/cosmos/gaia/v21/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v21/tests/interchain/delegator"
 	transfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
+	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
 
 type PFMSuite struct {
-	*chainsuite.Suite
-	Chains []*chainsuite.Chain
+	*delegator.Suite
+	Chains           []*chainsuite.Chain
+	ADelegatorWallet ibc.Wallet
+	DDelegatorWallet ibc.Wallet
 }
 
 func (s *PFMSuite) SetupSuite() {
@@ -26,6 +31,16 @@ func (s *PFMSuite) SetupSuite() {
 	s.Require().NoError(err)
 
 	s.Chains = []*chainsuite.Chain{s.Chain, chainB, chainC, chainD}
+	s.ADelegatorWallet = s.DelegatorWallet
+	wallet, err := chainD.BuildWallet(s.GetContext(), "delegator", "")
+	s.Require().NoError(err)
+	s.DDelegatorWallet = wallet
+	err = chainD.SendFunds(s.GetContext(), interchaintest.FaucetAccountKeyName, ibc.WalletAmount{
+		Address: s.DDelegatorWallet.FormattedAddress(),
+		Amount:  sdkmath.NewInt(100_000_000_000),
+		Denom:   chainD.Config().Denom,
+	})
+	s.Require().NoError(err)
 }
 
 func (s *PFMSuite) TestPFMHappyPath() {
@@ -50,11 +65,7 @@ func (s *PFMSuite) TestPFMHappyPath() {
 	}
 	targetDenomDA = transfertypes.ParseDenomTrace(targetDenomDA).IBCDenom()
 
-	dWallet1 := s.Chains[3].ValidatorWallets[0]
-
-	aWallet1 := s.Chains[0].ValidatorWallets[0]
-
-	dStartBalance, err := s.Chains[3].GetBalance(s.GetContext(), dWallet1.Address, targetDenomAD)
+	dStartBalance, err := s.Chains[3].GetBalance(s.GetContext(), s.DDelegatorWallet.FormattedAddress(), targetDenomAD)
 	s.Require().NoError(err)
 
 	timeout := "10m"
@@ -66,7 +77,7 @@ func (s *PFMSuite) TestPFMHappyPath() {
 			"timeout":  timeout,
 			"next": map[string]interface{}{
 				"forward": map[string]interface{}{
-					"receiver": dWallet1.Address,
+					"receiver": s.DDelegatorWallet.FormattedAddress(),
 					"port":     "transfer",
 					"channel":  forwardChannels[2].ChannelID,
 					"timeout":  timeout,
@@ -76,19 +87,19 @@ func (s *PFMSuite) TestPFMHappyPath() {
 	}
 	memoBytes, err := json.Marshal(memo)
 	s.Require().NoError(err)
-	_, err = s.Chains[0].GetNode().ExecTx(s.GetContext(), aWallet1.Address,
+	_, err = s.Chains[0].GetNode().ExecTx(s.GetContext(), s.ADelegatorWallet.FormattedAddress(),
 		"ibc-transfer", "transfer", "transfer", forwardChannels[0].ChannelID, "pfm", "1000000"+s.Chains[0].Config().Denom,
 		"--memo", string(memoBytes))
 	s.Require().NoError(err)
 
 	s.Require().EventuallyWithT(func(c *assert.CollectT) {
-		dEndBalance, err := s.Chains[3].GetBalance(s.GetContext(), dWallet1.Address, targetDenomAD)
+		dEndBalance, err := s.Chains[3].GetBalance(s.GetContext(), s.DDelegatorWallet.FormattedAddress(), targetDenomAD)
 		assert.NoError(c, err)
 		assert.Truef(c, dEndBalance.Sub(dStartBalance).IsPositive(), "expected %d - %d > 0 (it was %d) in %s",
 			dEndBalance, dStartBalance, dEndBalance.Sub(dStartBalance), targetDenomAD)
 	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "chain D balance has not increased")
 
-	aStartBalance, err := s.Chains[0].GetBalance(s.GetContext(), aWallet1.Address, targetDenomDA)
+	aStartBalance, err := s.Chains[0].GetBalance(s.GetContext(), s.ADelegatorWallet.FormattedAddress(), targetDenomDA)
 	s.Require().NoError(err)
 
 	memo = map[string]interface{}{
@@ -99,7 +110,7 @@ func (s *PFMSuite) TestPFMHappyPath() {
 			"timeout":  timeout,
 			"next": map[string]interface{}{
 				"forward": map[string]interface{}{
-					"receiver": aWallet1.Address,
+					"receiver": s.ADelegatorWallet.FormattedAddress(),
 					"port":     "transfer",
 					"channel":  backwardChannels[0].ChannelID,
 					"timeout":  timeout,
@@ -109,13 +120,13 @@ func (s *PFMSuite) TestPFMHappyPath() {
 	}
 	memoBytes, err = json.Marshal(memo)
 	s.Require().NoError(err)
-	_, err = s.Chains[3].GetNode().ExecTx(s.GetContext(), dWallet1.Address,
+	_, err = s.Chains[3].GetNode().ExecTx(s.GetContext(), s.DDelegatorWallet.FormattedAddress(),
 		"ibc-transfer", "transfer", "transfer", backwardChannels[2].ChannelID, "pfm", "1000000"+s.Chains[3].Config().Denom,
 		"--memo", string(memoBytes))
 	s.Require().NoError(err)
 
 	s.Require().EventuallyWithT(func(c *assert.CollectT) {
-		aEndBalance, err := s.Chains[0].GetBalance(s.GetContext(), aWallet1.Address, targetDenomDA)
+		aEndBalance, err := s.Chains[0].GetBalance(s.GetContext(), s.ADelegatorWallet.FormattedAddress(), targetDenomDA)
 		assert.NoError(c, err)
 		assert.Truef(c, aEndBalance.Sub(aStartBalance).IsPositive(), "expected %d - %d > 0 (it was %d) in %s",
 			aEndBalance, aStartBalance, aEndBalance.Sub(aStartBalance), targetDenomDA)
@@ -125,9 +136,9 @@ func (s *PFMSuite) TestPFMHappyPath() {
 
 func TestPFM(t *testing.T) {
 	s := &PFMSuite{
-		Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
+		Suite: &delegator.Suite{Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
 			UpgradeOnSetup: true,
 			CreateRelayer:  true,
-		})}
+		})}}
 	suite.Run(t, s)
 }

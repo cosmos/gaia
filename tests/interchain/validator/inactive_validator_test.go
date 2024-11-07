@@ -1,4 +1,4 @@
-package interchain_test
+package validator_test
 
 import (
 	"encoding/json"
@@ -20,12 +20,12 @@ const (
 	maxProviderConsensusValidators = 4
 )
 
-type ConsensusSuite struct {
+type InactiveValidatorsSuite struct {
 	*chainsuite.Suite
 	Consumer *chainsuite.Chain
 }
 
-func (s *ConsensusSuite) SetupSuite() {
+func (s *InactiveValidatorsSuite) SetupSuite() {
 	s.Suite.SetupSuite()
 	authority, err := s.Chain.GetGovernanceAddress(s.GetContext())
 	s.Require().NoError(err)
@@ -94,7 +94,7 @@ func (s *ConsensusSuite) SetupSuite() {
 	cfg := chainsuite.ConsumerConfig{
 		ChainName:             "ics-consumer",
 		Version:               "v6.2.1",
-		ShouldCopyProviderKey: allProviderKeysCopied(),
+		ShouldCopyProviderKey: []bool{true, true, true, true, true, true},
 		Denom:                 chainsuite.Ucon,
 		TopN:                  100,
 		AllowInactiveVals:     true,
@@ -119,7 +119,7 @@ func (s *ConsensusSuite) SetupSuite() {
 }
 
 // This is called 0ValidatorSets because it should run first; if the validator sets are wrong, obviously the other tests will fail
-func (s *ConsensusSuite) Test0ValidatorSets() {
+func (s *InactiveValidatorsSuite) Test0ValidatorSets() {
 	vals, err := s.Chain.QueryJSON(s.GetContext(), "validators", "tendermint-validator-set")
 	s.Require().NoError(err)
 	s.Require().Equal(maxProviderConsensusValidators, len(vals.Array()), vals)
@@ -139,20 +139,20 @@ func (s *ConsensusSuite) Test0ValidatorSets() {
 	}
 }
 
-func (s *ConsensusSuite) TestProviderJailing() {
+func (s *InactiveValidatorsSuite) TestProviderJailing() {
 	for i := 1; i < maxProviderConsensusValidators; i++ {
 		jailed, err := s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), s.Relayer, s.Chain, i)
 		s.Require().NoError(err)
 		s.Assert().True(jailed, "validator %d should be jailed", i)
 	}
-	for i := maxProviderConsensusValidators; i < chainsuite.ValidatorCount; i++ {
+	for i := maxProviderConsensusValidators; i < len(s.Chain.Validators); i++ {
 		jailed, err := s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), s.Relayer, s.Chain, i)
 		s.Require().NoError(err)
 		s.Assert().False(jailed, "validator %d should not be jailed", i)
 	}
 }
 
-func (s *ConsensusSuite) TestConsumerJailing() {
+func (s *InactiveValidatorsSuite) TestConsumerJailing() {
 	for i := 1; i < maxProviderConsensusValidators; i++ {
 		jailed, err := s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), s.Relayer, s.Consumer, i)
 		s.Require().NoError(err)
@@ -161,14 +161,14 @@ func (s *ConsensusSuite) TestConsumerJailing() {
 	// Validator 4 will have been opted in automatically when the other ones went down
 	_, err := s.Chain.Validators[maxProviderConsensusValidators].ExecTx(s.GetContext(), s.Chain.ValidatorWallets[maxProviderConsensusValidators].Moniker, "provider", "opt-out", s.getConsumerID())
 	s.Require().NoError(err)
-	for i := maxProviderConsensusValidators; i < chainsuite.ValidatorCount; i++ {
+	for i := maxProviderConsensusValidators; i < len(s.Chain.Validators); i++ {
 		jailed, err := s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), s.Relayer, s.Consumer, i)
 		s.Require().NoError(err)
 		s.Assert().False(jailed, "validator %d should not be jailed", i)
 	}
 }
 
-func (s *ConsensusSuite) TestOptInInactive() {
+func (s *InactiveValidatorsSuite) TestOptInInactive() {
 	consumerID := s.getConsumerID()
 	// Validator 4 will have been opted in automatically when the other ones went down
 	_, err := s.Chain.Validators[maxProviderConsensusValidators].ExecTx(s.GetContext(), s.Chain.ValidatorWallets[maxProviderConsensusValidators].Moniker, "provider", "opt-out", s.getConsumerID())
@@ -210,16 +210,21 @@ func (s *ConsensusSuite) TestOptInInactive() {
 	s.Assert().False(jailed, "validator 5 should not be jailed")
 }
 
-func (s *ConsensusSuite) getConsumerID() string {
+func (s *InactiveValidatorsSuite) getConsumerID() string {
 	consumerIDJSON, err := s.Chain.QueryJSON(s.GetContext(), fmt.Sprintf("chains.#(chain_id=%q).consumer_id", s.Consumer.Config().ChainID), "provider", "list-consumer-chains")
 	s.Require().NoError(err)
 	consumerID := consumerIDJSON.String()
 	return consumerID
 }
 
-func TestConsensus(t *testing.T) {
-	s := &ConsensusSuite{
-		Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{CreateRelayer: true}),
+func TestInactiveValidators(t *testing.T) {
+	s := &InactiveValidatorsSuite{
+		Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
+			CreateRelayer: true,
+			ChainSpec: &interchaintest.ChainSpec{
+				NumValidators: &chainsuite.SixValidators,
+			},
+		}),
 	}
 	suite.Run(t, s)
 }

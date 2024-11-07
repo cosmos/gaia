@@ -1,4 +1,4 @@
-package interchain_test
+package consumer_chain_test
 
 import (
 	"context"

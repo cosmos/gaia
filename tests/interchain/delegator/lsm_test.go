@@ -1,4 +1,4 @@
-package interchain_test
+package delegator_test
 
 import (
 	"encoding/json"
@@ -231,14 +231,18 @@ func (s *LSMSuite) TestLSMHappyPath() {
 		s.checkAMinusBEqualsX(happyLiquid3DelegationBalance, "0", sdkmath.NewInt(ibcTransfer))
 	})
 	s.Run("Cleanup", func() {
-		_, err := s.Chain.GetNode().ExecTx(s.GetContext(), s.LSMWallets[lsmBondingMoniker].FormattedAddress(),
+		validatorBondSharesBeforeResult, err := s.Chain.QueryJSON(s.GetContext(), "validator.validator_bond_shares", "staking", "validator", providerWallet.ValoperAddress)
+		s.Require().NoError(err)
+		validatorBondSharesBefore := validatorBondSharesBeforeResult.String()
+
+		_, err = s.Chain.GetNode().ExecTx(s.GetContext(), s.LSMWallets[lsmBondingMoniker].FormattedAddress(),
 			"staking", "unbond", providerWallet.ValoperAddress, fmt.Sprintf("%d%s", delegation, s.Chain.Config().Denom))
 		s.Require().NoError(err)
 
 		validatorBondSharesResult, err := s.Chain.QueryJSON(s.GetContext(), "validator.validator_bond_shares", "staking", "validator", providerWallet.ValoperAddress)
 		s.Require().NoError(err)
 		validatorBondShares := validatorBondSharesResult.String()
-		s.checkAMinusBEqualsX(validatorBondShares, "0", sdkmath.NewInt(0).Mul(s.ShareFactor))
+		s.checkAMinusBEqualsX(validatorBondSharesBefore, validatorBondShares, sdkmath.NewInt(delegation).Mul(s.ShareFactor))
 
 		_, err = s.Chain.GetNode().ExecTx(s.GetContext(), s.LSMWallets[lsmLiquid1Moniker].FormattedAddress(),
 			"staking", "unbond", providerWallet.ValoperAddress, fmt.Sprintf("%s%s", happyLiquid1DelegationBalance, s.Chain.Config().Denom))
@@ -267,7 +271,7 @@ func (s *LSMSuite) TestICADelegate() {
 	})
 	s.Require().NoError(err)
 
-	providerWallet := s.Chain.ValidatorWallets[1]
+	providerWallet := s.Chain.ValidatorWallets[0]
 
 	strideWallet := s.Stride.ValidatorWallets[0]
 
@@ -462,10 +466,11 @@ func (s *LSMSuite) SetupSuite() {
 		s.T().Skip("Skipping LSM when going from v21 -> v21")
 	}
 	stride, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, chainsuite.ConsumerConfig{
-		ChainName: "stride",
-		Version:   chainsuite.StrideVersion,
-		Denom:     chainsuite.StrideDenom,
-		TopN:      100,
+		ChainName:             "stride",
+		Version:               chainsuite.StrideVersion,
+		Denom:                 chainsuite.StrideDenom,
+		TopN:                  100,
+		ShouldCopyProviderKey: []bool{true},
 	})
 	s.Require().NoError(err)
 	s.Stride = stride

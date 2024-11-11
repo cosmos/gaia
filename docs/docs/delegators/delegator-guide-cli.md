@@ -405,7 +405,7 @@ gaiad tx bank send [from_key_or_address] [to_address] [amount] [flags]
 :::
 
 :::warning
-**Before bonding Atoms, please read the [delegator faq](https://hub.cosmos.network/delegators/delegator-faq) to understand the risk and responsibilities involved with delegating**
+**Before bonding Atoms, please read the [delegator faq](./delegator-faq) to understand the risk and responsibilities involved with delegating**
 :::
 
 :::warning

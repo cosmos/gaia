@@ -8,7 +8,7 @@ sidebar_position: 1
 
 # Introduction
 
-The Cosmos Hub is the first of [thousands of interconnected blockchains](https://cosmos.network) that will eventually comprise the **Cosmos Network**. The primary token of the Cosmos Hub is the **ATOM**, but the Hub will support many tokens in the future.
+The Cosmos Hub is the first of many [interconnected blockchains](https://cosmos.network) powered by the interchain stack: [CometBFT](https://cometbft.com), [CosmosSDK](https://docs.cosmos.network) and [IBC](https://ibc.cosmos.network). The primary token of the Cosmos Hub is the **ATOM**.
 
 ## The ATOM
 
@@ -63,9 +63,8 @@ These block explorers allow you to search, view and analyze Cosmos Hub data&mdas
 
 ## Running a full-node on the Cosmos Hub Mainnet
 
-In order to run a full-node for the Cosmos Hub mainnet, you must first [install `gaiad`](./getting-started/installation). Then, follow [the guide](./hub-tutorials/join-mainnet).
-If you are looking to run a validator node, follow the [validator setup guide](./validators/valid
-ator-setup).
+In order to run a full-node for the Cosmos Hub mainnet, you must first [install `gaiad`](./getting-started/installation.md). Then, follow [the guide](./hub-tutorials/join-mainnet.md).
+If you are looking to run a validator node, follow the [validator setup guide](./validators/validator-setup.md).
 
 ## Join the Community
 

@@ -222,15 +222,16 @@ const config = {
         darkTheme: darkCodeTheme,
         additionalLanguages: ["protobuf", "go-module"], // https://prismjs.com/#supported-languages
       },
-      algolia: {
-        appId: algoliaAppKey,
-        apiKey: algoliaAPIKey,
-        indexName: algoliaIndexName,
-        contextualSearch: false,
-      },
+      // algolia: {
+      //   appId: algoliaAppKey,
+      //   apiKey: algoliaAPIKey,
+      //   indexName: algoliaIndexName,
+      //   contextualSearch: false,
+      // },
     }),
   themes: ["@you54f/theme-github-codeblock"],
   plugins: [
+    require.resolve("docusaurus-lunr-search"),
     async function myPlugin(context, options) {
       return {
         name: "docusaurus-tailwindcss",
@@ -243,19 +244,6 @@ const config = {
         },
       };
     },
-    [
-      "@docusaurus/plugin-client-redirects",
-      {
-        fromExtensions: ["html"],
-        toExtensions: ["html"],
-        redirects: [
-          {
-            from: ["/"],
-            to: "/main",
-          },
-        ],
-      },
-    ],
   ],
 };
 

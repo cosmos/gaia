@@ -23,7 +23,7 @@ import (
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	gaiaApp "github.com/cosmos/gaia/v21/app"
+	gaiaApp "github.com/cosmos/gaia/v22/app"
 )
 
 var app *gaiaApp.GaiaApp

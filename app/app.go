@@ -66,10 +66,10 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	gaiaante "github.com/cosmos/gaia/v21/ante"
-	"github.com/cosmos/gaia/v21/app/keepers"
-	"github.com/cosmos/gaia/v21/app/upgrades"
-	v21 "github.com/cosmos/gaia/v21/app/upgrades/v21"
+	gaiaante "github.com/cosmos/gaia/v22/ante"
+	"github.com/cosmos/gaia/v22/app/keepers"
+	"github.com/cosmos/gaia/v22/app/upgrades"
+	v21 "github.com/cosmos/gaia/v22/app/upgrades/v21"
 )
 
 var (

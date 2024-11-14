@@ -11,7 +11,6 @@ import (
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
 
-	"github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/gaia/v21/tests/interchain/chainsuite"
 	"github.com/cosmos/gaia/v21/tests/interchain/delegator"
 	"github.com/strangelove-ventures/interchaintest/v8"
@@ -19,7 +18,6 @@ import (
 )
 
 const (
-	delegatorName        = "delegator1"
 	stakeAmount          = "10000000" // 10 ATOM
 	submissionDeposit    = "100"
 	proposalDepositInt   = chainsuite.GovMinDepositAmount
@@ -31,122 +29,85 @@ const (
 	queryScaleMultiplier = 1000000000000000000 // 18 zeroes
 )
 
-var proposalId string = "0"
-
 type GovSuite struct {
 	*delegator.Suite
 }
 
 func (s *GovSuite) SetupSuite() {
 	s.Suite.SetupSuite()
-	// Create delegator account
-	err := s.Chain.CreateKey(s.GetContext(), delegatorName)
-	s.Require().NoError(err)
-	delegatorAddress, err := s.Chain.GetAddress(s.GetContext(), delegatorName)
-	s.Require().NoError(err)
-	delegatorAddressString := types.MustBech32ifyAddressBytes("cosmos", delegatorAddress)
-	fmt.Println("delegator address:", delegatorAddressString)
-
-	// Fund delegator account
-	err = s.Chain.SendFunds(s.GetContext(), interchaintest.FaucetAccountKeyName, ibc.WalletAmount{
-		Denom:   chainsuite.Uatom,
-		Amount:  sdkmath.NewInt(chainsuite.ValidatorFunds),
-		Address: delegatorAddressString,
-	})
-	s.Require().NoError(err)
-	balance, err := s.Chain.GetBalance(s.GetContext(), delegatorAddressString, chainsuite.Uatom)
-	fmt.Println("Balance:", balance)
-
 	// Delegate >1 ATOM with delegator account
 	node := s.Chain.GetNode()
-	node.StakingDelegate(s.GetContext(), delegatorName, s.Chain.ValidatorWallets[0].ValoperAddress, string(stakeAmount)+s.Chain.Config().Denom)
+	node.StakingDelegate(s.GetContext(), s.DelegatorWallet.KeyName(), s.Chain.ValidatorWallets[0].ValoperAddress, string(stakeAmount)+s.Chain.Config().Denom)
+	node.StakingDelegate(s.GetContext(), s.DelegatorWallet2.KeyName(), s.Chain.ValidatorWallets[0].ValoperAddress, string(stakeAmount)+s.Chain.Config().Denom)
 }
 
-func (s *GovSuite) Test01SubmitProposal() {
-	delegatorAddress, err := s.Chain.GetAddress(s.GetContext(), delegatorName)
-	s.Require().NoError(err)
-	delegatorAddressString := types.MustBech32ifyAddressBytes("cosmos", delegatorAddress)
+func (s *GovSuite) TestProposal() {
+	// Test:
+	// 1. Proposal submission
+	// 2. Proposal deposit
+	// 3. Vote
+	// 4. Weighted vote
 
 	// Submit proposal
-	prop, err := s.Chain.BuildProposal(nil, "Test Proposal", "Test Proposal", "ipfs://CID", submissionDeposit+"uatom", delegatorAddressString, false)
+	prop, err := s.Chain.BuildProposal(nil, "Test Proposal", "Test Proposal", "ipfs://CID", submissionDeposit+"uatom", s.DelegatorWallet.FormattedAddress(), false)
 	s.Require().NoError(err)
-	result, err := s.Chain.SubmitProposal(s.GetContext(), delegatorName, prop)
+	result, err := s.Chain.SubmitProposal(s.GetContext(), s.DelegatorWallet.KeyName(), prop)
 	s.Require().NoError(err)
-	proposalId = result.ProposalID
+	proposalId := result.ProposalID
 
 	// Get status
 	proposalIDuint, err := strconv.ParseUint(proposalId, 10, 64)
 	proposal, err := s.Chain.GovQueryProposalV1(s.GetContext(), proposalIDuint)
 	s.Require().NoError(err)
+
+	// Test submission
 	currentStatus := proposal.Status.String()
-
-	// Test
-	s.Require().NotEqual("0", proposalId)
 	s.Require().Equal("PROPOSAL_STATUS_DEPOSIT_PERIOD", currentStatus)
-}
-
-func (s *GovSuite) Test02ProposalDeposit() {
-	node := s.Chain.GetNode()
-	delegatorAddress, err := s.Chain.GetAddress(s.GetContext(), delegatorName)
-	s.Require().NoError(err)
-	delegatorAddressString := types.MustBech32ifyAddressBytes("cosmos", delegatorAddress)
-	proposalDeposit := strconv.Itoa(proposalDepositInt)
 
 	// Submit deposit to proposal
-	_, err = node.ExecTx(s.GetContext(), delegatorName, "gov", "deposit", proposalId, proposalDeposit+"uatom", "--gas", "auto")
+	proposalDeposit := strconv.Itoa(proposalDepositInt)
+	node := s.Chain.GetNode()
+	_, err = node.ExecTx(s.GetContext(), s.DelegatorWallet.KeyName(), "gov", "deposit", proposalId, proposalDeposit+"uatom", "--gas", "auto")
 	s.Require().NoError(err)
-	proposalIDuint, err := strconv.ParseUint(proposalId, 10, 64)
-	proposal, err := s.Chain.GovQueryProposalV1(s.GetContext(), proposalIDuint)
-	s.Require().NoError(err)
-	currentStatus := proposal.Status.String()
-
 	submissionDepositUint, err := strconv.ParseUint(submissionDeposit, 10, 64)
 	s.Require().NoError(err)
-	depositTotal := chainsuite.GovMinDepositAmount + submissionDepositUint
-	fmt.Println("Deposit total: ", depositTotal)
+	depositTotal := proposalDepositInt + submissionDepositUint
 
-	// Test
-	deposit, err := s.Chain.QueryJSON(s.GetContext(), "deposit", "gov", "deposit", proposalId, delegatorAddressString)
+	// Get status
+	proposalIDuint, err = strconv.ParseUint(proposalId, 10, 64)
+	proposal, err = s.Chain.GovQueryProposalV1(s.GetContext(), proposalIDuint)
+	s.Require().NoError(err)
+	currentStatus = proposal.Status.String()
+
+	// Test deposit
+	deposit, err := s.Chain.QueryJSON(s.GetContext(), "deposit", "gov", "deposit", proposalId, s.DelegatorWallet.FormattedAddress())
 	s.Require().NoError(err)
 	depositAmount := deposit.Get("amount.#(denom==\"uatom\").amount").String()
 	depositAmountUint, err := strconv.ParseUint(depositAmount, 10, 64)
 	s.Require().NoError(err)
-	chainsuite.GetLogger(s.GetContext()).Sugar().Infof("Query amount: %d", depositAmountUint)
 	s.Require().Equal("PROPOSAL_STATUS_VOTING_PERIOD", currentStatus)
 	s.Require().Equal(depositTotal, depositAmountUint)
-}
 
-func (s *GovSuite) Test03ProposalVote() {
-	node := s.Chain.GetNode()
-	delegatorAddress, err := s.Chain.GetAddress(s.GetContext(), delegatorName)
-	s.Require().NoError(err)
-	delegatorAddressString := types.MustBech32ifyAddressBytes("cosmos", delegatorAddress)
-	// Vote yes on proposal
-	_, err = node.ExecTx(s.GetContext(), delegatorName, "gov", "vote", proposalId, "yes", "--gas", "auto")
+	// Submit yes vote
+	_, err = node.ExecTx(s.GetContext(), s.DelegatorWallet.KeyName(), "gov", "vote", proposalId, "yes", "--gas", "auto")
 	s.Require().NoError(err)
 
-	// Test
-	vote, err := s.Chain.QueryJSON(s.GetContext(), "vote", "gov", "vote", proposalId, delegatorAddressString)
+	// Test vote
+	vote, err := s.Chain.QueryJSON(s.GetContext(), "vote", "gov", "vote", proposalId, s.DelegatorWallet.FormattedAddress())
 	s.Require().NoError(err)
 	actual_yes_weight := vote.Get("options.#(option==\"VOTE_OPTION_YES\").weight")
 	chainsuite.GetLogger(s.GetContext()).Sugar().Infof("%s", actual_yes_weight.String())
 	s.Require().Equal(float64(1.0), actual_yes_weight.Float())
-}
 
-func (s *GovSuite) Test04ProposalWeightedVote() {
-	node := s.Chain.GetNode()
-	delegatorAddress, err := s.Chain.GetAddress(s.GetContext(), delegatorName)
-	s.Require().NoError(err)
-	delegatorAddressString := types.MustBech32ifyAddressBytes("cosmos", delegatorAddress)
-	// Submit weighted vote to proposal
-	_, err = node.ExecTx(s.GetContext(), delegatorName, "gov", "weighted-vote", proposalId, fmt.Sprintf("yes=%0.2f,no=%0.2f,abstain=%0.2f,no_with_veto=%0.2f", yesWeight, noWeight, abstainWeight, vetoWeight), "--gas", "auto")
+	// Submit weighted vote
+	_, err = node.ExecTx(s.GetContext(), s.DelegatorWallet2.KeyName(), "gov", "weighted-vote", proposalId, fmt.Sprintf("yes=%0.2f,no=%0.2f,abstain=%0.2f,no_with_veto=%0.2f", yesWeight, noWeight, abstainWeight, vetoWeight), "--gas", "auto")
 	s.Require().NoError(err)
 
-	// Test
-	vote, err := s.Chain.QueryJSON(s.GetContext(), "vote", "gov", "vote", proposalId, delegatorAddressString)
+	// Test weighted vote
+	vote, err = s.Chain.QueryJSON(s.GetContext(), "vote", "gov", "vote", proposalId, s.DelegatorWallet2.FormattedAddress())
 	s.Require().NoError(err)
 	// chainsuite.GetLogger(s.GetContext()).Sugar().Infof("%s", vote)
-	actual_yes_weight := vote.Get("options.#(option==\"VOTE_OPTION_YES\").weight")
+	actual_yes_weight = vote.Get("options.#(option==\"VOTE_OPTION_YES\").weight")
 	// chainsuite.GetLogger(s.GetContext()).Sugar().Infof("%s", actual_yes_weight.String())
 	s.Require().Equal(float64(yesWeight), actual_yes_weight.Float())
 	actual_no_weight := vote.Get("options.#(option==\"VOTE_OPTION_NO\").weight")
@@ -160,18 +121,14 @@ func (s *GovSuite) Test04ProposalWeightedVote() {
 	s.Require().Equal(float64(vetoWeight), actual_veto_weight.Float())
 }
 
-func (s *GovSuite) Test05ParamChange() {
+func (s *GovSuite) TestParamChange() {
 	govParams, err := s.Chain.QueryJSON(s.GetContext(), "params", "gov", "params")
 	s.Require().NoError(err)
 	chainsuite.GetLogger(s.GetContext()).Sugar().Infof("Params: %s", govParams)
 	currentThreshold := govParams.Get("threshold").Float()
 	chainsuite.GetLogger(s.GetContext()).Sugar().Infof("Current threshold: %f", currentThreshold)
 	newThreshold := 0.6
-	// chainsuite.GetLogger(s.GetContext()).Sugar().Infof("Changing community_tax to: %f", newCommunityTax)
 
-	delegatorAddress, err := s.Chain.GetAddress(s.GetContext(), delegatorName)
-	s.Require().NoError(err)
-	delegatorAddressString := types.MustBech32ifyAddressBytes("cosmos", delegatorAddress)
 	authority, err := s.Chain.GetGovernanceAddress(s.GetContext())
 	s.Require().NoError(err)
 
@@ -188,20 +145,23 @@ func (s *GovSuite) Test05ParamChange() {
 	}`, authority, updatedParams)
 
 	chainsuite.GetLogger(s.GetContext()).Sugar().Infof("Message: %s", paramChangeMessage)
+
 	// Submit proposal
-	prop, err := s.Chain.BuildProposal(nil, "Gov Param Change Proposal", "Test Proposal", "ipfs://CID", chainsuite.GovDepositAmount, delegatorAddressString, false)
+	prop, err := s.Chain.BuildProposal(nil, "Gov Param Change Proposal", "Test Proposal", "ipfs://CID", chainsuite.GovDepositAmount, s.DelegatorWallet.KeyName(), false)
 	s.Require().NoError(err)
 	prop.Messages = []json.RawMessage{json.RawMessage(paramChangeMessage)}
-	result, err := s.Chain.SubmitProposal(s.GetContext(), delegatorName, prop)
+	result, err := s.Chain.SubmitProposal(s.GetContext(), s.DelegatorWallet.KeyName(), prop)
 	s.Require().NoError(err)
-	proposalId = result.ProposalID
+	proposalId := result.ProposalID
 
 	json, _, err := s.Chain.GetNode().ExecQuery(s.GetContext(), "gov", "proposal", proposalId)
 	s.Require().NoError(err)
 	chainsuite.GetLogger(s.GetContext()).Sugar().Infof("%s", string(json))
-	// err = s.Chain.PassProposal(s.GetContext(), proposalId)
 
+	// Pass proposal
 	s.Require().NoError(s.Chain.PassProposal(s.GetContext(), proposalId))
+
+	// Test
 	govParams, err = s.Chain.QueryJSON(s.GetContext(), "params", "gov", "params")
 	s.Require().NoError(err)
 	chainsuite.GetLogger(s.GetContext()).Sugar().Infof("Params: %s", govParams)
@@ -209,7 +169,7 @@ func (s *GovSuite) Test05ParamChange() {
 	s.Require().Equal(newThreshold, currentThreshold)
 }
 
-func (s *GovSuite) Test06GovFundCommunityPool() {
+func (s *GovSuite) TestGovFundCommunityPool() {
 	// Fund gov account
 	authority, err := s.Chain.GetGovernanceAddress(s.GetContext())
 	s.Require().NoError(err)
@@ -231,10 +191,6 @@ func (s *GovSuite) Test06GovFundCommunityPool() {
 	s.Require().NoError(err)
 
 	// Build proposal
-	delegatorAddress, err := s.Chain.GetAddress(s.GetContext(), delegatorName)
-	s.Require().NoError(err)
-	delegatorAddressString := types.MustBech32ifyAddressBytes("cosmos", delegatorAddress)
-
 	fundMessage := fmt.Sprintf(`{
         "@type": "/cosmos.distribution.v1beta1.MsgFundCommunityPool",
         "amount": [
@@ -247,24 +203,25 @@ func (s *GovSuite) Test06GovFundCommunityPool() {
 	}`, communityPoolAmount, authority)
 
 	// Submit proposal
-	prop, err := s.Chain.BuildProposal(nil, "Community Pool Funding Proposal", "Test Proposal", "ipfs://CID", chainsuite.GovDepositAmount, delegatorAddressString, false)
+	prop, err := s.Chain.BuildProposal(nil, "Community Pool Funding Proposal", "Test Proposal", "ipfs://CID", chainsuite.GovDepositAmount, s.DelegatorWallet.FormattedAddress(), false)
 	s.Require().NoError(err)
 	prop.Messages = []json.RawMessage{json.RawMessage(fundMessage)}
-	result, err := s.Chain.SubmitProposal(s.GetContext(), delegatorName, prop)
+	result, err := s.Chain.SubmitProposal(s.GetContext(), s.DelegatorWallet.KeyName(), prop)
 	s.Require().NoError(err)
-	proposalId = result.ProposalID
+	proposalId := result.ProposalID
 
+	// Pass proposal
 	err = s.Chain.PassProposal(s.GetContext(), proposalId)
 
 	jsonMsg, _, err = s.Chain.GetNode().ExecQuery(s.GetContext(), "distribution", "community-pool")
 	s.Require().NoError(err)
 	chainsuite.GetLogger(s.GetContext()).Sugar().Infof("%s", string(jsonMsg))
 
+	// Test
 	poolBalanceJson = gjson.Get(string(jsonMsg), "pool.#(%\"*uatom\")")
 	chainsuite.GetLogger(s.GetContext()).Sugar().Infof("Community pool balance: %s", poolBalanceJson.String())
 	endingPoolBalance, err := chainsuite.StrToSDKInt(poolBalanceJson.String())
 	s.Require().NoError(err)
-
 	balanceDifference := endingPoolBalance.Uint64() - startingPoolBalance.Uint64()
 	chainsuite.GetLogger(s.GetContext()).Sugar().Infof("The community pool balance increased by %d", balanceDifference)
 	fundAmount, err := strconv.ParseUint(communityPoolAmount, 10, 64)

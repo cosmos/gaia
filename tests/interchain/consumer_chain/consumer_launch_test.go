@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	"golang.org/x/mod/semver"
 
-	"github.com/cosmos/gaia/v21/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v22/tests/interchain/chainsuite"
 )
 
 type ConsumerLaunchSuite struct {

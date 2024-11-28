@@ -253,6 +253,9 @@ replace (
 	// Use special SDK v0.50.x release with support for both ICS and LSM
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.50.10-lsm
 
+	// todo:remove this after ics version is updated
+	github.com/cosmos/interchain-security/v6 => github.com/cosmos/interchain-security/v6 v6.0.0-20241128093443-3f7df3506d1a
+
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
 

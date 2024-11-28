@@ -455,3 +455,29 @@ func (c *Chain) AddLinkedChain(ctx context.Context, testName interchaintest.Test
 
 	return chainB, nil
 }
+
+func (c *Chain) ModifyConfig(ctx context.Context, testName interchaintest.TestName, configChanges map[string]testutil.Toml) error {
+	eg := errgroup.Group{}
+	for _, val := range c.Validators {
+		val := val
+		eg.Go(func() error {
+			for file, changes := range configChanges {
+				if err := testutil.ModifyTomlConfigFile(
+					ctx, GetLogger(ctx),
+					val.DockerClient, testName.Name(), val.VolumeName,
+					file, changes,
+				); err != nil {
+					return err
+				}
+			}
+			if err := val.StopContainer(ctx); err != nil {
+				return err
+			}
+			return val.StartContainer(ctx)
+		})
+	}
+	if err := eg.Wait(); err != nil {
+		return err
+	}
+	return nil
+}

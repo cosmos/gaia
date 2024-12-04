@@ -106,7 +106,7 @@ When proposing an architecture decision for Gaia, please start by opening an [is
 
 If your architecture decision is a simple change, you may contribute directly without writing an ADR. However, if you are proposing a significant change, please include a corresponding ADR.
 
-To create an ADR, follow the [template](./docs/architecture/adr-template.md) and [doc](./docs/architecture/README.md). If you would like to see examples of how these are written, please refer to the current [ADRs](https://github.com/cosmos/gaia/tree/main/docs/architecture).
+To create an ADR, follow the [template](https://github.com/cosmos/gaia/blob/main/docs/docs/architecture/templates/adr-template.md) and [doc](https://github.com/cosmos/gaia/blob/main/docs/docs/architecture/README.md). If you would like to see examples of how these are written, please refer to the current [ADRs](https://github.com/cosmos/gaia/tree/main/docs/docs/architecture).
 
 ## Development Procedure
 

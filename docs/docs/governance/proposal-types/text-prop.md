@@ -58,7 +58,7 @@ Enter proposal title: Title
 Enter proposal authors: Author
 Enter proposal summary: Proposal summary
 Enter proposal details: Details, all the details
-Enter proposal proposal forum url: /
+Enter proposal forum url: /
 Enter proposal vote option context: Vote yes if <...>
 Enter proposal deposit: 100001uatom
 ```

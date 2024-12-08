@@ -89,7 +89,7 @@ func getCommandArgs(appOpts servertypes.AppOptions) (valArgs, error) {
 	// validate and set validator operator address
 	valoperAddress := cast.ToString(appOpts.Get(flagValidatorOperatorAddress))
 	if valoperAddress == "" {
-		return args, fmt.Errorf("invalid validator operator address string")
+		return args, errors.New("invalid validator operator address string")
 	}
 	_, err := sdk.ValAddressFromBech32(valoperAddress)
 	if err != nil {
@@ -100,7 +100,7 @@ func getCommandArgs(appOpts servertypes.AppOptions) (valArgs, error) {
 	// validate and set validator pubkey
 	validatorPubKey := cast.ToString(appOpts.Get(flagValidatorPubKey))
 	if validatorPubKey == "" {
-		return args, fmt.Errorf("invalid validator pubkey string")
+		return args, errors.New("invalid validator pubkey string")
 	}
 	decPubKey, err := base64.StdEncoding.DecodeString(validatorPubKey)
 	if err != nil {
@@ -135,7 +135,7 @@ func getCommandArgs(appOpts servertypes.AppOptions) (valArgs, error) {
 	// home dir
 	homeDir := cast.ToString(appOpts.Get(flags.FlagHome))
 	if homeDir == "" {
-		return args, fmt.Errorf("invalid home dir")
+		return args, errors.New("invalid home dir")
 	}
 	args.homeDir = homeDir
 

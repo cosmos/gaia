@@ -2,6 +2,7 @@ package e2e
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -27,13 +28,13 @@ func readJSON(resp *http.Response) (map[string]interface{}, error) {
 
 	body, readErr := io.ReadAll(resp.Body)
 	if readErr != nil {
-		return nil, fmt.Errorf("failed to read Body")
+		return nil, errors.New("failed to read Body")
 	}
 
 	var data map[string]interface{}
 	err := json.Unmarshal(body, &data)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal response body")
+		return nil, errors.New("failed to unmarshal response body")
 	}
 
 	return data, nil

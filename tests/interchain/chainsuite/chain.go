@@ -3,6 +3,7 @@ package chainsuite
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -194,9 +195,9 @@ func (c *Chain) Upgrade(ctx context.Context, upgradeName, version string) error 
 	defer timeoutCtxCancel()
 	err = testutil.WaitForBlocks(timeoutCtx, int(haltHeight-height)+3, c)
 	if err == nil {
-		return fmt.Errorf("chain should not produce blocks after halt height")
+		return errors.New("chain should not produce blocks after halt height")
 	} else if timeoutCtx.Err() == nil {
-		return fmt.Errorf("chain should not produce blocks after halt height")
+		return errors.New("chain should not produce blocks after halt height")
 	}
 
 	height, err = c.Height(ctx)

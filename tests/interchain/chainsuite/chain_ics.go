@@ -3,6 +3,7 @@ package chainsuite
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"path"
 	"strconv"
@@ -569,7 +570,7 @@ func (p *Chain) CheckCCV(ctx context.Context, consumer *Chain, relayer *Relayer,
 			return err
 		}
 		if providerPowerBefore >= providerPower {
-			return fmt.Errorf("provider power did not increase after delegation")
+			return errors.New("provider power did not increase after delegation")
 		}
 		consumerPower, err := consumer.GetValidatorPower(ctx, consumerHex)
 		if err != nil {

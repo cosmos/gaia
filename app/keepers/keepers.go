@@ -1,7 +1,7 @@
 package keepers
 
 import (
-	"fmt"
+	"errors"
 	"os"
 
 	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
@@ -600,7 +600,7 @@ func (r *DefaultFeemarketDenomResolver) ConvertToDenom(_ sdk.Context, coin sdk.D
 		return coin, nil
 	}
 
-	return sdk.DecCoin{}, fmt.Errorf("error resolving denom")
+	return sdk.DecCoin{}, errors.New("error resolving denom")
 }
 
 func (r *DefaultFeemarketDenomResolver) ExtraDenoms(_ sdk.Context) ([]string, error) {

@@ -2,8 +2,13 @@ package v22
 
 import (
 	"context"
+	"time"
+
+	providerkeeper "github.com/cosmos/interchain-security/v6/x/ccv/provider/keeper"
+	providertypes "github.com/cosmos/interchain-security/v6/x/ccv/provider/types"
 
 	errorsmod "cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -27,7 +32,37 @@ func CreateUpgradeHandler(
 			return vm, errorsmod.Wrapf(err, "running module migrations")
 		}
 
+		if err := SetConsumerInfractionParams(ctx, keepers.ProviderKeeper); err != nil {
+			return vm, errorsmod.Wrapf(err, "running module migrations")
+		}
+
 		ctx.Logger().Info("Upgrade v22 complete")
 		return vm, nil
+	}
+}
+
+func SetConsumerInfractionParams(ctx sdk.Context, pk providerkeeper.Keeper) error {
+	infractionParameters := DefaultInfractionParams()
+
+	activeConsumerIDs := pk.GetAllActiveConsumerIds(ctx)
+	for _, consumerID := range activeConsumerIDs {
+		if err := pk.SetInfractionParameters(ctx, consumerID, infractionParameters); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func DefaultInfractionParams() providertypes.InfractionParameters {
+	return providertypes.InfractionParameters{
+		DoubleSign: &providertypes.SlashJailParameters{
+			JailDuration:  time.Duration(1<<63 - 1),        // the largest value a time.Duration can hold 9223372036854775807 (approximately 292 years)
+			SlashFraction: math.LegacyNewDecWithPrec(5, 2), // 0.05
+		},
+		Downtime: &providertypes.SlashJailParameters{
+			JailDuration:  600 * time.Second,
+			SlashFraction: math.LegacyNewDec(0), // no slashing for downtime on the consumer
+		},
 	}
 }

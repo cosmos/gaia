@@ -43,7 +43,7 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v21/types"
+	"github.com/cosmos/gaia/v22/types"
 )
 
 const (

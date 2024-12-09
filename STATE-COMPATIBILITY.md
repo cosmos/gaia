@@ -177,7 +177,7 @@ func someInternalMethod(ctx sdk.Context) {
 - It will run out of gas with `gasUsed = 2100` where 2100 is getting merkelized
 into the tx results.
 
-Therefore, we introduced a state-incompatibility by merklezing diverging gas
+Therefore, we introduced a state-incompatibility by merkelizing diverging gas
 usage.
 
 ## Secondary Limitations To Keep In Mind

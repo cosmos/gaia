@@ -6,15 +6,14 @@ import (
 
 	"cosmossdk.io/math"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
-	providerkeeper "github.com/cosmos/interchain-security/v6/x/ccv/provider/keeper"
-	providertypes "github.com/cosmos/interchain-security/v6/x/ccv/provider/types"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-
-	"github.com/cosmos/gaia/v21/app/keepers"
+	"github.com/cosmos/gaia/v22/app/keepers"
+	providerkeeper "github.com/cosmos/interchain-security/v6/x/ccv/provider/keeper"
+	providertypes "github.com/cosmos/interchain-security/v6/x/ccv/provider/types"
 )
 
+// CreateUpgradeHandler returns an upgrade handler for Gaia v22.
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,

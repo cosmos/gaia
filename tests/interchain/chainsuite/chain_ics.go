@@ -384,6 +384,13 @@ func (p *Chain) DefaultConsumerChainSpec(ctx context.Context, chainID string, co
 		if err != nil {
 			return nil, err
 		}
+		if chainType == neutronChain || chainType == strideChain {
+			// Stride and Neutron aren't updated yet to use the consumer ID
+			b, err = sjson.DeleteBytes(b, "app_state.ccvconsumer.params.consumer_id")
+			if err != nil {
+				return nil, err
+			}
+		}
 		if chainType == strideChain {
 			b, err = sjson.SetBytes(b, "app_state.epochs.epochs.#(identifier==\"day\").duration", "120s")
 			if err != nil {

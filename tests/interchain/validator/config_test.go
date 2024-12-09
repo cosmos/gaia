@@ -11,13 +11,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cosmos/gaia/v21/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v22/tests/interchain/chainsuite"
 	"github.com/gorilla/websocket"
 	dto "github.com/prometheus/client_model/go"
 	"github.com/prometheus/common/expfmt"
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v8/testutil"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"golang.org/x/sync/errgroup"
 )
@@ -119,9 +120,11 @@ func (s *ConfigSuite) TestPeerLimit() {
 
 	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 4, s.Chain))
 
-	metrics, err = s.getPrometheusMetrics(0)
-	s.Require().NoError(err)
-	s.Require().Equal(float64(2), metrics["cometbft_p2p_peers"].GetMetric()[0].GetGauge().GetValue())
+	s.Require().EventuallyWithT(func(c *assert.CollectT) {
+		metrics, err = s.getPrometheusMetrics(0)
+		assert.NoError(c, err)
+		assert.Equal(c, float64(2), metrics["cometbft_p2p_peers"].GetMetric()[0].GetGauge().GetValue())
+	}, 3*time.Minute, 10*time.Second)
 
 	foundZero := false
 	for i := 1; i < len(s.Chain.Validators); i++ {

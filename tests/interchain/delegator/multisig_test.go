@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	sdkmath "cosmossdk.io/math"
-	"github.com/cosmos/gaia/v21/tests/interchain/chainsuite"
-	"github.com/cosmos/gaia/v21/tests/interchain/delegator"
+	"github.com/cosmos/gaia/v22/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v22/tests/interchain/delegator"
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
 	"github.com/stretchr/testify/suite"

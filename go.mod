@@ -6,10 +6,10 @@ toolchain go1.22.9
 
 require (
 	cosmossdk.io/api v0.7.5
-	cosmossdk.io/client/v2 v2.0.0-beta.3
+	cosmossdk.io/client/v2 v2.0.0-beta.6
 	cosmossdk.io/core v0.11.1
 	cosmossdk.io/errors v1.0.1
-	cosmossdk.io/log v1.4.1
+	cosmossdk.io/log v1.5.0
 	cosmossdk.io/math v1.4.0
 	cosmossdk.io/simapp v0.0.0-20240118210941-3897926e722e
 	cosmossdk.io/store v1.1.1
@@ -22,7 +22,7 @@ require (
 	github.com/CosmWasm/wasmd v0.53.0
 	github.com/cometbft/cometbft v0.38.15
 	github.com/cometbft/cometbft-db v0.14.1
-	github.com/cosmos/cosmos-db v1.0.2
+	github.com/cosmos/cosmos-db v1.1.0
 	github.com/cosmos/cosmos-sdk v0.50.10
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/gogoproto v1.7.0
@@ -41,7 +41,7 @@ require (
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.19.0
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 )
 
 require (
@@ -77,14 +77,18 @@ require (
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
 	github.com/bgentry/speakeasy v0.1.1-0.20220910012023-760eaf8b6816 // indirect
 	github.com/bits-and-blooms/bitset v1.8.0 // indirect
+	github.com/bytedance/sonic v1.12.3 // indirect
+	github.com/bytedance/sonic/loader v0.2.0 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/chzyer/readline v1.5.1 // indirect
+	github.com/cloudwego/base64x v0.1.4 // indirect
+	github.com/cloudwego/iasm v0.2.0 // indirect
 	github.com/cockroachdb/apd/v2 v2.0.2 // indirect
 	github.com/cockroachdb/errors v1.11.3 // indirect
 	github.com/cockroachdb/fifo v0.0.0-20240606204812-0bbfbd93a7ce // indirect
 	github.com/cockroachdb/logtags v0.0.0-20230118201751-21c54148d20b // indirect
-	github.com/cockroachdb/pebble v1.1.1 // indirect
+	github.com/cockroachdb/pebble v1.1.2 // indirect
 	github.com/cockroachdb/redact v1.1.5 // indirect
 	github.com/cockroachdb/tokenbucket v0.0.0-20230807174530-cc333fc44b06 // indirect
 	github.com/coinbase/rosetta-sdk-go v0.7.9 // indirect
@@ -162,6 +166,7 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jmhodges/levigo v1.0.0 // indirect
 	github.com/klauspost/compress v1.17.9 // indirect
+	github.com/klauspost/cpuid/v2 v2.0.9 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/lib/pq v1.10.9 // indirect
@@ -206,6 +211,7 @@ require (
 	github.com/syndtr/goleveldb v1.0.1-0.20220721030215-126854af5e6d // indirect
 	github.com/tendermint/go-amino v0.16.0 // indirect
 	github.com/tidwall/btree v1.7.0 // indirect
+	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ulikunitz/xz v0.5.11 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
@@ -221,6 +227,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.24.0 // indirect
 	go.uber.org/mock v0.4.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
+	golang.org/x/arch v0.0.0-20210923205945-b76863e36670 // indirect
 	golang.org/x/crypto v0.28.0 // indirect
 	golang.org/x/exp v0.0.0-20240613232115-7f521ea00fb8 // indirect
 	golang.org/x/net v0.30.0 // indirect

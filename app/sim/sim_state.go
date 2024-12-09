@@ -2,6 +2,7 @@ package sim
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"math/rand"
@@ -245,7 +246,7 @@ func AppStateFromGenesisFileFn(r io.Reader, cdc codec.JSONCodec, genesisFile str
 
 		a, ok := acc.GetCachedValue().(sdk.AccountI)
 		if !ok {
-			return genesis, nil, fmt.Errorf("expected account")
+			return genesis, nil, errors.New("expected account")
 		}
 
 		// create simulator accounts

@@ -5,9 +5,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	v22 "github.com/cosmos/gaia/v22/app/upgrades/v22"
 	testutil "github.com/cosmos/interchain-security/v6/testutil/keeper"
 	providertypes "github.com/cosmos/interchain-security/v6/x/ccv/provider/types"
+
+	v22 "github.com/cosmos/gaia/v22/app/upgrades/v22"
 )
 
 func TestSetDefaultConsumerInfractionParams(t *testing.T) {

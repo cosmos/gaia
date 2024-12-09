@@ -9,7 +9,7 @@ You can build a docker image using the [docker-push](../../.github/workflows/doc
 `docker-push` runs nightly on the `main` branch, and for all new releases, but you can also
 [run it manually on any branch](https://github.com/cosmos/gaia/actions/workflows/docker-push.yml)
 
-Once the `gaia` image is built, the `docker-push` action workflow automatically invoke the
+Once the `gaia` image is built, the `docker-push` action workflow automatically invokes the
 [interchain-test](../../.github/workflows/interchain-test.yml) workflow.
 
 Read on to learn how these tests work.

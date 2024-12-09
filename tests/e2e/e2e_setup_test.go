@@ -749,49 +749,6 @@ func (s *IntegrationTestSuite) writeCancelSoftwareUpgradeProposal(c *chain) {
 	s.Require().NoError(err)
 }
 
-func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain, oldParams stakingtypes.Params) {
-	template := `
-	{
-		"messages": [
-		 {
-		  "@type": "/cosmos.staking.v1beta1.MsgUpdateParams",
-		  "authority": "%s",
-		  "params": {
-		   "unbonding_time": "%s",
-		   "max_validators": %d,
-		   "max_entries": %d,
-		   "historical_entries": %d,
-		   "bond_denom": "%s",
-		   "min_commission_rate": "%s",
-		   "validator_bond_factor": "%s",
-		   "global_liquid_staking_cap": "%s",
-		   "validator_liquid_staking_cap": "%s"
-		  }
-		 }
-		],
-		"metadata": "ipfs://CID",
-		"deposit": "100uatom",
-		"title": "Update LSM Params",
-		"summary": "e2e-test updating LSM staking params",
-		"expedited": false
-	   }`
-	propMsgBody := fmt.Sprintf(template,
-		govAuthority,
-		oldParams.UnbondingTime,
-		oldParams.MaxValidators,
-		oldParams.MaxEntries,
-		oldParams.HistoricalEntries,
-		oldParams.BondDenom,
-		oldParams.MinCommissionRate,
-		math.LegacyNewDec(250),           // validator bond factor
-		math.LegacyNewDecWithPrec(25, 2), // 25 global_liquid_staking_cap
-		math.LegacyNewDecWithPrec(50, 2), // 50 validator_liquid_staking_cap
-	)
-
-	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalLSMParamUpdateFilename), []byte(propMsgBody))
-	s.Require().NoError(err)
-}
-
 // writeGovParamChangeProposalBlocksPerEpoch writes a governance proposal JSON file to change the `BlocksPerEpoch`
 // parameter to the provided `blocksPerEpoch`
 func (s *IntegrationTestSuite) writeGovParamChangeProposalBlocksPerEpoch(c *chain, paramsJSON string) {

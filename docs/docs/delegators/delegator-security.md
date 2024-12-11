@@ -19,7 +19,7 @@ If you receive an email or tweet that sounds too good to be true, is likely to b
 
 ## Key Management
 
-The best way to minimize the risk of theft or loss of ATOM is to have a strong storage and backup strategy for your private keys.  The safest way to store your keys is offline,  either in a cryptocurrency wallet or on a device that you never connect to the internet. The best backup strategy for your kyes is to ensure that you have multiple copies of them stored in safe places, and to take specific measures to protect at least one copy of your keys from any kind of natural disaster that is a likely possibility in your part of the world.
+The best way to minimize the risk of theft or loss of ATOM is to have a strong storage and backup strategy for your private keys.  The safest way to store your keys is offline,  either in a cryptocurrency wallet or on a device that you never connect to the internet. The best backup strategy for your keys is to ensure that you have multiple copies of them stored in safe places, and to take specific measures to protect at least one copy of your keys from any kind of natural disaster that is a likely possibility in your part of the world.
 
 **To protect your ATOM, do not share your 12 words with anyone.** The only person who should ever need to know them is you. You do not need to share your private keys if you're delegating ATOM to a validator on the network or to use custodial services. If anyone asks for your key material,
 

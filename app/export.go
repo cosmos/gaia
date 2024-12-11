@@ -2,6 +2,7 @@ package gaia
 
 import (
 	"encoding/json"
+	"sort"
 
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
@@ -43,6 +44,18 @@ func (app *GaiaApp) ExportAppStateAndValidators(
 	}
 
 	validators, err := staking.WriteValidators(ctx, app.StakingKeeper)
+	if err != nil {
+		return servertypes.ExportedApp{}, err
+	}
+	sort.SliceStable(validators, func(i, j int) bool {
+		return validators[i].Power > validators[j].Power
+	})
+	// we have to trim this to only active consensus validators
+	maxVals := app.ProviderKeeper.GetMaxProviderConsensusValidators(ctx)
+	if len(validators) > int(maxVals) {
+		validators = validators[:maxVals]
+	}
+
 	return servertypes.ExportedApp{
 		AppState:        appState,
 		Validators:      validators,

@@ -4,11 +4,12 @@ import (
 	"testing"
 	"time"
 
-	"cosmossdk.io/math"
 	"github.com/stretchr/testify/require"
 
 	testutil "github.com/cosmos/interchain-security/v6/testutil/keeper"
 	providertypes "github.com/cosmos/interchain-security/v6/x/ccv/provider/types"
+
+	"cosmossdk.io/math"
 
 	v22 "github.com/cosmos/gaia/v22/app/upgrades/v22"
 )

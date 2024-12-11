@@ -2,7 +2,9 @@ package v22_test
 
 import (
 	"testing"
+	"time"
 
+	"cosmossdk.io/math"
 	"github.com/stretchr/testify/require"
 
 	testutil "github.com/cosmos/interchain-security/v6/testutil/keeper"
@@ -36,13 +38,26 @@ func TestSetDefaultConsumerInfractionParams(t *testing.T) {
 		require.Error(t, err)
 	}
 
-	err := v22.SetConsumerInfractionParams(ctx, pk)
+	testParams := testInfractionParams()
+	err := v22.SetConsumerInfractionParams(ctx, pk, testParams)
 	require.NoError(t, err)
 
-	defaultInfractionParams := v22.DefaultInfractionParams()
 	for _, consumerID := range activeConsumerIDs {
 		infractionParams, err := pk.GetInfractionParameters(ctx, consumerID)
 		require.NoError(t, err)
-		require.Equal(t, defaultInfractionParams, infractionParams)
+		require.Equal(t, testParams, infractionParams)
+	}
+}
+
+func testInfractionParams() providertypes.InfractionParameters {
+	return providertypes.InfractionParameters{
+		DoubleSign: &providertypes.SlashJailParameters{
+			JailDuration:  time.Duration(1<<63 - 1),        // the largest value a time.Duration can hold 9223372036854775807 (approximately 292 years)
+			SlashFraction: math.LegacyNewDecWithPrec(5, 2), // 0.05
+		},
+		Downtime: &providertypes.SlashJailParameters{
+			JailDuration:  600 * time.Second,
+			SlashFraction: math.LegacyNewDec(0), // no slashing for downtime on the consumer
+		},
 	}
 }

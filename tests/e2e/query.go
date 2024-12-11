@@ -91,6 +91,8 @@ func querySupplyOf(endpoint, denom string) (sdk.Coin, error) {
 	return supplyOfResp.Amount, nil
 }
 
+/*
+TODO: Should probably replace the usage of this which was removed w/ the lsm removal
 func queryStakingParams(endpoint string) (stakingtypes.QueryParamsResponse, error) {
 	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/params", endpoint))
 	if err != nil {
@@ -104,6 +106,7 @@ func queryStakingParams(endpoint string) (stakingtypes.QueryParamsResponse, erro
 
 	return params, nil
 }
+*/
 
 func queryDelegation(endpoint string, validatorAddr string, delegatorAddr string) (stakingtypes.QueryDelegationResponse, error) {
 	var res stakingtypes.QueryDelegationResponse
@@ -287,20 +290,6 @@ func queryAllEvidence(endpoint string) (evidencetypes.QueryAllEvidenceResponse, 
 		return res, err
 	}
 	return res, nil
-}
-
-func queryTokenizeShareRecordByID(endpoint string, recordID int) (stakingtypes.TokenizeShareRecord, error) {
-	var res stakingtypes.QueryTokenizeShareRecordByIdResponse
-
-	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/tokenize_share_record_by_id/%d", endpoint, recordID))
-	if err != nil {
-		return stakingtypes.TokenizeShareRecord{}, fmt.Errorf("failed to execute HTTP request: %w", err)
-	}
-
-	if err := cdc.UnmarshalJSON(body, &res); err != nil {
-		return stakingtypes.TokenizeShareRecord{}, err
-	}
-	return res.Record, nil
 }
 
 func queryAllRateLimits(endpoint string) ([]ratelimittypes.RateLimit, error) {

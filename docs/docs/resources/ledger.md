@@ -49,7 +49,7 @@ That's it! You can now use Keplr with your Ledger Nano S. You can use the [Keplr
 
 ### (Optional) Confirm your address
 
-You can double check that Keplr is displaying the correct address directly on your Ledger Nano device. To do so:
+You can double-check that Keplr is displaying the correct address directly on your Ledger Nano device. To do so:
 
 1. Connect your Ledger to your computer and open the Cosmos application on the device.
 2. Once the Cosmos app is open, click on the right button to access the `Show Address` option.

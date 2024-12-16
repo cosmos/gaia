@@ -98,7 +98,7 @@ Self-delegation is a delegation of ATOM from a validator to themselves. The dele
 
 ### What is validator bond? How can I increase my validator bond?
 
-Validator bond is a delegation of ATOM from a delegator to a validator. Validator operators can validator bond to themselves. The validator bond amount can be increased by sending a `ValidatorBond` transaction from any account delegated to your validator. Validator bond is required before a validator can accept delegations from liquid staking providers. As such it forces validators to put “skin in the game” in order to be entrusted with delegations from liquid staking providers. This disincentivizes malicious behavior and enables the validator to negotiate its relationship with liquid staking providers.
+Validator bond is a delegation of ATOM from a delegator to a validator. Validator operators can validator bond to themselves. The validator bond amount can be increased by sending a `ValidatorBond` transaction from any account delegated to your validator. Validator bond is required before a validator can accept delegations from liquid staking providers. As such it forces validators to put "skin in the game" in order to be entrusted with delegations from liquid staking providers. This disincentivizes malicious behavior and enables the validator to negotiate its relationship with liquid staking providers.
 
 ### Is there a minimum amount of ATOM that must be delegated to be an active (bonded) validator?
 

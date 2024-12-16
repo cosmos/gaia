@@ -63,7 +63,7 @@ Then, each delegator in the staking pool can claim their portion of the delegato
 
 The Liquid Staking module enacts a safety framework and associated governance-controlled parameters to regulate the adoption of liquid staking.
 
-The LSM mitigates liquid staking risks by limiting the total amount of ATOM that can be liquid staked to a percentage of all staked ATOM. As an additional risk-mitigation feature, the LSM introduces a requirement that validators self-bond ATOM to be eligible for delegations from liquid staking providers or to be eligible to mint LSM tokens. This mechanism is called the “validator bond”, and is technically distinct from the current self-bond mechanism, but functions similarly.
+The LSM mitigates liquid staking risks by limiting the total amount of ATOM that can be liquid staked to a percentage of all staked ATOM. As an additional risk-mitigation feature, the LSM introduces a requirement that validators self-bond ATOM to be eligible for delegations from liquid staking providers or to be eligible to mint LSM tokens. This mechanism is called the "validator bond", and is technically distinct from the current self-bond mechanism, but functions similarly.
 
 At the same time, the LSM introduces the ability for staked ATOM to be instantly liquid staked, without having to wait for the unbonding period.
 
@@ -71,7 +71,7 @@ The LSM enables users to instantly liquid stake their staked ATOM, without havin
 
 A user would be able to visit any liquid staking provider that has integrated with the LSM and click a button to convert her staked ATOM to liquid staked ATOM. It would be as easy as liquid staking unstaked ATOM.
 
-Technically speaking, this is accomplished by using something called an “LSM share.” Using the liquid staking module, a user can tokenize their staked ATOM and turn it into LSM shares. LSM shares can be redeemed for underlying staked tokens and are transferable. After staked ATOM is tokenized it can be immediately transferred to a liquid staking provider in exchange for liquid staking tokens - without having to wait for the unbonding period.
+Technically speaking, this is accomplished by using something called an "LSM share." Using the liquid staking module, a user can tokenize their staked ATOM and turn it into LSM shares. LSM shares can be redeemed for underlying staked tokens and are transferable. After staked ATOM is tokenized it can be immediately transferred to a liquid staking provider in exchange for liquid staking tokens - without having to wait for the unbonding period.
 
 ### Toggling the ability to tokenize shares
 

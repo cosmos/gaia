@@ -74,6 +74,13 @@ service Query {
     option (cosmos.query.v1.module_query_safe) = true;
     option (google.api.http).get = "/gaia/lsm/v1beta1/params";
   }
+
+  // TokenizeShareRecordReward queries the tokenize share record rewards
+  rpc TokenizeShareRecordReward(QueryTokenizeShareRecordRewardRequest)
+      returns (QueryTokenizeShareRecordRewardResponse) {
+    option (google.api.http).get =
+        "/gaia/lsm/v1beta1/{owner_address}/tokenize_share_record_rewards";
+  }
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -160,9 +167,32 @@ message QueryTotalLiquidStakedResponse { string tokens = 1; }
 // QueryTokenizeShareLockInfo queries the tokenize share lock information
 // associated with given account
 message QueryTokenizeShareLockInfo { string address = 1; }
+
 // QueryTokenizeShareLockInfoResponse is the response from the
 // QueryTokenizeShareLockInfo query
 message QueryTokenizeShareLockInfoResponse {
   string status = 1;
   string expiration_time = 2;
+}
+
+// QueryTokenizeShareRecordRewardRequest is the request type for the
+// Query/TokenizeShareRecordReward RPC method.
+message QueryTokenizeShareRecordRewardRequest {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string owner_address = 1 [ (gogoproto.moretags) = "yaml:\"owner_address\"" ];
+}
+
+// QueryTokenizeShareRecordRewardResponse is the response type for the
+// Query/TokenizeShareRecordReward RPC method.
+message QueryTokenizeShareRecordRewardResponse {
+  // rewards defines all the rewards accrued by a delegator.
+  repeated TokenizeShareRecordReward rewards = 1
+      [ (gogoproto.nullable) = false ];
+  // total defines the sum of all the rewards.
+  repeated cosmos.base.v1beta1.DecCoin total = 2 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins"
+  ];
 }

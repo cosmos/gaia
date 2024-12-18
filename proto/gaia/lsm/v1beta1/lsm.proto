@@ -4,6 +4,7 @@ package gaia.lsm.v1beta1;
 import "gogoproto/gogo.proto";
 
 import "amino/amino.proto";
+import "cosmos/base/v1beta1/coin.proto";
 import "cosmos_proto/cosmos.proto";
 
 option go_package = "github.com/cosmos/gaia/x/lsm/types";
@@ -74,4 +75,17 @@ enum TokenizeShareLockStatus {
   // LOCK_EXPIRING indicates the account is unable to tokenize shares, but
   // will be able to tokenize shortly (after 1 unbonding period)
   TOKENIZE_SHARE_LOCK_STATUS_LOCK_EXPIRING = 3;
+}
+
+// TokenizeShareRecordReward represents the properties of tokenize share
+message TokenizeShareRecordReward {
+  option (gogoproto.goproto_getters) = false;
+  option (gogoproto.goproto_stringer) = true;
+
+  uint64 record_id = 1;
+
+  repeated cosmos.base.v1beta1.DecCoin reward = 2 [
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins",
+    (gogoproto.nullable) = false
+  ];
 }

@@ -430,6 +430,8 @@ github.com/cosmos/cosmos-db v1.1.0 h1:KLHNVQ73h7vawXTpj9UJ7ZR2IXv51tsEHkQJJ9EBDz
 github.com/cosmos/cosmos-db v1.1.0/go.mod h1:t7c4A6cfGdpUwwVxrQ0gQLeRQqGUBJu0yvE4F/26REg=
 github.com/cosmos/cosmos-proto v1.0.0-beta.5 h1:eNcayDLpip+zVLRLYafhzLvQlSmyab+RC5W7ZfmxJLA=
 github.com/cosmos/cosmos-proto v1.0.0-beta.5/go.mod h1:hQGLpiIUloJBMdQMMWb/4wRApmI9hjHH05nefC0Ojec=
+github.com/cosmos/cosmos-sdk v0.50.10-lsm.0.20241218094634-9f2e1dac5d35 h1:WH2EpFnHZnYjZUr5uxVz5v3FHlMvd7kRZ31b8s1fdWg=
+github.com/cosmos/cosmos-sdk v0.50.10-lsm.0.20241218094634-9f2e1dac5d35/go.mod h1:NflT1/PkUKwiAI2H6pZbn5I3bVYcY05qzk64XgZwkmw=
 github.com/cosmos/go-bip39 v1.0.0 h1:pcomnQdrdH22njcAatO0yWojsUnCO3y2tNoV1cb6hHY=
 github.com/cosmos/go-bip39 v1.0.0/go.mod h1:RNJv0H/pOIVgxw6KS7QeX2a0Uo0aKUlfhZ4xuwvCdJw=
 github.com/cosmos/gogogateway v1.2.0 h1:Ae/OivNhp8DqBi/sh2A8a1D0y638GpL3tkmLQAiKxTE=
@@ -884,8 +886,6 @@ github.com/influxdata/promql/v2 v2.12.0/go.mod h1:fxOPu+DY0bqCTCECchSRtWfc+0X19y
 github.com/influxdata/roaring v0.4.13-0.20180809181101-fc520f41fab6/go.mod h1:bSgUQ7q5ZLSO+bKBGqJiCBGAl+9DxyW63zLTujjUlOE=
 github.com/influxdata/tdigest v0.0.0-20181121200506-bf2b5ad3c0a9/go.mod h1:Js0mqiSBE6Ffsg94weZZ2c+v/ciT8QRHFOap7EKDrR0=
 github.com/influxdata/usage-client v0.0.0-20160829180054-6d3895376368/go.mod h1:Wbbw6tYNvwa5dlB6304Sd+82Z3f7PmVZHVKU637d4po=
-github.com/informalsystems/cosmos-sdk v0.46.0-alpha2.0.20241217170045-63895ecc6397 h1:ZdJ4CIIjwVJHdgAS/UawNwpTUJgnglHRzQx8a4MS3EE=
-github.com/informalsystems/cosmos-sdk v0.46.0-alpha2.0.20241217170045-63895ecc6397/go.mod h1:NflT1/PkUKwiAI2H6pZbn5I3bVYcY05qzk64XgZwkmw=
 github.com/informalsystems/cosmos-sdk/api v0.7.5-lsm h1:M0+CQZLf2yS41TiWaiKw8nF5vlPaFDmVfwfyMHViRZk=
 github.com/informalsystems/cosmos-sdk/api v0.7.5-lsm/go.mod h1:IcxpYS5fMemZGqyYtErK7OqvdM0C8kdW3dq8Q/XIG38=
 github.com/jackpal/go-nat-pmp v1.0.2/go.mod h1:QPH045xvCAeXUZOxsnwmrtiCoxIr9eob+4orBN1SBKc=

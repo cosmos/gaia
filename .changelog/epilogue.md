@@ -189,7 +189,7 @@
     [v1.6.0-forced-withdrawal](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.6.0-forced-withdrawal)
     ([\#2652](https://github.com/cosmos/gaia/pull/2652))
 - [GlobalFee](x/globalfee)
-  - Create the upgrade handler and params migration for the new Gloabal Fee module
+  - Create the upgrade handler and params migration for the new Global Fee module
     parameters introduced in [#2424](https://github.com/cosmos/gaia/pull/2424)
     ([\#2352](https://github.com/cosmos/gaia/pull/2352))
   - Add `bypass-min-fee-msg-types` and `maxTotalBypassMinFeeMsgGagUsage` to
@@ -338,7 +338,7 @@ sdk/releases/tag/v0.45.15-ics) and migrate to [CometBFT](https://github.com/come
 
 * (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.1](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.1). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.1/CHANGELOG.md#v0451---2022-02-03) for details.
 * (gaia) bump [ibc-go](https://github.com/cosmos/ibc-go) module to [v3.0.0](https://github.com/cosmos/ibc-go/releases/tag/v3.0.0). See [CHANGELOG.md](https://github.com/cosmos/ibc-go/blob/v3.0.0/CHANGELOG.md#v300---2022-03-15) for details.
-* (gaia) add [interchain account](https://github.com/cosmos/ibc-go/tree/main/modules/apps/27-interchain-accounts) module (interhchain-account module is part of ibc-go module).
+* (gaia) add [interchain account](https://github.com/cosmos/ibc-go/tree/main/modules/apps/27-interchain-accounts) module (interchain-account module is part of ibc-go module).
 * (gaia) bump [liquidity](https://github.com/gravity-devs/liquidity) module to [v1.5.0](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.5.0). See [CHANGELOG.md](https://github.com/Gravity-Devs/liquidity/blob/v1.5.0/CHANGELOG.md#v150---20220223) for details.
 * (gaia) bump [packet-forward-middleware](https://github.com/strangelove-ventures/packet-forward-middleware) module to [v2.1.1](https://github.com/strangelove-ventures/packet-forward-middleware/releases/tag/v2.1.1).
 * (gaia) add migration logs for upgrade process.

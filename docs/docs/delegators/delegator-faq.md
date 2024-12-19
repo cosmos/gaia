@@ -89,7 +89,7 @@ When tokenization is disabled, a lock is placed on the account, effectively prev
 
 ## Risks
 
-Staking Atoms is not free of risk. First, staked Atoms are locked up, and retrieving them requires a 3 week waiting period called unbonding period. Additionally, if a validator misbehaves, a portion of their total stake can be slashed (i.e. destroyed). This includes the stake of their delegators.
+Staking Atoms is not free of risk. First, staked Atoms are locked up, and retrieving them requires a 3-week waiting period called unbonding period. Additionally, if a validator misbehaves, a portion of their total stake can be slashed (i.e. destroyed). This includes the stake of their delegators.
 
 There is one main slashing condition:
 

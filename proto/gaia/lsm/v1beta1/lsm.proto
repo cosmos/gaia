@@ -14,9 +14,6 @@ message Params {
   option (amino.name) = "gaia/x/lsm/Params";
   option (gogoproto.equal) = true;
 
-  // bond_denom defines the bondable coin denomination.
-  string bond_denom = 5;
-
   // validator_bond_factor is required as a safety check for tokenizing shares
   // and delegations from liquid staking providers
   string validator_bond_factor = 7 [

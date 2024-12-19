@@ -376,10 +376,6 @@ proto-gen:
 	@echo "Generating Protobuf files"
 	@$(protoImage) sh ./proto/scripts/protocgen.sh
 
-proto-pulsar-gen:
-	@echo "Generating Dep-Inj Protobuf files"
-	@$(protoImage) sh ./scripts/protocgen-pulsar.sh
-
 proto-swagger-gen:
 	@echo "Generating Protobuf Swagger"
 	@$(protoImage) sh ./proto/scripts/protoc-swagger-gen.sh

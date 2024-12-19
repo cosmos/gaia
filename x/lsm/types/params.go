@@ -1,13 +1,10 @@
 package types
 
 import (
-	"cosmossdk.io/math"
-	"errors"
 	"fmt"
-	"strings"
 
+	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 var (
@@ -24,13 +21,11 @@ var (
 
 // NewParams creates a new Params instance
 func NewParams(
-	bondDenom string,
 	validatorBondFactor math.LegacyDec,
 	globalLiquidStakingCap math.LegacyDec,
 	validatorLiquidStakingCap math.LegacyDec,
 ) Params {
 	return Params{
-		BondDenom:                 bondDenom,
 		ValidatorBondFactor:       validatorBondFactor,
 		GlobalLiquidStakingCap:    globalLiquidStakingCap,
 		ValidatorLiquidStakingCap: validatorLiquidStakingCap,
@@ -40,7 +35,6 @@ func NewParams(
 // DefaultParams returns a default set of parameters.
 func DefaultParams() Params {
 	return NewParams(
-		sdk.DefaultBondDenom,
 		DefaultValidatorBondFactor,
 		DefaultGlobalLiquidStakingCap,
 		DefaultValidatorLiquidStakingCap,
@@ -69,10 +63,6 @@ func UnmarshalParams(cdc *codec.LegacyAmino, value []byte) (params Params, err e
 
 // validate a set of params
 func (p Params) Validate() error {
-	if err := validateBondDenom(p.BondDenom); err != nil {
-		return err
-	}
-
 	if err := validateValidatorBondFactor(p.ValidatorBondFactor); err != nil {
 		return err
 	}
@@ -82,23 +72,6 @@ func (p Params) Validate() error {
 	}
 
 	if err := validateValidatorLiquidStakingCap(p.ValidatorLiquidStakingCap); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func validateBondDenom(i interface{}) error {
-	v, ok := i.(string)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
-	}
-
-	if strings.TrimSpace(v) == "" {
-		return errors.New("bond denom cannot be blank")
-	}
-
-	if err := sdk.ValidateDenom(v); err != nil {
 		return err
 	}
 

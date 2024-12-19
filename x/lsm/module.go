@@ -2,27 +2,23 @@ package lsm
 
 import (
 	"context"
-	modulev1 "cosmossdk.io/api/cosmos/staking/module/v1"
-	"cosmossdk.io/core/appmodule"
-	"cosmossdk.io/core/store"
-	"cosmossdk.io/depinject"
 	"encoding/json"
 	"fmt"
-	abci "github.com/cometbft/cometbft/abci/types"
+
 	gwruntime "github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
+	"cosmossdk.io/core/appmodule"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/runtime"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/cosmos/cosmos-sdk/x/staking/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/staking/exported"
+
 	"github.com/cosmos/gaia/v22/x/lsm/keeper"
+	"github.com/cosmos/gaia/v22/x/lsm/simulation"
 	"github.com/cosmos/gaia/v22/x/lsm/types"
 )
 
@@ -35,7 +31,7 @@ var (
 	// _ module.AppModuleSimulation = AppModule{}
 	_ module.HasServices = AppModule{}
 	// _ module.HasInvariants       = AppModule{}
-	_ module.HasABCIGenesis = AppModule{}
+	_ module.HasGenesis = AppModule{}
 
 	_ appmodule.AppModule = AppModule{}
 )
@@ -61,7 +57,7 @@ func (AppModuleBasic) RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	types.RegisterInterfaces(registry)
 }
 
-// DefaultGenesis returns default genesis state as raw bytes for the staking
+// DefaultGenesis returns default genesis state as raw bytes for the lsm
 // module.
 func (AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 	return cdc.MustMarshalJSON(types.DefaultGenesisState())
@@ -126,7 +122,7 @@ func (am AppModule) IsAppModule() {}
 
 // TODO eric -- replace lsm invariants
 /*
-// RegisterInvariants registers the staking module invariants.
+// RegisterInvariants registers the lsm module invariants.
 func (am AppModule) RegisterInvariants(ir sdk.InvariantRegistry) {
 	keeper.RegisterInvariants(ir, am.keeper)
 }
@@ -140,12 +136,12 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 }
 
 // InitGenesis performs genesis initialization for the lsm module.
-func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.RawMessage) []abci.ValidatorUpdate {
+func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.RawMessage) {
 	var genesisState types.GenesisState
 
 	cdc.MustUnmarshalJSON(data, &genesisState)
 
-	return am.keeper.InitGenesis(ctx, &genesisState)
+	am.keeper.InitGenesis(ctx, &genesisState)
 }
 
 // ExportGenesis returns the exported genesis state as raw bytes for the lsm
@@ -157,37 +153,8 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 // ConsensusVersion implements AppModule/ConsensusVersion.
 func (AppModule) ConsensusVersion() uint64 { return consensusVersion }
 
-func init() {
-	appmodule.Register(
-		&modulev1.Module{},
-		appmodule.Provide(ProvideModule),
-	)
-}
 
-type ModuleInputs struct {
-	depinject.In
-
-	Config                *modulev1.Module
-	ValidatorAddressCodec runtime.ValidatorAddressCodec
-	ConsensusAddressCodec runtime.ConsensusAddressCodec
-	AccountKeeper         types.AccountKeeper
-	BankKeeper            types.BankKeeper
-	Cdc                   codec.Codec
-	StoreService          store.KVStoreService
-
-	// LegacySubspace is used solely for migration of x/params managed parameters
-	LegacySubspace exported.Subspace `optional:"true"`
-}
-
-// Dependency Injection Outputs
-type ModuleOutputs struct {
-	depinject.Out
-
-	LsmKeeper *keeper.Keeper
-	Module    appmodule.AppModule
-}
-
-func ProvideModule(in ModuleInputs) ModuleOutputs {
+// TODO eric -- fix this
 	// default to governance authority if not provided
 	authority := authtypes.NewModuleAddress(govtypes.ModuleName)
 	if in.Config.Authority != "" {
@@ -207,15 +174,15 @@ func ProvideModule(in ModuleInputs) ModuleOutputs {
 	return ModuleOutputs{LsmKeeper: k, Module: m}
 }
 
-// TODO eric replace simulation
 // AppModuleSimulation functions
 
-/*
 // GenerateGenesisState creates a randomized GenState of the lsm module.
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	simulation.RandomizedGenState(simState)
 }
 
+// TODO eric-fix these
+/*
 // ProposalMsgs returns msgs used for governance proposals for simulations.
 func (AppModule) ProposalMsgs(simState module.SimulationState) []simtypes.WeightedProposalMsg {
 	return simulation.ProposalMsgs()
@@ -233,4 +200,4 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		am.accountKeeper, am.bankKeeper, am.keeper,
 	)
 }
-*/
+ */

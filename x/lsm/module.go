@@ -70,7 +70,7 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncod
 		return fmt.Errorf("failed to unmarshal %s genesis state: %w", types.ModuleName, err)
 	}
 
-	return ValidateGenesis(&data)
+	return types.ValidateGenesis(&data)
 }
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the staking module.
@@ -153,27 +153,6 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 // ConsensusVersion implements AppModule/ConsensusVersion.
 func (AppModule) ConsensusVersion() uint64 { return consensusVersion }
 
-
-// TODO eric -- fix this
-	// default to governance authority if not provided
-	authority := authtypes.NewModuleAddress(govtypes.ModuleName)
-	if in.Config.Authority != "" {
-		authority = authtypes.NewModuleAddressOrBech32Address(in.Config.Authority)
-	}
-
-	k := keeper.NewKeeper(
-		in.Cdc,
-		in.StoreService,
-		in.AccountKeeper,
-		in.BankKeeper,
-		authority.String(),
-		in.ValidatorAddressCodec,
-		in.ConsensusAddressCodec,
-	)
-	m := NewAppModule(in.Cdc, k, in.AccountKeeper, in.BankKeeper, in.LegacySubspace)
-	return ModuleOutputs{LsmKeeper: k, Module: m}
-}
-
 // AppModuleSimulation functions
 
 // GenerateGenesisState creates a randomized GenState of the lsm module.
@@ -200,4 +179,4 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		am.accountKeeper, am.bankKeeper, am.keeper,
 	)
 }
- */
+*/

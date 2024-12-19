@@ -29,6 +29,7 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	lsmtypes "github.com/cosmos/gaia/v22/x/lsm/types"
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 )
@@ -62,6 +63,7 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 		consensusparamtypes.StoreKey,
 		feemarkettypes.StoreKey,
 		wasmtypes.StoreKey,
+		lsmtypes.StoreKey,
 	)
 
 	// Define transient store keys

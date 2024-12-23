@@ -19,7 +19,7 @@ require (
 	cosmossdk.io/x/feegrant v0.1.1
 	cosmossdk.io/x/tx v0.13.7
 	cosmossdk.io/x/upgrade v0.1.4
-	github.com/CosmWasm/wasmd v0.53.0
+	github.com/CosmWasm/wasmd v0.53.2
 	github.com/cometbft/cometbft v0.38.15
 	github.com/cometbft/cometbft-db v0.14.1
 	github.com/cosmos/cosmos-db v1.1.1
@@ -67,7 +67,7 @@ require (
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
 	github.com/99designs/keyring v1.2.2 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161 // indirect
-	github.com/CosmWasm/wasmvm/v2 v2.1.3 // indirect
+	github.com/CosmWasm/wasmvm/v2 v2.1.4 // indirect
 	github.com/DataDog/datadog-go v3.2.0+incompatible // indirect
 	github.com/DataDog/zstd v1.5.5 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect

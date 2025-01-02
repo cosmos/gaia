@@ -734,7 +734,7 @@
     [v1.6.0-forced-withdrawal](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.6.0-forced-withdrawal)
     ([\#2652](https://github.com/cosmos/gaia/pull/2652))
 - [GlobalFee](x/globalfee)
-  - Create the upgrade handler and params migration for the new Gloabal Fee module
+  - Create the upgrade handler and params migration for the new Global Fee module
     parameters introduced in [#2424](https://github.com/cosmos/gaia/pull/2424)
     ([\#2352](https://github.com/cosmos/gaia/pull/2352))
   - Add `bypass-min-fee-msg-types` and `maxTotalBypassMinFeeMsgGagUsage` to

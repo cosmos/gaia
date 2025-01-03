@@ -29,6 +29,7 @@ type BankKeeper interface {
 	MintCoins(cts context.Context, name string, amt sdk.Coins) error
 	BurnCoins(ctx context.Context, name string, amt sdk.Coins) error
 	BlockedAddr(addr sdk.AccAddress) bool
+	SpendableCoins(ctx context.Context, addr sdk.AccAddress) sdk.Coins
 }
 
 // StakingKeeper defines the expected interface needed to interact with the x/staking keeper.

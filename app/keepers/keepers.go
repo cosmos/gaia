@@ -82,6 +82,9 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+
+	lsmkeeper "github.com/cosmos/gaia/v22/x/lsm/keeper"
+	lsmtypes "github.com/cosmos/gaia/v22/x/lsm/types"
 )
 
 type AppKeepers struct {
@@ -98,6 +101,7 @@ type AppKeepers struct {
 	SlashingKeeper   slashingkeeper.Keeper
 	MintKeeper       mintkeeper.Keeper
 	DistrKeeper      distrkeeper.Keeper
+	LsmKeeper        *lsmkeeper.Keeper
 	GovKeeper        *govkeeper.Keeper
 	CrisisKeeper     *crisiskeeper.Keeper
 	UpgradeKeeper    *upgradekeeper.Keeper
@@ -280,6 +284,16 @@ func NewAppKeeper(
 			appKeepers.SlashingKeeper.Hooks(),
 			appKeepers.ProviderKeeper.Hooks(),
 		),
+	)
+
+	appKeepers.LsmKeeper = lsmkeeper.NewKeeper(
+		appCodec,
+		runtime.NewKVStoreService(appKeepers.keys[lsmtypes.StoreKey]),
+		appKeepers.AccountKeeper,
+		appKeepers.BankKeeper,
+		appKeepers.StakingKeeper,
+		appKeepers.DistrKeeper,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	appKeepers.FeeMarketKeeper = feemarketkeeper.NewKeeper(

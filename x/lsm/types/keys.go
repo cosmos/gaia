@@ -26,13 +26,13 @@ var (
 	// Last* values are constant during a block.
 	ParamsKey = []byte{0x51} // prefix for parameters for module x/lsm
 
-	TokenizeShareRecordPrefix          = []byte{0x81} // key for tokenizeshare record prefix
-	TokenizeShareRecordIDByOwnerPrefix = []byte{0x82} // key for tokenizeshare record id by owner prefix
-	TokenizeShareRecordIDByDenomPrefix = []byte{0x83} // key for tokenizeshare record id by denom prefix
-	LastTokenizeShareRecordIDKey       = []byte{0x84} // key for last tokenize share record id
-	TotalLiquidStakedTokensKey         = []byte{0x85} // key for total liquid staked tokens
-	TokenizeSharesLockPrefix           = []byte{0x86} // key for locking tokenize shares
-	TokenizeSharesUnlockQueuePrefix    = []byte{0x87} // key for the queue that unlocks tokenize shares
+	TokenizeShareRecordPrefix          = []byte{0x1} // key for tokenizeshare record prefix
+	TokenizeShareRecordIDByOwnerPrefix = []byte{0x2} // key for tokenizeshare record id by owner prefix
+	TokenizeShareRecordIDByDenomPrefix = []byte{0x3} // key for tokenizeshare record id by denom prefix
+	LastTokenizeShareRecordIDKey       = []byte{0x4} // key for last tokenize share record id
+	TotalLiquidStakedTokensKey         = []byte{0x5} // key for total liquid staked tokens
+	TokenizeSharesLockPrefix           = []byte{0x6} // key for locking tokenize shares
+	TokenizeSharesUnlockQueuePrefix    = []byte{0x7} // key for the queue that unlocks tokenize shares
 )
 
 // GetTokenizeShareRecordByIndexKey returns the key of the specified id. Intended for querying the tokenizeShareRecord by the id.
@@ -40,8 +40,8 @@ func GetTokenizeShareRecordByIndexKey(id uint64) []byte {
 	return append(TokenizeShareRecordPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-// GetTokenizeShareRecordIdsByOwnerPrefix returns the key of the specified owner. Intended for querying all tokenizeShareRecords of an owner
-func GetTokenizeShareRecordIdsByOwnerPrefix(owner sdk.AccAddress) []byte {
+// GetTokenizeShareRecordIDsByOwnerPrefix returns the key of the specified owner. Intended for querying all tokenizeShareRecords of an owner
+func GetTokenizeShareRecordIDsByOwnerPrefix(owner sdk.AccAddress) []byte {
 	return append(TokenizeShareRecordIDByOwnerPrefix, address.MustLengthPrefix(owner)...)
 }
 

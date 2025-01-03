@@ -5,14 +5,14 @@ import "cosmossdk.io/math"
 func NewGenesisState(
 	params Params,
 	tsr []TokenizeShareRecord,
-	recordId uint64,
+	recordID uint64,
 	liquidStakeTokens math.Int,
 	locks []TokenizeShareLock,
 ) *GenesisState {
 	return &GenesisState{
 		Params:                    params,
 		TokenizeShareRecords:      tsr,
-		LastTokenizeShareRecordId: recordId,
+		LastTokenizeShareRecordId: recordID,
 		TotalLiquidStakedTokens:   liquidStakeTokens,
 		TokenizeShareLocks:        locks,
 	}

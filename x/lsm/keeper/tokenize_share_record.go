@@ -4,11 +4,13 @@ import (
 	"context"
 	"fmt"
 
+	gogotypes "github.com/cosmos/gogoproto/types"
+
 	errorsmod "cosmossdk.io/errors"
 	storetypes "cosmossdk.io/store/types"
+
 	"github.com/cosmos/cosmos-sdk/runtime"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	gogotypes "github.com/cosmos/gogoproto/types"
 
 	"github.com/cosmos/gaia/v22/x/lsm/types"
 )
@@ -53,7 +55,7 @@ func (k Keeper) GetTokenizeShareRecord(ctx context.Context, id uint64) (tokenize
 func (k Keeper) GetTokenizeShareRecordsByOwner(ctx context.Context, owner sdk.AccAddress) (tokenizeShareRecords []types.TokenizeShareRecord) {
 	store := k.storeService.OpenKVStore(ctx)
 
-	it := storetypes.KVStorePrefixIterator(runtime.KVStoreAdapter(store), types.GetTokenizeShareRecordIdsByOwnerPrefix(owner))
+	it := storetypes.KVStorePrefixIterator(runtime.KVStoreAdapter(store), types.GetTokenizeShareRecordIDsByOwnerPrefix(owner))
 	defer it.Close()
 
 	for ; it.Valid(); it.Next() {

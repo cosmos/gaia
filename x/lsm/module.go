@@ -9,11 +9,13 @@ import (
 	"github.com/spf13/cobra"
 
 	"cosmossdk.io/core/appmodule"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/staking/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/staking/exported"
 
@@ -27,11 +29,10 @@ const (
 )
 
 var (
-	_ module.AppModuleBasic = AppModuleBasic{}
-	// _ module.AppModuleSimulation = AppModule{}
-	_ module.HasServices = AppModule{}
-	// _ module.HasInvariants       = AppModule{}
-	_ module.HasGenesis = AppModule{}
+	_ module.AppModuleBasic      = AppModuleBasic{}
+	_ module.AppModuleSimulation = AppModule{}
+	_ module.HasServices         = AppModule{}
+	_ module.HasGenesis          = AppModule{}
 
 	_ appmodule.AppModule = AppModule{}
 )
@@ -92,6 +93,7 @@ type AppModule struct {
 	keeper        *keeper.Keeper
 	accountKeeper types.AccountKeeper
 	bankKeeper    types.BankKeeper
+	stakingKeeper types.StakingKeeper
 
 	// legacySubspace is used solely for migration of x/params managed parameters
 	legacySubspace exported.Subspace
@@ -103,6 +105,7 @@ func NewAppModule(
 	keeper *keeper.Keeper,
 	ak types.AccountKeeper,
 	bk types.BankKeeper,
+	sk types.StakingKeeper,
 	ls exported.Subspace,
 ) AppModule {
 	return AppModule{
@@ -110,6 +113,7 @@ func NewAppModule(
 		keeper:         keeper,
 		accountKeeper:  ak,
 		bankKeeper:     bk,
+		stakingKeeper:  sk,
 		legacySubspace: ls,
 	}
 }
@@ -160,10 +164,8 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	simulation.RandomizedGenState(simState)
 }
 
-// TODO eric-fix these
-/*
 // ProposalMsgs returns msgs used for governance proposals for simulations.
-func (AppModule) ProposalMsgs(simState module.SimulationState) []simtypes.WeightedProposalMsg {
+func (AppModule) ProposalMsgs(_ module.SimulationState) []simtypes.WeightedProposalMsg {
 	return simulation.ProposalMsgs()
 }
 
@@ -175,8 +177,7 @@ func (am AppModule) RegisterStoreDecoder(sdr simtypes.StoreDecoderRegistry) {
 // WeightedOperations returns the all the lsm module operations with their respective weights.
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	return simulation.WeightedOperations(
-		simState.AppParams, simState.Cdc, simState.TxConfig,
-		am.accountKeeper, am.bankKeeper, am.keeper,
+		simState.AppParams, simState.TxConfig,
+		am.accountKeeper, am.bankKeeper, am.stakingKeeper, am.keeper,
 	)
 }
-*/

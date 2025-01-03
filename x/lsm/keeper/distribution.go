@@ -5,6 +5,7 @@ import (
 	goerrors "errors"
 
 	errorsmod "cosmossdk.io/errors"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -86,7 +87,8 @@ func (k Keeper) WithdrawSingleShareRecordReward(ctx context.Context, recordID ui
 
 // WithdrawTokenizeShareRecordReward withdraws rewards for owning a TokenizeShareRecord
 func (k Keeper) WithdrawTokenizeShareRecordReward(ctx context.Context, ownerAddr sdk.AccAddress,
-	recordID uint64) (sdk.Coins, error) {
+	recordID uint64,
+) (sdk.Coins, error) {
 	record, err := k.GetTokenizeShareRecord(ctx, recordID)
 	if err != nil {
 		return nil, err

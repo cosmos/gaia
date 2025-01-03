@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"cosmossdk.io/math"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 )
 
@@ -71,11 +72,7 @@ func (p Params) Validate() error {
 		return err
 	}
 
-	if err := validateValidatorLiquidStakingCap(p.ValidatorLiquidStakingCap); err != nil {
-		return err
-	}
-
-	return nil
+	return validateValidatorLiquidStakingCap(p.ValidatorLiquidStakingCap)
 }
 
 func validateValidatorBondFactor(i interface{}) error {

@@ -6,6 +6,7 @@ import (
 
 	"cosmossdk.io/math"
 	storetypes "cosmossdk.io/store/types"
+
 	"github.com/cosmos/cosmos-sdk/runtime"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	vesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/exported"
@@ -107,7 +108,8 @@ func (k Keeper) CheckExceedsGlobalLiquidStakingCap(ctx context.Context, tokens m
 // A liquid delegation is defined as either tokenized shares, or a delegation from an ICA Account
 // Returns true if the cap is exceeded
 func (k Keeper) CheckExceedsValidatorBondCap(ctx context.Context, validator stakingtypes.Validator,
-	shares math.LegacyDec) (bool, error) {
+	shares math.LegacyDec,
+) (bool, error) {
 	validatorBondFactor, err := k.ValidatorBondFactor(ctx)
 	if err != nil {
 		return false, err
@@ -130,7 +132,8 @@ func (k Keeper) CheckExceedsValidatorBondCap(ctx context.Context, validator stak
 // we need to add the shares to the current validator's delegator shares to get the total shares
 // Returns true if the cap is exceeded
 func (k Keeper) CheckExceedsValidatorLiquidStakingCap(ctx context.Context, validator stakingtypes.Validator,
-	shares math.LegacyDec, sharesAlreadyBonded bool) (bool, error) {
+	shares math.LegacyDec, sharesAlreadyBonded bool,
+) (bool, error) {
 	// TODO: eric -- move LiquidShares outside of staking module validator type
 	updatedLiquidShares := validator.LiquidShares.Add(shares)
 
@@ -185,7 +188,8 @@ func (k Keeper) DecreaseTotalLiquidStakedTokens(ctx context.Context, amount math
 //  1. (TotalLiquidStakedTokens / TotalStakedTokens) <= ValidatorLiquidStakingCap
 //  2. LiquidShares <= (ValidatorBondShares * ValidatorBondFactor)
 func (k Keeper) SafelyIncreaseValidatorLiquidShares(ctx context.Context, valAddress sdk.ValAddress,
-	shares math.LegacyDec, sharesAlreadyBonded bool) (stakingtypes.Validator, error) {
+	shares math.LegacyDec, sharesAlreadyBonded bool,
+) (stakingtypes.Validator, error) {
 	validator, err := k.stakingKeeper.GetValidator(ctx, valAddress)
 	if err != nil {
 		return validator, err
@@ -222,7 +226,8 @@ func (k Keeper) SafelyIncreaseValidatorLiquidShares(ctx context.Context, valAddr
 
 // DecreaseValidatorLiquidShares decrements the liquid shares on a validator
 func (k Keeper) DecreaseValidatorLiquidShares(ctx context.Context, valAddress sdk.ValAddress,
-	shares math.LegacyDec) (stakingtypes.Validator, error) {
+	shares math.LegacyDec,
+) (stakingtypes.Validator, error) {
 	validator, err := k.stakingKeeper.GetValidator(ctx, valAddress)
 	if err != nil {
 		return validator, err

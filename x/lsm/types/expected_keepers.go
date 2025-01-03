@@ -5,6 +5,7 @@ import (
 
 	"cosmossdk.io/core/address"
 	"cosmossdk.io/math"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
@@ -52,6 +53,7 @@ type StakingKeeper interface {
 	) (newShares math.LegacyDec, err error)
 	Validator(ctx context.Context, address sdk.ValAddress) (stakingtypes.ValidatorI, error)
 	Delegation(ctx context.Context, addrDel sdk.AccAddress, addrVal sdk.ValAddress) (stakingtypes.DelegationI, error)
+	GetValidatorDelegations(ctx context.Context, valAddr sdk.ValAddress) (delegations []stakingtypes.Delegation, err error)
 }
 
 // DistributionKeeper defines the expected interface needed to interact with the x/distribution keeper.

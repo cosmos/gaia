@@ -17,7 +17,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/staking/client/cli"
-	"github.com/cosmos/cosmos-sdk/x/staking/exported"
 
 	"github.com/cosmos/gaia/v22/x/lsm/keeper"
 	"github.com/cosmos/gaia/v22/x/lsm/simulation"
@@ -94,9 +93,6 @@ type AppModule struct {
 	accountKeeper types.AccountKeeper
 	bankKeeper    types.BankKeeper
 	stakingKeeper types.StakingKeeper
-
-	// legacySubspace is used solely for migration of x/params managed parameters
-	legacySubspace exported.Subspace
 }
 
 // NewAppModule creates a new AppModule object
@@ -106,7 +102,6 @@ func NewAppModule(
 	ak types.AccountKeeper,
 	bk types.BankKeeper,
 	sk types.StakingKeeper,
-	ls exported.Subspace,
 ) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{cdc: cdc, ak: ak},
@@ -114,7 +109,6 @@ func NewAppModule(
 		accountKeeper:  ak,
 		bankKeeper:     bk,
 		stakingKeeper:  sk,
-		legacySubspace: ls,
 	}
 }
 

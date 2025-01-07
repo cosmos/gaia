@@ -62,6 +62,7 @@ import (
 	wasm "github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
+	"github.com/cosmos/gaia/v22/x/lsm"
 	"github.com/cosmos/gaia/v22/x/metaprotocols"
 	metaprotocolstypes "github.com/cosmos/gaia/v22/x/metaprotocols/types"
 )
@@ -167,6 +168,7 @@ func simulationModules(
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		wasm.NewAppModule(appCodec, &app.AppKeepers.WasmKeeper, app.AppKeepers.StakingKeeper, app.AppKeepers.AccountKeeper, app.AppKeepers.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
 		ibc.NewAppModule(app.IBCKeeper),
+		lsm.NewAppModule(appCodec, app.LsmKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
 		app.TransferModule,
 		app.ICAModule,
 	}

@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"fmt"
 
 	storetypes "cosmossdk.io/core/store"
 	"cosmossdk.io/log"
@@ -36,11 +35,6 @@ func NewKeeper(
 	dk types.DistributionKeeper,
 	authority string,
 ) *Keeper {
-	// ensure lsm module account is set
-	if addr := ak.GetModuleAddress(types.ModuleName); addr == nil {
-		panic(fmt.Sprintf("%s module account has not been set", types.ModuleName))
-	}
-
 	// ensure that authority is a valid AccAddress
 	if _, err := ak.AddressCodec().StringToBytes(authority); err != nil {
 		panic("authority is not a valid acc address")

@@ -4,6 +4,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -96,9 +97,11 @@ func GetSemverForBranch() (string, error) {
 
 func GetTestList() ([]string, error) {
 	retval := []string{}
-	out, err := exec.Command("go", "test", "-list=.", "./...").Output()
+	cmd := exec.Command("go", "test", "-list=.", "./...")
+	out, err := cmd.Output()
 	if err != nil {
-		return nil, fmt.Errorf("go test -list failed: %w\n", err)
+		stderr := string(cmd.Stderr.(*bytes.Buffer).Bytes())
+		return nil, fmt.Errorf("go test -list failed with %w : %s\n", err, stderr)
 	}
 	lines := strings.Split(string(out), "\n")
 	for _, line := range lines {

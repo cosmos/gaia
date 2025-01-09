@@ -19,19 +19,23 @@ jobs:
   build:
     runs-on: Gaia-Runner-medium
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
           go-version: 1.22.x
       - name: Install runsim
         run: go install github.com/cosmos/tools/cmd/runsim@v1.0.0
-      - uses: actions/cache@v4.2.0
+      - uses: actions/cache@v4
         with:
           path: ~/go/bin
-          key: ${{ runner.os }}-go-runsim-binary
+          key: ${{ runner.os }}-go-runsim-binary-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-runsim-binary-
 
   test-sim-nondeterminism:
     runs-on: Gaia-Runner-medium
-    needs: newbuild
+    needs: build
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -77,42 +81,21 @@ jobs:
           make test-sim-multi-seed-short
         if: "env.GIT_DIFF != ''"
 
-  newbuild:
-      runs-on: Gaia-Runner-medium
-      steps:
-        - uses: actions/setup-go@v5
-          with:
-            go-version: 1.22.x
-        - name: Install runsim
-          run: go install github.com/cosmos/tools/cmd/runsim@v1.0.0
-        - uses: actions/cache@v4.2.0
-          with:
-            path: ~/go/bin
-            key: ${{ runner.os }}-go-runsim-binary
-
-  install-runsim:
-    runs-on: Gaia-Runner-medium
-    needs: build
-    steps:
-      - name: install runsim
-        run: go install github.com/cosmos/tools/cmd/runsim@v1.0.0
-      - uses: actions/cache@v4.2.0
-        with:
-          path: ~/go/bin
-          key: ${{ runner.os }}-go-runsim-binary
-
   test-sim-multi-seed-long:
     runs-on: Gaia-Runner-medium
-    needs: [build, install-runsim]
+    needs: build
+    timeout-minutes: 120
     steps:
       - uses: actions/setup-go@v5
         with:
           go-version: 1.22.x
       - uses: actions/checkout@v4
-      - uses: actions/cache@v4.2.0
+      - uses: actions/cache@v4
         with:
           path: ~/go/bin
-          key: ${{ runner.os }}-go-runsim-binary
+          key: ${{ runner.os }}-go-runsim-binary-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-runsim-binary-
       - name: test-sim-multi-seed-long
         run: |
           make test-sim-multi-seed-long

@@ -457,10 +457,16 @@ func (c *Chain) AddLinkedChain(ctx context.Context, testName interchaintest.Test
 	return chainB, nil
 }
 
-func (c *Chain) ModifyConfig(ctx context.Context, testName interchaintest.TestName, configChanges map[string]testutil.Toml) error {
+func (c *Chain) ModifyConfig(ctx context.Context, testName interchaintest.TestName, configChanges map[string]testutil.Toml, validators ...int) error {
 	eg := errgroup.Group{}
-	for _, val := range c.Validators {
-		val := val
+	if len(validators) == 0 {
+		validators = make([]int, len(c.Validators))
+		for _, valIdx := range validators {
+			validators[valIdx] = valIdx
+		}
+	}
+	for _, i := range validators {
+		val := c.Validators[i]
 		eg.Go(func() error {
 			for file, changes := range configChanges {
 				if err := testutil.ModifyTomlConfigFile(

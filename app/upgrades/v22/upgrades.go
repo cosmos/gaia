@@ -44,8 +44,7 @@ func CreateUpgradeHandler(
 }
 
 func SetConsumerInfractionParams(ctx sdk.Context, pk providerkeeper.Keeper, infractionParameters providertypes.InfractionParameters) error {
-	activeConsumerIDs := pk.GetAllActiveConsumerIds(ctx)
-	for _, consumerID := range activeConsumerIDs {
+	for _, consumerID := range pk.GetAllConsumerIds(ctx) {
 		if err := pk.SetInfractionParameters(ctx, consumerID, infractionParameters); err != nil {
 			return err
 		}

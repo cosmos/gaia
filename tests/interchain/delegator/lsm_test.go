@@ -65,7 +65,7 @@ func (s *LSMSuite) TestLSMHappyPath() {
 		s.Require().NoError(err)
 		delegatorShares2, err := s.Chain.QueryJSON(s.GetContext(), "validator.delegator_shares", "staking", "validator", providerWallet.ValoperAddress)
 		s.Require().NoError(err)
-		s.checkAMinusBEqualsX(delegatorShares2.String(), delegatorShares1.String(), sdkmath.NewInt(delegation).Mul(s.ShareFactor))
+		s.checkAMinusBEqualsX(delegatorShares2.String(), delegatorShares1.String(), sdkmath.NewInt(delegation))
 
 		_, err = s.Chain.GetNode().ExecTx(s.GetContext(), s.LSMWallets[lsmBondingMoniker].FormattedAddress(),
 			"staking", "validator-bond", providerWallet.ValoperAddress)
@@ -84,7 +84,7 @@ func (s *LSMSuite) TestLSMHappyPath() {
 		s.Require().NoError(err)
 		delegatorShares2, err := s.Chain.QueryJSON(s.GetContext(), "validator.delegator_shares", "staking", "validator", providerWallet.ValoperAddress)
 		s.Require().NoError(err)
-		s.checkAMinusBEqualsX(delegatorShares2.String(), delegatorShares1.String(), sdkmath.NewInt(delegation).Mul(s.ShareFactor))
+		s.checkAMinusBEqualsX(delegatorShares2.String(), delegatorShares1.String(), sdkmath.NewInt(delegation))
 
 		sharesPreTokenize, err := s.Chain.QueryJSON(s.GetContext(), "validator.liquid_shares", "staking", "validator", providerWallet.ValoperAddress)
 		s.Require().NoError(err)
@@ -201,18 +201,18 @@ func (s *LSMSuite) TestLSMHappyPath() {
 		happyLiquid1Delegations2Result, err := s.Chain.QueryJSON(s.GetContext(), fmt.Sprintf("delegation_responses.#(delegation.validator_address==\"%s\").delegation.shares", providerWallet.ValoperAddress), "staking", "delegations", s.LSMWallets[lsmLiquid1Moniker].FormattedAddress())
 		s.Require().NoError(err)
 		happyLiquid1Delegations2 := happyLiquid1Delegations2Result.String()
-		s.checkAMinusBEqualsX(happyLiquid1Delegations2, happyLiquid1Delegations1, sdkmath.NewInt(liquid1Redeem).Mul(s.ShareFactor))
+		s.checkAMinusBEqualsX(happyLiquid1Delegations2, happyLiquid1Delegations1, sdkmath.NewInt(liquid1Redeem))
 
 		happyLiquid2DelegationsResult, err := s.Chain.QueryJSON(s.GetContext(), fmt.Sprintf("delegation_responses.#(delegation.validator_address==\"%s\").delegation.shares", providerWallet.ValoperAddress), "staking", "delegations", s.LSMWallets[lsmLiquid2Moniker].FormattedAddress())
 		s.Require().NoError(err)
 		happyLiquid2Delegations := happyLiquid2DelegationsResult.String()
 		// LOL there are better ways of doing this
-		s.checkAMinusBEqualsX(happyLiquid2Delegations, "0", sdkmath.NewInt(bankSend).Mul(s.ShareFactor))
+		s.checkAMinusBEqualsX(happyLiquid2Delegations, "0", sdkmath.NewInt(bankSend))
 
 		happyLiquid3DelegationsResult, err := s.Chain.QueryJSON(s.GetContext(), fmt.Sprintf("delegation_responses.#(delegation.validator_address==\"%s\").delegation.shares", providerWallet.ValoperAddress), "staking", "delegations", s.LSMWallets[lsmLiquid3Moniker].FormattedAddress())
 		s.Require().NoError(err)
 		happyLiquid3Delegations := happyLiquid3DelegationsResult.String()
-		s.checkAMinusBEqualsX(happyLiquid3Delegations, "0", sdkmath.NewInt(ibcTransfer).Mul(s.ShareFactor))
+		s.checkAMinusBEqualsX(happyLiquid3Delegations, "0", sdkmath.NewInt(ibcTransfer))
 
 		happyLiquid1DelegationBalanceResult, err := s.Chain.QueryJSON(s.GetContext(), fmt.Sprintf("delegation_responses.#(delegation.validator_address==\"%s\").balance.amount", providerWallet.ValoperAddress), "staking", "delegations", s.LSMWallets[lsmLiquid1Moniker].FormattedAddress())
 		s.Require().NoError(err)
@@ -296,7 +296,7 @@ func (s *LSMSuite) TestICADelegate() {
 		s.Require().NoError(err)
 
 		exchangeRate1 := shares1Int.Quo(tokens1Int)
-		expectedSharesIncrease := exchangeRate1.MulRaw(bondDelegation)
+		expectedSharesIncrease := exchangeRate1.MulRaw(bondDelegation).Mul(s.ShareFactor)
 		expectedShares := expectedSharesIncrease.Add(bondShares1Int)
 
 		_, err = s.Chain.GetNode().ExecTx(s.GetContext(), bondingWallet.FormattedAddress(),
@@ -334,7 +334,7 @@ func (s *LSMSuite) TestICADelegate() {
 		preDelegationSharesInt, err := chainsuite.StrToSDKInt(preDelegationShares)
 		s.Require().NoError(err)
 		exchangeRate := preDelegationSharesInt.Quo(preDelegationTokensInt)
-		expectedLiquidIncrease := exchangeRate.MulRaw(delegate)
+		expectedLiquidIncrease := exchangeRate.MulRaw(delegate).Mul(s.ShareFactor)
 
 		delegateHappy := map[string]interface{}{
 			"@type":             "/cosmos.staking.v1beta1.MsgDelegate",
@@ -376,7 +376,7 @@ func (s *LSMSuite) TestICADelegate() {
 		preDelegationLiquidSharesInt, err := chainsuite.StrToSDKInt(preDelegationLiquidShares)
 		s.Require().NoError(err)
 		liquidSharesDelta := postDelegationLiquidShares.Sub(preDelegationLiquidSharesInt)
-		s.Require().Truef(liquidSharesDelta.Sub(expectedLiquidIncrease).Abs().LTE(sdkmath.NewInt(1)), "liquidSharesDelta: %s, expectedLiquidIncrease: %d", liquidSharesDelta, expectedLiquidIncrease)
+		s.Require().Truef(liquidSharesDelta.Sub(expectedLiquidIncrease).Abs().LTE(sdkmath.NewInt(1)), "liquidSharesDelta: %s, expectedLiquidIncrease: %s", liquidSharesDelta, expectedLiquidIncrease)
 	})
 }
 

@@ -1,7 +1,7 @@
 # CODEOWNERS: https://help.github.com/articles/about-codeowners/
 
 # Primary repo maintainers
-*       @zmanian @crodriguezvega @jackzampolin @cosmos/informal_gaia_maintain   
+*       @cosmos/informal_gaia_maintain @cosmos/interchain_inc_gaia_write
 
 # CODEOWNERS for the CODEOWNER file
 
@@ -9,4 +9,4 @@
 
 # CODEOWNERS for interchain tests
 
-/tests/interchain @dasanchez @LexaMichaelides @fastfadingviolets @cosmos/informal_gaia_maintain
+/tests/interchain @dasanchez @LexaMichaelides @fastfadingviolets @cosmos/informal_gaia_maintain @cosmos/interchain_inc_gaia_write

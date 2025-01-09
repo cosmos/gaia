@@ -31,10 +31,10 @@ func TestSetDefaultConsumerInfractionParams(t *testing.T) {
 	pk.SetConsumerChainId(ctx, stoppedConsumerID, "stopped-1")
 	pk.SetConsumerPhase(ctx, stoppedConsumerID, providertypes.CONSUMER_PHASE_STOPPED)
 
-	activeConsumerIDs := pk.GetAllActiveConsumerIds(ctx)
-	require.Equal(t, 2, len(activeConsumerIDs))
+	consumerIDs := pk.GetAllConsumerIds(ctx)
+	require.Equal(t, 3, len(consumerIDs))
 
-	for _, consumerID := range activeConsumerIDs {
+	for _, consumerID := range consumerIDs {
 		_, err := pk.GetInfractionParameters(ctx, consumerID)
 		require.Error(t, err)
 	}
@@ -43,7 +43,7 @@ func TestSetDefaultConsumerInfractionParams(t *testing.T) {
 	err := v22.SetConsumerInfractionParams(ctx, pk, testParams)
 	require.NoError(t, err)
 
-	for _, consumerID := range activeConsumerIDs {
+	for _, consumerID := range consumerIDs {
 		infractionParams, err := pk.GetInfractionParameters(ctx, consumerID)
 		require.NoError(t, err)
 		require.Equal(t, testParams, infractionParams)

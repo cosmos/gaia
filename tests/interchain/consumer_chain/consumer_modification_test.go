@@ -11,7 +11,7 @@ import (
 	sdkmath "cosmossdk.io/math"
 	"github.com/cosmos/gaia/v22/tests/interchain/chainsuite"
 	transfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
-	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
+	providertypes "github.com/cosmos/interchain-security/v6/x/ccv/provider/types"
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
@@ -159,7 +159,7 @@ func (s *ConsumerModificationSuite) TestConsumerCommissionRate() {
 	}
 	chainID := fmt.Sprintf("%s-test-%d", cfg.ChainName, len(s.Chain.Consumers)+1)
 	spawnTime := time.Now().Add(chainsuite.ChainSpawnWait)
-	cfg.Spec = s.Chain.DefaultConsumerChainSpec(s.GetContext(), chainID, cfg, spawnTime, nil)
+	cfg.Spec = s.Chain.DefaultConsumerChainSpec(s.GetContext(), chainID, cfg, spawnTime)
 	cfg.Spec.Version = "v4.5.0"
 	cfg.Spec.Images = images
 	consumer1, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, cfg)
@@ -168,7 +168,7 @@ func (s *ConsumerModificationSuite) TestConsumerCommissionRate() {
 
 	chainID = fmt.Sprintf("%s-test-%d", cfg.ChainName, len(s.Chain.Consumers)+1)
 	spawnTime = time.Now().Add(chainsuite.ChainSpawnWait)
-	cfg.Spec = s.Chain.DefaultConsumerChainSpec(s.GetContext(), chainID, cfg, spawnTime, nil)
+	cfg.Spec = s.Chain.DefaultConsumerChainSpec(s.GetContext(), chainID, cfg, spawnTime)
 	cfg.Spec.Version = "v4.5.0"
 	cfg.Spec.Images = images
 	consumer2, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, cfg)

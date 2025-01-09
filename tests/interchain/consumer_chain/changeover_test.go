@@ -13,7 +13,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/gaia/v22/tests/interchain/chainsuite"
 	transfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
-	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
+	providertypes "github.com/cosmos/interchain-security/v6/x/ccv/provider/types"
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
@@ -153,6 +153,7 @@ func (s *ChangeoverSuite) changeSovereignToConsumer(consumer *chainsuite.Chain, 
 	cfg.InitialHeight = initialHeight
 	spawnTime := time.Now().Add(60 * time.Second)
 	cfg.DistributionTransmissionChannel = transferCh.ChannelID
+	cfg.ExistingCCVConnection = transferCh.ConnectionHops[0]
 
 	err = s.Chain.CreateConsumerPermissionless(s.GetContext(), consumer.Config().ChainID, cfg, spawnTime)
 	s.Require().NoError(err)
@@ -233,8 +234,8 @@ func (s *ChangeoverSuite) changeSovereignToConsumer(consumer *chainsuite.Chain, 
 
 	consumer.ChangeBinary(s.GetContext(), "interchain-security-cdd")
 	s.Require().NoError(consumer.StartAllNodes(s.GetContext()))
-	s.Require().NoError(s.Relayer.ConnectProviderConsumer(s.GetContext(), s.Chain, consumer))
 	s.Require().NoError(s.Relayer.StopRelayer(s.GetContext(), chainsuite.GetRelayerExecReporter(s.GetContext())))
 	s.Require().NoError(s.Relayer.StartRelayer(s.GetContext(), chainsuite.GetRelayerExecReporter(s.GetContext())))
+	time.Sleep(120 * time.Second)
 	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), consumer, s.Relayer, 1_000_000, 0, 1))
 }

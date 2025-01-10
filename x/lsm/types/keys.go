@@ -33,7 +33,13 @@ var (
 	TotalLiquidStakedTokensKey         = []byte{0x5} // key for total liquid staked tokens
 	TokenizeSharesLockPrefix           = []byte{0x6} // key for locking tokenize shares
 	TokenizeSharesUnlockQueuePrefix    = []byte{0x7} // key for the queue that unlocks tokenize shares
+	LiquidValidatorPrefix              = []byte{0x8} // key for liquid validator prefix
 )
+
+// GetLiquidValidatorKey returns the key of the liquid validator.
+func GetLiquidValidatorKey(operatorAddress sdk.ValAddress) []byte {
+	return append(LiquidValidatorPrefix, address.MustLengthPrefix(operatorAddress)...)
+}
 
 // GetTokenizeShareRecordByIndexKey returns the key of the specified id. Intended for querying the tokenizeShareRecord by the id.
 func GetTokenizeShareRecordByIndexKey(id uint64) []byte {

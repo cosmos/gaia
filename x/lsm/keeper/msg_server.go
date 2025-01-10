@@ -147,7 +147,7 @@ func (k msgServer) TokenizeShares(goCtx context.Context, msg *types.MsgTokenizeS
 		if err := k.SafelyIncreaseTotalLiquidStakedTokens(ctx, msg.Amount.Amount, true); err != nil {
 			return nil, err
 		}
-		validator, err = k.SafelyIncreaseValidatorLiquidShares(ctx, valAddr, shares, true)
+		_, err = k.SafelyIncreaseValidatorLiquidShares(ctx, valAddr, shares, true)
 		if err != nil {
 			return nil, err
 		}
@@ -306,7 +306,7 @@ func (k msgServer) RedeemTokensForShares(goCtx context.Context, msg *types.MsgRe
 		if err := k.DecreaseTotalLiquidStakedTokens(ctx, tokens); err != nil {
 			return nil, err
 		}
-		validator, err = k.DecreaseValidatorLiquidShares(ctx, valAddr, shares)
+		_, err = k.DecreaseValidatorLiquidShares(ctx, valAddr, shares)
 		if err != nil {
 			return nil, err
 		}

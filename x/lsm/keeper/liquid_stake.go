@@ -10,8 +10,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/runtime"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	vesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/exported"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-
 	"github.com/cosmos/gaia/v22/x/lsm/types"
 )
 
@@ -107,7 +105,7 @@ func (k Keeper) CheckExceedsGlobalLiquidStakingCap(ctx context.Context, tokens m
 // the liquid shares to exceed the validator bond factor
 // A liquid delegation is defined as either tokenized shares, or a delegation from an ICA Account
 // Returns true if the cap is exceeded
-func (k Keeper) CheckExceedsValidatorBondCap(ctx context.Context, validator stakingtypes.Validator,
+func (k Keeper) CheckExceedsValidatorBondCap(ctx context.Context, validator types.LiquidValidator,
 	shares math.LegacyDec,
 ) (bool, error) {
 	validatorBondFactor, err := k.ValidatorBondFactor(ctx)
@@ -131,13 +129,19 @@ func (k Keeper) CheckExceedsValidatorBondCap(ctx context.Context, validator stak
 // If the liquid delegation's shares are not bonded (e.g. normal delegation),
 // we need to add the shares to the current validator's delegator shares to get the total shares
 // Returns true if the cap is exceeded
-func (k Keeper) CheckExceedsValidatorLiquidStakingCap(ctx context.Context, validator stakingtypes.Validator,
+func (k Keeper) CheckExceedsValidatorLiquidStakingCap(ctx context.Context, validator types.LiquidValidator,
 	shares math.LegacyDec, sharesAlreadyBonded bool,
 ) (bool, error) {
-	// TODO: eric -- move LiquidShares outside of staking module validator type
 	updatedLiquidShares := validator.LiquidShares.Add(shares)
-
-	updatedTotalShares := validator.DelegatorShares
+	str, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(validator.OperatorAddress)
+	if err != nil {
+		return false, err
+	}
+	stVal, err := k.stakingKeeper.GetValidator(ctx, str)
+	if err != nil {
+		return false, err
+	}
+	updatedTotalShares := stVal.DelegatorShares
 	if !sharesAlreadyBonded {
 		updatedTotalShares = updatedTotalShares.Add(shares)
 	}
@@ -189,8 +193,8 @@ func (k Keeper) DecreaseTotalLiquidStakedTokens(ctx context.Context, amount math
 //  2. LiquidShares <= (ValidatorBondShares * ValidatorBondFactor)
 func (k Keeper) SafelyIncreaseValidatorLiquidShares(ctx context.Context, valAddress sdk.ValAddress,
 	shares math.LegacyDec, sharesAlreadyBonded bool,
-) (stakingtypes.Validator, error) {
-	validator, err := k.stakingKeeper.GetValidator(ctx, valAddress)
+) (types.LiquidValidator, error) {
+	validator, err := k.GetLiquidValidator(ctx, valAddress)
 	if err != nil {
 		return validator, err
 	}
@@ -216,9 +220,9 @@ func (k Keeper) SafelyIncreaseValidatorLiquidShares(ctx context.Context, valAddr
 
 	// Increment the validator's liquid shares
 	validator.LiquidShares = validator.LiquidShares.Add(shares)
-	err = k.stakingKeeper.SetValidator(ctx, validator)
+	err = k.SetLiquidValidator(ctx, validator)
 	if err != nil {
-		return stakingtypes.Validator{}, err
+		return types.LiquidValidator{}, err
 	}
 
 	return validator, nil
@@ -227,8 +231,8 @@ func (k Keeper) SafelyIncreaseValidatorLiquidShares(ctx context.Context, valAddr
 // DecreaseValidatorLiquidShares decrements the liquid shares on a validator
 func (k Keeper) DecreaseValidatorLiquidShares(ctx context.Context, valAddress sdk.ValAddress,
 	shares math.LegacyDec,
-) (stakingtypes.Validator, error) {
-	validator, err := k.stakingKeeper.GetValidator(ctx, valAddress)
+) (types.LiquidValidator, error) {
+	validator, err := k.GetLiquidValidator(ctx, valAddress)
 	if err != nil {
 		return validator, err
 	}
@@ -238,9 +242,9 @@ func (k Keeper) DecreaseValidatorLiquidShares(ctx context.Context, valAddress sd
 	}
 
 	validator.LiquidShares = validator.LiquidShares.Sub(shares)
-	err = k.stakingKeeper.SetValidator(ctx, validator)
+	err = k.SetLiquidValidator(ctx, validator)
 	if err != nil {
-		return stakingtypes.Validator{}, err
+		return types.LiquidValidator{}, err
 	}
 
 	return validator, nil
@@ -249,13 +253,13 @@ func (k Keeper) DecreaseValidatorLiquidShares(ctx context.Context, valAddress sd
 // Increase validator bond shares increments the validator's self bond
 // in the event that the delegation amount on a validator bond delegation is increased
 func (k Keeper) IncreaseValidatorBondShares(ctx context.Context, valAddress sdk.ValAddress, shares math.LegacyDec) error {
-	validator, err := k.stakingKeeper.GetValidator(ctx, valAddress)
+	validator, err := k.GetLiquidValidator(ctx, valAddress)
 	if err != nil {
 		return err
 	}
 
 	validator.ValidatorBondShares = validator.ValidatorBondShares.Add(shares)
-	err = k.stakingKeeper.SetValidator(ctx, validator)
+	err = k.SetLiquidValidator(ctx, validator)
 	if err != nil {
 		return err
 	}
@@ -267,7 +271,7 @@ func (k Keeper) IncreaseValidatorBondShares(ctx context.Context, valAddress sdk.
 // so long as it will not cause the current delegations to exceed the threshold
 // set by validator bond factor
 func (k Keeper) SafelyDecreaseValidatorBond(ctx context.Context, valAddress sdk.ValAddress, shares math.LegacyDec) error {
-	validator, err := k.stakingKeeper.GetValidator(ctx, valAddress)
+	validator, err := k.GetLiquidValidator(ctx, valAddress)
 	if err != nil {
 		return err
 	}
@@ -287,7 +291,7 @@ func (k Keeper) SafelyDecreaseValidatorBond(ctx context.Context, valAddress sdk.
 
 	// Decrement the validator's self bond
 	validator.ValidatorBondShares = validator.ValidatorBondShares.Sub(shares)
-	err = k.stakingKeeper.SetValidator(ctx, validator)
+	err = k.SetLiquidValidator(ctx, validator)
 	if err != nil {
 		return err
 	}
@@ -513,8 +517,13 @@ func (k Keeper) RefreshTotalLiquidStaked(ctx context.Context) error {
 
 	// First reset each validator's liquid shares to 0
 	for _, validator := range validators {
-		validator.LiquidShares = math.LegacyZeroDec()
-		err = k.stakingKeeper.SetValidator(ctx, validator)
+		str, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(validator.OperatorAddress)
+		if err != nil {
+			return err
+		}
+		liquidVal, err := k.GetLiquidValidator(ctx, str)
+		liquidVal.LiquidShares = math.LegacyZeroDec()
+		err = k.SetLiquidValidator(ctx, liquidVal)
 		if err != nil {
 			return err
 		}
@@ -546,12 +555,16 @@ func (k Keeper) RefreshTotalLiquidStaked(ctx context.Context) error {
 			if err != nil {
 				return err
 			}
+			liquidVal, err := k.GetLiquidValidator(ctx, validatorAddress)
+			if err != nil {
+				return err
+			}
 
 			liquidShares := delegation.Shares
 			liquidTokens := validator.TokensFromShares(liquidShares).TruncateInt()
 
-			validator.LiquidShares = validator.LiquidShares.Add(liquidShares)
-			err = k.stakingKeeper.SetValidator(ctx, validator)
+			liquidVal.LiquidShares = liquidVal.LiquidShares.Add(liquidShares)
+			err = k.SetLiquidValidator(ctx, liquidVal)
 			if err != nil {
 				return err
 			}
@@ -590,4 +603,31 @@ func CheckVestedDelegationInVestingAccount(account vesting.VestingAccount, block
 
 	// Check if the total delegated vested amount is greater than or equal to the specified coin amount
 	return delVested.AmountOf(coin.Denom).GTE(coin.Amount)
+}
+
+// SetLiquidValidator sets the main record holding liquid validator details
+func (k Keeper) SetLiquidValidator(ctx context.Context, validator types.LiquidValidator) error {
+	store := k.storeService.OpenKVStore(ctx)
+	bz := types.MustMarshalValidator(k.cdc, &validator)
+	str, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(validator.OperatorAddress)
+	if err != nil {
+		return err
+	}
+	return store.Set(types.GetLiquidValidatorKey(str), bz)
+}
+
+// GetLiquidValidator gets a liquid validator record
+func (k Keeper) GetLiquidValidator(ctx context.Context, addr sdk.ValAddress) (validator types.LiquidValidator,
+	err error) {
+	store := k.storeService.OpenKVStore(ctx)
+	value, err := store.Get(types.GetLiquidValidatorKey(addr))
+	if err != nil {
+		return validator, err
+	}
+
+	if value == nil {
+		return validator, types.ErrNoValidatorFound
+	}
+
+	return types.UnmarshalValidator(k.cdc, value)
 }

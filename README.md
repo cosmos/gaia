@@ -46,6 +46,14 @@ Mainnet is currently running as `cosmoshub-4`.
 If you are looking for historical genesis files and other data [`cosmos/mainnet`](http://github.com/cosmos/mainnet) is an excellent resource. 
 Snapshots are also available at [cosmos.quicksync.io](https://quicksync.io/networks/cosmos.html).
 
+### Archive endpoints
+
+To access archived data from the Cosmos Hub network, you can use the following endpoints:
+
+- **RPC Endpoint**: `https://rpc.cosmoshub-4-archive.citizenweb3.com`
+- **REST API Endpoint**: `https://api.cosmoshub-4-archive.citizenweb3.com`
+- **gRPC Endpoint**: `grpc.cosmoshub-4-archive.citizenweb3.com`
+
 ## Contributing
 
 Check out [CONTRIBUTING.md](CONTRIBUTING.md) for our guidelines & policies for how we develop the Cosmos Hub. Thank you to all those who have contributed!

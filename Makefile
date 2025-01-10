@@ -273,6 +273,13 @@ PACKAGES_E2E=$(shell cd tests/e2e && go list ./... | grep '/e2e')
 TEST_PACKAGES=./...
 TEST_TARGETS := test-unit test-unit-cover test-race test-e2e
 
+mocks: gen-mocks format
+
+gen-mocks:
+	@echo "--> generating mocks"
+	@go install github.com/vektra/mockery/v2
+	@go run github.com/vektra/mockery/v2
+
 test-unit: ARGS=-timeout=5m -tags='norace'
 test-unit: TEST_PACKAGES=$(PACKAGES_UNIT)
 test-unit-cover: ARGS=-timeout=5m -tags='norace' -coverprofile=coverage.txt -covermode=atomic

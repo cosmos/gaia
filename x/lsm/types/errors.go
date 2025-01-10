@@ -23,4 +23,5 @@ var (
 	ErrNotEnoughBalance                        = errors.Register(ModuleName, 101, "not enough balance")
 	ErrTinyRedemptionAmount                    = errors.Register(ModuleName, 119, "too few tokens to redeem (truncates to zero tokens)")
 	ErrNoDelegation                            = errors.Register(ModuleName, 19, "no delegation for (address, validator) tuple")
+	ErrNoValidatorFound                        = errors.Register(ModuleName, 3, "validator does not exist")
 )

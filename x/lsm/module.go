@@ -9,17 +9,14 @@ import (
 	"github.com/spf13/cobra"
 
 	"cosmossdk.io/core/appmodule"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/staking/client/cli"
 
 	"github.com/cosmos/gaia/v22/x/lsm/keeper"
-	"github.com/cosmos/gaia/v22/x/lsm/simulation"
 	"github.com/cosmos/gaia/v22/x/lsm/types"
 )
 
@@ -28,10 +25,9 @@ const (
 )
 
 var (
-	_ module.AppModuleBasic      = AppModuleBasic{}
-	_ module.AppModuleSimulation = AppModule{}
-	_ module.HasServices         = AppModule{}
-	_ module.HasGenesis          = AppModule{}
+	_ module.AppModuleBasic = AppModuleBasic{}
+	_ module.HasServices    = AppModule{}
+	_ module.HasGenesis     = AppModule{}
 
 	_ appmodule.AppModule = AppModule{}
 )
@@ -142,28 +138,3 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 
 // ConsensusVersion implements AppModule/ConsensusVersion.
 func (AppModule) ConsensusVersion() uint64 { return consensusVersion }
-
-// AppModuleSimulation functions
-
-// GenerateGenesisState creates a randomized GenState of the lsm module.
-func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
-	simulation.RandomizedGenState(simState)
-}
-
-// ProposalMsgs returns msgs used for governance proposals for simulations.
-func (AppModule) ProposalMsgs(_ module.SimulationState) []simtypes.WeightedProposalMsg {
-	return simulation.ProposalMsgs()
-}
-
-// RegisterStoreDecoder registers a decoder for lsm module's types
-func (am AppModule) RegisterStoreDecoder(sdr simtypes.StoreDecoderRegistry) {
-	sdr[types.StoreKey] = simulation.NewDecodeStore(am.cdc)
-}
-
-// WeightedOperations returns the all the lsm module operations with their respective weights.
-func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
-	return simulation.WeightedOperations(
-		simState.AppParams, simState.TxConfig,
-		am.accountKeeper, am.bankKeeper, am.stakingKeeper, am.keeper,
-	)
-}

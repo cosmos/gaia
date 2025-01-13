@@ -5,13 +5,15 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/spf13/cobra"
+
 	"cosmossdk.io/core/address"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
-	"github.com/spf13/cobra"
 
 	"github.com/cosmos/gaia/v22/x/lsm/types"
 )
@@ -176,7 +178,7 @@ $ %s tx lsm transfer-tokenize-share-record 1 %s1gghjut3ccd8ay0zduzj64hwre2fxs9ld
 
 			msg := &types.MsgTransferTokenizeShareRecord{
 				Sender:                clientCtx.GetFromAddress().String(),
-				TokenizeShareRecordId: uint64(recordID),
+				TokenizeShareRecordId: uint64(recordID), //nolint:gosec
 				NewOwner:              ownerAddr,
 			}
 
@@ -324,7 +326,7 @@ $ %s tx distribution withdraw-tokenize-share-rewards 1 --from mykey
 				return err
 			}
 
-			msg := types.NewMsgWithdrawTokenizeShareRecordReward(ownerAddr, uint64(recordID))
+			msg := types.NewMsgWithdrawTokenizeShareRecordReward(ownerAddr, uint64(recordID)) //nolint:gosec
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},

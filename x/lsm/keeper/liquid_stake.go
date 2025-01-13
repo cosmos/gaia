@@ -10,6 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/runtime"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	vesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/exported"
+
 	"github.com/cosmos/gaia/v22/x/lsm/types"
 )
 
@@ -522,6 +523,9 @@ func (k Keeper) RefreshTotalLiquidStaked(ctx context.Context) error {
 			return err
 		}
 		liquidVal, err := k.GetLiquidValidator(ctx, str)
+		if err != nil {
+			return err
+		}
 		liquidVal.LiquidShares = math.LegacyZeroDec()
 		err = k.SetLiquidValidator(ctx, liquidVal)
 		if err != nil {
@@ -618,7 +622,8 @@ func (k Keeper) SetLiquidValidator(ctx context.Context, validator types.LiquidVa
 
 // GetLiquidValidator gets a liquid validator record
 func (k Keeper) GetLiquidValidator(ctx context.Context, addr sdk.ValAddress) (validator types.LiquidValidator,
-	err error) {
+	err error,
+) {
 	store := k.storeService.OpenKVStore(ctx)
 	value, err := store.Get(types.GetLiquidValidatorKey(addr))
 	if err != nil {

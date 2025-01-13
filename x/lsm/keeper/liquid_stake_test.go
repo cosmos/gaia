@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"cosmossdk.io/math"
+
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -200,7 +201,7 @@ func (s *KeeperTestSuite) TestCheckExceedsValidatorBondCap() {
 			params, err := keeper.GetParams(ctx)
 			require.NoError(err)
 			params.ValidatorBondFactor = tc.validatorBondFactor
-			keeper.SetParams(ctx, params)
+			require.NoError(keeper.SetParams(ctx, params))
 
 			// Create a validator with designated self-bond shares
 			validator := types.LiquidValidator{
@@ -382,7 +383,7 @@ func (s *KeeperTestSuite) TestCheckExceedsValidatorLiquidStakingCap() {
 			params, err := keeper.GetParams(ctx)
 			require.NoError(err)
 			params.ValidatorLiquidStakingCap = tc.validatorLiquidCap
-			keeper.SetParams(ctx, params)
+			require.NoError(keeper.SetParams(ctx, params))
 
 			call := s.stakingKeeper.EXPECT().GetValidator(ctx, mock.Anything).Return(
 				stakingtypes.Validator{DelegatorShares: tc.validatorTotalShares},
@@ -460,7 +461,7 @@ func (s *KeeperTestSuite) TestSafelyIncreaseValidatorLiquidShares() {
 		LiquidShares:        initialLiquidShares,
 		ValidatorBondShares: validatorBondShares,
 	}
-	keeper.SetLiquidValidator(ctx, initialValidator)
+	require.NoError(keeper.SetLiquidValidator(ctx, initialValidator))
 
 	// Set validator bond factor to a small number such that any delegation would fail,
 	// and set the liquid staking cap such that the first stake would succeed, but the second
@@ -469,7 +470,7 @@ func (s *KeeperTestSuite) TestSafelyIncreaseValidatorLiquidShares() {
 	require.NoError(err)
 	params.ValidatorBondFactor = initialBondFactor
 	params.ValidatorLiquidStakingCap = initialLiquidStakingCap
-	keeper.SetParams(ctx, params)
+	require.NoError(keeper.SetParams(ctx, params))
 
 	// Attempt to increase the validator liquid shares, it should throw an
 	// error that the validator bond cap was exceeded
@@ -479,7 +480,7 @@ func (s *KeeperTestSuite) TestSafelyIncreaseValidatorLiquidShares() {
 
 	// Change validator bond factor to a more conservative number, so that the increase succeeds
 	params.ValidatorBondFactor = finalBondFactor
-	keeper.SetParams(ctx, params)
+	require.NoError(keeper.SetParams(ctx, params))
 
 	// Try the increase again and check that it succeeded
 	expectedLiquidSharesAfterFirstStake := initialLiquidShares.Add(firstIncreaseAmount)
@@ -494,7 +495,7 @@ func (s *KeeperTestSuite) TestSafelyIncreaseValidatorLiquidShares() {
 
 	// Raise the liquid staking cap so the new increment succeeds
 	params.ValidatorLiquidStakingCap = finalLiquidStakingCap
-	keeper.SetParams(ctx, params)
+	require.NoError(keeper.SetParams(ctx, params))
 
 	// Finally confirm that the increase succeeded this time
 	expectedLiquidSharesAfterSecondStake := expectedLiquidSharesAfterFirstStake.Add(secondIncreaseAmount)
@@ -520,7 +521,7 @@ func (s *KeeperTestSuite) TestDecreaseValidatorLiquidShares() {
 		OperatorAddress: valAddress.String(),
 		LiquidShares:    initialLiquidShares,
 	}
-	keeper.SetLiquidValidator(ctx, initialValidator)
+	require.NoError(keeper.SetLiquidValidator(ctx, initialValidator))
 
 	// Decrease the validator liquid shares, and confirm the new share amount has been updated
 	_, err := keeper.DecreaseValidatorLiquidShares(ctx, valAddress, decreaseAmount)
@@ -556,13 +557,13 @@ func (s *KeeperTestSuite) TestSafelyDecreaseValidatorBond() {
 		ValidatorBondShares: initialValidatorBondShares,
 		LiquidShares:        initialLiquidShares,
 	}
-	keeper.SetLiquidValidator(ctx, initialValidator)
+	require.NoError(keeper.SetLiquidValidator(ctx, initialValidator))
 
 	// Set the bond factor
 	params, err := keeper.GetParams(ctx)
 	require.NoError(err)
 	params.ValidatorBondFactor = initialBondFactor
-	keeper.SetParams(ctx, params)
+	require.NoError(keeper.SetParams(ctx, params))
 
 	// Decrease the validator bond from 10 to 5 (minus 5)
 	// This will adjust the cap (factor * shares)
@@ -586,7 +587,7 @@ func (s *KeeperTestSuite) TestSafelyDecreaseValidatorBond() {
 	// Finally, disable the cap and attempt to decrease again
 	// This time it should succeed
 	params.ValidatorBondFactor = types.ValidatorBondCapDisabled
-	keeper.SetParams(ctx, params)
+	require.NoError(keeper.SetParams(ctx, params))
 
 	err = keeper.SafelyDecreaseValidatorBond(ctx, valAddress, decreaseAmount)
 	require.NoError(err)
@@ -767,7 +768,8 @@ func (s *KeeperTestSuite) TestTokenizeShareAuthorizationQueue() {
 
 	for timeIndex := 0; timeIndex <= 4; timeIndex++ {
 		for _, address := range addressesByTime[timeIndex] {
-			keeper.QueueTokenizeSharesAuthorization(ctx, address)
+			_, err := keeper.QueueTokenizeSharesAuthorization(ctx, address)
+			require.NoError(err)
 		}
 		ctx = ctx.WithBlockTime(ctx.BlockTime().Add(blockTimeIncrement))
 	}

@@ -942,7 +942,8 @@ func (_c *StakingKeeper_ValidatorAddressCodec_Call) RunAndReturn(run func() addr
 func NewStakingKeeper(t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *StakingKeeper {
+},
+) *StakingKeeper {
 	mock := &StakingKeeper{}
 	mock.Mock.Test(t)
 

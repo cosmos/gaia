@@ -208,7 +208,8 @@ func (_c *DistributionKeeper_WithdrawDelegationRewards_Call) RunAndReturn(run fu
 func NewDistributionKeeper(t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *DistributionKeeper {
+},
+) *DistributionKeeper {
 	mock := &DistributionKeeper{}
 	mock.Mock.Test(t)
 

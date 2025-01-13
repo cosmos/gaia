@@ -561,7 +561,8 @@ func (_c *BankKeeper_UndelegateCoinsFromModuleToAccount_Call) RunAndReturn(run f
 func NewBankKeeper(t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *BankKeeper {
+},
+) *BankKeeper {
 	mock := &BankKeeper{}
 	mock.Mock.Test(t)
 

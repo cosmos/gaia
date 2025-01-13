@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
+
 	"github.com/cosmos/gaia/v22/x/lsm/types"
 )
 

@@ -223,7 +223,8 @@ func (_c *AccountKeeper_GetModuleAddress_Call) RunAndReturn(run func(string) cos
 func NewAccountKeeper(t interface {
 	mock.TestingT
 	Cleanup(func())
-}) *AccountKeeper {
+},
+) *AccountKeeper {
 	mock := &AccountKeeper{}
 	mock.Mock.Test(t)
 

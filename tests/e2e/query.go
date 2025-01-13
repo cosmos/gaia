@@ -93,20 +93,6 @@ func querySupplyOf(endpoint, denom string) (sdk.Coin, error) {
 	return supplyOfResp.Amount, nil
 }
 
-func queryStakingParams(endpoint string) (stakingtypes.QueryParamsResponse, error) {
-	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/params", endpoint))
-	if err != nil {
-		return stakingtypes.QueryParamsResponse{}, fmt.Errorf("failed to execute HTTP request: %w", err)
-	}
-
-	var params stakingtypes.QueryParamsResponse
-	if err := cdc.UnmarshalJSON(body, &params); err != nil {
-		return stakingtypes.QueryParamsResponse{}, err
-	}
-
-	return params, nil
-}
-
 func queryLsmParams(endpoint string) (lsmtypes.QueryParamsResponse, error) {
 	body, err := httpGet(fmt.Sprintf("%s/gaia/lsm/v1beta1/params", endpoint))
 	if err != nil {
@@ -308,7 +294,7 @@ func queryAllEvidence(endpoint string) (evidencetypes.QueryAllEvidenceResponse, 
 func queryTokenizeShareRecordByID(endpoint string, recordID int) (lsmtypes.TokenizeShareRecord, error) {
 	var res lsmtypes.QueryTokenizeShareRecordByIdResponse
 
-	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/tokenize_share_record_by_id/%d", endpoint, recordID))
+	body, err := httpGet(fmt.Sprintf("%s/gaia/lsm/v1beta1/tokenize_share_record_by_id/%d", endpoint, recordID))
 	if err != nil {
 		return lsmtypes.TokenizeShareRecord{}, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}

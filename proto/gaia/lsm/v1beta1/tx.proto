@@ -47,7 +47,7 @@ service Msg {
 // MsgUpdateParams is the Msg/UpdateParams request type.
 message MsgUpdateParams {
   option (cosmos.msg.v1.signer) = "authority";
-  option (amino.name) = "gaia/x/lsm/MsgUpdateParams";
+  option (amino.name) = "gaia/lsm/MsgUpdateParams";
 
   // authority is the address that controls the module (defaults to x/gov unless
   // overwritten).
@@ -66,7 +66,7 @@ message MsgUpdateParamsResponse {};
 // MsgTokenizeShares tokenizes a delegation
 message MsgTokenizeShares {
   option (cosmos.msg.v1.signer) = "delegator_address";
-  option (amino.name) = "gaia/x/lsm/MsgTokenizeShares";
+  option (amino.name) = "gaia/MsgTokenizeShares";
 
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
@@ -88,7 +88,7 @@ message MsgTokenizeSharesResponse {
 // delegation
 message MsgRedeemTokensForShares {
   option (cosmos.msg.v1.signer) = "delegator_address";
-  option (amino.name) = "gaia/x/lsm/MsgRedeemTokensForShares";
+  option (amino.name) = "gaia/MsgRedeemTokensForShares";
 
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
@@ -107,7 +107,7 @@ message MsgRedeemTokensForSharesResponse {
 // MsgTransferTokenizeShareRecord transfer a tokenize share record
 message MsgTransferTokenizeShareRecord {
   option (cosmos.msg.v1.signer) = "sender";
-  option (amino.name) = "gaia/x/lsm/MsgTransferTokenizeShareRecord";
+  option (amino.name) = "gaia/MsgTransferTokenizeShareRecord";
 
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
@@ -125,7 +125,7 @@ message MsgTransferTokenizeShareRecordResponse {}
 // address
 message MsgDisableTokenizeShares {
   option (cosmos.msg.v1.signer) = "delegator_address";
-  option (amino.name) = "gaia/x/lsm/MsgDisableTokenizeShares";
+  option (amino.name) = "gaia/MsgDisableTokenizeShares";
 
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
@@ -141,7 +141,7 @@ message MsgDisableTokenizeSharesResponse {}
 // MsgEnableTokenizeShares re-enables tokenization of shares for a given address
 message MsgEnableTokenizeShares {
   option (cosmos.msg.v1.signer) = "delegator_address";
-  option (amino.name) = "gaia/x/lsm/MsgEnableTokenizeShares";
+  option (amino.name) = "gaia/MsgEnableTokenizeShares";
 
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
@@ -161,7 +161,7 @@ message MsgEnableTokenizeSharesResponse {
 // specific record
 message MsgWithdrawTokenizeShareRecordReward {
   option (cosmos.msg.v1.signer) = "owner_address";
-  option (amino.name) = "gaia/x/lsm/MsgWithdrawTokenizeShareRecordReward";
+  option (amino.name) = "gaia/MsgWithdrawTokenizeShareRecordReward";
 
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
@@ -178,7 +178,7 @@ message MsgWithdrawTokenizeShareRecordRewardResponse {}
 // all records owned by the designated owner
 message MsgWithdrawAllTokenizeShareRecordReward {
   option (cosmos.msg.v1.signer) = "owner_address";
-  option (amino.name) = "gaia/x/lsm/MsgWithdrawAllTokenizeShareRecordReward";
+  option (amino.name) = "gaia/MsgWithdrawAllTokenizeShareRecordReward";
 
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;

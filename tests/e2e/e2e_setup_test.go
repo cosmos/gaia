@@ -749,22 +749,11 @@ func (s *IntegrationTestSuite) writeCancelSoftwareUpgradeProposal(c *chain) {
 	s.Require().NoError(err)
 }
 
-func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain, oldParams stakingtypes.Params) {
+func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain) {
 	template := `
 	{
 		"messages": [
 		 {
-		  "@type": "/cosmos.staking.v1beta1.MsgUpdateParams",
-		  "authority": "%s",
-		  "params": {
-		   "unbonding_time": "%s",
-		   "max_validators": %d,
-		   "max_entries": %d,
-		   "historical_entries": %d,
-		   "bond_denom": "%s",
-		   "min_commission_rate": "%s"
-		  },
-		  {
 		  "@type": "/gaia.lsm.v1beta1.MsgUpdateParams",
 		  "authority": "%s",
 		  "params": {
@@ -772,7 +761,6 @@ func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain, 
 		   "global_liquid_staking_cap": "%s",
 		   "validator_liquid_staking_cap": "%s"
 		  }
-		 }
 		 }
 		],
 		"metadata": "ipfs://CID",
@@ -782,13 +770,6 @@ func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain, 
 		"expedited": false
 	   }`
 	propMsgBody := fmt.Sprintf(template,
-		govAuthority,
-		oldParams.UnbondingTime,
-		oldParams.MaxValidators,
-		oldParams.MaxEntries,
-		oldParams.HistoricalEntries,
-		oldParams.BondDenom,
-		oldParams.MinCommissionRate,
 		govAuthority,
 		math.LegacyNewDec(250),           // validator bond factor
 		math.LegacyNewDecWithPrec(25, 2), // 25 global_liquid_staking_cap

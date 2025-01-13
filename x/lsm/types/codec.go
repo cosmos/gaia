@@ -13,15 +13,15 @@ import (
 // for Amino JSON serialization.
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	legacy.RegisterAminoMsg(cdc, &MsgUpdateParams{}, "gaia/x/lsm/MsgUpdateParams")
-	legacy.RegisterAminoMsg(cdc, &MsgTokenizeShares{}, "gaia/x/lsm/MsgTokenizeShares")
-	legacy.RegisterAminoMsg(cdc, &MsgRedeemTokensForShares{}, "gaia/x/lsm/MsgRedeemTokensForShares")
-	legacy.RegisterAminoMsg(cdc, &MsgTransferTokenizeShareRecord{}, "gaia/x/lsm/MsgTransferTokenizeShareRecord")
-	legacy.RegisterAminoMsg(cdc, &MsgDisableTokenizeShares{}, "gaia/x/lsm/MsgDisableTokenizeShares")
-	legacy.RegisterAminoMsg(cdc, &MsgEnableTokenizeShares{}, "gaia/x/lsm/MsgEnableTokenizeShares")
-	// TODO eric I haven't included UnbondValidator -- do I need?
+	legacy.RegisterAminoMsg(cdc, &MsgTokenizeShares{}, "gaia/MsgTokenizeShares")
+	legacy.RegisterAminoMsg(cdc, &MsgRedeemTokensForShares{}, "gaia/MsgRedeemTokensForShares")
+	legacy.RegisterAminoMsg(cdc, &MsgTransferTokenizeShareRecord{}, "gaia/MsgTransferTokenizeShareRecord")
+	legacy.RegisterAminoMsg(cdc, &MsgDisableTokenizeShares{}, "gaia/MsgDisableTokenizeShares")
+	legacy.RegisterAminoMsg(cdc, &MsgEnableTokenizeShares{}, "gaia/MsgEnableTokenizeShares")
+	// TODO eric I haven't included UnbondValidator
 	// legacy.RegisterAminoMsg(cdc, &MsgUnbondValidator{}, "cosmos-sdk/MsgUnbondValidator")
-	legacy.RegisterAminoMsg(cdc, &MsgWithdrawTokenizeShareRecordReward{}, "gaia/x/lsm/MsgWithdrawTokenizeShareRecordReward")
-	legacy.RegisterAminoMsg(cdc, &MsgWithdrawAllTokenizeShareRecordReward{}, "gaia/x/lsm/MsgWithdrawAllTokenizeShareRecordReward")
+	legacy.RegisterAminoMsg(cdc, &MsgWithdrawTokenizeShareRecordReward{}, "gaia/MsgWithdrawTokenizeReward")
+	legacy.RegisterAminoMsg(cdc, &MsgWithdrawAllTokenizeShareRecordReward{}, "gaia/MsgWithdrawAllTokenizeReward")
 
 	cdc.RegisterConcrete(Params{}, "gaia/x/lsm/Params", nil)
 }

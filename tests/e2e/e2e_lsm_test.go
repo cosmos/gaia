@@ -22,9 +22,7 @@ func (s *IntegrationTestSuite) testLSM() {
 
 	validatorAddressA := sdk.ValAddress(validatorAAddr).String()
 
-	oldStakingParams, err := queryStakingParams(chainEndpoint)
-	s.Require().NoError(err)
-	s.writeLiquidStakingParamsUpdateProposal(s.chainA, oldStakingParams.Params)
+	s.writeLiquidStakingParamsUpdateProposal(s.chainA)
 	proposalCounter++
 	submitGovFlags := []string{configFile(proposalLSMParamUpdateFilename)}
 	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
@@ -33,7 +31,8 @@ func (s *IntegrationTestSuite) testLSM() {
 	// gov proposing LSM parameters (global liquid staking cap, validator liquid staking cap, validator bond factor)
 	s.T().Logf("Proposal number: %d", proposalCounter)
 	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: Set parameters (global liquid staking cap, validator liquid staking cap, validator bond factor)")
-	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), proposalCounter, "stakingtypes.MsgUpdateProposal", submitGovFlags, depositGovFlags, voteGovFlags, "vote")
+	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), proposalCounter, "lsmtypes.MsgUpdateProposal",
+		submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 
 	// query the proposal status and new fee
 	s.Require().Eventually(

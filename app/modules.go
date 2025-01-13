@@ -62,6 +62,7 @@ import (
 	wasm "github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
+	"github.com/cosmos/gaia/v22/x/lsm"
 	lsmtypes "github.com/cosmos/gaia/v22/x/lsm/types"
 	"github.com/cosmos/gaia/v22/x/metaprotocols"
 	metaprotocolstypes "github.com/cosmos/gaia/v22/x/metaprotocols/types"
@@ -124,6 +125,7 @@ func appModules(
 		app.ProviderModule,
 		metaprotocols.NewAppModule(),
 		feemarket.NewAppModule(appCodec, *app.FeeMarketKeeper),
+		lsm.NewAppModule(appCodec, app.LsmKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
 	}
 }
 

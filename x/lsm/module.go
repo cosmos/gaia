@@ -14,8 +14,8 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cosmos/cosmos-sdk/x/staking/client/cli"
 
+	"github.com/cosmos/gaia/v22/x/lsm/client/cli"
 	"github.com/cosmos/gaia/v22/x/lsm/keeper"
 	"github.com/cosmos/gaia/v22/x/lsm/types"
 )
@@ -59,7 +59,7 @@ func (AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 	return cdc.MustMarshalJSON(types.DefaultGenesisState())
 }
 
-// ValidateGenesis performs genesis state validation for the staking module.
+// ValidateGenesis performs genesis state validation for the lsm module.
 func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncodingConfig, bz json.RawMessage) error {
 	var data types.GenesisState
 	if err := cdc.UnmarshalJSON(bz, &data); err != nil {
@@ -69,19 +69,19 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncod
 	return types.ValidateGenesis(&data)
 }
 
-// RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the staking module.
+// RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the lsm module.
 func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *gwruntime.ServeMux) {
 	if err := types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx)); err != nil {
 		panic(err)
 	}
 }
 
-// GetTxCmd returns the root tx command for the staking module.
+// GetTxCmd returns the root tx command for the lsm module.
 func (amb AppModuleBasic) GetTxCmd() *cobra.Command {
 	return cli.NewTxCmd(amb.cdc.InterfaceRegistry().SigningContext().ValidatorAddressCodec(), amb.cdc.InterfaceRegistry().SigningContext().AddressCodec())
 }
 
-// AppModule implements an application module for the staking module.
+// AppModule implements an application module for the lsm module.
 type AppModule struct {
 	AppModuleBasic
 

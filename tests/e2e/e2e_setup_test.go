@@ -762,11 +762,17 @@ func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain, 
 		   "max_entries": %d,
 		   "historical_entries": %d,
 		   "bond_denom": "%s",
-		   "min_commission_rate": "%s",
+		   "min_commission_rate": "%s"
+		  },
+		  {
+		  "@type": "/gaia.lsm.v1beta1.MsgUpdateParams",
+		  "authority": "%s",
+		  "params": {
 		   "validator_bond_factor": "%s",
 		   "global_liquid_staking_cap": "%s",
 		   "validator_liquid_staking_cap": "%s"
 		  }
+		 }
 		 }
 		],
 		"metadata": "ipfs://CID",
@@ -783,6 +789,7 @@ func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain, 
 		oldParams.HistoricalEntries,
 		oldParams.BondDenom,
 		oldParams.MinCommissionRate,
+		govAuthority,
 		math.LegacyNewDec(250),           // validator bond factor
 		math.LegacyNewDecWithPrec(25, 2), // 25 global_liquid_staking_cap
 		math.LegacyNewDecWithPrec(50, 2), // 50 validator_liquid_staking_cap

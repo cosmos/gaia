@@ -1,7 +1,6 @@
 package gaia
 
 import (
-	lsmtypes "github.com/cosmos/gaia/v22/x/lsm/types"
 	feemarket "github.com/skip-mev/feemarket/x/feemarket"
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
@@ -63,6 +62,7 @@ import (
 	wasm "github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
+	lsmtypes "github.com/cosmos/gaia/v22/x/lsm/types"
 	"github.com/cosmos/gaia/v22/x/metaprotocols"
 	metaprotocolstypes "github.com/cosmos/gaia/v22/x/metaprotocols/types"
 )

@@ -35,6 +35,7 @@ func (s *ConfigSuite) TestNoIndexingTransactions() {
 	s.Require().NoError(s.Chain.ModifyConfig(
 		s.GetContext(), s.T(),
 		map[string]testutil.Toml{"config/config.toml": configToml},
+		0,
 	))
 
 	balanceBefore, err := s.Chain.GetBalance(s.GetContext(),
@@ -53,13 +54,23 @@ func (s *ConfigSuite) TestNoIndexingTransactions() {
 	s.Require().NoError(json.Unmarshal(stdout, &tx))
 	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 2, s.Chain))
 
+	txResult, err := s.Chain.Validators[1].GetTransaction(
+		s.Chain.Validators[1].CliContext(),
+		tx.TxHash,
+	)
+	s.Require().NoError(err)
+	s.Require().Equal(uint32(0), txResult.Code, txResult.RawLog)
+
 	balanceAfter, err := s.Chain.GetBalance(s.GetContext(),
 		s.Chain.ValidatorWallets[0].Address,
 		s.Chain.Config().Denom)
 	s.Require().NoError(err)
 	s.Require().Equal(balanceBefore.AddRaw(int64(amount)), balanceAfter)
 
-	_, err = s.Chain.GetTransaction(tx.TxHash)
+	_, err = s.Chain.Validators[0].GetTransaction(
+		s.Chain.Validators[0].CliContext(),
+		tx.TxHash,
+	)
 	s.Require().Error(err)
 	s.Require().Contains(err.Error(), "transaction indexing is disabled")
 }

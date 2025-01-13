@@ -52,6 +52,7 @@ func (s *ConfigSuite) TestNoIndexingTransactions() {
 	s.Require().NoError(err)
 	tx := cosmos.CosmosTx{}
 	s.Require().NoError(json.Unmarshal(stdout, &tx))
+	s.Require().Equal(0, tx.Code, tx.RawLog)
 	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 2, s.Chain))
 
 	txResult, err := s.Chain.Validators[1].GetTransaction(

@@ -52,6 +52,7 @@ func (s *ConfigSuite) TestNoIndexingTransactions() {
 	s.Require().NoError(err)
 	tx := cosmos.CosmosTx{}
 	s.Require().NoError(json.Unmarshal(stdout, &tx))
+	s.Require().Equal(0, tx.Code, tx.RawLog)
 	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 2, s.Chain))
 
 	txResult, err := s.Chain.Validators[1].GetTransaction(
@@ -114,20 +115,22 @@ func (s *ConfigSuite) TestPeerLimit() {
 	}
 	s.Require().NoError(s.Chain.Validators[0].SetPeers(s.GetContext(), ""))
 
+	s.Require().NoError(s.Chain.StopAllNodes(s.GetContext()))
+	s.Require().NoError(s.Chain.StartAllNodes(s.GetContext()))
+	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 2, s.Chain))
+
 	p2p := make(testutil.Toml)
 	p2p["max_num_inbound_peers"] = 2
 	// disable pex so that we can control the number of peers
-	// p2p["pex"] = false
+	p2p["pex"] = false
 	configToml := make(testutil.Toml)
 	configToml["p2p"] = p2p
 	err = s.Chain.ModifyConfig(
 		s.GetContext(), s.T(),
 		map[string]testutil.Toml{"config/config.toml": configToml},
+		0,
 	)
-	if err != nil {
-		// it's okay if one of the nodes has 0 peers and fails to start
-		s.Require().Contains(err.Error(), "still catching up")
-	}
+	s.Require().NoError(err)
 
 	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 4, s.Chain))
 

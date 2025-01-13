@@ -21,6 +21,8 @@ import (
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
+	lsmtypes "github.com/cosmos/gaia/v22/x/lsm/types"
 )
 
 func queryGaiaTx(endpoint, txHash string) error {
@@ -100,6 +102,20 @@ func queryStakingParams(endpoint string) (stakingtypes.QueryParamsResponse, erro
 	var params stakingtypes.QueryParamsResponse
 	if err := cdc.UnmarshalJSON(body, &params); err != nil {
 		return stakingtypes.QueryParamsResponse{}, err
+	}
+
+	return params, nil
+}
+
+func queryLsmParams(endpoint string) (lsmtypes.QueryParamsResponse, error) {
+	body, err := httpGet(fmt.Sprintf("%s/gaia/lsm/v1beta1/params", endpoint))
+	if err != nil {
+		return lsmtypes.QueryParamsResponse{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	var params lsmtypes.QueryParamsResponse
+	if err := cdc.UnmarshalJSON(body, &params); err != nil {
+		return lsmtypes.QueryParamsResponse{}, err
 	}
 
 	return params, nil
@@ -289,16 +305,16 @@ func queryAllEvidence(endpoint string) (evidencetypes.QueryAllEvidenceResponse, 
 	return res, nil
 }
 
-func queryTokenizeShareRecordByID(endpoint string, recordID int) (stakingtypes.TokenizeShareRecord, error) {
-	var res stakingtypes.QueryTokenizeShareRecordByIdResponse
+func queryTokenizeShareRecordByID(endpoint string, recordID int) (lsmtypes.TokenizeShareRecord, error) {
+	var res lsmtypes.QueryTokenizeShareRecordByIdResponse
 
 	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/tokenize_share_record_by_id/%d", endpoint, recordID))
 	if err != nil {
-		return stakingtypes.TokenizeShareRecord{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+		return lsmtypes.TokenizeShareRecord{}, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
 
 	if err := cdc.UnmarshalJSON(body, &res); err != nil {
-		return stakingtypes.TokenizeShareRecord{}, err
+		return lsmtypes.TokenizeShareRecord{}, err
 	}
 	return res.Record, nil
 }

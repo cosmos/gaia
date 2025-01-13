@@ -780,6 +780,7 @@ func (s *IntegrationTestSuite) expectTxSubmitError(expectErrString string) func(
 	}
 }
 
+/*
 func (s *IntegrationTestSuite) executeValidatorBond(c *chain, valIdx int, valOperAddress, delegatorAddr, home, delegateFees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
@@ -804,6 +805,7 @@ func (s *IntegrationTestSuite) executeValidatorBond(c *chain, valIdx int, valOpe
 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.defaultExecValidation(c, valIdx))
 	s.T().Logf("%s successfully executed validator bond tx to %s", delegatorAddr, valOperAddress)
 }
+*/
 
 func (s *IntegrationTestSuite) executeTokenizeShares(c *chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)

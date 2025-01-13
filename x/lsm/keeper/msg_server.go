@@ -85,6 +85,7 @@ func (k msgServer) TokenizeShares(goCtx context.Context, msg *types.MsgTokenizeS
 		return nil, types.ErrTokenizeSharesDisabledForAccount.Wrapf("tokenization will be allowed at %s", unlockTime)
 	}
 
+	/* todo--replace validatorbond
 	delegation, err := k.stakingKeeper.GetDelegation(ctx, delegatorAddress, valAddr)
 	if err != nil {
 		return nil, err
@@ -94,6 +95,7 @@ func (k msgServer) TokenizeShares(goCtx context.Context, msg *types.MsgTokenizeS
 	if delegation.ValidatorBond {
 		return nil, types.ErrValidatorBondNotAllowedForTokenizeShare
 	}
+	*/
 
 	bondDenom, err := k.stakingKeeper.BondDenom(ctx)
 	if err != nil {
@@ -383,6 +385,7 @@ func (k msgServer) RedeemTokensForShares(goCtx context.Context, msg *types.MsgRe
 		return nil, err
 	}
 
+	/* todo--replace validatorbond
 	// tokenized shares can be transferred from a validator that does not have validator bond to a delegator with validator bond
 	// in that case we need to increase the validator bond shares (same as during msgServer.Delegate)
 	newDelegation, err := k.stakingKeeper.GetDelegation(ctx, delegatorAddress, valAddr)
@@ -395,6 +398,7 @@ func (k msgServer) RedeemTokensForShares(goCtx context.Context, msg *types.MsgRe
 			return nil, err
 		}
 	}
+	*/
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(

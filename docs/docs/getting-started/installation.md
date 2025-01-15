@@ -46,7 +46,7 @@ At the time of this writing, the latest release is `1.22.3`. We're going to down
 ```bash
 curl -OL https://go.dev/dl/go1.22.3.darwin-amd64.tar.gz
 
-sudo tar -C /usr/local -xvf https://go.dev/dl/go1.22.3.darwin-amd64.tar.gz
+sudo tar -C /usr/local -xvf go1.22.3.darwin-amd64.tar.gz
 
 
 export PATH=$PATH:/usr/local/go/bin

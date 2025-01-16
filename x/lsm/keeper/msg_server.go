@@ -499,3 +499,37 @@ func (k msgServer) EnableTokenizeShares(ctx context.Context, msg *types.MsgEnabl
 
 	return &types.MsgEnableTokenizeSharesResponse{CompletionTime: completionTime}, nil
 }
+
+// WithdrawTokenizeShareRecordReward defines a method to withdraw reward for owning TokenizeShareRecord
+func (k msgServer) WithdrawTokenizeShareRecordReward(goCtx context.Context, msg *types.MsgWithdrawTokenizeShareRecordReward) (*types.MsgWithdrawTokenizeShareRecordRewardResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	ownerAddr, err := k.authKeeper.AddressCodec().StringToBytes(msg.OwnerAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = k.Keeper.WithdrawTokenizeShareRecordReward(ctx, ownerAddr, msg.RecordId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.MsgWithdrawTokenizeShareRecordRewardResponse{}, nil
+}
+
+// WithdrawAllTokenizeShareRecordReward defines a method to withdraw reward for owning TokenizeShareRecord
+func (k msgServer) WithdrawAllTokenizeShareRecordReward(goCtx context.Context, msg *types.MsgWithdrawAllTokenizeShareRecordReward) (*types.MsgWithdrawAllTokenizeShareRecordRewardResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	ownerAddr, err := k.authKeeper.AddressCodec().StringToBytes(msg.OwnerAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = k.Keeper.WithdrawAllTokenizeShareRecordReward(ctx, ownerAddr)
+	if err != nil {
+		return nil, err
+	}
+
+	return &types.MsgWithdrawAllTokenizeShareRecordRewardResponse{}, nil
+}

@@ -276,16 +276,6 @@ func NewAppKeeper(
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
-	// register the staking hooks
-	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
-	appKeepers.StakingKeeper.SetHooks(
-		stakingtypes.NewMultiStakingHooks(
-			appKeepers.DistrKeeper.Hooks(),
-			appKeepers.SlashingKeeper.Hooks(),
-			appKeepers.ProviderKeeper.Hooks(),
-		),
-	)
-
 	appKeepers.LsmKeeper = lsmkeeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(appKeepers.keys[lsmtypes.StoreKey]),
@@ -294,6 +284,17 @@ func NewAppKeeper(
 		appKeepers.StakingKeeper,
 		appKeepers.DistrKeeper,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+	)
+
+	// register the staking hooks
+	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
+	appKeepers.StakingKeeper.SetHooks(
+		stakingtypes.NewMultiStakingHooks(
+			appKeepers.DistrKeeper.Hooks(),
+			appKeepers.SlashingKeeper.Hooks(),
+			appKeepers.ProviderKeeper.Hooks(),
+			appKeepers.LsmKeeper.Hooks(),
+		),
 	)
 
 	appKeepers.FeeMarketKeeper = feemarketkeeper.NewKeeper(

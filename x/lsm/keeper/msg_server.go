@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -85,17 +86,10 @@ func (k msgServer) TokenizeShares(goCtx context.Context, msg *types.MsgTokenizeS
 		return nil, types.ErrTokenizeSharesDisabledForAccount.Wrapf("tokenization will be allowed at %s", unlockTime)
 	}
 
-	/* todo--replace validatorbond
-	delegation, err := k.stakingKeeper.GetDelegation(ctx, delegatorAddress, valAddr)
-	if err != nil {
-		return nil, err
-	}
-
 	// ValidatorBond delegation is not allowed for tokenize share
-	if delegation.ValidatorBond {
+	if bytes.Equal(delegatorAddress, sdk.AccAddress(validator.OperatorAddress)) {
 		return nil, types.ErrValidatorBondNotAllowedForTokenizeShare
 	}
-	*/
 
 	bondDenom, err := k.stakingKeeper.BondDenom(ctx)
 	if err != nil {
@@ -334,7 +328,7 @@ func (k msgServer) RedeemTokensForShares(goCtx context.Context, msg *types.MsgRe
 
 	// Note: since delegation object has been changed from unbond call, it gets latest delegation
 	_, err = k.stakingKeeper.GetDelegation(ctx, record.GetModuleAddress(), valAddr)
-	if err != nil && !errors.Is(err, types.ErrNoDelegation) {
+	if err != nil && !errors.Is(err, stakingtypes.ErrNoDelegation) {
 		return nil, err
 	}
 
@@ -385,7 +379,6 @@ func (k msgServer) RedeemTokensForShares(goCtx context.Context, msg *types.MsgRe
 		return nil, err
 	}
 
-	/* todo--replace validatorbond
 	// tokenized shares can be transferred from a validator that does not have validator bond to a delegator with validator bond
 	// in that case we need to increase the validator bond shares (same as during msgServer.Delegate)
 	newDelegation, err := k.stakingKeeper.GetDelegation(ctx, delegatorAddress, valAddr)
@@ -393,12 +386,11 @@ func (k msgServer) RedeemTokensForShares(goCtx context.Context, msg *types.MsgRe
 		return nil, err
 	}
 
-	if newDelegation.ValidatorBond {
+	if newDelegation.DelegatorAddress == validator.OperatorAddress {
 		if err := k.IncreaseValidatorBondShares(ctx, valAddr, shares); err != nil {
 			return nil, err
 		}
 	}
-	*/
 
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(

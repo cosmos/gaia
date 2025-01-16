@@ -771,7 +771,7 @@ func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain) 
 	   }`
 	propMsgBody := fmt.Sprintf(template,
 		govAuthority,
-		math.LegacyNewDec(250),           // validator bond factor
+		math.LegacyNewDec(-1),            // validator bond factor
 		math.LegacyNewDecWithPrec(25, 2), // 25 global_liquid_staking_cap
 		math.LegacyNewDecWithPrec(50, 2), // 50 validator_liquid_staking_cap
 	)

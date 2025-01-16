@@ -53,7 +53,7 @@ func (s *IntegrationTestSuite) testLSM() {
 
 			s.Require().Equal(lsmParams.Params.GlobalLiquidStakingCap, math.LegacyNewDecWithPrec(25, 2))
 			s.Require().Equal(lsmParams.Params.ValidatorLiquidStakingCap, math.LegacyNewDecWithPrec(50, 2))
-			s.Require().Equal(lsmParams.Params.ValidatorBondFactor, math.LegacyNewDec(250))
+			s.Require().Equal(lsmParams.Params.ValidatorBondFactor, math.LegacyNewDec(-1))
 
 			return true
 		},

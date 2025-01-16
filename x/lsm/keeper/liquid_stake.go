@@ -67,7 +67,7 @@ func (k Keeper) DelegatorIsLiquidStaker(delegatorAddress sdk.AccAddress) bool {
 
 // CheckExceedsGlobalLiquidStakingCap checks if a liquid delegation would cause the
 // global liquid staking cap to be exceeded
-// A liquid delegation is defined as either tokenized shares, or a delegation from an ICA Account
+// A liquid delegation is defined as tokenized shares
 // The total stake is determined by the balance of the bonded pool
 // If the delegation's shares are already bonded (e.g. in the event of a tokenized share)
 // the tokens are already included in the bonded pool
@@ -104,7 +104,7 @@ func (k Keeper) CheckExceedsGlobalLiquidStakingCap(ctx context.Context, tokens m
 
 // CheckExceedsValidatorBondCap checks if a liquid delegation to a validator would cause
 // the liquid shares to exceed the validator bond factor
-// A liquid delegation is defined as either tokenized shares, or a delegation from an ICA Account
+// A liquid delegation is defined as tokenized shares
 // Returns true if the cap is exceeded
 func (k Keeper) CheckExceedsValidatorBondCap(ctx context.Context, validator types.LiquidValidator,
 	shares math.LegacyDec,
@@ -124,7 +124,7 @@ func (k Keeper) CheckExceedsValidatorBondCap(ctx context.Context, validator type
 
 // CheckExceedsValidatorLiquidStakingCap checks if a liquid delegation could cause the
 // total liquid shares to exceed the liquid staking cap
-// A liquid delegation is defined as either tokenized shares, or a delegation from an ICA Account
+// A liquid delegation is defined as tokenized shares
 // If the liquid delegation's shares are already bonded (e.g. in the event of a tokenized share)
 // the tokens are already included in the validator's delegator shares
 // If the liquid delegation's shares are not bonded (e.g. normal delegation),
@@ -506,9 +506,7 @@ func (k Keeper) RemoveExpiredTokenizeShareLocks(ctx context.Context, blockTime t
 
 // Calculates and sets the global liquid staked tokens and liquid shares by validator
 // The totals are determined by looping each delegation record and summing the stake
-// if the delegator has a 32-length address. Checking for a 32-length address will capture
-// ICA accounts, as well as tokenized delegations which are owned by module accounts
-// under the hood
+// if the delegator is the lsm.
 // This function must be called in the upgrade handler which onboards LSM
 func (k Keeper) RefreshTotalLiquidStaked(ctx context.Context) error {
 	validators, err := k.stakingKeeper.GetAllValidators(ctx)
@@ -546,7 +544,7 @@ func (k Keeper) RefreshTotalLiquidStaked(ctx context.Context) error {
 			return err
 		}
 
-		// If the delegator is either an ICA account or a tokenize share module account,
+		// If the delegator is a tokenize share module account,
 		// the delegation should be considered to be associated with liquid staking
 		// Consequently, the global number of liquid staked tokens, and the total
 		// liquid shares on the validator should be incremented
@@ -635,4 +633,10 @@ func (k Keeper) GetLiquidValidator(ctx context.Context, addr sdk.ValAddress) (va
 	}
 
 	return types.UnmarshalValidator(k.cdc, value)
+}
+
+// RemoveLiquidValidator delete the LiquidValidator record
+func (k Keeper) RemoveLiquidValidator(ctx context.Context, addr sdk.ValAddress) error {
+	store := k.storeService.OpenKVStore(ctx)
+	return store.Delete(types.GetLiquidValidatorKey(addr))
 }

@@ -42,6 +42,17 @@ service Msg {
   // addresseses stake after it has been disabled
   rpc EnableTokenizeShares(MsgEnableTokenizeShares)
       returns (MsgEnableTokenizeSharesResponse);
+
+  // WithdrawTokenizeShareRecordReward defines a method to withdraw reward for
+  // an owning TokenizeShareRecord
+  rpc WithdrawTokenizeShareRecordReward(MsgWithdrawTokenizeShareRecordReward)
+      returns (MsgWithdrawTokenizeShareRecordRewardResponse);
+
+  // WithdrawAllTokenizeShareRecordReward defines a method to withdraw reward
+  // for all owning TokenizeShareRecord
+  rpc WithdrawAllTokenizeShareRecordReward(
+      MsgWithdrawAllTokenizeShareRecordReward)
+      returns (MsgWithdrawAllTokenizeShareRecordRewardResponse);
 }
 
 // MsgUpdateParams is the Msg/UpdateParams request type.

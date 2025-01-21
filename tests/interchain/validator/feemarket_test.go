@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cosmos/gaia/v22/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v23/tests/interchain/chainsuite"
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v8/testutil"
@@ -69,7 +69,6 @@ func (s *FeemarketSuite) setMaxBlockUtilization(utilization int) {
 	s.Require().NoError(err)
 	maxBlock := maxBlockResult.String()
 	s.Require().Equal(fmt.Sprint(utilization), maxBlock)
-
 }
 
 func (s *FeemarketSuite) packBlocks(txsPerBlock, blocksToPack int) {

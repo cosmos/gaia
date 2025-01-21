@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cosmos/gaia/v22/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v23/tests/interchain/chainsuite"
 	"github.com/gorilla/websocket"
 	dto "github.com/prometheus/client_model/go"
 	"github.com/prometheus/common/expfmt"
@@ -161,12 +161,12 @@ func (s *ConfigSuite) TestWSConnectionLimit() {
 	s.Require().NoError(err)
 	u.Scheme = "ws"
 	u.Path = "/websocket"
-	var canConnect = func() error {
+	canConnect := func() error {
 		var eg errgroup.Group
 		tCtx, tCancel := context.WithTimeout(s.GetContext(), 80*time.Second)
 		defer tCancel()
 		for i := 0; i < connectionCount; i++ {
-			var i = i
+			i := i
 			eg.Go(func() error {
 				c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 				if err != nil {

@@ -14,8 +14,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/cosmos/gaia/v22/ante"
-	gaiaApp "github.com/cosmos/gaia/v22/app"
+	"github.com/cosmos/gaia/v23/ante"
+	gaiaApp "github.com/cosmos/gaia/v23/app"
 )
 
 // These integration tests were modified to work with the GaiaApp

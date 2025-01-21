@@ -11,7 +11,7 @@ import (
 	sdkmath "cosmossdk.io/math"
 
 	"github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/gaia/v22/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v23/tests/interchain/chainsuite"
 	transfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
 	"github.com/strangelove-ventures/interchaintest/v8"
@@ -41,11 +41,9 @@ func (s *ChangeoverSuite) SetupSuite() {
 		cosmos.NewGenesisKV("app_state.gov.params.min_deposit.0.amount", strconv.Itoa(chainsuite.GovMinDepositAmount)),
 	}
 	spec := &interchaintest.ChainSpec{
-		Name:      "ics-consumer",
-		ChainName: "ics-consumer",
-		// Unfortunately, this rc is a bit of a bespoke version; it corresponds to an rc
-		// in hypha's fork that has a fix for sovereign -> consumer changeovers
-		Version:       "v6.2.0-rc1",
+		Name:          "ics-consumer",
+		ChainName:     "ics-consumer",
+		Version:       "v6.4.0-rc0",
 		NumValidators: &validators,
 		NumFullNodes:  &fullNodes,
 		ChainConfig: ibc.ChainConfig{
@@ -62,7 +60,7 @@ func (s *ChangeoverSuite) SetupSuite() {
 			Images: []ibc.DockerImage{
 				{
 					Repository: chainsuite.HyphaICSRepo,
-					Version:    "v6.2.0-rc1",
+					Version:    "v6.4.0-rc0",
 					UidGid:     chainsuite.ICSUidGuid,
 				},
 			},

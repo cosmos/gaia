@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cosmos/gaia/v22/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v23/tests/interchain/chainsuite"
 	"github.com/gorilla/websocket"
 	dto "github.com/prometheus/client_model/go"
 	"github.com/prometheus/common/expfmt"
@@ -35,6 +35,7 @@ func (s *ConfigSuite) TestNoIndexingTransactions() {
 	s.Require().NoError(s.Chain.ModifyConfig(
 		s.GetContext(), s.T(),
 		map[string]testutil.Toml{"config/config.toml": configToml},
+		0,
 	))
 
 	balanceBefore, err := s.Chain.GetBalance(s.GetContext(),
@@ -51,7 +52,15 @@ func (s *ConfigSuite) TestNoIndexingTransactions() {
 	s.Require().NoError(err)
 	tx := cosmos.CosmosTx{}
 	s.Require().NoError(json.Unmarshal(stdout, &tx))
+	s.Require().Equal(0, tx.Code, tx.RawLog)
 	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 2, s.Chain))
+
+	txResult, err := s.Chain.Validators[1].GetTransaction(
+		s.Chain.Validators[1].CliContext(),
+		tx.TxHash,
+	)
+	s.Require().NoError(err)
+	s.Require().Equal(uint32(0), txResult.Code, txResult.RawLog)
 
 	balanceAfter, err := s.Chain.GetBalance(s.GetContext(),
 		s.Chain.ValidatorWallets[0].Address,
@@ -59,7 +68,10 @@ func (s *ConfigSuite) TestNoIndexingTransactions() {
 	s.Require().NoError(err)
 	s.Require().Equal(balanceBefore.AddRaw(int64(amount)), balanceAfter)
 
-	_, err = s.Chain.GetTransaction(tx.TxHash)
+	_, err = s.Chain.Validators[0].GetTransaction(
+		s.Chain.Validators[0].CliContext(),
+		tx.TxHash,
+	)
 	s.Require().Error(err)
 	s.Require().Contains(err.Error(), "transaction indexing is disabled")
 }
@@ -103,20 +115,22 @@ func (s *ConfigSuite) TestPeerLimit() {
 	}
 	s.Require().NoError(s.Chain.Validators[0].SetPeers(s.GetContext(), ""))
 
+	s.Require().NoError(s.Chain.StopAllNodes(s.GetContext()))
+	s.Require().NoError(s.Chain.StartAllNodes(s.GetContext()))
+	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 2, s.Chain))
+
 	p2p := make(testutil.Toml)
 	p2p["max_num_inbound_peers"] = 2
 	// disable pex so that we can control the number of peers
-	// p2p["pex"] = false
+	p2p["pex"] = false
 	configToml := make(testutil.Toml)
 	configToml["p2p"] = p2p
 	err = s.Chain.ModifyConfig(
 		s.GetContext(), s.T(),
 		map[string]testutil.Toml{"config/config.toml": configToml},
+		0,
 	)
-	if err != nil {
-		// it's okay if one of the nodes has 0 peers and fails to start
-		s.Require().Contains(err.Error(), "still catching up")
-	}
+	s.Require().NoError(err)
 
 	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 4, s.Chain))
 
@@ -147,12 +161,12 @@ func (s *ConfigSuite) TestWSConnectionLimit() {
 	s.Require().NoError(err)
 	u.Scheme = "ws"
 	u.Path = "/websocket"
-	var canConnect = func() error {
+	canConnect := func() error {
 		var eg errgroup.Group
 		tCtx, tCancel := context.WithTimeout(s.GetContext(), 80*time.Second)
 		defer tCancel()
 		for i := 0; i < connectionCount; i++ {
-			var i = i
+			i := i
 			eg.Go(func() error {
 				c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 				if err != nil {

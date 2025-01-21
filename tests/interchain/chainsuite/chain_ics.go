@@ -128,11 +128,14 @@ func (p *Chain) AddConsumerChain(ctx context.Context, relayer *Relayer, config C
 
 	defaultSpec := p.DefaultConsumerChainSpec(ctx, chainID, config, spawnTime, proposalWaiter)
 	config.Spec = MergeChainSpecs(defaultSpec, config.Spec)
-	providerICS := p.GetNode().ICSVersion(ctx)
-	if config.Spec.InterchainSecurityConfig.ConsumerVerOverride == "" {
-		// This will disable the genesis transform
-		config.Spec.InterchainSecurityConfig.ConsumerVerOverride = providerICS
+	if config.Spec.InterchainSecurityConfig.ICSImageRepo == "" {
+		config.Spec.InterchainSecurityConfig.ICSImageRepo = "ghcr.io/hyphacoop/ics"
 	}
+	// providerICS := p.GetNode().ICSVersion(ctx)
+	// if config.Spec.InterchainSecurityConfig.ConsumerVerOverride == "" {
+	// 	// This will disable the genesis transform
+	// 	config.Spec.InterchainSecurityConfig.ConsumerVerOverride = providerICS
+	// }
 	cf := interchaintest.NewBuiltinChainFactory(
 		GetLogger(ctx),
 		[]*interchaintest.ChainSpec{config.Spec},

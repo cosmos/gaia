@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	sdkmath "cosmossdk.io/math"
-	"github.com/cosmos/gaia/v22/tests/interchain/chainsuite"
-	"github.com/cosmos/gaia/v22/tests/interchain/delegator"
+	"github.com/cosmos/gaia/v23/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v23/tests/interchain/delegator"
 	transfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
@@ -131,7 +131,6 @@ func (s *PFMSuite) TestPFMHappyPath() {
 		assert.Truef(c, aEndBalance.Sub(aStartBalance).IsPositive(), "expected %d - %d > 0 (it was %d) in %s",
 			aEndBalance, aStartBalance, aEndBalance.Sub(aStartBalance), targetDenomDA)
 	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "chain A balance has not increased")
-
 }
 
 func TestPFM(t *testing.T) {
@@ -139,6 +138,7 @@ func TestPFM(t *testing.T) {
 		Suite: &delegator.Suite{Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
 			UpgradeOnSetup: true,
 			CreateRelayer:  true,
-		})}}
+		})},
+	}
 	suite.Run(t, s)
 }

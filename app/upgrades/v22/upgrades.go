@@ -12,7 +12,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
-	"github.com/cosmos/gaia/v22/app/keepers"
+	"github.com/cosmos/gaia/v23/app/keepers"
 )
 
 // CreateUpgradeHandler returns an upgrade handler for Gaia v22.
@@ -44,8 +44,7 @@ func CreateUpgradeHandler(
 }
 
 func SetConsumerInfractionParams(ctx sdk.Context, pk providerkeeper.Keeper, infractionParameters providertypes.InfractionParameters) error {
-	activeConsumerIDs := pk.GetAllActiveConsumerIds(ctx)
-	for _, consumerID := range activeConsumerIDs {
+	for _, consumerID := range pk.GetAllConsumerIds(ctx) {
 		if err := pk.SetInfractionParameters(ctx, consumerID, infractionParameters); err != nil {
 			return err
 		}

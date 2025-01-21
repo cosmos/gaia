@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	sdkmath "cosmossdk.io/math"
-	"github.com/cosmos/gaia/v22/tests/interchain/chainsuite"
-	"github.com/cosmos/gaia/v22/tests/interchain/delegator"
+	"github.com/cosmos/gaia/v23/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v23/tests/interchain/delegator"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -28,7 +28,6 @@ func (s *BankSuite) TestSend() {
 	balanceAfter, err := s.Chain.GetBalance(s.GetContext(), s.DelegatorWallet2.FormattedAddress(), s.Chain.Config().Denom)
 	s.Require().NoError(err)
 	s.Require().Equal(balanceBefore.Add(sdkmath.NewInt(txAmount)), balanceAfter)
-
 }
 
 func TestBank(t *testing.T) {

@@ -11,7 +11,7 @@ import (
 
 	"cosmossdk.io/math"
 
-	v22 "github.com/cosmos/gaia/v22/app/upgrades/v22"
+	v22 "github.com/cosmos/gaia/v23/app/upgrades/v22"
 )
 
 func TestSetDefaultConsumerInfractionParams(t *testing.T) {

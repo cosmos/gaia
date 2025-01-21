@@ -15,7 +15,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
-	"github.com/cosmos/gaia/v22/x/metaprotocols/types"
+	"github.com/cosmos/gaia/v23/x/metaprotocols/types"
 )
 
 const consensusVersion uint64 = 1

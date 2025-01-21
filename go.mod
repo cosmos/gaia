@@ -1,4 +1,4 @@
-module github.com/cosmos/gaia/v22
+module github.com/cosmos/gaia/v23
 
 go 1.22.7
 

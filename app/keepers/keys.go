@@ -2,6 +2,7 @@ package keepers
 
 import (
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
+	tokenfactorytypes "github.com/strangelove-ventures/tokenfactory/x/tokenfactory/types"
 
 	routertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward/types"
 	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v8/types"
@@ -62,6 +63,7 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 		consensusparamtypes.StoreKey,
 		feemarkettypes.StoreKey,
 		wasmtypes.StoreKey,
+		tokenfactorytypes.StoreKey,
 	)
 
 	// Define transient store keys

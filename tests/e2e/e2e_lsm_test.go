@@ -11,7 +11,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
-	lsmtypes "github.com/cosmos/gaia/v22/x/lsm/types"
+	lsmtypes "github.com/cosmos/gaia/v23/x/lsm/types"
 )
 
 func (s *IntegrationTestSuite) testLSM() {

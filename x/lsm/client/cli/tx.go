@@ -15,7 +15,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
 
-	"github.com/cosmos/gaia/v22/x/lsm/types"
+	"github.com/cosmos/gaia/v23/x/lsm/types"
 )
 
 // NewTxCmd returns a root CLI command handler for all x/lsm transaction commands.

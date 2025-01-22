@@ -22,8 +22,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking/testutil"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	lsmkeeper "github.com/cosmos/gaia/v22/x/lsm/keeper"
-	lsmtypes "github.com/cosmos/gaia/v22/x/lsm/types"
+	lsmkeeper "github.com/cosmos/gaia/v23/x/lsm/keeper"
+	lsmtypes "github.com/cosmos/gaia/v23/x/lsm/types"
 )
 
 func TestTokenizeSharesAndRedeemTokens(t *testing.T) {

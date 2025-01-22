@@ -83,8 +83,8 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	lsmkeeper "github.com/cosmos/gaia/v22/x/lsm/keeper"
-	lsmtypes "github.com/cosmos/gaia/v22/x/lsm/types"
+	lsmkeeper "github.com/cosmos/gaia/v23/x/lsm/keeper"
+	lsmtypes "github.com/cosmos/gaia/v23/x/lsm/types"
 )
 
 type AppKeepers struct {

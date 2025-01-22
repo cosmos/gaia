@@ -12,7 +12,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/runtime"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/cosmos/gaia/v22/x/lsm/types"
+	"github.com/cosmos/gaia/v23/x/lsm/types"
 )
 
 func (k Keeper) GetLastTokenizeShareRecordID(ctx context.Context) uint64 {

@@ -35,9 +35,9 @@ import (
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v22/x/lsm"
-	lsmkeeper "github.com/cosmos/gaia/v22/x/lsm/keeper"
-	lsmtypes "github.com/cosmos/gaia/v22/x/lsm/types"
+	"github.com/cosmos/gaia/v23/x/lsm"
+	lsmkeeper "github.com/cosmos/gaia/v23/x/lsm/keeper"
+	lsmtypes "github.com/cosmos/gaia/v23/x/lsm/types"
 )
 
 type fixture struct {

@@ -24,7 +24,7 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	lsmtypes "github.com/cosmos/gaia/v22/x/lsm/types"
+	lsmtypes "github.com/cosmos/gaia/v23/x/lsm/types"
 )
 
 const (

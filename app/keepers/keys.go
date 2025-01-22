@@ -32,7 +32,7 @@ import (
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	lsmtypes "github.com/cosmos/gaia/v22/x/lsm/types"
+	lsmtypes "github.com/cosmos/gaia/v23/x/lsm/types"
 )
 
 func (appKeepers *AppKeepers) GenerateKeys() {

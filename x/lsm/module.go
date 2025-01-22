@@ -16,9 +16,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
-	"github.com/cosmos/gaia/v22/x/lsm/client/cli"
-	"github.com/cosmos/gaia/v22/x/lsm/keeper"
-	"github.com/cosmos/gaia/v22/x/lsm/types"
+	"github.com/cosmos/gaia/v23/x/lsm/client/cli"
+	"github.com/cosmos/gaia/v23/x/lsm/keeper"
+	"github.com/cosmos/gaia/v23/x/lsm/types"
 )
 
 const (

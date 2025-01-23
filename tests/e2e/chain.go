@@ -30,6 +30,7 @@ import (
 	gaia "github.com/cosmos/gaia/v23/app"
 	gaiaparams "github.com/cosmos/gaia/v23/app/params"
 	metaprotocoltypes "github.com/cosmos/gaia/v23/x/metaprotocols/types"
+	tokenfactorytypes "github.com/strangelove-ventures/tokenfactory/x/tokenfactory/types"
 )
 
 const (
@@ -61,6 +62,7 @@ func init() {
 	providertypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	metaprotocoltypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	ratelimittypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	tokenfactorytypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 
 	cdc = encodingConfig.Marshaler
 	txConfig = encodingConfig.TxConfig

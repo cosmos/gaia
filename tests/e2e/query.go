@@ -21,6 +21,7 @@ import (
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	tokenfactorytypes "github.com/strangelove-ventures/tokenfactory/x/tokenfactory/types"
 )
 
 func queryGaiaTx(endpoint, txHash string) error {
@@ -372,4 +373,18 @@ func queryBlocksPerEpoch(endpoint string) (int64, error) {
 	}
 
 	return response.Params.BlocksPerEpoch, nil
+}
+
+func queryDenomsFromAdmin(endpoint, admin string) (tokenfactorytypes.QueryDenomsFromAdminResponse, error) {
+	// TODO(wllmshao): do we care that this is osmosis-prefixed?
+	body, err := httpGet(fmt.Sprintf("%s/osmosis/tokenfactory/v1beta1/denoms_from_admin/%s", endpoint, admin))
+	if err != nil {
+		return tokenfactorytypes.QueryDenomsFromAdminResponse{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	var res tokenfactorytypes.QueryDenomsFromAdminResponse
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return tokenfactorytypes.QueryDenomsFromAdminResponse{}, err
+	}
+	return res, nil
 }

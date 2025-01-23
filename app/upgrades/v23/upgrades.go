@@ -4,10 +4,14 @@ import (
 	"context"
 
 	errorsmod "cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+
+	tokenfactorykeeper "github.com/strangelove-ventures/tokenfactory/x/tokenfactory/keeper"
+	tokenfactorytypes "github.com/strangelove-ventures/tokenfactory/x/tokenfactory/types"
 
 	"github.com/cosmos/gaia/v23/app/keepers"
 )
@@ -27,7 +31,16 @@ func CreateUpgradeHandler(
 			return vm, errorsmod.Wrapf(err, "running module migrations")
 		}
 
+		setTokenFactoryParams(ctx, keepers.TokenFactoryKeeper)
+
 		ctx.Logger().Info("Upgrade v23 complete")
 		return vm, nil
 	}
+}
+
+func setTokenFactoryParams(ctx sdk.Context, keeper tokenfactorykeeper.Keeper) {
+	keeper.SetParams(ctx, tokenfactorytypes.Params{
+		// TODO(wllmshao): set this to a fee we agree on
+		DenomCreationFee: sdk.NewCoins(sdk.NewCoin("uatom", math.NewInt(1000000))),
+	})
 }

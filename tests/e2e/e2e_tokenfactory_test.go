@@ -1,6 +1,8 @@
 package e2e
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func (s *IntegrationTestSuite) testTokenfactory() {
 	s.Run("create, mint, burn, change admin", func() {
@@ -11,15 +13,15 @@ func (s *IntegrationTestSuite) testTokenfactory() {
 			chainEndpoint = fmt.Sprintf("http://%s", s.valResources[c.id][valIdx].GetHostPort("1317/tcp"))
 		)
 
-		denom := "testdenom"
 		alice, _ := c.genesisAccounts[1].keyInfo.GetAddress()
+		denom := "factory/" + alice.String() + "/testdenom"
 
 		denoms, err := queryDenomsFromAdmin(chainEndpoint, alice.String())
 		s.Require().NoError(err)
 		s.Require().Equal(0, len(denoms.Denoms))
 
 		// Create denom
-		s.executeCreateDenom(c, valIdx, denom, gaiaHomePath, alice.String(), standardFees.String())
+		s.executeCreateDenom(c, valIdx, "testdenom", gaiaHomePath, alice.String(), standardFees.String())
 
 		// Check denoms from admin
 		denoms, err = queryDenomsFromAdmin(chainEndpoint, alice.String())

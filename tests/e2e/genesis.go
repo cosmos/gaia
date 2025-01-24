@@ -23,6 +23,7 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govlegacytypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	tokenfactorytypes "github.com/strangelove-ventures/tokenfactory/x/tokenfactory/types"
 )
 
 func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, basefee string, denom string) error {
@@ -187,6 +188,17 @@ func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, ba
 		return fmt.Errorf("failed to marshal gov genesis state: %w", err)
 	}
 	appState[govtypes.ModuleName] = govGenStateBz
+
+	tokenfactoryState := &tokenfactorytypes.GenesisState{
+		Params: tokenfactorytypes.Params{
+			DenomCreationFee: sdk.NewCoins(sdk.NewCoin("uatom", math.NewInt(1))),
+		},
+	}
+	tokenfactoryStateBz, err := cdc.MarshalJSON(tokenfactoryState)
+	if err != nil {
+		return fmt.Errorf("failed to marshal tokenfactory genesis state: %w", err)
+	}
+	appState[tokenfactorytypes.ModuleName] = tokenfactoryStateBz
 
 	appStateJSON, err := json.Marshal(appState)
 	if err != nil {

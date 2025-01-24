@@ -901,6 +901,7 @@ func (s *IntegrationTestSuite) executeCreateDenom(c *chain, valIdx int, denom, h
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, from),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
 		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, txFees),
+		fmt.Sprintf("--%s=%s", flags.FlagGas, "4000000"),
 		"--keyring-backend=test",
 		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
 		"--output=json",

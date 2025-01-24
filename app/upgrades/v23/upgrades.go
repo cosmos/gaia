@@ -31,15 +31,18 @@ func CreateUpgradeHandler(
 			return vm, errorsmod.Wrapf(err, "running module migrations")
 		}
 
-		setTokenFactoryParams(ctx, keepers.TokenFactoryKeeper)
+		err = setTokenFactoryParams(ctx, keepers.TokenFactoryKeeper)
+		if err != nil {
+			return vm, errorsmod.Wrapf(err, "setting token factory params")
+		}
 
 		ctx.Logger().Info("Upgrade v23 complete")
 		return vm, nil
 	}
 }
 
-func setTokenFactoryParams(ctx sdk.Context, keeper tokenfactorykeeper.Keeper) {
-	keeper.SetParams(ctx, tokenfactorytypes.Params{
+func setTokenFactoryParams(ctx sdk.Context, keeper tokenfactorykeeper.Keeper) error {
+	return keeper.SetParams(ctx, tokenfactorytypes.Params{
 		// TODO(wllmshao): set this to a fee we agree on
 		DenomCreationFee: sdk.NewCoins(sdk.NewCoin("uatom", math.NewInt(1000000))),
 	})

@@ -36,7 +36,7 @@ func (s *IntegrationTestSuite) testTokenfactory() {
 		// Check balance
 		balance, err := getSpecificBalance(chainEndpoint, alice.String(), denom)
 		s.Require().NoError(err)
-		s.Require().Equal(amount, balance.String())
+		s.Require().Equal(amount+denom, balance.String())
 
 		// Burn
 		amount = "500000"
@@ -45,7 +45,7 @@ func (s *IntegrationTestSuite) testTokenfactory() {
 		// Check balance
 		balance, err = getSpecificBalance(chainEndpoint, alice.String(), denom)
 		s.Require().NoError(err)
-		s.Require().Equal(amount, balance.String())
+		s.Require().Equal(amount+denom, balance.String())
 
 		// Change admin
 		bob, _ := c.genesisAccounts[2].keyInfo.GetAddress()

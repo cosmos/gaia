@@ -11,7 +11,7 @@ developed.](https://img.shields.io/badge/repo%20status-Active-green.svg)](https:
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=cosmos_gaia&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=cosmos_gaia)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=cosmos_gaia&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=cosmos_gaia)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=cosmos_gaia&metric=coverage)](https://sonarcloud.io/summary/new_code?id=cosmos_gaia)
-[![Twitter](https://badgen.net/badge/icon/Twitter?icon=twitter&label)](https://x.com/cosmoshub)
+[![Twitter](https://img.shields.io/twitter/follow/Cosmos_Hub)](https://x.com/cosmoshub)
 [![Discord](https://badgen.net/badge/icon/Discord?icon=discord&label)](https://discord.gg/interchain)
 [![Cosmos Hub Forum](https://badgen.net/badge/icon/Cosmos%20Hub%20Forum?icon=atom&label)](https://forum.cosmos.network)
 

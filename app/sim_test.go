@@ -18,6 +18,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	simulation2 "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -147,4 +148,72 @@ func TestAppStateDeterminism(t *testing.T) {
 			}
 		}
 	}
+}
+
+// TestFuzzerWithNoOpTxs tests the transaction fuzzer with no-operation transactions
+// to verify the fuzzer's behavior independently of the application logic.
+func TestFuzzerWithNoOpTxs(t *testing.T) {
+	if !sim.FlagEnabledValue {
+		t.Skip("skipping fuzzer simulation")
+	}
+
+	config := sim.NewConfigFromFlags()
+	config.InitialBlockHeight = 1
+	config.ExportParamsPath = ""
+	config.OnOperation = false
+	config.AllInvariants = false
+	config.ChainID = AppChainID
+	config.NumBlocks = 10 // Keep test short but meaningful
+
+	// Create a minimal application setup
+	logger := log.NewNopLogger()
+	db := dbm.NewMemDB()
+	dir, err := os.MkdirTemp("", "gaia-fuzzer-test")
+	require.NoError(t, err)
+	defer os.RemoveAll(dir)
+
+	appOptions := make(simtestutil.AppOptionsMap, 0)
+	appOptions[flags.FlagHome] = dir
+	appOptions[server.FlagInvCheckPeriod] = sim.FlagPeriodValue
+
+	app := gaia.NewGaiaApp(
+		logger,
+		db,
+		nil,
+		true,
+		map[int64]bool{},
+		dir,
+		appOptions,
+		emptyWasmOption,
+		interBlockCacheOpt(),
+		baseapp.SetChainID(AppChainID),
+	)
+
+	// Create simulation manager with only no-op operations
+	operations := []simulation2.WeightedOperation{
+		{
+			Weight: 100,
+			Op: simulation2.Operation(func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context,
+				accs []simulation2.Account, chainID string) (simulation2.OperationMsg, []simulation2.FutureOperation, error) {
+				return simulation2.NewOperationMsg(&sdk.Msg{}, true, "", nil), nil, nil
+			}),
+		},
+	}
+
+	// Run simulation
+	_, _, err = simulation.SimulateFromSeed(
+		t,
+		os.Stdout,
+		app.BaseApp,
+		simtestutil.AppStateFn(app.AppCodec(), app.SimulationManager(), app.ModuleBasics.DefaultGenesis(app.AppCodec())),
+		simulation2.RandomAccounts,
+		operations,
+		app.BlockedModuleAccountAddrs(app.ModuleAccountAddrs()),
+		config,
+		app.AppCodec(),
+	)
+	require.NoError(t, err)
+
+	// Verify that simulation completed successfully
+	require.Equal(t, uint64(config.NumBlocks), app.LastBlockHeight())
 }

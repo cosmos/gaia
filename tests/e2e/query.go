@@ -377,8 +377,7 @@ func queryBlocksPerEpoch(endpoint string) (int64, error) {
 }
 
 func queryDenomsFromAdmin(endpoint, admin string) (tokenfactorytypes.QueryDenomsFromAdminResponse, error) {
-	// TODO(wllmshao): do we care that this is osmosis-prefixed?
-	body, err := httpGet(fmt.Sprintf("%s/osmosis/tokenfactory/v1beta1/denoms_from_admin/%s", endpoint, admin))
+	body, err := httpGet(fmt.Sprintf("%s/gaia/tokenfactory/v1beta1/denoms_from_admin/%s", endpoint, admin))
 	if err != nil {
 		return tokenfactorytypes.QueryDenomsFromAdminResponse{}, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}

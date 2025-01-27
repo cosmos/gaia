@@ -4,11 +4,11 @@ import (
 	"errors"
 	"os"
 
+	"github.com/cosmos/gaia/v23/x/tokenfactory/bindings"
+	tokenfactorykeeper "github.com/cosmos/gaia/v23/x/tokenfactory/keeper"
+	tokenfactorytypes "github.com/cosmos/gaia/v23/x/tokenfactory/types"
 	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
-	"github.com/strangelove-ventures/tokenfactory/x/tokenfactory/bindings"
-	tokenfactorykeeper "github.com/strangelove-ventures/tokenfactory/x/tokenfactory/keeper"
-	tokenfactorytypes "github.com/strangelove-ventures/tokenfactory/x/tokenfactory/types"
 
 	pfmrouter "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward"
 	pfmrouterkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward/keeper"

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	tokenfactorytypes "github.com/cosmos/gaia/v23/x/tokenfactory/types"
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
-	tokenfactorytypes "github.com/strangelove-ventures/tokenfactory/x/tokenfactory/types"
 
 	icagen "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/genesis/types"
 	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"

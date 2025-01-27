@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
+	tokenfactorytypes "github.com/cosmos/gaia/v23/x/tokenfactory/types"
 	"github.com/ory/dockertest/v3/docker"
-	tokenfactorytypes "github.com/strangelove-ventures/tokenfactory/x/tokenfactory/types"
 
 	"cosmossdk.io/x/feegrant"
 

@@ -1,0 +1,192 @@
+syntax = "proto3";
+package gaia.tokenfactory.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/bank/v1beta1/bank.proto";
+import "gaia/tokenfactory/v1beta1/params.proto";
+import "cosmos/msg/v1/msg.proto";
+import "cosmos_proto/cosmos.proto";
+import "amino/amino.proto";
+
+option go_package = "github.com/cosmos/gaia/x/tokenfactory/types";
+
+// Msg defines the tokefactory module's gRPC message service.
+service Msg {
+  option (cosmos.msg.v1.service) = true;
+
+  // CreateDenom defines the message structure for the CreateDenom gRPC service
+  // method. It allows an account to create a new denom.
+  rpc CreateDenom(MsgCreateDenom) returns (MsgCreateDenomResponse);
+
+  // Mint defines the message structure for the Mint gRPC service method. It
+  // allows an admin account to mint more of a token.
+  rpc Mint(MsgMint) returns (MsgMintResponse);
+
+  // Burn defines the message structure for the Burn gRPC service method. It
+  // allows an admin account to burn a token.
+  rpc Burn(MsgBurn) returns (MsgBurnResponse);
+
+  // ChangeAdmin defines the message structure for the ChangeAdmin gRPC service
+  // method. It allows an admin account to reassign adminship of a denom to a
+  // new account
+  rpc ChangeAdmin(MsgChangeAdmin) returns (MsgChangeAdminResponse);
+
+  // SetDenomMetadata defines the message structure for the SetDenomMetadata
+  // gRPC service method. It allows an admin account to set the denom's bank
+  // metadata
+  rpc SetDenomMetadata(MsgSetDenomMetadata)
+      returns (MsgSetDenomMetadataResponse);
+
+  // ForceTransfer defines the message structure for the ForceTransfer gRPC
+  // service method. It allows an admin account to force transfer a token.
+  rpc ForceTransfer(MsgForceTransfer) returns (MsgForceTransferResponse);
+
+  // UpdateParams defines a governance operation for updating the x/mint module
+  // parameters.
+  //
+  // Since: cosmos-sdk 0.47
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
+}
+
+// MsgCreateDenom defines the message structure for the CreateDenom gRPC service
+// method. It allows an account to create a new denom. It requires a sender
+// address and a sub denomination. The (sender_address, sub_denomination) tuple
+// must be unique and cannot be re-used.
+//
+// The resulting denom created is defined as
+// <factory/{creatorAddress}/{subdenom}>. The resulting denom's admin is
+// originally set to be the creator, but this can be changed later. The token
+// denom does not indicate the current admin.
+message MsgCreateDenom {
+  option (cosmos.msg.v1.signer) = "sender";
+  option (amino.name) = "gaia/tokenfactory/create-denom";
+
+  string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
+  // subdenom can be up to 44 "alphanumeric" characters long.
+  string subdenom = 2 [ (gogoproto.moretags) = "yaml:\"subdenom\"" ];
+}
+
+// MsgCreateDenomResponse is the return value of MsgCreateDenom
+// It returns the full string of the newly created denom
+message MsgCreateDenomResponse {
+  string new_token_denom = 1
+      [ (gogoproto.moretags) = "yaml:\"new_token_denom\"" ];
+}
+
+// MsgMint is the sdk.Msg type for allowing an admin account to mint
+// more of a token.  For now, we only support minting to the sender account
+message MsgMint {
+  option (cosmos.msg.v1.signer) = "sender";
+  option (amino.name) = "gaia/tokenfactory/mint";
+
+  string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
+  cosmos.base.v1beta1.Coin amount = 2 [
+    (gogoproto.moretags) = "yaml:\"amount\"",
+    (gogoproto.nullable) = false,
+    (amino.encoding) = "legacy_coin"
+  ];
+  string mint_to_address = 3 [
+    (gogoproto.moretags) = "yaml:\"mint_to_address\"",
+    (amino.dont_omitempty) = true
+  ];
+}
+
+// MsgMintResponse is the return value of MsgMint
+message MsgMintResponse {}
+
+// MsgBurn is the sdk.Msg type for allowing an admin account to burn
+// a token.  For now, we only support burning from the sender account.
+message MsgBurn {
+  option (cosmos.msg.v1.signer) = "sender";
+  option (amino.name) = "gaia/tokenfactory/burn";
+
+  string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
+  cosmos.base.v1beta1.Coin amount = 2 [
+    (gogoproto.moretags) = "yaml:\"amount\"",
+    (gogoproto.nullable) = false,
+    (amino.encoding) = "legacy_coin"
+  ];
+  string burn_from_address = 3 [
+    (gogoproto.moretags) = "yaml:\"burn_from_address\"",
+    (amino.dont_omitempty) = true
+  ];
+}
+
+// MsgBurnResponse is the return value of MsgBurn
+message MsgBurnResponse {}
+
+// MsgChangeAdmin is the sdk.Msg type for allowing an admin account to reassign
+// adminship of a denom to a new account
+message MsgChangeAdmin {
+  option (cosmos.msg.v1.signer) = "sender";
+  option (amino.name) = "gaia/tokenfactory/change-admin";
+
+  string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
+  string denom = 2 [ (gogoproto.moretags) = "yaml:\"denom\"" ];
+  string new_admin = 3 [ (gogoproto.moretags) = "yaml:\"new_admin\"" ];
+}
+
+// MsgChangeAdminResponse defines the response structure for an executed
+// MsgChangeAdmin message.
+message MsgChangeAdminResponse {}
+
+// MsgSetDenomMetadata is the sdk.Msg type for allowing an admin account to set
+// the denom's bank metadata
+message MsgSetDenomMetadata {
+  option (cosmos.msg.v1.signer) = "sender";
+  option (amino.name) = "gaia/tokenfactory/set-denom-metadata";
+
+  string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
+  cosmos.bank.v1beta1.Metadata metadata = 2 [
+    (gogoproto.moretags) = "yaml:\"metadata\"",
+    (gogoproto.nullable) = false
+  ];
+}
+
+// MsgSetDenomMetadataResponse defines the response structure for an executed
+// MsgSetDenomMetadata message.
+message MsgSetDenomMetadataResponse {}
+
+// MsgForceTransfer is the sdk.Msg type for allowing an admin account to force
+// transfer a token.
+message MsgForceTransfer {
+  option (cosmos.msg.v1.signer) = "sender";
+  option (amino.name) = "gaia/tokenfactory/force-transfer";
+
+  string sender = 1 [ (gogoproto.moretags) = "yaml:\"sender\"" ];
+  cosmos.base.v1beta1.Coin amount = 2 [
+    (gogoproto.moretags) = "yaml:\"amount\"",
+    (gogoproto.nullable) = false,
+    (amino.encoding) = "legacy_coin"
+  ];
+  string transfer_from_address = 3
+      [ (gogoproto.moretags) = "yaml:\"transfer_from_address\"" ];
+  string transfer_to_address = 4
+      [ (gogoproto.moretags) = "yaml:\"transfer_to_address\"" ];
+}
+
+// MsgForceTransferResponse is the return value of MsgForceTransfer
+message MsgForceTransferResponse {}
+
+// MsgUpdateParams is the Msg/UpdateParams request type.
+//
+// Since: cosmos-sdk 0.47
+message MsgUpdateParams {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "gaia/tokenfactory/update-params";
+
+  // authority is the address of the governance account.
+  string authority = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+
+  // params defines the x/mint parameters to update.
+  //
+  // NOTE: All parameters must be supplied.
+  Params params = 2 [ (gogoproto.nullable) = false ];
+}
+
+// MsgUpdateParamsResponse defines the response structure for executing a
+// MsgUpdateParams message.
+//
+// Since: cosmos-sdk 0.47
+message MsgUpdateParamsResponse {}

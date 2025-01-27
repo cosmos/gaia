@@ -3,8 +3,8 @@ package v23
 import (
 	"context"
 
-	tokenfactorykeeper "github.com/strangelove-ventures/tokenfactory/x/tokenfactory/keeper"
-	tokenfactorytypes "github.com/strangelove-ventures/tokenfactory/x/tokenfactory/types"
+	tokenfactorykeeper "github.com/cosmos/gaia/v23/x/tokenfactory/keeper"
+	tokenfactorytypes "github.com/cosmos/gaia/v23/x/tokenfactory/types"
 
 	errorsmod "cosmossdk.io/errors"
 	"cosmossdk.io/math"

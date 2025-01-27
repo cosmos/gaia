@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	tokenfactorytypes "github.com/strangelove-ventures/tokenfactory/x/tokenfactory/types"
+	tokenfactorytypes "github.com/cosmos/gaia/v23/x/tokenfactory/types"
 
 	tmrand "github.com/cometbft/cometbft/libs/rand"
 

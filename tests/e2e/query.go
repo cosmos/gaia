@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	tokenfactorytypes "github.com/strangelove-ventures/tokenfactory/x/tokenfactory/types"
+	tokenfactorytypes "github.com/cosmos/gaia/v23/x/tokenfactory/types"
 
 	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v8/types"
 	icacontrollertypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/types"

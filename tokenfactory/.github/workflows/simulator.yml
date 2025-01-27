@@ -1,0 +1,35 @@
+name: Simulator tests
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+env:
+  GO_VERSION: 1.21.0
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          check-latest: true
+      - name: Full application simulation (fixed seed)
+        run: make sim-full-app
+      - name: Simulation after state import (fixed seed)
+        run: make sim-after-import
+#      #  Requires wiring v2
+#      # https://github.com/strangelove-ventures/tokenfactory/issues/13
+#      - name: Simulation import/export (fixed seed)
+#        run: make sim-import-export
+      - name: Simulate application state determinism (fixed seed)
+        run: make sim-app-determinism

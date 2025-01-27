@@ -3,6 +3,8 @@ package gaia
 import (
 	feemarket "github.com/skip-mev/feemarket/x/feemarket"
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
+	"github.com/strangelove-ventures/tokenfactory/x/tokenfactory"
+	tokenfactorytypes "github.com/strangelove-ventures/tokenfactory/x/tokenfactory/types"
 
 	pfmroutertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward/types"
 	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v8/types"
@@ -64,9 +66,6 @@ import (
 
 	"github.com/cosmos/gaia/v23/x/metaprotocols"
 	metaprotocolstypes "github.com/cosmos/gaia/v23/x/metaprotocols/types"
-
-	"github.com/strangelove-ventures/tokenfactory/x/tokenfactory"
-	tokenfactorytypes "github.com/strangelove-ventures/tokenfactory/x/tokenfactory/types"
 )
 
 var maccPerms = map[string][]string{

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	tokenfactorytypes "github.com/strangelove-ventures/tokenfactory/x/tokenfactory/types"
+
 	tmrand "github.com/cometbft/cometbft/libs/rand"
 
 	dbm "github.com/cosmos/cosmos-db"
@@ -30,7 +32,6 @@ import (
 	gaia "github.com/cosmos/gaia/v23/app"
 	gaiaparams "github.com/cosmos/gaia/v23/app/params"
 	metaprotocoltypes "github.com/cosmos/gaia/v23/x/metaprotocols/types"
-	tokenfactorytypes "github.com/strangelove-ventures/tokenfactory/x/tokenfactory/types"
 )
 
 const (

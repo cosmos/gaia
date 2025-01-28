@@ -518,18 +518,21 @@ func NewAppKeeper(
 	// Create Transfer Stack (from bottom to top of stack)
 	// - core IBC
 	// - ibcfee
-	// - callbacks
 	// - ratelimit
 	// - pfm
 	// - provider
+	// - callbacks
 	// - transfer
 	//
 	// This is how transfer stack will work in the end:
-	// * RecvPacket -> IBC core -> Fee -> Callbacks -> RateLimit -> PFM -> Provider -> Transfer (AddRoute)
-	// * SendPacket -> Transfer -> Provider -> PFM -> RateLimit -> Callbacks -> Fee -> IBC core (ICS4Wrapper)
+	// * RecvPacket -> IBC core -> Fee -> RateLimit -> PFM -> Provider -> Callbacks -> Transfer (AddRoute)
+	// * SendPacket -> Transfer -> Callbacks -> Provider -> PFM -> RateLimit -> Fee -> IBC core (ICS4Wrapper)
 
 	var transferStack porttypes.IBCModule
 	transferStack = transfer.NewIBCModule(appKeepers.TransferKeeper)
+	transferStack = ibccallbacks.NewIBCMiddleware(transferStack, appKeepers.IBCFeeKeeper, wasmStackIBCHandler,
+		wasm.DefaultMaxIBCCallbackGas)
+	transferICS4Wrapper := transferStack.(porttypes.ICS4Wrapper)
 	transferStack = icsprovider.NewIBCMiddleware(transferStack, appKeepers.ProviderKeeper)
 	transferStack = pfmrouter.NewIBCMiddleware(
 		transferStack,
@@ -539,9 +542,6 @@ func NewAppKeeper(
 		pfmrouterkeeper.DefaultRefundTransferPacketTimeoutTimestamp,
 	)
 	transferStack = ratelimit.NewIBCMiddleware(appKeepers.RatelimitKeeper, transferStack)
-	transferStack = ibccallbacks.NewIBCMiddleware(transferStack, appKeepers.IBCFeeKeeper, wasmStackIBCHandler,
-		wasm.DefaultMaxIBCCallbackGas)
-	transferICS4Wrapper := transferStack.(porttypes.ICS4Wrapper)
 	transferStack = ibcfee.NewIBCMiddleware(transferStack, appKeepers.IBCFeeKeeper)
 	appKeepers.TransferKeeper.WithICS4Wrapper(transferICS4Wrapper)
 

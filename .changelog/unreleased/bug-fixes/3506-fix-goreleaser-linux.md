@@ -1,0 +1,1 @@
+- Fix goreleaser config to generate Linux builds again. ([\#3506](https://github.com/cosmos/gaia/pull/3506))

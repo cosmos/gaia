@@ -1,6 +1,7 @@
 package keepers
 
 import (
+	tokenfactorytypes "github.com/cosmos/gaia/v23/x/tokenfactory/types"
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
 	routertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward/types"
@@ -62,6 +63,7 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 		consensusparamtypes.StoreKey,
 		feemarkettypes.StoreKey,
 		wasmtypes.StoreKey,
+		tokenfactorytypes.StoreKey,
 	)
 
 	// Define transient store keys

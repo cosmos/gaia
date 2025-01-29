@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	tokenfactorytypes "github.com/cosmos/gaia/v23/x/tokenfactory/types"
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
 	icagen "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/genesis/types"
@@ -187,6 +188,17 @@ func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, ba
 		return fmt.Errorf("failed to marshal gov genesis state: %w", err)
 	}
 	appState[govtypes.ModuleName] = govGenStateBz
+
+	tokenfactoryState := &tokenfactorytypes.GenesisState{
+		Params: tokenfactorytypes.Params{
+			DenomCreationFee: sdk.NewCoins(sdk.NewCoin("uatom", math.NewInt(1))),
+		},
+	}
+	tokenfactoryStateBz, err := cdc.MarshalJSON(tokenfactoryState)
+	if err != nil {
+		return fmt.Errorf("failed to marshal tokenfactory genesis state: %w", err)
+	}
+	appState[tokenfactorytypes.ModuleName] = tokenfactoryStateBz
 
 	appStateJSON, err := json.Marshal(appState)
 	if err != nil {

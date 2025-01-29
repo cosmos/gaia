@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	tokenfactorytypes "github.com/cosmos/gaia/v23/x/tokenfactory/types"
+
 	tmrand "github.com/cometbft/cometbft/libs/rand"
 
 	dbm "github.com/cosmos/cosmos-db"
@@ -61,6 +63,7 @@ func init() {
 	providertypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	metaprotocoltypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	ratelimittypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	tokenfactorytypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 
 	cdc = encodingConfig.Marshaler
 	txConfig = encodingConfig.TxConfig

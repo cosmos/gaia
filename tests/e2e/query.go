@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"strings"
 
+	tokenfactorytypes "github.com/cosmos/gaia/v23/x/tokenfactory/types"
+
 	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v8/types"
 	icacontrollertypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/types"
 	providertypes "github.com/cosmos/interchain-security/v6/x/ccv/provider/types"
@@ -372,4 +374,17 @@ func queryBlocksPerEpoch(endpoint string) (int64, error) {
 	}
 
 	return response.Params.BlocksPerEpoch, nil
+}
+
+func queryDenomsFromAdmin(endpoint, admin string) (tokenfactorytypes.QueryDenomsFromAdminResponse, error) {
+	body, err := httpGet(fmt.Sprintf("%s/gaia/tokenfactory/v1beta1/denoms_from_admin/%s", endpoint, admin))
+	if err != nil {
+		return tokenfactorytypes.QueryDenomsFromAdminResponse{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	var res tokenfactorytypes.QueryDenomsFromAdminResponse
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return tokenfactorytypes.QueryDenomsFromAdminResponse{}, err
+	}
+	return res, nil
 }

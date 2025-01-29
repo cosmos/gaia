@@ -16,6 +16,7 @@ var (
 	runLsmTest                    = true
 	runRateLimitTest              = true
 	runTxExtensionsTest           = true
+	runTokenfactoryTest           = true
 )
 
 func (s *IntegrationTestSuite) TestRestInterfaces() {
@@ -130,4 +131,11 @@ func (s *IntegrationTestSuite) TestTxExtensions() {
 	}
 	s.bankSendWithNonCriticalExtensionOptions()
 	s.failedBankSendWithNonCriticalExtensionOptions()
+}
+
+func (s *IntegrationTestSuite) TestTokenfactory() {
+	if !runTokenfactoryTest {
+		s.T().Skip()
+	}
+	s.testTokenfactory()
 }

@@ -64,6 +64,8 @@ import (
 
 	"github.com/cosmos/gaia/v23/x/metaprotocols"
 	metaprotocolstypes "github.com/cosmos/gaia/v23/x/metaprotocols/types"
+	"github.com/cosmos/gaia/v23/x/tokenfactory"
+	tokenfactorytypes "github.com/cosmos/gaia/v23/x/tokenfactory/types"
 )
 
 var maccPerms = map[string][]string{
@@ -81,6 +83,7 @@ var maccPerms = map[string][]string{
 	wasmtypes.ModuleName:              {authtypes.Burner},
 	feemarkettypes.ModuleName:         nil,
 	feemarkettypes.FeeCollectorName:   nil,
+	tokenfactorytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 }
 
 func appModules(
@@ -123,6 +126,7 @@ func appModules(
 		app.ProviderModule,
 		metaprotocols.NewAppModule(),
 		feemarket.NewAppModule(appCodec, *app.FeeMarketKeeper),
+		tokenfactory.NewAppModule(app.TokenFactoryKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(tokenfactorytypes.ModuleName)),
 	}
 }
 
@@ -169,6 +173,7 @@ func simulationModules(
 		ibc.NewAppModule(app.IBCKeeper),
 		app.TransferModule,
 		app.ICAModule,
+		tokenfactory.NewAppModule(app.TokenFactoryKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(tokenfactorytypes.ModuleName)),
 	}
 }
 
@@ -212,6 +217,7 @@ func orderBeginBlockers() []string {
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
 		wasmtypes.ModuleName,
+		tokenfactorytypes.ModuleName,
 	}
 }
 
@@ -252,6 +258,7 @@ func orderEndBlockers() []string {
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
 		wasmtypes.ModuleName,
+		tokenfactorytypes.ModuleName,
 	}
 }
 
@@ -301,5 +308,6 @@ func orderInitBlockers() []string {
 		// crisis needs to be last so that the genesis state is consistent
 		// when it checks invariants
 		crisistypes.ModuleName,
+		tokenfactorytypes.ModuleName,
 	}
 }

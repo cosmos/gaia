@@ -4,7 +4,7 @@ import (
 	"errors"
 	"os"
 
-	"github.com/cosmos/gaia/v23/x/tokenfactory/bindings"
+	"github.com/cosmos/gaia/v23/wasmbinding"
 	tokenfactorykeeper "github.com/cosmos/gaia/v23/x/tokenfactory/keeper"
 	tokenfactorytypes "github.com/cosmos/gaia/v23/x/tokenfactory/types"
 	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
@@ -505,7 +505,7 @@ func NewAppKeeper(
 		tokenfactorykeeper.DefaultIsSudoAdminFunc,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
-	wasmOpts = append(wasmOpts, bindings.RegisterCustomPlugins(appKeepers.BankKeeper, &appKeepers.TokenFactoryKeeper)...)
+	wasmOpts = append(wasmOpts, wasmbinding.RegisterCustomPlugins(appKeepers.BankKeeper, &appKeepers.TokenFactoryKeeper)...)
 
 	appKeepers.WasmKeeper = wasmkeeper.NewKeeper(
 		appCodec,

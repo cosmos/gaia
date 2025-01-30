@@ -4,7 +4,7 @@ import (
 	storetypes "cosmossdk.io/store/types"
 
 	"github.com/cosmos/gaia/v23/app/upgrades"
-	lsmtypes "github.com/cosmos/gaia/v23/x/lsm/types"
+	liquidtypes "github.com/cosmos/gaia/v23/x/liquid/types"
 )
 
 const (
@@ -17,7 +17,7 @@ var Upgrade = upgrades.Upgrade{
 	CreateUpgradeHandler: CreateUpgradeHandler,
 	StoreUpgrades: storetypes.StoreUpgrades{
 		Added: []string{
-			lsmtypes.ModuleName,
+			liquidtypes.ModuleName,
 		},
 	},
 }

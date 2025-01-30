@@ -35,9 +35,9 @@ import (
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v23/x/lsm"
-	lsmkeeper "github.com/cosmos/gaia/v23/x/lsm/keeper"
-	lsmtypes "github.com/cosmos/gaia/v23/x/lsm/types"
+	"github.com/cosmos/gaia/v23/x/liquid"
+	liquidkeeper "github.com/cosmos/gaia/v23/x/liquid/keeper"
+	liquidtypes "github.com/cosmos/gaia/v23/x/liquid/types"
 )
 
 type fixture struct {
@@ -51,13 +51,13 @@ type fixture struct {
 	bankKeeper         bankkeeper.Keeper
 	distributionKeeper distributionkeeper.Keeper
 	stakingKeeper      *stakingkeeper.Keeper
-	lsmKeeper          *lsmkeeper.Keeper
+	liquidKeeper       *liquidkeeper.Keeper
 }
 
 func initFixture(tb testing.TB) *fixture {
 	tb.Helper()
 	keys := storetypes.NewKVStoreKeys(
-		authtypes.StoreKey, banktypes.StoreKey, distributiontypes.StoreKey, stakingtypes.StoreKey, lsmtypes.StoreKey,
+		authtypes.StoreKey, banktypes.StoreKey, distributiontypes.StoreKey, stakingtypes.StoreKey, liquidtypes.StoreKey,
 	)
 	cdc := moduletestutil.MakeTestEncodingConfig(auth.AppModuleBasic{}, staking.AppModuleBasic{}, vesting.AppModuleBasic{}).Codec
 
@@ -103,7 +103,7 @@ func initFixture(tb testing.TB) *fixture {
 		addresscodec.NewBech32Codec(sdk.GetConfig().GetBech32ConsensusAddrPrefix()))
 	distributionKeeper := distributionkeeper.NewKeeper(cdc, runtime.NewKVStoreService(keys[distributiontypes.
 		StoreKey]), accountKeeper, bankKeeper, stakingKeeper, distributiontypes.ModuleName, authority.String())
-	lsmKeeper := lsmkeeper.NewKeeper(cdc, runtime.NewKVStoreService(keys[lsmtypes.StoreKey]), accountKeeper,
+	liquidKeeper := liquidkeeper.NewKeeper(cdc, runtime.NewKVStoreService(keys[liquidtypes.StoreKey]), accountKeeper,
 		bankKeeper, stakingKeeper, distributionKeeper, authority.String())
 
 	authModule := auth.NewAppModule(cdc, accountKeeper, authsims.RandomGenesisAccounts, nil)
@@ -111,20 +111,20 @@ func initFixture(tb testing.TB) *fixture {
 	stakingModule := staking.NewAppModule(cdc, stakingKeeper, accountKeeper, bankKeeper, nil)
 	distributionModule := distribution.NewAppModule(cdc, distributionKeeper, accountKeeper, bankKeeper,
 		stakingKeeper, nil)
-	lsmModule := lsm.NewAppModule(cdc, lsmKeeper, accountKeeper, bankKeeper, stakingKeeper)
+	liquidModule := liquid.NewAppModule(cdc, liquidKeeper, accountKeeper, bankKeeper, stakingKeeper)
 
 	integrationApp := integration.NewIntegrationApp(newCtx, logger, keys, cdc, map[string]appmodule.AppModule{
 		authtypes.ModuleName:         authModule,
 		banktypes.ModuleName:         bankModule,
 		distributiontypes.ModuleName: distributionModule,
 		stakingtypes.ModuleName:      stakingModule,
-		lsmtypes.ModuleName:          lsmModule,
+		liquidtypes.ModuleName:       liquidModule,
 	})
 
 	sdkCtx := sdk.UnwrapSDKContext(integrationApp.Context())
 
 	stakingKeeper.SetHooks(stakingtypes.NewMultiStakingHooks(
-		lsmKeeper.Hooks(),
+		liquidKeeper.Hooks(),
 	))
 
 	// Register staking MsgServer and QueryServer
@@ -134,12 +134,12 @@ func initFixture(tb testing.TB) *fixture {
 	// set default staking params
 	require.NoError(tb, stakingKeeper.SetParams(sdkCtx, stakingtypes.DefaultParams()))
 
-	// Register lsm MsgServer and QueryServer
-	lsmtypes.RegisterMsgServer(integrationApp.MsgServiceRouter(), lsmkeeper.NewMsgServerImpl(lsmKeeper))
-	lsmtypes.RegisterQueryServer(integrationApp.QueryHelper(), lsmkeeper.NewQuerier(lsmKeeper))
+	// Register liquid MsgServer and QueryServer
+	liquidtypes.RegisterMsgServer(integrationApp.MsgServiceRouter(), liquidkeeper.NewMsgServerImpl(liquidKeeper))
+	liquidtypes.RegisterQueryServer(integrationApp.QueryHelper(), liquidkeeper.NewQuerier(liquidKeeper))
 
-	// set default lsm params
-	require.NoError(tb, lsmKeeper.SetParams(sdkCtx, lsmtypes.DefaultParams()))
+	// set default liquid params
+	require.NoError(tb, liquidKeeper.SetParams(sdkCtx, liquidtypes.DefaultParams()))
 
 	f := fixture{
 		app:                integrationApp,
@@ -150,7 +150,7 @@ func initFixture(tb testing.TB) *fixture {
 		bankKeeper:         bankKeeper,
 		distributionKeeper: distributionKeeper,
 		stakingKeeper:      stakingKeeper,
-		lsmKeeper:          lsmKeeper,
+		liquidKeeper:       liquidKeeper,
 	}
 
 	return &f

@@ -24,7 +24,7 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	lsmtypes "github.com/cosmos/gaia/v23/x/lsm/types"
+	liquidtypes "github.com/cosmos/gaia/v23/x/liquid/types"
 )
 
 const (
@@ -813,12 +813,12 @@ func (s *IntegrationTestSuite) executeTokenizeShares(c *chain, valIdx int, amoun
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	s.T().Logf("Executing gaiad tx lsm tokenize-share %s", c.id)
+	s.T().Logf("Executing gaiad tx liquid tokenize-share %s", c.id)
 
 	gaiaCommand := []string{
 		gaiadBinary,
 		txCommand,
-		lsmtypes.ModuleName,
+		liquidtypes.ModuleName,
 		"tokenize-share",
 		valOperAddress,
 		amount,
@@ -841,12 +841,12 @@ func (s *IntegrationTestSuite) executeRedeemShares(c *chain, valIdx int, amount,
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	s.T().Logf("Executing gaiad tx lsm redeem-tokens %s", c.id)
+	s.T().Logf("Executing gaiad tx liquid redeem-tokens %s", c.id)
 
 	gaiaCommand := []string{
 		gaiadBinary,
 		txCommand,
-		lsmtypes.ModuleName,
+		liquidtypes.ModuleName,
 		"redeem-tokens",
 		amount,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
@@ -867,12 +867,12 @@ func (s *IntegrationTestSuite) executeTransferTokenizeShareRecord(c *chain, valI
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	s.T().Logf("Executing gaiad tx lsm transfer-tokenize-share-record %s", c.id)
+	s.T().Logf("Executing gaiad tx liquid transfer-tokenize-share-record %s", c.id)
 
 	gaiaCommand := []string{
 		gaiadBinary,
 		txCommand,
-		lsmtypes.ModuleName,
+		liquidtypes.ModuleName,
 		"transfer-tokenize-share-record",
 		recordID,
 		newOwner,

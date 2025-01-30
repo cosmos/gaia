@@ -29,7 +29,7 @@ import (
 
 	gaia "github.com/cosmos/gaia/v23/app"
 	gaiaparams "github.com/cosmos/gaia/v23/app/params"
-	lsmtypes "github.com/cosmos/gaia/v23/x/lsm/types"
+	liquidtypes "github.com/cosmos/gaia/v23/x/liquid/types"
 	metaprotocoltypes "github.com/cosmos/gaia/v23/x/metaprotocols/types"
 )
 
@@ -62,7 +62,7 @@ func init() {
 	providertypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	metaprotocoltypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	ratelimittypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-	lsmtypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	liquidtypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 
 	cdc = encodingConfig.Marshaler
 	txConfig = encodingConfig.TxConfig

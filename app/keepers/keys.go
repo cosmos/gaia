@@ -32,7 +32,7 @@ import (
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	lsmtypes "github.com/cosmos/gaia/v23/x/lsm/types"
+	liquidtypes "github.com/cosmos/gaia/v23/x/liquid/types"
 )
 
 func (appKeepers *AppKeepers) GenerateKeys() {
@@ -64,7 +64,7 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 		consensusparamtypes.StoreKey,
 		feemarkettypes.StoreKey,
 		wasmtypes.StoreKey,
-		lsmtypes.StoreKey,
+		liquidtypes.StoreKey,
 	)
 
 	// Define transient store keys

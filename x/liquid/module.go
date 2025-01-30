@@ -30,7 +30,8 @@ var (
 	_ module.HasServices    = AppModule{}
 	_ module.HasGenesis     = AppModule{}
 
-	_ appmodule.AppModule = AppModule{}
+	_ appmodule.AppModule       = AppModule{}
+	_ appmodule.HasBeginBlocker = AppModule{}
 )
 
 // AppModuleBasic defines the basic application module used by the liquid module.
@@ -90,6 +91,11 @@ type AppModule struct {
 	accountKeeper types.AccountKeeper
 	bankKeeper    types.BankKeeper
 	stakingKeeper types.StakingKeeper
+}
+
+// BeginBlock returns the Begin Blocker for the liquid module.
+func (am AppModule) BeginBlock(ctx context.Context) error {
+	return am.keeper.BeginBlocker(ctx)
 }
 
 // NewAppModule creates a new AppModule object

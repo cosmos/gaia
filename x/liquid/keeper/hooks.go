@@ -69,6 +69,7 @@ func (h Hooks) AfterDelegationModified(ctx context.Context, delAddr sdk.AccAddre
 }
 
 func (h Hooks) BeforeValidatorSlashed(ctx context.Context, valAddr sdk.ValAddress, fraction sdkmath.LegacyDec) error {
+	// fraction = tokens_to_burn / validator.Tokens
 	validator, err := h.k.stakingKeeper.Validator(ctx, valAddr)
 	if err != nil {
 		return err

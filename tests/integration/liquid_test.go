@@ -378,7 +378,6 @@ func TestTokenizeSharesAndRedeemTokens(t *testing.T) {
 			// set validator bond factor and global liquid staking cap
 			params, err := liquidKeeper.GetParams(ctx)
 			require.NoError(t, err)
-			params.ValidatorBondFactor = tc.validatorBondFactor
 			params.GlobalLiquidStakingCap = tc.globalLiquidStakingCap
 			params.ValidatorLiquidStakingCap = tc.validatorLiquidStakingCap
 			require.NoError(t, liquidKeeper.SetParams(ctx, params))

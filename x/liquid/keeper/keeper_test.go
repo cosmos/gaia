@@ -89,7 +89,6 @@ func (s *KeeperTestSuite) TestParams() {
 	require.NoError(err)
 	require.Equal(expParams, resParams)
 
-	expParams.ValidatorBondFactor = sdkmath.LegacyNewDec(-1)
 	expParams.GlobalLiquidStakingCap = sdkmath.LegacyNewDec(1)
 	expParams.ValidatorLiquidStakingCap = sdkmath.LegacyNewDec(1)
 	require.NoError(keeper.SetParams(ctx, expParams))

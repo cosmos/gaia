@@ -71,152 +71,6 @@ func (s *KeeperTestSuite) TestDecreaseTotalLiquidStakedTokens() {
 	require.ErrorIs(err, types.ErrTotalLiquidStakedUnderflow)
 }
 
-// Tests CheckExceedsValidatorBondCap
-func (s *KeeperTestSuite) TestCheckExceedsValidatorBondCap() {
-	ctx, keeper := s.ctx, s.lsmKeeper
-	require := s.Require()
-
-	testCases := []struct {
-		name                string
-		validatorShares     math.LegacyDec
-		validatorBondFactor math.LegacyDec
-		currentLiquidShares math.LegacyDec
-		newShares           math.LegacyDec
-		expectedExceeds     bool
-	}{
-		{
-			// Validator Shares: 100, Factor: 1, Current Shares: 90 => 100 Max Shares, Capacity: 10
-			// New Shares: 5 - below cap
-			name:                "factor 1 - below cap",
-			validatorShares:     math.LegacyNewDec(100),
-			validatorBondFactor: math.LegacyNewDec(1),
-			currentLiquidShares: math.LegacyNewDec(90),
-			newShares:           math.LegacyNewDec(5),
-			expectedExceeds:     false,
-		},
-		{
-			// Validator Shares: 100, Factor: 1, Current Shares: 90 => 100 Max Shares, Capacity: 10
-			// New Shares: 10 - at cap
-			name:                "factor 1 - at cap",
-			validatorShares:     math.LegacyNewDec(100),
-			validatorBondFactor: math.LegacyNewDec(1),
-			currentLiquidShares: math.LegacyNewDec(90),
-			newShares:           math.LegacyNewDec(10),
-			expectedExceeds:     false,
-		},
-		{
-			// Validator Shares: 100, Factor: 1, Current Shares: 90 => 100 Max Shares, Capacity: 10
-			// New Shares: 15 - above cap
-			name:                "factor 1 - above cap",
-			validatorShares:     math.LegacyNewDec(100),
-			validatorBondFactor: math.LegacyNewDec(1),
-			currentLiquidShares: math.LegacyNewDec(90),
-			newShares:           math.LegacyNewDec(15),
-			expectedExceeds:     true,
-		},
-		{
-			// Validator Shares: 100, Factor: 2, Current Shares: 90 => 200 Max Shares, Capacity: 110
-			// New Shares: 5 - below cap
-			name:                "factor 2 - well below cap",
-			validatorShares:     math.LegacyNewDec(100),
-			validatorBondFactor: math.LegacyNewDec(2),
-			currentLiquidShares: math.LegacyNewDec(90),
-			newShares:           math.LegacyNewDec(5),
-			expectedExceeds:     false,
-		},
-		{
-			// Validator Shares: 100, Factor: 2, Current Shares: 90 => 200 Max Shares, Capacity: 110
-			// New Shares: 100 - below cap
-			name:                "factor 2 - below cap",
-			validatorShares:     math.LegacyNewDec(100),
-			validatorBondFactor: math.LegacyNewDec(2),
-			currentLiquidShares: math.LegacyNewDec(90),
-			newShares:           math.LegacyNewDec(100),
-			expectedExceeds:     false,
-		},
-		{
-			// Validator Shares: 100, Factor: 2, Current Shares: 90 => 200 Max Shares, Capacity: 110
-			// New Shares: 110 - below cap
-			name:                "factor 2 - at cap",
-			validatorShares:     math.LegacyNewDec(100),
-			validatorBondFactor: math.LegacyNewDec(2),
-			currentLiquidShares: math.LegacyNewDec(90),
-			newShares:           math.LegacyNewDec(110),
-			expectedExceeds:     false,
-		},
-		{
-			// Validator Shares: 100, Factor: 2, Current Shares: 90 => 200 Max Shares, Capacity: 110
-			// New Shares: 111 - above cap
-			name:                "factor 2 - above cap",
-			validatorShares:     math.LegacyNewDec(100),
-			validatorBondFactor: math.LegacyNewDec(2),
-			currentLiquidShares: math.LegacyNewDec(90),
-			newShares:           math.LegacyNewDec(111),
-			expectedExceeds:     true,
-		},
-		{
-			// Validator Shares: 100, Factor: 100, Current Shares: 90 => 10000 Max Shares, Capacity: 9910
-			// New Shares: 100 - below cap
-			name:                "factor 100 - below cap",
-			validatorShares:     math.LegacyNewDec(100),
-			validatorBondFactor: math.LegacyNewDec(100),
-			currentLiquidShares: math.LegacyNewDec(90),
-			newShares:           math.LegacyNewDec(100),
-			expectedExceeds:     false,
-		},
-		{
-			// Validator Shares: 100, Factor: 100, Current Shares: 90 => 10000 Max Shares, Capacity: 9910
-			// New Shares: 9910 - at cap
-			name:                "factor 100 - at cap",
-			validatorShares:     math.LegacyNewDec(100),
-			validatorBondFactor: math.LegacyNewDec(100),
-			currentLiquidShares: math.LegacyNewDec(90),
-			newShares:           math.LegacyNewDec(9910),
-			expectedExceeds:     false,
-		},
-		{
-			// Validator Shares: 100, Factor: 100, Current Shares: 90 => 10000 Max Shares, Capacity: 9910
-			// New Shares: 9911 - above cap
-			name:                "factor 100 - above cap",
-			validatorShares:     math.LegacyNewDec(100),
-			validatorBondFactor: math.LegacyNewDec(100),
-			currentLiquidShares: math.LegacyNewDec(90),
-			newShares:           math.LegacyNewDec(9911),
-			expectedExceeds:     true,
-		},
-		{
-			// Factor of -1 (disabled): Should always return false
-			name:                "factor disabled",
-			validatorShares:     math.LegacyNewDec(1),
-			validatorBondFactor: math.LegacyNewDec(-1),
-			currentLiquidShares: math.LegacyNewDec(1),
-			newShares:           math.LegacyNewDec(1_000_000),
-			expectedExceeds:     false,
-		},
-	}
-
-	for _, tc := range testCases {
-		s.Run(tc.name, func() {
-			// Update the validator bond factor
-			params, err := keeper.GetParams(ctx)
-			require.NoError(err)
-			params.ValidatorBondFactor = tc.validatorBondFactor
-			require.NoError(keeper.SetParams(ctx, params))
-
-			// Create a validator with designated self-bond shares
-			validator := types.LiquidValidator{
-				LiquidShares:        tc.currentLiquidShares,
-				ValidatorBondShares: tc.validatorShares,
-			}
-
-			// Check whether the cap is exceeded
-			actualExceeds, err := keeper.CheckExceedsValidatorBondCap(ctx, validator, tc.newShares)
-			require.NoError(err)
-			require.Equal(tc.expectedExceeds, actualExceeds, tc.name)
-		})
-	}
-}
-
 // Tests TestCheckExceedsValidatorLiquidStakingCap
 func (s *KeeperTestSuite) TestCheckExceedsValidatorLiquidStakingCap() {
 	ctx, keeper := s.ctx, s.lsmKeeper
@@ -427,25 +281,19 @@ func (s *KeeperTestSuite) TestSafelyIncreaseValidatorLiquidShares() {
 
 	// Start with the following:
 	//   Initial Liquid Shares: 0
-	//   Validator Bond Shares: 10
 	//   Validator TotalShares: 75
 	//
 	// Initial Caps:
-	//   ValidatorBondFactor: 1 (Cap applied at 10 shares)
 	//   ValidatorLiquidStakingCap: 25% (Cap applied at 25 shares)
 	//
 	// Cap Increases:
-	//   ValidatorBondFactor: 10 (Cap applied at 100 shares)
 	//   ValidatorLiquidStakingCap: 40% (Cap applied at 50 shares)
 	initialLiquidShares := math.LegacyNewDec(0)
-	validatorBondShares := math.LegacyNewDec(10)
 	validatorTotalShares := math.LegacyNewDec(75)
 
 	firstIncreaseAmount := math.LegacyNewDec(20)
 	secondIncreaseAmount := math.LegacyNewDec(10) // total increase of 30
 
-	initialBondFactor := math.LegacyNewDec(1)
-	finalBondFactor := math.LegacyNewDec(10)
 	initialLiquidStakingCap := math.LegacyMustNewDecFromStr("0.25")
 	finalLiquidStakingCap := math.LegacyMustNewDecFromStr("0.4")
 
@@ -457,9 +305,8 @@ func (s *KeeperTestSuite) TestSafelyIncreaseValidatorLiquidShares() {
 	defer call.Unset()
 	// Create a validator with designated self-bond shares
 	initialValidator := types.LiquidValidator{
-		OperatorAddress:     valAddress.String(),
-		LiquidShares:        initialLiquidShares,
-		ValidatorBondShares: validatorBondShares,
+		OperatorAddress: valAddress.String(),
+		LiquidShares:    initialLiquidShares,
 	}
 	require.NoError(keeper.SetLiquidValidator(ctx, initialValidator))
 
@@ -468,21 +315,10 @@ func (s *KeeperTestSuite) TestSafelyIncreaseValidatorLiquidShares() {
 	// would fail
 	params, err := keeper.GetParams(ctx)
 	require.NoError(err)
-	params.ValidatorBondFactor = initialBondFactor
 	params.ValidatorLiquidStakingCap = initialLiquidStakingCap
 	require.NoError(keeper.SetParams(ctx, params))
 
-	// Attempt to increase the validator liquid shares, it should throw an
-	// error that the validator bond cap was exceeded
-	_, err = keeper.SafelyIncreaseValidatorLiquidShares(ctx, valAddress, firstIncreaseAmount, false)
-	require.ErrorIs(err, types.ErrInsufficientValidatorBondShares)
-	checkValidatorLiquidShares(initialLiquidShares, "shares after low bond factor")
-
-	// Change validator bond factor to a more conservative number, so that the increase succeeds
-	params.ValidatorBondFactor = finalBondFactor
-	require.NoError(keeper.SetParams(ctx, params))
-
-	// Try the increase again and check that it succeeded
+	// Try the increase and check that it succeeded
 	expectedLiquidSharesAfterFirstStake := initialLiquidShares.Add(firstIncreaseAmount)
 	_, err = keeper.SafelyIncreaseValidatorLiquidShares(ctx, valAddress, firstIncreaseAmount, false)
 	require.NoError(err)
@@ -534,67 +370,6 @@ func (s *KeeperTestSuite) TestDecreaseValidatorLiquidShares() {
 	// Attempt to decrease by a larger amount than it has, it should fail
 	_, err = keeper.DecreaseValidatorLiquidShares(ctx, valAddress, initialLiquidShares)
 	require.ErrorIs(err, types.ErrValidatorLiquidSharesUnderflow)
-}
-
-// Tests SafelyDecreaseValidatorBond
-func (s *KeeperTestSuite) TestSafelyDecreaseValidatorBond() {
-	ctx, keeper := s.ctx, s.lsmKeeper
-	require := s.Require()
-
-	// Initial Bond Factor: 100, Initial Validator Bond: 10
-	// => Max Liquid Shares 1000 (Initial Liquid Shares: 200)
-	initialBondFactor := math.LegacyNewDec(100)
-	initialValidatorBondShares := math.LegacyNewDec(10)
-	initialLiquidShares := math.LegacyNewDec(200)
-
-	// Create a validator with designated self-bond shares
-	privKey := secp256k1.GenPrivKey()
-	pubKey := privKey.PubKey()
-	valAddress := sdk.ValAddress(pubKey.Address())
-
-	initialValidator := types.LiquidValidator{
-		OperatorAddress:     valAddress.String(),
-		ValidatorBondShares: initialValidatorBondShares,
-		LiquidShares:        initialLiquidShares,
-	}
-	require.NoError(keeper.SetLiquidValidator(ctx, initialValidator))
-
-	// Set the bond factor
-	params, err := keeper.GetParams(ctx)
-	require.NoError(err)
-	params.ValidatorBondFactor = initialBondFactor
-	require.NoError(keeper.SetParams(ctx, params))
-
-	// Decrease the validator bond from 10 to 5 (minus 5)
-	// This will adjust the cap (factor * shares)
-	// from (100 * 10 = 1000) to (100 * 5 = 500)
-	// Since this is still above the initial liquid shares of 200, this will succeed
-	decreaseAmount, expectedBondShares := math.LegacyNewDec(5), math.LegacyNewDec(5)
-	err = keeper.SafelyDecreaseValidatorBond(ctx, valAddress, decreaseAmount)
-	require.NoError(err)
-
-	actualValidator, err := keeper.GetLiquidValidator(ctx, valAddress)
-	require.NoError(err)
-	require.Equal(expectedBondShares, actualValidator.ValidatorBondShares, "validator bond shares shares")
-
-	// Now attempt to decrease the validator bond again from 5 to 1 (minus 4)
-	// This time, the cap will be reduced to (factor * shares) = (100 * 1) = 100
-	// However, the liquid shares are currently 200, so this should fail
-	decreaseAmount, expectedBondShares = math.LegacyNewDec(4), math.LegacyNewDec(1)
-	err = keeper.SafelyDecreaseValidatorBond(ctx, valAddress, decreaseAmount)
-	require.ErrorIs(err, types.ErrInsufficientValidatorBondShares)
-
-	// Finally, disable the cap and attempt to decrease again
-	// This time it should succeed
-	params.ValidatorBondFactor = types.ValidatorBondCapDisabled
-	require.NoError(keeper.SetParams(ctx, params))
-
-	err = keeper.SafelyDecreaseValidatorBond(ctx, valAddress, decreaseAmount)
-	require.NoError(err)
-
-	actualValidator, err = keeper.GetLiquidValidator(ctx, valAddress)
-	require.NoError(err)
-	require.Equal(expectedBondShares, actualValidator.ValidatorBondShares, "validator bond shares shares")
 }
 
 // Tests Add/Remove/Get/SetTokenizeSharesLock

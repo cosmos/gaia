@@ -27,7 +27,6 @@ func NewParams(
 	validatorLiquidStakingCap math.LegacyDec,
 ) Params {
 	return Params{
-		ValidatorBondFactor:       validatorBondFactor,
 		GlobalLiquidStakingCap:    globalLiquidStakingCap,
 		ValidatorLiquidStakingCap: validatorLiquidStakingCap,
 	}
@@ -64,28 +63,11 @@ func UnmarshalParams(cdc *codec.LegacyAmino, value []byte) (params Params, err e
 
 // validate a set of params
 func (p Params) Validate() error {
-	if err := validateValidatorBondFactor(p.ValidatorBondFactor); err != nil {
-		return err
-	}
-
 	if err := validateGlobalLiquidStakingCap(p.GlobalLiquidStakingCap); err != nil {
 		return err
 	}
 
 	return validateValidatorLiquidStakingCap(p.ValidatorLiquidStakingCap)
-}
-
-func validateValidatorBondFactor(i interface{}) error {
-	v, ok := i.(math.LegacyDec)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
-	}
-
-	if v.IsNegative() && !v.Equal(math.LegacyNewDec(-1)) {
-		return fmt.Errorf("invalid validator bond factor: %s", v)
-	}
-
-	return nil
 }
 
 func validateGlobalLiquidStakingCap(i interface{}) error {

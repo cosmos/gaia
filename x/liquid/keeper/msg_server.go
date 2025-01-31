@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -86,11 +85,6 @@ func (k msgServer) TokenizeShares(goCtx context.Context, msg *types.MsgTokenizeS
 		return nil, types.ErrTokenizeSharesDisabledForAccount.Wrapf("tokenization will be allowed at %s", unlockTime)
 	}
 
-	// ValidatorBond delegation is not allowed for tokenize share
-	if bytes.Equal(delegatorAddress, sdk.AccAddress(validator.OperatorAddress)) {
-		return nil, types.ErrValidatorBondNotAllowedForTokenizeShare
-	}
-
 	bondDenom, err := k.stakingKeeper.BondDenom(ctx)
 	if err != nil {
 		return nil, err
@@ -135,18 +129,12 @@ func (k msgServer) TokenizeShares(goCtx context.Context, msg *types.MsgTokenizeS
 		return nil, types.ErrRedelegationInProgress
 	}
 
-	// If this tokenization is NOT from a liquid staking provider,
-	//   confirm it does not exceed the global and validator liquid staking cap
-	// If the tokenization is from a liquid staking provider,
-	//   the shares are already considered liquid and there's no need to increment the totals
-	if !k.DelegatorIsLiquidStaker(delegatorAddress) {
-		if err := k.SafelyIncreaseTotalLiquidStakedTokens(ctx, msg.Amount.Amount, true); err != nil {
-			return nil, err
-		}
-		_, err = k.SafelyIncreaseValidatorLiquidShares(ctx, valAddr, shares, true)
-		if err != nil {
-			return nil, err
-		}
+	if err := k.SafelyIncreaseTotalLiquidStakedTokens(ctx, msg.Amount.Amount, true); err != nil {
+		return nil, err
+	}
+	_, err = k.SafelyIncreaseValidatorLiquidShares(ctx, valAddr, shares, true)
+	if err != nil {
+		return nil, err
 	}
 
 	recordID := k.GetLastTokenizeShareRecordID(ctx) + 1
@@ -377,19 +365,6 @@ func (k msgServer) RedeemTokensForShares(goCtx context.Context, msg *types.MsgRe
 	_, err = k.stakingKeeper.Delegate(ctx, delegatorAddress, returnAmount, stakingtypes.Unbonded, validator, true)
 	if err != nil {
 		return nil, err
-	}
-
-	// tokenized shares can be transferred from a validator that does not have validator bond to a delegator with validator bond
-	// in that case we need to increase the validator bond shares (same as during msgServer.Delegate)
-	newDelegation, err := k.stakingKeeper.GetDelegation(ctx, delegatorAddress, valAddr)
-	if err != nil {
-		return nil, err
-	}
-
-	if newDelegation.DelegatorAddress == validator.OperatorAddress {
-		if err := k.IncreaseValidatorBondShares(ctx, valAddr, shares); err != nil {
-			return nil, err
-		}
 	}
 
 	ctx.EventManager().EmitEvent(

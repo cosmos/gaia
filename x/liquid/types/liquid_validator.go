@@ -9,9 +9,8 @@ import (
 // NewLiquidValidator constructs a new LiquidValidator
 func NewLiquidValidator(operator string) LiquidValidator {
 	return LiquidValidator{
-		OperatorAddress:     operator,
-		ValidatorBondShares: math.LegacyZeroDec(),
-		LiquidShares:        math.LegacyZeroDec(),
+		OperatorAddress: operator,
+		LiquidShares:    math.LegacyZeroDec(),
 	}
 }
 

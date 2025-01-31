@@ -53,7 +53,6 @@ func (s *IntegrationTestSuite) testLiquid() {
 
 			s.Require().Equal(liquidParams.Params.GlobalLiquidStakingCap, math.LegacyNewDecWithPrec(25, 2))
 			s.Require().Equal(liquidParams.Params.ValidatorLiquidStakingCap, math.LegacyNewDecWithPrec(50, 2))
-			s.Require().Equal(liquidParams.Params.ValidatorBondFactor, math.LegacyNewDec(-1))
 
 			return true
 		},

@@ -35,12 +35,6 @@ func (k Keeper) GetParams(ctx context.Context) (params types.Params, err error) 
 	return params, err
 }
 
-// Validator bond factor for all validators
-func (k Keeper) ValidatorBondFactor(ctx context.Context) (math.LegacyDec, error) {
-	params, err := k.GetParams(ctx)
-	return params.ValidatorBondFactor, err
-}
-
 // Global liquid staking cap across all liquid staking providers
 func (k Keeper) GlobalLiquidStakingCap(ctx context.Context) (math.LegacyDec, error) {
 	params, err := k.GetParams(ctx)

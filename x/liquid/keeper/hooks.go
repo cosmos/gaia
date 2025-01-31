@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"errors"
 
 	sdkmath "cosmossdk.io/math"
 
@@ -31,12 +30,6 @@ func (h Hooks) AfterValidatorCreated(ctx context.Context, valAddr sdk.ValAddress
 		return err
 	}
 	lVal := types.NewLiquidValidator(val.GetOperator())
-	del, err := h.k.stakingKeeper.GetDelegation(ctx, sdk.AccAddress(val.GetOperator()), valAddr)
-	if err != nil && !errors.Is(err, stakingtypes.ErrNoDelegation) {
-		return err
-	} else if err == nil {
-		lVal.ValidatorBondShares = del.Shares
-	}
 	return h.k.SetLiquidValidator(ctx, lVal)
 }
 
@@ -53,18 +46,6 @@ func (h Hooks) BeforeDelegationSharesModified(ctx context.Context, delAddr sdk.A
 }
 
 func (h Hooks) AfterDelegationModified(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
-	if delAddr.Equals(sdk.AccAddress(valAddr)) {
-		del, err := h.k.stakingKeeper.GetDelegation(ctx, sdk.AccAddress(valAddr), valAddr)
-		if err != nil {
-			return err
-		}
-		lVal, err := h.k.GetLiquidValidator(ctx, valAddr)
-		if err != nil {
-			return err
-		}
-		lVal.ValidatorBondShares = del.Shares
-		return h.k.SetLiquidValidator(ctx, lVal)
-	}
 	return nil
 }
 
@@ -104,14 +85,6 @@ func (h Hooks) AfterValidatorBeginUnbonding(_ context.Context, _ sdk.ConsAddress
 }
 
 func (h Hooks) BeforeDelegationRemoved(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
-	if delAddr.Equals(sdk.AccAddress(valAddr)) {
-		lVal, err := h.k.GetLiquidValidator(ctx, valAddr)
-		if err != nil {
-			return err
-		}
-		lVal.ValidatorBondShares = sdkmath.LegacyZeroDec()
-		return h.k.SetLiquidValidator(ctx, lVal)
-	}
 	return nil
 }
 

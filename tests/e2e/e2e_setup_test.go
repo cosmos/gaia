@@ -757,7 +757,6 @@ func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain) 
 		  "@type": "/gaia.liquid.v1beta1.MsgUpdateParams",
 		  "authority": "%s",
 		  "params": {
-		   "validator_bond_factor": "%s",
 		   "global_liquid_staking_cap": "%s",
 		   "validator_liquid_staking_cap": "%s"
 		  }

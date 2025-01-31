@@ -20,15 +20,15 @@ import (
 
 // NewTxCmd returns a root CLI command handler for all x/liquid transaction commands.
 func NewTxCmd(valAddrCodec, ac address.Codec) *cobra.Command {
-	lsmTxCmd := &cobra.Command{
+	liquidTxCmd := &cobra.Command{
 		Use:                        types.ModuleName,
-		Short:                      "Lsm transaction subcommands",
+		Short:                      "Liquid transaction subcommands",
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE:                       client.ValidateCmd,
 	}
 
-	lsmTxCmd.AddCommand(
+	liquidTxCmd.AddCommand(
 		NewTokenizeSharesCmd(valAddrCodec, ac),
 		NewRedeemTokensCmd(),
 		NewTransferTokenizeShareRecordCmd(ac),
@@ -38,7 +38,7 @@ func NewTxCmd(valAddrCodec, ac address.Codec) *cobra.Command {
 		NewWithdrawAllTokenizeShareRecordRewardCmd(ac),
 	)
 
-	return lsmTxCmd
+	return liquidTxCmd
 }
 
 // NewTokenizeSharesCmd defines a command for tokenizing shares from a validator.

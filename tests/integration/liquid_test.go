@@ -38,10 +38,6 @@ func TestTokenizeSharesAndRedeemTokens(t *testing.T) {
 	liquidStakingCapConservative := math.LegacyMustNewDecFromStr("0.8")
 	liquidStakingCapDisabled := math.LegacyOneDec()
 
-	validatorBondStrict := math.LegacyOneDec()
-	validatorBondConservative := math.LegacyNewDec(10)
-	validatorBondDisabled := math.LegacyNewDec(-1)
-
 	testCases := []struct {
 		name                          string
 		vestingAmount                 math.Int
@@ -53,9 +49,6 @@ func TestTokenizeSharesAndRedeemTokens(t *testing.T) {
 		globalLiquidStakingCap        math.LegacyDec
 		slashFactor                   math.LegacyDec
 		validatorLiquidStakingCap     math.LegacyDec
-		validatorBondFactor           math.LegacyDec
-		validatorBondDelegation       bool
-		validatorBondDelegatorIndex   int
 		expTokenizeErr                bool
 		expRedeemErr                  bool
 		prevAccountDelegationExists   bool
@@ -70,8 +63,6 @@ func TestTokenizeSharesAndRedeemTokens(t *testing.T) {
 			slashFactor:                   math.LegacyZeroDec(),
 			globalLiquidStakingCap:        liquidStakingCapDisabled,
 			validatorLiquidStakingCap:     liquidStakingCapDisabled,
-			validatorBondFactor:           validatorBondDisabled,
-			validatorBondDelegation:       false,
 			expTokenizeErr:                false,
 			expRedeemErr:                  false,
 			prevAccountDelegationExists:   false,
@@ -86,8 +77,6 @@ func TestTokenizeSharesAndRedeemTokens(t *testing.T) {
 			slashFactor:                   math.LegacyZeroDec(),
 			globalLiquidStakingCap:        liquidStakingCapDisabled,
 			validatorLiquidStakingCap:     liquidStakingCapDisabled,
-			validatorBondFactor:           validatorBondDisabled,
-			validatorBondDelegation:       false,
 			expTokenizeErr:                false,
 			expRedeemErr:                  false,
 			prevAccountDelegationExists:   false,
@@ -102,8 +91,6 @@ func TestTokenizeSharesAndRedeemTokens(t *testing.T) {
 			slashFactor:                   math.LegacyZeroDec(),
 			globalLiquidStakingCap:        liquidStakingCapDisabled,
 			validatorLiquidStakingCap:     liquidStakingCapDisabled,
-			validatorBondFactor:           validatorBondDisabled,
-			validatorBondDelegation:       false,
 			expTokenizeErr:                false,
 			expRedeemErr:                  false,
 			prevAccountDelegationExists:   true,
@@ -118,8 +105,6 @@ func TestTokenizeSharesAndRedeemTokens(t *testing.T) {
 			slashFactor:                   math.LegacyMustNewDecFromStr("0.1"),
 			globalLiquidStakingCap:        liquidStakingCapDisabled,
 			validatorLiquidStakingCap:     liquidStakingCapDisabled,
-			validatorBondFactor:           validatorBondDisabled,
-			validatorBondDelegation:       false,
 			expTokenizeErr:                false,
 			expRedeemErr:                  false,
 			prevAccountDelegationExists:   false,
@@ -134,8 +119,6 @@ func TestTokenizeSharesAndRedeemTokens(t *testing.T) {
 			slashFactor:               math.LegacyZeroDec(),
 			globalLiquidStakingCap:    liquidStakingCapDisabled,
 			validatorLiquidStakingCap: liquidStakingCapDisabled,
-			validatorBondFactor:       validatorBondDisabled,
-			validatorBondDelegation:   false,
 			expTokenizeErr:            true,
 			expRedeemErr:              false,
 		},
@@ -148,8 +131,6 @@ func TestTokenizeSharesAndRedeemTokens(t *testing.T) {
 			slashFactor:               math.LegacyZeroDec(),
 			globalLiquidStakingCap:    liquidStakingCapDisabled,
 			validatorLiquidStakingCap: liquidStakingCapDisabled,
-			validatorBondFactor:       validatorBondDisabled,
-			validatorBondDelegation:   false,
 			expTokenizeErr:            false,
 			expRedeemErr:              true,
 		},
@@ -162,8 +143,6 @@ func TestTokenizeSharesAndRedeemTokens(t *testing.T) {
 			slashFactor:                 math.LegacyZeroDec(),
 			globalLiquidStakingCap:      liquidStakingCapDisabled,
 			validatorLiquidStakingCap:   liquidStakingCapDisabled,
-			validatorBondFactor:         validatorBondDisabled,
-			validatorBondDelegation:     false,
 			expTokenizeErr:              true,
 			expRedeemErr:                false,
 			prevAccountDelegationExists: true,
@@ -179,61 +158,6 @@ func TestTokenizeSharesAndRedeemTokens(t *testing.T) {
 			slashFactor:                 math.LegacyZeroDec(),
 			globalLiquidStakingCap:      liquidStakingCapDisabled,
 			validatorLiquidStakingCap:   liquidStakingCapDisabled,
-			validatorBondFactor:         validatorBondDisabled,
-			validatorBondDelegation:     false,
-			expTokenizeErr:              false,
-			expRedeemErr:                false,
-			prevAccountDelegationExists: true,
-		},
-		{
-			name:                        "try tokenize share for a validator-bond delegation",
-			vestingAmount:               stakingKeeper.TokensFromConsensusPower(ctx, 10),
-			delegationAmount:            stakingKeeper.TokensFromConsensusPower(ctx, 20),
-			tokenizeShareAmount:         stakingKeeper.TokensFromConsensusPower(ctx, 10),
-			redeemAmount:                stakingKeeper.TokensFromConsensusPower(ctx, 10),
-			targetVestingDelAfterShare:  stakingKeeper.TokensFromConsensusPower(ctx, 10),
-			targetVestingDelAfterRedeem: stakingKeeper.TokensFromConsensusPower(ctx, 10),
-			slashFactor:                 math.LegacyZeroDec(),
-			globalLiquidStakingCap:      liquidStakingCapDisabled,
-			validatorLiquidStakingCap:   liquidStakingCapDisabled,
-			validatorBondFactor:         validatorBondConservative,
-			validatorBondDelegation:     true,
-			validatorBondDelegatorIndex: 1,
-			expTokenizeErr:              true,
-			expRedeemErr:                false,
-			prevAccountDelegationExists: true,
-		},
-		{
-			name:                        "strict validator-bond - tokenization fails",
-			vestingAmount:               stakingKeeper.TokensFromConsensusPower(ctx, 10),
-			delegationAmount:            stakingKeeper.TokensFromConsensusPower(ctx, 20),
-			tokenizeShareAmount:         stakingKeeper.TokensFromConsensusPower(ctx, 10),
-			redeemAmount:                stakingKeeper.TokensFromConsensusPower(ctx, 10),
-			targetVestingDelAfterShare:  stakingKeeper.TokensFromConsensusPower(ctx, 10),
-			targetVestingDelAfterRedeem: stakingKeeper.TokensFromConsensusPower(ctx, 10),
-			slashFactor:                 math.LegacyZeroDec(),
-			globalLiquidStakingCap:      liquidStakingCapDisabled,
-			validatorLiquidStakingCap:   liquidStakingCapDisabled,
-			validatorBondFactor:         validatorBondStrict,
-			validatorBondDelegation:     false,
-			expTokenizeErr:              true,
-			expRedeemErr:                false,
-			prevAccountDelegationExists: true,
-		},
-		{
-			name:                        "conservative validator-bond - successful tokenization",
-			vestingAmount:               stakingKeeper.TokensFromConsensusPower(ctx, 10),
-			delegationAmount:            stakingKeeper.TokensFromConsensusPower(ctx, 20),
-			tokenizeShareAmount:         stakingKeeper.TokensFromConsensusPower(ctx, 10),
-			redeemAmount:                stakingKeeper.TokensFromConsensusPower(ctx, 10),
-			targetVestingDelAfterShare:  stakingKeeper.TokensFromConsensusPower(ctx, 10),
-			targetVestingDelAfterRedeem: stakingKeeper.TokensFromConsensusPower(ctx, 10),
-			slashFactor:                 math.LegacyZeroDec(),
-			globalLiquidStakingCap:      liquidStakingCapDisabled,
-			validatorLiquidStakingCap:   liquidStakingCapDisabled,
-			validatorBondFactor:         validatorBondConservative,
-			validatorBondDelegation:     true,
-			validatorBondDelegatorIndex: 0,
 			expTokenizeErr:              false,
 			expRedeemErr:                false,
 			prevAccountDelegationExists: true,
@@ -249,9 +173,6 @@ func TestTokenizeSharesAndRedeemTokens(t *testing.T) {
 			slashFactor:                 math.LegacyZeroDec(),
 			globalLiquidStakingCap:      liquidStakingCapStrict,
 			validatorLiquidStakingCap:   liquidStakingCapDisabled,
-			validatorBondFactor:         validatorBondDisabled,
-			validatorBondDelegation:     true,
-			validatorBondDelegatorIndex: 0,
 			expTokenizeErr:              true,
 			expRedeemErr:                false,
 			prevAccountDelegationExists: true,
@@ -267,9 +188,6 @@ func TestTokenizeSharesAndRedeemTokens(t *testing.T) {
 			slashFactor:                 math.LegacyZeroDec(),
 			globalLiquidStakingCap:      liquidStakingCapConservative,
 			validatorLiquidStakingCap:   liquidStakingCapDisabled,
-			validatorBondFactor:         validatorBondDisabled,
-			validatorBondDelegation:     true,
-			validatorBondDelegatorIndex: 0,
 			expTokenizeErr:              false,
 			expRedeemErr:                false,
 			prevAccountDelegationExists: true,
@@ -285,9 +203,6 @@ func TestTokenizeSharesAndRedeemTokens(t *testing.T) {
 			slashFactor:                 math.LegacyZeroDec(),
 			globalLiquidStakingCap:      liquidStakingCapDisabled,
 			validatorLiquidStakingCap:   liquidStakingCapStrict,
-			validatorBondFactor:         validatorBondDisabled,
-			validatorBondDelegation:     true,
-			validatorBondDelegatorIndex: 0,
 			expTokenizeErr:              true,
 			expRedeemErr:                false,
 			prevAccountDelegationExists: true,
@@ -303,9 +218,6 @@ func TestTokenizeSharesAndRedeemTokens(t *testing.T) {
 			slashFactor:                 math.LegacyZeroDec(),
 			globalLiquidStakingCap:      liquidStakingCapDisabled,
 			validatorLiquidStakingCap:   liquidStakingCapConservative,
-			validatorBondFactor:         validatorBondDisabled,
-			validatorBondDelegation:     true,
-			validatorBondDelegatorIndex: 0,
 			expTokenizeErr:              false,
 			expRedeemErr:                false,
 			prevAccountDelegationExists: true,
@@ -321,9 +233,6 @@ func TestTokenizeSharesAndRedeemTokens(t *testing.T) {
 			slashFactor:                 math.LegacyZeroDec(),
 			globalLiquidStakingCap:      liquidStakingCapConservative,
 			validatorLiquidStakingCap:   liquidStakingCapConservative,
-			validatorBondFactor:         validatorBondConservative,
-			validatorBondDelegation:     true,
-			validatorBondDelegatorIndex: 0,
 			expTokenizeErr:              false,
 			expRedeemErr:                false,
 			prevAccountDelegationExists: true,
@@ -339,9 +248,6 @@ func TestTokenizeSharesAndRedeemTokens(t *testing.T) {
 			slashFactor:                 math.LegacyZeroDec(),
 			globalLiquidStakingCap:      liquidStakingCapConservative,
 			validatorLiquidStakingCap:   liquidStakingCapConservative,
-			validatorBondFactor:         validatorBondConservative,
-			validatorBondDelegation:     true,
-			validatorBondDelegatorIndex: 0,
 			expTokenizeErr:              false,
 			expRedeemErr:                false,
 			prevAccountDelegationExists: true,
@@ -438,17 +344,6 @@ func TestTokenizeSharesAndRedeemTokens(t *testing.T) {
 
 			// skServer := stakingkeeper.NewMsgServerImpl(stakingKeeper)
 			msgServer := liquidkeeper.NewMsgServerImpl(liquidKeeper)
-			if tc.validatorBondDelegation {
-				err := delegateCoinsFromAccount(ctx, *stakingKeeper, addrs[tc.validatorBondDelegatorIndex], tc.delegationAmount, val1)
-				require.NoError(t, err)
-				/*
-					_, err = skServer.Delegate(ctx, &stakingtypes.MsgDelegate{
-						DelegatorAddress: addrs[tc.validatorBondDelegatorIndex].String(),
-						ValidatorAddress: addrVal1.String(),
-					})
-					require.NoError(t, err)
-				*/
-			}
 
 			resp, err := msgServer.TokenizeShares(ctx, &liquidtypes.MsgTokenizeShares{
 				DelegatorAddress:    delegatorAccount.String(),

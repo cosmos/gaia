@@ -214,6 +214,7 @@ func orderBeginBlockers() []string {
 		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
+		liquidtypes.ModuleName,
 		wasmtypes.ModuleName,
 	}
 }

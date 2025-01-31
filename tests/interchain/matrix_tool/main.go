@@ -29,7 +29,7 @@ func GetPreviousMajorMinor(ctx context.Context, testVersion string) (previousVer
 		org = "cosmos"
 	}
 	client := github.NewClient(nil)
-	releaes, _, err := client.Repositories.ListReleases(ctx, org, "gaia", nil)
+	releases, _, err := client.Repositories.ListReleases(ctx, org, "gaia", nil)
 	if err != nil {
 		err = fmt.Errorf("ListReleases failed: %w", err)
 		return
@@ -40,8 +40,8 @@ func GetPreviousMajorMinor(ctx context.Context, testVersion string) (previousVer
 		err = fmt.Errorf("failed to parse major version: %w", err)
 		return
 	}
-	semvers := make([]string, 0, len(releaes))
-	for _, release := range releaes {
+	semvers := make([]string, 0, len(releases))
+	for _, release := range releases {
 		semvers = append(semvers, release.GetTagName())
 	}
 	var previousMinor, previousRc bool
@@ -97,6 +97,7 @@ func GetSemverForBranch() (string, error) {
 
 func GetTestList() ([]string, error) {
 	retval := []string{}
+	uniq := map[string]bool{}
 	cmd := exec.Command("go", "test", "-list=.", "./...")
 	out, err := cmd.Output()
 	if err != nil {
@@ -105,8 +106,9 @@ func GetTestList() ([]string, error) {
 	}
 	lines := strings.Split(string(out), "\n")
 	for _, line := range lines {
-		if strings.HasPrefix(line, "Test") {
+		if strings.HasPrefix(line, "Test") && !uniq[line] {
 			retval = append(retval, line)
+			uniq[line] = true
 		}
 	}
 	rand.Shuffle(len(retval), func(i, j int) {

@@ -35,6 +35,7 @@ func (s *IntegrationTestSuite) TestBank() {
 		s.T().Skip()
 	}
 	s.testBankTokenTransfer()
+	s.testFeeWithWrongDenomOrder()
 }
 
 func (s *IntegrationTestSuite) TestEncode() {
@@ -89,40 +90,6 @@ func (s *IntegrationTestSuite) TestSlashing() {
 	}
 	chainAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	s.testSlashing(chainAPI)
-}
-
-func (s *IntegrationTestSuite) TestFeeWithWrongDenomOrder() {
-	chainAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-	
-	// Get the first validator's address
-	val1 := s.chainA.validators[0]
-	valAddr := val1.keyInfo.GetAddress()
-	
-	// Create a transaction with fees in wrong denom order
-	fees := sdk.NewCoins(
-		sdk.NewCoin("stake", sdk.NewInt(1000)),
-		sdk.NewCoin("atom", sdk.NewInt(100)),
-	)
-	
-	msg := banktypes.NewMsgSend(
-		valAddr,
-		valAddr,
-		sdk.NewCoins(sdk.NewCoin("atom", sdk.NewInt(1))),
-	)
-	
-	// Build and sign the transaction
-	txBuilder := s.chainA.clientCtx.TxConfig.NewTxBuilder()
-	err := txBuilder.SetMsgs(msg)
-	s.Require().NoError(err)
-	
-	txBuilder.SetFeeAmount(fees)
-	txBuilder.SetGasLimit(200000)
-	
-	// The transaction should still be accepted and processed correctly
-	// despite the fees being in a different order
-	tx, err := s.chainA.SignAndBroadcastTx(val1.keyInfo, txBuilder)
-	s.Require().NoError(err)
-	s.Require().Equal(uint32(0), tx.Code)
 }
 
 func (s *IntegrationTestSuite) TestStakingAndDistribution() {

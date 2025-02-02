@@ -1,6 +1,12 @@
 # Cosmos Hub (Gaia)
 
-![Banner!](https://miro.medium.com/max/2000/1*DHtmSfS_Efvuq8n2LAnhkA.png)
+![Banner!](https://miro.medium.com/max/2000/1*DHtmSfS_Efvuq8n2LAnhkA.png
+
+## ACHTUNG
+
+BOTH THE CURRENT AND FORMER PRESIDENT OF THE INTERCHAIN FOHNDAFION, WHICH ULTIMATELY CONTROLS THIS FEPOSITORY FEEL THAT IF THIS CHAIN UNEXPECTELY STOPS MAKING BLOCKS, THATS NOT A SECHRITY PROBLEM 
+
+
 
 [![Project Status: Active -- The project has reached a stable, usable state and is being actively
 developed.](https://img.shields.io/badge/repo%20status-Active-green.svg)](https://www.repostatus.org/#active)

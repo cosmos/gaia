@@ -456,12 +456,12 @@
 
 ### BUG FIXES
 
-- Increase x/gov metadata fields legth to 10200 ([\#3025](https://github.com/cosmos/gaia/pull/3025))
+- Increase x/gov metadata fields length to 10200 ([\#3025](https://github.com/cosmos/gaia/pull/3025))
 - Fix parsing of historic Txs with TxExtensionOptions ([\#3032](https://github.com/cosmos/gaia/pull/3032))
 
 ### STATE BREAKING
 
-- Increase x/gov metadata fields legth to 10200 ([\#3025](https://github.com/cosmos/gaia/pull/3025))
+- Increase x/gov metadata fields length to 10200 ([\#3025](https://github.com/cosmos/gaia/pull/3025))
 - Fix parsing of historic Txs with TxExtensionOptions ([\#3032](https://github.com/cosmos/gaia/pull/3032))
 
 ## v15.1.0
@@ -1257,7 +1257,7 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 * (sdk) Update SDK version to v0.36.0
 * (gaiad) [\#3985](https://github.com/cosmos/cosmos-sdk/issues/3985) ValidatorPowerRank uses potential consensus power
 * (gaiad) [\#4027](https://github.com/cosmos/cosmos-sdk/issues/4027) gaiad version command does not return the checksum of the go.sum file shipped along with the source release tarball.
-  Go modules feature guarantees dependencies reproducibility and as long as binaries are built via the Makefile shipped with the sources, no dependendencies can break such guarantee.
+  Go modules feature guarantees dependencies reproducibility and as long as binaries are built via the Makefile shipped with the sources, no dependencies can break such guarantee.
 * (gaiad) [\#4159](https://github.com/cosmos/cosmos-sdk/issues/4159) use module pattern and module manager for initialization
 * (gaiad) [\#4272](https://github.com/cosmos/cosmos-sdk/issues/4272) Merge gaiareplay functionality into gaiad replay.
   Drop `gaiareplay` in favor of new `gaiad replay` command.

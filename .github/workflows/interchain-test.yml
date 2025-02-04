@@ -18,7 +18,7 @@ jobs:
                   echo "tag_name=${{ github.event.client_payload.tag_name }}" | tee -a $GITHUB_OUTPUT
                 else
                   echo "ref_name=${{ github.ref_name }}" | tee -a $GITHUB_OUTPUT
-                  echo "tag_name=${{ github.ref_name }}" | tee -a $GITHUB_OUTPUT
+                  echo "tag_name=${{ github.ref_name }}" | sed 's~/~-~g' | tee -a $GITHUB_OUTPUT
                 fi
             - name: Check out repository code
               uses: actions/checkout@v4
@@ -57,8 +57,43 @@ jobs:
                 TEST_NEW_GAIA_IMAGE_VERSION: "${{ matrix.test_version }}"
                 TEST_UPGRADE_NAME: "${{ matrix.upgrade_name }}"
               run: |
-                # This docker pull/tag is a quick hack only necessary for v19, since there were no official v18 images built.
-                # Once we're testing 19 -> 20 this can be removed
-                docker pull "ghcr.io/hyphacoop/gaia:v18.1.0" && docker tag "ghcr.io/hyphacoop/gaia:v18.1.0" "ghcr.io/${{ github.repository_owner }}/gaia:v18.1.0"
                 cd ./tests/interchain
-                go test -v ./... -failfast -p 1 -timeout 5h -run="^${{ matrix.test_name }}"
+                go install github.com/mfridman/tparse@latest
+                set -o pipefail
+                go test -v ./... -failfast -p 1 -timeout 5h -run="^${{ matrix.test_name }}" -json | tee ../../output-${{ matrix.previous_version }}-${{ matrix.test_name }}.json | tparse -follow -all
+            - name: Upload output
+              uses: actions/upload-artifact@v4
+              if: always()
+              with:
+                name: output-${{ matrix.previous_version }}-${{ matrix.test_name }}
+                path: output-${{ matrix.previous_version }}-${{ matrix.test_name }}.json
+    test-report:
+        needs: [test, prepare-matrix]
+        if: always()
+        runs-on: ubuntu-latest
+        steps:
+            - name: Download all artifacts
+              uses: actions/download-artifact@v4
+              with:
+                path: ./outputs
+            - name: Setup go
+              uses: actions/setup-go@v5
+            - name: Prep report
+              env:
+                TEST_MATRIX: ${{ needs.prepare-matrix.outputs.matrix }}
+              run: |
+                go install github.com/becheran/go-testreport@latest
+                TEST_VERSION=$(echo "$TEST_MATRIX" | jq -r '.test_version[0]')
+                UPGRADE_NAME=$(echo "$TEST_MATRIX" | jq -r '.upgrade_name[0]')
+                echo "$TEST_MATRIX" | jq -r '.previous_version[]' | while read PREV_VERSION; do
+                  cat ./outputs/output-${PREV_VERSION}-*/*.json > combined-${PREV_VERSION}.json
+                  go-testreport -vars="Title:${PREV_VERSION} -> ${UPGRADE_NAME} (${TEST_VERSION})" "test-report-${PREV_VERSION}.md" < "combined-${PREV_VERSION}.json" || true
+                  echo '' >> test-report-${PREV_VERSION}.md
+                done
+                cat test-report-*.md > test-report.md
+                cat test-report.md > $GITHUB_STEP_SUMMARY
+            - name: Upload output
+              uses: actions/upload-artifact@v4
+              with:
+                name: test-report
+                path: test-report.md

@@ -63,26 +63,6 @@ func (s *IntegrationTestSuite) testLiquid() {
 
 	fees := sdk.NewCoin(uatomDenom, math.NewInt(1))
 
-	/*
-		// Validator bond
-		s.executeValidatorBond(s.chainA, 0, validatorAddressA, validatorAAddr.String(), gaiaHomePath, fees.String())
-
-		// Validate validator bond successful
-		selfBondedShares := math.LegacyZeroDec()
-		s.Require().Eventually(
-			func() bool {
-				res, err := queryDelegation(chainEndpoint, validatorAddressA, validatorAAddr.String())
-				delegation := res.GetDelegationResponse().GetDelegation()
-				selfBondedShares = delegation.Shares
-				s.Require().NoError(err)
-
-				return isValidatorBond == true
-			},
-			20*time.Second,
-			5*time.Second,
-		)
-	*/
-
 	delegationAmount := math.NewInt(500000000)
 	delegation := sdk.NewCoin(uatomDenom, delegationAmount) // 500 atom
 

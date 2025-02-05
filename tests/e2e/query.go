@@ -21,6 +21,8 @@ import (
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
+	liquidtypes "github.com/cosmos/gaia/v23/x/liquid/types"
 )
 
 func queryGaiaTx(endpoint, txHash string) error {
@@ -91,15 +93,15 @@ func querySupplyOf(endpoint, denom string) (sdk.Coin, error) {
 	return supplyOfResp.Amount, nil
 }
 
-func queryStakingParams(endpoint string) (stakingtypes.QueryParamsResponse, error) {
-	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/params", endpoint))
+func queryLiquidParams(endpoint string) (liquidtypes.QueryParamsResponse, error) {
+	body, err := httpGet(fmt.Sprintf("%s/gaia/liquid/v1beta1/params", endpoint))
 	if err != nil {
-		return stakingtypes.QueryParamsResponse{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+		return liquidtypes.QueryParamsResponse{}, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
 
-	var params stakingtypes.QueryParamsResponse
+	var params liquidtypes.QueryParamsResponse
 	if err := cdc.UnmarshalJSON(body, &params); err != nil {
-		return stakingtypes.QueryParamsResponse{}, err
+		return liquidtypes.QueryParamsResponse{}, err
 	}
 
 	return params, nil
@@ -289,16 +291,16 @@ func queryAllEvidence(endpoint string) (evidencetypes.QueryAllEvidenceResponse, 
 	return res, nil
 }
 
-func queryTokenizeShareRecordByID(endpoint string, recordID int) (stakingtypes.TokenizeShareRecord, error) {
-	var res stakingtypes.QueryTokenizeShareRecordByIdResponse
+func queryTokenizeShareRecordByID(endpoint string, recordID int) (liquidtypes.TokenizeShareRecord, error) {
+	var res liquidtypes.QueryTokenizeShareRecordByIdResponse
 
-	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/tokenize_share_record_by_id/%d", endpoint, recordID))
+	body, err := httpGet(fmt.Sprintf("%s/gaia/liquid/v1beta1/tokenize_share_record_by_id/%d", endpoint, recordID))
 	if err != nil {
-		return stakingtypes.TokenizeShareRecord{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+		return liquidtypes.TokenizeShareRecord{}, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
 
 	if err := cdc.UnmarshalJSON(body, &res); err != nil {
-		return stakingtypes.TokenizeShareRecord{}, err
+		return liquidtypes.TokenizeShareRecord{}, err
 	}
 	return res.Record, nil
 }

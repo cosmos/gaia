@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package gaia.liquid.module.v1;
+
+import "cosmos/app/v1alpha1/module.proto";
+
+// Module is the config object of the liquid module.
+message Module {
+  option (cosmos.app.v1alpha1.module) = {
+    go_import : "github.com/cosmos/gaia/x/liquid"
+  };
+
+  // authority defines the custom module authority. If not set, defaults to the
+  // governance module.
+  string authority = 1;
+
+  // bech32_prefix_validator is the bech32 validator prefix for the app.
+  string bech32_prefix_validator = 2;
+
+  // bech32_prefix_consensus is the bech32 consensus node prefix for the app.
+  string bech32_prefix_consensus = 3;
+}

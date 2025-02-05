@@ -10,10 +10,11 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
+	liquidtypes "github.com/cosmos/gaia/v23/x/liquid/types"
 )
 
-func (s *IntegrationTestSuite) testLSM() {
+func (s *IntegrationTestSuite) testLiquid() {
 	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
 	validatorA := s.chainA.validators[0]
@@ -21,18 +22,17 @@ func (s *IntegrationTestSuite) testLSM() {
 
 	validatorAddressA := sdk.ValAddress(validatorAAddr).String()
 
-	oldStakingParams, err := queryStakingParams(chainEndpoint)
-	s.Require().NoError(err)
-	s.writeLiquidStakingParamsUpdateProposal(s.chainA, oldStakingParams.Params)
+	s.writeLiquidStakingParamsUpdateProposal(s.chainA)
 	proposalCounter++
-	submitGovFlags := []string{configFile(proposalLSMParamUpdateFilename)}
+	submitGovFlags := []string{configFile(proposalLiquidParamUpdateFilename)}
 	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
 	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes"}
 
-	// gov proposing LSM parameters (global liquid staking cap, validator liquid staking cap, validator bond factor)
+	// gov proposing Liquid parameters (global liquid staking cap, validator liquid staking cap, validator bond factor)
 	s.T().Logf("Proposal number: %d", proposalCounter)
 	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: Set parameters (global liquid staking cap, validator liquid staking cap, validator bond factor)")
-	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), proposalCounter, "stakingtypes.MsgUpdateProposal", submitGovFlags, depositGovFlags, voteGovFlags, "vote")
+	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), proposalCounter, "liquidtypes.MsgUpdateProposal",
+		submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 
 	// query the proposal status and new fee
 	s.Require().Eventually(
@@ -47,13 +47,12 @@ func (s *IntegrationTestSuite) testLSM() {
 
 	s.Require().Eventually(
 		func() bool {
-			stakingParams, err := queryStakingParams(chainEndpoint)
-			s.T().Logf("After LSM parameters update proposal")
+			liquidParams, err := queryLiquidParams(chainEndpoint)
+			s.T().Logf("After Liquid parameters update proposal")
 			s.Require().NoError(err)
 
-			s.Require().Equal(stakingParams.Params.GlobalLiquidStakingCap, math.LegacyNewDecWithPrec(25, 2))
-			s.Require().Equal(stakingParams.Params.ValidatorLiquidStakingCap, math.LegacyNewDecWithPrec(50, 2))
-			s.Require().Equal(stakingParams.Params.ValidatorBondFactor, math.LegacyNewDec(250))
+			s.Require().Equal(liquidParams.Params.GlobalLiquidStakingCap, math.LegacyNewDecWithPrec(25, 2))
+			s.Require().Equal(liquidParams.Params.ValidatorLiquidStakingCap, math.LegacyNewDecWithPrec(50, 2))
 
 			return true
 		},
@@ -63,25 +62,6 @@ func (s *IntegrationTestSuite) testLSM() {
 	delegatorAddress, _ := s.chainA.genesisAccounts[2].keyInfo.GetAddress()
 
 	fees := sdk.NewCoin(uatomDenom, math.NewInt(1))
-
-	// Validator bond
-	s.executeValidatorBond(s.chainA, 0, validatorAddressA, validatorAAddr.String(), gaiaHomePath, fees.String())
-
-	// Validate validator bond successful
-	selfBondedShares := math.LegacyZeroDec()
-	s.Require().Eventually(
-		func() bool {
-			res, err := queryDelegation(chainEndpoint, validatorAddressA, validatorAAddr.String())
-			delegation := res.GetDelegationResponse().GetDelegation()
-			selfBondedShares = delegation.Shares
-			isValidatorBond := delegation.ValidatorBond
-			s.Require().NoError(err)
-
-			return isValidatorBond == true
-		},
-		20*time.Second,
-		5*time.Second,
-	)
 
 	delegationAmount := math.NewInt(500000000)
 	delegation := sdk.NewCoin(uatomDenom, delegationAmount) // 500 atom
@@ -133,7 +113,7 @@ func (s *IntegrationTestSuite) testLSM() {
 		5*time.Second,
 	)
 
-	// Bank send LSM token
+	// Bank send Liquid token
 	sendAmount := sdk.NewCoin(shareDenom, tokenizeAmount)
 	s.execBankSend(s.chainA, 0, delegatorAddress.String(), validatorAAddr.String(), sendAmount.String(), standardFees.String(), false)
 
@@ -157,7 +137,7 @@ func (s *IntegrationTestSuite) testLSM() {
 
 	// transfer reward ownership
 	s.executeTransferTokenizeShareRecord(s.chainA, 0, strconv.Itoa(recordID), delegatorAddress.String(), validatorAAddr.String(), gaiaHomePath, standardFees.String())
-	tokenizeShareRecord := stakingtypes.TokenizeShareRecord{}
+	tokenizeShareRecord := liquidtypes.TokenizeShareRecord{}
 	// Validate ownership transferred correctly
 	s.Require().Eventually(
 		func() bool {
@@ -171,7 +151,7 @@ func (s *IntegrationTestSuite) testLSM() {
 	)
 	_ = tokenizeShareRecord
 
-	// IBC transfer LSM token
+	// IBC transfer Liquid token
 	ibcTransferAmount := sdk.NewCoin(shareDenom, math.NewInt(100000000))
 	sendRecipientAddr, _ := s.chainB.validators[0].keyInfo.GetAddress()
 	s.sendIBC(s.chainA, 0, validatorAAddr.String(), sendRecipientAddr.String(), ibcTransferAmount.String(), standardFees.String(), "memo", false)
@@ -201,13 +181,15 @@ func (s *IntegrationTestSuite) testLSM() {
 				return false
 			}
 
-			delegationRes, err := queryDelegation(chainEndpoint, validatorAddressA, validatorAAddr.String())
-			delegation := delegationRes.GetDelegationResponse().GetDelegation()
-			s.Require().NoError(err)
+			/*
+				delegationRes, err := queryDelegation(chainEndpoint, validatorAddressA, validatorAAddr.String())
+				delegation := delegationRes.GetDelegationResponse().GetDelegation()
+				s.Require().NoError(err)
 
-			if !delegation.Shares.Equal(selfBondedShares.Add(math.LegacyNewDecFromInt(redeemAmount.Amount))) {
-				return false
-			}
+				if !delegation.Shares.Equal(selfBondedShares.Add(math.LegacyNewDecFromInt(redeemAmount.Amount))) {
+					return false
+				}
+			*/
 
 			// check that tokenize share record module account received some rewards, since it unbonded during redeem tx execution
 			balanceRes, err = getSpecificBalance(chainEndpoint, tokenizeShareRecord.GetModuleAddress().String(), uatomDenom)

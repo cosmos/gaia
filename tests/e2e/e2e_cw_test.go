@@ -21,23 +21,31 @@ func (s *IntegrationTestSuite) testCWCounter() {
 	sender := address.String()
 	dirName, err := os.Getwd()
 	s.Require().NoError(err)
+
+	// Copy file to container path and store the contract
 	src := filepath.Join(dirName, "data/counter.wasm")
 	dst := filepath.Join(val.configDir(), "config", "counter.wasm")
 	_, err = copyFile(src, dst)
 	s.Require().NoError(err)
 	storeWasmPath := configFile("counter.wasm")
 	s.storeWasm(ctx, s.chainA, valIdx, sender, storeWasmPath)
+
+	// Instantiate the contract
 	s.instantiateWasm(ctx, s.chainA, valIdx, sender, "1", "{\"count\":0}", "counter")
 	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	contractAddr, err := queryWasmContractAddress(chainEndpoint, address.String())
 	s.Require().NoError(err)
+
+	// Execute the contract
 	s.executeWasm(ctx, s.chainA, valIdx, sender, contractAddr, "{\"increment\":{}}")
+
+	// Validate count increment
 	query := map[string]interface{}{
 		"get_count": map[string]interface{}{},
 	}
-	queryJson, err := json.Marshal(query)
+	queryJSON, err := json.Marshal(query)
 	s.Require().NoError(err)
-	queryMsg := base64.StdEncoding.EncodeToString(queryJson)
+	queryMsg := base64.StdEncoding.EncodeToString(queryJSON)
 	data, err := queryWasmSmartContractState(chainEndpoint, contractAddr, queryMsg)
 	s.Require().NoError(err)
 	var counterResp map[string]int
@@ -68,7 +76,7 @@ func (s *IntegrationTestSuite) storeWasm(ctx context.Context, c *chain, valIdx i
 	s.T().Log("successfully sent store wasm tx")
 }
 
-func (s *IntegrationTestSuite) instantiateWasm(ctx context.Context, c *chain, valIdx int, sender, codeId,
+func (s *IntegrationTestSuite) instantiateWasm(ctx context.Context, c *chain, valIdx int, sender, codeID,
 	msg, label string,
 ) {
 	storeCmd := []string{
@@ -76,7 +84,7 @@ func (s *IntegrationTestSuite) instantiateWasm(ctx context.Context, c *chain, va
 		txCommand,
 		"wasm",
 		"instantiate",
-		codeId,
+		codeID,
 		msg,
 		fmt.Sprintf("--from=%s", sender),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, standardFees.String()),

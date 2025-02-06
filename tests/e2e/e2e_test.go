@@ -16,7 +16,7 @@ var (
 	runLsmTest                    = true
 	runRateLimitTest              = true
 	runTxExtensionsTest           = true
-	runTestCWTest                 = true
+	runCWTest                     = true
 )
 
 func (s *IntegrationTestSuite) TestRestInterfaces() {
@@ -134,7 +134,7 @@ func (s *IntegrationTestSuite) TestTxExtensions() {
 }
 
 func (s *IntegrationTestSuite) TestCW() {
-	if !runTestCWTest {
+	if !runCWTest {
 		s.T().Skip()
 	}
 	s.testCWCounter()

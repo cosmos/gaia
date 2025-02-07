@@ -97,11 +97,12 @@ func GetSemverForBranch() (string, error) {
 
 func GetTestList() ([]string, error) {
 	retval := []string{}
+	var stderr bytes.Buffer
 	uniq := map[string]bool{}
 	cmd := exec.Command("go", "test", "-list=.", "./...")
+	cmd.Stderr = &stderr
 	out, err := cmd.Output()
 	if err != nil {
-		stderr := string(cmd.Stderr.(*bytes.Buffer).Bytes())
 		return nil, fmt.Errorf("go test -list failed with %w : %s\n", err, stderr)
 	}
 	lines := strings.Split(string(out), "\n")

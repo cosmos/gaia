@@ -1,5 +1,22 @@
 # CHANGELOG
 
+## UNRELEASED
+
+### BUG FIXES
+- Export only validators that are participating in consensus
+  ([\#3490](https://github.com/cosmos/gaia/pull/3490))
+- Fix goreleaser config to generate Linux builds again. ([\#3506](https://github.com/cosmos/gaia/pull/3506))
+
+### IMPROVEMENTS
+
+### FEATURES
+
+### BUG-FIXES
+
+### STATE-BREAKING
+
+### API-BREAKING
+
 ## v22.0.0
 
 *January 10, 2025*

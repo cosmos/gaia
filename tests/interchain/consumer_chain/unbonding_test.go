@@ -117,7 +117,7 @@ func (s *UnbondingSuite) TestCanLaunchAfterInitTimeout() {
 	s.Require().True(chain.Exists())
 }
 
-func TestUnbonding(t *testing.T) {
+func TestUnbondingICS(t *testing.T) {
 	genesis := chainsuite.DefaultGenesis()
 	env := chainsuite.GetEnvironment()
 	if semver.Compare(env.OldGaiaImageVersion, "v20.0.0") < 0 {

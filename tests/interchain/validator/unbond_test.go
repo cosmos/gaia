@@ -38,7 +38,7 @@ func (s *UnbondingSuite) TestUnbondValidator() {
 	s.Require().Equal(stakingtypes.Bonded, validator.Status)
 }
 
-func TestUnbonding(t *testing.T) {
+func TestUnbondingValidator(t *testing.T) {
 	txSuite := UnbondingSuite{chainsuite.NewSuite(chainsuite.SuiteConfig{
 		UpgradeOnSetup: true,
 		ChainSpec: &interchaintest.ChainSpec{

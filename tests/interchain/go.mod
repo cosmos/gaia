@@ -1,7 +1,8 @@
 module github.com/cosmos/gaia/v23/tests/interchain
 
-go 1.22.5
-toolchain go1.23.0
+go 1.22.11
+
+toolchain go1.23.5
 
 replace (
 	cosmossdk.io/core => cosmossdk.io/core v0.11.0

@@ -69,8 +69,6 @@ An exception are PRs open via the Github mergify integration (i.e., backported P
 
 For PRs that are changing production code, please add a changelog entry in `.changelog` (for details, see [contributing guidelines](./CONTRIBUTING.md#changelog)). 
 
-To manage and generate the changelog on Gaia, we currently use [unclog](https://github.com/informalsystems/unclog).
-
 #### Creating a new release branch 
 
 Unreleased changes are collected on `main` in `.changelog/unreleased/`. 
@@ -106,14 +104,8 @@ Before cutting a _**release candidate**_ (e.g., `v11.0.0-rc0`), the following st
     ```bash 
     git checkout release/v11.x
     ```
-- move all entries in ".changelog/unreleased" to the release version, e.g., `v11.0.0`, i.e.,
-    ```bash
-    unclog release v11.0.0
-    ```
-- update `CHANGELOG.md`, i.e.,
-    ```bash
-    unclog build > CHANGELOG.md
-    ```
+- move all entries in "CHANGELOG.md" from the `UNRELEASED` section to a new section with the proper release version,
+  e.g., `v11.0.0`, i.e.,
 - open a PR (from this new created branch) against the release branch, e.g., `release/v11.x`
 
 Now you can cut the release candidate, e.g., v11.0.0-rc0 (follow the [Tagging Procedure](#tagging-procedure)).
@@ -130,14 +122,11 @@ Once the **final release** is cut, the new changelog section must be added to ma
     ```
 - bring the new changelog section from the release branch into this branch, e.g.,
     ```bash
-    git checkout release/v11.x .changelog/v11.0.0
+    git merge release/v11.x
     ```
-- remove duplicate entries that are both in `.changelog/unreleased/` and the new changelog section, e.g., `.changelog/v11.0.0`
-- update `CHANGELOG.md`, i.e.,
-    ```bash
-    unclog build > CHANGELOG.md
-    ```
-- open a PR (from this new created branch) against `main`
+- Note that if new entries have been created in the Changelog since the release was cut, you should preserve those 
+  in the `UNRELEASED` section. That means you may have to do some manual cleanup here.
+- Open a PR (from this new created branch) against `main`
   
 ### Release Notes
 

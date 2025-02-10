@@ -33,7 +33,7 @@ func (b *Backend) GetCode(address common.Address, blockNrOrHash rpctypes.BlockNu
 	//}
 	//
 	//return res.Code, nil
-	panic("unsupported")
+	return []byte{}, nil
 }
 
 // GetProof returns an account object with proof and any storage proofs

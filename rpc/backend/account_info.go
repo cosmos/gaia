@@ -149,7 +149,7 @@ func (b *Backend) GetBalance(address common.Address, blockNrOrHash rpctypes.Bloc
 	}
 
 	req := &banktypes.QuerySpendableBalanceByDenomRequest{
-		Address: "0xC6Fe5D33615a1C52c08018c47E8Bc53646A0E101", //todo: convert to bech32
+		Address: "0xbfBD0ED656c0B8C1371F6d9D86AfAE1786911912", //todo: convert to bech32
 		Denom:   "uatom",                                      //todo: make this a constant
 	}
 

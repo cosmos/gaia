@@ -43,6 +43,7 @@ func (b *Backend) BlockNumber() (hexutil.Uint64, error) { //todo: JSON-RPC
 	//}
 	//
 	//return hexutil.Uint64(height), nil
+	return hexutil.Uint64(0), nil
 	panic("todo")
 }
 

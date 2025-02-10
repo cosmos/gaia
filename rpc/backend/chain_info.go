@@ -35,7 +35,7 @@ func (b *Backend) ChainID() (*hexutil.Big, error) {
 	//	return (*hexutil.Big)(config.ChainID), nil
 	//}
 
-	return (*hexutil.Big)(big.NewInt(9000)), nil
+	return (*hexutil.Big)(big.NewInt(118260)), nil
 	return nil, fmt.Errorf("chain not synced beyond EIP-155 replay-protection fork block")
 }
 

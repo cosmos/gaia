@@ -52,6 +52,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	evmserver "github.com/cosmos/gaia/v23/server"
+	evmconfig "github.com/cosmos/gaia/v23/server/config"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
@@ -179,7 +181,10 @@ func initAppConfig() (string, interface{}) {
 	type CustomAppConfig struct {
 		serverconfig.Config
 
-		Wasm wasmtypes.WasmConfig `mapstructure:"wasm"`
+		Wasm    wasmtypes.WasmConfig    `mapstructure:"wasm"`
+		JSONRPC evmconfig.JSONRPCConfig `mapstructure:"json-rpc"`
+		TLS     evmconfig.TLSConfig     `mapstructure:"tls"`
+		EVM     evmconfig.EVMConfig     `mapstructure:"evm"`
 	}
 
 	// Can optionally overwrite the SDK's default server config.
@@ -188,11 +193,14 @@ func initAppConfig() (string, interface{}) {
 	srvCfg.StateSync.SnapshotKeepRecent = 10
 
 	customAppConfig := CustomAppConfig{
-		Config: *srvCfg,
-		Wasm:   wasmtypes.DefaultWasmConfig(),
+		Config:  *srvCfg,
+		Wasm:    wasmtypes.DefaultWasmConfig(),
+		JSONRPC: *evmconfig.DefaultJSONRPCConfig(),
+		TLS:     *evmconfig.DefaultTLSConfig(),
+		EVM:     *evmconfig.DefaultEVMConfig(),
 	}
 
-	defaultAppTemplate := serverconfig.DefaultConfigTemplate + wasmtypes.DefaultConfigTemplate()
+	defaultAppTemplate := serverconfig.DefaultConfigTemplate + wasmtypes.DefaultConfigTemplate() + evmconfig.DefaultEVMConfigTemplate
 
 	return defaultAppTemplate, customAppConfig
 }
@@ -218,8 +226,12 @@ func initRootCmd(rootCmd *cobra.Command,
 		snapshot.Cmd(ac.newApp),
 	)
 
-	server.AddCommands(rootCmd, gaia.DefaultNodeHome, ac.newApp, ac.appExport, addModuleInitFlags)
-
+	evmserver.AddCommands(
+		rootCmd,
+		evmserver.NewDefaultStartOptions(ac.newApp, gaia.DefaultNodeHome),
+		ac.appExport,
+		addModuleInitFlags,
+	)
 	// add keybase, auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(
 		server.StatusCommand(),

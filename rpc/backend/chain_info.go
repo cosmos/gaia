@@ -11,7 +11,6 @@ import (
 	cmtrpctypes "github.com/cometbft/cometbft/rpc/core/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	rpctypes "github.com/cosmos/gaia/v23/rpc/types"
-	"github.com/cosmos/gaia/v23/types"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/params"
@@ -21,21 +20,22 @@ import (
 
 // ChainID is the EIP-155 replay-protection chain id for the current ethereum chain config.
 func (b *Backend) ChainID() (*hexutil.Big, error) {
-	eip155ChainID, err := types.ParseChainID(b.clientCtx.ChainID)
-	if err != nil {
-		panic(err)
-	}
-	// if current block is at or past the EIP-155 replay-protection fork block, return chainID from config
-	bn, err := b.BlockNumber()
-	if err != nil {
-		b.logger.Debug("failed to fetch latest block number", "error", err.Error())
-		return (*hexutil.Big)(eip155ChainID), nil
-	}
+	//eip155ChainID, err := types.ParseChainID(b.clientCtx.ChainID)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//// if current block is at or past the EIP-155 replay-protection fork block, return chainID from config
+	//bn, err := b.BlockNumber()
+	//if err != nil {
+	//	b.logger.Debug("failed to fetch latest block number", "error", err.Error())
+	//	return (*hexutil.Big)(eip155ChainID), nil
+	//}
+	//
+	//if config := b.ChainConfig(); config.IsEIP155(new(big.Int).SetUint64(uint64(bn))) {
+	//	return (*hexutil.Big)(config.ChainID), nil
+	//}
 
-	if config := b.ChainConfig(); config.IsEIP155(new(big.Int).SetUint64(uint64(bn))) {
-		return (*hexutil.Big)(config.ChainID), nil
-	}
-
+	return (*hexutil.Big)(big.NewInt(9000)), nil
 	return nil, fmt.Errorf("chain not synced beyond EIP-155 replay-protection fork block")
 }
 

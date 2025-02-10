@@ -5,6 +5,7 @@ package flags
 import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	evmconfig "github.com/cosmos/gaia/v23/server/config"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -70,6 +71,26 @@ const (
 	TLSCertPath = "tls.certificate-path"
 	TLSKeyPath  = "tls.key-path"
 )
+
+// AddModuleInitFlags implements servertypes.ModuleInitFlags interface.
+func AddModuleInitFlags(startCmd *cobra.Command) {
+	startCmd.Flags().Bool(JSONRPCEnable, evmconfig.DefaultJSONRPCEnable, "Define if the JSON-RPC server should be enabled")
+	startCmd.Flags().StringSlice(JSONRPCAPI, evmconfig.GetDefaultAPINamespaces(), "Defines a list of JSON-RPC namespaces that should be enabled")
+	startCmd.Flags().String(JSONRPCAddress, evmconfig.DefaultJSONRPCAddress, "the JSON-RPC server address to listen on")
+	startCmd.Flags().String(JSONWsAddress, evmconfig.DefaultJSONRPCWsAddress, "the JSON-RPC WS server address to listen on")
+	startCmd.Flags().Uint64(JSONRPCGasCap, evmconfig.DefaultGasCap, "Sets a cap on gas that can be used in eth_call/estimateGas unit is aevmos (0=infinite)")                        //nolint:lll
+	startCmd.Flags().Bool(JSONRPCAllowInsecureUnlock, evmconfig.DefaultJSONRPCAllowInsecureUnlock, "Allow insecure account unlocking when account-related RPCs are exposed by http") //nolint:lll
+	startCmd.Flags().Float64(JSONRPCTxFeeCap, evmconfig.DefaultTxFeeCap, "Sets a cap on transaction fee that can be sent via the RPC APIs (1 = default 1 evmos)")                    //nolint:lll
+	startCmd.Flags().Int32(JSONRPCFilterCap, evmconfig.DefaultFilterCap, "Sets the global cap for total number of filters that can be created")
+	startCmd.Flags().Duration(JSONRPCEVMTimeout, evmconfig.DefaultEVMTimeout, "Sets a timeout used for eth_call (0=infinite)")
+	startCmd.Flags().Duration(JSONRPCHTTPTimeout, evmconfig.DefaultHTTPTimeout, "Sets a read/write timeout for json-rpc http server (0=infinite)")
+	startCmd.Flags().Duration(JSONRPCHTTPIdleTimeout, evmconfig.DefaultHTTPIdleTimeout, "Sets a idle timeout for json-rpc http server (0=infinite)")
+	startCmd.Flags().Bool(JSONRPCAllowUnprotectedTxs, evmconfig.DefaultAllowUnprotectedTxs, "Allow for unprotected (non EIP155 signed) transactions to be submitted via the node's RPC when the global parameter is disabled") //nolint:lll
+	startCmd.Flags().Int32(JSONRPCLogsCap, evmconfig.DefaultLogsCap, "Sets the max number of results can be returned from single `eth_getLogs` query")
+	startCmd.Flags().Int32(JSONRPCBlockRangeCap, evmconfig.DefaultBlockRangeCap, "Sets the max block range allowed for `eth_getLogs` query")
+	startCmd.Flags().Int(JSONRPCMaxOpenConnections, evmconfig.DefaultMaxOpenConnections, "Sets the maximum number of simultaneous connections for the server listener") //nolint:lll
+	startCmd.Flags().Bool(JSONRPCEnableMetrics, false, "Define if EVM rpc metrics server should be enabled")
+}
 
 // AddTxFlags adds common flags for commands to post tx
 func AddTxFlags(cmd *cobra.Command) (*cobra.Command, error) {

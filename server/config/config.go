@@ -32,7 +32,7 @@ const (
 	DefaultGRPCWebEnable = false
 
 	// DefaultJSONRPCEnable is the default value for the parameter that defines if the JSON-RPC server is enabled
-	DefaultJSONRPCEnable = false
+	DefaultJSONRPCEnable = true
 
 	// DefaultRosettaEnable is the default value for the parameter that defines if the Rosetta API server is enabled
 	DefaultRosettaEnable = false

@@ -388,13 +388,13 @@ func (api *PublicFilterAPI) Logs(ctx context.Context, crit filters.FilterCriteri
 					return
 				}
 
-				// filter only events from EVM module txs
-				_, isMsgEthereumTx := ev.Events[evmtypes.TypeMsgEthereumTx]
-
-				if !isMsgEthereumTx {
-					// ignore transaction as it's not from the evm module
-					return
-				}
+				//// filter only events from EVM module txs
+				//_, isMsgEthereumTx := ev.Events[evmtypes.TypeMsgEthereumTx]
+				//
+				//if !isMsgEthereumTx {
+				//	// ignore transaction as it's not from the evm module
+				//	return
+				//}
 
 				// get transaction result data
 				dataTx, ok := ev.Data.(cmttypes.EventDataTx)

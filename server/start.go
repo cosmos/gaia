@@ -5,6 +5,7 @@ package server
 import (
 	"context"
 	"fmt"
+	"github.com/cosmos/gaia/v23/cmd/opendb"
 	"io"
 	"net"
 	"net/http"
@@ -61,6 +62,15 @@ type StartOptions struct {
 	AppCreator      types.AppCreator
 	DefaultNodeHome string
 	DBOpener        DBOpener
+}
+
+// NewDefaultStartOptions use the default db opener provided in tm-db.
+func NewDefaultStartOptions(appCreator types.AppCreator, defaultNodeHome string) StartOptions {
+	return StartOptions{
+		AppCreator:      appCreator,
+		DefaultNodeHome: defaultNodeHome,
+		DBOpener:        opendb.OpenDB,
+	}
 }
 
 // StartCmd runs the service passed in, either stand-alone or in-process with

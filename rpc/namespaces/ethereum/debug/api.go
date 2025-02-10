@@ -64,27 +64,29 @@ func NewAPI(
 // TraceTransaction returns the structured logs created during the execution of EVM
 // and returns them as a JSON object.
 func (a *API) TraceTransaction(hash common.Hash, config *evm.TraceConfig) (interface{}, error) {
-	a.logger.Debug("debug_traceTransaction", "hash", hash)
-	return a.backend.TraceTransaction(hash, config)
+	/*	a.logger.Debug("debug_traceTransaction", "hash", hash)
+		return a.backend.TraceTransaction(hash, config)*/
+	panic("unimplemented")
 }
 
 // TraceBlockByHash returns the structured logs created during the execution of
 // EVM and returns them as a JSON object.
 func (a *API) TraceBlockByHash(hash common.Hash, config *evm.TraceConfig) ([]*evm.TxTraceResult, error) {
-	a.logger.Debug("debug_traceBlockByHash", "hash", hash)
+	//a.logger.Debug("debug_traceBlockByHash", "hash", hash)
 	// Get Tendermint Block
-	resBlock, err := a.backend.TendermintBlockByHash(hash)
-	if err != nil {
-		a.logger.Debug("get block failed", "hash", hash.Hex(), "error", err.Error())
-		return nil, err
-	}
-
-	if resBlock == nil || resBlock.Block == nil {
-		a.logger.Debug("block not found", "hash", hash.Hex())
-		return nil, errors.New("block not found")
-	}
-
-	return a.backend.TraceBlock(rpctypes.BlockNumber(resBlock.Block.Height), config, resBlock)
+	//resBlock, err := a.backend.TendermintBlockByHash(hash)
+	//if err != nil {
+	//	a.logger.Debug("get block failed", "hash", hash.Hex(), "error", err.Error())
+	//	return nil, err
+	//}
+	//
+	//if resBlock == nil || resBlock.Block == nil {
+	//	a.logger.Debug("block not found", "hash", hash.Hex())
+	//	return nil, errors.New("block not found")
+	//}
+	//
+	//return a.backend.TraceBlock(rpctypes.BlockNumber(resBlock.Block.Height), config, resBlock)
+	panic("unimplemented")
 }
 
 // BlockProfile turns on goroutine profiling for nsec seconds and writes profile data to

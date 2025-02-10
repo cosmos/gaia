@@ -330,7 +330,7 @@ func (b *Backend) EstimateGas(args evm.TransactionArgs, blockNrOptional *rpctype
 	//	return 0, err
 	//}
 	//return hexutil.Uint64(res.Gas), nil
-	return hexutil.Uint64(0), nil
+	return hexutil.Uint64(1), nil
 }
 
 // DoCall performs a simulated call operation through the evmtypes. It returns the

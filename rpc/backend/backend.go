@@ -133,11 +133,11 @@ func NewBackend(
 	clientCtx client.Context,
 	allowUnprotectedTxs bool,
 ) *Backend {
-	chainID, err := evmostypes.ParseChainID(clientCtx.ChainID)
-	if err != nil {
-		panic(err)
-	}
-
+	//chainID, err := evmostypes.ParseChainID(clientCtx.ChainID)
+	//if err != nil {
+	//	panic(err)
+	//}
+	chainID := big.NewInt(118260)
 	appConf, err := config.GetConfig(ctx.Viper)
 	if err != nil {
 		panic(err)

@@ -149,8 +149,8 @@ func (b *Backend) GetBalance(address common.Address, blockNrOrHash rpctypes.Bloc
 	}
 
 	req := &banktypes.QuerySpendableBalanceByDenomRequest{
-		Address: "0xbfBD0ED656c0B8C1371F6d9D86AfAE1786911912", //todo: convert to bech32
-		Denom:   "uatom",                                      //todo: make this a constant
+		Address: "cosmos1lupv3mdn3pwm3xhe2lsc6palwv6ryndsy7a499", //todo: convert to bech32
+		Denom:   "stake",                                         //todo: make this a constant
 	}
 
 	_, err = b.TendermintBlockByNumber(blockNum)

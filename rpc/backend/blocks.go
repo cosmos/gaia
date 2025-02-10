@@ -6,6 +6,8 @@ import (
 	"fmt"
 	tmrpctypes "github.com/cometbft/cometbft/rpc/core/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	grpctypes "github.com/cosmos/cosmos-sdk/types/grpc"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	evmtypes "github.com/cosmos/gaia/v23/evm"
 	rpctypes "github.com/cosmos/gaia/v23/rpc/types"
 	"github.com/ethereum/go-ethereum/common"
@@ -13,7 +15,11 @@ import (
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/trie"
 	"github.com/pkg/errors"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
+	"math"
 	"math/big"
+	"strconv"
 )
 
 // BlockNumber returns the current block number in abci app state. Because abci
@@ -22,29 +28,27 @@ import (
 // rpc.
 func (b *Backend) BlockNumber() (hexutil.Uint64, error) { //todo: JSON-RPC
 	//// do any grpc query, ignore the response and use the returned block height
-	//var header metadata.MD
-	//_, err := b.queryClient.Params(b.ctx, &evmtypes.QueryParamsRequest{}, grpc.Header(&header))
-	//if err != nil {
-	//	return hexutil.Uint64(0), err
-	//}
+	var header metadata.MD
+	_, err := b.queryClient.BankClient.Params(b.ctx, &banktypes.QueryParamsRequest{}, grpc.Header(&header)) //todo: check if this is the best way to do this
+	if err != nil {
+		return hexutil.Uint64(0), err
+	}
 	//
-	//blockHeightHeader := header.Get(grpctypes.GRPCBlockHeightHeader)
-	//if headerLen := len(blockHeightHeader); headerLen != 1 {
-	//	return 0, fmt.Errorf("unexpected '%s' gRPC header length; got %d, expected: %d", grpctypes.GRPCBlockHeightHeader, headerLen, 1)
-	//}
+	blockHeightHeader := header.Get(grpctypes.GRPCBlockHeightHeader)
+	if headerLen := len(blockHeightHeader); headerLen != 1 {
+		return 0, fmt.Errorf("unexpected '%s' gRPC header length; got %d, expected: %d", grpctypes.GRPCBlockHeightHeader, headerLen, 1)
+	}
+
+	height, err := strconv.ParseUint(blockHeightHeader[0], 10, 64)
+	if err != nil {
+		return 0, fmt.Errorf("failed to parse block height: %w", err)
+	}
+
+	if height > math.MaxInt64 {
+		return 0, fmt.Errorf("block height %d is greater than max uint64", height)
+	}
 	//
-	//height, err := strconv.ParseUint(blockHeightHeader[0], 10, 64)
-	//if err != nil {
-	//	return 0, fmt.Errorf("failed to parse block height: %w", err)
-	//}
-	//
-	//if height > math.MaxInt64 {
-	//	return 0, fmt.Errorf("block height %d is greater than max uint64", height)
-	//}
-	//
-	//return hexutil.Uint64(height), nil
-	return hexutil.Uint64(0), nil
-	panic("todo")
+	return hexutil.Uint64(height), nil
 }
 
 // GetBlockByNumber returns the JSON-RPC compatible Ethereum block identified by
@@ -418,7 +422,7 @@ func (b *Backend) RPCBlockFromTendermintBlock(
 	//	// use zero address as the validator operator address
 	//	validatorAccAddr = sdk.AccAddress(common.Address{}.Bytes())
 	//} else {
-	validatorAccAddr, err = sdk.AccAddressFromBech32("cosmosvaloper17mggn4znyeyg25wd7498qxl7r2jhgue8u4qjcq")
+	validatorAccAddr, err = sdk.AccAddressFromBech32("cosmos1lupv3mdn3pwm3xhe2lsc6palwv6ryndsy7a499") //todo: hardcoded
 	if err != nil {
 		return nil, err
 	}

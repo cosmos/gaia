@@ -4,6 +4,10 @@ package backend
 
 import (
 	"bytes"
+	errorsmod "cosmossdk.io/errors"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	ethtypes "github.com/ethereum/go-ethereum/core/types"
+
 	//"context"
 	//"encoding/json"
 	"fmt"
@@ -106,64 +110,64 @@ func (b *Backend) Resend(args evm.TransactionArgs, gasPrice *hexutil.Big, gasLim
 
 // SendRawTransaction send a raw Ethereum transaction.
 func (b *Backend) SendRawTransaction(data hexutil.Bytes) (common.Hash, error) { //todo: JSON-RPC
-	//// RLP decode raw transaction bytes
-	//tx := &ethtypes.Transaction{}
-	//if err := tx.UnmarshalBinary(data); err != nil {
-	//	b.logger.Error("transaction decoding failed", "error", err.Error())
-	//	return common.Hash{}, err
-	//}
-	//
-	//// check the local node config in case unprotected txs are disabled
-	//if !b.UnprotectedAllowed() && !tx.Protected() {
-	//	// Ensure only eip155 signed transactions are submitted if EIP155Required is set.
-	//	return common.Hash{}, errors.New("only replay-protected (EIP-155) transactions allowed over RPC")
-	//}
-	//
-	//ethereumTx := &evm.MsgEthereumTx{}
-	//if err := ethereumTx.FromEthereumTx(tx); err != nil {
-	//	b.logger.Error("transaction converting failed", "error", err.Error())
-	//	return common.Hash{}, err
-	//}
-	//
-	//if err := ethereumTx.ValidateBasic(); err != nil {
-	//	b.logger.Debug("tx failed basic validation", "error", err.Error())
-	//	return common.Hash{}, err
-	//}
-	//
+	// RLP decode raw transaction bytes
+	tx := &ethtypes.Transaction{}
+	if err := tx.UnmarshalBinary(data); err != nil {
+		b.logger.Error("transaction decoding failed", "error", err.Error())
+		return common.Hash{}, err
+	}
+
+	// check the local node config in case unprotected txs are disabled
+	if !b.UnprotectedAllowed() && !tx.Protected() {
+		// Ensure only eip155 signed transactions are submitted if EIP155Required is set.
+		return common.Hash{}, errors.New("only replay-protected (EIP-155) transactions allowed over RPC")
+	}
+
+	ethereumTx := &evm.MsgEthereumTx{}
+	if err := ethereumTx.FromEthereumTx(tx); err != nil {
+		b.logger.Error("transaction converting failed", "error", err.Error())
+		return common.Hash{}, err
+	}
+
+	if err := ethereumTx.ValidateBasic(); err != nil {
+		b.logger.Debug("tx failed basic validation", "error", err.Error())
+		return common.Hash{}, err
+	}
+
 	//// Query params to use the EVM denomination
 	//res, err := b.queryClient.QueryClient.Params(b.ctx, &evmtypes.QueryParamsRequest{})
 	//if err != nil {
 	//	b.logger.Error("failed to query evm params", "error", err.Error())
 	//	return common.Hash{}, err
 	//}
-	//
-	//cosmosTx, err := ethereumTx.BuildTx(b.clientCtx.TxConfig.NewTxBuilder(), res.Params.EvmDenom)
-	//if err != nil {
-	//	b.logger.Error("failed to build cosmos tx", "error", err.Error())
-	//	return common.Hash{}, err
-	//}
-	//
-	//// Encode transaction by default Tx encoder
-	//txBytes, err := b.clientCtx.TxConfig.TxEncoder()(cosmosTx)
-	//if err != nil {
-	//	b.logger.Error("failed to encode eth tx using default encoder", "error", err.Error())
-	//	return common.Hash{}, err
-	//}
-	//
-	//txHash := ethereumTx.AsTransaction().Hash()
-	//
-	//syncCtx := b.clientCtx.WithBroadcastMode(flags.BroadcastSync)
-	//rsp, err := syncCtx.BroadcastTx(txBytes)
-	//if rsp != nil && rsp.Code != 0 {
-	//	err = errorsmod.ABCIError(rsp.Codespace, rsp.Code, rsp.RawLog)
-	//}
-	//if err != nil {
-	//	b.logger.Error("failed to broadcast tx", "error", err.Error())
-	//	return txHash, err
-	//}
 
-	//return txHash, nil
-	return common.Hash{}, nil
+	cosmosTx, err := ethereumTx.BuildTx(b.clientCtx.TxConfig.NewTxBuilder(), "uatom") //todo: hardcoded
+	if err != nil {
+		b.logger.Error("failed to build cosmos tx", "error", err.Error())
+		return common.Hash{}, err
+	}
+
+	// Encode transaction by default Tx encoder
+	txBytes, err := b.clientCtx.TxConfig.TxEncoder()(cosmosTx)
+	if err != nil {
+		b.logger.Error("failed to encode eth tx using default encoder", "error", err.Error())
+		return common.Hash{}, err
+	}
+
+	txHash := ethereumTx.AsTransaction().Hash()
+
+	syncCtx := b.clientCtx.WithBroadcastMode(flags.BroadcastSync)
+	rsp, err := syncCtx.BroadcastTx(txBytes)
+	if rsp != nil && rsp.Code != 0 {
+		err = errorsmod.ABCIError(rsp.Codespace, rsp.Code, rsp.RawLog)
+	}
+	if err != nil {
+		b.logger.Error("failed to broadcast tx", "error", err.Error())
+		return txHash, err
+	}
+
+	return txHash, nil
+	//return common.Hash{}, nil
 }
 
 // SetTxDefaults populates tx message with default values in case they are not
@@ -330,7 +334,7 @@ func (b *Backend) EstimateGas(args evm.TransactionArgs, blockNrOptional *rpctype
 	//	return 0, err
 	//}
 	//return hexutil.Uint64(res.Gas), nil
-	return hexutil.Uint64(1), nil
+	return hexutil.Uint64(21000), nil
 }
 
 // DoCall performs a simulated call operation through the evmtypes. It returns the

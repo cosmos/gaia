@@ -336,7 +336,7 @@ start-localnet-ci: build
 	./build/gaiad init liveness_9000-1 --chain-id liveness_9000-1 --home ~/.gaiad-liveness
 	./build/gaiad config set client chain-id liveness_9000-1 --home ~/.gaiad-liveness
 	./build/gaiad config set client keyring-backend test --home ~/.gaiad-liveness
-	./build/gaiad keys add val --home ~/.gaiad-liveness --keyring-backend test
+	echo "sample hat voyage harbor coral document vehicle inmate ozone symptom corn helmet language giggle cigar diagram swing text toilet palm tuna drama betray skate" | ./build/gaiad keys add val --home ~/.gaiad-liveness --keyring-backend test --recover
 	./build/gaiad genesis add-genesis-account val 10000000000000000000000000stake --home ~/.gaiad-liveness --keyring-backend test
 	./build/gaiad genesis gentx val 1000000000stake --home ~/.gaiad-liveness --chain-id liveness_9000-1 --keyring-backend test
 	./build/gaiad genesis collect-gentxs --home ~/.gaiad-liveness

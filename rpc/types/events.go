@@ -77,67 +77,66 @@ type ParsedTxs struct {
 // ParseTxResult parse eth tx infos from cosmos-sdk events.
 // It supports two event formats, the formats are described in the comments of the format constants.
 func ParseTxResult(result *abci.ExecTxResult, tx sdk.Tx) (*ParsedTxs, error) {
-	//format := eventFormatUnknown
-	//// the index of current ethereum_tx event in format 1 or the second part of format 2
-	//eventIndex := -1
-	//
-	//p := &ParsedTxs{
-	//	TxHashes: make(map[common.Hash]int),
-	//}
-	//for _, event := range result.Events {
-	//	if event.Type != evmtypes.EventTypeEthereumTx {
-	//		continue
-	//	}
-	//
-	//	if format == eventFormatUnknown {
-	//		// discover the format version by inspect the first ethereum_tx event.
-	//		if len(event.Attributes) > 2 {
-	//			format = eventFormat1
-	//		} else {
-	//			format = eventFormat2
-	//		}
-	//	}
-	//
-	//	if len(event.Attributes) == 2 {
-	//		// the first part of format 2
-	//		if err := p.newTx(event.Attributes); err != nil {
-	//			return nil, err
-	//		}
-	//	} else {
-	//		// format 1 or second part of format 2
-	//		eventIndex++
-	//		if format == eventFormat1 {
-	//			// append tx
-	//			if err := p.newTx(event.Attributes); err != nil {
-	//				return nil, err
-	//			}
-	//		} else {
-	//			// the second part of format 2, update tx fields
-	//			if err := p.updateTx(eventIndex, event.Attributes); err != nil {
-	//				return nil, err
-	//			}
-	//		}
-	//	}
-	//}
-	//
-	//// some old versions miss some events, fill it with tx result
-	//gasUsed := uint64(result.GasUsed) // #nosec G701 G115
-	//if len(p.Txs) == 1 {
-	//	p.Txs[0].GasUsed = gasUsed
-	//}
-	//
-	//// this could only happen if tx exceeds block gas limit
-	//if result.Code != 0 && tx != nil {
-	//	for i := 0; i < len(p.Txs); i++ {
-	//		p.Txs[i].Failed = true
-	//
-	//		// replace gasUsed with gasLimit because that's what's actually deducted.
-	//		gasLimit := tx.GetMsgs()[i].(*evmtypes.MsgEthereumTx).GetGas()
-	//		p.Txs[i].GasUsed = gasLimit
-	//	}
-	//}
-	//return p, nil
-	return &ParsedTxs{}, nil
+	format := eventFormatUnknown
+	// the index of current ethereum_tx event in format 1 or the second part of format 2
+	eventIndex := -1
+
+	p := &ParsedTxs{
+		TxHashes: make(map[common.Hash]int),
+	}
+	for _, event := range result.Events {
+		//if event.Type != evmtypes.EventTypeEthereumTx {
+		//	continue
+		//}
+
+		if format == eventFormatUnknown {
+			// discover the format version by inspect the first ethereum_tx event.
+			if len(event.Attributes) > 2 {
+				format = eventFormat1
+			} else {
+				format = eventFormat2
+			}
+		}
+
+		if len(event.Attributes) == 2 {
+			// the first part of format 2
+			if err := p.newTx(event.Attributes); err != nil {
+				return nil, err
+			}
+		} else {
+			// format 1 or second part of format 2
+			eventIndex++
+			if format == eventFormat1 {
+				// append tx
+				if err := p.newTx(event.Attributes); err != nil {
+					return nil, err
+				}
+			} else {
+				// the second part of format 2, update tx fields
+				if err := p.updateTx(eventIndex, event.Attributes); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+
+	// some old versions miss some events, fill it with tx result
+	gasUsed := uint64(result.GasUsed) // #nosec G701 G115
+	if len(p.Txs) == 1 {
+		p.Txs[0].GasUsed = gasUsed
+	}
+
+	// this could only happen if tx exceeds block gas limit
+	if result.Code != 0 && tx != nil {
+		for i := 0; i < len(p.Txs); i++ {
+			p.Txs[i].Failed = true
+
+			// replace gasUsed with gasLimit because that's what's actually deducted.
+			//gasLimit := tx.GetMsgs()[i].(*evmtypes.MsgEthereumTx).GetGas()
+			//p.Txs[i].GasUsed = gasLimit
+		}
+	}
+	return p, nil
 }
 
 // ParseTxIndexerResult parse tm tx result to a format compatible with the custom tx indexer.

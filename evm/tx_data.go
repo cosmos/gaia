@@ -60,3 +60,23 @@ func cost(fee, value *big.Int) *big.Int {
 	}
 	return fee
 }
+
+// NOTE: All non-protected transactions (i.e non EIP155 signed) will fail if the
+// AllowUnprotectedTxs parameter is disabled.
+func NewTxDataFromTx(tx *ethtypes.Transaction) (TxData, error) {
+	var txData TxData
+	var err error
+	switch tx.Type() {
+	case ethtypes.DynamicFeeTxType:
+		txData, err = NewDynamicFeeTx(tx)
+	case ethtypes.AccessListTxType:
+		txData, err = newAccessListTx(tx)
+	default:
+		txData, err = NewLegacyTx(tx)
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return txData, nil
+}

@@ -343,7 +343,7 @@ func (b *Backend) GetTxByEthHash(hash common.Hash) (*types.TxResult, error) {
 	//}
 
 	// fallback to tendermint tx indexer
-	query := fmt.Sprintf("%s='%s'", "txHash", hash.Hex())
+	query := fmt.Sprintf("%s='%s'", "tx.hash", hash.Hex())
 	txResult, err := b.queryTendermintTxIndexer(query, func(txs *rpctypes.ParsedTxs) *rpctypes.ParsedTx {
 		return txs.GetTxByHash(hash)
 	})

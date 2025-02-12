@@ -2,6 +2,7 @@ package gaia
 
 import (
 	"fmt"
+	"github.com/cosmos/gaia/v23/encoding"
 	"io"
 	"net/http"
 	"os"
@@ -29,7 +30,6 @@ import (
 	errorsmod "cosmossdk.io/errors"
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
-	"cosmossdk.io/x/tx/signing"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -37,7 +37,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/grpc/cmtservice"
 	nodeservice "github.com/cosmos/cosmos-sdk/client/grpc/node"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/codec/address"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	runtimeservices "github.com/cosmos/cosmos-sdk/runtime/services"
@@ -45,7 +44,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/api"
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	"github.com/cosmos/cosmos-sdk/std"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -129,27 +127,13 @@ func NewGaiaApp(
 	wasmOpts []wasmkeeper.Option,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *GaiaApp {
-	legacyAmino := codec.NewLegacyAmino()
-	interfaceRegistry, err := types.NewInterfaceRegistryWithOptions(types.InterfaceRegistryOptions{ //todo: add ethsekp256k1 signing here
-		ProtoFiles: proto.HybridResolver,
-		SigningOptions: signing.Options{
-			AddressCodec: address.Bech32Codec{
-				Bech32Prefix: sdk.GetConfig().GetBech32AccountAddrPrefix(),
-			},
-			ValidatorAddressCodec: address.Bech32Codec{
-				Bech32Prefix: sdk.GetConfig().GetBech32ValidatorAddrPrefix(),
-			},
-		},
-	})
-	if err != nil {
-		panic(err)
-	}
-	appCodec := codec.NewProtoCodec(interfaceRegistry)
+	encodingConfig := encoding.MakeConfig()
+	appCodec := encodingConfig.Codec
+	cdc := encodingConfig.Amino
+	interfaceRegistry := encodingConfig.InterfaceRegistry
+
 	txConfig := authtx.NewTxConfig(appCodec, authtx.DefaultSignModes)
-
-	std.RegisterLegacyAminoCodec(legacyAmino)
-	std.RegisterInterfaces(interfaceRegistry)
-
+	
 	// App Opts
 	skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
 	invCheckPeriod := cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod))
@@ -168,7 +152,7 @@ func NewGaiaApp(
 
 	app := &GaiaApp{
 		BaseApp:           bApp,
-		legacyAmino:       legacyAmino,
+		legacyAmino:       cdc,
 		txConfig:          txConfig,
 		appCodec:          appCodec,
 		interfaceRegistry: interfaceRegistry,
@@ -181,7 +165,7 @@ func NewGaiaApp(
 	app.AppKeepers = keepers.NewAppKeeper(
 		appCodec,
 		bApp,
-		legacyAmino,
+		cdc,
 		maccPerms,
 		moduleAccountAddresses,
 		app.BlockedModuleAccountAddrs(moduleAccountAddresses),
@@ -205,7 +189,7 @@ func NewGaiaApp(
 		EnabledSignModes:           enabledSignModes,
 		TextualCoinMetadataQueryFn: txmodule.NewBankKeeperCoinMetadataQueryFn(app.BankKeeper),
 	}
-	txConfig, err = authtx.NewTxConfigWithOptions(
+	txConfig, err := authtx.NewTxConfigWithOptions(
 		appCodec,
 		txConfigOpts,
 	)

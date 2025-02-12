@@ -3,6 +3,8 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	ethkeys "github.com/cosmos/gaia/v23/client"
+	"github.com/cosmos/gaia/v23/crypto/keyring"
 	"io"
 	"os"
 	"path/filepath"
@@ -31,7 +33,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/config"
 	"github.com/cosmos/cosmos-sdk/client/debug"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/pruning"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/client/snapshot"
@@ -95,6 +96,7 @@ func NewRootCmd() *cobra.Command {
 		WithInput(os.Stdin).
 		WithAccountRetriever(types.AccountRetriever{}).
 		WithHomeDir(gaia.DefaultNodeHome).
+		WithKeyringOptions(keyring.Option()).
 		WithViper("")
 
 	rootCmd := &cobra.Command{
@@ -238,7 +240,7 @@ func initRootCmd(rootCmd *cobra.Command,
 		genesisCommand(txConfig, basicManager),
 		queryCommand(),
 		txCommand(basicManager),
-		keys.Commands(),
+		ethkeys.KeyCommands(gaia.DefaultNodeHome),
 	)
 
 	// add rosetta

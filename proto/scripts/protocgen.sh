@@ -15,3 +15,5 @@ cd ..
 # move proto files to the right places
 cp -r github.com/cosmos/gaia/* ./
 rm -rf github.com
+
+sh ./proto/scripts/protocgen-pulsar.sh

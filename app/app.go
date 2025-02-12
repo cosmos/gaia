@@ -130,7 +130,7 @@ func NewGaiaApp(
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *GaiaApp {
 	legacyAmino := codec.NewLegacyAmino()
-	interfaceRegistry, err := types.NewInterfaceRegistryWithOptions(types.InterfaceRegistryOptions{
+	interfaceRegistry, err := types.NewInterfaceRegistryWithOptions(types.InterfaceRegistryOptions{ //todo: add ethsekp256k1 signing here
 		ProtoFiles: proto.HybridResolver,
 		SigningOptions: signing.Options{
 			AddressCodec: address.Bech32Codec{

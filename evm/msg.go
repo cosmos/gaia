@@ -5,13 +5,13 @@ import (
 	sdkmath "cosmossdk.io/math"
 	txsigning "cosmossdk.io/x/tx/signing"
 	"errors"
-	"fmt"
 	"github.com/cosmos/cosmos-sdk/client"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	errortypes "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/signing"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
+	evmv1 "github.com/cosmos/gaia/v23/api/ethermint/evm/v1"
 	"github.com/cosmos/gaia/v23/types"
 	gaiaerrors "github.com/cosmos/gaia/v23/types/errors"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
@@ -20,8 +20,8 @@ import (
 )
 
 var MsgEthereumTxCustomGetSigner = txsigning.CustomGetSigner{
-	MsgType: protov2.MessageName(&evmapi.MsgEthereumTx{}),
-	Fn:      GetSigners,
+	MsgType: protov2.MessageName(&evmv1.MsgEthereumTx{}),
+	Fn:      evmv1.GetSigners,
 }
 
 // AsTransaction creates an Ethereum Transaction type from the msg fields
@@ -139,31 +139,4 @@ func (msg MsgEthereumTx) GetGas() uint64 {
 		return 0
 	}
 	return txData.GetGas()
-}
-
-// GetSigners is the custom function to get signers on Ethereum transactions
-// Gets the signer's address from the Ethereum tx signature
-func GetSigners(msg protov2.Message) ([][]byte, error) {
-	msgEthTx, ok := msg.(*MsgEthereumTx)
-	if !ok {
-		return nil, fmt.Errorf("invalid type, expected MsgEthereumTx and got %T", msg)
-	}
-
-	txDataFn, found := supportedTxs[msgEthTx.Data.TypeUrl]
-	if !found {
-		return nil, fmt.Errorf("invalid TypeUrl %s", msgEthTx.Data.TypeUrl)
-	}
-	txData := txDataFn()
-
-	// msgEthTx.Data is a message (DynamicFeeTx, LegacyTx or AccessListTx)
-	if err := msgEthTx.Data.UnmarshalTo(txData); err != nil {
-		return nil, err
-	}
-
-	sender, err := getSender(txData)
-	if err != nil {
-		return nil, err
-	}
-
-	return [][]byte{sender.Bytes()}, nil
 }

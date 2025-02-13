@@ -75,13 +75,53 @@ builds:
       - -X github.com/cosmos/cosmos-sdk/version.Commit={{ .Commit }}
       - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,static_wasm
       - -X github.com/cometbft/cometbft/version.TMCoreSemVer={{ .Env.TM_VERSION }}
-
+  - id: gaiad-linux-amd64
+    main: ./cmd/gaiad
+    binary: gaiad
+    builder: go
+    gobinary: "go"
+    env:
+      - CGO_ENABLED=1
+      - CC=/opt/musl-cross/bin/x86_64-linux-musl-gcc
+      - LD=/opt/musl-cross/bin/x86_64-linux-musl-ld
+      - CGO_LDFLAGS=-L/lib
+    goos:
+      - linux
+    goarch:
+      - amd64
+    tags:
+      - muslc
+      - ledger
+    hooks:
+      pre:
+        - wget -O /lib/libwasmvm_muslc.x86_64.a https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvm_muslc.x86_64.a
+        - echo "a4a3d09b36fabb65b119d5ba23442c23694401fcbee4451fe6b7e22e325a4bac /lib/libwasmvm_muslc.x86_64.a" | sha256sum -c
+        - cp /lib/libwasmvm_muslc.x86_64.a /lib/libwasmvm_muslc.a
+        - curl -LO https://musl.cc/x86_64-linux-musl-cross.tgz
+        - tar xf x86_64-linux-musl-cross.tgz
+        - mv x86_64-linux-musl-cross /opt/musl-cross
+    ldflags:
+      - -s -w
+      - -linkmode=external
+      - -extldflags "-Wl,-z,muldefs -static"
+      - -X main.commit={{.Commit}}
+      - -X main.date={{ .CommitDate }}
+      - -X github.com/cosmos/cosmos-sdk/version.Name=gaia
+      - -X github.com/cosmos/cosmos-sdk/version.AppName=gaiad
+      - -X github.com/cosmos/cosmos-sdk/version.Version={{ .Version }}
+      - -X github.com/cosmos/cosmos-sdk/version.Commit={{ .Commit }}
+      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=muslc,ledger
+      - -X github.com/cometbft/cometbft/version.TMCoreSemVer={{ .Env.TM_VERSION }}
 
 universal_binaries:
   - id: gaiad-darwin-universal
     ids:
       - gaiad-darwin-arm64
       - gaiad-darwin-amd64
+    replace: false
+  - id: gaiad-linux-universal
+    ids:
+      - gaiad-linux-amd64
     replace: false
 
 archives:
@@ -102,6 +142,7 @@ archives:
     builds:
       - gaiad-darwin-arm64
       - gaiad-darwin-amd64
+      - gaiad-linux-amd64
     wrap_in_directory: false
     files:
       - none*

@@ -57,8 +57,5 @@ jobs:
                 TEST_NEW_GAIA_IMAGE_VERSION: "${{ matrix.test_version }}"
                 TEST_UPGRADE_NAME: "${{ matrix.upgrade_name }}"
               run: |
-                # This docker pull/tag is a quick hack only necessary for v19, since there were no official v18 images built.
-                # Once we're testing 19 -> 20 this can be removed
-                docker pull "ghcr.io/hyphacoop/gaia:v18.1.0" && docker tag "ghcr.io/hyphacoop/gaia:v18.1.0" "ghcr.io/${{ github.repository_owner }}/gaia:v18.1.0"
                 cd ./tests/interchain
                 go test -v ./... -failfast -p 1 -timeout 5h -run="^${{ matrix.test_name }}"

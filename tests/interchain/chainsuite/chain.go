@@ -210,6 +210,7 @@ func (c *Chain) Upgrade(ctx context.Context, upgradeName, version string) error 
 		return fmt.Errorf("height %d is not within one block of halt height %d; chain isn't halted", height, haltHeight)
 	}
 
+	fmt.Println("Upgrade ready: halt height has been reached.")
 	return c.ReplaceImagesAndRestart(ctx, version)
 }
 

@@ -461,7 +461,7 @@ func (c *Chain) ModifyConfig(ctx context.Context, testName interchaintest.TestNa
 	eg := errgroup.Group{}
 	if len(validators) == 0 {
 		validators = make([]int, len(c.Validators))
-		for _, valIdx := range validators {
+		for valIdx := range validators {
 			validators[valIdx] = valIdx
 		}
 	}
@@ -486,5 +486,6 @@ func (c *Chain) ModifyConfig(ctx context.Context, testName interchaintest.TestNa
 	if err := eg.Wait(); err != nil {
 		return err
 	}
+	time.Sleep(30 * time.Second)
 	return nil
 }

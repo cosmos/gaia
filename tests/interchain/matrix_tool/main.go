@@ -116,30 +116,31 @@ func GetTestList() ([]string, error) {
 }
 
 func main() {
-	ctx := context.Background()
-	if len(os.Args) != 2 {
-		fmt.Fprintf(os.Stderr, "Usage: %s <version>\n", os.Args[0])
-		return
-	}
-	if _, err := os.Stat("go.mod"); err != nil {
-		fmt.Fprintf(os.Stderr, "go.mod not found: %v\nRun me from the root of the gaia repo!\n", err)
-		return
-	}
-	testTag := os.Args[1]
-	testVersion := testTag
-	if !semver.IsValid(testVersion) {
-		var err error
-		testVersion, err = GetSemverForBranch()
-		if err != nil {
-			fmt.Fprint(os.Stderr, err)
-			return
-		}
-	}
-	previous, upgradeName, err := GetPreviousMajorMinor(ctx, testVersion)
-	if err != nil {
-		fmt.Fprint(os.Stderr, err)
-		return
-	}
+	// ctx := context.Background()
+	// if len(os.Args) != 2 {
+	// 	fmt.Fprintf(os.Stderr, "Usage: %s <version>\n", os.Args[0])
+	// 	return
+	// }
+	// if _, err := os.Stat("go.mod"); err != nil {
+	// 	fmt.Fprintf(os.Stderr, "go.mod not found: %v\nRun me from the root of the gaia repo!\n", err)
+	// 	return
+	// }
+	// testTag := os.Args[1]
+	// testVersion := testTag
+	// if !semver.IsValid(testVersion) {
+	// 	var err error
+	// 	testVersion, err = GetSemverForBranch()
+	// 	if err != nil {
+	// 		fmt.Fprint(os.Stderr, err)
+	// 		return
+	// 	}
+	// }
+	// previous, upgradeName, err := GetPreviousMajorMinor(ctx, testVersion)
+	// if err != nil {
+	// 	fmt.Fprint(os.Stderr, err)
+	// 	return
+	// }
+	previous := []string{"v22.1.0"}
 	tests, err := GetTestList()
 	if err != nil {
 		fmt.Fprint(os.Stderr, err)
@@ -147,10 +148,10 @@ func main() {
 	}
 	matrix := map[string][]string{
 		// It needs to be versionOrBranch so it matches the docker image that was pushed
-		"test_version":     {testTag},
+		"test_version":     {"v22.2.0"},
 		"previous_version": previous,
 		"test_name":        tests,
-		"upgrade_name":     {upgradeName},
+		"upgrade_name":     {"v22.2.0"},
 	}
 	marshaled, err := json.Marshal(matrix)
 	if err != nil {
@@ -159,3 +160,48 @@ func main() {
 	}
 	fmt.Println(string(marshaled))
 }
+
+// func main() {
+// 	ctx := context.Background()
+// 	if len(os.Args) != 2 {
+// 		fmt.Fprintf(os.Stderr, "Usage: %s <version>\n", os.Args[0])
+// 		return
+// 	}
+// 	if _, err := os.Stat("go.mod"); err != nil {
+// 		fmt.Fprintf(os.Stderr, "go.mod not found: %v\nRun me from the root of the gaia repo!\n", err)
+// 		return
+// 	}
+// 	testTag := os.Args[1]
+// 	testVersion := testTag
+// 	if !semver.IsValid(testVersion) {
+// 		var err error
+// 		testVersion, err = GetSemverForBranch()
+// 		if err != nil {
+// 			fmt.Fprint(os.Stderr, err)
+// 			return
+// 		}
+// 	}
+// 	previous, upgradeName, err := GetPreviousMajorMinor(ctx, testVersion)
+// 	if err != nil {
+// 		fmt.Fprint(os.Stderr, err)
+// 		return
+// 	}
+// 	tests, err := GetTestList()
+// 	if err != nil {
+// 		fmt.Fprint(os.Stderr, err)
+// 		return
+// 	}
+// 	matrix := map[string][]string{
+// 		// It needs to be versionOrBranch so it matches the docker image that was pushed
+// 		"test_version":     {testTag},
+// 		"previous_version": previous,
+// 		"test_name":        tests,
+// 		"upgrade_name":     {upgradeName},
+// 	}
+// 	marshaled, err := json.Marshal(matrix)
+// 	if err != nil {
+// 		fmt.Fprint(os.Stderr, err)
+// 		return
+// 	}
+// 	fmt.Println(string(marshaled))
+// }

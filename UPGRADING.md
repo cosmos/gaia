@@ -1,16 +1,14 @@
 # Upgrading Gaia
 
-This guide provides instructions for upgrading Gaia from v21.x to v22.x.
+This guide provides instructions for upgrading Gaia from v22.1.0 to v22.2.0.
 
-This document describes the steps for validators, full node operators and relayer operators, to upgrade successfully to the Gaia v21 release.
+This document describes the steps for validators, full node operators and relayer operators, to upgrade successfully to the Gaia v22.2.0 release.
 
-For more details on the release, please see the [release notes](https://github.com/cosmos/gaia/releases/tag/v22.0.0)
-
-**Relayer Operators** for the Cosmos Hub and consumer chains, will also need to update to use [Hermes v1.10.2](https://github.com/informalsystems/hermes/releases/tag/v1.10.2) or higher. You may need to restart your relayer software after a major chain upgrade.
+For more details on the release, please see the [release notes](https://github.com/cosmos/gaia/releases/tag/v22.2.0)
 
 ## Release Binary
 
-Please use the correct release binary: `v22.0.0`.
+Please use the correct release binary: `v22.2.0`.
 
 ## Instructions
 
@@ -39,7 +37,7 @@ Please use the correct release binary: `v22.0.0`.
 
 ## On-chain governance proposal attains consensus
 
-Once a software upgrade governance proposal is submitted to the Cosmos Hub, both a reference to this proposal and an `UPGRADE_HEIGHT` are added to the [release notes](https://github.com/cosmos/gaia/releases/tag/v22.0.0).
+Once a software upgrade governance proposal is submitted to the Cosmos Hub, both a reference to this proposal and an `UPGRADE_HEIGHT` are added to the [release notes](https://github.com/cosmos/gaia/releases/tag/v22.2.0).
 If and when this proposal reaches consensus, the upgrade height will be used to halt the "old" chain binaries. You can check the proposal on one of the block explorers or using the `gaiad` CLI tool.
 
 ## Upgrade date
@@ -55,17 +53,13 @@ If you use Cosmovisor to upgrade, by default, Cosmovisor will backup your data u
 
 It is critically important for validator operators to back-up the `.gaia/data/priv_validator_state.json` file after stopping the gaiad process. This file is updated every block as your validator participates in consensus rounds. It is a critical file needed to prevent double-signing, in case the upgrade fails and the previous chain needs to be restarted.
 
-### Testing
-
-For those validator and full node operators that are interested in ensuring preparedness for the impending upgrade, you can run a [v22 Local Testnet](https://github.com/cosmos/testnets/tree/master/local) or join in our [Cosmos Hub Public Testnet](https://github.com/cosmos/testnets/tree/master/public).
-
 ### Current runtime
 
-The Cosmos Hub mainnet network, `cosmoshub-4`, is currently running [Gaia v21.0.1](https://github.com/cosmos/gaia/releases/v21.0.1). We anticipate that operators who are running on v21.0.1, will be able to upgrade successfully. Validators are expected to ensure that their systems are up to date and capable of performing the upgrade. This includes running the correct binary and if building from source, building with the appropriate `go` version.
+The Cosmos Hub mainnet network, `cosmoshub-4`, is currently running [Gaia v22.1.0](https://github.com/cosmos/gaia/releases/v22.1.0). We anticipate that operators who are running on v22.1.0, will be able to upgrade successfully. Validators are expected to ensure that their systems are up to date and capable of performing the upgrade. This includes running the correct binary and if building from source, building with the appropriate `go` version.
 
 ### Target runtime
 
-The Cosmos Hub mainnet network, `cosmoshub-4`, will run **[Gaia v22.0.0](https://github.com/cosmos/gaia/releases/tag/v22.0.0)**. Operators _**MUST**_ use this version post-upgrade to remain connected to the network. The new version requires `go v1.22` to build successfully.
+The Cosmos Hub mainnet network, `cosmoshub-4`, will run **[Gaia v22.2.0](https://github.com/cosmos/gaia/releases/tag/v22.2.0)**. Operators _**MUST**_ use this version post-upgrade to remain connected to the network. The new version requires `go v1.22` to build successfully.
 
 ## Upgrade steps
 
@@ -80,15 +74,15 @@ If you prefer to use Cosmovisor to upgrade, some preparation work is needed befo
 
 ### Method I: Manual Upgrade
 
-Make sure **Gaia v21.0.1** is installed by either downloading a [compatible binary](https://github.com/cosmos/gaia/releases/tag/v21.0.1), or building from source. Check the required version to build this binary in the `Makefile`.
+Make sure **Gaia v22.1.0** is installed by either downloading a [compatible binary](https://github.com/cosmos/gaia/releases/tag/v22.1.0), or building from source. Check the required version to build this binary in the `Makefile`.
 
-Run Gaia v21.0.1 till upgrade height, the node will panic:
+Run Gaia v22.1.0 till upgrade height, the node will panic:
 
 ```shell
-ERR UPGRADE "v22" NEEDED at height: <UPGRADE_HEIGHT>: upgrade to v22 and applying upgrade "v22" at height:<UPGRADE_HEIGHT>
+ERR UPGRADE "v22.2.0" NEEDED at height: <UPGRADE_HEIGHT>: upgrade to v22.2.0 and applying upgrade "v22.2.0" at height:<UPGRADE_HEIGHT>
 ```
 
-Stop the node, and switch the binary to **Gaia v22.0.0** and re-start by `gaiad start`.
+Stop the node, and switch the binary to **Gaia v22.2.0** and re-start by `gaiad start`.
 
 It may take several minutes to a few hours until validators with a total sum voting power > 2/3 to complete their node upgrades. After that, the chain can continue to produce blocks.
 
@@ -106,18 +100,18 @@ cosmovisor version
 # cosmovisor version: v1.6.0
 ```
 
-- Create a `cosmovisor` folder inside `$GAIA_HOME` and move Gaia `v21.0.1` into `$GAIA_HOME/cosmovisor/genesis/bin`:
+- Create a `cosmovisor` folder inside `$GAIA_HOME` and move Gaia `v22.1.0` into `$GAIA_HOME/cosmovisor/genesis/bin`:
 
 ```shell
 mkdir -p $GAIA_HOME/cosmovisor/genesis/bin
 cp $(which gaiad) $GAIA_HOME/cosmovisor/genesis/bin
 ```
 
-- Build Gaia `v22.0.0`, and move gaiad `v22.0.0` to `$GAIA_HOME/cosmovisor/upgrades/v22/bin`
+- Build Gaia `v22.2.0`, and move gaiad `v22.2.0` to `$GAIA_HOME/cosmovisor/upgrades/v22.2.0/bin`
 
 ```shell
-mkdir -p  $GAIA_HOME/cosmovisor/upgrades/v22/bin
-cp $(which gaiad) $GAIA_HOME/cosmovisor/upgrades/v22/bin
+mkdir -p  $GAIA_HOME/cosmovisor/upgrades/v22.2.0/bin
+cp $(which gaiad) $GAIA_HOME/cosmovisor/upgrades/v22.2.0/bin
 ```
 
 At this moment, you should have the following structure:
@@ -127,11 +121,11 @@ At this moment, you should have the following structure:
 ├── current -> genesis or upgrades/<name>
 ├── genesis
 │   └── bin
-│       └── gaiad  # old: v21.0.1
+│       └── gaiad  # old: v22.1.0
 └── upgrades
-    └── v22
+    └── v22.2.0
         └── bin
-            └── gaiad  # new: v22.0.0
+            └── gaiad  # new: v22.2.0
 ```
 
 - Export the environmental variables:
@@ -169,7 +163,7 @@ The upgrade may take a few minutes to complete because cosmoshub-4 participants 
 
 During the network upgrade, core Cosmos teams will be keeping an ever vigilant eye and communicating with operators on the status of their upgrades. During this time, the core teams will listen to operator needs to determine if the upgrade is experiencing unintended challenges. In the event of unexpected challenges, the core teams, after conferring with operators and attaining social consensus, may choose to declare that the upgrade will be skipped.
 
-Steps to skip this upgrade proposal are simply to resume the cosmoshub-4 network with the (downgraded) v21.0.1 binary using the following command:
+Steps to skip this upgrade proposal are simply to resume the cosmoshub-4 network with the (downgraded) v22.1.0 binary using the following command:
 
 ```shell
 gaiad start --unsafe-skip-upgrade <UPGRADE_HEIGHT>

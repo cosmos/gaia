@@ -1,6 +1,11 @@
 package e2e
 
-import "fmt"
+import (
+	"fmt"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/bank/types"
+)
 
 var (
 	runBankTest                   = true
@@ -31,6 +36,7 @@ func (s *IntegrationTestSuite) TestBank() {
 		s.T().Skip()
 	}
 	s.testBankTokenTransfer()
+	s.testFeeWithWrongDenomOrder()
 }
 
 func (s *IntegrationTestSuite) TestEncode() {
@@ -87,7 +93,6 @@ func (s *IntegrationTestSuite) TestSlashing() {
 	s.testSlashing(chainAPI)
 }
 
-// todo add fee test with wrong denom order
 func (s *IntegrationTestSuite) TestStakingAndDistribution() {
 	if !runStakingAndDistributionTest {
 		s.T().Skip()

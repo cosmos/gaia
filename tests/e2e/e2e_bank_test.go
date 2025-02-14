@@ -217,3 +217,47 @@ func (s *IntegrationTestSuite) failedBankSendWithNonCriticalExtensionOptions() {
 		s.Require().Nil(txWithExt)
 	})
 }
+
+func (s *IntegrationTestSuite) testFeeWithWrongDenomOrder() {
+	s.Run("test_fee_with_wrong_denom_order", func() {
+		// Get the first validator
+		val1 := s.chainA.validators[0]
+		valAddr, err := val1.keyInfo.GetAddress()
+		s.Require().NoError(err)
+		
+		// Create transaction with fees in wrong denom order
+		fees := sdk.NewCoins(
+			sdk.NewCoin(stakeDenom, math.NewInt(1000)),
+			sdk.NewCoin(uatomDenom, math.NewInt(100)),
+		)
+		
+		msg := banktypes.NewMsgSend(
+			valAddr,
+			valAddr,
+			sdk.NewCoins(sdk.NewCoin(uatomDenom, math.NewInt(1))),
+		)
+		
+		// Build and sign transaction
+		txBuilder := s.chainA.clientCtx.TxConfig.NewTxBuilder()
+		err = txBuilder.SetMsgs(msg)
+		s.Require().NoError(err)
+		
+		txBuilder.SetFeeAmount(fees)
+		txBuilder.SetGasLimit(200000)
+		
+		// Verify that transaction is accepted and processed correctly
+		// despite fees being in wrong denom order
+		s.Require().Eventually(
+			func() bool {
+				tx, err := s.chainA.SignAndBroadcastTx(val1.keyInfo, txBuilder)
+				if err != nil {
+					return false
+				}
+				return tx.Code == uint32(0)
+			},
+			10*time.Second,
+			5*time.Second,
+			"Transaction with wrong denom order should succeed",
+		)
+	})
+}

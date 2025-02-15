@@ -4,6 +4,8 @@ package backend
 
 import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	"github.com/cosmos/gaia/v23/cmd/config"
+	"github.com/cosmos/gaia/v23/utils"
 
 	errorsmod "cosmossdk.io/errors"
 
@@ -149,8 +151,8 @@ func (b *Backend) GetBalance(address common.Address, blockNrOrHash rpctypes.Bloc
 	}
 
 	req := &banktypes.QuerySpendableBalanceByDenomRequest{
-		Address: "cosmos1lupv3mdn3pwm3xhe2lsc6palwv6ryndsy7a499", //todo: convert to bech32
-		Denom:   "stake",                                         //todo: make this a constant
+		Address: utils.EthToSDKAddr(address).String(),
+		Denom:   config.BaseDenom,
 	}
 
 	_, err = b.TendermintBlockByNumber(blockNum)

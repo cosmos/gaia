@@ -14,12 +14,44 @@ func UnpackTxData(any *codectypes.Any) (TxData, error) {
 		return nil, errorsmod.Wrap(errortypes.ErrUnpackAny, "protobuf Any message cannot be nil")
 	}
 
-	txData, ok := any.GetCachedValue().(TxData)
-	if !ok {
-		return nil, errorsmod.Wrapf(errortypes.ErrUnpackAny, "cannot unpack Any into TxData %T", any)
+	// First try to use cached value
+	if cachedValue := any.GetCachedValue(); cachedValue != nil {
+		txData, ok := cachedValue.(TxData)
+		if !ok {
+			return nil, errorsmod.Wrapf(errortypes.ErrUnpackAny, "cannot cast cached value to TxData: %T", cachedValue)
+		}
+		return txData, nil
 	}
 
-	return txData, nil
+	// If no cached value, unpack based on TypeUrl
+	switch any.TypeUrl {
+	case "/ethermint.evm.v1.LegacyTx":
+		var legacyTx LegacyTx
+		err := proto.Unmarshal(any.Value, &legacyTx)
+		if err != nil {
+			return nil, errorsmod.Wrapf(errortypes.ErrUnpackAny, "failed to unmarshal LegacyTx: %v", err)
+		}
+		return &legacyTx, nil
+
+	case "/ethermint.evm.v1.AccessListTx":
+		var accessListTx AccessListTx
+		err := proto.Unmarshal(any.Value, &accessListTx)
+		if err != nil {
+			return nil, errorsmod.Wrapf(errortypes.ErrUnpackAny, "failed to unmarshal AccessListTx: %v", err)
+		}
+		return &accessListTx, nil
+
+	case "/ethermint.evm.v1.DynamicFeeTx":
+		var dynamicFeeTx DynamicFeeTx
+		err := proto.Unmarshal(any.Value, &dynamicFeeTx)
+		if err != nil {
+			return nil, errorsmod.Wrapf(errortypes.ErrUnpackAny, "failed to unmarshal DynamicFeeTx: %v", err)
+		}
+		return &dynamicFeeTx, nil
+
+	default:
+		return nil, errorsmod.Wrapf(errortypes.ErrUnpackAny, "unsupported TypeUrl: %s", any.TypeUrl)
+	}
 }
 
 // PackTxData constructs a new Any packed with the given tx data value. It returns

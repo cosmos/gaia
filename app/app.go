@@ -1,8 +1,10 @@
 package gaia
 
 import (
+	"context"
 	"fmt"
 	"github.com/cosmos/gaia/v23/encoding"
+	evmtypes "github.com/cosmos/gaia/v23/evm"
 	"io"
 	"net/http"
 	"os"
@@ -114,6 +116,31 @@ func init() {
 	DefaultNodeHome = filepath.Join(userHomeDir, ".gaia")
 }
 
+type MsgServer struct {
+	// any dependencies your handler needs
+}
+
+func (ms MsgServer) UpdateParams(ctx context.Context, params *evmtypes.MsgUpdateParams) (*evmtypes.MsgUpdateParamsResponse, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (ms MsgServer) EthereumTx(goCtx context.Context, msg *evmtypes.MsgEthereumTx) (*evmtypes.MsgEthereumTxResponse, error) {
+	fmt.Printf("Handler received msg type URL: %s\n", msg.Data.TypeUrl)
+
+	// Try unpacking to see where it fails
+	txData, err := evmtypes.UnpackTxData(msg.Data)
+	if err != nil {
+		fmt.Printf("Handler unpack error: %v\n", err)
+		return nil, err
+	}
+
+	fmt.Printf("Successfully unpacked TxData type: %T\n", txData)
+
+	fmt.Println("I HAVE HANDLED AN ETH TX")
+	return &evmtypes.MsgEthereumTxResponse{}, nil
+}
+
 // NewGaiaApp returns a reference to an initialized Gaia.
 func NewGaiaApp(
 	logger log.Logger,
@@ -137,11 +164,36 @@ func NewGaiaApp(
 	skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
 	invCheckPeriod := cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod))
 
+	originalDecoder := txConfig.TxDecoder()
+	wrappedDecoder := func(txBytes []byte) (sdk.Tx, error) {
+		tx, err := originalDecoder(txBytes)
+		if err != nil {
+			fmt.Printf("Decoder error: %v\n", err)
+			return nil, err
+		}
+
+		// Try to get the ethereum tx
+		if len(tx.GetMsgs()) > 0 {
+			if ethTx, ok := tx.GetMsgs()[0].(*evmtypes.MsgEthereumTx); ok {
+				fmt.Printf("Decoded EthereumTx with type URL: %s\n", ethTx.Data.TypeUrl)
+
+				// Try unpacking here to see if it fails
+				txData, err := evmtypes.UnpackTxData(ethTx.Data)
+				if err != nil {
+					fmt.Printf("Decoder UnpackTxData error: %v\n", err)
+				} else {
+					fmt.Printf("Successfully unpacked TxData type: %T\n", txData)
+				}
+			}
+		}
+		return tx, nil
+	}
+
 	bApp := baseapp.NewBaseApp(
 		appName,
 		logger,
 		db,
-		txConfig.TxDecoder(),
+		wrappedDecoder,
 		baseAppOptions...)
 
 	bApp.SetCommitMultiStoreTracer(traceStore)
@@ -223,7 +275,10 @@ func NewGaiaApp(
 	// app.mm.SetOrderMigrations(custom order)
 
 	app.mm.RegisterInvariants(app.CrisisKeeper)
+
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
+	msgServer := MsgServer{}
+	evmtypes.RegisterMsgServer(app.MsgServiceRouter(), msgServer)
 	err = app.mm.RegisterServices(app.configurator)
 	if err != nil {
 		panic(err)
@@ -260,12 +315,11 @@ func NewGaiaApp(
 
 	anteHandler, err := gaiaante.NewAnteHandler(
 		gaiaante.HandlerOptions{
-			AccountKeeper:   app.AccountKeeper,
-			BankKeeper:      app.BankKeeper,
-			FeegrantKeeper:  app.FeeGrantKeeper,
-			SignModeHandler: txConfig.SignModeHandler(),
-			SigGasConsumer:  gaiaante.SigVerificationGasConsumer,
-
+			AccountKeeper:         app.AccountKeeper,
+			BankKeeper:            app.BankKeeper,
+			FeegrantKeeper:        app.FeeGrantKeeper,
+			SignModeHandler:       txConfig.SignModeHandler(),
+			SigGasConsumer:        gaiaante.SigVerificationGasConsumer,
 			Codec:                 appCodec,
 			IBCkeeper:             app.IBCKeeper,
 			StakingKeeper:         app.StakingKeeper,

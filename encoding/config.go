@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdktestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
+	tx2 "github.com/cosmos/cosmos-sdk/types/tx"
 	"github.com/cosmos/cosmos-sdk/x/auth/migrations/legacytx"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	evmtypes "github.com/cosmos/gaia/v23/evm"
@@ -38,8 +39,43 @@ func MakeConfig() sdktestutil.TestEncodingConfig {
 		ProtoFiles:     proto.HybridResolver,
 		SigningOptions: signingOptions,
 	})
+
+	interfaceRegistry.RegisterInterface(
+		"ethermint.evm.v1.TxData",
+		(*evmtypes.TxData)(nil),
+	)
+
+	interfaceRegistry.RegisterImplementations(
+		(*evmtypes.TxData)(nil),
+		&evmtypes.DynamicFeeTx{},
+		&evmtypes.AccessListTx{},
+		&evmtypes.LegacyTx{},
+	)
+
+	// Also try registering with the full Go package path
+	interfaceRegistry.RegisterInterface(
+		"github.com/cosmos/gaia/v23/evm.TxData",
+		(*evmtypes.TxData)(nil),
+	)
+
+	interfaceRegistry.RegisterInterface(
+		"cosmos.tx.v1beta1.TxExtensionOptionI",
+		(*tx2.TxExtensionOptionI)(nil),
+	)
+
+	interfaceRegistry.RegisterImplementations(
+		(*tx2.TxExtensionOptionI)(nil),
+		&evmtypes.ExtensionOptionsEthereumTx{},
+	)
+	interfaceRegistry.RegisterImplementations(
+		(*sdk.Msg)(nil),
+		&evmtypes.MsgEthereumTx{},
+		&evmtypes.MsgUpdateParams{},
+	)
+
 	codec := amino.NewProtoCodec(interfaceRegistry)
 	enccodec.RegisterLegacyAminoCodec(cdc)
+
 	enccodec.RegisterInterfaces(interfaceRegistry)
 
 	// This is needed for the EIP712 txs because currently is using

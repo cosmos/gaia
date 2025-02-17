@@ -22,6 +22,10 @@
 
 ### API-BREAKING
 
+### Dependencies
+
+- Bump [github.com/spf13/cobra](https://github.com/spf13/cobra) from 1.8.1 to 1.9.1 ([#3542](https://github.com/cosmos/gaia/pull/3542))
+
 ## v22.0.1
 
 *February 7, 2025*

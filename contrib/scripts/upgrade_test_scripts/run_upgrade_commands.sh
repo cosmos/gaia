@@ -1,27 +1,43 @@
-#!/bin/sh
+#!/bin/bash
 
 set -o errexit -o nounset
 
 UPGRADES_DIR=$(realpath ./app/upgrades)
-UPGRADE_VERSION_NUMBER=0
+UPGRADE_VERSION="v0"
+
+version_gt() {
+  IFS='_' read -ra LEFT_PARTS <<< "${1#v}"
+  IFS='_' read -ra RIGHT_PARTS <<< "${2#v}"
+
+  for ((i=0; i < ${#LEFT_PARTS[@]} || i < ${#RIGHT_PARTS[@]}; i++)); do
+    LEFT_NUM=${LEFT_PARTS[i]:-0}  # Default to 0 if missing
+    RIGHT_NUM=${RIGHT_PARTS[i]:-0} # Default to 0 if missing
+
+    if (( LEFT_NUM > RIGHT_NUM )); then
+      return 0  # Left is greater
+    elif (( LEFT_NUM < RIGHT_NUM )); then
+      return 1  # Right is greater
+    fi
+  done
+
+  return 1  # Equal versions, so not greater
+}
 
 for dir in "$UPGRADES_DIR"/*; do
   if [ -d "$dir" ]; then
     DIR_NAME=$(basename "$dir")
-    VERSION_NUMBER="${DIR_NAME#v}"
-    if [ "$VERSION_NUMBER" -gt "$UPGRADE_VERSION_NUMBER" ]; then
-      UPGRADE_VERSION_NUMBER=$VERSION_NUMBER
+
+    if version_gt "$DIR_NAME" "$UPGRADE_VERSION"; then
+      UPGRADE_VERSION="$DIR_NAME"
     fi
   fi
 done
 
-if [ -n "$UPGRADE_VERSION_NUMBER" ]; then
-  echo "Upgrade to version: $UPGRADE_VERSION_NUMBER"
-else
-  echo "No upgrade version found in app/upgrades."
-fi
+# Convert "_" to "." in the final output
+UPGRADE_VERSION="${UPGRADE_VERSION//_/.}"
 
-UPGRADE_VERSION=v$UPGRADE_VERSION_NUMBER
+echo "Latest upgrade version: $UPGRADE_VERSION"
+
 UPGRADE_HEIGHT=$1
 
 if [ -z "$1" ]; then
@@ -35,6 +51,7 @@ echo "NODE_HOME = ${NODE_HOME}"
 
 BINARY=$NODE_HOME/cosmovisor/genesis/bin/gaiad
 echo "BINARY = ${BINARY}"
+chmod a+x $BINARY
 
 $BINARY version
 

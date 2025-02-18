@@ -1,6 +1,7 @@
-package ante_test
+package gov_test
 
 import (
+	"github.com/cosmos/gaia/v23/ante/gov"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -15,7 +16,6 @@ import (
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v23/ante"
 	"github.com/cosmos/gaia/v23/app/helpers"
 )
 
@@ -24,7 +24,7 @@ import (
 func TestVoteSpamDecoratorGovV1Beta1(t *testing.T) {
 	gaiaApp := helpers.Setup(t)
 	ctx := gaiaApp.NewUncachedContext(true, tmproto.Header{})
-	decorator := ante.NewGovVoteDecorator(gaiaApp.AppCodec(), gaiaApp.StakingKeeper)
+	decorator := gov.NewGovVoteDecorator(gaiaApp.AppCodec(), gaiaApp.StakingKeeper)
 	stakingKeeper := gaiaApp.StakingKeeper
 
 	// Get validator
@@ -150,7 +150,7 @@ func TestVoteSpamDecoratorGovV1Beta1(t *testing.T) {
 func TestVoteSpamDecoratorGovV1(t *testing.T) {
 	gaiaApp := helpers.Setup(t)
 	ctx := gaiaApp.NewUncachedContext(true, tmproto.Header{})
-	decorator := ante.NewGovVoteDecorator(gaiaApp.AppCodec(), gaiaApp.StakingKeeper)
+	decorator := gov.NewGovVoteDecorator(gaiaApp.AppCodec(), gaiaApp.StakingKeeper)
 	stakingKeeper := gaiaApp.StakingKeeper
 
 	// Get validator

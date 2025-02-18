@@ -1,4 +1,4 @@
-package ante
+package gov
 
 import (
 	errorsmod "cosmossdk.io/errors"

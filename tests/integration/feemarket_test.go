@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"github.com/cosmos/gaia/v23/ante/cosmos"
 	"testing"
 
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
@@ -14,7 +15,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	"github.com/cosmos/gaia/v23/ante"
 	gaiaApp "github.com/cosmos/gaia/v23/app"
 )
 
@@ -37,7 +37,7 @@ func TestFeeMarketTestSuite(t *testing.T) {
 }
 
 func (suite *FeeMarketTestSuite) SetupTest() {
-	ante.UseFeeMarketDecorator = true
+	cosmos.UseFeeMarketDecorator = true
 	ibctesting.DefaultTestingAppInit = GaiaAppIniter
 	suite.coordinator = ibctesting.NewCoordinator(suite.T(), 1)
 	OverrideSendMsgs(suite.coordinator.Chains, sdk.NewInt64Coin(sdk.DefaultBondDenom, LargeFeeAmount), LargeGasLimit)

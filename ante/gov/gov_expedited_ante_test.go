@@ -1,6 +1,7 @@
-package ante_test
+package gov_test
 
 import (
+	"github.com/cosmos/gaia/v23/ante/gov"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -14,7 +15,6 @@ import (
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
-	"github.com/cosmos/gaia/v23/ante"
 	"github.com/cosmos/gaia/v23/app/helpers"
 )
 
@@ -168,7 +168,7 @@ func TestGovExpeditedProposalsDecorator(t *testing.T) {
 
 		t.Run(tc.name, func(t *testing.T) {
 			txCfg := gaiaApp.GetTxConfig()
-			decorator := ante.NewGovExpeditedProposalsDecorator(gaiaApp.AppCodec())
+			decorator := gov.NewGovExpeditedProposalsDecorator(gaiaApp.AppCodec())
 
 			txBuilder := txCfg.NewTxBuilder()
 			require.NoError(t, txBuilder.SetMsgs(tc.msgs...))

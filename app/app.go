@@ -3,6 +3,7 @@ package gaia
 import (
 	"context"
 	"fmt"
+	"github.com/cosmos/gaia/v23/ante/handler_options"
 	"github.com/cosmos/gaia/v23/encoding"
 	evmtypes "github.com/cosmos/gaia/v23/evm"
 	"io"
@@ -314,7 +315,7 @@ func NewGaiaApp(
 	}
 
 	anteHandler, err := gaiaante.NewAnteHandler(
-		gaiaante.HandlerOptions{
+		handler_options.HandlerOptions{
 			AccountKeeper:         app.AccountKeeper,
 			BankKeeper:            app.BankKeeper,
 			FeegrantKeeper:        app.FeeGrantKeeper,

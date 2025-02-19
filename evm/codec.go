@@ -15,7 +15,7 @@ func UnpackTxData(any *codectypes.Any) (TxData, error) {
 	}
 
 	// First try to use cached value
-	if cachedValue := any.GetCachedValue(); cachedValue != nil {
+	if cachedValue := any.GetCachedValue(); cachedValue != nil { //todo: figure out why cached value was nil (improperly registered interfaces?)
 		txData, ok := cachedValue.(TxData)
 		if !ok {
 			return nil, errorsmod.Wrapf(errortypes.ErrUnpackAny, "cannot cast cached value to TxData: %T", cachedValue)

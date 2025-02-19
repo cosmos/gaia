@@ -170,7 +170,7 @@ func CosmosMsgsFromMsgEthereumTx(tx sdk.Tx, cdc codec.Codec) ([]sdk.Msg, error) 
 
 		var unpacked sdk.Msg
 
-		if err = cdc.InterfaceRegistry().UnpackAny(anyMsg, &unpacked); err != nil {
+		if err = cdc.InterfaceRegistry().UnpackAny(anyMsg, &unpacked); err != nil { //todo: figure out why cache is nil when using binary codec unmarshalling
 			return nil, err
 		}
 

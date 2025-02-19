@@ -23,7 +23,7 @@ type HandlerOptions struct {
 
 	AccountKeeper         feemarketante.AccountKeeper
 	BankKeeper            feemarketante.BankKeeper
-	Codec                 codec.BinaryCodec
+	Codec                 codec.Codec
 	IBCkeeper             *ibckeeper.Keeper
 	StakingKeeper         *stakingkeeper.Keeper
 	FeeMarketKeeper       *feemarketkeeper.Keeper

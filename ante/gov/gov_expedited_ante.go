@@ -25,10 +25,10 @@ var expeditedPropsWhitelist = map[string]struct{}{
 
 // Check if the proposal is whitelisted for expedited voting.
 type GovExpeditedProposalsDecorator struct {
-	cdc codec.BinaryCodec
+	cdc codec.Codec
 }
 
-func NewGovExpeditedProposalsDecorator(cdc codec.BinaryCodec) GovExpeditedProposalsDecorator {
+func NewGovExpeditedProposalsDecorator(cdc codec.Codec) GovExpeditedProposalsDecorator {
 	return GovExpeditedProposalsDecorator{
 		cdc: cdc,
 	}

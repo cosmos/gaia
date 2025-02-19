@@ -27,10 +27,10 @@ func SetMinStakedTokens(tokens math.LegacyDec) {
 
 type GovVoteDecorator struct {
 	stakingKeeper *stakingkeeper.Keeper
-	cdc           codec.BinaryCodec
+	cdc           codec.Codec
 }
 
-func NewGovVoteDecorator(cdc codec.BinaryCodec, stakingKeeper *stakingkeeper.Keeper) GovVoteDecorator {
+func NewGovVoteDecorator(cdc codec.Codec, stakingKeeper *stakingkeeper.Keeper) GovVoteDecorator {
 	return GovVoteDecorator{
 		stakingKeeper: stakingKeeper,
 		cdc:           cdc,

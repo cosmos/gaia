@@ -342,6 +342,7 @@ start-localnet-ci: build
 	./build/gaiad genesis add-genesis-account val 10000000000000000000000000uatom --home ~/.gaiad-liveness --keyring-backend test
 	./build/gaiad genesis gentx val 1000000000uatom --home ~/.gaiad-liveness --chain-id liveness_9000-1 --keyring-backend test
 	./build/gaiad genesis collect-gentxs --home ~/.gaiad-liveness
+	sed -i.bak'' 's/"fee_denom": "stake",/"fee_denom": "uatom",/' ~/.gaiad-liveness/config/genesis.json
 	./build/gaiad start --home ~/.gaiad-liveness --x-crisis-skip-assert-invariants --json-rpc.enable=true
 
 .PHONY: start-localnet-ci

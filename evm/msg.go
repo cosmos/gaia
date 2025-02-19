@@ -134,7 +134,8 @@ func (msg *MsgEthereumTx) BuildTx(b client.TxBuilder, evmDenom string) (signing.
 	return tx, nil
 }
 
-func CosmosMsgsFromMsgEthereumTx(tx sdk.Tx, cdc codec.BinaryCodec) ([]sdk.Msg, error) {
+// todo: test this
+func CosmosMsgsFromMsgEthereumTx(tx sdk.Tx, cdc codec.Codec) ([]sdk.Msg, error) {
 	txMsgs := tx.GetMsgs()
 	ethTxMsgs := make([]*MsgEthereumTx, len(txMsgs))
 	for i, msg := range txMsgs {
@@ -150,19 +151,30 @@ func CosmosMsgsFromMsgEthereumTx(tx sdk.Tx, cdc codec.BinaryCodec) ([]sdk.Msg, e
 
 	rawInnerMsgs := txData.GetData()
 
+	// Pre-allocate our InnerCosmosMsgs struct
 	var innerAnyMsgs types.InnerCosmosMsgs
 	err = cdc.Unmarshal(rawInnerMsgs, &innerAnyMsgs)
 	if err != nil {
 		return nil, err
 	}
 
+	// Initialize our result slice
 	innerCosmosMsgs := make([]sdk.Msg, len(innerAnyMsgs.Msgs))
-	for i, msg := range innerAnyMsgs.Msgs {
-		cached := msg.GetCachedValue()
-		if cached == nil {
-			return nil, fmt.Errorf("any cached value is nil, %s messages must be correctly packed any values", msg.TypeUrl)
+
+	// Process each message individually
+	for i, anyMsg := range innerAnyMsgs.Msgs {
+		// Safety check for nil message
+		if anyMsg == nil {
+			return nil, fmt.Errorf("message at index %d is nil", i)
 		}
-		innerCosmosMsgs[i] = cached.(sdk.Msg)
+
+		var unpacked sdk.Msg
+
+		if err = cdc.InterfaceRegistry().UnpackAny(anyMsg, &unpacked); err != nil {
+			return nil, err
+		}
+
+		innerCosmosMsgs[i] = unpacked
 	}
 	return innerCosmosMsgs, nil
 }

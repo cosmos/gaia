@@ -35,6 +35,9 @@ func NewPostHandler(options PostHandlerOptions) (sdk.PostHandler, error) {
 						"rejecting tx with unsupported extension type: %s", typeUrl,
 					)
 				}
+				if postHandler == nil {
+					return ctx, nil
+				}
 				return postHandler(ctx, tx, simulate, success)
 			}
 		}

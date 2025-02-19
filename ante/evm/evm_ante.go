@@ -1,8 +1,14 @@
 package evm
 
-import sdk "github.com/cosmos/cosmos-sdk/types"
+import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/gaia/v23/ante/evm/decorators"
+	"github.com/cosmos/gaia/v23/ante/handler_options"
+)
 
-func NewAnteHandler() sdk.AnteHandler {
-	panic("EVM Ante handler not set")
-	return sdk.ChainAnteDecorators()
+func NewAnteHandler(opts handler_options.HandlerOptions) sdk.AnteHandler {
+	anteDecorators := []sdk.AnteDecorator{
+		decorators.NewGovVoteDecorator(opts.Codec, opts.StakingKeeper),
+	}
+	return sdk.ChainAnteDecorators(anteDecorators...)
 }

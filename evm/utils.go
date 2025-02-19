@@ -44,3 +44,12 @@ func DecodeTxResponse(in []byte) (*MsgEthereumTxResponse, error) {
 func EffectiveGasPrice(baseFee, feeCap, tipCap *big.Int) *big.Int {
 	return math.BigMin(new(big.Int).Add(tipCap, baseFee), feeCap)
 }
+
+// GetGas implements the GasTx interface. It returns the GasLimit of the transaction.
+func (msg MsgEthereumTx) GetGas() uint64 {
+	txData, err := UnpackTxData(msg.Data)
+	if err != nil {
+		return 0
+	}
+	return txData.GetGas()
+}

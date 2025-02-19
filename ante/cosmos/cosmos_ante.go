@@ -26,7 +26,7 @@ func NewAnteHandler(opts handler_options.HandlerOptions) sdk.AnteHandler {
 		ante.NewSetUpContextDecorator(),                                               // outermost AnteDecorator. SetUpContext must be called first
 		wasmkeeper.NewLimitSimulationGasDecorator(opts.WasmConfig.SimulationGasLimit), // after setup context to enforce limits early
 		wasmkeeper.NewCountTXDecorator(opts.TXCounterStoreService),
-		ante.NewExtensionOptionsDecorator(opts.ExtensionOptionChecker), //todo: set extension options decorator for eth transactions
+		ante.NewExtensionOptionsDecorator(opts.ExtensionOptionChecker),
 		ante.NewValidateBasicDecorator(),
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(opts.AccountKeeper),

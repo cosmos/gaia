@@ -10,7 +10,7 @@ import (
 	"github.com/cosmos/gaia/v23/ante/handler_options"
 )
 
-func NewAnteHandler(opts handler_options.HandlerOptions) (sdk.AnteHandler, error) {
+func NewAnteHandler(options handler_options.HandlerOptions) (sdk.AnteHandler, error) {
 	return func(ctx sdk.Context, tx sdk.Tx, simulate bool) (newCtx sdk.Context, err error) {
 		var anteHandler sdk.AnteHandler
 
@@ -20,7 +20,7 @@ func NewAnteHandler(opts handler_options.HandlerOptions) (sdk.AnteHandler, error
 			if len(opts) > 0 {
 				switch typeUrl := opts[0].GetTypeUrl(); typeUrl {
 				case "/ethermint.evm.v1.ExtensionOptionsEthereumTx":
-					anteHandler = evmante.NewAnteHandler()
+					anteHandler = evmante.NewAnteHandler(options)
 				//case "/ethermint.types.v1.ExtensionOptionDynamicFeeTx": //todo: is this relevant?
 				//	// cosmos-sdk tx with dynamic fee extension
 				//	anteHandler = cosmosante.NewAnteHandler(opts)
@@ -34,6 +34,6 @@ func NewAnteHandler(opts handler_options.HandlerOptions) (sdk.AnteHandler, error
 				return anteHandler(ctx, tx, simulate)
 			}
 		}
-		return cosmosante.NewAnteHandler(opts)(ctx, tx, simulate)
+		return cosmosante.NewAnteHandler(options)(ctx, tx, simulate)
 	}, nil
 }

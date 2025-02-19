@@ -5,7 +5,9 @@ import (
 	sdkmath "cosmossdk.io/math"
 	txsigning "cosmossdk.io/x/tx/signing"
 	"errors"
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	errortypes "github.com/cosmos/cosmos-sdk/types/errors"
@@ -132,11 +134,35 @@ func (msg *MsgEthereumTx) BuildTx(b client.TxBuilder, evmDenom string) (signing.
 	return tx, nil
 }
 
-// GetGas implements the GasTx interface. It returns the GasLimit of the transaction.
-func (msg MsgEthereumTx) GetGas() uint64 {
-	txData, err := UnpackTxData(msg.Data)
-	if err != nil {
-		return 0
+func CosmosMsgsFromMsgEthereumTx(tx sdk.Tx, cdc codec.BinaryCodec) ([]sdk.Msg, error) {
+	txMsgs := tx.GetMsgs()
+	ethTxMsgs := make([]*MsgEthereumTx, len(txMsgs))
+	for i, msg := range txMsgs {
+		ethTxMsgs[i] = msg.(*MsgEthereumTx)
 	}
-	return txData.GetGas()
+
+	//already validated that there is only a single message of type MsgEthereumTx, so now we unpack the TxData from the message
+	var txData TxData
+	txData, err := UnpackTxData(ethTxMsgs[0].Data)
+	if err != nil {
+		return nil, err
+	}
+
+	rawInnerMsgs := txData.GetData()
+
+	var innerAnyMsgs types.InnerCosmosMsgs
+	err = cdc.Unmarshal(rawInnerMsgs, &innerAnyMsgs)
+	if err != nil {
+		return nil, err
+	}
+
+	innerCosmosMsgs := make([]sdk.Msg, len(innerAnyMsgs.Msgs))
+	for i, msg := range innerAnyMsgs.Msgs {
+		cached := msg.GetCachedValue()
+		if cached == nil {
+			return nil, fmt.Errorf("any cached value is nil, %s messages must be correctly packed any values", msg.TypeUrl)
+		}
+		innerCosmosMsgs[i] = cached.(sdk.Msg)
+	}
+	return innerCosmosMsgs, nil
 }

@@ -3,7 +3,6 @@ package gaia
 import (
 	"context"
 	"fmt"
-	bankKeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/gaia/v23/ante/handler_options"
 	"github.com/cosmos/gaia/v23/encoding"
@@ -125,7 +124,13 @@ type MsgServer struct {
 	// any dependencies your handler needs
 	cdc    codec.Codec
 	router *baseapp.MsgServiceRouter
-	bk     bankKeeper.Keeper
+}
+
+func NewMsgServer(cdc codec.Codec, router *baseapp.MsgServiceRouter) *MsgServer {
+	return &MsgServer{
+		cdc:    cdc,
+		router: router,
+	}
 }
 
 func (ms MsgServer) UpdateParams(ctx context.Context, params *evmtypes.MsgUpdateParams) (*evmtypes.MsgUpdateParamsResponse, error) {
@@ -154,10 +159,7 @@ func (ms MsgServer) EthereumTx(goCtx context.Context, msg *evmtypes.MsgEthereumT
 			Amount:      sdk.Coins{sdk.NewCoin("uatom", math.NewInt(innerEthereumTx.GetValue().Int64()))},
 		}
 		fmt.Printf("default msg send: %v\n", defaultMsgSend)
-		handler = ms.router.Handler(defaultMsgSend) //todo: nil pointer
-		if handler == nil {
-			panic("HANDLER IS NIL!!!!!!!!")
-		}
+		handler = ms.router.Handler(defaultMsgSend)
 		_, err := handler(sdk.UnwrapSDKContext(goCtx), defaultMsgSend)
 		if err != nil {
 			return nil, err
@@ -313,7 +315,7 @@ func NewGaiaApp(
 	app.mm.RegisterInvariants(app.CrisisKeeper)
 
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
-	msgServer := MsgServer{}
+	msgServer := NewMsgServer(app.appCodec, app.MsgServiceRouter())
 	evmtypes.RegisterMsgServer(app.MsgServiceRouter(), msgServer)
 	err = app.mm.RegisterServices(app.configurator)
 	if err != nil {

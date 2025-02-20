@@ -3,9 +3,13 @@ package gaia
 import (
 	"context"
 	"fmt"
+	bankKeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/gaia/v23/ante/handler_options"
 	"github.com/cosmos/gaia/v23/encoding"
 	evmtypes "github.com/cosmos/gaia/v23/evm"
+	"github.com/cosmos/gaia/v23/utils"
+	"github.com/ethereum/go-ethereum/common"
 	"io"
 	"net/http"
 	"os"
@@ -119,6 +123,9 @@ func init() {
 
 type MsgServer struct {
 	// any dependencies your handler needs
+	cdc    codec.Codec
+	router *baseapp.MsgServiceRouter
+	bk     bankKeeper.Keeper
 }
 
 func (ms MsgServer) UpdateParams(ctx context.Context, params *evmtypes.MsgUpdateParams) (*evmtypes.MsgUpdateParamsResponse, error) {
@@ -129,17 +136,45 @@ func (ms MsgServer) UpdateParams(ctx context.Context, params *evmtypes.MsgUpdate
 func (ms MsgServer) EthereumTx(goCtx context.Context, msg *evmtypes.MsgEthereumTx) (*evmtypes.MsgEthereumTxResponse, error) {
 	fmt.Printf("Handler received msg type URL: %s\n", msg.Data.TypeUrl)
 
-	// Try unpacking to see where it fails
-	txData, err := evmtypes.UnpackTxData(msg.Data)
+	innerCosmosMsgs, err := evmtypes.CosmosMsgsFromMsgEthereumTx(*msg, ms.cdc)
 	if err != nil {
-		fmt.Printf("Handler unpack error: %v\n", err)
 		return nil, err
 	}
 
-	fmt.Printf("Successfully unpacked TxData type: %T\n", txData)
+	innerEthereumTx, err := evmtypes.UnpackTxData(msg.Data)
+	if err != nil {
+		return nil, err
+	}
 
+	var handler baseapp.MsgServiceHandler
+	if len(innerCosmosMsgs) == 0 {
+		defaultMsgSend := &banktypes.MsgSend{
+			FromAddress: utils.EthToSDKAddr(common.HexToAddress(msg.From)).String(),
+			ToAddress:   utils.EthToSDKAddr(*innerEthereumTx.GetTo()).String(),
+			Amount:      sdk.Coins{sdk.NewCoin("uatom", math.NewInt(innerEthereumTx.GetValue().Int64()))},
+		}
+		fmt.Printf("default msg send: %v\n", defaultMsgSend)
+		handler = ms.router.Handler(defaultMsgSend) //todo: nil pointer
+		if handler == nil {
+			panic("HANDLER IS NIL!!!!!!!!")
+		}
+		_, err := handler(sdk.UnwrapSDKContext(goCtx), defaultMsgSend)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if handler == nil {
+		return nil, fmt.Errorf("no handler found")
+	}
 	fmt.Println("I HAVE HANDLED AN ETH TX")
-	return &evmtypes.MsgEthereumTxResponse{}, nil
+	return &evmtypes.MsgEthereumTxResponse{
+		Hash:    msg.Hash,
+		Logs:    nil,
+		Ret:     nil,
+		VmError: "",
+		GasUsed: 0,
+	}, nil
 }
 
 // NewGaiaApp returns a reference to an initialized Gaia.

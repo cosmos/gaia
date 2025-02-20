@@ -138,7 +138,7 @@ func TestCosmosMsgsFromMsgEthereumTx(t *testing.T) {
 
 		// Execute test
 		tx := &MockTx{msgs: []sdk.Msg{ethTx}}
-		cosmosMsgs, err := CosmosMsgsFromMsgEthereumTx(tx, *cdc)
+		cosmosMsgs, err := CosmosMsgsFromWrappedMsgEthereumTx(tx, *cdc)
 		require.NoError(t, err)
 		require.Len(t, cosmosMsgs, 2)
 
@@ -179,7 +179,7 @@ func TestCosmosMsgsFromMsgEthereumTx(t *testing.T) {
 		}
 		tx := &MockTx{msgs: []sdk.Msg{ethTx}}
 
-		_, err = CosmosMsgsFromMsgEthereumTx(tx, *cdc)
+		_, err = CosmosMsgsFromWrappedMsgEthereumTx(tx, *cdc)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "no concrete type registered")
 	})
@@ -203,7 +203,7 @@ func TestCosmosMsgsFromMsgEthereumTx(t *testing.T) {
 		}
 		tx := &MockTx{msgs: []sdk.Msg{ethTx}}
 
-		cosmosMsgs, err := CosmosMsgsFromMsgEthereumTx(tx, *cdc)
+		cosmosMsgs, err := CosmosMsgsFromWrappedMsgEthereumTx(tx, *cdc)
 		require.NoError(t, err)
 		require.Len(t, cosmosMsgs, 0)
 	})

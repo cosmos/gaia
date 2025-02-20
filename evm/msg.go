@@ -134,23 +134,39 @@ func (msg *MsgEthereumTx) BuildTx(b client.TxBuilder, evmDenom string) (signing.
 	return tx, nil
 }
 
-// todo: test this
-func CosmosMsgsFromMsgEthereumTx(tx sdk.Tx, cdc codec.Codec) ([]sdk.Msg, error) {
+func CosmosMsgsFromWrappedMsgEthereumTx(tx sdk.Tx, cdc codec.Codec) ([]sdk.Msg, error) {
 	txMsgs := tx.GetMsgs()
+	if len(txMsgs) != 1 {
+		return nil, errors.New("tx must have exactly one MsgEthereumTx")
+	}
 	ethTxMsgs := make([]*MsgEthereumTx, len(txMsgs))
 	for i, msg := range txMsgs {
 		ethTxMsgs[i] = msg.(*MsgEthereumTx)
 	}
 
+	innerCosmosMsgs, err := CosmosMsgsFromMsgEthereumTx(*ethTxMsgs[0], cdc)
+	if err != nil {
+		return nil, err
+	}
+
+	return innerCosmosMsgs, nil
+}
+
+func CosmosMsgsFromMsgEthereumTx(msg MsgEthereumTx, cdc codec.Codec) ([]sdk.Msg, error) {
 	//already validated that there is only a single message of type MsgEthereumTx, so now we unpack the TxData from the message
 	var txData TxData
-	txData, err := UnpackTxData(ethTxMsgs[0].Data)
+	txData, err := UnpackTxData(msg.Data)
 	if err != nil {
 		return nil, err
 	}
 
 	rawInnerMsgs := txData.GetData()
 
+	fmt.Printf("raw innerMsgs: %v\n", rawInnerMsgs)
+
+	if rawInnerMsgs == nil || len(rawInnerMsgs) == 0 {
+		return []sdk.Msg{}, nil
+	}
 	// Pre-allocate our InnerCosmosMsgs struct
 	var innerAnyMsgs types.InnerCosmosMsgs
 	err = cdc.Unmarshal(rawInnerMsgs, &innerAnyMsgs)

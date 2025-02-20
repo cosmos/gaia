@@ -30,7 +30,7 @@ func NewEthSigVerificationDecorator() EthSigVerificationDecorator {
 func (esvd EthSigVerificationDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
 	fmt.Printf("IN SIG VERIFICATION HANDLER")
 
-	signer := ethtypes.NewEIP155Signer(big.NewInt(118260))
+	signer := ethtypes.NewEIP155Signer(big.NewInt(118260)) //todo: hardcoded
 
 	msgs := tx.GetMsgs()
 	if msgs == nil {

@@ -25,7 +25,7 @@ func (a MsgTypeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, 
 	}
 
 	for _, msg := range msgs {
-		if _, ok := msg.(*evmtypes.MsgEthereumTx); ok {
+		if _, ok := msg.(*evmtypes.MsgEthereumTx); !ok {
 			return ctx, nil
 		}
 	}

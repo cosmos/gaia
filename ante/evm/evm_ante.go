@@ -9,6 +9,7 @@ import (
 func NewAnteHandler(opts handler_options.HandlerOptions) sdk.AnteHandler {
 	anteDecorators := []sdk.AnteDecorator{
 		decorators.NewMsgTypeDecorator(),
+		decorators.NewEthSigVerificationDecorator(),
 		decorators.NewGovVoteDecorator(opts.Codec, opts.StakingKeeper),
 		decorators.NewGovExpeditedProposalsDecorator(opts.Codec),
 	}

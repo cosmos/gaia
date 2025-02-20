@@ -40,7 +40,7 @@ func NewGovExpeditedProposalsDecorator(cdc codec.Codec) GovExpeditedProposalsDec
 // Legacy proposals submitted using "gaiad tx gov submit-legacy-proposal" cannot be marked as expedited.
 func (g GovExpeditedProposalsDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
 	if expeditedPropDecoratorEnabled {
-		innerCosmosMsgs, err := evm.CosmosMsgsFromMsgEthereumTx(tx, g.cdc)
+		innerCosmosMsgs, err := evm.CosmosMsgsFromWrappedMsgEthereumTx(tx, g.cdc)
 		if err != nil {
 			return ctx, err
 		}

@@ -46,7 +46,7 @@ func (g GovVoteDecorator) AnteHandle(
 		return next(ctx, tx, simulate)
 	}
 
-	innerCosmosMsgs, err := evm.CosmosMsgsFromMsgEthereumTx(tx, g.cdc)
+	innerCosmosMsgs, err := evm.CosmosMsgsFromWrappedMsgEthereumTx(tx, g.cdc)
 	if err != nil {
 		return ctx, err
 	}

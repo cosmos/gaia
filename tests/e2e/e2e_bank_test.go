@@ -1,6 +1,7 @@
 package e2e
 
 import (
+	"encoding/json"
 	"fmt"
 	"path/filepath"
 	"time"
@@ -218,45 +219,92 @@ func (s *IntegrationTestSuite) failedBankSendWithNonCriticalExtensionOptions() {
 	})
 }
 
+// testFeeWithWrongDenomOrder tests that transactions with fees specified in non-standard
+// denom order are processed correctly. This verifies that the fee handling is not
+// sensitive to the order of denoms in the fee coins.
+//
+// Steps:
+// 1. Create a transaction with fees where stakeDenom comes before uatomDenom
+// 2. Sign and broadcast the transaction
+// 3. Verify that the transaction is accepted and processed successfully
+//
+// Expected: The transaction should be accepted and processed correctly despite
+// the non-standard ordering of fee denoms.
 func (s *IntegrationTestSuite) testFeeWithWrongDenomOrder() {
 	s.Run("test_fee_with_wrong_denom_order", func() {
-		// Get the first validator
-		val1 := s.chainA.validators[0]
-		valAddr, err := val1.keyInfo.GetAddress()
+		c := s.chainA
+
+		// Get the first validator's account
+		submitterAccount := c.validators[0]
+		submitterAddress, err := submitterAccount.keyInfo.GetAddress()
 		s.Require().NoError(err)
-		
+
 		// Create transaction with fees in wrong denom order
+		// Note: The standard order would be uatomDenom first, then stakeDenom
 		fees := sdk.NewCoins(
-			sdk.NewCoin(stakeDenom, math.NewInt(1000)),
-			sdk.NewCoin(uatomDenom, math.NewInt(100)),
+			sdk.NewCoin(stakeDenom, math.NewInt(1000)), // stake denom first
+			sdk.NewCoin(uatomDenom, math.NewInt(100)),  // uatom denom second
 		)
-		
+
+		// Create a simple bank send message (sending minimal amount to self)
 		msg := banktypes.NewMsgSend(
-			valAddr,
-			valAddr,
-			sdk.NewCoins(sdk.NewCoin(uatomDenom, math.NewInt(1))),
+			submitterAddress, // from address
+			submitterAddress, // to address (sending to self)
+			sdk.NewCoins(sdk.NewCoin(uatomDenom, math.NewInt(1))), // amount
 		)
-		
-		// Build and sign transaction
-		txBuilder := s.chainA.clientCtx.TxConfig.NewTxBuilder()
+
+		// Build and prepare transaction
+		txBuilder := encodingConfig.TxConfig.NewTxBuilder()
 		err = txBuilder.SetMsgs(msg)
 		s.Require().NoError(err)
-		
+
 		txBuilder.SetFeeAmount(fees)
-		txBuilder.SetGasLimit(200000)
-		
+		txBuilder.SetGasLimit(gas)
+
+		// Get raw transaction bytes
+		tx := txBuilder.GetTx()
+		txBytes, err := encodingConfig.TxConfig.TxJSONEncoder()(tx)
+		s.Require().NoError(err)
+
+		// Write unsigned transaction to file
+		unsignedFname := "unsigned_tx.json"
+		unsignedTxFile := filepath.Join(submitterAccount.configDir(), unsignedFname)
+		err = writeFile(unsignedTxFile, txBytes)
+		s.Require().NoError(err)
+
+		// Sign transaction
+		signedTx, err := s.signTxFileOnline(c, 0, submitterAddress.String(), unsignedFname)
+		s.Require().NoError(err)
+
+		// Write signed transaction to file
+		signedFname := "signed_tx.json"
+		signedTxFile := filepath.Join(submitterAccount.configDir(), signedFname)
+		err = writeFile(signedTxFile, signedTx)
+		s.Require().NoError(err)
+
 		// Verify that transaction is accepted and processed correctly
 		// despite fees being in wrong denom order
 		s.Require().Eventually(
 			func() bool {
-				tx, err := s.chainA.SignAndBroadcastTx(val1.keyInfo, txBuilder)
+				res, err := s.broadcastTxFile(c, 0, submitterAddress.String(), signedFname)
 				if err != nil {
 					return false
 				}
-				return tx.Code == uint32(0)
+
+				var result map[string]interface{}
+				err = json.Unmarshal(res, &result)
+				if err != nil {
+					return false
+				}
+
+				// Check if transaction was successful (code 0 means success)
+				if code, ok := result["code"].(float64); ok {
+					return code == 0
+				}
+				return false
 			},
-			10*time.Second,
-			5*time.Second,
+			10*time.Second, // timeout
+			5*time.Second,  // polling interval
 			"Transaction with wrong denom order should succeed",
 		)
 	})

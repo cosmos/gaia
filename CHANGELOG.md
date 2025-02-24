@@ -22,6 +22,10 @@
 
 ### API-BREAKING
 
+### Dependencies
+
+- Bump [docker/build-push-action](https://github.com/docker/build-push-action) from 6.13.0 to 6.14.0 ([#3546](https://github.com/cosmos/gaia/pull/3546))
+
 ## v22.0.1
 
 *February 7, 2025*

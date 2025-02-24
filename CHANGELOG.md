@@ -22,6 +22,10 @@
 
 ### API-BREAKING
 
+### Dependencies
+
+- Bump [github.com/prometheus/client_golang](https://github.com/prometheus/client_golang) from 1.20.5 to 1.21.0 ([#3548](https://github.com/cosmos/gaia/pull/3548))
+
 ## v22.0.1
 
 *February 7, 2025*

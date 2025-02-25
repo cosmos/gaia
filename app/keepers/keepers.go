@@ -83,6 +83,8 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+
+	gaiaparams "github.com/cosmos/gaia/v23/app/params"
 )
 
 type AppKeepers struct {
@@ -530,7 +532,7 @@ func NewAppKeeper(
 	var transferStack porttypes.IBCModule
 	transferStack = transfer.NewIBCModule(appKeepers.TransferKeeper)
 	transferStack = ibccallbacks.NewIBCMiddleware(transferStack, appKeepers.IBCFeeKeeper, wasmStackIBCHandler,
-		wasm.DefaultMaxIBCCallbackGas)
+		gaiaparams.MaxIBCCallbackGas)
 	transferICS4Wrapper := transferStack.(porttypes.ICS4Wrapper)
 	transferStack = icsprovider.NewIBCMiddleware(transferStack, appKeepers.ProviderKeeper)
 	transferStack = pfmrouter.NewIBCMiddleware(
@@ -549,7 +551,7 @@ func NewAppKeeper(
 	// Create Interchain Accounts Controller Stack
 	var icaControllerStack porttypes.IBCModule = icacontroller.NewIBCMiddleware(nil, appKeepers.ICAControllerKeeper)
 	icaControllerStack = ibccallbacks.NewIBCMiddleware(icaControllerStack, appKeepers.IBCFeeKeeper,
-		wasmStackIBCHandler, wasm.DefaultMaxIBCCallbackGas)
+		wasmStackIBCHandler, gaiaparams.MaxIBCCallbackGas)
 	icaICS4Wrapper := icaControllerStack.(porttypes.ICS4Wrapper)
 	appKeepers.ICAControllerKeeper.WithICS4Wrapper(icaICS4Wrapper)
 

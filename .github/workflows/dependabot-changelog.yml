@@ -1,0 +1,19 @@
+name: Dependabot Changelog Entry
+
+on:
+  pull_request:
+    types: [opened, reopened]
+    branches: [main]
+
+jobs:
+  update-changelog:
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # needed for pushing changes
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: crambl/dependabot-changelog-writer@trunk # Always use the latest RELEASED version of this action
+      with:
+        changelog-entry-pattern: 'Bump [dep] from [old] to [new] ([pr-link])'

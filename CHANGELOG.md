@@ -1,5 +1,57 @@
 # CHANGELOG
 
+## UNRELEASED
+
+### DEPENDENCIES
+
+### BUG FIXES
+- Export only validators that are participating in consensus
+  ([\#3490](https://github.com/cosmos/gaia/pull/3490))
+- Fix goreleaser config to generate Linux builds again. ([\#3506](https://github.com/cosmos/gaia/pull/3506))
+
+### IMPROVEMENTS
+
+### FEATURES
+
+### BUG-FIXES
+
+### STATE BREAKING
+
+### API-BREAKING
+
+## v22.2.0
+
+*February 12, 2025*
+
+### DEPENDENCIES
+- Bump [ibc-apps/middleware/packet-forward-middleware](https://github.com/cosmos/ibc-apps/tree/main/middleware/packet-forward-middleware) to
+    [v8.1.1](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv8.1.1)
+    ([\#3534](https://github.com/cosmos/gaia/pull/3534))
+- Add `v22.2.0` upgrade handler ([\#3538](https://github.com/cosmos/gaia/pull/3538))
+
+### STATE BREAKING
+- Bump [ibc-apps/middleware/packet-forward-middleware](https://github.com/cosmos/ibc-apps/tree/main/middleware/packet-forward-middleware) to
+    [v8.1.1](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv8.1.1)
+    ([\#3534](https://github.com/cosmos/gaia/pull/3534))
+- Add `v22.2.0` upgrade handler ([\#3538](https://github.com/cosmos/gaia/pull/3538))
+
+## v22.1.0
+
+February 10, 2025
+
+### DEPENDENCIES
+- Bump [wasmvm](https://github.com/CosmWasm/wasmvm) to
+  [v2.1.5](https://github.com/CosmWasm/wasmvm/releases/tag/v2.1.5)
+  ([\#3519](https://github.com/cosmos/gaia/pull/3519))
+- Bump [cometbft](https://github.com/cometbft/cometbft) to
+  [v0.38.17](https://github.com/cometbft/cometbft/releases/tag/v0.38.17)
+  ([\#3523](https://github.com/cosmos/gaia/pull/3523))
+
+### STATE BREAKING
+- Bump [wasmvm](https://github.com/CosmWasm/wasmvm) to
+  [v2.1.5](https://github.com/CosmWasm/wasmvm/releases/tag/v2.1.5)
+  ([\#3519](https://github.com/cosmos/gaia/pull/3519))
+
 ## v22.0.0
 
 *January 10, 2025*

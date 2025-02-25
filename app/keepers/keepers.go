@@ -455,7 +455,6 @@ func NewAppKeeper(
 		appKeepers.keys[pfmroutertypes.StoreKey],
 		nil, // Will be zero-value here. Reference is set later on with SetTransferKeeper.
 		appKeepers.IBCKeeper.ChannelKeeper,
-		appKeepers.DistrKeeper,
 		appKeepers.BankKeeper,
 		appKeepers.RatelimitKeeper, // ICS4Wrapper
 		govAuthority,
@@ -539,7 +538,6 @@ func NewAppKeeper(
 		appKeepers.PFMRouterKeeper,
 		0, // retries on timeout
 		pfmrouterkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
-		pfmrouterkeeper.DefaultRefundTransferPacketTimeoutTimestamp,
 	)
 	transferStack = ratelimit.NewIBCMiddleware(appKeepers.RatelimitKeeper, transferStack)
 	transferStack = ibcfee.NewIBCMiddleware(transferStack, appKeepers.IBCFeeKeeper)
@@ -596,7 +594,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName).WithKeyTable(ibctransfertypes.ParamKeyTable())
 	paramsKeeper.Subspace(icacontrollertypes.SubModuleName).WithKeyTable(icacontrollertypes.ParamKeyTable())
 	paramsKeeper.Subspace(icahosttypes.SubModuleName).WithKeyTable(icahosttypes.ParamKeyTable())
-	paramsKeeper.Subspace(pfmroutertypes.ModuleName).WithKeyTable(pfmroutertypes.ParamKeyTable())
+	paramsKeeper.Subspace(pfmroutertypes.ModuleName)
 	paramsKeeper.Subspace(ratelimittypes.ModuleName).WithKeyTable(ratelimittypes.ParamKeyTable())
 	paramsKeeper.Subspace(providertypes.ModuleName).WithKeyTable(providertypes.ParamKeyTable())
 	paramsKeeper.Subspace(wasmtypes.ModuleName)

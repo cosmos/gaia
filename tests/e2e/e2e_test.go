@@ -18,6 +18,7 @@ var (
 	runLsmTest                    = true
 	runRateLimitTest              = true
 	runTxExtensionsTest           = true
+	runCWTest                     = true
 )
 
 func (s *IntegrationTestSuite) TestRestInterfaces() {
@@ -132,4 +133,11 @@ func (s *IntegrationTestSuite) TestTxExtensions() {
 	}
 	s.bankSendWithNonCriticalExtensionOptions()
 	s.failedBankSendWithNonCriticalExtensionOptions()
+}
+
+func (s *IntegrationTestSuite) TestCW() {
+	if !runCWTest {
+		s.T().Skip()
+	}
+	s.testCWCounter()
 }

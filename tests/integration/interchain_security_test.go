@@ -35,6 +35,7 @@ func init() {
 }
 
 func TestCCVTestSuite(t *testing.T) {
+	ante.UseFeeMarketDecorator = false
 	// Run tests
 	suite.Run(t, ccvSuite)
 }

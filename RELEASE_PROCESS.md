@@ -67,14 +67,12 @@ An exception are PRs open via the Github mergify integration (i.e., backported P
 
 ### Changelog
 
-For PRs that are changing production code, please add a changelog entry in `.changelog` (for details, see [contributing guidelines](./CONTRIBUTING.md#changelog)). 
-
-To manage and generate the changelog on Gaia, we currently use [unclog](https://github.com/informalsystems/unclog).
+For PRs that are changing production code, please add a changelog entry in `CHANGELOG.md` (for details, see 
+[contributing guidelines](./CONTRIBUTING.md#changelog)). 
 
 #### Creating a new release branch 
 
-Unreleased changes are collected on `main` in `.changelog/unreleased/`. 
-However, `.changelog/` on `main` contains also existing releases (e.g., `v10.0.0`).
+Unreleased changes are collected on `main` in `CHANGELOG.md`. 
 Thus, when creating a new release branch (e.g., `release/v11.x`), the following steps are necessary:
 
 - create a new release branch, e.g., `release/v11.x`
@@ -82,16 +80,6 @@ Thus, when creating a new release branch (e.g., `release/v11.x`), the following 
     git checkout main
     git pull 
     git checkout -b release/v11.x
-    ```
-- delete all the sub-folders in `.changelog/` except `unreleased/` 
-    ```bash
-    find ./.changelog -mindepth 1 -maxdepth 1 -type d -not -name unreleased | xargs rm -r
-    ```
-- replace the content of `.changelog/epilogue.md` with the following text
-    ```md
-    ## Previous Versions
-
-    [CHANGELOG of previous versions](https://github.com/cosmos/gaia/blob/main/CHANGELOG.md)
     ```
 - push the release branch upstream 
     ```bash 
@@ -106,14 +94,8 @@ Before cutting a _**release candidate**_ (e.g., `v11.0.0-rc0`), the following st
     ```bash 
     git checkout release/v11.x
     ```
-- move all entries in ".changelog/unreleased" to the release version, e.g., `v11.0.0`, i.e.,
-    ```bash
-    unclog release v11.0.0
-    ```
-- update `CHANGELOG.md`, i.e.,
-    ```bash
-    unclog build > CHANGELOG.md
-    ```
+- move all entries in "CHANGELOG.md" from the `UNRELEASED` section to a new section with the proper release version,
+  e.g., `v11.0.0`
 - open a PR (from this new created branch) against the release branch, e.g., `release/v11.x`
 
 Now you can cut the release candidate, e.g., v11.0.0-rc0 (follow the [Tagging Procedure](#tagging-procedure)).
@@ -128,16 +110,13 @@ Once the **final release** is cut, the new changelog section must be added to ma
     git pull 
     git checkout -b <username>/backport_changelog
     ```
-- bring the new changelog section from the release branch into this branch, e.g.,
+- bring the new changelog section from the release branch into this branch
     ```bash
-    git checkout release/v11.x .changelog/v11.0.0
+    git merge release/v11.x
     ```
-- remove duplicate entries that are both in `.changelog/unreleased/` and the new changelog section, e.g., `.changelog/v11.0.0`
-- update `CHANGELOG.md`, i.e.,
-    ```bash
-    unclog build > CHANGELOG.md
-    ```
-- open a PR (from this new created branch) against `main`
+- Note that if new entries have been created in the Changelog since the release was cut, you should preserve those 
+  in the `UNRELEASED` section. That means you may have to do some manual cleanup here.
+- Open a PR (from this new created branch) against `main`
   
 ### Release Notes
 
@@ -199,66 +178,33 @@ TM_VERSION=$(go list -m github.com/tendermint/tendermint | sed 's:.* ::') gorele
 Check the instructions for installing goreleaser locally for your platform
 * https://goreleaser.com/install/
 
-#### Building linux-amd64
+## Release Policy
 
-Since linux-amd64 builds with goreleaser are broken after cosmwasm introduction, the corresponding linux-amd64 binary needs to be built on a local machine and uploaded to the release page on every release.
+### Definitions
 
-First, build the linux-amd64 binary:
-```shell
-make build-static-linux-amd64
-```
+A `major` release is an increment of the _point number_ (eg: `v9.X.X → v10.X.X`).  
+A `minor` release is an increment of the _point number_ (eg: `v9.0.X → v9.1.X`).  
+A `patch` release is an increment of the patch number (eg: `v10.0.0` → `v10.0.1`).
 
-The binary will reside in `./build/gaiad-linux-amd64`.
-Rename that binary to match: `gaiad-v<RELEASE>-linux-amd64` (e.g. gaiad-v21.0.0-rc0-linux-amd64).
+### Policy
 
-Then, run a checksum of the binary and update the SHASUMS file of the release (you need to download the file, enter the new SHASUM and reupload manually using the Github UI).
-```shell
-# example
-sha256sum ./gaiad-v21.0.0-rc0-linux-amd64
+A `major` release will only be done via a governance gated upgrade. It can contain state breaking changes, and will 
+also generally include new features, major changes to existing features, and/or large updates to key dependency 
+packages such as CometBFT or the Cosmos SDK.
 
-726f23e3e36f810374fb949d603db20c316de8a62b69d1eea7abd3e4e93e90d3  ./gaiad-v21.0.0-rc0-linux-amd64
-```
+A `minor` release may be done via a governance gated upgrade, or via a coordinated upgrade on a predefined block 
+height. It will contain breaking changes which require a coordinated upgrade, but the scope of these changes is 
+limited to essential updates such as fixes for security vulnerabilities. 
 
-## Non-major Release Procedure
+Each vulnerability which requires a state breaking upgrade will be evaluated individually by the maintainers of the 
+software and the maintainers will make a determination on whether to include the changes into a minor release.
 
-A minor release_ is an increment of the _point number_ (eg: `v9.0.0 → v9.1.0`, also called _point release_). 
-A _patch release_ is an increment of the patch number (eg: `v10.0.0` → `v10.0.1`).
+A `patch` release will be created for changes which are strictly not state breaking. The latest patch release for a 
+given release version is generally the recommended release, however, validator updates can be rolled out 
+asynchronously without risking the state of a network running the software.
 
-**Important**: _**Non-major releases must not break consensus.**_
-
-Updates to the release branch should come from `main` by backporting PRs 
-(usually done by automatic cherry pick followed by a PRs to the release branch). 
-The backports must be marked using `backport/Y` label in PR for main.
-It is the PR author's responsibility to fix merge conflicts, update changelog entries, and
-ensure CI passes. If a PR originates from an external contributor, a member of the stewarding team assumes
-responsibility to perform this process instead of the original author.
-Lastly, it is the stewarding team's responsibility to ensure that the PR meets all the Stable Release Update (SRU) criteria.
-
-Non-major Release must follow the [Stable Release Policy](#stable-release-policy).
-
-After the release branch has all commits required for the next patch release:
-
-* Update the [changelog](#changelog) and the [release notes](#release-notes).
-* Create a new annotated git tag in the release branch (follow the [Tagging Procedure](#tagging-procedure)). This will trigger the automated release process (which will also create the release artifacts).
-* Once the release process completes, modify release notes if needed.
-
-## Major Release Maintenance
-
-Major Release series continue to receive bug fixes (released as either a Minor or a Patch Release) until they reach **End Of Life**.
-Major Release series is maintained in compliance with the **Stable Release Policy** as described in this document.
-
-**Note**: Not every Major Release is denoted as stable releases.
-
-After two major releases, a supported major release will be transitioned to unsupported and will be deemed EOL with no further updates.
-For example, `release/v10.x` is deemed EOL once the network upgrades to `release/v12.x`. 
-
-## Stable Release Policy
-
-Once a Gaia release has been completed and published, updates for it are released under certain circumstances
-and must follow the [Non-major Release Procedure](#non-major-release-procedure).
-
-The intention of the Stable Release Policy is to ensure that all major release series that are not EOL, 
-are maintained with the following categories of fixes:
+The intention of the Release Policy is to ensure that the latest gaia release is maintained with the following
+categories of fixes:
 
 - Tooling improvements (including code formatting, linting, static analysis and updates to testing frameworks)
 - Performance enhancements for running archival and syncing nodes
@@ -267,4 +213,17 @@ are maintained with the following categories of fixes:
 - General maintenance improvements, that are deemed necessary by the stewarding team, that help align different releases and reduce the workload on the stewarding team
 - Security fixes
 
-Issues that are likely excluded, are any issues that impact operating a block producing network.
+## Non-major Release Procedure
+
+Updates to the release branch should come from `main` by backporting PRs 
+(usually done by automatic cherry-pick followed by a PRs to the release branch). 
+The backports must be marked using `backport/Y` label in PR for main.
+It is the PR author's responsibility to fix merge conflicts, update changelog entries, and
+ensure CI passes. If a PR originates from an external contributor, a member of the stewarding team assumes
+responsibility to perform this process instead of the original author.
+
+After the release branch has all commits required for the next patch release:
+
+* Update the [changelog](#changelog) and the [release notes](#release-notes).
+* Create a new annotated git tag in the release branch (follow the [Tagging Procedure](#tagging-procedure)). This will trigger the automated release process (which will also create the release artifacts).
+* Once the release process completes, modify release notes if needed.

@@ -21,6 +21,8 @@ import (
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 )
 
 func queryGaiaTx(endpoint, txHash string) error {
@@ -372,4 +374,32 @@ func queryBlocksPerEpoch(endpoint string) (int64, error) {
 	}
 
 	return response.Params.BlocksPerEpoch, nil
+}
+
+func queryWasmContractAddress(endpoint, creator string) (string, error) {
+	body, err := httpGet(fmt.Sprintf("%s/cosmwasm/wasm/v1/contracts/creator/%s", endpoint, creator))
+	if err != nil {
+		return "", fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	var response wasmtypes.QueryContractsByCreatorResponse
+	if err = cdc.UnmarshalJSON(body, &response); err != nil {
+		return "", err
+	}
+
+	return response.ContractAddresses[0], nil
+}
+
+func queryWasmSmartContractState(endpoint, address, msg string) ([]byte, error) {
+	body, err := httpGet(fmt.Sprintf("%s/cosmwasm/wasm/v1/contract/%s/smart/%s", endpoint, address, msg))
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	var response wasmtypes.QuerySmartContractStateResponse
+	if err = cdc.UnmarshalJSON(body, &response); err != nil {
+		return nil, err
+	}
+
+	return response.Data, nil
 }

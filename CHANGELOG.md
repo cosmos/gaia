@@ -2,22 +2,23 @@
 
 ## UNRELEASED
 
-### DEPENDENCIES
+### Dependencies
 
-### BUG FIXES
+### Bug Fixes
 - Export only validators that are participating in consensus
   ([\#3490](https://github.com/cosmos/gaia/pull/3490))
 - Fix goreleaser config to generate Linux builds again. ([\#3506](https://github.com/cosmos/gaia/pull/3506))
 
-### IMPROVEMENTS
+### Improvements
 
-### FEATURES
+### Features
 
-### BUG-FIXES
+### Bug-Fixes
 
-### STATE BREAKING
+### State Breaking
+- Remove the IBC Fee Middleware ([\#3553](https://github.com/cosmos/gaia/pull/3553))
 
-### API-BREAKING
+### API-Breaking
 
 ## v22.2.0
 

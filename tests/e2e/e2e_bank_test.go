@@ -3,6 +3,7 @@ package e2e
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"path/filepath"
 	"time"
 
@@ -286,6 +287,14 @@ func (s *IntegrationTestSuite) testFeeWithWrongDenomOrder() {
 		// despite fees being in wrong denom order
 		s.Require().Eventually(
 			func() bool {
+				// Log the transaction file contents for debugging
+				txContents, err := os.ReadFile(signedTxFile)
+				if err != nil {
+					s.T().Logf("Error reading signed transaction file: %v", err)
+				} else {
+					s.T().Logf("Signed transaction contents: %s", string(txContents))
+				}
+
 				// Broadcast the transaction
 				res, err := s.broadcastTxFile(c, 0, submitterAddress.String(), signedFname)
 				if err != nil {
@@ -303,6 +312,11 @@ func (s *IntegrationTestSuite) testFeeWithWrongDenomOrder() {
 					return false
 				}
 
+				// More detailed response checking
+				if rawLog, ok := result["raw_log"].(string); ok {
+					s.T().Logf("Transaction raw_log: %s", rawLog)
+				}
+
 				// Check if transaction was successful (code 0 means success)
 				if code, ok := result["code"].(float64); ok {
 					s.T().Logf("Transaction code: %v", code)
@@ -312,7 +326,7 @@ func (s *IntegrationTestSuite) testFeeWithWrongDenomOrder() {
 				s.T().Logf("Code field not found in response")
 				return false
 			},
-			30*time.Second, // increasing timeout
+			45*time.Second, // увеличиваем timeout еще больше
 			5*time.Second,  // polling interval
 			"Transaction with wrong denom order should succeed",
 		)

@@ -326,7 +326,7 @@ func (s *IntegrationTestSuite) testFeeWithWrongDenomOrder() {
 				s.T().Logf("Code field not found in response")
 				return false
 			},
-			45*time.Second, // увеличиваем timeout еще больше
+			45*time.Second, // increasing timeout
 			5*time.Second,  // polling interval
 			"Transaction with wrong denom order should succeed",
 		)

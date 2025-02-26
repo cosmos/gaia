@@ -1,8 +1,6 @@
 module github.com/cosmos/gaia/v23
 
-go 1.22.11
-
-toolchain go1.22.12
+go 1.23.6
 
 require (
 	cosmossdk.io/api v0.7.6

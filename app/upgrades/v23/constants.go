@@ -5,6 +5,8 @@ import (
 
 	"cosmossdk.io/store/types"
 
+	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/types"
+
 	"github.com/cosmos/gaia/v23/app/upgrades"
 )
 
@@ -17,7 +19,9 @@ var Upgrade = upgrades.Upgrade{
 	UpgradeName:          UpgradeName,
 	CreateUpgradeHandler: CreateUpgradeHandler,
 	StoreUpgrades: types.StoreUpgrades{
-		Added:   nil,
+		Added: []string{
+			ibcwasmtypes.StoreKey,
+		},
 		Renamed: nil,
 		Deleted: []string{
 			ibcfeetypes.StoreKey,

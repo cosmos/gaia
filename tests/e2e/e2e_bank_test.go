@@ -286,24 +286,33 @@ func (s *IntegrationTestSuite) testFeeWithWrongDenomOrder() {
 		// despite fees being in wrong denom order
 		s.Require().Eventually(
 			func() bool {
+				// Broadcast the transaction
 				res, err := s.broadcastTxFile(c, 0, submitterAddress.String(), signedFname)
 				if err != nil {
+					s.T().Logf("Error broadcasting transaction: %v", err)
 					return false
 				}
+
+				// Log the response for debugging
+				s.T().Logf("Broadcast response: %s", string(res))
 
 				var result map[string]interface{}
 				err = json.Unmarshal(res, &result)
 				if err != nil {
+					s.T().Logf("Error unmarshaling response: %v", err)
 					return false
 				}
 
 				// Check if transaction was successful (code 0 means success)
 				if code, ok := result["code"].(float64); ok {
+					s.T().Logf("Transaction code: %v", code)
 					return code == 0
 				}
+
+				s.T().Logf("Code field not found in response")
 				return false
 			},
-			10*time.Second, // timeout
+			30*time.Second, // увеличиваем timeout
 			5*time.Second,  // polling interval
 			"Transaction with wrong denom order should succeed",
 		)

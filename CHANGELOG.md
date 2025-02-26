@@ -4,6 +4,8 @@
 
 ### Dependencies
 
+- Bump Go to 1.23 [\#3556](https://github.com/cosmos/gaia/pull/3556)
+
 ### Bug Fixes
 - Export only validators that are participating in consensus
   ([\#3490](https://github.com/cosmos/gaia/pull/3490))

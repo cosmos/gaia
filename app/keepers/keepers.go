@@ -13,6 +13,7 @@ import (
 	ratelimit "github.com/cosmos/ibc-apps/modules/rate-limiting/v8"
 	ratelimitkeeper "github.com/cosmos/ibc-apps/modules/rate-limiting/v8/keeper"
 	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v8/types"
+	ibccallbacks "github.com/cosmos/ibc-go/modules/apps/callbacks"
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
 	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
 	ica "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts"
@@ -79,6 +80,8 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+
+	gaiaparams "github.com/cosmos/gaia/v23/app/params"
 )
 
 type AppKeepers struct {
@@ -497,20 +500,28 @@ func NewAppKeeper(
 	appKeepers.PFMRouterModule = pfmrouter.NewAppModule(appKeepers.PFMRouterKeeper, appKeepers.GetSubspace(pfmroutertypes.ModuleName))
 	appKeepers.RateLimitModule = ratelimit.NewAppModule(appCodec, appKeepers.RatelimitKeeper)
 
+	// wasmStackIBCHandler is injected into both ICA and transfer stacks
+	wasmStackIBCHandler := wasm.NewIBCHandler(appKeepers.WasmKeeper, appKeepers.IBCKeeper.ChannelKeeper,
+		appKeepers.IBCKeeper.ChannelKeeper)
+
 	// Create Transfer Stack (from bottom to top of stack)
 	// - core IBC
 	// - ibcfee
 	// - ratelimit
 	// - pfm
 	// - provider
+	// - callbacks
 	// - transfer
 	//
 	// This is how transfer stack will work in the end:
-	// * RecvPacket -> IBC core -> Fee -> RateLimit -> PFM -> Provider -> Transfer (AddRoute)
-	// * SendPacket -> Transfer -> Provider -> PFM -> RateLimit -> Fee -> IBC core (ICS4Wrapper)
+	// * RecvPacket -> IBC core -> Fee -> RateLimit -> PFM -> Provider -> Callbacks -> Transfer (AddRoute)
+	// * SendPacket -> Transfer -> Callbacks -> Provider -> PFM -> RateLimit -> Fee -> IBC core (ICS4Wrapper)
 
 	var transferStack porttypes.IBCModule
 	transferStack = transfer.NewIBCModule(appKeepers.TransferKeeper)
+	transferStack = ibccallbacks.NewIBCMiddleware(transferStack, appKeepers.IBCKeeper.ChannelKeeper, wasmStackIBCHandler,
+		gaiaparams.MaxIBCCallbackGas)
+	transferICS4Wrapper := transferStack.(porttypes.ICS4Wrapper)
 	transferStack = icsprovider.NewIBCMiddleware(transferStack, appKeepers.ProviderKeeper)
 	transferStack = pfmrouter.NewIBCMiddleware(
 		transferStack,
@@ -519,13 +530,17 @@ func NewAppKeeper(
 		pfmrouterkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
 	)
 	transferStack = ratelimit.NewIBCMiddleware(appKeepers.RatelimitKeeper, transferStack)
+	appKeepers.TransferKeeper.WithICS4Wrapper(transferICS4Wrapper)
 
 	// Create ICAHost Stack
 	var icaHostStack porttypes.IBCModule = icahost.NewIBCModule(appKeepers.ICAHostKeeper)
 
 	// Create Interchain Accounts Controller Stack
 	var icaControllerStack porttypes.IBCModule = icacontroller.NewIBCMiddleware(nil, appKeepers.ICAControllerKeeper)
-
+	icaControllerStack = ibccallbacks.NewIBCMiddleware(icaControllerStack, appKeepers.IBCKeeper.ChannelKeeper,
+		wasmStackIBCHandler, gaiaparams.MaxIBCCallbackGas)
+	icaICS4Wrapper := icaControllerStack.(porttypes.ICS4Wrapper)
+	appKeepers.ICAControllerKeeper.WithICS4Wrapper(icaICS4Wrapper)
 	wasmStack := wasm.NewIBCHandler(appKeepers.WasmKeeper, appKeepers.IBCKeeper.ChannelKeeper, appKeepers.IBCKeeper.ChannelKeeper)
 
 	// Create IBC Router & seal

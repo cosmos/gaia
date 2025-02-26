@@ -21,7 +21,7 @@ BUILDDIR ?= $(CURDIR)/build
 TEST_DOCKER_REPO=cosmos/contrib-gaiatest
 
 GO_SYSTEM_VERSION = $(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f1-2)
-REQUIRE_GO_VERSION = 1.22
+REQUIRE_GO_VERSION = 1.23
 
 export GO111MODULE = on
 

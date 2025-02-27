@@ -26,7 +26,7 @@ require (
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/gogoproto v1.7.0
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10 v10.0.0-beta.2
-	github.com/cosmos/ibc-apps/modules/rate-limiting/v9 v9.0.0-20250226172931-56b9c5e4400a
+	github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.0.0-beta.2
 	github.com/cosmos/ibc-go/modules/apps/callbacks v0.3.1-0.20250226181540-d65db00ece7a
 	github.com/cosmos/ibc-go/modules/light-clients/08-wasm v0.0.0-20250226100348-2b26fe63c089
 	github.com/cosmos/ibc-go/v10 v10.0.0

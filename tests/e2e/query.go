@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v9/types"
+	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types"
 	icacontrollertypes "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/controller/types"
 	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 

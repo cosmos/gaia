@@ -10,7 +10,7 @@ import (
 	tmrand "github.com/cometbft/cometbft/libs/rand"
 
 	dbm "github.com/cosmos/cosmos-db"
-	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v9/types"
+	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types"
 	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 
 	"cosmossdk.io/log"

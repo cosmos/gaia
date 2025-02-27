@@ -11,7 +11,7 @@ import (
 	sdkmath "cosmossdk.io/math"
 	"github.com/cosmos/gaia/v23/tests/interchain/chainsuite"
 	transfertypes "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
-	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
+	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
@@ -154,7 +154,7 @@ func (s *ConsumerModificationSuite) TestConsumerCommissionRate() {
 		{
 			Repository: "ghcr.io/hyphacoop/ics",
 			Version:    "v4.5.0",
-			UidGid:     "1025:1025",
+			UIDGID:     "1025:1025",
 		},
 	}
 	chainID := fmt.Sprintf("%s-test-%d", cfg.ChainName, len(s.Chain.Consumers)+1)
@@ -398,7 +398,7 @@ func TestConsumerModification(t *testing.T) {
 						{
 							Repository: chainsuite.HyphaICSRepo,
 							Version:    "v4.5.0",
-							UidGid:     chainsuite.ICSUidGuid,
+							UIDGID:     chainsuite.ICSUidGuid,
 						},
 					},
 				},

@@ -28,7 +28,7 @@ require (
 	github.com/cosmos/ibc-apps/modules/rate-limiting/v9 v9.0.0-20250226172931-56b9c5e4400a
 	github.com/cosmos/ibc-go/modules/apps/callbacks v0.3.1-0.20250226181540-d65db00ece7a
 	github.com/cosmos/ibc-go/v10 v10.0.0-beta.1
-	github.com/cosmos/interchain-security/v7 v7.0.0-20250226033846-fe7d0ab63413
+	github.com/cosmos/interchain-security/v7 v7.0.0-20250227030200-41409c50cf2f
 	github.com/google/gofuzz v1.2.0
 	github.com/gorilla/mux v1.8.1
 	github.com/ory/dockertest/v3 v3.11.0
@@ -135,7 +135,7 @@ require (
 	github.com/golang/snappy v0.0.5-0.20220116011046-fa5810519dcb // indirect
 	github.com/google/btree v1.1.3 // indirect
 	github.com/google/flatbuffers v24.3.25+incompatible // indirect
-	github.com/google/go-cmp v0.6.0 // indirect
+	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/orderedcode v0.0.1 // indirect
 	github.com/google/s2a-go v0.1.7 // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect

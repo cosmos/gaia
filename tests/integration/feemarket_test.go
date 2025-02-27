@@ -45,7 +45,7 @@ func (suite *FeeMarketTestSuite) SetupTest() {
 	chain, ok := suite.coordinator.Chains[ibctesting.GetChainID(1)]
 	suite.Require().True(ok, "chain not found")
 	suite.chain = chain
-	suite.chain.CurrentHeader.ProposerAddress = sdk.ConsAddress(suite.chain.Vals.Validators[0].Address)
+	suite.chain.ProposedHeader.ProposerAddress = sdk.ConsAddress(suite.chain.Vals.Validators[0].Address)
 
 	app, ok := chain.App.(*gaiaApp.GaiaApp)
 	suite.Require().True(ok, "expected App to be GaiaApp")

@@ -418,10 +418,10 @@ func NewAppKeeper(
 
 	// Create RateLimit keeper
 	appKeepers.RatelimitKeeper = *ratelimitkeeper.NewKeeper(
-		appCodec,                                                            // BinaryCodec
+		appCodec, // BinaryCodec
 		runtime.NewKVStoreService(appKeepers.keys[ratelimittypes.StoreKey]), // StoreKey
 		appKeepers.GetSubspace(ratelimittypes.ModuleName),                   // param Subspace
-		govAuthority,                                                        // authority
+		govAuthority, // authority
 		appKeepers.BankKeeper,
 		appKeepers.IBCKeeper.ChannelKeeper, // ChannelKeeper
 		appKeepers.IBCKeeper.ChannelKeeper, // ICS4Wrapper

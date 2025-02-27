@@ -2,11 +2,12 @@ package gaia
 
 import (
 	"fmt"
-	ibctm "github.com/cosmos/ibc-go/v10/modules/light-clients/07-tendermint"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	ibctm "github.com/cosmos/ibc-go/v10/modules/light-clients/07-tendermint"
 
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"

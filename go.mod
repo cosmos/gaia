@@ -27,8 +27,8 @@ require (
 	github.com/cosmos/gogoproto v1.7.0
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10 v10.0.0-beta.2
 	github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.0.0-beta.2
-	github.com/cosmos/ibc-go/modules/apps/callbacks v0.3.1-0.20250226181540-d65db00ece7a
-	github.com/cosmos/ibc-go/modules/light-clients/08-wasm v0.0.0-20250226100348-2b26fe63c089
+	github.com/cosmos/ibc-go/modules/apps/callbacks v0.3.1-0.20250227211730-c7a9c56d82b7 // go mod tidy automatically changes this from v0.3.0+ibc-go-v10.0-beta.2
+	github.com/cosmos/ibc-go/modules/light-clients/08-wasm v0.6.1-0.20250227211432-512d1b28273b // go mod tidy automatically changes this from v0.6.0+ibc-go-v10.0-wasmvm-v2.2-beta.2
 	github.com/cosmos/ibc-go/v10 v10.0.0
 	github.com/cosmos/interchain-security/v7 v7.0.0-20250227030200-41409c50cf2f
 	github.com/google/gofuzz v1.2.0
@@ -261,7 +261,7 @@ replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
 	// TODO: remove this replace directive once the following PR is merged and released: https://github.com/CosmWasm/wasmd/pull/2139
-	github.com/CosmWasm/wasmd => github.com/gjermundgaraba/wasmd v0.0.0-20250226195655-43308101e874
+	github.com/CosmWasm/wasmd => github.com/gjermundgaraba/wasmd v0.0.0-20250227212003-93178b50a03e
 
 	// Use special SDK v0.50.x release with support for both ICS and LSM
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.50.11-lsm

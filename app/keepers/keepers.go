@@ -3,7 +3,6 @@ package keepers
 import (
 	"errors"
 	"fmt"
-	ibctm "github.com/cosmos/ibc-go/v10/modules/light-clients/07-tendermint"
 	"os"
 	"path/filepath"
 
@@ -531,12 +530,6 @@ func NewAppKeeper(
 
 	// Create ICAHost Stack
 	var icaHostStack porttypes.IBCModule = icahost.NewIBCModule(appKeepers.ICAHostKeeper)
-
-	// Create IBC Tendermint Light Client Stack
-	clientKeeper := appKeepers.IBCKeeper.ClientKeeper //todo: vlad to fix
-	tmLightClientModule := ibctm.NewLightClientModule(appCodec, clientKeeper.GetStoreProvider())
-	clientKeeper.AddRoute(ibctm.ModuleName, &tmLightClientModule)
-	ibctm.NewAppModule(tmLightClientModule)
 
 	// Create Interchain Accounts Controller Stack
 	var icaControllerStack porttypes.IBCModule = icacontroller.NewIBCMiddleware(appKeepers.ICAControllerKeeper)

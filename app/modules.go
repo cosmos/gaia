@@ -1,6 +1,7 @@
 package gaia
 
 import (
+	tendermint "github.com/cosmos/ibc-go/v10/modules/light-clients/07-tendermint"
 	"github.com/skip-mev/feemarket/x/feemarket"
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
@@ -84,6 +85,8 @@ func appModules(
 	appCodec codec.Codec,
 	txConfig client.TxEncodingConfig,
 	skipGenesisInvariants bool,
+	tmLightClientModule tendermint.LightClientModule,
+
 ) []module.AppModule {
 	return []module.AppModule{
 		no_valupdates_genutil.NewAppModule(
@@ -117,6 +120,7 @@ func appModules(
 		app.ProviderModule,
 		metaprotocols.NewAppModule(),
 		feemarket.NewAppModule(appCodec, *app.FeeMarketKeeper),
+		tendermint.NewAppModule(tmLightClientModule),
 	}
 }
 

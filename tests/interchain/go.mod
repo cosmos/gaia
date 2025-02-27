@@ -1,7 +1,8 @@
 module github.com/cosmos/gaia/v23/tests/interchain
 
-go 1.22.5
-toolchain go1.23.0
+go 1.22.11
+
+toolchain go1.23.6
 
 replace (
 	cosmossdk.io/core => cosmossdk.io/core v0.11.0
@@ -22,7 +23,7 @@ require (
 	cosmossdk.io/math v1.4.0
 	github.com/cometbft/cometbft v0.38.17
 	github.com/cosmos/cosmos-sdk v0.50.9
-	github.com/cosmos/ibc-go/v8 v8.5.0
+	github.com/cosmos/ibc-go/v10 v8.5.0
 	github.com/cosmos/interchain-security/v5 v5.1.1
 	github.com/docker/docker v27.1.2+incompatible
 	github.com/google/go-github/v62 v62.0.0

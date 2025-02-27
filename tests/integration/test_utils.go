@@ -13,7 +13,7 @@ import (
 	abci "github.com/cometbft/cometbft/abci/types"
 
 	dbm "github.com/cosmos/cosmos-db"
-	ibctesting "github.com/cosmos/ibc-go/v8/testing"
+	ibctesting "github.com/cosmos/ibc-go/v10/testing"
 
 	"cosmossdk.io/log"
 
@@ -98,7 +98,7 @@ func SendMsgsOverride(chain *ibctesting.TestChain, feeAmount sdk.Coin, gasLimit 
 		[]uint64{chain.SenderAccount.GetAccountNumber()},
 		[]uint64{chain.SenderAccount.GetSequence()},
 		true,
-		chain.CurrentHeader.GetTime(),
+		chain.ProposedHeader.GetTime(),
 		chain.NextVals.Hash(),
 		feeAmount,
 		gasLimit,

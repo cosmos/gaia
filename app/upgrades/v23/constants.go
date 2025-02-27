@@ -1,8 +1,6 @@
 package v23
 
 import (
-	ibcfeetypes "github.com/cosmos/ibc-go/v8/modules/apps/29-fee/types"
-
 	"cosmossdk.io/store/types"
 
 	"github.com/cosmos/gaia/v23/app/upgrades"
@@ -11,6 +9,7 @@ import (
 const (
 	// UpgradeName defines the on-chain upgrade name.
 	UpgradeName = "v23"
+	StoreKey    = "feeibc"
 )
 
 var Upgrade = upgrades.Upgrade{
@@ -20,7 +19,7 @@ var Upgrade = upgrades.Upgrade{
 		Added:   nil,
 		Renamed: nil,
 		Deleted: []string{
-			ibcfeetypes.StoreKey,
+			StoreKey,
 		},
 	},
 }

@@ -442,8 +442,8 @@ github.com/cosmos/gogoproto v1.7.0 h1:79USr0oyXAbxg3rspGh/m4SWNyoz/GLaAh0QlCe2fr
 github.com/cosmos/gogoproto v1.7.0/go.mod h1:yWChEv5IUEYURQasfyBW5ffkMHR/90hiHgbNgrtp4j0=
 github.com/cosmos/iavl v1.2.4 h1:IHUrG8dkyueKEY72y92jajrizbkZKPZbMmG14QzsEkw=
 github.com/cosmos/iavl v1.2.4/go.mod h1:GiM43q0pB+uG53mLxLDzimxM9l/5N9UuSY3/D0huuVw=
-github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v9 v9.0.0-20250226215458-004dc57e8b77 h1:OeVhgRjHF/cHiSnO3QQRdXnZvIeWAVvuJkFJfAN3cFM=
-github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v9 v9.0.0-20250226215458-004dc57e8b77/go.mod h1:NOt4uoXlJOIVBUDmYmsEwWYmmUrUV/mBqnJhzHqWNIQ=
+github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10 v10.0.0-beta.2 h1:pUFOvX5ue1fNIGpm2akg/picBuTyEr8bGzKn+M7sCE0=
+github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10 v10.0.0-beta.2/go.mod h1:+oU4GGDP51P1A+W8WMTcx9kHdyRmX3uunECdFD2KpNU=
 github.com/cosmos/ibc-apps/modules/rate-limiting/v9 v9.0.0-20250226172931-56b9c5e4400a h1:rKTO9NFVAeg1XVVdcQsRfOBwyT+/TQxA82E0fJUkVMs=
 github.com/cosmos/ibc-apps/modules/rate-limiting/v9 v9.0.0-20250226172931-56b9c5e4400a/go.mod h1:YlRD7xyIKTNeqRl6LJsmR9gXQm6OnQz6ios32gw8UEQ=
 github.com/cosmos/ibc-go/modules/apps/callbacks v0.3.1-0.20250226181540-d65db00ece7a h1:sHNSaRpSG4MtvnRFUBu2JN8Ufmzqz1p7gawaY+Psu1c=

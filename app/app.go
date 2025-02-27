@@ -19,6 +19,7 @@ import (
 
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/gogoproto/proto"
+	ibcwasmkeeper "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/keeper"
 	ibctesting "github.com/cosmos/ibc-go/v10/testing"
 	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 
@@ -314,7 +315,10 @@ func NewGaiaApp(
 	app.SetEndBlocker(app.EndBlocker)
 
 	if manager := app.SnapshotManager(); manager != nil {
-		err = manager.RegisterExtensions(wasmkeeper.NewWasmSnapshotter(app.CommitMultiStore(), &app.AppKeepers.WasmKeeper))
+		err = manager.RegisterExtensions(
+			wasmkeeper.NewWasmSnapshotter(app.CommitMultiStore(), &app.AppKeepers.WasmKeeper),
+			ibcwasmkeeper.NewWasmSnapshotter(app.CommitMultiStore(), &app.WasmClientKeeper),
+		)
 		if err != nil {
 			panic("failed to register snapshot extension: " + err.Error())
 		}
@@ -345,6 +349,10 @@ func NewGaiaApp(
 
 		if err := app.AppKeepers.WasmKeeper.InitializePinnedCodes(ctx); err != nil {
 			tmos.Exit(fmt.Sprintf("WasmKeeper failed initialize pinned codes %s", err))
+		}
+
+		if err := app.WasmClientKeeper.InitializePinnedCodes(ctx); err != nil {
+			panic(fmt.Sprintf("wasmlckeeper failed initialize pinned codes %s", err))
 		}
 	}
 

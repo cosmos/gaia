@@ -17,7 +17,8 @@ require (
 	cosmossdk.io/x/feegrant v0.1.1
 	cosmossdk.io/x/tx v0.13.7
 	cosmossdk.io/x/upgrade v0.1.4
-	github.com/CosmWasm/wasmd v0.55.0-beta.0
+	github.com/CosmWasm/wasmd v0.0.0
+	github.com/CosmWasm/wasmvm/v2 v2.2.2
 	github.com/cometbft/cometbft v0.38.17
 	github.com/cometbft/cometbft-db v0.14.1
 	github.com/cosmos/cosmos-db v1.1.1
@@ -27,7 +28,8 @@ require (
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v9 v9.0.0-20250226215458-004dc57e8b77
 	github.com/cosmos/ibc-apps/modules/rate-limiting/v9 v9.0.0-20250226172931-56b9c5e4400a
 	github.com/cosmos/ibc-go/modules/apps/callbacks v0.3.1-0.20250226181540-d65db00ece7a
-	github.com/cosmos/ibc-go/v10 v10.0.0-beta.1
+	github.com/cosmos/ibc-go/modules/light-clients/08-wasm v0.0.0-20250226100348-2b26fe63c089
+	github.com/cosmos/ibc-go/v10 v10.0.0
 	github.com/cosmos/interchain-security/v7 v7.0.0-20250227030200-41409c50cf2f
 	github.com/google/gofuzz v1.2.0
 	github.com/gorilla/mux v1.8.1
@@ -65,7 +67,6 @@ require (
 	github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4 // indirect
 	github.com/99designs/keyring v1.2.2 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161 // indirect
-	github.com/CosmWasm/wasmvm/v2 v2.2.1 // indirect
 	github.com/DataDog/datadog-go v4.8.3+incompatible // indirect
 	github.com/DataDog/zstd v1.5.5 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
@@ -168,7 +169,7 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jmhodges/levigo v1.0.0 // indirect
 	github.com/klauspost/compress v1.17.9 // indirect
-	github.com/klauspost/cpuid/v2 v2.0.9 // indirect
+	github.com/klauspost/cpuid/v2 v2.2.8 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/lib/pq v1.10.9 // indirect
@@ -187,6 +188,8 @@ require (
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/oasisprotocol/curve25519-voi v0.0.0-20230904125328-1f23a7beb09a // indirect
 	github.com/oklog/run v1.1.0 // indirect
+	github.com/onsi/ginkgo v1.16.5 // indirect
+	github.com/onsi/gomega v1.34.1 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0 // indirect
 	github.com/opencontainers/runc v1.1.14 // indirect
@@ -229,7 +232,7 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/arch v0.0.0-20210923205945-b76863e36670 // indirect
 	golang.org/x/crypto v0.32.0 // indirect
-	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56 // indirect
+	golang.org/x/exp v0.0.0-20240808152545-0cdaa3abc0fa // indirect
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/oauth2 v0.24.0 // indirect
 	golang.org/x/sync v0.10.0 // indirect
@@ -262,6 +265,10 @@ replace (
 
 	// Use special SDK v0.50.x release with support for both ICS and LSM
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.50.11-lsm
+
+	github.com/cosmos/ibc-go/modules/light-clients/08-wasm/blsverifier => github.com/cosmos/ibc-go/modules/light-clients/08-wasm/blsverifier v0.0.0-20250211202654-9c448bbbe4ab
+
+	github.com/cosmos/ibc-go/v10 => github.com/cosmos/ibc-go/v10 v10.0.0-beta.1
 
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2

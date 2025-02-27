@@ -15,6 +15,8 @@
 
 ### Features
 
+- Add 08-wasm light client ([\#3554](https://github.com/cosmos/gaia/pull/3554))
+
 ### Bug-Fixes
 
 ### State Breaking

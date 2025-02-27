@@ -44,7 +44,7 @@ type HandlerOptions struct {
 	FeeMarketKeeper       *feemarketkeeper.Keeper
 	TxFeeChecker          ante.TxFeeChecker
 	TXCounterStoreService corestoretypes.KVStoreService
-	WasmConfig            *wasmtypes.WasmConfig
+	WasmConfig            *wasmtypes.NodeConfig
 }
 
 func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {

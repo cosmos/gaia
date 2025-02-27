@@ -2,7 +2,10 @@ package e2e
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
+	"path/filepath"
+	"strconv"
 
 	tmrand "github.com/cometbft/cometbft/libs/rand"
 
@@ -93,13 +96,15 @@ func (c *chain) configDir() string {
 }
 
 func (c *chain) createAndInitValidators(count int) error {
+	// create a separate app dir for the tempApp so that wasmvm won't complain about file locks
+	tempAppDir := filepath.Join(gaia.DefaultNodeHome, strconv.Itoa(rand.Intn(10000)))
 	tempApplication := gaia.NewGaiaApp(
 		log.NewNopLogger(),
 		dbm.NewMemDB(),
 		nil,
 		true,
 		map[int64]bool{},
-		gaia.DefaultNodeHome,
+		tempAppDir,
 		gaia.EmptyAppOptions{},
 		gaia.EmptyWasmOptions,
 	)

@@ -2,8 +2,11 @@ package keepers
 
 import (
 	"errors"
+	"fmt"
 	"os"
+	"path/filepath"
 
+	wasmvm "github.com/CosmWasm/wasmvm/v2"
 	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
@@ -16,6 +19,8 @@ import (
 	ibccallbacks "github.com/cosmos/ibc-go/modules/apps/callbacks"
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
 	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
+	ibcwasmkeeper "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/keeper"
+	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/types"
 	ica "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts"
 	icacontroller "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller"
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/keeper"
@@ -105,6 +110,7 @@ type AppKeepers struct {
 	WasmKeeper       wasmkeeper.Keeper
 	// IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	IBCKeeper             *ibckeeper.Keeper
+	WasmClientKeeper      ibcwasmkeeper.Keeper
 	ICAHostKeeper         icahostkeeper.Keeper
 	ICAControllerKeeper   icacontrollerkeeper.Keeper
 	EvidenceKeeper        evidencekeeper.Keeper
@@ -310,6 +316,37 @@ func NewAppKeeper(
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
+	wasmLightClientQuerier := ibcwasmtypes.QueryPlugins{
+		// Custom: MyCustomQueryPlugin(),
+		// `myAcceptList` is a `[]string` containing the list of gRPC query paths that the chain wants to allow for the `08-wasm` module to query.
+		// These queries must be registered in the chain's gRPC query router, be deterministic, and track their gas usage.
+		// The `AcceptListStargateQuerier` function will return a query plugin that will only allow queries for the paths in the `myAcceptList`.
+		// The query responses are encoded in protobuf unlike the implementation in `x/wasm`.
+		Stargate: ibcwasmtypes.AcceptListStargateQuerier([]string{
+			"/ibc.core.client.v1.Query/ClientState",
+			"/ibc.core.client.v1.Query/ConsensusState",
+			"/ibc.core.connection.v1.Query/Connection",
+		}),
+	}
+
+	dataDir := filepath.Join(homePath, "data")
+
+	var memCacheSizeMB uint32 = 100
+	lc08, err := wasmvm.NewVM(filepath.Join(dataDir, "08-light-client"), wasmkeeper.BuiltInCapabilities(), 32, false, memCacheSizeMB)
+	if err != nil {
+		panic(fmt.Sprintf("failed to create VM for 08 light client: %s", err))
+	}
+
+	appKeepers.WasmClientKeeper = ibcwasmkeeper.NewKeeperWithVM(
+		appCodec,
+		runtime.NewKVStoreService(appKeepers.keys[ibcwasmtypes.StoreKey]),
+		appKeepers.IBCKeeper.ClientKeeper,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		lc08,
+		bApp.GRPCQueryRouter(),
+		ibcwasmkeeper.WithQueryPlugins(&wasmLightClientQuerier),
+	)
+
 	appKeepers.ProviderKeeper = icsproviderkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[providertypes.StoreKey],
@@ -468,7 +505,7 @@ func NewAppKeeper(
 	appKeepers.PFMRouterKeeper.SetTransferKeeper(appKeepers.TransferKeeper)
 
 	wasmDir := homePath
-	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
+	wasmConfig, err := wasm.ReadNodeConfig(appOpts)
 	if err != nil {
 		panic("error while reading wasm config: " + err.Error())
 	}
@@ -489,6 +526,7 @@ func NewAppKeeper(
 		bApp.GRPCQueryRouter(),
 		wasmDir,
 		wasmConfig,
+		wasmtypes.VMConfig{},
 		wasmkeeper.BuiltInCapabilities(),
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 		wasmOpts...,

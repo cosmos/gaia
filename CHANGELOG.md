@@ -2,25 +2,29 @@
 
 ## UNRELEASED
 
-### Dependencies
+### DEPENDENCIES
 
 - Bump Go to 1.23 [\#3556](https://github.com/cosmos/gaia/pull/3556)
+- Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v10.0.0-beta.2](https://github.com/cosmos/ibc-go/tree/v10.0.0-beta.2) ([\#3560](https://github.com/cosmos/gaia/pull/3560))
+- Bump [ibc-apps/modules/rate-limiting](https://github.com/cosmos/ibc-apps/tree/main/modules/rate-limiting) to [v10.0.0-beta.2](https://github.com/cosmos/ibc-apps/tree/modules/rate-limiting/v10.0.0-beta.2) ([\#3560](https://github.com/cosmos/gaia/pull/3560))
+- Bump [ibc-apps/middleware/packet-forward-middleware](https://github.com/cosmos/ibc-apps/tree/main/middleware/packet-forward-middleware) to [v10.0.0-beta.2](https://github.com/cosmos/ibc-apps/tree/middleware/packet-forward-middleware/v10.0.0-beta.2) ([\#3560](https://github.com/cosmos/gaia/pull/3560))
+- Bump [ibc-go/modules/apps/callbacks](https://github.com/cosmos/ibc-go/tree/main/modules/apps/callbacks) to [v0.3.0+ibc-go-v10.0-beta.2](https://github.com/cosmos/ibc-go/tree/modules/apps/callbacks/v0.3.0%2Bibc-go-v10.0-beta.2/modules/apps/callbacks) ([\#3560](https://github.com/cosmos/gaia/pull/3560))
+- Bump [ibc-go/modules/light-clients/08-wasm](https://github.com/cosmos/ibc-go/tree/main/modules/light-clients/08-wasm) to [v0.6.0+ibc-go-v10.0-wasmvm-v2.2-beta.2](https://github.com/cosmos/ibc-go/tree/modules/light-clients/08-wasm/v0.6.0%2Bibc-go-v10.0-wasmvm-v2.2-beta.2) ([\#3560](https://github.com/cosmos/gaia/pull/3560))
+- Bump [interchain-security](https://github.com/cosmos/interchain-security) to [v7]() ([\#3560](https://github.com/cosmos/gaia/pull/3560))
+- Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.50.12](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.50.12) ([\#3560](https://github.com/cosmos/gaia/pull/3560))
 
-### Bug Fixes
+### BUG FIXES
 - Export only validators that are participating in consensus
   ([\#3490](https://github.com/cosmos/gaia/pull/3490))
 - Fix goreleaser config to generate Linux builds again. ([\#3506](https://github.com/cosmos/gaia/pull/3506))
 
-### Improvements
+### IMPROVEMENTS
 
-### Features
+### FEATURES
+- Add [ibc-go/modules/light-clients/08-wasm](https://github.com/cosmos/ibc-go/tree/main/modules/light-clients/08-wasm) ([\#3554](https://github.com/cosmos/gaia/pull/3554))
 
-- Add 08-wasm light client ([\#3554](https://github.com/cosmos/gaia/pull/3554))
-
-### Bug-Fixes
-
-### State Breaking
-- Remove the IBC Fee Middleware ([\#3553](https://github.com/cosmos/gaia/pull/3553))
+### STATE BREAKING
+- Remove [ibc-go/modules/apps/29-fee](https://github.com/cosmos/ibc-go/tree/v8.5.3/modules/apps/29-fee) ([\#3553](https://github.com/cosmos/gaia/pull/3553))
 
 ### API-Breaking
 

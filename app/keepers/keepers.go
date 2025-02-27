@@ -419,10 +419,10 @@ func NewAppKeeper(
 
 	// Create RateLimit keeper
 	appKeepers.RatelimitKeeper = *ratelimitkeeper.NewKeeper(
-		appCodec, // BinaryCodec
+		appCodec,                                                            // BinaryCodec
 		runtime.NewKVStoreService(appKeepers.keys[ratelimittypes.StoreKey]), // StoreKey
 		appKeepers.GetSubspace(ratelimittypes.ModuleName),                   // param Subspace
-		govAuthority, // authority
+		govAuthority,                                                        // authority
 		appKeepers.BankKeeper,
 		appKeepers.IBCKeeper.ChannelKeeper, // ChannelKeeper
 		appKeepers.IBCKeeper.ChannelKeeper, // ICS4Wrapper
@@ -533,7 +533,7 @@ func NewAppKeeper(
 	var icaHostStack porttypes.IBCModule = icahost.NewIBCModule(appKeepers.ICAHostKeeper)
 
 	// Create IBC Tendermint Light Client Stack
-	clientKeeper := appKeepers.IBCKeeper.ClientKeeper
+	clientKeeper := appKeepers.IBCKeeper.ClientKeeper //todo: vlad to fix
 	tmLightClientModule := ibctm.NewLightClientModule(appCodec, clientKeeper.GetStoreProvider())
 	clientKeeper.AddRoute(ibctm.ModuleName, &tmLightClientModule)
 	ibctm.NewAppModule(tmLightClientModule)

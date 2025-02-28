@@ -2,6 +2,8 @@ package gaia
 
 import (
 	"fmt"
+	ibcwasm "github.com/cosmos/ibc-go/modules/light-clients/08-wasm"
+	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/types"
 	"io"
 	"net/http"
 	"os"
@@ -199,6 +201,10 @@ func NewGaiaApp(
 	clientKeeper := app.AppKeepers.IBCKeeper.ClientKeeper
 	tmLightClientModule := ibctm.NewLightClientModule(appCodec, clientKeeper.GetStoreProvider())
 	clientKeeper.AddRoute(ibctm.ModuleName, &tmLightClientModule)
+
+	// Create WASM Light Client Stack
+	wasmLightClientModule := ibcwasm.NewLightClientModule(app.WasmClientKeeper, clientKeeper.GetStoreProvider())
+	clientKeeper.AddRoute(ibcwasmtypes.ModuleName, &wasmLightClientModule)
 
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.

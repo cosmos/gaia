@@ -5,6 +5,7 @@
 ### Dependencies
 
 - Bump Go to 1.23 [\#3556](https://github.com/cosmos/gaia/pull/3556)
+- Bump [github.com/cosmos/ibc-go/v8](https://github.com/cosmos/ibc-go) from 8.5.0 to 8.6.1 ([#3571](https://github.com/cosmos/gaia/pull/3571))
 
 ### Bug Fixes
 - Export only validators that are participating in consensus

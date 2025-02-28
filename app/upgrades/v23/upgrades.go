@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/cosmos/ibc-go/v10/modules/core/02-client/types"
 	ibctmtypes "github.com/cosmos/ibc-go/v10/modules/light-clients/07-tendermint"
+	"slices"
 
 	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/types"
 	clientkeeper "github.com/cosmos/ibc-go/v10/modules/core/02-client/keeper"
@@ -37,9 +38,11 @@ func CreateUpgradeHandler(
 		if len(params.AllowedClients) == 1 && params.AllowedClients[0] == types.AllowAllClients {
 			keepers.IBCKeeper.ClientKeeper.SetParams(ctx, types.Params{AllowedClients: []string{}})
 		}
-		
+
 		// Add the client types to the allowed clients
-		Add07TendermintToAllowedClients(ctx, *keepers.IBCKeeper.ClientKeeper)
+		if slices.Contains(params.AllowedClients, ibctmtypes.ModuleName) {
+			Add07TendermintToAllowedClients(ctx, *keepers.IBCKeeper.ClientKeeper)
+		}
 		Add08WasmToAllowedClients(ctx, *keepers.IBCKeeper.ClientKeeper)
 
 		ctx.Logger().Info("Upgrade v23 complete")

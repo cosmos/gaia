@@ -10,7 +10,7 @@
 - Bump [ibc-apps/middleware/packet-forward-middleware](https://github.com/cosmos/ibc-apps/tree/main/middleware/packet-forward-middleware) to [v10.0.0-beta.2](https://github.com/cosmos/ibc-apps/tree/middleware/packet-forward-middleware/v10.0.0-beta.2) ([\#3560](https://github.com/cosmos/gaia/pull/3560))
 - Bump [ibc-go/modules/apps/callbacks](https://github.com/cosmos/ibc-go/tree/main/modules/apps/callbacks) to [v0.3.0+ibc-go-v10.0-beta.2](https://github.com/cosmos/ibc-go/tree/modules/apps/callbacks/v0.3.0%2Bibc-go-v10.0-beta.2/modules/apps/callbacks) ([\#3560](https://github.com/cosmos/gaia/pull/3560))
 - Bump [ibc-go/modules/light-clients/08-wasm](https://github.com/cosmos/ibc-go/tree/main/modules/light-clients/08-wasm) to [v0.6.0+ibc-go-v10.0-wasmvm-v2.2-beta.2](https://github.com/cosmos/ibc-go/tree/modules/light-clients/08-wasm/v0.6.0%2Bibc-go-v10.0-wasmvm-v2.2-beta.2) ([\#3560](https://github.com/cosmos/gaia/pull/3560))
-- Bump [interchain-security](https://github.com/cosmos/interchain-security) to [v7]() ([\#3560](https://github.com/cosmos/gaia/pull/3560))
+- Bump [interchain-security](https://github.com/cosmos/interchain-security) to [v7.0.0-rc0](https://github.com/cosmos/interchain-security/tree/v7.0.0-rc0) ([\#3560](https://github.com/cosmos/gaia/pull/3560))
 - Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.50.12](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.50.12) ([\#3560](https://github.com/cosmos/gaia/pull/3560))
 
 ### BUG FIXES

@@ -30,7 +30,7 @@ require (
 	github.com/cosmos/ibc-go/modules/apps/callbacks v0.3.1-0.20250227211730-c7a9c56d82b7 // go mod tidy automatically changes this from v0.3.0+ibc-go-v10.0-beta.2
 	github.com/cosmos/ibc-go/modules/light-clients/08-wasm v0.6.1-0.20250227211432-512d1b28273b // go mod tidy automatically changes this from v0.6.0+ibc-go-v10.0-wasmvm-v2.2-beta.2
 	github.com/cosmos/ibc-go/v10 v10.0.0
-	github.com/cosmos/interchain-security/v7 v7.0.0-20250227030200-41409c50cf2f
+	github.com/cosmos/interchain-security/v7 v7.0.0-rc0
 	github.com/google/gofuzz v1.2.0
 	github.com/gorilla/mux v1.8.1
 	github.com/ory/dockertest/v3 v3.11.0

@@ -28,6 +28,10 @@
 
 ### API-Breaking
 
+### Dependencies
+
+- Bump [github.com/cometbft/cometbft-db](https://github.com/cometbft/cometbft-db) from 0.14.1 to 1.0.4 ([#3574](https://github.com/cosmos/gaia/pull/3574))
+
 ## v22.2.0
 
 *February 12, 2025*

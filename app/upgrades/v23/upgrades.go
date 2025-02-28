@@ -2,12 +2,8 @@ package v23
 
 import (
 	"context"
-	"github.com/cosmos/ibc-go/v10/modules/core/02-client/types"
-	ibctmtypes "github.com/cosmos/ibc-go/v10/modules/light-clients/07-tendermint"
-	"slices"
-
 	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/types"
-	clientkeeper "github.com/cosmos/ibc-go/v10/modules/core/02-client/keeper"
+	ibctmtypes "github.com/cosmos/ibc-go/v10/modules/light-clients/07-tendermint"
 
 	errorsmod "cosmossdk.io/errors"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
@@ -33,33 +29,12 @@ func CreateUpgradeHandler(
 			return vm, errorsmod.Wrapf(err, "running module migrations")
 		}
 
-		// Remove AllowAllClients if it exists
+		// Set IBC Client AllowedClients
 		params := keepers.IBCKeeper.ClientKeeper.GetParams(ctx)
-		if len(params.AllowedClients) == 1 && params.AllowedClients[0] == types.AllowAllClients {
-			keepers.IBCKeeper.ClientKeeper.SetParams(ctx, types.Params{AllowedClients: []string{}})
-		}
-
-		// Add the client types to the allowed clients
-		if slices.Contains(params.AllowedClients, ibctmtypes.ModuleName) {
-			Add07TendermintToAllowedClients(ctx, *keepers.IBCKeeper.ClientKeeper)
-		}
-		Add08WasmToAllowedClients(ctx, *keepers.IBCKeeper.ClientKeeper)
+		params.AllowedClients = []string{ibctmtypes.ModuleName, ibcwasmtypes.ModuleName}
+		keepers.IBCKeeper.ClientKeeper.SetParams(ctx, params)
 
 		ctx.Logger().Info("Upgrade v23 complete")
 		return vm, nil
 	}
-}
-
-func Add07TendermintToAllowedClients(ctx sdk.Context, clientKeeper clientkeeper.Keeper) {
-	// explicitly update the IBC 02-client params, adding the wasm client type
-	params := clientKeeper.GetParams(ctx)
-	params.AllowedClients = append(params.AllowedClients, ibctmtypes.ModuleName)
-	clientKeeper.SetParams(ctx, params)
-}
-
-func Add08WasmToAllowedClients(ctx sdk.Context, clientKeeper clientkeeper.Keeper) {
-	// explicitly update the IBC 02-client params, adding the wasm client type
-	params := clientKeeper.GetParams(ctx)
-	params.AllowedClients = append(params.AllowedClients, ibcwasmtypes.Wasm)
-	clientKeeper.SetParams(ctx, params)
 }

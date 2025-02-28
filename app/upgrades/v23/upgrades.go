@@ -4,7 +4,7 @@ import (
 	"context"
 
 	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/types"
-	clientkeeper "github.com/cosmos/ibc-go/v10/modules/core/02-client/keeper"
+	ibctmtypes "github.com/cosmos/ibc-go/v10/modules/light-clients/07-tendermint"
 
 	errorsmod "cosmossdk.io/errors"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
@@ -30,17 +30,12 @@ func CreateUpgradeHandler(
 			return vm, errorsmod.Wrapf(err, "running module migrations")
 		}
 
-		// Add the Wasm client type to the allowed clients
-		Add08WasmToAllowedClients(ctx, *keepers.IBCKeeper.ClientKeeper)
+		// Set IBC Client AllowedClients
+		params := keepers.IBCKeeper.ClientKeeper.GetParams(ctx)
+		params.AllowedClients = []string{ibctmtypes.ModuleName, ibcwasmtypes.ModuleName}
+		keepers.IBCKeeper.ClientKeeper.SetParams(ctx, params)
 
 		ctx.Logger().Info("Upgrade v23 complete")
 		return vm, nil
 	}
-}
-
-func Add08WasmToAllowedClients(ctx sdk.Context, clientKeeper clientkeeper.Keeper) {
-	// explicitly update the IBC 02-client params, adding the wasm client type
-	params := clientKeeper.GetParams(ctx)
-	params.AllowedClients = append(params.AllowedClients, ibcwasmtypes.Wasm)
-	clientKeeper.SetParams(ctx, params)
 }

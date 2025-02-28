@@ -30,7 +30,7 @@ require (
 	github.com/cosmos/ibc-go/modules/apps/callbacks v0.2.1-0.20231113120333-342c00b0f8bd
 	github.com/cosmos/ibc-go/modules/capability v1.0.1
 	github.com/cosmos/ibc-go/modules/light-clients/08-wasm v0.5.1-0.20241220160633-3f2a900052d7
-	github.com/cosmos/ibc-go/v8 v8.5.2
+	github.com/cosmos/ibc-go/v8 v8.6.1
 	github.com/cosmos/interchain-security/v6 v6.4.0
 	github.com/google/gofuzz v1.2.0
 	github.com/gorilla/mux v1.8.1

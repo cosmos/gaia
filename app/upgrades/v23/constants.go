@@ -10,8 +10,8 @@ import (
 
 const (
 	// UpgradeName defines the on-chain upgrade name.
-	UpgradeName = "v23"
-	StoreKey    = "feeibc"
+	UpgradeName    = "v23"
+	IbcFeeStoreKey = "feeibc"
 )
 
 var Upgrade = upgrades.Upgrade{
@@ -23,7 +23,7 @@ var Upgrade = upgrades.Upgrade{
 		},
 		Renamed: nil,
 		Deleted: []string{
-			StoreKey,
+			IbcFeeStoreKey,
 		},
 	},
 }

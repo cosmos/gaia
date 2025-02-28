@@ -28,6 +28,10 @@
 
 ### API-Breaking
 
+### Dependencies
+
+- Bump [github.com/ethereum/go-ethereum](https://github.com/ethereum/go-ethereum) from 1.14.12 to 1.14.13 ([#3573](https://github.com/cosmos/gaia/pull/3573))
+
 ## v22.2.0
 
 *February 12, 2025*

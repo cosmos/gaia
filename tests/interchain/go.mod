@@ -22,7 +22,7 @@ require (
 	cosmossdk.io/math v1.4.0
 	github.com/cometbft/cometbft v0.38.17
 	github.com/cosmos/cosmos-sdk v0.50.9
-	github.com/cosmos/ibc-go/v8 v8.5.0
+	github.com/cosmos/ibc-go/v8 v8.6.1
 	github.com/cosmos/interchain-security/v5 v5.1.1
 	github.com/docker/docker v27.1.2+incompatible
 	github.com/google/go-github/v62 v62.0.0

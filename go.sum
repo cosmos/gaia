@@ -452,8 +452,8 @@ github.com/cosmos/ibc-go/modules/capability v1.0.1 h1:ibwhrpJ3SftEEZRxCRkH0fQZ9s
 github.com/cosmos/ibc-go/modules/capability v1.0.1/go.mod h1:rquyOV262nGJplkumH+/LeYs04P3eV8oB7ZM4Ygqk4E=
 github.com/cosmos/ibc-go/modules/light-clients/08-wasm v0.6.1-0.20250227211432-512d1b28273b h1:N6ei8D8+KBzhPwbKQnoyoqBUkQ60L/XbIqvF3M8gnP8=
 github.com/cosmos/ibc-go/modules/light-clients/08-wasm v0.6.1-0.20250227211432-512d1b28273b/go.mod h1:bSjm5vIK3o5lzgSiqaE/MTlwzXPnyNmbNDlkQ4YdBzA=
-github.com/cosmos/ibc-go/modules/light-clients/08-wasm/blsverifier v0.0.0-20250211202654-9c448bbbe4ab h1:P8pvdRTGiJYp+5h08dVETpHiCndH94YO0T636ep9sf0=
-github.com/cosmos/ibc-go/modules/light-clients/08-wasm/blsverifier v0.0.0-20250211202654-9c448bbbe4ab/go.mod h1:G22E25VpQ6ctcDNeZYY7F2k+yR/4eLDUSO0Lxb5WjA0=
+github.com/cosmos/ibc-go/modules/light-clients/08-wasm/blsverifier v0.0.0-20250221115439-3e6d5f597fc4 h1:BkEGLjjtXTKYSz15vdjZi++sOaxuBI5zjVW6gdKR+Yc=
+github.com/cosmos/ibc-go/modules/light-clients/08-wasm/blsverifier v0.0.0-20250221115439-3e6d5f597fc4/go.mod h1:G22E25VpQ6ctcDNeZYY7F2k+yR/4eLDUSO0Lxb5WjA0=
 github.com/cosmos/ibc-go/v10 v10.0.0-beta.1 h1:IPAKp0ySxpkBCwzhaaVhbwTGZFnIm2Qq6owD6LW2Dvo=
 github.com/cosmos/ibc-go/v10 v10.0.0-beta.1/go.mod h1:ikF0o+cl0V7jwwe74fceRD5N2T7yfpRZju2fVJDdcu8=
 github.com/cosmos/ics23/go v0.11.0 h1:jk5skjT0TqX5e5QJbEnwXIS2yI2vnmLOgpQPeM5RtnU=

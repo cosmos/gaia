@@ -266,8 +266,6 @@ replace (
 	// Use special SDK v0.50.x release with support for both ICS and LSM
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.50.11-lsm
 
-	github.com/cosmos/ibc-go/modules/light-clients/08-wasm/blsverifier => github.com/cosmos/ibc-go/modules/light-clients/08-wasm/blsverifier v0.0.0-20250211202654-9c448bbbe4ab
-
 	github.com/cosmos/ibc-go/v10 => github.com/cosmos/ibc-go/v10 v10.0.0-beta.1
 
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134

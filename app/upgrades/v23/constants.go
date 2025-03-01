@@ -1,6 +1,8 @@
 package v23
 
 import (
+	_ "embed"
+
 	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/types"
 
 	"cosmossdk.io/store/types"
@@ -12,7 +14,12 @@ const (
 	// UpgradeName defines the on-chain upgrade name.
 	UpgradeName    = "v23"
 	IbcFeeStoreKey = "feeibc"
+
+	ExpectedEthLightClientChecksum = "f82549f5bc8adaef18e5ce4f5b68269947343742c938dac322faf1583319172c"
 )
+
+//go:embed cw_ics08_wasm_eth.wasm.gz
+var etheruemWasmLightClient []byte
 
 var Upgrade = upgrades.Upgrade{
 	UpgradeName:          UpgradeName,

@@ -2,7 +2,10 @@ package v23
 
 import (
 	"context"
+	"encoding/hex"
+	"fmt"
 
+	ibcwasmkeeper "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/keeper"
 	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/types"
 	ibctmtypes "github.com/cosmos/ibc-go/v10/modules/light-clients/07-tendermint"
 
@@ -31,11 +34,37 @@ func CreateUpgradeHandler(
 		}
 
 		// Set IBC Client AllowedClients
+		ctx.Logger().Info("Setting IBC Client AllowedClients")
 		params := keepers.IBCKeeper.ClientKeeper.GetParams(ctx)
 		params.AllowedClients = []string{ibctmtypes.ModuleName, ibcwasmtypes.ModuleName}
 		keepers.IBCKeeper.ClientKeeper.SetParams(ctx, params)
 
+		// Add Ethereum Light Wasm Light Client
+		ctx.Logger().Info("Adding Ethereum Light Wasm Light Client")
+		if err := AddEthereumLightWasmLightClient(ctx, keepers.WasmClientKeeper); err != nil {
+			ctx.Logger().Error("Error adding Ethereum Light Wasm Light Client", "message", err.Error())
+			return nil, err
+		}
+
 		ctx.Logger().Info("Upgrade v23 complete")
 		return vm, nil
 	}
+}
+
+func AddEthereumLightWasmLightClient(ctx context.Context, wasmKeeper ibcwasmkeeper.Keeper) error {
+	resp, err := wasmKeeper.StoreCode(ctx, &ibcwasmtypes.MsgStoreCode{
+		Signer:       wasmKeeper.GetAuthority(),
+		WasmByteCode: etheruemWasmLightClient,
+	})
+	if err != nil {
+		return errorsmod.Wrap(err, "failed to store ethereum wasm light client during upgrade")
+	}
+
+	actualChecksum := hex.EncodeToString(resp.Checksum)
+
+	if hex.EncodeToString(resp.Checksum) != ExpectedEthLightClientChecksum {
+		return fmt.Errorf("checksum mismatch: expected %s, got %s", ExpectedEthLightClientChecksum, actualChecksum)
+	}
+
+	return nil
 }

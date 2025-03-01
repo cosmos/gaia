@@ -39,10 +39,10 @@ func CreateUpgradeHandler(
 		params.AllowedClients = []string{ibctmtypes.ModuleName, ibcwasmtypes.ModuleName}
 		keepers.IBCKeeper.ClientKeeper.SetParams(ctx, params)
 
-		// Add Ethereum Light Wasm Light Client
-		ctx.Logger().Info("Adding Ethereum Light Wasm Light Client")
-		if err := AddEthereumLightWasmLightClient(ctx, keepers.WasmClientKeeper); err != nil {
-			ctx.Logger().Error("Error adding Ethereum Light Wasm Light Client", "message", err.Error())
+		// Add Eth Light Wasm Light Client
+		ctx.Logger().Info("Adding Eth Light Wasm Light Client")
+		if err := AddEthLightWasmLightClient(ctx, keepers.WasmClientKeeper); err != nil {
+			ctx.Logger().Error("Error adding Eth Light Wasm Light Client", "message", err.Error())
 			return nil, err
 		}
 
@@ -51,13 +51,13 @@ func CreateUpgradeHandler(
 	}
 }
 
-func AddEthereumLightWasmLightClient(ctx context.Context, wasmKeeper ibcwasmkeeper.Keeper) error {
+func AddEthLightWasmLightClient(ctx context.Context, wasmKeeper ibcwasmkeeper.Keeper) error {
 	resp, err := wasmKeeper.StoreCode(ctx, &ibcwasmtypes.MsgStoreCode{
 		Signer:       wasmKeeper.GetAuthority(),
-		WasmByteCode: etheruemWasmLightClient,
+		WasmByteCode: ethWasmLightClient,
 	})
 	if err != nil {
-		return errorsmod.Wrap(err, "failed to store ethereum wasm light client during upgrade")
+		return errorsmod.Wrap(err, "failed to store eth wasm light client during upgrade")
 	}
 
 	actualChecksum := hex.EncodeToString(resp.Checksum)

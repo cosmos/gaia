@@ -19,7 +19,7 @@ const (
 )
 
 //go:embed cw_ics08_wasm_eth.wasm.gz
-var etheruemWasmLightClient []byte
+var ethWasmLightClient []byte
 
 var Upgrade = upgrades.Upgrade{
 	UpgradeName:          UpgradeName,

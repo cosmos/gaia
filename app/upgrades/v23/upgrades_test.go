@@ -21,13 +21,13 @@ const (
 	consensusStateJSON = `{"@type":"/ibc.lightclients.wasm.v1.ConsensusState","data":"eyJjdXJyZW50X3N5bmNfY29tbWl0dGVlIjoiMHg4MTQ1ZjkyZDEzMTcxNTNlNmJiODFhOTAzZGI2ZjBiMTBjNTBhOTM2ODNmNGMyYWFiMzVlOWE4YTRiYjI4MzMyMzQyNWZiNTZhNDdkOGIzMGE5ZWZkNTA5YzhhZjE0ZTEiLCJuZXh0X3N5bmNfY29tbWl0dGVlIjoiMHg4MTQ1ZjkyZDEzMTcxNTNlNmJiODFhOTAzZGI2ZjBiMTBjNTBhOTM2ODNmNGMyYWFiMzVlOWE4YTRiYjI4MzMyMzQyNWZiNTZhNDdkOGIzMGE5ZWZkNTA5YzhhZjE0ZTEiLCJzbG90IjozMiwic3RhdGVfcm9vdCI6IjB4MjI4NTQzYWVlYzk0NjA5YjQwOGUyNzI0NjIzZjgyMGExNjFhYmY5OWRkODMyNzQ4MWQ1NGNmYmUyNzAyOTE1ZCIsInN0b3JhZ2Vfcm9vdCI6IjB4MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMCIsInRpbWVzdGFtcCI6MTc0MDgyNzU5OX0="}`
 )
 
-func TestAddEthereumLightWasmLightClient(t *testing.T) {
+func TestAddEthLightWasmLightClient(t *testing.T) {
 	gaiaApp := helpers.Setup(t)
 	ctx := gaiaApp.NewUncachedContext(true, tmproto.Header{
 		Time: time.Unix(1740829624, 0),
 	})
 
-	err := v23.AddEthereumLightWasmLightClient(ctx, gaiaApp.WasmClientKeeper)
+	err := v23.AddEthLightWasmLightClient(ctx, gaiaApp.WasmClientKeeper)
 	require.NoError(t, err)
 
 	// check that the checksum is as expected

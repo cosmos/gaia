@@ -11,6 +11,7 @@ import (
 
 	dbm "github.com/cosmos/cosmos-db"
 	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types"
+	wasmclienttypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/types"
 	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 
 	"cosmossdk.io/log"
@@ -33,8 +34,6 @@ import (
 	gaia "github.com/cosmos/gaia/v23/app"
 	gaiaparams "github.com/cosmos/gaia/v23/app/params"
 	metaprotocoltypes "github.com/cosmos/gaia/v23/x/metaprotocols/types"
-
-	wasmclienttypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/types"
 )
 
 const (

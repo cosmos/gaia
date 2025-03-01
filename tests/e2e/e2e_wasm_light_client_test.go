@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
+
 	"github.com/cosmos/gaia/v23/tests/e2e/data"
 )
 

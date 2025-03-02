@@ -89,7 +89,7 @@ func AllocateRewards(ctx sdk.Context, providerKeeper providerkeeper.Keeper, bank
 	return nil
 }
 
-// HasexpectedChainIDSanityCheck returns true if the chain with the provided `consumerID` is of a chain with the `expectedChainID`
+// HasExpectedChainIDSanityCheck returns true if the chain with the provided `consumerID` is of a chain with the `expectedChainID`
 func HasExpectedChainIDSanityCheck(ctx sdk.Context, providerKeeper providerkeeper.Keeper, consumerID string, expectedChainID string) bool {
 	actualChainID, err := providerKeeper.GetConsumerChainId(ctx, consumerID)
 	if err != nil {

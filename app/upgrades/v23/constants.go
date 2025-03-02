@@ -1,7 +1,7 @@
 package v23
 
 import (
-	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/types"
+	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/types"
 
 	"cosmossdk.io/store/types"
 

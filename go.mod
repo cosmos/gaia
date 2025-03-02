@@ -26,7 +26,7 @@ require (
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/gogoproto v1.7.0
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10 v10.0.0-beta.2
-	github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.0.0-beta.2
+	github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.0.0-beta.2-bugfix.1
 	github.com/cosmos/ibc-go/modules/apps/callbacks v0.3.1-0.20250227211730-c7a9c56d82b7 // go mod tidy automatically changes this from v0.3.0+ibc-go-v10.0-beta.2
 	github.com/cosmos/ibc-go/modules/light-clients/08-wasm v0.6.1-0.20250227211432-512d1b28273b // go mod tidy automatically changes this from v0.6.0+ibc-go-v10.0-wasmvm-v2.2-beta.2
 	github.com/cosmos/ibc-go/v10 v10.0.0

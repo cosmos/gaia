@@ -29,7 +29,7 @@ func logTestStart(testName string) {
 }
 
 // logTestResult logs the result of a test
-func logTestResult(testName string, t *testing.T) {
+func logTestResult(t *testing.T, testName string) {
 	if t.Failed() {
 		fmt.Printf("❌ Test FAILED: %s\n", testName)
 	} else {

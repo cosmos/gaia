@@ -1,6 +1,8 @@
 package e2e
 
-import "fmt"
+import (
+	"fmt"
+)
 
 var (
 	runBankTest                   = true
@@ -32,6 +34,7 @@ func (s *IntegrationTestSuite) TestBank() {
 		s.T().Skip()
 	}
 	s.testBankTokenTransfer()
+	s.testFeeWithWrongDenomOrder()
 }
 
 func (s *IntegrationTestSuite) TestEncode() {
@@ -88,7 +91,6 @@ func (s *IntegrationTestSuite) TestSlashing() {
 	s.testSlashing(chainAPI)
 }
 
-// todo add fee test with wrong denom order
 func (s *IntegrationTestSuite) TestStakingAndDistribution() {
 	if !runStakingAndDistributionTest {
 		s.T().Skip()

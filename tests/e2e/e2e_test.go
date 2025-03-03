@@ -20,6 +20,7 @@ var (
 	runRateLimitTest              = true
 	runTxExtensionsTest           = true
 	runCWTest                     = true
+	runWasmLightClientTest        = true
 )
 
 // logTestStart logs when a test starts
@@ -178,4 +179,12 @@ func (s *IntegrationTestSuite) TestCW() {
 	logTestStart("CosmWasm Tests")
 	s.testCWCounter()
 	logTestResult("CosmWasm Tests", s.T())
+}
+
+func (s *IntegrationTestSuite) TestWasmLightClient() {
+	if !runWasmLightClientTest {
+		s.T().Skip()
+	}
+	s.testStoreWasmLightClient()
+	s.testCreateWasmLightClient()
 }

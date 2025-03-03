@@ -43,7 +43,7 @@ func (s *IntegrationTestSuite) TestRestInterfaces() {
 	}
 	logTestStart("Rest Interfaces")
 	s.testRestInterfaces()
-	logTestResult("Rest Interfaces", s.T())
+	logTestResult(s.T(),"Rest Interfaces")
 }
 
 func (s *IntegrationTestSuite) TestBank() {
@@ -52,7 +52,7 @@ func (s *IntegrationTestSuite) TestBank() {
 	}
 	logTestStart("Bank Token Transfer")
 	s.testBankTokenTransfer()
-	logTestResult("Bank Token Transfer", s.T())
+	logTestResult(s.T(),"Bank Token Transfer")
 }
 
 func (s *IntegrationTestSuite) TestEncode() {
@@ -62,7 +62,7 @@ func (s *IntegrationTestSuite) TestEncode() {
 	logTestStart("Encoding")
 	s.testEncode()
 	s.testDecode()
-	logTestResult("Encoding", s.T())
+	logTestResult(s.T(),"Encoding")
 }
 
 func (s *IntegrationTestSuite) TestEvidence() {
@@ -71,7 +71,7 @@ func (s *IntegrationTestSuite) TestEvidence() {
 	}
 	logTestStart("Evidence Handling")
 	s.testEvidence()
-	logTestResult("Evidence Handling", s.T())
+	logTestResult(s.T(),"Evidence Handling")
 }
 
 func (s *IntegrationTestSuite) TestFeeGrant() {
@@ -80,7 +80,7 @@ func (s *IntegrationTestSuite) TestFeeGrant() {
 	}
 	logTestStart("Fee Grant")
 	s.testFeeGrant()
-	logTestResult("Fee Grant", s.T())
+	logTestResult(s.T(),"Fee Grant")
 }
 
 func (s *IntegrationTestSuite) TestGov() {
@@ -93,7 +93,7 @@ func (s *IntegrationTestSuite) TestGov() {
 	s.testSetBlocksPerEpoch()
 	s.ExpeditedProposalRejected()
 	s.GovSoftwareUpgradeExpedited()
-	logTestResult("Governance", s.T())
+	logTestResult(s.T(),"Governance")
 }
 
 func (s *IntegrationTestSuite) TestIBC() {
@@ -105,7 +105,7 @@ func (s *IntegrationTestSuite) TestIBC() {
 	s.testMultihopIBCTokenTransfer()
 	s.testFailedMultihopIBCTokenTransfer()
 	s.testICARegisterAccountAndSendTx()
-	logTestResult("IBC Transfer", s.T())
+	logTestResult(s.T(),"IBC Transfer")
 }
 
 func (s *IntegrationTestSuite) TestSlashing() {
@@ -115,7 +115,7 @@ func (s *IntegrationTestSuite) TestSlashing() {
 	logTestStart("Slashing")
 	chainAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	s.testSlashing(chainAPI)
-	logTestResult("Slashing", s.T())
+	logTestResult(s.T(),"Slashing")
 }
 
 func (s *IntegrationTestSuite) TestStakingAndDistribution() {
@@ -125,7 +125,7 @@ func (s *IntegrationTestSuite) TestStakingAndDistribution() {
 	logTestStart("Staking & Distribution")
 	s.testStaking()
 	s.testDistribution()
-	logTestResult("Staking & Distribution", s.T())
+	logTestResult(s.T(),"Staking & Distribution")
 }
 
 func (s *IntegrationTestSuite) TestVesting() {
@@ -136,7 +136,7 @@ func (s *IntegrationTestSuite) TestVesting() {
 	chainAAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	s.testDelayedVestingAccount(chainAAPI)
 	s.testContinuousVestingAccount(chainAAPI)
-	logTestResult("Vesting Accounts", s.T())
+	logTestResult(s.T(),"Vesting Accounts")
 }
 
 func (s *IntegrationTestSuite) TestLSM() {
@@ -145,7 +145,7 @@ func (s *IntegrationTestSuite) TestLSM() {
 	}
 	logTestStart("Liquid Staking Module (LSM)")
 	s.testLSM()
-	logTestResult("Liquid Staking Module (LSM)", s.T())
+	logTestResult(s.T(),"Liquid Staking Module (LSM)")
 }
 
 func (s *IntegrationTestSuite) TestRateLimit() {
@@ -159,7 +159,7 @@ func (s *IntegrationTestSuite) TestRateLimit() {
 	s.testIBCTransfer(false)
 	s.testResetRateLimit()
 	s.testRemoveRateLimit()
-	logTestResult("Rate Limit", s.T())
+	logTestResult(s.T(),"Rate Limit")
 }
 
 func (s *IntegrationTestSuite) TestTxExtensions() {
@@ -169,7 +169,7 @@ func (s *IntegrationTestSuite) TestTxExtensions() {
 	logTestStart("Transaction Extensions")
 	s.bankSendWithNonCriticalExtensionOptions()
 	s.failedBankSendWithNonCriticalExtensionOptions()
-	logTestResult("Transaction Extensions", s.T())
+	logTestResult(s.T(),"Transaction Extensions")
 }
 
 func (s *IntegrationTestSuite) TestCW() {
@@ -178,13 +178,16 @@ func (s *IntegrationTestSuite) TestCW() {
 	}
 	logTestStart("CosmWasm Tests")
 	s.testCWCounter()
-	logTestResult("CosmWasm Tests", s.T())
+	logTestResult(s.T(),"CosmWasm Tests")
 }
+
 
 func (s *IntegrationTestSuite) TestWasmLightClient() {
 	if !runWasmLightClientTest {
 		s.T().Skip()
 	}
+	logTestStart("Wasm Light Client") 
 	s.testStoreWasmLightClient()
 	s.testCreateWasmLightClient()
+	logTestResult(s.T(), "Wasm Light Client")
 }

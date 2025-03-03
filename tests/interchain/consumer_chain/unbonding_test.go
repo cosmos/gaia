@@ -32,7 +32,7 @@ func (s *UnbondingSuite) SetupSuite() {
 	s.Suite.SetupSuite()
 	cfg := chainsuite.ConsumerConfig{
 		ChainName:             "ics-consumer",
-		Version:               selectConsumerVersion("v6.0.0", "v6.2.1"),
+		Version:               "v6.2.1",
 		ShouldCopyProviderKey: allProviderKeysCopied(),
 		Denom:                 chainsuite.Ucon,
 		TopN:                  100,
@@ -41,7 +41,7 @@ func (s *UnbondingSuite) SetupSuite() {
 				Images: []ibc.DockerImage{
 					{
 						Repository: chainsuite.HyphaICSRepo,
-						Version:    selectConsumerVersion("v6.0.0", "v6.2.1"),
+						Version:    "v6.2.1",
 						UIDGID:     chainsuite.ICSUidGuid,
 					},
 				},

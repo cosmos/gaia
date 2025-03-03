@@ -6,7 +6,6 @@ import (
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
 	"github.com/stretchr/testify/suite"
-	"golang.org/x/mod/semver"
 
 	"github.com/cosmos/gaia/v23/tests/interchain/chainsuite"
 )
@@ -84,13 +83,6 @@ func (s *ConsumerLaunchSuite) TestChainLaunch() {
 	s.Require().False(jailed, "validator 5 should not be jailed for downtime")
 }
 
-func selectConsumerVersion(preV21, postV21 string) string {
-	if semver.Compare(semver.Major(chainsuite.GetEnvironment().OldGaiaImageVersion), "v21") >= 0 {
-		return postV21
-	}
-	return preV21
-}
-
 func TestICS4ChainLaunch(t *testing.T) {
 	s := &ConsumerLaunchSuite{
 		Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
@@ -100,7 +92,7 @@ func TestICS4ChainLaunch(t *testing.T) {
 			},
 		}),
 		OtherChain:                   "ics-consumer",
-		OtherChainVersionPreUpgrade:  selectConsumerVersion("v4.4.1", "v4.5.0"),
+		OtherChainVersionPreUpgrade:  "v4.5.0",
 		OtherChainVersionPostUpgrade: "v4.5.0",
 		ShouldCopyProviderKey:        noProviderKeysCopied(),
 	}
@@ -116,7 +108,7 @@ func TestICS6ConsumerAllKeysChainLaunch(t *testing.T) {
 			},
 		}),
 		OtherChain:                   "ics-consumer",
-		OtherChainVersionPreUpgrade:  selectConsumerVersion("v6.0.0", "v6.2.1"),
+		OtherChainVersionPreUpgrade:  "v6.2.1",
 		OtherChainVersionPostUpgrade: "v6.2.1",
 		ShouldCopyProviderKey:        allProviderKeysCopied(),
 	}
@@ -132,7 +124,7 @@ func TestICS6ConsumerSomeKeysChainLaunch(t *testing.T) {
 			},
 		}),
 		OtherChain:                   "ics-consumer",
-		OtherChainVersionPreUpgrade:  selectConsumerVersion("v6.0.0", "v6.2.1"),
+		OtherChainVersionPreUpgrade:  "v6.2.1",
 		OtherChainVersionPostUpgrade: "v6.2.1",
 		ShouldCopyProviderKey:        someProviderKeysCopied(),
 	}
@@ -148,7 +140,7 @@ func TestICS6ConsumerNoKeysChainLaunch(t *testing.T) {
 			},
 		}),
 		OtherChain:                   "ics-consumer",
-		OtherChainVersionPreUpgrade:  selectConsumerVersion("v6.0.0", "v6.2.1"),
+		OtherChainVersionPreUpgrade:  "v6.2.1",
 		OtherChainVersionPostUpgrade: "v6.2.1",
 		ShouldCopyProviderKey:        noProviderKeysCopied(),
 	}

@@ -17,6 +17,7 @@ import (
 	ratelimitkeeper "github.com/cosmos/ibc-apps/modules/rate-limiting/v10/keeper"
 	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types"
 	ratelimitv2 "github.com/cosmos/ibc-apps/modules/rate-limiting/v10/v2"
+	"github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/blsverifier"
 	ibcwasmkeeper "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/keeper"
 	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/types"
 	ica "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts"
@@ -300,6 +301,7 @@ func NewAppKeeper(
 			"/ibc.core.client.v1.Query/ConsensusState",
 			"/ibc.core.connection.v1.Query/Connection",
 		}, bApp.GRPCQueryRouter()),
+		Custom: blsverifier.CustomQuerier(),
 	}
 
 	dataDir := filepath.Join(homePath, "data")

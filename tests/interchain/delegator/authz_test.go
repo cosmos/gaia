@@ -21,11 +21,11 @@ func txAmountUatom() string {
 	return fmt.Sprintf("%d%s", txAmount, chainsuite.Uatom)
 }
 
-type AuthSuite struct {
+type AuthzSuite struct {
 	*delegator.Suite
 }
 
-func (s *AuthSuite) TestSend() {
+func (s *AuthzSuite) TestSend() {
 	balanceBefore, err := s.Chain.GetBalance(s.GetContext(), s.DelegatorWallet3.FormattedAddress(), chainsuite.Uatom)
 	s.Require().NoError(err)
 	_, err = s.Chain.GetNode().ExecTx(
@@ -56,7 +56,7 @@ func (s *AuthSuite) TestSend() {
 	s.Require().Error(s.authzGenExec(s.GetContext(), s.DelegatorWallet2, "bank", "send", s.DelegatorWallet.FormattedAddress(), s.DelegatorWallet3.FormattedAddress(), txAmountUatom()))
 }
 
-func (s *AuthSuite) TestDelegate() {
+func (s *AuthzSuite) TestDelegate() {
 	_, err := s.Chain.GetNode().ExecTx(
 		s.GetContext(),
 		s.DelegatorWallet.FormattedAddress(),
@@ -77,7 +77,7 @@ func (s *AuthSuite) TestDelegate() {
 	s.Require().Error(s.authzGenExec(s.GetContext(), s.DelegatorWallet2, "staking", "delegate", s.Chain.ValidatorWallets[0].ValoperAddress, txAmountUatom(), "--from", s.DelegatorWallet.FormattedAddress()))
 }
 
-func (s *AuthSuite) TestUnbond() {
+func (s *AuthzSuite) TestUnbond() {
 	valHex, err := s.Chain.GetValidatorHex(s.GetContext(), 0)
 	s.Require().NoError(err)
 	powerBefore, err := s.Chain.GetValidatorPower(s.GetContext(), valHex)
@@ -122,7 +122,7 @@ func (s *AuthSuite) TestUnbond() {
 	s.Require().Error(s.authzGenExec(s.GetContext(), s.DelegatorWallet2, "staking", "unbond", s.Chain.ValidatorWallets[0].ValoperAddress, txAmountUatom(), "--from", s.DelegatorWallet.FormattedAddress()))
 }
 
-func (s AuthSuite) TestRedelegate() {
+func (s AuthzSuite) TestRedelegate() {
 	val0Hex, err := s.Chain.GetValidatorHex(s.GetContext(), 0)
 	s.Require().NoError(err)
 	val2Hex, err := s.Chain.GetValidatorHex(s.GetContext(), 1)
@@ -171,7 +171,7 @@ func (s AuthSuite) TestRedelegate() {
 	s.Require().Error(s.authzGenExec(s.GetContext(), s.DelegatorWallet2, "staking", "redelegate", s.Chain.ValidatorWallets[0].ValoperAddress, s.Chain.ValidatorWallets[1].ValoperAddress, txAmountUatom(), "--from", s.Chain.ValidatorWallets[0].Address))
 }
 
-func (s AuthSuite) TestGeneric() {
+func (s AuthzSuite) TestGeneric() {
 	_, err := s.Chain.GetNode().ExecTx(
 		s.GetContext(),
 		s.Chain.ValidatorWallets[0].Moniker,
@@ -187,9 +187,9 @@ func (s AuthSuite) TestGeneric() {
 	s.Require().NoError(s.authzGenExec(s.GetContext(), s.DelegatorWallet, "gov", "vote", result.ProposalID, "yes", "--from", s.Chain.ValidatorWallets[0].Address))
 }
 
-func TestAuthz(t *testing.T) {
+func TestAuthzModule(t *testing.T) {
 	two := 2
-	s := &AuthSuite{Suite: &delegator.Suite{Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
+	s := &AuthzSuite{Suite: &delegator.Suite{Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
 		UpgradeOnSetup: true,
 		ChainSpec: &interchaintest.ChainSpec{
 			NumValidators: &two,
@@ -198,7 +198,7 @@ func TestAuthz(t *testing.T) {
 	suite.Run(t, s)
 }
 
-func (s AuthSuite) authzGenExec(ctx context.Context, grantee ibc.Wallet, command ...string) error {
+func (s AuthzSuite) authzGenExec(ctx context.Context, grantee ibc.Wallet, command ...string) error {
 	txjson, err := s.Chain.GenerateTx(ctx, 1, command...)
 	s.Require().NoError(err)
 

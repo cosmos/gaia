@@ -17,6 +17,7 @@ var (
 	runRateLimitTest              = true
 	runTxExtensionsTest           = true
 	runCWTest                     = true
+	runWasmLightClientTest        = true
 )
 
 func (s *IntegrationTestSuite) TestRestInterfaces() {
@@ -138,4 +139,12 @@ func (s *IntegrationTestSuite) TestCW() {
 		s.T().Skip()
 	}
 	s.testCWCounter()
+}
+
+func (s *IntegrationTestSuite) TestWasmLightClient() {
+	if !runWasmLightClientTest {
+		s.T().Skip()
+	}
+	s.testStoreWasmLightClient()
+	s.testCreateWasmLightClient()
 }

@@ -4,7 +4,7 @@ ARG IMG_TAG=latest
 # Compile the gaiad binary
 FROM golang:1.23-alpine AS gaiad-builder
 WORKDIR /src/app/
-ENV PACKAGES="curl make git libc-dev bash file gcc linux-headers eudev-dev"
+ENV PACKAGES="curl build-base git bash file linux-headers eudev-dev"
 RUN apk add --no-cache $PACKAGES
 
 # See https://github.com/CosmWasm/wasmvm/releases

@@ -30,6 +30,8 @@ func logTestStart(testName string) {
 
 // logTestResult logs the result of a test
 func logTestResult(t *testing.T, testName string) {
+	    t.Helper() 
+
 	if t.Failed() {
 		fmt.Printf("❌ Test FAILED: %s\n", testName)
 	} else {

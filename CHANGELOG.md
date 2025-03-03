@@ -29,6 +29,10 @@
 
 ### API-Breaking
 
+### Dependencies
+
+- Bump [docker/metadata-action](https://github.com/docker/metadata-action) from 5.6.1 to 5.7.0 ([#3595](https://github.com/cosmos/gaia/pull/3595))
+
 ## v22.2.0
 
 *February 12, 2025*

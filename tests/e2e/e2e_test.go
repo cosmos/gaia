@@ -18,6 +18,7 @@ var (
 	runTxExtensionsTest           = true
 	runCWTest                     = true
 	runIbcV2Test                  = true
+	runWasmLightClientTest        = true
 )
 
 func (s *IntegrationTestSuite) TestRestInterfaces() {
@@ -157,4 +158,12 @@ func (s *IntegrationTestSuite) TestIbcV2() {
 	s.testIBCTransfer(false, true)
 	s.testResetRateLimit(true)
 	s.testRemoveRateLimit(true)
+}
+
+func (s *IntegrationTestSuite) TestWasmLightClient() {
+	if !runWasmLightClientTest {
+		s.T().Skip()
+	}
+	s.testStoreWasmLightClient()
+	s.testCreateWasmLightClient()
 }

@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types"
+	wasmclienttypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/types"
 	icacontrollertypes "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/controller/types"
 	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 
@@ -401,4 +402,18 @@ func queryWasmSmartContractState(endpoint, address, msg string) ([]byte, error) 
 	}
 
 	return response.Data, nil
+}
+
+func queryIbcWasmChecksums(endpoint string) ([]string, error) {
+	body, err := httpGet(fmt.Sprintf("%s/ibc/lightclients/wasm/v1/checksums", endpoint))
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	var response wasmclienttypes.QueryChecksumsResponse
+	if err = cdc.UnmarshalJSON(body, &response); err != nil {
+		return nil, err
+	}
+
+	return response.Checksums, nil
 }

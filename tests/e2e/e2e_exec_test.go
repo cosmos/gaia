@@ -370,7 +370,7 @@ func (s *IntegrationTestSuite) runGovExec(c *chain, valIdx int, submitterAddr, g
 
 	generalFlags := []string{
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, submitterAddr),
-		fmt.Sprintf("--%s=%s", flags.FlagGas, "400000"), // default 200000 isn't enough
+		fmt.Sprintf("--%s=%s", flags.FlagGas, "50000000"), // default 200000 isn't enough
 		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, fees),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
 		"--keyring-backend=test",

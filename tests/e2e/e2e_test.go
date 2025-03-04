@@ -17,10 +17,7 @@ var (
 	runRateLimitTest              = true
 	runTxExtensionsTest           = true
 	runCWTest                     = true
-<<<<<<< HEAD
-=======
 	runIbcV2Test                  = true
->>>>>>> 8ad9e86 (test: add e2e tests for ibc v2 rate limiting (#3600))
 )
 
 func (s *IntegrationTestSuite) TestRestInterfaces() {
@@ -143,8 +140,6 @@ func (s *IntegrationTestSuite) TestCW() {
 	}
 	s.testCWCounter()
 }
-<<<<<<< HEAD
-=======
 
 func (s *IntegrationTestSuite) TestIbcV2() {
 	if !runIbcV2Test {
@@ -163,4 +158,3 @@ func (s *IntegrationTestSuite) TestIbcV2() {
 	s.testResetRateLimit(true)
 	s.testRemoveRateLimit(true)
 }
->>>>>>> 8ad9e86 (test: add e2e tests for ibc v2 rate limiting (#3600))

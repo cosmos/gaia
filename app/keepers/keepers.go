@@ -430,6 +430,7 @@ func NewAppKeeper(
 		govAuthority, // authority
 		appKeepers.BankKeeper,
 		appKeepers.IBCKeeper.ChannelKeeper, // ChannelKeeper
+		appKeepers.IBCKeeper.ClientKeeper,
 		appKeepers.IBCKeeper.ChannelKeeper, // ICS4Wrapper
 	)
 

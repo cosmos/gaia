@@ -84,6 +84,8 @@ const (
 	transferPort              = "transfer"
 	transferChannel           = "channel-0"
 
+	v2TransferClient = "08-wasm-1"
+
 	govAuthority = "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn"
 )
 

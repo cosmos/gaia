@@ -27,7 +27,7 @@ type PacketMetadata struct {
 }
 
 //nolint:unparam
-func (s *IntegrationTestSuite) sendIBC(c *chain, valIdx int, sender, recipient, token, fees, note string, expErr bool) {
+func (s *IntegrationTestSuite) sendIBC(c *chain, valIdx int, sender, recipient, token, fees, note, channel string, absoluteTimeout *int64, expErr bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -37,9 +37,17 @@ func (s *IntegrationTestSuite) sendIBC(c *chain, valIdx int, sender, recipient, 
 		"ibc-transfer",
 		"transfer",
 		"transfer",
-		"channel-0",
+		channel,
 		recipient,
 		token,
+	}
+
+	if absoluteTimeout != nil {
+		ibcCmd = append(ibcCmd, "--absolute-timeouts")
+		ibcCmd = append(ibcCmd, fmt.Sprintf("--packet-timeout-timestamp=%d", *absoluteTimeout))
+	}
+
+	ibcCmd = append(ibcCmd, []string{
 		fmt.Sprintf("--from=%s", sender),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, fees),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
@@ -49,7 +57,8 @@ func (s *IntegrationTestSuite) sendIBC(c *chain, valIdx int, sender, recipient, 
 		"--broadcast-mode=sync",
 		"--output=json",
 		"-y",
-	}
+	}...)
+
 	s.T().Logf("sending %s from %s (%s) to %s (%s) with memo %s", token, s.chainA.id, sender, s.chainB.id, recipient, note)
 	if expErr {
 		s.executeGaiaTxCommand(ctx, c, ibcCmd, valIdx, s.expectErrExecValidation(c, valIdx, true))
@@ -248,7 +257,7 @@ func (s *IntegrationTestSuite) testIBCTokenTransfer() {
 		}
 
 		tokenAmt := 3300000000
-		s.sendIBC(s.chainA, 0, sender, recipient, strconv.Itoa(tokenAmt)+uatomDenom, standardFees.String(), "", false)
+		s.sendIBC(s.chainA, 0, sender, recipient, strconv.Itoa(tokenAmt)+uatomDenom, standardFees.String(), "", transferChannel, nil, false)
 
 		pass := s.hermesClearPacket(hermesConfigWithGasPrices, s.chainA.id, transferPort, transferChannel)
 		s.Require().True(pass)
@@ -341,7 +350,7 @@ func (s *IntegrationTestSuite) testMultihopIBCTokenTransfer() {
 		memo, err := json.Marshal(firstHopMetadata)
 		s.Require().NoError(err)
 
-		s.sendIBC(s.chainA, 0, sender, middlehop, strconv.Itoa(tokenAmt)+uatomDenom, standardFees.String(), string(memo), false)
+		s.sendIBC(s.chainA, 0, sender, middlehop, strconv.Itoa(tokenAmt)+uatomDenom, standardFees.String(), string(memo), transferChannel, nil, false)
 
 		pass := s.hermesClearPacket(hermesConfigWithGasPrices, s.chainA.id, transferPort, transferChannel)
 		s.Require().True(pass)
@@ -416,7 +425,7 @@ func (s *IntegrationTestSuite) testFailedMultihopIBCTokenTransfer() {
 		memo, err := json.Marshal(firstHopMetadata)
 		s.Require().NoError(err)
 
-		s.sendIBC(s.chainA, 0, sender, middlehop, strconv.Itoa(tokenAmt)+uatomDenom, standardFees.String(), string(memo), false)
+		s.sendIBC(s.chainA, 0, sender, middlehop, strconv.Itoa(tokenAmt)+uatomDenom, standardFees.String(), string(memo), transferChannel, nil, false)
 
 		// Sender account should be initially decremented the full amount
 		s.Require().Eventually(

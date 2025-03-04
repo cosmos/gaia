@@ -26,7 +26,7 @@ func (s *IntegrationTestSuite) writeAddRateLimitAtomProposal(c *chain, v2 bool) 
 		  "@type": "/ratelimit.v1.MsgAddRateLimit",
 		  "authority": "%s",
 		  "denom": "%s",
-		  "channel_id": "%s",
+		  "channel_or_client_id": "%s",
 		  "max_percent_send": "%s",
 		  "max_percent_recv": "%s",
 		  "duration_hours": "%d"
@@ -45,7 +45,7 @@ func (s *IntegrationTestSuite) writeAddRateLimitAtomProposal(c *chain, v2 bool) 
 	propMsgBody := fmt.Sprintf(template,
 		govAuthority,
 		uatomDenom,                 // denom: uatom
-		channel,                    // channel_id: channel-0
+		channel,                    // channel_or_client_id: channel-0 / 08-wasm-1
 		sdkmath.NewInt(1).String(), // max_percent_send: 1%
 		sdkmath.NewInt(1).String(), // max_percent_recv: 1%
 		24,                         // duration_hours: 24
@@ -63,7 +63,7 @@ func (s *IntegrationTestSuite) writeAddRateLimitStakeProposal(c *chain, v2 bool)
 		  "@type": "/ratelimit.v1.MsgAddRateLimit",
 		  "authority": "%s",
 		  "denom": "%s",
-		  "channel_id": "%s",
+		  "channel_or_client_id": "%s",
 		  "max_percent_send": "%s",
 		  "max_percent_recv": "%s",
 		  "duration_hours": "%d"
@@ -82,7 +82,7 @@ func (s *IntegrationTestSuite) writeAddRateLimitStakeProposal(c *chain, v2 bool)
 	propMsgBody := fmt.Sprintf(template,
 		govAuthority,
 		stakeDenom,                  // denom: stake
-		channel,                     // channel_id: channel-0
+		channel,                     // channel_or_client_id: channel-0 / 08-wasm-1
 		sdkmath.NewInt(10).String(), // max_percent_send: 10%
 		sdkmath.NewInt(5).String(),  // max_percent_recv: 5%
 		6,                           // duration_hours: 6
@@ -100,7 +100,7 @@ func (s *IntegrationTestSuite) writeUpdateRateLimitAtomProposal(c *chain, v2 boo
 		  "@type": "/ratelimit.v1.MsgUpdateRateLimit",
 		  "authority": "%s",
 		  "denom": "%s",
-		  "channel_id": "%s",
+		  "channel_or_client_id": "%s",
 		  "max_percent_send": "%s",
 		  "max_percent_recv": "%s",
 		  "duration_hours": "%d"
@@ -119,7 +119,7 @@ func (s *IntegrationTestSuite) writeUpdateRateLimitAtomProposal(c *chain, v2 boo
 	propMsgBody := fmt.Sprintf(template,
 		govAuthority,
 		uatomDenom,                 // denom: uatom
-		channel,                    // channel_id: channel-0
+		channel,                    // channel_or_client_id: channel-0 / 08-wasm-1
 		sdkmath.NewInt(2).String(), // max_percent_send: 2%
 		sdkmath.NewInt(1).String(), // max_percent_recv: 1%
 		6,                          // duration_hours: 6
@@ -137,7 +137,7 @@ func (s *IntegrationTestSuite) writeResetRateLimitAtomProposal(c *chain, v2 bool
 		  "@type": "/ratelimit.v1.MsgResetRateLimit",
 		  "authority": "%s",
 		  "denom": "%s",
-		  "channel_id": "%s"
+		  "channel_or_client_id": "%s"
 		 }
 		],
 		"metadata": "ipfs://CID",
@@ -153,7 +153,7 @@ func (s *IntegrationTestSuite) writeResetRateLimitAtomProposal(c *chain, v2 bool
 	propMsgBody := fmt.Sprintf(template,
 		govAuthority,
 		uatomDenom, // denom: uatom
-		channel,    // channel_id: channel-0
+		channel,    // channel_or_client_id: channel-0 / 08-wasm-1
 	)
 
 	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalResetRateLimitAtomFilename), []byte(propMsgBody))
@@ -168,7 +168,7 @@ func (s *IntegrationTestSuite) writeRemoveRateLimitAtomProposal(c *chain, v2 boo
 		  "@type": "/ratelimit.v1.MsgRemoveRateLimit",
 		  "authority": "%s",
 		  "denom": "%s",
-		  "channel_id": "%s"
+		  "channel_or_client_id": "%s"
 		 }
 		],
 		"metadata": "ipfs://CID",
@@ -184,7 +184,7 @@ func (s *IntegrationTestSuite) writeRemoveRateLimitAtomProposal(c *chain, v2 boo
 	propMsgBody := fmt.Sprintf(template,
 		govAuthority,
 		uatomDenom, // denom: uatom
-		channel,    // channel_id: channel-0
+		channel,    // channel_or_client_id: channel-0 / 08-wasm-1
 	)
 
 	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalRemoveRateLimitAtomFilename), []byte(propMsgBody))
@@ -199,7 +199,7 @@ func (s *IntegrationTestSuite) writeRemoveRateLimitStakeProposal(c *chain, v2 bo
 		  "@type": "/ratelimit.v1.MsgRemoveRateLimit",
 		  "authority": "%s",
 		  "denom": "%s",
-		  "channel_id": "%s"
+		  "channel_or_client_id": "%s"
 		 }
 		],
 		"metadata": "ipfs://CID",
@@ -215,7 +215,7 @@ func (s *IntegrationTestSuite) writeRemoveRateLimitStakeProposal(c *chain, v2 bo
 	propMsgBody := fmt.Sprintf(template,
 		govAuthority,
 		stakeDenom, // denom: stake
-		channel,    // channel_id: channel-0
+		channel,    // channel_or_client_id: channel-0 / 08-wasm-1
 	)
 
 	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalRemoveRateLimitStakeFilename), []byte(propMsgBody))
@@ -254,7 +254,7 @@ func (s *IntegrationTestSuite) testAddRateLimits(v2 bool) {
 			rateLimits, err := queryAllRateLimits(chainEndpoint)
 			s.Require().NoError(err)
 			s.Require().Len(rateLimits, 1)
-			s.Require().Equal(channel, rateLimits[0].Path.ChannelId)
+			s.Require().Equal(channel, rateLimits[0].Path.ChannelOrClientId)
 			s.Require().Equal(uatomDenom, rateLimits[0].Path.Denom)
 			s.Require().Equal(uint64(24), rateLimits[0].Quota.DurationHours)
 			s.Require().Equal(sdkmath.NewInt(1), rateLimits[0].Quota.MaxPercentRecv)
@@ -302,7 +302,7 @@ func (s *IntegrationTestSuite) testAddRateLimits(v2 bool) {
 			s.Require().NoError(err)
 			s.Require().Len(rateLimits, 2)
 			// Note: the rate limits are ordered lexicographically by denom
-			s.Require().Equal(channel, rateLimits[0].Path.ChannelId)
+			s.Require().Equal(channel, rateLimits[0].Path.ChannelOrClientId)
 			s.Require().Equal(stakeDenom, rateLimits[0].Path.Denom)
 			s.Require().Equal(uint64(6), rateLimits[0].Quota.DurationHours)
 			s.Require().Equal(sdkmath.NewInt(5), rateLimits[0].Quota.MaxPercentRecv)

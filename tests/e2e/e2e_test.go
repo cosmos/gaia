@@ -17,6 +17,7 @@ var (
 	runRateLimitTest              = true
 	runTxExtensionsTest           = true
 	runCWTest                     = true
+	runIbcV2Test                  = true
 	runWasmLightClientTest        = true
 )
 
@@ -118,12 +119,12 @@ func (s *IntegrationTestSuite) TestRateLimit() {
 	if !runRateLimitTest {
 		s.T().Skip()
 	}
-	s.testAddRateLimits()
-	s.testIBCTransfer(true)
-	s.testUpdateRateLimit()
-	s.testIBCTransfer(false)
-	s.testResetRateLimit()
-	s.testRemoveRateLimit()
+	s.testAddRateLimits(false)
+	s.testIBCTransfer(true, false)
+	s.testUpdateRateLimit(false)
+	s.testIBCTransfer(false, false)
+	s.testResetRateLimit(false)
+	s.testRemoveRateLimit(false)
 }
 
 func (s *IntegrationTestSuite) TestTxExtensions() {
@@ -139,6 +140,24 @@ func (s *IntegrationTestSuite) TestCW() {
 		s.T().Skip()
 	}
 	s.testCWCounter()
+}
+
+func (s *IntegrationTestSuite) TestIbcV2() {
+	if !runIbcV2Test {
+		s.T().Skip()
+	}
+
+	// ibc v2 wasm light client tests
+	s.testStoreWasmLightClient()
+	s.testCreateWasmLightClient()
+
+	// ibc v2 rate limiting tests
+	s.testAddRateLimits(true)
+	s.testIBCTransfer(true, true)
+	s.testUpdateRateLimit(true)
+	s.testIBCTransfer(false, true)
+	s.testResetRateLimit(true)
+	s.testRemoveRateLimit(true)
 }
 
 func (s *IntegrationTestSuite) TestWasmLightClient() {

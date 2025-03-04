@@ -320,7 +320,6 @@ func queryAllRateLimits(endpoint string) ([]ratelimittypes.RateLimit, error) {
 	return res.RateLimits, nil
 }
 
-//nolint:unparam
 func queryRateLimit(endpoint, channelID, denom string) (ratelimittypes.QueryRateLimitResponse, error) {
 	var res ratelimittypes.QueryRateLimitResponse
 

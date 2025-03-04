@@ -174,7 +174,7 @@ func (s *IntegrationTestSuite) testLSM() {
 	// IBC transfer LSM token
 	ibcTransferAmount := sdk.NewCoin(shareDenom, math.NewInt(100000000))
 	sendRecipientAddr, _ := s.chainB.validators[0].keyInfo.GetAddress()
-	s.sendIBC(s.chainA, 0, validatorAAddr.String(), sendRecipientAddr.String(), ibcTransferAmount.String(), standardFees.String(), "memo", false)
+	s.sendIBC(s.chainA, 0, validatorAAddr.String(), sendRecipientAddr.String(), ibcTransferAmount.String(), standardFees.String(), "memo", transferChannel, nil, false)
 
 	s.Require().Eventually(
 		func() bool {

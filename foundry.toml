@@ -1,0 +1,28 @@
+# Full reference https://github.com/foundry-rs/foundry/tree/master/crates/config
+
+[profile.default]
+  auto_detect_solc = false
+  block_timestamp = 1_680_220_800 # March 31, 2023 at 00:00 GMT
+  bytecode_hash = "none"
+  evm_version = "cancun"
+  fuzz = { runs = 100_000 }
+  gas_reports = ["*"]
+  optimizer = true
+  via_ir = true # This is needed because of the `sp1-ics07-tendermint` contract
+  optimizer_runs = 10_000
+  out = "out"
+  script = "script"
+  solc = "0.8.28"
+  src = "contracts"
+  test = "test"
+  fs_permissions = [{ access = "read-write", path = "./" },]
+
+[fmt]
+  bracket_spacing = true
+  int_types = "long"
+  line_length = 120
+  multiline_func_header = "all"
+  number_underscore = "thousands"
+  quote_style = "double"
+  tab_width = 4
+  wrap_comments = true

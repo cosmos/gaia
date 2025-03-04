@@ -1,0 +1,17 @@
+[package]
+name = "ethereum-types"
+version = { workspace = true }
+edition = { workspace = true }
+repository = { workspace = true }
+
+[dependencies]
+alloy-primitives = { workspace = true, features = ["serde", "hex-compat"] }
+serde = { workspace = true, features = ["derive"] }
+serde_with = { workspace = true, features = ["macros"] }
+schemars = { workspace = true, features = ["derive"] }
+tree_hash = { workspace = true }
+tree_hash_derive = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }
+

@@ -1,0 +1,26 @@
+[package]
+name = "cw-ics08-wasm-eth"
+version = { workspace = true }
+edition = { workspace = true }
+repository = { workspace = true }
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+ibc-proto = { workspace = true }
+ethereum-light-client = { workspace = true }
+ethereum-types = { workspace = true }
+
+alloy-primitives = { workspace = true, default-features = false }
+
+cosmwasm-std = { workspace = true, features = ["std"] }
+cosmwasm-schema = { workspace = true }
+prost = { workspace = true, features = ["std"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+hex = { workspace = true }
+
+[dev-dependencies]
+ethereum-light-client = { workspace = true, features = ["test-utils"] }

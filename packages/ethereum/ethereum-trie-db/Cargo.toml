@@ -1,0 +1,18 @@
+[package]
+name = "ethereum-trie-db"
+version = { workspace = true }
+edition = { workspace = true }
+repository = { workspace = true }
+
+[dependencies]
+hex = { workspace = true }
+trie-db = { workspace = true, features = ["std"] }
+hash-db = { workspace = true }
+memory-db = { workspace = true }
+hash256-std-hasher = { workspace = true }
+rlp = { workspace = true, features = ["std"] }
+rlp-derive = { workspace = true }
+primitive-types = { workspace = true, features = ["rlp"] }
+sha3 = { workspace = true }
+thiserror = { workspace = true }
+alloy-primitives = { workspace = true } # Needed for alloy-based interfaces/functions

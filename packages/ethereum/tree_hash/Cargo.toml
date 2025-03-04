@@ -1,0 +1,22 @@
+[package]
+name = "tree_hash"
+version = { workspace = true }
+edition = { workspace = true }
+repository = { workspace = true }
+description = "Efficient Merkle-hashing as used in Ethereum consensus"
+license = { workspace = true }
+documentation = "https://docs.rs/tree_hash"
+
+[dependencies]
+alloy-primitives = { workspace = true }
+smallvec = { workspace = true }
+sha2 = { workspace = true }
+
+[dev-dependencies]
+rand = { workspace = true, features = ["thread_rng"] }
+tree_hash_derive = { workspace = true }
+ethereum_ssz = { workspace = true }
+ethereum_ssz_derive = { workspace = true }
+
+[features]
+arbitrary = ["alloy-primitives/arbitrary"]

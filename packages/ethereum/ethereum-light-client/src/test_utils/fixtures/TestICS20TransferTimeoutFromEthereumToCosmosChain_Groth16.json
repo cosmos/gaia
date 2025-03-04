@@ -1,0 +1,50 @@
+{
+ "steps": [
+  {
+   "data": {
+    "client_state": {
+     "chain_id": 3151908,
+     "epochs_per_sync_committee_period": 8,
+     "fork_parameters": {
+      "altair": {
+       "epoch": 0,
+       "version": "20000038"
+      },
+      "bellatrix": {
+       "epoch": 0,
+       "version": "30000038"
+      },
+      "capella": {
+       "epoch": 0,
+       "version": "40000038"
+      },
+      "deneb": {
+       "epoch": 0,
+       "version": "50000038"
+      },
+      "genesis_fork_version": "10000038",
+      "genesis_slot": 0
+     },
+     "is_frozen": false,
+     "genesis_time": 1734451535,
+     "genesis_validators_root": "d61ea484febacfae5298d52a2b581f3e305a51f3112a9241b968dccf019f7b11",
+     "ibc_commitment_slot": "0x1",
+     "ibc_contract_address": "0x7284df3a7e15f10099f224322a8c25cb72f558bb",
+     "latest_slot": 24,
+     "min_sync_committee_participants": 32,
+     "seconds_per_slot": 6,
+     "slots_per_epoch": 8
+    },
+    "consensus_state": {
+     "current_sync_committee": "0xb0a6dab068cb7f03ba649efaaef2f48f4c51cc024a746982a2515d71f74b9e28dc6c1b94cc30b52096cbef032a06117d",
+     "next_sync_committee": "0xb0a6dab068cb7f03ba649efaaef2f48f4c51cc024a746982a2515d71f74b9e28dc6c1b94cc30b52096cbef032a06117d",
+     "slot": 24,
+     "state_root": "0x6c3830d0098f9149022aaa3ad988008d9e585130069f9c1f50c66b43b001a7ef",
+     "storage_root": "0x0000000000000000000000000000000000000000000000000000000000000000",
+     "timestamp": 1734451679
+    }
+   },
+   "name": "initial_state"
+  }
+ ]
+}

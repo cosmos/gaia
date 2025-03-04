@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package relayer;
+
+option go_package = "types/relayer";
+
+// The relayer service definition
+// Each relayer service is defined between two chains.
+// One chain is the source chain, and the other chain is the target chain.
+service RelayerService {
+    // Relay the ibc packets produced by the results of transactions
+    rpc RelayByTx (RelayByTxRequest) returns (RelayByTxResponse);
+    // Request relayer information
+    rpc Info (InfoRequest) returns (InfoResponse);
+}
+
+// The request message
+message RelayByTxRequest {
+    // The source chain identifier
+    string src_chain = 1;
+    // The target chain identifier
+    string dst_chain = 2;
+    // The identifiers for the IBC transactions to be relayed
+    // This is usually the transaction hash
+    repeated bytes source_tx_ids = 3;
+    // The identifiers for the IBC transactions on the target chain to be timed out
+    repeated bytes timeout_tx_ids = 4;
+    // The identifier for the target client
+    // Used for event filtering
+    string target_client_id = 5;
+}
+
+// The response message
+message RelayByTxResponse {
+    // The multicall transaction to be submitted by caller
+    bytes tx = 1;
+    // The contract address to submit the transaction, if applicable
+    string address = 2;
+}
+
+// Information request message
+message InfoRequest {
+    // The source chain identifier
+    string src_chain = 1;
+    // The target chain identifier
+    string dst_chain = 2;
+}
+
+// Information response message
+message InfoResponse {
+    // The target chain information
+    Chain target_chain = 1;
+    // The source chain information
+    Chain source_chain = 2;
+}
+
+// The chain definition
+message Chain {
+    // The chain id
+    string chain_id = 1;
+    // The ibc version
+    string ibc_version = 2;
+    // The ibc contract address
+    string ibc_contract = 3;
+}

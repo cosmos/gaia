@@ -1,0 +1,23 @@
+[package]
+name       = "ibc-eureka-solidity-types"
+version    = { workspace = true }
+edition    = { workspace = true }
+repository = { workspace = true }
+license    = { workspace = true }
+
+[features]
+rpc = ["dep:alloy-contract", "dep:hex"]
+
+[dependencies]
+alloy-sol-types = { workspace = true, features = ["json"] }
+alloy-contract  = { workspace = true, optional = true }
+serde           = { workspace = true }
+hex             = { workspace = true, optional = true }
+time            = { workspace = true }
+
+ibc-proto-eureka                 = { workspace = true }
+tendermint-light-client-verifier = { workspace = true }
+ibc-client-tendermint-types      = { workspace = true }
+tendermint                       = { workspace = true }
+ibc-core-commitment-types        = { workspace = true }
+ibc-core-client-types            = { workspace = true }

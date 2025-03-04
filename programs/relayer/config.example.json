@@ -1,0 +1,42 @@
+{
+  "server": {
+    "log_level": "info",
+    "address": "127.0.0.1",
+    "port": 3000
+  },
+  "modules": [
+    {
+      "name": "cosmos_to_eth",
+      "src_chain": "cosmoshub-4",
+      "dst_chain": "0x1",
+      "config": {
+        "tm_rpc_url": "http://public-celestia-mocha4-consensus.numia.xyz/",
+        "ics26_address": "0x4242424242424242424242424242424242424242",
+        "eth_rpc_url": "https://ethereum-holesky-rpc.publicnode.com",
+        "sp1_config": "env"
+      }
+    },
+    {
+      "name": "eth_to_cosmos",
+      "src_chain": "0x1",
+      "dst_chain": "cosmoshub-4",
+      "config": {
+        "tm_rpc_url": "http://public-celestia-mocha4-consensus.numia.xyz/",
+        "ics26_address": "0x4242424242424242424242424242424242424242",
+        "eth_rpc_url": "https://ethereum-holesky-rpc.publicnode.com",
+        "eth_beacon_api_url": "https://ethereum-holesky-beacon-api.publicnode.com",
+        "signer_address": "cosmos1abcdef1234567890abcdef1234567890"
+      }
+    },
+    {
+      "name": "cosmos_to_cosmos",
+      "src_chain": "cosmoshub-4",
+      "dst_chain": "osmosis-1",
+      "config": {
+        "src_rpc_url": "https://noble-testnet-rpc.polkachu.com:443",
+        "target_rpc_url": "http://public-celestia-mocha5-consensus.numia.xyz/",
+        "signer_address": "cosmos1abcdef1234567890abcdef1234567890"
+      }
+    }
+  ]
+}

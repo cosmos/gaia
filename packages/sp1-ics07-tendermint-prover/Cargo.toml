@@ -1,0 +1,25 @@
+[package]
+name       = "sp1-ics07-tendermint-prover"
+version    = { workspace = true }
+edition    = { workspace = true }
+repository = { workspace = true }
+license    = { workspace = true }
+
+[dependencies]
+sp1-sdk    = { workspace = true }
+sp1-prover = { workspace = true }
+
+ibc-eureka-solidity-types = { workspace = true }
+
+alloy-sol-types = { workspace = true }
+
+prost      = { workspace = true }
+
+tracing = { workspace = true }
+
+ibc-proto                   = { workspace = true }
+ibc-client-tendermint-types = { workspace = true, features = ["serde"] }
+ibc-core-commitment-types   = { workspace = true }
+
+[build-dependencies]
+sp1-helper = { workspace = true }

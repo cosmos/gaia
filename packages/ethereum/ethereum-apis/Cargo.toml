@@ -1,0 +1,15 @@
+[package]
+name = "ethereum-apis"
+version = { workspace = true }
+edition = { workspace = true }
+repository = { workspace = true }
+
+[dependencies]
+ethereum-types = { workspace = true }
+
+alloy = { workspace = true, features = ["full"] }
+reqwest = { workspace = true, features = ["json"] }
+thiserror = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tracing     = { workspace = true, default-features = true }

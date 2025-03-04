@@ -1,0 +1,33 @@
+[package]
+name       = "solidity-ibc-eureka-relayer"
+version    = { workspace = true }
+edition    = { workspace = true }
+repository = { workspace = true }
+license    = { workspace = true }
+
+[dependencies]
+ibc-eureka-relayer-lib = { workspace = true, default-features = true }
+
+tokio = { workspace = true, default-features = true }
+tonic = { workspace = true, default-features = true }
+
+tracing            = { workspace = true, default-features = true }
+tracing-subscriber = { workspace = true, default-features = true }
+clap               = { workspace = true, default-features = true }
+anyhow             = { workspace = true, default-features = true }
+futures            = { workspace = true, default-features = true }
+
+serde      = { workspace = true, default-features = true }
+serde_json = { workspace = true, default-features = true }
+prost      = { workspace = true, default-features = true }
+
+alloy = { workspace = true, features = ["full", "node-bindings"] }
+
+tendermint     = { workspace = true }
+tendermint-rpc = { workspace = true }
+
+sp1-sdk = { workspace = true, default-features = true }
+sp1-prover = { workspace = true }
+
+[build-dependencies]
+tonic-build = { workspace = true, default-features = true }

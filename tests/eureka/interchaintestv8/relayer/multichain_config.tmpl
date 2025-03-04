@@ -1,0 +1,77 @@
+{
+  "server": {
+    "log_level": "info",
+    "address": "127.0.0.1",
+    "port": 3000
+  },
+  "modules": [
+    {
+      "name": "eth_to_cosmos",
+      "src_chain": "{{ .EthChainID }}",
+      "dst_chain": "{{ .ChainAID }}",
+      "config": {
+        "tm_rpc_url": "{{ .ChainATmRPC }}",
+        "ics26_address": "{{ .ICS26Address }}",
+        "eth_rpc_url": "{{ .EthRPC }}",
+        "eth_beacon_api_url": "{{ .BeaconAPI }}",
+        "signer_address": "{{ .ChainASignerAddress }}",
+        "mock": {{ .MockWasmClient }}
+      }
+    },
+    {
+      "name": "cosmos_to_eth",
+      "src_chain": "{{ .ChainAID }}",
+      "dst_chain": "{{ .EthChainID }}",
+      "config": {
+        "tm_rpc_url": "{{ .ChainATmRPC }}",
+        "ics26_address": "{{ .ICS26Address }}",
+        "eth_rpc_url": "{{ .EthRPC }}",
+        "sp1_config": "{{ .SP1Config }}"
+      }
+    },
+    {
+      "name": "eth_to_cosmos",
+      "src_chain": "{{ .EthChainID }}",
+      "dst_chain": "{{ .ChainBID }}",
+      "config": {
+        "tm_rpc_url": "{{ .ChainBTmRPC }}",
+        "ics26_address": "{{ .ICS26Address }}",
+        "eth_rpc_url": "{{ .EthRPC }}",
+        "eth_beacon_api_url": "{{ .BeaconAPI }}",
+        "signer_address": "{{ .ChainBSignerAddress }}",
+        "mock": {{ .MockWasmClient }}
+      }
+    },
+    {
+      "name": "cosmos_to_eth",
+      "src_chain": "{{ .ChainBID }}",
+      "dst_chain": "{{ .EthChainID }}",
+      "config": {
+        "tm_rpc_url": "{{ .ChainBTmRPC }}",
+        "ics26_address": "{{ .ICS26Address }}",
+        "eth_rpc_url": "{{ .EthRPC }}",
+        "sp1_config": "{{ .SP1Config }}"
+      }
+    },
+    {
+      "name": "cosmos_to_cosmos",
+      "src_chain": "{{ .ChainAID }}",
+      "dst_chain": "{{ .ChainBID }}",
+      "config": {
+        "src_rpc_url": "{{ .ChainATmRPC }}",
+        "target_rpc_url": "{{ .ChainBTmRPC }}",
+        "signer_address": "{{ .ChainBSignerAddress }}"
+      }
+    },
+    {
+      "name": "cosmos_to_cosmos",
+      "src_chain": "{{ .ChainBID }}",
+      "dst_chain": "{{ .ChainAID }}",
+      "config": {
+        "src_rpc_url": "{{ .ChainBTmRPC }}",
+        "target_rpc_url": "{{ .ChainATmRPC }}",
+        "signer_address": "{{ .ChainASignerAddress }}"
+      }
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+[package]
+name       = "ibc-eureka-relayer-lib"
+version    = { workspace = true }
+edition    = { workspace = true }
+repository = { workspace = true }
+license    = { workspace = true }
+
+[features]
+default = ["sp1-toolchain"]
+# sp1-toolchain requires sp1 toolchain to be installed to build
+sp1-toolchain = ["dep:sp1-ics07-tendermint-prover", "dep:sp1-ics07-tendermint-utils"]
+
+[dependencies]
+ibc-eureka-solidity-types = { workspace = true, features = ["rpc"] }
+
+sp1-ics07-tendermint-prover   = { workspace = true, optional = true }
+sp1-ics07-tendermint-utils    = { workspace = true, optional = true }
+
+ethereum-apis = { workspace = true }
+ethereum-light-client = { workspace = true }
+ethereum-types = { workspace = true }
+
+serde      = { workspace = true, features = ["derive"] }
+prost      = { workspace = true, features = ["std"] }
+serde_json = { workspace = true }
+
+async-trait   = { workspace = true }
+anyhow        = { workspace = true, features = ["std"] }
+futures       = { workspace = true, default-features = true }
+futures-timer = { workspace = true }
+tracing       = { workspace = true, default-features = true }
+
+tendermint     = { workspace = true, features = ["std"] }
+tendermint-rpc = { workspace = true, features = ["http-client"] }
+tendermint-light-client-verifier = { workspace = true }
+
+ibc-proto-eureka    = { workspace = true }
+ibc-core-host-types = { workspace = true }
+ibc-core-commitment-types = { workspace = true }
+
+alloy = { workspace = true, features = ["full", "node-bindings"] }
+
+sp1-sdk = { workspace = true, default-features = true }
+sp1-prover = { workspace = true }

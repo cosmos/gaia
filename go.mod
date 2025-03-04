@@ -26,7 +26,7 @@ require (
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/gogoproto v1.7.0
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10 v10.0.0-beta.2
-	github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.0.0-beta.2-bugfix.1.0.20250303224920-901b4143ee3d
+	github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.0.0-beta.2-bugfix.1.0.20250304162201-823de25b2030
 	github.com/cosmos/ibc-go/modules/apps/callbacks/v10 v10.0.0-rc.2
 	github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10 v10.0.0-rc.2
 	github.com/cosmos/ibc-go/v10 v10.0.0
@@ -273,7 +273,7 @@ replace (
 	// Use special SDK v0.50.x release with support for both ICS and LSM
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.50.11-lsm
 
-	github.com/cosmos/ibc-go/v10 => github.com/cosmos/ibc-go/v10 v10.0.0-rc.3
+	github.com/cosmos/ibc-go/v10 => github.com/cosmos/ibc-go/v10 v10.0.0-rc.2
 
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2

@@ -430,6 +430,7 @@ func NewAppKeeper(
 		govAuthority, // authority
 		appKeepers.BankKeeper,
 		appKeepers.IBCKeeper.ChannelKeeper, // ChannelKeeper
+		appKeepers.IBCKeeper.ClientKeeper,
 		appKeepers.IBCKeeper.ChannelKeeper, // ICS4Wrapper
 	)
 
@@ -461,7 +462,7 @@ func NewAppKeeper(
 		appKeepers.GetSubspace(ibctransfertypes.ModuleName),
 		appKeepers.PFMRouterKeeper, // ISC4 Wrapper: PFM Router middleware
 		appKeepers.IBCKeeper.ChannelKeeper,
-		bApp.MsgServiceRouter(),
+		appKeepers.IBCKeeper.ChannelKeeperV2,
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),

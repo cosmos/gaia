@@ -95,10 +95,9 @@ func (s *IntegrationTestSuite) testCallbacksCWSkipGo() {
 
 	memo := fmt.Sprintf("{%s,%s}", destCallbackData, ibcHooksData)
 
-	//packetData := transfertypes.NewFungibleTokenPacketData("uatom", "1", sender, adapterAddress, memo.String())
-
 	senderB, err := s.chainB.validators[0].keyInfo.GetAddress()
 	s.sendIBC(s.chainB, 0, senderB.String(), adapterAddress, "1uatom", "3000000uatom", memo, transferChannel, nil, false)
+	s.hermesClearPacket(hermesConfigWithGasPrices, s.chainB.id, transferPort, transferChannel)
 
 	balances, err := queryGaiaAllBalances(chainEndpoint, RecipientAddress)
 	if err != nil {
@@ -106,7 +105,6 @@ func (s *IntegrationTestSuite) testCallbacksCWSkipGo() {
 	}
 
 	require.Equal(s.T(), balances[0].String(), "1"+recipientDenom)
-	fmt.Printf("Balances: %v\n", balances)
 }
 
 func (s *IntegrationTestSuite) queryBuildAddress(ctx context.Context, c *chain, valIdx int, codeHash, creatorAddress, saltHexEncoded string,

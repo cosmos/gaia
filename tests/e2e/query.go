@@ -3,14 +3,13 @@ package e2e
 import (
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
-	"strings"
-
 	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types"
 	wasmclienttypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/types"
 	icacontrollertypes "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/controller/types"
 	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
+	"io"
+	"net/http"
+	"strings"
 
 	evidencetypes "cosmossdk.io/x/evidence/types"
 
@@ -376,7 +375,7 @@ func queryBlocksPerEpoch(endpoint string) (int64, error) {
 	return response.Params.BlocksPerEpoch, nil
 }
 
-func queryWasmContractAddress(endpoint, creator string) (string, error) {
+func queryWasmContractAddress(endpoint, creator string, idx uint64) (string, error) {
 	body, err := httpGet(fmt.Sprintf("%s/cosmwasm/wasm/v1/contracts/creator/%s", endpoint, creator))
 	if err != nil {
 		return "", fmt.Errorf("failed to execute HTTP request: %w", err)
@@ -387,7 +386,7 @@ func queryWasmContractAddress(endpoint, creator string) (string, error) {
 		return "", err
 	}
 
-	return response.ContractAddresses[0], nil
+	return response.ContractAddresses[idx], nil
 }
 
 func queryWasmSmartContractState(endpoint, address, msg string) ([]byte, error) {

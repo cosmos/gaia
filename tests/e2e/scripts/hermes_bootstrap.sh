@@ -12,7 +12,7 @@ echo $GAIA_A_E2E_RLY_MNEMONIC > /root/.hermes/GAIA_A_E2E_RLY_MNEMONIC.txt
 # setup Hermes relayer configuration with non-zero gas_price
 tee /root/.hermes/config.toml <<EOF
 [global]
-log_level = 'info'
+log_level = 'trace'
 
 [mode]
 
@@ -82,7 +82,7 @@ EOF
 # setup Hermes relayer configuration with zero gas_price
 tee /root/.hermes/config-zero.toml <<EOF
 [global]
-log_level = 'info'
+log_level = 'trace'
 
 [mode]
 
@@ -154,3 +154,4 @@ EOF
 hermes keys add  --key-name rly01-gaia-b  --chain $GAIA_B_E2E_CHAIN_ID --mnemonic-file /root/.hermes/GAIA_B_E2E_RLY_MNEMONIC.txt
 sleep 5
 hermes keys add  --key-name rly01-gaia-a  --chain $GAIA_A_E2E_CHAIN_ID --mnemonic-file /root/.hermes/GAIA_A_E2E_RLY_MNEMONIC.txt
+hermes start

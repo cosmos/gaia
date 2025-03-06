@@ -17,6 +17,7 @@ var (
 	runRateLimitTest              = true
 	runTxExtensionsTest           = true
 	runCWTest                     = true
+	runCallbacksTest              = true
 	runIbcV2Test                  = true
 )
 
@@ -157,4 +158,12 @@ func (s *IntegrationTestSuite) TestIbcV2() {
 	s.testIBCTransfer(false, true)
 	s.testResetRateLimit(true)
 	s.testRemoveRateLimit(true)
+}
+
+func (s *IntegrationTestSuite) TestCallbacks() {
+	if !runCallbacksTest {
+		s.T().Skip()
+	}
+
+	s.testCallbacksCWSkipGo()
 }

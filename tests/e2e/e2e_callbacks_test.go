@@ -59,7 +59,7 @@ func (s *IntegrationTestSuite) testCallbacksCWSkipGo() {
 	s.Require().Equal(entrypointPredictedAddress, entrypointAddress)
 	s.Require().NoError(err)
 
-	fmt.Printf("Successfully deployed contracts: \nEntrypoint: %s\nAdapter:%s\n", entrypointAddress, adapterAddress)
+	s.T().Logf("Successfully deployed contracts: \nEntrypoint: %s\nAdapter:%s\n", entrypointAddress, adapterAddress)
 
 	str := "transfer/channel-0/uatom"
 	h := sha256.New()

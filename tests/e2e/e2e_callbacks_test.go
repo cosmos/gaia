@@ -52,13 +52,11 @@ func (s *IntegrationTestSuite) testCallbacksCWSkipGo() {
 	s.Require().NoError(err)
 
 	instantiateAdapterJSON := fmt.Sprintf(`{"entry_point_contract_address":"%s"}`, entrypointPredictedAddress)
-	s.instantiateWasm(ctx, s.chainA, valIdx, sender, "3", instantiateAdapterJSON, "adapter")
-	adapterAddress, err := queryWasmContractAddress(chainEndpoint, address.String(), 1)
+	adapterAddress := s.instantiateWasm(ctx, s.chainA, valIdx, sender, adapterCode, instantiateAdapterJSON, "adapter")
 	s.Require().NoError(err)
 
 	instantiateEntrypointJSON := fmt.Sprintf(`{"swap_venues":[], "ibc_transfer_contract_address": "%s"}`, adapterAddress)
-	s.instantiate2Wasm(ctx, s.chainA, valIdx, sender, "2", instantiateEntrypointJSON, SaltHex, "entrypoint")
-	entrypointAddress, err := queryWasmContractAddress(chainEndpoint, address.String(), 2)
+	entrypointAddress := s.instantiate2Wasm(ctx, s.chainA, valIdx, sender, entryPointCode, instantiateEntrypointJSON, SaltHex, "entrypoint")
 	s.Require().Equal(entrypointPredictedAddress, entrypointAddress)
 	s.Require().NoError(err)
 

@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"gopkg.in/yaml.v2"
 	"os"
 	"path/filepath"
 	"strconv"

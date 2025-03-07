@@ -89,6 +89,12 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.initValidatorConfigs(s.chainB)
 	s.runValidators(s.chainB, 10)
 
+	s.testCounters = TestCounters{
+		proposalCounter:           0,
+		contractsCounter:          0,
+		contractsCounterPerSender: map[string]uint64{},
+	}
+
 	time.Sleep(10 * time.Second)
 	s.runIBCRelayer()
 }

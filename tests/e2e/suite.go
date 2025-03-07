@@ -42,10 +42,3 @@ type IntegrationTestSuite struct {
 
 	testCounters TestCounters
 }
-
-type AddressResponse struct {
-	Name     string `json:"name"`
-	Type     string `json:"type"`
-	Address  string `json:"address"`
-	Mnemonic string `json:"mnemonic"`
-}

@@ -1,14 +1,12 @@
 package e2e
 
 import (
-	"context"
 	"fmt"
 	"path/filepath"
 	"strconv"
 	"time"
 
 	sdkmath "cosmossdk.io/math"
-	"github.com/cosmos/cosmos-sdk/client/flags"
 )
 
 const (
@@ -504,64 +502,4 @@ func (s *IntegrationTestSuite) testIBCTransfer(expToFail bool, v2 bool) {
 		s.Require().Equal(sdkmath.NewInt(0), res.RateLimit.Flow.Inflow)
 		s.Require().NotEqual(sdkmath.NewInt(0), res.RateLimit.Flow.Outflow)
 	}
-}
-
-func (s *IntegrationTestSuite) createV2LightClient() {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-
-	valIdx := 0
-	val := s.chainA.validators[valIdx]
-	address, _ := val.keyInfo.GetAddress()
-	sender := address.String()
-
-	clientState := `{"@type":"/ibc.lightclients.wasm.v1.ClientState","data":"ZG9lc250IG1hdHRlcg==","checksum":"O45STPnbLLar4DtFwDx0dE6tuXQW5XTKPHpbjaugun4=","latest_height":{"revision_number":"0","revision_height":"7795583"}}`
-	consensusState := `{"@type":"/ibc.lightclients.wasm.v1.ConsensusState","data":"ZG9lc250IG1hdHRlcg=="}`
-
-	s.T().Logf("sender: %s", sender)
-
-	cmd := []string{
-		gaiadBinary,
-		txCommand,
-		"ibc",
-		"client",
-		"create",
-		clientState,
-		consensusState,
-		fmt.Sprintf("--from=%s", sender),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, standardFees.String()),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, s.chainA.id),
-		"--keyring-backend=test",
-		"--broadcast-mode=sync",
-		"--output=json",
-		"-y",
-	}
-
-	s.T().Logf("Creating light client on chain %s", s.chainA.id)
-	s.executeGaiaTxCommand(ctx, s.chainA, cmd, valIdx, s.defaultExecValidation(s.chainA, valIdx))
-	s.T().Log("successfully created light client")
-
-	s.T().Logf("sender: %s", sender)
-
-	cmd2 := []string{
-		gaiadBinary,
-		txCommand,
-		"ibc",
-		"client",
-		"add-counterparty",
-		v2TransferClient,
-		"client-0",
-		"aWJj",
-		fmt.Sprintf("--from=%s", sender),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, standardFees.String()),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, s.chainA.id),
-		"--keyring-backend=test",
-		"--broadcast-mode=sync",
-		"--output=json",
-		"-y",
-	}
-
-	s.T().Logf("Adding client counterparty on chain %s", s.chainA.id)
-	s.executeGaiaTxCommand(ctx, s.chainA, cmd2, valIdx, s.defaultExecValidation(s.chainA, valIdx))
-	s.T().Log("successfully added client counterparty")
 }

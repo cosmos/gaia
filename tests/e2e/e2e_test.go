@@ -20,7 +20,7 @@ var (
 	runRateLimitTest              = true
 	runTxExtensionsTest           = true
 	runCWTest                     = true
-	runWasmLightClientTest        = true
+	runIbcV2Test                  = true
 )
 
 // logTestStart logs when a test starts
@@ -154,14 +154,15 @@ func (s *IntegrationTestSuite) TestRateLimit() {
 	if !runRateLimitTest {
 		s.T().Skip()
 	}
-	logTestStart("Rate Limit")
-	s.testAddRateLimits()
-	s.testIBCTransfer(true)
-	s.testUpdateRateLimit()
-	s.testIBCTransfer(false)
-	s.testResetRateLimit()
-	s.testRemoveRateLimit()
-	logTestResult(s.T(), "Rate Limit")
+logTestStart("Rate Limit")
+s.testAddRateLimits(false)
+s.testIBCTransfer(true, false)
+s.testUpdateRateLimit(false)
+s.testIBCTransfer(false, false)
+s.testResetRateLimit(false)
+s.testRemoveRateLimit(false)
+logTestResult(s.T(), "Rate Limit")
+
 }
 
 func (s *IntegrationTestSuite) TestTxExtensions() {
@@ -183,12 +184,26 @@ func (s *IntegrationTestSuite) TestCW() {
 	logTestResult(s.T(), "CosmWasm Tests")
 }
 
-func (s *IntegrationTestSuite) TestWasmLightClient() {
-	if !runWasmLightClientTest {
+func (s *IntegrationTestSuite) TestIbcV2() {
+	if !runIbcV2Test {
 		s.T().Skip()
 	}
-	logTestStart("Wasm Light Client")
-	s.testStoreWasmLightClient()
-	s.testCreateWasmLightClient()
-	logTestResult(s.T(), "Wasm Light Client")
+  
+  logTestStart("Wasm Light Client")
+
+// ibc v2 wasm light client tests
+s.testStoreWasmLightClient()
+s.testCreateWasmLightClient()
+
+// ibc v2 rate limiting tests
+s.testAddRateLimits(true)
+s.testIBCTransfer(true, true)
+s.testUpdateRateLimit(true)
+s.testIBCTransfer(false, true)
+s.testResetRateLimit(true)
+s.testRemoveRateLimit(true)
+
+logTestResult(s.T(), "Wasm Light Client")
+
+  
 }

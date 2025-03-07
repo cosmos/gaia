@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/codec"
 	types7 "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	types3 "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -15,6 +16,8 @@ import (
 	types5 "github.com/cosmos/cosmos-sdk/x/gov/types"
 	types2 "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	types6 "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/cosmos/gogoproto/proto"
+	types8 "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/types"
 	"github.com/ory/dockertest/v3/docker"
 	"gopkg.in/yaml.v2"
 	"path/filepath"
@@ -43,8 +46,8 @@ func (s *IntegrationTestSuite) storeWasm(ctx context.Context, c *chain, valIdx i
 	s.T().Logf("%s storing wasm on host chain %s", sender, s.chainB.id)
 	s.executeGaiaTxCommand(ctx, c, storeCmd, valIdx, s.defaultExecValidation(c, valIdx))
 	s.T().Log("successfully sent store wasm tx")
-	contractsCounter++
-	return strconv.Itoa(contractsCounter)
+	s.testCounters.contractsCounter++
+	return strconv.Itoa(s.testCounters.contractsCounter)
 }
 
 func (s *IntegrationTestSuite) instantiateWasm(ctx context.Context, c *chain, valIdx int, sender, codeID,
@@ -73,9 +76,9 @@ func (s *IntegrationTestSuite) instantiateWasm(ctx context.Context, c *chain, va
 	s.executeGaiaTxCommand(ctx, c, storeCmd, valIdx, s.defaultExecValidation(c, valIdx))
 	s.T().Log("successfully sent instantiate wasm tx")
 	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[c.id][0].GetHostPort("1317/tcp"))
-	address, err := queryWasmContractAddress(chainEndpoint, sender, contractsCounterPerSender[sender])
+	address, err := queryWasmContractAddress(chainEndpoint, sender, s.testCounters.contractsCounterPerSender[sender])
 	s.Require().NoError(err)
-	contractsCounterPerSender[sender]++
+	s.testCounters.contractsCounterPerSender[sender]++
 	return address
 }
 
@@ -107,9 +110,9 @@ func (s *IntegrationTestSuite) instantiate2Wasm(ctx context.Context, c *chain, v
 	s.executeGaiaTxCommand(ctx, c, storeCmd, valIdx, s.defaultExecValidation(c, valIdx))
 	s.T().Log("successfully sent instantiate2 wasm tx")
 	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[c.id][0].GetHostPort("1317/tcp"))
-	address, err := queryWasmContractAddress(chainEndpoint, sender, contractsCounterPerSender[sender])
+	address, err := queryWasmContractAddress(chainEndpoint, sender, s.testCounters.contractsCounterPerSender[sender])
 	s.Require().NoError(err)
-	contractsCounterPerSender[sender]++
+	s.testCounters.contractsCounterPerSender[sender]++
 	return address
 }
 
@@ -956,4 +959,123 @@ func (s *IntegrationTestSuite) broadcastTxFile(chain *chain, valIdx int, from st
 		return nil, fmt.Errorf("failed to sign tx: %s", string(erroutput))
 	}
 	return output, nil
+}
+
+//nolint:unparam
+func (s *IntegrationTestSuite) sendIBC(c *chain, valIdx int, sender, recipient, token, fees, note, channel string, absoluteTimeout *int64, expErr bool) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	ibcCmd := []string{
+		gaiadBinary,
+		txCommand,
+		"ibc-transfer",
+		"transfer",
+		"transfer",
+		channel,
+		recipient,
+		token,
+	}
+
+	if absoluteTimeout != nil {
+		ibcCmd = append(ibcCmd, "--absolute-timeouts")
+		ibcCmd = append(ibcCmd, fmt.Sprintf("--packet-timeout-timestamp=%d", *absoluteTimeout))
+	}
+
+	ibcCmd = append(ibcCmd, []string{
+		fmt.Sprintf("--from=%s", sender),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		// fmt.Sprintf("--%s=%s", flags.FlagNote, note),
+		fmt.Sprintf("--memo=%s", note),
+		"--keyring-backend=test",
+		"--broadcast-mode=sync",
+		"--output=json",
+		"-y",
+	}...)
+
+	s.T().Logf("sending %s from %s (%s) to %s (%s) with memo %s", token, s.chainA.id, sender, s.chainB.id, recipient, note)
+	if expErr {
+		s.executeGaiaTxCommand(ctx, c, ibcCmd, valIdx, s.expectErrExecValidation(c, valIdx, true))
+		s.T().Log("unsuccessfully sent IBC tokens")
+	} else {
+		s.executeGaiaTxCommand(ctx, c, ibcCmd, valIdx, s.defaultExecValidation(c, valIdx))
+		s.T().Log("successfully sent IBC tokens")
+	}
+}
+
+func (s *IntegrationTestSuite) registerICAAccount(c *chain, valIdx int, sender, connectionID, fees string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	version := string(types8.ModuleCdc.MustMarshalJSON(&types8.Metadata{
+		Version:                types8.Version,
+		ControllerConnectionId: connectionID,
+		HostConnectionId:       connectionID,
+		Encoding:               types8.EncodingProtobuf,
+		TxType:                 types8.TxTypeSDKMultiMsg,
+	}))
+
+	icaCmd := []string{
+		gaiadBinary,
+		txCommand,
+		"interchain-accounts",
+		"controller",
+		"register",
+		connectionID,
+		fmt.Sprintf("--version=%s", version),
+		fmt.Sprintf("--from=%s", sender),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		"--gas=250000", // default 200_000 is not enough; gas fees increased after adding IBC fee middleware
+		"--keyring-backend=test",
+		"--broadcast-mode=sync",
+		"--output=json",
+		"-y",
+	}
+	s.T().Logf("%s registering ICA account on host chain %s", sender, s.chainB.id)
+	s.executeGaiaTxCommand(ctx, c, icaCmd, valIdx, s.defaultExecValidation(c, valIdx))
+	s.T().Log("successfully sent register ICA account tx")
+}
+
+func (s *IntegrationTestSuite) sendICATransaction(c *chain, valIdx int, sender, connectionID, packetMsgPath, fees string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	icaCmd := []string{
+		gaiadBinary,
+		txCommand,
+		"interchain-accounts",
+		"controller",
+		"send-tx",
+		connectionID,
+		packetMsgPath,
+		fmt.Sprintf("--from=%s", sender),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, fees),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		"--keyring-backend=test",
+		"--broadcast-mode=sync",
+		"--output=json",
+		"-y",
+	}
+	s.T().Logf("%s sending ICA transaction to the host chain %s", sender, s.chainB.id)
+	s.executeGaiaTxCommand(ctx, c, icaCmd, valIdx, s.defaultExecValidation(c, valIdx))
+	s.T().Log("successfully sent ICA transaction")
+}
+
+func (s *IntegrationTestSuite) buildICASendTransactionFile(cdc codec.Codec, msgs []proto.Message, outputBaseDir string) {
+	data, err := types8.SerializeCosmosTx(cdc, msgs, types8.EncodingProtobuf)
+	s.Require().NoError(err)
+
+	sendICATransaction := types8.InterchainAccountPacketData{
+		Type: types8.EXECUTE_TX,
+		Data: data,
+	}
+
+	sendICATransactionBody, err := json.MarshalIndent(sendICATransaction, "", " ")
+	s.Require().NoError(err)
+
+	outputPath := filepath.Join(outputBaseDir, "config", ICASendTransactionFileName)
+	err = writeFile(outputPath, sendICATransactionBody)
+	s.Require().NoError(err)
 }

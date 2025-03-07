@@ -24,20 +24,20 @@ func (s *IntegrationTestSuite) testLSM() {
 	oldStakingParams, err := queryStakingParams(chainEndpoint)
 	s.Require().NoError(err)
 	s.writeLiquidStakingParamsUpdateProposal(s.chainA, oldStakingParams.Params)
-	proposalCounter++
+	s.testCounters.proposalCounter++
 	submitGovFlags := []string{configFile(proposalLSMParamUpdateFilename)}
-	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
-	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes"}
+	depositGovFlags := []string{strconv.Itoa(s.testCounters.proposalCounter), depositAmount.String()}
+	voteGovFlags := []string{strconv.Itoa(s.testCounters.proposalCounter), "yes"}
 
 	// gov proposing LSM parameters (global liquid staking cap, validator liquid staking cap, validator bond factor)
-	s.T().Logf("Proposal number: %d", proposalCounter)
+	s.T().Logf("Proposal number: %d", s.testCounters.proposalCounter)
 	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: Set parameters (global liquid staking cap, validator liquid staking cap, validator bond factor)")
-	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), proposalCounter, "stakingtypes.MsgUpdateProposal", submitGovFlags, depositGovFlags, voteGovFlags, "vote")
+	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), s.testCounters.proposalCounter, "stakingtypes.MsgUpdateProposal", submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 
 	// query the proposal status and new fee
 	s.Require().Eventually(
 		func() bool {
-			proposal, err := queryGovProposal(chainEndpoint, proposalCounter)
+			proposal, err := queryGovProposal(chainEndpoint, s.testCounters.proposalCounter)
 			s.Require().NoError(err)
 			return proposal.GetProposal().Status == govv1beta1.StatusPassed
 		},

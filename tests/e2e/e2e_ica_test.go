@@ -1,10 +1,7 @@
 package e2e
 
 import (
-	"context"
-	"encoding/json"
 	"fmt"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -14,16 +11,8 @@ import (
 
 	"cosmossdk.io/math"
 
-	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-)
-
-const (
-	ICASendTransactionFileName = "execute_ica_transaction.json"
-	connectionID               = "connection-0"
-	icaChannel                 = "channel-1"
 )
 
 func (s *IntegrationTestSuite) testICARegisterAccountAndSendTx() {
@@ -131,80 +120,4 @@ func (s *IntegrationTestSuite) testICARegisterAccountAndSendTx() {
 			}
 		}
 	})
-}
-
-func (s *IntegrationTestSuite) registerICAAccount(c *chain, valIdx int, sender, connectionID, fees string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-
-	version := string(icatypes.ModuleCdc.MustMarshalJSON(&icatypes.Metadata{
-		Version:                icatypes.Version,
-		ControllerConnectionId: connectionID,
-		HostConnectionId:       connectionID,
-		Encoding:               icatypes.EncodingProtobuf,
-		TxType:                 icatypes.TxTypeSDKMultiMsg,
-	}))
-
-	icaCmd := []string{
-		gaiadBinary,
-		txCommand,
-		"interchain-accounts",
-		"controller",
-		"register",
-		connectionID,
-		fmt.Sprintf("--version=%s", version),
-		fmt.Sprintf("--from=%s", sender),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, fees),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-		"--gas=250000", // default 200_000 is not enough; gas fees increased after adding IBC fee middleware
-		"--keyring-backend=test",
-		"--broadcast-mode=sync",
-		"--output=json",
-		"-y",
-	}
-	s.T().Logf("%s registering ICA account on host chain %s", sender, s.chainB.id)
-	s.executeGaiaTxCommand(ctx, c, icaCmd, valIdx, s.defaultExecValidation(c, valIdx))
-	s.T().Log("successfully sent register ICA account tx")
-}
-
-func (s *IntegrationTestSuite) sendICATransaction(c *chain, valIdx int, sender, connectionID, packetMsgPath, fees string) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-
-	icaCmd := []string{
-		gaiadBinary,
-		txCommand,
-		"interchain-accounts",
-		"controller",
-		"send-tx",
-		connectionID,
-		packetMsgPath,
-		fmt.Sprintf("--from=%s", sender),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, fees),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-		"--keyring-backend=test",
-		"--broadcast-mode=sync",
-		"--output=json",
-		"-y",
-	}
-	s.T().Logf("%s sending ICA transaction to the host chain %s", sender, s.chainB.id)
-	s.executeGaiaTxCommand(ctx, c, icaCmd, valIdx, s.defaultExecValidation(c, valIdx))
-	s.T().Log("successfully sent ICA transaction")
-}
-
-func (s *IntegrationTestSuite) buildICASendTransactionFile(cdc codec.Codec, msgs []proto.Message, outputBaseDir string) {
-	data, err := icatypes.SerializeCosmosTx(cdc, msgs, icatypes.EncodingProtobuf)
-	s.Require().NoError(err)
-
-	sendICATransaction := icatypes.InterchainAccountPacketData{
-		Type: icatypes.EXECUTE_TX,
-		Data: data,
-	}
-
-	sendICATransactionBody, err := json.MarshalIndent(sendICATransaction, "", " ")
-	s.Require().NoError(err)
-
-	outputPath := filepath.Join(outputBaseDir, "config", ICASendTransactionFileName)
-	err = writeFile(outputPath, sendICATransactionBody)
-	s.Require().NoError(err)
 }

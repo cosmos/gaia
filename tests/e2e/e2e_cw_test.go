@@ -30,7 +30,7 @@ func (s *IntegrationTestSuite) testCWCounter() {
 	s.storeWasm(ctx, s.chainA, valIdx, sender, storeWasmPath)
 
 	// Instantiate the contract
-	contractAddr := s.instantiateWasm(ctx, s.chainA, valIdx, sender, strconv.Itoa(contractsCounter), "{\"count\":0}", "counter")
+	contractAddr := s.instantiateWasm(ctx, s.chainA, valIdx, sender, strconv.Itoa(s.testCounters.contractsCounter), "{\"count\":0}", "counter")
 	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 
 	// Execute the contract

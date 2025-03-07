@@ -3,17 +3,10 @@ package e2e
 import (
 	"context"
 	"fmt"
-	"path/filepath"
 	"strconv"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
-
-	"github.com/cosmos/gaia/v23/tests/e2e/data"
-)
-
-const (
-	proposalStoreWasmLightClientFilename = "proposal_store_wasm_light_client.json"
 )
 
 func (s *IntegrationTestSuite) testStoreWasmLightClient() {
@@ -23,14 +16,14 @@ func (s *IntegrationTestSuite) testStoreWasmLightClient() {
 	validatorAAddr, _ := validatorA.keyInfo.GetAddress()
 
 	s.writeStoreWasmLightClientProposal(s.chainA)
-	proposalCounter++
+	s.testCounters.proposalCounter++
 	submitGovFlags := []string{configFile(proposalStoreWasmLightClientFilename)}
-	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
-	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes"}
+	depositGovFlags := []string{strconv.Itoa(s.testCounters.proposalCounter), depositAmount.String()}
+	voteGovFlags := []string{strconv.Itoa(s.testCounters.proposalCounter), "yes"}
 
-	s.T().Logf("Proposal number: %d", proposalCounter)
+	s.T().Logf("Proposal number: %d", s.testCounters.proposalCounter)
 	s.T().Logf("Submitting, deposit and vote Gov Proposal: Store wasm light client code")
-	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), proposalCounter, "ibc.lightclients.wasm.v1.MsgStoreCode", submitGovFlags, depositGovFlags, voteGovFlags, "vote")
+	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), s.testCounters.proposalCounter, "ibc.lightclients.wasm.v1.MsgStoreCode", submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 
 	s.Require().Eventually(
 		func() bool {
@@ -102,28 +95,4 @@ func (s *IntegrationTestSuite) testCreateWasmLightClient() {
 	s.T().Logf("Adding wasm light client counterparty on chain %s", s.chainA.id)
 	s.executeGaiaTxCommand(ctx, s.chainA, cmd2, valIdx, s.defaultExecValidation(s.chainA, valIdx))
 	s.T().Log("successfully added wasm light client counterparty")
-}
-
-func (s *IntegrationTestSuite) writeStoreWasmLightClientProposal(c *chain) {
-	template := `
-	{
-		"messages": [
-			{
-			"@type": "/ibc.lightclients.wasm.v1.MsgStoreCode",
-			"signer": "%s",
-			"wasm_byte_code": "%s"
-			}
-		],
-		"metadata": "AQ==",
-		"deposit": "100uatom",
-		"title": "Store wasm light client code",
-		"summary": "e2e-test storing wasm light client code"
-	   }`
-	propMsgBody := fmt.Sprintf(template,
-		govAuthority,
-		data.WasmDummyLightClient,
-	)
-
-	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalStoreWasmLightClientFilename), []byte(propMsgBody))
-	s.Require().NoError(err)
 }

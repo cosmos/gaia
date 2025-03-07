@@ -30,7 +30,7 @@ func logTestStart(testName string) {
 
 // logTestResult logs the result of a test
 func logTestResult(t *testing.T, testName string) {
-	    t.Helper() 
+	t.Helper()
 
 	if t.Failed() {
 		fmt.Printf("❌ Test FAILED: %s\n", testName)
@@ -45,7 +45,7 @@ func (s *IntegrationTestSuite) TestRestInterfaces() {
 	}
 	logTestStart("Rest Interfaces")
 	s.testRestInterfaces()
-	logTestResult(s.T(),"Rest Interfaces")
+	logTestResult(s.T(), "Rest Interfaces")
 }
 
 func (s *IntegrationTestSuite) TestBank() {
@@ -54,7 +54,7 @@ func (s *IntegrationTestSuite) TestBank() {
 	}
 	logTestStart("Bank Token Transfer")
 	s.testBankTokenTransfer()
-	logTestResult(s.T(),"Bank Token Transfer")
+	logTestResult(s.T(), "Bank Token Transfer")
 }
 
 func (s *IntegrationTestSuite) TestEncode() {
@@ -64,7 +64,7 @@ func (s *IntegrationTestSuite) TestEncode() {
 	logTestStart("Encoding")
 	s.testEncode()
 	s.testDecode()
-	logTestResult(s.T(),"Encoding")
+	logTestResult(s.T(), "Encoding")
 }
 
 func (s *IntegrationTestSuite) TestEvidence() {
@@ -73,7 +73,7 @@ func (s *IntegrationTestSuite) TestEvidence() {
 	}
 	logTestStart("Evidence Handling")
 	s.testEvidence()
-	logTestResult(s.T(),"Evidence Handling")
+	logTestResult(s.T(), "Evidence Handling")
 }
 
 func (s *IntegrationTestSuite) TestFeeGrant() {
@@ -82,7 +82,7 @@ func (s *IntegrationTestSuite) TestFeeGrant() {
 	}
 	logTestStart("Fee Grant")
 	s.testFeeGrant()
-	logTestResult(s.T(),"Fee Grant")
+	logTestResult(s.T(), "Fee Grant")
 }
 
 func (s *IntegrationTestSuite) TestGov() {
@@ -95,7 +95,7 @@ func (s *IntegrationTestSuite) TestGov() {
 	s.testSetBlocksPerEpoch()
 	s.ExpeditedProposalRejected()
 	s.GovSoftwareUpgradeExpedited()
-	logTestResult(s.T(),"Governance")
+	logTestResult(s.T(), "Governance")
 }
 
 func (s *IntegrationTestSuite) TestIBC() {
@@ -107,7 +107,7 @@ func (s *IntegrationTestSuite) TestIBC() {
 	s.testMultihopIBCTokenTransfer()
 	s.testFailedMultihopIBCTokenTransfer()
 	s.testICARegisterAccountAndSendTx()
-	logTestResult(s.T(),"IBC Transfer")
+	logTestResult(s.T(), "IBC Transfer")
 }
 
 func (s *IntegrationTestSuite) TestSlashing() {
@@ -117,7 +117,7 @@ func (s *IntegrationTestSuite) TestSlashing() {
 	logTestStart("Slashing")
 	chainAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	s.testSlashing(chainAPI)
-	logTestResult(s.T(),"Slashing")
+	logTestResult(s.T(), "Slashing")
 }
 
 func (s *IntegrationTestSuite) TestStakingAndDistribution() {
@@ -127,7 +127,7 @@ func (s *IntegrationTestSuite) TestStakingAndDistribution() {
 	logTestStart("Staking & Distribution")
 	s.testStaking()
 	s.testDistribution()
-	logTestResult(s.T(),"Staking & Distribution")
+	logTestResult(s.T(), "Staking & Distribution")
 }
 
 func (s *IntegrationTestSuite) TestVesting() {
@@ -138,7 +138,7 @@ func (s *IntegrationTestSuite) TestVesting() {
 	chainAAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
 	s.testDelayedVestingAccount(chainAAPI)
 	s.testContinuousVestingAccount(chainAAPI)
-	logTestResult(s.T(),"Vesting Accounts")
+	logTestResult(s.T(), "Vesting Accounts")
 }
 
 func (s *IntegrationTestSuite) TestLSM() {
@@ -147,7 +147,7 @@ func (s *IntegrationTestSuite) TestLSM() {
 	}
 	logTestStart("Liquid Staking Module (LSM)")
 	s.testLSM()
-	logTestResult(s.T(),"Liquid Staking Module (LSM)")
+	logTestResult(s.T(), "Liquid Staking Module (LSM)")
 }
 
 func (s *IntegrationTestSuite) TestRateLimit() {
@@ -161,7 +161,7 @@ func (s *IntegrationTestSuite) TestRateLimit() {
 	s.testIBCTransfer(false)
 	s.testResetRateLimit()
 	s.testRemoveRateLimit()
-	logTestResult(s.T(),"Rate Limit")
+	logTestResult(s.T(), "Rate Limit")
 }
 
 func (s *IntegrationTestSuite) TestTxExtensions() {
@@ -171,7 +171,7 @@ func (s *IntegrationTestSuite) TestTxExtensions() {
 	logTestStart("Transaction Extensions")
 	s.bankSendWithNonCriticalExtensionOptions()
 	s.failedBankSendWithNonCriticalExtensionOptions()
-	logTestResult(s.T(),"Transaction Extensions")
+	logTestResult(s.T(), "Transaction Extensions")
 }
 
 func (s *IntegrationTestSuite) TestCW() {
@@ -180,15 +180,14 @@ func (s *IntegrationTestSuite) TestCW() {
 	}
 	logTestStart("CosmWasm Tests")
 	s.testCWCounter()
-	logTestResult(s.T(),"CosmWasm Tests")
+	logTestResult(s.T(), "CosmWasm Tests")
 }
-
 
 func (s *IntegrationTestSuite) TestWasmLightClient() {
 	if !runWasmLightClientTest {
 		s.T().Skip()
 	}
-	logTestStart("Wasm Light Client") 
+	logTestStart("Wasm Light Client")
 	s.testStoreWasmLightClient()
 	s.testCreateWasmLightClient()
 	logTestResult(s.T(), "Wasm Light Client")

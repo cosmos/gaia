@@ -2,10 +2,34 @@ package e2e
 
 import (
 	"fmt"
-
 	"github.com/cosmos/cosmos-sdk/codec/unknownproto"
 	sdktx "github.com/cosmos/cosmos-sdk/types/tx"
 )
+
+const (
+	flagFrom            = "from"
+	flagHome            = "home"
+	flagFees            = "fees"
+	flagGas             = "gas"
+	flagOutput          = "output"
+	flagChainID         = "chain-id"
+	flagSpendLimit      = "spend-limit"
+	flagGasAdjustment   = "gas-adjustment"
+	flagFeeGranter      = "fee-granter"
+	flagBroadcastMode   = "broadcast-mode"
+	flagKeyringBackend  = "keyring-backend"
+	flagAllowedMessages = "allowed-messages"
+)
+
+type flagOption func(map[string]interface{})
+
+// withKeyValue add a new flag to command
+
+func withKeyValue(key string, value interface{}) flagOption {
+	return func(o map[string]interface{}) {
+		o[key] = value
+	}
+}
 
 func decodeTx(txBytes []byte) (*sdktx.Tx, error) {
 	var raw sdktx.TxRaw
@@ -49,4 +73,22 @@ func concatFlags(originalCollection []string, commandFlags []string, generalFlag
 	originalCollection = append(originalCollection, generalFlags...)
 
 	return originalCollection
+}
+
+func applyOptions(chainID string, options []flagOption) map[string]interface{} {
+	opts := map[string]interface{}{
+		flagKeyringBackend: "test",
+		flagOutput:         "json",
+		flagGas:            "auto",
+		flagFrom:           "alice",
+		flagBroadcastMode:  "sync",
+		flagGasAdjustment:  "1.5",
+		flagChainID:        chainID,
+		flagHome:           gaiaHomePath,
+		flagFees:           standardFees.String(),
+	}
+	for _, apply := range options {
+		apply(opts)
+	}
+	return opts
 }

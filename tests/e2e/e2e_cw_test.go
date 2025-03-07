@@ -91,7 +91,7 @@ func (s *IntegrationTestSuite) instantiateWasm(ctx context.Context, c *chain, va
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
 		fmt.Sprintf("--label=%s", label),
 		"--no-admin",
-		"--gas=250000",
+		"--gas=500000",
 		"--keyring-backend=test",
 		"--broadcast-mode=sync",
 		"--output=json",

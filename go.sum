@@ -456,6 +456,8 @@ github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10 v10.0.0-beta
 github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10 v10.0.0-beta.2/go.mod h1:+oU4GGDP51P1A+W8WMTcx9kHdyRmX3uunECdFD2KpNU=
 github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.0.0-beta.2-bugfix.2 h1:kXts6XE2zkh+jJiXIdVWNI5jrma1I1r2fjj42LpGvKM=
 github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.0.0-beta.2-bugfix.2/go.mod h1:C5pSCd/vGT2XYlxHlGs0B13J8TjIJbwe2Ytf6q0FKCY=
+github.com/cosmos/ibc-go/modules/apps/callbacks/v10 v10.0.0-rc.2 h1:K1/MEYoIYv/s5s3jfdrxcnO7aGTBAJC5oIq+ekUn4Zc=
+github.com/cosmos/ibc-go/modules/apps/callbacks/v10 v10.0.0-rc.2/go.mod h1:9IfwYIf8FbaeWYKH0JDoreujwBxZa+8yOStSfcAlguk=
 github.com/cosmos/ibc-go/modules/capability v1.0.1 h1:ibwhrpJ3SftEEZRxCRkH0fQZ9svjthrX2+oXdZvzgGI=
 github.com/cosmos/ibc-go/modules/capability v1.0.1/go.mod h1:rquyOV262nGJplkumH+/LeYs04P3eV8oB7ZM4Ygqk4E=
 github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10 v10.0.0-rc.3 h1:gsjb6aMkZZkUsKM4JHAWo+oxgpByjbEYU4Hf+4vWqLc=

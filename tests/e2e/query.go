@@ -1,11 +1,14 @@
 package e2e
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
+	"time"
 
 	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types"
 	wasmclienttypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/types"
@@ -376,7 +379,7 @@ func queryBlocksPerEpoch(endpoint string) (int64, error) {
 	return response.Params.BlocksPerEpoch, nil
 }
 
-func queryWasmContractAddress(endpoint, creator string) (string, error) {
+func queryWasmContractAddress(endpoint, creator string, idx uint64) (string, error) {
 	body, err := httpGet(fmt.Sprintf("%s/cosmwasm/wasm/v1/contracts/creator/%s", endpoint, creator))
 	if err != nil {
 		return "", fmt.Errorf("failed to execute HTTP request: %w", err)
@@ -387,7 +390,7 @@ func queryWasmContractAddress(endpoint, creator string) (string, error) {
 		return "", err
 	}
 
-	return response.ContractAddresses[0], nil
+	return response.ContractAddresses[idx], nil
 }
 
 func queryWasmSmartContractState(endpoint, address, msg string) ([]byte, error) {
@@ -416,4 +419,51 @@ func queryIbcWasmChecksums(endpoint string) ([]string, error) {
 	}
 
 	return response.Checksums, nil
+}
+
+func (s *IntegrationTestSuite) getLatestBlockHeight(c *chain, valIdx int) int {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	type syncInfo struct {
+		SyncInfo struct {
+			LatestHeight string `json:"latest_block_height"`
+		} `json:"sync_info"`
+	}
+
+	var currentHeight int
+	gaiaCommand := []string{gaiadBinary, "status"}
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, func(stdOut []byte, stdErr []byte) bool {
+		var (
+			err   error
+			block syncInfo
+		)
+		s.Require().NoError(json.Unmarshal(stdOut, &block))
+		currentHeight, err = strconv.Atoi(block.SyncInfo.LatestHeight)
+		s.Require().NoError(err)
+		return currentHeight > 0
+	})
+	return currentHeight
+}
+
+func (s *IntegrationTestSuite) execQueryEvidence(c *chain, valIdx int, hash string) (res evidencetypes.Equivocation) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("querying evidence %s on chain %s", hash, c.id)
+
+	gaiaCommand := []string{
+		gaiadBinary,
+		queryCommand,
+		evidencetypes.ModuleName,
+		hash,
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, func(stdOut []byte, stdErr []byte) bool {
+		// TODO parse evidence after fix the SDK
+		// https://github.com/cosmos/cosmos-sdk/issues/13444
+		// s.Require().NoError(yaml.Unmarshal(stdOut, &res))
+		return true
+	})
+	return res
 }

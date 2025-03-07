@@ -4,17 +4,18 @@ import (
 	"context"
 	"crypto/sha256"
 	"fmt"
-	"github.com/stretchr/testify/assert/yaml"
-	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/stretchr/testify/assert/yaml"
+	"github.com/stretchr/testify/require"
 )
 
 const (
 	Sha256SkipEntryPoint          = "4ee07a1474cb1429cfbdba98fb52ca2efc2fe8602f8e1978dbc3f45b71511ca9"
 	Sha256SkipAdapterIBCCallbacks = "21c375f75e09197478cd345b0a6376824a75471d8e22577dc36b74739277f027"
-	SaltHex                       = "74657374696e67" //"testing" hex encoded
+	SaltHex                       = "74657374696e67" // "testing" hex encoded
 	RecipientAddress              = "cosmos1hrgj37s5dcqrte6srj9p2uqul3nxpmmqfhqp67"
 )
 
@@ -95,7 +96,7 @@ func (s *IntegrationTestSuite) testCallbacksCWSkipGo() {
 
 	memo := fmt.Sprintf("{%s,%s}", destCallbackData, ibcHooksData)
 
-	senderB, err := s.chainB.validators[0].keyInfo.GetAddress()
+	senderB, _ := s.chainB.validators[0].keyInfo.GetAddress()
 	s.sendIBC(s.chainB, 0, senderB.String(), adapterAddress, "1uatom", "3000000uatom", memo, transferChannel, nil, false)
 	s.hermesClearPacket(hermesConfigWithGasPrices, s.chainB.id, transferPort, transferChannel)
 

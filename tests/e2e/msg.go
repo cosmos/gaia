@@ -5,6 +5,7 @@ import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/cosmos/gaia/v23/tests/e2e/data"
 	"path/filepath"
 )
 
@@ -212,5 +213,233 @@ func (s *IntegrationTestSuite) writeExpeditedSoftwareUpgradeProp(c *chain) {
 }`
 
 	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalExpeditedSoftwareUpgrade), []byte(body))
+	s.Require().NoError(err)
+}
+
+func (s *IntegrationTestSuite) writeAddRateLimitAtomProposal(c *chain, v2 bool) {
+	template := `
+	{
+		"messages": [
+		 {
+		  "@type": "/ratelimit.v1.MsgAddRateLimit",
+		  "authority": "%s",
+		  "denom": "%s",
+		  "channel_or_client_id": "%s",
+		  "max_percent_send": "%s",
+		  "max_percent_recv": "%s",
+		  "duration_hours": "%d"
+		 }
+		],
+		"metadata": "ipfs://CID",
+		"deposit": "100uatom",
+		"title": "Add Rate Limit on (channel-0, uatom)",
+		"summary": "e2e-test adding an IBC rate limit"
+	   }`
+
+	channel := transferChannel
+	if v2 {
+		channel = v2TransferClient
+	}
+	propMsgBody := fmt.Sprintf(template,
+		govAuthority,
+		uatomDenom,              // denom: uatom
+		channel,                 // channel_or_client_id: channel-0 / 08-wasm-1
+		math.NewInt(1).String(), // max_percent_send: 1%
+		math.NewInt(1).String(), // max_percent_recv: 1%
+		24,                      // duration_hours: 24
+	)
+
+	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalAddRateLimitAtomFilename), []byte(propMsgBody))
+	s.Require().NoError(err)
+}
+
+func (s *IntegrationTestSuite) writeAddRateLimitStakeProposal(c *chain, v2 bool) {
+	template := `
+	{
+		"messages": [
+		 {
+		  "@type": "/ratelimit.v1.MsgAddRateLimit",
+		  "authority": "%s",
+		  "denom": "%s",
+		  "channel_or_client_id": "%s",
+		  "max_percent_send": "%s",
+		  "max_percent_recv": "%s",
+		  "duration_hours": "%d"
+		 }
+		],
+		"metadata": "ipfs://CID",
+		"deposit": "100uatom",
+		"title": "Add Rate Limit on (channel-0, stake)",
+		"summary": "e2e-test adding an IBC rate limit"
+	   }`
+
+	channel := transferChannel
+	if v2 {
+		channel = v2TransferClient
+	}
+	propMsgBody := fmt.Sprintf(template,
+		govAuthority,
+		stakeDenom,               // denom: stake
+		channel,                  // channel_or_client_id: channel-0 / 08-wasm-1
+		math.NewInt(10).String(), // max_percent_send: 10%
+		math.NewInt(5).String(),  // max_percent_recv: 5%
+		6,                        // duration_hours: 6
+	)
+
+	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalAddRateLimitStakeFilename), []byte(propMsgBody))
+	s.Require().NoError(err)
+}
+
+func (s *IntegrationTestSuite) writeUpdateRateLimitAtomProposal(c *chain, v2 bool) {
+	template := `
+	{
+		"messages": [
+		 {
+		  "@type": "/ratelimit.v1.MsgUpdateRateLimit",
+		  "authority": "%s",
+		  "denom": "%s",
+		  "channel_or_client_id": "%s",
+		  "max_percent_send": "%s",
+		  "max_percent_recv": "%s",
+		  "duration_hours": "%d"
+		 }
+		],
+		"metadata": "ipfs://CID",
+		"deposit": "100uatom",
+		"title": "Update Rate Limit on (channel-0, uatom)",
+		"summary": "e2e-test updating an IBC rate limit"
+	   }`
+
+	channel := transferChannel
+	if v2 {
+		channel = v2TransferClient
+	}
+	propMsgBody := fmt.Sprintf(template,
+		govAuthority,
+		uatomDenom,              // denom: uatom
+		channel,                 // channel_or_client_id: channel-0 / 08-wasm-1
+		math.NewInt(2).String(), // max_percent_send: 2%
+		math.NewInt(1).String(), // max_percent_recv: 1%
+		6,                       // duration_hours: 6
+	)
+
+	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalUpdateRateLimitAtomFilename), []byte(propMsgBody))
+	s.Require().NoError(err)
+}
+
+func (s *IntegrationTestSuite) writeResetRateLimitAtomProposal(c *chain, v2 bool) {
+	template := `
+	{
+		"messages": [
+		 {
+		  "@type": "/ratelimit.v1.MsgResetRateLimit",
+		  "authority": "%s",
+		  "denom": "%s",
+		  "channel_or_client_id": "%s"
+		 }
+		],
+		"metadata": "ipfs://CID",
+		"deposit": "100uatom",
+		"title": "Reset Rate Limit on (channel-0, uatom)",
+		"summary": "e2e-test resetting an IBC rate limit"
+	   }`
+
+	channel := transferChannel
+	if v2 {
+		channel = v2TransferClient
+	}
+	propMsgBody := fmt.Sprintf(template,
+		govAuthority,
+		uatomDenom, // denom: uatom
+		channel,    // channel_or_client_id: channel-0 / 08-wasm-1
+	)
+
+	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalResetRateLimitAtomFilename), []byte(propMsgBody))
+	s.Require().NoError(err)
+}
+
+func (s *IntegrationTestSuite) writeRemoveRateLimitAtomProposal(c *chain, v2 bool) {
+	template := `
+	{
+		"messages": [
+		 {
+		  "@type": "/ratelimit.v1.MsgRemoveRateLimit",
+		  "authority": "%s",
+		  "denom": "%s",
+		  "channel_or_client_id": "%s"
+		 }
+		],
+		"metadata": "ipfs://CID",
+		"deposit": "100uatom",
+		"title": "Remove Rate Limit (channel-0, uatom)",
+		"summary": "e2e-test removing an IBC rate limit"
+	   }`
+
+	channel := transferChannel
+	if v2 {
+		channel = v2TransferClient
+	}
+	propMsgBody := fmt.Sprintf(template,
+		govAuthority,
+		uatomDenom, // denom: uatom
+		channel,    // channel_or_client_id: channel-0 / 08-wasm-1
+	)
+
+	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalRemoveRateLimitAtomFilename), []byte(propMsgBody))
+	s.Require().NoError(err)
+}
+
+func (s *IntegrationTestSuite) writeRemoveRateLimitStakeProposal(c *chain, v2 bool) {
+	template := `
+	{
+		"messages": [
+		 {
+		  "@type": "/ratelimit.v1.MsgRemoveRateLimit",
+		  "authority": "%s",
+		  "denom": "%s",
+		  "channel_or_client_id": "%s"
+		 }
+		],
+		"metadata": "ipfs://CID",
+		"deposit": "100uatom",
+		"title": "Remove Rate Limit (channel-0, stake)",
+		"summary": "e2e-test removing an IBC rate limit"
+	   }`
+
+	channel := transferChannel
+	if v2 {
+		channel = v2TransferClient
+	}
+	propMsgBody := fmt.Sprintf(template,
+		govAuthority,
+		stakeDenom, // denom: stake
+		channel,    // channel_or_client_id: channel-0 / 08-wasm-1
+	)
+
+	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalRemoveRateLimitStakeFilename), []byte(propMsgBody))
+	s.Require().NoError(err)
+}
+
+func (s *IntegrationTestSuite) writeStoreWasmLightClientProposal(c *chain) {
+	template := `
+	{
+		"messages": [
+			{
+			"@type": "/ibc.lightclients.wasm.v1.MsgStoreCode",
+			"signer": "%s",
+			"wasm_byte_code": "%s"
+			}
+		],
+		"metadata": "AQ==",
+		"deposit": "100uatom",
+		"title": "Store wasm light client code",
+		"summary": "e2e-test storing wasm light client code"
+	   }`
+	propMsgBody := fmt.Sprintf(template,
+		govAuthority,
+		data.WasmDummyLightClient,
+	)
+
+	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalStoreWasmLightClientFilename), []byte(propMsgBody))
 	s.Require().NoError(err)
 }

@@ -219,6 +219,9 @@ func NewAppKeeper(
 		appKeepers.AccountKeeper,
 	)
 
+	// We need to set the bank keeper here otherwise risk a NPE in certain message handlers
+	appKeepers.AuthzKeeper = appKeepers.AuthzKeeper.SetBankKeeper(appKeepers.BankKeeper)
+
 	appKeepers.FeeGrantKeeper = feegrantkeeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(appKeepers.keys[feegrant.StoreKey]),

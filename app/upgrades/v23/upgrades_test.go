@@ -4,8 +4,6 @@ import (
 	"testing"
 	"time"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/stretchr/testify/require"
 
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
@@ -13,6 +11,8 @@ import (
 	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/types"
 	clienttypes "github.com/cosmos/ibc-go/v10/modules/core/02-client/types"
 	ibcexported "github.com/cosmos/ibc-go/v10/modules/core/exported"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/cosmos/gaia/v23/app/helpers"
 	v23 "github.com/cosmos/gaia/v23/app/upgrades/v23"

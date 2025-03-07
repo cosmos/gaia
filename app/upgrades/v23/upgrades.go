@@ -109,6 +109,7 @@ func AuthzGrantWasmLightClient(ctx context.Context, authzKeeper authzkeeper.Keep
 	if err != nil {
 		return err
 	}
+	sdkCtx.Logger().Info("Granting IBC Wasm Store Code", "granter", govKeeper.GetAuthority(), "grantee", ClientUploaderAddress)
 	resp, err := authzKeeper.Grant(ctx, &authz.MsgGrant{
 		Granter: govKeeper.GetAuthority(),
 		Grantee: ClientUploaderAddress,
@@ -117,6 +118,8 @@ func AuthzGrantWasmLightClient(ctx context.Context, authzKeeper authzkeeper.Keep
 	if err != nil {
 		return err
 	}
-	sdkCtx.Logger().Info("Authz Keeper Grant", "response", resp.String())
+	if resp != nil {
+		sdkCtx.Logger().Info("Authz Keeper Grant", "response", resp.String())
+	}
 	return nil
 }

@@ -69,9 +69,14 @@ func TestGrantIBCWasmAuth(t *testing.T) {
 	err := v23.AuthzGrantWasmLightClient(ctx, gaiaApp.AuthzKeeper, *gaiaApp.GovKeeper)
 	require.NoError(t, err)
 
+	granteeAddr, err := sdk.AccAddressFromBech32(v23.ClientUploaderAddress)
+	require.NoError(t, err)
+	granterAddr, err := sdk.AccAddressFromBech32(gaiaApp.GovKeeper.GetAuthority())
+	require.NoError(t, err)
+
 	auth, _ := gaiaApp.AuthzKeeper.GetAuthorization(
-		ctx, sdk.AccAddress(v23.ClientUploaderAddress),
-		sdk.AccAddress(gaiaApp.GovKeeper.GetAuthority()),
+		ctx, granteeAddr,
+		granterAddr,
 		v23.IBCWasmStoreCodeTypeURL)
 	require.NotNil(t, auth)
 }

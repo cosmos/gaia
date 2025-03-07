@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/hex"
 	"fmt"
+
 	ibcwasmkeeper "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/keeper"
 	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/types"
 	ibctmtypes "github.com/cosmos/ibc-go/v10/modules/light-clients/07-tendermint"
@@ -111,11 +112,11 @@ func AuthzGrantWasmLightClient(ctx context.Context, authzKeeper authzkeeper.Keep
 	resp, err := authzKeeper.Grant(ctx, &authz.MsgGrant{
 		Granter: govKeeper.GetAuthority(),
 		Grantee: ClientUploaderAddress,
-		Grant:   grant})
+		Grant:   grant,
+	})
 	if err != nil {
 		return err
 	}
 	sdkCtx.Logger().Info("Authz Keeper Grant", "response", resp.String())
 	return nil
-
 }

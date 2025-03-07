@@ -18,7 +18,7 @@ import (
 )
 
 // CreateRCUpgradeHandler returns an upgrade handler for Gaia v23.0.0-rc3.
-// This should only be executed on networks which
+// This should only be executed on networks which have already run a previous v23 upgrade handler.
 func CreateRCUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,

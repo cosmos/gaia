@@ -90,15 +90,17 @@ const (
 )
 
 var (
-	gaiaConfigPath    = filepath.Join(gaiaHomePath, "config")
-	stakingAmount     = math.NewInt(100000000000)
-	stakingAmountCoin = sdk.NewCoin(uatomDenom, stakingAmount)
-	tokenAmount       = sdk.NewCoin(uatomDenom, math.NewInt(3300000000)) // 3,300uatom
-	standardFees      = sdk.NewCoin(uatomDenom, math.NewInt(330000))     // 0.33uatom
-	depositAmount     = sdk.NewCoin(uatomDenom, math.NewInt(330000000))  // 3,300uatom
-	distModuleAddress = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
-	govModuleAddress  = authtypes.NewModuleAddress(govtypes.ModuleName).String()
-	proposalCounter   = 0
+	gaiaConfigPath            = filepath.Join(gaiaHomePath, "config")
+	stakingAmount             = math.NewInt(100000000000)
+	stakingAmountCoin         = sdk.NewCoin(uatomDenom, stakingAmount)
+	tokenAmount               = sdk.NewCoin(uatomDenom, math.NewInt(3300000000)) // 3,300uatom
+	standardFees              = sdk.NewCoin(uatomDenom, math.NewInt(330000))     // 0.33uatom
+	depositAmount             = sdk.NewCoin(uatomDenom, math.NewInt(330000000))  // 3,300uatom
+	distModuleAddress         = authtypes.NewModuleAddress(distrtypes.ModuleName).String()
+	govModuleAddress          = authtypes.NewModuleAddress(govtypes.ModuleName).String()
+	proposalCounter           = 0
+	contractsCounter          = 0
+	contractsCounterPerSender = map[string]uint64{}
 )
 
 type IntegrationTestSuite struct {

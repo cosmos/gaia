@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/stretchr/testify/assert/yaml"
 	"github.com/stretchr/testify/require"
 )
 
@@ -36,27 +35,25 @@ func (s *IntegrationTestSuite) testCallbacksCWSkipGo() {
 	entryPointDst := filepath.Join(val.configDir(), "config", "skip_go_entry_point.wasm")
 	_, err = copyFile(entryPointSrc, entryPointDst)
 	s.Require().NoError(err)
-	storeWasmPath := configFile("skip_go_entry_point.wasm")
-	s.storeWasm(ctx, s.chainA, valIdx, sender, storeWasmPath)
+	entryPointPath := configFile("skip_go_entry_point.wasm")
+	entryPointCode := s.storeWasm(ctx, s.chainA, valIdx, sender, entryPointPath)
 
 	adapterSrc := filepath.Join(dirName, "data/skip_go_ibc_adapter_ibc_callbacks.wasm")
 	adapterDst := filepath.Join(val.configDir(), "config", "skip_go_ibc_adapter_ibc_callbacks.wasm")
 	_, err = copyFile(adapterSrc, adapterDst)
 	s.Require().NoError(err)
-	storeWasmPath = configFile("skip_go_ibc_adapter_ibc_callbacks.wasm")
-	s.storeWasm(ctx, s.chainA, valIdx, sender, storeWasmPath)
+	adapterPath := configFile("skip_go_ibc_adapter_ibc_callbacks.wasm")
+	adapterCode := s.storeWasm(ctx, s.chainA, valIdx, sender, adapterPath)
 
 	entrypointPredictedAddress := s.queryBuildAddress(ctx, s.chainA, valIdx, Sha256SkipEntryPoint, sender, SaltHex)
 	s.Require().NoError(err)
 
 	instantiateAdapterJSON := fmt.Sprintf(`{"entry_point_contract_address":"%s"}`, entrypointPredictedAddress)
-	s.instantiateWasm(ctx, s.chainA, valIdx, sender, "3", instantiateAdapterJSON, "adapter")
-	adapterAddress, err := queryWasmContractAddress(chainEndpoint, address.String(), 1)
+	adapterAddress := s.instantiateWasm(ctx, s.chainA, valIdx, sender, adapterCode, instantiateAdapterJSON, "adapter")
 	s.Require().NoError(err)
 
 	instantiateEntrypointJSON := fmt.Sprintf(`{"swap_venues":[], "ibc_transfer_contract_address": "%s"}`, adapterAddress)
-	s.instantiate2Wasm(ctx, s.chainA, valIdx, sender, "2", instantiateEntrypointJSON, SaltHex, "entrypoint")
-	entrypointAddress, err := queryWasmContractAddress(chainEndpoint, address.String(), 2)
+	entrypointAddress := s.instantiate2Wasm(ctx, s.chainA, valIdx, sender, entryPointCode, instantiateEntrypointJSON, SaltHex, "entrypoint")
 	s.Require().Equal(entrypointPredictedAddress, entrypointAddress)
 	s.Require().NoError(err)
 
@@ -106,23 +103,4 @@ func (s *IntegrationTestSuite) testCallbacksCWSkipGo() {
 	}
 
 	require.Equal(s.T(), balances[0].String(), "1"+recipientDenom)
-}
-
-func (s *IntegrationTestSuite) queryBuildAddress(ctx context.Context, c *chain, valIdx int, codeHash, creatorAddress, saltHexEncoded string,
-) (res string) {
-	cmd := []string{
-		gaiadBinary,
-		queryCommand,
-		"wasm",
-		"build-address",
-		codeHash,
-		creatorAddress,
-		saltHexEncoded,
-	}
-
-	s.executeGaiaTxCommand(ctx, c, cmd, valIdx, func(stdOut []byte, stdErr []byte) bool {
-		s.Require().NoError(yaml.Unmarshal(stdOut, &res))
-		return true
-	})
-	return res
 }

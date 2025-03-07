@@ -5,8 +5,10 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"gopkg.in/yaml.v2"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -31,10 +33,8 @@ func (s *IntegrationTestSuite) testCWCounter() {
 	s.storeWasm(ctx, s.chainA, valIdx, sender, storeWasmPath)
 
 	// Instantiate the contract
-	s.instantiateWasm(ctx, s.chainA, valIdx, sender, "1", "{\"count\":0}", "counter")
+	contractAddr := s.instantiateWasm(ctx, s.chainA, valIdx, sender, strconv.Itoa(contractsCounter), "{\"count\":0}", "counter")
 	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-	contractAddr, err := queryWasmContractAddress(chainEndpoint, address.String(), 0)
-	s.Require().NoError(err)
 
 	// Execute the contract
 	s.executeWasm(ctx, s.chainA, valIdx, sender, contractAddr, "{\"increment\":{}}")
@@ -54,7 +54,7 @@ func (s *IntegrationTestSuite) testCWCounter() {
 	s.Require().Equal(1, counterResp["count"])
 }
 
-func (s *IntegrationTestSuite) storeWasm(ctx context.Context, c *chain, valIdx int, sender, wasmPath string) {
+func (s *IntegrationTestSuite) storeWasm(ctx context.Context, c *chain, valIdx int, sender, wasmPath string) string {
 	storeCmd := []string{
 		gaiadBinary,
 		txCommand,
@@ -74,11 +74,13 @@ func (s *IntegrationTestSuite) storeWasm(ctx context.Context, c *chain, valIdx i
 	s.T().Logf("%s storing wasm on host chain %s", sender, s.chainB.id)
 	s.executeGaiaTxCommand(ctx, c, storeCmd, valIdx, s.defaultExecValidation(c, valIdx))
 	s.T().Log("successfully sent store wasm tx")
+	contractsCounter++
+	return strconv.Itoa(contractsCounter)
 }
 
 func (s *IntegrationTestSuite) instantiateWasm(ctx context.Context, c *chain, valIdx int, sender, codeID,
 	msg, label string,
-) {
+) string {
 	storeCmd := []string{
 		gaiadBinary,
 		txCommand,
@@ -101,11 +103,16 @@ func (s *IntegrationTestSuite) instantiateWasm(ctx context.Context, c *chain, va
 	s.T().Logf("%s instantiating wasm on host chain %s", sender, s.chainB.id)
 	s.executeGaiaTxCommand(ctx, c, storeCmd, valIdx, s.defaultExecValidation(c, valIdx))
 	s.T().Log("successfully sent instantiate wasm tx")
+	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[c.id][0].GetHostPort("1317/tcp"))
+	address, err := queryWasmContractAddress(chainEndpoint, sender, contractsCounterPerSender[sender])
+	s.Require().NoError(err)
+	contractsCounterPerSender[sender]++
+	return address
 }
 
 func (s *IntegrationTestSuite) instantiate2Wasm(ctx context.Context, c *chain, valIdx int, sender, codeID,
 	msg, salt, label string,
-) {
+) string {
 	storeCmd := []string{
 		gaiadBinary,
 		txCommand,
@@ -130,6 +137,11 @@ func (s *IntegrationTestSuite) instantiate2Wasm(ctx context.Context, c *chain, v
 
 	s.executeGaiaTxCommand(ctx, c, storeCmd, valIdx, s.defaultExecValidation(c, valIdx))
 	s.T().Log("successfully sent instantiate2 wasm tx")
+	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[c.id][0].GetHostPort("1317/tcp"))
+	address, err := queryWasmContractAddress(chainEndpoint, sender, contractsCounterPerSender[sender])
+	s.Require().NoError(err)
+	contractsCounterPerSender[sender]++
+	return address
 }
 
 func (s *IntegrationTestSuite) executeWasm(ctx context.Context, c *chain, valIdx int, sender, addr, msg string) {
@@ -152,4 +164,23 @@ func (s *IntegrationTestSuite) executeWasm(ctx context.Context, c *chain, valIdx
 	s.T().Logf("%s executing wasm on host chain %s", sender, s.chainB.id)
 	s.executeGaiaTxCommand(ctx, c, execCmd, valIdx, s.defaultExecValidation(c, valIdx))
 	s.T().Log("successfully sent execute wasm tx")
+}
+
+func (s *IntegrationTestSuite) queryBuildAddress(ctx context.Context, c *chain, valIdx int, codeHash, creatorAddress, saltHexEncoded string,
+) (res string) {
+	cmd := []string{
+		gaiadBinary,
+		queryCommand,
+		"wasm",
+		"build-address",
+		codeHash,
+		creatorAddress,
+		saltHexEncoded,
+	}
+
+	s.executeGaiaTxCommand(ctx, c, cmd, valIdx, func(stdOut []byte, stdErr []byte) bool {
+		s.Require().NoError(yaml.Unmarshal(stdOut, &res))
+		return true
+	})
+	return res
 }

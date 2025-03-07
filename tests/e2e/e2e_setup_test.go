@@ -97,6 +97,12 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		ContractsCounterPerSender: map[string]uint64{},
 	}
 
+	s.testCounters = TestCounters{
+		proposalCounter:           0,
+		contractsCounter:          0,
+		contractsCounterPerSender: map[string]uint64{},
+	}
+
 	time.Sleep(10 * time.Second)
 	s.runIBCRelayer()
 }

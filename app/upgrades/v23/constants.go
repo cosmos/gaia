@@ -12,8 +12,13 @@ import (
 
 const (
 	// UpgradeName defines the on-chain upgrade name.
-	UpgradeName    = "v23"
+	UpgradeName = "v23"
+	// RCUpgradeName defines the on-chain upgrade name specifically for the testnet RC upgrade.
+	RCUpgradeName  = "23.0.0-rc3"
 	IbcFeeStoreKey = "feeibc"
+	// TODO Eric fill in actual account
+	ClientUploaderAddress   = "foobar"
+	IBCWasmStoreCodeTypeURL = "/ibc.lightclients.wasm.v1.MsgStoreCode"
 
 	ExpectedEthLightClientChecksum = "f82549f5bc8adaef18e5ce4f5b68269947343742c938dac322faf1583319172c"
 )
@@ -32,5 +37,15 @@ var Upgrade = upgrades.Upgrade{
 		Deleted: []string{
 			IbcFeeStoreKey,
 		},
+	},
+}
+
+var RCUpgrade = upgrades.Upgrade{
+	UpgradeName:          RCUpgradeName,
+	CreateUpgradeHandler: CreateRCUpgradeHandler,
+	StoreUpgrades: types.StoreUpgrades{
+		Added:   nil,
+		Renamed: nil,
+		Deleted: nil,
 	},
 }

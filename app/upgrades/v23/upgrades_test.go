@@ -1,6 +1,7 @@
 package v23_test
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
 	"time"
 
@@ -56,4 +57,20 @@ func TestAddEthLightWasmLightClient(t *testing.T) {
 	timestamp, err := gaiaApp.IBCKeeper.ClientKeeper.GetClientTimestampAtHeight(ctx, "08-wasm-0", clienttypes.NewHeight(0, 32))
 	require.NoError(t, err)
 	require.Equal(t, uint64(1740827599000000000), timestamp)
+}
+
+func TestGrantIBCWasmAuth(t *testing.T) {
+	gaiaApp := helpers.Setup(t)
+	ctx := gaiaApp.NewUncachedContext(true, tmproto.Header{
+		Time: time.Unix(1740829624, 0),
+	})
+
+	err := v23.AuthzGrantWasmLightClient(ctx, gaiaApp.AuthzKeeper, *gaiaApp.GovKeeper)
+	require.NoError(t, err)
+
+	auth, _ := gaiaApp.AuthzKeeper.GetAuthorization(
+		ctx, sdk.AccAddress(v23.ClientUploaderAddress),
+		sdk.AccAddress(gaiaApp.GovKeeper.GetAuthority()),
+		v23.IBCWasmStoreCodeTypeURL)
+	require.NotNil(t, auth)
 }

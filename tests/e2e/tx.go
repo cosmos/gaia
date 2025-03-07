@@ -4,100 +4,154 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	"cosmossdk.io/x/feegrant"
 	"encoding/json"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	types7 "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+	types3 "github.com/cosmos/cosmos-sdk/x/bank/types"
+	types4 "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	types5 "github.com/cosmos/cosmos-sdk/x/gov/types"
+	types2 "github.com/cosmos/cosmos-sdk/x/slashing/types"
+	types6 "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/ory/dockertest/v3/docker"
+	"gopkg.in/yaml.v2"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/ory/dockertest/v3/docker"
-
-	"cosmossdk.io/x/feegrant"
-
-	"github.com/cosmos/cosmos-sdk/client/flags"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
-const (
-	flagFrom            = "from"
-	flagHome            = "home"
-	flagFees            = "fees"
-	flagGas             = "gas"
-	flagOutput          = "output"
-	flagChainID         = "chain-id"
-	flagSpendLimit      = "spend-limit"
-	flagGasAdjustment   = "gas-adjustment"
-	flagFeeGranter      = "fee-granter"
-	flagBroadcastMode   = "broadcast-mode"
-	flagKeyringBackend  = "keyring-backend"
-	flagAllowedMessages = "allowed-messages"
-)
-
-type flagOption func(map[string]interface{})
-
-// withKeyValue add a new flag to command
-
-func withKeyValue(key string, value interface{}) flagOption {
-	return func(o map[string]interface{}) {
-		o[key] = value
-	}
-}
-
-func applyOptions(chainID string, options []flagOption) map[string]interface{} {
-	opts := map[string]interface{}{
-		flagKeyringBackend: "test",
-		flagOutput:         "json",
-		flagGas:            "auto",
-		flagFrom:           "alice",
-		flagBroadcastMode:  "sync",
-		flagGasAdjustment:  "1.5",
-		flagChainID:        chainID,
-		flagHome:           gaiaHomePath,
-		flagFees:           standardFees.String(),
-	}
-	for _, apply := range options {
-		apply(opts)
-	}
-	return opts
-}
-
-func (s *IntegrationTestSuite) execEncode(
-	c *chain,
-	txPath string,
-	opt ...flagOption,
-) string {
-	opts := applyOptions(c.id, opt)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-
-	s.T().Logf("%s - Executing gaiad encoding with %v", c.id, txPath)
-	gaiaCommand := []string{
+func (s *IntegrationTestSuite) storeWasm(ctx context.Context, c *chain, valIdx int, sender, wasmPath string) string {
+	storeCmd := []string{
 		gaiadBinary,
 		txCommand,
-		"encode",
-		txPath,
-	}
-	for flag, value := range opts {
-		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
+		"wasm",
+		"store",
+		wasmPath,
+		fmt.Sprintf("--from=%s", sender),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, standardFees.String()),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		"--gas=5000000",
+		"--keyring-backend=test",
+		"--broadcast-mode=sync",
+		"--output=json",
+		"-y",
 	}
 
-	var encoded string
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, 0, func(stdOut []byte, stdErr []byte) bool {
-		if stdErr != nil {
-			return false
-		}
-		encoded = strings.TrimSuffix(string(stdOut), "\n")
+	s.T().Logf("%s storing wasm on host chain %s", sender, s.chainB.id)
+	s.executeGaiaTxCommand(ctx, c, storeCmd, valIdx, s.defaultExecValidation(c, valIdx))
+	s.T().Log("successfully sent store wasm tx")
+	contractsCounter++
+	return strconv.Itoa(contractsCounter)
+}
+
+func (s *IntegrationTestSuite) instantiateWasm(ctx context.Context, c *chain, valIdx int, sender, codeID,
+	msg, label string,
+) string {
+	storeCmd := []string{
+		gaiadBinary,
+		txCommand,
+		"wasm",
+		"instantiate",
+		codeID,
+		msg,
+		fmt.Sprintf("--from=%s", sender),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, standardFees.String()),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--label=%s", label),
+		"--no-admin",
+		"--gas=500000",
+		"--keyring-backend=test",
+		"--broadcast-mode=sync",
+		"--output=json",
+		"-y",
+	}
+
+	s.T().Logf("%s instantiating wasm on host chain %s", sender, s.chainB.id)
+	s.executeGaiaTxCommand(ctx, c, storeCmd, valIdx, s.defaultExecValidation(c, valIdx))
+	s.T().Log("successfully sent instantiate wasm tx")
+	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[c.id][0].GetHostPort("1317/tcp"))
+	address, err := queryWasmContractAddress(chainEndpoint, sender, contractsCounterPerSender[sender])
+	s.Require().NoError(err)
+	contractsCounterPerSender[sender]++
+	return address
+}
+
+func (s *IntegrationTestSuite) instantiate2Wasm(ctx context.Context, c *chain, valIdx int, sender, codeID,
+	msg, salt, label string,
+) string {
+	storeCmd := []string{
+		gaiadBinary,
+		txCommand,
+		"wasm",
+		"instantiate2",
+		codeID,
+		msg,
+		salt,
+		fmt.Sprintf("--from=%s", sender),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, standardFees.String()),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--label=%s", label),
+		"--no-admin",
+		"--gas=250000",
+		"--keyring-backend=test",
+		"--broadcast-mode=sync",
+		"--output=json",
+		"-y",
+	}
+
+	s.T().Logf("%s instantiating wasm on host chain %s", sender, s.chainB.id)
+
+	s.executeGaiaTxCommand(ctx, c, storeCmd, valIdx, s.defaultExecValidation(c, valIdx))
+	s.T().Log("successfully sent instantiate2 wasm tx")
+	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[c.id][0].GetHostPort("1317/tcp"))
+	address, err := queryWasmContractAddress(chainEndpoint, sender, contractsCounterPerSender[sender])
+	s.Require().NoError(err)
+	contractsCounterPerSender[sender]++
+	return address
+}
+
+func (s *IntegrationTestSuite) executeWasm(ctx context.Context, c *chain, valIdx int, sender, addr, msg string) {
+	execCmd := []string{
+		gaiadBinary,
+		txCommand,
+		"wasm",
+		"execute",
+		addr,
+		msg,
+		fmt.Sprintf("--from=%s", sender),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, standardFees.String()),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		"--gas=250000",
+		"--keyring-backend=test",
+		"--broadcast-mode=sync",
+		"--output=json",
+		"-y",
+	}
+	s.T().Logf("%s executing wasm on host chain %s", sender, s.chainB.id)
+	s.executeGaiaTxCommand(ctx, c, execCmd, valIdx, s.defaultExecValidation(c, valIdx))
+	s.T().Log("successfully sent execute wasm tx")
+}
+
+func (s *IntegrationTestSuite) queryBuildAddress(ctx context.Context, c *chain, valIdx int, codeHash, creatorAddress, saltHexEncoded string,
+) (res string) {
+	cmd := []string{
+		gaiadBinary,
+		queryCommand,
+		"wasm",
+		"build-address",
+		codeHash,
+		creatorAddress,
+		saltHexEncoded,
+	}
+
+	s.executeGaiaTxCommand(ctx, c, cmd, valIdx, func(stdOut []byte, stdErr []byte) bool {
+		s.Require().NoError(yaml.Unmarshal(stdOut, &res))
 		return true
 	})
-	s.T().Logf("successfully encode with %v", txPath)
-	return encoded
+	return res
 }
 
 func (s *IntegrationTestSuite) execDecode(
@@ -147,7 +201,7 @@ func (s *IntegrationTestSuite) execVestingTx( //nolint:unused
 	gaiaCommand := []string{
 		gaiadBinary,
 		txCommand,
-		vestingtypes.ModuleName,
+		types.ModuleName,
 		method,
 		"-y",
 	}
@@ -185,7 +239,7 @@ func (s *IntegrationTestSuite) execUnjail(
 	gaiaCommand := []string{
 		gaiadBinary,
 		txCommand,
-		slashingtypes.ModuleName,
+		types2.ModuleName,
 		"unjail",
 		"-y",
 	}
@@ -277,7 +331,7 @@ func (s *IntegrationTestSuite) execBankSend(
 	gaiaCommand := []string{
 		gaiadBinary,
 		txCommand,
-		banktypes.ModuleName,
+		types3.ModuleName,
 		"send",
 		from,
 		to,
@@ -314,7 +368,7 @@ func (s *IntegrationTestSuite) execBankMultiSend(
 	gaiaCommand := []string{
 		gaiadBinary,
 		txCommand,
-		banktypes.ModuleName,
+		types3.ModuleName,
 		"multi-send",
 		from,
 	}
@@ -338,7 +392,7 @@ func (s *IntegrationTestSuite) execDistributionFundCommunityPool(c *chain, valId
 	gaiaCommand := []string{
 		gaiadBinary,
 		txCommand,
-		distributiontypes.ModuleName,
+		types4.ModuleName,
 		"fund-community-pool",
 		amt,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, from),
@@ -364,7 +418,7 @@ func (s *IntegrationTestSuite) runGovExec(c *chain, valIdx int, submitterAddr, g
 	gaiaCommand := []string{
 		gaiadBinary,
 		txCommand,
-		govtypes.ModuleName,
+		types5.ModuleName,
 		govCommand,
 	}
 
@@ -384,51 +438,6 @@ func (s *IntegrationTestSuite) runGovExec(c *chain, valIdx int, submitterAddr, g
 	s.T().Logf("Successfully executed %s", govCommand)
 }
 
-// NOTE: Tx unused, left here for future reference
-// func (s *IntegrationTestSuite) executeGKeysAddCommand(c *chain, valIdx int, name string, home string) string {
-// 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-// 	defer cancel()
-
-// 	gaiaCommand := []string{
-// 		gaiadBinary,
-// 		keysCommand,
-// 		"add",
-// 		name,
-// 		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
-// 		"--keyring-backend=test",
-// 		"--output=json",
-// 	}
-
-// 	var addrRecord AddressResponse
-// 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, func(stdOut []byte, stdErr []byte) bool {
-// 		// Gaiad keys add by default returns payload to stdErr
-// 		if err := json.Unmarshal(stdErr, &addrRecord); err != nil {
-// 			return false
-// 		}
-// 		return strings.Contains(addrRecord.Address, "cosmos")
-// 	})
-// 	return addrRecord.Address
-// }
-
-// NOTE: Tx unused, left here for future reference
-// func (s *IntegrationTestSuite) executeKeysList(c *chain, valIdx int, home string) { // nolint:U1000
-// 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-// 	defer cancel()
-
-// 	gaiaCommand := []string{
-// 		gaiadBinary,
-// 		keysCommand,
-// 		"list",
-// 		"--keyring-backend=test",
-// 		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
-// 		"--output=json",
-// 	}
-
-// 	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, func([]byte, []byte) bool {
-// 		return true
-// 	})
-// }
-
 func (s *IntegrationTestSuite) execDelegate(c *chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) { //nolint:unparam
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
@@ -439,7 +448,7 @@ func (s *IntegrationTestSuite) execDelegate(c *chain, valIdx int, amount, valOpe
 	gaiaCommand := []string{
 		gaiadBinary,
 		txCommand,
-		stakingtypes.ModuleName,
+		types6.ModuleName,
 		"delegate",
 		valOperAddress,
 		amount,
@@ -466,7 +475,7 @@ func (s *IntegrationTestSuite) execUnbondDelegation(c *chain, valIdx int, amount
 	gaiaCommand := []string{
 		gaiadBinary,
 		txCommand,
-		stakingtypes.ModuleName,
+		types6.ModuleName,
 		"unbond",
 		valOperAddress,
 		amount,
@@ -493,7 +502,7 @@ func (s *IntegrationTestSuite) execCancelUnbondingDelegation(c *chain, valIdx in
 	gaiaCommand := []string{
 		gaiadBinary,
 		txCommand,
-		stakingtypes.ModuleName,
+		types6.ModuleName,
 		"cancel-unbond",
 		valOperAddress,
 		amount,
@@ -522,7 +531,7 @@ func (s *IntegrationTestSuite) execRedelegate(c *chain, valIdx int, amount, orig
 	gaiaCommand := []string{
 		gaiadBinary,
 		txCommand,
-		stakingtypes.ModuleName,
+		types6.ModuleName,
 		"redelegate",
 		originalValOperAddress,
 		newValOperAddress,
@@ -541,44 +550,6 @@ func (s *IntegrationTestSuite) execRedelegate(c *chain, valIdx int, amount, orig
 	s.T().Logf("%s successfully redelegated %s from %s to %s", delegatorAddr, amount, originalValOperAddress, newValOperAddress)
 }
 
-func (s *IntegrationTestSuite) getLatestBlockHeight(c *chain, valIdx int) int {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
-	defer cancel()
-
-	type syncInfo struct {
-		SyncInfo struct {
-			LatestHeight string `json:"latest_block_height"`
-		} `json:"sync_info"`
-	}
-
-	var currentHeight int
-	gaiaCommand := []string{gaiadBinary, "status"}
-	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, func(stdOut []byte, stdErr []byte) bool {
-		var (
-			err   error
-			block syncInfo
-		)
-		s.Require().NoError(json.Unmarshal(stdOut, &block))
-		currentHeight, err = strconv.Atoi(block.SyncInfo.LatestHeight)
-		s.Require().NoError(err)
-		return currentHeight > 0
-	})
-	return currentHeight
-}
-
-// func (s *IntegrationTestSuite) verifyBalanceChange(endpoint string, expectedAmount sdk.Coin, recipientAddress string) {
-// 	s.Require().Eventually(
-// 		func() bool {
-// 			afterAtomBalance, err := getSpecificBalance(endpoint, recipientAddress, uatomDenom)
-// 			s.Require().NoError(err)
-
-// 			return afterAtomBalance.IsEqual(expectedAmount)
-// 		},
-// 		20*time.Second,
-// 		5*time.Second,
-// 	)
-// }
-
 func (s *IntegrationTestSuite) execSetWithdrawAddress(
 	c *chain,
 	valIdx int,
@@ -594,7 +565,7 @@ func (s *IntegrationTestSuite) execSetWithdrawAddress(
 	gaiaCommand := []string{
 		gaiadBinary,
 		txCommand,
-		distributiontypes.ModuleName,
+		types4.ModuleName,
 		"set-withdraw-addr",
 		newWithdrawalAddress,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddress),
@@ -624,7 +595,7 @@ func (s *IntegrationTestSuite) execWithdrawReward(
 	gaiaCommand := []string{
 		gaiadBinary,
 		txCommand,
-		distributiontypes.ModuleName,
+		types4.ModuleName,
 		"withdraw-rewards",
 		validatorAddress,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddress),
@@ -722,7 +693,7 @@ func (s *IntegrationTestSuite) executeHermesCommand(ctx context.Context, hermesC
 
 func (s *IntegrationTestSuite) expectErrExecValidation(chain *chain, valIdx int, expectErr bool) func([]byte, []byte) bool {
 	return func(stdOut []byte, stdErr []byte) bool {
-		var txResp sdk.TxResponse
+		var txResp types7.TxResponse
 		gotErr := cdc.UnmarshalJSON(stdOut, &txResp) != nil
 		if gotErr {
 			s.Require().True(expectErr)
@@ -744,9 +715,41 @@ func (s *IntegrationTestSuite) expectErrExecValidation(chain *chain, valIdx int,
 	}
 }
 
+func (s *IntegrationTestSuite) execEncode(
+	c *chain,
+	txPath string,
+	opt ...flagOption,
+) string {
+	opts := applyOptions(c.id, opt)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("%s - Executing gaiad encoding with %v", c.id, txPath)
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		"encode",
+		txPath,
+	}
+	for flag, value := range opts {
+		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
+	}
+
+	var encoded string
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, 0, func(stdOut []byte, stdErr []byte) bool {
+		if stdErr != nil {
+			return false
+		}
+		encoded = strings.TrimSuffix(string(stdOut), "\n")
+		return true
+	})
+	s.T().Logf("successfully encode with %v", txPath)
+	return encoded
+}
+
 func (s *IntegrationTestSuite) defaultExecValidation(chain *chain, valIdx int) func([]byte, []byte) bool {
 	return func(stdOut []byte, stdErr []byte) bool {
-		var txResp sdk.TxResponse
+		var txResp types7.TxResponse
 		if err := cdc.UnmarshalJSON(stdOut, &txResp); err != nil {
 			return false
 		}
@@ -769,7 +772,7 @@ func (s *IntegrationTestSuite) defaultExecValidation(chain *chain, valIdx int) f
 
 func (s *IntegrationTestSuite) expectTxSubmitError(expectErrString string) func([]byte, []byte) bool {
 	return func(stdOut []byte, stdErr []byte) bool {
-		var txResp sdk.TxResponse
+		var txResp types7.TxResponse
 		if err := cdc.UnmarshalJSON(stdOut, &txResp); err != nil {
 			return false
 		}
@@ -789,7 +792,7 @@ func (s *IntegrationTestSuite) executeValidatorBond(c *chain, valIdx int, valOpe
 	gaiaCommand := []string{
 		gaiadBinary,
 		txCommand,
-		stakingtypes.ModuleName,
+		types6.ModuleName,
 		"validator-bond",
 		valOperAddress,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
@@ -814,7 +817,7 @@ func (s *IntegrationTestSuite) executeTokenizeShares(c *chain, valIdx int, amoun
 	gaiaCommand := []string{
 		gaiadBinary,
 		txCommand,
-		stakingtypes.ModuleName,
+		types6.ModuleName,
 		"tokenize-share",
 		valOperAddress,
 		amount,
@@ -842,7 +845,7 @@ func (s *IntegrationTestSuite) executeRedeemShares(c *chain, valIdx int, amount,
 	gaiaCommand := []string{
 		gaiadBinary,
 		txCommand,
-		stakingtypes.ModuleName,
+		types6.ModuleName,
 		"redeem-tokens",
 		amount,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
@@ -868,7 +871,7 @@ func (s *IntegrationTestSuite) executeTransferTokenizeShareRecord(c *chain, valI
 	gaiaCommand := []string{
 		gaiadBinary,
 		txCommand,
-		stakingtypes.ModuleName,
+		types6.ModuleName,
 		"transfer-tokenize-share-record",
 		recordID,
 		newOwner,

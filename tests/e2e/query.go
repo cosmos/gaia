@@ -1,11 +1,14 @@
 package e2e
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
+	"time"
 
 	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types"
 	wasmclienttypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/types"
@@ -416,4 +419,29 @@ func queryIbcWasmChecksums(endpoint string) ([]string, error) {
 	}
 
 	return response.Checksums, nil
+}
+
+func (s *IntegrationTestSuite) getLatestBlockHeight(c *chain, valIdx int) int {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	type syncInfo struct {
+		SyncInfo struct {
+			LatestHeight string `json:"latest_block_height"`
+		} `json:"sync_info"`
+	}
+
+	var currentHeight int
+	gaiaCommand := []string{gaiadBinary, "status"}
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, func(stdOut []byte, stdErr []byte) bool {
+		var (
+			err   error
+			block syncInfo
+		)
+		s.Require().NoError(json.Unmarshal(stdOut, &block))
+		currentHeight, err = strconv.Atoi(block.SyncInfo.LatestHeight)
+		s.Require().NoError(err)
+		return currentHeight > 0
+	})
+	return currentHeight
 }

@@ -617,9 +617,7 @@ func noRestart(config *docker.HostConfig) {
 func (s *IntegrationTestSuite) runIBCRelayer() {
 	s.T().Log("starting Hermes relayer container")
 
-	tmpDir, err := os.MkdirTemp("", "gaia-e2e-testnet-hermes-")
-	s.Require().NoError(err)
-	s.tmpDirs = append(s.tmpDirs, tmpDir)
+	tmpDir := s.T().TempDir()
 
 	gaiaAVal := s.chainA.validators[0]
 	gaiaBVal := s.chainB.validators[0]
@@ -630,7 +628,7 @@ func (s *IntegrationTestSuite) runIBCRelayer() {
 	hermesCfgPath := path.Join(tmpDir, "hermes")
 
 	s.Require().NoError(os.MkdirAll(hermesCfgPath, 0o755))
-	_, err = copyFile(
+	_, err := copyFile(
 		filepath.Join("./scripts/", "hermes_bootstrap.sh"),
 		filepath.Join(hermesCfgPath, "hermes_bootstrap.sh"),
 	)

@@ -376,7 +376,7 @@ func queryBlocksPerEpoch(endpoint string) (int64, error) {
 	return response.Params.BlocksPerEpoch, nil
 }
 
-func queryWasmContractAddress(endpoint, creator string) (string, error) {
+func queryWasmContractAddress(endpoint, creator string, idx uint64) (string, error) {
 	body, err := httpGet(fmt.Sprintf("%s/cosmwasm/wasm/v1/contracts/creator/%s", endpoint, creator))
 	if err != nil {
 		return "", fmt.Errorf("failed to execute HTTP request: %w", err)
@@ -387,7 +387,7 @@ func queryWasmContractAddress(endpoint, creator string) (string, error) {
 		return "", err
 	}
 
-	return response.ContractAddresses[0], nil
+	return response.ContractAddresses[idx], nil
 }
 
 func queryWasmSmartContractState(endpoint, address, msg string) ([]byte, error) {

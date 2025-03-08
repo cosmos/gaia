@@ -20,6 +20,7 @@ var (
 	runRateLimitTest              = true
 	runTxExtensionsTest           = true
 	runCWTest                     = true
+	runCallbacksTest              = true
 	runIbcV2Test                  = true
 )
 
@@ -206,4 +207,12 @@ s.testRemoveRateLimit(true)
 logTestResult(s.T(), "Wasm Light Client")
 
   
+}
+
+func (s *IntegrationTestSuite) TestCallbacks() {
+	if !runCallbacksTest {
+		s.T().Skip()
+	}
+
+	s.testCallbacksCWSkipGo()
 }

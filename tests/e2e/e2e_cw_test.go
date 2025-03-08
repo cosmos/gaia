@@ -33,7 +33,7 @@ func (s *IntegrationTestSuite) testCWCounter() {
 	// Instantiate the contract
 	s.instantiateWasm(ctx, s.chainA, valIdx, sender, "1", "{\"count\":0}", "counter")
 	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
-	contractAddr, err := queryWasmContractAddress(chainEndpoint, address.String())
+	contractAddr, err := queryWasmContractAddress(chainEndpoint, address.String(), 0)
 	s.Require().NoError(err)
 
 	// Execute the contract
@@ -64,7 +64,7 @@ func (s *IntegrationTestSuite) storeWasm(ctx context.Context, c *chain, valIdx i
 		fmt.Sprintf("--from=%s", sender),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, standardFees.String()),
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
-		"--gas=2000000",
+		"--gas=5000000",
 		"--keyring-backend=test",
 		"--broadcast-mode=sync",
 		"--output=json",
@@ -91,7 +91,7 @@ func (s *IntegrationTestSuite) instantiateWasm(ctx context.Context, c *chain, va
 		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
 		fmt.Sprintf("--label=%s", label),
 		"--no-admin",
-		"--gas=250000",
+		"--gas=500000",
 		"--keyring-backend=test",
 		"--broadcast-mode=sync",
 		"--output=json",
@@ -101,6 +101,35 @@ func (s *IntegrationTestSuite) instantiateWasm(ctx context.Context, c *chain, va
 	s.T().Logf("%s instantiating wasm on host chain %s", sender, s.chainB.id)
 	s.executeGaiaTxCommand(ctx, c, storeCmd, valIdx, s.defaultExecValidation(c, valIdx))
 	s.T().Log("successfully sent instantiate wasm tx")
+}
+
+func (s *IntegrationTestSuite) instantiate2Wasm(ctx context.Context, c *chain, valIdx int, sender, codeID,
+	msg, salt, label string,
+) {
+	storeCmd := []string{
+		gaiadBinary,
+		txCommand,
+		"wasm",
+		"instantiate2",
+		codeID,
+		msg,
+		salt,
+		fmt.Sprintf("--from=%s", sender),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, standardFees.String()),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--label=%s", label),
+		"--no-admin",
+		"--gas=250000",
+		"--keyring-backend=test",
+		"--broadcast-mode=sync",
+		"--output=json",
+		"-y",
+	}
+
+	s.T().Logf("%s instantiating wasm on host chain %s", sender, s.chainB.id)
+
+	s.executeGaiaTxCommand(ctx, c, storeCmd, valIdx, s.defaultExecValidation(c, valIdx))
+	s.T().Log("successfully sent instantiate2 wasm tx")
 }
 
 func (s *IntegrationTestSuite) executeWasm(ctx context.Context, c *chain, valIdx int, sender, addr, msg string) {

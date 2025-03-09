@@ -2,13 +2,17 @@ package e2e
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
+	"path/filepath"
+	"strconv"
 
 	tmrand "github.com/cometbft/cometbft/libs/rand"
 
 	dbm "github.com/cosmos/cosmos-db"
-	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v8/types"
-	providertypes "github.com/cosmos/interchain-security/v6/x/ccv/provider/types"
+	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types"
+	wasmclienttypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/types"
+	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 
 	"cosmossdk.io/log"
 	evidencetypes "cosmossdk.io/x/evidence/types"
@@ -61,6 +65,7 @@ func init() {
 	providertypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	metaprotocoltypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	ratelimittypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	wasmclienttypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 
 	cdc = encodingConfig.Marshaler
 	txConfig = encodingConfig.TxConfig
@@ -93,13 +98,15 @@ func (c *chain) configDir() string {
 }
 
 func (c *chain) createAndInitValidators(count int) error {
+	// create a separate app dir for the tempApp so that wasmvm won't complain about file locks
+	tempAppDir := filepath.Join(gaia.DefaultNodeHome, strconv.Itoa(rand.Intn(10000)))
 	tempApplication := gaia.NewGaiaApp(
 		log.NewNopLogger(),
 		dbm.NewMemDB(),
 		nil,
 		true,
 		map[int64]bool{},
-		gaia.DefaultNodeHome,
+		tempAppDir,
 		gaia.EmptyAppOptions{},
 		gaia.EmptyWasmOptions,
 	)

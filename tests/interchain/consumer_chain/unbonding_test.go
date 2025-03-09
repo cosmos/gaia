@@ -42,7 +42,7 @@ func (s *UnbondingSuite) SetupSuite() {
 					{
 						Repository: chainsuite.HyphaICSRepo,
 						Version:    selectConsumerVersion("v6.0.0", "v6.2.1"),
-						UidGid:     chainsuite.ICSUidGuid,
+						UIDGID:     chainsuite.ICSUidGuid,
 					},
 				},
 			},

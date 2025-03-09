@@ -61,7 +61,7 @@ func (app *GaiaApp) ExportAppStateAndValidators(
 		Validators:      validators,
 		Height:          height,
 		ConsensusParams: app.BaseApp.GetConsensusParams(ctx),
-	}, err
+	}, nil
 }
 
 // prepare for fresh start at zero height

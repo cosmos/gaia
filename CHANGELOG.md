@@ -30,6 +30,10 @@
 
 ### API-Breaking
 
+### Dependencies
+
+- Bump [github.com/CosmWasm/wasmvm/v2](https://github.com/CosmWasm/wasmvm) from 2.2.2 to 2.2.3 ([#3621](https://github.com/cosmos/gaia/pull/3621))
+
 ## v22.2.0
 
 *February 12, 2025*

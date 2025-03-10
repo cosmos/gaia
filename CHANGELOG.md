@@ -30,6 +30,10 @@
 
 ### API-Breaking
 
+### Dependencies
+
+- Bump [github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10](https://github.com/cosmos/ibc-go) from 10.0.0-rc.3 to 10.0.0 ([#3622](https://github.com/cosmos/gaia/pull/3622))
+
 ## v22.2.0
 
 *February 12, 2025*

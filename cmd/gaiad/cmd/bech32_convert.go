@@ -32,7 +32,7 @@ Example:
 			address := args[0]
 			convertedAddress, err := addressutil.ConvertBech32Prefix(address, bech32prefix)
 			if err != nil {
-				return fmt.Errorf("conversation failed: %s", err)
+				return fmt.Errorf("conversion failed: %s", err)
 			}
 
 			cmd.Println(convertedAddress)

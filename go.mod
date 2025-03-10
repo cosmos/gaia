@@ -18,16 +18,14 @@ require (
 	cosmossdk.io/x/tx v0.13.7
 	cosmossdk.io/x/upgrade v0.1.4
 	github.com/CosmWasm/wasmd v0.55.0-beta.1
-	github.com/CosmWasm/wasmvm/v2 v2.2.2
+	github.com/CosmWasm/wasmvm/v2 v2.2.3
 	github.com/cometbft/cometbft v0.38.17
 	github.com/cometbft/cometbft-db v0.14.1
 	github.com/cosmos/cosmos-db v1.1.1
-	github.com/cosmos/cosmos-proto v1.0.0-beta.5
 	github.com/cosmos/cosmos-sdk v0.50.12
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/gogoproto v1.7.0
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10 v10.0.0-beta.2
-	github.com/cosmos/ibc-go/modules/apps/callbacks/v10 v10.0.0-rc.2
 	github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.0.0-beta.2-bugfix.2
 	github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10 v10.0.0-rc.3
 	github.com/cosmos/ibc-go/v10 v10.0.0
@@ -95,6 +93,7 @@ require (
 	github.com/coinbase/rosetta-sdk-go v0.7.9 // indirect
 	github.com/containerd/continuity v0.4.3 // indirect
 	github.com/cosmos/btcutil v1.0.5 // indirect
+	github.com/cosmos/cosmos-proto v1.0.0-beta.5 // indirect
 	github.com/cosmos/gogogateway v1.2.0 // indirect
 	github.com/cosmos/iavl v1.2.4 // indirect
 	github.com/cosmos/ics23/go v0.11.0 // indirect

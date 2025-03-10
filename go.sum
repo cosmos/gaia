@@ -245,8 +245,8 @@ github.com/BurntSushi/toml v1.4.0/go.mod h1:ukJfTF/6rtPPRCnwkur4qwRxa8vTRFBF0uk2
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/CosmWasm/wasmd v0.55.0-beta.1 h1:fiJW3QbyjFTYRcR3ic1pEhhl//5cnZoGo3UJayCr5Do=
 github.com/CosmWasm/wasmd v0.55.0-beta.1/go.mod h1:r/cYPpjocy5AkkPPUCIv8OTBXxydVW+ypkPcBCuWVMw=
-github.com/CosmWasm/wasmvm/v2 v2.2.2 h1:MaQMtaZN8L08N0uAlBlOICP+GWolibJsajHGo3fQ03w=
-github.com/CosmWasm/wasmvm/v2 v2.2.2/go.mod h1:bMhLQL4Yp9CzJi9A83aR7VO9wockOsSlZbT4ztOl6bg=
+github.com/CosmWasm/wasmvm/v2 v2.2.3 h1:LVaAdkCMbgfUTSFOANmp2OOU1rIgz4iylow4SFD/lqs=
+github.com/CosmWasm/wasmvm/v2 v2.2.3/go.mod h1:bMhLQL4Yp9CzJi9A83aR7VO9wockOsSlZbT4ztOl6bg=
 github.com/DATA-DOG/go-sqlmock v1.3.3/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
 github.com/DataDog/datadog-go v3.2.0+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
 github.com/DataDog/datadog-go v4.8.3+incompatible h1:fNGaYSuObuQb5nzeTQqowRAd9bpDIRRV4/gUtIBjh8Q=
@@ -456,8 +456,6 @@ github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10 v10.0.0-beta
 github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10 v10.0.0-beta.2/go.mod h1:+oU4GGDP51P1A+W8WMTcx9kHdyRmX3uunECdFD2KpNU=
 github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.0.0-beta.2-bugfix.2 h1:kXts6XE2zkh+jJiXIdVWNI5jrma1I1r2fjj42LpGvKM=
 github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.0.0-beta.2-bugfix.2/go.mod h1:C5pSCd/vGT2XYlxHlGs0B13J8TjIJbwe2Ytf6q0FKCY=
-github.com/cosmos/ibc-go/modules/apps/callbacks/v10 v10.0.0-rc.2 h1:K1/MEYoIYv/s5s3jfdrxcnO7aGTBAJC5oIq+ekUn4Zc=
-github.com/cosmos/ibc-go/modules/apps/callbacks/v10 v10.0.0-rc.2/go.mod h1:9IfwYIf8FbaeWYKH0JDoreujwBxZa+8yOStSfcAlguk=
 github.com/cosmos/ibc-go/modules/capability v1.0.1 h1:ibwhrpJ3SftEEZRxCRkH0fQZ9svjthrX2+oXdZvzgGI=
 github.com/cosmos/ibc-go/modules/capability v1.0.1/go.mod h1:rquyOV262nGJplkumH+/LeYs04P3eV8oB7ZM4Ygqk4E=
 github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10 v10.0.0-rc.3 h1:gsjb6aMkZZkUsKM4JHAWo+oxgpByjbEYU4Hf+4vWqLc=

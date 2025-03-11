@@ -3,9 +3,16 @@
 ## UNRELEASED
 
 ### DEPENDENCIES
-- Bump [ibc-apps/middleware/packet-forward-middleware](https://github.com/cosmos/ibc-apps/tree/main/middleware/packet-forward-middleware) to
-    [v8.1.1](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv8.1.1)
-    ([\#3533](https://github.com/cosmos/gaia/pull/3533))
+
+- Bump Go to 1.23 [\#3556](https://github.com/cosmos/gaia/pull/3556)
+- Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v10.0.0-beta.2](https://github.com/cosmos/ibc-go/tree/v10.0.0-beta.2) ([\#3560](https://github.com/cosmos/gaia/pull/3560))
+- Bump [ibc-apps/modules/rate-limiting](https://github.com/cosmos/ibc-apps/tree/main/modules/rate-limiting) to [v10.0.0-beta.2](https://github.com/cosmos/ibc-apps/tree/modules/rate-limiting/v10.0.0-beta.2) ([\#3560](https://github.com/cosmos/gaia/pull/3560))
+- Bump [ibc-apps/middleware/packet-forward-middleware](https://github.com/cosmos/ibc-apps/tree/main/middleware/packet-forward-middleware) to [v10.0.0-beta.2](https://github.com/cosmos/ibc-apps/tree/middleware/packet-forward-middleware/v10.0.0-beta.2) ([\#3560](https://github.com/cosmos/gaia/pull/3560))
+- Bump [ibc-go/modules/apps/callbacks](https://github.com/cosmos/ibc-go/tree/main/modules/apps/callbacks) to [v0.3.0+ibc-go-v10.0-beta.2](https://github.com/cosmos/ibc-go/tree/modules/apps/callbacks/v0.3.0%2Bibc-go-v10.0-beta.2/modules/apps/callbacks) ([\#3560](https://github.com/cosmos/gaia/pull/3560))
+- Bump [ibc-go/modules/light-clients/08-wasm](https://github.com/cosmos/ibc-go/tree/main/modules/light-clients/08-wasm) to [v0.6.0+ibc-go-v10.0-wasmvm-v2.2-beta.2](https://github.com/cosmos/ibc-go/tree/modules/light-clients/08-wasm/v0.6.0%2Bibc-go-v10.0-wasmvm-v2.2-beta.2) ([\#3560](https://github.com/cosmos/gaia/pull/3560))
+- Bump [interchain-security](https://github.com/cosmos/interchain-security) to [v7.0.0-rc0](https://github.com/cosmos/interchain-security/tree/v7.0.0-rc0) ([\#3560](https://github.com/cosmos/gaia/pull/3560))
+- Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.50.12](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.50.12) ([\#3560](https://github.com/cosmos/gaia/pull/3560))
+- Bump [ibc-apps/modules/rate-limiting](https://github.com/cosmos/ibc-apps/tree/main/modules/rate-limiting) to [v10.0.0-beta.2-bugfix.1](https://github.com/cosmos/ibc-apps/tree/modules/rate-limiting/v10.0.0-beta.2-bugfix.1) ([\#3588](https://github.com/cosmos/gaia/pull/3588))
 
 ### BUG FIXES
 - Export only validators that are participating in consensus
@@ -15,29 +22,50 @@
 ### IMPROVEMENTS
 
 ### FEATURES
+- Add [ibc-go/modules/light-clients/08-wasm](https://github.com/cosmos/ibc-go/tree/main/modules/light-clients/08-wasm) ([\#3554](https://github.com/cosmos/gaia/pull/3554))
+- Add BLS Verifier Querier to 08-wasm ([\#3596](https://github.com/cosmos/gaia/pull/3596))
 
-### BUG-FIXES
+### STATE BREAKING
+- Remove [ibc-go/modules/apps/29-fee](https://github.com/cosmos/ibc-go/tree/v8.5.3/modules/apps/29-fee) ([\#3553](https://github.com/cosmos/gaia/pull/3553))
 
-### STATE-BREAKING
-
-### API-BREAKING
+### API-Breaking
 
 ### Dependencies
 
 - Bump [docker/build-push-action](https://github.com/docker/build-push-action) from 6.13.0 to 6.14.0 ([#3546](https://github.com/cosmos/gaia/pull/3546))
 
-## v22.0.1
+## v22.2.0
 
-*February 7, 2025*
+*February 12, 2025*
 
 ### DEPENDENCIES
+- Bump [ibc-apps/middleware/packet-forward-middleware](https://github.com/cosmos/ibc-apps/tree/main/middleware/packet-forward-middleware) to
+    [v8.1.1](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv8.1.1)
+    ([\#3534](https://github.com/cosmos/gaia/pull/3534))
+- Add `v22.2.0` upgrade handler ([\#3538](https://github.com/cosmos/gaia/pull/3538))
 
+### STATE BREAKING
+- Bump [ibc-apps/middleware/packet-forward-middleware](https://github.com/cosmos/ibc-apps/tree/main/middleware/packet-forward-middleware) to
+    [v8.1.1](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv8.1.1)
+    ([\#3534](https://github.com/cosmos/gaia/pull/3534))
+- Add `v22.2.0` upgrade handler ([\#3538](https://github.com/cosmos/gaia/pull/3538))
+
+## v22.1.0
+
+February 10, 2025
+
+### DEPENDENCIES
 - Bump [wasmvm](https://github.com/CosmWasm/wasmvm) to
   [v2.1.5](https://github.com/CosmWasm/wasmvm/releases/tag/v2.1.5)
   ([\#3519](https://github.com/cosmos/gaia/pull/3519))
 - Bump [cometbft](https://github.com/cometbft/cometbft) to
   [v0.38.17](https://github.com/cometbft/cometbft/releases/tag/v0.38.17)
   ([\#3523](https://github.com/cosmos/gaia/pull/3523))
+
+### STATE BREAKING
+- Bump [wasmvm](https://github.com/CosmWasm/wasmvm) to
+  [v2.1.5](https://github.com/CosmWasm/wasmvm/releases/tag/v2.1.5)
+  ([\#3519](https://github.com/cosmos/gaia/pull/3519))
 
 ## v22.0.0
 

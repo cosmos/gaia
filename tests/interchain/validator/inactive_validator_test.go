@@ -105,7 +105,7 @@ func (s *InactiveValidatorsSuite) SetupSuite() {
 					{
 						Repository: chainsuite.HyphaICSRepo,
 						Version:    "v6.2.1",
-						UidGid:     chainsuite.ICSUidGuid,
+						UIDGID:     chainsuite.ICSUidGuid,
 					},
 				},
 			},

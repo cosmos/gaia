@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	testutil "github.com/cosmos/interchain-security/v6/testutil/keeper"
-	providertypes "github.com/cosmos/interchain-security/v6/x/ccv/provider/types"
+	testutil "github.com/cosmos/interchain-security/v7/testutil/keeper"
+	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 
 	"cosmossdk.io/math"
 

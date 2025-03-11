@@ -1,23 +1,21 @@
 package gaia
 
 import (
-	feemarket "github.com/skip-mev/feemarket/x/feemarket"
+	"github.com/skip-mev/feemarket/x/feemarket"
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
-	pfmroutertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v8/packetforward/types"
-	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v8/types"
-	"github.com/cosmos/ibc-go/modules/capability"
-	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
-	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
-	ibcfee "github.com/cosmos/ibc-go/v8/modules/apps/29-fee"
-	ibcfeetypes "github.com/cosmos/ibc-go/v8/modules/apps/29-fee/types"
-	ibctransfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
-	ibc "github.com/cosmos/ibc-go/v8/modules/core"
-	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
-	ibctm "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
-	no_valupdates_genutil "github.com/cosmos/interchain-security/v6/x/ccv/no_valupdates_genutil"
-	no_valupdates_staking "github.com/cosmos/interchain-security/v6/x/ccv/no_valupdates_staking"
-	providertypes "github.com/cosmos/interchain-security/v6/x/ccv/provider/types"
+	pfmroutertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10/packetforward/types"
+	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types"
+	ibcwasm "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10"
+	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/types"
+	icatypes "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/types"
+	ibctransfertypes "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
+	ibc "github.com/cosmos/ibc-go/v10/modules/core"
+	ibcexported "github.com/cosmos/ibc-go/v10/modules/core/exported"
+	tendermint "github.com/cosmos/ibc-go/v10/modules/light-clients/07-tendermint"
+	no_valupdates_genutil "github.com/cosmos/interchain-security/v7/x/ccv/no_valupdates_genutil"
+	no_valupdates_staking "github.com/cosmos/interchain-security/v7/x/ccv/no_valupdates_staking"
+	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 
 	"cosmossdk.io/x/evidence"
 	evidencetypes "cosmossdk.io/x/evidence/types"
@@ -59,7 +57,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	wasm "github.com/CosmWasm/wasmd/x/wasm"
+	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	"github.com/cosmos/gaia/v23/x/metaprotocols"
@@ -76,7 +74,6 @@ var maccPerms = map[string][]string{
 	govtypes.ModuleName:            {authtypes.Burner},
 	// liquiditytypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
 	ibctransfertypes.ModuleName:       {authtypes.Minter, authtypes.Burner},
-	ibcfeetypes.ModuleName:            nil,
 	providertypes.ConsumerRewardsPool: nil,
 	wasmtypes.ModuleName:              {authtypes.Burner},
 	feemarkettypes.ModuleName:         nil,
@@ -88,6 +85,7 @@ func appModules(
 	appCodec codec.Codec,
 	txConfig client.TxEncodingConfig,
 	skipGenesisInvariants bool,
+	tmLightClientModule tendermint.LightClientModule,
 ) []module.AppModule {
 	return []module.AppModule{
 		no_valupdates_genutil.NewAppModule(
@@ -99,7 +97,6 @@ func appModules(
 		auth.NewAppModule(appCodec, app.AccountKeeper, nil, app.GetSubspace(authtypes.ModuleName)),
 		vesting.NewAppModule(app.AccountKeeper, app.BankKeeper),
 		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper, app.GetSubspace(banktypes.ModuleName)),
-		capability.NewAppModule(appCodec, *app.CapabilityKeeper, false),
 		crisis.NewAppModule(app.CrisisKeeper, skipGenesisInvariants, app.GetSubspace(crisistypes.ModuleName)),
 		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(govtypes.ModuleName)),
 		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, nil, app.GetSubspace(minttypes.ModuleName)),
@@ -111,11 +108,10 @@ func appModules(
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		ibc.NewAppModule(app.IBCKeeper),
-		ibctm.NewAppModule(),
+		ibcwasm.NewAppModule(app.WasmClientKeeper),
 		sdkparams.NewAppModule(app.ParamsKeeper),
 		consensus.NewAppModule(appCodec, app.ConsensusParamsKeeper),
 		wasm.NewAppModule(appCodec, &app.AppKeepers.WasmKeeper, app.AppKeepers.StakingKeeper, app.AppKeepers.AccountKeeper, app.AppKeepers.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
-		ibcfee.NewAppModule(app.IBCFeeKeeper),
 		app.TransferModule,
 		app.ICAModule,
 		app.PFMRouterModule,
@@ -123,6 +119,7 @@ func appModules(
 		app.ProviderModule,
 		metaprotocols.NewAppModule(),
 		feemarket.NewAppModule(appCodec, *app.FeeMarketKeeper),
+		tendermint.NewAppModule(tmLightClientModule),
 	}
 }
 
@@ -155,7 +152,6 @@ func simulationModules(
 	return []module.AppModuleSimulation{
 		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts, app.GetSubspace(authtypes.ModuleName)),
 		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper, app.GetSubspace(banktypes.ModuleName)),
-		capability.NewAppModule(appCodec, *app.CapabilityKeeper, false),
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
 		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(govtypes.ModuleName)),
 		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, nil, app.GetSubspace(minttypes.ModuleName)),
@@ -181,12 +177,10 @@ During begin block slashing happens after distr.BeginBlocker so that
 there is nothing left over in the validator fee pool, so as to keep the
 CanWithdrawInvariant invariant.
 NOTE: staking module is required if HistoricalEntries param > 0
-NOTE: capability module's beginblocker must come before any modules using capabilities (e.g. IBC)
 */
 
 func orderBeginBlockers() []string {
 	return []string{
-		capabilitytypes.ModuleName,
 		minttypes.ModuleName,
 		distrtypes.ModuleName,
 		slashingtypes.ModuleName,
@@ -201,7 +195,6 @@ func orderBeginBlockers() []string {
 		icatypes.ModuleName,
 		pfmroutertypes.ModuleName,
 		ratelimittypes.ModuleName,
-		ibcfeetypes.ModuleName,
 		genutiltypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
@@ -212,6 +205,7 @@ func orderBeginBlockers() []string {
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
 		wasmtypes.ModuleName,
+		ibcwasmtypes.ModuleName,
 	}
 }
 
@@ -233,8 +227,6 @@ func orderEndBlockers() []string {
 		icatypes.ModuleName,
 		pfmroutertypes.ModuleName,
 		ratelimittypes.ModuleName,
-		capabilitytypes.ModuleName,
-		ibcfeetypes.ModuleName,
 		authtypes.ModuleName,
 		banktypes.ModuleName,
 		distrtypes.ModuleName,
@@ -252,6 +244,7 @@ func orderEndBlockers() []string {
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
 		wasmtypes.ModuleName,
+		ibcwasmtypes.ModuleName,
 	}
 }
 
@@ -259,13 +252,10 @@ func orderEndBlockers() []string {
 NOTE: The genutils module must occur after staking so that pools are
 properly initialized with tokens from genesis accounts.
 NOTE: The genutils module must also occur after auth so that it can access the params from auth.
-NOTE: Capability module must occur first so that it can initialize any capabilities
-so that other modules that want to create or claim capabilities afterwards in InitChain
 can do so safely.
 */
 func orderInitBlockers() []string {
 	return []string{
-		capabilitytypes.ModuleName,
 		authtypes.ModuleName,
 		banktypes.ModuleName,
 		distrtypes.ModuleName,
@@ -277,7 +267,6 @@ func orderInitBlockers() []string {
 		ibctransfertypes.ModuleName,
 		ibcexported.ModuleName,
 		icatypes.ModuleName,
-		ibcfeetypes.ModuleName,
 		evidencetypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
@@ -298,6 +287,7 @@ func orderInitBlockers() []string {
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
 		wasmtypes.ModuleName,
+		ibcwasmtypes.ModuleName,
 		// crisis needs to be last so that the genesis state is consistent
 		// when it checks invariants
 		crisistypes.ModuleName,

@@ -30,6 +30,10 @@
 
 ### API-Breaking
 
+### Dependencies
+
+- Bump [JamesIves/github-pages-deploy-action](https://github.com/jamesives/github-pages-deploy-action) from 4.7.2 to 4.7.3 ([#3547](https://github.com/cosmos/gaia/pull/3547))
+
 ## v22.2.0
 
 *February 12, 2025*

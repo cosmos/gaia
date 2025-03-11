@@ -80,7 +80,7 @@ var (
 	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
 
-	Upgrades = []upgrades.Upgrade{v23.Upgrade}
+	Upgrades = []upgrades.Upgrade{v23.Upgrade, v23.RCUpgrade}
 )
 
 var (

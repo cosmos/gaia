@@ -2,6 +2,7 @@ package e2e
 
 import (
 	"encoding/base64"
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
 	"path/filepath"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"

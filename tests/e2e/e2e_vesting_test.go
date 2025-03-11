@@ -2,6 +2,8 @@ package e2e
 
 import (
 	"encoding/json"
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v23/tests/e2e/query"
 	"math/rand"
 	"path/filepath"
 	"time"

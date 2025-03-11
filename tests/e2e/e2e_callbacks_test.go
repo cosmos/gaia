@@ -4,6 +4,8 @@ import (
 	"context"
 	"crypto/sha256"
 	"fmt"
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v23/tests/e2e/query"
 	"os"
 	"path/filepath"
 	"time"
@@ -52,11 +54,11 @@ func (s *IntegrationTestSuite) testCallbacksCWSkipGo() {
 	s.Require().NoError(err)
 
 	instantiateAdapterJSON := fmt.Sprintf(`{"entry_point_contract_address":"%s"}`, entrypointPredictedAddress)
-	adapterAddress := s.instantiateWasm(ctx, s.chainA, valIdx, sender, adapterCode, instantiateAdapterJSON, "adapter")
+	adapterAddress := s.tx.InstantiateWasm(ctx, s.commonHelper.Resources.ChainA, valIdx, sender, adapterCode, instantiateAdapterJSON, "adapter")
 	s.Require().NoError(err)
 
 	instantiateEntrypointJSON := fmt.Sprintf(`{"swap_venues":[], "ibc_transfer_contract_address": "%s"}`, adapterAddress)
-	entrypointAddress := s.instantiate2Wasm(ctx, s.chainA, valIdx, sender, entryPointCode, instantiateEntrypointJSON, SaltHex, "entrypoint")
+	entrypointAddress := s.tx.Instantiate2Wasm(ctx, s.commonHelper.Resources.ChainA, valIdx, sender, entryPointCode, instantiateEntrypointJSON, SaltHex, "entrypoint")
 	s.Require().Equal(entrypointPredictedAddress, entrypointAddress)
 	s.Require().NoError(err)
 

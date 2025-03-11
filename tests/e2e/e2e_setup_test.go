@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v23/tests/e2e/tx"
 	"math/rand"
 	"os"
 	"os/exec"
@@ -71,6 +73,13 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	jailedValMnemonic, err := common.CreateMnemonic()
 	s.Require().NoError(err)
+
+	s.commonHelper.Suite = &s.Suite
+
+	s.tx = tx.Helper{
+		Suite:        &s.Suite,
+		CommonHelper: &s.commonHelper,
+	}
 
 	// The bootstrapping phase is as follows:
 	//

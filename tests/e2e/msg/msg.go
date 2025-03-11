@@ -1,15 +1,21 @@
-package e2e
+package msg
 
 import (
 	"cosmossdk.io/math"
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
 	"github.com/cosmos/gaia/v23/tests/e2e/data"
+	"github.com/stretchr/testify/suite"
 	"path/filepath"
 )
 
-func (s *IntegrationTestSuite) writeGovCommunitySpendProposal(c *chain, amount sdk.Coin, recipient string) {
+type Helper struct {
+	Suite suite.Suite
+}
+
+func (h *Helper) WriteGovCommunitySpendProposal(c *common.Chain, amount sdk.Coin, recipient string) {
 	template := `
 	{
 		"messages":[
@@ -31,12 +37,12 @@ func (s *IntegrationTestSuite) writeGovCommunitySpendProposal(c *chain, amount s
 		"expedited": false
 	}
 	`
-	propMsgBody := fmt.Sprintf(template, govModuleAddress, recipient, amount.Denom, amount.Amount.String())
-	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalCommunitySpendFilename), []byte(propMsgBody))
-	s.Require().NoError(err)
+	propMsgBody := fmt.Sprintf(template, common.GovModuleAddress, recipient, amount.Denom, amount.Amount.String())
+	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalCommunitySpendFilename), []byte(propMsgBody))
+	h.Suite.Require().NoError(err)
 }
 
-func (s *IntegrationTestSuite) writeSoftwareUpgradeProposal(c *chain, height int64, name string) {
+func (h *Helper) WriteSoftwareUpgradeProposal(c *common.Chain, height int64, name string) {
 	body := `{
 		"messages": [
 		 {
@@ -58,11 +64,11 @@ func (s *IntegrationTestSuite) writeSoftwareUpgradeProposal(c *chain, height int
 
 	propMsgBody := fmt.Sprintf(body, name, height)
 
-	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalSoftwareUpgrade), []byte(propMsgBody))
-	s.Require().NoError(err)
+	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalSoftwareUpgrade), []byte(propMsgBody))
+	h.Suite.Require().NoError(err)
 }
 
-func (s *IntegrationTestSuite) writeCancelSoftwareUpgradeProposal(c *chain) {
+func (h *Helper) WriteCancelSoftwareUpgradeProposal(c *common.Chain) {
 	template := `{
 		"messages": [
 		 {
@@ -76,11 +82,11 @@ func (s *IntegrationTestSuite) writeCancelSoftwareUpgradeProposal(c *chain) {
 		"summary": "test"
 	   }`
 
-	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalCancelSoftwareUpgrade), []byte(template))
-	s.Require().NoError(err)
+	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalCancelSoftwareUpgrade), []byte(template))
+	h.Suite.Require().NoError(err)
 }
 
-func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain, oldParams stakingtypes.Params) {
+func (h *Helper) WriteLiquidStakingParamsUpdateProposal(c *common.Chain, oldParams stakingtypes.Params) {
 	template := `
 	{
 		"messages": [
@@ -107,7 +113,7 @@ func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain, 
 		"expedited": false
 	   }`
 	propMsgBody := fmt.Sprintf(template,
-		govAuthority,
+		common.GovAuthority,
 		oldParams.UnbondingTime,
 		oldParams.MaxValidators,
 		oldParams.MaxEntries,
@@ -119,13 +125,13 @@ func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain, 
 		math.LegacyNewDecWithPrec(50, 2), // 50 validator_liquid_staking_cap
 	)
 
-	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalLSMParamUpdateFilename), []byte(propMsgBody))
-	s.Require().NoError(err)
+	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalLSMParamUpdateFilename), []byte(propMsgBody))
+	h.Suite.Require().NoError(err)
 }
 
-// writeGovParamChangeProposalBlocksPerEpoch writes a governance proposal JSON file to change the `BlocksPerEpoch`
+// WriteGovParamChangeProposalBlocksPerEpoch writes a governance proposal JSON file to change the `BlocksPerEpoch`
 // parameter to the provided `blocksPerEpoch`
-func (s *IntegrationTestSuite) writeGovParamChangeProposalBlocksPerEpoch(c *chain, paramsJSON string) {
+func (h *Helper) WriteGovParamChangeProposalBlocksPerEpoch(c *common.Chain, paramsJSON string) {
 	template := `
 	{
 		"messages":[
@@ -144,17 +150,17 @@ func (s *IntegrationTestSuite) writeGovParamChangeProposalBlocksPerEpoch(c *chai
 	}`
 
 	propMsgBody := fmt.Sprintf(template,
-		govAuthority,
+		common.GovAuthority,
 		paramsJSON,
 	)
 
-	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalBlocksPerEpochFilename), []byte(propMsgBody))
-	s.Require().NoError(err)
+	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalBlocksPerEpochFilename), []byte(propMsgBody))
+	h.Suite.Require().NoError(err)
 }
 
-// writeFailingExpeditedProposal writes a governance proposal JSON file.
+// WriteFailingExpeditedProposal writes a governance proposal JSON file.
 // The proposal fails because only SoftwareUpgrade and CancelSoftwareUpgrade can be expedited.
-func (s *IntegrationTestSuite) writeFailingExpeditedProposal(c *chain, blocksPerEpoch int64) {
+func (h *Helper) WriteFailingExpeditedProposal(c *common.Chain, blocksPerEpoch int64) {
 	template := `
 	{
 		"messages":[
@@ -182,16 +188,16 @@ func (s *IntegrationTestSuite) writeFailingExpeditedProposal(c *chain, blocksPer
 	}`
 
 	propMsgBody := fmt.Sprintf(template,
-		govAuthority,
+		common.GovAuthority,
 		blocksPerEpoch,
 	)
 
-	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalFailExpedited), []byte(propMsgBody))
-	s.Require().NoError(err)
+	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalFailExpedited), []byte(propMsgBody))
+	h.Suite.Require().NoError(err)
 }
 
 // MsgSoftwareUpgrade can be expedited and it can only be submitted using "tx gov submit-proposal" command.
-func (s *IntegrationTestSuite) writeExpeditedSoftwareUpgradeProp(c *chain) {
+func (h *Helper) WriteExpeditedSoftwareUpgradeProp(c *common.Chain) {
 	body := `{
  "messages": [
   {
@@ -212,11 +218,11 @@ func (s *IntegrationTestSuite) writeExpeditedSoftwareUpgradeProp(c *chain) {
  "expedited": true
 }`
 
-	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalExpeditedSoftwareUpgrade), []byte(body))
-	s.Require().NoError(err)
+	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalExpeditedSoftwareUpgrade), []byte(body))
+	h.Suite.Require().NoError(err)
 }
 
-func (s *IntegrationTestSuite) writeAddRateLimitAtomProposal(c *chain, v2 bool) {
+func (h *Helper) WriteAddRateLimitAtomProposal(c *common.Chain, v2 bool) {
 	template := `
 	{
 		"messages": [
@@ -236,24 +242,24 @@ func (s *IntegrationTestSuite) writeAddRateLimitAtomProposal(c *chain, v2 bool) 
 		"summary": "e2e-test adding an IBC rate limit"
 	   }`
 
-	channel := transferChannel
+	channel := common.TransferChannel
 	if v2 {
-		channel = v2TransferClient
+		channel = common.V2TransferClient
 	}
 	propMsgBody := fmt.Sprintf(template,
-		govAuthority,
-		uatomDenom,              // denom: uatom
+		common.GovAuthority,
+		common.UatomDenom,       // denom: uatom
 		channel,                 // channel_or_client_id: channel-0 / 08-wasm-1
 		math.NewInt(1).String(), // max_percent_send: 1%
 		math.NewInt(1).String(), // max_percent_recv: 1%
 		24,                      // duration_hours: 24
 	)
 
-	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalAddRateLimitAtomFilename), []byte(propMsgBody))
-	s.Require().NoError(err)
+	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalAddRateLimitAtomFilename), []byte(propMsgBody))
+	h.Suite.Require().NoError(err)
 }
 
-func (s *IntegrationTestSuite) writeAddRateLimitStakeProposal(c *chain, v2 bool) {
+func (h *Helper) WriteAddRateLimitStakeProposal(c *common.Chain, v2 bool) {
 	template := `
 	{
 		"messages": [
@@ -273,24 +279,24 @@ func (s *IntegrationTestSuite) writeAddRateLimitStakeProposal(c *chain, v2 bool)
 		"summary": "e2e-test adding an IBC rate limit"
 	   }`
 
-	channel := transferChannel
+	channel := common.TransferChannel
 	if v2 {
-		channel = v2TransferClient
+		channel = common.V2TransferClient
 	}
 	propMsgBody := fmt.Sprintf(template,
-		govAuthority,
-		stakeDenom,               // denom: stake
+		common.GovAuthority,
+		common.StakeDenom,        // denom: stake
 		channel,                  // channel_or_client_id: channel-0 / 08-wasm-1
 		math.NewInt(10).String(), // max_percent_send: 10%
 		math.NewInt(5).String(),  // max_percent_recv: 5%
 		6,                        // duration_hours: 6
 	)
 
-	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalAddRateLimitStakeFilename), []byte(propMsgBody))
-	s.Require().NoError(err)
+	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalAddRateLimitStakeFilename), []byte(propMsgBody))
+	h.Suite.Require().NoError(err)
 }
 
-func (s *IntegrationTestSuite) writeUpdateRateLimitAtomProposal(c *chain, v2 bool) {
+func (h *Helper) WriteUpdateRateLimitAtomProposal(c *common.Chain, v2 bool) {
 	template := `
 	{
 		"messages": [
@@ -310,24 +316,24 @@ func (s *IntegrationTestSuite) writeUpdateRateLimitAtomProposal(c *chain, v2 boo
 		"summary": "e2e-test updating an IBC rate limit"
 	   }`
 
-	channel := transferChannel
+	channel := common.TransferChannel
 	if v2 {
-		channel = v2TransferClient
+		channel = common.V2TransferClient
 	}
 	propMsgBody := fmt.Sprintf(template,
-		govAuthority,
-		uatomDenom,              // denom: uatom
+		common.GovAuthority,
+		common.UatomDenom,       // denom: uatom
 		channel,                 // channel_or_client_id: channel-0 / 08-wasm-1
 		math.NewInt(2).String(), // max_percent_send: 2%
 		math.NewInt(1).String(), // max_percent_recv: 1%
 		6,                       // duration_hours: 6
 	)
 
-	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalUpdateRateLimitAtomFilename), []byte(propMsgBody))
-	s.Require().NoError(err)
+	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalUpdateRateLimitAtomFilename), []byte(propMsgBody))
+	h.Suite.Require().NoError(err)
 }
 
-func (s *IntegrationTestSuite) writeResetRateLimitAtomProposal(c *chain, v2 bool) {
+func (h *Helper) WriteResetRateLimitAtomProposal(c *common.Chain, v2 bool) {
 	template := `
 	{
 		"messages": [
@@ -344,21 +350,21 @@ func (s *IntegrationTestSuite) writeResetRateLimitAtomProposal(c *chain, v2 bool
 		"summary": "e2e-test resetting an IBC rate limit"
 	   }`
 
-	channel := transferChannel
+	channel := common.TransferChannel
 	if v2 {
-		channel = v2TransferClient
+		channel = common.V2TransferClient
 	}
 	propMsgBody := fmt.Sprintf(template,
-		govAuthority,
-		uatomDenom, // denom: uatom
-		channel,    // channel_or_client_id: channel-0 / 08-wasm-1
+		common.GovAuthority,
+		common.UatomDenom, // denom: uatom
+		channel,           // channel_or_client_id: channel-0 / 08-wasm-1
 	)
 
-	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalResetRateLimitAtomFilename), []byte(propMsgBody))
-	s.Require().NoError(err)
+	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalResetRateLimitAtomFilename), []byte(propMsgBody))
+	h.Suite.Require().NoError(err)
 }
 
-func (s *IntegrationTestSuite) writeRemoveRateLimitAtomProposal(c *chain, v2 bool) {
+func (h *Helper) WriteRemoveRateLimitAtomProposal(c *common.Chain, v2 bool) {
 	template := `
 	{
 		"messages": [
@@ -375,21 +381,21 @@ func (s *IntegrationTestSuite) writeRemoveRateLimitAtomProposal(c *chain, v2 boo
 		"summary": "e2e-test removing an IBC rate limit"
 	   }`
 
-	channel := transferChannel
+	channel := common.TransferChannel
 	if v2 {
-		channel = v2TransferClient
+		channel = common.V2TransferClient
 	}
 	propMsgBody := fmt.Sprintf(template,
-		govAuthority,
-		uatomDenom, // denom: uatom
-		channel,    // channel_or_client_id: channel-0 / 08-wasm-1
+		common.GovAuthority,
+		common.UatomDenom, // denom: uatom
+		channel,           // channel_or_client_id: channel-0 / 08-wasm-1
 	)
 
-	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalRemoveRateLimitAtomFilename), []byte(propMsgBody))
-	s.Require().NoError(err)
+	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalRemoveRateLimitAtomFilename), []byte(propMsgBody))
+	h.Suite.Require().NoError(err)
 }
 
-func (s *IntegrationTestSuite) writeRemoveRateLimitStakeProposal(c *chain, v2 bool) {
+func (h *Helper) WriteRemoveRateLimitStakeProposal(c *common.Chain, v2 bool) {
 	template := `
 	{
 		"messages": [
@@ -406,21 +412,21 @@ func (s *IntegrationTestSuite) writeRemoveRateLimitStakeProposal(c *chain, v2 bo
 		"summary": "e2e-test removing an IBC rate limit"
 	   }`
 
-	channel := transferChannel
+	channel := common.TransferChannel
 	if v2 {
-		channel = v2TransferClient
+		channel = common.V2TransferClient
 	}
 	propMsgBody := fmt.Sprintf(template,
-		govAuthority,
-		stakeDenom, // denom: stake
-		channel,    // channel_or_client_id: channel-0 / 08-wasm-1
+		common.GovAuthority,
+		common.StakeDenom, // denom: stake
+		channel,           // channel_or_client_id: channel-0 / 08-wasm-1
 	)
 
-	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalRemoveRateLimitStakeFilename), []byte(propMsgBody))
-	s.Require().NoError(err)
+	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalRemoveRateLimitStakeFilename), []byte(propMsgBody))
+	h.Suite.Require().NoError(err)
 }
 
-func (s *IntegrationTestSuite) writeStoreWasmLightClientProposal(c *chain) {
+func (h *Helper) WriteStoreWasmLightClientProposal(c *common.Chain) {
 	template := `
 	{
 		"messages": [
@@ -436,10 +442,10 @@ func (s *IntegrationTestSuite) writeStoreWasmLightClientProposal(c *chain) {
 		"summary": "e2e-test storing wasm light client code"
 	   }`
 	propMsgBody := fmt.Sprintf(template,
-		govAuthority,
+		common.GovAuthority,
 		data.WasmDummyLightClient,
 	)
 
-	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalStoreWasmLightClientFilename), []byte(propMsgBody))
-	s.Require().NoError(err)
+	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalStoreWasmLightClientFilename), []byte(propMsgBody))
+	h.Suite.Require().NoError(err)
 }

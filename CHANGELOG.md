@@ -30,10 +30,6 @@
 
 ### API-Breaking
 
-### Dependencies
-
-- Bump [prismjs](https://github.com/PrismJS/prism) from 1.29.0 to 1.30.0 ([#3623](https://github.com/cosmos/gaia/pull/3623))
-
 ## v22.2.0
 
 *February 12, 2025*

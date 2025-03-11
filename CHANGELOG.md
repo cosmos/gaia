@@ -32,6 +32,7 @@
 
 ### Dependencies
 
+- Bump [docker/build-push-action](https://github.com/docker/build-push-action) from 6.13.0 to 6.14.0 ([#3546](https://github.com/cosmos/gaia/pull/3546))
 - Bump [docker/metadata-action](https://github.com/docker/metadata-action) from 5.6.1 to 5.7.0 ([#3595](https://github.com/cosmos/gaia/pull/3595))
 - Bump [JamesIves/github-pages-deploy-action](https://github.com/jamesives/github-pages-deploy-action) from 4.7.2 to 4.7.3 ([#3547](https://github.com/cosmos/gaia/pull/3547))
 - Bump [@babel/helpers](https://github.com/babel/babel/tree/HEAD/packages/babel-helpers) from 7.24.0 to 7.26.10 ([#3629](https://github.com/cosmos/gaia/pull/3629))

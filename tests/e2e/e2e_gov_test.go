@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	providertypes "github.com/cosmos/interchain-security/v6/x/ccv/provider/types"
+	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 
 	"cosmossdk.io/math"
 	upgradetypes "cosmossdk.io/x/upgrade/types"

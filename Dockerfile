@@ -2,17 +2,17 @@
 ARG IMG_TAG=latest
 
 # Compile the gaiad binary
-FROM golang:1.22-alpine AS gaiad-builder
+FROM golang:1.23-alpine AS gaiad-builder
 WORKDIR /src/app/
-ENV PACKAGES="curl make git libc-dev bash file gcc linux-headers eudev-dev"
+ENV PACKAGES="curl build-base git bash file linux-headers eudev-dev"
 RUN apk add --no-cache $PACKAGES
 
 # See https://github.com/CosmWasm/wasmvm/releases
-ARG WASMVM_VERSION=v2.1.5
+ARG WASMVM_VERSION=v2.2.3
 ADD https://github.com/CosmWasm/wasmvm/releases/download/${WASMVM_VERSION}/libwasmvm_muslc.aarch64.a /lib/libwasmvm_muslc.aarch64.a
 ADD https://github.com/CosmWasm/wasmvm/releases/download/${WASMVM_VERSION}/libwasmvm_muslc.x86_64.a /lib/libwasmvm_muslc.x86_64.a
-RUN sha256sum /lib/libwasmvm_muslc.aarch64.a | grep 1bad0e3f9b72603082b8e48307c7a319df64ca9e26976ffc7a3c317a08fe4b1a
-RUN sha256sum /lib/libwasmvm_muslc.x86_64.a | grep c6612d17d82b0997696f1076f6d894e339241482570b9142f29b0d8f21b280bf
+RUN sha256sum /lib/libwasmvm_muslc.aarch64.a | grep 6641730781bb1adc4bdf04a1e0f822b9ad4fb8ed57dcbbf575527e63b791ae41
+RUN sha256sum /lib/libwasmvm_muslc.x86_64.a | grep 32503fe35a7be202c5f7c3051497d6e4b3cd83079a61f5a0bf72a2a455b6d820
 RUN cp "/lib/libwasmvm_muslc.$(uname -m).a" /lib/libwasmvm_muslc.a
 
 COPY go.mod go.sum* ./

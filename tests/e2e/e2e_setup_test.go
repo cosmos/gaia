@@ -169,7 +169,7 @@ func (s *IntegrationTestSuite) initNodes(c *common.Chain) {
 	}
 
 	s.Require().NoError(
-		modifyGenesis(val0ConfigDir, "", common.InitBalanceStr, addrAll, common.InitialBaseFeeAmt, common.UatomDenom),
+		modifyGenesis(val0ConfigDir, "", common.InitBalanceStr, addrAll, common.InitialBaseFeeAmt, common.UAtomDenom),
 	)
 	// copy the genesis file to the remaining validators
 	for _, val := range c.Validators[1:] {
@@ -310,7 +310,7 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 	}
 	stakingModuleBalances := banktypes.Balance{
 		Address: authtypes.NewModuleAddress(stakingtypes.NotBondedPoolName).String(),
-		Coins:   sdk.NewCoins(sdk.NewCoin(common.UatomDenom, math.NewInt(common.SlashingShares))),
+		Coins:   sdk.NewCoins(sdk.NewCoin(common.UAtomDenom, math.NewInt(common.SlashingShares))),
 	}
 	bankGenState.Balances = append(
 		bankGenState.Balances,
@@ -324,13 +324,13 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 	// update the denom metadata for the bank module
 	bankGenState.DenomMetadata = append(bankGenState.DenomMetadata, banktypes.Metadata{
 		Description: "An example stable token",
-		Display:     common.UatomDenom,
-		Base:        common.UatomDenom,
-		Symbol:      common.UatomDenom,
-		Name:        common.UatomDenom,
+		Display:     common.UAtomDenom,
+		Base:        common.UAtomDenom,
+		Symbol:      common.UAtomDenom,
+		Name:        common.UAtomDenom,
 		DenomUnits: []*banktypes.DenomUnit{
 			{
-				Denom:    common.UatomDenom,
+				Denom:    common.UAtomDenom,
 				Exponent: 0,
 			},
 		},
@@ -474,7 +474,7 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *common.Chain) {
 		appConfig := srvconfig.DefaultConfig()
 		appConfig.API.Enable = true
 		appConfig.API.Address = "tcp://0.0.0.0:1317"
-		appConfig.MinGasPrices = fmt.Sprintf("%s%s", common.MinGasPrice, common.UatomDenom)
+		appConfig.MinGasPrices = fmt.Sprintf("%s%s", common.MinGasPrice, common.UAtomDenom)
 		appConfig.GRPC.Address = "0.0.0.0:9090"
 
 		srvconfig.SetConfigTemplate(srvconfig.DefaultConfigTemplate)

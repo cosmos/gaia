@@ -37,10 +37,8 @@ const (
 	GaiadBinary    = "gaiad"
 	TxCommand      = "tx"
 	QueryCommand   = "query"
-	keysCommand    = "keys"
 	GaiaHomePath   = "/home/nonroot/.gaia"
-	photonDenom    = "photon"
-	UatomDenom     = types.UAtomDenom
+	UAtomDenom     = types.UAtomDenom
 	StakeDenom     = "stake"
 	InitBalanceStr = "110000000000stake,100000000000000000photon,100000000000000000uatom"
 	MinGasPrice    = "0.005"
@@ -53,7 +51,6 @@ const (
 	NumberOfEvidences               = 10
 	SlashingShares            int64 = 10000
 
-	proposalMaxTotalBypassFilename   = "proposal_max_total_bypass.json"
 	ProposalCommunitySpendFilename   = "proposal_community_spend.json"
 	ProposalLSMParamUpdateFilename   = "proposal_lsm_param_update.json"
 	ProposalBlocksPerEpochFilename   = "proposal_blocks_per_epoch.json"
@@ -67,7 +64,6 @@ const (
 
 	hermesBinary              = "hermes"
 	HermesConfigWithGasPrices = "/root/.hermes/config.toml"
-	hermesConfigNoGasPrices   = "/root/.hermes/config-zero.toml"
 	TransferPort              = "transfer"
 	TransferChannel           = "channel-0"
 
@@ -76,15 +72,13 @@ const (
 	GovAuthority = "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn"
 )
 
-var stakingAmount = math.NewInt(100000000000)
-
 var (
-	GaiaConfigPath = filepath.Join(GaiaHomePath, "config")
-
-	StakingAmountCoin = sdktypes.NewCoin(UatomDenom, stakingAmount)
-	TokenAmount       = sdktypes.NewCoin(UatomDenom, math.NewInt(3300000000)) // 3,300uatom
-	StandardFees      = sdktypes.NewCoin(UatomDenom, math.NewInt(330000))     // 0.33uatom
-	DepositAmount     = sdktypes.NewCoin(UatomDenom, math.NewInt(330000000))  // 3,300uatom
+	GaiaConfigPath    = filepath.Join(GaiaHomePath, "config")
+	StakingAmountCoin = sdktypes.NewCoin(UAtomDenom, stakingAmount)
+	TokenAmount       = sdktypes.NewCoin(UAtomDenom, math.NewInt(3300000000)) // 3,300uatom
+	StandardFees      = sdktypes.NewCoin(UAtomDenom, math.NewInt(330000))     // 0.33uatom
+	DepositAmount     = sdktypes.NewCoin(UAtomDenom, math.NewInt(330000000))  // 3,300uatom
 	DistModuleAddress = authtypes.NewModuleAddress(distributiontypes.ModuleName).String()
 	GovModuleAddress  = authtypes.NewModuleAddress(govtypes.ModuleName).String()
+	stakingAmount     = math.NewInt(100000000000)
 )

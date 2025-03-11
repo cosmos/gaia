@@ -52,7 +52,7 @@ func (s *IntegrationTestSuite) testICARegisterAccountAndSendTx() {
 		)
 
 		TokenAmount := 3300000000
-		s.tx.SendIBC(s.commonHelper.Resources.ChainA, 0, icaOwnerAccount, icaAccount, strconv.Itoa(TokenAmount)+common.UatomDenom, common.StandardFees.String(), "", common.TransferChannel, nil, false)
+		s.tx.SendIBC(s.commonHelper.Resources.ChainA, 0, icaOwnerAccount, icaAccount, strconv.Itoa(TokenAmount)+common.UAtomDenom, common.StandardFees.String(), "", common.TransferChannel, nil, false)
 
 		pass := s.commonHelper.HermesClearPacket(common.HermesConfigWithGasPrices, s.commonHelper.Resources.ChainA.Id, common.TransferPort, common.TransferChannel)
 		s.Require().True(pass)

@@ -65,7 +65,7 @@ func (s *IntegrationTestSuite) testLSM() {
 	)
 	delegatorAddress, _ := s.commonHelper.Resources.ChainA.GenesisAccounts[2].KeyInfo.GetAddress()
 
-	fees := sdk.NewCoin(common.UatomDenom, math.NewInt(1))
+	fees := sdk.NewCoin(common.UAtomDenom, math.NewInt(1))
 
 	// Validator bond
 	s.tx.ExecuteValidatorBond(s.commonHelper.Resources.ChainA, 0, validatorAddressA, validatorAAddr.String(), common.GaiaHomePath, fees.String())
@@ -87,7 +87,7 @@ func (s *IntegrationTestSuite) testLSM() {
 	)
 
 	delegationAmount := math.NewInt(500000000)
-	delegation := sdk.NewCoin(common.UatomDenom, delegationAmount) // 500 atom
+	delegation := sdk.NewCoin(common.UAtomDenom, delegationAmount) // 500 atom
 
 	// Alice delegate uatom to Validator A
 	s.tx.ExecDelegate(s.commonHelper.Resources.ChainA, 0, delegation.String(), validatorAddressA, delegatorAddress.String(), common.GaiaHomePath, fees.String())
@@ -107,7 +107,7 @@ func (s *IntegrationTestSuite) testLSM() {
 
 	// Tokenize shares
 	tokenizeAmount := math.NewInt(200000000)
-	tokenize := sdk.NewCoin(common.UatomDenom, tokenizeAmount) // 200 atom
+	tokenize := sdk.NewCoin(common.UAtomDenom, tokenizeAmount) // 200 atom
 	s.tx.ExecuteTokenizeShares(s.commonHelper.Resources.ChainA, 0, tokenize.String(), validatorAddressA, delegatorAddress.String(), common.GaiaHomePath, fees.String())
 
 	// Validate delegation reduced
@@ -213,7 +213,7 @@ func (s *IntegrationTestSuite) testLSM() {
 			}
 
 			// check that tokenize share record module account received some rewards, since it unbonded during redeem tx execution
-			balanceRes, err = query.GetSpecificBalance(chainEndpoint, tokenizeShareRecord.GetModuleAddress().String(), common.UatomDenom)
+			balanceRes, err = query.GetSpecificBalance(chainEndpoint, tokenizeShareRecord.GetModuleAddress().String(), common.UAtomDenom)
 			s.Require().NoError(err)
 			if balanceRes.Amount.IsNil() || balanceRes.Amount.IsZero() {
 				return false

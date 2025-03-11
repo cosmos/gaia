@@ -26,7 +26,7 @@ func (s *IntegrationTestSuite) testStaking() {
 
 	delegatorAddress, _ := s.commonHelper.Resources.ChainA.GenesisAccounts[2].KeyInfo.GetAddress()
 
-	fees := sdk.NewCoin(common.UatomDenom, math.NewInt(1))
+	fees := sdk.NewCoin(common.UAtomDenom, math.NewInt(1))
 
 	existingDelegation := math.LegacyZeroDec()
 	res, err := query.QueryDelegation(chainEndpoint, validatorAddressA, delegatorAddress.String())
@@ -35,7 +35,7 @@ func (s *IntegrationTestSuite) testStaking() {
 	}
 
 	delegationAmount := math.NewInt(500000000)
-	delegation := sdk.NewCoin(common.UatomDenom, delegationAmount) // 500 atom
+	delegation := sdk.NewCoin(common.UAtomDenom, delegationAmount) // 500 atom
 
 	// Alice delegate uatom to Validator A
 	s.tx.ExecDelegate(s.commonHelper.Resources.ChainA, 0, delegation.String(), validatorAddressA, delegatorAddress.String(), common.GaiaHomePath, fees.String())
@@ -54,7 +54,7 @@ func (s *IntegrationTestSuite) testStaking() {
 	)
 
 	redelegationAmount := delegationAmount.Quo(math.NewInt(2))
-	redelegation := sdk.NewCoin(common.UatomDenom, redelegationAmount) // 250 atom
+	redelegation := sdk.NewCoin(common.UAtomDenom, redelegationAmount) // 250 atom
 
 	// Alice re-delegate half of her uatom delegation from Validator A to Validator B
 	s.tx.ExecRedelegate(s.commonHelper.Resources.ChainA, 0, redelegation.String(), validatorAddressA, validatorAddressB, delegatorAddress.String(), common.GaiaHomePath, fees.String())
@@ -85,7 +85,7 @@ func (s *IntegrationTestSuite) testStaking() {
 			s.Require().NoError(err)
 
 			currDelegationAmount = amt.TruncateInt()
-			currDelegation = sdk.NewCoin(common.UatomDenom, currDelegationAmount)
+			currDelegation = sdk.NewCoin(common.UAtomDenom, currDelegationAmount)
 
 			return currDelegation.IsValid()
 		},

@@ -22,12 +22,12 @@ func (s *IntegrationTestSuite) testDistribution() {
 	delegatorAddress, _ := s.commonHelper.Resources.ChainA.GenesisAccounts[2].KeyInfo.GetAddress()
 
 	newWithdrawalAddress, _ := s.commonHelper.Resources.ChainA.GenesisAccounts[3].KeyInfo.GetAddress()
-	fees := sdk.NewCoin(common.UatomDenom, math.NewInt(1000))
+	fees := sdk.NewCoin(common.UAtomDenom, math.NewInt(1000))
 
-	beforeBalance, err := query.GetSpecificBalance(chainEndpoint, newWithdrawalAddress.String(), common.UatomDenom)
+	beforeBalance, err := query.GetSpecificBalance(chainEndpoint, newWithdrawalAddress.String(), common.UAtomDenom)
 	s.Require().NoError(err)
 	if beforeBalance.IsNil() {
-		beforeBalance = sdk.NewCoin(common.UatomDenom, math.NewInt(0))
+		beforeBalance = sdk.NewCoin(common.UAtomDenom, math.NewInt(0))
 	}
 
 	s.tx.ExecSetWithdrawAddress(s.commonHelper.Resources.ChainA, 0, fees.String(), delegatorAddress.String(), newWithdrawalAddress.String(), common.GaiaHomePath)
@@ -47,7 +47,7 @@ func (s *IntegrationTestSuite) testDistribution() {
 	s.tx.ExecWithdrawReward(s.commonHelper.Resources.ChainA, 0, delegatorAddress.String(), valOperAddressA, common.GaiaHomePath)
 	s.Require().Eventually(
 		func() bool {
-			afterBalance, err := query.GetSpecificBalance(chainEndpoint, newWithdrawalAddress.String(), common.UatomDenom)
+			afterBalance, err := query.GetSpecificBalance(chainEndpoint, newWithdrawalAddress.String(), common.UAtomDenom)
 			s.Require().NoError(err)
 
 			return afterBalance.IsGTE(beforeBalance)
@@ -71,7 +71,7 @@ func (s *IntegrationTestSuite) fundCommunityPool() {
 	beforeDistUatomBalance, _ := query.GetSpecificBalance(chainAAPIEndpoint, common.DistModuleAddress, common.TokenAmount.Denom)
 	if beforeDistUatomBalance.IsNil() {
 		// Set balance to 0 if previous balance does not exist
-		beforeDistUatomBalance = sdk.NewInt64Coin(common.UatomDenom, 0)
+		beforeDistUatomBalance = sdk.NewInt64Coin(common.UAtomDenom, 0)
 	}
 
 	s.tx.ExecDistributionFundCommunityPool(s.commonHelper.Resources.ChainA, 0, sender.String(), common.TokenAmount.String(), common.StandardFees.String())

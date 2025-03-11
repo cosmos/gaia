@@ -269,7 +269,7 @@ func (h *Helper) WriteAddRateLimitAtomProposal(c *common.Chain, v2 bool) error {
 	}
 	propMsgBody := fmt.Sprintf(template,
 		common.GovAuthority,
-		common.UatomDenom,       // denom: uatom
+		common.UAtomDenom,       // denom: uatom
 		channel,                 // channel_or_client_id: channel-0 / 08-wasm-1
 		math.NewInt(1).String(), // max_percent_send: 1%
 		math.NewInt(1).String(), // max_percent_recv: 1%
@@ -349,7 +349,7 @@ func (h *Helper) WriteUpdateRateLimitAtomProposal(c *common.Chain, v2 bool) erro
 	}
 	propMsgBody := fmt.Sprintf(template,
 		common.GovAuthority,
-		common.UatomDenom,       // denom: uatom
+		common.UAtomDenom,       // denom: uatom
 		channel,                 // channel_or_client_id: channel-0 / 08-wasm-1
 		math.NewInt(2).String(), // max_percent_send: 2%
 		math.NewInt(1).String(), // max_percent_recv: 1%
@@ -386,7 +386,7 @@ func (h *Helper) WriteResetRateLimitAtomProposal(c *common.Chain, v2 bool) error
 	}
 	propMsgBody := fmt.Sprintf(template,
 		common.GovAuthority,
-		common.UatomDenom, // denom: uatom
+		common.UAtomDenom, // denom: uatom
 		channel,           // channel_or_client_id: channel-0 / 08-wasm-1
 	)
 
@@ -420,7 +420,7 @@ func (h *Helper) WriteRemoveRateLimitAtomProposal(c *common.Chain, v2 bool) erro
 	}
 	propMsgBody := fmt.Sprintf(template,
 		common.GovAuthority,
-		common.UatomDenom, // denom: uatom
+		common.UAtomDenom, // denom: uatom
 		channel,           // channel_or_client_id: channel-0 / 08-wasm-1
 	)
 
